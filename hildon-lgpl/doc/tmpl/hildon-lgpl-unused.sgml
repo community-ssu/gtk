@@ -1,0 +1,63 @@
+<!-- ##### STRUCT HildonFileChooserDialogPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SIGNAL HildonFileSystemModel::finished-loading ##### -->
+<para>
+
+</para>
+
+@hildonfilesystemmodel: the object which received the signal.
+
+<!-- ##### ARG HildonFileSystemModel:backend ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG HildonFileSystemModel:ref-widget ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG HildonFileSystemModel:thumbnail-callback ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO MENUAREA_BOTTOM_LIMIT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO MENUAREA_LEFT_LIMIT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO MENUAREA_RIGHT_LIMIT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO MENUAREA_TOP_LIMIT ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gtk_infoprint ##### -->
+<para>
+
+</para>
+
+@parent: 
+@text: 
+
