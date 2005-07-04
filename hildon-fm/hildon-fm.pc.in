@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: hildon-fm
+Description: LGPL-licensed File Management for Sputnik
+Requires: gtk+-2.0 >= @GTK_VERSION@
+Version: @VERSION@
+Libs: -L${libdir} -lhildonfm
+Cflags: -I${includedir}/hildon-fm

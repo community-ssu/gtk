@@ -1,0 +1,316 @@
+<!-- ##### SECTION Title ##### -->
+HildonFileSelection
+
+<!-- ##### SECTION Short_Description ##### -->
+A file tree widget
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HildonFileSelection displays file system as a two (by default) paned 
+view. Navigation pane on the left lets the user to change directory
+that is automatically show on the content pane on the right. You
+can define a filter that is used when deciding which files to display on the
+content pane. You can also select the sorting order and view type (list or thumbnail). 
+However, you probably don't need to use #HildonFileSelection directly, but a 
+more convenient #HildonFileChooserDialog. 
+</para>
+
+<para>
+#HildonFileSelection uses #HildonFileSystemModel as its data store. Multiple
+file selections can share a common data model. This reduces memory consumption
+and loading times. This approach is used in #HildonFileChooserDialog.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### ENUM HildonFileSelectionMode ##### -->
+<para>
+
+</para>
+
+@HILDON_FILE_SELECTION_MODE_LIST: 
+@HILDON_FILE_SELECTION_MODE_THUMBNAILS: 
+
+<!-- ##### ENUM HildonFileSelectionSortKey ##### -->
+<para>
+
+</para>
+
+@HILDON_FILE_SELECTION_SORT_NAME: 
+@HILDON_FILE_SELECTION_SORT_TYPE: 
+@HILDON_FILE_SELECTION_SORT_MODIFIED: 
+@HILDON_FILE_SELECTION_SORT_SIZE: 
+
+<!-- ##### STRUCT HildonFileSelectionPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HildonFileSelection ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION hildon_file_selection_new_with_model ##### -->
+<para>
+
+</para>
+
+@model: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_set_mode ##### -->
+<para>
+
+</para>
+
+@self: 
+@mode: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_get_mode ##### -->
+<para>
+
+</para>
+
+@self: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_set_sort_key ##### -->
+<para>
+
+</para>
+
+@self: 
+@key: 
+@order: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_get_sort_key ##### -->
+<para>
+
+</para>
+
+@self: 
+@key: 
+@order: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_set_current_folder ##### -->
+<para>
+
+</para>
+
+@self: 
+@folder: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_get_current_folder ##### -->
+<para>
+
+</para>
+
+@self: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_get_current_content_iter ##### -->
+<para>
+
+</para>
+
+@self: 
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_get_current_folder_iter ##### -->
+<para>
+
+</para>
+
+@self: 
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_select_path ##### -->
+<para>
+
+</para>
+
+@self: 
+@path: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_unselect_path ##### -->
+<para>
+
+</para>
+
+@self: 
+@path: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_select_all ##### -->
+<para>
+
+</para>
+
+@self: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_unselect_all ##### -->
+<para>
+
+</para>
+
+@self: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_get_selected_paths ##### -->
+<para>
+
+</para>
+
+@self: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_set_select_multiple ##### -->
+<para>
+
+</para>
+
+@self: 
+@select_multiple: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_get_select_multiple ##### -->
+<para>
+
+</para>
+
+@self: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_set_filter ##### -->
+<para>
+
+</para>
+
+@self: 
+@filter: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_get_filter ##### -->
+<para>
+
+</para>
+
+@self: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_hide_content_pane ##### -->
+<para>
+
+</para>
+
+@self: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_show_content_pane ##### -->
+<para>
+
+</para>
+
+@self: 
+
+
+<!-- ##### ENUM HildonFileSelectionVisibleColumns ##### -->
+<para>
+
+</para>
+
+@HILDON_FILE_SELECTION_SHOW_NAME: 
+@HILDON_FILE_SELECTION_SHOW_MODIFIED: 
+@HILDON_FILE_SELECTION_SHOW_SIZE: 
+@HILDON_FILE_SELECTION_SHOW_ALL: 
+
+<!-- ##### SIGNAL HildonFileSelection::content-pane-context-menu ##### -->
+<para>
+
+</para>
+
+@hildonfileselection: the object which received the signal.
+
+<!-- ##### SIGNAL HildonFileSelection::current-folder-changed ##### -->
+<para>
+
+</para>
+
+@hildonfileselection: the object which received the signal.
+
+<!-- ##### SIGNAL HildonFileSelection::file-activated ##### -->
+<para>
+
+</para>
+
+@hildonfileselection: the object which received the signal.
+
+<!-- ##### SIGNAL HildonFileSelection::items-dropped ##### -->
+<para>
+
+</para>
+
+@hildonfileselection: the object which received the signal.
+@arg1: 
+@arg2: 
+
+<!-- ##### SIGNAL HildonFileSelection::navigation-pane-context-menu ##### -->
+<para>
+
+</para>
+
+@hildonfileselection: the object which received the signal.
+
+<!-- ##### SIGNAL HildonFileSelection::selection-changed ##### -->
+<para>
+
+</para>
+
+@hildonfileselection: the object which received the signal.
+
+<!-- ##### ARG HildonFileSelection:drag-enabled ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileSelection:empty-text ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileSelection:model ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileSelection:visible-columns ##### -->
+<para>
+
+</para>
+

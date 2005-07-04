@@ -1,0 +1,11 @@
+../hildon-fm/hildon-file-chooser-dialog.c
+../hildon-fm/hildon-file-chooser-dialog.h
+../hildon-fm/hildon-file-selection.c
+../hildon-fm/hildon-file-selection.h
+../hildon-fm/hildon-file-system-common.h
+../hildon-fm/hildon-file-system-info.c
+../hildon-fm/hildon-file-system-info.h
+../hildon-fm/hildon-file-system-model.c
+../hildon-fm/hildon-file-system-model.h
+../hildon-fm/hildon-file-system-private.c
+../hildon-fm/hildon-file-system-private.h

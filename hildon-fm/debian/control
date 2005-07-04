@@ -1,0 +1,49 @@
+Source: hildon-fm
+Section: x11
+Priority: optional
+Maintainer: Luc Pionchon <luc.pionchon@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libgtk2.0-dev (>= 1:2.4.4-2osso59), outo, libxi-dev, libxt-dev, libpng12-dev, libgconf2-dev, hildon-lgpl-dev, osso-thumbnail-dev, osso-gwconnect-dev
+Standards-Version: 3.6.0
+
+Package: hildon-fm-dev
+Section: devel
+Architecture: any
+Depends: hildon-fm1 (= ${Source-Version}), libgtk2.0-dev (>= 1:2.4.0hildon1), hildon-lgpl-dev, osso-thumbnail-dev, osso-gwconnect-dev
+Recommends: hildon-libs-dev (>= 0.7.3)
+Description: LGPL-licensed File Management libraries development files
+
+Package: hildon-fm1
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: hildon-libs0 (<< 0.7.3), hildon-lgpl0 (<< 0.8.6)
+Replaces: hildon-libs0 (<< 0.7.3), hildon-lgpl0 (<< 0.8.6)
+Depends: hildon-lgpl0 (>= 0.8.6)
+Recommends: hildon-libs0 (>= 0.7.3)
+Description: LGPL-licensed File Management libraries
+
+Package: hildon-fm-test
+Section: libs
+Architecture: any
+Depends: hildon-fm1, outo
+Conflicts: hildon-fm1 (<< 0.8.10)
+Recommends: hildon-libs-dev (>= 0.7.3)
+Description: LGPL-licensed File Management libraries unit tests
+
+Package: hildon-fm1-dbg
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-lgpl0-dbg (>= 0.8.6) | hildon-lgpl0 (>= 0.8.6)
+Recommends: hildon-libs0-dbg
+Description: LGPL-licensed File Management libraries (with debug info)
+
+Package: hildon-fm-l10n-engb
+Architecture: all
+Description: Locale for package hildon-fm
+ en_GB locale for hildon-fm.
+
+Package: hildon-fm-l10n-src
+Architecture: all
+Depends: gettext
+Description: Locale source package for hildon-fm
+ Source package for locales.
