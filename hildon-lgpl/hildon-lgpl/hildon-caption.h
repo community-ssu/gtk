@@ -56,6 +56,9 @@ typedef enum {
     HILDON_CAPTION_MANDATORY
 } HildonCaptionStatus;
 
+#define HILDON_TYPE_CAPTION_STATUS (hildon_caption_status_get_type ())
+
+G_CONST_RETURN GType hildon_caption_status_get_type (void);
 
 /**
  * HildonCaption:
@@ -89,6 +92,7 @@ GtkSizeGroup *hildon_caption_get_sizegroup( const HildonCaption *caption );
 
 void hildon_caption_set_sizegroup( const HildonCaption *caption,
                                    GtkSizeGroup *new_group );
+#endif
 
 gboolean hildon_caption_is_mandatory( const HildonCaption *caption );
 
@@ -110,10 +114,15 @@ void hildon_caption_set_separator( HildonCaption *caption,
 
 gchar *hildon_caption_get_separator( const HildonCaption *caption );
 
+
+#ifndef HILDON_DISABLE_DEPRECATED
 GtkWidget *hildon_caption_get_control( const HildonCaption *caption );
 
 void hildon_caption_set_control( HildonCaption *caption, GtkWidget *control );
 #endif
+
+void hildon_caption_set_child_expand( HildonCaption *caption, gboolean expand );
+gboolean hildon_caption_get_child_expand( HildonCaption *caption );
 
 G_END_DECLS
 #endif /* __HILDON_CAPTION_H__ */

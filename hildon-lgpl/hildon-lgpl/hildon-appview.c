@@ -58,7 +58,10 @@
 
 enum {
   PROP_0,
-  PROP_CONNECTED_ADJUSTMENT
+  PROP_CONNECTED_ADJUSTMENT,
+  PROP_FULLSCREEN_KEY_ALLOWED,
+  PROP_FULLSCREEN,
+  PROP_TITLE
 };
 
 /*The size of screen*/
@@ -86,7 +89,7 @@ enum {
 
 /*Margins
  * These margins are set to be 5pixels smaller than in the specs
- * Inner "thingies" are allocation that extra space
+ * Inner things are allocation that extra space
  * */
 /*
 #define MARGIN_TOOLBAR_TOP 2
@@ -100,9 +103,6 @@ enum {
 #define MARGIN_APPVIEW_RIGHT 24
 
 
-#define MENU_X_OFFSET 10
-#define MENU_Y_OFFSET -13
-
 #define HILDON_APPVIEW_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE ((obj),\
      HILDON_TYPE_APPVIEW, HildonAppViewPrivate))
@@ -112,8 +112,6 @@ enum {
 #define DEFAULT_HEIGHT 28
 #define BANNER_WIDTH DEFAULT_WIDTH
 #define BANNER_HEIGHT DEFAULT_HEIGHT
-
-#define DEFAULT_APPVIEW_TITLE "My program"
 
 static GtkBinClass *parent_class;
 
@@ -181,12 +179,12 @@ struct _HildonAppViewPrivate {
 
     GtkAllocation allocation;
 
-    gint fullscreen : 1;
-    gint fullscreenshortcutallowed : 1;
+    guint fullscreen : 1;
+    guint fullscreenshortcutallowed : 1;
     /* For future expansion. We might use the below variables for disabling keyrepeat
      * if we need it someday. */
-    gboolean increase_button_pressed_down : 1;
-    gboolean decrease_button_pressed_down : 1;
+    guint increase_button_pressed_down : 1;
+    guint decrease_button_pressed_down : 1;
     gint visible_toolbars;
     GtkAdjustment * connected_adjustment;
 };
@@ -354,9 +352,28 @@ static void hildon_appview_class_init(HildonAppViewClass * appview_class)
                             "Connected GtkAdjustment",
                             "The GtkAdjustment. The increase and decrease hardware buttons are mapped to this.",
 			    GTK_TYPE_ADJUSTMENT,
-                            G_PARAM_READWRITE));
+			    G_PARAM_READWRITE));
 
-  widget_class = (GtkWidgetClass*) appview_class;
+    g_object_class_install_property(object_class, PROP_FULLSCREEN_KEY_ALLOWED,
+				    g_param_spec_boolean("fullscreen-key-allowed",
+							 "Fullscreen key allowed",
+							 "Whether the fullscreen key is allowed or not",
+							 FALSE,
+							 G_PARAM_READWRITE));
+
+    g_object_class_install_property(object_class, PROP_FULLSCREEN,
+				    g_param_spec_boolean("fullscreen",
+							 "Fullscreen",
+							 "Whether the appview should be fullscreen or not",
+							 FALSE,
+							 G_PARAM_READWRITE));
+    g_object_class_install_property(object_class, PROP_TITLE,
+				    g_param_spec_string("title",
+							"Title",
+							"Appview title",
+							NULL,
+							G_PARAM_READWRITE));
+   widget_class = (GtkWidgetClass*) appview_class;
 }
 
 static void hildon_appview_init(HildonAppView * self)
@@ -369,7 +386,7 @@ static void hildon_appview_init(HildonAppView * self)
     priv->menu = NULL;
     priv->visible_toolbars = 0;
 
-    priv->title = g_strdup(DEFAULT_APPVIEW_TITLE);
+    priv->title = g_strdup("");
 
     priv->fullscreen = FALSE;
     priv->fullscreenshortcutallowed = FALSE;
@@ -403,7 +420,20 @@ static void hildon_appview_set_property(GObject * object, guint property_id,
     switch (property_id) {
     case PROP_CONNECTED_ADJUSTMENT:
         hildon_appview_set_connected_adjustment (appview, g_value_get_object (value));
-        break;
+	break;
+
+    case PROP_FULLSCREEN_KEY_ALLOWED:
+	hildon_appview_set_fullscreen_key_allowed (appview, g_value_get_boolean (value));
+	break;
+
+    case PROP_FULLSCREEN:
+	hildon_appview_set_fullscreen (appview, g_value_get_boolean (value));
+	break;
+
+    case PROP_TITLE:
+	hildon_appview_set_title (appview, g_value_get_string (value));
+	break;
+
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         break;
@@ -418,7 +448,20 @@ static void hildon_appview_get_property(GObject * object, guint property_id,
     switch (property_id) {
     case PROP_CONNECTED_ADJUSTMENT:
         g_value_set_object (value, priv->connected_adjustment);
-        break;
+	break;
+
+    case PROP_FULLSCREEN_KEY_ALLOWED:
+	g_value_set_boolean (value, priv->fullscreenshortcutallowed);
+	break;
+
+    case PROP_FULLSCREEN:
+	g_value_set_boolean (value, priv->fullscreen);
+	break;
+
+    case PROP_TITLE:
+	g_value_set_string (value, priv->title);
+	break;
+
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         break;
@@ -457,7 +500,7 @@ static void paint_toolbar(GtkWidget *widget, GtkBox *box,
     GtkWidget *findtoolbar = NULL;
     gchar toolbar_mode[40];
 
-    /*collect info to help on painting the boxes*/
+    /* collect info to help on painting the boxes */
     g_list_foreach(box->children, visible_toolbar, 
 		   (gpointer) &toolbar_num);
     if(toolbar_num <= 0)
@@ -465,11 +508,11 @@ static void paint_toolbar(GtkWidget *widget, GtkBox *box,
     g_list_foreach(box->children, find_findtoolbar, 
 		   (gpointer) &findtoolbar);
     if(findtoolbar != NULL){
-        gint pass_bundle[2];/*an array for convient data passing
+        gint pass_bundle[2];/* an array for convient data passing
                               the first member contains the y allocation
 	         	                  of the find toolbar, and the second allocation
 			                        contains the index(how many toolbars are above
-			                        find toolbar)*/
+			                        find toolbar) */
         pass_bundle[0] = findtoolbar->allocation.y;
         pass_bundle[1] = ftb_index;
         g_list_foreach(box->children, find_findtoolbar_index,
@@ -575,7 +618,7 @@ static gboolean hildon_appview_expose(GtkWidget * widget,
     HildonAppViewPrivate *priv = HILDON_APPVIEW_GET_PRIVATE(widget);
     g_list_foreach(box->children, visible_toolbar, 
                    (gpointer) &toolbar_num);
-    /* Kludge */
+    
     if( priv->visible_toolbars != toolbar_num)
     {
      gint y_pos = 0;
@@ -835,9 +878,6 @@ static void hildon_appview_menupopupfunc( GtkMenu *menu, gint *x, gint *y,
 
   get_client_area( GTK_WIDGET(widget), &client_area );
 
-  *x = MENU_X_OFFSET;
-  *y = MENU_Y_OFFSET;
-
   gtk_widget_style_get (GTK_WIDGET (menu), "horizontal-offset", x,
 			"vertical-offset", y, NULL);
    
@@ -850,7 +890,11 @@ static void hildon_appview_menupopupfuncfull( GtkMenu *menu, gint *x, gint *y,
                                               gboolean *push_in, 
                                               GtkWidget *widget )
 {
-  *x = *y = 0;
+  gtk_widget_style_get (GTK_WIDGET (menu), "horizontal-offset", x,
+			"vertical-offset", y, NULL);
+
+  *x = MAX (0, *x);
+  *y = MAX (0, *y);
 }
 
 /*******************/
@@ -956,7 +1000,11 @@ void hildon_appview_set_title(HildonAppView * self, const gchar * newname)
  * @self: A #HildonAppView
  * @toolbar: A #GtkToolbar
  *
- * Sets the #GtkToolbar assigned to given #HildonAppView.
+ * Sets the #GtkToolbar to given #HildonAppView. This is, however, not a recommned way to
+ * set your toolbars. When you have multi toolbars, calling this function more than once will just
+ * replace the bottom most toolbar. There is a #GtkVBox in #HildonAppView's public structure, the programmer
+ * is responsible to pack his toolbars in the #GtkVBox, and #HildonAppView will take care of put them at the
+ * right place.
  * 
  **/
 #ifndef HILDON_DISABLE_DEPRECATED
@@ -988,9 +1036,11 @@ void hildon_appview_set_toolbar(HildonAppView * self, GtkToolbar * toolbar)
  * hildon_appview_get_toolbar:
  * @self: A #HildonAppView
  *
- * Gets the #GtkToolbar assigned to given #HildonAppView.
+ * This function will only 
+ * return the last widget that has been packed into the #GtkVBox in the public structure. Note
+ * this does not, however, mean that it is the bottom most toolbar.
  * 
- * Return value: The #GtkToolbar assigned to this application view.
+ * Return value: The #GtkToolbar assigned to this application view. 
  **/
 #ifndef HILDON_DISABLE_DEPRECATED
 GtkToolbar *hildon_appview_get_toolbar(HildonAppView * self)

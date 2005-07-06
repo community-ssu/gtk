@@ -53,7 +53,7 @@ void hildon_icon_sizes_init (void)
   hildoniconsizes->icon_size_statusbar = gtk_icon_size_register ("icon_size_statusbar", 40, 40);
   hildoniconsizes->icon_size_indi_video_player_pre_roll = gtk_icon_size_register ("icon_size_indi_video_player_pre_roll", 300, 150);
   hildoniconsizes->icon_size_indi_key_pad_lock = gtk_icon_size_register ("icon_size_indi_key_pad_lock", 50, 50);
-  hildoniconsizes->icon_size_indi_copy = gtk_icon_size_register ("icon_size_indi_delete", 110, 60);
+  hildoniconsizes->icon_size_indi_copy = gtk_icon_size_register ("icon_size_indi_copy", 110, 60);
   hildoniconsizes->icon_size_indi_delete = gtk_icon_size_register ("icon_size_indi_delete", 91, 54);
   hildoniconsizes->icon_size_indi_process = gtk_icon_size_register ("icon_size_indi_process", 54, 60);
   hildoniconsizes->icon_size_indi_progressball = gtk_icon_size_register ("icon_size_indi_progressball", 22, 24);

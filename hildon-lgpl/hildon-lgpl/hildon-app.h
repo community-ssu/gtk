@@ -66,6 +66,7 @@ struct _HildonAppClass {
     void (*clipboard_paste) (HildonApp *self, GtkWidget *widget);
 };
 
+#ifndef HILDON_DISABLE_DEPRECATED
 /* Make these values >0 so that we can detect when someone sets SMALL-1
  * zoom level (enum seems to be unsigned int)
  */
@@ -78,6 +79,8 @@ struct _HildonAppClass {
  *
  * The Hildon zoom levels. Small meaning small font. Large meaning
  * large font. These font are specified in the gtkrc files.
+ * This enum is deprecated and should not be used. It's just
+ * lecagy stuff from ancient specs.
  */
 typedef enum {
     HILDON_ZOOM_SMALL = 1,
@@ -85,6 +88,12 @@ typedef enum {
     HILDON_ZOOM_LARGE = 3
 } HildonZoomLevel;
 
+#define HILDON_TYPE_ZOOM_LEVEL (hildon_zoom_level_get_type ())
+
+G_CONST_RETURN GType hildon_zoom_level_get_type (void);
+#endif /* deprecated */
+
+/* You should use the correct ones from hildon-defines.h */
 #define HILDON_MENU_KEY         GDK_F4
 #define HILDON_HOME_KEY         GDK_F5
 #define HILDON_TOOLBAR_KEY      GDK_T
@@ -101,6 +110,8 @@ typedef enum {
 #define HILDON_KEYEVENT_IS_INCREASE_KEY(keyevent) (keyevent->keyval == HILDON_INCREASE_KEY)
 #define HILDON_KEYEVENT_IS_DECREASE_KEY(keyevent) (keyevent->keyval == HILDON_DECREASE_KEY)
 
+#define TRANSIENCY_MAXITER 50
+
 GType hildon_app_get_type(void);
 GtkWidget *hildon_app_new(void);
 GtkWidget *hildon_app_new_with_appview(HildonAppView * appview);
@@ -108,10 +119,14 @@ void hildon_app_set_appview(HildonApp * self, HildonAppView * appview);
 HildonAppView *hildon_app_get_appview(HildonApp * self);
 void hildon_app_set_title(HildonApp * self, const gchar * newtitle);
 const gchar *hildon_app_get_title(HildonApp * self);
+
+#ifndef HILDON_DISABLE_DEPRECATED
 void hildon_app_set_zoom(HildonApp * self, HildonZoomLevel newzoom);
 HildonZoomLevel hildon_app_get_zoom(HildonApp * self);
 PangoFontDescription *hildon_app_get_default_font(HildonApp * self);
 PangoFontDescription *hildon_app_get_zoom_font(HildonApp * self);
+#endif
+
 void hildon_app_set_two_part_title(HildonApp * self,
                                    gboolean istwoparttitle);
 gboolean hildon_app_get_two_part_title(HildonApp * self);

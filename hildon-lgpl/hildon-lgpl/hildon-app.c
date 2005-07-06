@@ -22,42 +22,35 @@
  *
  */
 
-/*  
+/*
  * @file hildon-app.c
  *
  * This file implements the HildonApp widget
- * 
+ *
  */
 
-#include <hildon-app.h>
-#include <hildon-app-private.h>
-#include <gtk-infoprint.h>
-
+#include "hildon-app.h"
+#include "hildon-app-private.h"
+#include "gtk-infoprint.h"
 
 #include <X11/extensions/XTest.h>
 #include <gdk/gdkevents.h>
 #include <gdk/gdkkeysyms.h>
 #include <X11/Xatom.h>
-#include <gtk/gtkframe.h>
 #include <gtk/gtkmenu.h>
-#include <gtk/gtkmenubar.h>
-#include <gtk/gtkmenuitem.h>
-#include <gtk/gtk.h>
-#include "gtk-infoprint.h"
+#include <gtk/gtkmain.h>
+#include <gtk/gtkeditable.h>
+#include <gtk/gtktextview.h>
+#include <gtk/gtkentry.h>
 
-#include <locale.h>
 #include <libintl.h>
 #include <string.h>
-#include <memory.h>
-
-#include <syslog.h>
 
 #include <libmb/mbutil.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include <libintl.h>
 
 #define TITLE_DELIMITER " - "
 
@@ -69,11 +62,6 @@
 #define MENUAREA_TOP_LIMIT 0
 #define MENUAREA_BOTTOM_LIMIT 39
 
-/* hildon, from mb's struct.h */
-#define MB_CMD_DESKTOP 3
-
-#include <stdio.h>
-
 #define KILLABLE "CANKILL"
 
 #define _(String) dgettext(PACKAGE, String)
@@ -82,11 +70,6 @@
       HILDON_TYPE_APP, HildonAppPrivate));
 
 static GtkWindowClass *parent_class;
-
-#ifdef HILDON_DEBUG
-static gboolean hildon_debug = FALSE;
-#endif
-
 static guint app_signals[HILDON_APP_LAST_SIGNAL] = { 0 };
 
 typedef struct _HildonAppPrivate HildonAppPrivate;
@@ -94,18 +77,19 @@ typedef struct _HildonAppPrivate HildonAppPrivate;
 static void
 hildon_app_switch_to_desktop (void);
 static gboolean
-hildon_app_key_press_handler (GtkWidget *widget, GdkEventKey *keyevent, HildonApp *app);
+hildon_app_key_press (GtkWidget *widget, GdkEventKey *keyevent);
 static gboolean
-hildon_app_key_release_handler (GtkWidget *widget, GdkEventKey *keyevent, HildonApp *app);
+hildon_app_key_release (GtkWidget *widget, GdkEventKey *keyevent);
+static gboolean
+hildon_app_key_snooper (GtkWidget *widget, GdkEventKey *keyevent, HildonApp *app);
 static GdkFilterReturn
 hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data);
 static void
 hildon_app_construct_title (HildonApp *self);
 static void
-hildon_app_destroy_appview (GtkWidget *widget, gpointer data);
-
-static void
 hildon_app_finalize (GObject *obj_self);
+static void
+hildon_app_destroy (GtkObject *obj);
 static void
 hildon_app_init (HildonApp *self);
 static void
@@ -118,19 +102,60 @@ static void
 hildon_app_real_switch_to (HildonApp *self);
 static gboolean
 hildon_app_button_press (GtkWidget *widget, GdkEventButton *event);
+static void
+hildon_app_clipboard_copy(HildonApp *self, GtkWidget *widget);
+static void
+hildon_app_clipboard_cut(HildonApp *self, GtkWidget *widget);
+static void
+hildon_app_clipboard_paste(HildonApp *self, GtkWidget *widget);
 static gboolean hildon_app_escape_timeout(gpointer data);
 	
 static void hildon_app_set_property(GObject * object, guint property_id,
                                     const GValue * value, GParamSpec * pspec);
 static void hildon_app_get_property(GObject * object, guint property_id,
                                     GValue * value, GParamSpec * pspec);
-                                    
+
+static void hildon_app_add (GtkContainer *container, GtkWidget *child);
+static void hildon_app_remove (GtkContainer *container, GtkWidget *child);
+static void hildon_app_forall (GtkContainer *container, gboolean include_internals,
+			       GtkCallback callback, gpointer callback_data);
+
 enum {
-  PROP_SCROLL_CONTROL = 1  
+  PROP_0,
+  PROP_SCROLL_CONTROL,
+#ifndef HILDON_DISABLE_DEPRECATED
+  PROP_ZOOM,
+#endif
+  PROP_TWO_PART_TITLE,
+  PROP_APP_TITLE,
+  PROP_KILLABLE
 };
 
 static gpointer find_view(HildonApp *self, unsigned long view_id);
 
+/**
+ * hildon_zoom_level_get_type:
+ * @Returns : GType of #HildonZoomLevel
+ *
+ * Initialises, and returns the type of a hildon zoom level
+ */
+#ifndef HILDON_DISABLE_DEPRECATED
+G_CONST_RETURN GType
+hildon_zoom_level_get_type (void)
+{
+  static GType etype = 0;
+  if (etype == 0) {
+    static const GEnumValue values[] = {
+      { HILDON_ZOOM_SMALL, "HILDON_ZOOM_SMALL", "small" },
+      { HILDON_ZOOM_MEDIUM, "HILDON_ZOOM_MEDIUM", "medium" },
+      { HILDON_ZOOM_LARGE, "HILDON_ZOOM_LARGE", "large" },
+      { 0, NULL, NULL }
+    };
+    etype = g_enum_register_static ("HildonZoomLevel", values);
+  }
+  return etype;
+}
+#endif
 
 GType hildon_app_get_type(void)
 {
@@ -156,11 +181,134 @@ GType hildon_app_get_type(void)
     return app_type;
 }
 
+static void hildon_app_apply_killable(HildonApp *self)
+{
+    HildonAppPrivate *priv;
+    Atom killability_atom = XInternAtom (GDK_DISPLAY(),
+				       "_HILDON_APP_KILLABLE", False);
+    priv = HILDON_APP_GET_PRIVATE (self);
+
+    g_return_if_fail (HILDON_IS_APP (self) );
+    g_assert(GTK_WIDGET_REALIZED(self));
+
+    if (priv->killable)
+    {
+      /* Set the atom to specific value, because perhaps in the future,
+	       there may be other possible values? */
+      XChangeProperty(GDK_DISPLAY(),
+		      GDK_WINDOW_XID(GTK_WIDGET(self)->window),
+		      killability_atom, XA_STRING, 8,
+		      PropModeReplace, (unsigned char *)KILLABLE,
+		      strlen(KILLABLE));
+    }
+    else
+    {
+      XDeleteProperty(GDK_DISPLAY(),
+		      GDK_WINDOW_XID(GTK_WIDGET(self)->window),
+		      killability_atom);
+    }
+}
+
+/* Finally, update the _NET_CLIENT_LIST property */
+static void hildon_app_apply_client_list(HildonApp *self)
+{
+  HildonAppPrivate *priv;
+  Window *win_array;
+  GSList *list_ptr;
+  int loopctr = 0;
+  Atom clientlist;
+
+  g_assert(GTK_WIDGET_REALIZED(self));
+
+  clientlist = XInternAtom (GDK_DISPLAY(),
+    "_NET_CLIENT_LIST", False);
+
+  priv = HILDON_APP_GET_PRIVATE(self);
+  win_array = g_new(Window, g_slist_length(priv->view_ids));
+  
+  for (list_ptr = priv->view_ids; list_ptr; list_ptr = list_ptr->next)
+  {
+      win_array[loopctr] = 
+	(unsigned long)(((view_item *)(list_ptr->data))->view_id);
+      loopctr++;
+  }
+
+  XChangeProperty(GDK_DISPLAY(), GDK_WINDOW_XID(GTK_WIDGET(self)->window),
+		  clientlist, XA_WINDOW, 32, PropModeReplace,
+		  (unsigned char *)win_array,
+		  g_slist_length(priv->view_ids));
+
+  XFlush(GDK_DISPLAY());
+  g_free(win_array);
+}
+
+static void hildon_app_realize(GtkWidget *widget)
+{
+    HildonApp *self;
+    HildonAppPrivate *priv;
+    GdkWindow *window;
+    Atom *old_atoms, *new_atoms;
+    gint atom_count;
+    Display *disp;
+
+    self = HILDON_APP(widget);
+    priv = HILDON_APP_GET_PRIVATE(self);
+
+    GTK_WIDGET_CLASS(parent_class)->realize(widget);
+
+    hildon_app_apply_killable(self); 
+    hildon_app_construct_title(self);
+    hildon_app_apply_client_list(self);
+    hildon_app_notify_view_changed(self, hildon_app_get_appview(self));
+    window = widget->window;
+    disp = GDK_WINDOW_XDISPLAY(window);
+
+    /* Install a key snooper for the Home button - so that it works everywhere */
+    priv->key_snooper = gtk_key_snooper_install 
+        ((GtkKeySnoopFunc) hildon_app_key_snooper, widget);
+
+    /* Enable custom button that is used for menu */
+    XGetWMProtocols(disp, GDK_WINDOW_XID(window), &old_atoms, &atom_count);
+    new_atoms = g_new(Atom, atom_count + 1);
+
+    memcpy(new_atoms, old_atoms, sizeof(Atom) * atom_count);
+
+    new_atoms[atom_count++] =
+        XInternAtom(disp, "_NET_WM_CONTEXT_CUSTOM", False);
+
+    XSetWMProtocols(disp, GDK_WINDOW_XID(window), new_atoms, atom_count);
+
+    XFree(old_atoms);
+    g_free(new_atoms);
+
+    gdk_window_set_events(gdk_get_default_root_window(),
+                          gdk_window_get_events(gdk_get_default_root_window()) |
+                          GDK_PROPERTY_CHANGE_MASK);
+    gdk_window_set_events(window, gdk_window_get_events(window) | GDK_SUBSTRUCTURE_MASK);
+    gdk_window_add_filter(NULL, hildon_app_event_filter, widget);
+}
+
+static void hildon_app_unrealize(GtkWidget *widget)
+{
+  HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE(widget);
+
+  if (priv->key_snooper)
+  {
+    gtk_key_snooper_remove(priv->key_snooper);
+    priv->key_snooper = 0;
+  }
+
+  gdk_window_remove_filter(NULL, hildon_app_event_filter, widget);
+  GTK_WIDGET_CLASS(parent_class)->unrealize(widget);
+}
 
 static void hildon_app_class_init (HildonAppClass *app_class)
 {
     /* get convenience variables */
     GObjectClass *object_class = G_OBJECT_CLASS(app_class);
+    GtkContainerClass *container_class = GTK_CONTAINER_CLASS (app_class);
+    GtkObjectClass *gtkobject_class = GTK_OBJECT_CLASS(app_class);
+    GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(app_class);
 
     /* set the global parent_class here */
     parent_class = g_type_class_peek_parent(app_class);
@@ -171,10 +319,26 @@ static void hildon_app_class_init (HildonAppClass *app_class)
     object_class->finalize = hildon_app_finalize;
     object_class->set_property = hildon_app_set_property;
     object_class->get_property = hildon_app_get_property;
+
+    gtkobject_class->destroy = hildon_app_destroy;
+
+    widget_class->key_press_event = hildon_app_key_press;
+    widget_class->key_release_event = hildon_app_key_release;
+    widget_class->button_press_event = hildon_app_button_press;
+    widget_class->realize = hildon_app_realize;
+    widget_class->unrealize = hildon_app_unrealize;
+
+    container_class->add = hildon_app_add;
+    container_class->remove = hildon_app_remove;
+    container_class->forall = hildon_app_forall;
+
     app_class->topmost_status_acquire =
         hildon_app_real_topmost_status_acquire;
     app_class->topmost_status_lose = hildon_app_real_topmost_status_lose;
     app_class->switch_to = hildon_app_real_switch_to;
+    app_class->clipboard_copy = hildon_app_clipboard_copy;
+    app_class->clipboard_cut = hildon_app_clipboard_cut;
+    app_class->clipboard_paste = hildon_app_clipboard_paste;
 
     app_signals[TOPMOST_STATUS_ACQUIRE] =
         g_signal_new("topmost_status_acquire",
@@ -238,40 +402,95 @@ static void hildon_app_class_init (HildonAppClass *app_class)
         g_param_spec_boolean("scroll-control",
                             "Scroll control",
                             "Set the scroll control ON/OFF",
-                            TRUE, G_PARAM_READWRITE));
+			     TRUE, G_PARAM_READWRITE));
+
+    g_object_class_install_property(object_class, PROP_TWO_PART_TITLE,
+				    g_param_spec_boolean("two-part-title",
+							 "Two part title",
+							 "Use two part title or not",
+							 FALSE, G_PARAM_READWRITE));
+#ifndef HILDON_DISABLE_DEPRECATED
+    g_object_class_install_property(object_class, PROP_ZOOM,
+				    g_param_spec_enum ("zoom",
+						       "Zoom level",
+						       "Set the zoom level",
+						       HILDON_TYPE_ZOOM_LEVEL,
+						       HILDON_ZOOM_MEDIUM,
+						       G_PARAM_READWRITE));
+#endif
+    g_object_class_install_property(object_class, PROP_APP_TITLE,
+				    g_param_spec_string ("app-title",
+							 "Application title",
+							 "Set the application title",
+							 "",
+							 G_PARAM_READWRITE));
+
+    g_object_class_install_property(object_class, PROP_KILLABLE,
+				    g_param_spec_boolean("killable",
+							 "Killable",
+							 "Whether the application is killable or not",
+							 FALSE,
+							 G_PARAM_READWRITE));
 }
 
 
 static void
-hildon_app_finalize (GObject *obj_self)
+hildon_app_finalize (GObject *obj)
 {
-    HildonApp *self = HILDON_APP(obj_self);
-    HildonAppPrivate *priv;
+  HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE (obj);
 
-    priv = HILDON_APP_GET_PRIVATE(self);
-    if (G_OBJECT_CLASS(parent_class)->finalize)
-      {
-        G_OBJECT_CLASS(parent_class)->finalize(obj_self);
-      }
+  g_free (priv->title);
 
-    if (priv->appview)
-      {
-        g_object_unref(priv->appview);
-        priv->appview = NULL;
-      }
-    g_free(priv->title);
+  if (G_OBJECT_CLASS(parent_class)->finalize)
+    G_OBJECT_CLASS(parent_class)->finalize(obj);
 
-    if (priv->tag>0)
-	    g_source_remove(priv->tag);
+  /* This is legacy code, but cannot be removed 
+     without changing functionality */
+  gtk_main_quit ();
+}
 
-    gdk_window_remove_filter(gdk_get_default_root_window(),
-                             hildon_app_event_filter, self);
-    gdk_window_remove_filter(GTK_WIDGET(self)->window,
-                             hildon_app_event_filter, self);
-    gdk_window_remove_filter(NULL, hildon_app_event_filter, self);
+static void
+hildon_app_remove_timeout(HildonAppPrivate *priv)
+{
+  if (priv->escape_timeout > 0)
+    {
+      g_source_remove (priv->escape_timeout);
+      priv->escape_timeout = 0;
+    }
+}
 
-    g_slist_free(priv->view_ids);
+static void
+hildon_app_destroy (GtkObject *obj)
+{
+  HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE (obj);
 
+  hildon_app_remove_timeout(priv);
+
+  if (priv->view_ids)
+    {
+      g_slist_free (priv->view_ids);
+      priv->view_ids = NULL;
+    }
+
+  if (GTK_OBJECT_CLASS (parent_class)->destroy)
+    GTK_OBJECT_CLASS (parent_class)->destroy(obj);
+}
+
+static void hildon_app_forall (GtkContainer *container, gboolean include_internals,
+			       GtkCallback callback, gpointer callback_data)
+{
+  HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE (container);
+
+  g_return_if_fail (callback != NULL);
+
+  if (!include_internals)
+    {
+      GtkBin *bin = GTK_BIN (container);
+      if (bin->child)
+        (*callback) (bin->child, callback_data);
+    }
+  else
+    g_list_foreach (priv->children, (GFunc)callback, callback_data);
 }
 
 static void hildon_app_set_property(GObject * object, guint property_id,
@@ -281,17 +500,24 @@ static void hildon_app_set_property(GObject * object, guint property_id,
 
     switch (property_id) {
     case PROP_SCROLL_CONTROL:
-        if (g_value_get_boolean(value))
-          priv->scroll_control = g_signal_connect( object,
-                                     "button-press-event",
-                                     G_CALLBACK(hildon_app_button_press),
-                                     NULL );
-        else
-        {
-          g_signal_handler_disconnect( object, priv->scroll_control );
-          priv->scroll_control = 0;
-        }
+        priv->scroll_control = g_value_get_boolean(value);
         break;
+#ifndef HILDON_DISABLE_DEPRECATED
+    case PROP_ZOOM:
+        hildon_app_set_zoom( HILDON_APP (object), g_value_get_enum (value) );
+        break; 
+#endif
+    case PROP_TWO_PART_TITLE:
+ 	hildon_app_set_two_part_title( HILDON_APP (object), 
+				       g_value_get_boolean (value) );
+ 	break;
+     case PROP_APP_TITLE:
+ 	hildon_app_set_title( HILDON_APP (object), g_value_get_string (value));
+ 	break;
+    case PROP_KILLABLE:
+        hildon_app_set_killable( HILDON_APP (object), 
+			       g_value_get_boolean (value));
+ 	break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         break;
@@ -305,13 +531,94 @@ static void hildon_app_get_property(GObject * object, guint property_id,
 
     switch (property_id) {
     case PROP_SCROLL_CONTROL:
-        g_value_set_boolean( value, (priv->scroll_control ? TRUE : FALSE) );
+        g_value_set_boolean( value, priv->scroll_control );
         break;
+#ifndef HILDON_DISABLE_DEPRECATED
+    case PROP_ZOOM:
+ 	g_value_set_enum( value, priv->zoom);
+ 	break;
+#endif
+    case PROP_TWO_PART_TITLE:
+ 	g_value_set_boolean( value, priv->twoparttitle);
+ 	break;
+    case PROP_APP_TITLE:
+ 	g_value_set_string (value, priv->title);
+ 	break;
+    case PROP_KILLABLE:
+ 	g_value_set_boolean (value, priv->killable);
+ 	break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         break;
     }
 }
+
+static void hildon_app_add (GtkContainer *container, GtkWidget *child)
+{
+  HildonApp *app = HILDON_APP (container);
+  HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE (app);
+
+  g_return_if_fail (GTK_IS_WIDGET (child));
+
+  /* Check if child is already added here */
+  if (g_list_find (priv->children, child) != NULL)
+    return;
+
+  priv->children = g_list_append (priv->children, child);
+  GTK_BIN (container)->child = child;
+  gtk_widget_set_parent (child, GTK_WIDGET (app));
+
+  g_signal_connect_swapped (G_OBJECT (child), "title_change",
+			    G_CALLBACK (hildon_app_construct_title), app);
+
+  /* If the default direction (RTL/LTR) is different from the real
+   default, change it This happens if the locale has been changed
+   but this appview was orphaned and thus never got to know about
+   it. "default_direction" could be RTL, but the widget direction
+   of the view might still be LTR. Thats what we're fixing here. */
+
+  if (gtk_widget_get_default_direction () !=
+      gtk_widget_get_direction (GTK_WIDGET (child)))
+    gtk_widget_set_direction (GTK_WIDGET (child),
+			      gtk_widget_get_default_direction ());
+
+  if (priv->autoregistration)
+    hildon_app_register_view (app, child);
+}
+
+static void hildon_app_remove (GtkContainer *container, GtkWidget *child)
+{
+  HildonAppPrivate *priv;
+  GtkBin *bin;
+  HildonApp *app;
+
+  g_return_if_fail (GTK_WIDGET (child));
+
+  priv = HILDON_APP_GET_PRIVATE (container);
+  bin = GTK_BIN (container);
+  app = HILDON_APP (bin);
+
+  /* Make sure that child is found in the list */
+  if (g_list_find (priv->children, child) == NULL)
+    return;
+
+  priv->children = g_list_remove (priv->children, child);
+
+  g_signal_handlers_disconnect_by_func (G_OBJECT (child),
+					(gpointer)hildon_app_construct_title, app);
+
+  if (priv->autoregistration)
+    hildon_app_unregister_view (app, HILDON_APPVIEW (child));
+
+  gtk_widget_unparent (child);
+
+  if (bin->child == child)
+    {
+      bin->child = NULL;
+      gtk_widget_queue_resize (GTK_WIDGET (bin));
+    }
+}
+
 
 /* - FIXME - This is an estimate, when ever some border is changed too much
              This will break down.*/
@@ -320,49 +627,64 @@ static void hildon_app_get_property(GObject * object, guint property_id,
 static gboolean
 hildon_app_escape_timeout(gpointer data)
 {
-	HildonApp *app;
 	HildonAppPrivate *priv;
-	GdkWindow *window;
-	
-	app = HILDON_APP(data);
-	priv = HILDON_APP_GET_PRIVATE(app);
-	if (GTK_WIDGET(app)->parent == NULL) window = GTK_WIDGET(app)->window;
-	else window = gtk_widget_get_parent_window(GTK_WIDGET(app));
+	GdkEvent *event;
 
-	g_signal_emit_by_name (app, "delete-event");
-/*	if (priv->tag > 0) g_source_remove(priv->tag); */
-	priv->escape_pressed = FALSE;
-	return FALSE;
-	
+  g_assert(GTK_WIDGET_REALIZED(data));
+
+	priv = HILDON_APP_GET_PRIVATE(data);
+
+  /* Earlier implementation caused app to crash without mercy... */
+  event = gdk_event_new(GDK_DELETE);
+  ((GdkEventAny *)event)->window = GTK_WIDGET(data)->window;
+  gtk_main_do_event(event);
+  gdk_event_free(event);
+
+	priv->escape_timeout = 0;
+
+	return FALSE;	
 }
 
 static gboolean
 hildon_app_button_press (GtkWidget *widget, GdkEventButton *event)
 {
-  if (event->x > widget->allocation.width - RIGHT_BORDER)
+  HildonAppPrivate *priv;
+
+  priv = HILDON_APP_GET_PRIVATE (widget);
+  g_assert(GTK_WIDGET_REALIZED(widget));
+
+  if (priv->scroll_control &&
+      (event->x > widget->allocation.width - RIGHT_BORDER))
     {
-      gint x, y, width;
+      gint x, y;
       GdkWindow *window;
-      gint xs;
       gint xm = -(RIGHT_BORDER - (widget->allocation.width - event->x));
 
       XTestFakeRelativeMotionEvent (GDK_DISPLAY(), xm, 0, 0);
 
-      xs = event->x;
-      event->x = 6;
-
       window = event->window;
       event->window = gdk_window_at_pointer (&x, &y);
-      gdk_window_get_geometry (event->window, NULL, NULL, &width, NULL, NULL);
-      event->x = width/2;
 
-      gtk_main_do_event ((GdkEvent*)event);
+      if (event->window != widget->window)
+	{
+	  gint width, xs = event->x;
+	  gdk_window_get_geometry (event->window, NULL, NULL, &width, NULL, NULL);
+	  event->x = width-1;
 
-      event->window = window;
-      event->x = xs;
+	  gtk_main_do_event ((GdkEvent*)event);
+
+	  event->window = window;
+	  event->x = xs;
+	}
+      else
+	{
+	  event->window = window;
+          return FALSE;
+	}
       return TRUE;
     }
-return FALSE;
+
+  return FALSE;
 }
 
 static void hildon_app_clipboard_copy(HildonApp *self, GtkWidget *widget)
@@ -412,24 +734,14 @@ hildon_app_init (HildonApp *self)
     GdkGeometry geometry;
     GdkWindowHints geom_mask;
 
-    GdkWindow *window;
-    Atom *old_atoms, *new_atoms;
-    gint atom_count;
-    Display *disp;
-    static int set_domain = 1;
-
-    if (set_domain)
-      {
-        (void) bindtextdomain(PACKAGE, LOCALEDIR);
-        set_domain = 0;
-      }
-
+    /* Earlier textdomain was bound here. That was a dirty hack */
     priv = HILDON_APP_GET_PRIVATE(self);
 
     /* init private */
-    priv->appview = NULL;
     priv->title = g_strdup("");
+#ifndef HILDON_DISABLE_DEPRECATED
     priv->zoom = HILDON_ZOOM_MEDIUM;
+#endif
     priv->twoparttitle = FALSE;
     priv->lastmenuclick = 0;
     priv->is_topmost = FALSE;
@@ -438,6 +750,7 @@ hildon_app_init (HildonApp *self)
     priv->view_ids = NULL;
     priv->killable = FALSE;
     priv->autoregistration = TRUE;
+    priv->scroll_control = TRUE;
 
     /* normal init */
     geometry.min_width = 720;
@@ -448,77 +761,15 @@ hildon_app_init (HildonApp *self)
     geom_mask = GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE;
     gtk_window_set_geometry_hints(GTK_WINDOW(self), GTK_WIDGET(self),
                                   &geometry, geom_mask);
-    gtk_window_set_has_frame(GTK_WINDOW(self), FALSE);
-    gtk_window_move(GTK_WINDOW(self), 0, 0);
 
-    g_signal_connect (G_OBJECT (self), "key-press-event", G_CALLBACK (hildon_app_key_press_handler), self);
-    g_signal_connect (G_OBJECT (self), "key-release-event", G_CALLBACK (hildon_app_key_release_handler), self);
-
-    g_signal_connect(G_OBJECT(self), "destroy", gtk_main_quit, NULL);
     gtk_widget_set_events (GTK_WIDGET(self), GDK_BUTTON_PRESS_MASK |
                            GDK_BUTTON_RELEASE_MASK |
                            GDK_POINTER_MOTION_MASK);
 
-    gtk_widget_realize(GTK_WIDGET(self));
-    window = GTK_WIDGET(self)->window;
-    disp = GDK_WINDOW_XDISPLAY(window);
-
-    /* Enable custom button that is used for menu */
-    XGetWMProtocols(disp, GDK_WINDOW_XID(window), &old_atoms, &atom_count);
-    new_atoms = g_new(Atom, atom_count + 1);
-
-    memcpy(new_atoms, old_atoms, sizeof(Atom) * atom_count);
-
-    new_atoms[atom_count++] =
-        XInternAtom(disp, "_NET_WM_CONTEXT_CUSTOM", False);
-
-    XSetWMProtocols(disp, GDK_WINDOW_XID(window), new_atoms, atom_count);
-
-    XFree(old_atoms);
-    g_free(new_atoms);
-
-    gdk_window_set_events(gdk_get_default_root_window(),
-                          gdk_window_get_events(gdk_get_default_root_window
-                                                ()) |
-                          GDK_PROPERTY_CHANGE_MASK);
-    gdk_window_set_events(window, gdk_window_get_events(window) | GDK_SUBSTRUCTURE_MASK);
-
-/*   gdk_window_add_filter( gdk_get_default_root_window (), */
-/*       hildon_app_event_filter, GTK_WIDGET(self) ); */
-/*   gdk_window_add_filter( window, hildon_app_event_filter, */
-/*       GTK_WIDGET(self) ); */
-
-    gdk_window_add_filter(NULL, hildon_app_event_filter,
-			  GTK_WIDGET(self));
-
     /* For some reason, the titlebar menu has problems with the grab
        (bugzilla bug 1527). This is part of somewhat ugly fix for it to
        get it to work until a more satisfactory solution is found */
-
-#ifdef HILDON_DEBUG
-
-    if ((char *) g_getenv("HILDON_DEBUG") != NULL)
-        hildon_debug = ((strcmp((char *) g_getenv("HILDON_DEBUG"),
-                       "TRUE") == 0) == TRUE);
-    else
-        hildon_debug = TRUE;
-
-#endif
-
-    priv->scroll_control = g_signal_connect( G_OBJECT(self),
-                                     "button-press-event",
-                                     G_CALLBACK(hildon_app_button_press),
-                                     NULL );
-
-    g_signal_connect(G_OBJECT(self), "clipboard_copy",
-		     G_CALLBACK(hildon_app_clipboard_copy), NULL);
-    g_signal_connect(G_OBJECT(self), "clipboard_cut",
-		     G_CALLBACK(hildon_app_clipboard_cut), NULL);
-    g_signal_connect(G_OBJECT(self), "clipboard_paste",
-		     G_CALLBACK(hildon_app_clipboard_paste), NULL);
 }
-
-
 
 /*public functions */
 
@@ -570,12 +821,11 @@ hildon_app_new_with_appview (HildonAppView *appview)
 HildonAppView *
 hildon_app_get_appview (HildonApp *self)
 {
-    HildonAppPrivate *priv;
+  GtkBin *bin;
 
-    g_return_val_if_fail(HILDON_IS_APP(self), NULL);
-    priv = HILDON_APP_GET_PRIVATE(self);
-
-    return priv->appview;
+  g_return_val_if_fail (HILDON_IS_APP (self), NULL);
+  bin = GTK_BIN (self);
+  return HILDON_APPVIEW (bin->child);
 }
 
 /**
@@ -589,99 +839,39 @@ void
 hildon_app_set_appview (HildonApp *app, HildonAppView *view)
 {
   HildonAppPrivate *priv;
+  GtkBin *bin;
+  GtkWidget *widget; /*(view to be set)*/
 
-    g_return_if_fail(HILDON_IS_APP(app));
-    g_return_if_fail(HILDON_IS_APPVIEW (view));
-    
-    priv = HILDON_APP_GET_PRIVATE(app);
+  g_return_if_fail (HILDON_IS_APP (app));
+  g_return_if_fail (HILDON_IS_APPVIEW (view));
 
-    if (view == priv->appview)
-        return;
+  bin = GTK_BIN (app);
+  priv = HILDON_APP_GET_PRIVATE (app);
+  widget = GTK_WIDGET (view);
 
-    if (priv->appview)
-      {
-        g_object_ref(G_OBJECT(priv->appview));
+  if (widget == bin->child)
+    return;
 
-        gtk_container_remove (GTK_CONTAINER(app),
-                              GTK_WIDGET(priv->appview));
+  if (bin->child)
+    {
+      gtk_widget_hide (bin->child);
+      g_signal_emit_by_name (bin->child, "switched_from", NULL);
+      bin->child = NULL;
+    }
 
-        g_signal_emit_by_name(priv->appview, "switched_from", NULL);
+  if (!g_list_find (priv->children, widget))
+    gtk_container_add (GTK_CONTAINER (app), widget);
 
-        g_signal_handlers_disconnect_by_func(G_OBJECT(priv->appview),
-                                             (gpointer)
-                                             hildon_app_construct_title,
-                                             app);
-        g_signal_handlers_disconnect_by_func(G_OBJECT(priv->appview),
-                                             (gpointer)
-                                             hildon_app_destroy_appview,
-                                             app);
+  bin->child = widget;
 
-        priv->appview = NULL;
-      }
+  gtk_widget_show (widget);
+  hildon_app_construct_title (app);
 
-    if (view != NULL)
-      {
-        g_object_ref (view);
-	
-	if (priv->autoregistration == TRUE)
-	  {
-	    hildon_app_register_view(app, view);
-	  }
-        priv->appview = view;
-
-        g_signal_connect_swapped(G_OBJECT(view), "title_change",
-                                 G_CALLBACK(hildon_app_construct_title), app);
-        g_signal_connect (G_OBJECT(view), "destroy",
-                          G_CALLBACK(hildon_app_destroy_appview), app);
-
-        gtk_container_add(GTK_CONTAINER(app), GTK_WIDGET(view));
-
-        /* If the default direction (RTL/LTR) is different from the real
-           default, change it This happens if the locale has been changed
-           but this appview was orphaned and thus never got to know about
-           it. "default_direction" could be RTL, but the widget direction
-           of the view might still be LTR. Thats what we're fixing here. */
-
-        if (gtk_widget_get_default_direction() !=
-            gtk_widget_get_direction(GTK_WIDGET(view)))
-            gtk_widget_set_direction(GTK_WIDGET(view),
-            gtk_widget_get_default_direction());
-
-        gtk_widget_show(GTK_WIDGET(view));
-        hildon_app_construct_title(app);
-
-        g_signal_emit_by_name(view, "switched_to", NULL);
-	/* Sets the _NET_ACTIVE_WINDOW atom to correct view ID */
-	hildon_app_notify_view_changed(app, view);
-        gtk_widget_child_focus(GTK_WIDGET(view), GTK_DIR_TAB_FORWARD);
-      }
-}
-
-static void
-hildon_app_destroy_appview (GtkWidget *widget, gpointer data)
-{
-    HildonAppPrivate *priv;
-    HildonApp *app;
-    HildonAppView *view;
-
-    g_return_if_fail(HILDON_IS_APP(data));
-    g_return_if_fail(HILDON_IS_APPVIEW(widget));
-
-    app = HILDON_APP(data);
-    view = HILDON_APPVIEW(widget);
-    priv = HILDON_APP_GET_PRIVATE(app);
-    priv->appview = NULL;
-    
-    if (priv->autoregistration == TRUE)
-      {
-	hildon_app_unregister_view(app, view);
-      }
-    if (GTK_WIDGET(view)->parent)
-      {
-        g_object_ref(G_OBJECT(view));
-        gtk_container_remove(GTK_CONTAINER(app), GTK_WIDGET(view));
-      }
-
+  g_signal_emit_by_name (widget, "switched_to", NULL);
+  /* What means the comment belove this comment? */
+  /* Sets the _NET_ACTIVE_WINDOW atom to correct view ID */
+  hildon_app_notify_view_changed (app, view);
+  gtk_widget_child_focus (widget, GTK_DIR_TAB_FORWARD);
 }
 
 /**
@@ -739,13 +929,16 @@ hildon_app_get_title (HildonApp *self)
     return priv->title;
 }
 
+#ifndef HILDON_DISABLE_DEPRECATED
+
 /**
  * hildon_app_set_zoom:
  * @self : A @HildonApp
  * @newzoom: The zoom level of type @HildonZoomLevel to be assigned to an
  *  application.
  *
- * Sets the zoom level.
+ * Sets the zoom level. Warning! This function is deprecated and
+ * should not be used. It's lecacy stuff from ancient specs.
  **/
 void
 hildon_app_set_zoom (HildonApp *self, HildonZoomLevel newzoom)
@@ -775,7 +968,8 @@ hildon_app_set_zoom (HildonApp *self, HildonZoomLevel newzoom)
  * hildon_app_get_zoom:
  * @self : A @HildonApp
  *
- * Gets the zoom level.
+ * Gets the zoom level. Warning! This function is deprecated and
+ * should not be used. It's lecacy stuff from ancient specifications.
  *
  * Return value: Returns the zoom level of the Hildon application. The
  *  returned zoom level is of type @HildonZoomLevel.
@@ -794,7 +988,8 @@ hildon_app_get_zoom (HildonApp *self)
  * hildon_app_get_default_font:
  * @self : A @HildonApp
  *
- * Gets default font.
+ * Gets default font. Warning! This function is deprecated and should
+ * not be used. It's legacy stuff from ancient version of specification.
  *
  * Return value: Pointer to PangoFontDescription for the default,
  *  normal size font.
@@ -829,7 +1024,9 @@ hildon_app_get_default_font (HildonApp *self)
  * hildon_app_get_zoom_font:
  * @self : A @HildonApp
  *
- * Gets the description of the default font.
+ * Gets the description of the default font. Warning! This function
+ * is deprecated and should not be used. It's legacy stuff from
+ * ancient specs.
  * 
  * Return value: Pointer to PangoFontDescription for the default,
  *  normal size font.
@@ -880,6 +1077,8 @@ hildon_app_get_zoom_font (HildonApp *self)
     return font_desc;
 }
 
+#endif /* disable deprecated */
+
 /**
  * hildon_app_set_two_part_title:
  * @self : A @HildonApp
@@ -928,118 +1127,119 @@ hildon_app_get_two_part_title (HildonApp *self)
 static void
 hildon_app_switch_to_desktop (void)
 {
+
     XEvent ev;
-    Atom typeatom;
-
-    typeatom = XInternAtom(GDK_DISPLAY(), "_MB_COMMAND", False);
-
+    Atom showing_desktop = XInternAtom(GDK_DISPLAY(),
+                                  "_NET_SHOWING_DESKTOP", False);
     memset(&ev, 0, sizeof(ev));
     ev.xclient.type = ClientMessage;
+    gdk_error_trap_push();
     ev.xclient.window = GDK_ROOT_WINDOW();
-    ev.xclient.message_type = typeatom;
+    ev.xclient.message_type = showing_desktop;
     ev.xclient.format = 32;
-    ev.xclient.data.l[0] = MB_CMD_DESKTOP;
+    ev.xclient.data.l[0] = 1;
+    gdk_error_trap_push();
     XSendEvent(GDK_DISPLAY(), GDK_ROOT_WINDOW(), False,
                SubstructureRedirectMask, &ev);
+    gdk_error_trap_pop();
 }
 static gboolean
-hildon_app_key_press_handler (GtkWidget *widget, GdkEventKey *keyevent, HildonApp *app)
+hildon_app_key_press (GtkWidget *widget, GdkEventKey *keyevent)
 {
-    HildonAppView *appview;
-    HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE(app);
+  HildonApp *app = HILDON_APP (widget);
+  HildonAppView *appview;
+  HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE(app);
 
-    appview = priv->appview;
+  appview = HILDON_APPVIEW (GTK_BIN (app)->child);
 
-    if (!HILDON_IS_APPVIEW(appview))
-        return FALSE;
-   if (keyevent->keyval == GDK_Escape && priv->escape_pressed == FALSE) /*&& priv->tag == 0)                    */
-   {                                                                           
-	 priv->escape_pressed = TRUE;
- 	priv->tag = g_timeout_add(1500, hildon_app_escape_timeout, app);
- 	return FALSE;
-   }                                                                       
-
-    if (HILDON_KEYEVENT_IS_HOME_KEY (keyevent))
-          {
-            GtkWidget *grabber = gtk_grab_get_current();
-
-            if (grabber)
-              {
-                GtkWidget *grabbermenu =
-                    gtk_widget_get_ancestor(grabber, GTK_TYPE_MENU);
-
-                if (grabbermenu)
-                  {
-                    GtkWidget *currentmenu = grabbermenu;
-
-                    /* if the gtr_grab_get_current()'s ancestor is a menu
-                     *  then deactive it so the menus close when F5 pressed 
-                     */
-                    while (GTK_IS_MENU(currentmenu))
-                      {
-                        gtk_menu_shell_deactivate(GTK_MENU_SHELL(currentmenu));
-                        currentmenu = currentmenu->parent;
-                      }
-                  }
-              }
-            hildon_app_switch_to_desktop();
-
-            return FALSE;
-          }
-    
-    if (HILDON_KEYEVENT_IS_INCREASE_KEY (keyevent))
-        {
-          _hildon_appview_increase_button_state_changed (appview,
-							 keyevent->type);
-          return FALSE;
-        }
-
-    if (HILDON_KEYEVENT_IS_DECREASE_KEY (keyevent))
-        {
-          _hildon_appview_decrease_button_state_changed (appview,
-							 keyevent->type);
-          return FALSE;
-        }
-   
+  if (!HILDON_IS_APPVIEW(appview))
     return FALSE;
+
+    if (keyevent->keyval == GDK_Escape && priv->escape_timeout == 0)
+      {
+        priv->escape_timeout = g_timeout_add(1500, hildon_app_escape_timeout, app);
+      }
+    else if (HILDON_KEYEVENT_IS_INCREASE_KEY (keyevent))
+      {
+        _hildon_appview_increase_button_state_changed (appview,
+	                                               keyevent->type);
+      }
+    else if (HILDON_KEYEVENT_IS_DECREASE_KEY (keyevent))
+      {
+        _hildon_appview_decrease_button_state_changed (appview,
+                                                       keyevent->type);
+      }
+    else if (HILDON_KEYEVENT_IS_MENU_KEY (keyevent))
+      {
+        _hildon_appview_toggle_menu(appview,
+                gtk_get_current_event_time());
+      }
+
+
+    return GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, keyevent);
 }
 static gboolean
-hildon_app_key_release_handler (GtkWidget *widget, GdkEventKey *keyevent, HildonApp *app)
+hildon_app_key_release (GtkWidget *widget, GdkEventKey *keyevent)
 {
-    HildonAppView *appview;
-    HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE(app);
+  HildonApp *app = HILDON_APP (widget);
+  HildonAppView *appview;
+  HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE(app);
 
-    appview = priv->appview;
-     
-    if (!HILDON_IS_APPVIEW(appview))
-        return FALSE;
+  appview = HILDON_APPVIEW (GTK_BIN(app)->child);
 
-    if (keyevent->keyval == GDK_Escape) {g_source_remove(priv->tag); priv->escape_pressed = FALSE;}
-    if (HILDON_KEYEVENT_IS_TOOLBAR_KEY (keyevent))
+  if (!HILDON_IS_APPVIEW(appview))
+    return FALSE;
+
+    if (keyevent->keyval == GDK_Escape)
+      {
+        hildon_app_remove_timeout(priv);
+      }
+    else if (HILDON_KEYEVENT_IS_TOOLBAR_KEY (keyevent))
       {
         g_signal_emit_by_name(G_OBJECT(appview),
                               "toolbar-toggle-request", 0);
-        return FALSE;
       }
     
-    if (HILDON_KEYEVENT_IS_FULLSCREEN_KEY (keyevent))
-      if (hildon_appview_get_fullscreen_key_allowed (appview))
-        {
-          hildon_appview_set_fullscreen (appview,
-            !(hildon_appview_get_fullscreen (appview)));
-          return FALSE;
-        }
-
-     if (HILDON_KEYEVENT_IS_MENU_KEY (keyevent))
-     {
-         _hildon_appview_toggle_menu(appview,
-                gtk_get_current_event_time());
-         return FALSE;
-     }
-
-
-     return FALSE;
+    return GTK_WIDGET_CLASS (parent_class)->key_release_event (widget, keyevent);
 }
+
+static gboolean
+hildon_app_key_snooper (GtkWidget *widget, GdkEventKey *keyevent, HildonApp *app)
+{
+  HildonAppView *appview;
+
+  
+    if ((keyevent->type == GDK_KEY_RELEASE) &&
+        HILDON_KEYEVENT_IS_HOME_KEY (keyevent))
+      {
+	hildon_app_switch_to_desktop();
+
+        return TRUE;
+      }
+    else if ((keyevent->type == GDK_KEY_PRESS) &&
+             HILDON_KEYEVENT_IS_FULLSCREEN_KEY (keyevent))
+      {
+        appview = HILDON_APPVIEW (GTK_BIN(app)->child);
+      
+        if (!HILDON_IS_APPVIEW(appview))
+            return FALSE;
+        
+        if (hildon_appview_get_fullscreen_key_allowed (appview))
+          {
+            /* Remove open menus */
+            if (GTK_IS_MENU (widget))
+              gtk_menu_popdown (GTK_MENU (widget));
+            
+            hildon_appview_set_fullscreen (appview,
+              !(hildon_appview_get_fullscreen (appview)));
+          }
+        /* Eat the keypress so apps don't misbehave */
+        return (TRUE);
+      }
+
+    return FALSE;
+}
+
 static int
 xclient_message_type_check(XClientMessageEvent *cm, const gchar *name)
 {
@@ -1086,7 +1286,7 @@ hildon_app_send_clipboard_reply(XClientMessageEvent *cm, GtkWidget *widget)
   ev.xclient.type = ClientMessage;
   ev.xclient.window = cm->data.l[1];
   ev.xclient.message_type =
-    XInternAtom(GDK_DISPLAY(), "_OSSO_IM_CLIPBOARD_SELECTION_REPLY", False);
+    XInternAtom(GDK_DISPLAY(), "_HILDON_IM_CLIPBOARD_SELECTION_REPLY", False);
   ev.xclient.format = 32;
   ev.xclient.data.l[0] = selection;
 
@@ -1107,12 +1307,40 @@ hildon_app_send_clipboard_reply(XClientMessageEvent *cm, GtkWidget *widget)
     }
 }
 
+/* Let's search a actual main window using tranciency hints. 
+   Note that there can be several levels of menus/dialogs above
+   the actual main window. */
+static Window get_active_main_window(Window window)
+{
+  Window parent_window;
+  gint limit = 0;
+
+  while (XGetTransientForHint(GDK_DISPLAY(), window, &parent_window))
+  {
+        /* The limit > TRANSIENCY_MAXITER ensures that we can't be stuck
+           here forever if we have circular transiencies for some reason.
+           Use of _MB_CURRENT_APP_WINDOW might be more elegant... */
+
+    if (!parent_window || parent_window == GDK_ROOT_WINDOW() ||
+	parent_window == window || limit > TRANSIENCY_MAXITER)
+      {
+	break;
+      }
+
+    limit++;
+    window = parent_window;
+  }
+  
+  return window;
+}
+
 static GdkFilterReturn
 hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 {
     gint x,y;
     HildonApp *app = data;
     HildonAppPrivate *priv;
+    HildonAppView *appview = HILDON_APPVIEW (GTK_BIN (app)->child);
 
     XAnyEvent *eventti = xevent;
     
@@ -1127,9 +1355,10 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
         /* Check if a message indicating a click on titlebar has been
            received.  */
 	if (xclient_message_type_check(cm, "_MB_GRAB_TRANSFER") &&
-	    !_hildon_appview_menu_visible(priv->appview))
+            HILDON_IS_APPVIEW(appview) &&
+	    !_hildon_appview_menu_visible(appview))
         {
-          _hildon_appview_toggle_menu(priv->appview, cm->data.l[0]);
+          _hildon_appview_toggle_menu(appview, cm->data.l[0]);
           return GDK_FILTER_REMOVE;
         }
         else if (xclient_message_type_check(cm, "_HILDON_IM_CLOSE"))
@@ -1153,28 +1382,28 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 	  mb_util_window_activate(GDK_DISPLAY(),
  				    GDK_WINDOW_XID(GTK_WIDGET(app)->window));
 	  }
-        else if (xclient_message_type_check(cm, "_OSSO_IM_CLIPBOARD_COPY"))
+        else if (xclient_message_type_check(cm, "_HILDON_IM_CLIPBOARD_COPY"))
         {
 	  Window xwindow = cm->data.l[0];
 	  GtkWidget *widget = hildon_app_xwindow_lookup_widget(xwindow);
 
 	  g_signal_emit_by_name (G_OBJECT(app), "clipboard_copy", widget);
 	}
-        else if (xclient_message_type_check(cm, "_OSSO_IM_CLIPBOARD_CUT"))
+        else if (xclient_message_type_check(cm, "_HILDON_IM_CLIPBOARD_CUT"))
         {
 	  Window xwindow = cm->data.l[0];
 	  GtkWidget *widget = hildon_app_xwindow_lookup_widget(xwindow);
 
 	  g_signal_emit_by_name (G_OBJECT(app), "clipboard_cut", widget);
         }
-        else if (xclient_message_type_check(cm, "_OSSO_IM_CLIPBOARD_PASTE"))
+        else if (xclient_message_type_check(cm, "_HILDON_IM_CLIPBOARD_PASTE"))
         {
 	  Window xwindow = cm->data.l[0];
 	  GtkWidget *widget = hildon_app_xwindow_lookup_widget(xwindow);
 
 	  g_signal_emit_by_name (G_OBJECT(app), "clipboard_paste", widget);
         }
-        else if (xclient_message_type_check(cm, "_OSSO_IM_CLIPBOARD_SELECTION_QUERY"))
+        else if (xclient_message_type_check(cm, "_HILDON_IM_CLIPBOARD_SELECTION_QUERY"))
         {
 	  Window xwindow = cm->data.l[0];
 	  GtkWidget *widget = hildon_app_xwindow_lookup_widget(xwindow);
@@ -1188,17 +1417,18 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
        {
 	 XButtonEvent *bev = (XButtonEvent *)xevent;
 
-	 if (_hildon_appview_menu_visible(priv->appview))
+	 if (HILDON_IS_APPVIEW(appview) &&
+	     _hildon_appview_menu_visible(appview))
           {
 	    x = bev->x_root;
 	    y = bev->y_root;
 	    if ( (x >= MENUAREA_LEFT_LIMIT) && (x <= MENUAREA_RIGHT_LIMIT) &&
 		 (y >= MENUAREA_TOP_LIMIT) && (y <= MENUAREA_BOTTOM_LIMIT))
 	      {
-                _hildon_appview_toggle_menu(priv->appview, bev->time);
+                _hildon_appview_toggle_menu(appview, bev->time);
 		gtk_menu_shell_deactivate(GTK_MENU_SHELL
 					  (hildon_appview_get_menu
-					   (priv->appview)));
+					   (appview)));
 		return GDK_FILTER_CONTINUE;
 	      }
 	  }
@@ -1206,7 +1436,8 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
     
     if (eventti->type == ButtonRelease)
       {
-        if (_hildon_appview_menu_visible(priv->appview))
+        if (HILDON_IS_APPVIEW(appview) &&
+            _hildon_appview_menu_visible(appview))
           {
 	    XButtonEvent *bev = (XButtonEvent *)xevent;
 	    x = bev->x_root;
@@ -1234,6 +1465,7 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
             int status;
             unsigned long n;
             unsigned long extra;
+            Window my_window;
             union
             {
                 Window *win;
@@ -1254,7 +1486,10 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
                 return GDK_FILTER_CONTINUE;
               }
 
-            if (win.win[0] == GDK_WINDOW_XID (GTK_WIDGET (app)->window))
+            my_window = GDK_WINDOW_XID(GTK_WIDGET(app)->window);
+
+            if (win.win[0] == my_window || 
+                get_active_main_window(win.win[0]) == my_window)
               {
                 if (!priv->is_topmost)
                     g_signal_emit_by_name (G_OBJECT(app),
@@ -1284,76 +1519,78 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 static void
 hildon_app_construct_title (HildonApp *self)
 {
+  g_return_if_fail (HILDON_IS_APP (self));
+
+  if (GTK_WIDGET_REALIZED(self))
+  {
     HildonAppPrivate *priv;
     GdkAtom subname;
     gchar *concatenated_title = NULL;
-
-    g_return_if_fail (HILDON_IS_APP (self));
+    HildonAppView *appview;
 
     priv = HILDON_APP_GET_PRIVATE (self);
+    appview = hildon_app_get_appview(self);
     
     /* The subname property is legacy stuff no longer supported by
        Matchbox. However, it is still set for the convenience of
        the Task Navigator. */
-    
     subname = gdk_atom_intern("_MB_WIN_SUB_NAME", FALSE);
 
-    if ((!priv->appview) || (!priv->twoparttitle) ||
-	strlen(hildon_appview_get_title(priv->appview)) < 1 )
+    if (!appview || !hildon_app_get_two_part_title(self) ||
+        g_utf8_strlen(hildon_appview_get_title(appview), -1) < 1 )
       {
-	/* Set an invisible dummy value if there is no appview title */
+        /* Set an invisible dummy value if there is no appview title */
         gdk_property_change (GTK_WIDGET(self)->window, subname,
                              gdk_atom_intern ("UTF8_STRING", FALSE),
                              8, GDK_PROP_MODE_REPLACE, (guchar *) " \0", 1);
-	gtk_window_set_title (GTK_WINDOW(self), priv->title);
+        gtk_window_set_title (GTK_WINDOW(self), priv->title);
       }
     else
       {
         gdk_property_change (GTK_WIDGET(self)->window, subname,
                             gdk_atom_intern ("UTF8_STRING", FALSE),
                             8, GDK_PROP_MODE_REPLACE,
-                            (guchar *)hildon_appview_get_title(priv->appview),
-                            strlen(hildon_appview_get_title (priv->appview)));
-	concatenated_title = g_strjoin(TITLE_DELIMITER, priv->title,
-		       	hildon_appview_get_title(priv->appview), NULL);
-	if (concatenated_title != NULL)
-	  {
-	    gtk_window_set_title (GTK_WINDOW(self), concatenated_title);
-	    g_free(concatenated_title);
-	  }
-	else
-	  {
-	    gtk_window_set_title(GTK_WINDOW(self), priv->title);
-	  }
+                            (guchar *)hildon_appview_get_title(appview),
+                            strlen(hildon_appview_get_title (appview)));
+        concatenated_title = g_strjoin(TITLE_DELIMITER, priv->title,
+            hildon_appview_get_title(appview), NULL);
+      	if (concatenated_title != NULL)
+        {
+          gtk_window_set_title (GTK_WINDOW(self), concatenated_title);
+          g_free(concatenated_title);
+        }
+        else
+        {
+          gtk_window_set_title(GTK_WINDOW(self), priv->title);
+        }
       }
-    
+  }    
 }
 
 void
 hildon_app_real_topmost_status_acquire (HildonApp *self)
 {
-    HildonAppPrivate *priv;
+  HildonAppPrivate *priv;
+  g_return_if_fail (HILDON_IS_APP (self));
+  priv = HILDON_APP_GET_PRIVATE (self);
 
-    g_return_if_fail (HILDON_IS_APP (self));
+  if (!GTK_BIN (self)->child)
+    return;
 
-    priv = HILDON_APP_GET_PRIVATE (self);
-
-    if (!priv->appview)
-        return;
-    priv->is_topmost = TRUE;
+  priv->is_topmost = TRUE;
 }
 
 void
 hildon_app_real_topmost_status_lose (HildonApp *self)
 {
-    HildonAppPrivate *priv;
-    g_return_if_fail (HILDON_IS_APP (self));
-    priv = HILDON_APP_GET_PRIVATE (self);
-    
-    if (!priv->appview)
-        return;
+  HildonAppPrivate *priv;
+  g_return_if_fail (HILDON_IS_APP (self));
+  priv = HILDON_APP_GET_PRIVATE (self);
 
-    priv->is_topmost = FALSE;
+  if (!GTK_BIN (self)->child)
+    return;
+
+  priv->is_topmost = FALSE;
 }
 
 void
@@ -1393,66 +1630,29 @@ void hildon_app_set_autoregistration(HildonApp *self, gboolean auto_reg)
 
 void hildon_app_register_view(HildonApp *self, gpointer view_ptr)
 {
-  int loopctr = 0;
-
   HildonAppPrivate *priv;
   view_item *view_item_inst;
-  Window *win_array = NULL;
-  GSList *list_ptr = NULL;
-
-  Atom clientlist = XInternAtom (GDK_DISPLAY(),
-				 "_NET_CLIENT_LIST", False);
 
   g_return_if_fail (HILDON_IS_APP (self) || view_ptr != NULL);
 
-  priv = HILDON_APP_GET_PRIVATE (self);
-  
-  list_ptr = priv->view_ids;
+  priv = HILDON_APP_GET_PRIVATE (self);  
 
-  /* Check that the view is not already registered */
-  while (list_ptr)
-    {
-      if ( (gpointer)((view_item *)list_ptr->data)->view_ptr == view_ptr)      
-	      {
-	       return;
-    	}
-      list_ptr = list_ptr->next;
-    }
+  if (hildon_app_find_view_id(self, view_ptr) == 0)
+  {
+    /* The pointer to the view was unique, so add it to the list */
 
-  /* The pointer to the view was unique, so add it to the list */
+    view_item_inst = g_malloc(sizeof(view_item));
+    view_item_inst->view_id = priv->view_id_counter;
+    view_item_inst->view_ptr = view_ptr;
 
-  view_item_inst = g_malloc(sizeof(view_item));
-  view_item_inst->view_id = priv->view_id_counter;
-  view_item_inst->view_ptr = view_ptr;
+    priv->view_id_counter++;
 
-  priv->view_id_counter++;
+    priv->view_ids = 
+      g_slist_append(priv->view_ids, view_item_inst);
 
-  priv->view_ids = 
-    g_slist_append(priv->view_ids, view_item_inst);
-
-  /* Finally, update the _NET_CLIENT_LIST property */
-
-  win_array = g_malloc(sizeof(Window)*g_slist_length(priv->view_ids));
-
-
-  list_ptr = priv->view_ids;
-  
-  while (list_ptr)
-    {
-      win_array[loopctr] = 
-	(unsigned long)(((view_item *)(list_ptr->data))->view_id);
-      loopctr++;
-      list_ptr = list_ptr->next;
-    }
-
-  gdk_error_trap_push();
-  XChangeProperty(GDK_DISPLAY(), GDK_WINDOW_XID(GTK_WIDGET(self)->window),
-		  clientlist, XA_WINDOW, 32, PropModeReplace,
-		  (unsigned char *)win_array,
-		  g_slist_length(priv->view_ids));
-  XFlush(GDK_DISPLAY());
-  gdk_error_trap_pop();
-  g_free(win_array);
+    if (GTK_WIDGET_REALIZED(self))
+      hildon_app_apply_client_list(self);
+  }
 }
 
 
@@ -1473,15 +1673,9 @@ gboolean hildon_app_register_view_with_id(HildonApp *self,
 					  gpointer view_ptr,
 					  unsigned long view_id)
 {
-  int loopctr = 0;
-
   view_item *view_item_inst;  
   HildonAppPrivate *priv;
   GSList *list_ptr = NULL;
-  Window *win_array = NULL;
-    
-  Atom clientlist = XInternAtom (GDK_DISPLAY(),
-				 "_NET_CLIENT_LIST", False);
 
   g_return_val_if_fail (HILDON_IS_APP (self), FALSE);
   g_return_val_if_fail (view_ptr, FALSE);
@@ -1513,32 +1707,11 @@ gboolean hildon_app_register_view_with_id(HildonApp *self,
   priv->view_id_counter++;
 
   /* Finally, update the _NET_CLIENT_LIST property */
+  if (GTK_WIDGET_REALIZED(self))
+    hildon_app_apply_client_list(self);
 
-  win_array = g_malloc(sizeof(Window)*g_slist_length(priv->view_ids));
-
-
-  list_ptr = priv->view_ids;
-  
-  while (list_ptr)
-    {
-      win_array[loopctr] = 
-	(unsigned long)(((view_item *)(list_ptr->data))->view_id);
-      loopctr++;
-      list_ptr = list_ptr->next;
-    }
-
-  gdk_error_trap_push();
-  XChangeProperty(GDK_DISPLAY(), GDK_WINDOW_XID(GTK_WIDGET(self)->window),
-		  clientlist, XA_WINDOW, 32, PropModeReplace,
-		  (unsigned char *)win_array,
-		  g_slist_length(priv->view_ids));
-  XFlush(GDK_DISPLAY());
-  gdk_error_trap_pop();
-  g_free(win_array);
   return TRUE;
 }
-
-
 
 /**
  * hildon_app_unregister_view:
@@ -1555,12 +1728,7 @@ void hildon_app_unregister_view(HildonApp *self, gpointer view_ptr)
 {
   HildonAppPrivate *priv;
   GSList *list_ptr = NULL;
-  int loopctr = 0;
-  Atom clientlist = XInternAtom (GDK_DISPLAY(),
-				 "_NET_CLIENT_LIST", False);
 
-  Window *win_array = NULL;
-  
   g_return_if_fail (HILDON_IS_APP (self) || view_ptr != NULL);
   
   priv = HILDON_APP_GET_PRIVATE (self);
@@ -1580,28 +1748,8 @@ void hildon_app_unregister_view(HildonApp *self, gpointer view_ptr)
       list_ptr = list_ptr->next;
     }
   
-  win_array = g_malloc(sizeof(Window)*g_slist_length(priv->view_ids));
-
-  list_ptr = priv->view_ids;
-
-  while (list_ptr)
-    {
-      win_array[loopctr] = 
-	(unsigned long)(((view_item *)(list_ptr->data))->view_id);
-      loopctr++;
-      list_ptr = list_ptr->next;
-    }
-
-  gdk_error_trap_push();
-  XChangeProperty(GDK_DISPLAY(), GDK_WINDOW_XID(GTK_WIDGET(self)->window),
-		  clientlist, XA_WINDOW, 32, PropModeReplace,
-		  (unsigned char *)win_array,
-		  g_slist_length(priv->view_ids));
-  gdk_display_sync(gdk_x11_lookup_xdisplay(GDK_DISPLAY()));
-  XFlush(GDK_DISPLAY());
-  gdk_error_trap_pop();
-  g_free(win_array);
-  
+  if (GTK_WIDGET_REALIZED(self))
+    hildon_app_apply_client_list(self);
 }
 
 
@@ -1612,18 +1760,11 @@ void hildon_app_unregister_view(HildonApp *self, gpointer view_ptr)
  * 
  * Unregisters a view with specified ID, if it exists.
  */
-
-
 void hildon_app_unregister_view_with_id(HildonApp *self,
 					unsigned long view_id)
 {
   HildonAppPrivate *priv;
   GSList *list_ptr = NULL;
-  int loopctr = 0;
-  Atom clientlist = XInternAtom (GDK_DISPLAY(),
-				 "_NET_CLIENT_LIST", False);
-
-  Window *win_array = NULL;
   
   g_return_if_fail (HILDON_IS_APP (self));
   
@@ -1643,28 +1784,9 @@ void hildon_app_unregister_view_with_id(HildonApp *self,
 	}
       list_ptr = list_ptr->next;
     }
-  
-  win_array = g_malloc(sizeof(Window)*g_slist_length(priv->view_ids));
-  
-  list_ptr = priv->view_ids;
-  
-  while (list_ptr)
-    {
-      win_array[loopctr] = 
-	(unsigned long)(((view_item *)(list_ptr->data))->view_id);
-      loopctr++;
-      list_ptr = list_ptr->next;
-    }
 
-  gdk_error_trap_push();
-  XChangeProperty(GDK_DISPLAY(), GDK_WINDOW_XID(GTK_WIDGET(self)->window),
-		  clientlist, XA_WINDOW, 32, PropModeReplace,
-		  (unsigned char *)win_array,
-		  g_slist_length(priv->view_ids));
-  gdk_display_sync(gdk_x11_lookup_xdisplay(GDK_DISPLAY()));
-  XFlush(GDK_DISPLAY());
-  gdk_error_trap_pop();
-  g_free(win_array);
+  if (GTK_WIDGET_REALIZED(self))
+    hildon_app_apply_client_list(self);  
 }
 
 
@@ -1678,38 +1800,18 @@ void hildon_app_unregister_view_with_id(HildonApp *self,
 
 void hildon_app_notify_view_changed(HildonApp *self, gpointer view_ptr)
 {
-  HildonAppPrivate *priv;
-  GSList *list_ptr = NULL;
-  
-  Atom active_view = XInternAtom (GDK_DISPLAY(),
-				 "_NET_ACTIVE_WINDOW", False);
-
-
-
   g_return_if_fail (HILDON_IS_APP (self) || view_ptr != NULL);
 
-  priv = HILDON_APP_GET_PRIVATE (self);
+  if (GTK_WIDGET_REALIZED(self))
+  {
+    gulong id = hildon_app_find_view_id(self, view_ptr);
+    Atom active_view = XInternAtom (GDK_DISPLAY(),
+				 "_NET_ACTIVE_WINDOW", False);
 
-  /* Find the view from the list of views */
-  
-  list_ptr = g_slist_nth(priv->view_ids, 0);
-
-   while (list_ptr)
-    {
-      if ( (gpointer)((view_item *)list_ptr->data)->view_ptr == view_ptr)
-	{
-	  gulong id = (gulong)((view_item *)list_ptr->data)->view_id;
-	  gdk_error_trap_push();
-	  XChangeProperty(GDK_DISPLAY(),
-			  GDK_WINDOW_XID(GTK_WIDGET(self)->window),
-			  active_view, XA_WINDOW, 32,
-			  PropModeReplace, (unsigned char *)&id, 1);
-	  gdk_error_trap_pop();
-	  return;
-	}
-      list_ptr = list_ptr->next;
-    }
-
+    if (id)
+      XChangeProperty(GDK_DISPLAY(), GDK_WINDOW_XID(GTK_WIDGET(self)->window),
+			  active_view, XA_WINDOW, 32, PropModeReplace, (unsigned char *)&id, 1);
+  }
 }
 
 
@@ -1723,32 +1825,26 @@ void hildon_app_notify_view_changed(HildonApp *self, gpointer view_ptr)
  * Allows mapping of view pointer to its view ID. If NULL is passed
  * as the view pointer, returns the ID of the current view.
  */
-
 unsigned long hildon_app_find_view_id(HildonApp *self, gpointer view_ptr)
 {
   HildonAppPrivate *priv;
-  GSList *list_ptr = NULL;
+  GSList *iter;
 
   priv = HILDON_APP_GET_PRIVATE (self);
   
-  if (view_ptr == NULL)
-    {
-      view_ptr = priv->appview;
-    }
+  if (!view_ptr)
+    view_ptr = GTK_BIN (self)->child;
+  if (!view_ptr)
+    return 0;
 
-  list_ptr = g_slist_nth(priv->view_ids, 0);
+  for (iter = priv->view_ids; iter; iter = iter->next)
+  {
+    if ( (gpointer)((view_item *)iter->data)->view_ptr == view_ptr)
+  	  return (unsigned long)((view_item *)iter->data)->view_id;
+  }
 
-  while (list_ptr)
-    {
-      if ( (gpointer)((view_item *)list_ptr->data)->view_ptr == view_ptr)
-	{
-	  return (unsigned long)((view_item *)list_ptr->data)->view_id;
-	}
-      list_ptr = list_ptr->next;
-    }
   return 0;
 }
-
 
 /**
  * hildon_app_set_killable:
@@ -1758,60 +1854,33 @@ unsigned long hildon_app_find_view_id(HildonApp *self, gpointer view_ptr)
  * Updates information about whether the application can be killed or not by
  * Task Navigator (i.e. whether its statesave is up to date)
  */
-
-
 void hildon_app_set_killable(HildonApp *self, gboolean killability)
 {
-  HildonAppPrivate *priv;
-  Atom killability_atom = XInternAtom (GDK_DISPLAY(),
-				       "_HILDON_APP_KILLABLE", False);
-  priv = HILDON_APP_GET_PRIVATE (self);
-
+  HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE (self);
   g_return_if_fail (HILDON_IS_APP (self) );
 
-  if (killability == TRUE)
-    {
-      /* Set the atom to specific value, because perhaps in the future,
-	 there may be other possible values? */
-      gdk_error_trap_push();
-      XChangeProperty(GDK_DISPLAY(),
-		      GDK_WINDOW_XID(GTK_WIDGET(self)->window),
-		      killability_atom, XA_STRING, 8,
-		      PropModeReplace, (unsigned char *)KILLABLE,
-		      strlen(KILLABLE));
-      gdk_error_trap_pop();
-      priv->killable = TRUE;
-      return;
-    }
-  else
-    {
-      gdk_error_trap_push();
-      XDeleteProperty(GDK_DISPLAY(),
-		      GDK_WINDOW_XID(GTK_WIDGET(self)->window),
-		      killability_atom);
-      gdk_error_trap_pop();
-      priv->killable = FALSE;
-      return;
-    }
+  if (killability != priv->killable)
+  {
+    priv->killable = killability;
+
+    if (GTK_WIDGET_REALIZED(self))
+      hildon_app_apply_killable(self);
+  }
 }
 
 
 static gpointer find_view(HildonApp *self, unsigned long view_id)
 {
   HildonAppPrivate *priv;
-  GSList *list_ptr = NULL;
+  GSList *iter;
   
   priv = HILDON_APP_GET_PRIVATE (self);
 
-   list_ptr = g_slist_nth(priv->view_ids, 0);
+  for (iter = priv->view_ids; iter; iter = iter->next)
+  {
+    if ( (unsigned long)((view_item *)iter->data)->view_id == view_id)
+		  return (gpointer)((view_item *)iter->data)->view_ptr;
+  }
 
-   while (list_ptr)
-    {
-      if ( (unsigned long)((view_item *)list_ptr->data)->view_id == view_id)
-	{
-	  return (gpointer)((view_item *)list_ptr->data)->view_ptr;
-	}
-      list_ptr = list_ptr->next;
-    }
-   return NULL;
+  return NULL;
 }

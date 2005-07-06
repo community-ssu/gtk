@@ -335,12 +335,22 @@ void _testCaptionControl(GtkWidget *parent, gchar **help)
 
 </para>
 
+<!-- ##### ARG HildonCaption:separator ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG HildonCaption:size-group ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG HildonCaption:status ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonCaption:expand ##### -->
 <para>
 
 </para>

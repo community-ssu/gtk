@@ -32,8 +32,6 @@
 
 #define INFOPRINT_MIN_WIDTH    39
 #define INFOPRINT_MAX_WIDTH   334
-#define INFOPRINT_MIN_HEIGHT   50
-#define INFOPRINT_MAX_HEIGHT   60
 #define BANNER_MIN_WIDTH       35
 #define BANNER_MAX_WIDTH      375
 #define DEFAULT_WIDTH          20
@@ -54,6 +52,14 @@
 
 static gboolean gtk_infoprint_temporal_wrap_disable_flag = FALSE;
 
+typedef struct {
+  GtkWindow *parent;
+  GtkWidget *window;
+  gchar *text;
+  GtkWidget *main_item;
+  guint timeout;
+} InfoprintState;
+
 enum {
     WIN_TYPE = 0,
     WIN_TYPE_MESSAGE,
@@ -63,9 +69,20 @@ enum {
 static GtkWidget *global_banner = NULL;
 static GtkWidget *global_infoprint = NULL;
 
-static gchar *two_lines_truncate(GtkWindow * parent,
-                                 const gchar * str,
-                                 gint * max_width, gint * resulting_lines);
+static GQueue *cbanner_queue = NULL;
+static InfoprintState *current_ibanner = NULL;
+static InfoprintState *current_pbanner = NULL;
+static guint pbanner_refs = 0;
+
+static gboolean compare_icons(GtkImage *image1, GtkImage *image2);
+static void queue_new_cbanner(GtkWindow *parent,
+                              const gchar *text,
+                              GtkWidget *image);
+static void gtk_msg_window_init(GtkWindow * parent, GQuark type,
+                                const gchar * text, GtkWidget * main_item);
+static gchar *three_lines_truncate(GtkWindow * parent,
+                                   const gchar * str,
+                                   gint * max_width, gint * resulting_lines);
 
 /* Getters/initializers for needed quarks */
 static GQuark banner_quark(void)
@@ -170,6 +187,34 @@ static gboolean gtk_msg_window_destroy(gpointer pointer)
     parent = G_OBJECT(gtk_window_get_transient_for(GTK_WINDOW(pointer)));
     quark = (GQuark) g_object_get_qdata((GObject *) pointer, type_quark());
 
+    if (quark == infoprint_quark() && current_ibanner) {
+      gtk_widget_unref(current_ibanner->main_item);
+      g_free(current_ibanner->text);
+      g_free(current_ibanner);
+      current_ibanner = NULL;
+    } else if (quark == banner_quark() && current_pbanner) {
+      gtk_widget_unref(current_pbanner->main_item);
+      g_free(current_pbanner->text);
+      g_free(current_pbanner);
+      current_pbanner = NULL;
+    } else if (quark == confirmation_banner_quark() &&
+               !g_queue_is_empty(cbanner_queue)) {
+      InfoprintState *cbanner = g_queue_pop_head(cbanner_queue);
+
+      gtk_widget_unref(cbanner->main_item);
+      g_free(cbanner->text);
+      g_free(cbanner);
+
+      if (!g_queue_is_empty(cbanner_queue)) {
+        cbanner = g_queue_peek_head(cbanner_queue);
+        gtk_msg_window_init(cbanner->parent, confirmation_banner_quark(),
+                            cbanner->text, cbanner->main_item);
+      } else {
+        g_queue_free(cbanner_queue);
+        cbanner_queue = NULL;
+      }
+    }
+
     if (parent) {
         g_object_set_qdata(parent, quark, NULL);
     } else {
@@ -182,7 +227,7 @@ static gboolean gtk_msg_window_destroy(gpointer pointer)
 
     gtk_widget_destroy(GTK_WIDGET(pointer));
 
-    return TRUE;
+    return FALSE;
 }
 
 /* Get window ID of top window from _NET_ACTIVE_WINDOW property */
@@ -231,11 +276,17 @@ static gboolean check_fullscreen_state( Window window )
     
     if ( window == None )
         return FALSE;
-    
+
+    /* in some cases XGetWindowProperty seems to generate BadWindow,
+       so at the moment this function does not always work perfectly */
+    gdk_error_trap_push();
     status = XGetWindowProperty(GDK_DISPLAY(), window,
                                 atom_window_state, 0L, 1000000L,
                                 0, XA_ATOM, &realType, &format,
                                 &n, &extra, &data_return);
+    gdk_flush();
+    if (gdk_error_trap_pop())
+        return FALSE;
 
     if (status == Success && realType == XA_ATOM && format == 32 && n > 0)
     {
@@ -255,6 +306,72 @@ static gboolean check_fullscreen_state( Window window )
 }
 
 
+static gboolean
+compare_icons(GtkImage *image1, GtkImage *image2)
+{
+  GtkImageType type = gtk_image_get_storage_type(image1);
+  gchar *name1, *name2;
+  const gchar *icon_name1, *icon_name2;
+  GtkIconSize size1, size2;
+
+  if (gtk_image_get_storage_type(image2) != type)
+    return FALSE;
+
+  switch (type) {
+  case GTK_IMAGE_STOCK:
+    gtk_image_get_stock(image1, &name1, &size1);
+    gtk_image_get_stock(image2, &name2, &size2);
+    return ((g_utf8_collate(name1, name2) == 0) && (size1 == size2));
+  case GTK_IMAGE_ICON_NAME:
+    gtk_image_get_icon_name(image1, &icon_name1, &size1);
+    gtk_image_get_icon_name(image2, &icon_name2, &size2);
+    return ((g_utf8_collate(icon_name1, icon_name2) == 0) && (size1 == size2));
+  case GTK_IMAGE_ANIMATION:
+    /* there is only one possible animation */
+    return TRUE;
+  default:
+    /* other types of icons are actually not even supported */
+    return FALSE;
+  }
+}
+
+/* confirmation banners are queued so that all of them will
+   be shown eventually for the appropriate amount of time */
+static void
+queue_new_cbanner(GtkWindow *parent, const gchar *text, GtkWidget *image)
+{
+  InfoprintState *cbanner;
+
+  if (cbanner_queue == NULL)
+    cbanner_queue = g_queue_new();
+
+  /* identical consecutive cbanners are collapsed to just one cbanner */
+  if ((cbanner = g_queue_peek_tail(cbanner_queue)) != NULL &&
+      g_utf8_collate(cbanner->text, text) == 0 &&
+      compare_icons(GTK_IMAGE(image), GTK_IMAGE(cbanner->main_item))) {
+    g_source_remove(cbanner->timeout);
+
+    cbanner->timeout = g_timeout_add(MESSAGE_TIMEOUT,
+                                     gtk_msg_window_destroy,
+                                     cbanner->window);
+    g_signal_connect_swapped(cbanner->window, "destroy",
+                             G_CALLBACK(g_source_remove),
+                             GUINT_TO_POINTER(cbanner->timeout));
+    return;
+  }
+
+  cbanner = g_new0(InfoprintState, 1);
+  cbanner->parent = parent;
+  cbanner->text = g_strdup(text);
+  cbanner->main_item = image;
+  gtk_widget_ref(cbanner->main_item);
+
+  g_queue_push_tail(cbanner_queue, cbanner);
+
+  if (g_queue_get_length(cbanner_queue) == 1)
+    gtk_msg_window_init(parent, confirmation_banner_quark(), text, image);
+}
+
 
 /* gtk_msg_window_init
  *
@@ -269,27 +386,62 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
                     const gchar * text, GtkWidget * main_item)
 {
     GtkWidget *window;
-    GtkWidget *old_window;
     GtkWidget *hbox;
     GtkWidget *label;
 
     gchar *str = NULL;
-    Atom atoms[MAX_WIN_MESSAGES];
-
     gint max_width = 0;
-    gint lines = 1;
 
     g_return_if_fail((GTK_IS_WINDOW(parent) || parent == NULL));
+
+    if (type == banner_quark())
+      pbanner_refs++;
+
+    /* information banners: just reset the timeout if trying
+       to recreate the currently visible information banner */
+    if (type == infoprint_quark() && current_ibanner) {
+      g_source_remove(current_ibanner->timeout);
+
+      if (g_utf8_collate(current_ibanner->text, text) == 0 &&
+          compare_icons(GTK_IMAGE(main_item),
+                        GTK_IMAGE(current_ibanner->main_item))) {
+        /* caller is trying to recreate current information banner */
+        current_ibanner->timeout = g_timeout_add(MESSAGE_TIMEOUT,
+                                                 gtk_msg_window_destroy,
+                                                 current_ibanner->window);
+        g_signal_connect_swapped(current_ibanner->window, "destroy",
+                                 G_CALLBACK(g_source_remove),
+                                 GUINT_TO_POINTER(current_ibanner->timeout));
+
+        return;
+      }
+
+      gtk_msg_window_destroy(current_ibanner->window);
+    }
+
+    if (type == banner_quark() && current_pbanner) {
+      if (g_utf8_collate(current_pbanner->text, text) == 0) {
+        if (GTK_IS_PROGRESS_BAR(main_item) &&
+            GTK_IS_PROGRESS_BAR(current_pbanner->main_item)) {
+          gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(current_pbanner->main_item), 0.0);
+          return;
+        } else if (GTK_IS_IMAGE(main_item) &&
+                   GTK_IS_IMAGE(current_pbanner->main_item) &&
+                   compare_icons(GTK_IMAGE(main_item),
+                                 GTK_IMAGE(current_pbanner->main_item))) {
+          return;
+        }
+      }
+    }
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_accept_focus(GTK_WINDOW(window), FALSE);
 
     hbox = gtk_hbox_new(FALSE, 5);
 
-    old_window = GTK_WIDGET(gtk_msg_window_get(parent, type));
-
-    if (old_window)
-        gtk_msg_window_destroy(old_window);
+    if (current_pbanner && type == banner_quark()) {
+      gtk_msg_window_destroy(current_pbanner->window);
+    }
 
     if (parent) {
         gtk_window_set_transient_for(GTK_WINDOW(window), parent);
@@ -302,7 +454,6 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
         } else {
             global_infoprint = window;
         }
-	
     }
 
     gtk_widget_realize(window);
@@ -318,11 +469,10 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
 
     if (parent == NULL) {
       gdk_window_set_transient_for(GDK_WINDOW(window->window),
-				   GDK_WINDOW(gdk_get_default_root_window()));
-        str = two_lines_truncate(GTK_WINDOW(window), text,
-                                 &max_width, &lines);
+                                   GDK_WINDOW(gdk_get_default_root_window()));
+      str = three_lines_truncate(GTK_WINDOW(window), text, &max_width, NULL);
     } else {
-        str = two_lines_truncate(parent, text, &max_width, &lines);
+      str = three_lines_truncate(parent, text, &max_width, NULL);
     }
 
     gtk_infoprint_temporal_wrap_disable_flag = FALSE;
@@ -330,12 +480,11 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
     label = gtk_label_new(str);
     g_free(str);
 
-    if ((max_width < INFOPRINT_MIN_WIDTH) || (lines > 1)) {
+    if (max_width < INFOPRINT_MIN_WIDTH) {
         gtk_widget_set_size_request(GTK_WIDGET(label),
                                     (max_width < INFOPRINT_MIN_WIDTH) ?
                                     INFOPRINT_MIN_WIDTH : -1,
-                                    (lines ==
-                                     1) ? -1 : INFOPRINT_MAX_HEIGHT);
+                                    -1);
     }
 
     if ((type == confirmation_banner_quark()) || (type == banner_quark()))
@@ -374,7 +523,7 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
     gtk_window_set_default_size(GTK_WINDOW(window),
                                 DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
-    /* Positioning of the infoprint */
+    /* Positioning of the infoprint */ 
     { 
         gint y = INFOPRINT_WINDOW_Y;
         gint x = gdk_screen_width() + INFOPRINT_WINDOW_X;
@@ -387,35 +536,51 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
         gtk_window_move(GTK_WINDOW(window), x, y);
     }
 
-    atoms[WIN_TYPE] =
-        XInternAtom(GDK_DISPLAY(), "_NET_WM_WINDOW_TYPE", False);
-    atoms[WIN_TYPE_MESSAGE] =
-        XInternAtom(GDK_DISPLAY(),
-                    "_MB_WM_WINDOW_TYPE_MESSAGE", False);
-
-    XChangeProperty(GDK_DISPLAY(),
-                    GDK_WINDOW_XID(window->window),
-                    atoms[WIN_TYPE], XA_ATOM, 32,
-                    PropModeReplace,
-                    (unsigned char *) &atoms[WIN_TYPE_MESSAGE], 1);
+    gdk_window_set_type_hint(window->window, GDK_WINDOW_TYPE_HINT_MESSAGE);
 
     gtk_widget_show_all(window);
 
-    /* We set the timer if the type is an infoprint */
-    if ((type == infoprint_quark())
-        || (type == confirmation_banner_quark())) {
-        guint timeout;
+    if (type == infoprint_quark()) {
+      current_ibanner = g_new0(InfoprintState, 1);
+      current_ibanner->parent = parent;
+      current_ibanner->window = window;
+      current_ibanner->text = g_strdup(text);
+      current_ibanner->main_item = main_item;
+      gtk_widget_ref(current_ibanner->main_item);
+    }
+    else if (type == banner_quark()) {
+      current_pbanner = g_new0(InfoprintState, 1);
+      current_pbanner->parent = parent;
+      current_pbanner->window = window;
+      current_pbanner->text = g_strdup(text);
+      current_pbanner->main_item = main_item;
+      gtk_widget_ref(current_pbanner->main_item);
+    }
 
-        timeout = g_timeout_add(MESSAGE_TIMEOUT,
-                                gtk_msg_window_destroy, window);
-        g_signal_connect_swapped(window, "destroy",
-                                 G_CALLBACK(g_source_remove),
-                                 GUINT_TO_POINTER(timeout));
+    /* We set the timer if the type is an infoprint */
+    if (type == infoprint_quark()) {
+      current_ibanner->timeout = g_timeout_add(MESSAGE_TIMEOUT,
+                                               gtk_msg_window_destroy,
+                                               current_ibanner->window);
+      g_signal_connect_swapped(window, "destroy",
+                               G_CALLBACK(g_source_remove),
+                               GUINT_TO_POINTER(current_ibanner->timeout));
+    }
+    else if (type == confirmation_banner_quark()) {
+      InfoprintState *current_cbanner = g_queue_peek_head(cbanner_queue);
+
+      current_cbanner->window = window;
+      current_cbanner->timeout = g_timeout_add(MESSAGE_TIMEOUT,
+                                               gtk_msg_window_destroy,
+                                               current_cbanner->window);
+      g_signal_connect_swapped(window, "destroy",
+                               G_CALLBACK(g_source_remove),
+                               GUINT_TO_POINTER(current_cbanner->timeout));
     }
 }
 
-static gchar *two_lines_truncate(GtkWindow * parent, const gchar * str,
-                                 gint * max_width, gint * resulting_lines)
+static gchar *three_lines_truncate(GtkWindow * parent, const gchar * str,
+                                   gint * max_width, gint * resulting_lines)
 {
     gchar *result = NULL;
     PangoLayout *layout;
@@ -439,6 +604,7 @@ static gchar *two_lines_truncate(GtkWindow * parent, const gchar * str,
     {
         gchar *line1 = NULL;
         gchar *line2 = NULL;
+        gchar *line3 = NULL;
 
         layout = pango_layout_new(context);
         pango_layout_set_text(layout, str, -1);
@@ -452,23 +618,23 @@ static gchar *two_lines_truncate(GtkWindow * parent, const gchar * str,
         if (pango_layout_get_line_count(layout) >= 2) {
             PangoLayoutLine *line = pango_layout_get_line(layout, 0);
 
-            if (line != NULL) {
+            if (line != NULL)
                 line1 = g_strndup(str, line->length);
-                pango_layout_line_ref(line);
-                pango_layout_line_unref(line);
-            }
 
             line = pango_layout_get_line(layout, 1);
 
-            if (line != NULL) {
-                line2 =
-                    g_strdup((gchar *) ((gint) str + line->start_index));
-                pango_layout_line_ref(line);
-                pango_layout_line_unref(line);
-            }
+            if (line != NULL)
+                line2 = g_strndup((gchar *) ((gint) str + line->start_index),
+                                  line->length);
+
+            line = pango_layout_get_line(layout, 2);
+
+            if (line != NULL)
+                line3 = g_strdup((gchar *) ((gint) str + line->start_index));
+
             g_object_unref(layout);
             layout = pango_layout_new(context);
-            pango_layout_set_text(layout, line2, -1);
+            pango_layout_set_text(layout, line3 ? line3 : "", -1);
 
             {
                 gint index = 0;
@@ -477,9 +643,9 @@ static gchar *two_lines_truncate(GtkWindow * parent, const gchar * str,
                     gchar *templine = NULL;
 
                     line = pango_layout_get_line(layout, 0);
-                    templine = g_strndup(line2, line->length);
-                    g_free(line2);
-                    line2 = g_strconcat(templine, "\342\200\246", NULL);
+                    templine = g_strndup(line3, line->length);
+                    g_free(line3);
+                    line3 = g_strconcat(templine, "\342\200\246", NULL);
                     g_free(templine);
                 }
 
@@ -498,9 +664,9 @@ static gchar *two_lines_truncate(GtkWindow * parent, const gchar * str,
                                              ellipsiswidth,
                                              0, &index, NULL);
                     g_object_unref(G_OBJECT(ellipsis));
-                    tempresult = g_strndup(line2, index);
-                    g_free(line2);
-                    line2 = g_strconcat(tempresult, "\342\200\246", NULL);
+                    tempresult = g_strndup(line3, index);
+                    g_free(line3);
+                    line3 = g_strconcat(tempresult, "\342\200\246", NULL);
                     g_free(tempresult);
                 }
             }
@@ -512,21 +678,21 @@ static gchar *two_lines_truncate(GtkWindow * parent, const gchar * str,
             PangoLayout *templayout = pango_layout_new(context);
 
             pango_layout_set_text(templayout, line1, -1);
-            if (pango_layout_get_line_count(templayout) < 2
-                && line2 != NULL) {
-                result = g_strconcat(line1, "\n", line2, NULL);
+            if (pango_layout_get_line_count(templayout) < 3
+                && line3 != NULL) {
+                result = g_strconcat(line1, "\n", line2, "\n", line3, NULL);
+            } else if (pango_layout_get_line_count(templayout) < 2
+                       && line2 != NULL) {
+                result = g_strconcat(line1, "\n", line2, line3, NULL);
             } else {
-                result = g_strconcat(line1, line2, NULL);
+                result = g_strconcat(line1, line2, line3, NULL);
             }
             g_object_unref(templayout);
-        }
+	}
 
-        if (line1 != NULL) {
-            g_free(line1);
-        }
-        if (line2 != NULL) {
-            g_free(line2);
-        }
+        g_free(line1);
+        g_free(line2);
+        g_free(line3);
 
         g_object_unref(layout);
 
@@ -544,8 +710,6 @@ static gchar *two_lines_truncate(GtkWindow * parent, const gchar * str,
                 g_free(result);
                 result = g_strconcat(templine, "\342\200\246", NULL);
                 g_free(templine);
-                pango_layout_line_ref(line);
-                pango_layout_line_unref(line);
                 pango_layout_set_text(templayout, result, -1);
             }
 
@@ -576,7 +740,8 @@ static gchar *two_lines_truncate(GtkWindow * parent, const gchar * str,
 
         pango_layout_set_text(templayout, result, -1);
         pango_layout_get_size(templayout, max_width, NULL);
-        *resulting_lines = pango_layout_get_line_count(templayout);
+        if (resulting_lines != NULL)
+          *resulting_lines = pango_layout_get_line_count(templayout);
         g_object_unref(templayout);
     }
 
@@ -735,7 +900,7 @@ gtk_confirmation_banner(GtkWindow * parent, const gchar * text,
                                          HILDON_ICON_SIZE_NOTE);
     }
 
-    gtk_msg_window_init(parent, confirmation_banner_quark(), text, image);
+    queue_new_cbanner(parent, text, image);
 }
 
 /**
@@ -769,7 +934,7 @@ gtk_confirmation_banner_with_icon_name(GtkWindow * parent, const gchar * text,
                                          HILDON_ICON_SIZE_NOTE);
     }
 
-    gtk_msg_window_init(parent, confirmation_banner_quark(), text, image);
+    queue_new_cbanner(parent, text, image);
 }
 
 /**
@@ -779,7 +944,7 @@ gtk_confirmation_banner_with_icon_name(GtkWindow * parent, const gchar * text,
  *
  * The @text is the text shown in banner.
  * Creates a new banner with the animation.
-*/
+ */
 void gtk_banner_show_animation(GtkWindow * parent, const gchar * text)
 {
     GtkWidget *item;
@@ -793,7 +958,6 @@ void gtk_banner_show_animation(GtkWindow * parent, const gchar * text)
     
     if (info) {
 	const gchar *filename = gtk_icon_info_get_filename(info);
-	g_print("file name: %s\n", filename);
         item = gtk_image_new_from_file(filename);
     } else {
 	g_print("icon theme lookup for icon failed!\n");
@@ -812,7 +976,7 @@ void gtk_banner_show_animation(GtkWindow * parent, const gchar * text)
  *
  * The @text is the text shown in banner.
  * Creates a new banner with the progressbar.
-*/
+ */
 void gtk_banner_show_bar(GtkWindow * parent, const gchar * text)
 {
     gtk_msg_window_init(parent, banner_quark(),
@@ -826,7 +990,7 @@ void gtk_banner_show_bar(GtkWindow * parent, const gchar * text)
  *
  * The @text is the text shown in banner.
  * Sets the banner text.
-*/
+ */
 void gtk_banner_set_text(GtkWindow * parent, const gchar * text)
 {
     GtkWidget *item;
@@ -847,7 +1011,7 @@ void gtk_banner_set_text(GtkWindow * parent, const gchar * text)
  * The fraction is the completion of progressbar, 
  * the scale is from 0.0 to 1.0.
  * Sets the amount of fraction the progressbar has.
-*/
+ */
 void gtk_banner_set_fraction(GtkWindow * parent, gdouble fraction)
 {
     GtkWidget *item;
@@ -865,16 +1029,15 @@ void gtk_banner_set_fraction(GtkWindow * parent, gdouble fraction)
  * @parent: #GtkWindow
  *
  * Destroys the banner
-*/
+ */
 void gtk_banner_close(GtkWindow * parent)
 {
-    GtkWindow *window;
-
     g_return_if_fail(GTK_IS_WINDOW(parent) || parent == NULL);
+    g_return_if_fail(pbanner_refs > 0);
 
-    window = gtk_msg_window_get(parent, banner_quark());
-    if (window)
-        gtk_msg_window_destroy(window);
+    if (--pbanner_refs == 0) {
+      gtk_msg_window_destroy(current_pbanner->window);
+    }
 }
 
 /**

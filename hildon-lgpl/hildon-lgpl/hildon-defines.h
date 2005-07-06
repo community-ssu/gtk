@@ -122,6 +122,18 @@ extern HildonIconSizes *hildoniconsizes;
 #define HILDON_MARGIN_DOUBLE 12
 #define HILDON_MARGIN_TRIPLE 18
 
+#define HILDON_HARDKEY_UP         GDK_Up
+#define HILDON_HARDKEY_LEFT       GKD_Left
+#define HILDON_HARDKEY_RIGHT      GDK_Right
+#define HILDON_HARDKEY_DOWN       GDK_Down
+#define HILDON_HARDKEY_SELECT     GDK_Return
+#define HILDON_HARDKEY_MENU       GDK_F4
+#define HILDON_HARDKEY_HOME       GDK_F5
+#define HILDON_HARDKEY_ESC        GDK_Escape
+#define HILDON_HARDKEY_FULLSCREEN GDK_F6
+#define HILDON_HARDKEY_INCREASE   GDK_F7
+#define HILDON_HARDKEY_DECREASE   GDK_F8
+
 gulong hildon_gtk_widget_set_logical_font (GtkWidget *widget, gchar *logicalfontname);
 gulong hildon_gtk_widget_set_logical_color (GtkWidget *widget, GtkRcFlags rcflags,
 				    GtkStateType state, gchar *logicalcolorname);

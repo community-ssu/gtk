@@ -1,5 +1,3 @@
-# Copyright (c) 2005 Nokia Oyj 
-
 #INCLUDES = $(GTK_CFLAGS) -DLOCALEDIR=\"$(localedir)\"  $(LIBMB_CFLAGS) \
 #	$(GCONF_CFLAGS) $(X_CFLAGS) -I$(srcdir)/..
 

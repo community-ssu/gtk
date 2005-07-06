@@ -39,24 +39,25 @@ enum {
 };
 
 struct _HildonAppPrivate {
-    HildonAppView *appview;
-    GtkWidget *focus_widget;
+    GList *children;
     gchar *title;
+#ifndef HILDON_DISABLE_DEPRECATED
     HildonZoomLevel zoom;
+#endif
     gint lastmenuclick;
 
     gulong curr_view_id;
     gulong view_id_counter;
     GSList *view_ids;
-    gulong scroll_control;
+    gboolean scroll_control;
 
-    gint twoparttitle: 1;
-    gint is_topmost: 1;
+    guint twoparttitle: 1;
+    guint is_topmost: 1;
     gboolean killable;
     gboolean autoregistration;
 
-    gint tag; /* source tag for the time out */
-    gboolean escape_pressed;
+    guint escape_timeout;
+    guint key_snooper;
 };
 
 typedef struct {

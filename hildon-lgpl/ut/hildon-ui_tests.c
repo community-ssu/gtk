@@ -232,6 +232,7 @@ int test_app_set_title()
 
 int test7a()
 {
+#ifndef HILDON_DISABLE_DEPRECATED
     HildonApp * testapp;
 	
     testapp = HILDON_APP (hildon_app_new ());
@@ -241,11 +242,13 @@ int test7a()
     assert (hildon_app_get_zoom (testapp) == HILDON_ZOOM_MEDIUM);
     hildon_app_set_zoom (testapp, HILDON_ZOOM_LARGE);
     assert (hildon_app_get_zoom (testapp) == HILDON_ZOOM_LARGE);
+#endif
     return 1;
 }
 
 int test8a()
 {
+#ifndef HILDON_DISABLE_DEPRECATED
     PangoFontDescription * testfd;
     HildonApp * testapp;
 	
@@ -253,11 +256,13 @@ int test8a()
     testfd = hildon_app_get_default_font (testapp);
     assert (testfd != NULL);
     pango_font_description_free (testfd);
+#endif
     return 1;
 }
 
 int test8b()
 {
+#ifndef HILDON_DISABLE_DEPRECATED
     HildonApp * testapp;
     PangoFontDescription * testfd;
 	
@@ -274,6 +279,7 @@ int test8b()
     testfd = hildon_app_get_zoom_font (testapp);
     assert (testfd != NULL);
     pango_font_description_free (testfd);
+#endif
     return 1;
 }
 

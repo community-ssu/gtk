@@ -279,7 +279,27 @@ hildon_app_set_title( app, "This is a hello dude application" );
 
 @hildonapp: the object which received the signal.
 
+<!-- ##### ARG HildonApp:app-title ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonApp:killable ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG HildonApp:scroll-control ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonApp:two-part-title ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonApp:zoom ##### -->
 <para>
 
 </para>

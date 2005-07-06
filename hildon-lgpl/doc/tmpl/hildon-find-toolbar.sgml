@@ -53,6 +53,28 @@ does not hide itself. It is programmer's responsibility to hide the HildonFindTo
 
 @hildonfindtoolbar: the object which received the signal.
 
+<!-- ##### SIGNAL HildonFindToolbar::history-append ##### -->
+<para>
+Every time the user presses search button, the search signal is first emitted,
+ then history-append signal is emitted. The default handler will add
+ the currect item to the search history list. In case that the programmer
+ does not want to have the item added to list, for instance, when the search
+ fails, he must write his own handler and return TRUE.
+
+</para>
+
+@hildonfindtoolbar: the object which received the signal.
+@Returns: 
+
+<!-- ##### SIGNAL HildonFindToolbar::invalid-input ##### -->
+<para>
+This signal indicates that the user has reached the maximum allowed character in the
+ search field. The typical action is to kindly inform the user that he has
+ reached the limit of search field using info print.
+</para>
+
+@hildonfindtoolbar: the object which received the signal.
+
 <!-- ##### SIGNAL HildonFindToolbar::search ##### -->
 <para>
 It is emitted everytime the search button is clicked, even the GtkComboboxEntry is empty.
@@ -65,12 +87,22 @@ It is emitted everytime the search button is clicked, even the GtkComboboxEntry 
 
 </para>
 
+<!-- ##### ARG HildonFindToolbar:history-limit ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG HildonFindToolbar:label ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG HildonFindToolbar:list ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFindToolbar:max-characters ##### -->
 <para>
 
 </para>

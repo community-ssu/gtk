@@ -44,6 +44,12 @@
 #include <hildon-caption.h>
 #include <hildon-lgpl/hildon-defines.h>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#include <libintl.h>
+#define _(String) dgettext(PACKAGE, String)
+
 #define HILDON_CAPTION_MANDATORY_ICON "qgn_list_gene_mandat_field"
 #define HILDON_CAPTION_SPACING 6
 
@@ -64,6 +70,12 @@ enum
   PROP_STATUS,
   PROP_SEPARATOR,
   PROP_SIZE_GROUP
+};
+
+enum
+{
+  CHILD_PROP_NONE,
+  CHILD_PROP_EXPAND
 };
 
 /*Init functions*/
@@ -89,13 +101,23 @@ static void hildon_caption_get_property( GObject *object, guint param_id,
 static gboolean hildon_caption_expose( GtkWidget *widget,
                                        GdkEventExpose *event );
 static void hildon_caption_destroy( GtkObject *self );
-static gboolean hildon_caption_button_press( GtkWidget *widget, GdkEvent *event,
-                                             gpointer data );
+static gboolean hildon_caption_button_press( GtkWidget *widget, GdkEventButton *event );
 static void
 hildon_caption_set_focus_child( GtkContainer *container, GtkWidget *child );
 
 static void
 hildon_caption_set_label_text( HildonCaptionPrivate *priv );
+
+static void hildon_caption_set_child_property (GtkContainer    *container,
+					       GtkWidget       *child,
+					       guint            property_id,
+					       const GValue    *value,
+					       GParamSpec      *pspec);
+static void hildon_caption_get_child_property (GtkContainer    *container,
+					       GtkWidget       *child,
+					       guint            property_id,
+					       GValue          *value,
+					       GParamSpec      *pspec);
 
 struct _HildonCaptionPrivate
 {
@@ -107,10 +129,25 @@ struct _HildonCaptionPrivate
   gchar *text;
   gchar *separator;
   guint is_focused : 1;
-  guint activate_block : 1; 
+  guint activate_block : 1;
+  guint expand : 1;
   HildonCaptionStatus status;
 };
 
+G_CONST_RETURN GType
+hildon_caption_status_get_type (void)
+{
+  static GType etype = 0;
+  if (etype == 0) {
+    static const GEnumValue values[] = {
+      { HILDON_CAPTION_OPTIONAL, "HILDON_CAPTION_OPTIONAL", "optional" },
+      { HILDON_CAPTION_MANDATORY, "HILDON_CAPTION_MANDATORY", "mandatory" },
+      { 0, NULL, NULL }
+    };
+    etype = g_enum_register_static ("HildonCaptionStatus", values);
+  }
+  return etype;
+}
 
 /**
  * hildon_caption_get_type:
@@ -162,12 +199,15 @@ static void hildon_caption_class_init( HildonCaptionClass *caption_class )
   GTK_OBJECT_CLASS(caption_class)->destroy = hildon_caption_destroy;
   container_class->forall = hildon_caption_forall;
   container_class->set_focus_child = hildon_caption_set_focus_child;
-  
+  container_class->set_child_property = hildon_caption_set_child_property;
+  container_class->get_child_property = hildon_caption_get_child_property;
+
   widget_class->expose_event = hildon_caption_expose;
   widget_class->hierarchy_changed = hildon_caption_hierarchy_changed;
   widget_class->size_request = hildon_caption_size_request;
   widget_class->size_allocate = hildon_caption_size_allocate;
-  
+  widget_class->button_press_event = hildon_caption_button_press;
+
   widget_class->activate_signal = g_signal_new( "activate",
                                                 G_OBJECT_CLASS_TYPE(
                                                 gobject_class),
@@ -205,12 +245,12 @@ static void hildon_caption_class_init( HildonCaptionClass *caption_class )
    * Mandatory or optional status.
    */
   g_object_class_install_property( gobject_class, PROP_STATUS,
-                                   g_param_spec_int("status",
-                                   "Current status",
-                                   "Mandatory or optional status",
-                                   G_MININT, G_MAXINT,
-                                   HILDON_CAPTION_OPTIONAL,
-                                   G_PARAM_READABLE | G_PARAM_WRITABLE) );
+				   g_param_spec_enum("status",
+				   "Current status",
+				   "Mandatory or optional status",
+				   HILDON_TYPE_CAPTION_STATUS,
+				   HILDON_CAPTION_OPTIONAL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE) );
   /**
    * HildonCaption:size_group:
    *
@@ -231,8 +271,16 @@ static void hildon_caption_class_init( HildonCaptionClass *caption_class )
   g_object_class_install_property( gobject_class, PROP_SEPARATOR,
                                    g_param_spec_string("separator",
                                    "Current separator", "Current separator",
-                                   ":", G_PARAM_READABLE | G_PARAM_WRITABLE) );
+                                   _("Ecdg_ti_caption_separator"),
+                                   G_PARAM_READABLE | G_PARAM_WRITABLE) );
 
+  gtk_container_class_install_child_property (container_class,
+				CHILD_PROP_EXPAND,
+       				g_param_spec_boolean ("expand",
+       				"Same as GtkBox expand.",
+       				"Same as GtkBox expand. Wheter the child should be expanded or not.",
+       				FALSE,
+       				G_PARAM_READWRITE));
 }
 
 static void hildon_caption_destroy( GtkObject *self )
@@ -303,11 +351,6 @@ static gboolean hildon_caption_expose( GtkWidget *widget,
                    alloc.x, alloc.y, alloc.width, alloc.height );
 
   GTK_WIDGET_GET_CLASS(priv->caption_area)->expose_event( widget, event );
-  /*
-  if( GTK_BIN(widget)->child )
-    GTK_WIDGET_GET_CLASS(GTK_BIN(widget)->child)->expose_event(
-                         GTK_BIN(widget)->child, event );
-*/
   return FALSE;
 }
 
@@ -331,8 +374,6 @@ static void hildon_caption_set_property( GObject *object, guint param_id,
         priv->text = g_strdup( g_value_get_string(value) );
         hildon_caption_set_label_text( priv );
       }
-      /*gtk_label_set_text( GTK_LABEL(priv->label), g_value_get_string(value) );
-       */
       gtk_widget_queue_resize( GTK_WIDGET(object) );
       break;
       
@@ -352,7 +393,7 @@ static void hildon_caption_set_property( GObject *object, guint param_id,
       break;
 
     case PROP_STATUS:
-      priv->status = g_value_get_int( value );
+      priv->status = g_value_get_enum( value );
 
       if( priv->status == HILDON_CAPTION_MANDATORY )
       {
@@ -405,11 +446,9 @@ static void hildon_caption_set_property( GObject *object, guint param_id,
         hildon_caption_set_label_text( priv );
       }
           
-      /*gtk_label_set_text( GTK_LABEL(priv->label), g_value_get_string(value) );
-       */
       gtk_widget_queue_resize( GTK_WIDGET(object) );
       break;
-    
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, param_id, pspec);
       break;
@@ -444,8 +483,46 @@ static void hildon_caption_get_property( GObject *object, guint param_id,
     }
 }
 
-static gboolean hildon_caption_button_press( GtkWidget *widget, GdkEvent *event,
-                                             gpointer data )
+static void hildon_caption_set_child_property( GtkContainer    *container,
+					      GtkWidget       *child,
+					      guint            property_id,
+					      const GValue    *value,
+					      GParamSpec      *pspec )
+{
+  switch (property_id)
+    {
+    case CHILD_PROP_EXPAND:
+      hildon_caption_set_child_expand( HILDON_CAPTION(container),
+				      g_value_get_boolean(value) );
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(container, property_id, pspec);
+      break;
+    }
+}
+
+static void hildon_caption_get_child_property( GtkContainer    *container,
+					      GtkWidget       *child,
+					      guint            property_id,
+					      GValue          *value,
+					      GParamSpec      *pspec )
+{
+  switch (property_id)
+    {
+    case CHILD_PROP_EXPAND:
+      g_value_set_boolean( value, hildon_caption_get_child_expand(
+                           HILDON_CAPTION(container)) );
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID(container, property_id, pspec);
+      break;
+    }
+}
+
+static gboolean hildon_caption_button_press( GtkWidget *widget, 
+					     GdkEventButton *event )
 {
   HildonCaptionPrivate *priv = HILDON_CAPTION_GET_PRIVATE(widget);
   /* When a label is the child widget, it calls parents mnemonic_activate.
@@ -461,8 +538,6 @@ static gboolean hildon_caption_button_press( GtkWidget *widget, GdkEvent *event,
   if( GTK_WIDGET_CAN_FOCUS(GTK_BIN(widget)->child) )
   {
     priv->is_focused = TRUE;
-  /*if( !gtk_widget_mnemonic_activate( GTK_BIN(widget)->child, FALSE ) )
-    priv->is_focused = FALSE;*/
     gtk_widget_grab_focus( GTK_BIN(widget)->child );
   }
   return FALSE;
@@ -479,7 +554,7 @@ static void hildon_caption_init( HildonCaption *caption )
   priv->group = NULL;
   priv->is_focused = FALSE;
 
-  priv->separator = g_strdup(":");
+  priv->separator = g_strdup(_("Ecdg_ti_caption_separator"));
 
   gtk_widget_push_composite_child();
   
@@ -494,9 +569,6 @@ static void hildon_caption_init( HildonCaption *caption )
 
   gtk_widget_pop_composite_child();
 
-  g_signal_connect( G_OBJECT(caption), "button-press-event",
-                    G_CALLBACK(hildon_caption_button_press), NULL );  
-  
   gtk_widget_show_all( priv->caption_area );
 }
 
@@ -585,6 +657,7 @@ static void hildon_caption_size_allocate( GtkWidget *widget,
   GtkAllocation allocA;
   GtkAllocation allocB;
   GtkRequisition req;
+  GtkWidget *child = NULL;
   HildonCaptionPrivate *priv = NULL;
   g_return_if_fail( HILDON_IS_CAPTION(widget) );
   priv = HILDON_CAPTION_GET_PRIVATE(widget);
@@ -595,6 +668,8 @@ static void hildon_caption_size_allocate( GtkWidget *widget,
 				allocation->y + GTK_CONTAINER (widget)->border_width,
 				MAX (allocation->width - GTK_CONTAINER (widget)->border_width * 2, 0),
 				MAX (allocation->height - GTK_CONTAINER (widget)->border_width * 2, 0));
+
+  child = GTK_BIN(widget)->child;
 
   widget->allocation = *allocation;  
   gtk_widget_get_child_requisition( priv->caption_area, &req );
@@ -611,20 +686,26 @@ static void hildon_caption_size_allocate( GtkWidget *widget,
 
   allocA.width -= req.width + HILDON_CAPTION_SPACING * 2;
 
+  if( !priv->expand && child )
+  {
+    GtkRequisition child_req;
+    gtk_widget_get_child_requisition( child, &child_req );
+    allocA.width = MIN( allocA.width, child_req.width );
+    allocA.height = MIN( allocA.height, child_req.height );
+  }
+
   if( allocA.width < 0 )
   {
     allocB.width = req.width + allocA.width;
     allocA.width = 0;
-    if( allocB.width < 0 )
-      allocB.width = 0;
+    allocB.width = MAX (allocB.width, 0);
   }
 
-  if( allocA.height < 0 )
-    allocA.height = 0;
-  if( allocB.height < 0 )
-    allocB.height = 0;
+  allocA.height = MAX (allocA.height, 0);
+  allocB.height = MAX (allocB.height, 0);
 
-  gtk_widget_size_allocate( GTK_BIN(widget)->child, &allocA );
+  if (child)
+    gtk_widget_size_allocate( child, &allocA );
   gtk_widget_size_allocate( priv->caption_area, &allocB );
 }
 
@@ -652,7 +733,7 @@ static void hildon_caption_forall( GtkContainer *container,
  *
  * Sets a #GtkSizeGroup of a given captioned control.
  *
- * Depricated: Use g_object_set, property "size_group". 
+ * Deprecated: Use g_object_set, property "size_group". 
  */
 #ifndef HILDON_DISABLE_DEPRECATED
 void hildon_caption_set_sizegroup( const HildonCaption *self,
@@ -668,7 +749,7 @@ void hildon_caption_set_sizegroup( const HildonCaption *self,
  *
  * Query given captioned control for the #GtkSizeGroup assigned to it.
  *
- * Depricated: Use g_object_get, property "size_group". 
+ * Deprecated: Use g_object_get, property "size_group". 
  */
 #ifndef HILDON_DISABLE_DEPRECATED
 GtkSizeGroup *hildon_caption_get_sizegroup( const HildonCaption *self )
@@ -706,10 +787,12 @@ GtkWidget *hildon_caption_new( GtkSizeGroup *group, const gchar *value,
   g_return_val_if_fail( GTK_IS_WIDGET(control), NULL );
   
   widget = g_object_new( HILDON_TYPE_CAPTION, "label", value,
-                         "size_group", group, "icon", icon, "status", flag,
-                         NULL );
+			"size_group", group, "icon", icon, "status", flag,
+                        NULL );
 
+  hildon_caption_set_child_expand( HILDON_CAPTION(widget), TRUE );
   gtk_container_add( GTK_CONTAINER(widget), control );
+
 
   return widget;
 }
@@ -721,10 +804,8 @@ GtkWidget *hildon_caption_new( GtkSizeGroup *group, const gchar *value,
  * 
  * Query #HildonCaption whether this captioned control is a mandatory one.
  *
- * Depricated: Use g_object_get, property "status". Function is only comparing
- * that value to the HILDON_CAPTION_MANDATORY. 
  */
-#ifndef HILDON_DISABLE_DEPRECATED
+
 gboolean hildon_caption_is_mandatory( const HildonCaption *caption )
 {
   HildonCaptionPrivate *priv;
@@ -733,7 +814,7 @@ gboolean hildon_caption_is_mandatory( const HildonCaption *caption )
 
   return priv->status == HILDON_CAPTION_MANDATORY;
 }
-#endif
+
 /**
  * hildon_caption_set_status:
  * @caption : A #HildonCaption
@@ -741,15 +822,15 @@ gboolean hildon_caption_is_mandatory( const HildonCaption *caption )
  *
  * Sets #HildonCaption status.
  *
- * Depricated: Use g_object_set, property "status". 
+
  */
-#ifndef HILDON_DISABLE_DEPRECATED
+
 void hildon_caption_set_status( HildonCaption *caption,
                                 HildonCaptionStatus flag )
 {
   g_object_set( G_OBJECT(caption), "status", flag, NULL );
 }
-#endif
+
 /**
  * hildon_caption_get_status:
  * @caption : A #HildonCaption
@@ -757,9 +838,8 @@ void hildon_caption_set_status( HildonCaption *caption,
  *
  * Gets #HildonCaption status.
  *
- * Depricated: Use g_object_get, property "icon". 
  */
-#ifndef HILDON_DISABLE_DEPRECATED
+
 HildonCaptionStatus hildon_caption_get_status( const HildonCaption *caption )
 {
   HildonCaptionPrivate *priv;
@@ -768,7 +848,7 @@ HildonCaptionStatus hildon_caption_get_status( const HildonCaption *caption )
 
   return priv->status;
 }
-#endif
+
 /**
  * hildon_caption_set_icon_image:
  * @caption : A #HildonCaption
@@ -777,14 +857,13 @@ HildonCaptionStatus hildon_caption_get_status( const HildonCaption *caption )
  *
  * Sets the icon to be used by this hildon_caption widget.
  *
- * Depricated: Use g_object_set, property "icon". 
  */
-#ifndef HILDON_DISABLE_DEPRECATED
+
 void hildon_caption_set_icon_image( HildonCaption *caption, GtkWidget *icon )
 {
   g_object_set( G_OBJECT(caption), "icon", icon, NULL );
 }
-#endif
+
 /**
  * hildon_caption_get_icon_image:
  * @caption : A #HildonCaption
@@ -793,9 +872,8 @@ void hildon_caption_set_icon_image( HildonCaption *caption, GtkWidget *icon )
  *
  * Gets icon of #HildonCaption
  *
- * Depricated: Use g_object_get, property "icon". 
  */
-#ifndef HILDON_DISABLE_DEPRECATED
+
 GtkWidget *hildon_caption_get_icon_image( const HildonCaption *caption )
 {
   HildonCaptionPrivate *priv;
@@ -804,7 +882,7 @@ GtkWidget *hildon_caption_get_icon_image( const HildonCaption *caption )
 
   return priv->icon;
 }
-#endif
+
 /**
  * hildon_caption_set_label:
  * @caption : A #HildonCaption
@@ -814,14 +892,13 @@ GtkWidget *hildon_caption_get_icon_image( const HildonCaption *caption )
  * Separator character is added to the end of the label string. By default
  * the separator is ":".
  *
- * Depricated: Use g_object_set, property "label". 
  */
-#ifndef HILDON_DISABLE_DEPRECATED
+
 void hildon_caption_set_label( HildonCaption *caption, const gchar *label )
 {
   g_object_set( G_OBJECT(caption), "label", label, NULL );
 }
-#endif
+
 /**
  * hildon_caption_get_label:
  * @caption : A #HildonCaption
@@ -831,9 +908,8 @@ void hildon_caption_set_label( HildonCaption *caption, const gchar *label )
  *
  * Gets label of #HildonCaption
  *
- * Depricated: Use g_object_get, property "label". 
  */
-#ifndef HILDON_DISABLE_DEPRECATED
+
 gchar *hildon_caption_get_label( const HildonCaption *caption )
 {
   HildonCaptionPrivate *priv;
@@ -842,7 +918,7 @@ gchar *hildon_caption_get_label( const HildonCaption *caption )
 
   return (gchar*)gtk_label_get_text(GTK_LABEL(GTK_LABEL(priv->label)));
 }
-#endif
+
 /**
  * hildon_caption_set_separator:
  * @caption : A #HildonCaption
@@ -852,15 +928,15 @@ gchar *hildon_caption_get_label( const HildonCaption *caption )
  * The default seaparator character is ":"
  * separately.
  *
- * Depricated: Use g_object_set, property "separator". 
+
  */
-#ifndef HILDON_DISABLE_DEPRECATED
+
 void hildon_caption_set_separator( HildonCaption *caption, 
                                    const gchar *separator )
 {
   g_object_set( G_OBJECT(caption), "separator", separator, NULL );
 }
-#endif
+
 /**
  * hildon_caption_get_separator:
  * @caption : A #HildonCaption
@@ -870,9 +946,8 @@ void hildon_caption_set_separator( HildonCaption *caption,
  *
  * Gets separator string of #HildonCaption
  *
- * Depricated: Use g_object_get, property "separator". 
  */
-#ifndef HILDON_DISABLE_DEPRECATED
+
 gchar *hildon_caption_get_separator( const HildonCaption *caption )
 {
   HildonCaptionPrivate *priv;
@@ -881,7 +956,7 @@ gchar *hildon_caption_get_separator( const HildonCaption *caption )
 
   return priv->separator;
 }
-#endif
+
 
 /**
  * hildon_caption_get_control:
@@ -890,7 +965,7 @@ gchar *hildon_caption_get_separator( const HildonCaption *caption )
  *
  * Gets caption's control.
  *
- * Depricated: Use gtk_bin_get_child. 
+ * Deprecated: use gtk_bin_get_child instead
  */
 #ifndef HILDON_DISABLE_DEPRECATED
 GtkWidget *hildon_caption_get_control( const HildonCaption *caption )
@@ -913,17 +988,59 @@ static void hildon_caption_activate( GtkWidget *widget )
   if( priv->activate_block )
   {
     priv->is_focused = FALSE;
-    /*gtk_widget_queue_draw( child );*/
     return;
   }
 
   if( child )
   {
     priv->activate_block = TRUE;
-    /*gtk_widget_mnemonic_activate( child, FALSE );
-    priv->activate_block = FALSE;*/
     gtk_widget_grab_focus( child );
   }
+}
+
+/**
+ * hildon_caption_set_child_expand:
+ * @caption : A #HildonCaption
+ * @expand : gboolean to determine is the child expandable
+ *
+ * Sets child expandability.
+ */
+void hildon_caption_set_child_expand( HildonCaption *caption, gboolean expand )
+{
+  HildonCaptionPrivate *priv = NULL;
+  GtkWidget *child = NULL;
+  g_return_if_fail( HILDON_IS_CAPTION(caption) );
+
+  priv = HILDON_CAPTION_GET_PRIVATE(caption);
+
+  if( priv->expand == expand )
+    return;
+
+  priv->expand = expand;
+  child = GTK_BIN(caption)->child;
+
+  if( !GTK_IS_WIDGET(child) )
+    return;
+
+  if( GTK_WIDGET_VISIBLE (child) && GTK_WIDGET_VISIBLE (caption) )
+    gtk_widget_queue_resize( child );
+
+  gtk_widget_child_notify( child, "expand" );
+}
+
+/**
+ * hildon_caption_get_child_expand:
+ * @caption : A #HildonCaption
+ * @returns : Wheter the child is expandable or not.
+ *
+ * Gets childs expandability.
+ */
+gboolean hildon_caption_get_child_expand( HildonCaption *caption )
+{
+  HildonCaptionPrivate *priv = NULL;
+  g_return_val_if_fail( HILDON_IS_CAPTION(caption), FALSE );
+  priv = HILDON_CAPTION_GET_PRIVATE(caption);
+  return priv->expand;
 }
 
 /**
@@ -937,7 +1054,7 @@ static void hildon_caption_activate( GtkWidget *widget )
  * Function unparents the old control (if there is one) and adds the new
  * control.
  *
- * Depricated: Use gtk_container_add. 
+ * Deprecated: Use gtk_container_add. 
  */
 #ifndef HILDON_DISABLE_DEPRECATED
 void hildon_caption_set_control( HildonCaption *caption, GtkWidget *control )
@@ -958,6 +1075,7 @@ void hildon_caption_set_control( HildonCaption *caption, GtkWidget *control )
     child = NULL;
 }
 #endif
+
 static void
 hildon_caption_set_label_text( HildonCaptionPrivate *priv )
 {
@@ -968,9 +1086,17 @@ hildon_caption_set_label_text( HildonCaptionPrivate *priv )
   {
     if( priv->separator )
     {
-      tmp = g_strconcat( priv->text, priv->separator, NULL );
-      gtk_label_set_text( GTK_LABEL( priv->label ), tmp );
-      g_free( tmp );
+      if( !strcmp( priv->separator, ":" ) &&
+          priv->text [strlen ( priv->text ) - 1] == ':')
+      {
+        gtk_label_set_text( GTK_LABEL( priv->label ), priv->text );
+      }
+      else
+      {
+        tmp = g_strconcat( priv->text, priv->separator, NULL );
+        gtk_label_set_text( GTK_LABEL( priv->label ), tmp );
+        g_free( tmp );
+      }
     }
     else
     {
