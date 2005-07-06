@@ -1,10 +1,7 @@
-# Copyright (c) 2005 Nokia Oyj
-
-# Only macros needed from libOSSO.
 
 INCLUDES = $(GTK_CFLAGS) $(GCONF_CFLAGS) $(OSSO_THUMBNAIL_CFLAGS) \
 	$(GWCONNECT_CFLAGS) $(DBUSGLIB_CFLAGS) $(LIBOSSO_CFLAGS) \
-	-DLOCALEDIR=\"$(localedir)\" -I$(srcdir)/..
+  $(BTTOOLS_CFLAGS) $(MCE_CFLAGS) -DLOCALEDIR=\"$(localedir)\" -I$(srcdir)/..
 
 lib_LTLIBRARIES = libhildonfm.la
 
@@ -25,7 +22,9 @@ libhildonfm_la_SOURCES = \
 	hildon-file-system-private.c \
 	hildon-file-system-common.h \
 	hildon-file-system-info.h \
-	hildon-file-system-info.c
+	hildon-file-system-info.c \
+	hildon-file-system-settings.h \
+	hildon-file-system-settings.c
 
 hildonwidgetsincludeinstdir=$(includedir)/hildon-fm/hildon-widgets
 hildonwidgetsincludeinst_DATA = \

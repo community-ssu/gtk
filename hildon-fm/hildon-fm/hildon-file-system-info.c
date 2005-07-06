@@ -22,9 +22,9 @@
  *
  */
 /*
-  hildon-file-system-info.h
-
-  New API for querying info about files.
+ * hildon-file-system-info.h
+ *
+ * New API for querying info about files.
 */
 
 #include "hildon-file-system-info.h"
@@ -34,59 +34,13 @@
 struct _HildonFileSystemInfo
 {
   GtkFileSystem *fs;
-  GConfClient *client;
   GtkFilePath *path;  
   GtkFileInfo *info;
   HildonFileSystemModelItemType type;
-  gchar *bluetooth_address;
 
   gchar *name_cache;
   GdkPixbuf *icon_cache;
 };
-
-static GtkFileInfo *get_info_for_path(GtkFileSystem *fs, const GtkFilePath *path, GError **error)
-{
-  GtkFilePath *parent_path;
-  GtkFileFolder *folder;
-  GtkFileInfo *result = NULL;
-  
-  if (gtk_file_system_get_parent(fs, path, &parent_path, error))
-  {
-    if (parent_path)
-    {
-      folder = gtk_file_system_get_folder(fs, parent_path, GTK_FILE_INFO_ALL, error);
-      if (folder)
-      {
-        result = gtk_file_folder_get_info(folder, path, error);
-        g_object_unref(folder);
-      }
-      gtk_file_path_free(parent_path);
-    }
-    else  
-    {  /* There is no parent, so we have are toplevel folder. Let's create our own info */
-      result = gtk_file_info_new();
-      gtk_file_info_set_is_folder(result, TRUE);
-      gtk_file_info_set_display_name(result, gtk_file_path_get_string(path));
-    }
-  }
-
-  return result;
-}
-
-static gchar *get_bluetooth_address_from_uri(const gchar *uri)
-{
-  const gchar *endp;
-  gsize len;
-
-  if (!g_str_has_prefix(uri, "obex://["))
-    return NULL;
-
-  uri += 8; /* Skip obex://[ */
-  endp = strchr(uri, ']');
-  len = endp ? endp - uri : 0;
-
-  return (len > 0 ? g_strndup(uri, len) : NULL);
-}
 
 /**
  * hildon_file_system_info_new:
@@ -103,17 +57,17 @@ HildonFileSystemInfo *
 hildon_file_system_info_new(const gchar *uri, GError **error)
 {
     GtkFileSystem *fs;
-    GtkFilePath *path;
+    GtkFilePath *path, *parent_path;
     HildonFileSystemInfo *result;
     HildonFileSystemModelItemType type;
     GtkFileInfo *info = NULL;
-    gchar *bluetooth_address;
+    GtkFileFolder *folder;
 
     g_return_val_if_fail(uri != NULL, NULL);
 
     _hildon_file_system_ensure_locations();
     fs = hildon_file_system_create_backend("gnome-vfs", TRUE);
-    g_assert(GTK_IS_FILE_SYSTEM(fs)); /* Creations should always succeed. */    
+    g_return_val_if_fail(GTK_IS_FILE_SYSTEM(fs), NULL);
 
     path = gtk_file_system_uri_to_path(fs, uri);
     if (!path)
@@ -122,36 +76,61 @@ hildon_file_system_info_new(const gchar *uri, GError **error)
           GTK_FILE_SYSTEM_ERROR_INVALID_URI, "Invalid uri: %s", uri);
       g_object_unref(fs);
       return NULL;
+    }    
+  
+    if (!gtk_file_system_get_parent(fs, path, &parent_path, error))
+    { /* error is set */
+      gtk_file_path_free(path);
+      g_object_unref(fs);
+      return NULL;
     }
 
-    bluetooth_address = get_bluetooth_address_from_uri(uri);
-    type = bluetooth_address ? 
-                    HILDON_FILE_SYSTEM_MODEL_GATEWAY : 
-                    _hildon_file_system_get_special_location(fs, path);
-
-    if (!type)
+    /* We found toplevel item */
+    if (!parent_path)
     {
-      info = get_info_for_path(fs, path, error);
-      if (!info)
+      if (g_str_has_prefix(uri, "obex://"))
+        type = HILDON_FILE_SYSTEM_MODEL_GATEWAY;
+      else
       {
-        g_object_unref(fs);
-        g_free(bluetooth_address);
-        gtk_file_path_free(path);
-        return NULL;
+        info = gtk_file_info_new();
+        gtk_file_info_set_is_folder(info, TRUE);
+        gtk_file_info_set_display_name(info, gtk_file_path_get_string(path));
+        type = HILDON_FILE_SYSTEM_MODEL_FOLDER;
       }
-      
-      type = gtk_file_info_get_is_folder(info) ? 
-                    HILDON_FILE_SYSTEM_MODEL_FOLDER :
-                    HILDON_FILE_SYSTEM_MODEL_FILE;  
+    }
+    else
+    {
+      type = _hildon_file_system_get_special_location(fs, path);
+
+      if (!type)
+      {
+        folder = gtk_file_system_get_folder(fs, parent_path, GTK_FILE_INFO_ALL, error);
+        if (folder)
+        {
+          info = gtk_file_folder_get_info(folder, path, error);
+          g_object_unref(folder);
+        }
+        if (!info)
+        {
+          g_object_unref(fs);
+          gtk_file_path_free(parent_path);
+          gtk_file_path_free(path);
+          return NULL;
+        }
+
+        type = gtk_file_info_get_is_folder(info) ? 
+                 HILDON_FILE_SYSTEM_MODEL_FOLDER :
+                 HILDON_FILE_SYSTEM_MODEL_FILE;  
+      }
+
+      gtk_file_path_free(parent_path);
     }
 
     result = g_new0(HildonFileSystemInfo, 1);
     result->fs = fs;
-    result->client = gconf_client_get_default();
     result->path = path;
     result->info = info;
     result->type = type;
-    result->bluetooth_address = bluetooth_address;
 
     return result;    
 }
@@ -172,8 +151,8 @@ hildon_file_system_info_get_display_name(HildonFileSystemInfo *info)
   g_return_val_if_fail(info != NULL, NULL);
 
   if (info->name_cache == NULL)
-    info->name_cache = _hildon_file_system_create_display_name(info->client, 
-        info->type, info->bluetooth_address, info->info);
+    info->name_cache = _hildon_file_system_create_display_name(info->fs, 
+        info->path, info->type, info->info);
 
   return info->name_cache;
 }
@@ -195,8 +174,8 @@ hildon_file_system_info_get_icon(HildonFileSystemInfo *info, GtkWidget *ref_widg
 
   /* render icon seems to internally require that the folder is already created by get_folder */  
   if (info->icon_cache == NULL)
-    info->icon_cache = _hildon_file_system_create_image(info->fs, gtk_icon_theme_get_default(), 
-                  info->client, ref_widget, info->path, info->bluetooth_address, 
+    info->icon_cache = _hildon_file_system_create_image(info->fs,  
+                  ref_widget, info->path, 
                   info->type, TREE_ICON_SIZE);
 
   return info->icon_cache;
@@ -219,10 +198,8 @@ void hildon_file_system_info_free(HildonFileSystemInfo *info)
     g_object_unref(info->icon_cache);
 
   gtk_file_path_free(info->path);
-  g_free(info->bluetooth_address);
   g_free(info->name_cache);
   g_object_unref(info->fs);
-  g_object_unref(info->client);
 
   g_free(info);
 }

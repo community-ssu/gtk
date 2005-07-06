@@ -31,9 +31,10 @@
 
 #include <libintl.h>
 #include <string.h>
-#include <bt-gconf.h>
+#include <gtk/gtkicontheme.h>
 #include <osso-log.h>
 #include "hildon-file-system-private.h"
+#include "hildon-file-system-settings.h"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -62,15 +63,15 @@ static LocationType locations[] = {
   { "qgn_list_filesys_audio_fldr", N_("sfil_li_folder_sound_clips"), NULL },
   { "qgn_list_filesys_doc_fldr", N_("sfil_li_folder_documents"), NULL },
   { "qgn_list_filesys_games_fldr", N_("sfil_li_folder_games"), NULL },
-  { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_sputnik"), NULL },
+  { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_local_device"), NULL },
  /* This is used, if GConf for some reason don't contain name */
   { "qgn_list_filesys_divc_gw", N_("sfil_li_gateway_root"), NULL },
   { "qgn_list_filesys_divc_cls", N_("sfil_li_folder_root"), NULL }
 };
 
 /* Paths for system folders and devices */
-static const char *SPUTNIK_ROOT = "MyDocs";     /* Under $HOME */
-static const char *IMAGES_SAFE = ".images";     
+static const char *LOCAL_DEVICE_ROOT = "MyDocs";    /* Under $HOME */
+static const char *IMAGES_SAFE = ".images";         /* Under local device */
 static const char *VIDEOS_SAFE = ".videos";
 static const char *SOUNDS_SAFE = ".sounds";
 static const char *DOCUMENTS_SAFE = ".documents";
@@ -101,7 +102,7 @@ void _hildon_file_system_ensure_locations(void)
   const gchar *env;
   gchar *root;
 
-  if (locations[HILDON_FILE_SYSTEM_MODEL_SPUTNIK].path != NULL)
+  if (locations[HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE].path != NULL)
     return;
 
   env = g_getenv("MYDOCSDIR");
@@ -114,12 +115,12 @@ void _hildon_file_system_ensure_locations(void)
         when possible. */
     env = g_getenv("HOME");
     if (env && env[0])
-      root = g_build_path(G_DIR_SEPARATOR_S, env, SPUTNIK_ROOT, NULL);
+      root = g_build_path(G_DIR_SEPARATOR_S, env, LOCAL_DEVICE_ROOT, NULL);
     else
-      root = g_build_path(G_DIR_SEPARATOR_S, g_get_home_dir(), SPUTNIK_ROOT, NULL);
+      root = g_build_path(G_DIR_SEPARATOR_S, g_get_home_dir(), LOCAL_DEVICE_ROOT, NULL);
   }
 
-  locations[HILDON_FILE_SYSTEM_MODEL_SPUTNIK].path = root;
+  locations[HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE].path = root;
   locations[HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_IMAGES].path = 
     g_build_path(G_DIR_SEPARATOR_S, root, IMAGES_SAFE, NULL);
   locations[HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_VIDEOS].path = 
@@ -132,8 +133,10 @@ void _hildon_file_system_ensure_locations(void)
     g_build_path(G_DIR_SEPARATOR_S, root, DOCUMENTS_SAFE, GAMES_SAFE, NULL);
 
   env = g_getenv("MMC_MOUNTPOINT");
-  if (env)
-    locations[HILDON_FILE_SYSTEM_MODEL_MMC].path = g_strdup(env);
+  if (env == NULL || env[0] == 0)
+    env = "/media/mmc1";    /* Fallback location */
+
+  locations[HILDON_FILE_SYSTEM_MODEL_MMC].path = g_strdup(env);
 }
 
 gint 
@@ -159,32 +162,10 @@ _hildon_file_system_get_special_location(GtkFileSystem *fs, const GtkFilePath *p
   return result;
 }
 
-/* Check if the current gateway has icon defined in gconf */
-static gchar *
-get_gateway_icon_name(GConfClient *client, const gchar *bluetooth_address)
-{
-  gchar *str, *dot, *key;
-
-  g_assert(bluetooth_address != NULL);
-
-  key = GNOME_BT_DEV_ICON(bluetooth_address);
-  str = gconf_client_get_string(client, key, NULL);
-  g_free(key);
-
-  if (!str) return NULL;
-
-  dot = g_strrstr(str, ".");
-  if (dot && dot != str)
-    *dot = 0;
-
-  return str;      
-}
-
 GdkPixbuf *
-_hildon_file_system_create_image(GtkFileSystem *fs, GtkIconTheme *theme, 
-      GConfClient *client, GtkWidget *ref_widget, GtkFilePath *path, 
-      const gchar *bluetooth_address, HildonFileSystemModelItemType type, 
-      gint size)
+_hildon_file_system_create_image(GtkFileSystem *fs, 
+      GtkWidget *ref_widget, GtkFilePath *path, 
+      HildonFileSystemModelItemType type, gint size)
 {
     GdkPixbuf *pixbuf = NULL;
 
@@ -196,36 +177,84 @@ _hildon_file_system_create_image(GtkFileSystem *fs, GtkIconTheme *theme,
       }
       else if (type == HILDON_FILE_SYSTEM_MODEL_GATEWAY)
       {
-        gchar *name = get_gateway_icon_name(client, bluetooth_address);
+        GtkFileSystemVolume *vol;
 
-        if (name)
+        /* We do need the path. Every gateway device has different one */
+        g_assert(path != NULL);
+
+        vol = _hildon_file_system_get_volume_for_location(fs, 
+            HILDON_FILE_SYSTEM_MODEL_GATEWAY, path);
+
+        if (vol)
         {
-          pixbuf = gtk_icon_theme_load_icon(theme, name, size, 0, NULL);
-          g_free(name);
+          pixbuf = gtk_file_system_volume_render_icon(fs, vol, ref_widget, size, NULL);
+          gtk_file_system_volume_free(fs, vol);
         }
       }  
 
       if (!pixbuf)
-          pixbuf = gtk_icon_theme_load_icon(theme, 
+          pixbuf = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), 
                         locations[type].icon_name, size, 0, NULL);
     }
 
     return pixbuf;
 }
 
+static const gchar *get_custom_root_name(const GtkFilePath *path)
+{
+  const gchar *s, *name;
+  gssize len;
+
+  g_assert(path != NULL);
+  s = gtk_file_path_get_string(path);
+  len = strlen(s);
+
+  while (TRUE)
+  {
+    name = g_strrstr_len(s, len, "/");
+
+    if (!name)
+      return s;
+    if (name[1] != 0)
+      return &name[1];  /* This looks weird, but is safe */
+    len = name - s;
+  }
+}
+
 gchar *
-_hildon_file_system_create_file_name(GConfClient *client, 
-  HildonFileSystemModelItemType type, const gchar *bluetooth_address, 
+_hildon_file_system_create_file_name(GtkFileSystem *fs,
+  const GtkFilePath *path, HildonFileSystemModelItemType type,
   GtkFileInfo *info)
 {
   gchar *str;
 
-  if (type == HILDON_FILE_SYSTEM_MODEL_GATEWAY && bluetooth_address)
+  if (type == HILDON_FILE_SYSTEM_MODEL_GATEWAY ||
+      type == HILDON_FILE_SYSTEM_MODEL_MMC)
   {
-    gchar *key = GNOME_BT_DEV_NAME(bluetooth_address);
-    str = gconf_client_get_string(client, key, NULL);
-    g_free(key);
-    if (str) return str;
+    GtkFileSystemVolume *vol;
+
+    vol = _hildon_file_system_get_volume_for_location(fs, type, path);
+
+    if (vol)
+    {
+      str = gtk_file_system_volume_get_display_name(fs, vol);
+      gtk_file_system_volume_free(fs, vol);
+      if (str) return str;
+    }
+  }  
+  else if (type == HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE)
+  {
+    HildonFileSystemSettings *settings;
+    gchar *name;
+    
+    settings = _hildon_file_system_settings_get_instance();
+    g_object_get(settings, "btname", &name, NULL);
+
+    if (name)
+    {
+      if (name[0]) return name;
+      g_free(name);
+    }
   }
 
   if (type > HILDON_FILE_SYSTEM_MODEL_FOLDER)
@@ -248,21 +277,18 @@ _hildon_file_system_create_file_name(GConfClient *client,
     return g_strdup(name);
   }
 
-  /* We no longer support names for non-multiroot custom locations 
-      (only application using custom location is bookmarks and it 
-       uses multiroot). */
-  return g_strdup(_("Custom root"));
+  return g_strdup(get_custom_root_name(path));
 }
 
 gchar *
-_hildon_file_system_create_display_name(GConfClient *client, 
-  HildonFileSystemModelItemType type, const gchar *bluetooth_address, 
+_hildon_file_system_create_display_name(GtkFileSystem *fs, 
+  const GtkFilePath *path, HildonFileSystemModelItemType type, 
   GtkFileInfo *info)
 {
   gchar *str, *dot;
   const gchar *mime_type = NULL;
 
-  str = _hildon_file_system_create_file_name(client, type, bluetooth_address, info);   
+  str = _hildon_file_system_create_file_name(fs, path, type, info);   
 
   if (info)
     mime_type = gtk_file_info_get_mime_type(info);
@@ -282,6 +308,48 @@ GtkFilePath *_hildon_file_system_path_for_location(GtkFileSystem *fs,
 {
   g_assert(0 <= type && type < G_N_ELEMENTS(locations));
   return gtk_file_system_filename_to_path(fs, locations[type].path);
+}
+
+/* You can omit either type or base */
+GtkFileSystemVolume *
+_hildon_file_system_get_volume_for_location(GtkFileSystem *fs, 
+  HildonFileSystemModelItemType type,
+  const GtkFilePath *base)
+{
+    GSList *volumes, *iter;
+    GtkFilePath *mount_path, *path;
+    GtkFileSystemVolume *vol, *result = NULL;
+    const char *path_a, *path_b;
+
+    /* We cannot just use get_volume_for_path, because it won't
+        work work with URIs other than file:// */
+    volumes = gtk_file_system_list_volumes(fs);
+
+    mount_path = base ? gtk_file_path_copy(base) : 
+        _hildon_file_system_path_for_location(fs, type);
+    if (mount_path == NULL) return NULL;
+
+    path_a = gtk_file_path_get_string(mount_path);
+
+    for (iter = volumes; iter; iter = g_slist_next(iter))
+      if ((vol = iter->data) != NULL)   /* Hmmm, it seems to be possible that this list contains NULL items!! */
+      {
+        path = gtk_file_system_volume_get_base_path(fs, vol);
+        path_b = gtk_file_path_get_string(path);
+
+        if (!result &&
+           _hildon_file_system_compare_ignore_last_separator(path_a, path_b))
+          result = vol;
+        else
+          gtk_file_system_volume_free(fs, vol); 
+
+        gtk_file_path_free(path);
+      }
+
+    gtk_file_path_free(mount_path);
+    g_slist_free(volumes);
+
+    return result;
 }
 
 GtkFileSystem *hildon_file_system_create_backend(const gchar *name, gboolean use_fallback)

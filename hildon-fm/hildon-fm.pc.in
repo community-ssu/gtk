@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: hildon-fm
-Description: LGPL-licensed File Management for Sputnik
+Description: LGPL-licensed File Management 
 Requires: gtk+-2.0 >= @GTK_VERSION@
 Version: @VERSION@
 Libs: -L${libdir} -lhildonfm

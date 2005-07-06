@@ -46,7 +46,7 @@ typedef enum {
     HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_GAMES,
     HILDON_FILE_SYSTEM_MODEL_MMC,
     HILDON_FILE_SYSTEM_MODEL_GATEWAY,
-    HILDON_FILE_SYSTEM_MODEL_SPUTNIK
+    HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE
 } HildonFileSystemModelItemType;
 
 GtkFileSystem *hildon_file_system_create_backend(const gchar *name, gboolean use_fallback);

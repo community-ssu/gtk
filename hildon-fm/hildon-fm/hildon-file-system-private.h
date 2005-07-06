@@ -32,8 +32,6 @@
 #ifndef __HILDON_FILE_SYSTEM_PRIVATE_H__
 #define __HILDON_FILE_SYSTEM_PRIVATE_H__
 
-#include <gtk/gtkicontheme.h>
-#include <gconf/gconf-client.h>
 #include "hildon-file-system-common.h"
 
 G_BEGIN_DECLS
@@ -48,19 +46,25 @@ void _hildon_file_system_ensure_locations(void);
 gint _hildon_file_system_get_special_location(GtkFileSystem *fs, const GtkFilePath *path);
 
 GdkPixbuf *_hildon_file_system_create_image(GtkFileSystem *fs, 
-      GtkIconTheme *theme, GConfClient *client, GtkWidget *ref_widget, 
-      GtkFilePath *path, const gchar *bluetooth_address, 
+      GtkWidget *ref_widget, GtkFilePath *path, 
       HildonFileSystemModelItemType type, gint size);
 
-gchar *_hildon_file_system_create_file_name(GConfClient *client, 
-  HildonFileSystemModelItemType type, const gchar *bluetooth_address, 
+gchar *_hildon_file_system_create_file_name(GtkFileSystem *fs, 
+  const GtkFilePath *path, HildonFileSystemModelItemType type,  
   GtkFileInfo *info);
 
-gchar *_hildon_file_system_create_display_name(GConfClient *client, 
-  HildonFileSystemModelItemType type, const gchar *bluetooth_address, 
+gchar *_hildon_file_system_create_display_name(GtkFileSystem *fs, 
+  const GtkFilePath *path, HildonFileSystemModelItemType type,  
   GtkFileInfo *info);
 
-GtkFilePath *_hildon_file_system_path_for_location(GtkFileSystem *fs, HildonFileSystemModelItemType type);
+GtkFilePath *_hildon_file_system_path_for_location(GtkFileSystem *fs, 
+  HildonFileSystemModelItemType type);
+
+/* You can omit either type or base */
+GtkFileSystemVolume *
+_hildon_file_system_get_volume_for_location(GtkFileSystem *fs, 
+  HildonFileSystemModelItemType type,
+  const GtkFilePath *base);
 
 G_END_DECLS
 

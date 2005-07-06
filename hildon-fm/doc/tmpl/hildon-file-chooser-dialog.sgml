@@ -74,6 +74,16 @@ if (gtk_dialog_run(GTK_DIALOG(dialog) == GTK_RESPONSE_OK)
 
 </para>
 
+<!-- ##### ARG HildonFileChooserDialog:open-button-text ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileChooserDialog:save-multiple ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG HildonFileChooserDialog:show-folder-button ##### -->
 <para>
 

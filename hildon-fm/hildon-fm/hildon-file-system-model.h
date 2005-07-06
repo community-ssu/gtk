@@ -71,6 +71,8 @@ typedef enum {
     HILDON_FILE_SYSTEM_MODEL_COLUMN_TITLE,
     HILDON_FILE_SYSTEM_MODEL_COLUMN_AUTHOR,
 
+    HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_HIDDEN,
+
     HILDON_FILE_SYSTEM_MODEL_NUM_COLUMNS
 } HildonFileSystemModelColumns;
 
@@ -109,10 +111,10 @@ GType hildon_file_system_model_get_type(void);
 
 /* Backwards compatibility */
 #define hildon_file_system_model_create_backend hildon_file_system_create_backend
-
+#ifndef HILDON_DISABLE_DEPRECATED
 gboolean hildon_file_system_model_finished_loading(HildonFileSystemModel *
                                                    model);
-
+#endif
 /* These search from current model, nothing is loaded */
 
 gboolean hildon_file_system_model_search_local_path(HildonFileSystemModel *
@@ -162,6 +164,8 @@ void hildon_file_system_model_reset_available(HildonFileSystemModel *model);
 
 /* Not for public use */
 
+void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
+  GtkTreeIter *parent_iter, gboolean force);
 void _hildon_file_system_model_load_children(HildonFileSystemModel *model,
   GtkTreeIter *parent_iter);
 

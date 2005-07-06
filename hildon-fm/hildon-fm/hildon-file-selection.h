@@ -158,17 +158,21 @@ gboolean hildon_file_selection_set_current_folder(HildonFileSelection *
                                                   folder, GError ** error);
 GtkFilePath *hildon_file_selection_get_current_folder(HildonFileSelection *
                                                       self);
+#ifndef HILDON_DISABLE_DEPRECATED
 gboolean hildon_file_selection_get_current_content_iter(HildonFileSelection
                                                         * self,
                                                         GtkTreeIter *
                                                         iter);
+#endif
 gboolean hildon_file_selection_get_current_folder_iter(HildonFileSelection
                                                        * self,
                                                        GtkTreeIter * iter);
+#ifndef HILDON_DISABLE_DEPRECATED
 gboolean hildon_file_selection_get_active_content_iter(HildonFileSelection
                                                        *self, GtkTreeIter *iter);
 gboolean hildon_file_selection_content_iter_is_selected(HildonFileSelection *self,
                                                        GtkTreeIter *iter);
+#endif
 
 gboolean hildon_file_selection_select_path(HildonFileSelection * self,
                                            const GtkFilePath * path,

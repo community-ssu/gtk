@@ -21,17 +21,18 @@
  * 02110-1301 USA
  *
  */
+
 /*
-  HildonFileSelection widget
-
-  Completely rewritten, now data structure is separated to GtkTreeModel
-  compatible object.
-
-  Issues concerning GtkTreeView::horizontal-separator
-   * This space is concerned as cell area => alignment 1.0
-                                          => end of text is clipped)
-   * This comes also to the last column => Looks wery bad in all trees.
-*/
+ * HildonFileSelection widget
+ *
+ * Completely rewritten, now data structure is separated to GtkTreeModel
+ * compatible object.
+ *
+ * Issues concerning GtkTreeView::horizontal-separator
+ *  * This space is concerned as cell area => alignment 1.0
+ *                                         => end of text is clipped)
+ *  * This comes also to the last column => Looks wery bad in all trees.
+ */
 
 #include <gtk/gtk.h>
 #include <glib/gprintf.h>
@@ -43,6 +44,7 @@
 #include <osso-log.h>
 
 #include "hildon-file-selection.h"
+#include "hildon-file-system-settings.h"
 #include <hildon-widgets/gtk-infoprint.h>
 #include <hildon-widgets/hildon-defines.h>
 
@@ -56,11 +58,12 @@
     Anyway I have to add it to make cell 60 + two 
     margin pixels high. Now height is pixel perfect. */
 #define THUMBNAIL_CELL_HEIGHT (60 + HILDON_MARGIN_DEFAULT * 2 + 2)
+#define THUMBNAIL_CELL_WIDTH (80 + 16)
 
 /* Row height should be 30 and 4 is a mysterious constant.
     I just wonder why the constant is now 4 instead of 2
-    used in thumbnail view??? */
-#define LIST_CELL_HEIGHT (30 + 4)
+    used in thumbnail view???  And now it seems to be 3!!! */
+#define LIST_CELL_HEIGHT (30 + 3)
 
 /* These sizes are even more confusing. Magical constant is now 1!?# */
 #define TREE_CELL_HEIGHT (30 + 1)
@@ -76,8 +79,12 @@ static GObject *hildon_file_selection_constructor(GType type,
 static void
 hildon_file_selection_set_current_folder_iter(HildonFileSelection * self,
                                               GtkTreeIter * main_iter);
+static void 
+hildon_file_selection_check_close_load_banner(GtkTreeModel *model, 
+  GtkTreeIter *iter, gpointer data);
 static void hildon_file_selection_close_load_banner(HildonFileSelection *
                                                     self);
+static void hildon_file_selection_modified(gpointer object, GtkTreePath *path);
 static gboolean view_path_to_main_iter(GtkTreeModel *model,
   GtkTreeIter *iter, GtkTreePath *path);
 static void hildon_file_selection_real_row_insensitive(HildonFileSelection *self,
@@ -96,6 +103,7 @@ static guint signal_items_dropped, signal_location_insensitive;
 enum {
     PROP_MODEL = 1,
     PROP_LOCAL_ONLY,
+    PROP_SHOW_HIDDEN,
     PROP_DND,
     PROP_EMPTY_TEXT,
     PROP_VISIBLE_COLUMNS,
@@ -118,7 +126,6 @@ struct _HildonFileSelectionPrivate {
     GtkTreeModel *view_filter;
 
     GtkTreeRowReference *to_be_selected;
-    GTimer *autosel_timer;
     GtkNotebook *view_selector;
     GtkFileFilter *filter;
 
@@ -126,21 +133,47 @@ struct _HildonFileSelectionPrivate {
                                            mode is either this or an empty
                                            view containing a message */
     guint banner_timeout_id;
+    guint content_pane_changed_id;
+    guint delayed_select_id;
     gboolean banner_shown;
     gboolean content_pane_last_used;
 
-    /* Slightly kludgish flag. This is set when widget is shown and content pane
-        should have focus, but there is nothing yet. We use this to move focus when
-        there is some content */
+    /* This is set when widget is shown and content pane
+       should have focus, but there is nothing yet. We use this to move focus when
+       there is some content */
     gboolean force_content_pane;
+
+    /* Set to FALSE when a folder loading starts. If user moves the cursor this
+       is set to TRUE. So if it's still FALSE when folder loading is finished,
+       we can move the cursor where we want. */
+    gboolean user_touched;
+    /* Set if user have scrolled bar to specific position. This causes
+       automatic scrolling to cursor be disabled when the loading is done */
+    gboolean user_scrolled;
 
     /* Properties */
 
     HildonFileSelectionVisibleColumns visible_columns;
     gboolean drag_enabled;
     gboolean local_only;
+    gboolean show_hidden;
     GtkFilePath *safe_folder;
 };
+
+static void
+hildon_file_selection_cancel_delayed_select(HildonFileSelectionPrivate *priv)
+{
+  if (priv->to_be_selected)
+  {
+    gtk_tree_row_reference_free(priv->to_be_selected);
+    priv->to_be_selected = NULL;
+  }
+  if (priv->delayed_select_id)
+  {
+    g_source_remove(priv->delayed_select_id);
+    priv->delayed_select_id = 0;
+  }
+}
 
 static void scroll_to_cursor(GtkTreeView *tree)
 {
@@ -213,11 +246,9 @@ static gint get_view_to_be_displayed(HildonFileSelectionPrivate *priv)
     gtk_tree_model_get(child_model, &iter, HILDON_FILE_SYSTEM_MODEL_COLUMN_LOAD_READY, &ready, -1);
     result = ready ? 2 : gtk_notebook_get_current_page(priv->view_selector);
   }
-  else /* Virtual root really must be found */
-  {
+  else /* Virtual root is almost certainly found, EXCEPT when
+          that node is destroyed and row_reference is invalidated... */
     result = 2;
-    g_assert_not_reached();
-  }
 
   gtk_tree_path_free(path);
   g_object_unref(child_model);
@@ -336,9 +367,8 @@ hildon_file_selection_inspect_view(HildonFileSelectionPrivate *priv)
       }
     }
     
-    if (priv->force_content_pane && 
-        expand_cursor_row(GTK_TREE_VIEW(priv->dir_tree)))
-      priv->force_content_pane = FALSE;
+    if (priv->force_content_pane)
+      expand_cursor_row(GTK_TREE_VIEW(priv->dir_tree));
 }
 
 static void hildon_file_selection_forall(GtkContainer * self,
@@ -397,7 +427,6 @@ static void hildon_file_selection_size_allocate(GtkWidget * self,
     GtkAllocation alloc;
     GtkRequisition req;
     HildonFileSelectionPrivate *priv = HILDON_FILE_SELECTION(self)->priv;
-    GtkWidget *view;
 
     self->allocation = *allocation;
 
@@ -421,55 +450,6 @@ static void hildon_file_selection_size_allocate(GtkWidget * self,
 
         alloc.x += alloc.width;
         alloc.width = allocation->width - (alloc.x - allocation->x);
-
-        /* <kludge> */
-
-        view = get_current_view(priv);
-        if (view == priv->view[0]) {  /* For list mode only */
-            GtkTreeViewColumn *col;
-            GtkRequisition win_req, tree_req;
-            gint sum_width;
-            GList *columns, *iter;
-
-            /* Let's try a kludge to force name column not to be so wide.
-               Don't try this at home ;) */
-
-            gtk_widget_get_child_requisition(GTK_WIDGET
-                                             (priv->view_selector),
-                                             &win_req);
-            gtk_widget_get_child_requisition(view, &tree_req);
-
-            sum_width = (tree_req.height > allocation->height
-                         ? win_req.width - tree_req.width
-                         : 0);    /* Scrollbar width */
-
-            g_assert(sum_width >= 0);
-            columns = iter =
-                gtk_tree_view_get_columns(GTK_TREE_VIEW(view));
-
-            while (iter) {
-                col = GTK_TREE_VIEW_COLUMN(iter->data);
-
-                if (col->requested_width > 0)
-                    sum_width += col->requested_width;
-
-                iter = iter->next;
-            }
-
-            if (sum_width > alloc.width) {
-                col = GTK_TREE_VIEW_COLUMN(g_list_nth_data(columns, 1));
-                if (col->requested_width > sum_width - alloc.width)
-                    col->requested_width -= sum_width - alloc.width;
-                else
-                    ULOG_WARN
-                        ("Too little space for show the whole filetree.");
-            }
-
-            g_list_free(columns);
-        }
-
-        /* </kludge> */
-
         gtk_widget_size_allocate(GTK_WIDGET(priv->view_selector), &alloc);
     } else
         gtk_widget_size_allocate(priv->scroll_dir, allocation);
@@ -482,16 +462,24 @@ static void hildon_file_selection_finalize(GObject * obj)
 
     ULOG_DEBUG("%s (%p)", __FUNCTION__, (gpointer) obj);
 
+    if (priv->content_pane_changed_id)
+      g_source_remove(priv->content_pane_changed_id);
+
     /* We have to remove these by hand */
     g_signal_handlers_disconnect_by_func
         (priv->main_model,
-         (gpointer) hildon_file_selection_close_load_banner,
+         (gpointer) hildon_file_selection_check_close_load_banner,
          self);
     g_signal_handlers_disconnect_by_func
         (priv->main_model,
         (gpointer) hildon_file_selection_inspect_view,
         priv);
+    g_signal_handlers_disconnect_by_func
+        (priv->main_model,
+        (gpointer) hildon_file_selection_modified,
+        self);
 
+    hildon_file_selection_cancel_delayed_select(priv);
     g_source_remove_by_user_data(self); /* Banner checking timeout */
     gtk_widget_unparent(priv->scroll_dir);
     gtk_widget_unparent(priv->separator);
@@ -522,7 +510,6 @@ static void hildon_file_selection_finalize(GObject * obj)
         because view_filter is already set to NULL. Failing this setting caused 
         segfaults earlier. */
     hildon_file_selection_set_filter(self, NULL);   
-    g_timer_destroy(self->priv->autosel_timer);
 
     G_OBJECT_CLASS(hildon_file_selection_parent_class)->finalize(obj);
 }
@@ -530,7 +517,7 @@ static void hildon_file_selection_finalize(GObject * obj)
 static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter,
                             gpointer data)
 {
-    gboolean is_folder, result, has_local_path;
+    gboolean is_folder, result, has_local_path, is_hidden;
     GtkFileFilterInfo info;
     HildonFileSelectionPrivate *priv = data;
 
@@ -539,6 +526,14 @@ static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter,
                            HILDON_FILE_SYSTEM_MODEL_COLUMN_HAS_LOCAL_PATH,
                            &has_local_path, -1);
         if (!has_local_path)
+            return FALSE;
+    }
+
+    if (!priv->show_hidden) {
+        gtk_tree_model_get(model, iter,
+                           HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_HIDDEN,
+                           &is_hidden, -1);
+        if (is_hidden)
             return FALSE;
     }
 
@@ -729,6 +724,20 @@ static void hildon_file_selection_set_property(GObject * object,
         }
         break;
     }
+    case PROP_SHOW_HIDDEN:
+    {
+        gboolean new_state = g_value_get_boolean(value);
+
+        if (new_state != priv->show_hidden) {
+            priv->show_hidden = new_state;
+            if (priv->view_filter) {
+                gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER
+                                               (priv->view_filter));
+                hildon_file_selection_inspect_view(priv);
+            }
+        }
+        break;
+    }
     case PROP_EMPTY_TEXT:
         gtk_label_set_text(GTK_LABEL(priv->view[2]),
                            g_value_get_string(value));
@@ -766,6 +775,9 @@ static void hildon_file_selection_get_property(GObject * object,
         break;
     case PROP_LOCAL_ONLY:
         g_value_set_boolean(value, priv->local_only);
+        break;
+    case PROP_SHOW_HIDDEN:
+        g_value_set_boolean(value, priv->show_hidden);
         break;
     case PROP_EMPTY_TEXT:
         g_value_set_string(value,
@@ -979,17 +991,45 @@ static void hildon_file_selection_class_init(HildonFileSelectionClass *
                                      HILDON_FILE_SELECTION_PANE_NAVIGATION,
                                      HILDON_FILE_SELECTION_PANE_CONTENT, 
                                      HILDON_FILE_SELECTION_PANE_NAVIGATION, G_PARAM_READWRITE));
+
+    g_object_class_install_property(object, PROP_SHOW_HIDDEN,
+      g_param_spec_boolean("show-hidden", "Show hidden", 
+                           "Show hidden files in file selector widgets",
+                           FALSE, G_PARAM_READWRITE));
+
+    g_object_class_install_property(object, PROP_LOCAL_ONLY,
+      g_param_spec_boolean("local-only", "Local only",
+                           "Whether or not all the displayed items should "
+                           "have a local file path", 
+                           FALSE, G_PARAM_READWRITE));
 }
 
-static void hildon_file_selection_content_pane_selection_changed(GtkWidget
-                                                                 * widget,
-                                                                 gpointer
-                                                                 data)
+static gboolean
+content_pane_selection_changed_idle(gpointer data)
 {
     g_assert(HILDON_IS_FILE_SELECTION(data));
     g_signal_emit(data, signal_selection_changed, 0);
+    HILDON_FILE_SELECTION(data)->priv->content_pane_changed_id = 0;
+
+    return FALSE;
 }
-#if 0
+
+/* We have to send this signal in idle, because caches contain only
+   invalid iterators if this signal is received when we are deleting
+   something. */
+static void 
+hildon_file_selection_content_pane_selection_changed(GtkWidget *widget,
+  gpointer data)
+{
+    HildonFileSelectionPrivate *priv = HILDON_FILE_SELECTION(data)->priv;
+
+    if (priv->content_pane_changed_id == 0)
+    {
+      priv->content_pane_changed_id = 
+        g_idle_add(content_pane_selection_changed_idle, data);
+    }  
+}  
+
 /* Checks whether the given path matches current content pane path */
 static gboolean
 hildon_file_selection_matches_current_view(HildonFileSelectionPrivate *
@@ -1002,8 +1042,7 @@ hildon_file_selection_matches_current_view(HildonFileSelectionPrivate *
         g_object_get(priv->view_filter, "virtual-root", &current_path,
                      NULL);
         g_assert(current_path); /* Content pane should always have root
-                                   */
-
+                                   (no local device level allowed) */
         result = gtk_tree_path_compare(path, current_path);
         gtk_tree_path_free(current_path);
 
@@ -1012,7 +1051,7 @@ hildon_file_selection_matches_current_view(HildonFileSelectionPrivate *
 
     return FALSE;
 }
-#endif
+
 static gboolean hildon_file_selection_check_load_banner(gpointer data)
 {
     HildonFileSelection *self;
@@ -1021,7 +1060,10 @@ static gboolean hildon_file_selection_check_load_banner(gpointer data)
 
     self = HILDON_FILE_SELECTION(data);
     
-    if (hildon_file_selection_get_current_folder_iter(self, &iter))
+    /* We only show "updating" banner if 
+       the filetree itself is visible */
+    if (GTK_WIDGET_VISIBLE(data) &&
+        hildon_file_selection_get_current_folder_iter(self, &iter))
     {
       gtk_tree_model_get(self->priv->main_model, &iter,
         HILDON_FILE_SYSTEM_MODEL_COLUMN_LOAD_READY, &ready, -1);
@@ -1048,14 +1090,61 @@ static void hildon_file_selection_close_load_banner(HildonFileSelection *
 {
     GtkWidget *window =
         gtk_widget_get_ancestor(GTK_WIDGET(self), GTK_TYPE_WINDOW);
+    HildonFileSelectionPrivate *priv = self->priv;
 
     if (window) {
-        self->priv->banner_shown = FALSE;
+        priv->banner_shown = FALSE;
         gtk_banner_close(GTK_WINDOW(window));
     }
 
     /* Load can finish with no contents */
-    hildon_file_selection_inspect_view(self->priv);
+    hildon_file_selection_inspect_view(priv);
+
+    if (!priv->user_touched && priv->view_filter)
+    {
+      /* User hasn't changed the selection. Select the first row. */
+      GtkTreeIter iter;
+      gboolean content_pane_focused = priv->content_pane_last_used;
+
+      if (gtk_tree_model_get_iter_first(priv->view_filter, &iter))
+      {
+        gboolean is_available;
+        GtkWidget *view = get_current_view(priv);
+
+        gtk_tree_model_get(priv->view_filter, &iter,
+          HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE, &is_available,
+          -1);
+
+        if (is_available && !priv->user_scrolled)
+        {
+          GtkTreePath *treepath =
+            gtk_tree_model_get_path(priv->view_filter, &iter);
+
+          if (treepath)
+          {
+            gtk_tree_view_set_cursor(GTK_TREE_VIEW(view),
+                                 treepath, NULL, FALSE);
+            gtk_tree_path_free(treepath);
+          }
+        }
+
+        /* Left side was focused before we changed the cursor.
+           Set the focus back. Older implementation caused
+           focus to travel back and fort, causing unwanted
+           pane change notifications. */
+        if (!content_pane_focused && !priv->force_content_pane)
+        {
+          if (!priv->user_scrolled)
+            scroll_to_cursor(GTK_TREE_VIEW(view));
+          gtk_widget_grab_focus(priv->dir_tree);
+        }
+        else if (!priv->user_scrolled)
+          activate_view(view);
+        else
+          gtk_widget_grab_focus(view);
+      }
+    }
+    priv->force_content_pane = FALSE;
 }
 
 static void 
@@ -1073,122 +1162,84 @@ hildon_file_selection_check_close_load_banner(GtkTreeModel *model,
 static void
 get_safe_folder_tree_iter(HildonFileSelectionPrivate *priv, GtkTreeIter *iter)
 {
-  GtkTreeIter main_iter, sort_iter;
-
   if (priv->safe_folder == NULL || 
       !hildon_file_system_model_search_path(
         HILDON_FILE_SYSTEM_MODEL(priv->main_model), 
-        priv->safe_folder, &main_iter, NULL, TRUE))
-  {
+        priv->safe_folder, iter, NULL, TRUE))
+  { /* We use first node (=device) as fallback */
     gboolean success;
-    success = gtk_tree_model_get_iter_first(priv->main_model, &main_iter);
+    success = gtk_tree_model_get_iter_first(priv->main_model, iter);
     g_assert(success);  /* This really should work */
-  }
-      
-  gtk_tree_model_sort_convert_child_iter_to_iter(GTK_TREE_MODEL_SORT
-                                                   (priv->sort_model),
-                                                   &sort_iter, &main_iter);
-  gtk_tree_model_filter_convert_child_iter_to_iter(GTK_TREE_MODEL_FILTER
-                                                     (priv->dir_filter), iter, &sort_iter);
+  }      
 }
 
 static gboolean delayed_select_idle(gpointer data)
 {
-  GtkTreeSelection *selection;
-  GtkTreeView *tree;
-  GtkTreePath *path;
-  GtkTreeIter iter, parent;
-  HildonFileSelectionPrivate *priv = HILDON_FILE_SELECTION(data)->priv;
+  HildonFileSelection *self;
+  HildonFileSelectionPrivate *priv;
+  GtkTreeIter main_iter, sort_iter;
+  GtkTreePath *sort_path = NULL;
+  gboolean found = FALSE;
 
-  if (!priv->to_be_selected)
-    return FALSE;
+  self = HILDON_FILE_SELECTION(data);
+  priv = self->priv;
 
-  path = gtk_tree_row_reference_get_path(priv->to_be_selected);
+  if (priv->to_be_selected)
+    sort_path = gtk_tree_row_reference_get_path(priv->to_be_selected);
 
-  if (!path) /* Row reference is invalidated. Try a safe folder */
+  if (sort_path) 
   {
-    get_safe_folder_tree_iter(priv, &iter);
-    path = gtk_tree_model_get_path(priv->dir_filter, &iter);
-  }
-  else if (g_timer_elapsed(priv->autosel_timer, NULL) < 0.4)
-  {
-      /* Fast updates in a row are probably caused
-          by a deleted folder and we are updating the tree.
-         In this case we have special method for updating the cursor. */
+    /* We have to use sort_path --- not main_path, because there is not 
+       neccesarily corresponding main node present. */ 
 
-    gboolean root_found = FALSE, available;
-    HildonFileSystemModelItemType type;
+    /* First try this location */
+    if (gtk_tree_model_get_iter(priv->sort_model, &sort_iter, sort_path))
+      found = TRUE;
+    else
+    {
+      /* Then try parent */
+      gtk_tree_path_up(sort_path);
 
-    if (gtk_tree_model_get_iter(priv->dir_filter, &iter, path))
-      while (TRUE)
-      {
-        gtk_tree_model_get(priv->dir_filter, &iter,
-          HILDON_FILE_SYSTEM_MODEL_COLUMN_TYPE, &type, 
-          HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE, &available, 
-          -1);
+      if (gtk_tree_path_get_depth(sort_path) >= 1 && 
+          gtk_tree_model_get_iter(priv->sort_model, &sort_iter, sort_path))
+        found = TRUE;
+    }
 
-        if (type >= HILDON_FILE_SYSTEM_MODEL_MMC) {
-          root_found = available;
-          break;
-        }
-
-        if (!gtk_tree_model_iter_parent(priv->dir_filter, &parent, &iter))
-          break;
-  
-        iter = parent;
-      }
-
-    if (!root_found) /* Moving to safe folder */
-      get_safe_folder_tree_iter(priv, &iter);
-
-    gtk_tree_path_free(path);
-    path = gtk_tree_model_get_path(priv->dir_filter, &iter);
+    gtk_tree_path_free(sort_path);
   }
 
-  g_assert(path != NULL);
-  tree = GTK_TREE_VIEW(priv->dir_tree);
-  gtk_tree_view_expand_to_path(tree, path);
-  gtk_tree_view_scroll_to_cell(tree, path, NULL, FALSE, 0, 0);
-  selection = gtk_tree_view_get_selection(tree);
-  gtk_tree_selection_select_path(selection, path);
-  gtk_tree_path_free(path);
+  if (found)
+    gtk_tree_model_sort_convert_iter_to_child_iter(
+      GTK_TREE_MODEL_SORT(priv->sort_model), &main_iter, &sort_iter);
+  else
+    get_safe_folder_tree_iter(priv, &main_iter);  
 
-  /* This should not be needed, but appearently some bug in GtkTreeView 
-      patch requires this. Otherwise focus is totally lost. */
-  activate_view(priv->dir_tree); 
+  /* Ok, now main_iter points to our target location */
 
-  gtk_tree_row_reference_free(priv->to_be_selected);
-  priv->to_be_selected = NULL;
-  g_timer_start(priv->autosel_timer);
+  hildon_file_selection_set_current_folder_iter(self, &main_iter);
 
-  return FALSE;
+  /* Keep the focus in right side if possible */
+  activate_view(gtk_notebook_get_current_page(priv->view_selector) == 2 ?
+                priv->dir_tree : get_current_view(priv));
+
+  /* We have to return TRUE, because cancel removes the handler now */
+  hildon_file_selection_cancel_delayed_select(priv);
+
+  return TRUE;
 }
 
 static void
 hildon_file_selection_delayed_select_path(HildonFileSelection *self, 
-  GtkTreePath *dir_filter_path)
+  GtkTreePath *sort_model_path)
 {
+  self->priv->user_touched = FALSE;
+
   if (self->priv->to_be_selected) 
     gtk_tree_row_reference_free(self->priv->to_be_selected);
-  else  /* If we don't have previous path, then we need new idle */
-     g_idle_add(delayed_select_idle, self);
+  if (self->priv->delayed_select_id == 0)
+    self->priv->delayed_select_id = g_idle_add(delayed_select_idle, self);
 
-   self->priv->to_be_selected = gtk_tree_row_reference_new(self->priv->dir_filter, dir_filter_path);
-}
-
-static gboolean path_is_visible(GtkTreeView *view, GtkTreePath *path)
-{
-  GtkTreePath *temp;
-  gboolean result;
-
-  if (gtk_tree_path_get_depth(path) <= 1)
-    return TRUE;
-
-  temp = gtk_tree_path_copy(path);
-  gtk_tree_path_up(temp);
-  result = gtk_tree_view_row_expanded(view, temp);
-  gtk_tree_path_free(temp);
-  return result;
+  self->priv->to_be_selected = gtk_tree_row_reference_new(self->priv->sort_model, sort_model_path);
 }
 
 static void hildon_file_selection_row_insensitive(GtkTreeView *tree,
@@ -1218,9 +1269,20 @@ static void hildon_file_selection_real_row_insensitive(HildonFileSelection *self
   window = (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(self), GTK_TYPE_WINDOW);
 
   if (type == HILDON_FILE_SYSTEM_MODEL_MMC)
-    gtk_infoprint(window, "hfil_ib_mmc_not_present");
+  {
+    HildonFileSystemSettings *settings;
+    gboolean cable;
+
+    settings = _hildon_file_system_settings_get_instance();
+    g_object_get(settings, "usb-cable", &cable, NULL);
+
+    if (cable)
+      gtk_infoprint(window, _("sfil_ib_mmc_usb_connected"));
+    else
+      gtk_infoprint(window, _("hfil_ib_mmc_not_present"));
+  }
   else if (type == HILDON_FILE_SYSTEM_MODEL_GATEWAY)
-    gtk_infoprint(window, "sfil_ib_no_connections_flightmode");
+    gtk_infoprint(window, _("sfil_ib_no_connections_flightmode"));
 }
 
 static void hildon_file_selection_selection_changed(GtkTreeSelection *
@@ -1234,6 +1296,8 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
     g_assert(HILDON_IS_FILE_SELECTION(data));
     priv = HILDON_FILE_SELECTION(data)->priv;
     priv->force_content_pane = FALSE;
+    priv->user_touched = FALSE;
+    priv->user_scrolled = FALSE;
 
     if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
 
@@ -1255,14 +1319,19 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
         if (hildon_file_selection_content_pane_visible(priv)) {
             sort_path =
                 gtk_tree_model_get_path(priv->sort_model, &sort_iter);
-#if 0
+
             /* Check that we have actually changed the folder */
-            if (hildon_file_selection_matches_current_view
-                (priv, sort_path)) {
+            if (hildon_file_selection_matches_current_view(priv, sort_path)) 
+            {
                 gtk_tree_path_free(sort_path);
+                ULOG_INFO("Current folder re-selected => Asked to reload (if on gateway)");
+                _hildon_file_system_model_queue_reload(
+                    HILDON_FILE_SYSTEM_MODEL(priv->main_model), 
+                    &main_iter, TRUE);
+
                 return;
             }
-#endif
+
             if (priv->view_filter)
                 g_object_unref(priv->view_filter);
 
@@ -1282,13 +1351,13 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
             /* These DON'T affect colums that have AUTOSIZE as sizing type
                ;) */
             gtk_tree_view_columns_autosize(GTK_TREE_VIEW(priv->view[0]));
-            gtk_tree_view_columns_autosize(GTK_TREE_VIEW(priv->view[1]));
+           /*  gtk_tree_view_columns_autosize(GTK_TREE_VIEW(priv->view[1]));*/
 
             /* All of the refresh problems seem to happen only with
                matchbox. Some only if we have not enough space, some only
-               if we run with Teema */
+               if we run with the theme */
 
-            /* Hmmmm... In problem cases we run just size request, not
+            /* In problem cases we run just size request, not
                size allocate. With fvwm we run size allocate in all cases. 
              */
             /* When there is not set_size_request, or requested -1 then
@@ -1297,9 +1366,13 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
             /* This was finally a clear Matchbox bug. This was caused by
                unreceived configure event that caused screen freeze. */
         }
+
+        /* It can happen that we still have pending selection. */
+        hildon_file_selection_cancel_delayed_select(priv);
+
         g_signal_emit(data, signal_folder_changed, 0);
 
-	hildon_file_selection_close_load_banner(HILDON_FILE_SELECTION(data));
+        hildon_file_selection_close_load_banner(HILDON_FILE_SELECTION(data));
         if (!priv->banner_shown && priv->banner_timeout_id == 0)
             priv->banner_timeout_id =
                 g_timeout_add(500, hildon_file_selection_check_load_banner,
@@ -1331,33 +1404,25 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
     }
     else if (priv->view_filter)
     {
-      GtkTreePath *current_path, *temp_path;
+      /* If we arrive there because the current cursor was removed, we are
+         in a very dangerous place. Filter model and sort model have still
+         their caches containing iterators that point to deleted values.
+         Almost any model accessing function will cause an assertion... */
 
-      g_object_get(priv->view_filter, "virtual-root", &temp_path, NULL);
-      g_assert(temp_path); /* Content pane should always have root
-                                   (no device level allowed) */
+      GtkTreePath *path;
 
-      current_path = gtk_tree_model_filter_convert_child_path_to_path(
-        GTK_TREE_MODEL_FILTER(priv->dir_filter), temp_path);
-      gtk_tree_path_free(temp_path);
+      g_object_get(priv->view_filter, "virtual-root", &path, NULL);
+      if (path)
+      {
+        hildon_file_selection_delayed_select_path(HILDON_FILE_SELECTION(data), path);    
+        gtk_tree_path_free(path);
+      }
 
       g_object_unref(priv->view_filter);
       priv->view_filter = NULL;
 
       gtk_tree_view_set_model(GTK_TREE_VIEW(priv->view[0]), NULL);
       gtk_tree_view_set_model(GTK_TREE_VIEW(priv->view[1]), NULL);
-      hildon_file_selection_inspect_view(priv);
-
-      while (gtk_tree_path_up(current_path))
-      {
-        if (path_is_visible(GTK_TREE_VIEW(priv->dir_tree), current_path))
-        {
-          hildon_file_selection_delayed_select_path(HILDON_FILE_SELECTION(data), current_path);
-          break;
-        }
-      }
-
-      gtk_tree_path_free(current_path);
     }
 }
 
@@ -1368,61 +1433,91 @@ static void hildon_file_selection_row_activated(GtkTreeView * view,
 {
     GtkTreeIter iter;
     GtkTreeModel *model;
-    HildonFileSelection *self;
-/*    GtkWidget *content_view;*/
-
-    self = HILDON_FILE_SELECTION(data);
+    GtkTreePath *sort_path;
+    gboolean is_folder, is_available;
 
     model = gtk_tree_view_get_model(view); /* Content pane filter model */
 
     if (gtk_tree_model_get_iter(model, &iter, path)) {
-        gboolean is_folder, is_available;
-
         gtk_tree_model_get(model, &iter,
                            HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER,
                            &is_folder, 
                            HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE,
                            &is_available, -1);
 
-        if (is_folder) {
-          if (is_available) {
-            GtkTreePath *sort_path, *filter_path;
-/*            GtkTreeIter sort_iter, main_iter;*/
-/*
-            gtk_tree_model_filter_convert_iter_to_child_iter
-                (GTK_TREE_MODEL_FILTER(model), &sort_iter, &iter);
-            gtk_tree_model_sort_convert_iter_to_child_iter
-                (GTK_TREE_MODEL_SORT(self->priv->sort_model), &main_iter,
-                 &sort_iter);
-*/
+        if (is_available) {
+          if (is_folder) {
             sort_path = gtk_tree_model_filter_convert_path_to_child_path(
               GTK_TREE_MODEL_FILTER(model), path);
-            filter_path = gtk_tree_model_filter_convert_child_path_to_path(
-              GTK_TREE_MODEL_FILTER(self->priv->dir_filter), sort_path);
 
-            hildon_file_selection_delayed_select_path(self, filter_path);
-            gtk_tree_path_free(sort_path);
-            gtk_tree_path_free(filter_path);
-
-/*      gboolean result;
-        printf("Row \"%s\" activated\n", (const gchar *) path);
-        result =*/
- /*           hildon_file_selection_set_current_folder_iter(self,
-                                                          &main_iter);
-
-            content_view = get_current_view(self->priv);
-            if (GTK_IS_TREE_VIEW(content_view))
-              activate_view(content_view);
-            else
-              activate_view(self->priv->dir_tree);
-*/
-/*          printf("Result = %d\n", result);*/
+            if (sort_path) {
+              hildon_file_selection_delayed_select_path(
+                HILDON_FILE_SELECTION(data), sort_path);
+              gtk_tree_path_free(sort_path);
+            }
           }
-        } else {
-/*          printf("Selected item \"%s\" was not a directory. "
-                   "Sending signal...\n", (const gchar *) path); */
+          else 
             g_signal_emit(data, signal_file_activated, 0);
-        }
+        } 
+    }
+}
+
+static gboolean hildon_file_selection_user_moved(gpointer object)
+{
+    HildonFileSelection *self;
+
+    self = HILDON_FILE_SELECTION(object);
+
+    self->priv->user_touched = TRUE;
+    self->priv->user_scrolled = FALSE;
+
+    return FALSE;
+}
+
+static void hildon_file_selection_check_scroll(GtkWidget *widget, gboolean type, gpointer data)
+{
+  HildonFileSelectionPrivate *priv;
+  GtkWidget *grab_widget;
+
+  priv = HILDON_FILE_SELECTION(widget)->priv;
+  grab_widget = gtk_grab_get_current();
+
+  if (grab_widget && GTK_IS_SCROLLBAR(grab_widget) && 
+      gtk_widget_is_ancestor(grab_widget, GTK_WIDGET(priv->view_selector)))
+  {
+    ULOG_INFO("User scrolled the window, cancelling autoscrolling");
+    priv->user_scrolled = TRUE;
+  }
+}
+
+static void hildon_file_selection_keep_cursor_visible(HildonFileSelection *self)
+{
+    GtkWidget *view;
+
+    view = get_current_view(self->priv);
+    if (GTK_IS_TREE_VIEW(view) && !self->priv->user_scrolled)
+      scroll_to_cursor(GTK_TREE_VIEW(view));
+}
+
+static void hildon_file_selection_modified(gpointer object, GtkTreePath *path)
+{
+    HildonFileSelection *self;
+    GtkTreePath *current_folder;
+    GtkTreeIter iter;
+
+    /* Only detect changes inside current folder */
+    self = HILDON_FILE_SELECTION(object);
+
+    if (hildon_file_selection_get_current_folder_iter(self, &iter))
+    {
+      current_folder = gtk_tree_model_get_path(self->priv->main_model, &iter);
+      if (current_folder)
+      {
+        if (gtk_tree_path_is_ancestor(current_folder, path) &&
+            gtk_tree_path_get_depth(current_folder) == gtk_tree_path_get_depth(path) - 1)
+          hildon_file_selection_keep_cursor_visible(self);
+        gtk_tree_path_free(current_folder);
+      }
     }
 }
 
@@ -1500,7 +1595,7 @@ static void thumbnail_data_func(GtkTreeViewColumn * tree_column,
           HILDON_FILE_SYSTEM_MODEL_COLUMN_FREE_SPACE, &free_space, -1);
 
       /* Of course the catecories and names are not the 
-	 same here than in list view */
+         same here than in list view */
       if (!available)
         buffer2[0] = 0;
       else if (free_space < 1024 * 1024)
@@ -1508,7 +1603,7 @@ static void thumbnail_data_func(GtkTreeViewColumn * tree_column,
             (gint) free_space / 1024);
       else
         g_snprintf(buffer2, sizeof(buffer2), _("sfil_li_mmc_free_mb"), 
-            (gint) free_space / (1024 * 1024));
+            (gint) (free_space / (1024 * 1024)));
 
       line2 = buffer2;
     }
@@ -1520,15 +1615,14 @@ static void thumbnail_data_func(GtkTreeViewColumn * tree_column,
                    dngettext(PACKAGE,
                              "sfil_li_folder_contents_item",
                              "sfil_li_folder_contents_items", n),  n );
-	line2 = buffer2;
+        line2 = buffer2;
     }
     else
     {
         line2 = get_date_string(file_time,
-				_("sfil_li_modified_today"),
-				_("sfil_li_modified_thisyear"),
-				_("sfil_li_modified_earlier"));
-	
+                                _("sfil_li_modified_today"),
+                                _("sfil_li_modified_thisyear"),
+                                _("sfil_li_modified_earlier"));
     }
 
     if(thumb_title && thumb_title[0] )
@@ -1549,9 +1643,9 @@ static void thumbnail_data_func(GtkTreeViewColumn * tree_column,
     if (sensitive)  
     {
       found1 = gtk_style_lookup_logical_color(GTK_WIDGET(data)->style, 
-					      "DefaultTextColor", &color1);
+                                              "DefaultTextColor", &color1);
       found2 = gtk_style_lookup_logical_color(GTK_WIDGET(data)->style, 
-					      "SecondaryTextColor", &color2);
+                                              "SecondaryTextColor", &color2);
 
       attrs = pango_attr_list_new();
       bytes1 = strlen(title);
@@ -1577,14 +1671,13 @@ static void thumbnail_data_func(GtkTreeViewColumn * tree_column,
     /* No localization needed for this one */
     g_snprintf(buffer, sizeof(buffer), "%s\n%s", title, line2); 
     g_object_set(cell, "text", buffer, "attributes", attrs, 
-		 "sensitive", sensitive, NULL);
+      "sensitive", sensitive, NULL);
 
     if (attrs)
       pango_attr_list_unref(attrs);
 
     g_free(title);
 }
-	
 
 static void list_date_data_func(GtkTreeViewColumn * tree_column,
                                 GtkCellRenderer * cell,
@@ -1815,7 +1908,8 @@ content_pane_focus(GObject *object, GParamSpec *pspec, gpointer data)
     if (!priv->content_pane_last_used)
     {
       priv->content_pane_last_used = TRUE;
-      scroll_to_cursor(GTK_TREE_VIEW(object));
+      if (!priv->user_scrolled)
+        scroll_to_cursor(GTK_TREE_VIEW(object));
       g_object_notify(data, "active-pane");
     }
   }
@@ -1834,14 +1928,16 @@ static void hildon_file_selection_create_thumbnail_view(HildonFileSelection
 
     /* Fixed height mode has some kind of problems when appending new content to
         view. Seems that this is patch bug or Gtk 2.4 bug. Anyway, this works fine with
-        Gtk 2.6. Temporarily commented out fixed height mode. */
-    g_object_set(tree, "force_list_kludge", TRUE, /*"fixed-height-mode", TRUE,*/NULL); 
+        Gtk 2.6. Re-enabled this because we are now using 2.6 only. */
+    gtk_tree_view_set_fixed_height_mode(tree, TRUE);
+    g_object_set(tree, "force_list_kludge", TRUE, NULL); 
 
     col = gtk_tree_view_column_new();
-/*    gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);*/
-/*    gtk_tree_view_column_set_fixed_width(col, 80 + 16);*/  /* Thumbnail width and borders, ugly. Doesn't match the theme, wonder why???? */
     renderer = gtk_cell_renderer_pixbuf_new();
-    gtk_cell_renderer_set_fixed_size(renderer, -1, THUMBNAIL_CELL_HEIGHT);
+    gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
+    gtk_tree_view_column_set_fixed_width(col, THUMBNAIL_CELL_WIDTH);
+    gtk_cell_renderer_set_fixed_size(renderer, 
+        THUMBNAIL_CELL_WIDTH, THUMBNAIL_CELL_HEIGHT);
 
     gtk_tree_view_append_column(tree, col);
     gtk_tree_view_column_pack_start(col, renderer, FALSE);
@@ -1853,9 +1949,13 @@ static void hildon_file_selection_create_thumbnail_view(HildonFileSelection
         HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE);
 
     col = gtk_tree_view_column_new();
-/*    gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);*/
+    gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
     gtk_tree_view_column_set_expand(col, TRUE);
     renderer = gtk_cell_renderer_text_new();
+    g_object_set(renderer, "ypad", HILDON_MARGIN_DEFAULT, 
+                           "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+    gtk_cell_renderer_text_set_fixed_height_from_font(
+        GTK_CELL_RENDERER_TEXT(renderer), 2);
     gtk_tree_view_append_column(tree, col);
     gtk_tree_view_column_pack_start(col, renderer, TRUE);
     gtk_tree_view_column_set_cell_data_func(col, renderer,
@@ -1871,7 +1971,7 @@ static void hildon_file_selection_create_thumbnail_view(HildonFileSelection
                      G_CALLBACK(hildon_file_selection_on_content_pane_key),
                      self, 0);
     gtk_widget_tap_and_hold_setup(GTK_WIDGET(tree), NULL, NULL,
-                                  GTK_TAP_AND_HOLD_NONE);
+                                  GTK_TAP_AND_HOLD_NONE | GTK_TAP_AND_HOLD_NO_INTERNALS);
     g_signal_connect_object(tree, "tap-and-hold",
                      G_CALLBACK
                      (hildon_file_selection_content_pane_context), self, 0);
@@ -1894,17 +1994,13 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
        column. This is not a good thing in our case. We would _absolutely_
        need GTK_TREE_VIEW_COLUMN_GROW_ONLY to be supported as well in
        fixed-height-mode */
-/*  g_object_set(tree, "fixed-height-mode", TRUE, NULL);*/
+    /*  g_object_set(tree, "fixed-height-mode", TRUE, NULL);*/
 
     col = gtk_tree_view_column_new();
-/*      gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_fixed_width(col, 26);*/
+   /*      gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
+        gtk_tree_view_column_set_fixed_width(col, 26);*/
     renderer = gtk_cell_renderer_pixbuf_new();
     gtk_cell_renderer_set_fixed_size(renderer, -1, LIST_CELL_HEIGHT);
-
-/*  gtk_tree_view_column_set_spacing(col, 0);*/
-/*  g_object_set(renderer, "background", "yellow", "background-set",
-                 TRUE, NULL);*/
     gtk_tree_view_append_column(tree, col);
     gtk_tree_view_column_pack_start(col, renderer, TRUE);
     gtk_tree_view_column_add_attribute
@@ -1915,12 +2011,15 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
         HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE);
 
     col = gtk_tree_view_column_new();
-/*      gtk_tree_view_column_set_sizing(col, GTK_TREE_VEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_fixed_width(col, 128);*/
-/*  gtk_tree_view_column_set_spacing(col, 0);*/
+    /* Setting sizing to fixed with no "fixed-width" set makes column 
+        to truncate nicely, but still take all available space. */
+    gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
     gtk_tree_view_column_set_expand(col, TRUE);
     gtk_tree_view_append_column(tree, col);
     renderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_text_set_fixed_height_from_font(
+        GTK_CELL_RENDERER_TEXT(renderer), 1);
+    g_object_set(renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 /*  g_object_set(renderer, "background", "green", "background-set",
                  TRUE, NULL);*/
     gtk_tree_view_column_pack_start(col, renderer, TRUE);
@@ -1938,6 +2037,8 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
     gtk_tree_view_column_set_fixed_width(col, 128);*/
   /*  gtk_tree_view_column_set_spacing(col, 0);*/
       renderer = gtk_cell_renderer_text_new();
+      gtk_cell_renderer_text_set_fixed_height_from_font(
+          GTK_CELL_RENDERER_TEXT(renderer), 1);
       g_object_set(renderer, /*"background", "red", "background-set",
                    TRUE,*/ "xalign", 1.0f, NULL);
       gtk_tree_view_append_column(tree, col);
@@ -1954,6 +2055,8 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
   gtk_tree_view_column_set_fixed_width(col, 128);*/
 /*  gtk_tree_view_column_set_spacing(col, 0);*/
       renderer = gtk_cell_renderer_text_new();
+      gtk_cell_renderer_text_set_fixed_height_from_font(
+          GTK_CELL_RENDERER_TEXT(renderer), 1);
       g_object_set(renderer, "xalign", 1.0f,
                  /*"background", "blue", "background-set", TRUE,*/ NULL);
       gtk_tree_view_append_column(tree, col);
@@ -1969,7 +2072,7 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
          G_CALLBACK (hildon_file_selection_content_pane_selection_changed),
          self, 0);
     gtk_widget_tap_and_hold_setup(GTK_WIDGET(tree), NULL, NULL,
-                                  GTK_TAP_AND_HOLD_NONE);
+                                  GTK_TAP_AND_HOLD_NONE | GTK_TAP_AND_HOLD_NO_INTERNALS);
     g_signal_connect_object(tree, "tap-and-hold",
                      G_CALLBACK
                      (hildon_file_selection_content_pane_context), self, 0);
@@ -1987,6 +2090,9 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
     GtkCellRenderer *renderer;
     GtkTreeSelection *selection;
 
+    /* We really cannot use fixed height mode for hierarchial list, because
+        we want that the width of the list can grow dynamically when
+        folders are expanded (fixed height forces fixed width */
     self->priv->dir_filter =
         gtk_tree_model_filter_new(self->priv->sort_model, NULL);
     gtk_tree_model_filter_set_visible_column
@@ -1996,10 +2102,9 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
 
     self->priv->dir_tree =
         gtk_tree_view_new_with_model(self->priv->dir_filter);
-/*  g_object_set(self->priv->dir_tree, "fixed-height-mode", TRUE, NULL);*/
 
     col = gtk_tree_view_column_new();
-/*      gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);*/
+    gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     renderer = gtk_cell_renderer_pixbuf_new();
     gtk_cell_renderer_set_fixed_size(renderer, -1, TREE_CELL_HEIGHT);
     gtk_tree_view_append_column(GTK_TREE_VIEW(self->priv->dir_tree), col);
@@ -2021,6 +2126,8 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
          HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON);
 
     renderer = gtk_cell_renderer_text_new();
+    gtk_cell_renderer_text_set_fixed_height_from_font(
+        GTK_CELL_RENDERER_TEXT(renderer), 1);
     gtk_tree_view_column_pack_start(col, renderer, TRUE);
     gtk_tree_view_column_add_attribute
         (col, renderer, "text",
@@ -2037,7 +2144,7 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
                      G_CALLBACK(hildon_file_selection_selection_changed),
                      self, 0);
     gtk_widget_tap_and_hold_setup(GTK_WIDGET(self->priv->dir_tree), NULL,
-                                  NULL, GTK_TAP_AND_HOLD_NONE);
+                                  NULL, GTK_TAP_AND_HOLD_NONE | GTK_TAP_AND_HOLD_NO_INTERNALS);
     g_signal_connect_object(self->priv->dir_tree, "tap-and-hold",
                      G_CALLBACK
                      (hildon_file_selection_navigation_pane_context),
@@ -2049,18 +2156,191 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
                      G_CALLBACK(navigation_pane_focus), self, 0);
 }
 
+static gboolean path_is_available_folder(GtkTreeView *view, GtkTreeIter *iter, GtkTreePath *path)
+{
+  GtkTreeModel *model;
+  GtkTreeIter temp;
+  gboolean is_folder, is_available;
+
+  g_assert(path && gtk_tree_path_get_depth(path) > 0);
+
+  if (!iter) 
+    iter = &temp;
+
+  model = gtk_tree_view_get_model(view);
+  if (!gtk_tree_model_get_iter(model, iter, path))
+    return FALSE;
+
+  gtk_tree_model_get(model, iter, 
+    HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER, &is_folder, 
+    HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE, &is_available, 
+    -1);
+
+  return is_folder && is_available;   
+}
+
+/* Helper functions for autoscrolling and autoexpanding while dragging */
+
+#define DRAG_TIMER "hildon-file-selection-drag-timer"
+#define SCROLL_DIRECTION "hildon-file-selection-auto-scroll-direction"
+#define EXPAND_TIMER "hildon-file-selection-expand-timer"
+#define EXPAND_TIMEOUT 6
+
+/* Used for auto scrolling. Determine which path is shown just below 
+   the given one */
+static GtkTreePath *get_path_below(GtkTreeView *view, GtkTreePath *path)
+{
+  GtkTreePath *copy = gtk_tree_path_copy(path);
+
+  g_assert(path && gtk_tree_path_get_depth(path) > 0);
+
+  /* If row is expanded we use the first child */
+  if (gtk_tree_view_row_expanded(view, path))
+  {
+    gtk_tree_path_down(copy);
+    return copy;
+  }
+
+  /* Let's try the next sibbling, possibly climbing upwards */
+  do {
+    GtkTreeIter iter;
+
+    gtk_tree_path_next(copy);
+
+    if (gtk_tree_model_get_iter(gtk_tree_view_get_model(view), &iter, copy))
+      return copy;
+    gtk_tree_path_up(copy);
+  } while (gtk_tree_path_get_depth(copy) > 0); 
+
+  gtk_tree_path_free(copy);
+
+  return NULL;
+}
+
+static void ensure_expand_timeout(GtkTreeView *view, GtkTreePath *path)
+{
+  GtkTreePath *old_target;
+
+  gtk_tree_view_get_drag_dest_row(view, &old_target, NULL);
+
+  if (old_target == NULL || gtk_tree_path_compare(old_target, path) != 0)
+  {
+    g_object_set_data(G_OBJECT(view), EXPAND_TIMER, GINT_TO_POINTER(EXPAND_TIMEOUT));
+    gtk_tree_view_set_drag_dest_row(view, path,
+      GTK_TREE_VIEW_DROP_INTO_OR_AFTER);
+  }
+  
+  if (old_target)
+    gtk_tree_path_free(old_target);
+}
+
+static gboolean on_drag_timer(gpointer data)
+{
+  GObject *obj;
+  GtkTreeView *view;
+  GtkTreePath *path;
+  gint direction, expand_timer;
+
+  g_assert(GTK_IS_TREE_VIEW(data));
+
+  obj = G_OBJECT(data);
+  view = GTK_TREE_VIEW(data);
+
+  direction = GPOINTER_TO_INT(g_object_get_data(obj, SCROLL_DIRECTION));
+  expand_timer = GPOINTER_TO_INT(g_object_get_data(obj, EXPAND_TIMER));
+  gtk_tree_view_get_drag_dest_row(view, &path, NULL);
+
+  ULOG_DEBUG("Widget = %p, DIR = %d, TIMER = %d", data, direction, expand_timer);
+
+  /* Let's check if it's time to expand selected row */
+  if (expand_timer >= 1)
+  {
+    expand_timer--;
+    g_object_set_data(obj, EXPAND_TIMER, GINT_TO_POINTER(expand_timer));
+
+    if (expand_timer == 0 && path)
+      gtk_tree_view_expand_row(view, path, FALSE);
+  }
+
+  if (path)
+  {
+    if (direction < 0)     /* We'll have to scroll upwards */
+    {
+      if (gtk_tree_path_prev(path) || ( gtk_tree_path_up(path), gtk_tree_path_get_depth(path) > 0 ))
+      {
+        gtk_tree_view_scroll_to_cell(view, path, NULL, FALSE, 0.0f, 0.0f);
+        if (path_is_available_folder(view, NULL, path))
+          ensure_expand_timeout(view, path);
+      }  
+    }
+    else if (direction > 0)     /* We have to scroll downwards */
+    {
+      GtkTreePath *new_path = get_path_below(view, path);
+
+      if (new_path)      
+      {
+        gtk_tree_view_scroll_to_cell(view, new_path, NULL, FALSE, 0.0f, 0.0f);
+        if (path_is_available_folder(view, NULL, new_path))
+          ensure_expand_timeout(view, new_path);
+
+        gtk_tree_path_free(new_path);
+      }
+    }
+
+    gtk_tree_path_free(path);
+  }
+
+  return TRUE;
+}
+
+static guint get_drag_timer(GtkWidget *widget)
+{
+  return GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(widget), DRAG_TIMER));
+}
+
+static void ensure_drag_timer(GtkWidget *widget)
+{
+  guint timer_id = get_drag_timer(widget);
+
+  if (timer_id == 0)
+  {
+    timer_id = g_timeout_add(150, on_drag_timer, widget);
+    g_object_set_data(G_OBJECT(widget), 
+      DRAG_TIMER, GUINT_TO_POINTER(timer_id));
+  }
+}
+
+static void clean_drag_timer(GtkWidget *widget)
+{
+  guint timer_id = get_drag_timer(widget);
+  
+  if (timer_id != 0) 
+    g_source_remove(timer_id);
+
+  g_object_set_data(G_OBJECT(widget), DRAG_TIMER, NULL);
+  g_object_set_data(G_OBJECT(widget), SCROLL_DIRECTION, NULL);
+  g_object_set_data(G_OBJECT(widget), EXPAND_TIMER, NULL);
+}
+
+static void set_autoscroll_direction(GtkWidget *widget, gint direction)
+{
+  g_object_set_data(G_OBJECT(widget), 
+    SCROLL_DIRECTION, GINT_TO_POINTER(direction));
+  ensure_drag_timer(widget);
+}
+
 static void on_drag_data_received(GtkWidget * widget,
                                   GdkDragContext * context, int x, int y,
                                   GtkSelectionData * seldata, guint info,
                                   guint time, gpointer userdata)
 {
     GtkTreeView *view;
-    GtkTreeModel *dest_model;
     GtkTreePath *path;
+    GtkWidget *nav_pane;
     GtkTreeIter dest_iter;
     GtkFilePath *destination;
-    HildonFileSelection *self;
-    gboolean is_folder, is_available;
+    gboolean success = FALSE;
+    HildonFileSelectionPrivate *priv;
 
     g_assert(GTK_IS_TREE_VIEW(widget));
     g_assert(HILDON_IS_FILE_SELECTION(userdata));
@@ -2068,79 +2348,58 @@ static void on_drag_data_received(GtkWidget * widget,
     /* This is needed. Otherwise Gtk will give long description why we
        need this */
     g_signal_stop_emission_by_name(widget, "drag-data-received");
-
-    self = HILDON_FILE_SELECTION(userdata);
     view = GTK_TREE_VIEW(widget);
-    dest_model = gtk_tree_view_get_model(view);
+    priv = HILDON_FILE_SELECTION(userdata)->priv;
+    nav_pane = priv->dir_tree;
 
-    gtk_tree_view_get_path_at_pos(view, x, y, &path, NULL, NULL, NULL);
+    /* Dragging from navigation pane to content pane do not work well,
+       because content pane always displayes contents of selected folder. */
+    if (widget == nav_pane || 
+        gtk_drag_get_source_widget(context) != nav_pane)
+    {
+      if (gtk_tree_view_get_path_at_pos(view, x, y, &path, NULL, NULL, NULL))
+      {
+        if (path_is_available_folder(view, &dest_iter, path))
+        {
+          /* We now have a working iterator to drop destination */
 
-    if (!path || !gtk_tree_model_get_iter(dest_model, &dest_iter, path)) {
-        /* The only allowed case to not have working iterator is when item 
-           is dropped to empty space of content pane. In this case
-           location will be current folder. So, it's equal to drag to the
-           current folder of navigation pane and empty space of content
-           pane */
+          gchar **uris = gtk_selection_data_get_uris(seldata);
+          
+          if (uris)
+          {
+            gint i;
+            GtkFileSystem *fs;
+            GSList *sources = NULL;
 
-        GtkTreeSelection *selection;
+            fs = _hildon_file_system_model_get_file_system(
+                    HILDON_FILE_SYSTEM_MODEL(priv->main_model));
+            gtk_tree_model_get(gtk_tree_view_get_model(view), &dest_iter,
+              HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH, &destination, -1);
 
-        view = GTK_TREE_VIEW(self->priv->dir_tree);
-        selection = gtk_tree_view_get_selection(view);
+            for (i = 0; uris[i]; i++)
+            {
+              GtkFilePath *fpath = gtk_file_system_uri_to_path(fs, uris[i]);
+              if (fpath)
+                sources = g_slist_append(sources, fpath);
+            }
+  
+            g_signal_emit(userdata, signal_items_dropped, 0, destination, sources);
+            
+            gtk_file_paths_free(sources);
+            gtk_file_path_free(destination);
+            g_strfreev(uris);
 
-        if ((widget != self->priv->view[0]
-             && widget != self->priv->view[1])
-            || !gtk_tree_selection_get_selected(selection, &dest_model,
-                                                &dest_iter)) {
-            ULOG_INFO_L("Rejected");
-            /* No, we didn't get iterator */
-            gtk_drag_finish(context, FALSE, FALSE, time);
-            return;
-        }
-    }
-
-    gtk_tree_path_free(path);
-
-    /* We now have a working iterator to drop destination */
-    gtk_tree_model_get(dest_model, &dest_iter,
-                       HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER,
-                       &is_folder, 
-                       HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE,
-                       &is_available, -1);
-
-    if (!is_folder || !is_available) {
-        ULOG_INFO_L("Destination is not an available folder");
-        gtk_drag_finish(context, FALSE, FALSE, time);
-        return;
-    }
-
-    gtk_tree_model_get(dest_model, &dest_iter,
-                       HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH,
-                       &destination, -1);
-
-    if (seldata->length >= 0 && seldata->format == 8) {
-        char *buffer, *linebreak;
-        GSList *sources;
-
-        buffer = (char *) seldata->data;
-        sources = NULL;
-
-        while ((linebreak = strchr(buffer, '\n')) != NULL) {
-            GtkFilePath *file_path;
-            gchar *item = g_strndup(buffer, linebreak - buffer);
-
-            file_path = gtk_file_path_new_steal(item);
-            sources = g_slist_append(sources, file_path);
-            buffer = linebreak + 1;
+            success = TRUE;
+          }
+          else
+            ULOG_INFO("Dropped data did not contain uri atom signature");
         }
 
-        g_signal_emit(userdata, signal_items_dropped, 0, destination,
-                      sources);
-        gtk_file_paths_free(sources);
-        gtk_drag_finish(context, TRUE, FALSE, time);
-    } else
-        gtk_drag_finish(context, FALSE, FALSE, time);
+        gtk_tree_path_free(path);
+      }
+    }
 
-    gtk_file_path_free(destination);
+    gtk_drag_finish(context, success, FALSE, time);
 }
 
 #define CLIMB_RATE 4
@@ -2181,8 +2440,8 @@ static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
             gint right, bottom;
 
             gtk_tree_model_get(model, &iter, column, &buf, -1);
-	    if( !buf )
-	      return;
+            if( !buf )
+              return;
             right = gdk_pixbuf_get_width(buf) + dest;
             bottom = gdk_pixbuf_get_height(buf) + dest;
             dest += CLIMB_RATE;
@@ -2208,12 +2467,12 @@ static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
             gtk_tree_model_get(model, &iter, column, &buf, -1);
             w = gdk_pixbuf_get_width(buf);
             h = gdk_pixbuf_get_height(buf);
-	    /*   g_assert(gdk_pixbuf_get_has_alpha(buf));*/
-	    gdk_pixbuf_composite(buf, pixbuf, dest, dest, w, h, dest, dest,
+            /*   g_assert(gdk_pixbuf_get_has_alpha(buf));*/
+            gdk_pixbuf_composite(buf, pixbuf, dest, dest, w, h, dest, dest,
                                  1, 1, GDK_INTERP_NEAREST, 255);
             dest += CLIMB_RATE;
 
-	    g_object_unref(buf);
+            g_object_unref(buf);
         }
 
 
@@ -2228,18 +2487,10 @@ static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
 static void drag_data_get_helper(GtkTreeModel * model, GtkTreePath * path,
                                  GtkTreeIter * iter, gpointer data)
 {
-    GtkFilePath *file_path;
-    GString **buffer = data;
-
-    gtk_tree_model_get(model, iter,
-                       HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH,
-                       &file_path, -1);
-
-    /* Should we send URI:s instead of raw file paths ?? */
-    g_string_append(*buffer, (const char *) file_path);
-    g_string_append_c(*buffer, '\n');
-
-    gtk_file_path_free(file_path);
+  gchar *uri;
+  gtk_tree_model_get(model, iter,
+    HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri, -1);
+  g_ptr_array_add(data, uri);
 }
 
 static void drag_data_get(GtkWidget * widget,
@@ -2247,127 +2498,119 @@ static void drag_data_get(GtkWidget * widget,
                           GtkSelectionData * selection_data, guint info,
                           guint time, gpointer data)
 {
-    GString *buffer = g_string_new("");
+  gchar **uris;
+  GPtrArray *buffer = g_ptr_array_new();
 
-    gtk_tree_selection_selected_foreach(gtk_tree_view_get_selection
-                                        (GTK_TREE_VIEW(widget)),
-                                        drag_data_get_helper, &buffer);
-    gtk_selection_data_set(selection_data, selection_data->target, 8,
-                           (guchar *) buffer->str, buffer->len);
+  gtk_tree_selection_selected_foreach(gtk_tree_view_get_selection
+                                      (GTK_TREE_VIEW(widget)),
+                                      drag_data_get_helper, buffer);
+  g_ptr_array_add(buffer, NULL);
+  uris = (char **) g_ptr_array_free(buffer, FALSE);
 
-    g_string_free(buffer, TRUE);
-}
+  /* We use only uri-list internally, but somebody else
+     can use text format as well. */
+  if (!gtk_selection_data_set_uris(selection_data, uris))
+  {
+    gchar *plain = g_strjoinv("\n", uris);
+    gtk_selection_data_set_text(selection_data, plain, -1);
+    g_free(plain);
+  }
 
-static gboolean drag_motion_expand_timeout(gpointer data)
-{
-    GtkTreeView *view;
-    GtkTreePath *path;
-
-    g_return_val_if_fail(GTK_IS_TREE_VIEW(data), FALSE);
-
-    view = GTK_TREE_VIEW(data);
-    gtk_tree_view_get_drag_dest_row(view, &path, NULL);
-
-    if (path) {
-        gtk_tree_view_expand_row(view, path, FALSE);
-        gtk_tree_path_free(path);
-    }
-
-    return FALSE;
-}
-
-static gboolean path_is_available_row(GtkTreeView *view, GtkTreePath *path)
-{
-  GtkTreeModel *model;
-  GtkTreeIter iter;
-  gboolean available;
-
-  model = gtk_tree_view_get_model(view);
-
-  if (!gtk_tree_model_get_iter(model, &iter, path))
-    return FALSE;
-
-  gtk_tree_model_get(model, &iter, 
-    HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE, &available, -1);
-
-  return available;   
+  g_strfreev(uris);
 }
 
 static gboolean drag_motion(GtkWidget * widget,
                             GdkDragContext * drag_context, gint x, gint y,
                             guint time, gpointer userdata)
 {
+    HildonFileSelectionPrivate *priv;
     GtkTreeView *view;
     GtkTreePath *path;
-    HildonFileSelection *self;
-    gboolean row_at_pos, result = FALSE;
+    gboolean result = FALSE;
 
     g_assert(GTK_IS_TREE_VIEW(widget));
     g_assert(HILDON_IS_FILE_SELECTION(userdata));
 
-    self = HILDON_FILE_SELECTION(userdata);
     view = GTK_TREE_VIEW(widget);
+    priv = HILDON_FILE_SELECTION(userdata)->priv;
 
-    row_at_pos = gtk_tree_view_get_dest_row_at_pos(view, x, y, &path, NULL);
-
-    /* All of the content pane area is valid drop target, unless we drop over an
-       insensitive item */
-    if (widget == self->priv->view[0] || widget == self->priv->view[1])
+    /* Dragging from navigation pane to content pane do not work well,
+       because content pane always displayes contents of selected folder. */
+    if (widget == priv->dir_tree || 
+        gtk_drag_get_source_widget(drag_context) != priv->dir_tree)
     {
-      result = !row_at_pos || path_is_available_row(view, path);
-    }
-    else {
-      /* We have to be on the navigation pane */
-      g_assert(widget == self->priv->dir_tree);
+      /* We accept only copy type of actions of uri types */
+      if ((drag_context->suggested_action == GDK_ACTION_COPY || 
+           drag_context->actions & GDK_ACTION_COPY) && 
+          gtk_drag_dest_find_target(widget, drag_context, NULL) &&
+          gtk_tree_view_get_dest_row_at_pos(view, x, y, &path, NULL))
+      {
+        GdkRectangle rect;
+        gint tree_x, tree_y;
 
-      if (row_at_pos && path_is_available_row(view, path)) {
-        /* I don't know if this is the best way to reset the timeout
-           counter */
-        g_source_remove_by_user_data(widget);
-        g_timeout_add(1500, drag_motion_expand_timeout, widget);
-        result = TRUE;
+        gtk_tree_view_get_visible_rect(view, &rect);
+        gtk_tree_view_widget_to_tree_coords(view, x, y, &tree_x, &tree_y);
+
+        if (ABS(rect.y - tree_y) < 10)
+          set_autoscroll_direction(widget, -1);
+        else if (ABS(rect.y + rect.height - tree_y) < 10)
+          set_autoscroll_direction(widget, 1);
+        else
+          set_autoscroll_direction(widget, 0);
+
+        result = path_is_available_folder(view, NULL, path);
+
+        if (result)
+          ensure_expand_timeout(view, path);
+
+        gtk_tree_path_free(path);
       }
     }
 
-    if (row_at_pos && result)
-      gtk_tree_view_set_drag_dest_row(view, path,
-        GTK_TREE_VIEW_DROP_INTO_OR_AFTER);
-
-    if (path)
-      gtk_tree_path_free(path);
+    gdk_drag_status(drag_context, result ? GDK_ACTION_COPY : 0, time);
 
     return result;
 }
 
-static void drag_end(GtkWidget * widget, GdkDragContext * drag_context,
-                     gpointer user_data)
+static gboolean drag_drop(GtkWidget *widget, GdkDragContext *context,
+  gint x, gint y, guint time, gpointer user_data)
 {
+  GdkAtom target;
+
+  clean_drag_timer(widget);  
+  target = gtk_drag_dest_find_target (widget, context, NULL);
+
+  if (target == GDK_NONE)
+  {
+    gtk_drag_finish (context, FALSE, FALSE, time);
+    return TRUE;
+  }
+  else
+    gtk_drag_get_data (widget, context, target, time);
+  
+  return TRUE;
 }
 
 static void hildon_file_selection_setup_dnd_view(HildonFileSelection *
                                                  self, GtkWidget * view)
 {
-    static GtkTargetEntry target_entries[] = {
-        {"STRING", 0, 0},
-        {"text/plain", 0, 0},
-        {"text/uri-list", 0, 1}
-    };
-
-    gtk_drag_dest_set(view, GTK_DEST_DEFAULT_ALL, target_entries,
-                      G_N_ELEMENTS(target_entries),
-                      GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK);
+    gtk_drag_dest_set(view, GTK_DEST_DEFAULT_HIGHLIGHT, NULL, 0, GDK_ACTION_COPY);
+    gtk_drag_dest_add_uri_targets(view);
 
     g_signal_connect_object(view, "drag-data-received",
                      G_CALLBACK(on_drag_data_received), self, 0);
 
-    gtk_drag_source_set(view, GDK_BUTTON1_MASK, target_entries,
-                        G_N_ELEMENTS(target_entries), GDK_ACTION_COPY);
+    gtk_drag_source_set(view, GDK_BUTTON1_MASK, NULL, 0, GDK_ACTION_COPY);
+    gtk_drag_source_add_uri_targets(view);
+    gtk_drag_source_add_text_targets(view);
 
     g_signal_connect_object(view, "drag-begin", G_CALLBACK(drag_begin), self,0 );
     g_signal_connect_object(view, "drag-data-get", G_CALLBACK(drag_data_get),
                      self, 0);
-    g_signal_connect_object(view, "drag-end", G_CALLBACK(drag_end), self, 0);
     g_signal_connect_object(view, "drag-motion", G_CALLBACK(drag_motion), self, 0);
+    g_signal_connect_object(view, "drag-drop", G_CALLBACK(drag_drop), self ,0);
+    g_signal_connect(view, "drag-end", G_CALLBACK(clean_drag_timer), NULL);
+    g_signal_connect(view, "drag-leave", G_CALLBACK(clean_drag_timer), NULL);
     /* We don't connect "drag-data-delete", because file system
        notifications tell us about what to update */
     /* g_signal_connect(view, "drag-data-delete",
@@ -2383,7 +2626,6 @@ static void hildon_file_selection_init(HildonFileSelection * self)
 
     GTK_WIDGET_SET_FLAGS(GTK_WIDGET(self), GTK_NO_WINDOW);
 
-    self->priv->autosel_timer = g_timer_new();
     self->priv->scroll_dir = gtk_scrolled_window_new(NULL, NULL);
     self->priv->scroll_list = gtk_scrolled_window_new(NULL, NULL);
     self->priv->scroll_thumb = gtk_scrolled_window_new(NULL, NULL);
@@ -2428,6 +2670,9 @@ static void hildon_file_selection_init(HildonFileSelection * self)
     self->priv->view[2] = gtk_label_new(_("hfil_li_no_files_folders_to_show"));
     gtk_misc_set_alignment(GTK_MISC(self->priv->view[2]), 0.5f, 0.0f);
     gtk_notebook_append_page(self->priv->view_selector, self->priv->view[2], NULL);
+
+    g_signal_connect(self, "grab-notify", 
+      G_CALLBACK(hildon_file_selection_check_scroll), NULL);
 }
 
 static GObject *hildon_file_selection_constructor(GType type,
@@ -2441,8 +2686,6 @@ static GObject *hildon_file_selection_constructor(GType type,
     HildonFileSelectionPrivate *priv;
     GObject *dir_scroll;
     GtkTreeSortable *sortable;
-
-/*  GtkTreeIter iter;*/
 
     obj =
         G_OBJECT_CLASS(hildon_file_selection_parent_class)->
@@ -2496,6 +2739,18 @@ static GObject *hildon_file_selection_constructor(GType type,
                      G_CALLBACK(gtk_true), NULL);
     g_signal_connect(priv->view[1], "test-expand-row",
                      G_CALLBACK(gtk_true), NULL);
+    g_signal_connect_swapped(priv->view[0], "button-press-event",
+                             G_CALLBACK(hildon_file_selection_user_moved),
+                             self);
+    g_signal_connect_swapped(priv->view[1], "button-press-event",
+                             G_CALLBACK(hildon_file_selection_user_moved),
+                             self);
+    g_signal_connect_swapped(priv->view[0], "move-cursor",
+                             G_CALLBACK(hildon_file_selection_user_moved),
+                             self);
+    g_signal_connect_swapped(priv->view[1], "move-cursor",
+                             G_CALLBACK(hildon_file_selection_user_moved),
+                             self);
     g_signal_connect_after(priv->view[0], "row-activated",
                            G_CALLBACK(hildon_file_selection_row_activated),
                            self);
@@ -2511,6 +2766,12 @@ static GObject *hildon_file_selection_constructor(GType type,
     g_signal_connect_after(priv->dir_tree, "row-insensitive",
                            G_CALLBACK(hildon_file_selection_row_insensitive),
                            self);
+    g_signal_connect_object(priv->main_model, "row-inserted",
+                            G_CALLBACK(hildon_file_selection_modified), self,
+                            G_CONNECT_AFTER | G_CONNECT_SWAPPED);
+    g_signal_connect_object(priv->main_model, "row-deleted",
+                            G_CALLBACK(hildon_file_selection_modified), self,
+                            G_CONNECT_AFTER | G_CONNECT_SWAPPED);
 
     /* Use sort model when possible, because we own it. In last case we
        have to use main model. This handler has to be removed manually,
@@ -2538,7 +2799,7 @@ static GObject *hildon_file_selection_constructor(GType type,
     if (!GTK_WIDGET_VISIBLE(dir_scroll))
         gtk_widget_show(priv->separator);
 
-    /* Ouch, GtkTreeModelSort implements just GtkDragSource, not
+    /* GtkTreeModelSort implements just GtkDragSource, not
        GtkDragDest. We have to implement from scratch. */
     if (priv->drag_enabled) {
         hildon_file_selection_setup_dnd_view(self, priv->view[0]);
@@ -2730,23 +2991,18 @@ gboolean hildon_file_selection_set_current_folder(HildonFileSelection *
     ULOG_INFO_F("Setting folder to %s", (const char *) folder);
 
     file_system_model = HILDON_FILE_SYSTEM_MODEL(self->priv->main_model);
-    (void) hildon_file_system_model_load_path(file_system_model, folder,
-                                              &main_iter);
 
-    /* Iter is actually always pointing to last "good" position in this
-       case, regardless of the return value */
-
-    if (main_iter.user_data) {
-        /* The following can cause long delays if folder contains lot's of stuff. This is required by
-            spesification, however. Let's de that only modes that require it */
-        if (GTK_WIDGET_DRAWABLE(self))
-          _hildon_file_system_model_load_children(file_system_model, &main_iter);
-
+    if (hildon_file_system_model_load_path(file_system_model, folder, &main_iter))
+    {
+        /* Save dialogs are currently smart enough to rerun autonaming
+           when folder is loaded. No need to block here until children
+           are loaded. */
         hildon_file_selection_set_current_folder_iter(self, &main_iter);
         activate_view(self->priv->dir_tree);
         ULOG_INFO_F("Directory changed successfully");
         return TRUE;
     }
+
     ULOG_INFO_F("Directory change failed");
     return FALSE;
 }
@@ -2971,17 +3227,13 @@ GSList *hildon_file_selection_get_selected_paths(HildonFileSelection *
 static void
 hildon_file_selection_select_unselect_main_iter(HildonFileSelectionPrivate
                                                 * priv, GtkTreeIter * iter,
-                                                void
-                                                (*select_unselect_func)
-                                                (GtkTreeSelection *,
-                                                 GtkTreeIter *))
+                                                gboolean select)
 {
     GtkWidget *view = get_current_view(priv);
 
-    g_assert(select_unselect_func != NULL);
-
     if (GTK_IS_TREE_VIEW(view)) {
         GtkTreeIter sort_iter, filter_iter;
+        GtkTreeSelection *selection;
         GtkTreeView *treeview = GTK_TREE_VIEW(view);
 
         gtk_tree_model_sort_convert_child_iter_to_iter(GTK_TREE_MODEL_SORT
@@ -2990,8 +3242,28 @@ hildon_file_selection_select_unselect_main_iter(HildonFileSelectionPrivate
         gtk_tree_model_filter_convert_child_iter_to_iter
             (GTK_TREE_MODEL_FILTER(priv->view_filter), &filter_iter,
              &sort_iter);
-        select_unselect_func(gtk_tree_view_get_selection(treeview),
-                             &filter_iter);
+
+        selection = gtk_tree_view_get_selection(treeview);
+
+        if (select)
+        {
+          GtkTreePath *path;
+
+          /* Setting cursor is a hack, but it ensures that we do not
+             end up having old cursor value selected as well 
+             if we are in the multiselection mode... */
+          path = gtk_tree_model_get_path(priv->view_filter, &filter_iter);
+      
+          if (path)
+          { 
+            gtk_tree_view_set_cursor(treeview, path, NULL, FALSE);
+            gtk_tree_path_free(path);
+          }
+          
+          gtk_tree_selection_select_iter(selection, &filter_iter);
+        }
+        else
+          gtk_tree_selection_unselect_iter(selection, &filter_iter);
     }
 }
 
@@ -3012,7 +3284,7 @@ gboolean hildon_file_selection_select_path(HildonFileSelection * self,
                                            const GtkFilePath * path,
                                            GError ** error)
 {
-    GtkTreeIter iter;
+    GtkTreeIter iter, nav_iter;
     gboolean found;
     GtkWidget *view;
 
@@ -3023,24 +3295,36 @@ gboolean hildon_file_selection_select_path(HildonFileSelection * self,
                                            (self->priv->main_model), path,
                                            &iter);
 
-    if (found || iter.user_data != NULL) {      /* We have to found at
-                                                   least the parent folder 
-                                                 */
-        hildon_file_selection_set_current_folder_iter(self, &iter);
+    /* We found the item */
+    if (found)
+    {
+      /* We set the nav. pane to contain parent of the item found */
+      if (gtk_tree_model_iter_parent(self->priv->main_model, &nav_iter, &iter))
+      {
+        hildon_file_selection_set_current_folder_iter(self, &nav_iter);
+        /* Had to move this after setting folder. Otherwise it'll be cleared... */
+        self->priv->user_touched = TRUE;
+        hildon_file_selection_select_unselect_main_iter
+                (self->priv, &iter, TRUE);
 
-        if (found)      /* Directory is changed. Let's select a file
-                           inside of that */
-        {
-            hildon_file_selection_select_unselect_main_iter
-                (self->priv, &iter, gtk_tree_selection_select_iter);
+        view = get_current_view(self->priv);
+        if (GTK_IS_TREE_VIEW(view))
+          activate_view(view);
+        else
+          activate_view(self->priv->dir_tree);
 
-            view = get_current_view(self->priv);
-            if (GTK_IS_TREE_VIEW(view))
-              activate_view(view);
-            else
-              activate_view(self->priv->dir_tree);
-        }
         return TRUE;
+      } 
+      
+      /* If we do not get the parent then we fall through and the next
+          statement will just change the directory. */
+    }
+
+    /* We didn't find the match, but we did find the parent */
+    if (iter.user_data != NULL)
+    {
+      hildon_file_selection_set_current_folder_iter(self, &iter);
+      return TRUE;
     }
 
     return FALSE;
@@ -3066,7 +3350,7 @@ void hildon_file_selection_unselect_path(HildonFileSelection * self,
         (HILDON_FILE_SYSTEM_MODEL(self->priv->main_model), path, &iter,
          NULL, TRUE))
         hildon_file_selection_select_unselect_main_iter
-            (self->priv, &iter, gtk_tree_selection_unselect_iter);
+            (self->priv, &iter, FALSE);
 }
 
 /**
@@ -3099,7 +3383,7 @@ void hildon_file_selection_show_content_pane(HildonFileSelection * self)
 }
 
 /* Path is a location in content pane filter model - convert it to main model
-    iterator if possible */
+   iterator if possible */
 static gboolean view_path_to_main_iter(GtkTreeModel *model,
   GtkTreeIter *iter, GtkTreePath *path)
 {
@@ -3136,6 +3420,7 @@ static gboolean view_path_to_main_iter(GtkTreeModel *model,
  *
  * Returns: %TRUE, if the given iterator is set, %FALSE otherwise.
  */
+#ifndef HILDON_DISABLE_DEPRECATED
 gboolean hildon_file_selection_get_current_content_iter(HildonFileSelection
                                                         * self,
                                                         GtkTreeIter * iter)
@@ -3167,7 +3452,7 @@ gboolean hildon_file_selection_get_current_content_iter(HildonFileSelection
 
     return result;
 }
-
+#endif
 /**
  * hildon_file_selection_get_active_content_iter:
  * @self: a #HildonFileSelection
@@ -3187,6 +3472,7 @@ gboolean hildon_file_selection_get_current_content_iter(HildonFileSelection
  *
  * Returns: %TRUE, if the given iterator is set, %FALSE otherwise.
  */
+#ifndef HILDON_DISABLE_DEPRECATED
 gboolean 
 hildon_file_selection_get_active_content_iter(HildonFileSelection *self,
   GtkTreeIter *iter)
@@ -3212,7 +3498,7 @@ hildon_file_selection_get_active_content_iter(HildonFileSelection *self,
     gtk_tree_path_free(path);
     return result;
 }
-
+#endif
 /**
  * hildon_file_selection_content_iter_is_selected:
  * @self: a #HildonFileSelection
@@ -3224,6 +3510,7 @@ hildon_file_selection_get_active_content_iter(HildonFileSelection *self,
  *
  * Returns: %TRUE, if the iterator is selected, %FALSE otherwise.
  */
+#ifndef HILDON_DISABLE_DEPRECATED
 gboolean 
 hildon_file_selection_content_iter_is_selected(HildonFileSelection *self, 
   GtkTreeIter *iter)
@@ -3275,7 +3562,7 @@ hildon_file_selection_content_iter_is_selected(HildonFileSelection *self,
 
     return result;
 }
-
+#endif
 /**
  * hildon_file_selection_get_current_folder_iter:
  * @self: a #HildonFileSelection
@@ -3338,7 +3625,7 @@ static void get_selected_files_helper(GtkTreeModel * model,
 }
 
 /* Similar to get_selected_paths, but returns only files. This still uses
-    content_pane_last_used, so we do not need to change dialog at all */
+   content_pane_last_used, so we do not need to change dialog at all */
 GSList *_hildon_file_selection_get_selected_files(HildonFileSelection
                                                        * self)
 {

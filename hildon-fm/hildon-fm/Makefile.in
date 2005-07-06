@@ -14,10 +14,6 @@
 
 @SET_MAKE@
 
-# Copyright (c) 2005 Nokia Oyj
-
-# Only macros needed from libOSSO.
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -50,6 +46,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BTTOOLS_CFLAGS = @BTTOOLS_CFLAGS@
+BTTOOLS_LIBS = @BTTOOLS_LIBS@
 CATALOGS = @CATALOGS@
 CATOBJEXT = @CATOBJEXT@
 CC = @CC@
@@ -103,6 +101,8 @@ LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
+MCE_CFLAGS = @MCE_CFLAGS@
+MCE_LIBS = @MCE_LIBS@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
 OBJEXT = @OBJEXT@
@@ -175,7 +175,7 @@ target_alias = @target_alias@
 
 INCLUDES = $(GTK_CFLAGS) $(GCONF_CFLAGS) $(OSSO_THUMBNAIL_CFLAGS) \
 	$(GWCONNECT_CFLAGS) $(DBUSGLIB_CFLAGS) $(LIBOSSO_CFLAGS) \
-	-DLOCALEDIR=\"$(localedir)\" -I$(srcdir)/..
+  $(BTTOOLS_CFLAGS) $(MCE_CFLAGS) -DLOCALEDIR=\"$(localedir)\" -I$(srcdir)/..
 
 
 lib_LTLIBRARIES = libhildonfm.la
@@ -198,7 +198,9 @@ libhildonfm_la_SOURCES = \
 	hildon-file-system-private.c \
 	hildon-file-system-common.h \
 	hildon-file-system-info.h \
-	hildon-file-system-info.c
+	hildon-file-system-info.c \
+	hildon-file-system-settings.h \
+	hildon-file-system-settings.c
 
 
 hildonwidgetsincludeinstdir = $(includedir)/hildon-fm/hildon-widgets
@@ -219,7 +221,8 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libhildonfm_la_DEPENDENCIES =
 am_libhildonfm_la_OBJECTS = hildon-file-selection.lo \
 	hildon-file-system-model.lo hildon-file-chooser-dialog.lo \
-	hildon-file-system-private.lo hildon-file-system-info.lo
+	hildon-file-system-private.lo hildon-file-system-info.lo \
+	hildon-file-system-settings.lo
 libhildonfm_la_OBJECTS = $(am_libhildonfm_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -229,7 +232,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-selection.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-info.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-model.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-private.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-private.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-settings.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -294,6 +298,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-model.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-private.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-settings.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \

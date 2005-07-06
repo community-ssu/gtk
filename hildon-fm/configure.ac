@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-fm, 0.9.1)
+AM_INIT_AUTOMAKE(hildon-fm, 0.9.24)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
@@ -11,10 +11,8 @@ AC_PROG_AWK
 AC_PROG_LIBTOOL
 AC_HEADER_STDC
 
-LOGFLAGS="-DDEBUG"
-
 AC_ARG_ENABLE(logging, 
-  [  --enable-logging=ARG    none, syslog, stdout, stderr (default=syslog)],
+  [  --enable-logging=ARG    none, syslog, stdout, stderr (default=none)],
   [ case "x$enableval" in
       xsyslog) 
 	LOGFLAGS="-DDEBUG" ;;
@@ -32,7 +30,7 @@ CFLAGS="$CFLAGS -Wall -ansi -Wmissing-prototypes -Wmissing-declarations -Werror 
 PKG_CHECK_MODULES(OUTO, outo >= 0.1.1)
 AC_SUBST(OUTO_CFLAGS)
 
-GTK_VERSION=2.4.0
+GTK_VERSION=2.6.0
 
 PKG_CHECK_MODULES(GTK, hildon-lgpl >= 0.9.1)
 AC_SUBST(GTK_LIBS)
@@ -53,7 +51,8 @@ PKG_CHECK_MODULES(GWCONNECT, gwconnect >= 0.58)
 AC_SUBST(GWCONNECT_CFLAGS)
 AC_SUBST(GWCONNECT_LIBS)
 
-PKG_CHECK_MODULES(DBUSGLIB, dbus-glib-1 >= 0.23.1)
+# Updated required version. Old 0.23.1 is not compatible with 0.23.4
+PKG_CHECK_MODULES(DBUSGLIB, dbus-glib-1 >= 0.23.4)
 AC_SUBST(DBUSGLIB_CFLAGS)
 AC_SUBST(DBUSGLIB_LIBS)
 
@@ -61,7 +60,13 @@ AC_SUBST(DBUSGLIB_LIBS)
 PKG_CHECK_MODULES(LIBOSSO, libosso >= 0.8.8)
 AC_SUBST(LIBOSSO_CFLAGS)
 
-# We should check for MCE, but it doesn't have pkgconfig, bug #7999
+# We need only macros from bttools-dev package
+PKG_CHECK_MODULES(BTTOOLS, bttools >= 0.22)
+AC_SUBST(BTTOOLS_CFLAGS)
+
+# Now also mce has a pkgconfig file.
+PKG_CHECK_MODULES(MCE, mce >= 0.8.5)
+AC_SUBST(MCE_CFLAGS)
 
 ALL_LINGUAS="en_GB"
 AC_SUBST(ALL_LINGUAS)

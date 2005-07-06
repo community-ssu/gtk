@@ -240,6 +240,42 @@ and loading times. This approach is used in #HildonFileChooserDialog.
 @self: 
 
 
+<!-- ##### FUNCTION hildon_file_selection_content_iter_is_selected ##### -->
+<para>
+
+</para>
+
+@self: 
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_undim_all ##### -->
+<para>
+
+</para>
+
+@self: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_get_active_content_iter ##### -->
+<para>
+
+</para>
+
+@self: 
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_selection_dim_current_selection ##### -->
+<para>
+
+</para>
+
+@self: 
+
+
 <!-- ##### ENUM HildonFileSelectionVisibleColumns ##### -->
 <para>
 
@@ -280,6 +316,14 @@ and loading times. This approach is used in #HildonFileChooserDialog.
 @arg1: 
 @arg2: 
 
+<!-- ##### SIGNAL HildonFileSelection::location-insensitive ##### -->
+<para>
+
+</para>
+
+@hildonfileselection: the object which received the signal.
+@arg1: 
+
 <!-- ##### SIGNAL HildonFileSelection::navigation-pane-context-menu ##### -->
 <para>
 
@@ -294,6 +338,11 @@ and loading times. This approach is used in #HildonFileChooserDialog.
 
 @hildonfileselection: the object which received the signal.
 
+<!-- ##### ARG HildonFileSelection:active-pane ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG HildonFileSelection:drag-enabled ##### -->
 <para>
 
@@ -304,7 +353,22 @@ and loading times. This approach is used in #HildonFileChooserDialog.
 
 </para>
 
+<!-- ##### ARG HildonFileSelection:local-only ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG HildonFileSelection:model ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileSelection:safe-folder ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileSelection:show-hidden ##### -->
 <para>
 
 </para>

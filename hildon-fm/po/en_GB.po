@@ -2,12 +2,14 @@
 # Copyright (C) 2005 Nokia Corporation
 # This file is distributed under the same license as the hildon-fm package
 #
+
 msgid ""
 msgstr ""
 "Project-Id-Version: hildon-fm 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-02-15 16:15+0200\n"
 "PO-Revision-Date: 2005-03-13 12:00+0200\n"
+"Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -86,7 +88,7 @@ msgstr "Change Folder"
 
 #: ../hildon-fm/hildon-file-chooser-dialog.c:576
 msgid "ckdg_bd_change_folder_ok"
-msgstr "Ok"
+msgstr "OK"
 
 #: ../hildon-fm/hildon-file-chooser-dialog.c:580
 msgid "ckdg_bd_change_folder_cancel"
@@ -94,7 +96,7 @@ msgstr "Cancel"
 
 #: ../hildon-fm/hildon-file-chooser-dialog.c:586
 msgid "ckdg_ti_new_folder"
-msgstr "New Folder"
+msgstr "New folder"
 
 #: ../hildon-fm/hildon-file-chooser-dialog.c:588
 msgid "ckdg_va_new_folder_name_stub"
@@ -102,7 +104,7 @@ msgstr "Folder"
 
 #: ../hildon-fm/hildon-file-chooser-dialog.c:590
 msgid "ckdg_bd_new_folder_dialog_ok"
-msgstr "Ok"
+msgstr "OK"
 
 #: ../hildon-fm/hildon-file-chooser-dialog.c:592
 msgid "ckdg_bd_new_folder_dialog_cancel"
@@ -110,7 +112,7 @@ msgstr "Cancel"
 
 #: ../hildon-fm/hildon-file-chooser-dialog.c:717
 msgid "ckdg_ib_folder_already_exists"
-msgstr "A folder with this name already exists"
+msgstr "Folder name already in use"
 
 #: ../hildon-fm/hildon-file-chooser-dialog.c:775
 msgid "ckdg_ib_enter_name"
@@ -118,7 +120,7 @@ msgstr "Enter a name first"
 
 #: ../hildon-fm/hildon-file-chooser-dialog.c:785
 msgid "ckdg_ib_illegal_characters_entered"
-msgstr "Field cannot contain the characters: ..."
+msgstr "Field cannot contain the characters: %s"
 
 #: ../hildon-fm/hildon-file-chooser-dialog.c:817
 msgid "file_ib_name_too_long"
@@ -160,6 +162,24 @@ msgstr "List"
 msgid "sfil_me_view_thumbnails"
 msgstr "Thumbnails"
 
+msgid "sfil_ib_select_file"
+msgstr "Select file first"
+
+msgid "ckdg_fi_save_object_name"
+msgstr "Name:"
+
+msgid "ckdg_va_save_object_name_stub_default"
+msgstr "File"
+
+msgid "ckdg_fi_new_folder_name"
+msgstr "Name:"
+
+msgid "ckdg_fi_new_folder_location"
+msgstr "Location:"
+
+msgid "ckdg_ib_maximum_characters_reached"
+msgstr "Maximum number of characters reached"
+
 #: ../hildon-fm/hildon-file-selection.c:962
 msgid "ckdg_pb_updating"
 msgstr "Updating..."
@@ -200,7 +220,7 @@ msgstr "%d %b"
 
 #: ../hildon-fm/hildon-file-selection.c:1358
 msgid "sfil_li_date_other"
-msgstr "%D"
+msgstr "%x"
 
 #: ../hildon-fm/hildon-file-selection.c:1385
 msgid "sfil_li_size_max_100B"
@@ -234,9 +254,18 @@ msgstr "%d GB"
 msgid "hfil_li_no_files_folders_to_show"
 msgstr "(no files/folders)"
 
+msgid "hfil_ib_mmc_not_present"
+msgstr "No memory card inserted"
+
+msgid "sfil_ib_mmc_usb_connected"
+msgstr "Memory card not available.\nUSB cable connected."
+
+msgid "sfil_ib_no_connections_flightmode"
+msgstr "Flight mode.\nConnection not allowed."
+
 #: ../hildon-fm/hildon-file-system-model.c:1285
 msgid "sfil_li_folder_root"
-msgstr "Sputnik"
+msgstr "Nokia 770"
 
 msgid "sfil_li_gateway_root"
 msgstr "Phone"
@@ -246,7 +275,7 @@ msgid "sfil_li_mmc_gateway"
 msgstr "Memory Card"
 
 #: ../hildon-fm/hildon-file-system-model.c:1289
-msgid "sfil_li_mmc_sputnik"
+msgid "sfil_li_mmc_local_device"
 msgstr "Memory Card"
 
 #: ../hildon-fm/hildon-file-system-model.c:1456	 	
