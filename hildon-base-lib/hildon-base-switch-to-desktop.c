@@ -23,7 +23,7 @@
  */
 
 /*
- * @file hildon-base-switch-to-desktop.h
+ * @file hildon-base-switch-to-desktop.c
  * 
  * This file contains the implementation of function used to switch to desktop.
  * 

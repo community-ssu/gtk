@@ -1775,7 +1775,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=hildon-base-lib
- VERSION=0.8.6
+ VERSION=0.9.2
 
 
 cat >>confdefs.h <<_ACEOF
@@ -2331,7 +2331,7 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link_default\"") >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; then
   # Find the output, starting from the most likely.  This scheme is
-# not robust to  waste in `.', hence go to wildcards (a.*) only as a last
+# not robust to junk in `.', hence go to wildcards (a.*) only as a last
 # resort.
 
 # Be careful to initialize this variable, since it used to be cached.

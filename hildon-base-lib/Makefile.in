@@ -14,8 +14,6 @@
 
 @SET_MAKE@
 
-# Copyright (c) 2003 Nokia Oyj
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -198,10 +196,11 @@ LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 DIST_SOURCES = $(libhildonbase_la_SOURCES)
 DATA = $(libhildonbaseincludeinst_DATA) $(pkgconfig_DATA)
 
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure Doxyfile.in \
-	FullDoxyfile.in Makefile.am aclocal.m4 config.guess config.h.in \
-	config.sub configure configure.ac depcomp hildon-base-lib.pc.in \
-	install-sh ltmain.sh missing mkinstalldirs
+DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure COPYING \
+	Doxyfile.in FullDoxyfile.in Makefile.am aclocal.m4 config.guess \
+	config.h.in config.sub configure configure.ac depcomp \
+	hildon-base-lib.pc.in install-sh ltmain.sh missing \
+	mkinstalldirs
 SOURCES = $(libhildonbase_la_SOURCES)
 
 all: config.h

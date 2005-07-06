@@ -1,5 +1,3 @@
-# Copyright (c) 2003 Nokia Oyj
-
 INCLUDES = $(GLIB_CFLAGS) $(GTK_CFLAGS)
 
 EXTRA_DIST = debian/changelog debian/control debian/copyright debian/rules \

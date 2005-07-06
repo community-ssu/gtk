@@ -1,40 +1,5 @@
-hildon-base-lib (0.8.6-2) unstable; urgency=low
+hildon-base-lib (0.8.6-3) unstable; urgency=low
 
-  * Changed 'provides -libs' to 'conflicts -libs'
+  * Maemo dev release
 
- --  <First Release Nokia >  Wed,  9 Mar 2005 11:47:33 +0200
-
-hildon-base-lib (0.8.6-1) unstable; urgency=low
-
-  * Fixed #4704 (libraries should be versioned)
-
-
-hildon-base-lib (0.8.5-1) unstable; urgency=low
-
-  * Release 0.8.5 
-
-
-hildon-base-lib (0.8.4-1) unstable; urgency=low
-
-  * Teema 0.8.4 Release
-
-
-hildon-base-lib (0.8.3-1) unstable; urgency=low
-
-  * Teema release 0.8.3
-
-
-hildon-base-lib (0.8.1-1) unstable; urgency=low
-
-  * 0.8.1 release
-
-
-hildon-base-lib (0.8.0pre1-1) unstable; urgency=low
-
-  * 0.8.0 pre1 release
-  
-
-hildon-base-lib (0.8.0-1) unstable; urgency=low
-
-  * Initial add of the new separated hildon base lib package
-
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  6 Jul 2005 07:40:40 +0300

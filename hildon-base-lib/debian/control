@@ -2,7 +2,7 @@ Source: hildon-base-lib
 Section: lib
 Priority: optional
 Maintainer: Luc Pionchon <luc.pionchon@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), pkg-config, outo
+Build-Depends: debhelper (>= 4.0.0), pkg-config, outo, libgtk2.0-dev, libx11-dev
 Standards-Version: 3.6.0
 
 Package: hildon-base-lib0
@@ -23,5 +23,5 @@ Description: Hildon libraries tests.
 Package: hildon-base-lib-dev
 Section: devel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-base-lib0
+Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-base-lib0 (= ${Source-Version}), libgtk2.0-dev
 Description: Hildon Base library development files.
