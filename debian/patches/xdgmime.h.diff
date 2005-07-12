@@ -1,0 +1,11 @@
+--- gtk+-2.6.4/gtk/xdgmime/xdgmime.h	2005-03-01 18:59:03.000000000 +0200
++++ gtk+-2.6.4/gtk/xdgmime/xdgmime.h	2005-06-27 13:41:47.065958032 +0300
+@@ -63,7 +63,7 @@
+ #define xdg_mime_dump                         XDG_ENTRY(dump)
+ #endif
+ 
+-extern const char *xdg_mime_type_unknown;
++extern const char xdg_mime_type_unknown[];
+ #define XDG_MIME_TYPE_UNKNOWN xdg_mime_type_unknown
+ 
+ const char  *xdg_mime_get_mime_type_for_data       (const void *data,

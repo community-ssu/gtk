@@ -1,0 +1,13 @@
+--- gtk+-2.6.4/gdk/gdkinternals.h	2004-11-21 18:24:00.000000000 +0200
++++ gtk+-2.6.4/gdk/gdkinternals.h	2005-06-27 13:41:39.531103504 +0300
+@@ -185,8 +185,8 @@
+                                   GdkWindowState unset_flags,
+                                   GdkWindowState set_flags);
+ 
+-#define GDK_SCRATCH_IMAGE_WIDTH 256
+-#define GDK_SCRATCH_IMAGE_HEIGHT 64
++#define GDK_SCRATCH_IMAGE_WIDTH 128
++#define GDK_SCRATCH_IMAGE_HEIGHT 32
+ 
+ GdkImage* _gdk_image_new_for_depth (GdkScreen    *screen,
+ 				    GdkImageType  type,

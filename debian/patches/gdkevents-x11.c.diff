@@ -1,0 +1,16 @@
+--- gtk+-2.6.4/gdk/x11/gdkevents-x11.c	2005-03-01 08:28:55.000000000 +0200
++++ gtk+-2.6.4/gdk/x11/gdkevents-x11.c	2005-06-27 13:41:40.896895872 +0300
+@@ -192,8 +192,11 @@
+ {
+   GdkScreenX11 *screen_x11 = GDK_SCREEN_X11 (screen);
+ 
+-  xsettings_client_destroy (screen_x11->xsettings_client);
+-  screen_x11->xsettings_client = NULL;
++  if (screen_x11->xsettings_client)
++    {
++      xsettings_client_destroy (screen_x11->xsettings_client);
++      screen_x11->xsettings_client = NULL;
++    }
+ }
+ 
+ void 

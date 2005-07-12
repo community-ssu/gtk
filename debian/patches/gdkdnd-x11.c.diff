@@ -1,0 +1,11 @@
+--- gtk+-2.6.4/gdk/x11/gdkdnd-x11.c	2005-03-01 08:28:55.000000000 +0200
++++ gtk+-2.6.4/gdk/x11/gdkdnd-x11.c	2005-06-27 13:41:40.868900128 +0300
+@@ -136,7 +136,7 @@
+ const static struct {
+   const char *atom_name;
+   GdkFilterFunc func;
+-} xdnd_filters[] = {
++} const xdnd_filters[] = {
+   { "XdndEnter",    xdnd_enter_filter },
+   { "XdndLeave",    xdnd_leave_filter },
+   { "XdndPosition", xdnd_position_filter },

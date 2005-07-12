@@ -1,0 +1,16 @@
+--- gtk+-2.6.4/gtk/gtkentry.h	2004-10-08 07:24:45.000000000 +0300
++++ gtk+-2.6.4/gtk/gtkentry.h	2005-06-27 13:41:43.417512680 +0300
+@@ -143,10 +143,12 @@
+   void (* paste_clipboard)    (GtkEntry       *entry);
+   void (* toggle_overwrite)   (GtkEntry       *entry);
+ 
++  void (* invalid_input) (GtkEntry            *entry,
++                          GtkInvalidInputType  invalid_input_type);
++
+   /* Padding for future expansion */
+   void (*_gtk_reserved1) (void);
+   void (*_gtk_reserved2) (void);
+-  void (*_gtk_reserved3) (void);
+ };
+ 
+ GType      gtk_entry_get_type       		(void) G_GNUC_CONST;

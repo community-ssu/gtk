@@ -1,0 +1,10 @@
+--- gtk+-2.6.4/gdk-pixbuf/gdk-pixbuf-features.h	2005-03-01 17:32:04.000000000 +0200
++++ gtk+-2.6.4/gdk-pixbuf/gdk-pixbuf-features.h	2005-06-27 13:41:41.454811056 +0300
+@@ -36,6 +36,6 @@
+ GDK_PIXBUF_VAR const guint gdk_pixbuf_major_version;
+ GDK_PIXBUF_VAR const guint gdk_pixbuf_minor_version;
+ GDK_PIXBUF_VAR const guint gdk_pixbuf_micro_version;
+-GDK_PIXBUF_VAR const char *gdk_pixbuf_version;
++GDK_PIXBUF_VAR const char gdk_pixbuf_version[];
+ 
+ #endif

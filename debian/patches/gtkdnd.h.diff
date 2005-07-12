@@ -1,0 +1,10 @@
+--- gtk+-2.6.4/gtk/gtkdnd.h	2004-10-23 01:50:32.000000000 +0300
++++ gtk+-2.6.4/gtk/gtkdnd.h	2005-06-27 13:41:43.378518608 +0300
+@@ -159,6 +159,7 @@
+ 				    GdkEvent  *event);
+ void _gtk_drag_dest_handle_event (GtkWidget *toplevel,
+ 				  GdkEvent  *event);
++void _gtk_drag_source_ignore_drag (GtkWidget *widget);
+ 
+ #ifndef GTK_DISABLE_DEPRECATED
+ void gtk_drag_set_default_icon (GdkColormap   *colormap,

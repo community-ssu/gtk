@@ -1,0 +1,25 @@
+--- gtk+-2.6.4/gdk/gdkwindow.h	2004-07-11 16:26:57.000000000 +0300
++++ gtk+-2.6.4/gdk/gdkwindow.h	2005-06-27 13:41:39.803062160 +0300
+@@ -108,7 +108,8 @@
+   GDK_WINDOW_TYPE_HINT_SPLASHSCREEN,
+   GDK_WINDOW_TYPE_HINT_UTILITY,
+   GDK_WINDOW_TYPE_HINT_DOCK,
+-  GDK_WINDOW_TYPE_HINT_DESKTOP
++  GDK_WINDOW_TYPE_HINT_DESKTOP,
++  GDK_WINDOW_TYPE_HINT_MESSAGE
+ } GdkWindowTypeHint;
+ 
+ 
+@@ -407,8 +408,10 @@
+ 					  gint		   max_height,
+ 					  gint		   flags);
+ #endif
+-void          gdk_window_set_type_hint    (GdkWindow       *window,
+-					   GdkWindowTypeHint hint);
++void              gdk_window_set_type_hint (GdkWindow        *window,
++					    GdkWindowTypeHint hint);
++GdkWindowTypeHint gdk_window_get_type_hint (GdkWindow        *window);
++
+ void          gdk_window_set_modal_hint   (GdkWindow       *window,
+                                            gboolean         modal);
+ 

@@ -1,0 +1,11 @@
+--- gtk+-2.6.4/gtk/xdgmime/xdgmime.c	2005-03-01 19:01:01.000000000 +0200
++++ gtk+-2.6.4/gtk/xdgmime/xdgmime.c	2005-06-27 13:41:47.060958792 +0300
+@@ -55,7 +55,7 @@
+ static XdgParentList *parent_list = NULL;
+ static XdgDirTimeList *dir_time_list = NULL;
+ static XdgCallbackList *callback_list = NULL;
+-const char *xdg_mime_type_unknown = "application/octet-stream";
++const char xdg_mime_type_unknown[] = "application/octet-stream";
+ 
+ 
+ enum

@@ -1,0 +1,12 @@
+--- gtk+-2.6.4/gdk/gdkscreen.h	2004-11-28 08:45:52.000000000 +0200
++++ gtk+-2.6.4/gdk/gdkscreen.h	2005-06-27 13:41:39.768067480 +0300
+@@ -95,6 +95,9 @@
+ 				   const gchar *name,
+ 				   GValue      *value);
+ 
++GdkWindow *gdk_screen_get_active_window (GdkScreen *screen);
++GList     *gdk_screen_get_window_stack  (GdkScreen *screen);
++
+ G_END_DECLS
+ 
+ #endif				/* __GDK_SCREEN_H__ */

@@ -1,0 +1,36 @@
+--- gtk+-2.6.4/gdk/gdkwindow.c	2004-12-22 21:25:24.000000000 +0200
++++ gtk+-2.6.4/gdk/gdkwindow.c	2005-06-27 13:41:39.792063832 +0300
+@@ -335,6 +335,7 @@
+   GdkWindowObject *private;
+   GdkWindowObject *temp_private;
+   GdkWindow *temp_window;
++  GdkScreen *screen;
+   GList *children;
+   GList *tmp;
+   
+@@ -347,6 +348,14 @@
+     
+   switch (GDK_WINDOW_TYPE (window))
+     {
++    case GDK_WINDOW_ROOT:
++      screen = gdk_drawable_get_screen (GDK_DRAWABLE (window));
++      if (!screen->closed)
++	{
++	  g_error ("attempted to destroy root window");
++	  break;
++	}
++      /* else fall thru */
+     case GDK_WINDOW_TOPLEVEL:
+     case GDK_WINDOW_CHILD:
+     case GDK_WINDOW_DIALOG:
+@@ -422,10 +431,6 @@
+           gdk_drawable_set_colormap (GDK_DRAWABLE (window), NULL);
+ 	}
+       break;
+-      
+-    case GDK_WINDOW_ROOT:
+-      g_error ("attempted to destroy root window");
+-      break;
+     }
+ }
+ 

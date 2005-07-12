@@ -1,0 +1,182 @@
+--- gtk+-2.6.4/gtk/gtkcellrenderertoggle.c	2004-08-09 19:59:51.000000000 +0300
++++ gtk+-2.6.4/gtk/gtkcellrenderertoggle.c	2005-06-27 13:41:43.140554784 +0300
+@@ -68,10 +68,11 @@
+   PROP_ACTIVATABLE,
+   PROP_ACTIVE,
+   PROP_RADIO,
+-  PROP_INCONSISTENT
++  PROP_INCONSISTENT,
++  PROP_CHECKBOX_MODE
+ };
+ 
+-#define TOGGLE_WIDTH 12
++#define TOGGLE_WIDTH 26
+ 
+ static guint toggle_cell_signals[LAST_SIGNAL] = { 0 };
+ 
+@@ -81,6 +82,7 @@
+ struct _GtkCellRendererTogglePrivate
+ {
+   guint inconsistent : 1;
++  guint checkbox_mode : 1;       /* is checkbox mode on right now? */
+ };
+ 
+ 
+@@ -115,12 +117,13 @@
+ static void
+ gtk_cell_renderer_toggle_init (GtkCellRendererToggle *celltoggle)
+ {
++  GtkCellRendererTogglePrivate *priv = GTK_CELL_RENDERER_TOGGLE_GET_PRIVATE (celltoggle);
++
++  priv->checkbox_mode = FALSE;
+   celltoggle->activatable = TRUE;
+   celltoggle->active = FALSE;
+   celltoggle->radio = FALSE;
+   GTK_CELL_RENDERER (celltoggle)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
+-  GTK_CELL_RENDERER (celltoggle)->xpad = 2;
+-  GTK_CELL_RENDERER (celltoggle)->ypad = 2;
+ }
+ 
+ static void
+@@ -172,6 +175,14 @@
+ 							 G_PARAM_READABLE |
+ 							 G_PARAM_WRITABLE));
+ 
++  g_object_class_install_property (object_class,
++           PROP_CHECKBOX_MODE,
++           g_param_spec_boolean ("checkbox_mode",
++               P_("Checkbox Mode"),
++               P_("Checkbox mode hacky-crack. Will eat your children and give pox if used"),
++               FALSE,
++               G_PARAM_READABLE |
++               G_PARAM_WRITABLE));
+   
+   /**
+    * GtkCellRendererToggle::toggled:
+@@ -219,6 +230,9 @@
+     case PROP_RADIO:
+       g_value_set_boolean (value, celltoggle->radio);
+       break;
++    case PROP_CHECKBOX_MODE:
++      g_value_set_boolean (value, priv->checkbox_mode);
++      break;
+     default:
+       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+       break;
+@@ -255,6 +269,10 @@
+       celltoggle->radio = g_value_get_boolean (value);
+       g_object_notify (G_OBJECT(object), "radio");
+       break;
++    case PROP_CHECKBOX_MODE:
++      priv->checkbox_mode = g_value_get_boolean (value);
++      g_object_notify (G_OBJECT(object), "checkbox_mode");
++      break;
+     default:
+       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+       break;
+@@ -344,30 +362,89 @@
+   if (width <= 0 || height <= 0)
+     return;
+ 
+-  if (priv->inconsistent)
+-    shadow = GTK_SHADOW_ETCHED_IN;
+-  else
+-    shadow = celltoggle->active ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
+-
+-  if (!cell->sensitive)
+-    {
+-      state = GTK_STATE_INSENSITIVE;
+-    }
+-  else if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
++  if (priv->checkbox_mode)
+     {
+-      if (GTK_WIDGET_HAS_FOCUS (widget))
+-	state = GTK_STATE_SELECTED;
++      /* Cracky checkbox_mode version of reality */
++      
++      state = GTK_STATE_NORMAL;
++    
++      if (!cell->sensitive)
++        {
++          state = GTK_STATE_INSENSITIVE;
++        }
++/* FIXME: Enable this after the activatable-issue is cleared up */
++#if 0
++      if (!celltoggle->activatable)
++        {
++          state = GTK_STATE_INSENSITIVE;
++        }
++#endif        
++      if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
++        {
++            shadow = GTK_SHADOW_IN;
++        }
+       else
+-	state = GTK_STATE_ACTIVE;
++        {
++            shadow = GTK_SHADOW_OUT;
++        }
++        
++      if (priv->inconsistent)
++        {
++            shadow = GTK_SHADOW_ETCHED_IN;
++        }
++        
++      if ((flags & GTK_CELL_RENDERER_FOCUSED) == GTK_CELL_RENDERER_FOCUSED)
++        {
++          /* Don't overlap with the focus border */
++          height -= 2;
++          if (GTK_WIDGET_HAS_FOCUS (widget))
++            {
++              state = GTK_STATE_ACTIVE;
++            }
++          else
++            {
++              state = GTK_STATE_PRELIGHT;
++            }
++        }
++  
+     }
+   else
+     {
+-      if (celltoggle->activatable)
+-        state = GTK_STATE_NORMAL;
++      /* Normal operation */
++      if (priv->inconsistent)
++        shadow = GTK_SHADOW_ETCHED_IN;
++      else
++        shadow = celltoggle->active ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
++    
++      if (!cell->sensitive)
++        {
++          state = GTK_STATE_INSENSITIVE;
++        }
++      else if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
++        {
++          if (GTK_WIDGET_HAS_FOCUS (widget))
++            {
++              state = GTK_STATE_SELECTED;
++            }
++          else
++            {
++              state = GTK_STATE_ACTIVE;
++            }
++        }
+       else
+-        state = GTK_STATE_INSENSITIVE;
++        {
++          if (celltoggle->activatable)
++            {
++              state = GTK_STATE_NORMAL;
++            }
++          else
++            {
++              state = GTK_STATE_INSENSITIVE;
++            }
++        }
+     }
+ 
++    
+   if (celltoggle->radio)
+     {
+       gtk_paint_option (widget->style,

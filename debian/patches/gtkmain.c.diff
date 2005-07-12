@@ -1,0 +1,50 @@
+--- gtk+-2.6.4/gtk/gtkmain.c	2004-12-27 07:25:15.000000000 +0200
++++ gtk+-2.6.4/gtk/gtkmain.c	2005-06-27 13:41:44.185395944 +0300
+@@ -68,6 +68,7 @@
+ #include "gtkwindow.h"
+ #include "gtkprivate.h"
+ #include "gtkdebug.h"
++#include "gtkwidget.h"
+ 
+ /* Private type definitions
+  */
+@@ -1289,15 +1290,14 @@
+        *  then we send the event to the original event widget.
+        *  This is the key to implementing modality.
+        */
+-      if (GTK_WIDGET_IS_SENSITIVE (event_widget) &&
+-	  gtk_widget_is_ancestor (event_widget, grab_widget))
++      if (gtk_widget_is_ancestor (event_widget, grab_widget))
+ 	grab_widget = event_widget;
+     }
+   else
+     {
+       grab_widget = event_widget;
+     }
+-
++  
+   /* Not all events get sent to the grabbing widget.
+    * The delete, destroy, expose, focus change and resize
+    *  events still get sent to the event widget because
+@@ -1361,8 +1361,11 @@
+       gtk_widget_event (event_widget, event);
+       break;
+ 
+-    case GDK_SCROLL:
+     case GDK_BUTTON_PRESS:
++      if (!GTK_WIDGET_IS_SENSITIVE (event_widget))
++        gtk_widget_insensitive_press (grab_widget);
++      /* fall through */
++    case GDK_SCROLL:
+     case GDK_2BUTTON_PRESS:
+     case GDK_3BUTTON_PRESS:
+       gtk_propagate_event (grab_widget, event);
+@@ -2090,7 +2093,7 @@
+   handled_event = FALSE;
+ 
+   g_object_ref (widget);
+-      
++  
+   if ((event->type == GDK_KEY_PRESS) ||
+       (event->type == GDK_KEY_RELEASE))
+     {

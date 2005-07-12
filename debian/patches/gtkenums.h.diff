@@ -1,0 +1,29 @@
+--- gtk+-2.6.4/gtk/gtkenums.h	2003-07-18 21:52:02.000000000 +0300
++++ gtk+-2.6.4/gtk/gtkenums.h	2005-06-27 13:41:43.426511312 +0300
+@@ -133,7 +133,11 @@
+   GTK_ICON_SIZE_LARGE_TOOLBAR,
+   GTK_ICON_SIZE_BUTTON,
+   GTK_ICON_SIZE_DND,
+-  GTK_ICON_SIZE_DIALOG
++  GTK_ICON_SIZE_DIALOG,
++  HILDON_ICON_SIZE_26,
++  HILDON_ICON_SIZE_40,
++  HILDON_ICON_SIZE_50,
++  HILDON_ICON_SIZE_64
+ } GtkIconSize;
+ 
+ #ifndef GTK_DISABLE_DEPRECATED
+@@ -453,6 +457,13 @@
+   GTK_IM_STATUS_NONE
+ } GtkIMStatusStyle;
+ 
++/* Input validation */
++typedef enum
++{
++  GTK_INVALID_INPUT_MAX_CHARS_REACHED,
++  GTK_INVALID_INPUT_MODE_RESTRICTION
++} GtkInvalidInputType;
++
+ #ifdef __cplusplus
+ }
+ #endif /* __cplusplus */
