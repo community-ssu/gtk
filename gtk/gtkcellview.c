@@ -82,7 +82,6 @@ static void        gtk_cell_view_set_value                (GtkCellView     *cell
                                                            GValue          *value);
 static GtkCellViewCellInfo *gtk_cell_view_get_cell_info   (GtkCellView      *cellview,
                                                            GtkCellRenderer  *renderer);
-static void        gtk_cell_view_set_cell_data            (GtkCellView      *cell_view);
 
 
 static void        gtk_cell_view_cell_layout_pack_start        (GtkCellLayout         *layout,
@@ -376,9 +375,7 @@ gtk_cell_view_size_allocate (GtkWidget     *widget,
     }
 
   extra_space = widget->allocation.width - full_requested_width;
-  if (extra_space < 0)
-    extra_space = 0;
-  else if (extra_space > 0 && expand_cell_count > 0)
+  if (expand_cell_count > 0)
     extra_space /= expand_cell_count;
 
   /* iterate list for PACK_START cells */
@@ -536,7 +533,7 @@ gtk_cell_view_get_cell_info (GtkCellView     *cellview,
   return NULL;
 }
 
-static void
+void
 gtk_cell_view_set_cell_data (GtkCellView *cell_view)
 {
   GList *i;

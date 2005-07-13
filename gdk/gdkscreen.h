@@ -95,6 +95,9 @@ gboolean   gdk_screen_get_setting (GdkScreen   *screen,
 				   const gchar *name,
 				   GValue      *value);
 
+GdkWindow *gdk_screen_get_active_window (GdkScreen *screen);
+GList     *gdk_screen_get_window_stack  (GdkScreen *screen);
+
 G_END_DECLS
 
 #endif				/* __GDK_SCREEN_H__ */

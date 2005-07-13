@@ -91,13 +91,29 @@ static gint
 gtk_hseparator_expose (GtkWidget      *widget,
 		       GdkEventExpose *event)
 {
-  if (GTK_WIDGET_DRAWABLE (widget))
-    gtk_paint_hline (widget->style, widget->window, GTK_WIDGET_STATE (widget),
-		     &event->area, widget, "hseparator",
-		     widget->allocation.x,
-		     widget->allocation.x + widget->allocation.width - 1,
-		     widget->allocation.y + (widget->allocation.height -
-					     widget->style->ythickness) / 2);
+   gboolean hildonlike_drawing = FALSE;
+   gtk_widget_style_get ( widget, "hildonlike-drawing", &hildonlike_drawing, NULL );
 
-  return FALSE;
+   if (GTK_WIDGET_DRAWABLE (widget))
+   {
+	   if(hildonlike_drawing)
+		   gtk_paint_box   (widget->style, widget->window, GTK_STATE_NORMAL,
+				   GTK_SHADOW_NONE, &event->area, widget, "hseparator",
+				   widget->allocation.x,
+				   widget->allocation.y + (widget->allocation.height -
+					   widget->style->ythickness) / 2,
+				   widget->allocation.width - 1,
+				   widget->style->ythickness);
+	   else
+		   gtk_paint_hline (widget->style, widget->window, GTK_STATE_NORMAL,
+				   &event->area, widget, "hseparator",
+				   widget->allocation.x,
+				   widget->allocation.x + widget->allocation.width - 1,
+				   widget->allocation.y + (widget->allocation.height -
+					   widget->style->ythickness) / 2);
+   }
+
+
+
+   return FALSE;
 }

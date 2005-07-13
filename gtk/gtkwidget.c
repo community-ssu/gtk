@@ -28,6 +28,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <locale.h>
+#include <stdlib.h>
+#include <x11/gdkx.h>
 #include "gtkalias.h"
 #include "gtkcontainer.h"
 #include "gtkaccelmap.h"
@@ -44,6 +46,11 @@
 #include "gtkwindow.h"
 #include "gtkbindings.h"
 #include "gtkprivate.h"
+#include "gtktreeview.h"
+#include "gtkentry.h"
+#include "gtktextview.h"
+#include "gtkimcontext.h"
+#include "gtkmenu.h"
 #include "gdk/gdk.h"
 #include "gdk/gdkprivate.h" /* Used in gtk_reset_shapes_recurse to avoid copy */
 #include <gobject/gvaluecollector.h>
@@ -53,10 +60,33 @@
 #include "gtkaccessible.h"
 #include "gtktooltips.h"
 #include "gtkinvisible.h"
+#include "gtkscrollbar.h"   /* Following are needed for special focus changes */
+#include "gtktoolbar.h"
+#include "gtkmenu.h"
+#include "gtkmenuitem.h"
+#include "gtktogglebutton.h"
+#include "gtkcomboboxentry.h"
+#include "gtktogglebutton.h"
+#include "gtkcomboboxentry.h"
 
 #define WIDGET_CLASS(w)	 GTK_WIDGET_GET_CLASS (w)
 #define	INIT_PATH_SIZE	(512)
 
+#define GTK_TAP_THRESHOLD 30
+#define GTK_TAP_MENU_THRESHOLD 20
+#define GTK_TAP_AND_HOLD_TIMER_COUNTER 11
+#define GTK_TAP_AND_HOLD_TIMER_INTERVAL 100
+
+typedef struct _GtkWidgetPrivate GtkWidgetPrivate;
+
+#define GTK_WIDGET_GET_PRIVATE(obj) ( G_TYPE_INSTANCE_GET_PRIVATE ((obj),\
+                                      GTK_TYPE_WIDGET, GtkWidgetPrivate) )
+
+#define TAP_AND_HOLD_ANIMATION 1
+                                      
+#ifdef TAP_AND_HOLD_ANIMATION
+  #include <gdk-pixbuf/gdk-pixbuf.h>
+#endif
 
 enum {
   SHOW,
@@ -120,6 +150,10 @@ enum {
   ACCEL_CLOSURES_CHANGED,
   SCREEN_CHANGED,
   CAN_ACTIVATE_ACCEL,
+	INSENSITIVE_PRESS,
+  TAP_AND_HOLD,
+  TAP_AND_HOLD_SETUP,
+  TAP_AND_HOLD_QUERY,
   LAST_SIGNAL
 };
 
@@ -142,7 +176,8 @@ enum {
   PROP_STYLE,
   PROP_EVENTS,
   PROP_EXTENSION_EVENTS,
-  PROP_NO_SHOW_ALL
+  PROP_NO_SHOW_ALL,
+  PROP_TAP_AND_HOLD
 };
 
 typedef	struct	_GtkStateData	 GtkStateData;
@@ -155,6 +190,37 @@ struct _GtkStateData
   guint		use_forall : 1;
 };
 
+struct _GtkWidgetPrivate
+{
+  GtkWidget *menu;
+  guint timer_id;
+
+  GtkMenuPositionFunc func;
+  gint x, y;
+  gint timer_counter;
+  gint signals_connected : 1;
+  gboolean state_set;
+  guint interval;
+  GdkWindow *tah_on_window;
+  
+#ifdef TAP_AND_HOLD_ANIMATION
+  GdkPixbufAnimation *anim;
+  GdkPixbufAnimationIter *iter;
+  guint width, height;
+#endif
+};
+
+/* --- Tap And Hold --- */
+static gboolean gtk_widget_tap_and_hold_timeout( GtkWidget *widget );
+static gboolean gtk_widget_tap_and_hold_button_press( GtkWidget *widget,
+                                     GdkEvent *event, GtkWidgetPrivate *priv );
+static gboolean gtk_widget_tap_and_hold_event_stop( GtkWidget *widget,
+                                     gpointer unused, GtkWidgetPrivate *priv );
+static void gtk_widget_tap_and_hold_setup_real( GtkWidget *widget,
+            GtkWidget *menu, GtkCallback func, GtkWidgetTapAndHoldFlags flags );
+static void gtk_widget_real_tap_and_hold(GtkWidget *widget);
+static gboolean gtk_widget_tap_and_hold_query (GtkWidget *widget, GdkEvent *event);
+static gboolean gtk_widget_tap_and_hold_real_query (GtkWidget *widget, GdkEvent *event);
 
 /* --- prototypes --- */
 static void	gtk_widget_class_init		 (GtkWidgetClass    *klass);
@@ -185,6 +251,8 @@ static void	gtk_widget_style_set		 (GtkWidget	    *widget,
 static void	gtk_widget_direction_changed	 (GtkWidget	    *widget,
 						  GtkTextDirection   previous_direction);
 
+static void     gtk_widget_set_valid_context     (GtkIMContext     **valid_context,
+                                                  GtkWidget         *widget);
 static void	gtk_widget_real_grab_focus	 (GtkWidget         *focus_widget);
 static gboolean gtk_widget_real_show_help        (GtkWidget         *widget,
                                                   GtkWidgetHelpType  help_type);
@@ -228,6 +296,13 @@ static void gtk_widget_set_usize_internal (GtkWidget *widget,
 					   gint       width,
 					   gint       height);
 
+/*Hildon focus handling*/
+static void gtk_widget_set_focus_handling( GtkWidget *widget, gboolean state );
+
+static gboolean gtk_widget_enter_notify_event( GtkWidget *widget, GdkEventCrossing *event );
+static gboolean gtk_widget_leave_notify_event( GtkWidget *widget, GdkEventCrossing *event );
+static gint gtk_widget_button_release_event( GtkWidget *widget, GdkEventButton *event );
+static gint gtk_widget_button_press_event( GtkWidget *widget, GdkEventButton *event );
 
 /* --- variables --- */
 static gpointer         parent_class = NULL;
@@ -238,6 +313,10 @@ static GSList          *colormap_stack = NULL;
 static guint            composite_child_stack = 0;
 static GtkTextDirection gtk_default_direction = GTK_TEXT_DIR_LTR;
 static GParamSpecPool  *style_property_spec_pool = NULL;
+static GtkWidget       *selection_widget = NULL;
+
+static gboolean on_same_widget = FALSE; /*Hildon focus handling*/
+static gboolean mouse_pressed = FALSE; /*Hildon focus handling*/
 
 static GQuark		quark_property_parser = 0;
 static GQuark		quark_aux_info = 0;
@@ -396,6 +475,10 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   klass->drag_data_received = NULL;
   klass->screen_changed = NULL;
   klass->can_activate_accel = gtk_widget_real_can_activate_accel;
+  klass->tap_and_hold_setup = gtk_widget_tap_and_hold_setup_real;
+  klass->insensitive_press = NULL;
+  klass->tap_and_hold = gtk_widget_real_tap_and_hold;
+  klass->tap_and_hold_query = gtk_widget_tap_and_hold_real_query;
 
   klass->show_help = gtk_widget_real_show_help;
   
@@ -403,6 +486,18 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   klass->get_accessible = gtk_widget_real_get_accessible;
 
   klass->no_expose_event = NULL;
+
+  g_type_class_add_private( klass, sizeof(GtkWidgetPrivate) );
+
+  g_object_class_install_property (gobject_class,
+				   PROP_TAP_AND_HOLD,
+				   g_param_spec_int ("tap_and_hold_state",
+ 						     P_("Tap and hold State type"),
+ 						     P_("Sets the state to be used to the tap and hold functionality. The default is GTK_STATE_NORMAL"),
+ 						     0,
+ 						     4, /*4 == Last state in GTK+-2.0*/
+ 						     GTK_STATE_NORMAL,
+ 						     G_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
 				   PROP_NAME,
@@ -1389,6 +1484,78 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_BOOLEAN__UINT,
                   G_TYPE_BOOLEAN, 1, G_TYPE_UINT);
 
+  /**	
+   * GtkWidget::insensitive-press	
+   * @widget: the object which received the signal	
+   *	
+   * If a widget is insensitive and it receives click event,	
+   * the signal is emited.  Signal is made to clarify situations where	
+   * a widget is not easily noticable as an insenitive widget.	
+   */
+  widget_signals[INSENSITIVE_PRESS] =
+    g_signal_new ("insensitive_press",
+                  G_TYPE_FROM_CLASS (gobject_class),
+                  G_SIGNAL_RUN_FIRST,
+                  G_STRUCT_OFFSET (GtkWidgetClass, insensitive_press),
+                  NULL, NULL,
+                  _gtk_marshal_VOID__VOID,
+                  G_TYPE_NONE, 0);
+  
+  /**	
+   * GtkWidget::tap-and-hold	
+   * @widget: the object which received the signal	
+   *	
+   * The signal is emited when tap and hold activity occurs.	
+   */
+  widget_signals[TAP_AND_HOLD] =
+    g_signal_new("tap_and_hold", G_TYPE_FROM_CLASS(gobject_class),
+                  G_SIGNAL_RUN_LAST,
+                  G_STRUCT_OFFSET(GtkWidgetClass, tap_and_hold),
+                  NULL, NULL,
+                  _gtk_marshal_VOID__VOID,
+                  G_TYPE_NONE, 0);
+
+  /**	
+   * GtkWidget::tap-and-hold-setup	
+   * @widget: the object which received the signal	
+   * @menu: the menu to be opened.	
+   * @func: the menu position function	
+   * @flags: debricated	
+   *	
+   * Enables the tap and hold functionality to the @widget.	
+   * Usually a @menu is used at tap and hold signal,	
+   * but this is optional.  Setup can be run and some other functionality	
+   * may be connected to it as well.  Usually this signal is not used,	
+   * instead the virtual function is over written.	
+   * Signal is deprecated and should not be used.
+   */
+  widget_signals[TAP_AND_HOLD_SETUP] =  
+    g_signal_new("tap_and_hold_setup", G_TYPE_FROM_CLASS(gobject_class),
+                  G_SIGNAL_RUN_LAST,
+                  G_STRUCT_OFFSET(GtkWidgetClass, tap_and_hold_setup),
+                  NULL, NULL, /*FIXME -- OBJECT_POINTER_FLAGS*/
+                  _gtk_marshal_VOID__OBJECT_UINT_FLAGS,
+		 G_TYPE_NONE, 3, G_TYPE_OBJECT, G_TYPE_POINTER, G_TYPE_UINT);
+
+  /**
+   * GtkWidget::tap-and-hold-query
+   * @widget: the object which received the signal
+   * @returns: %FALSE if tap and hold is allowed to be started
+   *
+   * Signal is used in a situation where tap and hold is not allowed to be
+   * started in some mysterious reason.  A good mysterious reason could be,
+   * a widget which area is big and only part of it is allowed to start
+   * tap and hold.
+   */
+    widget_signals[TAP_AND_HOLD_QUERY] =
+    g_signal_new ("tap_and_hold_query",
+		  G_TYPE_FROM_CLASS (gobject_class),
+		  G_SIGNAL_RUN_LAST,
+		  G_STRUCT_OFFSET (GtkWidgetClass, tap_and_hold_query),
+		  _gtk_boolean_handled_accumulator, NULL,
+		  _gtk_marshal_BOOLEAN__BOXED,
+		  G_TYPE_BOOLEAN, 1, GDK_TYPE_EVENT);
+
   binding_set = gtk_binding_set_by_class (klass);
   gtk_binding_entry_add_signal (binding_set, GDK_F10, GDK_SHIFT_MASK,
                                 "popup_menu", 0);
@@ -1418,7 +1585,12 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 								 P_("Whether to draw the focus indicator inside widgets"),
 								 TRUE,
 								 G_PARAM_READABLE));
-
+  gtk_widget_class_install_style_property (klass,
+				   g_param_spec_boolean ("hildon-focus-handling",
+ 							 P_("Hildon focus handling"),
+ 							 P_("Whether the widget is using the hildon like focus handling or not"),
+ 							 FALSE,
+								 G_PARAM_READABLE));
   gtk_widget_class_install_style_property (klass,
 					   g_param_spec_int ("focus-line-width",
 							     P_("Focus linewidth"),
@@ -1543,6 +1715,8 @@ gtk_widget_set_property (GObject         *object,
     case PROP_NO_SHOW_ALL:
       gtk_widget_set_no_show_all (widget, g_value_get_boolean (value));
       break;
+    case PROP_TAP_AND_HOLD:
+      break;
     default:
       break;
     }
@@ -1637,16 +1811,44 @@ gtk_widget_get_property (GObject         *object,
     case PROP_NO_SHOW_ALL:
       g_value_set_boolean (value, gtk_widget_get_no_show_all (widget));
       break;
+    case PROP_TAP_AND_HOLD:
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
 }
 
+static void gtk_widget_set_focus_handling( GtkWidget *widget, gboolean state )
+{
+      GtkWidgetPrivate *priv;
+      priv = GTK_WIDGET_GET_PRIVATE (widget);
+
+      if( state && GTK_WIDGET_CAN_FOCUS(widget) )
+      {
+         if (!priv->state_set)
+            {  
+               g_signal_connect( G_OBJECT(widget), "button-press-event",
+                                      G_CALLBACK(gtk_widget_button_press_event), NULL );
+               g_signal_connect( G_OBJECT(widget), "button-release-event",
+                                      G_CALLBACK(gtk_widget_button_release_event), NULL );
+               g_signal_connect( G_OBJECT(widget), "enter-notify-event",
+                                      G_CALLBACK(gtk_widget_enter_notify_event), NULL );
+               g_signal_connect( G_OBJECT(widget), "leave-notify-event",
+                                      G_CALLBACK(gtk_widget_leave_notify_event), NULL );
+               priv->state_set = TRUE;
+            }
+      }
+}
+
 static void
 gtk_widget_init (GtkWidget *widget)
 {
+  GtkWidgetPrivate *priv;
   GTK_PRIVATE_FLAGS (widget) = PRIVATE_GTK_CHILD_VISIBLE;
+
+  priv = GTK_WIDGET_GET_PRIVATE(widget);
+
   widget->state = GTK_STATE_NORMAL;
   widget->saved_state = GTK_STATE_NORMAL;
   widget->name = NULL;
@@ -1659,6 +1861,16 @@ gtk_widget_init (GtkWidget *widget)
   widget->window = NULL;
   widget->parent = NULL;
 
+  priv->timer_id = 0;
+  priv->menu = NULL;
+  priv->signals_connected = FALSE;
+  priv->x = priv->y = 0;
+  priv->func = NULL;
+  priv->timer_counter = 0;
+  priv->state_set = FALSE;
+  priv->interval = GTK_TAP_AND_HOLD_TIMER_INTERVAL;
+  priv->tah_on_window = NULL;
+  
   GTK_WIDGET_SET_FLAGS (widget,
 			GTK_SENSITIVE |
 			GTK_PARENT_SENSITIVE |
@@ -1670,6 +1882,7 @@ gtk_widget_init (GtkWidget *widget)
   GTK_PRIVATE_SET_FLAG (widget, GTK_ALLOC_NEEDED);
 
   widget->style = gtk_widget_get_default_style ();
+
   g_object_ref (widget->style);
 }
 
@@ -2153,6 +2366,7 @@ gtk_widget_show_all (GtkWidget *widget)
 
   if ((GTK_WIDGET_FLAGS (widget) & GTK_NO_SHOW_ALL) != 0)
     return;
+ 
 
   class = GTK_WIDGET_GET_CLASS (widget);
 
@@ -3400,6 +3614,135 @@ gtk_widget_real_focus_out_event (GtkWidget     *widget,
   return FALSE;
 }
 
+/**
+ * gtk_widget_button_press_event
+ * @widget: a #GtkWidget
+ * @event: a #GtkEventKey
+ *
+**/
+static gboolean gtk_widget_button_press_event (GtkWidget *widget, GdkEventButton *event )
+{
+  if (!mouse_pressed)
+    {
+      GtkWidget *toplevel;
+      toplevel = gtk_widget_get_toplevel (widget);
+      if (GTK_IS_WINDOW (toplevel))
+	{
+	  mouse_pressed = TRUE;
+
+	  if (GTK_IS_WIDGET (GTK_WINDOW (toplevel)->focus_widget))
+	    gtk_window_set_prev_focus_widget (GTK_WINDOW (toplevel),
+					      GTK_WINDOW (toplevel)->focus_widget);
+	}
+    }
+  return FALSE;
+}
+
+/**
+ * gtk_widget_button_release_event
+ * @widget: a #GtkWidget
+ * @event: a #GtkEventKey
+ *
+**/
+static gboolean gtk_widget_button_release_event (GtkWidget *widget, GdkEventButton *event)
+{
+  if (mouse_pressed)
+    {
+      GtkWidget *toplevel;
+      GtkWidget *event_widget;
+      event_widget = gtk_get_event_widget ((GdkEvent*)event);
+      toplevel = gtk_widget_get_toplevel (widget);
+
+      mouse_pressed = FALSE;
+      on_same_widget = TRUE;
+
+      if (GTK_IS_WINDOW (toplevel))
+	{
+	  if (!on_same_widget &&
+	      GTK_IS_WIDGET (GTK_WINDOW (toplevel)->focus_widget))
+	    gtk_window_set_prev_focus_widget (GTK_WINDOW (toplevel),
+					      GTK_WINDOW (toplevel)->focus_widget);
+	  else if (GTK_IS_WIDGET (event_widget))
+	    gtk_window_set_prev_focus_widget (GTK_WINDOW (toplevel),
+					      event_widget);
+	}
+    }
+  return FALSE;
+}
+
+/**
+ * gtk_widget_enter_notify_event
+ * @widget: a #GtkWidget
+ * @event: a #GtkEventCrossing
+ *
+**/
+static gboolean gtk_widget_enter_notify_event (GtkWidget *widget, GdkEventCrossing *event)
+{
+  GtkWidget *toplevel;
+  GtkWidget *event_widget;
+
+  toplevel = gtk_widget_get_toplevel (widget);
+  event_widget = gtk_get_event_widget ((GdkEvent*) event);
+
+  if (mouse_pressed && !on_same_widget && gtk_window_get_prev_focus_widget( GTK_WINDOW(toplevel) ) == event_widget)
+    {
+      on_same_widget = TRUE;
+
+      if (GTK_IS_WIDGET (GTK_WINDOW (toplevel)->focus_widget))
+	{
+	  gtk_window_set_prev_focus_widget (GTK_WINDOW(toplevel), GTK_WINDOW(toplevel)->focus_widget);
+	  if (GTK_WIDGET_CAN_FOCUS (event_widget))
+	    gtk_widget_grab_focus (event_widget);
+	  else
+	    gtk_widget_activate (event_widget);
+	}
+    }
+  return FALSE;
+}
+
+
+/**
+ * gtk_widget_leave_notify_event
+ * @widget: a #GtkWidget
+ * @event: a #GtkEventCrossing
+ * 
+**/
+static gboolean gtk_widget_leave_notify_event (GtkWidget *widget, GdkEventCrossing *event)
+{
+  if (mouse_pressed && on_same_widget)
+    {
+      GtkWidget *event_widget;
+      GtkWidget *toplevel;
+      GtkWidget *temp;
+      toplevel = gtk_widget_get_toplevel (widget);
+      event_widget = gtk_get_event_widget ((GdkEvent*) event);
+      on_same_widget = FALSE;
+
+      /* in general what we're trying to do here is to cancel widget selection
+         and go back to previous one if mouse is moved out from it while
+         button is still being pressed.
+
+         this isn't wanted at least between two entry widgets, so there's a
+         special case for it. it might not be wanted with entries at all, but
+         apparently just checking that caused some bug, so playing safe
+         here.. */
+      temp = gtk_window_get_prev_focus_widget (GTK_WINDOW (toplevel));
+      if (GTK_IS_WIDGET (temp) && GTK_IS_WIDGET (event_widget) &&
+          gtk_window_has_toplevel_focus (GTK_WINDOW (toplevel)) &&
+          (!GTK_IS_ENTRY(widget) || !GTK_IS_ENTRY(temp)))
+	{
+	  gtk_window_set_prev_focus_widget (GTK_WINDOW (toplevel),
+					    event_widget);
+	  if (GTK_WIDGET_CAN_FOCUS (temp))
+	    gtk_widget_grab_focus (temp);
+	  else
+	    gtk_widget_activate (temp);
+	}
+    }
+  return FALSE;
+}
+
+
 #define WIDGET_REALIZED_FOR_EVENT(widget, event) \
      (event->type == GDK_FOCUS_CHANGE || GTK_WIDGET_REALIZED(widget))
 
@@ -3945,13 +4288,40 @@ reset_focus_recurse (GtkWidget *widget,
 }
 
 static void
+gtk_widget_set_valid_context (GtkIMContext **valid_context, GtkWidget *widget)
+{
+  GtkIMContext *context;
+
+  if (GTK_IS_ENTRY (widget))
+    context = GTK_ENTRY (widget)->im_context;
+  else if (GTK_IS_TEXT_VIEW (widget))
+    context = GTK_TEXT_VIEW (widget)->im_context;
+  else
+    return;
+
+  if (*valid_context != NULL)
+    g_object_unref (*valid_context);
+  *valid_context = context;
+  g_object_ref (*valid_context);
+}
+
+static void
 gtk_widget_real_grab_focus (GtkWidget *focus_widget)
 {
-  if (GTK_WIDGET_CAN_FOCUS (focus_widget))
+  if (GTK_WIDGET_CAN_FOCUS (focus_widget) &&
+      GTK_WIDGET_VISIBLE (focus_widget))
     {
+      /* we can't hide IM without IM context. it's possible to move
+       * focus to widget which doesn't have IM context, but which
+       * doesn't want IM to be hidden either. So, we have this
+       * static valid_context variable which is used... */
+      static GtkIMContext *valid_context = NULL;
       GtkWidget *toplevel;
       GtkWidget *widget;
-      
+      GtkIMContext *context;
+
+      gtk_widget_set_valid_context (&valid_context, focus_widget);
+
       /* clear the current focus setting, break if the current widget
        * is the focus widget's parent, since containers above that will
        * be set by the next loop.
@@ -3972,7 +4342,89 @@ gtk_widget_real_grab_focus (GtkWidget *focus_widget)
 
 	      return;
 	    }
-	  
+
+	  gtk_widget_set_valid_context (&valid_context, widget);
+
+          if (valid_context)
+            {
+              gboolean is_combo, is_inside_toolbar;
+	      gboolean is_editable_entry, is_editable_text_view;
+              gboolean allow_deselect;
+              GtkWidget *parent, *deselect = NULL;
+
+              parent = gtk_widget_get_parent (focus_widget);
+              is_combo = GTK_IS_TOGGLE_BUTTON (focus_widget) &&
+                (GTK_IS_COMBO_BOX_ENTRY (parent) ||
+                 GTK_IS_COMBO_BOX (parent));
+              is_inside_toolbar =
+                gtk_widget_get_ancestor (focus_widget,
+                                         GTK_TYPE_TOOLBAR) != NULL;
+	      is_editable_entry = GTK_IS_ENTRY (focus_widget) &&
+		gtk_editable_get_editable (GTK_EDITABLE(focus_widget));
+	      is_editable_text_view = GTK_IS_TEXT_VIEW (focus_widget) &&
+		gtk_text_view_get_editable (GTK_TEXT_VIEW (focus_widget));
+
+              if (focus_widget == NULL ||
+		  !is_editable_entry &&
+		  !is_editable_text_view &&
+                  !GTK_IS_SCROLLBAR (focus_widget) &&
+                  !GTK_IS_MENU_ITEM (focus_widget) &&
+                  !GTK_IS_MENU (focus_widget) &&
+                  !is_inside_toolbar &&
+                  !is_combo)
+                {
+                  gtk_im_context_hide (valid_context);
+                }
+
+              /* remove text highlight (selection) unless focus is not moved
+                 inside a toolbar */
+              allow_deselect = (!is_inside_toolbar ||
+                                GTK_IS_ENTRY (focus_widget) ||
+                                GTK_IS_TEXT_VIEW (focus_widget));
+
+              if (selection_widget && allow_deselect)
+                {
+                  g_object_remove_weak_pointer (G_OBJECT (selection_widget),
+                                                (gpointer) &selection_widget);
+                  deselect = selection_widget;
+                  selection_widget = NULL;
+                }
+              else if (GTK_IS_ENTRY (widget) || GTK_IS_TEXT_VIEW (widget))
+                {
+                  if (allow_deselect)
+                    deselect = widget;
+                  else
+                    {
+                      selection_widget = widget;
+                      g_object_add_weak_pointer (G_OBJECT (selection_widget),
+                                                 (gpointer) &selection_widget);
+                    }
+                }
+
+              if (deselect)
+                {
+                  if (GTK_IS_ENTRY (deselect) &&
+                      gtk_editable_get_selection_bounds (GTK_EDITABLE (deselect), NULL, NULL))
+                    {
+                      gint pos;
+                      pos = gtk_editable_get_position (GTK_EDITABLE (deselect));
+                      gtk_editable_set_position (GTK_EDITABLE (deselect), pos);
+                    }
+                  else if (GTK_IS_TEXT_VIEW (deselect))
+                    {
+                      GtkTextBuffer *text_buff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (deselect));
+
+                      if (gtk_text_buffer_get_selection_bounds (text_buff, NULL, NULL))
+                        {
+                          GtkTextIter insert;
+                          gtk_text_buffer_get_iter_at_mark (text_buff, &insert,
+                                  gtk_text_buffer_get_insert (text_buff));
+                          gtk_text_buffer_place_cursor (text_buff, &insert);
+                        }
+                    }
+                }
+            }
+
 	  if (widget)
 	    {
 	      while (widget->parent && widget->parent != focus_widget->parent)
@@ -4462,9 +4914,13 @@ gtk_widget_ensure_style (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  if (!GTK_WIDGET_USER_STYLE (widget) &&
-      !GTK_WIDGET_RC_STYLE (widget))
+  if (!GTK_WIDGET_USER_STYLE (widget) && !GTK_WIDGET_RC_STYLE (widget))
+  {
+    gboolean hfh = FALSE;
     gtk_widget_reset_rc_style (widget);
+    gtk_widget_style_get( widget, "hildon-focus-handling", &hfh, NULL );
+    gtk_widget_set_focus_handling( widget, hfh );
+  }
 }
 
 /* Look up the RC style for this widget, unsetting any user style that
@@ -6396,7 +6852,7 @@ gtk_widget_set_default_direction_recurse (GtkWidget *widget, gpointer data)
   
   if (!GTK_WIDGET_DIRECTION_SET (widget))
     gtk_widget_emit_direction_changed (widget, old_dir);
-  
+
   if (GTK_IS_CONTAINER (widget))
     gtk_container_forall (GTK_CONTAINER (widget),
 			  gtk_widget_set_default_direction_recurse,
@@ -6404,6 +6860,13 @@ gtk_widget_set_default_direction_recurse (GtkWidget *widget, gpointer data)
 
   g_object_unref (widget);
 }
+
+/* Non static */
+void gtk_widget_set_direction_recursive(GtkWidget * widget,  GtkTextDirection dir )
+{
+  gtk_widget_set_default_direction_recurse( widget, GUINT_TO_POINTER(dir) );
+}
+               
 
 /**
  * gtk_widget_set_default_direction:
@@ -6422,7 +6885,7 @@ gtk_widget_set_default_direction (GtkTextDirection dir)
     {
       GList *toplevels, *tmp_list;
       GtkTextDirection old_dir = gtk_default_direction;
-      
+
       gtk_default_direction = dir;
 
       tmp_list = toplevels = gtk_window_list_toplevels ();
@@ -6476,6 +6939,9 @@ gtk_widget_real_destroy (GtkObject *object)
 {
   /* gtk_object_destroy() will already hold a refcount on object */
   GtkWidget *widget = GTK_WIDGET (object);
+#ifdef TAP_AND_HOLD_ANIMATION
+  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE(widget);
+#endif
 
   /* wipe accelerator closures (keep order) */
   g_object_set_qdata (G_OBJECT (widget), quark_accel_path, NULL);
@@ -6490,6 +6956,14 @@ gtk_widget_real_destroy (GtkObject *object)
   widget->style = gtk_widget_get_default_style ();
   g_object_ref (widget->style);
 
+#ifdef TAP_AND_HOLD_ANIMATION
+  if( priv->anim )
+  {
+    g_object_unref(priv->anim);
+    priv->anim = NULL;
+  }
+#endif
+
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
@@ -6497,6 +6971,7 @@ static void
 gtk_widget_finalize (GObject *object)
 {
   GtkWidget *widget = GTK_WIDGET (object);
+  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE(object);
   GtkWidgetAuxInfo *aux_info;
   gint *events;
   GdkExtensionMode *mode;
@@ -6507,6 +6982,12 @@ gtk_widget_finalize (GObject *object)
   g_object_unref (widget->style);
   widget->style = NULL;
 
+  if (priv->timer_id)
+    {
+      g_source_remove (priv->timer_id);
+      priv->timer_id = 0;
+    }
+  
   if (widget->name)
     g_free (widget->name);
   
@@ -6525,6 +7006,9 @@ gtk_widget_finalize (GObject *object)
   accessible = g_object_get_qdata (G_OBJECT (widget), quark_accessible_object);
   if (accessible)
     g_object_unref (accessible);
+
+  if  (GTK_IS_MENU(priv->menu))
+    gtk_widget_destroy (priv->menu);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -7574,6 +8058,386 @@ gtk_widget_set_no_show_all (GtkWidget *widget,
     GTK_WIDGET_SET_FLAGS (widget, GTK_NO_SHOW_ALL);
   else
     GTK_WIDGET_UNSET_FLAGS (widget, GTK_NO_SHOW_ALL);
-  
+
   g_object_notify (G_OBJECT (widget), "no_show_all");
+}
+
+void gtk_widget_insensitive_press ( GtkWidget *widget )
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  g_signal_emit(widget, widget_signals[INSENSITIVE_PRESS], 0);
+}
+
+/*Tap And Hold*/
+
+#ifdef TAP_AND_HOLD_ANIMATION
+static void
+stop_tap_and_hold_animation (GtkWidget *widget)
+{
+  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE (widget);
+  if (!GDK_IS_WINDOW (priv->tah_on_window))
+    return;
+
+  if (priv->anim)
+    gdk_window_set_cursor (priv->tah_on_window, NULL);
+  priv->tah_on_window = NULL;
+}
+#endif
+
+void tap_and_hold_remove_timer (GtkWidget *widget)
+{
+  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE (widget);
+  if (priv->timer_id)
+    {
+      g_source_remove (priv->timer_id);
+      priv->timer_id = 0;
+    }
+
+  priv->x = priv->y = priv->timer_counter = 0;
+#ifdef TAP_AND_HOLD_ANIMATION
+  stop_tap_and_hold_animation (widget);
+#endif
+}
+
+#ifdef TAP_AND_HOLD_ANIMATION
+static void
+init_tap_and_hold_animation (GtkWidgetPrivate *priv)
+{
+  GTimeVal time;
+  if (priv->anim)
+    {
+      g_get_current_time (&time);
+      priv->iter = gdk_pixbuf_animation_get_iter (priv->anim, &time);
+      priv->interval = gdk_pixbuf_animation_iter_get_delay_time (priv->iter);
+    }
+}
+
+static gboolean
+timeout_tap_and_hold_animation (GtkWidget *widget)
+{
+  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE (widget);
+
+  if (!GDK_IS_WINDOW (priv->tah_on_window))
+    {
+      tap_and_hold_remove_timer (widget);
+      return FALSE;
+    }
+
+  if (priv->anim)
+    {
+      guint new_interval = 0;
+      GTimeVal time;
+      GdkScreen *screen;
+      GdkPixbuf *pic;
+      GdkCursor *cursor;
+
+      g_get_current_time (&time);
+      screen = gdk_screen_get_default ();
+      pic = gdk_pixbuf_animation_iter_get_pixbuf (priv->iter);
+      
+      pic = gdk_pixbuf_copy (pic);
+      
+      if (!GDK_IS_PIXBUF (pic))
+      	return TRUE;
+
+      cursor = gdk_cursor_new_from_pixbuf (gdk_display_get_default (), pic,
+					   priv->width, priv->height);
+      g_object_unref (pic);
+
+      if (!cursor)
+      	return TRUE;
+
+      gdk_window_set_cursor (priv->tah_on_window, cursor);
+      gdk_cursor_unref (cursor);
+
+      gdk_pixbuf_animation_iter_advance (priv->iter, &time);
+
+      new_interval = gdk_pixbuf_animation_iter_get_delay_time (priv->iter);
+
+      if (new_interval != priv->interval && priv->timer_counter)
+	{
+	  priv->interval = new_interval;
+	  priv->timer_id = g_timeout_add (priv->interval,
+					  (GSourceFunc)gtk_widget_tap_and_hold_timeout, widget);
+	  return FALSE;
+	}
+    }
+  return TRUE;
+}
+
+#endif
+
+/**
+ * gtk_widget_tap_and_hold_setup:
+ *
+ * @widget : A @GtkWidget
+ * @menu : A @GtkWidget
+ * @func : A @GtkCallback
+ * @flags : A @GtkWidgetTapAndHoldFlags
+ *
+ * Setups the tap and hold functionality to the @widget.
+ * The @menu is shown when the functionality is activated.
+ * If the @menu is wanted to be positioned in a different way than the
+ * gtk+ default, the menuposition @func can be passed as a third parameter.
+ * Fourth parameter, @flags is debricated and has no effect.
+ */
+void gtk_widget_tap_and_hold_setup (GtkWidget *widget, GtkWidget *menu,
+				    GtkCallback func,
+				    GtkWidgetTapAndHoldFlags flags)
+{
+  /*GtkWidgetClass *klass = GTK_WIDGET_GET_CLASS(widget);*/
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  g_return_if_fail (menu == NULL || GTK_IS_MENU (menu));
+  g_signal_emit (widget, widget_signals[TAP_AND_HOLD_SETUP], 0, menu, func,
+		 flags);
+}
+
+static void gtk_widget_tap_and_hold_setup_real (GtkWidget *widget,
+						GtkWidget *menu,
+						GtkCallback func,
+						GtkWidgetTapAndHoldFlags flags)
+{
+#ifdef TAP_AND_HOLD_ANIMATION
+  GtkIconTheme *theme = NULL;
+  GtkIconInfo *info = NULL;
+  GError *error = NULL;
+  const gchar *filename = NULL;
+  GdkWindow *window = NULL;
+#endif
+
+  GtkWidgetPrivate *priv;
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  g_return_if_fail (menu == NULL || GTK_IS_MENU (menu));
+  priv = GTK_WIDGET_GET_PRIVATE (widget);
+  if (priv->signals_connected)
+    return;
+
+  if (menu != NULL)
+    _gtk_menu_enable_context_menu_behavior (GTK_MENU (menu));
+
+  priv->menu = menu;
+  priv->func = (GtkMenuPositionFunc)func;
+  priv->signals_connected = TRUE;
+  priv->timer_counter = 0;
+
+  g_signal_connect (widget, "button-press-event",
+		    G_CALLBACK (gtk_widget_tap_and_hold_button_press), priv);
+  g_signal_connect (widget, "button-release-event",
+		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), priv);
+  g_signal_connect (widget, "leave-notify-event",
+		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), priv);
+  g_signal_connect (widget, "drag-begin",
+		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), priv);
+
+#ifdef TAP_AND_HOLD_ANIMATION
+  window = gdk_get_default_root_window ();
+  priv->anim = g_object_get_data (G_OBJECT (window),
+				  "gtk-tap-and-hold-animation");
+  if (!GDK_IS_PIXBUF_ANIMATION (priv->anim))
+    {
+      theme = gtk_icon_theme_get_default ();
+      if (!theme)
+	{
+	  g_warning ("Unable to find icon theme");
+	  return;
+	}
+
+      info = gtk_icon_theme_lookup_icon (theme, "qgn_indi_tap_hold_a", GTK_ICON_SIZE_BUTTON,
+					 GTK_ICON_LOOKUP_NO_SVG);
+      if (!info)
+	{
+	  g_warning ("Unable to find icon info");
+	  return;
+	}
+
+      filename = gtk_icon_info_get_filename (info);
+      if (!filename)
+	{
+	  gtk_icon_info_free (info);
+	  g_warning ("Unable to find tap and hold icon filename");
+	  return;
+	}
+
+      priv->anim = gdk_pixbuf_animation_new_from_file (filename, &error);
+
+      if (error)
+	{
+	  g_warning ("Unable to create tap and hold animation: %s", error->message);
+	  priv->anim = NULL;
+	  g_error_free (error);
+	  gtk_icon_info_free (info);
+	  return;
+	}
+
+      gtk_icon_info_free (info);
+
+      priv->width = gdk_pixbuf_animation_get_width (priv->anim)/2;
+      priv->height = gdk_pixbuf_animation_get_height (priv->anim)/2;
+      g_object_set_data (G_OBJECT (window),
+			 "gtk-tap-and-hold-animation", priv->anim);
+    }
+  g_object_ref (priv->anim);
+#endif
+}
+
+static void gtk_widget_real_tap_and_hold (GtkWidget *widget)
+{
+  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE (widget);
+  if (GTK_IS_MENU (priv->menu))
+    gtk_menu_popup (GTK_MENU (priv->menu), NULL, NULL,
+		    (GtkMenuPositionFunc)priv->func,
+		    widget, 1, gdk_x11_get_server_time (widget->window));
+}
+
+static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
+{
+  GtkWidgetPrivate *priv= GTK_WIDGET_GET_PRIVATE (widget);
+  gboolean result = TRUE;
+  gint x = 0, y = 0;
+
+  if (!GDK_IS_WINDOW (priv->tah_on_window))
+    {
+      tap_and_hold_remove_timer (widget);
+      return FALSE;
+    }
+  /* A small timeout before starting the tap and hold */
+  if (priv->timer_counter == GTK_TAP_AND_HOLD_TIMER_COUNTER)
+    {
+      priv->timer_counter--;
+      return TRUE;
+    }
+
+#ifdef TAP_AND_HOLD_ANIMATION
+  result = timeout_tap_and_hold_animation (widget);
+#endif
+
+  if (priv->timer_counter)
+    priv->timer_counter--;
+  else
+    priv->timer_id = 0;
+
+  gdk_display_get_pointer (gdk_x11_lookup_xdisplay (
+			   GDK_WINDOW_XDISPLAY (
+			   priv->tah_on_window)),
+			   NULL, &x, &y, NULL);
+
+  /* Did we dragged too far from the start point */
+  if ((abs (x - priv->x) > GTK_TAP_THRESHOLD) ||
+      (abs (y - priv->y) > GTK_TAP_THRESHOLD))
+    {
+      tap_and_hold_remove_timer (widget);
+      return FALSE;
+    }
+
+  /* Was that the last cycle -> tah starts */
+  if (!priv->timer_id)
+    {
+      tap_and_hold_remove_timer (widget);
+      _gtk_widget_grab_notify (widget, FALSE);
+      g_signal_emit (widget, widget_signals[TAP_AND_HOLD], 0);
+      return FALSE;
+    }
+  return result;
+}
+
+static gboolean gtk_widget_tap_and_hold_real_query (GtkWidget *widget, GdkEvent *event)
+{
+  return FALSE;
+}
+
+static gboolean gtk_widget_tap_and_hold_query (GtkWidget *widget, GdkEvent *event)
+{
+  gboolean return_value = FALSE;
+  g_signal_emit (G_OBJECT (widget), widget_signals[TAP_AND_HOLD_QUERY],
+		 0, event, &return_value);
+  return return_value;
+}
+
+static gboolean gtk_widget_tap_and_hold_button_press (GtkWidget *widget,
+						      GdkEvent *event,
+						      GtkWidgetPrivate *priv)
+{
+  if (event->button.type == GDK_2BUTTON_PRESS)
+    return FALSE;
+
+  if (!gtk_widget_tap_and_hold_query (widget, event) && !priv->timer_id)
+    {
+      gdk_display_get_pointer (gdk_x11_lookup_xdisplay (
+                               GDK_WINDOW_XDISPLAY (widget->window)),
+			       NULL, &priv->x, &priv->y, NULL);
+
+      priv->timer_counter = GTK_TAP_AND_HOLD_TIMER_COUNTER;
+      priv->tah_on_window = widget->window;
+
+#ifdef TAP_AND_HOLD_ANIMATION
+      init_tap_and_hold_animation (priv);
+#endif
+      priv->timer_id = g_timeout_add (priv->interval,
+				      (GSourceFunc)
+				      gtk_widget_tap_and_hold_timeout, widget);
+    }
+  return FALSE;
+}
+
+static gboolean gtk_widget_tap_and_hold_event_stop (GtkWidget *widget,
+						    gpointer unused,
+						    GtkWidgetPrivate *priv)
+{
+  if (priv->timer_id)
+    tap_and_hold_remove_timer (widget);
+  return FALSE;
+}
+
+/**
+ * gtk_widget_tap_and_hold_menu_position_top:
+ * @menu: a #GtkMenu
+ * @x: x cordinate to be returned
+ * @y: y cordinate to be returned
+ * @push_in: If going off screen, push it pack on the screen
+ * @widget: a #GtkWidget
+ *
+ * Pre-made menu positioning function.
+ * It positiones the @menu over the @widget.
+ *
+ **/
+void gtk_widget_tap_and_hold_menu_position_top (GtkWidget *menu,
+						gint *x, gint *y,
+						gboolean *push_in,
+						GtkWidget *widget)
+{
+  /*
+   * This function positiones the menu above widgets.
+   * This is a modified version of the position function
+   * gtk_combo_box_position_over.
+   */
+  GtkWidget *topw;
+  GtkRequisition requisition;
+  gint screen_width = 0;
+  gint menu_xpos = 0;
+  gint menu_ypos = 0;
+  gint w_xpos = 0, w_ypos = 0;
+  gtk_widget_size_request (menu, &requisition);
+
+  topw = gtk_widget_get_toplevel (widget);
+  gdk_window_get_origin (topw->window, &w_xpos, &w_ypos);
+
+  menu_xpos += widget->allocation.x + w_xpos;
+  menu_ypos += widget->allocation.y + w_ypos - requisition.height;
+
+  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+    menu_xpos = menu_xpos + widget->allocation.width - requisition.width;
+
+  screen_width = gdk_screen_get_width (gtk_widget_get_screen (widget));
+
+  if (menu_xpos < w_xpos)
+    menu_xpos = w_xpos;
+  else if ((menu_xpos + requisition.width) > screen_width)
+    menu_xpos -= ((menu_xpos + requisition.width) - screen_width);
+  if (menu_ypos < w_ypos)
+    menu_ypos = w_ypos;
+
+  *x = menu_xpos;
+  *y = menu_ypos;
+  *push_in = TRUE;
 }

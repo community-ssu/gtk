@@ -246,6 +246,7 @@ gtk_public_h_sources =          \
 	gtktearoffmenuitem.h    \
 	gtktext.h		\
 	gtktextbuffer.h		\
+	gtktextbufferserialize.h\
 	gtktextchild.h		\
 	gtktextdisplay.h	\
 	gtktextiter.h		\
@@ -387,6 +388,8 @@ gtk_c_sources =                 \
 	gtkframe.c		\
 	gtkgamma.c		\
 	gtkgc.c			\
+	gtkhashtable.c		\
+	gtkhashtable.h		\
 	gtkhandlebox.c		\
 	gtkhbbox.c		\
 	gtkhbox.c		\
@@ -470,6 +473,7 @@ gtk_c_sources =                 \
 	gtktext.c		\
 	gtktextbtree.c		\
 	gtktextbuffer.c		\
+	gtktextbufferserialize.c\
 	gtktextchild.c		\
 	gtktextdisplay.c	\
 	gtktextiter.c		\

@@ -85,14 +85,15 @@ struct _GtkIMContextClass
   gboolean (*get_surrounding)     (GtkIMContext   *context,
 				   gchar         **text,
 				   gint           *cursor_index);
+  void     (*show)                (GtkIMContext   *context);
+  void     (*hide)                (GtkIMContext   *context);
+   
 
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
   void (*_gtk_reserved3) (void);
   void (*_gtk_reserved4) (void);
-  void (*_gtk_reserved5) (void);
-  void (*_gtk_reserved6) (void);
 };
 
 GType    gtk_im_context_get_type            (void) G_GNUC_CONST;
@@ -122,6 +123,8 @@ gboolean gtk_im_context_get_surrounding     (GtkIMContext   *context,
 gboolean gtk_im_context_delete_surrounding  (GtkIMContext   *context,
 					     gint            offset,
 					     gint            n_chars);
+void     gtk_im_context_show                (GtkIMContext   *context);
+void     gtk_im_context_hide                (GtkIMContext   *context);
 
 #ifdef __cplusplus
 }

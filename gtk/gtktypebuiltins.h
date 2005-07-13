@@ -13,6 +13,11 @@ G_BEGIN_DECLS
 GType gtk_accel_flags_get_type (void) G_GNUC_CONST;
 #define GTK_TYPE_ACCEL_FLAGS (gtk_accel_flags_get_type())
 
+/* enumerations from "gtkbutton.h" */
+
+GType osso_gtk_button_attach_flags_get_type (void) G_GNUC_CONST;
+#define GTK_TYPE_GTK_BUTTON_ATTACH_FLAGS (osso_gtk_button_attach_flags_get_type())
+
 /* enumerations from "gtkcalendar.h" */
 
 GType gtk_calendar_display_options_get_type (void) G_GNUC_CONST;
@@ -203,6 +208,9 @@ GType gtk_im_preedit_style_get_type (void) G_GNUC_CONST;
 GType gtk_im_status_style_get_type (void) G_GNUC_CONST;
 #define GTK_TYPE_IM_STATUS_STYLE (gtk_im_status_style_get_type())
 
+GType gtk_invalid_input_type_get_type (void) G_GNUC_CONST;
+#define GTK_TYPE_INVALID_INPUT_TYPE (gtk_invalid_input_type_get_type())
+
 /* enumerations from "gtkfilechooser.h" */
 
 GType gtk_file_chooser_action_get_type (void) G_GNUC_CONST;
@@ -334,6 +342,9 @@ GType gtk_widget_flags_get_type (void) G_GNUC_CONST;
 
 GType gtk_widget_help_type_get_type (void) G_GNUC_CONST;
 #define GTK_TYPE_WIDGET_HELP_TYPE (gtk_widget_help_type_get_type())
+
+GType gtk_widget_tap_and_hold_flags_get_type (void) G_GNUC_CONST;
+#define GTK_TYPE_WIDGET_TAP_AND_HOLD_FLAGS (gtk_widget_tap_and_hold_flags_get_type())
 
 G_END_DECLS
 

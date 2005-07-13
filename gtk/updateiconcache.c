@@ -40,6 +40,7 @@ static gboolean quiet = FALSE;
 #define HAS_SUFFIX_SVG (1 << 1)
 #define HAS_SUFFIX_PNG (1 << 2)
 #define HAS_ICON_FILE  (1 << 3)
+#define HAS_SUFFIX_ANI (1 << 4)
 
 #define MAJOR_VERSION 1
 #define MINOR_VERSION 0
@@ -55,7 +56,7 @@ is_cache_up_to_date (const gchar *path)
   gchar *cache_path;
   int retval;
   
-  retval = g_stat (path, &path_stat);
+  retval = stat (path, &path_stat);
 
   if (retval < 0)
     {
@@ -164,7 +165,7 @@ scan_directory (const gchar *base_path,
 
       retval = g_file_test (path, G_FILE_TEST_IS_REGULAR);
       g_free (path);
-      
+
       if (retval)
 	{
 	  if (g_str_has_suffix (name, ".png"))
@@ -175,6 +176,8 @@ scan_directory (const gchar *base_path,
 	    flags |= HAS_SUFFIX_XPM;
 	  else if (g_str_has_suffix (name, ".icon"))
 	    flags |= HAS_ICON_FILE;
+	  else if (g_str_has_suffix (name, ".ani"))
+	    flags |= HAS_SUFFIX_ANI;
 	  
 	  if (flags == 0)
 	    continue;

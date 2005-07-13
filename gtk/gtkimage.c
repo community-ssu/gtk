@@ -1391,7 +1391,18 @@ animation_timeout (gpointer data)
                      animation_timeout,
                      image);
   
-  gtk_widget_queue_draw (GTK_WIDGET (image));
+  /*gtk_widget_queue_draw (GTK_WIDGET (image));*/
+  if (GTK_WIDGET_DRAWABLE (image))
+    {
+      GtkWidget     *widget = (GtkWidget*)image;
+      GdkEventExpose event;
+
+      /* ugly event hack, but the area is sufficient for gtk_image_expose */
+      event.area = widget->allocation;
+      gdk_window_begin_paint_rect (widget->window, &event.area);
+      gtk_image_expose (widget, &event);
+      gdk_window_end_paint (widget->window);
+    }
 
   GDK_THREADS_LEAVE ();
 

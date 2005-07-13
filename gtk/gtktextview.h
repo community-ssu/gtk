@@ -95,8 +95,7 @@ struct _GtkTextView
 
   guint accepts_tab : 1;
   
-  /* this flag is no longer used */
-  guint reserved : 1;
+  guint width_changed : 1;
   
   /* debug flag - means that we've validated onscreen since the
    * last "invalidate" signal from the layout
@@ -104,7 +103,7 @@ struct _GtkTextView
   guint onscreen_validated : 1;
 
   guint mouse_cursor_obscured : 1;
-  
+
   GtkTextWindow *text_window;
   GtkTextWindow *left_window;
   GtkTextWindow *right_window;

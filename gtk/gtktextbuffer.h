@@ -365,6 +365,14 @@ gboolean        gtk_text_buffer_delete_selection        (GtkTextBuffer *buffer,
 void            gtk_text_buffer_begin_user_action       (GtkTextBuffer *buffer);
 void            gtk_text_buffer_end_user_action         (GtkTextBuffer *buffer);
 
+void            gtk_text_buffer_set_can_paste_rich_text (GtkTextBuffer *buffer,
+							 gboolean       can_paste_rich_text);
+gboolean        gtk_text_buffer_get_can_paste_rich_text (GtkTextBuffer *buffer);
+
+void                  gtk_text_buffer_set_rich_text_format (GtkTextBuffer *buffer,
+							    const gchar   *format);
+G_CONST_RETURN gchar *gtk_text_buffer_get_rich_text_format (GtkTextBuffer *buffer);
+
 /* INTERNAL private stuff */
 void            _gtk_text_buffer_spew                  (GtkTextBuffer      *buffer);
 

@@ -454,6 +454,10 @@ void	  gtk_style_apply_default_background (GtkStyle	   *style,
 					      gint	    width, 
 					      gint	    height);
 
+gboolean  gtk_style_lookup_logical_color     (GtkStyle     *style,
+                                              const gchar  *color_name,
+                                              GdkColor     *color);
+                          
 GtkIconSet* gtk_style_lookup_icon_set (GtkStyle            *style,
                                        const gchar         *stock_id);
 GdkPixbuf*  gtk_style_render_icon     (GtkStyle            *style,

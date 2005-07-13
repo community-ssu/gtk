@@ -185,8 +185,8 @@ void gdk_synthesize_window_state (GdkWindow     *window,
                                   GdkWindowState unset_flags,
                                   GdkWindowState set_flags);
 
-#define GDK_SCRATCH_IMAGE_WIDTH 256
-#define GDK_SCRATCH_IMAGE_HEIGHT 64
+#define GDK_SCRATCH_IMAGE_WIDTH 128
+#define GDK_SCRATCH_IMAGE_HEIGHT 32
 
 GdkImage* _gdk_image_new_for_depth (GdkScreen    *screen,
 				    GdkImageType  type,

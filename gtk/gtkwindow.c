@@ -166,6 +166,7 @@ struct _GtkWindowPrivate
   guint skips_taskbar : 1;
   guint skips_pager : 1;
   guint accept_focus : 1;
+  GtkWidget *prev_focus_widget;
   guint focus_on_map : 1;
 };
 
@@ -293,6 +294,8 @@ static void gtk_window_get_property (GObject         *object,
 				     GValue          *value,
 				     GParamSpec      *pspec);
 
+static void gtk_window_focus_weak_notify (GtkWindow *window,
+		GtkWidget *widget);
 
 GType
 gtk_window_get_type (void)
@@ -771,6 +774,7 @@ gtk_window_init (GtkWindow *window)
   window->decorated = TRUE;
   window->mnemonic_modifier = GDK_MOD1_MASK;
   window->screen = gdk_screen_get_default ();
+  priv->prev_focus_widget = NULL;
 
   priv->accept_focus = TRUE;
   priv->focus_on_map = TRUE;
@@ -7505,3 +7509,39 @@ gtk_window_set_default_icon_from_file (const gchar *filename,
 }
 
 #endif
+/*Hildon focus handling*/
+GtkWidget *gtk_window_get_prev_focus_widget (GtkWindow *window)
+{
+  g_return_val_if_fail (GTK_IS_WINDOW (window), NULL);
+  return GTK_WINDOW_GET_PRIVATE (window)->prev_focus_widget;
+}
+
+void gtk_window_set_prev_focus_widget (GtkWindow *window, GtkWidget *widget)
+{
+  GtkWindowPrivate *priv;
+
+  g_return_if_fail (GTK_IS_WINDOW (window));
+  g_return_if_fail (widget == NULL || GTK_IS_WIDGET (widget));
+
+  if (widget == NULL)
+    return;
+
+  priv = GTK_WINDOW_GET_PRIVATE (window);
+
+  if (priv->prev_focus_widget == widget)
+    return;
+
+  if (GTK_IS_WIDGET (priv->prev_focus_widget))
+    g_object_weak_unref (G_OBJECT (priv->prev_focus_widget),
+			   (GWeakNotify)gtk_window_focus_weak_notify,
+			   (gpointer)window);
+
+  priv->prev_focus_widget = widget;
+  g_object_weak_ref (G_OBJECT (widget), (GWeakNotify)gtk_window_focus_weak_notify,
+		     (gpointer)window);
+}
+
+static void gtk_window_focus_weak_notify (GtkWindow *window, GtkWidget *widget)
+{
+  gtk_window_set_prev_focus_widget (window, window->focus_widget);
+}

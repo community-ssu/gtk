@@ -413,6 +413,10 @@ gboolean	_gtk_window_query_nonaccels	(GtkWindow	*window,
 						 guint		 accel_key,
 						 GdkModifierType accel_mods);
 
+GtkWidget *gtk_window_get_prev_focus_widget( GtkWindow *window );
+void gtk_window_set_prev_focus_widget( GtkWindow *window, GtkWidget *widget );
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

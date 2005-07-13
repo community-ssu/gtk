@@ -24,6 +24,10 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
+/* Modified by Nokia Corporation - 2005.
+ * 
+ */
+
 #define GTK_MENU_INTERNALS
 
 #include <config.h>
@@ -37,6 +41,9 @@
 #include "gtkmenubar.h"
 #include "gtkmenuitem.h"
 #include "gtkseparatormenuitem.h"
+
+#define HILDON_HEIGHT_INCREMENT  1
+#define HILDON_ARROW_SPACE       6
 
 #define MENU_ITEM_CLASS(w)  GTK_MENU_ITEM_CLASS (GTK_OBJECT (w)->klass)
 
@@ -94,6 +101,8 @@ static void gtk_menu_item_forall         (GtkContainer    *container,
 static gboolean gtk_menu_item_can_activate_accel (GtkWidget *widget,
 						  guint      signal_id);
 
+
+static void _gtk_menu_item_activate_submenus (GtkMenuItem *item);
 
 static GtkItemClass *parent_class;
 static guint menu_item_signals[LAST_SIGNAL] = { 0 };
@@ -158,7 +167,9 @@ gtk_menu_item_class_init (GtkMenuItemClass *klass)
   item_class->select = gtk_real_menu_item_select;
   item_class->deselect = gtk_real_menu_item_deselect;
 
-  klass->activate = NULL;
+  /* Hildon addition : Added this to catch the 
+   * activation of meuuitems with submenus. */
+  klass->activate = _gtk_menu_item_activate_submenus;
   klass->activate_item = gtk_real_menu_item_activate_item;
   klass->toggle_size_request = gtk_real_menu_item_toggle_size_request;
   klass->toggle_size_allocate = gtk_real_menu_item_toggle_size_allocate;
@@ -239,6 +250,16 @@ gtk_menu_item_class_init (GtkMenuItemClass *klass)
 							     G_MAXINT,
 							     10,
 							     G_PARAM_READABLE));
+
+   /* Hildon modification - allow themeing of separator height */
+   gtk_widget_class_install_style_property (widget_class,
+                                          g_param_spec_int ("separator_height",
+                                                            "Separator height",
+                                                            "Draw a separator graphics with height of x pixels.",
+                                                            0,
+							    G_MAXINT,
+							    5,
+                                                            G_PARAM_READABLE));
 }
 
 static void
@@ -415,6 +436,13 @@ gtk_menu_item_select (GtkMenuItem *menu_item)
   g_return_if_fail (GTK_IS_MENU_ITEM (menu_item));
   
   gtk_item_select (GTK_ITEM (menu_item));
+  /* HILDON MOD. This is required as changed focus isn't drawn automatically
+   * and drawing it must be requested. */
+  if ((GTK_WIDGET(menu_item)->parent) && GTK_IS_MENU (GTK_WIDGET(menu_item)->parent))
+    {
+      GtkMenu *menu = GTK_MENU (GTK_WIDGET(menu_item)->parent);
+      if (menu->parent_menu_item) gtk_widget_queue_draw(GTK_WIDGET(menu->parent_menu_item));
+    }
 }
 
 void
@@ -423,6 +451,13 @@ gtk_menu_item_deselect (GtkMenuItem *menu_item)
   g_return_if_fail (GTK_IS_MENU_ITEM (menu_item));
   
   gtk_item_deselect (GTK_ITEM (menu_item));
+  /* HILDON MOD. This is required as changed focus isn't drawn automatically
+   * and drawing it must be requested. */
+  if ((GTK_WIDGET(menu_item)->parent) && GTK_IS_MENU (GTK_WIDGET(menu_item)->parent))
+    {
+      GtkMenu *menu = GTK_MENU (GTK_WIDGET(menu_item)->parent);
+      if (menu->parent_menu_item) gtk_widget_queue_draw(GTK_WIDGET(menu->parent_menu_item));
+    }
 }
 
 void
@@ -531,7 +566,7 @@ gtk_menu_item_size_request (GtkWidget      *widget,
 				"arrow_spacing", &arrow_spacing,
 				NULL);
 
-	  requisition->width += child_requisition.height;
+	  requisition->width += child_requisition.height + HILDON_ARROW_SPACE;
 	  requisition->width += arrow_spacing;
 
 	  requisition->width = MAX (requisition->width, get_minimum_width (widget));
@@ -542,6 +577,12 @@ gtk_menu_item_size_request (GtkWidget      *widget,
       /* separator item */
       requisition->height += 4;
     }
+
+   /* We get correct focus size if we make the widget a bit bigger.
+    * (If the increment would be big, we should probably adjust the text
+    * position aswell.)
+    */
+   requisition->height += HILDON_HEIGHT_INCREMENT;
 
   accel_width = 0;
   gtk_container_foreach (GTK_CONTAINER (menu_item),
@@ -596,7 +637,8 @@ gtk_menu_item_size_allocate (GtkWidget     *widget,
 	{
 	  if (direction == GTK_TEXT_DIR_RTL)
 	    child_allocation.x += child_requisition.height;
-	  child_allocation.width -= child_requisition.height;
+          /* HILDON Modification. */
+	  child_allocation.width -= child_requisition.height + HILDON_ARROW_SPACE;
 	}
       
       if (child_allocation.width < 1)
@@ -688,6 +730,7 @@ gtk_menu_item_paint (GtkWidget    *widget,
   GtkShadowType shadow_type, selected_shadow_type;
   gint width, height;
   gint x, y;
+
   gint border_width = GTK_CONTAINER (widget)->border_width;
 
   if (GTK_WIDGET_DRAWABLE (widget))
@@ -704,10 +747,56 @@ gtk_menu_item_paint (GtkWidget    *widget,
       if ((state_type == GTK_STATE_PRELIGHT) &&
 	  (GTK_BIN (menu_item)->child))
 	{
+	  gint focus_x = x;
+	  gint focus_width = width;
 	  gtk_widget_style_get (widget,
 				"selected_shadow_type", &selected_shadow_type,
 				NULL);
-	  gtk_paint_box (widget->style,
+
+          if (menu_item->submenu && menu_item->show_submenu_indicator)
+	    {
+	      GtkRequisition child_requisition;
+	      gint arrow_size;
+	      /* gint arrow_extent; */
+	      gtk_widget_get_child_requisition (GTK_BIN (menu_item)->child,
+						&child_requisition);
+      
+	      arrow_size = child_requisition.height - 2 * widget->style->ythickness;
+	      if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR) {
+	        focus_width = x + width - arrow_size - 2 - HILDON_ARROW_SPACE;
+	      }
+	      else {
+	        focus_x = x + arrow_size + 2 + HILDON_ARROW_SPACE;
+	      }
+	    }
+	  
+          /*
+	   * Hildon modification:
+	   * This draws different focus depending on if it's the toplevel
+	   * focused menu item. All items that have submenus that in turn
+	   * have an item selected will be drawn with SELECTED - state focus.
+	   * If this isn't the case, PRELIGHT - state focus is used. */
+	  if (menu_item->submenu)
+	    {
+	      GtkMenuItem *msi;
+	      msi = GTK_MENU_ITEM(GTK_MENU_SHELL(&((GTK_MENU(menu_item->submenu))->menu_shell))->active_menu_item);
+	      if ((msi == NULL) || (GTK_WIDGET (msi)->state == 0))
+                gtk_paint_box (widget->style,
+			 widget->window,
+			 GTK_STATE_PRELIGHT,
+			 selected_shadow_type,
+			 area, widget, "menuitem",
+			 focus_x, y, focus_width, height);
+	      else
+                gtk_paint_box (widget->style,
+			 widget->window,
+			 GTK_STATE_SELECTED,
+			 selected_shadow_type,
+			 area, widget, "menuitem",
+			 focus_x, y, focus_width, height);
+	    }
+	  else
+            gtk_paint_box (widget->style,
 			 widget->window,
 			 GTK_STATE_PRELIGHT,
 			 selected_shadow_type,
@@ -747,8 +836,12 @@ gtk_menu_item_paint (GtkWidget    *widget,
 	  arrow_extent = arrow_size * 0.8;
 	  
 	  shadow_type = GTK_SHADOW_OUT;
-	  if (state_type == GTK_STATE_PRELIGHT)
-	    shadow_type = GTK_SHADOW_IN;
+	  /*Hildon: only show the pressed arrow if the submenu is visible*/
+	  if (state_type == GTK_STATE_PRELIGHT	
+	    && GTK_WIDGET_VISIBLE( menu_item->submenu))
+	    {
+	      shadow_type = GTK_SHADOW_IN;
+	    }
 
 	  if (direction == GTK_TEXT_DIR_LTR)
 	    {
@@ -763,6 +856,9 @@ gtk_menu_item_paint (GtkWidget    *widget,
 
 	  arrow_y = y + (height - arrow_extent) / 2;
 
+/* HILDON modification to correct focus drawing with submenu arrow */
+          arrow_x = arrow_x - 4;
+	  
 	  gtk_paint_arrow (widget->style, widget->window,
 			   state_type, shadow_type, 
 			   area, widget, "menuitem", 
@@ -772,18 +868,20 @@ gtk_menu_item_paint (GtkWidget    *widget,
 	}
       else if (!GTK_BIN (menu_item)->child)
 	{
-	  guint horizontal_padding;
+	  guint horizontal_padding, separator_height;
 
 	  gtk_widget_style_get (widget,
 				"horizontal_padding", &horizontal_padding,
+				"separator_height", &separator_height,
 				NULL);
 	  
-	  gtk_paint_hline (widget->style, widget->window, GTK_STATE_NORMAL,
-			   area, widget, "menuitem",
-			   widget->allocation.x + horizontal_padding + widget->style->xthickness,
-			   widget->allocation.x + widget->allocation.width - horizontal_padding - widget->style->xthickness - 1,
-			   widget->allocation.y + (widget->allocation.height -
-						   widget->style->ythickness) / 2);
+	  /* themable menuitem for menu separators */
+	  gtk_paint_box (widget->style, widget->window, GTK_STATE_NORMAL, GTK_SHADOW_NONE,
+	                 area, widget, "separator",
+			 widget->allocation.x + horizontal_padding + widget->style->xthickness,
+		         widget->allocation.y + (widget->allocation.height - widget->style->ythickness) / 2,
+			 widget->allocation.x + widget->allocation.width - horizontal_padding - widget->style->xthickness - 1,
+			 separator_height);
 	}
     }
 }
@@ -839,6 +937,7 @@ gtk_real_menu_item_select (GtkItem *item)
       (!GTK_WIDGET_MAPPED (menu_item->submenu) ||
        GTK_MENU (menu_item->submenu)->tearoff_active))
     {
+      GdkEvent *event = gtk_get_current_event ();
       gint popup_delay;
 
       if (menu_item->timer)
@@ -851,26 +950,40 @@ gtk_real_menu_item_select (GtkItem *item)
 	popup_delay = get_popup_delay (menu_item);
       
       if (popup_delay > 0)
-	{
-	  GdkEvent *event = gtk_get_current_event ();
-	  
-	  menu_item->timer = g_timeout_add (popup_delay,
-					    gtk_menu_item_select_timeout,
-					    menu_item);
-	  if (event &&
-	      event->type != GDK_BUTTON_PRESS &&
-	      event->type != GDK_ENTER_NOTIFY)
-	    menu_item->timer_from_keypress = TRUE;
-	  else
-	    menu_item->timer_from_keypress = FALSE;
+        {
+          /* OK, Here comes the contender for the 2003 Ugly Award
+           * The popup delay is set small enough to be unnoticable, but high enough to not
+           * notice the flickering which occurs when we close all the deepest menu's Gtk+ helpfully
+           * expands but are not needed
+           * This does not fix the mouse navigation yet (bug 18) but should take care of 442
+           * NOTE: test the delay factor on different CPU speeds
+           */
+          popup_delay = 3;
+          /* Hildon: Disabling the automatic opening of submenus. */
 
-	  if (event)
-	    gdk_event_free (event);
-	}
+          if (event &&
+              event->type != GDK_BUTTON_PRESS &&
+              event->type != GDK_ENTER_NOTIFY &&
+              event->type != GDK_MOTION_NOTIFY) /*hildon: for some reason, the event is sometimes this and not enter!*/
+            menu_item->timer_from_keypress = TRUE;
+          else if (event)
+            {
+              /* mouse/pen events */
+              /* here is a problem -- when a menu item with sub menus gets a mouse event,
+                 another event is generated for the submenu (and further its submenu etc.)
+                 This leads to a behaviour which does not comply to the hildon spec. */
+              menu_item->timer_from_keypress = FALSE;
+            }
+          else /* does this really happen? */
+            menu_item->timer_from_keypress = FALSE;
+        }
       else
-	_gtk_menu_item_popup_submenu (GTK_WIDGET (menu_item));
+        _gtk_menu_item_popup_submenu (menu_item);
+
+      if (event)
+        gdk_event_free (event);
     }
-  
+
   gtk_widget_set_state (GTK_WIDGET (menu_item), GTK_STATE_PRELIGHT);
   gtk_widget_queue_draw (GTK_WIDGET (menu_item));
 }
@@ -878,25 +991,16 @@ gtk_real_menu_item_select (GtkItem *item)
 static void
 gtk_real_menu_item_deselect (GtkItem *item)
 {
-  GtkMenuItem *menu_item;
+  GtkWidget *menu_item;
 
   g_return_if_fail (GTK_IS_MENU_ITEM (item));
 
-  menu_item = GTK_MENU_ITEM (item);
+  menu_item = GTK_WIDGET (item);
 
-  if (menu_item->submenu)
-    {
-      if (menu_item->timer)
-	{
-	  g_source_remove (menu_item->timer);
-	  menu_item->timer = 0;
-	}
-      else
-	gtk_menu_popdown (GTK_MENU (menu_item->submenu));
-    }
+  _gtk_menu_item_popdown_submenu (menu_item);
 
-  gtk_widget_set_state (GTK_WIDGET (menu_item), GTK_STATE_NORMAL);
-  gtk_widget_queue_draw (GTK_WIDGET (menu_item));
+  gtk_widget_set_state (menu_item, GTK_STATE_NORMAL);
+  gtk_widget_queue_draw (menu_item);
 }
 
 static gboolean
@@ -941,10 +1045,7 @@ gtk_real_menu_item_activate_item (GtkMenuItem *menu_item)
 	  _gtk_menu_shell_activate (menu_shell);
 
 	  gtk_menu_shell_select_item (GTK_MENU_SHELL (widget->parent), widget); 
-	  _gtk_menu_item_popup_submenu (widget); 
-
-	  gtk_menu_shell_select_first (GTK_MENU_SHELL (menu_item->submenu), TRUE);
-	  submenu = GTK_MENU_SHELL (menu_item->submenu);
+          /* Hildon mod: automatic submenu opening has been removed */
 	}
     }
 }
@@ -983,7 +1084,7 @@ gtk_menu_item_select_timeout (gpointer data)
     {
       _gtk_menu_item_popup_submenu (GTK_WIDGET (menu_item));
       if (menu_item->timer_from_keypress && menu_item->submenu)
-	GTK_MENU_SHELL (menu_item->submenu)->ignore_enter = TRUE;
+        GTK_MENU_SHELL (menu_item->submenu)->ignore_enter = TRUE;
     }
 
   GDK_THREADS_LEAVE ();
@@ -1002,7 +1103,16 @@ _gtk_menu_item_popup_submenu (GtkWidget *widget)
     g_source_remove (menu_item->timer);
   menu_item->timer = 0;
 
+  /* HILDON MOD. This is required as changed submenu arrow isn't drawn automatically
+   * and drawing it must be requested. */
+  gtk_widget_queue_draw (widget);
+
   if (GTK_WIDGET_IS_SENSITIVE (menu_item->submenu))
+  {
+    gboolean take_focus;
+    take_focus = gtk_menu_shell_get_take_focus (GTK_MENU_SHELL (widget->parent));
+    gtk_menu_shell_set_take_focus (GTK_MENU_SHELL (menu_item->submenu),take_focus);
+    
     gtk_menu_popup (GTK_MENU (menu_item->submenu),
 		    widget->parent,
 		    widget,
@@ -1010,6 +1120,28 @@ _gtk_menu_item_popup_submenu (GtkWidget *widget)
 		    menu_item,
 		    GTK_MENU_SHELL (widget->parent)->button,
 		    0);
+  }
+}
+
+void
+_gtk_menu_item_popdown_submenu (GtkWidget *widget)
+{
+  GtkMenuItem *menu_item;
+
+  menu_item = GTK_MENU_ITEM (widget);
+
+  if (menu_item->submenu)
+    {
+      if (menu_item->timer)
+        {
+          g_source_remove (menu_item->timer);
+          menu_item->timer = 0;
+        }
+      else
+        gtk_menu_popdown (GTK_MENU (menu_item->submenu));
+    }
+
+  gtk_widget_queue_draw (widget);
 }
 
 static void
@@ -1092,14 +1224,17 @@ gtk_menu_item_position_menu (GtkMenu  *menu,
 	  tx += widget->allocation.width - twidth;
 	}
 
+/* HILDON modifications
+ * Here we make the submenu of an menubar appear under the menubar.
+ * The only exception is when the resulting menu would be under 100 pixels
+ * high. In that case, the menu is made 100 pixels high.
+ */
       if ((ty + widget->allocation.height + theight) <= monitor.y + monitor.height)
 	ty += widget->allocation.height;
-      else if ((ty - theight) >= monitor.y)
-	ty -= theight;
-      else if (monitor.y + monitor.height - (ty + widget->allocation.height) > ty)
+      else if ((ty + widget->allocation.height) < monitor.y + monitor.height - 120)
 	ty += widget->allocation.height;
       else
-	ty -= theight;
+	ty = monitor.y + monitor.height - 120;
       break;
 
     case GTK_LEFT_RIGHT:
@@ -1403,4 +1538,31 @@ _gtk_menu_item_is_selectable (GtkWidget *menu_item)
     return FALSE;
 
   return TRUE;
+}
+
+/* Hildon modification :
+ * This function exists only for opening submenus on
+ * activation. */
+static void
+_gtk_menu_item_activate_submenus (GtkMenuItem *item)
+{
+  GdkEvent *event;
+
+  g_return_if_fail (GTK_IS_MENU_ITEM (item));
+  
+  if (!GTK_IS_MENU (item->submenu) ||
+      GTK_WIDGET_VISIBLE (item->submenu)) 
+    return;
+
+  event = gtk_get_current_event ();
+  _gtk_menu_item_popup_submenu (item);
+      
+  /* We don't want to select first item if the submenu
+   * is opened with mouse release because the selection
+   * would move straigh back under the cursor. */
+  if ((event == NULL) || (event->type != GDK_BUTTON_RELEASE))
+    gtk_menu_shell_select_first (GTK_MENU_SHELL (item->submenu), TRUE);
+      
+  if (event)
+    gdk_event_free (event);
 }

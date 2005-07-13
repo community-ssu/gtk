@@ -1210,14 +1210,22 @@ gtk_tree_model_filter_row_inserted (GtkTreeModel *c_model,
       if (gtk_tree_path_get_depth (filter->priv->virtual_root) >=
           gtk_tree_path_get_depth (c_path))
         {
-          gint level;
+          gint level, i;
           gint *v_indices, *c_indices;
+          gboolean common_prefix = TRUE;
 
           level = gtk_tree_path_get_depth (c_path) - 1;
           v_indices = gtk_tree_path_get_indices (filter->priv->virtual_root);
           c_indices = gtk_tree_path_get_indices (c_path);
 
-          if (v_indices[level] >= c_indices[level])
+          for (i = 0; i < level; i++)
+            if (v_indices[i] != c_indices[i])
+            {
+              common_prefix = FALSE;
+              break;
+            }
+
+          if (common_prefix && v_indices[level] >= c_indices[level])
             (v_indices[level])++;
         }
     }
@@ -1455,14 +1463,22 @@ gtk_tree_model_filter_row_deleted (GtkTreeModel *c_model,
       if (gtk_tree_path_get_depth (filter->priv->virtual_root) >=
           gtk_tree_path_get_depth (c_path))
         {
-          gint level;
+          gint level, i;
           gint *v_indices, *c_indices;
+          gboolean common_prefix = TRUE;
 
           level = gtk_tree_path_get_depth (c_path) - 1;
           v_indices = gtk_tree_path_get_indices (filter->priv->virtual_root);
           c_indices = gtk_tree_path_get_indices (c_path);
 
-          if (v_indices[level] > c_indices[level])
+          for (i = 0; i < level; i++)
+            if (v_indices[i] != c_indices[i])
+            {
+              common_prefix = FALSE;
+              break;
+            }
+
+          if (common_prefix && v_indices[level] > c_indices[level])
             (v_indices[level])--;
         }
     }
