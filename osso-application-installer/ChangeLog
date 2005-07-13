@@ -1,3 +1,13 @@
 2005-07-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* Makefile.am, src/Makefile.am (DISTCLEANFILES): Added so that
+	files created by configure get deleted by "make distclean".
+
+	* src/Makefile.am (script_DATA): Get the files from $(srcdir) to
+	enable a VPATH build.
+
+	* control-panel/Makefile.am (CLEANFILES, DISTCLEANFILES): Moved
+	.desktop files to DISTCLEANFILES since they are created by
+	configure.
+
 	* Imported version 1.0.28 into public repository.
