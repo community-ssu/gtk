@@ -25,6 +25,26 @@ gtk_accel_flags_get_type (void)
 }
 
 
+/* enumerations from "gtkbutton.h" */
+GType
+osso_gtk_button_attach_flags_get_type (void)
+{
+  static GType etype = 0;
+  if (etype == 0) {
+    static const GFlagsValue values[] = {
+      { OSSO_GTK_BUTTON_ATTACH_NORTH, "OSSO_GTK_BUTTON_ATTACH_NORTH", "north" },
+      { OSSO_GTK_BUTTON_ATTACH_EAST, "OSSO_GTK_BUTTON_ATTACH_EAST", "east" },
+      { OSSO_GTK_BUTTON_ATTACH_SOUTH, "OSSO_GTK_BUTTON_ATTACH_SOUTH", "south" },
+      { OSSO_GTK_BUTTON_ATTACH_WEST, "OSSO_GTK_BUTTON_ATTACH_WEST", "west" },
+      { OSSO_GTK_BUTTON_ATTACH_ENUM_END, "OSSO_GTK_BUTTON_ATTACH_ENUM_END", "enum-end" },
+      { 0, NULL, NULL }
+    };
+    etype = g_flags_register_static ("OssoGtkButtonAttachFlags", values);
+  }
+  return etype;
+}
+
+
 /* enumerations from "gtkcalendar.h" */
 GType
 gtk_calendar_display_options_get_type (void)
@@ -468,13 +488,17 @@ gtk_icon_size_get_type (void)
   static GType etype = 0;
   if (etype == 0) {
     static const GEnumValue values[] = {
-      { GTK_ICON_SIZE_INVALID, "GTK_ICON_SIZE_INVALID", "invalid" },
-      { GTK_ICON_SIZE_MENU, "GTK_ICON_SIZE_MENU", "menu" },
-      { GTK_ICON_SIZE_SMALL_TOOLBAR, "GTK_ICON_SIZE_SMALL_TOOLBAR", "small-toolbar" },
-      { GTK_ICON_SIZE_LARGE_TOOLBAR, "GTK_ICON_SIZE_LARGE_TOOLBAR", "large-toolbar" },
-      { GTK_ICON_SIZE_BUTTON, "GTK_ICON_SIZE_BUTTON", "button" },
-      { GTK_ICON_SIZE_DND, "GTK_ICON_SIZE_DND", "dnd" },
-      { GTK_ICON_SIZE_DIALOG, "GTK_ICON_SIZE_DIALOG", "dialog" },
+      { GTK_ICON_SIZE_INVALID, "GTK_ICON_SIZE_INVALID", "gtk-icon-size-invalid" },
+      { GTK_ICON_SIZE_MENU, "GTK_ICON_SIZE_MENU", "gtk-icon-size-menu" },
+      { GTK_ICON_SIZE_SMALL_TOOLBAR, "GTK_ICON_SIZE_SMALL_TOOLBAR", "gtk-icon-size-small-toolbar" },
+      { GTK_ICON_SIZE_LARGE_TOOLBAR, "GTK_ICON_SIZE_LARGE_TOOLBAR", "gtk-icon-size-large-toolbar" },
+      { GTK_ICON_SIZE_BUTTON, "GTK_ICON_SIZE_BUTTON", "gtk-icon-size-button" },
+      { GTK_ICON_SIZE_DND, "GTK_ICON_SIZE_DND", "gtk-icon-size-dnd" },
+      { GTK_ICON_SIZE_DIALOG, "GTK_ICON_SIZE_DIALOG", "gtk-icon-size-dialog" },
+      { HILDON_ICON_SIZE_26, "HILDON_ICON_SIZE_26", "hildon-icon-size-26" },
+      { HILDON_ICON_SIZE_40, "HILDON_ICON_SIZE_40", "hildon-icon-size-40" },
+      { HILDON_ICON_SIZE_50, "HILDON_ICON_SIZE_50", "hildon-icon-size-50" },
+      { HILDON_ICON_SIZE_64, "HILDON_ICON_SIZE_64", "hildon-icon-size-64" },
       { 0, NULL, NULL }
     };
     etype = g_enum_register_static ("GtkIconSize", values);
@@ -1066,6 +1090,21 @@ gtk_im_status_style_get_type (void)
   return etype;
 }
 
+GType
+gtk_invalid_input_type_get_type (void)
+{
+  static GType etype = 0;
+  if (etype == 0) {
+    static const GEnumValue values[] = {
+      { GTK_INVALID_INPUT_MAX_CHARS_REACHED, "GTK_INVALID_INPUT_MAX_CHARS_REACHED", "max-chars-reached" },
+      { GTK_INVALID_INPUT_MODE_RESTRICTION, "GTK_INVALID_INPUT_MODE_RESTRICTION", "mode-restriction" },
+      { 0, NULL, NULL }
+    };
+    etype = g_enum_register_static ("GtkInvalidInputType", values);
+  }
+  return etype;
+}
+
 
 /* enumerations from "gtkfilechooser.h" */
 GType
@@ -1390,6 +1429,7 @@ gtk_rc_token_type_get_type (void)
       { GTK_RC_TOKEN_STOCK, "GTK_RC_TOKEN_STOCK", "stock" },
       { GTK_RC_TOKEN_LTR, "GTK_RC_TOKEN_LTR", "ltr" },
       { GTK_RC_TOKEN_RTL, "GTK_RC_TOKEN_RTL", "rtl" },
+      { GTK_RC_TOKEN_LOGICAL_COLOR, "GTK_RC_TOKEN_LOGICAL_COLOR", "logical-color" },
       { GTK_RC_TOKEN_LAST, "GTK_RC_TOKEN_LAST", "last" },
       { 0, NULL, NULL }
     };
@@ -1669,6 +1709,23 @@ gtk_widget_help_type_get_type (void)
       { 0, NULL, NULL }
     };
     etype = g_enum_register_static ("GtkWidgetHelpType", values);
+  }
+  return etype;
+}
+
+GType
+gtk_widget_tap_and_hold_flags_get_type (void)
+{
+  static GType etype = 0;
+  if (etype == 0) {
+    static const GFlagsValue values[] = {
+      { GTK_TAP_AND_HOLD_NONE, "GTK_TAP_AND_HOLD_NONE", "none" },
+      { GTK_TAP_AND_HOLD_PASS_PRESS, "GTK_TAP_AND_HOLD_PASS_PRESS", "pass-press" },
+      { GTK_TAP_AND_HOLD_NO_SIGNALS, "GTK_TAP_AND_HOLD_NO_SIGNALS", "no-signals" },
+      { GTK_TAP_AND_HOLD_NO_INTERNALS, "GTK_TAP_AND_HOLD_NO_INTERNALS", "no-internals" },
+      { 0, NULL, NULL }
+    };
+    etype = g_flags_register_static ("GtkWidgetTapAndHoldFlags", values);
   }
   return etype;
 }

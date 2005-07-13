@@ -64,7 +64,8 @@ typedef enum
   ICON_SUFFIX_XPM = 1 << 0,
   ICON_SUFFIX_SVG = 1 << 1,
   ICON_SUFFIX_PNG = 1 << 2,
-  HAS_ICON_FILE = 1 << 3
+  HAS_ICON_FILE = 1 << 3,
+  ICON_SUFFIX_ANI = 1 << 4
 } IconSuffix;
 
 
@@ -1743,6 +1744,8 @@ string_from_suffix (IconSuffix suffix)
       return ".svg";
     case ICON_SUFFIX_PNG:
       return ".png";
+    case ICON_SUFFIX_ANI:
+      return ".ani";
     default:
       g_assert_not_reached();
     }
@@ -1760,6 +1763,8 @@ suffix_from_name (const char *name)
     retval = ICON_SUFFIX_SVG;
   else if (g_str_has_suffix (name, ".xpm"))
     retval = ICON_SUFFIX_XPM;
+  else if (g_str_has_suffix (name, ".ani"))
+    retval = ICON_SUFFIX_ANI;
   else
     retval = ICON_SUFFIX_NONE;
 
@@ -1776,6 +1781,8 @@ best_suffix (IconSuffix suffix,
     return ICON_SUFFIX_SVG;
   else if ((suffix & ICON_SUFFIX_XPM) != 0)
     return ICON_SUFFIX_XPM;
+  else if ((suffix & ICON_SUFFIX_ANI) != 0)
+    return ICON_SUFFIX_ANI;
   else
     return ICON_SUFFIX_NONE;
 }
@@ -2558,7 +2565,7 @@ icon_info_ensure_scale_and_pixbuf (GtkIconInfo *icon_info,
       icon_info->pixbuf = gdk_pixbuf_scale_simple (source_pixbuf,
 						   0.5 + image_width * icon_info->scale,
 						   0.5 + image_height * icon_info->scale,
-						   GDK_INTERP_BILINEAR);
+						   GDK_INTERP_NEAREST);
       g_object_unref (source_pixbuf);
     }
 

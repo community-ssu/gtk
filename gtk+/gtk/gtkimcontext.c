@@ -360,6 +360,44 @@ gtk_im_context_focus_out (GtkIMContext   *context)
 }
 
 /**
+ * gtk_im_context_show:
+ * @context: a #GtkIMContext
+ *
+ * Notify the input method that widget thinks the actual
+ * input method show be opened.
+ **/
+void
+gtk_im_context_show (GtkIMContext   *context)
+{
+  GtkIMContextClass *klass;
+  
+  g_return_if_fail (GTK_IS_IM_CONTEXT (context));
+  
+  klass = GTK_IM_CONTEXT_GET_CLASS (context);
+  if (klass->show)
+    klass->show (context);
+}
+
+/**
+ * gtk_im_context_hide:
+ * @context: a #GtkIMContext
+ *
+ * Notify the input method that widget thinks the actual
+ * input method show be closed.
+ **/
+void
+gtk_im_context_hide (GtkIMContext   *context)
+{
+  GtkIMContextClass *klass;
+  
+  g_return_if_fail (GTK_IS_IM_CONTEXT (context));
+
+  klass = GTK_IM_CONTEXT_GET_CLASS (context);
+  if (klass->hide)
+    klass->hide (context);
+}
+
+/**
  * gtk_im_context_reset:
  * @context: a #GtkIMContext
  *
@@ -553,4 +591,3 @@ gtk_im_context_delete_surrounding (GtkIMContext *context,
 
   return result;
 }
-

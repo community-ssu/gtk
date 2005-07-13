@@ -65,6 +65,18 @@ gtk_separator_get_type (void)
 static void
 gtk_separator_class_init (GtkSeparatorClass *class)
 {
+  GParamSpec* pspec;
+  
+  pspec = g_param_spec_boolean("hildonlike-drawing",
+                               "hildonlike looks.",
+                               "hildonlike looks. "
+			       "Draws with paint_box "
+			       "instead of paint_(vh)line, 1/0",
+                               FALSE,
+                               G_PARAM_READABLE);
+  
+  gtk_widget_class_install_style_property(GTK_WIDGET_CLASS(class),
+                                          pspec);
 }
 
 static void

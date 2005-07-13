@@ -1041,15 +1041,21 @@ start_spinning (GtkSpinButton *spin,
 		GtkArrowType   click_child,
 		gdouble        step)
 {
+  GtkSettings *settings;
+  guint timeout;
+
   g_return_if_fail (click_child == GTK_ARROW_UP || click_child == GTK_ARROW_DOWN);
-  
+
+  settings = gtk_settings_get_default ();
+  g_object_get (settings, "gtk-initial-timeout", &timeout, NULL); 
+
   spin->click_child = click_child;
   
   if (!spin->timer)
     {
       spin->timer_step = step;
       spin->need_timer = TRUE;
-      spin->timer = g_timeout_add (SPIN_BUTTON_INITIAL_TIMER_DELAY, 
+      spin->timer = g_timeout_add (/*SPIN_BUTTON_INITIAL_TIMER_DELAY*/timeout, 
 				   (GSourceFunc) gtk_spin_button_timer, 
 				   (gpointer) spin);
     }
@@ -1188,8 +1194,13 @@ static gint
 gtk_spin_button_timer (GtkSpinButton *spin_button)
 {
   gboolean retval = FALSE;
+  GtkSettings *settings;
+  guint timeout;
   
   GDK_THREADS_ENTER ();
+
+  settings = gtk_settings_get_default ();
+  g_object_get (settings, "gtk-update-timeout", &timeout, NULL);
 
   if (spin_button->timer)
     {
@@ -1201,7 +1212,7 @@ gtk_spin_button_timer (GtkSpinButton *spin_button)
       if (spin_button->need_timer)
 	{
 	  spin_button->need_timer = FALSE;
-	  spin_button->timer = g_timeout_add (SPIN_BUTTON_TIMER_DELAY, 
+	  spin_button->timer = g_timeout_add (/*SPIN_BUTTON_TIMER_DELAY*/timeout, 
 					      (GSourceFunc) gtk_spin_button_timer, 
 					      (gpointer) spin_button);
 	}

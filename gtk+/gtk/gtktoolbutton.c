@@ -41,6 +41,7 @@
 
 enum {
   CLICKED,
+  INSENSITIVE_PRESS,
   LAST_SIGNAL
 };
 
@@ -74,7 +75,10 @@ static void       button_clicked                    (GtkWidget       *widget,
 						     GtkToolButton   *button);
 
 static void gtk_tool_button_construct_contents (GtkToolItem *tool_item);
-      
+
+ static void insensitive_press (GtkWidget       *widget,
+						                    GtkToolButton   *button);
+    
 static GObjectClass *parent_class = NULL;
 static guint         toolbutton_signals[LAST_SIGNAL] = { 0 };
 
@@ -226,7 +230,7 @@ gtk_tool_button_class_init (GtkToolButtonClass *klass)
 		  NULL, NULL,
 		  g_cclosure_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
-  
+
   g_type_class_add_private (object_class, sizeof (GtkToolButtonPrivate));
 }
 
@@ -245,6 +249,10 @@ gtk_tool_button_init (GtkToolButton      *button,
   gtk_button_set_focus_on_click (GTK_BUTTON (button->priv->button), FALSE);
   g_signal_connect_object (button->priv->button, "clicked",
 			   G_CALLBACK (button_clicked), button, 0);
+
+  /* Hildon: connect "insensitive_press" signal for private button */
+  g_signal_connect_object (button->priv->button, "insensitive_press",
+			   G_CALLBACK (insensitive_press), button, 0);
 
   gtk_container_add (GTK_CONTAINER (button), button->priv->button);
   gtk_widget_show (button->priv->button);
@@ -519,7 +527,7 @@ clone_image_menu_size (GtkImage *image, GtkSettings *settings)
 
 	  src_pixbuf = gtk_image_get_pixbuf (image);
 	  dest_pixbuf = gdk_pixbuf_scale_simple (src_pixbuf, width, height,
-						 GDK_INTERP_BILINEAR);
+						 GDK_INTERP_NEAREST);
 
 	  return gtk_image_new_from_pixbuf (dest_pixbuf);
 	}
@@ -591,6 +599,13 @@ button_clicked (GtkWidget     *widget,
 		GtkToolButton *button)
 {
   g_signal_emit_by_name (button, "clicked");
+}
+
+static void
+insensitive_press (GtkWidget     *widget,
+		GtkToolButton *button)
+{
+  g_signal_emit_by_name (button, "insensitive_press");
 }
 
 static void

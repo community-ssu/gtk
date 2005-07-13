@@ -159,6 +159,7 @@ void _gtk_drag_source_handle_event (GtkWidget *widget,
 				    GdkEvent  *event);
 void _gtk_drag_dest_handle_event (GtkWidget *toplevel,
 				  GdkEvent  *event);
+void _gtk_drag_source_ignore_drag (GtkWidget *widget);
 
 #ifndef GTK_DISABLE_DEPRECATED
 void gtk_drag_set_default_icon (GdkColormap   *colormap,

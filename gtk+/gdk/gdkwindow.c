@@ -335,6 +335,7 @@ _gdk_window_destroy_hierarchy (GdkWindow *window,
   GdkWindowObject *private;
   GdkWindowObject *temp_private;
   GdkWindow *temp_window;
+  GdkScreen *screen;
   GList *children;
   GList *tmp;
   
@@ -347,6 +348,14 @@ _gdk_window_destroy_hierarchy (GdkWindow *window,
     
   switch (GDK_WINDOW_TYPE (window))
     {
+    case GDK_WINDOW_ROOT:
+      screen = gdk_drawable_get_screen (GDK_DRAWABLE (window));
+      if (!screen->closed)
+	{
+	  g_error ("attempted to destroy root window");
+	  break;
+	}
+      /* else fall thru */
     case GDK_WINDOW_TOPLEVEL:
     case GDK_WINDOW_CHILD:
     case GDK_WINDOW_DIALOG:
@@ -421,10 +430,6 @@ _gdk_window_destroy_hierarchy (GdkWindow *window,
 
           gdk_drawable_set_colormap (GDK_DRAWABLE (window), NULL);
 	}
-      break;
-      
-    case GDK_WINDOW_ROOT:
-      g_error ("attempted to destroy root window");
       break;
     }
 }

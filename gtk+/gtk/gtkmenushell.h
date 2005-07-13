@@ -56,7 +56,7 @@ struct _GtkMenuShell
   GtkWidget *active_menu_item;
   GtkWidget *parent_menu_shell;
   
-  guint button;
+  guint button;                 /* unused */
   guint32 activate_time;
 
   guint active : 1;
@@ -124,6 +124,12 @@ void _gtk_menu_shell_add_mnemonic    (GtkMenuShell *menu_shell,
 void _gtk_menu_shell_remove_mnemonic (GtkMenuShell *menu_shell,
 				      guint         keyval,
 				      GtkWidget    *target);
+gboolean gtk_menu_shell_get_take_focus (GtkMenuShell *menu_shell);
+void     gtk_menu_shell_set_take_focus (GtkMenuShell *menu_shell,
+                                        gboolean      take_focus);
+
+/* Private function */
+void _gtk_menu_shell_set_first_click (GtkMenuShell *menu_shell);
 
 #ifdef __cplusplus
 }

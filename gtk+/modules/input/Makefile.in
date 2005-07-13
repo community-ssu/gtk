@@ -812,7 +812,11 @@ uninstall-local:
 	rm -f $(DESTDIR)$(sysconfdir)/gtk-2.0/gtk.immodules
 
 gtk.immodules: Makefile.am $(module_LTLIBRARIES)
-	$(top_builddir)/gtk/gtk-query-immodules-2.0 $(module_LTLIBRARIES) > gtk.immodules
+	@if $(RUN_QUERY_IMMODULES_TEST) ; then \
+	  $(top_builddir)/gtk/gtk-query-immodules-2.0 $(module_LTLIBRARIES) > gtk.immodules ; \
+	else \
+	  touch $@ ; \
+	fi
 
 @CROSS_COMPILING_FALSE@all-local: gtk.immodules
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

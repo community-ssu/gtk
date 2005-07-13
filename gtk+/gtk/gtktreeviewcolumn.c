@@ -1367,6 +1367,19 @@ _gtk_tree_view_column_has_editable_cell (GtkTreeViewColumn *column)
   return FALSE;
 }
 
+gboolean
+_gtk_tree_view_column_has_activatable_cell (GtkTreeViewColumn *column)
+{
+  GList *list;
+
+  for (list = column->cell_list; list; list = list->next)
+    if (((GtkTreeViewColumnCellInfo *)list->data)->cell->mode ==
+       GTK_CELL_RENDERER_MODE_ACTIVATABLE)
+      return TRUE;
+
+  return FALSE;
+}
+
 /* gets cell being edited */
 GtkCellRenderer *
 _gtk_tree_view_column_get_edited_cell (GtkTreeViewColumn *column)
@@ -2590,7 +2603,9 @@ gtk_tree_view_column_cell_get_size (GtkTreeViewColumn *tree_column,
   if (width)
     * width = 0;
 
-  gtk_widget_style_get (tree_column->tree_view, "focus-line-width", &focus_line_width, NULL);
+  gtk_widget_style_get (tree_column->tree_view,
+                        "focus-line-width", &focus_line_width,
+                        NULL);
   
   for (list = tree_column->cell_list; list; list = list->next)
     {
@@ -2659,7 +2674,6 @@ gtk_tree_view_column_cell_process_action (GtkTreeViewColumn  *tree_column,
   gint min_x, min_y, max_x, max_y;
   gint focus_line_width;
   gint special_cells;
-  gint horizontal_separator;
   gboolean cursor_row = FALSE;
   gboolean rtl;
   /* If we have rtl text, we need to transform our areas */
@@ -2702,7 +2716,6 @@ gtk_tree_view_column_cell_process_action (GtkTreeViewColumn  *tree_column,
 
   gtk_widget_style_get (GTK_WIDGET (tree_column->tree_view),
 			"focus-line-width", &focus_line_width,
-			"horizontal-separator", &horizontal_separator,
 			NULL);
 
   real_cell_area = *cell_area;

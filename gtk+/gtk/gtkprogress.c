@@ -371,6 +371,17 @@ gtk_progress_create_pixmap (GtkProgress *progress)
 						   widget->allocation.width,
 						   widget->allocation.height,
 						   -1);
+       
+      /* OSSO addition : clear the pixmap first or transparent images
+       * painted on top of it may look stupid when it's blended against
+       * random memory.*/
+      gtk_paint_flat_box (widget->style,
+			  progress->offscreen_pixmap,
+			  GTK_STATE_NORMAL,
+			  GTK_SHADOW_NONE,
+			  NULL, widget, NULL,
+			  0, 0, widget->allocation.width, widget->allocation.height);
+      
       GTK_PROGRESS_GET_CLASS (progress)->paint (progress);
     }
 }

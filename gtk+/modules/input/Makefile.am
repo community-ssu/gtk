@@ -131,7 +131,12 @@ module_LTLIBRARIES =				\
 	$(IM_IME_MODULE)
 
 gtk.immodules: Makefile.am $(module_LTLIBRARIES)
-	$(top_builddir)/gtk/gtk-query-immodules-2.0 $(module_LTLIBRARIES) > gtk.immodules
+	@if $(RUN_QUERY_IMMODULES_TEST) ; then \
+	  $(top_builddir)/gtk/gtk-query-immodules-2.0 $(module_LTLIBRARIES) > gtk.immodules ; \
+	else \
+	  touch $@ ; \
+	fi
+
 
 CLEANFILES = gtk.immodules
 

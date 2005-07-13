@@ -364,6 +364,9 @@ void    gtk_file_paths_free (GSList *paths);
 
 GtkFileSystem  *_gtk_file_system_create (const char *file_system_name);
 
+/* In Hildon we need to publish the previous symbol */
+GtkFileSystem *hildon_gtk_file_system_create(const char *file_system_name);
+
 G_END_DECLS
 
 #endif /* __GTK_FILE_SYSTEM_H__ */

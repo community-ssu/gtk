@@ -24,6 +24,10 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
+/* Modified by Nokia Corporation - 2005.
+ * 
+ */
+
 #include <config.h>
 #include <string.h>
 
@@ -56,10 +60,13 @@
 
 #define GTK_ENTRY_COMPLETION_KEY "gtk-entry-completion-key"
 
-#define MIN_ENTRY_WIDTH  150
-#define DRAW_TIMEOUT     20
-#define INNER_BORDER     2
+#define MIN_ENTRY_WIDTH   150
+#define DRAW_TIMEOUT      20
+#define INNER_BORDER      2
+#define CARET_CURSOR_SIZE 1
 #define COMPLETION_TIMEOUT 300
+#define HILDON_EDITED_CHARACTER_MAX 8
+#define HILDON_EDITED_CHARACTER_MS 600  /* 0.6 seconds */
 
 /* Initial size of buffer, in bytes */
 #define MIN_SIZE 16
@@ -75,6 +82,18 @@ struct _GtkEntryPrivate
 {
   gfloat xalign;
   gint insert_pos;
+  /* Hildon additions:
+   * following variables are needed
+   * for Hildon password 'preview'
+   * functionality; last inputted character
+   * is showed for defined period, before it is
+   * rendered to '*'
+   */
+  gchar hildon_edited_character[HILDON_EDITED_CHARACTER_MAX];
+  gboolean  hildon_edited_character_timeout;
+  gint  hildon_edited_character_length;
+  gboolean keep_focus;
+  gboolean menu_popped; 
 };
 
 enum {
@@ -88,6 +107,7 @@ enum {
   COPY_CLIPBOARD,
   PASTE_CLIPBOARD,
   TOGGLE_OVERWRITE,
+  INVALID_INPUT,
   LAST_SIGNAL
 };
 
@@ -104,7 +124,9 @@ enum {
   PROP_WIDTH_CHARS,
   PROP_SCROLL_OFFSET,
   PROP_TEXT,
-  PROP_XALIGN
+  PROP_XALIGN,
+  PROP_AUTOCAP,
+  PROP_INPUT_MODE
 };
 
 static guint signals[LAST_SIGNAL] = { 0 };
@@ -324,6 +346,22 @@ static void         get_widget_window_size             (GtkEntry       *entry,
 							gint           *y,
 							gint           *width,
 							gint           *height);
+static void         gtk_entry_set_autocap              (GtkEntry       *entry,
+                                                        gboolean       autocap);
+static gboolean     gtk_entry_get_autocap              (GtkEntry       *entry);
+static void         gtk_entry_set_input_mode           (GtkEntry       *entry,
+                                                        gboolean       mode);
+static gint         gtk_entry_get_input_mode           (GtkEntry       *entry);
+
+/*Change for Hildon
+ *returns an iterator to the character at position x,y of the
+ *layout
+ *returns NULL if no iterator was found at that position
+ *Caller must call pango_layout_free_iter on the returned iterator
+ */
+static PangoLayoutIter *get_char_at_pos( PangoLayout *layout, gint x, gint y );
+
+static gboolean hildon_remove_visible_character( gpointer data );
 
 /* Completion */
 static gint         gtk_entry_completion_timeout       (gpointer            data);
@@ -523,7 +561,25 @@ gtk_entry_class_init (GtkEntryClass *class)
 							 P_("FALSE displays the \"invisible char\" instead of the actual text (password mode)"),
                                                          TRUE,
 							 G_PARAM_READABLE | G_PARAM_WRITABLE));
-
+  
+  g_object_class_install_property (gobject_class,
+                                   PROP_AUTOCAP,
+                                   g_param_spec_boolean ("autocap",
+                                                         P_("auto capitalization"),
+                                                         P_("Enable autocap support"),
+                                                         TRUE,
+                                                         G_PARAM_READABLE | G_PARAM_WRITABLE)); 
+  
+  g_object_class_install_property (gobject_class,
+                                   PROP_INPUT_MODE,
+                                   g_param_spec_int ("input_mode",
+                                                     P_("input mode"),
+                                                     P_("Define widget's input mode"),
+                                                     0,
+                                                     9, /* keep me updated */
+                                                     0,
+                                                     G_PARAM_READABLE | G_PARAM_WRITABLE)); 
+  
   g_object_class_install_property (gobject_class,
                                    PROP_HAS_FRAME,
                                    g_param_spec_boolean ("has_frame",
@@ -593,6 +649,40 @@ gtk_entry_class_init (GtkEntryClass *class)
 						       0.0,
 						       G_PARAM_READABLE | G_PARAM_WRITABLE));
   
+ gtk_widget_class_install_style_property (widget_class,
+                                          g_param_spec_int ("horizontal-border",
+							      P_("Horizontal borders for entry"),
+							      P_("Set left/right borders"),
+     							      0,
+							      G_MAXINT,
+ 							      INNER_BORDER,
+							      G_PARAM_READWRITE));
+
+  gtk_widget_class_install_style_property (widget_class,
+                                          g_param_spec_int ("vertical-border",
+							      P_("Vertical borders for entry"),
+							      P_("Set top/bottom borders"),
+							      0,
+  							      G_MAXINT,
+              						      INNER_BORDER,
+							      G_PARAM_READWRITE));
+
+  gtk_widget_class_install_style_property (widget_class,
+                                          g_param_spec_int ("icon-width",
+							      P_("Icon Width"),
+							      P_("Size of the purpose icon."),
+							      0,
+  							      G_MAXINT,
+              						      0,
+							      G_PARAM_READWRITE));
+  
+  gtk_widget_class_install_style_property (widget_class,
+                                          g_param_spec_boolean ("show-last-char",
+							      P_("Show last char in invisible mode for a while"),
+							      P_("Last char is shown before it is rendered to asterisk"),
+							      FALSE,
+							      G_PARAM_READABLE | G_PARAM_WRITABLE));
+
   signals[POPULATE_POPUP] =
     g_signal_new ("populate_popup",
 		  G_OBJECT_CLASS_TYPE (gobject_class),
@@ -692,6 +782,16 @@ gtk_entry_class_init (GtkEntryClass *class)
 		  NULL, NULL,
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
+
+  signals[INVALID_INPUT] =
+    g_signal_new ("invalid_input",
+		  G_OBJECT_CLASS_TYPE (gobject_class),
+		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+		  G_STRUCT_OFFSET (GtkEntryClass, invalid_input),
+		  NULL, NULL,
+		  _gtk_marshal_VOID__ENUM,
+		  G_TYPE_NONE, 1,
+                  GTK_TYPE_INVALID_INPUT_TYPE);
 
   /*
    * Key bindings
@@ -853,6 +953,22 @@ gtk_entry_cell_editable_init (GtkCellEditableIface *iface)
   iface->start_editing = gtk_entry_start_editing;
 }
 
+/* HILDON: Timed function to hide the most recently inputted character in password mode
+*/
+static gboolean
+ hildon_remove_visible_character( gpointer data )
+{
+    g_return_val_if_fail (GTK_IS_WIDGET (data), FALSE);
+
+    GtkEntry * entry = GTK_ENTRY( data );
+                                                                                        
+    /* Force the string to redrawn, but now without a visible character */
+    gtk_entry_recompute( entry );
+                                                                                        
+    /* Return false so this timeout is not called again and destroyed */
+    return FALSE;
+}
+
 static void
 gtk_entry_set_property (GObject         *object,
                         guint            prop_id,
@@ -869,7 +985,7 @@ gtk_entry_set_property (GObject         *object,
 
       	if (new_value != entry->editable)
 	  {
-	    if (!new_value)
+            if (!new_value)
 	      {
 		gtk_entry_reset_im_context (entry);
 		if (GTK_WIDGET_HAS_FOCUS (entry))
@@ -880,6 +996,7 @@ gtk_entry_set_property (GObject         *object,
 	      }
 
 	    entry->editable = new_value;
+            gtk_widget_set_sensitive( GTK_WIDGET( entry ), entry->editable );
 
 	    if (new_value && GTK_WIDGET_HAS_FOCUS (entry))
 	      gtk_im_context_focus_in (entry->im_context);
@@ -895,6 +1012,14 @@ gtk_entry_set_property (GObject         *object,
       
     case PROP_VISIBILITY:
       gtk_entry_set_visibility (entry, g_value_get_boolean (value));
+      break;
+      
+    case PROP_AUTOCAP:
+      gtk_entry_set_autocap (entry, g_value_get_boolean (value));
+      break;
+
+    case PROP_INPUT_MODE:
+      gtk_entry_set_input_mode (entry, g_value_get_int (value));
       break;
 
     case PROP_HAS_FRAME:
@@ -954,6 +1079,12 @@ gtk_entry_get_property (GObject         *object,
     case PROP_VISIBILITY:
       g_value_set_boolean (value, entry->visible);
       break;
+    case PROP_AUTOCAP:
+      g_value_set_boolean (value, gtk_entry_get_autocap (entry));
+      break;
+    case PROP_INPUT_MODE:
+	g_value_set_int (value, gtk_entry_get_input_mode (entry));
+      break;
     case PROP_HAS_FRAME:
       g_value_set_boolean (value, entry->has_frame);
       break;
@@ -1000,7 +1131,20 @@ gtk_entry_init (GtkEntry *entry)
   entry->width_chars = -1;
   entry->is_cell_renderer = FALSE;
   entry->editing_canceled = FALSE;
-  entry->has_frame = TRUE;
+#ifdef HILDON_SINGLE_LINE_EDITOR
+  entry->has_frame = FALSE;
+#else
+    entry->has_frame = TRUE;
+#endif
+
+  /* Hildon */
+  memset( &priv->hildon_edited_character, 0x00, HILDON_EDITED_CHARACTER_MAX );
+  priv->hildon_edited_character_length = 0;
+  priv->hildon_edited_character_timeout = FALSE;
+  
+  priv->keep_focus = FALSE;
+  priv->menu_popped = FALSE;
+  
   priv->xalign = 0.0;
 
   gtk_drag_dest_set (GTK_WIDGET (entry),
@@ -1013,6 +1157,10 @@ gtk_entry_init (GtkEntry *entry)
    * to it; so we create it here and destroy it in finalize().
    */
   entry->im_context = gtk_im_multicontext_new ();
+  /* Set default stuff. */
+  gtk_entry_set_autocap (entry, TRUE);
+  gtk_entry_set_input_mode (entry, 0); /* alpha-numeric-special */
+  g_object_set (G_OBJECT (entry->im_context), "use-show-hide", TRUE, NULL);
   
   g_signal_connect (entry->im_context, "commit",
 		    G_CALLBACK (gtk_entry_commit_cb), entry);
@@ -1058,7 +1206,8 @@ static void
 gtk_entry_finalize (GObject *object)
 {
   GtkEntry *entry = GTK_ENTRY (object);
-
+  GtkEntryPrivate *priv = GTK_ENTRY_GET_PRIVATE (GTK_WIDGET (entry));
+ 
   gtk_entry_set_completion (entry, NULL);
 
   if (entry->cached_layout)
@@ -1071,6 +1220,9 @@ gtk_entry_finalize (GObject *object)
 
   if (entry->recompute_idle)
     g_source_remove (entry->recompute_idle);
+
+  if (priv->hildon_edited_character_timeout)
+    g_source_remove (priv->hildon_edited_character_timeout);
 
   entry->text_size = 0;
 
@@ -1213,7 +1365,14 @@ gtk_entry_size_request (GtkWidget      *widget,
   PangoFontMetrics *metrics;
   gint xborder, yborder;
   PangoContext *context;
-  
+  gint border_x, border_y;
+  gint icon_width;
+
+  gtk_widget_style_get (widget,
+                        "horizontal-border", &border_x,
+                        "vertical-border", &border_y,
+                        "icon-width", &icon_width, NULL);
+
   gtk_widget_ensure_style (widget);
   context = gtk_widget_get_pango_context (widget);
   metrics = pango_context_get_metrics (context,
@@ -1225,21 +1384,22 @@ gtk_entry_size_request (GtkWidget      *widget,
   
   _gtk_entry_get_borders (entry, &xborder, &yborder);
   
-  xborder += INNER_BORDER;
-  yborder += INNER_BORDER;
+  xborder += border_x<<1;
+  yborder += border_y<<1;
   
   if (entry->width_chars < 0)
-    requisition->width = MIN_ENTRY_WIDTH + xborder * 2;
+    requisition->width = MIN_ENTRY_WIDTH + xborder;
   else
     {
       gint char_width = pango_font_metrics_get_approximate_char_width (metrics);
       gint digit_width = pango_font_metrics_get_approximate_digit_width (metrics);
       gint char_pixels = (MAX (char_width, digit_width) + PANGO_SCALE - 1) / PANGO_SCALE;
       
-      requisition->width = char_pixels * entry->width_chars + xborder * 2;
+      requisition->width = char_pixels * entry->width_chars + xborder;
     }
-    
-  requisition->height = PANGO_PIXELS (entry->ascent + entry->descent) + yborder * 2;
+  
+  requisition->width += icon_width;  
+  requisition->height = PANGO_PIXELS (entry->ascent + entry->descent) + yborder;
 
   pango_font_metrics_unref (metrics);
 }
@@ -1253,23 +1413,39 @@ get_text_area_size (GtkEntry *entry,
 {
   gint xborder, yborder;
   GtkRequisition requisition;
+  gint icon_width;
   GtkWidget *widget = GTK_WIDGET (entry);
 
+  gtk_widget_style_get (widget, "icon-width", &icon_width, NULL);
+  
   gtk_widget_get_child_requisition (widget, &requisition);
 
   _gtk_entry_get_borders (entry, &xborder, &yborder);
 
   if (x)
-    *x = xborder;
+    *x = xborder + icon_width;
 
   if (y)
+  {
     *y = yborder;
+    if( widget->allocation.height < requisition.height )
+      *y += ((widget->allocation.height - requisition.height) / 2);
+    if( *y < yborder )
+      *y = yborder;
+  }
   
-  if (width)
-    *width = GTK_WIDGET (entry)->allocation.width - xborder * 2;
+  if (width) 
+    *width = GTK_WIDGET (entry)->allocation.width - xborder * 2 - icon_width + CARET_CURSOR_SIZE;
 
   if (height)
-    *height = requisition.height - yborder * 2;
+  {
+    if( widget->allocation.height < requisition.height )
+      *height = widget->allocation.height - yborder * 2;
+    else
+      *height = widget->requisition.height - yborder * 2;
+    if( *height <=0 )
+      *height = 1;
+  }
 }
 
 static void
@@ -1289,10 +1465,9 @@ get_widget_window_size (GtkEntry *entry,
 
   if (y)
     {
-      if (entry->is_cell_renderer)
-	*y = widget->allocation.y;
-      else
-	*y = widget->allocation.y + (widget->allocation.height - requisition.height) / 2;
+    	*y = widget->allocation.y;
+      if( widget->allocation.height > requisition.height )
+      	*y += ((widget->allocation.height - requisition.height) / 2);
     }
 
   if (width)
@@ -1300,10 +1475,10 @@ get_widget_window_size (GtkEntry *entry,
 
   if (height)
     {
-      if (entry->is_cell_renderer)
-	*height = widget->allocation.height;
-      else
+      if( widget->allocation.height > requisition.height )
 	*height = requisition.height;
+      else
+	*height = widget->allocation.height;
     }
 }
 
@@ -1383,20 +1558,19 @@ gtk_entry_expose (GtkWidget      *widget,
 		  GdkEventExpose *event)
 {
   GtkEntry *entry = GTK_ENTRY (widget);
+  gint area_width, area_height;
+  
+  get_widget_window_size (entry, NULL, NULL, &area_width, &area_height);
 
   if (widget->window == event->window)
-    gtk_entry_draw_frame (widget);
+    {
+      gtk_paint_box (widget->style, widget->window,
+                     GTK_WIDGET_STATE (widget), GTK_SHADOW_NONE,
+                     NULL, widget, "entry_frame",
+                     0, 0, area_width, area_height);
+    }
   else if (entry->text_area == event->window)
     {
-      gint area_width, area_height;
-
-      get_text_area_size (entry, NULL, NULL, &area_width, &area_height);
-
-      gtk_paint_flat_box (widget->style, entry->text_area, 
-			  GTK_WIDGET_STATE(widget), GTK_SHADOW_NONE,
-			  NULL, widget, "entry_bg", 
-			  0, 0, area_width, area_height);
-      
       if ((entry->visible || entry->invisible_char != 0) &&
 	  GTK_WIDGET_HAS_FOCUS (widget) &&
 	  entry->selection_bound == entry->current_pos && entry->cursor_visible)
@@ -1490,16 +1664,19 @@ gtk_entry_button_press (GtkWidget      *widget,
     return FALSE;
 
   entry->button = event->button;
-  
+
   if (!GTK_WIDGET_HAS_FOCUS (widget))
     {
       entry->in_click = TRUE;
       gtk_widget_grab_focus (widget);
       entry->in_click = FALSE;
     }
-  
+
+  /* Hildon: we need to reset IM context so pre-edit string can be committed */
+  gtk_entry_reset_im_context (entry);
+
   tmp_pos = gtk_entry_find_position (entry, event->x + entry->scroll_offset);
-    
+  
   if (event->button == 1)
     {
       gboolean have_selection = gtk_editable_get_selection_bounds (editable, &sel_start, &sel_end);
@@ -1509,8 +1686,6 @@ gtk_entry_button_press (GtkWidget      *widget,
 
       if (event->state & GDK_SHIFT_MASK)
 	{
-	  gtk_entry_reset_im_context (entry);
-	  
 	  if (!have_selection) /* select from the current position to the clicked position */
 	    sel_start = sel_end = entry->current_pos;
 	  
@@ -1573,11 +1748,13 @@ gtk_entry_button_press (GtkWidget      *widget,
 	       */
 	      entry->in_drag = TRUE;
 	      entry->drag_start_x = event->x + entry->scroll_offset;
-	      entry->drag_start_y = event->y + entry->scroll_offset;
+	      entry->drag_start_y = event->y;
 	    }
-	  else
+	  else {
 	    gtk_editable_set_position (editable, tmp_pos);
-	  break;
+	  }
+
+          break;
  
 	case GDK_2BUTTON_PRESS:
 	  /* We ALWAYS receive a GDK_BUTTON_PRESS immediately before 
@@ -1614,8 +1791,16 @@ gtk_entry_button_press (GtkWidget      *widget,
     }
   else if (event->button == 3 && event->type == GDK_BUTTON_PRESS)
     {
+      /* Hildon: if we are in password mode selection and Cut & Copy should
+         be disabled. */
+      if (!entry->visible)
+        {
+           gtk_editable_set_position (GTK_EDITABLE(entry), 0);
+        }
+
       gtk_entry_do_popup (entry, event);
       entry->button = 0;	/* Don't wait for release, since the menu will gtk_grab_add */
+      priv->keep_focus = TRUE;
 
       return TRUE;
     }
@@ -1632,12 +1817,14 @@ gtk_entry_button_release (GtkWidget      *widget,
   if (event->window != entry->text_area || entry->button != event->button)
     return FALSE;
 
+  if (entry->editable)
+    gtk_im_context_show (entry->im_context);
+
   if (entry->in_drag)
     {
       gint tmp_pos = gtk_entry_find_position (entry, entry->drag_start_x);
 
       gtk_editable_set_position (GTK_EDITABLE (entry), tmp_pos);
-
       entry->in_drag = 0;
     }
   
@@ -1768,7 +1955,7 @@ set_invisible_cursor (GdkWindow *window)
   empty_bitmap = gdk_bitmap_create_from_data (window,
 					      invisible_cursor_bits,
 					      1, 1);
-  
+
   cursor = gdk_cursor_new_from_pixmap (empty_bitmap,
 				       empty_bitmap,
 				       &useless,
@@ -1822,6 +2009,13 @@ gtk_entry_key_press (GtkWidget   *widget,
         }
     }
 
+  if (event->keyval == GDK_Return)
+    return FALSE;	
+  if (event->keyval == GDK_KP_Enter)	 	
+    g_signal_emit_by_name (G_OBJECT(gtk_widget_get_ancestor (widget,	 	
+                            GTK_TYPE_WINDOW)), "move-focus",	 	
+                           GTK_DIR_TAB_FORWARD);	 	
+
   if (GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event))
     /* Activate key bindings
      */
@@ -1835,7 +2029,7 @@ gtk_entry_key_release (GtkWidget   *widget,
 		       GdkEventKey *event)
 {
   GtkEntry *entry = GTK_ENTRY (widget);
-
+  
   if (entry->editable)
     {
       if (gtk_im_context_filter_keypress (entry->im_context, event))
@@ -1853,7 +2047,35 @@ gtk_entry_focus_in (GtkWidget     *widget,
 		    GdkEventFocus *event)
 {
   GtkEntry *entry = GTK_ENTRY (widget);
-  
+  GtkEntryPrivate *priv;
+
+  priv = GTK_ENTRY_GET_PRIVATE (widget);
+  /* Hildon : If the text doesn't fit the entry, upon focusing
+   * to an text field, move the caret to the end of the entry. 
+   * Force the entry to recompute, otherwise it doesn't update
+   * if the cursor is currently at the end*/
+  /* hildon : If the text has no selection and focus returned with
+     other means than pointer click, set cursor before first
+      character of the text, otherwise behave normally */
+
+  if (!entry->in_click)
+    {
+      /*gboolean has_selection;
+      has_selection = gtk_editable_get_selection_bounds (GTK_EDITABLE (entry), NULL, NULL);
+      if (!has_selection)
+        {
+         gtk_editable_set_position (GTK_EDITABLE (entry), -1);
+        }*//*FIXME need a better hack here*/
+      /* Hildon: If in SecretEditor mode highlight selection if entry got focus
+       * otherways than mouse/stylus */
+      if (!entry->visible && priv->keep_focus)
+        {
+          gtk_editable_select_region (GTK_EDITABLE (entry), 0, -1);
+        }
+    }
+
+  gtk_entry_recompute (GTK_ENTRY (entry));
+
   gtk_widget_queue_draw (widget);
   
   if (entry->editable)
@@ -1877,8 +2099,6 @@ gtk_entry_focus_out (GtkWidget     *widget,
 {
   GtkEntry *entry = GTK_ENTRY (widget);
   GtkEntryCompletion *completion;
-  
-  gtk_widget_queue_draw (widget);
 
   if (entry->editable)
     {
@@ -1886,6 +2106,8 @@ gtk_entry_focus_out (GtkWidget     *widget,
       gtk_im_context_focus_out (entry->im_context);
     }
 
+  gtk_widget_queue_draw(widget);
+  
   gtk_entry_check_cursor_blink (entry);
   
   g_signal_handlers_disconnect_by_func (gdk_keymap_get_for_display (gtk_widget_get_display (widget)),
@@ -1902,7 +2124,6 @@ gtk_entry_focus_out (GtkWidget     *widget,
 static void
 gtk_entry_grab_focus (GtkWidget        *widget)
 {
-  GtkEntry *entry = GTK_ENTRY (widget);
   gboolean select_on_focus;
   
   GTK_WIDGET_CLASS (parent_class)->grab_focus (widget);
@@ -1912,8 +2133,8 @@ gtk_entry_grab_focus (GtkWidget        *widget)
 		&select_on_focus,
 		NULL);
   
-  if (select_on_focus && entry->editable && !entry->in_click)
-    gtk_editable_select_region (GTK_EDITABLE (widget), 0, -1);
+/* Hildon : When focusing to an entry, it shouldn't become
+ * highlighted. */
 }
 
 static void 
@@ -1987,7 +2208,6 @@ gtk_entry_insert_text (GtkEditable *editable,
 
   if (new_text_length > 63)
     g_free (text);
-
   g_object_unref (editable);
 }
 
@@ -2074,7 +2294,7 @@ gtk_entry_set_selection_bounds (GtkEditable *editable,
   if (end < 0)
     end = entry->text_length;
   
-  gtk_entry_reset_im_context (entry);
+  /*gtk_entry_reset_im_context (entry);*//*FIXME tmp kludge, might break something*/
 
   gtk_entry_set_positions (entry,
 			   MIN (end, entry->text_length),
@@ -2158,6 +2378,121 @@ gtk_entry_start_editing (GtkCellEditable *cell_editable,
 		    G_CALLBACK (gtk_cell_editable_key_press_event), NULL);
 }
 
+static gboolean g_unichar_notalpha (gunichar c)
+{
+  return !g_unichar_isalpha (c);
+}
+
+static gboolean g_unichar_notdigit (gunichar c)
+{
+  return !g_unichar_isdigit (c);
+}
+
+static gboolean g_unichar_isalpspace (gunichar c)
+{
+  return g_unichar_isalpha (c) || g_unichar_isspace (c);
+}
+
+static gboolean g_unichar_isdigitminus (gunichar c)
+{
+  return g_unichar_isdigit (c) || c == '-';
+}
+
+static gboolean g_unichar_isalnumspa (gunichar c)
+{
+  return g_unichar_isdigitminus (c) ||
+         g_unichar_isalpha (c) ||
+         g_unichar_isspace (c);
+}
+
+static gboolean g_unichar_isxdigitspecial (gunichar c)
+{
+  return g_unichar_isxdigit (c) || !g_unichar_isalnum (c);
+}
+
+static gboolean g_unichar_istelephone (gunichar c)
+{
+  return g_unichar_isdigitminus (c) ||
+         c == 'P' || c == 'W' || c == 'p' || c == 'w' ||
+         c == '/' || c == '(' || c == ')' || c == '.' ||
+         c == '+' || c == '*' || c == '#' || c == '?' ||
+         c == ',';
+}
+
+static gboolean g_unichar_istelephonespecial (gunichar c)
+{
+  return g_unichar_istelephone (c) || !g_unichar_isalnum (c);
+}
+
+static gboolean
+gtk_entry_filter_text (GtkEntry *entry, const gchar *str,
+		       gint length)
+{
+  gboolean (*filter_func) (gunichar) = NULL;
+
+  g_assert (GTK_IS_ENTRY (entry));
+
+  if (!length || !str)
+    return FALSE;
+
+  if (!g_utf8_validate (str, -1, NULL))
+    return FALSE;
+
+  /*Input modes are nokia 770 specific - check hildon-input-mode-hint.h*/
+  switch (gtk_entry_get_input_mode (entry))
+    {
+    case 1:
+      filter_func = g_unichar_isdigitminus;
+      break;
+
+    case 2:
+      filter_func = g_unichar_isalpspace;
+      break;
+
+    case 3:
+      filter_func = g_unichar_notalpha;
+      break;
+
+    case 4:
+      filter_func = g_unichar_notdigit;
+      break;
+
+    case 5:
+      filter_func = g_unichar_isalnumspa;
+      break;
+
+    case 6:
+      filter_func = g_unichar_isxdigit;
+      break;
+
+    case 7:
+      filter_func = g_unichar_isxdigitspecial;
+      break;
+
+    case 8:
+      filter_func = g_unichar_istelephone;
+      break;
+
+    case 9:
+      filter_func = g_unichar_istelephonespecial;
+      break;
+
+    default:
+      return TRUE;
+      break;
+    }
+
+  while(length)
+    {
+      if (!filter_func (g_utf8_get_char (str)))
+	return FALSE;
+      str = g_utf8_next_char (str);
+      length--;
+    }
+
+  return TRUE;
+}
+
 /* Default signal handlers
  */
 static void
@@ -2168,16 +2503,36 @@ gtk_entry_real_insert_text (GtkEditable *editable,
 {
   gint index;
   gint n_chars;
+  gboolean show_last_char = FALSE;
 
   GtkEntry *entry = GTK_ENTRY (editable);
-
+  GtkEntryPrivate *priv = GTK_ENTRY_GET_PRIVATE (GTK_WIDGET (entry));
   if (new_text_length < 0)
     new_text_length = strlen (new_text);
 
   n_chars = g_utf8_strlen (new_text, new_text_length);
+
+  if (g_object_class_find_property (G_OBJECT_GET_CLASS (entry->im_context),
+				    "input_mode"))
+  if (!gtk_entry_filter_text (entry, new_text, n_chars))
+    {
+      g_signal_emit (entry,
+		     signals[INVALID_INPUT],
+		     0,
+		     GTK_INVALID_INPUT_MODE_RESTRICTION);
+      return;
+    }
+
+  gtk_widget_style_get (GTK_WIDGET (entry), "show-last-char",
+                        &show_last_char, NULL);
+
   if (entry->text_max_length > 0 && n_chars + entry->text_length > entry->text_max_length)
     {
-      gdk_display_beep (gtk_widget_get_display (GTK_WIDGET (entry)));
+      g_signal_emit (entry,
+                     signals[INVALID_INPUT],
+                     0,
+                     GTK_INVALID_INPUT_MAX_CHARS_REACHED);
+
       n_chars = entry->text_max_length - entry->text_length;
       new_text_length = g_utf8_offset_to_pointer (new_text, n_chars) - new_text;
     }
@@ -2238,6 +2593,14 @@ gtk_entry_real_insert_text (GtkEditable *editable,
   
   if (entry->selection_bound > *position)
     entry->selection_bound += n_chars;
+  
+  /* Hildon: store this addition IF it was only 1 char (user inputted) and we are currently in secret mode (invisible) */
+                          
+  if (show_last_char && n_chars == 1 && !entry->visible && (new_text_length < HILDON_EDITED_CHARACTER_MAX)) {
+        memset( &priv->hildon_edited_character, 0x00, HILDON_EDITED_CHARACTER_MAX );
+        priv->hildon_edited_character_length = new_text_length;
+        memcpy( &priv->hildon_edited_character, new_text, new_text_length );  /* Guaranteed to be < total length */
+  }
 
   *position += n_chars;
 
@@ -2339,6 +2702,11 @@ gtk_entry_move_cursor (GtkEntry       *entry,
 
   gtk_entry_reset_im_context (entry);
 
+  /* Hildon, if not visible set the position to the end */
+  /* New SecretEditor specs say that with cursor should move
+   * With left/right arrows
+   */
+  
   if (entry->current_pos != entry->selection_bound && !extend_selection)
     {
       /* If we have a current selection and aren't extending it, move to the
@@ -2445,7 +2813,7 @@ gtk_entry_delete_from_cursor (GtkEntry       *entry,
   gint start_pos = entry->current_pos;
   gint end_pos = entry->current_pos;
   
-  gtk_entry_reset_im_context (entry);
+  /* Hildon: code removed - backspace should not clear the word completion */
 
   if (!entry->editable)
     return;
@@ -2515,7 +2883,8 @@ gtk_entry_backspace (GtkEntry *entry)
   GtkEditable *editable = GTK_EDITABLE (entry);
   gint prev_pos;
 
-  gtk_entry_reset_im_context (entry);
+/*  gtk_entry_reset_im_context (entry); */ /*backspace should not clear
+                                             the word completion*/
 
   if (!entry->editable || !entry->text)
     return;
@@ -2883,21 +3252,28 @@ append_char (GString *str,
       ++i;
     }
 }
-     
+
+#define HILDON_EDITED_CHARACTER_MS 600  /* 0.6 seconds */
+
 static PangoLayout *
 gtk_entry_create_layout (GtkEntry *entry,
 			 gboolean  include_preedit)
 {
   GtkWidget *widget = GTK_WIDGET (entry);
+  GtkEntryPrivate *priv = GTK_ENTRY_GET_PRIVATE (entry);
   PangoLayout *layout = gtk_widget_create_pango_layout (widget, NULL);
   PangoAttrList *tmp_attrs = pango_attr_list_new ();
   
   gchar *preedit_string = NULL;
   gint preedit_length = 0;
   PangoAttrList *preedit_attrs = NULL;
+  gboolean show_last_char = FALSE;
 
   pango_layout_set_single_paragraph_mode (layout, TRUE);
   
+  gtk_widget_style_get (widget, "show-last-char",
+                        &show_last_char, NULL);
+
   if (include_preedit)
     {
       gtk_im_context_get_preedit_string (entry->im_context,
@@ -3003,7 +3379,54 @@ gtk_entry_create_layout (GtkEntry *entry,
           else
             invisible_char = ' '; /* just pick a char */
           
-          append_char (str, invisible_char, entry->text_length);
+          if (!show_last_char)
+            append_char (str, invisible_char, entry->text_length);
+          else if (show_last_char)
+            {
+              /* Hildon */
+              if (priv->hildon_edited_character_length > 0)
+                {
+                                                                                                                          
+                  /* If we have an outstanding timeout, remove it, because the character it is set to hide
+                   * is already hidden now. We do this first to prevent possible race conditions if the timout
+                   * were to trigger while in here
+                   */
+                                                                                                                          
+                  if (priv->hildon_edited_character_timeout)
+                    {
+                      g_source_remove( priv->hildon_edited_character_timeout );
+                      priv->hildon_edited_character_timeout = FALSE;
+                    }
+
+		  /* Draw hidden characters upto just inserted, then the real thing, pad up to full length */
+
+		  if (entry->current_pos > 1) {
+		    append_char (str, invisible_char, entry->current_pos - 1);
+		  }
+		  g_string_append_len (str, (char *)&priv->hildon_edited_character, priv->hildon_edited_character_length);
+		  if (entry->current_pos < entry->text_length) {
+		    append_char (str, invisible_char, entry->text_length - entry->current_pos);
+		  }
+
+		  
+                  /* Now remove this last inputted character, don't need it anymore */
+                                                                                                                          
+                  memset( priv->hildon_edited_character, 0x00, HILDON_EDITED_CHARACTER_MAX );
+                  priv->hildon_edited_character_length = 0;
+                                                                                     
+                  priv->hildon_edited_character_timeout = g_timeout_add( HILDON_EDITED_CHARACTER_MS, (GSourceFunc)
+                                											      hildon_remove_visible_character, entry );
+                                                                                                                          
+                } 
+              else 
+                {
+                  /* No last character known. This could be for example because the application has filled
+                   * in the password already. In that case we of course don't want to view it
+                   */
+                  append_char (str, invisible_char, entry->text_length);
+                }
+            }
+    
           pango_layout_set_text (layout, str->str, str->len);
           g_string_free (str, TRUE);
         }
@@ -3048,12 +3471,17 @@ get_layout_position (GtkEntry *entry,
   gint area_width, area_height;
   gint y_pos;
   PangoLayoutLine *line;
-  
+  gint border_x, border_y;
+
+  gtk_widget_style_get (GTK_WIDGET (entry), "horizontal-border", &border_x,
+					    "vertical-border", &border_y,
+				 	    NULL);
+
   layout = gtk_entry_ensure_layout (entry, TRUE);
 
   get_text_area_size (entry, NULL, NULL, &area_width, &area_height);      
       
-  area_height = PANGO_SCALE * (area_height - 2 * INNER_BORDER);
+  area_height = PANGO_SCALE * (area_height - 2 * border_y);
   
   line = pango_layout_get_lines (layout)->data;
   pango_layout_line_get_extents (line, NULL, &logical_rect);
@@ -3070,10 +3498,10 @@ get_layout_position (GtkEntry *entry,
   else if (y_pos + logical_rect.height > area_height)
     y_pos = area_height - logical_rect.height;
   
-  y_pos = INNER_BORDER + y_pos / PANGO_SCALE;
+  y_pos = border_y + y_pos / PANGO_SCALE;
 
   if (x)
-    *x = INNER_BORDER - entry->scroll_offset;
+    *x = border_x - entry->scroll_offset;
 
   if (y)
     *y = y_pos;
@@ -3083,6 +3511,10 @@ static void
 gtk_entry_draw_text (GtkEntry *entry)
 {
   GtkWidget *widget;
+  gint border_y, border_x;
+
+  gtk_widget_style_get (GTK_WIDGET (entry), "horizontal-border", &border_x,
+		  "vertical-border", &border_y, NULL);
   
   if (!entry->visible && entry->invisible_char == 0)
     return;
@@ -3092,14 +3524,76 @@ gtk_entry_draw_text (GtkEntry *entry)
       PangoLayout *layout = gtk_entry_ensure_layout (entry, TRUE);
       gint x, y;
       gint start_pos, end_pos;
+      GdkRectangle clip_rect;
       
       widget = GTK_WIDGET (entry);
       
       get_layout_position (entry, &x, &y);
 
+      /* Use a clipping rectangle so that we always get enough empty space around
+       * the text.
+       */
+      clip_rect.x = border_x;
+      clip_rect.y = 0;
+
+      gdk_drawable_get_size (entry->text_area, &clip_rect.width, &clip_rect.height);
+      clip_rect.width -= border_x * 2;
+
+      /*changes for Hildon
+       *Reduce the size of the clip rect, so that only full characters are displayed
+      */
+
+         /* NOTE: Commented out because it does not work with bidi text where
+the indexes are in random
+          * left-right or right-left order. Code causes Pango assert aborts. Because gtkentry itself
+          * is broken with regard to bidi anyway (bug #478) we ignore this requirement of the spec
+          * until gtkentry itself is fixed. (bug #477)
+          */
+
+       /* Better yet, let's enable this only when not in RTL mode */
+
+       /* Note: BUG #857. patched gtkentry crashed when pasting scalable fonts. This is pango problem
+        * and we tested patched gtkentry with pango version 1.3.2 and it appears to be fixed. Section is commented
+        out until we upgrade to new version of pango
+          if (gtk_widget_get_direction( entry ) != GTK_TEXT_DIR_RTL)
+          {
+           PangoRectangle char_rect; // used for getting character's onscreen pos
+           PangoLayoutIter *iter; // used to iterate over the text
+
+           // get the position of the character currently at the clip border
+           iter = get_char_at_pos( layout, (clip_rect.x + clip_rect.width + entry->scroll_offset), 0 );
+           if ( iter )
+           {
+               // get the position of that character on the screen
+               pango_layout_iter_get_char_extents( iter, &char_rect );
+               char_rect.x /= PANGO_SCALE;
+               char_rect.x -= entry->scroll_offset;
+               char_rect.width /= PANGO_SCALE;
+
+               // if the ending position is > the clip rectangle, then the
+               // character is only partially visible, and we should
+               // clip the entire character.
+
+               if ( char_rect.x + char_rect.width > clip_rect.x + clip_rect.width )
+               {
+                   clip_rect.width = char_rect.x;
+               }
+
+               pango_layout_iter_free( iter );
+           }
+
+         }
+			*/
+       /******************************************************************/
+
+      gdk_gc_set_clip_rectangle (widget->style->text_gc [widget->state], &clip_rect);
+
       gdk_draw_layout (entry->text_area, widget->style->text_gc [widget->state],       
                        x, y,
 		       layout);
+
+      gdk_gc_set_clip_rectangle (widget->style->text_gc [widget->state], NULL);
+
       
       if (gtk_editable_get_selection_bounds (GTK_EDITABLE (entry), &start_pos, &end_pos))
 	{
@@ -3128,7 +3622,7 @@ gtk_entry_draw_text (GtkEntry *entry)
 	    {
 	      GdkRectangle rect;
 
-	      rect.x = INNER_BORDER - entry->scroll_offset + ranges[2 * i];
+	      rect.x = border_x - entry->scroll_offset + ranges[2 * i];
 	      rect.y = y;
 	      rect.width = ranges[2 * i + 1];
 	      rect.height = logical_rect.height;
@@ -3177,14 +3671,18 @@ gtk_entry_draw_cursor (GtkEntry  *entry,
 {
   GdkKeymap *keymap = gdk_keymap_get_for_display (gtk_widget_get_display (GTK_WIDGET (entry)));
   PangoDirection keymap_direction = gdk_keymap_get_direction (keymap);
+  gint border_x, border_y;
   
+  gtk_widget_style_get (GTK_WIDGET (entry), "horizontal-border", &border_x,
+				            "vertical-border", &border_y,
+				            NULL);
   if (GTK_WIDGET_DRAWABLE (entry))
     {
       GtkWidget *widget = GTK_WIDGET (entry);
       GdkRectangle cursor_location;
       gboolean split_cursor;
 
-      gint xoffset = INNER_BORDER - entry->scroll_offset;
+      gint xoffset = border_x - entry->scroll_offset;
       gint strong_x, weak_x;
       gint text_area_height;
       PangoDirection dir1 = PANGO_DIRECTION_NEUTRAL;
@@ -3221,9 +3719,9 @@ gtk_entry_draw_cursor (GtkEntry  *entry,
 	}
 
       cursor_location.x = xoffset + x1;
-      cursor_location.y = INNER_BORDER;
+      cursor_location.y = border_y;
       cursor_location.width = 0;
-      cursor_location.height = text_area_height - 2 * INNER_BORDER ;
+      cursor_location.height = text_area_height - 2 * border_y;
 
       draw_insertion_cursor (entry,
 			     &cursor_location, TRUE, dir1,
@@ -3249,11 +3747,8 @@ gtk_entry_queue_draw (GtkEntry *entry)
 static void
 gtk_entry_reset_im_context (GtkEntry *entry)
 {
-  if (entry->need_im_reset)
-    {
-      entry->need_im_reset = 0;
-      gtk_im_context_reset (entry->im_context);
-    }
+  /* Hildon: We want reset to be sent more often */ 
+  gtk_im_context_reset (entry->im_context);
 }
 
 static gint
@@ -3266,8 +3761,12 @@ gtk_entry_find_position (GtkEntry *entry,
   gint pos;
   gboolean trailing;
   const gchar *text;
-  gint cursor_index;
-  
+  gint border_x, cursor_index;
+
+  gtk_widget_style_get (GTK_WIDGET (entry), "horizontal-border", &border_x,
+				 	    NULL);
+  x -= border_x;
+
   layout = gtk_entry_ensure_layout (entry, TRUE);
   text = pango_layout_get_text (layout);
   cursor_index = g_utf8_offset_to_pointer (text, entry->current_pos) - text;
@@ -3355,12 +3854,17 @@ gtk_entry_adjust_scroll (GtkEntry *entry)
   PangoLayout *layout;
   PangoLayoutLine *line;
   PangoRectangle logical_rect;
+  gint border_x, border_y;
+
+  gtk_widget_style_get (GTK_WIDGET (entry), "horizontal-border", &border_x,
+					    "vertical-border", &border_y,
+				 	    NULL);
 
   if (!GTK_WIDGET_REALIZED (entry))
     return;
   
   gdk_drawable_get_size (entry->text_area, &text_area_width, NULL);
-  text_area_width -= 2 * INNER_BORDER;
+  text_area_width -= 2 * border_x;
 
   layout = gtk_entry_ensure_layout (entry, TRUE);
   line = pango_layout_get_lines (layout)->data;
@@ -3390,13 +3894,13 @@ gtk_entry_adjust_scroll (GtkEntry *entry)
   entry->scroll_offset = CLAMP (entry->scroll_offset, min_offset, max_offset);
 
   /* And make sure cursors are on screen. Note that the cursor is
-   * actually drawn one pixel into the INNER_BORDER space on
+   * actually drawn one pixel into the border_x space on
    * the right, when the scroll is at the utmost right. This
    * looks better to to me than confining the cursor inside the
    * border entirely, though it means that the cursor gets one
    * pixel closer to the edge of the widget on the right than
    * on the left. This might need changing if one changed
-   * INNER_BORDER from 2 to 1, as one would do on a
+   * border_x from 2 to 1, as one would do on a
    * small-screen-real-estate display.
    *
    * We always make sure that the strong cursor is on screen, and
@@ -3430,6 +3934,52 @@ gtk_entry_adjust_scroll (GtkEntry *entry)
       entry->scroll_offset += weak_xoffset - text_area_width;
     }
 
+  /*Changes for Hildon
+   * now we make it so that if a character is partially visible,
+   * then we also scroll that off the screen.
+   */
+         
+       /* NOTE: Commented out because it does not work with bidi text where the indexes are in random
+          * left-right or right-left order. Code causes Pango assert aborts. Because gtkentry itself
+          * is broken with regard to bidi anyway (bug #478) we ignore this requirement of the spec
+          * until gtkentry itself is fixed. (bug #477)
+          */
+
+       /* Better yet, let's disable this (for now) only when using RTL text */
+  
+/*Note: BUG #857. patched gtkentry crashed when pasting scalable fonts. This is pango problem
+  * and we tested patched gtkentry with pango version 1.3.2 and it appears to be fixed. Section is comment          ed out until we upgrade to new version of pango
+ if (gtk_widget_get_direction( entry ) != GTK_TEXT_DIR_RTL)
+  {
+    PangoLayoutIter *iter = get_char_at_pos( layout, entry->scroll_offset, 0 );
+    // if we found the char we were looking for
+    if ( iter )
+    {
+        PangoRectangle char_rect; // used for getting character's onscreen pos
+
+        // get the position of that character on the screen
+        pango_layout_iter_get_char_extents( iter, &char_rect );
+        char_rect.x /= PANGO_SCALE;
+
+        // if the starting position is < the current scroll offset, then the
+        // character is only partially visible, and we should scroll to the
+        // start of the next character instead
+         
+        if ( char_rect.x < entry->scroll_offset )
+        {
+            if ( pango_layout_iter_next_char( iter ) )
+            {
+                pango_layout_iter_get_char_extents( iter, &char_rect);
+                entry->scroll_offset = char_rect.x / PANGO_SCALE;
+            }
+        }
+
+        pango_layout_iter_free( iter );
+    }
+       
+
+  }*/
+ 
   g_object_notify (G_OBJECT (entry), "scroll_offset");
 }
 
@@ -3648,14 +4198,9 @@ gtk_entry_get_public_chars (GtkEntry *entry,
   
   if (entry->visible)
     return gtk_editable_get_chars (GTK_EDITABLE (entry), start, end);
-  else if (!entry->invisible_char)
+  /*Hildon: when not visible, no chars are public*/
+  else 
     return g_strdup ("");
-  else
-    {
-      GString *str = g_string_new (NULL);
-      append_char (str, entry->invisible_char, end - start);
-      return g_string_free (str, FALSE);
-    }
 }
 
 static void
@@ -3678,8 +4223,11 @@ paste_received (GtkClipboard *clipboard,
       
   if (text)
     {
-      gint pos, start, end;
+      gint pos, start, end, length;
       GtkEntryCompletion *completion = gtk_entry_get_completion (entry);
+
+      /* when pasting multiline text, ignore everything but the first line */
+      for (length = 0; text[length] != 0 && text[length] != '\n'; length++);
 
       if (completion)
 	{
@@ -3692,7 +4240,7 @@ paste_received (GtkClipboard *clipboard,
         gtk_editable_delete_text (editable, start, end);
 
       pos = entry->current_pos;
-      gtk_editable_insert_text (editable, text, -1, &pos);
+      gtk_editable_insert_text (editable, text, length, &pos);
       gtk_editable_set_position (editable, pos);
 
       if (completion)
@@ -3888,6 +4436,7 @@ gtk_entry_set_visibility (GtkEntry *entry,
 {
   g_return_if_fail (GTK_IS_ENTRY (entry));
 
+  g_object_set(G_OBJECT(entry->im_context), "visibility", visible, NULL);
   entry->visible = visible ? TRUE : FALSE;
   g_object_notify (G_OBJECT (entry), "visibility");
   gtk_entry_recompute (entry);
@@ -4569,6 +5118,7 @@ gtk_entry_do_popup (GtkEntry       *entry,
                     GdkEventButton *event)
 {
   PopupInfo *info = g_new (PopupInfo, 1);
+  GtkEntryPrivate *priv;
 
   /* In order to know what entries we should make sensitive, we
    * ask for the current targets of the clipboard, and when
@@ -4576,6 +5126,8 @@ gtk_entry_do_popup (GtkEntry       *entry,
    */
   info->entry = g_object_ref (entry);
   
+  priv = GTK_ENTRY_GET_PRIVATE (entry);
+
   if (event)
     {
       info->button = event->button;
@@ -4591,6 +5143,8 @@ gtk_entry_do_popup (GtkEntry       *entry,
 				  gdk_atom_intern ("TARGETS", FALSE),
 				  popup_targets_received,
 				  info);
+
+  priv->menu_popped = TRUE;
 }
 
 static gboolean
@@ -5388,4 +5942,111 @@ gtk_entry_get_completion (GtkEntry *entry)
                                      GTK_ENTRY_COMPLETION_KEY));
 
   return completion;
+}
+
+static PangoLayoutIter *get_char_at_pos( PangoLayout *layout, gint x, gint y )
+{
+     gint index = 0; /*the index of the first character */
+     gint trailing = 0; /*not used*/
+     PangoLayoutIter *iter; /*used to iterate over the text*/
+     gboolean valid_char = TRUE;
+
+     /*get the position of the character currently at the scroll offset*/
+     pango_layout_xy_to_index( layout, x * PANGO_SCALE, y * PANGO_SCALE, &index, &trailing );
+     iter = pango_layout_get_iter( layout );
+
+     /*iterate until we get to the character at the same index*/
+     while ( valid_char && pango_layout_iter_get_index( iter ) != index )
+     {
+         valid_char = pango_layout_iter_next_char( iter );
+     }
+
+     if ( valid_char == FALSE )
+         iter = NULL;
+
+     return iter;
+}
+
+/*
+ * gtk_entry_set_autocap:
+ * @entry: a #GtkEntry
+ * @autocap: autocap
+ *
+ * Sets autocapitalization of the widget.
+ */
+static void
+gtk_entry_set_autocap (GtkEntry *entry,
+                       gboolean autocap)
+{
+  g_return_if_fail (GTK_IS_ENTRY (entry));
+
+  if (gtk_entry_get_autocap (entry) != autocap)
+  {
+    g_object_set (G_OBJECT (entry->im_context), "autocap", autocap, NULL);
+    g_object_notify (G_OBJECT (entry), "autocap");
+  }
+}
+
+/*
+ * gtk_entry_get_autocap:
+ * @entry: a #GtkEntry
+ *
+ * Gets autocapitalization state of the widget.
+ *
+ * Return value: a state
+ */
+static gboolean
+gtk_entry_get_autocap (GtkEntry *entry)
+{
+  gboolean autocap;
+  g_return_val_if_fail (GTK_IS_ENTRY (entry), FALSE);
+
+  g_object_get (G_OBJECT (entry->im_context), "autocap", &autocap, NULL);
+
+  return autocap;
+}
+
+/*
+ * gtk_entry_set_input_mode:
+ * @entry: a #GtkEntry
+ * @autocap: input mode
+ *
+ * Sets autocapitalization of the widget.
+ */
+static void
+gtk_entry_set_input_mode (GtkEntry *entry,
+                          gint      mode)
+{
+  g_return_if_fail (GTK_IS_ENTRY (entry));
+
+  if (g_object_class_find_property (G_OBJECT_GET_CLASS (entry->im_context),
+				    "input_mode"))
+  if (gtk_entry_get_input_mode (entry) != mode)
+  {
+    g_object_set (G_OBJECT (entry->im_context), "input_mode", mode, NULL);
+    g_object_notify (G_OBJECT (entry), "input_mode");
+  }
+}
+
+/*
+ * gtk_entry_get_input_mode:
+ * @entry: a #GtkEntry
+ *
+ * Gets input mode of the widget.
+ *
+ * Return value: input mode
+ */
+static gint
+gtk_entry_get_input_mode (GtkEntry *entry)
+{
+  gint mode;
+  g_return_val_if_fail (GTK_IS_ENTRY (entry), FALSE);
+
+  if (g_object_class_find_property (G_OBJECT_GET_CLASS (entry->im_context),
+				    "input_mode"))
+    g_object_get (G_OBJECT (entry->im_context), "input_mode", &mode, NULL);
+  else
+    mode = 0;
+
+  return mode;
 }

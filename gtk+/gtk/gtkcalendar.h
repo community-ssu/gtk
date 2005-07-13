@@ -111,6 +111,9 @@ struct _GtkCalendarClass
   void (* next_month)			(GtkCalendar *calendar);
   void (* prev_year)			(GtkCalendar *calendar);
   void (* next_year)			(GtkCalendar *calendar);
+  /* Hildon signals */
+  void (* erroneous_date) (GtkCalendar *calendar);
+  void (* selected_date) (GtkCalendar *calendar);
   
 };
 

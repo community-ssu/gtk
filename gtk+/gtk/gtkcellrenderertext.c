@@ -182,8 +182,8 @@ gtk_cell_renderer_text_init (GtkCellRendererText *celltext)
 
   GTK_CELL_RENDERER (celltext)->xalign = 0.0;
   GTK_CELL_RENDERER (celltext)->yalign = 0.5;
-  GTK_CELL_RENDERER (celltext)->xpad = 2;
-  GTK_CELL_RENDERER (celltext)->ypad = 2;
+  GTK_CELL_RENDERER (celltext)->xpad = 0;
+  GTK_CELL_RENDERER (celltext)->ypad = 0;
   celltext->fixed_height_rows = -1;
   celltext->font = pango_font_description_new ();
 
@@ -1429,7 +1429,7 @@ get_size (GtkCellRenderer *cell,
   /* The minimum size for ellipsized labels is ~ 3 chars */
   if (width)
     {
-      if (priv->ellipsize || priv->width_chars > 0)
+      /*if (priv->ellipsize || priv->width_chars > 0)
 	{
 	  PangoContext *context;
 	  PangoFontMetrics *metrics;
@@ -1444,9 +1444,9 @@ get_size (GtkCellRenderer *cell,
 	  *width += (PANGO_PIXELS (char_width) * MAX (priv->width_chars, 3));
 	}
       else
-	{
+	{*/
 	  *width = GTK_CELL_RENDERER (celltext)->xpad * 2 + rect.width;
-	}	  
+	/*}	  */
     }
 
   if (cell_area)
@@ -1501,6 +1501,7 @@ gtk_cell_renderer_text_render (GtkCellRenderer      *cell,
   gint x_offset;
   gint y_offset;
   GtkCellRendererTextPrivate *priv;
+  PangoRectangle logical_rect;
 
   priv = GTK_CELL_RENDERER_TEXT_GET_PRIVATE (cell);
 
@@ -1521,7 +1522,7 @@ gtk_cell_renderer_text_render (GtkCellRenderer      *cell,
   else if ((flags & GTK_CELL_RENDERER_PRELIT) == GTK_CELL_RENDERER_PRELIT &&
 	   GTK_WIDGET_STATE (widget) == GTK_STATE_PRELIGHT)
     {
-      state = GTK_STATE_PRELIGHT;
+      state = GTK_STATE_NORMAL;
     }
   else
     {
@@ -1557,6 +1558,14 @@ gtk_cell_renderer_text_render (GtkCellRenderer      *cell,
       if (expose_area)               
         gdk_gc_set_clip_rectangle (gc, NULL);
       g_object_unref (gc);
+    }
+
+  /* Dirty Hildon hack to force ellipsation */
+  pango_layout_get_extents (layout, NULL, &logical_rect);
+  if (PANGO_PIXELS (logical_rect.width) > MIN (background_area->width, expose_area->width))
+    {
+      priv->ellipsize = PANGO_ELLIPSIZE_END;
+      priv->ellipsize_set = TRUE;
     }
 
   if (priv->ellipsize)

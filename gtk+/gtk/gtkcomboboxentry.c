@@ -55,6 +55,8 @@ static void gtk_combo_box_entry_contents_changed (GtkEntry              *entry,
                                                   gpointer               user_data);
 static gboolean gtk_combo_box_entry_mnemonic_activate (GtkWidget        *entry,
 						       gboolean          group_cycling);
+/*static void gtk_grab_combo_box_entry_focus       (GtkComboBoxEntry *entry_box);*/
+
 static void has_frame_changed                    (GtkComboBoxEntry      *entry_box,
 						  GParamSpec            *pspec,
 						  gpointer               data);
@@ -136,6 +138,10 @@ gtk_combo_box_entry_init (GtkComboBoxEntry *entry_box)
   gtk_widget_show (entry_box->priv->entry);
 
   entry_box->priv->text_renderer = gtk_cell_renderer_text_new ();
+
+  g_object_set (entry_box->priv->text_renderer,
+                "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+
   gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (entry_box),
                               entry_box->priv->text_renderer, TRUE);
 
@@ -381,4 +387,13 @@ gtk_combo_box_entry_new_text (void)
   g_object_unref (store);
 
   return entry_box;
+}
+
+/* Hildon: this is added because we need to grab focus from caption control
+ * to ComboBox entry.
+ */
+void
+gtk_grab_combo_box_entry_focus (GtkComboBoxEntry *entry_box)
+{
+  gtk_widget_grab_focus (entry_box->priv->entry);
 }

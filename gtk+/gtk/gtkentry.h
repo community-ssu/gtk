@@ -143,10 +143,12 @@ struct _GtkEntryClass
   void (* paste_clipboard)    (GtkEntry       *entry);
   void (* toggle_overwrite)   (GtkEntry       *entry);
 
+  void (* invalid_input) (GtkEntry            *entry,
+                          GtkInvalidInputType  invalid_input_type);
+
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
-  void (*_gtk_reserved3) (void);
 };
 
 GType      gtk_entry_get_type       		(void) G_GNUC_CONST;
