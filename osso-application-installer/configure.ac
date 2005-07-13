@@ -50,7 +50,7 @@ AC_SUBST(cp_plugindesktopdir)
 GETTEXT_PACKAGE=osso-application-installer
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Name of gettext package])
-ALL_LINGUAS="de_DE en_GB en_US es_ES es_MX fi_FI fr_FR fr_CA it_IT pt_BR ru_RU"
+ALL_LINGUAS="en_GB"
 AM_GLIB_GNU_GETTEXT
 
 # Mime crap
