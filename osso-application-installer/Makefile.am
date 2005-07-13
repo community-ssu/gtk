@@ -5,8 +5,6 @@ EXTRA_DIST = \
         intltool-extract.in \
         intltool-merge.in \
         intltool-update.in \
-        debian/* \
-	po/debian/* \
 	po/porules.mk.in
 
 SUBDIRS = src control-panel po mime wrapper
