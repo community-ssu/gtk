@@ -1,0 +1,9 @@
+./
+./usr
+./usr/share
+./usr/share/doc
+./usr/share/doc/maemo
+./usr/share/doc/maemo/this_file_does_not_exist
+./usr/lib
+./usr/lib/dbus-1.0
+./usr/lib/dbus-1.0/services

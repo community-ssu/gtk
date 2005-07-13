@@ -1,0 +1,103 @@
+# configure.ac for Application Installer
+
+# Mandatory, inits autoconf
+AC_INIT(osso_application_installer, 1.0.28-0)
+
+# Tests that source dir exists
+AC_CONFIG_SRCDIR([src/main.c])
+
+# For automake: generate rules to reproduce config.h, if needed
+AM_CONFIG_HEADER(config.h)
+
+# Initialize automake, takes package name and version from AC_INIT
+AM_INIT_AUTOMAKE
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LIBTOOL
+
+AC_HEADER_STDC
+
+CFLAGS="$CFLAGS -Wall -Wmissing-prototypes -Wmissing-declarations"
+
+# Check module dependencies, will automatically include all needed
+# compiler options to DEPS-variables, see src/Makefile.am for details
+PKG_CHECK_MODULES( DEPS,
+libossohelp >= 0.05
+gtk+-2.0 >= 2.2 glib-2.0 >= 2.2 hildon-libs >= 0.8.1
+hildon-base-lib >= 0.8.1 hildon-lgpl >= 0.8.1 libosso >= 0.8.1
+gnome-vfs-2.0 >= 2.6 gnome-vfs-module-2.0 >= 2.6
+)
+AC_SUBST( DEPS_CFLAGS )
+AC_SUBST( DEPS_LIBS )
+
+# Control panel related
+PKG_CHECK_MODULES(CP,
+glib-2.0 >= 2.4	dbus-glib-1 >= 0.22 hildon-control-panel >= 0.8.6
+)
+
+AC_SUBST(CP_CFLAGS)
+AC_SUBST(CP_LIBS)
+
+cp_pluginlibdir=`pkg-config hildon-control-panel --variable=pluginlibdir`
+AC_SUBST(cp_pluginlibdir)
+cp_plugindesktopdir=`pkg-config hildon-control-panel --variable=plugindesktopentrydir`
+AC_SUBST(cp_plugindesktopdir)
+
+# Localisation-related
+#AC_PROG_INTLTOOL([0.23])
+GETTEXT_PACKAGE=osso-application-installer
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Name of gettext package])
+ALL_LINGUAS="de_DE en_GB en_US es_ES es_MX fi_FI fr_FR fr_CA it_IT pt_BR ru_RU"
+AM_GLIB_GNU_GETTEXT
+
+# Mime crap
+dnl MIME-type registration check (2.6 / 2.8 version)
+AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database, no)
+AM_CONDITIONAL(HAVE_26_MIME, test x$UPDATE_MIME_DATABASE != xno)
+
+AC_PATH_PROG(UPDATE_DESKTOP_DATABASE, update-desktop-database, no)
+AM_CONDITIONAL(HAVE_28_MIME, test x$UPDATE_DESKTOP_DATABASE != xno)
+
+
+applicationinstallerlocaledir=${datadir}/locale
+AC_SUBST(applicationinstallerlocaledir)
+
+desktopentrydir=${datadir}/applications
+AC_SUBST(desktopentrydir)
+
+hildondesktopentrydir=${desktopentrydir}/hildon
+AC_SUBST(hildondesktopentrydir)
+
+hildoncpdesktopentrydir=`$PKG_CONFIG --variable=desktopentrydir hildon-control-panel`
+hildonpixmapdir=`$PKG_CONFIG --variable=hildonpixmapdir hildon-base`
+hildonstatusbarlibdir=`$PKG_CONFIG --variable=hildonstatusbarlibdir hildon-base`
+AC_SUBST(hildoncpdesktopentrydir)
+AC_SUBST(hildonpixmapdir)
+AC_SUBST(hildonstatusbarlibdir)
+
+dbuslibpathdir=`$PKG_CONFIG --variable=libdir dbus-1`
+dbusconfdir=/etc/dbus-1/system.d
+dbusservdir=${dbuslibpathdir}/dbus-1.0/services
+AC_SUBST(dbuslibpathdir)
+AC_SUBST(dbusconfdir)
+AC_SUBST(dbusservdir)
+
+# Define output files
+AC_CONFIG_FILES([
+Makefile
+src/Makefile
+src/osso_application_installer.desktop
+po/Makefile.in
+po/porules.mk
+src/com.nokia.osso_application_installer.service
+control-panel/Makefile
+control-panel/osso-application-installer-cp.desktop
+mime/Makefile
+wrapper/Makefile
+])
+
+# Mandatory, produce output
+AC_OUTPUT

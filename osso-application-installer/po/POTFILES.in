@@ -1,0 +1,6 @@
+# [encoding: UTF-8]
+src/core.c
+src/ui/interface.c
+src/ui/callbacks.c
+src/ui/represent.c
+src/ui/ui.h

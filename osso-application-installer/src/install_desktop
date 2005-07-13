@@ -1,0 +1,36 @@
+#!/bin/sh
+
+DESKTOPDIR=/usr/share/applications/hildon
+LINKDIR=/etc/others-menu/extra_applications
+DESTDIR=debian/tmp
+
+if [ -x "/usr/bin/pkg-config" ]; then
+    if /usr/bin/pkg-config osso-af-settings --modversion > /dev/null; then
+        DESKTOPDIR=`pkg-config osso-af-settings --variable=desktopentrydir`
+    fi
+fi
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 [--destdir=...] <desktop file> [file2...]"
+fi
+
+if echo "$1" | grep -q "^--destdir="; then
+    DESTDIR=`echo $1 | sed -e 's/^--destdir=//'`
+    shift
+fi
+
+if [ ! -d "$DESTDIR$DESKTOPDIR" ]; then
+    mkdir -p "$DESTDIR$DESKTOPDIR"
+fi
+if [ ! -d "$DESTDIR$LINKDIR" ]; then
+    mkdir -p "$DESTDIR$LINKDIR"
+fi
+
+FILE="$1"
+while shift; do
+    if [ -f "$FILE" ]; then
+        cp "$FILE" "$DESTDIR$DESKTOPDIR"
+        ln -s "$DESKTOPDIR"/`basename $FILE` "$DESTDIR$LINKDIR"
+    fi
+    FILE="$1"
+done

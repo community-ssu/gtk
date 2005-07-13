@@ -1,0 +1,67 @@
+Source: osso-application-installer-l10n-src
+Section: x11
+Priority: optional
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), gettext
+Standards-Version: 3.6.0
+
+# New packages for localization needs
+Package: osso-application-installer-l10n-dede
+Architecture: all
+Description: Application installer de locale
+ German locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-engb
+Architecture: all
+Description: Application installer en_GB locale
+ English locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-enus
+Architecture: all
+Description: Application installer en_US locale
+ English locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-eses
+Architecture: all
+Description: Application installer es locale
+ Spanish locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-esmx
+Architecture: all
+Description: Application installer es-mx locale
+ Spanish locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-fifi
+Architecture: all
+Description: Application installer fi locale
+ Finish locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-frca
+Architecture: all
+Description: Application installer fr-ca locale
+ French locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-frfr
+Architecture: all
+Description: Application installer fr locale
+ French locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-itit
+Architecture: all
+Description: Application installer it locale
+ Italian locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-ptbr
+Architecture: all
+Description: Application installer pt_BR locale
+ Brazilian Portugese locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-ruru
+Architecture: all
+Description: Application installer ru locale
+ Russian locale for osso-application-installer.
+
+Package: osso-application-installer-l10n-src
+Depends: gettext
+Architecture: all
+Description: Application installer locale src
