@@ -43,4 +43,4 @@ servicefiledir=$(prefix)/lib/dbus-1.0/services
 EXTRA_DIST = 					\
 	$(desktop_in_files)
 
-CLEANFILES =  $(desktop_DATA)
+DISTCLEANFILES =  $(desktop_DATA)

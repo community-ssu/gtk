@@ -16,3 +16,14 @@ deb:	dist
 	cd $(top_builddir)/debian-build && tar zxf ../$(top_builddir)/$(PACKAGE)-$(VERSION).tar.gz
 	cd $(top_builddir)/debian-build/$(PACKAGE)-$(VERSION) && dpkg-buildpackage -rfakeroot
 	-rm -rf $(top_builddir)/debian-build/$(PACKAGE)-$(VERSION)
+
+# We need to exclude the mime database from the uninstall check since
+# it is properly empty, but the files are still there.
+#
+distuninstallcheck_listfiles = \
+  find . -type f -and -not -path '*/share/mime/*' -print
+
+DISTCLEANFILES = intltool-extract		\
+                 intltool-merge			\
+                 intltool-update		\
+                 po/porules.mk

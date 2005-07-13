@@ -6,7 +6,7 @@ INCLUDES = @DEPS_CFLAGS@
 bin_PROGRAMS = osso_application_installer
 
 scriptdir = $(bindir)
-script_DATA = install_desktop install_service
+script_DATA = $(srcdir)/install_desktop $(srcdir)/install_service
 
 osso_application_installer_CFLAGS = $(INCLUDES) \
 	-DAPPLICATIONINSTALLERLOCALEDIR=\"$(applicationinstallerlocaledir)\" \
@@ -32,3 +32,6 @@ servicefiledir=$(prefix)/lib/dbus-1.0/services
 servicefile_DATA=com.nokia.osso_application_installer.service
 
 osso_application_installer_LDADD = @DEPS_LIBS@
+
+DISTCLEANFILES = com.nokia.osso_application_installer.service \
+		 osso_application_installer.desktop
