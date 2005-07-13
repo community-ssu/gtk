@@ -46,7 +46,7 @@ cp_plugindesktopdir=`pkg-config hildon-control-panel --variable=plugindesktopent
 AC_SUBST(cp_plugindesktopdir)
 
 # Localisation-related
-#AC_PROG_INTLTOOL([0.23])
+AC_PROG_INTLTOOL([0.23])
 GETTEXT_PACKAGE=osso-application-installer
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Name of gettext package])
