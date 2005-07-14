@@ -1,0 +1,3 @@
+etc/osso-af-init/sapwood-server.sh
+usr/lib/sapwood/sapwood-server
+usr/lib/gtk-2.0/@BINVER@/engines/libsapwood.so

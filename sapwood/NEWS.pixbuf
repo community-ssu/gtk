@@ -1,0 +1,8 @@
+Overview of Changes in 2.2.0 (since 1.9.0)
+==========================================
+* Add a .pc file [Seth Nickell]
+* Various crash fixes [Luca Barbato, Hongli Lai, 
+  Shivaram Upadhyayula, Peter Zelezny)
+* Build fixes [Havoc Pennington]
+* Metal theme drawing improvements [Owen Taylor]
+* Improve installation docs [Owen, Piotr Sawuk]

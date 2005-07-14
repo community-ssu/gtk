@@ -1,0 +1,75 @@
+gtk-engines
+===========
+
+This package provides three sample theme engines for GTK+:
+
+ Pixmap: A generic engine that renders using pixmaps.
+   One theme using this theme engine is included.
+
+ Metal: A fairly complete theme engine that looks like the
+   Java-Metal look of Swing.
+
+ Redmond95: A simple theme engine that looks a bit like 
+   Microsoft Windows 95.
+
+Requirements
+============
+
+To compile this package, you must have:
+
+ GTK+, version 1.3.12 or better
+
+   http://www.gtk.org/
+   ftp://ftp.gtk.org/pub/gtk/
+
+Installation
+============
+
+ ./configure 
+ make
+ [ become root ]
+ make install
+
+
+If you configured GTK+ in a non-default prefix, you should
+configure this package the same way. For instance:
+
+ ./configure --prefix=/opt/gtk+
+
+If you need to install this package in a different prefix
+from GTK+, then you'll have to set your GTK_PATH environment
+variable to point to the installed prefix. For instance,
+if this package was configured with:
+
+ ./configure --prefix=/home/john.doe/gtk-engines/
+
+Then you'd set:
+
+ GTK_PATH=/home/john.doe/gtk-engines/lib/gtk-2.0/
+ export GTK_PATH
+
+This will allow GTK+ to find the newly installed theme
+engines. To use the sample themes (installed into 
+$prefix/share/themes), you'll need to copy copy or link them 
+into your  ~/.theme directory.
+
+Further Information
+===================
+
+Questions about this package should be directed to the
+GTK+ mailing lists. See:
+
+  http://www.gtk.org/mailinglists.html
+
+
+====
+Owen Taylor <otaylor@redhat.com>
+The Rasterman <raster@redhat.com>
+18 Jan 1999
+
+Owen Taylor <otaylor@redhat.com>
+23 Jan 2002
+
+All software in this package is Copyright (C) 1999-2002 Red Hat Software and
+Randy Gordon and is distributed under the LGPL License (same as gtk+)
+

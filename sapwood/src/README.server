@@ -1,0 +1,22 @@
+Protocol
+========
+
+Server listens to unix socket in "$TMPDIR/sapwood-$DISPLAY"
+(g_get_tmp_dir() and gdk_display_get_name ())
+
+C -> S: 
+  guint8  border_left;
+  guint8  border_right;
+  guint8  border_top;
+  guint8  border_bottom;
+  guchar  filename[0];          /* null terminated, absolute filename */
+
+S -> C:
+  guint16 width;
+  guint16 height;
+  guint32 pixmap[3][3];         /* XIDs for pixmaps and masks for each part */
+  guint32 pixmask[3][3];        /* 0 if not applicable (full opacity)       */
+
+  on error:
+   char dummy;                  /* == '-' */
+

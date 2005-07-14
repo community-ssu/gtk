@@ -1,0 +1,49 @@
+sapwood 1.20 - 2005-05-13
+=========================
+
+Bugs fixed
+----------
+#11906 - Sapwood migh crash the application on skin change
+
+
+sapwood 1.18.1 - 2005-05-03
+===========================
+
+Changes
+-------
+Dim icons by putting a simple background color (white) over the normal state
+icon.
+
+Remove unneeded gtk+ dependency from sapwood-server.
+
+
+sapwood 1.18 - 2005-04-26
+=========================
+
+Changes
+-------
+Release old images when the theme changes.
+
+
+sapwood 1.12 - 2005-03-29
+=========================
+
+Bugs fixed
+----------
+#8479 - AI user cannot write to sapwood socket
+
+
+Changes
+-------
+Move sapwood-server to $(libdir)/sapwood
+
+Use abstract socket namespace where available to avoid dangling sockets in the
+filesystem.
+
+
+sapwood 1.08 - 2005-02-23
+=========================
+
+Bugs fixed
+----------
+#5533 - Changing GTK theme on the fly crashes applications

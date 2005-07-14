@@ -1,0 +1,125 @@
+2005-05-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* === Release 1.20 ===
+
+	* configure.in
+	* NEWS: Updated
+
+2005-05-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-pixmap.c(sapwood_pixmap_free): Make sure all (XChangeGC)
+	operations are processed before letting the sapwood server free the
+	pixmaps.  Otherwise there's a risk of getting BadPixmap errors (#11906)
+
+2005-05-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* === Release 1.18.1 ===
+
+	* configure.in
+	* NEWS: Updated
+
+2005-05-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-draw.c: Dim icons by drawing a simple background color
+	(white) raster over the normal state icon.
+
+	* configure.in
+	* src/sapwood-server.c
+	* src/Makefile.am: Remove unneeded gtk+ dependency from
+	sapwood-server.
+
+2005-04-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* === Release 1.18 ===
+
+	* configure.in
+	* NEWS: Updated
+
+2005-04-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-pixmap.c
+	* src/sapwood-server.c
+	* src/sapwood-proto.h: Change ref/unref to open/close to match
+	protocol semantics.
+
+2005-04-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-render.c(theme_pixbuf_equal): Fix border equality
+	check warnings, compare right to right, not right to bottom.
+
+	* src/sapwood-render.c(theme_pixbuf_get_pixmap): theme_pixbuf_ref() has
+	invalid semantics for GCache use (results in memory leak due to
+	self-referencing.)  Introduce and use theme_pixbuf_copy() instead.
+	* src/sapwood-render.c(theme_pixbuf_ref): Removed.
+
+	* src/sapwood-pixmap.c: Generalize pixbuf_proto_get_pixmap() to
+	pixbuf_proto_request() which can handle arbitrary requests and
+	optional responses. 
+
+	* src/sapwood-pixmap.c
+	* src/sapwood-server.c
+	* src/sapwood-proto.h: Rename PixbufRequest,PixbufResponse to
+	PixbufRefRequest,PixbufRefResponse
+
+	* src/sapwood-rc-style.c: Check all images for missing filenames
+	instead of only 'background' and 'overlay' ('gap', 'gap_start',
+	'gap_end' were missing.)
+
+	* src/sapwood-pixmap.c
+	* src/sapwood-server.c
+	* src/sapwood-proto.h: Include request total length in the message to
+	make trivial validation possible.
+
+	* src/sapwood-pixmap.c
+	* src/sapwood-server.c
+	* src/sapwood-proto.h: Include opcode in the request message.
+
+	* src/sapwood-server.c: Don't assume a read from the socket is a
+	single whole request, be prepared for partial and multiple requests in
+	the buffer.
+
+	* src/sapwood-server.c
+	* src/sapwood-proto.h: Assign a handle for each client requested image
+	the client can use later to release the image.
+
+	* src/sapwood-pixmap.c
+	* src/sapwood-server.c
+	* src/sapwood-proto.h: Add unref request to the protocol and release
+	images from the client side.
+
+2005-03-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/Makefile.am: Move sapwood server to $(libdir)/sapwood, this is
+	not gtk-engines package anymore.
+
+2005-03-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.in: Check for abstract socket namespace
+	* src/sapwood-pixmap.c
+	* src/sapwood-server.c: Use abstract socket namespace if available to
+	avoid leaving dangling sockets in the filesystem
+
+2005-02-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* === Release 1.08 ===
+
+	* configure.in
+	* NEWS: Updated
+
+2005-02-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* src/sapwood-server.c(client_sock_callback): Remove unused variable.
+
+2005-02-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/theme-pixbuf.h
+	* src/sapwood-render.c: Switch visibility of theme_pixbuf_unref()
+	and theme_pixbuf_destroy()
+	* src/sapwood-rc-style.c: Always unref pixbufs rather than blindly
+	destroying them.  Avoids crashing on theme change (#5533)
+
+2004-12-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* Creating new package by extracting (greatly modified) pixbuf engine
+	from gtk-engines.
+
