@@ -873,12 +873,6 @@ draw_extension (GtkStyle       *style,
   g_return_if_fail(style != NULL);
   g_return_if_fail(window != NULL);
 
-  /* Why? */
-  if (width >=0)
-    width++;
-  if (height >=0)
-    height++;
-  
   match_data.function = TOKEN_D_EXTENSION;
   match_data.detail = (gchar *)detail;
   match_data.flags = THEME_MATCH_SHADOW | THEME_MATCH_STATE | THEME_MATCH_GAP_SIDE;
@@ -1038,6 +1032,12 @@ render_icon (GtkStyle               *style,
 		  p[0] = color.red >> 8;
 		  p[1] = color.blue >> 8;
 		  p[2] = color.green >> 8;
+
+		  /* decrease alpha to avoid extreme contrast (such as in white
+		   * on black in audio player buttons)
+		   */
+		  if (n_channels == 4 && p[3] > 128)
+		    p[3] -= 127;
 		}
 
 	      p += n_channels;

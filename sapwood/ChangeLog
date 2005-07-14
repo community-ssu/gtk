@@ -1,3 +1,20 @@
+2005-05-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* === Release 1.22 ===
+
+	* configure.in
+	* NEWS: Updated
+
+2005-05-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-draw(draw_extension): Stop expanding our designated
+	drawing area, it's just wrong, wrong, wrong (#9727)
+
+2005-05-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-draw(render_icon): Increase alpha of the background
+	colored pixels used when dimming icons to avoid extreme contrast.
+
 2005-05-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* === Release 1.20 ===

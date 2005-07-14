@@ -1,3 +1,18 @@
+sapwood (1.22-1) unstable; urgency=low
+
+  * New release
+  * Fixes #9727 - Notebook widget: the most right tab's right border is not
+    displayed.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 27 May 2005 15:06:38 +0300
+
+sapwood (1.20-2) unstable; urgency=low
+
+  * sapwood-server.sh: use LAUNCHWRAPPER_NICE instead
+  * Fixes #11915 - Sapwood server is not started with Lifeguard
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 18 May 2005 18:37:59 +0300
+
 sapwood (1.20-1) unstable; urgency=low
 
   * New release

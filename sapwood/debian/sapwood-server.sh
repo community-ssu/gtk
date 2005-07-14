@@ -30,7 +30,7 @@ if [ $START = TRUE ]; then
     exit 2
   fi
 
-  $LAUNCHWRAPPER start "$SVC" $PROG
+  $LAUNCHWRAPPER_NICE start "$SVC" $PROG
 else
-  $LAUNCHWRAPPER stop "$SVC" $PROG
+  $LAUNCHWRAPPER_NICE stop "$SVC" $PROG
 fi

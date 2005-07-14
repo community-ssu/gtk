@@ -304,8 +304,6 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-sapwood-draw.lo sapwood-draw.o : sapwood-draw.c theme-pixbuf.h \
-	sapwood-pixmap.h sapwood-rc-style.h sapwood-style.h
 
 info-am:
 info: info-am

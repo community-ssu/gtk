@@ -1,3 +1,17 @@
+sapwood 1.22 - 2005-05-27
+=========================
+
+Bugs fixed
+----------
+#9727 - Notebook widget: the most right tab's right border is not displayed
+
+
+Changes
+-------
+Increase alpha of the background colored pixels used when dimming icons to
+avoid extreme contrast.
+
+
 sapwood 1.20 - 2005-05-13
 =========================
 
