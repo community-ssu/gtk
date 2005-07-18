@@ -11,12 +11,6 @@ SUBDIRS = src control-panel po mime wrapper
 
 INCLUDES = $(DEPS_CFLAGS)
 
-deb:	dist
-	-mkdir $(top_builddir)/debian-build
-	cd $(top_builddir)/debian-build && tar zxf ../$(top_builddir)/$(PACKAGE)-$(VERSION).tar.gz
-	cd $(top_builddir)/debian-build/$(PACKAGE)-$(VERSION) && dpkg-buildpackage -rfakeroot
-	-rm -rf $(top_builddir)/debian-build/$(PACKAGE)-$(VERSION)
-
 # We need to exclude the mime database from the uninstall check since
 # it is properly empty, but the files are still there.
 #
@@ -27,3 +21,20 @@ DISTCLEANFILES = intltool-extract		\
                  intltool-merge			\
                  intltool-update		\
                  po/porules.mk
+
+INSTROOT = /var/lib/install
+
+# Create installation root
+#
+install-data-local:
+	tar -C data --exclude .svn -cf - . | \
+        (cd $(DESTDIR) && rm -rf ./$(INSTROOT) && mkdir -p ./$(INSTROOT) \
+          && tar -C ./$(INSTROOT) -xf -)
+
+# Include files for the installation root in the distribution
+#
+dist-hook:
+	tar -C $(srcdir) --exclude .svn -cf - data | tar -C $(distdir) -xf - 
+
+deb:
+	./make-package $(PACKAGE) $(VERSION)
