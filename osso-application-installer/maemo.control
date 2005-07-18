@@ -1,0 +1,8 @@
+Package: maemo
+Version: 0.0
+Architecture: all
+Essential: yes
+Installed-Size: 0
+Maintainer: <marius.vollmer@nokia.com>
+Description: The base package for user installable applications.
+ .

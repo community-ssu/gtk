@@ -1,0 +1,5 @@
+etc/others-menu/extra_applications
+var/log
+usr/bin
+usr/share/applications/hildon
+usr/lib/dbus-1.0/services/
