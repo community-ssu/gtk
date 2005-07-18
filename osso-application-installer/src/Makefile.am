@@ -6,7 +6,9 @@ INCLUDES = @DEPS_CFLAGS@
 bin_PROGRAMS = osso_application_installer
 
 scriptdir = $(bindir)
-script_DATA = $(srcdir)/install_desktop $(srcdir)/install_service
+script_DATA = install_desktop install_service
+
+EXTRA_DIST = install_desktop install_service
 
 osso_application_installer_CFLAGS = $(INCLUDES) \
 	-DAPPLICATIONINSTALLERLOCALEDIR=\"$(applicationinstallerlocaledir)\" \
