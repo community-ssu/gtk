@@ -1,3 +1,17 @@
+2005-07-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/Makefile.am (script_DATA): Do not use $(srcdir) here.
+	(EXTRA_DIST): New, since script_DATA is not distributed
+	automatically.
+
+2005-07-14  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* make-package: New.
+	
+	* Makefile.am (deb): Replaced with call to make-package.
+	(dist-hook): New, to include data/ in distribution.
+	(install-data-local): New, to create /var/lib/install
+	
 2005-07-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* Makefile.am, src/Makefile.am (DISTCLEANFILES): Added so that
