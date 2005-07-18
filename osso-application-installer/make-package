@@ -1,0 +1,28 @@
+#! /bin/sh
+
+## make-package -- make a Debian package using the stage.maemo.org SVN
+##                 layout
+
+if test $# -ne 2; then
+  echo 1>&2 "usage: make-package PACKAGE VERSION"
+  exit 1
+fi
+ 
+set -e
+set -x
+
+PACKAGE="$1"
+VERSION="$2"
+
+DISTDIR=$PACKAGE-$VERSION
+DEBREP=../../../packaging/trunk/$PACKAGE/
+
+make dist distdir=$DISTDIR
+tar xzf $DISTDIR.tar.gz
+
+( cd $DISTDIR
+  tar --exclude .svn -C $DEBREP -cf - debian | tar xf -
+  dpkg-buildpackage -rfakeroot
+)
+
+rm -rf $DISTDIR $DISTDIR.tar.gz
