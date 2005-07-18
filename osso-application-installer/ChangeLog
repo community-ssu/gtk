@@ -1,5 +1,8 @@
 2005-07-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* make-package: Expect location of debian/ directory as argument.
+	* Makefile.am (DEBIAN, deb): Provide it, in an overridable way.
+	
 	* src/Makefile.am (script_DATA): Do not use $(srcdir) here.
 	(EXTRA_DIST): New, since script_DATA is not distributed
 	automatically.
