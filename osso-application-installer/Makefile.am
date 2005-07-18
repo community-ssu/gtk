@@ -36,5 +36,7 @@ install-data-local:
 dist-hook:
 	tar -C $(srcdir) --exclude .svn -cf - data | tar -C $(distdir) -xf - 
 
+DEBIAN = ../$(PACKAGE).debian/
+
 deb:
-	./make-package $(PACKAGE) $(VERSION)
+	./make-package $(PACKAGE) $(VERSION) $(DEBIAN)
