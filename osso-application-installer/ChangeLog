@@ -1,8 +1,16 @@
 2005-07-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* maemo.control, maemo.dirs: New files, for building the maemo.deb
+	package.
+	
+	* Makefile.am: Build and install the maemo.deb package.
+	(install-data-local, dist-hook): Removed since /var/lib/install is
+	now created by postinst.
+	(EXTRA_DIST): Added maemo.control and maemo.dirs.
+	
 	* make-package: Expect location of debian/ directory as argument.
 	* Makefile.am (DEBIAN, deb): Provide it, in an overridable way.
-	
+
 	* src/Makefile.am (script_DATA): Do not use $(srcdir) here.
 	(EXTRA_DIST): New, since script_DATA is not distributed
 	automatically.
