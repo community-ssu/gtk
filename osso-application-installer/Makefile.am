@@ -1,3 +1,5 @@
+SUBDIRS = src control-panel po mime wrapper
+
 # This variable tells which non-source files should be included in
 # "make dist"
 EXTRA_DIST = \
@@ -5,9 +7,8 @@ EXTRA_DIST = \
         intltool-extract.in \
         intltool-merge.in \
         intltool-update.in \
-	po/porules.mk.in
-
-SUBDIRS = src control-panel po mime wrapper
+	po/porules.mk.in \
+        maemo.control maemo.dirs
 
 INCLUDES = $(DEPS_CFLAGS)
 
@@ -22,19 +23,16 @@ DISTCLEANFILES = intltool-extract		\
                  intltool-update		\
                  po/porules.mk
 
-INSTROOT = /var/lib/install
+mylibdir = $(libdir)/osso-application-installer
+mylib_DATA = maemo.deb
 
-# Create installation root
-#
-install-data-local:
-	tar -C data --exclude .svn -cf - . | \
-        (cd $(DESTDIR) && rm -rf ./$(INSTROOT) && mkdir -p ./$(INSTROOT) \
-          && tar -C ./$(INSTROOT) -xf -)
-
-# Include files for the installation root in the distribution
-#
-dist-hook:
-	tar -C $(srcdir) --exclude .svn -cf - data | tar -C $(distdir) -xf - 
+maemo.deb: maemo.control maemo.dirs
+	rm -rf maemo.tmp
+	mkdir maemo.tmp
+	mkdir maemo.tmp/DEBIAN
+	cp maemo.control maemo.tmp/DEBIAN/control
+	(cd maemo.tmp && mkdir -p `cat ../maemo.dirs`)
+	dpkg-deb --build maemo.tmp maemo.deb
 
 DEBIAN = ../../$(PACKAGE).debian/trunk/
 
