@@ -1,0 +1,153 @@
+This is the source for the app-installer-tool program.
+******************************************************
+
+The app-installer-tool is a non-GUI, command-line program that
+performs the basic package management operations.  It can list
+installed packages, output the description of individual packages,
+install a new package, and remove installed packages.  It is
+responsible for leaving the system in a simple state: either a package
+has been installed successfully, or it is not installed.  Either a
+package has been removed completely, or it is still completely
+installed.  It copes with out-of-space conditions and broken packages.
+
+When dpkg leaves a package in a not-completely-installed state, the
+package will be removed.  Since removing a package that other packages
+depend on does not work, app-installer-tool will only install packages
+that are not yet installed.  That is, upgrading a package in-place is
+not supported.
+
+Still, removing a package might fail.  Packages that could not be
+removed are marked as 'broken' and should be presented to the user
+accordingly.
+
+app-installer-tool will be invoked via sudo and does no setuid stuff
+etc on its own.  It uses dpkg to do the real thing and passes on
+diagnostic output.
+
+app-installer-tool does not hide the existence of the fake "maemo"
+package.
+
+app-installer-tool does not handle GnomeVFS URIs since that might mean
+that a file needs to be copied to local storage more than once during
+installation, since installing usually consists of two invocations of
+app-installer-tool, one to get the description of the package and one
+to actually install it.
+
+Usage:
+
+  - app-installer-tool list
+
+  Lists all installed packages to stdout in this format:
+
+    package<TAB>version<TAB>installed-size<TAB>status<NL>
+
+  The 'status' is either 'ok' or 'broken'.  A 'broken' package might
+  result from a failed uninstall attempt and is usually caused by a
+  buggy package.
+
+  Stderr contains diagnostic messages that should be displayed to the
+  user when the exit code is non-zero.
+
+  - app-installer-tool describe-file <file.deb>
+  - app-installer-tool describe-package <package>
+
+  Returns the description of the file <file.deb> or the package
+  <package> on stdout.
+
+  Exits zero when stdout contains a proper description.
+  Exits non-zero when the package is not installed or some other error
+  occured.  Diagnostic output goes to stderr.
+
+  - app-installer-tool install <file.deb>
+
+  Installs the package contained in <file.deb> and exits zero when
+  this succeeded, non-zero otherwise.  Diagnostic output is displayed
+  on stderr.  Progress indication and a final status report is output
+  on stdout.
+
+  For each unsatisfied dependency, a line of the form
+
+    depends <dependency>
+
+  will appear on stdout.  Here, <dependency> is one entry from the
+  Depends field of the package.  It can be something simple like
+  "foo", it can include version number requirements like "foo (>=
+  2.3)" or be more complex like "libc6 (>= 2.2.1), exim |
+  mail-transport-agent".  However, application packages are advised
+  not to have complicated dependencies.
+
+  For each conflict, a line of the form
+
+    conflicts <conflict>
+
+  will appear on stdout.  Here, <conflict> is one entry from the
+  Conflicts field of the package, with the same syntax as <dependency>
+  above.
+
+  When the package already exists, a line of the form
+
+    exists
+
+  will appear on stdout.
+
+  When some unexpexted error happens, a line of the form
+
+    failed
+
+  will appear on stdout (and stderr should then be displayed to the
+  user).
+
+  From time to time a line of the form
+
+    progress <percentage>
+
+  will appear.  The progress bar should be updated.
+
+  
+  - app-installer-tool remove <package>
+
+  Removes <package> and exits zero when this succeeded, non-zero
+  otherwise.  Diagnostic output is displayed on stderr.  Progress
+  indication is output on stdout.
+
+  For each unsatisfied dependency that would be caused by the removal,
+  a line of the form
+
+    depended <package>
+
+  appears on stdout.  Here, <package> is the name of the package that
+  depends on the one to be removed.
+
+  If the removal fails for some unknown reason, a line of the form
+
+    failed
+
+  appears on stdout (and stderr should then be displayed to the user).
+
+  From time to time a line of the form
+
+    progress <percentage>
+
+  will appear.  The progress bar should be updated.
+
+General interaction with UI: stdout is meant for parsing, but stderr
+is never parsed.  When the exit code is non-zero, the UI offers to
+display the app-installer-tool command line together with stderr as
+"Details".  For example:
+
+  The command 
+
+     app-installer-tool install maemopad-1.1.deb
+
+  failed with this diagnostic output:
+
+     Stuff...
+
+This means that already installing a package with unsatisfied
+dependencies is considered a problem for experts to solve (because you
+have to read and understand the output of dpkg).  That is acceptable
+since application packages are supposed to be selfcontained for
+Sputnik.  With real package management in Sputnik+, we can give the
+user more control over these kind of things with as better UI like
+synaptic or the
+GPE-package-manager-thing-whose-name-escapes-me-at-the-moment.
