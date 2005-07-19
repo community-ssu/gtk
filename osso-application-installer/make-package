@@ -23,7 +23,7 @@ tar xzf $DISTDIR.tar.gz
 
 ( cd $DISTDIR
   tar --exclude .svn -C $ABS_DEBIAN -cf - debian | tar xf -
-  dpkg-buildpackage -rfakeroot
+  dpkg-buildpackage -rfakeroot -uc -us -sa -D
 )
 
 rm -rf $DISTDIR $DISTDIR.tar.gz
