@@ -1,3 +1,11 @@
+2005-07-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released version 1.0.29-0.
+
+	* configure.ac: Increased version number.
+	* make-package: Use "-uc -us -sa -D" options for
+	dpkg-buildpackage.
+
 2005-07-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* maemo.control, maemo.dirs: New files, for building the maemo.deb
