@@ -3,9 +3,9 @@
 
 set -x
 glib-gettextize --copy --force
-libtoolize --automake
+libtoolize --automake --copy --force
 intltoolize --copy --force --automake
 aclocal-1.7
-autoconf
+autoconf --force
 autoheader
 automake-1.7 --add-missing --foreign --copy
