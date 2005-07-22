@@ -1,6 +1,7 @@
 2005-07-22  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* Makefile.am (SUBDIRS): Removed wrapper.
+	* configure.ac: Do not create wrapper/Makefile.
 
 	* src/ui/interface.c (ui_create_main_dialog): Do not use
 	"row-activated" signal of treeview, use "changed" signal of its
