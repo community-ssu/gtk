@@ -29,179 +29,347 @@
  *
  */
 
+#define _GNU_SOURCE
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <glib.h>
+
 #include "core.h"
+#include "ui/represent.h"
 
-gint dpkg_wrapper(const char *cmdline, char **cmd_stdout, 
-		  char **cmd_stderr, gboolean wrap_it)
+/* Run the app-installer-tool (as the user "install" when that has not
+   been disabled) with the two arguments ARG1 and ARG2, or with only
+   ARG1 when ARG2 is NULL.  Stdout from the invocation is returned in
+   *STDOUT_STRING which must be non-NULL.  When STDERR_STRING is
+   non-NULL, it gets the stderr from the invocation.  You need to free
+   both strings.
+
+   The return value is non-zero when the invocation succeeded and zero
+   when it failed.  In the case of failure and when ERROR_DESCRIPTION
+   is non-NULL, present_report_with_details is used to show stderr to
+   the user.
+*/
+
+static int
+run_app_installer_tool (AppData *app_data,
+			gchar *arg1, gchar *arg2,
+			gchar **stdout_string, gchar **stderr_string,
+			gchar *error_description)
 {
-  if (!cmdline) return OSSO_INVALID;
+  gchar *argv[] = {
+#if USE_SUDO
+    "/usr/bin/sudo", "-u", "install",
+#endif
+    "/usr/bin/app-installer-tool", arg1, arg2,
+    NULL
+  };
+  gchar *my_stderr_string = NULL;
+  gint exit_status;
+  GError *error = NULL;
+  GString *report;
+  int result = 1;
 
-  GString *wrapper = g_string_new("");
-  if (wrap_it == TRUE)
-    wrapper = g_string_append(wrapper, "/usr/bin/aiwrapper ");
-  wrapper = g_string_append(wrapper, cmdline);
-
-  ULOG_DEBUG("Wrapper: '%s'", wrapper->str);
-  //fprintf(stderr, "Wrapper: '%s'\n", wrapper->str);
-
-  setlocale(LC_ALL, "C");
-  g_spawn_command_line_sync(wrapper->str, 
-			    cmd_stdout, cmd_stderr, 
-			    NULL, NULL);
-  setlocale(LC_ALL, "");
-
-  return OSSO_OK;
-}
-
-
-
-DpkgOutput use_dpkg(guint method, gchar **args, AppData *app_data)
-{
-  int i = 0;
-  gchar **package_items = NULL;
-  DpkgOutput output = { NULL, NULL, NULL };
-  ListItems list_items;
-  GString *cmdline = NULL;
-  gchar *cmd_stdout = NULL, *cmd_stderr = NULL;
-  gchar **buffer = NULL;
-
-  if (!args) return output;
-
-  cmdline = g_string_new("");
-  
-  ULOG_DEBUG("use_dpkg: started, method %d\n", method);
-  ULOG_DEBUG("(1=list, 2=install, 3=uninstall, 4=fields, 5=status, 6=list built-in)\n");
-  if ( (0 != method) && (0 < sizeof(args)) ) {
-    g_assert(method);
-    g_assert(args);
-
-    output.out = g_string_new("");
-    output.err = g_string_new("");
-    output.list = g_array_new(FALSE, TRUE, sizeof(ListItems));
-
-    i = 0;
-    while (args[i] != NULL) {
-      if (i > 0) cmdline = g_string_append(cmdline, " ");
-      cmdline = g_string_append(cmdline, args[i++]);
-    }
-
-    /* app_data is != null only at install/uninstall */
-    if ( (method == DPKG_METHOD_INSTALL) ||
-	 (method == DPKG_METHOD_UNINSTALL) ) {
-      ui_set_progressbar(app_data->app_ui_data, 0.33, method);
-
-      /* This is disabled in pulse() for now */
-      if (method == DPKG_METHOD_INSTALL)
-	ui_pulse_progressbar(app_data->app_ui_data, 0.40);
-      
-      ui_forcedraw();
-    }
-
-    ULOG_INFO("use_dpkg: cmdline '%s'", cmdline->str);
-    if ( (method == DPKG_METHOD_INSTALL) ||
-	 (method == DPKG_METHOD_UNINSTALL) ) {
-      dpkg_wrapper(cmdline->str, &cmd_stdout, &cmd_stderr, TRUE);
-    } else {
-      dpkg_wrapper(cmdline->str, &cmd_stdout, &cmd_stderr, FALSE);
-    }
-
-
-    /* removing progressbar updating timer after done */
-    if ( (method == DPKG_METHOD_INSTALL) ||
-	 (method == DPKG_METHOD_UNINSTALL) ) {
-      ui_set_progressbar(app_data->app_ui_data, 0.80, method);
-      ui_forcedraw();
-    }
-
-    /* Too much spam from built-in, even for debug */
-    ULOG_DEBUG("cmd: '%s'\n", cmdline->str);
-    if (method != DPKG_METHOD_LIST_BUILTIN) {
-      ULOG_DEBUG("out: '%s'\n", cmd_stdout);
-      ULOG_DEBUG("err: '%s'\n", cmd_stderr);
-    }
-
-    /* Were done with spawn, now parsing our outputs */
-    ULOG_DEBUG("use_dpkg: preparing outputs\n");
-    if (cmd_stdout == NULL && cmd_stderr == NULL) {
-      ULOG_DEBUG("****************************************\n");
-      ULOG_DEBUG("* FAKEROOT MISSING, UNABLE TO CONTINUE *\n");
-      ULOG_DEBUG("****************************************\n");
-    }
-    g_assert(cmd_stdout != NULL);
-    g_assert(cmd_stderr != NULL);
-    
-    output.out = g_string_new(cmd_stdout);
-    output.err = g_string_new(cmd_stderr);
-
-    
-    /* If cmd_stderr includes "cannot access archive", its MMC cover open */
-    /* or "failed to read archive" */
-    if ( (0 < strlen(cmd_stderr)) && 
-	 ((0 != g_strrstr(cmd_stderr, DPKG_STATUS_INSTALL_ERROR)) ||
-	  (0 != g_strrstr(cmd_stderr, DPKG_STATUS_UNINSTALL_ERROR)) ||
-	  (0 != g_strrstr(cmd_stderr, DPKG_ERROR_MEMORYFULL)) ||
-	  (0 != g_strrstr(cmd_stderr, DPKG_ERROR_MEMORYFULL2)) ||
-	  (0 != g_strrstr(cmd_stderr, DPKG_ERROR_CANNOT_ACCESS)) ||
-	  (0 != g_strrstr(cmd_stderr, DPKG_ERROR_NO_SUCH_FILE))) ) {
-      ULOG_DEBUG("use_dpkg: mmc/memoryfull error.. dialog follows\n");
-      return output;
-    }
-
-    ULOG_DEBUG("use_dpkg: going to stdout read loop\n");
-    buffer = g_strsplit(cmd_stdout, "\n", 0);
-    i = 0;
-    while (buffer[i] != NULL) {
-      /* break on empty line */
-      if (0 == g_strcasecmp(g_strstrip(buffer[i]), "")) { 
-	ULOG_INFO("use_dpkg: breaking on empty line at line %d\n", i+1);
-	break; 
-      }
-      
-      if (DPKG_METHOD_LIST == method) {
-	/* Split out of the string which is formed as below: */
-	/* package-name version size */
-	package_items = g_strsplit(buffer[i], " ", 0);
-	list_items.name = strdup(package_items[0]);
-	list_items.version = strdup(package_items[1]);
-	list_items.size = strdup(package_items[2]);
-	g_array_append_val(output.list, list_items);
-      }
-
-      i++;
-    }
-    
-    /* Terminate list with NULL */
-    if (DPKG_METHOD_LIST == method) {
-      list_items.name = list_items.version = list_items.size = NULL;
-      g_array_append_val(output.list, list_items);
-    }
-    
-    g_strfreev(buffer);
+#ifdef DEBUG
+  {
+    int i;
+    fprintf (stderr, "[");
+    for (i = 0; argv[i]; i++)
+      fprintf (stderr, " %s", argv[i]);
+    fprintf (stderr, " ]\n");
   }
+#endif
 
-  ULOG_DEBUG("use_dpkg: finished method '%d'\n", method);
-  return output;
+  if (stderr_string == NULL)
+    stderr_string = &my_stderr_string;
+
+  g_spawn_sync (NULL,
+		argv,
+		NULL,
+		0,
+		NULL,
+		NULL,
+		stdout_string,
+		stderr_string,
+		&exit_status,
+		&error);
+
+  report = g_string_new (*stderr_string);
+
+  /* XXX - This should be factored out here and in
+     spawn_app_installer_tool.
+   */
+  if (error)
+    {
+      g_string_append (report, error->message);
+      g_error_free (error);
+      result = 0;
+    }
+  else if (WIFEXITED (exit_status))
+    {
+      result = (WEXITSTATUS (exit_status) == 0);
+    }
+  else if (WIFSIGNALED (exit_status))
+    {
+      g_string_append_printf (report,
+			      "Caught signal %d%s.\n",
+			      WTERMSIG (exit_status),
+			      (WCOREDUMP (exit_status)?
+			       " (core dumped)" : ""));
+      result = 0;
+    }
+  else if (WIFSTOPPED (exit_status))
+    {
+      /* This should better not happen.  Hopefully g_spawn_sync does
+	 not use WUNTRACED in its call to waitpid or equivalent.  We
+	 still handle this case for extra clarity in the error
+	 message.
+      */
+      g_string_append_printf (report,
+			      "Stopped with signal %d.\n",
+			      WSTOPSIG (exit_status));
+      result = 0;
+    }
+  else
+    {
+      g_string_append_printf (report, "Unknown reason for failure.\n");
+      result = 0;
+    }
+
+  *stderr_string = report->str;
+  g_string_free (report, 0);
+
+  if (result == 0 && error_description)
+    present_report_with_details (app_data,
+				 _("ai_ti_general_error"),
+				 error_description,
+				 *stderr_string);
+  if (stderr_string == &my_stderr_string)
+    free (my_stderr_string);
+  return result;
 }
 
+/* Run app-installer-tool like with RUN_APP_INSTALLER_TOOL, but in the
+   background and call CALLBACK when it is done.  The SUCCESS
+   parameter of CALLBACK is non-zero when the program could be run and
+   exited successfully.  STDOUT_STRING and STDERR_STRING containd the
+   stdout and stderr of the program, respectively, and need to be
+   freed eventually (also in when SUCCESS is zero).  When SUCCESS is
+   zero, STDERR_STRING contains omre details of the failure, like
+   caught signals etc.
 
+   CALLBACK is either called from the main event loop, or it might be
+   called directly from SPAWN_APP_INSTALLER_TOOL, when an error
+   occurred before app-installer-tool could be spawned.  When CALLBACK
+   is called directly, SPAWN_APP_INSTALLER_TOOL returns zero.
+   Otherwise, it returns non-zero.
+*/
 
-GtkTreeModel *list_packages(AppUIData *app_ui_data)
+typedef struct {
+  void (*callback) (gpointer, int, gchar *, gchar *);
+  gpointer callback_data;
+
+  GIOChannel *channels[2];
+  GString *strings[2];
+  gboolean exited;
+  int status;
+} spawn_data;
+
+static void
+check_completion (spawn_data *data)
 {
-  gint i = 0;
+  if (data->channels[0] == NULL
+      && data->channels[1] == NULL
+      && data->exited)
+    {
+      int success;
+      
+      if (WIFEXITED (data->status))
+	{
+	  success = (WEXITSTATUS (data->status) == 0);
+	}
+      else if (WIFSIGNALED (data->status))
+	{
+	  g_string_append_printf (data->strings[1],
+				  "Caught signal %d%s.\n",
+				  WTERMSIG (data->status),
+				  (WCOREDUMP (data->status)?
+				   " (core dumped)" : ""));
+	  success = 0;
+	}
+      else if (WIFSTOPPED (data->status))
+	{
+	  /* This should better not happen.  Hopefully glib does not
+	     use WUNTRACED in its call to waitpid or equivalent.  We
+	     still handle this case for extra clarity in the error
+	     message.
+	  */
+	  g_string_append_printf (data->strings[1],
+				  "Stopped with signal %d.\n",
+				  WSTOPSIG (data->status));
+	  success = 0;
+	}
+      else
+	{
+	  g_string_append_printf (data->strings[1],
+				  "Unknown reason for failure.\n");
+	  success = 0;
+	}
+
+      data->callback (data->callback_data, success,
+		      data->strings[0]->str,
+		      data->strings[1]->str);
+      g_string_free (data->strings[0], 1);
+      g_string_free (data->strings[1], 1);
+      g_free (data);
+    }
+}
+
+static void
+reap_process (GPid pid, int status, gpointer raw_data)
+{
+  spawn_data *data = (spawn_data *)raw_data;
+  data->status = status;
+  data->exited = 1;
+  check_completion (data);
+}
+
+static gboolean
+read_into_string (GIOChannel *channel, GIOCondition cond, gpointer raw_data)
+{
+  spawn_data *data = (spawn_data *)raw_data;
+  gchar buf[256];
+  gsize count;
+  GIOStatus status;
+  int id;
+  
+  if (data->channels[0] == channel)
+    id = 0;
+  else if (data->channels[1] == channel)
+    id = 1;
+  else
+    return FALSE;
+
+  status = g_io_channel_read_chars (channel, buf, 256, &count, NULL);
+  if (status == G_IO_STATUS_NORMAL)
+    {
+      g_string_append_len (data->strings[id], buf, count);
+      return TRUE;
+    }
+  else
+    {
+      g_io_channel_shutdown (channel, 0, NULL);
+      data->channels[id] = NULL;
+      check_completion (data);
+      return FALSE;
+    }
+}
+
+void
+add_string_reader (int fd, int id, spawn_data *data)
+{
+  data->strings[id] = g_string_new ("");
+  data->channels[id] = g_io_channel_unix_new (fd);
+  g_io_add_watch (data->channels[id], 
+		  G_IO_IN | G_IO_HUP | G_IO_ERR,
+		  read_into_string, data);
+  g_io_channel_unref (data->channels[id]);
+}
+
+static int
+spawn_app_installer_tool (AppData *app_data,
+			  gchar *arg1, gchar *arg2,
+			  void (*callback) (gpointer data,
+					    int success,
+					    gchar *stdout_string,
+					    gchar *stderr_string),
+			  gpointer callback_data)
+{
+  gchar *argv[] = {
+#if USE_SUDO
+    "/usr/bin/sudo", "-u", "install",
+#endif
+    "/usr/bin/app-installer-tool", arg1, arg2,
+    NULL
+  };
+
+  spawn_data *data;
+  GError *error = NULL;
+  GPid child_pid;
+  int stdout_fd, stderr_fd;
+
+#ifdef DEBUG
+  {
+    int i;
+    fprintf (stderr, "[");
+    for (i = 0; argv[i]; i++)
+      fprintf (stderr, " %s", argv[i]);
+    fprintf (stderr, " ]\n");
+  }
+#endif
+
+  g_spawn_async_with_pipes (NULL,
+			    argv,
+			    NULL,
+			    G_SPAWN_DO_NOT_REAP_CHILD,
+			    NULL,
+			    NULL,
+			    &child_pid,
+			    NULL,
+			    &stdout_fd,
+			    &stderr_fd,
+			    &error);
+
+  if (error)
+    {
+      callback (callback_data, 0, "", error->message);
+      g_error_free (error);
+      return 0;
+    }
+
+  data = g_new (spawn_data, 1);
+  data->callback = callback;
+  data->callback_data = callback_data;
+
+  g_child_watch_add (child_pid, reap_process, data);
+  add_string_reader (stdout_fd, 0, data);
+  add_string_reader (stderr_fd, 1, data);
+
+  return 1;
+}
+
+static gchar *
+parse_delimited (gchar *ptr, gchar del, gchar **token)
+{
+  if (ptr == NULL)
+    return NULL;
+  *token = ptr;
+  ptr = strchr (ptr, del);
+  if (ptr)
+    *ptr++ = '\0';
+  return ptr;
+}
+
+GtkTreeModel *
+list_packages (AppData *app_data)
+{
   GtkListStore *store;
   GtkTreeIter iter;
-  ListItems *package;
-  DpkgOutput output;
-  gchar *args[5];
+  gchar *stdout_string, *ptr;
+  GdkPixbuf *default_icon;
 
-  /* Dpkg query params for needed information */
-  args[0] = DPKG_QUERY_BINARY;
-  args[1] = "-W";
-  args[2] = "--admindir=/var/lib/install/var/lib/dpkg";
-  args[3] = "--showformat=\\${Package}\\ \\${Version}\\ \\${Installed-Size}\\\\n";
-  args[4] = (gchar *) NULL;
+  if (!run_app_installer_tool (app_data,
+			       "list", NULL,
+			       &stdout_string, NULL,
+			       _("ai_ti_listing_failed")))
+    return NULL;
 
-  output = use_dpkg(DPKG_METHOD_LIST, args, NULL);
+  default_icon = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+					   "qgn_list_gene_default_app",
+					   26,
+					   0,
+					   NULL);
 
   store = gtk_list_store_new (NUM_COLUMNS,
 			      G_TYPE_OBJECT,
@@ -209,663 +377,445 @@ GtkTreeModel *list_packages(AppUIData *app_ui_data)
                               G_TYPE_STRING,
                               G_TYPE_STRING);
 
-  /* No packages installed */
-  if ( ((package = &g_array_index(output.list, ListItems, 1)) == NULL) || 
-       (package->name == NULL) ) {
+  /* Parse stdout_string.
+   */
+  ptr = stdout_string;
+  while (*ptr)
+    {
+      gchar *name, *version, *size, *status;
+      
+      ptr = parse_delimited (ptr, '\t', &name);
+      ptr = parse_delimited (ptr, '\t', &version);
+      ptr = parse_delimited (ptr, '\t', &size);
+      ptr = parse_delimited (ptr, '\n', &status);
 
-    gtk_list_store_append(store, &iter);
-    gtk_list_store_set(store, &iter,
-		       COLUMN_ICON, NULL,
-		       COLUMN_NAME, _("ai_ti_application_installer_nopackages"),
-		       COLUMN_VERSION, "",
-		       COLUMN_SIZE, "",
-		       -1
-		       );
-    return GTK_TREE_MODEL(store);
-  }
+      g_assert (ptr != NULL); /* XXX - do not crash here */
 
+      if (!strcmp (name, META_PACKAGE))
+	continue;
 
-  /* Some packages installed */
-  for (i = 0; (package = &g_array_index(output.list, ListItems, i)) &&
-       (NULL != package->name); i++) {
-    if (0 != g_strcasecmp(package->name, META_PACKAGE)) {
-      GString *version = g_string_append(g_string_new("v"), package->version);
-      GString *size = g_string_append(g_string_new(package->size), "kB");
+      /* XXX - find a better way to present broken packages.
+       */
+      if (strcmp (status, "ok"))
+	version = g_strdup_printf ("broken - v%s", version);
+      else
+	version = g_strdup_printf ("v%s", version);
+      size = g_strdup_printf ("%skB", size);
 
-      /* Load icon */
-      GdkPixbuf *icon = NULL;
-      icon = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
-				      "qgn_list_gene_default_app",
-				      26,
-				      0,
-				      NULL);
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter,
+			  COLUMN_ICON, default_icon, 
+			  COLUMN_NAME, name,
+			  COLUMN_VERSION, version,
+			  COLUMN_SIZE, size,
+			  -1);
 
-      gtk_list_store_append(store, &iter);
-      gtk_list_store_set(store, &iter,
-			 COLUMN_ICON, icon, 
-                         COLUMN_NAME, package->name,
-                         COLUMN_VERSION, version->str,
-                         COLUMN_SIZE, size->str,
-                         -1);
-
-      if (app_ui_data != NULL) {
-	app_ui_data->max_name = MAX(strlen(package->name), app_ui_data->max_name);      
-	app_ui_data->max_version = MAX(strlen(version->str), app_ui_data->max_version);      
-	app_ui_data->max_size = MAX(strlen(size->str), app_ui_data->max_size);
-      }
-
-      /* Release icon space */
-      g_object_unref(icon);
+      free (version);
+      free (size);
     }
-  }
 
-  if (app_ui_data != NULL) {
-    ULOG_DEBUG("max name: %d\n", app_ui_data->max_name);
-    ULOG_DEBUG("max size: %d\n", app_ui_data->max_size);
-    ULOG_DEBUG("max vers: %d\n", app_ui_data->max_version);
-  }
-
-  return GTK_TREE_MODEL(store);
+  g_object_unref (default_icon);
+  free (stdout_string);
+  return GTK_TREE_MODEL (store);
 }
 
-
-
-const gchar *list_builtin_packages(void) {
-  DpkgOutput output;
-  gchar *args[4];
-
-  /* Dpkg query params for needed information */
-  args[0] = DPKG_QUERY_BINARY;
-  args[1] = "-W";
-  args[2] = "--showformat=\\${Package}\\ ";
-  args[3] = (gchar *) NULL;
-
-  output = use_dpkg(DPKG_METHOD_LIST_BUILTIN, args, NULL);
-
-  return output.out->str;
+gboolean
+any_packages_installed (GtkTreeModel *model)
+{
+  GtkTreeIter iter;
+  return model && gtk_tree_model_get_iter_first (model, &iter);
 }
 
-
-
-void add_columns(AppUIData *app_ui_data, GtkTreeView *treeview)
+void
+add_columns (AppUIData *app_ui_data, GtkTreeView *treeview)
 {
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
  
   /* Icon column */
-  renderer = gtk_cell_renderer_pixbuf_new();
+  renderer = gtk_cell_renderer_pixbuf_new ();
   column = gtk_tree_view_column_new_with_attributes("Icon",
 						    renderer,
 						    "pixbuf",
 						    COLUMN_ICON,
 						    NULL);
-  gtk_tree_view_column_set_sort_column_id(column, COLUMN_ICON);
-  gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_fixed_width(column, COLUMN_ICON_WIDTH);
-  gtk_tree_view_append_column(treeview, column);
+  gtk_tree_view_column_set_sort_column_id (column, COLUMN_ICON);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_column_set_fixed_width (column, COLUMN_ICON_WIDTH);
+  gtk_tree_view_append_column (treeview, column);
 
   /* Name column */
-  renderer = gtk_cell_renderer_text_new();
-  column = gtk_tree_view_column_new_with_attributes("Name",
-                                                    renderer,
-                                                    "text",
-                                                    COLUMN_NAME,
-                                                    NULL);
-  gtk_tree_view_column_set_sort_column_id(column, COLUMN_NAME);
-  gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column(treeview, column);
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Name",
+						     renderer,
+						     "text",
+						     COLUMN_NAME,
+						     NULL);
+  gtk_tree_view_column_set_sort_column_id (column, COLUMN_NAME);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+  g_object_set (column, "expand", 1, NULL);
+  gtk_tree_view_append_column( treeview, column);
   app_ui_data->name_column = column;
 
-
   /* Version column */
-  renderer = gtk_cell_renderer_text_new();
-  column = gtk_tree_view_column_new_with_attributes("Version",
-                                                    renderer,
-                                                    "text",
-                                                    COLUMN_VERSION,
-                                                    NULL);
-  gtk_tree_view_column_set_sort_column_id(column, COLUMN_VERSION);
-  gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column(treeview, column);
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Version",
+						     renderer,
+						     "text",
+						     COLUMN_VERSION,
+						     NULL);
+  gtk_tree_view_column_set_sort_column_id (column, COLUMN_VERSION);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+  gtk_tree_view_column_set_alignment (column, 1.0);
+  gtk_tree_view_append_column (treeview, column);
   app_ui_data->version_column = column;
 
-
   /* Size column */
-  renderer = gtk_cell_renderer_text_new();
-  column = gtk_tree_view_column_new_with_attributes("Size",
-                                                    renderer,
-                                                    "text",
-                                                    COLUMN_SIZE,
-                                                    NULL);
-  gtk_tree_view_column_set_sort_column_id(column, COLUMN_SIZE);
-  gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column(treeview, column);
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Size",
+						     renderer,
+						     "text",
+						     COLUMN_SIZE,
+						     NULL);
+  gtk_tree_view_column_set_sort_column_id (column, COLUMN_SIZE);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+  gtk_tree_view_column_set_alignment (column, 1.0);
+  gtk_tree_view_append_column (treeview, column);
   app_ui_data->size_column = column;
 }
 
-
-
-PackageInfo package_info(gchar *package_or_deb, gint installed)
+/* Return information about the package file FILE.  You need to free
+   the returned structure eventually with package_info_free.  When the
+   information can not be retrieved, all strings in the returned
+   structure are NULL.
+ */
+PackageInfo
+package_file_info (AppData *app_data, gchar *file)
 {
-  gchar *dpkg_args[10];
-  gchar *name = NULL, *size = NULL, *description = NULL, *version = NULL;
-  //gchar *maintainer = NULL, *depends = NULL;
-  gchar **row, **namerow, **sizerow, **descriptionrow, **versionrow;
-  //gchar **maintainerrow, **dependsrow;
-  DpkgOutput output;
+  gchar *stdout_string;
   PackageInfo info;
 
-  /* Nullify the struct */
-  info.name = NULL;
-  info.size = NULL;
-  info.description = NULL;
-  info.version = NULL;
-  //info.depends = NULL;
-  //info.maintainer = NULL;
+  if (run_app_installer_tool (app_data,
+			      "describe-file", file,
+			      &stdout_string, NULL,
+			      _("ai_ti_describe_file_failed")))
+    {
+      gchar *ptr, *package, *version, *size;
 
-  if (package_or_deb == NULL) {
-    ULOG_DEBUG("Package_or_deb empty, returning NULL\n");
-    return info;
-  }
+      ptr = stdout_string;
+      ptr = parse_delimited (ptr, '\n', &package);
+      ptr = parse_delimited (ptr, '\n', &version);
+      ptr = parse_delimited (ptr, '\n', &size);
 
-  /* Information from .deb file */
-  if (installed == DPKG_INFO_PACKAGE) {
-    dpkg_args[0] = DPKG_BINARY;
-    dpkg_args[1] = "-f";
-    dpkg_args[2] = package_or_deb;
-    dpkg_args[3] = "Package";
-    dpkg_args[4] = "Version";
-    //dpkg_args[5] = "Maintainer";
-    //dpkg_args[6] = "Depends";
-    dpkg_args[5] = "Installed-Size";
-    dpkg_args[6] = "Description";
-    dpkg_args[7] = (gchar *)NULL;
+      g_assert (ptr != NULL);
 
-    /* Send command to dpkg */
-    output = use_dpkg(DPKG_METHOD_FIELDS, dpkg_args, NULL);
-
-
-    /* If invalid files */
-    if ( (0 != g_strrstr(output.err->str, DEB_FORMAT_FAILURE)) ||
-	 (0 != g_strrstr(output.err->str, DEB_FORMAT_FAILURE2)) || 
-	 (0 != g_strrstr(output.err->str, DPKG_ERROR_CANNOT_ACCESS)) ||
-	 (0 != g_strrstr(output.err->str, DPKG_ERROR_NO_SUCH_FILE)) ) {
-      ULOG_DEBUG("pkg_info: invalid format\n");
-      return info;
+      info.name = g_string_new (package);
+      info.version = g_string_new (version);
+      info.size = g_string_new (size);
+      info.description = g_string_new (ptr);
+      free (stdout_string);
     }
-
-    /* Split rows from the output */
-    row = g_strsplit(output.out->str, "\n", 4);
-    /* Split fields from the row */
-    namerow = g_strsplit(row[0], ":", 2);
-    versionrow = g_strsplit(row[1], ":", 2);
-    //dependsrow = g_strsplit(row[2], ":", 2);
-    sizerow = g_strsplit(row[2], ":", 2);
-    //maintainerrow = g_strsplit(row[4], ":", 2);
-    descriptionrow = g_strsplit(row[3], ":", 2);
-    /* Strip empty chars */
-    name = g_strstrip(g_strdup(namerow[1]));
-    version = g_strstrip(g_strdup(versionrow[1]));
-    size = g_strstrip(g_strdup(sizerow[1]));
-    description = g_strstrip(g_strdup(descriptionrow[1]));
-    //maintainer = g_strstrip(g_strdup(maintainerrow[1]));
-    //depends = g_strstrip(g_strdup(dependsrow[1]));
-
-    /* Free string arrays */
-    g_strfreev(row);
-    g_strfreev(namerow);
-    g_strfreev(versionrow);
-    g_strfreev(sizerow);
-    g_strfreev(descriptionrow);
-    //g_strfreev(maintainerrow);
-    //g_strfreev(dependsrow);
-  }
-
-  /* Information from installed package */
-  else {
-    if (0 == strcmp("", package_or_deb)) {
-      return info;
+  else
+    {
+      info.name = NULL;
+      info.size = NULL;
+      info.version = NULL;
+      info.description = NULL;
     }
-
-    dpkg_args[0] = DPKG_QUERY_BINARY;
-    dpkg_args[1] = "--status";
-    dpkg_args[2] = "--admindir=/var/lib/install/var/lib/dpkg";
-    dpkg_args[3] = package_or_deb;
-    dpkg_args[4] = (gchar *)NULL;
-
-    output = use_dpkg(DPKG_METHOD_STATUS, dpkg_args, NULL);
-  
-    if ( (0 != g_strrstr(output.err->str, DPKG_NO_SUCH_PACKAGE)) ||
-	 (0 != g_strrstr(output.err->str, DPKG_NO_SUCH_PACKAGE2)) ||
-	 (0 != g_strrstr(output.err->str, DPKG_NO_SUCH_PACKAGE3)) ) {
-      ULOG_DEBUG("No such package '%s' installed\n", package_or_deb);
-      return info;
-    }
-
-    //fprintf(stderr, "********* OUT **********\n");
-    //fprintf(stderr, "%s", output.err->str);
-    //fprintf(stderr, "********* END **********\n");
-    
-
-    /* Lets dig up pointers to strings we need */
-    gchar *version_ptr = g_strrstr(output.out->str, DPKG_FIELD_VERSION);
-    gchar *size_ptr = g_strrstr(output.out->str, DPKG_FIELD_SIZE);
-    gchar *desc_ptr = g_strrstr(output.out->str, DPKG_FIELD_DESCRIPTION);
-    //gchar *maint_ptr = g_strrstr(output.out->str, DPKG_FIELD_MAINTAINER);
-    //gchar *deps_ptr = g_strrstr(output.out->str, DPKG_FIELD_DEPENDS);
-
-    g_assert(version_ptr != NULL);
-    g_assert(size_ptr != NULL);
-    g_assert(desc_ptr != NULL);
-    //g_assert(maint_ptr != NULL);
-    //g_assert(deps_ptr != NULL);
-
-    /* Split them nicely to components we can use */
-    versionrow = g_strsplit(version_ptr, ": ", 2);
-    sizerow = g_strsplit_set(size_ptr, ":\n", 2);
-    descriptionrow = g_strsplit(desc_ptr, ": ", 2);
-    //maintainerrow = g_strsplit(maint_ptr, ": ", 2);
-    //dependsrow = g_strsplit(deps_ptr, ": ", 2);
-
-    /* And take a copy of them for us */
-    name = package_or_deb;
-    size = g_strstrip(g_strdup(sizerow[1]));
-    version = g_strstrip(g_strdup(versionrow[1]));
-    description = g_strstrip(g_strdup(descriptionrow[1]));
-    //maintainer = g_strstrip(g_strdup(maintainerrow[1]));
-    //depends = g_strstrip(g_strdup(dependsrow[1]));
-
-    /* Free the arrays */
-    g_strfreev(sizerow);
-    g_strfreev(descriptionrow);
-    g_strfreev(versionrow);
-    //g_strfreev(maintainerrow);
-    //g_strfreev(dependsrow);
-  }
-
-  /* Construct the info package */
-  info.name = g_string_new(name);
-  info.size = g_string_new(size);
-  info.version = g_string_new(version);
-  info.description = g_string_new(description);
-  //info.maintainer = g_string_new(description);
-  //info.depends = g_string_new(description);
 
   return info;
 }
-  
 
-
-/* Are there any packages installed (except maemo) */
-gboolean any_packages_installed(GtkTreeModel *model) 
+void
+package_info_free (PackageInfo *info)
 {
-  GtkTreeIter iter;
-  gboolean true_if_any = FALSE;
-  gchar *size = NULL;
-
-  /* Lets get a list of packages and its first entry */
-  if (model == NULL) 
-    model = list_packages(NULL);
-  true_if_any = gtk_tree_model_get_iter_first(model, &iter);
-
-  /* If entry size is empty, its "No Packages" text */
-  gtk_tree_model_get(model, &iter, COLUMN_SIZE, &size, -1);
-  if (0 == strcmp("", size))
-    true_if_any = FALSE;
-  g_free(size);
-
-  ULOG_INFO("any_installed: List had items: %s", 
-	    (true_if_any ? "true" : "false"));
-  return true_if_any;
+  g_string_free (info->name, 1);
+  g_string_free (info->version, 1);
+  g_string_free (info->size, 1);
+  g_string_free (info->description, 1);
 }
 
-
-
-gchar *show_description(gchar *package, gint installed)
+/* Return the description of PACKAGE.  You need to free the returned
+   string eventually.  This function never returns NULL.
+*/
+gchar *
+package_description (AppData *app_data, gchar *package)
 {
-  PackageInfo info = package_info(package, installed);
-
-  if (info.description != NULL) {
-    return info.description->str;
-  }
-
-  return "";
+  gchar *stdout_string;
+  if (run_app_installer_tool (app_data,
+			      "describe-package", package,
+			      &stdout_string, NULL,
+			      _("ai_ti_describe_package_failed")))
+    return stdout_string;
+  else
+    return g_strdup ("");
 }
 
-
-
-gchar *show_remove_dependencies(gchar *package)
+static gchar *
+has_prefix (gchar *ptr, gchar *prefix)
 {
-  gchar *dpkg_args[8];
-  DpkgOutput output;
-  GString *deps = g_string_new("");
+  int len = strlen (prefix);
+  if (!strncmp (ptr, prefix, len))
+    return ptr + len;
+  else
+    return NULL;
+}
 
-  /* We can get dependencies only by --simulating --remove */
-  dpkg_args[0] = FAKEROOT_BINARY;
-  dpkg_args[1] = DPKG_BINARY;
-  dpkg_args[2] = "--simulate";
-  dpkg_args[3] = "--force-not-root";
-  dpkg_args[4] = "--root=/var/lib/install";
-  dpkg_args[5] = "--remove";
-  dpkg_args[6] = package;
-  dpkg_args[7] = (gchar *) NULL;
+static void
+append_list_strings (GString *string, GSList *list)
+{
+  while (list)
+    {
+      g_string_append_printf (string, " %s\n", (gchar *)list->data);
+      list = list->next;
+    }
+}
 
-  output = use_dpkg(DPKG_METHOD_STATUS, dpkg_args, NULL);
+static GString *
+format_relationship_failures (gchar *header, gchar *output)
+{
+  GString *report;
+  GSList *depends = NULL, *depended = NULL, *conflicts = NULL;
+  int exists = 0;
+  gchar *ptr;
+
+  report = g_string_new (header);
+  g_string_append (report, "\n");
+
+  ptr = output;
+  while (ptr && *ptr)
+    {
+      gchar *val;
+      if ((val = has_prefix (ptr, "depends ")))
+	depends = g_slist_prepend (depends, val);
+      else if ((val = has_prefix (ptr, "depended ")))
+	depended = g_slist_prepend (depended, val);
+      else if ((val = has_prefix (ptr, "conflicts ")))
+	conflicts = g_slist_prepend (conflicts, val);
+      else if (has_prefix (ptr, "exists"))
+	exists = 1;
+      ptr = strchr (ptr, '\n');
+      if (ptr)
+	*ptr++ = '\0';
+    }
+
+  if (exists)
+    g_string_append (report, _("ai_ti_already_installed\n"));
+  if (depends)
+    {
+      g_string_append (report, _("ai_ti_depends_on\n"));
+      append_list_strings (report, depends);
+    }
+  if (depended)
+    {
+      g_string_append (report, _("ai_ti_depended_on_by\n"));
+      append_list_strings (report, depended);
+    }
+  if (conflicts)
+    {
+      g_string_append (report, _("ai_ti_conflicts_with\n"));
+      append_list_strings (report, conflicts);
+    }
+
+  g_slist_free (depends);
+  g_slist_free (depended);
+  g_slist_free (conflicts);
+
+  return report;
+}
+
+#define FUZZ_FACTOR 1.2
+
+typedef struct {
+  AppData *app_data;
+  gchar *package;
+  GMainLoop *loop;
+  guint timeout;
+
+  int showing_progress;
+  int initial_used_kb, package_size_kb;
+
+  gchar *progress_title;
+  gchar *report_title;
+  gchar *success_text;
+  gchar *failure_text;
+} installer_data;
+
+static void
+installer_callback (gpointer raw_data,
+		    int success,
+		    gchar *output, gchar *details)
+{
+  installer_data *data = (installer_data *)raw_data;
+  GString *report;
+
+  if (data->loop)
+    {
+      g_source_remove (data->timeout);
+      if (data->showing_progress)
+	gtk_banner_close 
+	  (GTK_WINDOW (data->app_data->app_ui_data->main_dialog));
+    }
+      
+  if (success)
+    {
+      report = g_string_new ("");
+      g_string_printf (report, data->success_text, data->package);
+    }
+  else
+    {
+      gchar *header = g_strdup_printf (data->failure_text, data->package);
+      report = format_relationship_failures (header, output);
+      free (header);
+    }
+      
+  present_report_with_details (data->app_data,
+			       data->report_title,
+			       report->str,
+			       details);
+  g_string_free (report, 1);
+
+  if (data->loop)
+    g_main_loop_quit (data->loop);
+}
+
+static int
+kb_used_in_var_lib_install (void)
+{
+  /* This is the method as used by dpkg to figure out Installed-Size.
+     So we use it as well to get more accurate results.  Just looking
+     at statvfs, for example, it very off due to JFFS2 compression and
+     stuff.  Still, using "du" is off because if the differences
+     between the filesystem used during packaging and the one used on
+     the target.
+
+     You might think that spawning a process for this is too much
+     overhead.  But think again.  This is Unix, you are supposed to do
+     things like this.
+  */
   
-  /* If we have erroneous output, it probably means dependency issues */
-  if (0 < output.err->len) {
+  gchar *args[] = {
+    "/usr/bin/du", "-sk", "/var/lib/install",
+    NULL
+  };
+  gchar *stdout_string;
+  int used_k = -1;
 
-    /* If the whole err has even one "depends on", we have problem */
-    if (0 != g_strrstr(output.err->str, DPKG_ERROR_DEPENDENCY)) {
-      gint i = 0;
-      gchar **errors = g_strsplit_set(output.err->str, " \n", 0);
-      GString *prev = NULL;
+  if (g_spawn_sync (NULL,
+		    args,
+		    NULL,
+		    0,
+		    NULL,
+		    NULL,
+		    &stdout_string,
+		    NULL,
+		    NULL,
+		    NULL))
+    {
+      used_k = atoi (stdout_string);
+      free (stdout_string);
+    }
 
-      /* Checking all lines for dependent packages */
-      for (i=0; errors[i] != NULL; i++) {
-	GString *this = g_string_new(errors[i]);
+  return used_k;
+}
 
-	/* Trying to find lines matching to this: */
-	/*  example: 
-	    file-roller depends on bzip2 (>= 1.0.1). */
-	if (this->len > 0 && 0 == g_strcasecmp(this->str, "depends")) {
-	  deps = g_string_append(deps, prev->str);
-	  deps = g_string_append(deps, " ");
+static gboolean
+installer_progress (gpointer raw_data)
+{
+  installer_data *data = (installer_data *)raw_data;
+  GtkWindow *main_dialog =
+    GTK_WINDOW (data->app_data->app_ui_data->main_dialog);
+  int now_used_kb;
+  double frac;
 
-	} else {
-	  prev = g_string_new(this->str);
+  if (!data->showing_progress)
+    {
+      gtk_banner_show_bar (main_dialog, data->progress_title);
+      data->showing_progress = 1;
+    }
+
+  now_used_kb = kb_used_in_var_lib_install ();
+  frac = FUZZ_FACTOR* (((double) (now_used_kb - data->initial_used_kb))
+		       / data->package_size_kb);
+
+#if 0
+  fprintf (stderr, "initial %d, now %d, size %d, frac %f\n",
+	   data->initial_used_kb, now_used_kb, data->package_size_kb,
+	   frac);
+#endif
+
+  gtk_banner_set_fraction (main_dialog, frac);
+
+  return TRUE;
+}
+
+void
+install_package (gchar *deb, AppData *app_data) 
+{
+  PackageInfo info;
+  installer_data data;
+
+  info = package_file_info (app_data, deb);
+
+  if (info.name == NULL)
+    return;
+
+  if (confirm_install (app_data, &info))
+    {
+      data.loop = NULL;
+      data.app_data = app_data;
+      data.package = info.name->str;
+      data.showing_progress = 0;
+      data.initial_used_kb = kb_used_in_var_lib_install ();
+      data.package_size_kb = atoi (info.size->str);
+
+      data.progress_title = "Installing";
+      data.report_title = _("ai_ti_installation_report"),
+      data.success_text = _("ai_ti_application_installed_text");
+      data.failure_text = _("ai_ti_installation_failed_text");
+
+      if (spawn_app_installer_tool (app_data,
+				    "install", deb,
+				    installer_callback, &data))
+	{
+	  data.loop = g_main_loop_new (NULL, 0);
+	  data.timeout = g_timeout_add (1000, installer_progress, &data);
+	  g_main_loop_run (data.loop);
 	}
-      }
-      
-      g_strfreev(errors);
     }
-  }
 
-  return deps->str;
+  package_info_free (&info);
 }
 
-
-
-gboolean install_package(gchar *deb, AppData *app_data) 
+void
+uninstall_package (gchar *package, gchar *size, AppData *app_data)
 {
-  gchar *install_args[12];
-  GString *tmp = g_string_new("");
+  installer_data data;
 
-  /* Start installation if deb package is given */
-  if (0 != g_strcasecmp(deb, "")) {
-    ULOG_INFO("Started installing '%s'..", deb);
+  if (confirm_uninstall (app_data, package)) 
+    {
+      data.loop = NULL;
+      data.app_data = app_data;
+      data.package = package;
+      data.showing_progress = 0;
+      data.initial_used_kb = kb_used_in_var_lib_install ();
+      data.package_size_kb = -atoi (size);
 
-    /* Install command */
-    install_args[0] = FAKEROOT_BINARY;
-    install_args[1] = DPKG_BINARY;
-    install_args[2] = "--force-not-root";
-    install_args[3] = "--root=/var/lib/install";
-    install_args[4] = "--refuse-depends";
-    install_args[5] = "--status-fd";
-    install_args[6] = "1";
-    install_args[7] = "--abort-after";
-    install_args[8] = "1";
-    install_args[9] = "--install";
-    install_args[10] = deb;
-    install_args[11] = (gchar *) NULL;
+      data.progress_title = "Uninstalling";
+      data.report_title = _("ai_ti_uninstallation_report"),
+      data.success_text = _("ai_ti_application_uninstalled_text");
+      data.failure_text = _("ai_ti_uninstallation_failed_text");
 
-    PackageInfo deb_info = package_info(deb, DPKG_INFO_PACKAGE);
-
-    /* If package is built-in show error and quit */
-    tmp = g_string_assign(tmp, deb_info.name->str);
-    tmp = g_string_append(tmp, " ");
-    if (NULL != g_strstr_len(app_data->app_ui_data->builtin_packages,
-        strlen(app_data->app_ui_data->builtin_packages), tmp->str)) {      
-
-      /* Installation failed, do you wanna see details */
-      if (represent_confirmation(app_data, DIALOG_SHOW_DETAILS,
-          g_strdup_printf(_("ai_ti_installation_failed_text"),
-          deb_info.name->str))) {
-
-        /* Show error to user */
-        represent_error(app_data, NULL,
-         g_strdup_printf(_("ai_error_builtin"), deb_info.name->str));
-      }
-      
-      return FALSE;
+      if (spawn_app_installer_tool (app_data,
+				    "remove", package,
+				    installer_callback, &data))
+	{
+	  data.loop = g_main_loop_new (NULL, 0);
+	  data.timeout = g_timeout_add (1000, installer_progress, &data);
+	  g_main_loop_run (data.loop);
+	}
     }
-    
-    /* If package is already installed, quit & remove it first */
-    if (NULL != deb_info.name) {
-      PackageInfo pkg_info = package_info(deb_info.name->str, 
-					  DPKG_INFO_INSTALLED);
-      
-      if (NULL != pkg_info.name) {
-	represent_error(app_data, pkg_info.name->str,
-			_("ai_error_alreadyinstalled"));
-	return FALSE;
-      }
-    }
-
-    /* Confirm installation from user */
-    ULOG_INFO("Trying to confirm install..");
-    if (!represent_confirmation(app_data, DIALOG_CONFIRM_INSTALL, deb)) {
-      ULOG_INFO("User cancelled installation.");
-      return FALSE;
-    }
-
-    /* Use dpkg to install package and get output */
-    ui_create_progressbar_dialog(app_data->app_ui_data,
-				 _("ai_ti_installing_installing"),
-				 DPKG_METHOD_INSTALL);
-    DpkgOutput output = use_dpkg(DPKG_METHOD_INSTALL, install_args,
-				 app_data);
-    ui_cleanup_progressbar_dialog(app_data->app_ui_data, DPKG_METHOD_INSTALL);
-    ULOG_DEBUG("checking installation\n");
-
-    /* If the file is not a deb package */
-    if (NULL != g_strrstr(output.err->str, DEB_FORMAT_FAILURE) ||
-        NULL != g_strrstr(output.err->str, DEB_FORMAT_FAILURE2)) {
-      ULOG_INFO("Tried to install a non-deb file: '%s'.", deb);
-     
-      /* Show notification */
-      represent_error(app_data, deb, _("ai_error_corrupted"));
-      return FALSE;
-    }
-
-    /* If installation succeeds */
-    if (NULL != g_strrstr(output.out->str, DPKG_STATUS_SUFFIX_INSTALL)) {
-      ULOG_INFO("Installation of '%s' succeeded.", deb);
-
-      /* Get package's name from deb package and show notification */
-      PackageInfo info = package_info(deb, DPKG_INFO_PACKAGE);
-
-      /* Installation succeeded */
-      represent_notification(app_data,
-			     info.name->str,
-			     _("ai_ti_application_installed_text"),
-			     _("ai_bd_application_installed__ok"),
-			     info.name->str);
-
-      gtk_text_buffer_set_text(GTK_TEXT_BUFFER(
-       app_data->app_ui_data->main_label), MESSAGE_DOUBLECLICK, -1);
-
-      return TRUE;
-
-    /* If installation fails */
-    } else {
-      ULOG_INFO("Installation of '%s' failed.", deb);
-      ULOG_DEBUG("Installation of '%s' failed.\n", deb);
-
-      /* Checking package name, or using deb name if package unavailable
-       * eg. MMC that was removed */
-      PackageInfo info = package_info(deb, DPKG_INFO_PACKAGE);
-      if (info.name == NULL) {
-	ULOG_DEBUG("name was null, inserted '%s' instead.\n", deb);
-	info.name = g_string_new(deb);
-      }
-      gchar *err = g_strdup_printf(_("ai_ti_installation_failed_text"),
-				   info.name->str);
-
-      /* Installation failed, do you wanna see details */
-      if (represent_confirmation(app_data, DIALOG_SHOW_DETAILS, err)) {
-
-	/* Show error to user */
-	gchar *errormsg = verbalize_error(output.err->str);
-	represent_error(app_data, info.name->str, errormsg);
-      }
-
-      /* Remove any remains if any left from that, many packages
-	 install as non-configured, if they fail deps */
-      gchar *uninstall_args[9];
-      uninstall_args[0] = FAKEROOT_BINARY;
-      uninstall_args[1] = DPKG_BINARY; 
-      uninstall_args[2] = "--force-not-root";
-      uninstall_args[3] = "--root=/var/lib/install";
-      uninstall_args[4] = "--status-fd";
-      uninstall_args[5] = "1";
-      uninstall_args[6] = "--purge";
-      uninstall_args[7] = info.name->str;
-      uninstall_args[8] = (gchar *) NULL;
-      
-      use_dpkg(DPKG_METHOD_UNINSTALL, uninstall_args, app_data);
-
-      g_free(err);
-      return FALSE;
-    }
-  }
-
-  return FALSE;
 }
-
-
-
-gboolean uninstall_package(gchar *package, AppData *app_data)
-{
-  gchar *uninstall_args[9];
-
-  /* Arg array for dpkg uninstall */
-  uninstall_args[0] = FAKEROOT_BINARY;
-  uninstall_args[1] = DPKG_BINARY; 
-  uninstall_args[2] = "--force-not-root";
-  uninstall_args[3] = "--root=/var/lib/install";
-  uninstall_args[4] = "--status-fd";
-  uninstall_args[5] = "1";
-  uninstall_args[6] = "--purge";
-  uninstall_args[7] = package;
-  uninstall_args[8] = (gchar *) NULL;
-
-
-  /* Start uninstallation if package is given */
-  if (0 != g_strcasecmp(package, "")) {
-    ULOG_INFO("Started uninstalling '%s'..", package);
-    gchar *deps = show_remove_dependencies(package);
-
-    /* Some dependencies found */
-    if (0 != g_strcasecmp(deps, "")) {
-      represent_dependencies(app_data, deps);
-      return FALSE;
-    }
-
-    /* Confirm uninstallation from user */
-    if (!represent_confirmation(app_data, DIALOG_CONFIRM_UNINSTALL, 
-				package)) {
-      ULOG_INFO("User cancelled uninstallation.");
-      return FALSE;
-    }
-
-
-    /* Use dpkg to uninstall package and get output */
-    ui_create_progressbar_dialog(app_data->app_ui_data,
-				 _("ai_ti_uninstall_progress_uninstalling"),
-				 DPKG_METHOD_UNINSTALL);
-    DpkgOutput output = use_dpkg(DPKG_METHOD_UNINSTALL, uninstall_args,
-				 app_data);
-    ui_cleanup_progressbar_dialog(app_data->app_ui_data,DPKG_METHOD_UNINSTALL);
-    
-    /* Uninstallation succeeds */
-    if (0 == g_strrstr(output.err->str, DPKG_STATUS_UNINSTALL_ERROR)) {
-      ULOG_INFO("Uninstallation of '%s' succeeded.", package);
-      
-      /* Show notification to user */
-      represent_notification(app_data,
-			     package,
-			     _("ai_ti_application_uninstalled_text"), 
-			     _("Ai_ti_application_uninstalled_ok"),
-			     package);
-      
-      return TRUE;
-      
-      /* If uninstallation fails */
-    } else {
-      ULOG_INFO("Uninstallation of '%s' failed.", package);
-      
-      represent_notification(app_data, 
-			     package,
-			     _("ai_ti_uninstallation_failed_text"), 
-			     _("ai_ti_uninstallation_failed_ok"),
-			     package);
-
-      return FALSE;
-    }
-  }
-
-  return FALSE;
-}
-
-
-
-
-gchar *verbalize_error(gchar *dpkg_err) 
-{
-  if (0 != g_strrstr(dpkg_err, DEB_FORMAT_FAILURE))
-    return _("ai_error_corrupted");
-
-  if (0 != g_strrstr(dpkg_err, DEB_FORMAT_FAILURE2))
-    return _("ai_error_corrupted");
-
-  if (0 != g_strrstr(dpkg_err, DPKG_ERROR_LOCKED))
-    return "FATAL: Something went wrong, dpkg database area is locked. "
-      "Reboot machine to unlock.";
-
-  if (0 != g_strrstr(dpkg_err, DPKG_ERROR_CANNOT_ACCESS))
-    return _("ai_error_memorycardopen");
-
-  if (0 != g_strrstr(dpkg_err, DPKG_ERROR_INCOMPATIBLE))
-    return _("ai_error_incompatible");
-
-  if (0 != g_strrstr(dpkg_err, DPKG_ERROR_MEMORYFULL))
-    return _("ai_info_notenoughmemory");
-
-  if (0 != g_strrstr(dpkg_err, DPKG_ERROR_MEMORYFULL2))
-    return _("ai_info_notenoughmemory");
-
-  if (0 != g_strrstr(dpkg_err, DPKG_ERROR_TIMEDOUT))
-    return _("ai_error_uninstall_timedout");
-
-  if (0 != g_strrstr(dpkg_err, DPKG_ERROR_CLOSE_APP))
-    return _("ai_error_uninstall_applicationrunning");
-
-  if (0 != g_strrstr(dpkg_err, DPKG_FIELD_ERROR)) {
-    GString *err = g_string_new("");
-    dpkg_err = g_strstr_len(dpkg_err, 1024, DPKG_ERROR_INSTALL_DEPENDS);
-
-    while ( (dpkg_err != NULL) && strlen(dpkg_err) > 0) {
-      gchar **row = g_strsplit(dpkg_err, " ", 5);
-      gchar *dep = g_strdup_printf(_("ai_error_componentmissing"), row[3]);
-
-      //ULOG_DEBUG("found dep: '%s'\n", row[3]);
-      err = g_string_append(err, dep);
-      err = g_string_append(err, "\n");
-      dpkg_err = (char *)g_strstr_len((char *)(dpkg_err+sizeof(char *)), 1024, 
-				      DPKG_ERROR_INSTALL_DEPENDS);
-
-      g_free(dep);
-      g_strfreev(row);
-    }
-
-    return err->str;
-  }
-
-  return dpkg_err;
-}
-
-
 
 gint space_left_on_device(void)
 {
@@ -880,4 +830,3 @@ gint space_left_on_device(void)
 
   return free_space_in_kb;
 }
-

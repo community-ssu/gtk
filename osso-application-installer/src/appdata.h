@@ -68,6 +68,7 @@ struct _AppUIData {
   GtkWidget *package_list;
   /* 'no packages' label */
   GtkWidget *empty_list_label;
+  GtkWidget *database_corrupted_label;
   /* main label, textbuffer */
   GtkTextBuffer *main_label;
   /* textbuffer containing error message */
@@ -83,8 +84,6 @@ struct _AppUIData {
   GString *param;
   /* progressbar status */
   gdouble current_progress;
-  /* list of built-in packages */
-  const gchar* builtin_packages;
   /* event id for show popup menu timer callback */
   guint32 popup_event_id;
   /* column objects in treeview */

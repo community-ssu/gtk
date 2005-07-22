@@ -77,19 +77,14 @@ int main (int argc, char** argv)
 
     /* Read params */
     if ( (argc > 1) && (argv[1] != NULL) ) {
-      ULOG_INFO("We got argc: %d and argv[1]: %s", argc, argv[1]);
-      app_ui_data->param = g_string_new(argv[1]);
-      direct_install = TRUE;
+      fprintf (stderr,
+	       "XXX - Direct install not supported right now, sorry.\n");
+      exit (1);
     }
-
 
     /* Init OSSO */
     ULOG_INFO("Initializing OSSO..");
     init_osso(app_data);
-
-    /* Create applet UI */
-    ULOG_INFO("Creating applet UI..");
-    ui_create_main_dialog(app_data);
 
 #ifdef USE_GNOME_VFS
     /* GnomeVFS */
@@ -101,6 +96,10 @@ int main (int argc, char** argv)
       }
     }
 #endif
+
+    /* Create applet UI */
+    ULOG_INFO("Creating applet UI..");
+    ui_create_main_dialog(app_data);
 
     /* Start GTK main loop */
     ULOG_INFO("Starting GTK main loop..");

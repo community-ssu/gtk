@@ -72,5 +72,8 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
+/* Whether to use sudo */
+#undef USE_SUDO
+
 /* Version number of package */
 #undef VERSION

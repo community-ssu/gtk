@@ -49,10 +49,18 @@ Usage:
   user when the exit code is non-zero.
 
   - app-installer-tool describe-file <file.deb>
+
+  Outputs information about <file.deb> to stdout.  The first line of
+  stdout contains the package name, the second line the version, the
+  third line the size and the rest of the lines contain the
+  description.
+
+  Exits zero when stdout contains a proper description.  Exits
+  non-zero when some error occured.  Diagnostic output goes to stderr.
+
   - app-installer-tool describe-package <package>
 
-  Returns the description of the file <file.deb> or the package
-  <package> on stdout.
+  Outputs the description of the package <package> on stdout.
 
   Exits zero when stdout contains a proper description.
   Exits non-zero when the package is not installed or some other error
@@ -62,8 +70,7 @@ Usage:
 
   Installs the package contained in <file.deb> and exits zero when
   this succeeded, non-zero otherwise.  Diagnostic output is displayed
-  on stderr.  Progress indication and a final status report is output
-  on stdout.
+  on stderr.  A status report is output on stdout.
 
   For each unsatisfied dependency, a line of the form
 
@@ -97,18 +104,12 @@ Usage:
   will appear on stdout (and stderr should then be displayed to the
   user).
 
-  From time to time a line of the form
-
-    progress <percentage>
-
-  will appear.  The progress bar should be updated.
-
   
   - app-installer-tool remove <package>
 
   Removes <package> and exits zero when this succeeded, non-zero
-  otherwise.  Diagnostic output is displayed on stderr.  Progress
-  indication is output on stdout.
+  otherwise.  Diagnostic output is displayed on stderr.  A status
+  report is output on stdout.
 
   For each unsatisfied dependency that would be caused by the removal,
   a line of the form
@@ -123,31 +124,3 @@ Usage:
     failed
 
   appears on stdout (and stderr should then be displayed to the user).
-
-  From time to time a line of the form
-
-    progress <percentage>
-
-  will appear.  The progress bar should be updated.
-
-General interaction with UI: stdout is meant for parsing, but stderr
-is never parsed.  When the exit code is non-zero, the UI offers to
-display the app-installer-tool command line together with stderr as
-"Details".  For example:
-
-  The command 
-
-     app-installer-tool install maemopad-1.1.deb
-
-  failed with this diagnostic output:
-
-     Stuff...
-
-This means that already installing a package with unsatisfied
-dependencies is considered a problem for experts to solve (because you
-have to read and understand the output of dpkg).  That is acceptable
-since application packages are supposed to be selfcontained for
-Sputnik.  With real package management in Sputnik+, we can give the
-user more control over these kind of things with as better UI like
-synaptic or the
-GPE-package-manager-thing-whose-name-escapes-me-at-the-moment.

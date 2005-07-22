@@ -58,6 +58,7 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   GError *error = NULL;
   
   GtkWidget *empty_list_label = NULL;
+  GtkWidget *database_corrupted_label = NULL;
   gboolean show_list = TRUE;
 
   GtkTextBuffer *textbuffer = NULL;
@@ -95,9 +96,6 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
     g_assert(FALSE);
   }
 
-  /* Fetch the list of built-in packages for later use */
-  app_ui_data->builtin_packages = list_builtin_packages();
-  
   /* Create dialog and set its attributes */
   ULOG_INFO("Creating dialog and setting it's attributes..");
   main_dialog = gtk_dialog_new_with_buttons(
@@ -121,14 +119,9 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   ULOG_INFO("Creating vertical box..");
   vbox = gtk_vbox_new(FALSE, 6);
 
-
   /* Create application list widget */
-  ULOG_INFO("Fetching package list..");
-  model = list_packages(app_ui_data);
-  treeview = gtk_tree_view_new_with_model(model);
+  treeview = gtk_tree_view_new ();
   app_ui_data->treeview = treeview;
-  g_object_unref(model);
-
 
   /* Creating list widget */
   ULOG_INFO("Creating list widget..");
@@ -141,20 +134,16 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   gtk_container_add(GTK_CONTAINER(vbox), list_sw);
   app_ui_data->package_list = list_sw;
   
-  
-  /* freeze after this might work */
-  if (!any_packages_installed(model)) {
-    show_list = FALSE;
-  }
-  ui_freeze_column_sizes(app_ui_data);
-
-
   /* Creating 'no packages' label */
   ULOG_INFO("Creating 'no packages' label..");
   empty_list_label = gtk_label_new(_("ai_ti_application_installer_nopackages"));
   gtk_container_add(GTK_CONTAINER(vbox), empty_list_label);
   app_ui_data->empty_list_label = empty_list_label;
 
+  database_corrupted_label =
+    gtk_label_new (_("ai_ti_application_installer_dbcorrupted"));
+  gtk_container_add (GTK_CONTAINER(vbox), database_corrupted_label);
+  app_ui_data->database_corrupted_label = database_corrupted_label;
 
   /* Create separator */
   ULOG_INFO("Adding separator..");
@@ -167,8 +156,6 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   textview = gtk_text_view_new();
   textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), GTK_WRAP_WORD);
-  gtk_text_buffer_set_text(GTK_TEXT_BUFFER(textbuffer), 
-			   MESSAGE_DOUBLECLICK, -1);
   gtk_widget_set_sensitive(textview, FALSE);
 
 
@@ -205,7 +192,7 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
 
   g_signal_connect((gpointer) treeview, 
 		   "row-activated",
-		   G_CALLBACK(on_treeview_activated), app_ui_data);
+		   G_CALLBACK(on_treeview_activated), app_data);
  
 
   /* Catching key events */
@@ -219,31 +206,9 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   gtk_signal_connect(GTK_OBJECT(main_dialog), "key_press_event",
 		     G_CALLBACK(key_press), (gpointer) app_ui_data);
 
+  gtk_widget_show_all (main_dialog);
 
-  /* Disable uninstall button if no items installed */
-  if (!any_packages_installed(model)) {
-    gtk_widget_set_sensitive(app_ui_data->uninstall_button, FALSE);
-  }
-
-
-  /* Display dialog or perform direct install without main dialog */
-  if ( (app_ui_data->param != NULL) &&
-       (app_ui_data->param->len > 0) ) {
-    ULOG_INFO("Not showing widget, direct install");
-    g_signal_emit_by_name((gpointer)app_ui_data->installnew_button,
-			  "clicked", (gpointer)app_ui_data);
-  }
-  else {
-    ULOG_INFO("Showing widget..");
-    gtk_widget_show_all(main_dialog);
-    
-    /* Hiding empty list label or package list */
-    if (show_list) {
-      gtk_widget_hide(app_ui_data->empty_list_label);
-    } else {
-      gtk_widget_hide(app_ui_data->package_list);
-    }
-  }
+  update_package_list (app_data);
 
   return main_dialog;
 }
@@ -264,35 +229,6 @@ void ui_create_main_buttons(AppUIData *app_ui_data)
      gtk_dialog_add_button(GTK_DIALOG(main_dialog),
      _("ai_bd__application_installer_cancel"), GTK_RESPONSE_OK);
 }
-
-
-
-void ui_freeze_column_sizes(AppUIData *app_ui_data)
-{
-  gint font_width = CALC_FONT_WIDTH;
-  
-  gtk_tree_view_column_set_sizing(app_ui_data->name_column, 
-				  GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_sizing(app_ui_data->size_column, 
-				  GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_sizing(app_ui_data->version_column, 
-				  GTK_TREE_VIEW_COLUMN_FIXED);
-
-  /* Width of thingie is font * chars wide */
-  gint name_width = font_width * app_ui_data->max_name;
-  gint size_width = font_width * app_ui_data->max_size;
-  gint vers_width = font_width * app_ui_data->max_version;
-
-  /* BETWEEN is macro making x be between min value y, max value z) */
-  gtk_tree_view_column_set_fixed_width(app_ui_data->name_column, 
-    BETWEEN(name_width, COLUMN_NAME_MIN_WIDTH, COLUMN_NAME_MAX_WIDTH));
-  gtk_tree_view_column_set_fixed_width(app_ui_data->size_column, 
-    BETWEEN(size_width, COLUMN_SIZE_MIN_WIDTH, COLUMN_SIZE_MAX_WIDTH));
-  gtk_tree_view_column_set_fixed_width(app_ui_data->version_column, 
-    BETWEEN(vers_width, COLUMN_VERSION_MIN_WIDTH, COLUMN_VERSION_MAX_WIDTH));
-}
-
-
 
 gchar *ui_show_file_chooser(AppUIData *app_ui_data)
 {
@@ -349,7 +285,7 @@ gchar *ui_show_file_chooser(AppUIData *app_ui_data)
 
 
 
-gchar *ui_read_selected_package(AppUIData *app_ui_data)
+gchar *ui_read_selected_package (AppUIData *app_ui_data, gchar **size)
 {
   GtkTreeSelection *selection = NULL;
   GtkTreeIter iter;
@@ -359,31 +295,19 @@ gchar *ui_read_selected_package(AppUIData *app_ui_data)
   if (!app_ui_data) return "";
 
   treeview = app_ui_data->treeview;
-  model = gtk_tree_view_get_model(GTK_TREE_VIEW(treeview));
-  selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW(treeview));
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(treeview));
 
-  if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
-    gchar *package = NULL;
-    gchar *version = NULL;
-    gchar *size = NULL;
-    GString *deb = NULL;
-
-    gtk_tree_model_get(GTK_TREE_MODEL(model), &iter,
-		       COLUMN_NAME, &package,
-		       COLUMN_VERSION, &version,
-		       COLUMN_SIZE, &size,
-		       -1);
-
-    ULOG_INFO("Package selected is %s.", package);
-    deb = g_string_new(package);
-
-    g_free(package);
-    g_free(version);
-    g_free(size);
-
-    return deb->str;
-  }
-
+  if (gtk_tree_selection_get_selected (selection, &model, &iter)) 
+    {
+      gchar *package = NULL;
+      gtk_tree_model_get (GTK_TREE_MODEL(model), &iter,
+			  COLUMN_NAME, &package,
+			  COLUMN_SIZE, size,
+			  -1);
+      return package;
+    }
+  
   return "";
 }
 
@@ -449,122 +373,3 @@ GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
 
   return sw;
 }
-
-
-
-void ui_set_progressbar(AppUIData *app_ui_data, gdouble new_progress,
-			gint method)
-{
-  ULOG_DEBUG("setting progress to %f\n", new_progress);
-  g_assert(app_ui_data);
-
-  if (new_progress < 0.0)
-    new_progress = 0.0;
-  if (new_progress > 1.0)
-    new_progress = 0.99;
-
-  /* Installing */
-  if (method == DPKG_METHOD_INSTALL) {
-    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(app_ui_data->progressbar), 
-				  new_progress);
-  }
-
-  /* Uninstalling */
-  if (method == DPKG_METHOD_UNINSTALL) {
-    gtk_banner_set_fraction(GTK_WINDOW(app_ui_data->main_dialog), 
-			    new_progress);
-  }
-
-  ui_forcedraw();
-}
-
-
-void ui_pulse_progressbar(AppUIData *app_ui_data, gdouble pulse_step)
-{
-  ULOG_DEBUG("pulsing bar..");
-  if (app_ui_data->progressbar == NULL) {
-    ULOG_DEBUG("app_ui_data wasn't defined!");
-    return;
-  }
-  g_assert(app_ui_data->progressbar);
-
-  /* Not actually pulsing for now */
-  /*
-  gtk_progress_bar_set_pulse_step(GTK_PROGRESS_BAR(app_ui_data->progressbar),
-				  pulse_step);
-  gtk_progress_bar_pulse(GTK_PROGRESS_BAR(app_ui_data->progressbar));
-  */
-}
-
-
-void ui_create_progressbar_dialog(AppUIData *app_ui_data, gchar *title,
-				  gint method)
-{
-  g_assert(app_ui_data != NULL);
-
-  /* Install */
-  if (method == DPKG_METHOD_INSTALL) {
-    if (app_ui_data->progressbar == NULL) {
-      app_ui_data->progressbar = gtk_progress_bar_new();
-      g_assert(app_ui_data->progressbar != NULL);
-      
-      gtk_progress_bar_set_orientation(
-        GTK_PROGRESS_BAR(app_ui_data->progressbar), 
-        GTK_PROGRESS_LEFT_TO_RIGHT);
-      gtk_widget_set_size_request(GTK_WIDGET(app_ui_data->progressbar),
-				  PROGRESSBAR_WIDTH,
-				  -1);
-    }
-
-    app_ui_data->progressbar_dialog =
-      gtk_dialog_new_with_buttons(title, 
-				  GTK_WINDOW(app_ui_data->main_dialog),
-				  GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR
-				  | GTK_DIALOG_DESTROY_WITH_PARENT,
-				  NULL,
-				  NULL);
-    gtk_container_add(
-      GTK_CONTAINER(GTK_DIALOG(app_ui_data->progressbar_dialog)->vbox),
-      app_ui_data->progressbar);
-					   
-    g_assert(app_ui_data->progressbar_dialog != NULL);
-    gtk_widget_show_all(app_ui_data->progressbar_dialog);
-  }
-
-
-  /* Uninstall */
-  if (method == DPKG_METHOD_UNINSTALL) {
-    gtk_banner_show_bar(GTK_WINDOW(app_ui_data->main_dialog), 
-			title);
-  }
-
-
-  ui_forcedraw();
-}
-
-
-
-
-void ui_cleanup_progressbar_dialog(AppUIData *app_ui_data, gint method)
-{
-  g_assert(app_ui_data != NULL);
-  ui_set_progressbar(app_ui_data, 1.00, method);
-
-  /* Were we installing */
-  if (method == DPKG_METHOD_INSTALL) {
-    g_assert(app_ui_data->progressbar_dialog != NULL);
-    gtk_widget_destroy(app_ui_data->progressbar_dialog);
-
-    app_ui_data->progressbar_dialog = NULL;
-    app_ui_data->progressbar = NULL;
-  }
-
-  /* ..or uninstalling */
-  if (method == DPKG_METHOD_UNINSTALL) {
-    gtk_banner_close(GTK_WINDOW(app_ui_data->main_dialog));
-  }
-
-  app_ui_data->current_progress = 0.0;
-}
-
-

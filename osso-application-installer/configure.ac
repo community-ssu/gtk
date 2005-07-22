@@ -2,7 +2,7 @@
 
 # Mandatory, inits autoconf
 # The version should match the version in debian/changelog
-AC_INIT(osso-application-installer, 1.0.29-0)
+AC_INIT(osso-application-installer, 2.0-0)
 
 # Tests that source dir exists
 AC_CONFIG_SRCDIR([src/main.c])
@@ -21,6 +21,18 @@ AC_PROG_LIBTOOL
 AC_HEADER_STDC
 
 CFLAGS="$CFLAGS -Wall -Wmissing-prototypes -Wmissing-declarations"
+
+# Handle --disable-sudo
+#
+AC_ARG_ENABLE([sudo],
+    [AC_HELP_STRING([--disable-sudo],
+	[do not use sudo (nice for scratchbox)])])
+test "x$enable_sudo" != xno && enable_sudo=yes
+USE_SUDO_VAL=0
+test "x$enable_sudo" = xyes && USE_SUDO_VAL=1
+AC_MSG_CHECKING([whether to use sudo])
+AC_MSG_RESULT($enable_sudo)
+AC_DEFINE_UNQUOTED(USE_SUDO, $USE_SUDO_VAL, [Whether to use sudo])
 
 # Check module dependencies, will automatically include all needed
 # compiler options to DEPS-variables, see src/Makefile.am for details
@@ -86,6 +98,13 @@ AC_SUBST(dbuslibpathdir)
 AC_SUBST(dbusconfdir)
 AC_SUBST(dbusservdir)
 
+# For the app-installer-tool
+#
+AITOOL_CFLAGS=`pkg-config --cflags glib-2.0`
+AITOOL_LIBS=`pkg-config --libs glib-2.0`
+AC_SUBST(AITOOL_CFLAGS)
+AC_SUBST(AITOOL_LIBS)
+
 # Define output files
 AC_CONFIG_FILES([
 Makefile
@@ -98,6 +117,7 @@ control-panel/Makefile
 control-panel/osso-application-installer-cp.desktop
 mime/Makefile
 wrapper/Makefile
+app-installer-tool/Makefile
 ])
 
 # Mandatory, produce output

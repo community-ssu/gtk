@@ -32,17 +32,7 @@
 
 #define UI_MARGIN_HORIZONTAL     12
 
-#define FAKEROOT_BINARY          "fakeroot"
-#define DPKG_BINARY              "dpkg"
-#define DPKG_QUERY_BINARY        "dpkg-query"
-#define DPKG_METHOD_LIST         1
-#define DPKG_METHOD_INSTALL      2
-#define DPKG_METHOD_UNINSTALL    3
-#define DPKG_METHOD_FIELDS       4
-#define DPKG_METHOD_STATUS       5
-#define DPKG_METHOD_LIST_BUILTIN 6
-
-#define DEFAULT_FOLDER           "/"
+#define DEFAULT_FOLDER            "/"
 
 #define PATH_ENV                 "PATH"
 #define PATH_ADD                 ":/sbin:/usr/sbin"

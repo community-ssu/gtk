@@ -96,48 +96,56 @@ void on_button_install_clicked(GtkButton *button, AppData *app_data)
 
   vfs_uri = gnome_vfs_uri_new(file_uri);
   
-  if (g_str_has_prefix(file_uri, "file://") &&
-      gnome_vfs_uri_is_local(vfs_uri)) {
-    lfs_deb = g_strdup(file_uri+strlen("file://"));
-    fprintf(stderr, "lfs_deb = %s\n", lfs_deb);
-  } else {
-    packname = g_strrstr(file_uri, "/");
-    packname++;
+  /* The app-installer-tool can access all "file://" URIs, whether
+     they are local or not.  (GnomeVFS considers a file:// URI
+     pointing to a NFS mounted volume as remove, but we can read that
+     just fine of course.)
+  */
+
+  if (g_str_has_prefix(file_uri, "file://"))
+    {
+      lfs_deb = g_strdup(file_uri+strlen("file://"));
+      fprintf(stderr, "lfs_deb = %s\n", lfs_deb);
+    } 
+  else
+    {
+      packname = g_strrstr(file_uri, "/");
+      packname++;
     
-    fprintf(stderr, "packname: %s\n", packname);
+      fprintf(stderr, "packname: %s\n", packname);
     
-    text_dest_uri = g_strconcat("file:///tmp/", packname, NULL);
-    fprintf(stderr, "text_dest_uri: %s\n", text_dest_uri);
-    dest_uri = gnome_vfs_uri_new(text_dest_uri);
-    
-    if (access("/tmp", W_OK) < 0) {
-      fprintf(stderr, "Cannot write /tmp, exiting..\n");
-      return;
-    }
-    
-    if (vfs_uri) {
-      result = gnome_vfs_xfer_uri(vfs_uri, dest_uri,
-				  GNOME_VFS_XFER_DEFAULT,
-				  GNOME_VFS_XFER_ERROR_MODE_ABORT,
-				  GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE,
-				  _progress_info_cb, NULL);
-      if (result != GNOME_VFS_OK) {
-	fprintf(stderr,"Failed to xfer debian package to local file system,\n"
-		"intended destination: %s\n",
-		gnome_vfs_uri_to_string(dest_uri, 0));
-	fprintf(stderr, "%s", gnome_vfs_result_to_string(result));
+      text_dest_uri = g_strconcat("file:///tmp/", packname, NULL);
+      fprintf(stderr, "text_dest_uri: %s\n", text_dest_uri);
+      dest_uri = gnome_vfs_uri_new(text_dest_uri);
+      
+      if (access("/tmp", W_OK) < 0) {
+	fprintf(stderr, "Cannot write /tmp, exiting..\n");
 	return;
-      } else {
-	fprintf(stderr,"File copied; \n");
-	lfs_deb = strdup(text_dest_uri+strlen("file://"));
-	fprintf(stderr,"lfs_deb = %s\n", lfs_deb);
-	copied_from_gw = TRUE;
       }
+    
+      if (vfs_uri) {
+	result = gnome_vfs_xfer_uri(vfs_uri, dest_uri,
+				    GNOME_VFS_XFER_DEFAULT,
+				    GNOME_VFS_XFER_ERROR_MODE_ABORT,
+				    GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE,
+				    _progress_info_cb, NULL);
+	if (result != GNOME_VFS_OK) {
+	  fprintf(stderr,"Failed to xfer debian package to local file system,\n"
+		  "intended destination: %s\n",
+		  gnome_vfs_uri_to_string(dest_uri, 0));
+	  fprintf(stderr, "%s", gnome_vfs_result_to_string(result));
+	  return;
+	} else {
+	  fprintf(stderr,"File copied; \n");
+	  lfs_deb = strdup(text_dest_uri+strlen("file://"));
+	  fprintf(stderr,"lfs_deb = %s\n", lfs_deb);
+	  copied_from_gw = TRUE;
+	}
+      }
+      g_free(file_uri);
+      gnome_vfs_uri_unref(vfs_uri);
+      gnome_vfs_uri_unref(dest_uri);
     }
-    g_free(file_uri);
-    gnome_vfs_uri_unref(vfs_uri);
-    gnome_vfs_uri_unref(dest_uri);
-  }
 
   /* Try installing if installation confirmed */
   if (0 != g_strcasecmp(lfs_deb, "")) {
@@ -146,19 +154,13 @@ void on_button_install_clicked(GtkButton *button, AppData *app_data)
     gtk_widget_set_sensitive(app_ui_data->installnew_button, FALSE);
     gtk_widget_set_sensitive(app_ui_data->close_button, FALSE);
     
-    /* Try install */
-    if (!install_package(lfs_deb, app_data)) {
-      ULOG_ERR("Installation of '%s' failed.", lfs_deb);
-    } else {
-      ULOG_INFO("Successfully installed '%s'.", lfs_deb);
-    }
-    
+    install_package (lfs_deb, app_data);
+
     if (!direct_install) {
-      /* Represent packages and uninstall button state */
-      represent_packages(app_ui_data);
+      update_package_list (app_data);
       
       /* Enable buttons again, except uninstall, which is set
-	 to proper value at represent_package */
+	 to proper value at update_package_list */
       gtk_widget_set_sensitive(app_ui_data->installnew_button, TRUE);
       gtk_widget_set_sensitive(app_ui_data->close_button, TRUE);
     }
@@ -191,86 +193,66 @@ void on_button_uninstall_clicked(GtkButton *button, AppData *app_data)
 
   AppUIData *app_ui_data = app_data->app_ui_data;
   if (!app_ui_data) return;
-  gchar *package;
-  package = ui_read_selected_package(app_ui_data);
+  gchar *package, *size;
+
+  package = ui_read_selected_package (app_ui_data, &size);
 
   /* Try uninstalling if package was selected */
-  if (0 != g_strcasecmp(package, "")) {
-    gchar *dependencies = show_remove_dependencies(package);
-    //ULOG_DEBUG("Dependencies: '%s'\n", dependencies);
+  if (0 != g_strcasecmp(package, "")) 
+    {
+      /* Dim button while uninstalling */
+      gtk_widget_set_sensitive(app_ui_data->uninstall_button, FALSE);
+      gtk_widget_set_sensitive(app_ui_data->installnew_button, FALSE);
+      gtk_widget_set_sensitive(app_ui_data->close_button, FALSE);
 
-    /* Some other package is dependant on this one, cannot uninstall */
-    if (0 != g_strcasecmp(dependencies, "")) {
-      represent_dependencies(app_data, _(dependencies));
-      return;
-    }
+      uninstall_package (package, size, app_data);
 
-    /* Dim button while uninstalling */
-    gtk_widget_set_sensitive(app_ui_data->uninstall_button, FALSE);
-    gtk_widget_set_sensitive(app_ui_data->installnew_button, FALSE);
-    gtk_widget_set_sensitive(app_ui_data->close_button, FALSE);
+      /* Clear description */
+      gtk_text_buffer_set_text (GTK_TEXT_BUFFER(app_ui_data->main_label),
+				"", -1);
 
-    /* Trying to uninstall */
-    if (!uninstall_package(package, app_data)) {
-      ULOG_ERR("Uninstallation of '%s' failed.", package);
+      /* Update the package list (and uninstall button state) */
+      update_package_list (app_data);
+
+      /* Enable buttons again, except uninstall, which is set
+	 to proper value at update_package_list */
+      gtk_widget_set_sensitive (app_ui_data->installnew_button, TRUE);
+      gtk_widget_set_sensitive (app_ui_data->close_button, TRUE);
+
     } else {
-      ULOG_INFO("Successfully uninstalled '%s'.", package);
+      ULOG_WARN("No package selected for uninstall or package is empty.");
     }
-
-    /* Deselect description */
-    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(app_ui_data->main_label),
-                               MESSAGE_DOUBLECLICK, -1);
-
-    /* Update the package list (and uninstall button state) */
-    represent_packages(app_ui_data);
-
-    /* Enable buttons again, except uninstall, which is set
-       to proper value at represent_package */
-    gtk_widget_set_sensitive(app_ui_data->installnew_button, TRUE);
-    gtk_widget_set_sensitive(app_ui_data->close_button, TRUE);
-
-  } else {
-    ULOG_WARN("No package selected for uninstall or package is empty.");
-  }
 }
 
 
 void on_treeview_activated(GtkTreeView *treeview, GtkTreePath *path, 
-                           GtkTreeViewColumn *col, AppUIData *app_ui_data)
+                           GtkTreeViewColumn *col, AppData *app_data)
 {
+  AppUIData *app_ui_data = app_data->app_ui_data;
   GtkTreeModel *model;
   GtkTreeIter iter;
 
   if (!treeview || !app_ui_data) return;
 
-  model = gtk_tree_view_get_model(treeview);
+  model = gtk_tree_view_get_model (treeview);
 
-  /* If something is selected */
-  if (gtk_tree_model_get_iter(model, &iter, path)) {
-    gchar *package = NULL;
-    gchar *description = NULL;
-    gchar *version = NULL;
+  /* If something is selected 
+   */
+  if (gtk_tree_model_get_iter (model, &iter, path))
+    {
+      gchar *package;
+      gchar *description;
 
-    gtk_tree_model_get(model, &iter, 
-                       COLUMN_NAME, &package, 
-                       COLUMN_VERSION, &version,
-                       -1);
+      gtk_tree_model_get (model, &iter, 
+			  COLUMN_NAME, &package, 
+			  -1);
     
-    /* Dig up information, but only if its with version */
-    /* No version = No packages installed text */
-    if ( (version != NULL) && (strlen(version) > 0) ) {
-           description = show_description(package, DPKG_INFO_INSTALLED);
-
-           gtk_text_buffer_set_text(GTK_TEXT_BUFFER(app_ui_data->main_label), 
-                                    description, -1);
+      description = package_description (app_data, package);
+      gtk_text_buffer_set_text (GTK_TEXT_BUFFER (app_ui_data->main_label), 
+				description, -1);
+      free (description);
+      free(package);
     }
-    
-    /* Free resources */
-    g_free(version);
-    g_free(package);
-    if (description != NULL && 0 != strcmp("", description)) 
-      g_free(description);
-  }
 }
 
 

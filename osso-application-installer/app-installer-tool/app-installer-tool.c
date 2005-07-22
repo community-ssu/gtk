@@ -23,33 +23,59 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/wait.h>
+#include <unistd.h>
+#include <string.h>
 #include <glib.h>
 
-#define DEBUG 0
+#undef DEBUG
+
+/* Prototypes
+ */
+
+void setup_environment (void);
+void redirect_stdout_to_stderr (gpointer unused);
+int run_cmd_save_output (gchar **argv,
+			 gchar **stdout_string,
+			 gchar **stderr_string);
+int run_cmd (gchar **argv);
+int get_package_name_from_file (gchar *file, gchar **package);
+int package_already_installed (gchar *package, int *is_installed);
+int dump_failed_relations (gchar *output, gchar *me);
+
+int do_list (void);
+int do_describe_file (gchar *file);
+int do_describe_package (gchar *package);
+int do_install (gchar *file);
+int do_remove (gchar *package, int silent);
 
 /* Setup the environment for dpkg.  It expects to be able to find
    programs from /sbin.  XXX - We replace the PATH environment
    variable completely but maybe it would be nicer to just add to
    it...
+
+   We also set the locale to "C" since we parse the output of dpkg.
 */
 
 void
 setup_environment ()
 {
   setenv ("PATH", "/sbin:/bin:/usr/sbin:/usr/bin", 1);
-  setenv ("LANG", "C");
+  setenv ("LC_ALL", "C", 1);
 }
 
 /* Run ARGV[0] with the given arguments and return its exit code when
    it terminates normally.  When ARGV[0] terminates because of a
    signal or can not be run at all, display a message to stderr and
-   return -1.  When STDOUT is non-NULL, it will get the stdout from
-   the program.  You need to free *STDOUT eventually.  When STDOUT is
-   NULL, the stdout of the program will be directed to stderr.
+   return -1.  When STDOUT_STRING is non-NULL, it will get the stdout
+   from the program.  You need to free *STDOUT_STRING eventually.
+   When STDOUT_STRING is NULL, the stdout of the program will be
+   directed to stderr.
 
-   When STDERR is non-NULL, it will get the stderr from the program.
-   Otherwise, stderr goes to our stderr.  You need to free *STDERR
+   When STDERR_STRING is non-NULL, it will get the stderr from the
+   program (including the possibly redirect stdout).  Otherwise,
+   stderr goes to our stderr.  You need to free *STDERR_STRING
    eventually.
 */
 
@@ -66,13 +92,15 @@ run_cmd_save_output (gchar **argv,
 {
   gint exit_status;
   GError *error = NULL;
-  int i;
 
-#if DEBUG
-  fprintf (stderr, "[");
-  for (i = 0; argv[i]; i++)
-    fprintf (stderr, " %s", argv[i]);
-  fprintf (stderr, " ]\n");
+#ifdef DEBUG
+  {
+    int i;
+    fprintf (stderr, "[");
+    for (i = 0; argv[i]; i++)
+      fprintf (stderr, " %s", argv[i]);
+    fprintf (stderr, " ]\n");
+  }
 #endif
 
   g_spawn_sync (NULL,
@@ -95,7 +123,7 @@ run_cmd_save_output (gchar **argv,
   
   if (WIFEXITED (exit_status))
     {
-#if DEBUG
+#ifdef DEBUG
       fprintf (stderr, "[ exit %d ]\n", WEXITSTATUS (exit_status));
 #endif
       return WEXITSTATUS (exit_status);
@@ -168,7 +196,7 @@ package_already_installed (gchar *package, int *is_installed)
   gchar *args[] = {
     "/usr/bin/dpkg-query",
     "--admindir=/var/lib/install/var/lib/dpkg",
-    "-f", "${Status}",
+    "--showformat=${Status}",
     "-W", package,
     NULL
   };
@@ -204,7 +232,7 @@ do_list (void)
   gchar *args[] = {
     "/usr/bin/dpkg-query",
     "--admindir=/var/lib/install/var/lib/dpkg",
-    "-f", "${Package}\\t${Version}\\t${Installed-Size}\\t${Status}\\n",
+    "--showformat=${Package}\\t${Version}\\t${Installed-Size}\\t${Status}\\n",
     "-W",
     NULL
   };
@@ -241,6 +269,34 @@ do_list (void)
   return result;
 }
 
+static gchar *
+parse_field (gchar *ptr, gchar *prefix, gchar **value)
+{
+  int len;
+
+  if (ptr == NULL)
+    return NULL;
+
+  len = strlen (prefix);
+  if (strncmp (ptr, prefix, len) == 0)
+    *value = ptr + len;
+
+  while (1)
+    {
+      ptr = strchr (ptr, '\n');
+      if (ptr == NULL)
+	return NULL;
+      if (ptr[1] == ' ')
+	ptr++;
+      else
+	{
+	  *ptr++ = '\0';
+	  return ptr;
+	}
+    }
+}
+
+
 int
 do_describe_file (gchar *file)
 {
@@ -249,13 +305,40 @@ do_describe_file (gchar *file)
   gchar *args[] = {
     "/usr/bin/dpkg-deb",
     "-f", file,
+    "Package",
+    "Version",
+    "Installed-Size",
     "Description",
     NULL
   };
 
   result = run_cmd_save_output (args, &output, NULL);
   if (result == 0)
-    fputs (output, stdout);
+    {
+      gchar *package = NULL, *version = NULL, *size = NULL;
+      gchar *description = NULL;
+      gchar *ptr;
+
+      /* The fields are output in the order of the control file, so we
+	 really have to parse the output.
+      */
+      ptr = output;
+      while (*ptr)
+	{
+	  ptr = parse_field (ptr, "Package: ", &package);
+	  ptr = parse_field (ptr, "Version: ", &version);
+	  ptr = parse_field (ptr, "Installed-Size: ", &size);
+	  ptr = parse_field (ptr, "Description: ", &description);
+	  
+	  g_assert (ptr != NULL);
+	}
+
+      printf ("%s\n", package);
+      printf ("%s\n", version);
+      printf ("%s\n", size);
+      printf ("%s\n", description);
+    }
+
   free (output);
   return result;
 }
@@ -268,7 +351,7 @@ do_describe_package (gchar *package)
   gchar *args[] = {
     "/usr/bin/dpkg-query",
     "--admindir=/var/lib/install/var/lib/dpkg",
-    "-f", "${Description}\\n",
+    "--showformat=${Description}\\n",
     "-W", package,
     NULL
   };
@@ -340,11 +423,9 @@ do_install (gchar *file)
   int result, is_installed;
   gchar *package, *output;
   gchar *install_args[] = {
+    "/usr/bin/fakeroot",
     "/usr/bin/dpkg",
     "--root=/var/lib/install",
-    "--log=/var/lib/install/var/log/dpkg.log",
-    "--force-not-root",
-    "--force-bad-path",
     "--install", file,
     NULL
   };
@@ -366,7 +447,7 @@ do_install (gchar *file)
   if (is_installed)
     {
       puts ("exists");
-      result = -1;
+      result = 1;
       goto done;
     }
 
@@ -397,11 +478,9 @@ do_remove (gchar *package, int silent)
   gchar *output;
   int result;
   gchar *args[] = {
+    "/usr/bin/fakeroot",
     "/usr/bin/dpkg",
     "--root=/var/lib/install",
-    "--log=/var/lib/install/var/log/dpkg.log",
-    "--force-not-root",
-    "--force-bad-path",
     "--purge", package,
     NULL
   };
@@ -419,20 +498,12 @@ do_remove (gchar *package, int silent)
 }
 
 int
-do_env (void)
-{
-  printf ("uid: %d, gid %d\n", getuid (), getgid ());
-}
-
-int
 main (int argc, char **argv)
 {
   int result;
 
   setup_environment ();
 
-  if (argc == 2 && !strcmp (argv[1], "env"))
-    result = do_env ();
   if (argc == 2 && !strcmp (argv[1], "list"))
     result = do_list ();
   else if (argc == 3 && !strcmp (argv[1], "describe-file"))
@@ -445,8 +516,11 @@ main (int argc, char **argv)
     result = do_remove (argv[2], 0);
   else
     {
-      fprintf (stderr, "usage: app-install-tool CMD ARGS...\n");
-      fprintf (stderr, "CMD is one of 'list', 'describe-file', ...\n");
+      fputs ("usage: app-installer-tool list\n",                       stderr);
+      fputs ("       app-installer-tool describe-file <file>\n",       stderr);
+      fputs ("       app-installer-tool describe-package <package>\n", stderr);
+      fputs ("       app-installer-tool install <file>\n",             stderr);
+      fputs ("       app-installer-tool remove <package>\n",           stderr);
       exit (1);
     }
 
