@@ -1,5 +1,14 @@
 2005-07-22  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/ui/interface.c (ui_create_main_dialog): Do not use
+	"row-activated" signal of treeview, use "changed" signal of its
+	selection.
+
+	* src/ui/callbacks.h, src/ui/callbacks.c (on_treeview_activated):
+	Renamed to on_treeview_selection_changed and adapted to be useable
+	as a "changed" signal handler for the tree selection.
+
+	
 	First round of the big rewrite.  Main things missing: context
 	sensitive menu and direct installation from command line argument.
 	
