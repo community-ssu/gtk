@@ -22,201 +22,156 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osso-application-installer 0.2.04\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-18 18:37+0300\n"
+"POT-Creation-Date: 2005-07-21 19:19+0300\n"
 "PO-Revision-Date: 2005-03-30 15:23+0200\n"
 "Last-Translator: \n"
-"Language-Team: English <en@translate.freefriends.org>\n"
+"Language-Team: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/core.c:219 src/ui/interface.c:154
-msgid "ai_ti_application_installer_nopackages"
-msgstr "No packages installed"
+#: src/core.c:142
+msgid "ai_ti_general_error"
+msgstr "Error"
 
-#: src/core.c:622 src/core.c:702
-msgid "ai_ti_installation_failed_text"
+#: src/core.c:173
+msgid "ai_ti_listing_failed"
+msgstr "Can not get the list of installed packages."
+
+#: src/core.c:309
+msgid "ai_ti_describe_file_failed"
+msgstr "Can not extract information from the file."
+
+#: src/core.c:356
+msgid "ai_ti_describe_package_failed"
+msgstr "Can not get the description of the package."
+
+#: src/core.c:411
+msgid "ai_ti_already_installed\n"
 msgstr ""
-"Installation of %s failed.\n"
-"Display details?"
+"It is already installed.\n"
+"Remove existing version first.\n"
 
-#: src/core.c:627
-msgid "ai_error_builtin"
-msgstr ""
-"Unable to install %s.\n"
-"Component is built-in."
+#: src/core.c:414
+msgid "ai_ti_depends_on\n"
+msgstr "It depends on the following uninstalled packages:\n"
 
-#: src/core.c:640
-msgid "ai_error_alreadyinstalled"
-msgstr ""
-"Package already installed.\n"
-"Remove existing version first."
+#: src/core.c:419
+msgid "ai_ti_depended_on_by\n"
+msgstr "The following installed packages depend on it:\n"
 
-#: src/core.c:654
-msgid "ai_ti_installing_installing"
-msgstr "Installing"
+#: src/core.c:424
+msgid "ai_ti_conflicts_with\n"
+msgstr "It conflicts with the following installed packages:\n"
 
-#. Show notification
-#: src/core.c:667 src/core.c:817 src/core.c:820 src/ui/represent.c:145
-msgid "ai_error_corrupted"
-msgstr ""
-"Unable to install.\n"
-"Installation file corrupted."
-
-#: src/core.c:681
+#: src/core.c:459
 msgid "ai_ti_application_installed_text"
 msgstr "Package %s successfully installed."
 
-#: src/core.c:682
-msgid "ai_bd_application_installed__ok"
-msgstr "OK"
+#: src/core.c:465
+msgid "ai_ti_installation_failed_text"
+msgstr "Installation of %s failed."
 
-#: src/core.c:775
-msgid "ai_ti_uninstall_progress_uninstalling"
-msgstr "Uninstalling"
+#: src/core.c:471
+msgid "ai_ti_installation_report"
+msgstr "Installation report"
 
-#: src/core.c:788
+#: src/core.c:502
 msgid "ai_ti_application_uninstalled_text"
 msgstr "Package %s successfully removed."
 
-#: src/core.c:789
-msgid "Ai_ti_application_uninstalled_ok"
-msgstr "OK"
-
-#: src/core.c:800
+#: src/core.c:508
 msgid "ai_ti_uninstallation_failed_text"
 msgstr "Uninstallation of %s failed."
 
-#: src/core.c:801
-msgid "ai_ti_uninstallation_failed_ok"
-msgstr "OK"
+#: src/core.c:514
+msgid "ai_ti_uninstallation_report"
+msgstr "Uninstallation report"
 
-#: src/core.c:827
-msgid "ai_error_memorycardopen"
-msgstr ""
-"Opening interrupted/Saving interrupted.\n"
-"Memory card cover open."
-
-#: src/core.c:830
-msgid "ai_error_incompatible"
-msgstr "Unable to install. Incompatible package."
-
-#: src/core.c:833 src/core.c:836 src/ui/represent.c:238
-msgid "ai_info_notenoughmemory"
-msgstr "Not enough memory."
-
-#: src/core.c:839
-msgid "ai_error_uninstall_timedout"
-msgstr "Operation time-out"
-
-#: src/core.c:842
-msgid "ai_error_uninstall_applicationrunning"
-msgstr "Application open. Close application and try again."
-
-#: src/core.c:850
-msgid "ai_error_componentmissing"
-msgstr "Component %s required for the installation is missing."
-
-#: src/ui/interface.c:104
+#: src/ui/interface.c:102
 msgid "ai_ti__application_installer_title"
 msgstr "Application installer"
 
-#: src/ui/interface.c:259
+#: src/ui/interface.c:139
+msgid "ai_ti_application_installer_nopackages"
+msgstr "No packages installed"
+
+#: src/ui/interface.c:144
+msgid "ai_ti_application_installer_dbcorrupted"
+msgstr "Package database corrupted"
+
+#: src/ui/interface.c:224
 msgid "ai_bd__application_installer_uninstall"
 msgstr "Uninstall"
 
-#: src/ui/interface.c:262
+#: src/ui/interface.c:227
 msgid "ai_bd__application_installer_install_new"
 msgstr "Install new"
 
-#: src/ui/interface.c:265
+#: src/ui/interface.c:230
 msgid "ai_bd__application_installer_cancel"
 msgstr "Cancel"
 
-#: src/ui/interface.c:328
+#: src/ui/interface.c:264
 msgid "ai_ti_select_package"
 msgstr "Select package"
 
-#: src/ui/represent.c:74
-msgid "ai_ti_dependency_conflict_text_plural"
-msgstr ""
-"Unable to uninstall package. Delete following packages first and then try "
-"again."
+#: src/ui/represent.c:99
+msgid "ai_ti_details\n"
+msgstr "Details:\n"
 
-#: src/ui/represent.c:76
-msgid "ai_ti_dependency_conflict_text"
-msgstr ""
-"Unable to uninstall package. Delete following package first and then try "
-"again."
+#: src/ui/represent.c:140
+msgid "ai_bd_report_show_details"
+msgstr "Show details"
 
-#: src/ui/represent.c:185
-msgid "ai_bd__ti_install_application_title"
-msgstr "Install package"
-
-#: src/ui/represent.c:195
-msgid "ai_ti_install_new"
-msgstr "Install new package? %s"
-
-#: src/ui/represent.c:197
-msgid "ai_ti_install_warning"
-msgstr "Installing this package may damage the device. Continue anyway?"
-
-#: src/ui/represent.c:210
-msgid "ai_ti_packagedescription"
-msgstr "%s description"
-
-#: src/ui/represent.c:212
-msgid "ai_ti_version"
-msgstr "Version: %s"
-
-#: src/ui/represent.c:213
-msgid "ai_ti_size"
-msgstr "Size required: %s kB"
-
-#: src/ui/represent.c:226
-msgid "ai_bd_install_application_ok"
+#: src/ui/represent.c:154
+msgid "ai_bd_report_ok"
 msgstr "OK"
 
-#: src/ui/represent.c:229
-msgid "ai_bd_install_application_cancel"
-msgstr "Cancel"
-
-#: src/ui/represent.c:252
+#: src/ui/represent.c:176
 msgid "ai_ti_confirm_uninstall_text"
 msgstr "Uninstall %s package?"
 
-#: src/ui/represent.c:256
+#: src/ui/represent.c:182
 msgid "ai_bd_confirm_uninstall_ok"
 msgstr "OK"
 
-#: src/ui/represent.c:258
+#: src/ui/represent.c:184
 msgid "ai_bd_confirm_uninstall_cancel"
 msgstr "Cancel"
 
-#: src/ui/represent.c:271
-msgid "ai_bd_installation_failed_yes"
-msgstr "Yes"
+#: src/ui/represent.c:209
+msgid "ai_bd__ti_install_application_title"
+msgstr "Install package"
 
-#: src/ui/represent.c:273
-msgid "ai_bd_installation_failed_no"
-msgstr "No"
+#: src/ui/represent.c:221
+msgid "ai_ti_install_new"
+msgstr "Install %s package?"
 
-#: src/ui/represent.c:282
-msgid "ai_ti_error_details_title"
-msgstr "Error details"
+#: src/ui/represent.c:223
+msgid "ai_ti_install_warning"
+msgstr "Installing this package may damage the device. Continue anyway?"
 
-#: src/ui/represent.c:301
-msgid "ai_bd_error_details_ok"
+#: src/ui/represent.c:232
+msgid "ai_ti_packagedescription"
+msgstr "%s description"
+
+#: src/ui/represent.c:234
+msgid "ai_ti_version"
+msgstr "Version: %s"
+
+#: src/ui/represent.c:236
+msgid "ai_ti_size"
+msgstr "Size required: %s kB"
+
+#: src/ui/represent.c:250
+msgid "ai_bd_install_application_ok"
 msgstr "OK"
 
-#: src/ui/represent.c:331
-msgid "ai_ti_dependency_conflict_title"
-msgstr "Dependency conflict"
-
-#: src/ui/represent.c:360
-msgid "ai_bd_dependency_conflict_ok"
-msgstr "OK"
+#: src/ui/represent.c:253
+msgid "ai_bd_install_application_cancel"
+msgstr "Cancel"
 
 #: src/ui/ui.h:77
 msgid "ai_error_details_csm_copy"
