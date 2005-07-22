@@ -116,7 +116,6 @@ src/com.nokia.osso_application_installer.service
 control-panel/Makefile
 control-panel/osso-application-installer-cp.desktop
 mime/Makefile
-wrapper/Makefile
 app-installer-tool/Makefile
 ])
 
