@@ -1,4 +1,4 @@
-SUBDIRS = src control-panel po mime wrapper app-installer-tool
+SUBDIRS = src control-panel po mime app-installer-tool
 
 # This variable tells which non-source files should be included in
 # "make dist"
