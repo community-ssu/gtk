@@ -1,3 +1,76 @@
+2005-07-22  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	First round of the big rewrite.  Main things missing: context
+	sensitive menu and direct installation from command line argument.
+	
+	* configure.ac: Changed version to 2.0-0.  Handle
+	"--disable-sudo".  Check for the depencies of app-installer-tool.
+
+	* src/core.c, src/core.h: Rewritten, changed everything.
+
+	* src/ui/represent.h, src/ui/represent.c: Removed unused defines.
+	(represent_packages): Renamed to update_package_list.  Take
+	AppData instead of AppUIData.  Changed all callers.  Deal with
+	errors from list_packages.
+	(represent_confirmation, represent_dependencies, represent_error,
+	represent_notification, show_dialog): Removed.
+	(present_report_with_details, confirm_install, confirm_uninstall):
+	New.
+	
+	* src/ui/interface.h, src/ui/interface.c: Removed unused defines.
+	(ui_freeze_column_sizes, ui_show_notification, ui_set_progressbar,
+	ui_pulse_progressbar, ui_create_progressbar_dialog,
+	ui_cleanup_progressbar_dialog): Removed.
+	(ui_read_selected_package): Also return size.  Do not test for
+	special entries to ignore, they are not used anymore.
+	(ui_create_main_dialog): Create database_corrupted_label.  Only
+	update list of apckages after everything has been created.  This
+	allows the list updating to display errors.  Do not set textbuffer
+	to MESSAGE_DOUBLECLICK, whatever that was meant to be.  Removed
+	code for doing direct install.
+	
+	* src/ui/callbacks.c, src/ui/callbacks.h (on_treeview_activated):
+	Use AppData instead of AppUIData.  Changed all callers.
+	(on_button_install_clicked): Only test for "file://" method whend
+	deciding whether to copy the file or not.  See the source for a
+	rationale.
+
+	* src/main.c (main): Temporarily disabled direct installation.
+
+	* src/definitions.h: Removed unused defines.
+
+	* src/appdata.h (AppUIData): Removed builtin_packages, added
+	database_corrupted_label.
+
+	* Makefile.am (SUBDIRS): Added app-installer-tool.
+
+	* app-installer-tool/app-installer-tool.c: Added prototypes.
+	Expanded usage message.
+	(setup_environment): Set "LC_ALL" instead of "LANG".
+	(do_list): Use "--showformat" instaed of "-f" since the latter is
+	not supported by the dpkg-query on the target.
+	(do_describe_package): Likewise.
+	(parse_field): New.
+	(do_describe_file): Use it to provide package name, version and
+	size in addition to description.
+	(do_install): Run dpkg with fakeroot.  Removed "--log",
+	"--force-not-root" and "--force-bad-path" options accordingly.
+	(do_uninstall): Likewise.
+	(do_install): Return 1, not -1, when the package exists.
+	(do_env): Removed.
+
+	* maemo.control: Changed version to 1.0.
+
+2005-07-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* autogen.sh: Use "--copy --force" also with libtoolize and
+	"--copy" with autoconf to avoid symlinks in the source tree.
+
+2005-07-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* app-installer-tool/Makefile.am,
+	app-installer-tool/app-installer-tool.c: New.
+
 2005-07-19  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released version 1.0.29-0.
