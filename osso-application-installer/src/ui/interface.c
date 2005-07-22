@@ -52,6 +52,7 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   GtkWidget *vbox = NULL;
   GtkWidget *treeview = NULL;
   GtkTreeModel *model = NULL;
+  GtkTreeSelection *selection;
 
   GtkUIManager *ui_manager = NULL;
   GtkActionGroup *actions = NULL;
@@ -190,10 +191,11 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
 		   "clicked",
 		   G_CALLBACK(ui_destroy), NULL);
 
-  g_signal_connect((gpointer) treeview, 
-		   "row-activated",
-		   G_CALLBACK(on_treeview_activated), app_data);
- 
+  selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (treeview));
+  gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (selection), "changed",
+		    G_CALLBACK (on_treeview_selection_changed),
+		    app_data);
 
   /* Catching key events */
   gtk_widget_add_events(GTK_WIDGET(main_dialog),

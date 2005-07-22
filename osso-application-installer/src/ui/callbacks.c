@@ -225,26 +225,21 @@ void on_button_uninstall_clicked(GtkButton *button, AppData *app_data)
 }
 
 
-void on_treeview_activated(GtkTreeView *treeview, GtkTreePath *path, 
-                           GtkTreeViewColumn *col, AppData *app_data)
+void
+on_treeview_selection_changed (GtkTreeSelection *selection,
+			       AppData *app_data)
 {
   AppUIData *app_ui_data = app_data->app_ui_data;
   GtkTreeModel *model;
   GtkTreeIter iter;
 
-  if (!treeview || !app_ui_data) return;
-
-  model = gtk_tree_view_get_model (treeview);
-
-  /* If something is selected 
-   */
-  if (gtk_tree_model_get_iter (model, &iter, path))
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
     {
       gchar *package;
       gchar *description;
 
       gtk_tree_model_get (model, &iter, 
-			  COLUMN_NAME, &package, 
+			  COLUMN_NAME, &package,
 			  -1);
     
       description = package_description (app_data, package);
@@ -392,8 +387,6 @@ gboolean key_release(GtkWidget * widget, GdkEventKey * event, gpointer data)
   ULOG_DEBUG("didnt match anything, return false\n");
   return FALSE;
 }
-
-
 
 gboolean on_error_press(GtkWidget *widget, GdkEventButton *event,
 			gpointer data)

@@ -83,8 +83,8 @@ Callback for treeview double-click for description
 @param col Column
 @param app_data AppData
 */
-void on_treeview_activated(GtkTreeView *view, GtkTreePath *path, 
-			   GtkTreeViewColumn *col, AppData *app_data);
+void on_treeview_selection_changed (GtkTreeSelection *selection, 
+				    AppData *app_data);
 
 
 /**
