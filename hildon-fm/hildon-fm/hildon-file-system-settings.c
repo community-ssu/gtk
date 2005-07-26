@@ -266,7 +266,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
   g_assert(request != NULL);
   dbus_message_set_auto_activation(request, TRUE);
 
-  if (dbus_connection_send_with_reply(conn, request, &call, 1000))
+  if (dbus_connection_send_with_reply(conn, request, &call, -1))
   {
     dbus_pending_call_set_notify(call, mode_received, self, NULL);
     dbus_pending_call_unref(call);
@@ -279,7 +279,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
   g_assert(request != NULL);
   dbus_message_set_auto_activation(request, TRUE);
 
-  if (dbus_connection_send_with_reply(conn, request, &call, 1000))
+  if (dbus_connection_send_with_reply(conn, request, &call, -1))
   {
     dbus_pending_call_set_notify(call, btname_received, self, NULL);
     dbus_pending_call_unref(call);
