@@ -21,13 +21,14 @@
  * 02110-1301 USA
  *
  */
-/*
-  hildon-file-system-private.h
 
-  Functions in this paclage are internal helpers of the
-  HildonFileSystem and should not be called by
-  applications.
-*/
+/*
+ * hildon-file-system-private.h
+ *
+ * Functions in this package are internal helpers of the
+ * HildonFileSystem and should not be called by
+ * applications.
+ */
 
 #ifndef __HILDON_FILE_SYSTEM_PRIVATE_H__
 #define __HILDON_FILE_SYSTEM_PRIVATE_H__
@@ -65,6 +66,8 @@ GtkFileSystemVolume *
 _hildon_file_system_get_volume_for_location(GtkFileSystem *fs, 
   HildonFileSystemModelItemType type,
   const GtkFilePath *base);
+
+gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime);
 
 G_END_DECLS
 

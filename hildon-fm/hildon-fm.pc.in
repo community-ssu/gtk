@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: hildon-fm
-Description: LGPL-licensed File Management 
+Description: LGPL-licensed File Management for Maemo
 Requires: gtk+-2.0 >= @GTK_VERSION@
 Version: @VERSION@
 Libs: -L${libdir} -lhildonfm

@@ -21,13 +21,14 @@
  * 02110-1301 USA
  *
  */
+ 
 /*
-  hildon-file-system-private.c
-
-  Functions in this paclage are internal helpers of the
-  HildonFileSystem and should not be called by
-  applications.
-*/
+ * hildon-file-system-private.c
+ *
+ * Functions in this package are internal helpers of the
+ * HildonFileSystem and should not be called by
+ * applications.
+ */
 
 #include <libintl.h>
 #include <string.h>
@@ -293,10 +294,9 @@ _hildon_file_system_create_display_name(GtkFileSystem *fs,
   if (info)
     mime_type = gtk_file_info_get_mime_type(info);
 
-  if (mime_type && type < HILDON_FILE_SYSTEM_MODEL_FOLDER &&
-    g_ascii_strcasecmp(mime_type, "application/octet-stream") != 0)
-  {  /* Unrecognized types are not touched */
-     dot = g_strrstr(str, ".");
+  if (type < HILDON_FILE_SYSTEM_MODEL_FOLDER)
+  {
+     dot = _hildon_file_system_search_extension(str, mime_type);
      if (dot && dot != str)
        *dot = 0;
   }
@@ -392,4 +392,94 @@ GtkFileSystem *hildon_file_system_create_backend(const gchar *name, gboolean use
 
     g_free(default_name);
     return result;
+}
+
+/* 
+   Giving MIME type is optional (when saving files we have to remove extension
+   as well, but we do not have mime-information available). 
+   * If not given, then extension db if just searched completely. 
+   * If given, then only matching mime-types are searched 
+*/
+
+/* known types are stored into list of these structs (with longest types first) */
+typedef struct
+{
+  gchar *extension;
+  gchar *mime;
+} MimeType;
+
+static gint mime_list_insert(gconstpointer a, gconstpointer b)
+{
+  return strlen(((MimeType *) b)->extension) - 
+         strlen(((MimeType *) a)->extension);
+}
+
+gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime)
+{
+  static GSList *types = NULL;
+  MimeType *type;
+  GSList *iter;
+  gint len;
+
+  /* Unrecognized types are not touched */
+  if (mime && g_ascii_strcasecmp(mime, "application/octet-stream") == 0)
+    return NULL;
+
+  /* Initialize suffix hash table from /usr/share/mime/globs */
+  if (!types)
+  {
+    FILE *f;
+    gchar line[256];
+    gchar *sep;
+
+    f = fopen("/usr/share/mime/globs", "rt");
+    if (f)
+    {
+      while (fgets(line, sizeof(line), f))
+      {
+        if (line[0] == 0 || line[0] == '#') continue;
+        /* fgets leaves newline into buffer */
+        len = strlen(line);
+        if (line[len - 1] == '\n') line[len - 1] = 0;
+        sep = strstr(line, ":*.");
+      	if (sep == NULL) continue;
+        *sep = 0; /* Clear colon */ 
+
+        type = g_new(MimeType, 1);
+        type->extension = g_strdup(sep + 2);
+        type->mime = g_strdup(line);
+        types = g_slist_insert_sorted(types, type, mime_list_insert);
+      }
+
+      fclose(f);
+
+/*      for (iter = types; iter; iter = iter->next)
+      {
+        type = iter->data;
+        fprintf(stderr, "%s: %s\n", type->extension, type->mime);
+      }*/
+    }
+  }
+
+  /* Now we must search possible extensions from the list that match
+     suffix of the given name. If mime type is given, it also has to match */
+  len = strlen(name);
+  for (iter = types; iter; iter = iter->next)
+  {
+    type = iter->data;
+
+    if (!mime || g_ascii_strcasecmp(mime, type->mime) == 0)
+    {
+      gchar *candidate = name + len - strlen(type->extension);
+
+      if (name <= candidate && 
+          g_ascii_strcasecmp(candidate, type->extension) == 0)
+        return candidate;
+    }
+  }
+
+  /* If we didn't find a match (but type was recognized), then we just
+     return the part after last dot. If we didn't have type information,
+     then we do not touch the name. */
+  return mime ? g_strrstr(name, ".") : NULL;
 }

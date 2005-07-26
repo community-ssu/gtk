@@ -1,0 +1,45 @@
+2005-07-25  Luc Pionchon <luc.pionchon@nokia.com>
+
+	* hildon-file-system-settings.c: Added auto activation flags into dbus
+	requests
+
+	* hildon-file-selection.c: 
+	Added infoprint
+	Fixed navigation pane filtering
+	Fixed automatic location change
+
+	* en_GB.po: Fixed a typo from translations
+
+	* hildon-file-system-model.c:
+	Added checking for readability
+	Implemented node referencing support
+	Fixed removing of folder objects
+	Fixed a problem with uri vs. display text encodings
+
+	* hildon-file-selection.h:
+	* hildon-file-chooser-dialog.c:
+	Fixed automatic location change
+
+	Fixed File Selection widget folder names
+
+	Fixed dimming for unreadable files in FileSelectionWidget
+
+	Fixed inconsistent drag and drop behaviour in multiple selection for
+	FileSelectionWidget
+
+	Fixed inconsistent behaviour of hildon_file_system_model_autoname_uri
+
+	Fixed notes files not opened after duplicating
+
+	Fixed 'autoname_uri' that didn't work properly for files with double
+	extensions
+
+	Fixed Control Panel that crashed on exporting certificate to MMC & the
+	MMC cover is open
+
+	Fixed HildonFileChooserDialog that didn't implement
+	gtk_filechooser_set_local_only
+
+	Drag data is now stored when drag begins to prevent GtkTreeVIew from
+	clearing selection due to button-release event before drag-data-get
+	signal is received

@@ -209,6 +209,7 @@ void hildon_file_selection_show_content_pane(HildonFileSelection * self);
 /* Not for public use */
 GSList *_hildon_file_selection_get_selected_files(HildonFileSelection
                                                        * self);
+void _hildon_file_selection_realize_help(HildonFileSelection *self);
 
 /* Functionality needed by file manager that cannot be implemented by
    GtkFileChooser. It's responsibility of the application to perform the

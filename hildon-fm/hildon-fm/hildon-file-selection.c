@@ -158,6 +158,8 @@ struct _HildonFileSelectionPrivate {
     gboolean local_only;
     gboolean show_hidden;
     GtkFilePath *safe_folder;
+
+    gchar **drag_data_uris;
 };
 
 static void
@@ -490,6 +492,7 @@ static void hildon_file_selection_finalize(GObject * obj)
 
     /* Works also with NULLs */
     gtk_tree_row_reference_free(priv->to_be_selected);
+    g_strfreev(priv->drag_data_uris);
 
     /* These objects really should dissappear. Otherwise we have a
         reference leak somewhere. */
@@ -512,6 +515,27 @@ static void hildon_file_selection_finalize(GObject * obj)
     hildon_file_selection_set_filter(self, NULL);   
 
     G_OBJECT_CLASS(hildon_file_selection_parent_class)->finalize(obj);
+}
+
+/* Previously the folder status was enough to decide whether or not
+   to show an item. Now we have also properties for hidden folders
+   and non-local folders, so we have to use this filter function
+   instead of simple boolean column. */
+static gboolean navigation_pane_filter_func(GtkTreeModel *model,
+    GtkTreeIter *iter, gpointer data)
+{
+  gboolean folder, hidden, local;
+  HildonFileSelectionPrivate *priv = data;
+
+  gtk_tree_model_get(model, iter,
+    HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER, &folder,
+    HILDON_FILE_SYSTEM_MODEL_COLUMN_HAS_LOCAL_PATH, &local,
+    HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_HIDDEN, &hidden,
+    -1);
+
+  return (folder && 
+         (!priv->local_only || local) && 
+         (priv->show_hidden || !hidden));
 }
 
 static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter,
@@ -716,6 +740,8 @@ static void hildon_file_selection_set_property(GObject * object,
 
         if (new_state != priv->local_only) {
             priv->local_only = new_state;
+            gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER
+                                               (priv->dir_filter));
             if (priv->view_filter) {
                 gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER
                                                (priv->view_filter));
@@ -730,6 +756,8 @@ static void hildon_file_selection_set_property(GObject * object,
 
         if (new_state != priv->show_hidden) {
             priv->show_hidden = new_state;
+            gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER
+                                               (priv->dir_filter));
             if (priv->view_filter) {
                 gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER
                                                (priv->view_filter));
@@ -1209,10 +1237,17 @@ static gboolean delayed_select_idle(gpointer data)
   }
 
   if (found)
+  {
     gtk_tree_model_sort_convert_iter_to_child_iter(
       GTK_TREE_MODEL_SORT(priv->sort_model), &main_iter, &sort_iter);
-  else
-    get_safe_folder_tree_iter(priv, &main_iter);  
+    /* It's possible that we are trying to select dimmed location. 
+       This happens, for example, if root folder of mmc was selected
+       in a save dialog and mmc is removed. */
+    gtk_tree_model_get(priv->main_model, &main_iter,
+      HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE, &found, -1);
+  }
+  if (!found)
+    get_safe_folder_tree_iter(priv, &main_iter);
 
   /* Ok, now main_iter points to our target location */
 
@@ -1283,6 +1318,8 @@ static void hildon_file_selection_real_row_insensitive(HildonFileSelection *self
   }
   else if (type == HILDON_FILE_SYSTEM_MODEL_GATEWAY)
     gtk_infoprint(window, _("sfil_ib_no_connections_flightmode"));
+  else
+    gtk_infoprint(window, _("sfil_ib_opening_not_allowed"));
 }
 
 static void hildon_file_selection_selection_changed(GtkTreeSelection *
@@ -2095,10 +2132,10 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
         folders are expanded (fixed height forces fixed width */
     self->priv->dir_filter =
         gtk_tree_model_filter_new(self->priv->sort_model, NULL);
-    gtk_tree_model_filter_set_visible_column
-        (GTK_TREE_MODEL_FILTER
-         (self->priv->dir_filter),
-         HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER);
+    gtk_tree_model_filter_set_visible_func(GTK_TREE_MODEL_FILTER
+        (self->priv->dir_filter),
+        navigation_pane_filter_func, self->priv,
+        NULL);
 
     self->priv->dir_tree =
         gtk_tree_view_new_with_model(self->priv->dir_filter);
@@ -2404,6 +2441,15 @@ static void on_drag_data_received(GtkWidget * widget,
 
 #define CLIMB_RATE 4
 
+static void drag_data_get_helper(GtkTreeModel * model, GtkTreePath * path,
+                                 GtkTreeIter * iter, gpointer data)
+{
+  gchar *uri;
+  gtk_tree_model_get(model, iter,
+    HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri, -1);
+  g_ptr_array_add(data, uri);
+}
+
 static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
                        gpointer user_data)
 {
@@ -2414,6 +2460,7 @@ static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
     GList *rows, *row;
     GtkTreeModel *model;
     GtkTreeIter iter;
+    GPtrArray *buffer;
 
     g_assert(GTK_IS_TREE_VIEW(widget));
     g_assert(HILDON_IS_FILE_SELECTION(user_data));
@@ -2430,6 +2477,16 @@ static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
 
     if (!rows)
         return;
+
+    /* store drag data for further use in drag_data_get since
+       selection is cleared when GtkTreeView gets button-release */
+    buffer = g_ptr_array_new();
+    gtk_tree_selection_selected_foreach(gtk_tree_view_get_selection
+                                        (GTK_TREE_VIEW(widget)),
+                                        drag_data_get_helper, buffer);
+    g_ptr_array_add(buffer, NULL);
+    g_strfreev(self->priv->drag_data_uris);
+    self->priv->drag_data_uris = (char **) g_ptr_array_free(buffer, FALSE);
 
     /* Lets find out how much space we need for drag icon */
     w = h = dest = 0;
@@ -2484,39 +2541,26 @@ static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
     g_object_unref(pixbuf);
 }
 
-static void drag_data_get_helper(GtkTreeModel * model, GtkTreePath * path,
-                                 GtkTreeIter * iter, gpointer data)
-{
-  gchar *uri;
-  gtk_tree_model_get(model, iter,
-    HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri, -1);
-  g_ptr_array_add(data, uri);
-}
-
 static void drag_data_get(GtkWidget * widget,
                           GdkDragContext * drag_context,
                           GtkSelectionData * selection_data, guint info,
                           guint time, gpointer data)
 {
-  gchar **uris;
-  GPtrArray *buffer = g_ptr_array_new();
+  HildonFileSelection *self;
 
-  gtk_tree_selection_selected_foreach(gtk_tree_view_get_selection
-                                      (GTK_TREE_VIEW(widget)),
-                                      drag_data_get_helper, buffer);
-  g_ptr_array_add(buffer, NULL);
-  uris = (char **) g_ptr_array_free(buffer, FALSE);
+  self = HILDON_FILE_SELECTION(data);
 
   /* We use only uri-list internally, but somebody else
      can use text format as well. */
-  if (!gtk_selection_data_set_uris(selection_data, uris))
+  if (!gtk_selection_data_set_uris(selection_data, self->priv->drag_data_uris))
   {
-    gchar *plain = g_strjoinv("\n", uris);
+    gchar *plain = g_strjoinv("\n", self->priv->drag_data_uris);
     gtk_selection_data_set_text(selection_data, plain, -1);
     g_free(plain);
   }
 
-  g_strfreev(uris);
+  g_strfreev(self->priv->drag_data_uris);
+  self->priv->drag_data_uris = NULL;
 }
 
 static gboolean drag_motion(GtkWidget * widget,
@@ -3715,4 +3759,11 @@ hildon_file_selection_get_active_pane(HildonFileSelection *self)
     HILDON_FILE_SELECTION_PANE_NAVIGATION);
 
   return (HildonFileSelectionPane) self->priv->content_pane_last_used; 
+}
+
+/* This tiny helper is needed by file chooser dialog. See
+   hildon-file-chooser-dialog.c for description */
+void _hildon_file_selection_realize_help(HildonFileSelection *self)
+{
+  gtk_widget_realize(self->priv->dir_tree);
 }

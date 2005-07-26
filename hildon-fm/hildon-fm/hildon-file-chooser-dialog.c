@@ -21,9 +21,10 @@
  * 02110-1301 USA
  *
  */
-/*
-  HildonFileChooserDialog widget
-*/
+
+ /*
+  * HildonFileChooserDialog widget
+  */
 
 #include "hildon-file-selection.h"
 #include "hildon-file-chooser-dialog.h"
@@ -506,7 +507,7 @@ static void hildon_file_chooser_dialog_set_current_name(GtkFileChooser *
 
     g_free(priv->stub_name);
     priv->stub_name = g_strdup(name);
-    dot = g_strrstr(priv->stub_name, ".");
+    dot = _hildon_file_system_search_extension(priv->stub_name, NULL);
 
     /* Is there a dot, but not as first character */
     if (dot && dot != priv->stub_name) { 
@@ -749,6 +750,12 @@ static void build_ui(HildonFileChooserDialog * self)
 	gtk_label_set_text(GTK_LABEL(priv->label_location), 
 				     _("sfil_fi_save_objects_location"));
         gtk_widget_hide(GTK_WIDGET(priv->filetree));
+
+        /* Content pane of the filetree widget needs to be realized.
+           Otherwise automatic location change etc don't work correctly.
+           This is because "rows-changed" handler in GtkTreeView exits
+           immediately if treeview is not realized. */
+	_hildon_file_selection_realize_help(priv->filetree);
         gtk_window_set_title(GTK_WINDOW(self), _("sfil_ti_save_file"));
         gtk_button_set_label(GTK_BUTTON(priv->action_button),
                              _("ckdg_bd_save_object_dialog_ok"));
@@ -782,6 +789,7 @@ static void build_ui(HildonFileChooserDialog * self)
 				     _("ckdg_fi_new_folder_location"));
         gtk_widget_show_all(priv->caption_control_name);
         gtk_widget_hide(GTK_WIDGET(priv->filetree));
+	_hildon_file_selection_realize_help(priv->filetree);        
         gtk_widget_hide(priv->hbox_items);
         gtk_window_set_title(GTK_WINDOW(self), _("ckdg_ti_new_folder"));
         gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(self),

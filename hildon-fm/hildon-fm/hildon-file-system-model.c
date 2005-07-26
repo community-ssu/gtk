@@ -40,6 +40,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/vfs.h>
+#include <unistd.h>
+#include <errno.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -92,6 +94,7 @@ typedef struct {
     gboolean available; /* Set by code */
     GError *error;      /* Set if cannot get children */
     gchar *thumb_title, *thumb_author;
+    gint ref_count;
 } HildonFileSystemModelNode;
 
 typedef struct {
@@ -255,7 +258,6 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
     HildonFileSystemModelPrivate *priv;
     delayed_list_type *current_list;
     GNode *node;
-    gint i;
 
     model = HILDON_FILE_SYSTEM_MODEL(data);
     priv = model->priv;
@@ -276,9 +278,9 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
 
     priv->in_timeout = TRUE;
 
-    /* Add some more nodes (instead of just one) per callback */
-    for (i = 0; i < 3; i++)
-    {
+    /* Back to one addition per idle, old approach caused too
+       long delays... */
+
       /* Ok, lets add one item from the list and return to main loop. This
          idle handler is then called again. */
         hildon_file_system_model_add_node(GTK_TREE_MODEL(data),
@@ -288,14 +290,13 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
                                       HILDON_FILE_SYSTEM_MODEL_UNKNOWN);
 
       current_list->iter = g_slist_next(current_list->iter);
-      if (!current_list->iter)
-        goto list_ends;
-    }
 
-    priv->in_timeout = FALSE;
-    return TRUE;  /* Ok, there is items left. Continue with this
-                                idle handler */
-list_ends:
+    if (current_list->iter)
+    {
+      priv->in_timeout = FALSE;
+      return TRUE;  /* Ok, there is items left. Continue with this
+                       idle handler */
+    }
     /* Current list ends here. We now have to check
   	         if loading of some folder is really finished. If this is a
   	         case we then have to check if there are unflagged
@@ -932,11 +933,11 @@ static gint hildon_file_system_model_iter_n_children(GtkTreeModel * model,
         return g_node_n_children(priv->roots);
 
     g_return_val_if_fail(priv->stamp == iter->stamp, 0);
-
+/*
     hildon_file_system_model_delayed_add_children(HILDON_FILE_SYSTEM_MODEL
                                                   (model),
                                                   iter->user_data, FALSE);
-
+*/
     return g_node_n_children(iter->user_data);
 }
 
@@ -995,6 +996,47 @@ static gboolean hildon_file_system_model_iter_parent(GtkTreeModel * model,
     iter->user_data = node->parent;
 
     return node->parent != NULL && node->parent != priv->roots;
+}
+
+static void
+hildon_file_system_model_ref_node(GtkTreeModel *model, GtkTreeIter *iter)
+{
+  HildonFileSystemModelNode *model_node;
+
+  g_return_if_fail(iter->stamp == CAST_GET_PRIVATE(model)->stamp);
+  g_return_if_fail(iter->user_data != NULL);
+
+  model_node = ((GNode *) iter->user_data)->data;
+
+  g_return_if_fail(model_node != NULL);
+  g_return_if_fail(model_node->ref_count >= 0);
+
+  if (++model_node->ref_count == 1)
+    hildon_file_system_model_delayed_add_children(HILDON_FILE_SYSTEM_MODEL
+                                                  (model),
+                                                  iter->user_data, FALSE);      
+}
+
+static void
+hildon_file_system_model_unref_node(GtkTreeModel *model, GtkTreeIter *iter)
+{
+  HildonFileSystemModelNode *model_node;
+
+  g_return_if_fail(iter->stamp == CAST_GET_PRIVATE(model)->stamp);
+  g_return_if_fail(iter->user_data != NULL);
+
+  model_node = ((GNode *) iter->user_data)->data;
+
+  g_return_if_fail(model_node != NULL);
+
+  /* g_return_if_fail could be used here instead,
+     but GtkTreeModelSort/Filter easily unref nodes with 
+     zero refcount. This would cause spam... */
+  if (model_node->ref_count > 0)
+  {
+    if (--model_node->ref_count == 0)
+      clear_model_node_caches(model_node);
+  }
 }
 
 /*********************************************/
@@ -1156,6 +1198,12 @@ static void hildon_file_system_model_send_has_child_toggled(GtkTreeModel *
     gtk_tree_path_free(tree_path);
 }
 
+static gint search_folder_helper(gconstpointer a, gconstpointer b)
+{
+  const delayed_list_type *list = a;
+  return list->folder != b; /* We have to return 0 if found */
+}
+
 static void
 unlink_file_folder(GNode *node)
 {
@@ -1164,6 +1212,9 @@ unlink_file_folder(GNode *node)
 
   if (model_node->folder) 
   {
+    GQueue *queue;
+    GList *link;
+
     g_object_set_qdata(G_OBJECT(model_node->folder),
                        hildon_file_system_model_quark, NULL);
 
@@ -1183,6 +1234,15 @@ unlink_file_folder(GNode *node)
         (model_node->folder,
          (gpointer) hildon_file_system_model_files_changed,
          model_node->model);
+
+    /* Remove possibly pending nodes from queue */
+    queue = model_node->model->priv->delayed_lists;
+    while ((link = g_queue_find_custom(queue, 
+            model_node->folder, search_folder_helper)) != NULL)
+    {
+      delayed_list_free(link->data);
+      g_queue_delete_link(queue, link);
+    }
 
     g_object_unref(model_node->folder);
     model_node->folder = NULL;
@@ -1480,6 +1540,28 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         special_type = _hildon_file_system_get_special_location(priv->filesystem, path);
         if (special_type != HILDON_FILE_SYSTEM_MODEL_UNKNOWN)
           type = special_type;
+    }
+
+    /* The following should be replaced by appending the functionality into
+       GtkFileInfo, but this requires API changes into gtkfilesystem.h,
+       gtkfilesystemunix.h and gtkfilesystemgnomevfs.h (as well as into 
+       memory backend). Currently we can handle only local files, but 
+       that's better than nothing... */
+    if (type <= HILDON_FILE_SYSTEM_MODEL_FOLDER)
+    {
+      gchar *local_path = gtk_file_system_path_to_filename(priv->filesystem, path);
+
+      if (local_path)
+      {
+        if (access(local_path, R_OK) != 0)
+        {
+          GFileError code = g_file_error_from_errno(errno);
+          if (code == G_FILE_ERROR_ACCES)
+            g_set_error(&model_node->error, G_FILE_ERROR, code, local_path);
+        }
+
+        g_free(local_path);
+      }      
     }
 
     model_node->type = type;
@@ -1903,6 +1985,8 @@ static void hildon_file_system_model_iface_init(GtkTreeModelIface * iface)
     iface->iter_n_children = hildon_file_system_model_iter_n_children;
     iface->iter_nth_child = hildon_file_system_model_iter_nth_child;
     iface->iter_parent = hildon_file_system_model_iter_parent;
+    iface->ref_node = hildon_file_system_model_ref_node;
+    iface->unref_node = hildon_file_system_model_unref_node;
 }
 
 static void
@@ -2634,76 +2718,94 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
 {
   GtkFileSystem *backend;
   GtkFilePath *folder;
-  gchar *file;
+  GtkFilePath * uri_path = NULL;
+  gchar *file = NULL;
   gchar *result = NULL;
+  GtkTreeIter iter;
+  
 
   g_return_val_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model), NULL);
   g_return_val_if_fail(uri != NULL, NULL);
 
   backend = model->priv->filesystem;
-
-  /* Base path really should not matter, because URI:s should be absolute */
-  if (gtk_file_system_parse(backend, model->priv->local_device_path, 
-        uri, &folder, &file, error))
-  {
-   GtkTreeIter iter;
-    gchar *extension = NULL, *dot, *autonamed, *par;
-
-    dot = g_strrstr(file, ".");
-    if (dot && dot != file) {
-       extension = g_strdup(dot);
-       *dot = '\0';
-    }
-
-    /* Let's check if the name body already contains autonumber. 
-        If this is a case then we'll remove the previous one. */
-    par = g_strrstr(file, "(");
-    if (par && par > file && parse_autonumber(par) >= 0)
-    {
-      *par = 0;
-
-      /* Autonumber can have a space before paranthesis.
-          we only remove one, because autonumbering only adds one. */
-      par--;
-      if (par > file && g_ascii_isspace(*par))
-        *par = 0;
-    }
-
-    if (hildon_file_system_model_load_path(model, folder, &iter))
-    {
+ 
+  
+  if ( ((uri_path = gtk_file_system_uri_to_path(backend, uri)) != NULL) &&
+        gtk_file_system_get_parent(backend, uri_path, &folder, NULL)    &&
+	(folder != NULL)                                                &&
+	hildon_file_system_model_load_path(model, folder, &iter) )
+  {     
+        
       _hildon_file_system_model_load_children(model, &iter);
 
-      autonamed = hildon_file_system_model_new_item(model, 
-          &iter, file, extension);
-      if (autonamed)
+      GtkTreeIter ret_iter;
+
+      if ( hildon_file_system_model_search_uri(model, uri, &ret_iter, &iter, FALSE) ) 
       {
-        GtkFilePath *result_path;
-      
-        if (extension) {
-            /* Dot is part of the extension */
-            gchar *ext_name = g_strconcat(autonamed, extension, NULL);
-            g_free(autonamed);
-            autonamed = ext_name;
-        }
-
-        result_path = gtk_file_system_make_path(backend, folder, autonamed, error);
-
-        if (result_path)
-        {
-          result = gtk_file_system_path_to_uri(backend, result_path);
-          gtk_file_path_free(result_path);
-        }
-
-        g_free(autonamed);
+	 gtk_tree_model_get(GTK_TREE_MODEL(model), &ret_iter,
+			    HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME, &file ,-1); 
       }
-    }
+  }
+   
+  gtk_file_path_free(uri_path);
+  
+  if( file == NULL )
+  {     
+      gtk_file_path_free(folder);	  
+      return g_strdup(uri);
+  }
+    
+  gchar *extension = NULL, *dot, *autonamed, *par;
 
-    g_free(extension);
+  dot = _hildon_file_system_search_extension(file, NULL);
+  if (dot && dot != file) {
+     extension = g_strdup(dot);
+     *dot = '\0';
+  }
+    
+  /* Let's check if the name body already contains autonumber. 
+   * If this is a case then we'll remove the previous one. */
+  par = g_strrstr(file, "(");
+  if (par && par > file && parse_autonumber(par) >= 0)
+  {
+    *par = 0;
+
+    /* Autonumber can have a space before paranthesis.
+     * we only remove one, because autonumbering only adds one. */
+    par--;
+    if (par > file && g_ascii_isspace(*par))
+      *par = 0;
   }
 
-  gtk_file_path_free(folder);
-  g_free(file);
+  autonamed = hildon_file_system_model_new_item(model, 
+                                &iter, file, extension);
+  g_free(file); 
+       
+  if (autonamed)
+  { 
+    GtkFilePath *result_path;
+      
+    if (extension) {
+       /* Dot is part of the extension */
+        gchar *ext_name = g_strconcat(autonamed, extension, NULL);
+        g_free(extension);
+        g_free(autonamed);
+        autonamed = ext_name;
+    }
 
+    result_path = gtk_file_system_make_path(backend, folder, autonamed, error);
+
+    if (result_path) {
+       result = gtk_file_system_path_to_uri(backend, result_path);
+       gtk_file_path_free(result_path);
+    }
+
+    g_free(autonamed);
+  }
+ 
+  gtk_file_path_free(folder);
+ 
+  
   return result;
 }
 

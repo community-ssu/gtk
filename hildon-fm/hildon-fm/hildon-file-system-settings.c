@@ -148,8 +148,8 @@ set_bt_name_from_message(HildonFileSystemSettings *self, DBusMessage *message)
 
   ULOG_INFO("BT name changed into \"%s\"", name);
 
-  g_free(self->priv->gateway);
-  self->priv->gateway = name;
+  g_free(self->priv->btname);
+  self->priv->btname = name;
   g_object_notify(G_OBJECT(self), "btname");
 }
 
@@ -264,6 +264,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
   request = dbus_message_new_method_call(MCE_SERVICE, 
         MCE_REQUEST_PATH, MCE_REQUEST_IF, MCE_DEVICE_MODE_GET);
   g_assert(request != NULL);
+  dbus_message_set_auto_activation(request, TRUE);
 
   if (dbus_connection_send_with_reply(conn, request, &call, 1000))
   {
@@ -276,6 +277,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
   request = dbus_message_new_method_call(BTNAME_SERVICE,
         BTNAME_REQUEST_PATH, BTNAME_REQUEST_IF, BTNAME_REQ_GET);
   g_assert(request != NULL);
+  dbus_message_set_auto_activation(request, TRUE);
 
   if (dbus_connection_send_with_reply(conn, request, &call, 1000))
   {

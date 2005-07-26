@@ -69,12 +69,12 @@ g_free(name);
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_URI: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_DISPLAY_NAME: 
-@HILDON_FILE_SYSTEM_MODEL_COLUMN_SORT_KEY: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_MIME_TYPE: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_SIZE: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_TIME: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE: 
+@HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_READ_ONLY: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_HAS_LOCAL_PATH: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_TYPE: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON: 
@@ -82,10 +82,6 @@ g_free(name);
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_COLLAPSED: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_THUMBNAIL: 
 @HILDON_FILE_SYSTEM_MODEL_COLUMN_LOAD_READY: 
-@HILDON_FILE_SYSTEM_MODEL_COLUMN_FREE_SPACE: 
-@HILDON_FILE_SYSTEM_MODEL_COLUMN_TITLE: 
-@HILDON_FILE_SYSTEM_MODEL_COLUMN_AUTHOR: 
-@HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_HIDDEN: 
 @HILDON_FILE_SYSTEM_MODEL_NUM_COLUMNS: 
 
 <!-- ##### ENUM HildonFileSystemModelItemType ##### -->
@@ -100,7 +96,6 @@ g_free(name);
 @HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_VIDEOS: 
 @HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_SOUNDS: 
 @HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_DOCUMENTS: 
-@HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_GAMES: 
 @HILDON_FILE_SYSTEM_MODEL_MMC: 
 @HILDON_FILE_SYSTEM_MODEL_GATEWAY: 
 @HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE: 
@@ -210,15 +205,14 @@ g_free(name);
 @Returns: 
 
 
-<!-- ##### MACRO hildon_file_system_model_create_backend ##### -->
+<!-- ##### FUNCTION hildon_file_system_model_create_backend ##### -->
 <para>
 
 </para>
 
-@Returns: 
-<!-- # Unused Parameters # -->
 @name: 
 @use_fallback: 
+@Returns: 
 
 
 <!-- ##### FUNCTION hildon_file_system_model_load_local_path ##### -->
@@ -229,35 +223,6 @@ g_free(name);
 @model: 
 @path: 
 @iter: 
-@Returns: 
-
-
-<!-- ##### FUNCTION hildon_file_system_model_reset_available ##### -->
-<para>
-
-</para>
-
-@model: 
-
-
-<!-- ##### FUNCTION hildon_file_system_model_iter_available ##### -->
-<para>
-
-</para>
-
-@model: 
-@iter: 
-@available: 
-
-
-<!-- ##### FUNCTION hildon_file_system_model_autoname_uri ##### -->
-<para>
-
-</para>
-
-@model: 
-@uri: 
-@error: 
 @Returns: 
 
 
