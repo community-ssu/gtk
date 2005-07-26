@@ -933,11 +933,15 @@ static gint hildon_file_system_model_iter_n_children(GtkTreeModel * model,
         return g_node_n_children(priv->roots);
 
     g_return_val_if_fail(priv->stamp == iter->stamp, 0);
-/*
+
+    /* Adding children is not enough in ref_node only:
+         - Dimmed MMC cannot be loaded at that time.
+         - Dimmed gateway has the same issue.
+         - Timed reloads need that this is done here as well.
+    */
     hildon_file_system_model_delayed_add_children(HILDON_FILE_SYSTEM_MODEL
                                                   (model),
                                                   iter->user_data, FALSE);
-*/
     return g_node_n_children(iter->user_data);
 }
 
@@ -1378,6 +1382,9 @@ static void set_mmc_state(GtkTreeModel * model, GtkFilePath *mount_path)
     node = priv->mmc.base_node;
     new_state = mount_path != NULL;
 
+    ULOG_INFO("%s: new state = %d, old state = %d", 
+      __FUNCTION__, new_state, priv->mmc.mounted);
+
     /* MMC device not in the tree or same state as previously */
     if (node == NULL || new_state == priv->mmc.mounted)
       return;
@@ -1393,6 +1400,9 @@ static void set_mmc_state(GtkTreeModel * model, GtkFilePath *mount_path)
           g_error_free(error);
           new_state = FALSE;
         }
+        else
+          hildon_file_system_model_delayed_add_children(
+            HILDON_FILE_SYSTEM_MODEL(model), node, FALSE);
     } else {
         ULOG_INFO("MMC unmounted");
         
@@ -1438,7 +1448,9 @@ static gboolean real_volumes_changed(gpointer data)
 }
 
 /* For some odd reason we get wrong values if we ask new state immediately
-   (in case of umounting), very weird... */
+   (in case of umounting), very weird... 
+   This was the case with early versions. Current backends seem to work
+   better... */
 static void hildon_file_system_model_volumes_changed(GObject * object,
                                                      gpointer data)
 {
@@ -2149,8 +2161,8 @@ hildon_file_system_model_constructor(GType type,
     flightmode_changed((GObject *) fs_settings, NULL, obj);
 
     g_signal_connect_object(priv->filesystem, "volumes-changed",
-                     G_CALLBACK(hildon_file_system_model_volumes_changed),
-                     obj, 0);
+                     G_CALLBACK(real_volumes_changed),
+                     obj, G_CONNECT_SWAPPED);
     }
     else
     {

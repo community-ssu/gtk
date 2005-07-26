@@ -2,6 +2,13 @@
 
 	* hildon-fm/hildon-file-system-settings.c (hildon_file_system_settings_setup_dbus): changed pending dbus calls to use default timeout value (which is longer than our old value).
 
+	* hildon-fm/hildon-file-system-model.c : 
+	  - Fixed a race condition from volumes-changed handler
+	    (not queued to idle anymore).
+	  - Restored call to delayed_add_children that was removed earlier.
+            Added one new call to this function to set_mmc_state as well
+	    (to make mmc immediately show '+' sign if needed).
+	
 2005-07-25  Luc Pionchon <luc.pionchon@nokia.com>
 
 	* hildon-file-system-settings.c: Added auto activation flags into dbus
