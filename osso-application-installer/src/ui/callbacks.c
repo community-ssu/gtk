@@ -34,19 +34,6 @@
 #include "interface.h"
 
 
-
-static gboolean _progress_info_cb(GnomeVFSXferProgressInfo *info, 
-				  gpointer data);
-
-static gboolean _progress_info_cb (GnomeVFSXferProgressInfo *info, 
-				   gpointer data)
-{
-  fprintf(stderr, "Here's progress info callback dummy for "
-	  "xferring deb package from the gateway device\n");
-  return TRUE;
-}
-
-
 /* Callback for csm help, error details help */
 void on_help_activate(GtkWidget *widget, AppData *app_data) {
   if (!app_data || !app_data->app_osso_data) return;
@@ -59,129 +46,30 @@ void on_help_activate(GtkWidget *widget, AppData *app_data) {
   }
 }
 
-
-
+  
 /* Callback for install button */
 void on_button_install_clicked(GtkButton *button, AppData *app_data)
 {
-  if (!app_data) return;
-
-  gchar *file_uri = NULL, *text_dest_uri = NULL; 
-  GnomeVFSURI *vfs_uri = NULL, *dest_uri = NULL;
-  GnomeVFSResult result = GNOME_VFS_ERROR_GENERIC;
-  
-  gchar *packname = NULL, *lfs_deb = NULL;
-	
-  gboolean direct_install = FALSE;
-  gboolean copied_from_gw = FALSE;
+  gchar *file_uri = NULL;
   AppUIData *app_ui_data = app_data->app_ui_data;
 
-  if (!app_ui_data) return;
+  file_uri = ui_show_file_chooser (app_ui_data);
 
-  /* if we have param, lets have that instead of fcd */
-  if ( (app_ui_data->param != NULL) &&
-       (app_ui_data->param->len > 0) ) {
-    file_uri = app_ui_data->param->str;
-    ULOG_DEBUG("install: having '%s' instead\n", file_uri);
-    direct_install = TRUE;
-  } else {
-    file_uri = ui_show_file_chooser(app_ui_data);
-    if (g_strcasecmp(file_uri, "") == 0) {
-      ULOG_DEBUG("File was null, returning");
-      return;
-    }
-  }
-  
-  fprintf(stderr,"on_button_install_clicked(): file_uri is %s\n", file_uri);
-
-  vfs_uri = gnome_vfs_uri_new(file_uri);
-  
-  /* The app-installer-tool can access all "file://" URIs, whether
-     they are local or not.  (GnomeVFS considers a file:// URI
-     pointing to a NFS mounted volume as remove, but we can read that
-     just fine of course.)
-  */
-
-  if (g_str_has_prefix(file_uri, "file://"))
+  if (*file_uri)
     {
-      lfs_deb = g_strdup(file_uri+strlen("file://"));
-      fprintf(stderr, "lfs_deb = %s\n", lfs_deb);
-    } 
-  else
-    {
-      packname = g_strrstr(file_uri, "/");
-      packname++;
-    
-      fprintf(stderr, "packname: %s\n", packname);
-    
-      text_dest_uri = g_strconcat("file:///tmp/", packname, NULL);
-      fprintf(stderr, "text_dest_uri: %s\n", text_dest_uri);
-      dest_uri = gnome_vfs_uri_new(text_dest_uri);
-      
-      if (access("/tmp", W_OK) < 0) {
-	fprintf(stderr, "Cannot write /tmp, exiting..\n");
-	return;
-      }
-    
-      if (vfs_uri) {
-	result = gnome_vfs_xfer_uri(vfs_uri, dest_uri,
-				    GNOME_VFS_XFER_DEFAULT,
-				    GNOME_VFS_XFER_ERROR_MODE_ABORT,
-				    GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE,
-				    _progress_info_cb, NULL);
-	if (result != GNOME_VFS_OK) {
-	  fprintf(stderr,"Failed to xfer debian package to local file system,\n"
-		  "intended destination: %s\n",
-		  gnome_vfs_uri_to_string(dest_uri, 0));
-	  fprintf(stderr, "%s", gnome_vfs_result_to_string(result));
-	  return;
-	} else {
-	  fprintf(stderr,"File copied; \n");
-	  lfs_deb = strdup(text_dest_uri+strlen("file://"));
-	  fprintf(stderr,"lfs_deb = %s\n", lfs_deb);
-	  copied_from_gw = TRUE;
-	}
-      }
-      g_free(file_uri);
-      gnome_vfs_uri_unref(vfs_uri);
-      gnome_vfs_uri_unref(dest_uri);
-    }
-
-  /* Try installing if installation confirmed */
-  if (0 != g_strcasecmp(lfs_deb, "")) {
-    /* Disable buttons while installing */
-    gtk_widget_set_sensitive(app_ui_data->uninstall_button, FALSE);
-    gtk_widget_set_sensitive(app_ui_data->installnew_button, FALSE);
-    gtk_widget_set_sensitive(app_ui_data->close_button, FALSE);
-    
-    install_package (lfs_deb, app_data);
-
-    if (!direct_install) {
+      /* Disable buttons while installing */
+      gtk_widget_set_sensitive (app_ui_data->uninstall_button, FALSE);
+      gtk_widget_set_sensitive (app_ui_data->installnew_button, FALSE);
+      gtk_widget_set_sensitive (app_ui_data->close_button, FALSE);
+  
+      install_package_from_uri (file_uri, app_data);
       update_package_list (app_data);
       
       /* Enable buttons again, except uninstall, which is set
 	 to proper value at update_package_list */
-      gtk_widget_set_sensitive(app_ui_data->installnew_button, TRUE);
-      gtk_widget_set_sensitive(app_ui_data->close_button, TRUE);
+      gtk_widget_set_sensitive (app_ui_data->installnew_button, TRUE);
+      gtk_widget_set_sensitive (app_ui_data->close_button, TRUE);
     }
-  } else  
-    ULOG_WARN("No file selected for installing or filename is empty.");
-  
-  /* shutting down since direct install */
-  if (direct_install)
-    gtk_widget_destroy(app_ui_data->main_dialog);
-  
-  /* If we had copied it, lets remove it */
-  fprintf(stderr, "lfs_deb: %s\n", lfs_deb);
-  if (copied_from_gw) {
-    fprintf(stderr, "deleting: %s\n",  lfs_deb);
-    if (0 != g_unlink(lfs_deb))
-      fprintf(stderr, "Cannot delete temporary deb package file in "
-	      "the local file system: %s ..\n", lfs_deb);
-  }
-
-  g_free(text_dest_uri);
-  g_free(lfs_deb);
 }
 
 
