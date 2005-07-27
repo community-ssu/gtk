@@ -124,3 +124,19 @@ Usage:
     failed
 
   appears on stdout (and stderr should then be displayed to the user).
+
+
+  - app-installer-tool copy <remote-uri> <local>
+
+  Copies <remote-uri> to <local> using gnome-vfs.  Progress is
+  indicated on stdout with lines containing the fraction of completed
+  work (floating point from 0 to 1).
+
+  When the copy is successful, it exits zero.  When there has been
+  some error, stderr contains a description and the exit code is
+  non-zero.
+
+  (This operation does not really fit into app-installer-tool, but it
+  is a convenient place to put it.  We can not use gnome_vfs_sync_xfer
+  in the GUI program itself, for example, since it appearantly doesn't
+  report errors.)
