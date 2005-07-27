@@ -65,30 +65,8 @@ gint dbus_message_handler(const gchar *method, GArray *arguments,
     if ( (val.type == DBUS_TYPE_STRING)
         && (val.value.s != NULL) ) {
 
-      /* Not showing the main dialog */
-      ULOG_DEBUG("Hide all & gtk_main_quit()");
-      gtk_widget_hide_all(app_data->app_ui_data->main_dialog);
-      gtk_main_quit();
+      install_package_from_uri (val.value.s, app_data);
 
-      /* Strip off file:// part if needed */
-      /* -- Stripping commented out; full uri is needed,
-       otherwise, how to figure out where is the file located ? */
-
-      /*
-      if (NULL != g_strrstr(val.value.s, "://")) {
-        gchar **tmp = g_strsplit(val.value.s, "://", 2);
-        app_data->app_ui_data->param = g_string_new(tmp[1]);
-      } else {
-        app_data->app_ui_data->param = g_string_new(val.value.s);
-      }
-      */
-
-      ULOG_DEBUG("Putting '%s' into param", val.value.s);
-      app_data->app_ui_data->param = g_string_new(val.value.s);
-
-      /* attempt to install package */
-      on_button_install_clicked(NULL, app_data);
-            
       retval->type = DBUS_TYPE_BOOLEAN;
       retval->value.b = TRUE;
       return OSSO_OK;
