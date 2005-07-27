@@ -103,6 +103,7 @@ Installs given package on the device.
 */
 void install_package (gchar *deb, AppData *app_data);
 
+void install_package_from_uri (gchar *uri, AppData *app_data);
 
 /**
 Uninstalls selected package from the device.
