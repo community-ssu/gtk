@@ -2,7 +2,7 @@
 
 # Mandatory, inits autoconf
 # The version should match the version in debian/changelog
-AC_INIT(osso-application-installer, 2.0-0)
+AC_INIT(osso-application-installer, 2.1-0)
 
 # Tests that source dir exists
 AC_CONFIG_SRCDIR([src/main.c])
@@ -100,8 +100,8 @@ AC_SUBST(dbusservdir)
 
 # For the app-installer-tool
 #
-AITOOL_CFLAGS=`pkg-config --cflags glib-2.0`
-AITOOL_LIBS=`pkg-config --libs glib-2.0`
+AITOOL_CFLAGS=`pkg-config --cflags glib-2.0 gnome-vfs-2.0`
+AITOOL_LIBS=`pkg-config --libs glib-2.0 gnome-vfs-2.0`
 AC_SUBST(AITOOL_CFLAGS)
 AC_SUBST(AITOOL_LIBS)
 
