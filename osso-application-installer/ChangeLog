@@ -1,3 +1,32 @@
+2005-07-27  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* configure.ac: Bumped version to 2.1.
+	(AITOOLS_CFLAGS, AITOOLS_LIBS): Added gnome-vfs-2.0.
+	
+	* app-installer-tool/app-installer-tool.c (do_copy): New.
+
+	* src/core.c (run_app_installer_tool): Reimplemented by using
+	spawn_app_installer_tool.
+	(spawn_app_installer_tool): Take three args for
+	app-installer-tool.  Make using sudo optional.  Accept 'line'
+	callbacks.  Changed all callers.
+	(read_into_string): Call 'line' callbacks as appropriate.
+	(kb_used_in_var_lib_install): Log error message in case of
+	failure.
+	(installer_progress): Deal with errors from
+	kb_used_in_var_lib_install.
+	(install_package_from_uri): New.
+
+	* src/dbus.c (dbus_message_handler): Use install_package_from_uri
+	instead of on_button_install_clicked.
+	
+	* src/main.c (main): Call install_package_from_uri instead of
+	passing it inside app_ui_data.
+
+	* src/ui/callbacks.c (on_button_install_clicked): Use
+	install_package_from_uri instead of doing the copying here.  Do
+	not look at 'param' from app_ui_data.
+	
 2005-07-22  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* Makefile.am (SUBDIRS): Removed wrapper.
