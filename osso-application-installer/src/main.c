@@ -96,7 +96,7 @@ int main (int argc, char** argv)
   /* Read params and maybe install directly 
    */
   if (argc > 1)
-    install_package_from_uri (argv[1], app_data);
+    do_install (argv[1], app_data);
 
   /* Start GTK main loop */
   ULOG_INFO("Starting GTK main loop..");

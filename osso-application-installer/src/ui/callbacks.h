@@ -46,6 +46,8 @@
 #define TIME_HOLD 1000
 
 
+void do_install (gchar *uri, AppData *app_data);
+
 /**
 Callback for help context sentitive dialog
 

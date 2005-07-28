@@ -65,7 +65,7 @@ gint dbus_message_handler(const gchar *method, GArray *arguments,
     if ( (val.type == DBUS_TYPE_STRING)
         && (val.value.s != NULL) ) {
 
-      install_package_from_uri (val.value.s, app_data);
+      do_install (val.value.s, app_data);
 
       retval->type = DBUS_TYPE_BOOLEAN;
       retval->value.b = TRUE;

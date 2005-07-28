@@ -46,6 +46,24 @@ void on_help_activate(GtkWidget *widget, AppData *app_data) {
   }
 }
 
+void
+do_install (gchar *uri, AppData *app_data)
+{
+  AppUIData *app_ui_data = app_data->app_ui_data;
+
+  /* Disable buttons while installing */
+  gtk_widget_set_sensitive (app_ui_data->uninstall_button, FALSE);
+  gtk_widget_set_sensitive (app_ui_data->installnew_button, FALSE);
+  gtk_widget_set_sensitive (app_ui_data->close_button, FALSE);
+  
+  install_package_from_uri (uri, app_data);
+  update_package_list (app_data);
+      
+  /* Enable buttons again, except uninstall, which is set
+     to proper value at update_package_list */
+  gtk_widget_set_sensitive (app_ui_data->installnew_button, TRUE);
+  gtk_widget_set_sensitive (app_ui_data->close_button, TRUE);
+}
   
 /* Callback for install button */
 void on_button_install_clicked(GtkButton *button, AppData *app_data)
@@ -56,20 +74,7 @@ void on_button_install_clicked(GtkButton *button, AppData *app_data)
   file_uri = ui_show_file_chooser (app_ui_data);
 
   if (*file_uri)
-    {
-      /* Disable buttons while installing */
-      gtk_widget_set_sensitive (app_ui_data->uninstall_button, FALSE);
-      gtk_widget_set_sensitive (app_ui_data->installnew_button, FALSE);
-      gtk_widget_set_sensitive (app_ui_data->close_button, FALSE);
-  
-      install_package_from_uri (file_uri, app_data);
-      update_package_list (app_data);
-      
-      /* Enable buttons again, except uninstall, which is set
-	 to proper value at update_package_list */
-      gtk_widget_set_sensitive (app_ui_data->installnew_button, TRUE);
-      gtk_widget_set_sensitive (app_ui_data->close_button, TRUE);
-    }
+    do_install (file_uri, app_data);
 }
 
 
