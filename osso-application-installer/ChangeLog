@@ -1,3 +1,24 @@
+2005-07-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Released 2.2-0.
+	
+	* src/core.c (read_into_string): Use read syscall instead of
+	g_io_channel_read_chars since the latter blocks sometimes.  Needs
+	more investigation.
+	(kb_used_in_var_lib_install): Use statvfs instead of spawning
+	"du".  The latter fails surprisingly often.
+
+	* src/ui/interface.h (progress_dialog,
+	ui_create_progressbar_dialog, ui_close_progress_dialog,
+	ui_set_progress_dialog): New.
+	* core.c (installer_callback, installer_progress): Use it, but
+	only in the pulsing mode.
+
+	* src/ui/callbacks.h, src/ui/callbacks.c (do_install): New.
+	(on_button_install_clicked): Use it.
+	* src/dbus.c (dbus_message_handler): Likewise.
+	* src/main.c (main): Likewise.
+	
 2005-07-27  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* configure.ac: Bumped version to 2.1.
