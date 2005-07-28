@@ -375,3 +375,37 @@ GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
 
   return sw;
 }
+
+progress_dialog *
+ui_create_progress_dialog (AppData *app_data,
+			   gchar *title)
+{
+  progress_dialog *dialog;
+  GtkWidget *hildon_dialog;
+  GtkWindow *main_dialog = app_data->app_ui_data->main_dialog;
+
+  dialog = g_new (progress_dialog, 1);
+  dialog->progressbar = gtk_progress_bar_new ();
+  dialog->dialog =
+    hildon_note_new_cancel_with_progress_bar (main_dialog,
+					      title,
+					      dialog->progressbar);
+  gtk_widget_show_all (dialog->dialog);
+  return dialog;
+}
+
+void
+ui_set_progress_dialog (progress_dialog *dialog, double frac)
+{
+  if (frac < 0)
+    gtk_progress_bar_pulse (dialog->progressbar);
+  else
+    gtk_progress_bar_set_fraction (dialog->progressbar, frac);
+}
+
+void
+ui_close_progress_dialog (progress_dialog *dialog)
+{
+  gtk_widget_destroy (dialog->dialog);
+  g_free (dialog);
+}

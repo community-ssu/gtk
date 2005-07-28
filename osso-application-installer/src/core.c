@@ -144,7 +144,23 @@ read_into_string (GIOChannel *channel, GIOCondition cond, gpointer raw_data)
   else
     return FALSE;
 
-  status = g_io_channel_read_chars (channel, buf, 256, &count, NULL);
+  {
+    int fd = g_io_channel_unix_get_fd (channel);
+    int n = read (fd, buf, 256);
+    if (n > 0)
+      {
+	status = G_IO_STATUS_NORMAL;
+	count = n;
+      }
+    else
+      {
+	status = G_IO_STATUS_EOF;
+	count = 0;
+      }
+  }
+
+  //status = g_io_channel_read_chars (channel, buf, 256, &count, NULL);
+
   if (status == G_IO_STATUS_NORMAL)
     {
       g_string_append_len (data->strings[id], buf, count);
@@ -622,7 +638,7 @@ format_relationship_failures (gchar *header, gchar *output)
   return report;
 }
 
-#define FUZZ_FACTOR 1.2
+#define FUZZ_FACTOR 1.0
 
 typedef struct {
   AppData *app_data;
@@ -630,7 +646,7 @@ typedef struct {
   GMainLoop *loop;
   guint timeout;
 
-  int showing_progress;
+  progress_dialog *dialog;
   int initial_used_kb, package_size_kb;
 
   gchar *progress_title;
@@ -650,9 +666,8 @@ installer_callback (gpointer raw_data,
   if (data->loop)
     {
       g_source_remove (data->timeout);
-      if (data->showing_progress)
-	gtk_banner_close 
-	  (GTK_WINDOW (data->app_data->app_ui_data->main_dialog));
+      if (data->dialog)
+	ui_close_progress_dialog (data->dialog);
     }
       
   if (success)
@@ -680,6 +695,7 @@ installer_callback (gpointer raw_data,
 static int
 kb_used_in_var_lib_install (void)
 {
+#if 0
   /* This is the method as used by dpkg to figure out Installed-Size.
      So we use it as well to get more accurate results.  Just looking
      at statvfs, for example, it very off due to JFFS2 compression and
@@ -690,6 +706,9 @@ kb_used_in_var_lib_install (void)
      You might think that spawning a process for this is too much
      overhead.  But think again.  This is Unix, you are supposed to do
      things like this.
+
+     - Well, it does not seem to work too well and g_spawn_sync often
+       fails in fork with ENOMEM...
   */
   
   gchar *args[] = {
@@ -720,8 +739,20 @@ kb_used_in_var_lib_install (void)
       g_error_free (error);
     }
 
-  free (stdout_string);
-  return used_k;
+  free (stdout_string);  return used_k;
+#else
+  /* A lighter weight approach that is not as accurate.
+   */
+  struct statvfs buf;
+
+  if (statvfs("/", &buf) != 0)
+    {
+      ULOG_ERR ("statvfs: %s\n", strerror (errno));
+      return -1;
+    }
+
+  return (buf.f_bsize * (buf.f_blocks - buf.f_bavail)) / 1024;
+#endif
 }
 
 static gboolean
@@ -733,24 +764,26 @@ installer_progress (gpointer raw_data)
   int now_used_kb;
   double frac;
 
-  if (!data->showing_progress)
-    {
-      gtk_banner_show_bar (main_dialog, data->progress_title);
-      data->showing_progress = 1;
-    }
+  if (data->dialog == NULL)
+    data->dialog =
+      ui_create_progress_dialog (data->app_data, data->progress_title);
 
+#if 0
   now_used_kb = kb_used_in_var_lib_install ();
   if (now_used_kb > 0 && data->initial_used_kb > 0)
     {
       frac = FUZZ_FACTOR * (((double) (now_used_kb - data->initial_used_kb))
 			    / data->package_size_kb);
-#if 1
+#if 0
       fprintf (stderr, "initial %d, now %d, size %d, frac %f\n",
 	       data->initial_used_kb, now_used_kb, data->package_size_kb,
 	       frac);
 #endif
-      gtk_banner_set_fraction (main_dialog, frac);
+      ui_set_progress_dialog (data->dialog, frac);
     }
+#else
+  ui_set_progress_dialog (data->dialog, -1.0);
+#endif
 
   return TRUE;
 }
@@ -771,7 +804,7 @@ install_package (gchar *deb, AppData *app_data)
       data.loop = NULL;
       data.app_data = app_data;
       data.package = info.name->str;
-      data.showing_progress = 0;
+      data.dialog = NULL;
       data.initial_used_kb = kb_used_in_var_lib_install ();
       data.package_size_kb = atoi (info.size->str);
 
@@ -788,7 +821,7 @@ install_package (gchar *deb, AppData *app_data)
 				    &data))
 	{
 	  data.loop = g_main_loop_new (NULL, 0);
-	  data.timeout = g_timeout_add (1000, installer_progress, &data);
+	  data.timeout = g_timeout_add (500, installer_progress, &data);
 	  g_main_loop_run (data.loop);
 	}
     }
@@ -947,7 +980,7 @@ uninstall_package (gchar *package, gchar *size, AppData *app_data)
       data.loop = NULL;
       data.app_data = app_data;
       data.package = package;
-      data.showing_progress = 0;
+      data.dialog = NULL;
       data.initial_used_kb = kb_used_in_var_lib_install ();
       data.package_size_kb = -atoi (size);
 
@@ -964,7 +997,7 @@ uninstall_package (gchar *package, gchar *size, AppData *app_data)
 				    &data))
 	{
 	  data.loop = g_main_loop_new (NULL, 0);
-	  data.timeout = g_timeout_add (1000, installer_progress, &data);
+	  data.timeout = g_timeout_add (500, installer_progress, &data);
 	  g_main_loop_run (data.loop);
 	}
     }

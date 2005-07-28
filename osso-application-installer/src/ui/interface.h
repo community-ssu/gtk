@@ -119,6 +119,14 @@ Creates scrollable text view with buffer filled with text
 GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
  gboolean editable, gboolean selectable);
 
+typedef struct {
+  GtkWidget *dialog;
+  GtkProgressBar *progressbar;
+} progress_dialog;
+
+progress_dialog *ui_create_progress_dialog (AppData *app_data, gchar *title);
+void ui_set_progress_dialog (progress_dialog *dialog, double fraction);
+void ui_close_progress_dialog (progress_dialog *dialog);
 
 /**
 Alias to while clause clearning gtk drawing queue
