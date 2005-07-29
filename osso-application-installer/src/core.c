@@ -40,23 +40,106 @@
 #include "core.h"
 #include "ui/represent.h"
 
-/* Run app-installer-tool like with RUN_APP_INSTALLER_TOOL, but in the
-   background and call CALLBACK when it is done.  The SUCCESS
-   parameter of CALLBACK is non-zero when the program could be run and
-   exited successfully.  STDOUT_STRING and STDERR_STRING containd the
-   stdout and stderr of the program, respectively, and need to be
-   freed eventually (also in when SUCCESS is zero).  When SUCCESS is
-   zero, STDERR_STRING contains omre details of the failure, like
-   caught signals etc.
+/* OVERVIEW
+
+   The real work is done by the program /usr/bin/app-installer-tool
+   and this file basically only invokes that program to do things like
+   retrieve the list of installed packages, install new ones, and
+   remove installed ones.
+
+   The app-installer-tool is used in a number of ways:
+
+   - Sort of synchronously, where nothing can be done in the GUI until
+     the program has terminated.  This is used to get the list of
+     installed packages.  (Redraws are still handled, see below.)
+     
+   - Semi-Asynchronously, where the GUI waits for the program to
+     terminate and shows a pulsating 'I am still alive' indication and
+     the operation can be cancelled.  The output of the
+     app-installer-tool is gathered and analzyed after it has
+     terminated.  This is used for installation and uninstallation of
+     packages.  There is no real progress information available from
+     the app-installer-tool for these operations, unfortunately.
+
+   - Really asynchronously, where the GUI interprets the output from
+     the app-installer-tool as soon as it becomes available.  This is
+     used for copying a remote file to local storage.  The
+     app-installer-tool can provide real progress information for that
+     and we use it to keep a progress bar alive.
+
+   The third way if of course the most general and the other two ways
+   are in fact implemented as special cases of it.  This means that
+   the app-installer-tool is in fact always execute asynchronously,
+   and the GUI will never starve.
+
+   The function SPAWN_APP_INSTALLER_TOOL implements the most general
+   way of invoking the app-installer-tool, and RUN_APP_INSTALLER_TOOL
+   uses it to run it sort-of-synchronously.
+
+   XXX - These three ways should probably be unified so that even
+   getting the list of installed packages gets a progress bar and can
+   be canceled.  The dialog for that would of course only be shown
+   after a certain timeout.
+
+   XXX - cancellation is not implemented.
+*/
+
+
+/* This function starts /usr/bin/app-installer-tool so that it runs
+   the background.
+
+   When AS_INSTALL is true, app-installer-tool will in fact be invoked
+   thru sudo und run as the user "install".
+ 
+   ARG1, ARG2, and ARG3 are up to three arguments that are passed to
+   app-installer-tool.  Set the unused arguments to NULL.
+
+   When this invokation of app-intstaller-tool has terminated or could
+   not be started at all, CALLBACK is called.  The SUCCESS parameter
+   of CALLBACK is non-zero when app-intstaller-tool exited with a code
+   of zero, non-zero otherwise.  The STDOUT_STRING and STDERR_STRING
+   parameters contain the stdout and stderr output of the invokation,
+   respectively.  (See below for how this interacts with the 'line
+   callbacks', however.)  Both strings are freed when CALLBACK
+   returns.
+
+   When SUCCESS is zero, the STDERR_STRING passed to CALLBACK will
+   contain suitable error messages such as "Caught signal 11 (core
+   dumped)".  These error messages will not be seen by
+   STDERR_LINE_CALLBACK.
+
+   When STDOUT_LINE_CALLBACK is non-zero, it is called whenever a new
+   complete line is available from the stdout of the invokation.  The
+   LINE parameter points to this zero-terminated line.  This pointer
+   is only valid during the call to STDOUT_LINE_CALLBACK.  When the
+   STDOUT_LINE_CALLBACK is used, the STDOUT_STRING passed to CALLBACK
+   will consist of the rest of stdout when it does not end with a
+   newline character.
+
+   STDERR_LINE_CALLBACK is the same as STDOUT_LINE_CALLBACK, only for
+   stderr.
+
+   CALLBACK_DATA is the data passed to all three callbacks above.
 
    CALLBACK is either called from the main event loop, or it might be
-   called directly from SPAWN_APP_INSTALLER_TOOL, when an error
+   called directly from SPAWN_APP_INSTALLER_TOOL when an error
    occurred before app-installer-tool could be spawned.  When CALLBACK
    is called directly, SPAWN_APP_INSTALLER_TOOL returns zero.
    Otherwise, it returns non-zero.
-
-   XXX - docs out of date.
 */
+static int
+spawn_app_installer_tool (AppData *app_data,
+			  int as_install,
+			  gchar *arg1, gchar *arg2, gchar *arg3,
+			  void (*callback) (gpointer data,
+					    int success,
+					    gchar *stdout_string,
+					    gchar *stderr_string),
+			  void (*stdout_line_callback) (gpointer data,
+							gchar *line),
+			  void (*stderr_line_callback) (gpointer data,
+							gchar *line),
+			  gpointer callback_data);
 
 typedef struct {
   void (*callback) (gpointer, int, gchar *, gchar *);
@@ -72,6 +155,10 @@ typedef struct {
 static void
 check_completion (spawn_data *data)
 {
+  /* The invocation is done when we have reaped the exit status and both
+     the stdout and stderr channels are at EOF.
+  */
+
   if (data->channels[0] == NULL
       && data->channels[1] == NULL
       && data->exited)
@@ -144,6 +231,12 @@ read_into_string (GIOChannel *channel, GIOCondition cond, gpointer raw_data)
   else
     return FALSE;
 
+#if 0
+  /* XXX - this blocks sometime.  Maybe setting the encoding to NULL
+           will work, but for now we just do it the old school way...
+  */
+  status = g_io_channel_read_chars (channel, buf, 256, &count, NULL);
+#else
   {
     int fd = g_io_channel_unix_get_fd (channel);
     int n = read (fd, buf, 256);
@@ -158,8 +251,7 @@ read_into_string (GIOChannel *channel, GIOCondition cond, gpointer raw_data)
 	count = 0;
       }
   }
-
-  //status = g_io_channel_read_chars (channel, buf, 256, &count, NULL);
+#endif
 
   if (status == G_IO_STATUS_NORMAL)
     {
@@ -275,18 +367,24 @@ spawn_app_installer_tool (AppData *app_data,
   return 1;
 }
 
-/* Run the app-installer-tool (as the user "install" when that has not
-   been disabled) with the two arguments ARG1 and ARG2, or with only
-   ARG1 when ARG2 is NULL.  Stdout from the invocation is returned in
-   *STDOUT_STRING which must be non-NULL.  When STDERR_STRING is
-   non-NULL, it gets the stderr from the invocation.  You need to free
-   both strings.
+/* Run the app-installer-tool as the user "install" with the arguments
+   ARG1, ARG2, and ARG3 (which be NULL if they are unused) and wait
+   for it to terminate.
+
+   Stdout from the invocation is returned in *STDOUT_STRING which must
+   be non-NULL.  When STDERR_STRING is non-NULL, it gets the stderr
+   from the invocation.  You need to free both strings.
 
    The return value is non-zero when the invocation succeeded and zero
    when it failed.  In the case of failure and when ERROR_DESCRIPTION
    is non-NULL, present_report_with_details is used to show stderr to
    the user.
 */
+static int
+run_app_installer_tool (AppData *app_data,
+			gchar *arg1, gchar *arg2, gchar *arg3,
+			gchar **stdout_string, gchar **stderr_string,
+			gchar *error_description);
 
 typedef struct {
   AppData *app_data;
@@ -351,7 +449,6 @@ run_app_installer_tool (AppData *app_data,
 
   return data.success;
 }
-
 
 static gchar *
 parse_delimited (gchar *ptr, gchar del, gchar **token)
@@ -521,6 +618,8 @@ package_file_info (AppData *app_data, gchar *file)
       ptr = parse_delimited (ptr, '\n', &version);
       ptr = parse_delimited (ptr, '\n', &size);
 
+      /* XXX - do not crash here.
+       */
       g_assert (ptr != NULL);
 
       info.name = g_string_new (package);
@@ -698,8 +797,8 @@ kb_used_in_var_lib_install (void)
 #if 0
   /* This is the method as used by dpkg to figure out Installed-Size.
      So we use it as well to get more accurate results.  Just looking
-     at statvfs, for example, it very off due to JFFS2 compression and
-     stuff.  Still, using "du" is off because if the differences
+     at statvfs, for example, is very off due to JFFS2 compression and
+     stuff.  Still, using "du" is off because of the differences
      between the filesystem used during packaging and the one used on
      the target.
 
@@ -769,6 +868,10 @@ installer_progress (gpointer raw_data)
       ui_create_progress_dialog (data->app_data, data->progress_title);
 
 #if 0
+  /* XXX - the progress indication is not at all accurate and we need
+           real cooperation from app-installer-tool for it anyway.  So
+           we just pulse the progress bar for now.
+  */
   now_used_kb = kb_used_in_var_lib_install ();
   if (now_used_kb > 0 && data->initial_used_kb > 0)
     {
