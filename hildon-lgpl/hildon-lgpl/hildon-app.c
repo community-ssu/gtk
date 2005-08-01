@@ -1167,15 +1167,10 @@ hildon_app_key_press (GtkWidget *widget, GdkEventKey *keyevent)
         _hildon_appview_decrease_button_state_changed (appview,
                                                        keyevent->type);
       }
-    else if (HILDON_KEYEVENT_IS_MENU_KEY (keyevent))
-      {
-        _hildon_appview_toggle_menu(appview,
-                gtk_get_current_event_time());
-      }
-
 
     return GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, keyevent);
 }
+
 static gboolean
 hildon_app_key_release (GtkWidget *widget, GdkEventKey *keyevent)
 {
@@ -1197,42 +1192,57 @@ hildon_app_key_release (GtkWidget *widget, GdkEventKey *keyevent)
         g_signal_emit_by_name(G_OBJECT(appview),
                               "toolbar-toggle-request", 0);
       }
-    
+     else if (HILDON_KEYEVENT_IS_FULLSCREEN_KEY (keyevent))
+       {
+         if (hildon_appview_get_fullscreen_key_allowed (appview))
+           {
+             hildon_appview_set_fullscreen (appview,
+               !(hildon_appview_get_fullscreen (appview)));
+           }
+       }
+
     return GTK_WIDGET_CLASS (parent_class)->key_release_event (widget, keyevent);
 }
 
 static gboolean
 hildon_app_key_snooper (GtkWidget *widget, GdkEventKey *keyevent, HildonApp *app)
 {
-  HildonAppView *appview;
 
-  
+    /* Menu key handling is done here */
+    if ( HILDON_KEYEVENT_IS_MENU_KEY (keyevent) ) {
+	    HildonAppView *appview;
+	    HildonAppPrivate *priv;
+		    
+	    appview = HILDON_APPVIEW (GTK_BIN(app)->child);
+	    priv = HILDON_APP_GET_PRIVATE(app);
+
+	    if ( keyevent->type == GDK_KEY_PRESS ) {
+		    if ( priv->lastmenuclick == 0 ){
+			    _hildon_appview_toggle_menu(appview,
+					    gtk_get_current_event_time());
+			    
+			    priv->lastmenuclick = 1;
+		    }
+	    } else if ( keyevent->type == GDK_KEY_RELEASE ) {
+
+		    if ( priv->lastmenuclick == 1 ) {
+			    priv->lastmenuclick = 0;
+		    }
+		    
+	    } else {
+		    /* Unknown key event */
+		    return FALSE;
+	    }
+
+	    return TRUE;
+    }
+    
     if ((keyevent->type == GDK_KEY_RELEASE) &&
         HILDON_KEYEVENT_IS_HOME_KEY (keyevent))
       {
 	hildon_app_switch_to_desktop();
 
         return TRUE;
-      }
-    else if ((keyevent->type == GDK_KEY_PRESS) &&
-             HILDON_KEYEVENT_IS_FULLSCREEN_KEY (keyevent))
-      {
-        appview = HILDON_APPVIEW (GTK_BIN(app)->child);
-      
-        if (!HILDON_IS_APPVIEW(appview))
-            return FALSE;
-        
-        if (hildon_appview_get_fullscreen_key_allowed (appview))
-          {
-            /* Remove open menus */
-            if (GTK_IS_MENU (widget))
-              gtk_menu_popdown (GTK_MENU (widget));
-            
-            hildon_appview_set_fullscreen (appview,
-              !(hildon_appview_get_fullscreen (appview)));
-          }
-        /* Eat the keypress so apps don't misbehave */
-        return (TRUE);
       }
 
     return FALSE;

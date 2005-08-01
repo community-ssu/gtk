@@ -44,6 +44,8 @@ struct _HildonAppPrivate {
 #ifndef HILDON_DISABLE_DEPRECATED
     HildonZoomLevel zoom;
 #endif
+
+    /* Used to keep track of menu key press/release */
     gint lastmenuclick;
 
     gulong curr_view_id;

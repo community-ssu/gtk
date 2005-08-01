@@ -1,5 +1,8 @@
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* hildon-lgpl/hildon-app.c: handle 'menu' hardkey (fix), do not
+	react to long press.
+
 	* hildon-lgpl/gtk-infoprint.c: fixed a crash in
 	GtkInfoprint. gtk_banner_close attempted to destroy a banner which
 	was actually already destroyed automatically when its transient
