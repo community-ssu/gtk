@@ -1,5 +1,7 @@
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* gtk/gtkmenuitem.c: Added a delay for showing submenus.
+
 	* gtk/gtktreeview.c: fix "Mark all does not select all (passive
 	focus makes item look unselected)". Passive focus is now replaced
 	with the selection indicator whenever treeview is in multiple
