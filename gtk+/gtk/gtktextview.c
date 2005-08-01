@@ -6787,39 +6787,35 @@ gtk_text_view_preedit_changed_handler (GtkIMContext *context,
 }
 
 static gboolean
+not_whitespace_crlf (gunichar ch, gpointer user_data)
+{
+  return !whitespace (ch, user_data) && ch != '\r' && ch != '\n';
+}
+
+static gboolean
 gtk_text_view_retrieve_surrounding_handler (GtkIMContext  *context,
 					    GtkTextView   *text_view)
 {
   GtkTextIter start;
   GtkTextIter end;
-  gint pos, endpos;
+  gint pos;
   gchar *text;
 
-  gtk_text_buffer_get_iter_at_line (text_view->buffer, &start, 0);
-  gtk_text_buffer_get_iter_at_mark (text_view->buffer, &end,  
+  gtk_text_buffer_get_iter_at_mark (text_view->buffer, &start,  
 				    gtk_text_buffer_get_insert (text_view->buffer));
+  end = start;
 
-  pos = gtk_text_iter_get_line_index (&end);
+  pos = gtk_text_iter_get_offset (&start);
+  gtk_text_iter_set_line_offset (&start, 0);
+  gtk_text_iter_forward_to_line_end (&end);
 
-  if (gtk_text_iter_ends_line (&end))
-    {
-      /* We're already at the end of line. Calling
-       * gtk_text_iter_forward_to_line_end() would get us to end of next
-       * line.
-       */
-      endpos = pos;
-    }
-  else
-    {
-      gtk_text_iter_forward_to_line_end (&end);
-      endpos = gtk_text_iter_get_line_index (&end);
-    }
+  /* we want to include the previous non-whitespace character in the
+     surroundings. */
+  if (gtk_text_iter_backward_char (&start))
+    gtk_text_iter_backward_find_char (&start, not_whitespace_crlf, NULL, NULL);
+  pos -= gtk_text_iter_get_offset (&start);
 
   text = gtk_text_iter_get_slice (&start, &end);
-  if (text)
-    pos = strlen (text) - (endpos - pos); /* want bytes, not characters */
-  else
-    pos = 0;
   gtk_im_context_set_surrounding (context, text, -1, pos);
   g_free (text);
 

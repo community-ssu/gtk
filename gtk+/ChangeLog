@@ -10,6 +10,12 @@
 	* gtk/gtkmenushell.c (gtk_real_menu_shell_move_current): Added 
 	comment to document reason for commenting out a block of code
 
+	* gtktextview.c: All text before cursor isn't needed to be set to
+	surroundings, only the last non-whitespace character before the
+	cursor (we'll use the last non-whitespace before the beginning of
+	current line though)
+
+	
 2005-07-26  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* gtk/gtkcellview.c (gtk_cell_view_size_allocate): adjust cell
