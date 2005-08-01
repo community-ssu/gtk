@@ -1,11 +1,16 @@
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* gtk/gtktextbuffer.c (clipboard_clipboard_buffer_received):
+	* gtktextbufferserialize.c: improved clipboard, handle anonymous
+	tags.
+
 	* gtk/gtkmenushell.c (gtk_real_menu_shell_move_current): Added 
 	comment to document reason for commenting out a block of code
 
 2005-07-26  Luc Pionchon  <luc.pionchon@nokia.com>
 
-	* gtk/gtkcellview.c (gtk_cell_view_size_allocate): adjust cell width to avoid truncation issues.
+	* gtk/gtkcellview.c (gtk_cell_view_size_allocate): adjust cell
+	width to avoid truncation issues.
 
 2005-07-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
