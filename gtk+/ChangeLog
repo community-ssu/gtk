@@ -1,5 +1,8 @@
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* gtk/gtkcombobox.c (gtk_combo_box_menu_size_request): width of
+	popup can now be as large as the combo's width
+
 	* gtk/gtkmenuitem.c: Added a delay for showing submenus.
 
 	* gtk/gtktreeview.c: fix "Mark all does not select all (passive
@@ -7,17 +10,17 @@
 	with the selection indicator whenever treeview is in multiple
 	selection mode without checkboxes.
 
-	* gtktreeview.c: (check_if_can_focus) Added NULL checks to prevent
+	* gtk/gtktreeview.c: (check_if_can_focus) Added NULL checks to prevent
 	access to deleted rows.
 
 	* gtk/gtktextbuffer.c (clipboard_clipboard_buffer_received):
-	* gtktextbufferserialize.c: improved clipboard, handle anonymous
+	* gtk/gtktextbufferserialize.c: improved clipboard, handle anonymous
 	tags.
 
 	* gtk/gtkmenushell.c (gtk_real_menu_shell_move_current): Added 
 	comment to document reason for commenting out a block of code
 
-	* gtktextview.c: All text before cursor isn't needed to be set to
+	* gtk/gtktextview.c: All text before cursor isn't needed to be set to
 	surroundings, only the last non-whitespace character before the
 	cursor (we'll use the last non-whitespace before the beginning of
 	current line though)
