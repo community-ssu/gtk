@@ -179,6 +179,14 @@ static GtkWidget *gtk_banner_get_widget(GtkWindow * parent,
 /* Timed destroy. Removing this callback is done in other place. */
 static gboolean gtk_msg_window_destroy(gpointer pointer)
 {
+    g_return_val_if_fail(GTK_IS_WINDOW(pointer), TRUE);
+    gtk_widget_destroy(GTK_WIDGET(pointer));
+    
+    return FALSE;
+}
+
+static gboolean gtk_msg_window_real_destroy(gpointer pointer)
+{
     GObject *parent;
     GQuark quark;
 
@@ -225,10 +233,9 @@ static gboolean gtk_msg_window_destroy(gpointer pointer)
         }
     }
 
-    gtk_widget_destroy(GTK_WIDGET(pointer));
-
     return FALSE;
 }
+
 
 /* Get window ID of top window from _NET_ACTIVE_WINDOW property */
 static Window get_active_window( void )
@@ -409,6 +416,7 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
         current_ibanner->timeout = g_timeout_add(MESSAGE_TIMEOUT,
                                                  gtk_msg_window_destroy,
                                                  current_ibanner->window);
+
         g_signal_connect_swapped(current_ibanner->window, "destroy",
                                  G_CALLBACK(g_source_remove),
                                  GUINT_TO_POINTER(current_ibanner->timeout));
@@ -436,6 +444,7 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_accept_focus(GTK_WINDOW(window), FALSE);
+    g_signal_connect(window, "destroy", G_CALLBACK(gtk_msg_window_real_destroy), window);
 
     hbox = gtk_hbox_new(FALSE, 5);
 
@@ -1033,10 +1042,12 @@ void gtk_banner_set_fraction(GtkWindow * parent, gdouble fraction)
 void gtk_banner_close(GtkWindow * parent)
 {
     g_return_if_fail(GTK_IS_WINDOW(parent) || parent == NULL);
-    g_return_if_fail(pbanner_refs > 0);
 
-    if (--pbanner_refs == 0) {
-      gtk_msg_window_destroy(current_pbanner->window);
+    if (pbanner_refs > 0) {
+        --pbanner_refs;
+        if (pbanner_refs == 0 && current_pbanner) {
+            gtk_msg_window_destroy(current_pbanner->window);
+        }
     }
 }
 
