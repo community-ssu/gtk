@@ -135,6 +135,7 @@ struct _GtkComboBoxPrivate
   guint editing_canceled : 1;
   guint auto_scroll : 1;
   guint focus_on_click : 1;
+  guint propagate_lr_keys : 1;
 
   GtkTreeViewRowSeparatorFunc row_separator_func;
   gpointer                    row_separator_data;
@@ -216,7 +217,8 @@ enum {
   PROP_ACTIVE,
   PROP_ADD_TEAROFFS,
   PROP_HAS_FRAME,
-  PROP_FOCUS_ON_CLICK
+  PROP_FOCUS_ON_CLICK,
+  PROP_PROPAGATE_LR_KEYS
 };
 
 static GtkBinClass *parent_class = NULL;
@@ -748,6 +750,14 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
 							 TRUE,
 							 G_PARAM_READWRITE));
 
+  g_object_class_install_property (object_class,
+                                   PROP_PROPAGATE_LR_KEYS,
+                                   g_param_spec_boolean ("propagate-lr-keys",
+                                                         P_("Propagate L&R keys"),
+                                                         P_("Whether to propagate key-press events from left and right arrow keys further"),
+                                                         FALSE,
+                                                         G_PARAM_READWRITE));
+
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("appears-as-list",
                                                                  P_("Appears as list"),
@@ -780,6 +790,14 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
 							      26,
 							      G_PARAM_READWRITE));
 
+  gtk_widget_class_install_style_property (widget_class,
+                                          g_param_spec_int ("separator-width",
+							      P_("Separator Width"),
+							      P_("Number of pixels between the button and entry field"),
+							      0,
+							      G_MAXINT,
+							      6,
+							      G_PARAM_READWRITE));
 
   /* Hildon hack: style property for enabling the autodimming hack */
   gtk_widget_class_install_style_property (
@@ -834,6 +852,7 @@ gtk_combo_box_init (GtkComboBox *combo_box)
   combo_box->priv->editing_canceled = FALSE;
   combo_box->priv->auto_scroll = FALSE;
   combo_box->priv->focus_on_click = TRUE;
+  combo_box->priv->propagate_lr_keys = FALSE;
 
   /* Hildon hack: default value for our style property if it is queried before
    *              the style is set */
@@ -883,6 +902,10 @@ gtk_combo_box_set_property (GObject      *object,
         combo_box->priv->focus_on_click = g_value_get_boolean (value);
         break;
 
+      case PROP_PROPAGATE_LR_KEYS:
+        combo_box->priv->propagate_lr_keys = g_value_get_boolean (value);
+        break;
+
       default:
         break;
     }
@@ -928,6 +951,10 @@ gtk_combo_box_get_property (GObject    *object,
 
       case PROP_FOCUS_ON_CLICK:
         g_value_set_boolean (value, combo_box->priv->focus_on_click);
+        break;
+
+      case PROP_PROPAGATE_LR_KEYS:
+        g_value_set_boolean (value, combo_box->priv->propagate_lr_keys);
         break;
 
       default:
@@ -2191,6 +2218,7 @@ gtk_combo_box_size_allocate (GtkWidget     *widget,
   gboolean hildonlike;
   gint arrow_width;
   gint arrow_height;
+  gint separator_width;
 
   gtk_combo_box_check_appearance (combo_box);
 
@@ -2200,6 +2228,7 @@ gtk_combo_box_size_allocate (GtkWidget     *widget,
 			"hildonlike", &hildonlike,
 			"arrow-width", &arrow_width,
 			"arrow-height", &arrow_height,
+			"separator-width", &separator_width,
 			NULL);
 
   /* HILDON: set height to fixed value */
@@ -2257,6 +2286,7 @@ gtk_combo_box_size_allocate (GtkWidget     *widget,
             child.x -= req.width;
 	  child.width = MAX (1, child.width);
 	  child.height = MAX (1, child.height);
+	  child.width = separator_width;
           gtk_widget_size_allocate (combo_box->priv->separator, &child);
 
           if (is_rtl)
@@ -2274,7 +2304,7 @@ gtk_combo_box_size_allocate (GtkWidget     *widget,
               child.width -= child.x + xthickness;
             }
             
-            if (hildonlike)
+          if (hildonlike)
             {
 		          gtk_widget_size_request(GTK_BIN(widget)->child, &child_req);
 		          child.y += (child.height - child_req.height) / 2;
@@ -2307,11 +2337,11 @@ gtk_combo_box_size_allocate (GtkWidget     *widget,
           gtk_widget_size_allocate (combo_box->priv->button, &child);
 
           if (is_rtl)
-            child.x = allocation->x + req.width;
+            child.x = allocation->x + req.width + separator_width;
           else
             child.x = allocation->x;
           child.y = allocation->y;
-          child.width = allocation->width - req.width;
+          child.width = allocation->width - req.width - separator_width;
 	  child.width = MAX (1, child.width);
 	  child.height = MAX (1, child.height);
 
@@ -3924,13 +3954,13 @@ gtk_combo_box_key_press (GtkWidget   *widget,
         {
           new_index = (index == 0) ? items - 1 : index - 1;
           gtk_combo_box_set_active (combo_box, new_index);
-          return TRUE;
+          return !combo_box->priv->propagate_lr_keys;
         }
       else if (event->keyval == GDK_Right && items != 0)
         {
           new_index = (index == items - 1) ? 0 : index + 1;
           gtk_combo_box_set_active (combo_box, new_index);
-          return TRUE;
+          return !combo_box->priv->propagate_lr_keys;
         }
       else if ((event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
                 || (event->keyval == GDK_Up || event->keyval == GDK_KP_Up))
