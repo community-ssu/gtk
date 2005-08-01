@@ -527,3 +527,27 @@ hildon_find_toolbar_new_with_model(gchar *label,
 
   return findtoolbar;
 }
+
+/**
+ * hildon_find_toolbar_highlight_entry
+ * @HildonFindToolbar: Find Toolbar whose entry is to be highlighted.
+ * @get_focus: if user passes TRUE to this value, then the text in
+ * the entry will not only get highlighted, but also get focused.
+ * 
+ * */
+void
+hildon_find_toolbar_highlight_entry(HildonFindToolbar *ftb,
+                                    gboolean get_focus)
+{
+  GtkWidget *entry = NULL;
+  
+  if(!HILDON_IS_FIND_TOOLBAR(ftb))
+    return;
+  
+  entry = gtk_bin_get_child(GTK_BIN(ftb->priv->entry_combo_box));
+  
+  gtk_editable_select_region(GTK_EDITABLE(entry), 0, -1);
+  
+  if(get_focus)
+    gtk_widget_grab_focus(entry);
+}

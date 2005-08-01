@@ -72,6 +72,8 @@ GtkWidget*	hildon_find_toolbar_new_with_model	(gchar *label,
 							 GtkListStore*
 							 model,
 							 gint column);
+void		hildon_find_toolbar_highlight_entry	(HildonFindToolbar *ftb,
+							 gboolean get_focus);
 
 G_END_DECLS
 
