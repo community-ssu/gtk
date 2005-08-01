@@ -1,5 +1,15 @@
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* gtk/gtkcombobox.c: Adds a new boolean property called
+	"propagate-lr-keys" to GtkComboBox. When set to TRUE (its default
+	value is FALSE), the key-press events for GDK_Left and GDK_Right
+	keys are propagated further as in stock GTK+. However, the default
+	behaviour for GtkComboBox must be to eat up key-press events for
+	left/right hardkeys, because otherwise focus might be shifted away
+	from the choice list when items contained in it are browsed using
+	left/right hardkeys. The added property allows overriding this
+	default behaviour in special occasions such as this.
+	
 	* gtk/gtkcombobox.c (gtk_combo_box_menu_size_request): width of
 	popup can now be as large as the combo's width
 
