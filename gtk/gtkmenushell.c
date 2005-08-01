@@ -1328,6 +1328,9 @@ gtk_real_menu_shell_move_current (GtkMenuShell      *menu_shell,
 	}
 
 #if 0
+      /* this code is kept here because at some point we might need to get this
+       * functionality back */      
+
       /* Try to find a menu running the opposite direction */
       while (parent_menu_shell && 
 	     (GTK_MENU_SHELL_GET_CLASS (parent_menu_shell)->submenu_placement ==
