@@ -15,7 +15,8 @@
 	cursor (we'll use the last non-whitespace before the beginning of
 	current line though)
 
-	
+	* gtk/gtkcellrenderertoggle.c: Code cleanup
+
 2005-07-26  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* gtk/gtkcellview.c (gtk_cell_view_size_allocate): adjust cell

@@ -179,7 +179,7 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
            PROP_CHECKBOX_MODE,
            g_param_spec_boolean ("checkbox_mode",
                P_("Checkbox Mode"),
-               P_("Checkbox mode hacky-crack. Will eat your children and give pox if used"),
+               P_("Activates the checkbox mode of drawing selection"),
                FALSE,
                G_PARAM_READABLE |
                G_PARAM_WRITABLE));
@@ -364,7 +364,7 @@ gtk_cell_renderer_toggle_render (GtkCellRenderer      *cell,
 
   if (priv->checkbox_mode)
     {
-      /* Cracky checkbox_mode version of reality */
+      /* Checkbox mode drawing */
       
       state = GTK_STATE_NORMAL;
     
