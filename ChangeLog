@@ -1,5 +1,10 @@
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* gtk/gtktreeview.c: fix "Mark all does not select all (passive
+	focus makes item look unselected)". Passive focus is now replaced
+	with the selection indicator whenever treeview is in multiple
+	selection mode without checkboxes.
+
 	* gtktreeview.c: (check_if_can_focus) Added NULL checks to prevent
 	access to deleted rows.
 
