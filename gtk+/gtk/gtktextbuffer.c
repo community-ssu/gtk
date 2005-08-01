@@ -3228,9 +3228,7 @@ clipboard_clipboard_buffer_received (GtkClipboard     *clipboard,
   
   src_buffer = selection_data_get_buffer (selection_data, request_data); 
 
-  priv = GTK_TEXT_BUFFER_GET_PRIVATE (request_data->buffer);
-
-  if (src_buffer && priv->can_paste_rich_text)
+  if (src_buffer)
     {
       GtkTextIter start, end;
 
@@ -3250,6 +3248,8 @@ clipboard_clipboard_buffer_received (GtkClipboard     *clipboard,
     }
   else
     {
+      priv = GTK_TEXT_BUFFER_GET_PRIVATE (request_data->buffer);
+
       if (priv->can_paste_rich_text &&
          formats_match (clipboard, priv->rich_text_format))
        /* Request markup */
