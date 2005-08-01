@@ -22,10 +22,8 @@
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
- */
-
-/* Modified by Nokia Corporation - 2005.
- * 
+ *
+ * Modified by Nokia Corporation - 2005.
  */
 
 #define GTK_MENU_INTERNALS
@@ -937,7 +935,6 @@ gtk_real_menu_item_select (GtkItem *item)
       (!GTK_WIDGET_MAPPED (menu_item->submenu) ||
        GTK_MENU (menu_item->submenu)->tearoff_active))
     {
-      GdkEvent *event = gtk_get_current_event ();
       gint popup_delay;
 
       if (menu_item->timer)
@@ -951,37 +948,26 @@ gtk_real_menu_item_select (GtkItem *item)
       
       if (popup_delay > 0)
         {
-          /* OK, Here comes the contender for the 2003 Ugly Award
-           * The popup delay is set small enough to be unnoticable, but high enough to not
-           * notice the flickering which occurs when we close all the deepest menu's Gtk+ helpfully
-           * expands but are not needed
-           * This does not fix the mouse navigation yet (bug 18) but should take care of 442
-           * NOTE: test the delay factor on different CPU speeds
-           */
-          popup_delay = 3;
-          /* Hildon: Disabling the automatic opening of submenus. */
+          GdkEvent *event = gtk_get_current_event ();
 
+          /*
+           * Hildon: Disabling the automatic opening of submenus by
+           * removing the corresponding code. 
+           */
+          
           if (event &&
               event->type != GDK_BUTTON_PRESS &&
               event->type != GDK_ENTER_NOTIFY &&
               event->type != GDK_MOTION_NOTIFY) /*hildon: for some reason, the event is sometimes this and not enter!*/
             menu_item->timer_from_keypress = TRUE;
-          else if (event)
-            {
-              /* mouse/pen events */
-              /* here is a problem -- when a menu item with sub menus gets a mouse event,
-                 another event is generated for the submenu (and further its submenu etc.)
-                 This leads to a behaviour which does not comply to the hildon spec. */
-              menu_item->timer_from_keypress = FALSE;
-            }
-          else /* does this really happen? */
+          else
             menu_item->timer_from_keypress = FALSE;
+          
+          if (event)
+            gdk_event_free (event);
         }
       else
         _gtk_menu_item_popup_submenu (menu_item);
-
-      if (event)
-        gdk_event_free (event);
     }
 
   gtk_widget_set_state (GTK_WIDGET (menu_item), GTK_STATE_PRELIGHT);
@@ -1547,6 +1533,7 @@ static void
 _gtk_menu_item_activate_submenus (GtkMenuItem *item)
 {
   GdkEvent *event;
+  gint popup_delay;
 
   g_return_if_fail (GTK_IS_MENU_ITEM (item));
   
@@ -1555,8 +1542,21 @@ _gtk_menu_item_activate_submenus (GtkMenuItem *item)
     return;
 
   event = gtk_get_current_event ();
-  _gtk_menu_item_popup_submenu (item);
-      
+ 
+  /* Hildon: add a delay before opening a new menu */
+  if (item->timer)
+  {
+      g_source_remove (item->timer);
+      item->timer = 0;
+      popup_delay = 0;
+  }
+  else
+      popup_delay = get_popup_delay (item);
+
+  item->timer = g_timeout_add (popup_delay,
+                               gtk_menu_item_select_timeout,
+                               item);
+  
   /* We don't want to select first item if the submenu
    * is opened with mouse release because the selection
    * would move straigh back under the cursor. */
