@@ -14433,7 +14433,8 @@ check_if_can_focus (GtkTreeView *tree_view)
 
     _gtk_tree_view_find_node (tree_view, path, &tree, &node);
 
-    if (_gtk_tree_selection_is_row_selectable (tree_view->priv->selection,
+    if (tree && node &&
+        _gtk_tree_selection_is_row_selectable (tree_view->priv->selection,
                                                node, path))
       {
         GTK_WIDGET_SET_FLAGS (tree_view, GTK_CAN_FOCUS);

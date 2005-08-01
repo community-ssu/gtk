@@ -1,5 +1,8 @@
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* gtktreeview.c: (check_if_can_focus) Added NULL checks to prevent
+	access to deleted rows.
+
 	* gtk/gtktextbuffer.c (clipboard_clipboard_buffer_received):
 	* gtktextbufferserialize.c: improved clipboard, handle anonymous
 	tags.
