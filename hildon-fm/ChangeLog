@@ -1,5 +1,9 @@
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* hildon-file-selection.c: GtkTreeModelSort didn't keep
+	the order very well for equal nodes, therefore a sort 
+	function was fixed to handle device nodes correctly.
+	
 	* hildon-file-system-model.c: Now allowing load_uri to access
 	gateway before gateway is accessed by UI.
 

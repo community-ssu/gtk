@@ -623,13 +623,18 @@ static gint sort_function(GtkTreeModel * model, GtkTreeIter * a,
     gtk_tree_model_get(model, b, HILDON_FILE_SYSTEM_MODEL_COLUMN_TYPE,
                        &type_b, -1);
 
-    /* Don't sort devices */
-    if (type_a > HILDON_FILE_SYSTEM_MODEL_MMC
-        || type_b > HILDON_FILE_SYSTEM_MODEL_MMC)
-        return 0;
-
     hildon_file_selection_get_sort_key(HILDON_FILE_SELECTION(data), &key,
                                        &order);
+
+    /* Local device comes before gateway device */
+    if (type_a > HILDON_FILE_SYSTEM_MODEL_MMC
+        || type_b > HILDON_FILE_SYSTEM_MODEL_MMC)
+    {
+         gint diff = type_a - type_b;
+         return order ==
+            GTK_SORT_ASCENDING ? (diff > 0 ? -1 : 1) : (diff > 0 ? 1 : -1);
+    }
+
     dir_a = (type_a >= HILDON_FILE_SYSTEM_MODEL_FOLDER);
     dir_b = (type_b >= HILDON_FILE_SYSTEM_MODEL_FOLDER);
 
