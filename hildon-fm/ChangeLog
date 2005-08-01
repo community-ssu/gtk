@@ -1,3 +1,12 @@
+2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-file-system-model.c: Now allowing load_uri to access
+	gateway before gateway is accessed by UI.
+
+	* hildon-file-system-settings.[ch]: Added
+	_hildon_file_system_settings_ready() for checking if all settings
+	have been loaded.
+
 2005-07-26  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-fm/hildon-file-system-settings.c (hildon_file_system_settings_setup_dbus): changed pending dbus calls to use default timeout value (which is longer than our old value).

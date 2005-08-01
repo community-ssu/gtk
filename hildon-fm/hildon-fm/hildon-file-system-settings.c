@@ -67,6 +67,10 @@ struct _HildonFileSystemSettingsPrivate
   gboolean usb;
   gchar *btname;
   gchar *gateway;
+
+  gboolean gconf_ready;
+  gboolean flightmode_ready;
+  gboolean btname_ready;
 };
 
 G_DEFINE_TYPE(HildonFileSystemSettings, \
@@ -199,8 +203,11 @@ hildon_file_system_settings_handle_dbus_signal(DBusConnection *conn, DBusMessage
 
 static void mode_received(DBusPendingCall *call, void *user_data)
 {
+  HildonFileSystemSettings *self;
   DBusMessage *message;
   DBusError error;
+
+  self = HILDON_FILE_SYSTEM_SETTINGS(user_data);
 
   g_assert(dbus_pending_call_get_completed(call));
   message = dbus_pending_call_steal_reply(call);
@@ -214,15 +221,20 @@ static void mode_received(DBusPendingCall *call, void *user_data)
     dbus_error_free(&error);
   }
   else
-    set_flight_mode_from_message(HILDON_FILE_SYSTEM_SETTINGS(user_data), message);
+    set_flight_mode_from_message(self, message);
 
   dbus_message_unref(message);
+
+  self->priv->flightmode_ready = TRUE;
 }
 
 static void btname_received(DBusPendingCall *call, void *user_data)
 {
+  HildonFileSystemSettings *self;
   DBusMessage *message;
   DBusError error;
+
+  self = HILDON_FILE_SYSTEM_SETTINGS(user_data);
 
   g_assert(dbus_pending_call_get_completed(call));
   message = dbus_pending_call_steal_reply(call);
@@ -236,9 +248,11 @@ static void btname_received(DBusPendingCall *call, void *user_data)
     dbus_error_free(&error);
   }
   else
-    set_bt_name_from_message(HILDON_FILE_SYSTEM_SETTINGS(user_data), message);
+    set_bt_name_from_message(self, message);
 
   dbus_message_unref(message);
+
+  self->priv->btname_ready = TRUE;
 }
 
 static void 
@@ -417,6 +431,8 @@ static gboolean delayed_init(gpointer data)
   	gconf_value_free(value);
   }
 
+  self->priv->gconf_ready = TRUE;
+
   return FALSE; /* We need this only once */
 }
 
@@ -443,6 +459,13 @@ HildonFileSystemSettings *_hildon_file_system_settings_get_instance(void)
     singleton = g_object_new(HILDON_TYPE_FILE_SYSTEM_SETTINGS, NULL);
 
   return singleton;
+}
+
+gboolean _hildon_file_system_settings_ready(HildonFileSystemSettings *self)
+{
+  return self->priv->btname_ready && 
+         self->priv->gconf_ready &&
+         self->priv->flightmode_ready;
 }
 
 gboolean _hildon_file_system_settings_get_flight_mode(void)

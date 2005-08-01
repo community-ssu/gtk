@@ -2363,6 +2363,7 @@ gboolean hildon_file_system_model_load_uri(HildonFileSystemModel * model,
                                             const gchar * uri,
                                             GtkTreeIter * iter)
 {
+    HildonFileSystemSettings *settings;
     gboolean result;
     GtkFilePath *filepath;
     HildonFileSystemModelPrivate *priv = CAST_GET_PRIVATE(model);
@@ -2370,6 +2371,15 @@ gboolean hildon_file_system_model_load_uri(HildonFileSystemModel * model,
     filepath = gtk_file_system_uri_to_path(priv->filesystem, uri);
     if (filepath == NULL)
       return FALSE;
+
+    if (!gtk_file_system_path_is_local(priv->filesystem, filepath))
+    {
+      /* If we're accessing a gateway, its root node doesn't exist until
+         settings are read. Wait here until they are */
+      settings = _hildon_file_system_settings_get_instance();
+      while (!_hildon_file_system_settings_ready(settings))
+        gtk_main_iteration();
+    }
 
     result = hildon_file_system_model_load_path(model, filepath, iter);
 
@@ -2402,9 +2412,12 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
     g_return_val_if_fail(iter != NULL, FALSE);
 
     /* Let's see if given path is already in the tree */
-    if (hildon_file_system_model_search_path
-        (model, path, iter, NULL, TRUE))
-        return TRUE;
+    if (hildon_file_system_model_search_path(model, path, iter, NULL, TRUE))
+    {
+      /* In case of gateway, we may need this to allow accessing contents */
+      (void) _hildon_file_system_model_mount_device_iter(model, iter, NULL);
+      return TRUE;
+    }
 
     /* No, path was not found. Let's try go one level up and loading more
        contents */
@@ -2666,6 +2679,7 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
 {
     HildonFileSystemModelNode *model_node;
     HildonFileSystemModelPrivate *priv;
+    static gboolean active_flag = FALSE;
 
     g_return_val_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model), FALSE);
     g_return_val_if_fail(iter != NULL, FALSE);
@@ -2674,9 +2688,26 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
     priv = model->priv;
     model_node = ((GNode *) iter->user_data)->data;
 
-    if (model_node->type == HILDON_FILE_SYSTEM_MODEL_GATEWAY && 
-        !_hildon_file_system_settings_get_flight_mode())
+    if (model_node->type == HILDON_FILE_SYSTEM_MODEL_GATEWAY && !active_flag)
     {
+      HildonFileSystemSettings *settings;
+
+      settings = _hildon_file_system_settings_get_instance();
+      active_flag = TRUE;
+
+      /* We really have to know gateway state until we can continue.
+         Entering main loop can be dangerous (some functions
+         experience re-entrancy issues). Anyway, this is issue only
+         if this function is called almost immediately after creating
+         the first model in a process. Then settings are not yet ready.
+      */
+      while (!_hildon_file_system_settings_ready(settings))
+        gtk_main_iteration();
+
+      active_flag = FALSE;
+
+      if (!_hildon_file_system_settings_get_flight_mode())
+      {
         if (!link_file_folder(priv->gateway_node, priv->gateway_path, error))
             return FALSE;
 
@@ -2685,6 +2716,7 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
         hildon_file_system_model_delayed_add_children(model, 
             priv->gateway_node, TRUE);
         return TRUE;
+      }
     }
 
     return FALSE;

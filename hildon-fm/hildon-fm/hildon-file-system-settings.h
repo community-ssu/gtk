@@ -73,6 +73,9 @@ struct _HildonFileSystemSettingsClass
 GType hildon_file_system_settings_get_type(void);
 HildonFileSystemSettings *_hildon_file_system_settings_get_instance(void);
 
+/* Returns TRUE, if async queries have finished */
+gboolean _hildon_file_system_settings_ready(HildonFileSystemSettings *self);
+
 /* Convenience APIs */
 gboolean _hildon_file_system_settings_get_flight_mode(void);
 
