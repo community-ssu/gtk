@@ -731,8 +731,6 @@ static void
 hildon_app_init (HildonApp *self)
 {
     HildonAppPrivate *priv;
-    GdkGeometry geometry;
-    GdkWindowHints geom_mask;
 
     /* Earlier textdomain was bound here. That was a dirty hack */
     priv = HILDON_APP_GET_PRIVATE(self);
@@ -752,15 +750,15 @@ hildon_app_init (HildonApp *self)
     priv->autoregistration = TRUE;
     priv->scroll_control = TRUE;
 
-    /* normal init */
-    geometry.min_width = 720;
-    geometry.min_height = 420;
-    geometry.max_width = 720;
-    geometry.max_height = 420;
-
-    geom_mask = GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE;
-    gtk_window_set_geometry_hints(GTK_WINDOW(self), GTK_WIDGET(self),
-                                  &geometry, geom_mask);
+    /* Forced geometry (720x420 min/max) was removed for following reasons:
+       - If window was not realized when widgets with subwindows were
+         added, those child windows were placed incorrectly (this happens
+         *only* when forced geometry is at least equal to available size).
+         This is some kind of gtk weirdness, but removing this step
+         from HildonApp is much easier than figuring out gtk problem.
+       - matchbox-window-manager still maximizes the window, no matter
+         what kind of geometry hints we set.
+    */
 
     gtk_widget_set_events (GTK_WIDGET(self), GDK_BUTTON_PRESS_MASK |
                            GDK_BUTTON_RELEASE_MASK |
@@ -1269,8 +1267,16 @@ hildon_app_send_clipboard_reply(XClientMessageEvent *cm, GtkWidget *widget)
 
   if (GTK_IS_EDITABLE(widget))
     {
-      selection =
-	gtk_editable_get_selection_bounds(GTK_EDITABLE(widget), NULL, NULL);
+      if (GTK_IS_ENTRY(widget) && !GTK_ENTRY(widget)->visible)
+	{
+	  /* nothing can be copied/cut in non-visible entries */
+	  selection = FALSE;
+	}
+      else
+	{
+	  selection =
+	    gtk_editable_get_selection_bounds(GTK_EDITABLE(widget), NULL, NULL);
+	}
     }
   else if (GTK_IS_TEXT_VIEW(widget))
     {

@@ -4,3 +4,22 @@
 	GtkInfoprint. gtk_banner_close attempted to destroy a banner which
 	was actually already destroyed automatically when its transient
 	parent was destroyed
+
+	* hildon-lgpl/hildon-defines.h: Fixed problem where
+	HILDON_ICON_SIZE_INDI_WLAN_STRENGTH was set too small
+
+	* Fixed dimming paste option when copied text cannot / should not
+	be pasted
+
+	* hildon-app.c: Disallowed copying / cutting text from non-visible
+	widgets Removed forced geometry constraints
+
+	* hildon-defines.[ch]: Icon size definition fixes
+
+	* Fixed critical GTK+ error in open file dialog
+
+	* Fixed drag and drop not working correctly
+
+	* gtk-infoprint.c: replace gtk_if_fail with code which doesn't
+	spam the console with Gtk-CRITICAL messages
+

@@ -42,31 +42,31 @@ void hildon_icon_sizes_init (void)
   
   hildoniconsizes = &hildoninternaliconsizes;
   
-  hildoniconsizes->icon_size_list = gtk_icon_size_register ("hildon_icon_size_list", 64, 54);
+  hildoniconsizes->icon_size_list = gtk_icon_size_register ("hildon_icon_size_list", 64, 64);
   hildoniconsizes->icon_size_small = gtk_icon_size_register ("*icon_size_small", 26, 26);
   hildoniconsizes->icon_size_toolbar = gtk_icon_size_register ("icon_size_toolbar", 26, 26);
   hildoniconsizes->icon_size_widg = gtk_icon_size_register ("icon_size_widg", 26, 26);
   hildoniconsizes->icon_size_widg_wizard = gtk_icon_size_register ("icon_size_widg_wizard", 50, 50);
-  hildoniconsizes->icon_size_grid = gtk_icon_size_register ("icon_size_grid", 64, 54);
+  hildoniconsizes->icon_size_grid = gtk_icon_size_register ("icon_size_grid", 64, 64);
   hildoniconsizes->icon_size_big_note = gtk_icon_size_register ("icon_size_big_note", 50, 50);
   hildoniconsizes->icon_size_note = gtk_icon_size_register ("icon_size_note", 26, 26);
   hildoniconsizes->icon_size_statusbar = gtk_icon_size_register ("icon_size_statusbar", 40, 40);
-  hildoniconsizes->icon_size_indi_video_player_pre_roll = gtk_icon_size_register ("icon_size_indi_video_player_pre_roll", 300, 150);
+  hildoniconsizes->icon_size_indi_video_player_pre_roll = gtk_icon_size_register ("icon_size_indi_video_player_pre_roll", 64, 64);
   hildoniconsizes->icon_size_indi_key_pad_lock = gtk_icon_size_register ("icon_size_indi_key_pad_lock", 50, 50);
-  hildoniconsizes->icon_size_indi_copy = gtk_icon_size_register ("icon_size_indi_copy", 110, 60);
-  hildoniconsizes->icon_size_indi_delete = gtk_icon_size_register ("icon_size_indi_delete", 91, 54);
-  hildoniconsizes->icon_size_indi_process = gtk_icon_size_register ("icon_size_indi_process", 54, 60);
-  hildoniconsizes->icon_size_indi_progressball = gtk_icon_size_register ("icon_size_indi_progressball", 22, 24);
-  hildoniconsizes->icon_size_indi_send = gtk_icon_size_register ("icon_size_indi_send", 63, 60);
+  hildoniconsizes->icon_size_indi_copy = gtk_icon_size_register ("icon_size_indi_copy", 64, 64);
+  hildoniconsizes->icon_size_indi_delete = gtk_icon_size_register ("icon_size_indi_delete", 64, 64);
+  hildoniconsizes->icon_size_indi_process = gtk_icon_size_register ("icon_size_indi_process", 64, 64);
+  hildoniconsizes->icon_size_indi_progressball = gtk_icon_size_register ("icon_size_indi_progressball", 64, 64);
+  hildoniconsizes->icon_size_indi_send = gtk_icon_size_register ("icon_size_indi_send", 64, 64);
   hildoniconsizes->icon_size_indi_offmode_charging = gtk_icon_size_register ("icon_size_indi_offmode_charging", 50, 50);
   hildoniconsizes->icon_size_indi_tap_and_hold = gtk_icon_size_register ("icon_size_indi_tap_and_hold", 34, 34);
-  hildoniconsizes->icon_size_indi_send_receive = gtk_icon_size_register ("icon_size_indi_send_receive", 64, 54);
-  hildoniconsizes->icon_size_indi_wlan_strength = gtk_icon_size_register ("icon_size_indi_wlan_strength", 52, 26);
+  hildoniconsizes->icon_size_indi_send_receive = gtk_icon_size_register ("icon_size_indi_send_receive", 64, 64);
+  hildoniconsizes->icon_size_indi_wlan_strength = gtk_icon_size_register ("icon_size_indi_wlan_strength", 64, 64);
   
-  hildoniconsizes->image_size_indi_nokia_logo = gtk_icon_size_register ("image_size_indi_nokia_logo", 103, 30);
-  hildoniconsizes->image_size_indi_startup_failed = gtk_icon_size_register ("image_size_indi_startup_failed", 400, 240);
-  hildoniconsizes->image_size_indi_startup_nokia_logo = gtk_icon_size_register ("image_size_indi_startup_nokia_logo", 472, 119);
-  hildoniconsizes->image_size_indi_nokia_hands = gtk_icon_size_register ("image_size_indi_nokia_hands", 800, 480);
+  hildoniconsizes->image_size_indi_nokia_logo = gtk_icon_size_register ("image_size_indi_nokia_logo", 64, 64);
+  hildoniconsizes->image_size_indi_startup_failed = gtk_icon_size_register ("image_size_indi_startup_failed", 64, 64);
+  hildoniconsizes->image_size_indi_startup_nokia_logo = gtk_icon_size_register ("image_size_indi_startup_nokia_logo", 64, 64);
+  hildoniconsizes->image_size_indi_nokia_hands = gtk_icon_size_register ("image_size_indi_nokia_hands", 64, 64);
 }
 
 typedef struct _HildonLogicalData HildonLogicalData;
