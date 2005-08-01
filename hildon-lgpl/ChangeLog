@@ -1,5 +1,8 @@
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* hildon-caption.c: check if the child is container which contains
+	focusable widget
+	
 	* hildon-find-toolbar.[ch] (hildon_find_toolbar_highlight_entry):
 	new function to highlight text entry and let it grab focus
 	depending on passed value.

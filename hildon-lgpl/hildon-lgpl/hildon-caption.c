@@ -118,6 +118,7 @@ static void hildon_caption_get_child_property (GtkContainer    *container,
 					       guint            property_id,
 					       GValue          *value,
 					       GParamSpec      *pspec);
+static void get_first_focusable_child ( GtkWidget *widget, gpointer data );
 
 struct _HildonCaptionPrivate
 {
@@ -540,7 +541,31 @@ static gboolean hildon_caption_button_press( GtkWidget *widget,
     priv->is_focused = TRUE;
     gtk_widget_grab_focus( GTK_BIN(widget)->child );
   }
+  else if ( GTK_IS_CONTAINER(GTK_BIN(widget)->child) )
+  {
+    GtkWidget *cwid= NULL;
+    /* go through the children of the container for the first focusable children */
+    gtk_container_foreach (GTK_CONTAINER(GTK_BIN(widget)->child), (GtkCallback) get_first_focusable_child, &cwid );
+    if (cwid)
+    {
+       priv->is_focused = TRUE;
+       gtk_widget_grab_focus( GTK_WIDGET(cwid) );
+    }
+  }    
   return FALSE;
+}
+
+static void get_first_focusable_child ( GtkWidget *widget, gpointer data )
+{
+  GtkWidget **child = (GtkWidget**)data;
+  /* if a first child has already been found then do nothing */
+  if (*child) return;
+
+  if (GTK_WIDGET_CAN_FOCUS (widget)) *child = widget;  
+  else if (GTK_IS_CONTAINER(widget)) /* if the child is a container itself then go through them also /including/ internals */  
+  {
+     gtk_container_forall (GTK_CONTAINER(widget), get_first_focusable_child, child);
+  }
 }
 
 static void hildon_caption_init( HildonCaption *caption )
