@@ -1201,8 +1201,15 @@ gtk_combo_box_menu_size_request (GtkWidget      *menu,
                                  GtkRequisition *requisition,
                                  gpointer        user_data)
 {
-  requisition->width = MAX (MIN (requisition->width, HILDON_MENU_COMBO_MAX_WIDTH),
-                            HILDON_MENU_COMBO_MIN_WIDTH);
+  GtkWidget *combo_box = GTK_WIDGET (user_data);
+
+  if ( combo_box->allocation.width < HILDON_MENU_COMBO_MAX_WIDTH )
+      requisition->width = MAX (MIN (requisition->width, HILDON_MENU_COMBO_MAX_WIDTH),
+              HILDON_MENU_COMBO_MIN_WIDTH);
+  else
+      requisition->width = MAX (MIN (requisition->width, combo_box->allocation.width),
+              HILDON_MENU_COMBO_MIN_WIDTH);
+  
   requisition->height = MAX (MIN (requisition->height, HILDON_MENU_COMBO_MAX_HEIGHT),
                              HILDON_MENU_COMBO_MIN_HEIGHT);
 
