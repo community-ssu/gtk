@@ -124,10 +124,14 @@
    CALLBACK is either called from the main event loop, or it might be
    called directly from SPAWN_APP_INSTALLER_TOOL when an error
    occurred before app-installer-tool could be spawned.  When CALLBACK
-   is called directly, SPAWN_APP_INSTALLER_TOOL returns zero.
-   Otherwise, it returns non-zero.
+   is called directly, SPAWN_APP_INSTALLER_TOOL returns NULL.
+   Otherwise, it returns a handle that can be used with
+   CANCEL_APP_INSTALLER_TOOL to interrupt the process.
+
+   The handle needs to be freed with free_app_installer_tool.
 */
-static int
+typedef struct tool_handle tool_handle;
+static tool_handle *
 spawn_app_installer_tool (AppData *app_data,
 			  int as_install,
 			  gchar *arg1, gchar *arg2, gchar *arg3,
@@ -141,7 +145,9 @@ spawn_app_installer_tool (AppData *app_data,
 							gchar *line),
 			  gpointer callback_data);
 
-typedef struct {
+struct tool_handle {
+  GPid pid;
+
   void (*callback) (gpointer, int, gchar *, gchar *);
   void (*line_callback[2]) (gpointer, gchar *);
   gpointer callback_data;
@@ -150,10 +156,10 @@ typedef struct {
   GString *strings[2];
   gboolean exited;
   int status;
-} spawn_data;
+};
 
 static void
-check_completion (spawn_data *data)
+check_completion (tool_handle *data)
 {
   /* The invocation is done when we have reaped the exit status and both
      the stdout and stderr channels are at EOF.
@@ -202,14 +208,13 @@ check_completion (spawn_data *data)
 		      data->strings[1]->str);
       g_string_free (data->strings[0], 1);
       g_string_free (data->strings[1], 1);
-      g_free (data);
     }
 }
 
 static void
 reap_process (GPid pid, int status, gpointer raw_data)
 {
-  spawn_data *data = (spawn_data *)raw_data;
+  tool_handle *data = (tool_handle *)raw_data;
   data->status = status;
   data->exited = 1;
   check_completion (data);
@@ -218,7 +223,7 @@ reap_process (GPid pid, int status, gpointer raw_data)
 static gboolean
 read_into_string (GIOChannel *channel, GIOCondition cond, gpointer raw_data)
 {
-  spawn_data *data = (spawn_data *)raw_data;
+  tool_handle *data = (tool_handle *)raw_data;
   gchar buf[256];
   gsize count;
   GIOStatus status;
@@ -280,7 +285,7 @@ read_into_string (GIOChannel *channel, GIOCondition cond, gpointer raw_data)
 }
 
 void
-add_string_reader (int fd, int id, spawn_data *data)
+add_string_reader (int fd, int id, tool_handle *data)
 {
   data->strings[id] = g_string_new ("");
   data->channels[id] = g_io_channel_unix_new (fd);
@@ -290,7 +295,7 @@ add_string_reader (int fd, int id, spawn_data *data)
   g_io_channel_unref (data->channels[id]);
 }
 
-static int
+static tool_handle *
 spawn_app_installer_tool (AppData *app_data,
 			  int as_install,
 			  gchar *arg1, gchar *arg2, gchar *arg3,
@@ -305,7 +310,7 @@ spawn_app_installer_tool (AppData *app_data,
 			  gpointer callback_data)
 {
   gchar *argv[8], **arg = argv;
-  spawn_data *data;
+  tool_handle *data;
   GError *error = NULL;
   GPid child_pid;
   int stdout_fd, stderr_fd;
@@ -351,10 +356,11 @@ spawn_app_installer_tool (AppData *app_data,
     {
       callback (callback_data, 0, "", error->message);
       g_error_free (error);
-      return 0;
+      return NULL;
     }
 
-  data = g_new (spawn_data, 1);
+  data = g_new (tool_handle, 1);
+  data->pid = child_pid;
   data->callback = callback;
   data->callback_data = callback_data;
   data->line_callback[0] = stdout_line_callback;
@@ -364,7 +370,21 @@ spawn_app_installer_tool (AppData *app_data,
   add_string_reader (stdout_fd, 0, data);
   add_string_reader (stderr_fd, 1, data);
 
-  return 1;
+  return data;
+}
+
+static void
+cancel_app_installer_tool (tool_handle *data)
+{
+  if (kill (data->pid, SIGINT) < 0)
+    perror ("kill");
+}
+
+static void
+free_app_installer_tool (tool_handle *data)
+{
+  g_spawn_close_pid (data->pid);
+  g_free (data);
 }
 
 /* Run the app-installer-tool as the user "install" with the arguments
@@ -406,7 +426,8 @@ run_callback (gpointer raw_data,
 
   if (!success && data->error_description)
     present_report_with_details (data->app_data,
-				 _("ai_ti_general_error"),
+				 /* XXX-NLS - ai_ti_general_error */
+				 "Error",
 				 data->error_description,
 				 stderr_string);
 
@@ -424,6 +445,7 @@ run_app_installer_tool (AppData *app_data,
 			gchar *error_description)
 {
   gchar *my_stderr_string = NULL;
+  tool_handle *handle;
   run_data data;
 
   if (stderr_string == NULL)
@@ -433,15 +455,17 @@ run_app_installer_tool (AppData *app_data,
   data.stdout_string = &stdout_string;
   data.stderr_string = &stderr_string;
   data.error_description = error_description;
-  if (spawn_app_installer_tool (app_data, 1,
-				arg1, arg2, arg3,
-				run_callback,
-				NULL,
-				NULL,
-				&data))
+  handle = spawn_app_installer_tool (app_data, 1,
+				     arg1, arg2, arg3,
+				     run_callback,
+				     NULL,
+				     NULL,
+				     &data);
+  if (handle)
     {
       data.loop = g_main_loop_new (NULL, 0);
       g_main_loop_run (data.loop);
+      free_app_installer_tool (handle);
     }
 
   if (stderr_string == &my_stderr_string)
@@ -473,7 +497,8 @@ list_packages (AppData *app_data)
   if (!run_app_installer_tool (app_data,
 			       "list", NULL, NULL,
 			       &stdout_string, NULL,
-			       _("ai_ti_listing_failed")))
+			       /* XXX-NLS - ai_ti_listing_failed */
+			       "Can not get the list of installed packages."))
     return NULL;
 
   default_icon = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
@@ -609,7 +634,8 @@ package_file_info (AppData *app_data, gchar *file)
   if (run_app_installer_tool (app_data,
 			      "describe-file", file, NULL,
 			      &stdout_string, NULL,
-			      _("ai_ti_describe_file_failed")))
+			      /* XXX-NLS - ai_ti_describe_file_failed */
+			      _("ai_error_corrupted")))
     {
       gchar *ptr, *package, *version, *size;
 
@@ -658,7 +684,8 @@ package_description (AppData *app_data, gchar *package)
   if (run_app_installer_tool (app_data,
 			      "describe-package", package, NULL,
 			      &stdout_string, NULL,
-			      _("ai_ti_describe_package_failed")))
+			      /* XXX-NLS - ai_ti_describe_package_failed */
+			      "Can not get the description of the package."))
     return stdout_string;
   else
     return g_strdup ("");
@@ -713,20 +740,32 @@ format_relationship_failures (gchar *header, gchar *output)
     }
 
   if (exists)
-    g_string_append (report, _("ai_ti_already_installed\n"));
+    {
+      g_string_append (report, _("ai_ti_already_installed"));
+      g_string_append (report, "\n");
+    }
   if (depends)
     {
-      g_string_append (report, _("ai_ti_depends_on\n"));
+      /* XXX-NLS - ai_ti_depends_on */
+      g_string_append 
+	(report,
+	 _("It depends on the following uninstalled packages:\n"));
       append_list_strings (report, depends);
     }
   if (depended)
     {
-      g_string_append (report, _("ai_ti_depended_on_by\n"));
+      /* XXX-NLS - ai_ti_depended_on_by */
+      g_string_append 
+	(report,
+	 _("The following installed packages depend on it:\n"));
       append_list_strings (report, depended);
     }
   if (conflicts)
     {
-      g_string_append (report, _("ai_ti_conflicts_with\n"));
+      /* XXX-NLS - ai_ti_conflicts_with */
+      g_string_append
+	(report,
+	 _("It conflicts with the following installed packages:\n"));
       append_list_strings (report, conflicts);
     }
 
@@ -740,6 +779,8 @@ format_relationship_failures (gchar *header, gchar *output)
 #define FUZZ_FACTOR 1.0
 
 typedef struct {
+  tool_handle *tool;
+
   AppData *app_data;
   gchar *package;
   GMainLoop *loop;
@@ -854,6 +895,14 @@ kb_used_in_var_lib_install (void)
 #endif
 }
 
+static void
+installer_cancel (gpointer raw_data)
+{
+  installer_data *data = (installer_data *)raw_data;
+  fprintf (stderr, "cancel\n");
+  cancel_app_installer_tool (data->tool);
+}
+
 static gboolean
 installer_progress (gpointer raw_data)
 {
@@ -865,7 +914,8 @@ installer_progress (gpointer raw_data)
 
   if (data->dialog == NULL)
     data->dialog =
-      ui_create_progress_dialog (data->app_data, data->progress_title);
+      ui_create_progress_dialog (data->app_data, data->progress_title,
+				 installer_cancel, data);
 
 #if 0
   /* XXX - the progress indication is not at all accurate and we need
@@ -911,21 +961,25 @@ install_package (gchar *deb, AppData *app_data)
       data.initial_used_kb = kb_used_in_var_lib_install ();
       data.package_size_kb = atoi (info.size->str);
 
-      data.progress_title = "Installing";
-      data.report_title = _("ai_ti_installation_report"),
+      data.progress_title = _("ai_ti_installing_installing");
+      /* XXX-NLS - ai_ti_installation_report */
+      data.report_title = _("Installation report"),
       data.success_text = _("ai_ti_application_installed_text");
-      data.failure_text = _("ai_ti_installation_failed_text");
+      /* XXX-NLS - ai_ti_installation_failed, without the "Show Details" */
+      data.failure_text = _("Installation of %s failed.\n");
 
-      if (spawn_app_installer_tool (app_data, 1,
-				    "install", deb, NULL,
-				    installer_callback,
-				    NULL,
-				    NULL,
-				    &data))
+      data.tool = spawn_app_installer_tool (app_data, 1,
+					    "install", deb, NULL,
+					    installer_callback,
+					    NULL,
+					    NULL,
+					    &data);
+      if (data.tool)
 	{
 	  data.loop = g_main_loop_new (NULL, 0);
 	  data.timeout = g_timeout_add (500, installer_progress, &data);
 	  g_main_loop_run (data.loop);
+	  free_app_installer_tool (data.tool);
 	}
     }
 
@@ -954,8 +1008,10 @@ copy_callback (gpointer raw_data,
   else
     {
       present_report_with_details (data->app_data,
-				   _("ai_ti_install_report"),
-				   _("ai_ti_copying_failed"),
+				   /* XXX-NLS - ai_ti_installation_report */
+				   _("Installation report"),
+				   /* XXX-NLS - ai_ti_copying_failed */
+				   _("Copying failed."),
 				   details);
     }
 
@@ -974,7 +1030,8 @@ copy_stdout_callback (gpointer raw_data,
 
   if (!data->showing_progress)
     {
-      gtk_banner_show_bar (main_dialog, _("ai_ti_copying"));
+      /* XXX-NLS - ai_ti_copying */
+      gtk_banner_show_bar (main_dialog, _("Copying"));
       data->showing_progress = 1;
     }
 
@@ -993,7 +1050,8 @@ install_package_from_uri (gchar *uri, AppData *app_data)
   vfs_uri = gnome_vfs_uri_new (uri);
   if (vfs_uri == NULL)
     {
-      details = g_strdup_printf (_("ai_ti_unsupported_uri"), uri);
+      /* XXX-NLS - ai_ti_unsupported_uri */
+      details = g_strdup_printf (_("Unsupported URI: %s\n"), uri);
       success = 0;
       goto done;
     }
@@ -1002,6 +1060,8 @@ install_package_from_uri (gchar *uri, AppData *app_data)
      they are considered local by GnomeVFS or not.  (GnomeVFS
      considers a file:// URI pointing to a NFS mounted volume as
      remote, but we can read that just fine of course.)
+
+     XXX - get_path does no decoding of stuff like '%20'.
   */
 
   scheme = gnome_vfs_uri_get_scheme (vfs_uri);
@@ -1014,12 +1074,13 @@ install_package_from_uri (gchar *uri, AppData *app_data)
       char template[] = "/tmp/osso-ai-XXXXXX", *tempdir;
       gchar *basename, *local;
       copy_data data;
+      tool_handle *handle;
 
       tempdir = mkdtemp (template);
       if (tempdir == NULL)
 	{
-	  details = g_strdup_printf (_("ai_ti_can_not_create_tempdir"),
-				     strerror (errno));
+	  details = g_strdup_printf ("creating %s: %s",
+				     template, strerror (errno));
 	  success = 0;
 	  goto done;
 	}
@@ -1028,22 +1089,21 @@ install_package_from_uri (gchar *uri, AppData *app_data)
       local = g_strdup_printf ("%s/%s", tempdir, basename);
       free (basename);
 
-      fprintf (stderr, "copy %s %s\n", uri, local);
-
       data.app_data = app_data;
       data.local = local;
       data.loop = NULL;
       data.showing_progress = 0;
-      if (spawn_app_installer_tool (app_data, 0,
-				    "copy", uri, local,
-				    copy_callback,
-				    copy_stdout_callback,
-				    NULL,
-				    &data))
+      handle = spawn_app_installer_tool (app_data, 0,
+					 "copy", uri, local,
+					 copy_callback,
+					 copy_stdout_callback,
+					 NULL,
+					 &data);
+      if (handle)
 	{
 	  data.loop = g_main_loop_new (NULL, 0);
-	  fprintf (stderr, "looping\n");
 	  g_main_loop_run (data.loop);
+	  free_app_installer_tool (handle);
 	}
 
       /* We don't put up dialogs for errors that happen now.  From the
@@ -1061,10 +1121,12 @@ install_package_from_uri (gchar *uri, AppData *app_data)
  done:
   if (!success)
     {
-      gchar *report = g_strdup_printf (_("ai_ti_installation_failed_text"),
+      /* XXX-NLS - ai_ti_installation_failed, without the "Show Details" */
+      gchar *report = g_strdup_printf (_("Installation of %s failed.\n"),
 				       uri);
       present_report_with_details (app_data,
-				   _("ai_ti_installation_report"),
+				   /* XXX-NLS - ai_ti_installation_report */
+				   _("Installation report"),
 				   report,
 				   details);
       free (report);
@@ -1087,8 +1149,9 @@ uninstall_package (gchar *package, gchar *size, AppData *app_data)
       data.initial_used_kb = kb_used_in_var_lib_install ();
       data.package_size_kb = -atoi (size);
 
-      data.progress_title = "Uninstalling";
-      data.report_title = _("ai_ti_uninstallation_report"),
+      data.progress_title = _("ai_ti_uninstall_progress_uninstalling");
+      /* XXX-NLS - ai_ti_uninstallation_report */
+      data.report_title = _("Uninstallation report"),
       data.success_text = _("ai_ti_application_uninstalled_text");
       data.failure_text = _("ai_ti_uninstallation_failed_text");
 

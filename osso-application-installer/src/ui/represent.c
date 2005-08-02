@@ -47,7 +47,7 @@ update_package_list (AppData *app_data)
   gtk_widget_set_sensitive (app_ui_data->uninstall_button, 0);
   gtk_widget_hide (app_ui_data->package_list);
   gtk_widget_hide (app_ui_data->empty_list_label);
-  gtk_widget_hide (app_ui_data->database_corrupted_label);
+  gtk_widget_hide (app_ui_data->database_unavailable_label);
 
   model = list_packages (app_data);
   gtk_tree_view_set_model (GTK_TREE_VIEW(app_ui_data->treeview), model);
@@ -57,7 +57,7 @@ update_package_list (AppData *app_data)
       /* We could not get the list of packages.  Label this as a
 	 database problem, regardless of what really went wrong.
       */
-      gtk_widget_show (app_ui_data->database_corrupted_label);
+      gtk_widget_show (app_ui_data->database_unavailable_label);
       gtk_widget_set_sensitive (app_ui_data->installnew_button, 0);
     }
   else
@@ -102,7 +102,8 @@ on_details_button_clicked (GtkWidget *button,
   details_button_data *data = (details_button_data *)raw_data;
 
   append_to_text_buffer (data->text_buffer, "\n\n");
-  append_to_text_buffer (data->text_buffer, _("ai_ti_details\n"));
+  /* XXX-NLS - ai_ti_details */
+  append_to_text_buffer (data->text_buffer, _("Details:\n"));
   append_to_text_buffer (data->text_buffer, data->details);
   gtk_widget_set_sensitive (button, 0);
 }
@@ -142,21 +143,24 @@ present_report_with_details (AppData *app_data,
       GtkTextView *text_view;
       GtkWidget *button;
 
-      button = gtk_button_new_with_label (_("ai_bd_report_show_details"));
-      gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->action_area),
-			 button);
-
       text_view = gtk_bin_get_child (GTK_BIN (sw));
       data.text_buffer = gtk_text_view_get_buffer (text_view);
       data.details = details;
+      
+      /* XXX-NLS - ai_bd_report_show_details */
+      button = gtk_button_new_with_label (_("Show details"));
+      gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->action_area),
+			 button);
       gtk_signal_connect (GTK_OBJECT (button),
 			  "clicked",
 			  G_CALLBACK (on_details_button_clicked),
 			  (gpointer) &data);
     }
 
+
   gtk_dialog_add_buttons (GTK_DIALOG (dialog),
-			  _("ai_bd_report_ok"), GTK_RESPONSE_OK,
+			  /* XXX-NLS - ai_bd_report_ok */
+			  _("ai_bd_install_application_ok"), GTK_RESPONSE_OK,
 			  NULL);
 
   gtk_widget_set_size_request (GTK_WIDGET(dialog), 400, 200);

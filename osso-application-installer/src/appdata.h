@@ -68,7 +68,7 @@ struct _AppUIData {
   GtkWidget *package_list;
   /* 'no packages' label */
   GtkWidget *empty_list_label;
-  GtkWidget *database_corrupted_label;
+  GtkWidget *database_unavailable_label;
   /* main label, textbuffer */
   GtkTextBuffer *main_label;
   /* textbuffer containing error message */

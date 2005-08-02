@@ -122,9 +122,14 @@ GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
 typedef struct {
   GtkWidget *dialog;
   GtkProgressBar *progressbar;
+  void (*cancel_callback) (gpointer data);
+  gpointer callback_data;
 } progress_dialog;
 
-progress_dialog *ui_create_progress_dialog (AppData *app_data, gchar *title);
+progress_dialog *ui_create_progress_dialog (AppData *app_data,
+					    gchar *title,
+					    void (*cancel_callback) (gpointer),
+					    gpointer callback_data);
 void ui_set_progress_dialog (progress_dialog *dialog, double fraction);
 void ui_close_progress_dialog (progress_dialog *dialog);
 

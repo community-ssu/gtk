@@ -59,7 +59,7 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   GError *error = NULL;
   
   GtkWidget *empty_list_label = NULL;
-  GtkWidget *database_corrupted_label = NULL;
+  GtkWidget *database_unavailable_label = NULL;
   gboolean show_list = TRUE;
 
   GtkTextBuffer *textbuffer = NULL;
@@ -141,10 +141,11 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   gtk_container_add(GTK_CONTAINER(vbox), empty_list_label);
   app_ui_data->empty_list_label = empty_list_label;
 
-  database_corrupted_label =
-    gtk_label_new (_("ai_ti_application_installer_dbcorrupted"));
-  gtk_container_add (GTK_CONTAINER(vbox), database_corrupted_label);
-  app_ui_data->database_corrupted_label = database_corrupted_label;
+  database_unavailable_label =
+    /* XXX-NLS - ai_ti_database_unavailable */
+    gtk_label_new (_("Database unavailable"));
+  gtk_container_add (GTK_CONTAINER(vbox), database_unavailable_label);
+  app_ui_data->database_unavailable_label = database_unavailable_label;
 
   /* Create separator */
   ULOG_INFO("Adding separator..");
@@ -376,13 +377,22 @@ GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
   return sw;
 }
 
+static void
+progress_cancel_callback (GtkDialog *widget, gint arg1, gpointer data)
+{
+  progress_dialog *dialog = (progress_dialog *)data;
+  dialog->cancel_callback (dialog->callback_data);
+}
+
 progress_dialog *
 ui_create_progress_dialog (AppData *app_data,
-			   gchar *title)
+			   gchar *title,
+			   void (*cancel_callback) (gpointer data),
+			   gpointer callback_data)
 {
   progress_dialog *dialog;
   GtkWidget *hildon_dialog;
-  GtkWindow *main_dialog = app_data->app_ui_data->main_dialog;
+  GtkWindow *main_dialog = GTK_WINDOW (app_data->app_ui_data->main_dialog);
 
   dialog = g_new (progress_dialog, 1);
   dialog->progressbar = gtk_progress_bar_new ();
@@ -390,6 +400,16 @@ ui_create_progress_dialog (AppData *app_data,
     hildon_note_new_cancel_with_progress_bar (main_dialog,
 					      title,
 					      dialog->progressbar);
+  dialog->cancel_callback = cancel_callback;
+  dialog->callback_data = callback_data;
+  if (cancel_callback)
+    {
+      g_signal_connect (G_OBJECT (dialog->dialog),
+			"response",
+			G_CALLBACK (progress_cancel_callback),
+			dialog);
+    }
+
   gtk_widget_show_all (dialog->dialog);
   return dialog;
 }
