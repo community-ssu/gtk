@@ -1,3 +1,21 @@
+2005-08-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Throughout: changed logical l10n strings that are not in version
+	3.1 of the UI spec to their English translations.
+	
+	* src/core.c, src/core.h (spawn_app_installer_tool): Return a
+	handle.  Changed all callers to free it.
+	(free_app_installer_tool): New, for freeing it.
+	(cancel_app_installer_tool): New.
+	(installer_cancel): New.
+	(installer_progress): Use it with the progress dialog.
+
+	* src/ui/interface.h, src/ui/interface.c (progress_dialog,
+	ui_create_progress_dialog): Added cancel_callback.
+
+	* src/appdata.h (AppUIData): Renamed database_corrupted_label to
+	database_unavailable_label.  Changed all uses.
+
 2005-07-28  Marius Vollmer  <marius.vollmer@nokia.com>
 
         Released 2.2-0.
