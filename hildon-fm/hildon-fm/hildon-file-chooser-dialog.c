@@ -562,7 +562,7 @@ static GSList *hildon_file_chooser_dialog_get_paths(GtkFileChooser *
 {
     GtkFilePath *file_path, *base_path;
     GtkFileSystem *backend;
-    gchar *name;
+    gchar *name, *name_without_dot_prefix;
 
     /* If we are asking a name from user, return it. Otherwise return
        selection */
@@ -588,13 +588,18 @@ static GSList *hildon_file_chooser_dialog_get_paths(GtkFileChooser *
        name = ext_name;
     }
 
-    ULOG_INFO("Inputted name: [%s]", name);
+    name_without_dot_prefix = name;
+    while (*name_without_dot_prefix == '.')
+      name_without_dot_prefix++;
+
+    ULOG_INFO("Inputted name: [%s]", name_without_dot_prefix);
 
     backend = _hildon_file_system_model_get_file_system(priv->model);
     base_path =
             hildon_file_selection_get_current_folder(priv->filetree);
     file_path =
-            gtk_file_system_make_path(backend, base_path, name, NULL);
+            gtk_file_system_make_path(backend, base_path, 
+            name_without_dot_prefix, NULL);
 
     gtk_file_path_free(base_path);
     g_free(name);

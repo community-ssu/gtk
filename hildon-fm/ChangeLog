@@ -1,3 +1,10 @@
+2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_get_paths): remove leading dots from
+	user provided file names (otherwise files are be hidden by the
+	filemanager, and the user has no way to access them.)
+
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-file-selection.c: GtkTreeModelSort didn't keep
