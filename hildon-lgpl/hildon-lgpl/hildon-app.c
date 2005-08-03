@@ -1434,7 +1434,8 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 	 XButtonEvent *bev = (XButtonEvent *)xevent;
 
 	 if (HILDON_IS_APPVIEW(appview) &&
-	     _hildon_appview_menu_visible(appview))
+	     _hildon_appview_menu_visible(appview) &&
+             !hildon_appview_get_fullscreen(appview))
           {
 	    x = bev->x_root;
 	    y = bev->y_root;
@@ -1453,7 +1454,8 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
     if (eventti->type == ButtonRelease)
       {
         if (HILDON_IS_APPVIEW(appview) &&
-            _hildon_appview_menu_visible(appview))
+            _hildon_appview_menu_visible(appview) &&
+            !hildon_appview_get_fullscreen(appview))
           {
 	    XButtonEvent *bev = (XButtonEvent *)xevent;
 	    x = bev->x_root;

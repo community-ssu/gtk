@@ -1,3 +1,9 @@
+2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-lgpl/hildon-app.c (hildon_app_event_filter): Appmenu
+	click checking shouldn't be done when we're in fullscreen mode,
+	since there is no appmenu then.
+
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-caption.c: check if the child is container which contains
