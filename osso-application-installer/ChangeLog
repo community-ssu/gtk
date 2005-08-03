@@ -1,5 +1,9 @@
 2005-08-03  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released version 2.4-0.
+
+	* configure.ac: Changed version for release.
+	
 	* src/core.c (install_package_from_uri): use
 	gnome_vfs_unescape_string to decode stuff like '%20'.
 
