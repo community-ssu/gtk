@@ -80,6 +80,7 @@ struct _GtkMenuShellClass
 			    GtkMenuDirectionType direction);
   void (*activate_current) (GtkMenuShell *menu_shell,
 			    gboolean      force_hide);
+  void (*close)            (GtkMenuShell *menu_shell);
   void (*cancel)           (GtkMenuShell *menu_shell);
   void (*select_item)      (GtkMenuShell *menu_shell,
 			    GtkWidget    *menu_item);

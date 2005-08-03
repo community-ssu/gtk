@@ -47,6 +47,7 @@ enum {
   SELECTION_DONE,
   MOVE_CURRENT,
   ACTIVATE_CURRENT,
+  CLOSE,
   CANCEL,
   CYCLE_FOCUS,
   LAST_SIGNAL
@@ -114,6 +115,9 @@ typedef void (*GtkMenuShellSignal2) (GtkObject *object,
  *     Activate the current item. If 'force_hide' is true, hide
  *     the current menu item always. Otherwise, only hide
  *     it if menu_item->klass->hide_on_activate is true.
+ *
+ *  ::close ()
+ *  	Closes the active menu. 
  *
  *  ::cancel ()
  *     Cancels the current selection
@@ -183,6 +187,7 @@ static void gtk_real_menu_shell_move_current (GtkMenuShell      *menu_shell,
 static void gtk_real_menu_shell_activate_current (GtkMenuShell      *menu_shell,
 						  gboolean           force_hide);
 static void gtk_real_menu_shell_cancel           (GtkMenuShell      *menu_shell);
+static void gtk_real_menu_shell_close            (GtkMenuShell      *menu_shell);
 static void gtk_real_menu_shell_cycle_focus      (GtkMenuShell      *menu_shell,
 						  GtkDirectionType   dir);
 
@@ -260,6 +265,7 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
   klass->selection_done = NULL;
   klass->move_current = gtk_real_menu_shell_move_current;
   klass->activate_current = gtk_real_menu_shell_activate_current;
+  klass->close = gtk_real_menu_shell_close;
   klass->cancel = gtk_real_menu_shell_cancel;
   klass->select_item = gtk_menu_shell_real_select_item;
   klass->insert = gtk_menu_shell_real_insert;
@@ -298,6 +304,14 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 		  _gtk_marshal_VOID__BOOLEAN,
 		  G_TYPE_NONE, 1, 
 		  G_TYPE_BOOLEAN);
+  menu_shell_signals[CLOSE] =
+    g_signal_new ("close",
+		  G_OBJECT_CLASS_TYPE (object_class),
+		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+		  G_STRUCT_OFFSET (GtkMenuShellClass, close),
+		  NULL, NULL,
+		  _gtk_marshal_VOID__VOID,
+		  G_TYPE_NONE, 0);
   menu_shell_signals[CANCEL] =
     g_signal_new ("cancel",
 		  G_OBJECT_CLASS_TYPE (object_class),
@@ -321,7 +335,7 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Escape, 0,
-				"cancel", 0);
+				"close", 0);
   gtk_binding_entry_add_signal (binding_set,
 				GDK_F4, 0,
 				"cancel", 0);
@@ -1381,6 +1395,20 @@ gtk_real_menu_shell_activate_current (GtkMenuShell      *menu_shell,
                                     menu_shell->active_menu_item,
 				    force_hide);
     }
+}
+
+static void
+gtk_real_menu_shell_close (GtkMenuShell      *menu_shell)
+{
+	if (menu_shell->parent_menu_shell) {
+		if (GTK_IS_MENU_BAR (menu_shell->parent_menu_shell)) {
+			gtk_menu_popdown (GTK_MENU (menu_shell));
+		} else {
+			gtk_real_menu_shell_move_current (menu_shell, GTK_MENU_DIR_PARENT);
+		}
+	} else {
+		gtk_real_menu_shell_cancel(menu_shell);
+	}
 }
 
 static void

@@ -1,3 +1,8 @@
+2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* gtk/gtkmenushell.[ch]: Added new "close" signal which closes
+	only current menu level and not its parent.
+
 2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* gtk/gtkcombobox.c: Adds a new boolean property called
