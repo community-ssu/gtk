@@ -1389,6 +1389,7 @@ gtk_tree_model_filter_row_has_child_toggled (GtkTreeModel *c_model,
   GtkTreeModelFilter *filter = GTK_TREE_MODEL_FILTER (data);
   GtkTreePath *path;
   GtkTreeIter iter;
+  FilterElt *elt;
 
   g_return_if_fail (c_path != NULL && c_iter != NULL);
 
@@ -1405,6 +1406,13 @@ gtk_tree_model_filter_row_has_child_toggled (GtkTreeModel *c_model,
     return;
 
   gtk_tree_model_get_iter (GTK_TREE_MODEL (data), &iter, path);
+  elt = FILTER_ELT (iter.user_data2);
+
+  /* Make sure that we clear children of this node if
+     child model has no children */
+  if (elt->children && !gtk_tree_model_iter_has_child(c_model, c_iter))
+    gtk_tree_model_filter_free_level(filter, elt->children);
+
   gtk_tree_model_row_has_child_toggled (GTK_TREE_MODEL (data), path, &iter);
 
   gtk_tree_path_free (path);

@@ -1,5 +1,10 @@
 2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* gtk/gtktreemodelfilter.c
+	(gtk_tree_model_filter_row_has_child_toggled): keep
+	GtkTreeModelFilter and GtkTreeModelSort cache in
+	sync. http://bugzilla.gnome.org/show_bug.cgi?id=311955
+	
 	* gtk/gtkmenushell.[ch]: Added new "close" signal which closes
 	only current menu level and not its parent.
 
