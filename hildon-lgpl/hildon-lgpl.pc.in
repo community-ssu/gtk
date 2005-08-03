@@ -7,5 +7,5 @@ Name: hildon-lgpl
 Description: LGPL-licensed widgets for the Hildon framework
 Requires: gtk+-2.0 >= @GTK_VERSION@
 Version: @VERSION@
-Libs: -L${libdir} -lhildonlgpl @X_LIBS@ -lXtst
+Libs: -L${libdir} -lhildonlgpl @X_LIBS@ 
 Cflags: -I${includedir}/hildon-lgpl @X_CFLAGS@

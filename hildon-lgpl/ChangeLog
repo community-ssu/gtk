@@ -1,5 +1,7 @@
 2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* hildon-lgpl.pc.in (Libs): Removed old -lXtst dependency
+
 	* hildon-lgpl/hildon-app.c (hildon_app_event_filter): Appmenu
 	click checking shouldn't be done when we're in fullscreen mode,
 	since there is no appmenu then.
