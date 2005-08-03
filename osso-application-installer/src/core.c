@@ -1060,13 +1060,27 @@ install_package_from_uri (gchar *uri, AppData *app_data)
      they are considered local by GnomeVFS or not.  (GnomeVFS
      considers a file:// URI pointing to a NFS mounted volume as
      remote, but we can read that just fine of course.)
-
-     XXX - get_path does no decoding of stuff like '%20'.
   */
 
   scheme = gnome_vfs_uri_get_scheme (vfs_uri);
   if (scheme && !strcmp (scheme, "file"))
-    install_package (gnome_vfs_uri_get_path (vfs_uri), app_data);
+    {
+      char *unescaped_path = 
+	gnome_vfs_unescape_string (gnome_vfs_uri_get_path (vfs_uri),
+				   NULL);
+      if (unescaped_path)
+	{
+	  install_package (unescaped_path, app_data);
+	  free (unescaped_path);
+	  success = 1;
+	}
+      else
+	{
+	  /* XXX-NLS - ai_ti_unsupported_uri */
+	  details = g_strdup_printf (_("Unsupported URI: %s\n"), uri);
+	  success = 0;
+	}
+    }
   else
     {
       /* We need to copy.
