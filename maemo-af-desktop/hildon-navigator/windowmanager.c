@@ -39,7 +39,6 @@
 
 #include <libosso.h>
 
-
 /* Acquire this from outside and not create here! */
 osso_context_t *osso;
 
@@ -342,6 +341,12 @@ static void top_non_hildonapp(Window xid);
 
 static gchar *get_subname(Window win_id);
 
+
+/*
+ * Check if we need to autotop an application and do it, if necessary.
+*/
+
+static void handle_autotopping( void );
 
 
 /*
@@ -733,11 +738,15 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
             if (gdk_error_trap_pop() == 0 && nitems == 1 &&
                 actual_type == XA_CARDINAL && desktop_shown[0] == 1)
             {
-                wm_cbs.topped_desktop_cb(wm_cbs.cb_data);
-                XFree(desktop_shown);
-                XFree(atomstring);
-                return;
+                handle_autotopping();
             }
+            XFree(desktop_shown);
+            XFree(atomstring);
+            if (wm_class_str != NULL)
+            {
+                XFree(wm_class_str);
+            }
+            return;
     }
 
     /* End of handler calls that do not require wm_class info */
@@ -872,6 +881,13 @@ static void map_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
     
     if (find_application_from_tree(model, &parent, wm_class_str))
     {
+        
+        /* Regardless whether it's HildonApp or not, it's safe to
+           say that the application is not minimized. */
+
+        gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
+                           WM_MINIMIZED_ITEM, FALSE, -1);
+
 	/* Determine whether it is a HildonApp, because applications
            without view supports needs to have different handling... */
         
@@ -1025,6 +1041,7 @@ GtkTreeModel *create_model(void)
                                              G_TYPE_ULONG,
                                              G_TYPE_STRING,
                                              G_TYPE_BOOLEAN,
+                                             G_TYPE_BOOLEAN,
                                              G_TYPE_BOOLEAN);
     
      directory = opendir(DESKTOPENTRYDIR);
@@ -1074,6 +1091,7 @@ GtkTreeModel *create_model(void)
                            WM_VIEW_ID_ITEM, 0,
                            WM_KILLABLE_ITEM, FALSE,
                            WM_KILLED_ITEM, FALSE,
+                           WM_MINIMIZED_ITEM, FALSE,
                            -1);
         if (startup_wmclass != NULL)
         {
@@ -1810,7 +1828,8 @@ static void handle_minimization(GtkTreeModel *model,
             {
                 continue;
             }
-            
+            gtk_tree_store_set(GTK_TREE_STORE(model),
+                               &parent, WM_MINIMIZED_ITEM, TRUE, -1);
             wm_cbs.updated_win_cb(widget_ptr, icon_name, app_name,
                                   view_name, AS_MENUITEM_TO_LAST_POSITION,
                                   killable, NULL, wm_cbs.cb_data);
@@ -2082,11 +2101,17 @@ static gboolean is_window_hildonapp(Window xid)
                        0, 32, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&value.char_value);
-    gdk_error_trap_pop();
-    if (nitems > 0 && value.char_value != NULL)
+    if (gdk_error_trap_pop() == 0 && 
+        (actual_type == XA_WINDOW && value.char_value != NULL) )
     {
         XFree(value.char_value);
         return TRUE;
+    }
+
+    if (value.char_value != NULL)
+    {
+        XFree(value.char_value);
+        value.char_value = NULL;
     }
 
     gdk_error_trap_push();
@@ -2094,14 +2119,13 @@ static gboolean is_window_hildonapp(Window xid)
                        0, 32, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&value.char_value);
-    gdk_error_trap_pop();
-    if (nitems > 0 && value.char_value != NULL)
+    if (gdk_error_trap_pop() == 0 &&
+        (actual_type == XA_WINDOW && value.char_value != NULL))
     {
         XFree(value.char_value);
         return TRUE;
     }
-
-    return FALSE;;
+    return FALSE;
 }
 
 static void top_non_hildonapp(Window xid)
@@ -2175,6 +2199,57 @@ static gchar *get_subname(Window win_id)
 
     return subname_str;
 }
+
+static void handle_autotopping()
+{
+    GList *mitems = NULL;
+    menuitem_comp_t menu_comp;
+    GtkTreeIter iter;
+    gboolean killed, minimized;
+
+   
+    mitems = application_switcher_get_menuitems(wm_cbs.cb_data);
+    
+    /* First two items are Home and the separator */
+    
+    if (mitems != NULL && g_list_length(mitems) > 2 )
+    {
+        menu_comp.menu_ptr = 
+            g_list_nth_data(mitems, 2);
+        menu_comp.wm_class = NULL;
+        menu_comp.service = NULL;
+        menu_comp.window_id = 0;
+
+        /* Use of gtk_tree_model_foreach is a heavy operation.
+           However, topping a killed application is so major operation
+           that this overhead can be tolerated (for now...) */
+        
+        gtk_tree_model_foreach(wm_cbs.model, menuitem_match_helper,
+                               &menu_comp);
+        if (menu_comp.service != NULL && 
+            find_service_from_tree(wm_cbs.model,
+                                   &iter, menu_comp.service))
+        {
+            gtk_tree_model_get(wm_cbs.model, &iter,
+                               WM_KILLED_ITEM, &killed,
+                               WM_MINIMIZED_ITEM,
+                               &minimized, -1);
+            
+            if (minimized == FALSE && killed == TRUE)
+            {
+                top_service(menu_comp.service);
+                return;
+            }
+            
+        }
+    }
+    /* Nothing had to be autotopped. So top desktop. */
+    wm_cbs.topped_desktop_cb(wm_cbs.cb_data);
+    return;
+}
+
+
+/* End of private window/X-property related functions */
 
 
 static void kill_application(GtkTreeModel *model, GtkTreeIter *parent)
@@ -2742,6 +2817,7 @@ void top_service(const gchar *service_name)
     int retval = 0;
     if (service_name == NULL)
     {
+        osso_log(LOG_ERR, "There was no service name!\n");
         return;
     }
     /* Search for the corresponding service root node */

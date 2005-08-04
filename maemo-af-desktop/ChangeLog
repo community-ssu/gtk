@@ -1,0 +1,9 @@
+2005-08-04  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+        * hildon-navigator/windowmanager.c : Added automated topping of killed
+	applications. 
+	- Minimization support improvements required by
+	automated topping fix. 
+	- Handle a rare situation with 0-length _NET_CLIENT_LIST X property properly.
+	* hildon-navigator/windowmanager.h: Added WM_MINIMIZED_ITEM
+    

@@ -115,6 +115,7 @@ enum
     WM_VIEW_NAME_ITEM, /* The name of the individual view */ 
     WM_KILLABLE_ITEM, /* If set to 1, application can be killed */
     WM_KILLED_ITEM, /* The application has been killed */
+    WM_MINIMIZED_ITEM, /* The application has been minimized */
     WM_NUM_TASK_ITEMS
 };
 
