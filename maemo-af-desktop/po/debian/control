@@ -1,0 +1,11 @@
+Source: maemo-af-desktop-l10n-src
+Section: x11
+Priority: optional
+Maintainer: Karoliina Salminen <karoliina.t.salminen@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), gettext
+Standards-Version: 3.6.0
+
+Package: maemo-af-desktop-l10n-engb
+Architecture: all
+Description: Locale for package maemo-af-desktop
+ en_GB locale for maemo-af-desktop.

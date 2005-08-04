@@ -1,0 +1,6 @@
+#!/bin/sh
+# osso-af-desktop.defs - AF Desktop defines sourced before AF Desktop is run
+# These are defined in apps launched after AF Desktop in af-base-apps, too.
+
+
+
