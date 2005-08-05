@@ -1,4 +1,10 @@
 2005-08-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gdk-pixbuf/io-jpeg.c (fatal_error_handler): Report out of memory
+	error correctly instead of as corrupt image.  (#312674, Tommi
+	Komulainen)
+
+2005-08-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	Merge patch by Kristian Rietveld from GNOME CVS:
 
