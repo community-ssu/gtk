@@ -281,11 +281,7 @@ static void hildon_app_realize(GtkWidget *widget)
     XFree(old_atoms);
     g_free(new_atoms);
 
-    gdk_window_set_events(gdk_get_default_root_window(),
-                          gdk_window_get_events(gdk_get_default_root_window()) |
-                          GDK_PROPERTY_CHANGE_MASK);
     gdk_window_set_events(window, gdk_window_get_events(window) | GDK_SUBSTRUCTURE_MASK);
-    gdk_window_add_filter(NULL, hildon_app_event_filter, widget);
 }
 
 static void hildon_app_unrealize(GtkWidget *widget)
@@ -749,6 +745,12 @@ hildon_app_init (HildonApp *self)
     priv->killable = FALSE;
     priv->autoregistration = TRUE;
     priv->scroll_control = TRUE;
+
+    /* grab the events here since HildonApp isn't necessarily ever shown */
+    gdk_window_set_events(gdk_get_default_root_window(),
+                          gdk_window_get_events(gdk_get_default_root_window()) |
+                          GDK_PROPERTY_CHANGE_MASK);
+    gdk_window_add_filter(NULL, hildon_app_event_filter, self);
 
     /* Forced geometry (720x420 min/max) was removed for following reasons:
        - If window was not realized when widgets with subwindows were
@@ -1362,7 +1364,7 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
     
     g_return_val_if_fail (app, GDK_FILTER_CONTINUE);
     g_return_val_if_fail (HILDON_IS_APP(app), GDK_FILTER_CONTINUE);
-    g_return_val_if_fail (GTK_WIDGET(app)->window, GDK_FILTER_CONTINUE);
+
     priv = HILDON_APP_GET_PRIVATE(app);
     if (eventti->type == ClientMessage)
       {
@@ -1385,18 +1387,21 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
         else if (xclient_message_type_check(cm, "_NET_ACTIVE_WINDOW"))
 	  {
 	    unsigned long view_id = cm->window;
-	    gpointer view_ptr = find_view(app, view_id);
-	    
-	    if (!priv->is_topmost)
-        g_signal_emit_by_name (G_OBJECT(app), "topmost_status_acquire");
-	    
-	    if (HILDON_IS_APPVIEW(view_ptr))
-        hildon_app_set_appview(app, (HILDON_APPVIEW(view_ptr)));
-	    else
-        g_signal_emit_by_name (G_OBJECT(app), "switch_to", view_ptr);
+            gpointer view_ptr = find_view(app, view_id);
 
-	  mb_util_window_activate(GDK_DISPLAY(),
- 				    GDK_WINDOW_XID(GTK_WIDGET(app)->window));
+            if (!priv->is_topmost)
+              g_signal_emit_by_name (G_OBJECT(app), "topmost_status_acquire");
+
+            if (HILDON_IS_APPVIEW(view_ptr))
+              hildon_app_set_appview(app, (HILDON_APPVIEW(view_ptr)));
+            else
+              g_signal_emit_by_name (G_OBJECT(app), "switch_to", view_ptr);
+
+            if (GTK_WIDGET(app)->window)
+            {
+              mb_util_window_activate(GDK_DISPLAY(),
+                                      GDK_WINDOW_XID(GTK_WIDGET(app)->window));
+            }
 	  }
         else if (xclient_message_type_check(cm, "_HILDON_IM_CLIPBOARD_COPY"))
         {
@@ -1476,7 +1481,8 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
         XPropertyEvent *prop = xevent;
 
         if ((prop->atom == active_window_atom)
-            && (prop->window == GDK_ROOT_WINDOW()))
+            && (prop->window == GDK_ROOT_WINDOW())
+            && GTK_WIDGET(app)->window)
           {
             Atom realtype;
             int format;

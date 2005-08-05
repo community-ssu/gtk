@@ -1,5 +1,10 @@
 2005-08-05  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* hildon-lgpl/hildon-app.c: Grab X events in init() instead of
+	realize() since the HildonApp is never shown if application has
+	only dialog window.  Also don't break in the event handler if
+	HildonApp's GdkWindow doesn't exist.
+
 	* hildon-lgpl/hildon-find-toolbar.c: changed icons and add the
 	space between label and combobox entry.
 
