@@ -3112,7 +3112,8 @@ clipboard_text_view_markup_received (GtkClipboard     *clipboard,
 
   priv = GTK_TEXT_BUFFER_GET_PRIVATE (request_data->buffer);
 
-  if (selection_data->target ==
+  /* The length is negative if the request failed. */
+  if (selection_data->length > 0 && selection_data->target ==
       gdk_atom_intern ("application/x-gtk-text-view-markup", FALSE))
     {
       pre_paste_prep (request_data, &insert_point);
@@ -3130,6 +3131,7 @@ clipboard_text_view_markup_received (GtkClipboard     *clipboard,
       if (!retval)
        {
          g_warning ("error pasting: %s\n", error->message);
+	 g_clear_error (&error);
        }
 
       if (request_data->interactive)
