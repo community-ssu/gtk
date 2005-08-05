@@ -1,5 +1,10 @@
 2005-08-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
+        * hildon-home/hildon-home-main.c: Corrected home from crashing from corrupted background image
+
+
+2005-08-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
         * Applied patch which fixes bug "saved sketch.png picture can not be selected as background image".
         * Cleaned up the code a bit after applying the patch - there was duplicate include for
           log-functions.h (the one I had added and the one this patch added). The other one of them was removed.

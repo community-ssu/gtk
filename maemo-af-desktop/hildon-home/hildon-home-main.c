@@ -118,6 +118,8 @@ static GtkWidget *loading_cancel_note = NULL;
 static gboolean image_loading_done = FALSE;
 static GPid image_loader_pid = -1;
 
+/* log include */
+#include <log-functions.h>  	 
 
 
 
@@ -1724,6 +1726,8 @@ void set_default_background_image()
 
     gchar *image_path = NULL;
     gint priority = -1; 
+    gchar *image_file;
+    struct stat buf;
 
     bg_image_desc_base_dir = g_dir_open(
          HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR, 0, &error);
@@ -1804,6 +1808,43 @@ void set_default_background_image()
     {
         construct_background_image_with_uri(image_path, FALSE);
         g_free(image_path);
+
+        /* remove old files if nesessary and create symlinks */
+        if(stat(home_current_bg_image, &buf) != -1)
+        {
+            unlink(home_current_bg_image);
+        }
+        
+        image_file = g_build_path("/", HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
+                                  HILDON_HOME_BG_USER_FILENAME, NULL);
+        
+        symlink(image_file, home_current_bg_image);
+        g_free(image_file);
+        
+        
+        if(stat(titlebar_original_image_savefile, &buf) != -1)
+        {
+            unlink(titlebar_original_image_savefile);
+        }
+        
+        image_file = g_build_path("/", HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
+                                  HILDON_HOME_ORIGINAL_IMAGE_TITLEBAR, NULL);
+        
+        symlink(image_file, titlebar_original_image_savefile);
+        g_free(image_file);
+        
+        
+        if(stat(sidebar_original_image_savefile, &buf) != -1)
+        {
+            unlink(sidebar_original_image_savefile);
+        }
+        
+        image_file = g_build_path("/", HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
+                                  HILDON_HOME_ORIGINAL_IMAGE_SIDEBAR, NULL);
+        
+        symlink(image_file, sidebar_original_image_savefile);
+        g_free(image_file);
+        
     }
 }
 
@@ -1827,7 +1868,9 @@ void refresh_background_image()
     if (stat(home_current_bg_image, &buf) != -1) 
     {    
         pixbuf_bg = get_background_image();
-    } else
+    }
+
+    if (pixbuf_bg == NULL)
     {    
         pixbuf_bg = get_factory_default_background_image();
 
