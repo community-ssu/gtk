@@ -46,7 +46,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <libosso.h>
-#include <log-functions.h>
 
 #include <libmb/mbutil.h>
 
@@ -68,6 +67,8 @@
 #include "hildon-home-interface.h"
 #include "../kstrace.h"
 
+/* log include */
+#include <log-functions.h>
 
 static GtkWidget *window = NULL;
 static GtkWidget *home_base_fixed;
@@ -713,6 +714,8 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
     gtk_file_filter_add_mime_type (mime_type_filter, "image/png");
     gtk_file_filter_add_mime_type (mime_type_filter, "image/bmp");
     gtk_file_filter_add_mime_type (mime_type_filter, "image/tiff");
+    gtk_file_filter_add_pattern (mime_type_filter, "*.png");    
+
     gtk_file_chooser_set_filter (GTK_FILE_CHOOSER (dialog),
                                  mime_type_filter);
     if(!gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER (dialog),

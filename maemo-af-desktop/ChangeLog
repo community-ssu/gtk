@@ -1,5 +1,14 @@
 2005-08-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
+        * Applied patch which fixes bug "saved sketch.png picture can not be selected as background image".
+        * Cleaned up the code a bit after applying the patch - there was duplicate include for
+          log-functions.h (the one I had added and the one this patch added). The other one of them was removed.
+        * There is now additional line gtk_file_filter_add_pattern (mime_type_filter, "*.png"); after
+          the gtk_file_filter_add_mime_type statements.
+
+
+2005-08-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
         * Icon corrected for OSSO_GN_NOTICE. 
          "qgn_note_confirm",  /* OSSO_GN_NOTICE */ changed to "qgn_note_info",  /* OSSO_GN_NOTICE */
 
