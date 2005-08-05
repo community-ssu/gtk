@@ -1,3 +1,8 @@
+2005-08-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-lgpl/hildon-find-toolbar.c: changed icons and add the
+	space between label and combobox entry.
+
 2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-lgpl.pc.in (Libs): Removed old -lXtst dependency

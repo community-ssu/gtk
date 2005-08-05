@@ -41,6 +41,8 @@
 
 /*same define as gtkentry.c as entry will further handle this*/
 #define MAX_SIZE G_MAXUSHORT
+#define FIND_LABEL_XPADDING 6
+#define FIND_LABEL_YPADDING 0
 
 enum
 {
@@ -434,13 +436,19 @@ hildon_find_toolbar_init(HildonFindToolbar *self)
 					   HILDON_TYPE_FIND_TOOLBAR, 
 					   HildonFindToolbarPrivate);
 
+  /* Create the label */
   self->priv->label = gtk_label_new(_("Ecdg_ti_find_toolbar_label"));
+  
+  gtk_misc_set_padding (GTK_MISC(self->priv->label), FIND_LABEL_XPADDING,
+                        FIND_LABEL_YPADDING);
+
   label_container = gtk_tool_item_new();
   gtk_container_add(GTK_CONTAINER(label_container), 
 		    self->priv->label);
   gtk_widget_show_all(GTK_WIDGET(label_container));
   gtk_toolbar_insert (GTK_TOOLBAR(self), label_container, -1);
   
+  /* ComboBox */
   self->priv->entry_combo_box = gtk_combo_box_entry_new();
   g_signal_connect(G_OBJECT(gtk_bin_get_child(
 		   GTK_BIN(self->priv->entry_combo_box))), 
@@ -455,8 +463,9 @@ hildon_find_toolbar_init(HildonFindToolbar *self)
   gtk_widget_show_all(GTK_WIDGET(entry_combo_box_container));
   gtk_toolbar_insert (GTK_TOOLBAR(self), entry_combo_box_container, -1);
 
+  /* First button */
   self->priv->find_button = gtk_tool_button_new (
-                              gtk_image_new_from_icon_name ("qgn_toolb_gene_find",
+                              gtk_image_new_from_icon_name ("qgn_toolb_browser_gobutton",
                                                             HILDON_ICON_SIZE_TOOLBAR),
                               "Find");
   g_signal_connect(G_OBJECT(self->priv->find_button), "clicked",
@@ -465,12 +474,14 @@ hildon_find_toolbar_init(HildonFindToolbar *self)
   gtk_widget_show_all(GTK_WIDGET(self->priv->find_button));
   gtk_toolbar_insert (GTK_TOOLBAR(self), self->priv->find_button, -1);
   
+  /* Separator */
   self->priv->separator = gtk_separator_tool_item_new();
   gtk_widget_show(GTK_WIDGET(self->priv->separator));
   gtk_toolbar_insert (GTK_TOOLBAR(self), self->priv->separator, -1);
   
+  /* Second button */
   self->priv->close_button = gtk_tool_button_new (
-                               gtk_image_new_from_icon_name ("qgn_toolb_gene_stop",
+                               gtk_image_new_from_icon_name ("qgn_toolb_gene_close",
                                                              HILDON_ICON_SIZE_TOOLBAR),
                                "Close");
   g_signal_connect(G_OBJECT(self->priv->close_button), "clicked",
