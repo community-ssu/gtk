@@ -1,3 +1,9 @@
+2005-08-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktextbuffer.c(clipboard_text_view_markup_received): Do not try
+	to deserialize rich text if the clipboard request failed. Stop leaking
+	the error.
+
 2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* gtk/gtktreemodelfilter.c
