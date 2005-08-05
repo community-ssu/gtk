@@ -1,3 +1,9 @@
+2005-08-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+        * Icon corrected for OSSO_GN_NOTICE. 
+         "qgn_note_confirm",  /* OSSO_GN_NOTICE */ changed to "qgn_note_info",  /* OSSO_GN_NOTICE */
+
+
 2005-08-04  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
         * hildon-navigator/windowmanager.c : Added automated topping of killed

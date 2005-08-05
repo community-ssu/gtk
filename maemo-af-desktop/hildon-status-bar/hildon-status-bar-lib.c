@@ -49,7 +49,7 @@ static void hildon_status_bar_lib_show_dialog( gint dialog_id )
     static gchar *icon[HILDON_STATUS_BAR_MAX_NOTE_TYPE] = {
         "qgn_note_gene_syswarning",         /* OSSO_GN_WARNING */
         "qgn_note_gene_syserror", /* OSSO_GN_ERROR */
-        "qgn_note_confirm",  /* OSSO_GN_NOTICE */
+        "qgn_note_info",  /* OSSO_GN_NOTICE */
         "qgn_note_gene_wait"  /* OSSO_GN_WAIT */
     };
 
