@@ -1358,7 +1358,6 @@ static
 void construct_background_image(char *argument_list[], gboolean cancel_note)
 {
     GError *error = NULL;
-    guint cancel_note_callback_id;
     guint image_loader_callback_id;
 
     image_loading_done = FALSE;
@@ -1407,10 +1406,7 @@ void construct_background_image(char *argument_list[], gboolean cancel_note)
 
     if(cancel_note)
     {
-        cancel_note_callback_id = 
-            g_timeout_add(ONE_SECOND, 
-                          show_loading_cancel_note, 
-                          GINT_TO_POINTER(image_loader_pid));
+        show_loading_cancel_note();
     }
 }
 
@@ -1476,18 +1472,16 @@ void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
 /**
  * @show_loading_cancel_note
  *
- * @user_data
- *
  * Shows cancel note during background image loading
  *
  */
 static
-gboolean show_loading_cancel_note(gpointer user_data)
+void show_loading_cancel_note()
 {
     /* cancel note postponed from this delivery */
     if(image_loading_done)
     {
-        return FALSE;
+        return;
     }
 
     loading_cancel_note =
@@ -1500,8 +1494,6 @@ gboolean show_loading_cancel_note(gpointer user_data)
                      G_CALLBACK(loading_cancel_note_handler), NULL);
 
     gtk_widget_show (GTK_WIDGET (loading_cancel_note));
-
-    return FALSE;
 }
 
 
@@ -1521,7 +1513,6 @@ gboolean loading_cancel_note_handler(GtkWidget *loading_cancel_note,
     g_spawn_close_pid(image_loader_pid);
     kill(image_loader_pid, SIGTERM);
 
-    /* cancel note postponed from this delivery */
     if(loading_cancel_note != NULL && 
        GTK_IS_WIDGET(loading_cancel_note))
     {

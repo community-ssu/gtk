@@ -1,5 +1,12 @@
 2005-08-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
+	* Correction to bug "Changing home background image reboots"
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: Removeed one second delay before showing "Loading" cancel note.
+        * maemo-af-desktop/hildon-home/hildon-home-main.h: Removed ONE_SECOND define as unnecessary. Changed
+          show_loading_cancel_note prototype from gboolean to void and its parameters from gpointer user_data to void.
+
+2005-08-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
         * Correction to bug "Task navigator crashes with incomplete .desktop files"
         * Changed files: hildon-navigator/others-menu.c, hildon-navigator/windowmanager.c
 

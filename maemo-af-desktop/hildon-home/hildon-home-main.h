@@ -44,7 +44,6 @@ G_BEGIN_DECLS
 #define WINDOW_HEIGHT                   480
 #define HILDON_TASKNAV_WIDTH            80
 #define HILDON_HOME_ENV_HOME            "HOME"
-#define ONE_SECOND                      1000
 
 #define HILDON_HOME_MMC_NOT_OPEN_TEXT   _("home_ib_mem_cov_open_not_text")
 #define HILDON_HOME_MMC_NOT_OPEN_CLOSE  _("home_bd_mem_cov_open_not_close")
@@ -346,7 +345,7 @@ static void construct_background_image(char *argument_list[],
 static void image_loader_callback(GPid pid, 
                                   gint child_exit_status, 
                                   gpointer data);
-static gboolean show_loading_cancel_note(gpointer user_data);
+static void show_loading_cancel_note(void);
 static gboolean loading_cancel_note_handler(GtkWidget *loading_cancel_note,
                                             GdkEvent *event, 
                                             gpointer user_data);
