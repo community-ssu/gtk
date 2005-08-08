@@ -1027,7 +1027,7 @@ static gboolean remove_helper(GtkTreeModel *model, GtkTreePath *path,
 
 GtkTreeModel *create_model(void)
 {
-    gchar *path, *exec, *icon_name, *startup_wmclass, *binitem;
+    gchar *path, *exec, *icon_name, *startup_wmclass, *binitem, *appname;
     DIR *directory = NULL;
     struct dirent *entry = NULL;
     GtkTreeStore *store = gtk_tree_store_new(WM_NUM_TASK_ITEMS,
@@ -1056,6 +1056,7 @@ GtkTreeModel *create_model(void)
     {
 	MBDotDesktop *desktop;
 	GtkTreeIter iter;
+        appname = NULL;
 	if (!g_str_has_suffix(entry->d_name, DESKTOP_SUFFIX))
             continue;
 
@@ -1070,22 +1071,35 @@ GtkTreeModel *create_model(void)
             g_free(path);
             continue;
         }
-        g_free(path);
 
-	exec = (char *) mb_dotdesktop_get(desktop, DESKTOP_LAUNCH_FIELD);
-        
-	icon_name =
-            (char *) mb_dotdesktop_get(desktop, DESKTOP_ICON_FIELD);
+        appname = (char *) mb_dotdesktop_get(desktop, DESKTOP_VISIBLE_FIELD);
         startup_wmclass = 
             (char *) mb_dotdesktop_get(desktop, DESKTOP_SUP_WMCLASS);
         binitem = (char *) mb_dotdesktop_get(desktop, DESKTOP_BIN_FIELD);
+
+        /* Things will break if we have application without valid name
+           or the fields that provide WM_CLASS comparison info */
+           
+        if (appname == NULL ||
+            (binitem == NULL && startup_wmclass == NULL))
+        {
+            osso_log(LOG_ERR,
+                     "TN: Desktop file %s has invalid fields", path);
+            g_free(path);
+            mb_dotdesktop_free(desktop);
+            continue;
+        }
+
+        g_free(path);
+	exec = (char *) mb_dotdesktop_get(desktop, DESKTOP_LAUNCH_FIELD);
+        icon_name =
+            (char *) mb_dotdesktop_get(desktop, DESKTOP_ICON_FIELD);
+
 	gtk_tree_store_append(store, &iter, NULL);
 	gtk_tree_store_set(store, &iter,
 			   WM_ICON_NAME_ITEM, icon_name,
                            WM_EXEC_ITEM, exec,
-			   WM_NAME_ITEM,
-			   _(mb_dotdesktop_get(desktop,
-					     DESKTOP_VISIBLE_FIELD)),
+			   WM_NAME_ITEM, _(appname),
                            WM_DIALOG_ITEM, 0,
                            WM_MENU_PTR_ITEM, NULL,
                            WM_VIEW_ID_ITEM, 0,

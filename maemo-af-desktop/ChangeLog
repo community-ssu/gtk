@@ -1,5 +1,10 @@
 2005-08-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
+        * Correction to bug "Task navigator crashes with incomplete .desktop files"
+        * Changed files: hildon-navigator/others-menu.c, hildon-navigator/windowmanager.c
+
+2005-08-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
         * Correction to bug "Menu hardware key does not close menu"
         * hildon-home/hildon-home-main.c: The corrected version now ignores repeated key presses.
 

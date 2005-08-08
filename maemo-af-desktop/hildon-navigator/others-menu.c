@@ -451,7 +451,7 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
 
     GtkWidget *menu_item_icon = NULL;
     char *icon_name;
-
+    guchar *application_name = NULL;
     
     menu = GTK_MENU(widget);
 
@@ -576,58 +576,68 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
 	    menu_item = NULL;
 	    icon_name = NULL;
             menu_item_icon = NULL;
+	    application_name = NULL;
 
 	    desktop = mb_dotdesktop_new_from_file(current_path);
 	    
-	    if (desktop != NULL)
+	    if (desktop == NULL ||
+		(application_name =
+		 mb_dotdesktop_get(desktop, DESKTOP_NAME_FIELD)) == NULL )
 	      {
-		om->as_menu_cb(desktop);
+		osso_log(LOG_ERR, 
+			 "TN: Broken .desktop file %s", current_path);
+
+		if (desktop != NULL)
+		  {
+		    mb_dotdesktop_free(desktop);
+		  }
 	      }
+	    else
+	      {
+		/* Add the new menu item, use .desktop's name field value
+		 * for label */
+		menu_item =
+		  gtk_image_menu_item_new_with_label(_(application_name));
+		
+		om->as_menu_cb(desktop);
 
-	    /* Add the new menu item, use .desktop's name field value
-	     * for label */
-	    menu_item =
-		gtk_image_menu_item_new_with_label(_(mb_dotdesktop_get
-						   (desktop,
-						    DESKTOP_NAME_FIELD)));
-
-	    /* Add the app's icon */
-	    icon_name = mb_dotdesktop_get(desktop, DESKTOP_ICON_FIELD);
-
-	    if ( icon_name && strlen( icon_name ) > 0 ) {
-		    menu_item_icon = get_icon(icon_name, MENU_ITEM_ICON_SIZE);
-	    }
-
-	    /* If we have no icon, use the default */
-	    if ( ! menu_item_icon ) {
-		    menu_item_icon = 
-			    get_icon( MENU_ITEM_DEFAULT_APP_ICON,
-					    MENU_ITEM_ICON_SIZE );
-	    }
-
-	    if ( menu_item_icon ) {
-		    gtk_image_menu_item_set_image(
-				    (GtkImageMenuItem *) menu_item,
-				    menu_item_icon );
-	    }
-
-	    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-
-	    g_object_set_data(G_OBJECT(menu_item), DESKTOP_EXEC_FIELD,
-			      g_strdup(mb_dotdesktop_get
-				       (desktop, DESKTOP_EXEC_FIELD)));
-
-	    g_object_set_data(G_OBJECT(menu_item), DESKTOP_SERVICE_FIELD,
-			      g_strdup(mb_dotdesktop_get
-				       (desktop, DESKTOP_SERVICE_FIELD)));
-
-	    /* Connect the signal and callback */
-	    g_signal_connect(G_OBJECT(menu_item), "activate",
-			     G_CALLBACK(others_menu_activate_item), om);
-
-	    /* Free the desktop instance */
-	    mb_dotdesktop_free(desktop);
-
+		/* Add the app's icon */
+		icon_name = mb_dotdesktop_get(desktop, DESKTOP_ICON_FIELD);
+		
+		if ( icon_name && strlen( icon_name ) > 0 ) {
+		  menu_item_icon = get_icon(icon_name, MENU_ITEM_ICON_SIZE);
+		}
+		
+		/* If we have no icon, use the default */
+		if ( ! menu_item_icon ) {
+		  menu_item_icon = 
+		    get_icon( MENU_ITEM_DEFAULT_APP_ICON,
+			      MENU_ITEM_ICON_SIZE );
+		}
+		
+		if ( menu_item_icon ) {
+		  gtk_image_menu_item_set_image(
+						(GtkImageMenuItem *) menu_item,
+						menu_item_icon );
+		}
+		
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
+		
+		g_object_set_data(G_OBJECT(menu_item), DESKTOP_EXEC_FIELD,
+				  g_strdup(mb_dotdesktop_get
+					   (desktop, DESKTOP_EXEC_FIELD)));
+		
+		g_object_set_data(G_OBJECT(menu_item), DESKTOP_SERVICE_FIELD,
+				  g_strdup(mb_dotdesktop_get
+					   (desktop, DESKTOP_SERVICE_FIELD)));
+		
+		/* Connect the signal and callback */
+		g_signal_connect(G_OBJECT(menu_item), "activate",
+				 G_CALLBACK(others_menu_activate_item), om);
+		
+		/* Free the desktop instance */
+		mb_dotdesktop_free(desktop);
+	      }
 	} else if (S_ISREG(buf.st_mode) && g_strrstr(
 				loop->data, SEPARATOR_STR)) {
 
