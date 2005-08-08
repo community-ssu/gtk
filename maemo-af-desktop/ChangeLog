@@ -1,3 +1,8 @@
+2005-08-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+        * Correction to bug "Menu hardware key does not close menu"
+        * hildon-home/hildon-home-main.c: The corrected version now ignores repeated key presses.
+
 2005-08-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
         * hildon-home/hildon-home-main.c: Corrected home from crashing from corrupted background image

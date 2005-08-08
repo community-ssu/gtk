@@ -2666,11 +2666,20 @@ gint hildon_home_key_snooper (GtkWidget * widget,
                               GdkEventKey * keyevent,
                               gpointer data)
 {
+    static gboolean last_pressed = FALSE;
     gboolean menu_is_visible = FALSE;
+
     if (keyevent->keyval == HILDON_MENU_KEY)
     {
         if (keyevent->type == GDK_KEY_PRESS)
         {
+            if (last_pressed)
+            {
+                /* ignore repeated keypresses */
+                return TRUE;
+            }
+            last_pressed = TRUE;
+
             menu_is_visible = GTK_WIDGET_VISIBLE(titlebar_menu);
             if (menu_is_visible)
             {
@@ -2684,6 +2693,9 @@ gint hildon_home_key_snooper (GtkWidget * widget,
             gtk_menu_shell_select_first (GTK_MENU_SHELL(titlebar_menu), TRUE);
             return TRUE;
         }
+
+        if (keyevent->type == GDK_KEY_RELEASE)
+            last_pressed = FALSE;
     }
     return FALSE;
 }
