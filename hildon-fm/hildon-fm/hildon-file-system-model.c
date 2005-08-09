@@ -1447,16 +1447,6 @@ static gboolean real_volumes_changed(gpointer data)
     return FALSE;
 }
 
-/* For some odd reason we get wrong values if we ask new state immediately
-   (in case of umounting), very weird... 
-   This was the case with early versions. Current backends seem to work
-   better... */
-static void hildon_file_system_model_volumes_changed(GObject * object,
-                                                     gpointer data)
-{
-    g_idle_add(real_volumes_changed, data);
-}
-
 static GNode *
 hildon_file_system_model_add_node(GtkTreeModel * model,
                                   GNode * parent_node,
@@ -2144,9 +2134,7 @@ hildon_file_system_model_constructor(GType type,
                  HILDON_FILE_SYSTEM_MODEL_MMC);
     g_assert(priv->mmc.base_node);
 
-
-    /* This sets up an idle and do not delay the program right here */
-    hildon_file_system_model_volumes_changed(G_OBJECT(priv->filesystem), obj);
+    real_volumes_changed(obj);
 
     fs_settings = _hildon_file_system_settings_get_instance();
 

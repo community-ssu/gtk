@@ -1,5 +1,10 @@
 2005-08-09  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* hildon-fm/hildon-file-system-model.c: Now MMC state is
+	investigated immediately when the widget is created. It makes the
+	creation to take a bit more time, but ensures that MMC locations
+	are usable as well right from the start.
+
 	* hildon-fm/hildon-file-chooser-dialog.c: Allow setting limit to
 	the filename. Added two new properties:
 
