@@ -10,6 +10,10 @@
 	handling mouse release. Changed xtst related code to the new fake
 	event based system.
 
+	* debian/control (Depends, Build-Depends): removed dependency to libxtst
+	* hildon-lgpl/Makefile.am (libhildonlgpl_la_LIBADD): likewise
+
+
 2005-08-05  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-lgpl/hildon-app.c: Grab X events in init() instead of

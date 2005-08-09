@@ -7,7 +7,7 @@ lib_LTLIBRARIES = libhildonlgpl.la
 EXTRA_DIST = 
 
 libhildonlgpl_la_LIBADD = $(GTK_LIBS) $(X_LIBS) $(LIBMB_LIBS) \
-	$(GCONF_LIBS) -lXtst
+	$(GCONF_LIBS)
 
 libhildonlgpl_la_LDFLAGS = -version-info 4:0:4
 libhildonlgpl_la_SOURCES = \
