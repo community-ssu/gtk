@@ -36,32 +36,71 @@
 #include <hildon-cp-plugin/hildon-cp-plugin-interface.h>
 #include <osso-log.h>
 
-/*
 #include <glib.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 
+#include <gtk/gtk.h>
+
 #include <sys/types.h>
 #include <sys/wait.h>
-*/
 
-#define APP_NAME "osso_application_installer"
 #define APP_BINARY "/usr/bin/osso_application_installer"
 
-extern char **environ;
+static void
+ai_exited (GPid pid, gint status, gpointer data)
+{
+  g_spawn_close_pid (pid);
+  g_main_loop_quit ((GMainLoop *) data);
+}
 
 osso_return_t execute (osso_context_t *osso, gpointer data,
                        gboolean user_activated)
 {
-/*
-  ULOG_INFO("Starting AI through DBUS");
-  osso_rpc_run_with_defaults(osso, APP_NAME, "activate", NULL,
-			     DBUS_TYPE_INVALID);
-*/
+  GMainLoop *loop;
+  GPid child_pid;
+  GError *error = NULL;
+  gchar *argv[] = {
+    APP_BINARY,
+    NULL
+  };
 
-  ULOG_INFO("Starting AI through async spawn");
-  g_spawn_command_line_async(APP_BINARY, NULL);
+  loop = g_main_loop_new (NULL, 0);
+
+  g_spawn_async (NULL,
+		 argv, 
+		 NULL,
+		 G_SPAWN_DO_NOT_REAP_CHILD,
+		 NULL,
+		 NULL,
+		 &child_pid,
+		 &error);
+  
+  if (error == NULL)
+    {
+      /* We use an invisible widget here to grab all input.  This
+	 makes the whole control panel insensitive so that no new
+	 applets can be started until this one is done.
+      */
+
+      GtkWidget *grabber = gtk_invisible_new ();
+      gtk_grab_add (grabber);
+      g_child_watch_add (child_pid, ai_exited, loop);
+      g_main_loop_run (loop);
+      gtk_grab_remove (grabber);
+      gtk_widget_destroy (grabber);
+    }
+  else
+    {
+      GtkWidget *dialog =
+	hildon_note_new_information (NULL, error->message);
+      gtk_widget_show_all (dialog);
+      gtk_dialog_run (dialog);
+      gtk_widget_destroy (dialog);
+      g_error_free (error);
+    }
+    
+  g_main_loop_unref (loop);
 
   return OSSO_OK;    
 }
