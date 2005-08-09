@@ -1,0 +1,14 @@
+This is libimlayouts, a library for reading virtual keyboard layouts and generating new layouts.
+
+To read:
+read docs/fileformat.html specially in the API section. This is usually not very useful for you,
+except you are implementing a new input method which need the layouts.
+
+To generate and use your own layout(s):
+0. modify keyboard.xml
+1. ./make.sh
+2. ./gen_vkb
+3. move your .vkb file(s) to /usr/share/keyboards
+
+-- 
+Copyright (c) 2005 Nokia Corporation
