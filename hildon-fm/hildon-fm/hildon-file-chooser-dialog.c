@@ -129,7 +129,9 @@ enum {
     PROP_LOCATION,
     PROP_AUTONAMING,
     PROP_OPEN_BUTTON_TEXT,
-    PROP_MULTIPLE_TEXT
+    PROP_MULTIPLE_TEXT,
+    PROP_MAX_NAME_LENGTH,
+    PROP_MAX_FULL_PATH_LENGTH
 };
 
 void _gtk_file_chooser_install_properties(GObjectClass * klass);
@@ -151,6 +153,7 @@ struct _HildonFileChooserDialogPrivate {
     GtkWidget *popup;
     GtkWidget *multiple_label, *hbox_items;
     gulong changed_handler;
+    gint max_full_path_length;
     gint max_filename_length;
     gboolean popup_protect;
 
@@ -299,28 +302,55 @@ hildon_file_chooser_dialog_set_limit(HildonFileChooserDialog *self)
 {
   gchar *uri;
   const char *str;
-  gint max_length, len;
+  gint max_length = 0, len;
+  gboolean limited;
 
-  uri = gtk_file_chooser_get_current_folder_uri(GTK_FILE_CHOOSER(self));
-  max_length = self->priv->max_filename_length - get_path_length_from_uri(uri);
-
-  /* Possible extension length must be subtracted from maximum 
-      possible length */
-  if ((str = self->priv->ext_name) != NULL)
+  /* We cannot get the current folder uri without filetree, 
+     which is not available during initial setup */
+  if (self->priv->max_full_path_length >= 0 && self->priv->filetree)
   {
-    len = g_utf8_strlen(str, -1);
-    max_length -= len;
-    ULOG_DEBUG("Extension = [%s], length = %d", str, len);
+    uri = gtk_file_chooser_get_current_folder_uri(GTK_FILE_CHOOSER(self));
+    max_length = self->priv->max_full_path_length - get_path_length_from_uri(uri);
+    g_free(uri);
+
+    /* Possible extension length must be subtracted from maximum 
+       possible length */
+    if ((str = self->priv->ext_name) != NULL)
+    {
+      len = g_utf8_strlen(str, -1);
+      max_length -= len;
+      ULOG_DEBUG("Extension = [%s], length = %d", str, len);
+    }
+
+    /* We have to alloc space for trailing slash */
+    max_length--;
+
+    limited = TRUE;
+  }
+  else
+    limited = FALSE;
+
+  if (self->priv->max_filename_length >= 0 && 
+     (!limited || self->priv->max_filename_length < max_length))
+  {
+    max_length = self->priv->max_filename_length;
+    limited = TRUE;
   }
 
-  /* Maximum length 0 means "no limit" for entry and negatives are
-      not allowed.  Setting this to one at least. max_length is 
-      decremented by one, because new separator comes between
-      path and the name. */
-  if (--max_length < 1) max_length = 1;
+  if (limited)
+  {
+    /* Maximum length 0 means "no limit" for entry and negatives are
+       not allowed.  Setting this to one at least. */
+    if (max_length < 1) max_length = 1;
 
-  ULOG_DEBUG("Setting maximum length to %d", max_length);
-  gtk_entry_set_max_length(GTK_ENTRY(self->priv->entry_name), max_length);
+    ULOG_DEBUG("Setting maximum length to %d", max_length);
+    gtk_entry_set_max_length(GTK_ENTRY(self->priv->entry_name), max_length);
+  }
+  else
+  {
+    ULOG_DEBUG("Unsetting maximum length");
+    gtk_entry_set_max_length(GTK_ENTRY(self->priv->entry_name), 0);
+  }
 }
 
 static void 
@@ -1028,7 +1058,8 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                     g_free(msg);
                     g_string_free(illegals, TRUE);
                 }
-                else {  /* Let's check that filename is not too long. 
+                else if (self->priv->max_full_path_length >= 0)
+                     {  /* Let's check that filename is not too long. 
                            This normally should not happen, because we 
                            have limit in entry. However, very long paths 
                            could cause max input length to be less than 1. */
@@ -1038,7 +1069,7 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                     uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(widget));
                     path_length = get_path_length_from_uri(uri);
 
-                    if (path_length > self->priv->max_filename_length)
+                    if (path_length > self->priv->max_full_path_length)
                     {
                         g_signal_stop_emission_by_name(widget, "response");
                         hildon_file_chooser_dialog_select_text(priv);
@@ -1065,13 +1096,16 @@ static void hildon_file_chooser_dialog_set_property(GObject * object,
                                                     const GValue * value,
                                                     GParamSpec * pspec)
 {
-    HildonFileChooserDialogPrivate *priv =
-        HILDON_FILE_CHOOSER_DIALOG(object)->priv;
+    HildonFileChooserDialog *self;
+    HildonFileChooserDialogPrivate *priv;
+
+    self = HILDON_FILE_CHOOSER_DIALOG(object);
+    priv = self->priv;
 
     switch (prop_id) {
     case GTK_FILE_CHOOSER_PROP_ACTION:
         priv->action = g_value_get_enum(value);
-        build_ui(HILDON_FILE_CHOOSER_DIALOG(object));
+        build_ui(self);
         break;
     case GTK_FILE_CHOOSER_PROP_SELECT_MULTIPLE:
         g_assert(HILDON_IS_FILE_SELECTION(priv->filetree));
@@ -1135,6 +1169,45 @@ static void hildon_file_chooser_dialog_set_property(GObject * object,
                             "label", value);
         build_ui(HILDON_FILE_CHOOSER_DIALOG(object));
         break;
+    case PROP_MAX_NAME_LENGTH:
+    {
+        gint new_value = g_value_get_int(value);
+        if (new_value != priv->max_filename_length)
+        {
+          ULOG_INFO("Maximum name length is %d characters", 
+            new_value);
+          priv->max_filename_length = new_value;
+          hildon_file_chooser_dialog_set_limit(self);
+        }    
+        break;
+    }
+    case PROP_MAX_FULL_PATH_LENGTH:
+    {
+      gint new_value;
+      const char *filename_len;
+
+      new_value = g_value_get_int(value);
+
+      if (new_value == 0)
+      {      
+        /* Figuring out maximum allowed path length */
+        filename_len = g_getenv("MAX_FILENAME_LENGTH");
+        if (filename_len)
+          new_value = atoi(filename_len);
+        if (new_value <= 0)
+          new_value = MAX_FILENAME_LENGTH_DEFAULT;
+      }
+
+      if (new_value != priv->max_full_path_length)
+      {
+        ULOG_INFO("Maximum full path length is %d characters", 
+            new_value);
+        priv->max_full_path_length = new_value;
+        hildon_file_chooser_dialog_set_limit(self);
+      }
+
+      break;
+    }
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -1191,6 +1264,12 @@ static void hildon_file_chooser_dialog_get_property(GObject * object,
     case PROP_MULTIPLE_TEXT:
         g_object_get_property(G_OBJECT(priv->multiple_label),
                             "label", value);
+        break;
+    case PROP_MAX_NAME_LENGTH:
+        g_value_set_int(value, priv->max_filename_length);
+        break;
+    case PROP_MAX_FULL_PATH_LENGTH:
+        g_value_set_int(value, priv->max_full_path_length);
         break;
     default:   /* Backend is not readable */
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1345,6 +1424,22 @@ hildon_file_chooser_dialog_class_init(HildonFileChooserDialogClass * klass)
                                 "Text to be displayed in items field when saving multiple files",
                                 NULL, G_PARAM_READWRITE));
 
+    g_object_class_install_property(gobject_class, PROP_MAX_NAME_LENGTH,
+            g_param_spec_int("max-name-length", "Maximum name length",
+                             "Maximum length of an individual file/folder "
+                             "name when entered by user. Note that the actual "
+                             "limit can be smaller, if the maximum full "
+                             "path length kicks in. Use -1 for no limit.", 
+                             -1, G_MAXINT, -1, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
+    g_object_class_install_property(gobject_class, PROP_MAX_FULL_PATH_LENGTH,
+            g_param_spec_int("max-full-path-length", "Maximum full path length",
+                             "Maximum length of the whole path of an individual "
+                             "file/folder name when entered by user. "
+                             "Use -1 for no limit or 0 to look the value "
+                             "from MAX_FILENAME_LENGTH environment variable", 
+                             -1, G_MAXINT, 0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
     _gtk_file_chooser_install_properties(gobject_class);
 }
 
@@ -1419,23 +1514,12 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
     GtkBox *box;
     GtkWidget *eventbox, *label_items;
     GtkSizeGroup *size_group;
-    const char *filename_len;
 
     ULOG_INFO("Initializing");
 
     self->priv = priv =
         G_TYPE_INSTANCE_GET_PRIVATE(self, HILDON_TYPE_FILE_CHOOSER_DIALOG,
                                     HildonFileChooserDialogPrivate);
-
-    /* Figuring out maximum allowed path length */
-    filename_len = g_getenv("MAX_FILENAME_LENGTH");
-    if (filename_len)
-      priv->max_filename_length = atoi(filename_len);
-    if (priv->max_filename_length <= 0)
-      priv->max_filename_length = MAX_FILENAME_LENGTH_DEFAULT;
-    ULOG_INFO("Maximum path length is %d characters", 
-        priv->max_filename_length);
-
     size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
     priv->filters = NULL;
     priv->autonaming_enabled = TRUE;
@@ -1612,6 +1696,8 @@ hildon_file_chooser_dialog_constructor(GType type,
                      obj, 0);
 
     gtk_dialog_set_has_separator(GTK_DIALOG(obj), FALSE);
+    hildon_file_chooser_dialog_set_limit(HILDON_FILE_CHOOSER_DIALOG(obj));
+
     return obj;
 }
 

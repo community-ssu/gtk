@@ -1,3 +1,15 @@
+2005-08-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Allow setting limit to
+	the filename. Added two new properties:
+
+	- "max-full-path-length": Works as current limitation system, but
+	you can now change the value as well (if needed, defaults to 255)
+
+	- "max-name-length": Limits the length of individual file/folder
+	name as entered by user (note that possible hidden
+	extension/folder path make the name longer).
+
 2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-fm/hildon-file-chooser-dialog.c
