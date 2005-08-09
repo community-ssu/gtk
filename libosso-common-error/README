@@ -1,0 +1,6 @@
+If you freshly check out from svn, please do the following first:
+
+$ make -f Makefile.svn
+
+if your installation doesn't give mkinstalldirs, then copy it first
+from automake directory in /usr/share/automake, otherwise you can't make install

@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libosso-common-error 
+Description: Common error messages library 
+Version: @VERSION@ 
+Libs: -L${libdir} -losso_common_error
+Cflags: -I${includedir}

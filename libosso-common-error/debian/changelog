@@ -1,0 +1,96 @@
+libosso-common-error (0.1.6-2) unstable; urgency=low
+
+  * Drop old l10n packages
+
+ -- Alexander Kanevskiy <alexander.kanevskiy@nokia.com>  Tue,  2 Aug 2005 18:14:45 +0300
+
+libosso-common-error (0.1.6-1osso3) unstable; urgency=low
+
+  * Added libosso-common-error.pc to make it easier to link
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Tue,  5 Jul 2005 10:25:45 +0300
+
+libosso-common-error (0.1.6-1osso2) unstable; urgency=low
+
+  * Added locale.h to be included in test program
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed, 25 May 2005 12:29:05 +0300
+
+libosso-common-error (0.1.6-1osso1) unstable; urgency=low
+
+  * Added three more strings 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Tue, 17 May 2005 12:28:16 +0300
+
+libosso-common-error (0.1.5-1osso3) unstable; urgency=low
+
+  * Fixed typo in en_GB.po
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Tue, 26 Apr 2005 11:02:08 +0300
+
+libosso-common-error (0.1.5-1osso2) unstable; urgency=low
+
+  * new en_GB.po from SDL (Bugzilla #10353)
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Tue, 26 Apr 2005 10:12:23 +0300
+
+libosso-common-error (0.1.5-1osso1) unstable; urgency=low
+
+  * Added 3 strings
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 21 Apr 2005 11:01:36 +0300
+
+libosso-common-error (0.1-1osso9) unstable; urgency=high
+
+  * make the dev depends on the lib, fixed to the reopened #9722
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed, 13 Apr 2005 16:03:24 +0300
+
+libosso-common-error (0.1-1osso8) unstable; urgency=low
+
+  * moved libosso-common-error.install to libosso-common-error0.install,
+    fixed bug #9722
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed, 13 Apr 2005 15:58:10 +0300
+
+libosso-common-error (0.1-1osso7) unstable; urgency=low
+
+  * fixed linda error messages
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed,  6 Apr 2005 09:41:00 +0300
+
+libosso-common-error (0.1-1osso6) unstable; urgency=low
+
+  * fixed bugzilla #8899
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Mon,  4 Apr 2005 14:30:56 +0300
+
+libosso-common-error (0.1-1osso5) unstable; urgency=low
+
+  * fixed bugzilla #8730
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 31 Mar 2005 12:59:38 +0300
+
+libosso-common-error (0.1-1osso4) unstable; urgency=high
+
+  * fixed miscellaneous debian packaging stuff
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Mon, 15 Mar 2005 13:56:00 +0200
+
+libosso-common-error (0.1-1osso3) unstable; urgency=high
+
+  * added missing debian/libosso-common-error.install 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Mon, 15 Mar 2005 13:17:00 +0200
+
+libosso-common-error (0.1-1osso2) unstable; urgency=high
+ 
+  * change name prefix to libosso
+ 
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Mon, 15 Mar 2005 11:16:00 +0200 
+
+osso-common-error (0.1-1osso1) unstable; urgency=high
+ 
+  * initial
+ 
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Mon, 14 Mar 2005 14:55:00 +0200 
