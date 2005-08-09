@@ -50,6 +50,7 @@ int do_describe_file (gchar *file);
 int do_describe_package (gchar *package);
 int do_install (gchar *file);
 int do_remove (gchar *package, int silent);
+int do_get_dependencies (gchar *package);
 int do_copy (gchar *source, gchar *target);
 
 /* Setup the environment for dpkg.  It expects to be able to find
@@ -499,6 +500,30 @@ do_remove (gchar *package, int silent)
   return result;
 }
 
+int
+do_get_dependencies (gchar *package)
+{
+  gchar *output;
+  int result;
+  gchar *args[] = {
+    "/usr/bin/fakeroot",
+    "/usr/bin/dpkg",
+    "--simulate",
+    "--root=/var/lib/install",
+    "--purge", package,
+    NULL
+  };
+
+  result = run_cmd_save_output (args, NULL, &output);
+  fputs (output, stderr);
+  
+  if (result != 0)
+    dump_failed_relations (output, package);
+
+  free (output);
+  return 0;
+}
+
 static gboolean
 copy_progress (GnomeVFSXferProgressInfo *info, gpointer raw_data)
 {
@@ -568,6 +593,8 @@ main (int argc, char **argv)
     result = do_install (argv[2]);
   else if (argc == 3 && !strcmp (argv[1], "remove"))
     result = do_remove (argv[2], 0);
+  else if (argc == 3 && !strcmp (argv[1], "get-dependencies"))
+    result = do_get_dependencies (argv[2]);
   else if (argc == 4 && !strcmp (argv[1], "copy"))
     result = do_copy (argv[2], argv[3]);
   else
@@ -577,6 +604,7 @@ main (int argc, char **argv)
       fputs ("       app-installer-tool describe-package <package>\n", stderr);
       fputs ("       app-installer-tool install <file>\n",             stderr);
       fputs ("       app-installer-tool remove <package>\n",           stderr);
+      fputs ("       app-installer-tool get-dependencies <package>\n", stderr);
       fputs ("       app-installer-tool copy <source-uri> <target>\n", stderr);
       exit (1);
     }
