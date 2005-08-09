@@ -1,0 +1,216 @@
+posix-locales (2.3.2-13osso19) unstable; urgency=low
+
+  * remove am/pm string from es_MX (fixed #16495) 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Fri,  5 Aug 2005 17:29:29 +0300
+
+posix-locales (2.3.2-13osso18) unstable; urgency=low
+
+  * Cleaning the package 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed,  3 Aug 2005 16:02:44 +0300
+
+posix-locales (2.3.2-13osso17) unstable; urgency=low
+
+  * Added more locales (nl_NL da_DK el_GR no_NO sv_SE pt_PT) to support
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 30 Jun 2005 12:24:10 +0300
+
+posix-locales (2.3.2-13osso16) unstable; urgency=low
+
+  * Revert the locales back to 11 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed, 29 Jun 2005 12:27:10 +0300
+
+posix-locales (2.3.2-13osso15) unstable; urgency=low
+
+  * Reducing number of locales to 7 (en_US, en_GB, es_MX, es_ES, de_DE, fr_FR, it_IT)
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed, 29 Jun 2005 12:21:56 +0300
+
+posix-locales (2.3.2-13osso14) unstable; urgency=low
+
+  * Amended first_weekday and first_workday to a value of 2 (fix bug #12176)
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed, 29 Jun 2005 12:21:54 +0300
+
+posix-locales (2.3.2-13osso13) unstable; urgency=high
+
+  * fr_CA: Added missing country_name and country_post
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed,  1 Jun 2005 15:40:09 +0300
+
+posix-locales (2.3.2-13osso12) unstable; urgency=low
+
+  * en_US: Changed am_pm in LC_TIME 				
+  * en_US: Added blank line in LC_TIME
+  * es_ES: d_t_fmt in LC_TIME cosmetic split over several lines
+  * es_ES: position of lang_lib in LC_ADDRESS changed
+  * es_MX: d_t_fmt in LC_TIME cosmetic split over several lines
+  * es_MX: Changed am_pm in LC_TIME				
+  * es_MX: Cosmetic tab removed from date_fmt in LC_TIME		
+  * es_MX: Amended int_select in LC_PAPER				
+  * es_MX: Cosmetic space removed from end of lang_name line in LC_ADDRESS
+  * fr_CA: d_t_fmt in LC_TIME cosmetic split over several lines
+  * fr_CA: name_fmt in LC_NAME cosmetic split over several lines
+  * fr_CA: Removed country_name from LC_ADDRESS
+  * fr_CA: Removed country_post from LC_ADDRESS
+  * fi_FI: Amended d_t_fmt in LC_TIME				
+  * pt_BR: position of int_curr_symbol in LC_MONETRY changed	
+  * pt_BR: position of int_select in LC_TELEPHONE changed
+  * pt_BR: position of int_prefix in LC_TELEPHONE changed	
+  * pt_BR: position of name_miss in LC_NAME changed
+  * en_GB: postal_fmt in LC_ADDRESS cosmetic entry all on one line
+  * de_DE: Added int_n_cs_precedes in LC_MONETARY section			
+  * de_DE: Removed country_ab2 from LC_ADDRESS
+  * de_DE: Removed country_ab3 from LC_ADDRESS
+  * fr_FR: Added blank line in LC_CTYPE section
+  * fr_FR: Position of name_miss in LC_Name section changed
+  * fr_FR: Amended lang_lib in LC_ADDRESS section
+  * it_IT: Amended thousands_sep in LC_NUMERIC section
+  * it_IT: Position of int_prefix in LC_TELEPHONE section changed
+  * it_IT: Position of name_miss in LC_NAME section changed
+  * it_IT: Amended first_weekday in LC_TIME section
+  * it_IT: Amended first_workday in LC_TIME section
+  * ru_RU: Position of int_select in LC_TELEPHONE section changed
+  * ru_RU: Position of int_prefix in LC_TELEPHONE section changed
+  * ru_RU: Position and format of country_name in LC_NAME section changed
+  * en_US: Amended measurement in LC_MEASUREMENT section			
+  * en_ES: Amended measurement in LC_MEASUREMENT section			
+  * fr_FR: Added copy in LC_CTYPE section					
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Tue, 17 May 2005 16:03:57 +0300
+
+posix-locales (2.3.2-13osso11) unstable; urgency=low
+
+  * updated locale: fr_FR (added "copy" in LC_CTYPE)
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Tue,  3 May 2005 13:20:39 +0300
+
+posix-locales (2.3.2-13osso10) unstable; urgency=low
+
+  * updated locale: ru_RU (fix the country name)
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed, 13 Apr 2005 13:25:01 +0300
+
+posix-locales (2.3.2-13osso9) unstable; urgency=low
+
+  * updated locales (see locales/changelog) and fixed linda error messages
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed,  6 Apr 2005 10:50:45 +0300
+
+posix-locales (2.3.2-13osso8) unstable; urgency=high
+  
+  * debian/rules.*: mkdir ./usr/lib/locale/xx_XX/LC_MESSAGES to enable 
+    message catalog to be put in that directory 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 17 Feb 2005 15:28:00 +0200 
+posix-locales (2.3.2-13osso7) unstable; urgency=high
+  
+  * debian/rules.*: modified set_n770 order, somehow fr_FR didn't get built
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 10 Feb 2005 15:30:00 +0200 
+posix-locales (2.3.2-13osso6) unstable; urgency=high
+
+  * using locale-archive now
+  * build in local directory
+  * updated locales (added country_name in LC_ADDRESS): ru_RU, fi_FI, en_GB,
+    es_ES, es_MX, fr_CA, fr_FR, it_IT, pt_BR 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 10 Feb 2005 10:57:00 +0200 
+posix-locales (2.3.2-13osso5) unstable; urgency=low
+
+  * Refresh some locale (en_US, ru_RU, pt_BR, it_IT, fr_CA, fr_FR, fi_FI,
+    es_MX, es_ES, en_GB, de_DE), use capitalization in lang_name
+  * fr_CA shares the same LC_TYPE with fr_FR
+  * es_MX shares the same LC_COLLATE with es_ES
+  * Changed Section and Priority in control file
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Mon,  7 Feb 2005 17:26:00 +0200 
+
+posix-locales (2.3.2-13osso4) unstable; urgency=low
+
+  * get some updated locale (es_MX, ru_RU, es_ES, fr_FR, it_IT, pt_BR,de_DE)
+  * use UTF-8 for now
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Fri,  4 Feb 2005 17:52:00 +0200
+
+posix-locales (2.3.2-13osso3) unstable; urgency=low
+
+  * Fixed the lang_info for few languages (pt_BR and ru_RU) 
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 17 Jan 2005 10:53:17 +0200
+
+posix-locales (2.3.2-13osso2) unstable; urgency=low
+
+  * ADDED unofficial localized language names for testing
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed,  8 Dec 2004 16:19:03 +0200
+
+posix-locales (2.3.2-13osso1) unstable; urgency=low
+
+  * Changed naming so that we keep the release version (2.3.2-13)
+    and just add the OSSO revision (osso1)
+  * Drastic reduction of number of languages and packages. 
+    Down to one package with 9 languages (13 in total)
+  * UPDATED de_DE, es_ES, es_MX, fr_FR, it_IT, pt_BR, pt_PT
+  * FIXES #2796 - debian/rules not executable
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed, 08 Dec 2004 11:19:07 +0200
+
+posix-locales (2.3.2-19osso1) unstable; urgency=low
+
+  * Removed unnecessary source and binary files from source package
+  * New version naming scheme
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Fri, 15 Oct 2004 14:11:10 +0300
+
+posix-locales (2.3.2-19) unstable; urgency=low
+
+  * Yet another marketing area modification
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed,  1 Sep 2004 16:47:31 +0300
+
+posix-locales (2.3.2-18) unstable; urgency=low
+
+  * Removed Malaysian and Philipines from suported languages
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 23 Aug 2004 13:59:55 +0300
+
+posix-locales (2.3.2-17) unstable; urgency=low
+
+  * FIXES #947
+  * Removed the debian package from source
+  * Added build dependencies
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue,  3 Aug 2004 16:08:42 +0300
+
+posix-locales (2.3.2-16) unstable; urgency=low
+
+  * Fixed directory access rights from 644 to 755.
+  * Cleanup of files -> half smaller source size.
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 12 Jul 2004 16:53:33 +0300
+
+posix-locales (2.3.2-15) unstable; urgency=low
+
+  * Added a new package posix-locales-all
+  * that contains all supported locales for Nokia 770
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue,  6 Jul 2004 15:19:46 +0300
+
+posix-locales (2.3.2-14) unstable; urgency=low
+
+  * Changed licence to LGPL (should be ok now)
+  * Changed the en_GB-UTF-8 to en_GB.UTF-8
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue, 29 Jun 2004 13:04:20 +0300
+
+posix-locales (2.3.2-13) unstable; urgency=low
+
+  * Initial Release of Debian packaged POSIX locale
+  * The packages are selected and selectively encoded
+  * packages for marketing areas are created separately
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue, 15 Jun 2004 15:12:19 +0300
+
