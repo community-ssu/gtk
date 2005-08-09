@@ -1,0 +1,181 @@
+<h1>OSSO Virtual Keyboard File Format Specification</h1>
+<h3>version 0.35, 11.04.2005</h3>
+<h4>Mohammad Anwari &lt;Mohammad.Anwari@nokia.com&gt;</h4>
+
+<h2>ChangeLog</h2>
+<pre>
+0.1   11.03.2005  Mohammad Anwari   initial document
+0.15  14.03.2005  Mohammad Anwari   changed the structure:
+                                    - removing state (this is runtime value)
+                                    changed namespace from HILDON to osso
+0.20  17.03.2005  Mohammad Anwari   added type of layout in file
+                                    structure
+0.25  18.03.2005  Mohammad Anwari   added Special key with scan codes 
+0.3   08.04.2005  Mohammad Anwari   changed the key type
+                                    and addition of numeric state
+0.35  11.04.2005  Mohammad Anwari   added lang, wc, and name
+</pre>
+
+<h2>Overview</h2>
+This document describes the file structure of the virtual
+keyboard layout and API to load it into memory. This file
+specification attempts to save multiple layout of 
+keyboard in a single file.
+Each layout can have individual configuration of the 
+number of keys and rows. This file specification 
+was designed to have a fast loading time of the file and fast
+accessibility to each layout inside the file in the memory.
+
+<h2>File Structure</h2>
+<pre>
+<b>Offset  Type      Size  Description</b>
+------------------------------ <i>Header Section</i>
+0000    Byte      1     Version
+0001    Byte      1     Number of Layout
+0002    Byte      1     Numeric Layout      
+0003    Byte      1     Length of Name
+0004    String    *     Name
+....    Byte      1     Length of Language Code
+....    String    *     Language Code
+....    Byte      1     Length of Word Completion Locale
+....    String    *     Word Completion Locale
+....    Array     *     --Read layout section--
+        of Layout
+------------------------------ <i>Layout Section</i>
+0000    Byte      1     Type of Layout
+If the layout type is OSSO_VKB_LAYOUT_SPECIAL
+the reader goes to Layout Section B else read
+Layout Section A
+------------------------------ <i><b>Layout Section A</b></i>
+0000    Byte      1     Number of Keys
+0001    Byte      1     Number of Rows
+0002    Array     *     Number of Keys in Rows
+        of bytes  (size depends on Number of Rows value)
+....    Array     *     --Read key section--
+        of Keys
+------------------------------ <i>Keys Section</i>
+0000    Byte      1     Type
+0001    Byte      1     Length of the Label
+0002    String    *     Label
+                  (size depends on the Length of the Label)
+------------------------------ if Key Type is SPECIAL
+0002+   Byte      1     Length of the scan code
+label   
+length
+0002+   Array     *     scan code
+label   of bytes
+length+1
+------------------------------ <i><b>End Layout Section A</b></i>
+------------------------------ <i><b>Layout Section B</b></i>
+0000    Byte      1     Number of Tabs
+0001    Array     *     --Read tabs section--
+        of Keys 
+------------------------------ <i>Tabs Section</i>
+0000    Byte      1     Length of the Tab's Label
+0001    String    *     Tab's Label
+....    Byte      1     Number of Keys
+....    Byte      1     Number of Columns
+....    Byte      1     Number of Rows
+....    Array     *     --Read key section--
+        of Keys 
+------------------------------ <i>Keys Section</i>
+0000    Byte      1     Type
+0001    Byte      1     Length of the Label
+0002    String    *     Label
+                  (size depends on the Length of the Label)
+------------------------------ <i><b>End Layout Section B</b></i>
+</pre>
+<p>
+The <tt>Layout Section</tt> will be repeated according to the <tt>Number of Layout</tt> and the <tt>Key Section</tt> will also be repeated according to the <tt>Number of Keys</tt> in the <tt>Layout Section</tt>.
+</p>
+<p>If key type is OSSO_VKB_KEY_SPECIAL, then when the key is
+pressed, IM should send the scan code for that key to the application. This is useful for keys like 'Control', 'Alt', 'Home', 'Shift' etc. The
+scan code is same scan code found in hardware keyboard.
+</p>
+
+<h2>API</h2>
+<pre>
+
+enum {
+        OSSO_VKB_LAYOUT_LOWERCASE = 0,
+        OSSO_VKB_LAYOUT_UPPERCASE,
+        OSSO_VKB_LAYOUT_SPECIAL
+} vkb_layout_type;
+
+typedef struct _IM_SPECIAL_KEY {
+  gint8 length;
+  gint8 *scancodes;
+} IM_SPECIAL_KEY;
+
+typedef struct button_key
+{
+  unsigned short state;
+  unsigned short type;
+  IM_SPECIAL_KEY special;
+  int init_x;
+  int init_y;
+  int end_x;
+  int end_y;
+  int timer;
+} IM_BUTTON;
+
+typedef struct _vkb_scv_tab
+{
+	gchar *label;
+  IM_LABEL *labels;
+	IM_BUTTON *keys;
+	int num_keys;
+  int num_rows;
+  int num_columns;
+} vkb_scv_tab;
+
+typedef struct _vkb_layout
+{
+  vkb_layout_type type;
+  IM_LABEL *labels;
+  IM_BUTTON *keys;
+  int TOTAL_chars;
+
+	int num_rows;
+	int *num_keys_in_rows;
+
+  int num_tabs;
+	vkb_scv_tab *tabs;
+} vkb_layout;
+
+typedef struct _vkb_layout_collection
+{
+  vkb_layout       *collection;
+  gint             num_layouts;
+  vkb_layout_type  numeric_layout;
+  gchar            *name;
+  gchar            *language;
+  gchar            *word_completion;
+} vkb_layout_collection;
+
+vkb_layout_collection *imlayout_vkb_load_file (const gchar *filename);
+void imlayout_vkb_free_layout (vkb_layout_collection *layout);
+GList *imlayout_vkb_get_layout_list ();
+imlayout_vkb_free_layout_list (GList *list);
+</pre>
+
+<b><tt>imlayout_vkb_load_file()</tt></b><br/>
+<tt>imlayout_vkb_load_file()</tt> loads a <tt>.vkb</tt> file which has name
+<tt>filename</tt> and returns a <tt>vkb_layout_collection</tt>.
+The size of the array can be obtained from <tt>num_layout</tt> 
+argument. The numeric layout can be obtained from <tt>numeric_layout</tt>. The <tt>collection</tt> contains all layout the file has. The <tt>name</tt>, <tt>language</tt>, and <tt>word_completion</tt> field contains the localized name of the layout, the language locale code which using this layout, and the preferred word completion locale code of this layout.
+If something bad happens, it will return <tt>NULL</tt>.
+<br/><br/>
+The return value must be freed with <tt>imlayout_vkb_free_layout()</tt>.
+
+<p/>
+<b><tt>imlayout_vkb_get_layout_list()</tt></b><br/>
+<tt>imlayout_vkb_get_layout_list()</tt> returns a <tt>GList</tt> containing a list of available keyboard layout installed on the system. Each entry of the list is an array of strings. Below is the index and description of the data in the array:<br/>
+<pre>
+0: layout id
+1: localized name
+2: language locale code
+3: preferred word completion locale code
+</pre>
+<br/>
+The value returned must be freed using <tt>imlayout_vkb_free_layout_list ()</tt>

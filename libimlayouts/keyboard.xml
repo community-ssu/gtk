@@ -1,0 +1,2653 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * This file is part of libimlayouts
+ *
+ * Copyright (C) 2005 Nokia Corporation.
+ *
+ * Contact: Mohammad Anwari <mdamt@maemo.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA
+ -->
+
+<keyboards>
+  <keyboard version="0" lang="cs_CZ" name="Česká" wc="cs_CZ" numeric="UPPERCASE">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+        <key alpha="ALPHA" tele="TELE">w</key>
+        <key alpha="ALPHA" hexa="HEXA">e</key>
+        <key alpha="ALPHA">r</key>
+        <key alpha="ALPHA">t</key>
+        <key alpha="ALPHA">y</key>
+        <key alpha="ALPHA">u</key>
+        <key alpha="ALPHA">i</key>
+        <key alpha="ALPHA">o</key>
+        <key alpha="ALPHA" tele="TELE">p</key>
+        <key alpha="ALPHA">ú</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+        <key alpha="ALPHA">s</key>
+        <key alpha="ALPHA" hexa="HEXA">d</key>
+        <key alpha="ALPHA" hexa="HEXA">f</key>
+        <key alpha="ALPHA">g</key>
+        <key alpha="ALPHA">h</key>
+        <key alpha="ALPHA">j</key>
+        <key alpha="ALPHA">k</key>
+        <key alpha="ALPHA">l</key>
+        <key alpha="ALPHA">ů</key>
+        <key alpha="ALPHA">§</key>
+        <key alpha="ALPHA" dead="DEAD">¨</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+        <key alpha="ALPHA">x</key>
+        <key alpha="ALPHA" hexa="HEXA">c</key>
+        <key alpha="ALPHA">v</key>
+        <key alpha="ALPHA" hexa="HEXA">b</key>
+        <key alpha="ALPHA">n</key>
+        <key alpha="ALPHA">m</key>
+        <key special="SPECIAL" tele="TELE">,</key>
+        <key special="SPECIAL" tele="TELE">.</key>
+        <key special="SPECIAL" tele="TELE">/</key>
+        <key special="SPECIAL" tele="TELE">?</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL" tele="TELE">+</key>
+        <key alpha="ALPHA">ě</key>
+        <key alpha="ALPHA">š</key>
+        <key alpha="ALPHA">č</key>
+        <key alpha="ALPHA">ř</key>
+        <key alpha="ALPHA">ž</key>
+        <key alpha="ALPHA">ý</key>
+        <key alpha="ALPHA">á</key>
+        <key alpha="ALPHA">í</key>
+        <key special="SPECIAL">;</key>
+				<key alpha="ALPHA">é</key>
+        <key special="SPECIAL" tele="TELE">=</key>
+			</keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+        <key alpha="ALPHA" tele="TELE">W</key>
+        <key alpha="ALPHA" hexa="HEXA">E</key>
+        <key alpha="ALPHA">R</key>
+        <key alpha="ALPHA">T</key>
+        <key alpha="ALPHA">Y</key>
+        <key alpha="ALPHA">U</key>
+        <key alpha="ALPHA">I</key>
+        <key alpha="ALPHA">O</key>
+        <key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA" dead="DEAD">´</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+        <key alpha="ALPHA">S</key>
+        <key alpha="ALPHA" hexa="HEXA">D</key>
+        <key alpha="ALPHA" hexa="HEXA">F</key>
+        <key alpha="ALPHA">G</key>
+        <key alpha="ALPHA">H</key>
+        <key alpha="ALPHA">J</key>
+        <key alpha="ALPHA">K</key>
+        <key alpha="ALPHA">L</key>
+        <key alpha="ALPHA">;</key>
+        <key alpha="ALPHA" tele="TELE">#</key>
+        <key alpha="ALPHA">|</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+        <key alpha="ALPHA">X</key>
+        <key alpha="ALPHA" hexa="HEXA">C</key>
+        <key alpha="ALPHA">V</key>
+        <key alpha="ALPHA" hexa="HEXA">B</key>
+        <key alpha="ALPHA">N</key>
+        <key alpha="ALPHA">M</key>
+        <key special="SPECIAL">&lt;</key>
+        <key special="SPECIAL">&gt;</key>
+        <key special="SPECIAL">\</key>
+        <key alpha="ALPHA" dead="DEAD">ˇ</key>
+      </row>
+      
+			<keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+        <key alpha="ALPHA" dead="DEAD">°</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+        <key special="SPECIAL">%</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+	<keyboard version="0" file="latin.special" lang="en_GB:en_US">
+    <layout type="SPECIAL">
+      <tab label="inpu_ti_special_char_common" rows="3" cols="15">
+				<key special="SPECIAL">.</key>
+	      <key special="SPECIAL">,</key>
+	      <key special="SPECIAL">`</key>
+	      <key special="SPECIAL">´</key>
+				<key special="SPECIAL">'</key>
+	      <key special="SPECIAL">&quot;</key>
+	      <key special="SPECIAL">&amp;</key>
+	      <key special="SPECIAL">(</key>
+	      <key special="SPECIAL">)</key>
+	      <key special="SPECIAL">$</key>
+	      <key special="SPECIAL">^</key>
+	      <key special="SPECIAL">/</key>
+	      <key special="SPECIAL">\</key>
+	      <key special="SPECIAL">?</key>
+				<key special="SPECIAL">!</key>
+
+	      <key special="SPECIAL">:</key>
+				<key special="SPECIAL">;</key>
+	      <key special="SPECIAL">+</key>
+	      <key special="SPECIAL">-</key>
+	      <key special="SPECIAL">_</key>
+	      <key special="SPECIAL">=</key>
+	      <key special="SPECIAL">*</key>
+	      <key special="SPECIAL">&lt;</key>
+	      <key special="SPECIAL">&gt;</key>
+	      <key special="SPECIAL">£</key>
+	      <key special="SPECIAL">€</key>
+	      <key special="SPECIAL">¨</key>
+	      <key special="SPECIAL">“</key>
+	      <key special="SPECIAL">”</key>
+				<key special="SPECIAL">„</key>
+				
+				<key special="SPECIAL">¿</key>
+				<key special="SPECIAL">¡</key>
+	      <key special="SPECIAL">[</key>
+	      <key special="SPECIAL">]</key>
+	      <key special="SPECIAL">{</key>
+	      <key special="SPECIAL">}</key>
+	      <key special="SPECIAL">~</key>
+	      <key special="SPECIAL">@</key>
+	      <key special="SPECIAL">%</key>
+	      <key special="SPECIAL">#</key>
+	      <key special="SPECIAL">¥</key>
+	      <key special="SPECIAL">‘</key>
+	      <key special="SPECIAL">’</key>
+	      <key special="SPECIAL">«</key>
+				<key special="SPECIAL">»</key>			
+			</tab>
+
+			<tab label="inpu_ti_special_char_symbols" rows="3" cols="15">
+				<key special="SPECIAL">±</key>
+	      <key special="SPECIAL">≠</key>
+	      <key special="SPECIAL">×</key>
+	      <key special="SPECIAL">÷</key>
+	      <key special="SPECIAL">≤</key>
+	      <key special="SPECIAL">≥</key>
+	      <key special="SPECIAL">∕</key>
+	      <key special="SPECIAL">√</key>
+	      <key special="SPECIAL">¼</key>
+	      <key special="SPECIAL">½</key>
+	      <key special="SPECIAL">¾</key>
+	      <key special="SPECIAL">⅛</key>
+	      <key special="SPECIAL">⅜</key>
+	      <key special="SPECIAL">⅝</key>
+				<key special="SPECIAL">⅞</key>
+
+	      <key special="SPECIAL">·</key>
+	      <key special="SPECIAL">•</key>
+	      <key special="SPECIAL">…</key>
+	      <key special="SPECIAL">≈</key>
+	      <key special="SPECIAL">‰</key>
+	      <key special="SPECIAL">¢</key>
+	      <key alpha="ALPHA" special="SPECIAL">∑</key>
+	      <key alpha="ALPHA" special="SPECIAL">∏</key>
+	      <key alpha="ALPHA" special="SPECIAL">µ</key>
+	      <key special="SPECIAL">∫</key>
+	      <key special="SPECIAL">|</key>
+	      <key alpha="ALPHA" special="SPECIAL">π</key>
+	      <key special="SPECIAL">§</key>
+	      <key special="SPECIAL">∞</key>
+				<key special="SPECIAL">№</key>
+
+	      <key special="SPECIAL">¹</key>
+	      <key special="SPECIAL">²</key>
+	      <key special="SPECIAL">³</key>
+	      <key special="SPECIAL">º</key>
+	      <key special="SPECIAL">¤</key>
+	      <key special="SPECIAL">Ł</key>
+	      <key special="SPECIAL">ª</key>
+	      <key alpha="ALPHA" special="SPECIAL">Ω</key>
+	      <key alpha="ALPHA" special="SPECIAL">Δ</key>
+	      <key special="SPECIAL">¶</key>
+	      <key special="SPECIAL">©</key>
+	      <key special="SPECIAL">®</key>
+	      <key special="SPECIAL">™</key>
+	      <key special="SPECIAL"></key>
+	      <key special="SPECIAL"></key>
+			</tab>
+
+			<tab label="inpu_ti_special_char_accents1" rows="3" cols="15">
+				<key alpha="ALPHA">à</key>
+	      <key alpha="ALPHA">á</key>
+	      <key alpha="ALPHA">ä</key>
+	      <key alpha="ALPHA">â</key>
+	      <key alpha="ALPHA">ã</key>
+	      <key alpha="ALPHA">æ</key>
+	      <key alpha="ALPHA">å</key>
+	      <key alpha="ALPHA">ă</key>
+	      <key alpha="ALPHA">ą</key>
+	      <key alpha="ALPHA">ç</key>
+	      <key alpha="ALPHA">ć</key>
+	      <key alpha="ALPHA">č</key>
+	      <key alpha="ALPHA">ð</key>
+	      <key alpha="ALPHA">ď</key>
+	      <key alpha="ALPHA">đ</key>
+				
+				<key alpha="ALPHA">ē</key>
+	      <key alpha="ALPHA">ė</key>
+	      <key alpha="ALPHA">è</key>
+	      <key alpha="ALPHA">é</key>
+	      <key alpha="ALPHA">ë</key>
+	      <key alpha="ALPHA">ê</key>
+	      <key alpha="ALPHA">ę</key>
+	      <key alpha="ALPHA">ě</key>
+	      <key alpha="ALPHA">ğ</key>
+	      <key alpha="ALPHA">ĳ</key>
+	      <key alpha="ALPHA">į</key>
+	      <key alpha="ALPHA">ì</key>
+	      <key alpha="ALPHA">í</key>
+	      <key alpha="ALPHA">ï</key>
+	      <key alpha="ALPHA">î</key>
+				
+				<key alpha="ALPHA">ı</key>
+	      <key alpha="ALPHA">ĺ</key>
+	      <key alpha="ALPHA">ľ</key>
+	      <key alpha="ALPHA">ł</key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+			</tab>
+
+			<tab label="inpu_ti_special_char_accents2" rows="3" cols="15">
+				<key alpha="ALPHA">ñ</key>
+	      <key alpha="ALPHA">ń</key>
+	      <key alpha="ALPHA">ň</key>
+	      <key alpha="ALPHA">ò</key>
+	      <key alpha="ALPHA">ó</key>
+	      <key alpha="ALPHA">ö</key>
+	      <key alpha="ALPHA">ô</key>
+	      <key alpha="ALPHA">õ</key>
+	      <key alpha="ALPHA">œ</key>
+	      <key alpha="ALPHA">ø</key>
+	      <key alpha="ALPHA">ő</key>
+	      <key alpha="ALPHA">ŕ</key>
+	      <key alpha="ALPHA">ř</key>
+	      <key alpha="ALPHA">ß</key>
+	      <key alpha="ALPHA">ś</key>
+				
+				<key alpha="ALPHA">ş</key>
+	      <key alpha="ALPHA">š</key>
+	      <key alpha="ALPHA">ţ</key>
+	      <key alpha="ALPHA">ť</key>
+	      <key alpha="ALPHA">ū</key>
+	      <key alpha="ALPHA">ų</key>
+	      <key alpha="ALPHA">ù</key>
+	      <key alpha="ALPHA">ú</key>
+	      <key alpha="ALPHA">ü</key>
+	      <key alpha="ALPHA">û</key>
+	      <key alpha="ALPHA">ů</key>
+	      <key alpha="ALPHA">ű</key>
+	      <key alpha="ALPHA">ý</key>
+	      <key alpha="ALPHA">ÿ</key>
+				<key alpha="ALPHA">þ</key>
+
+	      <key alpha="ALPHA">ź</key>
+	      <key alpha="ALPHA">ż</key>
+	      <key alpha="ALPHA">ž</key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+	      <key alpha="ALPHA"></key>
+      </tab>
+    </layout>
+  </keyboard>
+
+	<keyboard version="0" lang="da_DK" name="Dansk (Danmark)" wc="da_DK">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA">&#229;</key><!-- a with ring above -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">&#230;</key><!-- ae  -->
+				<key alpha="ALPHA">&#248;</key><!-- o with stroke  -->
+				<key special="SPECIAL">'</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key special="SPECIAL">@</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#180;</key><!-- acute accent  -->
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA">&#197;</key><!-- A with ring above -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">&#198;</key><!-- AE  -->
+				<key alpha="ALPHA">&#216;</key><!-- O with stroke  -->
+				<key special="SPECIAL" tele="TELE">*</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">_</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#126;</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL">!</key>
+	<key special="SPECIAL">&quot;</key>
+	<key special="SPECIAL" tele="TELE">#</key>
+	<key special="SPECIAL">&#8364;</key>
+	<key special="SPECIAL">%</key>
+	<key special="SPECIAL">&amp;</key>
+	<key special="SPECIAL" tele="TELE">/</key>
+	<key special="SPECIAL" tele="TELE">(</key>
+	<key special="SPECIAL" tele="TELE">)</key>
+	<key special="SPECIAL" tele="TELE">+</key>
+	<key special="SPECIAL">=</key>
+	<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#96;</key><!-- grave accent  -->
+      </keypad>
+    </layout>
+  </keyboard>
+
+	<keyboard version="0" lang="en_US" name="English (USA)" wc="en_US">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key special="SPECIAL">@</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">'</key>
+				<key special="SPECIAL">!</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL">=</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key special="SPECIAL">^</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">"</key>
+				<key special="SPECIAL">]</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">&lt;</key>
+				<key special="SPECIAL">&gt;</key>
+				<key special="SPECIAL">\</key>
+				<key special="SPECIAL">[</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL" tele="TELE">#</key>
+				<key special="SPECIAL">&#163;</key><!--pound-->
+				<key special="SPECIAL">&#165;</key><!--yen-->
+				<key special="SPECIAL">$</key>
+				<key special="SPECIAL">&#8364;</key><!--euro-->
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL">~</key>
+				<key special="SPECIAL" tele="TELE">*</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+  <keyboard version="0" lang="en_GB"  name="English (UK)" wc="en_GB">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key special="SPECIAL">@</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">'</key>
+				<key special="SPECIAL">!</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL">=</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key special="SPECIAL">^</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL" tele="TELE">#</key>
+				<key special="SPECIAL">|</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">&lt;</key>
+				<key special="SPECIAL">&gt;</key>
+				<key special="SPECIAL">\</key>
+				<key special="SPECIAL">~</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL">´</key>
+				<key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL">&#163;</key><!-- pound sign  -->
+				<key special="SPECIAL">$</key>
+				<key special="SPECIAL">&#8364;</key><!-- euro sign  -->
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL">_</key>
+				<key special="SPECIAL" tele="TELE">*</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+
+  <keyboard version="0" lang="fi_FI"  name="Suomi (Suomi)" wc="fi_FI">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA">&#229;</key><!-- a with ring above -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">&#246;</key><!-- o with diaeresis  -->
+				<key alpha="ALPHA">&#228;</key><!-- a with diaeresis  -->
+				<key special="SPECIAL">'</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key special="SPECIAL">@</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#180;</key><!-- acute accent  -->
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA">&#197;</key><!-- A with ring above -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">&#214;</key><!-- O with diaeresis  -->
+				<key alpha="ALPHA">&#196;</key><!-- A with diaeresis  -->
+				<key special="SPECIAL" tele="TELE">*</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">_</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#126;</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL">!</key>
+				<key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL" tele="TELE">#</key>
+				<key special="SPECIAL">&#8364;</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key special="SPECIAL">=</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#96;</key><!-- grave accent  -->
+      </keypad>
+    </layout>
+  </keyboard>
+
+
+  <keyboard version="0" lang="de_DE" name="Deutsch (Deutschland)" wc="de_DE">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA">&#252;</key><!-- u with diaeresis -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">&#246;</key><!-- o with diaeresis -->
+				<key alpha="ALPHA">&#228;</key><!-- a with diaeresis -->
+				<key alpha="ALPHA">&#223;</key><!--eszett-->
+      </row>
+      <row>
+        <key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key special="SPECIAL">@</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE">#</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#180;</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA">&#220;</key><!-- U with diaeresis -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">&#214;</key><!-- O with diaeresis -->
+				<key alpha="ALPHA">&#196;</key><!-- A with diaeresis -->
+				<key special="SPECIAL">'</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key special="SPECIAL">_</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL">!</key>
+				<key special="SPECIAL">"</key>
+				<key special="SPECIAL">&#8364;</key><!-- euro -->
+				<key special="SPECIAL" tele="TELE">*</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+				<key special="SPECIAL">=</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#96;</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+  <keyboard version="0" lang="it_IT" name="Italiano (Italia)" wc="it_IT">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA">&#233;</key><!-- e with acute  -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#180;</key><!-- acute accent  -->
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL">'</key>
+				<key special="SPECIAL">@</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA">&#201;</key><!-- E with acute  -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key special="SPECIAL">&#176;</key><!-- degree sign  -->
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#96;</key><!-- grave accent  -->
+				<key special="SPECIAL">|</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">_</key>
+				<key special="SPECIAL">~</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL">!</key>
+				<key special="SPECIAL">"</key>
+				<key special="SPECIAL" tele="TELE">*</key>
+				<key special="SPECIAL">&#8364;</key><!--euro sign-->
+				<key special="SPECIAL" tele="TELE">#</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL">=</key>
+				<key special="SPECIAL">\</key>
+				<key special="SPECIAL">&#231;</key><!-- c with cedilla  -->
+      </keypad>
+    </layout>
+  </keyboard>
+
+  <keyboard version="0" lang="es_ES" name="Español (España)" wc="es_ES">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key special="SPECIAL">'</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">&#241;</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#180;</key>
+				<key alpha="ALPHA">&#231;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key special="SPECIAL">!</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL">@</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#168;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">&#209;</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#96;</key>
+				<key alpha="ALPHA">&#199;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">_</key>
+				<key special="SPECIAL">&#161;</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL">&#183;</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL" tele="TELE">*</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL">&#8364;</key><!-- euro sign -->
+				<key special="SPECIAL">=</key>
+				<key special="SPECIAL">&#191;</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+    <keyboard version="0" lang="es_MX" name="Español (México)" wc="es_MX">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key special="SPECIAL">'</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">&#241;</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#180;</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#168;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key special="SPECIAL">!</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL">@</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">&#209;</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#180;</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#168;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">_</key>
+				<key special="SPECIAL">&#161;</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL">&#183;</key>
+				<key special="SPECIAL">&#126;</key>
+				<key special="SPECIAL">$</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL" tele="TELE">*</key>
+				<key special="SPECIAL">=</key>
+				<key special="SPECIAL">&#191;</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+
+	<keyboard version="0" lang="fr_FR" numeric="UPPERCASE" name="Français (France)" wc="fr_FR">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">z</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#94;</key><!-- circumflex accent -->
+      </row>
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">m</key>
+				<key alpha="ALPHA">&#249;</key><!-- u with grave-->
+				<key special="SPECIAL">@</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">&lt;</key>
+			</row>
+			<keypad>
+        <key special="SPECIAL">!</key>
+				<key alpha="ALPHA">&#233;</key><!-- e with acute  -->
+				<key special="SPECIAL">"</key>
+				<key special="SPECIAL">'</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key alpha="ALPHA">&#232;</key><!-- e with grave  -->
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key alpha="ALPHA">&#231;</key><!-- c with cedilla  -->
+				<key special="SPECIAL">_</key>
+				<key alpha="ALPHA">&#224;</key><!-- a with grave  -->
+				<key special="SPECIAL" tele="TELE">?</key>
+      </keypad>
+      
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#168;</key><!-- diaeresis -->
+      </row>
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL" tele="TELE">*</key>
+				<key alpha="ALPHA">&#339;</key><!-- small ligature oe  -->
+      </row>
+      <row>
+        <key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key special="SPECIAL">=</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&gt;</key>
+      </row>
+     <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL">&#8364;</key><!-- euro sign  -->
+      </keypad> 
+    </layout>
+  </keyboard>
+
+
+ 
+  <keyboard version="0" lang="fr_CA" name="Français (Canada)" wc="fr_CA">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#94;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key special="SPECIAL">;</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#96;</key>
+				<key special="SPECIAL">&lt;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key alpha="ALPHA">&#233;</key><!-- e with acute  -->
+				<key alpha="ALPHA">&#339;</key><!-- ligature oe  -->
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL">=</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+				<key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#168;</key>
+      </row>
+      <row>
+				<key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key special="SPECIAL">:</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#184;</key>
+				<key special="SPECIAL">&gt;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">&#171;</key> <!-- left-pointing double angle quotation mark -->
+				<key special="SPECIAL">&#187;</key> <!-- right-pointing double angle quotation mark -->
+				<key alpha="ALPHA">&#201;</key><!-- E with acute  -->
+				<key alpha="ALPHA">Œ</key><!-- ligature OE -->
+      </row>
+      <keypad>
+        <key special="SPECIAL">!</key>
+				<key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL">$</key>
+				<key special="SPECIAL">@</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+				<key special="SPECIAL">'</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL">_</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+      </keypad>
+    </layout>
+  </keyboard>
+  <keyboard version="0" lang="ru_RU"  name="Русский (Россия)" wc="ru_RU">
+    <layout type="LOWERCASE">
+      <row>
+				<key alpha="ALPHA">&#1081;</key><!-- cyrillic small letter short i -->
+				<key alpha="ALPHA">&#1094;</key><!-- cyrillic small letter tse  -->
+				<key alpha="ALPHA">&#1091;</key><!-- cyrillic capital letter u  -->
+				<key alpha="ALPHA">&#1082;</key><!-- cyrillic small letter ka  -->
+				<key alpha="ALPHA">&#1077;</key><!-- cyrillic small letter ie  -->
+				<key alpha="ALPHA">&#1085;</key><!-- cyrillic capital letter ie  -->
+				<key alpha="ALPHA">&#1075;</key><!-- cyrillic small letter ghe  -->
+				<key alpha="ALPHA">&#1096;</key><!-- cyrillic small letter sha  -->
+				<key alpha="ALPHA">&#1097;</key><!-- cyrillic capital letter shcha  -->
+				<key alpha="ALPHA">&#1079;</key><!-- cyrillic small letter ze  -->
+				<key alpha="ALPHA">&#1093;</key><!-- cyrillic small letter ha  -->
+      </row>
+      <row>
+				<key alpha="ALPHA">&#1092;</key><!-- cyrillic small letter ef  -->
+				<key alpha="ALPHA">&#1099;</key><!-- cyrillic small letter yeru  -->
+				<key alpha="ALPHA">&#1074;</key><!-- cyrillic small letter ve  -->
+				<key alpha="ALPHA">&#1072;</key><!-- cyrillic small letter a  -->
+				<key alpha="ALPHA">&#1087;</key><!-- cyrillic small letter pe  -->
+				<key alpha="ALPHA">&#1088;</key><!-- cyrillic small letter er  -->
+				<key alpha="ALPHA">&#1086;</key><!-- cyrillic small letter o  -->
+				<key alpha="ALPHA">&#1083;</key><!-- cyrillic small letter el  -->
+				<key alpha="ALPHA">&#1076;</key><!-- cyrillic small letter de  -->
+				<key alpha="ALPHA">&#1078;</key><!-- cyrillic small letter zhe  -->
+				<key alpha="ALPHA">&#1101;</key><!-- cyrillic small letter e  -->
+				<key alpha="ALPHA">&#1098;</key><!-- cyrillic small letter hard sign  -->
+      </row>
+      <row>
+        <key alpha="ALPHA">&#1103;</key><!-- cyrillic small letter ya  -->
+				<key alpha="ALPHA">&#1095;</key><!-- cyrillic small letter che  -->
+				<key alpha="ALPHA">&#1089;</key><!-- cyrillic small letter es  -->
+				<key alpha="ALPHA">&#1084;</key><!-- cyrillic small letter em  -->
+				<key alpha="ALPHA">&#1080;</key><!-- cyrillic small letter i  -->
+				<key alpha="ALPHA">&#1090;</key><!-- cyrillic small letter te  -->
+				<key alpha="ALPHA">&#1100;</key><!-- cyrillic small letter soft sign  -->
+				<key alpha="ALPHA">&#1073;</key><!-- cyrillic small letter be  -->
+				<key alpha="ALPHA">&#1102;</key><!-- cyrillic small letter yu  -->
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+      </row>
+      <keypad>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key alpha="ALPHA">&#1105;</key><!-- cyrillic small letter io  -->
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL" ele="TELE" numeric="NUMERIC">-</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+				<key alpha="ALPHA">&#1049;</key><!-- cyrillic capital letter short i -->
+				<key alpha="ALPHA">&#1062;</key><!-- cyrillic capital letter tse  -->
+				<key alpha="ALPHA">&#1059;</key><!-- cyrillic capital letter u  -->
+				<key alpha="ALPHA">&#1050;</key><!-- cyrillic capital letter ka  -->
+				<key alpha="ALPHA">&#1045;</key><!-- cyrillic capital letter ie  -->
+				<key alpha="ALPHA">&#1053;</key><!-- cyrillic capital letter en  -->
+				<key alpha="ALPHA">&#1043;</key><!-- cyrillic capital letter ghe -->
+				<key alpha="ALPHA">&#1064;</key><!-- cyrillic capital letter sha  -->
+				<key alpha="ALPHA">&#1065;</key><!-- cyrillic capital letter shcha  -->
+				<key alpha="ALPHA">&#1047;</key><!-- cyrillic capital letter ze  -->
+				<key alpha="ALPHA">&#1061;</key><!-- cyrillic capital letter ha  -->
+      </row>
+      <row>
+				<key alpha="ALPHA">&#1060;</key><!-- cyrillic capital letter ef -->
+				<key alpha="ALPHA">&#1067;</key><!-- cyrillic capital letter yeru  -->
+				<key alpha="ALPHA">&#1042;</key><!-- cyrillic capital letter ve  -->
+				<key alpha="ALPHA">&#1040;</key><!-- cyrillic capital letter a  -->
+				<key alpha="ALPHA">&#1055;</key><!-- cyrillic capital letter pe  -->
+				<key alpha="ALPHA">&#1056;</key><!-- cyrillic capital letter er  -->
+				<key alpha="ALPHA">&#1054;</key><!-- cyrillis capital letter o  -->
+				<key alpha="ALPHA">&#1051;</key><!-- cyrillic capital letter el  -->
+				<key alpha="ALPHA">&#1044;</key><!-- cyrillic capital letter de  -->
+				<key alpha="ALPHA">&#1046;</key><!-- cyrillic capital letter zhe  -->
+				<key alpha="ALPHA">&#1069;</key><!-- cyrillic capital letter e  -->
+				<key alpha="ALPHA">&#1066;</key><!-- cyrillic capital letter hard sign  -->
+      </row>
+      <row>
+				<key alpha="ALPHA">&#1071;</key><!-- cyrillic capital letter ya  -->
+				<key alpha="ALPHA">&#1063;</key><!-- cyrillic capital letter che  -->
+				<key alpha="ALPHA">&#1057;</key><!-- cyrillic capital letter es  -->
+				<key alpha="ALPHA">&#1052;</key><!-- cyrillic capital letter em  -->
+				<key alpha="ALPHA">&#1048;</key><!-- cyrillic capital letter i  -->
+				<key alpha="ALPHA">&#1058;</key><!-- cyrillic capital letter te  -->
+				<key alpha="ALPHA">&#1068;</key><!-- cyrillic capital letter soft sign  -->
+				<key alpha="ALPHA">&#1041;</key><!-- cyrillic capital letter be  -->
+				<key alpha="ALPHA">&#1070;</key><!-- cyrillic capital letter yu  -->
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+      </row>
+      <keypad>
+				<key special="SPECIAL">!</key>
+				<key special="SPECIAL">"</key>
+				<key special="SPECIAL">?</key>
+				<key special="SPECIAL">*</key><!-- euro sign -->
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL">\</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key alpha="ALPHA">&#1025;</key><!-- cyrillic capital letter io  -->
+				<key special="SPECIAL">=</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+  <keyboard version="0" lang="pt_BR" name="Português (Brasil)" wc="pt_BR">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#180;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">&#231;</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#126;</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#94;</key>
+      </row>
+      <row>
+				<key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">'</key>
+      </row>
+      <keypad>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#168;</key>
+      </row>
+      <row>
+				<key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">&#199;</key>
+				<key special="SPECIAL" tele="TELE">*</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#96;</key>
+      </row>
+      <row>
+				<key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key alpha="ALPHA">&#170;</key><!-- feminine ordinal indicator -->
+				<key special="SPECIAL">&#176;</key><!-- degree sign  -->
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">&quot;</key>
+      </row>
+      <keypad>
+				<key special="SPECIAL">!</key>
+				<key special="SPECIAL">@</key>
+				<key special="SPECIAL" tele="TELE">#</key>
+				<key special="SPECIAL">$</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL">_</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key special="SPECIAL">=</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+ <keyboard version="0" lang="pt_PT" name="Português (Portugal)" wc="pt_PT">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#180;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">&#231;</key>
+				<key special="SPECIAL">&#176;</key><!-- degree sign -->
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#126;</key>
+      </row>
+      <row>
+				<key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key special="SPECIAL">&#171;</key><!-- left-pointing double angle quotation mark -->
+      </row>
+      <keypad>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL">'</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#94;</key>
+      </row>
+      <row>
+				<key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">&#199;</key>
+				<key special="SPECIAL" tele="TELE">*</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#96;</key>
+      </row>
+      <row>
+				<key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">_</key>
+				<key special="SPECIAL">&#187;</key><!-- right-pointing double angle quotation mark -->
+      </row>
+      <keypad>
+				<key special="SPECIAL">!</key>
+				<key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL" tele="TELE">#</key>
+				<key special="SPECIAL">$</key>
+				<key special="SPECIAL">&#8364;</key><!-- euro sign  -->
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key special="SPECIAL">=</key>
+				<key special="SPECIAL">@</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+	<keyboard version="0" lang="nl_NL" name="Nederlands (Nederland)" wc="nl_NL">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key special="SPECIAL">@</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key special="SPECIAL">'</key>
+				<key special="SPECIAL">&#180;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL">&lt;</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL">&gt;</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key special="SPECIAL">^</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key special="SPECIAL">&#177;</key><!-- plus-minus sign -->
+				<key special="SPECIAL">_</key>
+				<key special="SPECIAL">&#96;</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">=</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL">!</key>
+				<key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL" tele="TELE">#</key>
+				<key special="SPECIAL">$</key>
+				<key special="SPECIAL">&#8364;</key><!-- euro sign  -->
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL">&#176;</key><!-- degree sign  -->
+				<key special="SPECIAL" tele="TELE">*</key>
+				<key special="SPECIAL">~</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+	<keyboard version="0" lang="el_GR" name="Ελληνικά (Ελληνικά)" wc="el_GR">
+    <layout type="LOWERCASE">
+      <row>
+        <key special="SPECIAL">;</key>
+				<key alpha="ALPHA">&#231;</key>
+				<key alpha="ALPHA">&#949;</key>
+				<key alpha="ALPHA">&#961;</key>
+				<key alpha="ALPHA">&#964;</key>
+				<key alpha="ALPHA">&#965;</key>
+				<key alpha="ALPHA">&#952;</key>
+				<key alpha="ALPHA">&#953;</key>
+				<key alpha="ALPHA">&#959;</key>
+				<key alpha="ALPHA">&#960;</key>
+				<key special="SPECIAL">&#96;</key>
+      </row>
+      <row>
+        <key special="SPECIAL" tele="TELE">/</key>
+				<key alpha="ALPHA">&#945;</key>
+				<key alpha="ALPHA">&#963;</key>
+				<key alpha="ALPHA">&#948;</key>
+				<key alpha="ALPHA">&#966;</key>
+				<key alpha="ALPHA">&#947;</key>
+				<key alpha="ALPHA">&#951;</key>
+				<key alpha="ALPHA">&#958;</key>
+				<key alpha="ALPHA">&#954;</key>
+				<key alpha="ALPHA">&#955;</key>
+				<key alpha="ALPHA" special="SPECIAL" dead="DEAD">&#180;</key>
+				<key special="SPECIAL">'</key>
+      </row>
+      <row>
+        <key special="SPECIAL">&#171;</key>
+				<key alpha="ALPHA">&#950;</key>
+				<key alpha="ALPHA">&#967;</key>
+				<key alpha="ALPHA">&#968;</key>
+				<key alpha="ALPHA">&#969;</key>
+				<key alpha="ALPHA">&#946;</key>
+				<key alpha="ALPHA">&#957;</key>
+				<key alpha="ALPHA">&#956;</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL">@</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL">=</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+				<key special="SPECIAL">:</key>
+				<key alpha="ALPHA" special="SPECIAL" dead="DEAD">&#901;</key>
+				<key alpha="ALPHA">&#917;</key>
+				<key alpha="ALPHA">&#929;</key>
+				<key alpha="ALPHA">&#932;</key>
+				<key alpha="ALPHA">&#933;</key>
+				<key alpha="ALPHA">&#920;</key>
+				<key alpha="ALPHA">&#921;</key>
+				<key alpha="ALPHA">&#927;</key>
+				<key alpha="ALPHA">&#928;</key>
+				<key special="SPECIAL">&#94;</key>
+      </row>
+      <row>
+        <key special="SPECIAL">\</key>
+				<key alpha="ALPHA">&#913;</key>
+				<key alpha="ALPHA">&#931;</key>
+				<key alpha="ALPHA">&#916;</key>
+				<key alpha="ALPHA">&#934;</key>
+				<key alpha="ALPHA">&#915;</key>
+				<key alpha="ALPHA">&#919;</key>
+				<key alpha="ALPHA">&#926;</key>
+				<key alpha="ALPHA">&#922;</key>
+				<key alpha="ALPHA">&#923;</key>
+				<key alpha="ALPHA" special="SPECIAL" dead="DEAD">&#168;</key>
+				<key special="SPECIAL">&quot;</key>
+      </row>
+      <row>
+        <key special="SPECIAL">&#187;</key>
+				<key alpha="ALPHA">&#918;</key>
+				<key alpha="ALPHA">&#935;</key>
+				<key alpha="ALPHA">&#936;</key>
+				<key alpha="ALPHA">&#937;</key>
+				<key alpha="ALPHA">&#914;</key>
+				<key alpha="ALPHA">&#925;</key>
+				<key alpha="ALPHA">&#924;</key>
+				<key special="SPECIAL">&lt;</key>
+				<key special="SPECIAL">&gt;</key>
+				<key special="SPECIAL">_</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL">!</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+				<key special="SPECIAL" tele="TELE">#</key>
+				<key special="SPECIAL">$</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">~</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL">&#8364;</key>
+				<key special="SPECIAL">*</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+	<keyboard version="0" lang="no_NO" name="Norsk (Norge)" wc="no_NO">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA">&#229;</key><!-- a with ring above -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">&#248;</key><!-- o with stroke  -->
+				<key alpha="ALPHA">&#230;</key><!-- ae  -->
+				<key special="SPECIAL">'</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key special="SPECIAL">@</key>
+      </row>
+      <keypad>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#168;</key><!-- diaeresis accent  -->
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA">&#197;</key><!-- A with ring above -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">&#216;</key><!-- O with stroke  -->
+				<key alpha="ALPHA">&#198;</key><!-- AE  -->
+				<key special="SPECIAL" tele="TELE">*</key>
+      </row>
+      <row>
+        <key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">_</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#126;</key>
+      </row>
+      <keypad>
+        <key special="SPECIAL">!</key>
+				<key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL" tele="TELE">#</key>
+				<key special="SPECIAL">&#8364;</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key special="SPECIAL">=</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#96;</key><!-- grave accent  -->
+      </keypad>
+    </layout>
+  </keyboard>
+
+ <keyboard version="0" lang="sv_SE" name="Svenska (Sverige)" wc="sv_SE">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+				<key alpha="ALPHA" hexa="HEXA">e</key>
+				<key alpha="ALPHA">r</key>
+				<key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+				<key alpha="ALPHA">u</key>
+				<key alpha="ALPHA">i</key>
+				<key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA">&#229;</key><!-- a with ring above -->
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+				<key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+				<key alpha="ALPHA" hexa="HEXA">f</key>
+				<key alpha="ALPHA">g</key>
+				<key alpha="ALPHA">h</key>
+				<key alpha="ALPHA">j</key>
+				<key alpha="ALPHA">k</key>
+				<key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">&#246;</key><!-- o with diaeresis  -->
+				<key alpha="ALPHA">&#228;</key><!-- a with diaeresis  -->
+				<key special="SPECIAL">'</key>
+      </row>
+      <row>
+				<key alpha="ALPHA">z</key>
+				<key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+				<key alpha="ALPHA">v</key>
+				<key alpha="ALPHA" hexa="HEXA">b</key>
+				<key alpha="ALPHA">n</key>
+				<key alpha="ALPHA">m</key>
+				<key special="SPECIAL" tele="TELE">,</key>
+				<key special="SPECIAL" tele="TELE">.</key>
+				<key special="SPECIAL" tele="TELE" numeric="NUMERIC">-</key>
+				<key special="SPECIAL">@</key>
+      </row>
+      <keypad>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL" tele="TELE">?</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#180;</key><!-- acute accent  -->
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+				<key alpha="ALPHA" tele="TELE">W</key>
+				<key alpha="ALPHA" hexa="HEXA">E</key>
+				<key alpha="ALPHA">R</key>
+				<key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Y</key>
+				<key alpha="ALPHA">U</key>
+				<key alpha="ALPHA">I</key>
+				<key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA">&#197;</key><!-- A with ring above -->
+      </row>
+      <row>
+				<key alpha="ALPHA" hexa="HEXA">A</key>
+				<key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+				<key alpha="ALPHA">G</key>
+				<key alpha="ALPHA">H</key>
+				<key alpha="ALPHA">J</key>
+				<key alpha="ALPHA">K</key>
+				<key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">&#214;</key><!-- O with diaeresis  -->
+				<key alpha="ALPHA">&#196;</key><!-- A with diaeresis  -->
+				<key special="SPECIAL" tele="TELE">*</key>
+      </row>
+      <row>
+				<key alpha="ALPHA">Z</key>
+				<key alpha="ALPHA">X</key>
+				<key alpha="ALPHA" hexa="HEXA">C</key>
+				<key alpha="ALPHA">V</key>
+				<key alpha="ALPHA" hexa="HEXA">B</key>
+				<key alpha="ALPHA">N</key>
+				<key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">_</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#126;</key>
+      </row>
+      <keypad>
+				<key special="SPECIAL">!</key>
+				<key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL" tele="TELE">#</key>
+				<key special="SPECIAL">&#8364;</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL" tele="TELE">/</key>
+				<key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key special="SPECIAL">=</key>
+				<key alpha="ALPHA" dead="DEAD" special="SPECIAL">&#96;</key><!-- grave accent  -->
+      </keypad>
+    </layout>
+  </keyboard>
+
+
+	 <keyboard version="0" lang="pl_PL" name="Polski" wc="pl_PL">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+        <key alpha="ALPHA" hexa="HEXA">e</key>
+        <key alpha="ALPHA">r</key>
+        <key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+        <key alpha="ALPHA">u</key>
+        <key alpha="ALPHA">i</key>
+        <key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA" dead="DEAD">´</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+        <key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+        <key alpha="ALPHA" hexa="HEXA">f</key>
+        <key alpha="ALPHA">g</key>
+        <key alpha="ALPHA">h</key>
+        <key alpha="ALPHA">j</key>
+        <key alpha="ALPHA">k</key>
+        <key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">ç</key>
+				<key alpha="ALPHA" dead="DEAD">^</key>
+				<key alpha="ALPHA" dead="DEAD">~</key>
+      </row>
+      <row>
+				<key alpha="ALPHA">z</key>
+        <key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+        <key alpha="ALPHA">v</key>
+        <key alpha="ALPHA" hexa="HEXA">b</key>
+        <key alpha="ALPHA">n</key>
+        <key alpha="ALPHA">m</key>
+        <key special="SPECIAL" tele="TELE">,</key>
+        <key special="SPECIAL" tele="TELE">.</key>
+        <key numeric="NUMERIC" special="SPECIAL" tele="TELE">-</key>
+				<key special="SPECIAL" tele="TELE">!</key>
+      </row>
+      <keypad>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL">@</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL">?</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+        <key alpha="ALPHA" tele="TELE">W</key>
+        <key alpha="ALPHA" hexa="HEXA">E</key>
+        <key alpha="ALPHA">R</key>
+        <key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Z</key>
+        <key alpha="ALPHA">U</key>
+        <key alpha="ALPHA">I</key>
+        <key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA" dead="DEAD">¨</key>
+      </row>
+      <row>
+				<key alpha="ALPHA" hexa="HEXA">A</key>
+        <key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+        <key alpha="ALPHA">G</key>
+        <key alpha="ALPHA">H</key>
+        <key alpha="ALPHA">J</key>
+        <key alpha="ALPHA">K</key>
+        <key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">Ç</key>
+				<key alpha="ALPHA">#</key>
+				<key alpha="ALPHA" dead="DEAD">`</key>
+      </row>
+      <row>
+				<key alpha="ALPHA">Z</key>
+        <key alpha="ALPHA">X</key>
+        <key alpha="ALPHA" hexa="HEXA">C</key>
+        <key alpha="ALPHA">V</key>
+        <key alpha="ALPHA" hexa="HEXA">B</key>
+        <key alpha="ALPHA">N</key>
+        <key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">_</key>
+				<key special="SPECIAL">\</key>
+      </row>
+      <keypad>
+				<key special="SPECIAL">'</key>
+				<key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL" tele="TELE">$</key>
+				<key special="SPECIAL">*</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL">/</key>
+        <key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key special="SPECIAL">=</key>
+				<key special="SPECIAL">°</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+ <keyboard version="0" lang="tr_TR" name="Türkçe" wc="tr_TR">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+				<key alpha="ALPHA" tele="TELE">w</key>
+        <key alpha="ALPHA" hexa="HEXA">e</key>
+        <key alpha="ALPHA">r</key>
+        <key alpha="ALPHA">t</key>
+				<key alpha="ALPHA">y</key>
+        <key alpha="ALPHA">u</key>
+        <key alpha="ALPHA">i</key>
+        <key alpha="ALPHA">o</key>
+				<key alpha="ALPHA" tele="TELE">p</key>
+				<key alpha="ALPHA" dead="DEAD">´</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+        <key alpha="ALPHA">s</key>
+				<key alpha="ALPHA" hexa="HEXA">d</key>
+        <key alpha="ALPHA" hexa="HEXA">f</key>
+        <key alpha="ALPHA">g</key>
+        <key alpha="ALPHA">h</key>
+        <key alpha="ALPHA">j</key>
+        <key alpha="ALPHA">k</key>
+        <key alpha="ALPHA">l</key>
+				<key alpha="ALPHA">ç</key>
+				<key alpha="ALPHA" dead="DEAD">^</key>
+				<key alpha="ALPHA" dead="DEAD">~</key>
+      </row>
+      <row>
+				<key alpha="ALPHA">z</key>
+        <key alpha="ALPHA">x</key>
+				<key alpha="ALPHA" hexa="HEXA">c</key>
+        <key alpha="ALPHA">v</key>
+        <key alpha="ALPHA" hexa="HEXA">b</key>
+        <key alpha="ALPHA">n</key>
+        <key alpha="ALPHA">m</key>
+        <key special="SPECIAL" tele="TELE">,</key>
+        <key special="SPECIAL" tele="TELE">.</key>
+        <key numeric="NUMERIC" special="SPECIAL" tele="TELE">-</key>
+				<key special="SPECIAL" tele="TELE">!</key>
+      </row>
+      <keypad>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+				<key special="SPECIAL">@</key>
+				<key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+				<key special="SPECIAL">?</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+        <key alpha="ALPHA" tele="TELE">W</key>
+        <key alpha="ALPHA" hexa="HEXA">E</key>
+        <key alpha="ALPHA">R</key>
+        <key alpha="ALPHA">T</key>
+				<key alpha="ALPHA">Z</key>
+        <key alpha="ALPHA">U</key>
+        <key alpha="ALPHA">I</key>
+        <key alpha="ALPHA">O</key>
+				<key alpha="ALPHA" tele="TELE">P</key>
+				<key alpha="ALPHA" dead="DEAD">¨</key>
+      </row>
+      <row>
+				<key alpha="ALPHA" hexa="HEXA">A</key>
+        <key alpha="ALPHA">S</key>
+				<key alpha="ALPHA" hexa="HEXA">D</key>
+				<key alpha="ALPHA" hexa="HEXA">F</key>
+        <key alpha="ALPHA">G</key>
+        <key alpha="ALPHA">H</key>
+        <key alpha="ALPHA">J</key>
+        <key alpha="ALPHA">K</key>
+        <key alpha="ALPHA">L</key>
+				<key alpha="ALPHA">Ç</key>
+				<key alpha="ALPHA">#</key>
+				<key alpha="ALPHA" dead="DEAD">`</key>
+      </row>
+      <row>
+				<key alpha="ALPHA">Z</key>
+        <key alpha="ALPHA">X</key>
+        <key alpha="ALPHA" hexa="HEXA">C</key>
+        <key alpha="ALPHA">V</key>
+        <key alpha="ALPHA" hexa="HEXA">B</key>
+        <key alpha="ALPHA">N</key>
+        <key alpha="ALPHA">M</key>
+				<key special="SPECIAL">;</key>
+				<key special="SPECIAL">:</key>
+				<key special="SPECIAL">_</key>
+				<key special="SPECIAL">\</key>
+      </row>
+      <keypad>
+				<key special="SPECIAL">'</key>
+				<key special="SPECIAL">&quot;</key>
+				<key special="SPECIAL" tele="TELE">$</key>
+				<key special="SPECIAL">*</key>
+				<key special="SPECIAL">%</key>
+				<key special="SPECIAL">&amp;</key>
+				<key special="SPECIAL">/</key>
+        <key special="SPECIAL" tele="TELE">(</key>
+				<key special="SPECIAL" tele="TELE">)</key>
+				<key special="SPECIAL" tele="TELE">+</key>
+				<key special="SPECIAL">=</key>
+				<key special="SPECIAL">°</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+	<keyboard version="0" lang="hu_HU" name="Magyar" wc="hu_HU">
+    <layout type="LOWERCASE">
+      <row>
+        <key alpha="ALPHA">q</key>
+  <key alpha="ALPHA" tele="TELE">w</key>
+        <key alpha="ALPHA" hexa="HEXA">e</key>
+        <key alpha="ALPHA">r</key>
+        <key alpha="ALPHA">t</key>
+  <key alpha="ALPHA">y</key>
+        <key alpha="ALPHA">u</key>
+        <key alpha="ALPHA">i</key>
+        <key alpha="ALPHA">o</key>
+  <key alpha="ALPHA" tele="TELE">p</key>
+  <key alpha="ALPHA" dead="DEAD">´</key>
+      </row>
+      <row>
+        <key alpha="ALPHA" hexa="HEXA">a</key>
+        <key alpha="ALPHA">s</key>
+  <key alpha="ALPHA" hexa="HEXA">d</key>
+        <key alpha="ALPHA" hexa="HEXA">f</key>
+        <key alpha="ALPHA">g</key>
+        <key alpha="ALPHA">h</key>
+        <key alpha="ALPHA">j</key>
+        <key alpha="ALPHA">k</key>
+        <key alpha="ALPHA">l</key>
+  <key alpha="ALPHA">ç</key>
+  <key alpha="ALPHA" dead="DEAD">^</key>
+  <key alpha="ALPHA" dead="DEAD">~</key>
+      </row>
+      <row>
+  <key alpha="ALPHA">z</key>
+        <key alpha="ALPHA">x</key>
+  <key alpha="ALPHA" hexa="HEXA">c</key>
+        <key alpha="ALPHA">v</key>
+        <key alpha="ALPHA" hexa="HEXA">b</key>
+        <key alpha="ALPHA">n</key>
+        <key alpha="ALPHA">m</key>
+        <key special="SPECIAL" tele="TELE">,</key>
+        <key special="SPECIAL" tele="TELE">.</key>
+        <key numeric="NUMERIC" special="SPECIAL" tele="TELE">-</key>
+  <key special="SPECIAL" tele="TELE">!</key>
+      </row>
+      <keypad>
+  <key numeric="NUMERIC" hexa="HEXA" tele="TELE">1</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">2</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">3</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">4</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">5</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">6</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">7</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">8</key>
+        <key numeric="NUMERIC" hexa="HEXA" tele="TELE">9</key>
+  <key special="SPECIAL">@</key>
+  <key numeric="NUMERIC" hexa="HEXA" tele="TELE">0</key>
+  <key special="SPECIAL">?</key>
+      </keypad>
+    </layout>
+    <layout type="UPPERCASE">
+      <row>
+        <key alpha="ALPHA">Q</key>
+        <key alpha="ALPHA" tele="TELE">W</key>
+        <key alpha="ALPHA" hexa="HEXA">E</key>
+        <key alpha="ALPHA">R</key>
+        <key alpha="ALPHA">T</key>
+  <key alpha="ALPHA">Z</key>
+        <key alpha="ALPHA">U</key>
+        <key alpha="ALPHA">I</key>
+        <key alpha="ALPHA">O</key>
+  <key alpha="ALPHA" tele="TELE">P</key>
+  <key alpha="ALPHA" dead="DEAD">¨</key>
+      </row>
+      <row>
+  <key alpha="ALPHA" hexa="HEXA">A</key>
+        <key alpha="ALPHA">S</key>
+  <key alpha="ALPHA" hexa="HEXA">D</key>
+  <key alpha="ALPHA" hexa="HEXA">F</key>
+        <key alpha="ALPHA">G</key>
+        <key alpha="ALPHA">H</key>
+        <key alpha="ALPHA">J</key>
+        <key alpha="ALPHA">K</key>
+        <key alpha="ALPHA">L</key>
+  <key alpha="ALPHA">Ç</key>
+  <key alpha="ALPHA">#</key>
+  <key alpha="ALPHA" dead="DEAD">`</key>
+      </row>
+      <row>
+  <key alpha="ALPHA">Z</key>
+        <key alpha="ALPHA">X</key>
+        <key alpha="ALPHA" hexa="HEXA">C</key>
+        <key alpha="ALPHA">V</key>
+        <key alpha="ALPHA" hexa="HEXA">B</key>
+        <key alpha="ALPHA">N</key>
+        <key alpha="ALPHA">M</key>
+  <key special="SPECIAL">;</key>
+  <key special="SPECIAL">:</key>
+  <key special="SPECIAL">_</key>
+  <key special="SPECIAL">\</key>
+      </row>
+      <keypad>
+  <key special="SPECIAL">'</key>
+  <key special="SPECIAL">&quot;</key>
+  <key special="SPECIAL" tele="TELE">$</key>
+  <key special="SPECIAL">*</key>
+  <key special="SPECIAL">%</key>
+  <key special="SPECIAL">&amp;</key>
+  <key special="SPECIAL">/</key>
+        <key special="SPECIAL" tele="TELE">(</key>
+  <key special="SPECIAL" tele="TELE">)</key>
+  <key special="SPECIAL" tele="TELE">+</key>
+  <key special="SPECIAL">=</key>
+  <key special="SPECIAL">°</key>
+      </keypad>
+    </layout>
+  </keyboard>
+
+
+</keyboards>

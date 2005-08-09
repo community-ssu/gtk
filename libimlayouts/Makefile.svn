@@ -1,0 +1,17 @@
+configure: all
+	./configure
+
+all:
+	aclocal -I /usr/share/aclocal
+	libtoolize --force --copy
+	touch NEWS README AUTHORS ChangeLog
+	automake -a -f -c --foreign
+	autoconf
+
+install: configure
+	make
+	make install
+
+reconf: all
+	./config.status --recheck
+	./config.status
