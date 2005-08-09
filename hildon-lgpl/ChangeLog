@@ -1,3 +1,15 @@
+2005-08-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	ScrollControl was never working as it was designed, and it had
+	debendency to libxtst. Fixed the feature and removed the
+	dependency:
+
+	* hildon-lgpl/hildon-app.c (find_window): new function. Finds the
+	window which for the fake mouse press/release event is sent.
+	(hildon_app_button_press): Renamed to hildon_app_button, now also
+	handling mouse release. Changed xtst related code to the new fake
+	event based system.
+
 2005-08-05  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-lgpl/hildon-app.c: Grab X events in init() instead of

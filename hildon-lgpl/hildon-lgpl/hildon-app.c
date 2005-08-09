@@ -29,11 +29,11 @@
  *
  */
 
+#include <gdk/gdk.h>
 #include "hildon-app.h"
 #include "hildon-app-private.h"
 #include "gtk-infoprint.h"
 
-#include <X11/extensions/XTest.h>
 #include <gdk/gdkevents.h>
 #include <gdk/gdkkeysyms.h>
 #include <X11/Xatom.h>
@@ -42,6 +42,7 @@
 #include <gtk/gtkeditable.h>
 #include <gtk/gtktextview.h>
 #include <gtk/gtkentry.h>
+#include <gtk/gtkscrolledwindow.h>
 
 #include <libintl.h>
 #include <string.h>
@@ -101,7 +102,9 @@ hildon_app_real_topmost_status_lose (HildonApp *self);
 static void
 hildon_app_real_switch_to (HildonApp *self);
 static gboolean
-hildon_app_button_press (GtkWidget *widget, GdkEventButton *event);
+hildon_app_button (GtkWidget *widget, GdkEventButton *event);
+static GdkWindow *
+find_window (GdkWindow *window, gint by, gint co);
 static void
 hildon_app_clipboard_copy(HildonApp *self, GtkWidget *widget);
 static void
@@ -320,7 +323,8 @@ static void hildon_app_class_init (HildonAppClass *app_class)
 
     widget_class->key_press_event = hildon_app_key_press;
     widget_class->key_release_event = hildon_app_key_release;
-    widget_class->button_press_event = hildon_app_button_press;
+    widget_class->button_press_event = hildon_app_button;
+    widget_class->button_release_event = hildon_app_button;
     widget_class->realize = hildon_app_realize;
     widget_class->unrealize = hildon_app_unrealize;
 
@@ -641,45 +645,64 @@ hildon_app_escape_timeout(gpointer data)
 	return FALSE;	
 }
 
+static GdkWindow *find_window (GdkWindow *window, gint by, gint co)
+{
+  GdkWindow *child;
+  GList *children = gdk_window_peek_children (window);
+
+  if (!children)
+    return window;
+
+  if (!(child = (GdkWindow *)children->data))
+    return window;
+
+  do
+    {
+      if (gdk_window_is_visible (child) &&
+	  gdk_window_get_events (child) & GDK_BUTTON_PRESS_MASK)
+	{
+	  gint x, width, y, height;
+
+	  gdk_window_get_geometry (child, &x, &y, &width, &height, NULL);
+	  if (x < co && x + width > co && y < by && y + height > by)
+	    return find_window (child, by, co);
+	}
+
+      if (!(children = g_list_next (children)))
+        return window;
+
+    } while ( (child = children->data));
+
+  return NULL;
+}
+
 static gboolean
-hildon_app_button_press (GtkWidget *widget, GdkEventButton *event)
+hildon_app_button (GtkWidget *widget, GdkEventButton *event)
 {
   HildonAppPrivate *priv;
-
   priv = HILDON_APP_GET_PRIVATE (widget);
   g_assert(GTK_WIDGET_REALIZED(widget));
 
   if (priv->scroll_control &&
       (event->x > widget->allocation.width - RIGHT_BORDER))
     {
-      gint x, y;
-      GdkWindow *window;
-      gint xm = -(RIGHT_BORDER - (widget->allocation.width - event->x));
+      GdkWindow *window = NULL;
+      gint co = widget->allocation.width - RIGHT_BORDER;
 
-      XTestFakeRelativeMotionEvent (GDK_DISPLAY(), xm, 0, 0);
-
-      window = event->window;
-      event->window = gdk_window_at_pointer (&x, &y);
-
-      if (event->window != widget->window)
+      if ((window = find_window (widget->window, event->y, co)))
 	{
-	  gint width, xs = event->x;
-	  gdk_window_get_geometry (event->window, NULL, NULL, &width, NULL, NULL);
-	  event->x = width-1;
+	  GdkEventButton nevent;
 
-	  gtk_main_do_event ((GdkEvent*)event);
+	  if (window == widget->window)
+	    return FALSE;
 
-	  event->window = window;
-	  event->x = xs;
+	  nevent = *event;
+	  nevent.x = 8;
+	  nevent.window = window;
+	  g_object_ref (nevent.window);
+	  gtk_main_do_event ((GdkEvent*)&nevent);
 	}
-      else
-	{
-	  event->window = window;
-          return FALSE;
-	}
-      return TRUE;
     }
-
   return FALSE;
 }
 
