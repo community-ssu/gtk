@@ -186,11 +186,18 @@ hildon_return_t hildon_dnotify_set_cb(hildon_dnotify_cb_f *func,
 hildon_return_t hildon_dnotify_remove_cb(char * path)
 {
 	_dir_map_t *dir, *prev;
+	gboolean shared_path = FALSE;
+
 	if( (path == NULL) || (dir_funcs == NULL) || (dir_src == NULL) )
 		return HILDON_ERR;
 	dir = _dir_map;
 	prev = NULL;
 	while(dir!=NULL) {
+
+		if(!shared_path && path == dir->path) {
+			shared_path = TRUE;
+		}
+
 		if(strcmp(path,dir->path)==0) {
 			_dir_map_t *tmp;
 			tmp=dir;
@@ -201,7 +208,8 @@ hildon_return_t hildon_dnotify_remove_cb(char * path)
 			else {
 				prev->next=tmp->next;
 			}
-			free(tmp->path);
+			if (!shared_path)
+				free(tmp->path);
 			close(tmp->fd);
 			free(tmp);
 		}
@@ -209,6 +217,10 @@ hildon_return_t hildon_dnotify_remove_cb(char * path)
 			prev = dir;
 			dir=dir->next;
 		}
+	}
+
+	if (shared_path) {
+		free(path);
 	}
 	
 	return HILDON_OK;

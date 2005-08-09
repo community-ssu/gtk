@@ -1,0 +1,6 @@
+2005-08-09  Tomas Junnonen  <tomas.junnonen@nokia.com>
+
+	* hildon-base-dir-change.c: Fixed case where the internal
+	dnotify cb path could be freed prematurely, causing only the
+	first registered callback to be removed.
+
