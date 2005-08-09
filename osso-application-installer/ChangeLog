@@ -1,3 +1,40 @@
+2005-08-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/ui/represent.c, src/ui/represent.h (all_white_space):
+	Advance pointer in loop, stupid.
+	(present_error_details): New.
+	(present_report_with_details): Redone as a two stage process:
+	first show the report as a information or confirmation note, and
+	then the details in a second dialog (XXX-UI32).
+	
+	* src/core.h, src/core.c: Do not use gettext for strings not in
+	the UI spec (XXX-UI32).
+	(package_file_info): Made static.  Do not present any details when
+	failing (XXX-UI32).
+	(run_app_installer_tool): Append a hardcoded "See the details?"
+	to error description (XXX-UI32).
+	(list_packages): Ignore broken packages (XXX-UI32).
+	(format_relationship_failures): Return a gchar* instead of a
+	GString.  The extra text is now the footer, not the header.
+	Changed all callers.
+	(installer_data): Added dont_show_details field.
+	(installer_callback): Suppress details in case of success and when
+	explicitely requested.  Relationship failures are now part of the
+	error details, not of the report (XXX-UI32).
+	(check_dependencies): New.
+	(uninstall_package): Use it to catch dependency errors early.  Use
+	the dont_show_details field to suppress any error details
+	(XXX-UI32).
+
+	* src/ui/interface.c: Do not use gettext for strings not in the UI
+	spec (XXX-UI32).
+	(ui_create_progress_dialog): Ignore the cancel_callback
+	(XXX-UI32).  Remove Cancel button from progress bar dialog when it
+	is not needed.
+	
+	* app-installer-tool/app-installer-tool.c (do_get_dependencies):
+	New.
+
 2005-08-03  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released version 2.4-0.
