@@ -126,6 +126,12 @@ Usage:
   appears on stdout (and stderr should then be displayed to the user).
 
 
+  - app-installer-tool get-dependencies <package>
+
+  Like 'remove', but do not actually remove the package, only report
+  its dependencies.
+
+
   - app-installer-tool copy <remote-uri> <local>
 
   Copies <remote-uri> to <local> using gnome-vfs.  Progress is
