@@ -89,8 +89,6 @@ Adds columns to treeview.
 */
 void add_columns (AppUIData *app_ui_data, GtkTreeView *treeview);
 
-
-PackageInfo package_file_info (AppData *app_data, gchar *file);
 gchar *package_description (AppData *app_data, gchar *package);
 
 

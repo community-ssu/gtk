@@ -67,9 +67,9 @@
      app-installer-tool can provide real progress information for that
      and we use it to keep a progress bar alive.
 
-   The third way if of course the most general and the other two ways
+   The third way is of course the most general and the other two ways
    are in fact implemented as special cases of it.  This means that
-   the app-installer-tool is in fact always execute asynchronously,
+   the app-installer-tool is in fact always executed asynchronously,
    and the GUI will never starve.
 
    The function SPAWN_APP_INSTALLER_TOOL implements the most general
@@ -85,7 +85,7 @@
 */
 
 
-/* This function starts /usr/bin/app-installer-tool so that it runs
+/* This function starts /usr/bin/app-installer-tool so that it runs in
    the background.
 
    When AS_INSTALL is true, app-installer-tool will in fact be invoked
@@ -376,6 +376,10 @@ spawn_app_installer_tool (AppData *app_data,
 static void
 cancel_app_installer_tool (tool_handle *data)
 {
+  /* XXX - this does not really work at all.  The best approach is
+     maybe to just close stdin of the subprocess and have the
+     app-installer-tool listen for that to happen.
+  */
   if (kill (data->pid, SIGINT) < 0)
     perror ("kill");
 }
@@ -425,11 +429,17 @@ run_callback (gpointer raw_data,
   data->success = success;
 
   if (!success && data->error_description)
-    present_report_with_details (data->app_data,
-				 /* XXX-NLS - ai_ti_general_error */
-				 "Error",
-				 data->error_description,
-				 stderr_string);
+    {
+      /* XXX-NLS - do something about the "See the details?" */
+      gchar *report = g_strdup_printf ("%s  See the details?",
+				       data->error_description);
+      present_report_with_details (data->app_data,
+				   /* XXX-NLS - ai_ti_general_error */
+				   "Error",
+				   report,
+				   stderr_string);
+      g_free (report);
+    }
 
   **(data->stdout_string) = g_strdup (stdout_string);
   **(data->stderr_string) = g_strdup (stderr_string);
@@ -530,24 +540,26 @@ list_packages (AppData *app_data)
       if (!strcmp (name, META_PACKAGE))
 	continue;
 
-      /* XXX - find a better way to present broken packages.
+      /* XXX-UI32 - do not ignore broken packages.
        */
-      if (strcmp (status, "ok"))
-	version = g_strdup_printf ("broken - v%s", version);
+      if (!strcmp (status, "ok"))
+	{
+	  version = g_strdup_printf ("v%s", version);
+	  size = g_strdup_printf ("%skB", size);
+
+	  gtk_list_store_append (store, &iter);
+	  gtk_list_store_set (store, &iter,
+			      COLUMN_ICON, default_icon, 
+			      COLUMN_NAME, name,
+			      COLUMN_VERSION, version,
+			      COLUMN_SIZE, size,
+			      -1);
+
+	  free (version);
+	  free (size);
+	}
       else
-	version = g_strdup_printf ("v%s", version);
-      size = g_strdup_printf ("%skB", size);
-
-      gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-			  COLUMN_ICON, default_icon, 
-			  COLUMN_NAME, name,
-			  COLUMN_VERSION, version,
-			  COLUMN_SIZE, size,
-			  -1);
-
-      free (version);
-      free (size);
+	ULOG_INFO ("broken package: %s\n", name);
     }
 
   g_object_unref (default_icon);
@@ -625,7 +637,7 @@ add_columns (AppUIData *app_ui_data, GtkTreeView *treeview)
    information can not be retrieved, all strings in the returned
    structure are NULL.
  */
-PackageInfo
+static PackageInfo
 package_file_info (AppData *app_data, gchar *file)
 {
   gchar *stdout_string;
@@ -634,8 +646,7 @@ package_file_info (AppData *app_data, gchar *file)
   if (run_app_installer_tool (app_data,
 			      "describe-file", file, NULL,
 			      &stdout_string, NULL,
-			      /* XXX-NLS - ai_ti_describe_file_failed */
-			      _("ai_error_corrupted")))
+			      NULL))
     {
       gchar *ptr, *package, *version, *size;
 
@@ -652,7 +663,6 @@ package_file_info (AppData *app_data, gchar *file)
       info.version = g_string_new (version);
       info.size = g_string_new (size);
       info.description = g_string_new (ptr);
-      free (stdout_string);
     }
   else
     {
@@ -660,8 +670,16 @@ package_file_info (AppData *app_data, gchar *file)
       info.size = NULL;
       info.version = NULL;
       info.description = NULL;
+
+      /* XXX-UI32 - do not suppress stderr output. */
+      present_report_with_details (app_data,
+				   /* XXX-NLS */
+				   NULL,
+				   _("ai_error_corrupted"),
+				   NULL);
     }
 
+  free (stdout_string);
   return info;
 }
 
@@ -711,16 +729,15 @@ append_list_strings (GString *string, GSList *list)
     }
 }
 
-static GString *
-format_relationship_failures (gchar *header, gchar *output)
+static gchar *
+format_relationship_failures (gchar *footer, gchar *output)
 {
   GString *report;
   GSList *depends = NULL, *depended = NULL, *conflicts = NULL;
   int exists = 0;
   gchar *ptr;
 
-  report = g_string_new (header);
-  g_string_append (report, "\n");
+  report = g_string_new ("");
 
   ptr = output;
   while (ptr && *ptr)
@@ -748,24 +765,27 @@ format_relationship_failures (gchar *header, gchar *output)
     {
       /* XXX-NLS - ai_ti_depends_on */
       g_string_append 
-	(report,
-	 _("It depends on the following uninstalled packages:\n"));
+	(report, "It depends on the following uninstalled packages:\n");
       append_list_strings (report, depends);
     }
   if (depended)
     {
       /* XXX-NLS - ai_ti_depended_on_by */
-      g_string_append 
-	(report,
-	 _("The following installed packages depend on it:\n"));
+      /* XXX - use proper .po plural mechanism */
+      if (depended->next)
+	g_string_append 
+	  (report, _("ai_ti_dependency_conflict_text_plural"));
+      else
+	g_string_append
+	  (report, _("ai_ti_dependency_conflict_text"));
+      g_string_append (report, "\n");
       append_list_strings (report, depended);
     }
   if (conflicts)
     {
       /* XXX-NLS - ai_ti_conflicts_with */
       g_string_append
-	(report,
-	 _("It conflicts with the following installed packages:\n"));
+	(report, "It conflicts with the following installed packages:\n");
       append_list_strings (report, conflicts);
     }
 
@@ -773,7 +793,16 @@ format_relationship_failures (gchar *header, gchar *output)
   g_slist_free (depended);
   g_slist_free (conflicts);
 
-  return report;
+  if (footer)
+    {
+      g_string_append (report, "\n");
+      g_string_append (report, footer);
+    }
+
+  ptr = report->str;
+  g_string_free (report, 0);
+
+  return ptr;
 }
 
 #define FUZZ_FACTOR 1.0
@@ -793,6 +822,8 @@ typedef struct {
   gchar *report_title;
   gchar *success_text;
   gchar *failure_text;
+  /* XXX-UI32 - never suppress details. */
+  gboolean dont_show_details;
 } installer_data;
 
 static void
@@ -814,19 +845,26 @@ installer_callback (gpointer raw_data,
     {
       report = g_string_new ("");
       g_string_printf (report, data->success_text, data->package);
+      /* XXX-UI32 - Do not suppress details in case of success. */
+      details = NULL;
     }
   else
     {
-      gchar *header = g_strdup_printf (data->failure_text, data->package);
-      report = format_relationship_failures (header, output);
-      free (header);
+      report = g_string_new ("");
+      g_string_printf (report, data->failure_text, data->package);
+      if (data->dont_show_details)
+	details = NULL;
+      else
+	details = format_relationship_failures (details, output);
     }
-      
+  
   present_report_with_details (data->app_data,
 			       data->report_title,
 			       report->str,
 			       details);
   g_string_free (report, 1);
+  if (details)
+    free (details);
 
   if (data->loop)
     g_main_loop_quit (data->loop);
@@ -963,10 +1001,10 @@ install_package (gchar *deb, AppData *app_data)
 
       data.progress_title = _("ai_ti_installing_installing");
       /* XXX-NLS - ai_ti_installation_report */
-      data.report_title = _("Installation report"),
+      data.report_title = "Installation report";
       data.success_text = _("ai_ti_application_installed_text");
-      /* XXX-NLS - ai_ti_installation_failed, without the "Show Details" */
-      data.failure_text = _("Installation of %s failed.\n");
+      data.failure_text = _("ai_ti_installation_failed_text");
+      data.dont_show_details = 0;
 
       data.tool = spawn_app_installer_tool (app_data, 1,
 					    "install", deb, NULL,
@@ -1009,9 +1047,9 @@ copy_callback (gpointer raw_data,
     {
       present_report_with_details (data->app_data,
 				   /* XXX-NLS - ai_ti_installation_report */
-				   _("Installation report"),
+				   "Installation report",
 				   /* XXX-NLS - ai_ti_copying_failed */
-				   _("Copying failed."),
+				   _("ai_ti_installation_failed_text"),
 				   details);
     }
 
@@ -1031,7 +1069,7 @@ copy_stdout_callback (gpointer raw_data,
   if (!data->showing_progress)
     {
       /* XXX-NLS - ai_ti_copying */
-      gtk_banner_show_bar (main_dialog, _("Copying"));
+      gtk_banner_show_bar (main_dialog, _("ai_ti_installing_installing"));
       data->showing_progress = 1;
     }
 
@@ -1051,7 +1089,7 @@ install_package_from_uri (gchar *uri, AppData *app_data)
   if (vfs_uri == NULL)
     {
       /* XXX-NLS - ai_ti_unsupported_uri */
-      details = g_strdup_printf (_("Unsupported URI: %s\n"), uri);
+      details = g_strdup_printf ("Unsupported URI: %s\n", uri);
       success = 0;
       goto done;
     }
@@ -1077,7 +1115,7 @@ install_package_from_uri (gchar *uri, AppData *app_data)
       else
 	{
 	  /* XXX-NLS - ai_ti_unsupported_uri */
-	  details = g_strdup_printf (_("Unsupported URI: %s\n"), uri);
+	  details = g_strdup_printf ("Unsupported URI: %s\n", uri);
 	  success = 0;
 	}
     }
@@ -1135,12 +1173,11 @@ install_package_from_uri (gchar *uri, AppData *app_data)
  done:
   if (!success)
     {
-      /* XXX-NLS - ai_ti_installation_failed, without the "Show Details" */
-      gchar *report = g_strdup_printf (_("Installation of %s failed.\n"),
+      gchar *report = g_strdup_printf (_("ai_ti_installation_failed_text"),
 				       uri);
       present_report_with_details (app_data,
 				   /* XXX-NLS - ai_ti_installation_report */
-				   _("Installation report"),
+				   "Installation report",
 				   report,
 				   details);
       free (report);
@@ -1149,10 +1186,42 @@ install_package_from_uri (gchar *uri, AppData *app_data)
   g_free (details);
 }
 
+static gboolean
+check_dependencies (AppData *app_data, gchar *package)
+{
+  gchar *stdout_string, *dependencies_report;
+  gboolean result;
+
+  if (!run_app_installer_tool (app_data,
+			       "get-dependencies", package, NULL,
+			       &stdout_string, NULL,
+			       /* XXX-NLS - ai_ti_get_dependencies_failed */
+			       "Can not get package dependencies."))
+    return FALSE;
+
+  dependencies_report = format_relationship_failures (NULL, stdout_string);
+  if (dependencies_report[0] != '\0')
+    {
+      present_error_details (app_data,
+			     _("ai_ti_dependency_conflict_title"),
+			     dependencies_report);
+      result = FALSE;
+    }
+  else
+    result = TRUE;
+
+  free (stdout_string);
+  free (dependencies_report);
+  return result;
+}
+
 void
 uninstall_package (gchar *package, gchar *size, AppData *app_data)
 {
   installer_data data;
+
+  if (!check_dependencies (app_data, package))
+    return;
 
   if (confirm_uninstall (app_data, package)) 
     {
@@ -1165,9 +1234,10 @@ uninstall_package (gchar *package, gchar *size, AppData *app_data)
 
       data.progress_title = _("ai_ti_uninstall_progress_uninstalling");
       /* XXX-NLS - ai_ti_uninstallation_report */
-      data.report_title = _("Uninstallation report"),
+      data.report_title = "Uninstallation report",
       data.success_text = _("ai_ti_application_uninstalled_text");
       data.failure_text = _("ai_ti_uninstallation_failed_text");
+      data.dont_show_details = 1;
 
       if (spawn_app_installer_tool (app_data, 1,
 				    "remove", package, NULL,
