@@ -1,3 +1,10 @@
+2005-08-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	Backported upstream fix
+	* gtk/gtkdialog.c (gtk_dialog_map): Don't
+	try to focus the default_widget if there is 
+	none.  (#169881, Thomas Leonard)
+	
 2005-08-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gdk-pixbuf/io-jpeg.c (fatal_error_handler): Report out of memory

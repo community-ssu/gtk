@@ -449,10 +449,10 @@ gtk_dialog_map (GtkWidget *widget)
 	{
 	  GtkWidget *child = tmp_list->data;
 
-	  if (window->focus_widget == NULL ||
-	      (child == window->focus_widget && 
+	  if ((window->focus_widget == NULL ||
+	       child == window->focus_widget) && 
 	       child != window->default_widget && 
-	       window->default_widget))
+	       window->default_widget)
 	    {
 	      gtk_widget_grab_focus (window->default_widget);
 	      break;
