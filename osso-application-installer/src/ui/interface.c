@@ -143,7 +143,7 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
 
   database_unavailable_label =
     /* XXX-NLS - ai_ti_database_unavailable */
-    gtk_label_new (_("Database unavailable"));
+    gtk_label_new ("Database unavailable");
   gtk_container_add (GTK_CONTAINER(vbox), database_unavailable_label);
   app_ui_data->database_unavailable_label = database_unavailable_label;
 
@@ -391,8 +391,10 @@ ui_create_progress_dialog (AppData *app_data,
 			   gpointer callback_data)
 {
   progress_dialog *dialog;
-  GtkWidget *hildon_dialog;
   GtkWindow *main_dialog = GTK_WINDOW (app_data->app_ui_data->main_dialog);
+
+  /* XXX-UI32 - support cancel button. */
+  cancel_callback = NULL;
 
   dialog = g_new (progress_dialog, 1);
   dialog->progressbar = gtk_progress_bar_new ();
@@ -408,6 +410,21 @@ ui_create_progress_dialog (AppData *app_data,
 			"response",
 			G_CALLBACK (progress_cancel_callback),
 			dialog);
+    }
+  else
+    {
+      /* XXX - removing the first child in the action area is likely
+	       the wrong way to get a hildon progressbar without a
+	       cancel button...
+      */
+      GtkDialog *gtk_dialog = GTK_DIALOG (dialog->dialog);
+      GtkContainer *container = GTK_CONTAINER (gtk_dialog->action_area);
+      GList *children = gtk_container_get_children (container);
+
+      if (children)
+	gtk_widget_destroy (GTK_WIDGET (children->data));
+
+      g_list_free (children);
     }
 
   gtk_widget_show_all (dialog->dialog);
