@@ -1,0 +1,40 @@
+CFLAGS = $(OSSO_CFLAGS) $(GLIB_CFLAGS) $(DBUS_CFLAGS) $(GNOMEVFS_CFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src \
+		 -DOSSO_CTRLPANELPLUGINDIR=\"${prefix}/lib/hildon-control-panel\"
+
+INCLUDES = \
+	-DPREFIX=\"${prefix}\"
+
+lib_LTLIBRARIES = libosso.la
+
+libosso_la_LIBADD = -ldl -lc $(GLIB_LIBS) $(DBUS_LIBS) $(GNOMEVFS_LIBS)
+libosso_la_LDFLAGS = -version-info 2:0:1
+
+ossoincludedir=$(includedir)
+ossoinclude_HEADERS = libosso.h osso-log.h log-functions.h
+
+libosso_la_SOURCES = \
+	osso-state.c \
+	osso-state.h \
+	osso-init.c \
+	osso-init.h \
+	osso-application-top.h \
+	osso-application-top.c \
+	osso-application-autosave.c \
+	osso-hw.c \
+	osso-hw.h \
+	osso-mime.c \
+	osso-system-note.c \
+	libosso.h \
+	log-functions.h \
+	osso-internal.h \
+	osso-rpc.c \
+	osso-statusbar.c \
+	osso-log.h \
+	osso-cp-plugin.c \
+	osso-cp-plugin.h \
+	osso-log.c \
+	osso-time.c \
+	osso-time.h \
+	osso-application-init.c \
+	osso-application-exit.c
+

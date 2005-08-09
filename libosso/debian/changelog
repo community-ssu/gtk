@@ -1,0 +1,15 @@
+libosso (0.9.11-1) unstable; urgency=low
+
+  * Added workaround for signal eating problem (bug 16802).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 09 Aug 2005 14:36:13 +0300
+
+libosso (0.9.10-3) unstable; urgency=low
+
+  * Some cleanups before publishing.
+  * Checked through all the function comments in libosso.h and rephrased
+    some of them for clarity. Also, corrected typos and modified some
+    example code.
+  * Added COPYING file.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 05 Aug 2005 15:32:56 +0300
