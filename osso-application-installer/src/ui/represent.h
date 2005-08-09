@@ -47,6 +47,10 @@
 
 void update_package_list (AppData *app_data);
 
+void present_error_details (AppData *app_data,
+			    gchar *title,
+			    gchar *details);
+
 void present_report_with_details (AppData *app_data,
 				  gchar *title,
 				  gchar *report,

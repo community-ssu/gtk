@@ -29,6 +29,8 @@
  *
  */
 
+#include <ctype.h>
+
 #include "represent.h"
 
 #ifdef HAVE_CONFIG_H
@@ -81,41 +83,53 @@ update_package_list (AppData *app_data)
   gtk_widget_grab_focus (app_ui_data->close_button);
 }
 
-typedef struct {
-  GtkTextBuffer *text_buffer;
-  gchar *details;
-} details_button_data;
-
-static void
-append_to_text_buffer (GtkTextBuffer *text_buffer, gchar *text)
+void
+present_error_details (AppData *app_data,
+		       gchar *title,
+		       gchar *details)
 {
-  GtkTextIter iter;
+  GtkWidget *parent, *dialog, *sw;
+  
+  parent = GTK_WINDOW (app_data->app_ui_data->main_dialog);
+  dialog = gtk_dialog_new_with_buttons (title,
+					parent,
+					GTK_DIALOG_DESTROY_WITH_PARENT |
+					GTK_DIALOG_NO_SEPARATOR,
+					NULL);
 
-  gtk_text_buffer_get_iter_at_offset (text_buffer, &iter, -1);
-  gtk_text_buffer_insert (text_buffer, &iter, text, -1);
-}
+  sw = ui_create_textbox (app_data, details, FALSE, TRUE);
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), sw);
 
-static void
-on_details_button_clicked (GtkWidget *button,
-			   gpointer raw_data)
-{
-  details_button_data *data = (details_button_data *)raw_data;
+  gtk_dialog_add_buttons (GTK_DIALOG (dialog),
+			  _("ai_bd_error_details_ok"),
+			  GTK_RESPONSE_OK,
+			  NULL);
 
-  append_to_text_buffer (data->text_buffer, "\n\n");
-  /* XXX-NLS - ai_ti_details */
-  append_to_text_buffer (data->text_buffer, _("Details:\n"));
-  append_to_text_buffer (data->text_buffer, data->details);
-  gtk_widget_set_sensitive (button, 0);
+  gtk_widget_set_size_request (GTK_WIDGET(dialog), 400, 200);
+      
+  ossohelp_dialog_help_enable (GTK_DIALOG(dialog),
+			       AI_HELP_KEY_ERROR,
+			       app_data->app_osso_data->osso);
+      
+  gtk_widget_show_all (dialog);
+  gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_destroy(dialog);
 }
 
 static int
 all_white_space (gchar *text)
 {
   while (*text)
-    if (!isspace (*text))
+    if (!isspace (*text++))
       return 0;
   return 1;
 }
+
+/* Present a success/failure report of a installation or
+   uninstallation operation.
+*/
+
+/* XXX-UI32 - do not ignore TITLE. */
 
 void
 present_report_with_details (AppData *app_data,
@@ -124,54 +138,26 @@ present_report_with_details (AppData *app_data,
 			     gchar *details)
 {
   GtkWindow *parent;
-  GtkWidget *dialog, *sw;
-  gchar *full_text;
-  details_button_data data;
+  GtkWidget *dialog;
+  gboolean no_details;
+  gint response;
 
   parent = GTK_WINDOW (app_data->app_ui_data->main_dialog);
-  dialog = gtk_dialog_new_with_buttons (title,
-					parent,
-					GTK_DIALOG_DESTROY_WITH_PARENT |
-					GTK_DIALOG_NO_SEPARATOR,
-					NULL);
+  no_details = (details == NULL || all_white_space (details));
 
-  sw = ui_create_textbox (app_data, report, FALSE, TRUE);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), sw);
-
-  if (details && !all_white_space (details))
-    {
-      GtkTextView *text_view;
-      GtkWidget *button;
-
-      text_view = gtk_bin_get_child (GTK_BIN (sw));
-      data.text_buffer = gtk_text_view_get_buffer (text_view);
-      data.details = details;
-      
-      /* XXX-NLS - ai_bd_report_show_details */
-      button = gtk_button_new_with_label (_("Show details"));
-      gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->action_area),
-			 button);
-      gtk_signal_connect (GTK_OBJECT (button),
-			  "clicked",
-			  G_CALLBACK (on_details_button_clicked),
-			  (gpointer) &data);
-    }
-
-
-  gtk_dialog_add_buttons (GTK_DIALOG (dialog),
-			  /* XXX-NLS - ai_bd_report_ok */
-			  _("ai_bd_install_application_ok"), GTK_RESPONSE_OK,
-			  NULL);
-
-  gtk_widget_set_size_request (GTK_WIDGET(dialog), 400, 200);
-
-  ossohelp_dialog_help_enable (GTK_DIALOG(dialog),
-			       AI_HELP_KEY_ERROR,
-			       app_data->app_osso_data->osso);
-
+  if (no_details)
+    dialog = hildon_note_new_information (parent, report);
+  else
+    dialog = hildon_note_new_confirmation (parent, report);
+  
   gtk_widget_show_all (dialog);
-  gtk_dialog_run (GTK_DIALOG (dialog));
+  response = gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy(dialog);
+
+  if (response == GTK_RESPONSE_OK && !no_details)
+    present_error_details (app_data,
+			   _("ai_ti_error_details_title"),
+			   details);
 }
 
 gboolean
