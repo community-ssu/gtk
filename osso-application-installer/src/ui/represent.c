@@ -43,6 +43,8 @@ update_package_list (AppData *app_data)
   AppUIData *app_ui_data = app_data->app_ui_data;
   GtkTreeModel *model;
 
+  model = list_packages (app_data);
+
   /* We first hide everything and then display the appropriate widget
      later on.
   */
@@ -51,7 +53,6 @@ update_package_list (AppData *app_data)
   gtk_widget_hide (app_ui_data->empty_list_label);
   gtk_widget_hide (app_ui_data->database_unavailable_label);
 
-  model = list_packages (app_data);
   gtk_tree_view_set_model (GTK_TREE_VIEW(app_ui_data->treeview), model);
 
   if (model == NULL)
@@ -90,9 +91,9 @@ present_error_details (AppData *app_data,
 {
   GtkWidget *parent, *dialog, *sw;
   
-  parent = GTK_WINDOW (app_data->app_ui_data->main_dialog);
+  parent = app_data->app_ui_data->main_dialog;
   dialog = gtk_dialog_new_with_buttons (title,
-					parent,
+					GTK_WINDOW (parent),
 					GTK_DIALOG_DESTROY_WITH_PARENT |
 					GTK_DIALOG_NO_SEPARATOR,
 					NULL);
@@ -129,11 +130,8 @@ all_white_space (gchar *text)
    uninstallation operation.
 */
 
-/* XXX-UI32 - do not ignore TITLE. */
-
 void
 present_report_with_details (AppData *app_data,
-			     gchar *title,
 			     gchar *report,
 			     gchar *details)
 {

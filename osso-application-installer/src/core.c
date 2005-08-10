@@ -434,8 +434,6 @@ run_callback (gpointer raw_data,
       gchar *report = g_strdup_printf ("%s  See the details?",
 				       data->error_description);
       present_report_with_details (data->app_data,
-				   /* XXX-NLS - ai_ti_general_error */
-				   "Error",
 				   report,
 				   stderr_string);
       g_free (report);
@@ -673,8 +671,6 @@ package_file_info (AppData *app_data, gchar *file)
 
       /* XXX-UI32 - do not suppress stderr output. */
       present_report_with_details (app_data,
-				   /* XXX-NLS */
-				   NULL,
 				   _("ai_error_corrupted"),
 				   NULL);
     }
@@ -819,7 +815,6 @@ typedef struct {
   int initial_used_kb, package_size_kb;
 
   gchar *progress_title;
-  gchar *report_title;
   gchar *success_text;
   gchar *failure_text;
   /* XXX-UI32 - never suppress details. */
@@ -859,7 +854,6 @@ installer_callback (gpointer raw_data,
     }
   
   present_report_with_details (data->app_data,
-			       data->report_title,
 			       report->str,
 			       details);
   g_string_free (report, 1);
@@ -1000,8 +994,6 @@ install_package (gchar *deb, AppData *app_data)
       data.package_size_kb = atoi (info.size->str);
 
       data.progress_title = _("ai_ti_installing_installing");
-      /* XXX-NLS - ai_ti_installation_report */
-      data.report_title = "Installation report";
       data.success_text = _("ai_ti_application_installed_text");
       data.failure_text = _("ai_ti_installation_failed_text");
       data.dont_show_details = 0;
@@ -1046,8 +1038,6 @@ copy_callback (gpointer raw_data,
   else
     {
       present_report_with_details (data->app_data,
-				   /* XXX-NLS - ai_ti_installation_report */
-				   "Installation report",
 				   /* XXX-NLS - ai_ti_copying_failed */
 				   _("ai_ti_installation_failed_text"),
 				   details);
@@ -1176,8 +1166,6 @@ install_package_from_uri (gchar *uri, AppData *app_data)
       gchar *report = g_strdup_printf (_("ai_ti_installation_failed_text"),
 				       uri);
       present_report_with_details (app_data,
-				   /* XXX-NLS - ai_ti_installation_report */
-				   "Installation report",
 				   report,
 				   details);
       free (report);
@@ -1233,8 +1221,6 @@ uninstall_package (gchar *package, gchar *size, AppData *app_data)
       data.package_size_kb = -atoi (size);
 
       data.progress_title = _("ai_ti_uninstall_progress_uninstalling");
-      /* XXX-NLS - ai_ti_uninstallation_report */
-      data.report_title = "Uninstallation report",
       data.success_text = _("ai_ti_application_uninstalled_text");
       data.failure_text = _("ai_ti_uninstallation_failed_text");
       data.dont_show_details = 1;
