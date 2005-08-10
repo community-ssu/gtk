@@ -58,11 +58,11 @@
 #include <libmb/mbdotdesktop.h>
 #include "osso-manager.h"
 
-/* For menu conf dir monitoring */
-#include <hildon-base-lib/hildon-base-dnotify.h>
-
+/* log include */
 #include <log-functions.h>
 
+/* For menu conf dir monitoring */
+#include <hildon-base-lib/hildon-base-dnotify.h>
 
 struct OthersMenu {
 
@@ -478,8 +478,8 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
     
     if ((dir_handle = opendir(full_path)) != NULL) {
 	while ((dir_entry = readdir(dir_handle)) != NULL) {
-	    if (g_utf8_collate(dir_entry->d_name, ".") != 0
-		&& g_utf8_collate(dir_entry->d_name, "..") != 0) {
+	    if (strcmp(dir_entry->d_name, ".") != 0
+		&& strcmp(dir_entry->d_name, "..") != 0) {
 		    menu_list =
 			    g_list_append(menu_list, g_strdup(dir_entry->d_name));
 	    }
@@ -496,7 +496,7 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
     }
 
     /* Sort the items */
-    menu_list = g_list_sort(menu_list, (GCompareFunc) g_utf8_collate);
+    menu_list = g_list_sort(menu_list, (GCompareFunc) strcmp);
 
     /* Get the first item.. */
     loop = g_list_first(menu_list);
@@ -512,23 +512,19 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
 	    osso_log( LOG_ERR,"%s: %s\n", current_path, strerror(errno));
 
 	} else if (S_ISDIR(buf.st_mode)) {
-            gchar temp_str_buf[5];
-            
-            g_utf8_strncpy(temp_str_buf, 
-                           (const gchar *)loop->data, 
-                           5);
-            
-            if(!(g_unichar_isdigit(g_utf8_get_char(&temp_str_buf[0])) &&
-                 g_unichar_isdigit(g_utf8_get_char(&temp_str_buf[1])) &&
-                 g_unichar_isdigit(g_utf8_get_char(&temp_str_buf[2])) &&
-                 g_unichar_isdigit(g_utf8_get_char(&temp_str_buf[3])) &&
-                 g_utf8_collate(&temp_str_buf[4], "_") == 0))
-            {
-                loop = loop->next;
-                continue;
-            }
 
-
+	    /* Skip directories with invalid names */
+	    if(strlen((char* )loop->data) < 6 ||
+	       !(g_ascii_isdigit(* (gchar* )loop->data) && 
+	         g_ascii_isdigit(* (gchar* )(loop->data + 1)) &&
+		 g_ascii_isdigit(* (gchar* )(loop->data + 2)) &&
+		 g_ascii_isdigit(* (gchar* )(loop->data + 3))) ||
+	       strncmp( (loop->data + 4), "_", 1) != 0
+	       ) {
+		    loop = loop->next;
+		    continue;
+	    }		    
+				    
 	    /* Create a submenu */
 	    submenu = GTK_MENU(gtk_menu_new());
     
@@ -537,11 +533,12 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
                  > 0 ) 
             {
                 GtkWidget *menu_item_submenu_icon = NULL;
-                gchar *menu_label_str = g_utf8_offset_to_pointer(loop->data, 5);
-                if(menu_label_str != NULL) 
-                {
-                /* Create a menu item and add it to the menu.
-		     * Skip the first 5 chars (four numbers and underscore). */
+		
+		/* Skip the first 5 chars (four numbers and underscore). */
+                gchar *menu_label_str = loop->data + 5;
+		
+                if(menu_label_str != NULL) {
+                    /* Create a menu item and add it to the menu. */
 		    menu_item = 
                         gtk_image_menu_item_new_with_label(_(menu_label_str));
 
@@ -587,13 +584,10 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
 		osso_log(LOG_ERR, 
 			 "TN: Broken .desktop file %s", current_path);
 
-		if (desktop != NULL)
-		  {
+		if (desktop != NULL) {
 		    mb_dotdesktop_free(desktop);
-		  }
-	      }
-	    else
-	      {
+		}
+	      } else {
 		/* Add the new menu item, use .desktop's name field value
 		 * for label */
 		menu_item =

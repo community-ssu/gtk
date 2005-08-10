@@ -1,3 +1,8 @@
+2005-08-10  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+        * Correction to bug "Multiple problems in Others menu item sorting"
+	* others-menu.c: utf-8 stuff was removed
+
 2005-08-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
         * Correction to bug "System reboots when Image Viewer is started after a search"
