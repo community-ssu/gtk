@@ -44,21 +44,17 @@ int main (int argc, char** argv)
   ULOG_INFO("Start logging..");
  
   /* Localization */
-  ULOG_INFO("Setting locale..");
   setlocale(LC_ALL, "");
   bindtextdomain(GETTEXT_PACKAGE, APPLICATIONINSTALLERLOCALEDIR);
   bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
   textdomain(GETTEXT_PACKAGE);
 
   /* Set new PATH variable */
-  ULOG_INFO("Setting path..");
   GString *tmp = g_string_new(g_getenv(PATH_ENV));
   tmp = g_string_append(tmp, PATH_ADD);
   g_setenv(PATH_ENV, tmp->str, TRUE);
-  ULOG_INFO("main: PATH=%s", g_getenv(PATH_ENV));
 
   /* Initialize GTK */
-  ULOG_INFO("Initializing GTK..");
   gtk_init(&argc, &argv);
 
   /*
@@ -66,17 +62,11 @@ int main (int argc, char** argv)
     There's no need to check the result, because application will terminate
     if allocating fails (see GLib API documentation).
   */
-  ULOG_INFO("Allocating memory for application data..");
   app_data = g_new0(AppData, 1);
   app_data->app_ui_data = g_new0(AppUIData, 1);
   app_data->app_osso_data = g_new0(AppOSSOData, 1);
   
   app_ui_data = app_data->app_ui_data;
-  app_ui_data->param = NULL;
-
-  /* Init OSSO */
-  ULOG_INFO("Initializing OSSO..");
-  init_osso(app_data);
 
 #ifdef USE_GNOME_VFS
   /* GnomeVFS */
@@ -89,8 +79,6 @@ int main (int argc, char** argv)
   }
 #endif
 
-  /* Create applet UI */
-  ULOG_INFO("Creating applet UI..");
   ui_create_main_dialog (app_data);
 
   /* Read params and maybe install directly 
@@ -98,8 +86,13 @@ int main (int argc, char** argv)
   if (argc > 1)
     do_install (argv[1], app_data);
 
-  /* Start GTK main loop */
-  ULOG_INFO("Starting GTK main loop..");
+  /* Init OSSO.  It has to be done after creating the main dialog
+     since the osso callbacks are run from the main loop and might
+     therefore be called too early if they are registered before the
+     main dialog has been setup completely.
+  */
+  init_osso(app_data);
+
   gtk_main();
 
 #ifdef USE_GNOME_VFS
@@ -109,9 +102,7 @@ int main (int argc, char** argv)
   }
 #endif
 
-  /* Deinit OSSO */
-  ULOG_INFO("Deinitializing OSSO..");
-  deinit_osso(app_data);
+  deinit_osso (app_data);
   
   /* Stop logging */
   ULOG_INFO("Stop logging..");
