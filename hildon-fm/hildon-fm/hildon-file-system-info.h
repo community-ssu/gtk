@@ -39,6 +39,10 @@ typedef struct _HildonFileSystemInfo HildonFileSystemInfo;
 HildonFileSystemInfo *hildon_file_system_info_new(const gchar *uri, GError **error);
 const gchar *hildon_file_system_info_get_display_name(HildonFileSystemInfo *info);
 GdkPixbuf *hildon_file_system_info_get_icon(HildonFileSystemInfo *info, GtkWidget *ref_widget);
+GdkPixbuf *hildon_file_system_info_get_icon_at_size(HildonFileSystemInfo *info, 
+						    GtkWidget *ref_widget,
+						    gint size);
+
 void hildon_file_system_info_free(HildonFileSystemInfo *info);
 
 G_END_DECLS

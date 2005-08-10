@@ -1,3 +1,9 @@
+2005-08-10  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-info.[ch]:
+	(hildon_file_system_info_get_icon_at_size) Added new interface to
+	get an icon in arbitrary size. N#16986
+
 2005-08-09  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-fm/hildon-file-system-model.c: Now MMC state is

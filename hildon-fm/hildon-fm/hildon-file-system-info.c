@@ -40,6 +40,7 @@ struct _HildonFileSystemInfo
 
   gchar *name_cache;
   GdkPixbuf *icon_cache;
+  gint size;
 };
 
 /**
@@ -161,8 +162,10 @@ hildon_file_system_info_get_display_name(HildonFileSystemInfo *info)
  * hildon_file_system_info_get_icon:
  * @info: a #HildonFileSystemInfo pointer.
  *
+ * @ref_widget: Any widget on the same screen as the new icon.
  * Gets icon for the location. All special places
- * have their special icons.
+ * have their special icons. Note that this function is just
+ * a special case of hildon_file_system_info_get_icon_at_size.
  *
  * Returns: a #GdkPixbuf. The value is owned by
  * HildonFileSystemInfo and there is no need to free it.
@@ -170,13 +173,41 @@ hildon_file_system_info_get_display_name(HildonFileSystemInfo *info)
 GdkPixbuf *
 hildon_file_system_info_get_icon(HildonFileSystemInfo *info, GtkWidget *ref_widget)
 {
+  return hildon_file_system_info_get_icon_at_size(info, 
+         ref_widget, TREE_ICON_SIZE);
+}
+
+/**
+ * hildon_file_system_info_get_icon_at_size:
+ * @info: a #HildonFileSystemInfo pointer.
+ * @ref_widget: Any widget on the same screen as the new icon.
+ * @size: Desired size of the icon.
+ *
+ * Gets icon for the location. All special places
+ * have their special icons.
+ *
+ * Returns: a #GdkPixbuf. The value is owned by
+ * HildonFileSystemInfo and there is no need to free it.
+ */
+GdkPixbuf *
+hildon_file_system_info_get_icon_at_size(HildonFileSystemInfo *info, 
+  GtkWidget *ref_widget, gint size)
+{
   g_return_val_if_fail(info != NULL && GTK_IS_WIDGET(ref_widget), NULL);
+
+  if (info->icon_cache != NULL && size != info->size)
+  {
+    g_object_unref(info->icon_cache);
+    info->icon_cache = NULL;
+  }
 
   /* render icon seems to internally require that the folder is already created by get_folder */  
   if (info->icon_cache == NULL)
     info->icon_cache = _hildon_file_system_create_image(info->fs,  
                   ref_widget, info->path, 
-                  info->type, TREE_ICON_SIZE);
+                  info->type, size);
+
+  info->size = size;
 
   return info->icon_cache;
 }
