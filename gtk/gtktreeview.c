@@ -10840,7 +10840,8 @@ gtk_tree_view_remove_column (GtkTreeView       *tree_view,
   g_object_unref (column);
   g_signal_emit (tree_view, tree_view_signals[COLUMNS_CHANGED], 0);
 
-  update_checkbox_mode (NULL, NULL, tree_view);
+  if(tree_view->priv->allow_checkbox_mode)
+    update_checkbox_mode (NULL, NULL, tree_view);
 
   return tree_view->priv->n_columns;
 }
@@ -10910,7 +10911,9 @@ gtk_tree_view_insert_column (GtkTreeView       *tree_view,
 
   g_signal_emit (tree_view, tree_view_signals[COLUMNS_CHANGED], 0);
 
-  update_checkbox_mode (NULL, NULL, tree_view);
+  if(tree_view->priv->allow_checkbox_mode)
+    update_checkbox_mode (NULL, NULL, tree_view);
+
   check_if_can_focus (tree_view);
 
   return tree_view->priv->n_columns;
