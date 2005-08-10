@@ -297,3 +297,7 @@ msgstr "Documents"
 #: ../hildon-fm/hildon-file-system-model.c:1470	 	
 msgid "sfil_li_folder_games"	 	
 msgstr "Games"
+
+#: ../hildon-fm/hildon-file-chooser-dialog.c:986	 	
+msgid "sfil_ni_operation_failed"
+msgstr "Operation failed"

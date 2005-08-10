@@ -1,5 +1,9 @@
 2005-08-10  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* hildon-fm/hildon-file-chooser-dialog.c (handle_folder_popup):
+	use logical string for message for generic error. N#13795
+	* po/en_GB.po: added sfil_ni_operation_failed translation
+	
 	* hildon-fm/hildon-file-system-info.[ch]:
 	(hildon_file_system_info_get_icon_at_size) Added new interface to
 	get an icon in arbitrary size. N#16986
