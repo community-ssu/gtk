@@ -1,21 +1,21 @@
 2005-08-10  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_insert_column)
-    	(gtk_tree_view_remove_column) Added allow_checkbox_mode checks
-        N#16571 
+	(gtk_tree_view_remove_column) Added allow_checkbox_mode checks
+	N#16571 
 
 2005-08-09  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	Backported upstream fix
 	* gtk/gtkdialog.c (gtk_dialog_map): Don't
 	try to focus the default_widget if there is 
-	none.  (#169881, Thomas Leonard)
+	none.  (#169881, Thomas Leonard)  N#16576
 	
 2005-08-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gdk-pixbuf/io-jpeg.c (fatal_error_handler): Report out of memory
 	error correctly instead of as corrupt image.  (#312674, Tommi
-	Komulainen)
+	Komulainen)  N#15422
 
 2005-08-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
@@ -23,13 +23,13 @@
 
 	* gtk/gtkentry.c (gtk_entry_move_forward_word): don't iterate
 	past the end of the string, so pango_layout_get_cursor_pos() won't
-	complain. (#309211, Tommi Komulainen).
+	complain. (#309211, Tommi Komulainen). N#13757
 
 2005-08-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktextbuffer.c(clipboard_text_view_markup_received): Do not try
 	to deserialize rich text if the clipboard request failed. Stop leaking
-	the error.
+	the error. N#16736
 
 2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
 
@@ -37,6 +37,7 @@
 	(gtk_tree_model_filter_row_has_child_toggled): keep
 	GtkTreeModelFilter and GtkTreeModelSort cache in
 	sync. http://bugzilla.gnome.org/show_bug.cgi?id=311955
+	N#8307
 	
 	* gtk/gtkmenushell.[ch]: Added new "close" signal which closes
 	only current menu level and not its parent.
