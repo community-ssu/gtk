@@ -1,3 +1,10 @@
+2005-08-10  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtkhbbox.c (gtk_hbutton_box_size_allocate): don't access
+	children_h before we check whether children_h is non-NULL, remove
+	useless check if we are at the end of the list inside the while
+	loop. Fixes crashes with empty hbboxes. 
+
 2005-08-10  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_insert_column)

@@ -359,12 +359,9 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
       GList *children_h = GTK_BOX (box)->children;
         /* heterogenous sized childs onto center */
       childspacing = spacing;
-      child_h = children_h->data;
 
       while (children_h )
 	{
-	  if ( g_list_length (children_h) == 0 ) break;  
-
 	  child_h = children_h->data;
 	  children_h = children_h->next;
 
