@@ -153,7 +153,7 @@ Callback for copying contents selected in error details widget to
 the clipboard.
 
 @param widget Menuitem widget
-@param data Data passed to callback
+@param data The GtkTextBuffer to copy from.
 @return Returns FALSE if failed, TRUE if ok
 */
 gboolean on_copy_activate(GtkWidget *widget, gpointer data);

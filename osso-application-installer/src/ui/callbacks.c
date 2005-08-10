@@ -334,18 +334,14 @@ gboolean on_popup(gpointer data)
 }
 
 
-gboolean on_copy_activate(GtkWidget *widget, gpointer data) 
+gboolean
+on_copy_activate (GtkWidget *widget, gpointer data) 
 {
-  AppData *app_data = (AppData *) data;
-  if (!app_data || !app_data->app_ui_data) return FALSE;
+  GtkTextBuffer *buffer = GTK_TEXT_BUFFER (data);
+  GtkClipboard *clipboard = gtk_clipboard_get (GDK_NONE);
 
-  GtkClipboard *clipboard = NULL;
-  clipboard = gtk_clipboard_get(GDK_NONE);
+  gtk_text_buffer_copy_clipboard (buffer, clipboard);
+  gtk_clipboard_store (clipboard);
 
-  gtk_text_buffer_copy_clipboard(GTK_TEXT_BUFFER(
-   app_data->app_ui_data->error_buffer), clipboard);
-
-  gtk_clipboard_store(clipboard);
   return TRUE;
 }
-
