@@ -713,6 +713,14 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
 
     gdk_error_trap_push();
     gchar *atomstring = XGetAtomName(GDK_DISPLAY(), pev->atom);
+    gdk_error_trap_pop();
+    if (atomstring == NULL)
+    {
+        osso_log(LOG_ERR,
+                 "TN: Unable to get atom name (propertynotifiy)\n");
+        return;
+    }
+    gdk_error_trap_push();
     XGetWindowProperty(GDK_DISPLAY(), pev->window, wm_class_atom, 0, 24,
                        False, XA_STRING, &actual_type, &actual_format,
                        &nitems, &bytes_after, &wm_class_str);
@@ -1119,6 +1127,7 @@ GtkTreeModel *create_model(void)
         }
 	mb_dotdesktop_free(desktop);
     }
+
     /* Add checks? */
     closedir(directory);
     g_free(entry);
@@ -1131,9 +1140,16 @@ static int find_application_from_tree(GtkTreeModel * model,
 				      GtkTreeIter * iter,
 				      const gchar * name)
 {
-    int has_more, ret = 0;
+    int has_more = 0, ret = 0;
     g_assert(model && iter);
     
+    if (name == NULL)
+    {
+        osso_log(LOG_ERR,
+                 "TN: NULL name at find_application_from_tree\n");
+        return ret;
+    }
+
     for (has_more = gtk_tree_model_get_iter_first(model, iter);
          has_more; has_more = gtk_tree_model_iter_next(model, iter))
     {
@@ -1158,8 +1174,18 @@ static int find_service_from_tree(GtkTreeModel * model,
                                   GtkTreeIter * iter,
                                   const gchar * service)
 {
-    int has_more, ret = 0;
+    int has_more = 0, ret = 0;
     g_assert(model && iter);
+    
+    /* If we did not get valid service name as input, we can hardly
+       find any matches for it either... */
+
+    if (service == NULL)
+    {
+        osso_log(LOG_ERR,
+                 "TN: NULL service name at find_service_from_tree\n");
+        return ret;
+    }
 
     for (has_more = gtk_tree_model_get_iter_first(model, iter);
          has_more; has_more = gtk_tree_model_iter_next(model, iter))
@@ -1877,8 +1903,12 @@ static int determine_window_type(Window win_id)
     {
         gdk_error_trap_push();
         type_str = XGetAtomName(GDK_DISPLAY(), wm_type_value.atom_value[i]);
-
         gdk_error_trap_pop();
+
+        if (type_str == NULL)
+        {
+            continue;
+        }
 
         /* The menu case is tested first, as it will probably be a very
            common one */
@@ -1904,11 +1934,15 @@ static int determine_window_type(Window win_id)
             }
             if (nitems_wmstate > 0)
             {
-                gdk_error_trap_push();
-                gchar *wm_state_str = XGetAtomName(GDK_DISPLAY(),
-                                                   wm_state_value.atom_value[0]);
+                gchar *wm_state_str = NULL; 
+
+                gdk_error_trap_push();                
+                wm_state_str = XGetAtomName(GDK_DISPLAY(),
+                                            wm_state_value.atom_value[0]);
                 gdk_error_trap_pop();
-                if (strcmp(wm_state_str, "_NET_WM_STATE_MODAL") == 0)
+
+                if (wm_state_str && strcmp(wm_state_str,
+                                           "_NET_WM_STATE_MODAL") == 0)
                 {
                     window_type = OTHER;
                     XFree(wm_state_str);
@@ -1917,7 +1951,8 @@ static int determine_window_type(Window win_id)
                 break;
             }
         }
-        else if (g_str_equal(type_str, "_NET_WM_WINDOW_TYPE_DIALOG") == TRUE )
+        else if (g_str_equal(type_str,
+                             "_NET_WM_WINDOW_TYPE_DIALOG") == TRUE )
         {
             gdk_error_trap_push();
             XGetWindowProperty(GDK_DISPLAY(), win_id, net_wm_state, 0,
@@ -1930,11 +1965,16 @@ static int determine_window_type(Window win_id)
             }
             if (nitems_wmstate > 0)
             {
+                gchar *wm_state_str = NULL;
+
                 gdk_error_trap_push();
-                gchar *wm_state_str = XGetAtomName(GDK_DISPLAY(),
-                                                   wm_state_value.atom_value[0]);
+                wm_state_str = XGetAtomName(GDK_DISPLAY(),
+                                            wm_state_value.atom_value[0]);
                 gdk_error_trap_pop();
-                if (g_str_equal(wm_state_str, "_NET_WM_STATE_MODAL") == TRUE)
+
+                if (wm_state_str && 
+                    g_str_equal(wm_state_str,
+                                "_NET_WM_STATE_MODAL") == TRUE)
                 {
                     window_type = MODAL_DIALOG;
                     XFree(wm_state_str);

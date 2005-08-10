@@ -1,3 +1,16 @@
+2005-08-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+        * Correction to bug "System reboots when Image Viewer is started after a search"
+	* hildon-navigator/windowmanager.c: (determine_window_type):
+	Prevent a crash by checking that we do not pass NULL pointers to g_str_equal()
+	* hildon-navigator/windowmanager.c: (find_application_from_tree):
+	Prevent a crash by checking that we do not pass NULL pointers to
+	g_str_equal()
+	* hildon-navigator/windowmanager.c: (property_notify_handler):
+	Prevent a crash by checking that we do not pass NULL pointers to g_str_equal()
+	* hildon-navigator/windowmanager.c: (find_service_from_tree):
+	Prevent a crash by checking that we do not pass NULL pointers tog_str_equal()
+
 2005-08-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Correction to bug "Changing home background image reboots"
