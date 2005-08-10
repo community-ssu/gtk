@@ -29,207 +29,41 @@
  *
  */
 
-
-#include <gtk/gtk.h>
 #include <libosso.h>
 #include "appdata.h"
 #include "dbus.h"
 #include "core.h"
 
-
-gint dbus_req_handler(const gchar *interface, const gchar *method,
-                      GArray *arguments, gpointer data,
-                      osso_rpc_t *retval)
+static void
+mime_open_handler (gpointer raw_data, int argc, char **argv)
 {
-    (void) interface;
-    return dbus_message_handler(method, arguments, data, retval);
-}
- 
+  AppData *app_data = (AppData *)raw_data;
+  int i;
 
-gint dbus_message_handler(const gchar *method, GArray *arguments, 
-                          gpointer data, osso_rpc_t *retval)
-{
-  AppData *app_data;
-  app_data = (AppData *) data;
-  osso_rpc_t val = g_array_index(arguments, osso_rpc_t, 0);
-  
-  (void) arguments;  
-  g_assert(method);
-
-  fprintf(stderr, "dbus: method '%s' called\n", method);
-  
-  /* Catch the message and define what you want to do with it */        
-  if (g_ascii_strcasecmp(method, DBUS_METHOD_MIME_OPEN) == 0) {
-    fprintf(stderr, "Got method 'mime_open' with method '%s'\n",
-	    DBUS_METHOD_MIME_OPEN);
-    if ( (val.type == DBUS_TYPE_STRING)
-        && (val.value.s != NULL) ) {
-
-      do_install (val.value.s, app_data);
-
-      retval->type = DBUS_TYPE_BOOLEAN;
-      retval->value.b = TRUE;
-      return OSSO_OK;
-    }
-
-  } else if (g_ascii_strcasecmp(method,
-             "application_installer_display_infoprint") == 0) {
-    /* "application_installer_display_infoprint" displays 
-       the infoprint with defined string */
-    osso_system_note_infoprint(app_data->app_osso_data->osso,
-     "I'm here!", retval);
-    
-    return DBUS_TYPE_BOOLEAN;
-
-  } else {
-    osso_log(LOG_ERR, "Unknown DBUS method: %s\n", method);
-  }
-  
-  return DBUS_TYPE_INVALID;
+  for (i = 0; i < argc; i++)
+    do_install (argv[i], app_data);
 }
 
-
-/* Send d-bus message */
-osso_return_t send_dbus_message(const gchar *app, const gchar *method,
-                                GArray *args, osso_rpc_t *retval, 
-                                AppData *app_data)
+void
+init_osso (AppData *app_data)
 {
-    /* Removed args, since we need to process them somehow */  
-    return osso_rpc_run(app_data->app_osso_data->osso,
-                        "com.nokia.app_launcher", 
-                        "/com/nokia/app_launcher", 
-                        "app_launcher",
-                        method, retval, 
-                        DBUS_TYPE_INVALID);
+  osso_return_t ret;
+  
+  app_data->app_osso_data->osso =
+    osso_initialize ("osso_application_installer",
+		     PACKAGE_VERSION, TRUE, NULL);
+  
+  g_assert (app_data->app_osso_data->osso);
+
+  ret = osso_mime_set_cb (app_data->app_osso_data->osso,
+			  mime_open_handler,
+			  app_data);
+  g_assert (ret == OSSO_OK);
 }
 
-
-/* Depending on the state of hw, do something */
-void hw_event_handler(osso_hw_state_t *state, gpointer data)
-{
-    (void) data;
-  
-    if (state->shutdown_ind) {
-        /* Rebooting */ 
-        gtk_main_quit();
-    }
-    if (state->memory_low_ind) {
-        /* Memory low */
-    }
-    if (state->save_unsaved_data_ind) {
-        /* Battery low */
-    }
-    if (state->system_inactivity_ind) {
-        /* Minimum activity */ 
-    }
-}
-
-
-/* Define topping */
-void osso_top_callback(const gchar *arguments, AppData *app_data)
-{
-    g_assert(app_data);
-    gtk_window_present(GTK_WINDOW(app_data));
-}
-
-
-static osso_return_t osso_rpc_cb(const gchar *interface,
-				 const gchar *method,
-				 GArray *args,
-				 gpointer data,
-				 osso_rpc_t *retval);
-
-static osso_return_t osso_rpc_cb(const gchar *interface, 
-			  const gchar *method,
-			  GArray *args, 
-			  gpointer data, 
-			  osso_rpc_t *retval )
-{
-  retval->type = DBUS_TYPE_BOOLEAN;
-  retval->value.b = TRUE;
-  return OSSO_OK;
-}
-
-
-/* Do initialization for OSSO, create osso context, set topping callback,
-   dbus-message handling callbaks, and hw-event callbacks. TODO: System 
-   bus still not seem working well, so HW-event callbacks no tested */
-gboolean init_osso(AppData *app_data)
-{
-    osso_return_t ret;
-  
-    /* Init osso */
-    osso_log(LOG_INFO, "Initializing osso");
-    app_data->app_osso_data->osso = osso_initialize(PACKAGE_NAME, 
-                                  PACKAGE_VERSION, TRUE, NULL);
-  
-    if (app_data->app_osso_data->osso==NULL) {
-        osso_log(LOG_ERR, "Osso initialization failed");
-        return FALSE;
-    }
-    g_assert(app_data->app_osso_data->osso);
-
-    /* RPC callback */
-    ret = osso_rpc_set_default_cb_f(app_data->app_osso_data->osso,
-				    (osso_rpc_cb_f *)osso_rpc_cb, 
-				    NULL);
-    if (ret != OSSO_OK) {
-      ULOG_CRIT( "Error setting RPC callback: %d", ret);
-      return FALSE;
-    }
-
-    /* Set topping callback */
-    osso_application_set_top_cb(app_data->app_osso_data->osso, 
-                           (osso_application_top_cb_f *) osso_top_callback,
-      (gpointer) app_data);
-  
-    /* Set handling d-bus messages from session bus */
-    ret = osso_rpc_set_cb_f(app_data->app_osso_data->osso,
-                           "com.nokia.osso_application_installer", 
-                            "/com/nokia/osso_application_installer",
-                            "com.nokia.osso_application_installer", 
-                            dbus_req_handler, 
-			    (gpointer) app_data);
-  
-    if (ret != OSSO_OK) {
-        osso_log(LOG_ERR, "Could not set callback for receiving messages");
-    }
-  
-    /* Set handling changes in HW states. Note: not tested */
-    ret = osso_hw_set_event_cb(app_data->app_osso_data->osso, 
-			       NULL,
-			       hw_event_handler, 
-			       app_data);
-  
-    if (ret != OSSO_OK) {
-        osso_log(LOG_ERR, "Could not set callback for HW monitoring");
-    }
-  
-    return TRUE;
-}
-
-
-/* Deinitialize osso specific data TODO:Check of return values from osso */
-gboolean deinit_osso(AppData *app_data)
+void
+deinit_osso (AppData *app_data)
 {  
-    if (!app_data || !app_data->app_osso_data) return FALSE;
-    if (!app_data->app_osso_data->osso) return TRUE;
-
-    /* Unset callbacks */
-    g_assert(app_data->app_osso_data->osso);
-    osso_application_unset_top_cb(app_data->app_osso_data->osso,
-      (osso_application_top_cb_f *) osso_top_callback, NULL);
-  
-    osso_rpc_unset_cb_f(app_data->app_osso_data->osso, 
-                        "com.nokia.osso_application_installer", 
-                        "/com/nokia/osso_application_installer",
-                        "com.nokia.osso_application_installer", 
-                        dbus_req_handler, app_data);
-
-    osso_hw_unset_event_cb(app_data->app_osso_data->osso, NULL);
-  
-    /* Deinit osso */
-    osso_deinitialize(app_data->app_osso_data->osso);
-  
-    return TRUE;
+  osso_mime_unset_cb (app_data->app_osso_data->osso);
+  osso_deinitialize (app_data->app_osso_data->osso);
 }
