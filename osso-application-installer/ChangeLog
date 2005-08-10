@@ -1,3 +1,32 @@
+2005-08-10  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/dbus.c, src/dbus.h: Rewritten to just use osso_mime_set_cb
+	and no other callbacks.
+	(init_osso, deinit_osso): Return void, changed callers.
+
+	* src/main.c (main): Moved osso initialization after dialog
+	creation.  Removed some logging fluff.
+
+	* src/osso_application_installer.desktop.in (X-Osso-Service):
+	Prepend com.nokia.
+
+	* src/ui/callbacks.c, src/ui/callbacks.h (on_copy_activate): Data
+	argument is now the GtkTextBuffer to copy from, not AppData.
+
+	* src/appdata.h (AppUIData): Removed error_buffer, progressbar,
+	progressbar_dialog, param, current_progress, max_name, max_size,
+	max_version.
+
+	* src/ui/interface.c (ui_create_main_dialog): Hide the alternative
+	labels after creating them to avoid UI flicker.
+	(ui_create_textbox): Do not set error_buffer of app_ui_data.
+	
+	* src/ui/represent.c, src/ui/represent.h
+	(present_report_with_details): Removed title argument.  Changed
+	all callers.
+	(update_package_list): Get list of packages before changing any of
+	the widget states to avoid UI flicker.
+
 2005-08-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* control-panel/ai-cp-applet.c (execute): Rewritten.  Use
