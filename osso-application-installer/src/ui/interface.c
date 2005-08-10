@@ -209,7 +209,11 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   gtk_signal_connect(GTK_OBJECT(main_dialog), "key_press_event",
 		     G_CALLBACK(key_press), (gpointer) app_ui_data);
 
+  /* Show everything except the two labels.
+   */
   gtk_widget_show_all (main_dialog);
+  gtk_widget_hide (empty_list_label);
+  gtk_widget_hide (database_unavailable_label);
 
   update_package_list (app_data);
 
@@ -346,7 +350,6 @@ GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
   sw = gtk_scrolled_window_new(NULL, NULL);
   view = gtk_text_view_new();
   buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(view));
-  app_data->app_ui_data->error_buffer = buffer;
   
   /* Adding them into buffer */
   gtk_text_buffer_set_text(buffer, text, -1);
