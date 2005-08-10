@@ -66,34 +66,21 @@ struct _AppUIData {
   GtkWidget *treeview;
   /* package list, scrolledwindow */
   GtkWidget *package_list;
-  /* 'no packages' label */
+  /* Labels that are shown as alternatives to the package list */
   GtkWidget *empty_list_label;
   GtkWidget *database_unavailable_label;
   /* main label, textbuffer */
   GtkTextBuffer *main_label;
-  /* textbuffer containing error message */
-  GtkTextBuffer *error_buffer;
   /* main dialog buttons */
   GtkWidget *installnew_button;
   GtkWidget *uninstall_button;
   GtkWidget *close_button;
-  /* progressbar stuff */
-  GtkWidget *progressbar;
-  GtkWidget *progressbar_dialog;
-  /* possible filename param */
-  GString *param;
-  /* progressbar status */
-  gdouble current_progress;
   /* event id for show popup menu timer callback */
   guint32 popup_event_id;
   /* column objects in treeview */
   GtkTreeViewColumn *name_column;
   GtkTreeViewColumn *version_column;
   GtkTreeViewColumn *size_column;
-  /* length of largest items on list */
-  gint max_name;
-  gint max_size;
-  gint max_version;
 };
 
 /* OSSO related application data */
