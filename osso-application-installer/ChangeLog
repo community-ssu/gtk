@@ -1,5 +1,19 @@
 2005-08-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/core.h, src/core.c (COLUMN_BROKEN): New.
+	(list_packages): Set it.
+	(text_cell_data_func): New, use the COLUMN_BROKEN field to render
+	broken packages struck out.
+	(add_columns): Set text_cell_data_func for all text columns.  Set
+	"xalign" of text renderer, not column alignment, for right
+	adjusted columns.
+	
+	* src/ui/callbacks.c (on_treeview_selection_changed): Show short
+	explanation instead of the description for broken packages.
+
+	* src/ui/interface.c (ui_create_main_dialog): Gove the dialog a
+	fixed size by using gtk_widget_size_request
+
 	* src/core.c: Added g_main_loop_unref in all the right places.
 
 	* po/en_GB.po (ai_bd__application_installer_cancel): Translate as
