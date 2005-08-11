@@ -473,6 +473,7 @@ run_app_installer_tool (AppData *app_data,
     {
       data.loop = g_main_loop_new (NULL, 0);
       g_main_loop_run (data.loop);
+      g_main_loop_unref (data.loop);
       free_app_installer_tool (handle);
     }
 
@@ -1009,6 +1010,7 @@ install_package (gchar *deb, AppData *app_data)
 	  data.loop = g_main_loop_new (NULL, 0);
 	  data.timeout = g_timeout_add (500, installer_progress, &data);
 	  g_main_loop_run (data.loop);
+	  g_main_loop_unref (data.loop);
 	  free_app_installer_tool (data.tool);
 	}
     }
@@ -1145,6 +1147,7 @@ install_package_from_uri (gchar *uri, AppData *app_data)
 	{
 	  data.loop = g_main_loop_new (NULL, 0);
 	  g_main_loop_run (data.loop);
+	  g_main_loop_unref (data.loop);
 	  free_app_installer_tool (handle);
 	}
 
@@ -1235,6 +1238,7 @@ uninstall_package (gchar *package, gchar *size, AppData *app_data)
 	  data.loop = g_main_loop_new (NULL, 0);
 	  data.timeout = g_timeout_add (500, installer_progress, &data);
 	  g_main_loop_run (data.loop);
+	  g_main_loop_unref (data.loop);
 	}
     }
 }
