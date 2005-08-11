@@ -1,5 +1,7 @@
 2005-08-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/core.c: Added g_main_loop_unref in all the right places.
+
 	* po/en_GB.po (ai_bd__application_installer_cancel): Translate as
 	"Close" to conform to UI spec 3.2.
 
