@@ -6,9 +6,13 @@
 # pregenerating background image 
 if [ -e /usr/share/backgrounds ]
 then
-DEF_BGIMAGE=`for bgimage in /usr/share/backgrounds/*.desktop; do grep "X-Order" $bgimage|sed 's/X-Order=//'|awk "{print \$1\" $bgimage\"}"; done |sort|sed 's/^[0-9]*\s*//'|head -1 |xargs cat|grep "^File"|sed 's/^File=//'`
+  DEF_BGIMAGE=`for bgimage in /usr/share/backgrounds/*.desktop; do grep "X-Order" $bgimage|sed 's/X-Order=//'|awk "{print \$1\" $bgimage\"}"; done |sort|sed 's/^[0-9]*\s*//'|head -1 |xargs cat|grep "^File"|sed 's/^File=//'`
 
-/usr/bin/home-image-loader new_image /usr/share/backgrounds/hildon_home_bg_user.png 720 480 $DEF_BGIMAGE /usr/share/backgrounds/user_filename.txt /usr/share/themes/default/images/qgn_plat_home_status_bar_background.png /usr/share/backgrounds/original_titlebar.png 0 0 /usr/share/themes/default/images/qgn_plat_home_border_left.png /usr/share/backgrounds/original_sidebar.png 0 60
-rm /usr/share/backgrounds/user_filename.txt
+  if [ "$DEF_BGIMAGE" ]
+  then
+    /usr/bin/home-image-loader new_image /usr/share/backgrounds/hildon_home_bg_user.png 720 480 $DEF_BGIMAGE /usr/share/backgrounds/user_filename.txt /usr/share/themes/default/images/qgn_plat_home_status_bar_background.png /usr/share/backgrounds/original_titlebar.png 0 0 /usr/share/themes/default/images/qgn_plat_home_border_left.png /usr/share/backgrounds/original_sidebar.png 0 60
+    rm /usr/share/backgrounds/user_filename.txt
+  fi
 
 fi
+

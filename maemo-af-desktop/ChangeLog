@@ -1,3 +1,8 @@
+2005-08-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+	* Fix to bug N#17092 to file maemo-af-desktop.postinst: Fixed postinstall target failing
+	when no themes are installed
+
 2005-08-10  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
         * Correction to bug "Multiple problems in Others menu item sorting"
