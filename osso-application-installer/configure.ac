@@ -2,7 +2,7 @@
 
 # Mandatory, inits autoconf
 # The version should match the version in debian/changelog
-AC_INIT(osso-application-installer, 2.5-0)
+AC_INIT(osso-application-installer, 2.6-0)
 
 # Tests that source dir exists
 AC_CONFIG_SRCDIR([src/main.c])
