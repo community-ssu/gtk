@@ -1,0 +1,4 @@
+# Sample service description file
+[D-BUS Service]
+Name=com.nokia.controlpanel
+Exec=@prefix@/bin/controlpanel

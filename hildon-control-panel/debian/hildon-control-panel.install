@@ -1,0 +1,4 @@
+etc/others-menu
+usr/bin
+usr/share/applications
+usr/lib/dbus-1.0/services/com.nokia.controlpanel.service

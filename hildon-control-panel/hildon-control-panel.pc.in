@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@prefix@
+libdir=@libdir@
+includedir=@includedir@
+localedir=@localedir@
+pluginlibdir=@hildoncplibdir@
+plugindesktopentrydir=@hildoncpdesktopentrydir@
+
+Name: hildon-control-panel
+Description: Hildon Control Panel
+Requires: hildon-libs >= 0.7.1
+Version: @VERSION@

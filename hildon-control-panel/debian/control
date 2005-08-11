@@ -1,0 +1,23 @@
+Source: hildon-control-panel
+Section: x11
+Priority: optional
+Maintainer: Nokia <nokia>
+Build-Depends: debhelper (>= 4.0.0), hildon-libs-dev (>= 0.7.0), hildon-lgpl-dev, hildon-base-lib-dev, pkg-config, libosso-dev (>= 0.9.10), libmatchbox-dev, osso-af-settings, libosso-help-dev
+Standards-Version: 3.6.0
+
+Package: hildon-control-panel
+Section: x11
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, libmatchbox1, hildon-control-panel-l10n-3.0-engb | hildon-control-panel-l10n-3.0-english
+Recommends: hildon-theme-harry, hildon-keyboard, matchbox-window-manager, hildon-base-lib
+Suggests: hildon-tests
+Conflicts: hildon-base
+Replaces: hildon-base, hildon-navigator (<= 0.8.10)
+Description: Hildon Control Panel
+
+Package: hildon-control-panel-dev
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-control-panel, hildon-base-lib-dev, hildon-libs-dev
+Description: Hildon Control Panel development files.
+
