@@ -215,6 +215,16 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   gtk_widget_hide (empty_list_label);
   gtk_widget_hide (database_unavailable_label);
 
+  /* XXX - find a better way to keep the dialog from resizing by
+           itself.  The resizing is likely triggered by the TextView
+           used for the descriptions.
+  */
+  {
+    GtkRequisition req;
+    gtk_widget_size_request (main_dialog, &req);
+    gtk_widget_set_size_request (main_dialog, req.width, req.height);
+  }
+
   update_package_list (app_data);
 
   return main_dialog;
