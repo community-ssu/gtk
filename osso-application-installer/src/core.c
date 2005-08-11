@@ -678,34 +678,53 @@ package_file_info (AppData *app_data, gchar *file)
   gchar *stdout_string;
   PackageInfo info;
 
+  info.name = NULL;
+  info.size = NULL;
+  info.version = NULL;
+  info.description = NULL;
+
   if (run_app_installer_tool (app_data,
 			      "describe-file", file, NULL,
 			      &stdout_string, NULL,
 			      NULL))
     {
-      gchar *ptr, *package, *version, *size;
+      gchar *ptr, *package, *version, *size, *depends;
+      gchar *tok;
+      gboolean depends_on_maemo;
 
       ptr = stdout_string;
       ptr = parse_delimited (ptr, '\n', &package);
       ptr = parse_delimited (ptr, '\n', &version);
       ptr = parse_delimited (ptr, '\n', &size);
+      ptr = parse_delimited (ptr, '\n', &depends);
 
       /* XXX - do not crash here.
        */
       g_assert (ptr != NULL);
 
-      info.name = g_string_new (package);
-      info.version = g_string_new (version);
-      info.size = g_string_new (size);
-      info.description = g_string_new (ptr);
+      /* XXX - the parsing is a bit coarse here...
+       */
+      depends_on_maemo = 0;
+      while (tok = strsep (&depends, " \t\r\n,"))
+	if (strcmp (tok, META_PACKAGE) == 0)
+	  depends_on_maemo = 1;
+
+      if (depends_on_maemo)
+	{
+	  info.name = g_string_new (package);
+	  info.version = g_string_new (version);
+	  info.size = g_string_new (size);
+	  info.description = g_string_new (ptr);
+	}
+      else
+	{
+	  present_report_with_details (app_data,
+				       _("ai_error_incompatible"),
+				       NULL);
+	}
     }
   else
     {
-      info.name = NULL;
-      info.size = NULL;
-      info.version = NULL;
-      info.description = NULL;
-
       /* XXX-UI32 - do not suppress stderr output. */
       present_report_with_details (app_data,
 				   _("ai_error_corrupted"),
