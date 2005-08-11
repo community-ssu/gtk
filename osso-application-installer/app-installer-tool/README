@@ -52,8 +52,8 @@ Usage:
 
   Outputs information about <file.deb> to stdout.  The first line of
   stdout contains the package name, the second line the version, the
-  third line the size and the rest of the lines contain the
-  description.
+  third line the size, the fourth line the dependencies and the rest
+  of the lines contain the description.
 
   Exits zero when stdout contains a proper description.  Exits
   non-zero when some error occured.  Diagnostic output goes to stderr.

@@ -282,21 +282,24 @@ parse_field (gchar *ptr, gchar *prefix, gchar **value)
 
   len = strlen (prefix);
   if (strncmp (ptr, prefix, len) == 0)
-    *value = ptr + len;
-
-  while (1)
     {
-      ptr = strchr (ptr, '\n');
-      if (ptr == NULL)
-	return NULL;
-      if (ptr[1] == ' ')
-	ptr++;
-      else
+      *value = ptr + len;
+      while (1)
 	{
-	  *ptr++ = '\0';
-	  return ptr;
+	  ptr = strchr (ptr, '\n');
+	  if (ptr == NULL)
+	    return NULL;
+	  if (ptr[1] == ' ')
+	    ptr++;
+	  else
+	    {
+	      *ptr++ = '\0';
+	      return ptr;
+	    }
 	}
     }
+  else
+    return ptr;
 }
 
 
@@ -311,6 +314,7 @@ do_describe_file (gchar *file)
     "Package",
     "Version",
     "Installed-Size",
+    "Depends",
     "Description",
     NULL
   };
@@ -319,7 +323,7 @@ do_describe_file (gchar *file)
   if (result == 0)
     {
       gchar *package = NULL, *version = NULL, *size = NULL;
-      gchar *description = NULL;
+      gchar *depends = NULL, *description = NULL;
       gchar *ptr;
 
       /* The fields are output in the order of the control file, so we
@@ -331,6 +335,7 @@ do_describe_file (gchar *file)
 	  ptr = parse_field (ptr, "Package: ", &package);
 	  ptr = parse_field (ptr, "Version: ", &version);
 	  ptr = parse_field (ptr, "Installed-Size: ", &size);
+	  ptr = parse_field (ptr, "Depends: ", &depends);
 	  ptr = parse_field (ptr, "Description: ", &description);
 	  
 	  g_assert (ptr != NULL);
@@ -339,6 +344,7 @@ do_describe_file (gchar *file)
       printf ("%s\n", package);
       printf ("%s\n", version);
       printf ("%s\n", size);
+      printf ("%s\n", depends);
       printf ("%s\n", description);
     }
 
