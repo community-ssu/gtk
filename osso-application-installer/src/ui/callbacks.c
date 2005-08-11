@@ -130,15 +130,28 @@ on_treeview_selection_changed (GtkTreeSelection *selection,
     {
       gchar *package;
       gchar *description;
+      gboolean broken;
 
       gtk_tree_model_get (model, &iter, 
 			  COLUMN_NAME, &package,
+			  COLUMN_BROKEN, &broken,
 			  -1);
     
-      description = package_description (app_data, package);
+      if (broken)
+	{
+	  description =
+	    "This application is broken.  "
+	    "You might be able to fix it by installing "
+	    "a newer version of it.";
+	}
+      else
+	description = package_description (app_data, package);
+
       gtk_text_buffer_set_text (GTK_TEXT_BUFFER (app_ui_data->main_label), 
 				description, -1);
-      free (description);
+
+      if (!broken)
+	free (description);
       free(package);
     }
 }
