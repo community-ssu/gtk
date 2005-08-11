@@ -1,5 +1,9 @@
 2005-08-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 2.6.
+	
+	* configure.ac: Bumped version.
+
 	* app-installer-tool/app-installer-tool.c (parse_field): Only skip
 	over field if it is indeed the one we are looking for, stupid.
 	(do_describe_file): Also output Depends field as fourth line.
