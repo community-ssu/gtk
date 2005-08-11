@@ -520,7 +520,8 @@ list_packages (AppData *app_data)
 			      G_TYPE_OBJECT,
                               G_TYPE_STRING,
                               G_TYPE_STRING,
-                              G_TYPE_STRING);
+                              G_TYPE_STRING,
+			      G_TYPE_BOOLEAN);
 
   /* Parse stdout_string.
    */
@@ -528,7 +529,8 @@ list_packages (AppData *app_data)
   while (*ptr)
     {
       gchar *name, *version, *size, *status;
-      
+      gboolean broken;
+
       ptr = parse_delimited (ptr, '\t', &name);
       ptr = parse_delimited (ptr, '\t', &version);
       ptr = parse_delimited (ptr, '\t', &size);
@@ -539,26 +541,21 @@ list_packages (AppData *app_data)
       if (!strcmp (name, META_PACKAGE))
 	continue;
 
-      /* XXX-UI32 - do not ignore broken packages.
-       */
-      if (!strcmp (status, "ok"))
-	{
-	  version = g_strdup_printf ("v%s", version);
-	  size = g_strdup_printf ("%skB", size);
+      version = g_strdup_printf ("v%s", version);
+      size = g_strdup_printf ("%skB", size);
+      broken = strcmp (status, "ok");
 
-	  gtk_list_store_append (store, &iter);
-	  gtk_list_store_set (store, &iter,
-			      COLUMN_ICON, default_icon, 
-			      COLUMN_NAME, name,
-			      COLUMN_VERSION, version,
-			      COLUMN_SIZE, size,
-			      -1);
-
-	  free (version);
-	  free (size);
-	}
-      else
-	ULOG_INFO ("broken package: %s\n", name);
+      gtk_list_store_append (store, &iter);
+      gtk_list_store_set (store, &iter,
+			  COLUMN_ICON, default_icon, 
+			  COLUMN_NAME, name,
+			  COLUMN_VERSION, version,
+			  COLUMN_SIZE, size,
+			  COLUMN_BROKEN, broken,
+			  -1);
+      
+      free (version);
+      free (size);
     }
 
   g_object_unref (default_icon);
@@ -571,6 +568,30 @@ any_packages_installed (GtkTreeModel *model)
 {
   GtkTreeIter iter;
   return model && gtk_tree_model_get_iter_first (model, &iter);
+}
+
+static void
+text_cell_data_func (GtkTreeViewColumn *tree_column,
+		     GtkCellRenderer *cell,
+		     GtkTreeModel *tree_model,
+		     GtkTreeIter *iter,
+		     gpointer data)
+{
+  gboolean broken;
+  gtk_tree_model_get (tree_model, iter,
+		      COLUMN_BROKEN, &broken,
+		      -1);
+  if (broken)
+    {
+      /* XXX-UI32 - maybe find a better way to present broken
+                    packages. */
+      g_object_set (cell, "strikethrough", TRUE, NULL);
+    }
+  else
+    {
+      /* Use the default. */
+      g_object_set (cell, "strikethrough-set", FALSE, NULL);
+    }
 }
 
 void
@@ -600,6 +621,11 @@ add_columns (AppUIData *app_ui_data, GtkTreeView *treeview)
 						     NULL);
   gtk_tree_view_column_set_sort_column_id (column, COLUMN_NAME);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+  gtk_tree_view_column_set_cell_data_func (column,
+					   renderer,
+					   text_cell_data_func,
+					   NULL,
+					   NULL);
   g_object_set (column, "expand", 1, NULL);
   gtk_tree_view_append_column( treeview, column);
   app_ui_data->name_column = column;
@@ -613,7 +639,12 @@ add_columns (AppUIData *app_ui_data, GtkTreeView *treeview)
 						     NULL);
   gtk_tree_view_column_set_sort_column_id (column, COLUMN_VERSION);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-  gtk_tree_view_column_set_alignment (column, 1.0);
+  gtk_tree_view_column_set_cell_data_func (column,
+					   renderer,
+					   text_cell_data_func,
+					   NULL,
+					   NULL);
+  g_object_set (renderer, "xalign", 1.0, NULL);
   gtk_tree_view_append_column (treeview, column);
   app_ui_data->version_column = column;
 
@@ -626,7 +657,12 @@ add_columns (AppUIData *app_ui_data, GtkTreeView *treeview)
 						     NULL);
   gtk_tree_view_column_set_sort_column_id (column, COLUMN_SIZE);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-  gtk_tree_view_column_set_alignment (column, 1.0);
+  gtk_tree_view_column_set_cell_data_func (column,
+					   renderer,
+					   text_cell_data_func,
+					   NULL,
+					   NULL);
+  g_object_set (renderer, "xalign", 1.0, NULL);
   gtk_tree_view_append_column (treeview, column);
   app_ui_data->size_column = column;
 }
