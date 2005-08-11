@@ -1,5 +1,13 @@
 2005-08-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* app-installer-tool/app-installer-tool.c (parse_field): Only skip
+	over field if it is indeed the one we are looking for, stupid.
+	(do_describe_file): Also output Depends field as fourth line.
+
+	* src/core.c (package_file_info): Expect Depends information from
+	app-installer-tool and parse it.  Refuse packages that do not
+	depend on the META_PACKAGE.
+
 	* src/core.h, src/core.c (COLUMN_BROKEN): New.
 	(list_packages): Set it.
 	(text_cell_data_func): New, use the COLUMN_BROKEN field to render
