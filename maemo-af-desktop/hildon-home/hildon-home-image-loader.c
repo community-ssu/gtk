@@ -56,6 +56,7 @@ void save_original_bg_image_uri(const gchar *uri,
 {
     FILE *fp;
     
+    unlink(uri_save_file);
     fp = fopen (uri_save_file, "w");
     if(fp == NULL) 
     {
@@ -770,6 +771,11 @@ int main(int argc, char *argv[])
             }
         }
 
+        loader_status = save_image(pixbuf, dest_filename);
+        if(loader_status != HILDON_HOME_IMAGE_LOADER_OK) 
+        {
+            return loader_status;
+        }
     } else 
     {
         source_uri = argv[argv_counter];
@@ -821,13 +827,12 @@ int main(int argc, char *argv[])
             }
         }
 
+        loader_status = save_image(pixbuf, dest_filename);
+        if(loader_status != HILDON_HOME_IMAGE_LOADER_OK) 
+        {
+            return loader_status;
+        }
         save_original_bg_image_uri(source_uri, source_uri_save_file);
-    }
-    
-    loader_status = save_image(pixbuf, dest_filename);
-    if(loader_status != HILDON_HOME_IMAGE_LOADER_OK) 
-    {
-        return loader_status;
     }
     
     if(pixbuf != NULL)

@@ -106,20 +106,20 @@ static const gchar *home_user_image_dir = NULL;  /*full dir path */
 static const gchar *home_factory_bg_image = NULL;/*full file path */
 static const gchar *user_original_bg_image = "";/*file having file path*/
 static const gchar *home_current_bg_image = NULL;/*full file path */
-static const gchar *home_bg_image_uri = NULL;/*full file path */
+static gchar *home_bg_image_uri = NULL;/*full file path */
+static gchar *home_bg_image_in_use_uri = NULL;/*full file path */
 static const gchar *home_bg_image_filename = NULL; /*file name (short)*/
 static gint home_bg_combobox_active_item = -1; 
 static gboolean home_bg_image_loading_necessary = FALSE;
+static gboolean home_bg_image_symlinked = FALSE;
 
 static const gchar *titlebar_original_image_savefile;
 static const gchar *sidebar_original_image_savefile;
 
-static GtkWidget *loading_cancel_note = NULL;
-static gboolean image_loading_done = FALSE;
+static GtkWidget *loading_image_note = NULL;
+static gboolean loading_image_process_active = FALSE;
 static GPid image_loader_pid = -1;
 
-/* log include */
-#include <log-functions.h>  	 
 
 
 
@@ -650,11 +650,9 @@ void load_original_bg_image_uri()
     {
         osso_log(LOG_ERR, "Couldn't open file %s for reading image name", 
                  user_original_bg_image);
-        home_bg_image_uri= HILDON_HOME_HC_BG_IMAGE_NAME;
+        home_bg_image_uri = "";
 
-        home_bg_image_filename =
-            gnome_vfs_uri_extract_short_name(
-                gnome_vfs_uri_new(home_bg_image_uri));
+        home_bg_image_filename = "";
 
         return;
     }
@@ -669,6 +667,7 @@ void load_original_bg_image_uri()
                  user_original_bg_image);
     }
     home_bg_image_uri = g_strdup_printf("%s", bg_uri);
+    home_bg_image_in_use_uri = g_strdup(home_bg_image_uri);
     home_bg_image_filename =
         gnome_vfs_uri_extract_short_name(
             gnome_vfs_uri_new(home_bg_image_uri));
@@ -696,6 +695,7 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
     GtkFileFilter *mime_type_filter;
     gint response;
     gchar *name_str, *temp_name, *dot;
+    gchar *chooser_name;
 
 
     dialog = hildon_file_chooser_dialog_new_with_properties(
@@ -731,12 +731,12 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
     
     if (response == GTK_RESPONSE_OK) {
         
-        home_bg_image_uri = 
+        chooser_name = 
             gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
         
         name_str = 
             gnome_vfs_uri_extract_short_name(
-                gnome_vfs_uri_new(home_bg_image_uri));
+                gnome_vfs_uri_new(chooser_name));
 
         temp_name = g_strdup(name_str);
         dot = g_strrstr(temp_name, ".");
@@ -757,7 +757,7 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
             gtk_list_store_set(GTK_LIST_STORE(tree),
                                &iter,
                                BG_IMAGE_NAME, name_str,
-                               BG_IMAGE_FILENAME, home_bg_image_uri,
+                               BG_IMAGE_FILENAME, chooser_name,
                                BG_IMAGE_PRIORITY, G_MAXINT, -1);
 
             gtk_combo_box_set_active_iter(box, &iter);
@@ -780,10 +780,12 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
             gtk_tree_path_free(path);
         }
         g_free(name_str);
+        gtk_widget_destroy(dialog);    
+        return TRUE;
     }    
     
     gtk_widget_destroy(dialog);
-    return TRUE;
+    return FALSE;
 }
 
 
@@ -791,7 +793,7 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
  * @combobox_active_tracer
  *
  * @param combobox the emitting combobox
- * @param data Pointer, null
+ * @param data Pointer to GtkDialog containing the combobox
  *
  * Handles changed - signals, recording the active combobox item
  * to global variable so as to be accesible in other functions.
@@ -802,16 +804,34 @@ static void combobox_active_tracer(GtkWidget *combobox,
                                    gpointer data)
 {
     gint active_index = -1;
-    home_bg_image_loading_necessary = TRUE;
-    
+    GtkDialog *dialog = GTK_DIALOG(data);
+
     active_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combobox));
     home_bg_combobox_active_item = active_index; 
 
     if (active_index != -1) 
-    {
-        home_bg_image_uri = 
-            get_filename_from_treemodel(GTK_COMBO_BOX(combobox), 
-                                        active_index);
+    {       
+        gchar *image_name = get_filename_from_treemodel
+            (GTK_COMBO_BOX(combobox), 
+             active_index);
+        if (home_bg_image_in_use_uri != NULL &&
+            image_name != NULL &&
+            g_str_equal(home_bg_image_in_use_uri, image_name))
+        {
+            home_bg_image_loading_necessary = FALSE;
+            gtk_dialog_set_response_sensitive(dialog,
+                                              GTK_RESPONSE_APPLY , FALSE);
+        }
+        else
+        {
+            home_bg_image_loading_necessary = TRUE;
+            if (home_bg_image_uri) {
+                g_free(home_bg_image_uri);
+            }
+            home_bg_image_uri = image_name;
+            gtk_dialog_set_response_sensitive(dialog,
+                                              GTK_RESPONSE_APPLY, TRUE);
+        }
     }
 } 
 
@@ -832,13 +852,19 @@ void set_background_response_handler(GtkWidget *dialog,
                                      gint arg, gpointer data)
 {
     GtkComboBox *box = GTK_COMBO_BOX(data);
+    gchar *image_name;
+    gint active_index = -1;
     
     switch (arg) 
     {
     case GTK_RESPONSE_YES:
         g_signal_stop_emission_by_name(dialog, "response");
-        set_background_select_file_dialog(box);
-        home_bg_image_loading_necessary = TRUE;
+        if (set_background_select_file_dialog(box))
+        {
+            home_bg_image_loading_necessary = TRUE;
+            gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
+                                              GTK_RESPONSE_APPLY , TRUE);
+        }
         break;
     case GTK_RESPONSE_APPLY:
         g_signal_stop_emission_by_name(dialog, "response");
@@ -854,6 +880,16 @@ void set_background_response_handler(GtkWidget *dialog,
                 get_filename_from_treemodel(box, 
                                             home_bg_combobox_active_item),
                 TRUE);
+            active_index = gtk_combo_box_get_active(box);
+            image_name = get_filename_from_treemodel(box, active_index);
+            if (home_bg_image_in_use_uri != NULL &&
+                image_name != NULL &&
+                g_str_equal(home_bg_image_in_use_uri, image_name))
+            {
+            
+                gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
+                                                  GTK_RESPONSE_APPLY , FALSE);
+            }
         }
         break;
     default:
@@ -880,19 +916,16 @@ void apply_background_response_handler(GtkWidget *widget,
     GtkTreeIter iter;
     gchar active_item_string[MAX_CHARS_HERE];
     
-    if(image_loading_done != TRUE)
-    {
-        g_snprintf(&active_item_string[0], MAX_CHARS_HERE, "%d", 
-                 home_bg_combobox_active_item);
-        
-        gtk_tree_model_get_iter_from_string(tree, &iter, 
-                                            &active_item_string[0]);
-        
-        gtk_list_store_remove(GTK_LIST_STORE(tree), &iter);
-        
-        home_bg_combobox_active_item = -1;
-        gtk_combo_box_set_active(box, home_bg_combobox_active_item);
-    }
+    g_snprintf(&active_item_string[0], MAX_CHARS_HERE, "%d", 
+               home_bg_combobox_active_item);
+    
+    gtk_tree_model_get_iter_from_string(tree, &iter, 
+                                        &active_item_string[0]);
+    
+    gtk_list_store_remove(GTK_LIST_STORE(tree), &iter);
+    
+    home_bg_combobox_active_item = -1;
+    gtk_combo_box_set_active(box, home_bg_combobox_active_item);
 }
 
 
@@ -1012,7 +1045,8 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                     active_count++;
                     
                     if (image_path != NULL && 
-                        g_str_equal(image_path, home_bg_image_uri) != TRUE) 
+                        home_bg_image_uri != NULL &&
+                        g_str_equal(image_path, home_bg_image_uri)) 
                     {
                         bg_image_is_default = TRUE;
                         /* This is calculated after the
@@ -1061,8 +1095,15 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
         GTK_SORT_ASCENDING);
     
     
-    if ((bg_image_is_default == FALSE)) 
+    if (bg_image_is_default == FALSE)
     {
+        if(home_bg_image_symlinked)
+        {
+            /* default in use, default is first always */
+            combobox_active = 0;
+        } else
+        {
+
         gtk_list_store_append(GTK_LIST_STORE
                               (combobox_contents), 
                               &iterator);
@@ -1087,6 +1128,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
         active_count++;
         
         combobox_active = active_count;
+        }
     } else 
     {
         /*
@@ -1094,7 +1136,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
          * out where it is in the new sorted list.
          */
         gboolean is_node;
-        int ac = 0;
+        gint ac = 0;
         model = GTK_TREE_MODEL(combobox_contents);
 
         is_node = gtk_tree_model_get_iter_first(model, &iterator);
@@ -1102,7 +1144,9 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
         {
             gchar * filename;
             gtk_tree_model_get(model, &iterator, 1, &filename, -1);
-            if (g_str_equal(filename, home_bg_image_uri) != TRUE) 
+            if (filename != NULL &&
+                home_bg_image_uri != NULL &&
+                g_str_equal(filename, home_bg_image_uri)) 
             {
                 combobox_active = ac;
                 g_free(filename);
@@ -1131,7 +1175,8 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                                     NULL);
     
     gtk_dialog_set_has_separator(GTK_DIALOG(dialog), FALSE);
-
+    gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
+                                      GTK_RESPONSE_APPLY , FALSE);
     hbox_label = gtk_hbox_new( FALSE, 10);
     combobox_image_select = 
         gtk_combo_box_new_with_model(combobox_contents);
@@ -1169,7 +1214,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
 
     g_signal_connect(G_OBJECT(combobox_image_select), "changed", 
                      G_CALLBACK(combobox_active_tracer), 
-                     NULL);
+                     dialog);
 
     g_signal_connect(G_OBJECT(dialog), "response", 
                      G_CALLBACK(set_background_response_handler), 
@@ -1348,19 +1393,20 @@ void show_mmc_cover_open_note(void)
  * @construct_background_image
  * 
  * @argument_list: commandline argumentlist for systemcall
- * @cancel_note: whatever if it is nesessary for user to be able
+ * @loading_image_note_allowed: whatever if it is nesessary for user to be able
  * cancel image loading
  * 
  * Calls image loader with argument list and waits loader to save
  * results appointed place(s)
  */
 static
-void construct_background_image(char *argument_list[], gboolean cancel_note)
+void construct_background_image(char *argument_list[], 
+                                gboolean loading_image_note_allowed)
 {
     GError *error = NULL;
     guint image_loader_callback_id;
 
-    image_loading_done = FALSE;
+    loading_image_process_active = TRUE;
 
     if(image_loader_pid != -1)
     {
@@ -1404,9 +1450,9 @@ void construct_background_image(char *argument_list[], gboolean cancel_note)
     image_loader_callback_id = 
         g_child_watch_add(image_loader_pid, image_loader_callback, NULL);
 
-    if(cancel_note)
+    if(loading_image_note_allowed)
     {
-        show_loading_cancel_note();
+        show_loading_image_note();
     }
 }
 
@@ -1422,18 +1468,27 @@ void construct_background_image(char *argument_list[], gboolean cancel_note)
 static 
 void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
 {    
-    image_loading_done = TRUE;
+    /* image loader process is done and succesful operation cannot be
+       canceled */
+    loading_image_process_active = FALSE;
 
-    if(loading_cancel_note != NULL && GTK_IS_WIDGET(loading_cancel_note))
+    if(loading_image_note != NULL && GTK_IS_WIDGET(loading_image_note))
     {
-        gtk_widget_destroy(loading_cancel_note);
+        gtk_widget_destroy(loading_image_note);
     }
 
-    loading_cancel_note = NULL;
+    loading_image_note = NULL;
 
     switch(child_exit_status)
     {
     case HILDON_HOME_IMAGE_LOADER_OK:
+        home_bg_image_symlinked = FALSE;
+        if (home_bg_image_in_use_uri) 
+        {
+            g_free(home_bg_image_in_use_uri);
+        }
+        
+        home_bg_image_in_use_uri = g_strdup(home_bg_image_uri);
         refresh_background_image();
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_MEMORY:
@@ -1470,56 +1525,99 @@ void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
 }
 
 /**
- * @show_loading_cancel_note
+ * @show_loading_image_note
  *
  * Shows cancel note during background image loading
  *
  */
 static
-void show_loading_cancel_note()
+void show_loading_image_note()
 {
-    /* cancel note postponed from this delivery */
-    if(image_loading_done)
+    GtkWidget *label;
+    GtkIconTheme *theme;
+    GtkIconInfo *info;
+    GtkWidget *animation = NULL;
+
+    if(loading_image_note != NULL && GTK_IS_WIDGET(loading_image_note))
+    {
+        gtk_widget_destroy(loading_image_note);
+    }
+    loading_image_note = NULL;
+    if(loading_image_process_active == FALSE)
     {
         return;
     }
 
-    loading_cancel_note =
-        hildon_note_new_information(GTK_WINDOW(window), 
-                                    HILDON_HOME_LOADING_CANCEL_TEXT);
+    loading_image_note =
+        gtk_dialog_new_with_buttons(
+            "",
+            GTK_WINDOW(window),
+            GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+            HILDON_HOME_LOADING_IMAGE_BUTTON,
+            GTK_RESPONSE_CANCEL,
+            NULL);
     
-    hildon_note_set_button_text(HILDON_NOTE(loading_cancel_note),
-                                HILDON_HOME_LOADING_CANCEL);
-    g_signal_connect(G_OBJECT(loading_cancel_note), "response",
-                     G_CALLBACK(loading_cancel_note_handler), NULL);
+    label = gtk_label_new(HILDON_HOME_LOADING_IMAGE_TEXT);
+    
+    gtk_container_add(GTK_CONTAINER(GTK_DIALOG(loading_image_note)->vbox),
+                      label);
+    
+    theme = gtk_icon_theme_get_default();
+    info = gtk_icon_theme_lookup_icon(theme, HILDON_HOME_LOADING_IMAGE_ANI,
+                                      HILDON_ICON_SIZE_NOTE, 0);
+    if (info)
+    {
+        const gchar *filename = gtk_icon_info_get_filename(info);
+        animation = gtk_image_new_from_file(filename);
+        gtk_icon_info_free(info);
+    }
+    if(animation)
+    {
+        gtk_container_add(GTK_CONTAINER(GTK_DIALOG(loading_image_note)->vbox),
+                          animation);
+    }
+    gtk_dialog_set_has_separator(GTK_DIALOG(loading_image_note), FALSE);
+    gtk_window_set_modal(GTK_WINDOW(loading_image_note), TRUE);
+    
+    g_signal_connect(G_OBJECT(loading_image_note), "response",
+                     G_CALLBACK(loading_image_note_handler), NULL);
 
-    gtk_widget_show (GTK_WIDGET (loading_cancel_note));
+    gtk_widget_realize (GTK_WIDGET (loading_image_note));
+    gdk_window_set_decorations(loading_image_note->window,
+                               GDK_DECOR_BORDER);
+    
+    gtk_widget_show_all (GTK_WIDGET (loading_image_note));
 }
 
 
 /**
- * @loading_cancel_note_handler
+ * @loading_image_note_handler
  *
- * @param loading_cancel_note
+ * @param loading_image_note
  * @param event
  * @param user_data
  *
  * Handles the cancel signal from note
  */
 static 
-gboolean loading_cancel_note_handler(GtkWidget *loading_cancel_note,
-                                     GdkEvent *event, gpointer user_data)
+gboolean loading_image_note_handler(GtkWidget *loading_cancel_note,
+                                    GdkEvent *event, gpointer user_data)
 {
-    g_spawn_close_pid(image_loader_pid);
-    kill(image_loader_pid, SIGTERM);
-
-    if(loading_cancel_note != NULL && 
-       GTK_IS_WIDGET(loading_cancel_note))
-    {
-        gtk_widget_destroy(loading_cancel_note);
-    }
-    loading_cancel_note = NULL;
-    return TRUE;
+     loading_image_process_active = FALSE;
+     if(image_loader_pid != -1)
+     {
+    
+         g_spawn_close_pid(image_loader_pid);
+         kill(image_loader_pid, SIGTERM);
+     }
+     
+     if(loading_image_note != NULL && 
+        GTK_IS_WIDGET(loading_image_note))
+     {
+         gtk_widget_destroy(loading_image_note);
+     }
+     loading_image_note = NULL;
+     return TRUE;
 }
 
 /**
@@ -1595,7 +1693,7 @@ static
 char *get_sidebar_image_to_blend()
 {
     GtkStyle *style;
-    char *image_name = NULL;
+    gchar *image_name = NULL;
     
     style = gtk_rc_get_style_by_paths(gtk_widget_get_settings(window),
                                       HILDON_HOME_BLEND_IMAGE_SIDEBAR_NAME,
@@ -1836,6 +1934,19 @@ void set_default_background_image()
         symlink(image_file, sidebar_original_image_savefile);
         g_free(image_file);
         
+        if(stat(user_original_bg_image, &buf) != -1)          
+        {    
+            unlink(user_original_bg_image);
+        }
+
+        image_file = g_build_path("/", HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR, 
+                                  HILDON_HOME_CONF_USER_ORIGINAL_FILENAME,
+                                  NULL);
+
+        symlink(image_file, user_original_bg_image);
+        g_free(image_file);
+
+        home_bg_image_symlinked = TRUE;
     }
 }
 
@@ -2177,6 +2288,10 @@ void hildon_home_initiliaze()
         g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
                      HILDON_HOME_BG_USER_FILENAME, NULL);
 
+    user_original_bg_image =
+        g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
+                     HILDON_HOME_CONF_USER_ORIGINAL_FILENAME, NULL);
+
     hildon_home_construct_user_system_dir();
 
     configure_file = 
@@ -2219,15 +2334,11 @@ void hildon_home_initiliaze()
                  configure_file);
     }
 
-    if(bg_orig_filename != NULL) 
+    if(bg_orig_filename != NULL && user_original_bg_image == NULL) 
     {
         user_original_bg_image = 
             g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR, 
                          bg_orig_filename, NULL);
-    } else
-    {
-        /* not file but infotext */
-        user_original_bg_image = HILDON_HOME_HC_BG_IMAGE_NAME;
     }
 
     if(image_dir != NULL) 
@@ -2445,6 +2556,17 @@ void hildon_home_construct_user_system_dir()
 
         symlink(image_file, sidebar_original_image_savefile);
         g_free(image_file);
+    }    
+
+    if(stat(user_original_bg_image, &buf) == -1)          
+    {    
+        image_file = g_build_path("/", HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR, 
+                                  HILDON_HOME_CONF_USER_ORIGINAL_FILENAME,
+                                  NULL);
+
+        symlink(image_file, user_original_bg_image);
+        g_free(image_file);
+        home_bg_image_symlinked = TRUE;
     }    
 
     g_free(system_dir);

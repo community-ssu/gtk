@@ -1,3 +1,51 @@
+
+2005-08-12  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+	* Removed earlier maemo-af-desktop/debian/maemo-af-desktop.postinst patch.
+        Applied new patch to maemo-af-desktop/debian/maemo-af-desktop.postinst file.
+	* Correction to bug N#14536 "On setting background image, a note "Loading
+	image" note does not display" 
+	* maemo-af-desktop/debian/maemo-af-desktop.postinst: Removed harmful remove file
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: Global variable update
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (load_original_bg_image_uri):
+	Extra gnome-vfs function calls removed. Set-up in_use_uri.
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (set_background_select_file_dialog):
+	Global uri variable writing changed local. Uri is set only after
+	operation is active. Return TRUE only when successfull.
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (combobox_active_tracer): Uri handling, combobox and apply button rewrite.
+	Prevent a crash by checking that we do not pass NULL pointers to g_str_equal()
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (set_background_response_handler):
+	Uri handling, combobox and apply button rewrite.
+	Prevent a crash by checking that we do not pass NULL pointers to g_str_equal()
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (apply_background_response_handler):
+	Unnessesary check removed.
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (set_background_dialog_selected):
+	Prevent a crash by checking that we do not pass NULL pointers to g_str_equal()
+	Uri handling, combobox and apply button rewrite.
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (construct_background_image):
+	Rename and rewrite of image loading process variables
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (image_loader_callback):
+	Rename and rewrite of image loading process variables. Uri
+	handling, combobox and apply button rewrite.
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (show_loading_cancel_note):
+	Rename and rewrite of image loading process variables and function name. 
+	Cancel note creation added
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (loading_cancel_note_handler):
+	Rename and rewrite of image loading process variables and function
+	name. Cancel note funtionality and process handling update.
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (get_sidebar_image_to_blend): char to gchar 
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (set_default_background_image):
+	Unlink and symlink default image files.
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (hildon_home_initiliaze):
+	Unlink and symlink default image files.
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: (hildon_home_construct_user_system_dir):
+	Symlink userfilenames to default image files if no files.
+	* maemo-af-desktop/hildon-home/hildon-home-image-loader.c: (save_original_bg_image_uri):
+	Added unlink to prevent overwrite default file
+	* maemo-af-desktop/hildon-home/hildon-home-image-loader.c: (main):
+	Changed file saving order
+	* maemo-af-desktop/hildon-home/hildon-home-main.h: removed extra define
+
 2005-08-12  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	Added autogen.sh

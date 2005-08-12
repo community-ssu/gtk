@@ -62,7 +62,6 @@ G_BEGIN_DECLS
  "WShide=%d\nWSproperties=%d\nBGchange=%d\nBGfile=%200s\n"
 
 /* Hard code values which are used when no other values are available */
-#define HILDON_HOME_HC_BG_IMAGE_NAME    "Default image"
 #define HILDON_HOME_HC_USER_IMAGE_DIR   "MyDocs/.images"
 #define HILDON_HOME_CONF_USER_FILENAME  "hildon-home.conf"
 #define HILDON_HOME_CONF_USER_ORIGINAL_FILENAME "user_filename.txt"
