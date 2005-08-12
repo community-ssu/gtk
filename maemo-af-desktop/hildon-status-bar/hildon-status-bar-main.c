@@ -529,14 +529,15 @@ static void destroy_item( GtkObject *object,
     reorder_items( panel );
 }
 
-int status_bar_main(osso_context_t *osso, StatusBar *panel){
+int status_bar_main(osso_context_t *osso, StatusBar **panel){
 
 
-
+    StatusBar *sb_panel = NULL;
     TRACE(TDEBUG,"status_bar_main: 1 g_new0");
-    panel = g_new0( StatusBar, 1 );
+    sb_panel = g_new0 (StatusBar, 1);
+
     TRACE(TDEBUG,"status_bar_main: 2 check panel ptr");
-    if( !panel )
+    if( !sb_panel )
     {  
         osso_log( LOG_ERR, "g_new0 failed! Exiting.." );
         osso_deinitialize( osso );
@@ -545,43 +546,45 @@ int status_bar_main(osso_context_t *osso, StatusBar *panel){
     TRACE(TDEBUG,"status_bar_main: 3: init dock");    
 
     /* initialize panel */
-    init_dock( panel);
+    init_dock( sb_panel );
 
     TRACE(TDEBUG,"status_bar_main: 4 add prespecified items");
-    add_prespecified_items( panel );
+    add_prespecified_items( sb_panel );
     TRACE(TDEBUG,"status_bar_main: 5 gtk widget show all");
-    gtk_widget_show_all( panel->window );
+    gtk_widget_show_all( sb_panel->window );
     TRACE(TDEBUG,"status_bar_main: 6 if rpc...");
     /* set RPC cb */
-    if( osso_rpc_set_default_cb_f( osso, rpc_cb, panel ) != OSSO_OK )
+    if( osso_rpc_set_default_cb_f( osso, rpc_cb, sb_panel ) != OSSO_OK )
     {
         osso_log( LOG_ERR, "osso_rpc_set_default_cb_f() failed" );
     }
     TRACE(TDEBUG,"status_bar_main: 7, status bar initialized successfully");
+    *panel = sb_panel;
     return 0;
 
 }
 
-void status_bar_deinitialize(osso_context_t *osso, StatusBar *panel){
+void status_bar_deinitialize(osso_context_t *osso, StatusBar **panel){
   gint i=0;
-  
+  StatusBar *sb_panel = (StatusBar *)(*panel);
+
   TRACE(TDEBUG,"status_bar_deinitialize: 1");
   for( i = 0; i < HILDON_STATUS_BAR_MAX_NO_OF_ITEMS; ++i )
   {
-      if( panel->items[i] != NULL )
+      if( sb_panel->items[i] != NULL )
       {
           TRACE(TDEBUG,"status_bar_deinitialize: 2 gtk widget destroy");
-          gtk_widget_destroy( panel->items[i] );
+          gtk_widget_destroy( sb_panel->items[i] );
       }
   }
-  if( osso_rpc_unset_default_cb_f( osso, rpc_cb, panel ) != OSSO_OK )
+  if( osso_rpc_unset_default_cb_f( osso, rpc_cb, sb_panel ) != OSSO_OK )
   {
       osso_log( LOG_ERR, "osso_rpc_unset_default_cb_f() failed" );
   }
   TRACE(TDEBUG,"status_bar_deinitialize: 3"); 
-  gtk_widget_destroy( panel->window );
+  gtk_widget_destroy( sb_panel->window );
   TRACE(TDEBUG,"status_bar_deinitialize: 4");
-  g_free( panel );
+  g_free( *panel );
 
 }
 
@@ -607,9 +610,9 @@ int main( int argc, char *argv[] )
       return 1;
   }
   
-  status_bar_main(osso, panel); 
+  status_bar_main(osso, &panel); 
   gtk_main();
-  status_bar_deinitialize(osso, panel);  
+  status_bar_deinitialize(osso, &panel);  
   osso_deinitialize( osso );
   
   return 0;

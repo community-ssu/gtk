@@ -261,8 +261,8 @@ int maemo_af_desktop_main(int argc, char* argv[])
 
     keysnooper_id = 0;
     keysnooper_id=hildon_home_main();
-    
-    status_bar_main(osso,panel);
+
+    status_bar_main(osso, &panel);
 
     if(pipe(signal_pipe)) 
     {
@@ -310,7 +310,7 @@ int maemo_af_desktop_main(int argc, char* argv[])
     g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, NULL);
     gtk_main();
     home_deinitialize(keysnooper_id);
-    status_bar_deinitialize(osso,panel);
+    status_bar_deinitialize(osso,&panel);
     task_navigator_deinitialize(&tasknav);
     
     osso_deinitialize( osso );

@@ -1,3 +1,28 @@
+2005-08-12  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+  	
+	* Fix to bug N#16297	
+	Following changes done:
+	* maemo-af-desktop-main.c: (maemo_af_desktop_main):
+	status_bar_main() and status_bar_deinitialize() now expect panel
+	parameter to be pointer to pointer, so calls to them were changed
+	to comply with this change.
+	* hildon-status-bar/hildon-status-bar-interface.h: Changed the
+	defintion of status_bar_main and status_bar_deinitialize functions
+	so that panel parameter is pointer to pointer. Done because
+	changes to panel will have to be visible for the caller.
+	* hildon-status-bar/hildon-status-bar-main.h: Changed the
+	defintion of status_bar_main and status_bar_deinitialize functions
+	so that panel parameter is pointer to pointer. Done because
+	changes to panel will have to be visible for the caller.
+	* hildon-status-bar-main.c:(main): status_bar_main() and
+	status_bar_deinitialize() now expect panel parameter to be pointer
+	to pointer, so calls to them were changed to correspond to this
+	change.
+	* hildon-status-bar-main.c:(status_bar_main),
+	status_bar_deinitialize): Panel parameter was changed to
+	pointer-to-pointer. Done because changes to it will have to be
+	visible to the caller.
+
 2005-08-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Fix to bug N#17092 to file maemo-af-desktop.postinst: Fixed postinstall target failing
