@@ -1,3 +1,34 @@
+2005-08-15  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Made it compile cleanly with "-Wall -Werror".  We should strive to
+	keep it this way.
+	
+	* src/Makefile.am (CFLAGS): Added -Wall -Werror.
+
+	* src/applicationinstaller-i18n.h (SUPPRESS_FORMAT_WARNING): New.
+
+	* src/core.c: (format_relationship_failures): Only output a
+	newline between the report and the footer when the report is
+	non-empty.
+
+	* src/core.c, src/ui/represent.c, src/ui/interface.c: Made -Wall
+	clean.
+
+	* src/ui/interface.c, src/ui/interface.h (main_dialog, hints):
+	Removed.
+	(ui_create_main_dialog): Set app_ui_data->main_dialog as early as
+	possible.  Connect on_button_close to close button, not
+	ui_destroy.  Do not connect to key_release_event.
+	(ui_destroy): Added AppUIData parameter.
+	(ui_create_text_box): Use gtk_widget_tap_and_hold_setup instead of
+	doing the timeout stuff ourself.
+	
+	* src/ui/callbacks.h, src/ui/callbacks.c
+	(on_button_close_clicked): New.
+	(on_button_cancel_operation, key_release, on_error_press,
+	on_error_release, on_popup): Removed.
+	(key_press): Only handle GDK_Escape.
+	
 2005-08-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 2.6.
