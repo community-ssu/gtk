@@ -1,5 +1,7 @@
 # Makefile.am for Application Installer
 
+CFLAGS = -Wall -Werror
+
 # These come from configure-script's module dependency checks
 INCLUDES = @DEPS_CFLAGS@
 
