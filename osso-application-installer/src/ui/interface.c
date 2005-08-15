@@ -52,10 +52,6 @@ ui_create_main_dialog (AppData *app_data)
   GtkWidget *treeview = NULL;
   GtkTreeSelection *selection;
 
-  GtkUIManager *ui_manager = NULL;
-  GtkActionGroup *actions = NULL;
-  GError *error = NULL;
-  
   GtkWidget *empty_list_label = NULL;
   GtkWidget *database_unavailable_label = NULL;
 
@@ -68,31 +64,6 @@ ui_create_main_dialog (AppData *app_data)
   AppUIData *app_ui_data = NULL;
  
   app_ui_data = app_data->app_ui_data;
-
-  /* Initialize main dialog stuff */
-  main_dialog = NULL;
-  
-  /* Create new action group */
-  actions = gtk_action_group_new("Actions");
-  g_assert(actions);
-  /* Translation domain need to be set _before_ adding actions */
-  gtk_action_group_set_translation_domain(actions, GETTEXT_PACKAGE);
-  gtk_action_group_add_actions(actions, action_entries, n_action_entries,
-   app_data);
-  
-  /* Create new UI manager */
-  ui_manager = gtk_ui_manager_new();
-  g_assert(ui_manager);
-  app_ui_data->ui_manager = ui_manager;
-  gtk_ui_manager_insert_action_group(ui_manager, actions, 0);
-
-  if (!gtk_ui_manager_add_ui_from_string(ui_manager, popup_info, -1,
-      &error)) {
-    fprintf(stderr, "Building ui_manager failed: %s",
-     error->message);
-    g_error_free(error);
-    g_assert(FALSE);
-  }
 
   /* Create dialog and set its attributes */
   ULOG_INFO("Creating dialog and setting it's attributes..");
@@ -341,8 +312,9 @@ ui_destroy (AppUIData *app_ui_data)
 }
 
 
-GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
- gboolean editable, gboolean selectable) 
+GtkWidget *
+ui_create_textbox (AppData *app_data, gchar *text,
+		   gboolean editable, gboolean selectable) 
 {
   GtkWidget *sw;
   GtkWidget *view;
@@ -366,8 +338,29 @@ GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
   /* Enabling popup only when selectable, i.e. error details */
   if (selectable) 
     {
-      menu = gtk_ui_manager_get_widget (app_data->app_ui_data->ui_manager,
-					"/Popup");
+      GtkWidget *copy_item, *help_item;
+
+      menu = gtk_menu_new ();
+      copy_item =
+	gtk_menu_item_new_with_label (_("ai_error_details_csm_copy"));
+      help_item =
+	gtk_menu_item_new_with_label (_("ai_error_details_csm_help"));
+
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu),
+			     copy_item);
+      g_signal_connect (G_OBJECT (copy_item), "activate",
+			G_CALLBACK (on_copy_activate), buffer);
+
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu),
+			     gtk_separator_menu_item_new ());
+
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu),
+			     help_item);
+      g_signal_connect (G_OBJECT (help_item), "activate",
+			G_CALLBACK (on_help_activate), app_data);
+
+      gtk_widget_show_all (menu);
+
       gtk_widget_tap_and_hold_setup (view, menu, NULL, 0);
     }
 
