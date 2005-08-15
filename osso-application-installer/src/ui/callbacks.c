@@ -32,6 +32,7 @@
 
 #include "callbacks.h"
 #include "interface.h"
+#include "represent.h"
 
 
 /* Callback for csm help, error details help */
@@ -117,6 +118,11 @@ void on_button_uninstall_clicked(GtkButton *button, AppData *app_data)
     }
 }
 
+void
+on_button_close_clicked (GtkButton *button, AppData *app_data)
+{
+  ui_destroy (app_data->app_ui_data);
+}
 
 void
 on_treeview_selection_changed (GtkTreeSelection *selection,
@@ -156,196 +162,19 @@ on_treeview_selection_changed (GtkTreeSelection *selection,
     }
 }
 
-
-
-/* Callback for keypresses */
-gboolean key_press(GtkWidget * widget, GdkEventKey * event, gpointer data)
+gboolean
+key_press (GtkWidget * widget, GdkEventKey * event, gpointer data)
 {
-  if (!event) return TRUE;
-
-  AppUIData *app_ui_data;
-  app_ui_data = (AppUIData *) data;
-        
-  /* what does this do? */
-  if (event->state & (GDK_CONTROL_MASK |
-                      GDK_SHIFT_MASK |
-                      GDK_MOD1_MASK |
-                      GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)) {
-    ULOG_DEBUG("keypress, true\n");
-    return TRUE;
-  }
-
-  /* What key was it */
-  switch (event->keyval) {
-    
-  case GDK_Up:
-    ULOG_DEBUG("key up\n");
-    break;
-    
-  case GDK_Left:
-    ULOG_DEBUG("key left\n");
-    break;
-    
-  case GDK_Down:
-    ULOG_DEBUG("key down\n");
-    break;
-    
-  case GDK_Right:
-    ULOG_DEBUG("key right\n");
-    break;
-  }
-
-  ULOG_DEBUG("keypress, ret false\n");
-  return FALSE;
-}
-
-
-/*
-Navigation keys         Arrow keys      GDK_Left, GDK_Right, GDK_Up, GDK_Down
-Cancel (Escape)         Esc             GDK_Escape
-Menu key                F4              GDK_F4
-Home                    F5              GDK_F5
-Fullscreen              F6              GDK_F6
-Plus (Zoom in)          F7              GDK_F7
-Minus (Zoom out)        F8              GDK_F7
-*/
-
-
-/* Non-repeating key handlers */
-gboolean key_release(GtkWidget * widget, GdkEventKey * event, gpointer data)
-{
-  if (!event) return TRUE;
-
   AppUIData *app_ui_data = (AppUIData *) data;
-  g_assert(app_ui_data != NULL);
-        
-  /* whats this? */
-  if (event->state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK | GDK_MOD1_MASK |
-                      GDK_MOD3_MASK | GDK_MOD4_MASK | GDK_MOD5_MASK)) {
-    ULOG_DEBUG("state on, returning true\n");
-    return TRUE;
-  }
 
-  /* whats da key */
-  switch (event->keyval) {
-  case GDK_Return:
-    ULOG_DEBUG("key return\n");
-    break;
-    
-    /* F6 = toggle full screen mode */
-  case GDK_F6:
-    ULOG_DEBUG("key fullscreen\n");
-    break;
-        
-    /* F8 = zoom out */
-  case GDK_F8:
-    ULOG_DEBUG("key zoomout\n");
-    break;
-    
-    /* F7 = zoom in */
-  case GDK_F7:
-    ULOG_DEBUG("key zoomin\n");
-    break;
-    
-    /* ESC = if fullscreen: back to normal */
-  case GDK_Escape:
-    ULOG_DEBUG("key esc\n");
-    break;
-
-  case GDK_KP_Enter:
-    ULOG_DEBUG("key kpenter\n");
-    break;
-        
-  case GDK_plus:
-    ULOG_DEBUG("key plus\n");
-    break;
-    
-  case GDK_KP_Add:
-    ULOG_DEBUG("key kpadd\n");
-    break;
-        
-  case GDK_KP_Down:
-    ULOG_DEBUG("key kpdown\n");
-    break;
-    
-  case GDK_KP_Left:
-    ULOG_DEBUG("key kpleft\n");
-    break;
-    
-  case GDK_KP_Up:
-    ULOG_DEBUG("key kpup\n");
-    break;
-        
-  case GDK_KP_Right:
-    ULOG_DEBUG("key kpright\n");
-    break;
-    
-  case GDK_minus:
-    ULOG_DEBUG("key minus\n");
-    break;
-    
-  case GDK_KP_Subtract:
-    ULOG_DEBUG("key kpsubstract\n");
-    break;
-    
-  }
-
-  ULOG_DEBUG("didnt match anything, return false\n");
+  if (event->keyval == GDK_Escape)
+    {
+      ui_destroy (app_ui_data);
+      return TRUE;
+    }
+  
   return FALSE;
 }
-
-gboolean on_error_press(GtkWidget *widget, GdkEventButton *event,
-			gpointer data)
-{
-  AppData *app_data = (AppData *) data;
-
-  if (!app_data || !app_data->app_ui_data) return FALSE;
-
-  /* ensure that timer is not set */
-  if (0 == app_data->app_ui_data->popup_event_id) {
-    /* Add timer to display context sensitive menu */
-    app_data->app_ui_data->popup_event_id = g_timeout_add(TIME_HOLD,
-     on_popup, app_data);
-  }
-
-  return FALSE;
-}
-
-
-gboolean on_error_release(GtkWidget *widget, GdkEventButton *event,
-			  gpointer data)
-{
-  AppData *app_data = (AppData *) data;
-
-  if (!app_data || !app_data->app_ui_data) return FALSE;
-
-  /* stop popup timer if set */
-  if (app_data->app_ui_data->popup_event_id != 0) {
-    g_source_remove(app_data->app_ui_data->popup_event_id);
-    app_data->app_ui_data->popup_event_id = 0;
-  }
-
-  return FALSE;
-}
-
-
-gboolean on_popup(gpointer data) 
-{
-  AppData *app_data = (AppData *) data;
-  GtkWidget *popup = NULL;
-
-  if (!app_data || !app_data->app_ui_data) return FALSE;
-
-  popup = gtk_ui_manager_get_widget(app_data->app_ui_data->ui_manager,
-   "/Popup");
-
-  gtk_menu_popup(GTK_MENU(popup), NULL, NULL, NULL, NULL, 0,
-  gtk_get_current_event_time());
-  gtk_widget_show_all(popup);
-
-  return FALSE;
-}
-
 
 gboolean
 on_copy_activate (GtkWidget *widget, gpointer data) 

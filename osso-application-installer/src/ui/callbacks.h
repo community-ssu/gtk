@@ -75,6 +75,7 @@ Call back for uninstall button
 */
 void on_button_uninstall_clicked(GtkButton *button, AppData *app_data);
 
+void on_button_close_clicked (GtkButton *button, AppData *app_data);
 
 
 /**
@@ -88,16 +89,6 @@ Callback for treeview double-click for description
 void on_treeview_selection_changed (GtkTreeSelection *selection, 
 				    AppData *app_data);
 
-
-/**
-Callback for cancel operation button
-
-@param button Button that got toggled
-@param button_yes Dialog to kill
-*/
-void on_button_cancel_operation(GtkButton *button, gpointer dialog);
-
-
 /**
 Callback for hw key presses
 
@@ -105,48 +96,8 @@ Callback for hw key presses
 @param event  What event happened
 @param data pointer to AppUIData
 */
-gboolean key_press(GtkWidget *widget, GdkEventKey *event, gpointer data);
+gboolean key_press (GtkWidget *widget, GdkEventKey *event, gpointer data);
 
-
-/**
-Callback for hw key releases
-
-@param widget What widget was released
-@param event  What event happened
-@param data pointer to AppUIData
-*/
-gboolean key_release(GtkWidget * widget, GdkEventKey * event, gpointer data);
-
-
-/**
-Callback for pressing button on error details widget.
-
-@param widget Error details widget
-@param event Event which occured
-@param data Data passed to callback
-@return returns FALSE
-*/
-gboolean on_error_press(GtkWidget *widget, GdkEventButton *event,
- gpointer data);
-
-/**
-Callback for releasing button on error details widget.
-
-@param widget Error details widget
-@param event Event which occured
-@param data Data passed to callback
-@return returns FALSE
-*/
-gboolean on_error_release(GtkWidget *widget, GdkEventButton *event,
-			  gpointer data);
-
-/**
-Callback for opening popup menu for error details widget.
-
-@param data Data passed to callback
-@return returns FALSE
-*/
-gboolean on_popup(gpointer data);
 
 /**
 Callback for copying contents selected in error details widget to
@@ -157,4 +108,3 @@ the clipboard.
 @return Returns FALSE if failed, TRUE if ok
 */
 gboolean on_copy_activate(GtkWidget *widget, gpointer data);
-
