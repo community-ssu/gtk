@@ -1,6 +1,6 @@
 libosso (0.9.12-1) unstable; urgency=low
 
-  * Added osso_get_application_name and osso_get_application_version
+  * Added osso_application_name_get and osso_application_version_get
     (bug 15018).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 15 Aug 2005 18:13:57 +0300
