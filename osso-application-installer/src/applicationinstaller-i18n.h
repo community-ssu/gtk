@@ -51,4 +51,11 @@
 #define bind_textdomain_codeset(Domain,Codeset) (Codeset) 
 #endif /* ENABLE_NLS */
 
+/* Logical ids do not contain format specifiers and GCC is smart
+   enough to warn about that.  In order to suppress these warnings in
+   selected places, you can use this macro around the format argument.
+*/
+
+#define SUPPRESS_FORMAT_WARNING(x) ((char *)(long)(x))
+
 #endif /* __AI_INTL_H__ */
