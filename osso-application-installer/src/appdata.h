@@ -59,8 +59,6 @@ typedef struct _AppUIData AppUIData;
 struct _AppUIData {
   GtkWidget *main_dialog;
   HildonAppView *main_view;
-  /* UI Manager */
-  GtkUIManager *ui_manager;
   /* Different UI widgets */
   GtkWidget *main_hbox;
   GtkWidget *treeview;
