@@ -1,5 +1,14 @@
 2005-08-15  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/appdata.h (AppUIData): Removed ui_manager.
+	* src/ui/ui.h (action_entries, n_action_entries, popup_info,
+	localize_strings): Removed.
+	* src/ui/interface.c (ui_create_main_dialog): Do not create the UI
+	manager and the action group for the menu.
+	(ui_create_textbox): Create menu with explicit code here.  The
+	reason for this change is mostly that I find the UI manager
+	confusing and overkill for a single menu.
+		
 	Made it compile cleanly with "-Wall -Werror".  We should strive to
 	keep it this way.
 	
