@@ -1,3 +1,10 @@
+libosso (0.9.12-1) unstable; urgency=low
+
+  * Added osso_get_application_name and osso_get_application_version
+    (bug 15018).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 15 Aug 2005 18:13:57 +0300
+
 libosso (0.9.11-1) unstable; urgency=low
 
   * Added workaround for signal eating problem (bug 16802).
