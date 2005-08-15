@@ -84,20 +84,20 @@ static gboolean _rpc_run_ret_cb(gpointer data)
     return 0;
 }
 
-const gchar * osso_get_application_name(osso_context_t *osso)
+const gchar * osso_application_name_get(osso_context_t *osso)
 {
 	if ( osso == NULL ) {
 		return NULL;
 	}
 
-	return osso->application;
+	return (struct osso_af_context_t*) osso->application;
 }
 
-const gchar * osso_get_application_version(osso_context_t *osso)
+const gchar * osso_application_version_get(osso_context_t *osso)
 {
 	if ( osso == NULL ) {
 		return NULL;
 	}
 
-	return osso->version;
+	return (struct osso_af_context_t*) osso->version;
 }
