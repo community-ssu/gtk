@@ -30,19 +30,18 @@
  */
 
 #include "interface.h"
+#include "represent.h"
 #include "ui.h"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-/* Main dialog related stuff */
-GtkWidget *main_dialog;
-GdkGeometry hints;
-
-
-GtkWidget *ui_create_main_dialog(AppData *app_data)
+GtkWidget *
+ui_create_main_dialog (AppData *app_data)
 {
+  GtkWidget *main_dialog;
+
   if (NULL == app_data) return NULL;
   if (NULL == app_data->app_ui_data) return NULL;
   g_assert(app_data);
@@ -51,7 +50,6 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   ULOG_INFO("Initializing UI..");
   GtkWidget *vbox = NULL;
   GtkWidget *treeview = NULL;
-  GtkTreeModel *model = NULL;
   GtkTreeSelection *selection;
 
   GtkUIManager *ui_manager = NULL;
@@ -60,7 +58,6 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
   
   GtkWidget *empty_list_label = NULL;
   GtkWidget *database_unavailable_label = NULL;
-  gboolean show_list = TRUE;
 
   GtkTextBuffer *textbuffer = NULL;
   GtkWidget *textview = NULL;
@@ -106,7 +103,7 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
       GTK_DIALOG_DESTROY_WITH_PARENT |
       GTK_DIALOG_NO_SEPARATOR,
       NULL);
-
+  app_ui_data->main_dialog = main_dialog;
 
   /* Enabling dialog help */
   ossohelp_dialog_help_enable(GTK_DIALOG(main_dialog),
@@ -190,7 +187,8 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
 
   g_signal_connect((gpointer) app_ui_data->close_button, 
 		   "clicked",
-		   G_CALLBACK(ui_destroy), NULL);
+		   G_CALLBACK(on_button_close_clicked),
+		   app_data);
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (treeview));
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
@@ -199,15 +197,10 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
 		    app_data);
 
   /* Catching key events */
-  gtk_widget_add_events(GTK_WIDGET(main_dialog),
-			GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK );
-  g_signal_connect(GTK_OBJECT(main_dialog), "key_release_event",
-		   G_CALLBACK(key_release), (gpointer) app_ui_data );
-
-
-  /* catching all HW key signals */
-  gtk_signal_connect(GTK_OBJECT(main_dialog), "key_press_event",
-		     G_CALLBACK(key_press), (gpointer) app_ui_data);
+  gtk_widget_add_events (GTK_WIDGET(main_dialog),
+			 GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK );
+  gtk_signal_connect (GTK_OBJECT(main_dialog), "key_press_event",
+		      G_CALLBACK(key_press), (gpointer) app_ui_data);
 
   /* Show everything except the two labels.
    */
@@ -232,19 +225,23 @@ GtkWidget *ui_create_main_dialog(AppData *app_data)
 
 
 
-void ui_create_main_buttons(AppUIData *app_ui_data)
+void 
+ui_create_main_buttons (AppUIData *app_ui_data)
 {
-  if (!app_ui_data) return;
+  GtkWidget *main_dialog = app_ui_data->main_dialog;
 
   app_ui_data->uninstall_button = 
-     gtk_dialog_add_button(GTK_DIALOG(main_dialog),
-     _("ai_bd__application_installer_uninstall"), GTK_RESPONSE_OK);
+    gtk_dialog_add_button (GTK_DIALOG (main_dialog),
+			  _("ai_bd__application_installer_uninstall"),
+			   GTK_RESPONSE_OK);
   app_ui_data->installnew_button = 
-     gtk_dialog_add_button(GTK_DIALOG(main_dialog),
-     _("ai_bd__application_installer_install_new"), GTK_RESPONSE_OK);
+    gtk_dialog_add_button (GTK_DIALOG (main_dialog),
+			   _("ai_bd__application_installer_install_new"),
+			   GTK_RESPONSE_OK);
   app_ui_data->close_button = 
-     gtk_dialog_add_button(GTK_DIALOG(main_dialog),
-     _("ai_bd__application_installer_cancel"), GTK_RESPONSE_OK);
+    gtk_dialog_add_button (GTK_DIALOG(main_dialog),
+			   _("ai_bd__application_installer_cancel"),
+			   GTK_RESPONSE_OK);
 }
 
 gchar *ui_show_file_chooser(AppUIData *app_ui_data)
@@ -336,15 +333,12 @@ void ui_forcedraw(void)
 }
 
 
-void ui_destroy(void)
+void
+ui_destroy (AppUIData *app_ui_data)
 {
-  if (main_dialog)
-  {
-    gtk_widget_destroy(main_dialog);
-  }
-  gtk_main_quit();
+  gtk_widget_destroy (app_ui_data->main_dialog);
+  gtk_main_quit ();
 }
-
 
 
 GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
@@ -352,6 +346,7 @@ GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
 {
   GtkWidget *sw;
   GtkWidget *view;
+  GtkWidget *menu;
   GtkTextBuffer *buffer;
   
   if (NULL == app_data || NULL == app_data->app_ui_data) return NULL;
@@ -369,14 +364,12 @@ GtkWidget *ui_create_textbox(AppData *app_data, gchar *text,
   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(view), FALSE);
   
   /* Enabling popup only when selectable, i.e. error details */
-  if (selectable) {
-    g_assert(app_data);
-
-    g_signal_connect(G_OBJECT(view), "button_press_event",
-      G_CALLBACK(on_error_press), app_data);
-    g_signal_connect(G_OBJECT(view), "button_release_event",
-      G_CALLBACK(on_error_release), app_data);
-  }
+  if (selectable) 
+    {
+      menu = gtk_ui_manager_get_widget (app_data->app_ui_data->ui_manager,
+					"/Popup");
+      gtk_widget_tap_and_hold_setup (view, menu, NULL, 0);
+    }
 
   /* Stuffing it into scrollable window */
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw),
@@ -410,7 +403,7 @@ ui_create_progress_dialog (AppData *app_data,
   cancel_callback = NULL;
 
   dialog = g_new (progress_dialog, 1);
-  dialog->progressbar = gtk_progress_bar_new ();
+  dialog->progressbar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
   dialog->dialog =
     hildon_note_new_cancel_with_progress_bar (main_dialog,
 					      title,

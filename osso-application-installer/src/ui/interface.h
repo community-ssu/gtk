@@ -94,7 +94,7 @@ gchar *ui_show_file_chooser(AppUIData *app_ui_data);
 /**
 Destroys main dialog and closes application
 */
-void ui_destroy(void);
+void ui_destroy (AppUIData *app_ui_data);
 
 /**
 Returns package name and size which is currently selected in treeview
