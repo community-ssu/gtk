@@ -705,7 +705,7 @@ package_file_info (AppData *app_data, gchar *file)
       /* XXX - the parsing is a bit coarse here...
        */
       depends_on_maemo = 0;
-      while (tok = strsep (&depends, " \t\r\n,"))
+      while ((tok = strsep (&depends, " \t\r\n,")))
 	if (strcmp (tok, META_PACKAGE) == 0)
 	  depends_on_maemo = 1;
 
@@ -847,7 +847,8 @@ format_relationship_failures (gchar *footer, gchar *output)
 
   if (footer)
     {
-      g_string_append (report, "\n");
+      if (report->len > 0)
+	g_string_append (report, "\n");
       g_string_append (report, footer);
     }
 
@@ -995,10 +996,6 @@ static gboolean
 installer_progress (gpointer raw_data)
 {
   installer_data *data = (installer_data *)raw_data;
-  GtkWindow *main_dialog =
-    GTK_WINDOW (data->app_data->app_ui_data->main_dialog);
-  int now_used_kb;
-  double frac;
 
   if (data->dialog == NULL)
     data->dialog =
@@ -1010,11 +1007,12 @@ installer_progress (gpointer raw_data)
            real cooperation from app-installer-tool for it anyway.  So
            we just pulse the progress bar for now.
   */
-  now_used_kb = kb_used_in_var_lib_install ();
+  int now_used_kb = kb_used_in_var_lib_install ();
   if (now_used_kb > 0 && data->initial_used_kb > 0)
     {
-      frac = FUZZ_FACTOR * (((double) (now_used_kb - data->initial_used_kb))
-			    / data->package_size_kb);
+      double frac = 
+	FUZZ_FACTOR * (((double) (now_used_kb - data->initial_used_kb))
+		       / data->package_size_kb);
 #if 0
       fprintf (stderr, "initial %d, now %d, size %d, frac %f\n",
 	       data->initial_used_kb, now_used_kb, data->package_size_kb,
@@ -1130,7 +1128,7 @@ install_package_from_uri (gchar *uri, AppData *app_data)
   gchar *details = NULL;
 
   GnomeVFSURI *vfs_uri = NULL;
-  gchar *scheme;
+  const gchar *scheme;
 
   vfs_uri = gnome_vfs_uri_new (uri);
   if (vfs_uri == NULL)
@@ -1150,9 +1148,8 @@ install_package_from_uri (gchar *uri, AppData *app_data)
   scheme = gnome_vfs_uri_get_scheme (vfs_uri);
   if (scheme && !strcmp (scheme, "file"))
     {
-      char *unescaped_path = 
-	gnome_vfs_unescape_string (gnome_vfs_uri_get_path (vfs_uri),
-				   NULL);
+      const gchar *path = gnome_vfs_uri_get_path (vfs_uri);
+      gchar *unescaped_path = gnome_vfs_unescape_string (path, NULL);
       if (unescaped_path)
 	{
 	  install_package (unescaped_path, app_data);
@@ -1178,7 +1175,8 @@ install_package_from_uri (gchar *uri, AppData *app_data)
       tempdir = mkdtemp (template);
       if (tempdir == NULL)
 	{
-	  details = g_strdup_printf ("creating %s: %s",
+	  /* XXX-NLS */
+	  details = g_strdup_printf ("Can not create %s: %s",
 				     template, strerror (errno));
 	  success = 0;
 	  goto done;
@@ -1221,7 +1219,8 @@ install_package_from_uri (gchar *uri, AppData *app_data)
  done:
   if (!success)
     {
-      gchar *report = g_strdup_printf (_("ai_ti_installation_failed_text"),
+      gchar *report = g_strdup_printf (SUPPRESS_FORMAT_WARNING 
+				       (_("ai_ti_installation_failed_text")),
 				       uri);
       present_report_with_details (app_data,
 				   report,
