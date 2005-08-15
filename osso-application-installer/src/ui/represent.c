@@ -166,7 +166,9 @@ confirm_uninstall (AppData *app_data, gchar *package)
   gchar *label_text;
   gboolean confirmed;
 
-  label_text = g_strdup_printf(_("ai_ti_confirm_uninstall_text"), package);
+  label_text = g_strdup_printf (SUPPRESS_FORMAT_WARNING 
+				(_("ai_ti_confirm_uninstall_text")),
+				package);
   parent = GTK_WINDOW (app_data->app_ui_data->main_dialog);
 
   dialog = hildon_note_new_confirmation_add_buttons 
@@ -211,7 +213,8 @@ confirm_install (AppData *app_data, PackageInfo *info)
    */
   label_text = g_string_new ("");
   g_string_printf (label_text,
-		   _("ai_ti_install_new"), info->name->str);
+		   SUPPRESS_FORMAT_WARNING (_("ai_ti_install_new")),
+		   info->name->str);
   g_string_append (label_text, "\n");
   g_string_append_printf (label_text, _("ai_ti_install_warning"));
 
@@ -222,11 +225,17 @@ confirm_install (AppData *app_data, PackageInfo *info)
 
   /* Creating textbuffer with details */
   GString *details = g_string_new ("");
-  g_string_printf (details, _("ai_ti_packagedescription"), info->name->str);
+  g_string_printf (details, 
+		   SUPPRESS_FORMAT_WARNING (_("ai_ti_packagedescription")),
+		   info->name->str);
   g_string_append (details, "\n");
-  g_string_append_printf (details, _("ai_ti_version"), info->version->str);
+  g_string_append_printf (details,
+			  SUPPRESS_FORMAT_WARNING (_("ai_ti_version")),
+			  info->version->str);
   g_string_append (details, "\n");
-  g_string_append_printf (details, _("ai_ti_size"), info->size->str);
+  g_string_append_printf (details,
+			  SUPPRESS_FORMAT_WARNING (_("ai_ti_size")),
+			  info->size->str);
   g_string_append (details, "\n");
   g_string_append (details, info->description->str);
 
