@@ -90,7 +90,7 @@ const gchar * osso_application_name_get(osso_context_t *osso)
 		return NULL;
 	}
 
-	return (struct osso_af_context_t*) osso->application;
+	return (const gchar*) (osso->application);
 }
 
 const gchar * osso_application_version_get(osso_context_t *osso)
@@ -99,5 +99,5 @@ const gchar * osso_application_version_get(osso_context_t *osso)
 		return NULL;
 	}
 
-	return (struct osso_af_context_t*) osso->version;
+	return (const gchar*) (osso->version);
 }
