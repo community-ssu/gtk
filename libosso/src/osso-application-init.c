@@ -20,6 +20,7 @@
  *
  */
 
+#include "osso-internal.h"
 #include "libosso.h"
 
 static void _run_main_loop( void );
@@ -84,7 +85,7 @@ static gboolean _rpc_run_ret_cb(gpointer data)
     return 0;
 }
 
-gchar * osso_application_name_get(osso_context_t *osso)
+const gchar * osso_application_name_get(osso_context_t *osso)
 {
 	if ( osso == NULL ) {
 		return NULL;
@@ -93,7 +94,7 @@ gchar * osso_application_name_get(osso_context_t *osso)
 	return osso->application;
 }
 
-gchar * osso_application_version_get(osso_context_t *osso)
+const gchar * osso_application_version_get(osso_context_t *osso)
 {
 	if ( osso == NULL ) {
 		return NULL;

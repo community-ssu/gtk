@@ -629,18 +629,20 @@ osso_return_t osso_application_userdata_changed(osso_context_t *osso);
 osso_return_t osso_application_autosave_force(osso_context_t *osso);
 
 /*
+ * Returns the application name of a Libosso context.
  * @param osso The library context as returned by #osso_initialize.
  * @return The name of the parent application, or NULL if the context
  * is invalid.
  */
-gchar * osso_application_name_get(osso_context_t * osso);
+const gchar * osso_application_name_get(osso_context_t *osso);
 
 /*
+ * Returns the application version of a Libosso context.
  * @param osso The library context as returned by #osso_initialize.
  * @return The version of the application, or NULL if the context is
  * invalid.
  */
-gchar * osso_application_version_get(osso_context_t * osso);
+const gchar * osso_application_version_get(osso_context_t *osso);
 
 /*@}*/
 
