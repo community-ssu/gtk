@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osso-application-installer 0.2.04\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-12 17:38+0300\n"
+"POT-Creation-Date: 2005-08-15 15:24+0300\n"
 "PO-Revision-Date: 2005-03-30 15:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: en_GB\n"
@@ -91,29 +91,37 @@ msgstr "Package %s successfully removed."
 msgid "ai_ti_uninstallation_failed_text"
 msgstr "Uninstallation of %s failed."
 
-#: src/ui/interface.c:100
+#: src/ui/interface.c:71
 msgid "ai_ti__application_installer_title"
 msgstr "Application installer"
 
-#: src/ui/interface.c:137
+#: src/ui/interface.c:108
 msgid "ai_ti_application_installer_nopackages"
 msgstr "No packages installed"
 
-#: src/ui/interface.c:239
+#: src/ui/interface.c:206
 msgid "ai_bd__application_installer_uninstall"
 msgstr "Uninstall"
 
-#: src/ui/interface.c:243
+#: src/ui/interface.c:210
 msgid "ai_bd__application_installer_install_new"
 msgstr "Install new"
 
-#: src/ui/interface.c:247
+#: src/ui/interface.c:214
 msgid "ai_bd__application_installer_cancel"
 msgstr "Close"
 
-#: src/ui/interface.c:282
+#: src/ui/interface.c:249
 msgid "ai_ti_select_package"
 msgstr "Select package"
+
+#: src/ui/interface.c:345
+msgid "ai_error_details_csm_copy"
+msgstr "Copy"
+
+#: src/ui/interface.c:347
+msgid "ai_error_details_csm_help"
+msgstr "Help"
 
 #: src/ui/represent.c:105
 msgid "ai_bd_error_details_ok"
@@ -166,14 +174,6 @@ msgstr "OK"
 #: src/ui/represent.c:255
 msgid "ai_bd_install_application_cancel"
 msgstr "Cancel"
-
-#: src/ui/ui.h:77
-msgid "ai_error_details_csm_copy"
-msgstr "Copy"
-
-#: src/ui/ui.h:78
-msgid "ai_error_details_csm_help"
-msgstr "Help"
 
 #~ msgid "ai_error_builtin"
 #~ msgstr ""
