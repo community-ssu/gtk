@@ -1,4 +1,4 @@
-SUBDIRS = hildon-lgpl timer ut po doc
+SUBDIRS = hildon-lgpl timer ut doc
 EXTRA_DIST = \
 	debian/changelog \
 	debian/control \
@@ -7,8 +7,6 @@ EXTRA_DIST = \
 	debian/hildon-lgpl0.install \
 	debian/hildon-lgpl0-dbg.install \
 	debian/hildon-lgpl-dev.docs \
-	debian/hildon-lgpl-l10n-engb.install \
-	debian/hildon-lgpl-l10n-src.install \
 	debian/rules
 
 pkgconfigdir = $(libdir)/pkgconfig
