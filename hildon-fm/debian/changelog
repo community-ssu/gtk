@@ -1,3 +1,11 @@
+hildon-fm (0.9.24-3) unstable; urgency=low
+
+  * debian/control:
+  * debian/rules: remove l10n packages, add Depends: Depends:
+    hildon-fm-l10n-3.0-engb | hildon-fm-l10n-3.0-english
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 16 Aug 2005 17:14:25 +0300
+
 hildon-fm (0.9.24-2) unstable; urgency=low
 
   * Maemo dev release

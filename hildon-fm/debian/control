@@ -15,7 +15,7 @@ Description: LGPL-licensed File Management libraries development files
 Package: hildon-fm1
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-fm-l10n-3.0-engb | hildon-fm-l10n-3.0-english
 Conflicts: hildon-libs0 (<< 0.7.3), hildon-lgpl0 (<< 0.8.6)
 Replaces: hildon-libs0 (<< 0.7.3), hildon-lgpl0 (<< 0.8.6)
 Depends: hildon-lgpl0 (>= 0.8.6)
@@ -37,13 +37,3 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-lgpl0-dbg (>= 0.8.6) | hildo
 Recommends: hildon-libs0-dbg
 Description: LGPL-licensed File Management libraries (with debug info)
 
-Package: hildon-fm-l10n-engb
-Architecture: all
-Description: Locale for package hildon-fm
- en_GB locale for hildon-fm.
-
-Package: hildon-fm-l10n-src
-Architecture: all
-Depends: gettext
-Description: Locale source package for hildon-fm
- Source package for locales.
