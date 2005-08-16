@@ -200,10 +200,6 @@ void hildon_file_selection_undim_all(HildonFileSelection *self);
 
 HildonFileSelectionPane hildon_file_selection_get_active_pane(HildonFileSelection *self);
 
-/*void hildon_file_selection_set_local_only(HildonFileSelection *self,
-                                            gboolean local_only);
-gboolean hildon_file_selection_get_local_only(HildonFileSelection *self);
-*/
 void hildon_file_selection_hide_content_pane(HildonFileSelection * self);
 void hildon_file_selection_show_content_pane(HildonFileSelection * self);
 
@@ -211,17 +207,6 @@ void hildon_file_selection_show_content_pane(HildonFileSelection * self);
 GSList *_hildon_file_selection_get_selected_files(HildonFileSelection
                                                        * self);
 void _hildon_file_selection_realize_help(HildonFileSelection *self);
-
-/* Functionality needed by file manager that cannot be implemented by
-   GtkFileChooser. It's responsibility of the application to perform the
-   following operations. */
-
-/* Rename files/folders */
-/* Delete files/folders */
-/* Cut/Copy files/folders */
-/* Move */
-/* Auto naming */
-/* Searching */
 
 G_END_DECLS
 #endif
