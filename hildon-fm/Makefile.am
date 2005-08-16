@@ -1,4 +1,4 @@
-SUBDIRS = hildon-fm ut po doc
+SUBDIRS = hildon-fm ut doc
 EXTRA_DIST = \
 	debian/changelog \
 	debian/control \
@@ -7,8 +7,6 @@ EXTRA_DIST = \
 	debian/hildon-fm1.install \
 	debian/hildon-fm1-dbg.install \
 	debian/hildon-fm-dev.docs \
-	debian/hildon-fm-l10n-engb.install \
-	debian/hildon-fm-l10n-src.install \
 	debian/rules
 
 pkgconfigdir = $(libdir)/pkgconfig

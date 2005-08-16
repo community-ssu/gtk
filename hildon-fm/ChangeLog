@@ -1,3 +1,15 @@
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Update to new l10n packaging style.  po-files (inside this package)
+	are not used for now, the message catalogs come from separate packages
+	and including them here would conflict.
+
+	* Makefile.am (SUBDIRS): stop including po-files
+	* Makefile.am (EXTRA_DIST):
+	* debian/hildon-fm-l10n-engb.install:
+	* debian/hildon-fm-l10n-src.install:
+	* po/debian/*: Removed
+
 2005-08-10  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-fm/hildon-file-chooser-dialog.c (handle_folder_popup):

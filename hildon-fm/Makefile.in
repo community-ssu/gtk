@@ -172,7 +172,7 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-SUBDIRS = hildon-fm ut po doc
+SUBDIRS = hildon-fm ut doc
 EXTRA_DIST = \
 	debian/changelog \
 	debian/control \
@@ -181,8 +181,6 @@ EXTRA_DIST = \
 	debian/hildon-fm1.install \
 	debian/hildon-fm1-dbg.install \
 	debian/hildon-fm-dev.docs \
-	debian/hildon-fm-l10n-engb.install \
-	debian/hildon-fm-l10n-src.install \
 	debian/rules
 
 
@@ -203,9 +201,9 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure COPYING \
-	COPYING.LIB Makefile.am aclocal.m4 config.guess config.h.in \
-	config.sub configure configure.ac depcomp hildon-fm.pc.in \
-	install-sh ltmain.sh missing mkinstalldirs
+	COPYING.LIB ChangeLog Makefile.am aclocal.m4 config.guess \
+	config.h.in config.sub configure configure.ac depcomp \
+	hildon-fm.pc.in install-sh ltmain.sh missing mkinstalldirs
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
