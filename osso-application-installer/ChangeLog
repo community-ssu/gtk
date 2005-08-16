@@ -1,5 +1,9 @@
 2005-08-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* control-panel/ai-cp-applet.c (show_message): New.
+	(ai_exited): Use it to show message in case of non-clean exits.
+	(execute): Use show_message instead of explicit code.
+	
 	* app-installer-tool/app-installer-tool.c: Start error messages
 	with a capital letter.
 	(package_already_installed, do_list, do_describe_file,
