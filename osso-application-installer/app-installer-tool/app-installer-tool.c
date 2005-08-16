@@ -59,6 +59,8 @@ int do_copy (gchar *source, gchar *target);
    it...
 
    We also set the locale to "C" since we parse the output of dpkg.
+   XXX - it would be nice to keep the output of dpkg localized and
+   only switch to "C" when we do in fact need to parse.
 */
 
 void
@@ -86,7 +88,7 @@ void
 redirect_stdout_to_stderr (gpointer unused)
 {
   if (dup2 (2, 1) < 0)
-    perror ("can not redirect stdout to stderr");
+    perror ("Can not redirect stdout to stderr");
 }
 
 int
@@ -119,7 +121,7 @@ run_cmd_save_output (gchar **argv,
 
   if (error)
     {
-      fprintf (stderr, "can not run %s: %s\n", argv[0], error->message);
+      fprintf (stderr, "Can not run %s: %s\n", argv[0], error->message);
       g_error_free (error);
       return -1;
     }
@@ -152,7 +154,7 @@ run_cmd_save_output (gchar **argv,
       return -1;
     }
 	       
-  fprintf (stderr, "can not run %s for unknown reasons.\n", argv[0]);
+  fprintf (stderr, "Can not run %s for unknown reasons.\n", argv[0]);
   return -1;
 }
 
@@ -163,7 +165,8 @@ run_cmd (gchar **argv)
 }
 
 /* Get the package name from a .deb file and return 0 when this
-   succeeded.  You need to free the name eventually, even for failure.
+   succeeded.  You need to free the name eventually, even in the case
+   of failure.
 */
 
 int
@@ -195,7 +198,7 @@ int
 package_already_installed (gchar *package, int *is_installed)
 {
   int result;
-  gchar *output;
+  gchar *output = NULL;
   gchar *args[] = {
     "/usr/bin/dpkg-query",
     "--admindir=/var/lib/install/var/lib/dpkg",
@@ -220,7 +223,7 @@ package_already_installed (gchar *package, int *is_installed)
       *is_installed = 
 	install_status && !strcmp (install_status+1, "installed");
     }
-  free (output);
+  g_free (output);
   return result;
 }
 
@@ -231,7 +234,7 @@ int
 do_list (void)
 {
   int result;
-  gchar *output, *line, *next_line;
+  gchar *output = NULL, *line, *next_line;
   gchar *args[] = {
     "/usr/bin/dpkg-query",
     "--admindir=/var/lib/install/var/lib/dpkg",
@@ -245,30 +248,31 @@ do_list (void)
   /* Loop over the lines in STDOUT and output them with a transformed
      ${Status} field.
    */
-  for (line = output; *line; line = next_line)
-    {
-      gchar *status;
+  if (output)
+    for (line = output; *line; line = next_line)
+      {
+	gchar *status;
+	
+	next_line = strchr (line, '\n');
+	if (next_line)
+	  *next_line++ = '\0';
+	else
+	  next_line = strchr (line, '\0');
+	
+	status = strrchr (line, '\t');
+	if (status)
+	  {
+	    status += 1;
+	    fwrite (line, status - line, 1, stdout);
+	    status = strrchr (status, ' ');
+	    if (status && !strcmp (status+1, "installed"))
+	      puts ("ok");
+	    else
+	      puts ("broken");
+	  }
+      }
 
-      next_line = strchr (line, '\n');
-      if (next_line)
-	*next_line++ = '\0';
-      else
-	next_line = strchr (line, '\0');
-
-      status = strrchr (line, '\t');
-      if (status)
-	{
-	  status += 1;
-	  fwrite (line, status - line, 1, stdout);
-	  status = strrchr (status, ' ');
-	  if (status && !strcmp (status+1, "installed"))
-	    puts ("ok");
-	  else
-	    puts ("broken");
-	}
-    }
-
-  free (output);
+  g_free (output);
   return result;
 }
 
@@ -302,7 +306,6 @@ parse_field (gchar *ptr, gchar *prefix, gchar **value)
     return ptr;
 }
 
-
 int
 do_describe_file (gchar *file)
 {
@@ -320,7 +323,7 @@ do_describe_file (gchar *file)
   };
 
   result = run_cmd_save_output (args, &output, NULL);
-  if (result == 0)
+  if (result == 0 && output)
     {
       gchar *package = NULL, *version = NULL, *size = NULL;
       gchar *depends = NULL, *description = NULL;
@@ -348,7 +351,7 @@ do_describe_file (gchar *file)
       printf ("%s\n", description);
     }
 
-  free (output);
+  g_free (output);
   return result;
 }
 
@@ -356,7 +359,7 @@ int
 do_describe_package (gchar *package)
 {
   int result;
-  gchar *output;
+  gchar *output = NULL;
   gchar *args[] = {
     "/usr/bin/dpkg-query",
     "--admindir=/var/lib/install/var/lib/dpkg",
@@ -366,9 +369,9 @@ do_describe_package (gchar *package)
   };
 
   result = run_cmd_save_output (args, &output, NULL);
-  if (result == 0)
+  if (result == 0 && output)
     fputs (output, stdout);
-  free (output);
+  g_free (output);
   return result;
 }
 
@@ -383,6 +386,9 @@ dump_failed_relations (gchar *output, gchar *me)
 {
   gchar *line, *next_line;
   int found_something = 0;
+
+  if (output == NULL)
+    return 0;
 
   /* We expect a very rigid format here and do not interpret version
      information at all.
@@ -430,7 +436,7 @@ int
 do_install (gchar *file)
 {
   int result, is_installed;
-  gchar *package, *output;
+  gchar *package = NULL, *output = NULL;
   gchar *install_args[] = {
     "/usr/bin/fakeroot",
     "/usr/bin/dpkg",
@@ -461,7 +467,8 @@ do_install (gchar *file)
     }
 
   result = run_cmd_save_output (install_args, NULL, &output);
-  fputs (output, stderr);
+  if (output)
+    fputs (output, stderr);
 
   if (result != 0)
     {
@@ -472,19 +479,19 @@ do_install (gchar *file)
 	       "Installation of %s failed, removing package %s.\n",
 	       file, package);
       if (do_remove (package, 1) != 0)
-	fprintf (stderr, "removing failed!\n");
+	fprintf (stderr, "Removing failed!\n");
     }
-  free (output);
 
  done:
-  free (package);
+  g_free (output);
+  g_free (package);
   return result;
 }
 
 int
 do_remove (gchar *package, int silent)
 {
-  gchar *output;
+  gchar *output = NULL;
   int result;
   gchar *args[] = {
     "/usr/bin/fakeroot",
@@ -495,21 +502,22 @@ do_remove (gchar *package, int silent)
   };
 
   result = run_cmd_save_output (args, NULL, &output);
-  fputs (output, stderr);
+  if (output)
+    fputs (output, stderr);
   
   if (!silent)
     {
       if (result != 0 && !dump_failed_relations (output, package))
 	puts ("failed");
     }
-  free (output);
+  g_free (output);
   return result;
 }
 
 int
 do_get_dependencies (gchar *package)
 {
-  gchar *output;
+  gchar *output = NULL;
   int result;
   gchar *args[] = {
     "/usr/bin/fakeroot",
@@ -521,12 +529,13 @@ do_get_dependencies (gchar *package)
   };
 
   result = run_cmd_save_output (args, NULL, &output);
-  fputs (output, stderr);
+  if (output)
+    fputs (output, stderr);
   
   if (result != 0)
     dump_failed_relations (output, package);
 
-  free (output);
+  g_free (output);
   return 0;
 }
 
