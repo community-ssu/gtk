@@ -3958,6 +3958,74 @@ iter_has_next (GtkTreeModel *model, GtkTreeIter *iter)
   return result;
 }
 
+static void
+draw_drop_indicator (GtkWidget *widget,
+                     GdkEventExpose *event,
+                     GdkRectangle *background_area,
+                     GtkTreePath *drag_dest_path,
+                     gint bin_window_width,
+                     gint highlight_x,
+                     gboolean is_first,
+                     gboolean is_last)
+{
+  GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
+
+  /* Draw indicator for the drop
+   */
+  gint highlight_y = -1;
+  GtkRBTree *tree = NULL;
+  GtkRBNode *node = NULL;
+
+  switch (tree_view->priv->drag_dest_pos)
+    {
+    case GTK_TREE_VIEW_DROP_BEFORE:
+      highlight_y = background_area->y - 1;
+      if (highlight_y < 0)
+        highlight_y = 0;
+      break;
+
+    case GTK_TREE_VIEW_DROP_AFTER:
+      highlight_y = background_area->y + background_area->height - 1;
+      break;
+
+    case GTK_TREE_VIEW_DROP_INTO_OR_BEFORE:
+    case GTK_TREE_VIEW_DROP_INTO_OR_AFTER:
+      _gtk_tree_view_find_node (tree_view, drag_dest_path, &tree, &node);
+
+      if (tree == NULL)
+        break;
+
+      gtk_paint_focus (widget->style,
+                       tree_view->priv->bin_window,
+                       GTK_WIDGET_STATE (widget),
+                       NULL,
+                       widget,
+                       (is_first
+                        ? (is_last
+                           ? "treeview-drop-indicator"
+                           : "treeview-drop-indicator-left")
+                        : (is_last
+                           ? "treeview-drop-indicator-right"
+                           : "treeview-drop-indicator-middle")),
+                       background_area->x,
+                       background_area->y,
+                       background_area->width,
+                       background_area->height);
+      break;
+    }
+
+  if (highlight_y >= 0)
+    {
+      gdk_draw_line (event->window,
+                     widget->style->black_gc,
+                     highlight_x,
+                     highlight_y,
+                     bin_window_width - highlight_x,
+                     highlight_y);
+    }
+}
+
+
 /* Warning: Very scary function.
  * Modify at your own risk
  *
@@ -4382,6 +4450,11 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
               gdk_drawable_get_size (tree_view->priv->bin_window, &width, NULL);
             }
 
+          if (node == drag_highlight)
+            draw_drop_indicator(widget, event, &background_area,
+                                drag_dest_path, bin_window_width,
+                                highlight_x, is_first, is_last);
+
 	  if (gtk_tree_view_is_expander_column (tree_view, column) &&
               TREE_VIEW_DRAW_EXPANDERS(tree_view))
 	    {
@@ -4517,61 +4590,6 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 	    }
 	  cell_offset += column->width;
 	}
-
-      if (node == drag_highlight)
-        {
-          /* Draw indicator for the drop
-           */
-          gint highlight_y = -1;
-	  GtkRBTree *tree = NULL;
-	  GtkRBNode *node = NULL;
-	  gint width;
-	  gint focus_line_width;
-
-          switch (tree_view->priv->drag_dest_pos)
-            {
-            case GTK_TREE_VIEW_DROP_BEFORE:
-              highlight_y = background_area.y - 1;
-	      if (highlight_y < 0)
-		      highlight_y = 0;
-              break;
-
-            case GTK_TREE_VIEW_DROP_AFTER:
-              highlight_y = background_area.y + background_area.height - 1;
-              break;
-
-            case GTK_TREE_VIEW_DROP_INTO_OR_BEFORE:
-            case GTK_TREE_VIEW_DROP_INTO_OR_AFTER:
-	      _gtk_tree_view_find_node (tree_view, drag_dest_path, &tree, &node);
-
-	      if (tree == NULL)
-		break;
-	      gdk_drawable_get_size (tree_view->priv->bin_window,
-				     &width, NULL);
-	      gtk_widget_style_get (widget, "focus-line-width", &focus_line_width, NULL);
-	      gtk_paint_focus (widget->style,
-			       tree_view->priv->bin_window,
-			       GTK_WIDGET_STATE (widget),
-			       NULL,
-			       widget,
-			       "treeview-drop-indicator",
-			       0, BACKGROUND_FIRST_PIXEL (tree_view, tree, node)
-			       - focus_line_width / 2,
-			       width, ROW_HEIGHT (tree_view, BACKGROUND_HEIGHT (node))
-			       - focus_line_width + 1);
-              break;
-            }
-
-          if (highlight_y >= 0)
-            {
-              gdk_draw_line (event->window,
-                             widget->style->black_gc,
-                             highlight_x,
-                             highlight_y,
-                             bin_window_width - highlight_x,
-                             highlight_y);
-            }
-        }
 
       /* Hildon: disabled this */
 #if 0
