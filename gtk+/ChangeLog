@@ -1,3 +1,11 @@
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_bin_expose): Drag drop indicator
+	painting refactored to a new function draw_drop_indicator; painting
+	order rearranged so that drag drop indicator is painted before the
+	cell is rendered to avoid cell being covered by the drop indicator.
+	N#10856
+
 2005-08-10  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtkhbbox.c (gtk_hbutton_box_size_allocate): don't access
