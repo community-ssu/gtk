@@ -275,7 +275,7 @@ msgid "sfil_li_mmc_gateway"
 msgstr "Memory Card"
 
 #: ../hildon-fm/hildon-file-system-model.c:1289
-msgid "sfil_li_mmc_local_device"
+msgid "sfil_li_mmc_localdevice"
 msgstr "Memory Card"
 
 #: ../hildon-fm/hildon-file-system-model.c:1456	 	

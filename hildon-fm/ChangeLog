@@ -1,5 +1,10 @@
 2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* hildon-fm/hildon-file-system-private.c (locations):
+	* po/en_GB.po: s/sfil_li_mmc_local_device/sfil_li_mmc_localdevice/
+	
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* hildon-fm/hildon-file-selection.h
 	* hildon-fm/hildon-file-selection.c
 	(hildon_file_selection_clear_multi_selection): New function that only

@@ -64,7 +64,7 @@ static LocationType locations[] = {
   { "qgn_list_filesys_audio_fldr", N_("sfil_li_folder_sound_clips"), NULL },
   { "qgn_list_filesys_doc_fldr", N_("sfil_li_folder_documents"), NULL },
   { "qgn_list_filesys_games_fldr", N_("sfil_li_folder_games"), NULL },
-  { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_local_device"), NULL },
+  { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL },
  /* This is used, if GConf for some reason don't contain name */
   { "qgn_list_filesys_divc_gw", N_("sfil_li_gateway_root"), NULL },
   { "qgn_list_filesys_divc_cls", N_("sfil_li_folder_root"), NULL }
