@@ -1491,7 +1491,18 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         GError *error = NULL;
         /* This can cause main loop execution on vfs backend */
         g_assert(path != NULL); /* Non-existing paths should not come here */
+
+      /* If we have received the path that we are adding by some other
+         means than listing the folder (like via some API function),
+         then the backend will send us "files-added" signal immediately 
+         after we first time use it. This is *not good*, because it 
+         places "garbage list" info processing queue and rest of 
+         the model believes that model is loading. See bug #14040. */
+        g_signal_handlers_block_by_func(parent_folder,
+          hildon_file_system_model_files_added, model);
         file_info = gtk_file_folder_get_info(parent_folder, path, &error);
+        g_signal_handlers_unblock_by_func(parent_folder,
+          hildon_file_system_model_files_added, model);
 
         /* If file is created and then renamed it can happen that file with this name no longer exists. */
         if (error)

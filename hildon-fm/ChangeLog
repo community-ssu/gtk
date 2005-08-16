@@ -1,5 +1,14 @@
 2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_add_node): Block file system backend from
+	sending a signal just when the same node is being added to internal
+	data model, which causes that the internal data model believes that it
+	has already loaded the folder.
+	N#14040
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	Update to new l10n packaging style.  po-files (inside this package)
 	are not used for now, the message catalogs come from separate packages
 	and including them here would conflict.
