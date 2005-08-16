@@ -1,5 +1,10 @@
 2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* hildon-lgpl/hildon-caption.c (hildon_caption_size_allocate): Check
+	children for focusability.  N#16222
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* configure.ac (CFLAGS): Change -std=c99 to -ansi
 	* hildon-lgpl/hildon-caption.c (hildon_caption_hierarchy_changed):
 	* hildon-lgpl/hildon-appview.c (hildon_appview_signal_marshal):

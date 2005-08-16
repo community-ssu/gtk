@@ -716,7 +716,7 @@ static void hildon_caption_size_allocate( GtkWidget *widget,
 
   allocA.width -= req.width + HILDON_CAPTION_SPACING * 2;
 
-  if( !priv->expand && child )
+  if( !priv->expand && child && GTK_WIDGET_VISIBLE(child) )
   {
     GtkRequisition child_req;
     gtk_widget_get_child_requisition( child, &child_req );
@@ -734,7 +734,7 @@ static void hildon_caption_size_allocate( GtkWidget *widget,
   allocA.height = MAX (allocA.height, 0);
   allocB.height = MAX (allocB.height, 0);
 
-  if (child)
+  if (child && GTK_WIDGET_VISIBLE(child) )
     gtk_widget_size_allocate( child, &allocA );
   gtk_widget_size_allocate( priv->caption_area, &allocB );
 }
