@@ -1361,6 +1361,8 @@ static Window get_active_main_window(Window window)
   Window parent_window;
   gint limit = 0;
 
+  gdk_error_trap_push ();
+
   while (XGetTransientForHint(GDK_DISPLAY(), window, &parent_window))
   {
         /* The limit > TRANSIENCY_MAXITER ensures that we can't be stuck
@@ -1377,6 +1379,11 @@ static Window get_active_main_window(Window window)
     window = parent_window;
   }
   
+  gdk_flush ();
+
+  if (gdk_error_trap_pop ())
+    return 0;
+
   return window;
 }
 
