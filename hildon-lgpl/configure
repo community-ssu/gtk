@@ -1778,7 +1778,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=hildon-lgpl
- VERSION=0.9.38
+ VERSION=0.9.49
 
 
 cat >>confdefs.h <<_ACEOF

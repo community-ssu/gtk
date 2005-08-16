@@ -1,4 +1,8 @@
 2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.ac: Release 0.9.49
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* hildon-lgpl/hildon-app.c (hildon_app_event_filter): Application
 	topping needs to follow _MB_CURRENT_APP_WINDOW rather than
