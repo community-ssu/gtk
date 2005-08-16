@@ -1,5 +1,11 @@
 2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtktextview.c (gtk_text_view_retrieve_surrounding_handler): change
+	from character count to byte count.  Fixes autocapitalization behavior
+	with inverted question and exclamation marks.  N#16733
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkmenu.c (gtk_menu_window_visibility_notify_event): Allow other
 	menu windows to cover other menu windows to avoid unwanted closing
 	caused by wrong window stack order. N#11711

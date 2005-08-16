@@ -6798,14 +6798,15 @@ gtk_text_view_retrieve_surrounding_handler (GtkIMContext  *context,
 {
   GtkTextIter start;
   GtkTextIter end;
+  GtkTextIter cursor;
   gint pos;
   gchar *text;
+  gchar *text_between = NULL;
 
-  gtk_text_buffer_get_iter_at_mark (text_view->buffer, &start,  
+  gtk_text_buffer_get_iter_at_mark (text_view->buffer, &cursor,  
 				    gtk_text_buffer_get_insert (text_view->buffer));
-  end = start;
+  end = start = cursor;
 
-  pos = gtk_text_iter_get_offset (&start);
   gtk_text_iter_set_line_offset (&start, 0);
   gtk_text_iter_forward_to_line_end (&end);
 
@@ -6813,11 +6814,18 @@ gtk_text_view_retrieve_surrounding_handler (GtkIMContext  *context,
      surroundings. */
   if (gtk_text_iter_backward_char (&start))
     gtk_text_iter_backward_find_char (&start, not_whitespace_crlf, NULL, NULL);
-  pos -= gtk_text_iter_get_offset (&start);
-
+  
+  text_between = gtk_text_iter_get_slice(&start, &cursor);
+    
+  if(text_between  != NULL)
+    pos = strlen(text_between);
+  else
+    pos = 0;
+    
   text = gtk_text_iter_get_slice (&start, &end);
   gtk_im_context_set_surrounding (context, text, -1, pos);
   g_free (text);
+  g_free(text_between);
 
   return TRUE;
 }
