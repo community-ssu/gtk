@@ -35,6 +35,7 @@
 #include <libosso.h>
 #include <hildon-cp-plugin/hildon-cp-plugin-interface.h>
 #include <osso-log.h>
+#include <hildon-widgets/hildon-note.h>
 
 #include <glib.h>
 #include <unistd.h>
@@ -48,9 +49,27 @@
 #define APP_BINARY "/usr/bin/osso_application_installer"
 
 static void
+show_message (gchar *message)
+{
+  GtkWidget *dialog =
+    hildon_note_new_information (NULL, message);
+  gtk_widget_show_all (dialog);
+  gtk_dialog_run (dialog);
+  gtk_widget_destroy (dialog);
+}
+
+static void
 ai_exited (GPid pid, gint status, gpointer data)
 {
   g_spawn_close_pid (pid);
+  if (!(WIFEXITED (status) && WEXITSTATUS (status) == 0))
+    {
+      gchar *message =
+	g_strdup_printf ("Application installer crashed with code 0x%x",
+			 status);
+      show_message (message);
+      g_free (message);
+    }
   g_main_loop_quit ((GMainLoop *) data);
 }
 
@@ -92,11 +111,7 @@ osso_return_t execute (osso_context_t *osso, gpointer data,
     }
   else
     {
-      GtkWidget *dialog =
-	hildon_note_new_information (NULL, error->message);
-      gtk_widget_show_all (dialog);
-      gtk_dialog_run (dialog);
-      gtk_widget_destroy (dialog);
+      show_message (error->message);
       g_error_free (error);
     }
     
