@@ -1,5 +1,17 @@
 2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* hildon-fm/hildon-file-selection.h
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_clear_multi_selection): New function that only
+	clears other selections, but keeps the item with (active/passive)
+	focus selected.
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_unselect_all): Now really unselects all paths,
+	also active/passive focus. 
+	N#15806
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* hildon-fm/hildon-file-system-model.c
 	(hildon_file_system_model_add_node): Block file system backend from
 	sending a signal just when the same node is being added to internal

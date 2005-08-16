@@ -1932,7 +1932,7 @@ navigation_pane_focus(GObject *object, GParamSpec *pspec, gpointer data)
 
     if (priv->content_pane_last_used)
     {
-      hildon_file_selection_unselect_all( HILDON_FILE_SELECTION(data) );
+      hildon_file_selection_clear_multi_selection( HILDON_FILE_SELECTION(data) );
       priv->content_pane_last_used = FALSE;
       scroll_to_cursor(GTK_TREE_VIEW(object));
       g_object_notify(data, "active-pane");
@@ -3223,17 +3223,45 @@ void hildon_file_selection_unselect_all(HildonFileSelection * self)
     view = get_current_view(self->priv);
     if (GTK_IS_TREE_VIEW(view))
     {
+      GtkTreeSelection *sel;
+
+      sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+      gtk_tree_selection_unselect_all(sel);    
+    }
+}
+
+/**
+ * hildon_file_selection_clear_multi_selection:
+ * @self: a pointer to #HildonFileSelection
+ *
+ * Otherwise similar to #hildon_file_selection_unselect_all,
+ * but keeps the node with cursor selected. Thus,
+ * this function don't have any efect in single selection mode.
+ */
+void hildon_file_selection_clear_multi_selection(HildonFileSelection * self)
+{
+    GtkWidget *view;
+
+    g_return_if_fail(HILDON_IS_FILE_SELECTION(self));
+
+    view = get_current_view(self->priv);
+    if (GTK_IS_TREE_VIEW(view))
+    {
       GtkTreePath *path;
       GtkTreeSelection *sel;
 
-      gtk_tree_view_get_cursor(GTK_TREE_VIEW(view), &path, NULL);
       sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
-      gtk_tree_selection_unselect_all(sel);    
 
-      if (path)
+      if (gtk_tree_selection_get_mode(sel) == GTK_SELECTION_MULTIPLE)
       {
-        gtk_tree_view_set_cursor(GTK_TREE_VIEW(view), path, NULL, FALSE);
-        gtk_tree_path_free(path);
+        gtk_tree_view_get_cursor(GTK_TREE_VIEW(view), &path, NULL);
+        gtk_tree_selection_unselect_all(sel);    
+
+        if (path)
+        {
+          gtk_tree_view_set_cursor(GTK_TREE_VIEW(view), path, NULL, FALSE);
+          gtk_tree_path_free(path);
+        }
       }
     }
 }
@@ -3272,11 +3300,18 @@ GSList *hildon_file_selection_get_selected_paths(HildonFileSelection *
     return NULL;
 }
 
+static void select_path_helper(gpointer path, gpointer selection)
+{
+    gtk_tree_selection_select_path((GtkTreeSelection *)(selection),
+                                   (GtkTreePath *)(path));
+}
+
 /* Used by select/unselect path for selections */
 static void
 hildon_file_selection_select_unselect_main_iter(HildonFileSelectionPrivate
                                                 * priv, GtkTreeIter * iter,
-                                                gboolean select)
+                                                gboolean select,
+                                                gboolean keep_current)
 {
     GtkWidget *view = get_current_view(priv);
 
@@ -3304,11 +3339,23 @@ hildon_file_selection_select_unselect_main_iter(HildonFileSelectionPrivate
           path = gtk_tree_model_get_path(priv->view_filter, &filter_iter);
       
           if (path)
-          { 
+          {
+            GList *selected = NULL;
+
+            if (keep_current)
+              selected = gtk_tree_selection_get_selected_rows(selection, NULL);
+
             gtk_tree_view_set_cursor(treeview, path, NULL, FALSE);
             gtk_tree_path_free(path);
+
+            if (keep_current)
+            {
+              g_list_foreach(selected, (GFunc) select_path_helper, selection);
+              g_list_foreach(selected, (GFunc) gtk_tree_path_free, NULL);
+              g_list_free(selected);
+            }
           }
-          
+
           gtk_tree_selection_select_iter(selection, &filter_iter);
         }
         else
@@ -3333,8 +3380,8 @@ gboolean hildon_file_selection_select_path(HildonFileSelection * self,
                                            const GtkFilePath * path,
                                            GError ** error)
 {
-    GtkTreeIter iter, nav_iter;
-    gboolean found;
+    GtkTreeIter iter, nav_iter, old_iter;
+    gboolean found, dir_changed;
     GtkWidget *view;
 
     g_return_val_if_fail(HILDON_IS_FILE_SELECTION(self), FALSE);
@@ -3350,11 +3397,17 @@ gboolean hildon_file_selection_select_path(HildonFileSelection * self,
       /* We set the nav. pane to contain parent of the item found */
       if (gtk_tree_model_iter_parent(self->priv->main_model, &nav_iter, &iter))
       {
-        hildon_file_selection_set_current_folder_iter(self, &nav_iter);
+        dir_changed = 
+            hildon_file_selection_get_current_folder_iter(self, &old_iter) &&
+            old_iter.user_data != nav_iter.user_data;
+
+        if (dir_changed)
+          hildon_file_selection_set_current_folder_iter(self, &nav_iter);
+
         /* Had to move this after setting folder. Otherwise it'll be cleared... */
         self->priv->user_touched = TRUE;
         hildon_file_selection_select_unselect_main_iter
-                (self->priv, &iter, TRUE);
+                (self->priv, &iter, TRUE, !dir_changed);
 
         view = get_current_view(self->priv);
         if (GTK_IS_TREE_VIEW(view))
@@ -3399,7 +3452,7 @@ void hildon_file_selection_unselect_path(HildonFileSelection * self,
         (HILDON_FILE_SYSTEM_MODEL(self->priv->main_model), path, &iter,
          NULL, TRUE))
         hildon_file_selection_select_unselect_main_iter
-            (self->priv, &iter, FALSE);
+            (self->priv, &iter, FALSE, FALSE);
 }
 
 /**

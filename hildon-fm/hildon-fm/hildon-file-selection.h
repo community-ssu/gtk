@@ -181,6 +181,7 @@ void hildon_file_selection_unselect_path(HildonFileSelection * self,
                                          const GtkFilePath * path);
 void hildon_file_selection_select_all(HildonFileSelection * self);
 void hildon_file_selection_unselect_all(HildonFileSelection * self);
+void hildon_file_selection_clear_multi_selection(HildonFileSelection * self);
 GSList *hildon_file_selection_get_selected_paths(HildonFileSelection *
                                                  self);
 
