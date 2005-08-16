@@ -1,3 +1,13 @@
+2005-08-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* app-installer-tool/app-installer-tool.c: Start error messages
+	with a capital letter.
+	(package_already_installed, do_list, do_describe_file,
+	do_describe_package, dump_failed_relations, do_install, do_remove,
+	do_get_dependencies): Deal with output strings that are NULL by
+	treating them as empty.  Use g_free instead of free when NULL
+	might be passed.
+	
 2005-08-15  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/appdata.h (AppUIData): Removed ui_manager.
