@@ -1,5 +1,11 @@
 2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkmenu.c (gtk_menu_window_visibility_notify_event): Allow other
+	menu windows to cover other menu windows to avoid unwanted closing
+	caused by wrong window stack order. N#11711
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_bin_expose): Drag drop indicator
 	painting refactored to a new function draw_drop_indicator; painting
 	order rearranged so that drag drop indicator is painted before the

@@ -4790,9 +4790,10 @@ gtk_menu_window_visibility_notify_event (GtkWidget          *widget,
           gdk_error_trap_push ();
           type = gdk_window_get_type_hint (win);
           if (!gdk_error_trap_pop () &&
-              (type != GDK_WINDOW_TYPE_HINT_MESSAGE))
+              (type != GDK_WINDOW_TYPE_HINT_MESSAGE)
+              && (type != GDK_WINDOW_TYPE_HINT_MENU))
             {
-              /* A non-message window above us; close. */
+              /* A non-message and non-menu window above us; close. */
               deactivate = TRUE;
 
               break;
