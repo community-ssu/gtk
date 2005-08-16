@@ -1511,13 +1511,12 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 
     if (eventti->type == PropertyNotify)
       {
-        Atom active_window_atom =
-            XInternAtom (GDK_DISPLAY(), "_NET_ACTIVE_WINDOW", False);
+        Atom active_app_atom =
+            XInternAtom (GDK_DISPLAY(), "_MB_CURRENT_APP_WINDOW", False);
         XPropertyEvent *prop = xevent;
 
-        if ((prop->atom == active_window_atom)
-            && (prop->window == GDK_ROOT_WINDOW())
-            && GTK_WIDGET(app)->window)
+        if ((prop->atom == active_app_atom)
+            && (prop->window == GDK_ROOT_WINDOW()))
           {
             Atom realtype;
             int format;
@@ -1534,7 +1533,7 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
             win.win = NULL;
 
             status = XGetWindowProperty(GDK_DISPLAY(), GDK_ROOT_WINDOW(),
-                                        active_window_atom, 0L, 16L,
+                                        active_app_atom, 0L, 16L,
                                         0, XA_WINDOW, &realtype, &format,
                                         &n, &extra, &win.char_pointer);
             if (!(status == Success && realtype == XA_WINDOW && format == 32

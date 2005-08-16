@@ -1,4 +1,10 @@
 2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* hildon-lgpl/hildon-app.c (hildon_app_event_filter): Application
+	topping needs to follow _MB_CURRENT_APP_WINDOW rather than
+	_NET_ACTIVE_WINDOW.  N#15427
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* hildon-lgpl/hildon-app.c (get_active_main_window): Trap X errors
 	when querying window transiency.  
