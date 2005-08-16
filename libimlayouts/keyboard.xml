@@ -142,29 +142,29 @@
 	<keyboard version="0" file="latin.special" lang="en_GB:en_US">
     <layout type="SPECIAL">
       <tab label="inpu_ti_special_char_common" rows="3" cols="15">
-				<key special="SPECIAL">.</key>
+				<key special="SPECIAL" tele="TELE">.</key>
 	      <key special="SPECIAL">,</key>
 	      <key special="SPECIAL">`</key>
 	      <key special="SPECIAL">´</key>
 				<key special="SPECIAL">'</key>
 	      <key special="SPECIAL">&quot;</key>
 	      <key special="SPECIAL">&amp;</key>
-	      <key special="SPECIAL">(</key>
-	      <key special="SPECIAL">)</key>
+	      <key special="SPECIAL" tele="TELE">(</key>
+	      <key special="SPECIAL" tele="TELE">)</key>
 	      <key special="SPECIAL">$</key>
 	      <key special="SPECIAL">^</key>
-	      <key special="SPECIAL">/</key>
+	      <key special="SPECIAL" tele="TELE">/</key>
 	      <key special="SPECIAL">\</key>
-	      <key special="SPECIAL">?</key>
+	      <key special="SPECIAL" tele="TELE">?</key>
 				<key special="SPECIAL">!</key>
 
 	      <key special="SPECIAL">:</key>
 				<key special="SPECIAL">;</key>
-	      <key special="SPECIAL">+</key>
-	      <key special="SPECIAL">-</key>
+	      <key special="SPECIAL" tele="TELE">+</key>
+	      <key special="SPECIAL" tele="TELE">-</key>
 	      <key special="SPECIAL">_</key>
 	      <key special="SPECIAL">=</key>
-	      <key special="SPECIAL">*</key>
+	      <key special="SPECIAL" tele="TELE">*</key>
 	      <key special="SPECIAL">&lt;</key>
 	      <key special="SPECIAL">&gt;</key>
 	      <key special="SPECIAL">£</key>
@@ -183,7 +183,7 @@
 	      <key special="SPECIAL">~</key>
 	      <key special="SPECIAL">@</key>
 	      <key special="SPECIAL">%</key>
-	      <key special="SPECIAL">#</key>
+	      <key special="SPECIAL" tele="TELE">#</key>
 	      <key special="SPECIAL">¥</key>
 	      <key special="SPECIAL">‘</key>
 	      <key special="SPECIAL">’</key>

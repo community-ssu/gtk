@@ -1,0 +1,4 @@
+2005-08-16  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* keyboard.xml: Added /().-+*#? as tele keys (N#17293)
+
