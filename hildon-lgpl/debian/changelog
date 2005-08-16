@@ -1,3 +1,32 @@
+hildon-lgpl (0.9.49-1) unstable; urgency=low
+
+  * Removed Xtst dependency
+
+  * Bugs fixed:
+     4468: Mouse focus is moving towards left when tap on the decoration of
+           the right bottom of an application window.
+     6367: HildonFileOpenDialog crashes
+     9179: Menu hardware key does not close menu
+     9505: Find toolbar has incorrect layout
+    13001: Some of the applications testing teema widgets throw 'Gtk-CRITICAL'
+           and 'Gtk-WARNING' warning messages.
+    13414: hildon-lgpl_0.9.25-1 fails to build with GCC3.4
+    14650: The defined HILDON_ICON_SIZE_INDI_WLAN_STRENGTH is too small
+    14663: Can't use topmost menu items with stylus in fullscreen mode
+    14764: Paste option is not dimmed when copied text cannot / should not be
+           pasted
+    15170: maemo_af_desktop received an X Window System error
+    15183: Drag and drop not working correctly
+    15427: Application top/untop signals listen to the wrong X property
+    15457: Critical Gtk error in open file dialog
+    16134: find toolbar: text in edit field is not highlighted
+    16222: NOKOGS-171 HildonCaption should check if the child is container
+           which contains focusable widget
+
+  * Removed fix for #14501 as it is not agreed yet
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 16 Aug 2005 16:29:07 +0300
+
 hildon-lgpl (0.9.38-1) unstable; urgency=low
 
   * debian/control:
