@@ -1,3 +1,9 @@
+libimlayouts (0.1-1osso12) unstable; urgency=low
+
+  * Updated package 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Tue, 16 Aug 2005 16:26:25 +0300
+
 libimlayouts (0.1-1osso11) unstable; urgency=low
 
   * only read file header in imlayout_vkb_get_layout_list()
