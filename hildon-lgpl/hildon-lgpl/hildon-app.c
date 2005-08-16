@@ -604,6 +604,11 @@ static void hildon_app_remove (GtkContainer *container, GtkWidget *child)
 
   priv->children = g_list_remove (priv->children, child);
 
+  /* XXX: This is a compilation workaround for gcc > 3.3, since glib-2 API is buggy.
+   * see http://bugzilla.gnome.org/show_bug.cgi?id=310175 */
+#ifdef __GNUC__
+  __extension__
+#endif
   g_signal_handlers_disconnect_by_func (G_OBJECT (child),
 					(gpointer)hildon_app_construct_title, app);
 

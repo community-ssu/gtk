@@ -645,10 +645,15 @@ static void hildon_caption_hierarchy_changed( GtkWidget *widget,
   if( GTK_WIDGET_CLASS(parent_class)->hierarchy_changed )
     GTK_WIDGET_CLASS(parent_class)->hierarchy_changed( widget,
                                                        previous_toplevel );
-  if (previous_toplevel)
+  if (previous_toplevel) {
+  /* This is a compilation workaround for gcc > 3.3 since glib is buggy */
+  /* see http://bugzilla.gnome.org/show_bug.cgi?id=310175 */
+#ifdef __GNUC__
+  __extension__
+#endif
     g_signal_handlers_disconnect_by_func
       (previous_toplevel, (gpointer) hildon_caption_set_focus, widget);
-
+  }
   current_ancestor = gtk_widget_get_ancestor(widget, GTK_TYPE_WINDOW);
 
   if (current_ancestor)

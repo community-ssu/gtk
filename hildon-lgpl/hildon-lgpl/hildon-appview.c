@@ -212,6 +212,12 @@ static void hildon_appview_signal_marshal(GClosure * closure,
     }
 
     callback =
+  /* This is a compilation workaround for gcc > 3.3 since glib is buggy */ 
+  /* see http://bugzilla.gnome.org/show_bug.cgi?id=310175 */
+           
+#ifdef __GNUC__
+  __extension__
+#endif
         (HildonAppViewSignal) (marshal_data !=
                                NULL ? marshal_data : cc->callback);
 

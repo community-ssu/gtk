@@ -85,6 +85,11 @@ static void hildon_change_style_recursive_from_ld (GtkWidget *widget, GtkStyle *
   if (GTK_IS_CONTAINER (widget))
     gtk_container_forall (GTK_CONTAINER (widget), (GtkCallback) (hildon_change_style_recursive_from_ld), ld);
   
+  /* This is a compilation workaround for gcc > 3.3 since glib is buggy */
+  /* see http://bugzilla.gnome.org/show_bug.cgi?id=310175 */
+#ifdef __GNUC__
+  __extension__
+#endif
   g_signal_handlers_block_matched (G_OBJECT (widget), G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
 				   g_signal_lookup ("style_set", G_TYPE_FROM_INSTANCE (widget)),
 				   0, NULL,
@@ -125,6 +130,11 @@ static void hildon_change_style_recursive_from_ld (GtkWidget *widget, GtkStyle *
     }
    
 
+  /* This is a compilation workaround for gcc > 3.3 since glib is buggy */
+  /* see http://bugzilla.gnome.org/show_bug.cgi?id=310175 */
+#ifdef __GNUC__
+  __extension__
+#endif
   g_signal_handlers_unblock_matched (G_OBJECT (widget), G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC,
 				   g_signal_lookup ("style_set", G_TYPE_FROM_INSTANCE (widget)),
 				   0, NULL,
