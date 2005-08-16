@@ -14,7 +14,7 @@ Description: LGPL-licensed Hildon libraries development files
 Package: hildon-lgpl0
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libgconf2-6
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgconf2-6, hildon-lgpl-l10n-3.0-engb | hildon-lgpl-l10n-3.0-english
 Conflicts: hildon-libs0 (<< 0.7.3)
 Replaces: hildon-libs0 (<< 0.7.3)
 Description: LGPL-licensed Hildon libraries
@@ -25,13 +25,3 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: LGPL-licensed Hildon libraries (with debug info)
 
-Package: hildon-lgpl-l10n-engb
-Architecture: all
-Description: Locale for package hildon-lgpl
- en_GB locale for hildon-lgpl.
-
-Package: hildon-lgpl-l10n-src
-Architecture: all
-Depends: gettext
-Description: Locale source package for hildon-lgpl
- Source package for locales.

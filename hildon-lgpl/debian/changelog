@@ -1,3 +1,11 @@
+hildon-lgpl (0.9.38-1) unstable; urgency=low
+
+  * debian/control:
+  * debian/rules: remove l10n packages, add Depends:
+    hildon-lgpl-l10n-3.0-engb | hildon-lgpl-l10n-3.0-english
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 16 Aug 2005 14:17:10 +0300
+
 hildon-lgpl (0.9.35-2) unstable; urgency=low
 
   * Maemo dev release
