@@ -1,5 +1,9 @@
 2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* configure.ac: Release 0.9.34
+	
+2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* hildon-fm/hildon-file-system-private.c
 	(_hildon_file_system_create_file_name): 
 	Take special 'mmc-undefined-name' name for unnamed MMCs into account
