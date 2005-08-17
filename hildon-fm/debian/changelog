@@ -1,3 +1,10 @@
+hildon-fm (0.9.34-1) unstable; urgency=low
+
+  * Bugs fixed:
+    15509: MMC name is not displayed in Fileselection widget
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 17 Aug 2005 17:05:36 +0300
+
 hildon-fm (0.9.33-1) unstable; urgency=low
 
   * Bugs fixed:
