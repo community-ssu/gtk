@@ -240,7 +240,15 @@ _hildon_file_system_create_file_name(GtkFileSystem *fs,
     {
       str = gtk_file_system_volume_get_display_name(fs, vol);
       gtk_file_system_volume_free(fs, vol);
-      if (str) return str;
+
+      /* We return device names, unless it's unnamed mmc */
+      if (str) 
+      {
+        if (strcmp(str, "mmc-undefined-name") != 0) 
+          return str;
+
+        g_free(str);
+      }
     }
   }  
   else if (type == HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE)
