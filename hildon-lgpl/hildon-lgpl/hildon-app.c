@@ -43,6 +43,7 @@
 #include <gtk/gtktextview.h>
 #include <gtk/gtkentry.h>
 #include <gtk/gtkscrolledwindow.h>
+#include <gtk/gtkdialog.h>
 
 #include <libintl.h>
 #include <string.h>
@@ -1242,7 +1243,16 @@ hildon_app_key_snooper (GtkWidget *widget, GdkEventKey *keyevent, HildonApp *app
     if ( HILDON_KEYEVENT_IS_MENU_KEY (keyevent) ) {
 	    HildonAppView *appview;
 	    HildonAppPrivate *priv;
-		    
+		  GtkWidget *toplevel;
+		  
+      /* Don't act on modal dialogs */
+      toplevel = gtk_widget_get_toplevel (widget);
+      if (GTK_IS_DIALOG (toplevel)
+          && gtk_window_get_modal (GTK_WINDOW (toplevel)))
+        {
+          return TRUE;
+        }
+      		    
 	    appview = HILDON_APPVIEW (GTK_BIN(app)->child);
 	    priv = HILDON_APP_GET_PRIVATE(app);
 

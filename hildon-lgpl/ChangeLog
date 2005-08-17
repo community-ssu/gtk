@@ -1,3 +1,8 @@
+2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-lgpl/hildon-app.c (hildon_app_key_snooper): Don't act on menu
+	key when a modal dialog is open/active.  N#17216
+
 2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* configure.ac: Release 0.9.49
