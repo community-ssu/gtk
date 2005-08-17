@@ -1,3 +1,10 @@
+hildon-lgpl (0.9.50-1) unstable; urgency=low
+
+  * Bugs fixed:
+    17216: Menu key opens menu even with modal dialog open
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 17 Aug 2005 15:55:29 +0300
+
 hildon-lgpl (0.9.49-1) unstable; urgency=low
 
   * Removed Xtst dependency
