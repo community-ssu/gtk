@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <glib.h>
+#include <gconf/gconf.h>
 
 #include "core.h"
 #include "ui/represent.h"
@@ -876,6 +877,7 @@ typedef struct {
   gchar *failure_text;
   /* XXX-UI32 - never suppress details. */
   gboolean dont_show_details;
+  gboolean check_mmc_cover;
 } installer_data;
 
 static void
@@ -909,7 +911,26 @@ installer_callback (gpointer raw_data,
       else
 	details = format_relationship_failures (details, output);
     }
-  
+
+  /* If the memory cover is open, we add the information to the
+     details when requested.
+   */
+  if (details && data->check_mmc_cover)
+    {
+      GConfEngine *engine = gconf_engine_get_default ();
+      if (gconf_engine_get_bool (engine, 
+				 "/system/osso/af/mmc-cover-open",
+				 NULL))
+	{
+	  gchar *more_details = g_strdup_printf ("%s\n\n%s",
+						 _("ai_error_memorycardopen"),
+						 details);
+	  g_free (details);
+	  details = more_details;
+	}
+      gconf_engine_unref (engine);
+    }
+
   present_report_with_details (data->app_data,
 			       report->str,
 			       details);
@@ -1051,6 +1072,7 @@ install_package (gchar *deb, AppData *app_data)
       data.success_text = _("ai_ti_application_installed_text");
       data.failure_text = _("ai_ti_installation_failed_text");
       data.dont_show_details = 0;
+      data.check_mmc_cover = 1;
 
       data.tool = spawn_app_installer_tool (app_data, 1,
 					    "install", deb, NULL,
@@ -1281,6 +1303,7 @@ uninstall_package (gchar *package, gchar *size, AppData *app_data)
       data.success_text = _("ai_ti_application_uninstalled_text");
       data.failure_text = _("ai_ti_uninstallation_failed_text");
       data.dont_show_details = 1;
+      data.check_mmc_cover = 0;
 
       if (spawn_app_installer_tool (app_data, 1,
 				    "remove", package, NULL,
