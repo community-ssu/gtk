@@ -34,14 +34,32 @@
 #include "dbus.h"
 #include "core.h"
 
+/* XXX - we are only ever going to handle a mime-open request for the
+         first package; additional requests are ignored.  The theory
+         behind this is that since the Application installer is system
+         modal, there is no way to send it mime-open requests while it
+         is running, and thus, all requests after the first must be
+         bogus and for example result from stylus tremor.
+*/
+
 static void
 mime_open_handler (gpointer raw_data, int argc, char **argv)
 {
+  static gboolean ignore_requests = 0;
+
   AppData *app_data = (AppData *)raw_data;
   int i;
 
   for (i = 0; i < argc; i++)
-    do_install (argv[i], app_data);
+    {
+      if (!ignore_requests)
+	{
+	  ignore_requests = 1;
+	  do_install (argv[i], app_data);
+	}
+      else
+	ULOG_INFO ("Ignoring mime-open request for %s\n", argv[i]);
+    }
 }
 
 void
