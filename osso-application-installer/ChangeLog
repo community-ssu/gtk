@@ -1,5 +1,8 @@
 2005-08-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/dbus.c (mime_open_handler): Ignore all requests except the
+	first.
+
 	* configure.ac (DEPS): Added gconf-2.0.
 
 	* src/core.c (installer_data): New field check_mmc_cover.
