@@ -1,3 +1,9 @@
+posix-locales (2.3.2-13osso21) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 18 Aug 2005 14:21:13 +0300
+
 posix-locales (2.3.2-13osso20) unstable; urgency=low
 
   * New package for w33 
