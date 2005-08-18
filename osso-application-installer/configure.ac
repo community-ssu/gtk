@@ -40,7 +40,7 @@ PKG_CHECK_MODULES( DEPS,
 libossohelp >= 0.05
 gtk+-2.0 >= 2.2 glib-2.0 >= 2.2 hildon-libs >= 0.8.1
 hildon-base-lib >= 0.8.1 hildon-lgpl >= 0.8.1 libosso >= 0.8.1
-gnome-vfs-2.0 >= 2.6 gnome-vfs-module-2.0 >= 2.6
+gnome-vfs-2.0 >= 2.6 gnome-vfs-module-2.0 >= 2.6, gconf-2.0
 )
 AC_SUBST( DEPS_CFLAGS )
 AC_SUBST( DEPS_LIBS )
