@@ -1,5 +1,12 @@
 2005-08-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 2.7.
+
+	* src/core.c (format_relationship_failures): Changed
+	"ai_ti_alreadyinstalled" to "ai_error_alreadyinstalled" since that
+	is the string used in the old PO files.  Updated POs.  (Second try
+	to get this right...)
+
 	* src/dbus.c (mime_open_handler): Ignore all requests except the
 	first.
 
