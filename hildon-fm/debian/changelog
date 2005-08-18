@@ -1,3 +1,12 @@
+hildon-fm (0.9.34-2) unstable; urgency=low
+
+  * debian/control: Remove extra Depends: line that's breaking dependencies.
+  * Bugs fixed:
+    17556: File selection and File manager has logical id's for folder and
+           file names
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 18 Aug 2005 11:42:54 +0300
+
 hildon-fm (0.9.34-1) unstable; urgency=low
 
   * Bugs fixed:
