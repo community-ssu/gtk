@@ -1,3 +1,11 @@
+2005-08-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* configure.ac (DEPS): Added gconf-2.0.
+
+	* src/core.c (installer_data): New field check_mmc_cover.
+	(install_package, uninstall_package): Set it.
+	(installer_callback): Check for open MMC cover when requested.
+
 2005-08-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* control-panel/ai-cp-applet.c (show_message): New.
