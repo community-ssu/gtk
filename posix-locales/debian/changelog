@@ -1,3 +1,9 @@
+posix-locales (2.3.2-13osso20) unstable; urgency=low
+
+  * New package for w33 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 18 Aug 2005 14:05:27 +0300
+
 posix-locales (2.3.2-13osso19) unstable; urgency=low
 
   * remove am/pm string from es_MX (fixed #16495) 
