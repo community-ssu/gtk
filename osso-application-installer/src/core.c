@@ -811,7 +811,7 @@ format_relationship_failures (gchar *footer, gchar *output)
 
   if (exists)
     {
-      g_string_append (report, _("ai_ti_alreadyinstalled"));
+      g_string_append (report, _("ai_error_alreadyinstalled"));
       g_string_append (report, "\n");
     }
   if (depends)
