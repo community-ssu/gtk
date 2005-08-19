@@ -1,3 +1,24 @@
+2005-08-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/core.c (package_already_installed): New.
+	(install_package): Use it to refuse to install packages tht are
+	already there.
+	(package_file_info): Reject packages for the wrong architectures.
+	Say "ai_error_builtin" for packages that do not depend on maemo,
+	not "ai_error_incompatible".
+	(format_relationship_failures): Use "ai_error_componentmissing"
+	instead of untranslated text.
+
+	* po/en_GB.po (ai_error_builtin, ai_error_componentmissing):
+	Resurrected.
+	
+	* configure.ac (DEB_HOST_ARCH): Check for it and subst it.
+
+	* app-installer-tool/app-installer-tool.c
+	(package_already_installed): Removed.
+	(do_install): Do not refuse to install packages that are present.
+	(describe_package): Also emit architecture.
+
 2005-08-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 2.7.
