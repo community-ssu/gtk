@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Debian architecture */
+#undef DEB_HOST_ARCH
+
 /* always defined to indicate that i18n is enabled */
 #undef ENABLE_NLS
 

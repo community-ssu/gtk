@@ -105,6 +105,11 @@ AITOOL_LIBS=`pkg-config --libs glib-2.0 gnome-vfs-2.0`
 AC_SUBST(AITOOL_CFLAGS)
 AC_SUBST(AITOOL_LIBS)
 
+# Debian architecture
+#
+DEB_HOST_ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
+AC_DEFINE_UNQUOTED(DEB_HOST_ARCH, "$DEB_HOST_ARCH", [Debian architecture])
+
 # Define output files
 AC_CONFIG_FILES([
 Makefile
