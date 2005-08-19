@@ -191,42 +191,6 @@ get_package_name_from_file (gchar *file, gchar **package)
   return result;
 }
 
-/* Figure out whether a package is already installed.
- */
-
-int
-package_already_installed (gchar *package, int *is_installed)
-{
-  int result;
-  gchar *output = NULL;
-  gchar *args[] = {
-    "/usr/bin/dpkg-query",
-    "--admindir=/var/lib/install/var/lib/dpkg",
-    "--showformat=${Status}",
-    "-W", package,
-    NULL
-  };
-
-  /* dpkg-query exits with code 1 when there is no information about
-     the package and with code 2 when some other error occured.
-  */
-
-  result = run_cmd_save_output (args, &output, NULL);
-  if (result == 1)
-    {
-      *is_installed = 0;
-      result = 0;
-    }
-  else if (result == 0)
-    {
-      gchar *install_status = strrchr (output, ' ');
-      *is_installed = 
-	install_status && !strcmp (install_status+1, "installed");
-    }
-  g_free (output);
-  return result;
-}
-
 /* List all installed packages.
  */
 
@@ -318,6 +282,7 @@ do_describe_file (gchar *file)
     "Version",
     "Installed-Size",
     "Depends",
+    "Architecture",
     "Description",
     NULL
   };
@@ -325,8 +290,8 @@ do_describe_file (gchar *file)
   result = run_cmd_save_output (args, &output, NULL);
   if (result == 0 && output)
     {
-      gchar *package = NULL, *version = NULL, *size = NULL;
-      gchar *depends = NULL, *description = NULL;
+      gchar *package = "", *version = "", *size = "";
+      gchar *depends = "", *arch = "", *description = "";
       gchar *ptr;
 
       /* The fields are output in the order of the control file, so we
@@ -339,6 +304,7 @@ do_describe_file (gchar *file)
 	  ptr = parse_field (ptr, "Version: ", &version);
 	  ptr = parse_field (ptr, "Installed-Size: ", &size);
 	  ptr = parse_field (ptr, "Depends: ", &depends);
+	  ptr = parse_field (ptr, "Architecture: ", &arch);
 	  ptr = parse_field (ptr, "Description: ", &description);
 	  
 	  g_assert (ptr != NULL);
@@ -348,6 +314,7 @@ do_describe_file (gchar *file)
       printf ("%s\n", version);
       printf ("%s\n", size);
       printf ("%s\n", depends);
+      printf ("%s\n", arch);
       printf ("%s\n", description);
     }
 
@@ -449,20 +416,6 @@ do_install (gchar *file)
   if (result != 0)
     {
       puts ("failed");
-      goto done;
-    }
-
-  result = package_already_installed (package, &is_installed);
-  if (result != 0)
-    {
-      puts ("failed");
-      goto done;
-    }
-
-  if (is_installed)
-    {
-      puts ("exists");
-      result = 1;
       goto done;
     }
 

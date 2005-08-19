@@ -4,19 +4,12 @@ This is the source for the app-installer-tool program.
 The app-installer-tool is a non-GUI, command-line program that
 performs the basic package management operations.  It can list
 installed packages, output the description of individual packages,
-install a new package, and remove installed packages.  It is
-responsible for leaving the system in a simple state: either a package
-has been installed successfully, or it is not installed.  Either a
-package has been removed completely, or it is still completely
-installed.  It copes with out-of-space conditions and broken packages.
+install a new package, and remove installed packages.
 
 When dpkg leaves a package in a not-completely-installed state, the
-package will be removed.  Since removing a package that other packages
-depend on does not work, app-installer-tool will only install packages
-that are not yet installed.  That is, upgrading a package in-place is
-not supported.
+package will be removed.
 
-Still, removing a package might fail.  Packages that could not be
+Removing a package might fail.  Packages that could not be
 removed are marked as 'broken' and should be presented to the user
 accordingly.
 
@@ -52,8 +45,9 @@ Usage:
 
   Outputs information about <file.deb> to stdout.  The first line of
   stdout contains the package name, the second line the version, the
-  third line the size, the fourth line the dependencies and the rest
-  of the lines contain the description.
+  third line the size, the fourth line the dependencies, the fifth
+  line the architecture and the rest of the lines contain the
+  description.
 
   Exits zero when stdout contains a proper description.  Exits
   non-zero when some error occured.  Diagnostic output goes to stderr.
@@ -90,12 +84,6 @@ Usage:
   will appear on stdout.  Here, <conflict> is one entry from the
   Conflicts field of the package, with the same syntax as <dependency>
   above.
-
-  When the package already exists, a line of the form
-
-    exists
-
-  will appear on stdout.
 
   When some unexpexted error happens, a line of the form
 
