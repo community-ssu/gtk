@@ -1,0 +1,6 @@
+osso-app-killer (0.15-2) unstable; urgency=low
+
+  * Removed maemo-launcher dependency.
+  * Some cleanup before publication.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 19 Aug 2005 15:06:17 +0300

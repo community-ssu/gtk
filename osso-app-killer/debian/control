@@ -1,0 +1,15 @@
+Source: osso-app-killer
+Section: base
+Priority: optional
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), libosso-dev, libglib2.0-dev, pkg-config
+Standards-Version: 3.6.0
+
+Package: osso-app-killer
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Program for shutting down applications on request.
+ This package contains the application killer program of the Application
+ Framework. The killer listens to D-BUS system bus for requests from e.g.
+ DSM, Backup application, etc. to shut down GUI applications.
+ It has nothing to do with the background killing.
