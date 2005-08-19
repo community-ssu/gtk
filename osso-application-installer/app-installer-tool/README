@@ -85,6 +85,13 @@ Usage:
   Conflicts field of the package, with the same syntax as <dependency>
   above.
 
+  When it looks like as if the installation failed due to unsufficient
+  space in the filesystem, a line of the form
+
+    full
+
+  will appear on stdout.
+
   When some unexpexted error happens, a line of the form
 
     failed
