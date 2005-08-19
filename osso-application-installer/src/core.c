@@ -829,7 +829,7 @@ format_relationship_failures (gchar *footer, gchar *output)
 {
   GString *report;
   GSList *depends = NULL, *depended = NULL, *conflicts = NULL;
-  int exists = 0;
+  int full = 0;
   gchar *ptr;
 
   report = g_string_new ("");
@@ -844,18 +844,19 @@ format_relationship_failures (gchar *footer, gchar *output)
 	depended = g_slist_prepend (depended, val);
       else if ((val = has_prefix (ptr, "conflicts ")))
 	conflicts = g_slist_prepend (conflicts, val);
-      else if (has_prefix (ptr, "exists"))
-	exists = 1;
+      else if (has_prefix (ptr, "full"))
+	full = 1;
       ptr = strchr (ptr, '\n');
       if (ptr)
 	*ptr++ = '\0';
     }
 
-  if (exists)
+  if (full)
     {
-      g_string_append (report, _("ai_error_alreadyinstalled"));
-      g_string_append (report, "\n");
+      g_string_append (report, _("ai_info_notenoughmemory"));
+      g_string_append (report, ".\n");
     }
+
   while (depends)
     {
       g_string_append_printf 
