@@ -29,6 +29,7 @@
 #include <string.h>
 #include <glib.h>
 #include <libgnomevfs/gnome-vfs.h>
+#include <errno.h>
 
 #undef DEBUG
 
@@ -425,7 +426,9 @@ do_install (gchar *file)
 
   if (result != 0)
     {
-      if (!dump_failed_relations (output, package))
+      if (output && strstr (output, strerror (ENOSPC)))
+	puts ("full");
+      else if (!dump_failed_relations (output, package))
 	puts ("failed");
       
       fprintf (stderr,
