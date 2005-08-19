@@ -565,6 +565,34 @@ list_packages (AppData *app_data)
 }
 
 gboolean
+package_already_installed (AppData *app_data, gchar *package)
+{
+  GtkTreeIter iter;
+  gboolean have_iter;
+  GtkTreeView *view = GTK_TREE_VIEW (app_data->app_ui_data->treeview);
+  GtkTreeModel *model = GTK_TREE_MODEL (gtk_tree_view_get_model (view));
+  
+  for (have_iter = gtk_tree_model_get_iter_first (model, &iter);
+       have_iter;
+       have_iter = gtk_tree_model_iter_next (model, &iter))
+    {
+      gchar *name;
+      gboolean broken, found_it;
+
+      gtk_tree_model_get (model, &iter,
+			  COLUMN_NAME, &name,
+			  COLUMN_BROKEN, &broken,
+			  -1);
+      found_it = (strcmp (name, package) == 0 && !broken);
+      g_free (name);
+      if (found_it)
+	return TRUE;
+    }
+
+  return FALSE;
+}
+
+gboolean
 any_packages_installed (GtkTreeModel *model)
 {
   GtkTreeIter iter;
@@ -689,7 +717,7 @@ package_file_info (AppData *app_data, gchar *file)
 			      &stdout_string, NULL,
 			      NULL))
     {
-      gchar *ptr, *package, *version, *size, *depends;
+      gchar *ptr, *package, *version, *size, *depends, *arch;
       gchar *tok;
       gboolean depends_on_maemo;
 
@@ -698,10 +726,18 @@ package_file_info (AppData *app_data, gchar *file)
       ptr = parse_delimited (ptr, '\n', &version);
       ptr = parse_delimited (ptr, '\n', &size);
       ptr = parse_delimited (ptr, '\n', &depends);
+      ptr = parse_delimited (ptr, '\n', &arch);
 
-      /* XXX - do not crash here.
-       */
-      g_assert (ptr != NULL);
+      if (ptr == NULL)
+	goto corrupt;
+
+      if (strcmp (arch, "all") && strcmp (arch, DEB_HOST_ARCH))
+	{
+	  present_report_with_details (app_data,
+				       _("ai_error_incompatible"),
+				       NULL);
+	  goto done;
+	}
 
       /* XXX - the parsing is a bit coarse here...
        */
@@ -710,28 +746,34 @@ package_file_info (AppData *app_data, gchar *file)
 	if (strcmp (tok, META_PACKAGE) == 0)
 	  depends_on_maemo = 1;
 
-      if (depends_on_maemo)
+      if (!depends_on_maemo)
 	{
-	  info.name = g_string_new (package);
-	  info.version = g_string_new (version);
-	  info.size = g_string_new (size);
-	  info.description = g_string_new (ptr);
-	}
-      else
-	{
+	  gchar *message =
+	    g_strdup_printf (SUPPRESS_FORMAT_WARNING
+			     (_("ai_error_builtin")),
+			     package);
 	  present_report_with_details (app_data,
-				       _("ai_error_incompatible"),
+				       message,
 				       NULL);
+	  g_free (message);
+	  goto done;
 	}
+      
+      info.name = g_string_new (package);
+      info.version = g_string_new (version);
+      info.size = g_string_new (size);
+      info.description = g_string_new (ptr);
     }
   else
     {
+    corrupt:
       /* XXX-UI32 - do not suppress stderr output. */
       present_report_with_details (app_data,
 				   _("ai_error_corrupted"),
 				   NULL);
     }
 
+ done:
   free (stdout_string);
   return info;
 }
@@ -814,12 +856,14 @@ format_relationship_failures (gchar *footer, gchar *output)
       g_string_append (report, _("ai_error_alreadyinstalled"));
       g_string_append (report, "\n");
     }
-  if (depends)
+  while (depends)
     {
-      /* XXX-NLS - ai_ti_depends_on */
-      g_string_append 
-	(report, "It depends on the following uninstalled packages:\n");
-      append_list_strings (report, depends);
+      g_string_append_printf 
+	(report,
+	 SUPPRESS_FORMAT_WARNING (_("ai_error_componentmissing")),
+	 (gchar *)(depends->data));
+      g_string_append (report, ".\n");
+      depends = depends->next;
     }
   if (depended)
     {
@@ -831,7 +875,7 @@ format_relationship_failures (gchar *footer, gchar *output)
       else
 	g_string_append
 	  (report, _("ai_ti_dependency_conflict_text"));
-      g_string_append (report, "\n");
+      g_string_append (report, ":\n");
       append_list_strings (report, depended);
     }
   if (conflicts)
@@ -1059,7 +1103,13 @@ install_package (gchar *deb, AppData *app_data)
   if (info.name == NULL)
     return;
 
-  if (confirm_install (app_data, &info))
+  if (package_already_installed (app_data, info.name->str))
+    {
+      present_report_with_details (app_data,
+				   _("ai_error_alreadyinstalled"),
+				   NULL);
+    }
+  else if (confirm_install (app_data, &info))
     {
       data.loop = NULL;
       data.app_data = app_data;
@@ -1095,6 +1145,7 @@ install_package (gchar *deb, AppData *app_data)
 
 typedef struct {
   AppData *app_data;
+  gchar *remote;
   gchar *local;
   GMainLoop *loop;
   int showing_progress;
@@ -1114,10 +1165,15 @@ copy_callback (gpointer raw_data,
     install_package (data->local, data->app_data);
   else
     {
+      /* XXX-NLS - ai_ti_copying_failed */
+      gchar *report = 
+	g_strdup_printf (SUPPRESS_FORMAT_WARNING 
+			 (_("ai_ti_installation_failed_text")),
+			 data->remote);
       present_report_with_details (data->app_data,
-				   /* XXX-NLS - ai_ti_copying_failed */
-				   _("ai_ti_installation_failed_text"),
+				   report,
 				   details);
+      g_free (report);
     }
 
   if (data->loop)
@@ -1132,6 +1188,8 @@ copy_stdout_callback (gpointer raw_data,
   GtkWindow *main_dialog =
     GTK_WINDOW (data->app_data->app_ui_data->main_dialog);
   double frac = atof (line);
+
+  fprintf (stderr, "copy: %s\n", line);
 
   if (!data->showing_progress)
     {
@@ -1209,6 +1267,7 @@ install_package_from_uri (gchar *uri, AppData *app_data)
       free (basename);
 
       data.app_data = app_data;
+      data.remote = uri;
       data.local = local;
       data.loop = NULL;
       data.showing_progress = 0;
