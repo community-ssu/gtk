@@ -1,5 +1,13 @@
 2005-08-19  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/core.c (format_relationship_failures): Do not look for
+	"exists" in output of app-installer-tool.  Look for "full" and
+	report it with ai_info_notenoughmemory.
+
+	* app-installer-tool/app-installer-tool.c (do_install): If the
+	string corresponding to ENOSPC can be found in the output of dpkg,
+	return a "full" indication.
+
 	* src/core.c (package_already_installed): New.
 	(install_package): Use it to refuse to install packages tht are
 	already there.
