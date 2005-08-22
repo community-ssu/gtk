@@ -4439,6 +4439,10 @@ gtk_entry_set_visibility (GtkEntry *entry,
   g_object_set(G_OBJECT(entry->im_context), "visibility", visible, NULL);
   entry->visible = visible ? TRUE : FALSE;
   g_object_notify (G_OBJECT (entry), "visibility");
+
+  if (gtk_entry_get_autocap (entry) != visible)
+    gtk_entry_set_autocap (entry, visible);
+    
   gtk_entry_recompute (entry);
 }
 
