@@ -21,7 +21,7 @@
  * 02110-1301 USA
  *
  */
-
+ 
 /* Hildon includes */
 #include "hildon-status-bar-lib.h"
 
@@ -31,6 +31,7 @@
 #include <glib.h>
 #include <libosso.h>
 
+/* log include */
 #include <log-functions.h>
 
 static SystemDialog dialogs[HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS];

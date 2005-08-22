@@ -28,8 +28,7 @@
  *
  */
 
-
-
+ 
 /* Hildon includes */
 #include "application-switcher.h"
 #include "windowmanager.h"
@@ -57,11 +56,13 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
+/* log include */
+#include <log-functions.h>
+
 /* D-BUS definitions/includes for communication with MCE */
 
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
-#include <log-functions.h>
 
 static gboolean button_expose_event(GtkWidget *widget,
                                      GdkEventExpose *event,

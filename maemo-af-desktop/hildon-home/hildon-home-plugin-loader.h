@@ -28,8 +28,6 @@
  *
  */
  
-
-
 #ifndef HILDON_HOME_PLUGIN_LOADER_H
 #define HILDON_HOME_PLUGIN_LOADER_H
 

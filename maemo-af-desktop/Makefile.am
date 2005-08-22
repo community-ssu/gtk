@@ -2,7 +2,7 @@
 # Authors: Karoliina Salminen <karoliina.t.salminen at nokia dot com>
 # 
 # Subdirectories
-SUBDIRS = po hildon-navigator hildon-status-bar hildon-home
+SUBDIRS = hildon-navigator hildon-status-bar hildon-home
 
 #
 EXTRA_DIST = debian/changelog debian/control debian/copyright debian/rules \
@@ -12,18 +12,6 @@ EXTRA_DIST = debian/changelog debian/control debian/copyright debian/rules \
 	maemo-af-desktop.sh \
 	maemo-af-desktop.defs \
 	kstrace.h \
-	debian/maemo-af-desktop-l10n-dede.install \
-	debian/maemo-af-desktop-l10n-engb.install \
-	debian/maemo-af-desktop-l10n-enus.install \
-	debian/maemo-af-desktop-l10n-eses.install \
-        debian/maemo-af-desktop-l10n-esmx.install \
-	debian/maemo-af-desktop-l10n-fifi.install \
-	debian/maemo-af-desktop-l10n-frfr.install \
-	debian/maemo-af-desktop-l10n-frca.install \
-	debian/maemo-af-desktop-l10n-itit.install \
-	debian/maemo-af-desktop-l10n-ptbr.install \
-	debian/maemo-af-desktop-l10n-ruru.install \
-	debian/maemo-af-desktop-l10n-src.install \
 	debian/maemo-af-desktop.postinst \
 	debian/maemo-af-desktop-dev.install \
 	debian/hildon-status-bar-lib-dev.install \
@@ -59,8 +47,7 @@ maemo_af_desktop_LDADD = \
 	$(HILDON_LIBS) \
 	$(HILDONBASELIB_LIBS) \
 	$(MB_LIBS) \
-	$(OSSO_LIBS) \
-	$(XTST_LIBS)
+	$(OSSO_LIBS) 
 
 maemo_af_desktop_LDFLAGS = $(MAEMO_LAUNCHER_LDFLAGS)
 

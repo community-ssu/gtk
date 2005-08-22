@@ -1,4 +1,4 @@
-# Copyright (c) 2004 Nokia Oyj
+# Copyright (c) 2005 Nokia Oyj
 
 # SUBDIRS = po 
 
@@ -39,14 +39,13 @@ libhildonhome_la_SOURCES = \
 	hildon-home-interface.h
 	hildon-home-image-loader.h
 
-libhildonhome_la_LIBADD = $(HILDON_LIBS) $(MB_LIBS) $(OSSO_LIBS) $(XTST_LIBS)
+libhildonhome_la_LIBADD = $(HILDON_LIBS) $(MB_LIBS) $(OSSO_LIBS)
 
 home_image_loader_SOURCES = \
 	hildon-home-image-loader.c \
 	hildon-home-image-loader.h
 
-home_image_loader_LDADD = $(HILDON_LIBS) $(MB_LIBS) $(OSSO_LIBS) $(XTST_LIBS) \
-	$(GCONF_LIBS)
+home_image_loader_LDADD = $(HILDON_LIBS) $(MB_LIBS) $(OSSO_LIBS) $(GCONF_LIBS)
 
 home_image_loader_LDFLAGS = $(MAEMO_LAUNCHER_LDFLAGS)
 

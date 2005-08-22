@@ -27,7 +27,6 @@
  * @file hildon-navigator-main.c
  *
  */
-
 /* GTK includes */ 
 #include <gtk/gtkmain.h>
 #include <gtk/gtkvbox.h>
@@ -49,10 +48,11 @@
 /* libintl include */
 #include <libintl.h>
 
+/* log include */
+#include <log-functions.h>
+
 /* Locale include */
 #include <locale.h>
-
-#include <log-functions.h>
 
 /* Hildon includes */
 #include "osso-manager.h"

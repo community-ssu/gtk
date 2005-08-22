@@ -28,7 +28,7 @@
  * public API.
  *
  */
-
+ 
 #ifndef HILDON_HOME_PLUGIN_API_H
 #define HILDON_HOME_PLUGIN_API_H
 

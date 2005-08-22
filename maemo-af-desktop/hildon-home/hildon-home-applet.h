@@ -27,8 +27,7 @@
  * Definitions of Hildon Home Applet
  *
  */
-
-
+ 
 #ifndef HILDON_HOME_APPLET_H
 #define HILDON_HOME_APPLET_H
 

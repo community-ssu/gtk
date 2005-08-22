@@ -96,14 +96,7 @@ ifeq "$(strip $(LAUNCHER))" "yes"
 	 $(CURDIR)/debian/build/usr/bin/home-image-loader
 
 endif 
-# Install locale stuff
-	mkdir -p $(CURDIR)/debian/build/usr/share/osso/l10n/maemo-af-desktop
 	mkdir -p $(CURDIR)/debian/build/usr/share/mime/packages/
-	cp po/*.po po/porules.mk $(CURDIR)/debian/build/usr/share/osso/l10n/maemo-af-desktop/
-	cp -a po/debian $(CURDIR)/debian/build/usr/share/osso/l10n/maemo-af-desktop/
-	cp debian/maemo-af-desktop-l10n-engb.install $(CURDIR)/debian/build/usr/share/osso/l10n/maemo-af-desktop/debian/
-	cp debian/copyright $(CURDIR)/debian/build/usr/share/osso/l10n/maemo-af-desktop/debian/
-	sed -r -e "s/^([a-z0-9-]+) /\1-l10n-src /g" debian/changelog > $(CURDIR)/debian/build/usr/share/osso/l10n/maemo-af-desktop/debian/changelog
 	cp debian/maemo-af-desktop.xml $(CURDIR)/debian/build/usr/share/mime/packages/
 
 # Build architecture-independent files here.

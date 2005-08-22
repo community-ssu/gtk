@@ -31,13 +31,12 @@
  */
 
 
-
 #ifndef __OSSO_AF_DESKTOP_MAIN_H__
 #define __OSSO_AF_DESKTOP_MAIN_H__
 
 
 void pipe_signals(int signal);
 gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d);
-int maemo_af_desktop_main(int argc, char* argv[]);
+int osso_af_desktop_main(int argc, char* argv[]);
 
 #endif

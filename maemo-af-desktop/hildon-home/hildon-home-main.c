@@ -46,7 +46,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <libosso.h>
-
 #include <libmb/mbutil.h>
 
 #ifdef HAVE_CONFIG_H
@@ -68,7 +67,7 @@
 #include "../kstrace.h"
 
 /* log include */
-#include <log-functions.h>
+#include <log-functions.h>  	 
 
 static GtkWidget *window = NULL;
 static GtkWidget *home_base_fixed;
@@ -729,7 +728,8 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
 
     response = gtk_dialog_run(GTK_DIALOG(dialog));
     
-    if (response == GTK_RESPONSE_OK) {
+    if (response == GTK_RESPONSE_OK) 
+    {
         
         chooser_name = 
             gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
@@ -782,7 +782,7 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
         g_free(name_str);
         gtk_widget_destroy(dialog);    
         return TRUE;
-    }    
+    }  
     
     gtk_widget_destroy(dialog);
     return FALSE;
@@ -869,7 +869,7 @@ void set_background_response_handler(GtkWidget *dialog,
     case GTK_RESPONSE_APPLY:
         g_signal_stop_emission_by_name(dialog, "response");
         home_bg_image_loading_necessary = FALSE;
-        
+
         g_signal_connect(G_OBJECT(dialog),"response",
                          G_CALLBACK(apply_background_response_handler),
                          box);
@@ -1054,6 +1054,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                            combobox_active = active_count;
                         */
                     }   
+                    
                     gtk_list_store_append(GTK_LIST_STORE
                                          (combobox_contents),
                                          &iterator);
@@ -2946,7 +2947,8 @@ static Window get_active_main_window(Window window)
 {
     Window parent_window;
     gint limit = 0;
-
+    
+    gdk_error_trap_push();
     while (XGetTransientForHint(GDK_DISPLAY(), window, &parent_window))
     {
         /* The limit > TRANSIENCY_MAXITER ensures that we can't be stuck
@@ -2962,7 +2964,7 @@ static Window get_active_main_window(Window window)
         limit++;
         window = parent_window;
     }
-    
+    gdk_error_trap_pop();
     return window;
 }
 /**

@@ -10,4 +10,5 @@ DEF_BGIMAGE=`for bgimage in /usr/share/backgrounds/*.desktop; do grep "X-Order" 
 
 /usr/bin/home-image-loader new_image /usr/share/backgrounds/hildon_home_bg_user.png 720 480 $DEF_BGIMAGE /usr/share/backgrounds/user_filename.txt /usr/share/themes/default/images/qgn_plat_home_status_bar_background.png /usr/share/backgrounds/original_titlebar.png 0 0 /usr/share/themes/default/images/qgn_plat_home_border_left.png /usr/share/backgrounds/original_sidebar.png 0 60
 
+
 fi

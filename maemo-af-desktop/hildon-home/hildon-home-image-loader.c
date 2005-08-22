@@ -27,7 +27,6 @@
  * @file hildon-home-image-loader.c
  *
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -834,7 +833,7 @@ int main(int argc, char *argv[])
         }
         save_original_bg_image_uri(source_uri, source_uri_save_file);
     }
-    
+        
     if(pixbuf != NULL)
     {
         g_object_unref(pixbuf);

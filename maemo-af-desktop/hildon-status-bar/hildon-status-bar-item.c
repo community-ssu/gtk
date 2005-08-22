@@ -26,8 +26,6 @@
 #include <config.h>
 #endif
 
-#include <log-functions.h>
-
 /* hildon includes */
 #include "hildon-status-bar-item.h"
 
@@ -43,6 +41,8 @@
 #include <libintl.h>
 #include <locale.h>
 
+/* log include */
+#include <log-functions.h>
 
 typedef struct _HildonStatusBarItemPrivate HildonStatusBarItemPrivate;
 

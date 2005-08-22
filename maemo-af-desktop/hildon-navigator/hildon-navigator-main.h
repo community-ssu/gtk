@@ -27,7 +27,7 @@
  * @file hildon-navigator-main.h
  *
  */
-
+ 
 #ifndef HILDON_NAVIGATOR_MAIN_H
 #define HILDON_NAVIGATOR_MAIN_H
 

@@ -1,4 +1,3 @@
-
 /*
  * This file is part of maemo-af-desktop
  *
@@ -243,9 +242,11 @@ G_BEGIN_DECLS
                                         HILDON_HOME_APPLET_0_HEIGHT+\
                                         HILDON_HOME_APP_AREA_MARGIN_INNER
 
-/* WID-NOT171*/
-#define HILDON_HOME_LOADING_CANCEL_TEXT  _("docm_nw_opening_file")
-#define HILDON_HOME_LOADING_CANCEL       _("docm_bd_opening_file")
+/* HOM-NOT006*/
+#define HILDON_HOME_LOADING_IMAGE_TEXT   _("home_ib_loading_image")
+#define HILDON_HOME_LOADING_IMAGE_ANI    "qgn_indi_process_a"
+#define HILDON_HOME_LOADING_IMAGE_BUTTON _("home_bd_loading_image_cancel")
+#define HILDON_NOTE_INFORMATION_ICON         "qgn_note_info"
 
 /* WID-NOT201*/
 #define HILDON_HOME_NO_MEMORY_TEXT       _("")
@@ -339,13 +340,13 @@ static void show_file_unreadable_note(void);
 static void show_mmc_cover_open_note(void);
 
 static void construct_background_image(char *argument_list[], 
-                                       gboolean cancel_note);
+                                       gboolean loading_image_note_allowed);
 
 static void image_loader_callback(GPid pid, 
                                   gint child_exit_status, 
                                   gpointer data);
-static void show_loading_cancel_note(void);
-static gboolean loading_cancel_note_handler(GtkWidget *loading_cancel_note,
+static void show_loading_image_note(void);
+static gboolean loading_image_note_handler(GtkWidget *loading_image_note,
                                             GdkEvent *event, 
                                             gpointer user_data);
 

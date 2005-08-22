@@ -26,14 +26,18 @@
  * @file hildon-home-interface.h
  */
 
- 
 #ifndef HILDON_HOME_IF_KS_H
 #define HILDON_HOME_IF_KS_H
+
+
+/* Additions by Karoliina Salminen <karoliina.t.salminen at nokia dot com> */
 
 int hildon_home_main(void);
 
 void home_deinitialize(gint keysnooper_id);
 
+
+                                                 
 #endif
 
 

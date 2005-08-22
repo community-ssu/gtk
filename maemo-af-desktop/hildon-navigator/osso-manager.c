@@ -29,17 +29,18 @@
  *
  */
 
-
-
+ 
 /* System includes */
 #include <glib.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 
+/* log include */
+#include <log-functions.h>
+
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
-#include <log-functions.h>
 
 /* hildon includes */
 #include "osso-manager.h"

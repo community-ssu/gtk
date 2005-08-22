@@ -22,8 +22,11 @@
  *
  */
 
+/* glib include */
 #include <glib.h>
+/* gdkx include */
 #include <gdk/gdkx.h>
+/* locale include */
 #include <locale.h>
 
 /* hildon includes */

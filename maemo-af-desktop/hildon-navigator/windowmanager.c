@@ -23,12 +23,15 @@
  */
 
 #include <gtk/gtkmenu.h>
-#include <log-functions.h>
+
 #include "windowmanager.h"
 #include "application-switcher.h"
 #include "osso-manager.h"
 #include <libmb/mbutil.h>
 #include <X11/X.h>
+
+/* log include */
+#include <log-functions.h>
 
 /* Needed for the "launch banner" */
 #include <hildon-widgets/gtk-infoprint.h>
@@ -68,6 +71,7 @@ wm_callbacks wm_cbs;
 Atom active_win, clientlist, net_wm_state, pid_atom;
 Atom subname, transient_for, typeatom;
 Atom wm_class_atom, wm_name, wm_state, wm_type, utf8, showing_desktop;
+Atom mb_active_win;
 
 /* Struct for launch banner info */
 typedef struct
@@ -1421,7 +1425,7 @@ static void handle_active_window_prop(GtkTreeModel *model,
     gdk_error_trap_push();
     XGetWindowProperty(GDK_DISPLAY(),
                        GDK_WINDOW_XID(gdk_get_default_root_window()),
-                       active_win, 0, 32, False, XA_WINDOW, &actual_type,
+                       mb_active_win, 0, 32, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&realwin_value.char_value);
     if (gdk_error_trap_pop() != 0 || nitems < 1)
@@ -2697,6 +2701,9 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
     utf8 = XInternAtom(GDK_DISPLAY(), "UTF8_STRING", False);
     showing_desktop = XInternAtom(GDK_DISPLAY(),
                                   "_NET_SHOWING_DESKTOP", False);
+    mb_active_win = XInternAtom(GDK_DISPLAY(),
+                                "_MB_CURRENT_APP_WINDOW", False);
+
     gdk_error_trap_pop();
 
     /* Set up callbacks for the window events */
@@ -3235,8 +3242,11 @@ static void show_launch_banner( GtkWidget *parent, gchar *app_name,
 
 	/* Show the banner */
         gdk_error_trap_push();
-	gtk_banner_show_animation( NULL, g_strdup_printf( "%s %s", app_name,
-				_( APP_LAUNCH_BANNER_MSG_LOADING ) ) );
+        
+        gtk_banner_show_animation( NULL,
+                                   g_strdup_printf(
+                                       _( APP_LAUNCH_BANNER_MSG_LOADING ),
+                                       app_name ) );
         gdk_error_trap_pop();
 
 	g_timeout_add( interval, launch_banner_timeout, info );

@@ -30,8 +30,6 @@
  */
 
 
-
-
 #ifndef __HILDON_NAV_IF_KS_H__
 #define __HILDON_NAV_IF_KS_H__
 

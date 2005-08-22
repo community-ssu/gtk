@@ -28,7 +28,7 @@
  * Implementation of Hildon Home Applet
  *
  */
-
+ 
 /* Hildon include */
 #include "hildon-home-applet.h"
 

@@ -27,11 +27,10 @@
  * Implementation of Hildon Home Plugin Loader
  *
  */
-
+ 
 /* Hildon include */
 #include "hildon-home-plugin-loader.h"
 #include "hildon-home-plugin-interface.h"
-#include <log-functions.h>
 
 /* Systems includes */
 #include <string.h>  /* for strcmp */
@@ -40,14 +39,14 @@
 /* Gtk include */
 #include <gtk/gtk.h>
 
+/* log include */
+#include <log-functions.h>
+
 #define HILDON_HOME_PLUGIN_PATH_FORMAT "%s/lib/hildon-home/%s"
 
 #define HILDON_HOME_PLUGIN_LOADER_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE ((obj),\
      HILDON_TYPE_HOME_PLUGIN_LOADER, HildonHomePluginLoaderPrivate))
-
-
-
 
 static GtkObjectClass *parent_class;
 

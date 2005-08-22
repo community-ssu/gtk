@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-af-desktop, 1.32.0)
+AM_INIT_AUTOMAKE(maemo-af-desktop, 1.43.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -42,9 +42,9 @@ then
     CFLAGS="$CFLAGS -DHILDON_USE_TIMESTAMPING"
 fi
 
-#ALL_LINGUAS="en_GB"
-#AC_SUBST(ALL_LINGUAS)
-#AM_GLIB_GNU_GETTEXT
+ALL_LINGUAS="de_DE en_GB en_US es_ES es_MX fi_FI fr_CA fr_FR it_IT pt_BR ru_RU"
+AC_SUBST(ALL_LINGUAS)
+AM_GLIB_GNU_GETTEXT
 
 # D-BUS headers do not compile with -pedantic. Once they are fixed, 
 #return the flag
@@ -84,10 +84,6 @@ PKG_CHECK_MODULES(GCONF, gconf-2.0 >= 2.6.2)
 AC_SUBST(GCONF_LIBS)
 AC_SUBST(GCONF_CFLAGS)
 
-PKG_CHECK_MODULES(XTST, xtst >= 6.2.2)
-AC_SUBST(XTST_LIBS)
-AC_SUBST(XTST_CFLAGS)
-
 PKG_CHECK_MODULES(GNOME_VFS, gnome-vfs-2.0 >= 2.8.3)
 AC_SUBST(GNOME_VFS_CFLAGS)
 
@@ -95,7 +91,7 @@ PKG_CHECK_MODULES(OSSOSETTINGS, osso-af-settings >= 0.8.1)
 localedir=`pkg-config osso-af-settings --variable=localedir`
 AC_SUBST(localedir)
 
-ALL_LINGUAS="en_GB"
+ALL_LINGUAS="de_DE en_GB en_US es_ES es_MX fi_FI fr_CA fr_FR it_IT pt_BR ru_RU"
 AC_SUBST(ALL_LINGUAS)
 AM_GLIB_GNU_GETTEXT
 
@@ -126,7 +122,4 @@ AC_OUTPUT(Makefile \
 	hildon-status-bar/Makefile \
 	hildon-status-bar/hildon-status-bar-lib.pc \
 	hildon-home/Makefile \
-        hildon-home/hildon-home.pc \
-	po/Makefile \
-	po/porules.mk)
-        
+        hildon-home/hildon-home.pc)        

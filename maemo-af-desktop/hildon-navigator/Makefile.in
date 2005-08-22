@@ -124,8 +124,6 @@ STRIP = @STRIP@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
-XTST_CFLAGS = @XTST_CFLAGS@
-XTST_LIBS = @XTST_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
@@ -261,7 +259,7 @@ DIST_SOURCES = $(libhildonnavigator_la_SOURCES)
 DATA = $(hildon_othersmenu_DATA) $(libhildonnavigatorincludeinst_DATA) \
 	$(pkgconfig_DATA)
 
-DIST_COMMON = $(srcdir)/Makefile.in Makefile.am \
+DIST_COMMON = $(srcdir)/Makefile.in Makefile.am TODO \
 	hildon-navigator.pc.in
 SOURCES = $(libhildonnavigator_la_SOURCES)
 

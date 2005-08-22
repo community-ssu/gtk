@@ -1,6 +1,3 @@
-/* -*- mode: C; c-file-style: "stroustrup"; indent-tabs-mode: nil; -*- */
-
-
 /*
  * This file is part of maemo-af-desktop
  *
