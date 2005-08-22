@@ -43,7 +43,6 @@ int run_cmd_save_output (gchar **argv,
 			 gchar **stderr_string);
 int run_cmd (gchar **argv);
 int get_package_name_from_file (gchar *file, gchar **package);
-int package_already_installed (gchar *package, int *is_installed);
 int dump_failed_relations (gchar *output, gchar *me);
 
 int do_list (void);
@@ -58,17 +57,12 @@ int do_copy (gchar *source, gchar *target);
    programs from /sbin.  XXX - We replace the PATH environment
    variable completely but maybe it would be nicer to just add to
    it...
-
-   We also set the locale to "C" since we parse the output of dpkg.
-   XXX - it would be nice to keep the output of dpkg localized and
-   only switch to "C" when we do in fact need to parse.
 */
 
 void
 setup_environment ()
 {
   setenv ("PATH", "/sbin:/bin:/usr/sbin:/usr/bin", 1);
-  setenv ("LC_ALL", "C", 1);
 }
 
 /* Run ARGV[0] with the given arguments and return its exit code when
@@ -403,7 +397,7 @@ dump_failed_relations (gchar *output, gchar *me)
 int
 do_install (gchar *file)
 {
-  int result, is_installed;
+  int result;
   gchar *package = NULL, *output = NULL;
   gchar *install_args[] = {
     "/usr/bin/fakeroot",
@@ -428,8 +422,23 @@ do_install (gchar *file)
     {
       if (output && strstr (output, strerror (ENOSPC)))
 	puts ("full");
-      else if (!dump_failed_relations (output, package))
-	puts ("failed");
+      else 
+	{
+	  /* Run the command again in the C locale.  This will
+	     hopefully give the same error message, but in English,
+	     which is what dump_failed_relations expects.
+	  */
+	  gchar *en_output;
+	  char *old_LC_ALL = g_strdup (getenv ("LC_ALL"));
+
+	  setenv ("LC_ALL", "C", 1);
+	  run_cmd_save_output (install_args, NULL, &en_output);
+	  if (!dump_failed_relations (en_output, package))
+	    puts ("failed");
+	  setenv ("LC_ALL", old_LC_ALL, 1);
+	  g_free (old_LC_ALL);
+	  g_free (en_output);
+	}
       
       fprintf (stderr,
 	       "Installation of %s failed, removing package %s.\n",
@@ -457,17 +466,7 @@ do_remove (gchar *package, int silent)
     NULL
   };
 
-  result = run_cmd_save_output (args, NULL, &output);
-  if (output)
-    fputs (output, stderr);
-  
-  if (!silent)
-    {
-      if (result != 0 && !dump_failed_relations (output, package))
-	puts ("failed");
-    }
-  g_free (output);
-  return result;
+  return run_cmd (args, NULL, NULL);
 }
 
 int
@@ -484,6 +483,7 @@ do_get_dependencies (gchar *package)
     NULL
   };
 
+  setenv ("LC_ALL", "C", 1);
   result = run_cmd_save_output (args, NULL, &output);
   if (output)
     fputs (output, stderr);
