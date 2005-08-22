@@ -14319,6 +14319,9 @@ static gboolean gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
   gint new_y;
   gboolean sensitive;
 
+  if (!tree_view->priv->tree)
+    return FALSE;
+  
   if (!gdk_event_get_coords(event, &x, &y))
     return FALSE;
 
