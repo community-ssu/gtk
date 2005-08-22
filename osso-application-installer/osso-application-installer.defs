@@ -1,0 +1,20 @@
+# osso-application-installer.defs
+# 
+# Integrates /var/lib/install into the system by setting various
+# environment variables
+
+add=/var/lib/install/lib:/var/lib/install/usr/lib
+if [ x$LD_LIBRARY_PATH = x ]; then
+  LD_LIBRARY_PATH=$add
+else
+  LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$add
+fi
+
+if [ x$XDG_DATA_DIRS = x ]; then
+  XDG_DATA_DIRS=/usr/local/share:/usr/share
+fi
+
+XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/install/share:/var/lib/install/usr/share
+
+export LD_LIBRARY_PATH
+export XDG_DATA_DIRS
