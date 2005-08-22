@@ -69,6 +69,7 @@ static const char *COLLAPSED_EMBLEM_NAME = "qgn_list_gene_fldr_clp";
 
 static GQuark hildon_file_system_model_quark = 0;
 static guint signal_finished_loading = 0;
+static guint signal_device_disconnected = 0;
 
 typedef struct {
     GNode *base_node;
@@ -187,6 +188,8 @@ static void
 hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
                                               model, GNode * node, gboolean force);
 static void unlink_file_folder(GNode *node);
+static gboolean
+link_file_folder(GNode *node, const GtkFilePath *path, GError **error);
 static void 
 hildon_file_system_model_folder_finished_loading(GtkFileFolder *monitor, 
   gpointer data);
@@ -226,6 +229,47 @@ static void handle_possibly_finished_node(GNode *node)
   	}
 }
 
+/* This default handler is activated when device tree (mmc/gateway)
+   is automatically removed. This handler removes the tree, but the
+   root node stays in the tree. Thus iter provided as parameter will
+   stay valid. */
+static void hildon_file_system_model_real_device_disconnected(
+  HildonFileSystemModel *self, GtkTreeIter *iter)
+{
+  GNode *node, *child;
+  HildonFileSystemModelNode *model_node;
+
+  g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(self));
+  g_return_if_fail(iter->stamp == self->priv->stamp);
+  ULOG_INFO(__FUNCTION__);
+  
+  node = iter->user_data;
+  unlink_file_folder(node);
+
+  child = node->children;
+  while (child)
+    child = hildon_file_system_model_kick_node(child, self);
+
+  model_node = node->data;
+  g_return_if_fail(model_node != NULL);
+
+  clear_model_node_caches(model_node);
+  model_node->load_time = 0;
+}
+
+static void send_device_disconnected(GNode *node)
+{
+  HildonFileSystemModel *model;
+  GtkTreeIter iter;
+
+  g_return_if_fail(node != NULL);
+
+  model = MODEL_FROM_NODE(node);
+  iter.stamp = model->priv->stamp;
+  iter.user_data = node;
+  g_signal_emit(model, signal_device_disconnected, 0, &iter);
+}
+
 static void handle_delayed_error(GNode *node)
 {
   HildonFileSystemModelNode *model_node;
@@ -237,7 +281,14 @@ static void handle_delayed_error(GNode *node)
 
   ULOG_ERR(model_node->error->message);
 
-  if (g_error_matches(model_node->error, 
+  /* We do not kick of devices because of errors */
+  if (model_node->type >= HILDON_FILE_SYSTEM_MODEL_MMC)
+  {
+    g_clear_error(&model_node->error);
+    send_device_disconnected(node);
+    emit_node_changed(node);
+  }
+  else if (g_error_matches(model_node->error, 
       GTK_FILE_SYSTEM_ERROR, GTK_FILE_SYSTEM_ERROR_NONEXISTENT))
     /* No longer present, we remove this node totally */
     hildon_file_system_model_kick_node(node, model_node->model);
@@ -400,6 +451,7 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
 {
     HildonFileSystemModelNode *model_node;
     time_t current_time;
+    gboolean removable;
 
     model_node = node->data;
     g_assert(model_node != NULL);
@@ -415,15 +467,50 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
       return;
 
     current_time = time(NULL);
+    removable = node_is_under_removable(node);
 
     if (model_node->load_time == 0 || force || 
        ((abs(current_time - model_node->load_time) > RELOAD_THRESHOLD) &&
-        (node_is_under_removable(node) || model_node->error)))
+        (removable || model_node->error)))
     {
       /* Unix backend can fail to set children to NULL if it encounters error */
       GSList *children = NULL;
 
       g_clear_error(&model_node->error);
+
+      /* List children do not work reliably with bluetooth connections. It can
+         still succeed, even though the connection has died already. This
+         if statement can be removed when the backend works better... */
+      if (!gtk_file_system_path_is_local(model->priv->filesystem, 
+        model_node->path))
+      {
+        HildonFileSystemModelNode *gw_model_node;
+        GNode *gw = model->priv->gateway_node;
+        g_assert(gw && gw->data);
+        gw_model_node = gw->data;
+
+        if (gw_model_node->error != NULL)
+        {
+          ULOG_INFO("Error has ocurred on GW, skip new operation (could cause long freeze)");
+          return;
+        }
+
+        unlink_file_folder(node);
+        if (!link_file_folder(node, model_node->path, &model_node->error))
+        {
+          ULOG_INFO("ERROR: %s", model_node->error->message);
+          hildon_file_system_model_ensure_idle(model);
+
+          /* We need to know wheter we have connection at all */
+          unlink_file_folder(gw);
+          if (link_file_folder(gw, model->priv->gateway_path, &gw_model_node->error))
+            g_queue_push_tail(model->priv->error_nodes, node);
+          else
+            g_queue_push_tail(model->priv->error_nodes, gw);
+          
+          return;
+        }
+      }
 
       /* We have to set load time every time. Otherwise we have a deadlock:
          load_children => error => notify => load_children => error */
@@ -451,6 +538,7 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
       else 
       {
         g_assert(children == NULL);
+        ULOG_INFO("ERROR: %s", model_node->error->message);
         hildon_file_system_model_ensure_idle(model);
         g_queue_push_tail(model->priv->error_nodes, node);
       }
@@ -798,7 +886,8 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE:
         g_value_set_boolean(value, path != NULL && model_node->available && 
-            !model_node->error &&
+            /* Folders that cause access errors are dimmed. Devices are not */
+            (!model_node->error || model_node->type >= HILDON_FILE_SYSTEM_MODEL_MMC) &&
             (model_node->type != HILDON_FILE_SYSTEM_MODEL_GATEWAY || 
 	     !_hildon_file_system_settings_get_flight_mode()));
         break;
@@ -1311,6 +1400,8 @@ static gboolean hildon_file_system_model_destroy_model_node(GNode * node,
     HildonFileSystemModelNode *model_node = node->data;
     g_assert(HILDON_IS_FILE_SYSTEM_MODEL(data));
 
+    g_queue_remove_all(HILDON_FILE_SYSTEM_MODEL(data)->priv->error_nodes, node);
+
     if (model_node)
     {
       ULOG_INFO("Remove [%s]", (const char *) model_node->path);
@@ -1374,7 +1465,7 @@ static void set_mmc_state(GtkTreeModel * model, GtkFilePath *mount_path)
 {
     HildonFileSystemModelNode *model_node;
     HildonFileSystemModelPrivate *priv;
-  	GNode *node, *child;
+  	GNode *node;
   	GError *error = NULL;
     gboolean new_state;
 
@@ -1407,13 +1498,7 @@ static void set_mmc_state(GtkTreeModel * model, GtkFilePath *mount_path)
         ULOG_INFO("MMC unmounted");
         
         gtk_file_path_free(model_node->path);
-        unlink_file_folder(node);
-
-        child = node->children;
-        while (child)
-          child = hildon_file_system_model_kick_node(child, model);
-
-        model_node->load_time = 0;
+        send_device_disconnected(node);        
         model_node->path = NULL;
     }
 
@@ -1924,6 +2009,8 @@ static void hildon_file_system_model_class_init(HildonFileSystemModelClass
     object->finalize = hildon_file_system_model_finalize;
     object->set_property = hildon_file_system_model_set_property;
     object->get_property = hildon_file_system_model_get_property;
+    klass->device_disconnected = 
+      hildon_file_system_model_real_device_disconnected;
 
     g_object_class_install_property(object, PROP_BACKEND,
         g_param_spec_string("backend",
@@ -1982,6 +2069,14 @@ static void hildon_file_system_model_class_init(HildonFileSystemModelClass
                      G_STRUCT_OFFSET(HildonFileSystemModelClass,
                                      finished_loading), NULL, NULL,
                      g_cclosure_marshal_VOID__BOXED, G_TYPE_NONE, 1, GTK_TYPE_TREE_ITER);
+
+    signal_device_disconnected =
+        g_signal_new("device-disconnected", HILDON_TYPE_FILE_SYSTEM_MODEL,
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(HildonFileSystemModelClass,
+                                     device_disconnected), NULL, NULL,
+                     g_cclosure_marshal_VOID__BOXED, G_TYPE_NONE, 1, 
+                     GTK_TYPE_TREE_ITER);
 }
 
 static void hildon_file_system_model_iface_init(GtkTreeModelIface * iface)
@@ -2076,7 +2171,7 @@ static void
 flightmode_changed(GObject *settings, GParamSpec *param, gpointer data)
 {
   HildonFileSystemModel *self;
-  GNode *node, *child;
+  GNode *node;
   gboolean mode;
 
   self = HILDON_FILE_SYSTEM_MODEL(data);
@@ -2088,15 +2183,8 @@ flightmode_changed(GObject *settings, GParamSpec *param, gpointer data)
   if (mode)
   {
     ULOG_INFO("Changing into flight mode");
-
     self->priv->gateway_accessed = FALSE;
-    unlink_file_folder(node);
-
-    child = node->children;
-    while (child)
-      child = hildon_file_system_model_kick_node(child, GTK_TREE_MODEL(self));
-
-    ((HildonFileSystemModelNode *) node->data)->load_time = 0;
+    send_device_disconnected(node);
   }
 
   emit_node_changed(node);

@@ -1,3 +1,29 @@
+2005-08-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c: (get_value) In some cases
+	gateway folder became dimmed because of read error. 
+	* (handle_delayed_error) It was possible that the whole gateway root
+	folder got deleted.
+	* (delayed_add_children) gtk_file_system_folder_list_children
+	succeeds, even in a case bt is switched off. Made a workaround for
+	this.
+	* Some code cleanup (handle_delayed_error, set_mmc_state,
+	flightmode_changed).
+	* Added implementation for the new signal and protection mechanism to
+	avoid several reloads from gateway when there is no connection.
+
+	* hildon-fm/hildon-file-system-model.h: Added new
+	"device-disconnected" signal.
+
+	* hildon-fm/hildon-file-selection.c: Added handler for the new signal.
+	* (selection_changed) We now return current folder back to it's
+	previous place if we fail to connect to gateway device.
+	* changed "to_be_selected" row reference into "current_folder", which
+	keeps eye on current folder all the time. This change was needed to
+	know previous folder. This causes many small changes here and there.
+
+	N#14585, N#14586
+
 2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* configure.ac: Release 0.9.34

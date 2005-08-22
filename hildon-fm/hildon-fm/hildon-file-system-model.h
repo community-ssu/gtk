@@ -105,6 +105,8 @@ typedef struct {
     GObjectClass parent_class;
 
     void (*finished_loading) (HildonFileSystemModel *model, GtkTreeIter *iter);
+    void (*device_disconnected) (HildonFileSystemModel *model, 
+      GtkTreeIter *iter);
 } HildonFileSystemModelClass;
 
 GType hildon_file_system_model_get_type(void);
