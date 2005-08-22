@@ -1,10 +1,21 @@
 2005-08-22  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/core.c (format_relationship_failures): Don't output ':'
+	after ai_ti_dependency_conflict_text.
+
+	* app-installer-tool/app-installer-tool.c (setup_environment): Do
+	not set LC_ALL.
+	(do_install): When installation fails, rerun the command in the
+	"C" locale to be able to parse the output.
+	(do_remove): Do not output relationship information.
+	(do_get_dependencies): Run command in "C" locale.
+	
 	* src/core.c (list_packages): Try to load specially named icons
 	for each package.
 
 	* osso-application-installer.defs: New.
 	* Makefile.am: Install it.
+	(EXTRA_DIST): Distribute it.
 
 2005-08-19  Marius Vollmer  <marius.vollmer@nokia.com>
 
