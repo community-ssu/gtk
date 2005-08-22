@@ -1,5 +1,10 @@
 2005-08-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkviewport.c ("shadow-type" property): Change default to
+	GTK_SHADOW_NONE to not draw extra borders.  N#17723
+
+2005-08-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkentry.c (gtk_entry_set_visibility): Disable
 	autocapitalization in secret mode.  N#17717
 
