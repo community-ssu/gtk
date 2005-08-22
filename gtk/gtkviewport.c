@@ -152,7 +152,7 @@ gtk_viewport_class_init (GtkViewportClass *class)
 						      P_("Shadow type"),
 						      P_("Determines how the shadowed box around the viewport is drawn"),
 						      GTK_TYPE_SHADOW_TYPE,
-						      GTK_SHADOW_IN,
+						      GTK_SHADOW_NONE,
 						      G_PARAM_READWRITE));
 
   widget_class->set_scroll_adjustments_signal =
@@ -229,7 +229,7 @@ gtk_viewport_init (GtkViewport *viewport)
   gtk_widget_set_redraw_on_allocate (GTK_WIDGET (viewport), FALSE);
   gtk_container_set_resize_mode (GTK_CONTAINER (viewport), GTK_RESIZE_QUEUE);
   
-  viewport->shadow_type = GTK_SHADOW_IN;
+  viewport->shadow_type = GTK_SHADOW_NONE;
   viewport->view_window = NULL;
   viewport->bin_window = NULL;
   viewport->hadjustment = NULL;
