@@ -2,12 +2,13 @@ SUBDIRS = src control-panel po mime app-installer-tool
 
 # This variable tells which non-source files should be included in
 # "make dist"
-EXTRA_DIST = \
-        autogen.sh \
-        intltool-extract.in \
-        intltool-merge.in \
-        intltool-update.in \
-	po/porules.mk.in \
+EXTRA_DIST =					\
+        autogen.sh				\
+	osso-application-installer.defs		\
+        intltool-extract.in			\
+        intltool-merge.in			\
+        intltool-update.in			\
+	po/porules.mk.in			\
         maemo.control maemo.dirs
 
 INCLUDES = $(DEPS_CFLAGS)
