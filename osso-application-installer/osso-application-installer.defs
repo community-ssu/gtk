@@ -13,8 +13,15 @@ fi
 if [ x$XDG_DATA_DIRS = x ]; then
   XDG_DATA_DIRS=/usr/local/share:/usr/share
 fi
-
 XDG_DATA_DIRS=$XDG_DATA_DIRS:/var/lib/install/share:/var/lib/install/usr/share
+
+add=/var/lib/install/lib/hildon-control-panel:/var/lib/install/usr/lib/hildon-control-panel
+if [ x$LIBOSSO_CP_PLUGIN_DIRS = x ]; then
+  LIBOSSO_CP_PLUGIN_DIRS=$add
+else
+  LIBOSSO_CP_PLUGIN_DIRS=$LIBOSSO_CP_PLUGIN_DIRS:$add
+fi
 
 export LD_LIBRARY_PATH
 export XDG_DATA_DIRS
+export LIBOSSO_CP_PLUGIN_DIRS
