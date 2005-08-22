@@ -1,3 +1,11 @@
+2005-08-22  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/core.c (list_packages): Try to load specially named icons
+	for each package.
+
+	* osso-application-installer.defs: New.
+	* Makefile.am: Install it.
+
 2005-08-19  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/core.c (format_relationship_failures): Do not look for
