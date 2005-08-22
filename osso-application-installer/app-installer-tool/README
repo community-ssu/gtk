@@ -103,28 +103,19 @@ Usage:
   - app-installer-tool remove <package>
 
   Removes <package> and exits zero when this succeeded, non-zero
-  otherwise.  Diagnostic output is displayed on stderr.  A status
-  report is output on stdout.
+  otherwise.  Diagnostic output is displayed on stderr.  Nothing
+  appears on stdout.
 
-  For each unsatisfied dependency that would be caused by the removal,
-  a line of the form
+
+  - app-installer-tool get-dependencies <package>
+
+  For each unsatisfied dependency that would be caused by a removal of
+  <package>, a line of the form
 
     depended <package>
 
   appears on stdout.  Here, <package> is the name of the package that
   depends on the one to be removed.
-
-  If the removal fails for some unknown reason, a line of the form
-
-    failed
-
-  appears on stdout (and stderr should then be displayed to the user).
-
-
-  - app-installer-tool get-dependencies <package>
-
-  Like 'remove', but do not actually remove the package, only report
-  its dependencies.
 
 
   - app-installer-tool copy <remote-uri> <local>
