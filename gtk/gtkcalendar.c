@@ -722,9 +722,9 @@ gtk_calendar_init (GtkCalendar *calendar)
   GtkWidget *widget;
   GtkCalendarPrivateData *private_data;
 /*  gchar *year_before;*/
-  gchar *week_start;
 /*  gint row;
   gint col; */
+  guint32 week_1stday;
   
   widget = GTK_WIDGET (calendar);
   GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
@@ -853,21 +853,22 @@ gtk_calendar_init (GtkCalendar *calendar)
     g_warning ("Whoever translated calendar:MY did so wrongly.\n");
 #endif
 
-  /* Translate to calendar:week_start:0 if you want Sunday to be the
-   * first day of the week to calendar:week_start:1 if you want Monday
-   * to be the first day of the week, and so on.
-   */  
+  /* Use nl_langinfo to obtain the first day of the week */
+  week_1stday = nl_langinfo (_NL_TIME_WEEK_1STDAY);
 
-  week_start = _("calendar:week_start:0");
-
-  if (strncmp (week_start, "calendar:week_start:", 20) == 0)
-    private_data->week_start = *(week_start + 20) - '0';
-  else 
-    private_data->week_start = -1;
-  
-  if (private_data->week_start < 0 || private_data->week_start > 6)
+  if (g_date_valid_dmy (week_1stday % 100,
+                        week_1stday % 10000 / 100,
+                        week_1stday / 10000))
     {
-      g_warning ("Whoever translated calendar:week_start:0 did so wrongly.\n");
+      GDate *start_day = g_date_new_dmy (week_1stday % 100,
+                                         week_1stday % 10000 / 100,
+                                         week_1stday / 10000);
+      private_data->week_start = g_date_get_weekday (start_day) % 7;
+      g_date_free (start_day);
+    }
+  else
+    {
+      g_warning ("nl_langinfo(_NL_TIME_WEEK_1STDAY) returns invalid date");
       private_data->week_start = 0;
     }
 }
