@@ -26,6 +26,9 @@ DISTCLEANFILES = intltool-extract		\
 mylibdir = $(libdir)/osso-application-installer
 mylib_DATA = maemo.deb
 
+ossoconfdir = $(sysconfdir)/osso-af-init
+ossoconf_DATA = osso-application-installer.defs
+
 maemo.deb: maemo.control maemo.dirs
 	rm -rf maemo.tmp
 	mkdir maemo.tmp
