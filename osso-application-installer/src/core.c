@@ -890,7 +890,7 @@ format_relationship_failures (gchar *footer, gchar *output)
       else
 	g_string_append
 	  (report, _("ai_ti_dependency_conflict_text"));
-      g_string_append (report, ":\n");
+      g_string_append (report, "\n");
       append_list_strings (report, depended);
     }
   if (conflicts)
