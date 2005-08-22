@@ -1,4 +1,9 @@
 2005-08-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_tap_and_hold_query): Don't crash if
+	the tree is empty.  N#16485
+
+2005-08-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkcalendar.c (gtk_calendar_init): Stock GTK+ mechanism for
 	determining the first day of the week with PO files replaced
