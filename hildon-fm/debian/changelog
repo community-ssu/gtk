@@ -1,3 +1,11 @@
+hildon-fm (0.9.35-1) unstable; urgency=low
+
+  * Bugs fixed:
+    14585: No error notification when connecting phone and BT is turned off
+    14586: Incorrect behaviour in File Tree when BT is turned off
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 22 Aug 2005 17:58:41 +0300
+
 hildon-fm (0.9.34-2) unstable; urgency=low
 
   * debian/control: Remove extra Depends: line that's breaking dependencies.
