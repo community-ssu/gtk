@@ -503,6 +503,7 @@ list_packages (AppData *app_data)
   GtkTreeIter iter;
   gchar *stdout_string, *ptr;
   GdkPixbuf *default_icon;
+  GtkIconTheme *icon_theme;
 
   if (!run_app_installer_tool (app_data,
 			       "list", NULL, NULL,
@@ -511,7 +512,8 @@ list_packages (AppData *app_data)
 			       "Can not get the list of installed packages."))
     return NULL;
 
-  default_icon = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+  icon_theme = gtk_icon_theme_get_default ();
+  default_icon = gtk_icon_theme_load_icon (icon_theme,
 					   "qgn_list_gene_default_app",
 					   26,
 					   0,
@@ -529,8 +531,9 @@ list_packages (AppData *app_data)
   ptr = stdout_string;
   while (*ptr)
     {
-      gchar *name, *version, *size, *status;
+      gchar *name, *version, *size, *status, *icon_name;
       gboolean broken;
+      GdkPixbuf *icon;
 
       ptr = parse_delimited (ptr, '\t', &name);
       ptr = parse_delimited (ptr, '\t', &version);
@@ -542,19 +545,30 @@ list_packages (AppData *app_data)
       if (!strcmp (name, META_PACKAGE))
 	continue;
 
-      version = g_strdup_printf ("v%s", version);
-      size = g_strdup_printf ("%skB", size);
+      version = g_strdup_printf ("v %s", version);
+      size = g_strdup_printf ("%s kB", size);
       broken = strcmp (status, "ok");
+
+      icon_name = g_strdup_printf ("pkg_%s", name);
+      icon = gtk_icon_theme_load_icon (icon_theme,
+				       icon_name,
+				       26,
+				       0,
+				       NULL);
+      g_free (icon_name);
 
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (store, &iter,
-			  COLUMN_ICON, default_icon, 
+			  COLUMN_ICON, icon? icon : default_icon, 
 			  COLUMN_NAME, name,
 			  COLUMN_VERSION, version,
 			  COLUMN_SIZE, size,
 			  COLUMN_BROKEN, broken,
 			  -1);
       
+      if (icon)
+	g_object_unref (icon);
+
       free (version);
       free (size);
     }
@@ -854,7 +868,7 @@ format_relationship_failures (gchar *footer, gchar *output)
   if (full)
     {
       g_string_append (report, _("ai_info_notenoughmemory"));
-      g_string_append (report, ".\n");
+      g_string_append (report, "\n");
     }
 
   while (depends)
