@@ -1,3 +1,10 @@
+libosso (0.9.13-1) unstable; urgency=low
+
+  * Added support for environment variable LIBOSSO_CP_PLUGIN_DIRS to
+    osso_cp_plugin_execute (bug 17720).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 23 Aug 2005 13:03:03 +0300
+
 libosso (0.9.12-1) unstable; urgency=low
 
   * Added osso_application_name_get and osso_application_version_get

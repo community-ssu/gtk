@@ -26,11 +26,31 @@
 #include <linux/limits.h>
 #include <errno.h>
 
+static void *
+try_plugin (const char *dir, const char *file)
+{
+  char libname[PATH_MAX];
+  void *handle;
+
+  if (snprintf (libname, PATH_MAX, "%s/%s", dir, file) >= PATH_MAX)
+    {
+      ULOG_ERR ("PATH_MAX exceeded in osso_cp_plugin_execute\n");
+      return NULL;
+    }
+
+  handle = dlopen (libname, RTLD_NOW | RTLD_GLOBAL);
+  if (handle == NULL)
+    {
+      ULOG_ERR_F ("Unable to load library '%s':", libname);
+      ULOG_ERR_F ("%s\n", dlerror());
+    }
+  return handle;
+}
+
 osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
 				     const gchar *filename,
 				     gpointer data, gboolean user_activated)
 {
-    char libname[PATH_MAX];
     gint r;
     osso_return_t ret;
     osso_cp_plugin_exec_f *exec=NULL;
@@ -45,21 +65,32 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
     if(filename == NULL) return OSSO_INVALID;
     dprint("executing library '%s'",filename);
 
-    if(sprintf(libname,"%s/%s",OSSO_CTRLPANELPLUGINDIR,filename)<0) {
-        ULOG_ERR_F("Error while copying plugin name: %s", strerror(errno));
-        return OSSO_ERROR;
-    }
-    /* load library, or return if this fails */
-    p.lib = dlopen(libname,RTLD_NOW|RTLD_GLOBAL);
-    dprint("libname='%s'",libname);
+    /* First try builtin path */
+    p.lib = try_plugin (OSSO_CTRLPANELPLUGINDIR, filename);
+    if (p.lib == NULL)
+      {
+	/* Then try the directories in LIBOSSO_CP_PLUGIN_DIRS
+	 */
+	const char *dirs = getenv ("LIBOSSO_CP_PLUGIN_DIRS");
+	if (dirs)
+	  {
+	    char *dirs_copy = strdup (dirs), *ptr = dirs_copy, *tok;
+	    while ((tok = strsep (&ptr, ":")))
+	      {
+		p.lib = try_plugin (tok, filename);
+		if (p.lib)
+		  break;
+	      }
+	    if (dirs_copy)
+	      free (dirs_copy);
+	    else
+	      ULOG_ERR ("Out of memory in osso_cp_plugin_execute");
+	  }
+      }
 
-    /* library wasn't found, or couldn't be loaded */
-    if(p.lib==NULL) {
-	ULOG_ERR_F("Unable to load library '%s':",libname);
-	ULOG_ERR_F("%s",dlerror());
-	dprint("could not load libraru!\n");
-	return OSSO_ERROR;
-    }
+    if (p.lib == NULL)
+      return OSSO_ERROR;
+
     p.name = g_path_get_basename(filename);
 
     dprint("..");
