@@ -1,8 +1,8 @@
-posix-locales (2.3.2-13osso21) UNRELEASED; urgency=low
+posix-locales (2.3.2-13osso21) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * New package for w34 with bugfixes
 
- -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 18 Aug 2005 14:21:13 +0300
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Tue, 23 Aug 2005 17:23:00 +0300
 
 posix-locales (2.3.2-13osso20) unstable; urgency=low
 

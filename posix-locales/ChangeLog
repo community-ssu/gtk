@@ -1,3 +1,7 @@
+2005-08-23  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* locales(fi_FI: Fixed abday, abmon, day, mon to use sentence capital letters (N#17095)
+
 2005-08-18  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* locales/fi_FI: Fixed d_fmt (N#16983) and country_name
