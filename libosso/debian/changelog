@@ -2,7 +2,8 @@ libosso (0.9.13-1) unstable; urgency=low
 
   * Added support for environment variable LIBOSSO_CP_PLUGIN_DIRS to
     osso_cp_plugin_execute (bug 17720).
-  * Now osso_state_read accepts zero as the state size (bug 17743).
+  * Now osso_state_read accepts zero as the state_size and NULL for
+    state_data (bug 17743).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 23 Aug 2005 17:46:22 +0300
 
