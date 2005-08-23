@@ -117,7 +117,7 @@ osso_return_t osso_state_read(osso_context_t *osso, osso_state_t *state)
     gchar *path = NULL, *tmpdir_path = NULL;
     osso_return_t ret;
 
-    if (state == NULL || state->state_data == NULL)
+    if (state == NULL)
     {
 	ULOG_ERR_F("NULL state pointer");
 	return OSSO_INVALID;
