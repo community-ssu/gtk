@@ -851,6 +851,10 @@ osso_return_t osso_state_write(osso_context_t *osso, osso_state_t *state);
  * @param osso The library context as returned by #osso_initialize.
  * @param state A pointer to an allocated #osso_state_t structure. The data
  * should point to a memory block that is at least as large as state_size.
+ * If state structure where the state_data member is NULL and the
+ * state_size member is zero is passed, then the needed space read from the
+ * state file and allocated dynamically (state_data points to the memory and
+ * must be freed by the caller).
  * @return OSSO_OK if the state reading was successful.
  * OSSO_ERROR if the operation failed for some reason.
  * OSSO_INVALID if function arguments were invalid.
