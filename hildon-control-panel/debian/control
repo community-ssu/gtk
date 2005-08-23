@@ -1,7 +1,7 @@
 Source: hildon-control-panel
 Section: x11
 Priority: optional
-Maintainer: Nokia <nokia>
+Maintainer: Karoliina Salminen <karoliina.t.salminen@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), hildon-libs-dev (>= 0.7.0), hildon-lgpl-dev, hildon-base-lib-dev, pkg-config, libosso-dev (>= 0.9.10), libmatchbox-dev, osso-af-settings, libosso-help-dev
 Standards-Version: 3.6.0
 

@@ -22,7 +22,6 @@
  *
  */
 
-
 #ifndef DBUS_API_SUBJECT_TO_CHANGE
 #define DBUS_API_SUBJECT_TO_CHANGE
 #endif /* dbus_api_subject_to_change */

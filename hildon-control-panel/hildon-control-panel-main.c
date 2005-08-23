@@ -21,7 +21,7 @@
  * 02110-1301 USA
  *
  */
-
+ 
 #include "hildon-control-panel-main.h"
 
 /* For logging functions */
@@ -33,6 +33,9 @@ static const gchar *user_home_dir;
 
 
 typedef struct _AppData AppData;
+
+static GtkCheckMenuItem *cp_view_small_icons;
+static GtkCheckMenuItem *cp_view_large_icons;
 
 struct _AppData
 {
@@ -72,9 +75,9 @@ AppData state_data;
 #define HILDON_CP_RFS_SHUTDOWN_IF HILDON_CP_SVC_NAME ".rfs_shutdown"
 #define HILDON_CP_RFS_SHUTDOWN_MSG "shutdown"
 
-/* Definitions for startup wizard launch*/
-#define HILDON_CONTROL_PANEL_DBUS_STARTUP_WIZARD_SERVICE "osso_startup_wizard"
-#define HILDON_CONTROL_PANEL_STARTUP_WIZARD_LAUNCH "launch_startup_wizard"
+/* Definitions for mobile operator wizard launch*/
+#define HILDON_CONTROL_PANEL_DBUS_OPERATOR_WIZARD_SERVICE "operator_wizard"
+#define HILDON_CONTROL_PANEL_OPERATOR_WIZARD_LAUNCH "launch_operator_wizard"
 
 #define HILDON_CONTROL_PANEL_STATEFILE_NO_CONTENT "EOF"
 
@@ -123,7 +126,7 @@ static void _enforce_state(void);
 static void _save_configuration( gpointer data );
 static void _retrieve_configuration( void );
 
-/* Keysnooper */
+/* Keylistener */
 static gint _cp_keyboard_listener(GtkWidget *widget, 
                                   GdkEventKey * keyevent, gpointer data);
 
@@ -133,8 +136,8 @@ static void _topmost_status_acquire(void);
 static void _topmost_status_lose(void);
 /* Callback for resetting factory settings */
 static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data );
-/* Callback for startup wizard launch */
-static void _run_startup_wizard( GtkWidget *widget, gpointer data );
+/* Callback for operator wizard launch */
+static void _run_operator_wizard( GtkWidget *widget, gpointer data );
 /* Callback for help function */
 static void _launch_help( GtkWidget *widget, gpointer data );
 /* Callback for menu item small/large icons */
@@ -157,7 +160,6 @@ static void _hw_signal_cb( osso_hw_state_t *state, gpointer data );
 int 
 main(int argc, char ** argv)
 {
-    gint keysnooper_id;
 
     setlocale( LC_ALL, "" );
     
@@ -187,8 +189,6 @@ main(int argc, char ** argv)
 
     _enforce_state();     /* realize the saved state */
 
-    keysnooper_id = gtk_key_snooper_install(_cp_keyboard_listener, NULL);
-    
     gtk_widget_show_all( GTK_WIDGET( state_data.app ) );
 
     if(state_data.execute==1) {
@@ -197,9 +197,7 @@ main(int argc, char ** argv)
     }
     
     gtk_main();
-    
-    gtk_key_snooper_remove(keysnooper_id);
-    
+
 
     _destroy_data( );
     
@@ -330,6 +328,7 @@ static void _init_gui(void)
     mi = gtk_radio_menu_item_new_with_label
         ( menugroup, HILDON_CONTROL_PANEL_MENU_SMALL_ITEMS );
     menugroup = gtk_radio_menu_item_get_group( GTK_RADIO_MENU_ITEM (mi) );
+    cp_view_small_icons = GTK_CHECK_MENU_ITEM(mi);
 
     if(state_data.icon_size == 0) {
         gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM(mi), TRUE);
@@ -346,6 +345,7 @@ static void _init_gui(void)
     mi = gtk_radio_menu_item_new_with_label
         ( menugroup,
           HILDON_CONTROL_PANEL_MENU_LARGE_ITEMS );
+    cp_view_large_icons = GTK_CHECK_MENU_ITEM(mi);
 
     if (state_data.icon_size == 1) {
         gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (mi), TRUE);
@@ -369,14 +369,14 @@ static void _init_gui(void)
     gtk_menu_shell_append( GTK_MENU_SHELL( menu ), mi );
 
 
-    /* Run startup wizard */
+    /* Run operator wizard */
     mi = gtk_menu_item_new_with_label
         ( HILDON_CONTROL_PANEL_MENU_SETUP_WIZARD);
 
     gtk_menu_shell_append( GTK_MENU_SHELL( sub_tools ), mi );
     
     g_signal_connect( G_OBJECT( mi ), "activate", 
-                      G_CALLBACK(_run_startup_wizard), NULL);
+                      G_CALLBACK(_run_operator_wizard), NULL);
 
     /* Reset Factory Settings */
     mi = gtk_menu_item_new_with_label
@@ -431,6 +431,17 @@ static void _init_gui(void)
 
     /* Set the callback function for HW signals */
     osso_hw_set_event_cb(state_data.osso, NULL , _hw_signal_cb, NULL );
+
+    /* Set the keyboard listening callback */
+
+    gtk_widget_add_events(GTK_WIDGET(state_data.window), 
+                          GDK_BUTTON_RELEASE_MASK);
+
+    g_signal_connect(G_OBJECT(state_data.window), "key_release_event",
+                     G_CALLBACK(_cp_keyboard_listener), NULL);
+
+
+
 }
 
 
@@ -746,14 +757,19 @@ static gint _cp_keyboard_listener( GtkWidget * widget,
         if (keyevent->keyval == HILDON_HARDKEY_INCREASE) {
             if (state_data.icon_size != 1) {
                 state_data.icon_size = 1;
+                gtk_check_menu_item_set_active 
+                    (cp_view_large_icons, TRUE);
                 _large_icons();
                 _save_configuration ((gpointer)"large");
                 return TRUE;
             }
+
         }
         else if (keyevent->keyval == HILDON_HARDKEY_DECREASE) {
             if (state_data.icon_size != 0) {
                 state_data.icon_size = 0;
+                gtk_check_menu_item_set_active 
+                    (cp_view_small_icons, TRUE);
                 _small_icons();
                 _save_configuration((gpointer)"small");
                 return TRUE;
@@ -822,14 +838,14 @@ static void _iconsize( GtkWidget *widget, gpointer data )
     }
 }
 
-static void _run_startup_wizard( GtkWidget *widget, gpointer data)
+static void _run_operator_wizard( GtkWidget *widget, gpointer data)
 {
 
     osso_rpc_t returnvalues;
     osso_return_t returnstatus;
     returnstatus = osso_rpc_run_with_defaults
-        (state_data.osso, HILDON_CONTROL_PANEL_DBUS_STARTUP_WIZARD_SERVICE,
-         HILDON_CONTROL_PANEL_STARTUP_WIZARD_LAUNCH,
+        (state_data.osso, HILDON_CONTROL_PANEL_DBUS_OPERATOR_WIZARD_SERVICE,
+         HILDON_CONTROL_PANEL_OPERATOR_WIZARD_LAUNCH,
          &returnvalues, 
          DBUS_TYPE_INVALID);    
 
@@ -840,7 +856,7 @@ static void _run_startup_wizard( GtkWidget *widget, gpointer data)
             break;
         case OSSO_INVALID:
             osso_log(LOG_ERR, 
-                     "Invalid parameter in startup_wizard launch");
+                     "Invalid parameter in operator_wizard launch");
             break;
         case OSSO_RPC_ERROR:
         case OSSO_ERROR:
@@ -848,12 +864,12 @@ static void _run_startup_wizard( GtkWidget *widget, gpointer data)
         case OSSO_ERROR_NO_STATE:
         case OSSO_ERROR_STATE_SIZE:
             if (returnvalues.type == DBUS_TYPE_STRING) {
-                osso_log(LOG_ERR, "Startup wizard launch failed: %s\n", 
+                osso_log(LOG_ERR, "Operator wizard launch failed: %s\n", 
                          returnvalues.value.s);
             }
             else {
                 osso_log(LOG_ERR, 
-                         "Startup wizard launch failed, unspecified");
+                         "Operator wizard launch failed, unspecified");
             }
             break;            
         default:
@@ -972,8 +988,6 @@ static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
          DBUS_TYPE_INVALID);
      
     password = NULL; /* password pointed to middle of crypted password */
-    g_free(crypted_password);
-    crypted_password = NULL;
 
     switch (returnstatus)
     {

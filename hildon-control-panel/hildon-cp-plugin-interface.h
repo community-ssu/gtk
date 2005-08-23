@@ -21,14 +21,13 @@
  * 02110-1301 USA
  *
  */
-
 /**
  * @file hildon-cp-plugin-interface.h
  * This file includes the control panel plugins interface, 
  * i.e. the prototypes for the execute() and reset() functions. 
  * This file is intended to be included by control panel plugins. 
- * <p />
  */
+
 #ifndef __HILDON_CP_PLUGIN_INTERFACE_H__
 # define  __HILDON_CP_PLUGIN_INTERFACE_H__
 
