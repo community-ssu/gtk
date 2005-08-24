@@ -14,7 +14,7 @@
 	respectively.  Fallback when no translation is available.
 	(install_package): Use either ai_error_alreadyinstalled or
 	ai_ti_alreadyinstalled, whichever provides a translation.
-	
+
 	* app-installer-tool/app-installer-tool.c (do_remove): Call
 	run_cmd correctly.  Removed unused local variables.
 
@@ -55,7 +55,7 @@
 	return a "full" indication.
 
 	* src/core.c (package_already_installed): New.
-	(install_package): Use it to refuse to install packages tht are
+	(install_package): Use it to refuse to install packages that are
 	already there.
 	(package_file_info): Reject packages for the wrong architectures.
 	Say "ai_error_builtin" for packages that do not depend on maemo,
