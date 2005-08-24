@@ -1,3 +1,30 @@
+2005-08-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.8
+	
+	* src/ui/callbacks.c (on_treeview_selection_changed): Use
+	ai_ti_broken_description or fallback to English text for
+	description of broken packages.
+
+	* src/core.c (format_relationship_failures): Use
+	ai_info_notenoughmemory only when a translation is available.
+	Fall back to explicit English text otherwise.
+	(list_packages): Allow version and size column text to be
+	translated with ai_ti_version_column and ai_ti_size_column,
+	respectively.  Fallback when no translation is available.
+	(install_package): Use either ai_error_alreadyinstalled or
+	ai_ti_alreadyinstalled, whichever provides a translation.
+	
+	* app-installer-tool/app-installer-tool.c (do_remove): Call
+	run_cmd correctly.  Removed unused local variables.
+
+	* src/applicationinstaller-i18n.h, src/main.c (gettext_try_many):
+	New.
+
+	* po/en_GB.po (ai_ti_version_column, ai_ti_size_column,
+	ai_ti_broken_description): New.
+	(ai_info_notenoughmemory): Resurrected.
+	
 2005-08-22  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/core.c (format_relationship_failures): Don't output ':'
