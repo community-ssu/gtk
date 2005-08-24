@@ -40,6 +40,7 @@
 
 #include "core.h"
 #include "ui/represent.h"
+#include "applicationinstaller-i18n.h"
 
 /* OVERVIEW
 
@@ -504,6 +505,19 @@ list_packages (AppData *app_data)
   gchar *stdout_string, *ptr;
   GdkPixbuf *default_icon;
   GtkIconTheme *icon_theme;
+  gchar *version_fmt, *size_fmt;
+
+  /* XXX-NLS - once these logical ids appear in l10n files, we can use
+               the simpler _(...) markup instead of gettext_try_many.
+  */
+  _("ai_ti_version_column");
+  version_fmt = gettext_try_many ("ai_ti_version_column",
+				  "v%s",
+				  NULL);
+  _("ai_ti_size_column");
+  size_fmt = gettext_try_many ("ai_ti_size_column",
+			       "%skB",
+			       NULL);
 
   if (!run_app_installer_tool (app_data,
 			       "list", NULL, NULL,
@@ -545,8 +559,8 @@ list_packages (AppData *app_data)
       if (!strcmp (name, META_PACKAGE))
 	continue;
 
-      version = g_strdup_printf ("v %s", version);
-      size = g_strdup_printf ("%s kB", size);
+      version = g_strdup_printf (version_fmt, version);
+      size = g_strdup_printf (size_fmt, size);
       broken = strcmp (status, "ok");
 
       icon_name = g_strdup_printf ("pkg_%s", name);
@@ -867,7 +881,12 @@ format_relationship_failures (gchar *footer, gchar *output)
 
   if (full)
     {
-      g_string_append (report, _("ai_info_notenoughmemory"));
+      /* XXX-NLS */
+      _("ai_info_notenoughmemory");
+      g_string_append (report,
+		       gettext_try_many ("ai_info_notenoughmemory",
+					 "Not enough memory",
+					 NULL));
       g_string_append (report, "\n");
     }
 
@@ -1120,8 +1139,16 @@ install_package (gchar *deb, AppData *app_data)
 
   if (package_already_installed (app_data, info.name->str))
     {
+      /* XXX-NLS - some versions of the osso-application-installer
+	           erroneously used ai_ti_alreadyinstalled and this
+	           has made it into some versions of the l10n files.
+      */
+      _("ai_error_alreadyinstalled");
       present_report_with_details (app_data,
-				   _("ai_error_alreadyinstalled"),
+				   gettext_try_many
+				   ("ai_error_alreadyinstalled",
+				    "ai_ti_alreadyinstalled",
+				    NULL),
 				   NULL);
     }
   else if (confirm_install (app_data, &info))
