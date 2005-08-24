@@ -456,8 +456,6 @@ do_install (gchar *file)
 int
 do_remove (gchar *package, int silent)
 {
-  gchar *output = NULL;
-  int result;
   gchar *args[] = {
     "/usr/bin/fakeroot",
     "/usr/bin/dpkg",
@@ -466,7 +464,7 @@ do_remove (gchar *package, int silent)
     NULL
   };
 
-  return run_cmd (args, NULL, NULL);
+  return run_cmd (args);
 }
 
 int
