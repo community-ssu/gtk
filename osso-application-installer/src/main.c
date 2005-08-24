@@ -29,9 +29,26 @@
  *
  */
 
-
-
+#include <stdarg.h>
 #include "main.h"
+
+char *
+gettext_try_many (const char *logical_id, ...)
+{
+  const char *string;
+  char *result;
+  va_list ap;
+
+  va_start (ap, logical_id);
+  for (string = logical_id; string; string = va_arg (ap, const char *))
+    {
+      result = gettext (string);
+      if (result != string)
+	break;
+    }
+  va_end (ap);
+  return result;
+}
 
 int main (int argc, char** argv)
 {

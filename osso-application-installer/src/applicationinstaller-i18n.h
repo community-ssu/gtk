@@ -58,4 +58,17 @@
 
 #define SUPPRESS_FORMAT_WARNING(x) ((char *)(long)(x))
 
+/* Sometimes there is a temporary disruption in the space-time
+   continuum and the localization files do not match the logical
+   strings that the source code wants to use.  In order to be
+   backwards compatible with old localization files but still
+   magically use the newer, better logical ids when they become
+   available in the l10n files, you can use this variant of gettext
+   that tries a NULL-terminated sequence of strings until it can get a
+   translation.  If no translation is available for any of the
+   strings, it returns the last string in the sequence.
+*/
+
+char *gettext_try_many (const char *logical_id, ...);
+
 #endif /* __AI_INTL_H__ */
