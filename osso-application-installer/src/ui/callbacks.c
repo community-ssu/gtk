@@ -145,10 +145,14 @@ on_treeview_selection_changed (GtkTreeSelection *selection,
     
       if (broken)
 	{
+	  /* XXX-NLS */
+	  _("ai_ti_broken_description");
 	  description =
-	    "This application is broken.  "
-	    "You might be able to fix it by installing "
-	    "a newer version of it.";
+	    gettext_try_many ("ai_ti_broken_description",
+			      "This package is broken.  "
+			      "You might be able to fix it by installing "
+			      "a newer version of it.",
+			      NULL);
 	}
       else
 	description = package_description (app_data, package);
