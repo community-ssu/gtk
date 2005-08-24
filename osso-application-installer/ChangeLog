@@ -6,11 +6,8 @@
 	ai_ti_broken_description or fallback to English text for
 	description of broken packages.
 
-	* src/core.c (format_relationship_failures): Use
-	ai_info_notenoughmemory only when a translation is available.
-	Fall back to explicit English text otherwise.
-	(list_packages): Allow version and size column text to be
-	translated with ai_ti_version_column and ai_ti_size_column,
+	* src/core.c (list_packages): Allow version and size column text
+	to be translated with ai_ti_version_column and ai_ti_size_column,
 	respectively.  Fallback when no translation is available.
 	(install_package): Use either ai_error_alreadyinstalled or
 	ai_ti_alreadyinstalled, whichever provides a translation.
