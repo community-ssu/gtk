@@ -881,12 +881,7 @@ format_relationship_failures (gchar *footer, gchar *output)
 
   if (full)
     {
-      /* XXX-NLS */
-      _("ai_info_notenoughmemory");
-      g_string_append (report,
-		       gettext_try_many ("ai_info_notenoughmemory",
-					 "Not enough memory",
-					 NULL));
+      g_string_append (report, _("ai_info_notenoughmemory"));
       g_string_append (report, "\n");
     }
 
