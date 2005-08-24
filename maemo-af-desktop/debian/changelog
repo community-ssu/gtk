@@ -1,9 +1,9 @@
 maemo-af-desktop (1.43.0-10) unstable; urgency=low
 
-  * Typo corrected in debian/control: default-backround-config ->
-    default-background-config
+  * Typo corrected in debian/control: default-backrounds-config ->
+    default-backgrounds-config
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 24 Aug 2005 14:00:43 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 24 Aug 2005 14:00:43 +0300
 
 maemo-af-desktop (1.43.0-9) unstable; urgency=low
 
