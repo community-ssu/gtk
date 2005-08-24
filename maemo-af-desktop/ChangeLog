@@ -1,3 +1,17 @@
+2005-08-24  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+        * Fixed bug #17249
+	* po/en_GB.po: Added logical ID "cerm_can_not_open_insuf_res" for the log
+	launch failures in low memory situations.
+	* windowmanager.c (top_service): When attempting to top killed applications and
+	memory is low, st up a timer to check the success of the launch.
+	(launch_banner_timeout): If the application launch failed and memory is low,
+	display an information note for the user. 
+	(relaunch_timeout): A new function. Checks if application 
+	relaunch for killed applications done during low memory situation failed and
+	displays information note in those situations.
+	* windowmanager.h: Added definitions for (re)launch timeout and the
+	insufficient memory infobanner.
 
 2005-08-12  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 

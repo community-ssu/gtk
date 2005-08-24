@@ -1,3 +1,9 @@
+maemo-af-desktop (1.43.0-11) unstable; urgency=low
+
+  * Fixed bug #17249
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 24 Aug 2005 17:01:21 +0300
+
 maemo-af-desktop (1.43.0-10) unstable; urgency=low
 
   * Typo corrected in debian/control: default-backrounds-config ->

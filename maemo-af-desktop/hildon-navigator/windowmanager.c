@@ -101,6 +101,10 @@ static void close_launch_banner( GtkWidget *parent );
 /* Function for figuring out when to close the banner */
 static gboolean launch_banner_timeout( gpointer data );
 
+/* Function for displaying relaunch failure banner */
+
+static gboolean relaunch_timeout( gpointer data );
+
 /** The actual X event handler that delegates real event handling
  *  elsewhere.
  */
@@ -2902,9 +2906,15 @@ void top_service(const gchar *service_name)
      }
      else if (killed == TRUE)
      {
+         guint interval = LAUNCH_SUCCESS_TIMEOUT * 1000;
          /* This should probably be merged with the previous condition */
          osso_man = osso_manager_singleton_get_instance();
          osso_manager_launch(osso_man, service_name, NULL);
+	 if (lowmem_situation == TRUE)
+	   {
+	     g_timeout_add(interval,
+			   relaunch_timeout, (gpointer)service_name);
+	   }
          return;
      }
      else
@@ -3293,14 +3303,11 @@ static gboolean launch_banner_timeout( gpointer data )
 		/* Close the banner */
 		close_launch_banner( NULL );
 		
-		/* NOTE: Disabled, for now */
-		/*
-		if ( time_left >= APP_LAUNCH_BANNER_TIMEOUT ) {
-			gtk_infoprint( NULL, g_strdup_printf( "%s %s",
-				_( APP_LAUNCH_BANNER_MSG_LOADING_FAILED ),
-				app_name ) );
+
+		if ( time_left >= APP_LAUNCH_BANNER_TIMEOUT &&
+		     lowmem_situation == TRUE) {
+		  gtk_infoprint( NULL, _( LAUNCH_FAILED_INSUF_RES ) );
 		}
-		*/
 		
 		/* Cleanup */
 		if ( data ) {
@@ -3317,7 +3324,27 @@ static gboolean launch_banner_timeout( gpointer data )
 	return TRUE;
 }
 
-		
+static gboolean relaunch_timeout(gpointer data)
+{
+  GtkTreeIter iter;
+  gchar *service_name = (gchar *)data;
+  gboolean killed;
+
+  if (find_service_from_tree(wm_cbs.model, &iter, service_name))
+    {
+      gtk_tree_model_get(wm_cbs.model, &iter, WM_KILLED_ITEM, &killed, -1);
+      
+      /* Did launch fail? */
+
+      if (killed == TRUE && lowmem_situation == TRUE)
+	{
+	  gtk_infoprint( NULL, _( LAUNCH_FAILED_INSUF_RES ) );
+	}
+    }
+  return FALSE;
+}
+
+	
 static void dnotify_callback(MBDotDesktop *desktop)
 {
     GtkTreeStore *store = GTK_TREE_STORE(wm_cbs.model);

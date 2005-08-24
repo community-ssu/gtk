@@ -30,6 +30,9 @@ msgstr "loading"
 msgid "ckct_ib_application_loading_failed"
 msgstr "Unable to load"
 
+msgid "cerm_can_not_open_insuf_res"
+msgstr "Unable to open. \n" "Not enough memory."
+
 #: ../others-menu.c:
 msgid "tana_fi_utilities"
 msgstr "Utilities"
