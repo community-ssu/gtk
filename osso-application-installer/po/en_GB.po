@@ -161,9 +161,8 @@ msgstr "Help"
 #: src/ui/callbacks.c:149
 msgid "ai_ti_broken_description"
 msgstr ""
-"This package is broken.  "
-"You might be able to fix it by installing "
-"a newer version of it."
+"This package is broken.  You might be able to fix it by installing a newer "
+"version of it."
 
 #: src/ui/represent.c:105
 msgid "ai_bd_error_details_ok"
