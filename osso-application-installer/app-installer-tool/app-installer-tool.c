@@ -30,6 +30,7 @@
 #include <glib.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <errno.h>
+#include <math.h>
 
 #undef DEBUG
 
@@ -493,11 +494,27 @@ do_get_dependencies (gchar *package)
   return 0;
 }
 
+typedef struct {
+  float old_progress;
+} copy_data;
+
 static gboolean
 copy_progress (GnomeVFSXferProgressInfo *info, gpointer raw_data)
 {
+  copy_data *data = (copy_data *)raw_data;
+
   if (info->file_size > 0)
-    printf ("%g\n", ((double) info->bytes_copied) / info->file_size);;
+    {
+      float progress =
+	floor ((40.0 * info->bytes_copied) / info->file_size) / 40.0;
+      if (progress != data->old_progress)
+	{
+	  data->old_progress = progress;
+	  printf ("%g\n", progress);
+	  fflush (stdout);
+	}
+    }
+
   return TRUE;
 }
 
@@ -506,6 +523,7 @@ do_copy (gchar *source, gchar *target)
 {
   GnomeVFSURI *source_uri, *target_uri;
   GnomeVFSResult result;
+  copy_data data;
 
   if (!gnome_vfs_init ())
     {
@@ -527,13 +545,14 @@ do_copy (gchar *source, gchar *target)
       return 1;
     }
 
+  data.old_progress = 0;
   result = gnome_vfs_xfer_uri (source_uri,
 			       target_uri,
 			       GNOME_VFS_XFER_DEFAULT,
 			       GNOME_VFS_XFER_ERROR_MODE_ABORT,
 			       GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE,
 			       copy_progress,
-			       NULL);
+			       &data);
 
   if (result != GNOME_VFS_OK)
     {
