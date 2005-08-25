@@ -190,7 +190,7 @@ static void _deinit(osso_context_t *osso)
         int i;
         _osso_interface_t *elem;
         /* interface members need to be freed separately */
-        for (i = 0; i < osso->ifs.len; ++i) {
+        for (i = 0; i < osso->ifs->len; ++i) {
             elem = &g_array_index(osso->ifs, _osso_interface_t, i);
             if (elem->interface != NULL) {
                 g_free(elem->interface);
