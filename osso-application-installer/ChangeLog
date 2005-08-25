@@ -1,5 +1,7 @@
 2005-08-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
+        * po/en_GB.po (ai_ti_copying, ai_ti_copying_failed): New.
+	
 	* app-installer-tool/app-installer-tool.c (copy_progress,
 	do_copy): Round progress fraction to to multiples of 1/40.  Only
 	output them when they are different from the previous one.
