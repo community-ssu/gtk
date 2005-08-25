@@ -1,3 +1,11 @@
+hildon-lgpl (0.9.51-1) unstable; urgency=low
+
+  * Bugs fixed:
+    16593: AFW Stress Testing: Menu disappears when we continuously navigate
+           between the menu items containing submenus
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 25 Aug 2005 15:55:51 +0300
+
 hildon-lgpl (0.9.50-1) unstable; urgency=low
 
   * Bugs fixed:
