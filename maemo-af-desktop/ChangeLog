@@ -1,3 +1,12 @@
+2005-08-25  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+        
+        * Fixed byg #10558 - FR_CA Home memory card cover: no message when open
+	* maemo-af-desktop/hildon-home/hildon-home-main.c:
+          (image_loader_callback):
+	Changed exit status to refer higher byte since status goes there.
+	* maemo-af-desktop/hildon-home/hildon-home-image-loader.h:
+	Added missing slash to uri prefix
+
 2005-08-24  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
         * Fixed bug #17249

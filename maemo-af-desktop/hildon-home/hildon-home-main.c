@@ -1480,6 +1480,7 @@ void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
 
     loading_image_note = NULL;
 
+    child_exit_status = child_exit_status >> 8;
     switch(child_exit_status)
     {
     case HILDON_HOME_IMAGE_LOADER_OK:

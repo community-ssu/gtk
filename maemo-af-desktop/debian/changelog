@@ -1,3 +1,9 @@
+maemo-af-desktop (1.44.0) unstable; urgency=low
+
+  * Fixed bug FR_CA Home memory card cover: no message when open
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 25 Aug 2005 14:44:27 +0300
+
 maemo-af-desktop (1.43.0-11) unstable; urgency=low
 
   * Fixed bug #17249
