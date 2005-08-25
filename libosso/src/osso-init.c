@@ -187,8 +187,18 @@ static void _deinit(osso_context_t *osso)
 	osso->object_path = NULL;
     }
     if(osso->ifs != NULL) {
-	g_array_free(osso->ifs, TRUE);
-	osso->ifs = NULL;
+        int i;
+        _osso_interface_t *elem;
+        /* interface members need to be freed separately */
+        for (i = 0; i < osso->ifs.len; ++i) {
+            elem = &g_array_index(osso->ifs, _osso_interface_t, i);
+            if (elem->interface != NULL) {
+                g_free(elem->interface);
+        	elem->interface = NULL;
+            }
+        }
+        g_array_free(osso->ifs, TRUE);
+        osso->ifs = NULL;
     }
     if(osso->hw != NULL) {
 	free(osso->hw);
