@@ -257,10 +257,13 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 	goto dbus_conn_error1;
     }
     
-    osso->object_path = g_strdup_printf("/com/nokia/%s",osso->application);
-    dprint("osso->object_path='%s'",osso->object_path);
-    if(osso->object_path == NULL)
-	goto dbus_conn_error1;
+    if (osso->object_path == NULL) {
+        osso->object_path = g_strdup_printf("/com/nokia/%s",
+                                            osso->application);
+        if (osso->object_path == NULL)
+            goto dbus_conn_error1;
+    }
+    dprint("osso->object_path='%s'", osso->object_path);
 
     vtable.message_function = _msg_handler;
     vtable.unregister_function = NULL;
