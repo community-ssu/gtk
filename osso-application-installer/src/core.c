@@ -600,6 +600,9 @@ package_already_installed (AppData *app_data, gchar *package)
   GtkTreeView *view = GTK_TREE_VIEW (app_data->app_ui_data->treeview);
   GtkTreeModel *model = GTK_TREE_MODEL (gtk_tree_view_get_model (view));
   
+  if (model == NULL)
+    return FALSE;
+
   for (have_iter = gtk_tree_model_get_iter_first (model, &iter);
        have_iter;
        have_iter = gtk_tree_model_iter_next (model, &iter))
@@ -1185,7 +1188,7 @@ typedef struct {
   gchar *remote;
   gchar *local;
   GMainLoop *loop;
-  int showing_progress;
+  progress_dialog *progress_dialog;
 } copy_data;
 
 static void
@@ -1195,17 +1198,20 @@ copy_callback (gpointer raw_data,
 {
   copy_data *data = (copy_data *)raw_data;
 
-  if (data->showing_progress)
-    gtk_banner_close (GTK_WINDOW (data->app_data->app_ui_data->main_dialog));
+  if (data->progress_dialog)
+    ui_close_progress_dialog (data->progress_dialog);
 
   if (success)
     install_package (data->local, data->app_data);
   else
     {
-      /* XXX-NLS - ai_ti_copying_failed */
+      /* XXX-NLS */
+      _("ai_ti_copying_failed");
       gchar *report = 
-	g_strdup_printf (SUPPRESS_FORMAT_WARNING 
-			 (_("ai_ti_installation_failed_text")),
+	g_strdup_printf (gettext_try_many
+			 ("ai_ti_copying_failed",
+			  "ai_ti_installation_failed_text",
+			  NULL),
 			 data->remote);
       present_report_with_details (data->app_data,
 				   report,
@@ -1222,20 +1228,22 @@ copy_stdout_callback (gpointer raw_data,
 		      gchar *line)
 {
   copy_data *data = (copy_data *)raw_data;
-  GtkWindow *main_dialog =
-    GTK_WINDOW (data->app_data->app_ui_data->main_dialog);
   double frac = atof (line);
 
-  fprintf (stderr, "copy: %s\n", line);
-
-  if (!data->showing_progress)
+  if (data->progress_dialog == NULL)
     {
-      /* XXX-NLS - ai_ti_copying */
-      gtk_banner_show_bar (main_dialog, _("ai_ti_installing_installing"));
-      data->showing_progress = 1;
+      /* XXX-NLS */
+      _("ai_ti_copying");
+      data->progress_dialog =
+	ui_create_progress_dialog (data->app_data,
+				   gettext_try_many 
+				   ("ai_ti_copying",
+				    "ai_ti_installing_installing",
+				    NULL),
+				   NULL, NULL);
     }
 
-  gtk_banner_set_fraction (main_dialog, frac);
+  ui_set_progress_dialog (data->progress_dialog, frac);
 }
 
 void
@@ -1299,6 +1307,17 @@ install_package_from_uri (gchar *uri, AppData *app_data)
 	  goto done;
 	}
 
+      /* Allow everyone to read the directory.
+       */
+      if (chmod (tempdir, 0755) < 0)
+	{
+	  /* XXX-NLS */
+	  details = g_strdup_printf ("Can not chmod %s: %s",
+				     tempdir, strerror (errno));
+	  success = 0;
+	  goto done;
+	}
+
       basename = gnome_vfs_uri_extract_short_path_name (vfs_uri);
       local = g_strdup_printf ("%s/%s", tempdir, basename);
       free (basename);
@@ -1307,7 +1326,7 @@ install_package_from_uri (gchar *uri, AppData *app_data)
       data.remote = uri;
       data.local = local;
       data.loop = NULL;
-      data.showing_progress = 0;
+      data.progress_dialog = NULL;
       handle = spawn_app_installer_tool (app_data, 0,
 					 "copy", uri, local,
 					 copy_callback,
