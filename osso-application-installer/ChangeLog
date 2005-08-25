@@ -1,3 +1,19 @@
+2005-08-25  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* app-installer-tool/app-installer-tool.c (copy_progress,
+	do_copy): Round progress fraction to to multiples of 1/40.  Only
+	output them when they are different from the previous one.
+
+	* src/core.c (package_already_installed): If model is NULL, treat
+	it as empty.
+	(copy_data, copy_callback, copy_stdout_callback,
+	install_package_from_uri): Use ui_create_progress_dialog etc for
+	showin the progress of the copying.  Use ai_ti_copying_failed in
+	preference to ai_ti_installation_failed_text, and ai_ti_copying in
+	preference to ai_ti_installing_installing.  Set mode of temporary
+	directory to rwxr-xr-x so that app-installer-tool can read from it
+	when run as "install".
+
 2005-08-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 2.8
