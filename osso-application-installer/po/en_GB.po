@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osso-application-installer 0.2.04\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-24 16:10+0300\n"
+"POT-Creation-Date: 2005-08-24 20:50+0300\n"
 "PO-Revision-Date: 2005-03-30 15:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: en_GB\n"
@@ -94,8 +94,7 @@ msgstr ""
 "Package already installed.\n"
 "Remove existing version first."
 
-#. XXX-NLS - ai_ti_copying
-#: src/core.c:1158 src/core.c:1234
+#: src/core.c:1158
 msgid "ai_ti_installing_installing"
 msgstr "Installing"
 
@@ -103,25 +102,35 @@ msgstr "Installing"
 msgid "ai_ti_application_installed_text"
 msgstr "Package %s successfully installed."
 
-#: src/core.c:1160 src/core.c:1208 src/core.c:1341
+#: src/core.c:1160 src/core.c:1347
 msgid "ai_ti_installation_failed_text"
 msgstr ""
 "Installation of %s failed.\n"
 "Display details?"
 
-#: src/core.c:1369
+#. XXX-NLS
+#: src/core.c:1206
+msgid "ai_ti_copying_failed"
+msgstr "Copying of %s failed."
+
+#. XXX-NLS
+#: src/core.c:1235
+msgid "ai_ti_copying"
+msgstr "Copying"
+
+#: src/core.c:1375
 msgid "ai_ti_dependency_conflict_title"
 msgstr "Dependency conflict"
 
-#: src/core.c:1398
+#: src/core.c:1404
 msgid "ai_ti_uninstall_progress_uninstalling"
 msgstr "Uninstalling"
 
-#: src/core.c:1399
+#: src/core.c:1405
 msgid "ai_ti_application_uninstalled_text"
 msgstr "Package %s successfully removed."
 
-#: src/core.c:1400
+#: src/core.c:1406
 msgid "ai_ti_uninstallation_failed_text"
 msgstr "Uninstallation of %s failed."
 
@@ -220,9 +229,6 @@ msgstr "Cancel"
 #~ msgstr "OK"
 
 #~ msgid "Ai_ti_application_uninstalled_ok"
-#~ msgstr "OK"
-
-#~ msgid "ai_ti_uninstallation_failed_ok"
 #~ msgstr "OK"
 
 #~ msgid "ai_error_uninstall_timedout"
