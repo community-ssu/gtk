@@ -904,12 +904,14 @@ static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
         
         gtk_widget_show_all(confirm_dialog);
         i = gtk_dialog_run(GTK_DIALOG(confirm_dialog));
-        
-        if (i == GTK_RESPONSE_CANCEL ) {
-            gtk_widget_destroy(GTK_WIDGET(confirm_dialog));
+
+        gtk_widget_destroy(GTK_WIDGET(confirm_dialog));
+
+        if (i == GTK_RESPONSE_CANCEL ||
+            i == GTK_RESPONSE_DELETE_EVENT) {
             return TRUE;    
         }
-        gtk_widget_destroy(GTK_WIDGET(confirm_dialog));
+
     }
     else {
         retry = GPOINTER_TO_INT(data) +1;
@@ -941,7 +943,8 @@ static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
     
     switch(gtk_dialog_run (GTK_DIALOG(pw_dialog)))
     {
-    case GTK_RESPONSE_CANCEL:
+      case GTK_RESPONSE_CANCEL:
+      case GTK_RESPONSE_DELETE_EVENT:
 
         if (pw_dialog !=NULL)
             gtk_widget_destroy(GTK_WIDGET(pw_dialog));        

@@ -1,3 +1,16 @@
+2005-08-25  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+  * hildon-control-panel-main.c (_reset_factory_settings): Fix 17278: HW
+    Close key now correctly dismisses the reset to factory settings dialog
+
+2005-08-22  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+  * Patched bug #17347 - Entering the wrong lock code twice in Restore
+    factory settings crashes the Control panel application. hildon-
+    control-panel-main.c (_reset_factory_settings): String returned by
+    crypt() is static data, not dynamically allocated. Thus, removed
+    g_free() that caused memory corruption.
+
 2005-08-23  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
      * Bugfix version at stage.maemo.org repository.
