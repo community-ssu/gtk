@@ -202,6 +202,10 @@ static void _deinit(osso_context_t *osso)
 	free(osso->mime);
 	osso->mime = NULL;
     }
+    if(osso->autosave != NULL) {
+	free(osso->autosave);
+	osso->autosave = NULL;
+    }
     osso->exit.cb = NULL;
     osso->exit.data = NULL;
     
