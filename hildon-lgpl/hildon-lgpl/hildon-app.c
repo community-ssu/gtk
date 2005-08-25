@@ -1274,7 +1274,9 @@ hildon_app_key_snooper (GtkWidget *widget, GdkEventKey *keyevent, HildonApp *app
 		    return FALSE;
 	    }
 
-	    return TRUE;
+            /* don't stop the key event so that it reaches GTK where it
+               closes all existing menus that might be open */
+	    return FALSE;
     }
     
     if ((keyevent->type == GDK_KEY_RELEASE) &&

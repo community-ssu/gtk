@@ -1,3 +1,10 @@
+2005-08-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-lgpl/hildon-app.c (hildon_app_key_snooper): Don't stop the
+	menu key event so that it reaches GTK where it closes all existing
+	menus that might be open.
+	N#16593
+
 2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* configure.ac: Release 0.9.50
