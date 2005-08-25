@@ -200,6 +200,10 @@ static void _deinit(osso_context_t *osso)
         g_array_free(osso->ifs, TRUE);
         osso->ifs = NULL;
     }
+    if(osso->autosave != NULL) {
+	free(osso->autosave);
+	osso->autosave = NULL;
+    }
     if(osso->hw != NULL) {
 	free(osso->hw);
 	osso->hw = NULL;
@@ -211,10 +215,6 @@ static void _deinit(osso_context_t *osso)
     if(osso->mime != NULL) {
 	free(osso->mime);
 	osso->mime = NULL;
-    }
-    if(osso->autosave != NULL) {
-	free(osso->autosave);
-	osso->autosave = NULL;
     }
     osso->exit.cb = NULL;
     osso->exit.data = NULL;
