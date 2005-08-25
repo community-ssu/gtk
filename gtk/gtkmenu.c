@@ -4754,7 +4754,15 @@ gtk_menu_window_visibility_notify_event (GtkWidget          *widget,
   GList *stack;
   gboolean deactivate;
 
-  if (event->state == GDK_VISIBILITY_UNOBSCURED)
+  /* The point here is to close the menu if another window gets on top of
+     the menu. However our own submenus may also fully obscure us, so we
+     have to check that case.
+
+     It's also possible that we get here while a submenu was opened and
+     closed quickly, so we don't really see it anymore but its window is
+     still obscuring us.. So, never close the menu if another menu is on top
+     of us. */
+  if (event->state != GDK_VISIBILITY_FULLY_OBSCURED)
     return FALSE;
 
   menu_shell = GTK_MENU_SHELL (menu);
@@ -4763,8 +4771,7 @@ gtk_menu_window_visibility_notify_event (GtkWidget          *widget,
    * do anything. The topmost submenu will take
    * care of deactivation. */
   if (menu_shell->active_menu_item != NULL &&
-      GTK_MENU_ITEM (menu_shell->active_menu_item)->submenu != NULL &&
-      GTK_WIDGET_VISIBLE (GTK_MENU_ITEM (menu_shell->active_menu_item)->submenu))
+      GTK_MENU_ITEM (menu_shell->active_menu_item)->submenu != NULL)
     return FALSE;
 
   screen = gtk_widget_get_screen (widget);
