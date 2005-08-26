@@ -495,6 +495,14 @@ static void _save_state( gboolean clear_state ) {
     }
     else 
     {
+        if (state_data.focused_filename != NULL) 
+	  {
+  	      osso_cp_plugin_save_state(
+		 		        state_data.osso,
+					state_data.focused_filename,
+					NULL
+					);
+	  }
         ret = g_snprintf(contents, HILDON_CONTROL_PANEL_STATEFILE_MAX,
                          "focused=%s\n"
                          "scroll=%d\n"

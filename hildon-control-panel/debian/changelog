@@ -1,3 +1,9 @@
+hildon-control-panel (0.9.21-2) unstable; urgency=low
+
+  * Patched bug 17744
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri, 26 Aug 2005 11:29:51 +0300
+
 hildon-control-panel (0.9.21-1) unstable; urgency=low
 
   * Added missing files.
