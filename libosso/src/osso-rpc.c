@@ -142,6 +142,8 @@ osso_return_t _rpc_run(osso_context_t *osso, DBusConnection *conn,
 	ret = dbus_connection_send_with_reply_and_block(conn, msg, 
 							osso->rpc_timeout,
 							&err);
+        dbus_message_unref(msg);
+
         if (!ret) {
             dprint("Error return: %s",err.message);
 	    retval->type = DBUS_TYPE_STRING;

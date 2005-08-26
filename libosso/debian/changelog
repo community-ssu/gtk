@@ -1,3 +1,9 @@
+libosso (0.9.15-1) unstable; urgency=low
+
+  * Fixed a memory leak in osso_rpc_run_* (bug 18083).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 26 Aug 2005 16:53:34 +0300
+
 libosso (0.9.14-1) unstable; urgency=low
 
   * Fixed a memory leak in initialisation (bug 16209).
