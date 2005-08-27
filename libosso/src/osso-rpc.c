@@ -450,6 +450,16 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 }
 
 /************************************************************************/
+osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
+                                 const gchar *object_path,
+                                 const gchar *interface,
+                                 osso_rpc_cb_f *cb, gpointer data,
+                                 gboolean use_system_bus)
+{
+    return _rpc_set_cb_f(osso, service, object_path, cb, data, use_system_bus);
+}
+
+/************************************************************************/
 osso_return_t osso_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 		       const gchar *object_path, const gchar *interface,
 		       osso_rpc_cb_f *cb, gpointer data)
