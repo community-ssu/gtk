@@ -25,7 +25,7 @@
 
 #define AUTOSAVE_TIMEOUT 120000 /* 2 mins */
 
-gboolean _autosave_timeout(gpointer data);
+static gboolean _autosave_timeout(gpointer data);
 
 osso_return_t osso_application_set_autosave_cb(osso_context_t *osso,
 				      osso_application_autosave_cb_f *cb,
@@ -111,7 +111,7 @@ osso_return_t osso_application_autosave_force(osso_context_t *osso)
     return OSSO_OK;
 }
 
-gboolean _autosave_timeout(gpointer data)
+static gboolean _autosave_timeout(gpointer data)
 {
     osso_context_t *osso = data;
 

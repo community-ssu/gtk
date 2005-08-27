@@ -56,8 +56,8 @@ static gboolean _validate_time(time_t time_candidate);
 /************************************************************************/
 static gchar *_time_to_string(const time_t timevalue);
 
-DBusHandlerResult _time_handler(osso_context_t *osso, DBusMessage *msg,
-			      gpointer data);
+static DBusHandlerResult _time_handler(osso_context_t *osso,
+                                       DBusMessage *msg, gpointer data);
 
 struct _osso_time {
   gchar *name;

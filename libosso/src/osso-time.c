@@ -112,8 +112,8 @@ osso_return_t osso_time_set(osso_context_t *osso, time_t new_time)
 }
 
 /************************************************************************/
-DBusHandlerResult _time_handler(osso_context_t *osso, DBusMessage *msg,
-       gpointer data)
+static DBusHandlerResult _time_handler(osso_context_t *osso,
+                                       DBusMessage *msg, gpointer data)
 {
     struct _osso_time *ot;
 
