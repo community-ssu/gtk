@@ -74,11 +74,12 @@ osso_return_t osso_rpc_run(osso_context_t *osso, const gchar *service,
 
 
 /************************************************************************/
-osso_return_t _rpc_run(osso_context_t *osso, DBusConnection *conn,
-		       const gchar *service, const gchar *object_path,
-		       const gchar *interface, const gchar *method,
-		       osso_rpc_t *retval, int first_arg_type,
-		       va_list var_args)
+osso_return_t __attribute__ ((visibility("hidden")))
+_rpc_run(osso_context_t *osso, DBusConnection *conn,
+         const gchar *service, const gchar *object_path,
+         const gchar *interface, const gchar *method,
+         osso_rpc_t *retval, int first_arg_type,
+         va_list var_args)
 {
     DBusMessage *msg;
     dbus_bool_t b;
@@ -236,35 +237,7 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
 }
 
 /************************************************************************/
-osso_return_t osso_rpc_async_run(osso_context_t *osso,
-				 const gchar *service,
-				 const gchar *object_path,
-				 const gchar *interface,
-				 const gchar *method,
-				 osso_rpc_async_f *async_cb,
-				 gpointer data,
-				 int argument_type, ...)
-{
-    va_list arg_list;
-    osso_return_t ret;
-   
-	
-    if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
-	(interface == NULL) || (method == NULL))
-	return OSSO_INVALID;
-
-    va_start(arg_list, argument_type);
-
-    ret = _rpc_async_run(osso, service, object_path, interface, method,
-			 async_cb, data, argument_type, arg_list);
-    
-    va_end(arg_list);
-    
-    return ret;
-}
-
-/************************************************************************/
-osso_return_t _rpc_async_run(osso_context_t *osso,
+static osso_return_t _rpc_async_run(osso_context_t *osso,
 			     const gchar *service,
 			     const gchar *object_path,
 			     const gchar *interface,
@@ -354,6 +327,34 @@ osso_return_t _rpc_async_run(osso_context_t *osso,
 	dbus_message_unref(msg);
 	return OSSO_ERROR;
     }
+}
+
+/************************************************************************/
+osso_return_t osso_rpc_async_run(osso_context_t *osso,
+				 const gchar *service,
+				 const gchar *object_path,
+				 const gchar *interface,
+				 const gchar *method,
+				 osso_rpc_async_f *async_cb,
+				 gpointer data,
+				 int argument_type, ...)
+{
+    va_list arg_list;
+    osso_return_t ret;
+   
+	
+    if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
+	(interface == NULL) || (method == NULL))
+	return OSSO_INVALID;
+
+    va_start(arg_list, argument_type);
+
+    ret = _rpc_async_run(osso, service, object_path, interface, method,
+			 async_cb, data, argument_type, arg_list);
+    
+    va_end(arg_list);
+    
+    return ret;
 }
 
 /************************************************************************/

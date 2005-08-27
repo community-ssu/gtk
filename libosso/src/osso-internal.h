@@ -163,11 +163,6 @@ osso_return_t _rpc_run (osso_context_t * osso, DBusConnection * conn,
                         const gchar * interface, const gchar * method,
                         osso_rpc_t * retval, int first_arg_type,
                         va_list var_args);
-osso_return_t _rpc_async_run (osso_context_t * osso, const gchar * service,
-                              const gchar * object_path,
-                              const gchar * interface, const gchar * method,
-                              osso_rpc_async_f * async_cb, gpointer data,
-                              int first_arg_type, va_list var_args);
 /* this is only needed by some unit testing code */
 osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
                                 const gchar *object_path,
