@@ -129,11 +129,10 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
     
     if(!_validate(application, version)) return NULL;
 
-    osso = (osso_context_t *)malloc(sizeof(osso_context_t));
+    osso = (osso_context_t *)calloc(1, sizeof(osso_context_t));
     if(osso == NULL) {
 	return NULL;
     }	
-    memset(osso, 0, sizeof(osso_context_t));
 
     osso->application = g_strdup(application);
     if(osso->application == NULL) {
@@ -144,39 +143,15 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
 	goto register_error1;
     }
 
-    osso->hw = (_osso_hw_cb_t *)malloc(sizeof(_osso_hw_cb_t));
-    if(osso->hw == NULL) {
-	goto register_error2;
-    }
-    osso->hw->shutdown_ind.set = FALSE;
-    osso->hw->sig_device_mode_ind.set = FALSE;
-    
-    osso->hw_state = (osso_hw_state_t *)malloc(sizeof(osso_hw_state_t));
-    if(osso->hw_state == NULL) {
-	goto register_error3;
-    }
-    memset(osso->hw_state, 0, sizeof(osso_hw_state_t));
-
-    osso->mime = (_osso_mime_t *)malloc(sizeof(_osso_mime_t));
+    osso->mime = (_osso_mime_t *)calloc(1, sizeof(_osso_mime_t));
 
     osso->ifs = g_array_new(FALSE, FALSE, sizeof(_osso_interface_t));
     osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
     osso->rpc_timeout = -1;
-    osso->exit.cb = NULL;
-    osso->exit.data = NULL;
     return osso;
 
     /**** ERROR HANDLING ****/
     
-    register_error3:
-    if(osso->hw != NULL)
-	free(osso->hw);
-    
-    register_error2:
-    if (osso->version != NULL) {
-      g_free(osso->version);
-    }
-
     register_error1:
     if (osso->application != NULL) {
       g_free(osso->application);
@@ -223,14 +198,6 @@ static void _deinit(osso_context_t *osso)
     if(osso->autosave != NULL) {
 	free(osso->autosave);
 	osso->autosave = NULL;
-    }
-    if(osso->hw != NULL) {
-	free(osso->hw);
-	osso->hw = NULL;
-    }
-    if(osso->hw_state != NULL) {
-	free(osso->hw_state);
-	osso->hw_state = NULL;
     }
     if(osso->mime != NULL) {
 	free(osso->mime);
