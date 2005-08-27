@@ -387,19 +387,6 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
 }
 
 /************************************************************************/
-
-osso_return_t osso_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
-		       const gchar *object_path, const gchar *interface,
-		       osso_rpc_cb_f *cb, gpointer data)
-{
-    if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
-	(interface == NULL) || (cb == NULL))
-	return OSSO_INVALID;
-    return _rpc_set_cb_f(osso, service, object_path,
-			 interface,cb, data, FALSE);
-}
-/************************************************************************/
-
 static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 			    const gchar *object_path,
 			    const gchar *interface,
@@ -460,6 +447,18 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
     dprint("rpc->func = %p",rpc->func);
 
     return OSSO_OK;
+}
+
+/************************************************************************/
+osso_return_t osso_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
+		       const gchar *object_path, const gchar *interface,
+		       osso_rpc_cb_f *cb, gpointer data)
+{
+    if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
+	(interface == NULL) || (cb == NULL))
+	return OSSO_INVALID;
+    return _rpc_set_cb_f(osso, service, object_path,
+			 interface,cb, data, FALSE);
 }
 
 /************************************************************************/
