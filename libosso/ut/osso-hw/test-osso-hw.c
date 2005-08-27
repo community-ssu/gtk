@@ -102,8 +102,8 @@ int test_set_event(void)
     r = osso_hw_set_event_cb(osso, &state, hw_cb, NULL);
 
     if( r == OSSO_OK) {
-	if( (osso->hw->shutdown_ind.cb == hw_cb) && 
-	    (osso->hw->system_inactivity_ind.cb == hw_cb) )
+	if( (osso->hw_cbs.shutdown_ind.cb == hw_cb) && 
+	    (osso->hw_cbs.system_inactivity_ind.cb == hw_cb) )
 	{
 	    ret = 1;
 	}
@@ -130,11 +130,11 @@ int test_set_all_event(void)
     r = osso_hw_set_event_cb(osso, NULL, hw_cb, NULL);
 
     if( r == OSSO_OK) {
-	if( (osso->hw->shutdown_ind.set) &&
-	    (osso->hw->memory_low_ind.set) &&
-	    (osso->hw->save_unsaved_data_ind.set) &&
-	    (osso->hw->system_inactivity_ind.set) &&
-	    (osso->hw->sig_device_mode_ind.set) )
+	if( (osso->hw_cbs.shutdown_ind.set) &&
+	    (osso->hw_cbs.memory_low_ind.set) &&
+	    (osso->hw_cbs.save_unsaved_data_ind.set) &&
+	    (osso->hw_cbs.system_inactivity_ind.set) &&
+	    (osso->hw_cbs.sig_device_mode_ind.set) )
 	{
 	    ret = 1;
 	}
