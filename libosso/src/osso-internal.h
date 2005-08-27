@@ -173,7 +173,7 @@ osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
                                 const gchar *object_path,
 			        const gchar *interface,
 			        osso_rpc_cb_f *cb, gpointer data,
-			        gboolean use_system_bus)
+			        gboolean use_system_bus);
 
 #define _launch_app(osso, application) \
     osso_rpc_run_with_defaults(osso, application, \
