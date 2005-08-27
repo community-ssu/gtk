@@ -58,7 +58,7 @@ osso_context_t * osso_initialize(const gchar *application,
         dprint("WARNING: if the system bus activated this program, "
                "Libosso does not connect to the session bus!");
         fprintf(stderr, "osso_initialize() WARNING: if the system bus "
-          "activated this program,\nLibosso does not connect"
+          "activated this program, Libosso does not connect"
           " to the session bus!\n");
         osso->conn = _dbus_connect_and_setup(osso, DBUS_BUS_ACTIVATION,
                                              context);
