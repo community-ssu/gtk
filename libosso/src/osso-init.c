@@ -401,9 +401,10 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
 
 
 /************************************************************************/
-void _msg_handler_set_cb_f(osso_context_t *osso, const gchar *interface,
-			   _osso_interface_cb_f *cb, gpointer data, 
-			   gboolean method)
+void __attribute__ ((visibility("hidden")))
+_msg_handler_set_cb_f(osso_context_t *osso, const gchar *interface,
+                      _osso_interface_cb_f *cb, gpointer data, 
+                      gboolean method)
 {   
     _osso_interface_t intf;
     if( (osso == NULL) || (interface == NULL) || (cb == NULL) )
@@ -424,8 +425,9 @@ void _msg_handler_set_cb_f(osso_context_t *osso, const gchar *interface,
 }
 
 /************************************************************************/
-gpointer _msg_handler_rm_cb_f(osso_context_t *osso, const gchar *interface,
-			      _osso_interface_cb_f *cb, gboolean method)
+gpointer __attribute__ ((visibility("hidden")))
+_msg_handler_rm_cb_f(osso_context_t *osso, const gchar *interface,
+                     _osso_interface_cb_f *cb, gboolean method)
 {   
     guint i=0;
     if( (osso == NULL) || (interface == NULL) || (cb == NULL) )
