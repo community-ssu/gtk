@@ -246,7 +246,7 @@ static DBusHandlerResult _hw_handler(osso_context_t *osso,
                                      gpointer data)
 {
     const gchar *signal = NULL, *mode_str = NULL;
-    gboolean old_inactivity_state = osso->hw_state->system_inactivity_ind;
+    gboolean old_inactivity_state = osso->hw_state.system_inactivity_ind;
     gboolean inactivity_state;
     DBusMessageIter iter;
     int type;

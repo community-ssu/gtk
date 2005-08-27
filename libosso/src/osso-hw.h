@@ -69,8 +69,8 @@
 		 ==TRUE) ) \
     { \
 	dprint("Calling handler for signal %s at %p with data = %p"\
-		   , #hwstate , osso->hw_cbs.hwstate.cb,osso->hw_state); \
-	(osso->hw_cbs.hwstate.cb)(osso->hw_state, osso->hw_cbs.hwstate.data); \
+		   , #hwstate , osso->hw_cbs.hwstate.cb, &osso->hw_state); \
+	(osso->hw_cbs.hwstate.cb)(&osso->hw_state, osso->hw_cbs.hwstate.data); \
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED; \
     } \
 }while(0)
