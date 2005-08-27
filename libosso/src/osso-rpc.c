@@ -456,7 +456,8 @@ osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
                                  osso_rpc_cb_f *cb, gpointer data,
                                  gboolean use_system_bus)
 {
-    return _rpc_set_cb_f(osso, service, object_path, cb, data, use_system_bus);
+    return _rpc_set_cb_f(osso, service, object_path, interface,
+                         cb, data, use_system_bus);
 }
 
 /************************************************************************/
