@@ -221,29 +221,29 @@ static void _osso_hw_state_get(osso_context_t *osso)
       if (fgets(storedstate, STORED_LEN, f) != NULL) {
 	
 	  if (strcmp(storedstate, MCE_NORMAL_MODE) == 0) {
-	    osso->hw.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
+	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
 	  }
 	  else if (strcmp(storedstate, MCE_FLIGHT_MODE) == 0) {
-	    osso->hw.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
+	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
 	  }
 	  else if (strcmp(storedstate, MCE_OFFLINE_MODE) == 0) {
-	    osso->hw.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
+	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
 	  }
 	  else if (strcmp(storedstate, MCE_INVALID_MODE) == 0) {
-	    osso->hw.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
+	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
 	  }
       }
       fclose(f);
     }
     else {
       ULOG_ERR_F("no device state file found, assuming NORMAL device state");
-      osso->hw.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
+      osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
     }
 }
 
 static DBusHandlerResult _hw_handler(osso_context_t *osso,
-				     DBusMessage *msg,
-				     gpointer data)
+                                     DBusMessage *msg,
+                                     gpointer data)
 {
     const gchar *signal = NULL, *mode_str = NULL;
     gboolean old_inactivity_state = osso->hw_state->system_inactivity_ind;
@@ -302,9 +302,9 @@ static DBusHandlerResult _hw_handler(osso_context_t *osso,
 	keep the backward compability without side effects. Shutdown is
         initialized by checking it from disk elsewhere. */
 
-     osso->hw_state->shutdown_ind = FALSE;
-     osso->hw_state->memory_low_ind =  FALSE;
-     osso->hw_state->save_unsaved_data_ind = FALSE;
+     osso->hw_state.shutdown_ind = FALSE;
+     osso->hw_state.memory_low_ind = FALSE;
+     osso->hw_state.save_unsaved_data_ind = FALSE;
      /*     osso->hw_state->system_inactivity_ind = FALSE; */
 
      _set_state(signal, shutdown_ind, TRUE);

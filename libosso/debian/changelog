@@ -18,6 +18,8 @@ libosso (0.9.15-1) unstable; urgency=low
   * Fixed possible uninitialized memory problem in _osso_hw_state_get().
   * Fixed brain-damage in osso_hw_set_event_cb() that would have caused
     memory leaks with each subsequent call after the first one.
+  * Fixed reading the current device state from file - it was completely
+    broken (used wrong member of the Libosso context struct).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 27 Aug 2005 17:17:44 +0300
 
