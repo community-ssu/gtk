@@ -96,46 +96,14 @@ osso_return_t osso_display_blanking_pause(osso_context_t *osso)
   dbus_message_unref(msg);
   return OSSO_OK;
 }
-#if 0
-#define _set_state_cb(hwstate, cb_f, data_p) do {\
-        if(state->hwstate) { \
-          osso->hw->hwstate.cb = cb_f; \
-          osso->hw->hwstate.data = data_p; \
-          osso->hw->hwstate.set = TRUE; \
-          if (!osso->hw->hwstate.set && osso->hw_state->hwstate) { \
-            (cb)(&temp, data); \
-          } \
-          dbus_bus_add_match(osso->sys_conn, "type='signal',interface='" \
-          MCE_SIGNAL_IF "',member='"#hwstate"'" \
-                  , NULL); \
-         dbus_connection_flush(osso->sys_conn); \
-        } \
-}while(0)
-static void _set_state_cb(osso_context_t *osso, _osso_hw_cb_data_t *field,
-                          gboolean set, gboolean curr_state,
-                          const osso_hw_cb_f *cb,
-                          const gpointer data)
-{
-    g_assert(osso != NULL);
-    if (set) {
-        field->cb = cb;
-        field->data = data;
-        field->set = TRUE;
-        if (curr_state) {
-            (*cb)(TODO, data);
-        } 
-        dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                           MCE_SIGNAL_IF "',member='"#hwstate"'", NULL);
-         
-    }
-}
-#endif
 
 osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
 				   osso_hw_state_t *state,
 				   osso_hw_cb_f *cb, gpointer data)
 {
     static const osso_hw_state_t default_mask = {TRUE,TRUE,TRUE,TRUE,1};
+    gboolean call_cb = FALSE;
+
     if (osso == NULL || cb == NULL) {
 	ULOG_ERR_F("invalid parameters");
 	return OSSO_INVALID;
@@ -161,18 +129,65 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 MCE_SIGNAL_IF "',member='shutdown_ind'", NULL);
         }
+	if (osso->hw_state.shutdown_ind) {
+            call_cb = TRUE;
+        } 
         osso->hw_cbs.shutdown_ind.set = TRUE;
     }
+    if (state->memory_low_ind) {
+        osso->hw_cbs.memory_low_ind.cb = cb;
+        osso->hw_cbs.memory_low_ind.data = data;
+        if (!osso->hw_cbs.memory_low_ind.set) {
+		/* FIXME: not correct signal */
+            dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
+                MCE_SIGNAL_IF "',member='memory_low_ind'", NULL);
+        }
+	if (osso->hw_state.memory_low_ind) {
+            call_cb = TRUE;
+        } 
+        osso->hw_cbs.memory_low_ind.set = TRUE;
+    }
+    if (state->save_unsaved_data_ind) {
+        osso->hw_cbs.save_unsaved_data_ind.cb = cb;
+        osso->hw_cbs.save_unsaved_data_ind.data = data;
+        if (!osso->hw_cbs.save_unsaved_data_ind.set) {
+            dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
+                MCE_SIGNAL_IF "',member='save_unsaved_data_ind'", NULL);
+        }
+	if (osso->hw_state.save_unsaved_data_ind) {
+            call_cb = TRUE;
+        } 
+        osso->hw_cbs.save_unsaved_data_ind.set = TRUE;
+    }
+    if (state->system_inactivity_ind) {
+        osso->hw_cbs.system_inactivity_ind.cb = cb;
+        osso->hw_cbs.system_inactivity_ind.data = data;
+        if (!osso->hw_cbs.system_inactivity_ind.set) {
+            dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
+                MCE_SIGNAL_IF "',member='system_inactivity_ind'", NULL);
+        }
+	if (osso->hw_state.system_inactivity_ind) {
+            call_cb = TRUE;
+        } 
+        osso->hw_cbs.system_inactivity_ind.set = TRUE;
+    }
+    if (state->sig_device_mode_ind) {
+        osso->hw_cbs.sig_device_mode_ind.cb = cb;
+        osso->hw_cbs.sig_device_mode_ind.data = data;
+        if (!osso->hw_cbs.sig_device_mode_ind.set) {
+            dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
+                MCE_SIGNAL_IF "',member='sig_device_mode_ind'", NULL);
+        }
+	if (osso->hw_state.sig_device_mode_ind != OSSO_DEVMODE_NORMAL) {
+            call_cb = TRUE;
+        } 
+        osso->hw_cbs.sig_device_mode_ind.set = TRUE;
+    }
 
-        /*
-    _set_state_cb(memory_low_ind, cb, data);
-    _set_state_cb(save_unsaved_data_ind, cb, data);
-    _set_state_cb(system_inactivity_ind, cb, data);
-    _set_state_cb(sig_device_mode_ind, cb, data);
-    */
-    _msg_handler_set_cb_f(osso, MCE_SIGNAL_IF, _hw_handler, state,
-			  FALSE);
-    /* TODO: kutsu callbackia */
+    _msg_handler_set_cb_f(osso, MCE_SIGNAL_IF, _hw_handler, state, FALSE);
+    if (call_cb) {
+        (*cb)(&osso->hw_state, data);
+    }
     dbus_connection_flush(osso->sys_conn);
 
     return OSSO_OK;    

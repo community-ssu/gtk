@@ -212,7 +212,7 @@ all: all-am
 .SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  ut/osso-time/Makefile
+	  $(AUTOMAKE) --gnu  ut/osso-time/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 com.nokia.unit_test_time.service: $(top_builddir)/config.status com.nokia.unit_test_time.service.in

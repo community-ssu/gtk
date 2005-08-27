@@ -28,21 +28,6 @@
 
 # define OSSO_DEVSTATE_MODE_FILE STATEPREFIX"/device_mode"
 
-# define _set_state_cb(hwstate, cb_f, data_p) do {\
-    if(state->hwstate) { \
-	osso->hw->hwstate.cb = cb_f; \
-	osso->hw->hwstate.data = data_p; \
-	osso->hw->hwstate.set = TRUE; \
-        if (!osso->hw->hwstate.set && osso->hw_state->hwstate) { \
-        (cb)(&temp, data); \
-        } \
-	dbus_bus_add_match(osso->sys_conn, "type='signal',interface='" \
-			       MCE_SIGNAL_IF "',member='"#hwstate"'" \
-			       , NULL); \
-	dbus_connection_flush(osso->sys_conn); \
-    } \
-}while(0)
-
 # define _unset_state_cb(hwstate) do {\
     if((state->hwstate) && (osso->hw_cbs.hwstate.set)) { \
 	dprint("Unsetting handler for signal %s"\
