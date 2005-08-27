@@ -13,8 +13,13 @@ libosso (0.9.15-1) unstable; urgency=low
   * Removed calls to dbus_connection_disconnect() (bug 18028).
   * Using LIBOSSO_DEBUG macro instead of DEBUG macro for internal sanity
     checks etc.
+  * Fixed D-BUS message leak from osso_display_* that would have happened
+    in error situation.
+  * Fixed possible uninitialized memory problem in _osso_hw_state_get().
+  * Fixed brain-damage in osso_hw_set_event_cb() that would have caused
+    memory leaks with each subsequent call after the first one.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 26 Aug 2005 16:53:34 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 27 Aug 2005 17:17:44 +0300
 
 libosso (0.9.14-1) unstable; urgency=low
 

@@ -122,8 +122,8 @@ struct osso_af_context_t {
     GArray *ifs;
     _osso_autosave_t *autosave;
     guint log_handler;
-    _osso_hw_cb_t *hw;
-    osso_hw_state_t *hw_state;
+    _osso_hw_cb_t hw_cbs;
+    osso_hw_state_t hw_state;
     int environment_set;
     guint rpc_timeout;
     _osso_mime_t *mime;
