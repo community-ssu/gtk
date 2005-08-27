@@ -233,13 +233,10 @@ int osso_state_open_write(osso_context_t *osso)
     
     free(app_path);
     if ((fd = open(path, O_WRONLY | O_CREAT | O_TRUNC,
-		   S_IRUSR | S_IWUSR)) != -1) {
-      free(path);
-      return fd;
+		   S_IRUSR | S_IWUSR)) == -1) {
+      ULOG_ERR_F("Opening of state file failed");
     }
     free(path);
-
-    ULOG_ERR_F("Opening statefile failed");
     return fd;
 }
 
@@ -273,10 +270,8 @@ int osso_state_open_read(osso_context_t *osso)
       ULOG_ERR_F("Allocation of application/version string failed");
       return -1;
     }
-    fd = open(path, O_RDONLY);
-    if ( fd != -1) {
-      free(path);
-      return fd;
+    if ((fd = open(path, O_RDONLY)) == -1) {
+      ULOG_ERR_F("Opening of state file failed");
     }
     free(path);
     return fd;
@@ -285,9 +280,14 @@ int osso_state_open_read(osso_context_t *osso)
 /************************************************************************/
 void osso_state_close(osso_context_t * osso, gint fd)
 {
-    if (close(fd) != 0) {
-      ULOG_ERR_F("Closing statefile failed");
-    }
+    do {
+        if (close(fd) == 0) {
+            return;
+        } else if (errno != EINTR) {
+            ULOG_ERR_F("Unable to close state file: %s", strerror(errno));
+            return;
+        }
+    } while (1);
 }
 
 /************************************************************************/
@@ -316,6 +316,7 @@ static osso_return_t _read_state(const gchar *statefile, osso_state_t *state)
     }
     else {
 	if(state->state_size != size) {
+            ULOG_ERR_F("specified size does not match read size");
 	    ret = OSSO_ERROR_STATE_SIZE;
 	    goto _get_state_ret1;
 	}
@@ -351,12 +352,9 @@ static osso_return_t _read_state(const gchar *statefile, osso_state_t *state)
     dprint("Read %u bytes out of %u", total_bytes, state->state_size);
 
     do {
-	int r;
-	r = close(fd);
-	if(r == 0) {
+	if (close(fd) == 0) {
 	    break;
-	}
-	else {
+	} else {
 	    if(errno != EINTR) {
 		ULOG_ERR_F("Unable to close file '%s': %s",
 			   statefile, strerror(errno));
@@ -367,7 +365,7 @@ static osso_return_t _read_state(const gchar *statefile, osso_state_t *state)
     }while(1);
 
     _get_state_ret1:
-#ifdef DEBUG	
+#ifdef LIBOSSO_DEBUG	
 	{
 	    guint i, sz;
 	    guint32 *p;
@@ -395,7 +393,7 @@ static osso_return_t _write_state(const gchar *statefile, osso_state_t *state)
     ssize_t bytes, total_bytes;
     struct stat statbuf;
     
-#ifdef DEBUG	
+#ifdef LIBOSSO_DEBUG	
 	{
 	    guint i, sz;
 	    guint32 *p;
@@ -472,20 +470,15 @@ static osso_return_t _write_state(const gchar *statefile, osso_state_t *state)
     }while(total_bytes < state->state_size);
 
     do {
-	int r;
-	r = close(fd);
-	if(r == 0) {
-	    break;
-	}
-	else {
-	    if(errno != EINTR) {
-		ULOG_ERR_F("Unable to close file '%s': %s",
-			   tempfile, strerror(errno));
-		ret = OSSO_ERROR;
-		break;
-	    }
-	}
-    }while(1);
+        if (close(fd) == 0) {
+            break;
+        } else if (errno != EINTR) {
+            ULOG_ERR_F("Unable to close file '%s': %s",
+                       tempfile, strerror(errno));
+            ret = OSSO_ERROR;
+            break;
+        }
+    } while (1);
     
     /* if writing the state or closing the file failed, bail out */
     if(ret == OSSO_ERROR)

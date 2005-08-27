@@ -1,6 +1,18 @@
 libosso (0.9.15-1) unstable; urgency=low
 
   * Fixed a memory leak in osso_rpc_run_* (bug 18083).
+  * Marked several private functions as static and set the hidden attribute
+    to some functions.
+  * Improved error logging in osso_initialize().
+  * Now handling EINTR correctly in osso_state_close().
+  * Removed rather brain-damaged cleanup of state saving directory from
+    osso_initialize(). Its success is not guaranteed and its usefulness is
+    basically zero, so it would just add to undeterministic behaviour.
+  * Fixed some minor brain-damages in coding style.
+  * Added warnings about the activation parameter of osso_initialize().
+  * Removed calls to dbus_connection_disconnect() (bug 18028).
+  * Using LIBOSSO_DEBUG macro instead of DEBUG macro for internal sanity
+    checks etc.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 26 Aug 2005 16:53:34 +0300
 

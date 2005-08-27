@@ -74,7 +74,9 @@ typedef struct osso_af_context_t osso_context_t;
  * application binary has been launched by the D-BUS daemon, and thus will
  * connect to the D-BUS activation bus (the D-BUS bus where the D-BUS message
  * that resulted in auto-activation of the application came -- either the
- * session or system bus).
+ * session or system bus). This parameter should always be FALSE and
+ * considered obsolete, because otherwise Libosso might behave strangely
+ * since it normally uses both session and system bus.
  * @param context The GLib main loop context to connect to, or NULL for
  * the default context.
  * @return A context to use in later calls to this library. NULL is

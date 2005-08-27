@@ -37,13 +37,12 @@ osso_context_t * osso_initialize(const gchar *application,
 	   activation?"with":"without",context);
     
     osso = _init(application, version);
-    if(osso == NULL) return NULL;
+    if (osso == NULL) {
+        ULOG_CRIT_F("initialization failed: out of memory");
+        return NULL;
+    }
 
-    /* Peform statefile clean-up, but do not fail osso_initialize()
-       if it does not succeed 100% - just log a warning */
-    _cleanup_state_dir(application, version);
-
-#ifdef DEBUG
+#ifdef LIBOSSO_DEBUG
     /* Redirect all GLib/GTK logging to OSSO logging macros */
       osso->log_handler = g_log_set_handler(NULL,
 					   G_LOG_LEVEL_MASK |
@@ -52,19 +51,40 @@ osso_context_t * osso_initialize(const gchar *application,
 					   (GLogFunc)_osso_log_handler,
 					   (gpointer)application);
 #endif
-    dprint("connecting to the session bus");
-    osso->conn = _dbus_connect_and_setup(osso,
-			activation?DBUS_BUS_ACTIVATION:DBUS_BUS_SESSION,
-					 context);
-    if(osso->conn == NULL) {
-	dprint("connecting to the sessionbus failed");
+    if (activation) {
+        dprint("connecting to the activation bus");
+        ULOG_WARN_F("WARNING: if the system bus activated this program, "
+                    "Libosso does not connect to the session bus!");
+        dprint("WARNING: if the system bus activated this program, "
+               "Libosso does not connect to the session bus!");
+        fprintf(stderr, "osso_initialize() WARNING: if the system bus "
+          "activated this program,\nLibosso does not connect"
+          " to the session bus!\n");
+        osso->conn = _dbus_connect_and_setup(osso, DBUS_BUS_ACTIVATION,
+                                             context);
+    } else {
+        dprint("connecting to the session bus");
+        osso->conn = _dbus_connect_and_setup(osso, DBUS_BUS_SESSION,
+                                             context);
+    }
+    if (osso->conn == NULL) {
+        if (activation) {
+	    ULOG_CRIT_F("connecting to the activation bus failed");
+	    dprint("connecting to the activation bus failed");
+        } else {
+	    ULOG_CRIT_F("connecting to the session bus failed");
+	    dprint("connecting to the session bus failed");
+        }
 	_deinit(osso);
 	return NULL;
     }
     dprint("connecting to the system bus");
     osso->sys_conn = _dbus_connect_and_setup(osso, DBUS_BUS_SYSTEM, context);
-    if(osso->sys_conn == NULL) {
-	dprint("connecting to the systembus failed");
+    if (osso->sys_conn == NULL) {
+        ULOG_CRIT_F("connecting to the system bus failed");
+        dprint("connecting to the system bus failed");
+	_deinit(osso);
+        return NULL;
     }
     osso->cur_conn = NULL;
     return osso;
@@ -75,8 +95,8 @@ void osso_deinitialize(osso_context_t *osso)
 {
     if(osso == NULL) return;
     
-    _dbus_disconnect(osso->conn, osso);
-    _dbus_disconnect(osso->sys_conn, osso);
+    _dbus_disconnect(osso, FALSE);
+    _dbus_disconnect(osso, TRUE);
     
     _deinit(osso);
     
@@ -219,7 +239,7 @@ static void _deinit(osso_context_t *osso)
     osso->exit.cb = NULL;
     osso->exit.data = NULL;
     
-#ifdef DEBUG
+#ifdef LIBOSSO_DEBUG
     g_log_remove_handler(NULL, osso->log_handler);
     osso->log_handler = 0;
 #endif
@@ -290,18 +310,16 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
    
     dbus_connection_set_exit_on_disconnect(conn, FALSE );
 
-#ifdef DEBUG
+#ifdef LIBOSSO_DEBUG
     dprint("adding Filter function %p",&_debug_filter);
-    if(dbus_connection_add_filter(conn, &_debug_filter, NULL, NULL)
-       != TRUE)
+    if(!dbus_connection_add_filter(conn, &_debug_filter, NULL, NULL))
     {
 	error = "Error: unable to add debug filter";
 	goto dbus_conn_error3;
     }
 #endif
     dprint("adding Filter function %p",&_msg_handler);
-    if(dbus_connection_add_filter(conn, &_msg_handler, osso, NULL)
-       != TRUE)
+    if(!dbus_connection_add_filter(conn, &_msg_handler, osso, NULL))
     {
 	error = "Error: unable to add _msg_handler as a filter";
 	goto dbus_conn_error4;
@@ -317,7 +335,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 
 /*    dbus_connection_remove_filter(conn, _msg_handler, osso); */
     dbus_conn_error4:
-#ifdef DEBUG
+#ifdef LIBOSSO_DEBUG
     dbus_connection_remove_filter(conn, _debug_filter, NULL);
     dbus_conn_error3:
 #endif
@@ -327,7 +345,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     g_free(osso->object_path);
     dbus_conn_error1:
         
-    dbus_connection_disconnect(conn);
+    /* no explicit disconnection, because the connections are shared */
     dbus_connection_unref(conn);
     if(error != NULL) {
 	ULOG_ERR_F("%s", error);
@@ -337,17 +355,25 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 }
 /*************************************************************************/
 
-static void _dbus_disconnect(DBusConnection *conn, osso_context_t *osso)
+static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
 {
-    if( (conn == NULL) || (osso == NULL) )
-	return;
+    DBusConnection *conn = NULL;
+    if (osso == NULL) {
+        return;
+    }
+    if (sys) {
+        conn = osso->sys_conn;
+        osso->sys_conn = NULL;
+    } else {
+        conn = osso->conn;
+        osso->conn = NULL;
+    }
     dbus_connection_remove_filter(conn, _msg_handler, osso);
-#ifdef DEBUG
+#ifdef LIBOSSO_DEBUG
     dbus_connection_remove_filter(conn, _debug_filter, NULL);
 #endif
     dbus_connection_unregister_object_path(conn, osso->object_path);
-
-    dbus_connection_disconnect(conn);
+    /* no explicit disconnection, because the connections are shared */
     dbus_connection_unref(conn);
     return;
 }
@@ -450,64 +476,8 @@ _msg_handler_rm_cb_f(osso_context_t *osso, const gchar *interface,
     return NULL;
 }
 
-/*************************************************************/
 
-static gint _cleanup_state_dir(const gchar *application,
-			       const gchar *version)
-{
-  gchar *dirname = NULL;
-  gchar *filename = NULL;
-  struct passwd *pwdstruct = NULL;
-  DIR *directory;
-  struct stat buf;
-  struct dirent *entry = NULL;
-
-  if (application == NULL || version == NULL) {
-    return OSSO_ERROR;
-  }
-  
-  pwdstruct = getpwuid(geteuid());
-  if (pwdstruct == NULL)
-    {
-      osso_log(LOG_ERR, "Unknown user!");
-      return OSSO_ERROR;
-    }
-  dirname = g_strconcat(pwdstruct->pw_dir, STATEDIRS,
-			  application, NULL);
-  if (dirname == NULL) {
-    return OSSO_ERROR;
-  }
-  directory = opendir(dirname);
-  if (directory == NULL) {
-    g_free(dirname);
-    return OSSO_ERROR;
-  }
-
-  /* Walk through the directory, remove everything but the current
-     version and directories */
-  
-  while ( (entry = readdir(directory)) ) {
-    if (strcmp(entry->d_name, version) != 0) {
-      filename = g_strconcat(dirname, "/", entry->d_name, NULL);
-      if (filename == NULL) {
-	continue;
-      }
-      if (stat(filename, &buf) != 0) {
-	g_free(filename);
-	continue;
-      }
-      if (S_ISREG(buf.st_mode)) {
-	unlink(filename);
-      }
-      g_free(filename);
-    }
-  }
-  g_free(dirname);
-  g_free(directory);
-  return OSSO_OK;
-}
-
-#ifdef DEBUG
+#ifdef LIBOSSO_DEBUG
 /*************************************************************/
 static GLogFunc _osso_log_handler(const gchar *log_domain,
 				 GLogLevelFlags log_level,
@@ -606,7 +576,7 @@ static DBusHandlerResult
 }
 
 
-#endif /* DEBUG */
+#endif /* LIBOSSO_DEBUG */
 
 gpointer osso_get_dbus_connection(osso_context_t *osso)
 {
