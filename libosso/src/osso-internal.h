@@ -168,7 +168,7 @@ osso_return_t _rpc_async_run (osso_context_t * osso, const gchar * service,
                               const gchar * interface, const gchar * method,
                               osso_rpc_async_f * async_cb, gpointer data,
                               int first_arg_type, va_list var_args);
-osso_return_t _rpc_set_cb_f (osso_context_t * osso, const gchar * service,
+static osso_return_t _rpc_set_cb_f (osso_context_t * osso, const gchar * service,
                              const gchar * object_path,
                              const gchar * interface, osso_rpc_cb_f * cb,
                              gpointer data, gboolean use_system_bus);
