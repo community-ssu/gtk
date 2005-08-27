@@ -191,12 +191,12 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	all-recursive install-data-recursive install-exec-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure COPYING \
-	Doxyfile.in Makefile.am aclocal.m4 config.guess config.h.in \
-	config.sub configure configure.ac dbus-launch-systembus.sh.in \
-	dbus-launch.sh.in depcomp install-sh libosso.conf.in \
-	libosso.pc.in ltmain.sh missing mkinstalldirs \
-	sessionbus-libosso.conf.in
+DIST_COMMON = README $(srcdir)/Makefile.in $(srcdir)/configure AUTHORS \
+	COPYING ChangeLog Doxyfile.in INSTALL Makefile.am NEWS \
+	aclocal.m4 config.guess config.h.in config.sub configure \
+	configure.ac dbus-launch-systembus.sh.in dbus-launch.sh.in \
+	depcomp install-sh libosso.conf.in libosso.pc.in ltmain.sh \
+	missing mkinstalldirs sessionbus-libosso.conf.in
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive

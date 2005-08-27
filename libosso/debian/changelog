@@ -20,6 +20,8 @@ libosso (0.9.15-1) unstable; urgency=low
     memory leaks with each subsequent call after the first one.
   * Fixed reading the current device state from file - it was completely
     broken (used wrong member of the Libosso context struct).
+  * Re-run automake-1.7.
+  * Added some files required by automake-1.7.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 27 Aug 2005 17:17:44 +0300
 
