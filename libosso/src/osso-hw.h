@@ -44,12 +44,12 @@
 }while(0)
 
 # define _unset_state_cb(hwstate) do {\
-    if((state->hwstate) && (osso->hw->hwstate.set)) { \
+    if((state->hwstate) && (osso->hw_cbs.hwstate.set)) { \
 	dprint("Unsetting handler for signal %s"\
 		   ,#hwstate); \
-	osso->hw->hwstate.cb = NULL; \
-	osso->hw->hwstate.data = NULL; \
-	osso->hw->hwstate.set = FALSE; \
+	osso->hw_cbs.hwstate.cb = NULL; \
+	osso->hw_cbs.hwstate.data = NULL; \
+	osso->hw_cbs.hwstate.set = FALSE; \
 	dbus_bus_remove_match(osso->sys_conn, "type='signal',interface='" \
 			      MCE_SIGNAL_IF "',member='"#hwstate"'"\
 			      , NULL); \
@@ -57,20 +57,20 @@
     } \
 }while(0)
 
-# define _state_is_unset() ( (!osso->hw->shutdown_ind.set) && \
-				 (!osso->hw->memory_low_ind.set) && \
-				 (!osso->hw->save_unsaved_data_ind.set) && \
-				 (!osso->hw->system_inactivity_ind.set) && \
-				 (!osso->hw->sig_device_mode_ind.set) )
+# define _state_is_unset() ( (!osso->hw_cbs.shutdown_ind.set) && \
+                             (!osso->hw_cbs.memory_low_ind.set) && \
+                             (!osso->hw_cbs.save_unsaved_data_ind.set) && \
+				 (!osso->hw_cbs.system_inactivity_ind.set) && \
+				 (!osso->hw_cbs.sig_device_mode_ind.set) )
 
 # define _call_state_cb(hwstate) do {\
-    if( osso->hw->hwstate.set && \
+    if( osso->hw_cbs.hwstate.set && \
 	    (dbus_message_is_signal(msg, MCE_SIGNAL_IF, #hwstate) \
 		 ==TRUE) ) \
     { \
 	dprint("Calling handler for signal %s at %p with data = %p"\
-		   , #hwstate , osso->hw->hwstate.cb,osso->hw_state); \
-	(osso->hw->hwstate.cb)(osso->hw_state, osso->hw->hwstate.data); \
+		   , #hwstate , osso->hw_cbs.hwstate.cb,osso->hw_state); \
+	(osso->hw_cbs.hwstate.cb)(osso->hw_state, osso->hw_cbs.hwstate.data); \
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED; \
     } \
 }while(0)
@@ -82,16 +82,16 @@
         {\
         FILE *f;\
           if (strcmp((gchar *)newstate, MCE_NORMAL_MODE) == 0) {\
-	    osso->hw_state->sig_device_mode_ind = OSSO_DEVMODE_NORMAL;\
+	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;\
 	  }\
 	  else if (strcmp((gchar *)newstate, MCE_FLIGHT_MODE) == 0) {\
-	    osso->hw_state->sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;\
+	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;\
 	  }\
 	  else if (strcmp((gchar *)newstate, MCE_OFFLINE_MODE) == 0) {\
-	    osso->hw_state->sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;\
+	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;\
 	  }\
 	  else if (strcmp((gchar *)newstate, MCE_INVALID_MODE) == 0) {\
-	    osso->hw_state->sig_device_mode_ind = OSSO_DEVMODE_INVALID;\
+	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;\
 	  }\
         f = fopen(OSSO_DEVSTATE_MODE_FILE, "w");\
         if (f != NULL) {\
@@ -100,11 +100,11 @@
         } \
         break;\
        } \
-           osso->hw_state->hwstate = (gboolean)newstate;\
+           osso->hw_state.hwstate = (gboolean)newstate;\
        } \
 }while(0)
 
-static osso_hw_state_t * _osso_hw_state_get(void);
+static void _osso_hw_state_get(osso_context_t *osso);
 static DBusHandlerResult _hw_handler(osso_context_t *osso,
 				     DBusMessage *msg,
 				     gpointer data);
