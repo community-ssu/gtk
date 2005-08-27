@@ -353,8 +353,8 @@ static void _dbus_disconnect(DBusConnection *conn, osso_context_t *osso)
 }
 
 /*************************************************************************/
-DBusHandlerResult _msg_handler(DBusConnection *conn, DBusMessage *msg,
-			       void *data)
+DBusHandlerResult __attribute__ ((visibility("hidden")))
+_msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
 {
     osso_context_t *osso;
     const gchar *interface;
