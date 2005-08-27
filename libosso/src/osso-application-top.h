@@ -29,7 +29,4 @@ struct _osso_top{
     gpointer data;
 };
 
-DBusHandlerResult _top_handler(osso_context_t *osso, DBusMessage *msg,
-			       gpointer data);
-
 #endif /* OSSO_APPLICATION_TOP_ */

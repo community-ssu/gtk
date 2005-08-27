@@ -95,6 +95,43 @@ static void _append_environment(DBusMessage *msg)
     
 }
 
+/************************************************************************/
+static DBusHandlerResult _top_handler(osso_context_t *osso,
+                                      DBusMessage *msg, gpointer data);
+static DBusHandlerResult _top_handler(osso_context_t *osso,
+                                      DBusMessage *msg, gpointer data)
+{
+    struct _osso_top *top;
+    gchar interface[256] = {0};
+
+    top = (struct _osso_top *)data;
+
+    g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT,
+	       osso->application);
+
+    if(dbus_message_is_method_call(msg, interface, OSSO_BUS_TOP) == TRUE)
+    {	
+	char *arguments = NULL;
+	DBusMessageIter iter;
+	
+	dbus_message_iter_init(msg, &iter);
+	if(dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_STRING) {
+	    arguments = dbus_message_iter_get_string(&iter);
+            if (!osso->environment_set)
+            {
+                _set_environment(&iter);
+                osso->environment_set = TRUE;
+            }
+	}
+	else {
+	    arguments = "";
+	}
+dprint("arguments = '%s'",arguments);	
+	top->handler(arguments, top->data);
+	return DBUS_HANDLER_RESULT_HANDLED;
+    }
+    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
 
 /************************************************************************/
 osso_return_t osso_application_set_top_cb(osso_context_t *osso,
@@ -142,45 +179,6 @@ osso_return_t osso_application_unset_top_cb(osso_context_t *osso,
 }
 
 static void _set_environment(DBusMessageIter *iter);
-
-
-/************************************************************************/
-DBusHandlerResult _top_handler(osso_context_t *osso, DBusMessage *msg,
-			       gpointer data)
-{
-    struct _osso_top *top;
-    gchar interface[256] = {0};
-
-    top = (struct _osso_top *)data;
-
-    g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT,
-	       osso->application);
-
-    if(dbus_message_is_method_call(msg, interface, OSSO_BUS_TOP) == TRUE)
-    {	
-	char *arguments = NULL;
-	DBusMessageIter iter;
-	
-	dbus_message_iter_init(msg, &iter);
-	if(dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_STRING) {
-	    arguments = dbus_message_iter_get_string(&iter);
-            if (!osso->environment_set)
-            {
-                _set_environment(&iter);
-                osso->environment_set = TRUE;
-            }
-	}
-	else {
-	    arguments = "";
-	}
-dprint("arguments = '%s'",arguments);	
-	top->handler(arguments, top->data);
-	return DBUS_HANDLER_RESULT_HANDLED;
-    }
-    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-}
-
-
 static void _set_environment(DBusMessageIter *iter)
 {
     dbus_message_iter_next(iter);
