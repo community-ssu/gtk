@@ -73,12 +73,12 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 						GMainContext *context);
 
 /**
- * This function deregisters with the D-BUS daemon, and disconnects from
+ * This function deregisters with the D-BUS daemon, and unreferences
  * the given dbus connection.
- * @apram conn The DBusConnection to disconnect.
  * @param osso The #osso_context_t for this connection.
+ * @param sys TRUE for system bus, FALSE for session bus.
  */
-static void _dbus_disconnect(DBusConnection *conn, osso_context_t *osso);
+static void _dbus_disconnect(osso_context_t *osso, gboolean sys);
 
 /**
  * This function cleans up the statefile directory that belongs to
@@ -108,7 +108,7 @@ static GLogFunc _osso_log_handler(const gchar *log_domain,
 				 const gchar *message,
 				 gpointer user_data);
 
-#ifdef DEBUG
+#ifdef LIBOSSO_DEBUG
 /**
  * This debug function will return the type of the message as a string.
  * @param message_type The message type to convert.
