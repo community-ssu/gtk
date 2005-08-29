@@ -26,6 +26,7 @@
 #include "osso-application-top.h"
 #include <stdlib.h>
 
+static void _set_environment(DBusMessageIter *iter);
 static void _append_environment(DBusMessage *msg);
 
 osso_return_t osso_application_top(osso_context_t *osso, const gchar *application,
@@ -178,7 +179,6 @@ osso_return_t osso_application_unset_top_cb(osso_context_t *osso,
     return OSSO_OK;
 }
 
-static void _set_environment(DBusMessageIter *iter);
 static void _set_environment(DBusMessageIter *iter)
 {
     dbus_message_iter_next(iter);

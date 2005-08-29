@@ -229,7 +229,7 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
     _unset_state_cb(shutdown_ind);
     if (state->memory_low_ind && osso->hw_cbs.memory_low_ind.set) {
         osso->hw_cbs.memory_low_ind.cb = NULL;
-        osso->hw_cbs.memory_low_ind.date = NULL;
+        osso->hw_cbs.memory_low_ind.data = NULL;
         osso->hw_cbs.memory_low_ind.set = FALSE;
         dbus_bus_remove_match(osso->sys_conn, "type='signal',interface='"
                 USER_LOWMEM_OFF_SIGNAL_IF "'", NULL);
