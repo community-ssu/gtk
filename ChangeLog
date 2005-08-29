@@ -1,3 +1,9 @@
+2005-08-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkfilesystem.h (GtkFileSystemError): Add
+	GTK_FILE_SYSTEM_ERROR_TIMEOUT to be able to differentiate (non-local)
+	timeouts from generic errors.
+
 2005-08-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkrc.c (gtk_rc_reparse_all_for_settings): When determining
