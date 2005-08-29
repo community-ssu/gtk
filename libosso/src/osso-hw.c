@@ -113,7 +113,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
     }
 
     if (state == NULL) {
-	state = &default_mask;
+	state = (osso_hw_state_t*) &default_mask;
     }
 
     read_device_state_from_file(osso);
@@ -239,7 +239,6 @@ static void read_device_state_from_file(osso_context_t *osso)
                 osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
             } else {
                 ULOG_WARN_F("invalid device mode '%s'", s);
-                return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
             }
         }
         fclose(f);
@@ -297,6 +296,7 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
     } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, DEVICE_MODE_SIG)) {
         int type;
         DBusMessageIter i;
+	char* s = NULL;
 
         dbus_message_iter_init(msg, &i);
         type = dbus_message_iter_get_arg_type(&i);
