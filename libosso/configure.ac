@@ -14,7 +14,7 @@ AC_ARG_ENABLE(debug,
               [Compile with Debug symbols, and extra debug code (default=no)])], 
               [libosso_use_debug=yes], [libosso_use_debug=no])
 
-WFLAGS="-Wall -pedantic-errors -Wmissing-prototypes -Wcast-align -std=c99"
+WFLAGS="-Wall -Wmissing-prototypes -Wunreachable-code -Wcast-align -std=c99"
 if test x${libosso_use_debug} = xyes ; then
     AC_DEFINE(DEBUG,1,[Build extra debug code])
     OSSO_CFLAGS="-g -ansi  -D_BSD_SOURCE -rdynamic $WFLAGS"
