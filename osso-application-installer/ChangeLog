@@ -1,5 +1,8 @@
 2005-08-29  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* po/en_GB.po (ai_ti_broken_description): Changed text according
+	to UI spec.
+
 	* src/dbus.h, src/dbus.c (register_mime_open_handler): New.
 	(init_osso): Do not register mime callback here.
 	* src/main.c (main): Initialize osso before creating the main
