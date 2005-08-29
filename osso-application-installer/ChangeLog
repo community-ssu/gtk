@@ -7,7 +7,8 @@
 
 	* src/ui/interface.c (ui_create_main_dialog): Log error when help
 	could not be activated.
-
+	(ui_create_textbox): Scroll to beginning of text.
+	
 2005-08-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
         * po/en_GB.po (ai_ti_copying, ai_ti_copying_failed): New.
