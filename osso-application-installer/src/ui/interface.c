@@ -77,9 +77,10 @@ ui_create_main_dialog (AppData *app_data)
   app_ui_data->main_dialog = main_dialog;
 
   /* Enabling dialog help */
-  ossohelp_dialog_help_enable(GTK_DIALOG(main_dialog),
-			      AI_HELP_KEY_MAIN,
-                              app_data->app_osso_data->osso);
+  if (!ossohelp_dialog_help_enable (GTK_DIALOG (main_dialog),
+				    AI_HELP_KEY_MAIN,
+				    app_data->app_osso_data->osso))
+    ULOG_ERR ("no help!\n");
 
   /* Create dialog buttons */
   ULOG_INFO("Creating buttons..");
