@@ -321,7 +321,8 @@ ui_create_textbox (AppData *app_data, gchar *text,
   GtkWidget *view;
   GtkWidget *menu;
   GtkTextBuffer *buffer;
-  
+  GtkTextIter *iter = NULL;
+
   if (NULL == app_data || NULL == app_data->app_ui_data) return NULL;
 
   /* Creating scrollable window */
@@ -335,7 +336,14 @@ ui_create_textbox (AppData *app_data, gchar *text,
   gtk_text_view_set_editable(GTK_TEXT_VIEW(view), editable);
   gtk_widget_set_sensitive(view, TRUE);
   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(view), FALSE);
-  
+
+  /* If text is longer than buffer, force scroll back up */
+  gtk_text_buffer_get_start_iter (buffer, iter);
+  gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(view),
+				iter,
+				0.0, TRUE,
+				0.0, 0.0);
+
   /* Enabling popup only when selectable, i.e. error details */
   if (selectable) 
     {
