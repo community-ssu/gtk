@@ -1,5 +1,12 @@
 2005-08-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_row_inserted): Revert
+	the optimization as it breaks file chooser (Memory Card is not shown
+	initially if a subfolder is selected.)
+	N#18260
+
+2005-08-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gdk/x11/gdkim-x11.c (_gdk_x11_initialize_locale): Comment out X
 	locale initialization.  We know it would fail anyway.
 
