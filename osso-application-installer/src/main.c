@@ -85,6 +85,8 @@ int main (int argc, char** argv)
   
   app_ui_data = app_data->app_ui_data;
 
+  init_osso (app_data);
+
 #ifdef USE_GNOME_VFS
   /* GnomeVFS */
   if (!gnome_vfs_initialized()) {
@@ -103,12 +105,12 @@ int main (int argc, char** argv)
   if (argc > 1)
     do_install (argv[1], app_data);
 
-  /* Init OSSO.  It has to be done after creating the main dialog
-     since the osso callbacks are run from the main loop and might
-     therefore be called too early if they are registered before the
-     main dialog has been setup completely.
+  /* Register the mime-open handler.  It has to be done after creating
+     the main dialog since the osso callbacks are run from the main
+     loop and might therefore be called too early if they are
+     registered before the main dialog has been setup completely.
   */
-  init_osso(app_data);
+  register_mime_open_handler (app_data);
 
   gtk_main();
 
