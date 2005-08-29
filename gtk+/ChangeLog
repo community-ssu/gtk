@@ -1,5 +1,16 @@
 2005-08-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtklabel.c (gtk_label_ensure_layout_full): New function,
+	extended to take additional parameter for optionally clamping the
+	layout width to current allocation width.
+	(gtk_label_ensure_layout_full, gtk_label_size_request): Set label
+	layout's maximum width correctly when wrapping is enabled.
+	(get_layout_location): Use the layout's actual width and height when
+	calculating the label alignmentation.
+	N#17117
+
+2005-08-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkfilesystem.h (GtkFileSystemError): Add
 	GTK_FILE_SYSTEM_ERROR_TIMEOUT to be able to differentiate (non-local)
 	timeouts from generic errors.

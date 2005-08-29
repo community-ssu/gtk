@@ -1841,7 +1841,7 @@ get_label_wrap_width (GtkLabel *label)
 }
 
 static void
-gtk_label_ensure_layout (GtkLabel *label)
+gtk_label_ensure_layout_full (GtkLabel *label, gboolean have_allocation)
 {
   GtkWidget *widget;
   PangoRectangle logical_rect;
@@ -1991,13 +1991,26 @@ gtk_label_ensure_layout (GtkLabel *label)
 			}
 		    }
 		}
+
+              /* If we already know our allocation size, make sure we don't
+               * try to set the width to more than we have
+               */
+              if (width > widget->allocation.width * PANGO_SCALE &&
+                  have_allocation)
+                width = widget->allocation.width * PANGO_SCALE;
+
 	      pango_layout_set_width (label->layout, width);
 	    }
 	}
       else /* !label->wrap */
 	pango_layout_set_width (label->layout, -1);
     }
+}
 
+static void
+gtk_label_ensure_layout (GtkLabel *label)
+{
+  gtk_label_ensure_layout_full (label, TRUE);
 }
 
 /* Gets the bounds of a layout in device coordinates. Note cut-and-paste
@@ -2081,7 +2094,7 @@ gtk_label_size_request (GtkWidget      *widget,
   if (label->wrap)
     gtk_label_clear_layout (label);
 
-  gtk_label_ensure_layout (label);
+  gtk_label_ensure_layout_full (label, FALSE);
 
   width = label->misc.xpad * 2;
   height = label->misc.ypad * 2;
@@ -2194,18 +2207,6 @@ gtk_label_size_allocate (GtkWidget     *widget,
         pango_layout_set_width (label->layout, allocation->width * PANGO_SCALE);
     }
 
-  /* update label's height requisition so vertical alignment
-     calculations will work correctly later (assuming our allocation
-     has enough height). */
-  if (label->wrap && label->layout)
-    {
-      gint height, width;
-
-      pango_layout_get_size (label->layout, &width, &height);
-      widget->requisition.width = width / PANGO_SCALE + label->misc.xpad * 2;
-      widget->requisition.height = height / PANGO_SCALE + label->misc.ypad * 2;
-    }
-
   if (label->select_info && label->select_info->window)
     {
       gdk_window_move_resize (label->select_info->window,
@@ -2265,7 +2266,7 @@ get_layout_location (GtkLabel  *label,
   GtkMisc *misc;
   GtkWidget *widget;
   gfloat xalign;
-  gint req_width, x, y;
+  gint req_width, req_height, x, y;
   
   misc = GTK_MISC (label);
   widget = GTK_WIDGET (label);
@@ -2275,6 +2276,24 @@ get_layout_location (GtkLabel  *label,
   else
     xalign = 1.0 - misc->xalign;
 
+  /* get label's actual width and height so alignment calculations will work
+   * correctly (assuming our allocation has enough width/height).
+   */
+  if (label->wrap)
+    {
+      gint height, width;
+
+      pango_layout_get_size (label->layout, &width, &height);
+      req_width = width / PANGO_SCALE + label->misc.xpad * 2;
+      req_height = height / PANGO_SCALE + label->misc.ypad * 2;
+    }
+  else
+    {
+      /* no wrapping, the requisition width/height is correct already */
+      req_width = widget->requisition.width;
+      req_height = widget->requisition.height;
+    }
+
   if (label->ellipsize)
     {
       PangoRectangle ink_rect;
@@ -2283,8 +2302,6 @@ get_layout_location (GtkLabel  *label,
 
       req_width = PANGO_PIXELS (ink_rect.width);
     }
-  else
-    req_width = widget->requisition.width;
 
   x = floor (widget->allocation.x + (gint)misc->xpad +
 	      xalign * (widget->allocation.width - req_width)
@@ -2298,7 +2315,7 @@ get_layout_location (GtkLabel  *label,
 	     req_width - misc->xpad);
 
   y = floor (widget->allocation.y + (gint)misc->ypad 
-             + MAX (((widget->allocation.height - widget->requisition.height) * misc->yalign)
+             + MAX (((widget->allocation.height - req_height) * misc->yalign)
 		    + 0.5, 0));
 
   if (xp)
