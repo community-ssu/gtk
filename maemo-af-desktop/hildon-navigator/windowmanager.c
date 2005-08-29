@@ -3046,7 +3046,10 @@ static int kill_all( gboolean killable_only )
         gtk_tree_model_foreach(wm_cbs.model, menuitem_match_helper,
                                &menu_comp);
 
-        if (menu_comp.window_id != 0 &&
+	/* Do not kill applications that do not have service name
+	   information, as we'd be unable to top them... */
+
+        if (menu_comp.window_id != 0 && menu_comp.service != NULL &&
             ((menu_comp.killable == TRUE && killable_only == TRUE) ||
              killable_only == FALSE))
         {

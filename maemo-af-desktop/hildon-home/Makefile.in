@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (c) 2004 Nokia Oyj
+# Copyright (c) 2005 Nokia Oyj
 
 # SUBDIRS = po 
 
@@ -260,7 +260,7 @@ LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 DIST_SOURCES = $(libhildonhome_la_SOURCES) $(home_image_loader_SOURCES)
 DATA = $(hildon_home_pluginincludeinst_DATA) $(pkgconfig_DATA)
 
-DIST_COMMON = $(srcdir)/Makefile.in Makefile.am TODO hildon-home.pc.in
+DIST_COMMON = $(srcdir)/Makefile.in Makefile.am hildon-home.pc.in
 SOURCES = $(libhildonhome_la_SOURCES) $(home_image_loader_SOURCES)
 
 all: all-am

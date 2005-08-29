@@ -1,3 +1,10 @@
+2005-08-29  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+	* Patched bug #16496.  
+	* hildon-navigator/windowmanager.c (kill_all): Do not background
+	kill applications that do not have X-Osso-Service defined, as we
+	can't relaunch them.
+
 2005-08-25  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
         
         * Fixed byg #10558 - FR_CA Home memory card cover: no message when open
