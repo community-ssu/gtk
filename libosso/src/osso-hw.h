@@ -38,18 +38,18 @@
 	dbus_bus_remove_match(osso->sys_conn, "type='signal',interface='" \
 			      MCE_SIGNAL_IF "',member='"#hwstate"'"\
 			      , NULL); \
-	dbus_connection_flush(osso->sys_conn); \
     } \
 }while(0)
 
 #define _state_is_unset() ( (!osso->hw_cbs.shutdown_ind.set) && \
-                            (!osso->hw_cbs.memory_low_ind.set) && \
                             (!osso->hw_cbs.save_unsaved_data_ind.set) && \
                             (!osso->hw_cbs.system_inactivity_ind.set) && \
                             (!osso->hw_cbs.sig_device_mode_ind.set) )
 
 static void read_device_state_from_file(osso_context_t *osso);
 static DBusHandlerResult signal_handler(osso_context_t *osso,
+                                        DBusMessage *msg, gpointer data);
+static DBusHandlerResult lowmem_signal_handler(osso_context_t *osso,
                                         DBusMessage *msg, gpointer data);
 
 #endif /* OSSO_HW_H_ */

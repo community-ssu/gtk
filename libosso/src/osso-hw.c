@@ -34,13 +34,20 @@
 #define DEVICE_MODE_SIG	                "sig_device_mode_ind"
 #define INACTIVITY_SIG                  "system_inactivity_ind"
 #define SHUTDOWN_SIG                    "shutdown_ind"
-#define MEMORY_LOW_SIG                  "memory_low_ind"
 #define SAVE_UNSAVED_SIG                "save_unsaved_data_ind"
 
 #define NORMAL_MODE                     "normal"
 #define FLIGHT_MODE                     "flight"
 #define OFFLINE_MODE                    "offline"
 #define INVALID_MODE                    "invalid"
+
+/* user lowmem signal */
+#define USER_LOWMEM_OFF_SIGNAL_OP "/com/nokia/ke_recv/user_lowmem_off"
+#define USER_LOWMEM_OFF_SIGNAL_IF "com.nokia.ke_recv.user_lowmem_off"
+#define USER_LOWMEM_OFF_SIGNAL_NAME "user_lowmem_off"
+#define USER_LOWMEM_ON_SIGNAL_OP "/com/nokia/ke_recv/user_lowmem_on"
+#define USER_LOWMEM_ON_SIGNAL_IF "com.nokia.ke_recv.user_lowmem_on"
+#define USER_LOWMEM_ON_SIGNAL_NAME "user_lowmem_on"
 
 osso_return_t osso_display_state_on(osso_context_t *osso)
 {
@@ -102,6 +109,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
 {
     static const osso_hw_state_t default_mask = {TRUE,TRUE,TRUE,TRUE,1};
     gboolean call_cb = FALSE;
+    gboolean install_mce_handler = FALSE;
 
     if (osso == NULL || cb == NULL) {
 	ULOG_ERR_F("invalid parameters");
@@ -125,6 +133,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
             /* if callback was not previously registered, add match */
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 MCE_SIGNAL_IF "',member='" SHUTDOWN_SIG "'", NULL);
+            install_mce_handler = TRUE;
         }
 	if (osso->hw_state.shutdown_ind) {
             call_cb = TRUE;
@@ -135,13 +144,17 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         osso->hw_cbs.memory_low_ind.cb = cb;
         osso->hw_cbs.memory_low_ind.data = data;
         if (!osso->hw_cbs.memory_low_ind.set) {
-		/* FIXME: not correct signal */
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='" MEMORY_LOW_SIG "'", NULL);
+                USER_LOWMEM_OFF_SIGNAL_IF "'", NULL);
+            dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
+                USER_LOWMEM_ON_SIGNAL_IF "'", NULL);
+            _msg_handler_set_cb_f(osso, USER_LOWMEM_OFF_SIGNAL_IF,
+                                  lowmem_signal_handler, NULL, FALSE);
+            _msg_handler_set_cb_f(osso, USER_LOWMEM_ON_SIGNAL_IF,
+                                  lowmem_signal_handler, NULL, FALSE);
         }
-	if (osso->hw_state.memory_low_ind) {
-            call_cb = TRUE;
-        } 
+        /* FIXME? callback cannot be called now because we
+         * don't know the state */
         osso->hw_cbs.memory_low_ind.set = TRUE;
     }
     if (state->save_unsaved_data_ind) {
@@ -150,6 +163,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         if (!osso->hw_cbs.save_unsaved_data_ind.set) {
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 MCE_SIGNAL_IF "',member='" SAVE_UNSAVED_SIG "'", NULL);
+            install_mce_handler = TRUE;
         }
 	if (osso->hw_state.save_unsaved_data_ind) {
             call_cb = TRUE;
@@ -162,6 +176,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         if (!osso->hw_cbs.system_inactivity_ind.set) {
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 MCE_SIGNAL_IF "',member='" INACTIVITY_SIG "'", NULL);
+            install_mce_handler = TRUE;
         }
 	if (osso->hw_state.system_inactivity_ind) {
             call_cb = TRUE;
@@ -174,6 +189,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         if (!osso->hw_cbs.sig_device_mode_ind.set) {
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 MCE_SIGNAL_IF "',member='" DEVICE_MODE_SIG "'", NULL);
+            install_mce_handler = TRUE;
         }
 	if (osso->hw_state.sig_device_mode_ind != OSSO_DEVMODE_NORMAL) {
             call_cb = TRUE;
@@ -181,7 +197,10 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         osso->hw_cbs.sig_device_mode_ind.set = TRUE;
     }
 
-    _msg_handler_set_cb_f(osso, MCE_SIGNAL_IF, signal_handler, state, FALSE);
+    if (install_mce_handler) {
+        _msg_handler_set_cb_f(osso, MCE_SIGNAL_IF, signal_handler,
+                              NULL, FALSE);
+    }
     if (call_cb) {
         (*cb)(&osso->hw_state, data);
     }
@@ -193,7 +212,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
 osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
 				     osso_hw_state_t *state)
 {
-    osso_hw_state_t temp = {TRUE,TRUE,TRUE,TRUE,1};
+    static const osso_hw_state_t default_mask = {TRUE,TRUE,TRUE,TRUE,1};
     if (osso == NULL) {
 	ULOG_ERR_F("invalid parameters");
 	return OSSO_INVALID;
@@ -203,16 +222,28 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
 	return OSSO_INVALID;
     }
 
-    dprint("state = %p", state);
-    if(state == NULL)
-	state = &temp;
-    dprint("state = %p", state);
+    if (state == NULL) {
+	state = (osso_hw_state_t*) &default_mask;
+    }
 
     _unset_state_cb(shutdown_ind);
-    _unset_state_cb(memory_low_ind);
+    if (state->memory_low_ind && osso->hw_cbs.memory_low_ind.set) {
+        osso->hw_cbs.memory_low_ind.cb = NULL;
+        osso->hw_cbs.memory_low_ind.date = NULL;
+        osso->hw_cbs.memory_low_ind.set = FALSE;
+        dbus_bus_remove_match(osso->sys_conn, "type='signal',interface='"
+                USER_LOWMEM_OFF_SIGNAL_IF "'", NULL);
+        dbus_bus_remove_match(osso->sys_conn, "type='signal',interface='"
+                USER_LOWMEM_ON_SIGNAL_IF "'", NULL);
+        _msg_handler_rm_cb_f(osso, USER_LOWMEM_OFF_SIGNAL_IF,
+                             lowmem_signal_handler, FALSE);
+        _msg_handler_rm_cb_f(osso, USER_LOWMEM_ON_SIGNAL_IF,
+                             lowmem_signal_handler, FALSE);
+    }
     _unset_state_cb(save_unsaved_data_ind);
     _unset_state_cb(system_inactivity_ind);
     _unset_state_cb(sig_device_mode_ind);
+    dbus_connection_flush(osso->sys_conn);
 
     if (_state_is_unset()) {
 	_msg_handler_rm_cb_f(osso, MCE_SIGNAL_IF, signal_handler, FALSE);
@@ -249,6 +280,30 @@ static void read_device_state_from_file(osso_context_t *osso)
     }
 }
 
+static DBusHandlerResult lowmem_signal_handler(osso_context_t *osso,
+                DBusMessage *msg, gpointer data)
+{
+    ULOG_DEBUG_F("entered");
+    if (dbus_message_is_signal(msg, USER_LOWMEM_ON_SIGNAL_IF,
+                               USER_LOWMEM_ON_SIGNAL_NAME)) {
+        osso->hw_state.memory_low_ind = TRUE;
+        if (osso->hw_cbs.memory_low_ind.set) {
+            (osso->hw_cbs.memory_low_ind.cb)(&osso->hw_state,
+                osso->hw_cbs.memory_low_ind.data);
+        } 
+    } else if (dbus_message_is_signal(msg, USER_LOWMEM_OFF_SIGNAL_IF,
+                               USER_LOWMEM_OFF_SIGNAL_NAME)) {
+        osso->hw_state.memory_low_ind = FALSE;
+        if (osso->hw_cbs.memory_low_ind.set) {
+            (osso->hw_cbs.memory_low_ind.cb)(&osso->hw_state,
+                osso->hw_cbs.memory_low_ind.data);
+        } 
+    } else {
+        ULOG_WARN_F("unknown signal received");
+    }
+    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
+
 static DBusHandlerResult signal_handler(osso_context_t *osso,
                                         DBusMessage *msg, gpointer data)
 {
@@ -260,13 +315,6 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
             (osso->hw_cbs.shutdown_ind.cb)(&osso->hw_state,
                 osso->hw_cbs.shutdown_ind.data);
         } 
-    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, MEMORY_LOW_SIG)) {
-        osso->hw_state.memory_low_ind = TRUE;
-        /* FIXME: wrong signal */
-        if (osso->hw_cbs.memory_low_ind.set) {
-            (osso->hw_cbs.memory_low_ind.cb)(&osso->hw_state,
-                osso->hw_cbs.memory_low_ind.data);
-        }
     } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, SAVE_UNSAVED_SIG)) {
         osso->hw_state.save_unsaved_data_ind = TRUE;
         if (osso->hw_cbs.save_unsaved_data_ind.set) {

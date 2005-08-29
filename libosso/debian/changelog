@@ -23,6 +23,8 @@ libosso (0.9.15-1) unstable; urgency=low
   * Re-run automake-1.7.
   * Added some files required by automake-1.7.
   * Rewrote most of the code in osso-hw.c.
+  * Connected the low memory signal handler to correct D-BUS signal (bug
+    18069).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 29 Aug 2005 18:08:13 +0300
 
