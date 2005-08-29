@@ -20,8 +20,8 @@
  *
  */
 
-/* Ideally, these definitions should come from elsewhere,
-   but it is not possible at the moment... (bug #10866) */
+#include "osso-internal.h"
+#include "osso-hw.h"
 
 #define MCE_SERVICE			"com.nokia.mce"
 #define MCE_REQUEST_PATH		"/com/nokia/mce/request"
@@ -30,18 +30,17 @@
 #define MCE_SIGNAL_IF			"com.nokia.mce.signal"
 #define MCE_DISPLAY_ON_REQ		"req_display_state_on"
 #define MCE_PREVENT_BLANK_REQ		"req_display_blanking_pause"
-#define MCE_DEVICE_MODE_SIG		"sig_device_mode_ind"
 
-#define MCE_INACTIVITY_SIG              "system_inactivity_ind"
+#define DEVICE_MODE_SIG	                "sig_device_mode_ind"
+#define INACTIVITY_SIG                  "system_inactivity_ind"
+#define SHUTDOWN_SIG                    "shutdown_ind"
+#define MEMORY_LOW_SIG                  "memory_low_ind"
+#define SAVE_UNSAVED_SIG                "save_unsaved_data_ind"
 
-#define MCE_NORMAL_MODE		"normal"	/* normal mode */
-#define MCE_FLIGHT_MODE		"flight"	/* flight mode */
-#define MCE_OFFLINE_MODE	"offline"	/* offline mode; unsupported! */
-#define MCE_INVALID_MODE	"invalid"	/* should *never* occur! */
-
-
-#include "osso-internal.h"
-#include "osso-hw.h"
+#define NORMAL_MODE                     "normal"
+#define FLIGHT_MODE                     "flight"
+#define OFFLINE_MODE                    "offline"
+#define INVALID_MODE                    "invalid"
 
 osso_return_t osso_display_state_on(osso_context_t *osso)
 {
@@ -117,17 +116,15 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
 	state = &default_mask;
     }
 
-    _osso_hw_state_get(osso);
+    read_device_state_from_file(osso);
 
-    /* Now set the HW state / add monitoring if requested */
-    
     if (state->shutdown_ind) {
         osso->hw_cbs.shutdown_ind.cb = cb;
         osso->hw_cbs.shutdown_ind.data = data;
         if (!osso->hw_cbs.shutdown_ind.set) {
             /* if callback was not previously registered, add match */
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='shutdown_ind'", NULL);
+                MCE_SIGNAL_IF "',member='" SHUTDOWN_SIG "'", NULL);
         }
 	if (osso->hw_state.shutdown_ind) {
             call_cb = TRUE;
@@ -140,7 +137,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         if (!osso->hw_cbs.memory_low_ind.set) {
 		/* FIXME: not correct signal */
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='memory_low_ind'", NULL);
+                MCE_SIGNAL_IF "',member='" MEMORY_LOW_SIG "'", NULL);
         }
 	if (osso->hw_state.memory_low_ind) {
             call_cb = TRUE;
@@ -152,7 +149,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         osso->hw_cbs.save_unsaved_data_ind.data = data;
         if (!osso->hw_cbs.save_unsaved_data_ind.set) {
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='save_unsaved_data_ind'", NULL);
+                MCE_SIGNAL_IF "',member='" SAVE_UNSAVED_SIG "'", NULL);
         }
 	if (osso->hw_state.save_unsaved_data_ind) {
             call_cb = TRUE;
@@ -164,7 +161,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         osso->hw_cbs.system_inactivity_ind.data = data;
         if (!osso->hw_cbs.system_inactivity_ind.set) {
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='system_inactivity_ind'", NULL);
+                MCE_SIGNAL_IF "',member='" INACTIVITY_SIG "'", NULL);
         }
 	if (osso->hw_state.system_inactivity_ind) {
             call_cb = TRUE;
@@ -176,7 +173,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         osso->hw_cbs.sig_device_mode_ind.data = data;
         if (!osso->hw_cbs.sig_device_mode_ind.set) {
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='sig_device_mode_ind'", NULL);
+                MCE_SIGNAL_IF "',member='" DEVICE_MODE_SIG "'", NULL);
         }
 	if (osso->hw_state.sig_device_mode_ind != OSSO_DEVMODE_NORMAL) {
             call_cb = TRUE;
@@ -184,7 +181,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         osso->hw_cbs.sig_device_mode_ind.set = TRUE;
     }
 
-    _msg_handler_set_cb_f(osso, MCE_SIGNAL_IF, _hw_handler, state, FALSE);
+    _msg_handler_set_cb_f(osso, MCE_SIGNAL_IF, signal_handler, state, FALSE);
     if (call_cb) {
         (*cb)(&osso->hw_state, data);
     }
@@ -217,135 +214,118 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
     _unset_state_cb(system_inactivity_ind);
     _unset_state_cb(sig_device_mode_ind);
 
-    if(_state_is_unset())
-	_msg_handler_rm_cb_f(osso, MCE_SIGNAL_IF,
-			     _hw_handler, FALSE);
-    
+    if (_state_is_unset()) {
+	_msg_handler_rm_cb_f(osso, MCE_SIGNAL_IF, signal_handler, FALSE);
+    }
     return OSSO_OK;    
 }
 
-static void _osso_hw_state_get(osso_context_t *osso)
+static void read_device_state_from_file(osso_context_t *osso)
 {
-    FILE *f;
-    gchar storedstate[STORED_LEN];
-    
+    FILE *f = NULL;
+    gchar s[STORED_LEN];
     g_assert(osso != NULL);
-    
+
     f = fopen(OSSO_DEVSTATE_MODE_FILE, "r");
-    if(f != NULL) {
-      if (fgets(storedstate, STORED_LEN, f) != NULL) {
-	
-	  if (strcmp(storedstate, MCE_NORMAL_MODE) == 0) {
-	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
-	  }
-	  else if (strcmp(storedstate, MCE_FLIGHT_MODE) == 0) {
-	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
-	  }
-	  else if (strcmp(storedstate, MCE_OFFLINE_MODE) == 0) {
-	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
-	  }
-	  else if (strcmp(storedstate, MCE_INVALID_MODE) == 0) {
-	    osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
-	  }
-      }
-      fclose(f);
-    }
-    else {
-      ULOG_ERR_F("no device state file found, assuming NORMAL device state");
-      osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
+    if (f != NULL) {
+        if (fgets(s, STORED_LEN, f) != NULL) {
+            if (strncmp(s, NORMAL_MODE, strlen(NORMAL_MODE)) == 0) {
+                osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
+            } else if (strncmp(s, FLIGHT_MODE, strlen(FLIGHT_MODE)) == 0) {
+                osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
+            } else if (strncmp(s, OFFLINE_MODE, strlen(OFFLINE_MODE)) == 0) {
+                osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
+            } else if (strncmp(s, INVALID_MODE, strlen(INVALID_MODE)) == 0) {
+                osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
+            } else {
+                ULOG_WARN_F("invalid device mode '%s'", s);
+                return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+            }
+        }
+        fclose(f);
+    } else {
+        ULOG_ERR_F("could not open device state file '%s', "
+            "assuming OSSO_DEVMODE_NORMAL", OSSO_DEVSTATE_MODE_FILE);
+        osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
     }
 }
 
-static DBusHandlerResult _hw_handler(osso_context_t *osso,
-                                     DBusMessage *msg,
-                                     gpointer data)
+static DBusHandlerResult signal_handler(osso_context_t *osso,
+                                        DBusMessage *msg, gpointer data)
 {
-    const gchar *signal = NULL, *mode_str = NULL;
-    gboolean old_inactivity_state = osso->hw_state.system_inactivity_ind;
-    gboolean inactivity_state;
-    DBusMessageIter iter;
-    int type;
-    
-    dprint("");
-    signal = dbus_message_get_member(msg);
-    dbus_message_iter_init(msg, &iter);
+    ULOG_DEBUG_F("entered");
 
-    type = dbus_message_iter_get_arg_type(&iter);
+    if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, SHUTDOWN_SIG)) {
+        osso->hw_state.shutdown_ind = TRUE;
+        if (osso->hw_cbs.shutdown_ind.set) {
+            (osso->hw_cbs.shutdown_ind.cb)(&osso->hw_state,
+                osso->hw_cbs.shutdown_ind.data);
+        } 
+    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, MEMORY_LOW_SIG)) {
+        osso->hw_state.memory_low_ind = TRUE;
+        /* FIXME: wrong signal */
+        if (osso->hw_cbs.memory_low_ind.set) {
+            (osso->hw_cbs.memory_low_ind.cb)(&osso->hw_state,
+                osso->hw_cbs.memory_low_ind.data);
+        }
+    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, SAVE_UNSAVED_SIG)) {
+        osso->hw_state.save_unsaved_data_ind = TRUE;
+        if (osso->hw_cbs.save_unsaved_data_ind.set) {
+            (osso->hw_cbs.save_unsaved_data_ind.cb)(&osso->hw_state,
+                osso->hw_cbs.save_unsaved_data_ind.data);
+        }
+    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, INACTIVITY_SIG)) {
+        int type;
+        DBusMessageIter i;
+        gboolean new_state;
 
-    if (signal == NULL)
-      {
-	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-      }
-    
-    dprint("argument type = '%c'",type);
+        dbus_message_iter_init(msg, &i);
+        type = dbus_message_iter_get_arg_type(&i);
+        if (type != DBUS_TYPE_BOOLEAN) {
+            ULOG_ERR_F("invalid argument in '" INACTIVITY_SIG "' signal");
+            return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+        }
 
-    /* We need to get the argument type for mode
-       signals, others have no arguments specified */
+        new_state = dbus_message_iter_get_boolean(&i);
+        if (osso->hw_state.system_inactivity_ind != new_state) {
+            osso->hw_state.system_inactivity_ind = new_state;
+            if (osso->hw_cbs.system_inactivity_ind.set) {
+                (osso->hw_cbs.system_inactivity_ind.cb)(&osso->hw_state,
+                    osso->hw_cbs.system_inactivity_ind.data);
+            }
+        }
+    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, DEVICE_MODE_SIG)) {
+        int type;
+        DBusMessageIter i;
 
-    if (strcmp(signal, MCE_INACTIVITY_SIG) == 0 &&
-	type != DBUS_TYPE_BOOLEAN)
-      {
-	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-      }
+        dbus_message_iter_init(msg, &i);
+        type = dbus_message_iter_get_arg_type(&i);
+        if (type != DBUS_TYPE_STRING) {
+            ULOG_ERR_F("invalid argument in '" DEVICE_MODE_SIG "' signal");
+            return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+        }
 
-    if (strcmp(signal, MCE_INACTIVITY_SIG) == 0)
-      {
-	inactivity_state = dbus_message_iter_get_boolean(&iter);
-      }
+        s = dbus_message_iter_get_string(&i);
+        if (strncmp(s, NORMAL_MODE, strlen(NORMAL_MODE)) == 0) {
+            osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
+        } else if (strncmp(s, FLIGHT_MODE, strlen(FLIGHT_MODE)) == 0) {
+            osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
+        } else if (strncmp(s, OFFLINE_MODE, strlen(OFFLINE_MODE)) == 0) {
+            osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
+        } else if (strncmp(s, INVALID_MODE, strlen(INVALID_MODE)) == 0) {
+            osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
+        } else {
+            ULOG_WARN_F("invalid device mode '%s'", s);
+            return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+        }
 
-    if (strcmp(signal, MCE_DEVICE_MODE_SIG) == 0 &&
-	     type != DBUS_TYPE_STRING)
-      {
-	ULOG_WARN_F("warning: invalid arguments in HW signal '%s'", signal);
-	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-      }
-
-    if (strcmp(signal, MCE_DEVICE_MODE_SIG) == 0)
-      {
-	mode_str = dbus_message_iter_get_string(&iter);
-	if ( (strcmp(mode_str, MCE_NORMAL_MODE) != 0) &&
-	     (strcmp(mode_str, MCE_FLIGHT_MODE) != 0) &&
-	     (strcmp(mode_str, MCE_OFFLINE_MODE) != 0) &&
-	     (strcmp(mode_str, MCE_INVALID_MODE) != 0) )
-	  {
-	    ULOG_WARN_F("warning: invalid device mode '%s'", mode_str);
-	    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	  }
-      }
-
-     /* Unsetting the non-stateful signals before possible call should
-	keep the backward compability without side effects. Shutdown is
-        initialized by checking it from disk elsewhere. */
-
-     osso->hw_state.shutdown_ind = FALSE;
-     osso->hw_state.memory_low_ind = FALSE;
-     osso->hw_state.save_unsaved_data_ind = FALSE;
-     /*     osso->hw_state->system_inactivity_ind = FALSE; */
-
-     _set_state(signal, shutdown_ind, TRUE);
-
-     /* To keep things single for identification of signals that do not
-	have a state on the callback function, just set their state to TRUE.
-     */
-     _set_state(signal, shutdown_ind, TRUE);
-     _set_state(signal, memory_low_ind, TRUE);
-     _set_state(signal, save_unsaved_data_ind, TRUE);
-
-     _set_state(signal, sig_device_mode_ind, mode_str);
-
-     _call_state_cb(shutdown_ind);
-     _call_state_cb(memory_low_ind);
-     _call_state_cb(save_unsaved_data_ind);
-     
-     /* Do not trigger system inactivity callback if it's not changed */
-
-     if (old_inactivity_state != inactivity_state)
-       {
-	 _set_state(signal, system_inactivity_ind, inactivity_state);
-	 _call_state_cb(system_inactivity_ind);
-       }
-
-     _call_state_cb(sig_device_mode_ind);
+        if (osso->hw_cbs.sig_device_mode_ind.set) {
+            (osso->hw_cbs.sig_device_mode_ind.cb)(&osso->hw_state,
+                osso->hw_cbs.sig_device_mode_ind.data);
+        }
+    } else {
+        ULOG_WARN_F("received unknown signal");
+    }
 
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
