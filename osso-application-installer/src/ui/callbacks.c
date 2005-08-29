@@ -149,9 +149,8 @@ on_treeview_selection_changed (GtkTreeSelection *selection,
 	  _("ai_ti_broken_description");
 	  description =
 	    gettext_try_many ("ai_ti_broken_description",
-			      "This package is broken.  "
-			      "You might be able to fix it by installing "
-			      "a newer version of it.",
+			      "Package broken. It may be possible to"
+			      "fix it by installing a more recent version.",
 			      NULL);
 	}
       else
