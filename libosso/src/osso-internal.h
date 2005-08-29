@@ -174,8 +174,8 @@ osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
     osso_rpc_run_with_defaults(osso, application, \
 				   OSSO_BUS_ACTIVATE, NULL, NULL);
 
-osso_return_t _read_state(const gchar *statefile, osso_state_t *state);
-osso_return_t _write_state(const gchar *statefile, osso_state_t *state);
+static osso_return_t _read_state(const gchar *statefile, osso_state_t *state);
+static osso_return_t _write_state(const gchar *statefile, osso_state_t *state);
 
 void _close_all_plugins(osso_context_t *osso);
 

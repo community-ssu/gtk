@@ -23,11 +23,6 @@
 #include "osso-state.h"
 #include "osso-log.h"
 
-static osso_return_t _read_state(const gchar *statefile,
-                                 osso_state_t *state);
-static osso_return_t _write_state(const gchar *statefile,
-                                  osso_state_t *state);
-
 /**
  * This internal function performs a simple validation for the application
  * and version information of the osso_context regarding their validity
