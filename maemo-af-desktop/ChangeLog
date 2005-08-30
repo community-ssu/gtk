@@ -1,4 +1,9 @@
 2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+        
+	* hildon-navigator/others-menu.c (others_menu_changed_cb): Fix for bug
+	17741, others-menu leaking file descriptors with each update of the menu
+
+2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
         * Patched bug # 9179
  	* hildon-home/hildon-home-main.c: Replaced keysnooper with key press/release

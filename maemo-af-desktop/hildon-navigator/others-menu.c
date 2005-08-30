@@ -412,8 +412,8 @@ void others_menu_deinit(OthersMenu_t * om)
 
 static void others_menu_changed_cb( char *path, _om_changed_cb_data_t *data )
 {
-	/* Remove callback */
-	hildon_dnotify_remove_cb( path );
+	/* Remove callbacks */
+ 	hildon_dnotify_remove_every_cb();
 
 	/* Destroy the menu */
 	gtk_widget_destroy( data->widget );
