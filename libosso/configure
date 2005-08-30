@@ -1940,7 +1940,7 @@ else
   libosso_use_debug=no
 fi;
 
-WFLAGS="-Wall -Wmissing-prototypes -Wunreachable-code -Wcast-align"
+WFLAGS="-Wall -Wmissing-prototypes -Wunreachable-code -Wcast-align -std=c99 -DOSSOLOG_COMPILE"
 if test x${libosso_use_debug} = xyes ; then
 
 cat >>confdefs.h <<\_ACEOF
