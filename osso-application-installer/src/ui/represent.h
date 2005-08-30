@@ -51,6 +51,11 @@ void present_error_details (AppData *app_data,
 			    gchar *title,
 			    gchar *details);
 
+void present_error_details_fmt (AppData *app_data,
+				gchar *title,
+				gchar *details_fmt,
+				...);
+
 void present_report_with_details (AppData *app_data,
 				  gchar *report,
 				  gchar *details);

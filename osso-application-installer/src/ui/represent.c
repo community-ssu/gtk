@@ -117,6 +117,22 @@ present_error_details (AppData *app_data,
   gtk_widget_destroy(dialog);
 }
 
+void
+present_error_details_fmt (AppData *app_data,
+			   gchar *title,
+			   gchar *details_fmt,
+			   ...)
+{
+  gchar *details;
+  va_list ap;
+
+  va_start (ap, details_fmt);
+  details = g_strdup_vprintf (details_fmt, ap);
+  present_error_details (app_data, title, details);
+  g_free (details);
+  va_end (ap);
+}
+
 static int
 all_white_space (gchar *text)
 {
