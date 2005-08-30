@@ -378,6 +378,7 @@ spawn_app_installer_tool (AppData *app_data,
   return data;
 }
 
+#if 0
 static void
 cancel_app_installer_tool (tool_handle *data)
 {
@@ -388,6 +389,7 @@ cancel_app_installer_tool (tool_handle *data)
   if (kill (data->pid, SIGINT) < 0)
     perror ("kill");
 }
+#endif
 
 static void
 free_app_installer_tool (tool_handle *data)
@@ -1084,13 +1086,6 @@ kb_used_in_var_lib_install (void)
 #endif
 }
 
-static void
-installer_cancel (gpointer raw_data)
-{
-  installer_data *data = (installer_data *)raw_data;
-  cancel_app_installer_tool (data->tool);
-}
-
 static gboolean
 installer_progress (gpointer raw_data)
 {
@@ -1098,8 +1093,10 @@ installer_progress (gpointer raw_data)
 
   if (data->dialog == NULL)
     data->dialog =
-      ui_create_progress_dialog (data->app_data, data->progress_title,
-				 installer_cancel, data);
+      ui_create_progress_dialog (data->app_data,
+				 data->progress_title,
+				 NULL,
+				 data);
 
 #if 0
   /* XXX - the progress indication is not at all accurate and we need
@@ -1188,8 +1185,8 @@ install_package (gchar *deb, AppData *app_data)
 typedef struct {
   progress_dialog *progress_dialog;
   GMainLoop *loop;
-  GnomeVFSAsyncHandle *async_handle;
   GnomeVFSResult result;
+  gboolean cancel_now;
 } copy_data;
 
 static gboolean
@@ -1199,33 +1196,95 @@ copy_progress (GnomeVFSAsyncHandle *handle,
 {
   copy_data *data = (copy_data *)raw_data;
 
-  // fprintf (stderr, "phase %d, status %d\n", info->phase, info->status);
+  /* XXX - ovu_async_xfer or gnome_vfs_async_xfer (or this code here)
+           somehow manages to invoke the copy_progress callback twice
+           with GNOME_VFS_XFER_PHASE_COMPLETED when cancelling.  This
+           means that we can not really know when we can safely
+           deallocate the callback data structure.  To work around
+           this, we only react to the first 'completed' phase
+           indication and ignore everything else afterwards until a
+           GNOME_VFS_XFER_PHASE_INITIAL happens.
 
-  if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR)
+	   I don't really understand gnome_vfs_async_xfer well enough
+	   to know what is going on here; I might very well do the
+	   cancelling wrong.  I still blame gnome_vfs_async_xfer since
+	   it is soo complicated and poorly documented.  The mere
+	   existence of ovu_async_xfer is a of course bogus beyond
+	   believe.  And gnome_vfs_async_cancel doesn't seem to work
+	   either.
+
+	   The use of a static variable here means of course that
+	   there can be only one copy in progress at any one time.  So
+	   be careful if you lift this code for some other use.
+
+	   Really, using gnome_vfs_async_xfer is not worth all the
+	   trouble, a simple explicit read/write loop should be all
+	   that is needed.  Unfortunately, it seems that one _has_ to
+	   use ovu_async_xfer to get any useful progress updates for a
+	   OBEX file transfer.
+
+	   Still with me?  Fine, then let me take the opportunity to
+	   also mention that GnomeVFS reliably corrupted the heap for
+	   me when reading a largish file served by publicfile over
+	   http.  I really don't like gnome_vfs too much, but maybe it
+	   is just me.
+  */
+  static gboolean between_initial_and_completed = FALSE;
+
+#if 0
+  fprintf (stderr, "phase %d, status %d, vfs_status %s\n",
+	   info->phase, info->status,
+	   gnome_vfs_result_to_string (info->vfs_status));
+#endif
+
+  if (info->phase == GNOME_VFS_XFER_PHASE_INITIAL)
+    between_initial_and_completed = TRUE;
+
+  if (!between_initial_and_completed)
     {
-      data->result = info->vfs_status;
-      return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
+      ULOG_INFO ("bogus call of copy_progress.\n");
+      return 0;
     }
 
-  if (info->file_size > 0)
+  if (data->progress_dialog && info->file_size > 0)
     {
       float progress = ((float)info->bytes_copied) / info->file_size;
-
       ui_set_progress_dialog (data->progress_dialog, progress);
     }
 
   if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED)
-    g_main_loop_quit (data->loop);
+    {
+      if (data->loop)
+	g_main_loop_quit (data->loop);
+      between_initial_and_completed = FALSE;
+    }
 
-  return TRUE;
+  /* Produce an appropriate return value depending on the status.
+   */
+  if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_OK)
+    {
+      if (data->cancel_now && info->phase != GNOME_VFS_XFER_PHASE_COMPLETED)
+	return 0;
+      else
+	return 1;
+    }
+  else if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR)
+    {
+      data->result = info->vfs_status;
+      return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
+    }
+  else
+    {
+      ULOG_CRIT ("unexpected status %d in copy_progress\n", info->status);
+      return 1;
+    }
 }
 
 static void
 copy_cancel (gpointer raw_data)
 {
   copy_data *data = (copy_data *)raw_data;
-  if (data->async_handle)
-    gnome_vfs_async_cancel (data->async_handle);
+  data->cancel_now = TRUE;
 }
 
 static gboolean
@@ -1233,6 +1292,7 @@ do_copy (AppData *app_data,
 	 gchar *source, GnomeVFSURI *source_uri,
 	 gchar *target)
 {
+  GnomeVFSAsyncHandle *handle;
   GnomeVFSURI *target_uri;
   GList *source_uri_list, *target_uri_list;
   GnomeVFSResult result;
@@ -1251,8 +1311,6 @@ do_copy (AppData *app_data,
   source_uri_list = g_list_append (NULL, (gpointer) source_uri);
   target_uri_list = g_list_append (NULL, (gpointer) target_uri);
 
-  data.async_handle = NULL;
-
   /* XXX-NLS - should make "Copying" translatable. 
    */
   data.progress_dialog = ui_create_progress_dialog (app_data,
@@ -1261,8 +1319,9 @@ do_copy (AppData *app_data,
 						    &data);
   data.loop = g_main_loop_new (NULL, 0);
   data.result = GNOME_VFS_OK;
+  data.cancel_now = FALSE;
 
-  result = ovu_async_xfer (&data.async_handle,
+  result = ovu_async_xfer (&handle,
 			   source_uri_list,
 			   target_uri_list,
 			   GNOME_VFS_XFER_DEFAULT,
@@ -1275,7 +1334,10 @@ do_copy (AppData *app_data,
 			   NULL);
 
   if (result == GNOME_VFS_OK)
-    g_main_loop_run (data.loop);
+    {
+      g_main_loop_run (data.loop);
+      g_main_loop_unref (data.loop);
+    }
   else
     data.result = result;
 
@@ -1292,7 +1354,7 @@ do_copy (AppData *app_data,
       return FALSE;
     }
 
-  return TRUE;
+  return !data.cancel_now;
 }
 
 static void
