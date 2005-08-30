@@ -2,6 +2,14 @@
 
 	* Added support for user plugins in the hildon-status-bar
         * Added support for user plugins in the hildon-home
+        * Updated the following source files:
+           maemo-af-desktop/hildon-status-bar/hildon-status-bar-main.c
+           maemo-af-desktop/hildon-status-bar/hildon-status-bar-main.h
+           maemo-af-desktop/hildon-status-bar/hildon-status-bar-item.c
+           maemo-af-desktop/hildon-home/hildon-home-plugin-loader.c
+           maemo-af-desktop/hildon-home/hildon-home-main.c
+           maemo-af-desktop/hildon-home/hildon-home-main.h
+        * Raised version number
 
 2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
         
