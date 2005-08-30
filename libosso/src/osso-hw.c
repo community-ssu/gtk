@@ -49,6 +49,8 @@
 #define USER_LOWMEM_ON_SIGNAL_IF "com.nokia.ke_recv.user_lowmem_on"
 #define USER_LOWMEM_ON_SIGNAL_NAME "user_lowmem_on"
 
+static gboolean i_am_root = FALSE;
+
 osso_return_t osso_display_state_on(osso_context_t *osso)
 {
   DBusMessage *msg = NULL;
@@ -119,6 +121,10 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
     if (osso->sys_conn == NULL) {
 	ULOG_ERR_F("error: no system bus connection");
 	return OSSO_INVALID;
+    }
+    if (geteuid() == 0) {
+        /* avoiding creating the device mode cache as root */
+        i_am_root = TRUE;
     }
 
     if (state == NULL) {
@@ -253,10 +259,15 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
     return OSSO_OK;    
 }
 
+
 static void write_device_state_to_file(const char* s)
 {
     char buf[STORED_LEN];
-    int ret = readlink(OSSO_DEVSTATE_MODE_FILE, buf, STORED_LEN - 1);
+    int ret;
+    if (i_am_root) {
+	return;
+    }
+    ret = readlink(OSSO_DEVSTATE_MODE_FILE, buf, STORED_LEN - 1);
     if (errno == ENOENT) {
         /* does not exist, create it */
         ret = symlink(s, OSSO_DEVSTATE_MODE_FILE);
@@ -312,10 +323,12 @@ static void read_device_state_from_file(osso_context_t *osso)
             "assuming OSSO_DEVMODE_NORMAL", OSSO_DEVSTATE_MODE_FILE,
             strerror(errno));
         osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
-        ret = symlink(NORMAL_MODE, OSSO_DEVSTATE_MODE_FILE);
-        if (ret == -1) {
-            ULOG_ERR_F("failed to create symlink '%s': %s",
+        if (!i_am_root) {
+            ret = symlink(NORMAL_MODE, OSSO_DEVSTATE_MODE_FILE);
+            if (ret == -1) {
+                ULOG_ERR_F("failed to create symlink '%s': %s",
                        OSSO_DEVSTATE_MODE_FILE, strerror(errno));
+            }
         }
     }
 }
