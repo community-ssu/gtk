@@ -42,7 +42,7 @@ then
     CFLAGS="$CFLAGS -DHILDON_USE_TIMESTAMPING"
 fi
 
-ALL_LINGUAS="de_DE en_GB en_US es_ES es_MX fi_FI fr_CA fr_FR it_IT pt_BR ru_RU"
+ALL_LINGUAS="en_GB"
 AC_SUBST(ALL_LINGUAS)
 AM_GLIB_GNU_GETTEXT
 
@@ -95,7 +95,7 @@ PKG_CHECK_MODULES(OSSOSETTINGS, osso-af-settings >= 0.8.1)
 localedir=`pkg-config osso-af-settings --variable=localedir`
 AC_SUBST(localedir)
 
-ALL_LINGUAS="de_DE en_GB en_US es_ES es_MX fi_FI fr_CA fr_FR it_IT pt_BR ru_RU"
+ALL_LINGUAS="en_GB"
 AC_SUBST(ALL_LINGUAS)
 AM_GLIB_GNU_GETTEXT
 

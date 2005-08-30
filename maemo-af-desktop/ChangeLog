@@ -1,3 +1,13 @@
+2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+        * Patched bug #17728 + corrected it by hand.
+	* Extra libraries where added in linking time. Improved library options.
+	* maemo-af-desktop/
+		* configure.ac: 
+  			- Added gnome-vfs and gdk and libs
+		* hildon-home/Makefile.am 
+  			- Updated library list for home image loader
+
 2005-08-29  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Patched bug #16496.  
