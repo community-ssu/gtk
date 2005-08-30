@@ -331,7 +331,7 @@ static gboolean hildon_caption_expose( GtkWidget *widget,
   if( !GTK_WIDGET_DRAWABLE(widget) )
     return FALSE;
 
-  /* FIXME -- We should not call parent here. We should call all of the childs
+  /* FIXME -- We should not call parent here. We should call the children
    * In the end of this function.. See comments down there.
    * (those are not working)
    * If we call parents function, it does not matter really.
@@ -529,7 +529,7 @@ static gboolean hildon_caption_button_press( GtkWidget *widget,
   /* When a label is the child widget, it calls parents mnemonic_activate.
    * We set is_focused to TRUE before we call mnemonic_activate to the label.
    * When the label calls parents mnemonic_activate, captions activate will be
-   * runned.
+   * run.
    * We set is_focused to FALSE there and that is the reason why this function
    * is not wrote in the following way.
    *
@@ -545,7 +545,7 @@ static gboolean hildon_caption_button_press( GtkWidget *widget,
   {
     GtkWidget *cwid= NULL;
     /* go through the children of the container for the first focusable children */
-    gtk_container_foreach (GTK_CONTAINER(GTK_BIN(widget)->child), (GtkCallback) get_first_focusable_child, &cwid );
+    gtk_container_forall (GTK_CONTAINER(GTK_BIN(widget)->child), (GtkCallback) get_first_focusable_child, &cwid );
     if (cwid)
     {
        priv->is_focused = TRUE;

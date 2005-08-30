@@ -1,3 +1,10 @@
+2005-08-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-lgpl/hildon-caption.c (hildon_caption_button_press): Consider
+	also internal children of composite widgets when trying to find the
+	widget to focus.
+	N#17712
+
 2005-08-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* configure.ac: Release 0.9.51
