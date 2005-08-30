@@ -73,6 +73,7 @@ static GtkWidget *window = NULL;
 static GtkWidget *home_base_fixed;
 static GtkWidget *home_base_eventbox;
 
+static gboolean menu_key_pressed = FALSE;
 static gboolean home_is_topmost;
 
 static GtkWidget *home_fixed;
@@ -2765,7 +2766,7 @@ static void hildon_home_cp_read_desktop_entries(void)
 }
 
 /**
- * @hildon_home_key_snooper
+ * @hildon_home_key_press_listener
  * 
  * @param widget
  * @param keyevent
@@ -2773,44 +2774,55 @@ static void hildon_home_cp_read_desktop_entries(void)
  * 
  * @return 
  *
- * Handles the keyboard events for the Home
+ * Handles the keyboard press events for the Home
  */
 
 static
-gint hildon_home_key_snooper (GtkWidget * widget,
+gint hildon_home_key_press_listener (GtkWidget * widget,
                               GdkEventKey * keyevent,
                               gpointer data)
 {
-    static gboolean last_pressed = FALSE;
-    gboolean menu_is_visible = FALSE;
-
     if (keyevent->keyval == HILDON_MENU_KEY)
     {
-        if (keyevent->type == GDK_KEY_PRESS)
+        if (!menu_key_pressed)
         {
-            if (last_pressed)
-            {
-                /* ignore repeated keypresses */
-                return TRUE;
-            }
-            last_pressed = TRUE;
-
-            menu_is_visible = GTK_WIDGET_VISIBLE(titlebar_menu);
-            if (menu_is_visible)
-            {
-                gtk_menu_popdown(GTK_MENU(titlebar_menu));
-                return TRUE;
-            }
+            menu_key_pressed = TRUE;
             gtk_menu_popup(GTK_MENU(titlebar_menu), NULL, NULL,
                            (GtkMenuPositionFunc)
                            titlebar_menu_position_func,
                            NULL, 0, gtk_get_current_event_time ());
             gtk_menu_shell_select_first (GTK_MENU_SHELL(titlebar_menu), TRUE);
-            return TRUE;
-        }
 
-        if (keyevent->type == GDK_KEY_RELEASE)
-            last_pressed = FALSE;
+            /* we'll have to grab this widget so we can catch the key
+               release signal, which is needed to prevent menu opening/closing
+               repeatedly when menu key is being pressed for a long time */
+            gtk_grab_add(widget);
+        }
+    }
+    return FALSE;
+}
+
+/**
+ * @hildon_home_key_release_listener
+ * 
+ * @param widget
+ * @param keyevent
+ * @param data
+ * 
+ * @return 
+ *
+ * Handles the keyboard release events for the Home
+ */
+
+static
+gint hildon_home_key_release_listener (GtkWidget * widget,
+                                       GdkEventKey * keyevent,
+                                       gpointer data)
+{
+    if (keyevent->keyval == HILDON_MENU_KEY)
+    {
+        gtk_grab_remove(widget);
+        menu_key_pressed = FALSE;
     }
     return FALSE;
 }
@@ -3086,8 +3098,10 @@ GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent,
 
 void home_deinitialize(gint keysnooper_id)
 {
+    /* keysnooper_id is no longer used, and the keyboard listener needs not
+       to be detached. The api between maemo and home mains for now
+       remains unchanged */
     hildon_home_save_configure();
-    gtk_key_snooper_remove(keysnooper_id);
     gdk_window_remove_filter(GDK_WINDOW(window->window),
                              hildon_home_event_filter, NULL);
     hildon_home_deinitiliaze();
@@ -3099,7 +3113,6 @@ int hildon_home_main(void)
 {
     gint window_width;
     gint window_height;
-    gint keysnooper_id = 0;
     
     hildon_home_initiliaze();
     
@@ -3137,10 +3150,13 @@ int hildon_home_main(void)
     
     construct_titlebar_menu();
     
-    /* Install the key snooper to handle menu toggling */
+    /* Install key listeners to handle menu toggling */
 
-    keysnooper_id = gtk_key_snooper_install(hildon_home_key_snooper, NULL);
-    
+    g_signal_connect(G_OBJECT(window), "key_press_event",
+                     G_CALLBACK(hildon_home_key_press_listener), NULL);
+    g_signal_connect(G_OBJECT(window), "key_release_event",
+                     G_CALLBACK(hildon_home_key_release_listener), NULL);
+
     gdk_window_add_filter(GDK_WINDOW(window->window),
                           hildon_home_event_filter, NULL);
     
@@ -3150,7 +3166,7 @@ int hildon_home_main(void)
     
     hildon_home_save_configure();
     
-    return keysnooper_id;
+    return 0;
 }
 
 #ifndef USE_AF_DESKTOP_MAIN__

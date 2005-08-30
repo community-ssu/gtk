@@ -384,8 +384,12 @@ static void hildon_home_create_configure(void);
 static void hildon_home_save_configure(void);
 static void hildon_home_cp_read_desktop_entries(void);
 
-static gint hildon_home_key_snooper(GtkWidget *widget,
-                                    GdkEventKey *keyevent, gpointer data);
+static gint hildon_home_key_press_listener(GtkWidget *widget,
+                                           GdkEventKey *keyevent,
+                                           gpointer data);
+static gint hildon_home_key_release_listener(GtkWidget *widget,
+                                             GdkEventKey *keyevent,
+                                             gpointer data);
 
 static void set_focus_to_widget_cb(GtkWindow *window, GtkWidget *widget,
                                    gpointer user_data);

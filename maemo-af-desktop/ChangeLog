@@ -1,5 +1,11 @@
 2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
+        * Patched bug # 9179
+ 	* hildon-home/hildon-home-main.c: Replaced keysnooper with key press/release
+	event handlers for the main window. This fixes problems with menu key handling.
+
+2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
         * Patched bug #17728 + corrected it by hand.
 	* Extra libraries where added in linking time. Improved library options.
 	* maemo-af-desktop/
