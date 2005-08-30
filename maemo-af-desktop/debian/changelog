@@ -1,4 +1,4 @@
-maemo-af-desktop (1.44.1) unstable; urgency=low
+maemo-af-desktop (1.45.0-1) unstable; urgency=low
 
   * Patched bug #16496
   * 1.45.0-1 New release version 1.45.0, patched bug 17728
