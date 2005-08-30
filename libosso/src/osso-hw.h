@@ -24,9 +24,7 @@
 #define OSSO_HW_H_
 
 #define STORED_LEN 10
-#define STATEPREFIX "/tmp/devicestate"
-
-#define OSSO_DEVSTATE_MODE_FILE STATEPREFIX"/device_mode"
+#define OSSO_DEVSTATE_MODE_FILE "/tmp/.libosso_device_mode_cache"
 
 #define _unset_state_cb(hwstate) do {\
     if((state->hwstate) && (osso->hw_cbs.hwstate.set)) { \

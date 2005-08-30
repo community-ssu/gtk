@@ -947,6 +947,8 @@ typedef enum {
 /*@{*/
 /**
  * This structure represents the device state.
+ * NOTE: Libosso sets value of save_unsaved_data_ind to 1 when the signal
+ * arrived and back to 0 after calling the application callback.
  */
 typedef struct {
   gboolean shutdown_ind; /**<The device is about to be shut down */

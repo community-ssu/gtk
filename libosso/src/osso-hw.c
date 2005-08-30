@@ -166,9 +166,8 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
                 MCE_SIGNAL_IF "',member='" SAVE_UNSAVED_SIG "'", NULL);
             install_mce_handler = TRUE;
         }
-	if (osso->hw_state.save_unsaved_data_ind) {
-            call_cb = TRUE;
-        } 
+	/* This signal is stateless: It makes no sense to call the
+	 * application callback */
         osso->hw_cbs.save_unsaved_data_ind.set = TRUE;
     }
     if (state->system_inactivity_ind) {
@@ -313,7 +312,6 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
                                         DBusMessage *msg, gpointer data)
 {
     ULOG_DEBUG_F("entered");
-
     if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, SHUTDOWN_SIG)) {
         osso->hw_state.shutdown_ind = TRUE;
         if (osso->hw_cbs.shutdown_ind.set) {
@@ -321,10 +319,12 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
                 osso->hw_cbs.shutdown_ind.data);
         } 
     } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, SAVE_UNSAVED_SIG)) {
-        osso->hw_state.save_unsaved_data_ind = TRUE;
         if (osso->hw_cbs.save_unsaved_data_ind.set) {
+            /* stateless signal, the value only tells the signal came */
+            osso->hw_state.save_unsaved_data_ind = TRUE;
             (osso->hw_cbs.save_unsaved_data_ind.cb)(&osso->hw_state,
                 osso->hw_cbs.save_unsaved_data_ind.data);
+            osso->hw_state.save_unsaved_data_ind = FALSE;
         }
     } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, INACTIVITY_SIG)) {
         int type;
@@ -379,6 +379,5 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
     } else {
         ULOG_WARN_F("received unknown signal");
     }
-
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
