@@ -321,7 +321,7 @@ ui_create_textbox (AppData *app_data, gchar *text,
   GtkWidget *view;
   GtkWidget *menu;
   GtkTextBuffer *buffer;
-  GtkTextIter *iter = NULL;
+  GtkTextIter iter;
 
   if (NULL == app_data || NULL == app_data->app_ui_data) return NULL;
 
@@ -338,9 +338,9 @@ ui_create_textbox (AppData *app_data, gchar *text,
   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(view), FALSE);
 
   /* If text is longer than buffer, force scroll back up */
-  gtk_text_buffer_get_start_iter (buffer, iter);
+  gtk_text_buffer_get_start_iter (buffer, &iter);
   gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(view),
-				iter,
+				&iter,
 				0.0, TRUE,
 				0.0, 0.0);
 
@@ -400,9 +400,6 @@ ui_create_progress_dialog (AppData *app_data,
 {
   progress_dialog *dialog;
   GtkWindow *main_dialog = GTK_WINDOW (app_data->app_ui_data->main_dialog);
-
-  /* XXX-UI32 - support cancel button. */
-  cancel_callback = NULL;
 
   dialog = g_new (progress_dialog, 1);
   dialog->progressbar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
