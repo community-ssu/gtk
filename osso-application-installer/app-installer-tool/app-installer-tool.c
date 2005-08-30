@@ -28,7 +28,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <glib.h>
-#include <libgnomevfs/gnome-vfs.h>
 #include <errno.h>
 #include <math.h>
 
@@ -52,7 +51,6 @@ int do_describe_package (gchar *package);
 int do_install (gchar *file);
 int do_remove (gchar *package, int silent);
 int do_get_dependencies (gchar *package);
-int do_copy (gchar *source, gchar *target);
 
 /* Setup the environment for dpkg.  It expects to be able to find
    programs from /sbin.  XXX - We replace the PATH environment
@@ -494,76 +492,6 @@ do_get_dependencies (gchar *package)
   return 0;
 }
 
-typedef struct {
-  float old_progress;
-} copy_data;
-
-static gboolean
-copy_progress (GnomeVFSXferProgressInfo *info, gpointer raw_data)
-{
-  copy_data *data = (copy_data *)raw_data;
-
-  if (info->file_size > 0)
-    {
-      float progress =
-	floor ((40.0 * info->bytes_copied) / info->file_size) / 40.0;
-      if (progress != data->old_progress)
-	{
-	  data->old_progress = progress;
-	  printf ("%g\n", progress);
-	  fflush (stdout);
-	}
-    }
-
-  return TRUE;
-}
-
-int
-do_copy (gchar *source, gchar *target)
-{
-  GnomeVFSURI *source_uri, *target_uri;
-  GnomeVFSResult result;
-  copy_data data;
-
-  if (!gnome_vfs_init ())
-    {
-      fprintf (stderr, "Can not initialize Gnome VFS\n");
-      return 1;
-    }
-
-  source_uri = gnome_vfs_uri_new (source);
-  if (source_uri == NULL)
-    {
-      fprintf (stderr, "Unsupported URI: %s.\n", source);
-      return 1;
-    }
-
-  target_uri = gnome_vfs_uri_new (target);
-  if (target_uri == NULL)
-    {
-      fprintf (stderr, "Unsupported URI: %s.\n", target);
-      return 1;
-    }
-
-  data.old_progress = 0;
-  result = gnome_vfs_xfer_uri (source_uri,
-			       target_uri,
-			       GNOME_VFS_XFER_DEFAULT,
-			       GNOME_VFS_XFER_ERROR_MODE_ABORT,
-			       GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE,
-			       copy_progress,
-			       &data);
-
-  if (result != GNOME_VFS_OK)
-    {
-      fprintf (stderr, "Copying %s to %s failed: %s\n",
-	       source, target, gnome_vfs_result_to_string (result));
-      return 1;
-    }
-
-  return 0;
-}
-
 int
 main (int argc, char **argv)
 {
@@ -583,8 +511,6 @@ main (int argc, char **argv)
     result = do_remove (argv[2], 0);
   else if (argc == 3 && !strcmp (argv[1], "get-dependencies"))
     result = do_get_dependencies (argv[2]);
-  else if (argc == 4 && !strcmp (argv[1], "copy"))
-    result = do_copy (argv[2], argv[3]);
   else
     {
       fputs ("usage: app-installer-tool list\n",                       stderr);
@@ -593,7 +519,6 @@ main (int argc, char **argv)
       fputs ("       app-installer-tool install <file>\n",             stderr);
       fputs ("       app-installer-tool remove <package>\n",           stderr);
       fputs ("       app-installer-tool get-dependencies <package>\n", stderr);
-      fputs ("       app-installer-tool copy <source-uri> <target>\n", stderr);
       exit (1);
     }
 
