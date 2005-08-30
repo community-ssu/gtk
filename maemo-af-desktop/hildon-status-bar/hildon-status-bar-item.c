@@ -44,6 +44,8 @@
 /* log include */
 #include <log-functions.h>
 
+#include "hildon-status-bar-main.h"
+
 typedef struct _HildonStatusBarItemPrivate HildonStatusBarItemPrivate;
 
 struct _HildonStatusBarItemPrivate
@@ -230,6 +232,16 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
     priv->name = g_strdup( plugin );
 
     g_free( pluginname );
+
+    /* Failed to load plugin, check in the application installer
+       target directory */
+    if( !priv->dlhandle )
+    {
+        pluginname = g_strdup_printf( "%s/lib%s.so", 
+                                      HILDON_STATUS_BAR_USER_PLUGIN_PATH,
+                                      plugin );
+        priv->dlhandle = dlopen( pluginname, RTLD_NOW );
+    }
 
     if( !priv->dlhandle )
     {

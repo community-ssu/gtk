@@ -1,3 +1,10 @@
+maemo-af-desktop (1.46.0-1) unstable; urgency=low
+
+  * Added significant amount of code due to addition to installable user
+    applets to home and status-bar and thus raised the version.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 30 Aug 2005 20:01:22 +0300
+
 maemo-af-desktop (1.45.0-4) unstable; urgency=low
 
   * Updated comment in ChangeLog
