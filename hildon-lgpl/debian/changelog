@@ -1,3 +1,10 @@
+hildon-lgpl (0.9.52-1) unstable; urgency=low
+
+  * Bugs fixed:
+    17712: Captions: stylus-focusing does not work with composite widgets
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 30 Aug 2005 19:02:09 +0300
+
 hildon-lgpl (0.9.51-1) unstable; urgency=low
 
   * Bugs fixed:
