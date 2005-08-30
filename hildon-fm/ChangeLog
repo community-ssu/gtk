@@ -1,5 +1,9 @@
 2005-08-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* configure.ac: Release 0.9.36
+
+2005-08-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* hildon-fm/hildon-file-system-model.c: Added a priority queue to
 	track most frequently used nodes and remove oldest items if needed, to
 	limit memory consumption.

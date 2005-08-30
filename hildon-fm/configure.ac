@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-fm, 0.9.35)
+AM_INIT_AUTOMAKE(hildon-fm, 0.9.36)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
