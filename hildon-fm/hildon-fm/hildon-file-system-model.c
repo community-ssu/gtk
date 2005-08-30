@@ -56,6 +56,8 @@
 #define THUMBNAIL_ICON 64       /* Size for icon theme icons used in
                                    thumbnail mode. Using the value 60 made
                                    icons to have size 60x51!!! */
+#define DEFAULT_MAX_CACHE 50
+#define MIN_CACHE 20
 
 /* An easy way to add tracing to functions, used while debugging */
 #if 0
@@ -121,7 +123,7 @@ struct _HildonFileSystemModelPrivate {
     GNode *gateway_node;
     GtkWidget *ref_widget;      /* Any widget on the same screen, needed
                                    to return correct icons */
-
+    GQueue *cache_queue;
     GQueue *delayed_lists;
     GQueue *error_nodes;
     guint timeout_id;
@@ -558,6 +560,51 @@ static GNode *get_node(HildonFileSystemModelPrivate * priv,
         return priv->roots;
 }
 
+static gint max_cached_nodes(void)
+{
+  static gint max_len = 0;
+  
+  if (G_UNLIKELY(max_len < MIN_CACHE))
+  {
+    const gchar *env_var;
+  
+    env_var = g_getenv("FILE_SELECTION_MAX_CACHED_NODES");
+    if (env_var)
+      max_len = atoi(env_var);
+    if (max_len < MIN_CACHE)
+      max_len = DEFAULT_MAX_CACHE;
+  }
+
+  return max_len;
+}
+
+/* We make sure that given node is in the priority queue. If it
+   already exists, we raise it to top. If not, we place it to top
+   and possibly remove last item. */
+static void update_cache_queue(HildonFileSystemModelPrivate *priv, GNode *node)
+{
+  GList *item;
+
+  if ( (item = g_queue_find(priv->cache_queue, node)) != NULL)
+  {
+    g_queue_unlink(priv->cache_queue, item);
+    g_queue_push_head_link(priv->cache_queue, item);
+  }
+  else
+  {
+    g_queue_push_head(priv->cache_queue, node);
+    
+    if (g_queue_get_length(priv->cache_queue) > max_cached_nodes())
+    {
+      HildonFileSystemModelNode *model_node;
+      node = g_queue_pop_tail(priv->cache_queue);
+      model_node = node->data;
+      ULOG_INFO("Clearing caches for %s", (char *) model_node->path);
+      clear_model_node_caches(model_node);
+    }
+  }
+}
+
 /**********************************************/
 /* Start of GTK_TREE_MODEL interface methods */
 /**********************************************/
@@ -940,12 +987,16 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
               }
               g_free(uri);
             }
+            else if (model_node->thumbnail_handle)
+              osso_thumbnail_factory_move_front(model_node->thumbnail_handle);
+
             if (!model_node->thumbnail_cache)
                 model_node->thumbnail_cache =
                     hildon_file_system_model_create_image(priv, model_node,
                                                           THUMBNAIL_ICON);
         }
         g_value_set_object(value, model_node->thumbnail_cache);
+        update_cache_queue(priv, node);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_LOAD_READY:
         g_value_set_boolean(value, is_node_loaded(priv, node));
@@ -1401,6 +1452,7 @@ static gboolean hildon_file_system_model_destroy_model_node(GNode * node,
     g_assert(HILDON_IS_FILE_SYSTEM_MODEL(data));
 
     g_queue_remove_all(HILDON_FILE_SYSTEM_MODEL(data)->priv->error_nodes, node);
+    g_queue_remove_all(HILDON_FILE_SYSTEM_MODEL(data)->priv->cache_queue, node);
 
     if (model_node)
     {
@@ -1874,6 +1926,7 @@ static void hildon_file_system_model_init(HildonFileSystemModel * self)
     priv->icon_theme = gtk_icon_theme_get_default();
     priv->delayed_lists = g_queue_new();
     priv->error_nodes = g_queue_new();
+    priv->cache_queue = g_queue_new();
 }
 
 static void hildon_file_system_model_dispose(GObject *self)
@@ -1913,6 +1966,7 @@ static void hildon_file_system_model_finalize(GObject * self)
     g_queue_foreach(priv->delayed_lists, (GFunc) delayed_list_free, NULL);
     g_queue_free(priv->delayed_lists);
     g_queue_free(priv->error_nodes); 
+    g_queue_free(priv->cache_queue);
     /* Contents of this queue are gone already */
 
     ULOG_INFO("ref count = %d", G_OBJECT(priv->filesystem)->ref_count);
