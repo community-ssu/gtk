@@ -1,8 +1,9 @@
 maemo-af-desktop (1.44.1) unstable; urgency=low
 
   * Patched bug #16496
+  * 1.45.0-1 New release version 1.45.0, patched bug 17728
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon, 29 Aug 2005 11:38:17 +0300
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 30 Aug 2005 17:38:13 +0300
 
 maemo-af-desktop (1.44.0) unstable; urgency=low
 
