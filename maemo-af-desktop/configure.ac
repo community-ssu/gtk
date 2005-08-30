@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-af-desktop, 1.44.0)
+AM_INIT_AUTOMAKE(maemo-af-desktop, 1.45.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -86,6 +86,10 @@ AC_SUBST(GCONF_CFLAGS)
 
 PKG_CHECK_MODULES(GNOME_VFS, gnome-vfs-2.0 >= 2.8.3)
 AC_SUBST(GNOME_VFS_CFLAGS)
+AC_SUBST(GNOME_VFS_LIBS)
+
+PKG_CHECK_MODULES(GDK, gdk-2.0 >= 1.3.12)
+AC_SUBST(GDK_LIBS)
 
 PKG_CHECK_MODULES(OSSOSETTINGS, osso-af-settings >= 0.8.1)
 localedir=`pkg-config osso-af-settings --variable=localedir`

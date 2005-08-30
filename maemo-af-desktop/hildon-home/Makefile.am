@@ -45,7 +45,7 @@ home_image_loader_SOURCES = \
 	hildon-home-image-loader.c \
 	hildon-home-image-loader.h
 
-home_image_loader_LDADD = $(HILDON_LIBS) $(MB_LIBS) $(OSSO_LIBS) $(GCONF_LIBS)
+home_image_loader_LDADD = $(GDK_LIBS) $(GNOME_VFS_LIBS) $(GCONF_LIBS)
 
 home_image_loader_LDFLAGS = $(MAEMO_LAUNCHER_LDFLAGS)
 
