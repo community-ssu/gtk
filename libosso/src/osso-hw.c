@@ -111,6 +111,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
     gboolean call_cb = FALSE;
     gboolean install_mce_handler = FALSE;
 
+    ULOG_DEBUG_F("entered");
     if (osso == NULL || cb == NULL) {
 	ULOG_ERR_F("invalid parameters");
 	return OSSO_INVALID;
@@ -202,6 +203,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
                               NULL, FALSE);
     }
     if (call_cb) {
+        ULOG_DEBUG_F("calling application callback");
         (*cb)(&osso->hw_state, data);
     }
     dbus_connection_flush(osso->sys_conn);
@@ -213,6 +215,7 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
 				     osso_hw_state_t *state)
 {
     static const osso_hw_state_t default_mask = {TRUE,TRUE,TRUE,TRUE,1};
+    ULOG_DEBUG_F("entered");
     if (osso == NULL) {
 	ULOG_ERR_F("invalid parameters");
 	return OSSO_INVALID;
@@ -257,6 +260,8 @@ static void read_device_state_from_file(osso_context_t *osso)
     gchar s[STORED_LEN];
     g_assert(osso != NULL);
 
+    ULOG_DEBUG_F("entered");
+    /* FIXME: this file does not exist */
     f = fopen(OSSO_DEVSTATE_MODE_FILE, "r");
     if (f != NULL) {
         if (fgets(s, STORED_LEN, f) != NULL) {
