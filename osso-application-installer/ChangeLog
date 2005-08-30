@@ -1,7 +1,41 @@
-2005-08-29  Marius Vollmer  <marius.vollmer@nokia.com>
+2005-08-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
-	* po/en_GB.po (ai_ti_broken_description): Changed text according
-	to UI spec.
+	* src/core.c (do_copy, copy_progress, copy_cancel): New, for doing
+	the copy ourselves with ovu_async_xfer and a cancellable progress
+	dialog.
+	(report_installation_failure): New.
+	(install_package_from_uri): Use it to clean up control flow.
+	Also, use do_copy to do the copy.
+	
+	* configure.ac (AITOOLS_CFLAGS, AITOOLS_LIBS): Removed gnome-vfs
+	(DEPS): Do not put comman in front of glib-2.0 dependency.  Added
+	obex-vfs-utils.
+
+	* app-installer-tool/app-installer-tool.c (do_copy, copy_progress,
+	copy_data): Removed.
+	(main): Do not handle "copy" command.
+
+	* src/ui/interface.c (ui_create_progress_dialog): Do not force
+	cancel_callback to zero, it is used now during copying.
+	(ui_create_textbox): Allocate a complete GtktextIter struct and
+	not a pointer to it.
+
+	* src/ui/represent.h, src/ui/represent.c
+	(present_error_details_fmt): New.
+
+	* po/en_GB.po: Make it conform better to the UI spec version 4.0.
+	In particular:
+	(ai_ti_broken_description): Changed text according to UI spec.
+	(ai_ti_copying_failed, ai_ti_copying): Removed.
+	(ai_bd__install_application_cancel, ai_bd_ confirm_uninstall_ok,
+	ai_bd_ confirm_uninstall_cancel, ai_ap_application_title,
+	ai_ti_uninstallation_failed_ok): Added.
+	(Ai_ti_application_uninstalled_ok): Renamed to
+	ai_bd_application_uninstalled_ok.
+	(ai_bd_application_installed__ok): Renamed to
+	ai_bd__application_installed__ok.
+	
+2005-08-29  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/dbus.h, src/dbus.c (register_mime_open_handler): New.
 	(init_osso): Do not register mime callback here.
