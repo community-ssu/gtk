@@ -41,7 +41,6 @@
 # include <fcntl.h>
 
 #define OSSO_CP_CLOSE_IF "com.nokia.controlpanel.close"
-#define PLUGIN_STATEDIR "/.hildon-var/state/controlpanel_plugins/"
 
 /**
  * The exec function template that the library expects;

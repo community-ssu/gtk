@@ -30,7 +30,6 @@
 #include <pwd.h>
 
 
-#define STATEDIRS "/.hildon-var/state/"
 
 /**
  * This internal function performs a simple validation for the application
