@@ -23,6 +23,9 @@
 #ifndef OSSO_HW_H_
 #define OSSO_HW_H_
 
+#include <unistd.h>
+#include <errno.h>
+
 #define STORED_LEN 10
 #define OSSO_DEVSTATE_MODE_FILE "/tmp/.libosso_device_mode_cache"
 
