@@ -1,3 +1,15 @@
+2005-08-31  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/core.c (cancel_app_installer_tool): Commented out since it
+	is not used right now.
+	(installer_cancel): Removed, doesn't work.
+	(installer_progress): Don't use it.
+	(copy_data, copy_progress, do_copy): Rewritten logic, especially
+	to do cancelling the 'right' way.
+	
+	* src/ui/interface.c (ui_create_textbox): Commented out text
+	scrolling since it doesn't seem work.  Will investigate.
+
 2005-08-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/core.c (do_copy, copy_progress, copy_cancel): New, for doing
