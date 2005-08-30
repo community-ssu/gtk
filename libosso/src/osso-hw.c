@@ -49,7 +49,9 @@
 #define USER_LOWMEM_ON_SIGNAL_IF "com.nokia.ke_recv.user_lowmem_on"
 #define USER_LOWMEM_ON_SIGNAL_NAME "user_lowmem_on"
 
-static gboolean i_am_root = FALSE;
+#define MAX_CACHE_FILE_NAME
+static char cache_file_name[MAX_CACHE_FILE_NAME + 1];
+static gboolean first_hw_set_cb_call = TRUE;
 
 osso_return_t osso_display_state_on(osso_context_t *osso)
 {
@@ -122,16 +124,22 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
 	ULOG_ERR_F("error: no system bus connection");
 	return OSSO_INVALID;
     }
-    if (geteuid() == 0) {
-        /* avoiding creating the device mode cache as root */
-        i_am_root = TRUE;
+
+    if (first_hw_set_cb_call) {
+        /* uid is used for naming the device mode cache file, avoiding
+         * permission issues */
+        int ret = snprintf(cache_file_name, MAX_CACHE_FILE_NAME, "%s-%d",
+                           OSSO_DEVSTATE_MODE_FILE, geteuid());
+        if (ret < 0) {
+            ULOG_ERR_F("snprintf failed");
+            return OSSO_ERROR;
+        }
+        read_device_state_from_file(osso);
     }
 
     if (state == NULL) {
 	state = (osso_hw_state_t*) &default_mask;
     }
-
-    read_device_state_from_file(osso);
 
     if (state->shutdown_ind) {
         osso->hw_cbs.shutdown_ind.cb = cb;
@@ -207,6 +215,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         _msg_handler_set_cb_f(osso, MCE_SIGNAL_IF, signal_handler,
                               NULL, FALSE);
     }
+    first_hw_set_cb_call = FALSE;  /* set before calling callbacks */
     if (call_cb) {
         ULOG_DEBUG_F("calling application callback");
         (*cb)(&osso->hw_state, data);
@@ -228,6 +237,10 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
     if (osso->sys_conn == NULL) {
 	ULOG_ERR_F("error: no system bus connection");
 	return OSSO_INVALID;
+    }
+    if (first_hw_set_cb_call) {
+        ULOG_WARN_F("called without calling osso_hw_set_event_cb first");
+        return OSSO_OK;
     }
 
     if (state == NULL) {
@@ -264,16 +277,14 @@ static void write_device_state_to_file(const char* s)
 {
     char buf[STORED_LEN];
     int ret;
-    if (i_am_root) {
-	return;
-    }
-    ret = readlink(OSSO_DEVSTATE_MODE_FILE, buf, STORED_LEN - 1);
+    g_assert(cache_file_name[0] != 0);
+    ret = readlink(cache_file_name, buf, STORED_LEN - 1);
     if (errno == ENOENT) {
         /* does not exist, create it */
-        ret = symlink(s, OSSO_DEVSTATE_MODE_FILE);
+        ret = symlink(s, cache_file_name);
         if (ret == -1) {
             ULOG_ERR_F("failed to create symlink '%s': %s",
-                       OSSO_DEVSTATE_MODE_FILE, strerror(errno));
+                       cache_file_name, strerror(errno));
         }
     } else if (ret >= 0) {
         buf[ret] = '\0';
@@ -282,16 +293,16 @@ static void write_device_state_to_file(const char* s)
             return;
         }
         /* change the value: unlink + symlink */
-        ret = unlink(OSSO_DEVSTATE_MODE_FILE);
+        ret = unlink(cache_file_name);
         if (ret == -1) {
             ULOG_ERR_F("failed to unlink symlink '%s': %s",
-                       OSSO_DEVSTATE_MODE_FILE, strerror(errno));
+                       cache_file_name, strerror(errno));
             return;
         }
-        ret = symlink(s, OSSO_DEVSTATE_MODE_FILE);
+        ret = symlink(s, cache_file_name);
         if (ret == -1) {
             ULOG_ERR_F("failed to create symlink '%s': %s",
-                       OSSO_DEVSTATE_MODE_FILE, strerror(errno));
+                       cache_file_name, strerror(errno));
         }
     }
 }
@@ -303,8 +314,9 @@ static void read_device_state_from_file(osso_context_t *osso)
 
     ULOG_DEBUG_F("entered");
     g_assert(osso != NULL);
+    g_assert(cache_file_name[0] != 0);
 
-    ret = readlink(OSSO_DEVSTATE_MODE_FILE, s, STORED_LEN - 1);
+    ret = readlink(cache_file_name, s, STORED_LEN - 1);
     if (ret >= 0) {
         s[ret] = '\0';
         if (strncmp(s, NORMAL_MODE, strlen(NORMAL_MODE)) == 0) {
@@ -320,15 +332,13 @@ static void read_device_state_from_file(osso_context_t *osso)
         }
     } else {
         ULOG_ERR_F("readlink of '%s' failed: '%s', "
-            "assuming OSSO_DEVMODE_NORMAL", OSSO_DEVSTATE_MODE_FILE,
+            "assuming OSSO_DEVMODE_NORMAL", cache_file_name,
             strerror(errno));
         osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
-        if (!i_am_root) {
-            ret = symlink(NORMAL_MODE, OSSO_DEVSTATE_MODE_FILE);
-            if (ret == -1) {
-                ULOG_ERR_F("failed to create symlink '%s': %s",
-                       OSSO_DEVSTATE_MODE_FILE, strerror(errno));
-            }
+        ret = symlink(NORMAL_MODE, cache_file_name);
+        if (ret == -1) {
+            ULOG_ERR_F("failed to create symlink '%s': %s",
+                       cache_file_name, strerror(errno));
         }
     }
 }

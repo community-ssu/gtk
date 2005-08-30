@@ -26,7 +26,7 @@ libosso (0.9.15-1) unstable; urgency=low
   * Connected the low memory signal handler to correct D-BUS signal (bug
     18069).
   * Implemented caching for the device mode, since MCE won't provide a file
-    with the value. It's not created when running as root.
+    with the value. Each user has own cache file due to permission issues.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 29 Aug 2005 18:08:13 +0300
 
