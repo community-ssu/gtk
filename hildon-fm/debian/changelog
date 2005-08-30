@@ -1,3 +1,11 @@
+hildon-fm (0.9.36-1) unstable; urgency=low
+
+  * Bugs fixed:
+    16151: Filetree doesn't limit the memory it can consume in anyway which
+           can prevent usage of several programs
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 30 Aug 2005 19:08:56 +0300
+
 hildon-fm (0.9.35-1) unstable; urgency=low
 
   * Bugs fixed:
