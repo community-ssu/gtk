@@ -49,8 +49,8 @@
 #define USER_LOWMEM_ON_SIGNAL_IF "com.nokia.ke_recv.user_lowmem_on"
 #define USER_LOWMEM_ON_SIGNAL_NAME "user_lowmem_on"
 
-#define MAX_CACHE_FILE_NAME
-static char cache_file_name[MAX_CACHE_FILE_NAME + 1];
+#define MAX_CACHE_FILE_NAME 100
+static char cache_file_name[MAX_CACHE_FILE_NAME];
 static gboolean first_hw_set_cb_call = TRUE;
 
 osso_return_t osso_display_state_on(osso_context_t *osso)
