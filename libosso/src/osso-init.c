@@ -326,9 +326,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
 {
     DBusConnection *conn = NULL;
-    if (osso == NULL) {
-        return;
-    }
+    g_assert(osso != NULL);
     if (sys) {
         conn = osso->sys_conn;
         osso->sys_conn = NULL;

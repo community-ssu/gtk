@@ -253,34 +253,70 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
     return OSSO_OK;    
 }
 
+static void write_device_state_to_file(const char* s)
+{
+    char buf[STORED_LEN];
+    int ret = readlink(OSSO_DEVSTATE_MODE_FILE, buf, STORED_LEN - 1);
+    if (errno == ENOENT) {
+        /* does not exist, create it */
+        ret = symlink(s, OSSO_DEVSTATE_MODE_FILE);
+        if (ret == -1) {
+            ULOG_ERR_F("failed to create symlink '%s': %s",
+                       OSSO_DEVSTATE_MODE_FILE, strerror(errno));
+        }
+    } else if (ret >= 0) {
+        buf[ret] = '\0';
+        if (strncmp(s, buf, strlen(buf)) == 0) {
+            /* the desired value is already there */
+            return;
+        }
+        /* change the value: unlink + symlink */
+        ret = unlink(OSSO_DEVSTATE_MODE_FILE);
+        if (ret == -1) {
+            ULOG_ERR_F("failed to unlink symlink '%s': %s",
+                       OSSO_DEVSTATE_MODE_FILE, strerror(errno));
+            return;
+        }
+        ret = symlink(s, OSSO_DEVSTATE_MODE_FILE);
+        if (ret == -1) {
+            ULOG_ERR_F("failed to create symlink '%s': %s",
+                       OSSO_DEVSTATE_MODE_FILE, strerror(errno));
+        }
+    }
+}
+
 static void read_device_state_from_file(osso_context_t *osso)
 {
-    FILE *f = NULL;
-    gchar s[STORED_LEN];
-    g_assert(osso != NULL);
+    int ret;
+    char s[STORED_LEN];
 
     ULOG_DEBUG_F("entered");
-    /* FIXME: this file does not exist */
-    f = fopen(OSSO_DEVSTATE_MODE_FILE, "r");
-    if (f != NULL) {
-        if (fgets(s, STORED_LEN, f) != NULL) {
-            if (strncmp(s, NORMAL_MODE, strlen(NORMAL_MODE)) == 0) {
-                osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
-            } else if (strncmp(s, FLIGHT_MODE, strlen(FLIGHT_MODE)) == 0) {
-                osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
-            } else if (strncmp(s, OFFLINE_MODE, strlen(OFFLINE_MODE)) == 0) {
-                osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
-            } else if (strncmp(s, INVALID_MODE, strlen(INVALID_MODE)) == 0) {
-                osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
-            } else {
-                ULOG_WARN_F("invalid device mode '%s'", s);
-            }
+    g_assert(osso != NULL);
+
+    ret = readlink(OSSO_DEVSTATE_MODE_FILE, s, STORED_LEN - 1);
+    if (ret >= 0) {
+        s[ret] = '\0';
+        if (strncmp(s, NORMAL_MODE, strlen(NORMAL_MODE)) == 0) {
+            osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
+        } else if (strncmp(s, FLIGHT_MODE, strlen(FLIGHT_MODE)) == 0) {
+            osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
+        } else if (strncmp(s, OFFLINE_MODE, strlen(OFFLINE_MODE)) == 0) {
+            osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
+        } else if (strncmp(s, INVALID_MODE, strlen(INVALID_MODE)) == 0) {
+            osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
+        } else {
+            ULOG_WARN_F("invalid device mode '%s'", s);
         }
-        fclose(f);
     } else {
-        ULOG_ERR_F("could not open device state file '%s', "
-            "assuming OSSO_DEVMODE_NORMAL", OSSO_DEVSTATE_MODE_FILE);
+        ULOG_ERR_F("readlink of '%s' failed: '%s', "
+            "assuming OSSO_DEVMODE_NORMAL", OSSO_DEVSTATE_MODE_FILE,
+            strerror(errno));
         osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
+        ret = symlink(NORMAL_MODE, OSSO_DEVSTATE_MODE_FILE);
+        if (ret == -1) {
+            ULOG_ERR_F("failed to create symlink '%s': %s",
+                       OSSO_DEVSTATE_MODE_FILE, strerror(errno));
+        }
     }
 }
 
@@ -288,6 +324,8 @@ static DBusHandlerResult lowmem_signal_handler(osso_context_t *osso,
                 DBusMessage *msg, gpointer data)
 {
     ULOG_DEBUG_F("entered");
+    g_assert(osso != NULL);
+
     if (dbus_message_is_signal(msg, USER_LOWMEM_ON_SIGNAL_IF,
                                USER_LOWMEM_ON_SIGNAL_NAME)) {
         osso->hw_state.memory_low_ind = TRUE;
@@ -312,6 +350,8 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
                                         DBusMessage *msg, gpointer data)
 {
     ULOG_DEBUG_F("entered");
+    g_assert(osso != NULL);
+
     if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, SHUTDOWN_SIG)) {
         osso->hw_state.shutdown_ind = TRUE;
         if (osso->hw_cbs.shutdown_ind.set) {
@@ -361,12 +401,16 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
         s = dbus_message_iter_get_string(&i);
         if (strncmp(s, NORMAL_MODE, strlen(NORMAL_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
+            write_device_state_to_file(NORMAL_MODE);
         } else if (strncmp(s, FLIGHT_MODE, strlen(FLIGHT_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
+            write_device_state_to_file(FLIGHT_MODE);
         } else if (strncmp(s, OFFLINE_MODE, strlen(OFFLINE_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
+            write_device_state_to_file(OFFLINE_MODE);
         } else if (strncmp(s, INVALID_MODE, strlen(INVALID_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
+            write_device_state_to_file(INVALID_MODE);
         } else {
             ULOG_WARN_F("invalid device mode '%s'", s);
             return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
