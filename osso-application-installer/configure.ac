@@ -40,7 +40,8 @@ PKG_CHECK_MODULES( DEPS,
 libossohelp >= 0.05
 gtk+-2.0 >= 2.2 glib-2.0 >= 2.2 hildon-libs >= 0.8.1
 hildon-base-lib >= 0.8.1 hildon-lgpl >= 0.8.1 libosso >= 0.8.1
-gnome-vfs-2.0 >= 2.6 gnome-vfs-module-2.0 >= 2.6, gconf-2.0
+gnome-vfs-2.0 >= 2.6 gnome-vfs-module-2.0 >= 2.6 gconf-2.0
+obex-vfs-utils
 )
 AC_SUBST( DEPS_CFLAGS )
 AC_SUBST( DEPS_LIBS )
@@ -100,8 +101,8 @@ AC_SUBST(dbusservdir)
 
 # For the app-installer-tool
 #
-AITOOL_CFLAGS=`pkg-config --cflags glib-2.0 gnome-vfs-2.0`
-AITOOL_LIBS=`pkg-config --libs glib-2.0 gnome-vfs-2.0`
+AITOOL_CFLAGS=`pkg-config --cflags glib-2.0`
+AITOOL_LIBS=`pkg-config --libs glib-2.0`
 AC_SUBST(AITOOL_CFLAGS)
 AC_SUBST(AITOOL_LIBS)
 
