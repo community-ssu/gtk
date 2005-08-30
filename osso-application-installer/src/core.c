@@ -37,6 +37,7 @@
 #include <sys/wait.h>
 #include <glib.h>
 #include <gconf/gconf.h>
+#include <obex-vfs-utils/ovu-xfer.h>
 
 #include "core.h"
 #include "ui/represent.h"
@@ -64,10 +65,12 @@
      the app-installer-tool for these operations, unfortunately.
 
    - Really asynchronously, where the GUI interprets the output from
-     the app-installer-tool as soon as it becomes available.  This is
-     used for copying a remote file to local storage.  The
+     the app-installer-tool as soon as it becomes available.  This
+     used to be used for copying a remote file to local storage.  The
      app-installer-tool can provide real progress information for that
-     and we use it to keep a progress bar alive.
+     and we use it to keep a progress bar alive.  (Nowadays, we do the
+     copy ourselves, since we have to use a ovu_async_xfer anyway and
+     I finally figured out how to do it...)
 
    The third way is of course the most general and the other two ways
    are in fact implemented as special cases of it.  This means that
@@ -1085,7 +1088,6 @@ static void
 installer_cancel (gpointer raw_data)
 {
   installer_data *data = (installer_data *)raw_data;
-  fprintf (stderr, "cancel\n");
   cancel_app_installer_tool (data->tool);
 }
 
@@ -1184,74 +1186,138 @@ install_package (gchar *deb, AppData *app_data)
 }
 
 typedef struct {
-  AppData *app_data;
-  gchar *remote;
-  gchar *local;
-  GMainLoop *loop;
   progress_dialog *progress_dialog;
+  GMainLoop *loop;
+  GnomeVFSAsyncHandle *async_handle;
+  GnomeVFSResult result;
 } copy_data;
 
-static void
-copy_callback (gpointer raw_data,
-	       int success,
-	       gchar *output, gchar *details)
+static gboolean
+copy_progress (GnomeVFSAsyncHandle *handle,
+	       GnomeVFSXferProgressInfo *info,
+	       gpointer raw_data)
 {
   copy_data *data = (copy_data *)raw_data;
 
-  if (data->progress_dialog)
-    ui_close_progress_dialog (data->progress_dialog);
+  // fprintf (stderr, "phase %d, status %d\n", info->phase, info->status);
 
-  if (success)
-    install_package (data->local, data->app_data);
-  else
+  if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR)
     {
-      /* XXX-NLS */
-      _("ai_ti_copying_failed");
-      gchar *report = 
-	g_strdup_printf (gettext_try_many
-			 ("ai_ti_copying_failed",
-			  "ai_ti_installation_failed_text",
-			  NULL),
-			 data->remote);
-      present_report_with_details (data->app_data,
-				   report,
-				   details);
-      g_free (report);
+      data->result = info->vfs_status;
+      return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
     }
 
-  if (data->loop)
+  if (info->file_size > 0)
+    {
+      float progress = ((float)info->bytes_copied) / info->file_size;
+
+      ui_set_progress_dialog (data->progress_dialog, progress);
+    }
+
+  if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED)
     g_main_loop_quit (data->loop);
+
+  return TRUE;
 }
 
 static void
-copy_stdout_callback (gpointer raw_data,
-		      gchar *line)
+copy_cancel (gpointer raw_data)
 {
   copy_data *data = (copy_data *)raw_data;
-  double frac = atof (line);
+  if (data->async_handle)
+    gnome_vfs_async_cancel (data->async_handle);
+}
 
-  if (data->progress_dialog == NULL)
+static gboolean
+do_copy (AppData *app_data,
+	 gchar *source, GnomeVFSURI *source_uri,
+	 gchar *target)
+{
+  GnomeVFSURI *target_uri;
+  GList *source_uri_list, *target_uri_list;
+  GnomeVFSResult result;
+  copy_data data;
+
+  target_uri = gnome_vfs_uri_new (target);
+  if (target_uri == NULL)
     {
       /* XXX-NLS */
-      _("ai_ti_copying");
-      data->progress_dialog =
-	ui_create_progress_dialog (data->app_data,
-				   gettext_try_many 
-				   ("ai_ti_copying",
-				    "ai_ti_installing_installing",
-				    NULL),
-				   NULL, NULL);
+      present_error_details_fmt (app_data,
+				 "Copying failed",
+				 "Unsupported URI: %s.\n", target);
+      return FALSE;
     }
 
-  ui_set_progress_dialog (data->progress_dialog, frac);
+  source_uri_list = g_list_append (NULL, (gpointer) source_uri);
+  target_uri_list = g_list_append (NULL, (gpointer) target_uri);
+
+  data.async_handle = NULL;
+
+  /* XXX-NLS - should make "Copying" translatable. 
+   */
+  data.progress_dialog = ui_create_progress_dialog (app_data,
+						    "Copying",
+						    copy_cancel,
+						    &data);
+  data.loop = g_main_loop_new (NULL, 0);
+  data.result = GNOME_VFS_OK;
+
+  result = ovu_async_xfer (&data.async_handle,
+			   source_uri_list,
+			   target_uri_list,
+			   GNOME_VFS_XFER_DEFAULT,
+			   GNOME_VFS_XFER_ERROR_MODE_QUERY,
+			   GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE,
+			   GNOME_VFS_PRIORITY_DEFAULT,
+			   copy_progress,
+			   &data,
+			   NULL,
+			   NULL);
+
+  if (result == GNOME_VFS_OK)
+    g_main_loop_run (data.loop);
+  else
+    data.result = result;
+
+  ui_close_progress_dialog (data.progress_dialog);
+
+  if (data.result != GNOME_VFS_OK)
+    {
+      /* XXX-NLS */
+      present_error_details_fmt (app_data,
+				 "Copying failed",
+				 "Copying %s to %s failed: %s\n",
+				 source, target,
+				 gnome_vfs_result_to_string (data.result));
+      return FALSE;
+    }
+
+  return TRUE;
+}
+
+static void
+report_installation_failure (AppData *app_data,
+			     gchar *source,
+			     gchar *details_fmt,
+			     ...)
+{
+  gchar *report, *details;
+  va_list ap;
+
+  va_start (ap, details_fmt);
+  report = g_strdup_printf (SUPPRESS_FORMAT_WARNING
+			    (_("ai_ti_installation_failed_text")),
+			    source);
+  details = g_strdup_vprintf (details_fmt, ap);
+  present_report_with_details (app_data, report, details);
+  g_free (details);
+  g_free (report);
+  va_end (ap);
 }
 
 void
 install_package_from_uri (gchar *uri, AppData *app_data)
 {
-  int success = 1;
-  gchar *details = NULL;
-
   GnomeVFSURI *vfs_uri = NULL;
   const gchar *scheme;
 
@@ -1259,9 +1325,9 @@ install_package_from_uri (gchar *uri, AppData *app_data)
   if (vfs_uri == NULL)
     {
       /* XXX-NLS - ai_ti_unsupported_uri */
-      details = g_strdup_printf ("Unsupported URI: %s\n", uri);
-      success = 0;
-      goto done;
+      report_installation_failure (app_data, uri,
+				   "Unsupported URI: %s\n", uri);
+      return;
     }
 
   /* The app-installer-tool can access all "file://" URIs, whether
@@ -1279,13 +1345,12 @@ install_package_from_uri (gchar *uri, AppData *app_data)
 	{
 	  install_package (unescaped_path, app_data);
 	  free (unescaped_path);
-	  success = 1;
 	}
       else
 	{
 	  /* XXX-NLS - ai_ti_unsupported_uri */
-	  details = g_strdup_printf ("Unsupported URI: %s\n", uri);
-	  success = 0;
+	  report_installation_failure (app_data, uri,
+				       "Unsupported URI: %s\n", uri);
 	}
     }
   else
@@ -1294,78 +1359,47 @@ install_package_from_uri (gchar *uri, AppData *app_data)
        */
       char template[] = "/tmp/osso-ai-XXXXXX", *tempdir;
       gchar *basename, *local;
-      copy_data data;
-      tool_handle *handle;
+
+      /* Make a temporary directory and allow everyone to read it.
+       */
 
       tempdir = mkdtemp (template);
       if (tempdir == NULL)
 	{
 	  /* XXX-NLS */
-	  details = g_strdup_printf ("Can not create %s: %s",
-				     template, strerror (errno));
-	  success = 0;
-	  goto done;
+	  report_installation_failure (app_data, uri,
+				       "Can not create %s: %s",
+				       template, strerror (errno));
 	}
-
-      /* Allow everyone to read the directory.
-       */
-      if (chmod (tempdir, 0755) < 0)
+      else if (chmod (tempdir, 0755) < 0)
 	{
 	  /* XXX-NLS */
-	  details = g_strdup_printf ("Can not chmod %s: %s",
-				     tempdir, strerror (errno));
-	  success = 0;
-	  goto done;
+	  report_installation_failure (app_data, uri,
+				       "Can not chmod %s: %s",
+				       tempdir, strerror (errno));
 	}
-
-      basename = gnome_vfs_uri_extract_short_path_name (vfs_uri);
-      local = g_strdup_printf ("%s/%s", tempdir, basename);
-      free (basename);
-
-      data.app_data = app_data;
-      data.remote = uri;
-      data.local = local;
-      data.loop = NULL;
-      data.progress_dialog = NULL;
-      handle = spawn_app_installer_tool (app_data, 0,
-					 "copy", uri, local,
-					 copy_callback,
-					 copy_stdout_callback,
-					 NULL,
-					 &data);
-      if (handle)
+      else
 	{
-	  data.loop = g_main_loop_new (NULL, 0);
-	  g_main_loop_run (data.loop);
-	  g_main_loop_unref (data.loop);
-	  free_app_installer_tool (handle);
+	  basename = gnome_vfs_uri_extract_short_path_name (vfs_uri);
+	  local = g_strdup_printf ("%s/%s", tempdir, basename);
+	  free (basename);
+
+	  if (do_copy (app_data, uri, vfs_uri, local))
+	    install_package (local, app_data);
+
+	  /* We don't put up dialogs for errors that happen now.  From the
+	     point of the user, the installation has been completed and he
+	     has seen the report already.
+	  */
+	  if (unlink (local) < 0)
+	    ULOG_ERR ("error unlinking %s: %s\n", local, strerror (errno));
+	  if (rmdir (tempdir) < 0)
+	    ULOG_ERR ("error removing %s: %s\n", tempdir, strerror (errno));
+	  free (local);
 	}
-
-      /* We don't put up dialogs for errors that happen now.  From the
-	 point of the user, the installation has been completed and he
-	 has seen the report already.
-      */
-      success = 1;
-      if (unlink (local) < 0)
-	ULOG_ERR ("error unlinking %s: %s\n", local, strerror (errno));
-      if (rmdir (tempdir) < 0)
-	ULOG_ERR ("error removing %s: %s\n", tempdir, strerror (errno));
-      free (local);
     }
 
- done:
-  if (!success)
-    {
-      gchar *report = g_strdup_printf (SUPPRESS_FORMAT_WARNING 
-				       (_("ai_ti_installation_failed_text")),
-				       uri);
-      present_report_with_details (app_data,
-				   report,
-				   details);
-      free (report);
-    }
   gnome_vfs_uri_unref (vfs_uri);
-  g_free (details);
 }
 
 static gboolean
