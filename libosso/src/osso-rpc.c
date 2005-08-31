@@ -415,7 +415,7 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
     dprint("acquiring service '%s'", service);
     i = dbus_bus_acquire_service(use_system_bus?osso->sys_conn:osso->conn,
 				 service, 0, &err);
-#ifdef DEBUG
+#ifdef LIBOSSO_DEBUG
     if(i <= 0) {
 	if(i == 0) {
 	    dprint("Unable to acquire service '%s': Invalid parameters\n", 

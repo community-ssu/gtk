@@ -39,7 +39,7 @@ void osso_log(int level, const char *format, ...)
 inline void d_log(const char *file,int line, int level, 
                 const char *format, ...)
 {
-#ifdef DEBUG
+#ifdef LIBOSSO_DEBUG
     va_list args;
     char *prefix_format;
     int len;

@@ -132,12 +132,12 @@ struct osso_af_context_t {
     _osso_exit_t exit;
 };
 
-# ifdef DEBUG
+# ifdef LIBOSSO_DEBUG
 #  define dprint(f, a...) fprintf(stderr, "%s:%d %s(): "f"\n", __FILE__, \
 				     __LINE__, __func__, ##a)
 # else
 #  define dprint(f, a...)
-# endif /* DEBUG */
+# endif /* LIBOSSO_DEBUG */
 
 /**
  * This is the first-level message handler. it checks to see if the message
