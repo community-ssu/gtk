@@ -1,5 +1,9 @@
 2005-08-26  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
+  * Increased version number -> 0.9.22. Tagged for integration, this version is for week 35 integration release. 
+
+2005-08-26  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
   * Patched bug #17744
   * Added the required call to inform active applet that statesave is required
   * Increased version number

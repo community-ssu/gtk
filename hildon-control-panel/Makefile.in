@@ -257,12 +257,12 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	all-recursive install-data-recursive install-exec-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure Makefile.am \
-	aclocal.m4 com.nokia.controlpanel.service.in config.guess \
-	config.h.in config.sub configure configure.ac \
-	controlpanel.sh.in depcomp hildon-control-panel.desktop.in \
-	hildon-control-panel.pc.in install-sh ltmain.sh missing \
-	mkinstalldirs
+DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure COPYING \
+	ChangeLog Makefile.am aclocal.m4 \
+	com.nokia.controlpanel.service.in config.guess config.h.in \
+	config.sub configure configure.ac controlpanel.sh.in depcomp \
+	hildon-control-panel.desktop.in hildon-control-panel.pc.in \
+	install-sh ltmain.sh missing mkinstalldirs
 DIST_SUBDIRS = $(SUBDIRS)
 SOURCES = $(controlpanel_SOURCES)
 
