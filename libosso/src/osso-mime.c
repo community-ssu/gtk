@@ -37,8 +37,9 @@ osso_return_t osso_mime_set_cb(osso_context_t *osso, osso_mime_cb_f *cb,
     if (osso == NULL || cb == NULL)
 	return OSSO_INVALID;
     if(osso->mime == NULL) {
-	osso->mime = (_osso_mime_t *)malloc(sizeof(_osso_mime_t));
+	osso->mime = (_osso_mime_t *)calloc(1, sizeof(_osso_mime_t));
 	if(osso->mime == NULL) {
+            ULOG_ERR_F("calloc failed");
 	    return OSSO_ERROR;
 	}
     }

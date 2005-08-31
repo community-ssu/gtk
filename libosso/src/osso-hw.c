@@ -388,8 +388,10 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
             (osso->hw_cbs.save_unsaved_data_ind.cb)(&osso->hw_state,
                 osso->hw_cbs.save_unsaved_data_ind.data);
             osso->hw_state.save_unsaved_data_ind = FALSE;
-	    /* call force autosave function */
-	    osso_application_autosave_force(osso);
+            if (osso->autosave != NULL) {
+	        /* call force autosave function */
+	        osso_application_autosave_force(osso);
+            }
         }
     } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, INACTIVITY_SIG)) {
         int type;

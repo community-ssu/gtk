@@ -319,7 +319,7 @@ static osso_return_t _read_state(const gchar *statefile, osso_state_t *state)
     dprint("statefile = '%s', of size %d",statefile, state->state_size);
     
     if(state->state_data == NULL) {
-	state->state_data = malloc(size);
+	state->state_data = calloc(1, size);
 	if(state->state_data == NULL) {
 	    ULOG_ERR_F("Error allocating memory for state data");
 	    ret = OSSO_ERROR;

@@ -272,7 +272,7 @@ static osso_return_t _rpc_async_run(osso_context_t *osso,
 	b = dbus_connection_send(osso->conn, msg, NULL);
     }
     else {
-	rpc = (_osso_rpc_async_t *)malloc(sizeof(_osso_rpc_async_t));
+	rpc = (_osso_rpc_async_t *)calloc(1, sizeof(_osso_rpc_async_t));
 	if(rpc == NULL) return OSSO_ERROR;
 	
 	rpc->func = async_cb;
@@ -404,8 +404,11 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 	   " on the %sbus", service, object_path, interface,
 	   use_system_bus?"SYSTEM":"SESSION");
     
-    rpc = (_osso_rpc_t *)malloc(sizeof(_osso_rpc_t));
-    if(rpc == NULL) return OSSO_ERROR;
+    rpc = (_osso_rpc_t *)calloc(1, sizeof(_osso_rpc_t));
+    if (rpc == NULL) {
+        ULOG_ERR_F("calloc failed");
+        return OSSO_ERROR;
+    }
     
     dbus_error_init(&err);
 
@@ -484,15 +487,17 @@ osso_return_t osso_rpc_set_default_cb_f(osso_context_t *osso,
     if( (osso == NULL) || (cb == NULL) )
 	return OSSO_INVALID;
 
-    rpc = (_osso_rpc_t *)malloc(sizeof(_osso_rpc_t));
-    if(rpc == NULL)
+    rpc = (_osso_rpc_t *)calloc(1, sizeof(_osso_rpc_t));
+    if (rpc == NULL) {
+        ULOG_ERR_F("calloc failed");
 	return OSSO_ERROR;
+    }
     
     g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT, osso->application);    
     rpc->func = cb;
     rpc->data = data;
     
-    _msg_handler_set_cb_f(osso, interface, _rpc_handler,
+    _msg_handler_set_cb_f_free_data(osso, interface, _rpc_handler,
 			  (gpointer)rpc, TRUE);
     return OSSO_OK;
 }

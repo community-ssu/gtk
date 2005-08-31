@@ -35,23 +35,6 @@ static gboolean _validate_time(time_t time_candidate)
   return TRUE;
 }
 
-/************************************************************************/
-static gchar *_time_to_string(const time_t timevalue)
-{
-  /* 20 (+1 for terminator) characters are enough for
-     a very long time value... */
-  gchar *textual_time = (gchar *)malloc((TIME_MAX_LEN+1)*sizeof(gchar));
-  if (textual_time == NULL) {
-    return NULL;
-  }
-  memset(textual_time, '\0', sizeof(textual_time));
-  if (g_snprintf(textual_time, TIME_MAX_LEN+1, "%ld",
-		 (long int)timevalue)
-      > TIME_MAX_LEN ) {
-    return NULL;
-  }
-  return textual_time;
-}
 
 /************************************************************************/
 osso_return_t osso_time_set_notification_cb(osso_context_t *osso, osso_time_cb_f *cb,
@@ -66,9 +49,9 @@ osso_return_t osso_time_set_notification_cb(osso_context_t *osso, osso_time_cb_f
     return OSSO_INVALID;
   }
 
-  ot = (struct _osso_time *)malloc(sizeof(struct _osso_time));
+  ot = (struct _osso_time *)calloc(1, sizeof(struct _osso_time));
   if(ot == NULL) {
-    ULOG_ERR_F("error: not ennough memory!");
+    ULOG_ERR_F("calloc failed");
     return OSSO_ERROR;
   }
 
@@ -92,18 +75,23 @@ osso_return_t osso_time_set_notification_cb(osso_context_t *osso, osso_time_cb_f
 
 osso_return_t osso_time_set(osso_context_t *osso, time_t new_time)
 {
-  gchar *timestring = NULL;
+  gchar *textual_time = NULL;
+  static const size_t textual_time_size = (TIME_MAX_LEN+1) * sizeof(gchar);
+  int ret;
   gint retval = OSSO_ERROR;
+
   if ( _validate_time(new_time) == FALSE || (osso == NULL) ) {
     return OSSO_INVALID;
   }
-  timestring = _time_to_string(new_time);
-  if (timestring == NULL) {
-    ULOG_DEBUG_F("Could not convert time_t to string!");
+
+  textual_time = (gchar *) alloca(textual_time_size);
+  memset(textual_time, '\0', textual_time_size);
+  ret = g_snprintf(textual_time, TIME_MAX_LEN+1, "%ld", (long int)new_time);
+  if (ret > TIME_MAX_LEN + 1 || ret < 0) {
+    ULOG_ERR_F("Could not convert time_t to string");
     return OSSO_ERROR;
   }
-  retval = osso_application_top(osso, "test_time_msg", timestring);
-  free(timestring);
+  retval = osso_application_top(osso, "test_time_msg", textual_time);
   ULOG_DEBUG_F("osso_application_top called");
   if (retval != OSSO_OK) {
     ULOG_ERR("osso_application_top failed!");

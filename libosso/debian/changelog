@@ -29,8 +29,10 @@ libosso (0.9.15-1) unstable; urgency=low
     with the value. Each user has own cache file due to permission issues.
   * Now calling osso_application_autosave_force automatically when the
     save_unsaved_data signal comes (bug 10960).
+  * Replaced most mallocs with callocs.
+  * Removed some unnecessary dynamic memory allocations.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 30 Aug 2005 22:23:28 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 31 Aug 2005 11:36:14 +0300
 
 libosso (0.9.14-1) unstable; urgency=low
 

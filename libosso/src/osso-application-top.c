@@ -144,8 +144,11 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
     if(osso == NULL) return OSSO_INVALID;
     if(cb == NULL) return OSSO_INVALID;
     
-    top = (struct _osso_top *) malloc(sizeof(struct _osso_top));
-    if(top == NULL) return OSSO_ERROR;
+    top = (struct _osso_top *) calloc(1, sizeof(struct _osso_top));
+    if (top == NULL) {
+        ULOG_ERR_F("calloc failed");
+        return OSSO_ERROR;
+    }
     top->handler = cb;
     top->data = data;
 
@@ -153,7 +156,7 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
 	       osso->application);
 
     /* register our top_application handler to the main message handler */
-    _msg_handler_set_cb_f(osso, interface, _top_handler, top, TRUE);
+    _msg_handler_set_cb_f_free_data(osso, interface, _top_handler, top, TRUE);
 
     return OSSO_OK;
 }

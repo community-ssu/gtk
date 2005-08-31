@@ -184,13 +184,17 @@ static void _deinit(osso_context_t *osso)
     if(osso->ifs != NULL) {
         int i;
         _osso_interface_t *elem;
-        /* interface members need to be freed separately */
+        /* some members need to be freed separately */
         for (i = 0; i < osso->ifs->len; ++i) {
             elem = (_osso_interface_t*)
                     &g_array_index(osso->ifs, _osso_interface_t, i);
             if (elem->interface != NULL) {
                 g_free(elem->interface);
         	elem->interface = NULL;
+            }
+            if (elem->can_free_data) {
+                free(elem->data);
+                elem->data = NULL;
             }
         }
         g_array_free(osso->ifs, TRUE);
@@ -406,11 +410,32 @@ _msg_handler_set_cb_f(osso_context_t *osso, const gchar *interface,
     intf.interface = g_strdup(interface);
     intf.data = data;
     intf.method = method;
+    intf.can_free_data = FALSE;
     
     dprint("intf.handler = %p",intf.handler);
     dprint("intf.interface = '%s'",intf.interface);
     dprint("intf.data = %p", intf.data);
     dprint("intf.method = %s", intf.method?"TRUE":"FALSE");
+    g_array_append_val(osso->ifs, intf);
+
+    return;
+}
+
+void __attribute__ ((visibility("hidden")))
+_msg_handler_set_cb_f_free_data(osso_context_t *osso, const gchar *interface,
+                      _osso_interface_cb_f *cb, gpointer data, 
+                      gboolean method)
+{   
+    _osso_interface_t intf;
+    if( (osso == NULL) || (interface == NULL) || (cb == NULL) )
+	return;
+    
+    intf.handler = cb;
+    intf.interface = g_strdup(interface);
+    intf.data = data;
+    intf.method = method;
+    intf.can_free_data = TRUE;
+    
     g_array_append_val(osso->ifs, intf);
 
     return;

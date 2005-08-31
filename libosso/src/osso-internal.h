@@ -96,6 +96,7 @@ typedef struct {
     gchar *interface;
     gpointer data;
     gboolean method;
+    gboolean can_free_data;
 }_osso_interface_t;
 
 typedef struct {
