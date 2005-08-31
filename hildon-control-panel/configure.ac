@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-control-panel, 0.9.20)
+AM_INIT_AUTOMAKE(hildon-control-panel, 0.9.22)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -19,7 +19,7 @@ AC_SUBST(X_CFLAGS)
 
 AC_HEADER_STDC
 
-ALL_LINGUAS="de_DE en_GB en_US es_ES es_MX fi_FI fr_CA fr_FR it_IT pt_BR ru_RU"
+ALL_LINGUAS="en_GB"
 AC_SUBST(ALL_LINGUAS)
 AM_GLIB_GNU_GETTEXT
 

@@ -1,3 +1,9 @@
+hildon-control-panel (0.9.22) unstable; urgency=low
+
+  * Tagged new version for integration. Week 35 release.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 31 Aug 2005 12:04:00 +0300
+
 hildon-control-panel (0.9.21-2) unstable; urgency=low
 
   * Patched bug 17744
