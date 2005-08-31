@@ -226,7 +226,7 @@ hildon_return_t hildon_dnotify_remove_cb(char * path)
 	return HILDON_OK;
 }
 
-hildon_return_t hildon_dnotify_handler_clear(void)
+hildon_return_t hildon_dnotify_remove_every_cb(void)
 {
 	_dir_map_t *dir;
 
@@ -241,6 +241,19 @@ hildon_return_t hildon_dnotify_handler_clear(void)
 		close(tmp->fd);
 		free(tmp);
 	}
+
+        _dir_map = NULL;
+
+	return HILDON_OK;
+}
+
+hildon_return_t hildon_dnotify_handler_clear(void)
+{
+	if( (dir_funcs == NULL) || (dir_src == NULL) )
+		return HILDON_ERR;
+
+	hildon_dnotify_remove_every_cb();
+
 	g_source_destroy(dir_src);
 	if(dir_funcs != NULL)
 		free(dir_src);

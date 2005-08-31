@@ -1,3 +1,9 @@
+2005-08-31  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-base-dir-change.[ch] (hildon_dnotify_remove_every_cb):
+	new function. Removes dnotify for all callbacks on all paths.
+	N#17741.
+
 2005-08-09  Tomas Junnonen  <tomas.junnonen@nokia.com>
 
 	* hildon-base-dir-change.c: Fixed case where the internal

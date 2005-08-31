@@ -94,6 +94,12 @@ G_BEGIN_DECLS
 	 * @return HILDON_OK.
 	 */	
 	hildon_return_t hildon_dnotify_remove_cb(char * path);
+
+	/**
+	 * Removes dnotify for all callbacks on all paths.
+	 * @return HILDON_OK.
+	 */	
+	hildon_return_t hildon_dnotify_remove_every_cb(void);
 	
 	/**
 	 * Removes the timeout and clears the dir_change handlers
