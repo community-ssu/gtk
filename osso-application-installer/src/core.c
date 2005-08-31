@@ -732,6 +732,28 @@ add_columns (AppUIData *app_ui_data, GtkTreeView *treeview)
   app_ui_data->size_column = column;
 }
 
+
+static void
+report_installation_failure (AppData *app_data,
+			     gchar *source,
+			     gchar *details_fmt,
+			     ...)
+{
+  gchar *report, *details;
+  va_list ap;
+
+  va_start (ap, details_fmt);
+  report = g_strdup_printf (SUPPRESS_FORMAT_WARNING
+			    (_("ai_ti_installation_failed_text")),
+			    source);
+  details = g_strdup_vprintf (details_fmt, ap);
+  present_report_with_details (app_data, report, details);
+  g_free (details);
+  g_free (report);
+  va_end (ap);
+}
+
+
 /* Return information about the package file FILE.  You need to free
    the returned structure eventually with package_info_free.  When the
    information can not be retrieved, all strings in the returned
@@ -784,14 +806,10 @@ package_file_info (AppData *app_data, gchar *file)
 
       if (!depends_on_maemo)
 	{
-	  gchar *message =
-	    g_strdup_printf (SUPPRESS_FORMAT_WARNING
-			     (_("ai_error_builtin")),
-			     package);
-	  present_report_with_details (app_data,
-				       message,
-				       NULL);
-	  g_free (message);
+	  report_installation_failure (app_data,
+				       package,
+				       _("ai_error_builtin"),
+				       package);
 	  goto done;
 	}
       
@@ -804,9 +822,9 @@ package_file_info (AppData *app_data, gchar *file)
     {
     corrupt:
       /* XXX-UI32 - do not suppress stderr output. */
-      present_report_with_details (app_data,
-				   _("ai_error_corrupted"),
-				   NULL);
+      report_installation_failure (app_data,
+				   basename (file),
+				   _("ai_error_corrupted"));
     }
 
  done:
@@ -1355,26 +1373,6 @@ do_copy (AppData *app_data,
     }
 
   return !data.cancel_now;
-}
-
-static void
-report_installation_failure (AppData *app_data,
-			     gchar *source,
-			     gchar *details_fmt,
-			     ...)
-{
-  gchar *report, *details;
-  va_list ap;
-
-  va_start (ap, details_fmt);
-  report = g_strdup_printf (SUPPRESS_FORMAT_WARNING
-			    (_("ai_ti_installation_failed_text")),
-			    source);
-  details = g_strdup_vprintf (details_fmt, ap);
-  present_report_with_details (app_data, report, details);
-  g_free (details);
-  g_free (report);
-  va_end (ap);
 }
 
 void
