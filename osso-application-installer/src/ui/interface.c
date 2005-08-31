@@ -37,6 +37,33 @@
 #include <config.h>
 #endif
 
+/* XXX - This is a hack to get the focus out of the description area
+         with the left and right keys.  There should be a better way
+         to do this, but I couldn't find one quickly enough.
+*/
+static gboolean
+keypress_event (GtkWidget *widget,
+		GdkEventKey *event,
+		gpointer user_data)
+{
+  AppUIData *app_ui_data = (AppUIData *)user_data;
+
+  if (event->keyval == GDK_Left)
+    {
+      GtkBin *bin = GTK_BIN (app_ui_data->package_list);
+      gtk_widget_grab_focus (gtk_bin_get_child (bin));
+      return TRUE;
+    }
+  else if (event->keyval == GDK_Right)
+    {
+      gtk_widget_grab_focus (app_ui_data->uninstall_button);
+      return TRUE;
+    }
+  else
+    return FALSE;
+}
+
+
 GtkWidget *
 ui_create_main_dialog (AppData *app_data)
 {
@@ -127,15 +154,20 @@ ui_create_main_dialog (AppData *app_data)
   textview = gtk_text_view_new();
   textbuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview), GTK_WRAP_WORD);
-  gtk_widget_set_sensitive(textview, FALSE);
-
+  gtk_text_view_set_editable (GTK_TEXT_VIEW(textview), FALSE);
+  gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW(textview), FALSE);
+  gtk_widget_set_sensitive (textview, TRUE);
+  g_signal_connect (G_OBJECT (textview),
+		    "key-press-event",
+		    G_CALLBACK (keypress_event),
+		    app_ui_data);
 
   /* And place in inside scrollable window */
   desc_sw = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(desc_sw),
    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(desc_sw),
-   GTK_SHADOW_NONE);
+				      GTK_SHADOW_NONE);
 
   gtk_container_add(GTK_CONTAINER(desc_sw), textview);
   gtk_container_add(GTK_CONTAINER(vbox), desc_sw);
@@ -191,6 +223,15 @@ ui_create_main_dialog (AppData *app_data)
   }
 
   update_package_list (app_data);
+
+  GList *chain = NULL;
+  chain = g_list_append (chain, list_sw);
+  chain = g_list_append (chain, desc_sw);
+  chain = g_list_append (chain, app_ui_data->uninstall_button);
+  chain = g_list_append (chain, app_ui_data->installnew_button);
+  chain = g_list_append (chain, app_ui_data->close_button);
+  
+  gtk_container_set_focus_chain (GTK_CONTAINER (vbox), chain);
 
   return main_dialog;
 }
@@ -336,20 +377,6 @@ ui_create_textbox (AppData *app_data, gchar *text,
   gtk_widget_set_sensitive(view, TRUE);
   gtk_text_view_set_cursor_visible(GTK_TEXT_VIEW(view), FALSE);
 
-  /* XXX - it might be too early to try to scroll here.  Gtk+
-     complains at least...  it probably is better to just set the
-     adjustment of the scrolled window.
-  */
-
-#if 0
-  /* If text is longer than buffer, force scroll back up */
-  gtk_text_buffer_get_start_iter (buffer, &iter);
-  gtk_text_view_scroll_to_iter (GTK_TEXT_VIEW(view),
-				&iter,
-				0.0, TRUE,
-				0.0, 0.0);
-#endif
-
   /* Enabling popup only when selectable, i.e. error details */
   if (selectable) 
     {
@@ -387,6 +414,18 @@ ui_create_textbox (AppData *app_data, gchar *text,
 
   /* And packing them into vbox */
   gtk_container_add(GTK_CONTAINER(sw), view);
+
+  {
+    /* We explicitely set the adjustment to zero here so that the
+       start of the text is guaranteed to be displayed.  Scrolling
+       doesn't seem to work too well at this point since the widget
+       doesn't know how big it is going to be, but scrolling to zero
+       should work...
+    */
+    GtkAdjustment *adj =
+      gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
+    gtk_adjustment_set_value (adj, 0.0);
+  }
 
   return sw;
 }
