@@ -31,6 +31,8 @@ libosso (0.9.15-1) unstable; urgency=low
     save_unsaved_data signal comes (bug 10960).
   * Replaced most mallocs with callocs.
   * Removed some unnecessary dynamic memory allocations.
+  * Fixed two small memory leaks in osso-application-top.c with a new internal
+    function.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 31 Aug 2005 11:36:14 +0300
 
