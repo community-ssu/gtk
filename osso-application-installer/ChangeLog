@@ -1,5 +1,9 @@
 2005-08-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/core.c (package_file_info): Use report_installation_failure
+	instead of present_report_with_details to present
+	"ai_error_builtin" and "ai_error_corrupted".
+
 	* src/ui/interface.c (ui_create_textbox): Set the vadjustment of
 	the scrolled window instead of scrolling the text view.  The
 	latter doesn't really seem to work before the widget is realized
