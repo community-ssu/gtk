@@ -1,5 +1,14 @@
 2005-08-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/ui/interface.c (ui_create_textbox): Set the vadjustment of
+	the scrolled window instead of scrolling the text view.  The
+	latter doesn't really seem to work before the widget is realized
+	or something.
+	(keypress_event): New.
+	(ui_create_main_dialog): Make description text view sensitive,
+	non-editable and hide the cursor.  Use keypress_event to get focus
+	behavior right.  Also set up an explicit focus chain for this.
+
 	* src/core.c (cancel_app_installer_tool): Commented out since it
 	is not used right now.
 	(installer_cancel): Removed, doesn't work.
@@ -7,9 +16,6 @@
 	(copy_data, copy_progress, do_copy): Rewritten logic, especially
 	to do cancelling the 'right' way.
 	
-	* src/ui/interface.c (ui_create_textbox): Commented out text
-	scrolling since it doesn't seem work.  Will investigate.
-
 2005-08-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/core.c (do_copy, copy_progress, copy_cancel): New, for doing
