@@ -1,3 +1,10 @@
+hildon-control-panel (0.9.23) unstable; urgency=low
+
+  * Updated dependency to UI spec 4.0 thus therefore to the new l10n
+    packages
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  1 Sep 2005 16:47:12 +0300
+
 hildon-control-panel (0.9.22) unstable; urgency=low
 
   * Tagged new version for integration. Week 35 release.
