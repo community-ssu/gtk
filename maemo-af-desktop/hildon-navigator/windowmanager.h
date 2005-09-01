@@ -82,7 +82,8 @@ enum {
 #define APP_LAUNCH_BANNER_CHECK_INTERVAL     0.5
 
 #define LAUNCH_SUCCESS_TIMEOUT 20
-#define LAUNCH_FAILED_INSUF_RES "cerm_can_not_open_insuf_res"
+
+#define LAUNCH_FAILED_INSUF_RES "ckct_ib_application_lowmem"
 
 #define LOCATION_VAR "STATESAVEDIR"
 #define FALLBACK_PREFIX "/tmp/state"

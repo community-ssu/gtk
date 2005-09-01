@@ -1,5 +1,11 @@
 2005-09-01  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
+	* Fixed bug N#17425.
+	* Updated hildon-navigator/windowmanager.h: #define LAUNCH_FAILED_INSUF_RES "cerm_can_not_open_insuf_res"
+          => #define LAUNCH_FAILED_INSUF_RES "ckct_ib_application_lowmem"
+
+2005-09-01  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
         * Updated debian/control file to depend to hildon-base-lib 0.9.3
         * Updated localization package dependencies to updated packages.
 
