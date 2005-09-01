@@ -1,3 +1,16 @@
+2005-09-01  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Merge patches by Matthias Clasen and Manish Singh from GNOME CVS:
+
+	* io-bmp.c (DecodeColormap): Initialize the colormap to
+	zero.  (#171762, David Costanzo)
+	* io-bmp.c (DoCompressed): Use the correct update regions for
+	compressed bmps.  (#150664, Owen Taylor, test images provided
+	by David Costanzo)
+	* io-bmp.c (grow_buffer): reject 0-sized buffers as corrupt header
+	data. Fixes bug #171707.
+	N#18487
+
 2005-08-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* io-ico.c (DecodeHeader): Check for header size overflow.
