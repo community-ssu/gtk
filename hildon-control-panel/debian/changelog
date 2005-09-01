@@ -1,3 +1,9 @@
+hildon-control-panel (0.9.23-1) unstable; urgency=low
+
+  * Downgraded l10n dependency
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  1 Sep 2005 17:59:17 +0300
+
 hildon-control-panel (0.9.23) unstable; urgency=low
 
   * Updated dependency to UI spec 4.0 thus therefore to the new l10n
