@@ -1,3 +1,8 @@
+2005-09-01  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+        * Updated debian/control file to depend to hildon-base-lib 0.9.3
+        * Updated localization package dependencies to updated packages.
+
 2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Added support for user plugins in the hildon-status-bar
@@ -10,6 +15,7 @@
            maemo-af-desktop/hildon-home/hildon-home-main.c
            maemo-af-desktop/hildon-home/hildon-home-main.h
         * Raised version number
+        * Requires new version of the hildon-base-lib.
 
 2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
         

@@ -2,13 +2,13 @@ Source: maemo-af-desktop
 Section: x11
 Priority: optional
 Maintainer: Karoliina Salminen <karoliina.t.salminen at nokia dot com>
-Build-Depends: debhelper (>= 4.0.0), hildon-libs-dev (>= 0.7.1), hildon-lgpl-dev, pkg-config, libosso-dev (>= 0.9.10), libosso-gnomevfs2-dev, libmatchbox-dev, osso-af-settings, hildon-base-lib-dev (>= 0.7.4), shared-mime-info
+Build-Depends: debhelper (>= 4.0.0), hildon-libs-dev (>= 0.7.1), hildon-lgpl-dev, pkg-config, libosso-dev (>= 0.9.10), libosso-gnomevfs2-dev, libmatchbox-dev, osso-af-settings, hildon-base-lib-dev (>= 0.9.3), shared-mime-info
 Standards-Version: 3.6.0
  
 Package: maemo-af-desktop
 Section: x11
 Architecture: any
-Depends:  ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, maemo-af-desktop-l10n-4.0-engb | maemo-af-desktop-l10n-4.0-english, hildon-libs0 (>= 0.7.1), matchbox-window-manager, hildon-status-bar-lib0 (=${Source-Version}), shared-mime-info, default-backgrounds-config
+Depends:  ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, maemo-af-desktop-l10n-4.1-engb | maemo-af-desktop-l10n-4.1-english, hildon-libs0 (>= 0.7.1), matchbox-window-manager, hildon-status-bar-lib0 (=${Source-Version}), shared-mime-info, default-backgrounds-config
 Conflicts: hildon-base, hildon-navigator, hildon-status-bar, hildon-home, home-image-loader
 Replaces: hildon-base, hildon-navigator, hildon-status-bar, hildon-home, hildon-image-loader
 Provides: hildon-navigator, hildon-status-bar, hildon-home, home-image-loader

@@ -1,3 +1,9 @@
+maemo-af-desktop (1.46.0-2) unstable; urgency=low
+
+  * Made dependency to hildon-base-lib 0.9.3 and the new l10n files
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  1 Sep 2005 16:13:50 +0300
+
 maemo-af-desktop (1.46.0-1) unstable; urgency=low
 
   * Added significant amount of code due to addition to installable user
