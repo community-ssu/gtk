@@ -1,5 +1,10 @@
 2005-09-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
+	* src/theme-pixbuf.h(struct _ThemePixbuf, struct _ThemeMatchData):
+	reorder and turn various members into bitfiels and save another 12k.
+
+2005-09-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
 	* src/theme-pixbuf.h(struct _ThemePixbuf)
 	* src/sapwood-render.c(theme_pixbuf_copy, theme_pixbuf_hash,
 	theme_pixbuf_equal, theme_pixbuf_set_filename,

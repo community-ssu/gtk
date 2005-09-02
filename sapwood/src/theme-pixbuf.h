@@ -124,31 +124,30 @@ typedef enum {
 
 struct _ThemePixbuf
 {
-  gint        refcnt;
   const char *dirname;
   gchar      *basename;
 
-  gboolean   stretch;
-  gint       border_left;
-  gint       border_right;
-  gint       border_bottom;
-  gint       border_top;
-
   SapwoodPixmap *pixmap;
+
+  guint       refcnt : 7;
+  guint       stretch : 1;
+  guint8      border_left;
+  guint8      border_right;
+  guint8      border_bottom;
+  guint8      border_top;
 };
 
 struct _ThemeMatchData
 {
-  guint           function;	/* Mandatory */
   gchar          *detail;
+  guint16         function;	/* Mandatory */
 
-  ThemeMatchFlags flags;
-
-  GtkPositionType gap_side;
-  GtkOrientation  orientation;
-  GtkStateType    state;
-  GtkShadowType   shadow;
-  GtkArrowType    arrow_direction;
+  ThemeMatchFlags flags           : 5;
+  GtkStateType    state           : 3;
+  GtkShadowType   shadow          : 3;
+  GtkPositionType gap_side        : 2;
+  GtkArrowType    arrow_direction : 2;
+  GtkOrientation  orientation     : 1;
 };
 
 struct _ThemeImage
