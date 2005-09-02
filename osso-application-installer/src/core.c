@@ -1209,8 +1209,7 @@ typedef struct {
 } copy_data;
 
 static gboolean
-copy_progress (GnomeVFSAsyncHandle *handle,
-	       GnomeVFSXferProgressInfo *info,
+copy_progress (GnomeVFSXferProgressInfo *info,
 	       gpointer raw_data)
 {
   copy_data *data = (copy_data *)raw_data;
@@ -1221,24 +1220,26 @@ copy_progress (GnomeVFSAsyncHandle *handle,
 	   gnome_vfs_result_to_string (info->vfs_status));
 #endif
 
-  if (info->file_size > 0)
+  if (info->file_size > 0 && data->progress_dialog)
     {
       float progress = ((float)info->bytes_copied) / info->file_size;
       ui_set_progress_dialog (data->progress_dialog, progress);
     }
 
-  if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED)
+  if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED && data->loop)
     g_main_loop_quit (data->loop);
 
   /* Produce an appropriate return value depending on the status.
    */
   if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_OK)
     {
-      return 1;
+      return !data->cancelled;
     }
   else if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR)
     {
       data->result = info->vfs_status;
+      if (data->loop)
+	g_main_loop_quit (data->loop);
       return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
     }
   else
@@ -1265,7 +1266,14 @@ do_copy (AppData *app_data,
   GnomeVFSURI *target_uri;
   GList *source_uri_list, *target_uri_list;
   GnomeVFSResult result;
-  copy_data data;
+
+  /* XXX - there seems to be no good way to really stop copy_progress
+           from being called; I just can not tame
+           gnome_vfs_async_xfer, at least not in its ovu_async_xfer
+           costume.  Thus, I simple punt the issue and use a static
+           copy_data struct.
+  */
+  static copy_data data;
 
   target_uri = gnome_vfs_uri_new (target);
   if (target_uri == NULL)
@@ -1297,21 +1305,22 @@ do_copy (AppData *app_data,
 			   GNOME_VFS_XFER_ERROR_MODE_QUERY,
 			   GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE,
 			   GNOME_VFS_PRIORITY_DEFAULT,
-			   copy_progress,
-			   &data,
 			   NULL,
-			   NULL);
+			   NULL,
+			   copy_progress,
+			   &data);
 
   if (result == GNOME_VFS_OK)
     {
       g_main_loop_run (data.loop);
       gnome_vfs_async_cancel (handle);
       g_main_loop_unref (data.loop);
+      data.loop = NULL;
+      result = data.result;
     }
-  else
-    result = data.result;
 
   ui_close_progress_dialog (data.progress_dialog);
+  data.progress_dialog = NULL;
 
   if (result != GNOME_VFS_OK)
     {
@@ -1369,7 +1378,7 @@ install_package_from_uri (gchar *uri, AppData *app_data)
     {
       /* We need to copy.
        */
-      char template[] = "/tmp/osso-ai-XXXXXX", *tempdir;
+      char template[] = "/var/tmp/osso-ai-XXXXXX", *tempdir;
       gchar *basename, *local;
 
       /* Make a temporary directory and allow everyone to read it.
