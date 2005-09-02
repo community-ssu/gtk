@@ -1,5 +1,10 @@
 2005-09-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
+	* src/theme-pixbuf.h: restore TOKEN_RECOLORABLE for not to invalidate
+	gtkrc cache files
+
+2005-09-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
 	* src/theme-pixbuf.h(struct _ThemePixbuf, struct _ThemeMatchData):
 	reorder and turn various members into bitfiels and save another 12k.
 
