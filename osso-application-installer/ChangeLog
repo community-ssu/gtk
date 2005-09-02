@@ -1,3 +1,28 @@
+2005-09-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/appdata.h (AppData): New fields delay_mime_open and
+	mime_open_param.
+
+	* src/dbus.h, src/dbus.c (register_mime_open_handler): Removed.
+	(init_osso): Do it here.
+	(mime_open_handler): Only store away URI when opening is being
+	delayed.
+
+	* src/main.c (main): Use delay_mime_open to get the sequence of
+	initializations right.  Do not call register_mime_open_handler.
+
+2005-09-01  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/appdata.h (AppUIData): New fields main_vbox,
+	full_focus_chain, and install_close_focus_chain.
+	* src/ui/interface.c (ui_create_main_dialog): Initialize them.  Do
+	not set focus chain here.
+	* src/ui/represent.c (update_package_list): Set one of the focus
+	chains here.  Do not ever disable the "Install new" button.
+
+	* src/core.c (run_app_installer_tool): Correctly initialize
+	'data.loop'.
+
 2005-08-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 2.9.
@@ -84,7 +109,7 @@
 	it as empty.
 	(copy_data, copy_callback, copy_stdout_callback,
 	install_package_from_uri): Use ui_create_progress_dialog etc for
-	showin the progress of the copying.  Use ai_ti_copying_failed in
+	showing the progress of the copying.  Use ai_ti_copying_failed in
 	preference to ai_ti_installation_failed_text, and ai_ti_copying in
 	preference to ai_ti_installing_installing.  Set mode of temporary
 	directory to rwxr-xr-x so that app-installer-tool can read from it
