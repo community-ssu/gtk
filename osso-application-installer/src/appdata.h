@@ -60,6 +60,7 @@ struct _AppUIData {
   GtkWidget *main_dialog;
   HildonAppView *main_view;
   /* Different UI widgets */
+  GtkWidget *main_vbox;
   GtkWidget *main_hbox;
   GtkWidget *treeview;
   /* package list, scrolledwindow */
@@ -79,6 +80,12 @@ struct _AppUIData {
   GtkTreeViewColumn *name_column;
   GtkTreeViewColumn *version_column;
   GtkTreeViewColumn *size_column;
+
+  /* The two focus chains; update_package_list activates one of them,
+     depending on which buttons are active.
+  */
+  GList *install_close_focus_chain;
+  GList *full_focus_chain;
 };
 
 /* OSSO related application data */
@@ -92,6 +99,9 @@ typedef struct _AppData AppData;
 struct _AppData {
   AppUIData *app_ui_data;
   AppOSSOData *app_osso_data;
+  
+  gboolean delay_mime_open;
+  gchar *mime_open_param;
 };
 
 #endif /* APPDATA_H */
