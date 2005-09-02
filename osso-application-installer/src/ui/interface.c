@@ -89,7 +89,9 @@ ui_create_main_dialog (AppData *app_data)
   GtkWidget *desc_sw = NULL;
   GtkWidget *separator = NULL;
   AppUIData *app_ui_data = NULL;
- 
+
+  GList *chain;
+
   app_ui_data = app_data->app_ui_data;
 
   /* Create dialog and set its attributes */
@@ -171,6 +173,8 @@ ui_create_main_dialog (AppData *app_data)
 
   gtk_container_add(GTK_CONTAINER(desc_sw), textview);
   gtk_container_add(GTK_CONTAINER(vbox), desc_sw);
+
+  app_ui_data->main_vbox = vbox;
   gtk_container_add(GTK_CONTAINER(GTK_DIALOG(main_dialog)->vbox), vbox);
   
   app_ui_data->main_dialog = main_dialog;
@@ -222,16 +226,20 @@ ui_create_main_dialog (AppData *app_data)
     gtk_widget_set_size_request (main_dialog, req.width, req.height);
   }
 
-  update_package_list (app_data);
-
-  GList *chain = NULL;
+  chain = NULL;
   chain = g_list_append (chain, list_sw);
   chain = g_list_append (chain, desc_sw);
   chain = g_list_append (chain, app_ui_data->uninstall_button);
   chain = g_list_append (chain, app_ui_data->installnew_button);
   chain = g_list_append (chain, app_ui_data->close_button);
-  
-  gtk_container_set_focus_chain (GTK_CONTAINER (vbox), chain);
+  app_ui_data->full_focus_chain = chain;
+
+  chain = NULL;
+  chain = g_list_append (chain, app_ui_data->installnew_button);
+  chain = g_list_append (chain, app_ui_data->close_button);
+  app_ui_data->install_close_focus_chain = chain;
+
+  update_package_list (app_data);
 
   return main_dialog;
 }
