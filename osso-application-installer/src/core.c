@@ -466,6 +466,7 @@ run_app_installer_tool (AppData *app_data,
   if (stderr_string == NULL)
     stderr_string = &my_stderr_string;
 
+  data.loop = NULL;
   data.app_data = app_data;
   data.stdout_string = &stdout_string;
   data.stderr_string = &stderr_string;
@@ -1204,7 +1205,7 @@ typedef struct {
   progress_dialog *progress_dialog;
   GMainLoop *loop;
   GnomeVFSResult result;
-  gboolean cancel_now;
+  gboolean cancelled;
 } copy_data;
 
 static gboolean
@@ -1214,77 +1215,26 @@ copy_progress (GnomeVFSAsyncHandle *handle,
 {
   copy_data *data = (copy_data *)raw_data;
 
-  /* XXX - ovu_async_xfer or gnome_vfs_async_xfer (or this code here)
-           somehow manages to invoke the copy_progress callback twice
-           with GNOME_VFS_XFER_PHASE_COMPLETED when cancelling.  This
-           means that we can not really know when we can safely
-           deallocate the callback data structure.  To work around
-           this, we only react to the first 'completed' phase
-           indication and ignore everything else afterwards until a
-           GNOME_VFS_XFER_PHASE_INITIAL happens.
-
-	   I don't really understand gnome_vfs_async_xfer well enough
-	   to know what is going on here; I might very well do the
-	   cancelling wrong.  I still blame gnome_vfs_async_xfer since
-	   it is soo complicated and poorly documented.  The mere
-	   existence of ovu_async_xfer is a of course bogus beyond
-	   believe.  And gnome_vfs_async_cancel doesn't seem to work
-	   either.
-
-	   The use of a static variable here means of course that
-	   there can be only one copy in progress at any one time.  So
-	   be careful if you lift this code for some other use.
-
-	   Really, using gnome_vfs_async_xfer is not worth all the
-	   trouble, a simple explicit read/write loop should be all
-	   that is needed.  Unfortunately, it seems that one _has_ to
-	   use ovu_async_xfer to get any useful progress updates for a
-	   OBEX file transfer.
-
-	   Still with me?  Fine, then let me take the opportunity to
-	   also mention that GnomeVFS reliably corrupted the heap for
-	   me when reading a largish file served by publicfile over
-	   http.  I really don't like gnome_vfs too much, but maybe it
-	   is just me.
-  */
-  static gboolean between_initial_and_completed = FALSE;
-
 #if 0
   fprintf (stderr, "phase %d, status %d, vfs_status %s\n",
 	   info->phase, info->status,
 	   gnome_vfs_result_to_string (info->vfs_status));
 #endif
 
-  if (info->phase == GNOME_VFS_XFER_PHASE_INITIAL)
-    between_initial_and_completed = TRUE;
-
-  if (!between_initial_and_completed)
-    {
-      ULOG_INFO ("bogus call of copy_progress.\n");
-      return 0;
-    }
-
-  if (data->progress_dialog && info->file_size > 0)
+  if (info->file_size > 0)
     {
       float progress = ((float)info->bytes_copied) / info->file_size;
       ui_set_progress_dialog (data->progress_dialog, progress);
     }
 
   if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED)
-    {
-      if (data->loop)
-	g_main_loop_quit (data->loop);
-      between_initial_and_completed = FALSE;
-    }
+    g_main_loop_quit (data->loop);
 
   /* Produce an appropriate return value depending on the status.
    */
   if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_OK)
     {
-      if (data->cancel_now && info->phase != GNOME_VFS_XFER_PHASE_COMPLETED)
-	return 0;
-      else
-	return 1;
+      return 1;
     }
   else if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR)
     {
@@ -1302,7 +1252,8 @@ static void
 copy_cancel (gpointer raw_data)
 {
   copy_data *data = (copy_data *)raw_data;
-  data->cancel_now = TRUE;
+  data->cancelled = TRUE;
+  g_main_loop_quit (data->loop);
 }
 
 static gboolean
@@ -1337,7 +1288,7 @@ do_copy (AppData *app_data,
 						    &data);
   data.loop = g_main_loop_new (NULL, 0);
   data.result = GNOME_VFS_OK;
-  data.cancel_now = FALSE;
+  data.cancelled = FALSE;
 
   result = ovu_async_xfer (&handle,
 			   source_uri_list,
@@ -1354,25 +1305,26 @@ do_copy (AppData *app_data,
   if (result == GNOME_VFS_OK)
     {
       g_main_loop_run (data.loop);
+      gnome_vfs_async_cancel (handle);
       g_main_loop_unref (data.loop);
     }
   else
-    data.result = result;
+    result = data.result;
 
   ui_close_progress_dialog (data.progress_dialog);
 
-  if (data.result != GNOME_VFS_OK)
+  if (result != GNOME_VFS_OK)
     {
       /* XXX-NLS */
       present_error_details_fmt (app_data,
 				 "Copying failed",
 				 "Copying %s to %s failed: %s\n",
 				 source, target,
-				 gnome_vfs_result_to_string (data.result));
+				 gnome_vfs_result_to_string (result));
       return FALSE;
     }
 
-  return !data.cancel_now;
+  return !data.cancelled;
 }
 
 void
