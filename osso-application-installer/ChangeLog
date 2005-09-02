@@ -1,5 +1,12 @@
 2005-09-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/core.c (do_copy): Call gnome_vfs_async_cancel after the main
+	loop has returned.  Use copy_progress as the 'sync' callback for
+	no particular reason.
+	(copy_progress): Do not handle spurious invocations since
+	copy_data is static.  Also quit the main loop on errors.
+	(install_package_from_uri): Put temporary copy into /var/tmp.
+	
 	* src/appdata.h (AppData): New fields delay_mime_open and
 	mime_open_param.
 
