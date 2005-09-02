@@ -49,7 +49,6 @@ theme_symbols[] =
   { "function", 	TOKEN_FUNCTION },
   { "file", 		TOKEN_FILE },
   { "stretch", 		TOKEN_STRETCH },
-  { "recolorable", 	TOKEN_RECOLORABLE },
   { "border", 		TOKEN_BORDER },
   { "detail", 		TOKEN_DETAIL },
   { "state", 		TOKEN_STATE },
@@ -291,31 +290,6 @@ theme_parse_stretch(GScanner     *scanner,
   
   theme_pixbuf_set_stretch (*theme_pb, stretch);
   
-  return G_TOKEN_NONE;
-}
-
-static guint
-theme_parse_recolorable(GScanner * scanner,
-			ThemeImage * data)
-{
-  guint               token;
-
-  token = g_scanner_get_next_token(scanner);
-  if (token != TOKEN_RECOLORABLE)
-    return TOKEN_RECOLORABLE;
-
-  token = g_scanner_get_next_token(scanner);
-  if (token != G_TOKEN_EQUAL_SIGN)
-    return G_TOKEN_EQUAL_SIGN;
-
-  token = g_scanner_get_next_token(scanner);
-  if (token == TOKEN_TRUE)
-    data->recolorable = 1;
-  else if (token == TOKEN_FALSE)
-    data->recolorable = 0;
-  else
-    return TOKEN_TRUE;
-
   return G_TOKEN_NONE;
 }
 
@@ -579,8 +553,6 @@ theme_parse_image(GtkSettings  *settings,
   data->gap = NULL;
   data->gap_end = NULL;
 
-  data->recolorable = FALSE;
-
   data->match_data.function = 0;
   data->match_data.detail = NULL;
   data->match_data.flags = 0;
@@ -592,9 +564,6 @@ theme_parse_image(GtkSettings  *settings,
 	{
 	case TOKEN_FUNCTION:
 	  token = theme_parse_function(scanner, data);
-	  break;
-	case TOKEN_RECOLORABLE:
-	  token = theme_parse_recolorable(scanner, data);
 	  break;
 	case TOKEN_DETAIL:
 	  token = theme_parse_detail(scanner, data);

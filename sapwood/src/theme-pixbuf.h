@@ -39,7 +39,6 @@ enum
   TOKEN_FUNCTION,
   TOKEN_FILE,
   TOKEN_STRETCH,
-  TOKEN_RECOLORABLE,
   TOKEN_BORDER,
   TOKEN_DETAIL,
   TOKEN_STATE,
@@ -161,8 +160,6 @@ struct _ThemeImage
   ThemePixbuf    *gap;
   ThemePixbuf    *gap_end;
   
-  gchar           recolorable;
-
   ThemeMatchData  match_data;
 };
 
