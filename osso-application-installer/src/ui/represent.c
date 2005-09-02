@@ -41,6 +41,7 @@ void
 update_package_list (AppData *app_data)
 {
   AppUIData *app_ui_data = app_data->app_ui_data;
+  GList *focus_chain;
   GtkTreeModel *model;
 
   model = list_packages (app_data);
@@ -52,6 +53,7 @@ update_package_list (AppData *app_data)
   gtk_widget_hide (app_ui_data->package_list);
   gtk_widget_hide (app_ui_data->empty_list_label);
   gtk_widget_hide (app_ui_data->database_unavailable_label);
+  focus_chain = app_ui_data->install_close_focus_chain;
 
   gtk_tree_view_set_model (GTK_TREE_VIEW(app_ui_data->treeview), model);
 
@@ -61,17 +63,16 @@ update_package_list (AppData *app_data)
 	 database problem, regardless of what really went wrong.
       */
       gtk_widget_show (app_ui_data->database_unavailable_label);
-      gtk_widget_set_sensitive (app_ui_data->installnew_button, 0);
     }
   else
     {
       /* We have a valid list, but it might be empty.
        */
-      gtk_widget_set_sensitive (app_ui_data->installnew_button, 1);
       if (any_packages_installed (model))
 	{
 	  gtk_widget_show (app_ui_data->package_list);
 	  gtk_widget_set_sensitive (app_ui_data->uninstall_button, 1);
+	  focus_chain = app_ui_data->full_focus_chain;
 	}
       else
 	{
@@ -80,6 +81,8 @@ update_package_list (AppData *app_data)
       g_object_unref(model);
     }
 
+  gtk_container_set_focus_chain (GTK_CONTAINER (app_ui_data->main_vbox),
+				 focus_chain);
   /* Focusing to cancel */
   gtk_widget_grab_focus (app_ui_data->close_button);
 }
