@@ -85,6 +85,39 @@ int main (int argc, char** argv)
   
   app_ui_data = app_data->app_ui_data;
 
+  /* The sequence of initializations is a bit tricky here.
+     
+     - The help of the main dialog needs to be activated before that
+       dialog is realized.
+
+     - Osso needs to be initialized before the help can be activated.
+
+     - The mime-open handler needs to be set after initializing osso
+       but before the first main loop is run.  (Otherwise, when the
+       mime-open call comes during that main loop, we will not handle
+       it.)
+
+     - The mime-open call should be handled after the main dialog has
+       been setup completely so that all needed information is
+       available and also so that the user doesn't see a half
+       constructed dialog.
+
+     - Gathering all information for setting up the main dialog runs a
+       main loop (when calling out to app-installer-tool to get the
+       list of packages, among other things).
+
+     We break this cycle not actually doing anything in the mime-open
+     handler that needs the main dialog to be setup.  We just store
+     away the URI that we should install and delay the actual install
+     until after the main dialog is ready.
+
+     (The thing that sticks out as being a bit unmotivated is that
+     help needs to be activated before the a dialog is realized.  It
+     should be possible to activate help even after a window is on the
+     screen.)
+  */
+
+  app_data->delay_mime_open = TRUE;
   init_osso (app_data);
 
 #ifdef USE_GNOME_VFS
@@ -99,18 +132,20 @@ int main (int argc, char** argv)
 #endif
 
   ui_create_main_dialog (app_data);
+  
+  /* Now we can handle mime-open directly.
+   */
+  app_data->delay_mime_open = FALSE;
+  if (app_data->mime_open_param)
+    {
+      do_install (app_data->mime_open_param, app_data);
+      g_free (app_data->mime_open_param);
+    }
 
   /* Read params and maybe install directly 
    */
   if (argc > 1)
     do_install (argv[1], app_data);
-
-  /* Register the mime-open handler.  It has to be done after creating
-     the main dialog since the osso callbacks are run from the main
-     loop and might therefore be called too early if they are
-     registered before the main dialog has been setup completely.
-  */
-  register_mime_open_handler (app_data);
 
   gtk_main();
 

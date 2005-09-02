@@ -46,10 +46,6 @@
 */
 void init_osso (AppData *app_data);
 
-/** Register a handler for mime-open that calls do_install
- */
-void register_mime_open_handler (AppData *app_data);
-
 /**
  Deinitialize osso
 */

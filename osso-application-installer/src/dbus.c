@@ -55,7 +55,10 @@ mime_open_handler (gpointer raw_data, int argc, char **argv)
       if (!ignore_requests)
 	{
 	  ignore_requests = 1;
-	  do_install (argv[i], app_data);
+	  if (app_data->delay_mime_open)
+	    app_data->mime_open_param = g_strdup (argv[i]);
+	  else
+	    do_install (argv[i], app_data);
 	}
       else
 	ULOG_INFO ("Ignoring mime-open request for %s\n", argv[i]);
@@ -65,18 +68,14 @@ mime_open_handler (gpointer raw_data, int argc, char **argv)
 void
 init_osso (AppData *app_data)
 {
+  osso_return_t ret;
+
   app_data->app_osso_data->osso =
     osso_initialize ("osso_application_installer",
 		     PACKAGE_VERSION, TRUE, NULL);
   
   g_assert (app_data->app_osso_data->osso);
-}
 
-void
-register_mime_open_handler (AppData *app_data)
-{
-  osso_return_t ret;
-  
   ret = osso_mime_set_cb (app_data->app_osso_data->osso,
 			  mime_open_handler,
 			  app_data);
