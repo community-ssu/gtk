@@ -1,3 +1,19 @@
+sapwood 1.36 - 2005-09-02
+=========================
+
+Bugs fixed
+----------
+#16158 - Most of memory used by g_strdup calls in applications come from the
+         sapwood theme engine
+  
+
+Changes
+-------
+Reduce memory consumption by packing structures as bitfields and using
+canonicalized string for the image filenames directory component.  With the
+current themes this saves around 30k per process.
+
+
 sapwood 1.22 - 2005-05-27
 =========================
 
