@@ -1,0 +1,152 @@
+sapwood (1.36-1) unstable; urgency=low
+
+  * Fixes #16158 - Most of memory used by g_strdup calls in applications come
+    from the sapwood theme engine
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  2 Sep 2005 18:13:32 +0300
+
+sapwood (1.22-1) unstable; urgency=low
+
+  * New release
+  * Fixes #9727 - Notebook widget: the most right tab's right border is not
+    displayed.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 27 May 2005 15:06:38 +0300
+
+sapwood (1.20-2) unstable; urgency=low
+
+  * sapwood-server.sh: use LAUNCHWRAPPER_NICE instead
+  * Fixes #11915 - Sapwood server is not started with Lifeguard
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 18 May 2005 18:37:59 +0300
+
+sapwood (1.20-1) unstable; urgency=low
+
+  * New release
+  * Fixes #11906 - Sapwood migh crash the application on skin change
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 13 May 2005 15:09:57 +0300
+
+sapwood (1.18.1-1) unstable; urgency=low
+
+  * New release
+    - Dim icons using white raster
+    - Remove unneeded gtk+ dependency from sapwood-server
+  * Don't install unneeded libsapwood.la
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue,  3 May 2005 18:12:24 +0300
+
+sapwood (1.18-1) unstable; urgency=low
+
+  * New release
+    - Release old images when the theme changes
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 26 Apr 2005 15:09:46 +0300
+
+sapwood (1.12-1) unstable; urgency=low
+
+  * New release
+    - sapwood-server moved to /usr/lib/sapwood
+  * Abstract socket writable to other users, application installer should look
+    better now
+  * Fixes #8479 - AI user cannot write to sapwood socket
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 29 Mar 2005 15:11:12 +0300
+
+sapwood (1.08-2) unstable; urgency=low
+
+  * re-tag with full sources
+
+ -- Alexander Kanevskiy <alexander.kanevskiy@nokia.com>  Wed, 23 Feb 2005 21:06:41 +0200
+
+sapwood (1.08-1) unstable; urgency=low
+
+  * New release
+    - switch to orig+diff
+  * Fixes #5533 - Changing GTK theme on the fly crashes applications
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 23 Feb 2005 19:03:04 +0200
+
+sapwood (1.03) unstable; urgency=low
+
+  * Extracted only the (greatly modified) pixbuf engine and renamed to sapwood
+  * Added AF startup script
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 13 Jan 2005 12:27:38 +0200
+
+gtk2-engines (2:2.2.0-2osso2) unstable; urgency=low
+
+  * Fix #3468 - drawing of center piece when left or top border is zero
+  * Fix compiler warnings (missing #include)
+  * debian/rules(clean): remove conftest* that get left around
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  1 Dec 2004 10:08:43 +0200
+
+gtk2-engines (1:2.2.0hildon3-2.osso.2) unstable; urgency=low
+
+  * Merge hildon-status-bar-popup change
+  * Merge fix for http://bugzilla.gnome.org/show_bug.cgi?id=112066 
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue,  9 Nov 2004 17:17:12 +0200
+
+gtk2-engines (1:2.2.0hildon3-2.osso.1) unstable; urgency=low
+
+  * Using pixmaps instead of pixbufs, and tiling instead of scaling
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 20 Oct 2004 17:20:18 +0300
+
+gtk2-engines (2.2.0-2) unstable; urgency=low
+
+  * Update libtool (Closes: #201939)
+
+ -- Ed Boraas <ed@debian.org>  Mon, 21 Jul 2003 19:58:11 -0600
+
+gtk2-engines (2.2.0-1) unstable; urgency=low
+
+  * Acknowledge previous NMU (Thanks, Akira!)
+    * Closes: #161725, #167553
+  * New upstream release
+
+ -- Ed Boraas <ed@debian.org>  Tue, 21 Jan 2003 20:41:49 -0700
+
+gtk2-engines (1.9.0-5) unstable; urgency=low
+
+  * NMU
+  * debian/rules:
+    - support noopt and nostrip for DEB_BUILD_OPTIONS
+    - support DEB_HOST_GNU_TYPE and DEB_BUILD_GNU_TYPE
+  * debian/control:
+    - bumped Standards-Version to 3.5.8.
+    - updated Build-Depends.
+  * debian/gtk2-engines-{metal,pixbuf,redmond95}.files:
+    fix the wrong packaging. (closes: Bug#161725)
+  * debian/gtk2-engines-pixbuf.README.Debian:
+    fix documentation. (closes: Bug#167553)
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue,  7 Jan 2003 05:40:47 +0900
+
+gtk2-engines (1.9.0-4) unstable; urgency=low
+
+  * Rename to gtk2-engines-*
+
+ -- Ed Boraas <ed@debian.org>  Tue, 20 Aug 2002 07:06:17 -0700
+
+gtk2.0-engines (1.9.0-3) unstable; urgency=low
+
+  * Rebuild against libpng3
+  * Each engine suggests its 1.2 counterpart
+
+ -- Ed Boraas <ed@debian.org>  Sun, 18 Aug 2002 21:36:04 -0700
+
+gtk2.0-engines (1.9.0-2) unstable; urgency=low
+
+  * Update build depends
+
+ -- Ed Boraas <ed@debian.org>  Tue, 6 Aug 2002 19:46:02 -0700
+
+gtk2.0-engines (1.9.0-1) unstable; urgency=low
+
+  * New package for GTK2 engines
+
+ -- Ed Boraas <ed@debian.org>  Mon, 29 Jul 2002 07:08:46 -0700
+
