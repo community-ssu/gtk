@@ -124,8 +124,9 @@ typedef enum {
 
 struct _ThemePixbuf
 {
-  gint       refcnt;
-  gchar     *filename;
+  gint        refcnt;
+  const char *dirname;
+  gchar      *basename;
 
   gboolean   stretch;
   gint       border_left;

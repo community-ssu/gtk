@@ -637,7 +637,7 @@ theme_parse_image(GtkSettings  *settings,
   token = g_scanner_get_next_token(scanner);
 
 #define CHECK_IMAGE(image, name) G_STMT_START{						\
-  if (image && !image->filename)							\
+  if (image && !image->basename)							\
     {											\
       g_scanner_warn (scanner, #name " image options specified without filename");	\
       theme_pixbuf_unref (image);							\

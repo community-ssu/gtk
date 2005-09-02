@@ -1,4 +1,14 @@
 2005-09-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* src/theme-pixbuf.h(struct _ThemePixbuf)
+	* src/sapwood-render.c(theme_pixbuf_copy, theme_pixbuf_hash,
+	theme_pixbuf_equal, theme_pixbuf_set_filename,
+	pixmap_cache_value_new): split (absolute) filename to dirname and
+	basename, keep only canonicalized copy in memory and reconstruct the
+	absolute filename when needed.  Saves roughly 21k (out of 43k) memory.
+	N#16158
+
+2005-09-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* src/theme-pixbuf.h(struct _ThemeImage)
 	* src/sapwood-rc-style.c(theme_symbols, theme_parse_image): remove

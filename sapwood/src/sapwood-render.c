@@ -64,7 +64,8 @@ theme_pixbuf_copy (ThemePixbuf *theme_pb)
 
   copy = g_memdup(theme_pb, sizeof(*theme_pb));
   copy->refcnt = 1;
-  copy->filename = g_strdup (theme_pb->filename);
+  copy->dirname  = theme_pb->dirname;
+  copy->basename = g_strdup (theme_pb->basename);
   copy->pixmap = NULL;
 
   return copy;
@@ -83,7 +84,7 @@ static guint
 theme_pixbuf_hash (gconstpointer v)
 {
   const ThemePixbuf *theme_pb = v;
-  return g_str_hash (theme_pb->filename);
+  return (guint)theme_pb->dirname ^ g_str_hash (theme_pb->basename);
 }
 
 static gboolean
@@ -92,7 +93,8 @@ theme_pixbuf_equal (gconstpointer v1, gconstpointer v2)
   const ThemePixbuf *a = v1;
   const ThemePixbuf *b = v2;
 
-  if (!g_str_equal (a->filename, b->filename))
+  if (a->dirname != b->dirname ||
+      !g_str_equal (a->basename, b->basename))
     return FALSE;
 
   if (a->border_bottom != b->border_bottom ||
@@ -100,7 +102,7 @@ theme_pixbuf_equal (gconstpointer v1, gconstpointer v2)
       a->border_left != b->border_left ||
       a->border_right != b->border_right)
     {
-      g_warning ("file: %s", g_basename (a->filename));
+      g_warning ("file: %s", a->basename);
       if (a->border_bottom != b->border_bottom)
 	g_warning ("border_bottom differs");
       if (a->border_top != b->border_top)
@@ -124,13 +126,27 @@ theme_pixbuf_set_filename (ThemePixbuf *theme_pb,
       theme_pb->pixmap = NULL;
     }
 
-  if (theme_pb->filename)
-    g_free (theme_pb->filename);
+  if (theme_pb->basename)
+    g_free (theme_pb->basename);
 
   if (filename)
-    theme_pb->filename = g_strdup (filename);
+    {
+      char *dirname;
+      char *basename;
+
+      dirname  = g_path_get_dirname (filename);
+      basename = g_path_get_basename (filename);
+
+      theme_pb->dirname  = g_quark_to_string (g_quark_from_string (dirname));
+      theme_pb->basename = basename;
+
+      g_free (dirname);
+    }
   else
-    theme_pb->filename = NULL;
+    {
+      theme_pb->dirname  = NULL;
+      theme_pb->basename = NULL;
+    }
 }
 
 void
@@ -160,9 +176,12 @@ theme_pixbuf_set_stretch (ThemePixbuf *theme_pb,
 static SapwoodPixmap *
 pixmap_cache_value_new (ThemePixbuf *theme_pb)
 {
+  SapwoodPixmap *result;
+  char          *filename;
   GError *err = NULL;
 
-  SapwoodPixmap *result = sapwood_pixmap_get_for_file (theme_pb->filename,
+  filename = g_build_filename (theme_pb->dirname, theme_pb->basename, NULL);
+  result = sapwood_pixmap_get_for_file (filename,
 						     theme_pb->border_left,
 						     theme_pb->border_right,
 						     theme_pb->border_top,
@@ -171,10 +190,12 @@ pixmap_cache_value_new (ThemePixbuf *theme_pb)
   if (!result)
     {
       g_error ("sapwood-theme: Failed to load pixmap file %s: %s\n",
-	       theme_pb->filename, err->message);
+	       filename, err->message);
       /* not reached */
       g_error_free (err);
     }
+
+  g_free (filename);
 
   return result;
 }
