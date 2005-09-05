@@ -581,6 +581,8 @@ static void create_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                     XFree(wm_class_str);
                     return;
                 }
+
+                g_object_unref(gdk_win);
             }
 
             /* If the application has been killed, we'll have to upgrade
@@ -3243,6 +3245,7 @@ static void show_launch_banner( GtkWidget *parent, gchar *app_name,
 		                gchar *service_name )
 {
 	launch_banner_info *info = g_malloc0( sizeof( launch_banner_info ) );
+        gchar *message;
 	
 	guint interval = APP_LAUNCH_BANNER_CHECK_INTERVAL * 1000;
 
@@ -3255,17 +3258,19 @@ static void show_launch_banner( GtkWidget *parent, gchar *app_name,
 
 	/* Show the banner */
         gdk_error_trap_push();
+
+        message = g_strdup_printf(_( APP_LAUNCH_BANNER_MSG_LOADING ),
+                                  app_name );
         
-        gtk_banner_show_animation( NULL,
-                                   g_strdup_printf(
-                                       _( APP_LAUNCH_BANNER_MSG_LOADING ),
-                                       app_name ) );
+        gtk_banner_show_animation( NULL, message );
+
         gdk_error_trap_pop();
 
 	g_timeout_add( interval, launch_banner_timeout, info );
 
 	/* Cleanup */
         g_free( app_name );
+        g_free( message );
 }
 
 
