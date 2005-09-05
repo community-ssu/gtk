@@ -1,13 +1,12 @@
 2005-09-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/core.h (PackageInfo): Added field rejection_reason.
+	* src/core.c (package_file_info): Set it for incompatible
+	packages.  Check for builtin packages before this.	
 	* src/ui/represent.c (show_info_banner): New.
 	(confirm_install): Make yes button insensitive when there is a
 	rejection_reason and show it with show_info_banner when the button
 	is pressed nevertheless.
-	* src/core.h (PackageInfo): Added field rejection_reason.
-	* src/core.c (package_file_info): Set it for incompatible
-	packages.  Check for builtin packages before first.
-	
 
 2005-09-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
