@@ -59,6 +59,7 @@ typedef struct
   GString *size;
   GString *description;
   GString *version;
+  gchar *rejection_reason;
 } PackageInfo;
 
 enum

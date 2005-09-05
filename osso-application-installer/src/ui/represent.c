@@ -208,6 +208,14 @@ confirm_uninstall (AppData *app_data, gchar *package)
   return confirmed;
 }
 
+static void
+show_info_banner (GtkWidget *button,
+		  gpointer raw_data)
+{
+  gchar *rejection_reason = (gchar *)raw_data;
+  gtk_infoprint (NULL, rejection_reason);
+}
+
 gboolean
 confirm_install (AppData *app_data, PackageInfo *info)
 {
@@ -279,7 +287,14 @@ confirm_install (AppData *app_data, PackageInfo *info)
   ossohelp_dialog_help_enable (GTK_DIALOG (dialog),
 			       AI_HELP_KEY_INSTALL,
 			       app_data->app_osso_data->osso);
-      
+
+  if (info->rejection_reason)
+    {
+      gtk_widget_set_sensitive (button_yes, 0);
+      g_signal_connect (G_OBJECT (button_yes), "insensitive_press",
+			G_CALLBACK (show_info_banner), info->rejection_reason);
+    }
+
   gtk_widget_show_all (dialog);
   confirmed = (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_YES);
   gtk_widget_destroy (dialog);

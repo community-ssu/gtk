@@ -759,6 +759,9 @@ report_installation_failure (AppData *app_data,
    the returned structure eventually with package_info_free.  When the
    information can not be retrieved, all strings in the returned
    structure are NULL.
+
+   The string REJECTION_REASON gives the reason why this package
+   should be rejected.  It is used by confirm_install.
  */
 static PackageInfo
 package_file_info (AppData *app_data, gchar *file)
@@ -770,6 +773,7 @@ package_file_info (AppData *app_data, gchar *file)
   info.size = NULL;
   info.version = NULL;
   info.description = NULL;
+  info.rejection_reason = NULL;
 
   if (run_app_installer_tool (app_data,
 			      "describe-file", file, NULL,
@@ -788,15 +792,18 @@ package_file_info (AppData *app_data, gchar *file)
       ptr = parse_delimited (ptr, '\n', &arch);
 
       if (ptr == NULL)
-	goto corrupt;
-
-      if (strcmp (arch, "all") && strcmp (arch, DEB_HOST_ARCH))
 	{
-	  present_report_with_details (app_data,
-				       _("ai_error_incompatible"),
-				       NULL);
+	  /* XXX-UI32 - do not suppress stderr output. */
+	  report_installation_failure (app_data,
+				       basename (file),
+				       _("ai_error_corrupted"));
 	  goto done;
 	}
+
+      info.name = g_string_new (package);
+      info.version = g_string_new (version);
+      info.size = g_string_new (size);
+      info.description = g_string_new (ptr);
 
       /* XXX - the parsing is a bit coarse here...
        */
@@ -811,21 +818,9 @@ package_file_info (AppData *app_data, gchar *file)
 				       package,
 				       _("ai_error_builtin"),
 				       package);
-	  goto done;
 	}
-      
-      info.name = g_string_new (package);
-      info.version = g_string_new (version);
-      info.size = g_string_new (size);
-      info.description = g_string_new (ptr);
-    }
-  else
-    {
-    corrupt:
-      /* XXX-UI32 - do not suppress stderr output. */
-      report_installation_failure (app_data,
-				   basename (file),
-				   _("ai_error_corrupted"));
+      else if (strcmp (arch, "all") && strcmp (arch, DEB_HOST_ARCH))
+	info.rejection_reason = _("ai_error_incompatible");
     }
 
  done:
@@ -840,6 +835,7 @@ package_info_free (PackageInfo *info)
   g_string_free (info->version, 1);
   g_string_free (info->size, 1);
   g_string_free (info->description, 1);
+  /* rejection_reason is a static string. */
 }
 
 /* Return the description of PACKAGE.  You need to free the returned
