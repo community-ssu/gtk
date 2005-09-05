@@ -1,0 +1,32 @@
+diff -Nur dbus-0.23/dbus/dbus-userdb.c dbus-0.23.new/dbus/dbus-userdb.c
+--- dbus-0.23/dbus/dbus-userdb.c	2004-08-29 04:14:52.000000000 +0200
++++ dbus-0.23.new/dbus/dbus-userdb.c	2005-02-14 13:45:03.779521400 +0100
+@@ -176,11 +176,24 @@
+           return NULL;
+         }
+ 
+-      if (!_dbus_group_info_fill_gid (info, gid, error))
++
++      if (gid != DBUS_GID_UNSET)
+         {
+-          _DBUS_ASSERT_ERROR_IS_SET (error);
+-          free_group_info (info);
+-          return NULL;
++          if (!_dbus_group_info_fill_gid (info, gid, error))
++            {
++              _DBUS_ASSERT_ERROR_IS_SET (error);
++              free_group_info (info);
++              return NULL;
++            }
++        }
++      else
++        {
++          if (!_dbus_group_info_fill (info, groupname, error))
++           {
++             _DBUS_ASSERT_ERROR_IS_SET (error);
++             free_group_info (info);
++             return NULL;
++           }
+         }
+ 
+       if (!_dbus_hash_table_insert_ulong (db->groups, info->gid, info))

@@ -1,0 +1,4 @@
+debian/tmp/usr/lib/pkgconfig/dbus-sharp.pc
+debian/tmp/usr/lib/mono/*
+debian/tmp/usr/share/dotnet/mono/*
+debian/tmp/usr/share/dotnet/monodoc/*

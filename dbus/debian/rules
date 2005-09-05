@@ -1,0 +1,77 @@
+#!/usr/bin/make -f
+# Copyright © 2002,2003 Colin Walters <walters@verbum.org>
+# Copyright © 2003 Daniel Stone <daniels@debian.org>
+
+binary/dbus-glib-1:: binary/dbus-1 
+binary/dbus-1-utils:: binary/dbus-glib-1 
+binary/python2.3-dbus::
+	dh_python -ppython2.3-dbus
+
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+include /usr/share/cdbs/1/rules/utils.mk
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+#ifeq ($(DEB_BUILD_ARCH),powerpc)
+# MONO_FLAGS=--enable-mono --enable-mono-docs
+#endif
+#ifeq ($(DEB_BUILD_ARCH),s390)
+# MONO_FLAGS=--enable-mono --enable-mono-docs
+#endif
+#ifeq ($(DEB_BUILD_ARCH),i386)
+# MONO_FLAGS=--enable-mono --enable-mono-docs
+#endif
+#
+#
+DEB_CONFIGURE_EXTRA_FLAGS := --enable-glib --disable-qt --disable-gtk \
+                             --disable-python --with-xml=expat --disable-docs \
+														 --disable-xml-docs --disable-doxygen-docs \
+														 --disable-verbose-mode \
+														 $(MONO_FLAGS)
+
+DEB_SHLIBDEPS_INCLUDE_dbus-glib-1 := debian/dbus-1/usr/lib/
+DEB_SHLIBDEPS_INCLUDE_dbus-1-utils := debian/dbus-1/usr/lib/ debian/dbus-glib-1/usr/lib/
+DEB_SHLIBDEPS_INCLUDE_python2.3-dbus := debian/dbus-1/usr/lib/
+
+DEB_DH_INSTALLINIT_ARGS := -r
+
+# Strict library versioning
+DEB_DH_MAKESHLIBS_ARGS_ALL := -V
+
+#export MONO_SHARED_DIR=$(CURDIR)
+
+#binary-predeb/libdbus-cil::
+#	dh_netdeps
+#	dh_makenetlibs -V
+
+#common-configure-indep::
+#	mkdir -p $(MONO_SHARED_DIR)/.wapi
+
+common-configure-impl::
+	chmod +x py-compile
+
+binary-post-install/dbus-1-dev::
+	rm -f debian/dbus-1-dev/usr/include/dbus*/dbus/dbus-glib.h
+
+binary-post-install/dbus-1-utils::
+	mkdir -p debian/dbus-1-utils/etc/X11/Xsession.d
+	cp debian/dbus-Xsession debian/dbus-1-utils/etc/X11/Xsession.d/75dbus-1-utils_dbus-launch
+
+binary-post-install/dbus-1::
+	mkdir -p debian/dbus-1/etc/dbus-1/event.d
+
+binary-post-install/libdbus-cil::
+	 perl -pe 's,\$${exec_prefix}/lib,/usr/share/dotnet,;' \
+ 	  -i $(CURDIR)/debian/libdbus-cil/usr/lib/pkgconfig/dbus-sharp.pc
+	mkdir -p $(CURDIR)/debian/libdbus-cil/usr/share/dotnet
+	mv $(CURDIR)/debian/libdbus-cil/usr/lib/mono \
+		$(CURDIR)/debian/libdbus-cil/usr/share/dotnet
+	cd $(CURDIR)/debian/libdbus-cil && \
+		find -type f -name "*.dll" -exec chmod -x {} \;
+
+build/dbus-1-doc::
+	doxygen Doxyfile
+
+clean::
+	rm -rf doc/api
+#	rm -rf $(MONO_SHARED_DIR)/.wapi

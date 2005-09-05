@@ -1,0 +1,50 @@
+--- dbus-0.23.2/dbus/dbus-userdb.c	Tue Mar  1 03:33:20 2005
++++ dbus-0.23.2.old/dbus/dbus-userdb.c	Tue Mar  1 03:32:25 2005
+@@ -78,20 +78,23 @@
+   
+   if (uid != DBUS_UID_UNSET)
+     info = _dbus_hash_table_lookup_ulong (db->users, uid);
+-  else
++  else 
+     info = _dbus_hash_table_lookup_string (db->users_by_name, _dbus_string_get_const_data (username));
+   
+   if (info)
+     {
+-      _dbus_verbose ("Using cache for UID "DBUS_UID_FORMAT" information\n",
+-                     uid);
++      _dbus_verbose ("Using cache for UID "DBUS_UID_FORMAT" information\n", info->uid);
+       return info;
+     }
+   else
+     {
++  if (uid != DBUS_UID_UNSET)
+       _dbus_verbose ("No cache for UID "DBUS_UID_FORMAT"\n",
+                      uid);
+-      
++ 	else
++      _dbus_verbose ("No cache for user \"%s\"\n",
++                     _dbus_string_get_const_data(username));
++    
+       info = dbus_new0 (DBusUserInfo, 1);
+       if (info == NULL)
+         {
+@@ -161,13 +164,17 @@
+   if (info)
+     {
+       _dbus_verbose ("Using cache for GID "DBUS_GID_FORMAT" information\n",
+-                     gid);
++                     info->gid);
+       return info;
+     }
+   else
+     {
+-      _dbus_verbose ("No cache for GID "DBUS_GID_FORMAT"\n",
++      if (gid != DBUS_GID_UNSET)
++      	_dbus_verbose ("No cache for GID "DBUS_GID_FORMAT"\n",
+                      gid);
++	  else
++      	_dbus_verbose ("No cache for group \"%s\"\n",
++                     _dbus_string_get_const_data(groupname));
+       
+       info = dbus_new0 (DBusGroupInfo, 1);
+       if (info == NULL)

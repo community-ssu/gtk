@@ -1,0 +1,2698 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+[
+]>
+
+<article id="index">
+  <articleinfo>
+    <title>D-BUS Specification</title>
+    <releaseinfo>Version 0.8</releaseinfo>
+    <date>06 September 2003</date>
+    <authorgroup>
+      <author>
+	<firstname>Havoc</firstname>
+	<surname>Pennington</surname>
+	<affiliation>
+	  <orgname>Red Hat, Inc.</orgname>
+	  <address>
+	    <email>hp@pobox.com</email>
+	  </address>
+	</affiliation>
+      </author>
+      <author>
+	<firstname>Anders</firstname>
+	<surname>Carlsson</surname>
+	<affiliation>
+	  <orgname>CodeFactory AB</orgname>
+	  <address>
+            <email>andersca@codefactory.se</email>
+          </address>
+	</affiliation>
+      </author>
+      <author>
+	<firstname>Alexander</firstname>
+	<surname>Larsson</surname>
+	<affiliation>
+	  <orgname>Red Hat, Inc.</orgname>
+	  <address>
+            <email>alexl@redhat.com</email>
+          </address>
+	</affiliation>
+      </author>
+    </authorgroup>
+  </articleinfo>
+
+  <sect1 id="introduction">
+    <title>Introduction</title>
+    <para>
+      D-BUS is a system for low-latency, low-overhead, easy to use
+      interprocess communication (IPC). In more detail:
+      <itemizedlist>
+        <listitem>
+          <para>
+            D-BUS is <emphasis>low-latency</emphasis> because it is designed 
+            to avoid round trips and allow asynchronous operation, much like 
+            the X protocol.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            D-BUS is <emphasis>low-overhead</emphasis> because it uses a
+            binary protocol, and does not have to convert to and from a text
+            format such as XML. Because D-BUS is intended for potentially
+            high-resolution same-machine IPC, not primarily for Internet IPC,
+            this is an interesting optimization.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            D-BUS is <emphasis>easy to use</emphasis> because it works in terms
+            of <firstterm>messages</firstterm> rather than byte streams, and
+            automatically handles a lot of the hard IPC issues. Also, the D-BUS
+            library is designed to be wrapped in a way that lets developers use
+            their framework's existing object/type system, rather than learning
+            a new one specifically for IPC.
+          </para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      The base D-BUS protocol is a peer-to-peer protocol, specified in <xref
+      linkend="message-protocol"/>. That is, it is a system for one application
+      to talk to a single other application. However, the primary intended
+      application of D-BUS is the D-BUS <firstterm>message bus</firstterm>,
+      specified in <xref linkend="message-bus"/>. The message bus is a special
+      application that accepts connections from multiple other applications, and
+      forwards messages among them.
+    </para>
+    <para>
+      Uses of D-BUS include notification of system changes (notification of when
+      a camera is plugged in to a computer, or a new version of some software
+      has been installed), or desktop interoperablity, for example a file
+      monitoring service or a configuration service.
+    </para>
+  </sect1>
+
+  <sect1 id="message-protocol">
+    <title>Message Protocol</title>
+    <para>
+      A <firstterm>message</firstterm> consists of a
+      <firstterm>header</firstterm> and a <firstterm>body</firstterm>. If you
+      think of a message as a package, the header is the address, and the body
+      contains the package contents. The message delivery system uses the header
+      information to figure out where to send the message and how to interpret
+      it; the recipient inteprets the body of the message.
+    </para>
+    
+    <para>
+      The body of the message is made up of zero or more
+      <firstterm>arguments</firstterm>, which are typed 
+      values, such as an integer or a byte array.
+    </para>
+
+    <sect2 id="message-protocol-header-encoding">
+      <title>Header Encoding</title>
+      <para>
+        Following the mandatory fields, there are zero or more named fields (see
+        <xref linkend="message-protocol-header-fields"/>), and then nul bytes
+        padding the header such that its total length in bytes is a multiple of
+        8.
+      </para>
+      <para>
+        The header MUST begin with the following mandatory fields in the following
+        order:
+        <informaltable>
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry>Size</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>1 byte</entry>
+                <entry>Endianness flag; ASCII 'l' for little-endian 
+                  or ASCII 'B' for big-endian.</entry>
+              </row>
+              <row>
+                <entry>1 byte</entry>
+                <entry>Type of message. Unknown types MUST be ignored. 
+                  Currently-defined types are described below.
+                </entry>
+              </row>
+              <row>
+                <entry>1 byte</entry>
+                <entry>Bitwise OR of flags. Unknown flags
+                  MUST be ignored. Currently-defined flags are described below.
+                </entry>
+              </row>
+              <row>
+                <entry>1 byte</entry>
+                <entry>Major protocol version of the sending application.  If
+                the major protocol version of the receiving application does not
+                match, the applications will not be able to communicate and the
+                D-BUS connection MUST be disconnected. The major protocol
+                version for this version of the specification is 0.
+                </entry>
+              </row>
+              <row>
+                <entry>4 bytes</entry>
+                <entry>An unsigned 32-bit integer in the
+                  message's byte order, indicating the total length in bytes of
+                  the header including named fields and any alignment padding.
+                  MUST be a multiple of 8.
+                </entry>
+              </row>
+              <row>
+                <entry>4 bytes</entry>
+                <entry>An unsigned 32-bit integer in the
+                  message's byte order, indicating the total length in bytes of
+                  the message body.
+                </entry>
+              </row>      
+              <row>
+                <entry>4 bytes</entry>
+                <entry>The message's serial number, an unsigned 32-bit integer in
+                  the message's byte order. The serial number is a cookie used to 
+                  identify message replies; thus all outstanding unreplied-to messages 
+                  from the same connection MUST have a different serial number.
+                  Zero is not a valid serial number, but all other numbers are 
+                  allowed.
+                </entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </para>
+      <para>
+        Types that can appear in the second byte of the header:
+        <informaltable>
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry>Conventional name</entry>
+                <entry>Decimal value</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>INVALID</entry>
+                <entry>0</entry>
+                <entry>This is an invalid type, if seen in a message 
+                  the connection should be dropped immediately.</entry>
+              </row>
+              <row>
+                <entry>METHOD_CALL</entry>
+                <entry>1</entry>
+                <entry>Method call.</entry>
+              </row>
+              <row>
+                <entry>METHOD_RETURN</entry>
+                <entry>2</entry>
+                <entry>Method reply with returned data.</entry>
+              </row>
+              <row>
+                <entry>ERROR</entry>
+                <entry>3</entry>
+                <entry>Error reply. If the first argument exists and is a
+                string, it is an error message.</entry>
+              </row>
+              <row>
+                <entry>SIGNAL</entry>
+                <entry>4</entry>
+                <entry>Signal emission.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </para>
+      <para>
+        Flags that can appear in the third byte of the header:
+        <informaltable>
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry>Conventional name</entry>
+                <entry>Hex value</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>NO_REPLY_EXPECTED</entry>
+                <entry>0x1</entry>
+                <entry>This message does not expect method return replies or
+                error replies; the reply can be omitted as an
+                optimization. However, it is compliant with this specification
+                to return the reply despite this flag.</entry>
+              </row>
+              <row>
+                <entry>AUTO_ACTIVATION</entry>
+                <entry>0x2</entry>
+                <entry>This message automatically activates the
+                addressed service before the message is delivered.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </para>
+    </sect2>
+
+    <sect2 id="message-protocol-header-fields">
+      <title>Header Fields</title>
+      <para>
+        In addition to the required header information mentioned 
+        in <xref linkend="message-protocol-header-encoding"/>, 
+          the header must contain the required named header
+          fields and zero or more of the optional named 
+          header fields. Future versions of this protocol
+          specification may add new fields. Implementations must
+          ignore fields they do not understand. Implementations
+          must not invent their own header fields; only changes to 
+          this specification may introduce new header fields.
+      </para>
+
+      <para>
+        Header field names MUST consist of a single byte, possible values
+        of which are defined below. Following the name, the field MUST have
+        a type code represented as a single unsigned byte, and then a
+        properly-aligned value of that type.  See <xref
+        linkend="message-protocol-arguments"/> for a description of how each
+        type is encoded. If an implementation sees a header field name that
+        it does not understand, it MUST ignore that field.
+      </para>
+
+      <para>
+        Here are the currently-defined named header fields:
+        <informaltable>
+          <tgroup cols="5">
+            <thead>
+              <row>
+                <entry>Conventional Name</entry>
+		<entry>Decimal Value</entry>
+                <entry>Type</entry>
+                <entry>Required</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>INVALID</entry>
+		<entry>0</entry>
+                <entry>INVALID</entry>
+                <entry>no</entry>
+                <entry>Not a valid field name (error if it appears in a message)</entry>
+              </row>
+              <row>
+                <entry>PATH</entry>
+		<entry>1</entry>
+                <entry>OBJECT_PATH</entry>
+                <entry>yes</entry>
+                <entry>The object to send the message to; objects are identified by 
+                a path, "/foo/bar"</entry>
+              </row>
+              <row>
+                <entry>INTERFACE</entry>
+		<entry>2</entry>
+                <entry>STRING</entry>
+                <entry>yes</entry>
+                <entry>The interface to invoke a method call on, or 
+                that a signal is emitted from. e.g. "org.freedesktop.Introspectable"</entry>
+              </row>
+              <row>
+                <entry>MEMBER</entry>
+		<entry>3</entry>
+                <entry>STRING</entry>
+                <entry>yes</entry>
+                <entry>The member, either the method name or signal name. 
+                e.g. "Frobate"</entry>
+              </row>
+              <row>
+                <entry>ERROR_NAME</entry>
+		<entry>4</entry>
+                <entry>STRING</entry>
+                <entry>no</entry>
+                <entry>The name of the error that occurred, for errors</entry>
+              </row>
+              <row>
+                <entry>REPLY_SERIAL</entry>
+		<entry>5</entry>
+                <entry>UINT32</entry>
+                <entry>no</entry>
+                <entry>The serial number of the message this message is a reply
+                to. (The serial number is one of the mandatory header fields,
+                see <xref linkend="message-protocol-header-encoding"/>.)</entry>
+              </row>
+              <row>
+                <entry>DESTINATION</entry>
+		<entry>6</entry>
+                <entry>STRING</entry>
+                <entry>no</entry>
+                <entry>The name of the service this message should be routed to. 
+                Only used in combination with the message bus, see 
+                <xref linkend="message-bus"/>.</entry>
+              </row>
+              <row>
+                <entry>SENDER</entry>
+		<entry>7</entry>
+                <entry>STRING</entry>
+                <entry>no</entry>
+                <entry>Sender service. The name of the base service that sent
+                this message.  The message bus fills in this field; the field is
+                only meaningful in combination with the message bus.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </para>
+      
+    </sect2>
+    <sect2 id="message-protocol-header-padding">
+      <title>Header Alignment Padding</title>
+      <para>
+        To allow implementations to keep the header and the body in a single
+        buffer while keeping data types aligned, the total length of the header
+        must be a multiple of 8 bytes.  To achieve this, the header MUST be padded
+        with nul bytes to align its total length on an 8-byte boundary. 
+        The minimum number of padding bytes MUST be used. Because zero is an
+        invalid field name, implementations can distinguish padding (which must be
+        zero initialized) from additional named fields.
+      </para>
+    </sect2>
+
+    <sect2 id="message-protocol-arguments">
+      <title>Message Arguments</title>
+      <para>
+        The message body is made up of arguments. Each argument is a type code,
+        represented by a single unsigned byte, followed by the aligned value of
+        the argument in a type-dependent format. Alignment padding between the 
+        typecode and the value is initialized to zero.
+      </para>
+      <para>
+        <informaltable>
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry>Type name</entry>
+                <entry>Code</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>INVALID</entry>
+                <entry>0 (ASCII NUL)</entry>
+                <entry>Not a valid type code (error if it appears in a message)</entry>
+              </row><row>
+                <entry>NIL</entry>
+                <entry>118 (ASCII 'v') </entry>
+                <entry>Marks a "void"/"unset"/"nonexistent"/"null" argument</entry>
+              </row><row>
+		<entry>BYTE</entry>
+		<entry>121 (ASCII 'y')</entry>
+		<entry>8-bit unsigned integer</entry>
+              </row><row>
+		<entry>BOOLEAN</entry>
+		<entry>98 (ASCII 'b')</entry>
+		<entry>Boolean value, 0 is FALSE and 1 is TRUE. Everything else is invalid.</entry>
+	      </row><row>
+                <entry>INT32</entry>
+                <entry>105 (ASCII 'i')</entry>
+                <entry>32-bit signed integer</entry>
+              </row><row>
+                <entry>UINT32</entry>
+                <entry>117 (ASCII 'u')</entry>
+                <entry>32-bit unsigned integer</entry>
+	      </row><row>
+                <entry>INT64</entry>
+                <entry>120 (ASCII 'x')</entry>
+                <entry>64-bit signed integer</entry>
+              </row><row>
+                <entry>UINT64</entry>
+                <entry>116 (ASCII 't')</entry>
+                <entry>64-bit unsigned integer</entry>
+              </row><row>
+                <entry>DOUBLE</entry>
+                <entry>100 (ASCII 'd')</entry>
+                <entry>IEEE 754 double</entry>
+              </row><row>
+                <entry>STRING</entry>
+                <entry>115 (ASCII 's')</entry>
+                <entry>UTF-8 string (<emphasis>must</emphasis> be valid UTF-8). Must be zero terminated. </entry>
+              </row><row>
+		<entry>CUSTOM</entry>
+		<entry>99 (ASCII 'c')</entry>
+		<entry>A named byte array, used for custom types</entry>
+	      </row><row>
+                <entry>ARRAY</entry>
+                <entry>97 (ASCII 'a')</entry>
+                <entry>Array</entry>
+              </row><row>
+                <entry>DICT</entry>
+                <entry>109 (ASCII 'm')</entry>
+                <entry>A dictionary of key/value pairs</entry>
+              </row><row>
+                <entry>OBJECT_PATH</entry>
+                <entry>111 (ASCII 'o')</entry>
+                <entry>Name of an object</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </para>
+      <para>
+        The types are encoded as follows:
+        <informaltable>
+          <tgroup cols="2">
+            <thead>
+              <row>
+                <entry>Type name</entry>
+                <entry>Encoding</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>INVALID</entry>
+                <entry>Not applicable; cannot be encoded.</entry>
+              </row><row>
+                <entry>NIL</entry>
+                <entry>No data is encoded; the type code is followed immediately 
+                by the type code of the next argument.</entry>
+              </row><row>
+                <entry>BYTE</entry>
+                <entry>A byte.</entry>
+              </row><row>
+                <entry>BOOLEAN</entry>
+                <entry>A byte, with valid values 0 and 1.</entry>
+              </row><row>
+                <entry>INT32</entry>
+                <entry>32-bit signed integer in the message's byte order, aligned to 4-byte boundary.</entry>
+              </row><row>
+                <entry>UINT32</entry>
+                <entry>32-bit unsigned integer in the message's byte order, aligned to 4-byte boundary.</entry>
+              </row><row>
+                <entry>INT64</entry>
+                <entry>64-bit signed integer in the message's byte order, aligned to 8-byte boundary.</entry>
+              </row><row>
+                <entry>UINT64</entry>
+                <entry>64-bit unsigned integer in the message's byte order, aligned to 8-byte boundary.</entry>
+              </row><row>
+                <entry>DOUBLE</entry>
+                <entry>64-bit IEEE 754 double in the message's byte order, aligned to 8-byte boundary.</entry>
+              </row><row>
+                <entry>STRING</entry>
+                <entry>UINT32 aligned to 4-byte boundary indicating the string's 
+                  length in bytes excluding its terminating nul, followed by 
+                  string data of the given length, followed by a terminating nul 
+                  byte.
+                </entry>
+              </row><row>
+                <entry>CUSTOM</entry>
+                <entry>A string (encoded as the STRING type above) giving the
+                  name of the type followed by an UINT32 aligned to 4-byte boundary
+                  indicating the data length in bytes, followed by the data.
+                  The string has some restrictions on its content, see 
+                  <xref linkend="message-protocol-names"/>.
+                </entry>
+              </row><row>
+                <entry>ARRAY</entry>
+                <entry>A sequence of bytes giving the element type of the array, terminated
+                by a type different from ARRAY (just one byte for one-dimensional arrays, but
+                larger for multi-dimensional arrays), followed by an UINT32 (aligned to 4 bytes)
+                giving the length of the array data in bytes. This is followed by each array entry
+                encoded the way it would normally be encoded, except arrays, which are encoded
+                without the type information, since that is already declared above. Arrays containing
+                NIL are not allowed.
+                </entry>
+              </row><row>
+                <entry>DICT</entry>
+                <entry>UINT32 giving the length of the dictionary data in bytes.
+                This is followed by a number of keyname/value pairs, where the
+                keyname is encoded as a STRING above, and the value is encoded
+                as a byte with typecode and how that type normally would be encoded
+                alone.
+                </entry>
+	      </row><row>
+                <entry>OBJECT_PATH</entry>
+                <entry>Encoded as if it were a STRING.
+                </entry>
+	      </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </para>
+    </sect2>
+
+    <sect2 id="message-protocol-names">
+      <title>Valid names</title>
+      <para>
+        The various names in D-BUS messages have some restrictions.
+      </para>
+      <sect3 id="message-protocol-names-interface">
+        <title>Interface names</title>
+        <para>
+          Interfaces have names with type STRING, meaning that 
+          they must be valid UTF-8. However, there are also some 
+          additional restrictions that apply to interface names 
+          specifically:
+          <itemizedlist>
+            <listitem><para>They are composed of 1 or more elements separated by
+                a period ('.') character. All elements must contain at least 
+                one character.
+                </para>
+            </listitem>
+            <listitem><para>Each element must only contain the ASCII characters 
+                "[A-Z][a-z][0-9]_" and must not begin with a digit.
+                </para>
+            </listitem>
+
+	    <listitem><para>They must contain at least one '.' (period)
+              character (and thus at least two elements).
+              </para></listitem>
+
+	    <listitem><para>They must not begin with a '.' (period) character.</para></listitem>
+	    <listitem><para>They must not exceed 256 bytes in length.</para></listitem>
+	    <listitem><para>They must be at least 1 byte in length.</para></listitem>
+          </itemizedlist>
+        </para>
+      </sect3>
+      <sect3 id="message-protocol-names-service">
+        <title>Service names</title>
+        <para>
+          Service names have the same restrictions as interface names, with a
+          special exception for base services. A base service name's first
+          element must start with a colon (':') character. After the colon, any
+          characters in the range "[A-Z][a-z][0-9]_" may appear. Elements after
+          the first must follow the usual rules, except that they may start with
+          a digit. Service names not starting with a colon have none of these 
+          exceptions and follow the same rules as interface names.
+        </para>
+      </sect3>
+      <sect3 id="message-protocol-names-method">
+        <title>Method names</title>
+        <para>
+          Method names:
+          <itemizedlist>
+	    <listitem><para>Must only contain the ASCII characters
+                "[A-Z][a-z][0-9]_" and may not begin with a
+                digit.</para></listitem>
+	    <listitem><para>Must not contain the '.' (period) character</para></listitem>
+	    <listitem><para>Must not exceed 256 bytes in length</para></listitem>
+	    <listitem><para>Must be at least 1 byte in length</para></listitem>
+          </itemizedlist>
+        </para>
+      </sect3>
+      <sect3 id="message-protocol-names-path">
+        <title>Path names</title>
+        <para>
+          A path (type OBJECT_PATH) must begin with an ASCII '/' (slash)
+          character. Paths may not end with a slash character unless the path is
+          the one-byte string "/". Two slash characters may not appear adjacent
+          to one another (the empty string is not a valid "subdirectory"). Paths
+          may not exceed 256 bytes in length.
+        </para>
+      </sect3>
+      <sect3 id="message-protocol-names-error">
+        <title>Error names</title>
+        <para>
+          Error names have the same restrictions as interface names.
+        </para>
+      </sect3>
+      <sect3 id="message-protocol-names-custom">
+        <title>Custom types</title>
+        <para>
+          Custom type names for values of type CUSTOM follow the same
+          restrictions as interface names.
+        </para>
+      </sect3>
+    </sect2>
+
+    <sect2 id="message-protocol-types">
+      <title>Message types</title>
+      <para>
+        Each of the message types (METHOD_CALL, METHOD_RETURN, ERROR, and
+        SIGNAL) has its own expected usage conventions and header fields.
+      </para>
+      <sect3 id="message-protocol-types-method">
+        <title>Method Calls, Returns, and Errors</title>
+        <para>
+          Some messages invoke an operation on a remote object.  These are
+          called method call messages and have the type tag METHOD_CALL. Such
+          messages map naturally to methods on objects in a typical program.
+        </para>
+        <para>
+          A method call message is expected to have a MEMBER header field
+          indicating the name of the method. Optionally, the message has an
+          INTERFACE field giving the interface the method is a part of. In the
+          absence of an INTERFACE field, if two interfaces on the same object have
+          a method with the same name, it is undefined which of the two methods
+          will be invoked. Implementations may also choose to return an error in
+          this ambiguous case. However, if a method name is unique
+          implementations should not require an interface field.
+        </para>
+        <para>
+          Method call messages also include a PATH field indicating the 
+          object to invoke the method on. If the call is passing through 
+          a message bus, the message will also have a SERVICE field giving 
+          the service to receive the message.
+        </para>
+        <para>
+          When an application handles a method call message, it is expected to
+          return a reply. The reply is identified by a REPLY_SERIAL header field
+          indicating the serial number of the METHOD_CALL being replied to. The
+          reply can have one of two types; either METHOD_RETURN or ERROR.
+        </para>
+        <para>
+          If the reply has type METHOD_RETURN, the arguments to the reply message 
+          are the return value(s) or "out parameters" of the method call. 
+          If the reply has type ERROR, then an "exception" has been thrown, 
+          and the call fails; no return value will be provided. It makes 
+          no sense to send multiple replies to the same method call.
+        </para>
+        <para>
+          Even if a method call has no return values, a METHOD_RETURN 
+          reply is expected, so the caller will know the method 
+          was successfully processed.
+        </para>
+        <para>
+          The METHOD_RETURN or ERROR reply message MUST have the REPLY_SERIAL 
+          header field. If this field is missing, it should be treated as 
+          a corrupt message.
+        </para>
+        <para>
+          If a METHOD_CALL message has the flag NO_REPLY_EXPECTED, 
+          then as an optimization the application receiving the method 
+          call may choose to omit the reply message (regardless of 
+          whether the reply would have been METHOD_RETURN or ERROR). 
+          However, it is also acceptable to ignore the NO_REPLY_EXPECTED
+          flag and reply anyway.
+        </para>
+        <para>
+          If a message has the flag AUTO_ACTIVATION, then the addressed
+          service will be activated before the message is delivered, if
+          not already active. The message will be held until the service
+          is successfully activated or has failed to activate; in case
+          of failure, an activation error will be returned.
+        </para>
+        <sect4 id="message-protocol-types-method-apis">
+          <title>Mapping method calls to native APIs</title>
+          <para>
+            APIs for D-BUS may map method calls to a method call in a specific
+            programming language, such as C++, or may map a method call written
+            in an IDL to a D-BUS message.
+          </para>
+          <para>
+            In APIs of this nature, arguments to a method are often termed "in"
+            (which implies sent in the METHOD_CALL), or "out" (which implies
+            returned in the METHOD_RETURN). Some APIs such as CORBA also have
+            "inout" arguments, which are both sent and received, i.e. the caller
+            passes in a value which is modified. Mapped to D-BUS, an "inout"
+            argument is equivalent to an "in" argument, followed by an "out"
+            argument. You can't pass things "by reference" over the wire, so
+            "inout" is purely an illusion of the in-process API.
+          </para>
+          <para>
+            Given a method with zero or one return values, followed by zero or more
+            arguments, where each argument may be "in", "out", or "inout", the
+            caller constructs a message by appending each "in" or "inout" argument,
+            in order. "out" arguments are not represented in the caller's message.
+          </para>
+          <para>
+            The recipient constructs a reply by appending first the return value 
+            if any, then each "out" or "inout" argument, in order. 
+            "in" arguments are not represented in the reply message.
+          </para>
+        </sect4>
+
+      </sect3>
+
+      <sect3 id="message-protocol-types-signal">
+        <title>Signal Emission</title>
+        <para>
+          Unlike method calls, signal emissions have no replies. 
+          A signal emission is simply a single message of type SIGNAL.
+          It must have three header fields: PATH giving the object 
+          the signal was emitted from, plus INTERFACE and MEMBER giving
+          the fully-qualified name of the signal.
+        </para>
+      </sect3>
+
+      <sect3 id="message-protocol-types-notation">
+        <title>Notation in this document</title>
+        <para>
+          This document uses a simple pseudo-IDL to describe particular method 
+          calls and signals. Here is an example of a method call:
+          <programlisting>
+            org.freedesktop.DBus.ActivateService (in STRING service_name, in UINT32 flags,
+                                                  out UINT32 resultcode)
+          </programlisting>
+          This means INTERFACE = org.freedesktop.DBus, MEMBER = ActivateService, 
+          METHOD_CALL arguments are STRING and UINT32, METHOD_RETURN argument
+          is UINT32. Remember that the MEMBER field can't contain any '.' (period)
+          characters so it's known that the last part of the name in
+          the "IDL" is the member name.
+        </para>
+        <para>
+          In C++ that might end up looking like this:
+          <programlisting>
+            unsigned int org::freedesktop::DBus::ActivateService (const char  *service_name, 
+                                                                  unsigned int flags);
+          </programlisting>
+          or equally valid, the return value could be done as an argument:
+          <programlisting>
+            void org::freedesktop::DBus::ActivateService (const char   *service_name, 
+                                                          unsigned int  flags,
+                                                          unsigned int *resultcode);
+          </programlisting>
+          It's really up to the API designer how they want to make 
+          this look. You could design an API where the namespace wasn't used 
+          in C++, using STL or Qt, using varargs, or whatever you wanted.
+        </para>
+        <para>
+          Signals are written as follows:
+          <programlisting>
+            org.freedesktop.DBus.ServiceLost (STRING service_name)
+          </programlisting>
+          Signals don't specify "in" vs. "out" because only 
+          a single direction is possible.
+        </para>
+        <para>
+          In this ad hoc notation, the special type name ANY means any type
+          other than NIL, and the special type name ANY_OR_NIL means any valid
+          type.
+        </para>
+        <para>
+          It isn't especially encouraged to use this lame pseudo-IDL in actual
+          API implementations; you might use the native notation for the
+          language you're using, or you might use COM or CORBA IDL, for example.
+        </para>
+      </sect3>
+    </sect2>
+
+  </sect1>
+
+  <sect1 id="auth-protocol">
+    <title>Authentication Protocol</title>
+    <para>
+      Before the flow of messages begins, two applications must
+      authenticate. A simple plain-text protocol is used for
+      authentication; this protocol is a SASL profile, and maps fairly
+      directly from the SASL specification. The message encoding is
+      NOT used here, only plain text messages.
+    </para>
+    <para>
+      In examples, "C:" and "S:" indicate lines sent by the client and
+      server respectively.
+    </para>
+    <sect2 id="auth-protocol-overview">
+      <title>Protocol Overview</title>
+      <para>
+        The protocol is a line-based protocol, where each line ends with
+        \r\n. Each line begins with an all-caps ASCII command name containing
+        only the character range [A-Z], a space, then any arguments for the
+        command, then the \r\n ending the line. The protocol is
+        case-sensitive. All bytes must be in the ASCII character set.
+
+        Commands from the client to the server are as follows:
+
+        <itemizedlist>
+	  <listitem><para>AUTH [mechanism] [initial-response]</para></listitem>
+	  <listitem><para>CANCEL</para></listitem>
+	  <listitem><para>BEGIN</para></listitem>
+	  <listitem><para>DATA &lt;data in hex encoding&gt;</para></listitem>
+	  <listitem><para>ERROR [human-readable error explanation]</para></listitem>
+	</itemizedlist>
+
+        From server to client are as follows:
+
+        <itemizedlist>
+	  <listitem><para>REJECTED &lt;space-separated list of mechanism names&gt;</para></listitem>
+	  <listitem><para>OK</para></listitem>
+	  <listitem><para>DATA &lt;data in hex encoding&gt;</para></listitem>
+	  <listitem><para>ERROR</para></listitem>
+	</itemizedlist>
+      </para>
+    </sect2>
+    <sect2 id="auth-nul-byte">
+      <title>Special credentials-passing nul byte</title>
+      <para>
+        Immediately after connecting to the server, the client must send a
+        single nul byte. This byte may be accompanied by credentials
+        information on some operating systems that use sendmsg() with
+        SCM_CREDS or SCM_CREDENTIALS to pass credentials over UNIX domain
+        sockets. However, the nul byte MUST be sent even on other kinds of
+        socket, and even on operating systems that do not require a byte to be
+        sent in order to transmit credentials. The text protocol described in
+        this document begins after the single nul byte. If the first byte
+        received from the client is not a nul byte, the server may disconnect 
+        that client.
+      </para>
+      <para>
+        A nul byte in any context other than the initial byte is an error; 
+        the protocol is ASCII-only.
+      </para>
+      <para>
+        The credentials sent along with the nul byte may be used with the 
+        SASL mechanism EXTERNAL.
+      </para>
+    </sect2>
+    <sect2 id="auth-command-auth">
+      <title>AUTH command</title>
+      <para>
+        If an AUTH command has no arguments, it is a request to list
+        available mechanisms. The server SHOULD respond with a REJECTED
+        command listing the mechanisms it understands.
+      </para>
+      <para>
+        If an AUTH command specifies a mechanism, and the server supports
+        said mechanism, the server SHOULD begin exchanging SASL
+        challenge-response data with the client using DATA commands.
+      </para>
+      <para>
+        If the server does not support the mechanism given in the AUTH
+        command, it SHOULD send a REJECTED command listing the mechanisms
+        it does support.
+      </para>
+      <para>
+        If the [initial-response] argument is provided, it is intended for
+        use with mechanisms that have no initial challenge (or an empty
+        initial challenge), as if it were the argument to an initial DATA
+        command. If the selected mechanism has an initial challenge, the
+        server should reject authentication by sending REJECTED.
+      </para>
+      <para>
+        If authentication succeeds after exchanging DATA commands, 
+        an OK command should be sent to the client. 
+      </para>
+      <para>
+        The first octet received by the client after the \r\n of the OK
+        command MUST be the first octet of the authenticated/encrypted 
+        stream of D-BUS messages.
+      </para>
+      <para>
+        The first octet received by the server after the \r\n of the BEGIN
+        command from the client MUST be the first octet of the
+        authenticated/encrypted stream of D-BUS messages.
+      </para>
+    </sect2>
+    <sect2 id="auth-command-cancel">
+      <title>CANCEL Command</title>
+      <para>
+        At any time up to sending the BEGIN command, the client may send a
+        CANCEL command. On receiving the CANCEL command, the server MUST
+        send a REJECTED command and abort the current authentication
+        exchange.
+      </para>
+    </sect2>
+    <sect2 id="auth-command-data">
+      <title>DATA Command</title>
+      <para>
+        The DATA command may come from either client or server, and simply 
+        contains a hex-encoded block of data to be interpreted 
+        according to the SASL mechanism in use.
+      </para>
+      <para>
+        Some SASL mechanisms support sending an "empty string"; 
+        FIXME we need some way to do this.
+      </para>
+    </sect2>
+    <sect2 id="auth-command-begin">
+      <title>BEGIN Command</title>
+      <para>
+        The BEGIN command acknowledges that the client has received an 
+        OK command from the server, and that the stream of messages
+        is about to begin. 
+      </para>
+      <para>
+        The first octet received by the server after the \r\n of the BEGIN
+        command from the client MUST be the first octet of the
+        authenticated/encrypted stream of D-BUS messages.
+      </para>
+    </sect2>
+    <sect2 id="auth-command-rejected">
+      <title>REJECTED Command</title>
+      <para>
+        The REJECTED command indicates that the current authentication
+        exchange has failed, and further exchange of DATA is inappropriate.
+        The client would normally try another mechanism, or try providing
+        different responses to challenges.
+      </para><para>
+        Optionally, the REJECTED command has a space-separated list of
+        available auth mechanisms as arguments. If a server ever provides
+        a list of supported mechanisms, it MUST provide the same list 
+        each time it sends a REJECTED message. Clients are free to 
+        ignore all lists received after the first.
+      </para>
+    </sect2>
+    <sect2 id="auth-command-ok">
+      <title>OK Command</title>
+      <para>
+        The OK command indicates that the client has been authenticated,
+        and that further communication will be a stream of D-BUS messages
+        (optionally encrypted, as negotiated) rather than this protocol.
+      </para>
+      <para>
+        The first octet received by the client after the \r\n of the OK
+        command MUST be the first octet of the authenticated/encrypted 
+        stream of D-BUS messages.
+      </para>
+      <para>
+        The client MUST respond to the OK command by sending a BEGIN
+        command, followed by its stream of messages, or by disconnecting.
+        The server MUST NOT accept additional commands using this protocol 
+        after the OK command has been sent.
+      </para>
+    </sect2>
+    <sect2 id="auth-command-error">
+      <title>ERROR Command</title>
+      <para>
+        The ERROR command indicates that either server or client did not
+        know a command, does not accept the given command in the current
+        context, or did not understand the arguments to the command. This
+        allows the protocol to be extended; a client or server can send a
+        command present or permitted only in new protocol versions, and if
+        an ERROR is received instead of an appropriate response, fall back
+        to using some other technique.
+      </para>
+      <para>
+        If an ERROR is sent, the server or client that sent the
+        error MUST continue as if the command causing the ERROR had never been
+        received. However, the the server or client receiving the error 
+        should try something other than whatever caused the error; 
+        if only canceling/rejecting the authentication.
+      </para>
+    </sect2>
+    <sect2 id="auth-examples">
+      <title>Authentication examples</title>
+      
+      <para>
+        <figure>
+	  <title>Example of successful magic cookie authentication</title>
+	  <programlisting>
+            (MAGIC_COOKIE is a made up mechanism)
+
+            C: AUTH MAGIC_COOKIE 3138363935333137393635383634
+            S: OK
+            C: BEGIN
+          </programlisting>
+	</figure>
+        <figure>
+	  <title>Example of finding out mechanisms then picking one</title>
+	  <programlisting>
+            C: AUTH
+            S: REJECTED KERBEROS_V4 SKEY
+            C: AUTH SKEY 7ab83f32ee
+            S: DATA 8799cabb2ea93e
+            C: DATA 8ac876e8f68ee9809bfa876e6f9876g8fa8e76e98f
+            S: OK
+            C: BEGIN
+          </programlisting>
+	</figure>
+        <figure>
+	  <title>Example of client sends unknown command then falls back to regular auth</title>
+	  <programlisting>
+            C: FOOBAR
+            S: ERROR
+            C: AUTH MAGIC_COOKIE 3736343435313230333039
+            S: OK
+            C: BEGIN
+          </programlisting>
+	</figure>
+        <figure>
+	  <title>Example of server doesn't support initial auth mechanism</title>
+	  <programlisting>
+            C: AUTH MAGIC_COOKIE 3736343435313230333039
+            S: REJECTED KERBEROS_V4 SKEY
+            C: AUTH SKEY 7ab83f32ee
+            S: DATA 8799cabb2ea93e
+            C: DATA 8ac876e8f68ee9809bfa876e6f9876g8fa8e76e98f
+            S: OK
+            C: BEGIN
+          </programlisting>
+	</figure>
+        <figure>
+	  <title>Example of wrong password or the like followed by successful retry</title>
+	  <programlisting>
+            C: AUTH MAGIC_COOKIE 3736343435313230333039
+            S: REJECTED KERBEROS_V4 SKEY
+            C: AUTH SKEY 7ab83f32ee
+            S: DATA 8799cabb2ea93e
+            C: DATA 8ac876e8f68ee9809bfa876e6f9876g8fa8e76e98f
+            S: REJECTED
+            C: AUTH SKEY 7ab83f32ee
+            S: DATA 8799cabb2ea93e
+            C: DATA 8ac876e8f68ee9809bfa876e6f9876g8fa8e76e98f
+            S: OK
+            C: BEGIN
+          </programlisting>
+	</figure>
+        <figure>
+	  <title>Example of skey cancelled and restarted</title>
+	  <programlisting>
+            C: AUTH MAGIC_COOKIE 3736343435313230333039
+            S: REJECTED KERBEROS_V4 SKEY
+            C: AUTH SKEY 7ab83f32ee
+            S: DATA 8799cabb2ea93e
+            C: CANCEL
+            S: REJECTED
+            C: AUTH SKEY 7ab83f32ee
+            S: DATA 8799cabb2ea93e
+            C: DATA 8ac876e8f68ee9809bfa876e6f9876g8fa8e76e98f
+            S: OK
+            C: BEGIN
+          </programlisting>
+	</figure>
+      </para>
+    </sect2>
+    <sect2 id="auth-states">
+      <title>Authentication state diagrams</title>
+      
+      <para>
+        This section documents the auth protocol in terms of 
+        a state machine for the client and the server. This is 
+        probably the most robust way to implement the protocol.
+      </para>
+
+      <sect3 id="auth-states-client">
+        <title>Client states</title>
+        
+        <para>
+          To more precisely describe the interaction between the
+          protocol state machine and the authentication mechanisms the
+          following notation is used: MECH(CHALL) means that the
+          server challenge CHALL was fed to the mechanism MECH, which
+          returns one of
+
+          <itemizedlist>
+            <listitem>
+              <para>
+                CONTINUE(RESP) means continue the auth conversation
+                and send RESP as the response to the server;
+              </para>
+            </listitem>
+
+            <listitem>
+              <para>
+                OK(RESP) means that after sending RESP to the server
+                the client side of the auth conversation is finished
+                and the server should return "OK";
+              </para>
+            </listitem>
+
+            <listitem>
+              <para>
+                ERROR means that CHALL was invalid and could not be
+                processed.
+              </para>
+            </listitem>
+          </itemizedlist>
+          
+          Both RESP and CHALL may be empty.
+        </para>
+        
+        <para>
+          The Client starts by getting an initial response from the
+          default mechanism and sends AUTH MECH RESP, or AUTH MECH if
+          the mechanism did not provide an initial response.  If the
+          mechanism returns CONTINUE, the client starts in state
+          <emphasis>WaitingForData</emphasis>, if the mechanism
+          returns OK the client starts in state
+          <emphasis>WaitingForOK</emphasis>.
+        </para>
+        
+        <para>
+          The client should keep track of available mechanisms and
+          which it mechanisms it has already attempted. This list is
+          used to decide which AUTH command to send. When the list is
+          exhausted, the client should give up and close the
+          connection.
+        </para>
+
+        <formalpara>
+          <title><emphasis>WaitingForData</emphasis></title>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>
+                  Receive DATA CHALL
+                  <simplelist>
+                    <member>
+                      MECH(CHALL) returns CONTINUE(RESP) &rarr; send
+                      DATA RESP, goto
+                      <emphasis>WaitingForData</emphasis>
+                    </member>
+
+                    <member>
+                      MECH(CHALL) returns OK(RESP) &rarr; send DATA
+                      RESP, goto <emphasis>WaitingForOK</emphasis>
+                    </member>
+
+                    <member>
+                      MECH(CHALL) returns ERROR &rarr; send ERROR
+                      [msg], goto <emphasis>WaitingForData</emphasis>
+                    </member>
+                  </simplelist>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive REJECTED [mechs] &rarr;
+                  send AUTH [next mech], goto
+                  WaitingForData or <emphasis>WaitingForOK</emphasis>
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  Receive ERROR &rarr; send
+                  CANCEL, goto
+                  <emphasis>WaitingForReject</emphasis>
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  Receive OK &rarr; send
+                  BEGIN, terminate auth
+                  conversation, authenticated
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  Receive anything else &rarr; send
+                  ERROR, goto
+                  <emphasis>WaitingForData</emphasis>
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </formalpara>
+
+        <formalpara>
+          <title><emphasis>WaitingForOK</emphasis></title>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>
+                  Receive OK &rarr; send BEGIN, terminate auth
+                  conversation, <emphasis>authenticated</emphasis>
+                </para>
+              </listitem>
+              <listitem>
+                <para>
+                  Receive REJECT [mechs] &rarr; send AUTH [next mech],
+                  goto <emphasis>WaitingForData</emphasis> or
+                  <emphasis>WaitingForOK</emphasis>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive DATA &rarr; send CANCEL, goto
+                  <emphasis>WaitingForReject</emphasis>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive ERROR &rarr; send CANCEL, goto
+                  <emphasis>WaitingForReject</emphasis>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive anything else &rarr; send ERROR, goto
+                  <emphasis>WaitingForOK</emphasis>
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </formalpara>
+
+        <formalpara>
+          <title><emphasis>WaitingForReject</emphasis></title>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>
+                  Receive REJECT [mechs] &rarr; send AUTH [next mech],
+                  goto <emphasis>WaitingForData</emphasis> or
+                  <emphasis>WaitingForOK</emphasis>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive anything else &rarr; terminate auth
+                  conversation, disconnect
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </formalpara>
+
+      </sect3>
+
+      <sect3 id="auth-states-server">
+        <title>Server states</title>
+ 
+        <para>
+          For the server MECH(RESP) means that the client response
+          RESP was fed to the the mechanism MECH, which returns one of
+
+          <itemizedlist>
+            <listitem>
+              <para>
+                CONTINUE(CHALL) means continue the auth conversation and
+                send CHALL as the challenge to the client;
+              </para>
+            </listitem>
+
+            <listitem>
+              <para>
+                OK means that the client has been successfully
+                authenticated;
+              </para>
+            </listitem>
+
+            <listitem>
+              <para>
+                REJECT means that the client failed to authenticate or
+                there was an error in RESP.
+              </para>
+            </listitem>
+          </itemizedlist>
+
+          The server starts out in state
+          <emphasis>WaitingForAuth</emphasis>.  If the client is
+          rejected too many times the server must disconnect the
+          client.
+        </para>
+
+        <formalpara>
+          <title><emphasis>WaitingForAuth</emphasis></title>
+          <para>
+            <itemizedlist>
+
+              <listitem>
+                <para>
+                  Receive AUTH &rarr; send REJECTED [mechs], goto
+                  <emphasis>WaitingForAuth</emphasis>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive AUTH MECH RESP
+
+                  <simplelist>
+                    <member>
+                      MECH not valid mechanism &rarr; send REJECTED
+                      [mechs], goto
+                      <emphasis>WaitingForAuth</emphasis>
+                    </member>
+
+                    <member>
+                      MECH(RESP) returns CONTINUE(CHALL) &rarr; send
+                      DATA CHALL, goto
+                      <emphasis>WaitingForData</emphasis>
+                    </member>
+
+                    <member>
+                      MECH(RESP) returns OK &rarr; send OK, goto
+                      <emphasis>WaitingForBegin</emphasis>
+                    </member>
+
+                    <member>
+                      MECH(RESP) returns REJECT &rarr; send REJECTED
+                      [mechs], goto
+                      <emphasis>WaitingForAuth</emphasis>
+                    </member>
+                  </simplelist>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive BEGIN &rarr; terminate
+                  auth conversation, disconnect
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive ERROR &rarr; send REJECTED [mechs], goto
+                  <emphasis>WaitingForAuth</emphasis>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive anything else &rarr; send
+                  ERROR, goto
+                  <emphasis>WaitingForAuth</emphasis>
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </formalpara>
+
+       
+        <formalpara>
+          <title><emphasis>WaitingForData</emphasis></title>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>
+                  Receive DATA RESP
+                  <simplelist>
+                    <member>
+                      MECH(RESP) returns CONTINUE(CHALL) &rarr; send
+                      DATA CHALL, goto
+                      <emphasis>WaitingForData</emphasis>
+                    </member>
+
+                    <member>
+                      MECH(RESP) returns OK &rarr; send OK, goto
+                      <emphasis>WaitingForBegin</emphasis>
+                    </member>
+
+                    <member>
+                      MECH(RESP) returns REJECT &rarr; send REJECTED
+                      [mechs], goto
+                      <emphasis>WaitingForAuth</emphasis>
+                    </member>
+                  </simplelist>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive BEGIN &rarr; terminate auth conversation,
+                  disconnect
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive CANCEL &rarr; send REJECTED [mechs], goto
+                  <emphasis>WaitingForAuth</emphasis>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive ERROR &rarr; send REJECTED [mechs], goto
+                  <emphasis>WaitingForAuth</emphasis>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive anything else &rarr; send ERROR, goto
+                  <emphasis>WaitingForData</emphasis>
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </formalpara>
+
+        <formalpara>
+          <title><emphasis>WaitingForBegin</emphasis></title>
+          <para>
+            <itemizedlist>
+              <listitem>
+                <para>
+                  Receive BEGIN &rarr; terminate auth conversation,
+                  client authenticated
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive CANCEL &rarr; send REJECTED [mechs], goto
+                  <emphasis>WaitingForAuth</emphasis>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive ERROR &rarr; send REJECTED [mechs], goto
+                  <emphasis>WaitingForAuth</emphasis>
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  Receive anything else &rarr; send ERROR, goto
+                  <emphasis>WaitingForBegin</emphasis>
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </formalpara>
+
+      </sect3>
+      
+    </sect2>
+    <sect2 id="auth-mechanisms">
+      <title>Authentication mechanisms</title>
+      <para>
+        This section describes some new authentication mechanisms.
+        D-BUS also allows any standard SASL mechanism of course.
+      </para>
+      <sect3 id="auth-mechanisms-sha">
+        <title>DBUS_COOKIE_SHA1</title>
+        <para>
+          The DBUS_COOKIE_SHA1 mechanism is designed to establish that a client
+          has the ability to read a private file owned by the user being
+          authenticated. If the client can prove that it has access to a secret
+          cookie stored in this file, then the client is authenticated. 
+          Thus the security of DBUS_COOKIE_SHA1 depends on a secure home 
+          directory.
+        </para>
+        <para>
+          Authentication proceeds as follows:
+          <itemizedlist>
+            <listitem>
+              <para>
+                The client sends the username it would like to authenticate 
+                as.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                The server sends the name of its "cookie context" (see below); a
+                space character; the integer ID of the secret cookie the client
+                must demonstrate knowledge of; a space character; then a
+                hex-encoded randomly-generated challenge string.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                The client locates the cookie, and generates its own hex-encoded
+                randomly-generated challenge string.  The client then
+                concatentates the server's hex-encoded challenge, a ":"
+                character, its own hex-encoded challenge, another ":" character,
+                and the hex-encoded cookie.  It computes the SHA-1 hash of this
+                composite string.  It sends back to the server the client's
+                hex-encoded challenge string, a space character, and the SHA-1
+                hash.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                The server generates the same concatenated string used by the
+                client and computes its SHA-1 hash. It compares the hash with
+                the hash received from the client; if the two hashes match, the
+                client is authenticated.
+              </para>
+            </listitem>
+          </itemizedlist>
+        </para>
+        <para>
+          Each server has a "cookie context," which is a name that identifies a
+          set of cookies that apply to that server. A sample context might be
+          "org_freedesktop_session_bus". Context names must be valid ASCII,
+          nonzero length, and may not contain the characters slash ("/"),
+          backslash ("\"), space (" "), newline ("\n"), carriage return ("\r"),
+          tab ("\t"), or period ("."). There is a default context,
+          "org_freedesktop_global" that's used by servers that do not specify
+          otherwise.
+        </para>
+        <para>
+          Cookies are stored in a user's home directory, in the directory
+          <filename>~/.dbus-keyrings/</filename>. This directory must 
+          not be readable or writable by other users. If it is, 
+          clients and servers must ignore it. The directory 
+          contains cookie files named after the cookie context.
+        </para>
+        <para>
+          A cookie file contains one cookie per line. Each line 
+          has three space-separated fields:
+          <itemizedlist>
+            <listitem>
+              <para>
+                The cookie ID number, which must be a non-negative integer and
+                may not be used twice in the same file.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                The cookie's creation time, in UNIX seconds-since-the-epoch
+                format.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                The cookie itself, a hex-encoded random block of bytes.
+              </para>
+            </listitem>
+          </itemizedlist>
+        </para>
+        <para>
+          Only server processes modify the cookie file. 
+          They must do so with this procedure:
+          <itemizedlist>
+            <listitem>
+              <para>
+                Create a lockfile name by appending ".lock" to the name of the
+                cookie file.  The server should attempt to create this file
+                using <literal>O_CREAT | O_EXCL</literal>.  If file creation
+                fails, the lock fails. Servers should retry for a reasonable
+                period of time, then they may choose to delete an existing lock
+                to keep users from having to manually delete a stale
+                lock. <footnote><para>Lockfiles are used instead of real file
+                locking <literal>fcntl()</literal> because real locking
+                implementations are still flaky on network
+                filesystems.</para></footnote>
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                Once the lockfile has been created, the server loads the cookie
+                file. It should then delete any cookies that are old (the
+                timeout can be fairly short), or more than a reasonable
+                time in the future (so that cookies never accidentally 
+                become permanent, if the clock was set far into the future 
+                at some point). If no recent keys remain, the 
+                server may generate a new key.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                The pruned and possibly added-to cookie file 
+                must be resaved atomically (using a temporary 
+                file which is rename()'d).
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                The lock must be dropped by deleting the lockfile.
+              </para>
+            </listitem>
+          </itemizedlist>
+        </para>
+        <para>
+          Clients need not lock the file in order to load it, 
+          because servers are required to save the file atomically.          
+        </para>
+      </sect3>
+    </sect2>
+  </sect1>
+  <sect1 id="addresses">
+    <title>Server Addresses</title>
+    <para>
+      Server addresses consist of a transport name followed by a colon, and
+      then an optional, comma-separated list of keys and values in the form key=value.
+      [FIXME how do you escape colon, comma, and semicolon in the values of the key=value pairs?]
+    </para>
+    <para>
+      For example: 
+      <programlisting>unix:path=/tmp/dbus-test</programlisting>
+      Which is the address to a unix socket with the path /tmp/dbus-test.
+    </para>
+    <para>
+      [FIXME clarify if attempting to connect to each is a requirement 
+      or just a suggestion]
+      When connecting to a server, multiple server addresses can be
+      separated by a semi-colon. The library will then try to connect
+      to the first address and if that fails, it'll try to connect to
+      the next one specified, and so forth. For example
+      <programlisting>unix:path=/tmp/dbus-test;unix:path=/tmp/dbus-test2</programlisting>
+    </para>
+    <para>
+      [FIXME we need to specify in detail each transport and its possible arguments]
+      Current transports include: unix domain sockets (including 
+      abstract namespace on linux), TCP/IP, and a debug/testing transport using 
+      in-process pipes. Future possible transports include one that 
+      tunnels over X11 protocol.
+    </para>
+  </sect1>
+
+  <sect1 id="standard-messages">
+    <title>Standard Peer-to-Peer Messages</title>
+    <para>
+      See <xref linkend="message-protocol-types-notation"/> for details on 
+       the notation used in this section.
+    </para>
+    <sect2 id="standard-messages-ping">
+      <title><literal>org.freedesktop.Peer.Ping</literal></title>
+      <para>        
+        <programlisting>
+          org.freedesktop.Peer.Ping ()
+        </programlisting>
+      </para>
+      <para>
+        On receipt of the METHOD_CALL
+        message <literal>org.freedesktop.Peer.Ping</literal>, an application
+        should do nothing other than reply with a METHOD_RETURN as usual.
+      </para>
+    </sect2>
+
+    <sect2 id="standard-messages-get-props">
+      <title><literal>org.freedesktop.Props.Get</literal></title>
+      <para>
+        [FIXME this is just a bogus made-up method that isn't implemented 
+        or thought through, to save an example of table formatting for the 
+        argument descriptions]
+        <programlisting>
+          org.freedesktop.Props.Get (in STRING property_name,
+                                     out ANY_OR_NIL property_value)
+        </programlisting>
+        Message arguments:
+        <informaltable>
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry>Argument</entry>
+                <entry>Type</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>0</entry>
+                <entry>in STRING</entry>
+                <entry>Name of the property to get</entry>
+              </row>
+              <row>
+                <entry>1</entry>
+                <entry>out ANY_OR_NIL</entry>
+                <entry>The value of the property. The type depends on the property.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </para>
+    </sect2>
+  </sect1>
+
+  <sect1 id="message-bus">
+    <title>Message Bus Specification</title>
+    <sect2 id="message-bus-overview">
+      <title>Message Bus Overview</title>
+      <para>
+        The message bus accepts connections from one or more applications. 
+        Once connected, applications can send and receive messages from 
+        the message bus, as in the peer-to-peer case.
+      </para>
+      <para>
+        The message bus keeps track of a set of
+        <firstterm>services</firstterm>. A service is simply a name, such as
+        <literal>com.yoyodyne.Screensaver</literal>, which can be
+        <firstterm>owned</firstterm> by one or more of the connected
+        applications.  The message bus itself always owns the special service
+        <literal>org.freedesktop.DBus</literal>.
+      </para>
+      <para>
+        Services may have <firstterm>secondary owners</firstterm>. Secondary owners
+        of a service are kept in a queue; if the primary owner of a service 
+        disconnects, or releases the service, the next secondary owner becomes
+        the new owner of the service.
+      </para>
+      <para>
+        Messages may have a <literal>SERVICE</literal> field (see <xref
+                                                                  linkend="message-protocol-header-fields"/>).  When the message bus
+          receives a message, if the <literal>SERVICE</literal> field is absent, the
+          message is taken to be a standard peer-to-peer message and interpreted
+          by the message bus itself. For example, sending
+          an <literal>org.freedesktop.Peer.Ping</literal> message with no 
+          <literal>SERVICE</literal> will cause the message bus itself to reply 
+          to the ping immediately; the message bus would never make 
+          this message visible to other applications.
+      </para>
+      <para>
+        If the <literal>SERVICE</literal> field is present, then it indicates a
+        request for the message bus to route the message. In the usual case,
+        messages are routed to the owner of the named service.
+        Messages may also be <firstterm>broadcast</firstterm>
+        by sending them to the special service 
+        <literal>org.freedesktop.DBus.Broadcast</literal>. Broadcast messages are
+        sent to all applications with <firstterm>message matching
+          rules</firstterm> that match the message.
+      </para>
+      <para>
+        Continuing the <literal>org.freedesktop.Peer.Ping</literal> example, if
+        the ping message were sent with a <literal>SERVICE</literal> name of
+        <literal>com.yoyodyne.Screensaver</literal>, then the ping would be
+        forwarded, and the Yoyodyne Corporation screensaver application would be
+        expected to reply to the ping. If
+        <literal>org.freedesktop.Peer.Ping</literal> were sent to
+        <literal>org.freedesktop.DBus.Broadcast</literal>, then multiple applications
+        might receive the ping, and all would normally reply to it.
+      </para>
+    </sect2>
+
+    <sect2 id="message-bus-services">
+      <title>Message Bus Services</title>
+      <para>
+        A service is a name that identifies a certain application. Each
+        application connected to the message bus has at least one service name
+        assigned at connection time and returned in response to the
+        <literal>org.freedesktop.DBus.Hello</literal> message.
+        This automatically-assigned service name is called 
+        the application's <firstterm>base service</firstterm>. 
+        Base service names are unique and MUST never be reused for two different 
+        applications.
+      </para>
+      <para>
+        Ownership of the base service is a prerequisite for interaction with 
+        the message bus. It logically follows that the base service is always 
+        the first service that an application comes to own, and the last 
+        service that it loses ownership of.
+      </para>
+      <para>
+        Base service names must begin with the character ':' (ASCII colon
+        character); service names that are not base service names must not begin
+        with this character. (The bus must reject any attempt by an application
+        to manually create a service name beginning with ':'.) This restriction
+        categorically prevents "spoofing"; messages sent to a base service name
+        will always go to a single application instance and that instance only.
+      </para>
+      <para>
+        An application can request additional service names to be associated
+        with it using the
+        <literal>org.freedesktop.DBus.AcquireService</literal>
+        message. [FIXME what service names are allowed; ASCII or unicode; 
+        length limit; etc.]
+      </para>
+      <para>
+        [FIXME this needs more detail, and should move the service-related message 
+        descriptions up into this section perhaps]
+        Service ownership handling can be specified in the flags part
+        of the <literal>org.freedesktop.DBus.AcquireService</literal>
+        message. If an application specifies the
+        DBUS_SERVICE_FLAGS_PROHIBIT_REPLACEMENT flag, then all applications
+        trying to acquire the service will be put in a queue. When the
+        primary owner disconnects from the bus or removes ownership
+        from the service, the next application in the queue will be the
+        primary owner. If the DBUS_SERVICE_FLAGS_PROHIBIT_REPLACEMENT
+        flag is not specified, then the primary owner will lose
+        ownership whenever another application requests ownership of the
+        service.
+      </para>
+      <para>
+        When a client disconnects from the bus, all the services that
+        the clients own are deleted, or in the case of a service that
+        prohibits replacement, ownership is transferred to the next
+        client in the queue, if any.
+      </para>
+    </sect2>
+    <sect2 id="message-bus-routing">
+      <title>Message Bus Message Routing</title>
+      <para>
+        When a message is received by the message bus, the message's 
+        <literal>sndr</literal> header field MUST be set to the base service of
+        the application which sent the message.  If the service already has
+        a <literal>sndr</literal> field, the pre-existing field is replaced.
+        This rule means that a replies are always sent to the base service name,
+        i.e. to the same application that sent the message being replied to.
+      </para>
+      <para>
+        [FIXME go into detail about broadcast, multicast, unicast, etc.]
+      </para>
+    </sect2>
+    <sect2 id="message-bus-activation">
+      <title>Message Bus Service Activation</title>
+      <para>
+        <firstterm>Activation</firstterm> means to locate a service 
+        owner for a service that is currently unowned. For now, it 
+        means to launch an executable that will take ownership of 
+        a particular service.
+      </para>
+      <para>
+        To find an executable corresponding to a particular service, the bus
+        daemon looks for <firstterm>service description files</firstterm>.
+        Service description files define a mapping from service names to
+        executables. Different kinds of message bus will look for these files
+        in different places, see <xref linkend="message-bus-types"/>.
+      </para>
+      <para>
+        [FIXME the file format should be much better specified than
+        "similar to .desktop entries" esp. since desktop entries are
+        already badly-specified. ;-)] Service description files have
+        the ".service" file extension. The message bus will only load
+        service description files ending with .service; all other
+        files will be ignored.  The file format is similar to that of
+        <ulink
+        url="http://www.freedesktop.org/standards/desktop-entry-spec/desktop-entry-spec.html">desktop
+        entries</ulink>. All service description files must be in
+        UTF-8 encoding. To ensure that there will be no name
+        collisions, service files must be namespaced using the same
+        mechanism as messages and service names.
+
+        <figure>
+	  <title>Example service description file</title>
+	  <programlisting>
+            # Sample service description file
+            [D-BUS Service]
+            Name=org.gnome.ConfigurationDatabase
+            Exec=/usr/libexec/gconfd-2
+          </programlisting>
+	</figure>
+      </para>
+      <para>
+        When an application requests a service to be activated, the
+        bus daemon tries to find it in the list of activation
+        entries. It then tries to spawn the executable associated with
+        it. If this fails, it will report an error. [FIXME what
+        happens if two .service files offer the same service; what
+        kind of error is reported, should we have a way for the client
+        to choose one?]
+      </para>
+      <para>
+        The executable launched will have the environment variable
+        <literal>DBUS_ACTIVATION_ADDRESS</literal> set to the address of the
+        message bus so it can connect and register the appropriate services.
+      </para>
+      <para>
+        The executable being launched may want to know whether the message bus
+        activating it is one of the well-known message buses (see <xref
+        linkend="message-bus-types"/>). To facilitate this, the bus MUST also set
+        the <literal>DBUS_ACTIVATION_BUS_TYPE</literal> environment variable if it is one
+        of the well-known buses. The currently-defined values for this variable
+        are <literal>system</literal> for the systemwide message bus,
+        and <literal>session</literal> for the per-login-session message
+        bus. The activated executable must still connect to the address given
+        in <literal>DBUS_ACTIVATION_ADDRESS</literal>, but may assume that the
+        resulting connection is to the well-known bus.
+      </para>
+      <para>
+        [FIXME there should be a timeout somewhere, either specified
+        in the .service file, by the client, or just a global value
+        and if the client being activated fails to connect within that
+        timeout, an error should be sent back.]
+      </para>
+    </sect2>
+
+    <sect2 id="message-bus-types">
+      <title>Well-known Message Bus Instances</title>
+      <para>
+        Two standard message bus instances are defined here, along with how 
+        to locate them and where their service files live.
+      </para>
+      <sect3 id="message-bus-types-login">
+        <title>Login session message bus</title>
+        <para>
+          Each time a user logs in, a <firstterm>login session message
+            bus</firstterm> may be started. All applications in the user's login
+          session may interact with one another using this message bus.
+        </para>
+        <para>
+          The address of the login session message bus is given 
+          in the <literal>DBUS_SESSION_BUS_ADDRESS</literal> environment 
+          variable. If that variable is not set, applications may 
+          also try to read the address from the X Window System root 
+          window property <literal>_DBUS_SESSION_BUS_ADDRESS</literal>.
+          The root window property must have type <literal>STRING</literal>.
+          The environment variable should have precedence over the 
+          root window property.
+        </para>
+        <para>
+          [FIXME specify location of .service files, probably using 
+          DESKTOP_DIRS etc. from basedir specification, though login session 
+          bus is not really desktop-specific]
+        </para>
+      </sect3>
+      <sect3 id="message-bus-types-system">
+        <title>System message bus</title>
+        <para>
+          A computer may have a <firstterm>system message bus</firstterm>,
+          accessible to all applications on the system. This message bus may be
+          used to broadcast system events, such as adding new hardware devices, 
+          changes in the printer queue, and so forth.
+        </para>
+        <para>
+          The address of the login session message bus is given 
+          in the <literal>DBUS_SYSTEM_BUS_ADDRESS</literal> environment 
+          variable. If that variable is not set, applications should try 
+          to connect to the well-known address
+          <literal>unix:path=/var/run/dbus/system_bus_socket</literal>.
+          <footnote>
+            <para>
+              The D-BUS reference implementation actually honors the 
+              <literal>$(localstatedir)</literal> configure option 
+              for this address, on both client and server side.
+            </para>
+          </footnote>
+        </para>
+        <para>
+          [FIXME specify location of system bus .service files]
+        </para>
+      </sect3>
+    </sect2>
+
+    <sect2 id="message-bus-messages">
+      <title>Message Bus Messages</title>
+      <para>
+        The special message bus service <literal>org.freedesktop.DBus</literal>
+        responds to a number of messages, allowing applications to 
+        interact with the message bus.
+      </para>
+
+      <sect3 id="bus-messages-hello">
+        <title><literal>org.freedesktop.DBus.Hello</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            STRING Hello ()
+          </programlisting>
+          Reply arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>STRING</entry>
+                  <entry>Name of the service assigned to the application</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </para>
+        <para>
+          Before an application is able to send messages to other
+          applications it must send the
+          <literal>org.freedesktop.DBus.Hello</literal> message to the
+          message bus service. If an application tries to send a
+          message to another application, or a message to the message
+          bus service that isn't the
+          <literal>org.freedesktop.DBus.Hello</literal> message, it
+          will be disconnected from the bus. If a client wishes to
+          disconnect from the bus, it just has to disconnect from the
+          transport used. No de-registration message is necessary.
+        </para>
+        <para>
+          The reply message contains the name of the application's base service.
+        </para>
+      </sect3>
+      <sect3 id="bus-messages-list-services">
+        <title><literal>org.freedesktop.DBus.ListServices</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            STRING_ARRAY ListServices ()
+          </programlisting>
+          Reply arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>STRING_ARRAY</entry>
+                  <entry>Array of strings where each string is the name of a service</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </para>
+        <para>
+          Returns a list of all existing services registered with the message bus. 
+        </para>
+      </sect3>
+      <sect3 id="bus-messages-service-exists">
+        <title><literal>org.freedesktop.DBus.ServiceExists</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            BOOLEAN ServiceExists (in STRING service_name)
+          </programlisting>
+          Message arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>STRING</entry>
+                  <entry>Name of the service</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+          Reply arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>BOOLEAN</entry>
+                  <entry>Return value, true if the service exists</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </para>
+        <para>
+          Checks if a service with a specified name exists.
+        </para>
+      </sect3>
+
+      <sect3 id="bus-messages-acquire-service">
+        <title><literal>org.freedesktop.DBus.AcquireService</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            UINT32 AcquireService (in STRING service_name)
+          </programlisting>
+          Message arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>STRING</entry>
+                  <entry>Name of the service</entry>
+                </row>
+	        <row>
+		  <entry>1</entry>
+		  <entry>UINT32</entry>
+		  <entry>Flags</entry>
+	        </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+          Reply arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>UINT32</entry>
+                  <entry>Return value</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </para>
+        <para>
+          Tries to become owner of a specific service. The flags
+          specified can be the following values logically ORed together:
+
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Identifier</entry>
+                  <entry>Value</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+	        <row>
+		  <entry>DBUS_SERVICE_FLAGS_PROHIBIT_REPLACEMENT</entry>
+		  <entry>0x1</entry>
+		  <entry>
+                    If the application succeeds in being the owner of the specified service,
+                    then ownership of the service can't be transferred until the service
+                    disconnects. If this flag is not set, then any application trying to become
+                    the owner of the service will succeed and the previous owner will be
+                    sent a <literal>org.freedesktop.DBus.ServiceLost</literal> message.
+                  </entry>
+	        </row>
+	        <row>
+		  <entry>DBUS_SERVICE_FLAGS_REPLACE_EXISTING</entry>
+		  <entry>0x2</entry>
+		  <entry>Try to replace the current owner if there is one. If this flag
+                  is not set the application will only become the owner of the service if
+                  there is no current owner.</entry>
+	        </row>
+	      </tbody>
+	    </tgroup>
+	  </informaltable>
+
+          [FIXME if it's one of the following values, why are the values
+          done as flags instead of just 0, 1, 2, 3, 4]
+          The return value can be one of the following values:
+
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Identifier</entry>
+                  <entry>Value</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+	        <row>
+                  <entry>DBUS_SERVICE_REPLY_PRIMARY_OWNER</entry>
+		  <entry>0x1</entry>
+		  <entry>The application is now the primary owner of the service.</entry>
+	        </row>
+	        <row>
+		  <entry>DBUS_SERVICE_REPLY_IN_QUEUE</entry>
+		  <entry>0x2</entry>
+		  <entry>The service already has an owner which do not want to give up ownership and therefore the application has been put in a queue.</entry>
+	        </row>
+	        <row>
+		  <entry>DBUS_SERVICE_REPLY_SERVICE_EXISTS</entry>
+		  <entry>0x4</entry>
+		  <entry>The service does already have a primary owner, and DBUS_SERVICE_FLAG_REPLACE_EXISTING was not specified when trying to acquire the service.</entry>
+	        </row>
+	        <row>
+		  <entry>DBUS_SERVICE_REPLY_ALREADY_OWNER</entry>
+		  <entry>0x8</entry>
+		  <entry>The application trying to request ownership of the service is already the owner of it.</entry>
+	        </row>
+	      </tbody>
+	    </tgroup>
+	  </informaltable>
+        </para>
+      </sect3>
+      <sect3 id="bus-messages-service-acquired">
+        <title><literal>org.freedesktop.DBus.ServiceAcquired</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            ServiceAcquired (in STRING service_name)
+          </programlisting>
+          Message arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>STRING</entry>
+                  <entry>Name of the service</entry>
+                </row>
+	        <row>
+		  <entry>1</entry>
+		  <entry>UINT32</entry>
+		  <entry>Flags</entry>
+	        </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </para>
+        <para>
+          This message is sent to a specific application when it becomes the
+          primary owner of a service.
+        </para>
+      </sect3>
+      <sect3 id="bus-messages-service-lost">
+        <title><literal>org.freedesktop.DBus.ServiceLost</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            ServiceLost (in STRING service_name)
+          </programlisting>
+          Message arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>STRING</entry>
+                  <entry>Name of the service</entry>
+                </row>
+	        <row>
+		  <entry>1</entry>
+		  <entry>UINT32</entry>
+		  <entry>Flags</entry>
+	        </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </para>
+        <para>
+          This message is sent to a specific application when it loses primary
+          ownership of a service.
+        </para>
+      </sect3>
+
+      <sect3 id="bus-messages-service-owner-changed">
+        <title><literal>org.freedesktop.DBus.ServiceOwnerChanged</literal></title>
+        <para>
+          <programlisting>
+            ServiceOwnerChanged (STRING service_name, STRING old_owner, STRING new_owner)
+          </programlisting>
+          Message arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>STRING</entry>
+                  <entry>Name of the service</entry>
+                </row>
+	        <row>
+		  <entry>1</entry>
+		  <entry>STRING</entry>
+		  <entry>Base service of previous owner, empty string if the
+		  service is newly created</entry>
+	        </row>
+	        <row>
+		  <entry>2</entry>
+		  <entry>STRING</entry>
+		  <entry>Base service of new owner, empty string if the
+		  service is no longer available</entry>
+	        </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </para>
+        <para>
+          This message is broadcast to all applications when a service has been
+          successfully registered on the message bus, has been deleted
+          or its primary owner has changed.
+        </para>
+      </sect3>
+
+      <sect3 id="bus-messages-activate-service">
+        <title><literal>org.freedesktop.DBus.ActivateService</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            UINT32 ActivateService (in STRING service_name, in UINT32 flags)
+          </programlisting>
+          Message arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>STRING</entry>
+                  <entry>Name of the service to activate</entry>
+                </row>
+	        <row>
+		  <entry>1</entry>
+		  <entry>UINT32</entry>
+		  <entry>Flags (currently not used)</entry>
+	        </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        Reply arguments:
+        <informaltable>
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry>Argument</entry>
+                <entry>Type</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>0</entry>
+                <entry>UINT32</entry>
+                <entry>Return value</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+          Tries to launch the executable associated with a service. For more information, see <xref linkend="message-bus-activation"/>.
+
+            [FIXME need semantics in much more detail here; for example, 
+            if I activate a service then send it a message, is the message 
+            queued for the new service or is there a race]
+        </para>
+        <para>
+          The return value can be one of the following values:
+    <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Identifier</entry>
+                  <entry>Value</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+	        <row>
+                  <entry>DBUS_ACTIVATION_REPLY_ACTIVATED</entry>
+                  <entry>0x0</entry>
+                  <entry>The service was activated successfully.</entry>
+                </row>
+                <row>
+                  <entry>DBUS_ACTIVATION_REPLY_ALREADY_ACTIVE</entry>
+                  <entry>0x1</entry>
+                  <entry>The service is already active.</entry>
+                </row>
+              </tbody>
+             </tgroup>
+           </informaltable>
+        </para>
+
+      </sect3>
+
+      <sect3 id="bus-messages-get-service-owner">
+        <title><literal>org.freedesktop.DBus.GetServiceOwner</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            STRING GetServiceOwner (in STRING service_name)
+          </programlisting>
+          Message arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>STRING</entry>
+                  <entry>Name of the service to query</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        Reply arguments:
+        <informaltable>
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry>Argument</entry>
+                <entry>Type</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>0</entry>
+                <entry>STRING</entry>
+                <entry>Return value, a base service name</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+        Returns the base service name of the primary owner of the
+        service in argument. If the requested service isn't active,
+        returns a
+        <literal>org.freedesktop.DBus.Error.ServiceHasNoOwner</literal> error.
+       </para>
+      </sect3>
+
+      <sect3 id="bus-messages-get-connection-unix-user">
+        <title><literal>org.freedesktop.DBus.GetConnectionUnixUser</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            UINT32 GetConnectionUnixUser (in STRING connection_name)
+          </programlisting>
+          Message arguments:
+          <informaltable>
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>Argument</entry>
+                  <entry>Type</entry>
+                  <entry>Description</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>0</entry>
+                  <entry>STRING</entry>
+                  <entry>Name of the connection/service to query</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        Reply arguments:
+        <informaltable>
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry>Argument</entry>
+                <entry>Type</entry>
+                <entry>Description</entry>
+              </row>
+            </thead>
+            <tbody>
+              <row>
+                <entry>0</entry>
+                <entry>UINT32</entry>
+                <entry>unix user id</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+        Returns the unix uid of the process connected to the server. If unable to
+	determine it, a <literal>org.freedesktop.DBus.Error.Failed</literal>
+	error is returned.
+       </para>
+      </sect3>
+
+      <sect3 id="bus-messages-out-of-memory">
+        <title><literal>org.freedesktop.DBus.Error.NoMemory</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            void NoMemory ()
+          </programlisting>
+        </para>
+        <para>
+          Sent by the message bus when it can't process a message due to an out of memory failure.
+        </para>
+      </sect3>
+
+      <sect3 id="bus-messages-service-does-not-exist">
+        <title><literal>org.freedesktop.DBus.Error.ServiceDoesNotExist</literal></title>
+        <para>
+          As a method:
+          <programlisting>
+            void ServiceDoesNotExist (in STRING error)
+          </programlisting>
+        </para>
+        <para>
+          Sent by the message bus as a reply to a client that tried to send a message to a service that doesn't exist.
+        </para>
+      </sect3>
+    </sect2>
+
+  </sect1>
+<!--
+  <appendix id="implementation-notes">
+    <title>Implementation notes</title>
+    <sect1 id="implementation-notes-subsection">
+      <title></title>
+      <para>
+      </para>
+    </sect1>
+  </appendix>
+-->
+
+  <glossary><title>Glossary</title>
+    <para>
+      This glossary defines some of the terms used in this specification.
+    </para>
+
+    <glossentry id="term-activation"><glossterm>Activation</glossterm>
+      <glossdef>
+        <para>
+          The process of creating an owner for a particular service, 
+          typically by launching an executable.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="term-base-service"><glossterm>Base Service</glossterm>
+      <glossdef>
+        <para>
+          The special service automatically assigned to an application by the 
+          message bus. This service may never change owner, and the service 
+          name will be unique (never reused during the lifetime of the 
+          message bus).
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="term-broadcast"><glossterm>Broadcast</glossterm>
+      <glossdef>
+        <para>
+          A message sent to the special <literal>org.freedesktop.DBus.Broadcast</literal>
+          service; the message bus will forward the broadcast message 
+          to all applications that have expressed interest in it.
+        </para>
+      </glossdef>
+    </glossentry>
+      
+    <glossentry id="term-message"><glossterm>Message</glossterm>
+      <glossdef>
+        <para>
+          A message is the atomic unit of communication via the D-BUS
+          protocol. It consists of a <firstterm>header</firstterm> and a
+          <firstterm>body</firstterm>; the body is made up of
+          <firstterm>arguments</firstterm>.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="term-message-bus"><glossterm>Message Bus</glossterm>
+      <glossdef>
+        <para>
+          The message bus is a special application that forwards 
+          or broadcasts messages between a group of applications
+          connected to the message bus. It also manages 
+          <firstterm>services</firstterm>.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="namespace"><glossterm>Namespace</glossterm>
+      <glossdef>
+	<para>
+          Used to prevent collisions when defining message and service
+	  names. The convention used is the same as Java uses for
+	  defining classes: a reversed domain name.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="term-object"><glossterm>Object</glossterm>
+      <glossdef>
+        <para>
+          Each application contains <firstterm>objects</firstterm>,
+          which have <firstterm>interfaces</firstterm> and 
+          <firstterm>methods</firstterm>. Objects are referred to 
+          by a name, called a <firstterm>path</firstterm> or 
+          <firstterm>object reference</firstterm>.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="term-path"><glossterm>Path</glossterm>
+      <glossdef>
+        <para>
+          Object references (object names) in D-BUS are 
+          organized into a filesystem-style hierarchy, so 
+          each object is named by a path. As in LDAP, 
+          there's no difference between "files" and "directories";
+          a path can refer to an object, while still having 
+          child objects below it.
+        </para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="peer-to-peer"><glossterm>Peer-to-peer</glossterm>
+      <glossdef>
+	<para>
+          An application talking directly to another application, without going through a message bus. 
+        </para>
+      </glossdef>
+    </glossentry>
+    <glossentry id="term-secondary-owner"><glossterm>Secondary service owner</glossterm>
+      <glossdef>
+        <para>
+          Each service has a primary owner; messages sent to the service name 
+          go to the primary owner. However, certain services also maintain 
+          a queue of secondary owners "waiting in the wings." If 
+          the primary owner releases the service, then the first secondary 
+          owner in the queue automatically becomes the primary owner.
+        </para>
+      </glossdef>
+    </glossentry>
+    <glossentry id="term-service"><glossterm>Service</glossterm>
+      <glossdef>
+        <para>
+          A service is simply a named list of applications. For example, the
+          hypothetical <literal>com.yoyodyne.Screensaver</literal> service might
+          accept messages that affect a screensaver from Yoyodyne Corporation.
+          An application is said to <firstterm>own</firstterm> a service if the
+          message bus has associated the application with the service name.
+          Services may also have <firstterm>secondary owners</firstterm> (see
+          <xref linkend="term-secondary-owner"/>).
+        </para>
+      </glossdef>
+    </glossentry>
+    <glossentry id="term-service-name"><glossterm>Service name</glossterm>
+      <glossdef>
+	<para>
+          The name used when referring to a service. If the service is
+          a base service it has a unique service name, for example
+          ":1-20", and otherwise it should be namespaced.
+        </para>
+      </glossdef>
+    </glossentry>
+    <glossentry id="term-service-description-files"><glossterm>Service Description Files</glossterm>
+      <glossdef>
+        <para>
+          ".service files" tell the bus how to activate a particular service.
+          See <xref linkend="term-activation"/>
+        </para>
+      </glossdef>
+    </glossentry>
+
+  </glossary>
+</article>
+

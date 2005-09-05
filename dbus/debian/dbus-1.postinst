@@ -1,0 +1,26 @@
+#!/bin/sh
+# -*- coding: utf-8 -*-
+# Post-installation script for D-BUS
+# Copyright © 2003 Colin Walters <walters@debian.org>
+
+MESSAGEUSER=messagebus
+MESSAGEHOME=/var/run/dbus
+
+chgrp "$MESSAGEUSER" "$MESSAGEHOME" 2>/dev/null || addgroup --system "$MESSAGEUSER"
+chown "$MESSAGEUSER"."$MESSAGEUSER" "$MESSAGEHOME" 2>/dev/null || \
+	adduser --system --home "$MESSAGEHOME" --no-create-home --disabled-password --ingroup "$MESSAGEUSER" "$MESSAGEUSER"
+usermod -G dialout $MESSAGEUSER
+
+#if [ -x "/etc/init.d/dbus-1" ] && [ "$1" = configure ] && [ "x$2" != "x" ]; then
+#   /etc/init.d/dbus-1 stop
+#fi
+
+# Make services directory for the appl. installer
+DIR=/var/lib/install/usr/lib/dbus-1.0/services
+mkdir -p $DIR
+chown install.users $DIR
+chmod 755 $DIR
+
+mkdir -p /usr/lib/dbus-1.0/services
+
+#DEBHELPER#

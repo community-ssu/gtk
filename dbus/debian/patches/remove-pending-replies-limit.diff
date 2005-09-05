@@ -1,0 +1,21 @@
+diff -ur dbus/bus/connection.c dbus.work/bus/connection.c
+--- dbus/bus/connection.c	2005-08-16 17:56:19.000000000 +0300
++++ dbus.work/bus/connection.c	2005-08-18 18:22:27.209301896 +0300
+@@ -1611,6 +1611,9 @@
+       ++count;
+     }
+   
++  /*  KHä: removing this check for now... Should investigate whether tainting
++   *  of pending replies is broken or what.
++    
+   if (count >=
+       bus_context_get_max_replies_per_connection (connections->context))
+     {
+@@ -1618,6 +1621,7 @@
+ 		      "The maximum number of pending replies per connection has been reached");
+       return FALSE;
+     }
++    */
+ 
+   pending = dbus_new0 (BusPendingReply, 1);
+   if (pending == NULL)

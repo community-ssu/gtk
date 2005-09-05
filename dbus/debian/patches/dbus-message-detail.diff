@@ -1,0 +1,301 @@
+diff -ur dbus/bus/driver.c dbus.work/bus/driver.c
+--- dbus/bus/driver.c	2005-02-11 01:31:25.000000000 +0200
++++ dbus.work/bus/driver.c	2005-06-10 17:47:19.559055136 +0300
+@@ -59,13 +59,15 @@
+   message = dbus_message_new_signal (DBUS_PATH_ORG_FREEDESKTOP_DBUS,
+                                      DBUS_INTERFACE_ORG_FREEDESKTOP_DBUS,
+                                      "ServiceOwnerChanged");
+-  
+   if (message == NULL)
+     {
+       BUS_SET_OOM (error);
+       return FALSE;
+     }
+-  
++
++  if (!dbus_message_set_detail (message, service_name))
++    goto oom;
++
+   if (!dbus_message_set_sender (message, DBUS_SERVICE_ORG_FREEDESKTOP_DBUS))
+     goto oom;
+ 
+@@ -110,6 +112,7 @@
+     }
+   
+   if (!dbus_message_set_destination (message, bus_connection_get_name (connection)) ||
++      !dbus_message_set_detail (message, service_name) ||
+       !dbus_message_append_args (message,
+                                  DBUS_TYPE_STRING, service_name,
+                                  DBUS_TYPE_INVALID))
+@@ -153,6 +156,7 @@
+     }
+   
+   if (!dbus_message_set_destination (message, bus_connection_get_name (connection)) ||
++      !dbus_message_set_detail (message, service_name) ||
+       !dbus_message_append_args (message,
+                                  DBUS_TYPE_STRING, service_name,
+                                  DBUS_TYPE_INVALID))
+diff -ur dbus/bus/signals.c dbus.work/bus/signals.c
+--- dbus/bus/signals.c	2005-02-11 01:31:25.000000000 +0200
++++ dbus.work/bus/signals.c	2005-06-10 17:47:19.560054984 +0300
+@@ -38,6 +38,7 @@
+   char *sender;
+   char *destination;
+   char *path;
++  char *detail;
+ };
+ 
+ BusMatchRule*
+@@ -82,6 +83,7 @@
+       dbus_free (rule->sender);
+       dbus_free (rule->destination);
+       dbus_free (rule->path);
++      dbus_free (rule->detail);
+       dbus_free (rule);
+     }
+ }
+@@ -167,7 +169,19 @@
+       if (!_dbus_string_append_printf (&str, "destination='%s'", rule->destination))
+         goto nomem;
+     }
+-  
++
++  if (rule->flags & BUS_MATCH_DETAIL)
++    {
++      if (_dbus_string_get_length (&str) > 0)
++	{
++	  if (!_dbus_string_append (&str, ","))
++	    goto nomem;
++	}
++
++      if (!_dbus_string_append_printf (&str, "detail='%s'", rule->detail))
++	goto nomem;
++    }
++
+   if (!_dbus_string_steal_data (&str, &ret))
+     goto nomem;
+ 
+@@ -216,6 +230,25 @@
+ }
+ 
+ dbus_bool_t
++bus_match_rule_set_detail (BusMatchRule *rule,
++			   const char   *detail)
++{
++  char *new;
++
++  _dbus_assert (detail != NULL);
++
++  new = _dbus_strdup (detail);
++  if (new == NULL)
++    return FALSE;
++
++  rule->flags |= BUS_MATCH_DETAIL;
++  dbus_free (rule->detail);
++  rule->detail = new;
++
++  return TRUE;
++}
++
++dbus_bool_t
+ bus_match_rule_set_member (BusMatchRule *rule,
+                            const char   *member)
+ {
+@@ -735,6 +768,21 @@
+               goto failed;
+             }
+         }
++      else if (strcmp (key, "detail") == 0)
++	{
++	  if (rule->flags & BUS_MATCH_DETAIL)
++	    {
++	      dbus_set_error (error, DBUS_ERROR_MATCH_RULE_INVALID,
++			      "Key %s specified twice in match rule\n", key);
++	      goto failed;
++	    }
++
++	  if (!bus_match_rule_set_detail (rule, value))
++	    {
++	      BUS_SET_OOM (error);
++	      goto failed;
++	    }
++	}
+       else if (strcmp (key, "destination") == 0)
+         {
+           if (rule->flags & BUS_MATCH_DESTINATION)
+@@ -908,6 +956,10 @@
+       strcmp (a->destination, b->destination) != 0)
+     return FALSE;
+ 
++  if ((a->flags & BUS_MATCH_DETAIL) &&
++      strcmp (a->detail, b->detail) != 0)
++    return FALSE;
++
+   return TRUE;
+ }
+ 
+@@ -1176,6 +1228,20 @@
+         return FALSE;
+     }
+ 
++  if (rule->flags & BUS_MATCH_DETAIL && dbus_message_has_detail (message))
++    {
++      const char *detail;
++
++      _dbus_assert (rule->detail != NULL);
++      
++      detail = dbus_message_get_detail (message);
++      if (detail == NULL)
++	return FALSE;
++
++      if (strcmp (detail, rule->detail) != 0)
++	return FALSE;
++    }
++
+   return TRUE;
+ }
+ 
+@@ -1308,6 +1374,7 @@
+   _dbus_assert (rule->flags & BUS_MATCH_MEMBER);
+   _dbus_assert (rule->flags & BUS_MATCH_DESTINATION);
+   _dbus_assert (rule->flags & BUS_MATCH_PATH);
++  _dbus_assert (rule->flags & BUS_MATCH_DETAIL);
+ 
+   _dbus_assert (rule->message_type == DBUS_MESSAGE_TYPE_SIGNAL);
+   _dbus_assert (rule->interface != NULL);
+@@ -1315,6 +1382,7 @@
+   _dbus_assert (rule->sender != NULL);
+   _dbus_assert (rule->destination != NULL);
+   _dbus_assert (rule->path != NULL);
++  _dbus_assert (rule->detail != NULL);
+ 
+   _dbus_assert (strcmp (rule->interface, "org.freedesktop.DBusInterface") == 0);
+   _dbus_assert (strcmp (rule->sender, "org.freedesktop.DBusSender") == 0);
+@@ -1328,7 +1396,7 @@
+ {
+   BusMatchRule *rule;
+ 
+-  rule = check_parse (TRUE, "type='signal',sender='org.freedesktop.DBusSender',interface='org.freedesktop.DBusInterface',member='Foo',path='/bar/foo',destination=':452345.34'");
++  rule = check_parse (TRUE, "type='signal',sender='org.freedesktop.DBusSender',interface='org.freedesktop.DBusInterface',member='Foo',path='/bar/foo',destination=':452345.34',detail='foo bar'");
+   if (rule != NULL)
+     {
+       assert_large_rule (rule);
+@@ -1336,7 +1404,7 @@
+     }
+ 
+   /* With extra whitespace and useless quotes */
+-  rule = check_parse (TRUE, "    type='signal',  \tsender='org.freedes''ktop.DBusSender',   interface='org.freedesktop.DBusInterface''''', \tmember='Foo',path='/bar/foo',destination=':452345.34'''''");
++  rule = check_parse (TRUE, "    type='signal',  \tsender='org.freedes''ktop.DBusSender',   interface='org.freedesktop.DBusInterface''''', \tmember='Foo',path='/bar/foo',destination=':452345.34''''',\tdetail='foo bar'\t");
+   if (rule != NULL)
+     {
+       assert_large_rule (rule);
+diff -ur dbus/bus/signals.h dbus.work/bus/signals.h
+--- dbus/bus/signals.h	2004-08-10 06:06:59.000000000 +0300
++++ dbus.work/bus/signals.h	2005-06-10 17:47:19.560054984 +0300
+@@ -36,7 +36,8 @@
+   BUS_MATCH_MEMBER       = 1 << 2,
+   BUS_MATCH_SENDER       = 1 << 3,
+   BUS_MATCH_DESTINATION  = 1 << 4,
+-  BUS_MATCH_PATH         = 1 << 5
++  BUS_MATCH_PATH         = 1 << 5,
++  BUS_MATCH_DETAIL       = 1 << 6
+ } BusMatchFlags;
+ 
+ BusMatchRule* bus_match_rule_new   (DBusConnection *matches_go_to);
+@@ -55,6 +56,8 @@
+                                              const char   *destination);
+ dbus_bool_t bus_match_rule_set_path         (BusMatchRule *rule,
+                                              const char   *path);
++dbus_bool_t bus_match_rule_set_detail       (BusMatchRule *rule,
++                                             const char   *interface);
+ 
+ BusMatchRule* bus_match_rule_parse (DBusConnection   *matches_go_to,
+                                     const DBusString *rule_text,
+diff -ur dbus/dbus/dbus-message.c dbus.work/dbus/dbus-message.c
+--- dbus/dbus/dbus-message.c	2005-02-11 01:31:26.000000000 +0200
++++ dbus.work/dbus/dbus-message.c	2005-06-10 17:50:08.276406200 +0300
+@@ -2133,6 +2133,41 @@
+                                     path);
+ }
+ 
++dbus_bool_t
++dbus_message_set_detail (DBusMessage   *message,
++                        const char    *detail)
++{
++  _dbus_return_val_if_fail (message != NULL, FALSE);
++  _dbus_return_val_if_fail (!message->locked, FALSE);
++
++  return set_string_field (message,
++                           DBUS_HEADER_FIELD_DETAIL,
++                           DBUS_TYPE_STRING,
++                           detail);
++}
++
++const char*
++dbus_message_get_detail (DBusMessage   *message)
++{
++  _dbus_return_val_if_fail (message != NULL, NULL);
++  
++  return get_string_field (message,
++                    DBUS_HEADER_FIELD_DETAIL,
++                    NULL);
++}
++
++dbus_bool_t
++dbus_message_has_detail (DBusMessage   *message)
++{
++  int n;
++  _dbus_return_val_if_fail (message != NULL, FALSE);
++  n = message->header_fields[DBUS_HEADER_FIELD_DETAIL].value_offset;
++  if (n >= 0)
++	  return TRUE;
++  else
++	  return FALSE;
++}
++
+ /**
+  * Sets the interface this message is being sent to
+  * (for DBUS_MESSAGE_TYPE_METHOD_CALL) or
+@@ -5419,6 +5454,12 @@
+ 	    }
+ 	  break;
+           
++	case DBUS_HEADER_FIELD_DETAIL:
++          if (!decode_string_field (data, field, &fields[field],
++				    &field_data, pos, type))
++            return FALSE;
++	  break;
++
+         default:
+ 	  _dbus_verbose ("Ignoring an unknown header field: %d at offset %d\n",
+ 			 field, pos);
+Only in dbus.work/dbus: dbus-message.c~
+diff -ur dbus/dbus/dbus-message.h dbus.work/dbus/dbus-message.h
+--- dbus/dbus/dbus-message.h	2005-02-11 01:31:26.000000000 +0200
++++ dbus.work/dbus/dbus-message.h	2005-06-10 17:47:19.564054376 +0300
+@@ -82,6 +82,10 @@
+ DBusMessage*  dbus_message_ref              (DBusMessage   *message);
+ void          dbus_message_unref            (DBusMessage   *message);
+ int           dbus_message_get_type         (DBusMessage   *message);
++dbus_bool_t   dbus_message_set_detail       (DBusMessage   *message,
++                                            const char    *detail);
++const char*   dbus_message_get_detail       (DBusMessage   *message);
++dbus_bool_t   dbus_message_has_detail       (DBusMessage   *message);
+ dbus_bool_t   dbus_message_set_path         (DBusMessage   *message,
+                                              const char    *object_path);
+ const char*   dbus_message_get_path         (DBusMessage   *message);
+diff -ur dbus/dbus/dbus-protocol.h dbus.work/dbus/dbus-protocol.h
+--- dbus/dbus/dbus-protocol.h	2005-02-11 01:31:26.000000000 +0200
++++ dbus.work/dbus/dbus-protocol.h	2005-06-10 17:47:19.570053464 +0300
+@@ -84,8 +84,9 @@
+ #define DBUS_HEADER_FIELD_DESTINATION    6
+ #define DBUS_HEADER_FIELD_SENDER         7
+ #define DBUS_HEADER_FIELD_SIGNATURE      8
++#define DBUS_HEADER_FIELD_DETAIL         9
+ 
+-#define DBUS_HEADER_FIELD_LAST DBUS_HEADER_FIELD_SIGNATURE
++#define DBUS_HEADER_FIELD_LAST DBUS_HEADER_FIELD_DETAIL
+ 
+ /* Services */
+ #define DBUS_SERVICE_ORG_FREEDESKTOP_DBUS      "org.freedesktop.DBus"
+Only in dbus/debian/patches: dbus-message-detail

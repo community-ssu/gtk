@@ -1,0 +1,6 @@
+debian/tmp/usr/bin/dbus-launch
+debian/tmp/usr/bin/dbus-monitor
+debian/tmp/usr/bin/dbus-send
+debian/tmp/usr/share/man/man1/dbus-launch.1
+debian/tmp/usr/share/man/man1/dbus-monitor.1
+debian/tmp/usr/share/man/man1/dbus-send.1
