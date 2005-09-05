@@ -1,3 +1,20 @@
+2005-09-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	Implement global IM module runtime switching using
+	"gtk-global-immodule" root window property.
+
+	* gtk/Makefile.am:
+	* gtk/maemo-gtk-im-switch.c: Add program to set the root window
+	property from command line.
+	* gtk/gtkimmulticontext.h (GtkIMMulticontext::context_id): remove
+	const
+	* gtk/gtkimmulticontext.c (global_context_id, get_global_context_id):
+	Replace static global context id string with a function getting it
+	from the root window property on runtime.
+	* gtk/gtkimmulticontext.c (gtk_im_multicontext_get_slave,
+	gtk_im_multicontext_focus_in, gtk_im_multicontext_append_menuitems,
+	gtk_im_multicontext_show): Adapt to use the function instead.
+
 2005-08-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_row_inserted): Revert

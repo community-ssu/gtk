@@ -888,7 +888,7 @@ LDADDS = \
 #
 # Installed tools
 #
-bin_PROGRAMS = gtk-query-immodules-2.0 gtk-update-icon-cache
+bin_PROGRAMS = gtk-query-immodules-2.0 gtk-update-icon-cache maemo-gtk-im-switch
 
 gtk_query_immodules_2_0_DEPENDENCIES = $(DEPS)
 gtk_query_immodules_2_0_LDADD = $(LDADDS)
@@ -899,6 +899,10 @@ gtk_update_icon_cache_DEPENDENCIES = $(DEPS)
 gtk_update_icon_cache_LDADD = $(LDADDS)
 
 gtk_update_icon_cache_SOURCES = updateiconcache.c
+
+maemo_gtk_im_switch_LDADD = $(LDADDS)
+
+maemo_gtk_im_switch_SOURCES = maemo-gtk-im-switch.c
 subdir = gtk
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -1153,7 +1157,8 @@ am__objects_4 = gtkplug.lo gtksocket.lo gtkxembed.lo
 am_libgtk_x11_2_0_la_OBJECTS = $(am__objects_3) $(am__objects_4)
 libgtk_x11_2_0_la_OBJECTS = $(am_libgtk_x11_2_0_la_OBJECTS)
 bin_PROGRAMS = gtk-query-immodules-2.0$(EXEEXT) \
-	gtk-update-icon-cache$(EXEEXT)
+	gtk-update-icon-cache$(EXEEXT) maemo-gtk-im-switch$(EXEEXT)
+
 PROGRAMS = $(bin_PROGRAMS)
 
 am_gtk_query_immodules_2_0_OBJECTS = queryimmodules.$(OBJEXT)
@@ -1162,6 +1167,12 @@ gtk_query_immodules_2_0_LDFLAGS =
 am_gtk_update_icon_cache_OBJECTS = updateiconcache.$(OBJEXT)
 gtk_update_icon_cache_OBJECTS = $(am_gtk_update_icon_cache_OBJECTS)
 gtk_update_icon_cache_LDFLAGS =
+am_maemo_gtk_im_switch_OBJECTS = maemo-gtk-im-switch.$(OBJEXT)
+maemo_gtk_im_switch_OBJECTS = $(am_maemo_gtk_im_switch_OBJECTS)
+maemo_gtk_im_switch_DEPENDENCIES = \
+	$(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la \
+	$(top_builddir)/gdk/$(gdktargetlib)
+maemo_gtk_im_switch_LDFLAGS =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -1342,6 +1353,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/gtkwidget.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/gtkwindow-decorate.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/gtkwindow.Plo ./$(DEPDIR)/gtkxembed.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/maemo-gtk-im-switch.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/queryimmodules.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/updateiconcache.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -1355,7 +1367,7 @@ DIST_SOURCES = $(am__libgtk_linux_fb_2_0_la_SOURCES_DIST) \
 	$(am__libgtk_win32_2_0_la_SOURCES_DIST) \
 	$(am__libgtk_x11_2_0_la_SOURCES_DIST) \
 	$(gtk_query_immodules_2_0_SOURCES) \
-	$(gtk_update_icon_cache_SOURCES)
+	$(gtk_update_icon_cache_SOURCES) $(maemo_gtk_im_switch_SOURCES)
 DATA = $(noinst_DATA)
 
 HEADERS = $(gtkinclude_HEADERS)
@@ -1368,7 +1380,7 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = $(gtkinclude_HEADERS) $(srcdir)/Makefile.in Makefile.am \
 	gtk-win32.rc.in gtkversion.h.in makefile.msc.in
-SOURCES = $(libgtk_linux_fb_2_0_la_SOURCES) $(libgtk_win32_2_0_la_SOURCES) $(libgtk_x11_2_0_la_SOURCES) $(gtk_query_immodules_2_0_SOURCES) $(gtk_update_icon_cache_SOURCES)
+SOURCES = $(libgtk_linux_fb_2_0_la_SOURCES) $(libgtk_win32_2_0_la_SOURCES) $(libgtk_x11_2_0_la_SOURCES) $(gtk_query_immodules_2_0_SOURCES) $(gtk_update_icon_cache_SOURCES) $(maemo_gtk_im_switch_SOURCES)
 
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -1455,6 +1467,9 @@ gtk-query-immodules-2.0$(EXEEXT): $(gtk_query_immodules_2_0_OBJECTS) $(gtk_query
 gtk-update-icon-cache$(EXEEXT): $(gtk_update_icon_cache_OBJECTS) $(gtk_update_icon_cache_DEPENDENCIES) 
 	@rm -f gtk-update-icon-cache$(EXEEXT)
 	$(LINK) $(gtk_update_icon_cache_LDFLAGS) $(gtk_update_icon_cache_OBJECTS) $(gtk_update_icon_cache_LDADD) $(LIBS)
+maemo-gtk-im-switch$(EXEEXT): $(maemo_gtk_im_switch_OBJECTS) $(maemo_gtk_im_switch_DEPENDENCIES) 
+	@rm -f maemo-gtk-im-switch$(EXEEXT)
+	$(LINK) $(maemo_gtk_im_switch_LDFLAGS) $(maemo_gtk_im_switch_OBJECTS) $(maemo_gtk_im_switch_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -1660,6 +1675,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtkwindow-decorate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtkwindow.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtkxembed.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maemo-gtk-im-switch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/queryimmodules.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/updateiconcache.Po@am__quote@
 

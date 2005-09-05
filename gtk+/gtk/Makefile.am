@@ -711,7 +711,7 @@ LDADDS =								\
 #
 # Installed tools
 #
-bin_PROGRAMS = gtk-query-immodules-2.0 gtk-update-icon-cache
+bin_PROGRAMS = gtk-query-immodules-2.0 gtk-update-icon-cache maemo-gtk-im-switch
 
 gtk_query_immodules_2_0_DEPENDENCIES = $(DEPS)
 gtk_query_immodules_2_0_LDADD = $(LDADDS)
@@ -723,6 +723,11 @@ gtk_update_icon_cache_DEPENDENCIES = $(DEPS)
 gtk_update_icon_cache_LDADD = $(LDADDS)
 
 gtk_update_icon_cache_SOURCES = updateiconcache.c
+
+
+maemo_gtk_im_switch_LDADD = $(LDADDS)
+
+maemo_gtk_im_switch_SOURCES = maemo-gtk-im-switch.c
 
 .PHONY: files test test-debug
 
