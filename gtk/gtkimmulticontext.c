@@ -90,7 +90,34 @@ static gboolean gtk_im_multicontext_delete_surrounding_cb   (GtkIMContext      *
 							     GtkIMMulticontext *multicontext);
 static GtkIMContextClass *parent_class;
 
-static const gchar *global_context_id = NULL;
+static gchar*
+get_global_context_id(void)
+{
+  GdkAtom atom, type, actual_type;
+
+  gint actual_format, actual_length;
+  guchar *context_id;
+
+  atom = gdk_atom_intern("gtk-global-immodule", FALSE);
+  type = gdk_atom_intern("STRING", FALSE);
+  if (!gdk_property_get(gdk_screen_get_root_window (gdk_screen_get_default ()),
+			atom,
+			type,
+			0,
+			G_MAXLONG,
+			FALSE,
+			&actual_type,
+			&actual_format,
+			&actual_length,
+			&context_id)) {
+    /* Fall back to default locale */
+    gchar *locale = _gtk_get_lc_ctype ();
+    context_id = _gtk_im_module_get_default_context_id (locale);
+    g_free (locale);
+  }
+  
+  return context_id;
+}
 
 GType
 gtk_im_multicontext_get_type (void)
@@ -342,18 +369,13 @@ gtk_im_multicontext_get_slave (GtkIMMulticontext *multicontext)
   if (!multicontext->slave)
     {
       GtkIMContext *slave;
+      gchar *global_context_id = get_global_context_id();
 
-      if (!global_context_id)
-	{
-	  gchar *locale = _gtk_get_lc_ctype ();
-	  global_context_id = _gtk_im_module_get_default_context_id (locale);
-	  g_free (locale);
-	}
-	
       slave = _gtk_im_module_create (global_context_id);
       gtk_im_multicontext_set_slave (multicontext, slave, FALSE);
       g_object_unref (slave);
 
+      g_free (multicontext->context_id);
       multicontext->context_id = global_context_id;
     }
 
@@ -412,6 +434,7 @@ gtk_im_multicontext_focus_in (GtkIMContext   *context)
 {
   GtkIMMulticontext *multicontext = GTK_IM_MULTICONTEXT (context);
   GtkIMContext *slave;
+  gchar *global_context_id = get_global_context_id();
 
   /* If the global context type is different from the context we were
    * using before, get rid of the old slave and create a new one
@@ -427,6 +450,8 @@ gtk_im_multicontext_focus_in (GtkIMContext   *context)
   
   if (slave)
     gtk_im_context_focus_in (slave);
+
+  g_free (global_context_id);
 }
 
 static void
@@ -574,11 +599,8 @@ activate_cb (GtkWidget         *menuitem,
 {
   if (GTK_CHECK_MENU_ITEM (menuitem)->active)
     {
-      const gchar *id = g_object_get_data (G_OBJECT (menuitem), "gtk-context-id");
-
       gtk_im_context_reset (GTK_IM_CONTEXT (context));
       
-      global_context_id = id;
       gtk_im_multicontext_set_slave (context, NULL, FALSE);
     }
 }
@@ -599,6 +621,7 @@ gtk_im_multicontext_append_menuitems (GtkIMMulticontext *context,
   const GtkIMContextInfo **contexts;
   guint n_contexts, i;
   GSList *group = NULL;
+  gchar *global_context_id = get_global_context_id();
   
   _gtk_im_module_list (&contexts, &n_contexts);
 
@@ -653,6 +676,7 @@ gtk_im_multicontext_append_menuitems (GtkIMMulticontext *context,
       gtk_menu_shell_append (menushell, menuitem);
     }
 
+  g_free (global_context_id);
   g_free (contexts);
 }
 
@@ -661,6 +685,7 @@ gtk_im_multicontext_show (GtkIMContext   *context)
 {
   GtkIMMulticontext *multicontext = GTK_IM_MULTICONTEXT (context);
   GtkIMContext *slave;
+  gchar *global_context_id = get_global_context_id();
 
   /* If the global context type is different from the context we were
    * using before, get rid of the old slave and create a new one
@@ -676,6 +701,8 @@ gtk_im_multicontext_show (GtkIMContext   *context)
   
   if (slave)
     gtk_im_context_show (slave);
+  
+  g_free (global_context_id);
 }
 
 static void
