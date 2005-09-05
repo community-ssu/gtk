@@ -1,0 +1,99 @@
+diff -ur glib-2.6.2/gobject/gparam.c glib-2.6.2.new/gobject/gparam.c
+--- glib-2.6.2/gobject/gparam.c	2004-09-16 21:52:40.000000000 +0300
++++ glib-2.6.2.new/gobject/gparam.c	2005-04-22 12:59:51.400056952 +0300
+@@ -152,10 +152,15 @@
+ g_param_spec_finalize (GParamSpec *pspec)
+ {
+   g_datalist_clear (&pspec->qdata);
++
++  if (!(pspec->flags & G_PARAM_STATIC_NAME))
++    g_free (pspec->name);
+   
+-  g_free (pspec->name);
+-  g_free (pspec->_nick);
+-  g_free (pspec->_blurb);
++  if (!(pspec->flags & G_PARAM_STATIC_NICK))
++    g_free (pspec->_nick);
++
++  if (!(pspec->flags & G_PARAM_STATIC_BLURB))
++    g_free (pspec->_blurb);
+ 
+   g_type_free_instance ((GTypeInstance*) pspec);
+ }
+@@ -297,6 +302,24 @@
+     }
+ }
+ 
++static gboolean
++is_canonical (gchar *key)
++{
++  gchar* p;
++  for (p = key; *p != 0; p++)
++    {
++      gchar c = *p;
++      
++      if (c != '-' &&
++	  (c < '0' || c > '9') &&
++	  (c < 'A' || c > 'Z') &&
++	  (c < 'a' || c > 'z'))
++	return FALSE;
++    }
++
++  return TRUE;
++}
++
+ gpointer
+ g_param_spec_internal (GType        param_type,
+ 		       const gchar *name,
+@@ -311,10 +334,28 @@
+   g_return_val_if_fail ((name[0] >= 'A' && name[0] <= 'Z') || (name[0] >= 'a' && name[0] <= 'z'), NULL);
+   
+   pspec = (gpointer) g_type_create_instance (param_type);
+-  pspec->name = g_strdup (name);
+-  canonicalize_key (pspec->name);
+-  pspec->_nick = g_strdup (nick);
+-  pspec->_blurb = g_strdup (blurb);
++
++  if (!is_canonical (name))
++    flags = flags & ~G_PARAM_STATIC_NAME;
++
++  if ((flags & G_PARAM_STATIC_NAME))
++    pspec->name = name;
++  else
++    {
++      pspec->name = g_strdup (name);
++      canonicalize_key (pspec->name);
++    }
++
++  if (flags & G_PARAM_STATIC_NICK)
++    pspec->_nick = nick;
++  else
++    pspec->_nick = g_strdup (nick);
++
++  if (flags & G_PARAM_STATIC_BLURB)
++    pspec->_blurb = blurb;
++  else
++    pspec->_blurb = g_strdup (blurb);
++
+   pspec->flags = (flags & G_PARAM_USER_MASK) | (flags & G_PARAM_MASK);
+   
+   return pspec;
+Only in glib-2.6.2.new/gobject: gparam.c~
+diff -ur glib-2.6.2/gobject/gparam.h glib-2.6.2.new/gobject/gparam.h
+--- glib-2.6.2/gobject/gparam.h	2003-10-25 02:10:36.000000000 +0300
++++ glib-2.6.2.new/gobject/gparam.h	2005-04-22 12:57:39.129165184 +0300
+@@ -53,9 +53,13 @@
+   G_PARAM_CONSTRUCT	      = 1 << 2,
+   G_PARAM_CONSTRUCT_ONLY      = 1 << 3,
+   G_PARAM_LAX_VALIDATION      = 1 << 4,
+-  G_PARAM_PRIVATE	      = 1 << 5
++  G_PARAM_PRIVATE	      = 1 << 5,
++  G_PARAM_STATIC_NAME         = 1 << 6,
++  G_PARAM_STATIC_NICK         = 1 << 7,
++  G_PARAM_STATIC_BLURB        = 1 << 8
+ } GParamFlags;
+ #define	G_PARAM_READWRITE	(G_PARAM_READABLE | G_PARAM_WRITABLE)
++#define	G_PARAM_STATIC_STRINGS  (G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB)
+ #define	G_PARAM_MASK		(0x000000ff)
+ /* bits in the range 0xffffff00 are reserved for 3rd party usage */
+ #define	G_PARAM_USER_SHIFT	(8)

@@ -1,0 +1,38 @@
+--- glib-2.6.2/glib/gscanner.h	2002-10-12 22:37:48.000000000 +0300
++++ glib-2.6.2/glib/gscanner.h	2005-08-05 11:50:08.000000000 +0300
+@@ -119,6 +119,12 @@
+   guint		v_error;
+ };
+ 
++/* cache flags, private */
++typedef enum
++{
++  CACHE_FLAGS_WRITE   = 1
++} GScannerCacheFlags;
++
+ struct	_GScannerConfig
+ {
+   /* Character sets
+@@ -199,12 +205,22 @@
+   
+   /* handler function for _warn and _error */
+   GScannerMsgFunc	msg_handler;
++
++  /* caching, private */
++  gint                  cache_fd;
++  GScannerCacheFlags    cache_flags;
++  gsize                 cache_size;
++  gpointer              cache_base;
++  const gchar          *cache_p;
++  const gchar          *cache_end;
+ };
+ 
+ GScanner*	g_scanner_new			(const GScannerConfig *config_templ);
+ void		g_scanner_destroy		(GScanner	*scanner);
+ void		g_scanner_input_file		(GScanner	*scanner,
+ 						 gint		input_fd);
++void		osso_g_scanner_cache_open	(GScanner	*scanner,
++						 gchar		*filename);
+ void		g_scanner_sync_file_offset	(GScanner	*scanner);
+ void		g_scanner_input_text		(GScanner	*scanner,
+ 						 const	gchar	*text,
