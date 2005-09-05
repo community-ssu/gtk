@@ -1457,7 +1457,7 @@ void construct_background_image(char *argument_list[],
             * parent's */
            NULL,
            /* flags from GSpawnFlags */
-           G_SPAWN_LEAVE_DESCRIPTORS_OPEN | G_SPAWN_DO_NOT_REAP_CHILD,
+           G_SPAWN_DO_NOT_REAP_CHILD,
            /* function to run in the child just before
             * exec() */
            NULL,

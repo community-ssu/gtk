@@ -232,7 +232,7 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
                            * parent's */
                           NULL,
                           /* flags from GSpawnFlags */
-                          G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
+                          0,
                           /* function to run in the child just before
                            * exec() */
                           NULL,
