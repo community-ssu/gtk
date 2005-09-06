@@ -16,6 +16,13 @@
            hildon_home_show_background_cb definition
          * hildon-home/hildon-home-main.c: Removed function
            hildon_home_show_background_cb and references to it as obsolete.
+	* Patch applied for N#18300:
+	* hildon-navigator/windowmanager.h: Added support for StartupNotify
+   	.desktop key.
+ 	* hildon-navigator/windowmanager.c (create_model): Added support
+   	for StartupNotify .desktop key.
+   	(method_call_handler): If StartupNotify is set to false, do not
+	   display the startup banner for application.
 
 2005-09-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 

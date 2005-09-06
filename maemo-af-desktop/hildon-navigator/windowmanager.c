@@ -1046,6 +1046,8 @@ static gboolean remove_helper(GtkTreeModel *model, GtkTreePath *path,
 GtkTreeModel *create_model(void)
 {
     gchar *path, *exec, *icon_name, *startup_wmclass, *binitem, *appname;
+    gchar *snotify_str;
+    gboolean startupnotify;
     DIR *directory = NULL;
     struct dirent *entry = NULL;
     GtkTreeStore *store = gtk_tree_store_new(WM_NUM_TASK_ITEMS,
@@ -1058,6 +1060,7 @@ GtkTreeModel *create_model(void)
                                              G_TYPE_POINTER,
                                              G_TYPE_ULONG,
                                              G_TYPE_STRING,
+                                             G_TYPE_BOOLEAN,
                                              G_TYPE_BOOLEAN,
                                              G_TYPE_BOOLEAN,
                                              G_TYPE_BOOLEAN);
@@ -1075,6 +1078,8 @@ GtkTreeModel *create_model(void)
 	MBDotDesktop *desktop;
 	GtkTreeIter iter;
         appname = NULL;
+	startupnotify = TRUE;
+
 	if (!g_str_has_suffix(entry->d_name, DESKTOP_SUFFIX))
             continue;
 
@@ -1113,6 +1118,15 @@ GtkTreeModel *create_model(void)
         icon_name =
             (char *) mb_dotdesktop_get(desktop, DESKTOP_ICON_FIELD);
 
+	snotify_str = (char *)mb_dotdesktop_get(desktop,
+						DESKTOP_STARTUPNOTIFY); 
+
+	if (snotify_str != NULL)
+
+	  {
+	    startupnotify = ( g_ascii_strcasecmp(snotify_str, "false"));
+	  }
+
 	gtk_tree_store_append(store, &iter, NULL);
 	gtk_tree_store_set(store, &iter,
 			   WM_ICON_NAME_ITEM, icon_name,
@@ -1124,6 +1138,7 @@ GtkTreeModel *create_model(void)
                            WM_KILLABLE_ITEM, FALSE,
                            WM_KILLED_ITEM, FALSE,
                            WM_MINIMIZED_ITEM, FALSE,
+                           WM_STARTUP_ITEM, startupnotify,
                            -1);
         if (startup_wmclass != NULL)
         {
@@ -1135,6 +1150,7 @@ GtkTreeModel *create_model(void)
             gtk_tree_store_set(store, &iter, WM_BIN_NAME_ITEM,
                                binitem, -1);
         }
+	/* This frees all .desktop keys also */
 	mb_dotdesktop_free(desktop);
     }
 
@@ -3199,6 +3215,7 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 		gchar *service = NULL;
 		gchar *app_name = NULL;
 		gulong view_id;
+		gboolean startup = TRUE;
 	
 		dbus_error_init (&error);
 		
@@ -3227,9 +3244,10 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 
 				gtk_tree_model_get(wm_cbs.model, &iter,
 						WM_VIEW_ID_ITEM, &view_id,
-						WM_NAME_ITEM, &app_name, -1);
+						WM_NAME_ITEM, &app_name,
+					       	WM_STARTUP_ITEM, &startup,							-1);
 
-				if (view_id == 0) {
+				if (view_id == 0 && startup == TRUE) {
 					/* Show the banner */
 					show_launch_banner( NULL,
 							app_name, service );
@@ -3363,7 +3381,8 @@ static void dnotify_callback(MBDotDesktop *desktop)
 {
     GtkTreeStore *store = GTK_TREE_STORE(wm_cbs.model);
     GtkTreeIter iter, dummy_iter;
-    gchar *exec, *icon_name, *startup_wmclass, *binitem;
+    gchar *exec, *icon_name, *startup_wmclass, *binitem, *snotify_str;
+    gboolean startupnotify = TRUE;
 
     binitem = (char *) mb_dotdesktop_get(desktop, DESKTOP_BIN_FIELD);
     startup_wmclass = 
@@ -3412,6 +3431,14 @@ static void dnotify_callback(MBDotDesktop *desktop)
     icon_name =
         (char *) mb_dotdesktop_get(desktop, DESKTOP_ICON_FIELD);
     
+
+    snotify_str = (char *)mb_dotdesktop_get(desktop,
+					    DESKTOP_STARTUPNOTIFY); 
+    if (snotify_str != NULL)
+      
+      {
+	startupnotify = ( g_ascii_strcasecmp(snotify_str, "false"));
+      }
     
     gtk_tree_store_set(store, &iter,
                        WM_ICON_NAME_ITEM, icon_name,
@@ -3424,6 +3451,7 @@ static void dnotify_callback(MBDotDesktop *desktop)
                        WM_VIEW_ID_ITEM, 0,
                        WM_KILLABLE_ITEM, FALSE,
                        WM_KILLED_ITEM, FALSE,
+		       WM_STARTUP_ITEM, startupnotify,
                        -1);
         return;
 }

@@ -103,6 +103,7 @@ enum {
 
 #define DESKTOP_ICON_FIELD "Icon"
 #define DESKTOP_SUP_WMCLASS "StartupWMClass"
+#define DESKTOP_STARTUPNOTIFY "StartupNotify"
 #define DESKTOP_SUFFIX ".desktop"
 #define UNKNOWN_TITLE "Unknown"
 
@@ -120,6 +121,7 @@ enum
     WM_KILLABLE_ITEM, /* If set to 1, application can be killed */
     WM_KILLED_ITEM, /* The application has been killed */
     WM_MINIMIZED_ITEM, /* The application has been minimized */
+    WM_STARTUP_ITEM, /* If TRUE, display the startup banner */
     WM_NUM_TASK_ITEMS
 };
 

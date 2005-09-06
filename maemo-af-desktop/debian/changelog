@@ -1,3 +1,9 @@
+maemo-af-desktop (1.47.4) unstable; urgency=low
+
+  * Patch applied for N#18300
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Sep 2005 13:22:57 +0300
+
 maemo-af-desktop (1.47.3) unstable; urgency=low
 
   * Patch applied for bug N#14514
