@@ -8,7 +8,7 @@ Standards-Version: 3.6.0
 Package: hildon-control-panel
 Section: x11
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, libmatchbox1, hildon-control-panel-l10n-3.1-engb | hildon-control-panel-l10n-3.1-english
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, libmatchbox1, hildon-control-panel-l10n-3.0-engb | hildon-control-panel-l10n-3.0-english
 Recommends: hildon-theme-harry, hildon-keyboard, matchbox-window-manager, hildon-base-lib
 Suggests: hildon-tests
 Conflicts: hildon-base
