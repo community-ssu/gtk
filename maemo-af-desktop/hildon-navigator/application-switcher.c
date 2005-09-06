@@ -265,11 +265,7 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
     as->tooltip_visible = FALSE;
     as->switched_to_desktop = FALSE;
 
-    /* In order to avoid the button being shown prematurely due to the
-       GUI draw optimization, pack it to the AS here, not before */
 
-    gtk_container_add(GTK_CONTAINER(as->toggle_button_as), 
-                      as->as_button_icon);
     
     /* Create a tooltip menu for open applications*/ 
     as->menu = GTK_MENU(gtk_menu_new());
@@ -425,7 +421,7 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
 
     gtk_widget_show(as->home_menu_item);
     gtk_widget_show(separator);
-    gtk_widget_hide(as->as_button_icon);
+
 }
 
 GtkWidget *application_switcher_get_killable_item(
@@ -493,6 +489,13 @@ void application_switcher_set_lowmem_handler( ApplicationSwitcher_t *as,
                                                  gpointer lowmem_on_cb_ptr)
 {
 	as->lowmem_handler = lowmem_on_cb_ptr;
+}
+
+void application_switcher_add_menubutton(ApplicationSwitcher_t *as)
+{
+  gtk_container_add(GTK_CONTAINER(as->toggle_button_as), 
+		    as->as_button_icon);  
+  gtk_widget_hide(as->as_button_icon);
 }
 
 /* <Private Functions> */

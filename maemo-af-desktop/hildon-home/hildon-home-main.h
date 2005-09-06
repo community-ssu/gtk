@@ -379,9 +379,6 @@ static void construct_applets(void);
 
 /* generic functions */
 static void construct_home_area(void);
-static void hildon_home_show_background_cb(GtkWidget *widget,
-                                           GdkEvent *event,
-                                           gint *background_shown);
 static void hildon_home_display_base(void);
 static void hildon_home_initiliaze(void);
 static void hildon_home_set_hardcode_values(void);

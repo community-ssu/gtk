@@ -2338,25 +2338,6 @@ void construct_home_area()
 
 }
 
-/**
- * @hildon_home_show_background_cb
- * 
- * @param widget The parent widget
- * @param event The event that caused this callback
- * @param background_shown Pointer to the flag indicating 
- *
- * Displays background and titlebar
- */
-static 
-void hildon_home_show_background_cb (GtkWidget *widget, 
-                                     GdkEvent *event, 
-                                     gint *background_shown)
-{
-    *background_shown = TRUE;
-    g_signal_handlers_disconnect_by_func (widget,
-                                          hildon_home_show_background_cb,
-                                          background_shown);
-}
 
 /**
  * @hildon_home_display_base
@@ -2366,24 +2347,10 @@ void hildon_home_show_background_cb (GtkWidget *widget,
 static 
 void hildon_home_display_base(void)
 {
-    
-    gint background_shown = FALSE;
-
     gtk_widget_realize( GTK_WIDGET( window ) );
     gdk_window_set_type_hint( GTK_WIDGET( window )->window, 
                               GDK_WINDOW_TYPE_HINT_DESKTOP );
     gtk_widget_show_all( GTK_WIDGET(window) );
-
-    g_signal_connect_after(GTK_WIDGET(window), 
-                           "expose_event",
-                           G_CALLBACK (hildon_home_show_background_cb),
-                           &background_shown);
-    gtk_widget_show_now(GTK_WIDGET(window));
-    
-    while (background_shown == FALSE)
-    {
-        gtk_main_iteration();
-    }
 }
 
 

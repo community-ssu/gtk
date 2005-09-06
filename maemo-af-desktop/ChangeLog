@@ -1,6 +1,21 @@
 2005-09-06  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
         * Additional patch applied for N#18522
+	* Patch applied for bug N#14514:
+	*  hildon-navigator/application-switcher.c:
+           (application_switcher_initialize_menu): The AS button icon is no
+           longer added to the container here.
+           (application_switcher_add_menubutton): Added function that allows the 
+           AS button icon to be packed from outside Application Switcher.
+         * hildon-navigator/application-switcher.h: Added function
+           application_switcher_add_menubutton definition
+         * hildon-navigator/hildon-navigator-main.c: Removed the 
+           navigator_gui_draw_cb callback function and references to it 
+           as obsolete.
+         * hildon-home/hildon-home-main.h: Removed function 
+           hildon_home_show_background_cb definition
+         * hildon-home/hildon-home-main.c: Removed function
+           hildon_home_show_background_cb and references to it as obsolete.
 
 2005-09-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 

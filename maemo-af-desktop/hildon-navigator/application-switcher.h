@@ -278,4 +278,6 @@ void application_switcher_set_shutdown_handler(ApplicationSwitcher_t *as,
 void application_switcher_set_lowmem_handler(ApplicationSwitcher_t *as,
                                                 gpointer lowmem_on_cb_ptr);
 
+void application_switcher_add_menubutton(ApplicationSwitcher_t *as);
+
 #endif /* APPLICATION_SWITCHER_H */

@@ -84,8 +84,6 @@ static void destroy_navigator(Navigator *tasknav);
      
 static gpointer create_new_plugin(Navigator *tasknav, gchar *plugin_name); 
 
-static void navigator_gui_draw_cb(GtkWidget *widget, GdkEvent *event,
-                                  gint *drawn); 
 
 
 
@@ -96,10 +94,9 @@ static void navigator_gui_draw_cb(GtkWidget *widget, GdkEvent *event,
 static void create_navigator(Navigator *tasknav)
 {
     GtkBox *box;
-    gint drawn = 0;
 
     tasknav->main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    
+
     gtk_window_set_type_hint(GTK_WINDOW(tasknav->main_window), 
                              GDK_WINDOW_TYPE_HINT_DOCK);
     
@@ -177,24 +174,13 @@ static void create_navigator(Navigator *tasknav)
         gtk_box_pack_start(box, tasknav->app_switcher_button,
                            FALSE, FALSE, 0);
     }
-    
-    gtk_widget_show_all(tasknav->main_window);
-    gtk_widget_show_now(tasknav->main_window);
-    
-    g_signal_connect_after(GTK_WIDGET(tasknav->main_window), 
-                           "expose_event",
-                           G_CALLBACK (navigator_gui_draw_cb),
-                           &drawn);
-    
-    while (drawn == 0)
-    {
-    
-        gtk_main_iteration();
-    }
 
-    /* Initialize navigator menus */
+    /* Initialize navigator menus, then display GUI */
     
     initialize_navigator_menus(tasknav);
+    gtk_widget_show_all(tasknav->main_window);
+    application_switcher_add_menubutton(tasknav->app_switcher);
+    
 }
 
 /* Create new plugin. If loading plugin succeed, function returns the 
@@ -408,16 +394,15 @@ static void initialize_navigator_menus(Navigator *tasknav)
     {
         tasknav->initialize_menu(tasknav->mail_data);   
     }
-    
+
     /*Initialize application switcher menu*/
     application_switcher_initialize_menu(tasknav->app_switcher);
-    tasknav->app_switcher_dnotify_cb = 
+    tasknav->app_switcher_dnotify_cb =
         application_switcher_get_dnotify_handler(tasknav->app_switcher);
 
     /* Initialize others menu */
     others_menu_initialize_menu(tasknav->others_menu,
                                 tasknav->app_switcher_dnotify_cb);
-    
 
 }
 
@@ -470,13 +455,3 @@ int main( int argc, char* argv[] )
 }
     
 #endif
-
-
-static void navigator_gui_draw_cb(GtkWidget *widget, GdkEvent *event,
-                                  gint *drawn)
-{
-    *drawn = 1;
-    g_signal_handlers_disconnect_by_func (widget,
-                                          navigator_gui_draw_cb,
-                                          drawn);
-}
