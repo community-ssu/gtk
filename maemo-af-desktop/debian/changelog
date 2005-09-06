@@ -1,3 +1,9 @@
+maemo-af-desktop (1.47.5) unstable; urgency=low
+
+  * Tried with w35 rootstrap, this version compiles, tagging new version
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Sep 2005 14:45:20 +0300
+
 maemo-af-desktop (1.47.4) unstable; urgency=low
 
   * Patch applied for N#18300
