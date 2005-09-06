@@ -1,3 +1,9 @@
+maemo-af-desktop (1.47.8) unstable; urgency=low
+
+  * Corrected versioning mistake. Now should be ok.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Sep 2005 18:15:39 +0300
+
 maemo-af-desktop (1.47.6) unstable; urgency=low
 
   * Tagged new version for integration
