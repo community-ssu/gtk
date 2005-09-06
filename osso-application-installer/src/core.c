@@ -805,13 +805,22 @@ package_file_info (AppData *app_data, gchar *file)
       info.size = g_string_new (size);
       info.description = g_string_new (ptr);
 
-      /* XXX - the parsing is a bit coarse here...
+      /* Figure out whether the package properly depends on maemo.
+         The maemo package itself does not need to depend on itself,
+         tho. 
+
+	 XXX - the parsing is a bit coarse here...
        */
       depends_on_maemo = 0;
-      while ((tok = strsep (&depends, " \t\r\n,")))
-	if (strcmp (tok, META_PACKAGE) == 0)
-	  depends_on_maemo = 1;
-
+      if (strcmp (package, META_PACKAGE) != 0)
+	{
+	  while ((tok = strsep (&depends, " \t\r\n,")))
+	    if (strcmp (tok, META_PACKAGE) == 0)
+	      depends_on_maemo = 1;
+	}
+      else
+	depends_on_maemo = 1;
+	  
       if (!depends_on_maemo)
 	{
 	  report_installation_failure (app_data,
@@ -1149,7 +1158,10 @@ install_package (gchar *deb, AppData *app_data)
   if (info.name == NULL)
     return;
 
-  if (package_already_installed (app_data, info.name->str))
+  /* Don't allow upgrades, except of the special "maemo" package.
+   */
+  if (strcmp (info.name->str, META_PACKAGE) != 0
+      && package_already_installed (app_data, info.name->str))
     {
       /* XXX-NLS - some versions of the osso-application-installer
 	           erroneously used ai_ti_alreadyinstalled and this
