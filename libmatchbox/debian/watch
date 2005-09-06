@@ -1,4 +1,0 @@
-version=2
-
-http://projects.o-hand.com/matchbox/sources/libmatchbox/1.7/libmatchbox-(.*)\.tar.gz \
-	debian	uupdate
