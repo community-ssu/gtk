@@ -3196,6 +3196,7 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 
 		DBusError error;
 		gchar *service_name = NULL;
+		gchar *service = NULL;
 		gchar *app_name = NULL;
 		gulong view_id;
 	
@@ -3214,13 +3215,15 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 			
 		} else {
 
-			/* FIXME: Maybe should do some checking here? */
-			service_name += strlen( SERVICE_PREFIX );
+                        if (!g_str_has_prefix(service_name, SERVICE_PREFIX)) {
+                                return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+                        }
+                        service = service_name + strlen(SERVICE_PREFIX);
 			
 			GtkTreeIter iter;
 			
 			if ( find_service_from_tree( wm_cbs.model,
-						&iter, service_name ) > 0 ) {
+						&iter, service ) > 0 ) {
 
 				gtk_tree_model_get(wm_cbs.model, &iter,
 						WM_VIEW_ID_ITEM, &view_id,
@@ -3229,11 +3232,14 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 				if (view_id == 0) {
 					/* Show the banner */
 					show_launch_banner( NULL,
-							app_name, service_name );
+							app_name, service );
 				}
+                                dbus_free (service_name);
 
 				return DBUS_HANDLER_RESULT_HANDLED;
 			}
+
+                        dbus_free (service_name);
 		}
 	}
 
