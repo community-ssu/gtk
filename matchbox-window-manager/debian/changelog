@@ -1,0 +1,113 @@
+matchbox-window-manager (1:0.9.5.20050809-2) unstable; urgency=low
+
+  * Code cleanup
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue,  6 Sep 2005 09:55:35 +0300
+
+matchbox-window-manager (1:0.9.5.20050809-1) unstable; urgency=low
+
+  * Packaged a new snapshot from the Matchbox SVN repository
+  * Fixes the positioning of withdrawn windows so that they are no
+    longer moved to 0,0
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue,  9 Aug 2005 13:21:08 +0300
+
+matchbox-window-manager (1:0.9.5-1.20050621.1) unstable; urgency=low
+
+  * Minor build fixes, removed SVN repository remains
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 21 Jun 2005 13:54:11 +0300
+
+matchbox-window-manager (1:0.9.5-1.20050621) unstable; urgency=low
+
+  * Another packaged SVN snapshot containing various fixes
+  * Fixes #14553 (Destroying a HildonNote too quickly causes a BadWindow
+    error)
+  * Fixes #14657 (Stripping out non-required themes from matchbox
+    package)
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 21 Jun 2005 11:40:06 +0300
+
+matchbox-window-manager (1:0.9.5-1.20050615) unstable; urgency=low
+
+  * A packaged SVN snapshot containing various fixes
+  * Removed various patches as they should now be present in the
+    Matchbox source itself
+  * Fixed #11656 (Withdrawn windows staying around)
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Fri, 17 Jun 2005 09:28:46 +0300
+
+matchbox-window-manager (1:0.9.4-1osso3) unstable; urgency=low
+
+  * Applied attachment #3648 from bug #13276.
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Mon,  6 Jun 2005 14:27:09 +0300
+
+matchbox-window-manager (1:0.9.4-1osso2) unstable; urgency=low
+
+  * control: Addition of libxrender-dev dependency as a build workaround
+    at least until a real culprit is fixed. No code changes.
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 12 May 2005 10:48:13 +0300
+
+matchbox-window-manager (1:0.9.4-1osso1) unstable; urgency=low
+
+  * Applied _NET_ACTIVE_WINDOW behavior patch from Matthew Allum
+  * Focus behavior change patch from Matthew Allum was applied.
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 10 May 2005 12:03:25 +0300
+
+matchbox-window-manager (1:0.9.4-1) unstable; urgency=low
+
+  * New upstream version has been packaged.
+  * Now XFT compile option is set instead of Pango
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 13 Apr 2005 11:23:27 +0300
+
+matchbox-window-manager (1:0.9.3-2.20050301) unstable; urgency=low
+
+  * Another packaged snapshot, fixes at least #6420 (Toolbars with
+    fullscreen doesn't work together with input window)
+  * Also bound the alt shift s to osso-screenshot-tool, as suggested
+    in bug #6478.
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu,  3 Mar 2005 15:12:04 +0200
+
+matchbox-window-manager (1:0.9.3-2) unstable; urgency=low
+
+  * Rebuilt with some additional compile options
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 17 Feb 2005 12:33:50 +0200
+
+matchbox-window-manager (1:0.9.3-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Moray Allan <moray@debian.org>  Thu, 10 Feb 2005 16:20:35 +0200
+
+matchbox-window-manager (0.9-2) unstable; urgency=low
+
+  * Update watch file.
+  * Tighten libmatchbox-dev build-depends.
+
+ -- Moray Allan <moray@debian.org>  Mon, 10 Jan 2005 02:24:47 +0000
+
+matchbox-window-manager (0.9-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Moray Allan <moray@debian.org>  Fri,  7 Jan 2005 16:56:11 +0000
+
+matchbox-window-manager (0.8.4-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Moray Allan <moray@debian.org>  Sat, 27 Nov 2004 19:15:45 +0000
+
+matchbox-window-manager (0.8.2-1) unstable; urgency=low
+
+  * Split out from monolithic matchbox package.
+  * New upstream release. Closes: #221365, #234223.
+  * New maintainer for Matchbox packages.
+
+ -- Moray Allan <moray@debian.org>  Fri, 16 Jul 2004 02:14:53 +0100

@@ -1,0 +1,4 @@
+version=2
+
+http://projects.o-hand.com/matchbox/sources/matchbox-window-manager/0.9/matchbox-window-manager-(.*)\.tar.gz \
+	debian	uupdate

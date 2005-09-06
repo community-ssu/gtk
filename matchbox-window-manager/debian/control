@@ -1,0 +1,17 @@
+Source: matchbox-window-manager
+Section: embedded
+Priority: optional
+Maintainer: Tapani Palli <tapani.palli@nokia.com>
+Build-Depends: cdbs (>= 0.4.21), debhelper (>= 4.1.0), pkg-config, libmatchbox-dev (>= 1.5-2), libxrender-dev
+Standards-Version: 3.6.1
+
+Package: matchbox-window-manager
+Architecture: any
+Depends: ${shlibs:Depends}
+Replaces: matchbox (<< 1:0.8.2)
+Description: window manager for resource-limited systems
+ Matchbox is a base environment for the X Window System running on non-desktop
+ embedded platforms such as handhelds, set-top boxes, kiosks and anything else
+ for which screen space, input mechanisms or system resources are limited.
+ .
+ This package contains the Matchbox window manager.
