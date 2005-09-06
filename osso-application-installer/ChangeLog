@@ -1,3 +1,9 @@
+2005-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/core.c (package_file_info): Do not insist that the "maemo"
+	package itself depends on "maemo".
+	(install_package): Allow upgrades of the "maemo" package.
+
 2005-09-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/core.h (PackageInfo): Added field rejection_reason.
