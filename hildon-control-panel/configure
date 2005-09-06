@@ -1775,7 +1775,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=hildon-control-panel
- VERSION=0.9.22
+ VERSION=0.10.0
 
 
 cat >>confdefs.h <<_ACEOF

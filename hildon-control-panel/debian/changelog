@@ -1,3 +1,9 @@
+hildon-control-panel (0.10.0) unstable; urgency=low
+
+  * Updated dependency to l10n packages
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Sep 2005 17:50:36 +0300
+
 hildon-control-panel (0.9.23-2) unstable; urgency=low
 
   * Updated version again

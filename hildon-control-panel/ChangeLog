@@ -1,4 +1,9 @@
 2005-08-26  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+  * Updated dependency to UI spec 3.0 to fix integratability problems.
+  * Tagged version for Integration 0.10.0. This is meant for week 36 integration release.
+
+2005-08-26  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	
   * Updated dependency to UI spec 4.0 to fix localization problems.
   * Tagged version for Integration 0.9.23. This is meant for week 35 integration release.
