@@ -205,6 +205,7 @@ static gboolean gtk_text_view_focus            (GtkWidget        *widget,
                                                 GtkDirectionType  direction);
 static void gtk_text_view_select_all           (GtkWidget        *widget,
                                                 gboolean          select);
+static void gtk_text_view_hide                 (GtkWidget        *widget);
 
 
 /* Source side drag signals */
@@ -537,6 +538,7 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
   widget_class->drag_motion = gtk_text_view_drag_motion;
   widget_class->drag_drop = gtk_text_view_drag_drop;
   widget_class->drag_data_received = gtk_text_view_drag_data_received;
+  widget_class->hide = gtk_text_view_hide;
 
   widget_class->popup_menu = gtk_text_view_popup_menu;
   
@@ -8604,3 +8606,13 @@ gtk_text_view_get_input_mode (GtkTextView *text_view)
 
   return mode;
 }
+
+static void
+gtk_text_view_hide (GtkWidget *widget)
+{
+  gtk_im_context_hide (GTK_TEXT_VIEW (widget)->im_context);
+
+  if (GTK_WIDGET_CLASS (parent_class)->hide)
+    (* GTK_WIDGET_CLASS (parent_class)->hide) (widget);
+}
+
