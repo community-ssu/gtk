@@ -7962,7 +7962,8 @@ gtk_tree_view_row_changed (GtkTreeModel *model,
   _gtk_tree_view_find_node (tree_view, path, &tree, &node);
   if (!_gtk_tree_selection_is_row_selectable (tree_view->priv->selection,
                                               node,
-                                              path))
+                                              path) &&
+      gtk_tree_row_reference_valid (tree_view->priv->cursor))
     {
       GtkTreePath *cursor_path = gtk_tree_row_reference_get_path (tree_view->priv->cursor);
  
