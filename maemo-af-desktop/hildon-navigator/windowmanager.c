@@ -3252,12 +3252,12 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 					show_launch_banner( NULL,
 							app_name, service );
 				}
-                                dbus_free (service_name);
+                /* FIXED 07092005, fix to bug N#18830: removed: dbus_free (service_name); Removed by Karoliina Salminen */
 
 				return DBUS_HANDLER_RESULT_HANDLED;
 			}
 
-                        dbus_free (service_name);
+            dbus_free (service_name);
 		}
 	}
 
