@@ -187,6 +187,7 @@ static void   gtk_entry_state_changed        (GtkWidget        *widget,
 					      GtkStateType      previous_state);
 static void   gtk_entry_screen_changed       (GtkWidget        *widget,
 					      GdkScreen        *old_screen);
+static void   gtk_entry_hide                 (GtkWidget        *widget);
 
 static gboolean gtk_entry_drag_drop          (GtkWidget        *widget,
                                               GdkDragContext   *context,
@@ -502,6 +503,7 @@ gtk_entry_class_init (GtkEntryClass *class)
   widget_class->drag_data_received = gtk_entry_drag_data_received;
   widget_class->drag_data_get = gtk_entry_drag_data_get;
   widget_class->drag_data_delete = gtk_entry_drag_data_delete;
+  widget_class->hide = gtk_entry_hide; 
 
   widget_class->popup_menu = gtk_entry_popup_menu;
 
@@ -6053,4 +6055,13 @@ gtk_entry_get_input_mode (GtkEntry *entry)
     mode = 0;
 
   return mode;
+}
+
+static void
+gtk_entry_hide (GtkWidget *widget)
+{
+  gtk_im_context_hide (GTK_ENTRY (widget)->im_context);
+  
+  if (GTK_WIDGET_CLASS (parent_class)->hide)
+    (* GTK_WIDGET_CLASS (parent_class)->hide) (widget);
 }

@@ -1,5 +1,12 @@
 2005-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkentry.c (gtk_entry_hide):
+	* gtk/gtktextview.c (gtk_text_view_hide): Override the hide virtual
+	function to hide the input method as well.
+	N#16761
+
+2005-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_row_changed): Added validity check
 	before using cursor row reference.
 	N#18433
