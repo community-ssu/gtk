@@ -1217,7 +1217,8 @@ typedef struct {
 } copy_data;
 
 static gboolean
-copy_progress (GnomeVFSXferProgressInfo *info,
+copy_progress (GnomeVFSAsyncHandle *handle,
+	       GnomeVFSXferProgressInfo *info,
 	       gpointer raw_data)
 {
   copy_data *data = (copy_data *)raw_data;
@@ -1313,10 +1314,10 @@ do_copy (AppData *app_data,
 			   GNOME_VFS_XFER_ERROR_MODE_QUERY,
 			   GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE,
 			   GNOME_VFS_PRIORITY_DEFAULT,
-			   NULL,
-			   NULL,
 			   copy_progress,
-			   &data);
+			   &data,
+			   NULL,
+			   NULL);
 
   if (result == GNOME_VFS_OK)
     {
