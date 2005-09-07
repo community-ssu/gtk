@@ -7543,5 +7543,10 @@ void gtk_window_set_prev_focus_widget (GtkWindow *window, GtkWidget *widget)
 
 static void gtk_window_focus_weak_notify (GtkWindow *window, GtkWidget *widget)
 {
+  GtkWindowPrivate *priv;
+
+  priv = GTK_WINDOW_GET_PRIVATE (window);
+  priv->prev_focus_widget = NULL;
+
   gtk_window_set_prev_focus_widget (window, window->focus_widget);
 }
