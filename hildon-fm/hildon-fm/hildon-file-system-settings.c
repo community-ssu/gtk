@@ -39,10 +39,19 @@
 #include <gconf/gconf-client.h>
 #include <mce/dbus-names.h>
 #include <mce/mode-names.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <libintl.h>
 
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#define _(String) dgettext(PACKAGE, String)
 
 #include "hildon-file-system-settings.h"
 
@@ -474,3 +483,58 @@ gboolean _hildon_file_system_settings_get_flight_mode(void)
   self = _hildon_file_system_settings_get_instance();
   return self->priv->flightmode;
 }
+
+#define BANNER_SERVICE "com.nokia.statusbar"
+#define BANNER_REQUEST_PATH "/com/nokia/statusbar"
+#define BANNER_REQUEST_IF "com.nokia.statusbar"
+#define BANNER_SHOW "delayed_infobanner"
+#define BANNER_HIDE "cancel_delayed_infobanner"
+
+/* Communication with tasknavigator for displaying possible
+   banner while making blocking calls */
+void _hildon_file_system_prepare_banner(void)
+{
+  HildonFileSystemSettings *settings;
+  DBusConnection *conn;
+  DBusMessage *message;
+  DBusMessageIter iter;
+
+  settings = _hildon_file_system_settings_get_instance();
+  conn = settings->priv->dbus_conn;
+  message = dbus_message_new_method_call(BANNER_SERVICE,
+        BANNER_REQUEST_PATH, BANNER_REQUEST_IF, BANNER_SHOW);
+  g_assert(message != NULL);
+
+  dbus_message_append_iter_init(message, &iter);
+  dbus_message_iter_append_int32(&iter, getpid()); /* id */
+  dbus_message_iter_append_int32(&iter, 1000);     /* Initial delay */
+  dbus_message_iter_append_int32(&iter, 30000);    /* Display timeout */
+  dbus_message_iter_append_string(&iter, _("ckdg_pb_updating"));
+
+  (void) dbus_connection_send(conn, message, NULL);
+
+  dbus_connection_flush(conn);
+  dbus_message_unref(message);
+}
+
+void _hildon_file_system_cancel_banner(void)
+{
+  HildonFileSystemSettings *settings;
+  DBusConnection *conn;
+  DBusMessage *message;
+  DBusMessageIter iter;
+
+  settings = _hildon_file_system_settings_get_instance();
+  conn = settings->priv->dbus_conn;
+  message = dbus_message_new_method_call(BANNER_SERVICE,
+        BANNER_REQUEST_PATH, BANNER_REQUEST_IF, BANNER_HIDE);
+  g_assert(message != NULL);
+
+  dbus_message_append_iter_init(message, &iter);
+  dbus_message_iter_append_int32(&iter, getpid());
+
+  (void) dbus_connection_send(conn, message, NULL);
+
+  dbus_message_unref(message);
+}
+

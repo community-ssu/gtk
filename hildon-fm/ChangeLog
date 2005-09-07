@@ -1,3 +1,30 @@
+2005-09-07  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	Some GTK filesystem backend cause blocking for unknown amount of
+	time. We "solve" this (give feedback to the user) by adding a dbus
+	service to TN to display an "updating" info banner after one
+	second.
+	
+	* hildon-file-system-settings.h: Introduced new internal API to
+	communicate with task navigator in order to display banner during
+	blocking backend operations.
+
+	* hildon-file-system-settings.c: Implemented new communication API.
+
+	* hildon-file-system-model.c:
+	- Added calls to task navigator to show banner during blocking
+	calls.
+	
+	- Changed nodes that need to be reloaded to be queued instead of
+	the old approach where error nodes were queued. In this way we can
+	remove problem nodes from model immediately after error condition
+	is detected.
+	
+2005-09-07  Luc Pionchon  <luc.pionchon@nokia.com>
+	
+	* hildon-file-system-model.c: Added handler for new
+	GtkFileSystemError code. This causes less calls over bluetooth.	
+
 2005-08-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* configure.ac: Release 0.9.36

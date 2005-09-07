@@ -79,6 +79,11 @@ gboolean _hildon_file_system_settings_ready(HildonFileSystemSettings *self);
 /* Convenience APIs */
 gboolean _hildon_file_system_settings_get_flight_mode(void);
 
+/* Communication with tasknavigator for displaying possible
+   banner while making blocking calls */
+void _hildon_file_system_prepare_banner(void);
+void _hildon_file_system_cancel_banner(void);
+
 G_END_DECLS
 
 #endif
