@@ -1,5 +1,12 @@
 2005-09-07  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
+	* Increased version baseline to 1.48.0 due to bugfix camp.
+	* First bugfix camp patch applied
+  	* Applied improve-hildon-home-event-efficiency -patch from Mathew
+    	Allum.
+
+2005-09-07  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
 	* Fixed bug N#18830
 	* hildon-navigator/windowmanager.c: method_call_handler: removed one dbus_free (service_name); (the second last one) 
 	* The bug was caused by loss of name of the service. 

@@ -1,3 +1,11 @@
+maemo-af-desktop (1.48.0) unstable; urgency=low
+
+  * Bug fix camp first version
+  * Applied improve-hildon-home-event-efficiency -patch from Mathew
+    Allum.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed,  7 Sep 2005 15:41:48 +0300
+
 maemo-af-desktop (1.47.9) unstable; urgency=low
 
   * Fixed bug 18830

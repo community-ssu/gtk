@@ -3088,7 +3088,11 @@ static Window get_active_main_window(Window window)
         /* The limit > TRANSIENCY_MAXITER ensures that we can't be stuck
            here forever if we have circular transiencies for some reason.
            Use of _MB_CURRENT_APP_WINDOW might be more elegant... */
-        
+
+        /* FIXME: You really *do* want to use _MB_CURRENT_APP_WINDOW  
+         *        it could potentially avoid a numer of round trips.
+         *        Its not just elegance but efficiency too.
+        */
         if (!parent_window || parent_window == GDK_ROOT_WINDOW() ||
             parent_window == window || limit > TRANSIENCY_MAXITER)
         {
@@ -3119,11 +3123,29 @@ GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent,
                                           GdkEvent *event, 
                                           gpointer data)
 {
-    Atom active_window_atom = XInternAtom (GDK_DISPLAY(),
-                                           "_NET_ACTIVE_WINDOW",
-                                           False);
-    XPropertyEvent *prop = xevent;
-    if (prop->window == GDK_WINDOW_XID(window->window) )
+    static Atom     active_window_atom = 0;
+    XPropertyEvent *prop = NULL;
+    
+    /* If this isn't a property chnage event ignore ASAP */
+    if (((XEvent*)xevent)->type != PropertyNotify)
+        return GDK_FILTER_CONTINUE;
+
+    if (active_window_atom == 0)
+    {
+        /* Only ever create the the atom _once_. It costs
+         * a roundtrip to create an atom so you really dont
+         * want to do this all the time. The atom value will
+         * not change.
+        */
+        active_window_atom = XInternAtom (GDK_DISPLAY(),
+                                          "_NET_ACTIVE_WINDOW",
+                                          False);
+    }
+    
+    prop = (XPropertyEvent*)xevent;
+
+    /* Only process is the event is for root win and active atom */
+    if (prop->window == GDK_ROOT_WINDOW () && prop->atom == active_window_atom)
     { 
         Atom realtype;
         gint applet_num = 0;
@@ -3308,8 +3330,19 @@ int hildon_home_main(void)
     g_signal_connect(G_OBJECT(window), "key_release_event",
                      G_CALLBACK(hildon_home_key_release_listener), NULL);
 
-    gdk_window_add_filter(GDK_WINDOW(window->window),
-                          hildon_home_event_filter, NULL);
+    /*gdk_window_add_filter(GDK_WINDOW(window->window),
+                          hildon_home_event_filter, NULL);*/
+    
+    /* Hand applied Mathew's patch here, Karoliina Salminen 07092005 bugfixcamp */
+    /* Set up the filter so we _only_ get notified for propertys
+     * changing on the root window. That is enough to know if we
+     * are currently at the top of the stack
+     */
+    gdk_window_set_events(gdk_get_default_root_window(),
+                          GDK_PROPERTY_CHANGE_MASK);
+    gdk_window_add_filter(gdk_get_default_root_window(),
+                           hildon_home_event_filter, NULL);
+
     
     g_signal_connect(window, "style-set", 
                      G_CALLBACK(construct_background_image_with_new_skin), 
