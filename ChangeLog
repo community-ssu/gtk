@@ -1,3 +1,10 @@
+2005-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkwindow.c (gtk_window_focus_weak_notify): When
+	prev_focus_widget gets destroyed and we recieve the destroy
+	notification, make sure that it gets changed or set to NULL.
+	N#16744
+
 2005-09-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	Implement global IM module runtime switching using
