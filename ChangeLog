@@ -1,5 +1,11 @@
 2005-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_row_changed): Added validity check
+	before using cursor row reference.
+	N#18433
+
+2005-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkwidget.c (gtk_widget_enter_notify, gtk_widget_leave_notify):
 	Don't call gtk_widget_activate() handler, which are about focus
 	handling.
