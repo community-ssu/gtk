@@ -3693,8 +3693,6 @@ static gboolean gtk_widget_enter_notify_event (GtkWidget *widget, GdkEventCrossi
 	  gtk_window_set_prev_focus_widget (GTK_WINDOW(toplevel), GTK_WINDOW(toplevel)->focus_widget);
 	  if (GTK_WIDGET_CAN_FOCUS (event_widget))
 	    gtk_widget_grab_focus (event_widget);
-	  else
-	    gtk_widget_activate (event_widget);
 	}
     }
   return FALSE;
@@ -3735,8 +3733,6 @@ static gboolean gtk_widget_leave_notify_event (GtkWidget *widget, GdkEventCrossi
 					    event_widget);
 	  if (GTK_WIDGET_CAN_FOCUS (temp))
 	    gtk_widget_grab_focus (temp);
-	  else
-	    gtk_widget_activate (temp);
 	}
     }
   return FALSE;
