@@ -1,4 +1,14 @@
 2005-09-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+	* Applied faster-atoms patch from Mathew Allum.
+	* windowmanager.c modified to speed up the atom
+	comparisons it does. rather than do hash lookups and then str
+	comparisons it now just compares integer ATOM ID's. Im hoping its
+	pretty safe to apply ( after testing your end ) and wont cause any
+	regressions.
+	* Changed version to 1.48.2. This can be now tested.
+
+2005-09-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	
 	* Tagged 1.48.1 for integration. Will be included to week 36, if Mathew's patches don't cause 
 	additional problems.

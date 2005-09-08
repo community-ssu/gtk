@@ -73,6 +73,16 @@ Atom subname, transient_for, typeatom;
 Atom wm_class_atom, wm_name, wm_state, wm_type, utf8, showing_desktop;
 Atom mb_active_win;
 
+/* FIXME: much nicer to declare global atoms like this 
+ * or better put in an array..
+*/
+Atom Atom_HILDON_APP_KILLABLE;
+Atom Atom_NET_WM_WINDOW_TYPE_MENU;
+Atom Atom_NET_WM_WINDOW_TYPE_NORMAL;
+Atom Atom_NET_WM_WINDOW_TYPE_DIALOG;
+Atom Atom_NET_WM_WINDOW_TYPE_DESKTOP;
+Atom Atom_NET_WM_STATE_MODAL;
+
 /* Struct for launch banner info */
 typedef struct
 {
@@ -722,15 +732,6 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
     gdk_error_trap_pop();
 
     gdk_error_trap_push();
-    gchar *atomstring = XGetAtomName(GDK_DISPLAY(), pev->atom);
-    gdk_error_trap_pop();
-    if (atomstring == NULL)
-    {
-        osso_log(LOG_ERR,
-                 "TN: Unable to get atom name (propertynotifiy)\n");
-        return;
-    }
-    gdk_error_trap_push();
     XGetWindowProperty(GDK_DISPLAY(), pev->window, wm_class_atom, 0, 24,
                        False, XA_STRING, &actual_type, &actual_format,
                        &nitems, &bytes_after, &wm_class_str);
@@ -739,12 +740,11 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
     /* If active view changes and is not in the treestore yet,
        it signifies a new view that must be registered. We do also the
        subname registration here. */
-
-    if (g_str_equal(atomstring, "_NET_ACTIVE_WINDOW") == TRUE)
+    if (pev->atom == active_win)
     {
         handle_active_window_prop(model, wm_class_str, pev->window);
     }
-    else if (g_str_equal(atomstring, "_NET_SHOWING_DESKTOP") == TRUE)
+    else if (pev->atom == showing_desktop)
     {
         gdk_error_trap_push();
         XGetWindowProperty(GDK_DISPLAY(), 
@@ -759,7 +759,6 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                 handle_autotopping();
             }
             XFree(desktop_shown);
-            XFree(atomstring);
             if (wm_class_str != NULL)
             {
                 XFree(wm_class_str);
@@ -771,23 +770,22 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
 
     if (wm_class_str == NULL)
     {
-        XFree(atomstring);
         return;
     }
-    else if (g_str_equal(atomstring, "_MB_WIN_SUB_NAME") == TRUE)
+    else if (pev->atom == subname)
     {
         handle_subname_window_prop(model, wm_class_str, pev->window);
     }
     
-    else if (g_str_equal (atomstring, "_NET_CLIENT_LIST") == TRUE)
+    else if (pev->atom == clientlist)
     {
         handle_client_list_prop(model, wm_class_str, pev->window);
     }
-    else if (g_str_equal(atomstring, "_HILDON_APP_KILLABLE") == TRUE)
+    else if (pev->atom == Atom_HILDON_APP_KILLABLE)
     {
         handle_killable_prop(model, wm_class_str, pev->window, pev->state);
     }
-    else if (g_str_equal(atomstring, "WM_STATE") == TRUE)
+    else if (pev->atom == wm_state)
     {
         gdk_error_trap_push();
         XGetWindowProperty(GDK_DISPLAY(), pev->window, wm_state, 0,
@@ -803,9 +801,7 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
         }
     }
 
-
     XFree(wm_class_str);
-    XFree(atomstring);
 }
 
 
@@ -1722,9 +1718,9 @@ static void handle_client_list_prop(GtkTreeModel *model,
                 g_free(subname_str);
                 return;
             }
-              else
+	    else
               {
-                  window_props *new_win =  NULL;
+		window_props *new_win =  NULL;
                   gchar *icon, *name, *exec;
                   
                   gtk_tree_model_get(model, &parent,
@@ -1927,28 +1923,23 @@ static int determine_window_type(Window win_id)
     
     for (i = 0; i < nitems; i++)
     {
-        gdk_error_trap_push();
-        type_str = XGetAtomName(GDK_DISPLAY(), wm_type_value.atom_value[i]);
-        gdk_error_trap_pop();
-
-        if (type_str == NULL)
-        {
-            continue;
-        }
-
         /* The menu case is tested first, as it will probably be a very
            common one */
 
-        if (g_str_equal(type_str, "_NET_WM_WINDOW_TYPE_MENU") == TRUE )
+        if (wm_type_value.atom_value[i] == Atom_NET_WM_WINDOW_TYPE_MENU)
         {
             window_type = MENU;
             break;
         }
 
-        if (g_str_equal(type_str, "_NET_WM_WINDOW_TYPE_NORMAL") == TRUE )
+        if (wm_type_value.atom_value[i] == Atom_NET_WM_WINDOW_TYPE_NORMAL)
             
         {
             window_type = NORMAL_WINDOW;
+
+	    /* FIXME: Below is bogus ?? application windows cant be modal..? 
+	    */
+#if 0
             gdk_error_trap_push();
             XGetWindowProperty(GDK_DISPLAY(), win_id, net_wm_state, 0,
                                G_MAXLONG, False, XA_ATOM, &actual_type,
@@ -1960,62 +1951,43 @@ static int determine_window_type(Window win_id)
             }
             if (nitems_wmstate > 0)
             {
-                gchar *wm_state_str = NULL; 
-
-                gdk_error_trap_push();                
-                wm_state_str = XGetAtomName(GDK_DISPLAY(),
-                                            wm_state_value.atom_value[0]);
-                gdk_error_trap_pop();
-
-                if (wm_state_str && strcmp(wm_state_str,
-                                           "_NET_WM_STATE_MODAL") == 0)
+                if (wm_state_value.atom_value[0] == Atom_NET_WM_STATE_MODAL)
                 {
                     window_type = OTHER;
-                    XFree(wm_state_str);
                     XFree(wm_state_value.char_value);
                 }
                 break;
             }
+#endif
         }
-        else if (g_str_equal(type_str,
-                             "_NET_WM_WINDOW_TYPE_DIALOG") == TRUE )
+        else if (wm_state_value.atom_value[0] == Atom_NET_WM_WINDOW_TYPE_DIALOG)
         {
-            gdk_error_trap_push();
-            XGetWindowProperty(GDK_DISPLAY(), win_id, net_wm_state, 0,
-                               G_MAXLONG, False, XA_ATOM, &actual_type,
-                               &actual_format, &nitems_wmstate, &bytes_after,
-                               (unsigned char **)&wm_state_value.char_value);
-            if (gdk_error_trap_pop() != 0)
-            {
-                break;
-            }
-            if (nitems_wmstate > 0)
-            {
-                gchar *wm_state_str = NULL;
+	  /* FIXME: What is window_type is dialog is not modal ?  */
 
-                gdk_error_trap_push();
-                wm_state_str = XGetAtomName(GDK_DISPLAY(),
-                                            wm_state_value.atom_value[0]);
-                gdk_error_trap_pop();
-
-                if (wm_state_str && 
-                    g_str_equal(wm_state_str,
-                                "_NET_WM_STATE_MODAL") == TRUE)
-                {
-                    window_type = MODAL_DIALOG;
-                    XFree(wm_state_str);
-                    XFree(wm_state_value.char_value);
-                    break;
-                }
-                
-            }
-            if (wm_state_value.char_value != NULL)
+	  gdk_error_trap_push();
+	  XGetWindowProperty(GDK_DISPLAY(), win_id, net_wm_state, 0,
+			     G_MAXLONG, False, XA_ATOM, &actual_type,
+			     &actual_format, &nitems_wmstate, &bytes_after,
+			     (unsigned char **)&wm_state_value.char_value);
+	  if (gdk_error_trap_pop() != 0)
             {
-                XFree(wm_state_value.char_value);
-                wm_state_value.char_value = NULL;
+	      break;
             }
-        }
-        else if (g_str_equal(type_str, "_NET_WM_WINDOW_TYPE_DESKTOP") == TRUE)
+	  if (nitems_wmstate > 0)
+            {
+	      if (wm_state_value.atom_value[0] == Atom_NET_WM_STATE_MODAL)
+		window_type = MODAL_DIALOG;
+            }
+	  
+	  if (wm_state_value.char_value != NULL)
+            {
+	      XFree(wm_state_value.char_value);
+	      wm_state_value.char_value = NULL;
+            }
+
+	  break;
+	}
+        else if (wm_state_value.atom_value[0] == Atom_NET_WM_WINDOW_TYPE_DESKTOP)
         {
             window_type = DESKTOP;
         }
@@ -2028,6 +2000,7 @@ static int determine_window_type(Window win_id)
         XFree(type_str);
     }
     XFree(wm_type_value.char_value);
+
     return window_type;
 }
 
@@ -2708,7 +2681,9 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
 
     /* Initialize the common X atoms */
 
+    /* FIXME: put in array and use XInternAtoms() */
     gdk_error_trap_push();
+
     active_win = XInternAtom(GDK_DISPLAY(), "_NET_ACTIVE_WINDOW", False);
     clientlist = XInternAtom(GDK_DISPLAY(), "_NET_CLIENT_LIST", False);
     net_wm_state =XInternAtom(GDK_DISPLAY(), "_NET_WM_STATE", False);
@@ -2725,6 +2700,19 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
                                   "_NET_SHOWING_DESKTOP", False);
     mb_active_win = XInternAtom(GDK_DISPLAY(),
                                 "_MB_CURRENT_APP_WINDOW", False);
+    Atom_HILDON_APP_KILLABLE = 
+      XInternAtom(GDK_DISPLAY(), "_HILDON_APP_KILLABLE", False);
+    Atom_NET_WM_WINDOW_TYPE_MENU = 
+      XInternAtom(GDK_DISPLAY(), "_NET_WM_WINDOW_TYPE_MENU", False);
+    Atom_NET_WM_WINDOW_TYPE_NORMAL =
+      XInternAtom(GDK_DISPLAY(), "_NET_WM_WINDOW_TYPE_NORMAL", False);
+    Atom_NET_WM_WINDOW_TYPE_DIALOG = 
+      XInternAtom(GDK_DISPLAY(), "_NET_WM_WINDOW_TYPE_DIALOG", False);
+    Atom_NET_WM_WINDOW_TYPE_DESKTOP =
+      XInternAtom(GDK_DISPLAY(), "_NET_WM_WINDOW_TYPE_DESKTOP", False);
+    Atom_NET_WM_STATE_MODAL =
+      XInternAtom(GDK_DISPLAY(), "_NET_WM_STATE_MODAL", False);
+
 
     gdk_error_trap_pop();
 
