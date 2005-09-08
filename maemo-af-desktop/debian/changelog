@@ -1,3 +1,9 @@
+maemo-af-desktop (1.48.3) unstable; urgency=low
+
+  * Patched bug 18503
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  8 Sep 2005 18:51:29 +0300
+
 maemo-af-desktop (1.48.2) unstable; urgency=low
 
   * Applied faster-atoms -patch from Mathew Allum. Ready for testing.

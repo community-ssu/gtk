@@ -1,5 +1,10 @@
 2005-09-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
+	* Patched bug N#18503
+	* status-bar-item.c: line 280-284 null checking added.
+	
+2005-09-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
 	* Applied faster-atoms patch from Mathew Allum.
 	* windowmanager.c modified to speed up the atom
 	comparisons it does. rather than do hash lookups and then str

@@ -277,6 +277,12 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
     /* Initialize the plugin */
     priv->data = priv->fn->initialize( item, &priv->button );
     
+    /* Patch status-bar-init-null-fix hand applied here by Karoliina Salminen 08092005 */
+    if ( !priv->button ) {
+         dlclose( priv->dlhandle );
+         return NULL;
+    }
+
     g_object_set (G_OBJECT (priv->button), "can-focus", FALSE, NULL);
 
     gtk_widget_set_parent( priv->button, GTK_WIDGET( item ) );
