@@ -360,6 +360,7 @@ gtk_cell_view_size_allocate (GtkWidget     *widget,
 
   cellview = GTK_CELL_VIEW (widget);
 
+
   /* checking how much extra space we have */
   for (i = cellview->priv->cell_list; i; i = i->next)
     {
@@ -375,38 +376,81 @@ gtk_cell_view_size_allocate (GtkWidget     *widget,
     }
 
   extra_space = widget->allocation.width - full_requested_width;
+  
   if (expand_cell_count > 0)
     extra_space /= expand_cell_count;
-
-  /* iterate list for PACK_START cells */
-  for (i = cellview->priv->cell_list; i; i = i->next)
+  
+  /* PACK_START cells */
+  if (extra_space >= 0)
     {
-      GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
+      /* we have more space than requested */
+      for (i = cellview->priv->cell_list; i; i = i->next)
+        {
+          GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
+          if (info->pack == GTK_PACK_END)
+              continue;
+          if (!info->cell->visible)
+              continue;
 
-      if (info->pack == GTK_PACK_END)
-        continue;
-
-      if (!info->cell->visible)
-        continue;
-
-      info->real_width = info->requested_width + 
-          (info->expand || extra_space < 0 ? extra_space : 0);
+          info->real_width = info->requested_width + 
+              (info->expand ? extra_space : 0);
+        }
     }
-
-  /* iterate list for PACK_END cells */
-  for (i = cellview->priv->cell_list; i; i = i->next)
+  else
     {
-      GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
-
-      if (info->pack == GTK_PACK_START)
-        continue;
-
-      if (!info->cell->visible)
-        continue;
-
-      info->real_width = info->requested_width + 
-          (info->expand || extra_space < 0 ? extra_space : 0);
+      /* we have less space than requested 
+       * iterate (and take space) from last cell in list so that first 
+       * cells remain visible */ 
+      for ( i = g_list_last(cellview->priv->cell_list); i; i = i->prev )
+         {
+           GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
+           if (info->pack == GTK_PACK_END)
+             continue;
+           if (!info->cell->visible)
+             continue;
+           
+           info->real_width = info->requested_width + extra_space;         
+           if (info->real_width < 0)
+               info->real_width = info->requested_width;
+           /* if there is at most one expanding cell, take space only once */
+           if (expand_cell_count <= 1)
+               extra_space = 0;
+         }
     }
+  
+  /* PACK_END cells */
+  if (extra_space >= 0)
+    {
+      for (i = cellview->priv->cell_list; i; i = i->next)
+        {
+          GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
+          if (info->pack == GTK_PACK_START)
+              continue;
+          if (!info->cell->visible)
+              continue;
+
+          info->real_width = info->requested_width + 
+              (info->expand ? extra_space : 0);
+        }
+    }
+  else
+    {
+       for ( i = g_list_last(cellview->priv->cell_list); i; i = i->prev )
+         {
+           GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
+           if (info->pack == GTK_PACK_START)
+               continue;
+           if (!info->cell->visible)
+               continue;
+
+           info->real_width = info->requested_width + extra_space;
+           if (info->real_width < 0)
+               info->real_width = info->requested_width;
+           if (expand_cell_count <= 1)
+               extra_space = 0;
+         }
+    }
+  
 }
 
 static gboolean

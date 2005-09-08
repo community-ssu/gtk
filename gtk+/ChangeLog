@@ -1,5 +1,11 @@
 2005-09-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkcellview.c (gtk_cell_view_size_allocate): improved width
+	computation incase there is less space available than requested
+	N#18597
+
+2005-09-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_increment_stamp):
 	Removed cache clear that was useless and highly inefficient.
 	N#17314
