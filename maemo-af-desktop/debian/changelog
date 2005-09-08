@@ -1,3 +1,9 @@
+maemo-af-desktop (1.48.4) unstable; urgency=low
+
+  * Patched earlier Mathew's patch with new one
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  8 Sep 2005 19:07:52 +0300
+
 maemo-af-desktop (1.48.3) unstable; urgency=low
 
   * Patched bug 18503

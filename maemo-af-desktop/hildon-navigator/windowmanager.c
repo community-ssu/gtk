@@ -1904,7 +1904,6 @@ static int determine_window_type(Window win_id)
 {
     int window_type = OTHER, actual_format, i;
     unsigned long nitems, nitems_wmstate = 0, bytes_after;
-    gchar *type_str = NULL;
     
     union atom_value wm_type_value, wm_state_value;
     
@@ -1920,7 +1919,8 @@ static int determine_window_type(Window win_id)
     {
         return UNKNOWN;
     }
-    
+
+    /* FIXME: Why loop here, only one type atom per window.. */
     for (i = 0; i < nitems; i++)
     {
         /* The menu case is tested first, as it will probably be a very
@@ -1960,7 +1960,7 @@ static int determine_window_type(Window win_id)
             }
 #endif
         }
-        else if (wm_state_value.atom_value[0] == Atom_NET_WM_WINDOW_TYPE_DIALOG)
+        else if (wm_type_value.atom_value[i] == Atom_NET_WM_WINDOW_TYPE_DIALOG)
         {
 	  /* FIXME: What is window_type is dialog is not modal ?  */
 
@@ -1973,10 +1973,17 @@ static int determine_window_type(Window win_id)
             {
 	      break;
             }
+
 	  if (nitems_wmstate > 0)
             {
-	      if (wm_state_value.atom_value[0] == Atom_NET_WM_STATE_MODAL)
-		window_type = MODAL_DIALOG;
+	      int j;
+
+	      for (j=0; j < nitems_wmstate; j++)
+		if (wm_state_value.atom_value[j] == Atom_NET_WM_STATE_MODAL)
+		  {
+		    window_type = MODAL_DIALOG;
+		    break;
+		  }
             }
 	  
 	  if (wm_state_value.char_value != NULL)
@@ -1987,18 +1994,13 @@ static int determine_window_type(Window win_id)
 
 	  break;
 	}
-        else if (wm_state_value.atom_value[0] == Atom_NET_WM_WINDOW_TYPE_DESKTOP)
+        else if (wm_type_value.atom_value[i] == Atom_NET_WM_WINDOW_TYPE_DESKTOP)
         {
             window_type = DESKTOP;
         }
         
-        XFree(type_str);
-        type_str = NULL;
     }
-    if (type_str != NULL)
-    {
-        XFree(type_str);
-    }
+
     XFree(wm_type_value.char_value);
 
     return window_type;

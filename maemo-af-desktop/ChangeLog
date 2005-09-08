@@ -2,6 +2,7 @@
 
 	* Patched bug N#18503
 	* status-bar-item.c: line 280-284 null checking added.
+	* Patched eaerlier Mathew's patch with a new patch.
 	
 2005-09-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
