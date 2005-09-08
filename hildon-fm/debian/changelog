@@ -1,3 +1,16 @@
+hildon-fm (0.9.37-2) unstable; urgency=low
+
+  * updated dependency on GTK
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  7 Sep 2005 18:06:18 +0300
+
+hildon-fm (0.9.37-1) unstable; urgency=low
+
+  * improvement: Show feedback (infoprint banner) to user during blocking
+    calls
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  7 Sep 2005 15:43:55 +0300
+
 hildon-fm (0.9.36-1) unstable; urgency=low
 
   * Bugs fixed:
