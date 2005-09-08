@@ -1,5 +1,11 @@
 2005-09-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_increment_stamp):
+	Removed cache clear that was useless and highly inefficient.
+	N#17314
+
+2005-09-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkentry.c:
 	* gtk/gtktextview.c: Instead of 'hide' use 'unmap' to hide the IM so
 	that it works also when parent gets hidden.
