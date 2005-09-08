@@ -1,3 +1,9 @@
+2005-09-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	
+	* Tagged 1.48.1 for integration. Will be included to week 36, if Mathew's patches don't cause 
+	additional problems.
+	* Tested that the package can be built.
+
 2005-09-07  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Increased version baseline to 1.48.0 due to bugfix camp.

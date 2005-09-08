@@ -1,3 +1,9 @@
+maemo-af-desktop (1.48.1) unstable; urgency=low
+
+  * Tagged version for integration
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  8 Sep 2005 14:04:40 +0300
+
 maemo-af-desktop (1.48.0) unstable; urgency=low
 
   * Bug fix camp first version
