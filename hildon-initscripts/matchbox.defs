@@ -6,6 +6,7 @@ DESKTOPMODE=plain
 LOWLIGHT=no
 SHOWCURSOR=yes
 DIALOGMODE=static
+SUPERMODAL=yes
 MBTHEME=$DEFAULTMBTHEME
 
 if [ -f $HOME/.osso/mbtheme ]; then

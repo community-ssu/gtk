@@ -53,6 +53,11 @@ if [ $START = TRUE ]; then
     echo "$0: Error, DIALOGMODE is not defined"
     exit 2
   fi
+  if [ "x$SUPERMODAL" = "x" ]; then
+    echo "$0: Error, SUPERMODAL is not defined"
+    exit 2
+  fi
+
 
   $LAUNCHWRAPPER_NICE start "$SVC" $PROG \
       -theme $MBTHEME \
@@ -60,7 +65,8 @@ if [ $START = TRUE ]; then
       -use_desktop_mode $DESKTOPMODE \
       -use_lowlight $LOWLIGHT \
       -use_cursor $SHOWCURSOR \
-      -use_dialog_mode $DIALOGMODE
+      -use_dialog_mode $DIALOGMODE \
+      -use_super_modal $SUPERMODAL
 else
   $LAUNCHWRAPPER_NICE stop "$SVC" $PROG
 fi
