@@ -1,3 +1,7 @@
+2005-09-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: Release 0.9.37
+
 2005-09-07  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	Some GTK filesystem backend cause blocking for unknown amount of
