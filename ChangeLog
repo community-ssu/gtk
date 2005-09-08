@@ -1,3 +1,12 @@
+2005-09-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenu.c (gtk_menu_window_visibility_notify_event): Close the
+	menu if it overlaps even partially with non-menu/message windows. Also
+	removed a check to make only root menu close the menu, since the root
+	menu doesn't receive partial visibility notification again once a
+	submenu has already partially obscured it.
+	N#18455
+
 2005-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkentry.c (gtk_entry_hide):
