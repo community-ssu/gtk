@@ -1,3 +1,7 @@
+2005-09-09  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* locales/en_GB: Amended am_pm and t_fmt_ampm (N#18270)
+
 2005-08-23  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* locales(fi_FI: Fixed abday, abmon, day, mon to use sentence capital letters (N#17095)
