@@ -59,7 +59,8 @@ enum {
   PROP_FLIGHT_MODE = 1,
   PROP_BTNAME,
   PROP_GATEWAY,
-  PROP_USB
+  PROP_USB,
+  PROP_GATEWAY_FTP
 };
 
 #define PRIVATE(obj) HILDON_FILE_SYSTEM_SETTINGS(obj)->priv
@@ -76,6 +77,7 @@ struct _HildonFileSystemSettingsPrivate
   gboolean usb;
   gchar *btname;
   gchar *gateway;
+  gboolean gateway_ftp;
 
   gboolean gconf_ready;
   gboolean flightmode_ready;
@@ -107,6 +109,9 @@ hildon_file_system_settings_get_property(GObject *object,
     case PROP_USB:
       g_value_set_boolean(value, priv->usb);
       break;
+    case PROP_GATEWAY_FTP:
+      g_value_set_boolean(value, priv->gateway_ftp);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -128,15 +133,24 @@ static void set_gateway_from_gconf_value(
 {
   g_free(self->priv->gateway);
   self->priv->gateway = NULL;
+  self->priv->gateway_ftp = FALSE;
 
   if (value && value->type == GCONF_VALUE_STRING)
   {
     const gchar *address = gconf_value_get_string(value); 
     if (address) 
+    {
+      gchar key[256];
+
+      g_snprintf(key, sizeof(key), "%s/%s/ftp", GNOME_BT_DEVICE, address);
       self->priv->gateway = g_strdup(address);
+      self->priv->gateway_ftp = gconf_client_get_bool(
+        self->priv->gconf, key, NULL);
+    }
   }
 
   g_object_notify(G_OBJECT(self), "gateway");
+  g_object_notify(G_OBJECT(self), "gateway-ftp");
 }
 
 static void set_usb_from_gconf_value(
@@ -394,6 +408,10 @@ hildon_file_system_settings_class_init(HildonFileSystemSettingsClass *klass)
     g_param_spec_boolean("usb-cable", "USB cable",
                          "Whether or not the USB cable is connected",
                          FALSE, G_PARAM_READABLE));
+  g_object_class_install_property(object_class, PROP_GATEWAY_FTP,
+    g_param_spec_boolean("gateway-ftp", "Gateway ftp",
+                         "Whether current gateway device supports file transfer",
+                         FALSE, G_PARAM_READABLE));
 }
 
 static gboolean delayed_init(gpointer data)
@@ -477,11 +495,13 @@ gboolean _hildon_file_system_settings_ready(HildonFileSystemSettings *self)
          self->priv->flightmode_ready;
 }
 
+/* This is used to check if we can access gateway.
+   Nowadays we check ftp support as well, not just flight mode. */
 gboolean _hildon_file_system_settings_get_flight_mode(void)
 {
   HildonFileSystemSettings *self;
   self = _hildon_file_system_settings_get_instance();
-  return self->priv->flightmode;
+  return self->priv->flightmode || !self->priv->gateway_ftp;
 }
 
 #define BANNER_SERVICE "com.nokia.statusbar"

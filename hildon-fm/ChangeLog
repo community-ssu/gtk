@@ -1,3 +1,17 @@
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+        N#18253 Phone icon is not dimmed (in file tree) when the phone
+	does not support OBEX.
+	
+	* hildon-fm/hildon-file-system-settings.c (gateway-ftp): added new
+	property "gateway-ftp".
+	(_hildon_file_system_settings_get_flight_mode): Added ftp capability check.
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_real_row_insensitive): Added a check if
+	gateway is dimmed because of missing ftp capability.
+
+
 2005-09-08  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: Release 0.9.37

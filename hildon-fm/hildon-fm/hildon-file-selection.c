@@ -1366,6 +1366,7 @@ static void hildon_file_selection_row_insensitive(GtkTreeView *tree,
 static void hildon_file_selection_real_row_insensitive(HildonFileSelection *self,
   GtkTreeIter *location)
 {
+  HildonFileSystemSettings *settings;
   HildonFileSystemModelItemType type;
   GtkWindow *window;
 
@@ -1377,13 +1378,12 @@ static void hildon_file_selection_real_row_insensitive(HildonFileSelection *self
 
   /* The following call can (in theory) return NULL. That's why use C style cast */
   window = (GtkWindow *) gtk_widget_get_ancestor(GTK_WIDGET(self), GTK_TYPE_WINDOW);
+  settings = _hildon_file_system_settings_get_instance();
 
   if (type == HILDON_FILE_SYSTEM_MODEL_MMC)
   {
-    HildonFileSystemSettings *settings;
     gboolean cable;
 
-    settings = _hildon_file_system_settings_get_instance();
     g_object_get(settings, "usb-cable", &cable, NULL);
 
     if (cable)
@@ -1392,7 +1392,16 @@ static void hildon_file_selection_real_row_insensitive(HildonFileSelection *self
       gtk_infoprint(window, _("hfil_ib_mmc_not_present"));
   }
   else if (type == HILDON_FILE_SYSTEM_MODEL_GATEWAY)
-    gtk_infoprint(window, _("sfil_ib_no_connections_flightmode"));
+  {
+    gboolean flight_mode, ftp;
+
+    g_object_get(settings, "gateway-ftp", &ftp, "flight-mode", &flight_mode, NULL);
+
+    if (flight_mode)
+      gtk_infoprint(window, _("sfil_ib_no_connections_flightmode"));
+    else if (!ftp)
+      gtk_infoprint(window, _("sfil_ib_no_connection_support"));
+  }
   else
     gtk_infoprint(window, _("sfil_ib_opening_not_allowed"));
 }
