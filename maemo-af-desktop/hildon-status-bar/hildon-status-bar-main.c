@@ -36,6 +36,7 @@
 
 /* System includes */
 #include <string.h>
+#include <glob.h>
 
 /* GTK includes */
 #include <gtk/gtkwindow.h>
@@ -172,6 +173,33 @@ static void add_prespecified_items( StatusBar *panel )
         osso_log( LOG_ERR, "Statusbar item add failed for display" );
     }
 }
+
+static void add_user_items( StatusBar *panel )
+{
+    glob_t globbuf;
+    gchar *pattern, *mark_prefix, *mark_suffix, *name;
+    int i;
+
+    pattern = g_strconcat(HILDON_STATUS_BAR_USER_PLUGIN_PATH, "/lib*.so", NULL);
+    glob(pattern, 0, NULL, &globbuf);
+
+    for (i = 0; i < globbuf.gl_pathc; i++)
+    {
+        mark_prefix = strrchr(globbuf.gl_pathv[i], '/');
+        mark_suffix = strrchr(globbuf.gl_pathv[i], '.');
+        /* Extract name, cut of lib prefix and .so suffix */
+        name = g_strndup(mark_prefix + 4, mark_suffix - mark_prefix - 4);
+
+        if (add_item( panel, name ) == NULL)
+        {
+            osso_log( LOG_ERR, "Statusbar item add failed for %s", name );
+        }
+    }
+
+    globfree(&globbuf);
+    g_free(pattern);
+}
+
 
 static void show_infoprint( const gchar *msg )
 {
@@ -550,15 +578,17 @@ int status_bar_main(osso_context_t *osso, StatusBar *panel){
 
     TRACE(TDEBUG,"status_bar_main: 4 add prespecified items");
     add_prespecified_items( panel );
-    TRACE(TDEBUG,"status_bar_main: 5 gtk widget show all");
+    TRACE(TDEBUG,"status_bar_main: 5 add user items");
+    add_user_items( panel );
+    TRACE(TDEBUG,"status_bar_main: 6 gtk widget show all");
     gtk_widget_show_all( panel->window );
-    TRACE(TDEBUG,"status_bar_main: 6 if rpc...");
+    TRACE(TDEBUG,"status_bar_main: 7 if rpc...");
     /* set RPC cb */
     if( osso_rpc_set_default_cb_f( osso, rpc_cb, panel ) != OSSO_OK )
     {
         osso_log( LOG_ERR, "osso_rpc_set_default_cb_f() failed" );
     }
-    TRACE(TDEBUG,"status_bar_main: 7, status bar initialized successfully");
+    TRACE(TDEBUG,"status_bar_main: 8, status bar initialized successfully");
     return 0;
 
 }

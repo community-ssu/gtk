@@ -61,6 +61,8 @@
 
 #define XLIB_FORMAT_32_BIT 32
 
+#define HILDON_STATUS_BAR_USER_PLUGIN_PATH "/var/lib/install/usr/lib/hildon-status-bar"
+
 typedef struct status_bar_st StatusBar;
 
 struct status_bar_st
