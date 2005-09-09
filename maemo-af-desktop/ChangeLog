@@ -1,7 +1,12 @@
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-    * Reverted version conflict which was caused by syncing CVS version and stage version.
-    * Patch edited & resolved by Karoliina Salminen & Tommi Komulainen
+	* hildon-home/hildon-home-main.c (hildon_home_main): Do not overwrite the existing event mask of the maemo-af-desktop for root window, otherwise Task navigator 
+	will break.
+
+2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+        * Reverted version conflict which was caused by syncing CVS version and stage version.
+        * Patch edited & resolved by Karoliina Salminen & Tommi Komulainen
 
 2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
 

@@ -3337,9 +3337,12 @@ int hildon_home_main(void)
     /* Set up the filter so we _only_ get notified for propertys
      * changing on the root window. That is enough to know if we
      * are currently at the top of the stack
-     */
+     * Ensure that we do not overwrite existing event mask, but only add
+       to it (important as long as statusbar, home and TN are one process) */
+
     gdk_window_set_events(gdk_get_default_root_window(),
-                          GDK_PROPERTY_CHANGE_MASK);
+			  gdk_window_get_events(gdk_get_default_root_window())
+			  | GDK_PROPERTY_CHANGE_MASK);
     gdk_window_add_filter(gdk_get_default_root_window(),
                            hildon_home_event_filter, NULL);
 
