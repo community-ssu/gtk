@@ -3223,11 +3223,14 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 		} else {
 
                         if (!g_str_has_prefix(service_name, SERVICE_PREFIX)) {
+				dbus_free (service_name);
                                 return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
                         }
-                        service = service_name + strlen(SERVICE_PREFIX);
+                        
+                        service = g_strdup (service_name + strlen(SERVICE_PREFIX));
+                        dbus_free (service_name);
 			
-			GtkTreeIter iter;
+                        GtkTreeIter iter;
 			
 			if ( find_service_from_tree( wm_cbs.model,
 						&iter, service ) > 0 ) {
@@ -3239,15 +3242,17 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 
 				if (view_id == 0 && startup == TRUE) {
 					/* Show the banner */
+                                        /* Service will be freed later when
+                                         * banner is removed */
 					show_launch_banner( NULL,
-							app_name, service );
+                                                            app_name, service );
 				}
-                /* FIXED 07092005, fix to bug N#18830: removed: dbus_free (service_name); Removed by Karoliina Salminen */
+
 
 				return DBUS_HANDLER_RESULT_HANDLED;
-			}
+                        }
 
-            dbus_free (service_name);
+                        g_free (service);
 		}
 	}
 
@@ -3330,12 +3335,11 @@ static gboolean launch_banner_timeout( gpointer data )
 		     lowmem_situation == TRUE) {
 		  gtk_infoprint( NULL, _( LAUNCH_FAILED_INSUF_RES ) );
 		}
-		
+	
 		/* Cleanup */
-		if ( data ) {
-			g_free( data );
-		}
-		
+		g_free (info->service_name);
+		g_free (info);
+
 		if ( app_name ) {
 			g_free( app_name );
 		}
