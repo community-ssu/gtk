@@ -558,14 +558,15 @@ static void destroy_item( GtkObject *object,
     reorder_items( panel );
 }
 
-int status_bar_main(osso_context_t *osso, StatusBar *panel){
+int status_bar_main(osso_context_t *osso, StatusBar **panel){
 
 
-
+    StatusBar *sb_panel = NULL;
     TRACE(TDEBUG,"status_bar_main: 1 g_new0");
-    panel = g_new0( StatusBar, 1 );
+    sb_panel = g_new0 (StatusBar, 1);
+
     TRACE(TDEBUG,"status_bar_main: 2 check panel ptr");
-    if( !panel )
+    if( !sb_panel )
     {  
         osso_log( LOG_ERR, "g_new0 failed! Exiting.." );
         osso_deinitialize( osso );
@@ -638,9 +639,9 @@ int main( int argc, char *argv[] )
       return 1;
   }
   
-  status_bar_main(osso, panel); 
+  status_bar_main(osso, &panel); 
   gtk_main();
-  status_bar_deinitialize(osso, panel);  
+  status_bar_deinitialize(osso, &panel);  
   osso_deinitialize( osso );
   
   return 0;

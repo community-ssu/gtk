@@ -81,8 +81,8 @@ struct status_bar_st
 };
 
 
-int status_bar_main(osso_context_t *osso, StatusBar *panel);
-void status_bar_deinitialize(osso_context_t *osso, StatusBar *panel);
+int status_bar_main(osso_context_t *osso, StatusBar **panel);
+void status_bar_deinitialize(osso_context_t *osso, StatusBar **panel);
 
 
 #endif

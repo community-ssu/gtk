@@ -1,3 +1,10 @@
+maemo-af-desktop (1.48.6) unstable; urgency=low
+
+  * Reverted to 1.48.4 from 1.48.5 and resolved earlier old major
+    version conflict and changed the version to 1.48.6
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri,  9 Sep 2005 15:29:02 +0300
+
 maemo-af-desktop (1.48.4) unstable; urgency=low
 
   * Patched earlier Mathew's patch with new one
