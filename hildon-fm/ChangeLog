@@ -1,3 +1,7 @@
+2005-09-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: Release 0.9.38
+	
 2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	N#16092 Filetree doesn't use singleton mime-type icons, but keeps
