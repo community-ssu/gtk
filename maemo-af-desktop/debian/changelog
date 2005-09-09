@@ -1,3 +1,11 @@
+maemo-af-desktop (1.48.5) unstable; urgency=low
+
+  * Reverted installable user applets patch because it broke other patches badly.
+  * This change needs to be redone differently, the patch was constructed badly and it reverted
+    earlier patches. Now it is gone at least.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri,  9 Sep 2005 13:57:52 +0300
+
 maemo-af-desktop (1.48.4-1) unstable; urgency=low
 
   * added dependency on hildon-base-lib0 (>= 0.9.3)

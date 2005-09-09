@@ -38,8 +38,7 @@ G_BEGIN_DECLS
 #define _(a) gettext(a)
 
 #define HILDON_MENU_KEY                 GDK_F4
-#define MAX_APPLETS                     10
-#define NUM_STATIC_APPLETS              4
+#define MAX_APPLETS                     4
 #define WINDOW_WIDTH                    800
 #define WINDOW_HEIGHT                   480
 #define HILDON_TASKNAV_WIDTH            80
@@ -106,16 +105,9 @@ G_BEGIN_DECLS
  */  
 #define MAX_APPLETS_HC                  4
 #define HILDON_HOME_CONF_USER_FORMAT \
-        "user_original:%s\nimage_dir:%s\napplets:0=%d,1=%d,2=%d,3=%d\nuser-applets:%s\n"
+        "user_original:%s\nimage_dir:%s\napplets:0=%d,1=%d,2=%d,3=%d\n"
 #define HILDON_HOME_CONF_USER_FORMAT_SAVE \
         "user_original:%200s\nimage_dir:%200s\napplets:0=%d,1=%d,2=%d,3=%d\n"
-
-#define HILDON_HOME_USER_PLUGIN_PATH "/var/lib/install/usr/lib/hildon-home/"
-#define HILDON_HOME_USER_PLUGIN_CONF_FORMAT    \
-    "plugin=%s\nwidth=%d\nheight=%d\nx=%d\ny=%d\n"
-
-#define STARTUP_LOCK_FILE "/var/lock/hildon-home-startup"
-#define STARTUP_LOCK_TIME 10000
 
 /* user saved values */
 #define HILDON_HOME_BG_USER_FILENAME        "hildon_home_bg_user.png"

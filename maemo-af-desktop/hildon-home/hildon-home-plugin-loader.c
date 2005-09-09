@@ -242,19 +242,9 @@ HildonHomePluginLoader *hildon_home_plugin_loader_new(
 
     priv = HILDON_HOME_PLUGIN_LOADER_GET_PRIVATE(loader);
 
-    if (!plugin_name)
-    {
-        return NULL;
-    }
-
-    if (plugin_name[0] == '/')  /* plugin supplies its own absolute path */
-    {
-        pluginname = g_strdup(plugin_name);
-    } else  /* generate the absolute path to plugin file */
-    {
-        pluginname = g_strdup_printf(HILDON_HOME_PLUGIN_PATH_FORMAT,
-                                     PREFIX, plugin_name);
-    }
+    /* generate the absolute path to plugin file */
+    pluginname = g_strdup_printf(HILDON_HOME_PLUGIN_PATH_FORMAT,
+                                 PREFIX, plugin_name);
     
     priv->dlhandle = dlopen(pluginname, RTLD_NOW);
     g_free(pluginname);    
