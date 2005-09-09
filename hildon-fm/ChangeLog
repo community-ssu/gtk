@@ -1,5 +1,9 @@
 2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* configure.ac 0.9.39
+
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	N#14586 Gateway content needs update if
 	   1) user clicks on a folder AND more than 30s is passed from
 	   last reload.
