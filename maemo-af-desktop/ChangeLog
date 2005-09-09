@@ -2,6 +2,8 @@
 
 	* hildon-home/hildon-home-main.c (hildon_home_main): Do not overwrite the existing event mask of the maemo-af-desktop for root window, otherwise Task navigator 
 	will break.
+	* Hand fixed previous reverting patches that did not seem to work after all, lots of code
+	  was reverted and I had to fix it by hand, correction patches failed to apply alltogether.
 
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 

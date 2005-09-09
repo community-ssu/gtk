@@ -1,3 +1,9 @@
+maemo-af-desktop (1.48.8) unstable; urgency=low
+
+  * Hand-fixed broken patch issues.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri,  9 Sep 2005 17:02:14 +0300
+
 maemo-af-desktop (1.48.7) unstable; urgency=low
 
   * Patched bug N#19007
