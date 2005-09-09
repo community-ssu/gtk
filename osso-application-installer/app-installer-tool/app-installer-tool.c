@@ -56,12 +56,17 @@ int do_get_dependencies (gchar *package);
    programs from /sbin.  XXX - We replace the PATH environment
    variable completely but maybe it would be nicer to just add to
    it...
+
+   We also set the locale to "C" since we parse the output of dpkg.
+   That output is never shown to the user, so there is no harm in not
+   localizing it.
 */
 
 void
 setup_environment ()
 {
   setenv ("PATH", "/sbin:/bin:/usr/sbin:/usr/bin", 1);
+  setenv ("LC_ALL", "C", 1);
 }
 
 /* Run ARGV[0] with the given arguments and return its exit code when
@@ -421,23 +426,8 @@ do_install (gchar *file)
     {
       if (output && strstr (output, strerror (ENOSPC)))
 	puts ("full");
-      else 
-	{
-	  /* Run the command again in the C locale.  This will
-	     hopefully give the same error message, but in English,
-	     which is what dump_failed_relations expects.
-	  */
-	  gchar *en_output;
-	  char *old_LC_ALL = g_strdup (getenv ("LC_ALL"));
-
-	  setenv ("LC_ALL", "C", 1);
-	  run_cmd_save_output (install_args, NULL, &en_output);
-	  if (!dump_failed_relations (en_output, package))
-	    puts ("failed");
-	  setenv ("LC_ALL", old_LC_ALL, 1);
-	  g_free (old_LC_ALL);
-	  g_free (en_output);
-	}
+      else if (!dump_failed_relations (output, package))
+	puts ("failed");
       
       fprintf (stderr,
 	       "Installation of %s failed, removing package %s.\n",
@@ -480,7 +470,6 @@ do_get_dependencies (gchar *package)
     NULL
   };
 
-  setenv ("LC_ALL", "C", 1);
   result = run_cmd_save_output (args, NULL, &output);
   if (output)
     fputs (output, stderr);
