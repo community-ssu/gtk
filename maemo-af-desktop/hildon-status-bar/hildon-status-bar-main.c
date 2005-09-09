@@ -558,6 +558,8 @@ static void destroy_item( GtkObject *object,
     reorder_items( panel );
 }
 
+/* Hand-fixed reverting patch here that refused to apply despite of efforts - Karoliina Salminen 09092005 */
+
 int status_bar_main(osso_context_t *osso, StatusBar **panel){
 
 
@@ -575,21 +577,23 @@ int status_bar_main(osso_context_t *osso, StatusBar **panel){
     TRACE(TDEBUG,"status_bar_main: 3: init dock");    
 
     /* initialize panel */
-    init_dock( panel);
+    init_dock( sb_panel );
 
     TRACE(TDEBUG,"status_bar_main: 4 add prespecified items");
-    add_prespecified_items( panel );
+    add_prespecified_items( sb_panel );
     TRACE(TDEBUG,"status_bar_main: 5 add user items");
-    add_user_items( panel );
+    add_user_items( sb_panel );
     TRACE(TDEBUG,"status_bar_main: 6 gtk widget show all");
-    gtk_widget_show_all( panel->window );
+    gtk_widget_show_all( sb_panel->window );
     TRACE(TDEBUG,"status_bar_main: 7 if rpc...");
     /* set RPC cb */
-    if( osso_rpc_set_default_cb_f( osso, rpc_cb, panel ) != OSSO_OK )
+    if( osso_rpc_set_default_cb_f( osso, rpc_cb, sb_panel ) != OSSO_OK )
     {
         osso_log( LOG_ERR, "osso_rpc_set_default_cb_f() failed" );
     }
+    
     TRACE(TDEBUG,"status_bar_main: 8, status bar initialized successfully");
+    *panel = sb_panel;
     return 0;
 
 }
