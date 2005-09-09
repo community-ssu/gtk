@@ -420,6 +420,7 @@ static void _init_gui(void)
         g_value_init(&val, G_TYPE_STRING);
         g_value_set_string(&val, "");
         g_object_set_property(G_OBJECT (grid), "empty_label", &val);
+	g_value_unset(&val);
     }
 
     gtk_widget_show_all(GTK_WIDGET(state_data.app));

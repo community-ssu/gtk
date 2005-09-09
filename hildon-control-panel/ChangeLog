@@ -1,3 +1,9 @@
+2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+  * Bug squashing camp version, increased baseline to 0.11.0
+  * Fixed memory leak from hildon-control-panel: 
+    hildon-control-panel-main.c: g_value_unset(&val); added to correspont its pair g_value_init.
+
 2005-08-26  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
   * Updated dependency to UI spec 3.0 to fix integratability problems.
