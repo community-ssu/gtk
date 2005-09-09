@@ -409,7 +409,7 @@ free_app_installer_tool (tool_handle *data)
    The return value is non-zero when the invocation succeeded and zero
    when it failed.  In the case of failure and when ERROR_DESCRIPTION
    is non-NULL, present_report_with_details is used to show stderr to
-   the user.
+   the user.  (XXX-UI32 - stderr is not actually shown.)
 */
 static int
 run_app_installer_tool (AppData *app_data,
@@ -437,13 +437,11 @@ run_callback (gpointer raw_data,
 
   if (!success && data->error_description)
     {
-      /* XXX-NLS - do something about the "See the details?" */
-      gchar *report = g_strdup_printf ("%s  See the details?",
-				       data->error_description);
+      /* XXX-UI32 - Do not suppress stderr_output.
+       */
       present_report_with_details (data->app_data,
-				   report,
-				   stderr_string);
-      g_free (report);
+				   data->error_description,
+				   NULL);
     }
 
   **(data->stdout_string) = g_strdup (stdout_string);
@@ -831,7 +829,12 @@ package_file_info (AppData *app_data, gchar *file)
       else if (strcmp (arch, "all") && strcmp (arch, DEB_HOST_ARCH))
 	info.rejection_reason = _("ai_error_incompatible");
     }
-
+  else
+    /* XXX-UI32 - do not suppress stderr output. */
+    report_installation_failure (app_data,
+				 basename (file),
+				 _("ai_error_corrupted"));
+    
  done:
   free (stdout_string);
   return info;
@@ -988,10 +991,15 @@ typedef struct {
 static void
 installer_callback (gpointer raw_data,
 		    int success,
-		    gchar *output, gchar *details)
+		    gchar *output, gchar *stderr_output)
 {
   installer_data *data = (installer_data *)raw_data;
   GString *report;
+  gchar *details = NULL;
+
+  /* XXX-UI32 - do not suppress stderr_output
+   */
+  stderr_output = NULL;
 
   if (data->loop)
     {
@@ -1004,36 +1012,32 @@ installer_callback (gpointer raw_data,
     {
       report = g_string_new ("");
       g_string_printf (report, data->success_text, data->package);
-      /* XXX-UI32 - Do not suppress details in case of success. */
-      details = NULL;
     }
   else
     {
       report = g_string_new ("");
       g_string_printf (report, data->failure_text, data->package);
-      if (data->dont_show_details)
-	details = NULL;
-      else
-	details = format_relationship_failures (details, output);
-    }
-
-  /* If the memory cover is open, we add the information to the
-     details when requested.
-   */
-  if (details && data->check_mmc_cover)
-    {
-      GConfEngine *engine = gconf_engine_get_default ();
-      if (gconf_engine_get_bool (engine, 
-				 "/system/osso/af/mmc-cover-open",
-				 NULL))
+      if (!data->dont_show_details)
 	{
-	  gchar *more_details = g_strdup_printf ("%s\n\n%s",
-						 _("ai_error_memorycardopen"),
-						 details);
-	  g_free (details);
-	  details = more_details;
+	  details = format_relationship_failures (stderr_output, output);
+
+	  if (data->check_mmc_cover)
+	    {
+	      GConfEngine *engine = gconf_engine_get_default ();
+	      if (gconf_engine_get_bool (engine, 
+					 "/system/osso/af/mmc-cover-open",
+					 NULL))
+		{
+		  gchar *more_details =
+		    g_strdup_printf ("%s\n\n%s",
+				     _("ai_error_memorycardopen"),
+				     details);
+		  g_free (details);
+		  details = more_details;
+		}
+	      gconf_engine_unref (engine);
+	    }
 	}
-      gconf_engine_unref (engine);
     }
 
   present_report_with_details (data->app_data,
