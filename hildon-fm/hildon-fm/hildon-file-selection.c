@@ -1453,6 +1453,13 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
 
                 return;
             }
+            else
+            {
+               _hildon_file_system_model_queue_reload(
+                    HILDON_FILE_SYSTEM_MODEL(priv->main_model),
+                    &main_iter, FALSE);
+            }
+       
 
             old_folder = priv->current_folder;
             priv->current_folder = gtk_tree_row_reference_new(priv->sort_model, sort_path);

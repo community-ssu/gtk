@@ -2654,9 +2654,12 @@ void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
   g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
   g_return_if_fail(parent_iter != NULL);
   g_return_if_fail(parent_iter->stamp == model->priv->stamp);
-
-  hildon_file_system_model_delayed_add_children(model, 
-      parent_iter->user_data, force);
+  
+  if (g_queue_find(model->priv->reload_list, parent_iter->user_data) == NULL)
+  {
+    hildon_file_system_model_ensure_idle(model);
+    g_queue_push_tail(model->priv->reload_list, parent_iter->user_data);
+  }
 }
 
 void _hildon_file_system_model_load_children(HildonFileSystemModel *model,

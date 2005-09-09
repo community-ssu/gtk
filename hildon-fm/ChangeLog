@@ -1,3 +1,18 @@
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#14586 Gateway content needs update if
+	   1) user clicks on a folder AND more than 30s is passed from
+	   last reload.
+	   2) User activates a filewithin current folder and than 30s is
+	   passed from last reload.
+	
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_selection_changed): reload gateway content.
+
+	* hildon-fm/hildon-file-system-model.c
+	(_hildon_file_system_model_queue_reload): likewise.
+
+
 2005-09-08  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: Release 0.9.38
