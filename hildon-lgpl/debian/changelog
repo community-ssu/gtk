@@ -1,3 +1,11 @@
+hildon-lgpl (0.9.53-1) unstable; urgency=low
+
+  * Bugs fixed:
+    N#18991: when receiving "Open app menu" event from WM, don't open
+    the menu if mouse is in grabbed state.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Fri,  9 Sep 2005 16:32:17 +0300
+
 hildon-lgpl (0.9.52-1) unstable; urgency=low
 
   * Bugs fixed:

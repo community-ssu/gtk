@@ -1418,9 +1418,11 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
         XClientMessageEvent *cm = xevent;
 
         /* Check if a message indicating a click on titlebar has been
-           received.  */
+           received. Don't open it if mouse is grabbed (eg. modal dialog
+           was just opened) */
 	if (xclient_message_type_check(cm, "_MB_GRAB_TRANSFER") &&
             HILDON_IS_APPVIEW(appview) &&
+            gtk_grab_get_current() == NULL &&
 	    !_hildon_appview_menu_visible(appview))
         {
           _hildon_appview_toggle_menu(appview, cm->data.l[0]);

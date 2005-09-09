@@ -1,3 +1,9 @@
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-lgpl/hildon-app.c (hildon_app_event_filter): when
+	receiving "Open app menu" event from WM, don't open the menu if
+	mouse is in grabbed state. N#18991
+
 2005-08-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* configure.ac: Release 0.9.52
