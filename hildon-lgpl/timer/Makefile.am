@@ -5,9 +5,6 @@ lib_LIBRARIES = libtimer.a
 
 EXTRA_DIST = 
 
-libtimer_a_LIBADD =
-
-libtimer_a_LDFLAGS =
 libtimer_a_SOURCES = \
 	timer.h timer.c
 	
