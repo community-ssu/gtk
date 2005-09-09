@@ -1,3 +1,7 @@
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* added dependency on hildon-base-lib0 (>= 0.9.3)
+
 2005-09-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Patched bug N#18503
