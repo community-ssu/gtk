@@ -1,3 +1,20 @@
+2005-09-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/core.c (run_callback): Never show stderr output.
+	(package_file_info): Show ai_error_corrupted when the
+	describe-file command fails.
+	(installer_callback): Never show the stderr output.
+	
+	* app-installer-tool/app-installer-tool.c (setup_environment): Set
+	LC_ALL to "C" again, we no longer care for localized dpkg output.
+	(do_install): Consequently, do not run dpkg a second time to get
+	the English output.
+
+2005-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/core.c (do_copy): Well, use copy_progress as the
+	asynchronous callback since gnome_vfs_async_xfer requires it.
+
 2005-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/core.c (package_file_info): Do not insist that the "maemo"
