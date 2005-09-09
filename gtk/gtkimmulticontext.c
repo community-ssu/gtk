@@ -320,6 +320,9 @@ gtk_im_multicontext_set_slave (GtkIMMulticontext *multicontext,
       g_object_unref (multicontext->slave);
       multicontext->slave = NULL;
 
+      g_free (multicontext->context_id);
+      multicontext->context_id = NULL;
+
       if (!finalizing)
 	need_preedit_changed = TRUE;
     }

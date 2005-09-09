@@ -1,3 +1,9 @@
+2005-09-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkimmulticontext.c (gtk_im_multicontext_set_slave): Free
+	context_id to fix memory leak.
+	N#17648
+
 2005-09-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcellview.c (gtk_cell_view_size_allocate): improved width
