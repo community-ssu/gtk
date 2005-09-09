@@ -163,6 +163,98 @@ _hildon_file_system_get_special_location(GtkFileSystem *fs, const GtkFilePath *p
   return result;
 }
 
+typedef struct
+{
+  const gchar *name;
+  gint size;
+} CacheElement;
+
+static void cache_element_free(gpointer a)
+{
+  if (a)
+  {
+    CacheElement *item = a;
+    g_free((gchar *) item->name);
+    g_free(item);
+  }
+}
+
+static gboolean cache_element_equal(gconstpointer a, gconstpointer b)
+{
+  const CacheElement *ea, *eb;
+
+  ea = (CacheElement *) a;
+  eb = (CacheElement *) b;
+
+  return ea->size == eb->size && g_str_equal(ea->name, eb->name);
+}
+
+static guint cache_element_hash(gconstpointer a)
+{
+  const CacheElement *e = a;
+
+  return g_str_hash(e->name) ^ e->size;
+}
+
+static GHashTable *get_cache(GtkIconTheme *theme)
+{
+  GHashTable *cache;
+
+  cache = g_object_get_data(G_OBJECT(theme), "hildon-file-system-icon-cache");
+  if (!cache)
+  {
+    cache = g_hash_table_new_full (cache_element_hash, cache_element_equal,
+                                   cache_element_free, g_object_unref);
+    g_object_set_data_full(G_OBJECT(theme), "hildon-file-system-icon-cache",
+      cache, (GDestroyNotify) g_hash_table_destroy);
+  }
+
+  return cache;
+}
+
+static GdkPixbuf *_hildon_file_system_lookup_icon_cached(GtkIconTheme *theme,
+  const gchar *name, gint size)
+{
+  CacheElement key;
+
+  key.name = name;
+  key.size = size;
+
+  return g_hash_table_lookup(get_cache(theme), &key);
+}
+
+static void _hildon_file_system_insert_icon(GtkIconTheme *theme, 
+  const gchar *name, gint size, GdkPixbuf *icon)
+{
+  CacheElement *key;
+
+  key = g_new(CacheElement, 1);
+  key->name = g_strdup(name);
+  key->size = size;
+
+  g_hash_table_insert(get_cache(theme), key, icon);       
+}
+
+GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
+						const gchar *name,
+						gint size)
+{
+  GdkPixbuf *pixbuf;
+
+  pixbuf = _hildon_file_system_lookup_icon_cached(theme, name, size);  
+
+  if (!pixbuf)
+  {
+    ULOG_INFO("Cache miss, loading %s at %d pix", name, size);
+    pixbuf = gtk_icon_theme_load_icon(theme, name, size, 0, NULL);
+    if (!pixbuf) return NULL;
+
+    _hildon_file_system_insert_icon(theme, name, size, pixbuf);
+  }
+
+  return g_object_ref(pixbuf);
+}
+
 GdkPixbuf *
 _hildon_file_system_create_image(GtkFileSystem *fs, 
       GtkWidget *ref_widget, GtkFilePath *path, 
@@ -194,8 +286,8 @@ _hildon_file_system_create_image(GtkFileSystem *fs,
       }  
 
       if (!pixbuf)
-          pixbuf = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), 
-                        locations[type].icon_name, size, 0, NULL);
+          pixbuf = _hildon_file_system_load_icon_cached(gtk_icon_theme_get_default(), 
+                        locations[type].icon_name, size);
     }
 
     return pixbuf;

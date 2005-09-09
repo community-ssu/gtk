@@ -33,6 +33,7 @@
 #ifndef __HILDON_FILE_SYSTEM_PRIVATE_H__
 #define __HILDON_FILE_SYSTEM_PRIVATE_H__
 
+#include <gtk/gtkicontheme.h>
 #include "hildon-file-system-common.h"
 
 G_BEGIN_DECLS
@@ -68,6 +69,8 @@ _hildon_file_system_get_volume_for_location(GtkFileSystem *fs,
   const GtkFilePath *base);
 
 gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime);
+GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme, 
+  const gchar *name, gint size);
 
 G_END_DECLS
 

@@ -733,8 +733,8 @@ static GdkPixbuf
     if (!plain) return NULL;
 
     emblem =
-        gtk_icon_theme_load_icon(priv->icon_theme, emblem_name,
-                                 TREE_ICON_SIZE, 0, NULL);
+        _hildon_file_system_load_icon_cached(priv->icon_theme, 
+                                  emblem_name, TREE_ICON_SIZE);
     if (!emblem) return plain;
 
     result = gdk_pixbuf_copy(plain);

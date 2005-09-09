@@ -1,5 +1,20 @@
 2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	N#16092 Filetree doesn't use singleton mime-type icons, but keeps
+	multiple copies of them in memory.
+	
+	* hildon-fm/hildon-file-system-private.[ch]
+	(_hildon_file_system_load_icon_cached): New function that
+	implements caching.
+	(_hildon_file_system_create_image): now uses cache when loading
+	icons.
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_create_composite_image): now uses cache
+	when loading icons.
+
+	
+
         N#18253 Phone icon is not dimmed (in file tree) when the phone
 	does not support OBEX.
 	
