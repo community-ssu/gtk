@@ -1,0 +1,23 @@
+HOW-TO-USE
+each script (sb-wizard, sb-wizard) takes the following argument
+
+$1 = package-name e.g sample-statusbar-plugin
+$2 = package description
+$3 = library name e.g sample_status_bar [results in libsample_status_bar]
+$4 = name of the icon file e.g sample_icon [note , no extension]
+
+GENERATE YOUR SAMPLE PROJECT
+
+CONTROL PANEL
+./cp-wizard $1 $2 $3 $4
+
+STATUS BAR
+./sb-wizard $1 $2 $3 $4
+
+cd into the generated directory and then issue
+./autogen.sh
+./configure
+fakeroot dpkg-buildpackage
+
+Now once everything builds, start writing your own GUI and logic :)
+

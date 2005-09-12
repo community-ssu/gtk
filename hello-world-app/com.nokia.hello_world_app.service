@@ -1,0 +1,4 @@
+# Sample service description file
+[D-BUS Service]
+Name=com.nokia.hello_world_app
+Exec=/var/lib/install/usr/bin/hello-world

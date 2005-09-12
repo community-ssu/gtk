@@ -1,0 +1,13 @@
+Source: hello-world-app
+Section: unknown
+Priority: optional
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
+
+Package: hello-world-app
+Architecture: any
+Depends: maemo
+Description: An example package for the application installer
+ It installs a service file for D-Bus and a desktop file for the Task
+ Navigator and launches a silly little Hello World window.
