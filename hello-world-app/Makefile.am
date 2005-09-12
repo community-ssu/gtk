@@ -1,7 +1,15 @@
-# The icon
+# The icons
 
-icondir = $(datadir)/icons/hicolor/26x26/hildon
-icon_DATA = pkg_hello-world-app.png
+icondir = $(datadir)/icons/hicolor
+
+install-data-local:
+	i=pkg_hello-world-app; \
+	$(mkinstalldirs) $(DESTDIR)$(icondir)/26x26/hildon; \
+	$(mkinstalldirs) $(DESTDIR)$(icondir)/40x40/hildon; \
+	$(mkinstalldirs) $(DESTDIR)$(icondir)/scalable/hildon; \
+	$(INSTALL_DATA) $$i.26.png $(DESTDIR)$(icondir)/26x26/hildon/$$i.png; \
+	$(INSTALL_DATA) $$i.40.png $(DESTDIR)$(icondir)/40x40/hildon/$$i.png; \
+	$(INSTALL_DATA) $$i.64.png $(DESTDIR)$(icondir)/scalable/hildon/$$i.png;
 
 # The program
 
@@ -80,4 +88,6 @@ EXTRA_DIST =					\
         hello-world-cp.desktop			\
         hello-world.conf			\
         com.nokia.hello_world_app.service	\
-        pkg_hello-world-app.png
+        pkg_hello-world-app.26.png		\
+        pkg_hello-world-app.40.png		\
+        pkg_hello-world-app.64.png
