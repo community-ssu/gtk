@@ -106,10 +106,10 @@ int main (int argc, char** argv)
        main loop (when calling out to app-installer-tool to get the
        list of packages, among other things).
 
-     We break this cycle not actually doing anything in the mime-open
-     handler that needs the main dialog to be setup.  We just store
-     away the URI that we should install and delay the actual install
-     until after the main dialog is ready.
+     We break this cycle by not actually doing anything in the
+     mime-open handler that needs the main dialog to be setup.  We
+     just store away the URI that we should install and delay the
+     actual install until after the main dialog is ready.
 
      (The thing that sticks out as being a bit unmotivated is that
      help needs to be activated before the a dialog is realized.  It
