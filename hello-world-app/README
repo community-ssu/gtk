@@ -25,3 +25,6 @@ When it is installed, it will add these items to the system:
 
 To see the Statusbar and Home plugins, you might need to restart the
 Desktop, for example by rebooting.
+
+To see the Control panel plugin, you need to restart the Control
+panel.
