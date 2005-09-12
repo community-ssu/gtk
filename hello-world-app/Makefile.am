@@ -75,7 +75,7 @@ EXTRA_DIST =					\
         debian/copyright			\
         debian/control				\
         debian/rules				\
-        debian/hello-world-gtk.links		\
+        debian/hello-world-app.links		\
         hello-world.desktop			\
         hello-world-cp.desktop			\
         hello-world.conf			\
