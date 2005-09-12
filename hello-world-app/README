@@ -1,23 +1,27 @@
-HOW-TO-USE
-each script (sb-wizard, sb-wizard) takes the following argument
+This is hello-world-app, an example package for the Application
+installer.
 
-$1 = package-name e.g sample-statusbar-plugin
-$2 = package description
-$3 = library name e.g sample_status_bar [results in libsample_status_bar]
-$4 = name of the icon file e.g sample_icon [note , no extension]
+You can build it like any other Debian package:
 
-GENERATE YOUR SAMPLE PROJECT
+    $ dpkg-buildpackage -rfakeroot
 
-CONTROL PANEL
-./cp-wizard $1 $2 $3 $4
+The result is a .deb package that can be installed by the Application
+installer, and by the Application installer alone.
 
-STATUS BAR
-./sb-wizard $1 $2 $3 $4
+When it is installed, it will add these items to the system:
 
-cd into the generated directory and then issue
-./autogen.sh
-./configure
-fakeroot dpkg-buildpackage
+  - An application in the "Extra" menu of the Task navigator
+    that is also a DBUS service.
 
-Now once everything builds, start writing your own GUI and logic :)
+  - A Control panel applet.
 
+  - A Statusbar plugin.
+
+  - A Home applet.
+
+  - A shared library, used by all of the components above.
+
+  - Some icons for the hicolor theme, also used by the components above.
+
+To see the Statusbar and Home plugins, you might need to restart the
+Desktop, for example by rebooting.
