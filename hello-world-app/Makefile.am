@@ -7,9 +7,15 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(icondir)/26x26/hildon; \
 	$(mkinstalldirs) $(DESTDIR)$(icondir)/40x40/hildon; \
 	$(mkinstalldirs) $(DESTDIR)$(icondir)/scalable/hildon; \
-	$(INSTALL_DATA) $$i.26.png $(DESTDIR)$(icondir)/26x26/hildon/$$i.png; \
-	$(INSTALL_DATA) $$i.40.png $(DESTDIR)$(icondir)/40x40/hildon/$$i.png; \
-	$(INSTALL_DATA) $$i.64.png $(DESTDIR)$(icondir)/scalable/hildon/$$i.png;
+	$(INSTALL_DATA) $(srcdir)/$$i.26.png $(DESTDIR)$(icondir)/26x26/hildon/$$i.png; \
+	$(INSTALL_DATA) $(srcdir)/$$i.40.png $(DESTDIR)$(icondir)/40x40/hildon/$$i.png; \
+	$(INSTALL_DATA) $(srcdir)/$$i.64.png $(DESTDIR)$(icondir)/scalable/hildon/$$i.png;
+
+uninstall-local:
+	i=pkg_hello-world-app; \
+	rm $(DESTDIR)$(icondir)/26x26/hildon/$$i.png; \
+	rm $(DESTDIR)$(icondir)/40x40/hildon/$$i.png; \
+	rm $(DESTDIR)$(icondir)/scalable/hildon/$$i.png;
 
 # The program
 
