@@ -140,8 +140,8 @@ ui_create_main_dialog (AppData *app_data)
   app_ui_data->empty_list_label = empty_list_label;
 
   database_unavailable_label =
-    /* XXX-NLS - ai_ti_database_unavailable */
-    gtk_label_new ("Database unavailable");
+    /* XXX-NLS - be more descriptive */
+    gtk_label_new ("");
   gtk_container_add (GTK_CONTAINER(vbox), database_unavailable_label);
   app_ui_data->database_unavailable_label = database_unavailable_label;
 

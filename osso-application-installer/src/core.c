@@ -31,6 +31,7 @@
 
 #define _GNU_SOURCE
 
+#include <ctype.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -526,8 +527,9 @@ list_packages (AppData *app_data)
   if (!run_app_installer_tool (app_data,
 			       "list", NULL, NULL,
 			       &stdout_string, NULL,
-			       /* XXX-NLS - ai_ti_listing_failed */
-			       "Can not get the list of installed packages."))
+			       /* XXX-NLS - be more descriptive */
+			       dgettext ("osso-filemanager",
+					 "sfil_ni_operation_failed")))
     return NULL;
 
   icon_theme = gtk_icon_theme_get_default ();
@@ -860,8 +862,9 @@ package_description (AppData *app_data, gchar *package)
   if (run_app_installer_tool (app_data,
 			      "describe-package", package, NULL,
 			      &stdout_string, NULL,
-			      /* XXX-NLS - ai_ti_describe_package_failed */
-			      "Can not get the description of the package."))
+			      /* XXX-NLS - be more descriptive */
+			      dgettext ("osso-filemanager",
+					"sfil_ni_operation_failed")))
     return stdout_string;
   else
     return g_strdup ("");
@@ -944,9 +947,34 @@ format_relationship_failures (gchar *footer, gchar *output)
     }
   if (conflicts)
     {
-      /* XXX-NLS - ai_ti_conflicts_with */
-      g_string_append
-	(report, "It conflicts with the following installed packages:\n");
+      /* XXX-NLS - the most ugly hack yet. We want to say "It
+	           conflicts with the following installed packages:"
+	           but we can not since we don't have a logical id for
+	           it.  So we just display the second sentence of
+	           "ai_ti_dependency_conflict" which is "Delete
+	           following package first and then try again".
+
+		   I checked that this hack works with the
+		   translations for de_DE en_GB en_US es_ES es_MX
+		   fr_FR it_IT.
+      */
+      gchar *text;
+      if (conflicts->next)
+	text = _("ai_ti_dependency_conflict_text_plural");
+      else
+	text = _("ai_ti_dependency_conflict_text");
+      text = strchr (text, '.');
+      if (text)
+	{
+	  while (isspace (*++text))
+	    ;
+	  g_string_append (report, text);
+	}
+      else
+	g_string_append (report,
+			 "It conflicts with the "
+			 "following installed packages:");
+      g_string_append (report, "\n");
       append_list_strings (report, conflicts);
     }
 
@@ -1291,22 +1319,25 @@ do_copy (AppData *app_data,
   target_uri = gnome_vfs_uri_new (target);
   if (target_uri == NULL)
     {
-      /* XXX-NLS */
+      /* XXX-NLS - be more descriptive. */
       present_error_details_fmt (app_data,
-				 "Copying failed",
-				 "Unsupported URI: %s.\n", target);
+				 dgettext ("osso-filemanager",
+					   "sfil_ni_operation_failed"),
+				 NULL);
       return FALSE;
     }
 
   source_uri_list = g_list_append (NULL, (gpointer) source_uri);
   target_uri_list = g_list_append (NULL, (gpointer) target_uri);
 
-  /* XXX-NLS - should make "Copying" translatable. 
+  /* XXX-NLS - should have our own id for "Copying". 
    */
-  data.progress_dialog = ui_create_progress_dialog (app_data,
-						    "Copying",
-						    copy_cancel,
-						    &data);
+  data.progress_dialog =
+    ui_create_progress_dialog (app_data,
+			       dgettext ("osso-filemanager",
+					 "sfil_pr_lb_copying_dev"),
+			       copy_cancel,
+			       &data);
   data.loop = g_main_loop_new (NULL, 0);
   data.result = GNOME_VFS_OK;
   data.cancelled = FALSE;
@@ -1337,12 +1368,11 @@ do_copy (AppData *app_data,
 
   if (result != GNOME_VFS_OK)
     {
-      /* XXX-NLS */
-      present_error_details_fmt (app_data,
-				 "Copying failed",
-				 "Copying %s to %s failed: %s\n",
-				 source, target,
-				 gnome_vfs_result_to_string (result));
+      /* XXX-NLS - be more descriptive */
+      present_error_details (app_data,
+			     dgettext ("osso-filemanager",
+				       "sfil_ni_operation_failed"),
+			     NULL);
       return FALSE;
     }
 
@@ -1358,9 +1388,10 @@ install_package_from_uri (gchar *uri, AppData *app_data)
   vfs_uri = gnome_vfs_uri_new (uri);
   if (vfs_uri == NULL)
     {
-      /* XXX-NLS - ai_ti_unsupported_uri */
+      /* XXX-NLS - be more descriptive */
       report_installation_failure (app_data, uri,
-				   "Unsupported URI: %s\n", uri);
+				   dgettext ("osso-filemanager",
+					     "sfil_ni_operation_failed"));
       return;
     }
 
@@ -1382,9 +1413,10 @@ install_package_from_uri (gchar *uri, AppData *app_data)
 	}
       else
 	{
-	  /* XXX-NLS - ai_ti_unsupported_uri */
+	  /* XXX-NLS - be more descriptive */
 	  report_installation_failure (app_data, uri,
-				       "Unsupported URI: %s\n", uri);
+				       dgettext ("osso-filemanager",
+						 "sfil_ni_operation_failed"));
 	}
     }
   else
@@ -1442,11 +1474,12 @@ check_dependencies (AppData *app_data, gchar *package)
   gchar *stdout_string, *dependencies_report;
   gboolean result;
 
+  /* XXX-NLS - be more descriptive in case of failure. */
   if (!run_app_installer_tool (app_data,
 			       "get-dependencies", package, NULL,
 			       &stdout_string, NULL,
-			       /* XXX-NLS - ai_ti_get_dependencies_failed */
-			       "Can not get package dependencies."))
+			       dgettext ("osso-filemanager",
+					 "sfil_ni_operation_failed")))
     return FALSE;
 
   dependencies_report = format_relationship_failures (NULL, stdout_string);
