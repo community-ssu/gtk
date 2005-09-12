@@ -1,3 +1,19 @@
+2005-09-12  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Make sure that no untranslated texts are being displayed.
+	
+	* src/core.c (list_packages, package_description, do_copy,
+	install_package_from_uri, check_dependencies): Use "Operation
+	failed" text from osso-filemanager text domain instead of more
+	descriptive texts.
+	(format_relationship_failures): Hack together a translated message
+	for displaying conflicts.
+	(do_copy): Use logical id from "osso-filemanager" instead of
+	untranstalted "Copying".
+	
+	* src/ui/interface.c (ui_create_main_dialog): Make the "Database
+	unavailable" lable be the empty string.
+
 2005-09-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/core.c (run_callback): Never show stderr output.
