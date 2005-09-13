@@ -1,5 +1,12 @@
 2005-09-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 2.10.
+
+	* maemo.dirs: Added usr/share/applications/hildon-control-panel,
+	usr/lib/dbus-1.0/services, usr/lib/hildon-control-panel,
+	usr/lib/hildon-home, usr/lib/hildon-status-bar, and
+	usr/share/icons/hicolor.
+
 	* src/core.c (package_file_info): Set info structu members to
 	non-NULL only after all error cases have been handled.
 
