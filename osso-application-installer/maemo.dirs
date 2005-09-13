@@ -2,4 +2,9 @@ etc/others-menu/extra_applications
 var/log
 usr/bin
 usr/share/applications/hildon
-usr/lib/dbus-1.0/services/
+usr/share/applications/hildon-control-panel
+usr/lib/dbus-1.0/services
+usr/lib/hildon-control-panel
+usr/lib/hildon-home
+usr/lib/hildon-status-bar
+usr/share/icons/hicolor
