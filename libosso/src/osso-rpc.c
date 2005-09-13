@@ -753,6 +753,8 @@ static void _append_arg(DBusMessage *msg, osso_rpc_t *arg)
 
 static void _get_arg(DBusMessageIter *iter, osso_rpc_t *retval)
 {
+    char *str;
+
     dprint("");
 
     retval->type = dbus_message_iter_get_arg_type(iter);
@@ -774,8 +776,9 @@ static void _get_arg(DBusMessageIter *iter, osso_rpc_t *retval)
 	dprint("got DOUBLE:%f",retval->value.d);
 	break;
       case DBUS_TYPE_STRING:
-	retval->value.s = 
-	    g_strdup(dbus_message_iter_get_string(iter));
+	str = dbus_message_iter_get_string (iter);
+	retval->value.s = g_strdup (str);
+	dbus_free (str);
 	if(retval->value.s == NULL) {
 	    retval->type = DBUS_TYPE_INVALID;
 	}
@@ -826,10 +829,9 @@ static void _async_return_handler(DBusPendingCall *pending, void *data)
 	DBusError err;
 	dbus_error_init(&err);
 	dbus_set_error_from_message(&err, msg);
-	retval.type = DBUS_TYPE_INVALID;
-	retval.value.s = g_strdup(err.message);
 	dbus_error_free(&err);
     }
+
     dbus_message_unref(msg);
     dprint("rpc = %p",rpc);
     dprint("rpc->func = %p",rpc->func);
