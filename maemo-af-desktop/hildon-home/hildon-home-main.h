@@ -66,7 +66,7 @@ G_BEGIN_DECLS
 #define HILDON_HOME_CONF_USER_FILENAME  "hildon-home.conf"
 #define HILDON_HOME_CONF_USER_ORIGINAL_FILENAME "user_filename.txt"
 #define HILDON_HOME_CONF_USER_IMAGE_DIR "MyDocs/.images"
-#define HILDON_HOME_CONF_USER_APPLET_STATUS_DEFAULT 0
+#define HILDON_HOME_CONF_USER_APPLET_STATUS_DEFAULT 1
 #define HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR "/usr/share/backgrounds"
   	 
 /* background image related definitions */ 	 

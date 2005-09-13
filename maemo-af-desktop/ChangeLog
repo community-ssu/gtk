@@ -1,7 +1,7 @@
 2005-09-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Preparing package for week 37 release, changed base version number
-	* Patched bug N#15041
+	* Patched bug N#15041:
 	* maemo-af-desktop/hildon-home/hildon-home-main.h: 
   	- Removed as obsolete prototype of apply_background_response_handler
 	* maemo-af-desktop/hildon-home/hildon-home-main.c:
@@ -13,9 +13,9 @@
   	- After browse selected set sensitiveness of apply button
   	- removed obsolete signal_connect which was probable memory leak since it was
 	created every time apply was selected
-	* Patched bug N#18873
+	* Patched bug N#18873:
 	* hildon-home/hildon-home-main.c: Fixed memory leak
-	* Patched bug N#18477
+	* Patched bug N#18477:
 	* hildon-navigator/osso-manager.h: Renamed the previously unused
           string parameter for osso_manager_launch and took it in use.
         * hildon-navigator/osso-manager.c: (osso_manager_launch): Took in use
@@ -26,6 +26,11 @@
           osso_manager_launch().
         * hildon-navigator/windowmanager.h: Added definition for the
           restoration message data.
+	* Patched N#19025:
+	* hildon-home/hildon-home-main.h
+  	- changed applet status default to 1 (visible)
+	* hildon-home/hildon-home-main.c: (hildon_home_set_hardcode_values):
+	- setting each applet status to default
 
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 

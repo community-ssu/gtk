@@ -2456,7 +2456,6 @@ void hildon_home_set_hardcode_values( void)
     gint height;
     gint x;
     gint y;
-    gboolean status = FALSE;
 
     for(applet_num= 0;applet_num<NUM_STATIC_APPLETS;applet_num++)
     {
@@ -2508,7 +2507,7 @@ void hildon_home_set_hardcode_values( void)
         applet_info[applet_num].height = height;
         applet_info[applet_num].x = x;
         applet_info[applet_num].y = y;
-        applet_info[applet_num].status = status;
+        applet_info[applet_num].status = HILDON_HOME_CONF_USER_APPLET_STATUS_DEFAULT;
     }
 }
 
