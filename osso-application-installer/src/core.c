@@ -800,11 +800,6 @@ package_file_info (AppData *app_data, gchar *file)
 	  goto done;
 	}
 
-      info.name = g_string_new (package);
-      info.version = g_string_new (version);
-      info.size = g_string_new (size);
-      info.description = g_string_new (ptr);
-
       /* Figure out whether the package properly depends on maemo.
          The maemo package itself does not need to depend on itself,
          tho. 
@@ -828,8 +823,16 @@ package_file_info (AppData *app_data, gchar *file)
 				       _("ai_error_builtin"),
 				       package);
 	}
-      else if (strcmp (arch, "all") && strcmp (arch, DEB_HOST_ARCH))
-	info.rejection_reason = _("ai_error_incompatible");
+      else 
+	{
+	  info.name = g_string_new (package);
+	  info.version = g_string_new (version);
+	  info.size = g_string_new (size);
+	  info.description = g_string_new (ptr);
+	  
+	  if (strcmp (arch, "all") && strcmp (arch, DEB_HOST_ARCH))
+	    info.rejection_reason = _("ai_error_incompatible");
+	}
     }
   else
     /* XXX-UI32 - do not suppress stderr output. */
