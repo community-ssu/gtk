@@ -332,9 +332,6 @@ static void combobox_active_tracer(GtkWidget *combobox,
                                    gpointer data);
 static void set_background_response_handler(GtkWidget *dialog, 
                                             gint arg, gpointer data);
-static void apply_background_response_handler(GtkWidget *widget, 
-                                              GdkEvent *event,
-                                              gpointer data);
 static gboolean set_background_dialog_selected(GtkWidget *widget, 
                                                GdkEvent *event, 
                                                gpointer data);

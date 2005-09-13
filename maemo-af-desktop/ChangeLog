@@ -1,3 +1,19 @@
+2005-09-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+	* Preparing package for week 37 release, changed base version number
+	* Patched bug N#15041
+	* maemo-af-desktop/hildon-home/hildon-home-main.h: 
+  	- Removed as obsolete prototype of apply_background_response_handler
+	* maemo-af-desktop/hildon-home/hildon-home-main.c:
+	(apply_background_response_handler):
+  	- Removed as obsolete 
+	* maemo-af-desktop/hildon-home/hildon-home-main.c:
+	(set_background_response_handler):
+	- Dimming apply button every time its is selected
+  	- After browse selected set sensitiveness of apply button
+  	- removed obsolete signal_connect which was probable memory leak since it was
+	created every time apply was selected
+
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Fixed bug 19007: 

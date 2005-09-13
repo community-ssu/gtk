@@ -1,3 +1,15 @@
+maemo-af-desktop (1.49.1) unstable; urgency=low
+
+  * Patched bug #15041
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 14:42:01 +0300
+
+maemo-af-desktop (1.49.0) unstable; urgency=low
+
+  * Updated version number for week 37 integration delivery
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 14:41:06 +0300
+
 maemo-af-desktop (1.48.9) unstable; urgency=low
 
   * Added patch for bug N#18875

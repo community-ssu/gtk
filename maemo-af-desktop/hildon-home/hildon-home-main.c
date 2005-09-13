@@ -892,18 +892,27 @@ void set_background_response_handler(GtkWidget *dialog,
         g_signal_stop_emission_by_name(dialog, "response");
         if (set_background_select_file_dialog(box))
         {
-            home_bg_image_loading_necessary = TRUE;
-            gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
-                                              GTK_RESPONSE_APPLY , TRUE);
+            active_index = gtk_combo_box_get_active(box);
+            image_name = get_filename_from_treemodel(box, active_index);
+            if (home_bg_image_in_use_uri != NULL &&
+                image_name != NULL &&
+                g_str_equal(home_bg_image_in_use_uri, image_name))
+            {
+                
+                gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
+                                                  GTK_RESPONSE_APPLY , FALSE);
+                while(gtk_main_iteration());
+            } else
+            {
+                home_bg_image_loading_necessary = TRUE;
+                gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
+                                                  GTK_RESPONSE_APPLY , TRUE);
+            }
         }
         break;
     case GTK_RESPONSE_APPLY:
         g_signal_stop_emission_by_name(dialog, "response");
         home_bg_image_loading_necessary = FALSE;
-
-        g_signal_connect(G_OBJECT(dialog),"response",
-                         G_CALLBACK(apply_background_response_handler),
-                         box);
 
         if (home_bg_combobox_active_item != -1) 
         {
@@ -911,54 +920,14 @@ void set_background_response_handler(GtkWidget *dialog,
                 get_filename_from_treemodel(box, 
                                             home_bg_combobox_active_item),
                 TRUE);
-            active_index = gtk_combo_box_get_active(box);
-            image_name = get_filename_from_treemodel(box, active_index);
-            if (home_bg_image_in_use_uri != NULL &&
-                image_name != NULL &&
-                g_str_equal(home_bg_image_in_use_uri, image_name))
-            {
-            
-                gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
-                                                  GTK_RESPONSE_APPLY , FALSE);
-            }
+            gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
+                                              GTK_RESPONSE_APPLY , FALSE);
         }
         break;
     default:
         break;
     }
 }
-
-/**
- * @apply_background_response_handler
- *
- * @param widget The parent widget
- * @param event The event that caused this callback
- * @param data Pointer to the data (not actually used by this function)
- * 
- * Set background image dialog (HOM-DIA002).
- **/
-static 
-void apply_background_response_handler(GtkWidget *widget, 
-                                       GdkEvent *event,
-                                       gpointer data)
-{ 
-    GtkComboBox *box = GTK_COMBO_BOX(data);
-    GtkTreeModel *tree = gtk_combo_box_get_model(box);
-    GtkTreeIter iter;
-    gchar active_item_string[MAX_CHARS_HERE];
-    
-    g_snprintf(&active_item_string[0], MAX_CHARS_HERE, "%d", 
-               home_bg_combobox_active_item);
-    
-    gtk_tree_model_get_iter_from_string(tree, &iter, 
-                                        &active_item_string[0]);
-    
-    gtk_list_store_remove(GTK_LIST_STORE(tree), &iter);
-    
-    home_bg_combobox_active_item = -1;
-    gtk_combo_box_set_active(box, home_bg_combobox_active_item);
-}
-
 
 /**
  * @set_background_dialog_selected
