@@ -2,7 +2,6 @@ SUBDIRS = src ut
 
 install-data-local:
 	mkdir -p $(DESTDIR)$(API_DIR)
-	$(DOXYGEN) Doxyfile
 
 uninstall-local:
 	$(RM) -r $(DESTDIR)$(API_DIR)
