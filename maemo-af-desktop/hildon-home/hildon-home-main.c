@@ -516,22 +516,15 @@ gchar *get_filename_from_treemodel(GtkComboBox *box, gint index)
     GtkTreeIter iter;    
     GtkTreePath *walkthrough;    
     GtkTreeModel *tree = gtk_combo_box_get_model(box);   
-    GValue value = { 0, };       
-    GValue value_path = { 0, };          
     
     walkthrough = gtk_tree_path_new_from_indices(index, -1);
     
     gtk_tree_model_get_iter(tree, &iter, walkthrough);   
-    
-    gtk_tree_model_get_value(tree, &iter,        
-                             BG_IMAGE_FILENAME, &value);         
-         
-    g_value_init(&value_path, G_TYPE_STRING);    
-    
-    if (g_value_transform(&value, &value_path))
-    {
-        name = g_strdup(g_value_get_string(&value_path));        
-    }    
+   
+    gtk_tree_model_get (tree, &iter,
+                        BG_IMAGE_FILENAME, &name,
+			-1);
+
     if (walkthrough != NULL) 
     {
         gtk_tree_path_free(walkthrough);     
