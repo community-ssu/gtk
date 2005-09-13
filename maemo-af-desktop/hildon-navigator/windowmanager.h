@@ -81,6 +81,9 @@ enum {
 /* Interval for checking for new window or timeout, in seconds */
 #define APP_LAUNCH_BANNER_CHECK_INTERVAL     0.5
 
+/* Application relaunch indicator data*/
+#define RESTORED "restored"
+
 #define LAUNCH_SUCCESS_TIMEOUT 20
 
 #define LAUNCH_FAILED_INSUF_RES "ckct_ib_application_lowmem"

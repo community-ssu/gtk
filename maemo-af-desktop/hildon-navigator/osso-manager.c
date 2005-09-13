@@ -162,7 +162,7 @@ void add_method_cb(osso_manager_t *man,const gchar *name,
 }
 
 void osso_manager_launch(osso_manager_t *man, const gchar *app,
-        const gchar *argv)
+        const gchar *launch_param)
 {
     char service[SERVICE_NAME_LEN],
         path[PATH_NAME_LEN],
@@ -186,10 +186,24 @@ void osso_manager_launch(osso_manager_t *man, const gchar *app,
 
     d_log(LOG_D,"Launch: s:%s\np:%s\ni:%s\n",service,path,interface);
 
-    if ( (osso_rpc_run( man->osso, service, path, interface,
-		    OSSO_BUS_TOP , NULL, DBUS_TYPE_INVALID )) != OSSO_OK ) {
-	osso_log(LOG_ERR, "Failed to launch!" );
-    }
+    if (launch_param != NULL)
+      {
+	if ( (osso_rpc_run( man->osso, service, path, interface,
+			    OSSO_BUS_TOP ,
+			    NULL, DBUS_TYPE_STRING, launch_param,
+			    DBUS_TYPE_INVALID )) != OSSO_OK )
+	  {
+	    osso_log(LOG_ERR, "Failed to restart!" );
+	  }
+      }
+    else
+      {
+	if ( (osso_rpc_run( man->osso, service, path, interface,
+			    OSSO_BUS_TOP ,
+			    NULL, DBUS_TYPE_INVALID )) != OSSO_OK ) {
+	  osso_log(LOG_ERR, "Failed to launch!" );
+	}
+      }
 }
 
 

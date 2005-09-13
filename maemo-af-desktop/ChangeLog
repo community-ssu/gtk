@@ -15,6 +15,17 @@
 	created every time apply was selected
 	* Patched bug N#18873
 	* hildon-home/hildon-home-main.c: Fixed memory leak
+	* Patched bug N#18477
+	* hildon-navigator/osso-manager.h: Renamed the previously unused
+          string parameter for osso_manager_launch and took it in use.
+        * hildon-navigator/osso-manager.c: (osso_manager_launch): Took in use
+          the previously unused string parameter. Now it is passed with the
+          D-BUS message to the launched application, if it's present.
+        * hildon-navigator/windowmanager.c: (top_service): When launching
+          background killed applications, pass a specific string to the
+          osso_manager_launch().
+        * hildon-navigator/windowmanager.h: Added definition for the
+          restoration message data.
 
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 

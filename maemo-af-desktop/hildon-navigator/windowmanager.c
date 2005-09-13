@@ -2917,7 +2917,7 @@ void top_service(const gchar *service_name)
          guint interval = LAUNCH_SUCCESS_TIMEOUT * 1000;
          /* This should probably be merged with the previous condition */
          osso_man = osso_manager_singleton_get_instance();
-         osso_manager_launch(osso_man, service_name, NULL);
+         osso_manager_launch(osso_man, service_name, RESTORED);
 	 if (lowmem_situation == TRUE)
 	   {
 	     g_timeout_add(interval,

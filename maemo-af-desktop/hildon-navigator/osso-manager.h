@@ -105,9 +105,9 @@ void add_method_cb(osso_manager_t *manager,
                             tasknav_cb_f *method,
                             gpointer data);
 
-/** Routine to launch the bookmark manager **/
+/** Routine to launch applications **/
 void osso_manager_launch(osso_manager_t *man,const gchar *app,
-            const gchar *argv);
+            const gchar *launch_data);
 
 
 /** Routine to print an infoprint trough osso*/
