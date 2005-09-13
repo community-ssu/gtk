@@ -1,3 +1,10 @@
+hildon-control-panel (0.11.1) unstable; urgency=low
+
+  * Prepared the hildon-control-panel ready for week 37 integration
+    round
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 18:17:19 +0300
+
 hildon-control-panel (0.11.0) unstable; urgency=low
 
   * Bugfix camp initial version. First patch applied which fixes memory

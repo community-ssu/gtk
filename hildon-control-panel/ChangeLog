@@ -1,6 +1,7 @@
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
   * Bug squashing camp version, increased baseline to 0.11.0
+  * Patched bug N#18692
   * Fixed memory leak from hildon-control-panel: 
     hildon-control-panel-main.c: g_value_unset(&val); added to correspont its pair g_value_init.
 
