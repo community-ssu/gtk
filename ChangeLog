@@ -1,3 +1,9 @@
+2005-09-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_increment_stamp):
+	Revert the optimization as it introduces a crasher.
+	N#19117
+
 2005-09-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkimmulticontext.c (gtk_im_multicontext_set_slave): Free
