@@ -2387,6 +2387,8 @@ gtk_tree_model_sort_increment_stamp (GtkTreeModelSort *tree_model_sort)
       tree_model_sort->stamp++;
     }
   while (tree_model_sort->stamp == 0);
+
+  gtk_tree_model_sort_clear_cache (tree_model_sort);
 }
 
 static void
