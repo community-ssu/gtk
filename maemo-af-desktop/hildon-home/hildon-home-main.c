@@ -2248,8 +2248,11 @@ void construct_user_applets(void)
                     }
                 }
             }
-
-            fclose(fp);
+            /* Added checking of NULL to prevent crashes Karoliina Salminen 13092005 */
+            if(fp!=NULL){
+                fclose(fp);
+            } 
+            /* End of fix 13092005 */
         }
     }
 
