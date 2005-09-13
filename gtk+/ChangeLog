@@ -1,4 +1,10 @@
 2005-09-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenu.c (gtk_menu_window_visibility_notify_event): Revert last
+	change as it introduces other bugs.
+	N#19120
+
+2005-09-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_increment_stamp):
 	Revert the optimization as it introduces a crasher.
