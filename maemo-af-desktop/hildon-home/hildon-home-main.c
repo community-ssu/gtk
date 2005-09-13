@@ -667,6 +667,7 @@ void load_original_bg_image_uri()
 {
     FILE *fp;
     gchar bg_uri[HILDON_HOME_PATH_STR_LENGTH] = {0};
+    GnomeVFSURI *uri;
 
     fp = fopen (user_original_bg_image, "r");
     if(fp == NULL) 
@@ -691,9 +692,10 @@ void load_original_bg_image_uri()
     }
     home_bg_image_uri = g_strdup_printf("%s", bg_uri);
     home_bg_image_in_use_uri = g_strdup(home_bg_image_uri);
-    home_bg_image_filename =
-        gnome_vfs_uri_extract_short_name(
-            gnome_vfs_uri_new(home_bg_image_uri));
+
+    uri = gnome_vfs_uri_new (home_bg_image_uri);
+    home_bg_image_filename = gnome_vfs_uri_extract_short_name(uri);
+    gnome_vfs_uri_unref (uri);
 }
 
 

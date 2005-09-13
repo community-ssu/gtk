@@ -45,6 +45,11 @@
 	- maemo-af-desktop/hildon-home/hildon-home-main.c:construct_background_image_with_uri()
 	  leaks all strings copied in the argumen_list array.
 
+	* Patched bug N#19108
+	* Found leaked GnomeVFSURI when looking for another leak:
+   	hildon-home/hildon-home-main.c: home_bg_image_filename = gnome_vfs_uri_extract_short_name(gnome_vfs_uri_new(home_bg_image_uri));
+	* The patch fixes the leak.
+
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Fixed bug 19007: 
