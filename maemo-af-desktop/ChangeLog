@@ -53,6 +53,20 @@
 	* Patched bug N#19111
 	hildon-home/hildon-home-main.c patched leaking GnomeVFSURI
 
+	* Patched bug N#18019:
+	* hildon-home/hildon-home-main.c: (set_background_dialog_selected):
+  	- changed error log message to more descriptive
+	* hildon-home/hildon-home-main.c: (hildon_home_get_factory_settings):
+	  - changed error log message to more descriptive
+	* hildon-home/hildon-home-main.c: (hildon_home_create_configure):
+	  - changed error log message to more descriptive
+	* hildon-home/hildon-home-main.c: (hildon_home_save_configure):
+	  - changed error log message to more descriptive
+	* hildon-home/hildon-home-main.c: (hildon_home_cp_read_desktop_entries):
+	  - changed error log message to more descriptive
+
+	* Tagged version 1.49.11 as ready for week 37 integration.
+
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Fixed bug 19007: 

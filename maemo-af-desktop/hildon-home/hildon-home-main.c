@@ -1073,7 +1073,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
             }            
         } else /*suffix test*/ 
         {
-            osso_log(LOG_ERR, "Unexpected file type: %s ",image_desc_file);
+            osso_log(LOG_ERR, "Skipping non-.desktop file: %s ",image_desc_file);
         }
         
         image_desc_file = g_dir_read_name(bg_image_desc_base_dir);
@@ -2554,7 +2554,8 @@ void hildon_home_get_factory_settings( void )
     fp = fopen (HILDON_HOME_FACTORY_FILENAME, "r");
     if(fp == NULL) 
     {
-        osso_log(LOG_ERR, "Couldn't open file %s for reading image name", 
+        osso_log(LOG_ERR, 
+                 "Couldn't open file %s for reading factory set image name",
                  user_original_bg_image);
     } else
     {
@@ -2630,7 +2631,8 @@ void hildon_home_construct_user_system_dir()
     {
         if(mkdir (system_dir, HILDON_HOME_SYSTEM_DIR_ACCESS) != 0) 
         {
-            osso_log(LOG_ERR, "Couldn't creat directory %s", system_dir);
+            osso_log(LOG_ERR, "Couldn't create directory %s for user settings", 
+                     system_dir);
         }
         
         hildon_home_create_configure();
@@ -2726,7 +2728,7 @@ void hildon_home_create_configure()
     }
     if(fp != NULL && fclose(fp) != 0) 
     {
-        osso_log(LOG_ERR, "Couldn't close file %s", 
+        osso_log(LOG_ERR, "Couldn't close configure file %s", 
                  configure_file);
     }
     
@@ -2791,7 +2793,7 @@ void hildon_home_save_configure()
     }
     if(fp != NULL && fclose(fp) != 0) 
     {
-        osso_log(LOG_ERR, "Couldn't close file %s", configure_file);
+        osso_log(LOG_ERR, "Couldn't close configure file %s", configure_file);
     }
     
     g_free(configure_file);
@@ -2840,7 +2842,9 @@ static void hildon_home_cp_read_desktop_entries(void)
         personalization = mb_dotdesktop_new_from_file(path);
         if(!personalization)
         {
-            osso_log( LOG_WARNING, "Error reading entry file %s\n", path );
+            osso_log(LOG_WARNING, 
+                     "Error reading entry file %s for personalisation applet", 
+                     path );
             personalization = NULL;
         }       
         g_free(path);
@@ -2858,7 +2862,9 @@ static void hildon_home_cp_read_desktop_entries(void)
         screen_calibration = mb_dotdesktop_new_from_file(path);
         if(!screen_calibration)
         {
-            osso_log( LOG_WARNING, "Error reading entry file %s\n", path );
+            osso_log(LOG_WARNING, 
+                     "Error reading entry file %s for screen calibration applet", 
+                     path );
             screen_calibration = NULL;
         }       
         g_free(path);
