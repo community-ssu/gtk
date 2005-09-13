@@ -1,3 +1,9 @@
+maemo-af-desktop (1.49.3) unstable; urgency=low
+
+  * Updated version again.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 15:14:12 +0300
+
 maemo-af-desktop (1.49.2) unstable; urgency=low
 
   * Patched N#18873
