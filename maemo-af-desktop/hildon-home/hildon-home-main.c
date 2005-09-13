@@ -1628,25 +1628,34 @@ gboolean loading_image_note_handler(GtkWidget *loading_cancel_note,
 static
 void construct_background_image_with_uri(const gchar *uri, gboolean new)
 {
+    char *width = g_strdup_printf("%d", HILDON_HOME_AREA_WIDTH);
+    char *height = g_strdup_printf("%d", HILDON_HOME_AREA_HEIGHT);
+    char *titlebar_image = get_titlebar_image_to_blend();
+    char *sidebar_image = get_sidebar_image_to_blend();
     char *argument_list[] = {
         HILDON_HOME_IMAGE_LOADER_PATH, 
         HILDON_HOME_IMAGE_LOADER_IMAGE,
         (char *)home_current_bg_image, 
-        (char *)g_strdup_printf("%d", HILDON_HOME_AREA_WIDTH),
-        (char *)g_strdup_printf("%d", HILDON_HOME_AREA_HEIGHT),
+	width,
+	height,
         (char *)uri, 
         (char *)user_original_bg_image,
-        get_titlebar_image_to_blend(),
+	titlebar_image,
         (char *)titlebar_original_image_savefile,
         HILDON_HOME_TITLEBAR_LEFT_X,
         HILDON_HOME_TITLEBAR_TOP_Y,
-        get_sidebar_image_to_blend(),
+        sidebar_image,
         (char *)sidebar_original_image_savefile,
         HILDON_HOME_SIDEBAR_LEFT_X,
         HILDON_HOME_SIDEBAR_TOP_Y,
         NULL };
 
     construct_background_image(argument_list, new);
+
+    g_free (width);
+    g_free (height);
+    g_free (titlebar_image);
+    g_free (sidebar_image);
 }
 
 /**
@@ -1664,23 +1673,32 @@ void construct_background_image_with_new_skin(GtkWidget *widget,
                                               GtkStyle *old_style,
                                               gpointer user_data)
 {
+    gchar *width = g_strdup_printf("%d", HILDON_HOME_AREA_WIDTH);
+    gchar *height = g_strdup_printf("%d", HILDON_HOME_AREA_HEIGHT);
+    gchar *titlebar_image = get_titlebar_image_to_blend();
+    gchar *sidebar_image = get_sidebar_image_to_blend();
     char *argument_list[] = {
         HILDON_HOME_IMAGE_LOADER_PATH, 
         HILDON_HOME_IMAGE_LOADER_SKIN,
         (char *)home_current_bg_image, 
-        (char *)g_strdup_printf("%d", HILDON_HOME_AREA_WIDTH),
-        (char *)g_strdup_printf("%d", HILDON_HOME_AREA_HEIGHT),
-        get_titlebar_image_to_blend(),
+	width,
+	height,
+	titlebar_image,
         (char *)titlebar_original_image_savefile,
         HILDON_HOME_TITLEBAR_LEFT_X,
         HILDON_HOME_TITLEBAR_TOP_Y,
-        get_sidebar_image_to_blend(),
+	sidebar_image,
         (char *)sidebar_original_image_savefile,
         HILDON_HOME_SIDEBAR_LEFT_X,
         HILDON_HOME_SIDEBAR_TOP_Y,
         NULL };
 
     construct_background_image(argument_list, FALSE);
+
+    g_free (width);
+    g_free (height);
+    g_free (titlebar_image);
+    g_free (sidebar_image);
 }
 
 

@@ -40,6 +40,11 @@
 	Added one null checking to hildon-home/hildon-home-main.c:
 	around fclose to avoid doing fclose to NULL ptr which would cause crash.
 
+	* Patched bug N#19106
+	* Patched maemo-af-desktop with an additional memory leak patch: Description:   	 
+	- maemo-af-desktop/hildon-home/hildon-home-main.c:construct_background_image_with_uri()
+	  leaks all strings copied in the argumen_list array.
+
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Fixed bug 19007: 
