@@ -1,3 +1,9 @@
+maemo-af-desktop (1.49.6) unstable; urgency=low
+
+  * Corrected crash problem, one NULL checking added
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 16:28:52 +0300
+
 maemo-af-desktop (1.49.5) unstable; urgency=low
 
   * Patched N#19025

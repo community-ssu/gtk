@@ -31,6 +31,7 @@
   	- changed applet status default to 1 (visible)
 	* hildon-home/hildon-home-main.c: (hildon_home_set_hardcode_values):
 	- setting each applet status to default
+	* Changes by Karoliina Salminen: Added null checking
 
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
