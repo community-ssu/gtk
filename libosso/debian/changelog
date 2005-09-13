@@ -1,3 +1,10 @@
+libosso (0.9.16-1) unstable; urgency=low
+
+  * Fixed a memory leak in _get_arg (bug 19148).
+  * Added autogen.sh file.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 13 Sep 2005 14:54:43 +0300
+
 libosso (0.9.15-1) unstable; urgency=low
 
   * Fixed a memory leak in osso_rpc_run_* (bug 18083).
