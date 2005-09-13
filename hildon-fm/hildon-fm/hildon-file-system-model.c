@@ -116,7 +116,6 @@ struct _HildonFileSystemModelPrivate {
     GtkIconTheme *icon_theme;
     removable_type mmc;
 
-    GtkFilePath *local_device_path;
     GtkFilePath *gateway_path;
   	
     GNode *local_device_node; 
@@ -2298,6 +2297,7 @@ hildon_file_system_model_constructor(GType type,
     HildonFileSystemModelPrivate *priv;
     GtkTreeModel *model;
     GtkFilePath *file_path;
+    GtkFilePath *local_device_path;
 
     obj =
         G_OBJECT_CLASS(hildon_file_system_model_parent_class)->
@@ -2317,13 +2317,15 @@ hildon_file_system_model_constructor(GType type,
     {
       HildonFileSystemSettings *fs_settings;
 
-    priv->local_device_path = 
-        _hildon_file_system_path_for_location(priv->filesystem, 
+      local_device_path = 
+	_hildon_file_system_path_for_location(priv->filesystem, 
               HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE);
 
     priv->local_device_node = hildon_file_system_model_add_node
-            (model, priv->roots, NULL, priv->local_device_path,
+            (model, priv->roots, NULL, local_device_path,
              HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE);
+    gtk_file_path_free (local_device_path);
+
     g_assert(priv->local_device_node);
 
     priv->mmc.base_node = hildon_file_system_model_add_node
