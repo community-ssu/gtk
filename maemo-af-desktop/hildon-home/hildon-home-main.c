@@ -756,13 +756,14 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
     
     if (response == GTK_RESPONSE_OK) 
     {
-        
+	GnomeVFSURI *uri_tmp;
+
         chooser_name = 
             gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
         
-        name_str = 
-            gnome_vfs_uri_extract_short_name(
-                gnome_vfs_uri_new(chooser_name));
+	uri_tmp = gnome_vfs_uri_new (chooser_name);
+        name_str = gnome_vfs_uri_extract_short_name(uri_tmp);
+	gnome_vfs_uri_unref (uri_tmp);
 
         temp_name = g_strdup(name_str);
         dot = g_strrstr(temp_name, ".");

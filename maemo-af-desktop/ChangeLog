@@ -50,6 +50,9 @@
    	hildon-home/hildon-home-main.c: home_bg_image_filename = gnome_vfs_uri_extract_short_name(gnome_vfs_uri_new(home_bg_image_uri));
 	* The patch fixes the leak.
 
+	* Patched bug N#19111
+	hildon-home/hildon-home-main.c patched leaking GnomeVFSURI
+
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Fixed bug 19007: 
