@@ -1,3 +1,26 @@
+2005-09-13  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_build_level),
+	(gtk_tree_model_filter_free_level), (gtk_tree_model_filter_row_changed),
+	(gtk_tree_model_filter_row_inserted),
+	(gtk_tree_model_filter_row_deleted): have the filter model maintain
+	a reference on all nodes in the child model which do have a
+	parent node (ie not the nodes in the root level). See GNOME
+	#311955 for discussion.
+	(gtk_tree_model_filter_row_has_child_toggled): remove call
+	to _free_level().
+
+	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_row_changed),
+	(gtk_tree_model_sort_row_inserted), (gtk_tree_model_sort_row_deleted),
+	(gtk_tree_model_sort_ref_node), (gtk_tree_model_sort_unref_node),
+	(gtk_tree_model_sort_sort_level), (gtk_tree_model_sort_build_level),
+	(gtk_tree_model_sort_free_level): bring back in sync with the
+	version found upstream, reverts changes in ref counting mechanism,
+	(gtk_tree_model_sort_row_inserted): don't insert new rows in a
+	level with zero refcount, free the level instead.
+
+	N#17314
+
 2005-09-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenu.c (gtk_menu_window_visibility_notify_event): Revert last
