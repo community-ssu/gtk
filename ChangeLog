@@ -1,3 +1,8 @@
+2005-09-14  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreemodelfilter.c
+	* gtk/gtktreemodelsort.c: ...and revert it because of crashes
+
 2005-09-13  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_build_level),
