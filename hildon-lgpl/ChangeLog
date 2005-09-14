@@ -1,3 +1,7 @@
+2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: Release 0.9.53
+
 2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-lgpl/hildon-app.c (hildon_app_event_filter): when
