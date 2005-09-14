@@ -1,3 +1,7 @@
+2005-09-14  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* locales/en_GB: Update en_GB to use 12 hour format (N#18270)
+
 2005-09-09  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* locales/en_GB: Amended am_pm and t_fmt_ampm (N#18270)

@@ -1,3 +1,9 @@
+posix-locales (2.3.2-13osso23) unstable; urgency=low
+
+  * New package for w37 with a bugfix 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed, 14 Sep 2005 15:43:11 +0300
+
 posix-locales (2.3.2-13osso22) unstable; urgency=low
 
   * New package for w36 with a bugfix 
