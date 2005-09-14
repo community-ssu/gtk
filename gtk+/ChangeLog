@@ -1,5 +1,12 @@
 2005-09-14  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkmenu.c (gtk_menu_window_visibility_notify_event): Reapply the
+	fix and now also ignore unmapped 10x10+10+10 windows which for some
+	reason seem to be included in the window list.
+	N#18455 
+
+2005-09-14  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreemodelfilter.c
 	* gtk/gtktreemodelsort.c: ...and revert it because of crashes
 
