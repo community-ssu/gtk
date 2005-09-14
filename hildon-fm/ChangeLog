@@ -1,5 +1,11 @@
 2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_create_file_name): Remove trailing spaces
+	from MMC name.
+	
+2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	* configure.ac: 0.9.40
 
 2005-09-13  Luc Pionchon  <luc.pionchon@nokia.com>

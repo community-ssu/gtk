@@ -336,7 +336,9 @@ _hildon_file_system_create_file_name(GtkFileSystem *fs,
       /* We return device names, unless it's unnamed mmc */
       if (str) 
       {
-        if (strcmp(str, "mmc-undefined-name") != 0) 
+        g_strstrip(str);
+
+        if (str[0] && strcmp(str, "mmc-undefined-name") != 0) 
           return str;
 
         g_free(str);
