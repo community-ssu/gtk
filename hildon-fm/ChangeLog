@@ -2,7 +2,7 @@
 
 	* hildon-fm/hildon-file-system-private.c
 	(_hildon_file_system_create_file_name): Remove trailing spaces
-	from MMC name.
+	from MMC name. N#17823
 	
 2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
 
