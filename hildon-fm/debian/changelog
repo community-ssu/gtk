@@ -1,3 +1,11 @@
+hildon-fm (0.9.41-1) unstable; urgency=low
+
+  * fixes
+    N#17314 (related to) - first emit the row_deleted signal, than actually delete the node from the tree.
+    N#17823 Remove trailing spaces from MMC name.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Thu, 15 Sep 2005 16:47:50 +0300
+
 hildon-fm (0.9.40-1) unstable; urgency=low
 
   * Bug fixed:

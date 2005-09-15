@@ -1533,6 +1533,9 @@ hildon_file_system_model_kick_node(GNode *node, gpointer data)
   iter.user_data = destroy_node;
   tree_path =
         hildon_file_system_model_get_path(GTK_TREE_MODEL(data), &iter);
+
+  gtk_tree_model_row_deleted(GTK_TREE_MODEL(data), tree_path);
+  gtk_tree_path_free(tree_path);
   	 
   parent_node = node->parent;
   node = g_node_next_sibling(node);
@@ -1541,9 +1544,6 @@ hildon_file_system_model_kick_node(GNode *node, gpointer data)
       -1, hildon_file_system_model_destroy_model_node, data);
 
   g_node_destroy(destroy_node);
-
-  gtk_tree_model_row_deleted(GTK_TREE_MODEL(data), tree_path);
-  gtk_tree_path_free(tree_path);
 
   if (parent_node && parent_node != priv->roots && parent_node->children ==NULL)
     hildon_file_system_model_send_has_child_toggled( GTK_TREE_MODEL(data), 

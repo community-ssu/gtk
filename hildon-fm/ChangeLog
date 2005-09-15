@@ -1,3 +1,15 @@
+2005-09-15  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.41
+
+2005-09-15  Kristian Rietveld  <kris@imendio.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_kick_node): first emit the row_deleted
+	signal, than actually delete the node from the tree. (the
+	row_deleted signal can trigger unrefs for this node, which still
+	need to be handled). N#17314
+
 2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-fm/hildon-file-system-private.c
