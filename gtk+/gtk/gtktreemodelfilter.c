@@ -551,6 +551,9 @@ gtk_tree_model_filter_build_level (GtkTreeModelFilter *filter,
       i++;
     }
   while (gtk_tree_model_iter_next (filter->priv->child_model, &iter));
+
+  if (new_level->array->len == 0)
+    gtk_tree_model_filter_free_level (filter, new_level);
 }
 
 static void
@@ -1428,8 +1431,6 @@ gtk_tree_model_filter_row_has_child_toggled (GtkTreeModel *c_model,
   FilterElt *elt;
 
   g_return_if_fail (c_path != NULL && c_iter != NULL);
-
-  /* FIXME: does this code work? */
 
   if (!gtk_tree_model_filter_visible (filter, c_iter))
     return;

@@ -1,3 +1,11 @@
+2005-09-17  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_build_level): if
+	none of the nodes in the new_level are visible, free the level
+	again,
+	(gtk_tree_model_filter_row_has_child_toggled): remove FIXME.
+	N#19416
+
 2005-09-14  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_build_level): don't
