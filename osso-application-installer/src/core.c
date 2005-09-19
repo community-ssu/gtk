@@ -928,11 +928,16 @@ format_relationship_failures (gchar *footer, gchar *output)
 
   while (depends)
     {
-      g_string_append_printf 
-	(report,
-	 SUPPRESS_FORMAT_WARNING (_("ai_error_componentmissing")),
-	 (gchar *)(depends->data));
-      g_string_append (report, ".\n");
+      gchar *fmt = _("ai_error_componentmissing");
+      g_string_append_printf (report, fmt, (gchar *)(depends->data));
+
+      /* XXX-NLS - some translations have a full-stop at the end, some
+	           don't.  We fix this by appending one ourselves when
+	           it is missing.
+      */
+      if (*fmt == '\0' || fmt[strlen(fmt)-1] != '.')
+	g_string_append (report, ".");
+      g_string_append (report, "\n");
       depends = depends->next;
     }
   if (depended)
@@ -950,7 +955,7 @@ format_relationship_failures (gchar *footer, gchar *output)
     }
   if (conflicts)
     {
-      /* XXX-NLS - the most ugly hack yet. We want to say "It
+      /* XXX-NLS - the most ugly hack yet.  We want to say "It
 	           conflicts with the following installed packages:"
 	           but we can not since we don't have a logical id for
 	           it.  So we just display the second sentence of
@@ -1375,6 +1380,7 @@ do_copy (AppData *app_data,
       present_error_details (app_data,
 			     dgettext ("osso-filemanager",
 				       "sfil_ni_operation_failed"),
+			     NULL,
 			     NULL);
       return FALSE;
     }
@@ -1490,6 +1496,7 @@ check_dependencies (AppData *app_data, gchar *package)
     {
       present_error_details (app_data,
 			     _("ai_ti_dependency_conflict_title"),
+			     AI_HELP_KEY_DEPENDS,
 			     dependencies_report);
       result = FALSE;
     }
