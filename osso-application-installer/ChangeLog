@@ -1,11 +1,21 @@
+2005-09-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/ui/represent.h, src/ui/represent.c (present_error_details):
+	added help_key argument.  Changed all callers.
+	* src/core.c (check_dependencies): Use correct help_key for error
+	dialog.
+	
 2005-09-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/core.c (format_relationship_failures): Append "." only for
+	translations of ai_error_componentmissing that do not already end
+	with one.
 
 	Released 2.10.
 
 	* maemo.dirs: Added usr/share/applications/hildon-control-panel,
-	usr/lib/dbus-1.0/services, usr/lib/hildon-control-panel,
-	usr/lib/hildon-home, usr/lib/hildon-status-bar, and
-	usr/share/icons/hicolor.
+	usr/lib/hildon-control-panel, usr/lib/hildon-home,
+	usr/lib/hildon-status-bar, and usr/share/icons/hicolor.
 
 	* src/core.c (package_file_info): Set info structu members to
 	non-NULL only after all error cases have been handled.
