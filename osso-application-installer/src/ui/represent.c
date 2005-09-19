@@ -90,10 +90,14 @@ update_package_list (AppData *app_data)
 void
 present_error_details (AppData *app_data,
 		       gchar *title,
+		       gchar *help_key,
 		       gchar *details)
 {
   GtkWidget *parent, *dialog, *sw;
   
+  if (help_key == NULL)
+    help_key = AI_HELP_KEY_ERROR;
+
   parent = app_data->app_ui_data->main_dialog;
   dialog = gtk_dialog_new_with_buttons (title,
 					GTK_WINDOW (parent),
@@ -110,9 +114,9 @@ present_error_details (AppData *app_data,
 			  NULL);
 
   gtk_widget_set_size_request (GTK_WIDGET(dialog), 400, 200);
-      
+
   ossohelp_dialog_help_enable (GTK_DIALOG(dialog),
-			       AI_HELP_KEY_ERROR,
+			       help_key,
 			       app_data->app_osso_data->osso);
       
   gtk_widget_show_all (dialog);
@@ -131,7 +135,7 @@ present_error_details_fmt (AppData *app_data,
 
   va_start (ap, details_fmt);
   details = g_strdup_vprintf (details_fmt, ap);
-  present_error_details (app_data, title, details);
+  present_error_details (app_data, title, NULL, details);
   g_free (details);
   va_end (ap);
 }
@@ -174,6 +178,7 @@ present_report_with_details (AppData *app_data,
   if (response == GTK_RESPONSE_OK && !no_details)
     present_error_details (app_data,
 			   _("ai_ti_error_details_title"),
+			   NULL,
 			   details);
 }
 
