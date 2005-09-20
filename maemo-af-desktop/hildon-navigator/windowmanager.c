@@ -797,8 +797,9 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
         if (nitems > 0 && (vt.state_value[0] == IconicState) )
         {
             handle_minimization(model, wm_class_str, pev->window);
-            XFree(vt.char_value);
         }
+        if (vt.char_value)
+            XFree(vt.char_value);
     }
 
     XFree(wm_class_str);
@@ -1493,6 +1494,8 @@ static void handle_active_window_prop(GtkTreeModel *model,
                 update_window(model, &parent, realwin_value.window_value[0],
                               id, id, subname_str,
                               AS_MENUITEM_TO_FIRST_POSITION);
+                
+                g_free(subname_str);
             }
             else if (id == 0 )
             {
@@ -1896,6 +1899,9 @@ static void handle_minimization(GtkTreeModel *model,
                                   view_name, AS_MENUITEM_TO_LAST_POSITION,
                                   killable, NULL, wm_cbs.cb_data);
         }
+        g_free(app_name);
+        g_free(view_name);
+        g_free(icon_name);
     }
 }
 
@@ -2300,6 +2306,7 @@ static void handle_autotopping()
     }
     /* Nothing had to be autotopped. So top desktop. */
     wm_cbs.topped_desktop_cb(wm_cbs.cb_data);
+
     return;
 }
 
@@ -2427,6 +2434,9 @@ static gboolean menuitem_match_helper(GtkTreeModel *model,
         ((menuitem_comp_t *)data)->view_id = view_id;
         ((menuitem_comp_t *)data)->window_id = window_id;
         ((menuitem_comp_t *)data)->killable = killable;
+
+        g_free(wm_class);
+        g_free(service);
         return TRUE;
     }
     return FALSE;
@@ -2834,6 +2844,7 @@ void top_view(GtkMenuItem *menuitem)
               if (!is_hildonapp && view_id == 0)
               {
                   top_non_hildonapp(win_id);
+                  g_free(exec);
                   return;
               }
 
@@ -2850,6 +2861,8 @@ void top_view(GtkMenuItem *menuitem)
                                   SubstructureRedirectMask
                                   | SubstructureNotifyMask, &xev);
               gdk_error_trap_pop();
+              
+              g_free(exec);
 	      return;
 	  }
             else if ((gpointer)widget == menuitem && killed == TRUE)
@@ -2866,6 +2879,7 @@ void top_view(GtkMenuItem *menuitem)
                                            WM_VIEW_ID_ITEM, view_id, -1);
                     }
                     top_service(exec);
+                    g_free(exec);
                     return;
                 }
             }
@@ -2921,7 +2935,7 @@ void top_service(const gchar *service_name)
 	 if (lowmem_situation == TRUE)
 	   {
 	     g_timeout_add(interval,
-			   relaunch_timeout, (gpointer)service_name);
+			   relaunch_timeout, (gpointer) g_strdup(service_name));
 	   }
          return;
      }
@@ -3307,13 +3321,11 @@ static gboolean launch_banner_timeout( gpointer data )
 	long unsigned int t1, t2;
 	guint time_left, view_id;
 	GtkTreeIter iter;
-	gchar *app_name;
 
 	if ( find_service_from_tree( wm_cbs.model,
 				&iter, info->service_name ) > 0 ) {
 		gtk_tree_model_get(wm_cbs.model, &iter,
-				WM_VIEW_ID_ITEM, &view_id,
-				WM_NAME_ITEM, &app_name, -1);
+				WM_VIEW_ID_ITEM, &view_id, -1);
 	} else {
 		/* This should never happen. Bail out! */
 		return FALSE;
@@ -3340,10 +3352,6 @@ static gboolean launch_banner_timeout( gpointer data )
 		g_free (info->service_name);
 		g_free (info);
 
-		if ( app_name ) {
-			g_free( app_name );
-		}
-
 		return FALSE;
 	}
 	
@@ -3367,6 +3375,8 @@ static gboolean relaunch_timeout(gpointer data)
 	  gtk_infoprint( NULL, _( LAUNCH_FAILED_INSUF_RES ) );
 	}
     }
+  
+  g_free(service_name);
   return FALSE;
 }
 
