@@ -928,15 +928,8 @@ format_relationship_failures (gchar *footer, gchar *output)
 
   while (depends)
     {
-      gchar *fmt = _("ai_error_componentmissing");
-      g_string_append_printf (report, fmt, (gchar *)(depends->data));
-
-      /* XXX-NLS - some translations have a full-stop at the end, some
-	           don't.  We fix this by appending one ourselves when
-	           it is missing.
-      */
-      if (*fmt == '\0' || fmt[strlen(fmt)-1] != '.')
-	g_string_append (report, ".");
+      g_string_append_printf (report, _("ai_error_componentmissing"),
+			      (gchar *)(depends->data));
       g_string_append (report, "\n");
       depends = depends->next;
     }
