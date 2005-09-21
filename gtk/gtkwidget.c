@@ -6958,6 +6958,11 @@ gtk_widget_real_destroy (GtkObject *object)
     g_object_unref(priv->anim);
     priv->anim = NULL;
   }
+  if( priv->iter )
+  {
+    g_object_unref(priv->iter);
+    priv->iter = NULL;
+  }
 #endif
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
@@ -8104,7 +8109,10 @@ init_tap_and_hold_animation (GtkWidgetPrivate *priv)
   if (priv->anim)
     {
       g_get_current_time (&time);
-      priv->iter = gdk_pixbuf_animation_get_iter (priv->anim, &time);
+      
+      if (!priv->iter)
+          priv->iter = gdk_pixbuf_animation_get_iter (priv->anim, &time);
+      
       priv->interval = gdk_pixbuf_animation_iter_get_delay_time (priv->iter);
     }
 }
@@ -8228,6 +8236,7 @@ static void gtk_widget_tap_and_hold_setup_real (GtkWidget *widget,
 
 #ifdef TAP_AND_HOLD_ANIMATION
   window = gdk_get_default_root_window ();
+  priv->iter = NULL;
   priv->anim = g_object_get_data (G_OBJECT (window),
 				  "gtk-tap-and-hold-animation");
   if (!GDK_IS_PIXBUF_ANIMATION (priv->anim))
