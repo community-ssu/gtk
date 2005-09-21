@@ -1,3 +1,12 @@
+2005-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkwidget.c (gtk_widget_real_destroy): removed reference for
+	animation iterator
+	(init_tap_and_hold_animation): function now creates the animation
+	iterator only once
+	(gtk_widget_tap_and_hold_setup): set priv->iter to NULL
+	N#19195
+
 2005-09-17  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_build_level): if
