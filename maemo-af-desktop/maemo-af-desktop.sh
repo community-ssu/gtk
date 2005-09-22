@@ -1,6 +1,12 @@
 #!/bin/sh
 # Task Navigator startup/shutdown script
 
+export NAVIGATOR_DO_BGKILL=yes
+export NAVIGATOR_LOWMEM_DIM=no
+export NAVIGATOR_LOWMEM_DIALOG=no
+export NAVIGATOR_LOWMEM_LAUNCH_BANNER_TIMEOUT=200
+export NAVIGATOR_LOWMEM_LAUNCH_THRESHOLD_DISTANCE=2000
+
 if [ "x$AF_PIDDIR" = "x" ]; then
   echo "$0: Error, AF_PIDDIR is not defined"
   exit 2

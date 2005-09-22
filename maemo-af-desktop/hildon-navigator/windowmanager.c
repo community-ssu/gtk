@@ -27,6 +27,8 @@
 #include "windowmanager.h"
 #include "application-switcher.h"
 #include "osso-manager.h"
+#include "others-menu.h"
+#include "hildon-navigator-interface.h"
 #include <libmb/mbutil.h>
 #include <X11/X.h>
 
@@ -35,6 +37,7 @@
 
 /* Needed for the "launch banner" */
 #include <hildon-widgets/gtk-infoprint.h>
+#include <hildon-widgets/hildon-note.h>
 #include <sys/time.h>
 
 #define DBUS_API_SUBJECT_TO_CHANGE
@@ -47,7 +50,13 @@ osso_context_t *osso;
 
 gint timer_id = 0;
 
+gulong lowmem_banner_timeout;
+gulong lowmem_min_distance;
+
 gboolean lowmem_situation = FALSE;
+gboolean bgkill_situation = FALSE;
+
+GtkWidget *cannot_launch_dialog = NULL;
 
 /* Structure that contains pointers to the callback functions */
 
@@ -60,6 +69,7 @@ typedef struct
     gpointer cb_data;
     
     GtkTreeModel *model;
+    GtkWidget *killer_dialog;
     GList *purge_win_list;
 } wm_callbacks;
 
@@ -100,6 +110,8 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 
 
 /* Internal function definitions */
+
+static void update_lowmem_situation(gboolean lowmem);
 
 /* Function for showing "launch banner" */
 static void show_launch_banner( GtkWidget *parent, gchar *app_name,
@@ -397,9 +409,11 @@ static int killmethod(GArray *arguments, gpointer data);
  * and kill the process.
  * @param model The GtkTreeModel
  * @param parent The iterator for the application top node
+ * @param mark_as_killed When TRUE, do not remove from AS.
  */
 
-static void kill_application(GtkTreeModel *model, GtkTreeIter *parent);
+static void kill_application(GtkTreeModel *model, GtkTreeIter *parent,
+			     gboolean mark_ask_killed);
 
 
 /* Updates the X window IDs of an applications window after the
@@ -461,6 +475,7 @@ static void shutdown_handler(void);
  */
 
 static void lowmem_handler(gboolean is_on);
+static void bgkill_handler(gboolean is_on);
 
 /*
  * Handle the appkiller signal(s).
@@ -483,9 +498,22 @@ static DBusHandlerResult exit_handler(DBusConnection *connection,
 static gboolean send_sigterms(gpointer data);
 
 
+/*
+ * Initializes the dialog for killing applications
+ */
+
+static void create_killer_dialog(void);
 
 
 
+/*
+ * Handler for the menu-like application killer dialog selections.
+ */
+
+static gboolean treeview_button_press(GtkTreeView *treeview,
+				      GdkEventButton *event,
+				      GtkCellRenderer *renderer);
+     
 /* Implementations begin */
 
 
@@ -1821,12 +1849,12 @@ static void handle_killable_prop(GtkTreeModel *model,
             gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
                                WM_KILLABLE_ITEM, TRUE, -1);
 
-            /* If we're in lowmem situation, we'll kill the application
+            /* If we're in bgkill situation, we'll kill the application
                right here. */
 
-            if (lowmem_situation == TRUE)
+            if (bgkill_situation)
             {
-                kill_application(model, &parent);
+                kill_application(model, &parent, TRUE);
                 return;
             }
             
@@ -2314,7 +2342,8 @@ static void handle_autotopping()
 /* End of private window/X-property related functions */
 
 
-static void kill_application(GtkTreeModel *model, GtkTreeIter *parent)
+static void kill_application(GtkTreeModel *model, GtkTreeIter *parent,
+			     gboolean mark_as_killed)
 {
     int actual_format;
     unsigned long nitems, bytes_after;
@@ -2351,6 +2380,12 @@ static void kill_application(GtkTreeModel *model, GtkTreeIter *parent)
             
             if (app_terminated == FALSE && pid_result != NULL)
             {
+		gchar *name;
+		gtk_tree_model_get(wm_cbs.model, &iter,
+				   WM_NAME_ITEM, &name, -1);
+		osso_log(LOG_INFO, "Killing %s", name);
+		g_free (name);
+
                 if(kill(pid_result[0]+256*pid_result[1], SIGTERM) != 0)
                 {
                     osso_log(LOG_ERR, "Failed to kill pid %d with SIGTERM", 
@@ -2358,7 +2393,7 @@ static void kill_application(GtkTreeModel *model, GtkTreeIter *parent)
                 }
             }
             gtk_tree_store_set(GTK_TREE_STORE(model), parent,
-                               WM_KILLED_ITEM, TRUE, -1);
+                               WM_KILLED_ITEM, mark_as_killed, -1);
             /* We have to update things for application switcher */
             gtk_tree_model_get(wm_cbs.model, &iter,
                                WM_MENU_PTR_ITEM,
@@ -2373,6 +2408,8 @@ static void kill_application(GtkTreeModel *model, GtkTreeIter *parent)
             
             XFree(pid_result);
             pid_result = NULL;
+
+	    update_lowmem_situation(lowmem_situation);
         }
     }
 
@@ -2656,6 +2693,20 @@ static gboolean send_sigterms(gpointer data)
     return success;
 }
 
+static gulong getenv_int(gchar *env_str, gulong val_default)
+{
+    gchar *val_str;
+    gulong val = val_default;
+
+    val_str = getenv(env_str);
+    if (val_str)
+    {
+	val = strtoul(val_str, NULL, 10);
+    }
+
+    return val;
+}
+
 /* Public functions*/
 
 
@@ -2670,7 +2721,7 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
     DBusError error;
     gchar *match_rule = NULL;
 
-    lowmem_situation = FALSE;
+    bgkill_situation = FALSE;
 
     osso_manager_t *osso_man = osso_manager_singleton_get_instance();
      
@@ -2687,9 +2738,25 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
     model = create_model();
     g_assert(model);
 
+    cannot_launch_dialog =
+	hildon_note_new_information(NULL, _(LAUNCH_FAILED_INSUF_RES));
+
+    /* Check for configurable lowmem values. */
+
+    lowmem_min_distance = getenv_int(LOWMEM_LAUNCH_THRESHOLD_DISTANCE_ENV,
+				     LOWMEM_LAUNCH_THRESHOLD_DISTANCE);
+    lowmem_banner_timeout = getenv_int(LOWMEM_LAUNCH_BANNER_TIMEOUT_ENV,
+				       LOWMEM_LAUNCH_BANNER_TIMEOUT);
+    /* Guard about insensibly long values. */
+    if (lowmem_banner_timeout > LOWMEM_LAUNCH_BANNER_TIMEOUT_MAX)
+    {
+	lowmem_banner_timeout = LOWMEM_LAUNCH_BANNER_TIMEOUT_MAX;
+    }
+
     application_switcher_set_dnotify_handler(cb_data, &dnotify_callback);
     application_switcher_set_shutdown_handler(cb_data, &shutdown_handler);
     application_switcher_set_lowmem_handler(cb_data, &lowmem_handler);
+    application_switcher_set_bgkill_handler(cb_data, &bgkill_handler);
 
     /* Initialize the common X atoms */
 
@@ -2736,8 +2803,7 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
     wm_cbs.topped_desktop_cb = topped_desktop_cb;
     wm_cbs.cb_data = cb_data;
     wm_cbs.model = model;
-  
-    
+
     /* Set up the event filter */
     gdk_error_trap_push();
     gdk_window_set_events(gdk_get_default_root_window(),
@@ -2792,7 +2858,59 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
 }
 
 
+gboolean is_killed(GtkMenuItem *menuitem)
+{
+    /* FIXME: this is a copy of top_view, below, reduced to only find out
+       whether the application corresponding to MENUITEM is killed. This
+       information should of course be available more cheaply...
+    */
 
+    GtkTreeModel *model = NULL;
+    GtkTreeIter iter;
+    gboolean valid;
+    gboolean killed;
+
+    model = wm_cbs.model;
+
+    valid = gtk_tree_model_iter_children(model, &iter, NULL);
+    while (valid)
+    {
+	gboolean inner_valid;
+	GtkTreeIter inner_iter;
+	GtkTreeIter parent_iter;
+
+	inner_valid = gtk_tree_model_iter_children(model, &inner_iter, &iter);
+	while (inner_valid)
+	{
+	    gpointer widget;
+
+	    gtk_tree_model_get(model, &inner_iter,
+			       WM_MENU_PTR_ITEM, &widget, -1);
+
+	    if (gtk_tree_model_iter_parent(model, &parent_iter, &inner_iter))
+	    {
+		gtk_tree_model_get(model, &parent_iter,
+				   WM_KILLED_ITEM, &killed, -1);
+	    }
+	    else
+	    {
+		killed = FALSE;
+	    }
+
+	    if ((gpointer)widget == menuitem)
+	    {
+		return killed;
+	    }
+
+	    inner_valid = gtk_tree_model_iter_next(model, &inner_iter);
+	}
+
+	valid = gtk_tree_model_iter_next (model, &iter);
+    }
+
+    /* Didn't find it, assume it is alive... */
+    return FALSE;
+}
 
 void top_view(GtkMenuItem *menuitem)
 {
@@ -2902,11 +3020,61 @@ void top_service(const gchar *service_name)
     gpointer widget_ptr = NULL;
     gchar *app_name = NULL, *view_name = NULL, *icon_name = NULL;
     int retval = 0;
+    FILE *lowmem_allowed_f = NULL, *pages_used_f = NULL;
+    guint lowmem_allowed, pages_used = 0;
+    guint pages_available = 0;
+
     if (service_name == NULL)
     {
         osso_log(LOG_ERR, "There was no service name!\n");
         return;
     }
+
+    /* Check how much memory we do have until the lowmem threshold */
+
+    lowmem_allowed_f = fopen(LOWMEM_PROC_ALLOWED, "r");
+    pages_used_f = fopen(LOWMEM_PROC_USED, "r");
+
+    if (lowmem_allowed_f != NULL && pages_used_f != NULL)
+    {
+	/* FIXME: Add checks. */
+	fscanf(lowmem_allowed_f, "%u", &lowmem_allowed);
+	fscanf(pages_used_f, "%u", &pages_used);
+	if (pages_used < lowmem_allowed)
+	{
+	    pages_available = lowmem_allowed - pages_used;
+	}
+	else
+	{
+	    pages_available = 0;
+	}
+    }
+    else
+    {
+	osso_log(LOG_ERR, "We could not read lowmem page stats.\n");
+    }
+
+    if (lowmem_allowed_f)
+    {
+	fclose(lowmem_allowed_f);
+    }
+    if (pages_used_f)
+    {
+	fclose(pages_used_f);
+    }
+
+    /* Here we should compare the amount of pages to a configurable
+       threshold. Value 0 means that we don't know and assume
+       slightly riskily that we can start the app... */
+
+    if (pages_available > 0 && pages_available < lowmem_min_distance)
+    {
+	gtk_widget_show_all(cannot_launch_dialog);
+	gtk_dialog_run(GTK_DIALOG(cannot_launch_dialog));
+	gtk_widget_hide(cannot_launch_dialog);
+	return;
+    }
+
     /* Search for the corresponding service root node */
      if (!find_service_from_tree(wm_cbs.model, &parent, service_name))
       {
@@ -2932,7 +3100,7 @@ void top_service(const gchar *service_name)
          /* This should probably be merged with the previous condition */
          osso_man = osso_manager_singleton_get_instance();
          osso_manager_launch(osso_man, service_name, RESTORED);
-	 if (lowmem_situation == TRUE)
+	 if (bgkill_situation == TRUE)
 	   {
 	     g_timeout_add(interval,
 			   relaunch_timeout, (gpointer) g_strdup(service_name));
@@ -3026,7 +3194,7 @@ static int kill_lru( void )
 			gtk_tree_model_get(wm_cbs.model, &parent,
 					WM_KILLABLE_ITEM, &killable, -1);
 			if (killable == TRUE) {
-				kill_application(wm_cbs.model, &parent);
+				kill_application(wm_cbs.model, &parent, TRUE);
 			}
 		}
 	}
@@ -3142,6 +3310,8 @@ static int kill_all( gboolean killable_only )
         }
     }
 
+    update_lowmem_situation(lowmem_situation);
+
     return 0; 
 }
 
@@ -3194,7 +3364,7 @@ static int killmethod(GArray *arguments, gpointer data)
                            WM_KILLABLE_ITEM, &killable, -1);
         if (killable == TRUE)
         {
-            kill_application(wm_cbs.model, &parent);
+            kill_application(wm_cbs.model, &parent, TRUE);
             
         }
     }
@@ -3254,7 +3424,8 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 						WM_NAME_ITEM, &app_name,
 					       	WM_STARTUP_ITEM, &startup,							-1);
 
-				if (view_id == 0 && startup == TRUE) {
+				if (view_id == 0 && startup == TRUE &&
+				    lowmem_banner_timeout > 0) {
 					/* Show the banner */
                                         /* Service will be freed later when
                                          * banner is removed */
@@ -3299,7 +3470,7 @@ static void show_launch_banner( GtkWidget *parent, gchar *app_name,
 
         gdk_error_trap_pop();
 
-	g_timeout_add( interval, launch_banner_timeout, info );
+	g_timeout_add(interval, launch_banner_timeout, info);
 
 	/* Cleanup */
         g_free( app_name );
@@ -3314,7 +3485,7 @@ static void close_launch_banner( GtkWidget *parent )
 
 
 
-static gboolean launch_banner_timeout( gpointer data )
+static gboolean launch_banner_timeout(gpointer data)
 {
 	launch_banner_info *info = data;
 	struct timeval current_time;
@@ -3337,7 +3508,7 @@ static gboolean launch_banner_timeout( gpointer data )
 	t2 = (long unsigned int) current_time.tv_sec;
 	time_left = (guint) (t2 - t1);
 	
-	if ( time_left >= APP_LAUNCH_BANNER_TIMEOUT || view_id > 0 ) {
+	if (time_left >= lowmem_banner_timeout || view_id > 0 ) {
 		
 		/* Close the banner */
 		close_launch_banner( NULL );
@@ -3466,17 +3637,120 @@ static void shutdown_handler(void)
     kill_all(FALSE);
 }
 
+static void explain_lowmem (void)
+{
+    /* We are called for every press when the button is insensitive.
+       Buttons are sometimes insensitive for other reasons than lowmem,
+       so we have to check here. */
+    if (lowmem_situation)
+    {
+	gtk_infoprintf(NULL, _("memr_ib_unable_to_switch_to_application"));
+    }
+}
+
+void set_lowmem_explain(GtkWidget *widget)
+{
+    g_signal_connect(G_OBJECT(widget), "insensitive-press",
+		     G_CALLBACK(explain_lowmem), NULL);
+}
+
+/* FIXME: This is defined in maemo-af-desktop-main.c and we shouldn't
+   be using it of course. Cleaning this up can be done when nothing
+   else is left to clean up... */
+extern Navigator tasknav;
+
+static void update_lowmem_situation(gboolean lowmem)
+{
+    /* Update the state of the UI according to LOWMEM. This is done by
+       just enabling/disabling all relevant widgets. Also, on the first
+       time around, we connect some handlers that put up explanations
+       when the widget is pressed anyway. */
+
+    static gboolean first_time = TRUE;
+
+    /* If dimming is disabled, we don't do anything here. Also see
+       APPLICATION_SWITCHER_UPDATE_LOWMEM_SITUATION. */
+    if (!config_dim_on_lowmem)
+    {
+	return;
+    }
+
+    if (first_time)
+    {
+	ApplicationSwitcher_t *as = tasknav.app_switcher;
+
+	first_time = FALSE;
+	set_lowmem_explain(others_menu_get_button(tasknav.others_menu));
+	set_lowmem_explain(tasknav.bookmark_button);
+	set_lowmem_explain(tasknav.mail_button);
+	set_lowmem_explain(as->toggle_button1);
+	set_lowmem_explain(as->toggle_button2);
+	set_lowmem_explain(as->toggle_button3);
+	set_lowmem_explain(as->toggle_button4);
+    }
+
+    gtk_widget_set_sensitive(others_menu_get_button(tasknav.others_menu),
+			    !lowmem);
+    gtk_widget_set_sensitive(tasknav.bookmark_button, !lowmem);
+    gtk_widget_set_sensitive(tasknav.mail_button, !lowmem);
+
+    application_switcher_update_lowmem_situation(tasknav.app_switcher, lowmem);
+}
+
+static void show_pavlov_dialog(void)
+{
+    GtkWidget *dialog =
+	hildon_note_new_information (NULL,
+				     _("memr_ni_application_memory_low"));
+    gtk_widget_show_all(dialog);
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    create_killer_dialog();
+}
 
 static void lowmem_handler(gboolean is_on)
 {
-    lowmem_situation = is_on;
-
-    /* If lowmem_on signal was received,
-       kill all applications that can be safely killed */
-
-    if (is_on == TRUE)
+    if (lowmem_situation != is_on)
     {
-        kill_all(TRUE);
+	lowmem_situation = is_on;
+
+	/* The 'lowmem' situation always includes the 'bgkill' situation,
+	   but the 'bgkill' signal is not generated in all configurations.
+	   So we just call the bgkill_handler here. */
+	bgkill_handler(is_on);
+
+	update_lowmem_situation(is_on);
+
+	if (config_dialog_on_lowmem)
+	{
+	    if (is_on)
+	    {
+		show_pavlov_dialog();
+	    }
+	    else
+	    {
+		gtk_infoprintf(NULL, _("memr_ib_no_more_memory_low"));
+	    }
+	}
+    }
+}
+
+static void bgkill_handler(gboolean is_on)
+{
+    /* If bgkilling is disabled, we never turn on the bgkill_situation. */
+    if (!config_do_bgkill)
+    {
+	return;
+    }
+
+    if (is_on != bgkill_situation)
+    {
+	bgkill_situation = is_on;
+
+	if (is_on == TRUE)
+	{
+	    kill_all(TRUE);
+	}
     }
 }
 
@@ -3497,3 +3771,176 @@ static DBusHandlerResult exit_handler(DBusConnection *connection,
     
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
+
+static gboolean treeview_button_press(GtkTreeView *treeview,
+				      GdkEventButton *event,
+				      GtkCellRenderer *renderer)
+{
+    GtkTreeViewColumn *column;
+    GtkTreePath *path;
+    gint cell_x, cell_y;
+    gint start_pos, width;
+
+    if (event->window != gtk_tree_view_get_bin_window(treeview))
+    {
+	gtk_widget_destroy(wm_cbs.killer_dialog);
+	return FALSE;
+    }
+    if (!gtk_tree_view_get_path_at_pos(treeview, event->x, event->y,
+				       &path, &column, &cell_x, &cell_y))
+    {
+	gtk_widget_destroy(wm_cbs.killer_dialog);
+	return FALSE;
+    }
+    if (gtk_tree_view_column_cell_get_position(column, renderer,
+					       &start_pos, &width))
+    {
+	if (start_pos <= cell_x && cell_x <= start_pos + width)
+	{
+	    GtkTreeModel *model;
+	    GtkTreeIter iter, parent_iter;
+
+	    model = gtk_tree_view_get_model(treeview);
+
+	    if (gtk_tree_model_get_iter (model, &iter, path))
+	    {
+		gchar *name;
+
+		gtk_tree_model_get(model, &iter, COL_SERVICE, &name, -1);
+
+		if (find_service_from_tree(wm_cbs.model, &parent_iter, name))
+		{
+		    kill_application(wm_cbs.model, &parent_iter, FALSE);
+		}
+
+		g_free(name);
+		gtk_widget_destroy(wm_cbs.killer_dialog);
+
+		return TRUE;
+	    }
+	}
+    }
+
+    gtk_tree_path_free(path);
+    gtk_widget_destroy(wm_cbs.killer_dialog);
+
+    return FALSE;
+}
+
+static void create_killer_dialog(void)
+{
+    GtkListStore *store;
+    GList *mitems = NULL;
+    GtkIconTheme *icon_theme;
+    GdkPixbuf *pixbuf;
+    GtkWidget *treeview = NULL;
+    GtkTreeViewColumn *column;
+    GtkCellRenderer *renderer;
+    GtkRequisition req;
+    GtkWidget *toplevel;
+
+    GtkWidget *dialog = gtk_window_new(GTK_WINDOW_POPUP);
+    gtk_window_set_type_hint(GTK_WINDOW(dialog),
+			     GDK_WINDOW_TYPE_HINT_MENU);
+    gtk_widget_set_name(dialog, "hildon-status-bar-popup");
+    gtk_window_set_resizable(GTK_WINDOW(dialog), FALSE);
+    gtk_window_set_decorated(GTK_WINDOW(dialog), TRUE);
+    gtk_container_set_border_width(GTK_CONTAINER(dialog), 20);
+
+    store = gtk_list_store_new (N_COLUMNS, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING);
+
+    icon_theme = gtk_icon_theme_get_default ();
+
+    /* Add running applications to the list */
+    /* FIXME: We _really_ should be able to get the name, icon etc.
+       from the AS itself without having to romp through the treemodel... */
+
+    mitems = application_switcher_get_menuitems(wm_cbs.cb_data);
+    /* First two items are Home and the separator */
+
+    if (mitems != NULL && g_list_length(mitems) > 2)
+    {
+	gint i;
+
+	for (i = g_list_length(mitems) - 1 ; i >= 2; i--)
+	{
+	    GtkTreeIter iter;
+	    menuitem_comp_t menu_comp;
+
+	    menu_comp.menu_ptr = g_list_nth_data(mitems, i);
+	    menu_comp.wm_class = NULL;
+	    menu_comp.service = NULL;
+	    menu_comp.window_id = 0;
+
+	    gtk_tree_model_foreach(wm_cbs.model, menuitem_match_helper,
+				   &menu_comp);
+	    if (menu_comp.service != NULL &&
+		find_service_from_tree(wm_cbs.model, &iter, menu_comp.service))
+	    {
+		gchar *icon_name, *app_name;
+
+		gtk_tree_model_get(wm_cbs.model, &iter,
+				   WM_ICON_NAME_ITEM, &icon_name,
+				   WM_NAME_ITEM, &app_name,
+				   -1);
+		pixbuf = gtk_icon_theme_load_icon(icon_theme, icon_name,
+						  HILDON_ICON_PIXEL_SIZE_SMALL,
+						  0, NULL);
+		/* g_free(icon_name) or something */
+
+		gtk_list_store_append(store, &iter);
+		gtk_list_store_set(store, &iter,
+				   COL_ICON, pixbuf,
+				   COL_NAME, _(app_name),
+				   COL_SERVICE, menu_comp.service,
+				   -1);
+		g_object_unref(pixbuf);
+	    }
+	}
+
+	treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
+	gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeview), FALSE);
+	g_object_unref(store);
+
+    }
+
+    if (treeview == NULL)
+    {
+	return;
+    }
+
+    column = gtk_tree_view_column_new();
+
+    renderer = gtk_cell_renderer_pixbuf_new();
+    gtk_tree_view_column_pack_start(column, renderer, FALSE);
+    gtk_tree_view_column_set_attributes(column, renderer, "pixbuf",
+					COL_ICON, NULL);
+
+    renderer = gtk_cell_renderer_text_new();
+    gtk_tree_view_column_pack_start(column, renderer, TRUE);
+    gtk_tree_view_column_set_attributes(column, renderer, "text",
+					COL_NAME, NULL);
+
+    renderer = gtk_cell_renderer_pixbuf_new();
+    gtk_tree_view_column_pack_start(column, renderer, FALSE);
+    g_object_set(renderer, "stock-id", GTK_STOCK_CLOSE, NULL);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
+
+    gtk_container_add(GTK_CONTAINER(dialog), treeview);
+
+    /* Setup kill handlers */
+
+    g_signal_connect(treeview, "button-press-event",
+		     G_CALLBACK(treeview_button_press), renderer);
+    wm_cbs.killer_dialog = dialog;
+    gtk_widget_show_all(dialog);
+
+    /* A quick and dirty 'solution' to position the pseudomenu */
+    toplevel = gtk_widget_get_toplevel(treeview);
+    gtk_widget_size_request( toplevel, &req );
+    gtk_window_move(GTK_WINDOW(dialog), 80,
+		    gdk_screen_get_height(gdk_screen_get_default()
+		    - req.height));
+    gtk_window_present(GTK_WINDOW(dialog));
+}
+

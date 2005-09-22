@@ -1,3 +1,39 @@
+2005-09-22  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Applied memory management change patch.
+	* Many things changed related to memory management:
+        * maemo-af-desktop is now configurable with its memory mgmt behaviour
+	* Configuration parameters used after Mariuses patch:
+		NAVIGATOR_DO_BGKILL=yes
+		NAVIGATOR_LAUNCHBANNER_TIMEOUT=200
+		NAVIGATOR_DIM_ON_LOWMEM=no
+		NAVIGATOR_DIALOG_ON_LOWMEM=yes
+		NAVIGATOR_LAUNCH_THRESHOLD_DISTANCE=2000
+	* Changed files by Marius Vollmer's patch:
+		maemo-af-desktop.sh
+		hildon-navigator/application-switcher.h
+		hildon-navigator/windowmanager.c
+		hildon-navigator/windowmanager.h
+		hildon-navigator/hildon-navigator-main.c
+		hildon-navigator/application-switcher.c
+		hildon-navigator/hildon-navigator-main.h
+	* Changed files by Guillem Jover's patch:
+		maemo-af-desktop.sh, the
+		configuration parameters changed (and the parameter names changed):
+		NAVIGATOR_LOWMEM_DIM=no
+		NAVIGATOR_LOWMEM_DIALOG=no
+		NAVIGATOR_LOWMEM_LAUNCH_BANNER_TIMEOUT=200
+		NAVIGATOR_LOWMEM_LAUNCH_THRESHOLD_DISTANCE=2000
+		hildon-navigator/application-switcher.h
+		hildon-navigator/windowmanager.c
+		Todo (to be cleaned up later):
+		+/* FIXME: This is defined in maemo-af-desktop-main.c and we shouldn't
+		+   be using it of course. Cleaning this up can be done when nothing
+		+   else is left to clean up... */
+		+extern Navigator tasknav;
+		hildon-navigator/windowmanager.h
+		hildon-navigator/hildon-navigator-main.c
+		hildon-navigator/application-switcher.c
+
 2005-09-20  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Raised version to 1.50.0. Preparing to week 38 release.

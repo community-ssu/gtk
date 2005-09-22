@@ -118,6 +118,8 @@ static void get_item_from_glist(gint list_position,
                                  
 static void add_item_to_button(ApplicationSwitcher_t *as);
 
+static void update_menu_items(ApplicationSwitcher_t *as);
+
 static void store_item(GArray *items,const gchar *app_name,
                         const gchar *item_text,
                         const gchar *icon_name, GtkWidget *item);    
@@ -143,6 +145,8 @@ static void desktop_topped_callback(gpointer data);
 static DBusHandlerResult mce_handler( DBusConnection *conn,
                                       DBusMessage *msg,
                                       void *data);
+
+static gboolean dimming_on = FALSE;
 
 				                     
 /* <Public functions> */
@@ -417,7 +421,44 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
 	    osso_log(LOG_ERR, "Could not create match rule for %s",
                      LOWMEM_OFF_SIGNAL_INTERFACE);
     }
-    
+
+    if (!dbus_connection_register_object_path(conn, BGKILL_ON_SIGNAL_PATH, &vtable, as))
+    {
+        osso_log(LOG_ERR, "Failed registering BGKILL_ON handler");
+    }
+
+    match_rule = g_strdup_printf("type='signal', interface='%s'",
+                                 BGKILL_ON_SIGNAL_INTERFACE);
+    if (match_rule != NULL)
+    {
+	dbus_bus_add_match(conn, match_rule, NULL);
+	g_free(match_rule);
+	dbus_connection_flush(conn);
+    }
+    else
+    {
+	osso_log(LOG_ERR, "Could not create match rule for %s",
+		 BGKILL_ON_SIGNAL_INTERFACE);
+    }
+
+    if (!dbus_connection_register_object_path(conn, BGKILL_OFF_SIGNAL_PATH, &vtable, as))
+    {
+	osso_log(LOG_ERR, "Failed registering BGKILL_OFF handler");
+    }
+
+    match_rule = g_strdup_printf("type='signal', interface='%s'",
+                                 BGKILL_OFF_SIGNAL_INTERFACE);
+    if (match_rule != NULL)
+    {
+	dbus_bus_add_match(conn, match_rule, NULL);
+	g_free(match_rule);
+	dbus_connection_flush(conn);
+    }
+    else
+    {
+	osso_log(LOG_ERR, "Could not create match rule for %s",
+		 BGKILL_OFF_SIGNAL_INTERFACE);
+    }
 
     gtk_widget_show(as->home_menu_item);
     gtk_widget_show(separator);
@@ -486,9 +527,15 @@ void application_switcher_set_shutdown_handler(ApplicationSwitcher_t *as,
 }
 
 void application_switcher_set_lowmem_handler( ApplicationSwitcher_t *as,
-                                                 gpointer lowmem_on_cb_ptr)
+                                                 gpointer lowmem_cb_ptr)
 {
-	as->lowmem_handler = lowmem_on_cb_ptr;
+    as->lowmem_handler = lowmem_cb_ptr;
+}
+
+void application_switcher_set_bgkill_handler( ApplicationSwitcher_t *as,
+                                                 gpointer bgkill_cb_ptr)
+{
+    as->bgkill_handler = bgkill_cb_ptr;
 }
 
 void application_switcher_add_menubutton(ApplicationSwitcher_t *as)
@@ -496,6 +543,14 @@ void application_switcher_add_menubutton(ApplicationSwitcher_t *as)
   gtk_container_add(GTK_CONTAINER(as->toggle_button_as), 
 		    as->as_button_icon);  
   gtk_widget_hide(as->as_button_icon);
+}
+
+void application_switcher_update_lowmem_situation(ApplicationSwitcher_t *as,
+						  gboolean lowmem)
+{
+    dimming_on = lowmem;
+    update_menu_items(as);
+    add_item_to_button(as);
 }
 
 /* <Private Functions> */
@@ -1234,18 +1289,13 @@ static void get_item_from_glist(gint list_position,
         return;
     }
     
-    else
-    {
-        gtk_widget_set_sensitive(togglebutton, TRUE);
-    }
-        
     /* Find the item */ 
     for (n=0;n<(as->items)->len;n++)
         if (g_array_index(as->items,container,n).item == item)
             break;  
     
     test_icon = g_array_index(as->items, container, n).icon;
-    
+
     /* If the icon is not valid, try to load it again just in case
        the problem has gone away since the creation of the item... */
 
@@ -1283,6 +1333,11 @@ static void get_item_from_glist(gint list_position,
         g_array_index(as->items, container, n).icon = item_icon;
     }
     
+    {
+      gboolean killed = g_array_index(as->items, container, n).killed_item;
+      gtk_widget_set_sensitive(togglebutton, !(dimming_on && killed));
+    }
+
     gtk_widget_show_all(togglebutton);   
 }
 
@@ -1312,6 +1367,18 @@ static void add_item_to_button(ApplicationSwitcher_t *as)
     get_item_from_glist(ITEM_2_LIST_POS,as->toggle_button2,as);
     get_item_from_glist(ITEM_3_LIST_POS,as->toggle_button3,as);
     get_item_from_glist(ITEM_4_LIST_POS,as->toggle_button4,as);  
+}
+
+static void update_menu_items(ApplicationSwitcher_t *as)
+{
+    gint i;
+
+    for (i = 0; i < as->items->len; i++)
+    {
+	container *c = &g_array_index(as->items, container, i);
+	c->killed_item = is_killed(GTK_MENU_ITEM (c->item));
+	gtk_widget_set_sensitive(c->item, !(dimming_on && c->killed_item));
+    }
 }
 
 /* Store information of new window/view */
@@ -1392,6 +1459,7 @@ static GtkWidget *add_new_window_callback(const gchar *icon_name,
 
     store_item(as->items, app_name, buf, icon_name, item);
     
+    set_lowmem_explain (item);
     gtk_widget_show(item);
     
     /* Show application switcher menu button */
@@ -1620,6 +1688,17 @@ static DBusHandlerResult mce_handler( DBusConnection *conn,
     else if (g_str_equal(LOWMEM_OFF_SIGNAL_NAME, member) == TRUE)
     {
         as->lowmem_handler(FALSE);
+        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    }
+
+    else if (g_str_equal(BGKILL_ON_SIGNAL_NAME, member) == TRUE)
+    {
+        as->bgkill_handler(TRUE);
+        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    }
+    else if (g_str_equal(BGKILL_OFF_SIGNAL_NAME, member) == TRUE)
+    {
+        as->bgkill_handler(FALSE);
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
 

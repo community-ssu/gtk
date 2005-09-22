@@ -87,6 +87,25 @@ enum {
    INITIALIZE_MENU_SYMBOL
 };
 
+/* Configuration options
+ */
+
+/* When CONFIG_DO_BGKILL is TRUE, applications are killed when they
+   are in the background and we are in the 'bgkill' situation.
+*/
+extern gboolean config_do_bgkill;
+
+/* When CONFIG_DIM_ON_LOWMEM is TRUE, all buttons that can start new
+   applications are dimmed when we are in the 'lowmem' situation.
+*/
+extern gboolean config_dim_on_lowmem;
+
+/* When CONFIG_DIALOG_ON_LOWMEM is TRUE, display a dialog upon
+   entering the 'lowmem' situation.  When leaving it, display an
+   infoprint.
+*/
+extern gboolean config_dialog_on_lowmem;
+
 #endif /* HILDON_NAVIGATOR_MAIN_H */
 
  

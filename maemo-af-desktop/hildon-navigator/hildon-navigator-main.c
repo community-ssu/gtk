@@ -72,6 +72,12 @@
 
 #define USE_AF_DESKTOP_MAIN__
                                                                                        
+
+/* Global external variables */
+gboolean config_do_bgkill;
+gboolean config_dim_on_lowmem;
+gboolean config_dialog_on_lowmem;
+
 /* Callbacks */
 static void initialize_navigator_menus(Navigator *tasknav);
 
@@ -84,9 +90,15 @@ static void destroy_navigator(Navigator *tasknav);
      
 static gpointer create_new_plugin(Navigator *tasknav, gchar *plugin_name); 
 
+static gboolean getenv_yesno(const char *env, gboolean def)
+{
+    char *val = getenv (env);
 
-
-
+    if (val)
+	return (strcmp(val, "yes") == 0);
+    else
+	return def;
+}
 
                 
 /* This callback creates/loads the button widgets and packs them
@@ -94,6 +106,12 @@ static gpointer create_new_plugin(Navigator *tasknav, gchar *plugin_name);
 static void create_navigator(Navigator *tasknav)
 {
     GtkBox *box;
+
+    /* Get configuration options from the environment.
+     */
+    config_do_bgkill = getenv_yesno("NAVIGATOR_DO_BGKILL", TRUE);
+    config_dim_on_lowmem = getenv_yesno("NAVIGATOR_LOWMEM_DIM", FALSE);
+    config_dialog_on_lowmem = getenv_yesno("NAVIGATOR_LOWMEM_DIALOG", FALSE);
 
     tasknav->main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 

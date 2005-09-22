@@ -118,6 +118,14 @@
 #define LOWMEM_OFF_SIGNAL_PATH "/com/nokia/ke_recv/lowmem_off"
 #define LOWMEM_OFF_SIGNAL_NAME "lowmem_off"
 
+#define BGKILL_ON_SIGNAL_INTERFACE "com.nokia.ke_recv.bgkill_on"
+#define BGKILL_ON_SIGNAL_PATH "/com/nokia/ke_recv/bgkill_on"
+#define BGKILL_ON_SIGNAL_NAME "bgkill_on"
+
+#define BGKILL_OFF_SIGNAL_INTERFACE "com.nokia.ke_recv.bgkill_off"
+#define BGKILL_OFF_SIGNAL_PATH "/com/nokia/ke_recv/bgkill_off"
+#define BGKILL_OFF_SIGNAL_NAME "bgkill_off"
+
 #define LAST_AS_BUTTON 4
 
 #define TIMEOUT_HALF_SECOND 500
@@ -128,6 +136,7 @@ typedef  struct ApplicationSwitcher ApplicationSwitcher_t;
 
 typedef void (_shutdown_callback)(void);
 typedef void (_lowmem_callback)(gboolean is_on);
+typedef void (_bgkill_callback)(gboolean is_on);
 
 /* Private data */
 struct ApplicationSwitcher {
@@ -181,6 +190,7 @@ struct ApplicationSwitcher {
     void *dnotify_handler;
     _shutdown_callback *shutdown_handler;
     _lowmem_callback *lowmem_handler;
+    _bgkill_callback *bgkill_handler;
 
     gboolean prev_sig_was_long_press;
 
@@ -193,6 +203,7 @@ typedef struct container {
     gchar *app_name;
     gchar *icon_name;
     gboolean killable_item;
+    gboolean killed_item;
     gchar *dialog_name;
     GtkWidget *icon;
 } container;
@@ -276,8 +287,14 @@ void application_switcher_set_shutdown_handler(ApplicationSwitcher_t *as,
                                                gpointer shutdown_cb_ptr);
 
 void application_switcher_set_lowmem_handler(ApplicationSwitcher_t *as,
-                                                gpointer lowmem_on_cb_ptr);
+                                                gpointer lowmem_cb_ptr);
+
+void application_switcher_set_bgkill_handler(ApplicationSwitcher_t *as,
+                                                gpointer bgkill_on_cb_ptr);
 
 void application_switcher_add_menubutton(ApplicationSwitcher_t *as);
+
+void application_switcher_update_lowmem_situation(ApplicationSwitcher_t *as,
+						  gboolean lowmem);
 
 #endif /* APPLICATION_SWITCHER_H */

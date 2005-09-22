@@ -37,6 +37,7 @@
 #include <hildon-navigator.h>
 
 #include <libmb/mbdotdesktop.h>
+#include <hildon-widgets/hildon-defines.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -49,8 +50,6 @@
 #define DESKTOP_BIN_FIELD   "Exec"
 #define DESKTOP_LAUNCH_FIELD    "X-Osso-Service"
 #define DESKTOP_VISIBLE_FIELD "Name"
-
-
 
 #define DUMMY_STRING " \0"
 
@@ -67,6 +66,12 @@ enum {
     MENU
 };
 
+enum {
+    COL_ICON,
+    COL_NAME,
+    COL_SERVICE,
+    N_COLUMNS
+};
 
 #define APPKILLER_SIGNAL_INTERFACE "com.nokia.osso_app_killer"
 #define APPKILLER_EXIT_SIGNAL "exit"
@@ -109,6 +114,18 @@ enum {
 #define DESKTOP_STARTUPNOTIFY "StartupNotify"
 #define DESKTOP_SUFFIX ".desktop"
 #define UNKNOWN_TITLE "Unknown"
+
+/* Low memory settings */
+
+/* For gathering available memory information */
+#define LOWMEM_PROC_ALLOWED "/proc/sys/vm/lowmem_allowed_pages"
+#define LOWMEM_PROC_USED "/proc/sys/vm/lowmem_used_pages"
+
+#define LOWMEM_LAUNCH_BANNER_TIMEOUT 0
+#define LOWMEM_LAUNCH_BANNER_TIMEOUT_MAX 60000
+#define LOWMEM_LAUNCH_BANNER_TIMEOUT_ENV "NAVIGATOR_LOWMEM_LAUNCH_BANNER_TIMEOUT"
+#define LOWMEM_LAUNCH_THRESHOLD_DISTANCE 2500
+#define LOWMEM_LAUNCH_THRESHOLD_DISTANCE_ENV "NAVIGATOR_LOWMEM_LAUNCH_THRESHOLD_DISTANCE"
 
 enum
 {
@@ -297,5 +314,8 @@ void top_service(const gchar *service_name);
 
 void top_desktop(void);
 
+gboolean is_killed(GtkMenuItem *menuitem);
+
+void set_lowmem_explain(GtkWidget *widget);
 
 #endif /* HILDON_NAVIGATOR_WM_H */
