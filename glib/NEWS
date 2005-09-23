@@ -860,4 +860,3 @@ What's new in GLib 1.3.1:
 * g_strcompress() added, g_strescape() had a slight API change, and
   more tightly defined semantics.
 * the g_string(x) macro has been removed, #x may be used instead.
-                                
