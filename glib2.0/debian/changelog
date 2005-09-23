@@ -1,3 +1,9 @@
+glib2.0 () unstable; urgency=low
+
+  * Branched for Sputnik maintenance.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 23 Sep 2005 16:46:40 +0300
+
 glib2.0 (2.6.2-1osso8) unstable; urgency=low
 
   * Added gscanner patch from Tommi (bugs 16829 and 16264). It is an update
