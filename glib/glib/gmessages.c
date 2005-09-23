@@ -28,6 +28,7 @@
  * MT safe
  */
 
+#define MAEMO_SYSLOG_ENABLED	/* Maemo builds will temporary use syslog for logging */
 #include "config.h"
 
 #include <stdlib.h>
@@ -49,6 +50,10 @@
 
 #ifdef G_OS_WIN32
 #include <io.h>
+#endif
+
+#ifdef MAEMO_SYSLOG_ENABLED
+#include <syslog.h>
 #endif
 
 /* --- structures --- */
@@ -847,6 +852,87 @@ escape_string (GString *string)
     }
 }
 
+#ifdef MAEMO_SYSLOG_ENABLED
+/* That is a syslog version of default log handler. */
+/* It shall be used only in case that MAEMO_SYSLOG_ENABLED switched on. */
+
+#define IS_EMPTY_STRING(s)	(NULL == (s) || 0 == *(s))
+
+#define GLIB_PREFIX	"GLIB"
+#define DEFAULT_DOMAIN	"default"
+#define DEFAULT_MESSAGE	"(NULL) message"
+
+void g_log_default_handler (
+		const gchar*	log_domain,
+		GLogLevelFlags	log_level,
+		const gchar*	message,
+		gpointer	unused_data
+	)
+{
+	/* This value will be switched to TRUE when log facility is initialized */
+	static gboolean initialized = FALSE;
+
+	/* This call only variables */
+	const gchar* alert    = (log_level & ALERT_LEVELS ? " ** " : " ");
+	const gchar* aborting = (log_level & G_LOG_FLAG_FATAL ? "\naborting..." : "");
+
+	const gchar* prefix;
+	int   priority;
+
+	/* Check first that logging facility is initialized */
+	if ( !initialized )
+	{
+		openlog(NULL, LOG_PERROR|LOG_PID, LOG_USER);
+		initialized = !initialized;
+	}
+
+	/* Validate log domain */
+	if ( IS_EMPTY_STRING(log_domain) )
+		log_domain = DEFAULT_DOMAIN;
+
+	/* Check log message for validity */
+	if ( IS_EMPTY_STRING(message) )
+		message = DEFAULT_MESSAGE;
+
+	/* Process the message prefix and priority */
+	switch (log_level & G_LOG_LEVEL_MASK)
+	{
+		case G_LOG_FLAG_FATAL:
+			prefix   = "FATAL";
+			priority = LOG_EMERG;
+		break;
+		case G_LOG_LEVEL_ERROR:
+			prefix   = "ERROR";
+			priority = LOG_ERR;
+		break;
+		case G_LOG_LEVEL_CRITICAL:
+			prefix   = "CRITICAL";
+			priority = LOG_CRIT;
+		break;
+		case G_LOG_LEVEL_WARNING:
+			prefix   = "WARNING";
+			priority = LOG_WARNING;
+		break;
+		case G_LOG_LEVEL_MESSAGE:
+			prefix   = "MESSAGE";
+			priority = LOG_NOTICE;
+		break;
+		case G_LOG_LEVEL_INFO:
+			prefix   = "INFO";
+			priority = LOG_INFO;
+		break;
+		default:
+			prefix   = "DEBUG";
+			priority = LOG_DEBUG;
+		break;
+	} /* switch log_level */
+
+	/* Now prining the message to syslog */
+	syslog(priority, "%s %s%s%s - %s%s", GLIB_PREFIX, prefix, alert, log_domain, message, aborting);
+} /* g_log_default_handler -- syslog version */
+
+#else /* not MAEMO_SYSLOG_ENABLED -- we will use standart stderr logging */
+
 void
 g_log_default_handler (const gchar   *log_domain,
 		       GLogLevelFlags log_level,
@@ -967,6 +1053,8 @@ g_log_default_handler (const gchar   *log_domain,
   write_string (fd, string);
   g_free (string);
 }
+
+#endif /* if MAEMO_SYSLOG_ENABLED */
 
 GPrintFunc
 g_set_print_handler (GPrintFunc func)
