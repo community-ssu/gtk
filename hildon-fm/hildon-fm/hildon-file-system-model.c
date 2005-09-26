@@ -424,8 +424,9 @@ hildon_file_system_model_ensure_idle(HildonFileSystemModel *self)
   if (self->priv->timeout_id == 0)
   {
     self->priv->timeout_id =
-      g_idle_add
-        (hildon_file_system_model_delayed_add_node_list_timeout, self);
+      g_idle_add_full (G_PRIORITY_DEFAULT_IDLE + 20,
+                       hildon_file_system_model_delayed_add_node_list_timeout,
+                       self, NULL);
   }
 }
 
@@ -438,8 +439,7 @@ hildon_file_system_model_delayed_add_node_list(HildonFileSystemModel *
                                                GSList * children)
 {
     if (children) {
-        delayed_list_type *new_list, *current_head;
-        GQueue *list;
+        delayed_list_type *new_list;
 
         new_list = g_new(delayed_list_type, 1);
         new_list->parent_node = parent;
@@ -449,19 +449,7 @@ hildon_file_system_model_delayed_add_node_list(HildonFileSystemModel *
 
         hildon_file_system_model_ensure_idle(model);
 
-        list = model->priv->delayed_lists;
-        current_head = g_queue_peek_head(list);
-
-        /* If we are loading a large directory that can delay other 
-            loads significantly. We place other loads to the start 
-            of the queue instead. But timeout handler pops from the
-            start of the queue, so it's not safe to append there
-            while in timeout. */
-        if (model->priv->in_timeout || current_head == NULL || 
-            current_head->folder == folder)
-          g_queue_push_tail(list, new_list);
-        else
-          g_queue_push_head(list, new_list);
+        g_queue_push_tail(model->priv->delayed_lists, new_list);
     }
 }
 
@@ -3110,4 +3098,26 @@ void hildon_file_system_model_reset_available(HildonFileSystemModel *model)
 
   g_node_traverse(model->priv->roots, G_POST_ORDER, 
       G_TRAVERSE_ALL, -1, reset_callback, NULL);
+}
+
+
+void
+_hildon_file_system_model_prioritize_folder(HildonFileSystemModel *model,
+                                            GtkTreeIter *folder_iter)
+{
+  GNode *folder_node = get_node(model->priv, folder_iter);
+  guint n, len;
+
+  /* search delayed_lists for the folder and move it to head */
+  for (n = 0, len = g_queue_get_length(model->priv->delayed_lists);
+       n < len;
+       n++) {
+    delayed_list_type *list = g_queue_peek_nth(model->priv->delayed_lists, n);
+
+    if (list->parent_node == folder_node) {
+      g_queue_push_head(model->priv->delayed_lists,
+                        g_queue_pop_nth(model->priv->delayed_lists, n));
+      return;
+    }
+  }
 }

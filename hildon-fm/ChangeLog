@@ -1,3 +1,26 @@
+2005-09-26  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#16169 File dialog shows "Updating" for several minutes although
+	directory doesn't have any files matching the mime-type requested
+	by the application (but 100 others):
+	
+	* hildon-fm/hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_ensure_idle):
+	hildon_file_selection_model_delayed_add_node_list_timeout idle
+	handler priority lowered
+	(hildon_file_system_model_delayed_add_node_list): model is now
+	constructed breadth-first, not depth-first
+	(_hildon_file_system_model_prioritize_folder): function added for
+	moving a folder to the head of delayed_lists queue
+	
+	* hildon-fm/hildon-fm/hildon-file-system-model.h: added prototype
+	for _hildon_file_system_model_prioritize_folder
+
+	* hildon-fm/hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_selection_changed): now calls
+	_hildon_file_system_model_prioritize_folder when the folder is
+	changed.
+
 2005-09-15  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.9.41
