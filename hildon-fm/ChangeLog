@@ -1,5 +1,7 @@
 2005-09-26  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* configure.ac: 0.9.42
+
 	N#16169 File dialog shows "Updating" for several minutes although
 	directory doesn't have any files matching the mime-type requested
 	by the application (but 100 others):
