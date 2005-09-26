@@ -50,8 +50,13 @@ osso_context_t *osso;
 
 gint timer_id = 0;
 
-gulong lowmem_banner_timeout;
-gulong lowmem_min_distance;
+gulong lowmem_banner_timeout = 0;
+gulong lowmem_min_distance = 0;
+/* Added by Karoliina Salminen 26092005. 
+   This global variable contains
+   the multiplier for the launch banner timeout in a low memory situation */
+gulong lowmem_timeout_multiplier = 0;
+/* End of addition 26092005 */
 
 gboolean lowmem_situation = FALSE;
 gboolean bgkill_situation = FALSE;
@@ -2750,8 +2755,10 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
     /* Guard about insensibly long values. */
     if (lowmem_banner_timeout > LOWMEM_LAUNCH_BANNER_TIMEOUT_MAX)
     {
-	lowmem_banner_timeout = LOWMEM_LAUNCH_BANNER_TIMEOUT_MAX;
+        lowmem_banner_timeout = LOWMEM_LAUNCH_BANNER_TIMEOUT_MAX;
     }
+    lowmem_timeout_multiplier = getenv_int(LOWMEM_TIMEOUT_MULTIPLIER_ENV,
+                     LOWMEM_TIMEOUT_MULTIPLIER);
 
     application_switcher_set_dnotify_handler(cb_data, &dnotify_callback);
     application_switcher_set_shutdown_handler(cb_data, &shutdown_handler);
@@ -3096,16 +3103,19 @@ void top_service(const gchar *service_name)
      }
      else if (killed == TRUE)
      {
-         guint interval = LAUNCH_SUCCESS_TIMEOUT * 1000;
-         /* This should probably be merged with the previous condition */
-         osso_man = osso_manager_singleton_get_instance();
-         osso_manager_launch(osso_man, service_name, RESTORED);
-	 if (bgkill_situation == TRUE)
-	   {
-	     g_timeout_add(interval,
-			   relaunch_timeout, (gpointer) g_strdup(service_name));
-	   }
-         return;
+        
+        guint interval = LAUNCH_SUCCESS_TIMEOUT * 1000;
+        
+        /* This should probably be merged with the previous condition */
+        osso_man = osso_manager_singleton_get_instance();
+        osso_manager_launch(osso_man, service_name, RESTORED);
+        if (bgkill_situation == TRUE)
+        {
+            g_timeout_add( interval,
+                           relaunch_timeout, 
+                           (gpointer) g_strdup(service_name) );
+	    }
+        return;
      }
      else
      {
@@ -3406,16 +3416,16 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 			
 		} else {
 
-                        if (!g_str_has_prefix(service_name, SERVICE_PREFIX)) {
-				dbus_free (service_name);
-                                return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-                        }
+            if (!g_str_has_prefix(service_name, SERVICE_PREFIX)) {
+                dbus_free (service_name);
+                return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+            }
                         
-                        service = g_strdup (service_name + strlen(SERVICE_PREFIX));
-                        dbus_free (service_name);
-			
-                        GtkTreeIter iter;
-			
+            service = g_strdup (service_name + strlen(SERVICE_PREFIX));
+            dbus_free (service_name);
+
+            GtkTreeIter iter;
+        
 			if ( find_service_from_tree( wm_cbs.model,
 						&iter, service ) > 0 ) {
 
@@ -3427,17 +3437,15 @@ static DBusHandlerResult method_call_handler( DBusConnection *connection,
 				if (view_id == 0 && startup == TRUE &&
 				    lowmem_banner_timeout > 0) {
 					/* Show the banner */
-                                        /* Service will be freed later when
-                                         * banner is removed */
-					show_launch_banner( NULL,
-                                                            app_name, service );
+                    /* Service will be freed later when
+                     * banner is removed */
+					show_launch_banner( NULL, app_name, service );
 				}
 
 
 				return DBUS_HANDLER_RESULT_HANDLED;
-                        }
-
-                        g_free (service);
+           }
+           g_free (service);
 		}
 	}
 
@@ -3492,6 +3500,17 @@ static gboolean launch_banner_timeout(gpointer data)
 	long unsigned int t1, t2;
 	guint time_left, view_id;
 	GtkTreeIter iter;
+    gulong current_banner_timeout = 0;
+
+    /* Added by Karoliina Salminen 26092005 
+       Addition to low memory situation awareness, the following multiplies the
+       launch banner timeout with the timeout multiplier found from environment variable */
+    if(lowmem_situation == TRUE) {
+        current_banner_timeout = lowmem_banner_timeout * lowmem_timeout_multiplier;
+    } else {
+        current_banner_timeout = lowmem_banner_timeout;
+    }
+    /* End of addition 26092005 */
 
 	if ( find_service_from_tree( wm_cbs.model,
 				&iter, info->service_name ) > 0 ) {
@@ -3508,7 +3527,9 @@ static gboolean launch_banner_timeout(gpointer data)
 	t2 = (long unsigned int) current_time.tv_sec;
 	time_left = (guint) (t2 - t1);
 	
-	if (time_left >= lowmem_banner_timeout || view_id > 0 ) {
+    /* The following uses now current_banner_timeout instead of lowmem_banner_timeout, changed by
+       Karoliina Salminen 26092005 */
+	if (time_left >= current_banner_timeout || view_id > 0 ) {
 		
 		/* Close the banner */
 		close_launch_banner( NULL );

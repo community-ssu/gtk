@@ -1,3 +1,12 @@
+2005-09-26  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Implemented variable launch banner timeout, which changes the
+	launch banner timeout value according what is specified in environment variable 
+	NAVIGATOR_LOWMEM_TIMEOUT_MULTIPLIER. The timeout is thus multiplied with the variable
+	specified in the ENV variable.
+	* Changed files:
+		windowmanager.c		Added timeout multiplier handling
+		windowmanager.h		Added new defines for the timeout multiplier
+	
 2005-09-22  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Applied memory management change patch.
 	* Many things changed related to memory management:

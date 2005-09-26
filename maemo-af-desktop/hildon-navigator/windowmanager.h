@@ -83,6 +83,9 @@ enum {
 #define APP_LAUNCH_BANNER_MSG_LOADING_FAILED "ckct_ib_application_loading_failed"
 /* Timeout of the launch banner, in secons */
 #define APP_LAUNCH_BANNER_TIMEOUT            20
+/* Timeout of the launch banner in lowmem situation */
+#define APP_LAUNCH_BANNER_TIMEOUT_LOWMEM     40
+
 /* Interval for checking for new window or timeout, in seconds */
 #define APP_LAUNCH_BANNER_CHECK_INTERVAL     0.5
 
@@ -91,11 +94,15 @@ enum {
 
 #define LAUNCH_SUCCESS_TIMEOUT 20
 
+#define LAUNCH_SUCCESS_TIMEOUT_LOWMEM 40
+
 #define LAUNCH_FAILED_INSUF_RES "ckct_ib_application_lowmem"
 
 #define LOCATION_VAR "STATESAVEDIR"
 #define FALLBACK_PREFIX "/tmp/state"
 #define KILL_DELAY 2000 /* 2 seconds */
+
+#define KILL_DELAY_LOWMEM 4000 /* 4 seconds */
 
 #define HOME_WMCLASS "maemo_af_desktop"
 
@@ -124,6 +131,12 @@ enum {
 #define LOWMEM_LAUNCH_BANNER_TIMEOUT 0
 #define LOWMEM_LAUNCH_BANNER_TIMEOUT_MAX 60000
 #define LOWMEM_LAUNCH_BANNER_TIMEOUT_ENV "NAVIGATOR_LOWMEM_LAUNCH_BANNER_TIMEOUT"
+
+/* Added by Karoliina 26092005 */
+#define LOWMEM_TIMEOUT_MULTIPLIER_ENV "NAVIGATOR_LOWMEM_TIMEOUT_MULTIPLIER"
+#define LOWMEM_TIMEOUT_MULTIPLIER 2
+/* */
+
 #define LOWMEM_LAUNCH_THRESHOLD_DISTANCE 2500
 #define LOWMEM_LAUNCH_THRESHOLD_DISTANCE_ENV "NAVIGATOR_LOWMEM_LAUNCH_THRESHOLD_DISTANCE"
 
