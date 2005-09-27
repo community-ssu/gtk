@@ -3691,7 +3691,7 @@ static void update_lowmem_situation(gboolean lowmem)
 
     /* If dimming is disabled, we don't do anything here. Also see
        APPLICATION_SWITCHER_UPDATE_LOWMEM_SITUATION. */
-    if (!config_dim_on_lowmem)
+    if (!config_lowmem_dim)
     {
 	return;
     }
@@ -3742,11 +3742,18 @@ static void lowmem_handler(gboolean is_on)
 
 	update_lowmem_situation(is_on);
 
-	if (config_dialog_on_lowmem)
+	if (config_lowmem_notify)
 	{
 	    if (is_on)
 	    {
-		show_pavlov_dialog();
+		if (config_lowmem_pavlov_dialog)
+		{
+		    show_pavlov_dialog();
+		}
+		else
+		{
+		    gtk_infoprintf(NULL, _("memr_ib_unable_to_switch_to_application"));
+		}
 	    }
 	    else
 	    {

@@ -1,3 +1,19 @@
+2005-09-27  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Applied lowmem infoprint patch from Guillem Jover:
+	* When CONFIG_LOWMEM_DIM is TRUE, all buttons that can start new
+    	  applications are dimmed when we are in the 'lowmem' situation.
+	* When CONFIG_LOWMEM_NOTIFY is TRUE, notify information to the user
+          upon entering and leaving the 'lowmem' situation.
+	* When CONFIG_LOWMEM_PAVLOV_DIALOG is TRUE, display a dialog instead of
+	an infoprint upon entering the 'lowmem' situation.
+	* Upgraded package version to 1.52.0
+	* Changed files:
+		hildon-navigator-main.c		Added the getting of env variables
+		hildon-navigator-main.h		Added externs for the globals that are used
+						to contain the content of the env variables
+		windowmanager.c			Added showing of lowmem notification dialog
+		maemo-af-desktop.sh		Added the new env variables
+
 2005-09-26  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Implemented variable launch banner timeout, which changes the
 	launch banner timeout value according what is specified in environment variable 

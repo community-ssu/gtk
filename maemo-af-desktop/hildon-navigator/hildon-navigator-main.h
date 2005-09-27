@@ -95,16 +95,20 @@ enum {
 */
 extern gboolean config_do_bgkill;
 
-/* When CONFIG_DIM_ON_LOWMEM is TRUE, all buttons that can start new
+/* When CONFIG_LOWMEM_DIM is TRUE, all buttons that can start new
    applications are dimmed when we are in the 'lowmem' situation.
 */
-extern gboolean config_dim_on_lowmem;
+extern gboolean config_lowmem_dim;
 
-/* When CONFIG_DIALOG_ON_LOWMEM is TRUE, display a dialog upon
-   entering the 'lowmem' situation.  When leaving it, display an
-   infoprint.
+/* When CONFIG_LOWMEM_NOTIFY is TRUE, notify information to the user
+   upon entering and leaving the 'lowmem' situation.
 */
-extern gboolean config_dialog_on_lowmem;
+extern gboolean config_lowmem_notify;
+
+/* When CONFIG_LOWMEM_PAVLOV_DIALOG is TRUE, display a dialog instead of
+   an infoprint upon entering the 'lowmem' situation.
+*/
+extern gboolean config_lowmem_pavlov_dialog;
 
 #endif /* HILDON_NAVIGATOR_MAIN_H */
 

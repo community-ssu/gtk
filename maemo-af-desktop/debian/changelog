@@ -1,3 +1,9 @@
+maemo-af-desktop (1.52.0) unstable; urgency=low
+
+  * Applied lowmem infoprint patch.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 27 Sep 2005 12:25:14 +0300
+
 maemo-af-desktop (1.51.0) unstable; urgency=low
 
   * Added timeout multiplier handling to windowmanager.c|h.
