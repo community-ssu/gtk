@@ -928,7 +928,9 @@ format_relationship_failures (gchar *footer, gchar *output)
 
   while (depends)
     {
-      g_string_append_printf (report, _("ai_error_componentmissing"),
+      g_string_append_printf (report,
+			      SUPPRESS_FORMAT_WARNING 
+			      (_("ai_error_componentmissing")),
 			      (gchar *)(depends->data));
       g_string_append (report, "\n");
       depends = depends->next;
