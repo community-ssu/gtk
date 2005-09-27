@@ -1,3 +1,10 @@
+2005-09-27  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.11
+
+	* src/core.c (format_relationship_failures): Use
+	SUPPRESS_FORMAT_WARNING appropriately.
+
 2005-09-20  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/core.c (format_relationship_failures): Do not try to be
