@@ -1,3 +1,9 @@
+maemo-af-desktop (1.53.0) unstable; urgency=low
+
+  * Missing task delayed info banner patched
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 27 Sep 2005 16:36:21 +0300
+
 maemo-af-desktop (1.52.0) unstable; urgency=low
 
   * Applied lowmem infoprint patch.

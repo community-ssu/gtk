@@ -48,6 +48,9 @@
 #include <gdk/gdkwindow.h>
 #include <gdk/gdkx.h>
 
+/* glib */
+#include <glib.h>
+
 /* X include */
 #include <X11/X.h>
 #include <X11/Xatom.h>
@@ -59,6 +62,12 @@
 #include "hildon-status-bar-main.h"
 #include "hildon-status-bar-interface.h"
 #include "../kstrace.h"
+
+static gint _delayed_infobanner_add(gint32 pid, gint32 begin, gint32 timeout,
+				    const gchar *text );
+gboolean _delayed_infobanner_remove(gpointer data);
+gboolean _delayed_ib_show(gpointer data);
+void _remove_sb_d_ib_item (gpointer key, gpointer value, gpointer user_data);
 
 
 static void init_dock( StatusBar *panel );
@@ -80,8 +89,8 @@ static void reorder_items( StatusBar *panel );
 static void destroy_item( GtkObject *object,
                           gpointer user_data );
 
-
-
+static GHashTable *delayed_banners;
+static gpointer delayed_ib_onscreen;
 
 static void init_dock( StatusBar *panel )
 {
@@ -329,6 +338,68 @@ static gint rpc_cb( const gchar *interface,
                                        val[2]->value.i, 
                                        val[3]->value.s );
     }
+    else if( g_str_equal( "delayed_infobanner", method ) )
+    {
+        if( arguments->len < 4 ||
+	    arguments->len > 5 ||
+            val[0]->type != DBUS_TYPE_INT32 ||
+            val[1]->type != DBUS_TYPE_INT32 ||
+            val[2]->type != DBUS_TYPE_INT32 ||
+            val[3]->type != DBUS_TYPE_STRING || 
+	    (arguments->len == 5 && val[5]->type != DBUS_TYPE_NIL 
+	    ) )
+	  {
+            retval->type = DBUS_TYPE_STRING;
+            if( arguments->len < 5 )
+                retval->value.s = 
+                    g_strdup_printf( "Not enough arguments." );
+            else
+                retval->value.s = 
+                    g_strdup_printf( "Wrong type of arguments: "
+                                     "(%d,%d,%d,%d); "
+                                     "was expecting (%d, %d, %d and %d)",
+                                     val[0]->type, val[1]->type, val[2]->type, 
+                                     val[3]->type,
+                                     DBUS_TYPE_INT32, DBUS_TYPE_INT32,
+                                     DBUS_TYPE_INT32, 
+                                     DBUS_TYPE_STRING);
+            osso_log( LOG_ERR, retval->value.s );
+            return OSSO_ERROR;
+	      
+	  }	
+	return _delayed_infobanner_add(val[0]->value.i,
+				       val[1]->value.i,
+				       val[2]->value.i,
+				       val[3]->value.s
+				       );	
+    }
+    else if( g_str_equal( "cancel_delayed_infobanner", method ) )
+    {
+        if( arguments->len > 1 ||
+            val[0]->type != DBUS_TYPE_INT32)
+	  {
+            retval->type = DBUS_TYPE_STRING;
+            if( arguments->len > 1 )
+                retval->value.s = 
+                    g_strdup_printf( "Too many arguments." );
+            else
+                retval->value.s = 
+                    g_strdup_printf( "Wrong type of arguments: "
+                                     "(%d), "
+                                     "was expecting int (%d)",
+                                     val[0]->type, 
+                                     DBUS_TYPE_INT32);
+            osso_log( LOG_ERR, retval->value.s );
+            return OSSO_ERROR;
+	      
+	  }	
+
+	_delayed_infobanner_remove(GINT_TO_POINTER(val[0]->value.i));
+	/* this function returns boolean for the timeout functions, *
+	 * we don't care about that here. It's false always, anyway */
+        return OSSO_OK;
+
+    }
     else
     {
         retval->type = DBUS_TYPE_STRING;
@@ -558,7 +629,105 @@ static void destroy_item( GtkObject *object,
     reorder_items( panel );
 }
 
-/* Hand-fixed reverting patch here that refused to apply despite of efforts - Karoliina Salminen 09092005 */
+/* Task delayed info banner, added 27092005 */
+
+static gint _delayed_infobanner_add(gint32 pid, gint32 begin, gint32 timeout,
+                   const gchar *text)
+{
+     SBDelayedInfobanner *data;
+  
+     if (g_hash_table_lookup(delayed_banners, GINT_TO_POINTER(pid)) != NULL)
+     {
+       _remove_sb_d_ib_item(GINT_TO_POINTER(pid),
+              g_hash_table_lookup(delayed_banners, 
+                          GINT_TO_POINTER(pid)),
+              NULL);
+     }
+     data = g_new(SBDelayedInfobanner, 1);
+ 
+     data->displaytime = timeout;
+     data->text = g_strdup (text);
+     data->timeout_onscreen_id = 0;
+     data->timeout_to_show_id = g_timeout_add( (guint) begin,
+                         _delayed_ib_show,
+                         GINT_TO_POINTER(pid));
+     
+     g_hash_table_insert(delayed_banners, GINT_TO_POINTER(pid),
+           data);
+     
+     return OSSO_OK;
+ }
+ 
+ gboolean _delayed_infobanner_remove(gpointer data)
+ {
+     gpointer hashvalue;
+     hashvalue = g_hash_table_lookup(delayed_banners, (gconstpointer)data);
+     if (hashvalue == NULL)
+     {
+         return FALSE;
+     }
+     _remove_sb_d_ib_item(data, hashvalue, NULL);
+     return FALSE;
+ }
+ 
+ gboolean _delayed_ib_show(gpointer data)
+ { 
+     SBDelayedInfobanner *info;
+     
+     info = g_hash_table_lookup(delayed_banners, data);
+     if (info == NULL)
+     {
+         return FALSE; /* False destroys timeout */
+     }  
+ 
+     g_source_remove(info->timeout_to_show_id);
+ 
+     info->timeout_to_show_id = 0;
+     
+     delayed_ib_onscreen = data;  
+ 
+     info->timeout_onscreen_id = g_timeout_add(
+                        (guint)info->displaytime,
+                        _delayed_infobanner_remove,
+                        data
+                        );
+     
+     gtk_banner_show_animation(NULL, 
+                 info->text);
+                 
+ 
+     return FALSE;
+ }
+ 
+ 
+ void _remove_sb_d_ib_item (gpointer key, gpointer value, gpointer user_data)
+ {
+ 
+     SBDelayedInfobanner *data;    
+ 
+     data = (SBDelayedInfobanner*)value;
+     if (data->timeout_to_show_id != 0)
+     {
+   g_source_remove(data->timeout_to_show_id);
+     }
+     else if (data->timeout_onscreen_id != 0)
+     {
+         g_source_remove(data->timeout_onscreen_id);
+     }
+     
+     if ( delayed_ib_onscreen == key)
+     {
+       gtk_banner_close(NULL);
+       delayed_ib_onscreen = NULL;
+     }
+     
+     g_hash_table_remove(delayed_banners, (gconstpointer)key);
+     g_free(data->text);
+     g_free(value);
+  
+ }
+ 
+
 
 int status_bar_main(osso_context_t *osso, StatusBar **panel){
 
@@ -592,6 +761,10 @@ int status_bar_main(osso_context_t *osso, StatusBar **panel){
         osso_log( LOG_ERR, "osso_rpc_set_default_cb_f() failed" );
     }
     
+    delayed_banners = g_hash_table_new(g_direct_hash,
+                       g_direct_equal);
+    delayed_ib_onscreen = NULL;
+
     TRACE(TDEBUG,"status_bar_main: 8, status bar initialized successfully");
     *panel = sb_panel;
     return 0;
@@ -620,6 +793,10 @@ void status_bar_deinitialize(osso_context_t *osso, StatusBar **panel){
   gtk_widget_destroy( sb_panel->window );
   TRACE(TDEBUG,"status_bar_deinitialize: 4");
   g_free( *panel );
+  g_hash_table_foreach(delayed_banners, 
+               _remove_sb_d_ib_item, 
+               NULL);
+  g_hash_table_destroy(delayed_banners);
 
 }
 

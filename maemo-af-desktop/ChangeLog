@@ -1,3 +1,8 @@
+2005-09-28  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Upped to version 1.53.0, will be the base for next integration round
+	* Applied patch for task delayed info banner:
+	  Added support for delayed infobanner showing to hildon-status-bar-main.c
+
 2005-09-27  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Changed low mem dimming in maemo-af-desktop.sh to yes as requested.
 

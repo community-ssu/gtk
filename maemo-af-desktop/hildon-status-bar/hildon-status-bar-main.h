@@ -80,9 +80,19 @@ struct status_bar_st
 
 };
 
+/* Task delayed info banner 27092005 */
+
+typedef struct status_bar_del_ib_st SBDelayedInfobanner;
+
+struct status_bar_del_ib_st
+{
+  gint32 displaytime;
+  gchar *text;
+  guint timeout_to_show_id;
+  guint timeout_onscreen_id;
+};
 
 int status_bar_main(osso_context_t *osso, StatusBar **panel);
 void status_bar_deinitialize(osso_context_t *osso, StatusBar **panel);
-
 
 #endif
