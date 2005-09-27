@@ -1,3 +1,8 @@
+2005-09-27  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* locales/ru_RU: Fixed the day and abday sequence (N#19422)
+	* locales/{en_GB, de_DE, en_US, es_ES, es_MX, fr_FR, it_IT}: Amended several date/time formatting
+
 2005-09-14  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* locales/en_GB: Update en_GB to use 12 hour format (N#18270)
