@@ -2,6 +2,10 @@
 	* Upped to version 1.53.0, will be the base for next integration round
 	* Applied patch for task delayed info banner:
 	  Added support for delayed infobanner showing to hildon-status-bar-main.c
+	* Fixed bug 19593 (memory leak in statusbar/libosso) with a workaround 
+          (without the need of touch libosso at this time):
+	  - in libosso callback strings created dynamically with str = g_strdup_printf("...")
+          are freed and reallocated in a shorter form as const with str = "Short error notice";
 
 2005-09-27  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Changed low mem dimming in maemo-af-desktop.sh to yes as requested.

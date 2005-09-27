@@ -1,3 +1,9 @@
+maemo-af-desktop (1.53.1) unstable; urgency=low
+
+  * Fixed bug 19593 with a workaround to hildon-status-bar-main.c
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 27 Sep 2005 17:11:16 +0300
+
 maemo-af-desktop (1.53.0) unstable; urgency=low
 
   * Missing task delayed info banner patched
