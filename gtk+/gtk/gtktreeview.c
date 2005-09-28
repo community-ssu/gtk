@@ -9364,6 +9364,8 @@ gtk_tree_view_move_cursor_up_down (GtkTreeView *tree_view,
            !_gtk_tree_selection_is_row_selectable (tree_view->priv->selection,
                                                    new_cursor_node,
                                                    new_cursor_path));
+  if (new_cursor_path)
+    gtk_tree_path_free (new_cursor_path);
 
   /*
    * If the list has only one item and multi-selection is set then select
