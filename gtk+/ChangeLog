@@ -1,3 +1,9 @@
+2005-09-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcellrendererpixbuf.c (gtk_cell_renderer_pixbuf_finalize):
+	unref() pixbuf_expander_{open,closed} to plug memory leak
+	N#19667
+
 2005-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_real_destroy): removed reference for
