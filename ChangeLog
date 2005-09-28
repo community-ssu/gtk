@@ -1,5 +1,11 @@
 2005-09-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_move_cursor_up_down): Free
+	new_cursor_path to fix memory leak per keypress.
+	N#19981
+
+2005-09-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtkentry.c (struct _GtkEntryPrivate): added new member: gint
 	hildon_edited_character_position
 	(gtk_entry_init) : initialize hildon_edited_character_position to 0
