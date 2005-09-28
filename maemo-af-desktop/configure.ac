@@ -95,6 +95,10 @@ PKG_CHECK_MODULES(OSSOSETTINGS, osso-af-settings >= 0.8.1)
 localedir=`pkg-config osso-af-settings --variable=localedir`
 AC_SUBST(localedir)
 
+PKG_CHECK_MODULES(COMMON_ERROR, libosso-common-error, >= 0.1.6-2)
+AC_SUBST(COMMON_ERROR_CFLAGS)
+AC_SUBST(COMMON_ERROR_LIBS)
+
 ALL_LINGUAS="en_GB"
 AC_SUBST(ALL_LINGUAS)
 AM_GLIB_GNU_GETTEXT

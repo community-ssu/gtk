@@ -258,23 +258,12 @@ G_BEGIN_DECLS
 
 /* WID-NOT201*/
 #define HILDON_HOME_NO_MEMORY_TEXT       _("")
-#define HILDON_HOME_NO_MEMORY_OK         _("")
 
 /* WID-NOT202 */
 #define HILDON_HOME_CONNECTIVITY_TEXT    _("")
-#define HILDON_HOME_CONNECTIVITY_OK      _("")
-
-/* FIL-NOT034*/
-#define HILDON_HOME_SYSTEM_RESOURCE_TEXT _("")
-#define HILDON_HOME_SYSTEM_RESOURCE_OK   _("")
-
-/* WID-NOT174*/
-#define HILDON_HOME_FILE_CORRUPT_TEXT    _("")
-#define HILDON_HOME_FILE_CORRUPT_OK      _("")
 
 /* FIL-INF010 */
 #define HILDON_HOME_FILE_UNREADABLE_TEXT _("sfil_ib_opening_not_allowed")
-#define HILDON_HOME_FILE_UNREADABLE_OK   _("")
 
 #define TRANSIENCY_MAXITER 50
 

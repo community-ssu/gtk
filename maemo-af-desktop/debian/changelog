@@ -1,3 +1,9 @@
+maemo-af-desktop (1.54.1) unstable; urgency=low
+
+  * Fixed bug N#19662
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 28 Sep 2005 14:11:15 +0300
+
 maemo-af-desktop (1.54.0) unstable; urgency=low
 
   * Fixed bug 18524 - Race condition in personalisation dialog

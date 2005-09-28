@@ -39,7 +39,7 @@ libhildonhome_la_SOURCES = \
 	hildon-home-interface.h
 	hildon-home-image-loader.h
 
-libhildonhome_la_LIBADD = $(HILDON_LIBS) $(MB_LIBS) $(OSSO_LIBS)
+libhildonhome_la_LIBADD = $(HILDON_LIBS) $(MB_LIBS) $(OSSO_LIBS) $(COMMON_ERROR_LIBS)
 
 home_image_loader_SOURCES = \
 	hildon-home-image-loader.c \

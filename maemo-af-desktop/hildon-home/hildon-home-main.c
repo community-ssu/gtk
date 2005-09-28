@@ -66,6 +66,7 @@
 #include "hildon-home-plugin-loader.h"
 #include "hildon-home-main.h"
 #include "hildon-home-interface.h"
+#include "osso-common-error.h"
 #include "../kstrace.h"
 
 /* log include */
@@ -1253,8 +1254,6 @@ void show_no_memory_note(void)
         hildon_note_new_information(GTK_WINDOW(window), 
                                     HILDON_HOME_NO_MEMORY_TEXT);
     
-    hildon_note_set_button_text(HILDON_NOTE(no_memory_note),
-                                HILDON_HOME_NO_MEMORY_OK);
     gtk_dialog_run (GTK_DIALOG (no_memory_note));
     if(no_memory_note != NULL) 
     {
@@ -1278,8 +1277,6 @@ void show_connectivity_broke_note(void)
         hildon_note_new_information(GTK_WINDOW(window), 
                                     HILDON_HOME_CONNECTIVITY_TEXT);
     
-    hildon_note_set_button_text(HILDON_NOTE(connectivity_broke_note),
-                                HILDON_HOME_CONNECTIVITY_OK);
     gtk_dialog_run (GTK_DIALOG (connectivity_broke_note));
     if(connectivity_broke_note != NULL) 
     {
@@ -1300,11 +1297,8 @@ void show_system_resource_note(void)
     GtkWidget *system_resource_note = NULL;
 
     system_resource_note =
-        hildon_note_new_information(GTK_WINDOW(window), 
-                                    HILDON_HOME_SYSTEM_RESOURCE_TEXT);
-    
-    hildon_note_set_button_text(HILDON_NOTE(system_resource_note),
-                                HILDON_HOME_SYSTEM_RESOURCE_OK);
+      hildon_note_new_information(GTK_WINDOW(window),
+				  osso_common_error(CERM_CAN_NOT_OPEN_INSUF_RES));
     gtk_dialog_run (GTK_DIALOG (system_resource_note));
     if(system_resource_note != NULL) 
     {
@@ -1325,11 +1319,9 @@ void show_file_corrupt_note(void)
     GtkWidget *file_corrupt_note = NULL;
 
     file_corrupt_note =
-        hildon_note_new_information(GTK_WINDOW(window), 
-                                    HILDON_HOME_FILE_CORRUPT_TEXT);
+      hildon_note_new_information(GTK_WINDOW(window), 
+				  osso_common_error(CERM_CAN_NOT_OPEN_NO_FILE_INFO));
     
-    hildon_note_set_button_text(HILDON_NOTE(file_corrupt_note),
-                                HILDON_HOME_FILE_CORRUPT_OK);
     gtk_dialog_run (GTK_DIALOG (file_corrupt_note));
     if(file_corrupt_note != NULL) 
     {
@@ -1352,8 +1344,6 @@ void show_file_unreadable_note(void)
         hildon_note_new_information(GTK_WINDOW(window), 
                                     HILDON_HOME_FILE_UNREADABLE_TEXT);
     
-    hildon_note_set_button_text(HILDON_NOTE(file_unreadable_note),
-                                HILDON_HOME_FILE_UNREADABLE_OK);
     gtk_dialog_run (GTK_DIALOG (file_unreadable_note));
     if(file_unreadable_note != NULL) 
     {

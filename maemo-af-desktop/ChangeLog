@@ -9,6 +9,27 @@
     	default. Reason for failing is most probable low resource state
     	when no loading succeeds. This would cause unwanted calls for
     	image loader when chancing theme.
+	* Increased version to 1.54.1: 
+	* Applied patch for bug N#19662
+	* Hand corrected Makefile.am and hildon-home/Makefile.am which parts did not apply from patch successfully
+	* The patch introduced the following changes:
+	* debian/control: Added dependencies for libosso-common-error.
+        * configure.ac: Added check for libosso-common-error pkgconfig
+        info
+        * Makefile.am: Added libosso-common-error library to list of
+        libraries to link to.
+        * hildon-home/Makefile.am: Added libosso-common-error libs and
+        cflags.
+        * hildon-home/hildon-home-main.h: Removed unnecessary defines.
+        * hildon-home/hildon-home-main.c: Added include for
+        libosso-common-error.
+        * Rely on default OK button logical ID for information notes
+        instead of note-specific ones that appear not to be
+        actually specified.
+        (show_system_resource_note): Use osso_commmon_error() to get the
+        required localised error message.
+        (show_file_corrupt_note): Use osso_common_error() to get the
+        required localised error message.
 
 2005-09-27  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Upped to version 1.53.0, will be the base for the next integration round
