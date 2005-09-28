@@ -92,6 +92,7 @@ struct _GtkEntryPrivate
   gchar hildon_edited_character[HILDON_EDITED_CHARACTER_MAX];
   gboolean  hildon_edited_character_timeout;
   gint  hildon_edited_character_length;
+  gint  hildon_edited_character_position;
   gboolean keep_focus;
   gboolean menu_popped; 
 };
@@ -1143,6 +1144,7 @@ gtk_entry_init (GtkEntry *entry)
   memset( &priv->hildon_edited_character, 0x00, HILDON_EDITED_CHARACTER_MAX );
   priv->hildon_edited_character_length = 0;
   priv->hildon_edited_character_timeout = FALSE;
+  priv->hildon_edited_character_position = 0;
   
   priv->keep_focus = FALSE;
   priv->menu_popped = FALSE;
@@ -2602,6 +2604,7 @@ gtk_entry_real_insert_text (GtkEditable *editable,
         memset( &priv->hildon_edited_character, 0x00, HILDON_EDITED_CHARACTER_MAX );
         priv->hildon_edited_character_length = new_text_length;
         memcpy( &priv->hildon_edited_character, new_text, new_text_length );  /* Guaranteed to be < total length */
+        priv->hildon_edited_character_position = *position + n_chars;
   }
 
   *position += n_chars;
@@ -3393,21 +3396,21 @@ gtk_entry_create_layout (GtkEntry *entry,
                    * is already hidden now. We do this first to prevent possible race conditions if the timout
                    * were to trigger while in here
                    */
-                                                                                                                          
+                                                                                                   
                   if (priv->hildon_edited_character_timeout)
                     {
                       g_source_remove( priv->hildon_edited_character_timeout );
                       priv->hildon_edited_character_timeout = FALSE;
                     }
 
-		  /* Draw hidden characters upto just inserted, then the real thing, pad up to full length */
+		  /* Draw hidden characters upto the inserted position, then the real thing, pad up to full length */
 
-		  if (entry->current_pos > 1) {
-		    append_char (str, invisible_char, entry->current_pos - 1);
+		  if ( priv->hildon_edited_character_position > 1) {
+		    append_char (str, invisible_char, priv->hildon_edited_character_position - 1);
 		  }
 		  g_string_append_len (str, (char *)&priv->hildon_edited_character, priv->hildon_edited_character_length);
-		  if (entry->current_pos < entry->text_length) {
-		    append_char (str, invisible_char, entry->text_length - entry->current_pos);
+		  if (priv->hildon_edited_character_position < entry->text_length) {
+		    append_char (str, invisible_char, entry->text_length - priv->hildon_edited_character_position);
 		  }
 
 		  
