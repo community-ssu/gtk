@@ -1,3 +1,15 @@
+2005-09-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtkentry.c (struct _GtkEntryPrivate): added new member: gint
+	hildon_edited_character_position
+	(gtk_entry_init) : initialize hildon_edited_character_position to 0
+	(gtk_entry_real_insert_text): set hildon_edited_character_position to
+	position of inserted character, if conditions met
+	(gtk_entry_create_layout): changed display position of inserted
+	characters from cursor position to hildon_edited_character_position
+	(the real position), when entry has visiblity=FALSE
+	N#16999
+
 2005-09-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcellrendererpixbuf.c (gtk_cell_renderer_pixbuf_finalize):
