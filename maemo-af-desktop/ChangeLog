@@ -1,5 +1,17 @@
 2005-09-28  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
-	* Upped to version 1.53.0, will be the base for next integration round
+	* Upped version to 1.54.0, will be the base for the next integration round
+	* Applied patch for bug N#18524 - Race condition in personalisation dialog:
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: construct_background_image():
+  	- added wait for killing old and obsolete image loader process
+	* maemo-af-desktop/hildon-home/hildon-home-main.c: refresh_background_image():
+  	- when user save directory has background image and loading pixbuf
+    	fails, no longer falling back to factory settings or
+    	default. Reason for failing is most probable low resource state
+    	when no loading succeeds. This would cause unwanted calls for
+    	image loader when chancing theme.
+
+2005-09-27  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Upped to version 1.53.0, will be the base for the next integration round
 	* Applied patch for task delayed info banner:
 	  Added support for delayed infobanner showing to hildon-status-bar-main.c
 	* Fixed bug 19593 (memory leak in statusbar/libosso) with a workaround 

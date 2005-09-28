@@ -1,3 +1,9 @@
+maemo-af-desktop (1.54.0) unstable; urgency=low
+
+  * Fixed bug 18524 - Race condition in personalisation dialog
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 28 Sep 2005 13:51:53 +0300
+
 maemo-af-desktop (1.53.1) unstable; urgency=low
 
   * Fixed bug 19593 with a workaround to hildon-status-bar-main.c

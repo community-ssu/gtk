@@ -33,6 +33,7 @@
  
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include <gdk/gdkx.h>
@@ -1409,6 +1410,8 @@ void construct_background_image(char *argument_list[],
     {
         g_spawn_close_pid(image_loader_pid);
         kill(image_loader_pid, SIGTERM);
+        waitpid(image_loader_pid, NULL, 0);
+        image_loader_pid = -1;
     }
 
     if(!g_spawn_async(
@@ -1986,9 +1989,7 @@ void refresh_background_image()
     if (stat(home_current_bg_image, &buf) != -1) 
     {    
         pixbuf_bg = get_background_image();
-    }
-
-    if (pixbuf_bg == NULL)
+    } else 
     {    
         pixbuf_bg = get_factory_default_background_image();
 
