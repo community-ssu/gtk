@@ -30,6 +30,11 @@
         required localised error message.
         (show_file_corrupt_note): Use osso_common_error() to get the
         required localised error message.
+	* Increased to version number 1.54.3:
+	* maemo-af-desktop.sh reduced the NAVIGATOR_LOWMEM_LAUNCH_BANNER_TIMEOUT from 200 to 20.
+	- Fixes the reject reason for bug 19818
+	- Fixed the reject reason for bug 19903
+	- Fixes bug 19939 with a workaround (timeout is reasonable)
 
 2005-09-27  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Upped to version 1.53.0, will be the base for the next integration round

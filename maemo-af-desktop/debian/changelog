@@ -1,3 +1,15 @@
+maemo-af-desktop (1.54.3) unstable; urgency=low
+
+  * Updated version to 1.54.3
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 28 Sep 2005 15:14:26 +0300
+
+maemo-af-desktop (1.54.2) unstable; urgency=low
+
+  * Changed timeout in maemo-af-desktop.sh from 200 to 20
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 28 Sep 2005 15:10:50 +0300
+
 maemo-af-desktop (1.54.1) unstable; urgency=low
 
   * Fixed bug N#19662
