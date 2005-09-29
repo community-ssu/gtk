@@ -1,0 +1,5 @@
+2005-09-29  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/osso-application-top.c (utf8_safe): New.
+	(_append_environment): Use it to skip over environment variables
+	that can not be transmitted as a DBUS_TYPE_STRING.
