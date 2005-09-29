@@ -80,6 +80,26 @@ osso_return_t osso_application_top(osso_context_t *osso, const gchar *applicatio
 /************************************************************************/
 extern char **environ;
 
+/* XXX - The environment variables of this process are transmitted in
+         the "top_application" message as DBUS_TYPE_STRING elements.
+         DBUS_TYPE_STRING implies that the characters are encoded as
+         UTF-8, but the environment variables are not necessarily in
+         UTF-8.  The real fix would be to transmit the variables as
+         DBUS_TYPE_ARRAY of DBUS_TYPE_BYTE, but for now we just skip
+         everything that is not ASCII.
+*/
+
+static int utf8_safe (char *str)
+{
+  while (*str)
+    {
+      if (*str & 0x80)
+	return 0;
+      str++;
+    }
+  return 1;
+}
+
 static void _append_environment(DBusMessage *msg)
 {
     char **iter;
@@ -87,8 +107,9 @@ static void _append_environment(DBusMessage *msg)
 
     for (;*iter;iter++)
     {
-        dbus_message_append_args(msg,DBUS_TYPE_STRING,
-                            *iter,DBUS_TYPE_INVALID);
+        if (utf8_safe (*iter))
+          dbus_message_append_args(msg,DBUS_TYPE_STRING,
+                              *iter,DBUS_TYPE_INVALID);
 
         dprint("append %s",*iter);
     }
