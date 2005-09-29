@@ -1,3 +1,9 @@
+2005-09-29  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Changed dimming feature to off
+	* Changed files:
+	* maemo-af-desktop.sh NAVIGATOR_LOWMEM_DIM=no
+	* Upped version number to 1.54.4
+
 2005-09-28  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Upped version to 1.54.0, will be the base for the next integration round
 	* Applied patch for bug N#18524 - Race condition in personalisation dialog:

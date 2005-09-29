@@ -1,3 +1,9 @@
+maemo-af-desktop (1.54.4) unstable; urgency=low
+
+  * Changed from maemo-af-desktop.sh dimming feature off
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 29 Sep 2005 12:44:35 +0300
+
 maemo-af-desktop (1.54.3) unstable; urgency=low
 
   * Updated version to 1.54.3
