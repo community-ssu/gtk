@@ -1,3 +1,11 @@
+libosso (0.9.17-1) unstable; urgency=low
+
+  * src/osso-application-top.c (utf8_safe): New.
+  (_append_environment): Use it to skip over environment variables
+  that can not be transmitted as a DBUS_TYPE_STRING.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 29 Sep 2005 20:42:22 +0300
+
 libosso (0.9.16-1) unstable; urgency=low
 
   * Fixed a memory leak in _get_arg (bug 19148).
