@@ -1,5 +1,11 @@
 2005-09-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
+	* gtk/gtkrbtree.c (_gtk_rbtree_free): g_free tree->nil as it isn't
+	allocated from the allocator like other nodes
+	N#19943
+
+2005-09-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
 	* gtk/gtkimage.c (gtk_image_expose): unref pixbuf also when rectangles
 	don't intersect.
 	N#20050
