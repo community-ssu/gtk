@@ -1836,6 +1836,9 @@ gtk_image_expose (GtkWidget      *widget,
           gdk_gc_set_clip_mask (widget->style->black_gc, NULL);
           gdk_gc_set_clip_origin (widget->style->black_gc, 0, 0);
         }
+
+      if (pixbuf)
+	g_object_unref (pixbuf);
       
     } /* if widget is drawable */
 
