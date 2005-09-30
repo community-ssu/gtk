@@ -1,3 +1,9 @@
+2005-09-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkimage.c (gtk_image_expose): unref pixbuf also when rectangles
+	don't intersect.
+	N#20050
+
 2005-09-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_move_cursor_up_down): Free
