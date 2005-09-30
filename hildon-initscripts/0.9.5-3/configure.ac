@@ -1,0 +1,14 @@
+AC_INIT(Makefile.am)
+AM_INIT_AUTOMAKE(hildon-initscripts, 0.9.4)
+AM_CONFIG_HEADER(config.h)
+
+AC_CANONICAL_HOST
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+AC_PROG_LIBTOOL
+
+AC_OUTPUT(Makefile \
+        af-sb-init.sh)

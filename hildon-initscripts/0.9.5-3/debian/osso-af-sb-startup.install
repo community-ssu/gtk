@@ -1,0 +1,3 @@
+/etc/osso-af-init/dbus-systembus.sh
+/usr/bin/af-sb-init.sh
+/usr/bin/scratchbox-launcher.sh
