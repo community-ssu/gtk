@@ -1,0 +1,22 @@
+Source: hildon-initscripts
+Section: base
+Priority: optional
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
+
+Package: hildon-initscripts
+Section: base
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, matchbox-window-manager (>=0.9.5.20050809-3), gtk2-engines-sapwood, dbus-1, osso-af-startup
+Conflicts: hildon-base
+Replaces: hildon-base
+Description: Miscellaneous startup files.
+ Matchbox startup files, run-standalone.sh, and osso-gtk.defs.
+
+Package: osso-af-sb-startup
+Section: base
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-initscripts, gtk2-engines-sapwood
+Description: Scripts to launch Maemo environment in Scratchbox.
+ Shell scripts to launch Maemo environment in Scratchbox.

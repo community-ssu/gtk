@@ -1,0 +1,14 @@
+#!/bin/sh
+# matchbox.defs - Matchbox defines
+
+TITLEBAR=yes
+DESKTOPMODE=plain
+LOWLIGHT=no
+SHOWCURSOR=yes
+DIALOGMODE=static
+SUPERMODAL=yes
+MBTHEME=$DEFAULTMBTHEME
+
+if [ -f $HOME/.osso/mbtheme ]; then
+    MBTHEME=`cat $HOME/.osso/mbtheme`
+fi
