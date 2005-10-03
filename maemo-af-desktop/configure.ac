@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-af-desktop, 1.54.0)
+AM_INIT_AUTOMAKE(maemo-af-desktop, 1.55.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],

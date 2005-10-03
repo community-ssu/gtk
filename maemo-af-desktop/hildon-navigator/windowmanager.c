@@ -1594,7 +1594,7 @@ static void handle_active_window_prop(GtkTreeModel *model,
 
         subname_str = get_subname(win_id);
         gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
-                           WM_VIEW_ID_ITEM, value.char_value[0], -1);
+                           WM_VIEW_ID_ITEM, value.window_value[0], -1);
         if (window_exists(model, &parent, &w_iter, win_id, 0))
         {
             update_window(model, &parent, win_id, 0, value.window_value[0],
@@ -1750,6 +1750,10 @@ static void handle_client_list_prop(GtkTreeModel *model,
                               value.window_value[clist_nitems-1],
                               value.window_value[clist_nitems-1],
                               subname_str, AS_MENUITEM_SAME_POSITION);
+		gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
+				   WM_VIEW_ID_ITEM,
+				   value.window_value[clist_nitems-1], -1);
+			
                 XFree(value.char_value);
                 g_free(subname_str);
                 return;
@@ -1779,6 +1783,8 @@ static void handle_client_list_prop(GtkTreeModel *model,
                                         subname_str, wm_cbs.cb_data);
                   insert_new_window(model, &parent,
                                     new_win);
+		  gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
+				     WM_VIEW_ID_ITEM, new_win->view_id, -1);
                   g_free(icon);
                   g_free(exec);
                   g_free(name);
@@ -3498,7 +3504,7 @@ static gboolean launch_banner_timeout(gpointer data)
 	launch_banner_info *info = data;
 	struct timeval current_time;
 	long unsigned int t1, t2;
-	guint time_left, view_id;
+	guint time_left;
 	GtkTreeIter iter;
     gulong current_banner_timeout = 0;
 
@@ -3514,8 +3520,6 @@ static gboolean launch_banner_timeout(gpointer data)
 
 	if ( find_service_from_tree( wm_cbs.model,
 				&iter, info->service_name ) > 0 ) {
-		gtk_tree_model_get(wm_cbs.model, &iter,
-				WM_VIEW_ID_ITEM, &view_id, -1);
 	} else {
 		/* This should never happen. Bail out! */
 		return FALSE;
@@ -3529,7 +3533,8 @@ static gboolean launch_banner_timeout(gpointer data)
 	
     /* The following uses now current_banner_timeout instead of lowmem_banner_timeout, changed by
        Karoliina Salminen 26092005 */
-	if (time_left >= current_banner_timeout || view_id > 0 ) {
+	if (time_left >= current_banner_timeout ||
+	    gtk_tree_model_iter_has_child(wm_cbs.model, &iter) == TRUE ) {
 		
 		/* Close the banner */
 		close_launch_banner( NULL );

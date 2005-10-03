@@ -1,3 +1,10 @@
+maemo-af-desktop (1.55.0) unstable; urgency=low
+
+  * Upped version number for next integration round. Applied patch for
+    bug N#19939.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon,  3 Oct 2005 12:06:50 +0300
+
 maemo-af-desktop (1.54.4) unstable; urgency=low
 
   * Changed from maemo-af-desktop.sh dimming feature off

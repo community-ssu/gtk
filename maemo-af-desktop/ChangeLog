@@ -1,3 +1,12 @@
+2005-10-03  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Increased version number to 1.55.0, for next integration round.
+	* Patched bug N#19939: Application -loading info banners not disappearing after applications launched
+	* hildon-navigator/windowmanager.c (handle_client_list_prop): When
+       	updating active view, update also application parent node.
+       	(launch_banner_timeout): Remove banner when application parent
+       	node has children in treemodel instead of checking for views in
+       	order to increase reliability.
+
 2005-09-29  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Changed dimming feature to off
 	* Changed files:
