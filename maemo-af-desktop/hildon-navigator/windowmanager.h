@@ -96,8 +96,6 @@ enum {
 
 #define LAUNCH_SUCCESS_TIMEOUT_LOWMEM 40
 
-#define LAUNCH_FAILED_INSUF_RES "ckct_ib_application_lowmem"
-
 #define LOCATION_VAR "STATESAVEDIR"
 #define FALLBACK_PREFIX "/tmp/state"
 #define KILL_DELAY 2000 /* 2 seconds */

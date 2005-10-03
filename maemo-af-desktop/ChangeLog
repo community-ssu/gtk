@@ -1,4 +1,20 @@
 2005-10-03  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Applied the following patch from Guillem Jover <guillem.jover@nokia.com> :
+        * hildon-navigator/hildon-navigator-main.h:
+        (config_lowmem_notify): Split into ...
+        (config_lowmem_notify_enter): ... this and ...
+        (config_lowmem_notify_leave): ... this.
+        * hildon-navigator/hildon-navigator-main.c: Likewise.
+        * hildon-navigator/windowmanager.h (LAUNCH_FAILED_INSUF_RES): Remove
+        macro.
+        * hildon-navigator/windowmanager.c: Replace LAUNCH_FAILED_INSUF_RES
+        with "memr_ib_unable_to_switch_to_application".
+        (cannot_launch_dialog): Remove variable.
+        (top_service): Replace cannot_launch_dialog dialog with an infoprint.
+        (lowmem_handler): Make enter and leave notifications independently
+        selectable.
+
+2005-10-03  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Increased version number to 1.55.0, for next integration round.
 	* Patched bug N#19939: Application -loading info banners not disappearing after applications launched
 	* hildon-navigator/windowmanager.c (handle_client_list_prop): When

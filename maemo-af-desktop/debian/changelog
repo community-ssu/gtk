@@ -1,3 +1,13 @@
+maemo-af-desktop (1.55.1) unstable; urgency=low
+
+  * Applied memory mgmt patch from Guillem Jover <guillem.jover@nokia.com>:
+  * Only show notifica when leaving lowmem state.
+  * Fix spurious %s appearing in dialogs, by showing the proper string.
+  * Use consitently the same message when we cannot load a new application.
+  * Replace the cannot launch dialog with an infoprint.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon,  3 Oct 2005 13:30:46 +0300
+
 maemo-af-desktop (1.55.0) unstable; urgency=low
 
   * Upped version number for next integration round. Applied patch for

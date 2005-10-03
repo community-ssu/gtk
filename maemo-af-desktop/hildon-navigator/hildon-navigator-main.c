@@ -76,7 +76,8 @@
 /* Global external variables */
 gboolean config_do_bgkill;
 gboolean config_lowmem_dim;
-gboolean config_lowmem_notify;
+gboolean config_lowmem_notify_enter;
+gboolean config_lowmem_notify_leave;
 gboolean config_lowmem_pavlov_dialog;
 
 /* Callbacks */
@@ -112,7 +113,8 @@ static void create_navigator(Navigator *tasknav)
      */
     config_do_bgkill = getenv_yesno("NAVIGATOR_DO_BGKILL", TRUE);
     config_lowmem_dim = getenv_yesno("NAVIGATOR_LOWMEM_DIM", FALSE);
-    config_lowmem_notify = getenv_yesno("NAVIGATOR_LOWMEM_NOTIFY", FALSE);
+    config_lowmem_notify_enter = getenv_yesno("NAVIGATOR_LOWMEM_NOTIFY_ENTER", FALSE);
+    config_lowmem_notify_leave = getenv_yesno("NAVIGATOR_LOWMEM_NOTIFY_LEAVE", FALSE);
     config_lowmem_pavlov_dialog = getenv_yesno("NAVIGATOR_LOWMEM_PAVLOV_DIALOG", FALSE);
 
     tasknav->main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);

@@ -61,8 +61,6 @@ gulong lowmem_timeout_multiplier = 0;
 gboolean lowmem_situation = FALSE;
 gboolean bgkill_situation = FALSE;
 
-GtkWidget *cannot_launch_dialog = NULL;
-
 /* Structure that contains pointers to the callback functions */
 
 typedef struct
@@ -2749,9 +2747,6 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
     model = create_model();
     g_assert(model);
 
-    cannot_launch_dialog =
-	hildon_note_new_information(NULL, _(LAUNCH_FAILED_INSUF_RES));
-
     /* Check for configurable lowmem values. */
 
     lowmem_min_distance = getenv_int(LOWMEM_LAUNCH_THRESHOLD_DISTANCE_ENV,
@@ -3082,9 +3077,8 @@ void top_service(const gchar *service_name)
 
     if (pages_available > 0 && pages_available < lowmem_min_distance)
     {
-	gtk_widget_show_all(cannot_launch_dialog);
-	gtk_dialog_run(GTK_DIALOG(cannot_launch_dialog));
-	gtk_widget_hide(cannot_launch_dialog);
+	gtk_infoprintf(NULL, _("memr_ib_unable_to_switch_to_application"));
+
 	return;
     }
 
@@ -3542,7 +3536,7 @@ static gboolean launch_banner_timeout(gpointer data)
 
 		if ( time_left >= APP_LAUNCH_BANNER_TIMEOUT &&
 		     lowmem_situation == TRUE) {
-		  gtk_infoprint( NULL, _( LAUNCH_FAILED_INSUF_RES ) );
+		  gtk_infoprintf(NULL, _("memr_ib_unable_to_switch_to_application"));
 		}
 	
 		/* Cleanup */
@@ -3569,7 +3563,7 @@ static gboolean relaunch_timeout(gpointer data)
 
       if (killed == TRUE && lowmem_situation == TRUE)
 	{
-	  gtk_infoprint( NULL, _( LAUNCH_FAILED_INSUF_RES ) );
+	  gtk_infoprintf(NULL, _("memr_ib_unable_to_switch_to_application"));
 	}
     }
   
@@ -3747,23 +3741,24 @@ static void lowmem_handler(gboolean is_on)
 
 	update_lowmem_situation(is_on);
 
-	if (config_lowmem_notify)
+	if (is_on && config_lowmem_notify_enter)
 	{
-	    if (is_on)
+	    if (config_lowmem_pavlov_dialog)
 	    {
-		if (config_lowmem_pavlov_dialog)
-		{
-		    show_pavlov_dialog();
-		}
-		else
-		{
-		    gtk_infoprintf(NULL, _("memr_ib_unable_to_switch_to_application"));
-		}
+		show_pavlov_dialog();
 	    }
 	    else
 	    {
-		gtk_infoprintf(NULL, _("memr_ib_no_more_memory_low"));
+		/*
+		 * The string supposed to be displayed here is
+		 * "memr_ib_unable_to_switch_to_application".
+		 */
+		gtk_infoprintf(NULL, _("memr_ni_application_memory_low"));
 	    }
+	}
+	else if (!is_on && config_lowmem_notify_leave)
+	{
+	    gtk_infoprintf(NULL, _("memr_ib_no_more_memory_low"));
 	}
     }
 }

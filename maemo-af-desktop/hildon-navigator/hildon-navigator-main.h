@@ -100,10 +100,15 @@ extern gboolean config_do_bgkill;
 */
 extern gboolean config_lowmem_dim;
 
-/* When CONFIG_LOWMEM_NOTIFY is TRUE, notify information to the user
-   upon entering and leaving the 'lowmem' situation.
-*/
-extern gboolean config_lowmem_notify;
+/* When CONFIG_LOWMEM_NOTIFY_ENTER is TRUE, notify this information to the
+ * user upon entering the 'lowmem' situation.
+ */
+extern gboolean config_lowmem_notify_enter;
+
+/* When CONFIG_LOWMEM_NOTIFY_LEAVE is TRUE, notify this information to the
+ * user upon leaving the 'lowmem' situation.
+ */
+extern gboolean config_lowmem_notify_leave;
 
 /* When CONFIG_LOWMEM_PAVLOV_DIALOG is TRUE, display a dialog instead of
    an infoprint upon entering the 'lowmem' situation.
