@@ -1,3 +1,10 @@
+2005-10-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* io-jpeg.c (gdk_pixbuf__jpeg_image_load_increment): Use buffered mode
+	only with progressive images to avoid excessive memory consumption; it
+	makes no difference to disable it for progressive images.
+	N#20154
+
 2005-09-01  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Merge patches by Matthias Clasen and Manish Singh from GNOME CVS:
