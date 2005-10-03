@@ -2,11 +2,11 @@ Source: posix-locales
 Section: base
 Priority: standard
 Maintainer: Mohammad Anwari <Mohammad.Anwari@nokia.com> 
-Standards-Version: 3.6.1.1
+Standards-Version: 3.6.2
 Build-Depends: libc6 (>> 2.3.2), debhelper (>>4.0.0)
 
 Package: posix-locales
-Architecture: any
+Architecture: all
 Provides: i18ndata
 Conflicts: i18ndata 
 Replaces: i18ndata 

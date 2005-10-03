@@ -1,3 +1,8 @@
+2005-10-03  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+	
+	* debian/rules, debian/compat, debian/control: Use localedef from libc
+	* locales/en_GB, locales/es_MX: Add second fields to t_fmt_ampm (N#20063)
+
 2005-09-27  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* locales/ru_RU: Fixed the day and abday sequence (N#19422)

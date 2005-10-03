@@ -1,66 +1,55 @@
 #!/usr/bin/make -f
 
-export DH_COMPAT=3
+DESTDIR=$(CURDIR)/debian/posix-locales
 
 set_n770=fr_FR pt_BR en_GB en_US fi_FI fr_CA ru_RU es_ES es_MX de_DE nl_NL da_DK el_GR no_NO sv_SE pt_PT it_IT 
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	install -d usr/lib/locale/
-	@touch configure-stamp
-
-build: configure-stamp build-stamp
-
-build-stamp: build-optimized-stamp
+build: build-stamp
+build-stamp:
+	mkdir -p $(CURDIR)/build
+	@for i in $(set_n770); do \
+	  echo "Building locale $$i (UTF-8)"; \
+	  I18NPATH=$(CURDIR)/locales/ localedef -c --quiet \
+	    --charmap=$(CURDIR)/charmaps/UTF-8 --inputfile=$$i build/$$i; \
+	done
 	@touch build-stamp
-
-build-optimized-stamp:
-	@cd locales
-	@pwd
-	@for i in $(set_n770);do \
-		echo "Building locale $$i (UTF-8)"; \
-		I18NPATH=./locales/ localedef -c --quiet --charmap=./charmaps/UTF-8 --inputfile=$$i ./$$i; \
-		mkdir ./usr/lib/locale/$$i; \
-		localedef --prefix=./ --add-to-archive ./$$i; \
-		localedef --prefix=./ --delete-from-archive $$i.utf8; \
-		done
-	@cd ..	
-	@touch build-optimized-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp configure-stamp install-linked-stamp build-optimized-stamp
-	rm -Rf usr/lib
-	rm -Rf $(set_n770)
+	rm -f build-stamp
+	rm -rf build
 	dh_clean
 
-install: build install-linked-stamp
-
-install-linked-stamp:
+install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	@cp -r usr debian/posix-locales
+	
+	@for i in $(set_n770); do \
+	  echo "Installing locale $$i (UTF-8)"; \
+	  mkdir -p $(DESTDIR)/usr/lib/locale/$$i; \
+	  localedef --prefix=$(DESTDIR)/ --add-to-archive build/$$i; \
+	  localedef --prefix=$(DESTDIR)/ --delete-from-archive $$i.utf8; \
+	done
 
-	@touch install-linked-stamp
+binary-indep:
 
-binary-indep: build install
-
-binary-arch: build install
+binary-arch: install
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs
-	@cp -r debian/copyright debian/posix-locales/usr/share/doc/posix-locales
-	dh_fixperms	
-	dh_installdeb
+	dh_installdocs
+	dh_fixperms
 	dh_compress
+	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install configure
+
+.PHONY: build clean binary-indep binary-arch binary install
+
