@@ -1163,6 +1163,7 @@ void _hildon_appview_toggle_menu(HildonAppView * self,
 
     if (GTK_WIDGET_VISIBLE(self->priv->menu)) {
         gtk_menu_popdown(GTK_MENU(self->priv->menu));
+        gtk_menu_shell_deactivate(GTK_MENU_SHELL(self->priv->menu));
         return;
     }
 

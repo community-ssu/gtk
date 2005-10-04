@@ -1497,9 +1497,6 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 		 (y >= MENUAREA_TOP_LIMIT) && (y <= MENUAREA_BOTTOM_LIMIT))
 	      {
                 _hildon_appview_toggle_menu(appview, bev->time);
-		gtk_menu_shell_deactivate(GTK_MENU_SHELL
-					  (hildon_appview_get_menu
-					   (appview)));
 		return GDK_FILTER_CONTINUE;
 	      }
 	  }
