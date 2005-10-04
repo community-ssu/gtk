@@ -201,6 +201,16 @@ static gboolean gtk_msg_window_real_destroy(gpointer pointer)
       g_free(current_ibanner);
       current_ibanner = NULL;
     } else if (quark == banner_quark() && current_pbanner) {
+      /*
+       * If the destroy signal is not emited via gkt_banner_close() 
+       * (for example when the banner is being destroyed with the parent)
+       * the reference counter will have a value larger than 0 and the
+       * reference counter should be decremented.
+       */
+      
+      if (pbanner_refs > 0) 
+        --pbanner_refs;
+      
       gtk_widget_unref(current_pbanner->main_item);
       g_free(current_pbanner->text);
       g_free(current_pbanner);
@@ -449,6 +459,11 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
     hbox = gtk_hbox_new(FALSE, 5);
 
     if (current_pbanner && type == banner_quark()) {
+      /*
+       * The destroy substracts one from the reference counter,
+       * so adding one to keep the counter working
+       */
+      ++pbanner_refs;
       gtk_msg_window_destroy(current_pbanner->window);
     }
 

@@ -1,3 +1,9 @@
+2005-10-04  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-lgpl/gtk-infoprint.c (gtk_msg_window_real_destroy)
+	(gtk_msg_window_init): Added check for reference decrementing when
+	window is destroyed with its parent. N#19047
+
 2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: Release 0.9.53
