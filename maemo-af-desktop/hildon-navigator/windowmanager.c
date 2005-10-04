@@ -562,11 +562,12 @@ static void create_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
     XWindowAttributes attrs;
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), cev->window, wm_class_atom, 0, 24,
                        False, XA_STRING, &actual_type, &actual_format,
                        &nitems, &bytes_after, &wm_class_str);
     gdk_flush();
-    XSync(NULL,FALSE);
+    
     if (gdk_error_trap_pop() != 0)
     {
         /* If the window does not have wm_class information available,
@@ -576,10 +577,8 @@ static void create_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
 
     attrs.override_redirect = 0;
     gdk_error_trap_push();
-    XGetWindowAttributes(GDK_DISPLAY(), cev->window, &attrs);
-
-   /* int XSync(Display *display, Bool discard);*/
     XSync(NULL,FALSE);
+    XGetWindowAttributes(GDK_DISPLAY(), cev->window, &attrs);
 
     gdk_error_trap_pop();
 
@@ -611,19 +610,21 @@ static void create_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                because GDK windows outside the running application
                are not 'reachable' directly */
             gdk_error_trap_push();
-            gdk_win = gdk_window_foreign_new (cev->window);
             XSync(NULL,FALSE);
+            gdk_win = gdk_window_foreign_new (cev->window);
+            
             gdk_error_trap_pop();
 
             if (gdk_win != NULL)
             {
                 gdk_error_trap_push();
+                XSync(NULL,FALSE);
                 gdk_window_set_events(gdk_win,
                                       gdk_window_get_events(gdk_win)
                                       | GDK_STRUCTURE_MASK
                                       | GDK_PROPERTY_CHANGE_MASK);
                 gdk_window_add_filter(gdk_win, x_event_filter, model);
-                XSync(NULL,FALSE);
+                
                 if (gdk_error_trap_pop() != 0)
                 {
                     XFree(wm_class_str);
@@ -761,21 +762,23 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
     Atom actual_type;
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     if (determine_window_type(pev->window) != NORMAL_WINDOW && 
         pev->window != GDK_WINDOW_XID(gdk_get_default_root_window()) )
     {
-        XSync(NULL,FALSE);
+        
         gdk_error_trap_pop();
         return;
     }
-    XSync(NULL,FALSE);
+    
     gdk_error_trap_pop();
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), pev->window, wm_class_atom, 0, 24,
                        False, XA_STRING, &actual_type, &actual_format,
                        &nitems, &bytes_after, &wm_class_str);
-    XSync(NULL,FALSE);
+    
     gdk_error_trap_pop();
 
     /* If active view changes and is not in the treestore yet,
@@ -788,6 +791,7 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
     else if (pev->atom == showing_desktop)
     {
         gdk_error_trap_push();
+        XSync(NULL,FALSE);
         XGetWindowProperty(GDK_DISPLAY(), 
                            GDK_WINDOW_XID(gdk_get_default_root_window()),
                            showing_desktop, 0, 32, False, XA_CARDINAL,
@@ -829,6 +833,7 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
     else if (pev->atom == wm_state)
     {
         gdk_error_trap_push();
+        XSync(NULL,FALSE);
         XGetWindowProperty(GDK_DISPLAY(), pev->window, wm_state, 0,
                            8L, False, wm_state, &actual_type,
                            &actual_format,
@@ -866,8 +871,9 @@ static void map_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
     GtkTreeIter parent , w_iter;
     
     gdk_error_trap_push();
-    status = XGetWindowAttributes(GDK_DISPLAY(), mev->window, &attrs);
     XSync(NULL,FALSE);
+    status = XGetWindowAttributes(GDK_DISPLAY(), mev->window, &attrs);
+    
     if (gdk_error_trap_pop() != 0)
     {
         /* Just ignore the error, i.e. do nothing */
@@ -879,10 +885,11 @@ static void map_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
     }
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), mev->window, wm_class_atom, 0, 24,
                        False, XA_STRING, &actual_type, &actual_format,
                        &nitems, &bytes_after, &wm_class_str);
-    XSync(NULL,FALSE);
+    
     if (gdk_error_trap_pop() != 0 || nitems < 1)
     {
         return;
@@ -966,6 +973,7 @@ static void map_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                 xev.xclient.format = 32;
                 xev.xclient.data.l[0] = 0;
                 gdk_error_trap_push();
+                XSync(NULL,FALSE);
                 XSendEvent(GDK_DISPLAY(), mev->window, False,
                            SubstructureRedirectMask
                            | SubstructureNotifyMask, &xev); 
@@ -1469,12 +1477,12 @@ static void handle_active_window_prop(GtkTreeModel *model,
 
     realwin_value.char_value = NULL;
     gdk_error_trap_push();
-    
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), win_id, active_win,
                        0, 32, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&value.char_value);
-    XSync(NULL,FALSE);
+    
     if (gdk_error_trap_pop() != 0)
     {
         /* We can't do anything without the active window property */
@@ -1487,12 +1495,13 @@ static void handle_active_window_prop(GtkTreeModel *model,
 
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(),
                        GDK_WINDOW_XID(gdk_get_default_root_window()),
                        mb_active_win, 0, 32, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&realwin_value.char_value);
-    XSync(NULL,FALSE);
+    
     if (gdk_error_trap_pop() != 0 || nitems < 1)
     {
         /* We couldn't find out - let's not update just in case */
@@ -1511,11 +1520,12 @@ static void handle_active_window_prop(GtkTreeModel *model,
     if (wm_class_str == NULL)
     {
         gdk_error_trap_push();
+        XSync(NULL,FALSE);
         XGetWindowProperty(GDK_DISPLAY(), realwin_value.window_value[0],
                            wm_class_atom, 0, 24,
                            False, XA_STRING, &actual_type, &actual_format,
                            &nitems, &bytes_after, &local_wm_class);
-        XSync(NULL,FALSE);
+        
         gdk_error_trap_pop();
        
         /* If we can't get wm_class for this window, we're unable to do
@@ -1653,11 +1663,12 @@ static void handle_subname_window_prop(GtkTreeModel *model,
     Atom actual_type;
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), win_id, active_win,
                        0, 32, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&value.char_value);
-    XSync(NULL,FALSE);
+    
     /* If the _NET_ACTIVE_WINDOW is not set, we can't do anything */
     if (nitems == 0 || gdk_error_trap_pop() != 0)
     {
@@ -1712,12 +1723,13 @@ static void handle_client_list_prop(GtkTreeModel *model,
     cleaner.window_id = win_id;
     
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), win_id, clientlist,
                        0, 128, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&value.char_value);
     gdk_flush();
-    XSync(NULL,FALSE);
+    
     err = gdk_error_trap_pop();
     
     if (err != 0)
@@ -1970,11 +1982,12 @@ static int determine_window_type(Window win_id)
     Atom actual_type;
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), win_id, wm_type, 0,
                        G_MAXLONG, False, XA_ATOM, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&wm_type_value.char_value);
-    XSync(NULL,FALSE);
+    
     if (gdk_error_trap_pop() != 0)
     {
         return UNKNOWN;
@@ -2001,11 +2014,12 @@ static int determine_window_type(Window win_id)
 	    */
 #if 0
             gdk_error_trap_push();
+            XSync(NULL,FALSE);
             XGetWindowProperty(GDK_DISPLAY(), win_id, net_wm_state, 0,
                                G_MAXLONG, False, XA_ATOM, &actual_type,
                                &actual_format, &nitems_wmstate, &bytes_after,
                                (unsigned char **)&wm_state_value.char_value);
-            XSync(NULL,FALSE);
+            
             if (gdk_error_trap_pop() != 0)
             {
                 break;
@@ -2026,11 +2040,12 @@ static int determine_window_type(Window win_id)
 	  /* FIXME: What is window_type is dialog is not modal ?  */
 
 	  gdk_error_trap_push();
+      XSync(NULL,FALSE);
 	  XGetWindowProperty(GDK_DISPLAY(), win_id, net_wm_state, 0,
 			     G_MAXLONG, False, XA_ATOM, &actual_type,
 			     &actual_format, &nitems_wmstate, &bytes_after,
 			     (unsigned char **)&wm_state_value.char_value);
-      XSync(NULL,FALSE);
+      
 	  if (gdk_error_trap_pop() != 0)
             {
 	      break;
@@ -2078,12 +2093,13 @@ static guchar *get_window_title(Window win_id)
     Atom actual_type;
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), win_id, wm_name, 0, 24,
                        False, XA_STRING, &actual_type,
                        &actual_format,
                        &nitems, &bytes_after,
                        &window_title);
-    XSync(NULL,FALSE);
+    
     if (gdk_error_trap_pop() != 0)
     {
         window_title = g_strdup(UNKNOWN_TITLE);
@@ -2104,11 +2120,12 @@ static gulong get_active_view(Window win_id)
     Atom actual_type;
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), win_id, transient_for,
                        0, 32, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&window_value.char_value);
-    XSync(NULL,FALSE);
+    
     if ((gdk_error_trap_pop() == 0) && nitems > 0)
     {
         transient_win = window_value.window_value[0];
@@ -2120,11 +2137,12 @@ static gulong get_active_view(Window win_id)
     }
     
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), transient_win, active_win,
                        0, 32, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&window_value.char_value);
-    XSync(NULL,FALSE);
+    
     if (gdk_error_trap_pop() != 0)
     {
         return 0;
@@ -2217,11 +2235,12 @@ static gboolean is_window_hildonapp(Window xid)
     value.char_value = NULL;
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), xid, active_win,
                        0, 32, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&value.char_value);
-    XSync(NULL,FALSE);
+    
     if (gdk_error_trap_pop() == 0 && 
         (actual_type == XA_WINDOW && value.char_value != NULL) )
     {
@@ -2236,11 +2255,12 @@ static gboolean is_window_hildonapp(Window xid)
     }
 
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XGetWindowProperty(GDK_DISPLAY(), xid, clientlist,
                        0, 32, False, XA_WINDOW, &actual_type,
                        &actual_format, &nitems, &bytes_after,
                        (unsigned char **)&value.char_value);
-    XSync(NULL,FALSE);
+    
     if (gdk_error_trap_pop() == 0 &&
         (actual_type == XA_WINDOW && value.char_value != NULL))
     {
@@ -2262,6 +2282,7 @@ static void top_non_hildonapp(Window xid)
     xev.xclient.format = 32;
     xev.xclient.data.l[0] = 0;
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XSendEvent(GDK_DISPLAY(),
                GDK_WINDOW_XID(gdk_get_default_root_window()),
                False, SubstructureRedirectMask |
@@ -2286,6 +2307,7 @@ static gchar *get_subname(Window win_id)
     do
     {
         gdk_error_trap_push();
+        XSync(NULL,FALSE);
         guchar *subname_part = NULL;
         bytes_after = 0;
         XGetWindowProperty(GDK_DISPLAY(), win_id, subname,
@@ -2294,7 +2316,7 @@ static gchar *get_subname(Window win_id)
                            &actual_type, &actual_format,
                            &nitems, &bytes_after,
                            &subname_part);
-        XSync(NULL,FALSE);
+        
         gdk_error_trap_pop();
 
         if (nitems > 0 && subname_part != NULL)
@@ -2402,11 +2424,12 @@ static void kill_application(GtkTreeModel *model, GtkTreeIter *parent,
             if (app_terminated == FALSE)
             {
                 gdk_error_trap_push();
+                XSync(NULL,FALSE);
                 XGetWindowProperty(GDK_DISPLAY(), (Window)id, pid_atom,
                                    0, 32, False, XA_CARDINAL, &actual_type,
                                    &actual_format, &nitems, &bytes_after,
                                    (unsigned char **)&pid_result);
-                XSync(NULL,FALSE);
+                
                 gdk_error_trap_pop();
             }
             
@@ -2580,11 +2603,12 @@ static int save_session(GArray *arguments, gpointer data)
                     unsigned long nitems, bytes_after;
                     Atom actual_type;
                     gdk_error_trap_push();
+                    XSync(NULL,FALSE);
                     XGetWindowProperty(GDK_DISPLAY(), (Window)menu_comp.window_id, pid_atom,
                                        0, 32, False, XA_CARDINAL, &actual_type,
                                        &actual_format, &nitems, &bytes_after,
                                        (unsigned char **)&pid_result);
-                    XSync(NULL,FALSE);
+                    
                     gdk_error_trap_pop();
                     if (pid_result != NULL)
                     {
@@ -2798,7 +2822,7 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
 
     /* FIXME: put in array and use XInternAtoms() */
     gdk_error_trap_push();
-
+    XSync(NULL,FALSE);
     active_win = XInternAtom(GDK_DISPLAY(), "_NET_ACTIVE_WINDOW", False);
     clientlist = XInternAtom(GDK_DISPLAY(), "_NET_CLIENT_LIST", False);
     net_wm_state =XInternAtom(GDK_DISPLAY(), "_NET_WM_STATE", False);
@@ -2828,7 +2852,7 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
     Atom_NET_WM_STATE_MODAL =
       XInternAtom(GDK_DISPLAY(), "_NET_WM_STATE_MODAL", False);
 
-    XSync(NULL,FALSE);
+    
     gdk_error_trap_pop();
 
     /* Set up callbacks for the window events */
@@ -2842,12 +2866,13 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
 
     /* Set up the event filter */
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     gdk_window_set_events(gdk_get_default_root_window(),
                           gdk_window_get_events(gdk_get_default_root_window())                          | GDK_SUBSTRUCTURE_MASK);
     
     gdk_window_add_filter(gdk_get_default_root_window(), x_event_filter,
                           model);
-    XSync(NULL,FALSE);
+    
     if (gdk_error_trap_pop() != 0)
     {
         return FALSE;
@@ -3012,10 +3037,11 @@ void top_view(GtkMenuItem *menuitem)
               xev.xclient.format = 32;
               xev.xclient.data.l[0] = 0;
               gdk_error_trap_push();
+              XSync(NULL,FALSE);
               retval = XSendEvent(GDK_DISPLAY(), (Window)win_id, False,
                                   SubstructureRedirectMask
                                   | SubstructureNotifyMask, &xev);
-                XSync(NULL,FALSE);
+              XSync(NULL,FALSE);
               gdk_error_trap_pop();
               
               g_free(exec);
@@ -3166,6 +3192,7 @@ void top_service(const gchar *service_name)
      if (win_id != 0)
      {
          gdk_error_trap_push();
+         XSync(NULL,FALSE);
          retval = XSendEvent(GDK_DISPLAY(), (Window)win_id, False,
                              SubstructureRedirectMask
                              | SubstructureNotifyMask, &xev);
@@ -3200,11 +3227,13 @@ void top_desktop(void)
     memset(&ev, 0, sizeof(ev));
     ev.xclient.type = ClientMessage;
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     ev.xclient.window = GDK_ROOT_WINDOW();
     ev.xclient.message_type = showing_desktop;
     ev.xclient.format = 32;
     ev.xclient.data.l[0] = 1;
     gdk_error_trap_push();
+    XSync(NULL,FALSE);
     XSendEvent(GDK_DISPLAY(), GDK_ROOT_WINDOW(), False,
                SubstructureRedirectMask, &ev);
     XSync(NULL,FALSE);
@@ -3297,6 +3326,7 @@ static int kill_all( gboolean killable_only )
                should not be killed... */
 
             gdk_error_trap_push();
+            XSync(NULL,FALSE);
             XGetWindowProperty(GDK_DISPLAY(),
                                GDK_WINDOW_XID(gdk_get_default_root_window()),
                                active_win, 0, 32, False, XA_WINDOW,
@@ -3312,13 +3342,14 @@ static int kill_all( gboolean killable_only )
             }
 
             gdk_error_trap_push();
+            XSync(NULL,FALSE);
             status = XGetWindowProperty(GDK_DISPLAY(),
                                         (Window)menu_comp.window_id,
                                         pid_atom, 0, 32, False, XA_CARDINAL,
                                         &actual_type, &actual_format,
                                         &nitems, &bytes_after,
                                         (unsigned char **)&pid_result);
-            XSync(NULL,FALSE);
+            
             if (gdk_error_trap_pop() == 0 &&pid_result != NULL &&
                 status == Success)
             {
@@ -3504,12 +3535,12 @@ static void show_launch_banner( GtkWidget *parent, gchar *app_name,
 
 	/* Show the banner */
         gdk_error_trap_push();
-
+        XSync(NULL,FALSE);
         message = g_strdup_printf(_( APP_LAUNCH_BANNER_MSG_LOADING ),
                                   app_name );
         
         gtk_banner_show_animation( NULL, message );
-        XSync(NULL,FALSE);
+        
         gdk_error_trap_pop();
 
 	g_timeout_add(interval, launch_banner_timeout, info);
