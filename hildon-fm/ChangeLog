@@ -1,3 +1,13 @@
+2005-10-04  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: 
+        - removed automatical name entry selection after model has
+          finished loading.
+        - autonaming now selects the generated file name only if the user
+          hasn't moved the cursor yet; otherwise the new cursor location
+          is preserved.
+          N#19311
+
 2005-09-26  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.9.42

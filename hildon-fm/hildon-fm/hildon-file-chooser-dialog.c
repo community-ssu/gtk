@@ -402,6 +402,8 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
         priv->stub_name && !priv->edited) 
     {
         gchar *name = NULL;
+        gboolean selection;
+        gint pos;
 
         g_signal_handler_block(priv->entry_name, priv->changed_handler);
         if (priv->autonaming_enabled) {
@@ -418,10 +420,21 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
             }
         }
 
+        pos = gtk_editable_get_position(GTK_EDITABLE(priv->entry_name));
+        selection =
+          gtk_editable_get_selection_bounds(GTK_EDITABLE(priv->entry_name),
+                                            NULL, NULL);
+
         if (name)
         {
           gtk_entry_set_text(GTK_ENTRY(priv->entry_name), name);
           g_free(name);
+          if (selection)
+            gtk_editable_select_region(GTK_EDITABLE(priv->entry_name), 0, -1);
+          else
+            /* if the user has already started to edit the name,
+               try to preserve cursor position and don't autoselect */
+            gtk_editable_set_position(GTK_EDITABLE(priv->entry_name), pos);
         }
         else
           gtk_entry_set_text(GTK_ENTRY(priv->entry_name), priv->stub_name);
@@ -441,7 +454,6 @@ hildon_file_chooser_dialog_finished_loading(GObject *sender, GtkTreeIter *iter, 
   {
     ULOG_DEBUG(__FUNCTION__);
     hildon_file_chooser_dialog_do_autonaming(priv);
-    gtk_editable_select_region(GTK_EDITABLE(priv->entry_name), 0, -1);  
   }
 }
 
