@@ -1,5 +1,12 @@
 2005-10-04  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* hildon-lgpl/hildon-caption.c (hildon_caption_expose):
+	caption_area is now exposed twice only if the widget is focused
+	and we also need to draw the focus background. N#16647 (Text looks
+	wrong in captioned labels)
+
+2005-10-04  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	N#19554 Application menu does not emit "deactivate" signal when
 	closed with the menu HW key,
 	

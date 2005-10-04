@@ -331,27 +331,25 @@ static gboolean hildon_caption_expose( GtkWidget *widget,
   if( !GTK_WIDGET_DRAWABLE(widget) )
     return FALSE;
 
-  /* FIXME -- We should not call parent here. We should call the children
-   * In the end of this function.. See comments down there.
-   * (those are not working)
-   * If we call parents function, it does not matter really.
-   * We are just calling expose twice to the caption_area.
-   */
   GTK_WIDGET_CLASS(parent_class)->expose_event( widget, event );
   
-  gtk_widget_get_child_requisition( priv->caption_area, &req );
+  if ( priv->is_focused )
+  {
+    gtk_widget_get_child_requisition( priv->caption_area, &req );
 
-  alloc.width = priv->caption_area->allocation.width + HILDON_CAPTION_SPACING;
-  alloc.height = MIN (req.height + (2 * widget->style->ythickness), priv->caption_area->allocation.height);
-  alloc.x = priv->caption_area->allocation.x;
-  alloc.y = (priv->label->allocation.height - alloc.height) / 2;
+    alloc.width = priv->caption_area->allocation.width + HILDON_CAPTION_SPACING;
+    alloc.height = MIN (req.height + (2 * widget->style->ythickness), priv->caption_area->allocation.height);
+    alloc.x = priv->caption_area->allocation.x;
+    alloc.y = (priv->label->allocation.height - alloc.height) / 2;
 
-  if( priv->is_focused )
     gtk_paint_box( widget->style, widget->window, GTK_STATE_ACTIVE,
                    GTK_SHADOW_OUT, NULL, widget, "selection",
                    alloc.x, alloc.y, alloc.width, alloc.height );
 
-  GTK_WIDGET_GET_CLASS(priv->caption_area)->expose_event( widget, event );
+    GTK_WIDGET_GET_CLASS(priv->caption_area)->expose_event(
+         priv->caption_area, event);
+  }
+  
   return FALSE;
 }
 
