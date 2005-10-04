@@ -1,3 +1,9 @@
+2005-10-04  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Raised version number to 1.56.0
+	* Added XSync function calls to several places in windowmanager.c to fix
+	the bug N#20187. There are several places in Desktop window manager which don't do 
+	XSync after xtrap + XSendMessage
+
 2005-10-03  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Applied the following patch from Guillem Jover <guillem.jover@nokia.com> :
         * hildon-navigator/hildon-navigator-main.h:

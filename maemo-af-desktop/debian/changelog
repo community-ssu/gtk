@@ -1,3 +1,9 @@
+maemo-af-desktop (1.56.0) unstable; urgency=low
+
+  * Started fixing potential crash bug.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  4 Oct 2005 13:22:21 +0300
+
 maemo-af-desktop (1.55.1) unstable; urgency=low
 
   * Applied memory mgmt patch from Guillem Jover <guillem.jover@nokia.com>:
