@@ -1,3 +1,10 @@
+maemo-af-desktop (1.56.1) unstable; urgency=low
+
+  * Removed unnecessary XSync calls from places that do not require
+    synchronization
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed,  5 Oct 2005 12:31:56 +0300
+
 maemo-af-desktop (1.56.0) unstable; urgency=low
 
   * Started fixing potential crash bug.

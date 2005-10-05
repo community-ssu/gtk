@@ -1,3 +1,9 @@
+2005-10-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Version number -> 1.56.1
+	* windowmanager.c:
+	* Removed several XSync function calls from places that don't require synchronization
+	* Now the XSync is called only after XSendMessage.
+
 2005-10-04  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Raised version number to 1.56.0
 	* Added XSync function calls to several places in windowmanager.c to fix
