@@ -1,3 +1,9 @@
+2005-10-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenu.c (gtk_menu_motion_notify): Removed outdated code about
+	closing submenus.
+	N#19035
+
 2005-09-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkrbtree.c (_gtk_rbtree_free): g_free tree->nil as it isn't
