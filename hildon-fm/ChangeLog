@@ -1,5 +1,9 @@
 2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* configure.ac: 0.9.44
+
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
         N#19698 File dialog doesn't free everything it has allocated/cached
 	
 	* hildon-fm/hildon-file-system-private.c: Changed the cache to use
