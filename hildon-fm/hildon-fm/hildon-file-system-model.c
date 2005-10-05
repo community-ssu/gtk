@@ -126,6 +126,10 @@ struct _HildonFileSystemModelPrivate {
     GQueue *delayed_lists;
     GQueue *reload_list;  /* Queueing all loads started implicitly by GtkTreeModel interface
                              instead of just errors is much more handy... */
+    /* We have to keep references to emblems ourselves. They are used only
+       while composed image is made, so our new cache approach would free
+       them immediately after composed image is ready */
+    GdkPixbuf *expanded_emblem, *collapsed_emblem;
     guint timeout_id;
     gboolean gateway_accessed;
     gboolean in_timeout;
@@ -717,26 +721,19 @@ inline static GdkPixbuf
 static GdkPixbuf
     *hildon_file_system_model_create_composite_image
     (HildonFileSystemModelPrivate * priv,
-     HildonFileSystemModelNode * model_node, const gchar * emblem_name)
+     HildonFileSystemModelNode * model_node, GdkPixbuf *emblem)
 {
-    GdkPixbuf *plain, *emblem, *result;
+    GdkPixbuf *plain, *result;
 
     plain =
         hildon_file_system_model_create_image(priv, model_node,
                                               TREE_ICON_SIZE);
     if (!plain) return NULL;
-
-    emblem =
-        _hildon_file_system_load_icon_cached(priv->icon_theme, 
-                                  emblem_name, TREE_ICON_SIZE);
     if (!emblem) return plain;
 
     result = gdk_pixbuf_copy(plain);
     if (!result)  /* Not an assert anymore */
-    {
-      g_object_unref(emblem);
       return plain;
-    }
 
     /* This causes read errors according to valgrind. I wonder why is that 
      */
@@ -744,7 +741,6 @@ static GdkPixbuf
       MIN(gdk_pixbuf_get_width(emblem), gdk_pixbuf_get_width(result)), 
       MIN(gdk_pixbuf_get_height(emblem), gdk_pixbuf_get_height(result)),
       0, 0, 1, 1, GDK_INTERP_NEAREST, 255);
-    g_object_unref(emblem);
     g_object_unref(plain);
 
     return result;
@@ -849,6 +845,24 @@ thumbnail_handled(OssoThumbnailFactoryHandle handle,
 
     emit_node_changed(node);
   }
+}
+
+static GdkPixbuf *get_expanded_emblem(HildonFileSystemModelPrivate *priv)
+{
+  if (!priv->expanded_emblem)
+    priv->expanded_emblem = _hildon_file_system_load_icon_cached(
+      priv->icon_theme, EXPANDED_EMBLEM_NAME, TREE_ICON_SIZE);
+
+  return priv->expanded_emblem;
+}
+
+static GdkPixbuf *get_collapsed_emblem(HildonFileSystemModelPrivate *priv)
+{
+  if (!priv->collapsed_emblem)
+    priv->collapsed_emblem = _hildon_file_system_load_icon_cached(
+      priv->icon_theme, COLLAPSED_EMBLEM_NAME, TREE_ICON_SIZE);
+
+  return priv->collapsed_emblem;
 }
 
 static void hildon_file_system_model_get_value(GtkTreeModel * model,
@@ -972,7 +986,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         if (!model_node->icon_cache_expanded)
             model_node->icon_cache_expanded =
                 hildon_file_system_model_create_composite_image
-                    (priv, model_node, EXPANDED_EMBLEM_NAME);
+                    (priv, model_node, get_expanded_emblem(priv));
 
         g_value_set_object(value, model_node->icon_cache_expanded);
         break;
@@ -980,7 +994,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         if (!model_node->icon_cache_collapsed)
             model_node->icon_cache_collapsed =
                 hildon_file_system_model_create_composite_image
-                    (priv, model_node, COLLAPSED_EMBLEM_NAME);
+                    (priv, model_node, get_collapsed_emblem(priv));
 
         g_value_set_object(value, model_node->icon_cache_collapsed);
         break;
@@ -2018,6 +2032,11 @@ static void hildon_file_system_model_finalize(GObject * self)
 
     ULOG_INFO("ref count = %d", G_OBJECT(priv->filesystem)->ref_count);
     g_object_unref(priv->filesystem);
+
+    if (priv->expanded_emblem)
+      g_object_unref(priv->expanded_emblem);
+    if (priv->collapsed_emblem)
+      g_object_unref(priv->collapsed_emblem);
 
     G_OBJECT_CLASS(hildon_file_system_model_parent_class)->finalize(self);
 }

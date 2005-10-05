@@ -169,6 +169,8 @@ typedef struct
   gint size;
 } CacheElement;
 
+static GHashTable *get_cache(GtkIconTheme *theme);
+
 static void cache_element_free(gpointer a)
 {
   if (a)
@@ -196,6 +198,41 @@ static guint cache_element_hash(gconstpointer a)
   return g_str_hash(e->name) ^ e->size;
 }
 
+static gboolean find_finalized_icon(gpointer key, gpointer value, 
+  gpointer data)
+{
+  return value == data;  
+}
+
+static void icon_finalized(gpointer data, GObject *finalized_icon)
+{
+  GHashTable *hash = get_cache(GTK_ICON_THEME(data));
+
+  ULOG_INFO("%s: %p", __FUNCTION__, (gpointer) finalized_icon);
+  g_hash_table_foreach_remove(hash, find_finalized_icon, finalized_icon);
+
+  if (g_hash_table_size(hash) == 0)
+  {
+    /* Setting data to NULL causes gobject to call installed finalizer */
+    g_object_set_data(G_OBJECT(data), "hildon-file-system-icon-cache", NULL);
+  }
+}
+
+static void unref_all_helper(gpointer key, gpointer value, gpointer data)
+{
+  g_object_weak_unref(G_OBJECT(value), icon_finalized, NULL);  
+}
+
+static void cache_finalize(gpointer data)
+{
+  GHashTable *cache = data;
+
+  ULOG_INFO(__FUNCTION__);
+
+  g_hash_table_foreach(cache, unref_all_helper, NULL); 
+  g_hash_table_destroy(cache);
+}
+
 static GHashTable *get_cache(GtkIconTheme *theme)
 {
   GHashTable *cache;
@@ -204,9 +241,9 @@ static GHashTable *get_cache(GtkIconTheme *theme)
   if (!cache)
   {
     cache = g_hash_table_new_full (cache_element_hash, cache_element_equal,
-                                   cache_element_free, g_object_unref);
+                                   cache_element_free, NULL);
     g_object_set_data_full(G_OBJECT(theme), "hildon-file-system-icon-cache",
-      cache, (GDestroyNotify) g_hash_table_destroy);
+      cache, cache_finalize);
   }
 
   return cache;
@@ -227,12 +264,15 @@ static void _hildon_file_system_insert_icon(GtkIconTheme *theme,
   const gchar *name, gint size, GdkPixbuf *icon)
 {
   CacheElement *key;
+  GHashTable *hash;
 
   key = g_new(CacheElement, 1);
   key->name = g_strdup(name);
   key->size = size;
+  hash = get_cache(theme);
 
-  g_hash_table_insert(get_cache(theme), key, icon);       
+  g_hash_table_insert(hash, key, icon);
+  g_object_weak_ref(G_OBJECT(icon), icon_finalized, theme);
 }
 
 GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
@@ -251,8 +291,10 @@ GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
 
     _hildon_file_system_insert_icon(theme, name, size, pixbuf);
   }
+  else
+    g_object_ref(pixbuf);
 
-  return g_object_ref(pixbuf);
+  return pixbuf;
 }
 
 GdkPixbuf *

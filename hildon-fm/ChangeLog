@@ -1,5 +1,32 @@
 2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
 
+        N#19698 File dialog doesn't free everything it has allocated/cached
+	
+	* hildon-fm/hildon-file-system-private.c: Changed the cache to use
+	weak references instead of normal hard references. Chnaged the
+	whole cache object to be destroyed as well, when it temporarily
+	becomes empty.
+	
+	(load_icon_cached): Reference changes due to above logic change.
+	(insert_icon): Added weak reference.
+	(get_cache): Changed to use new finalizer function.
+	(icon_finalized): New function, called when a cached icon is freed.
+	(cache_finalize): New function, called when the whole cache
+	becomes empty or icon theme dies.
+
+	* hildon-fm/hildon-file-system-model: Changed to keep hard
+	reference to emblems, because cache modifications would otherwise
+	cause emblems to be reloaded for each composite icon made.
+
+	(finalize): Unref emblems
+	(create_composite_image): Changed to take emblem icon as
+	parameter, not just name.
+	(get_collapsed_emblem): New function, ensures that emblem is
+	cached
+	(get_expanded_emblem): New function, ensures that emblem is cached
+
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	* configure.ac: 0.9.43
 
 2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
