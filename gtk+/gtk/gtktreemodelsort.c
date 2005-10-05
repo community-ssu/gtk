@@ -699,22 +699,6 @@ gtk_tree_model_sort_row_inserted (GtkTreeModel          *s_model,
 
       if (!elt->children)
 	{
-	  GtkTreePath *tmppath;
-	  GtkTreeIter  tmpiter;
-
-	  tmpiter.stamp = tree_model_sort->stamp;
-	  tmpiter.user_data = level;
-	  tmpiter.user_data2 = elt;
-
-	  tmppath = gtk_tree_model_get_path (GTK_TREE_MODEL (data), &tmpiter);
-	  if (tmppath)
-	    {
-	      gtk_tree_model_row_has_child_toggled (GTK_TREE_MODEL (data),
-						    tmppath,
-						    &tmpiter);
-	      gtk_tree_path_free (tmppath);
-	    }
-
 	  /* not covering this signal */
 	  goto done;
 	}
