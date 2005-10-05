@@ -1,3 +1,7 @@
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.54
+
 2005-10-04  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-lgpl/hildon-caption.c (hildon_caption_expose):

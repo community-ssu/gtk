@@ -1,3 +1,13 @@
+hildon-lgpl (0.9.54-1) unstable; urgency=low
+
+  * Bugs fixed,
+    N#16647 Text looks wrong in captioned labels
+    N#19554 Application menu does not emit "deactivate" signal when
+            closed with the menu HW key
+    N#19047 GtkBanner not closing on gtk_banner_close
+	
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  5 Oct 2005 15:49:19 +0300
+
 hildon-lgpl (0.9.53-1) unstable; urgency=low
 
   * Bugs fixed:
