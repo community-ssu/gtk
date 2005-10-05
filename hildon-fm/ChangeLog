@@ -1,3 +1,9 @@
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_finalize): Now removing signal handlers
+	that are bound to a longliving object. N#19820
+
 2005-10-04  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-fm/hildon-file-chooser-dialog.c: 

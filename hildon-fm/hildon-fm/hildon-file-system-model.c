@@ -197,6 +197,13 @@ hildon_file_system_model_folder_finished_loading(GtkFileFolder *monitor,
   gpointer data);
 static void emit_node_changed(GNode *node);
 
+static void
+gateway_changed(GObject *settings, GParamSpec *param, gpointer data);
+static void
+btname_changed(GObject *settings, GParamSpec *param, gpointer data);
+static void 
+flightmode_changed(GObject *settings, GParamSpec *param, gpointer data);
+
 #define CAST_GET_PRIVATE(o) \
     ((HildonFileSystemModelPrivate *) HILDON_FILE_SYSTEM_MODEL(o)->priv)
 #define MODEL_FROM_NODE(n) ((HildonFileSystemModelNode *) n->data)->model
@@ -1988,6 +1995,7 @@ static void hildon_file_system_model_dispose(GObject *self)
 
 static void hildon_file_system_model_finalize(GObject * self)
 {
+    HildonFileSystemSettings *fs_settings;
     HildonFileSystemModelPrivate *priv = CAST_GET_PRIVATE(self);
 
     ULOG_DEBUG(__FUNCTION__);
@@ -1999,6 +2007,14 @@ static void hildon_file_system_model_finalize(GObject * self)
     g_queue_free(priv->reload_list); 
     g_queue_free(priv->cache_queue);
     /* Contents of this queue are gone already */
+
+    fs_settings = _hildon_file_system_settings_get_instance();
+    g_signal_handlers_disconnect_by_func
+        (fs_settings, (gpointer) flightmode_changed, self);
+    g_signal_handlers_disconnect_by_func
+        (fs_settings, (gpointer) btname_changed, self);
+    g_signal_handlers_disconnect_by_func
+        (fs_settings, (gpointer) gateway_changed, self);
 
     ULOG_INFO("ref count = %d", G_OBJECT(priv->filesystem)->ref_count);
     g_object_unref(priv->filesystem);
