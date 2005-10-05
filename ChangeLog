@@ -1,3 +1,12 @@
+2005-10-05  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_row_inserted): emitting
+	row-has-child-toggled when the level is not in the cache does not
+	make sense here.  (This has been in there for ages and probably crept
+	in during the early stages of GtkTreeModelSort when there wasn't
+	a correct row-has-child-toggled implementation yet).
+	N#17314
+
 2005-10-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenu.c (gtk_menu_motion_notify): Removed outdated code about
