@@ -1,3 +1,11 @@
+hildon-fm (0.9.43-1) unstable; urgency=low
+
+  * fixes,
+    N#19820 Memory leaks in the file selector dialog and underlying components
+    N#19311 Save dialog sets text selection twice
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  5 Oct 2005 11:31:10 +0300
+
 hildon-fm (0.9.42-1) unstable; urgency=low
 
   * fixes
