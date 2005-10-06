@@ -291,9 +291,9 @@ check_name (const gchar *what,
 	    const gchar *expected,
 	    gint         position)
 {
-  if (strcmp (expected, value) != 0)
+  if (!value || strcmp (expected, value) != 0)
     {
-      g_print ("Wrong %s returned: got %s at %d, expected %s\n",
+      g_print ("Wrong %s returned: got '%s' at %d, expected '%s'\n",
 	       what, value, position, expected);
       exit (1);
     }
@@ -366,6 +366,88 @@ test_whitespace (void)
 
   g_key_file_free (keyfile);
 }
+
+/* check handling of comments
+ */
+static void
+test_comments (void)
+{
+  GKeyFile *keyfile;
+  gchar **names;
+  gsize len;
+  GError *error = NULL;
+  gchar *comment;
+
+  const gchar *data = 
+    "# top comment\n"
+    "# top comment, continued\n"
+    "[group1]\n"
+    "key1 = value1\n"
+    "# key comment\n"
+    "# key comment, continued\n"
+    "key2 = value2\n"
+    "# line end check\r\n"
+    "key3 = value3\n"
+    "key4 = value4\n"
+    "# group comment\n"
+    "# group comment, continued\n"
+    "[group2]\n";
+
+  const gchar *top_comment= " top comment\n top comment, continued\n";
+  const gchar *group_comment= " group comment\n group comment, continued\n";
+  const gchar *key_comment= " key comment\n key comment, continued\n";
+  
+  keyfile = load_data (data, 0);
+
+  check_string_value (keyfile, "group1", "key1", "value1");
+  check_string_value (keyfile, "group1", "key2", "value2");
+  check_string_value (keyfile, "group1", "key3", "value3");
+  check_string_value (keyfile, "group1", "key4", "value4");
+
+  names = g_key_file_get_keys (keyfile, "group1", &len, &error);
+  check_no_error (&error);
+
+  check_length ("keys", g_strv_length (names), len, 4);
+  check_name ("key", names[0], "key1", 0);
+  check_name ("key", names[1], "key2", 1);
+  check_name ("key", names[2], "key3", 2);
+  check_name ("key", names[3], "key4", 3);
+
+  g_strfreev (names);
+
+  g_key_file_free (keyfile);
+
+  keyfile = load_data (data, G_KEY_FILE_KEEP_COMMENTS);
+
+  names = g_key_file_get_keys (keyfile, "group1", &len, &error);
+  check_no_error (&error);
+
+  check_length ("keys", g_strv_length (names), len, 4);
+  check_name ("key", names[0], "key1", 0);
+  check_name ("key", names[1], "key2", 1);
+  check_name ("key", names[2], "key3", 2);
+  check_name ("key", names[3], "key4", 3);
+
+  g_strfreev (names);
+
+  comment = g_key_file_get_comment (keyfile, NULL, NULL, &error);
+  check_no_error (&error);
+  check_name ("top comment", comment, top_comment, 0);
+  g_free (comment);
+
+  comment = g_key_file_get_comment (keyfile, "group1", "key2", &error);
+  check_no_error (&error);
+  check_name ("key comment", comment, key_comment, 0);
+  g_free (comment);
+
+  comment = g_key_file_get_comment (keyfile, "group2", NULL, &error);
+  check_no_error (&error);
+  check_name ("group comment", comment, group_comment, 0);
+  g_free (comment);
+
+  g_key_file_free (keyfile);
+}
+
 
 /* check key and group listing */
 static void
@@ -615,7 +697,7 @@ test_locale_string (void)
 
   /* now test that translations are thrown away */
 
-  g_setenv ("LC_ALL", "de", TRUE);
+  g_setenv ("LANGUAGE", "de", TRUE);
   setlocale (LC_ALL, "");
 
   keyfile = load_data (data, 0);
@@ -708,6 +790,8 @@ test_group_remove (void)
   g_key_file_remove_group (keyfile, "group1", &error);
   check_no_error (&error);
   
+  g_strfreev (names);
+
   names = g_key_file_get_groups (keyfile, &len);
   if (names == NULL)
     {
@@ -722,6 +806,8 @@ test_group_remove (void)
   g_key_file_remove_group (keyfile, "group2", &error);
   check_no_error (&error);
   
+  g_strfreev (names);
+
   names = g_key_file_get_groups (keyfile, &len);
   if (names == NULL)
     {
@@ -734,6 +820,8 @@ test_group_remove (void)
 
   g_key_file_remove_group (keyfile, "no such group", &error);
   check_error (&error, G_KEY_FILE_ERROR, G_KEY_FILE_ERROR_GROUP_NOT_FOUND);
+
+  g_strfreev (names);
 
   g_key_file_free (keyfile);
 }
@@ -777,6 +865,7 @@ main (int argc, char *argv[])
 {
   test_line_ends ();
   test_whitespace ();
+  test_comments ();
   test_listing ();
   test_string ();
   test_boolean ();

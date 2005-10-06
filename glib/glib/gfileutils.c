@@ -20,7 +20,6 @@
 
 #include "config.h"
 
-#include "galias.h"
 #include "glib.h"
 
 #include <sys/stat.h>
@@ -52,6 +51,8 @@
 
 #include "gstdio.h"
 #include "glibintl.h"
+
+#include "galias.h"
 
 /**
  * g_file_test:
@@ -717,13 +718,11 @@ get_contents_win32 (const gchar *filename,
 {
   FILE *f;
   gboolean retval;
-  wchar_t *wfilename = g_utf8_to_utf16 (filename, -1, NULL, NULL, NULL);
   gchar *display_filename = g_filename_display_name (filename);
   int save_errno;
   
-  f = _wfopen (wfilename, L"rb");
+  f = g_fopen (filename, "rb");
   save_errno = errno;
-  g_free (wfilename);
 
   if (f == NULL)
     {
@@ -804,7 +803,7 @@ g_file_get_contents (const gchar *filename,
   if (utf8_filename == NULL)
     return FALSE;
 
-  retval = g_file_get_contents (utf8_filename, contents, length, error);
+  retval = g_file_get_contents_utf8 (utf8_filename, contents, length, error);
 
   g_free (utf8_filename);
 
@@ -1472,3 +1471,6 @@ g_file_read_link (const gchar *filename,
   return NULL;
 #endif
 }
+
+#define __G_FILEUTILS_C__
+#include "galiasdef.c"
