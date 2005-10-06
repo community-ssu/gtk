@@ -8,6 +8,9 @@
         restoration after a delay.
         (property_notify_handler): Do not autotop applications if desktop
         is about to shutdown/restart.
+	* Additional fix to X synchronization issue:
+		windowmanager.c:
+		XSync(NULL,FALSE); -> XSync(GDK_DISPLAY(),FALSE);
 
 2005-10-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Version number -> 1.56.1

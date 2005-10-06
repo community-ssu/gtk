@@ -985,7 +985,7 @@ static void map_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                 XSendEvent(GDK_DISPLAY(), mev->window, False,
                            SubstructureRedirectMask
                            | SubstructureNotifyMask, &xev); 
-                XSync(NULL,FALSE);
+                XSync(GDK_DISPLAY(),FALSE);
                 gdk_error_trap_pop();
             }
             if (killed)
@@ -2295,7 +2295,7 @@ static void top_non_hildonapp(Window xid)
                GDK_WINDOW_XID(gdk_get_default_root_window()),
                False, SubstructureRedirectMask |
                SubstructureNotifyMask, &xev);
-    XSync(NULL,FALSE);
+    XSync(GDK_DISPLAY(),FALSE);
     gdk_error_trap_pop();
     /* Should errors be logged? */
 }
@@ -3065,7 +3065,7 @@ void top_view(GtkMenuItem *menuitem)
               retval = XSendEvent(GDK_DISPLAY(), (Window)win_id, False,
                                   SubstructureRedirectMask
                                   | SubstructureNotifyMask, &xev);
-              XSync(NULL,FALSE);
+              XSync(GDK_DISPLAY(),FALSE);
               gdk_error_trap_pop();
               
               g_free(exec);
@@ -3220,7 +3220,7 @@ void top_service(const gchar *service_name)
          retval = XSendEvent(GDK_DISPLAY(), (Window)win_id, False,
                              SubstructureRedirectMask
                              | SubstructureNotifyMask, &xev);
-         XSync(NULL,FALSE);
+         XSync(GDK_DISPLAY(),FALSE);
          gdk_error_trap_pop();
          if (retval != Success)
          {
@@ -3260,7 +3260,7 @@ void top_desktop(void)
     
     XSendEvent(GDK_DISPLAY(), GDK_ROOT_WINDOW(), False,
                SubstructureRedirectMask, &ev);
-    XSync(NULL,FALSE);
+    XSync(GDK_DISPLAY(),FALSE);
     gdk_error_trap_pop();
     
 }

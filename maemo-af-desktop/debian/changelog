@@ -1,3 +1,15 @@
+maemo-af-desktop (1.57.2) unstable; urgency=low
+
+  * Tagged for integration
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  6 Oct 2005 14:58:45 +0300
+
+maemo-af-desktop (1.57.1) unstable; urgency=low
+
+  * Additional XSync fix done
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  6 Oct 2005 14:15:22 +0300
+
 maemo-af-desktop (1.57.0) unstable; urgency=low
 
   * Bug N#9843 patched with the latest patch
