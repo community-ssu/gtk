@@ -245,6 +245,7 @@ ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
 ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_ct_STRIP = @ac_ct_STRIP@
+ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -637,7 +638,7 @@ uninstall-man: uninstall-man1
 @ENABLE_GTK_DOC_TRUE@tmpl-build.stamp: $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt
 @ENABLE_GTK_DOC_TRUE@	@echo '*** Rebuilding template files ***'
 @ENABLE_GTK_DOC_TRUE@	@-chmod -R u+w $(srcdir)
-@ENABLE_GTK_DOC_TRUE@	cd $(srcdir) && gtkdoc-mktmpl --module=$(DOC_MODULE)
+@ENABLE_GTK_DOC_TRUE@	cd $(srcdir) && gtkdoc-mktmpl --module=$(DOC_MODULE) $(MKTMPL_OPTIONS)
 @ENABLE_GTK_DOC_TRUE@	touch tmpl-build.stamp
 
 @ENABLE_GTK_DOC_TRUE@tmpl.stamp: tmpl-build.stamp
@@ -645,11 +646,11 @@ uninstall-man: uninstall-man1
 
 #### xml ####
 
-@ENABLE_GTK_DOC_TRUE@sgml-build.stamp: tmpl.stamp $(CFILE_GLOB) $(srcdir)/tmpl/*.sgml
+@ENABLE_GTK_DOC_TRUE@sgml-build.stamp: tmpl.stamp $(CFILE_GLOB) $(srcdir)/tmpl/*.sgml $(expand_content_files)
 @ENABLE_GTK_DOC_TRUE@	@echo '*** Building XML ***'
 @ENABLE_GTK_DOC_TRUE@	@-chmod -R u+w $(srcdir)
 @ENABLE_GTK_DOC_TRUE@	cd $(srcdir) && \
-@ENABLE_GTK_DOC_TRUE@	gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --output-format=xml $(MKDB_OPTIONS)
+@ENABLE_GTK_DOC_TRUE@	gtkdoc-mkdb --module=$(DOC_MODULE) --source-dir=$(DOC_SOURCE_DIR) --output-format=xml --expand-content-files="$(expand_content_files)" $(MKDB_OPTIONS)
 @ENABLE_GTK_DOC_TRUE@	touch sgml-build.stamp
 
 @ENABLE_GTK_DOC_TRUE@sgml.stamp: sgml-build.stamp
