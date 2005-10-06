@@ -61,6 +61,10 @@ gulong lowmem_timeout_multiplier = 0;
 gboolean lowmem_situation = FALSE;
 gboolean bgkill_situation = FALSE;
 
+/* A global flag that can be used to avoid e.g. autotopping if we're going
+   to shutdown anyway. */
+gboolean about_to_shutdown = FALSE;
+
 /* Structure that contains pointers to the callback functions */
 
 typedef struct
@@ -516,6 +520,9 @@ static void create_killer_dialog(void);
 static gboolean treeview_button_press(GtkTreeView *treeview,
 				      GdkEventButton *event,
 				      GtkCellRenderer *renderer);
+
+static gboolean restore_delayer(gpointer data);
+
      
 /* Implementations begin */
 
@@ -799,7 +806,8 @@ static void property_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                            &actual_format, &nitems, &bytes_after,
                            (guchar **)&desktop_shown);
             if (gdk_error_trap_pop() == 0 && nitems == 1 &&
-                actual_type == XA_CARDINAL && desktop_shown[0] == 1)
+                actual_type == XA_CARDINAL && desktop_shown[0] == 1 &&
+		!about_to_shutdown)
             {
                 handle_autotopping();
             }
@@ -2629,6 +2637,11 @@ static int save_session(GArray *arguments, gpointer data)
 
     timer_id = g_timeout_add(KILL_DELAY, send_sigterms, pids);
 
+    /* At the moment, this change is not reverted anywhere as saving
+       session always impiles immediate shutdown/restart */
+
+    about_to_shutdown = TRUE;
+
     /* We reply automatically for the appkiller, thanks to LibOSSO */        
     return TRUE;
 }
@@ -2767,6 +2780,13 @@ static gulong getenv_int(gchar *env_str, gulong val_default)
 
     return val;
 }
+
+static gboolean restore_delayer(gpointer data)
+{
+  restore_session((osso_manager_t *)data);
+  return FALSE;
+}
+
 
 /* Public functions*/
 
@@ -2914,8 +2934,12 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
             add_method_cb(osso_man, SAVE_METHOD, &save_session, osso_man);
     }
 
-    restore_session(osso_man);
-    
+    /* We need to postpone the restoration of applications until
+       maemo-af-desktop initialization is done, as it will
+       behave erratically under unified desktop otherwise... */
+
+    g_timeout_add(5000, restore_delayer, (gpointer)osso_man);
+
     return TRUE;
 }
 

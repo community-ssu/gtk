@@ -1,3 +1,14 @@
+2005-10-06  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Preparing for Thusday integration round. Raised version to 1.57.0.
+	* Patched bug N#9843: After changing the language, the application hide from user
+	* hildon-navigator/windowmanager.c (init_window_manager): Delayed
+        the invocation of state restoration in order to prevent problems
+        occuring with unified desktop.
+        (restore_delayer): A new function, simply starts the state
+        restoration after a delay.
+        (property_notify_handler): Do not autotop applications if desktop
+        is about to shutdown/restart.
+
 2005-10-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Version number -> 1.56.1
 	* windowmanager.c:

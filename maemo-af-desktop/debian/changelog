@@ -1,3 +1,9 @@
+maemo-af-desktop (1.57.0) unstable; urgency=low
+
+  * Bug N#9843 patched with the latest patch
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  6 Oct 2005 11:58:25 +0300
+
 maemo-af-desktop (1.56.1) unstable; urgency=low
 
   * Removed unnecessary XSync calls from places that do not require
