@@ -1,3 +1,10 @@
+libosso (0.9.18-1) unstable; urgency=low
+
+  * New functionality for common tasks related to memory; see osso-mem.h,
+    osso-mem.c.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri,  7 Oct 2005 18:41:58 +0300
+
 libosso (0.9.17-1) unstable; urgency=low
 
   * src/osso-application-top.c (utf8_safe): New.
