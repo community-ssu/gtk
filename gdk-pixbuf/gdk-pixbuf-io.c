@@ -33,9 +33,9 @@
 #include <unistd.h>
 #endif
 
-#include "gdk-pixbuf-alias.h"
 #include "gdk-pixbuf-private.h"
 #include "gdk-pixbuf-io.h"
+#include "gdk-pixbuf-alias.h"
 
 #include <glib/gstdio.h>
 
@@ -906,7 +906,6 @@ gdk_pixbuf_new_from_file (const char *filename,
 #ifdef G_OS_WIN32
 
 #undef gdk_pixbuf_new_from_file
-
 GdkPixbuf *
 gdk_pixbuf_new_from_file (const char *filename,
                           GError    **error)
@@ -1528,8 +1527,8 @@ gdk_pixbuf_real_save_to_callback (GdkPixbuf         *pixbuf,
  * @error: return location for error, or %NULL
  * @Varargs: list of key-value save options
  *
- * Saves pixbuf to a file in format @type. By default, "jpeg", "png" and 
- * "ico" are possible file formats to save in, but more formats may be
+ * Saves pixbuf to a file in format @type. By default, "jpeg", "png", "ico" 
+ * and "bmp" are possible file formats to save in, but more formats may be
  * installed. The list of all writable formats can be determined in the 
  * following way:
  *
@@ -1599,6 +1598,50 @@ gdk_pixbuf_save (GdkPixbuf  *pixbuf,
         return result;
 }
 
+#ifdef G_OS_WIN32
+
+#undef gdk_pixbuf_save
+
+gboolean
+gdk_pixbuf_save (GdkPixbuf  *pixbuf, 
+                 const char *filename, 
+                 const char *type, 
+                 GError    **error,
+                 ...)
+{
+	char *utf8_filename;
+        gchar **keys = NULL;
+        gchar **values = NULL;
+        va_list args;
+	gboolean result;
+
+        g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+        
+	utf8_filename = g_locale_to_utf8 (filename, -1, NULL, NULL, error);
+
+	if (utf8_filename == NULL)
+		return FALSE;
+
+        va_start (args, error);
+        
+        collect_save_options (args, &keys, &values);
+        
+        va_end (args);
+
+        result = gdk_pixbuf_savev_utf8 (pixbuf, utf8_filename, type,
+					keys, values,
+					error);
+
+	g_free (utf8_filename);
+
+        g_strfreev (keys);
+        g_strfreev (values);
+
+        return result;
+}
+
+#endif
+
 /**
  * gdk_pixbuf_savev:
  * @pixbuf: a #GdkPixbuf.
@@ -1608,7 +1651,7 @@ gdk_pixbuf_save (GdkPixbuf  *pixbuf,
  * @option_values: values for named options
  * @error: return location for error, or %NULL
  *
- * Saves pixbuf to a file in @type, which is currently "jpeg", "png" or "ico".
+ * Saves pixbuf to a file in @type, which is currently "jpeg", "png", "ico" or "bmp".
  * If @error is set, %FALSE will be returned. 
  * See gdk_pixbuf_save () for more details.
  *
@@ -1625,7 +1668,6 @@ gdk_pixbuf_savev (GdkPixbuf  *pixbuf,
 {
         FILE *f = NULL;
         gboolean result;
-        
        
         g_return_val_if_fail (filename != NULL, FALSE);
         g_return_val_if_fail (type != NULL, FALSE);
@@ -1671,6 +1713,38 @@ gdk_pixbuf_savev (GdkPixbuf  *pixbuf,
        
        return TRUE;
 }
+
+#ifdef G_OS_WIN32
+
+#undef gdk_pixbuf_savev
+
+gboolean
+gdk_pixbuf_savev (GdkPixbuf  *pixbuf, 
+                  const char *filename, 
+                  const char *type,
+                  char      **option_keys,
+                  char      **option_values,
+                  GError    **error)
+{
+	char *utf8_filename;
+	gboolean retval;
+
+        g_return_val_if_fail (filename != NULL, FALSE);
+       
+	utf8_filename = g_locale_to_utf8 (filename, -1, NULL, NULL, error);
+
+	if (utf8_filename == NULL)
+		return FALSE;
+
+	retval = gdk_pixbuf_savev_utf8 (pixbuf, utf8_filename, type,
+					option_keys, option_values, error);
+
+	g_free (utf8_filename);
+
+	return retval;
+}
+
+#endif
 
 /**
  * gdk_pixbuf_save_to_callback:
@@ -1738,7 +1812,7 @@ gdk_pixbuf_save_to_callback    (GdkPixbuf  *pixbuf,
  * @error: return location for error, or %NULL
  *
  * Saves pixbuf to a callback in format @type, which is currently "jpeg",
- * "png" or "ico".  If @error is set, %FALSE will be returned. See
+ * "png", "ico" or "bmp".  If @error is set, %FALSE will be returned. See
  * gdk_pixbuf_save_to_callback () for more details.
  *
  * Return value: whether an error was set
@@ -1784,7 +1858,7 @@ gdk_pixbuf_save_to_callbackv   (GdkPixbuf  *pixbuf,
  * @Varargs: list of key-value save options
  *
  * Saves pixbuf to a new buffer in format @type, which is currently "jpeg",
- * "png" or "ico".  This is a convenience function that uses
+ * "png", "ico" or "bmp".  This is a convenience function that uses
  * gdk_pixbuf_save_to_callback() to do the real work. Note that the buffer 
  * is not nul-terminated and may contain embedded  nuls.
  * If @error is set, %FALSE will be returned and @string will be set to
@@ -1872,7 +1946,7 @@ save_to_buffer_callback (const gchar *data,
  * @error: return location for error, or %NULL
  *
  * Saves pixbuf to a new buffer in format @type, which is currently "jpeg",
- * "png" or "ico".  See gdk_pixbuf_save_to_buffer() for more details.
+ * "png", "ico" or "bmp".  See gdk_pixbuf_save_to_buffer() for more details.
  *
  * Return value: whether an error was set
  *
@@ -2137,6 +2211,5 @@ gdk_pixbuf_get_formats (void)
 }
 
 
-
-
-
+#define __GDK_PIXBUF_IO_C__
+#include "gdk-pixbuf-aliasdef.c"
