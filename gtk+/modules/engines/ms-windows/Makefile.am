@@ -13,6 +13,7 @@ INCLUDES = \
 
 
 LDADDS = \
+	$(top_builddir)/gdk-pixbuf/libgdk_pixbuf-2.0.la	\
 	$(top_builddir)/gdk/$(gdktargetlib)		\
 	$(top_builddir)/gtk/$(gtktargetlib)		\
 	$(GTK_DEP_LIBS)
@@ -34,4 +35,4 @@ libwimp_la_SOURCES = \
 libwimp_la_LDFLAGS = \
 	-avoid-version -module -no-undefined -export-dynamic
 
-libwimp_la_LIBADD = $(LDADDS)
+libwimp_la_LIBADD = $(LDADDS) -lgdi32

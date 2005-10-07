@@ -954,22 +954,41 @@ build_pointer_event_state (MSG *msg)
   gint state;
   
   state = 0;
+
   if (msg->wParam & MK_CONTROL)
     state |= GDK_CONTROL_MASK;
-  if (msg->wParam & MK_LBUTTON)
+
+  if ((msg->message != WM_LBUTTONDOWN &&
+       (msg->wParam & MK_LBUTTON)) ||
+      msg->message == WM_LBUTTONUP)
     state |= GDK_BUTTON1_MASK;
-  if (msg->wParam & MK_MBUTTON)
+
+  if ((msg->message != WM_MBUTTONDOWN &&
+       (msg->wParam & MK_MBUTTON)) ||
+      msg->message == WM_MBUTTONUP)
     state |= GDK_BUTTON2_MASK;
-  if (msg->wParam & MK_RBUTTON)
+
+  if ((msg->message != WM_RBUTTONDOWN &&
+       (msg->wParam & MK_RBUTTON)) ||
+      msg->message == WM_RBUTTONUP)
     state |= GDK_BUTTON3_MASK;
-  if (msg->wParam & MK_XBUTTON1)
+
+  if (((msg->message != WM_XBUTTONDOWN || HIWORD (msg->wParam) != XBUTTON1) &&
+       (msg->wParam & MK_XBUTTON1)) ||
+      (msg->message == WM_XBUTTONUP && HIWORD (msg->wParam) == XBUTTON1))
     state |= GDK_BUTTON4_MASK;
-  if (msg->wParam & MK_XBUTTON2)
+
+  if (((msg->message != WM_XBUTTONDOWN || HIWORD (msg->wParam) != XBUTTON2) &&
+       (msg->wParam & MK_XBUTTON2)) ||
+      (msg->message == WM_XBUTTONUP && HIWORD (msg->wParam) == XBUTTON2))
     state |= GDK_BUTTON5_MASK;
+
   if (msg->wParam & MK_SHIFT)
     state |= GDK_SHIFT_MASK;
+
   if (GetKeyState (VK_MENU) < 0)
     state |= GDK_MOD1_MASK;
+
   if (GetKeyState (VK_CAPITAL) & 0x1)
     state |= GDK_LOCK_MASK;
 
@@ -1132,7 +1151,7 @@ print_event (GdkEvent *event)
 	       event->configure.width, event->configure.height);
       break;
     case GDK_SCROLL:
-      g_print ("(%.4g,%.4g) (%.4g,%.4g)%s",
+      g_print ("(%.4g,%.4g) (%.4g,%.4g) %s",
 	       event->scroll.x, event->scroll.y,
 	       event->scroll.x_root, event->scroll.y_root,
 	       (event->scroll.direction == GDK_SCROLL_UP ? "UP" :
@@ -2141,14 +2160,11 @@ gdk_event_translate (GdkDisplay *display,
 		     MSG        *msg,
 		     gint       *ret_valp)
 {
-  DWORD pidActWin;
-  DWORD pidThis;
   RECT rect, *drag, orig_drag;
   POINT point;
   MINMAXINFO *mmi;
   HWND hwnd;
   HCURSOR hcursor;
-  CHARSETINFO charset_info;
   BYTE key_state[256];
   HIMC himc;
 
@@ -2165,6 +2181,7 @@ gdk_event_translate (GdkDisplay *display,
 
   static gint update_colors_counter = 0;
   gint button;
+  GdkAtom target;
 
   gchar buf[256];
   gboolean return_val = FALSE;
@@ -2179,14 +2196,11 @@ gdk_event_translate (GdkDisplay *display,
 	apply_filters (display, NULL, msg, _gdk_default_filters);
       
       /* If result is GDK_FILTER_CONTINUE, we continue as if nothing
-       * happened. If it is GDK_FILTER_REMOVE, we return FALSE from
-       * gdk_event_translate(), meaning that the DefWindowProc() will
-       * be called. If it is GDK_FILTER_TRANSLATE, we return TRUE, and
-       * DefWindowProc() will not be called.
+       * happened. If it is GDK_FILTER_REMOVE or GDK_FILTER_TRANSLATE,
+       * we return TRUE, and DefWindowProc() will not be called.
        */
-      if (result == GDK_FILTER_REMOVE)
-	return FALSE;
-      else if (result == GDK_FILTER_TRANSLATE)
+      if (result == GDK_FILTER_REMOVE ||
+	  result == GDK_FILTER_TRANSLATE)
 	return TRUE;
     }
 
@@ -2210,7 +2224,7 @@ gdk_event_translate (GdkDisplay *display,
 	   * removed it. Repost the same message to our queue so that
 	   * we will get it later when we are prepared.
 	   */
-	  GDK_NOTE (MISC, g_print (" (posted)"));
+	  GDK_NOTE (EVENTS, g_print (" (posted)"));
 	
 	  PostMessage (msg->hwnd, msg->message,
 		       msg->wParam, msg->lParam);
@@ -2243,12 +2257,8 @@ gdk_event_translate (GdkDisplay *display,
       GdkFilterReturn result =
 	apply_filters (display, window, msg, ((GdkWindowObject *) window)->filters);
 
-      if (result == GDK_FILTER_REMOVE)
-	{
-	  return_val = FALSE;
-	  goto done;
-	}
-      else if (result == GDK_FILTER_TRANSLATE)
+      if (result == GDK_FILTER_REMOVE ||
+	  result == GDK_FILTER_TRANSLATE)
 	{
 	  return_val = TRUE;
 	  goto done;
@@ -2305,52 +2315,54 @@ gdk_event_translate (GdkDisplay *display,
   else if (msg->message == client_message)
     {
       GList *tmp_list;
+      GdkFilterReturn result = GDK_FILTER_CONTINUE;
+
+      GDK_NOTE (EVENTS, g_print (" client_message"));
 
       tmp_list = client_filters;
       while (tmp_list)
 	{
 	  GdkClientFilter *filter = tmp_list->data;
 
+	  tmp_list = tmp_list->next;
+
 	  if (filter->type == GDK_POINTER_TO_ATOM (msg->wParam))
 	    {
-	      GList *this_filter = g_list_append (NULL, filter);
+	      GList *filter_list = g_list_append (NULL, filter);
 	      
-	      GdkFilterReturn result =
-		apply_filters (display, window, msg, this_filter);
+	      GDK_NOTE (EVENTS, g_print (" (match)"));
 
-	      GDK_NOTE (EVENTS, g_print (" (client filter match)"));
+	      result = apply_filters (display, window, msg, filter_list);
 
-	      g_list_free (this_filter);
+	      g_list_free (filter_list);
 
-	      if (result == GDK_FILTER_REMOVE)
-		{
-		  return_val = FALSE;
-		  goto done;
-		}
-	      else if (result == GDK_FILTER_TRANSLATE)
-		{
-		  return_val = TRUE;
-		  goto done;
-		}
-	      else /* GDK_FILTER_CONTINUE */
-		{
-		  /* Send unknown client messages on to Gtk for it to use */
-
-		  event = gdk_event_new (GDK_CLIENT_EVENT);
-		  event->client.window = window;
-		  event->client.message_type = GDK_POINTER_TO_ATOM (msg->wParam);
-		  event->client.data_format = 32;
-		  event->client.data.l[0] = msg->lParam;
-		  for (i = 1; i < 5; i++)
-		    event->client.data.l[i] = 0;
-
-		  append_event (display, event);
-
-		  return_val = TRUE;
-		  goto done;
-		}
+	      if (result != GDK_FILTER_CONTINUE)
+		break;
 	    }
-	  tmp_list = tmp_list->next;
+	}
+
+      if (result == GDK_FILTER_REMOVE ||
+	  result == GDK_FILTER_TRANSLATE)
+	{
+	  return_val = TRUE;
+	  goto done;
+	}
+      else
+	{
+	  /* Send unknown client messages on to Gtk for it to use */
+
+	  event = gdk_event_new (GDK_CLIENT_EVENT);
+	  event->client.window = window;
+	  event->client.message_type = GDK_POINTER_TO_ATOM (msg->wParam);
+	  event->client.data_format = 32;
+	  event->client.data.l[0] = msg->lParam;
+	  for (i = 1; i < 5; i++)
+	    event->client.data.l[i] = 0;
+	  
+	  append_event (display, event);
+	  
+	  return_val = TRUE;
+	  goto done;
 	}
     }
 
@@ -2375,9 +2387,7 @@ gdk_event_translate (GdkDisplay *display,
     case WM_SYSKEYDOWN:
       GDK_NOTE (EVENTS,
 		g_print (" %s ch:%.02x %s",
-			 (GetKeyNameText (msg->lParam, buf,
-					  sizeof (buf)) > 0 ?
-			  buf : ""),
+			 _gdk_win32_key_to_string (msg->lParam),
 			 msg->wParam,
 			 decode_key_lparam (msg->lParam)));
 
@@ -2403,9 +2413,7 @@ gdk_event_translate (GdkDisplay *display,
     case WM_KEYDOWN:
       GDK_NOTE (EVENTS, 
 		g_print (" %s ch:%.02x %s",
-			 (GetKeyNameText (msg->lParam, buf,
-					  sizeof (buf)) > 0 ?
-			  buf : ""),
+			 _gdk_win32_key_to_string (msg->lParam),
 			 msg->wParam,
 			 decode_key_lparam (msg->lParam)));
 
@@ -2433,6 +2441,26 @@ gdk_event_translate (GdkDisplay *display,
       event->key.string = NULL;
       event->key.length = 0;
       event->key.hardware_keycode = msg->wParam;
+      if (HIWORD (msg->lParam) & KF_EXTENDED)
+	{
+	  switch (msg->wParam)
+	    {
+	    case VK_CONTROL:
+	      event->key.hardware_keycode = VK_RCONTROL;
+	      break;
+	    case VK_SHIFT:	/* Actually, KF_EXTENDED is not set
+				 * for the right shift key.
+				 */
+	      event->key.hardware_keycode = VK_RSHIFT;
+	      break;
+	    case VK_MENU:
+	      event->key.hardware_keycode = VK_RMENU;
+	      break;
+	    }
+	}
+      else if (msg->wParam == VK_SHIFT &&
+	       LOBYTE (HIWORD (msg->lParam)) == _scancode_rshift)
+	event->key.hardware_keycode = VK_RSHIFT;
 
       API_CALL (GetKeyboardState, (key_state));
 
@@ -2712,12 +2740,6 @@ gdk_event_translate (GdkDisplay *display,
 		g_print (" %#x (%d,%d)",
 			 msg->wParam,
 			 GET_X_LPARAM (msg->lParam), GET_Y_LPARAM (msg->lParam)));
-
-      /* HB: only process mouse move messages if we own the active window. */
-      GetWindowThreadProcessId (GetActiveWindow (), &pidActWin);
-      GetWindowThreadProcessId (msg->hwnd, &pidThis);
-      if (pidActWin != pidThis)
-	break;
 
       assign_object (&window, find_window_for_mouse_event (window, msg));
 
@@ -3303,8 +3325,7 @@ gdk_event_translate (GdkDisplay *display,
 				 GET_X_LPARAM (msg->lParam), GET_Y_LPARAM (msg->lParam)));
 
       if (GDK_WINDOW_TYPE (window) != GDK_WINDOW_CHILD &&
-	  !IsIconic (msg->hwnd) &&
-	  IsWindowVisible (msg->hwnd))
+	  !IsIconic (msg->hwnd))
 	{
 	  if (!GDK_WINDOW_DESTROYED (window))
 	    handle_configure_event (msg, window);
@@ -3365,7 +3386,62 @@ gdk_event_translate (GdkDisplay *display,
       else
 	return_val = TRUE;
       break;
- 
+
+    case WM_RENDERFORMAT:
+      GDK_NOTE (EVENTS, g_print (" %s", _gdk_win32_cf_to_string (msg->wParam)));
+
+      if (!(target = g_hash_table_lookup (_format_atom_table, GINT_TO_POINTER (msg->wParam))))
+	{
+	  GDK_NOTE (EVENTS, g_print (" (target not found)"));
+	  return_val = TRUE;
+	  break;
+	}
+
+      /* We need to render to clipboard immediately, don't call
+       * append_event()
+       */
+      if (_gdk_event_func)
+	{
+	  event = gdk_event_new (GDK_SELECTION_REQUEST);
+	  event->selection.window = window;
+	  event->selection.send_event = FALSE;
+	  event->selection.selection = GDK_SELECTION_CLIPBOARD;
+	  event->selection.target = target;
+	  event->selection.property = _gdk_selection_property;
+	  event->selection.requestor = (guint32) msg->hwnd;
+	  event->selection.time = msg->time;
+
+	  fixup_event (event);
+	  GDK_NOTE (EVENTS, g_print (" (calling gdk_event_func)"));
+	  GDK_NOTE (EVENTS, print_event (event));
+	  (*_gdk_event_func) (event, _gdk_event_data);
+	  gdk_event_free (event);
+
+	  /* Now the clipboard owner should have rendered */
+	  if (!_delayed_rendering_data)
+	    GDK_NOTE (EVENTS, g_print (" (no _delayed_rendering_data?)"));
+	  else
+	    {
+	      if (msg->wParam == CF_DIB)
+		{
+		  _delayed_rendering_data =
+		    _gdk_win32_selection_convert_to_dib (_delayed_rendering_data,
+							 target);
+		  if (!_delayed_rendering_data)
+		    {
+		      g_warning ("Cannot convert to DIB from delayed rendered image");
+		      break;
+		    }
+		}
+	      /* The requestor is holding the clipboard, no
+	       * OpenClipboard() is required/possible
+	       */
+	      API_CALL (SetClipboardData, (msg->wParam, _delayed_rendering_data));
+	      _delayed_rendering_data = NULL;
+	    }
+	}
+      break;
+
 #ifdef HAVE_WINTAB
     case WM_ACTIVATE:
       /* Bring any tablet contexts to the top of the overlap order when
