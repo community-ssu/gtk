@@ -1,3 +1,9 @@
+2005-10-07  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Raised version number to 1.58.0
+	* Implemented the fix to bug N#20177 - Memory leak in Desktop destroy_notify_handler functionality:
+	windowmanager.c::destroy_notify_handler g_free(wm_class); from inside if (killed == TRUE) to before it, so
+	that the wm_class becomes freed every time. 
+
 2005-10-06  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Preparing for Thusday integration round. Raised version to 1.57.0.
 	* Patched bug N#9843: After changing the language, the application hide from user

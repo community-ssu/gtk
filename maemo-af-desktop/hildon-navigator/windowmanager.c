@@ -731,11 +731,12 @@ static void destroy_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
 
     if (wm_class != NULL)
     {
+        /* Moved g_free here from inside the if killed == TRUE, fix to bug N#20177, Karoliina Salminen 07102005 */
+        g_free(wm_class);
         gtk_tree_model_get(model, &root, WM_KILLED_ITEM, &killed, -1);
         if (killed == TRUE)
         {
             update_application_window_id(model, &root, 1);
-            g_free(wm_class);
             return;
         }
     }
