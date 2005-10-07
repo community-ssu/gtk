@@ -1,3 +1,357 @@
+2005-10-07  Michael Natterer  <mitch@gimp.org>
+
+	Merged all Win32 related 2.4 -> 2.10 diffs:
+
+    2005-07-30  Hans Breuer  <hans@breuer.org>
+
+	* gtk/makefile.msc.in : updated
+
+    2005-07-29  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkdrawable-win32.c (blit_inside_drawable): Rename
+	from blit_inside_window(), as it now does blitting inside a
+	bitmap, too. No code change, still just call BitBlt().
+	(_gdk_win32_blit): Check for source equalling destination
+	first. (#169508, #131977) 
+	Do away with the superfluous local draw_impl variable, the
+	parameter to this function is already a GdkDrawableImplWin32*, no
+	need to copy and cast it.
+
+    2005-07-28  Robert Ögren  <gtk@roboros.com>
+
+	Avoid spurious core pointer events when the tablet pen is lifted.
+	(#167000)
+
+	* gdk/win32/gdkinput-win32.c (set_ignore_core): New static function,
+	handles delayed unsetting of _gdk_input_ignore_core.
+	(_gdk_input_other_event): Call set_ignore_core instead of setting
+	_gdk_input_ignore_core directly.
+
+    2005-07-27  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkmain-win32.c (_gdk_win32_psstyle_to_string): Handle
+	PS_ALTERNATE, too.
+
+	* gdk/win32/gdkmain-win32.c (gdk_screen_get_height_mm): Fix for
+	multi-monitor cases. (#311677, Tim Evans)
+
+	+2005-07-21  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkwindow-win32.c (gdk_window_set_title): Use
+	wide-char API when available. (#311079, Peter Zelezny)
+
+    2005-07-14  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkfilesystemwin32.c (filename_get_info): Implement getting
+	the MIME type of a file. Look it up in the Registry. Bug reported
+	by Hans Oesterholt.
+
+    2005-07-13  Robert Ögren  <gtk@roboros.com>
+
+	Fix handling of Aiptek and Aiptek-like graphical tablets such as Trust
+	on Windows. (#167004, thanks to "pnohant" for testing)
+
+	Code cleanup: Remove the unused and unmaintained code for using a
+	non-system tablet context (USE_SYSCONTEXT ifdef:s), suggested
+	by Tor Lillqvist.
+
+	* gdk/win32/gdkinput-win32.c (_gdk_input_wintab_init_check): Handle
+	tablet drivers that don't support WTI_DDCTXS/WTI_DSCTXS gracefully.
+	Sligthly reorganize and simplify the code to support this.
+	(_gdk_input_wintab_init_check, _gdk_input_other_event): Remove
+	USE_SYSCONTEXT ifdef:s and the code for the case it was not defined.
+	(gdk_input_window_find_within): Removed.
+
+    2005-06-23  Tor Lillqvist  <tml@novell.com>
+
+	Improve and simplify line segment rendering on Win32, especially
+	the implementation of GDK_CAP_NOT_LAST, and dashed lines. Fixes
+	bugs #306396 and #308413.
+
+	* gdk/win32/gdkprivate-win32.h (GdkGCWin32): Save the GdkGC's
+	line_style, cap_style and join_style as such in the
+	GdkGCWin32. Don't need to keep the pen_double_dash flag, we can
+	check the line_style.
+
+	* gdk/win32/gdkgc-win32.c (fixup_pen): New internal function. Sets
+	up the GDI pen type, style, end cap and join attributes to use
+	based on the pen width, GDK line style, end cap style, and join
+	style.
+
+	For a narrow (zero-width) GDK pen with the GDK_CAP_NOT_LAST end
+	cap style, which typically are used for XOR drawing where it is
+	essential that the last pixel is not drawn, use a GDI cosmetic
+	pen. Only for a cosmetic pen does GDI not draw the last pixel. I
+	deduced this by experimetation, the documentation is rather vague.
+
+	For other GDK pens use a geometric GDI pen. If the width is 0 or 1
+	and the GDK end cap style is GDK_CAP_BUTT, and the line style is
+	GDK_LINE_SOLID, use PS_ENDCAP_ROUND. This ensures that also
+	single-pixel length lines are drawn. (For sngle-pixel width lines
+	roundness as such is of course irrelevant.) For dashed lines, use
+	PS_ENDCAP_FLAT.
+
+	For wide lines use PS_ENDCAP_FLAT, _ROUND or _SQUARE,
+	respectively, for GDK_CAP_BUTT, GDK_CAP_ROUND and GDK_CAP_PROJECTING.
+
+	For one pixel on-off dashed lines, use PS_ALTERNATE, it seems to
+	work better than PS_USERSTYLE. For other dashed lines, use
+	PS_USERSTYLE and the dashes as set by the user (or the default
+	four-pixel on-off style).
+
+	(gdk_win32_gc_values_to_win32values, gdk_win32_gc_set_dashes):
+	Call fixup_pen() to do the pen settings after modifying some of
+	the GDK GC attributes that affect pens.
+
+	* gdk/win32/gdkdrawable-win32.c (render_line_horizontal,
+	render_line_vertical, draw_segments): Check GdkGCWin32::line_style
+	instead of the the removed pen_double_dash member. Don't use
+	PATCOPY unconditionally in the PatBlt() call, use a raster op
+	code that depends on the GC function in use.
+
+	(draw_rectangle, draw_segments, draw_lines): Be more careful in
+	deciding when to do the manual dash rendering.
+
+	(draw_segments): Don't do any manual "last point" drawing at
+	all. The above changes takes care of narrow line segments being
+	drawn correctly in most cases, at least on NT-based Windows.
+
+    2005-06-17  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkdnd-win32.c (gdk_dropfiles_filter): Set the actions
+	and suggested_action fields in the GdkDragContext to
+	GDK_ACTION_COPY. Otherwise apps that check the suggested_action
+	field, like eog, won't accept dropped files.
+
+    2005-06-16  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkmain.c (g_win32_locale_filename_from_utf8): [Win32]
+	Borrow this function from GLib HEAD.
+	(_gtk_get_localedir): [Win32] Make sure the run-time locale
+	directory is in system codepage, as it is passed to the
+	non-UTF8-aware gettext library.
+
+    2005-06-03  Dom Lachowicz <cinamod@hotmail.com>
+
+	Merge from HEAD:
+	
+	* modules/engines/ms-windows/msw_style.c: Re-sync with gtk-wimp
+	* modules/engines/ms-windows/xp_theme.c: Ditto
+	* modules/engines/ms-windows/Theme/gtk-2.0/gtkrc: Ditto
+
+    2005-06-05  Tor Lillqvist  <tml@novell.com>
+
+	* modules/engines/Makefile.am
+	* modules/input/Makefile.am: Decide whether to build the
+	ms-windows theme engine based on the GDK backend, not based on
+	platform. (I.e., if building for Cygwin with the X11 backend, we
+	shouldn't build the ms-windows engine, but if building for Cygwin
+	but with the Win32 backend, we should.) Ditto for the IME
+	(Windows) input module. (#305832)
+
+	+2005-06-04  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkcursor-win32.c
+	* gdk/win32/gdkwindow-win32.c
+	* gdk/win32/gdkprivate-win32.h: Support full-colour cursors.
+	Support cursors with alpha on XP. Use code in common with the
+	support for alpha icons that already was present. (#306101, Tim
+	Evans)
+
+	* modules/engines/ms-windows/msw_style.c: Render insensitive icons
+	in a way that more closely matches Windows. (#305986, Tim Evans).
+
+	* modules/engines/ms-windows/Makefile.am (LDADDS): Link with
+	gdk-pixbuf.
+
+    2005-05-26  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkdrawable-win32.c (_gdk_win32_blit): If blitting
+	from the root window, take the multi-monitor offset into
+	account. (#305511)
+
+    2005-05-23  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkkeys-win32.c (handle_special): Map VK_APPS to
+	GDK_Menu. (#172383, Ivan Wong)
+
+	* gdk/win32/gdkkeys-win32.c (handle_dead): If the keysym isn't one
+	of the special cases this function takes care of, use it as
+	such. This takes care of for instance the Bengali Virama, see bug
+	#165723.
+
+    2005-05-18  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkevents-win32.c
+	* gdk/win32/gdkkeys-win32.c
+	* gdk/win32/gdkprivate-win32.h: Check the KF_EXTENDED bit in
+	lParam of WM_KEY* messages to distinguish between left and right
+	Control and Alt keys. Unfortunately, the right Shift key doesnt
+	set KF_EXTENDED, so to distinguish between left and right Shift
+	keys, check the scan code. (#304584)
+
+    2005-05-10  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkproperty-win32.c (gdk_screen_get_setting): Check
+	that GDK_IS_SCREEN(screen) (like the X11 backend does), not screen
+	== gdk_screen_get_default(), as that might return NULL when this
+	function is called.
+
+    2005-04-30  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkdnd-win32.c (gdk_dropfiles_filter): Take
+	multi-monitor offset into account. (#302525)
+
+    2005-04-25  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkfilesystemwin32.c
+	(gtk_file_system_win32_volume_get_display_name): Get volume name
+	also on Win9x. (#301798, Daniel Atallah)
+	(canonicalize_filename): Add explicit braces to silence compiler
+	warning.
+
+    2005-04-24  Hans Breuer  <hans@breuer.org>
+
+	* gtk/stock-icons/makefile.msc : updated
+
+	+2005-04-19  Ivan, Wong Yat Cheung  <email@ivanwong.info>
+
+	* gdk/win32/gdkfont-win32.c (gdk_font_load_internal): Match
+	character height instead of cell height. Fix #301228.
+
+    2005-04-11  Ivan, Wong Yat Cheung  <email@ivanwong.info>
+
+	Fix #300218:
+
+	* gdk/win32/gdkselection-win32.c (gdk_selection_convert): Fix
+	C99ism.
+
+    2005-04-05  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkvisual-win32.c (_gdk_visual_init): Handle 16 colour
+	display mode. For some reason, in this mode GetDeviceCaps(BITSPIXEL)
+	returns 1 (but GetDeviceCaps(NUMCOLORS) does return 16). (#143415)
+
+	* gdk/win32/gdkvisual-win32.c (_gdk_visual_init): Don't force
+	24bpp GdkVisual on 32bpp displays. (#140706)
+
+    2005-04-04  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkmain.c (_gdk_win32_cf_to_string): New debugging
+	function, to log a clipboard format name symbolically.
+	(_gdk_win32_data_to_string): Also new, to log random data bytes.
+
+	Merge from HEAD:
+	
+	* gdk/win32/gdkdisplay-win32.c (_win32_on_clipboard_change): Print
+	debugging output only if asked for, not always.
+
+	* gdk/win32/gdkmain-win32.c (_gdk_win32_key_to_string): New
+	debugging function. As GetKeyNameText() returns a localized key
+	name we need to convert it to UTF-8.
+
+	* gdk/win32/gdkprivate-win32.h
+	* gdk/win32/gdkevents-win32.c: : Declare new functions, use them.
+
+	Implement delayed rendering on Win32, specifically for transfering
+	images through the clipboard from GTK+ apps to other
+	apps (#168173, implementation by Ivan Wong):
+
+	* gdk/win32/gdkevents-win32.c (gdk_event_translate): 
+	Handle WM_RENDERFORMAT.
+
+	* gdk/win32/gdkprivate-win32.h
+	* gdk/win32/gdkglobals-win32.c: Add _format_atom_table,
+	_delayed_rendering_data and _image_bmp.
+
+	* gdk/win32/gdkmain-win32.c: Initialize _image_bmp.
+
+	* gdk/win32/gdkproperty-win32.c (gdk_property_change):
+	Accept formats other than GDK_TARGET_STRING or _utf8_string, and
+	assume they are handled through delayed rendering.
+
+	* gdk/win32/gdkselection-win32.c (gdk_selection_convert):
+	Return all available formats (including those registered by GTK+
+	apps) on request_targets.
+	(gdk_selection_property_get): We should append a zero byte like
+	X11 does.
+	(gdk_win32_selection_add_targets): New function, for
+	gtkselection's use. Win32 requires that the clipboard owner
+	registers all valid formats even if the owner wants delayed
+	rendering.
+	(_gdk_win32_selection_convert_to_dib): New function. Convert
+	images to DIB using gdk-pixbuf.
+
+	* gdk/win32/gdkwin32.h: Declare gdk_win32_selection_add_targets().
+
+	* gtk/gtkselection.c (gtk_selection_add_target,
+	gtk_selection_add_targets): Call gdk_win32_selection_add_targets()
+	to register target formats.
+
+	* gdk/gdk.symbols: Add gdk_win32_selection_add_targets().
+
+    2005-04-03  Hans Breuer  <hans@breuer.org>
+
+	* gdk/win32/gdkdrawable-win32.c : let dash_offset shift the start of
+	the line pattern not the start of the line. Fixes bug #171641.
+
+	* gtk/makefile.msc.in : follow .symbols changes
+
+    2005-03-30  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkevents-win32.c (build_pointer_event_state): The
+	state field should represent the state before the event, like on
+	X11. (#169753)
+	(gdk_event_translate): Fix event filter handling. If an event
+	filter (global, client message filter, of window-specific) returns
+	GDK_FILTER_CONTINUE, continue as if nothing happened. If it
+	returns GDK_FILTER_REMOVE or GDK_FILTER_TRANSLATE, return TRUE
+	from gdk_event_translate() which means that DefWindowProc() will
+	not be called.
+	(gdk_event_translate): Fix client message handling. Append a
+	GDK_CLIENT_EVENT unless there is a filter that matches and returns
+	something other than GDK_FILTER_CONTINUE. (#135552)
+
+	Merge from HEAD:
+
+	* gdk/win32/gdkevents-win32.c (gdk_event_translate): On
+	WM_MOUSEMOVE, don't check if this process owns the active
+	window. This makes cross-application widget embedding work better.
+	On WM_MOVE, don't bother checking for window visibility.
+
+    2005-03-21  Tor Lillqvist  <tml@novell.com>
+
+	* modules/engines/ms-windows/*.c: Silence gcc warnings (unused
+	variables, unhandled enum value in switch). Use g_object_unref()
+	instead of deprecated gdk_gc_unref() and gdk_drawable_unref().
+
+	* modules/engines/ms-windows/xp_theme.c (xp_theme_map_gtk_state): 
+	Add missing "case" keyword.
+
+	* modules/engines/ms-windows/Makefile.am: Link with -lgdi32
+	explicitly.
+
+	* gdk/win32/gdkim-win32.c: Remove bogus empty doc comment. Remove
+	unused variables. Add some casts to silence gcc.
+
+    2005-03-13  Ivan, Wong Yat Cheung  <email@ivanwong.info>
+
+	* gdk/win32/gdkgeometry-win32.c (gdk_window_scroll): A further fix
+	for big window support. Now also the test in testgtk works.
+
+    2005-03-12  Ivan, Wong Yat Cheung  <email@ivanwong.info>
+
+	Big window fix for Win32. Big windows are still emulated within
+	16-bit coordinate limits, though. Big windows now work on NT-based
+	Windows. (#169989)
+
+	* gdk/win32/gdkgc-win32.c (_gdk_win32_gdkregion_to_hrgn): Use
+	32-bit coordinates.
+
+	* gdk/win32/gdkgeometry-win32.c: Largely rewrite.
+
+	* gdk/win32/gdkwindow-win32.c: Minor related changes.
+
 2005-10-07  Michael Natterer  <mitch@imendio.com>
 
 	Merged the 2.4 -> 2.10 diff, excluding the patches that have
