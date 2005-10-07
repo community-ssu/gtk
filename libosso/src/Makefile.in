@@ -159,10 +159,10 @@ INCLUDES = \
 lib_LTLIBRARIES = libosso.la
 
 libosso_la_LIBADD = -ldl -lc $(GLIB_LIBS) $(DBUS_LIBS) $(GNOMEVFS_LIBS)
-libosso_la_LDFLAGS = -version-info 2:0:1
+libosso_la_LDFLAGS = -version-info 3:0:2
 
 ossoincludedir = $(includedir)
-ossoinclude_HEADERS = libosso.h osso-log.h log-functions.h
+ossoinclude_HEADERS = libosso.h osso-log.h log-functions.h osso-mem.h
 
 libosso_la_SOURCES = \
 	osso-state.c \
@@ -188,7 +188,9 @@ libosso_la_SOURCES = \
 	osso-time.c \
 	osso-time.h \
 	osso-application-init.c \
-	osso-application-exit.c
+	osso-application-exit.c \
+	osso-mem.h \
+	osso-mem.c
 
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -202,7 +204,7 @@ am_libosso_la_OBJECTS = osso-state.lo osso-init.lo \
 	osso-application-top.lo osso-application-autosave.lo osso-hw.lo \
 	osso-mime.lo osso-system-note.lo osso-rpc.lo osso-statusbar.lo \
 	osso-cp-plugin.lo osso-log.lo osso-time.lo \
-	osso-application-init.lo osso-application-exit.lo
+	osso-application-init.lo osso-application-exit.lo osso-mem.lo
 libosso_la_OBJECTS = $(am_libosso_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -214,8 +216,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/osso-application-top.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-cp-plugin.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-hw.Plo ./$(DEPDIR)/osso-init.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/osso-log.Plo ./$(DEPDIR)/osso-mime.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/osso-rpc.Plo ./$(DEPDIR)/osso-state.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/osso-log.Plo ./$(DEPDIR)/osso-mem.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/osso-mime.Plo ./$(DEPDIR)/osso-rpc.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/osso-state.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-statusbar.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-system-note.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-time.Plo
@@ -286,6 +289,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-hw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-init.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-log.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-mem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-mime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-rpc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-state.Plo@am__quote@
