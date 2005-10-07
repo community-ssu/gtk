@@ -3,6 +3,7 @@
 	* Implemented the fix to bug N#20177 - Memory leak in Desktop destroy_notify_handler functionality:
 	windowmanager.c::destroy_notify_handler g_free(wm_class); from inside if (killed == TRUE) to before it, so
 	that the wm_class becomes freed every time. 
+	* Implemented bug fix to bug N#20181 - Memory leak in Desktop map_notify_handler() function
 
 2005-10-06  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Preparing for Thusday integration round. Raised version to 1.57.0.

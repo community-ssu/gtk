@@ -697,13 +697,10 @@ static void create_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
             }
             insert_new_window(model, &parent, new_win);
             
-            /* Get dialog name */
-            new_win->dialog_name = get_window_title(cev->window);
-            
             g_free(exec);
             g_free(name);
             g_free(icon);
-            g_free(new_win->dialog_name);
+            
             g_free(new_win);
         }
         XFree(wm_class_str);
@@ -937,9 +934,12 @@ static void map_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
             insert_new_window(model, &parent, new_win);
         }
         
-        new_win->dialog_name = get_window_title(mev->window);
-        
-        g_free(new_win->dialog_name);
+        /* Added by Karoliina Salminen 07102005: Fixes bug 20181 Memory leak in Desktop map_notify_handler() function */
+        if(new_win){
+            g_free(new_win);
+        }
+        /* End of addition 07102005 */
+
         XFree(wm_class_str);
         return;
     }
