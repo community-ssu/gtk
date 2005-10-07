@@ -19,8 +19,8 @@ install-libtool-import-lib:
 #	(Unfortunately the GNU linker doesn't yet understand the PRIVATE
 #	directive in .def files.)
 	for entry in `grep PRIVATE gdk_pixbuf.def | sed -e 's/PRIVATE//'`; do \
-	  file=`nm -A .libs/libgdk_pixbuf-$(GTK_API_VERSION).dll.a | tr -d '\r' | grep -m 1 -E $$entry'$$' | cut -d: -f2`; \
-	  ar d .libs/libgdk_pixbuf-$(GTK_API_VERSION).dll.a $$file; \
+	  file=`$(NM) -A .libs/libgdk_pixbuf-$(GTK_API_VERSION).dll.a | tr -d '\r' | grep -E $$entry'$$' | head -n 1 | cut -d: -f2`; \
+	  $(AR) d .libs/libgdk_pixbuf-$(GTK_API_VERSION).dll.a $$file; \
 	done
 	$(INSTALL) .libs/libgdk_pixbuf-$(GTK_API_VERSION).dll.a $(DESTDIR)$(libdir)
 uninstall-libtool-import-lib:
@@ -47,10 +47,13 @@ uninstall-ms-lib:
 endif
 
 gdk_pixbuf.def: gdk-pixbuf.symbols
-	(echo -e EXPORTS; $(CPP) -P -DINCLUDE_VARIABLES -DG_OS_WIN32 - <$(srcdir)/gdk-pixbuf.symbols | sed -e '/^$$/d' -e 's/^/	/' -e 's/G_GNUC_[^ ]*//g') > gdk_pixbuf.def
+	(echo -e EXPORTS; $(CPP) -P -DINCLUDE_VARIABLES -DG_OS_WIN32 -DALL_FILES - <$(srcdir)/gdk-pixbuf.symbols | sed -e '/^$$/d' -e 's/^/	/' -e 's/G_GNUC_[^ ]*//g') > gdk_pixbuf.def
 
 gdk-pixbuf-alias.h: gdk-pixbuf.symbols
 	 $(PERL) $(srcdir)/makegdkpixbufalias.pl < $(srcdir)/gdk-pixbuf.symbols > gdk-pixbuf-alias.h
+
+gdk-pixbuf-aliasdef.c: gdk-pixbuf.symbols
+	 $(PERL) $(srcdir)/makegdkpixbufalias.pl -def < $(srcdir)/gdk-pixbuf.symbols > gdk-pixbuf-aliasdef.c
 
 if OS_LINUX
 TESTS = abicheck.sh
@@ -347,6 +350,7 @@ noinst_HEADERS = 		\
 
 BUILT_SOURCES = 		\
 	gdk-pixbuf-alias.h	\
+	gdk-pixbuf-aliasdef.c	\
 	gdk-pixbuf-enum-types.h \
 	gdk-pixbuf-enum-types.c \
 	gdk-pixbuf-marshal.h 	\
@@ -358,6 +362,8 @@ MAINTAINERCLEANFILES = 		\
 	gdk-pixbuf-enum-types.c \
 	gdk-pixbuf-marshal.h 	\
 	gdk-pixbuf-marshal.c 	\
+	gdk-pixbuf-alias.h	\
+	gdk-pixbuf-aliasdef.c	\
 	gdk-pixbuf.loaders
 
 #
@@ -385,8 +391,9 @@ MAINTAINERCLEANFILES += s-enum-types-h
 #
 gdk-pixbuf-enum-types.c: @REBUILD@ $(gdk_pixbuf_headers) Makefile
 	(cd $(srcdir) && glib-mkenums \
-		--fhead "#include \"gdk-pixbuf-alias.h\"\n#include <gdk-pixbuf/gdk-pixbuf.h>" \
+		--fhead "#include <gdk-pixbuf/gdk-pixbuf.h>\n#include \"gdk-pixbuf-alias.h\"\n" \
 		--fprod "\n/* enumerations from \"@filename@\" */" \
+		--ftail "\n#define __GDK_PIXBUF_ENUM_TYPES_C__\n#include \"gdk-pixbuf-aliasdef.c\"" \
 		--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {"       \
 		--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 		--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (\"@EnumName@\", values);\n  }\n  return etype;\n}\n" \
@@ -411,7 +418,7 @@ MAINTAINERCLEANFILES += stamp-gdk-pixbuf-marshal.h
 # gdk-pixbuf-marshal.c
 #
 $(srcdir)/gdk-pixbuf-marshal.c: @REBUILD@ $(srcdir)/gdk-pixbuf-marshal.list
-	(echo -e "#include \"gdk-pixbuf-alias.h\"" | $(GLIB_GENMARSHAL) --prefix=_gdk_pixbuf_marshal $(srcdir)/gdk-pixbuf-marshal.list --body ) >> xgen-gmc \
+	(echo -e "#include <gdk-pixbuf/gdk-pixbuf.h>\n#include \"gdk-pixbuf-alias.h\"" | $(GLIB_GENMARSHAL) --prefix=_gdk_pixbuf_marshal $(srcdir)/gdk-pixbuf-marshal.list --body ) >> xgen-gmc \
 	&& cp xgen-gmc gdk-pixbuf-marshal.c \
 	&& rm -f xgen-gmc xgen-gmc~
 
