@@ -280,10 +280,12 @@ struct _GdkGCWin32
   gint graphics_exposures;
   gint pen_width;
   DWORD pen_style;
+  GdkLineStyle line_style;
+  GdkCapStyle cap_style;
+  GdkJoinStyle join_style;
   DWORD *pen_dashes;		/* use for PS_USERSTYLE or step-by-step rendering */
   gint pen_num_dashes;
   gint pen_dash_offset;
-  gboolean pen_double_dash;
   HBRUSH pen_hbrbg;
 
   /* Following fields are valid while the GC exists as a Windows DC */
@@ -403,6 +405,10 @@ gchar *_gdk_win32_psstyle_to_string    (DWORD        pen_style);
 gchar *_gdk_win32_psendcap_to_string   (DWORD        pen_style);
 gchar *_gdk_win32_psjoin_to_string     (DWORD        pen_style);
 gchar *_gdk_win32_message_to_string    (UINT         msg);
+gchar *_gdk_win32_key_to_string        (LONG         lParam);
+gchar *_gdk_win32_cf_to_string         (UINT         format);
+gchar *_gdk_win32_data_to_string       (const guchar*data,
+					int          nbytes);
 gchar *_gdk_win32_rect_to_string       (const RECT  *rect);
 
 gchar *_gdk_win32_gdkrectangle_to_string (const GdkRectangle *rect);
@@ -471,16 +477,18 @@ extern UINT		 _gdk_input_codepage;
 
 extern guint		 _gdk_keymap_serial;
 extern gboolean		 _gdk_keyboard_has_altgr;
+extern guint		 _scancode_rshift;
 
 /* Registered clipboard formats */
 extern WORD		 _cf_rtf;
 extern WORD		 _cf_utf8_string;
 
-/* GdkAtoms: Targets */
+/* GdkAtoms: targets */
 extern GdkAtom           _utf8_string;
-extern GdkAtom		 _compound_text;
-extern GdkAtom		 _text_uri_list;
 extern GdkAtom		 _targets;
+
+extern GdkAtom		 _text_uri_list;
+extern GdkAtom		 _image_bmp;
 
 /* DND selections */
 extern GdkAtom           _local_dnd;
@@ -502,6 +510,26 @@ extern gboolean		 _sizemove_in_progress;
 
 /* TRUE when we are emptying the clipboard ourselves */
 extern gboolean		_ignore_destroy_clipboard;
+
+/* Mapping from registered clipboard format id (native) to
+ * corresponding GdkAtom
+ */
+extern GHashTable	*_format_atom_table;
+
+/* Hold the result of a delayed rendering */
+extern HGLOBAL		_delayed_rendering_data;
+
+HGLOBAL _gdk_win32_selection_convert_to_dib (HGLOBAL  hdata,
+					     GdkAtom  target);
+
+/* Convert a pixbuf to an HICON (or HCURSOR).  Supports alpha under
+ * Windows XP, thresholds alpha otherwise.
+ */
+HICON _gdk_win32_pixbuf_to_hicon   (GdkPixbuf *pixbuf);
+HICON _gdk_win32_pixbuf_to_hcursor (GdkPixbuf *pixbuf,
+				    gint       x_hotspot,
+				    gint       y_hotspot);
+gboolean _gdk_win32_pixbuf_to_hicon_supports_alpha (void);
 
 /* Initialization */
 void _gdk_windowing_window_init (void);

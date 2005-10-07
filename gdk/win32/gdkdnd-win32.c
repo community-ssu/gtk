@@ -978,6 +978,8 @@ gdk_dropfiles_filter (GdkXEvent *xev,
       /* WM_DROPFILES drops are always file names */
       context->targets =
 	g_list_append (NULL, GUINT_TO_POINTER (_text_uri_list));
+      context->actions = GDK_ACTION_COPY;
+      context->suggested_action = GDK_ACTION_COPY;
       current_dest_drag = context;
 
       event->dnd.type = GDK_DROP_START;
@@ -987,8 +989,8 @@ gdk_dropfiles_filter (GdkXEvent *xev,
       DragQueryPoint (hdrop, &pt);
       ClientToScreen (msg->hwnd, &pt);
 
-      event->dnd.x_root = pt.x;
-      event->dnd.y_root = pt.y;
+      event->dnd.x_root = pt.x + _gdk_offset_x;
+      event->dnd.y_root = pt.y + _gdk_offset_y;
       event->dnd.time = _gdk_win32_get_next_tick (msg->time);
 
       nfiles = DragQueryFile (hdrop, 0xFFFFFFFF, NULL, 0);

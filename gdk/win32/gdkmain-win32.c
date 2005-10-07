@@ -113,8 +113,10 @@ _gdk_windowing_init (void)
   _cf_utf8_string = RegisterClipboardFormat ("UTF8_STRING");
 
   _utf8_string = gdk_atom_intern ("UTF8_STRING", FALSE);
-  _text_uri_list = gdk_atom_intern ("text/uri-list", FALSE);
   _targets = gdk_atom_intern ("TARGETS", FALSE);
+
+  _text_uri_list = gdk_atom_intern ("text/uri-list", FALSE);
+  _image_bmp = gdk_atom_intern ("image/bmp", FALSE);
 
   _local_dnd = gdk_atom_intern ("LocalDndSelection", FALSE);
   _gdk_win32_dropfiles = gdk_atom_intern ("DROPFILES_DND", FALSE);
@@ -185,13 +187,13 @@ gdk_screen_get_height (GdkScreen *screen)
 gint
 gdk_screen_get_width_mm (GdkScreen *screen)
 {
-  return (double) GetDeviceCaps (_gdk_display_hdc, HORZRES) / GetDeviceCaps (_gdk_display_hdc, LOGPIXELSX) * 25.4;
+  return (double) gdk_screen_get_width (screen) / GetDeviceCaps (_gdk_display_hdc, LOGPIXELSX) * 25.4;
 }
 
 gint
 gdk_screen_get_height_mm (GdkScreen *screen)
 {
-  return (double) GetDeviceCaps (_gdk_display_hdc, VERTRES) / GetDeviceCaps (_gdk_display_hdc, LOGPIXELSY) * 25.4;
+  return (double) gdk_screen_get_height (screen) / GetDeviceCaps (_gdk_display_hdc, LOGPIXELSY) * 25.4;
 }
 
 void
@@ -251,7 +253,7 @@ gdk_notify_startup_complete (void)
  */
 static gchar *
 static_printf (const gchar *format,
-			 ...)
+	       ...)
 {
   static gchar buf[10000];
   gchar *msg;
@@ -620,14 +622,15 @@ _gdk_win32_psstyle_to_string (DWORD pen_style)
   switch (pen_style & PS_STYLE_MASK)
     {
 #define CASE(x) case PS_##x: return #x
+      CASE (ALTERNATE);
+      CASE (SOLID);
       CASE (DASH);
+      CASE (DOT);
       CASE (DASHDOT);
       CASE (DASHDOTDOT);
-      CASE (DOT);
-      CASE (INSIDEFRAME);
       CASE (NULL);
-      CASE (SOLID);
       CASE (USERSTYLE);
+      CASE (INSIDEFRAME);
 #undef CASE
     default: return static_printf ("illegal_%d", pen_style & PS_STYLE_MASK);
     }
@@ -641,9 +644,9 @@ _gdk_win32_psendcap_to_string (DWORD pen_style)
   switch (pen_style & PS_ENDCAP_MASK)
     {
 #define CASE(x) case PS_ENDCAP_##x: return #x
-      CASE (FLAT);
       CASE (ROUND);
       CASE (SQUARE);
+      CASE (FLAT);
 #undef CASE
     default: return static_printf ("illegal_%d", pen_style & PS_ENDCAP_MASK);
     }
@@ -657,9 +660,9 @@ _gdk_win32_psjoin_to_string (DWORD pen_style)
   switch (pen_style & PS_JOIN_MASK)
     {
 #define CASE(x) case PS_JOIN_##x: return #x
+      CASE (ROUND);
       CASE (BEVEL);
       CASE (MITER);
-      CASE (ROUND);
 #undef CASE
     default: return static_printf ("illegal_%d", pen_style & PS_JOIN_MASK);
     }
@@ -902,6 +905,91 @@ _gdk_win32_message_to_string (UINT msg)
     }
   /* NOTREACHED */
   return NULL;
+}
+
+gchar *
+_gdk_win32_key_to_string (LONG lParam)
+{
+  char buf[100];
+  gchar *keyname_utf8;
+
+  if (GetKeyNameText (lParam, buf, sizeof (buf)) &&
+      (keyname_utf8 = g_locale_to_utf8 (buf, -1, NULL, NULL, NULL)) != NULL)
+    {
+      gchar *retval = static_printf ("%s", keyname_utf8);
+
+      g_free (keyname_utf8);
+
+      return retval;
+    }
+
+  return static_printf ("unk-%#lx", lParam);
+}
+      
+gchar *
+_gdk_win32_cf_to_string (UINT format)
+{
+  char buf[100];
+
+  switch (format)
+    {
+#define CASE(x) case CF_##x: return #x
+      CASE (BITMAP);
+      CASE (DIB);
+#ifdef CF_DIBV5
+      CASE (DIBV5);
+#endif
+      CASE (DIF);
+      CASE (DSPBITMAP);
+      CASE (DSPENHMETAFILE);
+      CASE (DSPMETAFILEPICT);
+      CASE (DSPTEXT);
+      CASE (ENHMETAFILE);
+      CASE (HDROP);
+      CASE (LOCALE);
+      CASE (METAFILEPICT);
+      CASE (OEMTEXT);
+      CASE (OWNERDISPLAY);
+      CASE (PALETTE);
+      CASE (PENDATA);
+      CASE (RIFF);
+      CASE (SYLK);
+      CASE (TEXT);
+      CASE (WAVE);
+      CASE (TIFF);
+      CASE (UNICODETEXT);
+    default:
+      if (format >= CF_GDIOBJFIRST &&
+	  format <= CF_GDIOBJLAST)
+	return static_printf ("CF_GDIOBJ%d", format - CF_GDIOBJFIRST);
+      if (format >= CF_PRIVATEFIRST &&
+	  format <= CF_PRIVATELAST)
+	return static_printf ("CF_PRIVATE%d", format - CF_PRIVATEFIRST);
+      if (GetClipboardFormatName (format, buf, sizeof (buf)))
+	return static_printf ("%s", buf);
+      else
+	return static_printf ("unk-%#lx", format);
+    }
+}
+      
+gchar *
+_gdk_win32_data_to_string (const guchar *data,
+			   int           nbytes)
+{
+  GString *s = g_string_new ("");
+  int i;
+  gchar *retval;
+
+  for (i = 0; i < nbytes; i++)
+    if (data[i] >=' ' && data[i] <= '~')
+      g_string_append_printf (s, "%c  ", data[i]);
+    else
+      g_string_append_printf (s, "%02X ", data[i]);
+
+  retval = static_printf ("%s", s->str);
+  g_string_free (s, TRUE);
+
+  return retval;
 }
 
 gchar *

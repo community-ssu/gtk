@@ -1,7 +1,7 @@
 /* GDK - The GIMP Drawing Kit
  * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
  * Copyright (C) 1998-2004 Tor Lillqvist
- * Copyright (C) 2001-2004 Hans Breuer
+ * Copyright (C) 2001-2005 Hans Breuer
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,6 +43,12 @@
 
 #define LINE_ATTRIBUTES (GDK_GC_LINE_WIDTH|GDK_GC_LINE_STYLE| \
 			 GDK_GC_CAP_STYLE|GDK_GC_JOIN_STYLE)
+
+#define MUST_RENDER_DASHES_MANUALLY(gcwin32)			\
+  (gcwin32->line_style == GDK_LINE_DOUBLE_DASH ||		\
+   (gcwin32->line_style == GDK_LINE_ON_OFF_DASH &&		\
+    (gcwin32->pen_dash_offset ||				\
+     (!G_WIN32_IS_NT_BASED () && (gcwin32->pen_style & PS_STYLE_MASK) == PS_SOLID))))
 
 static void gdk_win32_draw_rectangle (GdkDrawable    *drawable,
 				      GdkGC          *gc,
@@ -239,75 +245,131 @@ gdk_win32_set_colormap (GdkDrawable *drawable,
 /* Drawing
  */
 
-static DWORD default_double_dashes[] = { 3, 3 };
+static int
+rop2_to_rop3 (int rop2)
+{
+  switch (rop2)
+    {
+    /* Oh, Microsoft's silly names for binary and ternary rops. */
+#define CASE(rop2,rop3) case R2_##rop2: return rop3
+      CASE (BLACK, BLACKNESS);
+      CASE (NOTMERGEPEN, NOTSRCERASE);
+      CASE (MASKNOTPEN, 0x00220326);
+      CASE (NOTCOPYPEN, NOTSRCCOPY);
+      CASE (MASKPENNOT, SRCERASE);
+      CASE (NOT, DSTINVERT);
+      CASE (XORPEN, SRCINVERT);
+      CASE (NOTMASKPEN, 0x007700E6);
+      CASE (MASKPEN, SRCAND);
+      CASE (NOTXORPEN, 0x00990066);
+      CASE (NOP, 0x00AA0029);
+      CASE (MERGENOTPEN, MERGEPAINT);
+      CASE (COPYPEN, SRCCOPY);
+      CASE (MERGEPENNOT, 0x00DD0228);
+      CASE (MERGEPEN, SRCPAINT);
+      CASE (WHITE, WHITENESS);
+#undef CASE
+    default: return SRCCOPY;
+    }
+}
 
+static int
+rop2_to_patblt_rop (int rop2)
+{
+  switch (rop2)
+    {
+#define CASE(rop2,patblt_rop) case R2_##rop2: return patblt_rop
+      CASE (COPYPEN, PATCOPY);
+      CASE (XORPEN, PATINVERT);
+      CASE (NOT, DSTINVERT);
+      CASE (BLACK, BLACKNESS);
+      CASE (WHITE, WHITENESS);
+#undef CASE
+    default:
+      g_warning ("Unhandled rop2 in GC to be used in PatBlt: %#x", rop2);
+      return PATCOPY;
+    }
+}
+
+static inline int
+align_with_dash_offset (int a, DWORD *dashes, int num_dashes, GdkGCWin32 *gcwin32)
+{
+  int	   n = 0;
+  int    len_sum = 0;
+  /* 
+   * We can't simply add the dashoffset, it can be an arbitrary larger
+   * or smaller value not even between x1 and x2. It just says use the
+   * dash pattern aligned to the offset. So ensure x1 is smaller _x1
+   * and we start with the appropriate dash.
+   */
+  for (n = 0; n < num_dashes; n++)
+    len_sum += dashes[n];
+  if (   len_sum > 0 /* pathological api usage? */
+      && gcwin32->pen_dash_offset > a)
+    a -= (((gcwin32->pen_dash_offset/len_sum - a/len_sum) + 1) * len_sum);
+  else
+    a = gcwin32->pen_dash_offset;
+
+  return a;
+}
+ 
 /* Render a dashed line 'by hand'. Used for all dashes on Win9x (where
  * GDI is way too limited), and for double dashes on all Windowses.
  */
 static inline gboolean
 render_line_horizontal (GdkGCWin32 *gcwin32,
-                        int    x1, 
-                        int    x2,
-                        int    y)
+                        int         x1,
+                        int         x2,
+                        int         y)
 {
-  int	  n;
-  HDC	  hdc = gcwin32->hdc;
-  int	  pen_width = gcwin32->pen_width;
-  DWORD	  *dashes;
-  int	  num_dashes;
-  int	  _x1 = x1;
+  int n = 0;
+  const int pen_width = MAX (gcwin32->pen_width, 1);
+  const int _x1 = x1;
 
-  if (gcwin32->pen_dashes)
-    {
-      dashes = gcwin32->pen_dashes;
-      num_dashes = gcwin32->pen_num_dashes;
-      x1 += gcwin32->pen_dash_offset;
-    }
-  else
-    {
-      dashes = default_double_dashes;
-      num_dashes = G_N_ELEMENTS (default_double_dashes);
-    }
+  g_assert (gcwin32->pen_dashes);
+
+  x1 = align_with_dash_offset (x1, gcwin32->pen_dashes, gcwin32->pen_num_dashes, gcwin32);
 
   for (n = 0; x1 < x2; n++)
     {
-      int len = dashes[n % num_dashes];
+      int len = gcwin32->pen_dashes[n % gcwin32->pen_num_dashes];
       if (x1 + len > x2)
         len = x2 - x1;
 
-      if (n % 2 == 0)
-        if (!GDI_CALL (PatBlt, (hdc, x1, y - pen_width / 2, 
+      if (n % 2 == 0 && x1 + len > _x1)
+        if (!GDI_CALL (PatBlt, (gcwin32->hdc, 
+				x1 < _x1 ? _x1 : x1, 
+				y - pen_width / 2, 
 				len, pen_width, 
-				PATCOPY)))
+				rop2_to_patblt_rop (gcwin32->rop2))))
 	  return FALSE;
 
-      x1 += dashes[n % num_dashes];
+      x1 += gcwin32->pen_dashes[n % gcwin32->pen_num_dashes];
     }
 
-  if (gcwin32->pen_double_dash)
+  if (gcwin32->line_style == GDK_LINE_DOUBLE_DASH)
     {
       HBRUSH hbr;
 
-      if ((hbr = SelectObject (hdc, gcwin32->pen_hbrbg)) == HGDI_ERROR)
+      if ((hbr = SelectObject (gcwin32->hdc, gcwin32->pen_hbrbg)) == HGDI_ERROR)
 	return FALSE;
       x1 = _x1;
-      if (gcwin32->pen_dashes)
-	x1 += gcwin32->pen_dash_offset;
+      x1 += gcwin32->pen_dash_offset;
       for (n = 0; x1 < x2; n++)
 	{
-	  int len = dashes[n % num_dashes];
+	  int len = gcwin32->pen_dashes[n % gcwin32->pen_num_dashes];
 	  if (x1 + len > x2)
 	    len = x2 - x1;
 
 	  if (n % 2)
-	    if (!GDI_CALL (PatBlt, (hdc, x1, y - pen_width / 2,
+	    if (!GDI_CALL (PatBlt, (gcwin32->hdc, x1, y - pen_width / 2,
 				    len, pen_width,
-				    PATCOPY)))
+				    rop2_to_patblt_rop (gcwin32->rop2))))
 	      return FALSE;
 
-	  x1 += dashes[n % num_dashes];
+	  x1 += gcwin32->pen_dashes[n % gcwin32->pen_num_dashes];
 	}
-      if (SelectObject (hdc, hbr) == HGDI_ERROR)
+      if (SelectObject (gcwin32->hdc, hbr) == HGDI_ERROR)
 	return FALSE;
     }
 
@@ -316,66 +378,54 @@ render_line_horizontal (GdkGCWin32 *gcwin32,
 
 static inline gboolean
 render_line_vertical (GdkGCWin32 *gcwin32,
-		      int    x, 
-                      int    y1,
-                      int    y2)
+		      int         x,
+                      int         y1,
+                      int         y2)
 {
-  int	  n;
-  HDC	  hdc = gcwin32->hdc;
-  int	  pen_width = gcwin32->pen_width;
-  DWORD	  *dashes;
-  int	  num_dashes;
-  int	  _y1 = y1;
+  int n;
+  const int pen_width = MAX (gcwin32->pen_width, 1);
+  const int _y1 = y1;
 
-  if (gcwin32->pen_dashes)
-    {
-      dashes = gcwin32->pen_dashes;
-      num_dashes = gcwin32->pen_num_dashes;
-      y1 += gcwin32->pen_dash_offset;
-    }
-  else
-    {
-      dashes = default_double_dashes;
-      num_dashes = G_N_ELEMENTS (default_double_dashes);
-    }
+  g_assert (gcwin32->pen_dashes);
 
+  y1 = align_with_dash_offset (y1, gcwin32->pen_dashes, gcwin32->pen_num_dashes, gcwin32);
   for (n = 0; y1 < y2; n++)
     {
-      int len = dashes[n % num_dashes];
+      int len = gcwin32->pen_dashes[n % gcwin32->pen_num_dashes];
       if (y1 + len > y2)
         len = y2 - y1;
-      if (n % 2 == 0)
-        if (!GDI_CALL (PatBlt, (hdc, x - pen_width / 2, y1, 
+      if (n % 2 == 0 && y1 + len > _y1)
+        if (!GDI_CALL (PatBlt, (gcwin32->hdc, x - pen_width / 2, 
+				y1 < _y1 ? _y1 : y1, 
 				pen_width, len, 
-				PATCOPY)))
+				rop2_to_patblt_rop (gcwin32->rop2))))
 	  return FALSE;
 
-      y1 += dashes[n % num_dashes];
+      y1 += gcwin32->pen_dashes[n % gcwin32->pen_num_dashes];
     }
 
-  if (gcwin32->pen_double_dash)
+  if (gcwin32->line_style == GDK_LINE_DOUBLE_DASH)
     {
       HBRUSH hbr;
 
-      if ((hbr = SelectObject (hdc, gcwin32->pen_hbrbg)) == HGDI_ERROR)
+      if ((hbr = SelectObject (gcwin32->hdc, gcwin32->pen_hbrbg)) == HGDI_ERROR)
 	return FALSE;
       y1 = _y1;
-      if (gcwin32->pen_dashes)
-	y1 += gcwin32->pen_dash_offset;
+      y1 += gcwin32->pen_dash_offset;
       for (n = 0; y1 < y2; n++)
 	{
-	  int len = dashes[n % num_dashes];
+	  int len = gcwin32->pen_dashes[n % gcwin32->pen_num_dashes];
 	  if (y1 + len > y2)
 	    len = y2 - y1;
 	  if (n % 2)
-	    if (!GDI_CALL (PatBlt, (hdc, x - pen_width / 2, y1,
+	    if (!GDI_CALL (PatBlt, (gcwin32->hdc, x - pen_width / 2, y1,
 				    pen_width, len,
-				    PATCOPY)))
+				    rop2_to_patblt_rop (gcwin32->rop2))))
 	      return FALSE;
 
-	  y1 += dashes[n % num_dashes];
+	  y1 += gcwin32->pen_dashes[n % gcwin32->pen_num_dashes];
 	}
-      if (SelectObject (hdc, hbr) == HGDI_ERROR)
+      if (SelectObject (gcwin32->hdc, hbr) == HGDI_ERROR)
 	return FALSE;
     }
 
@@ -467,34 +517,6 @@ draw_tiles (GdkDrawable *drawable,
   gdk_win32_hdc_release (drawable, gc, mask);
   gdk_win32_hdc_release (tile, gc_copy, mask);
   gdk_gc_unref (gc_copy);
-}
-
-static int
-rop2_to_rop3 (int rop2)
-{
-  switch (rop2)
-    {
-    /* Oh, Microsoft's silly names for binary and ternary rops. */
-#define CASE(rop2,rop3) case R2_##rop2: return rop3
-      CASE (BLACK, BLACKNESS);
-      CASE (NOTMERGEPEN, NOTSRCERASE);
-      CASE (MASKNOTPEN, 0x00220326);
-      CASE (NOTCOPYPEN, NOTSRCCOPY);
-      CASE (MASKPENNOT, SRCERASE);
-      CASE (NOT, DSTINVERT);
-      CASE (XORPEN, SRCINVERT);
-      CASE (NOTMASKPEN, 0x007700E6);
-      CASE (MASKPEN, SRCAND);
-      CASE (NOTXORPEN, 0x00990066);
-      CASE (NOP, 0x00AA0029);
-      CASE (MERGENOTPEN, MERGEPAINT);
-      CASE (COPYPEN, SRCCOPY);
-      CASE (MERGEPENNOT, 0x00DD0228);
-      CASE (MERGEPEN, SRCPAINT);
-      CASE (WHITE, WHITENESS);
-#undef CASE
-    default: return SRCCOPY;
-    }
 }
 
 static void
@@ -818,9 +840,7 @@ draw_rectangle (GdkGCWin32 *gcwin32,
   x -= x_offset;
   y -= y_offset;
 
-  if (!filled && (gcwin32->pen_double_dash ||
-                  (gcwin32->pen_dashes && (gcwin32->pen_dash_offset ||
-					   !G_WIN32_IS_NT_BASED ()))))
+  if (!filled && MUST_RENDER_DASHES_MANUALLY (gcwin32))
     {
       render_line_vertical (gcwin32, x, y, y+height+1) &&
       render_line_horizontal (gcwin32, x, x+width+1, y) &&
@@ -1269,9 +1289,7 @@ draw_segments (GdkGCWin32 *gcwin32,
         }
     }
 
-  if (gcwin32->pen_double_dash ||
-      (gcwin32->pen_dashes && (gcwin32->pen_dash_offset ||
-			       !G_WIN32_IS_NT_BASED ())))
+  if (MUST_RENDER_DASHES_MANUALLY (gcwin32))
     {
       for (i = 0; i < nsegs; i++)
 	{
@@ -1300,42 +1318,22 @@ draw_segments (GdkGCWin32 *gcwin32,
 	  else
 	    GDI_CALL (MoveToEx, (hdc, segs[i].x1, segs[i].y1, NULL)) &&
 	      GDI_CALL (LineTo, (hdc, segs[i].x2, segs[i].y2));
-
 	}
     }
   else
     {
       for (i = 0; i < nsegs; i++)
-	GDI_CALL (MoveToEx, (hdc, segs[i].x1, segs[i].y1, NULL)) &&
-	  GDI_CALL (LineTo, (hdc, segs[i].x2, segs[i].y2));
+	{
+	  const GdkSegment *ps = &segs[i];
+	  const int x1 = ps->x1, y1 = ps->y1;
+	  int x2 = ps->x2, y2 = ps->y2;
 
-      /* not drawing the end pixel does produce a crippled mask, look 
-       * e.g. at xpm icons produced with gdk_pixbuf_new_from_xpm_data trough
-       * gdk_pixbuf_render_threshold_alpha (testgtk folder icon or
-       * Dia's toolbox icons) but only on win9x ... --hb
-       *
-       * Update : see bug #81895 and bug #126710 why this is finally
-       *          needed on any win32 platform ;-)
-       */
-      if (gcwin32->pen_width <= 1)
-        {
-          GdkSegment *ps = &segs[nsegs-1];
-          int xc = 0, yc = 0;
+	  GDK_NOTE (MISC, g_print (" +%d+%d..+%d+%d", x1, y1, x2, y2));
+	  GDI_CALL (MoveToEx, (hdc, x1, y1, NULL)) &&
+	    GDI_CALL (LineTo, (hdc, x2, y2));
+	}
 
-          if (ps->y2 == ps->y1 && ps->x2 == ps->x1)
-            xc = 1; /* just a point */
-          else if (ps->y2 == ps->y1)
-            xc = (ps->x1 < ps->x2) ? 1 : -1; /* advance x only */
-          else if (ps->x2 == ps->x1)
-            yc = (ps->y1 < ps->y2) ? 1 : -1; /* advance y only */
-          else
-            {
-              xc = (ps->x1 < ps->x2) ? 1 : -1;
-              yc = (ps->y1 < ps->y2) ? 1 : -1;
-            }
-
-          GDI_CALL (LineTo, (hdc, ps->x2 + xc, ps->y2 + yc));
-        }
+      GDK_NOTE (MISC, g_print ("\n"));
     }
   if (x_offset != 0 || y_offset != 0)
     g_free (segs);
@@ -1378,8 +1376,7 @@ gdk_win32_draw_segments (GdkDrawable *drawable,
 
   region = widen_bounds (&bounds, GDK_GC_WIN32 (gc)->pen_width);
 
-  generic_draw (drawable, gc, GDK_GC_FOREGROUND | GDK_GC_FOREGROUND |
-			      LINE_ATTRIBUTES,
+  generic_draw (drawable, gc, GDK_GC_FOREGROUND | LINE_ATTRIBUTES,
 		draw_segments, region, segs, nsegs);
 
   gdk_region_destroy (region);
@@ -1406,9 +1403,7 @@ draw_lines (GdkGCWin32 *gcwin32,
 	pts[i].y -= y_offset;
       }
   
-  if (gcwin32->pen_double_dash ||
-      (gcwin32->pen_dashes && (gcwin32->pen_dash_offset ||
-			       !G_WIN32_IS_NT_BASED ())))
+  if (MUST_RENDER_DASHES_MANUALLY (gcwin32))
     {
       for (i = 0; i < npoints - 1; i++)
         {
@@ -1742,17 +1737,17 @@ blit_from_pixmap (gboolean              use_fg_bg,
 }
 
 static void
-blit_inside_window (HDC      	hdc,
-		    GdkGCWin32 *gcwin32,
-		    gint     	xsrc,
-		    gint     	ysrc,
-		    gint     	xdest,
-		    gint     	ydest,
-		    gint     	width,
-		    gint     	height)
+blit_inside_drawable (HDC      	hdc,
+		      GdkGCWin32 *gcwin32,
+		      gint     	xsrc,
+		      gint     	ysrc,
+		      gint     	xdest,
+		      gint     	ydest,
+		      gint     	width,
+		      gint     	height)
 
 {
-  GDK_NOTE (MISC, g_print ("blit_inside_window\n"));
+  GDK_NOTE (MISC, g_print ("blit_inside_drawable\n"));
 
   GDI_CALL (BitBlt, (hdc, xdest, ydest, width, height,
 		     hdc, xsrc, ysrc, rop2_to_rop3 (gcwin32->rop2)));
@@ -1806,7 +1801,7 @@ blit_from_window (HDC                   hdc,
 
 void
 _gdk_win32_blit (gboolean              use_fg_bg,
-		 GdkDrawableImplWin32 *drawable,
+		 GdkDrawableImplWin32 *draw_impl,
 		 GdkGC       	      *gc,
 		 GdkDrawable 	      *src,
 		 gint        	       xsrc,
@@ -1819,7 +1814,6 @@ _gdk_win32_blit (gboolean              use_fg_bg,
   HDC hdc;
   HRGN src_rgn, draw_rgn, outside_rgn;
   RECT r;
-  GdkDrawableImplWin32 *draw_impl;
   GdkDrawableImplWin32 *src_impl = NULL;
   gint src_width, src_height;
   
@@ -1827,11 +1821,19 @@ _gdk_win32_blit (gboolean              use_fg_bg,
 			   "                 dst:%s @+%d+%d use_fg_bg=%d\n",
 			   _gdk_win32_drawable_description (src),
 			   width, height, xsrc, ysrc,
-			   _gdk_win32_drawable_description ((GdkDrawable *) drawable),
+			   _gdk_win32_drawable_description (&draw_impl->parent_instance),
 			   xdest, ydest,
 			   use_fg_bg));
 
-  draw_impl = (GdkDrawableImplWin32 *) drawable;
+  /* If blitting from the root window, take the multi-monitor offset
+   * into account.
+   */
+  if (src == ((GdkWindowObject *)_gdk_parent_root)->impl)
+    {
+      GDK_NOTE (MISC, g_print ("... offsetting src coords\n"));
+      xsrc -= _gdk_offset_x;
+      ysrc -= _gdk_offset_y;
+    }
 
   if (GDK_IS_DRAWABLE_IMPL_WIN32 (src))
     src_impl = (GdkDrawableImplWin32 *) src;
@@ -1842,7 +1844,7 @@ _gdk_win32_blit (gboolean              use_fg_bg,
   else
     g_assert_not_reached ();
 
-  hdc = gdk_win32_hdc_get ((GdkDrawable *) drawable, gc, GDK_GC_FOREGROUND);
+  hdc = gdk_win32_hdc_get (&draw_impl->parent_instance, gc, GDK_GC_FOREGROUND);
 
   gdk_drawable_get_size (src, &src_width, &src_height);
 
@@ -1908,15 +1910,15 @@ _gdk_win32_blit (gboolean              use_fg_bg,
       GDI_CALL (DeleteObject, (draw_rgn));
     }
 
-  if (GDK_IS_PIXMAP_IMPL_WIN32 (src_impl))
+  if (draw_impl->handle == src_impl->handle)
+    blit_inside_drawable (hdc, GDK_GC_WIN32 (gc), xsrc, ysrc, xdest, ydest, width, height);
+  else if (GDK_IS_PIXMAP_IMPL_WIN32 (src_impl))
     blit_from_pixmap (use_fg_bg, draw_impl, hdc,
 		      (GdkPixmapImplWin32 *) src_impl, GDK_GC_WIN32 (gc),
 		      xsrc, ysrc, xdest, ydest, width, height);
-  else if (draw_impl->handle == src_impl->handle)
-    blit_inside_window (hdc, GDK_GC_WIN32 (gc), xsrc, ysrc, xdest, ydest, width, height);
   else
     blit_from_window (hdc, GDK_GC_WIN32 (gc), src_impl, xsrc, ysrc, xdest, ydest, width, height);
-  gdk_win32_hdc_release ((GdkDrawable *) drawable, gc, GDK_GC_FOREGROUND);
+  gdk_win32_hdc_release (&draw_impl->parent_instance, gc, GDK_GC_FOREGROUND);
 }
 
 static void
