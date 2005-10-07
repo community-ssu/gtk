@@ -20,12 +20,12 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkfilesystem.h"
 #include "gtkfilesystemwin32.h"
 #include "gtkintl.h"
 #include "gtkstock.h"
 #include "gtkiconfactory.h"
+#include "gtkalias.h"
 
 #include <glib/gstdio.h>
 
@@ -612,23 +612,48 @@ gtk_file_system_win32_volume_get_display_name (GtkFileSystem       *file_system,
   else if ((filename_is_drive_root (volume->drive) && volume->drive[0] >= 'C') ||
       volume->drive_type != DRIVE_REMOVABLE)
     {
-      gunichar2 *wdrive = g_utf8_to_utf16 (volume->drive, -1, NULL, NULL, NULL);
-      gunichar2 wname[80];
-      if (GetVolumeInformationW (wdrive,
-				 wname, G_N_ELEMENTS(wname), 
-				 NULL, /* serial number */
-				 NULL, /* max. component length */
-				 NULL, /* fs flags */
-				 NULL, 0) /* fs type like FAT, NTFS */ &&
-	  wname[0])
+      gchar *name = NULL;
+      if (G_WIN32_HAVE_WIDECHAR_API ())
 	{
-	  gchar *name = g_utf16_to_utf8 (wname, -1, NULL, NULL, NULL);
+	  gunichar2 *wdrive = g_utf8_to_utf16 (volume->drive, -1, NULL, NULL, NULL);
+	  gunichar2 wname[80];
+	  if (GetVolumeInformationW (wdrive,
+				     wname, G_N_ELEMENTS(wname), 
+				     NULL, /* serial number */
+				     NULL, /* max. component length */
+				     NULL, /* fs flags */
+				     NULL, 0) /* fs type like FAT, NTFS */ &&
+	      wname[0])
+	    {
+	      name = g_utf16_to_utf8 (wname, -1, NULL, NULL, NULL);
+	    }
+	  g_free (wdrive);
+	}
+      else
+        {
+          gchar *cpdrive = g_locale_from_utf8 (volume->drive, -1, NULL, NULL, NULL);
+          gchar cpname[80];
+          if (GetVolumeInformationA (cpdrive,
+				     cpname, G_N_ELEMENTS(cpname), 
+				     NULL, /* serial number */
+				     NULL, /* max. component length */
+				     NULL, /* fs flags */
+				     NULL, 0) /* fs type like FAT, NTFS */ &&
+	      cpname[0])
+            {
+              name = g_locale_to_utf8 (cpname, -1, NULL, NULL, NULL);
+            }
+          g_free (cpdrive);
+        }
+      if (name != NULL)
+        {
 	  real_display_name = g_strconcat (name, " (", volume->drive, ")", NULL);
 	  g_free (name);
 	}
       else
-	real_display_name = g_strdup (volume->drive);
-      g_free (wdrive);
+	{
+	  real_display_name = g_strdup (volume->drive);
+	}
     }
   else
     real_display_name = g_strdup (volume->drive);
@@ -741,7 +766,7 @@ canonicalize_filename (gchar *filename)
   printf("canonicalize_filename: %s ", filename);
 #endif
 
-  past_root = g_path_skip_root (filename);
+  past_root = (gchar *) g_path_skip_root (filename);
 
   q = p = past_root;
 
@@ -1287,10 +1312,12 @@ gtk_file_system_win32_render_icon (GtkFileSystem     *file_system,
     }
 
   if (!icon_set)
-    if (g_file_test (filename, G_FILE_TEST_IS_EXECUTABLE))
-	icon_set = gtk_style_lookup_icon_set (widget->style, GTK_STOCK_EXECUTE);
-    else
-      icon_set = gtk_style_lookup_icon_set (widget->style, GTK_STOCK_FILE);
+    {
+      if (g_file_test (filename, G_FILE_TEST_IS_EXECUTABLE))
+        icon_set = gtk_style_lookup_icon_set (widget->style, GTK_STOCK_EXECUTE);
+      else
+        icon_set = gtk_style_lookup_icon_set (widget->style, GTK_STOCK_FILE);
+    }
 
   // FIXME : I'd like to get from pixel_size (=20) back to
   // icon size, which is an index, but there appears to be no way ?
@@ -1586,23 +1613,37 @@ filename_get_info (const gchar     *filename,
     }
 #endif
 
-  if ((types & GTK_FILE_INFO_MIME_TYPE)
-#if 0 /* it's dead in gtkfilesystemunix.c, too */
-      || ((types & GTK_FILE_INFO_ICON) && icon_type == GTK_FILE_ICON_REGULAR)
-#endif
-     )
+  if (types & GTK_FILE_INFO_MIME_TYPE)
     {
-#if 0
-      const char *mime_type = xdg_mime_get_mime_type_for_file (filename);
-      gtk_file_info_set_mime_type (info, mime_type);
+      if (g_file_test (filename, G_FILE_TEST_IS_EXECUTABLE))
+	gtk_file_info_set_mime_type (info, "application/x-executable");
+      else
+	{
+	  const char *extension = strrchr (filename, '.');
+	  HKEY key = NULL;
+	  DWORD type, nbytes = 0;
+	  char *value;
 
-      if ((types & GTK_FILE_INFO_ICON) && icon_type == GTK_FILE_ICON_REGULAR &&
-	  (statbuf.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)) &&
-	  (strcmp (mime_type, XDG_MIME_TYPE_UNKNOWN) == 0 ||
-	   strcmp (mime_type, "application/x-executable") == 0 ||
-	   strcmp (mime_type, "application/x-shellscript") == 0))
-	gtk_file_info_set_icon_type (info, GTK_FILE_ICON_EXECUTABLE);
-#endif
+	  if (extension != NULL &&
+	      extension[1] != '\0' &&
+	      RegOpenKeyEx (HKEY_CLASSES_ROOT, extension, 0,
+			    KEY_QUERY_VALUE, &key) == ERROR_SUCCESS &&
+	      RegQueryValueEx (key, "Content Type", 0,
+			       &type, NULL, &nbytes) == ERROR_SUCCESS &&
+	      type == REG_SZ &&
+	      (value = g_try_malloc (nbytes + 1)) &&
+	      RegQueryValueEx (key, "Content Type", 0,
+			       &type, value, &nbytes) == ERROR_SUCCESS)
+	    {
+	      value[nbytes] = '\0';
+	      gtk_file_info_set_mime_type (info, value);
+	      g_free (value);
+	    }
+	  else
+	    gtk_file_info_set_mime_type (info, "application/octet-stream");
+	  if (key != NULL)
+	    RegCloseKey (key);
+	}
     }
 
   if (types & GTK_FILE_INFO_MODIFICATION_TIME)
@@ -1711,3 +1752,6 @@ _gtk_file_system_win32_path_compare (const gchar *path1,
 
   return retval;
 }
+
+#define __GTK_FILE_SYSTEM_WIN32_C__
+#include "gtkaliasdef.c"
