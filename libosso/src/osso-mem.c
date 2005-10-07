@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2005 Nokia. All rights reserved.
  *
- * Contact: Leonid Moiseichuk <leonid.moiseichuk@nokia.com>
+ * Contact: Andrei Laperie <andrei.laperie@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,20 +20,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-/*
- * Description:
- *    Reading /proc/meminfo and return memory important values: free, used, usage, total.
- *
- * History:
- *
- * 27-Sep-2005 Leonid Moiseichuk
- * - initial version created using memlimits.c as a prototype.
- * 
- * 07-Oct-2005 Andrei Laperie
- * - corrected memusage function to ignore the  Slab memory 
- * - added saw_ and lowmem_ functions
- * - reformatted to be made part of libosso
- * ========================================================================= */
 /* ========================================================================= *
  * Includes
  * ========================================================================= */
