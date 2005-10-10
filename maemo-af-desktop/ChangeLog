@@ -1,4 +1,18 @@
 2005-10-10  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Patched bug N# 20284 Random ghost icon in Task Navigator:
+	* hildon-navigator/windowmanager.h: Removed killable member from
+        menuitem_comp_t, as windowmanager.c now uses a better method for
+        acquiring the information.
+        * hildon-navigator/windowmanager.c (handle_active_window_prop):
+        Application Switcher was occasionally updated incorrectly due to
+        use of hardcoded value instead of variable.
+        (menuitem_match_helper): menuitem_comp_t member killable removed.
+        (kill_all): Avoid attempting to kill applications that are not
+        killable/are already killed. Mark killed applications as not
+        killable, as otherwise we may attempt to kill applications that
+        are restaring after bgkill.
+
+2005-10-10  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Increased version number to 1.58.2
 	* Commented out one unused function to prevent compilation warning
 

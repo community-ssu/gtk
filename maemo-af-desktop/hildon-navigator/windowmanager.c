@@ -1559,7 +1559,7 @@ static void handle_active_window_prop(GtkTreeModel *model,
                                    WM_VIEW_NAME_ITEM, &subname_str, -1);
                 update_window(model, &parent, realwin_value.window_value[0],
                               id, id, subname_str,
-                              AS_MENUITEM_TO_FIRST_POSITION);
+                              update_flag);
                 
                 g_free(subname_str);
             }
@@ -2538,7 +2538,6 @@ static gboolean menuitem_match_helper(GtkTreeModel *model,
         ((menuitem_comp_t *)data)->service = g_strdup(service);
         ((menuitem_comp_t *)data)->view_id = view_id;
         ((menuitem_comp_t *)data)->window_id = window_id;
-        ((menuitem_comp_t *)data)->killable = killable;
 
         g_free(wm_class);
         g_free(service);
@@ -3322,21 +3321,33 @@ static int kill_all( gboolean killable_only )
 
     for (i = g_list_length(mitems)-1 ; i >= 2; i--)
     {
+        gboolean killable, killed;
+	GtkTreeIter iter;
         menu_comp.menu_ptr = 
             g_list_nth_data(mitems, i);
         menu_comp.wm_class = NULL;
         menu_comp.service = NULL;
         menu_comp.window_id = 0;
-        menu_comp.killable = FALSE;
 
         gtk_tree_model_foreach(wm_cbs.model, menuitem_match_helper,
                                &menu_comp);
 
 	/* Do not kill applications that do not have service name
-	   information, as we'd be unable to top them... */
+	   information, as we'd be unable to top them... Also, 
+	   leave killed/not killable apps alone - we do not want to
+	   kill an application that is starting up! */
 
-        if (menu_comp.window_id != 0 && menu_comp.service != NULL &&
-            ((menu_comp.killable == TRUE && killable_only == TRUE) ||
+	if ( find_service_from_tree(wm_cbs.model,
+				    &iter,
+				    menu_comp.service ) > 0) 
+	  {
+	    gtk_tree_model_get( wm_cbs.model, &iter,WM_KILLABLE_ITEM,
+				&killable, WM_KILLED_ITEM, &killed, -1);
+	  }
+
+        if (menu_comp.window_id != 0 &&
+	    menu_comp.service != NULL && !killed &&
+	    ((killable && killable_only == TRUE) || 
              killable_only == FALSE))
         {
 
@@ -3394,15 +3405,19 @@ static int kill_all( gboolean killable_only )
                     XFree(pid_result);
                     continue;
                 }
-                if (menu_comp.killable == TRUE )
+                if (killable)
                 {
-                    GtkTreeIter iter;
                     /* Find service parent node */
+		    
                     if ( find_service_from_tree( wm_cbs.model,
                                                  &iter,
                                                  menu_comp.service ) > 0 ) {
-                        gtk_tree_store_set( GTK_TREE_STORE(wm_cbs.model),
-                                            &iter, WM_KILLED_ITEM, TRUE, -1);
+		      /* To ensure that the app is not killed again
+			 during its possible restart, reset killed
+			 applications to non-killable */
+		      gtk_tree_store_set( GTK_TREE_STORE(wm_cbs.model),
+					  &iter, WM_KILLED_ITEM, TRUE,
+					  WM_KILLABLE_ITEM, FALSE, -1);
                     }
                 }
                 XFree(pid_result);
