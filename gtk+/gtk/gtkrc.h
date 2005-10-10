@@ -30,9 +30,7 @@
 
 #include <gtk/gtkstyle.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* Forward declarations */
 typedef struct _GtkIconFactory  GtkIconFactory;
@@ -244,9 +242,6 @@ const gchar* _gtk_rc_context_get_default_font_name (GtkSettings *settings);
 
 GSList *_gtk_rc_style_get_logical_color_hashes (GtkRcStyle *rc_style);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __GTK_RC_H__ */

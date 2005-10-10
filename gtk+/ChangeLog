@@ -1,5 +1,12 @@
 2005-10-10  Michael Natterer  <mitch@imendio.com>
 
+	* gtk/*.h: merged all header changes which only affect include
+	guards and G_BEGIN_DECLS/G_END_DECLS (in fact that's all but 3
+	headers). They don't have upstream ChangeLog entries that are
+	worth mentioning.
+
+2005-10-10  Michael Natterer  <mitch@imendio.com>
+
 	Merge all changes in modules/input/:
 
     2005-07-05  Matthias Clasen  <mclasen@redhat.com>

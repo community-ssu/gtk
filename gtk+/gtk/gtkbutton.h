@@ -34,9 +34,7 @@
 #include <gtk/gtkimage.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 #define GTK_TYPE_BUTTON                 (gtk_button_get_type ())
 #define GTK_BUTTON(obj)                 (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_BUTTON, GtkButton))
@@ -148,9 +146,6 @@ extern const gchar *osso_gtk_button_attach_details [OSSO_GTK_BUTTON_ATTACH_ENUM_
 void osso_gtk_button_set_detail_from_attach_flags (GtkButton *button,
 						   OssoGtkButtonAttachFlags flags);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __GTK_BUTTON_H__ */

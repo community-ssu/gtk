@@ -32,10 +32,7 @@
 #include <gtk/gtkcontainer.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 #define	GTK_TYPE_MENU_SHELL		(gtk_menu_shell_get_type ())
 #define GTK_MENU_SHELL(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_MENU_SHELL, GtkMenuShell))
@@ -132,9 +129,6 @@ void     gtk_menu_shell_set_take_focus (GtkMenuShell *menu_shell,
 /* Private function */
 void _gtk_menu_shell_set_first_click (GtkMenuShell *menu_shell);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __GTK_MENU_SHELL_H__ */
