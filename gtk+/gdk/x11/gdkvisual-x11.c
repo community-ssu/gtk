@@ -28,11 +28,12 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include "gdkalias.h"
+#include "gdkx.h"
 #include "gdkvisual.h"
 #include "gdkprivate-x11.h"
 #include "gdkscreen-x11.h"
 #include "gdkinternals.h"
+#include "gdkalias.h"
 
 struct _GdkVisualClass
 {
@@ -593,6 +594,12 @@ gdk_visual_decompose_mask (gulong  mask,
   *shift = 0;
   *prec = 0;
 
+  if (mask == 0)
+    {
+      g_warning ("Mask is 0 in visual. Server bug ?");
+      return;
+    }
+
   while (!(mask & 0x1))
     {
       (*shift)++;
@@ -652,3 +659,6 @@ gdk_visual_get_screen (GdkVisual *visual)
 
   return  ((GdkVisualPrivate*) visual)->screen;
 }
+
+#define __GDK_VISUAL_X11_C__
+#include "gdkaliasdef.c"

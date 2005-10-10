@@ -48,9 +48,9 @@ in this Software without prior written authorization from The Open Group.
 #include <X11/extensions/XIproto.h>
 #endif
 #include <X11/Xlibint.h>
-#include "gdkalias.h"
 #include "gdkasync.h"
 #include "gdkx.h"
+#include "gdkalias.h"
 
 typedef struct _ChildInfoChildState ChildInfoChildState;
 typedef struct _ChildInfoState ChildInfoState;
@@ -150,6 +150,8 @@ send_event_handler (Display *dpy,
 	state->callback (state->window, !state->have_error, state->data);
 
       DeqAsyncHandler(state->dpy, &state->async);
+
+      g_free (state);
 
       return (rep->generic.type != X_Error);
     }
@@ -724,3 +726,5 @@ _gdk_x11_get_window_child_info (GdkDisplay       *display,
   return !state.have_error;
 }
 
+#define __GDK_ASYNC_C__
+#include "gdkaliasdef.c"

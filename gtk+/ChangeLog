@@ -1,3 +1,107 @@
+2005-10-10  Michael Natterer  <mitch@imendio.com>
+
+	Merge all changes in gdk/ and gdk/x11/:
+
+    2005-06-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/x11/gdkvisual-x11.c (gdk_visual_decompose_mask): Avoid
+	infinite loop if a mask is zero.  (#309222, David Saxton)
+
+    2005-06-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/x11/gdkdnd-x11.c (xdnd_finished_filter): Set the
+	time field in the event.  (#308573, Morten Welinder)
+
+    2005-06-12  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* gdk/x11/gdkasync.c: (send_event_handler): Merge
+	fix for a leak from HEAD. Bug #307281.
+
+    2005-06-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/x11/gdkdnd-x11.c (motif_drop_start, xdnd_drop_filter): Update
+	the user time on the window when a drop happens.  (#169364, Alexander
+	Hunziker, patch by Elijah Newren)
+
+    2005-05-18  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/x11/gdkproperty-x11.c (gdk_property_get): Warn if
+	length overflows.  (#161520, Ian Wienand)
+
+    2005-05-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/gdkpango.c (gdk_pango_renderer_get_default): Fix a typo
+	in the docs.  (#303940, Masao Mutoh)
+
+    2005-05-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/x11/gdkscreen-x11.c (gdk_screen_get_width_mm) 
+	(gdk_screen_get_height_mm): Fix typos in the docs. (#303389,
+	Masao Mutoh)
+
+    2005-05-04  Owen Taylor  <otaylor@redhat.com>
+
+	* gdk/x11/gdkevents-x11.c gdk/x11/gdkwindow-x11.h: Fix a bug
+	in focus tracking when we move between has_pointer_focus and 
+	has_focus_window directly. (#109246, Billy Biggs, Niko Tyni 
+	and others)
+
+	* gdk/x11/gdkevents-x11.c: Also fix some extremely confusion
+	that could happen in the case of no window manager + keyboard grabs,
+	by moving to a more consistent model of when we pay attention
+	to mode=NotifyGrab/NotifyUngrab events.
+
+    2005-04-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/abicheck.sh: Handle duplicate symbols.
+
+    2005-04-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/x11/gdkinput-xfree.c:
+	* gdk/x11/gdkinput-none.c:
+	* gdk/gtk.symbols: Some more fixes necessary to 
+	make building with gcc 4 work.
+
+    2005-04-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/gdkpango.c (gdk_pango_layout_line_get_clip_region): 
+	Ignore regions which fall completely outside the line.  
+	(#165862, Felipe Heidrich)
+
+    2005-04-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/*.c, gdk/gdkdisplaymanager.c: s/G-OBJECT/G_OBJECT/g, 
+	and some more build fixes.
+
+    2005-04-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/*.c, gdk/gdkdisplaymanager.c: Use canonical property
+	names for g_object_notify() calls.  (#171746, Morten Welinder)
+
+    Tue Mar 15 20:34:33 2005  Manish Singh  <yosh@gimp.org>
+
+	* gdk/x11/gdkinput-xfree.c: #include gdkaliasdef.c here too.
+
+    2005-03-15  Matthias Clasen  <mclasen@redhat.com>
+
+	Make PLT-reduction work with gcc4, and don't include
+	everything in gdkalias.h:
+	
+	* gdk/gdk.symbols: Group symbols by header and source file.
+	* gdk/makegdkalias.pl: Protect definitions by the same 
+	preprocessor symbols used to guard the headers. Move
+	the alias declarations to a separate file which is 
+	produced when calling makegdkalias.pl -def
+	* gdk/Makefile.am (gdkaliasdef.c): Add a rule to generate this
+	file.
+	* gdk/*.c, gdk/x11/*.c: Include gdkalias.h after the other
+	headers, include gdkaliasdef.c at the bottom.
+
+    Tue Mar  1 14:04:08 2005  Manish Singh  <yosh@gimp.org>
+
+	* gdk/x11/gdkproperty-x11.c (virtual_atom_check_init): Cast to avoid
+	const warnings on data structure seeding.
+
 2005-10-07  Michael Natterer  <mitch@imendio.com>
 
 	Merged all Win32 related 2.4 -> 2.10 diffs:
