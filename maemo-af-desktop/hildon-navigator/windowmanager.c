@@ -323,7 +323,7 @@ static int determine_window_type(Window win_id);
  * @return The title of the window, or "Unknown" if not set
  */
 
-static guchar *get_window_title(Window win_id);
+/*static guchar *get_window_title(Window win_id);*/
 
 
 /* Gets the active view for the window (i.e. _NET_ACTIVE_WINDOW)
@@ -2092,7 +2092,7 @@ static int determine_window_type(Window win_id)
     return window_type;
 }
 
-
+/* Commented out to make this buildable - quick and dirty solution
 static guchar *get_window_title(Window win_id)
 {
     int actual_format;
@@ -2115,7 +2115,7 @@ static guchar *get_window_title(Window win_id)
     }
     return window_title;
 }
-
+*/
 
 static gulong get_active_view(Window win_id)
 {
