@@ -1,5 +1,47 @@
 2005-10-10  Michael Natterer  <mitch@imendio.com>
 
+	Merged all changes to demos/ and tests/:
+
+    2005-05-25  Matthias Clasen  <mclasen@redhat.com>
+
+	* demos/gtk-demo/clipboard.c: Demonstrate image copy-and-paste
+	and drag-and-drop.
+
+	* demos/gtk-demo/appwindow.c (do_appwindow): Set the window
+	icon by name.
+
+    2005-05-25  Matthias Clasen  <mclasen@redhat.com>
+
+	* demos/gtk-demo/editable_cells.c (create_items_model): Also
+	demonstrate GtkCellRendererProgress.
+
+	* demos/gtk-demo/Makefile.am (demos): 
+	* demos/gtk-demo/combobox.c: Add a demo showing combo box 
+	variations.
+
+	* demos/gtk-demo/Makefile.am (demos): 
+	* demos/gtk-demo/pickers.c: Add a demo showing all picker widgets.
+
+    2005-07-18  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkmain.c (gtk_parse_args, gtk_init_with_args): Call
+	gettext_initialization before checking gtk_initialized, otherwise
+	there are scenarios where it is not called at all. For an
+	example, see tests/testfilechooserbutton.c.  (#310323, 
+	Arkady L. Shane)
+
+    2005-05-02  Federico Mena Quintero  <federico@ximian.com>
+
+	* tests/testfilechooser.c: Oops, remove mtrace() stuff.
+
+    2005-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* tests/testiconview.c: Add some more tests.
+
+	* tests/testtext.c: Add some more attribute tests.
+
+2005-10-10  Michael Natterer  <mitch@imendio.com>
+
 	* gtk/*.h: merged all header changes which only affect include
 	guards and G_BEGIN_DECLS/G_END_DECLS (in fact that's all but 3
 	headers). They don't have upstream ChangeLog entries that are
