@@ -415,7 +415,7 @@ main (int argc, char **argv)
   GtkWidget *preview_vbox;
   int i;
   gboolean multiple = FALSE;
-  
+
   gtk_init (&argc, &argv);
 
   /* to test rtl layout, set RTL=1 in the environment */
