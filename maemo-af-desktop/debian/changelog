@@ -1,3 +1,9 @@
+maemo-af-desktop (1.58.2) unstable; urgency=low
+
+  * Commented out unused function
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon, 10 Oct 2005 14:53:46 +0300
+
 maemo-af-desktop (1.58.1) unstable; urgency=low
 
   * Fixed bug N#20181
