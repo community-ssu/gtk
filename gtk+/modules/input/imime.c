@@ -17,13 +17,14 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: imime.c,v 1.3 2004/12/01 20:23:48 tml Exp $
+ * $Id: imime.c,v 1.3.2.1 2005/07/06 00:33:09 matthiasc Exp $
  */
 
-#include <gtk/gtkimmodule.h>
-#include "gtkimcontextime.h"
-
 #include <string.h>
+
+#include "gtk/gtkintl.h"
+#include "gtk/gtkimmodule.h"
+#include "gtkimcontextime.h"
 
 static const GtkIMContextInfo ime_info = {
   "ime",

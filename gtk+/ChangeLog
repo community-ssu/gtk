@@ -1,5 +1,37 @@
 2005-10-10  Michael Natterer  <mitch@imendio.com>
 
+	Merge all changes in modules/input/:
+
+    2005-07-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/input/imime.c: Fix includes.  (#309462, Kazuki IWAMOTO)
+
+    2005-06-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/input/gtkimcontextxim.c (gtk_im_context_xim_finalize): 
+	Don't prematurely unregister callbacks.
+
+    2005-06-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/input/gtkimcontextxim.c (gtk_im_context_xim_finalize): 
+	Avoid a segfault.  (#309054)
+
+    2005-06-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/input/gtkimcontextxim.c (gtk_im_context_xim_finalize): 
+	Unregister XIM callbacks here.  (#309054)
+
+    2005-06-05  Tor Lillqvist  <tml@novell.com>
+
+	* modules/input/Makefile.am: Decide whether to build the
+	ms-windows theme engine based on the GDK backend, not based on
+	platform. (I.e., if building for Cygwin with the X11 backend, we
+	shouldn't build the ms-windows engine, but if building for Cygwin
+	but with the Win32 backend, we should.) Ditto for the IME
+	(Windows) input module. (#305832)
+
+2005-10-10  Michael Natterer  <mitch@imendio.com>
+
 	Merge all changes in gdk/ and gdk/x11/:
 
     2005-06-30  Matthias Clasen  <mclasen@redhat.com>
