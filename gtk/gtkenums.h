@@ -29,10 +29,7 @@
 
 #include <glib-object.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* Anchor types */
 typedef enum
@@ -464,9 +461,7 @@ typedef enum
   GTK_INVALID_INPUT_MODE_RESTRICTION
 } GtkInvalidInputType;
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 
 #endif /* __GTK_ENUMS_H__ */

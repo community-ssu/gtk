@@ -24,10 +24,7 @@
 #include <gtk/gtkobject.h>
 #include <pango/pango.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 #define GTK_TYPE_IM_CONTEXT              (gtk_im_context_get_type ())
 #define GTK_IM_CONTEXT(obj)              (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_IM_CONTEXT, GtkIMContext))
@@ -126,9 +123,6 @@ gboolean gtk_im_context_delete_surrounding  (GtkIMContext   *context,
 void     gtk_im_context_show                (GtkIMContext   *context);
 void     gtk_im_context_hide                (GtkIMContext   *context);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __GTK_IM_CONTEXT_H__ */
