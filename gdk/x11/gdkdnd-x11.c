@@ -29,7 +29,6 @@
 #include <X11/Xatom.h>
 #include <string.h>
 
-#include "gdkalias.h"
 #include "gdk.h"          /* For gdk_flush() */
 #include "gdkx.h"
 #include "gdkasync.h"
@@ -39,6 +38,7 @@
 #include "gdkinternals.h"
 #include "gdkscreen-x11.h"
 #include "gdkdisplay-x11.h"
+#include "gdkalias.h"
 
 typedef struct _GdkDragContextPrivateX11 GdkDragContextPrivateX11;
 
@@ -1741,6 +1741,8 @@ motif_drop_start (GdkEvent *event,
   event->dnd.x_root = x_root;
   event->dnd.y_root = y_root;
 
+  gdk_x11_window_set_user_time (event->any.window, timestamp);
+
   g_object_ref (new_context);
   display_x11->current_dest_drag = new_context;
 
@@ -2031,6 +2033,8 @@ xdnd_finished_filter (GdkXEvent *xev,
       event->dnd.type = GDK_DROP_FINISHED;
       event->dnd.context = context;
       g_object_ref (context);
+
+      event->dnd.time = GDK_CURRENT_TIME; /* FIXME? */
 
       return GDK_FILTER_TRANSLATE;
     }
@@ -2904,6 +2908,8 @@ xdnd_drop_filter (GdkXEvent *xev,
       event->dnd.time = time;
       event->dnd.x_root = private->last_x;
       event->dnd.y_root = private->last_y;
+
+      gdk_x11_window_set_user_time (event->any.window, time);
       
       return GDK_FILTER_TRANSLATE;
     }
@@ -3808,3 +3814,6 @@ gdk_drag_drop_succeeded (GdkDragContext *context)
 
   return !private->drop_failed;
 }
+
+#define __GDK_DND_X11_C__
+#include "gdkaliasdef.c"

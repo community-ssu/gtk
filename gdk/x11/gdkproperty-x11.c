@@ -29,7 +29,6 @@
 #include <X11/Xatom.h>
 #include <string.h>
 
-#include "gdkalias.h"
 #include "gdk.h"          /* For gdk_error_trap_push/pop() */
 #include "gdkx.h"
 #include "gdkproperty.h"
@@ -38,6 +37,7 @@
 #include "gdkdisplay-x11.h"
 #include "gdkscreen-x11.h"
 #include "gdkselection.h"	/* only from predefined atom */
+#include "gdkalias.h"
 
 static GPtrArray *virtual_atom_array;
 static GHashTable *virtual_atom_hash;
@@ -347,8 +347,8 @@ virtual_atom_check_init (void)
       
       for (i = 0; i < G_N_ELEMENTS (XAtomsStrings); i++)
 	{
-	  g_ptr_array_add (virtual_atom_array, XAtomsStrings[i]);
-	  g_hash_table_insert (virtual_atom_hash, XAtomsStrings[i],
+	  g_ptr_array_add (virtual_atom_array, (gchar *) XAtomsStrings[i]);
+	  g_hash_table_insert (virtual_atom_hash, (gchar *) XAtomsStrings[i],
 			       GUINT_TO_POINTER (i));
 	}
     }
@@ -493,6 +493,7 @@ gdk_property_get (GdkWindow   *window,
   gint ret_format;
   gulong ret_nitems;
   gulong ret_bytes_after;
+  gulong get_length;
   gulong ret_length;
   guchar *ret_data;
   Atom xproperty;
@@ -521,9 +522,30 @@ gdk_property_get (GdkWindow   *window,
 
   ret_data = NULL;
   
+  /* 
+   * Round up length to next 4 byte value.  Some code is in the (bad?)
+   * habit of passing G_MAXLONG as the length argument, causing an
+   * overflow to negative on the add.  In this case, we clamp the
+   * value to G_MAXLONG.
+   */
+  get_length = length + 3;
+  if (get_length > G_MAXLONG)
+    {
+      g_warning ("gdk_property_get(): length value has wrapped in calculation "
+		 "(did you pass G_MAXLONG?)");
+      get_length = G_MAXLONG;
+    }
+  /* To fail, either the user passed 0 or G_MAXULONG */
+  get_length = get_length / 4;
+  if (get_length == 0)
+    {
+      g_warning ("gdk_propery-get(): invalid length 0");
+      return FALSE;
+    }
+
   res = XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display),
 			    GDK_WINDOW_XWINDOW (window), xproperty,
-			    offset, (length + 3) / 4, pdelete,
+			    offset, get_length, pdelete,
 			    xtype, &ret_prop_type, &ret_format,
 			    &ret_nitems, &ret_bytes_after,
 			    &ret_data);
@@ -684,3 +706,6 @@ gdk_property_delete (GdkWindow *window,
 		   gdk_x11_atom_to_xatom_for_display (GDK_WINDOW_DISPLAY (window),
 						      property));
 }
+
+#define __GDK_PROPERTY_X11_C__
+#include "gdkaliasdef.c"

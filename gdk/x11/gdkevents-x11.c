@@ -26,7 +26,6 @@
 
 #include <config.h>
 
-#include "gdkalias.h"
 #include "gdk.h"
 #include "gdkprivate-x11.h"
 #include "gdkinternals.h"
@@ -42,6 +41,8 @@
 #include <string.h>
 
 #include "gdkinputprivate.h"
+
+#include "gdkalias.h"
 
 #ifdef HAVE_XKB
 #include <X11/XKBlib.h>
@@ -1220,16 +1221,19 @@ gdk_event_translate (GdkDisplay *display,
         }
       
       /* Handle focusing (in the case where no window manager is running */
-      if (toplevel &&
-	  xevent->xcrossing.detail != NotifyInferior &&
-	  xevent->xcrossing.focus && !toplevel->has_focus_window)
+      if (toplevel && xevent->xcrossing.detail != NotifyInferior)
 	{
-	  gboolean had_focus = HAS_FOCUS (toplevel);
+	  toplevel->has_pointer = TRUE;
 
-	  toplevel->has_pointer_focus = TRUE;
-
-	  if (HAS_FOCUS (toplevel) != had_focus)
-	    generate_focus_event (window, TRUE);
+	  if (xevent->xcrossing.focus && !toplevel->has_focus_window)
+	    {
+	      gboolean had_focus = HAS_FOCUS (toplevel);
+	      
+	      toplevel->has_pointer_focus = TRUE;
+	      
+	      if (HAS_FOCUS (toplevel) != had_focus)
+		generate_focus_event (window, TRUE);
+	    }
 	}
 
       /* Tell XInput stuff about it if appropriate */
@@ -1314,16 +1318,19 @@ gdk_event_translate (GdkDisplay *display,
         }
       
       /* Handle focusing (in the case where no window manager is running */
-      if (toplevel &&
-	  xevent->xcrossing.detail != NotifyInferior &&
-	  xevent->xcrossing.focus && !toplevel->has_focus_window)
+      if (toplevel && xevent->xcrossing.detail != NotifyInferior)
 	{
-	  gboolean had_focus = HAS_FOCUS (toplevel);
-	  
-	  toplevel->has_pointer_focus = FALSE;
-	  
-	  if (HAS_FOCUS (toplevel) != had_focus)
-	    generate_focus_event (window, FALSE);
+	  toplevel->has_pointer = FALSE;
+
+	  if (xevent->xcrossing.focus && !toplevel->has_focus_window)
+	    {
+	      gboolean had_focus = HAS_FOCUS (toplevel);
+	      
+	      toplevel->has_pointer_focus = FALSE;
+	      
+	      if (HAS_FOCUS (toplevel) != had_focus)
+		generate_focus_event (window, FALSE);
+	    }
 	}
 
       event->crossing.type = GDK_LEAVE_NOTIFY;
@@ -1406,10 +1413,25 @@ gdk_event_translate (GdkDisplay *display,
 	  switch (xevent->xfocus.detail)
 	    {
 	    case NotifyAncestor:
-	    case NotifyNonlinear:
 	    case NotifyVirtual:
+	      /* When the focus moves from an ancestor of the window to
+	       * the window or a descendent of the window, *and* the
+	       * pointer is inside the window, then we were previously
+	       * receiving keystroke events in the has_pointer_focus
+	       * case and are now receiving them in the
+	       * has_focus_window case.
+	       */
+	      if (toplevel->has_pointer &&
+		  xevent->xfocus.mode != NotifyGrab &&
+		  xevent->xfocus.mode != NotifyUngrab)
+		toplevel->has_pointer_focus = FALSE;
+	      
+	      /* fall through */
+	    case NotifyNonlinear:
 	    case NotifyNonlinearVirtual:
-	      toplevel->has_focus_window = TRUE;
+	      if (xevent->xfocus.mode != NotifyGrab &&
+		  xevent->xfocus.mode != NotifyUngrab)
+		toplevel->has_focus_window = TRUE;
 	      /* We pretend that the focus moves to the grab
 	       * window, so we pay attention to NotifyGrab
 	       * NotifyUngrab, and ignore NotifyWhileGrabbed
@@ -1422,7 +1444,8 @@ gdk_event_translate (GdkDisplay *display,
 	       * but the pointer focus is ignored while a
 	       * grab is in effect
 	       */
-	      if (xevent->xfocus.mode != NotifyGrab)
+	      if (xevent->xfocus.mode != NotifyGrab &&
+		  xevent->xfocus.mode != NotifyUngrab)
 		toplevel->has_pointer_focus = TRUE;
 	      break;
 	    case NotifyInferior:
@@ -1449,15 +1472,31 @@ gdk_event_translate (GdkDisplay *display,
 	  switch (xevent->xfocus.detail)
 	    {
 	    case NotifyAncestor:
-	    case NotifyNonlinear:
 	    case NotifyVirtual:
+	      /* When the focus moves from the window or a descendent
+	       * of the window to an ancestor of the window, *and* the
+	       * pointer is inside the window, then we were previously
+	       * receiving keystroke events in the has_focus_window
+	       * case and are now receiving them in the
+	       * has_pointer_focus case.
+	       */
+	      if (toplevel->has_pointer &&
+		  xevent->xfocus.mode != NotifyGrab &&
+		  xevent->xfocus.mode != NotifyUngrab)
+		toplevel->has_pointer_focus = TRUE;
+
+	      /* fall through */
+	    case NotifyNonlinear:
 	    case NotifyNonlinearVirtual:
-	      toplevel->has_focus_window = FALSE;
+	      if (xevent->xfocus.mode != NotifyGrab &&
+		  xevent->xfocus.mode != NotifyUngrab)
+		toplevel->has_focus_window = FALSE;
 	      if (xevent->xfocus.mode != NotifyWhileGrabbed)
 		toplevel->has_focus = FALSE;
 	      break;
 	    case NotifyPointer:
-	      if (xevent->xfocus.mode != NotifyUngrab)
+	      if (xevent->xfocus.mode != NotifyGrab &&
+		  xevent->xfocus.mode != NotifyUngrab)
 		toplevel->has_pointer_focus = FALSE;
 	    break;
 	    case NotifyInferior:
@@ -2936,3 +2975,6 @@ gdk_xsettings_watch_cb (Window   window,
       g_object_unref (gdkwin);
     }
 }
+
+#define __GDK_EVENTS_X11_C__
+#include "gdkaliasdef.c"

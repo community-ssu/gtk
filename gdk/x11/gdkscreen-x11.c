@@ -27,12 +27,12 @@
 #include <string.h>
 
 #include <glib.h>
-#include "gdkalias.h"
 #include "gdkscreen.h"
 #include "gdkscreen-x11.h"
 #include "gdkdisplay.h"
 #include "gdkdisplay-x11.h"
 #include "gdkx.h"
+#include "gdkalias.h"
 
 #include <X11/Xatom.h>
 
@@ -169,7 +169,7 @@ gdk_screen_get_height (GdkScreen *screen)
  * Gets the width of @screen in millimeters. 
  * Note that on some X servers this value will not be correct.
  * 
- * Returns: the width of @screen in pixels.
+ * Returns: the width of @screen in millimeters.
  *
  * Since: 2.2
  **/
@@ -188,7 +188,7 @@ gdk_screen_get_width_mm (GdkScreen *screen)
  * Returns the height of @screen in millimeters. 
  * Note that on some X servers this value will not be correct.
  * 
- * Returns: the heigth of @screen in pixels.
+ * Returns: the heigth of @screen in millimeters.
  *
  * Since: 2.2
  **/
@@ -842,3 +842,6 @@ gdk_screen_get_window_stack (GdkScreen *screen)
 
   return ret;
 }
+
+#define __GDK_SCREEN_X11_C__
+#include "gdkaliasdef.c"

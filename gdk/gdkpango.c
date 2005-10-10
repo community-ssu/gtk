@@ -19,13 +19,13 @@
 
 #include <config.h>
 #include <math.h>
-#include "gdkalias.h"
 #include "gdkcolor.h"
 #include "gdkgc.h"
 #include "gdkpango.h"
 #include "gdkrgb.h"
 #include "gdkprivate.h"
 #include "gdkscreen.h"
+#include "gdkalias.h"
 
 /* This is for P_() ... a bit non-kosher, but works fine */
 #include "gtk/gtkintl.h"
@@ -622,7 +622,7 @@ on_renderer_display_closed (GdkDisplay       *display,
  * by functions such as gdk_draw_layout().
  *
  * Before using the renderer, you need to call gdk_pango_renderer_set_drawable()
- * and gdk_pango_renderer_set_drawable() to set the drawable and graphics context
+ * and gdk_pango_renderer_set_gc() to set the drawable and graphics context
  * to use for drawing.
  * 
  * Return value: the default #PangoRenderer for @screen. The
@@ -1317,12 +1317,14 @@ gdk_pango_layout_line_get_clip_region (PangoLayoutLine *line,
 
       /* Note that get_x_ranges returns layout coordinates
        */
-      pango_layout_line_get_x_ranges (line,
-                                      index_ranges[i*2],
-                                      index_ranges[i*2+1],
-                                      &pixel_ranges, &n_pixel_ranges);
-  
-      for (j=0; j < n_pixel_ranges; j++)
+      if (index_ranges[i*2+1] >= line->start_index &&
+	  index_ranges[i*2] < line->start_index + line->length)
+	pango_layout_line_get_x_ranges (line,
+					index_ranges[i*2],
+					index_ranges[i*2+1],
+					&pixel_ranges, &n_pixel_ranges);
+      
+      for (j = 0; j < n_pixel_ranges; j++)
         {
           GdkRectangle rect;
           
@@ -1419,3 +1421,6 @@ gdk_pango_context_get (void)
 {
   return gdk_pango_context_get_for_screen (gdk_screen_get_default ());
 }
+
+#define __GDK_PANGO_C__
+#include "gdkaliasdef.c"
