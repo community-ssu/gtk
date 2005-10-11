@@ -1411,7 +1411,7 @@ static void store_item(GArray *items,const gchar *item_text,
     }
 
     g_array_append_val(items,cont);
-    
+
 }
 
 /* Function callback to be called when a new window/view is created */
@@ -1499,12 +1499,15 @@ static void removed_window_callback(GtkWidget *menuitem, gpointer data)
     g_return_if_fail(as);
     /* Find the removed item */
     for (n=0;n<(as->items)->len;n++)
-        if (g_array_index(as->items,container,n).item == menuitem)
-            break;
+	    if (g_array_index(as->items,container,n).item == menuitem)
+		    break;
+
     g_free(g_array_index(as->items, container, n).app_name);
     g_free(g_array_index(as->items, container, n).icon_name);
     g_free(g_array_index(as->items, container, n).item_text);
     
+    g_object_unref(g_array_index(as->items, container, n).icon);
+
     /* Remove item from array */
     g_array_remove_index(as->items,n);
 
@@ -1596,9 +1599,11 @@ static void updated_window_callback(GtkWidget *menuitem,
             break;  
             
     /* Save the new item text */
+    g_free(g_array_index(as->items,container,n).item_text);
     g_array_index(as->items,container,n).item_text = g_strdup(buf);
 
     /* Save the new app name */
+    g_free(g_array_index(as->items,container,n).app_name);
     g_array_index(as->items,container,n).app_name = g_strdup(app_name);
     
     /* Save the killable status */

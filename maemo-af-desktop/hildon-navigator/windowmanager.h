@@ -190,6 +190,7 @@ typedef struct
     gchar *service;
     gchar *wm_class;
     gulong window_id;
+    gboolean killable;
 } menuitem_comp_t;
 
 struct state_data{

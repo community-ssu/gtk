@@ -1,4 +1,9 @@
+2005-10-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Patched bug 18522
+
+
 2005-10-10  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* This patch is on hold !!
 	* Patched bug N# 20284 Random ghost icon in Task Navigator:
 	* hildon-navigator/windowmanager.h: Removed killable member from
         menuitem_comp_t, as windowmanager.c now uses a better method for
