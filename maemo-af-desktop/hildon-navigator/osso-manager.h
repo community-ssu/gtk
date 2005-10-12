@@ -22,6 +22,10 @@
  *
  */
 
+/**
+* @file osso-manager.h
+*/
+
 #ifndef OSSO_MANAGER_H
 #define OSSO_MANAGER_H
 

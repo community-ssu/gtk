@@ -23,9 +23,10 @@
  *
  */
 
-/*
+/**
+ * @file application-switcher.h
  *
- * Definitions of Application Switcher
+ * @brief Definitions of Application Switcher
  *
  *
  */

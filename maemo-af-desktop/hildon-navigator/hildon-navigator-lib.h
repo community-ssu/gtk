@@ -30,8 +30,9 @@
 
 G_BEGIN_DECLS
 
-/*the functions that need to be in global scope for the plugin's library*/
-
+/** 
+ * the functions that need to be in global scope for the plugin's library*/
+ *
 /* hildon_navigator_lib_create
  * Called to initialise the plugin and the navigator button.  
  * This is called when the plugin is first loaded.
@@ -41,7 +42,8 @@ G_BEGIN_DECLS
  */
 void *hildon_navigator_lib_create(void);
 
-/* hildon_navigator_lib_destroy
+/** 
+ * hildon_navigator_lib_destroy
  * Used to clean up the library just before it gets unloaded.
  * Note: This function will only be called when the Navigator exits. 
  * However, * currently, the Navigator is designed to be always running.
@@ -52,7 +54,8 @@ void *hildon_navigator_lib_create(void);
  */
 void hildon_navigator_lib_destroy(void *data);
 
-/** hildon_navigator_lib_get_button_widget
+/** 
+ * hildon_navigator_lib_get_button_widget
  * Returns a widget that is to be used in task navigator.
  * 
  * @param data The void* returned by the previous call to

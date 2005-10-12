@@ -22,7 +22,7 @@
  *
  */
 
-/* 
+/** 
  *
  * @file hildon-navigator-main.h
  *

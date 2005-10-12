@@ -22,6 +22,12 @@
  *
  */
 
+
+/**
+* @file hildon-navigator.h
+*/
+
+
 #ifndef HILDON_NAVIGATOR_H
 #define HILDON_NAVIGATOR_H
 

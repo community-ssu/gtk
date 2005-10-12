@@ -22,6 +22,11 @@
  *
  */
 
+
+/**
+* @file windowmanager.h
+*/
+
 #ifndef HILDON_NAVIGATOR_WM_H
 #define HILDON_NAVIGATOR_WM_H
 

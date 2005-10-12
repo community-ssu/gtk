@@ -23,8 +23,10 @@
  *
  */
 
-/*
- * Definitions of Hildon Home Applet
+/** 
+ * @file hildon-home-applet.h
+ * 
+ * @brief Definitions of Hildon Home Applet
  *
  */
  

@@ -22,6 +22,10 @@
  *
  */
 
+/**
+* @file hildon-status-bar-main.h
+*/
+
 #ifndef __HILDON_STATUS_BAR_MAIN__H__
 #define __HILDON_STATUS_BAR_MAIN__H__
 

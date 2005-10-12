@@ -22,6 +22,12 @@
  *
  */
 
+/**
+* @file hildon-status-bar-item.h
+* @brief
+* 
+*/
+
 #ifndef HILDON_STATUS_BAR_ITEM_H
 #define HILDON_STATUS_BAR_ITEM_H
 

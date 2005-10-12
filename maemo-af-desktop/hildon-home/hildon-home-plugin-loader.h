@@ -22,9 +22,10 @@
  *
  */
 
-/*
+/**
+ * @file hildon-home-plugin-loader.h
  *
- * Definitions of Hildon Home Plugin Loader 
+ * @brief Definitions of Hildon Home Plugin Loader 
  *
  */
  

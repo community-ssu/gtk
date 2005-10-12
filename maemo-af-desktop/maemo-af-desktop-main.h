@@ -27,7 +27,7 @@
 /**
  * @file maemo-af-desktop-main.h
  * 
- *
+ * @brief Function prototypes for maemo-af-desktop-main.c
  */
 
 

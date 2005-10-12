@@ -25,7 +25,7 @@
 /**
  * @file hildon-status-bar-interface.h
  * <p>
- * Hildon-status-bar interface functions for maemo-af-desktop
+ * @brief Hildon-status-bar interface functions for maemo-af-desktop
  */
 
 #ifndef __HILDON_STAB_IF_KS_H__

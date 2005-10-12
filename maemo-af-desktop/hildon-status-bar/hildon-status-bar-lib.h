@@ -22,6 +22,13 @@
  *
  */
 
+
+/**
+* @file hildon-status-bar-lib.h
+* @brief
+* DESCRIPTION: Status bar library functions
+*/
+
 #ifndef HILDON_STATUR_BAR_LIB_FUNCTIONS_H
 #define HILDON_STATUR_BAR_LIB_FUNCTIONS_H
 
