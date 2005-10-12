@@ -1,3 +1,9 @@
+maemo-af-desktop (1.58.7) unstable; urgency=low
+
+  * Added Doxygen comments and doxyconf-file
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 12 Oct 2005 16:17:36 +0300
+
 maemo-af-desktop (1.58.6) unstable; urgency=low
 
   * Ready for integration
