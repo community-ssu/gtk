@@ -1,3 +1,15 @@
+maemo-af-desktop (1.58.5) unstable; urgency=low
+
+  * Patched bug 20284 with a new patch
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 12 Oct 2005 14:38:31 +0300
+
+maemo-af-desktop (1.58.4) unstable; urgency=low
+
+  * Patched bug 18522. Reverted bug fix 20284, will be redone later.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 12 Oct 2005 10:18:24 +0300
+
 maemo-af-desktop (1.58.3) unstable; urgency=low
 
   * Patched N#20284

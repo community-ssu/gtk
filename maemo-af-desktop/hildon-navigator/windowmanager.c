@@ -1514,13 +1514,10 @@ static void handle_active_window_prop(GtkTreeModel *model,
     if (gdk_error_trap_pop() != 0 || nitems < 1)
     {
         /* We couldn't find out - let's not update just in case */
-        update_flag = AS_MENUITEM_SAME_POSITION;
+	XFree(value.window_value);
+	return;
     }
-    else if (realwin_value.window_value[0] != win_id)
-    {
-        update_flag = AS_MENUITEM_SAME_POSITION;
-    }
-    
+
     /* No WM_CLASS info acquired before? Try to get it one more
        time. This is most common when an application itself has been
        topped, instead of just switching to a view inside an
@@ -1549,8 +1546,25 @@ static void handle_active_window_prop(GtkTreeModel *model,
 
         if (find_application_from_tree(model, &parent, local_wm_class) )
         {
-            gulong id;
-            gtk_tree_model_get(model, &parent, WM_VIEW_ID_ITEM, &id, -1);
+            gulong id = 0;
+	    if (realwin_value.window_value[0] != win_id)
+	      {
+		XFree(value.window_value);
+		gdk_error_trap_push();
+		XGetWindowProperty(GDK_DISPLAY(),
+				   realwin_value.window_value[0], active_win,
+				   0, 32, False, XA_WINDOW, &actual_type,
+				   &actual_format, &nitems, &bytes_after,
+				   (unsigned char **)&value.char_value);
+		
+		if (gdk_error_trap_pop() != 0 || nitems < 1)
+		   {
+		     id = 0;
+		   }
+		else {
+		  id = value.window_value[0];
+		}
+	      }
            
             if (id != 0 && window_exists(model, &parent, &w_iter,
                                          realwin_value.window_value[0], id))
@@ -1559,8 +1573,8 @@ static void handle_active_window_prop(GtkTreeModel *model,
                                    WM_VIEW_NAME_ITEM, &subname_str, -1);
                 update_window(model, &parent, realwin_value.window_value[0],
                               id, id, subname_str,
-                              AS_MENUITEM_TO_FIRST_POSITION);
-                
+                              update_flag);
+		
                 g_free(subname_str);
             }
             else if (id == 0 )
@@ -1611,24 +1625,25 @@ static void handle_active_window_prop(GtkTreeModel *model,
     }
 
     /* It is quite probably an application with more than one view.
-       Thus, updating the active view status on Application Switcher. */
-    
-
+       We will update the information on the internal model.
+       but keep the Application Switcher unchanged, as the previous
+       case will deal with that. */
 
     if (find_application_from_tree(model, &parent, wm_class_str) )
     {
-        gboolean killed;
-        gtk_tree_model_get(model, &parent, WM_KILLED_ITEM, &killed, -1);
-        if (killed == TRUE)
+      gboolean killed;
+      
+      update_flag = AS_MENUITEM_SAME_POSITION;
+      gtk_tree_model_get(model, &parent, WM_KILLED_ITEM, &killed, -1);
+      
+      if (killed == TRUE)
         {
-            XFree(value.char_value);
-            return;
+	  XFree(value.char_value);
+	  return;
         }
-
-        subname_str = get_subname(win_id);
-        gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
-                           WM_VIEW_ID_ITEM, value.window_value[0], -1);
-        if (window_exists(model, &parent, &w_iter, win_id, 0))
+      
+      subname_str = get_subname(win_id);
+      if (window_exists(model, &parent, &w_iter, win_id, 0))
         {
             update_window(model, &parent, win_id, 0, value.window_value[0],
                           subname_str, update_flag);
@@ -2473,7 +2488,7 @@ static void kill_application(GtkTreeModel *model, GtkTreeIter *parent,
             wm_cbs.updated_win_cb(widget_ptr, icon_name, app_name,
                                   view_name, AS_MENUITEM_SAME_POSITION,
                                   FALSE, NULL, wm_cbs.cb_data);
-            
+	    
             XFree(pid_result);
             pid_result = NULL;
 
@@ -2538,7 +2553,6 @@ static gboolean menuitem_match_helper(GtkTreeModel *model,
         ((menuitem_comp_t *)data)->service = g_strdup(service);
         ((menuitem_comp_t *)data)->view_id = view_id;
         ((menuitem_comp_t *)data)->window_id = window_id;
-        ((menuitem_comp_t *)data)->killable = killable;
 
         g_free(wm_class);
         g_free(service);
@@ -3322,21 +3336,33 @@ static int kill_all( gboolean killable_only )
 
     for (i = g_list_length(mitems)-1 ; i >= 2; i--)
     {
+        gboolean killable, killed;
+	GtkTreeIter iter;
         menu_comp.menu_ptr = 
             g_list_nth_data(mitems, i);
         menu_comp.wm_class = NULL;
         menu_comp.service = NULL;
         menu_comp.window_id = 0;
-        menu_comp.killable = FALSE;
 
         gtk_tree_model_foreach(wm_cbs.model, menuitem_match_helper,
                                &menu_comp);
 
 	/* Do not kill applications that do not have service name
-	   information, as we'd be unable to top them... */
+	   information, as we'd be unable to top them... Also, 
+	   leave killed/not killable apps alone - we do not want to
+	   kill an application that is starting up! */
 
-        if (menu_comp.window_id != 0 && menu_comp.service != NULL &&
-            ((menu_comp.killable == TRUE && killable_only == TRUE) ||
+	if ( find_service_from_tree(wm_cbs.model,
+				    &iter,
+				    menu_comp.service ) > 0) 
+	  {
+	    gtk_tree_model_get( wm_cbs.model, &iter,WM_KILLABLE_ITEM,
+				&killable, WM_KILLED_ITEM, &killed, -1);
+	  }
+
+        if (menu_comp.window_id != 0 &&
+	    menu_comp.service != NULL && !killed &&
+	    ((killable && killable_only == TRUE) || 
              killable_only == FALSE))
         {
 
@@ -3394,15 +3420,19 @@ static int kill_all( gboolean killable_only )
                     XFree(pid_result);
                     continue;
                 }
-                if (menu_comp.killable == TRUE )
+                if (killable)
                 {
-                    GtkTreeIter iter;
                     /* Find service parent node */
+		    
                     if ( find_service_from_tree( wm_cbs.model,
                                                  &iter,
                                                  menu_comp.service ) > 0 ) {
-                        gtk_tree_store_set( GTK_TREE_STORE(wm_cbs.model),
-                                            &iter, WM_KILLED_ITEM, TRUE, -1);
+		      /* To ensure that the app is not killed again
+			 during its possible restart, reset killed
+			 applications to non-killable */
+		      gtk_tree_store_set( GTK_TREE_STORE(wm_cbs.model),
+					  &iter, WM_KILLED_ITEM, TRUE,
+					  WM_KILLABLE_ITEM, FALSE, -1);
                     }
                 }
                 XFree(pid_result);
