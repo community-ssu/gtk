@@ -263,8 +263,7 @@ DIST_SOURCES = $(libhildonnavigator_la_SOURCES)
 DATA = $(hildon_othersmenu_DATA) $(libhildonnavigatorincludeinst_DATA) \
 	$(pkgconfig_DATA)
 
-DIST_COMMON = $(srcdir)/Makefile.in Makefile.am TODO \
-	hildon-navigator.pc.in
+DIST_COMMON = $(srcdir)/Makefile.in Makefile.am hildon-navigator.pc.in
 SOURCES = $(libhildonnavigator_la_SOURCES)
 
 all: all-am
