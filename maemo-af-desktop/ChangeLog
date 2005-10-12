@@ -1,4 +1,8 @@
 2005-10-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Added Doxygen comments
+	* Added doxyconf-file for generating Doxygen documentation by running doxygen doxyconf
+
+2005-10-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
         * Patched bug N# 20284 Random ghost icon in Task Navigator:
         * hildon-navigator/windowmanager.h: Removed killable member from
         menuitem_comp_t, as windowmanager.c now uses a better method for
