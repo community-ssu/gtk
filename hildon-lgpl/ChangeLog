@@ -1,3 +1,12 @@
+2005-10-12  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-lgpl/gtk-infoprint.c (queue_new_cbanner)
+	(gtk_msg_window_init): If the new infoprint is identical to the
+	existing infoprint and therefore the timeout of the existing
+	infoprint is reset instead of creating a new infoprint, the widget
+	that was supposed be displayed in the new infoprint is now
+	freed. N#20011
+
 2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.9.54

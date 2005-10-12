@@ -374,6 +374,7 @@ queue_new_cbanner(GtkWindow *parent, const gchar *text, GtkWidget *image)
     g_signal_connect_swapped(cbanner->window, "destroy",
                              G_CALLBACK(g_source_remove),
                              GUINT_TO_POINTER(cbanner->timeout));
+    gtk_object_sink(GTK_OBJECT(image));
     return;
   }
 
@@ -431,6 +432,7 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
                                  G_CALLBACK(g_source_remove),
                                  GUINT_TO_POINTER(current_ibanner->timeout));
 
+        gtk_object_sink(GTK_OBJECT(main_item));
         return;
       }
 
@@ -442,11 +444,13 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
         if (GTK_IS_PROGRESS_BAR(main_item) &&
             GTK_IS_PROGRESS_BAR(current_pbanner->main_item)) {
           gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(current_pbanner->main_item), 0.0);
+          gtk_object_sink(GTK_OBJECT(main_item));
           return;
         } else if (GTK_IS_IMAGE(main_item) &&
                    GTK_IS_IMAGE(current_pbanner->main_item) &&
                    compare_icons(GTK_IMAGE(main_item),
                                  GTK_IMAGE(current_pbanner->main_item))) {
+          gtk_object_sink(GTK_OBJECT(main_item));
           return;
         }
       }
