@@ -23,7 +23,7 @@
  *
  */
 
-/*
+/**
  *
  * Implementation of Hildon Home Applet
  *

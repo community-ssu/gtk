@@ -22,6 +22,11 @@
  *
  */
 
+/**
+ * @file hildon-navigator-lib.h
+ * @brief Plugin library API for Task Navigator plugins
+ */
+
 #ifndef HILDON_NAVIGATOR_LIB_FUNCTIONS_H
 #define HILDON_NAVIGATOR_LIB_FUNCTIONS_H
 

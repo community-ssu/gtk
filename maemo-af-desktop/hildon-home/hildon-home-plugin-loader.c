@@ -22,7 +22,7 @@
  *
  */
 
-/*
+/**
  *
  * Implementation of Hildon Home Plugin Loader
  *

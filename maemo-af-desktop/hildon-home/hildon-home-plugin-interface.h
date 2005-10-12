@@ -23,8 +23,9 @@
  */
 
 /**
- * @file hildon-home-plugin-interface.h
  *
+ * @file hildon-home-plugin-interface.h
+ * <p>
  * @brief Definitions of Hildon Home Plugin API. All plugin applets use this 
  *        public API.
  *
