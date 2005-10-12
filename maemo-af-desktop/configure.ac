@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-af-desktop, 1.58.0)
+AM_INIT_AUTOMAKE(maemo-af-desktop, 1.59.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -60,7 +60,7 @@ fi
 
 AC_SUBST(CFLAGS)
 
-PKG_CHECK_MODULES(OSSO,libosso >= 0.9.10)
+PKG_CHECK_MODULES(OSSO,libosso >= 0.9.18)
 AC_SUBST(OSSO_LIBS)
 AC_SUBST(OSSO_CFLAGS)
 

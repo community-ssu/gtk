@@ -124,6 +124,7 @@ G_BEGIN_DECLS
 
 #define HILDON_HOME_IMAGE_LOADER            "home-image-loader"
 #define HILDON_HOME_IMAGE_LOADER_PATH       "/usr/bin/home-image-loader"
+#define HILDON_HOME_IMAGE_LOADER_NICE       19
 
 #define HILDON_HOME_BLEND_IMAGE_TITLEBAR_NAME "HildonHomeTitleBar"
 #define HILDON_HOME_BLEND_IMAGE_SIDEBAR_NAME  "HildonHomeLeftEdge"

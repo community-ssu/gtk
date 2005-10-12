@@ -31,6 +31,8 @@
 #define USE_AF_DESKTOP_MAIN__
  
  
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -1435,6 +1437,14 @@ void construct_background_image(char *argument_list[],
         }
         image_loader_pid = -1;
         return;
+    }
+    
+    if(setpriority(PRIO_PROCESS, image_loader_pid, 
+                   HILDON_HOME_IMAGE_LOADER_NICE) == -1)
+    {
+        osso_log(LOG_ERR, 
+                 "setting process priority %d: image loader process failed\n",
+                 HILDON_HOME_IMAGE_LOADER_NICE);
     }
 
     image_loader_callback_id = 

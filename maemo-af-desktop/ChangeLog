@@ -1,4 +1,22 @@
 2005-10-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Patched bug 20250:
+	* hildon-home/hildon-home-image-loader.c
+	  - Andrei Laperie's <andrei.laperie@nokia.com> patch to add SAW (allocation watchdog facilities)
+	  - osso-mem.h include added
+	  - load_image_oom_cb(): out-of-memory callback added
+	  - load_image_from_uri(): oom control with
+	* hildon-home/Makefile.am
+	  - added osso libs to image loader LDADD list
+	* configure.ac
+	  - changed libosso version requirement
+	* hildon-home/hildon-home-main.h
+	  - nice value define for image loader process added
+	* hildon-home/hildon-home-main.c
+	  - system includes for process priority settings added
+	  - construct_background_image():
+            after launching image loader process set it priority value.
+
+2005-10-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Added Doxygen comments
 	* Added doxyconf-file for generating Doxygen documentation by running doxygen doxyconf
 
@@ -15,6 +33,7 @@
         killable/are already killed. Mark killed applications as not
         killable, as otherwise we may attempt to kill applications that
         are restaring after bgkill.
+	* Submitted to integration as version 1.58.6
 
 2005-10-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Patched bug 18522: Maemo desktop memory leaks detected on application switching

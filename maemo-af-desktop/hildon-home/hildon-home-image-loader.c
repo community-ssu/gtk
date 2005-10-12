@@ -40,6 +40,9 @@
 
 #include "hildon-home-image-loader.h"
 
+/*SAW (allocation watchdog facilities)*/
+#include <osso-mem.h>
+
 /**
  * @save_original_bg_image_uri
  * 
@@ -76,6 +79,13 @@ void save_original_bg_image_uri(const gchar *uri,
     return;
 }
 
+/*An out-of-memory callback for load_image_from_uri*/
+static void 
+load_image_oom_cb(size_t current_sz, size_t max_sz,void *context)
+{
+    /*&oom is passed in context*/
+    *(gboolean *)context = TRUE;
+}
 
 
 /**
@@ -99,6 +109,7 @@ gint load_image_from_uri(GdkPixbuf **pixbuf, const gchar *uri)
     GnomeVFSFileSize  bytes_read;
     GConfClient      *gconf_client; 	 
     gboolean          mmc_in_use = FALSE; 	 
+    gboolean          oom = FALSE; /*OOM during pixbuf op*/
     gboolean          mmc_cover_open = FALSE; 	 
     gchar            *mmc_uri_prefix;
 
@@ -132,13 +143,25 @@ gint load_image_from_uri(GdkPixbuf **pixbuf, const gchar *uri)
     }
     g_free(mmc_uri_prefix);
     result = gnome_vfs_open(&handle, uri, GNOME_VFS_OPEN_READ);
+    /*Setting up a watchdog*/
+    if( osso_mem_saw_enable( 3 << 20, 32767, load_image_oom_cb, (void *)&oom) )
+    {
+         oom = TRUE;
+    }
+    
     loader = gdk_pixbuf_loader_new();
 
-    while (result == GNOME_VFS_OK && (!mmc_in_use || !mmc_cover_open)) {
+    while (!oom && (result == GNOME_VFS_OK) && (!mmc_in_use || !mmc_cover_open)) {
         result = gnome_vfs_read(handle, buffer, BUF_SIZE, &bytes_read);
-        gdk_pixbuf_loader_write(loader, buffer, bytes_read, NULL);
+        if(!oom) 
+        {
+            if(!gdk_pixbuf_loader_write(loader, buffer, bytes_read, NULL))
+            {
+                return HILDON_HOME_IMAGE_LOADER_ERROR_SYSTEM_RESOURCE; 	 
+            }
+        }
 
-        if(mmc_in_use)
+        if(!oom && mmc_in_use)
         {
             mmc_cover_open =
                 gconf_client_get_bool(gconf_client,
@@ -163,7 +186,10 @@ gint load_image_from_uri(GdkPixbuf **pixbuf, const gchar *uri)
     }
     g_object_unref(gconf_client); 	 
     
-    if (result != GNOME_VFS_ERROR_EOF) 
+    /*disable watchdog*/
+    osso_mem_saw_disable();
+    
+    if (oom || (result != GNOME_VFS_ERROR_EOF)) 
     {
         gdk_pixbuf_loader_close(loader, NULL);
         gnome_vfs_close(handle);
