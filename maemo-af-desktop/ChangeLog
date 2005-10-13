@@ -1,6 +1,8 @@
 2005-10-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Increased version number to 1.59.2.
 	* Reverted the previously mentioned ugly hack, now the configure points to libosso >= 0.9.18
+	* Increased version number to 1.59.3
+	* Updated libosso deps to 0.9.19+.
 
 2005-10-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Fixed libosso version inconsistency problem with a workaround by reverting dependency to
