@@ -30,7 +30,6 @@
 #include "gdk/gdk.h"
 #include "gdk/gdkkeysyms.h"
 
-#include "gtkalias.h"
 #include "gtkprivate.h"
 #include "gtkrc.h"
 #include "gtkwindow.h"
@@ -44,6 +43,7 @@
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
 #include "gtkplug.h"
+#include "gtkalias.h"
 
 #ifdef GDK_WINDOWING_X11
 #include "x11/gdkx.h"
@@ -829,7 +829,7 @@ gtk_window_set_property (GObject      *object,
     case PROP_RESIZABLE:
       window->allow_grow = g_value_get_boolean (value);
       gtk_widget_queue_resize (GTK_WIDGET (window));
-      g_object_notify (G_OBJECT (window), "allow_grow");
+      g_object_notify (G_OBJECT (window), "allow-grow");
       break;
     case PROP_MODAL:
       gtk_window_set_modal (window, g_value_get_boolean (value));
@@ -1275,11 +1275,11 @@ gtk_window_set_default (GtkWindow *window,
 	}
 
       if (old_default_widget)
-	g_object_notify (G_OBJECT (old_default_widget), "has_default");
+	g_object_notify (G_OBJECT (old_default_widget), "has-default");
       
       if (default_widget)
 	{
-	  g_object_notify (G_OBJECT (default_widget), "has_default");
+	  g_object_notify (G_OBJECT (default_widget), "has-default");
 	  g_object_unref (default_widget);
 	}
     }
@@ -1297,8 +1297,8 @@ gtk_window_set_policy (GtkWindow *window,
   window->allow_grow = (allow_grow != FALSE);
 
   g_object_freeze_notify (G_OBJECT (window));
-  g_object_notify (G_OBJECT (window), "allow_shrink");
-  g_object_notify (G_OBJECT (window), "allow_grow");
+  g_object_notify (G_OBJECT (window), "allow-shrink");
+  g_object_notify (G_OBJECT (window), "allow-grow");
   g_object_notify (G_OBJECT (window), "resizable");
   g_object_thaw_notify (G_OBJECT (window));
   
@@ -1523,7 +1523,7 @@ gtk_window_set_position (GtkWindow         *window,
 
   window->position = position;
   
-  g_object_notify (G_OBJECT (window), "window_position");
+  g_object_notify (G_OBJECT (window), "window-position");
 }
 
 /**
@@ -1978,7 +1978,7 @@ gtk_window_set_skip_taskbar_hint (GtkWindow *window,
       if (GTK_WIDGET_REALIZED (window))
         gdk_window_set_skip_taskbar_hint (GTK_WIDGET (window)->window,
                                           priv->skips_taskbar);
-      g_object_notify (G_OBJECT (window), "skip_taskbar_hint");
+      g_object_notify (G_OBJECT (window), "skip-taskbar-hint");
     }
 }
 
@@ -2035,7 +2035,7 @@ gtk_window_set_skip_pager_hint (GtkWindow *window,
       if (GTK_WIDGET_REALIZED (window))
         gdk_window_set_skip_pager_hint (GTK_WIDGET (window)->window,
                                         priv->skips_pager);
-      g_object_notify (G_OBJECT (window), "skip_pager_hint");
+      g_object_notify (G_OBJECT (window), "skip-pager-hint");
     }
 }
 
@@ -2089,7 +2089,7 @@ gtk_window_set_accept_focus (GtkWindow *window,
       if (GTK_WIDGET_REALIZED (window))
         gdk_window_set_accept_focus (GTK_WIDGET (window)->window,
 				     priv->accept_focus);
-      g_object_notify (G_OBJECT (window), "accept_focus");
+      g_object_notify (G_OBJECT (window), "accept-focus");
     }
 }
 
@@ -2144,7 +2144,7 @@ gtk_window_set_focus_on_map (GtkWindow *window,
       if (GTK_WIDGET_REALIZED (window))
         gdk_window_set_focus_on_map (GTK_WIDGET (window)->window,
 				     priv->focus_on_map);
-      g_object_notify (G_OBJECT (window), "focus_on_map");
+      g_object_notify (G_OBJECT (window), "focus-on-map");
     }
 }
 
@@ -2201,7 +2201,7 @@ gtk_window_set_destroy_with_parent  (GtkWindow *window,
   
   window->destroy_with_parent = setting;
 
-  g_object_notify (G_OBJECT (window), "destroy_with_parent");
+  g_object_notify (G_OBJECT (window), "destroy-with-parent");
 }
 
 /**
@@ -2902,7 +2902,7 @@ gtk_window_set_icon_name (GtkWindow   *window,
   
   update_themed_icon (NULL, window);
 
-  g_object_notify (G_OBJECT (window), "icon_name");
+  g_object_notify (G_OBJECT (window), "icon-name");
 }
 
 /**
@@ -3214,7 +3214,7 @@ gtk_window_set_default_size_internal (GtkWindow    *window,
 
       info->default_width = width;
 
-      g_object_notify (G_OBJECT (window), "default_width");
+      g_object_notify (G_OBJECT (window), "default-width");
     }
 
   if (change_height)
@@ -3227,7 +3227,7 @@ gtk_window_set_default_size_internal (GtkWindow    *window,
 
       info->default_height = height;
       
-      g_object_notify (G_OBJECT (window), "default_height");
+      g_object_notify (G_OBJECT (window), "default-height");
     }
   
   g_object_thaw_notify (G_OBJECT (window));
@@ -4544,7 +4544,7 @@ do_focus_change (GtkWidget *widget,
   
   gtk_widget_event (widget, fevent);
   
-  g_object_notify (G_OBJECT (widget), "has_focus");
+  g_object_notify (G_OBJECT (widget), "has-focus");
 
   g_object_unref (widget);
   gdk_event_free (fevent);
@@ -4753,7 +4753,7 @@ gtk_window_real_set_focus (GtkWindow *window,
       if (window->has_focus)
 	do_focus_change (window->focus_widget, TRUE);
 
-      g_object_notify (G_OBJECT (window->focus_widget), "is_focus");
+      g_object_notify (G_OBJECT (window->focus_widget), "is-focus");
     }
 
   /* If the default widget changed, a redraw will have been queued
@@ -7415,7 +7415,7 @@ _gtk_window_set_is_active (GtkWindow *window,
       window->is_active = is_active;
       window_update_has_focus (window);
 
-      g_object_notify (G_OBJECT (window), "is_active");
+      g_object_notify (G_OBJECT (window), "is-active");
     }
 }
 
@@ -7440,7 +7440,7 @@ _gtk_window_set_has_toplevel_focus (GtkWindow *window,
       window->has_toplevel_focus = has_toplevel_focus;
       window_update_has_focus (window);
 
-      g_object_notify (G_OBJECT (window), "has_toplevel_focus");
+      g_object_notify (G_OBJECT (window), "has-toplevel-focus");
     }
 }
 
@@ -7550,3 +7550,6 @@ static void gtk_window_focus_weak_notify (GtkWindow *window, GtkWidget *widget)
 
   gtk_window_set_prev_focus_widget (window, window->focus_widget);
 }
+
+#define __GTK_WINDOW_C__
+#include "gtkaliasdef.c"

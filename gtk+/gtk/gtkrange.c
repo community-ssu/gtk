@@ -32,13 +32,13 @@
 #include <config.h>
 #include <stdio.h>
 #include <math.h>
-#include "gtkalias.h"
 #include "gtkintl.h"
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtkrange.h"
 #include "gtkintl.h"
 #include "gtkscrollbar.h"
+#include "gtkalias.h"
 
 #define SCROLL_INITIAL_DELAY 250  /* must hold button this long before ... */
 #define SCROLL_LATER_DELAY   100  /* ... it starts repeating at this rate  */
@@ -638,7 +638,7 @@ gtk_range_set_update_policy (GtkRange      *range,
   if (range->update_policy != policy)
     {
       range->update_policy = policy;
-      g_object_notify (G_OBJECT (range), "update_policy");
+      g_object_notify (G_OBJECT (range), "update-policy");
     }
 }
 
@@ -3033,3 +3033,6 @@ osso_gtk_range_focus_out (GtkWidget *widget, GdkEventFocus *event)
     }
   return GTK_WIDGET_CLASS (parent_class)->focus_out_event (widget, event);
 }
+
+#define __GTK_RANGE_C__
+#include "gtkaliasdef.c"

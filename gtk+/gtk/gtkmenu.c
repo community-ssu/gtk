@@ -35,7 +35,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include "gdk/gdkkeysyms.h"
-#include "gtkalias.h"
 #include "gtkaccellabel.h"
 #include "gtkaccelmap.h"
 #include "gtkbindings.h"
@@ -49,8 +48,9 @@
 #include "gtkhbox.h"
 #include "gtkvscrollbar.h"
 #include "gtksettings.h"
-#include "gtkintl.h"
 #include "gtkcombobox.h"
+#include "gtkintl.h"
+#include "gtkalias.h"
 
 /* Hildon : We need this to figure out if menu should have
  * corners etc. */
@@ -2034,7 +2034,7 @@ gtk_menu_set_tearoff_state (GtkMenu  *menu,
 	  menu->tearoff_adjustment = NULL;
 	}
 
-      g_object_notify (G_OBJECT (menu), "tearoff_state");
+      g_object_notify (G_OBJECT (menu), "tearoff-state");
     }
 }
 
@@ -2076,7 +2076,7 @@ gtk_menu_set_title (GtkMenu     *menu,
     g_object_set_data (G_OBJECT (menu), "gtk-menu-title", NULL);
     
   gtk_menu_update_title (menu);
-  g_object_notify (G_OBJECT (menu), "tearoff_title");
+  g_object_notify (G_OBJECT (menu), "tearoff-title");
 }
 
 /**
@@ -4810,3 +4810,6 @@ gtk_menu_window_visibility_notify_event (GtkWidget          *widget,
 
   return FALSE;
 }
+
+#define __GTK_MENU_C__
+#include "gtkaliasdef.c"

@@ -26,9 +26,9 @@
 
 #include <config.h>
 #include <math.h>
-#include "gtkalias.h"
 #include "gtkarrow.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 #define MIN_ARROW_SIZE  15
 
@@ -207,13 +207,13 @@ gtk_arrow_set (GtkArrow      *arrow,
       if ((GtkArrowType) arrow->arrow_type != arrow_type)
         {
           arrow->arrow_type = arrow_type;
-          g_object_notify (G_OBJECT (arrow), "arrow_type");
+          g_object_notify (G_OBJECT (arrow), "arrow-type");
         }
 
       if ((GtkShadowType) arrow->shadow_type != shadow_type)
         {
           arrow->shadow_type = shadow_type;
-          g_object_notify (G_OBJECT (arrow), "shadow_type");
+          g_object_notify (G_OBJECT (arrow), "shadow-type");
         }
 
       g_object_thaw_notify (G_OBJECT (arrow));
@@ -288,3 +288,6 @@ gtk_arrow_expose (GtkWidget      *widget,
 
   return FALSE;
 }
+
+#define __GTK_ARROW_C__
+#include "gtkaliasdef.c"

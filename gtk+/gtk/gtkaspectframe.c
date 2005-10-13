@@ -30,9 +30,9 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkaspectframe.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 enum {
   PROP_0,
@@ -276,7 +276,7 @@ gtk_aspect_frame_set (GtkAspectFrame *aspect_frame,
       if (aspect_frame->obey_child != obey_child)
         {
           aspect_frame->obey_child = obey_child;
-          g_object_notify (G_OBJECT (aspect_frame), "obey_child");
+          g_object_notify (G_OBJECT (aspect_frame), "obey-child");
         }
       g_object_thaw_notify (G_OBJECT (aspect_frame));
 
@@ -335,3 +335,6 @@ gtk_aspect_frame_compute_child_allocation (GtkFrame      *frame,
   else
     parent_class->compute_child_allocation (frame, child_allocation);
 }
+
+#define __GTK_ASPECT_FRAME_C__
+#include "gtkaliasdef.c"

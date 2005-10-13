@@ -25,9 +25,9 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkalignment.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 enum {
   PROP_0,
@@ -558,22 +558,22 @@ gtk_alignment_set_padding (GtkAlignment    *alignment,
   if (priv->padding_top != padding_top)
     {
       priv->padding_top = padding_top;
-      g_object_notify (G_OBJECT (alignment), "top_padding");
+      g_object_notify (G_OBJECT (alignment), "top-padding");
     }
   if (priv->padding_bottom != padding_bottom)
     {
       priv->padding_bottom = padding_bottom;
-      g_object_notify (G_OBJECT (alignment), "bottom_padding");
+      g_object_notify (G_OBJECT (alignment), "bottom-padding");
     }
   if (priv->padding_left != padding_left)
     {
       priv->padding_left = padding_left;
-      g_object_notify (G_OBJECT (alignment), "left_padding");
+      g_object_notify (G_OBJECT (alignment), "left-padding");
     }
   if (priv->padding_right != padding_right)
     {
       priv->padding_right = padding_right;
-      g_object_notify (G_OBJECT (alignment), "right_padding");
+      g_object_notify (G_OBJECT (alignment), "right-padding");
     }
 
   g_object_thaw_notify (G_OBJECT (alignment));
@@ -619,3 +619,6 @@ gtk_alignment_get_padding (GtkAlignment    *alignment,
   if(padding_right)
     *padding_right = priv->padding_right;
 }
+
+#define __GTK_ALIGNMENT_C__
+#include "gtkaliasdef.c"

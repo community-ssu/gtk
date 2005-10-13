@@ -19,10 +19,10 @@
 
 #include <config.h>
 #include <string.h>
-#include "gtkalias.h"
 #include "gtkimcontext.h"
 #include "gtkmain.h"		/* For _gtk_boolean_handled_accumulator */
 #include "gtkmarshalers.h"
+#include "gtkalias.h"
 
 enum {
   PREEDIT_START,
@@ -591,3 +591,6 @@ gtk_im_context_delete_surrounding (GtkIMContext *context,
 
   return result;
 }
+
+#define __GTK_IM_CONTEXT_C__
+#include "gtkaliasdef.c"

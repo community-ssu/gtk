@@ -32,8 +32,6 @@
 
 #include <gdk/gdkkeysyms.h>
 
-#include "gtkalias.h"
-
 #include "gtkaboutdialog.h"
 #include "gtkbutton.h"
 #include "gtkbbox.h"
@@ -50,6 +48,8 @@
 #include "gtkviewport.h"
 #include "gtkiconfactory.h"
 #include "gtkintl.h"
+
+#include "gtkalias.h"
 
 #include <string.h>
 
@@ -1147,7 +1147,7 @@ gtk_about_dialog_set_website_label (GtkAboutDialog *about,
     }
   g_free (tmp);
 
-  g_object_notify (G_OBJECT (about), "website_label");
+  g_object_notify (G_OBJECT (about), "website-label");
 }
 
 /**
@@ -1455,7 +1455,7 @@ gtk_about_dialog_set_logo (GtkAboutDialog *about,
   g_object_freeze_notify (G_OBJECT (about));
 
   if (gtk_image_get_storage_type (GTK_IMAGE (priv->logo_image)) == GTK_IMAGE_ICON_NAME)
-    g_object_notify (G_OBJECT (about), "logo_icon_name");
+    g_object_notify (G_OBJECT (about), "logo-icon-name");
 
   if (logo != NULL) 
     gtk_image_set_from_pixbuf (GTK_IMAGE (priv->logo_image), logo);
@@ -1537,7 +1537,7 @@ gtk_about_dialog_set_logo_icon_name (GtkAboutDialog *about,
 
   gtk_image_set_from_icon_name (GTK_IMAGE (priv->logo_image), icon_name,
 				GTK_ICON_SIZE_DIALOG);
-  g_object_notify (G_OBJECT (about), "logo_icon_name");
+  g_object_notify (G_OBJECT (about), "logo-icon-name");
 
   g_object_thaw_notify (G_OBJECT (about));
 }
@@ -2217,6 +2217,9 @@ gtk_show_about_dialog (GtkWindow   *parent,
 	global_about_dialog = dialog;
       
     }
-  
+
   gtk_window_present (GTK_WINDOW (dialog));
 }
+
+#define __GTK_ABOUT_DIALOG_C__
+#include "gtkaliasdef.c"

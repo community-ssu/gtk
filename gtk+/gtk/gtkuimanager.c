@@ -31,7 +31,6 @@
 #include <config.h>
 
 #include <string.h>
-#include "gtkalias.h"
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
 #include "gtkmenu.h"
@@ -42,6 +41,7 @@
 #include "gtktearoffmenuitem.h"
 #include "gtktoolbar.h"
 #include "gtkuimanager.h"
+#include "gtkalias.h"
 
 #undef DEBUG_UI_MANAGER
 
@@ -574,7 +574,7 @@ gtk_ui_manager_set_add_tearoffs (GtkUIManager *self,
       
       dirty_all_nodes (self);
 
-      g_object_notify (G_OBJECT (self), "add_tearoffs");
+      g_object_notify (G_OBJECT (self), "add-tearoffs");
     }
 }
 
@@ -2775,3 +2775,6 @@ gtk_ui_manager_add_ui_from_file (GtkUIManager *self,
 }
 
 #endif
+
+#define __GTK_UI_MANAGER_C__
+#include "gtkaliasdef.c"

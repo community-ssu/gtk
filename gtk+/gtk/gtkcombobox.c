@@ -22,7 +22,6 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkcombobox.h"
 
 #include "gtkarrow.h"
@@ -57,6 +56,7 @@
 #include "gtkintl.h"
 
 #include "gtktreeprivate.h"
+#include "gtkalias.h"
 
 #define HILDON_MAX_WIDTH 406
 #define HILDON_MAX_HEIGHT 305
@@ -4716,7 +4716,7 @@ gtk_combo_box_set_wrap_width (GtkComboBox *combo_box,
       gtk_combo_box_check_appearance (combo_box);
       gtk_combo_box_relayout (combo_box);
       
-      g_object_notify (G_OBJECT (combo_box), "wrap_width");
+      g_object_notify (G_OBJECT (combo_box), "wrap-width");
     }
 }
 
@@ -4766,7 +4766,7 @@ gtk_combo_box_set_row_span_column (GtkComboBox *combo_box,
       
       gtk_combo_box_relayout (combo_box);
  
-      g_object_notify (G_OBJECT (combo_box), "row_span_column");
+      g_object_notify (G_OBJECT (combo_box), "row-span-column");
     }
 }
 
@@ -4816,7 +4816,7 @@ gtk_combo_box_set_column_span_column (GtkComboBox *combo_box,
       
       gtk_combo_box_relayout (combo_box);
 
-      g_object_notify (G_OBJECT (combo_box), "column_span_column");
+      g_object_notify (G_OBJECT (combo_box), "column-span-column");
     }
 }
 
@@ -5510,7 +5510,7 @@ gtk_combo_box_set_add_tearoffs (GtkComboBox *combo_box,
       combo_box->priv->add_tearoffs = add_tearoffs;
       gtk_combo_box_check_appearance (combo_box);
       gtk_combo_box_relayout (combo_box);
-      g_object_notify (G_OBJECT (combo_box), "add_tearoffs");
+      g_object_notify (G_OBJECT (combo_box), "add-tearoffs");
     }
 }
 
@@ -5632,7 +5632,7 @@ gtk_combo_box_set_focus_on_click (GtkComboBox *combo,
     {
       combo->priv->focus_on_click = focus_on_click;
       
-      g_object_notify (G_OBJECT (combo), "focus_on_click");
+      g_object_notify (G_OBJECT (combo), "focus-on-click");
     }
 }
 
@@ -5685,3 +5685,7 @@ static void	gtk_combo_box_grab_focus	 (GtkWidget         *focus_widget)
         }
     }
 }
+
+
+#define __GTK_COMBO_BOX_C__
+#include "gtkaliasdef.c"

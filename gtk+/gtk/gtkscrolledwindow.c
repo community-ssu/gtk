@@ -27,11 +27,11 @@
 #include <config.h>
 #include <math.h>
 #include <gdk/gdkkeysyms.h>
-#include "gtkalias.h"
 #include "gtkbindings.h"
 #include "gtkmarshalers.h"
 #include "gtkscrolledwindow.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 
 /* scrolled window policy and size requisition handling:
@@ -519,8 +519,8 @@ gtk_scrolled_window_set_policy (GtkScrolledWindow *scrolled_window,
       gtk_widget_queue_resize (GTK_WIDGET (scrolled_window));
 
       g_object_freeze_notify (object);
-      g_object_notify (object, "hscrollbar_policy");
-      g_object_notify (object, "vscrollbar_policy");
+      g_object_notify (object, "hscrollbar-policy");
+      g_object_notify (object, "vscrollbar-policy");
       g_object_thaw_notify (object);
     }
 }
@@ -559,7 +559,7 @@ gtk_scrolled_window_set_placement (GtkScrolledWindow *scrolled_window,
 
       gtk_widget_queue_resize (GTK_WIDGET (scrolled_window));
       
-      g_object_notify (G_OBJECT (scrolled_window), "window_placement");
+      g_object_notify (G_OBJECT (scrolled_window), "window-placement");
     }
 }
 
@@ -605,7 +605,7 @@ gtk_scrolled_window_set_shadow_type (GtkScrolledWindow *scrolled_window,
 
       gtk_widget_queue_resize (GTK_WIDGET (scrolled_window));
 
-      g_object_notify (G_OBJECT (scrolled_window), "shadow_type");
+      g_object_notify (G_OBJECT (scrolled_window), "shadow-type");
     }
 }
 
@@ -1520,3 +1520,6 @@ _gtk_scrolled_window_get_scrollbar_spacing (GtkScrolledWindow *scrolled_window)
       return scrollbar_spacing;
     }
 }
+
+#define __GTK_SCROLLED_WINDOW_C__
+#include "gtkaliasdef.c"

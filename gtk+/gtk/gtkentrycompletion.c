@@ -18,10 +18,10 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkentrycompletion.h"
 #include "gtkentryprivate.h"
 #include "gtkcelllayout.h"
+#include "gtkalias.h"
 
 #include "gtkintl.h"
 #include "gtkcellrenderertext.h"
@@ -303,7 +303,9 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    * GtkEntryCompletion:inline-completion:
    * 
    * Determines whether the common prefix of the possible completions 
-   * should be inserted automatically in the entry.
+   * should be inserted automatically in the entry. Note that this
+   * requires text-column to be set, even if you are using a custom
+   * match function.
    *
    * Since: 2.6
    **/
@@ -1022,7 +1024,7 @@ gtk_entry_completion_set_minimum_key_length (GtkEntryCompletion *completion,
     {
       completion->priv->minimum_key_length = length;
      
-      g_object_notify (G_OBJECT (completion), "minimum_key_length");
+      g_object_notify (G_OBJECT (completion), "minimum-key-length");
     }
 }
 
@@ -1205,7 +1207,7 @@ gtk_entry_completion_set_text_column (GtkEntryCompletion *completion,
                                  cell,
                                  "text", column);
 
-  g_object_notify (G_OBJECT (completion), "text_column");
+  g_object_notify (G_OBJECT (completion), "text-column");
 }
 
 /**
@@ -1533,7 +1535,7 @@ gtk_entry_completion_set_inline_completion (GtkEntryCompletion *completion,
     {
       completion->priv->inline_completion = inline_completion;
 
-      g_object_notify (G_OBJECT (completion), "inline_completion");
+      g_object_notify (G_OBJECT (completion), "inline-completion");
     }
 }
 
@@ -1578,7 +1580,7 @@ gtk_entry_completion_set_popup_completion (GtkEntryCompletion *completion,
     {
       completion->priv->popup_completion = popup_completion;
 
-      g_object_notify (G_OBJECT (completion), "popup_completion");
+      g_object_notify (G_OBJECT (completion), "popup-completion");
     }
 }
 
@@ -1600,3 +1602,6 @@ gtk_entry_completion_get_popup_completion (GtkEntryCompletion *completion)
   
   return completion->priv->popup_completion;
 }
+
+#define __GTK_ENTRY_COMPLETION_C__
+#include "gtkaliasdef.c"

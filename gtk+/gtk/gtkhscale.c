@@ -28,9 +28,9 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "gtkalias.h"
 #include "gtkhscale.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 static gpointer parent_class;
 
@@ -118,6 +118,10 @@ gtk_hscale_new (GtkAdjustment *adjustment)
  * increment @step.  @step must be nonzero; it's the distance the
  * slider moves when using the arrow keys to adjust the scale value.
  * 
+ * Note that the way in which the precision is derived works best if @step 
+ * is a power of ten. If the resulting precision is not suitable for your 
+ * needs, use gtk_scale_set_digits() to correct it.
+ *
  * Return value: a new #GtkHScale
  **/
 GtkWidget*
@@ -258,3 +262,6 @@ gtk_hscale_get_layout_offsets (GtkScale *scale,
   *x += widget->allocation.x;
   *y += widget->allocation.y;
 }
+
+#define __GTK_HSCALE_C__
+#include "gtkaliasdef.c"

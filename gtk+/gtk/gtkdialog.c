@@ -28,7 +28,6 @@
  * 
  */
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkbutton.h"
 #include "gtkdialog.h"
 #include "gtkhbbox.h"
@@ -41,6 +40,7 @@
 #include "gtkintl.h"
 #include "gtkbindings.h"
 #include "gtkalignment.h"
+#include "gtkalias.h"
 
 #define GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_DIALOG, GtkDialogPrivate))
 
@@ -1426,3 +1426,5 @@ gtk_dialog_move_to_next_active_button (GList *iter, gboolean forward)
     return FALSE;
 }
 
+#define __GTK_DIALOG_C__
+#include "gtkaliasdef.c"

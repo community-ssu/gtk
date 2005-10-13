@@ -47,8 +47,8 @@ gtk-win32res.lo : gtk-win32.rc
 
 install-libtool-import-lib:
 	for entry in `grep PRIVATE gtk.def | sed -e 's/PRIVATE//'`; do \
-	  file=`nm -A .libs/libgtk-win32-$(GTK_API_VERSION).dll.a | tr -d '\r' | grep -m 1 -E $$entry'$$' | cut -d: -f2`; \
-	  ar d .libs/libgtk-win32-$(GTK_API_VERSION).dll.a $$file; \
+	  file=`$(NM) -A .libs/libgtk-win32-$(GTK_API_VERSION).dll.a | tr -d '\r' | grep -E $$entry'$$' | head -n 1 | cut -d: -f2`; \
+	  $(AR) d .libs/libgtk-win32-$(GTK_API_VERSION).dll.a $$file; \
 	done
 	$(INSTALL) .libs/libgtk-win32-$(GTK_API_VERSION).dll.a $(DESTDIR)$(libdir)
 uninstall-libtool-import-lib:
@@ -75,10 +75,12 @@ uninstall-ms-lib:
 endif
 
 gtk.def: gtk.symbols
-	(echo -e EXPORTS; $(CPP) -P -DINCLUDE_VARIABLES -DG_OS_WIN32 - <$(srcdir)/gtk.symbols | sed -e '/^$$/d' -e 's/^/	/' -e 's/G_GNUC_[^ ]*//g') > gtk.def
+	(echo -e EXPORTS; $(CPP) -P -DINCLUDE_VARIABLES -DG_OS_WIN32 -DALL_FILES - <$(srcdir)/gtk.symbols | sed -e '/^$$/d' -e 's/^/	/' -e 's/G_GNUC_[^ ]*//g') > gtk.def
 
 gtkalias.h: gtk.symbols
 	  $(PERL) $(srcdir)/makegtkalias.pl < $(srcdir)/gtk.symbols > gtkalias.h
+gtkaliasdef.c: gtk.symbols
+	  $(PERL) $(srcdir)/makegtkalias.pl -def < $(srcdir)/gtk.symbols > gtkaliasdef.c
 
 if OS_LINUX
 TESTS = abicheck.sh
@@ -557,6 +559,7 @@ gtk_built_private_headers =			\
 	gtkmarshalers.h
 
 gtk_built_sources =				\
+	gtkaliasdef.c				\
 	gtktypebuiltins.c			\
 	gtkmarshalers.c				\
 	gtkmarshalers.h				\
@@ -640,7 +643,8 @@ stamp-gtktypebuiltins.h: @REBUILD@ $(gtk_public_h_sources) Makefile
 	&& echo timestamp > $(@F)
 gtktypebuiltins.c: @REBUILD@ $(gtk_public_h_sources) Makefile
 	( cd $(srcdir) && glib-mkenums \
-			--fhead "#undef GTK_DISABLE_DEPRECATED\n#define GTK_ENABLE_BROKEN\n#include \"gtkalias.h\"\n#include \"gtk.h\"\n#include \"gtkprivate.h\"" \
+			--fhead "#undef GTK_DISABLE_DEPRECATED\n#define GTK_ENABLE_BROKEN\n#include \"gtk.h\"\n#include \"gtkprivate.h\"\n#include \"gtkalias.h\"\n" \
+			--ftail "#define __GTK_TYPE_BUILTINS_C__\n#include \"gtkaliasdef.c\"\n" \
 			--fprod "\n/* enumerations from \"@filename@\" */" \
 			--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {" \
 			--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
@@ -665,11 +669,11 @@ libgtk_win32_2_0_la_LDFLAGS = $(libtool_opts)
 
 libgtk_x11_2_0_la_LIBADD = $(libadd)
 libgtk_linux_fb_2_0_la_LIBADD = $(libadd)
-libgtk_win32_2_0_la_LIBADD = $(libadd) $(gtk_win32res_lo)
+libgtk_win32_2_0_la_LIBADD = $(libadd) $(gtk_win32res_lo) -lole32 -lwsock32 -lgdi32
 libgtk_win32_2_0_la_DEPENDENCIES = $(gtk_def) $(gtk_win32res_lo)
 
 if USE_WIN32
-libgtk_target_ldflags = $(gtk_win32_symbols) -lole32 -lwsock32
+libgtk_target_ldflags = $(gtk_win32_symbols) 
 endif
 EXTRA_LTLIBRARIES = libgtk-x11-2.0.la libgtk-linux-fb-2.0.la libgtk-win32-2.0.la
 

@@ -31,7 +31,6 @@
 #include <config.h>
 #include <string.h>
 
-#include "gtkalias.h"
 #include "gtkaccellabel.h"
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
@@ -39,6 +38,7 @@
 #include "gtkmenubar.h"
 #include "gtkmenuitem.h"
 #include "gtkseparatormenuitem.h"
+#include "gtkalias.h"
 
 #define HILDON_HEIGHT_INCREMENT  1
 #define HILDON_ARROW_SPACE       6
@@ -1566,3 +1566,6 @@ _gtk_menu_item_activate_submenus (GtkMenuItem *item)
   if (event)
     gdk_event_free (event);
 }
+
+#define __GTK_MENU_ITEM_C__
+#include "gtkaliasdef.c"

@@ -25,9 +25,9 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkbbox.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 enum {
   PROP_0,
@@ -287,7 +287,7 @@ gtk_button_box_set_layout (GtkButtonBox      *widget,
   if (widget->layout_style != layout_style)
     {
       widget->layout_style = layout_style;
-      g_object_notify (G_OBJECT (widget), "layout_style");
+      g_object_notify (G_OBJECT (widget), "layout-style");
       gtk_widget_queue_resize (GTK_WIDGET (widget));
     }
 }
@@ -503,3 +503,6 @@ _gtk_button_box_child_requisition (GtkWidget *widget,
   if (height)
     *height = needed_height;
 }
+
+#define __GTK_BUTTON_BOX_C__
+#include "gtkaliasdef.c"

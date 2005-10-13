@@ -28,11 +28,11 @@
 
 #include <config.h>
 #include "gdk/gdkkeysyms.h"
-#include "gtkalias.h"
 #include "gtkbindings.h"
 #include "gtkkeyhash.h"
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
+#include "gtkmenu.h"
 #include "gtkmenubar.h"
 #include "gtkmenuitem.h"
 #include "gtkmenushell.h"
@@ -41,6 +41,7 @@
 #include "gtkwindow.h"
 #include "gtkprivate.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 enum {
   DEACTIVATE,
@@ -1660,3 +1661,6 @@ gtk_menu_shell_set_take_focus (GtkMenuShell *menu_shell,
       g_object_notify (G_OBJECT (menu_shell), "take-focus");
     }
 }
+
+#define __GTK_MENU_SHELL_C__
+#include "gtkaliasdef.c"

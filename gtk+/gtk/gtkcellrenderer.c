@@ -18,11 +18,11 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkcellrenderer.h"
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
 #include "gtktreeprivate.h"
+#include "gtkalias.h"
 
 static void gtk_cell_renderer_init       (GtkCellRenderer      *cell);
 static void gtk_cell_renderer_class_init (GtkCellRendererClass *class);
@@ -455,7 +455,7 @@ gtk_cell_renderer_set_property (GObject      *object,
 	else
 	  g_warning ("Don't know color `%s'", g_value_get_string (value));
 
-	g_object_notify (object, "cell_background_gdk");
+	g_object_notify (object, "cell-background-gdk");
       }
       break;
     case PROP_CELL_BACKGROUND_GDK:
@@ -481,7 +481,7 @@ set_cell_bg_color (GtkCellRenderer *cell,
       if (!cell->cell_background_set)
         {
 	  cell->cell_background_set = TRUE;
-	  g_object_notify (G_OBJECT (cell), "cell_background_set");
+	  g_object_notify (G_OBJECT (cell), "cell-background-set");
 	}
 
       priv->cell_background.red = color->red;
@@ -493,7 +493,7 @@ set_cell_bg_color (GtkCellRenderer *cell,
       if (cell->cell_background_set)
         {
 	  cell->cell_background_set = FALSE;
-	  g_object_notify (G_OBJECT (cell), "cell_background_set");
+	  g_object_notify (G_OBJECT (cell), "cell-background-set");
 	}
     }
 }
@@ -808,3 +808,5 @@ gtk_cell_renderer_stop_editing (GtkCellRenderer *cell,
     }
 }
 
+#define __GTK_CELL_RENDERER_C__
+#include "gtkaliasdef.c"

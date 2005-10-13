@@ -39,7 +39,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "gtkalias.h"
 
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -57,6 +56,8 @@
 #include "gtksettings.h"
 #include "gtkwindow.h"
 #include "gtkhashtable.h"
+
+#include "gtkalias.h"
 
 #ifdef G_OS_WIN32
 #include <io.h>
@@ -4135,4 +4136,5 @@ gtk_rc_parse_logical_color (GScanner     *scanner,
 	return G_TOKEN_NONE;
 }
 
-
+#define __GTK_RC_C__
+#include "gtkaliasdef.c"

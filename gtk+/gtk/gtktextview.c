@@ -27,7 +27,6 @@
 #include <config.h>
 #include <string.h>
 
-#include "gtkalias.h"
 #define GTK_TEXT_USE_INTERNAL_UNSUPPORTED_API
 #include "gtkbindings.h"
 #include "gtkdnd.h"
@@ -48,6 +47,7 @@
 #include "gtksizegroup.h"          /* FIXME http://bugzilla.gnome.org/show_bug.cgi?id=72258 */
 #include "gtktextutil.h"
 #include "gtkwindow.h"
+#include "gtkalias.h"
 
 /* How scrolling, validation, exposes, etc. work.
  *
@@ -2057,7 +2057,7 @@ gtk_text_view_set_wrap_mode (GtkTextView *text_view,
         }
     }
 
-  g_object_notify (G_OBJECT (text_view), "wrap_mode");
+  g_object_notify (G_OBJECT (text_view), "wrap-mode");
 }
 
 /**
@@ -2148,7 +2148,7 @@ gtk_text_view_set_pixels_above_lines (GtkTextView *text_view,
           gtk_text_layout_default_style_changed (text_view->layout);
         }
 
-      g_object_notify (G_OBJECT (text_view), "pixels_above_lines");
+      g_object_notify (G_OBJECT (text_view), "pixels-above-lines");
     }
 }
 
@@ -2194,7 +2194,7 @@ gtk_text_view_set_pixels_below_lines (GtkTextView *text_view,
           gtk_text_layout_default_style_changed (text_view->layout);
         }
 
-      g_object_notify (G_OBJECT (text_view), "pixels_below_lines");
+      g_object_notify (G_OBJECT (text_view), "pixels-below-lines");
     }
 }
 
@@ -2240,7 +2240,7 @@ gtk_text_view_set_pixels_inside_wrap (GtkTextView *text_view,
           gtk_text_layout_default_style_changed (text_view->layout);
         }
 
-      g_object_notify (G_OBJECT (text_view), "pixels_inside_wrap");
+      g_object_notify (G_OBJECT (text_view), "pixels-inside-wrap");
     }
 }
 
@@ -2331,7 +2331,7 @@ gtk_text_view_set_left_margin (GtkTextView *text_view,
           gtk_text_layout_default_style_changed (text_view->layout);
         }
 
-      g_object_notify (G_OBJECT (text_view), "left_margin");
+      g_object_notify (G_OBJECT (text_view), "left-margin");
     }
 }
 
@@ -2377,7 +2377,7 @@ gtk_text_view_set_right_margin (GtkTextView *text_view,
           gtk_text_layout_default_style_changed (text_view->layout);
         }
 
-      g_object_notify (G_OBJECT (text_view), "right_margin");
+      g_object_notify (G_OBJECT (text_view), "right-margin");
     }
 }
 
@@ -2529,7 +2529,7 @@ gtk_text_view_set_cursor_visible    (GtkTextView   *text_view,
             }
         }
 
-      g_object_notify (G_OBJECT (text_view), "cursor_visible");
+      g_object_notify (G_OBJECT (text_view), "cursor-visible");
     }
 }
 
@@ -8616,3 +8616,5 @@ gtk_text_view_unmap (GtkWidget *widget)
     (* GTK_WIDGET_CLASS (parent_class)->unmap) (widget);
 }
 
+#define __GTK_TEXT_VIEW_C__
+#include "gtkaliasdef.c"

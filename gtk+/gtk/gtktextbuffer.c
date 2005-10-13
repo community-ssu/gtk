@@ -31,7 +31,6 @@
 #include <stdarg.h>
 
 
-#include "gtkalias.h"
 #define GTK_TEXT_USE_INTERNAL_UNSUPPORTED_API
 #include "gtkclipboard.h"
 #include "gtkinvisible.h"
@@ -39,8 +38,9 @@
 #include "gtktextbuffer.h"
 #include "gtktextbtree.h"
 #include "gtktextiterprivate.h"
-#include "gtkintl.h"
 #include "gtktextbufferserialize.h"
+#include "gtkintl.h"
+#include "gtkalias.h"
 
 #define GTK_TEXT_BUFFER_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_TEXT_BUFFER, GtkTextBufferPrivate))
 
@@ -4034,3 +4034,6 @@ _gtk_text_buffer_spew (GtkTextBuffer *buffer)
 {
   _gtk_text_btree_spew (get_btree (buffer));
 }
+
+#define __GTK_TEXT_BUFFER_C__
+#include "gtkaliasdef.c"

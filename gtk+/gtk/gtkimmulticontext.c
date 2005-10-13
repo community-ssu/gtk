@@ -22,13 +22,13 @@
 #include <string.h>
 #include <locale.h>
 
-#include "gtkalias.h"
 #include "gtkimmulticontext.h"
 #include "gtkimmodule.h"
 #include "gtkmain.h"
 #include "gtkradiomenuitem.h"
 #include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkalias.h"
 
 struct _GtkIMMulticontextPrivate
 {
@@ -719,3 +719,6 @@ gtk_im_multicontext_hide (GtkIMContext   *context)
   if (slave)
     gtk_im_context_hide (slave);
 }
+
+#define __GTK_IM_MULTICONTEXT_C__
+#include "gtkaliasdef.c"

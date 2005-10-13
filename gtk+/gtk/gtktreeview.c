@@ -22,12 +22,12 @@
 #include <string.h>
 #include <gdk/gdkkeysyms.h>
 
-#include "gtkalias.h"
 #include "gtktreeview.h"
 #include "gtkrbtree.h"
 #include "gtktreednd.h"
 #include "gtktreeprivate.h"
 #include "gtkcellrenderer.h"
+#include "gtkcellrenderertoggle.h"
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtkbutton.h"
@@ -44,6 +44,7 @@
 #include "gtktreemodelsort.h"
 #include "gtkscrolledwindow.h"
 #include "gtkprivate.h"
+#include "gtkalias.h"
 
 #define GTK_TREE_VIEW_PRIORITY_VALIDATE (GDK_PRIORITY_REDRAW + 5)
 #define GTK_TREE_VIEW_PRIORITY_SCROLL_SYNC (GTK_TREE_VIEW_PRIORITY_VALIDATE + 2)
@@ -14499,3 +14500,6 @@ check_if_can_focus (GtkTreeView *tree_view)
 
   GTK_WIDGET_UNSET_FLAGS (tree_view, GTK_CAN_FOCUS);
 }
+
+#define __GTK_TREE_VIEW_C__
+#include "gtkaliasdef.c"
