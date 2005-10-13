@@ -1,4 +1,8 @@
 2005-10-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Increased version number to 1.59.2.
+	* Reverted the previously mentioned ugly hack, now the configure points to libosso >= 0.9.18
+
+2005-10-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Fixed libosso version inconsistency problem with a workaround by reverting dependency to
 	  libosso >= 0.9.10 from libosso >= 0.9.18 in configure.ac. Tested to compile ok with libosso 0.9.18-1.
 	* debian/control still points to 0.9.18-1 in libosso-dev and it appears to not have any adverse effect on 
