@@ -24,9 +24,15 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <errno.h>
+#ifdef _MSC_VER
+#include <sys/utime.h>
+#else
 #include <utime.h>
+#endif
 
 #include <glib.h>
 #include <glib/gstdio.h>
@@ -56,7 +62,7 @@ is_cache_up_to_date (const gchar *path)
   gchar *cache_path;
   int retval;
   
-  retval = stat (path, &path_stat);
+  retval = g_stat (path, &path_stat);
 
   if (retval < 0)
     {
@@ -69,14 +75,14 @@ is_cache_up_to_date (const gchar *path)
   retval = g_stat (cache_path, &cache_stat);
   g_free (cache_path);
   
-  if (retval < 0 && errno == ENOENT)
+  if (retval < 0)
     {
       /* Cache file not found */
       return FALSE;
     }
 
   /* Check mtime */
-  return cache_stat.st_mtime <= path_stat.st_mtime;
+  return cache_stat.st_mtime >= path_stat.st_mtime;
 }
 
 typedef struct
@@ -236,8 +242,8 @@ struct _HashNode
 static guint
 icon_name_hash (gconstpointer key)
 {
-  const char *p = key;
-  guint h = *p;
+  const signed char *p = key;
+  guint32 h = *p;
 
   if (h)
     for (p += 1; *p != '\0'; p++)
@@ -294,11 +300,10 @@ gboolean
 write_card16 (FILE *cache, guint16 n)
 {
   int i;
-  gchar s[2];
 
-  *((guint16 *)s) = GUINT16_TO_BE (n);
+  n = GUINT16_TO_BE (n);
   
-  i = fwrite (s, 2, 1, cache);
+  i = fwrite ((char *)&n, 2, 1, cache);
 
   return i == 1;
 }
@@ -307,11 +312,10 @@ gboolean
 write_card32 (FILE *cache, guint32 n)
 {
   int i;
-  gchar s[4];
 
-  *((guint32 *)s) = GUINT32_TO_BE (n);
+  n = GUINT32_TO_BE (n);
   
-  i = fwrite (s, 4, 1, cache);
+  i = fwrite ((char *)&n, 4, 1, cache);
 
   return i == 1;
 }
@@ -607,8 +611,9 @@ build_cache (const gchar *path)
 
   /* Update time */
   /* FIXME: What do do if an error occurs here? */
-  g_stat (path, &path_stat);
-  g_stat (cache_path, &cache_stat);
+  if (g_stat (path, &path_stat) < 0 ||
+      g_stat (cache_path, &cache_stat))
+    exit (1);
 
   utime_buf.actime = path_stat.st_atime;
   utime_buf.modtime = cache_stat.st_mtime;
