@@ -1,5 +1,58 @@
 2005-10-13  Michael Natterer  <mitch@imendio.com>
 
+	Merged some local changes that don't affect other files:
+
+	gtk/gtkaboutdialog.c:
+
+    2005-04-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkaboutdialog.c (gtk_about_dialog_init): Protect
+	the license and credits buttons from being affected by 
+	gtk_widget_show_all().  (#172724)
+
+    2005-03-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkaboutdialog.c (add_credits_page): Don't crash on
+	style changes.  (#169334, Yury Puzis)
+
+	gtk/gtkaccelgroup.c:
+
+    2005-03-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkaccelgroup.c (substitute_underscores): Remove
+	this unused function. It lives in gtkaccellabel.c now.  
+
+	gtk/gtkaction.c:
+
+    2005-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkaction.c (connect_proxy): Use gtk_action_sync_tooltip().
+
+	gtk/gtkalignment.c:
+
+    2005-05-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkalignment.c (gtk_alignment_size_allocate): Flip the
+	padding in RTL mode.  (#303572, Maciej Katafiasz)
+
+	gtk/gtkbutton.c:
+
+    2005-06-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkbutton.c (gtk_button_construct_child): Don't
+	trigger warnings if there are extra references to the
+	hbox.  (#308677, Dan Winship)
+
+	gtk/gtkcellrendererpixbuf.c:
+
+    2005-03-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkcellrendererpixbuf.c (gtk_cell_renderer_pixbuf_render): 
+	Don't warn if a stock icon cannot be found.  (#168830,
+	Sven Neumann)
+
+2005-10-13  Michael Natterer  <mitch@imendio.com>
+
 	Merged changes to updateiconcache.c and changed a stat() back to
 	g_stat() because glib 2.6.6 contains the needed #define.
 
