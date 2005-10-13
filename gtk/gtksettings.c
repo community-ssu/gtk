@@ -17,12 +17,12 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkmodules.h"
 #include "gtksettings.h"
 #include "gtkrc.h"
 #include "gtkintl.h"
 #include "gtkwidget.h"
+#include "gtkalias.h"
 
 #define DEFAULT_INITIAL_TIMEOUT 300
 #define DEFAULT_UPDATE_TIMEOUT 125
@@ -1441,3 +1441,6 @@ settings_update_modules (GtkSettings *settings)
   
   g_free (modules);
 }
+
+#define __GTK_SETTINGS_C__
+#include "gtkaliasdef.c"

@@ -18,7 +18,6 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkcomboboxentry.h"
 #include "gtkcelllayout.h"
 
@@ -26,6 +25,7 @@
 #include "gtkcellrenderertext.h"
 
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 #define GTK_COMBO_BOX_ENTRY_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_COMBO_BOX_ENTRY, GtkComboBoxEntryPrivate))
 
@@ -397,3 +397,6 @@ gtk_grab_combo_box_entry_focus (GtkComboBoxEntry *entry_box)
 {
   gtk_widget_grab_focus (entry_box->priv->entry);
 }
+
+#define __GTK_COMBO_BOX_ENTRY_C__
+#include "gtkaliasdef.c"

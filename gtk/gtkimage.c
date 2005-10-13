@@ -26,13 +26,13 @@
 
 #include <config.h>
 #include <math.h>
-#include "gtkalias.h"
 #include "gtkcontainer.h"
 #include "gtkimage.h"
 #include "gtkiconfactory.h"
 #include "gtkstock.h"
 #include "gtkicontheme.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 #include <string.h>
 
 typedef struct _GtkImagePrivate GtkImagePrivate;
@@ -605,7 +605,7 @@ gtk_image_new_from_pixbuf (GdkPixbuf *pixbuf)
  * Creates a #GtkImage displaying a stock icon. Sample stock icon
  * names are #GTK_STOCK_OPEN, #GTK_STOCK_EXIT. Sample stock sizes
  * are #GTK_ICON_SIZE_MENU, #GTK_ICON_SIZE_SMALL_TOOLBAR. If the stock
- * icon name isn't known, a "broken image" icon will be displayed instead.
+ * icon name isn't known, the image will be empty. 
  * You can register your own stock icon names, see
  * gtk_icon_factory_add_default() and gtk_icon_factory_add().
  * 
@@ -948,7 +948,7 @@ gtk_image_set_from_stock  (GtkImage       *image,
     }
 
   g_object_notify (G_OBJECT (image), "stock");
-  g_object_notify (G_OBJECT (image), "icon_size");
+  g_object_notify (G_OBJECT (image), "icon-size");
   
   g_object_thaw_notify (G_OBJECT (image));
 }
@@ -988,8 +988,8 @@ gtk_image_set_from_icon_set  (GtkImage       *image,
        */
     }
   
-  g_object_notify (G_OBJECT (image), "icon_set");
-  g_object_notify (G_OBJECT (image), "icon_size");
+  g_object_notify (G_OBJECT (image), "icon-set");
+  g_object_notify (G_OBJECT (image), "icon-size");
   
   g_object_thaw_notify (G_OBJECT (image));
 }
@@ -1030,7 +1030,7 @@ gtk_image_set_from_animation (GtkImage           *image,
                              gdk_pixbuf_animation_get_height (animation));
     }
 
-  g_object_notify (G_OBJECT (image), "pixbuf_animation");
+  g_object_notify (G_OBJECT (image), "pixbuf-animation");
   
   g_object_thaw_notify (G_OBJECT (image));
 }
@@ -1074,8 +1074,8 @@ gtk_image_set_from_icon_name  (GtkImage       *image,
        */
     }
 
-  g_object_notify (G_OBJECT (image), "icon_name");
-  g_object_notify (G_OBJECT (image), "icon_size");
+  g_object_notify (G_OBJECT (image), "icon-name");
+  g_object_notify (G_OBJECT (image), "icon-size");
   
   g_object_thaw_notify (G_OBJECT (image));
 }
@@ -1556,6 +1556,7 @@ gtk_image_expose (GtkWidget      *widget,
       GdkBitmap *mask;
       GdkPixbuf *pixbuf;
       gboolean needs_state_transform;
+	  
       
       image = GTK_IMAGE (widget);
       misc = GTK_MISC (widget);
@@ -1643,8 +1644,7 @@ gtk_image_expose (GtkWidget      *widget,
 
         case GTK_IMAGE_PIXBUF:
           image_bound.width = gdk_pixbuf_get_width (image->data.pixbuf.pixbuf);
-          image_bound.height = gdk_pixbuf_get_height (image->data.pixbuf.pixbuf);          
-	  
+          image_bound.height = gdk_pixbuf_get_height (image->data.pixbuf.pixbuf);            
 
 	  if (rectangle_intersect_even (&area, &image_bound) &&
 	      needs_state_transform)
@@ -1851,7 +1851,7 @@ gtk_image_clear (GtkImage *image)
   g_object_freeze_notify (G_OBJECT (image));
   
   if (image->storage_type != GTK_IMAGE_EMPTY)
-    g_object_notify (G_OBJECT (image), "storage_type");
+    g_object_notify (G_OBJECT (image), "storage-type");
 
   if (image->mask)
     {
@@ -1863,7 +1863,7 @@ gtk_image_clear (GtkImage *image)
   if (image->icon_size != DEFAULT_ICON_SIZE)
     {
       image->icon_size = DEFAULT_ICON_SIZE;
-      g_object_notify (G_OBJECT (image), "icon_size");
+      g_object_notify (G_OBJECT (image), "icon-size");
     }
   
   switch (image->storage_type)
@@ -1911,7 +1911,7 @@ gtk_image_clear (GtkImage *image)
         gtk_icon_set_unref (image->data.icon_set.icon_set);
       image->data.icon_set.icon_set = NULL;
       
-      g_object_notify (G_OBJECT (image), "icon_set");      
+      g_object_notify (G_OBJECT (image), "icon-set");      
       break;
 
     case GTK_IMAGE_ANIMATION:
@@ -1921,7 +1921,7 @@ gtk_image_clear (GtkImage *image)
         g_object_unref (image->data.anim.anim);
       image->data.anim.anim = NULL;
       
-      g_object_notify (G_OBJECT (image), "pixbuf_animation");
+      g_object_notify (G_OBJECT (image), "pixbuf-animation");
       
       break;
 
@@ -1933,7 +1933,7 @@ gtk_image_clear (GtkImage *image)
 	g_object_unref (image->data.name.pixbuf);
       image->data.name.pixbuf = NULL;
 
-      g_object_notify (G_OBJECT (image), "icon_name");
+      g_object_notify (G_OBJECT (image), "icon-name");
 
       break;
       
@@ -2154,3 +2154,6 @@ gtk_image_set_from_file   (GtkImage    *image,
 }
 
 #endif
+
+#define __GTK_IMAGE_C__
+#include "gtkaliasdef.c"

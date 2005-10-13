@@ -25,7 +25,6 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtknotebook.h"
 #include "gtkmain.h"
 #include "gtkmenu.h"
@@ -36,6 +35,7 @@
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
 #include "gtkbindings.h"
+#include "gtkalias.h"
 
 
 #define TAB_OVERLAP    2
@@ -4300,8 +4300,8 @@ gtk_notebook_set_tab_border_internal (GtkNotebook *notebook,
     gtk_widget_queue_resize (GTK_WIDGET (notebook));
 
   g_object_freeze_notify (G_OBJECT (notebook));
-  g_object_notify (G_OBJECT (notebook), "tab_hborder");
-  g_object_notify (G_OBJECT (notebook), "tab_vborder");
+  g_object_notify (G_OBJECT (notebook), "tab-hborder");
+  g_object_notify (G_OBJECT (notebook), "tab-vborder");
   g_object_thaw_notify (G_OBJECT (notebook));
 }
 
@@ -4319,7 +4319,7 @@ gtk_notebook_set_tab_hborder_internal (GtkNotebook *notebook,
   if (GTK_WIDGET_VISIBLE (notebook) && notebook->show_tabs)
     gtk_widget_queue_resize (GTK_WIDGET (notebook));
 
-  g_object_notify (G_OBJECT (notebook), "tab_hborder");
+  g_object_notify (G_OBJECT (notebook), "tab-hborder");
 }
 
 static void
@@ -4336,7 +4336,7 @@ gtk_notebook_set_tab_vborder_internal (GtkNotebook *notebook,
   if (GTK_WIDGET_VISIBLE (notebook) && notebook->show_tabs)
     gtk_widget_queue_resize (GTK_WIDGET (notebook));
 
-  g_object_notify (G_OBJECT (notebook), "tab_vborder");
+  g_object_notify (G_OBJECT (notebook), "tab-vborder");
 }
 
 /* Public GtkNotebook Page Insert/Remove Methods :
@@ -4909,7 +4909,7 @@ gtk_notebook_set_show_border (GtkNotebook *notebook,
       if (GTK_WIDGET_VISIBLE (notebook))
 	gtk_widget_queue_resize (GTK_WIDGET (notebook));
       
-      g_object_notify (G_OBJECT (notebook), "show_border");
+      g_object_notify (G_OBJECT (notebook), "show-border");
     }
 }
 
@@ -4978,7 +4978,7 @@ gtk_notebook_set_show_tabs (GtkNotebook *notebook,
     }
   gtk_widget_queue_resize (GTK_WIDGET (notebook));
 
-  g_object_notify (G_OBJECT (notebook), "show_tabs");
+  g_object_notify (G_OBJECT (notebook), "show-tabs");
 }
 
 /**
@@ -5019,7 +5019,7 @@ gtk_notebook_set_tab_pos (GtkNotebook     *notebook,
 	gtk_widget_queue_resize (GTK_WIDGET (notebook));
     }
 
-  g_object_notify (G_OBJECT (notebook), "tab_pos");
+  g_object_notify (G_OBJECT (notebook), "tab-pos");
 }
 
 /**
@@ -5185,7 +5185,7 @@ gtk_notebook_popup_enable (GtkNotebook *notebook)
 			     GTK_WIDGET (notebook),
 			     gtk_notebook_menu_detacher);
 
-  g_object_notify (G_OBJECT (notebook), "enable_popup");
+  g_object_notify (G_OBJECT (notebook), "enable-popup");
 }
 
 /**
@@ -5206,7 +5206,7 @@ gtk_notebook_popup_disable  (GtkNotebook *notebook)
 			 (GtkCallback) gtk_notebook_menu_label_unparent, NULL);
   gtk_widget_destroy (notebook->menu);
 
-  g_object_notify (G_OBJECT (notebook), "enable_popup");
+  g_object_notify (G_OBJECT (notebook), "enable-popup");
 }
 
 /* Public GtkNotebook Page Properties Functions:
@@ -5682,3 +5682,6 @@ gtk_notebook_reorder_child (GtkNotebook *notebook,
 
   gtk_widget_thaw_child_notify (child);
 }
+
+#define __GTK_NOTEBOOK_C__
+#include "gtkaliasdef.c"

@@ -32,7 +32,6 @@
 #undef GTK_DISABLE_DEPRECATED
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkarrow.h"
 #include "gtktoolbar.h"
 #include "gtkradiotoolbutton.h"
@@ -53,6 +52,7 @@
 #include "gtkvbox.h"
 #include "gtkimage.h"
 #include "gtkseparatormenuitem.h"
+#include "gtkalias.h"
 #include <math.h>
 
 typedef struct _ToolbarContent ToolbarContent;
@@ -2575,7 +2575,7 @@ gtk_toolbar_real_style_changed (GtkToolbar     *toolbar,
       gtk_toolbar_reconfigured (toolbar);
       
       gtk_widget_queue_resize (GTK_WIDGET (toolbar));
-      g_object_notify (G_OBJECT (toolbar), "toolbar_style");
+      g_object_notify (G_OBJECT (toolbar), "toolbar-style");
     }
 }
 
@@ -3050,7 +3050,7 @@ gtk_toolbar_set_show_arrow (GtkToolbar *toolbar,
 	gtk_widget_hide (priv->arrow_button);
       
       gtk_widget_queue_resize (GTK_WIDGET (toolbar));      
-      g_object_notify (G_OBJECT (toolbar), "show_arrow");
+      g_object_notify (G_OBJECT (toolbar), "show-arrow");
     }
 }
 
@@ -4861,3 +4861,6 @@ _gtk_toolbar_rebuild_menu (GtkToolbar *toolbar)
   
   gtk_widget_queue_resize (GTK_WIDGET (toolbar));
 }
+
+#define __GTK_TOOLBAR_C__
+#include "gtkaliasdef.c"

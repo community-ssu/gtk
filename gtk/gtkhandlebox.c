@@ -27,13 +27,13 @@
 
 #include <config.h>
 #include <stdlib.h>
-#include "gtkalias.h"
 #include "gtkhandlebox.h"
 #include "gtkinvisible.h"
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtkwindow.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 typedef struct _GtkHandleBoxPrivate GtkHandleBoxPrivate;
 
@@ -807,7 +807,7 @@ gtk_handle_box_set_shadow_type (GtkHandleBox  *handle_box,
   if ((GtkShadowType) handle_box->shadow_type != type)
     {
       handle_box->shadow_type = type;
-      g_object_notify (G_OBJECT (handle_box), "shadow_type");
+      g_object_notify (G_OBJECT (handle_box), "shadow-type");
       gtk_widget_queue_resize (GTK_WIDGET (handle_box));
     }
 }
@@ -838,7 +838,7 @@ gtk_handle_box_set_handle_position  (GtkHandleBox    *handle_box,
   if ((GtkPositionType) handle_box->handle_position != position)
     {
       handle_box->handle_position = position;
-      g_object_notify (G_OBJECT (handle_box), "handle_position");
+      g_object_notify (G_OBJECT (handle_box), "handle-position");
       gtk_widget_queue_resize (GTK_WIDGET (handle_box));
     }
 }
@@ -871,8 +871,8 @@ gtk_handle_box_set_snap_edge        (GtkHandleBox    *handle_box,
       handle_box->snap_edge = edge;
       
       g_object_freeze_notify (G_OBJECT (handle_box));
-      g_object_notify (G_OBJECT (handle_box), "snap_edge");
-      g_object_notify (G_OBJECT (handle_box), "snap_edge_set");
+      g_object_notify (G_OBJECT (handle_box), "snap-edge");
+      g_object_notify (G_OBJECT (handle_box), "snap-edge-set");
       g_object_thaw_notify (G_OBJECT (handle_box));
     }
 }
@@ -1446,4 +1446,7 @@ gtk_handle_box_end_drag (GtkHandleBox *hb,
   g_signal_handlers_disconnect_by_func (invisible,
 					G_CALLBACK (gtk_handle_box_grab_event),
 					hb);
- }
+}
+
+#define __GTK_HANDLE_BOX_C__
+#include "gtkaliasdef.c"

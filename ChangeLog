@@ -1,5 +1,29 @@
 2005-10-13  Michael Natterer  <mitch@imendio.com>
 
+	Merged the entire symbol aliasing and canonical property names
+	patches. They affect all files but don't change any logic:
+
+    2005-04-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/*.c, gdk/gdkdisplaymanager.c: Use canonical property
+	names for g_object_notify() calls.  (#171746, Morten Welinder)
+
+    2005-03-20  Matthias Clasen  <mclasen@redhat.com>
+
+	Make PLT-reduction work with gcc4, and don't include
+	everything in gdkalias.h:
+
+	* gtk/grk.symbols: Group symbols by header and source file.
+	* gtk/makegtkalias.pl: Protect definitions by the same 
+	preprocessor symbols used to guard the headers. Move
+	the alias declarations to a separate file which is 
+	produced when calling makegtkalias.pl -def
+	* gtk/*.c: Include gtkalias.h after the other headers, 
+	include gtkaliasdef.c at the bottom.
+	* gtk/*.h: Small cleanups.
+
+2005-10-13  Michael Natterer  <mitch@imendio.com>
+
 	Revert merging of this commit. Apparently it interacts badly
 	with hildon/matchbox.
 

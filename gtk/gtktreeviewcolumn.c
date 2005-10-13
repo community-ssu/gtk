@@ -19,7 +19,6 @@
 
 #include <config.h>
 #include <string.h>
-#include "gtkalias.h"
 #include "gtktreeviewcolumn.h"
 #include "gtktreeview.h"
 #include "gtktreeprivate.h"
@@ -31,6 +30,7 @@
 #include "gtkmarshalers.h"
 #include "gtkarrow.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 enum
 {
@@ -1931,7 +1931,7 @@ gtk_tree_view_column_set_fixed_width (GtkTreeViewColumn *tree_column,
       gtk_widget_queue_resize (tree_column->tree_view);
     }
 
-  g_object_notify (G_OBJECT (tree_column), "fixed_width");
+  g_object_notify (G_OBJECT (tree_column), "fixed-width");
 }
 
 /**
@@ -1982,9 +1982,9 @@ gtk_tree_view_column_set_min_width (GtkTreeViewColumn *tree_column,
   if (tree_column->max_width != -1 && tree_column->max_width < min_width)
     {
       tree_column->max_width = min_width;
-      g_object_notify (G_OBJECT (tree_column), "max_width");
+      g_object_notify (G_OBJECT (tree_column), "max-width");
     }
-  g_object_notify (G_OBJECT (tree_column), "min_width");
+  g_object_notify (G_OBJECT (tree_column), "min-width");
   g_object_thaw_notify (G_OBJECT (tree_column));
 
   if (tree_column->column_type == GTK_TREE_VIEW_COLUMN_AUTOSIZE)
@@ -2042,9 +2042,9 @@ gtk_tree_view_column_set_max_width (GtkTreeViewColumn *tree_column,
   if (max_width != -1 && max_width < tree_column->min_width)
     {
       tree_column->min_width = max_width;
-      g_object_notify (G_OBJECT (tree_column), "min_width");
+      g_object_notify (G_OBJECT (tree_column), "min-width");
     }
-  g_object_notify (G_OBJECT (tree_column), "max_width");
+  g_object_notify (G_OBJECT (tree_column), "max-width");
   g_object_thaw_notify (G_OBJECT (tree_column));
 
   if (tree_column->column_type == GTK_TREE_VIEW_COLUMN_AUTOSIZE)
@@ -2445,7 +2445,7 @@ gtk_tree_view_column_set_sort_indicator (GtkTreeViewColumn     *tree_column,
 
   tree_column->show_sort_indicator = setting;
   gtk_tree_view_column_update_button (tree_column);
-  g_object_notify (G_OBJECT (tree_column), "sort_indicator");
+  g_object_notify (G_OBJECT (tree_column), "sort-indicator");
 }
 
 /**
@@ -2492,7 +2492,7 @@ gtk_tree_view_column_set_sort_order      (GtkTreeViewColumn     *tree_column,
 
   tree_column->sort_order = order;
   gtk_tree_view_column_update_button (tree_column);
-  g_object_notify (G_OBJECT (tree_column), "sort_order");
+  g_object_notify (G_OBJECT (tree_column), "sort-order");
 }
 
 /**
@@ -3673,3 +3673,5 @@ gtk_tree_view_column_cell_get_position (GtkTreeViewColumn *tree_column,
   return found_cell;
 }
 
+#define __GTK_TREE_VIEW_COLUMN_C__
+#include "gtkaliasdef.c"

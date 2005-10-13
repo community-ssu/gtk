@@ -28,9 +28,9 @@
 #include "config.h"
 #include <stdlib.h>
 
-#include "gtkalias.h"
 #include "gtkcellrendererprogress.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 #define GTK_CELL_RENDERER_PROGRESS_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object),                        \
                                                                                      GTK_TYPE_CELL_RENDERER_PROGRESS, \
@@ -232,6 +232,7 @@ gtk_cell_renderer_progress_set_value (GtkCellRendererProgress *cellprogress,
   if (cellprogress->priv->text)
     text = g_strdup (cellprogress->priv->text);
   else
+    /* translators, strip the prefix up to and including the first | */
     text = g_strdup_printf (Q_("progress bar label|%d %%"), 
 			    cellprogress->priv->value);
   
@@ -376,3 +377,5 @@ gtk_cell_renderer_progress_render (GtkCellRenderer *cell,
   g_object_unref (gc);
 }
 
+#define __GTK_CELL_RENDERER_PROGRESS_C__
+#include "gtkaliasdef.c"

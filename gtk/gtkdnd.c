@@ -25,7 +25,6 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gdkconfig.h"
 
 #include "gdk/gdkkeysyms.h"
@@ -37,6 +36,7 @@
 #include "gtkplug.h"
 #include "gtkstock.h"
 #include "gtkwindow.h"
+#include "gtkalias.h"
 
 static GSList *source_widgets = NULL;
 
@@ -3713,3 +3713,6 @@ _gtk_drag_source_ignore_drag (GtkWidget *widget)
   if (site != NULL)
     site->state &= ~GDK_BUTTON1_MASK;
 }
+
+#define __GTK_DND_C__
+#include "gtkaliasdef.c"

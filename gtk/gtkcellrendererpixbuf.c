@@ -19,11 +19,11 @@
 
 #include <config.h>
 #include <stdlib.h>
-#include "gtkalias.h"
 #include "gtkcellrendererpixbuf.h"
 #include "gtkiconfactory.h"
 #include "gtkicontheme.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 static void gtk_cell_renderer_pixbuf_get_property  (GObject                    *object,
 						    guint                       param_id,
@@ -593,3 +593,6 @@ gtk_cell_renderer_pixbuf_render (GtkCellRenderer      *cell,
   if (invisible)
     g_object_unref (invisible);
 }
+
+#define __GTK_CELL_RENDERER_PIXBUF_C__
+#include "gtkaliasdef.c"

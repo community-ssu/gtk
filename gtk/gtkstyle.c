@@ -28,7 +28,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "gtkalias.h"
 #include "gtkgc.h"
 #include "gtkmarshalers.h"
 #include "gtkrc.h"
@@ -39,6 +38,7 @@
 #include "gtkiconfactory.h"
 #include "gtksettings.h"	/* _gtk_settings_parse_convert() */
 #include "gtkhashtable.h"
+#include "gtkalias.h"
 
 #define LIGHTNESS_MULT  1.3
 #define DARKNESS_MULT   0.7
@@ -6975,3 +6975,6 @@ gtk_draw_insertion_cursor (GtkWidget        *widget,
   if (area)
     gdk_gc_set_clip_rectangle (gc, NULL);
 }
+
+#define __GTK_STYLE_C__
+#include "gtkaliasdef.c"

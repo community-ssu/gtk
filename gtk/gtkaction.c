@@ -30,7 +30,6 @@
 
 #include <config.h>
 
-#include "gtkalias.h"
 #include "gtkaction.h"
 #include "gtkactiongroup.h"
 #include "gtkaccellabel.h"
@@ -45,6 +44,7 @@
 #include "gtktearoffmenuitem.h"
 #include "gtktoolbutton.h"
 #include "gtktoolbar.h"
+#include "gtkalias.h"
 
 
 #define GTK_ACTION_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_ACTION, GtkActionPrivate))
@@ -446,7 +446,7 @@ gtk_action_set_property (GObject         *object,
 	  tmp = action->private_data->short_label;
 	  action->private_data->short_label = g_strdup (action->private_data->label);
 	  g_free (tmp);
-	  g_object_notify (object, "short_label");
+	  g_object_notify (object, "short-label");
 	}
       break;
     case PROP_SHORT_LABEL:
@@ -486,7 +486,7 @@ gtk_action_set_property (GObject         *object,
 	  tmp = action->private_data->short_label;
 	  action->private_data->short_label = g_strdup (action->private_data->label);
 	  g_free (tmp);
-	  g_object_notify (object, "short_label");
+	  g_object_notify (object, "short-label");
 	}
       break;
     case PROP_VISIBLE_HORIZONTAL:
@@ -1574,3 +1574,6 @@ gtk_action_disconnect_accelerator (GtkAction *action)
     gtk_accel_group_disconnect (action->private_data->accel_group,
 				action->private_data->accel_closure);
 }
+
+#define __GTK_ACTION_C__
+#include "gtkaliasdef.c"

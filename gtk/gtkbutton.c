@@ -30,7 +30,6 @@
 
 #include <config.h>
 #include <string.h>
-#include "gtkalias.h"
 #include "gtkalignment.h"
 #include "gtkbutton.h"
 #include "gtklabel.h"
@@ -41,6 +40,7 @@
 #include "gtkstock.h"
 #include "gtkiconfactory.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 /* Osso addition:
  * Here are the details for each attach 
@@ -1689,7 +1689,7 @@ gtk_button_set_use_underline (GtkButton *button,
   
       gtk_button_construct_child (button);
       
-      g_object_notify (G_OBJECT (button), "use_underline");
+      g_object_notify (G_OBJECT (button), "use-underline");
     }
 }
 
@@ -1733,7 +1733,7 @@ gtk_button_set_use_stock (GtkButton *button,
   
       gtk_button_construct_child (button);
       
-      g_object_notify (G_OBJECT (button), "use_stock");
+      g_object_notify (G_OBJECT (button), "use-stock");
     }
 }
 
@@ -1779,7 +1779,7 @@ gtk_button_set_focus_on_click (GtkButton *button,
     {
       button->focus_on_click = focus_on_click;
       
-      g_object_notify (G_OBJECT (button), "focus_on_click");
+      g_object_notify (G_OBJECT (button), "focus-on-click");
     }
 }
 
@@ -2038,6 +2038,8 @@ gtk_button_set_image (GtkButton *button,
  * This may have been explicitly set by gtk_button_set_image()
  * or constructed by gtk_button_new_from_stock().
  *
+ * Return value: a #GtkWidget or %NULL in case there is no image
+ *
  * Since: 2.6
  */
 GtkWidget *
@@ -2061,3 +2063,6 @@ void osso_gtk_button_set_detail_from_attach_flags (GtkButton *button,OssoGtkButt
 		osso_gtk_button_attach_details[flags],
 		NULL);
 } 
+
+#define __GTK_BUTTON_C__
+#include "gtkaliasdef.c"

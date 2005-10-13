@@ -25,11 +25,11 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkcheckmenuitem.h"
 #include "gtkaccellabel.h"
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
+#include "gtkalias.h"
 
 enum {
   TOGGLED,
@@ -350,7 +350,7 @@ gtk_check_menu_item_set_draw_as_radio (GtkCheckMenuItem *check_menu_item,
 
       gtk_widget_queue_draw (GTK_WIDGET (check_menu_item));
 
-      g_object_notify (G_OBJECT (check_menu_item), "draw_as_radio");
+      g_object_notify (G_OBJECT (check_menu_item), "draw-as-radio");
     }
 }
 
@@ -541,3 +541,6 @@ gtk_check_menu_item_set_property (GObject      *object,
       break;
     }
 }
+
+#define __GTK_CHECK_MENU_ITEM_C__
+#include "gtkaliasdef.c"

@@ -34,13 +34,13 @@
 #include <string.h>
 #include <locale.h>
 #include "gdk/gdkkeysyms.h"
-#include "gtkalias.h"
 #include "gtkbindings.h"
 #include "gtkspinbutton.h"
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtksettings.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 #define MIN_SPIN_BUTTON_WIDTH              30
 #define SPIN_BUTTON_INITIAL_TIMER_DELAY    200
@@ -1571,7 +1571,7 @@ gtk_spin_button_configure (GtkSpinButton  *spin_button,
   if (spin_button->climb_rate != climb_rate)
     {
       spin_button->climb_rate = climb_rate;
-      g_object_notify (G_OBJECT (spin_button), "climb_rate");
+      g_object_notify (G_OBJECT (spin_button), "climb-rate");
     }
   g_object_thaw_notify (G_OBJECT (spin_button));
 
@@ -1606,6 +1606,10 @@ gtk_spin_button_new (GtkAdjustment *adjustment,
  * initially set to the minimum value and a page increment of 10 * @step
  * is the default. The precision of the spin button is equivalent to the 
  * precision of @step.
+ *
+ * Note that the way in which the precision is derived works best if @step 
+ * is a power of ten. If the resulting precision is not suitable for your 
+ * needs, use gtk_spin_button_set_digits() to correct it. 
  * 
  * Return value: The new spin button as a #GtkWidget.
  **/
@@ -1929,7 +1933,7 @@ gtk_spin_button_set_update_policy (GtkSpinButton             *spin_button,
   if (spin_button->update_policy != policy)
     {
       spin_button->update_policy = policy;
-      g_object_notify (G_OBJECT (spin_button), "update_policy");
+      g_object_notify (G_OBJECT (spin_button), "update-policy");
     }
 }
 
@@ -2086,7 +2090,7 @@ gtk_spin_button_set_snap_to_ticks (GtkSpinButton *spin_button,
       if (new_val && GTK_ENTRY (spin_button)->editable)
 	gtk_spin_button_update (spin_button);
       
-      g_object_notify (G_OBJECT (spin_button), "snap_to_ticks");
+      g_object_notify (G_OBJECT (spin_button), "snap-to-ticks");
     }
 }
 
@@ -2262,3 +2266,6 @@ spin_button_redraw (GtkSpinButton *spin_button)
       gdk_window_invalidate_rect (spin_button->panel, NULL, TRUE);
     }
 }        
+
+#define __GTK_SPIN_BUTTON_C__
+#include "gtkaliasdef.c"

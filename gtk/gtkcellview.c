@@ -18,7 +18,6 @@
  */
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkcellview.h"
 #include "gtkcelllayout.h"
 #include "gtkintl.h"
@@ -26,6 +25,7 @@
 #include "gtkcellrenderertext.h"
 #include "gtkcellrendererpixbuf.h"
 #include <gobject/gmarshal.h>
+#include "gtkalias.h"
 
 typedef struct _GtkCellViewCellInfo GtkCellViewCellInfo;
 struct _GtkCellViewCellInfo
@@ -260,7 +260,7 @@ gtk_cell_view_set_property (GObject      *object,
           else
             g_warning ("Don't know color `%s'", g_value_get_string (value));
 
-          g_object_notify (object, "background_gdk");
+          g_object_notify (object, "background-gdk");
         }
         break;
       case PROP_BACKGROUND_GDK:
@@ -1010,6 +1010,18 @@ gtk_cell_view_set_displayed_row (GtkCellView *cell_view,
   gtk_widget_queue_draw (GTK_WIDGET (cell_view));
 }
 
+/**
+ * gtk_cell_view_get_displayed_row:
+ * @cell_view: a #GtkCellView
+ *
+ * Returns a #GtkTreePath referring to the currently 
+ * displayed row. If no row is currently displayed, 
+ * %NULL is returned.
+ *
+ * Returns: the currently displayed row or %NULL
+ *
+ * Since: 2.6
+ */
 GtkTreePath *
 gtk_cell_view_get_displayed_row (GtkCellView *cell_view)
 {
@@ -1081,7 +1093,7 @@ gtk_cell_view_set_background_color (GtkCellView    *cell_view,
       if (!cell_view->priv->background_set)
         {
           cell_view->priv->background_set = TRUE;
-          g_object_notify (G_OBJECT (cell_view), "background_set");
+          g_object_notify (G_OBJECT (cell_view), "background-set");
         }
 
       cell_view->priv->background = *color;
@@ -1091,7 +1103,7 @@ gtk_cell_view_set_background_color (GtkCellView    *cell_view,
       if (cell_view->priv->background_set)
         {
           cell_view->priv->background_set = FALSE;
-          g_object_notify (G_OBJECT (cell_view), "background_set");
+          g_object_notify (G_OBJECT (cell_view), "background-set");
         }
     }
 
@@ -1128,3 +1140,6 @@ gtk_cell_view_get_cell_renderers (GtkCellView *cell_view)
 
   return g_list_reverse (retval);
 }
+
+#define __GTK_CELL_VIEW_C__
+#include "gtkaliasdef.c"

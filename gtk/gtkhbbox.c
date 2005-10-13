@@ -34,10 +34,10 @@
 #define GTK_BUTTONBOX_HETEROGENOUS 6
 
 #include <config.h>
-#include "gtkalias.h"
 #include "gtkhbbox.h"
 /* Hildon : We need this to deal with buttons graphics. */
 #include "gtkbutton.h"
+#include "gtkalias.h"
 
 static void gtk_hbutton_box_class_init    (GtkHButtonBoxClass   *klass);
 static void gtk_hbutton_box_init          (GtkHButtonBox        *box);
@@ -546,3 +546,6 @@ static void osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
         g_object_set (G_OBJECT (child_widget), "detail", osso_gtk_button_attach_details[attachflags], NULL);
     }
 }
+
+#define __GTK_HBUTTON_BOX_C__
+#include "gtkaliasdef.c"

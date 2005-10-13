@@ -40,7 +40,6 @@
 #include <langinfo.h>
 #include <glib/gprintf.h>
 
-#include "gtkalias.h"
 #include "gtkcalendar.h"
 #include "gtkdnd.h"
 #include "gtkintl.h"
@@ -48,6 +47,7 @@
 #include "gtkmarshalers.h"
 #include "gtkintl.h"
 #include "gdk/gdkkeysyms.h"
+#include "gtkalias.h"
 
 /***************************************************************************/
 /* The following date routines are taken from the lib_date package.  Keep
@@ -2734,13 +2734,13 @@ gtk_calendar_set_display_options (GtkCalendar          *calendar,
   
   g_object_freeze_notify (G_OBJECT (calendar));
   if ((old_flags ^ calendar->display_flags) & GTK_CALENDAR_SHOW_HEADING)
-    g_object_notify (G_OBJECT (calendar), "show_heading");
+    g_object_notify (G_OBJECT (calendar), "show-heading");
   if ((old_flags ^ calendar->display_flags) & GTK_CALENDAR_SHOW_DAY_NAMES)
-    g_object_notify (G_OBJECT (calendar), "show_day_names");
+    g_object_notify (G_OBJECT (calendar), "show-day-names");
   if ((old_flags ^ calendar->display_flags) & GTK_CALENDAR_NO_MONTH_CHANGE)
-    g_object_notify (G_OBJECT (calendar), "no_month_change");
+    g_object_notify (G_OBJECT (calendar), "no-month-change");
   if ((old_flags ^ calendar->display_flags) & GTK_CALENDAR_SHOW_WEEK_NUMBERS)
-    g_object_notify (G_OBJECT (calendar), "show_week_numbers");
+    g_object_notify (G_OBJECT (calendar), "show-week-numbers");
   g_object_thaw_notify (G_OBJECT (calendar));
 }
 
@@ -4206,3 +4206,6 @@ gtk_calendar_check_current_date (GtkCalendar *calendar, gint x, gint y)
                      HILDON_DAY_HEIGHT);
     }
 }
+
+#define __GTK_CALENDAR_C__
+#include "gtkaliasdef.c"
