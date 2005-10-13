@@ -3374,26 +3374,30 @@ static int kill_all( gboolean killable_only )
             union win_value window_value;
 
             /* Is the application topped, i.e. topmost? If yes, it
-               should not be killed... */
+               should not be killed. Ignored when non-killable apps are
+	       killed, as at the moment this is done only when TN/base
+	       apps are due to shutdown/restart. */
 
-            gdk_error_trap_push();
-            
-            XGetWindowProperty(GDK_DISPLAY(),
-                               GDK_WINDOW_XID(gdk_get_default_root_window()),
-                               active_win, 0, 32, False, XA_WINDOW,
-                               &actual_type,
-                               &actual_format, &nitems, &bytes_after,
-                               (unsigned char **)&window_value.char_value);
-            
-            if (gdk_error_trap_pop() == 0 &&
-                window_value.window_value[0] == menu_comp.window_id)
-            {
-                XFree(window_value.char_value);
-                continue;
-            }
+	    if (killable_only)
+	      {
+		gdk_error_trap_push();
+		XGetWindowProperty(GDK_DISPLAY(),
+				   GDK_WINDOW_XID(gdk_get_default_root_window()),
+				   mb_active_win, 0, 32, False, XA_WINDOW,
+				   &actual_type, &actual_format, &nitems,
+				   &bytes_after,
+				   (unsigned char **)&window_value.char_value);
+		
+		if (gdk_error_trap_pop() == 0 &&
+		    window_value.window_value[0] == menu_comp.window_id)
+		  {
+		    XFree(window_value.char_value);
+		    continue;
+		  }
+		XFree(window_value.char_value);
+	      }
 
-            gdk_error_trap_push();
-            
+	    gdk_error_trap_push();
             status = XGetWindowProperty(GDK_DISPLAY(),
                                         (Window)menu_comp.window_id,
                                         pid_atom, 0, 32, False, XA_CARDINAL,
@@ -3406,7 +3410,7 @@ static int kill_all( gboolean killable_only )
             {
                 pid_t pid = pid_result[0]+256*pid_result[1];
                 int retval;
-
+		
                 /* As we don't have to wait, kill things right here.
                    Mark them also as killed to the treemodel, if
                    it's an hildonapp-based program and supports
@@ -3416,7 +3420,6 @@ static int kill_all( gboolean killable_only )
                 if (retval != 0)
                 {
                     osso_log(LOG_ERR, "Could not kill pid %d\n", pid);
-                    XFree(window_value.char_value);
                     XFree(pid_result);
                     continue;
                 }

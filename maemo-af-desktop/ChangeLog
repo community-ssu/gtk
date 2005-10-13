@@ -1,4 +1,12 @@
 2005-10-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Increased version number to 1.60.0, preparing for next integration round
+	* Patched bug N#20305: Desktop doesn't close applications on exit
+	* hildon-navigator/windowmanager.c (kill_all): Allow also the
+        topmost application to be killed, when killable_only is set to
+        FALSE (indicates that Task Navigator and apps are about to
+        restart/shutdown anyway)
+
+2005-10-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Increased version number to 1.59.2.
 	* Reverted the previously mentioned ugly hack, now the configure points to libosso >= 0.9.18
 	* Increased version number to 1.59.3

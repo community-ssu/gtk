@@ -1,3 +1,10 @@
+maemo-af-desktop (1.60.0) unstable; urgency=low
+
+  * Preparing for next integration round, increased version number to
+    1.60.0. Patched bug 20305
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 13 Oct 2005 16:24:50 +0300
+
 maemo-af-desktop (1.59.3) unstable; urgency=low
 
   * Changed deps again, libosso >= 0.9.19+
