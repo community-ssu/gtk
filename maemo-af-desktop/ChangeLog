@@ -1,4 +1,11 @@
-2005-10-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+2005-10-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Fixed libosso version inconsistency problem with a workaround by reverting dependency to
+	  libosso >= 0.9.10 from libosso >= 0.9.18 in configure.ac. Tested to compile ok with libosso 0.9.18-1.
+	* debian/control still points to 0.9.18-1 in libosso-dev and it appears to not have any adverse effect on 
+	  buildability.
+	* Increased version number to 1.59.1.
+
+2005-10-12  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Patched bug 20250:
 	* hildon-home/hildon-home-image-loader.c
 	  - Andrei Laperie's <andrei.laperie@nokia.com> patch to add SAW (allocation watchdog facilities)
