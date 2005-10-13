@@ -96,14 +96,9 @@ struct _GdkToplevelX11
    */
   guint has_focus : 1;
 
-  /* Set if the pointer is inside this window. (This is needed for
-   * for focus tracking)
-   */
-  guint has_pointer : 1;
-  
-  /* Set if the window is a descendent of the focus window and the pointer is
-   * inside it. (This is the case where the window will receive keystroke
-   * events even window->has_focus_window is FALSE)
+  /* Set if !window->has_focus_window, but events are being sent to the
+   * window because the pointer is in it. (Typically, no window
+   * manager is running.
    */
   guint has_pointer_focus : 1;
 
