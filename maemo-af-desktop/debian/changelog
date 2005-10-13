@@ -1,6 +1,6 @@
 maemo-af-desktop (1.59.3) unstable; urgency=low
 
-  * Changed deps again
+  * Changed deps again, libosso >= 0.9.19+
 
  -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 13 Oct 2005 15:17:40 +0300
 
