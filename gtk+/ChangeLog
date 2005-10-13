@@ -1,5 +1,33 @@
 2005-10-13  Michael Natterer  <mitch@imendio.com>
 
+	Merged changes to updateiconcache.c and changed a stat() back to
+	g_stat() because glib 2.6.6 contains the needed #define.
+
+    2005-04-11  Ivan, Wong Yat Cheung  <email@ivanwong.info>
+
+	* gtk/updateiconcache.c: Guard inclusion of unistd.h and
+	utime.h.
+
+    2005-04-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/updateiconcache.c (write_card32, write_card16): Avoid
+	unaligned access.  (#172947)
+
+	Some fixes from Morten Welinder (#172947):
+	
+	* gtk/updateiconcache.c (icon_name_hash): Make this compiler- 
+	and platform-independent.
+	(is_cache_up_to_date): Don't compare mtimes is a stat call failed.
+	(build_cache): Error out if a stat fails.  
+
+    2005-04-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/updateiconcache.c (is_cache_up_to_date): Return 
+	TRUE if the cache is newer than the directory.  (#172852,
+	Jacob Kroon)
+
+2005-10-13  Michael Natterer  <mitch@imendio.com>
+
 	Merged the entire symbol aliasing and canonical property names
 	patches. They affect all files but don't change any logic:
 
