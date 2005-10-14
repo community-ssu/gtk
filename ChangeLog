@@ -1,5 +1,75 @@
 2005-10-14  Michael Natterer  <mitch@imendio.com>
 
+	Merged changes to GtkComboBox and GtkComboBoxEntry. The changes
+	contain proper implementations of GtkWidget::grab_focus(), so I
+	removed the resp. hildon patches which were used if "hildonlike"
+	was set. The boxes now always have proper grab_focus() behavior.
+	Also reduced the size of the hildon path by getting rid of
+	G_OBJECT() casts that are not needed. Note that the first of the
+	following patches was applied after gtk 2.6.10 and is currently
+	only in gtk-2-6 CVS.
+
+    2005-08-22  Matthias Clasen  <mclasen@redhat.com>
+
+        Backport from 2.8.
+        
+        * gtk/gtkcombobox.c (gtk_combo_box_list_destroy): Cleanup
+        a possible resize idle.  (#311141, Robert Ögren)
+
+	2005-05-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_list_auto_scroll): Make 
+	autoscrolling work at the bottom of the screen.
+
+    2005-05-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_list_button_released): Keep
+	the popup posted if the button is released over the cellview.
+	This matches the behaviour of other combo box implementations.  
+	(#171378)
+
+    2005-04-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_popdown): Make this
+	work when called from gtk_combo_box_destroy().  (#172999,
+	Christian Persch)
+
+    2005-04-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkcomboboxentry.c (gtk_combo_box_entry_grab_focus): 
+	* gtk/gtkcombobox.c (gtk_combo_box_grab_focus): Implement
+	grab_focus for GtkComboBox and GtkComboBoxEntry.  (#171912,
+	Gustavo Carneiro)
+
+    Mon Apr  4 14:33:55 2005  Manish Singh  <yosh@gimp.org>
+
+	* gtk/gtkcomboboxentry.c (gtk_combo_box_entry_get_active_text):
+	cast combo->priv->entry to GTK_ENTRY()
+
+    2005-04-01  Matthias Clasen  <mclasen@redhat.com>
+
+	Make gtk_combo_box_get_active_text do the right thing for
+	GtkComboBoxEntry (#171373, Robert Staudinger)
+	
+	* gtk/gtkcombobox.h: Add a get_active_text vfunc.
+	
+	* gtk/gtkcombobox.c (gtk_combo_box_real_get_active_text): And
+	implement it here.
+
+	* gtk/gtkcomboboxentry.c (gtk_combo_box_entry_get_active_text): 
+	Implement get_active_text by always returning the content of 
+	the entry.
+
+    2005-03-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_popup): Don't 
+	segfault if somebody tries to popup an unrealized
+	combo box.  (#172031, Felipe Heidrich)
+
+2005-10-14  Michael Natterer  <mitch@imendio.com>
+
+	Merged more local changes that don't affect other files:
+
 	gtk/gtkfilesel.c:
 
     2005-07-01  Matthias Clasen  <mclasen@redhat.com>

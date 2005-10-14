@@ -42,7 +42,6 @@
 #include "gtktreeselection.h"
 #include "gtkvseparator.h"
 #include "gtkwindow.h"
-#include "gtkcomboboxentry.h"
 #include "gtktoolbar.h"
 
 #include <gdk/gdkkeysyms.h>
@@ -123,6 +122,7 @@ struct _GtkComboBoxPrivate
   guint changed_id;
   guint popup_idle_id;
   guint scroll_timer;
+  guint resize_idle_id;
 
   gint width;
   GSList *cells;
@@ -247,6 +247,7 @@ static void     gtk_combo_box_get_property         (GObject         *object,
 
 static void     gtk_combo_box_state_changed        (GtkWidget        *widget,
 			                            GtkStateType      previous);
+static void     gtk_combo_box_grab_focus           (GtkWidget       *widget);
 static void     gtk_combo_box_style_set            (GtkWidget       *widget,
                                                     GtkStyle        *previous);
 static void     gtk_combo_box_button_toggled       (GtkWidget       *widget,
@@ -304,11 +305,11 @@ static void     gtk_combo_box_forall               (GtkContainer     *container,
                                                     gpointer          callback_data);
 static gboolean gtk_combo_box_focus_in             (GtkWidget        *widget,
                                                     GdkEventFocus    *event);
-static gint gtk_combo_box_focus             (GtkWidget        *widget,
+static gint     gtk_combo_box_focus                (GtkWidget        *widget,
                                                     GtkDirectionType dir);
-static void gtk_combo_box_child_focus_in            (GtkWidget        *widget,
+static void     gtk_combo_box_child_focus_in       (GtkWidget        *widget,
                                                     GdkEventFocus    *event);
-static void gtk_combo_box_child_focus_out            (GtkWidget        *widget,
+static void     gtk_combo_box_child_focus_out      (GtkWidget        *widget,
                                                     GdkEventFocus    *event);
 static gboolean gtk_combo_box_expose_event         (GtkWidget        *widget,
                                                     GdkEventExpose   *event);
@@ -321,12 +322,7 @@ static gboolean gtk_combo_box_key_press            (GtkWidget        *widget,
 						    gpointer          data);
 
 static void     gtk_combo_box_check_appearance     (GtkComboBox      *combo_box);
-
-/* <Hildon addition> */
-extern void     gtk_grab_combo_box_entry_focus   (GtkComboBoxEntry *entry_box);
-
-static void    gtk_combo_box_grab_focus         (GtkWidget         *focus_widget);
-/* </hildon addition> */
+static gchar *  gtk_combo_box_real_get_active_text (GtkComboBox      *combo_box);
 
 /* listening to the model */
 static void     gtk_combo_box_model_row_inserted   (GtkTreeModel     *model,
@@ -556,6 +552,8 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
 
   binding_set = gtk_binding_set_by_class (klass);
 
+  klass->get_active_text = gtk_combo_box_real_get_active_text;
+
   container_class = (GtkContainerClass *)klass;
   container_class->forall = gtk_combo_box_forall;
   container_class->add = gtk_combo_box_add;
@@ -567,11 +565,11 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
   widget_class->expose_event = gtk_combo_box_expose_event;
   widget_class->scroll_event = gtk_combo_box_scroll_event;
   widget_class->mnemonic_activate = gtk_combo_box_mnemonic_activate;
+  widget_class->grab_focus = gtk_combo_box_grab_focus;
   widget_class->style_set = gtk_combo_box_style_set;
   widget_class->state_changed = gtk_combo_box_state_changed;
   
   /* Hildon addition */
-  widget_class->grab_focus = gtk_combo_box_grab_focus;
   widget_class->focus_in_event = gtk_combo_box_focus_in;
   widget_class->focus = gtk_combo_box_focus;
 
@@ -1277,7 +1275,7 @@ gtk_combo_box_set_popup_widget (GtkComboBox *combo_box,
     {
       gtk_container_remove (GTK_CONTAINER (combo_box->priv->popup_frame),
                             combo_box->priv->popup_widget);
-      g_object_unref (G_OBJECT (combo_box->priv->popup_widget));
+      g_object_unref (combo_box->priv->popup_widget);
       combo_box->priv->popup_widget = NULL;
     }
 
@@ -1351,7 +1349,7 @@ gtk_combo_box_set_popup_widget (GtkComboBox *combo_box,
                          popup);
 
       gtk_widget_show (popup);
-      g_object_ref (G_OBJECT (popup));
+      g_object_ref (popup);
       combo_box->priv->popup_widget = popup;
     }
 }
@@ -1783,7 +1781,7 @@ cell_view_is_sensitive (GtkCellView *cell_view)
   list = cells;
   while (list)
     {
-      g_object_get (G_OBJECT (list->data), "sensitive", &sensitive, NULL);
+      g_object_get (list->data, "sensitive", &sensitive, NULL);
       
       if (sensitive)
 	break;
@@ -1822,7 +1820,7 @@ tree_column_row_is_sensitive (GtkComboBox *combo_box,
   list = cells;
   while (list)
     {
-      g_object_get (G_OBJECT (list->data), "sensitive", &sensitive, NULL);
+      g_object_get (list->data, "sensitive", &sensitive, NULL);
       
       if (sensitive)
 	break;
@@ -1869,8 +1867,8 @@ update_menu_sensitivity (GtkComboBox *combo_box,
 	  if (menu != combo_box->priv->popup_widget && child == children)
 	    {
 	      separator = GTK_WIDGET (child->next->data);
-	      g_object_set (G_OBJECT (item), "visible", sensitive, NULL);
-	      g_object_set (G_OBJECT (separator), "visible", sensitive, NULL);
+	      g_object_set (item, "visible", sensitive, NULL);
+	      g_object_set (separator, "visible", sensitive, NULL);
 	    }
 	  else
 	    gtk_widget_set_sensitive (item, sensitive);
@@ -1905,7 +1903,7 @@ gtk_combo_box_menu_popup (GtkComboBox *combo_box,
     }
 
   /* FIXME handle nested menus better */
-  gtk_menu_set_active (GTK_MENU (combo_box->priv->popup_widget), active_item);  
+  gtk_menu_set_active (GTK_MENU (combo_box->priv->popup_widget), active_item);
 
   gtk_menu_popup (GTK_MENU (combo_box->priv->popup_widget),
 		  NULL, NULL,
@@ -1932,6 +1930,9 @@ gtk_combo_box_popup (GtkComboBox *combo_box)
   GtkWidget *toplevel;
 
   g_return_if_fail (GTK_IS_COMBO_BOX (combo_box));
+
+  if (!GTK_WIDGET_REALIZED (combo_box))
+    return;
 
   if (GTK_WIDGET_MAPPED (combo_box->priv->popup_widget))
     return;
@@ -2006,14 +2007,14 @@ gtk_combo_box_popdown (GtkComboBox *combo_box)
 {
   g_return_if_fail (GTK_IS_COMBO_BOX (combo_box));
 
-  if (!GTK_WIDGET_REALIZED (GTK_WIDGET (combo_box)))
-    return;
-
   if (GTK_IS_MENU (combo_box->priv->popup_widget))
     {
       gtk_menu_popdown (GTK_MENU (combo_box->priv->popup_widget));
       return;
     }
+
+  if (!GTK_WIDGET_REALIZED (GTK_WIDGET (combo_box)))
+    return;
 
   gtk_combo_box_list_remove_grabs (combo_box);
 
@@ -2454,8 +2455,6 @@ gtk_combo_box_unset_model (GtkComboBox *combo_box)
     gtk_cell_view_set_displayed_row (GTK_CELL_VIEW (combo_box->priv->cell_view), NULL);
 }
 
-
-
 static void
 gtk_combo_box_forall (GtkContainer *container,
                       gboolean      include_internals,
@@ -2824,6 +2823,7 @@ gtk_combo_box_menu_setup (GtkComboBox *combo_box,
   if (combo_box->priv->cell_view)
     {
       combo_box->priv->button = gtk_toggle_button_new ();
+
       g_signal_connect (combo_box->priv->button, "toggled",
                         G_CALLBACK (gtk_combo_box_button_toggled), combo_box);
       g_signal_connect_after (combo_box->priv->button, 
@@ -3251,8 +3251,8 @@ gtk_combo_box_model_row_deleted (GtkTreeModel     *model,
   if (combo_box->priv->tree_view)
     gtk_combo_box_list_popup_resize (combo_box);
   else
-    gtk_combo_box_menu_row_deleted (model, path, user_data);        
- 
+    gtk_combo_box_menu_row_deleted (model, path, user_data);  
+
   /* Hildon hack: dim the popup button in case item count reaches 0 */
   hildon_check_autodim(combo_box);
 }
@@ -3316,6 +3316,8 @@ list_popup_resize_idle (gpointer user_data)
       gtk_window_move (GTK_WINDOW (combo_box->priv->popup_window), x, y);
     }
 
+  combo_box->priv->resize_idle_id = 0;
+
   GDK_THREADS_LEAVE ();
 
   return FALSE;
@@ -3324,7 +3326,9 @@ list_popup_resize_idle (gpointer user_data)
 static void
 gtk_combo_box_list_popup_resize (GtkComboBox *combo_box)
 {
-  g_idle_add (list_popup_resize_idle, combo_box);
+  if (!combo_box->priv->resize_idle_id)
+    combo_box->priv->resize_idle_id = 
+      g_idle_add (list_popup_resize_idle, combo_box);
 }
 
 static void
@@ -3794,6 +3798,12 @@ gtk_combo_box_list_destroy (GtkComboBox *combo_box)
       combo_box->priv->scroll_timer = 0;
     }
 
+  if (combo_box->priv->resize_idle_id)
+    {
+      g_source_remove (combo_box->priv->resize_idle_id);
+      combo_box->priv->resize_idle_id = 0;
+    }
+
   gtk_widget_destroy (combo_box->priv->tree_view);
 
   combo_box->priv->tree_view = NULL;
@@ -3880,7 +3890,8 @@ gtk_combo_box_list_button_released (GtkWidget      *widget,
 
   if (ewidget != combo_box->priv->tree_view)
     {
-      if (ewidget == combo_box->priv->button &&
+      if ((ewidget == combo_box->priv->button ||
+	   ewidget == combo_box->priv->box ) &&
           !popup_in_progress &&
           gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (combo_box->priv->button)))
         {
@@ -3889,7 +3900,8 @@ gtk_combo_box_list_button_released (GtkWidget      *widget,
         }
 
       /* released outside treeview */
-      if (ewidget != combo_box->priv->button)
+      if (ewidget != combo_box->priv->button &&
+	  ewidget != combo_box->priv->box)
         {
           gtk_combo_box_popdown (combo_box);
 
@@ -4118,10 +4130,10 @@ gtk_combo_box_list_auto_scroll (GtkComboBox *combo_box,
 	  value = adj->value - (tree_view->allocation.y - y + 1);
 	  gtk_adjustment_set_value (adj, CLAMP (value, adj->lower, adj->upper - adj->page_size));
 	}
-      else if (y >= tree_view->allocation.y + tree_view->allocation.height &&
+      else if (y >= tree_view->allocation.height &&
 	       adj->upper - adj->page_size > adj->value)
 	{
-	  value = adj->value + (y - tree_view->allocation.y - tree_view->allocation.height + 1);
+	  value = adj->value + (y - tree_view->allocation.height + 1);
 	  gtk_adjustment_set_value (adj, CLAMP (value, 0.0, adj->upper - adj->page_size));
 	}
     }
@@ -4221,7 +4233,7 @@ gtk_combo_box_cell_layout_pack_start (GtkCellLayout   *layout,
 
   combo_box = GTK_COMBO_BOX (layout);
 
-  g_object_ref (G_OBJECT (cell));
+  g_object_ref (cell);
   gtk_object_sink (GTK_OBJECT (cell));
 
   info = g_new0 (ComboCellInfo, 1);
@@ -4278,7 +4290,7 @@ gtk_combo_box_cell_layout_pack_end (GtkCellLayout   *layout,
 
   combo_box = GTK_COMBO_BOX (layout);
 
-  g_object_ref (G_OBJECT (cell));
+  g_object_ref (cell);
   gtk_object_sink (GTK_OBJECT (cell));
 
   info = g_new0 (ComboCellInfo, 1);
@@ -4340,7 +4352,7 @@ gtk_combo_box_cell_layout_clear (GtkCellLayout *layout)
      ComboCellInfo *info = (ComboCellInfo *)i->data;
 
       gtk_combo_box_cell_layout_clear_attributes (layout, info->cell);
-      g_object_unref (G_OBJECT (info->cell));
+      g_object_unref (info->cell);
       g_free (info);
       i->data = NULL;
     }
@@ -4429,7 +4441,7 @@ combo_cell_data_func (GtkCellLayout   *cell_layout,
   
   if (GTK_IS_MENU_ITEM (parent) && 
       gtk_menu_item_get_submenu (GTK_MENU_ITEM (parent)))
-    g_object_set (G_OBJECT (cell), "sensitive", TRUE, NULL);
+    g_object_set (cell, "sensitive", TRUE, NULL);
 }
 
 
@@ -4644,7 +4656,7 @@ gtk_combo_box_cell_layout_reorder (GtkCellLayout   *layout,
 GtkWidget *
 gtk_combo_box_new (void)
 {
-  return GTK_WIDGET (g_object_new (GTK_TYPE_COMBO_BOX, NULL));
+  return g_object_new (GTK_TYPE_COMBO_BOX, NULL);
 }
 
 /**
@@ -4664,9 +4676,7 @@ gtk_combo_box_new_with_model (GtkTreeModel *model)
 
   g_return_val_if_fail (GTK_IS_TREE_MODEL (model), NULL);
 
-  combo_box = GTK_COMBO_BOX (g_object_new (GTK_TYPE_COMBO_BOX,
-                                           "model", model,
-                                           NULL));
+  combo_box = g_object_new (GTK_TYPE_COMBO_BOX, "model", model, NULL);
 
   return GTK_WIDGET (combo_box);
 }
@@ -5034,7 +5044,7 @@ gtk_combo_box_set_model (GtkComboBox  *combo_box,
     gtk_combo_box_unset_model (combo_box);
 
   combo_box->priv->model = model;
-  g_object_ref (G_OBJECT (combo_box->priv->model));
+  g_object_ref (combo_box->priv->model);
 
   combo_box->priv->inserted_id =
     g_signal_connect (combo_box->priv->model, "row_inserted",
@@ -5263,10 +5273,24 @@ gtk_combo_box_remove_text (GtkComboBox *combo_box,
 gchar *
 gtk_combo_box_get_active_text (GtkComboBox *combo_box)
 {
+  GtkComboBoxClass *class;
+
+  g_return_val_if_fail (GTK_IS_COMBO_BOX (combo_box), NULL);
+
+  class = GTK_COMBO_BOX_GET_CLASS (combo_box);
+
+  if (class->get_active_text)
+    return (* class->get_active_text) (combo_box);
+
+  return NULL;
+}
+
+static gchar *
+gtk_combo_box_real_get_active_text (GtkComboBox *combo_box)
+{
   GtkTreeIter iter;
   gchar *text = NULL;
 
-  g_return_val_if_fail (GTK_IS_COMBO_BOX (combo_box), NULL);
   g_return_val_if_fail (GTK_IS_LIST_STORE (combo_box->priv->model), NULL);
 
   if (gtk_combo_box_get_active_iter (combo_box, &iter))
@@ -5285,6 +5309,14 @@ gtk_combo_box_mnemonic_activate (GtkWidget *widget,
   gtk_widget_grab_focus (combo_box->priv->button);
 
   return TRUE;
+}
+
+static void
+gtk_combo_box_grab_focus (GtkWidget *widget)
+{
+  GtkComboBox *combo_box = GTK_COMBO_BOX (widget);
+
+  gtk_widget_grab_focus (combo_box->priv->button);
 }
 
 static void
@@ -5654,36 +5686,6 @@ gtk_combo_box_get_focus_on_click (GtkComboBox *combo)
   g_return_val_if_fail (GTK_IS_COMBO_BOX (combo), FALSE);
   
   return combo->priv->focus_on_click;
-}
-/* Hildon addition:
- * This is added, because we need to be able grab focus for our widget.
- * Focus grabbing can happen it two ways: If we are using combobox entry
- * we grab entry widget focus, otherwise togglebutton focus
- */
-static void	gtk_combo_box_grab_focus	 (GtkWidget         *focus_widget)
-{
-  GtkComboBox *combo_box;
-  GtkComboBoxEntry *combo_entry;
-  gboolean hildonlike;
-
-  combo_box = GTK_COMBO_BOX (focus_widget);
-  
-  gtk_widget_style_get (focus_widget, "hildonlike",
-			&hildonlike, NULL);
-
-  if (hildonlike)
-    {
-      /* Are we in entry mode ? */
-      if ( GTK_IS_COMBO_BOX_ENTRY(combo_box))
-        {
-	   combo_entry = GTK_COMBO_BOX_ENTRY (combo_box);
-	   gtk_grab_combo_box_entry_focus (combo_entry);
-        }
-      else
-        {
-	   gtk_widget_grab_focus (combo_box->priv->button);
-        }
-    }
 }
 
 

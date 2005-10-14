@@ -49,14 +49,14 @@ static void gtk_combo_box_entry_get_property     (GObject               *object,
                                                   GValue                *value,
                                                   GParamSpec            *pspec);
 
+static gchar *gtk_combo_box_entry_get_active_text (GtkComboBox *combo_box);
 static void gtk_combo_box_entry_active_changed   (GtkComboBox           *combo_box,
                                                   gpointer               user_data);
 static void gtk_combo_box_entry_contents_changed (GtkEntry              *entry,
                                                   gpointer               user_data);
 static gboolean gtk_combo_box_entry_mnemonic_activate (GtkWidget        *entry,
 						       gboolean          group_cycling);
-/*static void gtk_grab_combo_box_entry_focus       (GtkComboBoxEntry *entry_box);*/
-
+static void gtk_combo_box_entry_grab_focus       (GtkWidget *widget);
 static void has_frame_changed                    (GtkComboBoxEntry      *entry_box,
 						  GParamSpec            *pspec,
 						  gpointer               data);
@@ -102,6 +102,7 @@ gtk_combo_box_entry_class_init (GtkComboBoxEntryClass *klass)
 {
   GObjectClass *object_class;
   GtkWidgetClass *widget_class;
+  GtkComboBoxClass *combo_class;
 
   object_class = (GObjectClass *)klass;
   object_class->set_property = gtk_combo_box_entry_set_property;
@@ -109,7 +110,11 @@ gtk_combo_box_entry_class_init (GtkComboBoxEntryClass *klass)
 
   widget_class = (GtkWidgetClass *)klass;
   widget_class->mnemonic_activate = gtk_combo_box_entry_mnemonic_activate;
+  widget_class->grab_focus = gtk_combo_box_entry_grab_focus;
 
+  combo_class = (GtkComboBoxClass *)klass;
+  combo_class->get_active_text = gtk_combo_box_entry_get_active_text;
+  
   g_object_class_install_property (object_class,
                                    PROP_TEXT_COLUMN,
                                    g_param_spec_int ("text_column",
@@ -359,6 +364,15 @@ gtk_combo_box_entry_mnemonic_activate (GtkWidget *widget,
   return TRUE;
 }
 
+static void
+gtk_combo_box_entry_grab_focus (GtkWidget *widget)
+{
+  GtkComboBoxEntry *entry_box = GTK_COMBO_BOX_ENTRY (widget);
+
+  gtk_widget_grab_focus (entry_box->priv->entry);
+}
+
+
 
 /* convenience API for simple text combos */
 
@@ -389,13 +403,15 @@ gtk_combo_box_entry_new_text (void)
   return entry_box;
 }
 
-/* Hildon: this is added because we need to grab focus from caption control
- * to ComboBox entry.
- */
-void
-gtk_grab_combo_box_entry_focus (GtkComboBoxEntry *entry_box)
+static gchar *
+gtk_combo_box_entry_get_active_text (GtkComboBox *combo_box)
 {
-  gtk_widget_grab_focus (entry_box->priv->entry);
+  GtkComboBoxEntry *combo = GTK_COMBO_BOX_ENTRY (combo_box);
+
+  if (combo->priv->entry)
+    return g_strdup (gtk_entry_get_text (GTK_ENTRY (combo->priv->entry)));
+
+  return NULL;
 }
 
 #define __GTK_COMBO_BOX_ENTRY_C__
