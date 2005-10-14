@@ -1,3 +1,26 @@
+2005-10-14  Michael Natterer  <mitch@imendio.com>
+
+	Merged new stock icons:
+
+    2005-04-09  Matthias Clasen  <mclasen@redhat.com>
+
+	Add 16x16 versions of the zoom icons and of 
+	GTK_STOCK_INDEX. Some of the images were taken from 
+	the hicolor icon theme, and were originally created 
+	by Jakub Steiner and Tuomas Kuosmanen.  (#167515, 
+	Vincent Noel)
+	
+	* gtk/stock-icons/stock_index_16.png:
+	* gtk/stock-icons/stock_zoom_1_16.png:
+	* gtk/stock-icons/stock_zoom_fit_16.png:
+	* gtk/stock-icons/stock_zoom_in_16.png:
+	* gtk/stock-icons/stock_zoom_out_16.png: New images.
+	
+	* gtk/stock-icons/Makefile.am: Add the new images. 
+
+	* gtk/gtkiconfactory.c (get_default_icons): Add the new 
+	images. 
+
 2005-10-13  Michael Natterer  <mitch@imendio.com>
 
 	Merged some local changes that don't affect other files:
