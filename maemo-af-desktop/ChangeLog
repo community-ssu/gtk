@@ -1,3 +1,14 @@
+2005-10-14  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	* Increased version number 1.60.1 for packaging
+	* Applied 20250_postinstfix patch 
+	* maemo-af-desktop/debian/maemo-af-desktop.postinst
+  	- added parameter for image loader to notice instal time run
+	* hildon-home/hildon-home-image-loader.c
+	  - load_image_from_uri(): added postinstall parameter
+	  - load_image_from_uri(): if postinstall, saw tool is disabled
+	  - main(): check if there is extra parameter with correct value we
+	    are in postinstall phase and set variable for load function call
+
 2005-10-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Increased version number to 1.60.0, preparing for next integration round
 	* Patched bug N#20305: Desktop doesn't close applications on exit

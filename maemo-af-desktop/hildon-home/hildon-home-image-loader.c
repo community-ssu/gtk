@@ -93,13 +93,14 @@ load_image_oom_cb(size_t current_sz, size_t max_sz,void *context)
  *
  * @param pixbuf Storing place pixbuf of loaded image
  * @param uri URI for the image to load
+ * @param postintall TRUE if installing time call
  *
  * @returns loader status
  *
  * Load an image from given URI. Places to pixbuf
 */
 static 
-gint load_image_from_uri(GdkPixbuf **pixbuf, const gchar *uri)
+gint load_image_from_uri(GdkPixbuf **pixbuf, const gchar *uri, gboolean postinstall)
 {     
     GError           *error = NULL;
     GdkPixbufLoader  *loader;
@@ -144,11 +145,10 @@ gint load_image_from_uri(GdkPixbuf **pixbuf, const gchar *uri)
     g_free(mmc_uri_prefix);
     result = gnome_vfs_open(&handle, uri, GNOME_VFS_OPEN_READ);
     /*Setting up a watchdog*/
-    if( osso_mem_saw_enable( 3 << 20, 32767, load_image_oom_cb, (void *)&oom) )
+    if(!postinstall && osso_mem_saw_enable( 3 << 20, 32767, load_image_oom_cb, (void *)&oom) )
     {
-         oom = TRUE;
-    }
-    
+        oom = TRUE;
+    } 
     loader = gdk_pixbuf_loader_new();
 
     while (!oom && (result == GNOME_VFS_OK) && (!mmc_in_use || !mmc_cover_open)) {
@@ -187,7 +187,10 @@ gint load_image_from_uri(GdkPixbuf **pixbuf, const gchar *uri)
     g_object_unref(gconf_client); 	 
     
     /*disable watchdog*/
-    osso_mem_saw_disable();
+    if(postinstall)
+    {
+        osso_mem_saw_disable();
+    }
     
     if (oom || (result != GNOME_VFS_ERROR_EOF)) 
     {
@@ -718,17 +721,24 @@ int main(int argc, char *argv[])
     const gchar *dest_filename;
     gint dest_width, dest_height;
     gint argv_counter = 5, loader_status;
-    
+    gboolean postinstall = FALSE;
+
     GdkPixbuf *pixbuf_titlebar = NULL;
     GdkPixbuf *pixbuf_sidebar = NULL;
     
-    if (argc < argv_counter || (((argc - argv_counter) % 2) != 0)) 
+    if (argc == 16 && atoi(argv[15]) == 1)
+    {
+        postinstall = TRUE;
+    }
+
+    if (argc < argv_counter || 
+        (((argc - argv_counter) % 2) != 0 && !postinstall))
     {
         g_print("Usage: <operation> <save-image-filename> "
                 "<image-width> <image-height> "
                 "[<source-image-uri> <source-uri-save-file>] "
                 "[<image-filename> <image-filename-save> "
-                "<image-x> <image-y> [..]]\n");
+                "<image-x> <image-y> [..]] [install-flag]\n");
         return HILDON_HOME_IMAGE_LOADER_ERROR_SYSTEM_RESOURCE;
     }
     
@@ -807,7 +817,8 @@ int main(int argc, char *argv[])
         argv_counter++;
         source_uri_save_file = argv[argv_counter];
         argv_counter++;
-        loader_status = load_image_from_uri(&src_pixbuf, source_uri);
+        loader_status = 
+            load_image_from_uri(&src_pixbuf, source_uri, postinstall);
         
         if(loader_status != HILDON_HOME_IMAGE_LOADER_OK) 
         {

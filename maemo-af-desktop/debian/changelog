@@ -1,3 +1,9 @@
+maemo-af-desktop (1.60.1) unstable; urgency=low
+
+  * Patched 20250 again with postinstfix
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri, 14 Oct 2005 14:31:44 +0300
+
 maemo-af-desktop (1.60.0) unstable; urgency=low
 
   * Preparing for next integration round, increased version number to
