@@ -175,7 +175,7 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
     const char *error_str;
     gchar *pluginname = NULL; /* NULL = statically compiled */
     gchar *entryfn_name;
-    
+
     g_return_val_if_fail( plugin, NULL );
 
     if( FALSE ) 
@@ -241,12 +241,15 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
                                       HILDON_STATUS_BAR_USER_PLUGIN_PATH,
                                       plugin );
         priv->dlhandle = dlopen( pluginname, RTLD_NOW );
+        g_free(pluginname);
     }
 
     if( !priv->dlhandle )
     {
         osso_log( LOG_ERR, "HildonStatusBarItem: Unable to open plugin %s\n", 
                   plugin );
+
+        g_object_unref(item);
         return NULL;
     }
 
@@ -263,14 +266,14 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
                   "Unable to load entry symbol for plugin %s: %s\n", 
                   plugin, error_str );
 
-        dlclose( priv->dlhandle );
+        g_object_unref(item);
         return NULL;
     }
 
     /* Get functions */
     if( !hildon_status_bar_item_load_symbols( item ) )
     {
-        dlclose( priv->dlhandle );
+        g_object_unref(item);
         return NULL;
     }
     
@@ -279,7 +282,7 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
     
     /* Patch status-bar-init-null-fix hand applied here by Karoliina Salminen 08092005 */
     if ( !priv->button ) {
-         dlclose( priv->dlhandle );
+         g_object_unref(item);
          return NULL;
     }
 
@@ -342,7 +345,8 @@ static void hildon_status_bar_item_finalize( GObject *obj )
     /* allow the lib to clean up itself */
     priv->fn->destroy( priv->data );
 
-    dlclose( priv->dlhandle );
+    if ( priv->dlhandle)
+            dlclose( priv->dlhandle );
 
     g_free( priv->fn );
     g_free( priv->name );

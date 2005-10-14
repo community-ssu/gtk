@@ -8,6 +8,9 @@
 	  - load_image_from_uri(): if postinstall, saw tool is disabled
 	  - main(): check if there is extra parameter with correct value we
 	    are in postinstall phase and set variable for load function call
+	* Increased version number to 1.60.2
+	* Applied Tomas Junnonen's <tomas.junnonen@nokia.com> patch for 
+	N#19614: Memory leaks in Statusbar hildon_status_bar_item_new()
 
 2005-10-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Increased version number to 1.60.0, preparing for next integration round

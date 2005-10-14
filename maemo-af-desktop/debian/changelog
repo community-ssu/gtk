@@ -1,3 +1,10 @@
+maemo-af-desktop (1.60.2) unstable; urgency=low
+
+  * applied patch to N#19614 Memory leaks in Statusbar
+    hildon_status_bar_item_new()
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri, 14 Oct 2005 17:19:06 +0300
+
 maemo-af-desktop (1.60.1) unstable; urgency=low
 
   * Patched 20250 again with postinstfix
