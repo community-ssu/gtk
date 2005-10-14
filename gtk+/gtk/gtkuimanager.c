@@ -2056,7 +2056,6 @@ update_node (GtkUIManager *self,
   Node *info;
   GNode *child;
   GtkAction *action;
-  gchar *tooltip;
   const gchar *action_name;
   NodeUIReference *ref;
   
@@ -2436,14 +2435,6 @@ update_node (GtkUIManager *self,
 	      
 	      gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 				  GTK_TOOL_ITEM (info->proxy), pos);
-	      
-	      /* FIXME: we must trigger the notify::tooltip handler, since 
-	       * tooltips on toolitems can't be set before the toolitem 
-	       * is added to the toolbar.
-	       */
-	      g_object_get (action, "tooltip", &tooltip, NULL);
-	      g_object_set (action, "tooltip", tooltip, NULL);
-	      g_free (tooltip);
 	    }
 	}
       else
@@ -2453,6 +2444,13 @@ update_node (GtkUIManager *self,
 						NULL);
 	  gtk_action_connect_proxy (action, info->proxy);
 	}
+	      
+     /* FIXME: we must trigger the notify::tooltip handler, since 
+      * tooltips on toolitems can't be set before the toolitem 
+      * is added to the toolbar.
+      */
+      g_object_notify (G_OBJECT (action), "tooltip");
+
       g_signal_connect (info->proxy, "notify::visible",
 			G_CALLBACK (update_smart_separators), NULL);
       break;
