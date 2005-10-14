@@ -1,5 +1,95 @@
 2005-10-14  Michael Natterer  <mitch@imendio.com>
 
+	gtk/gtkfilesel.c:
+
+    2005-07-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilesel.c (cmpl_init_state): Prevent an infinite
+	loop when G_FILENAME_ENCODING is invalid.  (#309280, Padraig Brady)
+
+	gtk/gtkmenutoolbutton.c:
+
+    Fri Aug  5 16:54:19 2005  Søren Sandmann  <sandmann@redhat.com>
+
+	* gtk/gtkmenutoolbutton.c
+	(gtk_menu_tool_button_construct_contents): Set the relief of the
+	arrow button to the value returned by
+	gtk_tool_item_get_relief_style(). Patch from Benjamin Berg.
+	Bug 312695.
+
+    2005-03-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkmenutoolbutton.c (gtk_menu_tool_button_set_arrow_tooltip): 
+	Typo fix in the docs.
+
+	gtk/gtkrange.c:
+
+    2005-03-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkrange.c (gtk_range_unmap): Stop scrolling when
+	the widget is unmapped.  (#168791, Ryan Lortie)
+
+	gtk/gtkselection.c:
+
+    2005-06-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkselection.c (gtk_target_list_add_image_targets): 
+	Don't leak the format names.  (#307190, Morten Welinder)
+
+    2005-05-25  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkselection.c (gtk_target_list_add_image_targets): 
+	Make sure png comes first, otherwise dnd may use bmp by
+	default, loosing transparency.
+
+    2005-04-04  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkselection.c (gtk_selection_add_target,
+	gtk_selection_add_targets): Call gdk_win32_selection_add_targets()
+	to register target formats.
+
+    2005-04-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkselection.c: Move documentation inline, document
+	if add_target functions append or prepend.  (#172350, 
+	Jon-Kare Hellan)
+
+	gtk/gtksettings.c:
+
+    2005-03-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtksettings.c (gtk_settings_get_property): Don't leak 
+	the values here.  (#169047, Philip Langdale)
+
+	gtk/gtkspinbutton.c:
+
+    2005-03-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkspinbutton.c (gtk_spin_button_unmap): Stop scrolling when
+	the widget is unmapped.  (#168791, Ryan Lortie)
+
+	gtk/gtktoggleaction.c:
+
+    2005-05-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktoggleaction.c (connect_proxy): Be more careful when
+	casting.  (#304089, Philip Langdale)
+
+	gtk/gtkuimanager.c:
+
+    2005-08-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkuimanager.c (update_node): Update tooltips when 
+	reconnecting toolitems.  (#312173, Alex Graveley)
+
+    2005-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkuimanager.c (update_node): Use g_object_notify() instead
+	of triggering a ::notify by re-setting the property.  (#300982,
+	Sven Neumann)
+
+2005-10-14  Michael Natterer  <mitch@imendio.com>
+
 	Merged new stock icons:
 
     2005-04-09  Matthias Clasen  <mclasen@redhat.com>

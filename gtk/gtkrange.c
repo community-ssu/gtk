@@ -153,6 +153,7 @@ static void gtk_range_style_set      (GtkWidget        *widget,
 static void update_slider_position   (GtkRange	       *range,
 				      gint              mouse_x,
 				      gint              mouse_y);
+static void stop_scrolling           (GtkRange         *range);
 
 static gint osso_gtk_range_focus_out (GtkWidget *widget, GdkEventFocus *event);
 
@@ -1023,6 +1024,8 @@ gtk_range_unmap (GtkWidget *widget)
 {
   GtkRange *range = GTK_RANGE (widget);
     
+  stop_scrolling (range);
+
   gdk_window_hide (range->event_window);
 
   GTK_WIDGET_CLASS (parent_class)->unmap (widget);
@@ -1671,7 +1674,8 @@ update_slider_position (GtkRange *range,
                  &handled);
 }
 
-static void stop_scrolling (GtkRange *range)
+static void 
+stop_scrolling (GtkRange *range)
 {
   range_grab_remove (range);
   gtk_range_remove_step_timer (range);
