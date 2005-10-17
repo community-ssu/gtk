@@ -34,10 +34,7 @@
 #include <gtk/gtkenums.h>
 #include <gtk/gtkwidget.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 #define GTK_TYPE_WINDOW			(gtk_window_get_type ())
 #define GTK_WINDOW(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_WINDOW, GtkWindow))
@@ -389,6 +386,7 @@ void            _gtk_window_constrain_size     (GtkWindow *window,
 						gint      *new_width,
 						gint      *new_height);
 GtkWindowGroup *_gtk_window_get_group          (GtkWindow *window);
+GtkWidget      *_gtk_window_group_get_current_grab (GtkWindowGroup *window_group);
 
 void            _gtk_window_set_has_toplevel_focus (GtkWindow *window,
 						    gboolean   has_toplevel_focus);
@@ -417,9 +415,6 @@ GtkWidget *gtk_window_get_prev_focus_widget( GtkWindow *window );
 void gtk_window_set_prev_focus_widget( GtkWindow *window, GtkWidget *widget );
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __GTK_WINDOW_H__ */

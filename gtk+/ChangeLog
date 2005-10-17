@@ -1,3 +1,23 @@
+2005-10-17  Michael Natterer  <mitch@imendio.com>
+
+	Merged changes to GtkWindow:
+
+    2005-08-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkwindow.[hc]: Add a non-exported function to
+	get the grab widget of a window group.
+
+    2005-06-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkwindow.c (gtk_window_real_set_focus): Queue a
+	draw on the old and new focus widgets, if their defaultness
+	changes.  (#305607, Billy Biggs)
+
+    2005-04-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkwindow.c (gtk_window_set_keep_below): Fix the EWMH link,
+	noticed by Kristof Vansant.
+
 2005-10-14  Michael Natterer  <mitch@imendio.com>
 
 	Merged changes to GtkComboBox and GtkComboBoxEntry. The changes
@@ -11,12 +31,12 @@
 
     2005-08-22  Matthias Clasen  <mclasen@redhat.com>
 
-        Backport from 2.8.
-        
-        * gtk/gtkcombobox.c (gtk_combo_box_list_destroy): Cleanup
-        a possible resize idle.  (#311141, Robert Ögren)
+	Backport from 2.8.
 
-	2005-05-26  Matthias Clasen  <mclasen@redhat.com>
+	* gtk/gtkcombobox.c (gtk_combo_box_list_destroy): Cleanup
+	a possible resize idle.  (#311141, Robert Ögren)
+
+    2005-05-26  Matthias Clasen  <mclasen@redhat.com>
 
 	* gtk/gtkcombobox.c (gtk_combo_box_list_auto_scroll): Make 
 	autoscrolling work at the bottom of the screen.
