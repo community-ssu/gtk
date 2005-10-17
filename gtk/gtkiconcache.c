@@ -41,6 +41,10 @@
 #define _O_BINARY 0
 #endif
 
+#ifndef MAP_FAILED
+#define MAP_FAILED ((void *) -1)
+#endif
+
 #define MAJOR_VERSION 1
 #define MINOR_VERSION 0
 
@@ -98,9 +102,6 @@ _gtk_icon_cache_new_for_path (const gchar *path)
 #ifdef G_OS_WIN32
   HANDLE handle = NULL;
 #endif
-
-  if (g_getenv ("GTK_NO_ICON_CACHE"))
-    return NULL;
 
   /* Check if we have a cache file */
   cache_filename = g_build_filename (path, "icon-theme.cache", NULL);
@@ -222,8 +223,8 @@ _gtk_icon_cache_has_directory (GtkIconCache *cache,
 static guint
 icon_name_hash (gconstpointer key)
 {
-  const char *p = key;
-  guint h = *p;
+  const signed char *p = key;
+  guint32 h = *p;
 
   if (h)
     for (p += 1; *p != '\0'; p++)

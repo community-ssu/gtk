@@ -1,5 +1,103 @@
 2005-10-17  Michael Natterer  <mitch@imendio.com>
 
+	Merged changes to icon cache, icon theme and icon view:
+
+	gtk/gtkiconcache.c:
+
+    2005-06-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkiconcache.c (_gtk_icon_cache_new_for_path): Remove
+	a leftover debugging envvar.  
+
+    2005-06-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkiconcache.c: Handle missing MAP_FAILED.  (#308449, Georg
+	Schwarz) 
+
+    2005-04-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkiconcache.c (icon_name_hash): Use the same function 
+	as in updateiconcache.c.  (spotted by Morten Welinder)
+
+	gtk/gtkicontheme.c:
+
+    2005-08-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkicontheme.c: When changing the icon theme, defer
+	the resetting of rc styles to an idle, so that it does
+	not happen e.g during expose handling (which is problematic,
+	since some widgets, like the toolbar, are changing the
+	hierarchy in response to style changes).  (#300539, reported
+	by many people, analyzed by Owen Taylor)
+
+    2005-07-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkicontheme.c (load_themes): Don't keep the caches
+	for unthemed directories in a separate list, instead append
+	them at the end of the dir_mtimes list, so that we can check
+	them for staleness like the other caches.  (#310221, Mark 
+	McLoughlin)
+
+    2005-04-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkicontheme.c: Store icon caches along with the
+	mtimes of the toplevel directories. The previous
+	mechanism of a hashtable-per-theme caused duplicate icon
+	caches for the same toplevel directory to be created.  
+	(#170030)
+
+	gtk/gtkiconview.c:
+
+    2005-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkiconview.c (gtk_icon_view_map): Get rid of this
+	function, instead show the bin_window when it is created.
+
+	* gtk/gtkiconview.c (gtk_icon_view_move_cursor_start_end): Use
+	the internal unselect_all function, since we need the unselection
+	to happen even in browse mode.  (#300995, Mathias Hasselmann)
+
+	* gtk/gtkiconview.c (gtk_icon_view_scroll_to_item): Also
+	scroll horizontally when necessary, and keep the northwest
+	corner of the item visible.  (#300913, Mathias Hasselmann)
+
+	* gtk/gtkiconview.c (gtk_icon_view_select_path): Don't crash
+	if the path does not point to a row in the model.  (#300909,
+	Mathias Hasselmann)
+	(gtk_icon_view_rows_reordered): Re-layout here.  (#301009, 
+	Mathias Hasselmann)
+
+    2005-04-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkiconview.c (gtk_icon_view_calculate_item_size): Take
+	padding into account when calculating max_layout_width.  
+
+    2005-03-31  Sven Neumann  <sven@gimp.org>
+
+	* gtk/gtkiconview.c: fixed gtk-doc comments.
+
+    2005-03-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkiconview.c (gtk_icon_view_size_allocate): Clamp
+	adjustment values on resize.  (#170567, Tomislav Jonjic)
+
+    2005-03-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkiconview.c (gtk_icon_view_get_columns) 
+	(gtk_icon_view_set_columns, gtk_icon_view_set_item_width) 
+	(gtk_icon_view_get_item_width, gtk_icon_view_set_spacing) 
+	(gtk_icon_view_get_spacing, gtk_icon_view_set_row_spacing) 
+	(gtk_icon_view_set_column_spacing, gtk_icon_view_get_row_spacing) 
+	(gtk_icon_view_get_column_spacing, gtk_icon_view_set_margin) 
+	(gtk_icon_view_get_margin): Add docs.
+
+    2005-03-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkiconview.c (gtk_icon_view_set_model): Queue a resize 
+	when the model is unset.  (#169528, Tomislav Jonjic)
+
+2005-10-17  Michael Natterer  <mitch@imendio.com>
+
 	Merged another bunch of local changes that don't affect
 	other files:
 
