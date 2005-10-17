@@ -1083,6 +1083,7 @@ gtk_menu_shell_activate_item (GtkMenuShell      *menu_shell,
     deactivate = GTK_MENU_ITEM_GET_CLASS (menu_item)->hide_on_activate;
 
   g_object_ref (menu_shell);
+  g_object_ref (menu_item);
 
   /* We don't want to deactivate if we're activating
    * a submenu item. */
@@ -1125,6 +1126,7 @@ gtk_menu_shell_activate_item (GtkMenuShell      *menu_shell,
     }
 
   g_object_unref (menu_shell);
+  g_object_unref (menu_item);
 }
 
 /* Distance should be +/- 1 */
