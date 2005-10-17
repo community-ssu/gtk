@@ -1,5 +1,44 @@
 2005-10-17  Michael Natterer  <mitch@imendio.com>
 
+	Merged another bunch of local changes that don't affect
+	other files:
+
+	gtk/gtkmenushell.c:
+
+    2005-04-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkmenushell.c (gtk_menu_shell_activate_item): Keep a 
+	reference to the item.  (#167920, Hazael Maldonado Torres)
+
+	gtk/gtknotebook.c:
+
+    2005-05-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtknotebook.c (gtk_notebook_insert_page_menu): Always
+	initialize child-visible to FALSE, otherwise we may end up
+	with the wrong page visible initially.  (#302283, Patrik Fimml)
+
+    2005-03-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtknotebook.c (gtk_notebook_unmap): Stop scrolling when
+	the widget is unmapped.  (#168791, Ryan Lortie)
+
+	gtk/gtkradiobutton.c:
+
+    2005-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkradiobutton.c (gtk_radio_button_focus): Don't 
+	grab focus to unrealized widgets.  (#302240, Philip Langdale)
+
+	gtk/gtkrc.c:
+
+    2005-03-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkrc.c (gtk_rc_parse_assignment): Don't leak 
+	the values here.  (#169047, Philip Langdale)
+
+2005-10-17  Michael Natterer  <mitch@imendio.com>
+
 	Merged changes to GtkWindow:
 
     2005-08-15  Matthias Clasen  <mclasen@redhat.com>
