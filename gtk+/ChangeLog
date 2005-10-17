@@ -1,3 +1,14 @@
+Mon Oct 17 15:34:22 2005  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtkdnd.c: get rid of superfluous g_signal_handlers_disconnect_by_func().
+
+	* apllied 2.6.10 fixes to gtkdnd.c.
+
+    2005-07-20  Matthias Clasen  <mclasen@redhat.com>
+	
+	* gtk/gtkdnd.c (gtk_drag_begin_internal): Don't fail if we
+	can't get a keyboard grab.  (#168351)
+
 2005-10-17  Michael Natterer  <mitch@imendio.com>
 
 	Merged changes to GtkTextView and GtkTextBtree, and fixed formatting
