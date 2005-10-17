@@ -1075,6 +1075,9 @@ gtk_entry_completion_complete (GtkEntryCompletion *completion)
   g_free (tmp);
 
   gtk_tree_model_filter_refilter (completion->priv->filter_model);
+
+  if (GTK_WIDGET_VISIBLE (completion->priv->popup_window))
+    _gtk_entry_completion_resize_popup (completion);
 }
 
 static void
@@ -1414,8 +1417,12 @@ gtk_entry_completion_compute_prefix (GtkEntryCompletion *completion)
   GtkTreeIter iter;
   gchar *prefix = NULL;
   gboolean valid;
+  const gchar *key;
 
-  const gchar *key = gtk_entry_get_text (GTK_ENTRY (completion->priv->entry));
+  if (completion->priv->text_column < 0)
+    return NULL;
+
+  key = gtk_entry_get_text (GTK_ENTRY (completion->priv->entry));
 
   valid = gtk_tree_model_get_iter_first (GTK_TREE_MODEL (completion->priv->filter_model),
 					 &iter);
@@ -1464,7 +1471,6 @@ gtk_entry_completion_real_insert_prefix (GtkEntryCompletion *completion,
     {
       gint key_len;
       gint prefix_len;
-      gint pos;
       const gchar *key;
 
       prefix_len = g_utf8_strlen (prefix, -1);
@@ -1474,6 +1480,7 @@ gtk_entry_completion_real_insert_prefix (GtkEntryCompletion *completion,
 
       if (prefix_len > key_len)
 	{
+	  gint pos = prefix_len;
 	  gtk_editable_insert_text (GTK_EDITABLE (completion->priv->entry),
 				    prefix + key_len, -1, &pos);
 	  gtk_editable_select_region (GTK_EDITABLE (completion->priv->entry),
