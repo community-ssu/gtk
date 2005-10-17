@@ -5353,6 +5353,7 @@ cursor_blinks (GtkEntry *entry)
   gboolean blink;
 
   if (GTK_WIDGET_HAS_FOCUS (entry) &&
+      entry->editable &&
       entry->selection_bound == entry->current_pos)
     {
       g_object_get (settings, "gtk-cursor-blink", &blink, NULL);
@@ -5763,6 +5764,7 @@ check_completion_callback (GtkEntryCompletion *completion)
 {
   completion->priv->check_completion_idle = NULL;
   
+  gtk_entry_completion_complete (completion);
   gtk_entry_completion_insert_prefix (completion);
 
   return FALSE;
