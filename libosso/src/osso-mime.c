@@ -114,7 +114,9 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
 	}
 	
 	(osso->mime->func)(osso->mime->data, argc, argv);
-    
+
+	_freeargv(argc, argv);
+
 	return DBUS_HANDLER_RESULT_HANDLED;
     }
     else {
@@ -134,7 +136,7 @@ static gchar * _get_arg(DBusMessageIter *iter)
 	return NULL;
     }
     else {
-	return g_strdup(dbus_message_iter_get_string(iter));
+	return dbus_message_iter_get_string(iter);
     }
 }
 
@@ -144,7 +146,7 @@ static void _freeargv(int argc, gchar **argv)
 	int i;
 	for(i=0;i<argc;i++) {
 	    if(argv[i] != NULL) {
-		free(argv[i]);
+		dbus_free(argv[i]);
 	    }
 	}
 	free(argv);
