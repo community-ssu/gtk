@@ -1,3 +1,9 @@
+libosso (0.10.0-1) unstable; urgency=low
+
+  * Packaged 0.10.0.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 18 Oct 2005 21:17:35 +0300
+
 libosso (0.9.18-1) unstable; urgency=low
 
   * New functionality for common tasks related to memory; see osso-mem.h,
