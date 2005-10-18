@@ -1,3 +1,50 @@
+2005-10-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* configure.ac: Changed version to 0.10.0.
+	
+	* src/Makefile.am (libosso_la_LDFLAGS): Stepped current and age,
+	for the following changes.  We maintain binary compatability with
+	the magic of versioned symbols.
+
+	* src/libosso.h: Clarified docs about memory management.
+	(osso_rpc_t): Removed const from value.s since it normally points
+	to dynamically allocated memory.
+	(osso_rpc_free_val): New.
+	(osso_rpc_retval_free_f): New.
+	(osso_rpc_set_cb_f, osso_rpc_set_default_cb_f): Added retval_free
+	param.
+
+	* src/osso-rpc.c (_osso_rpc_t): Added retval_free field.
+	(osso_rpc_free_val): New.
+	(_rpc_set_cb_f): Added retval_free param and put it into callback
+	data.
+	(_test_rpc_set_cb_f): Pass NULL for new retval_free param of
+	above.
+	(osso_rpc_set_cb_f): Added retval_free param and pass it on to
+	_rpc_set_cb_f.
+	(osso_rpc_set_default_cb_f): Added retval_free param and put it
+	into callback data.
+	(_rpc_handler): Initialize retval to DBUS_TYPE_INVALID.  Free
+	argument osso_rpc_t structure after calling the user callback.
+	Call retval_free on retval.
+	(_async_return_handler): Free retval after calling the callback.
+	
+	* src/osso-mime.c (_mime_handler): Free arguments after calling
+	user function.
+	(_get_arg): Don't g_strdup the string, it is already in fresh
+	memory when coming from dbus_message_iter_get_string.
+	(_freeargv): Free strings with dbus_free.
+
+	* src/osso-state.c (_read_state): Close file on error exit.
+
+	* ut/osso-rpc/test-osso-rpc-prog.c (main): Pass osso_rpc_free_val
+	as retval param of osso_rpc_set_cb_f and
+	osso_rpc_set_default_cb_f.
+	(cb): Make sure that retval->value.s is a dynamically allocated
+	string that can be freed with g_free.
+
+	* ut/osso-rpc/test-osso-rpc.c: Use NULL as retval_free thoughout.
+	
 2005-09-29  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/osso-application-top.c (utf8_safe): New.
