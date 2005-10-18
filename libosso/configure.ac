@@ -1,5 +1,5 @@
 # -*- sh -*-
-AC_INIT(libosso, 0.9.10)
+AC_INIT(libosso, 0.10.0)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
 AC_LANG(C)
