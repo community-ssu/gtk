@@ -39,6 +39,7 @@ static void _async_return_handler (DBusPendingCall * pending, void *data);
 
 typedef struct {
     osso_rpc_cb_f *func;
+    osso_rpc_retval_free_f *retval_free;
     gpointer data;
 }_osso_rpc_t;
 
@@ -49,6 +50,13 @@ typedef struct {
     gchar *method;
 }_osso_rpc_async_t;
 
+
+void osso_rpc_free_val (osso_rpc_t *rpc)
+{
+  if (rpc->type == DBUS_TYPE_STRING)
+	  g_free (rpc->value.s);
+  rpc->type = DBUS_TYPE_INVALID;
+}
 
 /************************************************************************/
 osso_return_t osso_rpc_run(osso_context_t *osso, const gchar *service,
@@ -389,10 +397,11 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
 
 /************************************************************************/
 static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
-			    const gchar *object_path,
-			    const gchar *interface,
-			    osso_rpc_cb_f *cb, gpointer data,
-			    gboolean use_system_bus)
+				   const gchar *object_path,
+				   const gchar *interface,
+				   osso_rpc_cb_f *cb, gpointer data,
+				   osso_rpc_retval_free_f *retval_free,
+				   gboolean use_system_bus)
 {
     DBusError err;
     struct DBusObjectPathVTable vt;
@@ -442,6 +451,7 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
     dprint("%s",b?"success":"failure");
 
     rpc->func = cb;
+    rpc->retval_free = retval_free;
     rpc->data = data;
     dprint("rpc = %p",rpc);
     dprint("rpc->func = %p",rpc->func);
@@ -461,25 +471,27 @@ osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
                                  gboolean use_system_bus)
 {
     return _rpc_set_cb_f(osso, service, object_path, interface,
-                         cb, data, use_system_bus);
+                         cb, data, NULL, use_system_bus);
 }
 
 /************************************************************************/
 osso_return_t osso_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
-		       const gchar *object_path, const gchar *interface,
-		       osso_rpc_cb_f *cb, gpointer data)
+				const gchar *object_path, const gchar *interface,
+				osso_rpc_cb_f *cb, gpointer data,
+				osso_rpc_retval_free_f *retval_free)
 {
     if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
 	(interface == NULL) || (cb == NULL))
 	return OSSO_INVALID;
     return _rpc_set_cb_f(osso, service, object_path,
-			 interface,cb, data, FALSE);
+			 interface,cb, data, retval_free, FALSE);
 }
 
 /************************************************************************/
 osso_return_t osso_rpc_set_default_cb_f(osso_context_t *osso,
 					osso_rpc_cb_f *cb,
-					gpointer data)
+					gpointer data,
+					osso_rpc_retval_free_f *retval_free)
 {
     gchar interface[256] = {0};
     _osso_rpc_t *rpc;
@@ -495,6 +507,7 @@ osso_return_t osso_rpc_set_default_cb_f(osso_context_t *osso,
     
     g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT, osso->application);    
     rpc->func = cb;
+    rpc->retval_free = retval_free;
     rpc->data = data;
     
     _msg_handler_set_cb_f_free_data(osso, interface, _rpc_handler,
@@ -592,8 +605,9 @@ static DBusHandlerResult _rpc_handler(osso_context_t *osso, DBusMessage *msg,
     _osso_rpc_t *rpc;
     DBusMessageIter iter;
     GArray *arguments;
-    osso_rpc_t retval = {0};
+    osso_rpc_t retval;
     gint ret;
+    int i;
 
     rpc = (_osso_rpc_t *)data;
     dprint("rpc->func = %p",rpc->func);
@@ -614,12 +628,18 @@ static DBusHandlerResult _rpc_handler(osso_context_t *osso, DBusMessage *msg,
 	    break;
     }
     dprint("calling handler at %p",rpc->func);
-     ret = (rpc->func)(dbus_message_get_interface(msg),
+    retval.type = DBUS_TYPE_INVALID;
+    ret = (rpc->func)(dbus_message_get_interface(msg),
 		      dbus_message_get_member(msg), arguments, rpc->data,
 		      &retval);
 
+    for (i = 0; i < arguments->len; i++)
+        osso_rpc_free_val (&g_array_index (arguments, osso_rpc_t, i));
+    g_array_free(arguments, TRUE);
+
     if(ret == OSSO_INVALID) {
-	g_array_free(arguments, TRUE);
+	if (rpc->retval_free)
+	    rpc->retval_free (&retval);
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
     
@@ -653,7 +673,8 @@ static DBusHandlerResult _rpc_handler(osso_context_t *osso, DBusMessage *msg,
 	    dbus_message_unref(reply);
 	}
     }
-    g_array_free(arguments, TRUE);
+    if (rpc->retval_free)
+        rpc->retval_free (&retval);
     return DBUS_HANDLER_RESULT_HANDLED;
 }
 
@@ -824,6 +845,7 @@ static void _async_return_handler(DBusPendingCall *pending, void *data)
 	(rpc->func)(rpc->interface, rpc->method, &retval,
 			  rpc->data);
 	dprint("done calling cb");
+	osso_rpc_free_val(&retval);
     }
     else if(type == DBUS_MESSAGE_TYPE_ERROR) {
 	DBusError err;
