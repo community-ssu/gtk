@@ -297,7 +297,7 @@ static osso_return_t _read_state(const gchar *statefile, osso_state_t *state)
     fd = open(statefile, O_RDONLY);
     if ( fd == -1) {	
 	ret = OSSO_ERROR_NO_STATE;
-	goto _get_state_ret1;
+	goto _get_state_ret2;
     }
     
     if(read(fd, &size, sizeof(guint32))==-1) {
@@ -346,6 +346,7 @@ static osso_return_t _read_state(const gchar *statefile, osso_state_t *state)
     }
     dprint("Read %u bytes out of %u", total_bytes, state->state_size);
 
+    _get_state_ret1:
     do {
 	if (close(fd) == 0) {
 	    break;
@@ -353,13 +354,14 @@ static osso_return_t _read_state(const gchar *statefile, osso_state_t *state)
 	    if(errno != EINTR) {
 		ULOG_ERR_F("Unable to close file '%s': %s",
 			   statefile, strerror(errno));
-		ret = OSSO_ERROR;
+		if(ret == OSSO_OK)
+		    ret = OSSO_ERROR;
 		break;
 	    }
 	}
     }while(1);
 
-    _get_state_ret1:
+    _get_state_ret2:
 #ifdef LIBOSSO_DEBUG	
 	{
 	    guint i, sz;
