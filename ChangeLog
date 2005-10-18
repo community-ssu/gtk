@@ -1,3 +1,18 @@
+2005-10-18  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreemodelfilter.c:
+	- Introduced visible_nodes for each level, got rid of
+	  root_level_visible.
+	- Levels can now have invisible nodes cached, updated all functions to
+	  take account of this fact. Some functions were also rewritten because
+	  of this and to correct the logic.
+	- All nodes on the virtual root path are referenced in order to keep at
+	  least the virtual root level cached in any child model.
+	- The rule that each referenced node should at least have one of their
+	  children referenced is now implemented correctly everywhere.
+	- Small bug fixes and (comment) updates.
+	N#20302
+
 Tue Oct 18 13:47:32 2005  Tim Janik  <timj@imendio.com>
 
 	* merged gtkclipboard.c fixes.
