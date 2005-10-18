@@ -678,7 +678,7 @@ clipboard_unset (GtkClipboard *clipboard)
    */
   if (old_have_owner &&
       old_n_storable_targets != -1)
-    g_object_unref (clipboard->user_data);
+    g_object_unref (old_data);
 }
 
 /**
@@ -765,6 +765,8 @@ gtk_clipboard_set_text (GtkClipboard *clipboard,
 			       g_strndup (text, len));
   gtk_clipboard_set_can_store (clipboard, NULL, 0);
 
+  for (i = 0; i < n_targets; i++)
+    g_free (targets[i].target);
   g_free (targets);
   gtk_target_list_unref (list);
 }
@@ -826,6 +828,8 @@ gtk_clipboard_set_image (GtkClipboard *clipboard,
 			       g_object_ref (pixbuf));
   gtk_clipboard_set_can_store (clipboard, NULL, 0);
 
+  for (i = 0; i < n_targets; i++)
+    g_free (targets[i].target);
   g_free (targets);
   gtk_target_list_unref (list);
 }
@@ -1609,6 +1613,7 @@ gtk_clipboard_set_can_store (GtkClipboard         *clipboard,
   };
   
   g_return_if_fail (GTK_IS_CLIPBOARD (clipboard));
+  g_return_if_fail (n_targets >= 0);
 
   if (clipboard->selection != GDK_SELECTION_CLIPBOARD)
     return;

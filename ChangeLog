@@ -1,3 +1,21 @@
+Tue Oct 18 13:47:32 2005  Tim Janik  <timj@imendio.com>
+
+	* merged gtkclipboard.c fixes.
+
+    2005-08-01  Matthias Clasen  <mclasen@redhat.com>
+
+        * gtk/gtkclipboard.c (gtk_clipboard_set_image) 
+        (gtk_clipboard_set_text): Don't leak atom names.  (#311933,
+        Peter Zelezny)
+
+    2005-03-30  Matthias Clasen  <mclasen@redhat.com>
+
+        * gtk/gtkclipboard.c (gtk_clipboard_set_can_store): 
+        Don't accept n_targets == -1.
+        (clipboard_unset): unref the old_data, not the
+        user_data which we have just cleared.  (#172038, Sven
+        Neumann)
+
 2005-10-17  Michael Natterer  <mitch@imendio.com>
 
 	Merged changes to GtkEntry and GtkEntryCompletion:
