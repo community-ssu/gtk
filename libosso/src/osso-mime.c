@@ -99,7 +99,7 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
 	    argc++;
 	    pp = realloc(argv, argc*sizeof(gchar*));
 	    if(pp == NULL) {
-		_freeargv(argc, argv);
+		_freeargv(argc-1, argv);
 		return DBUS_HANDLER_RESULT_HANDLED;
 	    }
 	    else {
