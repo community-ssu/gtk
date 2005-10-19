@@ -1,3 +1,19 @@
+2005-10-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/libosso.h (osso_rpc_set_cb_f): New #define to rename
+	osso_rpc_set_cb_f to osso_rpc_set_cb_f_with_free in the object
+	file.
+	(osso_rpc_set_default_cb_f): Likewise with
+	osso_rpc_set_default_cb_f_with_free as the object file name.
+
+	* src/osso-rpc-old.c: New file.
+	(osso_rpc_set_cb_f, osso_rpc_set_default_cb_f): New functions for
+	maintaining binary compatibility.
+	* src/Makefile.am (libosso_la_SOURCES): Added osso-rpc-old.c.
+	
+	* src/osso-mime.c (_mime_handler): Pass correct count to _freeargv
+	when realloc fails.
+
 2005-10-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* configure.ac: Changed version to 0.10.0.
