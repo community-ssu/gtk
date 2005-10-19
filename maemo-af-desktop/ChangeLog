@@ -1,3 +1,23 @@
+2005-10-19  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 1.60.3
+
+2005-10-19  Luc Pionchon  <luc.pionchon@nokia.com>
+
+        N#19187 Application icon is not visible in Tasknavigator although
+                application is running,
+	
+	* hildon-navigator/windowmanager.c
+	(map_notify_handler): Add the mapped application window always to
+	 the treemodel, if it is not yet there.
+	
+	(handle_subname_window_prop): If subname of the window changes and
+	window is not yet in treemodel, add it here.
+
+	(handle_active_window_prop): If window becomes active without
+	being yet in treemodel, add it here. Ensure that the currently
+	active view information is up to date.
+
 2005-10-14  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Increased version number 1.60.1 for packaging
 	* Applied 20250_postinstfix patch 

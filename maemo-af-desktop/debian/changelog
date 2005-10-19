@@ -1,34 +1,42 @@
+maemo-af-desktop (1.60.3) unstable; urgency=low
+
+  * Bug fixed:
+    N#19187 Application icon is not visible in Tasknavigator although
+            application is running.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed, 19 Oct 2005 14:56:23 +0300
+
 maemo-af-desktop (1.60.2) unstable; urgency=low
 
   * applied patch to N#19614 Memory leaks in Statusbar
     hildon_status_bar_item_new()
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri, 14 Oct 2005 17:19:06 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri, 14 Oct 2005 17:19:06 +0300
 
 maemo-af-desktop (1.60.1) unstable; urgency=low
 
   * Patched 20250 again with postinstfix
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri, 14 Oct 2005 14:31:44 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri, 14 Oct 2005 14:31:44 +0300
 
 maemo-af-desktop (1.60.0) unstable; urgency=low
 
   * Preparing for next integration round, increased version number to
     1.60.0. Patched bug 20305
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 13 Oct 2005 16:24:50 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 13 Oct 2005 16:24:50 +0300
 
 maemo-af-desktop (1.59.3) unstable; urgency=low
 
   * Changed deps again, libosso >= 0.9.19+
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 13 Oct 2005 15:17:40 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 13 Oct 2005 15:17:40 +0300
 
 maemo-af-desktop (1.59.2) unstable; urgency=low
 
   * Reverted previous ugly hack
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 13 Oct 2005 14:03:49 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 13 Oct 2005 14:03:49 +0300
 
 maemo-af-desktop (1.59.1) unstable; urgency=low
 
@@ -36,93 +44,93 @@ maemo-af-desktop (1.59.1) unstable; urgency=low
     reverting the dependency in configure.ac to the older package
     version
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 13 Oct 2005 13:43:03 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 13 Oct 2005 13:43:03 +0300
 
 maemo-af-desktop (1.59.0) unstable; urgency=low
 
   * Patched bug 20250
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 12 Oct 2005 16:33:10 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 12 Oct 2005 16:33:10 +0300
 
 maemo-af-desktop (1.58.7) unstable; urgency=low
 
   * Added Doxygen comments and doxyconf-file
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 12 Oct 2005 16:17:36 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 12 Oct 2005 16:17:36 +0300
 
 maemo-af-desktop (1.58.6) unstable; urgency=low
 
   * Ready for integration
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 12 Oct 2005 14:59:21 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 12 Oct 2005 14:59:21 +0300
 
 maemo-af-desktop (1.58.5) unstable; urgency=low
 
   * Patched bug 20284 with a new patch
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 12 Oct 2005 14:38:31 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 12 Oct 2005 14:38:31 +0300
 
 maemo-af-desktop (1.58.4) unstable; urgency=low
 
   * Patched bug 18522. Reverted bug fix 20284, will be redone later.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 12 Oct 2005 10:18:24 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 12 Oct 2005 10:18:24 +0300
 
 maemo-af-desktop (1.58.3) unstable; urgency=low
 
   * Patched N#20284
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon, 10 Oct 2005 17:26:49 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 10 Oct 2005 17:26:49 +0300
 
 maemo-af-desktop (1.58.2) unstable; urgency=low
 
   * Commented out unused function
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon, 10 Oct 2005 14:53:46 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 10 Oct 2005 14:53:46 +0300
 
 maemo-af-desktop (1.58.1) unstable; urgency=low
 
   * Fixed bug N#20181
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri,  7 Oct 2005 17:59:53 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  7 Oct 2005 17:59:53 +0300
 
 maemo-af-desktop (1.58.0) unstable; urgency=low
 
   * New version for new integration round
   * Implemented fix to bug N#20177.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri,  7 Oct 2005 13:39:42 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  7 Oct 2005 13:39:42 +0300
 
 maemo-af-desktop (1.57.2) unstable; urgency=low
 
   * Tagged for integration
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  6 Oct 2005 14:58:45 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  6 Oct 2005 14:58:45 +0300
 
 maemo-af-desktop (1.57.1) unstable; urgency=low
 
   * Additional XSync fix done
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  6 Oct 2005 14:15:22 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  6 Oct 2005 14:15:22 +0300
 
 maemo-af-desktop (1.57.0) unstable; urgency=low
 
   * Bug N#9843 patched with the latest patch
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  6 Oct 2005 11:58:25 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  6 Oct 2005 11:58:25 +0300
 
 maemo-af-desktop (1.56.1) unstable; urgency=low
 
   * Removed unnecessary XSync calls from places that do not require
     synchronization
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed,  5 Oct 2005 12:31:56 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed,  5 Oct 2005 12:31:56 +0300
 
 maemo-af-desktop (1.56.0) unstable; urgency=low
 
   * Started fixing potential crash bug.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  4 Oct 2005 13:22:21 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  4 Oct 2005 13:22:21 +0300
 
 maemo-af-desktop (1.55.1) unstable; urgency=low
 
@@ -132,208 +140,208 @@ maemo-af-desktop (1.55.1) unstable; urgency=low
   * Use consitently the same message when we cannot load a new application.
   * Replace the cannot launch dialog with an infoprint.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon,  3 Oct 2005 13:30:46 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon,  3 Oct 2005 13:30:46 +0300
 
 maemo-af-desktop (1.55.0) unstable; urgency=low
 
   * Upped version number for next integration round. Applied patch for
     bug N#19939.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon,  3 Oct 2005 12:06:50 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon,  3 Oct 2005 12:06:50 +0300
 
 maemo-af-desktop (1.54.4) unstable; urgency=low
 
   * Changed from maemo-af-desktop.sh dimming feature off
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 29 Sep 2005 12:44:35 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 29 Sep 2005 12:44:35 +0300
 
 maemo-af-desktop (1.54.3) unstable; urgency=low
 
   * Updated version to 1.54.3
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 28 Sep 2005 15:14:26 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 28 Sep 2005 15:14:26 +0300
 
 maemo-af-desktop (1.54.2) unstable; urgency=low
 
   * Changed timeout in maemo-af-desktop.sh from 200 to 20
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 28 Sep 2005 15:10:50 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 28 Sep 2005 15:10:50 +0300
 
 maemo-af-desktop (1.54.1) unstable; urgency=low
 
   * Fixed bug N#19662
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 28 Sep 2005 14:11:15 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 28 Sep 2005 14:11:15 +0300
 
 maemo-af-desktop (1.54.0) unstable; urgency=low
 
   * Fixed bug 18524 - Race condition in personalisation dialog
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 28 Sep 2005 13:51:53 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 28 Sep 2005 13:51:53 +0300
 
 maemo-af-desktop (1.53.1) unstable; urgency=low
 
   * Fixed bug 19593 with a workaround to hildon-status-bar-main.c
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 27 Sep 2005 17:11:16 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 27 Sep 2005 17:11:16 +0300
 
 maemo-af-desktop (1.53.0) unstable; urgency=low
 
   * Missing task delayed info banner patched
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 27 Sep 2005 16:36:21 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 27 Sep 2005 16:36:21 +0300
 
 maemo-af-desktop (1.52.0) unstable; urgency=low
 
   * Applied lowmem infoprint patch.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 27 Sep 2005 12:25:14 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 27 Sep 2005 12:25:14 +0300
 
 maemo-af-desktop (1.51.0) unstable; urgency=low
 
   * Added timeout multiplier handling to windowmanager.c|h.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon, 26 Sep 2005 16:53:01 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 26 Sep 2005 16:53:01 +0300
 
 maemo-af-desktop (1.50.2) unstable; urgency=low
 
   * Applied additional patch from Guillem which cleans up things a bit.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 22 Sep 2005 16:27:40 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 22 Sep 2005 16:27:40 +0300
 
 maemo-af-desktop (1.50.1) unstable; urgency=low
 
   * Integrated Mariuses memory management changes
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 21 Sep 2005 16:02:39 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 21 Sep 2005 16:02:39 +0300
 
 maemo-af-desktop (1.50.0) unstable; urgency=low
 
   * Patched bug 18881. Preparing for week 38 integration.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 20 Sep 2005 19:44:18 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 20 Sep 2005 19:44:18 +0300
 
 maemo-af-desktop (1.49.11) unstable; urgency=low
 
   * Patched bug #18019
   * Ready for week 37 integration
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 19:10:49 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 19:10:49 +0300
 
 maemo-af-desktop (1.49.10) unstable; urgency=low
 
   * Tagged new version for testing 1.49.10
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 17:38:18 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 17:38:18 +0300
 
 maemo-af-desktop (1.49.9) unstable; urgency=low
 
   * Patched N#19111
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 17:24:49 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 17:24:49 +0300
 
 maemo-af-desktop (1.49.8) unstable; urgency=low
 
   * Patched N#19108
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 17:17:09 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 17:17:09 +0300
 
 maemo-af-desktop (1.49.7) unstable; urgency=low
 
   * Patched bug N#19106
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 17:11:46 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 17:11:46 +0300
 
 maemo-af-desktop (1.49.6) unstable; urgency=low
 
   * Corrected crash problem, one NULL checking added
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 16:28:52 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 16:28:52 +0300
 
 maemo-af-desktop (1.49.5) unstable; urgency=low
 
   * Patched N#19025
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 15:27:37 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 15:27:37 +0300
 
 maemo-af-desktop (1.49.4) unstable; urgency=low
 
   * Patched bug 18477
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 15:17:15 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 15:17:15 +0300
 
 maemo-af-desktop (1.49.3) unstable; urgency=low
 
   * Updated version again.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 15:14:12 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 15:14:12 +0300
 
 maemo-af-desktop (1.49.2) unstable; urgency=low
 
   * Patched N#18873
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 15:00:58 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 15:00:58 +0300
 
 maemo-af-desktop (1.49.1) unstable; urgency=low
 
   * Patched bug #15041
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 14:42:01 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 14:42:01 +0300
 
 maemo-af-desktop (1.49.0) unstable; urgency=low
 
   * Updated version number for week 37 integration delivery
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 13 Sep 2005 14:41:06 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 14:41:06 +0300
 
 maemo-af-desktop (1.48.9) unstable; urgency=low
 
   * Added patch for bug N#18875
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri,  9 Sep 2005 17:15:19 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  9 Sep 2005 17:15:19 +0300
 
 maemo-af-desktop (1.48.8) unstable; urgency=low
 
   * Hand-fixed broken patch issues.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri,  9 Sep 2005 17:02:14 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  9 Sep 2005 17:02:14 +0300
 
 maemo-af-desktop (1.48.7) unstable; urgency=low
 
   * Patched bug N#19007
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri,  9 Sep 2005 16:30:17 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  9 Sep 2005 16:30:17 +0300
 
 maemo-af-desktop (1.48.6) unstable; urgency=low
 
   * Reverted to 1.48.4 from 1.48.5 and resolved earlier old major
     version conflict and changed the version to 1.48.6
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri,  9 Sep 2005 15:29:02 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  9 Sep 2005 15:29:02 +0300
 
 maemo-af-desktop (1.48.4) unstable; urgency=low
 
   * Patched earlier Mathew's patch with new one
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  8 Sep 2005 19:07:52 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  8 Sep 2005 19:07:52 +0300
 
 maemo-af-desktop (1.48.3) unstable; urgency=low
 
   * Patched bug 18503
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  8 Sep 2005 18:51:29 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  8 Sep 2005 18:51:29 +0300
 
 maemo-af-desktop (1.48.2) unstable; urgency=low
 
   * Applied faster-atoms -patch from Mathew Allum. Ready for testing.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  8 Sep 2005 14:31:10 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  8 Sep 2005 14:31:10 +0300
 
 maemo-af-desktop (1.48.1) unstable; urgency=low
 
   * Tagged version for integration
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  8 Sep 2005 14:04:40 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  8 Sep 2005 14:04:40 +0300
 
 maemo-af-desktop (1.48.0) unstable; urgency=low
 
@@ -341,117 +349,117 @@ maemo-af-desktop (1.48.0) unstable; urgency=low
   * Applied improve-hildon-home-event-efficiency -patch from Mathew
     Allum.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed,  7 Sep 2005 15:41:48 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed,  7 Sep 2005 15:41:48 +0300
 
 maemo-af-desktop (1.47.9) unstable; urgency=low
 
   * Fixed bug 18830
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed,  7 Sep 2005 12:42:24 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed,  7 Sep 2005 12:42:24 +0300
 
 maemo-af-desktop (1.47.8) unstable; urgency=low
 
   * Corrected versioning mistake. Now should be ok.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Sep 2005 18:15:39 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 18:15:39 +0300
 
 maemo-af-desktop (1.47.6) unstable; urgency=low
 
   * Tagged new version for integration
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Sep 2005 17:55:09 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 17:55:09 +0300
 
 maemo-af-desktop (1.47.5) unstable; urgency=low
 
   * Tried with w35 rootstrap, this version compiles, tagging new version
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Sep 2005 14:45:20 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 14:45:20 +0300
 
 maemo-af-desktop (1.47.4) unstable; urgency=low
 
   * Patch applied for N#18300
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Sep 2005 13:22:57 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 13:22:57 +0300
 
 maemo-af-desktop (1.47.3) unstable; urgency=low
 
   * Patch applied for bug N#14514
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Sep 2005 12:46:16 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 12:46:16 +0300
 
 maemo-af-desktop (1.47.2) unstable; urgency=low
 
   * Applied additional patch for 18522
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Sep 2005 10:50:42 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 10:50:42 +0300
 
 maemo-af-desktop (1.47.1) unstable; urgency=low
 
   * Patched more bugs
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon,  5 Sep 2005 18:00:17 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon,  5 Sep 2005 18:00:17 +0300
 
 maemo-af-desktop (1.47.0) unstable; urgency=low
 
   * New proposed version for week 36 release.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon,  5 Sep 2005 17:54:51 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon,  5 Sep 2005 17:54:51 +0300
 
 maemo-af-desktop (1.46.0-3) unstable; urgency=low
 
   * Fixed bug 17425
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  1 Sep 2005 16:26:53 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  1 Sep 2005 16:26:53 +0300
 
 maemo-af-desktop (1.46.0-2) unstable; urgency=low
 
   * Made dependency to hildon-base-lib 0.9.3 and the new l10n files
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu,  1 Sep 2005 16:13:50 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  1 Sep 2005 16:13:50 +0300
 
 maemo-af-desktop (1.46.0-1) unstable; urgency=low
 
   * Added significant amount of code due to addition to installable user
     applets to home and status-bar and thus raised the version.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 30 Aug 2005 20:01:22 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 30 Aug 2005 20:01:22 +0300
 
 maemo-af-desktop (1.45.0-4) unstable; urgency=low
 
   * Updated comment in ChangeLog
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 30 Aug 2005 19:05:21 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 30 Aug 2005 19:05:21 +0300
 
 maemo-af-desktop (1.45.0-3) unstable; urgency=low
 
   * Patched bug 17741
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 30 Aug 2005 18:53:17 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 30 Aug 2005 18:53:17 +0300
 
 maemo-af-desktop (1.45.0-2) unstable; urgency=low
 
   * Patched bug 9179
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 30 Aug 2005 18:31:10 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 30 Aug 2005 18:31:10 +0300
 
 maemo-af-desktop (1.45.0-1) unstable; urgency=low
 
   * Patched bug #16496
   * 1.45.0-1 New release version 1.45.0, patched bug 17728
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue, 30 Aug 2005 17:38:13 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 30 Aug 2005 17:38:13 +0300
 
 maemo-af-desktop (1.44.0) unstable; urgency=low
 
   * Fixed bug FR_CA Home memory card cover: no message when open
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 25 Aug 2005 14:44:27 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 25 Aug 2005 14:44:27 +0300
 
 maemo-af-desktop (1.43.0-11) unstable; urgency=low
 
   * Fixed bug #17249
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Wed, 24 Aug 2005 17:01:21 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 24 Aug 2005 17:01:21 +0300
 
 maemo-af-desktop (1.43.0-10) unstable; urgency=low
 
@@ -464,13 +472,13 @@ maemo-af-desktop (1.43.0-9) unstable; urgency=low
 
   * Updated header of kstrace.h
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon, 22 Aug 2005 21:16:43 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 22 Aug 2005 21:16:43 +0300
 
 maemo-af-desktop (1.43.0-8) unstable; urgency=low
 
   * Added some missing files, that were lost in cleanup.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon, 22 Aug 2005 21:00:12 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 22 Aug 2005 21:00:12 +0300
 
 maemo-af-desktop (1.43.0-7) unstable; urgency=low
 
@@ -480,13 +488,13 @@ maemo-af-desktop (1.43.0-7) unstable; urgency=low
     that have a dialog open. Also added the definition and
     initialisation of the corresponding X atom.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon, 22 Aug 2005 20:29:13 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 22 Aug 2005 20:29:13 +0300
 
 maemo-af-desktop (1.43.0-6) unstable; urgency=low
 
   * Cleaned up version.
 
- -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon, 22 Aug 2005 19:17:52 +0300
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 22 Aug 2005 19:17:52 +0300
 
 maemo-af-desktop (1.43.0-5) unstable; urgency=low
 

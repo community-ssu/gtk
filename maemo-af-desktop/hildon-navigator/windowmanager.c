@@ -995,13 +995,10 @@ static void map_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                 gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
                                    WM_KILLED_ITEM, FALSE, -1);
             }
-            /* This will be handled by the property handlers */
-            XFree(wm_class_str);
-            return;
-        }
-        
+	}
         if (!window_exists(model, &parent, &w_iter, mev->window, id))
         {
+
             new_win = g_malloc0(sizeof(window_props));
             gtk_tree_model_get(model, &parent,
                                WM_ICON_NAME_ITEM, &new_win->icon,
@@ -1015,6 +1012,8 @@ static void map_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                 wm_cbs.new_win_cb(new_win->icon, new_win->name,
                                   DUMMY_STRING, wm_cbs.cb_data);
             insert_new_window(model, &parent, new_win);
+	    gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
+			       WM_KILLED_ITEM, FALSE, -1);
             g_free(new_win);
         }
     }
@@ -1574,23 +1573,25 @@ static void handle_active_window_prop(GtkTreeModel *model,
                 update_window(model, &parent, realwin_value.window_value[0],
                               id, id, subname_str,
                               update_flag);
+		gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
+				   WM_VIEW_ID_ITEM, id, -1);
 		
                 g_free(subname_str);
             }
-            else if (id == 0 )
-            {
-                /* Seems that apps without views need this... However,
-                   let's still check that this is not an application
-                   with registered views (as we get them asynchronously) */
-
-                if (is_window_hildonapp(win_id))
-                {
-                    XFree(local_wm_class);
-                    XFree(value.char_value);
-                    XFree(realwin_value.char_value);
-                    return;
-                }
-
+	    else if (id != 0 && window_exists(model, &parent, &w_iter,
+					      realwin_value.window_value[0],
+					      0))
+		{
+		  update_window(model, &parent, realwin_value.window_value[0],
+				0, id, subname_str, update_flag);
+		  gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
+						    WM_VIEW_ID_ITEM, id, -1);
+		}
+	    else if (!window_exists(model, &parent, &w_iter,
+				    realwin_value.window_value[0],
+				    0) &&
+		     !gtk_tree_model_iter_has_child(model, &parent))
+	      {
                 gchar *exec, *name, *icon;
                 gtk_tree_model_get(model, &parent,
                                    WM_ICON_NAME_ITEM, &icon,
@@ -1647,6 +1648,9 @@ static void handle_active_window_prop(GtkTreeModel *model,
         {
             update_window(model, &parent, win_id, 0, value.window_value[0],
                           subname_str, update_flag);
+	    gtk_tree_store_set(GTK_TREE_STORE(model),
+			       &parent, WM_VIEW_ID_ITEM,
+			       value.window_value[0], -1);
             g_free(subname_str);
             return;
         }
@@ -1655,7 +1659,35 @@ static void handle_active_window_prop(GtkTreeModel *model,
         {
             update_window(model, &parent, win_id, value.window_value[0],
                           value.window_value[0], subname_str, update_flag);
+	    return;
         }
+      else
+	{
+	  gchar *exec, *name, *icon;
+	  gtk_tree_model_get(model, &parent,
+			     WM_ICON_NAME_ITEM, &icon,
+			     WM_BIN_NAME_ITEM, &exec,
+			     WM_NAME_ITEM, &name, -1);
+	  
+	  window_props *new_win;
+	  
+	  new_win = g_malloc(sizeof(window_props));
+	  new_win->icon = (gchar *)icon;
+	  new_win->name = (gchar *)name;
+	  new_win->exec = (gchar *)exec;
+	  new_win->win_id = (gulong)win_id;
+	  new_win->view_id = value.window_value[0];
+	  new_win->is_dialog = 0;
+	  
+	  new_win->menuitem_widget = 
+	    wm_cbs.new_win_cb(icon, name,
+			      subname_str, wm_cbs.cb_data);
+	  insert_new_window(model, &parent, 
+			    new_win);
+	  g_free(name);
+	  g_free(icon);
+	  g_free(exec);
+	}
     }
     g_free(subname_str);
     g_free(value.char_value);
@@ -1723,6 +1755,35 @@ static void handle_subname_window_prop(GtkTreeModel *model,
             XFree(value.char_value);
             return;
         }
+	if (!window_exists(model, &parent, &w_iter, win_id,
+			   value.window_value[0]))
+	  {
+	    gchar *exec, *name, *icon;
+	    gtk_tree_model_get(model, &parent,
+			       WM_ICON_NAME_ITEM, &icon,
+			       WM_BIN_NAME_ITEM, &exec,
+			       WM_NAME_ITEM, &name, -1);
+	    
+	  window_props *new_win;
+	  
+	  new_win = g_malloc(sizeof(window_props));
+	  new_win->icon = (gchar *)icon;
+	  new_win->name = (gchar *)name;
+	  new_win->exec = (gchar *)exec;
+	  new_win->win_id = (gulong)win_id;
+	  new_win->view_id = value.window_value[0];
+	  new_win->is_dialog = 0;
+	  
+	  new_win->menuitem_widget = 
+	    wm_cbs.new_win_cb(icon, name,
+			      subname_str, wm_cbs.cb_data);
+	  insert_new_window(model, &parent, 
+			    new_win);
+	  g_free(name);
+	  g_free(icon);
+	  g_free(exec);
+	  }
+			   
         g_free(subname_str);
     }
     XFree(value.char_value);
