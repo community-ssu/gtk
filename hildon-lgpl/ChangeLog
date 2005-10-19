@@ -1,3 +1,7 @@
+2005-10-19  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.55
+
 2005-10-12  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* hildon-lgpl/gtk-infoprint.c (queue_new_cbanner)
