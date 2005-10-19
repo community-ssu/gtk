@@ -1,3 +1,8 @@
+2005-10-19  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtktreemodelfilter.c: revert change below, it crashes global
+	search.
+
 Wed Oct 19 14:52:05 2005  Tim Janik  <timj@imendio.com>
 
 	* marged gtkstatusbar.c and gtkimcontextsimple.c fixes.
