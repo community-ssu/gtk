@@ -344,6 +344,18 @@ osso_return_t osso_rpc_async_run_with_defaults (osso_context_t * osso,
  */
 typedef void osso_rpc_retval_free_f (osso_rpc_t *retval);
 
+/* The API of the following two functions was changed incompatibly in
+   version 0.10.0 of libosso.  The API breaking was done on purpose
+   since the old API was leading to bugs and needed to be phased out
+   forcefully.  However, in order to keep binary compatibility, we
+   actually provide both the old API with the old names and the new
+   API with new names.  At compile time, macros are used to make the
+   new API visible with the old names.  This gives us the desired API
+   break.
+*/
+#define osso_rpc_set_cb_f         osso_rpc_set_cb_f_with_free
+#define osso_rpc_set_default_cb_f osso_rpc_set_default_cb_f_with_free
+
 /**
  * This function registers a callback function for handling RPC calls to
  * a given object of a service.
@@ -370,13 +382,6 @@ osso_return_t osso_rpc_set_cb_f (osso_context_t * osso, const gchar * service,
                                  gpointer data,
 				 osso_rpc_retval_free_f *retval_free);
 
-#if 0
-osso_return_t osso_rpc_set_cb_f (osso_context_t * osso, const gchar * service,
-                                 const gchar * object_path,
-                                 const gchar * interface, osso_rpc_cb_f * cb,
-                                 gpointer data);
-#endif
-
 /**
  * This function registers a callback function for handling RPC calls to the
  * default service of the application. The default service is "com.nokia.A",
@@ -392,11 +397,6 @@ osso_return_t osso_rpc_set_cb_f (osso_context_t * osso, const gchar * service,
 osso_return_t osso_rpc_set_default_cb_f (osso_context_t * osso,
                                          osso_rpc_cb_f * cb, gpointer data,
 					 osso_rpc_retval_free_f *retval_free);
-
-#if 0
-osso_return_t osso_rpc_set_default_cb_f (osso_context_t * osso,
-                                         osso_rpc_cb_f * cb, gpointer data);
-#endif
 
 /**
  * This function unregisters an RPC callback function.
