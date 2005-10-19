@@ -1,3 +1,17 @@
+Wed Oct 19 14:52:05 2005  Tim Janik  <timj@imendio.com>
+
+	* marged gtkstatusbar.c and gtkimcontextsimple.c fixes.
+
+    2005-05-16  Matthias Clasen  <mclasen@redhat.com>
+
+        * gtk/gtkstatusbar.c (gtk_statusbar_size_allocate): Only shrink
+        the label if we need to.  (#169390, Felix Riemann)
+
+    2005-05-20  Matthias Clasen  <mclasen@redhat.com>
+
+        * gtk/gtkimcontextsimple.c (check_table): Avoid a possible
+        buffer overrun.  (#142444, Leonard Michlmayr)
+
 2005-10-18  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreemodelfilter.c:
