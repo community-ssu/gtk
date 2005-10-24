@@ -290,13 +290,46 @@ _gtk_get_libdir (void)
   return gtk_libdir;
 }
 
+/* Lifted from HEAD GLib */
+static gchar *
+g_win32_locale_filename_from_utf8 (const gchar *utf8filename)
+{
+  gchar *retval = g_locale_from_utf8 (utf8filename, -1, NULL, NULL, NULL);
+
+  if (retval == NULL && G_WIN32_HAVE_WIDECHAR_API ())
+    {
+      /* Conversion failed, so convert to wide chars, check if there
+       * is a 8.3 version, and use that.
+       */
+      wchar_t *wname = g_utf8_to_utf16 (utf8filename, -1, NULL, NULL, NULL);
+      if (wname != NULL)
+	{
+	  wchar_t wshortname[MAX_PATH + 1];
+	  if (GetShortPathNameW (wname, wshortname, G_N_ELEMENTS (wshortname)))
+	    {
+	      gchar *tem = g_utf16_to_utf8 (wshortname, -1, NULL, NULL, NULL);
+	      retval = g_locale_from_utf8 (tem, -1, NULL, NULL, NULL);
+	      g_free (tem);
+	    }
+	  g_free (wname);
+	}
+    }
+  return retval;
+}
+
 const gchar *
 _gtk_get_localedir (void)
 {
   static char *gtk_localedir = NULL;
   if (gtk_localedir == NULL)
-    gtk_localedir = g_win32_get_package_installation_subdirectory
-      (GETTEXT_PACKAGE, dll_name, "lib\\locale");
+    {
+      gtk_localedir = g_win32_get_package_installation_subdirectory (GETTEXT_PACKAGE, dll_name, "lib\\locale");
+      if (gtk_localedir != NULL)
+	gtk_localedir = g_win32_locale_filename_from_utf8 (gtk_localedir);
+
+      if (gtk_localedir == NULL)
+	gtk_localedir = "\\";	/* Punt */
+    }
 
   return gtk_localedir;
 }
@@ -449,9 +482,27 @@ do_pre_parse_initialization (int    *argc,
 }
 
 static void
+gettext_initialization (void)
+{
+#ifdef ENABLE_NLS
+  bindtextdomain (GETTEXT_PACKAGE, GTK_LOCALEDIR);
+  bindtextdomain (GETTEXT_PACKAGE "-properties", GTK_LOCALEDIR);
+#    ifdef HAVE_BIND_TEXTDOMAIN_CODESET
+  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+  bind_textdomain_codeset (GETTEXT_PACKAGE "-properties", "UTF-8");
+#    endif
+#endif  
+}
+
+static void
 do_post_parse_initialization (int    *argc,
 			      char ***argv)
 {
+  if (gtk_initialized)
+    return;
+
+  gettext_initialization ();
+
   if (g_fatal_warnings)
     {
       GLogLevelFlags fatal_mask;
@@ -463,15 +514,6 @@ do_post_parse_initialization (int    *argc,
 
   if (gtk_debug_flags & GTK_DEBUG_UPDATES)
     gdk_window_set_debug_updates (TRUE);
-
-#ifdef ENABLE_NLS
-  bindtextdomain (GETTEXT_PACKAGE, GTK_LOCALEDIR);
-  bindtextdomain (GETTEXT_PACKAGE "-properties", GTK_LOCALEDIR);
-#    ifdef HAVE_BIND_TEXTDOMAIN_CODESET
-  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-  bind_textdomain_codeset (GETTEXT_PACKAGE "-properties", "UTF-8");
-#    endif
-#endif  
 
   {
   /* Translate to default:RTL if you want your widgets
@@ -612,6 +654,8 @@ gtk_init_with_args (int            *argc,
   if (gtk_initialized)
     return TRUE;
 
+  gettext_initialization ();
+
   if (!check_setugid ())
     return FALSE;
 
@@ -656,6 +700,8 @@ gtk_parse_args (int    *argc,
   
   if (gtk_initialized)
     return TRUE;
+
+  gettext_initialization ();
 
   if (!check_setugid ())
     return FALSE;
