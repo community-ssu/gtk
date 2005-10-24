@@ -50,10 +50,10 @@ int main(int nargs, char *argv[])
     if(osso == NULL)
 	return 1;
 
-    osso_rpc_set_default_cb_f(osso, cb, (gpointer)loop, osso_rpc_free_val);
+    osso_rpc_set_default_cb_f(osso, cb, (gpointer)loop);
     dprint("cb = %p",cb);
     osso_rpc_set_cb_f(osso, TEST_SERVICE, TEST_OBJECT, TEST_IFACE,
-		      cb,(gpointer)loop, osso_rpc_free_val);
+		      cb,(gpointer)loop);
     g_main_loop_run(loop);
     osso_deinitialize(osso);
 
@@ -127,13 +127,11 @@ gint cb(const gchar *interface, const gchar *method,
 	dprint("echo method");
 	arg = &g_array_index(arguments, osso_rpc_t, 0);
 	memcpy(retval, arg, sizeof(osso_rpc_t));
-	if (retval->type == DBUS_TYPE_STRING)
-	  retval->value.s = g_strdup (retval->value.s);
     }
     else if(strcmp(method,"error")==0) {
 	dprint("error method");
 	retval->type = DBUS_TYPE_STRING;
-	retval->value.s = g_strdup ("error");
+	retval->value.s = "error";
 	return OSSO_ERROR;
     }
     else {
