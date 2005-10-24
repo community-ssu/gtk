@@ -451,8 +451,8 @@ gtk_dialog_map (GtkWidget *widget)
 
 	  if ((window->focus_widget == NULL ||
 	       child == window->focus_widget) && 
-	       child != window->default_widget && 
-	       window->default_widget)
+              child != window->default_widget && 
+              window->default_widget)
 	    {
 	      gtk_widget_grab_focus (window->default_widget);
 	      break;
@@ -460,7 +460,7 @@ gtk_dialog_map (GtkWidget *widget)
 	  
 	  tmp_list = tmp_list->next;
 	}
-
+      
       g_list_free (children);
     }
 }
@@ -637,18 +637,9 @@ get_response_data (GtkWidget *widget,
 static void
 action_widget_activated (GtkWidget *widget, GtkDialog *dialog)
 {
-  ResponseData *ad;
   gint response_id;
   
-  g_return_if_fail (GTK_IS_DIALOG (dialog));
-
-  response_id = GTK_RESPONSE_NONE;
-  
-  ad = get_response_data (widget, TRUE);
-
-  g_assert (ad != NULL);
-  
-  response_id = ad->response_id;
+  response_id = _gtk_dialog_get_response_for_widget (dialog, widget);
 
   gtk_dialog_response (dialog, response_id);
 }
@@ -672,7 +663,7 @@ gtk_dialog_add_action_widget (GtkDialog *dialog,
                               gint       response_id)
 {
   ResponseData *ad;
-  gint signal_id = 0;
+  guint signal_id;
   
   g_return_if_fail (GTK_IS_DIALOG (dialog));
   g_return_if_fail (GTK_IS_WIDGET (child));
@@ -684,7 +675,7 @@ gtk_dialog_add_action_widget (GtkDialog *dialog,
   if (GTK_IS_BUTTON (child))
     signal_id = g_signal_lookup ("clicked", GTK_TYPE_BUTTON);
   else
-    signal_id = GTK_WIDGET_GET_CLASS (child)->activate_signal != 0;
+    signal_id = GTK_WIDGET_GET_CLASS (child)->activate_signal;
 
   if (signal_id)
     {
@@ -827,8 +818,7 @@ gtk_dialog_set_response_sensitive (GtkDialog *dialog,
   while (tmp_list != NULL)
     {
       GtkWidget *widget = tmp_list->data;
-      ResponseData *rd = g_object_get_data (G_OBJECT (widget),
-                                            "gtk-dialog-response-data");
+      ResponseData *rd = get_response_data (widget, FALSE);
 
       if (rd && rd->response_id == response_id)
         gtk_widget_set_sensitive (widget, setting);
@@ -863,8 +853,7 @@ gtk_dialog_set_default_response (GtkDialog *dialog,
   while (tmp_list != NULL)
     {
       GtkWidget *widget = tmp_list->data;
-      ResponseData *rd = g_object_get_data (G_OBJECT (widget),
-                                            "gtk-dialog-response-data");
+      ResponseData *rd = get_response_data (widget, FALSE);
 
       if (rd && rd->response_id == response_id)
 	gtk_widget_grab_default (widget);
@@ -919,7 +908,7 @@ gtk_dialog_set_has_separator (GtkDialog *dialog,
       dialog->separator = NULL;
     }
 
-  g_object_notify (G_OBJECT (dialog), "has_separator");
+  g_object_notify (G_OBJECT (dialog), "has-separator");
 }
 
 /**
@@ -1070,7 +1059,7 @@ run_destroy_handler (GtkDialog *dialog, gpointer data)
 gint
 gtk_dialog_run (GtkDialog *dialog)
 {
-  RunInfo ri = { NULL, GTK_RESPONSE_NONE, NULL };
+  RunInfo ri = { NULL, GTK_RESPONSE_NONE, NULL, FALSE };
   gboolean was_modal;
   gulong response_handler;
   gulong unmap_handler;
@@ -1121,7 +1110,6 @@ gtk_dialog_run (GtkDialog *dialog)
   g_main_loop_unref (ri.loop);
 
   ri.loop = NULL;
-  ri.destroyed = FALSE;
   
   if (!ri.destroyed)
     {
