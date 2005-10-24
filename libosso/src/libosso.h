@@ -340,21 +340,9 @@ osso_return_t osso_rpc_async_run_with_defaults (osso_context_t * osso,
 /**
  * The type for functions that free the contents of a #osso_rpc_t
  * structure that is used as a #retval with an RPC callback.  See
- * #osso_rpc_set_cb_f.
+ * #osso_rpc_set_cb_f_with_free.
  */
 typedef void osso_rpc_retval_free_f (osso_rpc_t *retval);
-
-/* The API of the following two functions was changed incompatibly in
-   version 0.10.0 of libosso.  The API breaking was done on purpose
-   since the old API was leading to bugs and needed to be phased out
-   forcefully.  However, in order to keep binary compatibility, we
-   actually provide both the old API with the old names and the new
-   API with new names.  At compile time, macros are used to make the
-   new API visible with the old names.  This gives us the desired API
-   break.
-*/
-#define osso_rpc_set_cb_f         osso_rpc_set_cb_f_with_free
-#define osso_rpc_set_default_cb_f osso_rpc_set_default_cb_f_with_free
 
 /**
  * This function registers a callback function for handling RPC calls to
@@ -376,11 +364,19 @@ typedef void osso_rpc_retval_free_f (osso_rpc_t *retval);
  * @return #OSSO_OK on success, #OSSO_INVALID if a parameter is
  * invalid, and #OSSO_ERROR if an error occurred.
  */
+osso_return_t osso_rpc_set_cb_f_with_free (osso_context_t * osso, const gchar * service,
+					   const gchar * object_path,
+					   const gchar * interface, osso_rpc_cb_f * cb,
+					   gpointer data,
+					   osso_rpc_retval_free_f *retval_free);
+
+/** Equivalent to #osso_rpc_set_cb_f_with_free when passing #NULL for
+    #retval_free.
+ */
 osso_return_t osso_rpc_set_cb_f (osso_context_t * osso, const gchar * service,
-                                 const gchar * object_path,
-                                 const gchar * interface, osso_rpc_cb_f * cb,
-                                 gpointer data,
-				 osso_rpc_retval_free_f *retval_free);
+				 const gchar * object_path,
+				 const gchar * interface, osso_rpc_cb_f * cb,
+				 gpointer data);
 
 /**
  * This function registers a callback function for handling RPC calls to the
@@ -394,9 +390,16 @@ osso_return_t osso_rpc_set_cb_f (osso_context_t * osso, const gchar * service,
  * @return #OSSO_OK on success, #OSSO_INVALID if a
  * parameter is invalid, and #OSSO_ERROR if an error occurred.
  */
+osso_return_t osso_rpc_set_default_cb_f_with_free (osso_context_t * osso,
+						   osso_rpc_cb_f * cb, gpointer data,
+						   osso_rpc_retval_free_f *retval_free);
+
+/** Equivalent to #osso_rpc_set_default_cb_f_with_free when passing
+    #NULL for #retval_free.
+ */
 osso_return_t osso_rpc_set_default_cb_f (osso_context_t * osso,
-                                         osso_rpc_cb_f * cb, gpointer data,
-					 osso_rpc_retval_free_f *retval_free);
+					 osso_rpc_cb_f * cb, gpointer data);
+
 
 /**
  * This function unregisters an RPC callback function.

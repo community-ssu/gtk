@@ -28,7 +28,6 @@ libosso_la_SOURCES = \
 	log-functions.h \
 	osso-internal.h \
 	osso-rpc.c \
-	osso-rpc-old.c \
 	osso-statusbar.c \
 	osso-log.h \
 	osso-cp-plugin.c \

@@ -475,10 +475,10 @@ osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 }
 
 /************************************************************************/
-osso_return_t osso_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
-				const gchar *object_path, const gchar *interface,
-				osso_rpc_cb_f *cb, gpointer data,
-				osso_rpc_retval_free_f *retval_free)
+osso_return_t osso_rpc_set_cb_f_with_free (osso_context_t *osso, const gchar *service,
+					   const gchar *object_path, const gchar *interface,
+					   osso_rpc_cb_f *cb, gpointer data,
+					   osso_rpc_retval_free_f *retval_free)
 {
     if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
 	(interface == NULL) || (cb == NULL))
@@ -487,11 +487,18 @@ osso_return_t osso_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 			 interface,cb, data, retval_free, FALSE);
 }
 
+osso_return_t osso_rpc_set_cb_f (osso_context_t *osso, const gchar *service,
+				 const gchar *object_path, const gchar *interface,
+				 osso_rpc_cb_f *cb, gpointer data)
+{
+    return osso_rpc_set_cb_f_with_free (osso, service, object_path, interface, cb, data, NULL);
+}
+
 /************************************************************************/
-osso_return_t osso_rpc_set_default_cb_f(osso_context_t *osso,
-					osso_rpc_cb_f *cb,
-					gpointer data,
-					osso_rpc_retval_free_f *retval_free)
+osso_return_t osso_rpc_set_default_cb_f_with_free (osso_context_t *osso,
+						   osso_rpc_cb_f *cb,
+						   gpointer data,
+						   osso_rpc_retval_free_f *retval_free)
 {
     gchar interface[256] = {0};
     _osso_rpc_t *rpc;
@@ -513,6 +520,13 @@ osso_return_t osso_rpc_set_default_cb_f(osso_context_t *osso,
     _msg_handler_set_cb_f_free_data(osso, interface, _rpc_handler,
 			  (gpointer)rpc, TRUE);
     return OSSO_OK;
+}
+
+osso_return_t osso_rpc_set_default_cb_f (osso_context_t *osso,
+					 osso_rpc_cb_f *cb,
+					 gpointer data)
+{
+    return osso_rpc_set_default_cb_f_with_free (osso, cb, data, NULL);
 }
 
 /************************************************************************/
