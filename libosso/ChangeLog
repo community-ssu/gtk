@@ -9,6 +9,9 @@
 	(osso_rpc_set_default_cb_f, osso_rpc_set_default_cb_f_with_free):
 	Likewise.
 	* src/Makefile.am (libosso_la_SOURCES): Removed osso-rpc-old.c.
+
+	* ut/osso-rpc/test-osso-rpc-prog.c, ut/osso-rpc/test-osso-rpc.c:
+	Reverted change from 2005-10-18.
 	
 2005-10-19  Marius Vollmer  <marius.vollmer@nokia.com>
 
