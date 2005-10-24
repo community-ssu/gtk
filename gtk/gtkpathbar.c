@@ -78,6 +78,7 @@ static void gtk_path_bar_finalize                 (GObject          *object);
 static void gtk_path_bar_dispose                  (GObject          *object);
 static void gtk_path_bar_size_request             (GtkWidget        *widget,
 						   GtkRequisition   *requisition);
+static void gtk_path_bar_unmap                    (GtkWidget          *widget);
 static void gtk_path_bar_size_allocate            (GtkWidget        *widget,
 						   GtkAllocation    *allocation);
 static void gtk_path_bar_add                      (GtkContainer     *container,
@@ -167,6 +168,7 @@ gtk_path_bar_class_init (GtkPathBarClass *path_bar_class)
   gobject_class->dispose = gtk_path_bar_dispose;
 
   widget_class->size_request = gtk_path_bar_size_request;
+  widget_class->unmap = gtk_path_bar_unmap;
   widget_class->size_allocate = gtk_path_bar_size_allocate;
   widget_class->style_set = gtk_path_bar_style_set;
   widget_class->screen_changed = gtk_path_bar_screen_changed;
@@ -310,6 +312,14 @@ gtk_path_bar_update_slider_buttons (GtkPathBar *path_bar)
       else
 	gtk_widget_set_sensitive (path_bar->up_slider_button, TRUE);
     }
+}
+
+static void
+gtk_path_bar_unmap (GtkWidget *widget)
+{
+  gtk_path_bar_stop_scrolling (GTK_PATH_BAR (widget));
+
+  GTK_WIDGET_CLASS (gtk_path_bar_parent_class)->unmap (widget);
 }
 
 /* This is a tad complicated
@@ -1225,6 +1235,7 @@ gtk_path_bar_check_parent_path (GtkPathBar         *path_bar,
 gboolean
 _gtk_path_bar_set_path (GtkPathBar         *path_bar,
 			const GtkFilePath  *file_path,
+			const gboolean      keep_trail,     
 			GError            **error)
 {
   GtkFilePath *path;
@@ -1240,7 +1251,8 @@ _gtk_path_bar_set_path (GtkPathBar         *path_bar,
   /* Check whether the new path is already present in the pathbar as buttons.
    * This could be a parent directory or a previous selected subdirectory.
    */
-  if (gtk_path_bar_check_parent_path (path_bar, file_path, path_bar->file_system))
+  if (keep_trail &&
+      gtk_path_bar_check_parent_path (path_bar, file_path, path_bar->file_system))
     return TRUE;
 
   path = gtk_file_path_copy (file_path);
@@ -1342,7 +1354,6 @@ _gtk_path_bar_set_path (GtkPathBar         *path_bar,
 
   return result;
 }
-
 
 /* FIXME: This should be a construct-only property */
 void

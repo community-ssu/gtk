@@ -678,8 +678,12 @@ gtk_file_chooser_button_constructor (GType                  type,
 					combo_box_row_separator_func,
 					NULL, NULL);
 
-  update_label_and_image (GTK_FILE_CHOOSER_BUTTON (object));
-  update_combo_box (GTK_FILE_CHOOSER_BUTTON (object));
+  /* set up the action for a user-provided dialog, this also updates
+   * the label, image and combobox
+   */
+  g_object_set (object, 
+		"action", gtk_file_chooser_get_action (GTK_FILE_CHOOSER (priv->dialog)),
+		NULL);
 
   priv->fs_volumes_changed_id =
     g_signal_connect (priv->fs, "volumes-changed",
@@ -711,7 +715,6 @@ gtk_file_chooser_button_set_property (GObject      *object,
       gtk_file_chooser_button_set_width_chars (GTK_FILE_CHOOSER_BUTTON (object),
 					       g_value_get_int (value));
       break;
-
     case GTK_FILE_CHOOSER_PROP_ACTION:
       switch (g_value_get_enum (value))
 	{
@@ -1473,7 +1476,10 @@ model_update_current_folder (GtkFileChooserButton *button,
       button->priv->has_current_folder = TRUE;
     }
   else
-    gtk_tree_model_iter_nth_child (button->priv->model, &iter, NULL, pos);
+    {
+      gtk_tree_model_iter_nth_child (button->priv->model, &iter, NULL, pos);
+      model_free_row_data (button, &iter);
+    }
 
   pixbuf = gtk_file_system_render_icon (button->priv->fs, path,
 					GTK_WIDGET (button),
@@ -1689,7 +1695,6 @@ update_combo_box (GtkFileChooserButton *button)
 
   g_assert (gtk_tree_model_get_iter_first (priv->filter_model, &iter));
 
-  _gtk_file_chooser_get_current_folder_path (GTK_FILE_CHOOSER (priv->dialog));
   paths = _gtk_file_chooser_get_paths (GTK_FILE_CHOOSER (priv->dialog));
 
   row_found = FALSE;
@@ -1825,6 +1830,8 @@ update_label_and_image (GtkFileChooserButton *button)
       folder = gtk_file_system_get_folder (priv->fs,
 					   parent_path ? parent_path : path,
 					   GTK_FILE_INFO_DISPLAY_NAME, NULL);
+      gtk_file_path_free (parent_path);
+
       if (folder)
 	{
 	  GtkFileInfo *info;
@@ -2163,6 +2170,8 @@ dialog_response_cb (GtkDialog *dialog,
 	  break;
 	}
     }
+  else
+    gtk_file_chooser_unselect_all (GTK_FILE_CHOOSER (dialog));
 
   if (priv->old_path)
     {
