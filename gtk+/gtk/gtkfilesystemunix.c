@@ -62,6 +62,13 @@ struct _GtkFileSystemUnix
   GObject parent_instance;
 
   GHashTable *folder_hash;
+
+  /* For /afs and /net */
+  struct stat afs_statbuf;
+  struct stat net_statbuf;
+
+  guint have_afs : 1;
+  guint have_net : 1;
 };
 
 /* Icon type, supplemented by MIME type
@@ -103,8 +110,9 @@ struct _GtkFileFolderUnix
   GtkFileInfoType types;
   gchar *filename;
   GHashTable *stat_info;
-  unsigned int have_stat : 1;
-  unsigned int have_mime_type : 1;
+  guint have_stat : 1;
+  guint have_mime_type : 1;
+  guint is_network_dir : 1;
   time_t asof;
 };
 
@@ -315,6 +323,16 @@ static void
 gtk_file_system_unix_init (GtkFileSystemUnix *system_unix)
 {
   system_unix->folder_hash = g_hash_table_new (g_str_hash, g_str_equal);
+
+  if (stat ("/afs", &system_unix->afs_statbuf) == 0)
+    system_unix->have_afs = TRUE;
+  else
+    system_unix->have_afs = FALSE;
+
+  if (stat ("/net", &system_unix->net_statbuf) == 0)
+    system_unix->have_net = TRUE;
+  else
+    system_unix->have_net = FALSE;
 }
 
 static void
@@ -373,7 +391,7 @@ gtk_file_system_unix_get_folder (GtkFileSystem     *file_system,
   GtkFileFolderUnix *folder_unix;
   const char *filename;
   char *filename_copy;
-  time_t now = time (NULL);
+  gboolean set_asof = FALSE;
 
   system_unix = GTK_FILE_SYSTEM_UNIX (file_system);
 
@@ -387,8 +405,8 @@ gtk_file_system_unix_get_folder (GtkFileSystem     *file_system,
   if (folder_unix)
     {
       g_free (filename_copy);
-      if (now - folder_unix->asof >= FOLDER_CACHE_LIFETIME &&
-	  folder_unix->stat_info)
+      if (folder_unix->stat_info &&
+	  time (NULL) - folder_unix->asof >= FOLDER_CACHE_LIFETIME)
 	{
 #if 0
 	  g_print ("Cleaning out cached directory %s\n", filename);
@@ -397,6 +415,7 @@ gtk_file_system_unix_get_folder (GtkFileSystem     *file_system,
 	  folder_unix->stat_info = NULL;
 	  folder_unix->have_mime_type = FALSE;
 	  folder_unix->have_stat = FALSE;
+	  set_asof = TRUE;
 	}
 
       g_object_ref (folder_unix);
@@ -409,6 +428,8 @@ gtk_file_system_unix_get_folder (GtkFileSystem     *file_system,
       int result;
       int code;
       int my_errno;
+
+      code = my_errno = 0; /* shut up GCC */
 
       result = stat (filename, &statbuf);
 
@@ -451,9 +472,19 @@ gtk_file_system_unix_get_folder (GtkFileSystem     *file_system,
       folder_unix->filename = filename_copy;
       folder_unix->types = types;
       folder_unix->stat_info = NULL;
-      folder_unix->asof = now;
       folder_unix->have_mime_type = FALSE;
       folder_unix->have_stat = FALSE;
+      set_asof = TRUE;
+
+      if ((system_unix->have_afs &&
+	   system_unix->afs_statbuf.st_dev == statbuf.st_dev &&
+	   system_unix->afs_statbuf.st_ino == statbuf.st_ino) ||
+	  (system_unix->have_net &&
+	   system_unix->net_statbuf.st_dev == statbuf.st_dev &&
+	   system_unix->net_statbuf.st_ino == statbuf.st_ino))
+	folder_unix->is_network_dir = TRUE;
+      else
+	folder_unix->is_network_dir = FALSE;
 
       g_hash_table_insert (system_unix->folder_hash,
 			   folder_unix->filename,
@@ -465,6 +496,9 @@ gtk_file_system_unix_get_folder (GtkFileSystem     *file_system,
 
   if ((types & GTK_FILE_INFO_MIME_TYPE) != 0)
     fill_in_mime_type (folder_unix);
+
+  if (set_asof)
+    folder_unix->asof = time (NULL);
 
   return GTK_FILE_FOLDER (folder_unix);
 }
@@ -1487,10 +1521,19 @@ gtk_file_system_unix_insert_bookmark (GtkFileSystem     *file_system,
 
   for (l = bookmarks; l; l = l->next)
     {
-      const char *bookmark;
+      char *bookmark, *space;
 
       bookmark = l->data;
-      if (strcmp (bookmark, uri) == 0)
+      
+      space = strchr (bookmark, ' ');
+      if (space)
+	*space = '\0';
+      if (strcmp (bookmark, uri) != 0)
+	{
+	  if (space)
+	    *space = ' ';
+	}
+      else
 	{
 	  g_set_error (error,
 		       GTK_FILE_SYSTEM_ERROR,
@@ -1535,10 +1578,19 @@ gtk_file_system_unix_remove_bookmark (GtkFileSystem     *file_system,
 
   for (l = bookmarks; l; l = l->next)
     {
-      const char *bookmark;
+      char *bookmark, *space;
 
-      bookmark = l->data;
-      if (strcmp (bookmark, uri) == 0)
+      bookmark = (char *)l->data;
+      space = strchr (bookmark, ' ');
+      if (space)
+	*space = '\0';
+
+      if (strcmp (bookmark, uri) != 0)
+	{
+	  if (space)
+	    *space = ' ';
+	}
+      else
 	{
 	  g_free (l->data);
 	  bookmarks = g_slist_remove_link (bookmarks, l);
@@ -1582,12 +1634,15 @@ gtk_file_system_unix_list_bookmarks (GtkFileSystem *file_system)
 
   for (l = bookmarks; l; l = l->next)
     {
-      const char *name;
+      char *bookmark, *space;
 
-      name = l->data;
+      bookmark = (char *)l->data;
+      space = strchr (bookmark, ' ');
+      if (space)
+	*space = '\0';
 
-      if (is_local_uri (name))
-	result = g_slist_prepend (result, gtk_file_system_unix_uri_to_path (file_system, name));
+      if (is_local_uri (bookmark))
+	result = g_slist_prepend (result, gtk_file_system_unix_uri_to_path (file_system, bookmark));
     }
 
   bookmark_list_free (bookmarks);
@@ -1957,13 +2012,23 @@ fill_in_names (GtkFileFolderUnix *folder_unix, GError **error)
 
   while (TRUE)
     {
-      const gchar *basename = g_dir_read_name (dir);
+      struct stat_info_entry *entry;
+      const gchar *basename;
+
+      basename = g_dir_read_name (dir);
       if (!basename)
 	break;
 
+      entry = g_new0 (struct stat_info_entry, 1);
+      if (folder_unix->is_network_dir)
+	{
+	  entry->statbuf.st_mode = S_IFDIR;
+	  entry->mime_type = g_strdup ("x-directory/normal");
+	}
+
       g_hash_table_insert (folder_unix->stat_info,
 			   g_strdup (basename),
-			   g_new0 (struct stat_info_entry, 1));
+			   entry);
     }
 
   g_dir_close (dir);
@@ -2001,9 +2066,10 @@ fill_in_stats (GtkFileFolderUnix *folder_unix)
   if (!fill_in_names (folder_unix, NULL))
     return;
 
-  g_hash_table_foreach_remove (folder_unix->stat_info,
-			       cb_fill_in_stats,
-			       folder_unix);
+  if (!folder_unix->is_network_dir)
+    g_hash_table_foreach_remove (folder_unix->stat_info,
+				 cb_fill_in_stats,
+				 folder_unix);
 
   folder_unix->have_stat = TRUE;
 }
@@ -2037,9 +2103,10 @@ fill_in_mime_type (GtkFileFolderUnix *folder_unix)
 
   g_assert (folder_unix->stat_info != NULL);
 
-  g_hash_table_foreach_remove (folder_unix->stat_info,
-			       cb_fill_in_mime_type,
-			       folder_unix);
+  if (!folder_unix->is_network_dir)
+    g_hash_table_foreach_remove (folder_unix->stat_info,
+				 cb_fill_in_mime_type,
+				 folder_unix);
 
   folder_unix->have_mime_type = TRUE;
 }

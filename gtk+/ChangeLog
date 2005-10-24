@@ -1,3 +1,195 @@
+2005-10-24  Michael Natterer  <mitch@imendio.com>
+
+	Merged all changes to GtkFileChooserButton, GtkFileChooser,
+	GtkFileChooserDefault, GtkFileChooserEntry, GtkFileSystemUnix
+	and GtkPathBar.
+
+    2005-07-07  Matthias Clasen  <mclasen@redhat.com>
+
+	Implement Drag-and-Drop to the file list.  (#145121, Sven Neumann)
+	
+	* gtk/gtkfilechooserdefault.c (file_list_drag_data_received_cb) 
+	(file_list_drag_drop_cb, file_list_drag_motion_cb): New functions
+	to handle drag-and-drop on the file list.
+	(create_file_list): Set up drag-and-drop handlers on the file list.
+
+    2005-07-07  Matthias Clasen  <mclasen@redhat.com>
+
+	Fix #157787, reported by Jonathan Blandford: 
+	
+	* gtk/gtkfilechooserdefault.c 
+	(gtk_file_chooser_default_set_current_folder): Don't leave a 
+	"trail" behind when set_current_folder is called explicitly.
+	(gtk_file_chooser_default_update_current_folder): New function
+	that is called to update the current folder in response to
+	user actions.
+
+	* gtk/gtkpathbar.c (_gtk_path_bar_set_path): Add a boolean
+	keep_trail argument, and don't leave a "trail" behind unless
+	it is set.
+
+    2005-06-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilesystemunix.c (gtk_file_system_unix_get_folder): 
+	Fix an error in the cache timeout logic.  (#166601, Morten
+	Welinder)
+
+    2005-06-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilesystemunix.c: Ignore everything after the
+	first space in lines from the .gtk-bookmarks file.
+
+    2005-06-14  Federico Mena Quintero  <federico@ximian.com>
+
+	Fix #302087:
+
+	* gtk/gtkfilechooserdefault.c (list_selection_changed): Emit
+	"selection-changed" and do the normal housekeeping even if we are
+	in SAVE mode and there is nothing selected.  We didn't emit that
+	signal if we were in SAVE mode and unselect_all() got called.
+	(gtk_file_chooser_default_unselect_all): Call
+	pending_select_paths_free() so that we cancel any asynchronous
+	selections.
+	(gtk_file_chooser_default_set_current_name): Likewise.
+
+    2005-06-14  Federico Mena Quintero  <federico@ximian.com>
+
+	Fixes #307640:
+
+	* gtk/gtkfilechooserdefault.c
+	(gtk_file_chooser_default_should_respond): Oops, I broke SAVE
+	mode.  If the parent path is a folder, only create a subfolder if
+	we are in CREATE_FOLDER mode; if we are in SAVE mode, just return
+	and respond.  Also, pick up the case where the user types
+	"dirname/" instead of "dirname".
+	(check_save_entry): Make the return type void.  Add some return
+	parameters so that we can do more thorough checking.
+	(gtk_file_chooser_default_get_paths): If the file part is empty
+	and we are in SAVE mode, return an empty selection.
+
+    2005-06-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilechooserbutton.c (model_update_current_folder): 
+	Free the data of the row before overwriting it.  (#307490,
+	Kjartan Maraas) 
+
+    2005-06-09  Federico Mena Quintero  <federico@ximian.com>
+
+	Fixes #162358:
+
+	* gtk/gtkfilechooserdefault.c (update_chooser_entry): Don't return
+	immediately if we are in CREATE_FOLDER mode, so that we can fill
+	the entry with the newly-selected folder.
+	(gtk_file_chooser_default_set_property): Warn against turning on
+	multiple selection for CREATE_FOLDER mode, or about setting that
+	action while multiple selection is on.
+	(update_chooser_entry): Change the entry's contents as well if we
+	are in CREATE_FOLDER mode.  If nothing is selected, clear the
+	chooser entry.
+	(trap_activate_cb): Don't trap enter/space if modifiers are
+	pressed.  This lets one use Ctrl-space to toggle rows in multiple
+	selection mode.
+	(gtk_file_chooser_default_should_respond): Clean up the if-chain
+	mess of special cases by using an array to determine what to do.
+	Also, for the save-entry case in CREATE_FOLDER mode, actually fix
+	the bug where the file chooser would switch to an existing folder
+	rather than confirming with it, and create the folder ourselves.
+	(error_creating_folder_over_existing_file_dialog): New function.
+
+	* gtk/gtkfilechooserentry.c (check_completion_callback): Only
+	insert the common prefix if we are in an "open" mode.  Use a
+	helper function.
+	(append_common_prefix): New helper function; code moved over from
+	check_completion_callback().
+	(find_common_prefix): New helper function.
+	(gtk_file_chooser_entry_focus): Append the common prefix if the
+	user requests it explicitly.
+
+    2005-06-07  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* gtk/gtkfilechooserbutton.c: (update_label_and_image):
+	Plug a leak. Closes bug #306754.
+
+    2005-05-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilechooserdefault.c (gtk_file_chooser_default_init):
+	Revert an accidental commit.
+
+	* gtk/gtkfilechooserdefault.c (filter_create): Don't grab
+	the focus away from the file list when operating the filter
+	combo with the pointer.  (#304844, Sven Neumann)
+
+    2005-05-18  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilechooser.c (gtk_file_chooser_remove_shortcut_folder_uri): 
+	Use the correct function to conver the uri to a path.  (#304565,
+	Ismael Juma)
+
+	* gtk/gtkfilechooserbutton.c (dialog_response_cb): Handle the
+	Cancel button properly.  (#304234, Sven Neumann)
+
+    2005-05-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilechooserbutton.c (gtk_file_chooser_button_constructor): 
+	Make sure the action of the button and the dialog are in sync,
+	when the dialog is provided by the app.  (#303987, David A Knight)
+
+    2005-05-06  Federico Mena Quintero  <federico@ximian.com>
+
+	* gtk/gtkfilesystemunix.c (fill_in_mime_type): Don't fill the mime
+	types if this is an AFS directory.
+	(fill_in_names): If we are in an AFS directory, set the MIME type
+	blindly to "x-directory/normal".
+
+    2005-05-02  Federico Mena Quintero  <federico@ximian.com>
+
+	Fixes #301068:
+
+	* gtk/gtkfilesystemunix.c (struct _GtkFileSystemUnix): Add fields
+	to store struct stat for /afs and /net, and boolean fields to say
+	whether these are valid.
+	(struct _GtkFileFolderUnix): Added a boolean is_network_dir field.
+	(gtk_file_system_unix_get_folder): Fill in the is_network_dir
+	field of the folder structure.
+	(fill_in_names): If the folder is a network directory, create a
+	fake struct stat for its entries.
+	(fill_in_stats): Don't stat() the children of network directories.
+ 
+	* gtk/gtkfilechooserdefault.c (list_mtime_data_func): If the mtime
+	is 0, use "Unknown" for the cell's displayed text.
+
+    2005-04-18  Federico Mena Quintero  <federico@ximian.com>
+
+	* gtk/gtkfilechooserdefault.c (remove_selected_bookmarks): Remove
+	obsolete assertion that the selected row can't be a volume; this
+	is handled by the "removable" column now.  Fixes #301017.
+
+    2005-04-15  Federico Mena Quintero  <federico@ximian.com>
+
+	* gtk/gtkfilechooserdefault.c (pending_select_paths_process):
+	Patch from Christian Neumair <chris@gnome-de.org>; only select the
+	first row if we are in OPEN mode.  The only other case we were
+	letting pass through was SELECT_FOLDER, but selecting the first
+	row when changing folders confuses people when folders are
+	actually being selected.  Fixes #171885.
+
+    2005-03-28  Jeroen Zwartepoorte  <jeroen.zwartepoorte@gmail.com>
+
+	* gtk/gtkfilechooserdefault.c: (update_preview_widget_visibility): Make
+	the preview label ellipsize so the dialog layout stays constant.
+	(#171398)
+
+    2005-03-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilechooserbutton.c (update_combo_box): Remove
+	a call whose result was unused and leaked.  (#170776,
+	Kjartan Maraas)
+
+    2005-03-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkpathbar.c (gtk_path_bar_unmap):Stop scrolling when
+	the widget is unmapped.  (#168791, Ryan Lortie)
+
 Mon Oct 24 17:56:46 2005  Tim Janik  <timj@imendio.com>
 
 	* merged gtkwidget.c.
@@ -19,7 +211,7 @@ Mon Oct 24 16:57:03 2005  Tim Janik  <timj@imendio.com>
 	gdkwindow-x11.h actually contains a binary incompatible chnage that
 	shouldn't have occoured upstream ;(
 
-  2005-05-04  Owen Taylor  <otaylor@redhat.com>
+    2005-05-04  Owen Taylor  <otaylor@redhat.com>
 
         * gdk/x11/gdkevents-x11.c gdk/x11/gdkwindow-x11.h: Fix a bug
         in focus tracking when we move between has_pointer_focus and 
