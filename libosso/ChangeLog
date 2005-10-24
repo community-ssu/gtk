@@ -1,3 +1,15 @@
+2005-10-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Do not break source-compatibility gratuitously.
+	
+	* src/libosso.h, src/osso-rpc.c (osso_rpc_set_cb_f,
+	osso_rpc_set_cb_f_with_free): Make it so that the new API has the
+	new name osso_rpc_set_cb_f_with_free and the old API is still
+	available with the old name osso_rpc_set_cb_f.
+	(osso_rpc_set_default_cb_f, osso_rpc_set_default_cb_f_with_free):
+	Likewise.
+	* src/Makefile.am (libosso_la_SOURCES): Removed osso-rpc-old.c.
+	
 2005-10-19  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/libosso.h (osso_rpc_set_cb_f): New #define to rename
