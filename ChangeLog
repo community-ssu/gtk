@@ -1,3 +1,18 @@
+Mon Oct 24 17:56:46 2005  Tim Janik  <timj@imendio.com>
+
+	* merged gtkwidget.c.
+
+    2005-05-18  Matthias Clasen  <mclasen@redhat.com>
+
+        * gtk/gtkwidget.c (gtk_widget_add_events): Try harder to set
+        the event masks of descendent windows.  (#169821, Tommi Komulainen)
+
+    2005-03-03  Matthias Clasen  <mclasen@redhat.com>
+
+        * gtk/gtkwidget.c (gtk_widget_reparent_subwindows): 
+        Avoid warnings if gtk_widget_reparent() is called at
+        unusual times.  (#168966, Christian Persch)
+
 Mon Oct 24 16:57:03 2005  Tim Janik  <timj@imendio.com>
 
 	* merged gdkevents-x11.c, gdkwindow-x11.h.
