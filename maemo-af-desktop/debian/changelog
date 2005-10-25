@@ -1,3 +1,10 @@
+maemo-af-desktop (1.61.0) unstable; urgency=low
+
+  * Corrected copyright texts in Makefiles.
+  * configure.ac -> 1.61.0
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 25 Oct 2005 16:54:48 +0300
+
 maemo-af-desktop (1.60.3) unstable; urgency=low
 
   * Bug fixed:

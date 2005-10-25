@@ -1,4 +1,4 @@
-# Copyright (c) 2004 Nokia
+# Copyright (c) 2004, 2005 Nokia Corporation
 
 INCLUDES = $(HILDON_CFLAGS) $(OSSO_CFLAGS) \
 	-DPREFIX=\"$(prefix)\"

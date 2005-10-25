@@ -1,3 +1,11 @@
+2005-10-25  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	
+	* Corrected copyright texts in Makefiles (e.g. Nokia -> Nokia Corporation)
+	* Changed files: Makefile, Makefile.in, Makefile.am, hildon-home/Makefile.in, 
+	  hildon-home/Makefile.am, hildon-navigator/Makefile.in, hildon-navigator/Makefile.am,
+	  hildon-status-bar/Makefile.in, hildon-status-bar/Makefile.am
+	* configure.ac: 1.61.0
+
 2005-10-19  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 1.60.3

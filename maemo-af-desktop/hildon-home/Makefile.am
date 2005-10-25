@@ -1,5 +1,5 @@
-# Copyright (c) 2005 Nokia Oyj
-
+# Copyright (c) 2005 Nokia Corporation
+#
 # SUBDIRS = po 
 
 INCLUDES = \

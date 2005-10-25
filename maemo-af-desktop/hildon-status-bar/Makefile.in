@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (c) 2004 Nokia
+# Copyright (c) 2004, 2005 Nokia Corporation
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@

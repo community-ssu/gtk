@@ -1,5 +1,5 @@
-# Copyright (c) 2003,2004,2005 Nokia Oyj
-# Authors: Karoliina Salminen <karoliina.t.salminen at nokia dot com>
+# Copyright (c) 2003, 2004, 2005 Nokia Corporation
+# Authors: Karoliina Salminen <karoliina.t.salminen@nokia.com>
 # 
 # Subdirectories
 SUBDIRS = hildon-navigator hildon-status-bar hildon-home
