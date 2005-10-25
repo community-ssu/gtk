@@ -969,7 +969,9 @@ gtk_tree_model_filter_fetch_child (GtkTreeModelFilter *filter,
   g_array_insert_val (level->array, i, elt);
   *index = i;
 
-  for (i = MAX (--i, 0); i < level->array->len; i++)
+  if (i > 0)
+    i--;
+  for ( ; i < level->array->len; i++)
     {
       FilterElt *e = &(g_array_index (level->array, FilterElt, i));
       if (e->children)
@@ -2911,6 +2913,11 @@ gtk_tree_model_filter_get_model (GtkTreeModelFilter *filter)
  * function should return %TRUE if the given row should be visible and
  * %FALSE otherwise.
  *
+ * If the condition calculated by the function changes over time (e.g. because
+ * it depends on some global parameters), you must call 
+ * gtk_tree_model_filter_refilter() to keep the visibility information of 
+ * the model uptodate.
+ *
  * Since: 2.4
  */
 void
@@ -3335,7 +3342,7 @@ gtk_tree_model_filter_refilter (GtkTreeModelFilter *filter)
  * gtk_tree_model_ref_node(). This might be useful if the child model
  * being filtered is static (and doesn't change often) and there has been
  * a lot of unreffed access to nodes. As a side effect of this function,
- * all unreffed itters will be invalid.
+ * all unreffed iters will be invalid.
  *
  * Since: 2.4
  */
