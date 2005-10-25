@@ -1,5 +1,33 @@
 2005-10-25  Michael Natterer  <mitch@imendio.com>
 
+	Merged changes to files at the toplevel, added README.in and
+	INSTALL.in and got rid of duplicate XFixes check in configure.in
+
+    2005-07-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Add -DHPPEX -DSHMLINK to CFLAGS for HP-UX.  
+	(#162979, Paul Cornett)
+
+    2005-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Check for nm.
+
+    2005-04-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Replace an explicit pkg-config by 
+	$PKG_CONFIG.  (#168074, Hans-Wolfgang Loidl)
+
+    2005-03-27  Tor Lillqvist  <tml@novell.com>
+
+	* configure.in: Apparently AC_LIBTOOL_WIN32_DLL isn't deprecated
+	after all, and in fact necessary with HEAD libtool.
+
+    Thu Mar  3 16:59:44 2005  Manish Singh  <yosh@gimp.org>
+
+	* configure.in: URL escape the '+' in gtk+ in the bugzilla URL.
+
+2005-10-25  Michael Natterer  <mitch@imendio.com>
+
 	Merged changes to GtkTreeModel, GtkTreeModelSort and
 	GtkTreeModelFilter:
 

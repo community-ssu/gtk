@@ -12,10 +12,10 @@ AC_PREREQ(2.54)
 
 m4_define([gtk_major_version], [2])
 m4_define([gtk_minor_version], [6])
-m4_define([gtk_micro_version], [4])
+m4_define([gtk_micro_version], [10])
 m4_define([gtk_version],
           [gtk_major_version.gtk_minor_version.gtk_micro_version])
-m4_define([gtk_interface_age], [4])
+m4_define([gtk_interface_age], [10])
 m4_define([gtk_binary_age],
           [m4_eval(100 * gtk_minor_version + gtk_micro_version)])
 # This is the X.Y used in -lgtk-FOO-X.Y
@@ -35,7 +35,7 @@ m4_define([atk_required_version], [1.0.1])
 
 
 AC_INIT([gtk+], [gtk_version],
-        [http://bugzilla.gnome.org/enter_bug.cgi?product=gtk+],
+        [http://bugzilla.gnome.org/enter_bug.cgi?product=gtk%2B],
 	[gtk+])
 
 AC_CONFIG_SRCDIR([gdk/gdktypes.h])
@@ -143,12 +143,14 @@ if test "$os_win32" = "yes"; then
   enable_shared=yes
 fi
 
+AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 
 # Make sure we use 64-bit versions of various file stuff.
 AC_SYS_LARGEFILE
 
 AM_PROG_AS
+AC_PATH_PROG(NM, nm, nm)
 
 dnl Initialize maintainer mode
 AM_MAINTAINER_MODE
@@ -427,7 +429,7 @@ fi
 # sure that both po/ and po-properties/ have .po files that correspond
 # to your language.  If you only add one to po/, the build will break
 # in po-properties/.
-ALL_LINGUAS=""
+ALL_LINGUAS="af am ar az az_IR be bg bn br bs ca cs cy da de el en_CA en_GB es et eu fa fi fr ga gl gu he hi hr hu hy ia id is it ja ko li lt lv mi mk ml mn mr ms nb ne nl nn no nso pa pl pt pt_BR ro ru rw sk sl sq sr sr@ije sr@Latn sv ta th tk tr uk uz uz@Latn vi wa xh yi zh_CN zh_TW"
 AM_GLIB_GNU_GETTEXT
 LIBS="$LIBS $INTLLIBS"
 AC_OUTPUT_COMMANDS([case "$CONFIG_FILES" in *po-properties/Makefile.in*)
@@ -465,6 +467,20 @@ case $host in
   *-*-beos*)
     AC_MSG_RESULT(yes)
     MATH_LIB=
+  ;;
+  *)
+    AC_MSG_RESULT(no)
+  ;;
+esac
+
+#
+# see bug 162979
+#
+AC_MSG_CHECKING(for HP-UX)
+case $host_os in
+  hpux9* | hpux10* | hpux11*)
+    AC_MSG_RESULT(yes)
+    CFLAGS="$CFLAGS -DHPPEX -DSHMLINK"
   ;;
   *)
     AC_MSG_RESULT(no)
@@ -1085,7 +1101,7 @@ if test "x$gdktarget" = "xx11"; then
   
   if test $pango_omitted_x_deps = yes ; then
     # Old versions of Xft didn't necessarily include -lX11 in the output
-    x_libs="`pkg-config --libs xft` -lX11 $X_EXTRA_LIBS"
+    x_libs="`$PKG_CONFIG --libs xft` -lX11 $X_EXTRA_LIBS"
   fi    	
 
   ## Strip the .la files
@@ -1293,17 +1309,6 @@ if test "x$gdktarget" = "xx11"; then
     GDK_EXTRA_LIBS="`$PKG_CONFIG --libs xfixes` $GDK_EXTRA_LIBS"
   fi
 
-  # Checks for XFixes extension
-
-  have_xfixes=false
-  PKG_CHECK_MODULES(XFIXES, xfixes, have_xfixes=true, :)
-
-  if $have_xfixes ; then
-    AC_DEFINE(HAVE_XFIXES, 1, Have the XFIXES X extension)
-    GDK_EXTRA_CFLAGS="`$PKG_CONFIG --cflags xfixes` $GDK_EXTRA_CFLAGS"
-    GDK_EXTRA_LIBS="`$PKG_CONFIG --libs xfixes` $GDK_EXTRA_LIBS"
-  fi
-    
   # Xshm checks
 
   if test "x$enable_shm" = "xyes"; then
