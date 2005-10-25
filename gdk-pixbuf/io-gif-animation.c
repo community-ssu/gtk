@@ -464,7 +464,7 @@ gdk_pixbuf_gif_anim_frame_composite (GdkPixbufGifAnim *gif_anim,
 
                                         if (f->composited == NULL)
                                                 return;
-
+                                        
                                 } else if (prev_frame->action == GDK_PIXBUF_FRAME_DISPOSE) {
                                         f->composited = gdk_pixbuf_copy (prev_frame->composited);
 
@@ -483,7 +483,7 @@ gdk_pixbuf_gif_anim_frame_composite (GdkPixbufGifAnim *gif_anim,
 
                                                 if (area == NULL)
                                                         return;
-
+                                                
                                                 gdk_pixbuf_fill (area,
                                                                  (gif_anim->bg_red << 24) |
                                                                  (gif_anim->bg_green << 16) |
@@ -523,10 +523,10 @@ gdk_pixbuf_gif_anim_frame_composite (GdkPixbufGifAnim *gif_anim,
                                                                                  f->y_offset,
                                                                                  clipped_width,
                                                                                  clipped_height);
-
+                                            
                                                 if (area == NULL)
                                                         return;
-
+                                                
                                                 f->revert = gdk_pixbuf_copy (area);
 
                                                 g_object_unref (area);
