@@ -1,3 +1,75 @@
+2005-08-18  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.6.10 ===
+
+2005-08-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.6.9 ===
+
+2005-07-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/images/file-button.png: Update the image
+
+2005-06-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.6.8 ===
+
+2005-05-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/migrating-GtkAction.sgml: Fix an example.  (#304808,
+	Ghorban M. Tavakoly)
+
+2005-05-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/tmpl/visuals.sgml: Fix a typo (#303473, Masao Mutoh)
+
+2005-05-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/tmpl/pango_interaction.sgml: Fix a reference.
+	(#303403, Masao Mutoh)
+
+2005-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkuimanager.sgml: Refer to the correct
+	property. (#301115, Richard Hult)
+
+2005-04-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Releases 2.6.7 ====
+
+2005-04-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.6.6 ===
+
+2005-04-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.6.5 ===
+
+2005-04-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkbbox.sgml: Document that GtkButtonBox ignores
+	the homogeneous property.  (#171412, Morten Welinder)
+
+	* gtk/tmpl/gtkenums.sgml: Make the docs of GKT_SELECTION_MULTIPLE
+	more accurate by making them more vague.  (#167088,
+	Ken Siersma)
+
+	* gtk/tmpl/gtkradiobutton.sgml: Add a sentence about
+	toggling.  (#159382, Worik Stanton)
+
+2005-04-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtktooltips.sgml: Mention enter and leave
+	events.  (#167546, Billy Biggs)
+
+2005-04-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/tmpl/gtkselection.sgml: Move docs inline.
+
+2005-03-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk-sections.txt: Add gtk_button_[sg]et_image.
+
 2005-03-01  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.6.4 ===
