@@ -335,3 +335,21 @@ Returns the current relief style of the given #GtkButton.
 @yalign: 
 
 
+<!-- ##### FUNCTION gtk_button_set_image ##### -->
+<para>
+
+</para>
+
+@button: 
+@image: 
+
+
+<!-- ##### FUNCTION gtk_button_get_image ##### -->
+<para>
+
+</para>
+
+@button: 
+@Returns: 
+
+

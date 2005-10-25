@@ -1,3 +1,7 @@
+<!-- ##### SECTION ./tmpl/gtk-unused.sgml:Stability_Level ##### -->
+
+
+
 <!-- ##### SECTION ./tmpl/gtkarg.sgml:Long_Description ##### -->
 <para>
 All the functions in here are marked a Non-public.
