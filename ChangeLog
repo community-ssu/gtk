@@ -1,5 +1,27 @@
 2005-10-25  Michael Natterer  <mitch@imendio.com>
 
+	Merged changes to GtkTreeModel, GtkTreeModelSort and
+	GtkTreeModelFilter:
+
+    2005-06-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_fetch_child): 
+	Clarify the code, gcc 4 complains about predecrement in  MAX().
+
+    2005-06-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreemodel.c (gtk_tree_path_new_from_string): Check for
+	negative before appending the index, to avoid double error
+	message.  (#306393, Morten Welinder)
+
+    2005-03-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_set_visible_func): 
+	Document the need to refilter if parameters of the visibility function
+	change.  (#169516, Olivier Sessink)
+
+2005-10-25  Michael Natterer  <mitch@imendio.com>
+
 	Merged GtkMenu changes:
 
     2005-08-17  Matthias Clasen  <mclasen@redhat.com>
