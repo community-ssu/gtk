@@ -1,3 +1,31 @@
+2005-10-25  Michael Natterer  <mitch@imendio.com>
+
+	Merged GtkMenu changes:
+
+    2005-08-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkmenu.c (gtk_menu_grab_notify): Complete the 
+	backported fix.  
+
+    2005-08-15  Matthias Clasen  <mclasen@redhat.com>
+
+	Backported fixes from 2.8:
+	
+	* gtk/gtkmenu.c (gtk_menu_grab_notify): Take window
+	groups into account.  (#309473, Diego Gonzalez)
+
+    2005-06-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkmenu.c (gtk_menu_grab_notify): Cancel menus when
+	they are grab-shadowed by something thats not a
+	submenu.  (#145416, Euan MacGregor)
+
+    Mon Apr  4 12:14:35 2005  Søren Sandmann  <sandmann@redhat.com>
+
+	* gtk/gtkmenu.c (gtk_menu_handle_scrolling): Translate x, y into
+	widget coordinates instead of root coordinates. Patch from Jorn
+	Baayen. (#172236) (this patch  was already partly applied)
+
 2005-10-24  Michael Natterer  <mitch@imendio.com>
 
 	Merged all changes to GtkFileChooserButton, GtkFileChooser,
