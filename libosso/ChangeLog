@@ -1,3 +1,10 @@
+2005-10-25  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Merged changes between 0.9.18 and 0.9.20.
+	
+	* src/osso-mem.c: Changes from Andrei Laperie to make it work with
+	kernels that don't provide the expected information in /proc.
+
 2005-10-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Do not break source-compatibility gratuitously.

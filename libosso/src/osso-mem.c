@@ -47,17 +47,51 @@
 /* Correct division of 2 unsigned values */
 #define DIVIDE(a,b)  (((a) + ((b) >> 1)) / (b))
 
-/*A lil' bit extra threshold before the deny limit so we could
- * prevent kernel denies alltogether and try to react 'properly' instead 
- * see osso_mem_saw_enable*/
-#define DEFAULT_SAW_EXTRA_THRESHOLD (1 << 10)
+/*Defining the labels we could read from the /proc/meminfo */
+/*Done in a little tricky way to have strlen's calculated @ compile time*/
+#define MEMINFO_STRINGS    \
+        IV_PAIR(ENU_MU_MEMTOTAL,    "MemTotal:"    )\
+        IV_PAIR(ENU_MU_SWAPTOTAL,    "SwapTotal:")\
+        IV_PAIR(ENU_MU_MEMFREE,     "MemFree:"     )\
+        IV_PAIR(ENU_MU_BUFFERS,     "Buffers:"    )\
+        IV_PAIR(ENU_MU_CACHED,         "Cached:"    )\
+        IV_PAIR(ENU_MU_SWAPFREE,    "SwapFree:"    )\
+        IV_PAIR(ENU_MU_SLAB,         "Slab:"     )
 
-/*Name-value pair*/
-typedef struct
+/*a. local strings*/
+#define IV_PAIR(ID,STRING) \
+    static const char _localstring_##ID[]=STRING;
+    
+    MEMINFO_STRINGS
+    
+/*b. label-strlen pair*/
+#undef IV_PAIR
+#define IV_PAIR(ID,STRING) \
+    { _localstring_##ID,CAPACITY(_localstring_##ID) -1 },
+
+    static const struct { 
+        const char *name; 
+        size_t len; 
+    } mu_labels[] = {
+        MEMINFO_STRINGS
+    };
+#undef IV_PAIR
+/*c. Enum, for conveinience*/
+#define IV_PAIR(ID,STRING) \
+    ID,
+enum
 {
-   const char* name;    /* /proc/meminfo parameter with ":" */
-   unsigned    data;    /* loaded value                     */
-} meminfo_nvp_t;
+    MEMINFO_STRINGS
+    MAX_MEMINFO_STRINGS
+};
+
+#undef IV_PAIR
+/*d. Initializer for values array (mu_load)*/
+#define IV_PAIR(ID,STRING)    0,
+#define MU_ZERO_INITIALIZER        MEMINFO_STRINGS
+
+
+
 
 /* ========================================================================= *
  * Local data.
@@ -110,7 +144,7 @@ static void *(*saw_old_malloc_hook)(size_t,const void *);
 static void lm_read_proc(void);
 
 /*Reading /proc/meminfo*/
-static unsigned mu_load(const char* path, meminfo_nvp_t* vals, unsigned size);
+static unsigned mu_load(const char* path, size_t* vals, unsigned size);
 
 /*Malloc hook*/
 static void *saw_malloc_hook(size_t sz, const void *caller);
@@ -124,37 +158,39 @@ static void *saw_malloc_hook(size_t sz, const void *caller);
  * returns: number of sucessfully loaded values.
  * ------------------------------------------------------------------------- */
 static unsigned 
-mu_load(const char* path, meminfo_nvp_t* vals, unsigned size)
+mu_load(const char* path, size_t *vals, unsigned size)
 {
-   unsigned counter = 0;
    FILE*    meminfo = fopen(path, "rt");
 
    if ( meminfo )
    {
+	  unsigned idx,counter = 0;
       char line[256];
 
       /* Load all lines in file */
       while ( fgets(line, CAPACITY(line),meminfo) )
       {
-         unsigned idx;
-
-         /* Search and setup parameter */
          for (idx = 0; idx < size; idx++)
+             if(       ( !vals[idx]  ) /*If not set already*/
+                && ( line == strstr(line, mu_labels[idx].name) )
+              )
          {
-            if ( line == strstr(line, vals[idx].name) )
-            {
-               /* Parameter has a format SomeName:\tValue, we expect that meminfo_nvp_t::name contains ":" */
-               vals[idx].data = (unsigned)strtoul(line + strlen(vals[idx].name) + 1, NULL, 0);
+                /* Parameter has a format SomeName:\tValue*/
+                vals[idx] = (unsigned)strtoul(line + mu_labels[idx].len + 1, NULL, 0);
                counter++;
                break;
             }
          }
-      } /* while have data */
 
       fclose(meminfo);
+	  return counter;
+   }
+   else
+   {
+       ULOG_CRIT("Cannot open %s",path);
    }
 
-   return counter;
+   return 0;
 } /* mu_load */
 /*---------------------------------------------------------------------------*/
 /*Returns a single unsigned integer read from the file or negative
@@ -171,15 +207,15 @@ lm_get_file_int(const char *filename)
 	{
 	    if(fscanf(f, "%u", (unsigned *)&u) < 1) 
 		{
-        	u = -1;
+            u = 0;
 		}
 
 		fclose(f);
     }
 	else
-		u=errno;
+        u=0;
 
-    return u;
+    return u < 0 ? 0 : u;
 }
 /*---------------------------------------------------------------------------*/
 /*Reads contents of certain /proc/sys/vm/lowmem entries into static vars*/
@@ -222,14 +258,14 @@ static void
         struct mallinfo mi = mallinfo();
         mi.arena += (mi.hblkhd + sz);
 
-        ULOG_DEBUG("sz:%u\tmax:%u\tcur:%u\n",sz, osso_mem_saw_max_heapsz,mi.arena);
-
         if( mi.arena  >=  osso_mem_saw_max_heapsz)
         /*And we're oom*/
         {
             /*Notify*/
             if(osso_mem_saw_oom_func)
             {
+                ULOG_DEBUG("SAW:OOM! sz=%u (%u >= %u)\n",sz, mi.arena,osso_mem_saw_max_heapsz);
+                
 				THREAD_UNLOCK();
 
 				(*osso_mem_saw_oom_func)(mi.arena,osso_mem_saw_max_heapsz,osso_mem_saw_usr_ctx);
@@ -277,23 +313,25 @@ osso_mem_get_usage(osso_mem_usage_t* usage)
    /* Check the pointer validity first */
    if ( usage )
    {
-      static meminfo_nvp_t vals[] =
-      {
-         { "MemTotal:",  0 },
-         { "SwapTotal:", 0 },
-         { "MemFree:",   0 },
-         { "Buffers:",   0 },
-         { "Cached:",    0 },
-         { "SwapFree:",  0 },
-         { "Slab:",      0 }
-      }; /* vals */
+      size_t vals[MAX_MEMINFO_STRINGS] = { MU_ZERO_INITIALIZER };
+      
+      int n = mu_load("/proc/meminfo", vals, MAX_MEMINFO_STRINGS);
 	  
       /* Load values from the meminfo file */
-      if ( CAPACITY(vals) == mu_load("/proc/meminfo", vals, CAPACITY(vals)) )
+      /*AL: depending on the host kernel version, the results in 
+       * scratchbox might be different, so, we'll loose the */
+      if ( /* CAPACITY(vals) == */ n  )
       {
          /* Discover memory information using loaded numbers */
-         usage->total = vals[0].data + vals[1].data;
-         usage->free  = vals[2].data + vals[3].data + vals[4].data + vals[5].data /*+ vals[6].data*/;
+         usage->total =    vals[ENU_MU_MEMTOTAL] 
+                         + vals[ENU_MU_SWAPTOTAL];
+         
+         usage->free  = vals[ENU_MU_MEMFREE] 
+                         + vals[ENU_MU_BUFFERS] 
+                         + vals[ENU_MU_CACHED] 
+                         + vals[ENU_MU_SWAPFREE] 
+                         /*+ vals[ENU_MSLAB]*/;
+         
          usage->used  = usage->total - usage->free;
          usage->util  = DIVIDE(100 * usage->used, usage->total);
 
@@ -301,9 +339,9 @@ osso_mem_get_usage(osso_mem_usage_t* usage)
          usage->total <<= 10;
          usage->free  <<= 10;
          usage->used  <<= 10;
+         
 /*Getting /proc/sys/vm/lowmem* stuff*/
 		 if(!sys_lowmem_limit) lm_read_proc();
-
 		 usage->deny = osso_mem_get_deny_limit();
 		 usage->low  = osso_mem_get_lowmem_limit();
 	 
@@ -373,11 +411,14 @@ osso_mem_saw_enable(size_t threshold,
 	osso_mem_usage_t current;
 
 	if( 0!=osso_mem_get_usage(&current) )
+    {
+            ULOG_CRIT("Error:osso_mem_get_usage failed\n");
 			return -EINVAL;
+    }
 	
 	osso_mem_saw_disable();
 
-    ULOG_DEBUG("Setting hooks\n");
+    ULOG_INFO("Setting hooks\n");
 
 	THREAD_LOCK();
 
@@ -396,6 +437,7 @@ osso_mem_saw_enable(size_t threshold,
 	}
 	else
 	{	
+        ULOG_WARN("SAW: OOM:current.usable(%d) <= threshold(%d)\n",current.usable,threshold);
 		osso_mem_saw_max_heapsz = 0;
 	}
     
@@ -409,6 +451,7 @@ osso_mem_saw_enable(size_t threshold,
         }
         else
         {
+            ULOG_CRIT("OOM detected at start but no hook provided\n");
             return -EINVAL;
         }
     }
@@ -422,8 +465,8 @@ osso_mem_saw_enable(size_t threshold,
 	
 	THREAD_UNLOCK();
 
-	ULOG_DEBUG("WDOG: sz %u max %u thr %u\n",
-                    osso_mem_saw_blocksz, osso_mem_saw_max_heapsz, DEFAULT_SAW_EXTRA_THRESHOLD);
+    ULOG_INFO("SAW set: bs>%u, maxheap %u(threshold %u)\n",
+                    osso_mem_saw_blocksz, osso_mem_saw_max_heapsz, threshold);
 
     return 0;
 }
