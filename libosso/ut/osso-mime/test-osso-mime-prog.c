@@ -52,6 +52,8 @@ int main(int nargs, char *argv[])
     dbus_message_unref(msg);
     
     osso_deinitialize(osso);
+
+    return 0;
 }
 
     

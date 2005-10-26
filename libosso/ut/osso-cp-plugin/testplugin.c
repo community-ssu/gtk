@@ -35,14 +35,13 @@ struct plugin_data {
 
 osso_return_t execute(osso_context_t *osso, gpointer data,
 		      gboolean user_activated);
+gchar * get_service_name(osso_context_t *osso, gpointer data);
+
 osso_return_t execute(osso_context_t *osso, gpointer data,
 		      gboolean user_activated)
 {
-    gint action = (gint)data;
-    
     printf("This is execute\n");
     fflush(stdout);
-    
 
     return OSSO_OK;
 }

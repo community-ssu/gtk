@@ -37,6 +37,7 @@ char* outo_name = "initialize / uninitialize";
 int init_daemon_with_null_name( void );
 int init_daemon_with_null_version( void );
 int init_daemon_with_correct_params( void );
+int system_bus_init( void );
 int init_app( void );
 int deinit_with_invalid_osso( void );
 int deinit( void );

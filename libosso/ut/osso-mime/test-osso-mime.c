@@ -33,6 +33,7 @@
 int test_osso_mime_set_cb_invalid_osso(void);
 int test_osso_mime_set_cb_invalid_cb(void);
 int test_osso_mime_set_cb(void);
+int test_osso_mime_cb_function(void);
 
 testcase *get_tests(void);
 
@@ -102,7 +103,6 @@ int test_osso_mime_cb_function(void)
 {
     osso_return_t ret;
     osso_context_t *osso;
-    int retval = -1;
     struct st str;
     
     osso = osso_initialize(APP_NAME, APP_VERSION, FALSE, NULL);

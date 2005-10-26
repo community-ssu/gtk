@@ -42,6 +42,9 @@ struct state_data{
 
 osso_return_t execute(osso_context_t *osso, gpointer data,
 		      gboolean user_activated);
+osso_return_t save_state(osso_context_t *osso, gboolean user_activated, 
+			 gpointer data);
+gchar * get_service_name(osso_context_t *osso, gpointer data);
 
 osso_return_t execute(osso_context_t *osso, gpointer data,
 		      gboolean user_activated)
@@ -84,6 +87,7 @@ osso_return_t save_state(osso_context_t *osso, gboolean user_activated,
     
     return OSSO_OK;
 }
+
 gchar * get_service_name(osso_context_t *osso, gpointer data)
 {
     return TESTPLUGIN;
