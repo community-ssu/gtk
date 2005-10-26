@@ -888,7 +888,7 @@ append_list_strings (GString *string, GSList *list)
 {
   while (list)
     {
-      g_string_append_printf (string, " %s\n", (gchar *)list->data);
+      g_string_append_printf (string, "%s\n", (gchar *)list->data);
       list = list->next;
     }
 }
