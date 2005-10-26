@@ -43,19 +43,6 @@
 */
 static gboolean _validate_time(time_t time_candidate);
 
-/**
- *Converts the time_t string to gchar string, because application_top
- *wants string arguments.
- *
- *@todo Remove the assumption about type of time_t?. Merge this and
- *_validate_time?  
- *@param timevalue Timevalue to be converted @return
- *The gchar string containing the time, or NULL if failed.
- */
-
-/************************************************************************/
-static gchar *_time_to_string(const time_t timevalue);
-
 static DBusHandlerResult _time_handler(osso_context_t *osso,
                                        DBusMessage *msg, gpointer data);
 

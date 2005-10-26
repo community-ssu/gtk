@@ -18,10 +18,11 @@
  *
  */
                 
-#include <osso-internal.h>
 #include <stdarg.h>
 #include <syslog.h>
 
+#include "osso-internal.h"
+#include "log-functions.h"
 
 void osso_log(int level, const char *format, ...) 
 {

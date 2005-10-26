@@ -79,19 +79,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
  */
 static void _dbus_disconnect(osso_context_t *osso, gboolean sys);
 
-/**
- * This function cleans up the statefile directory that belongs to
- * the application that the osso context is created for. This ensures
- * that statefiles belonging to other versions of the same application
- * are cleaned up.
- * @param application The application name
- * @param verson The application version.
- * @return OSSO_OK on success, OSSO_ERROR otherwise.
- */
-
-static gint _cleanup_state_dir(const gchar *application,
- 			       const gchar *version);
-
+#ifdef LIBOSSO_DEBUG
 
 /**
  * This function will redirect the GLib/GTK log messages to the
@@ -107,7 +95,6 @@ static GLogFunc _osso_log_handler(const gchar *log_domain,
 				 const gchar *message,
 				 gpointer user_data);
 
-#ifdef LIBOSSO_DEBUG
 /**
  * This debug function will return the type of the message as a string.
  * @param message_type The message type to convert.

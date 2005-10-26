@@ -153,6 +153,9 @@ DBusHandlerResult _msg_handler(DBusConnection *conn, DBusMessage *msg,
 void _msg_handler_set_cb_f(osso_context_t *osso, const gchar *interface,
 			   _osso_interface_cb_f *cb, gpointer data, 
 			   gboolean method);
+void _msg_handler_set_cb_f_free_data(osso_context_t *osso, const gchar *interface,
+				     _osso_interface_cb_f *cb, gpointer data, 
+				     gboolean method);
 gpointer _msg_handler_rm_cb_f(osso_context_t *osso, const gchar *interface,
 			      _osso_interface_cb_f *cb, gboolean method);
 void _msg_handler_set_ret(osso_context_t *osso, gint serial,
