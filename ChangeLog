@@ -1,5 +1,12 @@
 2005-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtktextbtree.c (gtk_text_btree_resolve_bidi): Skip
+	non-characters (widgets, pixbufs, ...) when determining text
+	direction. (#319065)
+	N#20317
+
+2005-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkiconfactory.c: Add compile time #define to disable builtin
 	default icons; nothing in the 770 uses them and they wouldn't quite
 	fit the overall looks anyway. NONE of the GTK_STOCK_* icons will be
