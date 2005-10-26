@@ -1,3 +1,36 @@
+2005-10-26  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Silenced warnings.
+	
+	* configure.ac (WFLAGS): Removd -Wunreachable-code since GCC 3.3
+	gives false warnings.
+
+        * src/osso-time.h (_time_to_string): Removed prototype.
+	
+	* src/osso-state.c (_write_state, _read_state): Added prototypes.
+
+	* src/osso-log.c: Include log-functions.h, include osso-internal.h
+	using "..." syntax.
+	
+	* src/osso-internal.h (_msg_handler_set_cb_f_free_data): Added prototype.
+
+	* src/osso-init.h (_cleanup_state_dir): Removed prototype.
+	(_osso_log_handler): Only define with LIBOSSO_DEBUG.
+
+	* ut/osso-cp-plugin/testplugin.c (get_service_name): Added
+	prototype.
+	(execute): Removed unused local variable 'action'.
+
+	* ut/osso-cp-plugin/testplugin2.c (save_state, get_service_name):
+	Added prototypes.
+
+	* ut/osso-init/test-osso-init.c (system_bus_init): Added prototype.
+
+	* ut/osso-mime/test-osso-mime-prog.c (main): Return a value at the end.
+
+	* ut/osso-mime/test-osso-mime.c (test_osso_mime_cb_function):
+	Added prototype.  Removed unused local variable 'retval'.
+
 2005-10-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Merged changes between 0.9.18 and 0.9.20.
