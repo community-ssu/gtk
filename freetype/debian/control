@@ -1,0 +1,28 @@
+Source: freetype
+Section: devel
+Priority: optional
+Build-Depends: zlib1g-dev, bzip2
+Maintainer:  Jakub Pavelek <jakub.pavelek@nokia.com>
+Standards-Version: 3.5.9
+
+Package: libfreetype6
+Section: libs
+Architecture: any
+Depends: zlib1g
+Description: FreeType 2 font engine, shared library files
+ The FreeType project is a team of volunteers who develop free,
+ portable and high-quality software solutions for digital typography.
+ They specifically target embedded systems and focus on bringing small,
+ efficient and ubiquitous products.
+
+Package: libfreetype6-dev
+Section: libs
+Architecture: any
+Depends: libfreetype6 (>=2.1.9-1osso1), zlib1g-dev
+Description: Development package for Freetype2.
+
+Package: libfreetype6-dbg
+Section: libs
+Architecture: any
+Depends: libfreetype6, zlib1g
+Description: Debugging symbols for Freetype2

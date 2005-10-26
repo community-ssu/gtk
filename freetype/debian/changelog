@@ -1,0 +1,5 @@
+freetype (2.1.10-1osso2) unstable; urgency=low
+
+  * Fixes for SDK
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Fri,  7 Oct 2005 10:53:09 +0300
