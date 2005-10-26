@@ -1,3 +1,11 @@
+2005-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkiconfactory.c: Add compile time #define to disable builtin
+	default icons; nothing in the 770 uses them and they wouldn't quite
+	fit the overall looks anyway. NONE of the GTK_STOCK_* icons will be
+	present as the result.
+	N#20810
+
 2005-10-25  Michael Natterer  <mitch@imendio.com>
 
 	Merged changes to files at the toplevel, added README.in and
