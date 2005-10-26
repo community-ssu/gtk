@@ -1,0 +1,45 @@
+# Copyright 2005 Nokia
+# Licensed under the same license as the package xft
+diff -Naur Xft-2.1.6/xftdbg.c Xft-2.1.6-nodebug/xftdbg.c
+--- Xft-2.1.6/xftdbg.c	2004-10-18 12:15:41.000000000 +0300
++++ Xft-2.1.6-nodebug/xftdbg.c	2005-01-26 08:57:51.000000000 +0200
+@@ -24,25 +24,8 @@
+ 
+ #include "xftint.h"
+ 
+-int
++inline int
+ XftDebug (void)
+ {
+-    static int  initialized;
+-    static int  debug;
+-
+-    if (!initialized)
+-    {
+-	char    *e;
+-
+-	initialized = 1;
+-        e = getenv ("XFT_DEBUG");
+-	if (e)
+-	{
+-	    printf ("XFT_DEBUG=%s\n", e);
+-	    debug = atoi (e);
+-	    if (debug <= 0)
+-		debug = 1;
+-	}
+-    }
+-    return debug;
++    return 0;
+ }
+diff -Naur Xft-2.1.6/xftint.h Xft-2.1.6-nodebug/xftint.h
+--- Xft-2.1.6/xftint.h	2004-10-18 12:36:25.000000000 +0300
++++ Xft-2.1.6-nodebug/xftint.h	2005-01-26 08:58:06.000000000 +0200
+@@ -345,7 +345,7 @@
+ 		      int			nglyphs);
+ 
+ /* xftdbg.c */
+-int
++inline int
+ XftDebug (void);
+ 
+ /* xftdpy.c */

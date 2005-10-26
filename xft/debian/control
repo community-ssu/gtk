@@ -1,0 +1,29 @@
+Source: xft
+Section: devel
+Priority: optional
+Maintainer:  Jakub Pavelek <jakub.pavelek@nokia.com>
+Build-Depends: debhelper (>> 3.5.9), libfontconfig1-dev (>= 2.2.96), libexpat1-dev, libxrender-dev, zlib1g-dev, tar, gzip
+Standards-Version: 3.5.9
+
+Package: libxft2
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: FreeType-based font drawing library for X
+ Xft provides a client-side font API for X applications, making the FreeType
+ font rasterizer available to X clients.  Fontconfig is used for font
+ specification resolution.  Where available, the RENDER extension handles
+ glyph drawing; otherwise, the core X protocol is used.
+
+Package: libxft-dev
+Section: libs
+Architecture: any
+Provides: libxft2-dev
+Depends: libxft2 (= ${Source-Version}), libfontconfig1-dev, libfreetype6-dev
+Description: Development package for Xft.
+
+Package: libxft2-dbg
+Section: libs
+Architecture: any
+Depends: libxft2 (= ${Source-Version}) 
+Description: Debugging symbols for the Xft.

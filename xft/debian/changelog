@@ -1,0 +1,70 @@
+xft (2.1.6-1osso11) unstable; urgency=low
+
+  * Fixing a typo in the control file
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed, 18 May 2005 12:08:47 +0300
+
+xft (2.1.6-1osso10) unstable; urgency=low
+
+  * Removing things that shouldn't be there
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed, 11 May 2005 10:06:48 +0300
+
+xft (2.1.6-1osso9) unstable; urgency=low
+
+  * CVS update
+  * Added performance patches
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Thu, 17 Mar 2005 14:15:36 +0200
+
+xft (2.1.6-1osso8) unstable; urgency=low
+
+  * Added build dependency on zlib1g-dev
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue,  1 Feb 2005 09:45:58 +0200
+
+xft (2.1.6-1osso7) unstable; urgency=low
+
+  * changed the XftDebug definition (nodebug.patch) to remove debug code
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed, 26 Jan 2005 12:46:55 +0200
+
+xft (2.1.6-1osso6) unstable; urgency=low
+
+  * ADDED: dh_makeshlibs -V
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 24 Jan 2005 09:19:37 +0200
+
+xft (2.1.6-1osso5) unstable; urgency=low
+
+  * FIXES bug - strip vs dh_strip
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Thu,  4 Nov 2004 10:49:34 +0200
+
+xft (2.1.6-1osso4) unstable; urgency=low
+
+  * Fix package dependencies 
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 18 Oct 2004 16:17:05 +0300
+
+xft (2.1.6-1osso3) unstable; urgency=low
+
+  * Changed version numbering
+  * Fixed (again) the include directory
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 18 Oct 2004 13:56:31 +0300
+
+xft (2.1.6-1osso2) unstable; urgency=low
+
+  * Fixed file access rights
+  * Fixed build-deps (expat dev)
+  * New build system with source and patches
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 18 Oct 2004 12:08:43 +0300
+
+xft (2.1.6-1osso1) unstable; urgency=low
+
+  * Initial release of internal Xft
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue, 14 Sep 2004 14:33:19 +0300
+
