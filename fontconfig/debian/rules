@@ -1,0 +1,86 @@
+#!/usr/bin/make -f
+
+
+export DH_COMPAT=3
+PV = 2.3.2
+
+SHELL = /bin/bash
+
+CFLAGS = -g
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	tar -xzf fontconfig-$(PV).tar.gz
+	mv fontconfig-$(PV) fontconfig
+	patch -p0 < fontconfig-const.patch
+	#patch -p0 < fontconfig-static-object.patch  in upstream already
+	patch -p0 < fontconfig-nodebug.patch
+	patch -p0 < fontconfig-lessfloat.patch
+	patch -p0 < fontconfig-optimize_config.patch
+	patch -p0 < fontconfig-newtimes-nohint.patch
+	#patch -p0 < fontconfig-even_less_debug.patch not working
+	cd fontconfig && patch -p0 < ../fontconfig-remove-i18n.patch
+	cd fontconfig && ./configure --prefix=/usr --sysconfdir=/etc
+	touch configure-stamp
+
+
+build: configure-stamp build-stamp
+build-stamp:
+	dh_testdir
+	$(MAKE) -C fontconfig all
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	rm -rf fontconfig
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+	$(MAKE) -C fontconfig install DESTDIR=$(CURDIR)/debian/libfontconfig1
+	install -d $(CURDIR)/debian/fontconfig/usr/include
+	install -d $(CURDIR)/debian/fontconfig/usr/share/doc/fontconfig
+	install -d $(CURDIR)/debian/libfontconfig1-dev/usr
+	install -d $(CURDIR)/debian/libfontconfig1-dev/usr/lib
+	install -d $(CURDIR)/debian/libfontconfig1-dbg/usr
+	install -d $(CURDIR)/debian/libfontconfig1-dbg/usr/lib
+	install -d $(CURDIR)/debian/libfontconfig1-dbg/usr/lib/debug
+	mv $(CURDIR)/debian/libfontconfig1/usr/bin $(CURDIR)/debian/fontconfig/usr/
+	mv $(CURDIR)/debian/libfontconfig1/etc $(CURDIR)/debian/fontconfig/
+	mv $(CURDIR)/debian/libfontconfig1/usr/include $(CURDIR)/debian/libfontconfig1-dev/usr/
+	mv $(CURDIR)/debian/libfontconfig1/usr/man $(CURDIR)/debian/libfontconfig1-dev/usr/
+	mv $(CURDIR)/debian/libfontconfig1/usr/share $(CURDIR)/debian/libfontconfig1-dev/usr/
+	mv $(CURDIR)/debian/libfontconfig1/usr/lib/libfontconfig.a $(CURDIR)/debian/libfontconfig1-dev/usr/lib/
+	mv $(CURDIR)/debian/libfontconfig1/usr/lib/libfontconfig.la $(CURDIR)/debian/libfontconfig1-dev/usr/lib/
+	cp --no-dereference $(CURDIR)/debian/libfontconfig1/usr/lib/libfontconfig.so* $(CURDIR)/debian/libfontconfig1-dbg/usr/lib/debug/
+	mv $(CURDIR)/debian/libfontconfig1/usr/lib/libfontconfig.so $(CURDIR)/debian/libfontconfig1-dev/usr/lib/
+	mv $(CURDIR)/debian/libfontconfig1/usr/lib/pkgconfig $(CURDIR)/debian/libfontconfig1-dev/usr/lib/
+	mv $(CURDIR)/debian/libfontconfig1-dev/usr/share/doc/fontconfig/*.* $(CURDIR)/debian/fontconfig/usr/share/doc/fontconfig/
+	mv $(CURDIR)/debian/libfontconfig1-dev/usr/share/doc/fontconfig $(CURDIR)/debian/libfontconfig1-dev/usr/share/doc/libfontconfig1-dev
+	mv $(CURDIR)/debian/fontconfig/usr/share/doc/fontconfig/*.{pdf,html,txt} $(CURDIR)/debian/libfontconfig1-dev/usr/share/doc/libfontconfig1-dev/
+	dh_strip 
+	install -d $(CURDIR)/debian/fontconfig/etc/gconf/schemas
+	install -m 644 hildon_fontconfig.schemas $(CURDIR)/debian/fontconfig/etc/gconf/schemas/
+	install -m 644 device_symbols.h $(CURDIR)/debian/fontconfig/usr/include/
+
+binary-indep: build install
+
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_makeshlibs -V
+	dh_installchangelogs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure

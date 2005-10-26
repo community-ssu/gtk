@@ -1,0 +1,37 @@
+# Copyright 2005 Nokia
+# Licensed under the same license as the package fontconfig
+Index: src/fcfreetype.c
+===================================================================
+RCS file: /cvs/fontconfig/fontconfig/src/fcfreetype.c,v
+retrieving revision 1.59
+diff -u -r1.59 fcfreetype.c
+--- src/fcfreetype.c	5 Mar 2005 23:50:55 -0000	1.59
++++ src/fcfreetype.c	13 Apr 2005 17:48:38 -0000
+@@ -1211,6 +1210,27 @@
+ 	++nfamily;
+     }
+ 
++    {
++	int	fn;
++	FcChar8	*full;
++	for (fn = 1; FcPatternGetString (pat, FC_FULLNAMELANG, fn, &full) == FcResultMatch; ) {
++	    if (strcmp (full, "en")) {
++		FcPatternRemove (pat, FC_FULLNAMELANG, fn);
++		FcPatternRemove (pat, FC_FULLNAME, fn);
++	    } else {
++		fn++;
++	    }
++	}
++	for (fn = 1; FcPatternGetString (pat, FC_STYLELANG, fn, &full) == FcResultMatch; ) {
++	    if (strcmp (full, "en")) {
++		FcPatternRemove (pat, FC_STYLELANG, fn);
++		FcPatternRemove (pat, FC_STYLE, fn);
++	    } else {
++		fn++;
++	    }
++	}
++    }
++
+     /*
+      * Walk through FC_FULLNAME entries eliding those in FC_FAMILY
+      * or which are simply a FC_FAMILY and FC_STYLE glued together

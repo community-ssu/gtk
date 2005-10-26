@@ -1,0 +1,211 @@
+# Copyright 2005 Nokia
+# Licensed under the same license as the package fontconfig
+diff -Naur fontconfig/src/fcmatch.c fontconfig-2.2.97_lessfloat/src/fcmatch.c
+--- fontconfig/src/fcmatch.c	2004-05-29 22:23:55.000000000 +0300
++++ fontconfig-2.2.97_lessfloat/src/fcmatch.c	2004-12-09 10:50:48.000000000 +0200
+@@ -27,54 +27,54 @@
+ #include "fcint.h"
+ #include <stdio.h>
+ 
+-static double
++static int
+ FcCompareNumber (char *object, FcValue value1, FcValue value2)
+ {
+-    double  v1, v2, v;
++    int v1, v2, v;
+     
+     switch (value1.type) {
+     case FcTypeInteger:
+-	v1 = (double) value1.u.i;
++	v1 = value1.u.i;
+ 	break;
+     case FcTypeDouble:
+-	v1 = value1.u.d;
++	v1 = (int) value1.u.d;
+ 	break;
+     default:
+-	return -1.0;
++	return -1;
+     }
+     switch (value2.type) {
+     case FcTypeInteger:
+-	v2 = (double) value2.u.i;
++	v2 = value2.u.i;
+ 	break;
+     case FcTypeDouble:
+-	v2 = value2.u.d;
++	v2 = (int) value2.u.d;
+ 	break;
+     default:
+-	return -1.0;
++	return -1;
+     }
+     v = v2 - v1;
+     if (v < 0)
+ 	v = -v;
+-    return (double) v;
++    return v;
+ }
+ 
+-static double
++static int
+ FcCompareString (char *object, FcValue value1, FcValue value2)
+ {
+     if (value2.type != FcTypeString || value1.type != FcTypeString)
+-	return -1.0;
+-    return (double) FcStrCmpIgnoreCase (value1.u.s, value2.u.s) != 0;
++	return -1;
++    return (int) FcStrCmpIgnoreCase (value1.u.s, value2.u.s) != 0;
+ }
+ 
+-static double
++static int
+ FcCompareFamily (char *object, FcValue value1, FcValue value2)
+ {
+     if (value2.type != FcTypeString || value1.type != FcTypeString)
+-	return -1.0;
+-    return (double) FcStrCmpIgnoreBlanksAndCase (value1.u.s, value2.u.s) != 0;
++	return -1;
++    return (int) FcStrCmpIgnoreBlanksAndCase (value1.u.s, value2.u.s) != 0;
+ }
+ 
+-static double
++static int
+ FcCompareLang (char *object, FcValue value1, FcValue value2)
+ {
+     FcLangResult    result;
+@@ -89,7 +89,7 @@
+ 	    result = FcLangSetHasLang (value1.u.l, value2.u.s);
+ 	    break;
+ 	default:
+-	    return -1.0;
++	    return -1;
+ 	}
+ 	break;
+     case FcTypeString:
+@@ -101,11 +101,11 @@
+ 	    result = FcLangCompare (value1.u.s, value2.u.s);
+ 	    break;
+ 	default:
+-	    return -1.0;
++	    return -1;
+ 	}
+ 	break;
+     default:
+-	return -1.0;
++	return -1;
+     }
+     switch (result) {
+     case FcLangEqual:
+@@ -118,33 +118,33 @@
+     }
+ }
+ 
+-static double
++static int
+ FcCompareBool (char *object, FcValue value1, FcValue value2)
+ {
+     if (value2.type != FcTypeBool || value1.type != FcTypeBool)
+-	return -1.0;
+-    return (double) value2.u.b != value1.u.b;
++	return -1;
++    return (int) value2.u.b != value1.u.b;
+ }
+ 
+-static double
++static int
+ FcCompareCharSet (char *object, FcValue value1, FcValue value2)
+ {
+     if (value2.type != FcTypeCharSet || value1.type != FcTypeCharSet)
+-	return -1.0;
+-    return (double) FcCharSetSubtractCount (value1.u.c, value2.u.c);
++	return -1;
++    return (int) FcCharSetSubtractCount (value1.u.c, value2.u.c);
+ }
+ 
+-static double
++static int
+ FcCompareSize (char *object, FcValue value1, FcValue value2)
+ {
+-    double  v1, v2, v;
++    int v1, v2, v;
+ 
+     switch (value1.type) {
+     case FcTypeInteger:
+ 	v1 = value1.u.i;
+ 	break;
+     case FcTypeDouble:
+-	v1 = value1.u.d;
++	v1 = (int) value1.u.d;
+ 	break;
+     default:
+ 	return -1;
+@@ -154,7 +154,7 @@
+ 	v2 = value2.u.i;
+ 	break;
+     case FcTypeDouble:
+-	v2 = value2.u.d;
++	v2 = (int) value2.u.d;
+ 	break;
+     default:
+ 	return -1;
+@@ -169,7 +169,7 @@
+ 
+ typedef struct _FcMatcher {
+     char	    *object;
+-    double	    (*compare) (char *object, FcValue value1, FcValue value2);
++    int		    (*compare) (char *object, FcValue value1, FcValue value2);
+     int		    strong, weak;
+ } FcMatcher;
+ 
+@@ -233,7 +233,7 @@
+ 		    FcResult	*result)
+ {
+     FcValueList    *v1, *v2;
+-    double    	    v, best, bestStrong, bestWeak;
++    int    	    v, best, bestStrong, bestWeak;
+     int		    i;
+     int		    j;
+     
+@@ -310,9 +310,9 @@
+ 	return FcTrue;
+     }
+ #endif
+-    best = 1e99;
+-    bestStrong = 1e99;
+-    bestWeak = 1e99;
++    best = INT_MAX;
++    bestStrong = INT_MAX;
++    bestWeak = INT_MAX;
+     j = 0;
+     for (v1 = v1orig; v1; v1 = v1->next)
+     {
+@@ -327,7 +327,7 @@
+ 		return FcFalse;
+ 	    }
+ 	    if (FcDebug () & FC_DBG_MATCHV)
+-		printf (" v %g j %d ", v, j);
++		printf (" v %d j %d ", v, j);
+ 	    v = v * 100 + j;
+ 	    if (v < best)
+ 	    {
+@@ -350,7 +350,7 @@
+     }
+     if (FcDebug () & FC_DBG_MATCHV)
+     {
+-	printf (" %s: %g ", object, best);
++	printf (" %s: %d ", object, best);
+ 	FcValueListPrint (v1orig);
+ 	printf (", ");
+ 	FcValueListPrint (v2orig);
+@@ -364,8 +364,8 @@
+ 	    value[strong] += best;
+ 	else
+ 	{
+-	    value[weak] += bestWeak;
+-	    value[strong] += bestStrong;
++	    value[weak] += (double) bestWeak;
++	    value[strong] += (double) bestStrong;
+ 	}
+     }
+     return FcTrue;

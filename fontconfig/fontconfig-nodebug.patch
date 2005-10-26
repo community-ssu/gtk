@@ -1,0 +1,45 @@
+# Copyright 2005 Nokia
+# Licensed under the same license as the package fontconfig
+diff -Naur fontconfig/src/fcdbg.c fontconfig-2.2.97-nodebug/src/fcdbg.c
+--- fontconfig/src/fcdbg.c	2003-07-20 19:06:18.000000000 +0300
++++ fontconfig-2.2.97-nodebug/src/fcdbg.c	2005-01-26 08:46:43.000000000 +0200
+@@ -339,25 +339,8 @@
+     }
+ }
+ 
+-int
++inline int
+ FcDebug (void)
+ {
+-    static int  initialized;
+-    static int  debug;
+-
+-    if (!initialized)
+-    {
+-	char    *e;
+-
+-	initialized = 1;
+-	e = getenv ("FC_DEBUG");
+-	if (e)
+-	{
+-	    printf ("FC_DEBUG=%s\n", e);
+-	    debug = atoi (e);
+-	    if (debug < 0)
+-		debug = 0;
+-	}
+-    }
+-    return debug;
++    return 0;
+ }
+diff -Naur fontconfig/src/fcint.h fontconfig-2.2.97-nodebug/src/fcint.h
+--- fontconfig/src/fcint.h	2005-01-26 08:47:42.000000000 +0200
++++ fontconfig-2.2.97-nodebug/src/fcint.h	2005-01-26 08:46:22.000000000 +0200
+@@ -517,7 +517,7 @@
+ void
+ FcSubstPrint (const FcSubst *subst);
+ 
+-int
++inline int
+ FcDebug (void);
+ 
+ /* fcdir.c */

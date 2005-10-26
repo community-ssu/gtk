@@ -1,0 +1,43 @@
+# Copyright 2005 Nokia
+# Licensed under the same license as the package fontconfig
+--- fontconfig/src/fcinit.c	2004-12-06 23:06:40.000000000 +0200
++++ fontconfig-perf/src/fcinit.c	2005-06-29 14:56:28.911992544 +0300
+@@ -88,6 +88,7 @@
+     return config;
+ }
+ 
++#define PROFILE_LOG "/var/log/fontconf-profile"
+ /*
+  * Initialize the default library configuration
+  */
+@@ -95,6 +96,13 @@
+ FcInit (void)
+ {
+     FcConfig	*config;
++    clock_t start, end;
++    double cpu_time, time_in_sec;
++    pid_t pid;
++    FILE *f;
++
++    start = clock ();
++    pid = getpid ();
+ 
+     if (_fcConfig)
+ 	return FcTrue;
+@@ -104,6 +112,16 @@
+     FcConfigSetCurrent (config);
+     if (FcDebug() & FC_DBG_MEMORY)
+ 	FcMemReport ();
++
++    end = clock ();
++    cpu_time = (double) (end - start);
++    time_in_sec = cpu_time / CLOCKS_PER_SEC;
++
++    f = fopen (PROFILE_LOG, "a");
++    fprintf (f, "PID is %d, FcInit completed in %f\n", pid, time_in_sec);
++
++    fclose (f);
++
+     return FcTrue;
+ }
+ 

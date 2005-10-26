@@ -1,0 +1,215 @@
+# Copyright 2005 Nokia
+# Licensed under the same license as the package fontconfig
+diff -Naur fontconfig/fonts.conf.in fontconfig-optimize_config/fonts.conf.in
+--- fontconfig/fonts.conf.in	2005-01-13 20:00:49.000000000 +0200
++++ fontconfig-optimize_config/fonts.conf.in	2005-03-16 16:41:15.000000000 +0200
+@@ -72,6 +72,7 @@
+   Serif faces
+  -->
+ 	<alias>
++		<family>NewTimes</family>
+ 		<family>Bitstream Vera Serif</family>
+ 		<family>Times New Roman</family>
+ 		<family>Thorndale AMT</family>
+@@ -90,6 +91,8 @@
+   Sans-serif faces
+  -->
+ 	<alias>
++		<family>SwissA</family>
++		<family>Nokia Sans</family>
+ 		<family>Bitstream Vera Sans</family>
+ 		<family>Helvetica</family>
+ 		<family>Arial</family>
+@@ -110,6 +113,7 @@
+   Monospace faces
+  -->
+  	<alias>
++		<family>NewCourier</family>
+ 		<family>Bitstream Vera Sans Mono</family>
+ 		<family>Courier</family>
+ 		<family>Courier New</family>
+@@ -181,31 +185,6 @@
+ 		<accept><family>Cumberland AMT</family></accept>
+ 	</alias>
+  
+-<!--
+-  Some Asian fonts misadvertise themselves as monospaced when
+-  in fact they are dual-spaced (half and full).  This makes
+-  FreeType very confused as it forces all widths to match.
+-  Undo this magic by disabling the width forcing code -->
+-	<match target="font">
+-		<test name="family"><string>GulimChe</string></test>
+-		<edit name="globaladvance"><bool>false</bool></edit>
+-	</match>
+-
+-	<match target="font">
+-		<test name="family"><string>DotumChe</string></test>
+-		<edit name="globaladvance"><bool>false</bool></edit>
+-	</match>
+-
+-	<match target="font">
+-		<test name="family"><string>BatangChe</string></test>
+-		<edit name="globaladvance"><bool>false</bool></edit>
+-	</match>
+-
+-	<match target="font">
+-		<test name="family"><string>GungsuhChe</string></test>
+-		<edit name="globaladvance"><bool>false</bool></edit>
+-	</match>
+-
+ <!-- 
+ 	The Bitstream Vera fonts have GASP entries suggesting that hinting be
+ 	disabled below 8 ppem, but FreeType ignores those, preferring to use
+@@ -267,6 +246,7 @@
+ 	<alias>
+ 		<family>serif</family>
+ 		<prefer>
++			<family>NewTimes</family>
+ 			<family>Bitstream Vera Serif</family>
+ 			<family>Times New Roman</family>
+ 			<family>Thorndale AMT</family>
+@@ -285,6 +265,8 @@
+ 	<alias>
+ 		<family>sans-serif</family>
+ 		<prefer>
++			<family>SwissA</family>
++			<family>Nokia Sans</family>
+ 			<family>Bitstream Vera Sans</family>
+ 			<family>Verdana</family>
+ 			<family>Arial</family>
+@@ -305,6 +287,7 @@
+ 	<alias>
+ 		<family>monospace</family>
+ 		<prefer>
++			<family>NewCourier</family>
+ 			<family>Bitstream Vera Sans Mono</family>
+ 			<family>Andale Mono</family>
+ 			<family>Courier New</family>
+@@ -320,6 +303,127 @@
+ 		</prefer>
+ 	</alias>
+ 
++<!--
++  Provide aliases for the content fonts
++-->
++       <alias>
++               <family>Arial</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>ArialNarrow</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>ArialRounded</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>Caflish Script Web</family>
++               <accept><family>NewTimes</family></accept> <!-- NewTimes Italic -->
++       </alias>
++       <alias>
++               <family>Chicago</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++              <family>Comic Sans MS</family>
++               <accept><family>SwissA</family></accept> <!-- SwissA Italic -->
++       </alias>
++       <alias>
++               <family>Courier</family>
++               <accept><family>NewCourier</family></accept>
++       </alias>
++       <alias>
++               <family>Geneva</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>Georgia</family>
++               <accept><family>NewTimes</family></accept>
++       </alias>
++       <alias>
++               <family>Giddyup Web</family>
++               <accept><family>SwissA</family></accept> <!-- SwissA Italic -->
++       </alias>
++       <alias>
++               <family>Helvetica</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>HelveticaNeue</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>Impact</family>
++               <accept><family>SwissA</family></accept> <!-- SwissA Bold  -->
++       </alias>
++       <alias>
++               <family>Mezz Web</family>
++               <accept><family>SwissA</family></accept> <!-- SwissA Italic -->
++       </alias>
++       <alias>
++               <family>Minion Web</family>
++               <accept><family>NewTimes</family></accept>
++       </alias>
++       <alias>
++               <family>Monaco</family>
++               <accept><family>NewCourier</family></accept>
++       </alias>
++       <alias>
++               <family>Myriad Web</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>Myriad Condenced Web</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>New York</family>
++               <accept><family>NewTimes</family></accept>
++       </alias>
++       <alias>
++               <family>Palatino</family>
++               <accept><family>NewTimes</family></accept>
++       </alias>
++       <alias>
++               <family>Penumbra Web</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>Symbol</family>
++               <accept><family>NewTimes</family></accept>
++       </alias>
++       <alias>
++               <family>Tahoma</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>Times New Roman</family>
++               <accept><family>NewTimes</family></accept>
++       </alias>
++       <alias> <!-- Additional one to cover plain "Times" -->
++               <family>Times</family>
++               <accept><family>NewTimes</family></accept>
++       </alias>
++       <alias>
++               <family>Trebuchet MS</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>Verdana</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>Webdings</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++       <alias>
++               <family>Windings</family>
++               <accept><family>SwissA</family></accept>
++       </alias>
++
++
+ <!-- 
+  Artificial oblique for fonts without an italic or oblique version
+  -->

@@ -1,0 +1,137 @@
+# Copyright 2005 Nokia
+# Licensed under the same license as the package fontconfig
+diff -Naur -x '*Make*' fontconfig-mmap/src/fccfg.c fontconfig-debug/src/fccfg.c
+--- fontconfig-mmap/src/fccfg.c	2005-07-04 10:44:13.535631272 +0300
++++ fontconfig-debug/src/fccfg.c	2005-07-04 12:03:39.561085272 +0300
+@@ -638,9 +638,9 @@
+ 	    case FcOpNotEqual:
+ 		ret = FcStrCmpIgnoreCase (left.u.s, right.u.s) != 0;
+ 		break;
+-	    case FcOpNotContains:
+-		ret = FcStrStrIgnoreCase (left.u.s, right.u.s) == 0;
+-		break;
++            case FcOpNotContains:
++                ret = FcStrStrIgnoreCase (left.u.s, right.u.s) == 0;
++                break;
+ 	    default:
+ 		break;
+ 	    }
+diff -Naur -x '*Make*' fontconfig-mmap/src/fcinit.c fontconfig-debug/src/fcinit.c
+--- fontconfig-mmap/src/fcinit.c	2005-07-04 10:44:13.536631120 +0300
++++ fontconfig-debug/src/fcinit.c	2005-07-04 12:03:39.562085120 +0300
+@@ -25,6 +25,19 @@
+ #include <stdlib.h>
+ #include "fcint.h"
+ 
++#define PROFILE_LOG "/var/log/fontconf-profile"
++
++static void
++FcLog (const char *msg)
++{
++    FILE *f;
++
++    f = fopen (PROFILE_LOG, "a");
++    fprintf (f, msg);
++    fclose (f);
++}
++
++
+ static FcConfig *
+ FcInitFallbackConfig (void)
+ {
+@@ -61,8 +74,11 @@
+     if (!config)
+ 	return FcFalse;
+     
+-    if (!FcMmapLoadObjects(config))
++    if (!FcMmapLoadObjects(config)) {
++    	FcLog("Failed to mmap objects!\n");
+         FcMmapForce(FcTrue);
++    } else
++    	FcLog("Successfully mmaped objects!\n");
+     
+     if (!FcConfigParseAndLoad (config, 0, FcTrue))
+     {
+diff -Naur -x '*Make*' fontconfig-mmap/src/fcmmap.c fontconfig-debug/src/fcmmap.c
+--- fontconfig-mmap/src/fcmmap.c	2005-07-04 10:44:13.537630968 +0300
++++ fontconfig-debug/src/fcmmap.c	2005-07-04 12:03:39.564084816 +0300
+@@ -99,6 +99,19 @@
+     force = f;
+ }
+ 
++#define PROFILE_LOG "/var/log/fontconf-profile"
++
++static void
++FcLog (const char *msg)
++{
++    FILE *f;
++
++    f = fopen (PROFILE_LOG, "a");
++    fprintf (f, msg);
++    fclose (f);
++}
++
++
+ #define MMAP_DEFAULT_TMPDIR "/tmp"
+ #define MMAP_DEFAULT_NAME "/fontconfig-mmap"
+ static char *
+@@ -163,12 +176,18 @@
+     int fd;
+     FcMmap metadata;
+ 
+-    if (force)
++    if (force) {
++    	FcLog ("Force used, skipping mmap\n");
+         return FcFalse;
++    }
+ 
+     fd = open(FcMmapFilename(), O_RDONLY);
+-    if (fd == -1)
++    if (fd == -1) {
++    	FcLog ("Failed to open mmap file, filename tried was ");
++    	FcLog (FcMmapFilename());
++    	FcLog ("\n");
+         return FcFalse;
++    }
+ 
+     // sanity check for endianness issues
+     read(fd, &metadata, sizeof(FcMmap));
+diff -Naur -x '*Make*' fontconfig-mmap/src/fcpat.c fontconfig-debug/src/fcpat.c
+--- fontconfig-mmap/src/fcpat.c	2005-07-04 10:44:13.537630968 +0300
++++ fontconfig-debug/src/fcpat.c	2005-07-04 12:03:39.563084968 +0300
+@@ -28,6 +28,8 @@
+ #include <sys/mman.h>
+ #include "fcint.h"
+ 
++#define PROFILE_LOG "/var/log/fontconf-profile"
++
+ FcPattern *
+ FcPatternCreate (void)
+ {
+@@ -1357,7 +1359,7 @@
+ 	for (i = 0; i < OBJECT_HASH_SIZE; i++)
+ 	{
+ 	    struct objectBucket *b, *bp;
+-	    if (buckets[i]->hash) 
++	    if (buckets[i] != NULL && buckets[i]->hash) 
+ 	    {
+ 		for (b = buckets[i]; b; )
+ 		{
+@@ -1462,8 +1464,16 @@
+                           metadata.objects_length, 
+                           PROT_READ, 
+                           MAP_FIXED | MAP_SHARED, fd, metadata.objects_offset);
+-    if (object_content == MAP_FAILED)
++    if (object_content == MAP_FAILED) {
++    	int errnum = errno;
++	FILE *f;
++
++    	f = fopen (PROFILE_LOG, "a");
++    	fprintf (f, "ObjectsRead: map failed, error was: %d %s\n", errnum, strerror(errnum));
++	fclose (f);
++
+         goto bail;
++    }
+     object_content_count = metadata.objects_length;
+     object_content_ptr = object_content + object_content_count;
+ 

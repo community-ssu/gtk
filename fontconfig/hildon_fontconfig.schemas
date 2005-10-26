@@ -1,0 +1,18 @@
+<gconfschemafile>
+  <schemalist>
+     
+    <schema>
+      <key>/apps/osso/fontconfig/font_scaling_factor</key>
+      <applyto>/apps/osso/fontconfig/font_scaling_factor</applyto>
+      <owner>OSSO</owner>
+      <type>float</type>
+      <default>1.50</default>
+      <locale name="C">
+        <short>Font scaling factor</short>
+        <long>This scaling factor tells the composer applications (e.g. email, Notes) by what ratio to scale user requested fonts (point sizes) to the ones apropriate for the screen resolution/DPI.</long>
+      </locale>
+    </schema>
+
+  </schemalist>
+</gconfschemafile>
+

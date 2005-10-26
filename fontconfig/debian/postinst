@@ -1,0 +1,4 @@
+#!/bin/sh
+
+GCONF_CONFIG_SOURCE=xml::/etc/gconf/gconf.xml.defaults gconftool-2 --makefile-install-rule /etc/gconf/schemas/hildon_fontconfig.schemas
+
