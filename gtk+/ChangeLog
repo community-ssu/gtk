@@ -1,5 +1,9 @@
 2005-10-27  Michael Natterer  <mitch@imendio.com>
 
+	* gtk/gtksettings.c: more patch size reduction, no logic changed.
+
+2005-10-27  Michael Natterer  <mitch@imendio.com>
+
 	* gtk/gtkcheckbutton.c
 	* gtk/gtkdnd.c
 	* gtk/gtknotebook.c
