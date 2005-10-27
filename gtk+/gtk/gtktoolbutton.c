@@ -76,9 +76,9 @@ static void       button_clicked                    (GtkWidget       *widget,
 
 static void gtk_tool_button_construct_contents (GtkToolItem *tool_item);
 
- static void insensitive_press (GtkWidget       *widget,
-						                    GtkToolButton   *button);
-    
+static void insensitive_press (GtkWidget       *widget,
+                               GtkToolButton   *button);
+
 static GObjectClass *parent_class = NULL;
 static guint         toolbutton_signals[LAST_SIGNAL] = { 0 };
 
@@ -603,7 +603,7 @@ button_clicked (GtkWidget     *widget,
 
 static void
 insensitive_press (GtkWidget     *widget,
-		GtkToolButton *button)
+                   GtkToolButton *button)
 {
   g_signal_emit_by_name (button, "insensitive_press");
 }

@@ -91,36 +91,32 @@ static gint
 gtk_vseparator_expose (GtkWidget      *widget,
 		       GdkEventExpose *event)
 {
-	gboolean hildonlike_drawing = FALSE;
+  if (GTK_WIDGET_DRAWABLE (widget))
+    {
+      gboolean hildonlike_drawing = FALSE;
 
+      gtk_widget_style_get (widget,
+                            "hildonlike-drawing", &hildonlike_drawing,
+                            NULL);
 
-	gtk_widget_style_get ( widget, "hildonlike-drawing", &hildonlike_drawing, NULL );
+      if (hildonlike_drawing)
+        gtk_paint_box (widget->style, widget->window, GTK_STATE_NORMAL,
+                       GTK_SHADOW_NONE, &event->area, widget, "vseparator",
+                       widget->allocation.x + (widget->allocation.width -
+                                               widget->style->xthickness) / 2,
+                       widget->allocation.y,
+                       widget->style->xthickness,
+                       widget->allocation.height - 1);
+      else
+        gtk_paint_vline (widget->style, widget->window, GTK_STATE_NORMAL,
+                         &event->area, widget, "vseparator",
+                         widget->allocation.y,
+                         widget->allocation.y + widget->allocation.height - 1,
+                         widget->allocation.x + (widget->allocation.width -
+                                                 widget->style->xthickness) / 2);
+    }
 
-	if (GTK_WIDGET_DRAWABLE (widget))
-	{
-		if(hildonlike_drawing)
-			gtk_paint_box   (widget->style, widget->window, GTK_STATE_NORMAL,
-					GTK_SHADOW_NONE, &event->area, widget, "vseparator",
-					widget->allocation.x + (widget->allocation.width -
-						widget->style->xthickness) / 2,
-					widget->allocation.y,
-
-					widget->style->xthickness,
-					widget->allocation.height - 1);
-		else
-			gtk_paint_vline (widget->style, widget->window, GTK_STATE_NORMAL,
-					&event->area, widget, "vseparator",
-					widget->allocation.y,
-					widget->allocation.y + widget->allocation.height - 1,
-					widget->allocation.x + (widget->allocation.width -
-						widget->style->xthickness) / 2);
-	}
-
-
-
-
-
-	return FALSE;
+  return FALSE;
 }
 
 #define __GTK_VSEPARATOR_C__

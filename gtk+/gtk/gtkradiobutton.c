@@ -507,8 +507,8 @@ gtk_radio_button_focus (GtkWidget         *widget,
 	{
 	  tmp_list = tmp_list->next;
 	  
-    if( !tmp_list )
-      return FALSE;
+          if (!tmp_list)
+            return FALSE;
     
 	  while (tmp_list)
 	    {
@@ -586,7 +586,7 @@ gtk_radio_button_clicked (GtkButton *button)
   GtkToggleButton *toggle_button;
   GtkRadioButton *radio_button;
   GtkToggleButton *tmp_button;
-  GtkStateType new_state = GTK_WIDGET_STATE( button );
+  GtkStateType new_state = GTK_WIDGET_STATE (button);
   GSList *tmp_list;
   gint toggled;
   gboolean depressed;
@@ -598,54 +598,52 @@ gtk_radio_button_clicked (GtkButton *button)
   g_object_ref (GTK_WIDGET (button));
 
   if (toggle_button->active)
-  	{
-	  tmp_button = NULL;
-	  tmp_list = radio_button->group;
+    {
+      tmp_button = NULL;
+      tmp_list = radio_button->group;
 
-	  while (tmp_list)
-	    {
-	      tmp_button = tmp_list->data;
-	      tmp_list = tmp_list->next;
+      while (tmp_list)
+        {
+          tmp_button = tmp_list->data;
+          tmp_list = tmp_list->next;
 	      
-	      if (tmp_button->active && tmp_button != toggle_button)
-		break;
+          if (tmp_button->active && tmp_button != toggle_button)
+            break;
 
-	      tmp_button = NULL;
-	    }
+          tmp_button = NULL;
+        }
 
-	  if (!tmp_button)
-	    {
-	      new_state = (button->in_button ? 
-			   GTK_STATE_PRELIGHT : GTK_STATE_ACTIVE);
-	    }
-	  else
-	    {
-	      toggled = TRUE;
-	      toggle_button->active = !toggle_button->active;
-	      new_state = (button->in_button ? GTK_STATE_PRELIGHT : GTK_STATE_NORMAL);
-	    }
-	}
+      if (!tmp_button)
+        {
+          new_state = (button->in_button ? GTK_STATE_PRELIGHT : GTK_STATE_ACTIVE);
+        }
       else
-	{
-	  toggled = TRUE;
-	  toggle_button->active = !toggle_button->active;
+        {
+          toggled = TRUE;
+          toggle_button->active = !toggle_button->active;
+          new_state = (button->in_button ? GTK_STATE_PRELIGHT : GTK_STATE_NORMAL);
+        }
+    }
+  else
+    {
+      toggled = TRUE;
+      toggle_button->active = !toggle_button->active;
 
-	  tmp_list = radio_button->group;
-	  while (tmp_list)
-	    {
-	      tmp_button = tmp_list->data;
-	      tmp_list = tmp_list->next;
+      tmp_list = radio_button->group;
+      while (tmp_list)
+        {
+          tmp_button = tmp_list->data;
+          tmp_list = tmp_list->next;
 	      
-	      if (tmp_button->active && (tmp_button != toggle_button))
-		{
-		  gtk_button_clicked (GTK_BUTTON (tmp_button));
-		  break;
-		}
-	    }
+          if (tmp_button->active && (tmp_button != toggle_button))
+            {
+              gtk_button_clicked (GTK_BUTTON (tmp_button));
+              break;
+            }
+        }
 
-  	  new_state = (button->in_button ? GTK_STATE_PRELIGHT : GTK_STATE_ACTIVE);
-	}
-
+      new_state = (button->in_button ? GTK_STATE_PRELIGHT : GTK_STATE_ACTIVE);
+    }
 
   if (toggle_button->inconsistent)
     depressed = FALSE;
@@ -694,40 +692,32 @@ gtk_radio_button_draw_indicator (GtkCheckButton *check_button,
 			    "focus-padding", &focus_pad,
 			    NULL);
 
-      _gtk_check_button_get_props (check_button, 
-				   &indicator_size, &indicator_spacing);
+      _gtk_check_button_get_props (check_button, &indicator_size, &indicator_spacing);
 
-      x = widget->allocation.x + indicator_spacing + 
-	GTK_CONTAINER (widget)->border_width;
+      x = widget->allocation.x + indicator_spacing + GTK_CONTAINER (widget)->border_width;
       y = widget->allocation.y + (widget->allocation.height - 
 				  indicator_size + focus_width + 
 				  focus_pad) / 2;
 
       /* Hildon - always add space for the padding
-      */
+       */
       x += focus_width + focus_pad;
       
       if (toggle_button->inconsistent)
-   shadow_type = GTK_SHADOW_ETCHED_IN;
-
+        shadow_type = GTK_SHADOW_ETCHED_IN;
       else if (toggle_button->active)
-   shadow_type = GTK_SHADOW_IN;
-
+        shadow_type = GTK_SHADOW_IN;
       else
-   shadow_type = GTK_SHADOW_OUT;
+        shadow_type = GTK_SHADOW_OUT;
 
-      if (button->activate_timeout || 
-         (button->button_down && button->in_button) )
-  state_type = GTK_STATE_ACTIVE;
-
+      if (button->activate_timeout || (button->button_down && button->in_button))
+        state_type = GTK_STATE_ACTIVE;
       else if (button->in_button)
-   state_type = GTK_STATE_PRELIGHT;
-
+        state_type = GTK_STATE_PRELIGHT;
       else if (!GTK_WIDGET_IS_SENSITIVE (widget))
 	state_type = GTK_STATE_INSENSITIVE;
-
       else
-  state_type = GTK_STATE_NORMAL;
+        state_type = GTK_STATE_NORMAL;
 
       /* Hildon change. We want to draw active image always when we have
        * focus. */
@@ -735,39 +725,32 @@ gtk_radio_button_draw_indicator (GtkCheckButton *check_button,
 	state_type = GTK_STATE_ACTIVE;
        
       if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
-	{
-	  x = widget->allocation.x + widget->allocation.width - 
-	    (indicator_size + x - widget->allocation.x);
-	}
+        x = widget->allocation.x + widget->allocation.width - (indicator_size + x - widget->allocation.x);
+
       /* Well, commenting this out fixes bug #280, 
-	 without apparent side effects.
-       *
+	 without apparent side effects. */
+#if 0
       if (GTK_WIDGET_STATE (toggle_button) == GTK_STATE_PRELIGHT)
 	{
 	  GdkRectangle restrict_area;
 	  GdkRectangle new_area;
 	      
-	  restrict_area.x = widget->allocation.x + 
-	  GTK_CONTAINER (widget)->border_width;
-	  restrict_area.y = widget->allocation.y + 
-	  GTK_CONTAINER (widget)->border_width;
-	  restrict_area.width = widget->allocation.width - 
-	  (2 * GTK_CONTAINER (widget)->border_width);
-	  restrict_area.height = widget->allocation.height - 
-	  (2 * GTK_CONTAINER (widget)->border_width);
+	  restrict_area.x = widget->allocation.x + GTK_CONTAINER (widget)->border_width;
+	  restrict_area.y = widget->allocation.y + GTK_CONTAINER (widget)->border_width;
+	  restrict_area.width = widget->allocation.width - (2 * GTK_CONTAINER (widget)->border_width);
+	  restrict_area.height = widget->allocation.height - (2 * GTK_CONTAINER (widget)->border_width);
 	  
 	  if (gdk_rectangle_intersect (area, &restrict_area, &new_area))
 	    {
-	      gtk_paint_flat_box (widget->style, widget->window, 
-	      GTK_STATE_PRELIGHT,
-	      GTK_SHADOW_ETCHED_OUT, 
-	      area, widget, "checkbutton",
-	      new_area.x, new_area.y,
-	      new_area.width, new_area.height);
+	      gtk_paint_flat_box (widget->style, widget->window, GTK_STATE_PRELIGHT,
+                                  GTK_SHADOW_ETCHED_OUT, 
+                                  area, widget, "checkbutton",
+                                  new_area.x, new_area.y,
+                                  new_area.width, new_area.height);
 	    }
 	}
+#endif
 
-      */
       gtk_paint_option (widget->style, widget->window,
 			state_type, shadow_type,
 			area, widget, "radiobutton",

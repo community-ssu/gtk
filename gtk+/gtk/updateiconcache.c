@@ -171,7 +171,7 @@ scan_directory (const gchar *base_path,
 
       retval = g_file_test (path, G_FILE_TEST_IS_REGULAR);
       g_free (path);
-
+      
       if (retval)
 	{
 	  if (g_str_has_suffix (name, ".png"))

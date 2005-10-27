@@ -620,17 +620,17 @@ gtk_table_resize (GtkTable *table,
 
       if ((recalc_column != -1) || (recalc_row != -1))
 	for (list = table->children; list; list = list->next)
-	{
-	  GtkTableChild *child;
+          {
+            GtkTableChild *child;
 	  
-	  child = list->data;
+            child = list->data;
 
-          if (GTK_IS_BUTTON (child->widget) &&
-               ((child->bottom_attach == recalc_row) ||
-               (child->right_attach == recalc_column)))
+            if (GTK_IS_BUTTON (child->widget) &&
+                ((child->bottom_attach == recalc_row) ||
+                 (child->right_attach == recalc_column)))
 
-	    osso_gtk_table_find_button_detail (table, child);
-	}
+              osso_gtk_table_find_button_detail (table, child);
+          }
     }
 }
 
@@ -677,7 +677,6 @@ gtk_table_attach (GtkTable	  *table,
   table_child->yshrink = (yoptions & GTK_SHRINK) != 0;
   table_child->yfill = (yoptions & GTK_FILL) != 0;
   table_child->ypadding = ypadding;
-
 
   if (GTK_IS_BUTTON (table_child->widget))
     osso_gtk_table_find_button_detail (table, table_child);

@@ -1883,7 +1883,6 @@ gtk_widget_init (GtkWidget *widget)
   GTK_PRIVATE_SET_FLAG (widget, GTK_ALLOC_NEEDED);
 
   widget->style = gtk_widget_get_default_style ();
-
   g_object_ref (widget->style);
 }
 
@@ -2368,7 +2367,6 @@ gtk_widget_show_all (GtkWidget *widget)
   if ((GTK_WIDGET_FLAGS (widget) & GTK_NO_SHOW_ALL) != 0)
     return;
  
-
   class = GTK_WIDGET_GET_CLASS (widget);
 
   if (class->show_all)
