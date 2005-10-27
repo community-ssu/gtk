@@ -54,7 +54,7 @@ struct _GtkToolButtonClass
 
   /* signal */
   void       (* clicked)             (GtkToolButton    *tool_item);
-  void       (* insensitive_press)             (GtkToolButton    *tool_item);
+  void       (* insensitive_press)   (GtkToolButton    *tool_item);
 
   /* Padding for future expansion */
   void (* _gtk_reserved1) (void);

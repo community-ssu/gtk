@@ -1536,7 +1536,7 @@ gtk_drag_proxy_begin (GtkWidget       *widget,
       gtk_drag_source_info_destroy (dest_info->proxy_source);
       dest_info->proxy_source = NULL;
     }
-
+  
   ipc_widget = gtk_drag_get_ipc_widget (gtk_widget_get_screen (widget));
   context = gdk_drag_begin (ipc_widget->window,
 			    dest_info->context->targets);
@@ -1929,7 +1929,7 @@ gtk_drag_begin_internal (GtkWidget         *widget,
   GdkDragContext *context;
   GtkWidget *ipc_widget;
   GdkCursor *cursor;
-
+ 
   ipc_widget = gtk_drag_get_ipc_widget (gtk_widget_get_screen (widget));
   
   gtk_drag_get_event_actions (event, button, actions,
@@ -2142,8 +2142,8 @@ gtk_drag_source_set (GtkWidget            *widget,
 			G_CALLBACK (gtk_drag_source_event_cb),
 			site);
       g_signal_connect (widget, "button_release_event",
-                        G_CALLBACK (gtk_drag_source_event_cb),
-                        site);
+			G_CALLBACK (gtk_drag_source_event_cb),
+			site);
       g_signal_connect (widget, "motion_notify_event",
 			G_CALLBACK (gtk_drag_source_event_cb),
 			site);

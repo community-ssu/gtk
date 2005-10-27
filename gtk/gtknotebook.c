@@ -218,7 +218,7 @@ static void gtk_notebook_real_remove         (GtkNotebook      *notebook,
 					      GList            *list,
 					      gboolean		destroying);
 static void gtk_notebook_update_labels       (GtkNotebook      *notebook);
-static gint gtk_notebook_timer               (GtkNotebook      *notebook        );
+static gint gtk_notebook_timer               (GtkNotebook      *notebook);
 static gint gtk_notebook_page_compare        (gconstpointer     a,
 					      gconstpointer     b);
 static GList* gtk_notebook_find_child        (GtkNotebook      *notebook,
@@ -783,6 +783,7 @@ gtk_notebook_init (GtkNotebook *notebook)
   notebook->in_child = 0;
   notebook->click_child = 0;
   notebook->button = 0;
+  notebook->need_timer = 0;
   notebook->child_has_focus = TRUE;
   notebook->have_visible_child = FALSE;
   notebook->focus_out = FALSE;
@@ -1859,9 +1860,9 @@ gtk_notebook_arrow_button_press (GtkNotebook      *notebook,
         }
     }
   else if (event->button == 2)
-      gtk_notebook_page_select (notebook, TRUE);
+    gtk_notebook_page_select (notebook, TRUE);
   else if (event->button == 3)
-      gtk_notebook_switch_focus_tab (notebook,
+    gtk_notebook_switch_focus_tab (notebook,
 				   gtk_notebook_search_page (notebook,
 							     NULL,
 							     left ? STEP_NEXT : STEP_PREV,
@@ -2007,7 +2008,7 @@ gtk_notebook_button_press (GtkWidget      *widget,
 static void 
 stop_scrolling (GtkNotebook *notebook)
 {
-   if (notebook->timer)
+  if (notebook->timer)
     {
       g_source_remove (notebook->timer);
       notebook->timer = 0;
@@ -2626,6 +2627,7 @@ gtk_notebook_child_type (GtkContainer     *container)
  * gtk_notebook_redraw_tabs
  * gtk_notebook_real_remove
  * gtk_notebook_update_labels
+ * gtk_notebook_timer
  * gtk_notebook_page_compare
  * gtk_notebook_real_page_position
  * gtk_notebook_search_page
@@ -4046,7 +4048,7 @@ gtk_notebook_real_switch_page (GtkNotebook     *notebook,
   g_return_if_fail (page != NULL);
 
   if (notebook->cur_page == page || !GTK_WIDGET_VISIBLE (page->child))
-      return;
+    return;
 
   if (notebook->cur_page)
     gtk_widget_set_child_visible (notebook->cur_page->child, FALSE);
@@ -4068,7 +4070,7 @@ gtk_notebook_real_switch_page (GtkNotebook     *notebook,
     {
       if (notebook->cur_page->last_focus_child &&
 	  gtk_widget_is_ancestor (notebook->cur_page->last_focus_child, notebook->cur_page->child))
-          gtk_widget_grab_focus (notebook->cur_page->last_focus_child);
+        gtk_widget_grab_focus (notebook->cur_page->last_focus_child);
       else
 	if (!gtk_widget_child_focus (notebook->cur_page->child, GTK_DIR_TAB_FORWARD))
           gtk_widget_grab_focus (notebook->cur_page->child);
@@ -5294,7 +5296,6 @@ gtk_notebook_set_tab_label (GtkNotebook *notebook,
     {
       page->default_tab = FALSE;
       page->tab_label = tab_label;
-
       gtk_widget_set_parent (page->tab_label, GTK_WIDGET (notebook));
     }
   else

@@ -64,11 +64,11 @@
 #include "x11/gdkx.h"
 #endif
 
-#include "gtkalias.h"
-
 #ifdef GDK_WINDOWING_WIN32
 #include "win32/gdkwin32.h"
 #endif
+
+#include "gtkalias.h"
 
 #undef DEBUG_SELECTION
 
