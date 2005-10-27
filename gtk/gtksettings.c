@@ -1,4 +1,4 @@
-/*
+/* GTK - The GIMP Toolkit
  * Copyright (C) 2000 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -77,7 +77,7 @@ enum {
 #endif
   PROP_INITIAL_TIMEOUT,
   PROP_UPDATE_TIMEOUT,
-  PROP_HILDON_KEYBOARD_NAVIGATION,	  
+  PROP_HILDON_KEYBOARD_NAVIGATION,
   PROP_ALTERNATIVE_BUTTON_ORDER
 };
 
@@ -432,6 +432,7 @@ gtk_settings_class_init (GtkSettingsClass *class)
 					     NULL);
   
   g_assert (result == PROP_XFT_DPI);
+#endif  /* GDK_WINDOWING_X11 */
 
   result = settings_install_property_parser (class,
 					     g_param_spec_int ("gtk-initial-timeout",
@@ -463,7 +464,6 @@ gtk_settings_class_init (GtkSettingsClass *class)
 
    g_assert (result == PROP_HILDON_KEYBOARD_NAVIGATION);
   
-#endif  /* GDK_WINDOWING_X11 */
   result = settings_install_property_parser (class,
                                              g_param_spec_boolean ("gtk-alternative-button-order",
 								   P_("Alternative button order"),
