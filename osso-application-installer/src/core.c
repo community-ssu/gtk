@@ -1019,6 +1019,15 @@ typedef struct {
   gboolean check_mmc_cover;
 } installer_data;
 
+static int
+all_white_space (gchar *text)
+{
+  while (*text)
+    if (!isspace (*text++))
+      return 0;
+  return 1;
+}
+
 static void
 installer_callback (gpointer raw_data,
 		    int success,
@@ -1039,14 +1048,11 @@ installer_callback (gpointer raw_data,
 	ui_close_progress_dialog (data->dialog);
     }
       
+  report = g_string_new ("");
   if (success)
-    {
-      report = g_string_new ("");
-      g_string_printf (report, data->success_text, data->package);
-    }
+    g_string_printf (report, data->success_text, data->package);
   else
     {
-      report = g_string_new ("");
       g_string_printf (report, data->failure_text, data->package);
       if (!data->dont_show_details)
 	{
@@ -1071,12 +1077,20 @@ installer_callback (gpointer raw_data,
 	}
     }
 
+  /* XXX-UI32 - if we are asked to show details, but we don't have
+                any, we show "Incompatible package".
+  */
+  if (details == NULL || all_white_space (details))
+    {
+      g_free (details);
+      details = g_strdup (_("ai_error_incompatible"));
+    }
+
   present_report_with_details (data->app_data,
 			       report->str,
 			       details);
   g_string_free (report, 1);
-  if (details)
-    free (details);
+  g_free (details);
 
   if (data->loop)
     g_main_loop_quit (data->loop);
