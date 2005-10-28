@@ -502,6 +502,15 @@ parse_delimited (gchar *ptr, gchar del, gchar **token)
   return ptr;
 }
 
+static int
+all_white_space (gchar *text)
+{
+  while (*text)
+    if (!isspace (*text++))
+      return 0;
+  return 1;
+}
+
 GtkTreeModel *
 list_packages (AppData *app_data)
 {
@@ -566,7 +575,10 @@ list_packages (AppData *app_data)
 	continue;
 
       version = g_strdup_printf (version_fmt, version);
-      size = g_strdup_printf (size_fmt, size);
+      if (!all_white_space (size))
+	size = g_strdup_printf (size_fmt, size);
+      else
+	size = g_strdup ("");
       broken = strcmp (status, "ok");
 
       icon_name = g_strdup_printf ("pkg_%s", name);
@@ -1019,15 +1031,6 @@ typedef struct {
   gboolean check_mmc_cover;
 } installer_data;
 
-static int
-all_white_space (gchar *text)
-{
-  while (*text)
-    if (!isspace (*text++))
-      return 0;
-  return 1;
-}
-
 static void
 installer_callback (gpointer raw_data,
 		    int success,
@@ -1077,10 +1080,11 @@ installer_callback (gpointer raw_data,
 	}
     }
 
-  /* XXX-UI32 - if we are asked to show details, but we don't have
-                any, we show "Incompatible package".
+  /* XXX-UI32 - if this operation failed, and we are asked to show
+                details, but we don't have any, we show "Incompatible
+                package".
   */
-  if (details == NULL || all_white_space (details))
+  if (!success && !data->dont_show_details && (details == NULL || all_white_space (details)))
     {
       g_free (details);
       details = g_strdup (_("ai_error_incompatible"));
