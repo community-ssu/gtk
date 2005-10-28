@@ -2,7 +2,8 @@
 
 	* src/core.c (installer_callback): Make up some generic details
 	when details should be shown, but there aren't any.
-
+	(list_packages): Leave size column completely empty.
+	
 2005-10-26  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/core.c (append_list_strings): Do not output space before
