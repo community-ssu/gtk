@@ -267,7 +267,8 @@ confirm_install (AppData *app_data, PackageInfo *info)
   g_string_append (details, "\n");
   g_string_append_printf (details,
 			  SUPPRESS_FORMAT_WARNING (_("ai_ti_size")),
-			  info->size->str);
+			  (all_white_space (info->size->str) ?
+			   "?" : info->size->str));
   g_string_append (details, "\n");
   g_string_append (details, info->description->str);
 
