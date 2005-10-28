@@ -1,3 +1,8 @@
+2005-10-28  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkhseparator.h: merged forgotten G_BEGIN_DECLS/G_END_DECLS
+	from gtk-2.6.10
+
 2005-10-27  Michael Natterer  <mitch@imendio.com>
 
 	Merged fix from GTK+ 2.8 and HEAD:
