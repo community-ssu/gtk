@@ -1,3 +1,95 @@
+2005-10-28  Kristian Rietveld  <kris@imendio.com>
+
+	Merged gtktreeview.c changes:
+
+    2005-06-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_real_start_interactive_search):
+	Don't crash if search_window is NULL.  (#304914, Victor Osadci,
+	testcase by Olaf Vitters)
+
+    2005-05-25  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_bin_expose): Draw the
+	background of rows insensitive when the treeview is insensitive.
+	(pointed out by Billy Biggs)
+
+    2005-05-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_draw_arrow): Make expanders
+	appear insensitive in insensitive treeviews.
+
+    2005-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_state_changed): Set
+	background upon state changes.  (#301651, Billy Biggs)
+	(gtk_tree_view_get_path_at_pos): Take RTL into account
+	when iterating over the columns.  (#302163)
+
+    2005-04-08  Matthias Clasen  <mclasen@redhat.com>
+
+	Fix double-click to autosize treeview columns. This was
+	probably broken since 2.2 ! (#169675)
+	
+	* gtk/gtktreeview.c (gtk_tree_view_button_press): Leave the
+	"user-resized" state of the column on a double-click to
+	autosize.
+	(gtk_tree_view_button_press, gtk_tree_view_motion_resize_column):
+	Enter the "user-resized" state of the column only if a drag
+	actually changes the column width, not on any click.
+
+    2005-04-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_enable_model_drag_source)
+	(gtk_tree_view_enable_model_drag_dest): Pass the target list
+	to the underlying dnd implementation, otherwise we miss the
+	target info in the drag-data-received signal.  (#164085, Jorn
+	Baayen)
+
+    2005-04-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_set_search_column): Allow
+	resetting search-column to -1, and document it.  (#172891,
+	Lorenzo Gil Sanchez)
+
+    2005-04-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_motion_resize_column)
+	(gtk_tree_view_bin_expose): Avoid a few unnecessary calls
+	to gdk_window_get_pointer(). (#168015, Billy Biggs)
+
+    2005-04-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_set_search_column): Add some
+	more docs on interactive search.
+
+    Mon Apr  4 19:13:23 2005  Jonathan Blandford  <jrb@redhat.com>
+
+	Fix for #172319, Tristan Van Berkom:
+
+	* gtk/gtktreeview.c (gtk_tree_view_expand_all): change to use
+	gtk_tree_view_real_expand_row() instead of doing this by hand.
+
+    2005-03-30  Federico Mena Quintero  <federico@ximian.com>
+
+	Fix #170755:
+
+	* gtk/gtktreeview.c (gtk_tree_view_row_changed): Only stop editing
+	if the row which changed is the same as the row being edited.
+
+    2005-03-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_real_start_interactive_search):
+	Make enable_search control only typeahead, not C-f.  (#170435,
+	Sven Neumann)
+	(gtk_tree_view_start_interactive_search): Pass keybinding == TRUE.
+
+    2005-03-28  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_key_press): Don't pop up
+	the context menu of the search entry if it is not visible.
+	(#169534, Billy Biggs)
+
 2005-10-28  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkhseparator.h: merged forgotten G_BEGIN_DECLS/G_END_DECLS
