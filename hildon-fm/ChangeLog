@@ -1,5 +1,9 @@
 2005-10-31  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* configure.ac: 0.9.45
+
+2005-10-31  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	N#20341 hildon_file_system_model_autoname_uri doesn't work
 	        properly for names having numbers.
 

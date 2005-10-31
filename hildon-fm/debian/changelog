@@ -1,3 +1,10 @@
+hildon-fm (0.9.45-1) unstable; urgency=low
+
+  * fixes
+    N#20341 hildon_file_system_model_autoname_uri doesn't work properly for names having numbers.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 31 Oct 2005 16:12:13 +0200
+
 hildon-fm (0.9.44-1) unstable; urgency=low
 
   * fixes
