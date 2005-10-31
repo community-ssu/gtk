@@ -1,3 +1,27 @@
+2005-10-31  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#20341 hildon_file_system_model_autoname_uri doesn't work
+	        properly for names having numbers.
+
+	* hildon-file-system-private.[ch]:
+	(_hildon_file_system_parse_autonumber): Moved parse_autonumber
+	here from hildon-file-system-model.c, with following changes:
+	Changed all error cases immediately return -1 (not accepted) and
+	remove separate ACCEPT state (input is now accepted, when state
+	machine is in CLOSE state at the end of input). Small logic
+	changes (not increase input pointer after number conversion, since
+	it already points to next character).
+	
+	(_hildon_file_system_remove_autonumber): Refactored from
+	autoname_uri. Also needed in save dialog.
+	
+	* hildon-file-system-model.c: move out parse_autonumber(). Use new
+	_hildon_file_system_parse_autonumber instead.
+
+	* hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_set_current_name): Changed to remove
+	existing autonumber from name, if autonumbering is enabled.
+	
 2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.9.44

@@ -558,6 +558,12 @@ static void hildon_file_chooser_dialog_set_current_name(GtkFileChooser *
         *dot = '\0';
     }
 
+    /* If we have autonaming enabled, we try to remove possible
+       autonumber from stub part. We do not want to do this
+       always (saving existing file would be difficult otherwise) */
+    if (priv->autonaming_enabled)
+      _hildon_file_system_remove_autonumber(priv->stub_name);
+
     ULOG_INFO("Current name set: body = %s, ext = %s", priv->stub_name, priv->ext_name);
     hildon_file_chooser_dialog_set_limit(HILDON_FILE_CHOOSER_DIALOG(chooser));
     hildon_file_chooser_dialog_do_autonaming(priv);

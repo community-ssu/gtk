@@ -31,6 +31,7 @@
  */
 
 #include <libintl.h>
+#include <stdlib.h>
 #include <string.h>
 #include <gtk/gtkicontheme.h>
 #include <osso-log.h>
@@ -626,4 +627,68 @@ gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime)
      return the part after last dot. If we didn't have type information,
      then we do not touch the name. */
   return mime ? g_strrstr(name, ".") : NULL;
+}
+
+enum {
+ STATE_START,
+ STATE_OPEN,
+ STATE_END,
+ STATE_CLOSE
+};
+
+/* Checks whether the string contains valid autonumber and
+   returns the value. Negative if not valid autonumber. */
+long _hildon_file_system_parse_autonumber(const char *start)
+{
+  gint state = STATE_START;
+  long value = 0;
+  char *endp;
+
+  while (*start) {
+    if (state == STATE_START){
+      if (*start == '(') state = STATE_OPEN;
+      else if (g_ascii_isspace(*start)) state = STATE_START;
+      else return -1;
+    }
+    else if (state == STATE_OPEN){
+      if (g_ascii_isspace(*start)) state = STATE_OPEN;
+      else if (g_ascii_isalnum(*start)) {
+        value = strtol(start, &endp, 10);
+        start = endp;
+        state = STATE_END;
+        continue; /* start already points to first non-number char */
+      }
+      else return -1;
+    }
+    else if (state == STATE_END){
+      if (*start == ')') state = STATE_CLOSE;
+      else if (g_ascii_isspace(*start)) state = STATE_END;
+      else return -1;
+    }
+    else if (state == STATE_CLOSE){
+      if (g_ascii_isspace(*start)) state = STATE_CLOSE;
+      else return -1;
+    }
+    start++;
+  }
+
+  return (state == STATE_CLOSE ? value : -1);
+}
+
+/* Let's check if the name body already contains autonumber.
+ * If this is a case then we'll remove the previous one. */
+void _hildon_file_system_remove_autonumber(char *name)
+{
+  char *par = g_strrstr(name, "(");
+
+  if (par && par > name && _hildon_file_system_parse_autonumber(par) >= 0)
+  {
+    *par = 0;
+
+    /* Autonumber can have a space before paranthesis.
+     * we only remove one, because autonumbering only adds one. */
+    par--;
+    if (par > name && g_ascii_isspace(*par))
+      *par = 0;
+  }
 }

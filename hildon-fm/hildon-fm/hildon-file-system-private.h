@@ -69,6 +69,9 @@ _hildon_file_system_get_volume_for_location(GtkFileSystem *fs,
   const GtkFilePath *base);
 
 gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime);
+long _hildon_file_system_parse_autonumber(const char *start);
+void _hildon_file_system_remove_autonumber(char *name);
+
 GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme, 
   const gchar *name, gint size);
 

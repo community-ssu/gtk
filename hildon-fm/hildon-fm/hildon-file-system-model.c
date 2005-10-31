@@ -150,14 +150,6 @@ enum {
     PROP_MULTI_ROOT
 };
 
-enum {
-	STATE_ACCEPT = 0,
-	STATE_START,
-	STATE_OPEN,
-	STATE_END, 
-	STATE_CLOSE 	    	
-};
-
 static void hildon_file_system_model_iface_init(GtkTreeModelIface * iface);
 static void hildon_file_system_model_init(HildonFileSystemModel * self);
 static void hildon_file_system_model_class_init(HildonFileSystemModelClass
@@ -2714,45 +2706,6 @@ compare_numbers(gconstpointer a, gconstpointer b)
   return GPOINTER_TO_INT(a) - GPOINTER_TO_INT(b);
 }
 
-/* Checks whether the string contains valid autonumber and
-   returns the value. Negative if not valid autonumber. */
-static long parse_autonumber(const char *start)
-{
-  gint state = 1;
-  long value = 0;
-  char *endp;
-
-  while (state != STATE_ACCEPT && *start != '\0') {
-    if (state == STATE_START){
-      if (*start == '(') state = STATE_OPEN;
-      else if (g_ascii_isspace(*start)) state = STATE_START;
-      else break; 
-    }
-    else if (state == STATE_OPEN){
-      if (g_ascii_isspace(*start)) state = STATE_OPEN;
-      else if (g_ascii_isalnum(*start)) {
-        value = strtol(start, &endp, 10);
-        start = endp;
-        state = STATE_END;
-      }
-      else break;
-    }
-    else if (state == STATE_END){
-      if (*start == ')') state = STATE_CLOSE;
-      else if (g_ascii_isspace(*start)) state = STATE_END;
-      else break;
-    }
-    else if (state == STATE_CLOSE){
-      if (g_ascii_isspace(*start)) state = STATE_CLOSE;
-      else if (*start == '\0') state = STATE_ACCEPT;
-      else break;    
-    }
-    if (state != STATE_ACCEPT) start++;
-  }
-
-  return (state != STATE_ACCEPT ? value : -1);
-}
-
 /**
  * hildon_file_system_model_new_item:
  * @model: a #HildonFileSystemModel.
@@ -2848,7 +2801,7 @@ gchar *hildon_file_system_model_new_item(HildonFileSystemModel * model,
               full_match = TRUE;
             else
             {
-              long value = parse_autonumber(start);
+              long value = _hildon_file_system_parse_autonumber(start);
 
   	          if (value >= 0)  /* the string is reserved */ 
                 reserved = g_list_insert_sorted(reserved, 
@@ -3018,27 +2971,15 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
       return g_strdup(uri);
   }
     
-  gchar *extension = NULL, *dot, *autonamed, *par;
+  gchar *extension = NULL, *dot, *autonamed;
 
   dot = _hildon_file_system_search_extension(file, NULL);
   if (dot && dot != file) {
      extension = g_strdup(dot);
      *dot = '\0';
   }
-    
-  /* Let's check if the name body already contains autonumber. 
-   * If this is a case then we'll remove the previous one. */
-  par = g_strrstr(file, "(");
-  if (par && par > file && parse_autonumber(par) >= 0)
-  {
-    *par = 0;
 
-    /* Autonumber can have a space before paranthesis.
-     * we only remove one, because autonumbering only adds one. */
-    par--;
-    if (par > file && g_ascii_isspace(*par))
-      *par = 0;
-  }
+  _hildon_file_system_remove_autonumber(file);
 
   autonamed = hildon_file_system_model_new_item(model, 
                                 &iter, file, extension);
