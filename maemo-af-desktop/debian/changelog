@@ -1,3 +1,15 @@
+maemo-af-desktop (1.61.2) unstable; urgency=low
+
+   * Reverted incomplete bug fix
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 26 Oct 2005 20:19:42 +0300
+
+maemo-af-desktop (1.61.1) unstable; urgency=low
+
+  * Patched PE bug 20384
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 26 Oct 2005 20:17:25 +0300
+
 maemo-af-desktop (1.61.0) unstable; urgency=low
 
   * Corrected copyright texts in Makefiles.

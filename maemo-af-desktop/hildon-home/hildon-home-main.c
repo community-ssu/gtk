@@ -2366,7 +2366,7 @@ void hildon_home_initiliaze()
     /* If the lock file exists, we probably crashed during startup */
     if (startup_lock_exists())
     {
-        hildon_home_create_configure(); /* Disable all applets */
+        hildon_home_create_configure(); /* Restore default applet settings */
     } else
     {
         create_startup_lock();
@@ -3250,7 +3250,8 @@ void create_startup_lock(void)
      FILE *f;
      
      f = fopen(STARTUP_LOCK_FILE, "w");
-     fclose(f);
+     if (f)
+             fclose(f);
 }
  
 static

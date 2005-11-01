@@ -1,3 +1,11 @@
+2005-11-01  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+	* Reverted one incomplete bugfix	
+	
+2005-10-26  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+	* Patched bug N#20384
+
 2005-10-25  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	
 	* Corrected copyright texts in Makefiles (e.g. Nokia -> Nokia Corporation)

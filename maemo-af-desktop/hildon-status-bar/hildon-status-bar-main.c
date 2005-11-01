@@ -63,6 +63,8 @@
 #include "hildon-status-bar-interface.h"
 #include "../kstrace.h"
 
+extern gboolean IS_SDK;
+
 static gint _delayed_infobanner_add(gint32 pid, gint32 begin, gint32 timeout,
 				    const gchar *text );
 gboolean _delayed_infobanner_remove(gpointer data);
@@ -91,6 +93,8 @@ static void destroy_item( GtkObject *object,
 
 static GHashTable *delayed_banners;
 static gpointer delayed_ib_onscreen;
+
+
 
 static void init_dock( StatusBar *panel )
 {
@@ -163,23 +167,33 @@ static void add_prespecified_items( StatusBar *panel )
 
     if (add_item( panel, "sound" )==NULL)
     {
-        osso_log( LOG_ERR, "Statusbar item add failed for sound" );
+        if(IS_SDK==FALSE){
+            osso_log( LOG_ERR, "Statusbar item add failed for sound" );
+        }
     }
     if (add_item( panel, "internet" )==NULL)
     {
-        osso_log( LOG_ERR, "Statusbar item add failed for internet" );
+        if(IS_SDK==FALSE){
+            osso_log( LOG_ERR, "Statusbar item add failed for internet" );
+        }
     }
     if (add_item( panel, "gateway" ) ==NULL)
     {
-        osso_log( LOG_ERR, "Statusbar item add failed for gateway" );
+        if(IS_SDK==FALSE){
+            osso_log( LOG_ERR, "Statusbar item add failed for gateway" );
+        }
     }
     if (add_item( panel, "battery" ) == NULL)
     {
-        osso_log( LOG_ERR, "Statusbar item add failed for battery" );
+        if(IS_SDK==FALSE){
+            osso_log( LOG_ERR, "Statusbar item add failed for battery" );
+        }
     }
     if (add_item( panel, "display" ) == NULL)
     {
-        osso_log( LOG_ERR, "Statusbar item add failed for display" );
+        if(IS_SDK==FALSE){
+            osso_log( LOG_ERR, "Statusbar item add failed for display" );
+        }
     }
 }
 
