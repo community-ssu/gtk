@@ -16,8 +16,11 @@ AC_ARG_ENABLE(debug,
 
 ## GCC 3.3.4, used in scratchbox 0.9.8.5, has bugs with
 ## -Wunreachable-code, so we don't use that warning option for now.
+## 
+## g_array_index gives bogus warnings for -Wcast-align on ARM, so we
+## don't us that warning as well.
 
-WFLAGS="-Werror -Wall -Wmissing-prototypes -Wcast-align -std=c99 -DOSSOLOG_COMPILE"
+WFLAGS="-Werror -Wall -Wmissing-prototypes -std=c99 -DOSSOLOG_COMPILE"
 if test x${libosso_use_debug} = xyes ; then
     AC_DEFINE(DEBUG,1,[Build extra debug code])
     OSSO_CFLAGS="-g -ansi  -D_BSD_SOURCE -rdynamic $WFLAGS"
