@@ -169,13 +169,17 @@ present_report_with_details (AppData *app_data,
   if (no_details)
     dialog = hildon_note_new_information (parent, report);
   else
-    dialog = hildon_note_new_confirmation (parent, report);
+    dialog = hildon_note_new_confirmation_add_buttons 
+      (parent, report,
+       _("ai_bd_installation_failed_yes"), GTK_RESPONSE_YES,
+       _("ai_bd_installation_failed_no"), GTK_RESPONSE_NO,
+       NULL);
   
   gtk_widget_show_all (dialog);
   response = gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy(dialog);
 
-  if (response == GTK_RESPONSE_OK && !no_details)
+  if (response == GTK_RESPONSE_YES && !no_details)
     present_error_details (app_data,
 			   _("ai_ti_error_details_title"),
 			   NULL,

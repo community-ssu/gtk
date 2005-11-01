@@ -1,4 +1,15 @@
+2005-11-01  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/ui/represent.c (present_report_with_details): Use
+	hildon_note_new_confirmation_add_buttons to get "Yes" and "No"
+	button labels.
+	* po/en_GB.po (ai_bd_installation_failed_yes,
+	ai_bd_installation_failed_no): Resurrected.
+	
 2005-10-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/ui/represent.c (confirm_install): If size is not known,
+	display "?".
 
 	* src/core.c (installer_callback): Make up some generic details
 	when details should be shown, but there aren't any.

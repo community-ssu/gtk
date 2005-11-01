@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: osso-application-installer 0.2.04\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-30 20:51+0300\n"
+"POT-Creation-Date: 2005-11-01 12:50+0200\n"
 "PO-Revision-Date: 2005-03-30 15:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: en_GB\n"
@@ -34,51 +34,57 @@ msgstr ""
 #. XXX-NLS - once these logical ids appear in l10n files, we can use
 #. the simpler _(...) markup instead of gettext_try_many.
 #.
-#: src/core.c:516
+#: src/core.c:527
 msgid "ai_ti_version_column"
 msgstr "v %s"
 
-#: src/core.c:520
+#: src/core.c:531
 msgid "ai_ti_size_column"
 msgstr "%s kB"
 
-#: src/core.c:771
-msgid "ai_error_incompatible"
-msgstr "Unable to install. Incompatible package."
-
-#: src/core.c:787
-msgid "ai_error_builtin"
+#: src/core.c:760 src/core.c:1242
+msgid "ai_ti_installation_failed_text"
 msgstr ""
-"Unable to install %s.\n"
-"Component is built-in."
+"Installation of %s failed.\n"
+"Display details?"
 
-#: src/core.c:806
+#: src/core.c:811 src/core.c:853
 msgid "ai_error_corrupted"
 msgstr ""
 "Unable to install.\n"
 "Installation file corrupted."
 
-#: src/core.c:890
+#: src/core.c:835
+msgid "ai_error_builtin"
+msgstr ""
+"Unable to install %s.\n"
+"Component is built-in."
+
+#: src/core.c:846 src/core.c:1090
+msgid "ai_error_incompatible"
+msgstr "Unable to install. Incompatible package."
+
+#: src/core.c:937
 msgid "ai_info_notenoughmemory"
 msgstr "Not enough memory."
 
-#: src/core.c:898
+#: src/core.c:945
 msgid "ai_error_componentmissing"
 msgstr "Component %s required for the installation is missing"
 
-#: src/core.c:909
+#: src/core.c:956 src/core.c:978
 msgid "ai_ti_dependency_conflict_text_plural"
 msgstr ""
 "Unable to uninstall package. Delete following packages first and then try "
 "again."
 
-#: src/core.c:912
+#: src/core.c:959 src/core.c:980
 msgid "ai_ti_dependency_conflict_text"
 msgstr ""
 "Unable to uninstall package. Delete following package first and then try "
 "again."
 
-#: src/core.c:1005
+#: src/core.c:1073
 msgid "ai_error_memorycardopen"
 msgstr ""
 "Opening interrupted/Saving interrupted.\n"
@@ -88,71 +94,65 @@ msgstr ""
 #. erroneously used ai_ti_alreadyinstalled and this
 #. has made it into some versions of the l10n files.
 #.
-#: src/core.c:1147
+#: src/core.c:1223
 msgid "ai_error_alreadyinstalled"
 msgstr ""
 "Package already installed.\n"
 "Remove existing version first."
 
-#: src/core.c:1164
+#: src/core.c:1240
 msgid "ai_ti_installing_installing"
 msgstr "Installing"
 
-#: src/core.c:1165
+#: src/core.c:1241
 msgid "ai_ti_application_installed_text"
 msgstr "Package %s successfully installed."
 
-#: src/core.c:1166 src/core.c:1313
-msgid "ai_ti_installation_failed_text"
-msgstr ""
-"Installation of %s failed.\n"
-"Display details?"
-
-#: src/core.c:1426
+#: src/core.c:1511
 msgid "ai_ti_dependency_conflict_title"
 msgstr "Dependency conflict"
 
-#: src/core.c:1455
+#: src/core.c:1541
 msgid "ai_ti_uninstall_progress_uninstalling"
 msgstr "Uninstalling"
 
-#: src/core.c:1456
+#: src/core.c:1542
 msgid "ai_ti_application_uninstalled_text"
 msgstr "Package %s successfully removed."
 
-#: src/core.c:1457
+#: src/core.c:1543
 msgid "ai_ti_uninstallation_failed_text"
 msgstr "Uninstallation of %s failed."
 
-#: src/ui/interface.c:71
+#: src/ui/interface.c:100
 msgid "ai_ti__application_installer_title"
 msgstr "Application installer"
 
-#: src/ui/interface.c:109
+#: src/ui/interface.c:138
 msgid "ai_ti_application_installer_nopackages"
 msgstr "No packages installed"
 
-#: src/ui/interface.c:207
+#: src/ui/interface.c:256
 msgid "ai_bd__application_installer_uninstall"
 msgstr "Uninstall"
 
-#: src/ui/interface.c:211
+#: src/ui/interface.c:260
 msgid "ai_bd__application_installer_install_new"
 msgstr "Install new"
 
-#: src/ui/interface.c:215
+#: src/ui/interface.c:264
 msgid "ai_bd__application_installer_cancel"
 msgstr "Close"
 
-#: src/ui/interface.c:250
+#: src/ui/interface.c:299
 msgid "ai_ti_select_package"
 msgstr "Select package"
 
-#: src/ui/interface.c:354
+#: src/ui/interface.c:395
 msgid "ai_error_details_csm_copy"
 msgstr "Copy"
 
-#: src/ui/interface.c:356
+#: src/ui/interface.c:397
 msgid "ai_error_details_csm_help"
 msgstr "Help"
 
@@ -163,55 +163,63 @@ msgstr ""
 "Package broken. It may be possible to fix it by installing a more recent "
 "version."
 
-#: src/ui/represent.c:105
+#: src/ui/represent.c:112
 msgid "ai_bd_error_details_ok"
 msgstr "OK"
 
-#: src/ui/represent.c:173
+#: src/ui/represent.c:174
+msgid "ai_bd_installation_failed_yes"
+msgstr "Yes"
+
+#: src/ui/represent.c:175
+msgid "ai_bd_installation_failed_no"
+msgstr "No"
+
+#: src/ui/represent.c:184
 msgid "ai_ti_error_details_title"
 msgstr "Error details"
 
-#: src/ui/represent.c:187
+#: src/ui/represent.c:198
 msgid "ai_ti_confirm_uninstall_text"
 msgstr "Uninstall %s package?"
 
-#: src/ui/represent.c:194
+#: src/ui/represent.c:205
 msgid "ai_bd_confirm_uninstall_ok"
 msgstr "OK"
 
-#: src/ui/represent.c:196
+#: src/ui/represent.c:207
 msgid "ai_bd_confirm_uninstall_cancel"
 msgstr "Cancel"
 
-#: src/ui/represent.c:221
+#: src/ui/represent.c:240
 msgid "ai_bd__ti_install_application_title"
 msgstr "Install package"
 
-#: src/ui/represent.c:233
+#: src/ui/represent.c:252
 msgid "ai_ti_install_new"
 msgstr "Install new package? %s"
 
-#: src/ui/represent.c:236
+#: src/ui/represent.c:255
 msgid "ai_ti_install_warning"
 msgstr "Installing this package may damage the device. Continue anyway?"
 
-#: src/ui/represent.c:246
+#: src/ui/represent.c:265
 msgid "ai_ti_packagedescription"
 msgstr "%s description"
 
-#: src/ui/represent.c:250
+#: src/ui/represent.c:269
 msgid "ai_ti_version"
 msgstr "Version: %s"
 
-#: src/ui/represent.c:254
+#: src/ui/represent.c:273
 msgid "ai_ti_size"
 msgstr "Size required: %s kB"
 
-#: src/ui/represent.c:269
+#: src/ui/represent.c:289
 msgid "ai_bd_install_application_ok"
 msgstr "OK"
 
-#: src/ui/represent.c:272
+#: src/ui/represent.c:292
 msgid "ai_bd_install_application_cancel"
 msgstr "Cancel"
 
@@ -235,12 +243,6 @@ msgstr "Cancel"
 
 #~ msgid "ai_error_uninstall_applicationrunning"
 #~ msgstr "Application open. Close application and try again."
-
-#~ msgid "ai_bd_installation_failed_yes"
-#~ msgstr "Yes"
-
-#~ msgid "ai_bd_installation_failed_no"
-#~ msgstr "No"
 
 #~ msgid "ai_bd_dependency_conflict_ok"
 #~ msgstr "OK"
