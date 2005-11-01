@@ -1941,7 +1941,7 @@ else
 fi;
 
 ## GCC 3.3.4, used in scratchbox 0.9.8.5, has bugs with
-## -Wunreachable-code, so we don't use it for now.
+## -Wunreachable-code, so we don't use that warning option for now.
 
 WFLAGS="-Werror -Wall -Wmissing-prototypes -Wcast-align -std=c99 -DOSSOLOG_COMPILE"
 if test x${libosso_use_debug} = xyes ; then
