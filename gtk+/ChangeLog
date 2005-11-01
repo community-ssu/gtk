@@ -1,3 +1,9 @@
+2005-11-01  Michael Natterer  <mitch@imendio.com>
+
+	* gdk/x11/gdkdnd-x11.c: removed redundant "const" from the
+	"xdnd_filters" array definition, effectively reverting this file
+	to upstream.
+
 2005-10-28  Kristian Rietveld  <kris@imendio.com>
 
 	Merged gtktreeview.c changes:
