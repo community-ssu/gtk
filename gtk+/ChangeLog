@@ -1,5 +1,11 @@
 2005-11-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_button_release,
+	gtk_tree_view_motion_bin_window): Free leaked GtkTreePaths
+	N#20677
+
+2005-11-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	Making the builtin stock icons available again.
 
 	* gtk/gtkiconfactory.c: Revert the previous stock icons patch.
