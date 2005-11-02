@@ -39,8 +39,6 @@
 #include "gtkintl.h"
 #include "gtkalias.h"
 
-/* FIXME: make this configure option */
-#define DISABLE_DEFAULT_ICONS
 
 static GSList *all_icon_factories = NULL;
 
@@ -88,9 +86,7 @@ static gpointer parent_class = NULL;
 static void gtk_icon_factory_init       (GtkIconFactory      *icon_factory);
 static void gtk_icon_factory_class_init (GtkIconFactoryClass *klass);
 static void gtk_icon_factory_finalize   (GObject             *object);
-#ifndef DISABLE_DEFAULT_ICONS
 static void get_default_icons           (GtkIconFactory      *icon_factory);
-#endif
 static void icon_source_clear           (GtkIconSource       *source);
 
 static GtkIconSize icon_size_register_intern (const gchar *name,
@@ -264,9 +260,7 @@ gtk_icon_factory_lookup (GtkIconFactory *factory,
   return g_hash_table_lookup (factory->icons, stock_id);
 }
 
-#ifndef DISABLE_DEFAULT_ICONS
 static GtkIconFactory *gtk_default_icons = NULL;
-#endif
 static GSList *default_factories = NULL;
 
 /**
@@ -313,14 +307,12 @@ gtk_icon_factory_remove_default (GtkIconFactory  *factory)
 void
 _gtk_icon_factory_ensure_default_icons (void)
 {
-#ifndef DISABLE_DEFAULT_ICONS
   if (gtk_default_icons == NULL)
     {
       gtk_default_icons = gtk_icon_factory_new ();
 
       get_default_icons (gtk_default_icons);
     }
-#endif
 }
 
 /**
@@ -356,16 +348,11 @@ gtk_icon_factory_lookup_default (const gchar *stock_id)
       tmp_list = g_slist_next (tmp_list);
     }
 
-#ifndef DISABLE_DEFAULT_ICONS
   _gtk_icon_factory_ensure_default_icons ();
   
   return gtk_icon_factory_lookup (gtk_default_icons, stock_id);
-#else
-  return NULL;
-#endif
 }
 
-#ifndef DISABLE_DEFAULT_ICONS
 static void
 register_stock_icon (GtkIconFactory *factory,
 		     const gchar    *stock_id)
@@ -799,7 +786,6 @@ get_default_icons (GtkIconFactory *factory)
   add_icon (factory, GTK_STOCK_SELECT_COLOR, 24, stock_colorselector_24);
   add_icon (factory, GTK_STOCK_COLOR_PICKER, 25, stock_color_picker_25);
 }
-#endif
 
 /************************************************************
  *                    Icon size handling                    *

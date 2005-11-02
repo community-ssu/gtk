@@ -1,3 +1,14 @@
+2005-11-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Making the builtin stock icons available again.
+
+	* gtk/gtkiconfactory.c: Revert the previous stock icons patch.
+	* gtk/gtkicontheme.c (theme_lookup_icons): Consider builtin stock
+	icons only as final resort (instead of primary candidates in the
+	'hicolor' theme) to avoid the extra memory consumption caused by icon
+	registration.
+	N#20725, N#21039
+
 2005-11-01  Michael Natterer  <mitch@imendio.com>
 
 	* gdk/x11/gdkdnd-x11.c: removed redundant "const" from the

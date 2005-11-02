@@ -1813,19 +1813,6 @@ theme_lookup_icon (IconTheme          *theme,
   min_dir = NULL;
   has_larger = FALSE;
 
-  /* Builtin icons are logically part of the default theme and
-   * are searched before other subdirectories of the default theme.
-   */
-  if (strcmp (theme->name, DEFAULT_THEME_NAME) == 0 && use_builtin)
-    {
-      closest_builtin = find_builtin_icon (icon_name, size,
-					   &min_difference,
-					   &has_larger);
-
-      if (min_difference == 0)
-	return icon_info_new_builtin (closest_builtin);
-    }
-
   l = theme->dirs;
   while (l != NULL)
     {
@@ -1848,7 +1835,6 @@ theme_lookup_icon (IconTheme          *theme,
 		{
 		  min_difference = difference;
 		  min_dir = dir;
-		  closest_builtin = NULL;
 		  has_larger = smaller;
 		}
 	    }
@@ -1858,7 +1844,6 @@ theme_lookup_icon (IconTheme          *theme,
 		{
 		  min_difference = difference;
 		  min_dir = dir;
-		  closest_builtin = NULL;
 		}
 	    }
 
@@ -1867,9 +1852,6 @@ theme_lookup_icon (IconTheme          *theme,
       l = l->next;
     }
 
-  if (closest_builtin)
-    return icon_info_new_builtin (closest_builtin);
-  
   if (min_dir)
     {
       GtkIconInfo *icon_info = icon_info_new ();
@@ -1918,6 +1900,19 @@ theme_lookup_icon (IconTheme          *theme,
       return icon_info;
     }
  
+  /* When an icon isn't found even in the default theme, try builtin stock
+   * icons as the last resort
+   */
+  if (strcmp (theme->name, DEFAULT_THEME_NAME) == 0 && use_builtin)
+    {
+      closest_builtin = find_builtin_icon (icon_name, size,
+					   &min_difference,
+					   &has_larger);
+
+      if (closest_builtin)
+	return icon_info_new_builtin (closest_builtin);
+    }
+  
   return NULL;
 }
 
