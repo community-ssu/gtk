@@ -1,3 +1,9 @@
+maemo-af-desktop (1.62.1) unstable; urgency=low
+
+  * Updated version, incorrect version in previous version
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed,  2 Nov 2005 13:51:38 +0200
+
 maemo-af-desktop (1.61.2) unstable; urgency=low
 
    * Reverted incomplete bug fix
