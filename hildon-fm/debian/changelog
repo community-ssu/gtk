@@ -1,3 +1,10 @@
+hildon-fm (0.9.46-1) unstable; urgency=low
+
+  * fixes
+    N#20755 Modifications to GtkTreeModels cause File selector to load much more content than intended.	
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Thu,  3 Nov 2005 19:54:59 +0200
+
 hildon-fm (0.9.45-1) unstable; urgency=low
 
   * fixes
