@@ -337,9 +337,6 @@ static void hildon_app_class_init (HildonAppClass *app_class)
         hildon_app_real_topmost_status_acquire;
     app_class->topmost_status_lose = hildon_app_real_topmost_status_lose;
     app_class->switch_to = hildon_app_real_switch_to;
-    app_class->clipboard_copy = hildon_app_clipboard_copy;
-    app_class->clipboard_cut = hildon_app_clipboard_cut;
-    app_class->clipboard_paste = hildon_app_clipboard_paste;
 
     app_signals[TOPMOST_STATUS_ACQUIRE] =
         g_signal_new("topmost_status_acquire",
@@ -710,45 +707,6 @@ hildon_app_button (GtkWidget *widget, GdkEventButton *event)
 	}
     }
   return FALSE;
-}
-
-static void hildon_app_clipboard_copy(HildonApp *self, GtkWidget *widget)
-{
-  if (GTK_IS_EDITABLE(widget) || GTK_IS_TEXT_VIEW(widget))
-    {
-      g_signal_emit_by_name(widget, "copy_clipboard");
-
-      /* now, remove selection */
-      if (GTK_IS_EDITABLE(widget))
-      {
-        gint pos = gtk_editable_get_position(GTK_EDITABLE(widget));
-	gtk_editable_select_region(GTK_EDITABLE(widget), pos, pos);
-      }
-      else
-      {
-	GtkTextBuffer *buffer;
-	GtkTextIter iter;
-
-	buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
-
-	/* set selection_bound mark to same location as insert mark */
-	gtk_text_buffer_get_iter_at_mark(buffer, &iter,
-	  gtk_text_buffer_get_insert(buffer));
-        gtk_text_buffer_move_mark_by_name(buffer, "selection_bound", &iter);
-      }
-    }
-}
-
-static void hildon_app_clipboard_cut(HildonApp *self, GtkWidget *widget)
-{
-  if (GTK_IS_EDITABLE(widget) || GTK_IS_TEXT_VIEW(widget))
-    g_signal_emit_by_name(widget, "cut_clipboard");
-}
-
-static void hildon_app_clipboard_paste(HildonApp *self, GtkWidget *widget)
-{
-  if (GTK_IS_EDITABLE(widget) || GTK_IS_TEXT_VIEW(widget))
-    g_signal_emit_by_name(widget, "paste_clipboard");
 }
 
 /*init functions */
@@ -1310,61 +1268,6 @@ hildon_app_xwindow_lookup_widget(Window xwindow)
   return widget;
 }
 
-static void
-hildon_app_send_clipboard_reply(XClientMessageEvent *cm, GtkWidget *widget)
-{
-  XEvent ev;
-  gint xerror;
-  gboolean selection;
-
-  if (GTK_IS_EDITABLE(widget))
-    {
-      if (GTK_IS_ENTRY(widget) && !GTK_ENTRY(widget)->visible)
-	{
-	  /* nothing can be copied/cut in non-visible entries */
-	  selection = FALSE;
-	}
-      else
-	{
-	  selection =
-	    gtk_editable_get_selection_bounds(GTK_EDITABLE(widget), NULL, NULL);
-	}
-    }
-  else if (GTK_IS_TEXT_VIEW(widget))
-    {
-      GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
-      selection = gtk_text_buffer_get_selection_bounds(buf, NULL, NULL);
-    }
-  else
-    {
-      selection = TRUE;
-    }
-
-  memset(&ev, 0, sizeof(ev));
-  ev.xclient.type = ClientMessage;
-  ev.xclient.window = cm->data.l[1];
-  ev.xclient.message_type =
-    XInternAtom(GDK_DISPLAY(), "_HILDON_IM_CLIPBOARD_SELECTION_REPLY", False);
-  ev.xclient.format = 32;
-  ev.xclient.data.l[0] = selection;
-
-  gdk_error_trap_push();
-  XSendEvent(GDK_DISPLAY(), cm->data.l[1], False, 0, &ev);
-
-  xerror = gdk_error_trap_pop();
-  if( xerror )
-    {
-      if( xerror == BadWindow )
-	{
-	  /* The keyboard is gone, ignore */
-	}
-      else
-	{
-	  g_warning( "Received the X error %d\n", xerror );
-	}
-    }
-}
-
 /* Let's search a actual main window using tranciency hints. 
    Note that there can be several levels of menus/dialogs above
    the actual main window. */
@@ -1473,14 +1376,6 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 
 	  g_signal_emit_by_name (G_OBJECT(app), "clipboard_paste", widget);
         }
-        else if (xclient_message_type_check(cm, "_HILDON_IM_CLIPBOARD_SELECTION_QUERY"))
-        {
-	  Window xwindow = cm->data.l[0];
-	  GtkWidget *widget = hildon_app_xwindow_lookup_widget(xwindow);
-
-	  if (widget != NULL)
-	    hildon_app_send_clipboard_reply(cm, widget);
-	}
       }
     
      if (eventti->type == ButtonPress)
