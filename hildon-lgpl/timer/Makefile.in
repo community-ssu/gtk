@@ -175,9 +175,6 @@ lib_LIBRARIES = libtimer.a
 
 EXTRA_DIST = 
 
-libtimer_a_LIBADD = 
-
-libtimer_a_LDFLAGS = 
 libtimer_a_SOURCES = \
 	timer.h timer.c
 
@@ -194,7 +191,7 @@ CONFIG_CLEAN_FILES =
 LIBRARIES = $(lib_LIBRARIES)
 
 libtimer_a_AR = $(AR) cru
-libtimer_a_DEPENDENCIES =
+libtimer_a_LIBADD =
 am_libtimer_a_OBJECTS = timer.$(OBJEXT)
 libtimer_a_OBJECTS = $(am_libtimer_a_OBJECTS)
 
