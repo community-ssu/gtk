@@ -1,3 +1,28 @@
+2005-11-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#20755 Modifications to GtkTreeModels cause File selector to load
+                much more content than intended.
+
+	* hildon-fm/hildon-file-system-model.c
+	(*): Removed in_timeout member. The need for that was dissapeared.
+	
+	(hildon_file_system_model_ref_node),
+	(hildon_file_system_model_unref_node),
+	(node_is_under_removable): functions removed
+	
+	(set_mmc_state): Changed to avoid possible extra reload in save
+	dialogs.
+	
+	(hildon_file_system_model_iter_n_children): Removed node loading.
+
+	(hildon_file_system_model_get_value): Changed to load children
+	when a field that is needed to display folder graphically is
+	requested.
+
+	(hildon_file_system_model_delayed_add_children): Changed to skip
+	extra reloads on MMC at some cases.
+
+	
 2005-10-31  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.9.45

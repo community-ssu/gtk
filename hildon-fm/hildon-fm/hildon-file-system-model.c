@@ -97,7 +97,6 @@ typedef struct {
     gboolean available; /* Set by code */
     GError *error;      /* Set if cannot get children */
     gchar *thumb_title, *thumb_author;
-    gint ref_count;
 } HildonFileSystemModelNode;
 
 typedef struct {
@@ -132,7 +131,6 @@ struct _HildonFileSystemModelPrivate {
     GdkPixbuf *expanded_emblem, *collapsed_emblem;
     guint timeout_id;
     gboolean gateway_accessed;
-    gboolean in_timeout;
 
     /* Properties */
     gchar *backend_name;
@@ -180,8 +178,6 @@ static GNode *
 hildon_file_system_model_kick_node(GNode *node, gpointer data);
 static void
 clear_model_node_caches(HildonFileSystemModelNode *model_node);
-static gboolean
-node_is_under_removable(GNode *node);
 static void
 hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
                                               model, GNode * node, gboolean force);
@@ -355,10 +351,6 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
     model = HILDON_FILE_SYSTEM_MODEL(data);
     priv = model->priv;
 
-    /* No recursion allowed (even I if think 
-       g_timeout:s do not recurse anyway */
-    if (priv->in_timeout) return TRUE;
-
     /* Handle pending reloads one at a time. We can now handle errors
        inside delayed_add_children, since we are called from idle and
        we can do modifications to model. */
@@ -374,8 +366,6 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
         return FALSE;
     }
 
-    priv->in_timeout = TRUE;
-
     /* Back to one addition per idle, old approach caused too
        long delays... */
 
@@ -390,21 +380,17 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
       current_list->iter = g_slist_next(current_list->iter);
 
     if (current_list->iter)
-    {
-      priv->in_timeout = FALSE;
       return TRUE;  /* Ok, there is items left. Continue with this
                        idle handler */
-    }
     /* Current list ends here. We now have to check
   	         if loading of some folder is really finished. If this is a
   	         case we then have to check if there are unflagged
   	         paths in that folder (paths to be removed) */
-  
-  	node = current_list->parent_node;
+
+    node = current_list->parent_node;
     delayed_list_free(current_list);
     g_queue_pop_head(priv->delayed_lists);
     handle_possibly_finished_node(node);
-    priv->in_timeout = FALSE;
 
     return TRUE;
 }
@@ -456,22 +442,6 @@ hildon_file_system_model_delayed_add_node_list(HildonFileSystemModel *
     }
 }
 
-static gboolean
-node_is_under_removable(GNode *node)
-{
-/* You can change the following conditional to make everything
-    to load like it were under gateway */
-#if 1
-  gint type;
-  node = get_device_for_node(node, &type);
-
-  return node && (type == HILDON_FILE_SYSTEM_MODEL_MMC ||
-                  type == HILDON_FILE_SYSTEM_MODEL_GATEWAY);
-#else
-  return TRUE;
-#endif
-}
-
 /* We are not any more called directly by GtkTreeModel interface methods, so we can modify
    model and send notifications */
 static void
@@ -496,7 +466,8 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
       return;
 
     current_time = time(NULL);
-    removable = node_is_under_removable(node);
+    removable = !gtk_file_system_path_is_local(model->priv->filesystem, 
+        model_node->path);
 
     if (model_node->load_time == 0 || force || 
        ((abs(current_time - model_node->load_time) > RELOAD_THRESHOLD) &&
@@ -511,8 +482,7 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
       /* List children do not work reliably with bluetooth connections. It can
          still succeed, even though the connection has died already. This
          if statement can be removed when the backend works better... */
-      if (!gtk_file_system_path_is_local(model->priv->filesystem, 
-        model_node->path))
+      if (removable)
       {
         unlink_file_folder(node);
         if (!link_file_folder(node, model_node->path, &model_node->error))
@@ -920,6 +890,11 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
           model_node->title_cache = _hildon_file_system_create_display_name(fs, 
               path, model_node->type, model_node->info);
         g_value_set_string(value, model_node->title_cache);
+
+        /* We try to reload children, if we are actually showing something */
+        if (model_node->type >= HILDON_FILE_SYSTEM_MODEL_FOLDER)
+          _hildon_file_system_model_queue_reload(
+            HILDON_FILE_SYSTEM_MODEL(model), iter, FALSE);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_SORT_KEY:
         /* We cannot just use display_key from GtkFileInfo, because it is case sensitive */
@@ -973,6 +948,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
                                                       TREE_ICON_SIZE);
 
         g_value_set_object(value, model_node->icon_cache);
+        update_cache_queue(priv, node);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_EXPANDED:
         if (!model_node->icon_cache_expanded)
@@ -1086,7 +1062,6 @@ static gint hildon_file_system_model_iter_n_children(GtkTreeModel * model,
 {
     HildonFileSystemModel *self;
     HildonFileSystemModelPrivate *priv;
-    GNode *node;
 
     TRACE;
     g_assert(HILDON_IS_FILE_SYSTEM_MODEL(model));
@@ -1098,23 +1073,8 @@ static gint hildon_file_system_model_iter_n_children(GtkTreeModel * model,
         return g_node_n_children(priv->roots);
 
     g_return_val_if_fail(priv->stamp == iter->stamp, 0);
-    node = iter->user_data;
 
-    /* Adding children is not enough in ref_node only:
-         - Dimmed MMC cannot be loaded at that time.
-         - Dimmed gateway has the same issue.
-         - Timed reloads need that this is done here as well.
-    */
-
-    if (((HildonFileSystemModelNode *) node->data)->ref_count > 0)
-    {
-      hildon_file_system_model_ensure_idle(self);
-  
-      if (g_queue_find(priv->reload_list, node) == NULL)
-        g_queue_push_tail(priv->reload_list, node);
-    }
-  	 
-    return g_node_n_children(node);
+    return g_node_n_children(iter->user_data);
 }
 
 static gboolean hildon_file_system_model_iter_has_child(GtkTreeModel *
@@ -1172,55 +1132,6 @@ static gboolean hildon_file_system_model_iter_parent(GtkTreeModel * model,
     iter->user_data = node->parent;
 
     return node->parent != NULL && node->parent != priv->roots;
-}
-
-static void
-hildon_file_system_model_ref_node(GtkTreeModel *model, GtkTreeIter *iter)
-{
-  HildonFileSystemModel *self;
-  HildonFileSystemModelNode *model_node;
-  GNode *node;
-
-  self = HILDON_FILE_SYSTEM_MODEL(model);
-  node = iter->user_data;
-  	 
-  g_return_if_fail(iter->stamp == self->priv->stamp);
-  g_return_if_fail(node != NULL);
-
-  model_node = node->data;
-
-  g_return_if_fail(model_node != NULL);
-  g_return_if_fail(model_node->ref_count >= 0);
-
-  if (++model_node->ref_count == 1)
-  {
-    hildon_file_system_model_ensure_idle(self);
-
-    if (g_queue_find(self->priv->reload_list, node) == NULL)
-      g_queue_push_tail(self->priv->reload_list, node);
-  }
-}
-
-static void
-hildon_file_system_model_unref_node(GtkTreeModel *model, GtkTreeIter *iter)
-{
-  HildonFileSystemModelNode *model_node;
-
-  g_return_if_fail(iter->stamp == CAST_GET_PRIVATE(model)->stamp);
-  g_return_if_fail(iter->user_data != NULL);
-
-  model_node = ((GNode *) iter->user_data)->data;
-
-  g_return_if_fail(model_node != NULL);
-
-  /* g_return_if_fail could be used here instead,
-     but GtkTreeModelSort/Filter easily unref nodes with 
-     zero refcount. This would cause spam... */
-  if (model_node->ref_count > 0)
-  {
-    if (--model_node->ref_count == 0)
-      clear_model_node_caches(model_node);
-  }
 }
 
 /*********************************************/
@@ -1583,15 +1494,13 @@ static void set_mmc_state(GtkTreeModel * model, GtkFilePath *mount_path)
           g_error_free(error);
           new_state = FALSE;
         }
-        else
-          hildon_file_system_model_delayed_add_children(
-            HILDON_FILE_SYSTEM_MODEL(model), node, FALSE);
     } else {
         ULOG_INFO("MMC unmounted");
         
         gtk_file_path_free(model_node->path);
         send_device_disconnected(node);        
         model_node->path = NULL;
+        model_node->load_time = 0;
     }
 
     clear_model_node_caches(model_node);
@@ -2205,8 +2114,6 @@ static void hildon_file_system_model_iface_init(GtkTreeModelIface * iface)
     iface->iter_n_children = hildon_file_system_model_iter_n_children;
     iface->iter_nth_child = hildon_file_system_model_iter_nth_child;
     iface->iter_parent = hildon_file_system_model_iter_parent;
-    iface->ref_node = hildon_file_system_model_ref_node;
-    iface->unref_node = hildon_file_system_model_unref_node;
 }
 
 static void
