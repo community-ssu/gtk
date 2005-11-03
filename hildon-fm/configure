@@ -1774,7 +1774,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=hildon-fm
- VERSION=0.9.45
+ VERSION=0.9.46
 
 
 cat >>confdefs.h <<_ACEOF
