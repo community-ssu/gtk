@@ -1,3 +1,9 @@
+Thu Nov  3 12:23:17 2005  Tim Janik  <timj@gtk.org>
+
+	* io-ico.c (DecodeHeader): removed bogus HeaderSize<0 check (right
+	after initialization from unsigned variables).
+	synced with upstream HEAD.
+
 2005-10-07  Michael Natterer  <mitch@imendio.com>
 
 	Merged the 2.4 -> 2.10 diff, excluding the patches that have
