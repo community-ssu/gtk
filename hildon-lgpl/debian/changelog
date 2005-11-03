@@ -1,3 +1,10 @@
+hildon-lgpl (0.9.56-1) unstable; urgency=low
+
+  * fixed,
+    N#19072 Not able to Cut/Copy/Paste from VKB if Web shortcut details used
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Thu,  3 Nov 2005 20:29:20 +0200
+
 hildon-lgpl (0.9.55) unstable; urgency=low
 
   * Bugs fixed,
