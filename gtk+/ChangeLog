@@ -1,3 +1,15 @@
+2005-11-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcalendar.c (gtk_calendar_class_init), (gtk_calendar_init),
+	(gtk_calendar_set_month_prev), (gtk_calendar_set_month_next),
+	(gtk_calendar_set_year_prev), (gtk_calendar_set_year_next),
+	(gtk_calendar_main_button), (gtk_calendar_select_month),
+	(gtk_calendar_button_press), (gtk_calendar_paint_arrow),
+	(gtk_calendar_key_press), (gtk_calendar_set_property),
+	(gtk_calendar_get_property): replaced style properties 'min-year' and
+	'max-year' with corresponding new class properties
+	N#19283, N#19648
+
 2005-11-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_button_release,

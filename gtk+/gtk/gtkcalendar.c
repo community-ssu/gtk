@@ -207,10 +207,6 @@ dates_difference(N_int year1, N_int mm1, N_int dd1,
 #define BACKGROUND_COLOR(widget)         (& (widget)->style->base[GTK_WIDGET_STATE (widget)])
 #define HIGHLIGHT_BACK_COLOR(widget)     (& (widget)->style->mid[GTK_WIDGET_STATE (widget)])
 
-/* Default Min/Max years for hildon calendar */
-#define HILDON_MIN_YEAR 0
-#define HILDON_MAX_YEAR 2999
-
 enum {
   ARROW_YEAR_LEFT,
   ARROW_YEAR_RIGHT,
@@ -248,6 +244,8 @@ enum
   PROP_NO_MONTH_CHANGE,
   PROP_SHOW_WEEK_NUMBERS,
   PROP_WEEK_START,
+  PROP_MIN_YEAR,
+  PROP_MAX_YEAR,
   PROP_LAST
 };
 
@@ -330,6 +328,9 @@ struct _GtkCalendarPrivateData
 
   gint drag_start_x;
   gint drag_start_y;
+
+  gint min_year;
+  gint max_year;
 };
 
 #define GTK_CALENDAR_PRIVATE_DATA(widget)  (((GtkCalendarPrivateData*)(GTK_CALENDAR (widget)->private_data)))
@@ -612,23 +613,21 @@ gtk_calendar_class_init (GtkCalendarClass *class)
                                                      0, 6, 0,
                                                      G_PARAM_READWRITE));
 
-  gtk_widget_class_install_style_property (widget_class,
-                                          g_param_spec_int ("min-year",
-                                                              P_("Minimum year for calendar"),
-                                                              P_("Set minimum year calendar accepts"),
-                                                              0,
-                                                              G_MAXINT,
-                                                              HILDON_MIN_YEAR,
-                                                              G_PARAM_READWRITE));
+  g_object_class_install_property (gobject_class,
+                                   PROP_MIN_YEAR,
+                                   g_param_spec_int ("min_year",
+                                                     "Minimum valid year",
+                                                     "Minimum valid year (0 if no limit)",
+                                                     0, 2100, 0,
+                                                     G_PARAM_READWRITE));
 
-  gtk_widget_class_install_style_property (widget_class,
-                                          g_param_spec_int ("max-year",
-                                                              P_("Maximum year for calendar"),
-                                                              P_("Set max year that calendar accepts"),
-                                                              0,
-                                                              G_MAXINT,
-                                                              HILDON_MAX_YEAR,
-                                                              G_PARAM_READWRITE));
+  g_object_class_install_property (gobject_class,
+                                   PROP_MAX_YEAR,
+                                   g_param_spec_int ("max_year",
+                                                     "Maximum valid year",
+                                                     "Maximum valid year (0 if no limit)",
+                                                     0, 2100, 0,
+                                                     G_PARAM_READWRITE));
 
   gtk_widget_class_install_style_property (widget_class,
                                   g_param_spec_boolean ("hildonlike",
@@ -792,6 +791,9 @@ gtk_calendar_init (GtkCalendar *calendar)
   private_data->in_drag = 0;
   private_data->drag_highlight = 0;
 
+  private_data->min_year = 0;
+  private_data->max_year = 0;
+
   gtk_drag_dest_set (widget, 0, NULL, 0, GDK_ACTION_COPY);
   gtk_drag_dest_add_text_targets (widget);
 
@@ -854,7 +856,7 @@ gtk_calendar_init (GtkCalendar *calendar)
 #endif
 
   /* Use nl_langinfo to obtain the first day of the week */
-  week_1stday = nl_langinfo (_NL_TIME_WEEK_1STDAY);
+  week_1stday = (guint32) nl_langinfo (_NL_TIME_WEEK_1STDAY);
 
   if (g_date_valid_dmy (week_1stday % 100,
                         week_1stday % 10000 / 100,
@@ -975,34 +977,22 @@ top_y_for_row (GtkCalendar *calendar,
 static void
 gtk_calendar_set_month_prev (GtkCalendar *calendar)
 {
+  GtkCalendarPrivateData *priv = GTK_CALENDAR_PRIVATE_DATA (calendar);
   gint month_len;
-  gint min_year;
-  gboolean hildonlike;
-
-  gtk_widget_style_get (GTK_WIDGET (calendar), "hildonlike", &hildonlike,
-                        "min-year", &min_year, NULL);
 
   if (calendar->display_flags & GTK_CALENDAR_NO_MONTH_CHANGE)
     return;
   
   if (calendar->month == 0)
-     {
-       if (hildonlike)
-         {
-            if (calendar->year > min_year) 
-              {
-                 calendar->month = 11;
-                 calendar->year--;
-              }
-         }
-       else
-         {
-           calendar->month = 11;
-           calendar->year--;
-         }
-      }
+    {
+      if (!priv->min_year || calendar->year > priv->min_year)
+        {
+          calendar->month = 11;
+          calendar->year--;
+        }
+    }
   else
-     calendar->month--;
+    calendar->month--;
 
   month_len = month_length[leap (calendar->year)][calendar->month + 1];
   
@@ -1036,29 +1026,19 @@ gtk_calendar_set_month_prev (GtkCalendar *calendar)
 static void
 gtk_calendar_set_month_next (GtkCalendar *calendar)
 {
+  GtkCalendarPrivateData *priv;
   gint month_len;
-  gint max_year;
-  gboolean hildonlike;
   
   g_return_if_fail (GTK_IS_WIDGET (calendar));
-  
-  gtk_widget_style_get (GTK_WIDGET (calendar), "hildonlike", &hildonlike,
-                        "max-year", &max_year, NULL);
 
+  priv = GTK_CALENDAR_PRIVATE_DATA (calendar);
+  
   if (calendar->display_flags & GTK_CALENDAR_NO_MONTH_CHANGE)
     return;
   
   if (calendar->month == 11)
     {
-      if (hildonlike)
-        {
-          if (calendar->year < max_year)
-            {
-              calendar->month = 0;
-              calendar->year++;
-            }
-        }
-      else
+      if (!priv->max_year || calendar->year < priv->max_year)
         {
           calendar->month = 0;
           calendar->year++;
@@ -1093,22 +1073,15 @@ gtk_calendar_set_month_next (GtkCalendar *calendar)
 static void
 gtk_calendar_set_year_prev (GtkCalendar *calendar)
 {
+  GtkCalendarPrivateData *priv;
   gint month_len;
-  gint min_year;
-  gboolean hildonlike;
 
   g_return_if_fail (GTK_IS_WIDGET (calendar));
   
-  gtk_widget_style_get (GTK_WIDGET (calendar), "hildonlike", &hildonlike,
-                        "min-year", &min_year, NULL);
-  
-  if (hildonlike)
-  {
-      if (calendar->year > min_year)
-         calendar->year--;
-  }
-  else 
-      calendar->year--;
+  priv = GTK_CALENDAR_PRIVATE_DATA (calendar);
+
+  if (!priv->min_year || priv->min_year < calendar->year)
+    calendar->year--;
 
   gtk_calendar_freeze (calendar);
   gtk_calendar_compute_days (calendar);
@@ -1136,27 +1109,16 @@ gtk_calendar_set_year_prev (GtkCalendar *calendar)
 static void
 gtk_calendar_set_year_next (GtkCalendar *calendar)
 {
+  GtkCalendarPrivateData *priv;
   gint month_len;
-  GtkWidget *widget;
-  gint max_year;
-  gboolean hildonlike;
   
   g_return_if_fail (GTK_IS_WIDGET (calendar));
-  
-  widget = GTK_WIDGET (calendar);
-
-  gtk_widget_style_get(widget, "hildonlike", &hildonlike, 
-                       "max-year", &max_year, NULL);
+  priv = GTK_CALENDAR_PRIVATE_DATA (calendar);
   
   gtk_calendar_freeze (calendar);
   
-  if (hildonlike)
-  {
-     if (calendar->year < max_year)
-       calendar->year++;
-  }
-  else
-      calendar->year++;
+  if (!priv->max_year || priv->max_year > calendar->year)
+    calendar->year++;
 
   gtk_calendar_compute_days (calendar);
   g_signal_emit (calendar,
@@ -1189,7 +1151,6 @@ gtk_calendar_main_button (GtkWidget      *widget,
   gint row, col;
   gint day_month;
   gint day;
-  gint max_year, min_year;
   gboolean hildonlike;
   
   calendar = GTK_CALENDAR (widget);
@@ -1205,14 +1166,15 @@ gtk_calendar_main_button (GtkWidget      *widget,
   if (row == -1 || col == -1)
     return;
 
-  gtk_widget_style_get (GTK_WIDGET (calendar), "hildonlike", &hildonlike,
-                        "max-year", &max_year, "min-year", &min_year, NULL);
+  gtk_widget_style_get (GTK_WIDGET(calendar), "hildonlike", &hildonlike, NULL);
   day_month = calendar->day_month[row][col];
   
   if (hildonlike) 
     {
-      if ((calendar->year == min_year && calendar->month == 0 && day_month == MONTH_PREV)
-          || (calendar->year == max_year && calendar->month == 11 && day_month == MONTH_NEXT)) 
+      if ((calendar->year == private_data->min_year &&
+           calendar->month == 0 && day_month == MONTH_PREV) ||
+          (calendar->year == private_data->max_year &&
+           calendar->month == 11 && day_month == MONTH_NEXT)) 
         {
           private_data->is_bad_day = TRUE;
           g_signal_emit (calendar, gtk_calendar_signals[ERRONEOUS_DATE_SIGNAL], 0);
@@ -2749,23 +2711,17 @@ gtk_calendar_select_month (GtkCalendar *calendar,
                            guint        month,
                            guint        year)
 {
-  gboolean hildonlike;
-  guint min_year, max_year;
+  GtkCalendarPrivateData *priv;
 
   g_return_val_if_fail (GTK_IS_CALENDAR (calendar), FALSE);
   g_return_val_if_fail (month <= 11, FALSE);
-  
-  gtk_widget_style_get(GTK_WIDGET (calendar), "hildonlike", &hildonlike, 
-                       "max-year", &max_year, "min-year",
-                        &min_year, NULL);
-  
-  if (hildonlike)
-    {
-      if (year >= max_year)
-         year = max_year;
-      else if (year <= min_year)
-         year = min_year;
-    }
+
+  priv = GTK_CALENDAR_PRIVATE_DATA (calendar);
+
+  if (priv->max_year && year > priv->max_year)
+    year = priv->max_year;
+  if (priv->min_year && year < priv->min_year)
+    year = priv->min_year;
 
   calendar->month = month;
   calendar->year  = year;
@@ -3081,13 +3037,11 @@ gtk_calendar_button_press (GtkWidget      *widget,
   GtkCalendarPrivateData *private_data;
   gint arrow = -1;
   gboolean hildonlike;
-  gint min_year, max_year;
 
   calendar = GTK_CALENDAR (widget);
   private_data = GTK_CALENDAR_PRIVATE_DATA (widget);
  
-  gtk_widget_style_get(widget, "hildonlike", &hildonlike,
-                       "min-year", &min_year, "max-year", &max_year, NULL);
+  gtk_widget_style_get(widget, "hildonlike", &hildonlike, NULL);
   
   if (!hildonlike || event->type == GDK_2BUTTON_PRESS)
    {
@@ -3102,8 +3056,12 @@ gtk_calendar_button_press (GtkWidget      *widget,
      gint col = column_from_x (calendar, x);
      private_data->pressed_day = calendar->day[row][col];
      
-     if ((calendar->year == min_year && calendar->month == 0 && calendar->day_month[row][col] == MONTH_PREV) ||
-         (calendar->year == max_year && calendar->month == 11 && calendar->day_month[row][col] == MONTH_NEXT))
+     if ((calendar->year == private_data->min_year &&
+          calendar->month == 0
+          && calendar->day_month[row][col] == MONTH_PREV) ||
+         (calendar->year == private_data->max_year &&
+          calendar->month == 11 &&
+          calendar->day_month[row][col] == MONTH_NEXT))
        {}
      else if (calendar->day_month[row][col] == MONTH_CURRENT)
        gtk_calendar_select_and_focus_day (calendar, private_data->pressed_day);
@@ -3374,14 +3332,12 @@ gtk_calendar_paint_arrow (GtkWidget *widget,
   GdkGC *gc;
   GtkCalendar *calendar;
   gint state;
-  gint max_year, min_year;
   gboolean hildonlike;
 /*  gint width, height;*/
   
   calendar = GTK_CALENDAR (widget);
   private_data = GTK_CALENDAR_PRIVATE_DATA (widget);
-  gtk_widget_style_get (widget, "hildonlike", &hildonlike, "max-year",
-                        &max_year, "min-year", &min_year, NULL);
+  gtk_widget_style_get (widget, "hildonlike", &hildonlike, NULL);
 
   if (private_data->freeze_count)
     {
@@ -3404,9 +3360,12 @@ gtk_calendar_paint_arrow (GtkWidget *widget,
       gdk_window_clear(window);
 
     /* Hildon: added support for dimmed arrows */
-    if (hildonlike  && (calendar->year <= min_year || calendar->year >= max_year))
+    if (hildonlike &&
+        ((private_data->min_year && calendar->year <= private_data->min_year) ||
+         (private_data->max_year && calendar->year >= private_data->max_year)))
       {
-        if (calendar->year <= min_year)
+        if (private_data->min_year &&
+            calendar->year <= private_data->min_year)
           {
             if (arrow == ARROW_YEAR_LEFT)
               gtk_paint_arrow (widget->style, window, GTK_STATE_INSENSITIVE,
@@ -3429,7 +3388,8 @@ gtk_calendar_paint_arrow (GtkWidget *widget,
                          GTK_ARROW_LEFT, TRUE,
                0, 0, HILDON_ARROW_WIDTH, HILDON_ARROW_HEIGHT);
           }
-        else if (calendar->year >= max_year)
+        else if (private_data->max_year &&
+                 calendar->year >= private_data->max_year)
           {
            if (arrow == ARROW_YEAR_RIGHT)
              gtk_paint_arrow (widget->style, window, GTK_STATE_INSENSITIVE, 
@@ -3646,22 +3606,20 @@ gtk_calendar_key_press (GtkWidget   *widget,
                         GdkEventKey *event)
 {
   GtkCalendar *calendar;
+  GtkCalendarPrivateData *priv;
   GtkSettings *settings;
   gint return_val;
   gint old_focus_row;
   gint old_focus_col;
   gint row, col, day;
-  gint min_year, max_year;
   gboolean knav;
 
   calendar = GTK_CALENDAR (widget);
+  priv = GTK_CALENDAR_PRIVATE_DATA (calendar);
   return_val = FALSE;
   
   old_focus_row = calendar->focus_row;
   old_focus_col = calendar->focus_col;
-
-  gtk_widget_style_get (widget, "max-year", &max_year, 
-                            "min-year", &min_year, NULL);
 
   settings = gtk_settings_get_default ();
   g_object_get (settings, "hildon-keyboard-navigation", &knav, NULL);
@@ -3676,7 +3634,8 @@ gtk_calendar_key_press (GtkWidget   *widget,
       else
         {
            /* if we are at the first allowed day of the minimum year/month then do nothing */
-           if (calendar->year == min_year && calendar->month == 0 && calendar->day_month[old_focus_row][old_focus_col-1] == MONTH_PREV) 
+           if (calendar->year == priv->min_year && calendar->month == 0 &&
+               calendar->day_month[old_focus_row][old_focus_col-1] == MONTH_PREV) 
              {
                 g_signal_emit (calendar, gtk_calendar_signals[ERRONEOUS_DATE_SIGNAL], 0);
                 return TRUE;
@@ -3719,7 +3678,8 @@ gtk_calendar_key_press (GtkWidget   *widget,
         gtk_calendar_set_month_next (calendar);
       else
         {
-           if (calendar->year == max_year && calendar->month == 11 && calendar->day_month[old_focus_row][old_focus_col+1] == MONTH_NEXT)
+           if (calendar->year == priv->max_year && calendar->month == 11 &&
+               calendar->day_month[old_focus_row][old_focus_col+1] == MONTH_NEXT)
              {
                 g_signal_emit (calendar, gtk_calendar_signals[ERRONEOUS_DATE_SIGNAL], 0);
                 return TRUE;
@@ -3758,7 +3718,8 @@ gtk_calendar_key_press (GtkWidget   *widget,
         gtk_calendar_set_year_prev (calendar);
       else
         {
-           if (calendar->year == min_year && calendar->month == 0 && calendar->day_month[old_focus_row-1][old_focus_col] == MONTH_PREV)
+           if (calendar->year == priv->min_year && calendar->month == 0 &&
+               calendar->day_month[old_focus_row-1][old_focus_col] == MONTH_PREV)
              {
                 g_signal_emit (calendar, gtk_calendar_signals[ERRONEOUS_DATE_SIGNAL], 0);
                 return TRUE;
@@ -3809,7 +3770,8 @@ gtk_calendar_key_press (GtkWidget   *widget,
         gtk_calendar_set_year_next (calendar);
       else
         {
-           if (calendar->year == max_year && calendar->month == 11 && calendar->day_month[old_focus_row+1][old_focus_col] == MONTH_NEXT)
+           if (calendar->year == priv->max_year && calendar->month == 11 &&
+               calendar->day_month[old_focus_row+1][old_focus_col] == MONTH_NEXT)
              {
                 g_signal_emit (calendar, gtk_calendar_signals[ERRONEOUS_DATE_SIGNAL], 0);
                 return TRUE;
@@ -3907,6 +3869,7 @@ gtk_calendar_set_property (GObject      *object,
 {
   GtkCalendar *calendar;
   GtkCalendarPrivateData *private_data;
+  gint val;
 
   calendar = GTK_CALENDAR (object);
   private_data = GTK_CALENDAR_PRIVATE_DATA (calendar);
@@ -3949,6 +3912,34 @@ gtk_calendar_set_property (GObject      *object,
       break;
     case PROP_WEEK_START:
       private_data->week_start = g_value_get_int (value);
+      break;
+    case PROP_MIN_YEAR:
+      val = g_value_get_int (value);
+      if (val <= private_data->max_year ||
+          val == 0 || private_data->max_year == 0)
+        {
+          private_data->min_year = val;
+          if (val && (calendar->year < val))
+            gtk_calendar_select_month (calendar,
+                                       calendar->month,
+                                       private_data->min_year);
+        }
+      else
+        g_warning("min-year cannot be greater than max-year");
+      break;
+    case PROP_MAX_YEAR:
+      val = g_value_get_int (value);
+      if (val >= private_data->min_year ||
+          val == 0 || private_data->min_year == 0)
+        {
+          private_data->max_year = val;
+          if (val && (calendar->year > val))
+            gtk_calendar_select_month (calendar,
+                                       calendar->month,
+                                       private_data->max_year);
+        }
+      else
+        g_warning("max-year cannot be less than min-year");
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -3997,6 +3988,12 @@ gtk_calendar_get_property (GObject      *object,
       break;
     case PROP_WEEK_START:
       g_value_set_int (value, private_data->week_start);
+      break;
+    case PROP_MIN_YEAR:
+      g_value_set_int (value, private_data->min_year);
+      break;
+    case PROP_MAX_YEAR:
+      g_value_set_int (value, private_data->max_year);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
