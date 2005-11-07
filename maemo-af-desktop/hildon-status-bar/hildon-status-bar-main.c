@@ -362,7 +362,7 @@ static gint rpc_cb( const gchar *interface,
     }
     else if( g_str_equal( "delayed_infobanner", method ) )
     {
-        if( arguments->len < 4 ||
+        /*if( arguments->len < 4 ||
 	    arguments->len > 5 ||
             val[0]->type != DBUS_TYPE_INT32 ||
             val[1]->type != DBUS_TYPE_INT32 ||
@@ -398,7 +398,47 @@ static gint rpc_cb( const gchar *interface,
 				       val[1]->value.i,
 				       val[2]->value.i,
 				       val[3]->value.s
-				       );	
+				       );	*/
+    }
+    else if( g_str_equal( "xyzzyplugh", method ) )
+    {
+        if( arguments->len < 4 ||
+        arguments->len > 5 ||
+            val[0]->type != DBUS_TYPE_INT32 ||
+            val[1]->type != DBUS_TYPE_INT32 ||
+            val[2]->type != DBUS_TYPE_INT32 ||
+            val[3]->type != DBUS_TYPE_STRING || 
+        (arguments->len == 5 && val[5]->type != DBUS_TYPE_NIL 
+        ) )
+      {
+            retval->type = DBUS_TYPE_STRING;
+            if( arguments->len < 5 ) {
+                retval->value.s = 
+                    g_strdup_printf( "Not enough arguments." );
+            } else {
+                retval->value.s = 
+                    g_strdup_printf( "Wrong type of arguments: "
+                                     "(%d,%d,%d,%d); "
+                                     "was expecting (%d, %d, %d and %d)",
+                                     val[0]->type, val[1]->type, val[2]->type, 
+                                     val[3]->type,
+                                     DBUS_TYPE_INT32, DBUS_TYPE_INT32,
+                                     DBUS_TYPE_INT32, 
+                                     DBUS_TYPE_STRING);
+            }
+            osso_log( LOG_ERR, retval->value.s );
+            if(retval->value.s){
+                g_free((gchar*)retval->value.s);
+            }
+            retval->value.s = "Wrong type of args";
+            return OSSO_ERROR;
+ 
+      } 
+    return _delayed_infobanner_add(val[0]->value.i,
+                       val[1]->value.i,
+                       val[2]->value.i,
+                       val[3]->value.s
+                       );  
     }
     else if( g_str_equal( "cancel_delayed_infobanner", method ) )
     {

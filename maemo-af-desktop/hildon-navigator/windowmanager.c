@@ -604,11 +604,11 @@ static void create_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
     if (wm_class_str != NULL)
     {
         window_props *new_win;
-        GdkWindow *gdk_win = NULL;
         
         if (find_application_from_tree(model, &parent, wm_class_str))
         {
             unsigned long active_view;
+            GdkWindow *gdk_win = NULL;
 
             gtk_tree_model_get(model, &parent, WM_KILLED_ITEM, &killed,
                                WM_VIEW_ID_ITEM, &active_view, -1);
@@ -635,11 +635,13 @@ static void create_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                 if (gdk_error_trap_pop() != 0)
                 {
                     XFree(wm_class_str);
+                    g_object_unref(gdk_win);
+                    gdk_win = NULL;
                     return;
                 }
-
-                g_object_unref(gdk_win);
             }
+            g_object_unref(gdk_win);
+            gdk_win = NULL;
 
             /* If the application has been killed, we'll have to upgrade
                the window ID information on all application leaf nodes. */
@@ -647,6 +649,7 @@ static void create_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
             if (killed == TRUE)
             {
                 update_application_window_id(model, &parent, cev->window);
+                XFree(wm_class_str);
                 return;
             }
 
@@ -679,6 +682,10 @@ static void create_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
             new_win->menuitem_widget = NULL;
             new_win->is_dialog = 1;
             
+            g_free(icon);
+            g_free(exec);
+            g_free(name);
+
             if (new_win->view_id == 0)
             {
                 gulong active_view = get_active_view(cev->window);
@@ -688,18 +695,19 @@ static void create_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                 }
                 else
                 {
-                    g_free(icon);
-                    g_free(exec);
-                    g_free(name);
+                    g_free(new_win->icon);
+                    g_free(new_win->exec);
+                    g_free(new_win->name);
+                    g_free(new_win);
                     XFree(wm_class_str);
                     return;
                 }
             }
             insert_new_window(model, &parent, new_win);
             
-            g_free(exec);
-            g_free(name);
-            g_free(icon);
+            g_free(new_win->exec);
+            g_free(new_win->name);
+            g_free(new_win->icon);
             
             g_free(new_win);
         }
@@ -1120,7 +1128,8 @@ GtkTreeModel *create_model(void)
                                              G_TYPE_BOOLEAN,
                                              G_TYPE_BOOLEAN,
                                              G_TYPE_BOOLEAN,
-                                             G_TYPE_BOOLEAN);
+                                             G_TYPE_BOOLEAN,
+                                             G_TYPE_UINT);
     
      directory = opendir(DESKTOPENTRYDIR);
     if (directory == NULL)
@@ -1513,7 +1522,7 @@ static void handle_active_window_prop(GtkTreeModel *model,
     if (gdk_error_trap_pop() != 0 || nitems < 1)
     {
         /* We couldn't find out - let's not update just in case */
-	XFree(value.window_value);
+	XFree(value.char_value);
 	return;
     }
 
@@ -1539,7 +1548,7 @@ static void handle_active_window_prop(GtkTreeModel *model,
         if (local_wm_class == NULL)
         {
             XFree(realwin_value.char_value);
-            XFree(value.char_value);
+	    XFree(value.char_value);
             return;
         }
 
@@ -1617,10 +1626,11 @@ static void handle_active_window_prop(GtkTreeModel *model,
                 g_free(name);
                 g_free(icon);
                 g_free(exec);
+                g_free(new_win);
             }
         }
-        XFree(value.window_value);
         XFree(realwin_value.window_value);
+	XFree(value.char_value);
         XFree(local_wm_class);
         return;
     }
@@ -1640,6 +1650,7 @@ static void handle_active_window_prop(GtkTreeModel *model,
       if (killed == TRUE)
         {
 	  XFree(value.char_value);
+	  XFree(realwin_value.char_value);
 	  return;
         }
       
@@ -1652,6 +1663,8 @@ static void handle_active_window_prop(GtkTreeModel *model,
 			       &parent, WM_VIEW_ID_ITEM,
 			       value.window_value[0], -1);
             g_free(subname_str);
+	    XFree(value.char_value);
+	    XFree(realwin_value.char_value);
             return;
         }
         else if (window_exists(model, &parent, &w_iter, win_id,
@@ -1659,6 +1672,9 @@ static void handle_active_window_prop(GtkTreeModel *model,
         {
             update_window(model, &parent, win_id, value.window_value[0],
                           value.window_value[0], subname_str, update_flag);
+            g_free(subname_str);
+	    XFree(value.char_value);
+	    XFree(realwin_value.char_value);
 	    return;
         }
       else
@@ -1687,13 +1703,14 @@ static void handle_active_window_prop(GtkTreeModel *model,
 	  g_free(name);
 	  g_free(icon);
 	  g_free(exec);
+          g_free(new_win);
 	}
     }
     g_free(subname_str);
-    g_free(value.char_value);
+    XFree(value.char_value);
     if (realwin_value.char_value != NULL)
     {
-    g_free(realwin_value.char_value);
+        XFree(realwin_value.char_value);
     }
     if (local_wm_class != NULL)
     {
@@ -1956,6 +1973,10 @@ static void handle_killable_prop(GtkTreeModel *model,
                      }
 
             }
+            g_free( view_name );
+            g_free( icon_name );
+            g_free( app_name );
+            
             return;
         }
         
@@ -2007,6 +2028,10 @@ static void handle_killable_prop(GtkTreeModel *model,
                 }
                 
             }
+            /* Cleanup */
+            g_free( view_name );
+            g_free( icon_name );
+            g_free( app_name );
             
         }
     }
@@ -2417,7 +2442,7 @@ static gchar *get_subname(Window win_id)
                 subname_str = g_strdup(subname_part);
             }
 
-            XFree(subname_part);
+            g_free(subname_part);
         }
 
         offset += nitems;
@@ -2469,10 +2494,14 @@ static void handle_autotopping()
             if (minimized == FALSE && killed == TRUE)
             {
                 top_service(menu_comp.service);
+                g_free(menu_comp.wm_class);
+                g_free(menu_comp.service);
                 return;
             }
             
         }
+        g_free(menu_comp.wm_class);
+        g_free(menu_comp.service);
     }
     /* Nothing had to be autotopped. So top desktop. */
     wm_cbs.topped_desktop_cb(wm_cbs.cb_data);
@@ -3096,7 +3125,9 @@ void top_view(GtkMenuItem *menuitem)
         {
             gulong win_id, view_id;
             gpointer widget;
-            
+
+            g_free( exec );
+
             gtk_tree_model_get(model, &inner_iter,
                                WM_EXEC_ITEM, &exec,
                                WM_ID_ITEM, &win_id,
@@ -3106,7 +3137,7 @@ void top_view(GtkMenuItem *menuitem)
             
             if (gtk_tree_model_iter_parent(model, &parent_iter, &inner_iter))
             {
-
+            g_free(exec);
             gtk_tree_model_get(model, &parent_iter,
                                WM_EXEC_ITEM, &exec,
                                WM_KILLED_ITEM, &killed, -1);
@@ -3169,6 +3200,7 @@ void top_view(GtkMenuItem *menuitem)
         }
         valid = gtk_tree_model_iter_next (model, &iter);
     }
+    g_free(exec);
 }
 
 

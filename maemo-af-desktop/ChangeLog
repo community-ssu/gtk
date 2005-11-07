@@ -1,3 +1,22 @@
+2005-11-07  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+	* Patched PE bug N#18881 Valgrind reported memory leaks with XProperty usage, Others menu and strdup
+	* hildon-navigator/other_menu.c
+	  - others_menu_deinit(): freeing menu
+	  - others_menu_changed_cb(): freeing menu objects
+	  - others_menu_get_items(): changed place to monitor directory changes, freeing objects
+	  - others_menu_get_items(): changed menu item creation to be able free menu item data
+	* hildon-navigator/windowmanager.c
+	  - handle_active_window_prop(): XFreeing realwin_value and value structure members corrected
+	* improved memory handling in functions:
+	  - create_notify_handler()
+          - handle_active_window_prop()
+          - handle_killable_prop()
+          - get_subname()
+          - handle_autotopping()
+          - top_view()
+	* configure.ac: 1.63.0
+
 2005-11-01  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Reverted one incomplete bugfix	

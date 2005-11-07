@@ -406,6 +406,7 @@ void others_menu_initialize_menu(OthersMenu_t * om, void *as_menu_cb)
 
 void others_menu_deinit(OthersMenu_t * om)
 {
+    gtk_widget_destroy(GTK_WIDGET(om->menu));
     g_free(om);
 }
 
@@ -417,6 +418,12 @@ static void others_menu_changed_cb( char *path, _om_changed_cb_data_t *data )
 
 	/* Destroy the menu */
 	gtk_widget_destroy( data->widget );
+
+	/* Cleanup */
+	g_free( path );
+	
+	g_free( data->om );
+	g_free( data );
 	
 	/* Re-initialize menu */	
 	others_menu_initialize_menu( data->om, NULL);
@@ -452,7 +459,8 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
     GtkWidget *menu_item_icon = NULL;
     char *icon_name;
     guchar *application_name = NULL;
-    
+
+
     menu = GTK_MENU(widget);
 
     /* No directory given.. */
@@ -463,18 +471,6 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
 	/* Use the path, Luke! */
 	full_path = directory;
     }
-
-    /* Monitor changes to the directory */	    
-    _om_changed_cb_data_t *cb_data = g_malloc0(sizeof(_om_changed_cb_data_t));
-    cb_data->widget = GTK_WIDGET(om->menu);
-    cb_data->om = om;
-
-    if ( hildon_dnotify_set_cb(
-			    (hildon_dnotify_cb_f *)others_menu_changed_cb,
-			    (char *)full_path, cb_data ) != HILDON_OK) {
-	    osso_log( LOG_ERR, "Error setting dir notify callback!\n" );
-    }
-
     
     if ((dir_handle = opendir(full_path)) != NULL) {
 	while ((dir_entry = readdir(dir_handle)) != NULL) {
@@ -493,6 +489,17 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
     /* If the directory is empty, return value < 0 */
     if (menu_list == NULL) {
 	return -1;
+    }
+
+    /* Monitor changes to the directory */
+    _om_changed_cb_data_t *cb_data = g_malloc0(sizeof(_om_changed_cb_data_t));
+    cb_data->widget = GTK_WIDGET(om->menu);
+    cb_data->om = om;
+
+    if ( hildon_dnotify_set_cb(
+			    (hildon_dnotify_cb_f *)others_menu_changed_cb,
+			    (char *)full_path, cb_data ) != HILDON_OK) {
+	    osso_log( LOG_ERR, "Error setting dir notify callback!\n" );
     }
 
     /* Sort the items */
@@ -527,7 +534,7 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
 				    
 	    /* Create a submenu */
 	    submenu = GTK_MENU(gtk_menu_new());
-    
+   
 	    /* Recursion rulezz!! */
 	    if ( others_menu_get_items(GTK_WIDGET(submenu), current_path, om) 
                  > 0 ) 
@@ -562,7 +569,10 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
                 }
 	    } else {
 		    /* Empty "folder", no need for a submenu */
-		    gtk_widget_destroy( GTK_WIDGET(submenu) );
+		    /*gtk_widget_destroy( GTK_WIDGET(submenu) );*/
+		    g_object_ref( submenu );
+		    gtk_object_sink( GTK_OBJECT( submenu ) );
+		    g_object_unref( submenu );
 	    }
 
 	} else if (S_ISREG(buf.st_mode)
@@ -592,7 +602,7 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
 		 * for label */
 		menu_item =
 		  gtk_image_menu_item_new_with_label(_(application_name));
-		
+
 		om->as_menu_cb(desktop);
 
 		/* Add the app's icon */
@@ -617,13 +627,13 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
 		
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
 		
-		g_object_set_data(G_OBJECT(menu_item), DESKTOP_EXEC_FIELD,
-				  g_strdup(mb_dotdesktop_get
-					   (desktop, DESKTOP_EXEC_FIELD)));
+		g_object_set_data_full(G_OBJECT(menu_item), DESKTOP_EXEC_FIELD,
+                                       g_strdup(mb_dotdesktop_get(desktop, DESKTOP_EXEC_FIELD)), 
+                                       g_free);
 		
-		g_object_set_data(G_OBJECT(menu_item), DESKTOP_SERVICE_FIELD,
-				  g_strdup(mb_dotdesktop_get
-					   (desktop, DESKTOP_SERVICE_FIELD)));
+		g_object_set_data_full(G_OBJECT(menu_item), DESKTOP_SERVICE_FIELD,
+                                       g_strdup(mb_dotdesktop_get(desktop, DESKTOP_SERVICE_FIELD)), 
+                                       g_free);
 		
 		/* Connect the signal and callback */
 		g_signal_connect(G_OBJECT(menu_item), "activate",
