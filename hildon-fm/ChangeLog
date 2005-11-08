@@ -1,5 +1,9 @@
 2005-11-08  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* configure.ac: 0.9.47
+
+2005-11-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	* hildon-fm/hildon-file-selection.c (MAX_CURSOR_PARTS)
 	(drag_begin): Added upper limit to number of items in the drag
 	cursor. N#20202.

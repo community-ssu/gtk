@@ -1,3 +1,10 @@
+hildon-fm (0.9.47-1) unstable; urgency=low
+
+  * fixes
+    N#20202 Dragging several hundred files renders the device temporarily unusable
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Tue,  8 Nov 2005 15:25:47 +0200
+
 hildon-fm (0.9.46-1) unstable; urgency=low
 
   * fixes
