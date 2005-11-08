@@ -2539,6 +2539,7 @@ static void on_drag_data_received(GtkWidget * widget,
 }
 
 #define CLIMB_RATE 4
+#define MAX_CURSOR_PARTS 10
 
 static void drag_data_get_helper(GtkTreeModel * model, GtkTreePath * path,
                                  GtkTreeIter * iter, gpointer data)
@@ -2554,7 +2555,7 @@ static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
 {
     GdkPixbuf *pixbuf;
     GtkTreeSelection *selection;
-    gint column, w, h, dest;
+    gint column, w, h, dest, count;
     HildonFileSelection *self;
     GList *rows, *row;
     GtkTreeModel *model;
@@ -2590,7 +2591,8 @@ static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
     /* Lets find out how much space we need for drag icon */
     w = h = dest = 0;
 
-    for (row = rows; row; row = row->next)
+    for (row = rows, count = 0; row && count < MAX_CURSOR_PARTS; 
+         row = row->next, count++)
         if (gtk_tree_model_get_iter(model, &iter, row->data)) {
             GdkPixbuf *buf;
             gint right, bottom;
@@ -2616,7 +2618,8 @@ static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
     dest = 0;
 
 
-    for (row = rows; row; row = row->next)
+    for (row = rows, count = 0; row && count < MAX_CURSOR_PARTS; 
+         row = row->next, count++)
         if (gtk_tree_model_get_iter(model, &iter, row->data)) {
             GdkPixbuf *buf;
 
