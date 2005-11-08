@@ -1392,14 +1392,12 @@ gtk_label_set_markup_with_mnemonic (GtkLabel    *label,
   g_return_if_fail (GTK_IS_LABEL (label));
 
   last_keyval = label->mnemonic_keyval;
-
   gtk_label_set_label_internal (label, g_strdup (str ? str : ""));
   gtk_label_set_use_markup_internal (label, TRUE);
   gtk_label_set_use_underline_internal (label, TRUE);
-  gtk_label_recalculate (label);
- 
-  gtk_label_setup_mnemonic (label, last_keyval);
 
+  gtk_label_recalculate (label);
+  gtk_label_setup_mnemonic (label, last_keyval);
 }
 
 /**
@@ -1475,16 +1473,7 @@ gtk_label_set_pattern_internal (GtkLabel    *label,
 
   if (label->effective_attrs)
     pango_attr_list_unref (label->effective_attrs);
-/* Following will disable undercores from
-   keyboard shortcuts if DISABLE_KEYBOARD_SHORTCUTS
-   is enabled during compile time
- */
-#ifndef DISABLE_KEYBOARD_SHORTCUTS
   label->effective_attrs = attrs;
-#else
-  pango_attr_list_unref (attrs);
-#endif /* DISABLE_KEYBOARD_SHORTCUTS */
-
 }
 
 void

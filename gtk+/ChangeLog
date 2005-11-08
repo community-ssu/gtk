@@ -1,3 +1,9 @@
+Tue Nov  8 17:05:20 2005  Tim Janik  <timj@imendio.com>
+
+	* configure.in:
+	* gtk/gtklabel.c: removed outdated DISABLE_KEYBOARD_SHORTCUTS
+	handling case. whitespace fixups according to upstream.
+
 2005-11-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcalendar.c (gtk_calendar_class_init), (gtk_calendar_init),
