@@ -1,0 +1,125 @@
+osso-application-installer (2.12-0) unstable; urgency=low
+
+  * Packaged 2.12.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue,  1 Nov 2005 13:40:59 +0200
+
+osso-application-installer (2.11-0) unstable; urgency=low
+
+  * Packaged 2.11.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 27 Sep 2005 20:10:44 +0300
+
+osso-application-installer (2.10-0) unstable; urgency=low
+
+  * Packaged 2.10.  Name the link in /etc/others-menu
+    "2200_tana_fi_extras", to conform to the TN UI spec.  Forcefully make
+    that link in postinst since maemo-af-desktop creates an empty
+    directory with that name.  Depend on l10n-4.1 packages, do not depend
+    on l10n-3.2 and l10n-3.1 packages.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  5 Sep 2005 16:49:07 +0300
+
+osso-application-installer (2.9-0) unstable; urgency=low
+
+  * Packaged 2.9.  Added osso-gnomevfs-extra-dev to Build-Depends.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 31 Aug 2005 14:46:39 +0300
+
+osso-application-installer (2.8-0) unstable; urgency=low
+
+  * Packages 2.8.  Configure with --sysconfdir=/etc.  Put
+    /etc/osso-af-init/* in package.  Depend on l10n packages for UI spec
+    version 4.0.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 24 Aug 2005 17:31:55 +0300
+
+osso-application-installer (2.7-0) unstable; urgency=low
+
+  * Packaged 2.7.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 18 Aug 2005 16:07:49 +0300
+
+osso-application-installer (2.6-0) unstable; urgency=low
+
+  * Packaged 2.6.  Depend on version 3.2 of the l10n packages as well.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 11 Aug 2005 18:44:12 +0300
+
+osso-application-installer (2.5-0) unstable; urgency=low
+
+  * Packaged 2.5.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue,  9 Aug 2005 18:56:52 +0300
+
+osso-application-installer (2.4-0) unstable; urgency=low
+
+  * Packaged 2.4.  Include appropriate l10n packages in Depends.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  3 Aug 2005 18:42:13 +0300
+
+osso-application-installer (2.3-0) unstable; urgency=low
+
+  * Packaged 2.3.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue,  2 Aug 2005 19:41:40 +0300
+
+osso-application-installer (2.2-1) unstable; urgency=low
+
+  * In postinst: Really remove /var/lib/install when upgrading from 1.0 to
+    2.x, not only /var/lib/install/var/lib/dpkg.  Simply upgrade the maemo
+    package as root, not via the old su/fakeroot contortion which had
+    strange effects when cross-installing the root filesystem.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 29 Jul 2005 17:54:15 +0300
+
+osso-application-installer (2.2-0) unstable; urgency=low
+
+  * Packaged 2.2.  Deal with upgrading from 1.0 to 2.1 when
+    /var/lib/install is still there.  Use -h when chowning
+    /var/lib/install to deal with broken links.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 28 Jul 2005 16:18:57 +0300
+
+osso-application-installer (2.1-0) unstable; urgency=low
+
+  * Packaged 2.1.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 27 Jul 2005 15:00:30 +0300
+
+osso-application-installer (2.0-0) unstable; urgency=low
+
+  * Packaged 2.0.  Do not mess with aiwrapper from postinst, it is no
+    longer included.  Add line to sudoers in postinst that allows the
+    Application Installer to invoke app-installer-tool as the user
+    "install".  Remove this line in postrm.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 22 Jul 2005 21:30:16 +0300
+
+osso-application-installer (1.0.29-1) unstable; urgency=low
+
+  * Do not include any l10n packages.  Do not depend on them, either.
+    Added "--force-not-root" to dpkg invocation in postinst.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 20 Jul 2005 14:43:35 +0300
+
+osso-application-installer (1.0.29-0) unstable; urgency=low
+
+  * Create /var/lib/install during postinst and install a real maemo
+    package in it.  Do not delete "install" user during postrm.  Removed
+    most ownership/permission mangling from postinst, since it shouldn't
+    be necessary anymore.  Depend on fakeroot instead of on fakeroot-net.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 18 Jul 2005 22:46:25 +0300
+
+osso-application-installer (1.0.28-1) unstable; urgency=low
+
+  * First packages from public sources
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 14 Jul 2005 15:10:46 +0300
+
+osso-application-installer (1.0.28-0) unstable; urgency=low
+
+  * Cleaned up code; put maintainer name
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 17 Jun 2005 20:50:39 +0300

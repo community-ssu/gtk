@@ -1,0 +1,81 @@
+#!/bin/sh -e
+
+echo "--- Postinst script starting up.."
+
+set -e
+
+INSTALL_HOME=/var/lib/install
+
+### Create the install user
+
+echo "Adding user 'install'"
+adduser --system --home $INSTALL_HOME --ingroup users \
+    --disabled-password install
+
+### Add an empty dpkg database if needed
+
+## Version 1.0 of the application installer removes the database
+## (since it is part of the package) but leaves the installed
+## applications there.  So when upgrading from 1.0 to 2.x, we remove
+## all of /var/lib/install to get a clean slate.  When upgrading
+## within the 2.x series, the database will be left in place and we
+## skip the steps below.
+
+DPKG_DB=$INSTALL_HOME/var/lib/dpkg
+
+if [ ! -f $DPKG_DB/status ]; then
+ echo "Creating $DPKG_DB"
+ rm -rf $INSTALL_HOME
+ mkdir -p $DPKG_DB
+ mkdir $DPKG_DB/info
+ mkdir $DPKG_DB/updates
+ touch $DPKG_DB/available
+ touch $DPKG_DB/status
+fi
+
+### Update the maemo package
+
+echo "Updating maemo package."
+dpkg --root=$INSTALL_HOME -i /usr/lib/osso-application-installer/maemo.deb
+
+### Chown everything inside /var/lib/install to the "install" user.
+
+chown -Rh install:users $INSTALL_HOME
+
+## Add line to sudo so that "user" can run "app-installer-tool" as
+## "install".
+##
+## KEEP THIS IN SYNC WITH POSTRM.
+##
+echo "Updating /etc/sudoers."
+LINE="user ALL=(install) NOPASSWD: /usr/bin/app-installer-tool"
+echo "$LINE" >>/etc/sudoers
+
+## XXX - when /etc/others-menu/2200_tana_fi_extras is not a symlink,
+##       then make it one.  Once maemo-af-desktop does no longer create this
+##       directory, this code can be removed.
+##
+if [ ! -h /etc/others-menu/2200_tana_fi_extras ]; then
+  echo "Making 2200_tana_fi_extras symlink."
+  rmdir /etc/others-menu/2200_tana_fi_extras
+  ln -s /var/lib/install/etc/others-menu/extra_applications \
+        /etc/others-menu/2200_tana_fi_extras
+fi
+
+if [ -x /usr/sbin/update-mime ]; then
+ update-mime-database /usr/share/mime
+fi
+
+if [ -x /usr/bin/update-desktop-database ]; then
+ update-desktop-database /usr/share/applications
+fi
+
+if [ -x /usr/bin/osso-update-category-database ]; then
+ osso-update-category-database /usr/share/mime
+fi
+
+echo "--- Postinst script finishing.."
+
+#DEBHELPER#
+
+exit 0

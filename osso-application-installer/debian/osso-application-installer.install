@@ -1,0 +1,10 @@
+usr/bin/*
+usr/share/applications/hildon/*
+usr/share/applications/hildon-control-panel/*
+usr/lib/dbus-1.0/services/*
+usr/lib/hildon-control-panel/*.so
+usr/lib/hildon-control-panel/*.la
+usr/lib/osso-application-installer/*
+usr/share/mime/packages/*
+usr/share/mime/application/*
+etc/osso-af-init/*
