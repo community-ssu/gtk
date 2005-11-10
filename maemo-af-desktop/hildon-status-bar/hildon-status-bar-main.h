@@ -54,9 +54,10 @@
 #define HILDON_STATUS_BAR_ITEM6_Y          0
 
 
-/* hardcoded slot position for the four prespecified items, 0,1,2.. */
-#define HILDON_STATUS_BAR_FIRST_DYN_SLOT  5   /* first slot for dynamic 
+/* hardcoded slot position for the five prespecified items, 0,1,2.. */
+#define HILDON_STATUS_BAR_FIRST_DYN_SLOT  6   /* first slot for dynamic 
                                                * plugins */
+#define HILDON_STATUS_BAR_ALARM_SLOT      5
 #define HILDON_STATUS_BAR_DISPLAY_SLOT    4
 #define HILDON_STATUS_BAR_SOUND_SLOT      3
 #define HILDON_STATUS_BAR_INTERNET_SLOT   2

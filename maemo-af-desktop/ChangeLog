@@ -6,6 +6,13 @@
   	is shown. This is a workaround on the sort-of-recursivity problem
   	on autotruncation. (Truncates previously truncated label again)
         * Version ++
+	* Patched PE bug 20668 The maemo-af-desktop can not reload the statusbar alarm icon everytime when desktop restarted
+	* hildon-status-bar/hildon-status-bar-main.h
+  	- added slot define for alarm plugin
+	* hildon-status-bar/hildon-status-bar-main.c
+  	- add_prespecified_items(): alarm adding 
+  	- add_item(): alarm plugin check for slot definition
+	* Version ++
 
 2005-11-07  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 

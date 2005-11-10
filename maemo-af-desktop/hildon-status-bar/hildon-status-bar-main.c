@@ -195,6 +195,10 @@ static void add_prespecified_items( StatusBar *panel )
             osso_log( LOG_ERR, "Statusbar item add failed for display" );
         }
     }
+    if (add_item( panel, "alarm" ) == NULL)
+    {
+        osso_log( LOG_ERR, "Statusbar item add failed for alarm" );
+    }
 }
 
 static void add_user_items( StatusBar *panel )
@@ -526,6 +530,8 @@ static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *plugin )
         slot = HILDON_STATUS_BAR_BATTERY_SLOT;
     else if( g_str_equal( "display", plugin ) )
         slot = HILDON_STATUS_BAR_DISPLAY_SLOT;
+    else if( g_str_equal( "alarm", plugin ) )
+        slot = HILDON_STATUS_BAR_ALARM_SLOT;
 
     item = hildon_status_bar_item_new( plugin );
 
