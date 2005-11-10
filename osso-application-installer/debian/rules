@@ -34,6 +34,9 @@ endif
 #	LAUNCHER_LDFLAGS = -shared -export-dynamic
 #endif
 
+configure: autogen.sh
+	./autogen.sh
+
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
