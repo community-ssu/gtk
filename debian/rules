@@ -2,10 +2,8 @@
 # Sample debian/rules that uses debhelper.
 # GNU copyright 1997 to 1999 by Joey Hess.
 
-include debian/scripts/vars
-BUILD_DIR=$(SOURCE_DIR)/$(TAR_DIR)
-BUILD_SHARED_DIR=$(SOURCE_DIR)/$(TAR_DIR)-shared
-BUILD_STATIC_DIR=$(SOURCE_DIR)/$(TAR_DIR)-static
+SOURCE_DIR=$(CURDIR)
+BUILD_SHARED_DIR=$(SOURCE_DIR)
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -26,7 +24,7 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 endif
 
 ##
-version=$(shell echo "Version: 2.6.4-1osso1" | grep '^Version: ' | sed -e 's/^Version: //' -e 's/-[A-Za-z0-9\.\+]*$$//g' -e 's/+[A-Za-z0-9\.]*$$//g')
+version=$(shell echo "Version: 2.6.10-1osso1" | grep '^Version: ' | sed -e 's/^Version: //' -e 's/-[A-Za-z0-9\.\+]*$$//g' -e 's/+[A-Za-z0-9\.]*$$//g')
 major=$(shell echo ${version} | sed -e 's/\(^[0-9]*\)\.[0-9]*\.[0-9]*$$/\1/')
 minor=$(shell echo ${version} | sed -e 's/^[0-9]*\.\([0-9]*\)\.[0-9]*$$/\1/')
 rel=$(shell echo ${version} | sed -e 's/^[0-9]*\.[0-9]*\.\([0-9]*\)$$/\1/')
@@ -38,8 +36,8 @@ modver=$(major).$(minor).0
 glibver=2.0
 atkver=1.0
 pangover=1.0
-shver=2.6.4
-libpath=$(CURDIR)/$(BUILD_SHARED_DIR)/gdk-pixbuf/.libs:$(CURDIR)/$(BUILD_SHARED_DIR)/gdk/.libs:$(CURDIR)/$(BUILD_SHARED_DIR)/gtk/.libs
+shver=2.6.10
+libpath=$(BUILD_SHARED_DIR)/gdk-pixbuf/.libs:$(BUILD_SHARED_DIR)/gdk/.libs:$(BUILD_SHARED_DIR)/gtk/.libs
 
 
 debian/control:
@@ -47,28 +45,17 @@ debian/control:
 
 	sed -e 's/@SONAME@/${soname}${suffix}/g' -e 's/@VERSION@/${version}/g' $@.in > $@
 
-extract: $(STAMP_DIR)/extract-stamp
-$(STAMP_DIR)/extract-stamp:
+$(SOURCE_DIR)/configure:
+	AUTOGEN_SUBDIR_MODE=1 $(SOURCE_DIR)/autogen.sh
+
+configure-shared: $(BUILD_SHARED_DIR)/config.status
+$(BUILD_SHARED_DIR)/config.status: $(SOURCE_DIR)/configure
 	dh_testdir
-
-	$(MAKE) -f debian/sys-build.mk source.make
-
-	-test -r /usr/share/misc/config.sub && \
-	   cp -f /usr/share/misc/config.sub $(BUILD_DIR)/config.sub
-	-test -r /usr/share/misc/config.guess && \
-	   cp -f /usr/share/misc/config.guess $(BUILD_DIR)/config.guess
-
-	touch $@
-
-configure-shared: extract $(STAMP_DIR)/configure-shared-stamp
-$(STAMP_DIR)/configure-shared-stamp:
-	dh_testdir
-
-	cp -ar $(BUILD_DIR) $(BUILD_SHARED_DIR)
 
 	# Add here commands to configure the package.
 	cd $(BUILD_SHARED_DIR) && \
-	./configure	--host=$(DEB_HOST_GNU_TYPE) \
+	$(SOURCE_DIR)/configure	\
+			--host=$(DEB_HOST_GNU_TYPE) \
 			--build=$(DEB_BUILD_GNU_TYPE) \
 			--prefix=/usr \
 			--mandir=\$${prefix}/share/man \
@@ -87,114 +74,39 @@ $(STAMP_DIR)/configure-shared-stamp:
 	 -e '/^archive_cmds="/s/"$$/ \\$$deplibs"/' && \
 	mv libtool-2 libtool
 
-	touch $@
 
-configure-shared-simple: extract $(STAMP_DIR)/configure-shared-stamp
-$(STAMP_DIR)/configure-shared-stamp:
+configure: configure-shared
+
+build-shared: debian/control configure-shared $(BUILD_SHARED_DIR)/build-stamp
+$(BUILD_SHARED_DIR)/build-stamp:
 	dh_testdir
 
-	ln -s ../$(BUILD_DIR) $(BUILD_SHARED_DIR)
-
-	# Add here commands to configure the package.
-	cd $(BUILD_SHARED_DIR) && \
-	./configure	--host=$(DEB_HOST_GNU_TYPE) \
-			--build=$(DEB_BUILD_GNU_TYPE) \
-			--prefix=/usr \
-			--mandir=\$${prefix}/share/man \
-			--infodir=\$${prefix}/share/info \
-			--sysconfdir=/etc \
-			--disable-gtk-doc \
-			--with-xinput=yes \
-			--enable-shared \
-			--disable-static
-
-	cd $(BUILD_SHARED_DIR) && \
-	sed < libtool > libtool-2 \
-	 -e 's/^hardcode_libdir_flag_spec.*$$/hardcode_libdir_flag_spec=" -D__LIBTOOL_IS_A_FOOL__ "/' \
-	 -e '/^archive_cmds="/s/"$$/ \\$$deplibs"/' && \
-	mv libtool-2 libtool
-
-	touch $@
-
-configure-static: extract $(STAMP_DIR)/configure-static-stamp
-$(STAMP_DIR)/configure-static-stamp:
-	dh_testdir
-
-	cp -ar $(BUILD_DIR) $(BUILD_STATIC_DIR)
-
-	# Add here commands to configure the package.
-	cd $(BUILD_STATIC_DIR) && \
-	./configure	--host=$(DEB_HOST_GNU_TYPE) \
-			--build=$(DEB_BUILD_GNU_TYPE) \
-			--prefix=/usr \
-			--mandir=\$${prefix}/share/man \
-			--infodir=\$${prefix}/share/info \
-			--sysconfdir=/etc \
-			--with-xinput=yes \
-			--disable-modules \
-			--with-included-loaders=png,jpeg \
-			--disable-shared \
-			--enable-static \
-			--disable-dependency-tracking \
-			--disable-shortcuts
-
-	cd $(BUILD_STATIC_DIR) && \
-	sed < libtool > libtool-2 \
-	 -e 's/^hardcode_libdir_flag_spec.*$$/hardcode_libdir_flag_spec=" -D__LIBTOOL_IS_A_FOOL__ "/' \
-	 -e '/^archive_cmds="/s/"$$/ \\$$deplibs"/' && \
-	mv libtool-2 libtool
-
-	touch $@
-
-configure: configure-static configure-shared
-
-build-shared: debian/control configure-shared $(STAMP_DIR)/build-shared-stamp
-$(STAMP_DIR)/build-shared-stamp:
-	dh_testdir
-
-	-rm -f $(STAMP_DIR)/install-test-stamp
+	-rm -f $(SOURCE_DIR)/install-test-stamp
 
 	# Add here commands to compile the package.
 	$(MAKE) -C $(BUILD_SHARED_DIR) \
 		LD_LIBRARY_PATH=$(libpath):$(LD_LIBRARY_PATH)
 
-	touch $@
-
-build-static: debian/control configure-static $(STAMP_DIR)/build-static-stamp
-$(STAMP_DIR)/build-static-stamp:
-	dh_testdir
-
-	-rm -f $(STAMP_DIR)/install-test-stamp
-
-	# Add here commands to compile the package.
-	$(MAKE) -C $(BUILD_STATIC_DIR) \
-		RUN_QUERY_IMMODULES_TEST=false
+	# The FAQ and tutorial are normally built only during 'make dist'
+	$(MAKE) -C $(BUILD_SHARED_DIR)/docs/faq html
+	$(MAKE) -C $(BUILD_SHARED_DIR)/docs/tutorial html
 
 	touch $@
 
-build-dirs:
-	-cd $(SOURCE_DIR) && \
-		ln -s $(TAR_DIR) gtk+-$(shver) && \
-		ln -s $(TAR_DIR)-indep gtk+-$(shver)-indep && \
-		ln -s $(TAR_DIR)-shared gtk+-$(shver)-shared && \
-		ln -s $(TAR_DIR)-static gtk+-$(shver)-static     
+build: build-shared
 
-build: build-dirs build-static build-shared
-
-clean:: debian/control
+clean: debian/control
 	dh_testdir
 	dh_testroot
 
 	# Add here commands to clean up after the build process.
-	$(MAKE) -f debian/sys-build.mk source.clean
-	-rm -rf $(BUILD_SHARED_DIR)
-	-rm -rf $(BUILD_STATIC_DIR)
-	-rm -rf $(STAMP_DIR)
+	-make maintainer-clean
+	-rm -f $(SOURCE_DIR)/install-test-stamp
 
 	dh_clean
 
-install-test: $(STAMP_DIR)/install-test-stamp
-$(STAMP_DIR)/install-test-stamp:
+install-test: $(SOURCE_DIR)/install-test-stamp
+$(SOURCE_DIR)/install-test-stamp:
 	dh_testdir
 	dh_testroot
 	dh_clean -k
@@ -207,14 +119,7 @@ install-shared: build-shared install-test
 	$(MAKE) -C $(BUILD_SHARED_DIR) install \
 		DESTDIR=$(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix)
 
-install-static: build-static install-test
-	# Add here commands to install the package into debian/tmp
-	$(MAKE) -C $(BUILD_STATIC_DIR) install \
-		DESTDIR=$(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix) \
-		RUN_QUERY_IMMODULES_TEST=false \
-		RUN_QUERY_LOADER_TEST=false
-
-install: install-static install-shared
+install: install-shared
 	# generating debian files from .in
 	for f in `find debian/ -name "[^c]*.in"`; do \
 		sed -e "s/@VERSION@/${version}/g" -e "s/@MODVER@/${modver}/g" -e "s/@APIVER@/${apiver}/g" $$f > `echo $$f | sed -e "s/\.in//"`; \
@@ -227,7 +132,6 @@ install: install-static install-shared
 	cp -a $(BUILD_SHARED_DIR)/docs/tutorial/html debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc/gtk-tutorial/
 	cp $(CURDIR)/debian/gtk-tutorial.devhelp debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc/gtk-tutorial/
 
-	cp -ar $(BUILD_SHARED_DIR)/docs/tutorial/images debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc/gtk-tutorial/
 	cp $(BUILD_SHARED_DIR)/docs/*.txt debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc
 
 	# for -dbg
@@ -237,6 +141,13 @@ install: install-static install-shared
 		cp -vdf $$l \
 			$(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix)/usr/lib/debug; \
 	done
+
+	# examples (without .svn)
+	mkdir -p $(CURDIR)/debian/gtk$(apiver)-examples/usr/share/doc/gtk$(apiver)-examples
+	find examples -name .svn -prune -o \
+		-not \( -type d -o -name .svn -o -name Makefile.am -o -name find-examples.sh \) -print | \
+		tar cf - -T- | \
+		tar xf - -C $(CURDIR)/debian/gtk$(apiver)-examples/usr/share/doc/gtk$(apiver)-examples
 
 	# debian files
 	install -m 755 $(CURDIR)/debian/update-gtk-immodules \
@@ -293,18 +204,14 @@ binary-indep: build install
 			usr/share/gtk-doc/html/$$i;		\
 	done
 
-	dh_installexamples -i
 	dh_installinfo -i
-	dh_installchangelogs -i $(BUILD_DIR)/ChangeLog
+	dh_installchangelogs -i $(SOURCE_DIR)/ChangeLog
 	dh_compress -i
 	dh_fixperms -i
 	dh_installdeb -i
 	dh_gencontrol -i
 	dh_md5sums -i
 	dh_builddeb -i
-
-test-shared: configure-shared-simple install-shared
-	cp $(CURDIR)/debian/libgtk2.0-0/usr/lib/libgtk-x11-2.0.so.0.600.4 /usr/lib
 
 # Build architecture-dependent files here.
 binary-arch: build install
@@ -328,13 +235,9 @@ binary-arch: build install
 		usr/share/doc/libgtk$(apiver)-$(soname)$(suffix) \
 		usr/share/doc/libgtk$(apiver)-bin
 
-	dh_installexamples -a
-
-	rm $(CURDIR)/debian/gtk$(apiver)-examples/usr/share/doc/gtk$(apiver)-examples/examples/find-examples.sh
-
 	dh_installman -a
 	dh_installinfo -a
-	dh_installchangelogs -a $(BUILD_DIR)/ChangeLog
+	dh_installchangelogs -a $(SOURCE_DIR)/ChangeLog
 	dh_strip -a -Nlibgtk$(apiver)-dbg
 	dh_compress -a
 	dh_fixperms -a
