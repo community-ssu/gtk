@@ -91,6 +91,9 @@ static void activate_item(GtkMenuItem *item, gpointer data);
 static gboolean as_key_press(GtkWidget *widget,
                               GdkEventKey *event,
                               gpointer data);
+
+static void recreate_tooltip_menuitem(ApplicationSwitcher_t *as);
+
 static void add_item_to_tooltip_menu(gint item_pos_in_list,
                                       ApplicationSwitcher_t *as);
                                       
@@ -886,6 +889,20 @@ static gboolean as_key_press(GtkWidget *widget,
     return FALSE;
 }
 
+static void recreate_tooltip_menuitem(ApplicationSwitcher_t *as)
+{
+  
+    GtkWidget * oldTooltipMenuItem = as->tooltip_menu_item;
+
+    /* Create a tooltip menu label */
+    as->tooltip_menu_item = gtk_label_new(gtk_label_get_text
+					  (GTK_LABEL(oldTooltipMenuItem)));
+    gtk_container_remove(GTK_CONTAINER(as->tooltip_menu), oldTooltipMenuItem);
+    gtk_container_add(GTK_CONTAINER(as->tooltip_menu),as->tooltip_menu_item);
+    gtk_widget_show(as->tooltip_menu_item);
+    g_free(oldTooltipMenuItem);
+}
+
 static void add_item_to_tooltip_menu(gint item_pos_in_list,
                                       ApplicationSwitcher_t *as)
 {
@@ -1031,6 +1048,9 @@ static void show_tooltip_menu(GtkWidget *menu,
     GtkAllocation workarea = { 0, 0, 0, 0 };
     
     get_workarea(&workarea);
+
+    recreate_tooltip_menuitem ( as );
+
     time = gtk_get_current_event_time();
     
     gtk_widget_size_request(as->tooltip_menu_item, &req);

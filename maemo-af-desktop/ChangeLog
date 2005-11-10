@@ -1,3 +1,12 @@
+2005-11-10  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+        * Patched PE bug N#18257 Task navigator: tooltip sometimes only one character wide
+	* hildon-navigator/application-switcher.c
+	* the label containing the tooltip is recreated each time it
+  	is shown. This is a workaround on the sort-of-recursivity problem
+  	on autotruncation. (Truncates previously truncated label again)
+        * Version ++
+
 2005-11-07  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Patched PE bug N#18881 Valgrind reported memory leaks with XProperty usage, Others menu and strdup
