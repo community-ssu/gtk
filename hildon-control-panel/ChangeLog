@@ -1,3 +1,9 @@
+2005-10-27  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-control-panel-main.c (_run_operator_wizard,
+	_reset_factory_settings): Call osso_rpc_free_val to free the
+	memory associated with the osso_rpc_t value.
+
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
   * Bug squashing camp version, increased baseline to 0.11.0

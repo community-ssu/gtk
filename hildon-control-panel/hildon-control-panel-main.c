@@ -92,7 +92,8 @@ static void _init_gui (void);
 static void _large_icons(void);
 static void _small_icons(void);
 
-/* Make a DBUS system call  */
+/* Make a DBUS system call.  When RETVAL is non-NULL, it needs to be
+   freed with osso_rpc_free_val.  */
 static osso_return_t _cp_run_rpc_system_request (osso_context_t *osso, 
                                                  const gchar *service, 
                                                  const gchar *object_path,
@@ -102,6 +103,9 @@ static osso_return_t _cp_run_rpc_system_request (osso_context_t *osso,
                                                  int first_arg_type,
                                                  ...);
 
+/* When RETVAL is non-NULL, it needs to be freed with
+   osso_rpc_free_val.
+*/
 static osso_return_t _rpc_system_request (osso_context_t *osso, 
                                           DBusConnection *conn,
                                           const gchar *service, 
@@ -885,6 +889,7 @@ static void _run_operator_wizard( GtkWidget *widget, gpointer data)
             osso_log(LOG_ERR, "Unknown error type %d", returnstatus);
     }
     
+    osso_rpc_free_val (&returnvalues);
 }
 
 static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
@@ -1031,7 +1036,8 @@ static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
     
     if (returnvalues.type == DBUS_TYPE_BOOLEAN &&
         returnvalues.value.b == TRUE) { 
-        
+
+        osso_rpc_free_val (&returnvalues);
         returnstatus = osso_rpc_run(state_data.osso, 
                                     HILDON_CP_SVC_NAME, 
                                     HILDON_CP_RFS_SHUTDOWN_OP,
@@ -1063,6 +1069,7 @@ static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
             break;
             
         case OSSO_OK:
+	    osso_rpc_free_val (&returnvalues);
             return TRUE;
             /* There is no real need for case OSSO_OK: we'll be dead
                ... if everyhting goes as planned, anyway! */
@@ -1078,12 +1085,14 @@ static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
                        RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE );
         gtk_widget_destroy(GTK_WIDGET(pw_dialog));
         _reset_factory_settings(widget, GINT_TO_POINTER(retry));
+	osso_rpc_free_val (&returnvalues);
         return TRUE;
     }
 
     if (pw_dialog)
         gtk_widget_destroy(GTK_WIDGET(pw_dialog));
 
+    osso_rpc_free_val (&returnvalues);
     return TRUE;
 }
 
@@ -1341,12 +1350,15 @@ static void _get_arg(DBusMessageIter *iter, osso_rpc_t *retval)
 	dprint("got DOUBLE:%f",retval->value.d);
 	break;
       case DBUS_TYPE_STRING:
-	retval->value.s = 
-	    g_strdup(dbus_message_iter_get_string(iter));
-	if(retval->value.s == NULL) {
+	{
+	  gchar *dbus_string = dbus_message_iter_get_string(iter);
+	  retval->value.s = g_strdup (dbus_string);
+	  dbus_free (dbus_string);
+	  if(retval->value.s == NULL) {
 	    retval->type = DBUS_TYPE_INVALID;
+	  }
+	  dprint("got STRING:'%s'",retval->value.s);
 	}
-	dprint("got STRING:'%s'",retval->value.s);
 	break;
       case DBUS_TYPE_NIL:
 	retval->value.s = NULL;	    
