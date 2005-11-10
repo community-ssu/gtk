@@ -324,9 +324,15 @@ spawn_app_installer_tool (AppData *app_data,
 #if USE_SUDO
   if (as_install)
     {
-      *arg++ = "/usr/bin/sudo";
-      *arg++ = "-u";
-      *arg++ = "install";
+      /* Only use sudo when we are not running inside Scratchbox.
+       */
+      struct stat info;
+      if (stat ("/targets/links/scratchbox.config", &info))
+	{
+	  *arg++ = "/usr/bin/sudo";
+	  *arg++ = "-u";
+	  *arg++ = "install";
+	}
     }
 #endif
 
