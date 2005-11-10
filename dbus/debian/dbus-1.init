@@ -62,7 +62,7 @@ start_it_up()
   # start with dsmetool
   rm -f $PIDFILE
   echo -n "Starting $DESC: "
-  /usr/sbin/dsmetool -r "$DAEMON --system $PARAMS" -n -1
+  /usr/sbin/dsmetool -r "$DAEMON --system $PARAMS" -n -5
   echo "$NAME."
  fi
 }
