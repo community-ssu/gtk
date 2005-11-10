@@ -1,0 +1,284 @@
+gtk+2.0 (2:2.6.4-1.osso76) unstable; urgency=low
+
+  * Updated fix for bug 20810 to not remove builtin stock icons, depends on
+    bug 21042.
+
+  * Bugs fixed:
+    20677: Minor memory leak in Gtk Treeview
+    21039: gtk+ builtin stock icons are missing
+
+  * Together with update to hildon-libs fixes:
+    19283: Control panel - The vaules entered is not saved
+    19648: Hildon Date Editor widget detects values too high
+
+  * debian/rules: API addition to GtkCalendar, update shlibs
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  3 Nov 2005 14:45:59 +0200
+
+gtk+2.0 (2:2.6.4-1.osso75) unstable; urgency=low
+
+  * Bugs fixed:
+    20317: GtkTextView: alignment problems
+    20810: Gtk allocates >30k memory for Stock icons that are never used
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 26 Oct 2005 18:31:34 +0300
+
+gtk+2.0 (2:2.6.4-1.osso74) unstable; urgency=low
+
+  * Bugs fixed:
+    20725: Search application crashes
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 20 Oct 2005 17:18:29 +0300
+
+gtk+2.0 (2:2.6.4-1.osso73) unstable; urgency=low
+
+  * Bugs fixed:
+    20302: NOKGTK-51 Sometimes all folders or files are not shown
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 18 Oct 2005 16:23:07 +0300
+
+gtk+2.0 (2:2.6.4-1.osso72) unstable; urgency=low
+
+  * Bugs fixed, once again:
+    17314: NOKGTK-51 GtkTreeModelSort does HUGE amount of unneccesary calls to
+           sort function
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  5 Oct 2005 19:18:10 +0300
+
+gtk+2.0 (2:2.6.4-1.osso71) unstable; urgency=low
+
+  * Bugs fixed:
+    19035: Submenu does not get focus correctly
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  5 Oct 2005 18:57:05 +0300
+
+gtk+2.0 (2:2.6.4-1.osso70) unstable; urgency=low
+
+  * Bugs fixed:
+    20154: GdkPixbuf: libjpeg buffered mode wastes memory
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  3 Oct 2005 16:42:45 +0300
+
+gtk+2.0 (2:2.6.4-1.osso69) unstable; urgency=low
+
+  * Bugs fixed:
+    19943: Small memory leak from Gtk treeview on each fileselector opening
+    20050: GtkImage leaks animation frames
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 30 Sep 2005 18:39:37 +0300
+
+gtk+2.0 (2:2.6.4-1.osso68) unstable; urgency=low
+
+  * Bugs fixed:
+    19981: treeview leaks memory
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 28 Sep 2005 17:35:49 +0300
+
+gtk+2.0 (2:2.6.4-1.osso67) unstable; urgency=low
+
+  * Bugs fixed:
+    16999: Password entry not behaving consistent with
+    gtk_entry_set_visibility()
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 28 Sep 2005 14:57:38 +0300
+
+gtk+2.0 (2:2.6.4-1.osso66) unstable; urgency=low
+
+  * debian/patches/bug19667.diff: Added
+  * Bugs fixed:
+    19667: GtkCellRendererPixbuf memory leak.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 23 Sep 2005 19:14:28 +0300
+
+gtk+2.0 (2:2.6.4-1.osso65) unstable; urgency=low
+
+  * debian/patches/bug19195.diff: Added
+  * Bugs fixed:
+    19195: Tap-n-hold animation leaks animation iterators
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 21 Sep 2005 12:39:58 +0300
+
+gtk+2.0 (2:2.6.4-1.osso64) unstable; urgency=low
+
+  * debian/patches/bug19416.diff: Added
+  * Bugs fixed:
+    19416: Audo file invisible in file selection widget
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 19 Sep 2005 15:54:44 +0300
+
+gtk+2.0 (2:2.6.4-1.osso63) unstable; urgency=low
+
+  * debian/patches/bug17314.diff: Added
+  * Bugs, hopefully for the last time, fixed:
+    17314: NOKGTK-51 GtkTreeModelSort does HUGE amount of unneccesary calls to
+           sort function
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 15 Sep 2005 19:10:57 +0300
+
+gtk+2.0 (2:2.6.4-1.osso62) unstable; urgency=low
+
+  * Bugs fixed:
+    18455: Incorrect focus handling between Menu and System modal dialog
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 14 Sep 2005 18:23:04 +0300
+
+gtk+2.0 (2:2.6.4-1.osso61) unstable; urgency=low
+
+  * Bugs fixed:
+    19117: Display blanked due to the Hildon File selection widget crash on
+           closing the MMC cover
+    19120: Input Method Main Menu disappears on tapping on menu items
+  * Bugs reopened: 17314, 18455
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 13 Sep 2005 13:19:47 +0300
+
+gtk+2.0 (2:2.6.4-1.osso60) unstable; urgency=low
+
+  * Fix small memory leak.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 12 Sep 2005 12:33:59 +0300
+
+gtk+2.0 (2:2.6.4-1.osso59) unstable; urgency=low
+
+  * Bugs fixed:
+    17314: NOKGTK-51 GtkTreeModelSort does HUGE amount of unneccesary calls to
+           sort function
+    18597: TRUE Long connection does not show in connectivity settings window
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  8 Sep 2005 17:58:11 +0300
+
+gtk+2.0 (2:2.6.4-1.osso58) unstable; urgency=low
+
+  * Really fix 16761
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  8 Sep 2005 13:53:51 +0300
+
+gtk+2.0 (2:2.6.4-1.osso57) unstable; urgency=low
+
+  * Bugs fixed:
+    18455: Incorrect focus handling between Menu and System modal dialog
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  8 Sep 2005 12:16:01 +0300
+
+gtk+2.0 (2:2.6.4-1.osso56) unstable; urgency=low
+
+  * Bugs fixed:
+    11711: On opening the submenu sometimes the Main menu dissapears.
+    16744: E-mail application crashes sometimes when tapped on Bold toolbar
+           item
+    16761: AFW Stress Testing: VKB does not disappear when Find tool bar is
+           closed
+    18433: Gtk/Glib critical warning are thrown at runtime when fileselection
+           dialog is opened
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  7 Sep 2005 18:12:35 +0300
+
+gtk+2.0 (2:2.6.4-1.osso55) unstable; urgency=low
+
+  * debian/patches/001_im-switch.diff: Added
+  * Add support for runtime input method switching (and hardware keyboards)
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  5 Sep 2005 18:53:25 +0300
+
+gtk+2.0 (2:2.6.4-1.osso54) unstable; urgency=low
+
+  * debian/patches/bug18487.diff: Added
+  * Bugs fixed:
+    18487: Crafted BMPs crash libpixbufloader-bmp.so
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  1 Sep 2005 14:56:10 +0300
+
+gtk+2.0 (2:2.6.4-1.osso53) unstable; urgency=low
+
+  * Bugs fixed:
+    17117: Layout problems in HWR Teach
+    18260: MMC not visible in file selector
+  * Bugs reopened: 17314
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 30 Aug 2005 17:27:34 +0300
+
+gtk+2.0 (2:2.6.4-1.osso52) unstable; urgency=low
+
+  * Bugs fixed:
+    16593: AFW Stress Testing: Menu disappears when we continuously navigate
+           between the menu items containing submenus
+    17314: NOKGTK-51 GtkTreeModelSort does HUGE amount of unneccesary calls to
+           sort function
+    17568: Desktop theme doesn't change (always) when theme is changed on
+           first bootup after flashing.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 25 Aug 2005 11:53:14 +0300
+
+gtk+2.0 (2:2.6.4-1.osso51) unstable; urgency=low
+
+  * debian/patches/bug17078-io-ico.diff: Removed, integrated in the big patch.
+  * debian/update-gtk-immodules.in:
+    - module version is 2.4.0.
+  * Bugs fixed:
+     8922: Errors during post-inst of Gtk 2.6
+    12176: it_IT Control Panel Date Time: Calendar view in English
+    16485: AFW Stress Testing: Device reboots on using the Web shortcut
+           details menu item in Home application menu.
+    17717: Autocapitalization in GtkEntry secret mode should be removed
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 22 Aug 2005 17:03:32 +0300
+
+gtk+2.0 (2:2.6.4-1.osso50) unstable; urgency=low
+
+  * debian/patches/bug17078-io-ico.diff: Added
+  * Bugs fixed:
+    17078: LibPixbufLoaderIco crashes when opening attached .ico image
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 18 Aug 2005 15:35:00 +0300
+
+gtk+2.0 (2:2.6.4-1.osso49) unstable; urgency=low
+
+  * debian/patches/*: replaced per-file patches with single diff.
+  * Bugs fixed:
+    16733: Strange auto-cap behavir with inverted question & exclamation marks
+    11711: On opening the submenu sometimes the Main menu dissapears.
+    10856: Modified GtkTreeView do not draw drag'n'drop destination row.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 16 Aug 2005 11:41:43 +0300
+
+gtk+2.0 (2:2.6.4-1.osso48) unstable; urgency=low
+
+  * Bugs fixed:
+    13757: NOKGTK-44 Blank space appears in single line editor widgets when
+           selecting text by tapping
+    15422: 'File format not supported' error (should be OOM) for valid but
+           large 'image/jpeg' files
+    16736: NOKGTK-47 Crash in rich text deserialization
+
+  * debian/patches/gtkhbbox.c.diff: Fix crash when GtkHButtonBox is empty
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 11 Aug 2005 10:53:05 +0300
+
+gtk+2.0 (2:2.6.4-1.osso46) unstable; urgency=low
+
+  * Bugs fixed:
+     1883: Minor Code Review Comments For Gtkmenushell
+     8307: MMC is shown in multiple levels
+    10684: NOKGTK-22 Treeview (or filechooser specific) crash when editing
+    10856: Modified GtkTreeView does not draw drag'n'drop
+    11797: Problem with Search bookmark dalog appearance
+    13431: Opening submenus quickly causes problems
+    13838: choice list is too narrow in browser/toolbar
+    14611: Auto-capitalisation turns ON unexpectedly
+    14765: en-GB, , es-MX 2005-24, Search - Sort results by - choice list
+           items truncated
+    16060: GtkComboBox: Eating up key-press-event for GDK_Left
+    16417: <ESC> key closes all menu levels at once
+    16571: Critical warnings thrown upon creation of GtkTreeView
+    16576: Runtime critical warnings due to HildonTimeEditor
+
+  * Fixed (partially?)
+     8891: NOKGTK-38 copy/paste functionality not working fine
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  8 Aug 2005 15:52:19 +0300
+
+gtk+2.0 (2:2.6.4-1.osso34.1) unstable; urgency=low
+
+  * Maemo dev release
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 27 Jun 2005 13:41:16 +0300

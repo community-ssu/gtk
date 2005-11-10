@@ -1,0 +1,13 @@
+Index: gtk+/gtk/gtkrbtree.c
+===================================================================
+--- gtk+/gtk/gtkrbtree.c	(revision 1041)
++++ gtk+/gtk/gtkrbtree.c	(revision 1042)
+@@ -472,7 +472,7 @@
+   if (tree->parent_node &&
+       tree->parent_node->children == tree)
+     tree->parent_node->children = NULL;
+-  _gtk_rbnode_free (tree->nil);
++  g_free (tree->nil);
+   g_free (tree);
+ }
+ 
