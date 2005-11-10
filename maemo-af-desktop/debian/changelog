@@ -1,3 +1,9 @@
+maemo-af-desktop (1.63.3) unstable; urgency=low
+
+  * Patched bug 20883
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 10 Nov 2005 17:40:37 +0200
+
 maemo-af-desktop (1.63.2) unstable; urgency=low
 
   * Patched bug 20668

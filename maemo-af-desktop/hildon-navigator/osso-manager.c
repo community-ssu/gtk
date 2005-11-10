@@ -212,7 +212,7 @@ void osso_manager_infoprint(osso_manager_t *man, const gchar *message)
     osso_rpc_t retval;
     if (osso_system_note_infoprint(man->osso, message, &retval) != OSSO_OK)
         osso_log(LOG_ERR,"Could not show infoprint %s\n",message);
-
+    osso_rpc_free_val (&retval);
 }
 
 /** Method to set the x window to be used by the osso manager */

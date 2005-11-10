@@ -13,6 +13,10 @@
   	- add_prespecified_items(): alarm adding 
   	- add_item(): alarm plugin check for slot definition
 	* Version ++
+	* Patched bug N#20883 with Marius Vollmer's patch - Potential memory leaks when using the libosso RPC API
+	* hildon-navigator/osso-manager.c (osso_manager_infoprint): Free
+	retval.
+	* Version ++
 
 2005-11-07  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
