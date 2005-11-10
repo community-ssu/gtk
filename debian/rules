@@ -242,7 +242,7 @@ binary-arch: build install
 	dh_compress -a
 	dh_fixperms -a
 	dh_makeshlibs -a -Nlibgtk$(apiver)-dbg
-	dh_makeshlibs -n -X usr/lib/gtk-$(apiver) -plibgtk$(apiver)-$(soname)$(suffix) -V "libgtk${apiver}-${soname}${suffix} (>= 2:${shver}-1.osso76)"
+	dh_makeshlibs -n -X usr/lib/gtk-$(apiver) -plibgtk$(apiver)-$(soname)$(suffix) -V "libgtk${apiver}-${soname}${suffix} (>= 2:2.6.4-1.osso76)"
 	dh_installdeb -a
 	dh_shlibdeps -l$(libpath) -a
 	cat debian/*/DEBIAN/shlibs > debian/shlibs.local
