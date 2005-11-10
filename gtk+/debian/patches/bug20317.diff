@@ -1,0 +1,11 @@
+--- gtk+/gtk/gtktextbtree.c	(revision 1245)
++++ gtk+/gtk/gtktextbtree.c	(working copy)
+@@ -589,7 +589,7 @@
+       
+       while (seg)
+         {
+-          if (seg->byte_count > 0)
++          if (seg->type == &gtk_text_char_type && seg->byte_count > 0)
+             {
+ 	      PangoDirection pango_dir;
+ 

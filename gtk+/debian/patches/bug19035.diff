@@ -1,0 +1,15 @@
+--- gtk+/gtk/gtkmenu.c	(revision 1081)
++++ gtk+/gtk/gtkmenu.c	(revision 1082)
+@@ -3035,12 +3035,6 @@
+   if (gtk_menu_navigating_submenu (menu, event->x_root, event->y_root))
+     return TRUE; 
+ 
+-  /* HILDON MOD.
+-   * Close the submenus that are two levels down from the currently selected.
+-   * This ensures that the focus is correct all the time.*/
+-  if (GTK_MENU_ITEM (menu_item)->submenu != NULL)
+-    gtk_menu_shell_deselect (GTK_MENU_SHELL (GTK_MENU_ITEM (menu_item)->submenu));
+-
+   /* Make sure we pop down if we enter a non-selectable menu item, so we
+    * don't show a submenu when the cursor is outside the stay-up triangle.
+    */

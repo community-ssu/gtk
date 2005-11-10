@@ -1,0 +1,14 @@
+Index: gtk+/gtk/gtkimage.c
+===================================================================
+--- gtk+/gtk/gtkimage.c	(revision 1039)
++++ gtk+/gtk/gtkimage.c	(revision 1040)
+@@ -1836,6 +1836,9 @@
+           gdk_gc_set_clip_mask (widget->style->black_gc, NULL);
+           gdk_gc_set_clip_origin (widget->style->black_gc, 0, 0);
+         }
++
++      if (pixbuf)
++	g_object_unref (pixbuf);
+       
+     } /* if widget is drawable */
+ 
