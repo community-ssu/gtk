@@ -1,5 +1,10 @@
 2005-11-01  Marius Vollmer  <marius.vollmer@nokia.com>
 
+        Released 2.12
+	
+	* src/core.c (spawn_app_installer_tool): Do not use sudo when we
+	are running inside Scratchbox.
+
 	* src/ui/represent.c (present_report_with_details): Use
 	hildon_note_new_confirmation_add_buttons to get "Yes" and "No"
 	button labels.
