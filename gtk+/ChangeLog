@@ -1,3 +1,8 @@
+2005-11-14  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkcellrenderertoggle.c: merged removal of redundant
+	g_object_notify() from upstream. Some formatting cleanups.
+
 Tue Nov  8 17:05:20 2005  Tim Janik  <timj@imendio.com>
 
 	* configure.in:
