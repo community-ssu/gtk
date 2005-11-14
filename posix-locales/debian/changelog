@@ -1,3 +1,9 @@
+posix-locales (2.3.2-13osso26) unstable; urgency=low
+
+  * New package wit a bugfix
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Mon, 14 Nov 2005 09:16:39 +0200
+
 posix-locales (2.3.2-13osso25) unstable; urgency=low
 
   * New package with bugfixes 

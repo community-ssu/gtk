@@ -134,7 +134,8 @@ mon	"<U004A><U0061><U006E><U0075><U0061><U0072>";/
 am_pm   "";""
 % Appropriate date and time representation (%c)
 %	"%a, %e. %b %Y %T %Z"
-d_t_fmt "<U0025><U0061><U002C><U0020><U0025><U0065><U002E><U0020><U0025><U0062><U0020><U0025><U0059><U0020><U0025><U0054><U0020><U0025><U005A>"
+d_t_fmt "<U0025><U0061><U002E><U002C><U0020><U0025><U0065><U002E><U0020><U0025><U0062>/
+<U002E><U0020><U0025><U0059><U0020><U0025><U0054><U0020><U0025><U005A>"
 %
 % Appropriate date representation (%x)
 %	"%d.%m.%Y"

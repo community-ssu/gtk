@@ -1,3 +1,7 @@
+2005-11-14  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* locales/{de_DE  en_GB  en_US  es_ES  es_MX  fr_FR  it_IT}: Updated d_t_fmt (Fixed N#18400)
+
 2005-10-03  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 	
 	* debian/rules, debian/compat, debian/control: Use localedef from libc
