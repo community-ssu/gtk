@@ -82,7 +82,7 @@ typedef struct _GtkCellRendererTogglePrivate GtkCellRendererTogglePrivate;
 struct _GtkCellRendererTogglePrivate
 {
   guint inconsistent : 1;
-  guint checkbox_mode : 1;       /* is checkbox mode on right now? */
+  guint checkbox_mode : 1;
 };
 
 
@@ -117,9 +117,6 @@ gtk_cell_renderer_toggle_get_type (void)
 static void
 gtk_cell_renderer_toggle_init (GtkCellRendererToggle *celltoggle)
 {
-  GtkCellRendererTogglePrivate *priv = GTK_CELL_RENDERER_TOGGLE_GET_PRIVATE (celltoggle);
-
-  priv->checkbox_mode = FALSE;
   celltoggle->activatable = TRUE;
   celltoggle->active = FALSE;
   celltoggle->radio = FALSE;
@@ -176,13 +173,13 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 							 G_PARAM_WRITABLE));
 
   g_object_class_install_property (object_class,
-           PROP_CHECKBOX_MODE,
-           g_param_spec_boolean ("checkbox_mode",
-               P_("Checkbox Mode"),
-               P_("Activates the checkbox mode of drawing selection"),
-               FALSE,
-               G_PARAM_READABLE |
-               G_PARAM_WRITABLE));
+                                   PROP_CHECKBOX_MODE,
+                                   g_param_spec_boolean ("checkbox-mode",
+                                                         P_("Checkbox Mode"),
+                                                         P_("Activates the checkbox mode of drawing selection"),
+                                                         FALSE,
+                                                         G_PARAM_READABLE |
+                                                         G_PARAM_WRITABLE));
   
   /**
    * GtkCellRendererToggle::toggled:
@@ -250,28 +247,23 @@ gtk_cell_renderer_toggle_set_property (GObject      *object,
   GtkCellRendererTogglePrivate *priv;
 
   priv = GTK_CELL_RENDERER_TOGGLE_GET_PRIVATE (object);
-  
+
   switch (param_id)
     {
     case PROP_ACTIVE:
       celltoggle->active = g_value_get_boolean (value);
-      g_object_notify (G_OBJECT(object), "active");
       break;
     case PROP_INCONSISTENT:
       priv->inconsistent = g_value_get_boolean (value);
-      g_object_notify (G_OBJECT (object), "inconsistent");
       break;
     case PROP_ACTIVATABLE:
       celltoggle->activatable = g_value_get_boolean (value);
-      g_object_notify (G_OBJECT(object), "activatable");
       break;
     case PROP_RADIO:
       celltoggle->radio = g_value_get_boolean (value);
-      g_object_notify (G_OBJECT(object), "radio");
       break;
     case PROP_CHECKBOX_MODE:
       priv->checkbox_mode = g_value_get_boolean (value);
-      g_object_notify (G_OBJECT(object), "checkbox_mode");
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -281,7 +273,7 @@ gtk_cell_renderer_toggle_set_property (GObject      *object,
 
 /**
  * gtk_cell_renderer_toggle_new:
- * 
+ *
  * Creates a new #GtkCellRendererToggle. Adjust rendering
  * parameters using object properties. Object properties can be set
  * globally (with g_object_set()). Also, with #GtkTreeViewColumn, you
@@ -289,7 +281,7 @@ gtk_cell_renderer_toggle_set_property (GObject      *object,
  * can bind the "active" property on the cell renderer to a boolean value
  * in the model, thus causing the check button to reflect the state of
  * the model.
- * 
+ *
  * Return value: the new cell renderer
  **/
 GtkCellRenderer *
@@ -365,57 +357,46 @@ gtk_cell_renderer_toggle_render (GtkCellRenderer      *cell,
   if (priv->checkbox_mode)
     {
       /* Checkbox mode drawing */
-      
+
       state = GTK_STATE_NORMAL;
-    
+
       if (!cell->sensitive)
         {
           state = GTK_STATE_INSENSITIVE;
         }
-/* FIXME: Enable this after the activatable-issue is cleared up */
 #if 0
+      /* FIXME: Enable this after the activatable-issue is cleared up */
       if (!celltoggle->activatable)
-        {
-          state = GTK_STATE_INSENSITIVE;
-        }
-#endif        
+        state = GTK_STATE_INSENSITIVE;
+#endif
+
       if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
-        {
-            shadow = GTK_SHADOW_IN;
-        }
+        shadow = GTK_SHADOW_IN;
       else
-        {
-            shadow = GTK_SHADOW_OUT;
-        }
-        
+        shadow = GTK_SHADOW_OUT;
+
       if (priv->inconsistent)
-        {
-            shadow = GTK_SHADOW_ETCHED_IN;
-        }
-        
+        shadow = GTK_SHADOW_ETCHED_IN;
+
       if ((flags & GTK_CELL_RENDERER_FOCUSED) == GTK_CELL_RENDERER_FOCUSED)
         {
           /* Don't overlap with the focus border */
           height -= 2;
           if (GTK_WIDGET_HAS_FOCUS (widget))
-            {
-              state = GTK_STATE_ACTIVE;
-            }
+            state = GTK_STATE_ACTIVE;
           else
-            {
-              state = GTK_STATE_PRELIGHT;
-            }
+            state = GTK_STATE_PRELIGHT;
         }
-  
     }
   else
     {
       /* Normal operation */
+
       if (priv->inconsistent)
         shadow = GTK_SHADOW_ETCHED_IN;
       else
         shadow = celltoggle->active ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
-    
+
       if (!cell->sensitive)
         {
           state = GTK_STATE_INSENSITIVE;
@@ -423,28 +404,19 @@ gtk_cell_renderer_toggle_render (GtkCellRenderer      *cell,
       else if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
         {
           if (GTK_WIDGET_HAS_FOCUS (widget))
-            {
-              state = GTK_STATE_SELECTED;
-            }
+            state = GTK_STATE_SELECTED;
           else
-            {
-              state = GTK_STATE_ACTIVE;
-            }
+            state = GTK_STATE_ACTIVE;
         }
       else
         {
           if (celltoggle->activatable)
-            {
-              state = GTK_STATE_NORMAL;
-            }
+            state = GTK_STATE_NORMAL;
           else
-            {
-              state = GTK_STATE_INSENSITIVE;
-            }
+            state = GTK_STATE_INSENSITIVE;
         }
     }
 
-    
   if (celltoggle->radio)
     {
       gtk_paint_option (widget->style,
