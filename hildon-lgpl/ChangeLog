@@ -1,3 +1,13 @@
+2005-11-16  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-lgpl/hildon-app.c (hildon_app_set_appview): Active view
+	needs to be updated before the view name, otherwise Task Navigator
+	may update the name of the previous view instead the name of the
+	current view.
+
+	* hildon-lgpl/hildon-app.c (hildon_app_notify_view_changed): Added
+	XFlush() to speed up the propagation of the active view change.
+
 2005-11-03  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.9.56

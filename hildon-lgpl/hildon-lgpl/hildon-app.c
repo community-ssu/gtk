@@ -852,12 +852,12 @@ hildon_app_set_appview (HildonApp *app, HildonAppView *view)
   bin->child = widget;
 
   gtk_widget_show (widget);
-  hildon_app_construct_title (app);
 
   g_signal_emit_by_name (widget, "switched_to", NULL);
-  /* What means the comment belove this comment? */
+  /* What means the comment below this comment? */
   /* Sets the _NET_ACTIVE_WINDOW atom to correct view ID */
   hildon_app_notify_view_changed (app, view);
+  hildon_app_construct_title (app);
   gtk_widget_child_focus (widget, GTK_DIR_TAB_FORWARD);
 }
 
@@ -1772,9 +1772,12 @@ void hildon_app_notify_view_changed(HildonApp *self, gpointer view_ptr)
     Atom active_view = XInternAtom (GDK_DISPLAY(),
 				 "_NET_ACTIVE_WINDOW", False);
 
-    if (id)
+    if (id) {
       XChangeProperty(GDK_DISPLAY(), GDK_WINDOW_XID(GTK_WIDGET(self)->window),
-			  active_view, XA_WINDOW, 32, PropModeReplace, (unsigned char *)&id, 1);
+		      active_view, XA_WINDOW, 32, PropModeReplace,
+		      (unsigned char *)&id, 1);
+    XFlush(GDK_DISPLAY());
+    }
   }
 }
 
