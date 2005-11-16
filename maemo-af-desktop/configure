@@ -1777,7 +1777,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=maemo-af-desktop
- VERSION=1.63.0
+ VERSION=2.0.0
 
 
 cat >>confdefs.h <<_ACEOF
