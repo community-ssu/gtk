@@ -1,5 +1,11 @@
 2005-11-16  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	* configure.ac: 0.9.57
+
+2005-11-16  Luc Pionchon  <luc.pionchon@nokia.com>
+
+        N#11861 tasknavigator app switcher has incorrect window-title.
+
 	* hildon-lgpl/hildon-app.c (hildon_app_set_appview): Active view
 	needs to be updated before the view name, otherwise Task Navigator
 	may update the name of the previous view instead the name of the
