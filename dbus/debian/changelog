@@ -1,9 +1,10 @@
 dbus (0.23.4-10osso) unstable; urgency=low
 
-  * Increased Glib source priority for the message socket (bug 21004).
+  * Increased Glib source priority for the message socket, and running
+    the system bus now with -5 priority (bug 21004).
   * Removed useless extra file dbus-pending-call-get-reply.diff.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 03 Nov 2005 16:25:56 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 17 Nov 2005 15:22:01 +0200
 
 dbus (0.23.4-9osso) unstable; urgency=low
 
