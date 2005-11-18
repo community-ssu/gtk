@@ -1,3 +1,9 @@
+maemo-af-desktop (2.0.2) unstable; urgency=low
+
+  * Minor changes to status bar to fix plugins not loading problem
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri, 18 Nov 2005 11:17:58 +0200
+
 maemo-af-desktop (2.0.1) unstable; urgency=low
 
   * Removed startup file lock temporarily for testing purposes
