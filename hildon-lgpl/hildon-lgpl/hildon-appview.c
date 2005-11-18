@@ -27,6 +27,7 @@
 #include <string.h>
 #include <strings.h>
 #include <stdio.h>
+#include "hildon-app.h"
 #include <hildon-appview.h>
 #include <hildon-find-toolbar.h>
 
@@ -61,7 +62,8 @@ enum {
   PROP_CONNECTED_ADJUSTMENT,
   PROP_FULLSCREEN_KEY_ALLOWED,
   PROP_FULLSCREEN,
-  PROP_TITLE
+  PROP_TITLE,
+  PROP_MENU_UI
 };
 
 /*The size of screen*/
@@ -187,6 +189,8 @@ struct _HildonAppViewPrivate {
     guint decrease_button_pressed_down : 1;
     gint visible_toolbars;
     GtkAdjustment * connected_adjustment;
+
+    gchar *menu_ui;
 };
 
 
@@ -379,6 +383,12 @@ static void hildon_appview_class_init(HildonAppViewClass * appview_class)
 							"Appview title",
 							NULL,
 							G_PARAM_READWRITE));
+    g_object_class_install_property(object_class, PROP_MENU_UI,
+				    g_param_spec_string("menu-ui",
+							"Menu UI string",
+							"UI string for application view menu",
+							NULL,
+							G_PARAM_READWRITE));
    widget_class = (GtkWidgetClass*) appview_class;
 }
 
@@ -407,6 +417,9 @@ static void hildon_appview_finalize(GObject * obj_self)
     HildonAppView *self;
     g_return_if_fail(HILDON_APPVIEW(obj_self));
     self = HILDON_APPVIEW(obj_self);
+
+    if (self->priv->menu_ui)
+      g_free (self->priv->menu_ui);
 
     if (self->priv->connected_adjustment != NULL)
       g_object_remove_weak_pointer (G_OBJECT (self->priv->connected_adjustment),
@@ -440,6 +453,10 @@ static void hildon_appview_set_property(GObject * object, guint property_id,
 	hildon_appview_set_title (appview, g_value_get_string (value));
 	break;
 
+    case PROP_MENU_UI:
+    	hildon_appview_set_menu_ui (appview, g_value_get_string (value));
+    	break;
+    
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         break;
@@ -468,6 +485,10 @@ static void hildon_appview_get_property(GObject * object, guint property_id,
 	g_value_set_string (value, priv->title);
 	break;
 
+    case PROP_MENU_UI:
+    	g_value_set_string (value, priv->menu_ui);
+    	break;
+	
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         break;
@@ -1136,10 +1157,31 @@ GtkMenu *hildon_appview_get_menu(HildonAppView * self)
 
     if (self->priv->menu == NULL) {
         /* Create hildonlike menu */
-        self->priv->menu =
-            g_object_new(GTK_TYPE_MENU, NULL);
+        
+        GtkUIManager *uim;
+        GtkWidget *parent = gtk_widget_get_parent (GTK_WIDGET (self));
+        
+        if (parent && HILDON_IS_APP (parent))
+          {
+            
+            uim = hildon_app_get_ui_manager (HILDON_APP (parent));
+            if (uim)
+              {
+                self->priv->menu =
+                  gtk_ui_manager_get_widget (uim, "/HildonApp");
+              }
+          }
+        
+        
+        if (self->priv->menu == NULL)
+          {
+            /* Fall back to oldskool menus */
+            self->priv->menu = GTK_WIDGET (g_object_new (GTK_TYPE_MENU, NULL));
+          }  
+          
         gtk_widget_set_name(GTK_WIDGET(self->priv->menu),
                             "menu_force_with_corners");
+        gtk_widget_show_all (self->priv->menu);
     }
 
     return GTK_MENU(self->priv->menu);
@@ -1242,6 +1284,62 @@ GtkAdjustment * hildon_appview_get_connected_adjustment (HildonAppView * self)
     g_return_val_if_fail (HILDON_IS_APPVIEW (self), NULL);
    
     return self->priv->connected_adjustment;
+}
+
+
+/**
+ * hildon_appview_set_menu_ui
+ * @self : A @HildonAppView
+ * @ui_string : A @GtkUIManager ui description string
+ *
+ * Sets the ui description (xml) from which the UIManager creates menus
+ * (see @GtkUIManager for details on how to use it)
+ **/
+void hildon_appview_set_menu_ui(HildonAppView *self, const gchar *ui_string)
+{
+  g_return_if_fail (HILDON_IS_APPVIEW (self));
+  
+  if (ui_string)
+    {
+      if (self->priv->menu_ui)
+        g_free (self->priv->menu_ui);
+      
+      self->priv->menu_ui = g_strdup (ui_string);
+      
+      /* FIXME: We should update the menu here, preferrably by a
+       * hildon_app_ensure_menu_update() which re-installs the menu ui
+       * and calls gtk_ui_manager_ensure_update() 
+       */
+    }
+  else
+    {
+      /* Reset the UI */
+      if (self->priv->menu_ui)
+        {
+          g_free (self->priv->menu_ui);
+          self->priv->menu_ui = NULL;
+        }
+    }
+
+    g_object_notify (G_OBJECT(self), "menu-ui");
+}
+
+/**
+ * hildon_appview_get_menu_ui
+ * @self : A @HildonAppView
+ *
+ * Sets the ui description (xml) from which the UIManager creates menus
+ * (see @GtkUIManager for details on how to use it)
+ *
+ * Return value: Currently set ui description
+ * 
+ **/
+const gchar *hildon_appview_get_menu_ui(HildonAppView *self)
+{
+  g_return_val_if_fail (HILDON_IS_APPVIEW (self), NULL);
+
+  return (self->priv->menu_ui);
+
 }
 
 void _hildon_appview_increase_button_state_changed (HildonAppView * self,

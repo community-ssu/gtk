@@ -32,6 +32,7 @@
 #include <gdk/gdk.h>
 #include "hildon-app.h"
 #include "hildon-app-private.h"
+#include "hildon-appview.h"
 #include "gtk-infoprint.h"
 
 #include <gdk/gdkevents.h>
@@ -43,6 +44,8 @@
 #include <gtk/gtktextview.h>
 #include <gtk/gtkentry.h>
 #include <gtk/gtkscrolledwindow.h>
+#include <gtk/gtkuimanager.h>
+#include <gtk/gtkactiongroup.h>
 #include <gtk/gtkdialog.h>
 
 #include <libintl.h>
@@ -132,7 +135,10 @@ enum {
 #endif
   PROP_TWO_PART_TITLE,
   PROP_APP_TITLE,
-  PROP_KILLABLE
+  PROP_KILLABLE,
+  PROP_AUTOREGISTRATION,
+  PROP_APPVIEW,
+  PROP_UI_MANAGER
 };
 
 static gpointer find_view(HildonApp *self, unsigned long view_id);
@@ -429,6 +435,24 @@ static void hildon_app_class_init (HildonAppClass *app_class)
 							 "Whether the application is killable or not",
 							 FALSE,
 							 G_PARAM_READWRITE));
+    g_object_class_install_property(object_class, PROP_AUTOREGISTRATION,
+				    g_param_spec_boolean("autoregistration",
+							 "Autoregistration",
+							 "Whether the application views should be registered automatically",
+							 TRUE,
+							 G_PARAM_READWRITE));
+    g_object_class_install_property(object_class, PROP_APPVIEW,
+				    g_param_spec_object("appview",
+							 "Appplication View",
+							 "The currently active application view",
+							 HILDON_TYPE_APPVIEW,
+							 G_PARAM_READWRITE));
+    g_object_class_install_property(object_class, PROP_UI_MANAGER,
+				    g_param_spec_object("ui-manager",
+							 "UIManager",
+							 "The associated GtkUIManager for this app",
+							 GTK_TYPE_UI_MANAGER,
+							 G_PARAM_READWRITE));
 }
 
 
@@ -464,6 +488,12 @@ hildon_app_destroy (GtkObject *obj)
 
   hildon_app_remove_timeout(priv);
 
+  if (priv->uim != NULL)
+    {
+      g_object_unref (G_OBJECT (priv->uim));
+      priv->uim = NULL;
+    }
+
   if (priv->view_ids)
     {
       g_slist_free (priv->view_ids);
@@ -481,14 +511,7 @@ static void hildon_app_forall (GtkContainer *container, gboolean include_interna
 
   g_return_if_fail (callback != NULL);
 
-  if (!include_internals)
-    {
-      GtkBin *bin = GTK_BIN (container);
-      if (bin->child)
-        (*callback) (bin->child, callback_data);
-    }
-  else
-    g_list_foreach (priv->children, (GFunc)callback, callback_data);
+  g_list_foreach (priv->children, (GFunc)callback, callback_data);
 }
 
 static void hildon_app_set_property(GObject * object, guint property_id,
@@ -515,6 +538,18 @@ static void hildon_app_set_property(GObject * object, guint property_id,
     case PROP_KILLABLE:
         hildon_app_set_killable( HILDON_APP (object), 
 			       g_value_get_boolean (value));
+ 	break;
+    case PROP_AUTOREGISTRATION:
+        hildon_app_set_autoregistration( HILDON_APP (object), 
+			       g_value_get_boolean (value));
+ 	break;
+    case PROP_APPVIEW:
+        hildon_app_set_appview( HILDON_APP (object), 
+			       HILDON_APPVIEW (g_value_get_object (value)));
+ 	break;
+    case PROP_UI_MANAGER:
+        hildon_app_set_ui_manager( HILDON_APP (object), 
+			          GTK_UI_MANAGER (g_value_get_object (value)));
  	break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -545,6 +580,15 @@ static void hildon_app_get_property(GObject * object, guint property_id,
     case PROP_KILLABLE:
  	g_value_set_boolean (value, priv->killable);
  	break;
+    case PROP_AUTOREGISTRATION:
+ 	g_value_set_boolean (value, priv->autoregistration);
+ 	break;
+    case PROP_APPVIEW:
+ 	g_value_set_object (value, hildon_app_get_appview (HILDON_APP (object)));
+ 	break;
+    case PROP_UI_MANAGER:
+ 	g_value_set_object (value, hildon_app_get_ui_manager (HILDON_APP (object)));
+ 	break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         break;
@@ -566,9 +610,6 @@ static void hildon_app_add (GtkContainer *container, GtkWidget *child)
   GTK_BIN (container)->child = child;
   gtk_widget_set_parent (child, GTK_WIDGET (app));
 
-  g_signal_connect_swapped (G_OBJECT (child), "title_change",
-			    G_CALLBACK (hildon_app_construct_title), app);
-
   /* If the default direction (RTL/LTR) is different from the real
    default, change it This happens if the locale has been changed
    but this appview was orphaned and thus never got to know about
@@ -580,8 +621,13 @@ static void hildon_app_add (GtkContainer *container, GtkWidget *child)
     gtk_widget_set_direction (GTK_WIDGET (child),
 			      gtk_widget_get_default_direction ());
 
-  if (priv->autoregistration)
-    hildon_app_register_view (app, child);
+  if (HILDON_IS_APPVIEW (child))
+    {
+      g_signal_connect_swapped (G_OBJECT (child), "title_change",
+                                G_CALLBACK (hildon_app_construct_title), app);
+      if (priv->autoregistration)
+        hildon_app_register_view (app, child);
+    }
 }
 
 static void hildon_app_remove (GtkContainer *container, GtkWidget *child)
@@ -602,16 +648,20 @@ static void hildon_app_remove (GtkContainer *container, GtkWidget *child)
 
   priv->children = g_list_remove (priv->children, child);
 
+  if (HILDON_IS_APPVIEW (child))
+    {
   /* XXX: This is a compilation workaround for gcc > 3.3, since glib-2 API is buggy.
    * see http://bugzilla.gnome.org/show_bug.cgi?id=310175 */
 #ifdef __GNUC__
   __extension__
 #endif
-  g_signal_handlers_disconnect_by_func (G_OBJECT (child),
-					(gpointer)hildon_app_construct_title, app);
 
-  if (priv->autoregistration)
-    hildon_app_unregister_view (app, HILDON_APPVIEW (child));
+      g_signal_handlers_disconnect_by_func (G_OBJECT (child),
+                                            (gpointer)hildon_app_construct_title, app);
+
+      if (priv->autoregistration)
+        hildon_app_unregister_view (app, HILDON_APPVIEW (child));
+    }
 
   gtk_widget_unparent (child);
 
@@ -732,6 +782,8 @@ hildon_app_init (HildonApp *self)
     priv->killable = FALSE;
     priv->autoregistration = TRUE;
     priv->scroll_control = TRUE;
+    priv->uim = NULL;
+    priv->active_menu_id = 0;
 
     /* grab the events here since HildonApp isn't necessarily ever shown */
     gdk_window_set_events(gdk_get_default_root_window(),
@@ -812,7 +864,12 @@ hildon_app_get_appview (HildonApp *self)
 
   g_return_val_if_fail (HILDON_IS_APP (self), NULL);
   bin = GTK_BIN (self);
-  return HILDON_APPVIEW (bin->child);
+  if (HILDON_IS_APPVIEW (bin->child))
+    {
+      return HILDON_APPVIEW (bin->child);
+    }
+  
+  return NULL;
 }
 
 /**
@@ -828,6 +885,7 @@ hildon_app_set_appview (HildonApp *app, HildonAppView *view)
   HildonAppPrivate *priv;
   GtkBin *bin;
   GtkWidget *widget; /*(view to be set)*/
+  gchar *menu_ui;
 
   g_return_if_fail (HILDON_IS_APP (app));
   g_return_if_fail (HILDON_IS_APPVIEW (view));
@@ -843,6 +901,18 @@ hildon_app_set_appview (HildonApp *app, HildonAppView *view)
     {
       gtk_widget_hide (bin->child);
       g_signal_emit_by_name (bin->child, "switched_from", NULL);
+      
+      if (priv->active_menu_id > 0)
+      {
+        if (priv->uim != NULL)
+          {
+            gtk_ui_manager_remove_ui (priv->uim,
+                                      priv->active_menu_id);
+          }
+        priv->active_menu_id = 0;
+      }
+      
+      
       bin->child = NULL;
     }
 
@@ -852,6 +922,22 @@ hildon_app_set_appview (HildonApp *app, HildonAppView *view)
   bin->child = widget;
 
   gtk_widget_show (widget);
+
+  g_object_get (G_OBJECT (view),
+                "menu-ui", &menu_ui,
+                NULL);
+
+  if (menu_ui && priv->uim)
+    {
+     
+      priv->active_menu_id =
+        gtk_ui_manager_add_ui_from_string (priv->uim, menu_ui, -1, NULL);
+      
+      gtk_ui_manager_ensure_update (priv->uim);
+
+    }
+
+  g_free (menu_ui);
 
   g_signal_emit_by_name (widget, "switched_to", NULL);
   /* What means the comment below this comment? */
@@ -1137,10 +1223,14 @@ hildon_app_key_press (GtkWidget *widget, GdkEventKey *keyevent)
   HildonAppView *appview;
   HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE(app);
 
-  appview = HILDON_APPVIEW (GTK_BIN (app)->child);
-
-  if (!HILDON_IS_APPVIEW(appview))
-    return FALSE;
+  if (HILDON_IS_APPVIEW(GTK_BIN (app)->child))
+    {
+      appview = HILDON_APPVIEW (GTK_BIN (app)->child);
+    }
+  else
+    {
+      return FALSE;
+    }
 
     if (keyevent->keyval == GDK_Escape && priv->escape_timeout == 0)
       {
@@ -1167,10 +1257,14 @@ hildon_app_key_release (GtkWidget *widget, GdkEventKey *keyevent)
   HildonAppView *appview;
   HildonAppPrivate *priv = HILDON_APP_GET_PRIVATE(app);
 
-  appview = HILDON_APPVIEW (GTK_BIN(app)->child);
-
-  if (!HILDON_IS_APPVIEW(appview))
-    return FALSE;
+  if (HILDON_IS_APPVIEW(GTK_BIN (app)->child))
+    {
+      appview = HILDON_APPVIEW (GTK_BIN (app)->child);
+    }
+  else
+    {
+      return FALSE;
+    }
 
     if (keyevent->keyval == GDK_Escape)
       {
@@ -1308,10 +1402,15 @@ hildon_app_event_filter (GdkXEvent *xevent, GdkEvent *event, gpointer data)
     gint x,y;
     HildonApp *app = data;
     HildonAppPrivate *priv;
-    HildonAppView *appview = HILDON_APPVIEW (GTK_BIN (app)->child);
+    HildonAppView *appview = NULL;
 
     XAnyEvent *eventti = xevent;
-    
+
+    if (HILDON_IS_APPVIEW (GTK_BIN (app)->child))
+      {
+        appview = HILDON_APPVIEW (GTK_BIN (app)->child);
+      }
+
     g_return_val_if_fail (app, GDK_FILTER_CONTINUE);
     g_return_val_if_fail (HILDON_IS_APP(app), GDK_FILTER_CONTINUE);
 
@@ -1835,6 +1934,59 @@ void hildon_app_set_killable(HildonApp *self, gboolean killability)
   }
 }
 
+
+/**
+ * hildon_app_set_ui_manager:
+ * @self : #HildonApp
+ * @uim : #GtkUIManager to be set
+ * 
+ * Sets the #GtkUIManager assigned to the #HildonApp.
+ * If @uim is NULL, unsets the current ui manager.
+ * The @HildonApp holds a reference to the ui manager until
+ * the @HildonApp is destroyed or unset.
+ **/
+void hildon_app_set_ui_manager(HildonApp *self, GtkUIManager *uim)
+{
+    HildonAppPrivate *priv;
+
+    g_return_if_fail(self && HILDON_IS_APP(self));
+    
+    priv = HILDON_APP_GET_PRIVATE (self);
+    
+    if (priv->uim != NULL)
+      {
+        g_object_unref (G_OBJECT (priv->uim));
+      }
+    
+    priv->uim = uim;
+
+    if (priv->uim != NULL)
+      {
+        g_object_ref (G_OBJECT (uim));
+      }
+
+    g_object_notify (G_OBJECT(self), "ui-manager");
+}
+
+/**
+ * hildon_app_get_ui_manager:
+ * @self : #HildonApp
+ * 
+ * Gets the #GtkUIManager assigned to the #HildonApp.
+ *
+ * Return value: The #GtkUIManager assigned to this application
+ * or null if no manager is assigned.
+ **/
+GtkUIManager *hildon_app_get_ui_manager(HildonApp *self)
+{
+    HildonAppPrivate *priv;
+    
+    g_return_val_if_fail(self && HILDON_IS_APP(self), NULL);
+
+    priv = HILDON_APP_GET_PRIVATE (self);
+
+    return (priv->uim);
+}
 
 static gpointer find_view(HildonApp *self, unsigned long view_id)
 {

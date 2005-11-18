@@ -1,3 +1,29 @@
+2005-11-18  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	Gazpacho support
+	
+	* hildon-lgpl/hildon-app-private.h:
+	* hildon-lgpl/hildon-app.h:
+	* hildon-lgpl/hildon-app.c:
+        - Added support for properties,
+          - "autoregistration"
+          - "appview"
+          - "ui-manager" *
+        - Added support for containing any type of widget (not just AppViews)
+        - Change hildon_app_get_children to actually return the children,
+          not just the active one (BIN(app)->child will give you that)
+        - Added support for appview-specific and global menuitems with
+          GtkUIManager
+        - * new features, GtkUIManager support
+
+	* hildon-lgpl/hildon-appview.h:
+	* hildon-lgpl/hildon-appview.c:
+        - Added support for properties,
+          - "title"
+          - "menu-ui" *
+        - Now using GtkUIManager internally (retains backwards compatibilty)
+        - * new feature, GtkUIManager support
+
 2005-11-16  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.9.57

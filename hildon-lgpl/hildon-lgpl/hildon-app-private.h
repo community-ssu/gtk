@@ -60,6 +60,10 @@ struct _HildonAppPrivate {
 
     guint escape_timeout;
     guint key_snooper;
+    
+    GtkUIManager *uim;
+    
+    guint active_menu_id;
 };
 
 typedef struct {

@@ -26,6 +26,7 @@
 #define __HILDON_APP_H__
 
 #include <gtk/gtkwindow.h>
+#include <gtk/gtkuimanager.h>
 #include "hildon-appview.h"
 
 G_BEGIN_DECLS
@@ -143,6 +144,9 @@ unsigned long hildon_app_find_view_id(HildonApp *self, gpointer view_ptr);
 void hildon_app_notify_view_changed(HildonApp *self, gpointer view_ptr);
 
 void hildon_app_set_killable(HildonApp *self, gboolean killability);
+
+void hildon_app_set_ui_manager(HildonApp *self, GtkUIManager *uim);
+GtkUIManager *hildon_app_get_ui_manager(HildonApp *self);
 
 G_END_DECLS
 #endif /* HILDON_APP_H */

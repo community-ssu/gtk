@@ -114,5 +114,8 @@ void _hildon_appview_increase_button_state_changed (HildonAppView * self,
 void _hildon_appview_decrease_button_state_changed (HildonAppView * self,
 						    guint newkeytype);
 
+void hildon_appview_set_menu_ui(HildonAppView *self, const gchar *ui_string);
+const gchar *hildon_appview_get_menu_ui(HildonAppView *self);
+
 G_END_DECLS
 #endif /* HILDON_APPVIEW_H */
