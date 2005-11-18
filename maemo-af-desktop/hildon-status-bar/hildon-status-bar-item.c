@@ -239,6 +239,10 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
        target directory */
     if( !priv->dlhandle )
     {
+        if(IS_SDK==FALSE){
+            osso_log( LOG_ERR, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
+                  plugin, dlerror() );
+        }
         pluginname = g_strdup_printf( "%s/lib%s.so", 
                                       HILDON_STATUS_BAR_USER_PLUGIN_PATH,
                                       plugin );
@@ -249,8 +253,8 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
     if( !priv->dlhandle )
     {
         if(IS_SDK==FALSE){
-            osso_log( LOG_ERR, "HildonStatusBarItem: Unable to open plugin %s\n", 
-                  plugin );
+            osso_log( LOG_ERR, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
+                  plugin, dlerror() );
         }
         g_object_unref(item);
         return NULL;
