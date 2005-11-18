@@ -3247,23 +3247,25 @@ void home_deinitialize(gint keysnooper_id)
 static
 void create_startup_lock(void)
 {
-     FILE *f;
+     /*FILE *f;
      
      f = fopen(STARTUP_LOCK_FILE, "w");
      if (f)
              fclose(f);
+     */
 }
  
 static
 gboolean startup_lock_exists(void)
 {
-     return g_file_test(STARTUP_LOCK_FILE, G_FILE_TEST_EXISTS);
+     /*return g_file_test(STARTUP_LOCK_FILE, G_FILE_TEST_EXISTS);*/
+     return FALSE;
 }
  
 static
 gboolean remove_startup_lock_timeout(gpointer data)
 {
-     unlink(STARTUP_LOCK_FILE);
+     /*unlink(STARTUP_LOCK_FILE);*/
      return FALSE;
 }
  
