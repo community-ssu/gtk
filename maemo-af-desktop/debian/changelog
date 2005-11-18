@@ -1,3 +1,9 @@
+maemo-af-desktop (2.0.1) unstable; urgency=low
+
+  * Removed startup file lock temporarily for testing purposes
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri, 18 Nov 2005 10:07:48 +0200
+
 maemo-af-desktop (2.0.0) unstable; urgency=low
 
   * Upped version of trunk to 2.0.0, 2.0.0 is baseline for development of IT-2006
