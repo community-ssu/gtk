@@ -63,7 +63,7 @@
 #include "hildon-status-bar-interface.h"
 #include "../kstrace.h"
 
-extern gboolean IS_SDK;
+gboolean IS_SDK=false;
 
 static gint _delayed_infobanner_add(gint32 pid, gint32 begin, gint32 timeout,
 				    const gchar *text );
