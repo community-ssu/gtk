@@ -152,7 +152,7 @@ StatusBar *panel;
 static int signal_pipe[2];
 static gint keysnooper_id;
 
-gboolean IS_SDK = FALSE;
+/*gboolean IS_SDK = FALSE;*/
 
 
 /*

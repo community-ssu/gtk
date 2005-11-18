@@ -61,7 +61,7 @@ struct _HildonStatusBarItemPrivate
 };
 
 /* Added to fix bug N#20197 */
-gboolean IS_SDK=FALSE;
+gboolean SB_ITEM_IS_SDK=FALSE;
 
 /* parent class pointer */
 static GtkContainerClass *parent_class;
@@ -239,7 +239,7 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
        target directory */
     if( !priv->dlhandle )
     {
-        if(IS_SDK==FALSE){
+        if(SB_ITEM_IS_SDK==FALSE){
             osso_log( LOG_ERR, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
                   plugin, dlerror() );
         }
@@ -252,7 +252,7 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
 
     if( !priv->dlhandle )
     {
-        if(IS_SDK==FALSE){
+        if(SB_ITEM_IS_SDK==FALSE){
             osso_log( LOG_ERR, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
                   plugin, dlerror() );
         }
