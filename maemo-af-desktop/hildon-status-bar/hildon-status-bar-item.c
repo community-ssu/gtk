@@ -61,7 +61,7 @@ struct _HildonStatusBarItemPrivate
 };
 
 /* Added to fix bug N#20197 */
-gboolean IS_SDK=false;
+gboolean IS_SDK=FALSE;
 
 /* parent class pointer */
 static GtkContainerClass *parent_class;
