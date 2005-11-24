@@ -514,8 +514,6 @@ gtk_calendar_class_init (GtkCalendarClass *class)
   class->next_month = NULL;
   class->prev_year = NULL;
   class->next_year = NULL;
-  class->erroneous_date = NULL;
-  class->selected_date = NULL;
 
   g_object_class_install_property (gobject_class,
                                    PROP_YEAR,
@@ -694,9 +692,9 @@ gtk_calendar_class_init (GtkCalendarClass *class)
                   G_TYPE_NONE, 0);
    gtk_calendar_signals[ERRONEOUS_DATE_SIGNAL] =
      g_signal_new ("erroneous_date",
-                   G_OBJECT_CLASS_TYPE(gobject_class),
+                   G_OBJECT_CLASS_TYPE (gobject_class),
                    G_SIGNAL_RUN_FIRST,
-                   G_STRUCT_OFFSET (GtkCalendarClass, erroneous_date),
+                   0,
                    NULL, NULL,
                    _gtk_marshal_VOID__VOID,
                    G_TYPE_NONE, 0);
@@ -704,7 +702,7 @@ gtk_calendar_class_init (GtkCalendarClass *class)
      g_signal_new ("selected_date",
                    G_OBJECT_CLASS_TYPE(gobject_class),
                    G_SIGNAL_RUN_FIRST,
-                   G_STRUCT_OFFSET (GtkCalendarClass, selected_date),
+                   0,
                    NULL, NULL,
                    _gtk_marshal_VOID__VOID,
                    G_TYPE_NONE, 0);

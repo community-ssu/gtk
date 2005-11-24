@@ -1,3 +1,13 @@
+Thu Nov 24 18:06:08 2005  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtkcalendar.h: removed ::erroneous_date and ::selected_date 
+	vmethods from GtkCalendarClass. this restores binary compatibility
+	of the calendar ABI with gtk+-2.6.10.
+
+	* gtk/gtkcalendar.c:
+	gtk_calendar_class_init(): create ::erroneous_date and ::selected_date
+	signals without a default handler.
+
 2005-11-14  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkcellrenderertoggle.c: merged removal of redundant
