@@ -77,7 +77,6 @@ struct _GtkMenuShellClass
 			    GtkMenuDirectionType direction);
   void (*activate_current) (GtkMenuShell *menu_shell,
 			    gboolean      force_hide);
-  void (*close)            (GtkMenuShell *menu_shell);
   void (*cancel)           (GtkMenuShell *menu_shell);
   void (*select_item)      (GtkMenuShell *menu_shell,
 			    GtkWidget    *menu_item);
@@ -86,10 +85,12 @@ struct _GtkMenuShellClass
 			    gint          position);
   gint (*get_popup_delay)  (GtkMenuShell *menu_shell);
 
+  /* hildon */
+  void (*close)            (GtkMenuShell *menu_shell);
+
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
-  void (*_gtk_reserved3) (void);
 };
 
 
