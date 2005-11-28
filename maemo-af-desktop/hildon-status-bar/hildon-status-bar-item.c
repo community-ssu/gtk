@@ -256,7 +256,7 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
             osso_log( LOG_ERR, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
                   plugin, dlerror() );
         }
-        g_object_unref(item);
+        gtk_object_sink( GTK_OBJECT( item ) );
         return NULL;
     }
 
@@ -273,14 +273,14 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
                   "Unable to load entry symbol for plugin %s: %s\n", 
                   plugin, error_str );
 
-        g_object_unref(item);
+        gtk_object_sink( GTK_OBJECT( item ) );
         return NULL;
     }
 
     /* Get functions */
     if( !hildon_status_bar_item_load_symbols( item ) )
     {
-        g_object_unref(item);
+        gtk_object_sink( GTK_OBJECT( item ) );
         return NULL;
     }
     
@@ -289,7 +289,7 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
     
     /* Patch status-bar-init-null-fix hand applied here by Karoliina Salminen 08092005 */
     if ( !priv->button ) {
-         g_object_unref(item);
+         gtk_object_sink( GTK_OBJECT( item ) );
          return NULL;
     }
 
