@@ -38,7 +38,5 @@ maemo.deb: maemo.control maemo.dirs
 	(cd maemo.tmp && mkdir -p `cat ../maemo.dirs`)
 	dpkg-deb --build maemo.tmp maemo.deb
 
-DEBIAN = ../../$(PACKAGE).debian/trunk/
-
 deb:
-	./make-package $(PACKAGE) $(VERSION) $(DEBIAN)
+	./make-package $(PACKAGE) $(VERSION) .
