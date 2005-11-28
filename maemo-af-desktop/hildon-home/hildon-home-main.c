@@ -3200,7 +3200,7 @@ GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent,
                     if (retval != 1 || statesize == 0)
                     {
                         /* Indicate that this plugin has no saved state */
-                        write(fd, '\0', 1);
+                        write(fd, "\0", 1);
                         continue;
                     }
                     write(fd, &statesize, sizeof(int));
