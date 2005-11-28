@@ -1,3 +1,9 @@
+dbus (0.23.4-11osso) unstable; urgency=low
+
+  * Forward-ported bugfix from the past: autoact. timeout 32s. (bug 21448).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 28 Nov 2005 15:19:49 +0200
+
 dbus (0.23.4-10osso) unstable; urgency=low
 
   * Increased Glib source priority for the message socket, and running
