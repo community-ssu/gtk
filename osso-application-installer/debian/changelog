@@ -1,3 +1,11 @@
+osso-application-installer (2.12-2) unstable; urgency=low
+
+  * Include "2200_tana_fi_extras" symlink in package, do not create it
+    from postinst, conflict with maemo-af-desktop (<< 1.67.1) which
+    includes this filename as a directory.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 28 Nov 2005 15:21:25 +0200
+
 osso-application-installer (2.12-1) unstable; urgency=low
 
   * debian/rules (configure): Added rule to create configure with
