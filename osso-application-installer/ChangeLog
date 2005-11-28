@@ -1,3 +1,11 @@
+2005-11-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* Makefile.am (deb): Expect the debian/ directory in the current
+	directory.
+
+	* configure.ac: Changed version to 2.12-2 to reflect
+	debian/changelog.
+	
 2005-11-01  Marius Vollmer  <marius.vollmer@nokia.com>
 
         Released 2.12
