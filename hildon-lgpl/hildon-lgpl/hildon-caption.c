@@ -39,6 +39,7 @@
 #include <gtk/gtkcomboboxentry.h>
 #include <gtk/gtkoptionmenu.h>
 #include <gtk/gtkmarshal.h>
+#include <gtk/gtkalignment.h>
 #include <stdio.h>
 #include <string.h>
 #include <hildon-caption.h>
@@ -126,6 +127,7 @@ struct _HildonCaptionPrivate
   GtkWidget *mandatory_icon;
   GtkWidget *label;
   GtkWidget *icon;
+  GtkWidget *icon_align; /* Arbitrary icon widgets do not support alignment */
   GtkSizeGroup *group;
   gchar *text;
   gchar *separator;
@@ -325,6 +327,8 @@ static gboolean hildon_caption_expose( GtkWidget *widget,
   HildonCaptionPrivate *priv = NULL;
   GtkRequisition req;
   GtkAllocation alloc;
+  gfloat align;
+
   g_return_val_if_fail( HILDON_IS_CAPTION(widget), TRUE );
   priv = HILDON_CAPTION_GET_PRIVATE(widget);
 
@@ -336,11 +340,13 @@ static gboolean hildon_caption_expose( GtkWidget *widget,
   if ( priv->is_focused )
   {
     gtk_widget_get_child_requisition( priv->caption_area, &req );
+    align = hildon_caption_get_label_alignment(HILDON_CAPTION(widget));
 
     alloc.width = priv->caption_area->allocation.width + HILDON_CAPTION_SPACING;
     alloc.height = MIN (req.height + (2 * widget->style->ythickness), priv->caption_area->allocation.height);
     alloc.x = priv->caption_area->allocation.x;
-    alloc.y = (priv->label->allocation.height - alloc.height) / 2;
+    alloc.y = priv->caption_area->allocation.y + 
+              MAX(((priv->caption_area->allocation.height - alloc.height) * align), 0);
 
     gtk_paint_box( widget->style, widget->window, GTK_STATE_ACTIVE,
                    GTK_SHADOW_OUT, NULL, widget, "selection",
@@ -378,15 +384,12 @@ static void hildon_caption_set_property( GObject *object, guint param_id,
       
     case PROP_ICON:
       if( priv->icon )
-        gtk_container_remove( GTK_CONTAINER(priv->caption_area), priv->icon );
+        gtk_container_remove( GTK_CONTAINER(priv->icon_align), priv->icon );
 
       priv->icon = g_value_get_object( value );
       if( priv->icon )
       {
-        gtk_box_pack_end( GTK_BOX(priv->caption_area), priv->icon, FALSE, FALSE,
-                          0 );
-        gtk_box_reorder_child( GTK_BOX(priv->caption_area),
-                               priv->icon, 0 );
+        gtk_container_add(GTK_CONTAINER(priv->icon_align), priv->icon);
         gtk_widget_show_all( priv->caption_area );
       }
       break;
@@ -398,9 +401,14 @@ static void hildon_caption_set_property( GObject *object, guint param_id,
       {
         if( !priv->mandatory_icon )
         {
+          gfloat align;
           priv->mandatory_icon = gtk_image_new_from_icon_name(
                                                 HILDON_CAPTION_MANDATORY_ICON,
                                                 HILDON_ICON_SIZE_NOTE );
+
+          align = hildon_caption_get_label_alignment(HILDON_CAPTION(object));
+          g_object_set(priv->mandatory_icon, "yalign", align, NULL);
+
           if( priv->mandatory_icon )
           {
             gtk_box_pack_end( GTK_BOX(priv->caption_area),
@@ -583,10 +591,12 @@ static void hildon_caption_init( HildonCaption *caption )
   
   priv->caption_area = gtk_hbox_new( FALSE, HILDON_CAPTION_SPACING ); 
   priv->label = gtk_label_new( NULL );
-  
+  priv->icon_align = gtk_alignment_new(0.5f, 0.5f, 0.0f, 0.0f);
+
   gtk_event_box_set_above_child( GTK_EVENT_BOX(caption), FALSE );
   gtk_widget_add_events( GTK_WIDGET(caption), GDK_BUTTON_PRESS_MASK );
 
+  gtk_box_pack_end( GTK_BOX(priv->caption_area), priv->icon_align, FALSE, FALSE, 0);
   gtk_box_pack_end( GTK_BOX(priv->caption_area), priv->label, FALSE, FALSE, 0 );
   gtk_widget_set_parent( priv->caption_area, GTK_WIDGET(caption) );
 
@@ -1138,6 +1148,29 @@ hildon_caption_set_label_text( HildonCaptionPrivate *priv )
 
 }
     
+void hildon_caption_set_label_alignment(HildonCaption *caption, 
+                                        gfloat alignment)
+{
+  HildonCaptionPrivate *priv;
 
+  g_return_if_fail(HILDON_IS_CAPTION(caption));
 
+  priv = HILDON_CAPTION_GET_PRIVATE(caption);
+  g_object_set(priv->label, "yalign", alignment, NULL);
+  g_object_set(priv->icon_align, "yalign", alignment, NULL);
 
+  if (priv->mandatory_icon)
+    g_object_set(priv->mandatory_icon, "yalign", alignment, NULL);
+}
+
+gfloat hildon_caption_get_label_alignment(HildonCaption *caption)
+{
+  HildonCaptionPrivate *priv;
+  gfloat result;
+
+  g_return_val_if_fail( HILDON_IS_CAPTION(caption), 0);
+  priv = HILDON_CAPTION_GET_PRIVATE(caption);
+  g_object_get(priv->label, "yalign", &result, NULL);
+
+  return result;
+}

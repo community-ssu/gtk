@@ -114,6 +114,9 @@ void hildon_caption_set_separator( HildonCaption *caption,
 
 gchar *hildon_caption_get_separator( const HildonCaption *caption );
 
+void hildon_caption_set_label_alignment(HildonCaption *caption, 
+                                        gfloat alignment);
+gfloat hildon_caption_get_label_alignment(HildonCaption *caption);
 
 #ifndef HILDON_DISABLE_DEPRECATED
 GtkWidget *hildon_caption_get_control( const HildonCaption *caption );

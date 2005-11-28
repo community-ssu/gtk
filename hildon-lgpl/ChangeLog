@@ -1,5 +1,18 @@
 2005-11-28  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	N#17142 HildonCaption shall be top aligned (multiline control)
+	
+	* hildon-caption.[ch]:
+	(hildon_caption_set_label_alignment): New function
+	(hildon_caption_get_label_alignment): New function
+	(hildon_caption_init): Added GtkAlignment for custom icon.
+	(hildon_caption_set_property): Changed alignments of mandatory
+	icon and custom icon.
+	(hildon_caption_expose): Take alignment into account when painting
+	focus box.
+
+2005-11-28  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	* configure.ac: 0.10.0 branch (0.9.xx continues for maintenance releases)
 	                Gazpacho support added to 0.10 branch (not 0.9).
 

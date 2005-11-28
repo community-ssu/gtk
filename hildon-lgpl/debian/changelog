@@ -1,3 +1,12 @@
+hildon-lgpl (0.10.1-1pre) unstable; urgency=low
+
+  * fixes,
+    N#17142 HildonCaption shall be top aligned (multiline control)
+
+  * added Gazpacho support
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 28 Nov 2005 09:47:01 +0200
+
 hildon-lgpl (0.9.57-1) unstable; urgency=low
 
   * fixed,
