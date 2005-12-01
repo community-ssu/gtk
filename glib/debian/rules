@@ -99,10 +99,12 @@ clean: debian/control
 
 	# Add here commands to clean up after the build process.
 	-$(MAKE) maintainer-clean
-	rm -f $(SOURCE_DIR)/install-test-stamp
-	rm -f $(BUILD_DEB_DIR)/build-stamp
+	rm -f gobject/gmarshal.strings
+	rm -f configure config.guess ltmain.sh config.sub aclocal.m4
+	rm -f depcomp mkinstalldirs missing install-sh config.h.in
+	find -name Makefile.in | xargs --no-run-if-empty rm
 
-	dh_clean
+	dh_clean $(SOURCE_DIR)/install-test-stamp $(BUILD_DEB_DIR)/build-stamp debian/shlibs.local
 
 install-test: $(SOURCE_DIR)/install-test-stamp
 $(SOURCE_DIR)/install-test-stamp:
