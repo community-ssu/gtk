@@ -130,7 +130,6 @@ install-deb: build-deb install-test
 		prefix=$(CURDIR)/debian/libglib$(apiver)-$(soname)/usr
 
 install: install-deb
-	dh_movefiles --sourcedir=debian/libglib$(apiver)-$(soname) -Nlibglib$(apiver)-udeb
 	-find $(CURDIR)/debian/ -type d -empty | xargs rmdir -p 2>&1 > /dev/null
 
 # Build architecture-independent files here.
@@ -195,9 +194,9 @@ binary-arch: build install
 	dh_installdeb -a
 	dh_shlibdeps -l$(libpath) -a
 	cat debian/*/DEBIAN/shlibs > debian/shlibs.local
-	dh_gencontrol -a -Nlibglib$(apiver)-udeb
-	dh_md5sums -a -Nlibglib$(apiver)-udeb
-	dh_builddeb -a -Nlibglib$(apiver)-udeb
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
 
 binary: binary-indep binary-arch
 .PHONY: build build-deb clean binary-indep binary-arch binary install install-deb install-test configure configure-deb extract debian/control
