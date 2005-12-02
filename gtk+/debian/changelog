@@ -5,8 +5,10 @@ gtk+2.0 (2:2.6.10-1.osso1) unstable; urgency=low
       upstream
   * debian/*: redo packaging to build directly from svn trunk
   * static libraries removed to simplify the build (they were unused anyway)
+  * debian/rules: configure with --disable-gtk-doc as the docs won't build
+    properly with currently available tools
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 25 Nov 2005 12:19:40 +0200
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  2 Dec 2005 18:11:33 +0200
 
 gtk+2.0 (2:2.6.4-1.osso76) unstable; urgency=low
 
