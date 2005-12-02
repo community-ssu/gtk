@@ -130,6 +130,7 @@ install-deb: build-deb install-test
 		prefix=$(CURDIR)/debian/libglib$(apiver)-$(soname)/usr
 
 install: install-deb
+	dh_movefiles --sourcedir=debian/libglib$(apiver)-$(soname)
 	-find $(CURDIR)/debian/ -type d -empty | xargs rmdir -p 2>&1 > /dev/null
 
 # Build architecture-independent files here.
