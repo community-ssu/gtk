@@ -2,8 +2,12 @@ glib2.0 (2.6.6-1osso1) unstable; urgency=low
 
   * Upgrade to glib 2.6.6
   * debian/*: redo packaging to build directly from svn trunk
+  * debian/control: add gtk-doc-tools to Build-Depends as it's needed for
+    autogen
+  * debian/rules: configure with --disable-gtk-doc as the docs won't build
+    properly with currently available tools
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 30 Nov 2005 17:56:39 +0200
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  2 Dec 2005 12:24:13 +0200
 
 glib2.0 (2.6.2-1osso8) unstable; urgency=low
 

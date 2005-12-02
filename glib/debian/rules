@@ -69,7 +69,8 @@ $(BUILD_DEB_DIR)/config.status: $(SOURCE_DIR)/configure
 			--mandir=\$${prefix}/share/man \
 			--infodir=\$${prefix}/share/info \
 			--with-html-dir=\$${prefix}/share/doc/libglib$(apiver)-doc \
-			--enable-static
+			--enable-static \
+			--disable-gtk-doc
 
 	cd $(BUILD_DEB_DIR) && \
 	sed < libtool > libtool-2 \
