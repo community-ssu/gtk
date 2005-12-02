@@ -1,0 +1,39 @@
+.TH maemo\-launcher 1 2005-09-13 @VERSION@ "Maemo Launcher manual"
+.SH NAME
+maemo\-launcher \- initialization launcher daemon
+.SH SYNOPSIS
+.B maemo\-launcher
+.RI [ options ]
+.SH DESCRIPTION
+.B maemo\-launcher
+is an initialization speedup daemon, that tries to move as much as possible
+of tasks done for every application to a central program that then forks
+and dynamically opens the applications to run.
+.PP
+The application to run is communicated from the
+.B maemo\-invoker
+through a unix socket and then started.
+.SH OPTIONS
+These programs follow the usual GNU command line syntax, with long
+options starting with two dashes (`-').
+A summary of options is included below.
+.TP
+.B \-\-daemon
+Fork and go to background.
+.TP
+.B \-\-pidfile PIDFILE
+Specify a different filename for the pid file.
+.TP
+.B \-\-quiet
+Do not print anything.
+.TP
+.B \-\-help
+Show summary of options.
+.TP
+.B \-\-version
+Show version of program.
+.SH SEE ALSO
+.BR maemo\-invoker (1).
+.SH AUTHOR
+maemo\-launcher was written by Michael Natterer <mitch@imendio.com> and
+Guillem Jover <guillem.jover@nokia.com>.

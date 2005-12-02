@@ -1,0 +1,17 @@
+Source: maemo-launcher
+Section: embedded
+Priority: optional
+Maintainer: Guillem Jover <guillem.jover@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), libgtk2.0-dev (>= 2.6.4-1),
+ libosso-gnomevfs2-dev (>= 2.8.0-1), hildon-libs-dev (>= 0.7.5-1),
+ hildon-lgpl-dev (>= 0.7.5-1)
+Standards-Version: 3.6.2
+
+Package: maemo-launcher
+Architecture: any
+Depends: ${shlibs:Depends}, hildon-initscripts
+Description: Maemo Launcher for GTK applications
+ Maemo Launcher for any gtk+ application. Tries to reduce startup time by
+ pre-initializing the state of some libraries and then dynamically loading
+ the applications.
+

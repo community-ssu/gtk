@@ -1,0 +1,189 @@
+
+  $Id$
+
+
+What is the maemo-launcher?
+===========================
+
+The maemo-launcher is a daemon to speedup applications startup time.
+
+It opens a new GdkDisplay, makes it the default and forces all gtkrc files
+to be parsed and initializes some other components like pango, stores the
+GtkSettings object that was associated with the display's default screen
+(this is a hack, the settings and all cached gtkrc stuff should be deleted
+if display/screen closing was implemented correctly, but they aren't because
+display/screen closing is not supported at the moment), then it closes the
+GdkDisplay.
+
+When an application is invoked it forks, tries to restore the environment as
+if it had been started directy, dynamically opens the application, opens a
+new display and associates its screen with the stored state (the GtkSettings;
+this is the second hack which only works because we *know* the new display's
+properties are identical to the old display's ones). And afterwards launches
+the application by calling the "main" function.
+
+The launcher is listening to a unix socket for notifications of new
+applications to be launched. The maemo-invoker is the program in charge to
+notify the launcher of which application to run.
+
+Read the man pages for further information.
+
+
+Current known issues
+====================
+
+The maemo-invoker does not return the exit value of the launched program.
+
+If the application takes too much time to register the DBUS service the
+maemo-invoker may have exited already, so dbus will not allow the application
+to register it after the process it has started has finished already.
+
+Binaries intended to be run by maemo-launcher must be linked with the
+"-pie -rdynamic" linker flags if they should transparently work as
+executables and dlopen()-able objects. If running them as executable is not
+a requirement, "-rdynamic" or "-shared" is good enough.
+
+Transferring the GtkSettings to the child's screen is a hack, therefore it
+will only work if we open the "same" display again (the same display on the
+same server with the same visuals and colormaps).
+
+gnome_vfs_init() cannot be called by the daemon because it opens a pipe to
+the vfs daemon.
+
+Children using GThread should use
+
+  if (!g_thread_supported())
+    g_thread_init(NULL);
+
+to be safe against possible future changes in maemo-launcher.
+
+Until display/screen closing is fully supported, we should not do anything
+with the original display, esp. not opening windows on it.
+
+The children are dlopen()ed using RTLD_LAZY, so symbol relocation errors are
+not caught at the time we call dlopen(). Instead, the child will crash
+randomly at any later point if the libraries it depends on are somehow messed.
+
+
+Integrating the maemo-launcher painlessly
+=========================================
+
+These are the detailed changes needed to add support for the new
+maemo-launcher. The launcher will not be used by default, so once it's
+checked that it works with the specific application it can be enabled
+explicitely.
+
+The changes are meant for normal OSSO packages using automake. If yours
+differ feel free to contact me (Guillem Jover <guillem.jover@nokia.com>)
+and I can help you on the process.
+
+
+Upstream Changes
+----------------
+
+On the Makefile.am that is creating the final application binary, add to
+the application_CFLAGS variable:
+
+	$(MAEMO_LAUNCHER_CFLAGS)
+
+And to the the application_LDFLAGS variable:
+
+	$(MAEMO_LAUNCHER_LDFLAGS)
+
+
+Debian Changes
+--------------
+
+* debian/control:
+
+ - Add a "${launcher:Depends} to the "Depends:" line of the package
+   containing the application to be launched.
+
+* debian/rules:
+
+ - Initializing the launcher variables:
+
+---X<---
+LAUNCHER = no
+
+ifneq (,$(findstring maemo-launcher,$(DEB_BUILD_OPTIONS)))
+	LAUNCHER = yes
+endif
+
+ifeq "$(strip $(LAUNCHER))" "yes"
+	LAUNCHER_DEPENDS = -Vlauncher:Depends="maemo-launcher"
+	LAUNCHER_CFLAGS = -shared
+	LAUNCHER_LDFLAGS = -shared -export-dynamic
+endif
+---X<---
+
+ - On the make target reponsible of the building (usually "build:"),
+   pass the following variables to the make call:
+
+---X<---
+	$(MAKE) \
+	  MAEMO_LAUNCHER_CFLAGS="$(LAUNCHER_CFLAGS)" \
+	  MAEMO_LAUNCHER_LDFLAGS="$(LAUNCHER_LDFLAGS)" \
+	  ...
+---X<---
+
+ - On the "install:" target after having installed the binaries
+   (usually after "$(MAKE) install ...") do:
+
+---X<---
+ifeq "$(strip $(LAUNCHER))" "yes"
+	mv $(CURDIR)/debian/application-package/usr/bin/application \
+	   $(CURDIR)/debian/application-package/usr/bin/application.launch
+	ln -s /usr/bin/maemo-invoker \
+	      $(CURDIR)/debian/application-package/usr/bin/application
+endif
+---X<---
+
+   Substitute application with the name of the application to be launched,
+   and application-package with the package containing such application.
+
+ - On the "binary:" target, change:
+
+	dh_gencontrol
+
+   to
+
+	dh_gencontrol -- $(LAUNCHER_DEPENDS)
+
+
+Activating the maemo-launcher in the application
+================================================
+
+
+Testing the launcher enabled application
+----------------------------------------
+
+To test if your application just works with the launcher, build with the
+following command line:
+
+	DEB_BUILD_OPTIONS=maemo-launcher dpkg-buildpackage -b -us -uc
+
+Install the package, and start the application from the Task Navigator.
+Check as much as possible for extraneous behaviour.
+
+WARNING: The launcher requires a modified libgdk, if it's not present
+the launcher itself will segfault. That version is present on w2005-24
+release.
+
+
+Enabling the launcher after checking that it works
+--------------------------------------------------
+
+If the tests were successful, you just have to change the first LAUNCHER
+variable assignment from "no" to "yes":
+
+---X<---
+LAUNCHER = yes
+---X<---
+
+If for any reason the launcher stops working, or it's found that it's
+breaking some part of the application (although in general the launcher
+is not at fault, and only triggers unrelated bugs in other components)
+you can disable it by setting the variable back to "no".
+
+

@@ -1,0 +1,81 @@
+#!/usr/bin/make -f
+#
+# $Id$
+#
+
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+CFLAGS = -g -Wall
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+# Nasty thing due to having the upstream and debian stuff merged.
+configure: configure.ac
+	autoreconf -f -i -Wall
+	rm -rf autom4te.cache
+
+config.status: configure
+	dh_testdir
+	
+	CFLAGS="$(CFLAGS)" ./configure \
+	  --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
+	  --enable-extra-libs \
+	  --mandir=\$${prefix}/share/man \
+	  --prefix=/usr
+
+build: config.status
+	dh_testdir
+	
+	$(MAKE)
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+	
+	-$(MAKE) distclean
+	
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+	
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/maemo-launcher
+
+binary-indep: build install
+	# Nothing to do.
+
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs ChangeLog
+	dh_installdocs
+	dh_installexamples
+#	dh_install
+#	dh_installlogrotate
+#	dh_installpam
+	dh_installinit -- start 45 2 3 4 . stop 45 0 1 5 6 .
+	dh_installman
+	dh_link
+	dh_strip
+	dh_compress
+	dh_fixperms
+#	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+
+.PHONY: build clean binary-indep binary-arch binary install
+

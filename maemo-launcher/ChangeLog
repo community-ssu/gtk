@@ -1,0 +1,983 @@
+2005-12-01  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (clean_daemon): Use pidfilename instead of
+	LAUNCHER_PIDFILE.
+
+2005-11-30  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.c (invoker_ack): Rename to ...
+	(invoke_recv_ack): ... this. Fix all callers.
+	(invoker_exec): Rename to ...
+	(invoker_send_exec): ... this. Fix all callers.
+	(invoker_args): Rename to ...
+	(invoker_send_args): ... this. Fix all callers.
+
+2005-11-21  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invokelib.h (INVOKER_MAGIC): Bump version to 2.
+	(INVOKER_END): New macro.
+	* launcher/invoker.c (invoker_send_end): New function.
+	(main): Call invoker_send_end to finish communication.
+	* launcher/launcher.c (invoked_get_exec, invoked_get_args): Move
+	action get logic to ...
+	(invoked_get_actions): ... here. New function.
+	(main): Use invoked_get_actions instead of directly using
+	invoked_get_exec and invoked_get_args.
+
+2005-11-17  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.9.
+
+2005-11-17  Guillem Jover  <guillem.jover@nokia.com>
+
+	* README: Merge the scattered HOWTO into the package.
+
+2005-11-16  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (invoked_get_args): Detect buggy or malicious
+	invokers trying to do a heap overflow.
+
+2005-11-16  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (launch_process): Restore process priority to 0
+	if it was < 0.
+
+2005-10-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.8.
+
+2005-10-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher.c (invoked_get_args): Use msg variable instead of
+	prog->argc when using invoke_recv_msg to avoid warning.
+
+2005-10-19  Guillem Jover  <guillem.jover@nokia.com>
+
+	* COPYING: Update FSF's address.
+
+2005-10-19  Guillem Jover  <guillem.jover@nokia.com>
+
+	* README: Cosmetic fixes.
+
+2005-10-18  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (fix_argv): Rename to ...
+	(set_progname): ... this. Fix all callers.
+
+2005-10-18  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (main): Call invoked_get_args inside the if
+	body.
+
+2005-10-18  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (sigchild_catched, sighup_catched): Switch
+	static and volatile keywords.
+	* launcher/report.c (report_type): Remove comma after last entry.
+	* launcher/report.h (report_output): Likewise.
+	(die): Add noreturn attribute.
+
+2005-10-07  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.7.
+
+2005-10-07  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invokelib.c (invoke_recv_str): Return NULL instead of false
+	if malloc fails. Check for returned read bytes.
+
+2005-10-07  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/report.c (report): Set default case in switch.
+
+2005-10-07  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.c (get_linux_lowmem_modifier): Compute the modifier
+	correctly.
+
+2005-09-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.6.
+
+2005-09-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* client/client.c: Correct indentation. Use proper types for main
+	arguments. Do not include 'stdlib.h'. Change app title to
+	maemo-client.
+
+2005-09-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/ui_gtk.c (ui_daemon_init): Use error instead of g_error.
+
+2005-09-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.c (get_linux_lowmem_modifier): Add portability
+	comment. Remove linux from linux_lowmem_threshold variable name.
+
+2005-09-27  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invokelib.c (invoke_recv_msg): Use __FUNCTION__ instead if
+	the hardcoded function name.
+	(invoke_send_msg): Likewise.
+	(invoke_send_str): Likewise.
+	(invoke_recv_str): Likewise.
+	* launcher/report.c (report): Remove "while" from die string.
+	* launcher/invoker.c (main): Print an error and the usage when nothing
+	to invoke instead of just dying.
+
+2005-09-27  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.1.in: Rename --timeout to --delay, and
+	MAEMO_INVOKER_TIMEOUT to MAEMO_INVOKER_DELAY.
+	* launcher/invoker.c: Likewise.
+	(DEFAULT_TIMEOUT): Renamed to ...
+	(DEFAULT_DELAY): ... this. Set back to 10 as some apps cannot cope
+	with lower values.
+	(get_file_int): New function.
+	(get_linux_lowmem_modifier): Likewise.
+	(get_delay): Likewise.
+	(main): Get the exit delay from get_delay.
+
+2005-09-15  Guillem Jover  <guillem.jover@nokia.com>
+
+	* client/client.c (main): Destroy the timer before entering gtk_main.
+	Thanks to David Weinehall.
+
+2005-09-15  Guillem Jover  <guillem.jover@nokia.com>
+
+	* README: Fix typo. Thanks to David Weinehall.
+
+2005-09-15  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/report.h (info): New prototype.
+
+2005-09-14  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.5.
+
+2005-09-14  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.c (DEFAULT_TIMEOUT): Set to 6. Add a comment to
+	why the sleep is needed.
+
+2005-09-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/report.h [!DEBUG] (debug): Remove macro.
+	* launcher/report.c [DEBUG] (debug): Do not protect function from
+	macro expansion.
+
+2005-09-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* client/client.c: Update FSF's address.
+	* launcher/invokelib.c: Likewise.
+	* launcher/invokelib.h: Likewise.
+	* launcher/invoker.c: Likewise.
+	* launcher/launcher.c: Likewise.
+	* launcher/report.c: Likewise.
+	* launcher/report.h: Likewise.
+	* launcher/ui.h: Likewise.
+	* launcher/ui_gtk.c: Likewise.
+	* launcher/ui_gtk.h: Likewise.
+
+2005-09-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.1.in: Lower case tittle name.
+	* launcher/launcher.1.in: Likewise. Fix a typo.
+
+2005-09-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/report.c (report_type): Add report_info.
+	(report): Initialize str_type to an empy string.
+	Handle new report_info type.
+	(info): New function.
+	* launcher/launcher.c: Remove 'syslog.h' include.
+	(clean_childs): Use info instead of syslog.
+	(main): Likewise.
+
+2005-09-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/report.c (report_type): New enum.
+	(report): New function.
+	(debug): Use the new refactorized report function.
+	(error): Likewise.
+	(die): Likewise.
+
+2005-09-12  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (clean_childs): Use waitpid instead of wait, and
+	do not hand waiting.
+
+2005-09-12  Guillem Jover  <guillem.jover@nokia.com>
+
+	* ChangeLog: Unify history.
+	* client/client.c: Unify and fix comments.
+	* launcher/launcher.c: Likewise.
+	* launcher/invoker.c: Likewise.
+	* launcher/invokelib.c: Likewise.
+	* launcher/invokelib.h: Likewise.
+	* launcher/ui_gtk.c: Likewise.
+
+2005-09-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* launcher/ui.h (ui_state_reload): New prototype.
+	* launcher/ui_gtk.c (ui_state_reload): New function. Reopens
+	connection to the X server and reparses settings in gtkrc to catch
+	up with theme switching, then close X display again.
+	* launcher/launcher.c (sighup_catched): New variable.
+	(sighup_handler): New function.
+	(main): Set up SIGHUP handler and restore it after child creation.
+	Reread ui state if the signal was catched.
+
+2005-09-12  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (sigchild_catched): New variable.
+	(child_exit): Rename to ...
+	(clean_childs): ... this. Do not take any argument.
+	(sigchild_handler): New function.
+	(main): Use sigaction instead of signal.
+	Allow SIGCHLD to only interrupt accept. Store errno after accept for
+	posterior processing. Run clean_childs if a SIGCHLD was catched and
+	mark sigchild as uncacthed.
+
+2005-09-10  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/report.h (report_output): New enum declaration
+	(report_set_output): New function prototype.
+	* launcher/report.c: Include 'syslog.h'.
+	(output): New variable.
+	(report_set_output): New function.
+	(debug): Use syslog or fprintf conditionally.
+	(error): Likewise.
+	(die): Likewise.
+	* launcher/invoker.c (main): Set reporting output when called as a
+	symlink to syslog.
+	* launcher/launcher.c (launch_process): Set reporting output to
+	console for [DEBUG]. Set it to none for [!DEBUG].
+	(main): Set reporting output to syslog.
+
+2005-09-10  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (main): Set the child signal to the ignore
+	handler in the invokation child.
+
+2005-09-10  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (child_exit): Use wait instead of waitpid, and
+	only keep waiting if it returns > 0.
+
+2005-09-09  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/report.h: Remove 'stdio.h' include.
+	(debug): New function prototype. Change the macro to use the function,
+	instead of fprintf.
+	* launcher/report.c (debug): New function.
+
+2005-09-09  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.c: Unify and clarify a output messages.
+	* launcher/launcher.c: Likewise.
+
+2005-09-09  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (main): Reset all signals to the default handler
+	in the invokation child.
+
+2005-09-09  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (main): Include 'errno.h'. Print an error and
+	continue on next loop if accept returned an error.
+
+2005-09-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/Makefile.am (maemo_launcher_CPPFLAGS): Rename LAUNCHER_NAME
+	to PROG_NAME.
+	* launcher/launcher.c: Likewise.
+	* launcher/Makefile.am (maemo_invoker_CPPFLAGS): Rename INVOKER_NAME
+	to PROG_NAME.
+	* launcher/invoker.c: Likewise.
+
+2005-09-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.c (invoker_init): Unify and clarify a die message.
+	* launcher/launcher.c: Unify and clarify some die and error messages.
+
+2005-09-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c: Include 'sys/wait.h' and 'syslog.h'.
+	(child_exit): New function.
+	(main): Set child_exit as the SIGCHLD handler.
+
+2005-09-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (main): Check return values from setsid and
+	fork, and die in case of error.
+
+2005-09-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (main): Open stdin as readonly, and stdout and
+	stderr as writeonly. Check for return values and die in case of error.
+
+2005-09-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (launch_process) [DEBUG]: Use debug instead of
+	printf for debugging output.
+	* launcher/ui_gtk.c [DEBUG] (timestamp_func): Likewise.
+
+2005-09-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.h: Rename to ...
+	* launcher/report.h: ... this. Fix all includers.
+	(error): Convert from a macro to a function prototype.
+	(die): New function prototype.
+	* launcher/report.c: New file.
+	* Makefile.am (maemo_launcher_SOURCES): Add 'report.c' and 'report.h'.
+	(maemo_invoker_SOURCES): Likewise.
+	* launcher/launcher.c (launch_process): Rename variable error to
+	error_s, to not conflict now that error is a function.
+	(invoked_init): Use die instead of the error and exit combo.
+	* launcher/invoker.c (invoker_ack): Likewise.
+	(invoker_init): Likewise.
+	(main): Likewise.
+
+2005-07-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.4.
+
+2005-07-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invokelib.c (invoke_recv_str): Fix off-by-one bug when zero
+	terminating str.
+
+2005-07-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.3.
+
+2005-07-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invokelib.h (INVOKER_SOCK): Use the PACKAGE name.
+
+2005-07-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.c (main): Rename progname to prog_name.
+	Shut up the compiler warnings by initializing proc_argc and prog_argv.
+
+2005-07-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (launch_process): Pretty debugging print
+	environment. Debugging print argv.
+
+2005-07-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/ui.h (ui_client_init): Make arguments constant.
+	* launcher/ui_gtk.c: Include <stdlib.h> for free.
+	(ui_client_init): Duplicate progfilename to progname to be able to
+	modify it.
+	* launcher/launcher.c (launch_process): Set the environment variable
+	"_" to the program name, not the filename launched.
+
+2005-07-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/ui.h: Rename progname to progfilename.
+	* launcher/ui_gtk.c (_GNU_SOURCE): Define.
+	Include <string.h> for basename.
+	(ui_client_init): Likewise. Get basename of
+	progfilename into progname.
+
+2005-07-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.c (DEFAULT_TIMEOUT): Set to 4.
+
+2005-07-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.2.
+
+2005-07-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/ui_gtk.c (init_gtypes): Use gint instead of int.
+	(init_gquarks): Likewise.
+
+2005-07-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (invoked_get_args): Remove __FUNCTION__ from
+	error calls.
+
+2005-07-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invokelib.h (INVOKER_ARGS): New macro.
+	(INVOKER_MAGIC, INVOKER_EXEC, INVOKER_ACK): Append version 0x0000.
+	* launcher/invoker.c (invoker_args): New function.
+	(usage): Document the support for invoked program arguments.
+	(main): Only recognise our own arguments if we are called with our
+	real name. Support invoker program arguments. Now the knowledge about
+	".launch" is self contained on the invoker as we are sending the
+	filename and whole arguments. Bail out if there is nothing to invoke.
+	* launcher/invoker.1.in: Document the support for invoked program
+	arguments.
+	* launcher/launcher.c (prog_t): New type.
+	(launcher_process): Change prototype to use prog_t. Change all
+	callers. Do not stip ".launch" from progname anymore. Move argv fix
+	logic to ...
+	(fix_argv): ... here. New function.
+	(invoked_get_exec): Change prototype to use prog_t. Change all
+	callers.
+	(invoked_get_args): New function.
+	(main): Use prog_t. Call invoked_get_args and fix_argv.
+
+2005-07-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (invoked_get_exec): Move magic handling to ...
+	(invoked_get_magic): ... here. New function.
+	(main): Get the magic data on the parent and get the rest on the
+	child.
+
+2005-07-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invokelib.c (invoke_recv_str): Forcibly zero terminate
+	the received string.
+
+2005-07-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invokelib.c (invoke_send_str): Move debug sentence just
+	before sending the string.
+
+2005-07-05  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (launch_process): Indentation fixes.
+	Debugging output fixes. Fix pedantic warning.
+
+2005-07-05  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invokelib.h (invoke_send_str): New protoype.
+	(invoke_recv_str): Likewise.
+	* launcher/invokelib.c (invoke_send_str): New function.
+	(invoke_recv_str): Likewise.
+	* launcher/invoker.c (invoker_exec): Use invoke_send_str.
+	* launcher/launcher.c (invoked_get_exec): Use invoke_recv_str.
+
+2005-07-01  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/gquark_list.h: Rename to ...
+	* launcher/ui_gtk.h: ... this, fix all includers.
+	* launcher/gtypes.c: Rename to ...
+	* launcher/ui_gtk.c: ... this.
+	* launcher/gtypes.h: Rename to ...
+	* launcher/ui.h: ... this, fix all includers.
+	(LauncherState): Rename to ...
+	(ui_state): ... this, fix all callers.
+	(init_daemon): Rename to ...
+	(ui_daemon_init): ... this, fix all callers.
+	(init_client): Rename to ...
+	(ui_client_init): ... this, fix all callers.
+
+2005-06-20  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/gquark_list.h: Unify indentation style.
+	* launcher/gtypes.c: Likewise.
+	* launcher/launcher.c: Likewise.
+
+2005-06-17  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.1.0.
+
+2005-06-17  Guillem Jover  <guillem.jover@nokia.com>
+
+	* COPYING: New file.
+	* client/client.c: Add GPL statement.
+	* launcher/gquark_list.h: Likewise.
+	* launcher/gtypes.c: Likewise.
+	* launcher/gtypes.h: Likewise.
+	* launcher/launcher.c: Likewise.
+	* launcher/launcher.h: Likewise.
+	* launcher/invokelib.c: Likewise.
+	* launcher/invokelib.h: Likewise.
+	* launcher/invoker.c: Likewise.
+
+2005-06-16  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.0.10.
+
+2005-06-16  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invoker.1.in: Document the way it invokes programs.
+
+2005-06-16  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon: Rename to ...
+	* launcher: ... this.
+	* iclient: Rename to ...
+	* client: ... this.
+	* configure.ac: Fix accordingly.
+	* Makefile.am: Likewise.
+
+2005-06-16  Guillem Jover  <guillem.jover@nokia.com>
+
+	Rename iclient to client, idaemon to maemo-launcher and invoker to
+	maemo-invoker.
+
+	* configure.ac: s/IDAEMON/LAUNCHER/ s/ICLIENT/CLIENT/.
+	Generate maemo-app.1 manpages from app.1.in.
+	* README: s/idaemon/maemo-launcher/.
+	* idaemon/idaemon.1.in: Rename to ...
+	* idaemon/launcher.1.in: ... this.
+	* idaemon/idaemon.c: Rename to ...
+	* idaemon/launcher.c: ... this.
+	(usage): Do not quote invoker.
+	(LAUNCHER_PIDFILE): Use LAUNCHER_NAME.
+	(LAUNCHER_NAME): Move definition to ...
+	* idaemon/Makefile.am (maemo_launcher_CPPFLAGS): ... here.
+	* idaemon/invoker.c: s/INVOKER_TIMEOUT/MAEMO_INVOKER_TIMEOUT/.
+	(INVOKER_NAME): Move definition to ...
+	* idaemon/Makefile.am (maemo_invoker_CPPFLAGS): ... here.
+	* iclient/iclient.c: Rename to ...
+	* iclient/client.c: ... this.
+	* iclient/iclient.Version: Rename to ...
+	* iclient/client.Version: ... this.
+	* iclient/Makefile.am (version_script): New variable.
+
+2005-06-16  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Change package name to maemo-launcher.
+
+2005-06-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.0.9.
+
+2005-06-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Add --enable-extra-libs.
+
+2005-06-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (invoked_init): Set umask to 022.
+
+2005-06-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.1: Rename to ...
+	* idaemon/idaemon.1.in: ... this. Use @VERSION@.
+	* idaemon/invoker.1: Rename to ...
+	* idaemon/invoker.1.in: ... this. Use @VERSION@.
+	* configure.ac: Generate idaemon/idaemon.1.in
+	and idaemin/invoker.1.in.
+
+2005-06-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (main): Add missing ; after fork().
+
+2005-05-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (clean_daemon): Kill all process in process group.
+
+2005-05-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (is_parent): New variable.
+	(clean_daemon): Only remove files if is_parent.
+	(main): Set is_parent from fork.
+
+2005-05-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/Makefile.am (dist_man_MANS): New variable.
+
+2005-05-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* INSTALL: New file.
+	* idaemon/idaemon.1: Likewise.
+	* idaemon/invoker.1: Likewise.
+
+2005-05-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/invoker.c (DEFAULT_TIMEOUT): New macro.
+	(main): Add --timeout option.
+	(usage): Likewise.
+
+2005-05-25  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/invoker.c (version, usage): New functions.
+	(main): Add command line parsing.
+	* idaemon/idaemon.c (version): Print package name.
+
+2005-05-24  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/gtypes.h: Do not include 'gtk/gtk.h'.
+	(LauncherState): New type.
+	(init_daemon): Use LauncherState instead of GtkSettings.
+	Change all callers.
+	(init_client): Likewise. Add progname as argument.
+	* idaemon/idaemon.c (start_process): Rename to ...
+	(launch_process): ... this. Change all callers. Replace GTK functions
+	with stdc ones.
+	(main): Change arguments to int and char. Move GTimer insertion to ...
+	* idaemon/gtypes.c: ... here.
+	* idaemon/idaemon.c (timestamp_func): Move to ...
+	* idaemon/gtypes.c: ... here.
+	(init_gtypes): Use int instead of gint.
+
+2005-05-24  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (init_daeomon, init_client)
+	(pango_default_substitute): Move to ...
+	* idaemon/gtypes.c: ... here.
+	(init_gtypes, init_gquarks): Change to static.
+	* idaemon/gtypes.h (init_gtypes, init_gquarks): Removed declarations.
+	(init_daemon, init_client): New declarations.
+
+2005-05-24  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c: Include 'launcher.h'.
+
+2005-05-23  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/invokelib.h: Fix comment.
+	(error, debug): Move macros to ...
+	* idaemon/launcher.h: ... here. New file.
+	* idaemon/invokelib.c: Include 'launcher.h'.
+	* idaemon/invoker.c: Likewise.
+	* idaemon/Makefile.am (idaemon_SOURCES): Add 'launcher.h'.
+	(invoker_SOURCES): Likewise.
+
+2005-05-19  Guillem Jover  <guillem.jover@nokia.com>
+
+	* Makefile.am (ICLIENT) [BUILD_CLIENT]: New variable.
+	(SUBDIR): Use ICLIENT.
+	* configure.ac: Add --enable-client.
+	(IDAEMON): Remove hildon and gnome-vfs libs.
+	(ICLIENT): New pkg-config variable.
+
+2005-05-18  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (timestamp_func): Change to static.
+	(invoked_get_exec): Likewise.
+	(clean_daemon): Likewise.
+	(version): Likewise.
+	(usage): Likewise.
+
+2005-05-18  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c: Include 'config.h'.
+	(LAUNCHER_NAME): New macro.
+	(pidfilename): New variable.
+	(version): New function.
+	(usage): Likewise.
+	(main): Add --version, --daemon, --quiet and --pidfile options.
+	Move daemonization after launcher startup setup and conditionalize.
+
+2005-05-18  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (main): Reopen 0, 1 and 2 to /dev/null.
+
+2005-05-16  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/invokelib.h (error): New macro.
+	* idaemon/idaemon.c: Use error.
+	* idaemon/invoker.c: Likewise.
+
+2005-05-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (main): Close the socket before starting childs.
+	Daemonize.
+
+2005-05-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.0.8.
+
+2005-05-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/gtypes.c (init_gtypes): Return a value.
+	* idaemon/idaemon.c: Remove commented DEBUG definition.
+	(init_daemon): Move timings to [DEBUG].
+	(timestamp_func): Likewise.
+	(main): Likewise. Update usage text. Add comment about umask.
+
+2005-05-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (start_process): Call init_client after setting
+	the class. Set the class and program name from the full filename and
+	not the possibly truncated one. Strip ".launch" from the program name.
+
+2005-05-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (clean_daemon): New function.
+	(main): Install clean_daemon for INT and TERM signals.
+
+2005-05-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (main): Write a pid file.
+
+2005-05-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/invoker.c (main): Try to get the timeout from the environment.
+
+2005-05-10  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (init_daemon): Remove unused variable 'i'.
+
+2005-05-10  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (main): Move program name faking to ...
+	(start_process): ... here.
+
+2005-05-10  Guillem Jover  <guillem.jover@nokia.com>
+
+	* AUTHORS: Added myself.
+	* idaemon/gtypes.c: Likewise.
+	* idaemon/idaemon.c: Likewise.
+
+2005-05-10  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (start_process): Call dlerror instead of
+	g_module_error.
+
+2005-05-10  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/quark_list.h: Renamed to ...
+	* idaemon/gquark_list.h: this.
+	(quark_name_list): Renamed to ...
+	(gquark_name_list): ... this.
+	* idaemon/quarks.h: Renamed to ...
+	* idaemon/gtypes.h: ... this.
+	(init_gtypes): New declaration.
+	* idaemon/idaemon.c (init_daemon): Move initialization of GTypes to init_gtypes.
+	(get_type_funcs, init_gtypes): Move to ...
+	* idaemon/quarks.c: ... here. Renamed to ...
+	* idaemon/gtypes.c: ... this.
+	* idaemon/Makefile.am (idaemon_SOURCES): Rename quarks.c, quarks.h and
+	quark_list.h to gtypes.c, gtypes.h and gquark_list.h
+
+2005-05-10  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c: Remove unneeded gnomevfs include.
+
+2005-05-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (invoked_init): Set umask to 0.
+
+2005-05-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (main): Move g_idle_add after the fork.
+
+2005-05-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/invokelib.h (debug) [DEBUG]: Handle cases where there is no
+	format arguments.
+
+2005-05-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/invoker.c (main): Use debug instead of printf.
+
+2005-05-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (timestamp_func): New function.
+	(main): Install timestamp_func into idle passing a timer.
+
+2005-05-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* README: Reflect current implementation.
+
+2005-05-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/invokelib.c (debug): Move to ...
+	* idaemon/invokelib.h: ... here.
+	* idaemon/idaemon.c (init_daemon): Use debug instead of g_print for
+	time reporting functions.
+	(main): Likewise.
+
+2005-05-06  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/invokelib.c: New file.
+	* idaemon/invokelib.h: Likewise.
+	* idaemon/invoker.c: Likewise.
+	* idaemon/idaemon.c (invoked_init): New function.
+	(invoked_get_exec): Likewise.
+	(start_process): Remove num parameter, fix all callers. Do not print
+	that we are launching.
+	(main): Ignore child signals and do not wait for them. Initialize
+	invoker. Take programs to execute from invoker.
+	* idaemon/Makefile.am (bin_PROGRAMS): Added invoker.
+	(idaemon_SOURCES): Added invokelib.c and invokelib.h.
+	(invoker_SOURCES): New variable.
+
+2005-05-04  Michael Natterer  <mitch@imendio.com>
+
+	* configure.ac: Version 0.0.7.
+
+2005-05-04  Michael Natterer  <mitch@imendio.com>
+
+	* README: Added some content: explain how idaemon works and
+	mention side conditions that need to be honored.
+
+2005-05-04  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (main): Bail out if there is no arguments to be
+	launched.
+
+2005-05-04  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (start_process): Put back plain dlopen.
+
+2005-05-04  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (main): strdup filename so it does not get
+	cleared with memset.
+
+2005-05-02  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/quarks.c: New file.
+	* idaemon/quarks.h: Likewise.
+	* idaemon/quark_list.h: Likewise.
+	* idaemon/idaemon.c: Include quarks.h.
+	(init_daemon): Call init_quarks.
+	* idaemon/Makefile.am (idaemon_SOURCES): Add quarks.c, quarks.h and
+	quark_list.h.
+
+2005-04-29  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (main): Change program name after fork. Run the
+	modules listed in the command line. State on the help that the module
+	can be -pie linked as well.
+	(start_process): Take the modified argv from the caller.
+
+2005-04-29  Michael Natterer  <mitch@imendio.com>
+
+	* configure.ac: Version 0.0.5.
+
+2005-04-29  Michael Natterer  <mitch@imendio.com>
+
+	* idaemon/idaemon.c (init_daemon): Don't call gnome_vfs_init().
+	It has issues with opening a pipe to the vfs daemon.
+
+2005-04-29  Michael Natterer  <mitch@imendio.com>
+
+	* configure.ac: Version 0.0.4.
+
+2005-04-29  Michael Natterer  <mitch@imendio.com>
+
+	* idaemon/idaemon.c (init_client): Call
+	pango_xft_set_default_substitute() for the settings transferred to
+	the new screen. Added a straight copy of the substitution function
+	from gtksettings.c
+
+2005-04-29  Michael Natterer  <mitch@imendio.com>
+
+	* idaemon/idaemon.c (start_process): Set the "_" environment
+	variable to the filename of the client.
+
+2005-04-28  Michael Natterer  <mitch@imendio.com>
+
+	* configure.ac: Version 0.0.3.
+
+2005-04-28  Michael Natterer  <mitch@imendio.com>
+
+	* idaemon/idaemon.c (start_process): Set program name and class to
+	the basename of the dlopen()ed executable.
+
+2005-04-28  Michael Natterer  <mitch@imendio.com>
+
+	* configure.ac: Version 0.0.2.
+
+2005-04-28  Michael Natterer  <mitch@imendio.com>
+
+	* iclient/iclient.c: Fixed usage of HildonApp/HildonAppView.
+
+	* idaemon/idaemon.c: Close the display in the parent process
+	and just pass the default GtkSettings down to the child.
+	Hopefully fixes all kind of Xlib confusion caused by having
+	the old display open across a fork(). Needs a patched GDK.
+
+2005-04-26  Michael Natterer  <mitch@imendio.com>
+
+	* iclient/iclient.c: Added copyright.
+	* idaemon/idaemon.c: Likewise.
+
+2005-04-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (main): Wait for the childs and do not sleep.
+
+2005-04-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (init_daemon): Disable display init by default.
+	(init_client): Likewise.
+
+2005-04-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c (start_process): Switch to plain dlopen.
+
+2005-04-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* idaemon/idaemon.c: Move main to the end. Remove now unneeded forward
+	declarations.
+
+2005-04-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Conditionalize use of PIE.
+	* iclient/Makefile.am: Likewise.
+
+2005-04-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* iclient/Makefile.am: Remove cruft.
+	* idaemon/makefile.am: Likewise.
+
+2005-04-27  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.in: Renamed to ...
+	* configure.ac: ... this. Update to newer autotools.
+	* COPYING: Removed, as autotools does not need it anymore.
+	* NEWS: Likewise.
+
+2005-04-27  Guillem Jover  <guillem.jover@nokia.com>
+
+	* iclient/iclient.Version: New file.
+	* iclient/Makefile.am (EXTRA_DIST): New macro.
+	(iclient_LDFLAGS): Use PIE and the version script.
+
+2005-04-26  Michael Natterer  <mitch@imendio.com>
+
+	* configure.in: Depend on gtk+ >= 2.6.4.
+
+	* idaemon/idaemon.c: Removed declaration of gtk_parse_args()
+	because gtk+ 2.6 has it.
+
+2005-04-26  Michael Natterer  <mitch@imendio.com>
+
+	* AUTHORS: New file, so autotools don't complain.
+	* COPYING: Likewise.
+	* NEWS: Likewise.
+	* README: Likewise.
+
+	* iclient/Makefile.am: Build 'iclient' as shared object and
+	commented out the build of the shared library.
+
+	* iclient/iclient.c: Don't expect the process number in argv[],
+	don't print the process number.
+
+	* idaemon/idaemon.c: Add -? and --help command line options, added
+	more debugging output because the client doesn't do it any more.
+
+2005-04-25  Michael Natterer  <mitch@imendio.com>
+
+	* idaemon/idaemon.c: Pass the old display down to the child
+	process, it's not used in the checked in version but i need it for
+	hacking and don't want to remove/add that code around comitting
+	other changes.
+
+2005-04-25  Michael Natterer  <mitch@imendio.com>
+
+	* idaemon/idaemon.c: Open a display in the daemon process and make
+	sure all rc files are parsed. In the fork()ed client, open the
+	same display again, make it the default, and hack around to
+	associate the original default screen's GtkSettings with the new
+	default screen.
+
+2005-04-22  Michael Natterer  <mitch@imendio.com>
+
+	* iclient/Makefile.am: Also build the same code as executable for
+	comparison.
+
+2005-04-21  Michael Natterer  <mitch@imendio.com>
+
+	* autogen.sh: New file.
+	* configure.in: Likewise.
+	* Makefile.am: Likewise.
+	* iclient/Makefile.am: Likewise.
+	* iclient/iclient.c: Likewise.
+	* idaemon/Makefile.am: Likewise.
+	* idaemon/idaemon.c:: Likewise.
+
