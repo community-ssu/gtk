@@ -3,7 +3,7 @@ Section: libs
 Priority: optional
 Maintainer: Tommi Komulainen <tommi.komulainen@nokia.com>
 Build-Depends: debhelper (>> 4.0.0), gettext, pkg-config, libglib2.0-dev (>= 2.6.2-1), libpango1.0-dev (>= 1.8.0-3), libatk1.0-dev (>= 1.6.1-2), xlibs-static-pic | xlibs-pic (>= 4.2.1-6), libx11-dev | xlibs-dev, libxext-dev | xlibs-dev, libxi-dev | xlibs-dev, libxrandr-dev | xlibs-dev, libxt-dev | xlibs-dev, libxrender-dev, libxft-dev, libxcursor-dev,  libjpeg62-dev, libpng12-dev, gtk-doc-tools, gnome-pkg-tools, libtiff4-dev, libexpat1-dev, libxfixes-dev
-Build-Depends-Indep: gtk-doc-tools, docbook-xml
+Build-Depends-Indep: gtk-doc-tools
 Standards-Version: 3.6.1.0
 
 Package: libgtk2.0-0
