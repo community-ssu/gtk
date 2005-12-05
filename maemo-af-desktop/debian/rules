@@ -15,16 +15,6 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 CFLAGS = -Wall -g
 
-ifneq (,$(findstring maemo-launcher,$(DEB_BUILD_OPTIONS)))
-	LAUNCHER = yes
-endif
-
-ifeq "$(strip $(LAUNCHER))" "yes"
-	LAUNCHER_DEPENDS = -Vlauncher:Depends="maemo-launcher"
-	LAUNCHER_CFLAGS = -shared
-	LAUNCHER_LDFLAGS = -shared -export-dynamic
-endif 
-
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else
@@ -54,9 +44,7 @@ build-stamp:  config.status
 	dh_testdir
 
 # Add here commands to compile the package.
-	$(MAKE) \
-	MAEMO_LAUNCHER_CFLAGS="$(LAUNCHER_CFLAGS)" \
-	MAEMO_LAUNCHER_LDFLAGS="$(LAUNCHER_LDFLAGS)"
+	$(MAKE)
 	touch build-stamp
 
 clean:
@@ -84,18 +72,6 @@ install: build
 
 # Add here commands to install the package into debian/build
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/build
-ifeq "$(strip $(LAUNCHER))" "yes"
-	mv $(CURDIR)/debian/build/usr/bin/maemo_af_desktop \
-	 $(CURDIR)/debian/build/usr/bin/maemo_af_desktop.launch
-	ln -s /usr/bin/maemo-invoker \
-	 $(CURDIR)/debian/build/usr/bin/maemo_af_desktop
-
-	mv $(CURDIR)/debian/build/usr/bin/home-image-loader \
-	 $(CURDIR)/debian/build/usr/bin/home_image_loader.launch
-	ln -s /usr/bin/home-image-loader \
-	 $(CURDIR)/debian/build/usr/bin/home-image-loader
-
-endif 
 	mkdir -p $(CURDIR)/debian/build/usr/share/mime/packages/
 	cp debian/maemo-af-desktop.xml $(CURDIR)/debian/build/usr/share/mime/packages/
 
@@ -130,7 +106,7 @@ binary-arch: build install
 	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps
-	dh_gencontrol -- $(LAUNCHER_DEPENDS)
+	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 

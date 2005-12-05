@@ -56,6 +56,5 @@ install-data-hook:
 	ln -sf .empty 1000_separator; \
 	ln -sf .empty 2000_separator; \
 	mkdir -p $(DESTDIR)/$(hildon_othersmenudir)/1400_tana_fi_utilities; \
-	mkdir -p $(DESTDIR)/$(hildon_othersmenudir)/2100_tana_fi_games; \
-	mkdir -p $(DESTDIR)/$(hildon_othersmenudir)/2200_tana_fi_extras; 
+	mkdir -p $(DESTDIR)/$(hildon_othersmenudir)/2100_tana_fi_games;
 

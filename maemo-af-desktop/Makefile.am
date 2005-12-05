@@ -21,7 +21,7 @@ EXTRA_DIST = debian/changelog debian/control debian/copyright debian/rules \
 
 INCLUDES = \
 	$(HILDON_CFLAGS) -g $(MB_CFLAGS) $(OSSO_CFLAGS) $(GNOME_VFS_CFLAGS) \
-	$(GCONF_CFLAGS) $(MB_CFLAGS) $(MAEMO_LAUNCHER_CFLAGS) $(COMMON_ERROR_CFLAGS) \
+	$(GCONF_CFLAGS) $(MB_CFLAGS) $(COMMON_ERROR_CFLAGS) \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
 	-DOTHERS_MENU_CONF_DIR=\"$(sysconfdir)/others-menu\" \
@@ -49,8 +49,6 @@ maemo_af_desktop_LDADD = \
 	$(MB_LIBS) \
 	$(OSSO_LIBS) \
 	$(COMMON_ERROR_LIBS)
-
-maemo_af_desktop_LDFLAGS = $(MAEMO_LAUNCHER_LDFLAGS)
 
 initexecdir=$(sysconfdir)/osso-af-init/init.d
 initexec_SCRIPTS = maemo-af-desktop-launch.sh
