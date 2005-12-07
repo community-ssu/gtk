@@ -9,6 +9,10 @@ libgthread = $(top_builddir)/gthread/libgthread-2.0.la
 libgmodule = $(top_builddir)/gmodule/libgmodule-2.0.la
 libgobject = $(top_builddir)/gobject/libgobject-2.0.la
 
+# ARM libs
+libadd_libgmodule = $(libgmodule)
+libadd_libglib = $(libglib)
+
 if PLATFORM_WIN32
 libadd_libgmodule = $(libgmodule)
 libadd_libglib = $(libglib)

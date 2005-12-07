@@ -1,3 +1,7 @@
+Wed Dec  7 14:31:21 2005  Tim Janik  <timj@imendio.com>
+
+	* tests/Makefile.am: added missing libraries for ARM builds.
+
 2005-08-01  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.6.6 ===
