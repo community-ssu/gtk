@@ -1,0 +1,121 @@
+libosso (1.0.1-1) unstable; urgency=low
+
+  * Fixed bug about passing empty strings with osso_rpc.
+  * Fixed some osso_rpc_* unit tests.
+  * Fixed porting bugs in osso-rpc.c.
+  * Now calling the callback also on error when using async RPC.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 05 Dec 2005 18:09:42 +0200
+
+libosso (1.0.0-1) unstable; urgency=low
+
+  * Ported to new v0.50 dbus.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 04 Nov 2005 16:11:14 +0200
+
+libosso (0.10.0-1) unstable; urgency=low
+
+  * Packaged 0.10.0.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 18 Oct 2005 21:17:35 +0300
+
+libosso (0.9.18-1) unstable; urgency=low
+
+  * New functionality for common tasks related to memory; see osso-mem.h,
+    osso-mem.c.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri,  7 Oct 2005 18:41:58 +0300
+
+libosso (0.9.17-1) unstable; urgency=low
+
+  * src/osso-application-top.c (utf8_safe): New.
+  (_append_environment): Use it to skip over environment variables
+  that can not be transmitted as a DBUS_TYPE_STRING.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 29 Sep 2005 20:42:22 +0300
+
+libosso (0.9.16-1) unstable; urgency=low
+
+  * Fixed a memory leak in _get_arg (bug 19148).
+  * Added autogen.sh file.
+  * Removed Doxygen documentation building because of SDK problems.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 13 Sep 2005 14:54:43 +0300
+
+libosso (0.9.15-1) unstable; urgency=low
+
+  * Fixed a memory leak in osso_rpc_run_* (bug 18083).
+  * Marked several private functions as static and set the hidden attribute
+    to some functions.
+  * Improved error logging in osso_initialize().
+  * Now handling EINTR correctly in osso_state_close().
+  * Removed rather brain-damaged cleanup of state saving directory from
+    osso_initialize(). Its success is not guaranteed and its usefulness is
+    basically zero, so it would just add to undeterministic behaviour.
+  * Fixed some minor brain-damages in coding style.
+  * Added warnings about the activation parameter of osso_initialize().
+  * Removed calls to dbus_connection_disconnect() (bug 18028).
+  * Using LIBOSSO_DEBUG macro instead of DEBUG macro for internal sanity
+    checks etc.
+  * Fixed D-BUS message leak from osso_display_* that would have happened
+    in error situation.
+  * Fixed possible uninitialized memory problem in _osso_hw_state_get().
+  * Fixed brain-damage in osso_hw_set_event_cb() that would have caused
+    memory leaks with each subsequent call after the first one.
+  * Fixed reading the current device state from file - it was completely
+    broken (used wrong member of the Libosso context struct).
+  * Re-run automake-1.7.
+  * Added some files required by automake-1.7.
+  * Rewrote most of the code in osso-hw.c.
+  * Connected the low memory signal handler to correct D-BUS signal (bug
+    18069).
+  * Implemented caching for the device mode, since MCE won't provide a file
+    with the value. Each user has own cache file due to permission issues.
+  * Now calling osso_application_autosave_force automatically when the
+    save_unsaved_data signal comes (bug 10960).
+  * Replaced most mallocs with callocs.
+  * Removed some unnecessary dynamic memory allocations.
+  * Fixed two small memory leaks in osso-application-top.c with a new internal
+    function.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 31 Aug 2005 11:36:14 +0300
+
+libosso (0.9.14-1) unstable; urgency=low
+
+  * Fixed a memory leak in initialisation (bug 16209).
+  * Now freeing autosave callback in osso_deinitialize.
+  * Now freeing interface member of ifs elements in osso_deinitialize.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 25 Aug 2005 09:36:44 +0300
+
+libosso (0.9.13-1) unstable; urgency=low
+
+  * Added support for environment variable LIBOSSO_CP_PLUGIN_DIRS to
+    osso_cp_plugin_execute (bug 17720).
+  * Now osso_state_read accepts zero as the state_size and NULL for
+    state_data (bug 17743).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 23 Aug 2005 17:46:22 +0300
+
+libosso (0.9.12-1) unstable; urgency=low
+
+  * Added osso_application_name_get and osso_application_version_get
+    (bug 15018).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 15 Aug 2005 18:13:57 +0300
+
+libosso (0.9.11-1) unstable; urgency=low
+
+  * Added workaround for signal eating problem (bug 16802).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 09 Aug 2005 14:36:13 +0300
+
+libosso (0.9.10-3) unstable; urgency=low
+
+  * Some cleanups before publishing.
+  * Checked through all the function comments in libosso.h and rephrased
+    some of them for clarity. Also, corrected typos and modified some
+    example code.
+  * Added COPYING file.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 05 Aug 2005 15:32:56 +0300
