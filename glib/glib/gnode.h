@@ -76,8 +76,6 @@ struct _GNode
 				 ((GNode*) (node))->next == NULL)
 #define	 G_NODE_IS_LEAF(node)	(((GNode*) (node))->children == NULL)
 
-void     g_node_push_allocator  (GAllocator       *allocator);
-void     g_node_pop_allocator   (void);
 GNode*	 g_node_new		(gpointer	   data);
 void	 g_node_destroy		(GNode		  *root);
 void	 g_node_unlink		(GNode		  *node);
@@ -164,6 +162,9 @@ GNode*	 g_node_last_sibling	 (GNode		  *node);
 					 ((GNode*) (node))->next : NULL)
 #define	 g_node_first_child(node)	((node) ? \
 					 ((GNode*) (node))->children : NULL)
+
+void     g_node_push_allocator  (gpointer          dummy);
+void     g_node_pop_allocator   (void);
 
 G_END_DECLS
 

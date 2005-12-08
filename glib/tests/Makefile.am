@@ -93,6 +93,7 @@ test_programs =					\
 	relation-test				\
 	shell-test				\
 	slist-test				\
+	slice-test				\
 	spawn-test				\
 	$(spawn_test_win32_gui)			\
 	strfunc-test				\
@@ -149,6 +150,8 @@ rand_test_LDADD = $(progs_ldadd)
 relation_test_LDADD = $(progs_ldadd)
 shell_test_LDADD = $(progs_ldadd)
 slist_test_LDADD = $(progs_ldadd)
+slice_test_SOURCES = slice-test.c memchunks.c
+slice_test_LDADD = $(thread_ldadd)
 spawn_test_LDADD = $(progs_ldadd)
 strfunc_test_LDADD = $(progs_ldadd)
 string_test_LDADD = $(progs_ldadd)

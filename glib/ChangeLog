@@ -1,3 +1,84 @@
+Thu Dec  8 17:16:08 2005  Tim Janik  <timj@imendio.com>
+
+	* merged g_slice*() from upstream.
+
+	* glib/gmacros.h: define G_GNUC_WARN_UNUSED_RESULT.
+
+Thu Dec  1 17:32:46 2005  Tim Janik  <timj@imendio.com>
+
+	* glib/gslice.[hc]: new slice allocator implementation.
+
+        * tests/slice-test.c: added random slice allocation test.
+
+        * glib/gthreadinit.h:
+        * glib/gmessages.c:
+        * glib/gthread.c:
+        * glib/gmem.c: divided glib threading initialisation into three phases,
+        initialisation where private keys and messaging are not available (only
+        needed by gmem.c), initialisation without messaging but private keys
+        available (gslice.c, gmessage.c), and full fledged initialisers that
+        server the rest of glib. initialisation functions got renamed to reflect
+        the limitations of their corresponding phases.
+
+        * glib/gmem.c: removed memchunk code, defer allocations to 
+        g_slice_* instead.
+
+        * glib/gmem.[hc]: removed g_slice_* skeletons.
+
+        * glib/glib.symbols: added g_slice_* symbols.
+
+        * configure.in: check for availability of posix_memalign(3), memalign(3)
+        and valloc(3). 
+
+        * glib/Makefile.am: added gslice.[hc].
+
+Tue Nov  1 16:24:20 2005  Tim Janik  <timj@imendio.com>
+
+	* glib/gmem.[hc]:
+	added g_slice_*() API to allocate and cache small bits of memory.
+	an actuall allocator implementation for g_slice_*() is still pending.
+
+	* glib/gthread.[hc]: changes from a patch by Matthias Clasen.
+	changed GRealThread list to use in-structure *next; fields instead
+	of GSList, in order for thread iteration to not depenend on g_slice_*()
+	indirectly.
+
+	* glib/gthread.[hc]:
+	g_thread_foreach(): new public API function to loop over all existing threads.
+
+	* glib/gdataset.c:
+	* glib/gstring.c:
+	* glib/gcache.c:
+	* glib/garray.c: 
+	* glib/gqueue.c:
+	* glib/gslist.c:
+	* glib/glist.c:
+	* glib/ghash.c:
+	* glib/gtree.c:
+	* glib/ghook.c:
+	* glib/gmain.c:
+	* glib/gnode.c:
+	removed GAllocator and free list usages and accompanying locks.
+	use g_slice_*() API to allocate and cache small bits of memory.
+
+	* glib/ghook.h: removed GMemChunk field from public API.
+
+	* glib/gslist.h:
+	* glib/glist.h: provide _free1() for consistency.
+
+	* glib/gmain.c: reordered GPollRec fields so g_slice_free_chain() can
+	be used for poll rec lists.
+
+	* glib/grel.c: removed mem chunk usage, and allocated tuples via g_slice_*().
+	g_relation_destroy(): free all tuples from the all_tuples hash table,
+	this effectively maintains the life time track keeping of tuples.
+	g_relation_delete_tuple(): free tuples which are removed from the
+	all_tuples hash table. this fixes a temporary leak that was present
+	in the memchunk code until the destruction of the relation.
+
+  2005-10-29  Matthias Clasen  <mclasen@redhat.com>
+  
+  	* tests/convert-test.c: Add some tests for conversions between
 Wed Dec  7 14:31:21 2005  Tim Janik  <timj@imendio.com>
 
 	* tests/Makefile.am: added missing libraries for ARM builds.

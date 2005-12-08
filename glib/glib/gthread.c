@@ -76,6 +76,7 @@ struct  _GRealThread
 {
   GThread thread;
   gpointer private_data;
+  GRealThread *next;
   gpointer retval;
   GSystemThread system_thread;
 };
@@ -126,7 +127,7 @@ GThreadFunctions g_thread_functions_for_glib_use = {
 static GMutex   *g_once_mutex = NULL;
 static GCond    *g_once_cond = NULL;
 static GPrivate *g_thread_specific_private = NULL;
-static GSList   *g_thread_all_threads = NULL;
+static GRealThread *g_thread_all_threads = NULL;
 static GSList   *g_thread_free_indeces = NULL;
 
 G_LOCK_DEFINE_STATIC (g_thread);
@@ -143,29 +144,34 @@ g_thread_init_glib (void)
    */
   GRealThread* main_thread = (GRealThread*) g_thread_self ();
 
+  /* mutex and cond creation works without g_threads_got_initialized */
   g_once_mutex = g_mutex_new ();
   g_once_cond = g_cond_new ();
 
+  /* we may only create mutex and cond in here */
+  _g_mem_thread_init_noprivate_nomessage ();
+
+  /* setup the basic threading system */
+  g_threads_got_initialized = TRUE;
+  g_thread_specific_private = g_private_new (g_thread_cleanup);
+  g_private_set (g_thread_specific_private, main_thread);
+  G_THREAD_UF (thread_self, (&main_thread->system_thread));
+
+  /* complete memory system initialization, g_private_*() works now */
+  _g_slice_thread_init_nomessage ();
+
+  /* accomplish log system initialization to enable messaging */
+  _g_messages_thread_init_nomessage ();
+
+  /* we may run full-fledged initializers from here */
   _g_convert_thread_init ();
   _g_rand_thread_init ();
   _g_main_thread_init ();
-  _g_mem_thread_init ();
-  _g_messages_thread_init ();
   _g_atomic_thread_init ();
   _g_utils_thread_init ();
 #ifdef G_OS_WIN32
   _g_win32_thread_init ();
 #endif
-
-  g_threads_got_initialized = TRUE;
-
-  g_thread_specific_private = g_private_new (g_thread_cleanup);
-  g_private_set (g_thread_specific_private, main_thread);
-  G_THREAD_UF (thread_self, (&main_thread->system_thread));
-
-  _g_mem_thread_private_init ();
-  _g_messages_thread_private_init ();
-
 }
 #endif /* G_THREADS_ENABLED */
 
@@ -199,7 +205,7 @@ g_once_impl (GOnce       *once,
 void 
 g_static_mutex_init (GStaticMutex *mutex)
 {
-  static GStaticMutex init_mutex = G_STATIC_MUTEX_INIT;
+  static const GStaticMutex init_mutex = G_STATIC_MUTEX_INIT;
 
   g_return_if_fail (mutex);
 
@@ -253,7 +259,7 @@ g_static_mutex_free (GStaticMutex* mutex)
 void     
 g_static_rec_mutex_init (GStaticRecMutex *mutex)
 {
-  static GStaticRecMutex init_mutex = G_STATIC_REC_MUTEX_INIT;
+  static const GStaticRecMutex init_mutex = G_STATIC_REC_MUTEX_INIT;
   
   g_return_if_fail (mutex);
 
@@ -333,6 +339,9 @@ g_static_rec_mutex_lock_full   (GStaticRecMutex *mutex,
   g_return_if_fail (mutex);
 
   if (!g_thread_supported ())
+    return;
+
+  if (depth == 0)
     return;
 
   G_THREAD_UF (thread_self, (&self));
@@ -462,7 +471,7 @@ void
 g_static_private_free (GStaticPrivate *private_key)
 {
   guint index = private_key->index;
-  GSList *list;
+  GRealThread *thread;
 
   if (!index)
     return;
@@ -470,12 +479,12 @@ g_static_private_free (GStaticPrivate *private_key)
   private_key->index = 0;
 
   G_LOCK (g_thread);
-  list =  g_thread_all_threads;
-  while (list)
+  
+  thread = g_thread_all_threads;
+  while (thread)
     {
-      GRealThread *thread = list->data;
       GArray *array = thread->private_data;
-      list = list->next;
+      thread = thread->next;
 
       if (array && index <= array->len)
 	{
@@ -526,8 +535,20 @@ g_thread_cleanup (gpointer data)
          it is, the structure is freed in g_thread_join */
       if (!thread->thread.joinable)
 	{
+	  GRealThread *t, *p;
+
 	  G_LOCK (g_thread);
-	  g_thread_all_threads = g_slist_remove (g_thread_all_threads, data);
+	  for (t = g_thread_all_threads, p = NULL; t; p = t, t = t->next)
+	    {
+	      if (t == thread)
+		{
+		  if (p)
+		    p->next = t->next;
+		  else
+		    g_thread_all_threads = t->next;
+		  break;
+		}
+	    }
 	  G_UNLOCK (g_thread);
 	  
 	  /* Just to make sure, this isn't used any more */
@@ -578,7 +599,7 @@ g_thread_create_full (GThreadFunc 		 func,
   g_return_val_if_fail (priority >= G_THREAD_PRIORITY_LOW, NULL);
   g_return_val_if_fail (priority <= G_THREAD_PRIORITY_URGENT, NULL);
   
-  result = g_new (GRealThread, 1);
+  result = g_new0 (GRealThread, 1);
 
   result->thread.joinable = joinable;
   result->thread.priority = priority;
@@ -589,7 +610,8 @@ g_thread_create_full (GThreadFunc 		 func,
   G_THREAD_UF (thread_create, (g_thread_create_proxy, result, 
 			       stack_size, joinable, bound, priority,
 			       &result->system_thread, &local_error));
-  g_thread_all_threads = g_slist_prepend (g_thread_all_threads, result);
+  result->next = g_thread_all_threads;
+  g_thread_all_threads = result;
   G_UNLOCK (g_thread);
 
   if (local_error)
@@ -614,6 +636,7 @@ gpointer
 g_thread_join (GThread* thread)
 {
   GRealThread* real = (GRealThread*) thread;
+  GRealThread *p, *t;
   gpointer retval;
 
   g_return_val_if_fail (thread, NULL);
@@ -626,7 +649,17 @@ g_thread_join (GThread* thread)
   retval = real->retval;
 
   G_LOCK (g_thread);
-  g_thread_all_threads = g_slist_remove (g_thread_all_threads, thread);
+  for (t = g_thread_all_threads, p = NULL; t; p = t, t = t->next)
+    {
+      if (t == (GRealThread*) thread)
+	{
+	  if (p)
+	    p->next = t->next;
+	  else
+	    g_thread_all_threads = t->next;
+	  break;
+	}
+    }
   G_UNLOCK (g_thread);
 
   /* Just to make sure, this isn't used any more */
@@ -669,7 +702,7 @@ g_thread_self (void)
       /* If no thread data is available, provide and set one.  This
          can happen for the main thread and for threads, that are not
          created by GLib. */
-      thread = g_new (GRealThread, 1);
+      thread = g_new0 (GRealThread, 1);
       thread->thread.joinable = FALSE; /* This is a save guess */
       thread->thread.priority = G_THREAD_PRIORITY_NORMAL; /* This is
 							     just a guess */
@@ -683,7 +716,8 @@ g_thread_self (void)
       g_private_set (g_thread_specific_private, thread); 
       
       G_LOCK (g_thread);
-      g_thread_all_threads = g_slist_prepend (g_thread_all_threads, thread);
+      thread->next = g_thread_all_threads;
+      g_thread_all_threads = thread;
       G_UNLOCK (g_thread);
     }
   
@@ -693,14 +727,14 @@ g_thread_self (void)
 void
 g_static_rw_lock_init (GStaticRWLock* lock)
 {
-  static GStaticRWLock init_lock = G_STATIC_RW_LOCK_INIT;
+  static const GStaticRWLock init_lock = G_STATIC_RW_LOCK_INIT;
 
   g_return_if_fail (lock);
 
   *lock = init_lock;
 }
 
-static void inline 
+inline static void 
 g_static_rw_lock_wait (GCond** cond, GStaticMutex* mutex)
 {
   if (!*cond)
@@ -708,7 +742,7 @@ g_static_rw_lock_wait (GCond** cond, GStaticMutex* mutex)
   g_cond_wait (*cond, g_static_mutex_get_mutex (mutex));
 }
 
-static void inline 
+inline static void 
 g_static_rw_lock_signal (GStaticRWLock* lock)
 {
   if (lock->want_to_write && lock->write_cond)
@@ -836,6 +870,52 @@ g_static_rw_lock_free (GStaticRWLock* lock)
       lock->write_cond = NULL;
     }
   g_static_mutex_free (&lock->mutex);
+}
+
+/**
+ * g_thread_foreach
+ * @thread_func: function to call for all GThread structures
+ * @user_data:   second argument to @thread_func
+ *
+ * Call @thread_func on all existing #GThread structures. Note that
+ * threads may decide to exit while @thread_func is running, so
+ * without intimate knowledge about the lifetime of foreign threads,
+ * @thread_func shouldn't access the GThread* pointer passed in as
+ * first argument. However, @thread_func will not be called for threads
+ * which are known to have exited already.
+ *
+ * Due to thread lifetime checks, this function has an execution complexity
+ * which is quadratic in the number of existing threads.
+ *
+ * Since: 2.10
+ */
+void
+g_thread_foreach (GFunc    thread_func,
+                  gpointer user_data)
+{
+  GSList *slist = NULL;
+  GRealThread *thread;
+  g_return_if_fail (thread_func != NULL);
+  /* snapshot the list of threads for iteration */
+  G_LOCK (g_thread);
+  for (thread = g_thread_all_threads; thread; thread = thread->next)
+    slist = g_slist_prepend (slist, thread);
+  G_UNLOCK (g_thread);
+  /* walk the list, skipping non-existant threads */
+  while (slist)
+    {
+      GSList *node = slist;
+      slist = node->next;
+      /* check whether the current thread still exists */
+      G_LOCK (g_thread);
+      for (thread = g_thread_all_threads; thread; thread = thread->next)
+        if (thread == node->data)
+          break;
+      G_UNLOCK (g_thread);
+      if (thread)
+        thread_func (thread, user_data);
+      g_slist_free_1 (node);
+    }
 }
 
 #define __G_THREAD_C__
