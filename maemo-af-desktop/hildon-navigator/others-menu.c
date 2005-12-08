@@ -419,14 +419,11 @@ static void others_menu_changed_cb( char *path, _om_changed_cb_data_t *data )
 	/* Destroy the menu */
 	gtk_widget_destroy( data->widget );
 
-	/* Cleanup */
-	g_free( path );
-	
-	g_free( data->om );
-	g_free( data );
-	
 	/* Re-initialize menu */	
 	others_menu_initialize_menu( data->om, NULL);
+    
+	/* Cleanup */
+    g_free( data );
 
 }
 
@@ -485,12 +482,7 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
 	g_free( dir_entry );
 
     }
-
-    /* If the directory is empty, return value < 0 */
-    if (menu_list == NULL) {
-	return -1;
-    }
-
+    
     /* Monitor changes to the directory */
     _om_changed_cb_data_t *cb_data = g_malloc0(sizeof(_om_changed_cb_data_t));
     cb_data->widget = GTK_WIDGET(om->menu);
@@ -500,6 +492,11 @@ gint others_menu_get_items(GtkWidget * widget, char *directory,
 			    (hildon_dnotify_cb_f *)others_menu_changed_cb,
 			    (char *)full_path, cb_data ) != HILDON_OK) {
 	    osso_log( LOG_ERR, "Error setting dir notify callback!\n" );
+    }
+
+    /* If the directory is empty, return value < 0 */
+    if (menu_list == NULL) {
+	return -1;
     }
 
     /* Sort the items */
