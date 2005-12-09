@@ -31,6 +31,8 @@
 #include <errno.h>
 #include <math.h>
 
+#define PIDFILE "/tmp/dpkg.pid"
+
 #undef DEBUG
 
 /* Prototypes
@@ -40,8 +42,9 @@ void setup_environment (void);
 void redirect_stdout_to_stderr (gpointer unused);
 int run_cmd_save_output (gchar **argv,
 			 gchar **stdout_string,
-			 gchar **stderr_string);
-int run_cmd (gchar **argv);
+			 gchar **stderr_string,
+			 gboolean allow_interrupt);
+int run_cmd (gchar **argv, gboolean allow_interrupt);
 int get_package_name_from_file (gchar *file, gchar **package);
 int dump_failed_relations (gchar *output, gchar *me);
 
@@ -81,6 +84,10 @@ setup_environment ()
    program (including the possibly redirect stdout).  Otherwise,
    stderr goes to our stderr.  You need to free *STDERR_STRING
    eventually.
+
+   XXX - yes, the following is a lot of code and it is duplicated from
+         src/core.c.  Maybe it should be generalized even more and put
+         into some library.
 */
 
 void
@@ -90,12 +97,166 @@ redirect_stdout_to_stderr (gpointer unused)
     perror ("Can not redirect stdout to stderr");
 }
 
+typedef struct {
+  GPid pid;
+  GMainLoop *loop;
+
+  GIOChannel *channels[2];
+  GString *strings[2];
+  gboolean exited;
+  gboolean success;
+} tool_handle;
+
+static void
+check_completion (tool_handle *data)
+{
+  /* The invocation is done when we have reaped the exit status and both
+     the stdout and stderr channels are at EOF.
+  */
+
+  if (data->channels[0] == NULL
+      && data->channels[1] == NULL
+      && data->exited)
+    g_main_loop_quit (data->loop);
+}
+
+static void
+reap_process (GPid pid, int status, gpointer raw_data)
+{
+  tool_handle *data = (tool_handle *)raw_data;
+
+  if (WIFEXITED (status))
+    {
+      data->success = (WEXITSTATUS (status) == 0);
+    }
+  else if (WIFSIGNALED (status))
+    {
+      fprintf (stderr, "Caught signal %d%s.\n", WTERMSIG (status),
+	       (WCOREDUMP (status)? " (core dumped)" : ""));
+      data->success = 0;
+    }
+  else if (WIFSTOPPED (status))
+    {
+      /* This should better not happen.  Hopefully glib does not
+	 use WUNTRACED in its call to waitpid or equivalent.  We
+	 still handle this case for extra clarity in the error
+	 message.
+      */
+      fprintf (stderr, "Stopped with signal %d.\n", WSTOPSIG (status));
+      data->success = 0;
+    }
+  else
+    {
+      fprintf (stderr, "Unknown reason for failure.\n");
+      data->success = 0;
+    }
+
+  data->exited = 1;
+  check_completion (data);
+}
+
+static gboolean
+read_into_string (GIOChannel *channel, GIOCondition cond, gpointer raw_data)
+{
+  tool_handle *data = (tool_handle *)raw_data;
+  gchar buf[256];
+  gsize count;
+  GIOStatus status;
+  int id;
+  
+  if (data->channels[0] == channel)
+    id = 0;
+  else if (data->channels[1] == channel)
+    id = 1;
+  else
+    return FALSE;
+
+#if 0
+  /* XXX - this blocks sometime.  Maybe setting the encoding to NULL
+           will work, but for now we just do it the old school way...
+  */
+  status = g_io_channel_read_chars (channel, buf, 256, &count, NULL);
+#else
+  {
+    int fd = g_io_channel_unix_get_fd (channel);
+    int n = read (fd, buf, 256);
+    if (n > 0)
+      {
+	status = G_IO_STATUS_NORMAL;
+	count = n;
+      }
+    else
+      {
+	status = G_IO_STATUS_EOF;
+	count = 0;
+      }
+  }
+#endif
+
+  if (status == G_IO_STATUS_NORMAL)
+    {
+      g_string_append_len (data->strings[id], buf, count);
+      return TRUE;
+    }
+  else
+    {
+      g_io_channel_shutdown (channel, 0, NULL);
+      data->channels[id] = NULL;
+      check_completion (data);
+      return FALSE;
+    }
+}
+
+static gboolean
+read_stdin (GIOChannel *channel, GIOCondition cond, gpointer raw_data)
+{
+  tool_handle *data = (tool_handle *)raw_data;
+  int pid;
+  FILE *f;
+
+  /* Something happened on stdin, kill the child.
+   */
+
+  g_io_channel_shutdown (channel, 0, NULL);
+  f = fopen (PIDFILE, "r");
+  if (f)
+    {
+      if (fscanf (f, "%d", &pid) == 1)
+	{
+#ifdef DEBUG
+	  fprintf (stderr, "[ killing %d ]\n", pid);
+#endif
+	  if (kill (pid, SIGINT) < 0)
+	    perror ("kill");
+	}
+      fclose (f);
+    }
+  else
+    perror (PIDFILE);
+
+  return FALSE;
+}
+
+static void
+add_string_reader (int fd, int id, tool_handle *data)
+{
+  data->strings[id] = g_string_new ("");
+  data->channels[id] = g_io_channel_unix_new (fd);
+  g_io_add_watch (data->channels[id], 
+		  G_IO_IN | G_IO_HUP | G_IO_ERR,
+		  read_into_string, data);
+  g_io_channel_unref (data->channels[id]);
+}
+
 int
 run_cmd_save_output (gchar **argv,
-		     gchar **stdout_string, gchar **stderr_string)
+		     gchar **stdout_string, gchar **stderr_string,
+		     gboolean allow_interrupt)
 {
-  gint exit_status;
+  GPid child_pid;
   GError *error = NULL;
+  tool_handle data;
+  int stdout_fd, stderr_fd;
 
 #ifdef DEBUG
   {
@@ -107,16 +268,17 @@ run_cmd_save_output (gchar **argv,
   }
 #endif
 
-  g_spawn_sync (NULL,
-		argv,
-		NULL,
-		0,
-		stdout_string? NULL : redirect_stdout_to_stderr,
-		NULL,
-		stdout_string,
-		stderr_string,
-		&exit_status,
-		&error);
+  g_spawn_async_with_pipes (NULL,
+			    argv,
+			    NULL,
+			    G_SPAWN_DO_NOT_REAP_CHILD,
+			    stdout_string? NULL : redirect_stdout_to_stderr,
+			    NULL, /* user_data */
+			    &child_pid,
+			    NULL,
+			    stdout_string? &stdout_fd : NULL,
+			    stderr_string? &stderr_fd : NULL,
+			    &error);
 
   if (error)
     {
@@ -124,43 +286,55 @@ run_cmd_save_output (gchar **argv,
       g_error_free (error);
       return -1;
     }
-  
-  if (WIFEXITED (exit_status))
+
+  data.pid = child_pid;
+  data.loop = g_main_loop_new (NULL, 0);
+
+  g_child_watch_add (child_pid, reap_process, &data);
+  if (stdout_string)
+    add_string_reader (stdout_fd, 0, &data);
+  else
+    data.channels[0] = NULL;
+  if (stderr_string)
+    add_string_reader (stderr_fd, 1, &data);
+  else
+    data.channels[1] = NULL;
+
+  if (allow_interrupt)
     {
-#ifdef DEBUG
-      fprintf (stderr, "[ exit %d ]\n", WEXITSTATUS (exit_status));
-#endif
-      return WEXITSTATUS (exit_status);
+      GIOChannel *stdin_channel = g_io_channel_unix_new (0);
+      g_io_add_watch (stdin_channel, 
+		      G_IO_IN | G_IO_HUP | G_IO_ERR,
+		      read_stdin, &data);
+      g_io_channel_unref (stdin_channel);
     }
   
-  if (WIFSIGNALED (exit_status))
+  g_main_loop_run (data.loop);
+  g_main_loop_unref (data.loop);
+
+  if (stdout_string)
     {
-      fprintf (stderr, "%s caught signal %d%s.\n",
-	       argv[0], WTERMSIG (exit_status),
-	       (WCOREDUMP (exit_status)? " (dumped core)" : ""));
-      return -1;
+      *stdout_string = data.strings[0]->str;
+      g_string_free (data.strings[0], 0);
     }
 
-  if (WIFSTOPPED (exit_status))
+  if (stderr_string)
     {
-      /* This should better not happen.  Hopefully g_spawn_sync does
-	 not use WUNTRACED in its call to waitpid or equivalent.  We
-	 still handle this case for extra clarity in the error
-	 message.
-      */
-      fprintf (stderr, "%s stopped with signal %d.\n",
-	       argv[0], WSTOPSIG (exit_status));
-      return -1;
+      *stderr_string = data.strings[1]->str;
+      g_string_free (data.strings[1], 0);
     }
-	       
-  fprintf (stderr, "Can not run %s for unknown reasons.\n", argv[0]);
-  return -1;
+
+#ifdef DEBUG
+  fprintf (stderr, "[ %s ]\n", data.success? "ok" : "failed");
+#endif
+
+  return data.success? 0 : -1;
 }
 
 int
-run_cmd (gchar **argv)
+run_cmd (gchar **argv, gboolean allow_interrupt)
 {
-  return run_cmd_save_output (argv, NULL, NULL);
+  return run_cmd_save_output (argv, NULL, NULL, allow_interrupt);
 }
 
 /* Get the package name from a .deb file and return 0 when this
@@ -179,7 +353,7 @@ get_package_name_from_file (gchar *file, gchar **package)
     NULL
   };
 
-  result = run_cmd_save_output (args, package, NULL);
+  result = run_cmd_save_output (args, package, NULL, 0);
   if (result == 0)
     {
       /* Remove trailing newline. */
@@ -206,7 +380,7 @@ do_list (void)
     NULL
   };
 
-  result = run_cmd_save_output (args, &output, NULL);
+  result = run_cmd_save_output (args, &output, NULL, 0);
   
   /* Loop over the lines in STDOUT and output them with a transformed
      ${Status} field.
@@ -286,7 +460,7 @@ do_describe_file (gchar *file)
     NULL
   };
 
-  result = run_cmd_save_output (args, &output, NULL);
+  result = run_cmd_save_output (args, &output, NULL, 0);
   if (result == 0 && output)
     {
       gchar *package = "", *version = "", *size = "";
@@ -334,7 +508,7 @@ do_describe_package (gchar *package)
     NULL
   };
 
-  result = run_cmd_save_output (args, &output, NULL);
+  result = run_cmd_save_output (args, &output, NULL, 0);
   if (result == 0 && output)
     fputs (output, stdout);
   g_free (output);
@@ -405,6 +579,7 @@ do_install (gchar *file)
   gchar *package = NULL, *output = NULL;
   gchar *install_args[] = {
     "/usr/bin/fakeroot",
+    "/usr/bin/savepid", PIDFILE,
     "/usr/bin/dpkg",
     "--root=/var/lib/install",
     "--install", file,
@@ -418,7 +593,7 @@ do_install (gchar *file)
       goto done;
     }
 
-  result = run_cmd_save_output (install_args, NULL, &output);
+  result = run_cmd_save_output (install_args, NULL, &output, 1);
   if (output)
     fputs (output, stderr);
 
@@ -453,7 +628,7 @@ do_remove (gchar *package, int silent)
     NULL
   };
 
-  return run_cmd (args);
+  return run_cmd (args, 0);
 }
 
 int
@@ -470,7 +645,7 @@ do_get_dependencies (gchar *package)
     NULL
   };
 
-  result = run_cmd_save_output (args, NULL, &output);
+  result = run_cmd_save_output (args, NULL, &output, 0);
   if (output)
     fputs (output, stderr);
   
