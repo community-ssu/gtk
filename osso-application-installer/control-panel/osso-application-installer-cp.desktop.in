@@ -1,6 +1,0 @@
-[Desktop Entry]
-Name=ai_ap_application_title
-Comment=Manage device's packages
-Type=HildonControlPanelPlugin
-Icon=qgn_list_app_installer
-X-control-panel-plugin=libosso-application-installer-cp.so
