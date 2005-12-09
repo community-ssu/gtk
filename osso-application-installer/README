@@ -1,0 +1,16 @@
+This is osso-application-installer, version 4
+---------------------------------------------
+
+Osso-application-installer is a program to manage user package in the
+OSSO platform.  It uses the system-wide package management tools (thru
+libapt-pkg) and presents a 'end user oriented' interface to them.
+
+The package management tools are powerful enough to manage the whole
+system, but osso-application installer is not intended to offer that
+power to the user.  If you want it, synaptic is quite easy to compile
+and runs reasonable well on the 770...
+
+Osso-application-installer is intended to be fully compatible with
+existing and future interfaces for package management.  It should be
+possible to, for example, freely alternate between apt-get, synaptic
+and osso-application installer and not have anything break.
