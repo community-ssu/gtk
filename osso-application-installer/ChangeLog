@@ -1,3 +1,37 @@
+2005-12-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* configure.ac: Bumped version to 2.13-0.
+	
+	Make "app-installer-tool install" cancellable and do so when the
+	MMC cover is opened when installing from MMC.
+
+	* src/core.c (spawn_app_installer_tool): Also get a pipe to the
+	stdin of app-installer-tool.
+	(cancel_app_installer_tool): New, close stdin pipe.
+	(free_app_installer_tool): Close stdin pipe here as well if it is
+	still open.
+	(installer_data): Removed check_mmc_cover, added mmc_cover_open
+	flag.  Changed users.
+	(installer_callback): Don't check GConf for MMC cover state, just
+	trust mmc_cover_open flag in the data.
+	(mmc_cover_changed, file_is_on_mmc): New.
+	(install_package): When file is on MMC, get notification from
+	GConf when cover is openened and cancel installation.
+	
+	* app-installer-tool/Makefile.am (bin_PROGRAMS): Added savepid.
+	
+	* savepid.c: New.
+
+	* app-installer-tool/app-installer-tool
+	(run_cmd_save_output): Reimplemented using
+	g_spawn_async_with_pipes and a bunch of helper functions that
+	collect the output into strings.  Send SIGINT to child when stdin
+	of the app-installer-tool process is closed.
+	(run_cmd_save_output, run_cmd): Added allow_interrupt parameter
+	and changed all callers except do_install to pass 0.
+	(do_install): Allow dpkg to be interrupted when installing.  Wrap
+	dpkg in savepid.
+	
 2005-11-28  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* Makefile.am (deb): Expect the debian/ directory in the current

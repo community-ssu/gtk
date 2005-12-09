@@ -1,3 +1,9 @@
+osso-application-installer (2.13-0) unstable; urgency=low
+
+  * Cancelling!
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  7 Dec 2005 20:35:00 +0200
+
 osso-application-installer (2.12-2) unstable; urgency=low
 
   * Include "2200_tana_fi_extras" symlink in package, do not create it

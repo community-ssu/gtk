@@ -37,7 +37,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <glib.h>
-#include <gconf/gconf.h>
+#include <gconf/gconf-client.h>
 #include <obex-vfs-utils/ovu-xfer.h>
 
 #include "core.h"
@@ -86,8 +86,6 @@
    getting the list of installed packages gets a progress bar and can
    be canceled.  The dialog for that would of course only be shown
    after a certain timeout.
-
-   XXX - cancellation is not implemented.
 */
 
 
@@ -158,6 +156,7 @@ struct tool_handle {
   void (*line_callback[2]) (gpointer, gchar *);
   gpointer callback_data;
 
+  int stdin_fd;
   GIOChannel *channels[2];
   GString *strings[2];
   gboolean exited;
@@ -319,7 +318,7 @@ spawn_app_installer_tool (AppData *app_data,
   tool_handle *data;
   GError *error = NULL;
   GPid child_pid;
-  int stdout_fd, stderr_fd;
+  int stdin_fd, stdout_fd, stderr_fd;
 
 #if USE_SUDO
   if (as_install)
@@ -359,7 +358,7 @@ spawn_app_installer_tool (AppData *app_data,
 			    NULL,
 			    NULL,
 			    &child_pid,
-			    NULL,
+			    &stdin_fd,
 			    &stdout_fd,
 			    &stderr_fd,
 			    &error);
@@ -373,6 +372,7 @@ spawn_app_installer_tool (AppData *app_data,
 
   data = g_new (tool_handle, 1);
   data->pid = child_pid;
+  data->stdin_fd = stdin_fd;
   data->callback = callback;
   data->callback_data = callback_data;
   data->line_callback[0] = stdout_line_callback;
@@ -385,22 +385,21 @@ spawn_app_installer_tool (AppData *app_data,
   return data;
 }
 
-#if 0
 static void
 cancel_app_installer_tool (tool_handle *data)
 {
-  /* XXX - this does not really work at all.  The best approach is
-     maybe to just close stdin of the subprocess and have the
-     app-installer-tool listen for that to happen.
+  /* Closing stdin is detected by app-installer-tool and it will exit
+     as soon as possible.
   */
-  if (kill (data->pid, SIGINT) < 0)
-    perror ("kill");
+  close (data->stdin_fd);
+  data->stdin_fd = -1;
 }
-#endif
 
 static void
 free_app_installer_tool (tool_handle *data)
 {
+  if (data->stdin_fd > 0)
+    close (data->stdin_fd);
   g_spawn_close_pid (data->pid);
   g_free (data);
 }
@@ -1034,7 +1033,7 @@ typedef struct {
   gchar *failure_text;
   /* XXX-UI32 - never suppress details. */
   gboolean dont_show_details;
-  gboolean check_mmc_cover;
+  gboolean mmc_cover_open;
 } installer_data;
 
 static void
@@ -1056,8 +1055,9 @@ installer_callback (gpointer raw_data,
       if (data->dialog)
 	ui_close_progress_dialog (data->dialog);
     }
-      
+
   report = g_string_new ("");
+
   if (success)
     g_string_printf (report, data->success_text, data->package);
   else
@@ -1066,22 +1066,15 @@ installer_callback (gpointer raw_data,
       if (!data->dont_show_details)
 	{
 	  details = format_relationship_failures (stderr_output, output);
-
-	  if (data->check_mmc_cover)
+	  
+	  if (data->mmc_cover_open)
 	    {
-	      GConfEngine *engine = gconf_engine_get_default ();
-	      if (gconf_engine_get_bool (engine, 
-					 "/system/osso/af/mmc-cover-open",
-					 NULL))
-		{
-		  gchar *more_details =
-		    g_strdup_printf ("%s\n\n%s",
-				     _("ai_error_memorycardopen"),
-				     details);
-		  g_free (details);
-		  details = more_details;
-		}
-	      gconf_engine_unref (engine);
+	      gchar *more_details =
+		g_strdup_printf ("%s\n\n%s",
+				 _("ai_error_memorycardopen"),
+				 details);
+	      g_free (details);
+	      details = more_details;
 	    }
 	}
     }
@@ -1090,7 +1083,8 @@ installer_callback (gpointer raw_data,
                 details, but we don't have any, we show "Incompatible
                 package".
   */
-  if (!success && !data->dont_show_details && (details == NULL || all_white_space (details)))
+  if (!success && !data->dont_show_details
+      && (details == NULL || all_white_space (details)))
     {
       g_free (details);
       details = g_strdup (_("ai_error_incompatible"));
@@ -1099,6 +1093,7 @@ installer_callback (gpointer raw_data,
   present_report_with_details (data->app_data,
 			       report->str,
 			       details);
+
   g_string_free (report, 1);
   g_free (details);
 
@@ -1178,8 +1173,7 @@ installer_progress (gpointer raw_data)
     data->dialog =
       ui_create_progress_dialog (data->app_data,
 				 data->progress_title,
-				 NULL,
-				 data);
+				 NULL, NULL);
 
 #if 0
   /* XXX - the progress indication is not at all accurate and we need
@@ -1204,6 +1198,28 @@ installer_progress (gpointer raw_data)
 #endif
 
   return TRUE;
+}
+
+static void
+mmc_cover_changed (GConfClient *client, guint unused, GConfEntry *entry,
+		   gpointer raw_data)
+{
+  installer_data *data = (installer_data *)raw_data;
+  if (gconf_value_get_bool (entry->value))
+    {
+      data->mmc_cover_open = 1;
+      cancel_app_installer_tool (data->tool);
+    }
+}
+
+static gboolean
+file_is_on_mmc (const gchar *abs_filename)
+{
+  const gchar *mount_point = getenv ("MMC_MOUNTPOINT");
+
+  if (mount_point == NULL)
+    mount_point = "/media/mmc1";
+  return g_str_has_prefix (abs_filename, mount_point);
 }
 
 void
@@ -1247,7 +1263,7 @@ install_package (gchar *deb, AppData *app_data)
       data.success_text = _("ai_ti_application_installed_text");
       data.failure_text = _("ai_ti_installation_failed_text");
       data.dont_show_details = 0;
-      data.check_mmc_cover = 1;
+      data.mmc_cover_open = 0;
 
       data.tool = spawn_app_installer_tool (app_data, 1,
 					    "install", deb, NULL,
@@ -1257,17 +1273,43 @@ install_package (gchar *deb, AppData *app_data)
 					    &data);
       if (data.tool)
 	{
+	  GConfClient *client = NULL;
+	  guint cnx_id;
+
+	  if (file_is_on_mmc (deb))
+	    {
+	      client = gconf_client_get_default ();
+	      gconf_client_add_dir (client,
+				    "/system/osso/af",
+				    GCONF_CLIENT_PRELOAD_NONE,
+				    NULL);
+	      cnx_id =
+		gconf_client_notify_add (client,
+					 "/system/osso/af/mmc-cover-open",
+					 mmc_cover_changed,
+					 &data,
+					 NULL,
+					 NULL);
+	    }
+
 	  data.loop = g_main_loop_new (NULL, 0);
 	  data.timeout = g_timeout_add (500, installer_progress, &data);
 	  g_main_loop_run (data.loop);
 	  g_main_loop_unref (data.loop);
+
+	  if (client)
+	    {
+	      gconf_client_notify_remove (client, cnx_id);
+	      g_object_unref (client);
+	    }
+
 	  free_app_installer_tool (data.tool);
 	}
     }
 
   package_info_free (&info);
 }
-
+	      
 typedef struct {
   progress_dialog *progress_dialog;
   GMainLoop *loop;
@@ -1548,7 +1590,7 @@ uninstall_package (gchar *package, gchar *size, AppData *app_data)
       data.success_text = _("ai_ti_application_uninstalled_text");
       data.failure_text = _("ai_ti_uninstallation_failed_text");
       data.dont_show_details = 1;
-      data.check_mmc_cover = 0;
+      data.mmc_cover_open = 0;
 
       if (spawn_app_installer_tool (app_data, 1,
 				    "remove", package, NULL,
