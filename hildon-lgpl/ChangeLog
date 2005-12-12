@@ -1,3 +1,17 @@
+2005-12-12  Luc Pionchon  <luc.pionchon@nokia.com>
+
+        N#21833 Implement robust timer handling in Info Banner.
+
+        (this is a workaround:)
+        * hildon-lgpl/gtk-infoprint.c: Added a check to see if the timer
+        has been created before removing it, in case of creating a new
+        InfoPrint when one already exists. Also if the timer wasn't
+        removed on the account that it hadn't been created already and the
+        program is trying to recreate the same InfoPrint, we do not set up
+        a new timer, but wait for the original timer to handle the removal
+        of the InfoPrint.
+	(infoprint_idle_before_timer, infoprint_start_timer): new functions
+	
 2005-11-28  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	N#17142 HildonCaption shall be top aligned (multiline control)

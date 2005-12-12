@@ -84,6 +84,11 @@ static gchar *three_lines_truncate(GtkWindow * parent,
                                    const gchar * str,
                                    gint * max_width, gint * resulting_lines);
 
+static gboolean infoprint_idle_before_timer (GtkWidget *widget, 
+                                             GdkEventExpose *event, 
+                                             gpointer data);
+static gboolean infoprint_start_timer (gpointer data);
+
 /* Getters/initializers for needed quarks */
 static GQuark banner_quark(void)
 {
@@ -418,23 +423,29 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
     /* information banners: just reset the timeout if trying
        to recreate the currently visible information banner */
     if (type == infoprint_quark() && current_ibanner) {
-      g_source_remove(current_ibanner->timeout);
-
+     
+      /* caller is trying to recreate current information banner */
       if (g_utf8_collate(current_ibanner->text, text) == 0 &&
           compare_icons(GTK_IMAGE(main_item),
                         GTK_IMAGE(current_ibanner->main_item))) {
-        /* caller is trying to recreate current information banner */
-        current_ibanner->timeout = g_timeout_add(MESSAGE_TIMEOUT,
-                                                 gtk_msg_window_destroy,
-                                                 current_ibanner->window);
+        /* If previous timer has been created, replace it with a new one */
+        if (current_ibanner->timeout > 0) {
+          g_source_remove(current_ibanner->timeout);
+          current_ibanner->timeout = g_timeout_add(MESSAGE_TIMEOUT,
+                                                   gtk_msg_window_destroy,
+                                                   current_ibanner->window);
 
-        g_signal_connect_swapped(current_ibanner->window, "destroy",
-                                 G_CALLBACK(g_source_remove),
-                                 GUINT_TO_POINTER(current_ibanner->timeout));
-
+          g_signal_connect_swapped(current_ibanner->window, "destroy",
+                                   G_CALLBACK(g_source_remove),
+                                   GUINT_TO_POINTER(current_ibanner->timeout));
+        }
         gtk_object_sink(GTK_OBJECT(main_item));
         return;
       }
+     
+      /* If the timer has already been set -> remove it */
+      if (current_ibanner->timeout > 0)
+        g_source_remove(current_ibanner->timeout);
 
       gtk_msg_window_destroy(current_ibanner->window);
     }
@@ -585,14 +596,10 @@ gtk_msg_window_init(GtkWindow * parent, GQuark type,
       gtk_widget_ref(current_pbanner->main_item);
     }
 
-    /* We set the timer if the type is an infoprint */
+    /* If the type is an infoprint we set the timer after the expose-event */
     if (type == infoprint_quark()) {
-      current_ibanner->timeout = g_timeout_add(MESSAGE_TIMEOUT,
-                                               gtk_msg_window_destroy,
-                                               current_ibanner->window);
-      g_signal_connect_swapped(window, "destroy",
-                               G_CALLBACK(g_source_remove),
-                               GUINT_TO_POINTER(current_ibanner->timeout));
+      g_signal_connect_after(window, "expose-event", 
+                             G_CALLBACK(infoprint_idle_before_timer), NULL);
     }
     else if (type == confirmation_banner_quark()) {
       InfoprintState *current_cbanner = g_queue_peek_head(cbanner_queue);
@@ -1081,4 +1088,33 @@ void gtk_banner_temporarily_disable_wrap(void)
     /* The below variable name is intentional. There's no real need for
        having two different variables for this functionality. */
     gtk_infoprint_temporal_wrap_disable_flag = TRUE;
+}
+
+/* We want the timer to be launched only after the infoprint is fully drawn.
+ * As an approximation, we wait for an idle moment before starting
+ * the timer. This method is not exact, since it does not guarantee that
+ * the x-server has gotten around to drawing the window. The only way to be 
+ * sure would require syncing with the x-server, but this should be close 
+ * enough.
+ */
+static gboolean infoprint_idle_before_timer (GtkWidget *widget,
+                                             GdkEventExpose *event,
+                                             gpointer data)
+{
+    g_idle_add(infoprint_start_timer, widget);
+    return FALSE;
+}
+
+/* Start the actual timer for the infoprint */
+static gboolean infoprint_start_timer (gpointer data)
+{
+    if (GTK_IS_WIDGET (data)) {
+      current_ibanner->timeout = g_timeout_add(MESSAGE_TIMEOUT,
+              gtk_msg_window_destroy,
+              current_ibanner->window);
+      g_signal_connect_swapped(GTK_WIDGET(data), "destroy",
+              G_CALLBACK(g_source_remove),
+              GUINT_TO_POINTER(current_ibanner->timeout));
+    }
+    return FALSE;
 }
