@@ -1,9 +1,22 @@
 This is osso-application-installer, version 4
 ---------------------------------------------
 
-Osso-application-installer is a program to manage user package in the
-OSSO platform.  It uses the system-wide package management tools (thru
-libapt-pkg) and presents a 'end user oriented' interface to them.
+[ About versions:
+
+  1.x initial 'prototype'
+
+  2.x working version of 1.x series with app-installer tool
+
+  3.x intermediate version with the UI of 2.x that uses system-wide
+      package management tools
+
+  4.x completely new design that uses libapt-pkg and repositories
+]
+
+The osso-application-installer is a program to manage user packages in
+the OSSO platform.  It uses the system-wide package management tools
+(thru libapt-pkg) and presents a 'end user oriented' interface to
+them.
 
 The package management tools are powerful enough to manage the whole
 system, but osso-application installer is not intended to offer that
@@ -14,3 +27,15 @@ Osso-application-installer is intended to be fully compatible with
 existing and future interfaces for package management.  It should be
 possible to, for example, freely alternate between apt-get, synaptic
 and osso-application installer and not have anything break.
+
+
+Design notes
+------------
+
+First phase: wild experimentation with libapt-pkg and widget writing
+for Gtk+.  No design whatsoever.
+
+The libapt-pkg specific code is written in C++, but most of the GUI
+code should be plain C to enable easier transportation into external
+libraries or reuse.  This is not an object oriented program, but we'll
+use STL without prejudice.
