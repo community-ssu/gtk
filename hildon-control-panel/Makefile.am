@@ -32,7 +32,7 @@ controlpanel_SOURCES = \
 
 controlpanel_LDFLAGS = $(MAEMO_LAUNCHER_LDFLAGS)
 
-servicefiledir=$(prefix)/lib/dbus-1.0/services
+servicefiledir=$(prefix)/share/dbus-1.0/services
 servicefile_DATA=com.nokia.controlpanel.service
 
 hildondesktopentry_DATA = hildon-control-panel.desktop

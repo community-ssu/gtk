@@ -1237,7 +1237,7 @@ static osso_return_t _rpc_system_request (osso_context_t *osso,
     if(first_arg_type != DBUS_TYPE_INVALID)
 	_append_args(msg, first_arg_type, var_args);
     
-    dbus_message_set_auto_activation(msg, FALSE);
+    dbus_message_set_auto_start(msg, FALSE);
 
     dbus_error_init(&err);
     timeout_retval = osso_rpc_get_timeout(osso, &timeout);
@@ -1308,15 +1308,19 @@ static void _append_args(DBusMessage *msg, int type, va_list var_args)
 	    break;
 	  case DBUS_TYPE_STRING:
 	    s = va_arg(var_args, gchar *);
+#if 0
 	    if(s == NULL)
 		dbus_message_append_args(msg, DBUS_TYPE_NIL,
 					 DBUS_TYPE_INVALID);
 	    else
+#endif
 		dbus_message_append_args(msg, type, s, DBUS_TYPE_INVALID);
 	    break;
+#if 0
 	  case DBUS_TYPE_NIL:	    
 		dbus_message_append_args(msg, DBUS_TYPE_NIL,
 					 DBUS_TYPE_INVALID);
+#endif
 	    break;
 	  default:
 	    break;	    
@@ -1334,24 +1338,25 @@ static void _get_arg(DBusMessageIter *iter, osso_rpc_t *retval)
     retval->type = dbus_message_iter_get_arg_type(iter);
     switch(retval->type) {
       case DBUS_TYPE_INT32:
-	retval->value.i = dbus_message_iter_get_int32(iter);
+	dbus_message_iter_get_basic(iter,&retval->value.i);
 	dprint("got INT32:%d",retval->value.i);
 	break;
       case DBUS_TYPE_UINT32:
-	retval->value.u = dbus_message_iter_get_uint32(iter);
+    dbus_message_iter_get_basic(iter,&retval->value.u);
 	dprint("got UINT32:%u",retval->value.u);
 	break;
       case DBUS_TYPE_BOOLEAN:
-	retval->value.b = dbus_message_iter_get_boolean(iter);
+	dbus_message_iter_get_basic(iter,&retval->value.b);
 	dprint("got BOOLEAN:%s",retval->value.s?"TRUE":"FALSE");
 	break;
       case DBUS_TYPE_DOUBLE:
-	retval->value.d = dbus_message_iter_get_double(iter);
+	dbus_message_iter_get_basic(iter,&retval->value.d);
 	dprint("got DOUBLE:%f",retval->value.d);
 	break;
       case DBUS_TYPE_STRING:
 	{
-	  gchar *dbus_string = dbus_message_iter_get_string(iter);
+	  gchar *dbus_string;
+      dbus_message_iter_get_basic(iter,&dbus_string);
 	  retval->value.s = g_strdup (dbus_string);
 	  dbus_free (dbus_string);
 	  if(retval->value.s == NULL) {
@@ -1360,10 +1365,12 @@ static void _get_arg(DBusMessageIter *iter, osso_rpc_t *retval)
 	  dprint("got STRING:'%s'",retval->value.s);
 	}
 	break;
+#if 0
       case DBUS_TYPE_NIL:
 	retval->value.s = NULL;	    
 	dprint("got NIL");
 	break;
+#endif
       default:
 	retval->type = DBUS_TYPE_INVALID;
 	retval->value.i = 0;	    

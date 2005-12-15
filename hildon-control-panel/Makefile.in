@@ -206,7 +206,7 @@ controlpanel_SOURCES = \
 
 controlpanel_LDFLAGS = $(MAEMO_LAUNCHER_LDFLAGS)
 
-servicefiledir = $(prefix)/lib/dbus-1.0/services
+servicefiledir = $(prefix)/share/dbus-1.0/services
 servicefile_DATA = com.nokia.controlpanel.service
 
 hildondesktopentry_DATA = hildon-control-panel.desktop
@@ -276,7 +276,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  Makefile
+	  $(AUTOMAKE) --gnu  Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)
 

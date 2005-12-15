@@ -1,3 +1,7 @@
+2005-12-15 Johan Bilien <johan.bilien@nokia.com>
+	* Ported to dbus >= 0.50.
+	* configure.ac: 1.0.0
+
 2005-10-27 Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Patched bug N#20882 with Marius Vollmer's patch <marius.vollmer@nokia.com> :
 	* hildon-control-panel-main.c (_run_operator_wizard,
