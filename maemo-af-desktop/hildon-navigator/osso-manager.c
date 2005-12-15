@@ -241,7 +241,7 @@ int is_service_running(const char *service)
     con = (DBusConnection *)osso_get_dbus_connection(man->osso);
 
     dbus_error_init(&error);
-    n = dbus_bus_service_exists(con,buf,&error);
+    n = dbus_bus_name_has_owner(con,buf,&error);
 
     if (dbus_error_is_set(&error))
     {

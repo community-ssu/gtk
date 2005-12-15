@@ -8,7 +8,7 @@ Standards-Version: 3.6.0
 Package: maemo-af-desktop
 Section: x11
 Architecture: any
-Depends:  ${shlibs:Depends}, ${misc:Depends}, maemo-af-desktop-l10n-4.1-engb | maemo-af-desktop-l10n-4.1-english, hildon-libs0 (>= 0.7.1), hildon-base-lib0 (>= 0.9.3), matchbox-window-manager, hildon-status-bar-lib0 (=${Source-Version}), shared-mime-info, default-backgrounds-config, libosso-common-error0 (>= 0.1.6-2)
+Depends:  ${shlibs:Depends}, ${misc:Depends}, maemo-af-desktop-l10n-4.1-engb | maemo-af-desktop-l10n-4.1-english, hildon-libs0 (>= 0.7.1), hildon-base-lib0 (>= 0.9.3), matchbox-window-manager, hildon-status-bar-lib0 (=${Source-Version}), shared-mime-info, default-backgrounds-config, libosso-common-error0 (>= 0.1.6-2), osso-gnomevfs-extra
 Conflicts: hildon-base, hildon-navigator, hildon-status-bar, hildon-home, home-image-loader
 Replaces: hildon-base, hildon-navigator, hildon-status-bar, hildon-home, hildon-image-loader
 Provides: hildon-navigator, hildon-status-bar, hildon-home, home-image-loader

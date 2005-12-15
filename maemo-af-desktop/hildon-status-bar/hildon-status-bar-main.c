@@ -312,8 +312,11 @@ static gint rpc_cb( const gchar *interface,
             val[0]->type != DBUS_TYPE_STRING ||
             val[1]->type != DBUS_TYPE_INT32 ||
             val[2]->type != DBUS_TYPE_INT32 ||
+            val[3]->type != DBUS_TYPE_STRING )
+#if 0
             ( val[3]->type != DBUS_TYPE_STRING && 
               val[3]->type != DBUS_TYPE_NIL ) )
+#endif
         {
             retval->type = DBUS_TYPE_STRING;
             if( arguments->len < 4 )
@@ -322,12 +325,12 @@ static gint rpc_cb( const gchar *interface,
             } else {
                 retval->value.s = g_strdup_printf("Wrong type of arguments to a plugin "
                                      "(%d,%d,%d,%d); "
-                                     "was expecting (%d, %d, %d ,%d or %d)",
+                                     "was expecting (%d, %d, %d ,%d)",
                                      val[0]->type, val[1]->type, val[2]->type, 
                                      val[3]->type,
                                      DBUS_TYPE_STRING, DBUS_TYPE_INT32,
-                                     DBUS_TYPE_INT32, DBUS_TYPE_STRING,
-                                     DBUS_TYPE_NIL);
+                                     DBUS_TYPE_INT32, DBUS_TYPE_STRING);
+                                     //DBUS_TYPE_NIL);
             }
             osso_log( LOG_ERR, retval->value.s );
             if(retval->value.s){
@@ -367,12 +370,12 @@ static gint rpc_cb( const gchar *interface,
             val[0]->type != DBUS_TYPE_INT32 ||
             val[1]->type != DBUS_TYPE_INT32 ||
             val[2]->type != DBUS_TYPE_INT32 ||
-            val[3]->type != DBUS_TYPE_STRING || 
-	    (arguments->len == 5 && val[5]->type != DBUS_TYPE_NIL 
-	    ) )
+            val[3]->type != DBUS_TYPE_STRING ) 
+/*	    (arguments->len == 5 && val[5]->type != DBUS_TYPE_NIL 
+	    ) )*/
 	  {
             retval->type = DBUS_TYPE_STRING;
-            if( arguments->len < 5 ) {
+            if( arguments->len < 4 ) {
                 retval->value.s = 
                     g_strdup_printf( "Not enough arguments." );
             } else {

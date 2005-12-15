@@ -101,6 +101,9 @@ enum {
 
 #define LAUNCH_SUCCESS_TIMEOUT_LOWMEM 40
 
+/* Delay between application restarts during locale change */
+#define RESTORE_DELAY_BETWEEN_APPS 5000
+
 #define LOCATION_VAR "STATESAVEDIR"
 #define FALLBACK_PREFIX "/tmp/state"
 #define KILL_DELAY 2000 /* 2 seconds */

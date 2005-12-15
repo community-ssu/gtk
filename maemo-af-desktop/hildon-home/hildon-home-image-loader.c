@@ -143,7 +143,15 @@ gint load_image_from_uri(GdkPixbuf **pixbuf, const gchar *uri, gboolean postinst
         } 	 
     }
     g_free(mmc_uri_prefix);
+    
     result = gnome_vfs_open(&handle, uri, GNOME_VFS_OPEN_READ);
+    
+    if(result != GNOME_VFS_OK)
+    {
+        g_object_unref(gconf_client);
+        return HILDON_HOME_IMAGE_LOADER_ERROR_FILE_UNREADABLE;
+    }
+
     /*Setting up a watchdog*/
     if(!postinstall && osso_mem_saw_enable( 3 << 20, 32767, load_image_oom_cb, (void *)&oom) )
     {

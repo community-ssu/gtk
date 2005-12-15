@@ -1,3 +1,8 @@
+2005-12-15  Johan Bilien <johan.bilien@nokia.com>
+	* Depend on dbus >= 0.50
+	* backported a few changes from IT-2005
+	* configure.ac: 2.1.0
+
 2005-11-10  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Branched to IT-2005, trunk continues as IT-2006 branch *************************

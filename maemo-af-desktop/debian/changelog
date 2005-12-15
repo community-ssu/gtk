@@ -1,3 +1,10 @@
+maemo-af-desktop (2.1.0-0) unstable; urgency=low
+
+  * Depend on dbus >= 0.50
+  * backported a few changes from IT-2005
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 15 Dec 2005 16:11:08 +0200
+
 maemo-af-desktop (2.0.2) unstable; urgency=low
 
   * Minor changes to status bar to fix plugins not loading problem

@@ -86,7 +86,7 @@ wm_callbacks wm_cbs;
 /* X Atoms we'll use all the time */
 
 Atom active_win, clientlist, net_wm_state, pid_atom;
-Atom subname, transient_for, typeatom;
+Atom subname, transient_for;
 Atom wm_class_atom, wm_name, wm_state, wm_type, utf8, showing_desktop;
 Atom mb_active_win;
 
@@ -521,7 +521,18 @@ static gboolean treeview_button_press(GtkTreeView *treeview,
 				      GdkEventButton *event,
 				      GtkCellRenderer *renderer);
 
+/*
+ * Delays the startup of session restoration
+ */
+
 static gboolean restore_delayer(gpointer data);
+
+/*
+ * Delay between application relaunches while restoring session
+ */
+
+static gboolean restore_session_delayed_relaunch(gpointer data);
+
 
      
 /* Implementations begin */
@@ -1020,8 +1031,10 @@ static void map_notify_handler(GdkXEvent *xev, GtkTreeModel *model)
                 wm_cbs.new_win_cb(new_win->icon, new_win->name,
                                   DUMMY_STRING, wm_cbs.cb_data);
             insert_new_window(model, &parent, new_win);
-	    gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
-			       WM_KILLED_ITEM, FALSE, -1);
+            gtk_tree_store_set(GTK_TREE_STORE(model), &parent,
+                    WM_KILLED_ITEM, FALSE, -1);
+            g_free(new_win->icon);
+            g_free(new_win->name);
             g_free(new_win);
         }
     }
@@ -1743,7 +1756,7 @@ static void handle_subname_window_prop(GtkTreeModel *model,
                        (unsigned char **)&value.char_value);
     
     /* If the _NET_ACTIVE_WINDOW is not set, we can't do anything */
-    if (nitems == 0 || gdk_error_trap_pop() != 0)
+    if (gdk_error_trap_pop() != 0 || nitems == 0)
     {
         return;
     }
@@ -2787,8 +2800,20 @@ static void restore_session(osso_manager_t *man)
     {
         gchar **launch = g_strsplit(entries[i], " ", 2);
 
-        /* Should we check whether this has already been launched? */
-        top_service(launch[0]);
+	/* We need to restart applications with delay between
+	   launches, otherwise the launch requests will timeout when a
+	   number of large applications are restarted */
+ 
+	if (i > 0)
+	  {
+	    g_timeout_add(i*RESTORE_DELAY_BETWEEN_APPS,
+			  restore_session_delayed_relaunch,
+			  g_strdup(launch[0]));
+	  }
+	else
+	  {
+	    top_service(launch[0]);
+	  }
 
         if (entries[i+1] == NULL || strlen(entries[i+1]) <= 1 )
         {
@@ -2893,6 +2918,15 @@ static gboolean restore_delayer(gpointer data)
 }
 
 
+static gboolean restore_session_delayed_relaunch(gpointer data)
+{
+  top_service((gchar *)data);
+  g_free(data);
+  return FALSE;
+}
+
+
+
 /* Public functions*/
 
 
@@ -2954,7 +2988,6 @@ gboolean init_window_manager(wm_new_window_cb *new_win_cb,
     pid_atom = XInternAtom(GDK_DISPLAY(), "_NET_WM_PID", False);
     subname = XInternAtom(GDK_DISPLAY(), "_MB_WIN_SUB_NAME", False);
     transient_for = XInternAtom(GDK_DISPLAY(), "WM_TRANSIENT_FOR", False);
-    typeatom = XInternAtom(GDK_DISPLAY(), "_MB_COMMAND", False);
     wm_class_atom = XInternAtom(GDK_DISPLAY(), "WM_CLASS", False);
     wm_name = XInternAtom(GDK_DISPLAY(), "WM_NAME", False);
     wm_state = XInternAtom(GDK_DISPLAY(), "WM_STATE", False);
@@ -3818,15 +3851,13 @@ static void dnotify_callback(MBDotDesktop *desktop)
     }
     else
     {	
-	gchar *basename = g_path_get_basename(binitem);
+        gchar *basename = g_path_get_basename(binitem);
 	
         if (find_application_from_tree(wm_cbs.model,
                                        &dummy_iter,
                                        basename) == 1)
         {
-	    if ( basename ) {
-	       g_free( basename );
-	    }
+            g_free(basename);
             return;
         } 
         else
@@ -3835,6 +3866,8 @@ static void dnotify_callback(MBDotDesktop *desktop)
             gtk_tree_store_set(store, &iter, WM_BIN_NAME_ITEM,
                                binitem, -1);
         }
+
+        g_free(basename);
         
     }
     exec = (char *) mb_dotdesktop_get(desktop, DESKTOP_LAUNCH_FIELD);
