@@ -1,17 +1,24 @@
-diff -ur ../dbus/dbus/dbus-string.c dbus/dbus/dbus-string.c
---- ../dbus/dbus/dbus-string.c	2005-09-05 13:11:12.000000000 +0300
-+++ dbus/dbus/dbus-string.c	2005-12-15 17:31:10.356857816 +0200
-@@ -423,6 +423,24 @@
+diff -ur dbus/dbus/dbus-string.c dbus.new/dbus/dbus-string.c
+--- dbus/dbus/dbus-string.c	2005-12-15 17:46:01.851330056 +0200
++++ dbus.new/dbus/dbus-string.c	2005-12-16 16:15:39.230368104 +0200
+@@ -423,6 +423,31 @@
  {
    /* Note, we are setting the length not including nul termination */
  
-+  /* Kimmo's MEMORY-SAVING HACK: */
 +  if (real->allocated > new_length * 2 + ALLOCATION_PADDING)
 +    {
 +       /* free some space */
 +       int new_size = new_length * 2 + ALLOCATION_PADDING;
-+       char* new_str = dbus_realloc (real->str - real->align_offset,
-+                                     new_size);
++       char* new_str;
++       if (new_length == 0)
++         {
++            /* free & reallocate to give the heap a chance to contract */
++            dbus_free (real->str - real->align_offset);
++            new_str = dbus_malloc (new_size); 
++         }
++       else
++         new_str = dbus_realloc (real->str - real->align_offset, new_size);
++
 +       if (_DBUS_UNLIKELY (new_str == NULL))
 +         return FALSE;
 +
@@ -26,4 +33,3 @@ diff -ur ../dbus/dbus/dbus-string.c dbus/dbus/dbus-string.c
    /* exceeding max length is the same as failure to allocate memory */
    if (_DBUS_UNLIKELY (new_length > real->max_length))
      return FALSE;
-Only in dbus/dbus: dbus-string.c~
