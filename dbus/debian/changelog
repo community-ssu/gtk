@@ -1,3 +1,9 @@
+dbus (0.23.4-13osso) unstable; urgency=low
+
+  * Added patch for freeing buffers (bug 21872).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 16 Dec 2005 14:57:46 +0200
+
 dbus (0.23.4-12osso) unstable; urgency=low
 
   * Added patch for unreffing leaking g_source (bug 21733).
