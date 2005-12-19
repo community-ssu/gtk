@@ -1,4 +1,9 @@
 2005-12-19  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-navigator/application-switcher.c: Backported fixes to N#21089
+	  from 2005
+	* Reverted fix to N#21895 as it doesn't behave as expected
+
+2005-12-19  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-home/hildon-home-image-loader.c: Backported fixes to N#21750
 	  and N#21814 from 2005
 

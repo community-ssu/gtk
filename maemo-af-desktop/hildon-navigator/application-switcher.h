@@ -180,6 +180,7 @@ struct ApplicationSwitcher {
     gint hide_tooltip_timeout_id;
     gint show_tooltip_timeout_id;
     gboolean tooltip_visible; 
+    gboolean tooltip_pending; 
     
     gboolean switched_to_desktop;
     

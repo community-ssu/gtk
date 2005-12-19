@@ -919,7 +919,7 @@ void set_background_response_handler(GtkWidget *dialog,
             construct_background_image_with_uri(
                 get_filename_from_treemodel(box, 
                                             home_bg_combobox_active_item),
-                TRUE, GTK_DIALOG(dialog));
+                TRUE);
             gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
                                               GTK_RESPONSE_APPLY , FALSE);
         }
@@ -1229,8 +1229,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
            home_bg_combobox_active_item != -1 &&
            home_bg_image_loading_necessary) 
         {              
-            construct_background_image_with_uri(home_bg_image_uri,
-                                                TRUE, GTK_DIALOG(dialog));
+            construct_background_image_with_uri(home_bg_image_uri, TRUE);
         }
         break;
     default:
@@ -1386,15 +1385,13 @@ void show_mmc_cover_open_note(void)
  * @argument_list: commandline argumentlist for systemcall
  * @loading_image_note_allowed: whatever if it is nesessary for user to be able
  * cancel image loading
- * @dialog: Set background dialog for apply button dimming
  * 
  * Calls image loader with argument list and waits loader to save
  * results appointed place(s)
  */
 static
 void construct_background_image(char *argument_list[], 
-                                gboolean loading_image_note_allowed, 
-                                GtkDialog *dialog)
+                                gboolean loading_image_note_allowed)
 {
     GError *error = NULL;
     guint image_loader_callback_id;
@@ -1455,7 +1452,7 @@ void construct_background_image(char *argument_list[],
 
     if(loading_image_note_allowed)
     {
-        show_loading_image_note(dialog);
+        show_loading_image_note();
     }
 }
 
@@ -1531,13 +1528,11 @@ void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
 /**
  * @show_loading_image_note
  *
- * @dialog: Set background dialog for apply button dimming
- *
  * Shows cancel note during background image loading
  *
  */
 static
-void show_loading_image_note(GtkDialog *dialog)
+void show_loading_image_note()
 {
     GtkWidget *label;
     GtkIconTheme *theme;
@@ -1586,7 +1581,7 @@ void show_loading_image_note(GtkDialog *dialog)
     gtk_window_set_modal(GTK_WINDOW(loading_image_note), TRUE);
     
     g_signal_connect(G_OBJECT(loading_image_note), "response",
-                     G_CALLBACK(loading_image_note_handler), dialog);
+                     G_CALLBACK(loading_image_note_handler), NULL);
 
     gtk_widget_realize (GTK_WIDGET (loading_image_note));
     gdk_window_set_decorations(loading_image_note->window,
@@ -1601,7 +1596,7 @@ void show_loading_image_note(GtkDialog *dialog)
  *
  * @param loading_image_note
  * @param event
- * @param user_data Set background dialog for apply button dimming
+ * @param user_data
  *
  * Handles the cancel signal from note
  */
@@ -1623,11 +1618,6 @@ gboolean loading_image_note_handler(GtkWidget *loading_cancel_note,
          gtk_widget_destroy(loading_image_note);
      }
      loading_image_note = NULL;
-
-     /* Background image changing was canceled so apply is possible */
-     gtk_dialog_set_response_sensitive(GTK_DIALOG(user_data),
-                                       GTK_RESPONSE_APPLY , TRUE);
-
      return TRUE;
 }
 
@@ -1636,15 +1626,13 @@ gboolean loading_image_note_handler(GtkWidget *loading_cancel_note,
  * 
  * @uri: uri to location of image file
  * @new: TRUE if user selected. FALSE when loading system default.
- * @dialog: Set background dialog for apply button dimming
  * 
  * Generates argument list for image loader to change original
  * background image from background. If construction was successfull,
  * saves uri it to designstated place for user background image.
  */
 static
-void construct_background_image_with_uri(const gchar *uri, gboolean new,
-                                         GtkDialog *dialog)
+void construct_background_image_with_uri(const gchar *uri, gboolean new)
 {
     char *width = g_strdup_printf("%d", HILDON_HOME_AREA_WIDTH);
     char *height = g_strdup_printf("%d", HILDON_HOME_AREA_HEIGHT);
@@ -1668,7 +1656,7 @@ void construct_background_image_with_uri(const gchar *uri, gboolean new,
         HILDON_HOME_SIDEBAR_TOP_Y,
         NULL };
 
-    construct_background_image(argument_list, new, dialog);
+    construct_background_image(argument_list, new);
 
     g_free (width);
     g_free (height);
@@ -1711,7 +1699,7 @@ void construct_background_image_with_new_skin(GtkWidget *widget,
         HILDON_HOME_SIDEBAR_TOP_Y,
         NULL };
 
-    construct_background_image(argument_list, FALSE, NULL);
+    construct_background_image(argument_list, FALSE);
 
     g_free (width);
     g_free (height);
@@ -1926,7 +1914,7 @@ void set_default_background_image()
 
     if (image_path) 
     {
-        construct_background_image_with_uri(image_path, FALSE, NULL);
+        construct_background_image_with_uri(image_path, FALSE);
         g_free(image_path);
 
         /* remove old files if nesessary and create symlinks */

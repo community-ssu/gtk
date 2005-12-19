@@ -270,6 +270,7 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
     g_return_if_fail(as);
     
     as->tooltip_visible = FALSE;
+    as->tooltip_pending = FALSE;
     as->switched_to_desktop = FALSE;
 
 
@@ -606,6 +607,8 @@ static gboolean timeout_callback(gpointer data)
     gtk_widget_hide(as->tooltip_menu);
     
     as->tooltip_visible = FALSE;
+
+    as->tooltip_pending = FALSE;
         
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON( 
                                             as->toggle_button1), FALSE);
@@ -697,6 +700,7 @@ static void set_first_button_pressed_and_grab_tooltip(gpointer data)
     /* Stop timeout if there is no tooltip visible */
     if (as->tooltip_visible == FALSE)
     {
+        as->tooltip_pending = FALSE;
         g_source_remove(as->show_tooltip_timeout_id);
     }
 
@@ -792,6 +796,7 @@ static gboolean tooltip_button_release(GtkWidget *widget,
         if (as->tooltip_visible == TRUE)
         {
             /*hide the window*/
+            as->tooltip_pending = FALSE;
             gtk_widget_hide(as->tooltip_menu);
             
             as->tooltip_visible = FALSE;
@@ -800,6 +805,7 @@ static gboolean tooltip_button_release(GtkWidget *widget,
         else
         { 
             /*stop a timeout*/
+            as->tooltip_pending = FALSE;
             g_source_remove(as->show_tooltip_timeout_id);
         }
         
@@ -900,7 +906,6 @@ static void recreate_tooltip_menuitem(ApplicationSwitcher_t *as)
     gtk_container_remove(GTK_CONTAINER(as->tooltip_menu), oldTooltipMenuItem);
     gtk_container_add(GTK_CONTAINER(as->tooltip_menu),as->tooltip_menu_item);
     gtk_widget_show(as->tooltip_menu_item);
-    g_free(oldTooltipMenuItem);
 }
 
 static void add_item_to_tooltip_menu(gint item_pos_in_list,
@@ -1121,6 +1126,9 @@ static gboolean show_tooltip_timeout_callback(gpointer data)
 {
     ApplicationSwitcher_t *as = (ApplicationSwitcher_t *) data;
 
+    /* Ensure that the tooltip item is up to date after delay */
+    add_item_to_tooltip_menu(as->toggled_button_id +
+            (ITEM_1_LIST_POS - AS_BUTTON_1), as);
     show_tooltip_menu(GTK_WIDGET(as->tooltip_menu),as);
     
     as->tooltip_visible = TRUE;                                
@@ -1139,6 +1147,7 @@ static void button_toggled(GtkToggleButton *togglebutton,
     if (as->tooltip_visible)
     { 
         /*stop a timeout*/
+        as->tooltip_pending = FALSE;as->tooltip_pending = FALSE;
         g_source_remove(as->hide_tooltip_timeout_id);
 
         /* hide the window */
@@ -1164,8 +1173,7 @@ static void button_toggled(GtkToggleButton *togglebutton,
     {
         as->toggled_button_id = AS_BUTTON_1;
         
-        add_item_to_tooltip_menu(ITEM_1_LIST_POS,as);
-
+        as->tooltip_pending = TRUE;
         as->show_tooltip_timeout_id = g_timeout_add(TIMEOUT_HALF_SECOND, 
                                            show_tooltip_timeout_callback, 
                                            as);
@@ -1185,8 +1193,7 @@ static void button_toggled(GtkToggleButton *togglebutton,
     {
         as->toggled_button_id = AS_BUTTON_2;
         
-        add_item_to_tooltip_menu(ITEM_2_LIST_POS,as);
-
+        as->tooltip_pending = TRUE;
         as->show_tooltip_timeout_id = g_timeout_add(TIMEOUT_HALF_SECOND, 
                                            show_tooltip_timeout_callback, 
                                            as);
@@ -1205,8 +1212,7 @@ static void button_toggled(GtkToggleButton *togglebutton,
     {
         as->toggled_button_id = AS_BUTTON_3;
         
-        add_item_to_tooltip_menu(ITEM_3_LIST_POS,as);
-
+        as->tooltip_pending = TRUE;
         as->show_tooltip_timeout_id = g_timeout_add(TIMEOUT_HALF_SECOND, 
                                            show_tooltip_timeout_callback, 
                                            as);
@@ -1225,9 +1231,8 @@ static void button_toggled(GtkToggleButton *togglebutton,
               (as->toggle_button4 == GTK_WIDGET(togglebutton)))
     {
         as->toggled_button_id = AS_BUTTON_4;
-    
-        add_item_to_tooltip_menu(ITEM_4_LIST_POS,as);
 
+        as->tooltip_pending = TRUE;
         as->show_tooltip_timeout_id = g_timeout_add(TIMEOUT_HALF_SECOND, 
                                            show_tooltip_timeout_callback, 
                                            as);
@@ -1634,7 +1639,8 @@ static void updated_window_callback(GtkWidget *menuitem,
                        buf);
 
     /* Show button pressed only if the desktop is not topmost */ 
-    if (as->switched_to_desktop == FALSE) {
+    if (as->switched_to_desktop == FALSE &&
+        as->tooltip_pending == FALSE && as->tooltip_visible == FALSE) {
     	gtk_widget_set_name(as->toggle_button1,
         	            SMALL_BUTTON1_PRESSED);
     }
