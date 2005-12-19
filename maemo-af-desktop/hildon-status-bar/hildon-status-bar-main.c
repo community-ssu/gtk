@@ -217,6 +217,8 @@ static void add_user_items( StatusBar *panel )
         {
             osso_log( LOG_ERR, "Statusbar item add failed for %s", name );
         }
+
+        g_free(name);
     }
 
     globfree(&globbuf);
@@ -273,8 +275,8 @@ static gint rpc_cb( const gchar *interface,
                     g_strdup_printf("Wrong type param to infoprint (%d)",
                                      val[0]->type );
             }
-            osso_log( LOG_ERR, retval->value.s );
             if(retval->value.s){
+                osso_log( LOG_ERR, retval->value.s );
                 g_free((gchar*)retval->value.s);
             }
             retval->value.s = "Wrong param type to infoprint";
@@ -350,8 +352,8 @@ static gint rpc_cb( const gchar *interface,
             retval->type = DBUS_TYPE_STRING;
             retval->value.s = g_strdup_printf( "Failed to load plugin %s", 
                                                val[0]->value.s );
-            osso_log( LOG_ERR, retval->value.s );
             if(retval->value.s){
+                osso_log( LOG_ERR, retval->value.s );
                 g_free((gchar*)retval->value.s);
             }
             retval->value.s="Failed to load plugin";
@@ -389,8 +391,8 @@ static gint rpc_cb( const gchar *interface,
                                      DBUS_TYPE_INT32, 
                                      DBUS_TYPE_STRING);
             }
-            osso_log( LOG_ERR, retval->value.s );
             if(retval->value.s){
+                osso_log( LOG_ERR, retval->value.s );
                 g_free((gchar*)retval->value.s);
             }
             retval->value.s = "Wrong type of args";
@@ -419,8 +421,8 @@ static gint rpc_cb( const gchar *interface,
                                      val[0]->type, 
                                      DBUS_TYPE_INT32);
             }
-            osso_log( LOG_ERR, retval->value.s );
             if(retval->value.s){
+                osso_log( LOG_ERR, retval->value.s );
                 g_free((gchar*)retval->value.s);
             }
             retval->value.s = "Wrong type args";
@@ -438,8 +440,8 @@ static gint rpc_cb( const gchar *interface,
     {
         retval->type = DBUS_TYPE_STRING;
         retval->value.s = g_strdup_printf( "Unknown method '%s'", method );
-        osso_log( LOG_ERR, retval->value.s );
         if(retval->value.s){
+            osso_log( LOG_ERR, retval->value.s );
             g_free((gchar*)retval->value.s);
         }
         retval->value.s = "Unknown method";

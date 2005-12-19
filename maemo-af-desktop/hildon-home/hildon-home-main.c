@@ -919,7 +919,7 @@ void set_background_response_handler(GtkWidget *dialog,
             construct_background_image_with_uri(
                 get_filename_from_treemodel(box, 
                                             home_bg_combobox_active_item),
-                TRUE);
+                TRUE, GTK_DIALOG(dialog));
             gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
                                               GTK_RESPONSE_APPLY , FALSE);
         }
@@ -1229,7 +1229,8 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
            home_bg_combobox_active_item != -1 &&
            home_bg_image_loading_necessary) 
         {              
-            construct_background_image_with_uri(home_bg_image_uri, TRUE);
+            construct_background_image_with_uri(home_bg_image_uri,
+                                                TRUE, GTK_DIALOG(dialog));
         }
         break;
     default:
@@ -1385,13 +1386,15 @@ void show_mmc_cover_open_note(void)
  * @argument_list: commandline argumentlist for systemcall
  * @loading_image_note_allowed: whatever if it is nesessary for user to be able
  * cancel image loading
+ * @dialog: Set background dialog for apply button dimming
  * 
  * Calls image loader with argument list and waits loader to save
  * results appointed place(s)
  */
 static
 void construct_background_image(char *argument_list[], 
-                                gboolean loading_image_note_allowed)
+                                gboolean loading_image_note_allowed, 
+                                GtkDialog *dialog)
 {
     GError *error = NULL;
     guint image_loader_callback_id;
@@ -1452,7 +1455,7 @@ void construct_background_image(char *argument_list[],
 
     if(loading_image_note_allowed)
     {
-        show_loading_image_note();
+        show_loading_image_note(dialog);
     }
 }
 
@@ -1528,11 +1531,13 @@ void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
 /**
  * @show_loading_image_note
  *
+ * @dialog: Set background dialog for apply button dimming
+ *
  * Shows cancel note during background image loading
  *
  */
 static
-void show_loading_image_note()
+void show_loading_image_note(GtkDialog *dialog)
 {
     GtkWidget *label;
     GtkIconTheme *theme;
@@ -1581,7 +1586,7 @@ void show_loading_image_note()
     gtk_window_set_modal(GTK_WINDOW(loading_image_note), TRUE);
     
     g_signal_connect(G_OBJECT(loading_image_note), "response",
-                     G_CALLBACK(loading_image_note_handler), NULL);
+                     G_CALLBACK(loading_image_note_handler), dialog);
 
     gtk_widget_realize (GTK_WIDGET (loading_image_note));
     gdk_window_set_decorations(loading_image_note->window,
@@ -1596,7 +1601,7 @@ void show_loading_image_note()
  *
  * @param loading_image_note
  * @param event
- * @param user_data
+ * @param user_data Set background dialog for apply button dimming
  *
  * Handles the cancel signal from note
  */
@@ -1618,6 +1623,11 @@ gboolean loading_image_note_handler(GtkWidget *loading_cancel_note,
          gtk_widget_destroy(loading_image_note);
      }
      loading_image_note = NULL;
+
+     /* Background image changing was canceled so apply is possible */
+     gtk_dialog_set_response_sensitive(GTK_DIALOG(user_data),
+                                       GTK_RESPONSE_APPLY , TRUE);
+
      return TRUE;
 }
 
@@ -1626,13 +1636,15 @@ gboolean loading_image_note_handler(GtkWidget *loading_cancel_note,
  * 
  * @uri: uri to location of image file
  * @new: TRUE if user selected. FALSE when loading system default.
+ * @dialog: Set background dialog for apply button dimming
  * 
  * Generates argument list for image loader to change original
  * background image from background. If construction was successfull,
  * saves uri it to designstated place for user background image.
  */
 static
-void construct_background_image_with_uri(const gchar *uri, gboolean new)
+void construct_background_image_with_uri(const gchar *uri, gboolean new,
+                                         GtkDialog *dialog)
 {
     char *width = g_strdup_printf("%d", HILDON_HOME_AREA_WIDTH);
     char *height = g_strdup_printf("%d", HILDON_HOME_AREA_HEIGHT);
@@ -1656,7 +1668,7 @@ void construct_background_image_with_uri(const gchar *uri, gboolean new)
         HILDON_HOME_SIDEBAR_TOP_Y,
         NULL };
 
-    construct_background_image(argument_list, new);
+    construct_background_image(argument_list, new, dialog);
 
     g_free (width);
     g_free (height);
@@ -1699,7 +1711,7 @@ void construct_background_image_with_new_skin(GtkWidget *widget,
         HILDON_HOME_SIDEBAR_TOP_Y,
         NULL };
 
-    construct_background_image(argument_list, FALSE);
+    construct_background_image(argument_list, FALSE, NULL);
 
     g_free (width);
     g_free (height);
@@ -1914,7 +1926,7 @@ void set_default_background_image()
 
     if (image_path) 
     {
-        construct_background_image_with_uri(image_path, FALSE);
+        construct_background_image_with_uri(image_path, FALSE, NULL);
         g_free(image_path);
 
         /* remove old files if nesessary and create symlinks */
@@ -2212,7 +2224,10 @@ void construct_user_applets(void)
 
         info = &applet_info[applet_num];
         info->label = malloc(HILDON_HOME_PATH_STR_LENGTH);
+        /* Terminate the string */
+        info->label[0] = 0;
         info->plugin_name = malloc(HILDON_HOME_PATH_STR_LENGTH);
+        info->plugin_name[0] = 0;
 	
         fp = fopen(globbuf.gl_pathv[i], "r");
         if (fp != NULL)
@@ -2221,6 +2236,7 @@ void construct_user_applets(void)
             if (fgets(buf, sizeof(buf), fp))
             {
                 tokens = g_strsplit(buf, "=", 2);
+                free(info->label);
                 info->label = g_strdup(g_strstrip(tokens[1]));
                 g_strfreev(tokens);
             }
@@ -2277,7 +2293,8 @@ void construct_user_applets(void)
             /* End of fix 13092005 */
         }
     }
-
+    
+    globfree(&globbuf);
     g_free(pattern);
 }
 
@@ -3247,25 +3264,23 @@ void home_deinitialize(gint keysnooper_id)
 static
 void create_startup_lock(void)
 {
-     /*FILE *f;
+     FILE *f;
      
      f = fopen(STARTUP_LOCK_FILE, "w");
      if (f)
              fclose(f);
-     */
 }
  
 static
 gboolean startup_lock_exists(void)
 {
-     /*return g_file_test(STARTUP_LOCK_FILE, G_FILE_TEST_EXISTS);*/
-     return FALSE;
+     return g_file_test(STARTUP_LOCK_FILE, G_FILE_TEST_EXISTS);
 }
  
 static
 gboolean remove_startup_lock_timeout(gpointer data)
 {
-     /*unlink(STARTUP_LOCK_FILE);*/
+     unlink(STARTUP_LOCK_FILE);
      return FALSE;
 }
  

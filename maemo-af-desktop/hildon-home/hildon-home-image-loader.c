@@ -163,9 +163,19 @@ gint load_image_from_uri(GdkPixbuf **pixbuf, const gchar *uri, gboolean postinst
         result = gnome_vfs_read(handle, buffer, BUF_SIZE, &bytes_read);
         if(!oom) 
         {
-            if(!gdk_pixbuf_loader_write(loader, buffer, bytes_read, NULL))
+            if(!gdk_pixbuf_loader_write(loader, buffer, bytes_read, &error))
             {
-                return HILDON_HOME_IMAGE_LOADER_ERROR_SYSTEM_RESOURCE; 	 
+                if(error != NULL)
+                {
+                    if(error->domain == GDK_PIXBUF_ERROR &&
+                            (error->code == GDK_PIXBUF_ERROR_CORRUPT_IMAGE ||
+                             error->code == GDK_PIXBUF_ERROR_UNKNOWN_TYPE))
+                    {
+                        g_error_free(error);
+                        return HILDON_HOME_IMAGE_LOADER_ERROR_FILE_CORRUPT;
+                    }
+                    g_error_free(error);
+                }
             }
         }
 
@@ -498,7 +508,7 @@ void blend_new_skin_to_image_area(GdkPixbuf **pixbuf_orig,
                          height_blend,
                          0, 0,
                          1.0, 1.0,
-                         GDK_INTERP_BILINEAR,
+                         GDK_INTERP_NEAREST,
                          HILDON_HOME_IMAGE_ALPHA_FULL);
 
     g_object_unref(pixbuf_blend);
@@ -612,7 +622,7 @@ void blend_in_from_path(GdkPixbuf **pixbuf,
                          src_height,
                          0, 0,
                          1.0, 1.0,
-                         GDK_INTERP_BILINEAR,
+                         GDK_INTERP_NEAREST,
                          HILDON_HOME_IMAGE_ALPHA_FULL);
 
     if (src_pixbuf != NULL)
@@ -712,7 +722,7 @@ void blend_in_from_path_sidebar(GdkPixbuf **pixbuf,
                          src_height,
                          0, 0,
                          1.0, 1.0,
-                         GDK_INTERP_BILINEAR,
+                         GDK_INTERP_NEAREST,
                          HILDON_HOME_IMAGE_ALPHA_FULL);
 
     if (src_pixbuf != NULL)
@@ -883,8 +893,6 @@ int main(int argc, char *argv[])
     {
         g_object_unref(pixbuf);
     }
-
-    gnome_vfs_shutdown();
 
     return HILDON_HOME_IMAGE_LOADER_OK;
 }

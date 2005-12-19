@@ -1,3 +1,15 @@
+2005-12-19  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-home/hildon-home-image-loader.c: Backported fixes to N#21750
+	  and N#21814 from 2005
+
+2005-12-16  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-home/hildon-home-main.c:
+	   . construct_user_applets(): Backported memory leak fixes from 2005
+	   . Applied fix to N#21895:   'Apply' button is dimmed for the
+	     currently selected (unloaded) image. Patch by Koivikko Jari.
+	* hildon-status-bar/hildon-status-bar-main.c:
+	   . add_user_items(): Backported memory leak fix from 2005
+
 2005-12-15  Johan Bilien <johan.bilien@nokia.com>
 	* Depend on dbus >= 0.50
 	* backported a few changes from IT-2005
