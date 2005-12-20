@@ -1,3 +1,7 @@
+2005-12-20  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-navigator/windowmanager.c: Backported and ported to new dbus
+      fix to N#20921 from IT-2005
+
 2005-12-19  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/application-switcher.c: Backported fixes to N#21089
 	  from 2005

@@ -533,7 +533,14 @@ static gboolean restore_delayer(gpointer data);
 
 static gboolean restore_session_delayed_relaunch(gpointer data);
 
+/*
+ * Connectivity helper functions
+ */
+static void indicate_kill_to_connectivity(GtkTreeModel *model,
+                      GtkTreeIter *iter);
 
+static gchar *get_service_basename(DBusConnection *conn,
+                      const gchar *service_name);
      
 /* Implementations begin */
 
@@ -2925,6 +2932,176 @@ static gboolean restore_session_delayed_relaunch(gpointer data)
   return FALSE;
 }
 
+static void indicate_kill_to_connectivity(GtkTreeModel *model,
+                                          GtkTreeIter *iter)
+{
+
+  gchar *service_name = NULL, *service_base_name = NULL, *full_sname = NULL;
+  DBusPendingCall *pending = NULL;
+  dbus_bool_t b;
+  DBusMessage *msg;
+  DBusError error;
+
+  dbus_error_init(&error);
+  DBusConnection *sys_conn = dbus_bus_get(DBUS_BUS_SYSTEM, &error);
+
+  if (!sys_conn)
+    {
+      osso_log(LOG_ERR, "Failed to connect to DBUS: %s!\n", error.message );
+      dbus_error_free( &error );
+      return;
+    }
+
+  gtk_tree_model_get(model, iter, WM_EXEC_ITEM, &service_name, -1);
+  if (service_name == NULL)
+    {
+      osso_log(LOG_ERR, "Can't send to Connectivity: No service name.\n");
+      return;
+    }
+
+  if (!g_strrstr(service_name, "."))
+    {
+      full_sname = g_strconcat(OSSO_BUS_ROOT, ".", service_name, NULL);
+    }
+  else
+    {
+      full_sname = g_strdup(service_name);
+    }
+
+  g_free(service_name);
+
+  service_base_name = get_service_basename(sys_conn, full_sname);
+
+  if (service_base_name == NULL)
+    {
+      osso_log(LOG_ERR, "Can't send to Connectivity: No basename");
+      g_free(full_sname);
+      return;
+    }
+
+  /* Send service name / service base name to connectivity */
+
+  msg = dbus_message_new_method_call(CONNECTIVITY_DESTINATION,
+                                     CONNECTIVITY_PATH,
+                                     CONNECTIVITY_INTERFACE,
+                                     CONNECTIVITY_BGKILL_METHOD);
+
+  if (msg == NULL)
+    {
+      osso_log(LOG_WARNING, "Could not create message for Connectivity");
+      g_free(full_sname);
+      g_free(service_base_name);
+      return;
+    }
+
+  dbus_message_append_args(msg, DBUS_TYPE_STRING, full_sname,
+                           DBUS_TYPE_STRING, service_base_name,
+                           DBUS_TYPE_INVALID);
+
+  /* For now, we don't care what Connectivity will reply, the important
+     thing is to wait for the reply in the first place */
+
+  b = dbus_connection_send_with_reply(sys_conn, msg, &pending, 150);
+
+
+  if (b && pending)
+    {
+      dbus_connection_flush(sys_conn);
+      dbus_pending_call_block(pending);
+    }
+  else
+    {
+      osso_log(LOG_ERR, "Unable to perform method call to Connectivity");
+      g_free(full_sname);
+      g_free(service_base_name);
+      dbus_message_unref(msg);
+      return;
+    }
+
+  g_free(full_sname);
+  g_free(service_base_name);
+  dbus_message_unref(msg);
+}
+
+
+static void handle_getserviceowner_reply(DBusPendingCall *pending,
+                                         void *data)
+{
+  DBusMessage *msg;
+  gchar *service_basename = NULL;
+  DBusError error;
+  msg = dbus_pending_call_steal_reply(pending);
+
+  if (msg == NULL)
+    {
+      osso_log(LOG_ERR, "Reply message not available.");
+      return;
+    }
+
+  else if (dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_METHOD_RETURN)
+    {
+      dbus_error_init(&error);
+      if (!dbus_message_get_args (msg, &error,
+                 DBUS_TYPE_STRING, &service_basename,
+                 DBUS_TYPE_INVALID))
+   {
+     osso_log(LOG_ERR, "Did not get service basename in reply.");
+     return;
+   }
+      *(gchar **)data = service_basename;
+    }
+  else
+    {
+      osso_log(LOG_ERR,
+               "Did not get a reply to getserviceowner method call");
+    }
+}
+
+
+
+static gchar *get_service_basename(DBusConnection *conn,
+                                   const gchar *service_name)
+{
+  DBusPendingCall *pending = NULL;
+  DBusMessage *msg = NULL;
+  dbus_bool_t b;
+  gchar *service_basename;
+
+  msg = dbus_message_new_method_call (DBUS_SERVICE_DBUS,
+                                      DBUS_PATH_DBUS,
+                                      DBUS_INTERFACE_DBUS,
+                                      "GetServiceOwner");
+  if (!msg)
+    {
+      osso_log(LOG_ERR, "Could not create GetServiceOwner call");
+      return NULL;
+    }
+
+  if (!dbus_message_append_args (msg,
+                DBUS_TYPE_STRING, service_name,
+                DBUS_TYPE_INVALID))
+    {
+      dbus_message_unref (msg);
+      osso_log(LOG_ERR,
+          "Could not append arguments to GetServiceOwner message");
+      return NULL;
+    }
+
+  b = dbus_connection_send_with_reply(conn, msg, &pending, 150);
+  if (b && pending)
+    {
+      dbus_pending_call_set_notify(pending, handle_getserviceowner_reply,
+                  &service_basename, NULL);
+      dbus_connection_flush(conn);
+
+      /* We should not block. But if we try to sit in gtk main loop
+         while waiting for the reply, things break for some reason. */
+
+      dbus_pending_call_block(pending);
+    }
+
+  return service_basename;
+}
 
 
 /* Public functions*/
@@ -3542,6 +3719,7 @@ static int kill_all( gboolean killable_only )
                    it's an hildonapp-based program and supports
                    killable property. */
 
+                indicate_kill_to_connectivity(wm_cbs.model, &iter);
                 retval = kill((pid_t)pid, SIGTERM);
                 if (retval != 0)
                 {

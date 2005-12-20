@@ -86,6 +86,12 @@ enum {
 #define APP_LAUNCH_BANNER_METHOD             "app_launch_banner"
 #define APP_LAUNCH_BANNER_MSG_LOADING        "ckct_ib_application_loading"
 #define APP_LAUNCH_BANNER_MSG_LOADING_FAILED "ckct_ib_application_loading_failed"
+
+#define CONNECTIVITY_DESTINATION "com.nokia.icd"
+#define CONNECTIVITY_INTERFACE "com.nokia.icd"
+#define CONNECTIVITY_PATH "/com/nokia/icd"
+#define CONNECTIVITY_BGKILL_METHOD "background_killing_application"
+
 /* Timeout of the launch banner, in secons */
 #define APP_LAUNCH_BANNER_TIMEOUT            20
 /* Timeout of the launch banner in lowmem situation */
@@ -111,6 +117,9 @@ enum {
 #define KILL_DELAY_LOWMEM 4000 /* 4 seconds */
 
 #define HOME_WMCLASS "maemo_af_desktop"
+
+/* hildon, from mb's struct.h */
+#define MB_CMD_DESKTOP 3
 
 /* hildon, from mb's struct.h */
 #define MB_CMD_DESKTOP 3
