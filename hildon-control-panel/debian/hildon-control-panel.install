@@ -1,4 +1,4 @@
 etc/others-menu
 usr/bin
 usr/share/applications
-usr/lib/dbus-1.0/services/com.nokia.controlpanel.service
+usr/share/dbus-1/services/com.nokia.controlpanel.service

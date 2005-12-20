@@ -1,3 +1,9 @@
+hildon-control-panel (1.0.0-1) unstable; urgency=low
+
+  * Move the service file to the new location.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 20 Dec 2005 10:44:33 +0200
+
 hildon-control-panel (1.0.0-0) unstable; urgency=low
 
   * Ported to dbus >= 0.50
