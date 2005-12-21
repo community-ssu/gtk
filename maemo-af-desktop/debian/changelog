@@ -1,3 +1,13 @@
+maemo-af-desktop (2.1.1-0) unstable; urgency=low
+
+  * Backported fix to  N#20921 from IT-2005
+  * Backported fix to  N#21089 from IT-2005
+  * Backported fix to  N#21750 from IT-2005
+  * Backported fix to  N#21814 from IT-2005
+  * Reverted improper fix to  N#21895 from IT-2005
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 21 Dec 2005 15:23:07 +0200
+
 maemo-af-desktop (2.1.0-0) unstable; urgency=low
 
   * Depend on dbus >= 0.50
