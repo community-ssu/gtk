@@ -138,7 +138,7 @@ set_progname(char *progname, int argc, char **argv)
 }
 
 static int
-invoked_init()
+invoked_init(void)
 {
   int fd;
   struct sockaddr_un sun;
@@ -273,7 +273,7 @@ clean_daemon(int signal)
 }
 
 static void
-clean_childs()
+clean_childs(void)
 {
   int status;
   char *cause;
@@ -307,7 +307,7 @@ sighup_handler(int sig)
 }
 
 static void
-version()
+version(void)
 {
   printf("%s (%s) %s\n", PROG_NAME, PACKAGE, VERSION);
 

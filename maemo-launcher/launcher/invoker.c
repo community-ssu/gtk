@@ -53,7 +53,7 @@ invoke_recv_ack(int fd)
 }
 
 static int
-invoker_init()
+invoker_init(void)
 {
   int fd;
   struct sockaddr_un sun;
@@ -137,7 +137,7 @@ get_file_int(const char *filename)
  * but should behave as a nop on systems not supporting it.
  */
 static int
-get_linux_lowmem_modifier()
+get_linux_lowmem_modifier(void)
 {
   uint32_t mem_allowed;
   uint32_t mem_used;
@@ -186,7 +186,7 @@ get_delay(char *delay_arg)
 }
 
 static void
-version()
+version(void)
 {
   printf("%s (%s) %s\n", PROG_NAME, PACKAGE, VERSION);
 

@@ -1,3 +1,11 @@
+2005-12-20  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (invoked_init, clean_childs, version): Declare
+	as taking void as parameter.
+	* launcher/invoker.c (invoker_init, get_linux_lowmem_modifier,
+	version): Likewise.
+	* launcher/ui_gtk.c (init_gtypes, init_gquarks): Likewise.
+
 2005-12-01  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/launcher.c (clean_daemon): Use pidfilename instead of

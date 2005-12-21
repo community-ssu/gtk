@@ -104,7 +104,7 @@ static GetTypeFunc get_type_funcs[] =
 };
 
 static int
-init_gtypes()
+init_gtypes(void)
 {
   gint i;
 
@@ -120,7 +120,7 @@ init_gtypes()
 }
 
 static int
-init_gquarks()
+init_gquarks(void)
 {
   gint i;
 
