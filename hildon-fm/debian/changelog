@@ -1,4 +1,4 @@
-hildon-fm (0.10.0) unstable; urgency=low
+hildon-fm (0.10.0-1) unstable; urgency=low
 
   * Port to dbus >= 0.50
 
