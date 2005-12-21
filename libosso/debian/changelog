@@ -1,3 +1,9 @@
+libosso (1.0.2-1) unstable; urgency=low
+
+  * Ported for v0.60 dbus.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 21 Dec 2005 14:13:56 +0200
+
 libosso (1.0.1-1) unstable; urgency=low
 
   * Fixed bug about passing empty strings with osso_rpc.
