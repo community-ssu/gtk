@@ -1,3 +1,9 @@
+hildon-fm (0.10.0) unstable; urgency=low
+
+  * Port to dbus >= 0.50
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 21 Dec 2005 15:18:22 +0200
+
 hildon-fm (0.9.47-1) unstable; urgency=low
 
   * fixes

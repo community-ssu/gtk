@@ -170,7 +170,7 @@ set_bt_name_from_message(HildonFileSystemSettings *self, DBusMessage *message)
   gchar *name;
 
   if (!dbus_message_iter_init(message, &iter)) return;
-  name = dbus_message_iter_get_string(&iter);
+  dbus_message_iter_get_basic(&iter, &name);
   if (!name) return;
 
   ULOG_INFO("BT name changed into \"%s\"", name);
@@ -188,7 +188,7 @@ set_flight_mode_from_message(HildonFileSystemSettings *self, DBusMessage *messag
   char *mode_name;
 
   if (!dbus_message_iter_init(message, &iter)) return;
-  mode_name = dbus_message_iter_get_string(&iter);
+  dbus_message_iter_get_basic(&iter, &mode_name);
   if (!mode_name) return;
 
   if (g_ascii_strcasecmp(mode_name, MCE_FLIGHT_MODE) == 0)
@@ -301,7 +301,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
   request = dbus_message_new_method_call(MCE_SERVICE, 
         MCE_REQUEST_PATH, MCE_REQUEST_IF, MCE_DEVICE_MODE_GET);
   g_assert(request != NULL);
-  dbus_message_set_auto_activation(request, TRUE);
+  dbus_message_set_auto_start(request, TRUE);
 
   if (dbus_connection_send_with_reply(conn, request, &call, -1))
   {
@@ -314,7 +314,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
   request = dbus_message_new_method_call(BTNAME_SERVICE,
         BTNAME_REQUEST_PATH, BTNAME_REQUEST_IF, BTNAME_REQ_GET);
   g_assert(request != NULL);
-  dbus_message_set_auto_activation(request, TRUE);
+  dbus_message_set_auto_start(request, TRUE);
 
   if (dbus_connection_send_with_reply(conn, request, &call, -1))
   {
@@ -518,6 +518,8 @@ void _hildon_file_system_prepare_banner(void)
   DBusConnection *conn;
   DBusMessage *message;
   DBusMessageIter iter;
+  dbus_int32_t value;
+  const char *ckdg_pb_updating_str = _("ckdg_pb_updating");
 
   settings = _hildon_file_system_settings_get_instance();
   conn = settings->priv->dbus_conn;
@@ -525,11 +527,16 @@ void _hildon_file_system_prepare_banner(void)
         BANNER_REQUEST_PATH, BANNER_REQUEST_IF, BANNER_SHOW);
   g_assert(message != NULL);
 
-  dbus_message_append_iter_init(message, &iter);
-  dbus_message_iter_append_int32(&iter, getpid()); /* id */
-  dbus_message_iter_append_int32(&iter, 1000);     /* Initial delay */
-  dbus_message_iter_append_int32(&iter, 30000);    /* Display timeout */
-  dbus_message_iter_append_string(&iter, _("ckdg_pb_updating"));
+  dbus_message_iter_init_append(message, &iter);
+  value = getpid(); /* id */
+  dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &value); 
+  value = 1000;     /* Initial value */
+  dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &value); 
+  value = 30000;    /* Display timeout */
+  dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &value); 
+  
+  dbus_message_iter_append_basic(&iter, DBUS_TYPE_STRING, 
+          &ckdg_pb_updating_str);
 
   (void) dbus_connection_send(conn, message, NULL);
 
@@ -543,6 +550,7 @@ void _hildon_file_system_cancel_banner(void)
   DBusConnection *conn;
   DBusMessage *message;
   DBusMessageIter iter;
+  dbus_int32_t pid;
 
   settings = _hildon_file_system_settings_get_instance();
   conn = settings->priv->dbus_conn;
@@ -550,8 +558,9 @@ void _hildon_file_system_cancel_banner(void)
         BANNER_REQUEST_PATH, BANNER_REQUEST_IF, BANNER_HIDE);
   g_assert(message != NULL);
 
-  dbus_message_append_iter_init(message, &iter);
-  dbus_message_iter_append_int32(&iter, getpid());
+  dbus_message_iter_init_append(message, &iter);
+  pid = getpid();
+  dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &pid);
 
   (void) dbus_connection_send(conn, message, NULL);
 
