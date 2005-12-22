@@ -57,8 +57,7 @@ if [ $START = TRUE ]; then
     echo "$0: Error, SUPERMODAL is not defined"
     exit 2
   fi
-
-
+		  
   $LAUNCHWRAPPER_NICE start "$SVC" $PROG \
       -theme $MBTHEME \
       -use_titlebar $TITLEBAR \
@@ -68,5 +67,13 @@ if [ $START = TRUE ]; then
       -use_dialog_mode $DIALOGMODE \
       -use_super_modal $SUPERMODAL
 else
-  $LAUNCHWRAPPER_NICE stop "$SVC" $PROG
+  # dsmetool wants identical arguments for stopping
+  $LAUNCHWRAPPER_NICE stop "$SVC" $PROG \
+      -theme $MBTHEME \
+      -use_titlebar $TITLEBAR \
+      -use_desktop_mode $DESKTOPMODE \
+      -use_lowlight $LOWLIGHT \
+      -use_cursor $SHOWCURSOR \
+      -use_dialog_mode $DIALOGMODE \
+      -use_super_modal $SUPERMODAL
 fi

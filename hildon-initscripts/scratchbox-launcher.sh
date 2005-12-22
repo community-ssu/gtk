@@ -7,7 +7,7 @@ fi
 
 STOP=FALSE
 START=FALSE
-SBRSH=""
+CPU_TRANSPARENCY_METHOD=""
 
 case "$1" in
 start)  START=TRUE
@@ -43,7 +43,11 @@ if [ -e /targets/links/scratchbox.config ]; then
     fi
 
     # we are using Scratchbox and sbrsh
-    SBRSH="sbrsh $SBOX_TARGET_NAME"
+    CPU_TRANSPARENCY_METHOD="sbrsh $SBOX_TARGET_NAME"
+  fi
+  if echo $SBOX_CPUTRANSPARENCY_METHOD | grep "qemu-arm$" >/dev/null; then
+    # we are using qemu-arm
+    CPU_TRANSPARENCY_METHOD="qemu-arm"
   fi
 fi
 
@@ -68,7 +72,7 @@ if [ $START = TRUE ]; then
     DOIT=TRUE
     if [ -e $PIDFILE ]; then
 	PID=`cat $PIDFILE`
-	$SBRSH grep "$BASENAME" /proc/$PID/cmdline >/dev/null 2>&1
+	$CPU_TRANSPARENCY_METHOD grep "$BASENAME" /proc/$PID/cmdline >/dev/null 2>&1
 	if [ $? -eq 0 ]; then
 	    echo "$SVC is already running, doing nothing"
 	    DOIT=FALSE
@@ -83,16 +87,25 @@ if [ $START = TRUE ]; then
 	    if [ -n "$VALGRIND" ] && [ "$VALGRINDCMD" = "$BASENAME" ]; then
 		$VALGRIND $CMD $PARAMS &
 	    else
-		if [ -z "$SBRSH" ]; then
+		if [ -z "$CPU_TRANSPARENCY_METHOD" ]; then
 		    # no sbrsh
 		    $CMD $PARAMS &
 		    echo $! > $PIDFILE  
 		else
-    		    # We need to run it with sbrsh show that we get the pid of
-		    # the sbrsh and then on stop we can kill the sbrsh and 
-		    # the actual process will die.
-		    $SBRSH -d $PWD $CMD $PARAMS &
-		    echo $! > $PIDFILE  
+	            if [ x"$CPU_TRANSPARENCY_METHOD" == x"sbrsh $SBOX_TARGET_NAME" ]; then
+    		       # We need to run it with sbrsh show that we get the pid of
+		       # the sbrsh and then on stop we can kill the sbrsh and 
+		       # the actual process will die.
+		       $CPU_TRANSPARENCY_METHOD -d $PWD $CMD $PARAMS &
+		       echo $! > $PIDFILE
+		    fi
+		    if [ x"$CPU_TRANSPARENCY_METHOD" == x"qemu-arm" ]; then
+		       $CPU_TRANSPARENCY_METHOD $CMD $PARAMS &
+		       echo $! > $PIDFILE
+		    else
+		       echo "Unkown CPU transparency method: $CPU_TRANSPARENCY_METHOD"
+		       exit 1
+		    fi
 		fi
 	    fi
 	fi

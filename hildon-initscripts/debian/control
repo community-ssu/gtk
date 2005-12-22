@@ -7,8 +7,8 @@ Standards-Version: 3.6.0
 
 Package: hildon-initscripts
 Section: base
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, matchbox-window-manager (>=0.9.5.20050809-3), gtk2-engines-sapwood, dbus-1, osso-af-startup
+Architecture: all
+Depends: matchbox-window-manager, gtk2-engines-sapwood, dbus-1 | dbus, osso-af-startup
 Conflicts: hildon-base
 Replaces: hildon-base
 Description: Miscellaneous startup files.
@@ -16,7 +16,7 @@ Description: Miscellaneous startup files.
 
 Package: osso-af-sb-startup
 Section: base
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-initscripts, gtk2-engines-sapwood
+Architecture: all
+Depends: hildon-initscripts, gtk2-engines-sapwood
 Description: Scripts to launch Maemo environment in Scratchbox.
  Shell scripts to launch Maemo environment in Scratchbox.

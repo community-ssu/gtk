@@ -11,8 +11,6 @@ PREFIX=/usr
 SYSCONFDIR=/etc
 
 export XDG_DATA_HOME=$PREFIX/share/mime
-export XDG_DATA_DIRS=/usr/local/share:/usr/share:/var/lib/install/share:/var/lib/install/usr/share
-export LD_LIBRARY_PATH=/var/lib/install/lib:/var/lib/install/usr/lib
 export GTK_PATH=$PREFIX/lib/gtk-2.0/2.4.0
 
 DEFAULTMBTHEME=default

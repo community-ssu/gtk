@@ -1,8 +1,51 @@
-hildon-initscripts (0.9.5-3) unstable; urgency=low
+hildon-initscripts (0.9.11-1) unstable; urgency=low
 
-  * Added new flag (use_super_modal) for matchbox 
+  * Added COPYING file and fixed debian/copyright.
 
- -- Tapani Palli <tapani.palli@nokia.com>  Thu,  8 Sep 2005 16:42:39 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 28 Nov 2005 11:25:49 +0200
+
+hildon-initscripts (0.9.10-1) unstable; urgency=low
+
+  * Fixed debian/control DBus dependency so that also v0.50 is supported.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 22 Nov 2005 15:41:34 +0200
+
+hildon-initscripts (0.9.9-1) unstable; urgency=low
+
+  * Fixed stopping Matchbox in its startup script (for bug 19955).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 27 Oct 2005 18:01:57 +0300
+
+hildon-initscripts (0.9.8-3) unstable; urgency=low
+
+  * added Ferenc's patch to fix N#19883
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Fri, 30 Sep 2005 14:08:46 +0300
+
+hildon-initscripts (0.9.7-3) unstable; urgency=low
+
+  * added super_modal flag for matchbox
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Mon, 26 Sep 2005 15:54:12 +0300
+
+hildon-initscripts (0.9.6-3) unstable; urgency=low
+
+  * .osso dir should be owned by user 
+
+ -- Alexander Kanevskiy <alexander.kanevskiy@nokia.com>  Fri,  2 Sep 2005 12:30:51 +0300
+
+hildon-initscripts (0.9.6-2) unstable; urgency=low
+
+  * Fixed invalid dir while creating product image
+
+ -- Alexander Kanevskiy <alexander.kanevskiy@nokia.com>  Fri,  2 Sep 2005 12:04:21 +0300
+
+hildon-initscripts (0.9.6-1) unstable; urgency=low
+
+  * Removed XDG_DATA_DIRS and LD_LIBRARY_PATH, they will go to AI's defs
+    file (bug 17724).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 23 Aug 2005 09:13:26 +0300
 
 hildon-initscripts (0.9.5-2) unstable; urgency=low
 

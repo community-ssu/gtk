@@ -3,11 +3,11 @@ TGT=''
 if [ -e /targets/links/scratchbox.config ] ; then
   . /targets/links/scratchbox.config
   TGT=$SBOX_TARGET_DIR
-else
   USER=user
 fi
 
 HOME="$TGT/home/$USER"
 if [ ! -d $HOME/.osso ]; then
   mkdir -p $HOME/.osso
+  chown user:users $HOME/.osso
 fi
