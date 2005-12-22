@@ -1,0 +1,8 @@
+prefix=@prefix@
+desktopentrydir=@datadir@/applications/hildon
+localedir=@localedir@
+hildonpixmapdir=@hildonpixmapdir@
+
+Name: osso-af-settings
+Description: Settings for the OSSO environment
+Version: @VERSION@
