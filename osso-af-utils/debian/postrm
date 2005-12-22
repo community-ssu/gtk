@@ -1,0 +1,2 @@
+#!/bin/sh
+update-rc.d -f fb-progress.sh remove > /dev/null
