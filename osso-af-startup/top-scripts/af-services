@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# Copyright (C) 2004-2005 Nokia Corporation.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+# USA
+
+
+# Exclude some UIDs from memory allocation denial.
+# 30000 is messagebus, 30001 could be used by Matchbox
+echo "30000 30001 30002 30003" > /proc/sys/vm/lowmem_allowed_uids
+
+# activate lowmem module
+echo 95 > /proc/sys/vm/lowmem_deny_watermark
+echo 82 > /proc/sys/vm/lowmem_notify_high
+echo 256 > /proc/sys/vm/lowmem_nr_decay_pages
+echo 75 > /proc/sys/vm/lowmem_notify_low
+
+# adjust other kernel parameters to minimize memory consumption 
+echo 4 > /proc/sys/kernel/pty/max
+echo 256 > /proc/sys/kernel/threads-max
+echo 2048 > /proc/sys/fs/file-max
+
+
+SCRIPT=/etc/osso-af-init/real-af-services
+
+case "$1" in
+start)  su - user $SCRIPT start
+        # if device lock is on, stop the progress bar
+        TMP=`/etc/osso-af-init/get-devlock.sh`
+        if [ "x$TMP" != "xunlocked" ]; then
+          /etc/init.d/fb-progress.sh stop
+        fi 
+        ;;
+stop)   su - user $SCRIPT stop
+        ;;
+restart)
+        echo "$0: not implemented"
+        exit 1
+        ;;
+force-reload)
+        echo "$0: not implemented"
+        exit 1
+        ;;
+*)      echo "Usage: $0 {start|stop}"
+        exit 1
+        ;;
+esac

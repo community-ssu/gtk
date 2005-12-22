@@ -1,0 +1,108 @@
+#!/bin/sh
+#
+# Copyright (C) 2004-2005 Nokia Corporation.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+# USA
+
+case "$1" in
+start)
+
+  # this is used by the input methods for disabling features in startup
+  touch /tmp/im_disable_tools_menu
+
+  echo "Running xset770 -- the future of xset!"
+  # disable keyrepeat for select, menu, plus, minus, escape
+  xset770 -r 36 0 -r 70 0 -r 73 0 -r 74 0 -r 9 0
+
+  # block here if device lock is on
+  if [ -x /sbin/devlock-blocker ]; then
+    /sbin/devlock-blocker
+  fi
+
+  # wait for the session bus
+  /usr/sbin/waitdbus session
+  if [ $? -gt 0 ]; then
+    echo "$0: Error, the D-BUS session bus did not start"
+    exit 2
+  fi
+  source $SESSION_BUS_ADDRESS_FILE
+
+  if [ -x /etc/osso-af-init/maemo-launcher ]; then
+    /etc/osso-af-init/maemo-launcher start
+  fi
+  if [ -f $AF_INIT_DIR/ke-recv.sh ]; then
+    source $AF_INIT_DIR/ke-recv.sh start
+  fi
+
+  if [ -x $AF_INIT_DIR/startup-greeting.sh ]; then
+    source $AF_INIT_DIR/startup-greeting.sh start
+    sleep 2
+  fi
+
+  if [ -e $HOME/first-boot-flag ]; then
+    CONNECTIVITY_UI_SCRIPT=/usr/bin/osso-connectivity-ui.sh
+    if [ -x $CONNECTIVITY_UI_SCRIPT ]; then
+      source $CONNECTIVITY_UI_SCRIPT start
+    fi
+    if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then
+      source $AF_INIT_DIR/startup-wizard.sh start
+      source $AF_INIT_DIR/af-defines.sh ;# re-read locale variables
+      # restart processes because the locale might have changed
+      source $AF_INIT_DIR/after-suw-process-restart.sh
+    fi
+    echo "LC_ALL='$LC_ALL' LANG='$LANG' LC_MESSAGES='$LC_MESSAGES'"
+    if [ -x $AF_INIT_DIR/osso-connectivity-ui-gwwizard-startup.sh \
+         -a ! -f /tmp/suw-user-cancelled.tmp ]; then
+      $AF_INIT_DIR/osso-connectivity-ui-gwwizard-startup.sh start
+    fi
+    if [ -f $TMPDIR/launch-operator-wizard.tmp \
+         -a ! -f /tmp/suw-user-cancelled.tmp ]; then
+      if [ -x $AF_INIT_DIR/operator-wizard.sh ]; then
+        $AF_INIT_DIR/operator-wizard.sh start
+      fi
+      rm -f $TMPDIR/launch-operator-wizard.tmp
+    fi
+    rm $HOME/first-boot-flag
+    rm -f /tmp/suw-user-cancelled.tmp
+  else
+    if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then
+      source $AF_INIT_DIR/startup-wizard.sh start
+    fi
+  fi
+
+  rm -f /tmp/im_disable_tools_menu
+
+  ;;
+stop)
+
+  if [ -x $AF_INIT_DIR/osso-media-server.sh ]; then
+    $AF_INIT_DIR/osso-media-server.sh stop
+  fi
+
+  ;;
+restart)
+  echo "$0: not implemented"
+  exit 1
+  ;;
+force-reload)
+  echo "$0: not implemented"
+  exit 1
+  ;;
+*)
+  echo "Usage: $0 {start|stop}"
+  exit 1
+  ;;
+esac

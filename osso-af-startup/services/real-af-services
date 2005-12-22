@@ -1,0 +1,93 @@
+#!/bin/sh
+#
+# Copyright (C) 2004-2005 Nokia Corporation.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+# USA
+
+case "$1" in
+start)
+
+  source $AF_INIT_DIR/temp-reaper-startup.sh start
+
+  # GConf daemon (probably started already by D-BUS)
+  #source $AF_INIT_DIR/gconf-daemon.sh start
+
+  source $AF_INIT_DIR/dbus-sessionbus.sh start
+
+  # Wait until X is ready
+  INC=1
+  while [ ! -e /tmp/.X11-unix/X0 ]; do
+    if [ $INC -gt 20 ]; then
+      echo "$0: Error, X server did not start"
+      exit 2
+    fi
+    sleep 1
+    INC=`expr $INC + 1`
+  done
+
+  source $AF_INIT_DIR/sapwood-server.sh start
+  source $AF_INIT_DIR/matchbox.sh start
+
+  # wait until system D-BUS is ready (some stuff started by init
+  # after us assume it is running)
+  /usr/sbin/waitdbus system
+  if [ $? -gt 0 ]; then
+    echo "$0: Error, the D-BUS system bus did not start"
+    exit 2
+  fi
+
+  # media-server is only started here if we go directly to ACTDEAD
+  DSME_STATE=`/usr/sbin/bootstate`
+  if [ "x$DSME_STATE" = "xACTDEAD" ]; then
+    if [ -x $AF_INIT_DIR/osso-media-server.sh ]; then
+      # media server wants the session bus
+      /usr/sbin/waitdbus session
+      source $SESSION_BUS_ADDRESS_FILE
+
+      source $AF_INIT_DIR/osso-media-server.sh start
+      unset LD_PRELOAD
+    fi
+  fi
+
+  ;;
+stop)
+
+  if [ -x $AF_INIT_DIR/osso-media-server.sh ]; then
+    source $AF_INIT_DIR/osso-media-server.sh stop
+    unset LD_PRELOAD
+  fi
+  if [ -f $AF_INIT_DIR/matchbox.sh ]; then
+    source $AF_INIT_DIR/matchbox.sh stop
+  fi
+  source $AF_INIT_DIR/sapwood-server.sh stop
+  source $AF_INIT_DIR/dbus-sessionbus.sh stop
+  source $AF_INIT_DIR/gconf-daemon.sh stop
+  source $AF_INIT_DIR/temp-reaper-startup.sh stop
+
+  ;;
+restart)
+  echo "$0: not implemented"
+  exit 1
+  ;;
+force-reload)
+  echo "$0: not implemented"
+  exit 1
+  ;;
+*)
+  echo "Usage: $0 {start|stop}"
+  exit 1
+  ;;
+esac

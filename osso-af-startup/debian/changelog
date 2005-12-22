@@ -1,0 +1,645 @@
+osso-af-startup (1.0-1) unstable; urgency=low
+
+  * Modifications for new DBus.
+  * AF environment is now included to every shell in /etc/profile.
+  * D-BUS session bus now uses an abstract socket and dynamic address.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 25 Nov 2005 13:12:50 +0200
+
+osso-af-startup (0.70-1) unstable; urgency=low
+
+  * Added creation and deletion of im_disable_tools_menu to real-af-startup
+    (bug 21348).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 17 Nov 2005 14:31:26 +0200
+
+osso-af-startup (0.69-2) unstable; urgency=low
+
+  * Set execute property for get-devlock.sh in postinst script (bug 21278).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 14 Nov 2005 13:20:56 +0200
+
+osso-af-startup (0.69-1) unstable; urgency=low
+
+  * Set execute property for get-devlock.sh (bug 21278).
+  * Starting ke-recv now earlier so that MMC volume label is available
+    when GnomeVFS wants it (bug 17805). Also restarting it now in the
+    first boot, since the session bus is restarted then.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 11 Nov 2005 16:43:07 +0200
+
+osso-af-startup (0.68-1) unstable; urgency=low
+
+  * Now removing first-boot-flag later (bug 21035).
+  * Skipping progress bar when device lock is on (bug 20454).
+  * Unsetting LC_ALL in default locale file (bug 17188).
+  * Removed non-functional stopping of fb-progress from real-af-startup.
+  * Added missing sourcing of keyboard.defs to after-suw... script.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 01 Nov 2005 12:02:06 +0200
+
+osso-af-startup (0.67-1) unstable; urgency=low
+
+  * Added COPYING and fixed debian/copyright.
+  * Added GPL notice to every startup script.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 24 Oct 2005 12:07:20 +0300
+
+osso-af-startup (0.66-2) unstable; urgency=low
+
+  * Scrubbed changelog.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 18 Oct 2005 18:19:12 +0300
+
+osso-af-startup (0.66-1) unstable; urgency=low
+
+  * Partially reverted change in 0.55-1: ke-recv is now again stopped in
+    real-af-base-apps, closing bug 20637 (ke-recv would be stuck in
+    S_SHUTDOWN after going thru runlevel 5).  This would reopen bug 15564,
+    but osso-app-killer 0.18-1 closes it again.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 17 Oct 2005 14:30:03 +0300
+
+osso-af-startup (0.65-3) unstable; urgency=low
+
+  * Stop fb-progressbar in af-startup while we still are root.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue,  4 Oct 2005 16:12:46 +0300
+
+osso-af-startup (0.65-2) unstable; urgency=low
+
+  * Version 0.65-1 was prepared by Leonid Moiseichuk but was not commited
+    to subversion.  This version is in subversion and otherwise identical
+    to 0.65-1.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 30 Sep 2005 12:10:23 +0300
+  
+osso-af-startup (0.65-1) unstable; urgency=low
+
+  * Corrected values with deny threshold (95%) high memory watermark (82%).
+
+ -- Leonid Moiseichuk <leonid.moiseichuk@nokia.com>  Fri, 30 Sep 2005 08:41:59 +0300
+
+osso-af-startup (0.64-4) unstable; urgency=low
+
+  * Adjusted lowmem values in af-services.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 28 Sep 2005 14:54:26 +0300
+
+osso-af-startup (0.64-3) unstable; urgency=low
+
+  * Disabled deny limit.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 19 Sep 2005 15:36:52 +0300
+
+osso-af-startup (0.64-2) unstable; urgency=low
+
+  * New lowmem values.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 19 Sep 2005 15:03:43 +0300
+
+osso-af-startup (0.64-1) unstable; urgency=low
+
+  * Adjusted lowmem values a little.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 16 Sep 2005 17:41:43 +0300
+
+osso-af-startup (0.63-1) unstable; urgency=low
+
+  * Set values for the new memory framework.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 14 Sep 2005 19:44:58 +0300
+
+osso-af-startup (0.62-1) unstable; urgency=low
+
+  * Set values for the new memory framework.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 13 Sep 2005 12:06:29 +0300
+
+osso-af-startup (0.61-1) unstable; urgency=low
+
+  * Removed /proc/sys/vm/min_free_kbytes line (bug 18933).
+  * lowmem notify/deny set to 0/0.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 12 Sep 2005 13:17:16 +0300
+
+osso-af-startup (0.60-1) unstable; urgency=low
+
+  * Changed /proc/sys/vm/min_free_kbytes back to 256 because of instability
+    problems.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sun, 11 Sep 2005 16:58:10 +0300
+
+osso-af-startup (0.59-1) unstable; urgency=low
+
+  * Removed sourcing of media-server startup script because of malloc tuning
+    parameters there.
+  * Added some procfs parameters from Leonid to save memory (bug 18904).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 08 Sep 2005 14:26:53 +0300
+
+osso-af-startup (0.58-1) unstable; urgency=low
+
+  * TMPDIR is now defined as /var/tmp, not as /tmp (bug 18842), however
+    STATESAVEDIR is still using /tmp.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 07 Sep 2005 16:21:20 +0300
+
+osso-af-startup (0.57-1) unstable; urgency=low
+
+  * Moved removing of first-boot-flag earlier to avoid possible
+    reboot loop when the first boot is interrupted after .suw_first_run
+    is deleted but before first-boot-flag is deleted.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 06 Sep 2005 17:07:27 +0300
+
+osso-af-startup (0.56-1) unstable; urgency=low
+
+  * Removed VKB and clipboard startup before SUW (bug 18471).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 06 Sep 2005 15:56:04 +0300
+
+osso-af-startup (0.55-1) unstable; urgency=low
+
+  * Added if condition for Matchbox startup and stopping.
+  * Raised deny_limit from 114 to 130 to close bug 18050.
+  * Removed ke-recv stopping from af-base-apps to avoid problem during
+    restore operation when MMC is removed. However, ke-recv should be
+    still restarted during language change (by appl. killer).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 05 Sep 2005 13:29:41 +0300
+
+osso-af-startup (0.54-1) unstable; urgency=low
+
+  * Added UIDs 30000--30003 to lowmem module's exclusion list.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 01 Sep 2005 14:05:05 +0300
+
+osso-af-startup (0.53-1) unstable; urgency=low
+
+  * Fixed language changing problem in first boot (bug 17188 and bug 17806),
+    thanks to Tomas.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 31 Aug 2005 14:03:52 +0300
+
+osso-af-startup (0.52-1) unstable; urgency=low
+
+  * Sourcing /etc/osso-af-init/osso-application-installer.defs
+    also from real-af-base-apps (bug 17724).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 23 Aug 2005 19:25:19 +0300
+
+osso-af-startup (0.51-1) unstable; urgency=low
+
+  * Added temp-reaper.sh startup (bug 16404).
+  * Sourcing /etc/osso-af-init/osso-application-installer.defs (bug 17724).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 22 Aug 2005 14:41:06 +0300
+
+osso-af-startup (0.50-1) unstable; urgency=low
+
+  * Added browser definitions before restarting the session bus in
+    the first boot (bug 17535).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 18 Aug 2005 11:45:57 +0300
+
+osso-af-startup (0.49-1) unstable; urgency=low
+
+  * Removed duplicate definitions of LD_PRELOAD for media-server.
+  * Added restarting of some processes after SUW (bug 17188).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 12 Aug 2005 10:07:09 +0300
+
+osso-af-startup (0.48-1) unstable; urgency=low
+
+  * Disable autorepeat for plus, minus and escape keys (bug 14279).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 11 Aug 2005 18:06:19 +0300
+
+osso-af-startup (0.47-1) unstable; urgency=low
+
+  * Adjusted lowmem limits: 100 -> 106, and 111 -> 114, according to
+    current estimate that is not completely safe, though.
+  * Added definition of User_Applets_Dir to af-defines.sh (bug 16375).
+  * Bug 16407 was not fixed because the script was not started, now it is.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 04 Aug 2005 11:57:48 +0300
+
+osso-af-startup (0.46-1) unstable; urgency=low
+
+  * Added Gateway and Operator Wizard startup (bug 14475).
+  * Added script for purging temporary files in the startup (bug 16407).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 02 Aug 2005 10:28:49 +0300
+
+osso-af-startup (0.45-1) unstable; urgency=low
+
+  * Adjusted low-memory watermarks.
+  * Added startup of xset770.
+  * Now starting /etc/osso-af-init/maemo-launcher if present.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 25 Jul 2005 10:00:10 +0300
+
+osso-af-startup (0.44-1) unstable; urgency=low
+
+  * Added startup progress bar, using Eero's cool fb-progress program.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 14 Jul 2005 13:48:39 +0300
+
+osso-af-startup (0.43-1) unstable; urgency=low
+
+  * Removed maemo-launcher startup (reopens bug 15425) because of
+    launcher problems.
+  * Added some 'sources' to avoid extra fork()s.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 13 Jul 2005 16:25:44 +0300
+
+osso-af-startup (0.42-1) unstable; urgency=low
+
+  * Optimised boots after the first boot when Startup Wizard is started.
+  * Optimised startup by moving Connectivity UI to start after desktop
+    (except for the first boot when it's needed by Startup Wizard).
+  * Added maemo-launcher startup (bug 15425).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 12 Jul 2005 09:57:23 +0300
+
+osso-af-startup (0.41-1) unstable; urgency=low
+
+  * Moved connectivity UI startup after Nokia hands to speed up device
+    startup.
+  * Reduced the sleep after Nokia hands because of maemo-af-desktop's faster
+    startup time (bug 14760).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 28 Jun 2005 18:45:31 +0300
+
+osso-af-startup (0.40-1) unstable; urgency=low
+
+  * Added clipboard daemon startup before SUW (bug 12575).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Jun 2005 17:33:40 +0300
+
+osso-af-startup (0.39-1) unstable; urgency=low
+
+  * Now using the clipboard startup script (bug 14274).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Jun 2005 12:20:42 +0300
+
+osso-af-startup (0.38-1) unstable; urgency=low
+
+  * Fixed media-server stoppage problem in ACTDEAD, this time in trunk
+    (bug 12701).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Jun 2005 10:27:30 +0300
+
+osso-af-startup (0.37-1) unstable; urgency=low
+
+  * Changed startup wizard startup (bug 14010).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 08 Jun 2005 16:32:56 +0300
+
+osso-af-startup (0.36-1) unstable; urgency=low
+
+  * Added lowmem module activation to beginning of af-services
+    (bug 7649).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 02 Jun 2005 14:58:33 +0300
+
+osso-af-startup (0.35-2) unstable; urgency=low
+
+  * We can't trust greetings startup script. Removed "source". 
+
+ -- Alexander Kanevskiy <alexander.kanevskiy@nokia.com>  Mon, 30 May 2005 19:36:26 +0300
+
+osso-af-startup (0.35-1) unstable; urgency=low
+
+  * Fixed bug 13342 (device lock handling).
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 27 May 2005 16:32:11 +0300
+
+osso-af-startup (0.34-1) unstable; urgency=low
+
+  * Fixed bugs 11737 and 11738 (forward-ported fix).
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 18 May 2005 15:45:02 +0300
+
+osso-af-startup (0.33-1) unstable; urgency=low
+
+  * Added LAUNCHWRAPPER_TRYRESTART.
+  * Added existence check for dsmetool to af-defines.sh.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 12 May 2005 10:16:19 +0300
+
+osso-af-startup (0.32-1) unstable; urgency=low
+
+  * Replaced TN, Home and Statusbar with the combined program.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 29 Apr 2005 15:35:46 +0300
+
+osso-af-startup (0.31-1) unstable; urgency=low
+
+  * Startup wizard is now started by its startup script.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 25 Apr 2005 13:29:55 +0300
+
+osso-af-startup (0.30-1) unstable; urgency=low
+
+  * Using "uname -m" instead of existence of /usr/sbin/dsmetool to
+    determine environment in af-defines.sh.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 22 Apr 2005 11:27:01 +0300
+
+osso-af-startup (0.29-1) unstable; urgency=low
+
+  * Forward-ported 5-sec sleep from 0.25-1fix3.
+  * Removed LD_PRELOAD from D-BUS session bus environment.
+  * Removed devlock-blocker program startup.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 13 Apr 2005 17:07:13 +0300
+
+osso-af-startup (0.28-1) unstable; urgency=low
+
+  * Added devlock-blocker startup.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 12 Apr 2005 16:17:27 +0300
+
+osso-af-startup (0.27-1) unstable; urgency=low
+
+  * Updated startup-greeting startup.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 04 Apr 2005 14:43:35 +0300
+
+osso-af-startup (0.26-1) unstable; urgency=low
+
+  * Added STATESAVEDIR variable and directory creation.
+  * Giving LD_PRELOAD again to media-server.
+  * media-server is now started also when going directly to ACTDEAD.
+  * Giving --session also when stopping D-BUS session bus to make
+    dsmetool happy.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 01 Apr 2005 10:06:11 +0300
+
+osso-af-startup (0.25-1) unstable; urgency=low
+
+  * Removed ke-recv.sh startup script.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sun, 20 Mar 2005 19:26:50 +0200
+
+osso-af-startup (0.24-1) unstable; urgency=low
+
+  * Fixed bug 8049.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 17 Mar 2005 16:18:43 +0200
+
+osso-af-startup (0.23-1) unstable; urgency=low
+
+  * Added startup of the Nokia hands startup greeting.
+  * Moved multimedia engine startup after base apps.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 17 Mar 2005 11:18:43 +0200
+
+osso-af-startup (0.22-2) unstable; urgency=low
+
+  * Fix HOME usage under scratchbox
+
+ -- Alexander Kanevskiy <alexander.kanevskiy@nokia.com>  Wed, 16 Mar 2005 18:15:11 +0200
+
+osso-af-startup (0.22-1) unstable; urgency=low
+
+  * Fixed BusyBox problem.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 15 Mar 2005 16:26:33 +0200
+
+osso-af-startup (0.21-2) unstable; urgency=low
+
+  * H4x0rz for integration: check and conditional code for dsmetool.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 15 Mar 2005 16:26:33 +0200
+
+osso-af-startup (0.21-1) unstable; urgency=low
+
+  * Added wrappers for starting -1 priority processes with dsmetool.
+  * LD_PRELOAD is now defined only in the session bus' environment.
+  * D-BUS session bus and ke-recv are now started with -1 priority.
+  * Tweaked startup-boosting sleep hacks.
+  * Added GConf startup and shutdown to real-af-services.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 14 Mar 2005 16:07:46 +0200
+
+osso-af-startup (0.20-2) unstable; urgency=low
+
+  * Group name changed: "user" -> "users"
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 10 Mar 2005 18:39:44 +0200
+
+osso-af-startup (0.20-1) unstable; urgency=low
+
+  * "foouser" -> "user"
+  * Removed definition of HOME from af-defines.sh because su defines it.
+  * Using now "2>" instead of ">&" in the postinst script due to strange
+    problems reported by Lauri Arimo.
+  * Sourcing browser.defs if it exists.
+  * Removed deprecated X server startup/shutdown stuff.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 04 Mar 2005 14:04:31 +0200
+
+osso-af-startup (0.19-1) unstable; urgency=low
+
+  * Added startup wizard.
+  * Gave permissions to foouser to modify the locale file.
+  * Created /etc/osso-af-init/first-boot-flag for first-boot wizards.
+ 
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 03 Mar 2005 14:22:45 +0200
+
+osso-af-startup (0.18-1) unstable; urgency=low
+
+  * Replaced waitx with existence check (bug 6059)
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 18 Feb 2005 12:58:06 +0200
+
+osso-af-startup (0.17-5) unstable; urgency=low
+
+  * Checking writableness in postinst (for Scratchbox, bug 6187)
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 17 Feb 2005 09:47:30 +0200
+
+osso-af-startup (0.17-4) unstable; urgency=low
+
+  * SVN tag version.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 16 Feb 2005 09:45:33 +0200
+
+osso-af-startup (0.17-3) unstable; urgency=low
+
+  * Using chown instead of su in the postinst script.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 16 Feb 2005 09:43:39 +0200
+
+osso-af-startup (0.17-2) unstable; urgency=low
+
+  * SVN tag version
+
+ -- Kimmo Hämäläinen <kihamala@mylly>  Mon, 14 Feb 2005 15:29:01 +0200
+
+osso-af-startup (0.17-1) unstable; urgency=low
+
+  * ke-recv's not suid anymore (later this might change because of /sys)
+  * starting x-server.sh is conditional (temporary)
+
+ -- Kimmo Hämäläinen <kihamala@mylly>  Mon, 14 Feb 2005 12:52:09 +0200
+
+osso-af-startup (0.16-2) unstable; urgency=low
+
+  * Release with some known problems:
+    - media-engine's startup script uses su (one may need to press enter
+      in startup)
+    - ke-recv's MMC mounting might not work (unless core updates fstab).
+
+ -- Kimmo Hämäläinen <kihamala@mylly>  Fri, 11 Feb 2005 15:38:38 +0200
+
+osso-af-startup (0.16-1) unstable; urgency=low
+
+  * Removed use of runas.
+  * Also Connectivity dialogs are now run as foouser.
+  * Moved directory creations to package installation time.
+  * Removed some redundant checks.
+  * Changed launch-wrapper to use start-stop-daemon.
+  * Fixed /etc/osso-af-init/gconf-dir link.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 10 Feb 2005 19:38:10 +0200
+
+osso-af-startup (0.15-1) unstable; urgency=low
+
+  * Added TMPDIR environment variable.
+  * Removed some hacks now done in Core packages.
+  * Removed some overly careful checks.
+  * Moved startup of ke-recv after Statusbar.
+  * Added an evil sleep hack to af-base-apps.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 08 Feb 2005 10:29:58 +0200
+
+osso-af-startup (0.14-1) unstable; urgency=low
+
+  * Fixed .games directory creation (bug 5518)
+  * Moved virtual keyboard startup after Statusbar
+  * Moved clipboard manager to start after Statusbar
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 03 Feb 2005 10:42:16 +0200
+
+osso-af-startup (0.13-1) unstable; urgency=low
+
+  * Fixed to use media-server's startup script (bug 4930)
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 26 Jan 2005 10:22:53 +0200
+
+osso-af-startup (0.12-1) unstable; urgency=low
+
+  * Fixed MyDocs dir permissions problem.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 25 Jan 2005 13:07:20 +0200
+
+osso-af-startup (0.11-2) unstable; urgency=low
+
+  * Fixed upgrade problem.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 19 Jan 2005 16:10:23 +0200
+
+osso-af-startup (0.11-1) unstable; urgency=low
+
+  * Fixed sourcing of osso-gtk.defs to be before D-BUS session bus
+    is started.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 19 Jan 2005 14:12:23 +0200
+
+osso-af-startup (0.10-1) unstable; urgency=low
+
+  * Added creation of MyDocs/.games.
+  * Fixed "line 49: [: too many arguments" errors.
+  * Fixed several lintian issues.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 19 Jan 2005 11:24:41 +0200
+
+osso-af-startup (0.9-1) unstable; urgency=low
+
+  * Creating MyDocs/.sounds etc. moved to af-services.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 14 Jan 2005 16:19:03 +0200
+
+osso-af-startup (0.8-1) unstable; urgency=low
+
+  * Changed HOME to ~foouser.
+  * Remove fc-cache generation (bug 4481).
+  * Added startup script for ke-recv.
+  * launch-wrapper now runs programs as foouser.
+  * Added ILLEGAL_FAT_CHARS and MAX_FILENAME_LENGTH variables.
+  * Init now starts af-services, af-startup and af-base-apps directly.
+  * Directories are made as foouser.
+  * Some minor optimisations.
+  * Moved system D-BUS wait from af-startup to af-services.
+  * Removed x-server.sh and x-server.defs and added dependency to
+    osso-core-config.
+  * pixbufserver.sh -> sapwood-server.sh
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 13 Jan 2005 10:39:53 +0200
+
+osso-af-startup (0.7-2) unstable; urgency=low
+
+  * Fixed gconf-dir soft link.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 07 Jan 2005 14:12:26 +0200
+
+osso-af-startup (0.7-1) unstable; urgency=low
+
+  * launch-wrapper is now used for starting ke-recv.
+  * Due to popular demand added startup of clipboard-manager.
+  * Changed process running check to use readlink instead of grep.
+  * Moved media-server startup to happen earlier.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 07 Jan 2005 09:26:20 +0200
+
+osso-af-startup (0.6-1) unstable; urgency=low
+
+  * Added waitx and waitdbus.
+  * Changed locale to en_GB (bug 3660).
+  * dbus-sessionbus.sh came back to this package (bug 3918).
+  * Added gconf-dir soft link (bug 4176).
+  * Added MMC_MOUNTPOINT variable and creation of the directory.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 29 Dec 2004 12:33:24 +0200
+
+osso-af-startup (0.5-1) unstable; urgency=low
+
+  * Added media-server startup.
+  * Removed use of source command with osso-connectivity-ui.sh 
+    (because of "exit 0"), also added "&" as it seems to block.
+  * Added use of source command to x-server.sh and removed Xfbdev
+    support.
+  * Added ke-recv starting to af-startup.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 10 Dec 2004 12:19:19 +0200
+
+osso-af-startup (0.4-1) unstable; urgency=low
+
+  * Removed Foo's scripts.
+  * Added a launcher script. 
+
+ -- John Doe <john@doe.com>  Thu,  9 Dec 2004 15:55:59 +0200
+
+osso-af-startup (0.3-1) unstable; urgency=low
+
+  * Changed Connectivity script's name, changed theme to hildon-white,
+    split many defines to separate files
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 29 Nov 2004 17:39:14 +0200
+
+osso-af-startup (0.2-1) unstable; urgency=low
+
+  * Fixed some efficiency issues thanks to comments from Riku Voipio.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 26 Nov 2004 13:24:09 +0200
+
+osso-af-startup (0.1-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri,  5 Nov 2004 10:15:27 +0200
+

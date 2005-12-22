@@ -1,0 +1,4 @@
+top-scripts/* /etc/init.d
+services/* /etc/osso-af-init
+startup/* /etc/osso-af-init
+temp-reaper.sh /usr/sbin

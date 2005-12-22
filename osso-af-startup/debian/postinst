@@ -1,0 +1,56 @@
+#!/bin/sh
+
+TGT=''
+if [ -e /targets/links/scratchbox.config ] ; then
+        . /targets/links/scratchbox.config
+        TGT=$SBOX_TARGET_DIR
+fi
+
+USER=user
+GROUP=users
+HOME="$TGT/home/$USER"
+
+rm -f /etc/osso-af-init/gconf-dir
+ln -s /var/lib/gconf /etc/osso-af-init/gconf-dir
+
+# startup wizard needs to be able to modify the locale
+chown $USER.$GROUP /etc/osso-af-init/locale
+
+update-rc.d af-services start 22 2 3 4 5 . stop 22 0 1 6 . > /dev/null
+update-rc.d af-startup start 50 2 3 4 . stop 21 0 1 6 . > /dev/null
+update-rc.d af-base-apps start 51 2 3 4 . stop 20 0 1 5 6 . > /dev/null
+update-rc.d clean-tmp-dirs start 1 2 . > /dev/null
+
+# create MMC mount point ("if" is for Scratchbox)
+if [ -w / ]; then
+  mkdir -p /media/mmc1 2> /dev/null
+  if [ $? = 0 ]; then
+    chown $USER.$GROUP /media/mmc1
+  fi
+fi
+
+# create MyDocs and some special directories ("if" is for Scratchbox)
+if [ -w $HOME ]; then
+  MYDOCS=$HOME/MyDocs
+  mkdir -p $MYDOCS/.sounds $MYDOCS/.videos \
+    $MYDOCS/.documents/.games $MYDOCS/.images 2> /dev/null
+  if [ $? = 0 ]; then
+    chown -R $USER.$GROUP $MYDOCS
+  fi
+else
+  echo "Warning: '$HOME' is not writable, couldn't create e.g. MyDocs directory"
+fi
+
+# evil hack to ensure execute permissions
+chmod +x /etc/osso-af-init/get-devlock.sh
+
+# this is needed for optimising boots after first boot
+touch $HOME/first-boot-flag
+chown $USER.$GROUP $HOME/first-boot-flag
+
+# AF environment is included to every shell
+line="source /etc/osso-af-init/af-defines.sh"
+if ! grep -F -q "$line" /etc/profile; then
+  echo "+$line"
+  echo "$line" >> /etc/profile
+fi

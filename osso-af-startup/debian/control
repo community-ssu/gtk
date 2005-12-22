@@ -1,0 +1,15 @@
+Source: osso-af-startup
+Section: base
+Priority: required
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
+
+Package: osso-af-startup
+Architecture: all
+Depends: osso-af-utils (>= 0.10), osso-core-config, lsof, dbus-1-utils
+Description: Application framework top startup scripts
+ Application framework startup scripts af-services, af-startup and
+ af-base-apps. Also includes D-BUS session bus starting script.
+ These scripts are for the target only -- they have not been necessarily
+ tested in Scratchbox.
