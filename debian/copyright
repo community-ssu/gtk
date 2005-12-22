@@ -1,6 +1,0 @@
-kdbusd - Linux Kernel UEvent to D-BUS system daemon proxy
-
-Copyright (C) 2004 Kay Sievers <kay.sievers@vrfy.org>
-Modified for new interface and packaged by Timo Teräs <ext-timo.teras@nokia.com>
-
-Relased under GPL.
