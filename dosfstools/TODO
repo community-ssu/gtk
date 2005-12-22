@@ -1,0 +1,11 @@
+                                                    -*- mode: indented-text -*-
+
+ - dosfsck: Better checking of file times: ctime <= mtime <= atime
+
+ - mkdosfs: If /etc/bootsect.dos (or similar) exists, use it as a
+   template for generating boot sectors. This way, you can, e.g., make
+   bootable DOS disks.
+
+ - dosfsck: read-only sector test (-t without -a or -r); just print
+   out errors.
+
