@@ -1,0 +1,203 @@
+lsof (4.70-1osso) unstable; urgency=medium
+
+  * Removed 10 legally problematic files.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 17 Aug 2005 17:07:32 +0300
+
+lsof (4.70-1) unstable; urgency=medium
+
+  * new upstream release (closes: #199017)
+  * removed lsof-2.2 provides (closes: #223908)
+  * new Co-Maintainer: Norbert Tretkowski <nobse@debian.org>
+  * added debian/watch file, thanks to Filippo Giunchedi
+  * bumped up Standards-Version to 3.6.1.0, no changes needed
+
+ -- Norbert Tretkowski <nobse@debian.org>  Sun, 22 Feb 2004 23:33:16 +0100
+
+lsof (4.64-1) unstable; urgency=low
+
+  * New upstream version (Closes: #152196)
+  * Fixed grammar in description (Closes: #145387)
+  * Moved to /usr/bin (with link to /usr/sbin) to 
+    conform with FSSTND and traceroute (Closes: #55587)
+
+ -- Jim Mintha <jmintha@debian.org>  Thu, 18 Jul 2002 01:28:50 +0200
+
+lsof (4.57-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Jim Mintha <jmintha@debian.org>  Sun, 22 Jul 2001 03:21:07 +0200
+
+lsof (4.55-2) unstable; urgency=low
+
+  * Add Provides for lsof-2.2 (Closes: Bug#94922)
+
+ -- Jim Mintha <jmintha@debian.org>  Mon, 23 Apr 2001 01:45:03 +0200
+
+lsof (4.55-1) frozen unstable; urgency=low
+
+  * New upstream version (Closes: Bug#57203)
+  * Rename package back to just lsof (Closes: Bug#91231, Bug#87403)
+  * Fixes not showing flock type locks (Closes: Bug#67236)
+
+ -- Jim Mintha <jmintha@debian.org>  Thu, 12 Apr 2001 03:41:42 +0200
+
+lsof (4.48-1) frozen unstable; urgency=medium
+
+  * New upstream version
+  * compatible with linux 2.3.x kernels (#55242)
+  * -r doesn't hang anymore (#44573)
+  * /proc based lsof doesn't need setgid kmem
+  * fix grammer error in description (#56872)
+  
+ -- Jim Mintha <jmintha@debian.org>  Mon, 31 Jan 2000 00:43:03 +0100
+
+lsof (4.43-1) unstable; urgency=low
+
+  * New upstream version.
+  * Dynamically create the control file based on kernel version
+  * create a virtual package lsof that the different kernel version
+    will provide and conflict with.
+  * Support of 2.2 kernels (/proc based so don't need a verson for
+    each kernel
+  * This should build on glibc 2.1 systems (tested on SPARC)
+
+ -- Jim Mintha <jmintha@debian.org>  Sat, 15 May 1999 22:50:27 +0200
+
+lsof (4.37-4) stable; urgency=low
+
+  * Add control file to build for 2.0.36 kernel version
+
+ -- Jim Mintha <jmintha@debian.org>  Wed, 14 Apr 1999 01:04:09 +0200
+
+lsof (4.37-3) unstable stable frozen; urgency=high
+
+  * Patched to get rid of buffer overflow security problem (#33538)
+
+ -- Jim Mintha <jmintha@debian.org>  Thu, 18 Feb 1999 08:28:57 -0800
+
+lsof (4.37-2) unstable; urgency=low
+
+  * Binary wasn't being installed sgid kmem (#28548)
+  * .dsc file has lsof2.0.25 instead of lsof-2.0.35 (#28546)
+
+ -- Jim Mintha <jmintha@debian.org>  Mon, 26 Oct 1998 22:42:21 +0100
+
+lsof (4.37-1) unstable; urgency=low
+
+  * New upstream version.
+  * Change to use debhelper scripts
+  * Binary packages now contain kernel version number
+
+ -- Jim Mintha <jmintha@debian.org>  Wed, 14 Oct 1998 23:32:46 +0200
+
+lsof (4.28-2) frozen unstable; urgency=medium
+
+  * Change package name to include kernel version (#24327)
+  * Small patch to build with new glibc stuff.
+
+ -- Jim Mintha <jmintha@debian.org>  Thu, 16 Jul 1998 05:01:38 -0700
+
+lsof (4.28-1) unstable; urgency=low
+
+  * New upstream version.
+  * Fixed example scripts to call perl in the proper location
+
+ -- Jim Mintha <jmintha@debian.org>  Sun, 15 Mar 1998 04:42:33 -0800
+
+lsof (4.26-1) unstable; urgency=low
+
+  * New upstream version.
+  * Update docs to warn about kernel version dependencies (#17614)
+
+ -- Jim Mintha <jmintha@debian.org>  Mon, 23 Feb 1998 00:05:52 -0800
+
+lsof (4.25-1) unstable; urgency=low
+
+  * New upstream version.
+  * Patch to read /boot/System.map-`uname -r` now in upstream version.
+
+ -- Jim Mintha <jmintha@debian.org>  Thu, 12 Feb 1998 01:06:57 -0800
+
+lsof (4.23-1) unstable; urgency=low
+
+  * New upstream version.
+  * added patch by upstream maintainer to read /boot/System.map-`uname -r`
+    instead of /System.map. (#16972)
+
+ -- Jim Mintha <jmintha@debian.org>  Sun, 18 Jan 1998 18:21:14 -0800
+
+lsof (4.22-1) unstable; urgency=low
+
+  * New upstream version.
+  * build with newer version of deb-make (#15410)
+  * don't include automatically built files in the diff.
+  * New maintainer.
+
+ -- Jim Mintha <jmintha@debian.org>  Thu, 15 Jan 1998 04:20:43 -0800
+
+lsof (4.18-1) unstable; urgency=low
+
+  * New upstream version
+  * Rebuild with libc6 (#11715).
+  * Include scripts as examples.
+
+ -- Michael Meskes <meskes@debian.org>  Tue, 28 Oct 1997 12:11:06 +0100
+
+lsof (4.15-1) unstable; urgency=low
+
+  * New upstream version (#7551).
+  * Compiled with support for kernel 2.1.* (#8270).
+    this also fixes (#10160)
+  * New maintainer.
+
+ -- Michael Meskes <meskes@topsystem.de>  Fri, 29 Aug 1997 10:22:00 +0200
+
+lsof (3.65-5) frozen unstable; urgency=low
+
+  * added patch by Helmut Geyer <Helmut.Geyer@IWR.Uni-Heidelberg.De>
+    to read /boot/System.map-`uname -r` instead of /System.map.
+    This fixes bug#4888. 
+  * changed maintainer address to <dominik@debian.org>.
+
+ -- Dominik Kubla <dominik@debian.org>  Thu, 14 Nov 1996 16:08:30 +0100
+
+lsof (3.65-4) unstable; urgency=low
+
+  * manual pages are now installed in "gzip -9" format as per
+    "Debian Policy Manual", section 3.2.1
+
+  * copyright file is now installed in /usr/doc/lsof as per
+    "Debian Policy Manual", section 3.2.5
+
+  * changelog file is now installed in /usr/doc/lsof as per
+    "Debian Policy Manual", section 3.2.6
+
+  * package is now build with CFLAGS set to '-O2 -g -Wall' as per
+    "Debian Policy Manual", section 4.1
+
+ -- Dominik Kubla <dominik@debian.org>  Thu, 14 Nov 1996 16:08:30 +0100
+
+lsof (3.65-4) unstable; urgency=low
+
+  * manual pages are now installed in "gzip -9" format as per
+    "Debian Policy Manual", section 3.2.1
+
+  * copyright file is now installed in /usr/doc/lsof as per
+    "Debian Policy Manual", section 3.2.5
+
+  * changelog file is now installed in /usr/doc/lsof as per
+    "Debian Policy Manual", section 3.2.6
+
+  * package is now build with CFLAGS set to '-O2 -g -Wall' as per
+    "Debian Policy Manual", section 4.1
+
+ -- Dominik Kubla <Dominik.Kubla@Uni-Mainz.DE>  Sun, 29 Sep 1996 17:14:11 +0200
+
+lsof (3.65-3) unstable; urgency=low
+
+  * Converted to new packaing standards.
+
+ -- Dominik Kubla <Dominik.Kubla@Uni-Mainz.DE>  Fri, 20 Sep 1996 17:00:00 +0200
+

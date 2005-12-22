@@ -1,0 +1,19 @@
+Source: lsof
+Section: utils
+Priority: standard
+Maintainer: Jim Mintha <jmintha@debian.org>
+Uploaders: Norbert Tretkowski <nobse@debian.org>
+Build-Depends: debhelper (>> 3.0.0)
+Standards-Version: 3.6.1.0
+
+Package: lsof
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: List open files.
+ Lsof is a Unix-specific diagnostic tool.  Its name stands
+ for LiSt Open Files, and it does just that.  It lists
+ information about any files that are open, by processes
+ currently running on the system.  
+ The binary should work on any kernel in 2.2 or 2.4
+Replaces: lsof-2.2, lsof-2.0.35, lsof-2.0.36, lsof-2.0.38
+Conflicts: suidmanager (<< 0.50)
