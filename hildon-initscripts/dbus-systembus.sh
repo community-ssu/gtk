@@ -10,7 +10,7 @@ if [ ! -w $AF_PIDDIR ]; then
   exit 2
 fi
 
-PROG=/usr/bin/dbus-daemon-1
+PROG=/usr/bin/dbus-daemon
 SVC="DBUS system bus"
 
 case "$1" in

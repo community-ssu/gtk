@@ -8,7 +8,7 @@ Standards-Version: 3.6.0
 Package: hildon-initscripts
 Section: base
 Architecture: all
-Depends: matchbox-window-manager, gtk2-engines-sapwood, dbus-1 | dbus, osso-af-startup
+Depends: matchbox-window-manager, gtk2-engines-sapwood, dbus, osso-af-startup
 Conflicts: hildon-base
 Replaces: hildon-base
 Description: Miscellaneous startup files.

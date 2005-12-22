@@ -1,3 +1,9 @@
+hildon-initscripts (1.0-1) unstable; urgency=low
+
+  * Ported for new DBus version (executable name change).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 22 Dec 2005 12:57:16 +0200
+
 hildon-initscripts (0.9.11-1) unstable; urgency=low
 
   * Added COPYING file and fixed debian/copyright.
