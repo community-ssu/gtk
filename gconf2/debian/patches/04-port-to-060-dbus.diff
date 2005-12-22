@@ -1,0 +1,12 @@
+diff -ur gconf-dbus-2.6.4.13/gconf/gconfd-dbus.c gconf-dbus-2.6.4.13.new/gconf/gconfd-dbus.c
+--- gconf-dbus-2.6.4.13/gconf/gconfd-dbus.c	2005-09-30 16:23:16.000000000 +0300
++++ gconf-dbus-2.6.4.13.new/gconf/gconfd-dbus.c	2005-12-21 14:54:47.277003200 +0200
+@@ -222,7 +222,7 @@
+   
+   ret = dbus_bus_request_name (bus_conn,
+ 			       GCONF_DBUS_SERVICE,
+-			       DBUS_NAME_FLAG_PROHIBIT_REPLACEMENT,
++			       0,
+ 			       &error);
+ 
+   if (ret != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER)

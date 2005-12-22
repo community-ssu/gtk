@@ -1,0 +1,27 @@
+gconf2 (2.6.4.13-osso2) unstable; urgency=low
+
+  * Depending to v0.60 dbus.
+  * Added patch for v0.60 dbus version.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 21 Dec 2005 14:37:08 +0200
+
+gconf2 (2.6.4.13-osso1) unstable; urgency=low
+
+  * New upstream package version 2.6.4.13 with couple of bug fixes.
+  * Tidied up startup script and removed the unused one.
+  * Not building or installing po files.
+  * Added the umask patch for Backup application.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 23 Nov 2005 13:28:27 +0200
+
+gconf2 (2.6.4.12-osso1) unstable; urgency=low
+
+  * New upstream package.
+  * Fixed stopping of the daemon in the startup script.
+  * Removed some internal patches that are now in the upstream package.
+    (Some internal patches still need porting for the new upstream package.)
+  * Fixed dbus dependency to depend to version 0.50 and up. 
+  * Put patch to fix default system bus address in gconftool (added running
+    of automake-1.7 because of that).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 07 Nov 2005 16:58:07 +0200

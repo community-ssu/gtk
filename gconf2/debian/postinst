@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+#find /etc/gconf/gconf.xml.defaults -type d -exec chmod go=rX {} \;
+find /etc/gconf/gconf.xml.defaults -type d | xargs chmod go=rX
+
+update-alternatives --install \
+        /usr/bin/gconftool gconftool /usr/bin/gconftool-2 25
+
+# KHä: create directory for the database
+mkdir -p /var/lib/gconf
+chown messagebus.messagebus /var/lib/gconf
+chmod -R go+rwx /var/lib/gconf
+
+#DEBHELPER#

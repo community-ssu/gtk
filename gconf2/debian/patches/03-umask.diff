@@ -1,0 +1,23 @@
+diff -ruN gconf-dbus-2.6.4.13-old/gconf/gconfd.c gconf-dbus-2.6.4.13/gconf/gconfd.c
+--- gconf-dbus-2.6.4.13-old/gconf/gconfd.c	2005-11-01 18:27:05.000000000 +0200
++++ gconf-dbus-2.6.4.13/gconf/gconfd.c	2005-11-23 14:30:26.203065344 +0200
+@@ -425,7 +425,7 @@
+       gconf_log_debug_messages = TRUE;
+     }
+   
+-  umask (022);
++  umask (0);
+ 
+ #ifndef DAEMON_DEBUG
+   gconf_set_daemon_mode(TRUE);
+diff -ruN gconf-dbus-2.6.4.13-old/gconf/gconftool.c gconf-dbus-2.6.4.13/gconf/gconftool.c
+--- gconf-dbus-2.6.4.13-old/gconf/gconftool.c	2005-04-26 10:39:38.000000000 +0300
++++ gconf-dbus-2.6.4.13/gconf/gconftool.c	2005-11-23 14:44:22.178977688 +0200
+@@ -486,6 +486,7 @@
+   setlocale (LC_ALL, "");
+   bindtextdomain (GETTEXT_PACKAGE,GCONF_LOCALE_DIR);
+   textdomain (GETTEXT_PACKAGE);
++  umask(0);
+   
+   ctx = poptGetContext("gconftool", argc, (const char **) argv, options, 0);
+ 

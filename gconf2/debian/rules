@@ -1,0 +1,137 @@
+#!/usr/bin/make -f
+# MAde with the aid of dh_make, by Craig Small
+# Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.
+# Some lines taken from debmake, by Cristoph Lameter.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This is the debhelper compatability version to use.
+export DH_COMPAT=3
+
+include /usr/share/gnome-pkg-tools/1/rules/uploaders.mk
+
+VERSION := $(shell dpkg-parsechangelog | grep Version | sed -e 's/Version: //g' -e 's/-[A-Za-z0-9\.]*$$//g')
+SHLIBDEPS := $(VERSION)
+CURRENT := 6
+
+SCRIPT_DIR = /usr/share/dbs
+
+# the dbs rules
+TAR_DIR := gconf-dbus-$(VERSION)
+include $(SCRIPT_DIR)/dbs-build.mk
+
+# dpkg-arch rules
+ifeq (,$(DEB_BUILD_GNU_TYPE))
+	include $(SCRIPT_DIR)/dpkg-arch.mk
+endif
+
+# CC := gcc-3.0
+# export CC
+
+configure: $(STAMP_DIR)/configure
+$(STAMP_DIR)/configure: $(patched)
+	dh_testdir
+
+	@echo
+	@echo "*** VERSION = ${VERSION} ***"
+	@echo
+	@sleep 1
+
+	-test -r /usr/share/misc/config.sub && \
+	  cp -f /usr/share/misc/config.sub $(BUILD_TREE)/config.sub
+	-test -r /usr/share/misc/config.guess && \
+	  cp -f /usr/share/misc/config.guess $(BUILD_TREE)/config.guess
+
+	cd $(BUILD_TREE) && ./autogen.sh && ./configure --prefix=/usr \
+                --mandir=\$${prefix}/share/man \
+                --infodir=\$${prefix}/share/info \
+		--libexecdir=\$${prefix}/lib/gconf2 \
+                --sysconfdir=/etc --disable-debug \
+		--disable-gtk-doc --with-ipc=dbus \
+		--enable-system-bus
+
+	touch $@
+
+build: configure $(STAMP_DIR)/build
+$(STAMP_DIR)/build:
+	dh_testdir
+
+	cd $(BUILD_TREE) && $(MAKE)
+
+	touch $@
+
+clean::
+	dh_testdir
+	rm -rf $(STAMP_DIR) $(SOURCE_DIR)
+	perl $(SCRIPT_DIR)/dbs_split clean
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	cd $(BUILD_TREE) && $(MAKE) install DESTDIR=$(CURDIR)/debian/gconf2
+	-rm -f $(CURDIR)/debian/gconf2/usr/bin/gconftool
+	-rm -f $(CURDIR)/debian/gconf2/usr/lib/GConf/2/*.a
+	-rm -f $(CURDIR)/debian/gconf2/usr/lib/GConf/2/*.la
+	-rm -f $(CURDIR)/debian/gconf2/etc/gconf/schemas/desktop.schemas
+
+	dh_movefiles --sourcedir=debian/gconf2
+	find debian/ -type d -empty | sort -r | xargs rmdir -p --ignore-fail-on-non-empty
+	install -m 755 -d $(CURDIR)/debian/gconf2/etc/gconf/gconf.xml.defaults
+	install -m 755 -d $(CURDIR)/debian/gconf2/etc/gconf/gconf.xml.mandatory
+	install -d $(CURDIR)/debian/gconf2/usr/share/lintian/overrides
+	install -m 644 debian/gconf2.lintian $(CURDIR)/debian/gconf2/usr/share/lintian/overrides/gconf2
+	install -d  $(CURDIR)/debian/libgconf2-$(CURRENT)/usr/share/lintian/overrides
+	install -m 644 debian/libgconf.lintian $(CURDIR)/debian/libgconf2-$(CURRENT)/usr/share/lintian/overrides/libgconf2-$(CURRENT)
+#	install -m 644 debian/gconf.devhelp  $(CURDIR)/debian/gconf2/usr/share/gtk-doc/html/gconf/gconf.devhelp
+
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+#	dh_testversion
+	dh_testdir
+	dh_testroot
+
+	dh_installdocs $(BUILD_TREE)/NEWS $(BUILD_TREE)/README $(BUILD_TREE)/TODO debian/FAQ
+	# fix place of documentation
+#	mv $(CURDIR)/debian/gconf2/usr/share/gtk-doc/html/gconf/ \
+#	$(CURDIR)/debian/gconf2/usr/share/doc/gconf2/gtk-doc-html
+
+	dh_install
+	dh_installexamples
+	dh_installmenu
+	dh_installman debian/gconftool-2.1
+	dh_installchangelogs $(BUILD_TREE)/ChangeLog
+
+	rm -rf debian/libgconf2-$(CURRENT)/usr/share/doc/*
+	rm -rf debian/libgconf2-dev/usr/share/doc/*
+
+	dh_link -pgconf2
+	dh_link -plibgconf2-$(CURRENT) /usr/share/doc/gconf2 /usr/share/doc/libgconf2-$(CURRENT)
+	dh_link -plibgconf2-dev /usr/share/doc/gconf2 /usr/share/doc/libgconf2-dev
+
+	dh_installcatalogs
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_makeshlibs -plibgconf2-$(CURRENT) -V 'libgconf2-$(CURRENT) (>= ${SHLIBDEPS})' -Xlibgconfbackend
+	cat debian/*/DEBIAN/shlibs > debian/shlibs.local
+	dh_shlibdeps
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+source diff:                                                                  
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary
