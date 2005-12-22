@@ -3,7 +3,7 @@ INCLUDES = \
 	`pkg-config --cflags libosso` \
 	`pkg-config --cflags glib-2.0` \
 	`pkg-config --cflags dbus-1` \
-	-DOSSOLOG_STDERR
+	-DOSSOLOG_COMPILE
 
 app_killer_SOURCES = \
 	app-killer.c \

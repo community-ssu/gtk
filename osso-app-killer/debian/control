@@ -7,9 +7,9 @@ Standards-Version: 3.6.0
 
 Package: osso-app-killer
 Architecture: any
-Depends: ${shlibs:Depends}
-Description: Program for shutting down applications on request.
+Depends: hildon-initscripts (>= 0.9.9)
+Description: Program for restarting some programs on locale change etc.
  This package contains the application killer program of the Application
- Framework. The killer listens to D-BUS system bus for requests from e.g.
- DSM, Backup application, etc. to shut down GUI applications.
+ Framework. The killer restarts some programs on locale change, restore
+ factory settings, and restore backup operations.
  It has nothing to do with the background killing.

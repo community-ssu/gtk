@@ -1,3 +1,46 @@
+osso-app-killer (1.0-1) unstable; urgency=low
+
+  * Ported for v0.50 dbus.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 15 Dec 2005 12:51:06 +0200
+
+osso-app-killer (0.20-1) unstable; urgency=low
+
+  * Added restarting of maemo-launcher to the RFS script (bug 19955).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 03 Nov 2005 15:08:55 +0200
+
+osso-app-killer (0.19-1) unstable; urgency=low
+
+  * Added restarting of Matchbox to the RFS script (bug 19955).
+  * Added dependency on hildon-initscripts, because of Matchbox restart.
+  * Not using dsmetool anymore for starting app-killer due to inreliable
+    behaviour with D-BUS activation.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 27 Oct 2005 18:11:44 +0300
+
+osso-app-killer (0.18-1) unstable; urgency=low
+
+  * Restart ke-recv in osso-app-killer-restore.sh so that Backup/Restore
+    applet is being informed about the removal of the MMC, for example.
+    See bugs 15564 and 20637.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 17 Oct 2005 19:01:51 +0300
+
+osso-app-killer (0.17-1) unstable; urgency=low
+
+  * Added 2-sec sleep before restarting the session bus to work around
+    delay in DSME in detecting exited process (bug 18032).
+  * Now compiling OSSO logging.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 06 Sep 2005 18:15:08 +0300
+
+osso-app-killer (0.16-1) unstable; urgency=low
+
+  * Fixed buggy gconf-clean.sh script (bug 18230).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 29 Aug 2005 13:55:39 +0300
+
 osso-app-killer (0.15-2) unstable; urgency=low
 
   * Removed maemo-launcher dependency.

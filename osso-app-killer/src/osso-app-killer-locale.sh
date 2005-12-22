@@ -20,6 +20,7 @@ while [ $TMP = 1 ]; do
   sleep 1
   TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
 done
+sleep 2
 $DIR/dbus-sessionbus.sh start
 /usr/sbin/waitdbus session
 sudo /etc/init.d/af-base-apps start

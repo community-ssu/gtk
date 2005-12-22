@@ -13,6 +13,8 @@ if [ -x $DIR/osso-media-server.sh ]; then
   $DIR/osso-media-server.sh stop
 fi
 $DIR/dbus-sessionbus.sh stop
+source $DIR/matchbox.defs
+source $DIR/matchbox.sh stop
 
 # Remove user-modified settings
 if [ "x$OSSO_RFS_DOES_NOT_DESTROY" = "x" ]; then
@@ -30,6 +32,10 @@ while [ $TMP = 1 ]; do
 done
 
 # restart things
+if [ -x /etc/init.d/maemo-launcher ]; then
+  /etc/init.d/maemo-launcher restart
+fi
+source $DIR/matchbox.sh start
 $DIR/dbus-sessionbus.sh start
 # start GConf by D-BUS activation
 gconftool-2 -g /foo

@@ -347,7 +347,7 @@ DBusHandlerResult sysbus_filter(DBusConnection* c,
                                  DBusMessage* m,
                                  void* user_data)
 {
-    if (dbus_message_is_signal(m, DBUS_INTERFACE_ORG_FREEDESKTOP_LOCAL,
+    if (dbus_message_is_signal(m, DBUS_INTERFACE_DBUS,
                                "Disconnected")) {
         ULOG_CRIT("D-BUS system bus disconnected");
 	exit(1);
@@ -363,7 +363,7 @@ DBusHandlerResult sesbus_filter(DBusConnection* c,
                                  DBusMessage* m,
                                  void* user_data)
 {
-    if (dbus_message_is_signal(m, DBUS_INTERFACE_ORG_FREEDESKTOP_LOCAL,
+    if (dbus_message_is_signal(m, DBUS_INTERFACE_DBUS,
                                "Disconnected")) {
         ULOG_DEBUG("D-BUS session bus disconnected");
 	exit(1);
