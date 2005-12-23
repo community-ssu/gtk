@@ -1,6 +1,8 @@
 dbus (0.23.4-15osso) unstable; urgency=low
 
   * Added a patch to disable mempools.
+  * Added a patch to empty the dbus_verbose function, because it was
+    still used from somewhere despite the --disable-verbose option.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 23 Dec 2005 14:04:00 +0200
 

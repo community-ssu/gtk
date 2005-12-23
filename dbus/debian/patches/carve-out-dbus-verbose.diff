@@ -1,0 +1,51 @@
+diff -ur dbus/dbus/dbus-internals.c dbus.new/dbus/dbus-internals.c
+--- dbus/dbus/dbus-internals.c	2005-12-15 17:46:02.000000000 +0200
++++ dbus.new/dbus/dbus-internals.c	2005-12-23 14:10:06.509359432 +0200
+@@ -184,46 +184,10 @@
+  *
+  * @param format printf-style format string.
+  */
+-void
++inline void
+ _dbus_verbose_real (const char *format,
+                     ...)
+ {
+-  va_list args;
+-  static dbus_bool_t verbose = TRUE;
+-  static dbus_bool_t need_pid = TRUE;
+-  int len;
+-  
+-  /* things are written a bit oddly here so that
+-   * in the non-verbose case we just have the one
+-   * conditional and return immediately.
+-   */
+-  if (!verbose)
+-    return;
+-  
+-  if (!verbose_initted)
+-    {
+-      verbose = _dbus_getenv ("DBUS_VERBOSE") != NULL;
+-      verbose_initted = TRUE;
+-      if (!verbose)
+-        return;
+-    }
+-
+-  /* Print out pid before the line */
+-  if (need_pid)
+-    fprintf (stderr, "%lu: ", _dbus_getpid ());
+-
+-  /* Only print pid again if the next line is a new line */
+-  len = strlen (format);
+-  if (format[len-1] == '\n')
+-    need_pid = TRUE;
+-  else
+-    need_pid = FALSE;
+-  
+-  va_start (args, format);
+-  vfprintf (stderr, format, args);
+-  va_end (args);
+-
+-  fflush (stderr);
+ }
+ 
+ /**
