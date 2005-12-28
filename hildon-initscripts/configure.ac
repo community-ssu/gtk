@@ -1,14 +1,12 @@
-AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-initscripts, 0.9.4)
-AM_CONFIG_HEADER(config.h)
+AC_INIT([hildon-initscripts], [0.9.11])
+AC_PREREQ([2.59])
+AC_CONFIG_SRCDIR([run-standalone.sh])
 
-AC_CANONICAL_HOST
+AM_INIT_AUTOMAKE([1.7 foreign])
 
-AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_INSTALL
-AC_PROG_RANLIB
-AC_PROG_LIBTOOL
+AC_CONFIG_FILES([
+	Makefile
+	af-sb-init.sh
+])
+AC_OUTPUT
 
-AC_OUTPUT(Makefile \
-        af-sb-init.sh)
