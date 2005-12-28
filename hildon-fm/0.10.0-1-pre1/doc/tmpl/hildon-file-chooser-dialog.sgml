@@ -1,0 +1,96 @@
+<!-- ##### SECTION Title ##### -->
+HildonFileChooserDialog
+
+<!-- ##### SECTION Short_Description ##### -->
+A dialog displaying #HildonFileSelection.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HildonFileChooser dialog is a dialog used in many file handling tasks.
+It implements #GtkFileChooser interface and uses #HildonFileSelection
+to display file system.
+</para>
+
+<informalexample>
+We create a saving dialog and set a default name.
+<programlisting>
+GtkWidget *dialog = hildon_file_chooser_dialog_new(GTK_FILE_CHOOSER_ACTION_SAVE);
+
+gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), "default.txt");
+if (gtk_dialog_run(GTK_DIALOG(dialog) == GTK_RESPONSE_OK)
+{
+  gchar *name;
+  name = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+  g_print("Saving as &percnt;s\n", name);
+  g_free(name);
+}
+</programlisting>
+</informalexample>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT HildonFileChooserDialog ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION hildon_file_chooser_dialog_new ##### -->
+<para>
+
+</para>
+
+@parent: 
+@action: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_file_chooser_dialog_new_with_properties ##### -->
+<para>
+
+</para>
+
+@parent: 
+@first_property: 
+@Varargs: 
+@Returns: 
+
+
+<!-- ##### ARG HildonFileChooserDialog:autonaming ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileChooserDialog:empty-text ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileChooserDialog:file-system-model ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileChooserDialog:open-button-text ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileChooserDialog:save-multiple ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileChooserDialog:show-folder-button ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG HildonFileChooserDialog:show-location ##### -->
+<para>
+
+</para>
+

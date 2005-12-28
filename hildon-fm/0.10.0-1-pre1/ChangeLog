@@ -1,0 +1,450 @@
+2005-11-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.47
+
+2005-11-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c (MAX_CURSOR_PARTS)
+	(drag_begin): Added upper limit to number of items in the drag
+	cursor. N#20202.
+
+2005-11-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.46
+
+	N#20755 Modifications to GtkTreeModels cause File selector to load
+                much more content than intended.
+
+	* hildon-fm/hildon-file-system-model.c
+	(*): Removed in_timeout member. The need for that was dissapeared.
+	
+	(hildon_file_system_model_ref_node),
+	(hildon_file_system_model_unref_node),
+	(node_is_under_removable): functions removed
+	
+	(set_mmc_state): Changed to avoid possible extra reload in save
+	dialogs.
+	
+	(hildon_file_system_model_iter_n_children): Removed node loading.
+
+	(hildon_file_system_model_get_value): Changed to load children
+	when a field that is needed to display folder graphically is
+	requested.
+
+	(hildon_file_system_model_delayed_add_children): Changed to skip
+	extra reloads on MMC at some cases.
+
+	
+2005-10-31  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.45
+
+2005-10-31  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#20341 hildon_file_system_model_autoname_uri doesn't work
+	        properly for names having numbers.
+
+	* hildon-file-system-private.[ch]:
+	(_hildon_file_system_parse_autonumber): Moved parse_autonumber
+	here from hildon-file-system-model.c, with following changes:
+	Changed all error cases immediately return -1 (not accepted) and
+	remove separate ACCEPT state (input is now accepted, when state
+	machine is in CLOSE state at the end of input). Small logic
+	changes (not increase input pointer after number conversion, since
+	it already points to next character).
+	
+	(_hildon_file_system_remove_autonumber): Refactored from
+	autoname_uri. Also needed in save dialog.
+	
+	* hildon-file-system-model.c: move out parse_autonumber(). Use new
+	_hildon_file_system_parse_autonumber instead.
+
+	* hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_set_current_name): Changed to remove
+	existing autonumber from name, if autonumbering is enabled.
+	
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.44
+
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+        N#19698 File dialog doesn't free everything it has allocated/cached
+	
+	* hildon-fm/hildon-file-system-private.c: Changed the cache to use
+	weak references instead of normal hard references. Chnaged the
+	whole cache object to be destroyed as well, when it temporarily
+	becomes empty.
+	
+	(load_icon_cached): Reference changes due to above logic change.
+	(insert_icon): Added weak reference.
+	(get_cache): Changed to use new finalizer function.
+	(icon_finalized): New function, called when a cached icon is freed.
+	(cache_finalize): New function, called when the whole cache
+	becomes empty or icon theme dies.
+
+	* hildon-fm/hildon-file-system-model: Changed to keep hard
+	reference to emblems, because cache modifications would otherwise
+	cause emblems to be reloaded for each composite icon made.
+
+	(finalize): Unref emblems
+	(create_composite_image): Changed to take emblem icon as
+	parameter, not just name.
+	(get_collapsed_emblem): New function, ensures that emblem is
+	cached
+	(get_expanded_emblem): New function, ensures that emblem is cached
+
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.43
+
+2005-10-05  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_finalize): Now removing signal handlers
+	that are bound to a longliving object. N#19820
+
+2005-10-04  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c: 
+        - removed automatical name entry selection after model has
+          finished loading.
+        - autonaming now selects the generated file name only if the user
+          hasn't moved the cursor yet; otherwise the new cursor location
+          is preserved.
+          N#19311
+
+2005-09-26  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.42
+
+	N#16169 File dialog shows "Updating" for several minutes although
+	directory doesn't have any files matching the mime-type requested
+	by the application (but 100 others):
+	
+	* hildon-fm/hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_ensure_idle):
+	hildon_file_selection_model_delayed_add_node_list_timeout idle
+	handler priority lowered
+	(hildon_file_system_model_delayed_add_node_list): model is now
+	constructed breadth-first, not depth-first
+	(_hildon_file_system_model_prioritize_folder): function added for
+	moving a folder to the head of delayed_lists queue
+	
+	* hildon-fm/hildon-fm/hildon-file-system-model.h: added prototype
+	for _hildon_file_system_model_prioritize_folder
+
+	* hildon-fm/hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_selection_changed): now calls
+	_hildon_file_system_model_prioritize_folder when the folder is
+	changed.
+
+2005-09-15  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.41
+
+2005-09-15  Kristian Rietveld  <kris@imendio.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_kick_node): first emit the row_deleted
+	signal, than actually delete the node from the tree. (the
+	row_deleted signal can trigger unrefs for this node, which still
+	need to be handled). N#17314
+
+2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_create_file_name): Remove trailing spaces
+	from MMC name. N#17823
+	
+2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.40
+
+2005-09-13  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_constructor): fixed memory leak. Removed
+	local_device_path from private data struct, use local
+	variable. N#19145
+
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.9.39
+
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#14586 Gateway content needs update if
+	   1) user clicks on a folder AND more than 30s is passed from
+	   last reload.
+	   2) User activates a filewithin current folder and than 30s is
+	   passed from last reload.
+	
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_selection_changed): reload gateway content.
+
+	* hildon-fm/hildon-file-system-model.c
+	(_hildon_file_system_model_queue_reload): likewise.
+
+
+2005-09-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: Release 0.9.38
+	
+2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#16092 Filetree doesn't use singleton mime-type icons, but keeps
+	multiple copies of them in memory.
+	
+	* hildon-fm/hildon-file-system-private.[ch]
+	(_hildon_file_system_load_icon_cached): New function that
+	implements caching.
+	(_hildon_file_system_create_image): now uses cache when loading
+	icons.
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_create_composite_image): now uses cache
+	when loading icons.
+
+	
+
+        N#18253 Phone icon is not dimmed (in file tree) when the phone
+	does not support OBEX.
+	
+	* hildon-fm/hildon-file-system-settings.c (gateway-ftp): added new
+	property "gateway-ftp".
+	(_hildon_file_system_settings_get_flight_mode): Added ftp capability check.
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_real_row_insensitive): Added a check if
+	gateway is dimmed because of missing ftp capability.
+
+
+2005-09-08  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: Release 0.9.37
+
+2005-09-07  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	Some GTK filesystem backend cause blocking for unknown amount of
+	time. We "solve" this (give feedback to the user) by adding a dbus
+	service to TN to display an "updating" info banner after one
+	second.
+	
+	* hildon-file-system-settings.h: Introduced new internal API to
+	communicate with task navigator in order to display banner during
+	blocking backend operations.
+
+	* hildon-file-system-settings.c: Implemented new communication API.
+
+	* hildon-file-system-model.c:
+	- Added calls to task navigator to show banner during blocking
+	calls.
+	
+	- Changed nodes that need to be reloaded to be queued instead of
+	the old approach where error nodes were queued. In this way we can
+	remove problem nodes from model immediately after error condition
+	is detected.
+	
+2005-09-07  Luc Pionchon  <luc.pionchon@nokia.com>
+	
+	* hildon-file-system-model.c: Added handler for new
+	GtkFileSystemError code. This causes less calls over bluetooth.	
+
+2005-08-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.ac: Release 0.9.36
+
+2005-08-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c: Added a priority queue to
+	track most frequently used nodes and remove oldest items if needed, to
+	limit memory consumption.
+	N#16151
+
+2005-08-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.ac: Release 0.9.35
+
+2005-08-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c: (get_value) In some cases
+	gateway folder became dimmed because of read error. 
+	* (handle_delayed_error) It was possible that the whole gateway root
+	folder got deleted.
+	* (delayed_add_children) gtk_file_system_folder_list_children
+	succeeds, even in a case bt is switched off. Made a workaround for
+	this.
+	* Some code cleanup (handle_delayed_error, set_mmc_state,
+	flightmode_changed).
+	* Added implementation for the new signal and protection mechanism to
+	avoid several reloads from gateway when there is no connection.
+
+	* hildon-fm/hildon-file-system-model.h: Added new
+	"device-disconnected" signal.
+
+	* hildon-fm/hildon-file-selection.c: Added handler for the new signal.
+	* (selection_changed) We now return current folder back to it's
+	previous place if we fail to connect to gateway device.
+	* changed "to_be_selected" row reference into "current_folder", which
+	keeps eye on current folder all the time. This change was needed to
+	know previous folder. This causes many small changes here and there.
+
+	N#14585, N#14586
+
+2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.ac: Release 0.9.34
+	
+2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_create_file_name): 
+	Take special 'mmc-undefined-name' name for unnamed MMCs into account
+	when resolving device names.  N#15509
+
+2005-08-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.ac: Release 0.9.33
+	
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c (locations):
+	* po/en_GB.po: s/sfil_li_mmc_local_device/sfil_li_mmc_localdevice/
+	
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-selection.h
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_clear_multi_selection): New function that only
+	clears other selections, but keeps the item with (active/passive)
+	focus selected.
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_unselect_all): Now really unselects all paths,
+	also active/passive focus. 
+	N#15806
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_add_node): Block file system backend from
+	sending a signal just when the same node is being added to internal
+	data model, which causes that the internal data model believes that it
+	has already loaded the folder.
+	N#14040
+
+2005-08-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Update to new l10n packaging style.  po-files (inside this package)
+	are not used for now, the message catalogs come from separate packages
+	and including them here would conflict.
+
+	* Makefile.am (SUBDIRS): stop including po-files
+	* Makefile.am (EXTRA_DIST):
+	* debian/hildon-fm-l10n-engb.install:
+	* debian/hildon-fm-l10n-src.install:
+	* po/debian/*: Removed
+
+2005-08-10  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (handle_folder_popup):
+	use logical string for message for generic error. N#13795
+	* po/en_GB.po: added sfil_ni_operation_failed translation
+	
+	* hildon-fm/hildon-file-system-info.[ch]:
+	(hildon_file_system_info_get_icon_at_size) Added new interface to
+	get an icon in arbitrary size. N#16986
+
+2005-08-09  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c: Now MMC state is
+	investigated immediately when the widget is created. It makes the
+	creation to take a bit more time, but ensures that MMC locations
+	are usable as well right from the start.
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Allow setting limit to
+	the filename. Added two new properties:
+
+	- "max-full-path-length": Works as current limitation system, but
+	you can now change the value as well (if needed, defaults to 255)
+
+	- "max-name-length": Limits the length of individual file/folder
+	name as entered by user (note that possible hidden
+	extension/folder path make the name longer).
+
+2005-08-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_dialog_get_paths): remove leading dots from
+	user provided file names (otherwise files are be hidden by the
+	filemanager, and the user has no way to access them.)
+
+2005-08-01  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-file-selection.c: GtkTreeModelSort didn't keep
+	the order very well for equal nodes, therefore a sort 
+	function was fixed to handle device nodes correctly.
+	
+	* hildon-file-system-model.c: Now allowing load_uri to access
+	gateway before gateway is accessed by UI.
+
+	* hildon-file-system-settings.[ch]: Added
+	_hildon_file_system_settings_ready() for checking if all settings
+	have been loaded.
+
+2005-07-26  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-fm/hildon-file-system-settings.c (hildon_file_system_settings_setup_dbus): changed pending dbus calls to use default timeout value (which is longer than our old value).
+
+	* hildon-fm/hildon-file-system-model.c : 
+	  - Fixed a race condition from volumes-changed handler
+	    (not queued to idle anymore).
+	  - Restored call to delayed_add_children that was removed earlier.
+            Added one new call to this function to set_mmc_state as well
+	    (to make mmc immediately show '+' sign if needed).
+	
+2005-07-25  Luc Pionchon <luc.pionchon@nokia.com>
+
+	* hildon-file-system-settings.c: Added auto activation flags into dbus
+	requests
+
+	* hildon-file-selection.c: 
+	Added infoprint
+	Fixed navigation pane filtering
+	Fixed automatic location change
+
+	* en_GB.po: Fixed a typo from translations
+
+	* hildon-file-system-model.c:
+	Added checking for readability
+	Implemented node referencing support
+	Fixed removing of folder objects
+	Fixed a problem with uri vs. display text encodings
+
+	* hildon-file-selection.h:
+	* hildon-file-chooser-dialog.c:
+	Fixed automatic location change
+
+	Fixed File Selection widget folder names
+
+	Fixed dimming for unreadable files in FileSelectionWidget
+
+	Fixed inconsistent drag and drop behaviour in multiple selection for
+	FileSelectionWidget
+
+	Fixed inconsistent behaviour of hildon_file_system_model_autoname_uri
+
+	Fixed notes files not opened after duplicating
+
+	Fixed 'autoname_uri' that didn't work properly for files with double
+	extensions
+
+	Fixed Control Panel that crashed on exporting certificate to MMC & the
+	MMC cover is open
+
+	Fixed HildonFileChooserDialog that didn't implement
+	gtk_filechooser_set_local_only
+
+	Drag data is now stored when drag begins to prevent GtkTreeVIew from
+	clearing selection due to button-release event before drag-data-get
+	signal is received
