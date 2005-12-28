@@ -1,7 +1,0 @@
-#include <hildon-file-selection.h>
-#include <hildon-file-chooser-dialog.h>
-#include <hildon-file-system-model.h>
-
-hildon_file_selection_get_type
-hildon_file_chooser_dialog_get_type
-hildon_file_system_model_get_type
