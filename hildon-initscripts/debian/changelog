@@ -2,6 +2,7 @@ hildon-initscripts (1.0-2) unstable; urgency=low
 
   * Applied a cleanup patch from Guillem Jover.
   * Added ChangeLog.
+  * Removed mkinstalldirs, config.guess, ltmain.sh, config.sub, config.h.in.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 28 Dec 2005 16:29:48 +0200
 
