@@ -1,3 +1,9 @@
+osso-af-utils (1.0-3) unstable; urgency=low
+
+  * Re-run automake because of a build problem.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 30 Dec 2005 07:32:31 +0200
+
 osso-af-utils (1.0-2) unstable; urgency=low
 
   * Depending to v0.60 dbus.

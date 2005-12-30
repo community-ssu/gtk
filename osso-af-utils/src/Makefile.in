@@ -165,6 +165,12 @@ xset770_INCLUDES = \
 xset770_LDFLAGS = \
 	`pkg-config --libs x11 xsp`
 
+fb_progress_INCLUDES = \
+	`pkg-config --cflags libpng12`
+
+fb_progress_LDFLAGS = \
+	`pkg-config --libs libpng12`
+
 waitdbus_SOURCES = \
 	waitdbus.c \
 	waitdbus.h
