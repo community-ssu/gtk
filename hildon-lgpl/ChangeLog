@@ -1,5 +1,11 @@
 2006-01-03  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	N#19656 Memory leak in hildon-lgpl	
+	* hildon-lgpl/hildon-app.c (hildon_app_destroy): free
+	priv->view_ids elements.
+
+2006-01-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	* hildon-lgpl/hildon-caption.c
 	* hildon-lgpl/hildon-appview.c
 	* hildon-lgpl/hildon-defines.c

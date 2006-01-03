@@ -554,6 +554,7 @@ hildon_app_destroy (GtkObject *obj)
   /* Free all the views */
   if (priv->view_ids)
     {
+      g_slist_foreach (priv->view_ids, (GFunc)g_free, NULL);
       g_slist_free (priv->view_ids);
       priv->view_ids = NULL;
     }
