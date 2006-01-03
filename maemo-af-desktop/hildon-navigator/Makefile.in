@@ -208,7 +208,20 @@ libhildonnavigator_la_SOURCES = \
 	osso-manager.c \
 	osso-manager.h \
 	windowmanager.c \
-	windowmanager.h \
+	hn-wm.h \
+	hn-wm-types.h \
+	hn-wm-util.c \
+	hn-wm-util.h \
+	hn-wm-memory.c \
+	hn-wm-memory.h \
+	hn-wm-session.c \
+	hn-wm-session.h \
+	hn-wm-watched-window.c \
+	hn-wm-watched-window.h \
+	hn-wm-watched-window-view.c \
+	hn-wm-watched-window-view.h \
+	hn-wm-watchable-app.c \
+	hn-wm-watcheble-app.h \
 	application-switcher.c \
 	application-switcher.h \
 	others-menu.c \
@@ -240,7 +253,9 @@ libhildonnavigator_la_LDFLAGS =
 libhildonnavigator_la_DEPENDENCIES =
 am_libhildonnavigator_la_OBJECTS = hildon-navigator.lo \
 	hildon-navigator-main.lo osso-manager.lo windowmanager.lo \
-	application-switcher.lo others-menu.lo
+	hn-wm-util.lo hn-wm-memory.lo hn-wm-session.lo \
+	hn-wm-watched-window.lo hn-wm-watched-window-view.lo \
+	hn-wm-watchable-app.lo application-switcher.lo others-menu.lo
 libhildonnavigator_la_OBJECTS = $(am_libhildonnavigator_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -249,6 +264,12 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/application-switcher.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-navigator-main.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-navigator.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-memory.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-session.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-util.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-watchable-app.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-watched-window-view.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-watched-window.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-manager.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/others-menu.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/windowmanager.Plo
@@ -317,6 +338,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/application-switcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-navigator-main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-navigator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-session.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-util.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-watchable-app.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-watched-window-view.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-watched-window.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/others-menu.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/windowmanager.Plo@am__quote@

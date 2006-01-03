@@ -38,6 +38,8 @@
 #include <libosso.h>
 #include <gtk/gtkmenu.h>
 
+#include "hn-wm-types.h"
+
 /* Hardcoded list position for the four recently opened window items */
 #define ITEM_1_LIST_POS 2                          
 #define ITEM_2_LIST_POS 3
@@ -180,7 +182,6 @@ struct ApplicationSwitcher {
     gint hide_tooltip_timeout_id;
     gint show_tooltip_timeout_id;
     gboolean tooltip_visible; 
-    gboolean tooltip_pending; 
     
     gboolean switched_to_desktop;
     
@@ -298,5 +299,24 @@ void application_switcher_add_menubutton(ApplicationSwitcher_t *as);
 
 void application_switcher_update_lowmem_situation(ApplicationSwitcher_t *as,
 						  gboolean lowmem);
+
+/* new api */
+
+GtkWidget*
+app_switcher_add_new_item (ApplicationSwitcher_t *as,
+			   HNWMWatchedWindow     *window,
+			   HNWMWatchedWindowView *view);
+
+void 
+app_switcher_remove_item (ApplicationSwitcher_t *as,
+			  GtkWidget             *menuitem);
+
+void 
+app_switcher_update_item (ApplicationSwitcher_t *as,
+			  HNWMWatchedWindow     *window,
+			  HNWMWatchedWindowView *view,
+			  guint                  position_change);
+void
+app_switcher_top_desktop_item (ApplicationSwitcher_t *as);
 
 #endif /* APPLICATION_SWITCHER_H */

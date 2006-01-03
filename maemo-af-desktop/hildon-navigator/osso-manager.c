@@ -150,15 +150,12 @@ void add_method_cb(osso_manager_t *man,const gchar *name,
                 tasknav_cb_f *method,gpointer data)
 {
     osso_method met;
-
-
                              
     g_snprintf(met.name,METHOD_NAME_LEN,"%s",name);
     met.method = method;
     met.data = data;
 
     g_array_append_val(man->methods,met);
- 
 }
 
 void osso_manager_launch(osso_manager_t *man, const gchar *app,

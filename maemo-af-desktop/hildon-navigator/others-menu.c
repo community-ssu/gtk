@@ -24,7 +24,7 @@
 
 /* Hildon includes */
 #include "others-menu.h"
-#include "windowmanager.h"
+#include "hn-wm.h"
 #include <libosso.h>
 
 /* GLib includes */
@@ -212,7 +212,7 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
 	 g_object_get_data(G_OBJECT(item), DESKTOP_SERVICE_FIELD))) {
 
 	/* Launch the app or if it's already running move it to the top */
-	top_service(service_field);
+	hn_wm_top_service(service_field);
 
     } else {
 	exec_field =

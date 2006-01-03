@@ -1,3 +1,6 @@
+2006-02-01  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-navigator/*: Imported Matthew Allum's cleanups and refactoring.
+
 2005-12-21  Johan Bilien <johan.bilien@nokia.com>
 	* configure.ac: 2.1.1
 

@@ -31,7 +31,20 @@ libhildonnavigator_la_SOURCES = \
 	osso-manager.c \
 	osso-manager.h \
 	windowmanager.c \
-	windowmanager.h \
+	hn-wm.h \
+	hn-wm-types.h \
+	hn-wm-util.c \
+	hn-wm-util.h \
+	hn-wm-memory.c \
+	hn-wm-memory.h \
+	hn-wm-session.c \
+	hn-wm-session.h \
+	hn-wm-watched-window.c \
+	hn-wm-watched-window.h \
+	hn-wm-watched-window-view.c \
+	hn-wm-watched-window-view.h \
+	hn-wm-watchable-app.c \
+	hn-wm-watcheble-app.h \
 	application-switcher.c \
 	application-switcher.h \
 	others-menu.c \

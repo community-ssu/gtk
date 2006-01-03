@@ -31,7 +31,7 @@
  
 /* Hildon includes */
 #include "application-switcher.h"
-#include "windowmanager.h"
+#include "hn-wm.h"
 
 /* GLib include */
 #include <glib.h>
@@ -127,24 +127,6 @@ static void store_item(GArray *items,const gchar *app_name,
                         const gchar *item_text,
                         const gchar *icon_name, GtkWidget *item);    
                                                                                       
-static GtkWidget *add_new_window_callback(const gchar *icon_name,
-                                          const gchar *app_name,
-                                          const gchar *view_name,
-                                          gpointer data);
-                                          
-static void removed_window_callback(GtkWidget *menuitem, gpointer data);
-
-static void updated_window_callback(GtkWidget *menuitem,
-                                    const gchar *icon_name,
-                                    const gchar *app_name,
-                                    const gchar *view_name,
-                                    const guint position_change,
-                                    const gboolean killable,
-                                    const gchar *dialog_name,
-                                    gpointer data);
-
-static void desktop_topped_callback(gpointer data);
-
 static DBusHandlerResult mce_handler( DBusConnection *conn,
                                       DBusMessage *msg,
                                       void *data);
@@ -270,7 +252,6 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
     g_return_if_fail(as);
     
     as->tooltip_visible = FALSE;
-    as->tooltip_pending = FALSE;
     as->switched_to_desktop = FALSE;
 
 
@@ -351,11 +332,8 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
     as->items = g_array_new(FALSE,FALSE,sizeof(container));
 
     /* initialixe callback functions of the window manager */
-    init_succeed = init_window_manager(add_new_window_callback, 
-                                       removed_window_callback,
-                                       updated_window_callback,
-                                       desktop_topped_callback,
-                                       as);
+    init_succeed = hn_wm_init (as);
+
     if (init_succeed == FALSE)
         d_log(LOG_D,"Failed initializing window manager");
 
@@ -607,8 +585,6 @@ static gboolean timeout_callback(gpointer data)
     gtk_widget_hide(as->tooltip_menu);
     
     as->tooltip_visible = FALSE;
-
-    as->tooltip_pending = FALSE;
         
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON( 
                                             as->toggle_button1), FALSE);
@@ -632,7 +608,7 @@ static void move_item_to_first_position_in_list(gint item_position,
                           ITEM_1_LIST_POS); 
     
     /* Also call the top view callback to open window of an item*/
-    top_view(GTK_MENU_ITEM(item));                        
+    hn_wm_top_view(GTK_MENU_ITEM(item));                        
 }
 
 static void set_first_button_pressed_and_grab_tooltip(gpointer data)
@@ -647,9 +623,9 @@ static void set_first_button_pressed_and_grab_tooltip(gpointer data)
     switch (as->toggled_button_id)
     {
         case AS_BUTTON_1:
-            top_view(GTK_MENU_ITEM(g_list_nth_data(
-                        GTK_MENU_SHELL(as->menu)->children,
-                                       ITEM_1_LIST_POS)));
+            hn_wm_top_view(GTK_MENU_ITEM(g_list_nth_data(
+							 GTK_MENU_SHELL(as->menu)->children,
+							 ITEM_1_LIST_POS)));
 
             break;
             
@@ -700,7 +676,6 @@ static void set_first_button_pressed_and_grab_tooltip(gpointer data)
     /* Stop timeout if there is no tooltip visible */
     if (as->tooltip_visible == FALSE)
     {
-        as->tooltip_pending = FALSE;
         g_source_remove(as->show_tooltip_timeout_id);
     }
 
@@ -796,7 +771,6 @@ static gboolean tooltip_button_release(GtkWidget *widget,
         if (as->tooltip_visible == TRUE)
         {
             /*hide the window*/
-            as->tooltip_pending = FALSE;
             gtk_widget_hide(as->tooltip_menu);
             
             as->tooltip_visible = FALSE;
@@ -805,7 +779,6 @@ static gboolean tooltip_button_release(GtkWidget *widget,
         else
         { 
             /*stop a timeout*/
-            as->tooltip_pending = FALSE;
             g_source_remove(as->show_tooltip_timeout_id);
         }
         
@@ -848,7 +821,7 @@ static void activate_item(GtkMenuItem *item, gpointer data)
     {
         gtk_widget_set_name(GTK_WIDGET(as->toggle_button1),
                             SMALL_BUTTON1_NORMAL);
-        top_desktop();
+        hn_wm_top_desktop();
         
         as->switched_to_desktop = TRUE;
     }
@@ -866,7 +839,7 @@ static void activate_item(GtkMenuItem *item, gpointer data)
                             SMALL_BUTTON1_PRESSED);
         add_item_to_button(as);
         
-        top_view(GTK_MENU_ITEM(item));
+        hn_wm_top_view(GTK_MENU_ITEM(item));
     
         if (as->switched_to_desktop)
         {
@@ -906,6 +879,7 @@ static void recreate_tooltip_menuitem(ApplicationSwitcher_t *as)
     gtk_container_remove(GTK_CONTAINER(as->tooltip_menu), oldTooltipMenuItem);
     gtk_container_add(GTK_CONTAINER(as->tooltip_menu),as->tooltip_menu_item);
     gtk_widget_show(as->tooltip_menu_item);
+    g_free(oldTooltipMenuItem);
 }
 
 static void add_item_to_tooltip_menu(gint item_pos_in_list,
@@ -1126,9 +1100,6 @@ static gboolean show_tooltip_timeout_callback(gpointer data)
 {
     ApplicationSwitcher_t *as = (ApplicationSwitcher_t *) data;
 
-    /* Ensure that the tooltip item is up to date after delay */
-    add_item_to_tooltip_menu(as->toggled_button_id +
-            (ITEM_1_LIST_POS - AS_BUTTON_1), as);
     show_tooltip_menu(GTK_WIDGET(as->tooltip_menu),as);
     
     as->tooltip_visible = TRUE;                                
@@ -1147,7 +1118,6 @@ static void button_toggled(GtkToggleButton *togglebutton,
     if (as->tooltip_visible)
     { 
         /*stop a timeout*/
-        as->tooltip_pending = FALSE;as->tooltip_pending = FALSE;
         g_source_remove(as->hide_tooltip_timeout_id);
 
         /* hide the window */
@@ -1173,7 +1143,8 @@ static void button_toggled(GtkToggleButton *togglebutton,
     {
         as->toggled_button_id = AS_BUTTON_1;
         
-        as->tooltip_pending = TRUE;
+        add_item_to_tooltip_menu(ITEM_1_LIST_POS,as);
+
         as->show_tooltip_timeout_id = g_timeout_add(TIMEOUT_HALF_SECOND, 
                                            show_tooltip_timeout_callback, 
                                            as);
@@ -1193,7 +1164,8 @@ static void button_toggled(GtkToggleButton *togglebutton,
     {
         as->toggled_button_id = AS_BUTTON_2;
         
-        as->tooltip_pending = TRUE;
+        add_item_to_tooltip_menu(ITEM_2_LIST_POS,as);
+
         as->show_tooltip_timeout_id = g_timeout_add(TIMEOUT_HALF_SECOND, 
                                            show_tooltip_timeout_callback, 
                                            as);
@@ -1212,7 +1184,8 @@ static void button_toggled(GtkToggleButton *togglebutton,
     {
         as->toggled_button_id = AS_BUTTON_3;
         
-        as->tooltip_pending = TRUE;
+        add_item_to_tooltip_menu(ITEM_3_LIST_POS,as);
+
         as->show_tooltip_timeout_id = g_timeout_add(TIMEOUT_HALF_SECOND, 
                                            show_tooltip_timeout_callback, 
                                            as);
@@ -1231,8 +1204,9 @@ static void button_toggled(GtkToggleButton *togglebutton,
               (as->toggle_button4 == GTK_WIDGET(togglebutton)))
     {
         as->toggled_button_id = AS_BUTTON_4;
+    
+        add_item_to_tooltip_menu(ITEM_4_LIST_POS,as);
 
-        as->tooltip_pending = TRUE;
         as->show_tooltip_timeout_id = g_timeout_add(TIMEOUT_HALF_SECOND, 
                                            show_tooltip_timeout_callback, 
                                            as);
@@ -1400,9 +1374,17 @@ static void update_menu_items(ApplicationSwitcher_t *as)
 
     for (i = 0; i < as->items->len; i++)
     {
-	container *c = &g_array_index(as->items, container, i);
-	c->killed_item = is_killed(GTK_MENU_ITEM (c->item));
-	gtk_widget_set_sensitive(c->item, !(dimming_on && c->killed_item));
+      HNWMWatchableApp *app;
+      container        *c;
+
+      c = &g_array_index(as->items, container, i);
+
+      app = hn_wm_lookup_watchable_app_via_menu (c->item);
+
+      if (app)
+	c->killed_item = hn_wm_watchable_app_is_hibernating (app);
+
+      gtk_widget_set_sensitive(c->item, !(dimming_on && c->killed_item));
     }
 }
 
@@ -1439,93 +1421,107 @@ static void store_item(GArray *items,const gchar *item_text,
 
 }
 
-/* Function callback to be called when a new window/view is created */
-static GtkWidget *add_new_window_callback(const gchar *icon_name,
-                                       const gchar *app_name,
-                                       const gchar *view_name,
-                                       gpointer data)
+/* FIXME: Add flags param for initial position... */
+GtkWidget*
+app_switcher_add_new_item (ApplicationSwitcher_t *as,
+			   HNWMWatchedWindow     *window,
+			   HNWMWatchedWindowView *view)
 {
-    ApplicationSwitcher_t *as = (ApplicationSwitcher_t *)data;
-    GtkWidget *item;
-    GtkWidget *menu_item_icon = NULL;
+  GtkWidget        *item;
+  GtkWidget        *menu_item_icon = NULL;
+  HNWMWatchableApp *app;
+  gchar             buf[TEMP_LABEL_BUFFER_SIZE];
 
-    gchar buf[TEMP_LABEL_BUFFER_SIZE];
-    
-    g_return_val_if_fail(as, NULL);
+  if (window == NULL && view == NULL)
+    return NULL;
+  
+  if (!window)
+    window = hn_wm_watched_window_view_get_parent (view);
 
-    if (view_name && view_name[0])
+  app = hn_wm_watched_window_get_app (window);
+
+  if (view &&
+      !g_str_equal(hn_wm_watched_window_view_get_name (view), 
+		   hn_wm_watchable_app_get_name (app)))
     {
-	   g_snprintf(buf, sizeof(buf), "%s - %s", app_name, view_name);
+      g_snprintf(buf, sizeof(buf), "%s - %s", 
+		 hn_wm_watchable_app_get_name (app),
+		 hn_wm_watched_window_view_get_name (view));
     }
-    else
+  else
     {
-	   g_snprintf(buf, sizeof(buf), "%s", app_name);
-    }
-    
-    /* create menu item */
-    item = gtk_image_menu_item_new_with_label(buf);
-
-    menu_item_icon = get_icon(icon_name);
-
-    if (menu_item_icon == NULL)
-    {
-        menu_item_icon = get_icon( MENU_ITEM_DEFAULT_APP_ICON);
+      g_snprintf(buf, sizeof(buf), "%s", 
+		 hn_wm_watchable_app_get_name (app));
     }
 
-    gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(item),
-                                  menu_item_icon);
-    /* Insert the menuitem to first place in list */
-    gtk_menu_shell_insert(GTK_MENU_SHELL(as->menu), 
-                          item, ITEM_1_LIST_POS); 
+  /* create menu item */
+  item = gtk_image_menu_item_new_with_label(buf);
+
+  menu_item_icon = get_icon (hn_wm_watchable_app_get_icon_name(app));
+
+  if (menu_item_icon == NULL)
+    menu_item_icon = get_icon( MENU_ITEM_DEFAULT_APP_ICON);
+
+  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(item),
+				menu_item_icon);
+
+  /* Insert the menuitem to first place in list */
+  gtk_menu_shell_insert(GTK_MENU_SHELL(as->menu), 
+			item, 
+			ITEM_1_LIST_POS); 
                           
-    /* connect signal */
-    g_signal_connect(G_OBJECT(item), "activate",
-                     G_CALLBACK(activate_item), as);
+  /* connect signal */
+  g_signal_connect(G_OBJECT(item), "activate",G_CALLBACK(activate_item), as);
 
-    store_item(as->items, app_name, buf, icon_name, item);
-    
-    set_lowmem_explain (item);
-    gtk_widget_show(item);
-    
-    /* Show application switcher menu button */
-    if ((as->items)->len == 1)
+  store_item(as->items, 
+	     hn_wm_watchable_app_get_name (app), 
+	     buf, 
+	     hn_wm_watchable_app_get_icon_name(app), 
+	     item);
+  
+  hn_wm_memory_connect_lowmem_explain (item);
+  gtk_widget_show(item);
+  
+  /* Show application switcher menu button */
+
+  if ((as->items)->len == 1)
     {
-        gtk_widget_set_sensitive(as->toggle_button_as, TRUE);
-        if( as->as_button_icon )
-            gtk_widget_show(as->as_button_icon);
+      gtk_widget_set_sensitive(as->toggle_button_as, TRUE);
+      if( as->as_button_icon )
+	gtk_widget_show(as->as_button_icon);
     }
     
-    add_item_to_button(as);
+  add_item_to_button(as);
     
-    /* Show button pressed */
-    gtk_widget_set_name(as->toggle_button1,
-                        SMALL_BUTTON1_PRESSED);
+  /* Show button pressed */
+  gtk_widget_set_name(as->toggle_button1,
+		      SMALL_BUTTON1_PRESSED);
 
-    as->switched_to_desktop = FALSE;
+  as->switched_to_desktop = FALSE;
 
-    /* If AS menu is visible, refresh it */
+  /* If AS menu is visible, refresh it */
     
-    if (GTK_WIDGET_VISIBLE(as->menu))
-    {
-        gtk_menu_reposition(as->menu);
-    }
+  if (GTK_WIDGET_VISIBLE(as->menu))
+    gtk_menu_reposition(as->menu);
     
-    /* return menu item */
+  /* return menu item */
 
-    return item;
-}                                    
-                                    
+  return item;
+}
+
 /* Function callback to be called when a window is removed */
-static void removed_window_callback(GtkWidget *menuitem, gpointer data)
+void 
+app_switcher_remove_item (ApplicationSwitcher_t *as,
+			  GtkWidget             *menuitem)
 {
-    ApplicationSwitcher_t *as = (ApplicationSwitcher_t *)data;
     gint n;    
     
     g_return_if_fail(as);
+
     /* Find the removed item */
     for (n=0;n<(as->items)->len;n++)
-	    if (g_array_index(as->items,container,n).item == menuitem)
-		    break;
+      if (g_array_index(as->items,container,n).item == menuitem)
+	break;
 
     g_free(g_array_index(as->items, container, n).app_name);
     g_free(g_array_index(as->items, container, n).icon_name);
@@ -1543,128 +1539,132 @@ static void removed_window_callback(GtkWidget *menuitem, gpointer data)
     
     /* Hide application switcher menu button */
     if ((as->items)->len == 0)
-    {           
+      {           
         gtk_widget_set_sensitive(as->toggle_button_as, FALSE);
         gtk_widget_hide(as->as_button_icon);
     }
+
     /* If AS menu is visible, refresh it */
     if (GTK_WIDGET_VISIBLE(as->menu))
-    {
-        gtk_menu_reposition(as->menu);
-    }
+      gtk_menu_reposition(as->menu);
 }
 
-/** Function callback to be called when a window has been changed */
-static void updated_window_callback(GtkWidget *menuitem,
-                                    const gchar *icon_name,
-                                    const gchar *app_name,
-                                    const gchar *view_name,
-                                    const guint position_change,
-                                    const gboolean killable,
-                                    const gchar *dialog_name,
-                                    gpointer data)
+/* FIXME: Add flags for whats actually changed, or rename _sync() ? */
+void 
+app_switcher_update_item (ApplicationSwitcher_t *as,
+			  HNWMWatchedWindow     *window,
+			  HNWMWatchedWindowView *view,
+			  guint                  position_change)
 {
-    ApplicationSwitcher_t *as = (ApplicationSwitcher_t *)data;
-    gchar buf[TEMP_LABEL_BUFFER_SIZE];
-    gint n;
+  HNWMWatchableApp *app;
+  GtkWidget        *menuitem;
+  gchar             buf[TEMP_LABEL_BUFFER_SIZE];
+  const gchar      *name;
+  gint              n;
     
-    g_return_if_fail(as);
-    switch (position_change)
+  g_return_if_fail(as);
+
+  if (window == NULL && view == NULL)
+    return;
+
+  if (view)
+    menuitem = hn_wm_watched_window_view_get_menu (view);
+  else
+    menuitem = hn_wm_watched_window_get_menu (window);
+
+  if (menuitem == NULL)
+    return;
+
+  if (!window)
+    window = hn_wm_watched_window_view_get_parent (view);
+
+  app = hn_wm_watched_window_get_app (window);
+
+
+  switch (position_change)
     {
     case AS_MENUITEM_TO_FIRST_POSITION:
-        for (n=0;n<(as->items)->len;n++)
-            if (g_array_index(as->items,container,n).item == menuitem)
-            {
-                gtk_container_remove(GTK_CONTAINER(as->menu),
-                                     GTK_WIDGET(menuitem));
-                
-                gtk_menu_shell_insert(GTK_MENU_SHELL(as->menu),
-                                      GTK_WIDGET(menuitem),
-                                      ITEM_1_LIST_POS);
-                add_item_to_button(as);
-                as->switched_to_desktop = FALSE;
-                break;
-            }
-        break;
+      for (n=0;n<(as->items)->len;n++)
+	if (g_array_index(as->items,container,n).item == menuitem)
+	  {
+	    gtk_container_remove(GTK_CONTAINER(as->menu),
+				 GTK_WIDGET(menuitem));
+	    
+	    gtk_menu_shell_insert(GTK_MENU_SHELL(as->menu),
+				  GTK_WIDGET(menuitem),
+				  ITEM_1_LIST_POS);
+	    add_item_to_button(as);
+	    as->switched_to_desktop = FALSE;
+	    break;
+	  }
+      break;
     case AS_MENUITEM_TO_LAST_POSITION:
-        for (n=0;n<(as->items)->len;n++)
+      for (n=0;n<(as->items)->len;n++)
         {
-            if (g_array_index(as->items,container,n).item == menuitem)
+	  if (g_array_index(as->items,container,n).item == menuitem)
             {
-                gtk_container_remove(GTK_CONTAINER(as->menu),
-                                     GTK_WIDGET(menuitem));
-                gtk_menu_shell_insert(GTK_MENU_SHELL(as->menu),
-                                      GTK_WIDGET(menuitem), 
-                                      ((as->items)->len)+1);
-
-                /* In practice, the buttons have to be always updated,
-                   because user can iconize only the topmost app. */
-                add_item_to_button(as);
-                break;  
+	      gtk_container_remove(GTK_CONTAINER(as->menu),
+				   GTK_WIDGET(menuitem));
+	      gtk_menu_shell_insert(GTK_MENU_SHELL(as->menu),
+				    GTK_WIDGET(menuitem), 
+				    ((as->items)->len)+1);
+	      
+	      /* In practice, the buttons have to be always updated,
+		 because user can iconize only the topmost app. */
+	      add_item_to_button(as);
+	      break;  
             }
         }
-        break;
+      break;
     default:
-        /* Corresponds to the "same position"; i.e. do not reorder. */
-        break;
+      /* Corresponds to the "same position"; i.e. do not reorder. */
+      break;
     }
+  
+  name = hn_wm_watchable_app_get_name (app);
 
-    if (view_name && (g_str_equal(DUMMY_STRING, view_name) == FALSE) )
-    {
-        g_snprintf(buf, sizeof(buf), "%s - %s", app_name, view_name);
-    }
-    else
-    {
-        g_snprintf(buf, sizeof(buf), "%s", app_name);
-    }
-      
-    /* Find the item */ 
-    for (n=0;n<(as->items)->len;n++)
-        if (g_array_index(as->items,container,n).item == menuitem)
-            break;  
-            
-    /* Save the new item text */
-    g_free(g_array_index(as->items,container,n).item_text);
-    g_array_index(as->items,container,n).item_text = g_strdup(buf);
+  if (view && !g_str_equal(hn_wm_watched_window_view_get_name (view), name))
+    g_snprintf(buf, sizeof(buf), "%s - %s", 
+	       name, hn_wm_watched_window_view_get_name (view));
+  else
+    g_snprintf(buf, sizeof(buf), "%s", name);
 
-    /* Save the new app name */
-    g_free(g_array_index(as->items,container,n).app_name);
-    g_array_index(as->items,container,n).app_name = g_strdup(app_name);
-    
-    /* Save the killable status */
-    g_array_index(as->items,container,n).killable_item = killable;
-    
-    /* Set the label text */
-    gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(menuitem))),
-                       buf);
-
-    /* Show button pressed only if the desktop is not topmost */ 
-    if (as->switched_to_desktop == FALSE &&
-        as->tooltip_pending == FALSE && as->tooltip_visible == FALSE) {
-    	gtk_widget_set_name(as->toggle_button1,
-        	            SMALL_BUTTON1_PRESSED);
-    }
-	
-
-    /* Finally, if AS menu is visible, resize it */
-
-    if (GTK_WIDGET_VISIBLE(as->menu))
-    {
-        gtk_menu_reposition(as->menu);
-    }
+  /* Find the item */ 
+  for (n=0;n<(as->items)->len;n++)
+    if (g_array_index(as->items,container,n).item == menuitem)
+      break;  
+  
+  /* Save the new item text */
+  g_free(g_array_index(as->items,container,n).item_text);
+  g_array_index(as->items,container,n).item_text = g_strdup(buf);
+  
+  /* Save the new app name */
+  /* FIXME: should this be view name >> */
+  g_free(g_array_index(as->items,container,n).app_name);
+  g_array_index(as->items,container,n).app_name = g_strdup(name);
+  
+  /* Save the killable status */
+  g_array_index(as->items,container,n).killable_item = hn_wm_watchable_app_is_able_to_hibernate (app);
+  
+  /* Set the label text */
+  gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(menuitem))), buf);
+  
+  /* Show button pressed only if the desktop is not topmost */ 
+  if (as->switched_to_desktop == FALSE) 
+    gtk_widget_set_name(as->toggle_button1, SMALL_BUTTON1_PRESSED);
+  
+  /* Finally, if AS menu is visible, resize it */
+  
+  if (GTK_WIDGET_VISIBLE(as->menu))
+    gtk_menu_reposition(as->menu);
 } 
 
-
-/* Function callback to be called when desktop (i.e. Home) is topped */
-
-static void desktop_topped_callback(gpointer data)
+void 
+app_switcher_top_desktop_item (ApplicationSwitcher_t *as)
 {
-    ApplicationSwitcher_t *as = (ApplicationSwitcher_t *)data;
-    gtk_widget_set_name(as->toggle_button1,
-                        SMALL_BUTTON1_NORMAL);
+    gtk_widget_set_name(as->toggle_button1, SMALL_BUTTON1_NORMAL);
     as->switched_to_desktop = TRUE;                  
 }
-
 
 static DBusHandlerResult mce_handler( DBusConnection *conn,
                                       DBusMessage *msg,
@@ -1701,7 +1701,7 @@ static DBusHandlerResult mce_handler( DBusConnection *conn,
             return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
         }
         as->prev_sig_was_long_press = FALSE;
-        top_desktop();
+        hn_wm_top_desktop();
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
 
