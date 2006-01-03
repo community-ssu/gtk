@@ -154,7 +154,7 @@ static void get_client_area(GtkWidget * widget,
 
 typedef void (*HildonAppViewSignal) (HildonAppView *, gint, gpointer);
 
-
+/* signals */
 enum {
     TOOLBAR_CHANGED,
     TOOLBAR_TOGGLE_REQUEST,
@@ -193,7 +193,8 @@ struct _HildonAppViewPrivate {
     gchar *menu_ui;
 };
 
-
+/* FIXME: Extremely old Legacy code. I wonder why we need 
+          a custom marshaller in the first place. */
 static void hildon_appview_signal_marshal(GClosure * closure,
                                           GValue * return_value,
                                           guint n_param_values,
@@ -252,6 +253,9 @@ GType hildon_appview_get_type(void)
     return appview_type;
 }
 
+/*
+ * Class initialisation.
+ */
 static void hildon_appview_class_init(HildonAppViewClass * appview_class)
 {
     /* Get convenience variables */
@@ -290,6 +294,7 @@ static void hildon_appview_class_init(HildonAppViewClass * appview_class)
     g_type_class_add_private(appview_class,
                              sizeof(struct _HildonAppViewPrivate));
 
+    /* New signals */
     appview_signals[TOOLBAR_CHANGED] =
         g_signal_new("toolbar-changed",
                      G_OBJECT_CLASS_TYPE(object_class),
@@ -356,7 +361,8 @@ static void hildon_appview_class_init(HildonAppViewClass * appview_class)
                      NULL, NULL,
                      g_cclosure_marshal_VOID__UINT, G_TYPE_NONE, 1,
 		     G_TYPE_UINT);
-                     
+
+    /* New properties */                     
     g_object_class_install_property(object_class, PROP_CONNECTED_ADJUSTMENT,
         g_param_spec_object("connected-adjustment",
                             "Connected GtkAdjustment",
@@ -392,11 +398,18 @@ static void hildon_appview_class_init(HildonAppViewClass * appview_class)
    widget_class = (GtkWidgetClass*) appview_class;
 }
 
+/*
+ * Performs the initialisation of the widget.
+ */
 static void hildon_appview_init(HildonAppView * self)
 {
     HildonAppViewPrivate *priv = self->priv =
         HILDON_APPVIEW_GET_PRIVATE(self);
 
+    /* the vbox is used to handle both the view's main body and how many
+     * toolbars as the user wants */
+
+    /* FIXME: Where does this constant 10 come from */
     self->vbox = gtk_vbox_new(TRUE, 10);
     gtk_widget_set_parent(self->vbox, GTK_WIDGET(self));
     priv->menu = NULL;
@@ -412,6 +425,10 @@ static void hildon_appview_init(HildonAppView * self)
     priv->connected_adjustment = NULL;
 }
 
+/*
+ * Performs the standard gtk finalize function, freeing allocated
+ * memory and propagating the finalization to the parent.
+ */
 static void hildon_appview_finalize(GObject * obj_self)
 {
     HildonAppView *self;
@@ -431,6 +448,9 @@ static void hildon_appview_finalize(GObject * obj_self)
     g_free(self->priv->title);
 }
 
+/*
+ * An accessor to set private properties of HildonAppView.
+ */
 static void hildon_appview_set_property(GObject * object, guint property_id,
                                     const GValue * value, GParamSpec * pspec)
 {
@@ -463,6 +483,9 @@ static void hildon_appview_set_property(GObject * object, guint property_id,
     }
 }
 
+/*
+ * An accessor to get private properties of HildonAppView.
+ */
 static void hildon_appview_get_property(GObject * object, guint property_id,
                                     GValue * value, GParamSpec * pspec)
 {
@@ -495,12 +518,23 @@ static void hildon_appview_get_property(GObject * object, guint property_id,
     }
 }
 
+/*
+ * Used when the HildonAppView is exposed, this function gets a GtkBoxChild
+ * as first argument, and a pointer to a gint as second argument. If such
+ * GtkBoxChild is visible, the function increments the gint. It is used
+ * in a loop, to compute the number of visible toolbars.
+ */
 static void visible_toolbar(gpointer data, gpointer user_data) 
 {
     if(GTK_WIDGET_VISIBLE(((GtkBoxChild *)data)->widget))
       (*((gint *)user_data))++;
 }
 
+/*
+ * Used in the paint_toolbar function to discover how many toolbars are
+ * above the find toolbar. It's called in a loop that iterates through
+ * all the children of the GtkVBox of the HildonAppView.
+ */
 static void find_findtoolbar_index(gpointer data, gpointer user_data)
 {
     gint *pass_bundle = (gint *)user_data;
@@ -510,6 +544,11 @@ static void find_findtoolbar_index(gpointer data, gpointer user_data)
         pass_bundle[1]++;
 }
 
+/*
+ * Used in the paint_toolbar function, it's get a GtkBoxChild as first argument
+ * and a pointer to a GtkWidget as the second one, which will be addressed to
+ * the find toolbar widget, if it is contained in the given GtkBoxChild.
+ */
 static void find_findtoolbar(gpointer data, gpointer user_data)
 {
     if(HILDON_IS_FIND_TOOLBAR(((GtkBoxChild *)data)->widget)
@@ -517,6 +556,9 @@ static void find_findtoolbar(gpointer data, gpointer user_data)
         (*((GtkWidget **)user_data)) = ((GtkBoxChild *)data)->widget;
 }
 
+/*
+ * Paints all the toolbar children of the GtkVBox of the HildonAppView.
+ */
 static void paint_toolbar(GtkWidget *widget, GtkBox *box, 
 		          GdkEventExpose * event, 
 			  gboolean fullscreen)
@@ -527,11 +569,19 @@ static void paint_toolbar(GtkWidget *widget, GtkBox *box,
     GtkWidget *findtoolbar = NULL;
     gchar toolbar_mode[40];
 
-    /* collect info to help on painting the boxes */
+    /* Iterate through all the children of the vbox of the HildonAppView.
+     * The visible_toolbar function increments toolbar_num if the toolbar
+     * is visible. After this loop, toobar_num will contain the number
+     * of the visible toolbars. */
     g_list_foreach(box->children, visible_toolbar, 
 		   (gpointer) &toolbar_num);
     if(toolbar_num <= 0)
       return;
+
+    /* Loop through all the children of the GtkVBox of the HildonAppView.
+     * The find_findtoolbar function will assign a pointer to the find toolbar
+     * to "findtoolbar" argument. If the findtoolbar is not found, i.e. it
+     * isn't in the GtkVBox, then the "findtoolbar" argument will stay NULL */
     g_list_foreach(box->children, find_findtoolbar, 
 		   (gpointer) &findtoolbar);
     if(findtoolbar != NULL){
@@ -542,6 +592,9 @@ static void paint_toolbar(GtkWidget *widget, GtkBox *box,
 			                        find toolbar) */
         pass_bundle[0] = findtoolbar->allocation.y;
         pass_bundle[1] = ftb_index;
+
+        /* computes how many toolbars are above the find toolbar, and the value is
+         * stored in pass_bundle[1] */
         g_list_foreach(box->children, find_findtoolbar_index,
 		       (gpointer) pass_bundle);
         ftb_index = pass_bundle[1];
@@ -634,6 +687,9 @@ static void paint_toolbar(GtkWidget *widget, GtkBox *box,
 		  widget->allocation.width, TOOLBAR_DOWN);
 }
 
+/*
+ * Callback function to an expose event.
+ */
 static gboolean hildon_appview_expose(GtkWidget * widget,
                                       GdkEventExpose * event)
 {
@@ -643,17 +699,26 @@ static gboolean hildon_appview_expose(GtkWidget * widget,
   if(GTK_WIDGET_VISIBLE(box) && box->children != NULL)
   {
     HildonAppViewPrivate *priv = HILDON_APPVIEW_GET_PRIVATE(widget);
+
+    /* Iterate through all the children of the vbox of the HildonAppView.
+     * The visible_toolbar function increments toolbar_num if the toolbar
+     * is visible. After this loop, toobar_num will contain the number
+     * of the visible toolbars. */
     g_list_foreach(box->children, visible_toolbar, 
                    (gpointer) &toolbar_num);
     
     if( priv->visible_toolbars != toolbar_num)
     {
+     /* If the code reaches this block, it means that a toolbar as been added
+      * or removed since last time the view was drawn. Let's then compute the
+      * new height of the toolbars areas */
      gint y_pos = 0;
+     /* the height difference */
      gint change = (priv->visible_toolbars - toolbar_num) *
                    (TOOLBAR_HEIGHT+TOOLBAR_MIDDLE+TOOLBAR_UP);
      if( change < 0 )
        change = TOOLBAR_MIDDLE + TOOLBAR_UP;
-     
+     /* the new y-coordinate for the toolbars area */
      y_pos = HILDON_APPVIEW(widget)->vbox->allocation.y - change;
        
      gtk_widget_queue_draw_area(widget, 0, y_pos, widget->allocation.width,
@@ -715,18 +780,25 @@ static gboolean hildon_appview_expose(GtkWidget * widget,
 
 }
 
+/*
+ * Responds to the usual size_request signal.
+ */
 static void hildon_appview_size_request(GtkWidget * widget,
                                         GtkRequisition * requisition)
 {
     HildonAppViewPrivate *priv = HILDON_APPVIEW(widget)->priv;
     GtkWidget *child = GTK_BIN(widget)->child;
 
+    /* forward the size_request to the eventual child of the main container */
     if (child)
         gtk_widget_size_request(child, requisition);
 
+    /* forward the size_request to the eventual vbox (which may contain
+     * toolbars) */
     if (HILDON_APPVIEW(widget)->vbox != NULL)
         gtk_widget_size_request(HILDON_APPVIEW(widget)->vbox, requisition);
 
+    /* express the size_request for the view */
     if (priv->fullscreen) {
         requisition->height = WINDOW_HEIGHT;
         requisition->width = WINDOW_WIDTH;
@@ -736,6 +808,9 @@ static void hildon_appview_size_request(GtkWidget * widget,
     }
 }
 
+/*
+ * Computes size and position for the children of the view.
+ */
 static void hildon_appview_size_allocate(GtkWidget * widget,
                                          GtkAllocation * allocation)
 {
@@ -768,7 +843,10 @@ static void hildon_appview_size_allocate(GtkWidget * widget,
     if (box->children != NULL) {
         gint length = 0;
         gint box_height = 0;
-      
+        /* Iterate through all the children of the vbox of the HildonAppView.
+         * The visible_toolbar function increments toolbar_num if the toolbar
+         * is visible. After this loop, toobar_num will contain the number
+         * of the visible toolbars. */
         g_list_foreach(box->children, visible_toolbar, 
 		     (gpointer) &length);
         if(length > 0){
@@ -798,6 +876,10 @@ static void hildon_appview_size_allocate(GtkWidget * widget,
     gtk_widget_size_allocate(GTK_WIDGET(bin->child), &alloc);
 }
 
+/*
+ * Overrides gtk_container_forall, calling the callback function for each of
+ * the children of HildonAppPrivate.
+ */
 static void hildon_appview_forall(GtkContainer * container,
                                   gboolean include_internals,
                                   GtkCallback callback,
@@ -813,14 +895,23 @@ static void hildon_appview_forall(GtkContainer * container,
         (* callback)(GTK_WIDGET(self->vbox), callback_data);
 }
 
+/**
+ * Shows all the widgets in the container.
+ */
 static void hildon_appview_show_all(GtkWidget *widget)
 {
     HildonAppView *self = HILDON_APPVIEW(widget);
     
+    /* Toolbar items */
     gtk_widget_show_all(self->vbox);
+
+    /* Parent handless stuff inside appview */
     GTK_WIDGET_CLASS(parent_class)->show_all(widget);
 }
 
+/*
+ * Frees all the resources and propagates the destroy call to the parent.
+ */
 static void hildon_appview_destroy(GtkObject *obj)
 {
     HildonAppView *self = HILDON_APPVIEW(obj);
@@ -865,6 +956,7 @@ static void hildon_appview_real_fullscreen_state_change(HildonAppView *
     g_return_if_fail(self && HILDON_IS_APPVIEW(self));
     priv = self->priv;
 
+    /* Ensure that state is really changed */
     if( priv->fullscreen == fullscreen )
       return;
 
@@ -885,7 +977,7 @@ static void hildon_appview_real_fullscreen_state_change(HildonAppView *
 
 /*
  * queries a window for the root window coordinates and size of its
- * client area (i.e. minus the title borders etc.
+ * client area (i.e. minus the title borders etc.)
  */
 static void get_client_area(GtkWidget * widget, GtkAllocation * allocation)
 {
@@ -913,6 +1005,7 @@ static void hildon_appview_menupopupfunc( GtkMenu *menu, gint *x, gint *y,
   
 }
 
+/* Similar to above, but used in fullscreen mode */
 static void hildon_appview_menupopupfuncfull( GtkMenu *menu, gint *x, gint *y,
                                               gboolean *push_in, 
                                               GtkWidget *widget )
@@ -968,6 +1061,9 @@ void hildon_appview_add_with_scrollbar(HildonAppView * self,
                                    GTK_POLICY_AUTOMATIC);
     gtk_scrolled_window_set_shadow_type(scrolledw, GTK_SHADOW_NONE);
 
+    /* FIXME: child doesn't need to be a viewport in order it can
+              be packed into scrolled window. It just needs to support
+              setting adjustments. */
     if (GTK_IS_VIEWPORT(child))
         gtk_container_add(GTK_CONTAINER(scrolledw), child);
     else
@@ -1011,8 +1107,6 @@ void hildon_appview_set_title(HildonAppView * self, const gchar * newname)
     g_return_if_fail(self && HILDON_IS_APPVIEW(self));
     oldtitle = self->priv->title;
 
-/*No longer issue a warning, as this is logged in bug database (bug 758)*/
-/*#warning None of this is UTF8 safe*/
     if (newname != NULL)
         self->priv->title = g_strdup(newname);
     else
@@ -1160,10 +1254,10 @@ GtkMenu *hildon_appview_get_menu(HildonAppView * self)
         
         GtkUIManager *uim;
         GtkWidget *parent = gtk_widget_get_parent (GTK_WIDGET (self));
-        
+
+        /* Try to get appview menu from ui manager */        
         if (parent && HILDON_IS_APP (parent))
           {
-            
             uim = hildon_app_get_ui_manager (HILDON_APP (parent));
             if (uim)
               {
@@ -1209,6 +1303,8 @@ void _hildon_appview_toggle_menu(HildonAppView * self,
         return;
     }
 
+    /* Avoid opening an empty menu */
+    /* FIXME: leaks list on each menu open */
     if (gtk_container_get_children
         (GTK_CONTAINER(hildon_appview_get_menu(self))) != NULL) {
         GtkWidget *menu;
@@ -1259,10 +1355,12 @@ void hildon_appview_set_connected_adjustment (HildonAppView * self,
 {
     g_return_if_fail (HILDON_IS_APPVIEW (self));
 
+    /* Disconnect old adjustment */
     if (self->priv->connected_adjustment != NULL)
       g_object_remove_weak_pointer (G_OBJECT (self->priv->connected_adjustment),
 				    (gpointer) &self->priv->connected_adjustment);
 
+    /* Start using the new one */
     self->priv->connected_adjustment = adjustment;
     if (self->priv->connected_adjustment != NULL)
         g_object_add_weak_pointer (G_OBJECT (self->priv->connected_adjustment),
@@ -1342,10 +1440,13 @@ const gchar *hildon_appview_get_menu_ui(HildonAppView *self)
 
 }
 
+/* Called when '+' hardkey is pressed/released */
 void _hildon_appview_increase_button_state_changed (HildonAppView * self,
 						    guint newkeytype)
 {
   self->priv->increase_button_pressed_down = newkeytype;
+
+  /* Transform '+' press into adjustment update (usually scrollbar move) */
   if ((self->priv->connected_adjustment != NULL) && (newkeytype == GDK_KEY_PRESS))
     {
       gfloat clampedvalue = CLAMP (gtk_adjustment_get_value (self->priv->connected_adjustment) + self->priv->connected_adjustment->step_increment,
@@ -1357,10 +1458,13 @@ void _hildon_appview_increase_button_state_changed (HildonAppView * self,
   g_signal_emit (G_OBJECT (self), appview_signals[INCREASE_BUTTON_EVENT], 0, newkeytype);
 }
 
+/* Called when '-' hardkey is pressed/released */
 void _hildon_appview_decrease_button_state_changed (HildonAppView * self,
 						    guint newkeytype)
 {
   self->priv->decrease_button_pressed_down = newkeytype;
+
+  /* Transform '-' press into adjustment update (usually scrollbar move) */
   if ((self->priv->connected_adjustment != NULL) && (newkeytype == GDK_KEY_PRESS))
     {
       gfloat clampedvalue = CLAMP (gtk_adjustment_get_value (self->priv->connected_adjustment) - self->priv->connected_adjustment->step_increment,

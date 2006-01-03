@@ -72,7 +72,6 @@ struct _HildonFindToolbarPrivate
   GtkToolItem*		separator;
   GtkToolItem*		close_button;
 
-  /*GtkListStore*		list;*/
   gint			history_limit;
 };
 static guint HildonFindToolbar_signal[LAST_SIGNAL] = {0};
@@ -93,7 +92,9 @@ hildon_find_toolbar_filter(GtkTreeModel *model,
   g_object_get(G_OBJECT(self), "history_limit", &limit, NULL);
   path = gtk_tree_model_get_path(model, iter);
   indices = gtk_tree_path_get_indices (path);
-  /*get the first level index, and free the path*/
+
+  /* List store has only one level. If this row's index number is larger
+     than history_limit, we want to filter it. */
   n = indices[0];
   gtk_tree_path_free(path);
   
@@ -112,26 +113,27 @@ hildon_find_toolbar_apply_filter(HildonFindToolbar *self,
   gint c_n = 0;
   HildonFindToolbarPrivate *priv = self->priv;
 
+  /* Create a filter for the given list store. Its only purpose is to hide
+     the oldest entries so only "history_limit" entries are visible. */
   filter = gtk_tree_model_filter_new(GTK_TREE_MODEL(list), NULL);
-  
-  /*get the text column*/
+
+  /* FIXME: next two lines are useless */
   if(gtk_combo_box_get_model(GTK_COMBO_BOX(priv->entry_combo_box)) != NULL)
     g_object_get(G_OBJECT(self), "column", &c_n, NULL);
   
-  /*add filter function*/
   gtk_tree_model_filter_set_visible_func(GTK_TREE_MODEL_FILTER(filter), 
 					 hildon_find_toolbar_filter, 
 					 (gpointer) self, NULL);
-  
-  /*set the new filtered model*/
   gtk_combo_box_set_model(GTK_COMBO_BOX(priv->entry_combo_box), filter);
 
-  /*once set, we need to remove one reference count for the fitler*/
+  /* ComboBox keeps the only needed reference to the filter */
   g_object_unref(filter);
 
-  /*reset the text column if needed*/
+  /* If "column" property hasn't been set yet and we have set_column=TRUE,
+     set the column to 0. This is done when we're creating the list store
+     internally. */
   if ( gtk_combo_box_entry_get_text_column(
-	GTK_COMBO_BOX_ENTRY(priv->entry_combo_box)) == -1 && set_column)/*unset*/
+	GTK_COMBO_BOX_ENTRY(priv->entry_combo_box)) == -1 && set_column)
     gtk_combo_box_entry_set_text_column(
 	GTK_COMBO_BOX_ENTRY(priv->entry_combo_box), c_n);
 }
@@ -227,7 +229,9 @@ hildon_find_toolbar_set_property(GObject      *object,
 	   * solves the problem*/
 	  
 	  /*gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(model));*/
-	  
+
+          /* FIXME: don't call with set_column=TRUE since it sets column to 0.
+             We can't know that it's correct. */
 	  hildon_find_toolbar_apply_filter(HILDON_FIND_TOOLBAR(object),GTK_LIST_STORE(
 			gtk_tree_model_filter_get_model(GTK_TREE_MODEL_FILTER(model))),
 					   TRUE);
@@ -256,19 +260,22 @@ hildon_find_toolbar_history_append(HildonFindToolbar *self,
   
   if(strcmp(string, "") != 0)
     {
+      /* If list store is set, get it */
       if(gtk_combo_box_get_model(GTK_COMBO_BOX(priv->entry_combo_box)) != NULL)
 	list = GTK_LIST_STORE(gtk_tree_model_filter_get_model(
 			GTK_TREE_MODEL_FILTER(gtk_combo_box_get_model(							  GTK_COMBO_BOX(priv->entry_combo_box)))));
 
       if(list == NULL)
 	{
+          /* No list store set. Create our own. */
 	  list = gtk_list_store_new(1, G_TYPE_STRING);
 	  self_create = TRUE;
 	}
       else
 	g_object_get(G_OBJECT(self), "column", &c_n, NULL);
 
-      /*add new item into the list*/
+      /* Latest string is always the first one in list. If the string already
+         exists, remove it so there are no duplicates in list. */
       occupy = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list), &iter);
       while(occupy)
 	{
@@ -277,26 +284,30 @@ hildon_find_toolbar_history_append(HildonFindToolbar *self,
 	  if(old_string != NULL && 
 	     strcmp(string, old_string) == 0)
 	    {
+              /* Found it, remove. */
 	      occupy = FALSE;
-	      /*remove the existing one, so we could prepend to the begining
-	       *to show that it is the latest item*/
 	      gtk_list_store_remove (list, &iter);
 	    }
 	  else
 	    occupy = gtk_tree_model_iter_next(GTK_TREE_MODEL(list), &iter);
 	}
+
+      /* Column number is -1 if "column" property hasn't been set but
+         "list" property is. */
       if(c_n >= 0)
 	{
+          /* Add the string to first in list */
 	  gtk_list_store_prepend(list, &iter);
 	  gtk_list_store_set(list, &iter, c_n, string, -1);
 	  if(self_create)
 	    {
+              /* Add the created list to ComboBoxEntry */
 	      hildon_find_toolbar_apply_filter(self, list, TRUE);
-	      /*need to unref our g object, after it has been packed 
-	       *the first time*/
+              /* ComboBoxEntry keeps the only needed reference to this list */
 	      g_object_unref(list);
 	    }
 	  else
+            /* Refilter to get the oldest entry hidden from history */
 	    gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER(
 		gtk_combo_box_get_model(GTK_COMBO_BOX(priv->entry_combo_box))));
 	}
@@ -310,7 +321,8 @@ static void
 hildon_find_toolbar_emit_search(GtkButton *button, gpointer self)
 {
   gboolean rb;
-  
+
+  /* Clicked search button. Perform search and add search prefix to history */
   g_signal_emit_by_name(self, "search", NULL);
   g_signal_emit_by_name(self, "history_append", &rb, NULL);
 }
@@ -318,6 +330,7 @@ hildon_find_toolbar_emit_search(GtkButton *button, gpointer self)
 static void
 hildon_find_toolbar_emit_close(GtkButton *button, gpointer self)
 {
+  /* Clicked close button */
   g_signal_emit_by_name(self, "close", NULL);
 }
 
@@ -354,30 +367,27 @@ hildon_find_toolbar_class_init(HildonFindToolbarClass *klass)
   
   g_object_class_install_property(object_class, PROP_PREFIX, 
 				  g_param_spec_string("prefix", 
-				  "Prefix", "Search that "
-				  "start with this prefix are"
-				  " displayed", NULL, 
+				  "Prefix", "Search string", NULL,
 				  G_PARAM_READWRITE));
   
   g_object_class_install_property(object_class, PROP_LIST,
 				  g_param_spec_object("list",
-                                  "List"," Storelist for the "
-				  "content to be displayed in"
-				  " in combobox", 
+                                  "List"," GtkListStore model where "
+				  "history list is kept",
 				  GTK_TYPE_LIST_STORE,
 				  G_PARAM_READWRITE));
 
   g_object_class_install_property(object_class, PROP_COLUMN,
 				  g_param_spec_int("column",
-				  "Column", "Text column for"
-				  " history list to retrieve"
-				  " strings", 0, G_MAXINT,
+				  "Column", "Column number in GtkListStore "
+                                  "where history list strings are kept",
+				  0, G_MAXINT,
 				  0, G_PARAM_READWRITE));
 
   g_object_class_install_property(object_class, PROP_MAX,
 				  g_param_spec_int("max_characters",
-				  "Maximum amount of characters",
-				  "Maximum amount of characters "
+				  "Maximum number of characters",
+				  "Maximum number of characters "
 				  "in search string",
 				  0, MAX_SIZE,
 				  0, G_PARAM_READWRITE |
@@ -387,11 +397,17 @@ hildon_find_toolbar_class_init(HildonFindToolbarClass *klass)
 				  g_param_spec_int("history_limit",
 				  "Maximum number of history items",
 				  "Maximum number of history items "
-				  "in searching combobox",
+				  "in search combobox",
 				  0, G_MAXINT,
 				  5, G_PARAM_READWRITE |
 				  G_PARAM_CONSTRUCT));
 
+  /**
+   * HildonFindToolbar::search:
+   * @toolbar: the toolbar which received the signal
+   * 
+   * Gets emitted when the find button is pressed.
+   */ 
   HildonFindToolbar_signal[SEARCH] = 
     			      g_signal_new(
 			      "search", HILDON_TYPE_FIND_TOOLBAR,
@@ -400,6 +416,12 @@ hildon_find_toolbar_class_init(HildonFindToolbarClass *klass)
 			      NULL, NULL, gtk_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
   
+  /**
+   * HildonFindToolbar::close:
+   * @toolbar: the toolbar which received the signal
+   * 
+   * Gets emitted when the close button is pressed.
+   */ 
   HildonFindToolbar_signal[CLOSE] = 
     			     g_signal_new(
 			     "close", HILDON_TYPE_FIND_TOOLBAR,
@@ -408,6 +430,13 @@ hildon_find_toolbar_class_init(HildonFindToolbarClass *klass)
 			     NULL, NULL, gtk_marshal_VOID__VOID,
 			     G_TYPE_NONE, 0);
   
+  /**
+   * HildonFindToolbar::invalid-input:
+   * @toolbar: the toolbar which received the signal
+   * 
+   * Gets emitted when the maximum search prefix length is reached and
+   * user tries to type more.
+   */ 
   HildonFindToolbar_signal[INVALID_INPUT] = 
     			     g_signal_new(
 			     "invalid_input", HILDON_TYPE_FIND_TOOLBAR,
@@ -416,6 +445,12 @@ hildon_find_toolbar_class_init(HildonFindToolbarClass *klass)
 			     NULL, NULL, gtk_marshal_VOID__VOID,
 			     G_TYPE_NONE, 0);
   
+  /**
+   * HildonFindToolbar::history-append:
+   * @toolbar: the toolbar which received the signal
+   * 
+   * Gets emitted when the current search prefix should be added to history.
+   */ 
   HildonFindToolbar_signal[HISTORY_APPEND] = 
     			     g_signal_new(
 			     "history_append", HILDON_TYPE_FIND_TOOLBAR,
@@ -448,7 +483,7 @@ hildon_find_toolbar_init(HildonFindToolbar *self)
   gtk_widget_show_all(GTK_WIDGET(label_container));
   gtk_toolbar_insert (GTK_TOOLBAR(self), label_container, -1);
   
-  /* ComboBox */
+  /* ComboBoxEntry for search prefix string / history list */
   self->priv->entry_combo_box = gtk_combo_box_entry_new();
   g_signal_connect(G_OBJECT(gtk_bin_get_child(
 		   GTK_BIN(self->priv->entry_combo_box))), 
@@ -463,7 +498,7 @@ hildon_find_toolbar_init(HildonFindToolbar *self)
   gtk_widget_show_all(GTK_WIDGET(entry_combo_box_container));
   gtk_toolbar_insert (GTK_TOOLBAR(self), entry_combo_box_container, -1);
 
-  /* First button */
+  /* Find button */
   self->priv->find_button = gtk_tool_button_new (
                               gtk_image_new_from_icon_name ("qgn_toolb_browser_gobutton",
                                                             HILDON_ICON_SIZE_TOOLBAR),
@@ -479,7 +514,7 @@ hildon_find_toolbar_init(HildonFindToolbar *self)
   gtk_widget_show(GTK_WIDGET(self->priv->separator));
   gtk_toolbar_insert (GTK_TOOLBAR(self), self->priv->separator, -1);
   
-  /* Second button */
+  /* Close button */
   self->priv->close_button = gtk_tool_button_new (
                                gtk_image_new_from_icon_name ("qgn_toolb_gene_close",
                                                              HILDON_ICON_SIZE_TOOLBAR),

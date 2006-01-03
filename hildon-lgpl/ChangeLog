@@ -1,3 +1,12 @@
+2006-01-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* hildon-lgpl/hildon-caption.c
+	* hildon-lgpl/hildon-appview.c
+	* hildon-lgpl/hildon-defines.c
+	* hildon-lgpl/hildon-app.c
+	* hildon-lgpl/hildon-find-toolbar.c
+	  commented code
+	
 2005-12-12  Luc Pionchon  <luc.pionchon@nokia.com>
 
         N#21833 Implement robust timer handling in Info Banner.

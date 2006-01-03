@@ -25,8 +25,8 @@
 #include <gtk/gtk.h>
 #include "hildon-defines.h"
 
-HildonIconSizes *hildoniconsizes = NULL;
-HildonIconSizes hildoninternaliconsizes;
+HildonIconSizes *hildoniconsizes = NULL; /* FIXME: could be const */
+HildonIconSizes hildoninternaliconsizes; /* FIXME: should be static */
 
 /**
  * hildon_icon_sizes_init:
@@ -82,11 +82,21 @@ struct _HildonLogicalData
 
 static void hildon_change_style_recursive_from_ld (GtkWidget *widget, GtkStyle *prev_style, HildonLogicalData *ld)
 {
+  /* Change the style for child widgets */
   if (GTK_IS_CONTAINER (widget))
     gtk_container_forall (GTK_CONTAINER (widget), (GtkCallback) (hildon_change_style_recursive_from_ld), ld);
-  
-  /* This is a compilation workaround for gcc > 3.3 since glib is buggy */
-  /* see http://bugzilla.gnome.org/show_bug.cgi?id=310175 */
+
+  /* gtk_widget_modify_*() emit "style_set" signals, so if we got here from
+     "style_set" signal, we need to block this function from being called
+     again or we get into inifinite loop.
+
+     Compiling with gcc > 3.3 and -pedantic won't allow conversion between
+     function and object pointers. GLib API however requires an object pointer
+     for a function, so we have to work around this. See
+     see http://bugzilla.gnome.org/show_bug.cgi?id=310175
+
+     FIXME: Use G_GNUC_EXTENSION instead of our own ifdef
+  */
 #ifdef __GNUC__
   __extension__
 #endif
@@ -98,6 +108,7 @@ static void hildon_change_style_recursive_from_ld (GtkWidget *widget, GtkStyle *
    
   if (ld->logicalcolorstring != NULL)
     {
+      /* Changing logical color */
       GdkColor color;
       if (gtk_style_lookup_logical_color (widget->style, ld->logicalcolorstring, &color) == TRUE)
         switch (ld->rcflags)
@@ -119,6 +130,7 @@ static void hildon_change_style_recursive_from_ld (GtkWidget *widget, GtkStyle *
 
   if (ld->logicalfontstring != NULL)
     {
+      /* Changing logical font */
       GtkStyle *fontstyle = gtk_rc_get_style_by_paths (gtk_settings_get_default (), ld->logicalfontstring, NULL, G_TYPE_NONE);
       if (fontstyle != NULL)
 	{
@@ -130,8 +142,7 @@ static void hildon_change_style_recursive_from_ld (GtkWidget *widget, GtkStyle *
     }
    
 
-  /* This is a compilation workaround for gcc > 3.3 since glib is buggy */
-  /* see http://bugzilla.gnome.org/show_bug.cgi?id=310175 */
+  /* Compilation workaround for gcc > 3.3 + -pedantic again */
 #ifdef __GNUC__
   __extension__
 #endif
@@ -147,7 +158,7 @@ static void hildon_change_style_recursive_from_ld (GtkWidget *widget, GtkStyle *
  * @widget : A @GtkWidget to assign this logical font for.
  * @logicalfontname : A gchar* with the logical font name to assign to the widget with an "osso-" -prefix.
  * 
- * This function assigns a defined logical font to the @widget and all it's child widgets.
+ * This function assigns a defined logical font to the @widget and all its child widgets.
  * It also connects to the "style_set" signal which will retrieve & assign the new font for the given logical name each time the theme is changed.
  * The returned signal id can be used to disconnect the signal.
  * 
@@ -166,10 +177,14 @@ gulong hildon_gtk_widget_set_logical_font (GtkWidget *widget, gchar *logicalfont
   ld->rcflags = 0;
   ld->state = 0;
   ld->logicalcolorstring = NULL;
-  ld->logicalfontstring = logicalfontname;
+  ld->logicalfontstring = logicalfontname; /* FIXME: g_strdup() */
 
+  /* Change the font now */
   hildon_change_style_recursive_from_ld (widget, NULL, ld);
 
+  /* Connect to "style_set" so that the font gets changed whenever theme
+     changes. FIXME: if this function is called multiple times, the old signal
+     handler should be disconnected */
   signum = g_signal_connect_data (G_OBJECT (widget), "style_set", G_CALLBACK (hildon_change_style_recursive_from_ld), ld, (GClosureNotify) g_free, 0);
 
   return signum;
@@ -203,11 +218,15 @@ gulong hildon_gtk_widget_set_logical_color (GtkWidget *widget, GtkRcFlags rcflag
 
   ld->rcflags = rcflags;
   ld->state = state;
-  ld->logicalcolorstring = logicalcolorname;
+  ld->logicalcolorstring = logicalcolorname; /* FIXME: g_strdup() */
   ld->logicalfontstring = NULL;
   
+  /* Change the colors now */
   hildon_change_style_recursive_from_ld (widget, NULL, ld);
 
+  /* Connect to "style_set" so that the colors gets changed whenever theme
+     changes. FIXME: if this function is called multiple times, the old signal
+     handler should be disconnected */
   signum = g_signal_connect_data (G_OBJECT (widget), "style_set", G_CALLBACK (hildon_change_style_recursive_from_ld), ld, (GClosureNotify) g_free, 0);
 
   return signum;
