@@ -24,6 +24,8 @@
 
 #include "hildon-find-toolbar.h"
 #include "hildon-defines.h"
+#include <gdk/gdkkeysyms.h>
+
 #include <gtk/gtklabel.h>
 #include <gtk/gtkentry.h>
 #include <gtk/gtkbutton.h>
@@ -343,6 +345,27 @@ hildon_find_toolbar_emit_invalid_input(GtkEntry *entry,
     g_signal_emit_by_name(self, "invalid_input", NULL);
 }
 
+static gboolean
+hildon_find_toolbar_entry_key_press (GtkWidget *widget,
+                                    GdkEventKey *event,
+                                    gpointer user_data)
+{
+  GtkWidget *find_toolbar = GTK_WIDGET(user_data);
+  
+  /* on enter we emit search and history_append signals and keep
+   * focus by returning true */
+  if (event->keyval == GDK_KP_Enter)
+    {
+      gboolean rb;  
+      g_signal_emit_by_name(find_toolbar, "search", NULL);
+      g_signal_emit_by_name(find_toolbar, "history_append", &rb, NULL);
+
+      return TRUE;
+    }
+
+  return FALSE;      
+}
+
 static void
 hildon_find_toolbar_class_init(HildonFindToolbarClass *klass)
 {
@@ -490,13 +513,16 @@ hildon_find_toolbar_init(HildonFindToolbar *self)
 		   "invalid_input", 
 		   G_CALLBACK(hildon_find_toolbar_emit_invalid_input),
 		   (gpointer) self);
-  
   entry_combo_box_container = gtk_tool_item_new();
   gtk_tool_item_set_expand(entry_combo_box_container, TRUE);
   gtk_container_add(GTK_CONTAINER(entry_combo_box_container),
 		    self->priv->entry_combo_box);
   gtk_widget_show_all(GTK_WIDGET(entry_combo_box_container));
   gtk_toolbar_insert (GTK_TOOLBAR(self), entry_combo_box_container, -1);
+  g_signal_connect(GTK_BIN (self->priv->entry_combo_box)->child, 
+                    "key-press-event",
+                    G_CALLBACK(hildon_find_toolbar_entry_key_press),
+                    (gpointer) self);
 
   /* Find button */
   self->priv->find_button = gtk_tool_button_new (
@@ -508,6 +534,9 @@ hildon_find_toolbar_init(HildonFindToolbar *self)
 		   (gpointer) self);
   gtk_widget_show_all(GTK_WIDGET(self->priv->find_button));
   gtk_toolbar_insert (GTK_TOOLBAR(self), self->priv->find_button, -1);
+  if ( GTK_WIDGET_CAN_FOCUS( GTK_BIN(self->priv->find_button)->child) )
+      GTK_WIDGET_UNSET_FLAGS(
+              GTK_BIN(self->priv->find_button)->child, GTK_CAN_FOCUS);
   
   /* Separator */
   self->priv->separator = gtk_separator_tool_item_new();
@@ -524,6 +553,9 @@ hildon_find_toolbar_init(HildonFindToolbar *self)
 		   (gpointer) self);
   gtk_widget_show_all(GTK_WIDGET(self->priv->close_button));
   gtk_toolbar_insert (GTK_TOOLBAR(self), self->priv->close_button, -1);
+  if ( GTK_WIDGET_CAN_FOCUS( GTK_BIN(self->priv->close_button)->child) )
+      GTK_WIDGET_UNSET_FLAGS(
+              GTK_BIN(self->priv->close_button)->child, GTK_CAN_FOCUS);
 }
 
 /*Public functions*/

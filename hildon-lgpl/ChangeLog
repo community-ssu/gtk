@@ -1,5 +1,18 @@
 2006-01-04  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	N#20354 Find Toolbar doesn't initiate search on VKBD enter
+
+	* hildon-lgpl/hildon-find-toolbar.c
+	(hildon_find_toolbar_entry_key_press): new static function. When
+	enter pressed, emmits the signals needed for searching and keeps
+	focus within entry.
+
+	* hildon-lgpl/hildon-find-toolbar.c (hildon_find_toolbar_init):
+	connected the new key-press handler to the entry in the combo and
+	unset GTK_CAN_FOCUS flags for the buttons.
+
+2006-01-04  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	N#18086 Captioned control highlighted even if content in CC is dimmed
 
 	* hildon-lgpl/hildon-caption.c (hildon_caption_button_press)
