@@ -297,7 +297,7 @@ hildon_find_toolbar_history_append(HildonFindToolbar *self,
       if(c_n >= 0)
 	{
           /* Add the string to first in list */
-	  gtk_list_store_prepend(list, &iter);
+	  gtk_list_store_append(list, &iter);
 	  gtk_list_store_set(list, &iter, c_n, string, -1);
 	  if(self_create)
 	    {
