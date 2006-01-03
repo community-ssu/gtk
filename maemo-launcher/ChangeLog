@@ -1,3 +1,9 @@
+2006-01-03  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac (GTK_REQUIRED, GNOMEVFS_REQUIRED, HILDON_LIBS_REQUIRED,
+	HILDON_LGPL_REQUIRED): Removed variables. Replaced all users with the
+	values.
+
 2005-12-20  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/launcher.c (invoked_init, clean_childs, version): Declare

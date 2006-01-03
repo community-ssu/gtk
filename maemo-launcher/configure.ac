@@ -51,22 +51,14 @@ AC_ARG_ENABLE([client],
 	esac], [client=false])
 AM_CONDITIONAL([BUILD_CLIENT], [test x$client = xtrue])
 
-GTK_REQUIRED=2.6.4
-GNOMEVFS_REQUIRED=2.8.0
-HILDON_LIBS_REQUIRED=0.7.5
-HILDON_LGPL_REQUIRED=0.7.5
-
-AC_SUBST([GTK_REQUIRED])
-AC_SUBST([GNOMEVFS_REQUIRED])
-AC_SUBST([HILDON_LIBS_REQUIRED])
-AC_SUBST([HILDON_LGPL_REQUIRED])
-
-MINIMAL_DEPENDS="gtk+-2.0 >= $GTK_REQUIRED"
+MINIMAL_DEPENDS="
+	gtk+-2.0 >= 2.6.4
+"
 
 EXTRA_DEPENDS="$MINIMAL_DEPENDS
-	gnome-vfs-2.0 >= $GNOMEVFS_REQUIRED
-	hildon-libs >= $HILDON_LIBS_REQUIRED
-	hildon-lgpl >= $HILDON_LGPL_REQUIRED
+	gnome-vfs-2.0 >= 2.8.0
+	hildon-libs >= 0.7.5
+	hildon-lgpl >= 0.7.5
 "
 
 if test x$extra_libs = xtrue
