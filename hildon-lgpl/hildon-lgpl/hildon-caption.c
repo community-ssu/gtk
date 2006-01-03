@@ -552,7 +552,8 @@ static gboolean hildon_caption_button_press( GtkWidget *widget,
   HildonCaptionPrivate *priv = HILDON_CAPTION_GET_PRIVATE(widget);
 
   /* If child can take focus, we simply grab focus to it */
-  if( GTK_WIDGET_CAN_FOCUS(GTK_BIN(widget)->child) )
+  if (GTK_WIDGET_CAN_FOCUS(GTK_BIN(widget)->child) &&
+      GTK_WIDGET_IS_SENSITIVE(GTK_BIN(widget)->child))
   {
     priv->is_focused = TRUE;
     gtk_widget_grab_focus( GTK_BIN(widget)->child );
@@ -583,7 +584,9 @@ static void get_first_focusable_child ( GtkWidget *widget, gpointer data )
   /* if a first child has already been found then do nothing */
   if (*child) return;
 
-  if (GTK_WIDGET_CAN_FOCUS (widget)) *child = widget;  
+  if (GTK_WIDGET_CAN_FOCUS (widget) &&
+      GTK_WIDGET_IS_SENSITIVE (widget))
+    *child = widget;  
   else if (GTK_IS_CONTAINER(widget)) /* if the child is a container itself then go through them also /including/ internals */  
   {
      gtk_container_forall (GTK_CONTAINER(widget), get_first_focusable_child, child);

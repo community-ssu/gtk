@@ -1,5 +1,13 @@
 2006-01-04  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	N#18086 Captioned control highlighted even if content in CC is dimmed
+
+	* hildon-lgpl/hildon-caption.c (hildon_caption_button_press)
+	(get_first_focusable_child): check for sensitivity of child widget
+	when caption receives focus.
+
+2006-01-04  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	N#16991 Find toolbar: wrong order of items in find toolbar history list
 	* hildon-lgpl/hildon-find-toolbar.c
 	(hildon_find_toolbar_history_append): append the items (do not

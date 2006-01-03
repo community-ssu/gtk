@@ -1,5 +1,6 @@
 hildon-lgpl (0.10.0.000-1) unstable; urgency=low
 
+  * N#18086 Captioned control highlighted even if content in CC is dimmed
   * N#16991 Find toolbar: wrong order of items in find toolbar history list
   * N#19656 Memory leak in hildon-lgpl
   * N#17142 HildonCaption shall be top aligned (multiline control)
