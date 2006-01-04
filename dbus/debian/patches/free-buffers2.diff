@@ -1,0 +1,27 @@
+--- dbus/dbus/dbus-string.c	2005-12-29 14:25:56.959405040 +0200
++++ dbus.new/dbus/dbus-string.c	2005-12-29 15:41:54.892493888 +0200
+@@ -423,6 +423,24 @@
+ {
+   /* Note, we are setting the length not including nul termination */
+ 
++  if (new_length == 0)
++    {
++       /* try to reduce heap fragmentation */
++       char* new_str;
++       dbus_free (real->str - real->align_offset);
++       new_str = dbus_malloc(ALLOCATION_PADDING);
++
++       if (_DBUS_UNLIKELY (new_str == NULL))
++         return FALSE;
++       
++       real->str = new_str + real->align_offset;
++       real->allocated = ALLOCATION_PADDING;
++       fixup_alignment (real);
++       real->len = 0;
++       real->str[0] = '\0';
++       return TRUE;
++    }
++
+   if (real->allocated > new_length * 2 + ALLOCATION_PADDING)
+     {
+        /* free some space */

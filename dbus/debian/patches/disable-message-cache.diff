@@ -1,0 +1,18 @@
+--- dbus/dbus/dbus-message.c	2005-12-29 16:56:18.172972120 +0200
++++ dbus.new/dbus/dbus-message.c	2005-12-29 17:21:53.907504984 +0200
+@@ -1567,6 +1567,7 @@
+     }
+ 
+   _dbus_assert (message_cache_count >= 0);
++#if 0
+   
+   if ((_dbus_string_get_length (&message->header) +
+        _dbus_string_get_length (&message->body)) >
+@@ -1587,6 +1588,7 @@
+   message_cache[i] = message;
+   message_cache_count += 1;
+   was_cached = TRUE;
++#endif
+   
+  out:
+   _DBUS_UNLOCK (message_cache);

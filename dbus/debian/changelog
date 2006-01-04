@@ -1,3 +1,15 @@
+dbus (0.23.4-16osso) unstable; urgency=low
+
+  * Several patches in pursuit of fixing bug 21877:
+  * Added a patch to disable message cache.
+  * Added a patch to disable link cache.
+  * Added a patch to free & reallocate DBusString when it's set
+    to zero length.
+  * Added a patch to empty the _dbus_warn function, because it was
+    causing memory allocations.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 04 Jan 2006 14:21:19 +0200
+
 dbus (0.23.4-15osso) unstable; urgency=low
 
   * Added a patch to disable mempools (helps to bug 21877).

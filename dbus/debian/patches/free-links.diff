@@ -1,0 +1,26 @@
+--- dbus/dbus/dbus-connection.c	2005-12-29 15:47:57.000445112 +0200
++++ dbus.new/dbus/dbus-connection.c	2005-12-29 16:53:17.505437760 +0200
+@@ -466,10 +466,9 @@
+   _dbus_assert (link != NULL);
+   _dbus_assert (link->data == message);
+ 
+-  /* Save this link in the link cache */
+   _dbus_list_unlink (&connection->outgoing_messages,
+                      link);
+-  _dbus_list_prepend_link (&connection->link_cache, link);
++  _dbus_list_free_link (link);
+   
+   connection->n_outgoing -= 1;
+ 
+@@ -485,10 +484,9 @@
+                  dbus_message_get_signature (message),
+                  connection, connection->n_outgoing);
+ 
+-  /* Save this link in the link cache also */
+   _dbus_message_remove_size_counter (message, connection->outgoing_counter,
+                                      &link);
+-  _dbus_list_prepend_link (&connection->link_cache, link);
++  _dbus_list_free_link (link);
+   
+   dbus_message_unref (message);
+ }
