@@ -7,7 +7,7 @@ dbus (0.23.4-16osso) unstable; urgency=low
   * Added a patch to empty the _dbus_warn function, because it was
     causing memory allocations.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 04 Jan 2006 14:21:19 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 04 Jan 2006 18:23:39 +0200
 
 dbus (0.23.4-15osso) unstable; urgency=low
 
