@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.6.10-1.osso2) unstable; urgency=low
+
+  * Backport GtkWindow::urgency-hint from 2.8
+    - debian/rules: update shlibs
+  * Begin using the new g_slice_*() API
+    - debian/control.in: Build-Depends: libglib2.0-dev (>= 2.6.6-1osso2)
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  4 Jan 2006 18:22:45 +0200
+
 gtk+2.0 (2:2.6.10-1.osso1) unstable; urgency=low
 
   * Upgrade to gtk+ 2.6.10
