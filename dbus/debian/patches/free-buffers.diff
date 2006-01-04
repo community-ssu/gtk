@@ -1,10 +1,31 @@
 diff -ur dbus/dbus/dbus-string.c dbus.new/dbus/dbus-string.c
---- dbus/dbus/dbus-string.c	2005-12-15 17:46:01.851330056 +0200
-+++ dbus.new/dbus/dbus-string.c	2005-12-16 16:15:39.230368104 +0200
-@@ -423,6 +423,31 @@
- {
-   /* Note, we are setting the length not including nul termination */
- 
+--- dbus/dbus/dbus-string.c	2006-01-04 17:22:50.443705344 +0200
++++ dbus.new/dbus/dbus-string.c	2006-01-04 17:30:08.972038904 +0200
+@@ -426,7 +426,52 @@
+   /* exceeding max length is the same as failure to allocate memory */
+   if (_DBUS_UNLIKELY (new_length > real->max_length))
+     return FALSE;
+-  else if (new_length > (real->allocated - ALLOCATION_PADDING) &&
++
++  if (new_length == 0)
++    {
++       /* try to reduce heap fragmentation */
++       char* new_str;
++       dbus_free (real->str - real->align_offset);
++       new_str = dbus_malloc(ALLOCATION_PADDING);
++
++       if (_DBUS_UNLIKELY (new_str == NULL))
++         return FALSE;
++       
++       real->str = new_str + real->align_offset;
++       /* reallocate_for_length() would allocate the same size */
++       real->allocated = ALLOCATION_PADDING;
++       fixup_alignment (real);
++       real->len = 0;
++       real->str[0] = '\0';
++       return TRUE;
++    }
++
 +  if (real->allocated > new_length * 2 + ALLOCATION_PADDING)
 +    {
 +       /* free some space */
@@ -30,6 +51,7 @@ diff -ur dbus/dbus/dbus-string.c dbus.new/dbus/dbus-string.c
 +       return TRUE;
 +    }
 +
-   /* exceeding max length is the same as failure to allocate memory */
-   if (_DBUS_UNLIKELY (new_length > real->max_length))
++  if (new_length > (real->allocated - ALLOCATION_PADDING) &&
+            _DBUS_UNLIKELY (!reallocate_for_length (real, new_length)))
      return FALSE;
+   else

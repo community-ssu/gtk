@@ -3,8 +3,7 @@ dbus (0.23.4-16osso) unstable; urgency=low
   * Several patches in pursuit of fixing bug 21877:
   * Added a patch to disable message cache.
   * Added a patch to disable link cache.
-  * Added a patch to free & reallocate DBusString when it's set
-    to zero length.
+  * Enhanced the free-buffer patch even more.
   * Added a patch to empty the _dbus_warn function, because it was
     causing memory allocations.
 
