@@ -1,5 +1,12 @@
 2006-01-04  Luc Pionchon  <luc.pionchon@nokia.com>
 
+	N#22187 HildonAppview leaks memory on each menu open
+
+	* hildon-lgpl/hildon-appview.c (_hildon_appview_toggle_menu): free
+	the list of children returned by gtk_container_get_children().
+	
+2006-01-04  Luc Pionchon  <luc.pionchon@nokia.com>
+
 	N#20354 Find Toolbar doesn't initiate search on VKBD enter
 
 	* hildon-lgpl/hildon-find-toolbar.c

@@ -1292,6 +1292,8 @@ GtkMenu *hildon_appview_get_menu(HildonAppView * self)
 void _hildon_appview_toggle_menu(HildonAppView * self,
                                  Time button_event_time)
 {
+    GList *children;
+
     g_return_if_fail(self && HILDON_IS_APPVIEW(self));
 
     if (!self->priv->menu)
@@ -1304,11 +1306,12 @@ void _hildon_appview_toggle_menu(HildonAppView * self,
     }
 
     /* Avoid opening an empty menu */
-    /* FIXME: leaks list on each menu open */
-    if (gtk_container_get_children
-        (GTK_CONTAINER(hildon_appview_get_menu(self))) != NULL) {
+    children = gtk_container_get_children(
+                        GTK_CONTAINER(hildon_appview_get_menu(self)));
+    if (children != NULL) {
         GtkWidget *menu;
 
+        g_list_free(children);
         menu = GTK_WIDGET(hildon_appview_get_menu(self));
         if (self->priv->fullscreen) {
             gtk_menu_popup(GTK_MENU(menu), NULL, NULL,
