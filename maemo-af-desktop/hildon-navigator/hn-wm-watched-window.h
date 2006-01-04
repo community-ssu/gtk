@@ -37,7 +37,7 @@
 
 #define HN_WM_SYNC_NAME                (1<<1)
 #define HN_WM_SYNC_BIN_NAME            (1<<2)
-#define HN_WM_SYNC_CLASS_NAME          (1<<3)
+#define HN_WM_SYNC_WMHINTS             (1<<3)
 #define HN_WM_SYNC_TRANSIANT           (1<<4)
 #define HN_WM_SYNC_HILDON_APP_KILLABLE (1<<5)
 #define HN_WM_SYNC_WM_STATE            (1<<6)

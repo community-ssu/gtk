@@ -30,7 +30,7 @@ libhildonnavigator_la_SOURCES = \
 	hildon-navigator-lib.h \
 	osso-manager.c \
 	osso-manager.h \
-	windowmanager.c \
+	hn-wm.c \
 	hn-wm.h \
 	hn-wm-types.h \
 	hn-wm-util.c \

@@ -7,7 +7,7 @@ extern HNWM *hnwm;
 struct HNWMWatchableApp
 {
   gchar     *icon_name;
-  gchar     *exec;
+  gchar     *service;
   gchar     *app_name; 		/* window title */
   gchar     *bin_name; 		/* class || exec field ? */
   gchar     *class_name;        
@@ -26,7 +26,7 @@ HNWMWatchableApp*
 hn_wm_watchable_app_new (MBDotDesktop *desktop)
 {
   HNWMWatchableApp *app;
-  gchar            *exec, *icon_name, *startup_notify;
+  gchar            *service, *icon_name, *startup_notify;
   gchar            *startup_wmclass, *bin_name, *app_name;
 
   
@@ -43,12 +43,11 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop)
     {
       osso_log(LOG_ERR,
 	       "HN: Desktop file has invalid fields");
-      mb_dotdesktop_free(desktop);
       return NULL;
     }
   
   /* DESKTOP_LAUNCH_FIELD maps to X-Osso-Service */
-  exec = (gchar *) mb_dotdesktop_get(desktop, 
+  service = (gchar *) mb_dotdesktop_get(desktop, 
 				     DESKTOP_LAUNCH_FIELD);
   icon_name = (char *) mb_dotdesktop_get(desktop, 
 					 DESKTOP_ICON_FIELD);
@@ -64,7 +63,7 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop)
     }
 
   app->icon_name      = g_strdup(icon_name); 
-  app->exec           = g_strdup(exec);      /* Actually Service name */
+  app->service        = g_strdup(service);    
   app->app_name       = g_strdup(app_name); 
   app->startup_notify = TRUE;                /* Default */
 
@@ -78,7 +77,7 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop)
     app->class_name = g_path_get_basename(bin_name);
 
   HN_DBG("Registered new watchable app\n\tapp_name: %s\n\tclass name: %s\n\texec name (service): %s", 
-	 app->app_name, app->class_name, app->exec);
+	 app->app_name, app->class_name, app->service);
 
   return app;
 }
@@ -142,9 +141,9 @@ hn_wm_watchable_app_set_able_to_hibernate (HNWMWatchableApp *app,
 
 
 const gchar*
-hn_wm_watchable_app_get_exec (HNWMWatchableApp *app)
+hn_wm_watchable_app_get_service (HNWMWatchableApp *app)
 {
-  return app->exec;
+  return app->service;
 }
 
 const gchar*

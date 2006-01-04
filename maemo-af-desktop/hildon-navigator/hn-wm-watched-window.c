@@ -1,6 +1,8 @@
 #include "hn-wm-watched-window.h"
 #include "osso-manager.h"
 
+#include <X11/Xutil.h> 		/* For WMHints */
+
 /* Application relaunch indicator data*/
 #define RESTORED "restored"
 
@@ -8,12 +10,12 @@ struct HNWMWatchedWindow
 {
   Window                  xwin;         
   gchar                  *name;
-  gchar                  *class_name;    /* FIXME: togo as in watchableApp ? */
   GtkWidget              *menu_widget;   /* Active if no views */
   HNWMWatchableApp       *app_parent;
   GList                  *views; 
   HNWMWatchedWindowView  *view_active;
 
+  Window                  xwin_group;
 };
 
 struct xwinv
@@ -36,6 +38,9 @@ hn_wm_watched_window_process_wm_name (HNWMWatchedWindow *win);
 
 static void
 hn_wm_watched_window_process_hibernation_prop (HNWMWatchedWindow *win);
+
+static void
+hn_wm_watched_window_process_wm_hints (HNWMWatchedWindow *win);
 
 static void 
 hn_wm_watched_window_process_hildon_view_active (HNWMWatchedWindow *win)
@@ -211,6 +216,32 @@ hn_wm_watched_window_process_wm_state (HNWMWatchedWindow *win)
     XFree(state);
 }
 
+static void
+hn_wm_watched_window_process_wm_hints (HNWMWatchedWindow *win)
+{
+  HNWMWatchableApp *app;
+  XWMHints         *wm_hints;
+
+  app = hn_wm_watched_window_get_app (win);  
+
+  wm_hints = XGetWMHints (GDK_DISPLAY(), win->xwin);
+
+  if (!wm_hints)
+    return;
+
+  /* FIXME: check flags ? */
+  win->xwin_group = wm_hints->window_group;
+  
+  if (wm_hints->flags & XUrgencyHint)
+    printf("@@@@@@@ Window '%s' has urgent hint *SET* @@@@@@@",
+	   win->name);
+  else
+    printf("@@@@@@@ Window '%s' has urgent hint *UNSET* @@@@@@@",
+	   win->name);
+
+  XFree(wm_hints);
+}
+
 static void 
 hn_wm_watched_window_process_hildon_view_list (HNWMWatchedWindow *win)
 {
@@ -331,7 +362,7 @@ hn_wm_watched_window_new (Window            xid,
   /* Grab some initial props */
   hn_wm_watched_window_props_sync (win, 
 				   HN_WM_SYNC_NAME
-				   |HN_WM_SYNC_BIN_NAME
+				   |HN_WM_SYNC_WMHINTS
 				   |HN_WM_SYNC_HILDON_APP_KILLABLE);
 
   return win;
@@ -490,7 +521,7 @@ hn_wm_watched_window_awake (HNWMWatchedWindow *win)
     {
       /* Relaunch it with RESTORED */
       osso_man = osso_manager_singleton_get_instance();
-      osso_manager_launch(osso_man, hn_wm_watchable_app_get_exec (app), 
+      osso_manager_launch(osso_man, hn_wm_watchable_app_get_service (app), 
 			  RESTORED);
 
       /* Remove it from our hibernating hash, on mapping it should
@@ -538,9 +569,6 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
       iter = next_iter;
     }
 
-  if (win->class_name)
-    g_free(win->class_name);
-
   if (win->name) 
     XFree(win->name);
 
@@ -577,27 +605,9 @@ hn_wm_watched_window_props_sync (HNWMWatchedWindow *win, gulong props)
       hn_wm_watched_window_process_hildon_view_active (win);
     }
 
-  if (props & HN_WM_SYNC_CLASS_NAME) /* FIXME: Not Needed ? */
+  if (props & HN_WM_SYNC_WMHINTS)
     {
-      XClassHint class_hint;
-
-      memset(&class_hint, 0, sizeof(XClassHint));
-
-      XGetClassHint(GDK_DISPLAY(), win->xwin, &class_hint);
-      
-      if (class_hint.res_name) 	/*  FIXME: *res_class - do we care ? */
-	{
-	  if (win->class_name)  /* FIXME: Not needed ? */
-	    g_free(win->class_name);
-	  
-	  win->class_name = g_strdup(class_hint.res_name);
-
-	  XFree(class_hint.res_name);
-	}
-      
-      if (class_hint.res_class)
-	XFree(class_hint.res_class);
-	
+      hn_wm_watched_window_process_wm_hints (win);
     }
 
   gdk_error_trap_pop();

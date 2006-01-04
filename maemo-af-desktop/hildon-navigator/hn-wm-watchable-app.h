@@ -51,7 +51,7 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop);
  * @return exec field value 
  */
 const gchar*
-hn_wm_watchable_app_get_exec (HNWMWatchableApp *app);
+hn_wm_watchable_app_get_service (HNWMWatchableApp *app);
 
 /** 
  * Get the name field set via .desktop file of an HNWMWatchableApp instance. 
