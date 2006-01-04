@@ -82,6 +82,7 @@ enum {
   PROP_TYPE_HINT,
   PROP_SKIP_TASKBAR_HINT,
   PROP_SKIP_PAGER_HINT,
+  PROP_URGENCY_HINT,
   PROP_ACCEPT_FOCUS,
   PROP_FOCUS_ON_MAP,
   PROP_DECORATED,
@@ -165,6 +166,7 @@ struct _GtkWindowPrivate
   guint fullscreen_initially : 1;
   guint skips_taskbar : 1;
   guint skips_pager : 1;
+  guint urgent : 1;
   guint accept_focus : 1;
   GtkWidget *prev_focus_widget;
   guint focus_on_map : 1;
@@ -583,6 +585,14 @@ gtk_window_class_init (GtkWindowClass *klass)
                                                          FALSE,
                                                          G_PARAM_READWRITE));  
 
+  g_object_class_install_property (gobject_class,
+                   PROP_URGENCY_HINT,
+                   g_param_spec_boolean ("urgency-hint",
+                                                         P_("Urgent"),
+                                                         P_("TRUE if the window should be brought to the user's attention."),
+                                                         FALSE,
+                                                         G_PARAM_READWRITE));
+
   /**
    * GtkWindow:accept-focus-hint:
    *
@@ -872,6 +882,10 @@ gtk_window_set_property (GObject      *object,
       gtk_window_set_skip_pager_hint (window,
                                       g_value_get_boolean (value));
       break;
+    case PROP_URGENCY_HINT:
+      gtk_window_set_urgency_hint (window,
+                   g_value_get_boolean (value));
+      break;
     case PROP_ACCEPT_FOCUS:
       gtk_window_set_accept_focus (window,
 				   g_value_get_boolean (value));
@@ -971,6 +985,10 @@ gtk_window_get_property (GObject      *object,
     case PROP_SKIP_PAGER_HINT:
       g_value_set_boolean (value,
                            gtk_window_get_skip_pager_hint (window));
+      break;
+    case PROP_URGENCY_HINT:
+      g_value_set_boolean (value,
+                           gtk_window_get_urgency_hint (window));
       break;
     case PROP_ACCEPT_FOCUS:
       g_value_set_boolean (value,
@@ -2059,6 +2077,60 @@ gtk_window_get_skip_pager_hint (GtkWindow *window)
   priv = GTK_WINDOW_GET_PRIVATE (window);
 
   return priv->skips_pager;
+}
+
+/**
+ * gtk_window_set_urgency_hint:
+ * @window: a #GtkWindow
+ * @setting: %TRUE to mark this window as urgent
+ *
+ * Windows may set a hint asking the desktop environment to draw
+ * the users attention to the window. This function sets this hint.
+ *
+ * Since: 2.8 (maemo 2.0)
+ **/
+void
+gtk_window_set_urgency_hint (GtkWindow *window,
+                 gboolean   setting)
+{
+  GtkWindowPrivate *priv;
+
+  g_return_if_fail (GTK_IS_WINDOW (window));
+
+  priv = GTK_WINDOW_GET_PRIVATE (window);
+
+  setting = setting != FALSE;
+
+  if (priv->urgent != setting)
+    {
+      priv->urgent = setting;
+      if (GTK_WIDGET_REALIZED (window))
+        gdk_window_set_urgency_hint (GTK_WIDGET (window)->window,
+                     priv->urgent);
+      g_object_notify (G_OBJECT (window), "urgency-hint");
+    }
+}
+
+/**
+ * gtk_window_get_urgency_hint:
+ * @window: a #GtkWindow
+ *
+ * Gets the value set by gtk_window_set_urgency_hint()
+ *
+ * Return value: %TRUE if window is urgent
+ *
+ * Since: 2.8 (maemo 2.0)
+ **/
+gboolean
+gtk_window_get_urgency_hint (GtkWindow *window)
+{
+  GtkWindowPrivate *priv;
+
+  g_return_val_if_fail (GTK_IS_WINDOW (window), FALSE);
+
+  priv = GTK_WINDOW_GET_PRIVATE (window);
+
+  return priv->urgent;
 }
 
 /**
