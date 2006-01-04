@@ -1,8 +1,20 @@
+2006-01-04  Johan Bilien  <johan.bilien@nokia.com>
+
+	Backported from 2.8:
+
+	* gdk/gdkwindow.h
+	* gdk/x11/gdkwindow-x11.c: Added gdk_window_set_urgency_hint()
+	* gdk/x11/gdkwindow-x11.h (struct _GdkTopLevelX11): added urgency_hint
+	* gdk/x11/gdkwindow-x11.c (update_wm_hints): update XUrgencyHint
+	* gtk/gtkwindow.h
+	* gtk/gtkwindow.c: added GtkWindow::urgency-hint property and
+	gtk_window_{get,set}_urgency_hint()
+
 Tue Nov  1 16:18:24 2005  Tim Janik  <timj@imendio.com>
 
-        * gtk/gtkrbtree.[hc]: get rid of GAllocator usage, allocate and free 
-        nodes via the g_slice_*() API.
-        _gtk_rbtree_new(): fixed wrong node allocation via g_new().
+	* gtk/gtkrbtree.[hc]: get rid of GAllocator usage, allocate and free 
+	nodes via the g_slice_*() API.
+	_gtk_rbtree_new(): fixed wrong node allocation via g_new().
 
 Thu Nov 24 18:25:58 2005  Tim Janik  <timj@imendio.com>
 
