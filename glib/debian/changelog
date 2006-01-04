@@ -1,3 +1,11 @@
+glib2.0 (2.6.6-1osso2) unstable; urgency=low
+
+  * merged g_slice*() from upstream
+  * debian/rules: new API, bump shlibs
+  * debian/control.in: set myself as maintainer
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  4 Jan 2006 17:58:10 +0200
+
 glib2.0 (2.6.6-1osso1) unstable; urgency=low
 
   * Upgrade to glib 2.6.6

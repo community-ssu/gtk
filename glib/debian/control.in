@@ -1,7 +1,7 @@
 Source: glib2.0
 Section: libs
 Priority: optional
-Maintainer: Sebastien Bacher <seb128@debian.org>
+Maintainer: Tommi Komulainen <tommi.komulainen@nokia.com>
 Build-Depends: debhelper (>> 4.0.0), pkg-config (>= 0.14.0), gettext, autotools-dev, gtk-doc-tools
 Standards-Version: 3.6.1.0
 
