@@ -2816,6 +2816,7 @@ gtk_tree_model_filter_ref_path (GtkTreeModelFilter *filter,
       gtk_tree_model_ref_node (GTK_TREE_MODEL (filter->priv->child_model), &iter);
       gtk_tree_path_up (p);
     }
+  gtk_tree_path_free (p);
 }
 
 static void
@@ -2835,6 +2836,7 @@ gtk_tree_model_filter_unref_path (GtkTreeModelFilter *filter,
       gtk_tree_model_unref_node (GTK_TREE_MODEL (filter->priv->child_model), &iter);
       gtk_tree_path_up (p);
     }
+  gtk_tree_path_free (p);
 }
 
 static void
