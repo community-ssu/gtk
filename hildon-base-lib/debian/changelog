@@ -1,0 +1,34 @@
+hildon-base-lib (0.10.0-1) unstable; urgency=low
+
+  * Increased version number.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 05 Jan 2006 15:41:25 +0200
+
+hildon-base-lib (0.9.4-1) unstable; urgency=low
+
+  * Bugs fixed, 
+    N#17741: Removes dnotify for all callbacks on all paths.
+
+    N#16294: Fixed case where the internal dnotify cb path could be
+             freed prematurely, causing only the first registered
+             callback to be removed.
+        
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed, 14 Sep 2005 11:28:11 +0300
+
+hildon-base-lib (0.9.3-1) unstable; urgency=low
+
+  * Bump shlibs to 'hildon-base-lib0 (>= 0.9.3)'
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  9 Sep 2005 14:12:29 +0300
+
+hildon-base-lib (0.9.3-0) unstable; urgency=low
+
+  * Packaged 0.9.3
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Thu,  1 Sep 2005 15:23:26 +0300
+
+hildon-base-lib (0.8.6-3) unstable; urgency=low
+
+  * Maemo dev release
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  6 Jul 2005 07:40:40 +0300
