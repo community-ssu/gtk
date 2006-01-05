@@ -5353,6 +5353,12 @@ gtk_tree_view_leave_notify (GtkWidget        *widget,
   if (tree_view->priv->pen_down && tree_view->priv->queued_select_row == NULL)
     tree_view->priv->pen_drag_active = TRUE;
 
+  if (tree_view->priv->queued_activate_row)
+    {
+      gtk_tree_row_reference_free (tree_view->priv->queued_activate_row);
+      tree_view->priv->queued_activate_row = NULL;
+    }
+
   if (event->mode == GDK_CROSSING_GRAB)
     return TRUE;
 
