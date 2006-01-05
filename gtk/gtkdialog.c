@@ -1350,10 +1350,10 @@ gtk_dialog_handle_focus (GtkWidget *widget,
                         g_list_previous (iter),
                         FALSE);
             
-             if (!ret_val)
+             if (!ret_val && dir == GTK_DIR_LEFT)
                 {
                   g_signal_emit_by_name (dialog, "move-focus",
-                            GTK_DIR_TAB_BACKWARD);
+                                         GTK_DIR_UP);
                   ret_val = TRUE;
                 }
              break;
@@ -1365,10 +1365,10 @@ gtk_dialog_handle_focus (GtkWidget *widget,
                                             g_list_next (iter),
                                             TRUE);
             
-            if (!ret_val)
+            if (!ret_val && dir == GTK_DIR_RIGHT)
               {
                 g_signal_emit_by_name (dialog, "move-focus", 
-                        GTK_DIR_TAB_FORWARD);
+                                       GTK_DIR_DOWN);
                 ret_val = TRUE;
               }
             break;

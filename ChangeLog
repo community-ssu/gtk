@@ -1,5 +1,12 @@
 2006-01-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkdialog.c (gtk_dialog_handle_focus): Handle
+	left-in-first-button as "up" and right-in-last-button as "down"
+	instead of using tabs.
+	N#13454
+
+2006-01-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_ref_path
 	gtk_tree_model_filter_unref_path): Free copied paths
 	N#21366, N#21542
