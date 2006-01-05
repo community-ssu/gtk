@@ -207,7 +207,6 @@ struct _GtkWidgetPrivate
 #ifdef TAP_AND_HOLD_ANIMATION
   GdkPixbufAnimation *anim;
   GdkPixbufAnimationIter *iter;
-  guint width, height;
 #endif
 };
 
@@ -8156,6 +8155,8 @@ timeout_tap_and_hold_animation (GtkWidget *widget)
       GdkScreen *screen;
       GdkPixbuf *pic;
       GdkCursor *cursor;
+      gchar *x_hot, *y_hot;
+      gint x, y;
 
       g_get_current_time (&time);
       screen = gdk_screen_get_default ();
@@ -8166,8 +8167,13 @@ timeout_tap_and_hold_animation (GtkWidget *widget)
       if (!GDK_IS_PIXBUF (pic))
       	return TRUE;
 
+      x_hot = gdk_pixbuf_get_option (pic, "x_hot");
+      y_hot = gdk_pixbuf_get_option (pic, "y_hot");
+      x = (x_hot) ? atoi(x_hot) : gdk_pixbuf_get_width(pic) / 2;
+      y = (y_hot) ? atoi(y_hot) : gdk_pixbuf_get_height(pic) / 2;
+
       cursor = gdk_cursor_new_from_pixbuf (gdk_display_get_default (), pic,
-					   priv->width, priv->height);
+                                           x, y);
       g_object_unref (pic);
 
       if (!cursor)
@@ -8298,8 +8304,6 @@ static void gtk_widget_tap_and_hold_setup_real (GtkWidget *widget,
 
       gtk_icon_info_free (info);
 
-      priv->width = gdk_pixbuf_animation_get_width (priv->anim)/2;
-      priv->height = gdk_pixbuf_animation_get_height (priv->anim)/2;
       g_object_set_data (G_OBJECT (window),
 			 "gtk-tap-and-hold-animation", priv->anim);
     }
