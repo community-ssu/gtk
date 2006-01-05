@@ -1,5 +1,11 @@
 2006-01-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_ref_path
+	gtk_tree_model_filter_unref_path): Free copied paths
+	N#21366, N#21542
+
+2006-01-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_leave_notify): clear
 	queued_activate_row so that the next button-release event will not be
 	interpreted as a single tap even if stylus is moved back to the same
