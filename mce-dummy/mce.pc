@@ -1,0 +1,9 @@
+prefix=/usr
+includedir=${prefix}/include
+
+Name: mce
+Description: Mode Control Entity
+Version: 1.2.0
+Requires:
+Libs:
+Cflags: -I${includedir}
