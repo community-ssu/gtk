@@ -2,7 +2,7 @@ Source: hildon-fm
 Section: x11
 Priority: optional
 Maintainer: Luc Pionchon <luc.pionchon@nokia.com> 
-Build-Depends: debhelper (>= 4.0.0), pkg-config, libosso-dev (>= 0.9.1-1), libgtk2.0-dev (>= 2:2.6.4-1.osso53), outo, libxi-dev, libxt-dev, libpng12-dev, libgconf2-dev, hildon-lgpl-dev (>= 0.9.24-1), osso-thumbnail-dev, osso-gwconnect-dev, mce-dev (>= 0.8.5), osso-bttools-dev (>= 0.22), libdbus-glib-1-dev (>= 0.50-1osso)
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libosso-dev (>= 0.9.1-1), libgtk2.0-dev (>= 2:2.6.4-1.osso53), outo, libxi-dev, libxt-dev, libpng12-dev, libgconf2-dev, hildon-lgpl-dev (>= 0.9.24-1), osso-thumbnail-dev, osso-gwconnect-dev, mce-dev, osso-bttools-dev (>= 0.22), libdbus-glib-1-dev (>= 0.50-1osso)
 Standards-Version: 3.6.0
 
 Package: hildon-fm-dev

@@ -1,3 +1,10 @@
+hildon-fm (0.10.0-2) unstable; urgency=low
+
+  * Removed version number from the mce-dev build dependency, so that
+    the mce-dummy package works (bug 86).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 05 Jan 2006 18:01:31 +0200
+
 hildon-fm (0.10.0-1) unstable; urgency=low
 
   * Port to dbus >= 0.50
