@@ -1,3 +1,9 @@
+osso-af-startup (1.1-1) unstable; urgency=low
+
+  * LANGUAGE is now unset in the default 'locale' file (bug 21780).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 09 Jan 2006 09:46:35 +0200
+
 osso-af-startup (1.0-1) unstable; urgency=low
 
   * Modifications for new DBus.

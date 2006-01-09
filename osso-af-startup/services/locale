@@ -1,4 +1,5 @@
 #!/bin/sh
 unset LC_ALL
+unset LANGUAGE
 export LANG=en_GB
 export LC_MESSAGES=en_GB
