@@ -85,25 +85,6 @@ if [ -e /targets/links/scratchbox.config ]; then
     # we are using Scratchbox and sbrsh
     SBRSH="sbrsh $SBOX_TARGET_NAME"
   fi
-
-  # Modify the DBUS session bus socket so that it is different for each user.
-  if [ -e /etc/dbus-1/session.conf ]; then
-      if grep 'session_bus_socket</listen>' /etc/dbus-1/session.conf; then
-	  cp -f /etc/dbus-1/session.conf /tmp/session.conf && \
-	      cat /tmp/session.conf | sed -e "s|session_bus_socket</listen>|session_bus_socket-$USER</listen>|" > \
-	      /etc/dbus-1/session.conf
-      fi
-  fi
-  # we need also to modify the env. variable in af-defines.sh
-  if [ -e /etc/osso-af-init/af-defines.sh ]; then
-      if grep 'session_bus_socket$' /etc/osso-af-init/af-defines.sh; then
-	  cp -f /etc/osso-af-init/af-defines.sh /tmp/af-defines.sh && \
-	      cat /tmp/af-defines.sh | sed -e "s|DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/session_bus_socket|DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/session_bus_socket-$USER|" > \
-	      /etc/osso-af-init/af-defines.sh
-      fi
-  fi
-
-  
 fi
 
 # we need to save these, because the source commands below messes them up
@@ -191,6 +172,22 @@ if [ "$START" = "TRUE" ]; then
 
   # remove dbus own dbus pid file
   rm -rf /var/run/dbus/pid
+  
+  # start dbus system and session busses
+  for svc in \
+      dbus-systembus \
+      dbus-sessionbus;
+  do
+    if [ -e $DIR/$svc.defs ]; then
+      source $DIR/$svc.defs
+    fi
+    if [ -e $DIR/$svc.sh ]; then
+      source $DIR/$svc.sh start
+    fi
+  done
+
+  # resource AF_DEFS to read the address of the dbus session address
+  source $AF_DEFS
 
   # start maemo-launcher
   if [ -x /etc/init.d/maemo-launcher ]; then
@@ -199,8 +196,6 @@ if [ "$START" = "TRUE" ]; then
 
   # start other things
   for svc in \
-      dbus-systembus \
-      dbus-sessionbus \
       sapwood-server \
       matchbox \
       clipboard \

@@ -1,3 +1,10 @@
+hildon-initscripts (1.1-1) unstable; urgency=low
+
+  * Fixed an issue with the session bus address not properly defined by
+    a patch from Johan Bilien.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 11 Jan 2006 14:11:25 +0200
+
 hildon-initscripts (1.0-2) unstable; urgency=low
 
   * Applied a cleanup patch from Guillem Jover.
