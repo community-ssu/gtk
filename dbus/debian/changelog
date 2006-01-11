@@ -1,3 +1,9 @@
+dbus (0.60-1osso4) experimental; urgency=low
+
+  * Added patch for DBusGProxy inheritance from Ricardo Kekki (bug 22302).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 11 Jan 2006 16:42:12 +0200
+
 dbus (0.60-1osso3) experimental; urgency=low
 
   * Added libexpat1-dev as alternative dependency to libexpat-dev.
