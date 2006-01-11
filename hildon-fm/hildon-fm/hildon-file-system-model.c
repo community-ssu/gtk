@@ -136,6 +136,9 @@ struct _HildonFileSystemModelPrivate {
     gchar *backend_name;
     gchar *alternative_root_dir;
     gboolean multiroot;
+    
+    /* fs_settings signal id's */
+    gulong signal_handler_id[4];
 };
 
 /* Property id:s */
@@ -1912,6 +1915,7 @@ static void hildon_file_system_model_finalize(GObject * self)
 {
     HildonFileSystemSettings *fs_settings;
     HildonFileSystemModelPrivate *priv = CAST_GET_PRIVATE(self);
+    gint i;
 
     ULOG_DEBUG(__FUNCTION__);
     g_free(priv->backend_name); /* No need to check NULL */
@@ -1924,12 +1928,20 @@ static void hildon_file_system_model_finalize(GObject * self)
     /* Contents of this queue are gone already */
 
     fs_settings = _hildon_file_system_settings_get_instance();
-    g_signal_handlers_disconnect_by_func
-        (fs_settings, (gpointer) flightmode_changed, self);
-    g_signal_handlers_disconnect_by_func
-        (fs_settings, (gpointer) btname_changed, self);
-    g_signal_handlers_disconnect_by_func
-        (fs_settings, (gpointer) gateway_changed, self);
+    
+    /* Disconnecting signals connected to the fs_settings
+     * notify::flight-mode, notify::btname, notify::gateway */
+    for (i=0; i<3; i++)
+      if (g_signal_handler_is_connected (fs_settings,
+                                         priv->signal_handler_id[i]))
+        g_signal_handler_disconnect (fs_settings,
+                                     priv->signal_handler_id[i]);
+
+    /* Disconnecting filesystem volumes-changed signal */
+    if (g_signal_handler_is_connected (priv->filesystem,
+                                       priv->signal_handler_id[3]));
+      g_signal_handler_disconnect (priv->filesystem,
+                                   priv->signal_handler_id[3]);
 
     ULOG_INFO("ref count = %d", G_OBJECT(priv->filesystem)->ref_count);
     g_object_unref(priv->filesystem);
@@ -2259,18 +2271,18 @@ hildon_file_system_model_constructor(GType type,
 
     fs_settings = _hildon_file_system_settings_get_instance();
 
-    g_signal_connect_object(fs_settings, "notify::flight-mode", 
-        G_CALLBACK(flightmode_changed), obj, 0);
-    g_signal_connect_object(fs_settings, "notify::btname", 
-        G_CALLBACK(btname_changed), obj, 0);
-    g_signal_connect_object(fs_settings, "notify::gateway", 
-        G_CALLBACK(gateway_changed), obj, 0);
+    priv->signal_handler_id[0] = g_signal_connect_object(fs_settings,
+        "notify::flight-mode", G_CALLBACK(flightmode_changed), obj, 0);
+    priv->signal_handler_id[1] = g_signal_connect_object(fs_settings, 
+        "notify::btname", G_CALLBACK(btname_changed), obj, 0);
+    priv->signal_handler_id[2] = g_signal_connect_object(fs_settings,
+        "notify::gateway", G_CALLBACK(gateway_changed), obj, 0);
 
     gateway_changed((GObject *) fs_settings, NULL, obj);
     flightmode_changed((GObject *) fs_settings, NULL, obj);
 
-    g_signal_connect_object(priv->filesystem, "volumes-changed",
-                     G_CALLBACK(real_volumes_changed),
+    priv->signal_handler_id[3] = g_signal_connect_object(priv->filesystem,
+         "volumes-changed", G_CALLBACK(real_volumes_changed),
                      obj, G_CONNECT_SWAPPED);
     }
     else

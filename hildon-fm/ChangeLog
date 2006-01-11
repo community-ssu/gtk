@@ -1,3 +1,24 @@
+2006-01-12  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#19820 Memory leaks in the file selector dialog and underlying components
+	* hildon-fm/hildon-file-system-model.c
+	(_HildonFileSystemModelPrivate): added signal_handler_id table
+	(hildon_file_system_model_finalize): use _disconnect instead of
+	_disconnect_by_func, which does not release memory early enough.
+	(hildon_file_system_model_constructor): Save signal IDs. We need
+	those when we release signal handlers at finalize.
+
+2006-01-12  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	Branched for maintenance (0.9.x) based on 0.9.47-1
+	Developement on trunk (0.10.x)
+
+2005-12-21  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 0.10.0
+
+	* Port to dbus >= 0.50
+
 2005-11-08  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.9.47
