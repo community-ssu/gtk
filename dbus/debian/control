@@ -1,0 +1,109 @@
+Source: dbus
+Section: devel
+Priority: optional
+Maintainer: D-Bus Maintenance Team <debian-dbus@fooishbar.org>
+Uploaders: Daniel Stone <daniels@debian.org>, Sjoerd Simons <sjoerd@debian.org>
+Build-Depends: cdbs (>= 0.4.5.1), debhelper (>= 4.1.46), libglib2.0-dev, libexpat-dev | libexpat1-dev, xlibs-dev
+Standards-Version: 3.6.1.0
+
+Package: dbus
+Architecture: any
+Depends: ${shlibs:Depends}, adduser, debianutils, libexpat1
+Conflicts: libdbus0, dbus-1, dbus-1-utils (<< 0.50-2), libdbus-1-1
+Replaces: libdbus0, dbus-1
+Description: simple interprocess messaging system
+ D-BUS is a message bus, used for sending messages between
+ applications.  Conceptually, it fits somewhere in between raw sockets
+ and CORBA in terms of complexity.
+ .
+ D-BUS supports broadcast messages, asynchronous messages (thus
+ decreasing latency), authentication, and more.  It is designed to be
+ low-overhead; messages are sent using a binary protocol, not using
+ XML.  D-BUS also supports a method call mapping for its messages, but
+ it is not required; this makes using the system quite simple.
+ .
+ D-BUS is still under heavy development, but is expected to be widely
+ used.  It comes with several interfaces, including GLib.  See the
+ description of dbus-glib-1 for more information about those.
+ .
+ This package contains the D-BUS daemon; the client-side library can
+ be found in the libdbus-1-2 package, as it is no longer contained in
+ this package.
+
+Package: libdbus-1-2
+Architecture: any
+Depends: ${shlibs:Depends}
+Conflicts: dbus (<< 0.60)
+Description: simple interprocess messaging system
+ D-BUS is a message bus, used for sending messages between
+ applications.  Conceptually, it fits somewhere in between raw sockets
+ and CORBA in terms of complexity.
+ .
+ D-BUS supports broadcast messages, asynchronous messages (thus
+ decreasing latency), authentication, and more.  It is designed to be
+ low-overhead; messages are sent using a binary protocol, not using
+ XML.  D-BUS also supports a method call mapping for its messages, but
+ it is not required; this makes using the system quite simple.
+ .
+ D-BUS is still under heavy development, but is expected to be widely
+ used.  It comes with several interfaces, including GLib.  See the
+ description of libdbus-glib-1-2 for more information about those.
+ .
+ The daemon can be found in the dbus package.
+
+Package: dbus-1-utils
+Architecture: any
+Section: utils
+Depends: ${shlibs:Depends}, dbus
+Description: simple interprocess messaging system (utilities)
+ D-BUS is a message bus, used for sending messages between
+ applications.  Conceptually, it fits somewhere in between raw sockets
+ and CORBA in terms of complexity.
+ .
+ This package contains several D-BUS related utilities like
+ dbus-launch and dbus-send.
+ .
+ See the dbus description for more information about D-BUS in general.
+
+Package: libdbus-1-dev
+Section: libdevel
+Architecture: any
+Depends: libdbus-1-2 (= ${Source-Version}), pkg-config
+Conflicts: dbus-1-dev
+Replaces: libdbus0-dev, dbus-1-dev 
+Description: simple interprocess messaging system (development headers)
+ D-BUS is a message bus, used for sending messages between applications.
+ Conceptually, it fits somewhere in between raw sockets and CORBA in
+ terms of complexity.
+ .
+ See the dbus description for more information about D-BUS in general.
+
+Package: libdbus-glib-1-dev
+Section: libdevel
+Architecture: any
+Depends: libdbus-glib-1-2 (= ${Source-Version}), libdbus-1-dev (= ${Source-Version}), libglib2.0-dev
+Conflicts: libdbus-glib-dev, dbus-glib-1-dev, dbus-1-utils (<< 0.50-2)
+Replaces: libdbus-glib0-dev, dbus-glib-1-dev
+Description: simple interprocess messaging system (GLib interface)
+ D-BUS is a message bus, used for sending messages between applications.
+ Conceptually, it fits somewhere in between raw sockets and CORBA in
+ terms of complexity.
+ .
+ This package provides a GLib-style interface to D-BUS.
+ .
+ See the dbus description for more information about D-BUS in general.
+
+Package: libdbus-glib-1-2
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: simple interprocess messaging system (GLib-based shared library)
+ D-BUS is a message bus, used for sending messages between applications.
+ Conceptually, it fits somewhere in between raw sockets and CORBA in
+ terms of complexity.
+ .
+ This package provides the GLib-based shared library for applications using the
+ GLib interface to D-BUS.
+ .
+ See the dbus description for more information about D-BUS in general.
+

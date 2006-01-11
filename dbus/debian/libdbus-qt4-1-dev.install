@@ -1,0 +1,7 @@
+debian/tmp/usr/include/dbus*/dbus/qdbuserror.h
+debian/tmp/usr/include/dbus*/dbus/qdbusmessage.h
+debian/tmp/usr/include/dbus*/dbus/qdbusserver.h
+debian/tmp/usr/include/dbus*/dbus/qdbusconnection.h
+debian/tmp/usr/include/dbus*/dbus/qdbusvariant.h
+debian/tmp/usr/lib/libdbus-qt4*.a
+debian/tmp/usr/lib/libdbus-qt4*.so

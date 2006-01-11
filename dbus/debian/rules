@@ -1,0 +1,75 @@
+#!/usr/bin/make -f
+# Copyright © 2002,2003 Colin Walters <walters@verbum.org>
+# Copyright © 2003 Daniel Stone <daniels@debian.org>
+
+binary/libdbus-glib-1-2:: binary/libdbus-1-2
+binary/libdbus-qt-1-1c2:: binary/libdbus-1-2
+binary/dbus-1-utils:: binary/libdbus-glib-1-2
+binary/python2.4-dbus::
+	rm debian/python2.4-dbus/usr/lib/python2.4/site-packages/dbus/dbus_bindings.*a
+	dh_python -ppython2.4-dbus
+
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+include /usr/share/cdbs/1/rules/utils.mk
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+ifeq ($(DEB_BUILD_ARCH),powerpc)
+ MONO_FLAGS=--enable-mono --enable-mono-docs
+endif
+ifeq ($(DEB_BUILD_ARCH),amd64)
+ MONO_FLAGS=--enable-mono --enable-mono-docs
+endif
+ifeq ($(DEB_BUILD_ARCH),i386)
+ MONO_FLAGS=--disable-mono --disable-mono-docs
+endif
+
+
+DEB_CONFIGURE_SCRIPT_ENV += PYTHON=/usr/bin/python2.4
+DEB_CONFIGURE_EXTRA_FLAGS := --enable-glib --disable-gtk --disable-verbose-mode \
+                             --disable-qt3 --with-qt3-moc=/usr/bin/moc-qt3 \
+                             --disable-qt --with-qt-moc=/usr/bin/moc-qt4 \
+                             --disable-python --with-xml=expat --disable-docs \
+                             --disable-xml-docs --disable-doxygen-docs \
+                             $(MONO_FLAGS)
+
+DEB_SHLIBDEPS_INCLUDE_libdbus-glib-1-2 := debian/libdbus-1-2/usr/lib/
+DEB_SHLIBDEPS_INCLUDE_dbus-1-utils := debian/libdbus-1-2/usr/lib/ debian/dbus-gl
+DEB_SHLIBDEPS_INCLUDE_libdbus-qt-1-1c2 := debian/libdbus-1-2/usr/lib/
+DEB_SHLIBDEPS_INCLUDE_libdbus-qt4-1-1 := debian/libdbus-1-2/usr/lib/
+DEB_SHLIBDEPS_INCLUDE_python2.4-dbus := debian/libdbus-1-2/usr/lib/
+
+# Strict library versioning
+DEB_DH_MAKESHLIBS_ARGS_ALL := -V
+
+export MONO_SHARED_DIR=$(CURDIR)
+
+binary-predeb/libdbus-1-cil::
+	dh_makeclilibs -V
+	dh_clideps
+
+common-configure-indep::
+	mkdir -p $(MONO_SHARED_DIR)/.wapi
+
+common-configure-impl::
+	chmod +x py-compile
+
+binary-post-install/libdbus-1-dev::
+	rm -f debian/libdbus-1-dev/usr/include/dbus*/dbus/dbus-glib.h
+	rm -f debian/libdbus-1-dev/usr/include/dbus*/dbus/dbus-qt.h
+
+binary-post-install/dbus::
+	mkdir -p debian/dbus/etc/dbus-1/event.d
+	mkdir -p debian/dbus/etc/X11/Xsession.d
+	cp debian/dbus-Xsession debian/dbus/etc/X11/Xsession.d/75dbus_dbus-launch
+
+binary-post-install/libdbus-1-cil::
+	cd $(CURDIR)/debian/libdbus-1-cil && \
+		find -type f -name "*.dll" -exec chmod -x {} \;
+
+build/dbus-1-doc::
+	doxygen Doxyfile
+
+clean::
+	rm -rf doc/api
+	rm -rf $(MONO_SHARED_DIR)/.wapi

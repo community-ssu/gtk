@@ -1,0 +1,45 @@
+diff -ur dbus/dbus/dbus-sysdeps-util.c dbus.new/dbus/dbus-sysdeps-util.c
+--- dbus/dbus/dbus-sysdeps-util.c	2005-11-04 14:04:14.000000000 +0200
++++ dbus.new/dbus/dbus-sysdeps-util.c	2005-11-17 16:51:34.858779200 +0200
+@@ -42,6 +42,7 @@
+ #include <sys/socket.h>
+ #include <dirent.h>
+ #include <sys/un.h>
++#include <pwd.h>
+ 
+ #ifndef O_BINARY
+ #define O_BINARY 0
+@@ -247,16 +248,23 @@
+                         dbus_gid_t     gid,
+                         DBusError     *error)
+ {
+-  /* setgroups() only works if we are a privileged process,
+-   * so we don't return error on failure; the only possible
+-   * failure is that we don't have perms to do it.
+-   * FIXME not sure this is right, maybe if setuid()
+-   * is going to work then setgroups() should also work.
+-   */
+-  if (setgroups (0, NULL) < 0)
+-    _dbus_warn ("Failed to drop supplementary groups: %s\n",
+-                _dbus_strerror (errno));
+-  
++  struct passwd *pw = getpwuid(uid);
++  if (pw == NULL)
++    {
++      dbus_set_error (error, _dbus_error_from_errno (errno),
++                     "getpwuid() for UID '%d' failed: %s", uid,
++                     _dbus_strerror (errno));
++      return FALSE;
++    }
++
++  if (initgroups (pw->pw_name, pw->pw_gid) < 0)
++    {
++      dbus_set_error (error, _dbus_error_from_errno (errno),
++                      "initgroups() failed: %s",
++                      _dbus_strerror (errno));
++      return FALSE;
++    }
++ 
+   /* Set GID first, or the setuid may remove our permission
+    * to change the GID
+    */

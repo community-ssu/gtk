@@ -1,0 +1,14 @@
+diff -ur dbus/dbus/dbus-sysdeps.c dbus.new/dbus/dbus-sysdeps.c
+--- dbus/dbus/dbus-sysdeps.c	2005-11-04 14:04:15.034503880 +0200
++++ dbus.new/dbus/dbus-sysdeps.c	2005-11-04 18:08:41.894802200 +0200
+@@ -2060,7 +2060,7 @@
+   
+   total = 0;
+   orig_len = _dbus_string_get_length (str);
+-  if (sb.st_size > 0 && S_ISREG (sb.st_mode))
++  if (sb.st_size > 0)
+     {
+       int bytes_read;
+ 
+Only in dbus.new/dbus: dbus-sysdeps.c~
+Only in dbus/debian/patches: ugly-workaround.patch
