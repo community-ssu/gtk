@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.freedesktop.DBus.TestSuiteEchoService
-Exec=/home/joe/cvs/dbus-0.23/test/test-service

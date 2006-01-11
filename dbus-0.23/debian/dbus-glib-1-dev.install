@@ -1,5 +1,0 @@
-debian/tmp/usr/include/dbus*/dbus/dbus-glib.h
-debian/tmp/usr/lib/pkgconfig/dbus-glib-1.pc
-debian/tmp/usr/lib/libdbus-glib-*.a
-debian/tmp/usr/lib/libdbus-glib-*.so
-debian/tmp/usr/lib/libdbus-glib-*.la
