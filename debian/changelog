@@ -5,7 +5,16 @@ gtk+2.0 (2:2.6.10-1.osso2) unstable; urgency=low
   * Begin using the new g_slice_*() API
     - debian/control.in: Build-Depends: libglib2.0-dev (>= 2.6.6-1osso2)
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  4 Jan 2006 18:22:45 +0200
+  * Bugfixes merged from IT-2005:
+    13454: HW keys - OGS - problem with UP and LEFT keys when OK button is
+           focused
+    18225: TN and status bar menus do not close in certain case
+    20212: Long touch animation circling: bias-aligned?
+    20552: GtkTreeView sometimes actives items after drag'n'drop
+    21366: Minor memory leak in Chess when file selector is destroyed
+    21542: Minor memory leak in filetree/treeview update
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 11 Jan 2006 18:21:14 +0200
 
 gtk+2.0 (2:2.6.10-1.osso1) unstable; urgency=low
 
