@@ -1,5 +1,5 @@
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(libosso_common_error, 0.1.7)
+AM_INIT_AUTOMAKE(libosso_common_error, 0.1.8)
 
 AC_ISC_POSIX
 AC_PROG_CC
@@ -15,7 +15,6 @@ GETTEXT_PACKAGE=libosso-common-error
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE")
 
-dnl Add the languages which your application supports here.
 ALL_LINGUAS="en_GB"
 AM_GLIB_GNU_GETTEXT
 

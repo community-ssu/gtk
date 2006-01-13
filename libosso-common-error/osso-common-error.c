@@ -157,7 +157,13 @@ static const char *_osso_errlist [] = {
 	[CERM_FOLDER_NOT_FOUND]
 								= _("cerm_folder_not_found"),
 	[CERM_ITEMS_NOT_FOUND]
-								= _("cerm_items_not_found")
+								= _("cerm_items_not_found"),
+  [CERM_THUMB_KEYBOARD_NOT_SUPPORTED]
+                = _("cerm_thumb_keyboard_not_supported"),
+  [CERM_DEVICE_MEMORY_FULL]
+                = _("cerm_device_memory_full"),
+  [CERM_MEMORY_CARD_FULL]
+                = _("cerm_memory_card_full")
 };
 
 static int osso_common_error_size = sizeof (_osso_errlist)

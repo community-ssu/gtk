@@ -271,3 +271,12 @@ msgstr "Folder not found"
 
 msgid "cerm_items_not_found"
 msgstr "Items not found"
+
+msgid "cerm_thumb_keyboard_not_supported"
+msgstr "Thumb keyboard not supported"
+
+msgid "cerm_device_memory_full"
+msgstr "Device memory full. Remove data to free memory."
+
+msgid "cerm_memory_card_full"
+msgstr "Memory card full. Remove data to free memory."
