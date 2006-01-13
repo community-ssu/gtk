@@ -207,7 +207,7 @@ libhildonnavigator_la_SOURCES = \
 	hildon-navigator-lib.h \
 	osso-manager.c \
 	osso-manager.h \
-	windowmanager.c \
+	hn-wm.c \
 	hn-wm.h \
 	hn-wm-types.h \
 	hn-wm-util.c \
@@ -252,10 +252,10 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libhildonnavigator_la_LDFLAGS =
 libhildonnavigator_la_DEPENDENCIES =
 am_libhildonnavigator_la_OBJECTS = hildon-navigator.lo \
-	hildon-navigator-main.lo osso-manager.lo windowmanager.lo \
-	hn-wm-util.lo hn-wm-memory.lo hn-wm-session.lo \
-	hn-wm-watched-window.lo hn-wm-watched-window-view.lo \
-	hn-wm-watchable-app.lo application-switcher.lo others-menu.lo
+	hildon-navigator-main.lo osso-manager.lo hn-wm.lo hn-wm-util.lo \
+	hn-wm-memory.lo hn-wm-session.lo hn-wm-watched-window.lo \
+	hn-wm-watched-window-view.lo hn-wm-watchable-app.lo \
+	application-switcher.lo others-menu.lo
 libhildonnavigator_la_OBJECTS = $(am_libhildonnavigator_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -270,9 +270,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/hn-wm-watchable-app.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hn-wm-watched-window-view.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hn-wm-watched-window.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/osso-manager.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/others-menu.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/windowmanager.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/hn-wm.Plo ./$(DEPDIR)/osso-manager.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/others-menu.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -344,9 +343,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-watchable-app.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-watched-window-view.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-watched-window.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/others-menu.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/windowmanager.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \

@@ -115,6 +115,7 @@ static gchar *home_bg_image_uri = NULL;/*full file path */
 static gchar *home_bg_image_in_use_uri = NULL;/*full file path */
 static const gchar *home_bg_image_filename = NULL; /*file name (short)*/
 static gint home_bg_combobox_active_item = -1; 
+static gboolean home_bg_image_loading_necessary = FALSE;
 static gboolean home_bg_image_symlinked = FALSE;
 
 static const gchar *titlebar_original_image_savefile;
@@ -412,10 +413,8 @@ void construct_titlebar_menu()
             {
                 if(plugin_exists[applet_num])
                 {
-                gtk_check_menu_item_set_active(
-                    GTK_CHECK_MENU_ITEM(menu_item[applet_num]),TRUE);                
-                    hildon_home_plugin_applet_foreground(
-                        plugin[applet_num]);
+                    gtk_check_menu_item_set_active(
+                            GTK_CHECK_MENU_ITEM(menu_item[applet_num]),TRUE);                
                     g_object_set(G_OBJECT(applet_area[applet_num]), 
                                  "visible", TRUE, NULL);
                 }
@@ -848,11 +847,13 @@ static void combobox_active_tracer(GtkWidget *combobox,
             image_name != NULL &&
             g_str_equal(home_bg_image_in_use_uri, image_name))
         {
+            home_bg_image_loading_necessary = FALSE;
             gtk_dialog_set_response_sensitive(dialog,
                                               GTK_RESPONSE_APPLY , FALSE);
         }
         else
         {
+            home_bg_image_loading_necessary = TRUE;
             if (home_bg_image_uri) {
                 g_free(home_bg_image_uri);
             }
@@ -901,6 +902,7 @@ void set_background_response_handler(GtkWidget *dialog,
                 while(gtk_main_iteration());
             } else
             {
+                home_bg_image_loading_necessary = TRUE;
                 gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
                                                   GTK_RESPONSE_APPLY , TRUE);
             }
@@ -908,6 +910,7 @@ void set_background_response_handler(GtkWidget *dialog,
         break;
     case GTK_RESPONSE_APPLY:
         g_signal_stop_emission_by_name(dialog, "response");
+        home_bg_image_loading_necessary = FALSE;
 
         if (home_bg_combobox_active_item != -1) 
         {
@@ -1221,7 +1224,8 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
     {
     case GTK_RESPONSE_OK:
         if(home_bg_image_uri != NULL && 
-           home_bg_combobox_active_item != -1) 
+           home_bg_combobox_active_item != -1 &&
+           home_bg_image_loading_necessary) 
         {              
             construct_background_image_with_uri(home_bg_image_uri, TRUE);
         }

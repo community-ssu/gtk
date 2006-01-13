@@ -1,5 +1,9 @@
+2006-01-13  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-home/hildon-home-main.c: Backported fix to N#21213 from IT-2005
+	* Reverted fix to N#19977
+
 2006-01-05  Johan Bilien <johan.bilien@nokia.com>
-	* hildon-home/hildon-home-main.c: Backported fix to B#19977 from IT-2005
+	* hildon-home/hildon-home-main.c: Backported fix to N#19977 from IT-2005
 
 2006-01-04  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/*: Imported recent changes by Matthew Allum
