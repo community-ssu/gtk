@@ -1,0 +1,16 @@
+2006-01-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.10.1
+
+2006-01-03  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#21990 Unable move bookmarks with ä or ö
+	
+	* gtkfilesystemmemory.c (g_unescape_uri_string): Be less strict on
+	what ASCII characters to accept escaped, since g_filename_to_uri()
+	escapes quite a many of them.
+	
+	(gtk_file_system_memory_path_to_uri): Use g_filename_to_uri() to
+	escape the filename if needed.
+
+	

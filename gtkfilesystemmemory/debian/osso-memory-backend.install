@@ -1,0 +1,5 @@
+usr/include/gtkfilesystemmemory
+usr/lib/gtk-2.0/2.4.0/filesystems/libfilesystemmemory.so
+usr/lib/pkgconfig/gtkfilesystemmemory.pc
+usr/lib/pkgconfig/gtkfilesystemmemorypublic.pc
+usr/lib/libgtkfilesystemmemorypublic.so*

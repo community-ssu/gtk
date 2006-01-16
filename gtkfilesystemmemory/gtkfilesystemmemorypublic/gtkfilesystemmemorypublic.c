@@ -1,0 +1,286 @@
+/* gtkfilesystemmemorypublic.c
+ *
+ * Copyright (C) 2005 Nokia Corporation.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ *
+ *
+ * To use gtkfilesystemmemory you may need some additional
+ * functionality. gtkfilesystemmemorypublic is implementing
+ * the public part of the filesystem.
+ */
+
+#include <gtk/gtktreestore.h>
+
+#define GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
+#undef __GNUC__ /* This is needed because compile option -pedantic
+                   disables GNU extensions and code don't detect this */
+
+#include <gtk/gtkfilesystem.h>
+
+#include "../gtkfilesystemmemory/gtkfilesystemmemoryprivate.h"
+#include "gtkfilesystemmemory.h"
+#include <string.h>
+
+/**
+ * gtk_file_system_memory_tree_path_to_file_path:
+ * @file_system: #GtkFileSystem
+ * @path: #GtkTreePath
+ *
+ * Converts a #GtkTreePath to #GtkFilePath.
+ *
+ * Return value: A #GtkFilePath
+ */
+GtkFilePath *
+gtk_file_system_memory_tree_path_to_file_path( GtkFileSystem *file_system,
+                                               GtkTreePath *path )
+{
+  GtkTreeIter iter;
+  
+  if( !gtk_tree_model_get_iter( GTK_TREE_MODEL(file_system), &iter, path ) )
+    return NULL;
+
+  return gtk_file_system_memory_tree_iter_to_file_path( file_system, &iter );
+}
+
+/**
+ * gtk_file_system_memory_file_path_to_tree_path:
+ * @file_system: #GtkFileSystem
+ * @path: #GtkFilePath
+ *
+ * Converts a #GtkFilePath to #GtkTreePath.
+ *
+ * Return value: A #GtkTreePath
+ */
+GtkTreePath *
+gtk_file_system_memory_file_path_to_tree_path( GtkFileSystem *file_system,
+                                               const GtkFilePath *path )
+{
+  GtkTreeIter iter;
+
+  if (gtk_file_system_memory_file_path_to_tree_iter(file_system, &iter, path ))
+    return gtk_tree_model_get_path( GTK_TREE_MODEL(file_system), &iter );
+
+  return NULL; 
+}
+
+/**
+ * gtk_file_system_memory_file_path_to_tree_iter:
+ * @file_system: a #GtkFileSystem
+ * @iter: a #GtkTreeIter to store the result.
+ * @path: a #GtkFilePath
+ *
+ * Converts a #GtkFilePath to #GtkTreeIter.
+ *
+ * Return value: %TRUE, if #iter points to valid location, %FALSE otherwise.
+ */
+gboolean
+gtk_file_system_memory_file_path_to_tree_iter( GtkFileSystem *file_system,
+                                               GtkTreeIter *iter, const GtkFilePath *path )
+{
+  GtkTreeModel *model = NULL;
+  GtkTreeIter child;
+  gboolean is_folder = FALSE;
+  gboolean result = FALSE;
+  gint i = 0;
+  gchar *str = NULL, *current = NULL;
+  gchar **tokens = NULL;
+
+  if( !path )
+    return FALSE;
+
+  model = GTK_TREE_MODEL(file_system);
+
+  gtk_tree_model_get_iter_first( model, iter );
+  tokens = g_strsplit( (gchar*)path, "/", 0 );
+
+  if( !tokens[0] )
+  {
+    g_free(tokens);
+    return FALSE;
+  }
+  
+  current = tokens[0];
+
+  if( *current == '\0' )
+  {
+    g_free( current );
+    current = tokens[0] = g_strdup("/");
+    if( *tokens[1] == '\0' )
+    {
+      g_free( tokens[1] );
+      tokens[1] = NULL;
+    }
+  }
+
+  while( current )
+  {
+    gtk_tree_model_get( model, iter, GTK_FILE_SYSTEM_MEMORY_COLUMN_NAME, &str,
+                        GTK_FILE_SYSTEM_MEMORY_COLUMN_IS_FOLDER, &is_folder,
+                        -1 );
+    if( !strcmp(current, str) )
+    {
+      g_free( str );
+      
+      if( tokens[i+1] == NULL || *tokens[i+1] == '\0' )
+      {
+        result = TRUE;
+        break;
+      }
+
+      if( gtk_tree_model_iter_children( model, &child, iter ) )
+      {
+        *iter = child;
+        g_free( current );
+        current = tokens[++i];
+        continue;
+      }
+    }
+    else
+    {
+      g_free( str );
+      
+      if( *current == '\0' )
+        break;
+    }
+    
+    if ( !gtk_tree_model_iter_next( model, iter ) )
+      break;
+  }
+
+/*  if( !current )
+    result = gtk_tree_model_get_path( model, &iter ); 
+  else*/
+    while( current )
+    {
+      g_free( current );
+      current = tokens[++i];
+    }
+  
+  g_free( tokens );
+
+  return result; 
+}
+
+/**
+ * gtk_file_system_memory_file_path_to_tree_iter:
+ * @file_system: #GtkFileSystem
+ * @iter: #GtkTreeIter
+ *
+ * Converts a #GtkTreeIter to #GtkFilePath.
+ *
+ * Return value: A #GtkFilePath
+ */
+GtkFilePath *
+gtk_file_system_memory_tree_iter_to_file_path( GtkFileSystem *file_system,
+                                               GtkTreeIter *iter )
+{
+  gboolean result;
+  GtkTreeModel *model= NULL;
+  GtkTreeIter iterator;
+  GtkTreeIter parent;
+  gchar *str = NULL, *tmp = NULL, *cac = NULL;
+
+  model = GTK_TREE_MODEL(file_system);
+  iterator = *iter;
+
+  gtk_tree_model_get( model, &iterator, GTK_FILE_SYSTEM_MEMORY_COLUMN_NAME, 
+                      &str, -1 );
+
+  while( gtk_tree_model_iter_parent(model, &parent, &iterator) )
+  {
+    iterator = parent;
+    gtk_tree_model_get( model, &iterator, GTK_FILE_SYSTEM_MEMORY_COLUMN_NAME,
+                        &tmp, -1 );
+    if( strcmp( tmp, "/" ) )
+      cac = g_strconcat( tmp, "/", str, NULL );
+    else
+      cac = g_strconcat( tmp, str, NULL );
+    g_free(tmp);
+    g_free(str);
+    str = cac;
+  }
+  
+  gtk_tree_model_get( model, &iterator, GTK_FILE_SYSTEM_MEMORY_COLUMN_IS_FOLDER,
+                      &result, -1 );
+  if( result )
+  {
+    if( str[0] != '/' )
+    {
+      tmp = g_strconcat( str, "/", NULL );
+      g_free(str);
+      str = tmp;
+    }
+  }
+
+  return (GtkFilePath*)str;
+}
+
+
+/**
+ * gtk_file_system_memory_remove
+ * @file_system: #GtkFileSystem
+ * @path: #GtkTreePath
+ *
+ * Removes the item pointed by the path.
+ * Should be used instead of the gtk_tree_store_remove.
+ *
+ * Return value: TRUE if success.
+ */
+gboolean gtk_file_system_memory_remove( GtkFileSystem *file_system,
+                                        GtkTreePath *path )
+{
+  GtkTreeIter iter;
+  GtkTreeIter child;
+  GtkFilePath *file_path = NULL;
+  GtkFileSystemMemory *fsm = (GtkFileSystemMemory*)file_system;
+  GtkTreeModel *model = GTK_TREE_MODEL(fsm);
+
+  file_path = gtk_file_system_memory_tree_path_to_file_path(
+                                              file_system, path);
+
+  fsm->parent_path = gtk_tree_path_copy(path);
+  gtk_tree_path_up(fsm->parent_path);
+
+  if( !gtk_tree_model_get_iter( GTK_TREE_MODEL(fsm), &iter, path ) )
+    return FALSE;
+
+  if( gtk_tree_model_iter_children(GTK_TREE_MODEL(fsm), &child, &iter) )
+  do
+  {
+    GtkTreePath *child_path = gtk_tree_model_get_path( model, &iter );
+    fsm->file_paths_to_be_deleted = g_slist_append( fsm->file_paths_to_be_deleted,
+                                      gtk_file_system_memory_tree_path_to_file_path(
+       				      file_system, child_path));
+    gtk_tree_path_free( child_path );
+  } while( gtk_tree_model_iter_next(model, &child) );
+
+  fsm->file_paths_to_be_deleted = g_slist_append( fsm->file_paths_to_be_deleted,
+                                      file_path);
+
+  /* with ! --> success
+   * If we were not able to remove anything, we haveto NULL the variable
+   */
+  if( gtk_tree_store_remove(GTK_TREE_STORE(fsm), &iter) )
+  {
+    g_slist_free(fsm->file_paths_to_be_deleted);
+    fsm->file_paths_to_be_deleted = NULL;
+    gtk_tree_path_free(fsm->parent_path);
+    fsm->parent_path = NULL;
+  }
+  
+  return TRUE;
+}
+

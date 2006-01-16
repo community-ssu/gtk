@@ -1,0 +1,13 @@
+gtkfilesystemmemory (0.10.1-1) unstable; urgency=low
+
+  * N#21990 Unable move bookmarks with ä or ö
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Tue,  3 Jan 2006 23:42:53 +0200
+
+gtkfilesystemmemory (0.10.0-1) unstable; urgency=low
+
+  * Cleaned up for publication.
+  * Added COPYING file.
+  * Added copyright headers to code files.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 22 Nov 2005 11:36:58 +0200

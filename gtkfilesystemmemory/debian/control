@@ -1,0 +1,12 @@
+Source: gtkfilesystemmemory
+Section: x11
+Priority: optional
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libgtk2.0-dev (>= 1:2.4.4), libxi-dev, libxt-dev
+Standards-Version: 3.6.0
+
+Package: osso-memory-backend
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Memory based backend for GTK+ file selector
