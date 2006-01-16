@@ -1,5 +1,5 @@
 /*
- * client.c
+ * $Id$
  *
  * Copyright (C) 2005 Nokia
  *

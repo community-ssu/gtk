@@ -1,5 +1,5 @@
 /*
- * ui_gtk.h
+ * $Id$
  *
  * Copyright (C) 2005 Nokia
  *

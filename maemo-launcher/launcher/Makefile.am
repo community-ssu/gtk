@@ -1,4 +1,7 @@
 ## Process this file with automake to produce Makefile.in
+#
+# $Id$
+#
 
 bin_PROGRAMS = maemo-launcher maemo-invoker
 

@@ -1,3 +1,4 @@
+.\" $Id$
 .TH maemo\-launcher 1 2005-09-13 @VERSION@ "Maemo Launcher manual"
 .SH NAME
 maemo\-launcher \- initialization launcher daemon

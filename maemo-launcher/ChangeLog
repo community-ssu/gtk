@@ -1,3 +1,22 @@
+2006-01-16  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/invokelib.c: Add svn:keywords Id.
+	* launcher/invokelib.h: Likewise.
+	* launcher/invoker.1.in: Likewise.
+	* launcher/invoker.c: Likewise.
+	* launcher/launcher.1.in: Likewise.
+	* launcher/launcher.c: Likewise.
+	* launcher/ui.h: Likewise.
+	* launcher/ui_gtk.c: Likewise.
+	* launcher/ui_gtk.h: Likewise.
+	* launcher/report.c: Likewise.
+	* launcher/report.h: Likewise.
+	* launcher/Makefile.am: Likewise.
+	* client/client.c: Likewise.
+	* client/Makefile.am: Likewise.
+	* INSTALL: Likewise.
+	* Makefile.am: Likewise.
+
 2006-01-03  Guillem Jover  <guillem.jover@nokia.com>
 
 	* configure.ac (GTK_REQUIRED, GNOMEVFS_REQUIRED, HILDON_LIBS_REQUIRED,
