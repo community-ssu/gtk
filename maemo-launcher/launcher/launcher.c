@@ -169,13 +169,13 @@ invoked_get_magic(int fd)
 
   /* Receive the magic. */
   invoke_recv_msg(fd, &msg);
-  if (msg != INVOKER_MAGIC)
+  if (msg != INVOKER_MSG_MAGIC)
   {
     error("receiving bad magic (%08x)\n", msg);
     return false;
   }
   else
-    invoke_send_msg(fd, INVOKER_ACK);
+    invoke_send_msg(fd, INVOKER_MSG_ACK);
 
   return true;
 }
@@ -187,7 +187,7 @@ invoked_get_exec(int fd, prog_t *prog)
   if (!prog->filename)
     return false;
 
-  invoke_send_msg(fd, INVOKER_ACK);
+  invoke_send_msg(fd, INVOKER_MSG_ACK);
 
   return true;
 }
@@ -226,7 +226,7 @@ invoked_get_args(int fd, prog_t *prog)
     }
   }
 
-  invoke_send_msg(fd, INVOKER_ACK);
+  invoke_send_msg(fd, INVOKER_MSG_ACK);
 
   return true;
 }
@@ -243,14 +243,14 @@ invoked_get_actions(int fd, prog_t *prog)
 
     switch (msg)
     {
-    case INVOKER_EXEC:
+    case INVOKER_MSG_EXEC:
       invoked_get_exec(fd, prog);
       break;
-    case INVOKER_ARGS:
+    case INVOKER_MSG_ARGS:
       invoked_get_args(fd, prog);
       break;
-    case INVOKER_END:
-      invoke_send_msg(fd, INVOKER_ACK);
+    case INVOKER_MSG_END:
+      invoke_send_msg(fd, INVOKER_MSG_ACK);
       return true;
     default:
       error("receiving invalid action (%08x)\n", msg);

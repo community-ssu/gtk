@@ -46,7 +46,7 @@ invoke_recv_ack(int fd)
   /* Revceive ACK. */
   invoke_recv_msg(fd, &msg);
 
-  if (msg != INVOKER_ACK)
+  if (msg != INVOKER_MSG_ACK)
     die(1, "receiving wrong ack (%08x)\n", msg);
   else
     return true;
@@ -69,7 +69,7 @@ invoker_init(void)
     die(1, "connecting to the launcher\n");
 
   /* Send magic. */
-  invoke_send_msg(fd, INVOKER_MAGIC);
+  invoke_send_msg(fd, INVOKER_MSG_MAGIC | INVOKER_MSG_MAGIC_VERSION);
   invoke_recv_ack(fd);
 
   return fd;
@@ -79,7 +79,7 @@ static bool
 invoker_send_exec(int fd, char *exec)
 {
   /* Send action. */
-  invoke_send_msg(fd, INVOKER_EXEC);
+  invoke_send_msg(fd, INVOKER_MSG_EXEC);
   invoke_send_str(fd, exec);
 
   invoke_recv_ack(fd);
@@ -93,7 +93,7 @@ invoker_send_args(int fd, int argc, char **argv)
   int i;
 
   /* Send action. */
-  invoke_send_msg(fd, INVOKER_ARGS);
+  invoke_send_msg(fd, INVOKER_MSG_ARGS);
   invoke_send_msg(fd, argc);
   for (i = 0; i < argc; i++)
     invoke_send_str(fd, argv[i]);
@@ -107,7 +107,7 @@ static bool
 invoker_send_end(int fd)
 {
   /* Send action. */
-  invoke_send_msg(fd, INVOKER_END);
+  invoke_send_msg(fd, INVOKER_MSG_END);
 
   invoke_recv_ack(fd);
 

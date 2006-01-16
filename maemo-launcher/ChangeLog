@@ -1,5 +1,23 @@
 2006-01-16  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/invokelib.h (INVOKER_MSG_MASK): New macro.
+	(INVOKER_MSG_MAGIC_VERSION_MASK): Likewise.
+	(INVOKER_MSG_MAGIC_OPTION_MASK): Likewise.
+	(INVOKER_MSG_MAGIC_OPTION_WAIT): Likewise.
+	(INVOKER_MAGIC): Renamed to ...
+	(INVOKER_MSG_MAGIC): ... this. Fix all callers. Move version to ...
+	(INVOKER_MSG_MAGIC_VERSION): ... here. New macro.
+	(INVOKER_EXEC): Renamed to ...
+	(INVOKER_MSG_EXEC): ... this. Fix all callers.
+	(INVOKER_ARGS): Renamed to ...
+	(INVOKER_MSG_ARGS): ... this. Fix all callers.
+	(INVOKER_END): Renamed to ...
+	(INVOKER_MSG_END): ... this. Fix all callers.
+	(INVOKER_ACK): Renamed to ...
+	(INVOKER_MSG_ACK): ... this. Fix all callers.
+
+2006-01-16  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/invokelib.c: Add svn:keywords Id.
 	* launcher/invokelib.h: Likewise.
 	* launcher/invoker.1.in: Likewise.

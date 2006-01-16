@@ -36,13 +36,17 @@ char *invoke_recv_str(int fd);
 /* FIXME: Should be '/var/run/'. */
 #define INVOKER_SOCK	"/tmp/."PACKAGE
 
-#define INVOKER_MAGIC	0xb0070002
-
-#define INVOKER_EXEC	0xe8ec0000
-#define INVOKER_ARGS	0xa4650000
-#define INVOKER_END	0xdead0000
-
-#define INVOKER_ACK	0x600d0000
+/* Protocol messages and masks. */
+#define INVOKER_MSG_MASK		0xffff0000
+#define INVOKER_MSG_MAGIC		0xb0070000
+#define INVOKER_MSG_MAGIC_VERSION_MASK		0x0000ff00
+#define INVOKER_MSG_MAGIC_VERSION		0x00000100
+#define INVOKER_MSG_MAGIC_OPTION_MASK		0x000000ff
+#define INVOKER_MSG_MAGIC_OPTION_WAIT		0x00000001
+#define INVOKER_MSG_EXEC		0xe8ec0000
+#define INVOKER_MSG_ARGS		0xa4650000
+#define INVOKER_MSG_END			0xdead0000
+#define INVOKER_MSG_ACK			0x600d0000
 
 #endif
 
