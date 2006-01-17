@@ -29,7 +29,7 @@ hildon_bread_crumb_trail_set_path (GtkWidget *trail, GList *path)
       GList *next;
       gtk_widget_destroy (GTK_WIDGET (children->data));
       next = children->next;
-      g_list_free (children);
+      g_list_free_1 (children);
       children = next;
     }
 

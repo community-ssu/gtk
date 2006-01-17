@@ -27,7 +27,9 @@
 
 #include <gtk/gtk.h>
 
-bool ask_yes_no (const gchar *question);
+#include "operations.h"
+
+bool ask_yes_no (const gchar *question_fmt);
 void annoy_user (const gchar *text);
 
 struct progress_with_cancel {
@@ -45,5 +47,22 @@ struct progress_with_cancel {
   GtkProgressBar *bar;
   bool cancelled;
 };
+
+typedef void item_widget_attacher (GtkTable *tabel, gint row,
+				   gpointer item);
+
+GtkWidget *make_scrolled_table (GList *items, gint columns,
+				item_widget_attacher *attacher);
+
+typedef void section_activated (section_info *);
+GtkWidget *make_section_list (GList *packages, section_activated *act);
+
+typedef void package_info_callback (package_info *);
+GtkWidget *make_package_list (GList *packages,
+			      bool installed,
+			      package_info_callback *selected,
+			      package_info_callback *activated);
+
+GtkWidget *make_small_text_view (const char *text);
 
 #endif /* !UTIL_H */

@@ -5,6 +5,12 @@ osso_application_installer_SOURCES = main.cc \
                                      util.cc \
                                      operations.h \
                                      operations.cc \
+                                     details.h \
+                                     details.cc \
+                                     menu.h \
+                                     menu.cc \
+                                     log.h \
+                                     log.cc \
                                      hildonbreadcrumbtrail.h \
                                      hildonbreadcrumbtrail.c
 

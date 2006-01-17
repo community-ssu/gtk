@@ -35,7 +35,24 @@ Design notes
 First phase: wild experimentation with libapt-pkg and widget writing
 for Gtk+.  No design whatsoever.
 
-The libapt-pkg specific code is written in C++, but most of the GUI
-code should be plain C to enable easier transportation into external
-libraries or reuse.  This is not an object oriented program, but we'll
-use STL without prejudice.
+The libapt-pkg specific code is written in C++, but some of the GUI
+code will be plain C to enable easier transportation into external
+libraries or reuse.  This is not a deeply object oriented program, but
+we'll use STL without prejudice.
+
+
+XXX
+---
+
+Updating the cache works but is only seen after restarting the
+program.
+
+
+TESTS
+-----
+
+Packages with same name, different versions, different descriptions.
+
+Upgrading to resolve conflicts.
+
+Unsatisfied indirect dependencies.

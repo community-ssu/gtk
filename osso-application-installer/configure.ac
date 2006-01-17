@@ -23,6 +23,7 @@ AC_SUBST(AI_DEPS_CFLAGS)
 AC_SUBST(AI_DEPS_LIBS)
 
 AC_CONFIG_FILES([Makefile
-                 src/Makefile])
+                 src/Makefile
+                 test-data/Makefile])
 
 AC_OUTPUT
