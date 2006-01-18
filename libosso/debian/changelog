@@ -1,3 +1,10 @@
+libosso (1.0.2-2) unstable; urgency=low
+
+  * Improved documentation for osso_initialize to include facts about
+    the D-BUS service name and its relation to the desktop file.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 18 Jan 2006 13:26:54 +0200
+
 libosso (1.0.2-1) unstable; urgency=low
 
   * Ported for v0.60 dbus.

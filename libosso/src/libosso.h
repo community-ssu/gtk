@@ -65,7 +65,11 @@ typedef struct osso_af_context_t osso_context_t;
  * only once by the application.
  * @param application The name of the application.
  * This name forms the last part of the default (D-BUS) service name of the
- * application.
+ * application. Note that the D-BUS service name will be
+ * 'com.nokia.application', where 'application' is the value you gave as the
+ * parameter. Note also that this argument must be identical to the
+ * X-Osso-Service value in the desktop file, or the D-BUS daemon will kill
+ * your application.
  * The only valid characters that the name may contain are letters a-z and
  * the underscore '_'.
  * @param version The version string of the application. It must be 
