@@ -1,0 +1,548 @@
+hildon-lgpl (0.9.35-1) unstable; urgency=low
+
+  * Fixed 14165: Single press Home hardkey does not minimize
+    applications and show home application
+  * hildon-app.c:
+  * - We now use more standard _NET_SHOWING_DESKTOP to top desktop instead
+    of Matchbox-only MB_CMD_DESKTOP.
+  * Fixed #14501 - Full screen HW key does not work when menu is open
+  * hildon-app.c:
+  * - Fix menu-open-on-fullscreen-button problems.
+  * - Eat the fullscreen hw key event to encourage correct API usage
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 27 Jun 2005 17:20:32 +0300
+
+hildon-lgpl (0.9.34-1) unstable; urgency=low
+
+  * gtkinfoprint.c: fixed infoprint destruction issue.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Fri, 17 Jun 2005 12:46:08 +0300
+
+hildon-lgpl (0.9.33-1) unstable; urgency=low
+
+  * Fixed #13388 (Whole device hangs while dragging in Others menu)
+  * hildon-app.[ch]:
+  * - Added a break check in to a while loop
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Fri, 17 Jun 2005 09:45:56 +0300
+
+hildon-lgpl (0.9.32-1) unstable; urgency=low
+
+  * Code clean up
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Fri, 17 Jun 2005 08:45:19 +0300
+
+hildon-lgpl (0.9.31-1) unstable; urgency=low
+
+  * hildon-defines.h: added device hardkey keysym defines (that refer to
+    gdkkeysyms.h defines, not the actual values)
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Thu, 16 Jun 2005 19:57:58 +0300
+
+hildon-lgpl (0.9.30-1) unstable; urgency=low
+
+  * hildon-app.{h,c},hildon-app-private.h:
+  * - hildon-app realization fixes
+  * Fixed #9179: Menu hardware key does not close menu
+  * hildon-app.c:
+  * - Move menu key event handling from release to press
+  * Fixed #13105: Infoprint could compare the infoprint string to see
+    whether it should stay longer
+  * gtk-infoprint.c:
+  * - now checks each new infoprint in case it is exactly the same as
+    some currently visible infoprint (or in the case of confirmation
+    banners, the  current queue tail) and reuses the current infoprint
+    to prevent running amok when the same infoprint is created over and
+    over again for some reason (such as putting 770 in a pocket while
+    its screen is locked)
+  * - implemented confirmation banner queue
+  * - information banners are replaced immediately
+  * - implemented progress banner "reference counter" to ensure that
+    gtk_banner_close has no effect until all created progress banners
+    have  been explicitly destroyed
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 13 Jun 2005 16:18:59 +0300
+
+hildon-lgpl (0.9.29-1) unstable; urgency=low
+
+  * hildon-app.c:
+  * - Renamed _OSSO_* -> _HILDON_* so communication works with hildon-
+      im-keyboard.
+      
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 30 May 2005 08:41:35 +0300
+
+hildon-lgpl (0.9.28-1) unstable; urgency=low
+
+  * hildon-app.c:
+  * - A minor scroll control fix/update.
+  * Fixed #11129: some strings are not localizable
+  * hildon-caption.c:
+  * - separator now uses logical name
+  * hildon-find-toolbar.c:
+  * - Find button now uses logical name
+  * en_GB.po:
+  * - added new logical strings in hildon-caption and hildon-find-
+    toolbar
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 30 May 2005 08:41:12 +0300
+
+hildon-lgpl (0.9.27-1) unstable; urgency=low
+
+  * hildon-caption.[ch]: Added 'expand' property
+  * hildon-caption.[ch]:
+  * - Added 'expand' property
+  * - Fixed compilation problems if HILDON_DISABLE_DEPRECATED is defined
+  * Fixed #12361: In fullscreen mode application menu appears in the
+    middle of the  screen
+  * hildon-appview.c:
+  * - Position menu using theme-specified offset in fullscreen mode.
+  * - Remove a bit of unused code.
+  * Fixed #9505 - Find toolbar has incorrect layout
+  * hildon-find-toolbar.c:
+  * - Fixed the toolbar items to be toolbar items and to have icons
+    instead of text.
+  * - Set the search field to expand
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Tue, 24 May 2005 18:23:50 +0300
+
+hildon-lgpl (0.9.26-1) unstable; urgency=low
+
+  * Fixed #10483 - fr_FR - Input methods - Truncation issue
+  * Fixed #10731 - es_ES Teach handwriting view: truncated information
+    banner
+  * Fixed #10732 - es_ES Teach handwriting view: truncated information
+    banner
+  * Fixed #11015 - de-DE Input Methods, Teach handwriting: Information
+    banner
+  * gtk-infoprint.c:
+  * - two_lines_truncate changed to three_lines_truncate and its
+    functionality was changed to split the infoprint to up to three
+    lines instead of two.
+  * Fixed #9690: Derived classes shouldn't connect to own signals
+  * hildon-app.c,hildon-app-private.h,hildon-caption.c:
+  * - Provide default signal handlers, instead of connecting signals on
+    self
+  * Fixed #12229: hildon libs not ready for publishing
+  * - Applied patch from #12229 (Correct copyright/license
+    statements)
+  * Fixed #12344: Captions: double-colons
+  * hildon-caption.c:
+  * - Do not use separator if the separator equals "" and the last char
+    of the label string is ':'.
+  * --
+  * hildon-app.c,hildon-appview.c,hildon-caption.{h,c}:
+  * - Applied Imendio's property-patch
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 23 May 2005 16:56:42 +0300
+
+hildon-lgpl (0.9.25-1) unstable; urgency=low
+
+  * Fixed #12018 "topmost_status_lost"/"topmost_status_acquired" signal
+    not emitted properly
+  * hildon-app.c:
+  * - Added tranciency checks to prevent menu/dialog openings to emit
+    toplevel_status_lost/acquired
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Fri, 20 May 2005 18:14:31 +0300
+
+hildon-lgpl (0.9.24-1) unstable; urgency=low
+
+  * Added libxsts dependency back
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed, 18 May 2005 13:18:43 +0300
+
+hildon-lgpl (0.9.23-1) unstable; urgency=low
+
+  * Removed -lXtst from pkgconfig file
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed, 18 May 2005 11:15:26 +0300
+
+hildon-lgpl (0.9.22-1) unstable; urgency=low
+
+  * Fixed #11006: hildon-lgpl including libxtst
+  * Fixed #9349: hildon-lgpl-test is an empty package
+  * - Package removed
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed, 18 May 2005 10:29:30 +0300
+
+hildon-lgpl (0.9.21-1) unstable; urgency=low
+
+  * hildon-app-private.h,hildon-appview.c:
+  * - Changed some gints to guints
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 16 May 2005 17:13:05 +0300
+
+hildon-lgpl (0.9.20-1) unstable; urgency=low
+
+  * hildon-defines.c:
+  * - Fix the icon size tag for copy, was "icon_size_indi_delete"
+    instead of "icon_size_indi_copy"
+  * gtk-infoprint.c:
+  * - Removed kludge
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 16 May 2005 16:03:18 +0300
+
+hildon-lgpl (0.9.19-1) unstable; urgency=low
+
+  * Fixed #8601: embedded browser window contents disappear
+  * - modified: hildon-app.c,hildon-app-private.h
+  * Fixed #10131 - AF-BAT: HildonNote takes a long time to display its
+    contents
+  * gtk-infoprint.c:
+  * - X errors generated while checking fullscreen status are now
+    trapped in order to avoid crashes in some cases when displaying
+    infoprint (for instance, Hildon Note tester)
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Fri, 13 May 2005 13:38:51 +0300
+
+hildon-lgpl (0.9.18-1) unstable; urgency=low
+
+  * Fixed #8737: Bad PO file - hildon-lgpl.po version 0.1
+  * en_GB.po:
+  * - Removed almost everything because all but 2 strings were actually
+    related to widgets that currently reside in hildon-fm component. Now
+    only two infoprints in HildonApp remain.
+  * Fixed #11578: HildonFindToolbar cannot be displayed with
+    gtk_widget_show
+  * hildon-find-toolbar.c:
+  * - Show contained widgets in init
+  * Fixed #10046: Find Dialog in Notes application
+  * hildon-find-toolbar.c:
+  * - "max_characters" property added, with "invalid_input" signal added
+    to inform the programmer that the user has reached the search field
+    character limit.
+  * - "history_limit" added to limit the shown number of history. this
+    requires we have a GtkTreeModelFilter to filter the GtkListStore.
+  * - the lastest item is added to the top of the list
+  * - "history_append" signal added, so that the programmer can stop
+    item from adding to the history list if he wants.
+  * hildon-find-toolbar.h:
+  * - add two signal handler function pointers, also modified the others
+    to  give the correct information.
+  * hildon-find-toolbar.sgml:
+  * - modified for the api changes
+  * Fixed #11129 - Some strings are not localizable
+  * hildon-appview.c:
+  * - changed default appview title to empty string since "My program"
+    was not supported by spec
+  * --
+  * gtk-infoprint.c:
+  * - Removed debug print
+  * hildon-app.c:
+  * - Only remove Esc timeout if it was actually added
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Thu, 12 May 2005 11:04:34 +0300
+
+hildon-lgpl (0.9.17-1) unstable; urgency=low
+
+  * hildon-appview.c:
+  * - Modified function header comments for hildon_appview_get_toolbar
+    and hildon_appview_set_toolbar
+  * hildon-appview.sgml:
+  * - add some signal description for "toolbar-toggle-request" and
+    "toolbar-changed"
+  * hildon-app.c:
+  *  - Created key snooper for Home key, so that it is handled too when
+    a key grab is active.
+  * - Removed obsolete menu closing code- this is now handled by GtkMenu
+    itself
+  * Fixed #9735: Pressing 'Home' HW key when a dialog is on top of an
+    app. doesn't render 'Home' view.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon,  9 May 2005 15:14:30 +0300
+
+hildon-lgpl (0.9.16-1) unstable; urgency=low
+
+  * gtk-infoprint.c:
+  * - Use GTK_WINDOW_TYPE_HINT_MESSAGE instead of calling X directly
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed,  4 May 2005 16:58:39 +0300
+
+hildon-lgpl (0.9.15-1) unstable; urgency=low
+
+  * Fixed #10552: NOKGTK-6 Apps that have an appview but not yet an
+    appview gets critical warnings
+  * hildon-app.c:
+  * -merged imendio patch, i.e. effectively added three
+    HILDON_IS_APPVIEW checks
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Tue,  3 May 2005 17:04:18 +0300
+
+hildon-lgpl (0.9.14-2) unstable; urgency=low
+
+  * Removed extra locales
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Sun, 22 May 2005 13:39:31 +0300
+
+hildon-lgpl (0.9.14-1) unstable; urgency=low
+
+  * Fixed #10413 (HILDON_INPUT_MODE_HINT in hildon-input-mode-hint.h is
+    incorrect)
+  * Updated .po files to correspond with new release from SDL team
+
+ -- First release <Nokia>  Thu, 28 Apr 2005 13:39:31 +0300
+
+hildon-lgpl (0.9.13-1) unstable; urgency=low
+
+  * Fixed #10413: HILDON_INPUT_MODE_HINT in hildon-input-mode-hint.h is
+    incorrect
+  * Fixed #10415: Auto-capitalization gtk property has no #define in
+    hildon headers
+  * Fixed  #9694 - Deprecated APIs should be marked with
+    HILDON_DISABLE_DEPRECATED
+  * hildon-input-mode-hint.h:
+  * - Added HILDON_AUTOCAP define
+  * - Fixed HILDON_INPUT_MODE_HINT
+  * hildon-appview.[ch],hildon-caption.[ch]:
+  * - several functions removed when HILDON_DISABLE_DEPRECATED is
+    defined
+
+
+hildon-lgpl (0.9.12-1) unstable; urgency=low
+
+  * Fixed #4379 (GtkMenu - Initial focus missing on the menuitem)
+  * hildon-appview.c: call gtk_menu_shell_select_first and set modal
+    hint for menu
+
+
+hildon-lgpl (0.9.11-1) unstable; urgency=low
+
+  * Fixed #4472: Menu: is not closing itself when another application
+    window opens
+  * Fixed #3257: The Home titlebar menu popdown works incorrectly
+  * Fixed #9179: Menu hardware key does not close menu
+  * hildon-app.c:
+  * - moved menu opening with menu hardkey (F4) from
+    hildon_app_key_press_handler() to hildon_app_key_release_handler()
+  * - removed code that handled the menu closing because that key press
+    event can't reach the application.
+  * - fix timestamp code
+  * hildon-appview.c:
+  * - fix timestamp code
+  * - do not make menu windows modal.
+
+
+hildon-lgpl (0.9.10-1) unstable; urgency=low
+
+  * Fixed #7964: HildonApp blocks key release events from applications\!
+
+
+hildon-lgpl (0.9.9-1) unstable; urgency=low
+
+  * Fixed #9910 GDK_Return moves the focus away from entry.
+  * Fixed #9546 Made appview bottom skin graphics not take space when a
+    toolbar is visible.
+  * hildon-appview.c:
+  * - changed size_allocation function to check if there's an toolbar
+    visible and adjust the allocated size accordingly.
+  * hildon-app.c:
+  * - removed Opera hack
+
+
+hildon-lgpl (0.9.8-1) unstable; urgency=low
+
+  * Fixed #3862: Menus are occasionally stacked incorrectly
+  * Fixed (partially?) #4472: Menu: is not closing itself when another
+    application window opens
+
+
+hildon-lgpl (0.9.7-1) unstable; urgency=low
+
+  * Fixed #3180: hildon-appview: should use gtk/gdk_window_fullscreen
+  * Fixed #9285: Fail to start in full screen mode
+  * Fixed #817: CaptionControl: correct icon are missing
+  * hildon-caption.c: changed the mandatory icon to use icon_names
+    instead of stock icons
+
+
+hildon-lgpl (0.9.6-1) unstable; urgency=low
+
+  * Fixed #9214: HildonFindToobar API documentation missing
+  * Fixed #9218: HildonFileDetailsDialog - "Size" field is accepting
+    focus!!!
+  * hildon-find-toolbar.c:
+  * - small modification on explanatory text for "label" property
+  * hildon-lgpl-docs.xml,hildon-lgpl-sections.txt,hildon-lgpl.types: add
+    hildon find toolbar in them
+  * hildon-find-toolbar.sgml: created to add more content into the
+    document
+
+
+hildon-lgpl (0.9.5-1) unstable; urgency=low
+
+  * Cleaned non-logical and obsolete strings
+  * Fixed #6243: Cannot invoke VKB on tapping on the text input element
+    after performing hide operation(VKB).
+  * hildon-app.c: Remove focus if unfocus-flag is set in
+    _HILDON_IM_CLOSE
+
+
+hildon-lgpl (0.9.4-1) unstable; urgency=low
+
+  * hildon-appview.c: fix the Gtk-CRITICAL warning when using
+    hildon_appview
+
+
+hildon-lgpl (0.9.3-1) unstable; urgency=low
+
+  * Fixed po headers
+
+
+hildon-lgpl (0.9.2-1) unstable; urgency=low
+
+  * Fixed #3263 (Optimised view and infoprints)
+  * Fixed #979 (Infoprints and banners shouldn't accept focus)
+  * Fixed #2024 (Copy and paste of a highlighted block of text)
+  * Fixed #3853 (HildonApp - BAD WINDOW error occurs when trying to
+    destroy a hildon_app which contains a hildon_appview)
+  * Added timer code needed for timestamping
+
+
+hildon-lgpl (0.9.1-1) unstable; urgency=low
+
+  * Update GTK 2.6
+
+
+hildon-lgpl (0.9.0-1) unstable; urgency=low
+
+  * GTK 2.6 fixes
+
+
+hildon-lgpl (0.8.26-1) unstable; urgency=low
+
+  * hildon-find-toolbar.c: Fixed warnings
+
+
+hildon-lgpl (0.8.25-1) unstable; urgency=low
+
+  * Implemented maximum toolbar item spacing
+  * Added telephone and hexamode support for Input Method
+  * Implemented logical fonts and colors API
+
+
+hildon-lgpl (0.8.24-1) unstable; urgency=low
+
+  * Fixed po issues
+  * Changed gtk_infoprint() to use icon theme
+
+
+hildon-lgpl (0.8.23-1) unstable; urgency=low
+
+  * Fixed #6594 (Toolbar buttons generate expose events for the
+    application area)
+  * Fixed #7964 (HildonApp blocks key release events from applications)
+
+
+hildon-lgpl (0.8.22-1) unstable; urgency=low
+
+  * The minimum size of caption widget should now correspond to the
+    widget specification
+
+
+hildon-lgpl (0.8.21-1) unstable; urgency=low
+
+  * Added es_MX and fr_CA
+  * Renamed localization packages: fi -> fi_FI
+
+
+hildon-lgpl (0.8.20-1) unstable; urgency=low
+
+  * Support for long esc press
+  * hildon-find-tool-bar.c: Send press-signal always
+
+
+hildon-lgpl (0.8.19-1) unstable; urgency=low
+
+  * New header file hildon-defines.h with logical icon names and margin
+    sizes
+
+
+hildon-lgpl (0.8.18-1) unstable; urgency=low
+
+  * Fixed #6442 (Matchbox window manager doesn't show two part titles)
+  * HildonCaption: new API for setting separator character
+
+
+hildon-lgpl (0.8.17-1) unstable; urgency=low
+
+  * Fixed #6153 (Hildon lgpl library eats GDK_F7 and GDK_F8 HW key
+    events)
+
+
+hildon-lgpl (0.8.16-1) unstable; urgency=low
+
+  * Fixed #6091 (Incorrect 'Project-Id-Version' field in hildon-lgpl-
+    0.8.8/po/en.po)
+
+
+hildon-lgpl (0.8.15-1) unstable; urgency=low
+
+  * Fixed #2281 (HildonAppView menu does not emit deactivate signal...)
+  * Fixed #6383 (hildon-libs, hildon-lgpl --- refers to new API provided
+    by updated gtk, but this is not specified in build-deps.)
+
+
+hildon-lgpl (0.8.14-1) unstable; urgency=low
+
+  * Task 1777 (Notifications: Add support for GTK icon theme names)
+    implementation added
+
+
+hildon-lgpl (0.8.13-1) unstable; urgency=low
+
+  * Fixed #3813 (Cannot cut and paste using VKB in the New Folder dialog
+    box)
+
+
+hildon-lgpl (0.8.12-1) unstable; urgency=low
+
+  * Fixed layout update from 0.8.9-1
+
+
+hildon-lgpl (0.8.11-1) unstable; urgency=low
+
+  * Support multiple toolbars and find toolbar
+
+
+hildon-lgpl (0.8.10-1) unstable; urgency=low
+
+  * Debianized locale-packages
+  * Fixed #4704 (libraries should be versioned)
+
+
+hildon-lgpl (0.8.9-2) unstable; urgency=low
+
+  * Removed recommendatio-field from debian control file
+
+
+hildon-lgpl (0.8.9-1) unstable; urgency=low
+
+  * HildonCaption: Changed the focus behaviour inside a widget
+  * Updated the layout and optimized & cleaned up expose function of
+    hildon_appview.
+
+
+hildon-lgpl (0.8.8-1) unstable; urgency=low
+
+  * Downgraded infoprint modifications, because they need the new stable
+    matchbox 0.9
+
+
+hildon-lgpl (0.8.7-2) unstable; urgency=low
+
+  * added dependency for libxtst6
+
+
+hildon-lgpl (0.8.7-1) unstable; urgency=low
+
+  * Fixed GTK-doc comments.
+  * Moved some defines from hildon-app.h to hildon-app.h.
+  * Removed obsolete (empty) gnome VFS flags from ut/Makefile.am (#2065).
+  * Added -dev dependency for libxtst-dev (#4653).
+	
+
+hildon-lgpl (0.8.6-1) unstable; urgency=low
+
+  * File Management stuff splitted to hildon-fm package
+
+

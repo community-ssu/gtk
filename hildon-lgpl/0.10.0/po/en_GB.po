@@ -1,0 +1,30 @@
+# English (GB) translation of hildon-lgpl 
+# Copyright (C) 2005 Nokia Corporation
+# This file is distributed under the same license as the hildon-lgpl package
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: hildon-lgpl 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-12-22 17:07+0200\n"
+"PO-Revision-Date: 2005-03-31 20:37:00\n"
+"Last-Translator: \n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ../hildon-lgpl/hildon-app.c:650
+msgid "ckct_ib_min_zoom_level_reached"
+msgstr "Maximum zoom level reached"
+
+#: ../hildon-lgpl/hildon-app.c:654
+msgid "ckct_ib_max_zoom_level_reached"
+msgstr "Minimum zoom level reached"
+
+msgid "Ecdg_ti_find_toolbar_label"
+msgstr "Find"
+
+msgid "Ecdg_ti_caption_separator"
+msgstr ":"

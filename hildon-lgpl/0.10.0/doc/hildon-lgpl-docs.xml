@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<book id="index" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <bookinfo>
+    <title>Hildon LGPL Reference Manual</title>
+  </bookinfo>
+
+  <chapter>
+    <title>Hildon LGPL</title>
+    <xi:include href="xml/hildon-app.xml"/>
+    <xi:include href="xml/hildon-appview.xml"/>
+    <xi:include href="xml/hildon-caption.xml"/>
+    <xi:include href="xml/gtk-infoprint.xml"/>
+    <xi:include href="xml/hildon-find-toolbar.xml"/>
+    <xi:include href="xml/hildon-input-mode-hint.xml"/>
+  </chapter>
+</book>
