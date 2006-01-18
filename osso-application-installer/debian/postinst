@@ -1,0 +1,34 @@
+#!/bin/sh -e
+
+set -e
+
+add_sudoer ()
+{
+    line="$1"
+    if ! grep -F -q "$line" /etc/sudoers; then
+	echo "+$line"
+	echo "$line" >>/etc/sudoers
+    fi
+}
+
+## Add line to sudo so that "user" can run "osso-application-installer" as
+## "root".
+##
+## XXX - this is a bloody hack.  It will go away, don't worry.
+
+add_sudoer 'user ALL = NOPASSWD: /usr/bin/run-standalone.sh /usr/bin/osso-application-installer'
+
+if [ -x /usr/bin/update-desktop-database ]; then
+ update-desktop-database /usr/share/applications
+fi
+
+utilsdir=/etc/others-menu/1400_tana_fi_utilities
+entry=0500_osso_application_installer.desktop
+
+rm -f $utilsdir/$entry
+ln -s /usr/share/applications/hildon/osso-application-installer.desktop \
+      $utilsdir/$entry
+
+#DEBHELPER#
+
+exit 0

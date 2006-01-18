@@ -1,0 +1,12 @@
+Source: osso-application-installer
+Section: unknown
+Priority: optional
+Maintainer: Marius Vollmer <marius.vollmer@nokia>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
+
+Package: osso-application-installer
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A program for managing user installed applications.
+ It's not done yet.

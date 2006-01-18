@@ -1,0 +1,16 @@
+#! /bin/sh
+
+set -e
+
+rem_sudoer ()
+{
+    line="$1"
+    grep -v -F -q "$line" /etc/sudoers >/etc/sudoers.tmp
+    mv /etc/sudoers.tmp /etc/sudoers.
+}
+
+## Remove the sudoer line
+##
+## XXX - this is a bloody hack.  It will go away, don't worry.
+
+rem_sudoer 'user ALL = NOPASSWD: /usr/bin/run-standalone.sh /usr/bin/osso-application-installer'
