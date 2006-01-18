@@ -1,0 +1,37 @@
+--- glib/dbus-binding-tool-glib.c	5 Jan 2006 20:03:38 -0000	1.24
++++ glib/dbus-binding-tool-glib.c	17 Jan 2006 22:45:17 -0000
+@@ -97,8 +97,16 @@
+ static const char *
+ dbus_g_type_get_c_name (GType gtype)
+ {
+-  if (dbus_g_type_is_collection (gtype))
+-    return "GArray";
++  GType subtype;
++  if (dbus_g_type_is_collection (gtype)) {
++    subtype = dbus_g_type_get_collection_specialization(gtype);
++    if (_dbus_g_type_is_fixed (subtype)) {
++      return "GArray";
++    } else {
++      return "GPtrArray";
++    }
++  }
++    
+   if (dbus_g_type_is_map (gtype))
+     return "GHashTable";
+   
+@@ -1009,8 +1017,13 @@
+       elt_gtype = dbus_g_type_get_collection_specialization (gtype);
+       sublookup = dbus_g_type_get_lookup_function (elt_gtype);
+       g_assert (sublookup);
+-      type_lookup = g_strdup_printf ("dbus_g_type_get_collection (\"GArray\", %s)",
+-				     sublookup);
++      if (_dbus_g_type_is_fixed (elt_gtype)) {
++        type_lookup = g_strdup_printf 
++          ("dbus_g_type_get_collection (\"GArray\", %s)", sublookup);
++      } else {
++        type_lookup = g_strdup_printf 
++          ("dbus_g_type_get_collection (\"GPtrArray\", %s)", sublookup);
++      }
+       g_free (sublookup);
+       return type_lookup;
+     }

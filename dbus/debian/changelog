@@ -1,3 +1,9 @@
+dbus (0.60-1osso5) experimental; urgency=low
+
+  * Added patch for GPtrArray to dbus-binding-tool (N#22384).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 18 Jan 2006 13:55:47 +0200
+
 dbus (0.60-1osso4) experimental; urgency=low
 
   * Added patch for DBusGProxy inheritance from Ricardo Kekki (bug 22302).
