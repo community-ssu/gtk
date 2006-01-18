@@ -262,11 +262,16 @@ hildon_find_toolbar_history_append(HildonFindToolbar *self,
   
   if(strcmp(string, "") != 0)
     {
+      GtkTreeModel *model = NULL;
+
       /* If list store is set, get it */
       if(gtk_combo_box_get_model(GTK_COMBO_BOX(priv->entry_combo_box)) != NULL)
-	list = GTK_LIST_STORE(gtk_tree_model_filter_get_model(
-			GTK_TREE_MODEL_FILTER(gtk_combo_box_get_model(							  GTK_COMBO_BOX(priv->entry_combo_box)))));
-
+      {
+          list = GTK_LIST_STORE(gtk_tree_model_filter_get_model(
+                     GTK_TREE_MODEL_FILTER(gtk_combo_box_get_model(
+                     GTK_COMBO_BOX(priv->entry_combo_box)))));
+          model = GTK_TREE_MODEL (list);
+      }
       if(list == NULL)
 	{
           /* No list store set. Create our own. */
@@ -276,33 +281,43 @@ hildon_find_toolbar_history_append(HildonFindToolbar *self,
       else
 	g_object_get(G_OBJECT(self), "column", &c_n, NULL);
 
-      /* Latest string is always the first one in list. If the string already
-         exists, remove it so there are no duplicates in list. */
-      occupy = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list), &iter);
-      while(occupy)
-	{
-	  gtk_tree_model_get (GTK_TREE_MODEL(list), 
-			      &iter, c_n, &old_string, -1);
-	  if(old_string != NULL && 
-	     strcmp(string, old_string) == 0)
-	    {
-              /* Found it, remove. */
-	      occupy = FALSE;
-	      gtk_list_store_remove (list, &iter);
-	    }
-	  else
-	    occupy = gtk_tree_model_iter_next(GTK_TREE_MODEL(list), &iter);
-	}
 
-      /* Column number is -1 if "column" property hasn't been set but
+      /* Latest string is always the first one in list. */
+      /* Remove item if too many, remove also duplicates. */
+      if (model)
+      {      
+      occupy = gtk_tree_model_get_iter_first(model, &iter);
+
+      while(occupy)
+      {
+        gtk_tree_model_get (model, &iter, c_n, &old_string, -1);
+        if(old_string != NULL && strcmp(string, old_string) == 0)
+          {
+            /* Found it, remove. */
+            occupy = FALSE;
+            gtk_list_store_remove (list, &iter);
+          }
+        else
+          occupy = gtk_tree_model_iter_next(model, &iter);
+      }
+
+      /* If we have more than history_limit amount of items
+       * in the list, remove one. */
+      if(gtk_tree_model_iter_n_children(model, NULL) >= priv->history_limit)
+        {
+          gtk_tree_model_get_iter_first(model, &iter);
+          gtk_list_store_remove(list, &iter);
+        }
+    }
+
+  /* Column number is -1 if "column" property hasn't been set but
          "list" property is. */
-      if(c_n >= 0)
-	{
-          /* Add the string to first in list */
-	  gtk_list_store_append(list, &iter);
-	  gtk_list_store_set(list, &iter, c_n, string, -1);
-	  if(self_create)
-	    {
+    if(c_n >= 0)
+    {/* Add the string to first in list */
+        gtk_list_store_append(list, &iter);
+        gtk_list_store_set(list, &iter, c_n, string, -1);
+        if(self_create)
+	  {
               /* Add the created list to ComboBoxEntry */
 	      hildon_find_toolbar_apply_filter(self, list, TRUE);
               /* ComboBoxEntry keeps the only needed reference to this list */
