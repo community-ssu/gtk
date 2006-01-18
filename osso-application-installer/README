@@ -40,19 +40,37 @@ code will be plain C to enable easier transportation into external
 libraries or reuse.  This is not a deeply object oriented program, but
 we'll use STL without prejudice.
 
+The current way to keep the GUI alive is the put PM->DoInstall into a
+new thread.  That seems to work fine on the target, but the DoInstall
+thread sometimes blocks indefinitely when running in x86 scratchbox.
+This is very weird, I declare it non-debuggable for now, and blame it
+on scratchbox oddities.  In any case, using libapt-pkg in the
+'obvious' way and keeping the GUI alive from OpProgress and
+pkgAcquireStatus objects does not feel sufficiently smooth on a slow
+device.  Also, I don't feel confident enough about using threads.
 
-XXX
----
+Therefore, the internal design will be changed to use two processes:
+one to run the GUI, one to do stuff with libapt-pkg.  They will
+communicate via pipes (or sockets).  The libapt-pkg will be command
+driven: it reads a command, executes it, ships back the result, adn
+then reads the next command.  Long running commands might or might not
+be interuptible, depending on how feasible that is.  The GUI process
+will do the usual event-loop thing.  It will request stuff from the
+libapt-pkg process and then react to it when the result arrives.
+Commands and results are linked with sequence numbers, making it
+simple to just forget about some request.
 
-Updating the cache works but is only seen after restarting the
-program.
+Stdout and stderr from the libapt-pkg process are being redirected to
+the 'log'.
 
+Commands will be:
 
-TESTS
------
+ - get list of packages.  This will include just enough information
+   for the package list: name, version, section, status.
 
-Packages with same name, different versions, different descriptions.
+ - get package info: more, like download size, installability, etc.
+   This will be used to fill the displayed list asynchronously.
 
-Upgrading to resolve conflicts.
+ - get package details: all the rest of a package for the details dialog.
 
-Unsatisfied indirect dependencies.
+ - install package, remove package: this executes the operation.
