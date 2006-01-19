@@ -1,3 +1,9 @@
+gconf2 (2.6.4.13-osso3) unstable; urgency=low
+
+  * Added patch for setting the database directory.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 19 Jan 2006 16:32:59 +0200
+
 gconf2 (2.6.4.13-osso2) unstable; urgency=low
 
   * Depending to v0.60 dbus.

@@ -1,0 +1,12 @@
+diff -ur gconf-dbus-2.6.4.13/gconf/default.path.in gconf-dbus-2.6.4.13.new/gconf/default.path.in
+--- gconf-dbus-2.6.4.13/gconf/default.path.in	2005-04-26 12:03:28.000000000 +0300
++++ gconf-dbus-2.6.4.13.new/gconf/default.path.in	2006-01-19 16:31:08.958365968 +0200
+@@ -18,7 +18,7 @@
+ include "$(HOME)/.gconf.path"
+ 
+ # Give users a default storage location, ~/.gconf
+-xml:readwrite:$(HOME)/.gconf
++xml:readwrite:/etc/osso-af-init/gconf-dir
+ 
+ # To read in any defaults settings that the Sys Admin may have created
+ # prior to a desktop system upgrade. The SysAdmin can stick default values
