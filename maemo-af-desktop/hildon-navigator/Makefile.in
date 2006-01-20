@@ -221,7 +221,9 @@ libhildonnavigator_la_SOURCES = \
 	hn-wm-watched-window-view.c \
 	hn-wm-watched-window-view.h \
 	hn-wm-watchable-app.c \
-	hn-wm-watcheble-app.h \
+	hn-wm-watchable-app.h \
+	hildon-pixbuf-anim-blinker.c \
+	hildon-pixbuf-anim-blinker.h \
 	application-switcher.c \
 	application-switcher.h \
 	others-menu.c \
@@ -255,7 +257,8 @@ am_libhildonnavigator_la_OBJECTS = hildon-navigator.lo \
 	hildon-navigator-main.lo osso-manager.lo hn-wm.lo hn-wm-util.lo \
 	hn-wm-memory.lo hn-wm-session.lo hn-wm-watched-window.lo \
 	hn-wm-watched-window-view.lo hn-wm-watchable-app.lo \
-	application-switcher.lo others-menu.lo
+	hildon-pixbuf-anim-blinker.lo application-switcher.lo \
+	others-menu.lo
 libhildonnavigator_la_OBJECTS = $(am_libhildonnavigator_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -264,6 +267,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/application-switcher.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-navigator-main.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-navigator.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-pixbuf-anim-blinker.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hn-wm-memory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hn-wm-session.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hn-wm-util.Plo \
@@ -337,6 +341,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/application-switcher.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-navigator-main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-navigator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-pixbuf-anim-blinker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-memory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-session.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-util.Plo@am__quote@

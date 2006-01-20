@@ -64,6 +64,9 @@
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
 
+/* Blinking pixbuf anim widget */
+#include "hildon-pixbuf-anim-blinker.h"
+
 static gboolean button_expose_event(GtkWidget *widget,
                                      GdkEventExpose *event,
                                      gpointer user_data);
@@ -112,8 +115,14 @@ static void show_tooltip_menu(GtkWidget *menu,
                                
 static void button_toggled(GtkToggleButton *togglebutton,
                             gpointer data);
-                                                                 
-static GtkWidget *get_icon(const gchar *icon_name);
+
+static GtkWidget*
+app_switcher_get_icon_from_window (ApplicationSwitcher_t *as,
+				   HNWMWatchedWindow     *window);
+
+/* Load icon from icon theme */
+static GtkWidget*
+app_switcher_get_icon_from_theme (const char* icon_name);  
 
 static void get_item_from_glist(gint list_position,
                                  GtkWidget *togglebutton,
@@ -125,7 +134,8 @@ static void update_menu_items(ApplicationSwitcher_t *as);
 
 static void store_item(GArray *items,const gchar *app_name,
                         const gchar *item_text,
-                        const gchar *icon_name, GtkWidget *item);    
+                        const gchar *icon_name, 
+		       GtkWidget *item);    
                                                                                       
 static DBusHandlerResult mce_handler( DBusConnection *conn,
                                       DBusMessage *msg,
@@ -161,7 +171,7 @@ ApplicationSwitcher_t *application_switcher_init(void)
     ret->toggle_button_as = gtk_toggle_button_new();
                       
     /* Create icon for applications switcher button */
-    ret->as_button_icon = get_icon(AS_SWITCHER_BUTTON_ICON);
+    ret->as_button_icon = app_switcher_get_icon_from_theme(AS_SWITCHER_BUTTON_ICON);
     
 
     /* Create alignments. Needed for pixel perfecting things */
@@ -277,7 +287,7 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
     /* Create home menu item */
     as->home_menu_item = gtk_image_menu_item_new_with_label(STRING_HOME);
     /* Create home menu item icon  */
-    home_item_icon = get_icon(HOME_MENU_ITEM_ICON);
+    home_item_icon = app_switcher_get_icon_from_theme(HOME_MENU_ITEM_ICON);
     gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(as->home_menu_item),
                                   home_item_icon);
     
@@ -1223,48 +1233,84 @@ static void button_toggled(GtkToggleButton *togglebutton,
     
 }
 
+static GdkPixbuf*
+app_switcher_get_pixbuf_icon_from_theme (const char *icon_name)
+{
+  GtkIconTheme *icon_theme;
+  GdkPixbuf    *pixbuf;
+  GError       *error = NULL;
+
+  icon_theme = gtk_icon_theme_get_default();
+    
+  pixbuf = gtk_icon_theme_load_icon (icon_theme, 
+				     icon_name,  
+				     ICON_SIZE,
+				     0,	
+				     &error);
+  if (error)
+    {
+      osso_log(LOG_ERR, "Could not load icon: %s\n", error->message);
+      g_error_free(error);
+      return NULL;
+    }    
+
+  return pixbuf;
+}
+
+static GtkWidget*
+app_switcher_get_icon_from_window (ApplicationSwitcher_t *as,
+				   HNWMWatchedWindow     *window)
+{
+  GdkPixbuf        *pixbuf;
+  HNWMWatchableApp *app;
+
+  app = hn_wm_watched_window_get_app (window);
+
+  pixbuf = hn_wm_watched_window_get_custom_icon (window);
+
+  if (!pixbuf)
+    {
+      pixbuf = app_switcher_get_pixbuf_icon_from_theme (hn_wm_watchable_app_get_icon_name(app));
+      
+      if (!pixbuf)
+	return NULL;
+    }
+
+  if (hn_wm_watched_window_is_urgent (window))
+    {
+	GdkPixbufAnimation *pixbuf_anim;
+
+	pixbuf_anim 
+	  = GDK_PIXBUF_ANIMATION (hildon_pixbuf_anim_blinker_new (pixbuf, 
+								  500, 
+								  -1));
+	return gtk_image_new_from_animation (pixbuf_anim);
+    }
+
+  return gtk_image_new_from_pixbuf(pixbuf);
+}
+
 
 /* Load icon from icon theme */
-static GtkWidget *get_icon(const gchar *icon_name)
+static GtkWidget*
+app_switcher_get_icon_from_theme (const char *icon_name)
 {
-    GtkIconTheme *icon_theme;
-    GError *error = NULL;
-    GdkPixbuf *pixbuf;
+  GdkPixbuf    *pixbuf;
+  GtkWidget    *icon = NULL;
 
-    icon_theme = gtk_icon_theme_get_default();
-    
-    pixbuf = gtk_icon_theme_load_icon(icon_theme, 
-                                      icon_name,  
-                                      ICON_SIZE,
-                                      0,	
-                                      &error);
-    if (error)
-    {
-        osso_log(LOG_ERR, "Could not load icon: %s\n", error->message);
-        g_error_free(error);
-        error = NULL;
-        
-    }    
-    
-    else
-    {
-        GtkWidget *icon = gtk_image_new_from_pixbuf(pixbuf);
-        g_object_unref(pixbuf);
-        
-        return icon;
-    }
-    
-    return NULL;
+  if ((pixbuf = app_switcher_get_pixbuf_icon_from_theme (icon_name)) != NULL)
+    icon = gtk_image_new_from_pixbuf(pixbuf);
+
+  return icon;
 }
 
 static void get_item_from_glist(gint list_position,
-                                 GtkWidget *togglebutton,
-                                 ApplicationSwitcher_t *as)
+				GtkWidget *togglebutton,
+				ApplicationSwitcher_t *as)
 {
     GtkWidget *item;
-    GtkWidget *item_icon =NULL, *test_icon = NULL ;
+    GtkWidget *item_icon =NULL; 
     gint n;       
-    gchar *icon_name;
    
     item = g_list_nth_data(GTK_MENU_SHELL(as->menu)->children,
                            list_position);
@@ -1292,6 +1338,8 @@ static void get_item_from_glist(gint list_position,
     for (n=0;n<(as->items)->len;n++)
         if (g_array_index(as->items,container,n).item == item)
             break;  
+
+#if 0 	/* Is this needed - MA ? */
     
     test_icon = g_array_index(as->items, container, n).icon;
 
@@ -1299,27 +1347,28 @@ static void get_item_from_glist(gint list_position,
        the problem has gone away since the creation of the item... */
 
     if (GTK_IS_WIDGET(test_icon) == 0 )
-    {
-    /* Get the icon name */
-    icon_name = g_array_index(as->items,container,n).icon_name;
-
-    item_icon = get_icon(icon_name);
-
-    if (item_icon == NULL)
-    {
-        item_icon = get_icon( MENU_ITEM_DEFAULT_APP_ICON);
-    }
-
-    /* We need to add a reference, otherwise the icon might be free'd
-       when it's removed from the button container. */
-
-    g_object_ref(item_icon);
-
-    }
+      {
+	/* Get the icon name */
+	icon_name = g_array_index(as->items,container,n).icon_name;
+	
+	item_icon = get_icon(icon_name);
+	
+	if (item_icon == NULL)
+	  {
+	    item_icon = get_icon( MENU_ITEM_DEFAULT_APP_ICON);
+	  }
+	
+	/* We need to add a reference, otherwise the icon might be free'd
+	   when it's removed from the button container. */
+	
+	g_object_ref(item_icon);
+	
+      }
     else
-    {
+#endif
+      {
         item_icon = g_array_index(as->items, container, n).icon;
-    }
+      }
     
     /* In case we still do not have an icon, do not attempt to add it
        to the button or to the array... */
@@ -1389,36 +1438,56 @@ static void update_menu_items(ApplicationSwitcher_t *as)
 }
 
 /* Store information of new window/view */
-static void store_item(GArray *items,const gchar *item_text,
-                        const gchar *app_name,
-                        const gchar *icon_name, GtkWidget *item)
+static void 
+store_item (GArray      *items,
+	    const gchar *item_text,
+	    const gchar *app_name,
+	    const gchar *icon_name, 
+	    GtkWidget   *item)
 {
-    GdkPixbuf *pixbuf;
-    GtkWidget *icon_image;
-    container cont;
-    
-    cont.item = item;
-    cont.app_name = g_strdup(app_name);
-    cont.item_text = g_strdup(item_text);
-    cont.icon_name = g_strdup(icon_name); 
-    cont.killable_item = FALSE;
-
-    icon_image = gtk_image_menu_item_get_image(GTK_IMAGE_MENU_ITEM(item));
-    pixbuf = 
-        gtk_image_get_pixbuf(GTK_IMAGE(icon_image));
-    cont.icon = gtk_image_new_from_pixbuf(pixbuf);
-    g_object_unref(pixbuf);
-
-    /* We need to add a reference, otherwise the icon might be free'd
-       when it's removed from the button container. */
-
-    if (cont.icon != NULL)
+  GdkPixbuf *pixbuf;
+  GtkWidget *icon_image;
+  container cont;
+  
+  cont.item = item;
+  cont.app_name = g_strdup(app_name);
+  cont.item_text = g_strdup(item_text);
+  cont.icon_name = g_strdup(icon_name); 
+  cont.killable_item = FALSE;
+  
+  icon_image = gtk_image_menu_item_get_image(GTK_IMAGE_MENU_ITEM(item));
+  
+  if (gtk_image_get_storage_type(GTK_IMAGE(icon_image)) == GTK_IMAGE_ANIMATION)
     {
-        g_object_ref(cont.icon);
+      GdkPixbufAnimation *pixbuf_anim;
+      
+      pixbuf = gdk_pixbuf_animation_get_static_image (gtk_image_get_animation (GTK_IMAGE(icon_image)));
+      
+      pixbuf_anim 
+	= GDK_PIXBUF_ANIMATION (hildon_pixbuf_anim_blinker_new (pixbuf, 
+								500, 
+								-1));
+      cont.icon = gtk_image_new_from_animation (pixbuf_anim);
+      
     }
-
-    g_array_append_val(items,cont);
-
+  else
+    {
+      pixbuf =  gtk_image_get_pixbuf(GTK_IMAGE(icon_image));
+      cont.icon = gtk_image_new_from_pixbuf(pixbuf);
+      
+    }
+  
+  g_object_unref(pixbuf); 
+  
+  /* We need to add a reference, otherwise the icon might be free'd
+     when it's removed from the button container. */
+  
+  if (cont.icon != NULL)
+    {
+      g_object_ref(cont.icon);
+    }
+  
+  g_array_append_val(items,cont);
 }
 
 /* FIXME: Add flags param for initial position... */
@@ -1457,10 +1526,10 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
   /* create menu item */
   item = gtk_image_menu_item_new_with_label(buf);
 
-  menu_item_icon = get_icon (hn_wm_watchable_app_get_icon_name(app));
+  menu_item_icon = app_switcher_get_icon_from_window (as, window);
 
   if (menu_item_icon == NULL)
-    menu_item_icon = get_icon( MENU_ITEM_DEFAULT_APP_ICON);
+    menu_item_icon = app_switcher_get_icon_from_theme (MENU_ITEM_DEFAULT_APP_ICON);
 
   gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(item),
 				menu_item_icon);
@@ -1514,40 +1583,109 @@ void
 app_switcher_remove_item (ApplicationSwitcher_t *as,
 			  GtkWidget             *menuitem)
 {
-    gint n;    
+  gint n;    
     
-    g_return_if_fail(as);
+  g_return_if_fail(as);
 
-    /* Find the removed item */
-    for (n=0;n<(as->items)->len;n++)
-      if (g_array_index(as->items,container,n).item == menuitem)
-	break;
-
-    g_free(g_array_index(as->items, container, n).app_name);
-    g_free(g_array_index(as->items, container, n).icon_name);
-    g_free(g_array_index(as->items, container, n).item_text);
-    
-    g_object_unref(g_array_index(as->items, container, n).icon);
-
-    /* Remove item from array */
-    g_array_remove_index(as->items,n);
-
-    gtk_container_remove(GTK_CONTAINER(as->menu),menuitem);
-    
-    /* Update small icons of the buttons */
-    add_item_to_button(as);
-    
-    /* Hide application switcher menu button */
-    if ((as->items)->len == 0)
-      {           
-        gtk_widget_set_sensitive(as->toggle_button_as, FALSE);
-        gtk_widget_hide(as->as_button_icon);
+  /* Find the removed item */
+  for (n=0;n<(as->items)->len;n++)
+    if (g_array_index(as->items,container,n).item == menuitem)
+      break;
+  
+  g_free(g_array_index(as->items, container, n).app_name);
+  g_free(g_array_index(as->items, container, n).icon_name);
+  g_free(g_array_index(as->items, container, n).item_text);
+  
+  g_object_unref(g_array_index(as->items, container, n).icon);
+  
+  /* Remove item from array */
+  g_array_remove_index(as->items,n);
+  
+  gtk_container_remove(GTK_CONTAINER(as->menu),menuitem);
+  
+  /* Update small icons of the buttons */
+  add_item_to_button(as);
+  
+  /* Hide application switcher menu button */
+  if ((as->items)->len == 0)
+    {           
+      gtk_widget_set_sensitive(as->toggle_button_as, FALSE);
+      gtk_widget_hide(as->as_button_icon);
     }
-
-    /* If AS menu is visible, refresh it */
-    if (GTK_WIDGET_VISIBLE(as->menu))
-      gtk_menu_reposition(as->menu);
+  
+  /* If AS menu is visible, refresh it */
+  if (GTK_WIDGET_VISIBLE(as->menu))
+    gtk_menu_reposition(as->menu);
 }
+
+void 
+app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
+			     HNWMWatchedWindow     *window)
+{
+  GtkWidget *menuitem;
+  GtkWidget *menu_item_icon = NULL;
+  GdkPixbuf *pixbuf;
+  int        n;
+
+  HN_DBG("called");
+
+  menuitem = hn_wm_watched_window_get_menu (window);
+
+  if (menuitem == NULL)
+    return;
+
+  /* grab image widget */
+
+  menu_item_icon = app_switcher_get_icon_from_window (as, window);
+
+  if (menu_item_icon == NULL)
+    menu_item_icon = app_switcher_get_icon_from_theme (MENU_ITEM_DEFAULT_APP_ICON);
+
+  /* set it to menu */
+
+  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menuitem),
+				menu_item_icon);
+
+
+  for (n=0;n<(as->items)->len;n++)
+    if (g_array_index(as->items,container,n).item == menuitem)
+      break;
+
+  /* now dupe to actual TN icon */
+
+  if (gtk_image_get_storage_type(GTK_IMAGE(menu_item_icon)) == GTK_IMAGE_ANIMATION)
+    {
+      GdkPixbufAnimation *pixbuf_anim;
+
+      pixbuf = gdk_pixbuf_animation_get_static_image (gtk_image_get_animation (GTK_IMAGE(menu_item_icon)));
+
+      pixbuf_anim 
+	= GDK_PIXBUF_ANIMATION (hildon_pixbuf_anim_blinker_new (pixbuf, 
+								500, 
+								  -1));
+      
+      gtk_image_set_from_animation (GTK_IMAGE(g_array_index(as->items,container,n).icon),
+				    pixbuf_anim);
+      
+      g_object_unref(pixbuf_anim);
+    }
+  else
+    {
+      pixbuf =  gtk_image_get_pixbuf(GTK_IMAGE(menu_item_icon));
+      
+      gtk_image_set_from_pixbuf (GTK_IMAGE(g_array_index(as->items,container,n).icon),
+				 pixbuf);
+    }
+  
+  if (n > 4)
+    {
+      /* FIXME: Make the '>>' flash */
+    }
+  
+  g_object_unref(pixbuf); 
+
+}
+
 
 /* FIXME: Add flags for whats actually changed, or rename _sync() ? */
 void 
@@ -1665,6 +1803,7 @@ app_switcher_top_desktop_item (ApplicationSwitcher_t *as)
     gtk_widget_set_name(as->toggle_button1, SMALL_BUTTON1_NORMAL);
     as->switched_to_desktop = TRUE;                  
 }
+
 
 static DBusHandlerResult mce_handler( DBusConnection *conn,
                                       DBusMessage *msg,

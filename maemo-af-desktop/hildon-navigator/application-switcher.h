@@ -319,4 +319,8 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
 void
 app_switcher_top_desktop_item (ApplicationSwitcher_t *as);
 
+void 
+app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
+			     HNWMWatchedWindow     *window);
+
 #endif /* APPLICATION_SWITCHER_H */

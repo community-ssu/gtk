@@ -36,7 +36,6 @@ hn_wm_memory_get_limits (guint *pages_used,
   else
     {
       osso_log(LOG_ERR, "We could not read lowmem page stats.\n");
-
     }
 
   if (lowmem_allowed_f)

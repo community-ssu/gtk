@@ -108,27 +108,38 @@ hn_wm_top_view (GtkMenuItem *menuitem)
   /* window doesn't have views - non hildon app maybe so top that via WM */
   if (win && hn_wm_watched_window_get_app (win))
     {
+      XEvent ev;
+
       app = hn_wm_watched_window_get_app (win);
       
       HN_DBG("window is viewless");
       
       if (hn_wm_watchable_app_is_hibernating (app))
 	{
+	  HN_DBG("window is hibernating");
 	  hn_wm_top_service(hn_wm_watchable_app_get_service (app));
 	  return;
 	}
+
+      HN_DBG("toping non view window ( %li ) via _NET_ACTIVE_WINDOW message",
+	     hn_wm_watched_window_get_x_win (win) );      
+	
+       /* FIXME: hn_wm_util_send_x_message() should be used here but wont
+        *         work! 
+	*/
+      memset(&ev, 0, sizeof(ev));
       
-      hn_wm_util_send_x_message (hn_wm_watched_window_get_x_win (win),
-				 GDK_WINDOW_XID(gdk_get_default_root_window()),
-				 hnwm->atoms[HN_ATOM_NET_ACTIVE_WINDOW],
-				 SubstructureRedirectMask
-				 |SubstructureNotifyMask,
-				 0, 
-				 0, 
-				 0, 
-				 0, 
-				 0);
+      ev.xclient.type         = ClientMessage;
+      ev.xclient.window       = hn_wm_watched_window_get_x_win (win);
+      ev.xclient.message_type = hnwm->atoms[HN_ATOM_NET_ACTIVE_WINDOW];
+      ev.xclient.format       = 32;
       
+      gdk_error_trap_push();
+      XSendEvent(GDK_DISPLAY(), GDK_ROOT_WINDOW(), False,
+		 SubstructureRedirectMask, &ev);
+      XSync(GDK_DISPLAY(),FALSE);
+      gdk_error_trap_pop();
+
       return;
     }
 
@@ -289,6 +300,7 @@ hn_wm_atoms_init()
     "_NET_WM_PID",
     "_NET_ACTIVE_WINDOW",
     "_NET_CLIENT_LIST",
+    "_NET_WM_ICON",
 
     "_HILDON_APP_KILLABLE",	/* Hildon only props */
     "_NET_CLIENT_LIST",         /* NOTE: Hildon uses these values on app wins*/
@@ -300,6 +312,7 @@ hn_wm_atoms_init()
     "_MB_WIN_SUB_NAME",		/* MB Only props */
     "_MB_COMMAND",              /* FIXME: Unused */
     "_MB_CURRENT_APP_WINDOW",
+    "_MB_APP_WINDOW_LIST_STACKING",
 
     "UTF8_STRING",
   };
@@ -349,6 +362,8 @@ hn_wm_x_window_is_watchable (Window xid)
       goto out;
     }
 
+  /* FIXME: below checks are really uneeded assuming we trust new MB list prop
+   */
   wm_type_atom 
     = hn_wm_util_get_win_prop_data_and_validate (xid, 
 						 hnwm->atoms[HN_ATOM_NET_WM_WINDOW_TYPE],
@@ -642,15 +657,26 @@ hn_wm_process_x_client_list(void)
   struct xwinv xwins;
   int     i;
 
+  /* FIXME: We (or MB!) should probably keep a copy of ordered window list
+   * that way we can check against new list for changes before to save
+   * some hash lookups etc.    
+   *
+   * Also now we have the list in stacking order could use this to update
+   * app switcher ordering more efficiently, but need to figure out how
+   * that works first.
+  */
+
   xwins.wins 
     = hn_wm_util_get_win_prop_data_and_validate (GDK_ROOT_WINDOW(),
-						 hnwm->atoms[HN_ATOM_NET_CLIENT_LIST],
+						 hnwm->atoms[HN_ATOM_MB_APP_WINDOW_LIST_STACKING],
 						 XA_WINDOW,
 						 32,
 						 0,
 						 &xwins.n_wins);
   if (G_UNLIKELY(xwins.wins == NULL))
-    return;
+    {
+      g_warning("Failed to read _MB_APP_WINDOW_LIST_STACKING root win prop, you probably need a newer matchbox !!!");
+    }
 
   /* Check if any windows in our hash have since dissapeared */
   g_hash_table_foreach_remove ( hnwm->watched_windows, 
@@ -702,11 +728,11 @@ hn_wm_process_x_client_list(void)
 
 	      hn_wm_watched_window_set_menu (win, menu_item);
 	    }
-
 	}
     }
 
-  XFree(xwins.wins);
+  if (xwins.wins)
+    XFree(xwins.wins);
 }
 
 gboolean
@@ -781,7 +807,7 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
 
   if (G_LIKELY(prop->window == GDK_ROOT_WINDOW()))
     {
-      if (prop->atom == hnwm->atoms[HN_ATOM_NET_CLIENT_LIST])
+      if (prop->atom == hnwm->atoms[HN_ATOM_MB_APP_WINDOW_LIST_STACKING])
 	{
 	  hn_wm_process_x_client_list();
 	}
@@ -815,7 +841,7 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
        * 
        * Check if its an atom were actually interested in	 
        * before doing the assumed to be more expensive hash 
-       * lookup.
+       * lookup. FIXME: hmmm..
        */
       
       if ( prop->atom == hnwm->atoms[HN_ATOM_WM_NAME]
@@ -824,7 +850,8 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
 	   || prop->atom == hnwm->atoms[HN_ATOM_HILDON_VIEW_ACTIVE]
 	   || prop->atom == hnwm->atoms[HN_ATOM_HILDON_APP_KILLABLE]
 	   || prop->atom == hnwm->atoms[HN_ATOM_NET_WM_STATE]
-	   || prop->atom == hnwm->atoms[HN_ATOM_WM_HINTS])
+	   || prop->atom == hnwm->atoms[HN_ATOM_WM_HINTS]
+	   || prop->atom == hnwm->atoms[HN_ATOM_NET_WM_ICON])
 	{
 	  win = g_hash_table_lookup(hnwm->watched_windows, 
 				    (gconstpointer)&prop->window);
@@ -840,6 +867,10 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
       else if (prop->atom == hnwm->atoms[HN_ATOM_WM_STATE])
 	{
 	  hn_wm_watched_window_props_sync (win, HN_WM_SYNC_WM_STATE);
+	}
+      else if (prop->atom == hnwm->atoms[HN_ATOM_NET_WM_ICON])
+	{
+	  hn_wm_watched_window_props_sync (win, HN_WM_SYNC_ICON);
 	}
       else if (prop->atom == hnwm->atoms[HN_ATOM_HILDON_VIEW_ACTIVE])
 	{

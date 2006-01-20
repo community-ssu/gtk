@@ -44,7 +44,9 @@ libhildonnavigator_la_SOURCES = \
 	hn-wm-watched-window-view.c \
 	hn-wm-watched-window-view.h \
 	hn-wm-watchable-app.c \
-	hn-wm-watcheble-app.h \
+	hn-wm-watchable-app.h \
+	hildon-pixbuf-anim-blinker.c \
+	hildon-pixbuf-anim-blinker.h \
 	application-switcher.c \
 	application-switcher.h \
 	others-menu.c \

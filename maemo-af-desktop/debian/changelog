@@ -1,3 +1,11 @@
+maemo-af-desktop (2.2.0-0) unstable; urgency=low
+
+  * Reverted fix to N#21895 as it introduces N#22414
+  * Heavy refactoring of the task navigator by Matthew Allum.
+  * Support the WM urgency hint and the WM_ICON properties
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 20 Jan 2006 12:47:42 +0200
+
 maemo-af-desktop (2.1.1-0) unstable; urgency=low
 
   * Backported fix to  N#20921 from IT-2005

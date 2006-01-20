@@ -14,8 +14,9 @@ struct HNWMWatchedWindow
   HNWMWatchableApp       *app_parent;
   GList                  *views; 
   HNWMWatchedWindowView  *view_active;
-
+  GdkPixbuf              *pixb_icon;
   Window                  xwin_group;
+  gboolean                is_urgent;
 };
 
 struct xwinv
@@ -41,6 +42,105 @@ hn_wm_watched_window_process_hibernation_prop (HNWMWatchedWindow *win);
 
 static void
 hn_wm_watched_window_process_wm_hints (HNWMWatchedWindow *win);
+
+static void
+hn_wm_watched_window_process_net_wm_icon (HNWMWatchedWindow *win);
+
+static void
+pixbuf_destroy (guchar *pixels, gpointer data)
+{
+  /* For hn_wm_watched_window_process_net_wm_icon  */
+  g_free(pixels);
+}
+
+static void
+hn_wm_watched_window_process_net_wm_icon (HNWMWatchedWindow *win)
+{
+  gulong *data;
+  gint    len = 0, offset, w, h, i;
+  guchar *rgba_data, *p;
+
+  rgba_data = p = NULL;
+
+  data 
+    = hn_wm_util_get_win_prop_data_and_validate (hn_wm_watched_window_get_x_win (win),
+						 hnwm->atoms[HN_ATOM_NET_WM_ICON],
+						 XA_CARDINAL,
+						 0,
+						 0,
+						 &len);
+
+  HN_DBG("#### grabbing NET icon ####");
+
+  if (data == NULL || len < 2)
+    goto out;
+
+  offset = 0;
+
+  /* Do we have an icon of required size ?
+   * NOTE: ICON_SIZE set in application-switcher.h, defaults to 26 
+   * FIXME: figure out best way to handle scaling here
+  */
+  do
+    {
+      w = data[offset]; 
+      h = data[offset+1];
+      
+      HN_DBG("got w:%i, h:%im offset is %i\n", w, h, offset);
+
+      if (w == ICON_SIZE && h == ICON_SIZE)
+	break;
+
+      offset += ((w*h) + 2);
+    }
+  while (offset < len);
+
+  if (offset >= len)
+    {
+      HN_DBG("w,h not found");
+      goto out;
+    }
+
+  HN_DBG("#### w,h ok ####");
+
+  p = rgba_data = g_new (guchar, w * h * 4);
+
+  i = offset+2;
+
+  while (i < (w*h))
+    {
+      *p++ = (data[i] >> 16) & 0xff;
+      *p++ = (data[i] >> 8) & 0xff;
+      *p++ = data[i] & 0xff;
+      *p++ = data[i] >> 24;
+      i++;
+    }
+
+  if (win->pixb_icon)
+    g_object_unref(win->pixb_icon);
+
+  win->pixb_icon = gdk_pixbuf_new_from_data (rgba_data,
+					     GDK_COLORSPACE_RGB,
+					     TRUE,
+					     8,
+					     w, h, w * 4,
+					     pixbuf_destroy,
+					     NULL);
+
+  if (win->pixb_icon == NULL)
+    {
+      HN_DBG("#### win->pixb_icon == NULL ####");
+      g_free(rgba_data);
+      goto out;
+    }
+
+  /* FIXME: need to just update icon, also could be broke for views */
+  app_switcher_item_icon_sync (hnwm->app_switcher, win);
+
+ out:
+  if (data)
+    XFree(data);
+}
 
 static void 
 hn_wm_watched_window_process_hildon_view_active (HNWMWatchedWindow *win)
@@ -221,6 +321,7 @@ hn_wm_watched_window_process_wm_hints (HNWMWatchedWindow *win)
 {
   HNWMWatchableApp *app;
   XWMHints         *wm_hints;
+  gboolean          need_icon_sync = FALSE;
 
   app = hn_wm_watched_window_get_app (win);  
 
@@ -229,15 +330,15 @@ hn_wm_watched_window_process_wm_hints (HNWMWatchedWindow *win)
   if (!wm_hints)
     return;
 
-  /* FIXME: check flags ? */
   win->xwin_group = wm_hints->window_group;
   
-  if (wm_hints->flags & XUrgencyHint)
-    printf("@@@@@@@ Window '%s' has urgent hint *SET* @@@@@@@",
-	   win->name);
-  else
-    printf("@@@@@@@ Window '%s' has urgent hint *UNSET* @@@@@@@",
-	   win->name);
+  if (win->is_urgent != (wm_hints->flags & XUrgencyHint))
+    need_icon_sync = TRUE;
+
+  win->is_urgent = (wm_hints->flags & XUrgencyHint);
+
+  if (need_icon_sync)
+    app_switcher_item_icon_sync (hnwm->app_switcher, win);
 
   XFree(wm_hints);
 }
@@ -329,6 +430,9 @@ hn_wm_watched_window_process_hildon_view_list (HNWMWatchedWindow *win)
 	    hn_wm_watched_window_add_view (win, new_view);
 	}
     }
+
+  if (xwins.wins)
+    XFree(xwins.wins);
 }
 
 
@@ -363,6 +467,7 @@ hn_wm_watched_window_new (Window            xid,
   hn_wm_watched_window_props_sync (win, 
 				   HN_WM_SYNC_NAME
 				   |HN_WM_SYNC_WMHINTS
+				   |HN_WM_SYNC_ICON
 				   |HN_WM_SYNC_HILDON_APP_KILLABLE);
 
   return win;
@@ -379,6 +484,12 @@ Window
 hn_wm_watched_window_get_x_win (HNWMWatchedWindow *win)
 {
   return win->xwin;
+}
+
+gboolean
+hn_wm_watched_window_is_urgent (HNWMWatchedWindow *win)
+{
+  return win->is_urgent;
 }
 
 const gchar*
@@ -400,6 +511,15 @@ GtkWidget*
 hn_wm_watched_window_get_menu (HNWMWatchedWindow *win)
 {
   return win->menu_widget;
+}
+
+GdkPixbuf*
+hn_wm_watched_window_get_custom_icon (HNWMWatchedWindow *win)
+{
+  if (win->pixb_icon == NULL)
+    return NULL;
+
+  return gdk_pixbuf_copy(win->pixb_icon);
 }
 
 void
@@ -572,6 +692,9 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
   if (win->name) 
     XFree(win->name);
 
+  if (win->pixb_icon)
+    g_object_unref(win->pixb_icon);
+
   g_free(win);
 }
 
@@ -584,12 +707,12 @@ hn_wm_watched_window_props_sync (HNWMWatchedWindow *win, gulong props)
     {
       hn_wm_watched_window_process_wm_name (win);      
     }
-
+  
   if (props & HN_WM_SYNC_HILDON_APP_KILLABLE)
     {
       hn_wm_watched_window_process_hibernation_prop (win);
     }
-
+  
   if (props & HN_WM_SYNC_WM_STATE)
     {
       hn_wm_watched_window_process_wm_state (win);
@@ -608,6 +731,11 @@ hn_wm_watched_window_props_sync (HNWMWatchedWindow *win, gulong props)
   if (props & HN_WM_SYNC_WMHINTS)
     {
       hn_wm_watched_window_process_wm_hints (win);
+    }
+
+  if (props & HN_WM_SYNC_ICON)
+    {
+      hn_wm_watched_window_process_net_wm_icon (win);
     }
 
   gdk_error_trap_pop();

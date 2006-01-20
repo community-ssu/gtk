@@ -212,7 +212,7 @@ gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
             continue;
         }
         
-        gtk_main_quit ();
+        exit(0);
     }
   
     /* 

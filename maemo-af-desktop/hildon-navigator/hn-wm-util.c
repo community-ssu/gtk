@@ -96,7 +96,7 @@ hn_wm_util_send_x_message (Window        xwin_src,
   gdk_error_trap_push();
     
   XSendEvent(GDK_DISPLAY(), xwin_dest, mask, False, &ev);
-  XSync(GDK_DISPLAY(),FALSE);
+  XSync(GDK_DISPLAY(), FALSE);
   
   if (gdk_error_trap_pop())
     {

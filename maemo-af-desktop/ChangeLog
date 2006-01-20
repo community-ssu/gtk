@@ -1,3 +1,52 @@
+2006-01-20  Johan Bilien <johan.bilien@nokia.com>
+	* configure.ac: 2.2.0
+	* hildon-home/hildon-home-main.{c,h}
+	  - Reverted fix to N#21895 as it introduces N#22414
+	* hildon-navigator/*: Imported recent changes by Matthew Allum:
+
+	 * hildon-navigator/hn-wm-watched-window.c:
+	 (hn_wm_watched_window_process_wm_hints):
+	 Make sure urgency hint change gets applied to flash icon
+
+	 * hildon-navigator/application-switcher.c: (store_item),
+	 (app_switcher_remove_item), (app_switcher_item_icon_sync):
+	 * hildon-navigator/hn-wm-watched-window.c:
+	 (hn_wm_watched_window_process_net_wm_icon),
+	 (hn_wm_watched_window_process_hildon_view_list),
+	 (hn_wm_watched_window_get_menu), (hn_wm_watched_window_destroy):
+	 * hildon-navigator/hn-wm.c: (hn_wm_process_x_client_list):
+	 Fixes to icons changing on the fly.
+	 Fix leak in handling view lists
+
+	 * hildon-navigator/Makefile.am:
+	 * hildon-navigator/hildon-pixbuf-anim-blinker.c:
+	 * hildon-navigator/hildon-pixbuf-anim-blinker.h:
+
+
+	 * hildon-navigator/application-switcher.c: (button_toggled),
+	 (add_item_to_button), (update_menu_items), (store_item),
+	 (app_switcher_add_new_item), (app_switcher_remove_item),
+	 (app_switcher_update_item), (app_switcher_top_desktop_item):
+	 * hildon-navigator/application-switcher.h:
+	 * hildon-navigator/hn-wm-watched-window.c:
+	 (hn_wm_watched_window_process_net_wm_icon),
+	 (hn_wm_watched_window_process_wm_hints),
+	 (hn_wm_watched_window_get_x_win):
+	 * hildon-navigator/hn-wm-watched-window.h:
+	 * hildon-navigator/hn-wm.c: (hn_wm_x_event_filter):
+
+	 * hildon-navigator/hn-wm.c: (hn_wm_top_view):
+	 Fix topping of regular non view windows
+
+	 * hildon-navigator/Makefile.am:
+	 Fix typo for make dist to work.
+	 * hildon-navigator/hn-wm.c: (hn_wm_top_view),
+	 Make viewless windows get topped ok.
+
+2006-01-17  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-home/hildon-home-main.c: Backported fix to N#21895 from IT-2005
+	* maemo-af-desktop-main.c: Backported fix to N#21976 from IT-2005
+
 2006-01-13  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-home/hildon-home-main.c: Backported fix to N#21213 from IT-2005
 	* Reverted fix to N#19977
@@ -8,15 +57,184 @@
 2006-01-04  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/*: Imported recent changes by Matthew Allum
 
+	 * hildon-navigator/hn-wm-watchable-app.c:
+	 (hn_wm_watchable_app_new):
+	 Dont free the .desktop object here
+
+	 * hildon-navigator/hn-wm.c: (hn_wm_process_x_client_list):
+	 Plug a leak in not freeing up client list prop
+
+	* hildon-navigator/hn-wm-types.h:
+	 * hildon-navigator/hn-wm-watchable-app.c:
+	 (hn_wm_watchable_app_new):
+	 * hildon-navigator/hn-wm-watchable-app.h:
+	 * hildon-navigator/hn-wm-watched-window.c:
+	 (hn_wm_watched_window_process_wm_state),
+	 (hn_wm_watched_window_process_hildon_view_list),
+	 (hn_wm_watched_window_new), (hn_wm_watched_window_is_hibernating),
+	 (hn_wm_watched_window_hibernate), (hn_wm_watched_window_awake),
+	 (hn_wm_watched_window_destroy), (hn_wm_watched_window_props_sync):
+	 * hildon-navigator/hn-wm-watched-window.h:
+	 Rename *_exec() to *_service()
+	 Remove uneeded class name tracking
+	 Add initial support for tracking WM_HINTS
+
+	 * hildon-navigator/Makefile.am:
+	 * hildon-navigator/windowmanager.c:
+	 * hildon-navigator/hn-wm.c: (hn_wm_top_view), (hn_wm_atoms_init),
+	 (hn_wm_lookup_watched_window_via_service_find_func),
+	 (hn_wm_lookup_watched_window_via_service),
+	 (hn_wm_lookup_watchable_app_via_service_find_func),
+	 (hn_wm_process_x_client_list), (hn_wm_x_event_filter),
+	 (hn_wm_watchable_apps_init):
+	 Rename to hn-wm.c
+	 Rename *_exec() to *_service()
+
+
 2006-01-02  Johan Bilien <johan.bilien@nokia.com>
-	* hildon-navigator/*: Imported Matthew Allum's cleanups and refactoring.
+	* Imported Matthew Allum's cleanups and refactoring.
+	
+	 * hildon-navigator/hn-wm-watched-window.c:
+	 (hn_wm_watched_window_props_sync):
+	 * hildon-navigator/windowmanager.c: (hn_wm_x_window_is_watchable):
+	 Fix XGetClassHint leakage.
+	 * hildon-navigator/application-switcher.c: (update_menu_items):
+	 * hildon-navigator/hn-wm-memory.c: (hn_wm_memory_kill_lru):
+	 * hildon-navigator/hn-wm-session.c: (hn_wm_session_restore):
+	 * hildon-navigator/hn-wm-watchable-app.c:
+	 (hn_wm_watchable_app_new):
+	 * hildon-navigator/hn-wm-watched-window-view.c:
+	 (hn_wm_watched_window_view_new):
+	 * hildon-navigator/hn-wm-watched-window-view.h:
+	 * hildon-navigator/hn-wm-watched-window.c:
+	 (hn_wm_watched_window_process_hildon_view_active),
+	 (hn_wm_watched_window_process_wm_name),
+	 (hn_wm_watched_window_process_hibernation_prop),
+	 (hn_wm_watched_window_process_wm_state),
+	 (hn_wm_watched_window_process_hildon_view_list),
+	 (hn_wm_watched_window_new):
+	 * hildon-navigator/hn-wm-watched-window.h:
+	 * hildon-navigator/hn-wm.h:
+	 * hildon-navigator/osso-manager.c: (add_method_cb):
+	 * hildon-navigator/windowmanager.c: (hn_wm_top_view),
+	 (hn_wm_top_service), (hn_wm_x_window_is_watchable),
+	 (hn_wm_process_mb_current_app_window),
+	 (client_list_remove_foreach_func), (hn_wm_process_x_client_list),
+	 (hn_wm_add_watched_window), (hn_wm_x_event_filter),
+	 (hn_wm_dbus_method_call_handler), (hn_wm_dbus_exit_handler),
+	 (hn_wm_dnotify_func), (hn_wm_osso_kill_method),
+	 (hn_wm_relaunch_timeout), (hn_wm_watchable_apps_init),
+	 (hn_wm_init):
+	 More refactoring.
+	 * hildon-navigator/hn-wm-watchable-app.h:
+	 Add some initial documentation
+	 * hildon-navigator/application-switcher.c: (update_menu_items),
+	 (app_switcher_add_new_item):
+	 * hildon-navigator/hn-wm-memory.c: (hn_wm_memory_update_lowmem_ui):
+	 * hildon-navigator/hn-wm-memory.h:
+	 * hildon-navigator/hn-wm-session.c: (hn_wm_session_save),
+	 (hn_wm_session_restore):
+	 * hildon-navigator/hn-wm-session.h:
+	 * hildon-navigator/hn-wm-watchable-app.c:
+	 * hildon-navigator/hn-wm-watchable-app.h:
+	 * hildon-navigator/osso-manager.c: (add_method_cb):
+	 * hildon-navigator/windowmanager.c: (hn_wm_top_service),
+	 (hn_wm_process_mb_current_app_window), (hn_wm_osso_kill_method):
+	 Rename and rejig various osso/dbus/memory related calls
+
+	 * hildon-navigator/Makefile.am:
+	 * hildon-navigator/hn-wm-session.c:
+	 * hildon-navigator/hn-wm-session.h:
+	 * hildon-navigator/hn-wm.h:
+	 Re-add session code.
+
+	 * hildon-navigator/Makefile.in:
+	 Remove this, shouldn't be in SVN
+
+	 * hildon-navigator/hn-wm-memory.c: (hn_wm_memory_get_limits),
+	 (hn_wm_memory_kill_all_watched_foreach_func):
+	 * hildon-navigator/hn-wm-memory.h:
+	 * hildon-navigator/hn-wm-watchable-app.c:
+	 (hn_wm_watchable_app_has_windows_find_func),
+	 (hn_wm_watchable_app_has_windows),
+	 (hn_wm_watchable_app_is_hibernating),
+	 (hn_wm_watchable_app_set_hibernate),
+	 (hn_wm_watchable_app_is_able_to_hibernate):
+	 * hildon-navigator/hn-wm-watchable-app.h:
+	 * hildon-navigator/hn-wm-watched-window-view.c:
+	 (hn_wm_watched_window_view_new),
+	 (hn_wm_watched_window_view_set_name),
+	 (hn_wm_watched_window_view_get_name),
+	 (hn_wm_watched_window_view_lookup_find_func),
+	 (hn_wm_watched_window_view_lookup),
+	 (hn_wm_watched_window_view_destroy):
+	 * hildon-navigator/hn-wm-watched-window-view.h:
+	 * hildon-navigator/hn-wm-watched-window.c:
+	 (hn_wm_watched_window_process_hildon_view_active),
+	 (hn_wm_watched_window_process_wm_name),
+	 (hn_wm_watched_window_process_hibernation_prop),
+	 (hn_wm_watched_window_process_wm_state),
+	 (hn_wm_watched_window_process_hildon_view_list),
+	 (hn_wm_watched_window_new), (hn_wm_watched_window_get_app),
+	 (hn_wm_watched_window_get_x_win), (hn_wm_watched_window_get_name),
+	 (hn_wm_watched_window_set_name), (hn_wm_watched_window_get_menu),
+	 (hn_wm_watched_window_set_menu), (hn_wm_watched_window_get_views),
+	 (hn_wm_watched_window_add_view),
+	 (hn_wm_watched_window_remove_view),
+	 (hn_wm_watched_window_set_active_view),
+	 (hn_wm_watched_window_get_active_view),
+	 (hn_wm_watched_window_lookup_via_service_find_func),
+	 (hn_wm_watched_window_lookup_via_service),
+	 (hn_wm_watched_window_lookup_via_menu_widget_find_func),
+	 (hn_wm_watched_window_lookup_via_menu_widget),
+	 (hn_wm_watched_window_attempt_pid_kill),
+	 (hn_wm_watched_window_is_hibernating),
+	 (hn_wm_watched_window_hibernate), (hn_wm_watched_window_awake),
+	 (hn_wm_watched_window_destroy):
+	 * hildon-navigator/hn-wm.h:
+	 * hildon-navigator/others-menu.c: (others_menu_activate_item):
+	 * hildon-navigator/windowmanager.c: (hn_wm_top_view),
+	 (hn_wm_top_service), (hn_wm_top_desktop), (hn_wm_atoms_init),
+	 (hn_wm_x_window_is_watchable),
+	 (hn_wm_process_mb_current_app_window), (hn_wm_x_event_filter):
+	 Lots of refactoring. Still more to do.
+
+	 * hildon-navigator/Makefile.am:
+	 * hildon-navigator/hn-wm-types.h:
+	 Add this header containing types
+
+	 * hildon-navigator/application-switcher.c:
+	 (application_switcher_initialize_menu),
+	 (set_first_button_pressed_and_grab_tooltip), (activate_item),
+	 (app_switcher_remove_item), (mce_handler):
+	 * hildon-navigator/application-switcher.h:
+	 Remove odd callbacks. Refactor that code a little
+
+	* hildon-navigator/Makefile.am:
+	 * hildon-navigator/Makefile.in:
+	 * hildon-navigator/hn-wm-memory.c:
+	 * hildon-navigator/hn-wm-memory.h:
+	 * hildon-navigator/hn-wm-util.c:
+	 * hildon-navigator/hn-wm-util.h:
+	 * hildon-navigator/hn-wm-watchable-app.c:
+	 * hildon-navigator/hn-wm-watchable-app.h:
+	 * hildon-navigator/hn-wm-watched-window-view.c:
+	 * hildon-navigator/hn-wm-watched-window-view.h:
+	 * hildon-navigator/hn-wm-watched-window.c:
+	 * hildon-navigator/hn-wm-watched-window.h:
+	 * hildon-navigator/hn-wm.h:
+	 * hildon-navigator/windowmanager.c:
+	 Breakup existsing windowmanager.c into sub files
+
+	 * hildon-navigator/windowmanager.c:
+	 Import initial rewrite.
 
 2005-12-21  Johan Bilien <johan.bilien@nokia.com>
 	* configure.ac: 2.1.1
 
 2005-12-20  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/windowmanager.c: Backported and ported to new dbus
-      fix to N#20921 from IT-2005
+	   fix to N#20921 from IT-2005
 
 2005-12-19  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/application-switcher.c: Backported fixes to N#21089
@@ -43,7 +261,7 @@
 2005-11-10  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Branched to IT-2005, trunk continues as IT-2006 branch *************************
-        * Patched PE bug N#18257 Task navigator: tooltip sometimes only one character wide
+	     * Patched PE bug N#18257 Task navigator: tooltip sometimes only one character wide
 	* hildon-navigator/application-switcher.c
 	* the label containing the tooltip is recreated each time it
   	is shown. This is a workaround on the sort-of-recursivity problem
@@ -63,11 +281,11 @@
 	  - handle_active_window_prop(): XFreeing realwin_value and value structure members corrected
 	* improved memory handling in functions:
 	  - create_notify_handler()
-          - handle_active_window_prop()
-          - handle_killable_prop()
-          - get_subname()
-          - handle_autotopping()
-          - top_view()
+	       - handle_active_window_prop()
+	       - handle_killable_prop()
+	       - get_subname()
+	       - handle_autotopping()
+	       - top_view()
 	* configure.ac: 1.63.0
 
 2005-11-01  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
@@ -92,8 +310,8 @@
 
 2005-10-19  Luc Pionchon  <luc.pionchon@nokia.com>
 
-        N#19187 Application icon is not visible in Tasknavigator although
-                application is running,
+	     N#19187 Application icon is not visible in Tasknavigator although
+	             application is running,
 	
 	* hildon-navigator/windowmanager.c
 	(map_notify_handler): Add the mapped application window always to
@@ -124,9 +342,9 @@
 	* Increased version number to 1.60.0, preparing for next integration round
 	* Patched bug N#20305: Desktop doesn't close applications on exit
 	* hildon-navigator/windowmanager.c (kill_all): Allow also the
-        topmost application to be killed, when killable_only is set to
-        FALSE (indicates that Task Navigator and apps are about to
-        restart/shutdown anyway)
+	     topmost application to be killed, when killable_only is set to
+	     FALSE (indicates that Task Navigator and apps are about to
+	     restart/shutdown anyway)
 
 2005-10-13  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Increased version number to 1.59.2.
@@ -157,25 +375,25 @@
 	* hildon-home/hildon-home-main.c
 	  - system includes for process priority settings added
 	  - construct_background_image():
-            after launching image loader process set it priority value.
+	         after launching image loader process set it priority value.
 
 2005-10-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Added Doxygen comments
 	* Added doxyconf-file for generating Doxygen documentation by running doxygen doxyconf
 
 2005-10-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
-        * Patched bug N# 20284 Random ghost icon in Task Navigator:
-        * hildon-navigator/windowmanager.h: Removed killable member from
-        menuitem_comp_t, as windowmanager.c now uses a better method for
-        acquiring the information.
-        * hildon-navigator/windowmanager.c (handle_active_window_prop):
-        Application Switcher was occasionally updated incorrectly due to
-        use of hardcoded value instead of variable.
-        (menuitem_match_helper): menuitem_comp_t member killable removed.
-        (kill_all): Avoid attempting to kill applications that are not
-        killable/are already killed. Mark killed applications as not
-        killable, as otherwise we may attempt to kill applications that
-        are restaring after bgkill.
+	     * Patched bug N# 20284 Random ghost icon in Task Navigator:
+	     * hildon-navigator/windowmanager.h: Removed killable member from
+	     menuitem_comp_t, as windowmanager.c now uses a better method for
+	     acquiring the information.
+	     * hildon-navigator/windowmanager.c (handle_active_window_prop):
+	     Application Switcher was occasionally updated incorrectly due to
+	     use of hardcoded value instead of variable.
+	     (menuitem_match_helper): menuitem_comp_t member killable removed.
+	     (kill_all): Avoid attempting to kill applications that are not
+	     killable/are already killed. Mark killed applications as not
+	     killable, as otherwise we may attempt to kill applications that
+	     are restaring after bgkill.
 	* Submitted to integration as version 1.58.6
 
 2005-10-11  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
@@ -197,12 +415,12 @@
 	* Preparing for Thusday integration round. Raised version to 1.57.0.
 	* Patched bug N#9843: After changing the language, the application hide from user
 	* hildon-navigator/windowmanager.c (init_window_manager): Delayed
-        the invocation of state restoration in order to prevent problems
-        occuring with unified desktop.
-        (restore_delayer): A new function, simply starts the state
-        restoration after a delay.
-        (property_notify_handler): Do not autotop applications if desktop
-        is about to shutdown/restart.
+	     the invocation of state restoration in order to prevent problems
+	     occuring with unified desktop.
+	     (restore_delayer): A new function, simply starts the state
+	     restoration after a delay.
+	     (property_notify_handler): Do not autotop applications if desktop
+	     is about to shutdown/restart.
 	* Additional fix to X synchronization issue:
 		windowmanager.c:
 		XSync(NULL,FALSE); -> XSync(GDK_DISPLAY(),FALSE);
@@ -221,28 +439,28 @@
 
 2005-10-03  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Applied the following patch from Guillem Jover <guillem.jover@nokia.com> :
-        * hildon-navigator/hildon-navigator-main.h:
-        (config_lowmem_notify): Split into ...
-        (config_lowmem_notify_enter): ... this and ...
-        (config_lowmem_notify_leave): ... this.
-        * hildon-navigator/hildon-navigator-main.c: Likewise.
-        * hildon-navigator/windowmanager.h (LAUNCH_FAILED_INSUF_RES): Remove
-        macro.
-        * hildon-navigator/windowmanager.c: Replace LAUNCH_FAILED_INSUF_RES
-        with "memr_ib_unable_to_switch_to_application".
-        (cannot_launch_dialog): Remove variable.
-        (top_service): Replace cannot_launch_dialog dialog with an infoprint.
-        (lowmem_handler): Make enter and leave notifications independently
-        selectable.
+	     * hildon-navigator/hildon-navigator-main.h:
+	     (config_lowmem_notify): Split into ...
+	     (config_lowmem_notify_enter): ... this and ...
+	     (config_lowmem_notify_leave): ... this.
+	     * hildon-navigator/hildon-navigator-main.c: Likewise.
+	     * hildon-navigator/windowmanager.h (LAUNCH_FAILED_INSUF_RES): Remove
+	     macro.
+	     * hildon-navigator/windowmanager.c: Replace LAUNCH_FAILED_INSUF_RES
+	     with "memr_ib_unable_to_switch_to_application".
+	     (cannot_launch_dialog): Remove variable.
+	     (top_service): Replace cannot_launch_dialog dialog with an infoprint.
+	     (lowmem_handler): Make enter and leave notifications independently
+	     selectable.
 
 2005-10-03  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Increased version number to 1.55.0, for next integration round.
 	* Patched bug N#19939: Application -loading info banners not disappearing after applications launched
 	* hildon-navigator/windowmanager.c (handle_client_list_prop): When
-       	updating active view, update also application parent node.
-       	(launch_banner_timeout): Remove banner when application parent
-       	node has children in treemodel instead of checking for views in
-       	order to increase reliability.
+	    	updating active view, update also application parent node.
+	    	(launch_banner_timeout): Remove banner when application parent
+	    	node has children in treemodel instead of checking for views in
+	    	order to increase reliability.
 
 2005-09-29  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Changed dimming feature to off
@@ -257,31 +475,31 @@
   	- added wait for killing old and obsolete image loader process
 	* maemo-af-desktop/hildon-home/hildon-home-main.c: refresh_background_image():
   	- when user save directory has background image and loading pixbuf
-    	fails, no longer falling back to factory settings or
-    	default. Reason for failing is most probable low resource state
-    	when no loading succeeds. This would cause unwanted calls for
-    	image loader when chancing theme.
+	 	fails, no longer falling back to factory settings or
+	 	default. Reason for failing is most probable low resource state
+	 	when no loading succeeds. This would cause unwanted calls for
+	 	image loader when chancing theme.
 	* Increased version to 1.54.1: 
 	* Applied patch for bug N#19662
 	* Hand corrected Makefile.am and hildon-home/Makefile.am which parts did not apply from patch successfully
 	* The patch introduced the following changes:
 	* debian/control: Added dependencies for libosso-common-error.
-        * configure.ac: Added check for libosso-common-error pkgconfig
-        info
-        * Makefile.am: Added libosso-common-error library to list of
-        libraries to link to.
-        * hildon-home/Makefile.am: Added libosso-common-error libs and
-        cflags.
-        * hildon-home/hildon-home-main.h: Removed unnecessary defines.
-        * hildon-home/hildon-home-main.c: Added include for
-        libosso-common-error.
-        * Rely on default OK button logical ID for information notes
-        instead of note-specific ones that appear not to be
-        actually specified.
-        (show_system_resource_note): Use osso_commmon_error() to get the
-        required localised error message.
-        (show_file_corrupt_note): Use osso_common_error() to get the
-        required localised error message.
+	     * configure.ac: Added check for libosso-common-error pkgconfig
+	     info
+	     * Makefile.am: Added libosso-common-error library to list of
+	     libraries to link to.
+	     * hildon-home/Makefile.am: Added libosso-common-error libs and
+	     cflags.
+	     * hildon-home/hildon-home-main.h: Removed unnecessary defines.
+	     * hildon-home/hildon-home-main.c: Added include for
+	     libosso-common-error.
+	     * Rely on default OK button logical ID for information notes
+	     instead of note-specific ones that appear not to be
+	     actually specified.
+	     (show_system_resource_note): Use osso_commmon_error() to get the
+	     required localised error message.
+	     (show_file_corrupt_note): Use osso_common_error() to get the
+	     required localised error message.
 	* Increased to version number 1.54.3:
 	* maemo-af-desktop.sh reduced the NAVIGATOR_LOWMEM_LAUNCH_BANNER_TIMEOUT from 200 to 20.
 	- Fixes the reject reason for bug 19818
@@ -293,9 +511,9 @@
 	* Applied patch for task delayed info banner:
 	  Added support for delayed infobanner showing to hildon-status-bar-main.c
 	* Fixed bug 19593 (memory leak in statusbar/libosso) with a workaround 
-          (without the need of touch libosso at this time):
+	       (without the need of touch libosso at this time):
 	  - in libosso callback strings created dynamically with str = g_strdup_printf("...")
-          are freed and reallocated in a shorter form as const with str = "Short error notice";
+	       are freed and reallocated in a shorter form as const with str = "Short error notice";
 
 2005-09-27  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Changed low mem dimming in maemo-af-desktop.sh to yes as requested.
@@ -303,9 +521,9 @@
 2005-09-27  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Applied lowmem infoprint patch from Guillem Jover:
 	* When CONFIG_LOWMEM_DIM is TRUE, all buttons that can start new
-    	  applications are dimmed when we are in the 'lowmem' situation.
+	 	  applications are dimmed when we are in the 'lowmem' situation.
 	* When CONFIG_LOWMEM_NOTIFY is TRUE, notify information to the user
-          upon entering and leaving the 'lowmem' situation.
+	       upon entering and leaving the 'lowmem' situation.
 	* When CONFIG_LOWMEM_PAVLOV_DIALOG is TRUE, display a dialog instead of
 	an infoprint upon entering the 'lowmem' situation.
 	* Upgraded package version to 1.52.0
@@ -328,7 +546,7 @@
 2005-09-22  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 	* Applied memory management change patch.
 	* Many things changed related to memory management:
-        * maemo-af-desktop is now configurable with its memory mgmt behaviour
+	     * maemo-af-desktop is now configurable with its memory mgmt behaviour
 	* Configuration parameters used after Mariuses patch:
 		NAVIGATOR_DO_BGKILL=yes
 		NAVIGATOR_LAUNCHBANNER_TIMEOUT=200
@@ -398,15 +616,15 @@
 
 	* Patched bug N#18477:
 	* hildon-navigator/osso-manager.h: Renamed the previously unused
-          string parameter for osso_manager_launch and took it in use.
-        * hildon-navigator/osso-manager.c: (osso_manager_launch): Took in use
-          the previously unused string parameter. Now it is passed with the
-          D-BUS message to the launched application, if it's present.
-        * hildon-navigator/windowmanager.c: (top_service): When launching
-          background killed applications, pass a specific string to the
-          osso_manager_launch().
-        * hildon-navigator/windowmanager.h: Added definition for the
-          restoration message data.
+	       string parameter for osso_manager_launch and took it in use.
+	     * hildon-navigator/osso-manager.c: (osso_manager_launch): Took in use
+	       the previously unused string parameter. Now it is passed with the
+	       D-BUS message to the launched application, if it's present.
+	     * hildon-navigator/windowmanager.c: (top_service): When launching
+	       background killed applications, pass a specific string to the
+	       osso_manager_launch().
+	     * hildon-navigator/windowmanager.h: Added definition for the
+	       restoration message data.
 
 	* Patched N#19025:
 	* hildon-home/hildon-home-main.h
@@ -425,7 +643,7 @@
 
 	* Patched bug N#19108
 	* Found leaked GnomeVFSURI when looking for another leak:
-   	hildon-home/hildon-home-main.c: home_bg_image_filename = gnome_vfs_uri_extract_short_name(gnome_vfs_uri_new(home_bg_image_uri));
+		hildon-home/hildon-home-main.c: home_bg_image_filename = gnome_vfs_uri_extract_short_name(gnome_vfs_uri_new(home_bg_image_uri));
 	* The patch fixes the leak.
 
 	* Patched bug N#19111
@@ -448,7 +666,7 @@
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Fixed bug 19007: 
-        * hildon-home/hildon-home-main.c (hildon_home_main): Do not overwrite the existing event mask of the maemo-af-desktop for root window, 
+	     * hildon-home/hildon-home-main.c (hildon_home_main): Do not overwrite the existing event mask of the maemo-af-desktop for root window, 
 	otherwise Task navigator 
 	will break.
 	* Hand fixed previous reverting patches that did not seem to work after all, lots of code
@@ -457,8 +675,8 @@
 
 2005-09-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Reverted version conflict which was caused by syncing CVS version and stage version.
-        * Patch edited & resolved by Karoliina Salminen & Tommi Komulainen
+	     * Reverted version conflict which was caused by syncing CVS version and stage version.
+	     * Patch edited & resolved by Karoliina Salminen & Tommi Komulainen
 
 2005-09-09  Luc Pionchon  <luc.pionchon@nokia.com>
 
@@ -491,7 +709,7 @@
 	* Increased version baseline to 1.48.0 due to bugfix camp.
 	* First bugfix camp patch applied
   	* Applied improve-hildon-home-event-efficiency -patch from Mathew
-    	Allum.
+	 	Allum.
 
 2005-09-07  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
@@ -502,75 +720,75 @@
 
 2005-09-06  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Additional patch applied for N#18522
+	     * Additional patch applied for N#18522
 	* Patch applied for bug N#14514:
 	*  hildon-navigator/application-switcher.c:
-           (application_switcher_initialize_menu): The AS button icon is no
-           longer added to the container here.
-           (application_switcher_add_menubutton): Added function that allows the 
-           AS button icon to be packed from outside Application Switcher.
-         * hildon-navigator/application-switcher.h: Added function
-           application_switcher_add_menubutton definition
-         * hildon-navigator/hildon-navigator-main.c: Removed the 
-           navigator_gui_draw_cb callback function and references to it 
-           as obsolete.
-         * hildon-home/hildon-home-main.h: Removed function 
-           hildon_home_show_background_cb definition
-         * hildon-home/hildon-home-main.c: Removed function
-           hildon_home_show_background_cb and references to it as obsolete.
+	        (application_switcher_initialize_menu): The AS button icon is no
+	        longer added to the container here.
+	        (application_switcher_add_menubutton): Added function that allows the 
+	        AS button icon to be packed from outside Application Switcher.
+	      * hildon-navigator/application-switcher.h: Added function
+	        application_switcher_add_menubutton definition
+	      * hildon-navigator/hildon-navigator-main.c: Removed the 
+	        navigator_gui_draw_cb callback function and references to it 
+	        as obsolete.
+	      * hildon-home/hildon-home-main.h: Removed function 
+	        hildon_home_show_background_cb definition
+	      * hildon-home/hildon-home-main.c: Removed function
+	        hildon_home_show_background_cb and references to it as obsolete.
 	* Patch applied for N#18300:
 	* hildon-navigator/windowmanager.h: Added support for StartupNotify
-   	.desktop key.
+		.desktop key.
  	* hildon-navigator/windowmanager.c (create_model): Added support
-   	for StartupNotify .desktop key.
-   	(method_call_handler): If StartupNotify is set to false, do not
+		for StartupNotify .desktop key.
+		(method_call_handler): If StartupNotify is set to false, do not
 	   display the startup banner for application.
 
 2005-09-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Patches applied for bug N#18522
-        * Patch applied for bug N#17734
+	     * Patch applied for bug N#17734
 
 2005-09-01  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Fixed bug N#17425.
 	* Updated hildon-navigator/windowmanager.h: #define LAUNCH_FAILED_INSUF_RES "cerm_can_not_open_insuf_res"
-          => #define LAUNCH_FAILED_INSUF_RES "ckct_ib_application_lowmem"
+	       => #define LAUNCH_FAILED_INSUF_RES "ckct_ib_application_lowmem"
 
 2005-09-01  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Updated debian/control file to depend to hildon-base-lib 0.9.3
-        * Updated localization package dependencies to updated packages.
+	     * Updated debian/control file to depend to hildon-base-lib 0.9.3
+	     * Updated localization package dependencies to updated packages.
 
 2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Added support for user plugins in the hildon-status-bar
-        * Added support for user plugins in the hildon-home
-        * Updated the following source files:
-           maemo-af-desktop/hildon-status-bar/hildon-status-bar-main.c
-           maemo-af-desktop/hildon-status-bar/hildon-status-bar-main.h
-           maemo-af-desktop/hildon-status-bar/hildon-status-bar-item.c
-           maemo-af-desktop/hildon-home/hildon-home-plugin-loader.c
-           maemo-af-desktop/hildon-home/hildon-home-main.c
-           maemo-af-desktop/hildon-home/hildon-home-main.h
-        * Raised version number
-        * Requires new version of the hildon-base-lib.
+	     * Added support for user plugins in the hildon-home
+	     * Updated the following source files:
+	        maemo-af-desktop/hildon-status-bar/hildon-status-bar-main.c
+	        maemo-af-desktop/hildon-status-bar/hildon-status-bar-main.h
+	        maemo-af-desktop/hildon-status-bar/hildon-status-bar-item.c
+	        maemo-af-desktop/hildon-home/hildon-home-plugin-loader.c
+	        maemo-af-desktop/hildon-home/hildon-home-main.c
+	        maemo-af-desktop/hildon-home/hildon-home-main.h
+	     * Raised version number
+	     * Requires new version of the hildon-base-lib.
 
 2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
-        
+	     
 	* hildon-navigator/others-menu.c (others_menu_changed_cb): Fix for bug
 	17741, others-menu leaking file descriptors with each update of the menu
-        * This fix requires support from hildon-base-lib, otherwise it will not work.
+	     * This fix requires support from hildon-base-lib, otherwise it will not work.
 
 2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Patched bug # 9179
+	     * Patched bug # 9179
  	* hildon-home/hildon-home-main.c: Replaced keysnooper with key press/release
 	event handlers for the main window. This fixes problems with menu key handling.
 
 2005-08-30  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Patched bug #17728 + corrected it by hand.
+	     * Patched bug #17728 + corrected it by hand.
 	* Extra libraries where added in linking time. Improved library options.
 	* maemo-af-desktop/
 		* configure.ac: 
@@ -586,17 +804,17 @@
 	can't relaunch them.
 
 2005-08-25  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
-        
-        * Fixed byg #10558 - FR_CA Home memory card cover: no message when open
+	     
+	     * Fixed byg #10558 - FR_CA Home memory card cover: no message when open
 	* maemo-af-desktop/hildon-home/hildon-home-main.c:
-          (image_loader_callback):
+	       (image_loader_callback):
 	Changed exit status to refer higher byte since status goes there.
 	* maemo-af-desktop/hildon-home/hildon-home-image-loader.h:
 	Added missing slash to uri prefix
 
 2005-08-24  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Fixed bug #17249
+	     * Fixed bug #17249
 	* po/en_GB.po: Added logical ID "cerm_can_not_open_insuf_res" for the log
 	launch failures in low memory situations.
 	* windowmanager.c (top_service): When attempting to top killed applications and
@@ -612,7 +830,7 @@
 2005-08-12  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
 	* Removed earlier maemo-af-desktop/debian/maemo-af-desktop.postinst patch.
-        Applied new patch to maemo-af-desktop/debian/maemo-af-desktop.postinst file.
+	     Applied new patch to maemo-af-desktop/debian/maemo-af-desktop.postinst file.
 	* Correction to bug N#14536 "On setting background image, a note "Loading
 	image" note does not display" 
 	* maemo-af-desktop/debian/maemo-af-desktop.postinst: Removed harmful remove file
@@ -692,12 +910,12 @@
 
 2005-08-10  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Correction to bug "Multiple problems in Others menu item sorting"
+	     * Correction to bug "Multiple problems in Others menu item sorting"
 	* others-menu.c: utf-8 stuff was removed
 
 2005-08-09  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Correction to bug "System reboots when Image Viewer is started after a search"
+	     * Correction to bug "System reboots when Image Viewer is started after a search"
 	* hildon-navigator/windowmanager.c: (determine_window_type):
 	Prevent a crash by checking that we do not pass NULL pointers to g_str_equal()
 	* hildon-navigator/windowmanager.c: (find_application_from_tree):
@@ -712,45 +930,45 @@
 
 	* Correction to bug "Changing home background image reboots"
 	* maemo-af-desktop/hildon-home/hildon-home-main.c: Removeed one second delay before showing "Loading" cancel note.
-        * maemo-af-desktop/hildon-home/hildon-home-main.h: Removed ONE_SECOND define as unnecessary. Changed
-          show_loading_cancel_note prototype from gboolean to void and its parameters from gpointer user_data to void.
+	     * maemo-af-desktop/hildon-home/hildon-home-main.h: Removed ONE_SECOND define as unnecessary. Changed
+	       show_loading_cancel_note prototype from gboolean to void and its parameters from gpointer user_data to void.
 
 2005-08-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Correction to bug "Task navigator crashes with incomplete .desktop files"
-        * Changed files: hildon-navigator/others-menu.c, hildon-navigator/windowmanager.c
+	     * Correction to bug "Task navigator crashes with incomplete .desktop files"
+	     * Changed files: hildon-navigator/others-menu.c, hildon-navigator/windowmanager.c
 
 2005-08-08  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Correction to bug "Menu hardware key does not close menu"
-        * hildon-home/hildon-home-main.c: The corrected version now ignores repeated key presses.
+	     * Correction to bug "Menu hardware key does not close menu"
+	     * hildon-home/hildon-home-main.c: The corrected version now ignores repeated key presses.
 
 2005-08-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * hildon-home/hildon-home-main.c: Corrected home from crashing from corrupted background image
-
-
-2005-08-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
-
-        * Applied patch which fixes bug "saved sketch.png picture can not be selected as background image".
-        * Cleaned up the code a bit after applying the patch - there was duplicate include for
-          log-functions.h (the one I had added and the one this patch added). The other one of them was removed.
-        * There is now additional line gtk_file_filter_add_pattern (mime_type_filter, "*.png"); after
-          the gtk_file_filter_add_mime_type statements.
+	     * hildon-home/hildon-home-main.c: Corrected home from crashing from corrupted background image
 
 
 2005-08-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * Icon corrected for OSSO_GN_NOTICE. 
-         "qgn_note_confirm",  /* OSSO_GN_NOTICE */ changed to "qgn_note_info",  /* OSSO_GN_NOTICE */
+	     * Applied patch which fixes bug "saved sketch.png picture can not be selected as background image".
+	     * Cleaned up the code a bit after applying the patch - there was duplicate include for
+	       log-functions.h (the one I had added and the one this patch added). The other one of them was removed.
+	     * There is now additional line gtk_file_filter_add_pattern (mime_type_filter, "*.png"); after
+	       the gtk_file_filter_add_mime_type statements.
+
+
+2005-08-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+	     * Icon corrected for OSSO_GN_NOTICE. 
+	      "qgn_note_confirm",  /* OSSO_GN_NOTICE */ changed to "qgn_note_info",  /* OSSO_GN_NOTICE */
 
 
 2005-08-04  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
 
-        * hildon-navigator/windowmanager.c : Added automated topping of killed
+	     * hildon-navigator/windowmanager.c : Added automated topping of killed
 	applications. 
 	- Minimization support improvements required by
 	automated topping fix. 
 	- Handle a rare situation with 0-length _NET_CLIENT_LIST X property properly.
 	* hildon-navigator/windowmanager.h: Added WM_MINIMIZED_ITEM
-    
+	 

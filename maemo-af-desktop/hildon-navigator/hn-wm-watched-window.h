@@ -43,6 +43,7 @@
 #define HN_WM_SYNC_WM_STATE            (1<<6)
 #define HN_WM_SYNC_HILDON_VIEW_LIST    (1<<7)
 #define HN_WM_SYNC_HILDON_VIEW_ACTIVE  (1<<8)
+#define HN_WM_SYNC_ICON                (1<<9)
 #define HN_WM_SYNC_ALL                 (G_MAXULONG)
 
 HNWMWatchedWindow*
@@ -57,6 +58,9 @@ hn_wm_watched_window_get_app (HNWMWatchedWindow *win);
 Window
 hn_wm_watched_window_get_x_win (HNWMWatchedWindow *win);
 
+gboolean
+hn_wm_watched_window_is_urgent (HNWMWatchedWindow *win);
+
 const gchar*
 hn_wm_watched_window_get_name (HNWMWatchedWindow *win);
 
@@ -69,6 +73,11 @@ hn_wm_watched_window_get_menu (HNWMWatchedWindow *win);
 void
 hn_wm_watched_window_set_menu (HNWMWatchedWindow *win,
 			       GtkWidget         *menu);
+
+/* Note, returns a copy of pixbuf will need freeing */
+GdkPixbuf*
+hn_wm_watched_window_get_custom_icon (HNWMWatchedWindow *win);
+
 GList*
 hn_wm_watched_window_get_views (HNWMWatchedWindow *win);
 
