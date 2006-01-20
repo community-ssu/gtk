@@ -1,0 +1,113 @@
+Index: glib/dbus-gvalue.c
+===================================================================
+--- glib/dbus-gvalue.c.orig	2006-01-19 03:23:10.364210704 +0000
++++ glib/dbus-gvalue.c	2006-01-19 03:51:44.523618864 +0000
+@@ -346,6 +346,57 @@
+   return type_id;
+ }
+ 
++
++static GQuark
++dbus_g_contents_signature_quark ()
++{
++  static GQuark quark;
++  if (!quark)
++    quark = g_quark_from_static_string ("DBusGContentsSignature");
++
++  return quark;
++}
++
++/**
++ * Set the D-Bus signature type for the contents of a collection.
++ *
++ * @param collection  the GPtrArray representing the collection
++ * @param signature   the D-Bus signature for a single element of the collection
++ */
++void
++dbus_g_collection_set_signature    (GPtrArray  *collection,
++                                    const char *signature)
++{
++  g_return_if_fail (collection != NULL);
++  g_return_if_fail (dbus_signature_validate_single (signature, NULL));
++
++  g_dataset_id_set_data_full (collection,
++                              dbus_g_contents_signature_quark (),
++                              g_strdup (signature),
++                              g_free);
++}
++
++
++/**
++ * Set the D-Bus signature type for the values of a map.
++ *
++ * @param collection  the GHashTable representing the map
++ * @param signature   the D-Bus signature for a single value in the map
++ */
++void
++dbus_g_map_set_value_signature (GHashTable *map,
++                                const char *signature)
++{
++  g_return_if_fail (map != NULL);
++  g_return_if_fail (dbus_signature_validate_single (signature, NULL));
++
++  g_dataset_id_set_data_full (map,
++                              dbus_g_contents_signature_quark (),
++                              g_strdup (signature),
++                              g_free);
++}
++
++
+ char *
+ _dbus_gtype_to_signature (GType gtype)
+ {
+@@ -1415,6 +1466,16 @@
+   value_sig = _dbus_gtype_to_signature (value_type);
+   if (!value_sig)
+     {
++      gpointer pointer = g_value_peek_pointer (value);
++
++      value_sig = g_strdup (
++        g_dataset_id_get_data (pointer,
++                               dbus_g_contents_signature_quark ()));
++
++      g_dataset_destroy (pointer);
++    }
++  if (!value_sig)
++    {
+       g_free (key_sig);
+       g_warning ("Cannot marshal type \"%s\" in map\n", g_type_name (value_type));
+       return FALSE;
+@@ -1567,6 +1628,16 @@
+   elt_sig = _dbus_gtype_to_signature (elt_gtype);
+   if (!elt_sig)
+     {
++      gpointer pointer = g_value_peek_pointer (value);
++
++      elt_sig = g_strdup (
++          g_dataset_id_get_data (pointer,
++                                 dbus_g_contents_signature_quark ()));
++
++      g_dataset_destroy (pointer);
++    }
++  if (!elt_sig)
++    {
+       g_warning ("Cannot marshal type \"%s\" in collection\n", g_type_name (elt_gtype));
+       return FALSE;
+     }
+Index: dbus/dbus-glib.h
+===================================================================
+--- dbus/dbus-glib.h.orig	2006-01-19 03:23:10.365210552 +0000
++++ dbus/dbus-glib.h	2006-01-19 03:50:34.751225880 +0000
+@@ -240,6 +240,12 @@
+ 
+ void              dbus_g_method_return_error         (DBusGMethodInvocation *context, GError *error);
+ 
++void              dbus_g_collection_set_signature    (GPtrArray  *collection,
++                                                      const char *signature);
++
++void              dbus_g_map_set_value_signature     (GHashTable *map,
++                                                      const char *signature);
++
+ /* Probably possible to replace this with a closure */
+ typedef struct {
+   GCallback cb;

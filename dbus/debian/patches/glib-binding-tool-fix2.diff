@@ -1,37 +1,66 @@
---- glib/dbus-binding-tool-glib.c	5 Jan 2006 20:03:38 -0000	1.24
-+++ glib/dbus-binding-tool-glib.c	17 Jan 2006 22:45:17 -0000
-@@ -97,8 +97,16 @@
+Index: glib/dbus-binding-tool-glib.c
+===================================================================
+--- glib/dbus-binding-tool-glib.c.orig	2006-01-19 02:49:47.106752128 +0000
++++ glib/dbus-binding-tool-glib.c	2006-01-19 02:52:14.104405088 +0000
+@@ -97,11 +97,19 @@
  static const char *
  dbus_g_type_get_c_name (GType gtype)
  {
--  if (dbus_g_type_is_collection (gtype))
--    return "GArray";
 +  GType subtype;
-+  if (dbus_g_type_is_collection (gtype)) {
-+    subtype = dbus_g_type_get_collection_specialization(gtype);
-+    if (_dbus_g_type_is_fixed (subtype)) {
-+      return "GArray";
-+    } else {
-+      return "GPtrArray";
+   if (dbus_g_type_is_collection (gtype))
+-    return "GArray";
++    {
++      subtype = dbus_g_type_get_collection_specialization(gtype);
++      if (_dbus_g_type_is_fixed (subtype))
++        return "GArray";
++      else
++        return "GPtrArray";
 +    }
-+  }
-+    
++
    if (dbus_g_type_is_map (gtype))
      return "GHashTable";
-   
-@@ -1009,8 +1017,13 @@
+-  
++
+   if (g_type_is_a (gtype, G_TYPE_STRING))
+     return "char *";
+ 
+@@ -110,9 +118,10 @@
+    */
+   if (g_type_is_a (gtype, G_TYPE_STRV))
+     return "char *";
++
+   if (g_type_is_a (gtype, DBUS_TYPE_G_OBJECT_PATH))
+     return "char";
+-  
++
+   return g_type_name (gtype);
+ }
+ 
+@@ -1005,13 +1014,24 @@
+     {
+       GType elt_gtype;
+       char *sublookup;
+-      
++
        elt_gtype = dbus_g_type_get_collection_specialization (gtype);
        sublookup = dbus_g_type_get_lookup_function (elt_gtype);
        g_assert (sublookup);
 -      type_lookup = g_strdup_printf ("dbus_g_type_get_collection (\"GArray\", %s)",
 -				     sublookup);
-+      if (_dbus_g_type_is_fixed (elt_gtype)) {
-+        type_lookup = g_strdup_printf 
-+          ("dbus_g_type_get_collection (\"GArray\", %s)", sublookup);
-+      } else {
-+        type_lookup = g_strdup_printf 
-+          ("dbus_g_type_get_collection (\"GPtrArray\", %s)", sublookup);
-+      }
++
++      if (_dbus_g_type_is_fixed (elt_gtype))
++        {
++          type_lookup = g_strdup_printf ("dbus_g_type_get_collection "
++              "(\"GArray\", %s)", sublookup);
++        }
++      else
++        {
++          type_lookup = g_strdup_printf ("dbus_g_type_get_collection "
++              "(\"GPtrArray\", %s)", sublookup);
++        }
++
        g_free (sublookup);
++
        return type_lookup;
      }
+   else if (dbus_g_type_is_map (gtype))

@@ -1,3 +1,10 @@
+dbus (0.60-1osso6) experimental; urgency=low
+
+  * Added cleaned-up version of the previous GPtrArray patch.
+  * Added a patch (API addition) for collection signatures. 
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 20 Jan 2006 18:41:40 +0200
+
 dbus (0.60-1osso5) experimental; urgency=low
 
   * Added patch for GPtrArray to dbus-binding-tool (N#22384).
