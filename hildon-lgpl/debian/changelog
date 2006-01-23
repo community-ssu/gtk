@@ -1,3 +1,9 @@
+hildon-lgpl (0.10.1-2) unstable; urgency=low
+
+  * increment debian revision to overwrite 0.10.1-1pre (which hides 0.10.1-1)
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 23 Jan 2006 14:50:46 +0200
+
 hildon-lgpl (0.10.1-1) unstable; urgency=low
 
   * N#16991 Find toolbar: wrong order of items in find toolbar history list.
