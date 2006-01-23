@@ -22,8 +22,9 @@
  *
  */
 
+#include <unistd.h>
+
 #include <gtk/gtk.h>
-#include <apt-pkg/error.h>
 
 #include "log.h"
 #include "util.h"
@@ -82,18 +83,6 @@ add_log_no_fmt (const gchar *str, size_t n)
   if (log_text == NULL)
     log_text = g_string_new ("");
   g_string_append_len (log_text, str, n);
-}
-
-void 
-log_errors ()
-{
-  // Print any errors or warnings found
-  string Err;
-  while (_error->empty() == false)
-    {
-      bool Type = _error->PopMessage(Err);
-      add_log ("%s: %s\n", Type? "E":"W", Err.c_str());
-    }
 }
 
 int old_stdout_fd = 1;

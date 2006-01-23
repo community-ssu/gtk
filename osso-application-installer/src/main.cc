@@ -30,16 +30,10 @@
 
 #include <gtk/gtk.h>
 
-#include <apt-pkg/init.h>
-#include <apt-pkg/error.h>
-#include <apt-pkg/pkgcache.h>
-#include <apt-pkg/pkgcachegen.h>
-#include <apt-pkg/sourcelist.h>
-#include <apt-pkg/acquire.h>
-#include <apt-pkg/cachefile.h>
+#include "apt-worker-client.h"
+#include "apt-worker-proto.h"
 
 #include "main.h"
-#include "operations.h"
 #include "util.h"
 #include "details.h"
 #include "menu.h"
@@ -58,6 +52,8 @@ using namespace std;
 static void set_details_callback (void (*func) (gpointer), gpointer data);
 static void set_operation_callback (const char *label,
 				    void (*func) (gpointer), gpointer data);
+
+void get_package_list_info (GList *packages);
 
 struct view {
   view *parent;
@@ -187,14 +183,212 @@ make_main_view (view *v)
 
   gtk_widget_show_all (view);
 
+  get_package_list_info (NULL);
+
   return view;
 }
 
-static GList *sections;
+static GList *install_sections = NULL;
+static GList *upgradeable_packages = NULL;
+static GList *installed_packages = NULL;
+
 static section_info *cur_section;
 
 static void
-append_user_size_delta (GString *str, gint delta,
+free_packages (GList *list)
+{
+  // XXX
+}
+
+static void
+free_sections (GList *list)
+{
+  // XXX
+}
+
+static void
+free_all_packages ()
+{
+  if (install_sections)
+    {
+      free_sections (install_sections);
+      install_sections = NULL;
+    }
+
+  if (upgradeable_packages)
+    {
+      free_packages (install_sections);
+      upgradeable_packages = NULL;
+    }
+    
+  if (installed_packages)
+    {
+      free_packages (install_sections);
+      installed_packages = NULL;
+    }
+}
+
+static section_info *
+find_section_info (GList **list_ptr, const char *name)
+{
+  if (name == NULL)
+    name = "none";
+
+  for (GList *ptr = *list_ptr; ptr; ptr = ptr->next)
+    if (!strcmp (((section_info *)ptr->data)->name, name))
+      return (section_info *)ptr->data;
+
+  section_info *si = new section_info;
+  si->name = name;
+  si->packages = NULL;
+  *list_ptr = g_list_prepend (*list_ptr, si);
+  return si;
+}
+
+static void
+get_package_list_reply (int cmd, char *response, int len, void *loop)
+{
+  if (response)
+    {
+      apt_proto_decoder dec (response, len);
+      int count = 0, new_p = 0, upg_p = 0, inst_p = 0;
+
+      while (!dec.at_end ())
+	{
+	  package_info *info = new package_info;
+	  info->name = dec.decode_string_dup ();
+	  info->installed_version = dec.decode_string_dup ();
+	  info->installed_size = dec.decode_int ();
+	  info->available_version = dec.decode_string_dup ();
+	  info->available_section = dec.decode_string_dup ();
+
+	  info->have_info = false;
+#if 0	  
+	  printf ("%s %s (%d) %s (%s)\n",
+		  name,
+		  installed? installed : "<none>", installed_size,
+		  available? available : "<none>", section);
+#endif
+	  
+	  count++;
+	  if (info->installed_version && info->available_version)
+	    {
+	      upgradeable_packages = g_list_prepend (upgradeable_packages,
+						     info);
+	      upg_p++;
+	    }
+	  else if (info->available_version)
+	    {
+	      section_info *sec = find_section_info (&install_sections,
+						     info->available_section);
+	      sec->packages = g_list_prepend (sec->packages,
+					      info);
+	      new_p++;
+	    }
+
+	  if (info->installed_version)
+	    {
+	      installed_packages = g_list_prepend (installed_packages,
+						   info);
+	      inst_p++;
+	    }
+	}
+
+      printf ("%d packages, %d new, %d upgradable, %d installed\n",
+	      count, new_p, upg_p, inst_p);
+
+      if (dec.corrupted ())
+	printf ("reply corrupted.\n");
+    }
+  else
+    printf ("bad get_package_list reply");
+
+  if (loop)
+    g_main_loop_quit ((GMainLoop *)loop);
+}
+
+static void
+get_package_list ()
+{
+  GMainLoop *loop = g_main_loop_new (NULL, 0);
+  apt_worker_get_package_list (get_package_list_reply, loop);
+  g_main_loop_run (loop);
+  g_main_loop_unref (loop);
+}
+
+struct gpi_closure {
+  void (*func) (package_info *, void *);
+  void *data;
+  package_info *pi;
+};
+
+static void
+gpi_reply  (int cmd, char *response, int len, void *clos)
+{
+  gpi_closure *c = (gpi_closure *)clos;
+  void (*func) (package_info *, void *) = c->func;
+  void *data = c->data;
+  package_info *pi = c->pi;
+  delete c;
+  
+  if (response)
+    {
+      apt_proto_decoder dec (response, len);
+      dec.decode_mem (&(pi->info), sizeof (pi->info));
+      pi->installed_short_description = dec.decode_string_dup ();
+      pi->available_short_description = dec.decode_string_dup ();
+      if (!dec.corrupted ())
+	{
+	  pi->have_info = true;
+	  func (pi, data);
+	}
+    }
+}
+
+void
+call_with_package_info (package_info *pi,
+			void (*func) (package_info *, void *), void *data)
+{
+  if (pi->have_info)
+    func (pi, data);
+  else
+    {
+      gpi_closure *c = new gpi_closure;
+      c->func = func;
+      c->data = data;
+      c->pi = pi;
+      apt_worker_get_package_info (pi->name, gpi_reply, c);
+    }
+}
+
+static GList *cur_packages_for_info;
+static GList *next_packages_for_info;
+
+static void
+get_next_package_info (package_info *pi, void *unused)
+{
+  if (pi)
+    printf ("info: %s\n", pi->name);
+
+  cur_packages_for_info = next_packages_for_info;
+  if (cur_packages_for_info)
+    {
+      next_packages_for_info = cur_packages_for_info->next;
+      pi = (package_info *)cur_packages_for_info->data;
+      call_with_package_info (pi, get_next_package_info, NULL);
+    }
+}
+
+void
+get_package_list_info (GList *packages)
+{
+  next_packages_for_info = packages;
+  if (cur_packages_for_info == NULL)
+    get_next_package_info (NULL, NULL);
+}
+
+static void
+append_user_size_delta (GString *str, int delta,
 			bool zero_is_positive)
 {
   if (delta == 0)
@@ -209,24 +403,17 @@ append_user_size_delta (GString *str, gint delta,
   else
     g_string_append_printf (str, "%d bytes will be freed.\n", -delta);
 }
-    
+   
 static bool
 confirm_install (package_info *pi)
 {
   GString *text = g_string_new ("");
   bool response;
 
-  simulate_install (pi);
   g_string_printf (text,
 		   "Do you want to %s?\n%s\n%s\n",
-		   pi->installed? "upgrade" : "install",
-		   pi->name, pi->available->version);
-  if (pi->install_possible)
-    {
-      g_string_append_printf (text, "%d bytes need to be downloaded.\n",
-			      pi->download_size);
-      append_user_size_delta (text, pi->install_user_size_delta, false);
-    }
+		   pi->installed_version? "upgrade" : "install",
+		   pi->name, pi->available_version);
 
   response = ask_yes_no (text->str);
   g_string_free (text, 1);
@@ -237,41 +424,7 @@ static void
 install_package (package_info *pi)
 {
   if (confirm_install (pi))
-    {
-      simulate_install (pi);
-      if (pi->install_possible)
-	{
-	  bool success;
-
-	  add_log ("\n------\n");
-	  add_log ("Installing %s %s.\n", pi->name, pi->available->version);
-
-	  /* XXX - We are going to invalidate the package db at one
-	     point and need to make sure that no pointers into it are
-	     used.  For example, redrawing the list of packages must
-	     not happen.  That's why we stop using it before actually
-	     invalidating it.
-	  */
-
-	  progress_with_cancel *pc = new progress_with_cancel ();
-	  pc->set ("Installing", 0.0);
-	  setup_install (pi);
-	  success = do_operations (pc);
-	  log_errors ();
-	  operations_init ();
-	  pc->close ();
-	  delete pc;
-	  
-	  package_db_invalidated ();
-
-	  if (success)
-	    annoy_user ("Done");
-	  else
-	    annoy_user ("Failed, see log.");
-	}
-      else
-	annoy_user ("Impossible, see details.");
-    }
+    annoy_user ("Not yet, sorry.");
 }
 
 static void
@@ -335,6 +488,8 @@ make_install_section_view (view *v)
 			    install_package);
   gtk_widget_show_all (view);
 
+  get_package_list_info (cur_section->packages);
+
   return view;
 }
 
@@ -351,13 +506,11 @@ make_install_applications_view (view *v)
   GtkWidget *view;
 
   set_operation_callback ("Install", NULL, NULL);
-  update_package_cache ();
-  sections = sectionize_packages (get_package_list (false, false),
-				  false);
   cur_section = NULL;
-
-  view = make_section_list (sections, view_section);
+  view = make_section_list (install_sections, view_section);
   gtk_widget_show_all (view);
+
+  get_package_list_info (NULL);
 
   return view;
 }
@@ -368,14 +521,13 @@ make_upgrade_applications_view (view *v)
   GtkWidget *view;
   GList *packages;
 
-  update_package_cache ();
-  packages = get_package_list (true, true);
-
-  view = make_package_list (packages,
+  view = make_package_list (upgradeable_packages,
 			    false,
 			    available_package_selected,
 			    install_package);
   gtk_widget_show_all (view);
+
+  get_package_list_info (upgradeable_packages);
 
   return view;
 }
@@ -386,12 +538,9 @@ confirm_uninstall (package_info *pi)
   GString *text = g_string_new ("");
   bool response;
 
-  simulate_uninstall (pi);
   g_string_printf (text,
 		   "Do you want to uninstall?\n%s\n%s\n",
-		   pi->name, pi->installed->version);
-  if (pi->uninstall_possible)
-    append_user_size_delta (text, pi->uninstall_user_size_delta, false);
+		   pi->name, pi->installed_version);
   
   response = ask_yes_no (text->str);
   g_string_free (text, 1);
@@ -402,41 +551,7 @@ static void
 uninstall_package (package_info *pi)
 {
   if (confirm_uninstall (pi))
-    {
-      simulate_uninstall (pi);
-      if (pi->uninstall_possible)
-	{
-	  bool success;
-
-	  add_log ("\n------\n");
-	  add_log ("Removing %s %s.\n", pi->name, pi->installed->version);
-
-	  /* XXX - We are going to invalidate the package db at one
-	     point and need to make sure that no pointers into it are
-	     used.  For example, redrawing the list of packages must
-	     not happen.  That's why we stop using it before actually
-	     invalidating it.
-	  */
-
-	  progress_with_cancel *pc = new progress_with_cancel ();
-	  pc->set ("Uninstalling", 0.0);
-	  setup_uninstall (pi);
-	  success = do_operations (pc);
-	  log_errors ();
-	  operations_init ();
-	  pc->close ();
-	  delete pc;
-
-	  package_db_invalidated ();
-
-	  if (success)
-	    annoy_user ("Done");
-	  else
-	    annoy_user ("Failed, see log.");
-	}
-      else
-	annoy_user ("Impossible, see details.");
-    }
+    annoy_user ("Not yet, sorry.");
 }
 
 GtkWidget *
@@ -445,13 +560,13 @@ make_uninstall_applications_view (view *v)
   GtkWidget *view;
   GList *packages;
 
-  packages = get_package_list (true, false);
-
-  view = make_package_list (packages,
+  view = make_package_list (installed_packages,
 			    true,
 			    installed_package_selected,
 			    uninstall_package);
   gtk_widget_show_all (view);
+
+  get_package_list_info (installed_packages);
 
   return view;
 }
@@ -501,10 +616,40 @@ window_destroy (GtkWidget* widget, gpointer data)
   gtk_main_quit ();
 }
 
-void
-package_db_invalidated ()
+static void
+apt_status_callback (int cmd, char *response, int len, void *unused)
 {
-  show_view (&main_view);
+  if (response)
+    {
+      apt_proto_decoder dec (response, len);
+      char *label = dec.decode_string_dup ();
+      int percent = dec.decode_int ();
+
+      printf ("STATUS: %3d %s\n", percent, label);
+
+      free (label);
+    }
+}
+
+static gboolean
+handle_apt_worker (GIOChannel *channel, GIOCondition cond, gpointer data)
+{
+  if (apt_worker_is_running ())
+    {
+      handle_one_apt_worker_response ();
+      return TRUE;
+    }
+  else
+    return FALSE;
+}
+
+void
+add_apt_worker_handler ()
+{
+  GIOChannel *channel = g_io_channel_unix_new (apt_worker_in_fd);
+  g_io_add_watch (channel, GIOCondition (G_IO_IN | G_IO_HUP | G_IO_ERR),
+		  handle_apt_worker, NULL);
+  g_io_channel_unref (channel);
 }
 
 int
@@ -515,7 +660,10 @@ main (int argc, char **argv)
   GtkMenu *main_menu;
 
   gtk_init (&argc, &argv);
-  operations_init ();
+
+  start_apt_worker ();
+  apt_worker_set_status_callback (apt_status_callback, NULL);
+  add_apt_worker_handler ();
 
   app_view = hildon_appview_new (NULL);
   app = hildon_app_new_with_appview (HILDON_APPVIEW (app_view));
@@ -552,7 +700,6 @@ main (int argc, char **argv)
 
   show_view (&main_view);
 
-  // redirect_fd_to_log (1);
-  redirect_fd_to_log (2);
+  get_package_list ();
   gtk_main ();
 }

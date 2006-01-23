@@ -27,7 +27,7 @@
 
 #include <gtk/gtk.h>
 
-#include "operations.h"
+#include "main.h"
 
 bool ask_yes_no (const gchar *question_fmt);
 void annoy_user (const gchar *text);

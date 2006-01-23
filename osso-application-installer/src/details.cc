@@ -28,104 +28,149 @@
 
 #include "details.h"
 #include "util.h"
+#include "apt-worker-client.h"
+#include "apt-worker-proto.h"
+
+struct spd_closure {
+  package_info *pi;
+  bool installed;
+};
+
+static char *
+decode_dependencies (apt_proto_decoder &dec)
+{
+  return g_strdup ("Not yet, sorry.");
+}
+
+static char *
+decode_summary (apt_proto_decoder &dec)
+{
+  return g_strdup ("Not yet, sorry.");
+}
+
+static void
+get_package_details_reply (int cmd, char *response, int len, void *clos)
+{
+  spd_closure *c = (spd_closure *)clos;
+  package_info *pi = c->pi;
+  bool installed = c->installed;
+  delete c;
+
+  if (response)
+    {
+      apt_proto_decoder dec (response, len);
+      const char *maintainer = dec.decode_string_in_place ();
+      const char *description = dec.decode_string_in_place ();
+      char *dependencies = decode_dependencies (dec);
+      char *summary = decode_summary (dec);
+      const char *operation;
+
+      if (dec.corrupted ())
+	return;
+
+      GtkWidget *dialog, *notebook;
+      GString *common = g_string_new ("");
+
+      gchar *status;
+      bool able, broken = false;
+
+      if (pi->installed_version && pi->available_version)
+	{
+	  status = "upgradeable";
+	  able = pi->info.installable;
+	}
+      else if (pi->installed_version)
+	{
+	  status = "installed";
+	  able = true;
+	}
+      else if (pi->available_version)
+	{
+	  status = "installable";
+	  able = pi->info.installable;
+	}
+      else
+	{
+	  status = "???";
+	  able = true;
+	}
+
+      g_string_append_printf (common, "Name:\t\t\t\t%s\n", pi->name);
+      g_string_append_printf (common, "Status:\t\t\t\t%s%s%s\n",
+			      broken? "broken, ":"",
+			      able? "" : "not ", status);
+      g_string_append_printf (common, "Maintainer:\t\t\t%s\n", maintainer);
+      g_string_append_printf (common, "Installed version:\t\t%s\n",
+			      (pi->installed_version
+			       ? pi->installed_version
+			       : "<none>"));
+      g_string_append_printf (common, "Installed size:\t\t%d\n",
+			      pi->installed_size);
+      g_string_append_printf (common, "Available version:\t%s\n",
+			      (pi->available_version 
+			       ? pi->available_version
+			       : "<none>"));
+      g_string_append_printf (common, "Download size:\t\t%d\n",
+			      pi->info.download_size);
+
+      if (!installed)
+	{
+	  if (pi->installed_version)
+	    operation = "Upgrade";
+	  else
+	    operation = "Install";
+	}
+      else
+	operation = "Remove";
+
+      dialog = gtk_dialog_new_with_buttons ("Package details",
+					    NULL,
+					    GTK_DIALOG_MODAL,
+					    "OK", GTK_RESPONSE_OK,
+					    NULL);
+      notebook = gtk_notebook_new ();
+      gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
+      gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+				make_small_text_view (common->str),
+				gtk_label_new ("Common"));
+      gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+				make_small_text_view (description),
+				gtk_label_new ("Description"));
+      gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+				make_small_text_view (dependencies),
+				gtk_label_new ("Dependencies"));
+      gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+				make_small_text_view (summary),
+				gtk_label_new (operation));
+
+      g_string_free (common, 1);
+      g_free (dependencies);
+      g_free (summary);
+
+      gtk_widget_set_usize (dialog, 600, 350);
+      gtk_widget_show_all (dialog);
+      gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (dialog);
+    }
+}
+
+void
+spd_cont (package_info *pi, void *data)
+{
+  spd_closure *c = (spd_closure *)data;
+  apt_worker_get_package_details (pi->name, (c->installed
+					     ? pi->installed_version
+					     : pi->available_version),
+				  1,
+				  get_package_details_reply,
+				  data);
+}
 
 void 
 show_package_details (package_info *pi, bool installed)
 {
-  GtkWidget *dialog, *notebook;
-  GString *common = g_string_new ("");
-  char *description;
-  GString *dependencies = g_string_new ("");
-  gchar *operation;
-  GString *summary = g_string_new ("");
-
-  version_info *focus = installed? pi->installed : pi->available;
-
-  assert (focus != NULL);
-
-  simulate_install (pi);
-
-  gchar *status;
-  bool able, broken = false;
-
-  if (pi->installed && pi->available)
-    {
-      status = "upgradeable";
-      able = pi->install_possible;
-    }
-  else if (pi->installed)
-    {
-      status = "installed";
-      able = true;
-    }
-  else if (pi->available)
-    {
-      status = "installable";
-      able = pi->install_possible;
-    }
-  else
-    {
-      status = "???";
-      able = true;
-    }
-
-  g_string_append_printf (common, "Name:\t\t\t\t%s\n", pi->name);
-  g_string_append_printf (common, "Status:\t\t\t\t%s%s%s\n",
-			  broken? "broken, ":"", able? "" : "not ", status);
-  g_string_append_printf (common, "Maintainer:\t\t\t%s\n", focus->maintainer);
-  g_string_append_printf (common, "Installed version:\t\t%s\n",
-			  (pi->installed ? pi->installed->version : "<none>"));
-  g_string_append_printf (common, "Installed size:\t\t%d\n", pi->installed_size);
-  g_string_append_printf (common, "Available version:\t%s\n",
-			  (pi->available ? pi->available->version : "<none>"));
-  g_string_append_printf (common, "Download size:\t\t%d\n", pi->download_size);
-
-
-  description = get_long_description (focus);
-
-  show_dependencies (focus, dependencies);
-
-  if (!installed)
-    {
-      if (pi->installed)
-	operation = "Upgrade";
-      else
-	operation = "Install";
-      show_install_summary (pi, summary);
-    }
-  else
-    {
-      operation = "Remove";
-      show_uninstall_summary (pi, summary);
-    }
-
-  dialog = gtk_dialog_new_with_buttons ("Package details",
-					NULL,
-					GTK_DIALOG_MODAL,
-					"OK", GTK_RESPONSE_OK,
-					NULL);
-  notebook = gtk_notebook_new ();
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_small_text_view (common->str),
-			    gtk_label_new ("Common"));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_small_text_view (description),
-			    gtk_label_new ("Description"));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_small_text_view (dependencies->str),
-			    gtk_label_new ("Dependencies"));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_small_text_view (summary->str),
-			    gtk_label_new (operation));
-
-  g_string_free (common, 1);
-  g_free (description);
-  g_string_free (dependencies, 1);
-  g_string_free (summary, 1);
-
-  gtk_widget_set_usize (dialog, 600, 350);
-  gtk_widget_show_all (dialog);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
+  spd_closure *c = new spd_closure;
+  c->pi = pi;
+  c->installed = installed;
+  call_with_package_info (pi, spd_cont, c);
 }

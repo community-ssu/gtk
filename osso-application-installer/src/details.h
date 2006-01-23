@@ -25,7 +25,7 @@
 #ifndef DETAILS_H
 #define DETAILS_H
 
-#include "operations.h"
+#include "main.h"
 
 void show_package_details (package_info *p, bool installed);
 

@@ -28,7 +28,6 @@
 #include <hildon-widgets/hildon-note.h>
 
 #include "util.h"
-#include "operations.h"
 
 bool
 ask_yes_no (const gchar *question)
@@ -217,10 +216,19 @@ package_name_func (GtkTreeViewColumn *column,
     {
       const gchar *desc;
       gchar *markup;
-      if (installed)
-	desc = pi->installed->short_description;
+      if (pi->have_info)
+	{
+	  if (installed)
+	    desc = pi->installed_short_description;
+	  else
+	    {
+	      desc = pi->available_short_description;
+	      if (desc == NULL)
+		desc = pi->installed_short_description;
+	    }
+	}
       else
-	desc = pi->available->short_description;
+	desc = "...";
       markup = g_markup_printf_escaped ("%s\n<small>%s</small>",
 					pi->name, desc);
       g_object_set (cell, "markup", markup, NULL);
@@ -260,7 +268,7 @@ installed_version_func (GtkTreeViewColumn *column,
 {
   package_info *pi;
   gtk_tree_model_get (model, iter, 0, &pi, -1);
-  g_object_set (cell, "text", pi->installed->version, NULL);
+  g_object_set (cell, "text", pi->installed_version, NULL);
 }
 
 static void
@@ -272,7 +280,7 @@ available_version_func (GtkTreeViewColumn *column,
 {
   package_info *pi;
   gtk_tree_model_get (model, iter, 0, &pi, -1);
-  g_object_set (cell, "text", pi->available->version, NULL);
+  g_object_set (cell, "text", pi->available_version, NULL);
 }
 
 static void
@@ -299,7 +307,10 @@ download_size_func (GtkTreeViewColumn *column,
   package_info *pi;
   char buf[20];
   gtk_tree_model_get (model, iter, 0, &pi, -1);
-  sprintf (buf, "%d", pi->download_size);
+  if (pi->have_info)
+    sprintf (buf, "%d", pi->info.download_size);
+  else
+    buf[0] = '\0';
   g_object_set (cell, "text", buf, NULL);
 }
 
@@ -384,8 +395,6 @@ make_package_list (GList *packages,
       gtk_list_store_set (store, &iter,
 			  0, packages->data,
 			  -1);
-      if (!installed)
-	simulate_install ((package_info *)packages->data);
       packages = packages->next;
     }
 

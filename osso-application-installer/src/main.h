@@ -25,7 +25,32 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-void package_db_invalidated ();
+#include "apt-worker-proto.h"
+
+struct package_info {
+  const char *name;
+  const char *installed_version;
+  int installed_size;
+  const char *available_version;
+  const char *available_section;
+
+  bool have_info;
+  apt_proto_package_info info;
+  const char *installed_short_description;
+  const char *available_short_description;
+};
+
+void call_with_package_info (package_info *pi,
+			     void (*func) (package_info *, void *), void *);
+
+package_info *alloc_package_info ();
+void free_package_info (package_info *);
+
+struct section_info {
+  const char *name;
+  GList *packages;
+};
+
 void show_current_details ();
 void do_current_operation ();
 

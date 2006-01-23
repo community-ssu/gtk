@@ -26,7 +26,6 @@
 #include <gtk/gtk.h>
 
 #include "menu.h"
-#include "operations.h"
 #include "util.h"
 #include "main.h"
 #include "log.h"
@@ -94,10 +93,7 @@ static void
 menu_refresh ()
 {
   if (ask_yes_no ("Do you want to refresh the list of packages?"))
-    {
-      update_package_cache_no_confirm ();
-      package_db_invalidated ();
-    }
+    annoy_user ("Not yet, sorry.");
 }
 
 static GtkWidget *details_menu_item = NULL;
