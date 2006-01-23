@@ -169,13 +169,21 @@ invoked_get_magic(int fd)
 
   /* Receive the magic. */
   invoke_recv_msg(fd, &msg);
-  if (msg != INVOKER_MSG_MAGIC)
+  if ((msg & INVOKER_MSG_MASK) == INVOKER_MSG_MAGIC)
+  {
+    if ((msg & INVOKER_MSG_MAGIC_VERSION_MASK) == INVOKER_MSG_MAGIC_VERSION)
+      invoke_send_msg(fd, INVOKER_MSG_ACK);
+    else
+    {
+      error("receiving bad magic version (%08x)\n", msg);
+      return false;
+    }
+  }
+  else
   {
     error("receiving bad magic (%08x)\n", msg);
     return false;
   }
-  else
-    invoke_send_msg(fd, INVOKER_MSG_ACK);
 
   return true;
 }

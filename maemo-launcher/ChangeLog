@@ -1,3 +1,8 @@
+2006-01-23  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (invoked_get_magic): Mask and check the magic
+	and the version independently.
+
 2006-01-16  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/invokelib.h (INVOKER_MSG_MASK): New macro.
