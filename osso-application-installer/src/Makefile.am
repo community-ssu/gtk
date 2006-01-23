@@ -1,6 +1,5 @@
 bin_PROGRAMS = osso-application-installer
-
-noinst_PROGRAMS = t apt-worker
+libexec_PROGRAMS = apt-worker
 
 osso_application_installer_SOURCES = main.h			\
                                      main.cc			\
@@ -18,16 +17,6 @@ osso_application_installer_SOURCES = main.h			\
 				     apt-worker-client.cc	\
 	 			     apt-worker-proto.h		\
 				     apt-worker-proto.cc
-
-t_SOURCES = t.cc \
-            apt-worker-client.h \
-            apt-worker-client.cc \
-            apt-worker-proto.h \
-            apt-worker-proto.cc
-
-t_CFLAGS = $(AI_DEPS_CFLAGS)
-t_CXXFLAGS = $(AI_DEPS_CFLAGS)
-t_LDADD = $(AI_DEPS_LIBS)
 
 apt_worker_SOURCES = apt-worker.cc \
                      apt-worker-proto.h \
