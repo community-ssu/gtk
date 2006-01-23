@@ -220,6 +220,7 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
         if(exec_field != NULL) {
             /* Argument list. [0] is binary we wish to execute */
             gchar *arg_list[] = { exec_field, NULL };
+            GPid child_pid;
 
             g_spawn_async(
                           /* child's current working directory,
@@ -239,7 +240,7 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
                           /* user data for child_setup */
                           NULL,
                           /* return location for child process ID or NULL */
-                          NULL,
+                          &child_pid,
                           /* return location for error */
                           &error);
             
@@ -247,6 +248,17 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
                 osso_log( LOG_ERR,"Failed to execute %s: %s\n",
                           arg_list[0], error->message);
                 g_clear_error(&error);
+            } else {
+                int priority;
+
+                errno = 0;
+
+                priority = getpriority(PRIO_PROCESS, child_pid);
+                /* If the child process inherited desktop's high priority,
+                 * give child default priority */
+                if (!errno && priority < 0) {
+                    setpriority(PRIO_PROCESS, child_pid, 0);
+                }
             }
 
         } else {

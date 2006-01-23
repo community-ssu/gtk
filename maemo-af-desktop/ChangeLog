@@ -1,3 +1,10 @@
+2006-01-23  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-navigator/others-menu.c:
+	  - others_menu_activate_item(): reset the priority to default
+	    processes spawned by the task navigator. Patch courtesy of
+		Tomas Junnonen
+	* Closes N#22407
+
 2006-01-20  Johan Bilien <johan.bilien@nokia.com>
 	* configure.ac: 2.2.0
 	* hildon-home/hildon-home-main.{c,h}
