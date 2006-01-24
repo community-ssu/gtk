@@ -111,12 +111,10 @@ static gboolean _validate(const gchar *application, const gchar* version)
 	(version == NULL)) {
 	return FALSE;
     }
-    if ((strstr(application, "/") != NULL) ||
-	(strstr(application, ".") != NULL)) {
+    if (strstr(application, "/") != NULL) {
 	return FALSE;
     }
-    if ((strstr(version, "/") != NULL) ||
-	(strstr(version, "/") != NULL)) {
+    if (strstr(version, "/") != NULL) {
 	return FALSE;
     }
     return TRUE;
