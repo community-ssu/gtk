@@ -1,3 +1,10 @@
+maemo-af-desktop (2.2.1-0) unstable; urgency=low
+
+  * Applied fix to N#22407
+  * Build a -dbg package
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 24 Jan 2006 13:15:11 +0200
+
 maemo-af-desktop (2.2.0-0) unstable; urgency=low
 
   * Reverted fix to N#21895 as it introduces N#22414

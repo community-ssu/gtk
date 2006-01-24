@@ -1,3 +1,6 @@
+2006-01-24  Johan Bilien <johan.bilien@nokia.com>
+	* configure.ac: 2.2.1
+
 2006-01-23  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/others-menu.c:
 	  - others_menu_activate_item(): reset the priority to default

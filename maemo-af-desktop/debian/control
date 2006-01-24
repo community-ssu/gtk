@@ -41,3 +41,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, pkg-config, libgtk2.0-dev, hildon-l
 Conflicts: hildon-base
 Description: Hildon Home development files
 
+Package: maemo-af-desktop-dbg
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Debug symbols for maemo-af-desktop
