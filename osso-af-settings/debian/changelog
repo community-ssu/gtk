@@ -1,3 +1,9 @@
+osso-af-settings (0.8.6-3) unstable; urgency=low
+
+  * Added 'dbusservicedir' variable to the .pc file (N#22451).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 24 Jan 2006 15:51:47 +0200
+
 osso-af-settings (0.8.5-3) unstable; urgency=low
 
   * Added COPYING and fixed debian/copyright.

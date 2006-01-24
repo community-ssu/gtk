@@ -1,7 +1,7 @@
 Source: osso-af-settings
 Section: base
 Priority: optional
-Maintainer: Kimmo Hämälainen <kimmo.hamalainen@nokia.com>
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 Build-Depends: debhelper (>= 4.0.0)
 Standards-Version: 3.6.0
 
@@ -9,5 +9,4 @@ Package: osso-af-settings
 Section: libs
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: osso-teema
-Description: Pkg-config settings for Hildon programs.
+Description: pkg-config settings for Maemo/OS 2006.

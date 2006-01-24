@@ -2,6 +2,7 @@ prefix=@prefix@
 desktopentrydir=@datadir@/applications/hildon
 localedir=@localedir@
 hildonpixmapdir=@hildonpixmapdir@
+dbusservicedir=/usr/share/dbus-1/services
 
 Name: osso-af-settings
 Description: Settings for the OSSO environment
