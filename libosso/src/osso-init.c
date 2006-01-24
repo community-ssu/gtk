@@ -31,7 +31,7 @@
 gchar* __attribute__ ((visibility("hidden")))
 appname_to_valid_path_component(const gchar *application)
 {
-    gchar* copy = NULL, p = NULL;
+    gchar* copy = NULL, *p = NULL;
     g_assert(application != NULL);
     copy = g_strdup(application);
     if (copy == NULL) {
