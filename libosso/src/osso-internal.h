@@ -174,6 +174,19 @@ osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 			        osso_rpc_cb_f *cb, gpointer data,
 			        gboolean use_system_bus);
 
+gchar* appname_to_valid_path_component(const gchar *application);
+gboolean validate_appname(const gchar *application);
+
+/**
+ * This internal function performs a simple validation for the application
+ * and version information of the osso_context regarding their validity
+ * as components of the filesystem (no slashes, value not NULL etc)
+ * @param osso The osso context containing the application name and
+ * version information
+ * @return TRUE if the context passes the validation, FALSE otherwise.
+ */
+gboolean validate_osso_context(const osso_context_t * osso);
+
 #define _launch_app(osso, application) \
     osso_rpc_run_with_defaults(osso, application, \
 				   OSSO_BUS_ACTIVATE, NULL, NULL);

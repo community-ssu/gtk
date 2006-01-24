@@ -35,6 +35,8 @@ osso_return_t osso_application_top(osso_context_t *osso, const gchar *applicatio
     char service[255], path[255], interface[255];
     guint serial;
     DBusMessage *msg;
+    gchar* copy = NULL;
+
     if(osso == NULL) return OSSO_INVALID;
     if(application == NULL) return OSSO_INVALID;
 
@@ -43,8 +45,13 @@ osso_return_t osso_application_top(osso_context_t *osso, const gchar *applicatio
     
     g_snprintf(service, 255, "%s.%s", OSSO_BUS_ROOT, application);
 
-    g_snprintf(path, 255, "%s/%s", OSSO_BUS_ROOT_PATH, application);
-	       
+    copy = appname_to_valid_path_component(application);
+    if (copy == NULL) {
+        ULOG_ERR_F("failure in appname_to_valid_path_component");
+        return OSSO_ERROR;
+    }
+    g_snprintf(path, 255, "%s/%s", OSSO_BUS_ROOT_PATH, copy);
+    g_free(copy); copy = NULL;
 
     g_snprintf(interface, 255, "%s", service);
 

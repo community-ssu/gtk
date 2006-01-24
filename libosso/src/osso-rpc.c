@@ -228,14 +228,20 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
     gchar service[256] = {0}, object_path[256] = {0}, interface[256] = {0};
     va_list arg_list;
     osso_return_t ret;
+    gchar* copy = NULL;
 
     dprint("");
     if( (osso == NULL) || (application == NULL) || (method == NULL) )
 	return OSSO_INVALID;
     
     g_snprintf(service, 255, "%s.%s", OSSO_BUS_ROOT, application);
-    g_snprintf(object_path, 255, "%s/%s", OSSO_BUS_ROOT_PATH,
-	       application);
+    copy = appname_to_valid_path_component(application);
+    if (copy == NULL) {
+	ULOG_ERR_F("failure in appname_to_valid_path_component");
+	return OSSO_ERROR;
+    }
+    g_snprintf(object_path, 255, "%s/%s", OSSO_BUS_ROOT_PATH, copy);
+    g_free(copy); copy = NULL;
     g_snprintf(interface, 255, "%s", service);
 
     va_start(arg_list, argument_type);
@@ -385,13 +391,19 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
     va_list arg_list;
     osso_return_t ret;
     gchar service[256] = {0}, object_path[256] = {0}, interface[256] = {0};
+    gchar* copy = NULL;
 
     if( (osso == NULL) || (application == NULL) || (method == NULL) )
 	return OSSO_INVALID;
     
     g_snprintf(service, 255, "%s.%s", OSSO_BUS_ROOT, application);
-    g_snprintf(object_path, 255, "%s/%s", OSSO_BUS_ROOT_PATH,
-	       application);
+    copy = appname_to_valid_path_component(application);
+    if (copy == NULL) {
+        ULOG_ERR_F("failure in appname_to_valid_path_component");
+	return OSSO_ERROR;
+    }
+    g_snprintf(object_path, 255, "%s/%s", OSSO_BUS_ROOT_PATH, copy);
+    g_free(copy); copy = NULL;
     g_snprintf(interface, 255, "%s", service);
 
     va_start(arg_list, argument_type);

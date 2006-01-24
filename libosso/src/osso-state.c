@@ -22,37 +22,10 @@
 
 #include "osso-state.h"
 #include "osso-log.h"
+#include "osso-internal.h"
 
 static osso_return_t _write_state(const gchar *statefile, osso_state_t *state);
 static osso_return_t _read_state(const gchar *statefile, osso_state_t *state);
-
-/**
- * This internal function performs a simple validation for the application
- * and version information of the osso_context regarding their validity
- * as components of the filesystem (no slashes, value not NULL etc)
- * @param osso The osso context containing the application name and
- * version information
- * @return TRUE if the context passes the validation, FALSE otherwise.
- */
-
-/* TODO: Move validation to osso_initialization?
- */
-
-/************************************************************************/
-static gboolean _validate(osso_context_t * osso)
-{
-    if ((osso == NULL) || (osso->application  == NULL) ||
-	(osso->version == NULL)) {
-	return FALSE;
-    }
-    if ((strstr(osso->application, "/") != NULL)) {
-	return FALSE;
-    }
-    if ((strstr(osso->version, "/") != NULL)) {
-	return FALSE;
-    }
-    return TRUE;
-}
 
 static gboolean _validate_state(osso_state_t *state)
 {
@@ -77,7 +50,7 @@ osso_return_t osso_state_write(osso_context_t *osso, osso_state_t *state)
 	ULOG_ERR_F("NULL state pointer, or state size invalid");
 	return OSSO_INVALID;
     }
-    if (_validate(osso) == FALSE) {
+    if (!validate_osso_context(osso)) {
 	ULOG_ERR_F("appname/version invalid or osso context NULL");
 	return OSSO_INVALID;
     }
@@ -108,7 +81,7 @@ osso_return_t osso_state_write(osso_context_t *osso, osso_state_t *state)
     
     _write_state(path, state);
     
-    free(path);
+    g_free(path);
 
     return OSSO_OK;
 }
@@ -125,7 +98,7 @@ osso_return_t osso_state_read(osso_context_t *osso, osso_state_t *state)
 	ULOG_ERR_F("NULL state pointer");
 	return OSSO_INVALID;
     }
-    if (_validate(osso) == FALSE) {
+    if (!validate_osso_context(osso)) {
 	ULOG_ERR_F("appname/version invalid or osso context NULL");
 	return OSSO_INVALID;
     }
@@ -154,7 +127,7 @@ osso_return_t osso_state_read(osso_context_t *osso, osso_state_t *state)
 
     ret = _read_state(path, state);
 
-    free(path);
+    g_free(path);
 
     return ret;
 }
@@ -164,10 +137,10 @@ int osso_state_open_write(osso_context_t *osso)
 {
     gint fd = -1;
     gchar *tmpdir_path  = NULL;
-    gchar *path, *app_path = NULL;
+    gchar *path = NULL, *app_path = NULL;
     struct stat statbuf;
 
-    if (_validate(osso) == FALSE) {
+    if (!validate_osso_context(osso)) {
       ULOG_ERR_F("appname/version invalid or osso context NULL");
       return -1;
     }
@@ -206,14 +179,14 @@ int osso_state_open_write(osso_context_t *osso)
     }
     if (app_path == NULL) {
       ULOG_ERR_F("Allocation of application string failed");
-      free(path);
+      g_free(path);
       return -1;
     }
     if (stat(app_path, &statbuf) != -1) {
       if (!S_ISDIR(statbuf.st_mode)) {
 	ULOG_ERR_F("Other type of file instead of app directory");
-	free(app_path);
-	free(path);
+	g_free(app_path);
+	g_free(path);
 	return -1;
       }
     } else {
@@ -223,18 +196,18 @@ int osso_state_open_write(osso_context_t *osso)
 
       if (mkdir(app_path, S_IRUSR | S_IWUSR | S_IXUSR) != 0) {
 	ULOG_ERR_F("Could not create application state directory");
-	free(app_path);
-	free(path);
+	g_free(app_path);
+	g_free(path);
 	return -1;
       }
     }
     
-    free(app_path);
+    g_free(app_path);
     if ((fd = open(path, O_WRONLY | O_CREAT | O_TRUNC,
 		   S_IRUSR | S_IWUSR)) == -1) {
       ULOG_ERR_F("Opening of state file failed");
     }
-    free(path);
+    g_free(path);
     return fd;
 }
 
@@ -246,7 +219,7 @@ int osso_state_open_read(osso_context_t *osso)
     gchar *tmpdir_path  = NULL;
     gchar *path = NULL;
 
-    if (_validate(osso) == FALSE) {
+    if (!validate_osso_context(osso)) {
       ULOG_ERR_F("appname/version invalid or osso context NULL");
       return -1;
     }
@@ -271,7 +244,7 @@ int osso_state_open_read(osso_context_t *osso)
     if ((fd = open(path, O_RDONLY)) == -1) {
       ULOG_ERR_F("Opening of state file failed");
     }
-    free(path);
+    g_free(path);
     return fd;
 }
 

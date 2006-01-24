@@ -24,6 +24,47 @@
 #include "osso-init.h"
 #include "osso-log.h"
 
+/* for internal use only
+ * This function strdups application name and makes it
+ * suitable for being part of an object path, or returns NULL.
+ * Currently needed for allowing '.' in application name. */
+gchar* __attribute__ ((visibility("hidden")))
+appname_to_valid_path_component(const gchar *application)
+{
+    gchar* copy = NULL, p = NULL;
+    copy = g_strdup(osso->application);
+    if (copy == NULL) {
+       return NULL;
+    }
+    for (p = strstr(copy, '.'); p != NULL; p = strstr(p + 1, '.')) {
+        *p = '/';
+    }
+    return copy;
+}
+
+gboolean __attribute__ ((visibility("hidden")))
+validate_appname(const gchar *application)
+{
+    if (application == NULL || strstr(application, "/") != NULL) {
+	return FALSE;
+    }
+    return TRUE;
+}
+
+gboolean __attribute__ ((visibility("hidden")))
+validate_osso_context(const osso_context_t * osso)
+{
+    if (osso == NULL || !validate_appname(osso->application) ||
+        osso->version == NULL) {
+       return FALSE;
+    }
+    if (strstr(osso->version, "/") != NULL) {
+       return FALSE;
+    }
+    return TRUE;
+}
+
+
 /************************************************************************/
 osso_context_t * osso_initialize(const gchar *application,
 				 const gchar *version,
@@ -105,13 +146,14 @@ void osso_deinitialize(osso_context_t *osso)
 
 
 /************************************************************************/
+
 static gboolean _validate(const gchar *application, const gchar* version)
 {
     if ((application  == NULL) ||
 	(version == NULL)) {
 	return FALSE;
     }
-    if (strstr(application, "/") != NULL) {
+    if (!validate_appname(application)) {
 	return FALSE;
     }
     if (strstr(version, "/") != NULL) {
@@ -262,10 +304,14 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     }
     
     if (osso->object_path == NULL) {
-        osso->object_path = g_strdup_printf("/com/nokia/%s",
-                                            osso->application);
-        if (osso->object_path == NULL)
+        char* copy = NULL;
+        copy = appname_to_valid_path_component(osso->application);
+        osso->object_path = g_strdup_printf("/com/nokia/%s", copy);
+        if (osso->object_path == NULL) {
+            g_free(copy);
             goto dbus_conn_error1;
+        }
+        g_free(copy);
     }
     dprint("osso->object_path='%s'", osso->object_path);
 
