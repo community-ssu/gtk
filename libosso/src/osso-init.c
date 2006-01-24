@@ -32,11 +32,13 @@ gchar* __attribute__ ((visibility("hidden")))
 appname_to_valid_path_component(const gchar *application)
 {
     gchar* copy = NULL, p = NULL;
-    copy = g_strdup(osso->application);
+    g_assert(application != NULL);
+    copy = g_strdup(application);
     if (copy == NULL) {
        return NULL;
     }
-    for (p = strstr(copy, '.'); p != NULL; p = strstr(p + 1, '.')) {
+    for (p = strstr(copy, '.'); p != NULL;
+         p = strstr((gchar*)(p + 1), '.')) {
         *p = '/';
     }
     return copy;
