@@ -37,8 +37,8 @@ appname_to_valid_path_component(const gchar *application)
     if (copy == NULL) {
        return NULL;
     }
-    for (p = strstr(copy, '.'); p != NULL;
-         p = strstr((gchar*)(p + 1), '.')) {
+    for (p = strchr(copy, '.'); p != NULL;
+         p = strchr((gchar*)(p + 1), '.')) {
         *p = '/';
     }
     return copy;
