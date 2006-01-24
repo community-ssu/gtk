@@ -31,16 +31,16 @@
 gchar* __attribute__ ((visibility("hidden")))
 appname_to_valid_path_component(const gchar *application)
 {
-    char* copy = NULL, p = NULL;
+    gchar* copy = NULL, p = NULL;
     g_assert(application != NULL);
     copy = g_strdup(application);
     if (copy == NULL) {
        return NULL;
     }
-    for (p = strchr(copy, '.'); p != NULL; p = strchr(p + 1, '.')) {
+    for (p = g_strrstr(copy, "."); p != NULL; p = g_strrstr(p + 1, ".")) {
         *p = '/';
     }
-    return (gchar*) copy;
+    return copy;
 }
 
 gboolean __attribute__ ((visibility("hidden")))
