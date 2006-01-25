@@ -1,5 +1,10 @@
 2006-01-25  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/Makefile.am (maemo_invoker_CPPFLAGS): Remove double quotes.
+	(maemo_launcher_CPPFLAGS): Likewise.
+
+2006-01-25  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (main): Move console quieting logic to ...
 	(console_quiet): ... here. Redirect output to syslog when being quiet.
 
