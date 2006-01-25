@@ -315,6 +315,40 @@ sighup_handler(int sig)
 }
 
 static void
+sigs_init(void)
+{
+  struct sigaction sig;
+
+  memset(&sig, 0, sizeof(sig));
+  sig.sa_flags = SA_RESTART;
+
+  sig.sa_handler = clean_daemon;
+  sigaction(SIGINT, &sig, NULL);
+  sigaction(SIGTERM, &sig, NULL);
+
+  sig.sa_handler = sigchild_handler;
+  sigaction(SIGCHLD, &sig, NULL);
+
+  sig.sa_handler = sighup_handler;
+  sigaction(SIGHUP, &sig, NULL);
+}
+
+static void
+sigs_restore(void)
+{
+  struct sigaction sig;
+
+  memset(&sig, 0, sizeof(sig));
+  sig.sa_handler = SIG_DFL;
+  sig.sa_flags = SA_RESTART;
+
+  sigaction(SIGINT, &sig, NULL);
+  sigaction(SIGTERM, &sig, NULL);
+  sigaction(SIGCHLD, &sig, NULL);
+  sigaction(SIGHUP, &sig, NULL);
+}
+
+static void
 version(void)
 {
   printf("%s (%s) %s\n", PROG_NAME, PACKAGE, VERSION);
@@ -349,7 +383,6 @@ main(int argc, char *argv[])
   FILE *pidfile;
   bool daemonize = false;
   bool quiet = false;
-  struct sigaction sig;
 
   /*
    * Parse arguments.
@@ -380,19 +413,7 @@ main(int argc, char *argv[])
 
   state = ui_daemon_init(&argc, &argv);
 
-  /* Setup signal handlers. */
-  memset(&sig, 0, sizeof(sig));
-  sig.sa_flags = SA_RESTART;
-
-  sig.sa_handler = clean_daemon;
-  sigaction(SIGINT, &sig, NULL);
-  sigaction(SIGTERM, &sig, NULL);
-
-  sig.sa_handler = sigchild_handler;
-  sigaction(SIGCHLD, &sig, NULL);
-
-  sig.sa_handler = sighup_handler;
-  sigaction(SIGHUP, &sig, NULL);
+  sigs_init();
 
   /* Setup the conversation channel with the invoker. */
   fd = invoked_init();
@@ -488,15 +509,7 @@ main(int argc, char *argv[])
       break;
 
     case 0: /* Child. */
-      /* Restore default signals. */
-      memset(&sig, 0, sizeof(sig));
-      sig.sa_handler = SIG_DFL;
-      sig.sa_flags = SA_RESTART;
-
-      sigaction(SIGINT, &sig, NULL);
-      sigaction(SIGTERM, &sig, NULL);
-      sigaction(SIGCHLD, &sig, NULL);
-      sigaction(SIGHUP, &sig, NULL);
+      sigs_restore();
 
       invoked_get_actions(sd, &prog);
 
