@@ -367,7 +367,7 @@ daemonize(void)
   pid_t pid;
 
   if (fork())
-      _exit(0);
+    _exit(0);
 
   if (setsid() < 0)
     die(1, "setting session id");
