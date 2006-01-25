@@ -895,7 +895,14 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         g_value_set_string(value, model_node->title_cache);
 
         /* We try to reload children, if we are actually showing something */
-        if (model_node->type >= HILDON_FILE_SYSTEM_MODEL_FOLDER)
+        /* This action should be performed for initial access only. Otherwise
+           we always end up loading all the children of a node after long 
+           time of inactivity. This is not good in case of gateway, since the
+           old BT connection is already timed out. UI asks for reloads if
+           user actually does something, so we just make sure that children
+           initially appear where they should. */
+        if (model_node->type >= HILDON_FILE_SYSTEM_MODEL_FOLDER &&
+            model_node->load_time == 0)
           _hildon_file_system_model_queue_reload(
             HILDON_FILE_SYSTEM_MODEL(model), iter, FALSE);
         break;
@@ -1331,6 +1338,10 @@ unlink_file_folder(GNode *node)
     g_signal_handlers_disconnect_by_func
         (model_node->folder,
          (gpointer) hildon_file_system_model_files_changed,
+         model_node->model);
+    g_signal_handlers_disconnect_by_func
+        (model_node->folder,
+         (gpointer) hildon_file_system_model_folder_finished_loading,
          model_node->model);
 
     /* Remove possibly pending nodes from queue */
