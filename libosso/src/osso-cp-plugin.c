@@ -71,7 +71,7 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
 	if (dirs)
 	  {
 	    char *dirs_copy = strdup (dirs), *ptr = dirs_copy, *tok;
-	    while (tok = strsep (&ptr, ":"))
+	    while ((tok = strsep (&ptr, ":")))
 	      {
 		p.lib = try_plugin (tok, filename);
 		if (p.lib)
