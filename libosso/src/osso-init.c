@@ -73,8 +73,8 @@ osso_context_t * osso_initialize(const gchar *application,
 				 GMainContext *context)
 {
     osso_context_t *osso;
-    ULOG_DEBUG_F("application '%s', version '%s'");
-    
+    ULOG_DEBUG_F("application '%s', version '%s'", application, version);
+
     osso = _init(application, version);
     if (osso == NULL) {
         ULOG_CRIT_F("initialization failed: out of memory");
@@ -132,14 +132,14 @@ void osso_deinitialize(osso_context_t *osso)
 
 static gboolean _validate(const gchar *application, const gchar* version)
 {
-    if ((application  == NULL) ||
-	(version == NULL)) {
+    if (application == NULL || version == NULL) {
 	return FALSE;
     }
     if (!validate_appname(application)) {
 	return FALSE;
     }
-    if (strstr(version, "/") != NULL) {
+    if (strchr(version, '/') != NULL) {
+        ULOG_ERR_F("invalid version string '%s'", version);
 	return FALSE;
     }
     return TRUE;
@@ -150,23 +150,33 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
 {
     osso_context_t * osso;
     
-    if(!_validate(application, version)) return NULL;
+    if (!_validate(application, version)) {
+	ULOG_ERR_F("invalid arguments");
+	return NULL;
+    }
 
     osso = (osso_context_t *)calloc(1, sizeof(osso_context_t));
-    if(osso == NULL) {
+    if (osso == NULL) {
+	ULOG_ERR_F("calloc failed");
 	return NULL;
     }	
 
     osso->application = g_strdup(application);
-    if(osso->application == NULL) {
+    if (osso->application == NULL) {
+	ULOG_ERR_F("g_strdup failed");
 	goto register_error0;
     }
     osso->version = g_strdup(version);
-    if(osso->version == NULL) {
+    if (osso->version == NULL) {
+	ULOG_ERR_F("g_strdup failed");
 	goto register_error1;
     }
 
     osso->mime = (_osso_mime_t *)calloc(1, sizeof(_osso_mime_t));
+    if (osso->mime == NULL) {
+        ULOG_ERR_F("calloc failed");
+        goto register_error1;
+    }
 
     osso->ifs = g_array_new(FALSE, FALSE, sizeof(_osso_interface_t));
     osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
