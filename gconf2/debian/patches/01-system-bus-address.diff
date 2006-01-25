@@ -1,0 +1,12 @@
+diff -ur gconf-dbus-2.6.4.13/gconf/Makefile.am gconf-dbus-2.6.4.13.new/gconf/Makefile.am
+--- gconf-dbus-2.6.4.13/gconf/Makefile.am	2005-12-22 11:37:54.000000000 +0200
++++ gconf-dbus-2.6.4.13.new/gconf/Makefile.am	2006-01-25 15:08:01.842669432 +0200
+@@ -1,6 +1,6 @@
+ GCONFD_BINARY_NAME=gconfd-2
+ 
+-address=`pkg-config dbus-1 --variable system_bus_default_address`
++address="unix:path=/var/run/dbus/system_bus_socket"
+ 
+ INCLUDES=								\
+ 	-I$(top_srcdir)							\
+Only in gconf-dbus-2.6.4.13.new/gconf: Makefile.am~
