@@ -1,6 +1,7 @@
-hildon-fm (0.10.1-1) unstable; urgency=low
+hildon-fm (0.11-1) unstable; urgency=low
 
   * Changed package maintainer.
+  * New maintainer -> more minimalist version numbering :P
   * Bug fixes from maintenance branch: N#21746, N#22158.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 25 Jan 2006 16:04:44 +0200
