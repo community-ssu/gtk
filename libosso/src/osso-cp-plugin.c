@@ -38,7 +38,7 @@ try_plugin (const char *dir, const char *file)
       return NULL;
     }
 
-  handle = dlopen (libname, RTLD_NOW | RTLD_GLOBAL);
+  handle = dlopen (libname, RTLD_LAZY | RTLD_GLOBAL);
   if (handle == NULL)
     {
       ULOG_ERR_F("Unable to load library '%s': %s", libname, dlerror());
