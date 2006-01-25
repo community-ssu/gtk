@@ -382,6 +382,21 @@ daemonize(void)
 }
 
 static void
+console_quiet(void)
+{
+  report_set_output(report_syslog);
+
+  close(0);
+  close(1);
+  close(2);
+
+  if (open("/dev/null", O_RDONLY) < 0)
+    die(1, "opening /dev/null readonly");
+  if (dup(open("/dev/null", O_WRONLY)) < 0)
+    die(1, "opening /dev/null writeonly");
+}
+
+static void
 version(void)
 {
   printf("%s (%s) %s\n", PROG_NAME, PACKAGE, VERSION);
@@ -441,8 +456,6 @@ main(int argc, char *argv[])
   /*
    * Daemon initialization.
    */
-  report_set_output(report_syslog);
-
   state = ui_daemon_init(&argc, &argv);
 
   sigs_init();
@@ -454,16 +467,7 @@ main(int argc, char *argv[])
     daemonize();
 
   if (quiet)
-  {
-    close(0);
-    close(1);
-    close(2);
-
-    if (open("/dev/null", O_RDONLY) < 0)
-      die(1, "opening /dev/null readonly");
-    if (dup(open("/dev/null", O_WRONLY)) < 0)
-      die(1, "opening /dev/null writeonly");
-  }
+    console_quiet();
 
   create_pidfile();
 
