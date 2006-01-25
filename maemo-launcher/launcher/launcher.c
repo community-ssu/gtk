@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2005 Nokia
+ * Copyright (C) 2005, 2006 Nokia
  *
  * Authors: Michael Natterer <mitch@imendio.com>
  *	    Guillem Jover <guillem.jover@nokia.com>
@@ -349,6 +349,19 @@ sigs_restore(void)
 }
 
 static void
+create_pidfile()
+{
+  FILE *pidfile = fopen(pidfilename, "w");
+
+  if (pidfile)
+  {
+    pid_t pid = getpid();
+    fprintf(pidfile, "%d\n", pid);
+    fclose(pidfile);
+  }
+}
+
+static void
 version(void)
 {
   printf("%s (%s) %s\n", PROG_NAME, PACKAGE, VERSION);
@@ -380,7 +393,6 @@ main(int argc, char *argv[])
   ui_state state;
   int i;
   int fd;
-  FILE *pidfile;
   bool daemonize = false;
   bool quiet = false;
 
@@ -448,14 +460,7 @@ main(int argc, char *argv[])
       _exit(0);
   }
 
-  /* Generate a pid file. */
-  pidfile = fopen(pidfilename, "w");
-  if (pidfile)
-  {
-    pid_t pid = getpid();
-    fprintf(pidfile, "%d\n", pid);
-    fclose(pidfile);
-  }
+  create_pidfile();
 
   /*
    * Application invokation loop.

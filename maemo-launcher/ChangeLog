@@ -1,5 +1,10 @@
 2006-01-25  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (main): Move pid file creation to ...
+	(create_pidfile): ... here. New function.
+
+2006-01-25  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (main): Move signal setup and restore to ...
 	(sigs_init, sigs_restore): ... here. New functions.
 
