@@ -230,7 +230,7 @@ static void     gtk_menu_real_insert       (GtkMenuShell     *menu_shell,
 					    gint              position);
 static void     gtk_menu_scrollbar_changed (GtkAdjustment    *adjustment,
 					    GtkMenu          *menu);
-static void     gtk_menu_handle_scrolling  (GtkMenu          *menu,
+static gboolean gtk_menu_handle_scrolling  (GtkMenu          *menu,
 					    gint	      event_x,
 					    gint	      event_y,
 					    gboolean          enter,
@@ -2740,7 +2740,8 @@ gtk_menu_button_press (GtkWidget      *widget,
 
       if (menu->upper_arrow_prelight || menu->lower_arrow_prelight)
         {
-	  gtk_menu_handle_scrolling (GTK_MENU (widget), event->x_root, event->y_root, TRUE, FALSE);
+	  if (gtk_menu_handle_scrolling (GTK_MENU (widget), event->x_root, event->y_root, TRUE, FALSE))
+            return FALSE;
 
 	  return TRUE;
 	}
@@ -2773,7 +2774,8 @@ gtk_menu_button_release (GtkWidget      *widget,
 
       if (menu->upper_arrow_prelight || menu->lower_arrow_prelight)
         {
-	  gtk_menu_handle_scrolling (GTK_MENU (widget), event->x_root, event->y_root, FALSE, FALSE);
+	  if (gtk_menu_handle_scrolling (GTK_MENU (widget), event->x_root, event->y_root, FALSE, FALSE))
+            return FALSE;
 
 	  return TRUE;
         }
@@ -2990,7 +2992,10 @@ gtk_menu_motion_notify  (GtkWidget	   *widget,
   gboolean need_enter;
 
   if (GTK_IS_MENU (widget))
-    gtk_menu_handle_scrolling (GTK_MENU (widget), event->x_root, event->y_root, TRUE, TRUE);
+    {
+      if (gtk_menu_handle_scrolling (GTK_MENU (widget), event->x_root, event->y_root, TRUE, TRUE))
+	return FALSE;
+    }
 
   /* We received the event for one of two reasons:
    *
@@ -3174,7 +3179,7 @@ gtk_menu_scroll (GtkWidget	*widget,
   return TRUE;
 }
 
-static void
+static gboolean
 gtk_menu_handle_scrolling (GtkMenu *menu,
 			   gint x,
 			   gint y,
@@ -3190,6 +3195,7 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
   guint vertical_padding;
   gint top_x, top_y;
   gint win_x, win_y;
+  gboolean ret = FALSE;
 
   priv = gtk_menu_get_private (menu);
 
@@ -3230,7 +3236,8 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
 	  if (enter && menu->upper_arrow_prelight &&
 	      (menu->timeout_id == 0 || menu->scroll_fast != scroll_fast))
 	    {
-	      menu->scroll_fast = scroll_fast;
+              ret = TRUE;
+              menu->scroll_fast = scroll_fast;
 	      
 	      /* Deselect the active item so that any submenus are poped down */
 	      gtk_menu_shell_deselect (menu_shell);
@@ -3283,6 +3290,7 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
 	  if (enter && menu->lower_arrow_prelight &&
 	      (menu->timeout_id == 0 || menu->scroll_fast != scroll_fast))
 	    {
+              ret = TRUE;
 	      menu->scroll_fast = scroll_fast;
 
 	      /* Deselect the active item so that any submenus are poped down */
@@ -3318,6 +3326,7 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
 	    }
         }
     }
+  return ret;
 }
 
 static gboolean
@@ -3331,8 +3340,8 @@ gtk_menu_enter_notify (GtkWidget        *widget,
     {
       GtkMenuShell *menu_shell = GTK_MENU_SHELL (widget);
 
-      if (!menu_shell->ignore_enter)
-	gtk_menu_handle_scrolling (GTK_MENU (widget), event->x_root, event->y_root, TRUE, TRUE);
+      if (gtk_menu_handle_scrolling (GTK_MENU (widget), event->x_root, event->y_root, TRUE, TRUE))
+        return FALSE;
     }
 
   /* If this is a faked enter (see gtk_menu_motion_notify), 'widget'
@@ -3361,8 +3370,9 @@ gtk_menu_leave_notify (GtkWidget        *widget,
   if (gtk_menu_navigating_submenu (menu, event->x_root, event->y_root))
     return TRUE; 
 
-  gtk_menu_handle_scrolling (menu, event->x_root, event->y_root, FALSE, TRUE);
-  
+  if (gtk_menu_handle_scrolling (menu, event->x_root, event->y_root, FALSE, TRUE))
+    return FALSE;
+
   event_widget = gtk_get_event_widget ((GdkEvent*) event);
   
   if (!event_widget || !GTK_IS_MENU_ITEM (event_widget))
