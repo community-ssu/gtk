@@ -10,8 +10,9 @@ libosso (1.1-1) unstable; urgency=low
   * Using now RTLD_LAZY in osso-cp-plugin dlopen().
   * Removed some dbus_connection_flushes from osso-rpc.c.
   * Fixed memory leak in osso-init.c (N#18850).
+  * Fixed memory leak when setting callback for time notification (N#21059).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 25 Jan 2006 16:44:00 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 25 Jan 2006 19:44:00 +0200
 
 libosso (1.0.2-2) unstable; urgency=low
 
