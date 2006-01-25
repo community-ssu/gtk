@@ -34,15 +34,14 @@ try_plugin (const char *dir, const char *file)
 
   if (snprintf (libname, PATH_MAX, "%s/%s", dir, file) >= PATH_MAX)
     {
-      ULOG_ERR ("PATH_MAX exceeded in osso_cp_plugin_execute\n");
+      ULOG_ERR_F("PATH_MAX exceeded");
       return NULL;
     }
 
   handle = dlopen (libname, RTLD_NOW | RTLD_GLOBAL);
   if (handle == NULL)
     {
-      ULOG_ERR_F ("Unable to load library '%s':", libname);
-      ULOG_ERR_F ("%s\n", dlerror());
+      ULOG_ERR_F("Unable to load library '%s': %s", libname, dlerror());
     }
   return handle;
 }
@@ -53,16 +52,13 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
 {
     gint r;
     osso_return_t ret;
-    osso_cp_plugin_exec_f *exec=NULL;
-/*     osso_cp_plugin_get_svc_name_f *gsvcn=NULL; */
+    osso_cp_plugin_exec_f *exec = NULL;
     _osso_cp_plugin_t p;
-/*     osso_state_t state={0,NULL}; */
-/*     gchar *statefile; */
    
-    /* check parameters and initialize variables*/
-    
-    if(osso == NULL) return OSSO_INVALID;
-    if(filename == NULL) return OSSO_INVALID;
+    if (osso == NULL || filename == NULL) {
+	ULOG_ERR_F("invalid arguments");
+	return OSSO_INVALID;
+    }
     dprint("executing library '%s'",filename);
 
     /* First try builtin path */
@@ -75,7 +71,7 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
 	if (dirs)
 	  {
 	    char *dirs_copy = strdup (dirs), *ptr = dirs_copy, *tok;
-	    while ((tok = strsep (&ptr, ":")))
+	    while (tok = strsep (&ptr, ":"))
 	      {
 		p.lib = try_plugin (tok, filename);
 		if (p.lib)
@@ -84,12 +80,14 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
 	    if (dirs_copy)
 	      free (dirs_copy);
 	    else
-	      ULOG_ERR ("Out of memory in osso_cp_plugin_execute");
+	      ULOG_ERR_F("strdup failed");
 	  }
       }
 
-    if (p.lib == NULL)
-      return OSSO_ERROR;
+    if (p.lib == NULL) {
+        ULOG_ERR_F("library '%s' could not be opened", filename);
+        return OSSO_ERROR;
+    }
 
     p.name = g_path_get_basename(filename);
 
@@ -100,7 +98,7 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
     exec = dlsym(p.lib, "execute");
     dprint("..");
     /* function wasn't found or it was NULL */
-    if(exec==NULL) {
+    if (exec == NULL) {
 	ULOG_ERR_F("function 'execute' not found in library");
 	ret = OSSO_ERROR;
 	goto _exec_err1;
@@ -111,10 +109,9 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
     ret = exec(osso, data, user_activated);  
     _exec_err1:
 
-    r = _close_lib(osso->cp_plugins, p.name);
-    if(r!=0) {
+    r = _close_lib(osso->cp_plugins, p.name); /* p.name is freed here */
+    if (r != 0) {
 	ULOG_ERR_F("Error closing library");
-
 	ret = OSSO_ERROR;
     }
     return ret;
@@ -125,40 +122,45 @@ osso_return_t osso_cp_plugin_save_state(osso_context_t *osso,
 					gpointer data)
 {
     gchar *pluginname;
-    _osso_cp_plugin_t *p;
-    GArray *a = osso->cp_plugins;
+    _osso_cp_plugin_t *p = NULL;
+    GArray *a;
     gint i;
     
-    if(osso == NULL) return OSSO_INVALID;
-    if(filename == NULL) return OSSO_INVALID;
+    if (osso == NULL || filename == NULL) {
+	ULOG_ERR_F("invalid arguments");
+	return OSSO_INVALID;
+    }
+    a = osso->cp_plugins;
     
     pluginname = g_path_get_basename(filename);
-    for(i=0;i<a->len;i++) {
+    for (i = 0; i < a->len; i++) {
 	p = &g_array_index(a, _osso_cp_plugin_t, i);
-	if(strcmp(p->name,pluginname) == 0)
+	if (strcmp(p->name, pluginname) == 0)
 	    break;
     }
+    g_free(pluginname); pluginname = NULL;
 
-    if(i<a->len) {
+    if (i < a->len) {
 	osso_return_t ret;
-	osso_cp_plugin_save_state_f *ss=NULL;
+	osso_cp_plugin_save_state_f *ss = NULL;
 
  	ss = dlsym(p->lib, "save_state"); 
 	
 	/* function wasn't found or it was NULL */
-	if(ss==NULL) {
+	if (ss == NULL) {
 	    ULOG_ERR_F("symbol 'save_state' not found in library, or "
 		       "it has a 'NULL' value");
 	    return OSSO_ERROR;
 	}
 		
 	ret = ss(osso, data);
-	if(ret != OSSO_OK)
-	    return ret;
-
-	return OSSO_OK;
+	if (ret != OSSO_OK) {
+	    ULOG_WARN_F("'save_state' did not return OSSO_OK");
+	}
+	return ret;
     }
     else {
+	ULOG_ERR_F("plugin '%s' was not found", filename);
 	return OSSO_ERROR;
     }
 }
@@ -167,20 +169,19 @@ osso_return_t osso_cp_plugin_save_state(osso_context_t *osso,
 static int _close_lib(GArray *a, const gchar *n)
 {
     gint i=0, r=0;
-    _osso_cp_plugin_t *p;
+    _osso_cp_plugin_t *p = NULL;
 
-    while(i<a->len) {
+    while (i < a->len) {
         p = &g_array_index(a, _osso_cp_plugin_t, i);
-        if(strcmp(p->name,n) == 0)
+        if (strcmp(p->name, n) == 0)
             break;
         else
             i++;
     }
 
-    if(i<a->len) {
+    if (i < a->len) {
         r = dlclose(p->lib);
-        free(p->name);
-        /*    free(p->svcname); */
+        g_free(p->name);
         g_array_remove_index_fast(a, i);
     }
 

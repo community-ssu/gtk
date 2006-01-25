@@ -94,122 +94,118 @@ _rpc_run(osso_context_t *osso, DBusConnection *conn,
     
     dprint("");
     if (conn == NULL) {
-        dprint("connection invalid");
+        ULOG_ERR_F("invalid arguments");
 	return OSSO_INVALID;
     }
     
     dprint("New method: %s:%s:%s:%s",service,object_path,interface,method);
     msg = dbus_message_new_method_call(service, object_path,
 				       interface, method);
-    if(msg == NULL)
+    if (msg == NULL) {
+        ULOG_ERR_F("dbus_message_new_method_call failed");
 	return OSSO_ERROR;
+    }
 
-    if(first_arg_type != DBUS_TYPE_INVALID)
+    if (first_arg_type != DBUS_TYPE_INVALID) {
 	_append_args(msg, first_arg_type, var_args);
+    }
 
     dbus_message_set_auto_start(msg, TRUE);
     
-    if(retval == NULL) {
+    if (retval == NULL) {
 	dbus_message_set_no_reply(msg, TRUE);
 	b = dbus_connection_send(conn, msg, NULL);
+        dbus_message_unref(msg);
         if (b) {
-            dbus_connection_flush(conn);
-            dbus_message_unref(msg);
 
 	    /* Tell TaskNavigator to show "launch banner" */
-	    msg = dbus_message_new_method_call(
-			    TASK_NAV_SERVICE,
+	    msg = dbus_message_new_method_call(TASK_NAV_SERVICE,
 			    APP_LAUNCH_BANNER_METHOD_PATH,
 			    APP_LAUNCH_BANNER_METHOD_INTERFACE,
 			    APP_LAUNCH_BANNER_METHOD );
    
-	    if ( msg != NULL ) {
-		    dbus_message_append_args( msg,
-				    DBUS_TYPE_STRING, &service,
-				    DBUS_TYPE_INVALID);
+	    if (msg != NULL) {
+                dbus_message_append_args(msg, DBUS_TYPE_STRING, &service,
+                                         DBUS_TYPE_INVALID);
 
-		    b = dbus_connection_send(conn, msg, NULL);
-
-		    if (b) {
-			    dbus_connection_flush(conn);
-		    } else {
-			    dprint( "Failed to send signal to TN!" );
-		    }
-		    
-		    dbus_message_unref(msg);
-
+                b = dbus_connection_send(conn, msg, NULL);
+                if (!b) {
+                    ULOG_WARN_F("dbus_connection_send failed");
+                }
+                dbus_message_unref(msg);
 	    }
-	    
-	    return OSSO_OK;
+            else {
+                ULOG_WARN_F("dbus_message_new_method_call failed");
+            }
+            return OSSO_OK;
         }
         else {
-            dbus_message_unref(msg);
+            ULOG_ERR_F("dbus_connection_send failed");
             return OSSO_ERROR;
         }
     }
     else {
         DBusError err;
-        DBusMessage *ret;
+        DBusMessage *reply = NULL;
         dbus_error_init(&err);
-	ret = dbus_connection_send_with_reply_and_block(conn, msg, 
+	reply = dbus_connection_send_with_reply_and_block(conn, msg, 
 							osso->rpc_timeout,
 							&err);
         dbus_message_unref(msg);
 
-        if (!ret) {
-            dprint("Error return: %s",err.message);
-	    retval->type = DBUS_TYPE_STRING;
-	    retval->value.s = g_strdup(err.message);
-	    dbus_error_free(&err);
+        if (reply == NULL) {
+            ULOG_ERR_F("dbus_connection_send_with_reply_and_block error: %s",
+                       err.message);
+            retval->type = DBUS_TYPE_STRING;
+            retval->value.s = g_strdup(err.message);
+            dbus_error_free(&err);
             return OSSO_RPC_ERROR;
         }
         else {
 	    DBusMessageIter iter;
-	    DBusError err;
 
-	    switch(dbus_message_get_type(ret)) {
+	    switch (dbus_message_get_type(reply)) {
 	      case DBUS_MESSAGE_TYPE_ERROR:
-		dbus_set_error_from_message(&err, ret);
+		dbus_set_error_from_message(&err, reply);
 		retval->type = DBUS_TYPE_STRING;
 		retval->value.s = g_strdup(err.message);
 		dbus_error_free(&err);
+		dbus_message_unref(reply);
 		return OSSO_RPC_ERROR;
 	      case DBUS_MESSAGE_TYPE_METHOD_RETURN:
 		dprint("message return");
-		dbus_message_iter_init(ret, &iter);
+		dbus_message_iter_init(reply, &iter);
 	    
 		_get_arg(&iter, retval);
 	    
-		dbus_message_unref(ret);
+		dbus_message_unref(reply);
 	
 		/* Tell TaskNavigator to show "launch banner" */
-		msg = dbus_message_new_method_call(
-				TASK_NAV_SERVICE,
+		msg = dbus_message_new_method_call(TASK_NAV_SERVICE,
 				APP_LAUNCH_BANNER_METHOD_PATH,
 				APP_LAUNCH_BANNER_METHOD_INTERFACE,
 				APP_LAUNCH_BANNER_METHOD );
 
-		if ( msg != NULL ) {
-			dbus_message_append_args( msg,
-					DBUS_TYPE_STRING, &service,
-					DBUS_TYPE_INVALID);
+		if (msg != NULL) {
+                    dbus_message_append_args(msg, DBUS_TYPE_STRING,
+                                             &service, DBUS_TYPE_INVALID);
 
-			b = dbus_connection_send(conn, msg, NULL);
+                    b = dbus_connection_send(conn, msg, NULL);
 
-			if (b) {
-				dbus_connection_flush(conn);
-			} else {
-				dprint( "Failed to send signal to TN!" );
-			}
-
-			dbus_message_unref(msg);
-
+                    if (!b) {
+                        ULOG_WARN_F("dbus_connection_send failed");
+                    }
+                    dbus_message_unref(msg);
 		}
-
-		return OSSO_OK;
+                else {
+                    ULOG_WARN_F("dbus_message_new_method_call failed");
+                }
+                return OSSO_OK;
 	      default:
+                ULOG_WARN_F("got unknown message type as reply");
 		retval->type = DBUS_TYPE_STRING;
 		retval->value.s = g_strdup("Invalid return value");
+		dbus_message_unref(reply);
 		return OSSO_RPC_ERROR;
 	    }
         }
@@ -264,28 +260,32 @@ static osso_return_t _rpc_async_run(osso_context_t *osso,
 			     gpointer data, int first_arg_type,
 			     va_list var_args)
 {
-    DBusMessage *msg;
-    DBusPendingCall *pending;
+    DBusMessage *msg = NULL;
+    DBusPendingCall *pending = NULL;
     dbus_bool_t succ = FALSE;
     _osso_rpc_async_t *rpc = NULL;
    
-    if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
-	(interface == NULL) || (method == NULL))
-	return OSSO_INVALID;
+    if (osso == NULL || service == NULL || object_path == NULL ||
+        interface == NULL || method == NULL) {
+        ULOG_ERR_F("invalid arguments");
+        return OSSO_INVALID;
+    }
 
     dprint("New method: %s%s::%s:%s",service,object_path,interface,method);
     msg = dbus_message_new_method_call(service, object_path,
 				       interface, method);
-    if(msg == NULL)
-	return OSSO_ERROR;
+    if (msg == NULL) {
+        ULOG_ERR_F("dbus_message_new_method_call failed");
+        return OSSO_ERROR;
+    }
 
     dbus_message_set_auto_start(msg, TRUE);
     
-    if(first_arg_type != DBUS_TYPE_INVALID)
-	_append_args(msg, first_arg_type, var_args);
-/*	dbus_message_append_args_valist(msg, first_arg_type, var_args);*/
+    if (first_arg_type != DBUS_TYPE_INVALID) {
+        _append_args(msg, first_arg_type, var_args);
+    }
 
-    if(async_cb == NULL) {
+    if (async_cb == NULL) {
 	dprint("no reply wanted");
 	dbus_message_set_no_reply(msg, TRUE);
 	succ = dbus_connection_send(osso->conn, msg, NULL);
@@ -293,7 +293,10 @@ static osso_return_t _rpc_async_run(osso_context_t *osso,
     else {
 	dprint("caller wants reply");
 	rpc = (_osso_rpc_async_t *)calloc(1, sizeof(_osso_rpc_async_t));
-	if(rpc == NULL) return OSSO_ERROR;
+	if (rpc == NULL) {
+            ULOG_ERR_F("calloc failed");
+            return OSSO_ERROR;
+        }
 	
 	rpc->func = async_cb;
 	rpc->data = data;
@@ -311,43 +314,40 @@ static osso_return_t _rpc_async_run(osso_context_t *osso,
 
     if (succ) {
 	dprint("succ is true");
-	if(async_cb != NULL) {
+	if (async_cb != NULL) {
 	    dbus_pending_call_set_notify(pending,
 					 _async_return_handler,
 					 rpc, NULL);
 	}
-	dbus_connection_flush(osso->conn);
 	dbus_message_unref(msg);
 
 	/* Tell TaskNavigator to show "launch banner" */
-	msg = dbus_message_new_method_call(
-			TASK_NAV_SERVICE,
-			APP_LAUNCH_BANNER_METHOD_PATH,
-			APP_LAUNCH_BANNER_METHOD_INTERFACE,
-			APP_LAUNCH_BANNER_METHOD );
+	msg = dbus_message_new_method_call(TASK_NAV_SERVICE,
+                        APP_LAUNCH_BANNER_METHOD_PATH,
+                        APP_LAUNCH_BANNER_METHOD_INTERFACE,
+                        APP_LAUNCH_BANNER_METHOD );
 
-	if ( msg != NULL ) {
-		dbus_message_append_args( msg,
-				DBUS_TYPE_STRING, &service,
-				DBUS_TYPE_INVALID);
+	if (msg != NULL) {
+            dbus_message_append_args(msg, DBUS_TYPE_STRING, &service,
+                                     DBUS_TYPE_INVALID);
 
-		succ = dbus_connection_send(osso->conn, msg, NULL);
+            succ = dbus_connection_send(osso->conn, msg, NULL);
 
-		if (succ) {
-			dbus_connection_flush(osso->conn);
-		} else {
-			dprint( "Failed to send signal to TN!" );
-		}
-
-		dbus_message_unref(msg);
+            if (!succ) {
+                ULOG_WARN_F("dbus_connection_send failed");
+            }
+            dbus_message_unref(msg);
 	}
+        else {
+            ULOG_WARN_F("dbus_message_new_method_call failed");
+        }
 
 	return OSSO_OK;
     }
     else {
-	dprint("succ is false");
-	dbus_message_unref(msg);
-	return OSSO_ERROR;
+        ULOG_ERR_F("dbus_connection_send(_with_reply) failed");
+        dbus_message_unref(msg);
+        return OSSO_ERROR;
     }
 }
 
@@ -428,10 +428,10 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
     DBusError err;
     struct DBusObjectPathVTable vt;
     _osso_rpc_t *rpc;
-    gint i;
-    gboolean b;
+    gint ret;
+    dbus_bool_t b;
 
-    dprint("registering method service '%s' at '%s' on interface '%s',"
+    ULOG_DEBUG_F("registering method service '%s' at '%s' on interface '%s',"
 	   " on the %sbus", service, object_path, interface,
 	   use_system_bus?"SYSTEM":"SESSION");
     
@@ -445,22 +445,13 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 
     dprint("requesting service '%s'", service);
 
-    i = dbus_bus_request_name (use_system_bus?osso->sys_conn:osso->conn,
+    ret = dbus_bus_request_name (use_system_bus?osso->sys_conn:osso->conn,
 				 service, 0, &err);		 
-#ifdef LIBOSSO_DEBUG
-    if(i <= 0) {
-	if(i == 0) {
-	    dprint("Unable to acquire service '%s': Invalid parameters\n", 
-		   service);
-	}
-	else {
-	    dprint("Unable to acquire service '%s': %s\n",
-		   service, err.message);
-	}
+    if (ret < 0) {
+        ULOG_ERR_F("dbus_bus_request_name for '%s' failed: %s",
+                   service, err.message);
+        return OSSO_ERROR;
     }
-    else
-	dprint("success");
-#endif
     dbus_error_free(&err);
 
     vt.message_function = _msg_handler;
@@ -471,7 +462,10 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 					     osso->sys_conn:osso->conn,
 					     object_path,
 					     &vt, (void *)osso);
-    dprint("%s",b?"success":"failure");
+    if (!b) {
+        ULOG_ERR_F("dbus_connection_register_object_path failed");
+        return OSSO_ERROR;
+    }
 
     rpc->func = cb;
     rpc->retval_free = retval_free;
