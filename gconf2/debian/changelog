@@ -1,3 +1,10 @@
+gconf2 (2.6.4.13-osso4) unstable; urgency=low
+
+  * Upgraded the upstream tar to _real_ 2.6.4.13.
+  * Removed internal patches that are included in the tar.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 25 Jan 2006 14:15:18 +0200
+
 gconf2 (2.6.4.13-osso3) unstable; urgency=low
 
   * Added patch for setting the database directory.
