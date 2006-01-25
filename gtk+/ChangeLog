@@ -1,3 +1,14 @@
+2006-01-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenu.c (gtk_menu_handle_scrolling): Return TRUE if scrolling
+	was done.
+	* gtk/gtkmenu.c (gtk_menu_button_press) (gtk_menu_button_release)
+	(gtk_menu_motion_notify) (gtk_menu_enter_notify)
+	(gtk_menu_leave_notify): Stop the signal if
+	gtk_menu_handle_scrolling() returned TRUE. The event was meant for the
+	scroll arrows in that case.
+	N#22201
+
 2006-01-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkdialog.c (gtk_dialog_handle_focus): Handle
