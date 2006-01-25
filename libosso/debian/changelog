@@ -11,6 +11,8 @@ libosso (1.1-1) unstable; urgency=low
   * Removed some dbus_connection_flushes from osso-rpc.c.
   * Fixed memory leak in osso-init.c (N#18850).
   * Fixed memory leak when setting callback for time notification (N#21059).
+  * Removed the effect of osso_initialize's 'activation' argument -- now
+    Libosso always connects to both session and system bus.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 25 Jan 2006 19:44:00 +0200
 
