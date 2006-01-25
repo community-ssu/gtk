@@ -268,16 +268,17 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     DBusConnection *conn;
     DBusError err;
     DBusObjectPathVTable vtable;
-    gchar service[255], *error=NULL;
+    gchar service[255];
     gint i;
     
     dbus_error_init(&err);
     dprint("getting the DBUS");
     conn = dbus_bus_get(bus_type, &err);
-    if(conn == NULL) {
-	ULOG_ERR_F("Unable to connect to the D-BUS daemon: %s", err.message);
-	dprint("Unable to connect to the D-BUS daemon: %s", err.message);
-	return NULL;
+    if (conn == NULL) {
+        ULOG_ERR_F("Unable to connect to the D-BUS daemon: %s", err.message);
+        dprint("Unable to connect to the D-BUS daemon: %s", err.message);
+        dbus_error_free(&err);
+        return NULL;
     }
     dbus_connection_setup_with_g_main(conn, context);
     
@@ -286,20 +287,10 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     g_snprintf(service, 255, "%s.%s", OSSO_BUS_ROOT, osso->application);
     dprint("service='%s'",service);
 
-    i = dbus_bus_request_name (conn, service, 
-				 0, /* undocumented parameter, flags */
-				 &err);
-    dprint("acquire service returned '%d'",i);
-    if(i <= 0) {
-	if(i == 0) {
-	    ULOG_ERR_F("Unable to acquire service '%s': Invalid parameters\n", 
-		     service);
-	}
-	else {
-	    ULOG_ERR_F("Unable to acquire service '%s': %s\n",
-		     service, err.message);
-	}
-	error = "Error: Not enough memory";
+    i = dbus_bus_request_name(conn, service, 0, &err);
+    dprint("acquire service returned '%d'", i);
+    if (i == -1) {
+        ULOG_ERR_F("dbus_bus_request_name failed: %s", err.message);
 	dbus_error_free(&err);
 	goto dbus_conn_error1;
     }
@@ -309,6 +300,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
         copy = appname_to_valid_path_component(osso->application);
         osso->object_path = g_strdup_printf("/com/nokia/%s", copy);
         if (osso->object_path == NULL) {
+            ULOG_ERR_F("g_strdup_printf failed");
             g_free(copy);
             goto dbus_conn_error1;
         }
@@ -331,26 +323,22 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     dprint("adding Filter function %p",&_debug_filter);
     if(!dbus_connection_add_filter(conn, &_debug_filter, NULL, NULL))
     {
-	error = "Error: unable to add debug filter";
+        ULOG_ERR_F("dbus_connection_add_filter failed");
 	goto dbus_conn_error3;
     }
 #endif
     dprint("adding Filter function %p",&_msg_handler);
     if(!dbus_connection_add_filter(conn, &_msg_handler, osso, NULL))
     {
-	error = "Error: unable to add _msg_handler as a filter";
+        ULOG_ERR_F("dbus_connection_add_filter failed");
 	goto dbus_conn_error4;
     }
-    dprint("My base service is '%s'",
-	   dbus_bus_get_unique_name(conn));
-
-    dbus_error_free(&err);
+    dprint("My base service is '%s'", dbus_bus_get_unique_name(conn));
 
     return conn;
 
     /**** ERROR HANDLING ****/
 
-/*    dbus_connection_remove_filter(conn, _msg_handler, osso); */
     dbus_conn_error4:
 #ifdef LIBOSSO_DEBUG
     dbus_connection_remove_filter(conn, _debug_filter, NULL);
@@ -364,9 +352,6 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
         
     /* no explicit disconnection, because the connections are shared */
     dbus_connection_unref(conn);
-    if(error != NULL) {
-	ULOG_ERR_F("%s", error);
-    }
 
     return NULL;
 }

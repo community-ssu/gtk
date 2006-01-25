@@ -75,7 +75,7 @@ osso_return_t osso_state_write(osso_context_t *osso, osso_state_t *state)
       }
 
     if (path == NULL) {
-	ULOG_ERR_F("Allocation of application/version string failed");
+	ULOG_ERR_F("g_strconcat failed");
 	return OSSO_ERROR;
     }
     
@@ -406,8 +406,7 @@ static osso_return_t _write_state(const gchar *statefile, osso_state_t *state)
     tempfile = g_strconcat(statefile, ".tmpXXXXXX", NULL);
     if(tempfile == NULL) {
 	ULOG_ERR_F("Unable to allocate memory for tempfile");
-	ret = OSSO_ERROR;
-	goto _set_state_ret0;
+	return OSSO_ERROR;
     }
     fd = g_mkstemp(tempfile);
     if(fd == -1) {
@@ -463,7 +462,6 @@ static osso_return_t _write_state(const gchar *statefile, osso_state_t *state)
 	ret = OSSO_ERROR;
     }
     _set_state_ret1:
-    free(tempfile);	
-    _set_state_ret0:
+    g_free(tempfile);	
     return ret;
 }
