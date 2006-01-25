@@ -362,6 +362,26 @@ create_pidfile()
 }
 
 static void
+daemonize(void)
+{
+  pid_t pid;
+
+  if (fork())
+      _exit(0);
+
+  if (setsid() < 0)
+    die(1, "setting session id");
+
+  pid = fork();
+  if (pid < 0)
+    die(1, "forking while daemonizing");
+  else if (pid)
+    _exit(0);
+
+  chdir("/");
+}
+
+static void
 version(void)
 {
   printf("%s (%s) %s\n", PROG_NAME, PACKAGE, VERSION);
@@ -393,7 +413,7 @@ main(int argc, char *argv[])
   ui_state state;
   int i;
   int fd;
-  bool daemonize = false;
+  bool daemon = false;
   bool quiet = false;
 
   /*
@@ -402,7 +422,7 @@ main(int argc, char *argv[])
   for (i = 1; i < argc; ++i)
   {
     if (strcmp(argv[i], "--daemon") == 0)
-      daemonize = true;
+      daemon = true;
     else if (strcmp(argv[i], "--quiet") == 0)
       quiet = true;
     else if (strcmp(argv[i], "--pidfile") == 0)
@@ -430,9 +450,8 @@ main(int argc, char *argv[])
   /* Setup the conversation channel with the invoker. */
   fd = invoked_init();
 
-  /* Daemonize. */
-  if (daemonize && fork())
-      _exit(0);
+  if (daemon)
+    daemonize();
 
   if (quiet)
   {
@@ -444,20 +463,6 @@ main(int argc, char *argv[])
       die(1, "opening /dev/null readonly");
     if (dup(open("/dev/null", O_WRONLY)) < 0)
       die(1, "opening /dev/null writeonly");
-  }
-
-  if (daemonize)
-  {
-    pid_t pid;
-
-    if (setsid() < 0)
-      die(1, "setting session id");
-
-    pid = fork();
-    if (pid < 0)
-      die(1, "forking while daemonizing");
-    else if (pid)
-      _exit(0);
   }
 
   create_pidfile();

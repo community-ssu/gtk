@@ -1,5 +1,11 @@
 2006-01-25  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (main): Rename daemonize variable to daemon.
+	Move daemonization logic to ...
+	(daemonize): ... here. New function. Change dir to root.
+
+2006-01-25  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (main): Move pid file creation to ...
 	(create_pidfile): ... here. New function.
 
