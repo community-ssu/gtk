@@ -2,7 +2,7 @@
  * @file libosso.h
  * This file is the public API for the Libosso library.
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -59,7 +59,7 @@ typedef enum {
 typedef struct osso_af_context_t osso_context_t;
 
 /**
- * This function initializes the library, connects to the D-BUS session
+ * This function initializes the library, connects to both the D-BUS session
  * and system busses, integrates with the GLib main loop, and
  * initializes the library for use. #osso_initialize should be called
  * only once by the application.
@@ -74,13 +74,7 @@ typedef struct osso_af_context_t osso_context_t;
  * the underscore '_'.
  * @param version The version string of the application. It must be 
  * comparable with strcmp().
- * @param activation If this is TRUE, then the library assumes that the
- * application binary has been launched by the D-BUS daemon, and thus will
- * connect to the D-BUS activation bus (the D-BUS bus where the D-BUS message
- * that resulted in auto-activation of the application came -- either the
- * session or system bus). This parameter should always be FALSE and
- * considered obsolete, because otherwise Libosso might behave strangely
- * since it normally uses both session and system bus.
+ * @param activation This parameter is obsolete and does not have any effect.
  * @param context The GLib main loop context to connect to, or NULL for
  * the default context.
  * @return A context to use in later calls to this library. NULL is

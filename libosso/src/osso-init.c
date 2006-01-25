@@ -73,10 +73,7 @@ osso_context_t * osso_initialize(const gchar *application,
 				 GMainContext *context)
 {
     osso_context_t *osso;
-
-    dprint("Initialising application '%s' version '%s' "
-	   "%s activation, with context = %p",application, version,
-	   activation?"with":"without",context);
+    ULOG_DEBUG_F("application '%s', version '%s'");
     
     osso = _init(application, version);
     if (osso == NULL) {
@@ -94,38 +91,23 @@ osso_context_t * osso_initialize(const gchar *application,
 					   (gpointer)application);
 #endif
     if (activation) {
-        dprint("connecting to the activation bus");
-        ULOG_WARN_F("WARNING: if the system bus activated this program, "
-                    "Libosso does not connect to the session bus!");
-        dprint("WARNING: if the system bus activated this program, "
-               "Libosso does not connect to the session bus!");
-        fprintf(stderr, "osso_initialize() WARNING: if the system bus "
-          "activated this program, Libosso does not connect"
-          " to the session bus!\n");
-        osso->conn = _dbus_connect_and_setup(osso, DBUS_BUS_STARTER,
-                                             context);
-    } else {
-        dprint("connecting to the session bus");
-        osso->conn = _dbus_connect_and_setup(osso, DBUS_BUS_SESSION,
-                                             context);
+        ULOG_WARN_F("connecting to both D-BUS busses, 'activation' "
+                    "argument does not have any effect");
     }
+    dprint("connecting to the session bus");
+    osso->conn = _dbus_connect_and_setup(osso, DBUS_BUS_SESSION, context);
     if (osso->conn == NULL) {
-        if (activation) {
-	    ULOG_CRIT_F("connecting to the activation bus failed");
-	    dprint("connecting to the activation bus failed");
-        } else {
-	    ULOG_CRIT_F("connecting to the session bus failed");
-	    dprint("connecting to the session bus failed");
-        }
-	_deinit(osso);
-	return NULL;
+        ULOG_CRIT_F("connecting to the session bus failed");
+        dprint("connecting to the session bus failed");
+        _deinit(osso);
+        return NULL;
     }
     dprint("connecting to the system bus");
     osso->sys_conn = _dbus_connect_and_setup(osso, DBUS_BUS_SYSTEM, context);
     if (osso->sys_conn == NULL) {
         ULOG_CRIT_F("connecting to the system bus failed");
         dprint("connecting to the system bus failed");
-	_deinit(osso);
+        _deinit(osso);
         return NULL;
     }
     osso->cur_conn = NULL;
