@@ -544,7 +544,7 @@ static void _save_state( gboolean clear_state ) {
 
 static void _retrieve_state( void ) {
     gchar buff[HILDON_CONTROL_PANEL_STATEFILE_MAX];
-    size_t rc;
+    ssize_t rc;
     gint fd;
     gchar *eq;
     gchar *nl;
@@ -552,7 +552,7 @@ static void _retrieve_state( void ) {
     gint length;
 
     fd = osso_state_open_read(state_data.osso);
-    if( fd == -1)
+    if(fd == -1)
     {
         return;
     }
@@ -565,7 +565,13 @@ static void _retrieve_state( void ) {
         osso_log(LOG_ERR,
                  "Error retrieving state -- too long state file %d", rc);
         return;
-    }   
+    }
+    if(rc == -1)
+    {
+        osso_log(LOG_ERR,
+                 "Error retrieving state -- error on reading the state file");
+        return;
+    }
    
     start = buff;
     length = rc;

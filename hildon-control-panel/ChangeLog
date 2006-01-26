@@ -1,4 +1,10 @@
 2005-12-15 Johan Bilien <johan.bilien@nokia.com>
+	* hildon-control-panel-main.c:
+	  - _retrieve_state(): check the return value of read
+	* Closes N#21333
+	* configure.ac: 1.0.1
+
+2005-12-15 Johan Bilien <johan.bilien@nokia.com>
 	* Ported to dbus >= 0.50.
 	* configure.ac: 1.0.0
 

@@ -1,3 +1,9 @@
+hildon-control-panel (1.0.1-0) unstable; urgency=low
+
+  * Fixed N#21333
+
+ -- Johan Bilien <jobi@localhost.localdomain>  Thu, 26 Jan 2006 17:55:25 +0200
+
 hildon-control-panel (1.0.0-1) unstable; urgency=low
 
   * Move the service file to the new location.
