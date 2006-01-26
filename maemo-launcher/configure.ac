@@ -53,6 +53,8 @@ AM_CONDITIONAL([BUILD_CLIENT], [test x$client = xtrue])
 
 MINIMAL_DEPENDS="
 	gtk+-2.0 >= 2.6.4
+	fontconfig
+	pangoxft
 "
 
 EXTRA_DEPENDS="$MINIMAL_DEPENDS

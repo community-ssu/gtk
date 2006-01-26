@@ -1,3 +1,7 @@
+2006-01-26  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac (MINIMAL_DEPENDS): Add fontconfig and pangoxft.
+
 2006-01-25  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/Makefile.am (maemo_invoker_CPPFLAGS): Remove double quotes.

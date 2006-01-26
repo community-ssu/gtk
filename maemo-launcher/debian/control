@@ -3,6 +3,7 @@ Section: embedded
 Priority: optional
 Maintainer: Guillem Jover <guillem.jover@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), libgtk2.0-dev (>= 2.6.4-1),
+ libfontconfig1-dev, libpango1.0-dev,
  libosso-gnomevfs2-dev (>= 2.8.0-1), hildon-libs-dev (>= 0.7.5-1),
  hildon-lgpl-dev (>= 0.7.5-1)
 Standards-Version: 3.6.2
