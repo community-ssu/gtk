@@ -3,6 +3,7 @@ osso-af-startup (1.2-1) unstable; urgency=low
   * ke-recv is not started anymore, it is now under init.
   * Removed temp-reaper.sh because the C program is now used.
   * Removed dependency to lsof.
+  * Removed empty 'startup' directory.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 26 Jan 2006 11:19:52 +0200
 
