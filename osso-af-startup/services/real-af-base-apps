@@ -31,7 +31,6 @@ start)
     source $CONNECTIVITY_UI_SCRIPT start
   fi
 
-  source $AF_INIT_DIR/ke-recv.sh start
   source $AF_INIT_DIR/keyboard.sh start
 
   if [ -x $AF_INIT_DIR/osso-media-server.sh ]; then
@@ -45,7 +44,6 @@ stop)
 
   source $AF_INIT_DIR/clipboard.sh stop
   source $AF_INIT_DIR/keyboard.sh stop
-  source $AF_INIT_DIR/ke-recv.sh stop
 
   if [ -x $CONNECTIVITY_UI_SCRIPT ]; then
     source $CONNECTIVITY_UI_SCRIPT stop

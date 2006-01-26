@@ -43,9 +43,6 @@ start)
   if [ -x /etc/osso-af-init/maemo-launcher ]; then
     /etc/osso-af-init/maemo-launcher start
   fi
-  if [ -f $AF_INIT_DIR/ke-recv.sh ]; then
-    source $AF_INIT_DIR/ke-recv.sh start
-  fi
 
   if [ -x $AF_INIT_DIR/startup-greeting.sh ]; then
     source $AF_INIT_DIR/startup-greeting.sh start
