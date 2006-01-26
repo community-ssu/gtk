@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(ageoffile_SOURCES) $(fb_progress_SOURCES) $(runas_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
+SOURCES = $(ageoffile_SOURCES) $(fb_progress_SOURCES) $(runas_SOURCES) $(temp_reaper_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -37,7 +37,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 sbin_PROGRAMS = waitdbus$(EXEEXT) waitx$(EXEEXT) runas$(EXEEXT) \
-	fb-progress$(EXEEXT)
+	fb-progress$(EXEEXT) temp-reaper$(EXEEXT)
 bin_PROGRAMS = xset770$(EXEEXT) ageoffile$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -60,6 +60,9 @@ fb_progress_LDADD = $(LDADD)
 am_runas_OBJECTS = runas.$(OBJEXT)
 runas_OBJECTS = $(am_runas_OBJECTS)
 runas_LDADD = $(LDADD)
+am_temp_reaper_OBJECTS = temp-reaper.$(OBJEXT)
+temp_reaper_OBJECTS = $(am_temp_reaper_OBJECTS)
+temp_reaper_LDADD = $(LDADD)
 am_waitdbus_OBJECTS = waitdbus.$(OBJEXT)
 waitdbus_OBJECTS = $(am_waitdbus_OBJECTS)
 waitdbus_LDADD = $(LDADD)
@@ -74,17 +77,18 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ageoffile.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/fb-progress.Po ./$(DEPDIR)/runas.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/waitdbus.Po ./$(DEPDIR)/waitx.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/xset770.Po
+@AMDEP_TRUE@	./$(DEPDIR)/temp-reaper.Po ./$(DEPDIR)/waitdbus.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/waitx.Po ./$(DEPDIR)/xset770.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(ageoffile_SOURCES) $(fb_progress_SOURCES) $(runas_SOURCES) \
-	$(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
-DIST_SOURCES = $(ageoffile_SOURCES) $(fb_progress_SOURCES) \
-	$(runas_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) \
+	$(temp_reaper_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) \
 	$(xset770_SOURCES)
+DIST_SOURCES = $(ageoffile_SOURCES) $(fb_progress_SOURCES) \
+	$(runas_SOURCES) $(temp_reaper_SOURCES) $(waitdbus_SOURCES) \
+	$(waitx_SOURCES) $(xset770_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -198,6 +202,9 @@ ageoffile_SOURCES = \
 
 xset770_SOURCES = \
 	xset770.c
+
+temp_reaper_SOURCES = \
+	temp-reaper.c
 
 CURSOR_NAMES = \
 	00008160000006810000408080010102 \
@@ -374,6 +381,9 @@ fb-progress$(EXEEXT): $(fb_progress_OBJECTS) $(fb_progress_DEPENDENCIES)
 runas$(EXEEXT): $(runas_OBJECTS) $(runas_DEPENDENCIES) 
 	@rm -f runas$(EXEEXT)
 	$(LINK) $(runas_LDFLAGS) $(runas_OBJECTS) $(runas_LDADD) $(LIBS)
+temp-reaper$(EXEEXT): $(temp_reaper_OBJECTS) $(temp_reaper_DEPENDENCIES) 
+	@rm -f temp-reaper$(EXEEXT)
+	$(LINK) $(temp_reaper_LDFLAGS) $(temp_reaper_OBJECTS) $(temp_reaper_LDADD) $(LIBS)
 waitdbus$(EXEEXT): $(waitdbus_OBJECTS) $(waitdbus_DEPENDENCIES) 
 	@rm -f waitdbus$(EXEEXT)
 	$(LINK) $(waitdbus_LDFLAGS) $(waitdbus_OBJECTS) $(waitdbus_LDADD) $(LIBS)
@@ -393,6 +403,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ageoffile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fb-progress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runas.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/temp-reaper.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/waitdbus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/waitx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xset770.Po@am__quote@

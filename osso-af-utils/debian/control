@@ -1,12 +1,12 @@
 Source: osso-af-utils
 Section: base
 Priority: optional
-Maintainer: Kimmo Hämälainen <kimmo.hamalainen@nokia.com>
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), pkg-config, libx11-dev, libdbus-1-dev (>= 0.60), libosso-dev, libxsp-dev, libpng12-dev
 Standards-Version: 3.6.0
 
 Package: osso-af-utils
 Architecture: any
-Depends: ${shlibs:Depends}, osso-icons-default (>= 1.6-1)
+Depends: ${shlibs:Depends}, osso-icons-default (>= 1.6-1), lsof
 Description: Assortment of small programs for the application framework.
- Including waitdbus, waitx, fb-progress, and xset770.
+ Including waitdbus, waitx, fb-progress, xset770, temp-reaper.

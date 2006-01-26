@@ -1,3 +1,10 @@
+osso-af-utils (1.1-1) unstable; urgency=low
+
+  * Replaced the script with Guillem's temp-reaper.
+  * Added dependency to lsof.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 26 Jan 2006 11:37:33 +0200
+
 osso-af-utils (1.0-3) unstable; urgency=low
 
   * Re-run automake because of a build problem.

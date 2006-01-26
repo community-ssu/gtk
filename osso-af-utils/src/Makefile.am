@@ -1,4 +1,4 @@
-sbin_PROGRAMS = waitdbus waitx runas fb-progress
+sbin_PROGRAMS = waitdbus waitx runas fb-progress temp-reaper
 bin_PROGRAMS = xset770 ageoffile
 INCLUDES = \
 	`pkg-config --cflags dbus-1` \
@@ -43,6 +43,9 @@ ageoffile_SOURCES = \
 
 xset770_SOURCES = \
 	xset770.c
+
+temp_reaper_SOURCES = \
+	temp-reaper.c
 
 CURSOR_NAMES = \
 	00008160000006810000408080010102 \
