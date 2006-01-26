@@ -36,9 +36,7 @@ if [ -f $DIR/keyboard.defs ]; then
 fi
 source $DIR/keyboard.sh stop
 source $DIR/dbus-sessionbus.sh stop
-if [ -f $DIR/ke-recv.sh ]; then
-  source $DIR/ke-recv.sh stop
-fi
+# TODO: stop ke-recv
 
 # wait for the D-BUS session bus to die
 TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
@@ -55,9 +53,7 @@ if [ -f $DIR/browser.defs ]; then
 fi
 source $DIR/dbus-sessionbus.sh start
 /usr/sbin/waitdbus session
-if [ -f $DIR/ke-recv.sh ]; then
-  source $DIR/ke-recv.sh start
-fi
+# TODO: start ke-recv
 sudo /etc/init.d/osso-systemui restart
 if [ "x$DSME_STATE" = "xACTDEAD" ]; then
   if [ -x $DIR/osso-media-server.sh ]; then

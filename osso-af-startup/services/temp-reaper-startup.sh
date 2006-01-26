@@ -22,8 +22,8 @@ if [ "x$LAUNCHWRAPPER_NICE_TRYRESTART" = "x" ]; then
   echo "$0: Error, LAUNCHWRAPPER_NICE_TRYRESTART is not defined"
   exit 2
 fi
-PROG=/usr/sbin/temp-reaper.sh
-SVC="Periodical temporary file purging script"
+PROG=/usr/sbin/temp-reaper
+SVC="Periodical temporary file purging daemon"
 
 case "$1" in
 start)  START=TRUE
