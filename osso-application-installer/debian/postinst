@@ -11,12 +11,12 @@ add_sudoer ()
     fi
 }
 
-## Add line to sudo so that "user" can run "osso-application-installer" as
+## Add line to sudo so that "user" can run "apt-worker" as
 ## "root".
 ##
-## XXX - this is a bloody hack.  It will go away, don't worry.
+## KEEP THIS IN SYNC WITH prerm
 
-add_sudoer 'user ALL = NOPASSWD: /usr/bin/run-standalone.sh /usr/bin/osso-application-installer'
+add_sudoer 'user ALL = NOPASSWD: /usr/libexec/apt-worker'
 
 if [ -x /usr/bin/update-desktop-database ]; then
  update-desktop-database /usr/share/applications

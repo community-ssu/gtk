@@ -30,6 +30,11 @@
 #include <unistd.h>
 #include <assert.h>
 #include <stdarg.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <sys/statvfs.h>
+#include <sys/types.h>
+#include <sys/fcntl.h>
 
 #include <apt-pkg/init.h>
 #include <apt-pkg/error.h>
@@ -49,7 +54,9 @@
 
 #include "apt-worker-proto.h"
 
-#define DEBUG
+using namespace std;
+
+//#define DEBUG
 
 /* This is the process that runs as root and does all the work.
 
@@ -64,10 +71,10 @@
    It will output stuff to stdin and stderr, which the GUI process is
    supposed to catch and put into its log.
 
-   Invocation: apt-worker input-fd output-fd
+   Invocation: apt-worker input-fifo output-fifo status-fifo
  */
 
-int input_fd, output_fd;
+int input_fd, output_fd, status_fd;
 
 void
 log_stderr (const char *fmt, ...)
@@ -188,7 +195,11 @@ void make_package_info_response (const char *package);
 void make_package_details_response (const char *package,
 				    const char *version,
 				    int summary_kind);
+
 bool update_package_cache ();
+void install_prepare (const char *package);
+void install_doit ();
+bool remove_package (const char *package);
 
 void
 handle_request ()
@@ -243,6 +254,31 @@ handle_request ()
 	send_response (&req);
 	break;
       }
+    case APTCMD_INSTALL_PREPARE:
+      {
+	request.reset (reqbuf, req.len);
+	const char *package = request.decode_string_in_place ();
+	install_prepare (package);
+	send_response (&req);
+	break;
+      }
+    case APTCMD_INSTALL_DOIT:
+      {
+	install_doit ();
+	send_response (&req);
+	break;
+      }
+    case APTCMD_REMOVE_PACKAGE:
+      {
+	response.reset ();
+	request.reset (reqbuf, req.len);
+	const char *package = request.decode_string_in_place ();
+	bool success = remove_package (package);
+	_error->DumpErrors ();
+	response.encode_int (success? 1 : 0);
+	send_response (&req);
+	break;
+      }
     default:
       {
 	log_stderr ("unrecognized request: %d", req.cmd);
@@ -254,20 +290,34 @@ handle_request ()
   free_buf (reqbuf, stack_reqbuf);
 }
 
+static int
+must_open (char *filename, int flags)
+{
+  int fd = open (filename, flags);
+  if (fd < 0)
+    {
+      perror (filename);
+      exit (1);
+    }
+}
+
 int
 main (int argc, char **argv)
 {
-  if (argc != 3)
+  if (argc != 4)
     {
       log_stderr ("wrong invocation");
       exit (1);
     }
 
-  input_fd = atoi (argv[1]);
-  output_fd = atoi (argv[2]);
+  DBG ("starting up");
 
-  DBG ("starting with pid %d, in %d, out %d",
-       getpid (), input_fd, output_fd);
+  input_fd = must_open (argv[1], O_RDONLY);
+  output_fd = must_open (argv[2], O_WRONLY);
+  status_fd = must_open (argv[3], O_WRONLY);
+
+  DBG ("starting with pid %d, in %d, out %d, stat %d",
+       getpid (), input_fd, output_fd, status_fd);
 
   cache_init ();
 
@@ -315,17 +365,21 @@ cache_init ()
 
   if (package_cache)
     {
+      DBG ("closing");
       package_cache->Close ();
       delete package_cache;
+      DBG ("done");
     }
 
   package_cache = new pkgCacheFile;
 
+  DBG ("init.");
   if (pkgInitConfig(*_config) == false ||
       pkgInitSystem(*_config,_system) == false ||
       package_cache->Open (progress) == false)
    {
      // XXX - launch into a deaf, blind and dumb mode.
+     DBG ("failed.");
      _error->DumpErrors();
      exit (1);
    }
@@ -419,7 +473,7 @@ make_package_info_response (const char *package)
 
       // simulate install
 
-      cache.Init(NULL);
+      cache.Init(NULL); // XXX - this is very slow
       
       old_broken_count = cache.BrokenCount();
       (*package_cache)->MarkInstall (pkg);
@@ -444,7 +498,7 @@ make_package_info_response (const char *package)
       
       // simulate remove
 
-      cache.Init(NULL);
+      cache.Init(NULL); // XXX - this is very slow
       
       old_broken_count = cache.BrokenCount();
       (*package_cache)->MarkDelete (pkg);
@@ -517,8 +571,6 @@ encode_dependencies (pkgCache::VerIterator &ver)
 	  g_string_append_printf (str, " |");
 	  start++;
 	}
-
-      printf ("encoding %d %s\n", type, str->str);
 
       response.encode_int (type);
       response.encode_string (str->str);
@@ -683,6 +735,9 @@ find_package_version (pkgDepCache &cache,
 		      pkgCache::VerIterator &ver,
 		      const char *package, const char *version)
 {
+  if (package == NULL || version == NULL)
+    return false;
+
   pkg = cache.FindPkg (package);
   if (!pkg.end ())
     {
@@ -788,4 +843,263 @@ update_package_cache ()
   }
 
   return !Failed;
+}
+
+bool operation_prepare (bool encode_prep);
+bool operation_doit ();
+
+void
+install_prepare (const char *package)
+{
+  pkgDepCache &cache = *package_cache;
+  pkgCache::PkgIterator pkg = cache.FindPkg (package);
+  bool success;
+
+  response.reset ();
+  if (!pkg.end ())
+    {
+      cache.Init (NULL);
+      cache.MarkInstall (pkg);
+      success = operation_prepare (true);
+    }
+  else
+    success = false;
+
+  response.encode_int (success);
+}
+
+void
+install_doit ()
+{
+  response.reset ();
+  response.encode_int (operation_doit ());
+}
+
+bool
+remove_package (const char *package)
+{
+  pkgDepCache &cache = *package_cache;
+  pkgCache::PkgIterator pkg = cache.FindPkg (package);
+
+  if (!pkg.end ())
+    {
+      cache.Init (NULL);
+      cache.MarkDelete (pkg);
+      return operation_prepare (false) && operation_doit ();
+    }
+  else
+    return false;
+}
+
+static void
+encode_prep_summary (pkgAcquire& Fetcher)
+{
+  for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin();
+       I < Fetcher.ItemsEnd(); ++I)
+    {
+      if (!(*I)->IsTrusted())
+	{
+	  response.encode_int (preptype_notauth);
+	  response.encode_string ((*I)->ShortDesc().c_str());
+	}
+    }
+  response.encode_int (preptype_end);
+}
+
+bool operation_prepare_1 (bool);
+bool operation_doit_1 ();
+
+bool
+operation_prepare (bool encode_prep)
+{
+  bool res = operation_prepare_1 (encode_prep);
+  _error->DumpErrors ();
+  return res;
+}
+
+// XXX - Check whether we really need to loop in operations_doit_1.
+//       If not, operation_recs and operation_list need not be global.
+
+myAcquireStatus *operation_stat;
+pkgAcquire *operation_fetcher;
+SPtr<pkgPackageManager> operation_pm;
+pkgRecords *operation_recs;
+pkgSourceList *operation_list;
+
+bool
+operation_doit ()
+{
+  bool res = operation_doit_1 ();
+  delete operation_fetcher;
+  delete operation_stat;
+  // XXX - leak: delete operation_pm;
+  delete operation_recs;
+  delete operation_list;
+
+  _error->DumpErrors ();
+  cache_init ();
+  return res;
+}
+
+bool
+operation_prepare_1 (bool encode_prep)
+{
+   pkgCacheFile &Cache = *package_cache;
+
+   if (_config->FindB("APT::Get::Purge",false) == true)
+   {
+      pkgCache::PkgIterator I = Cache->PkgBegin();
+      for (; I.end() == false; I++)
+      {
+	 if (I.Purge() == false && Cache[I].Mode == pkgDepCache::ModeDelete)
+	    Cache->MarkDelete(I,true);
+      }
+   }
+   
+   bool Fail = false;
+   
+   // Sanity check
+   if (Cache->BrokenCount() != 0)
+   {
+     return _error->Error("Internal error, install_packages was called with broken packages!");
+   }
+
+   if (Cache->DelCount() == 0 && Cache->InstCount() == 0 &&
+       Cache->BadCount() == 0)
+      return true;
+   
+   // Create the text record parser
+   operation_recs = new pkgRecords (Cache);
+   if (_error->PendingError() == true)
+      return false;
+   
+   // Lock the archive directory
+   FileFd Lock;
+   if (_config->FindB("Debug::NoLocking",false) == false)
+   {
+      Lock.Fd(GetLock(_config->FindDir("Dir::Cache::Archives") + "lock"));
+      if (_error->PendingError() == true)
+	 return _error->Error("Unable to lock the download directory");
+   }
+   
+   // Create the download object
+   operation_stat = new myAcquireStatus;
+   operation_fetcher = new pkgAcquire (operation_stat);
+
+   // Read the source list
+   operation_list = new pkgSourceList;
+   if (operation_list->ReadMainList() == false)
+      return _error->Error("The list of sources could not be read.");
+   
+   // Create the package manager and prepare to download
+   operation_pm = _system->CreatePM(Cache);
+   if (operation_pm->GetArchives(operation_fetcher,
+				 operation_list,
+				 operation_recs) == false || 
+       _error->PendingError() == true)
+      return false;
+
+   // Display statistics
+   double FetchBytes = operation_fetcher->FetchNeeded();
+   double FetchPBytes = operation_fetcher->PartialPresent();
+   double DebBytes = operation_fetcher->TotalNeeded();
+   if (DebBytes != Cache->DebSize())
+     {
+       fprintf (stderr, "%f != %f\n", DebBytes, Cache->DebSize());
+       fprintf (stderr, "How odd.. The sizes didn't match, "
+		"email apt@packages.debian.org\n");
+     }
+   
+   // Number of bytes
+   if (DebBytes != FetchBytes)
+     fprintf (stderr, "Need to get %sB/%sB of archives.\n",
+	      SizeToStr(FetchBytes).c_str(),SizeToStr(DebBytes).c_str());
+   else
+     fprintf (stderr, "Need to get %sB of archives.\n",
+	      SizeToStr(DebBytes).c_str());
+
+   // Size delta
+   if (Cache->UsrSize() >= 0)
+     fprintf (stderr, 
+	      "After unpacking %sB of additional disk space will be used.\n",
+	      SizeToStr(Cache->UsrSize()).c_str());
+   else
+     fprintf (stderr, 
+	      "After unpacking %sB disk space will be freed.\n",
+	      SizeToStr(-1*Cache->UsrSize()).c_str());
+
+   if (_error->PendingError() == true)
+      return false;
+
+   /* Check for enough free space. */
+   {
+     struct statvfs Buf;
+     string OutputDir = _config->FindDir("Dir::Cache::Archives");
+     if (statvfs(OutputDir.c_str(),&Buf) != 0)
+       return _error->Errno("statvfs","Couldn't determine free space in %s",
+			    OutputDir.c_str());
+     if (unsigned(Buf.f_bfree) < (FetchBytes - FetchPBytes)/Buf.f_bsize)
+       return _error->Error("You don't have enough free space in %s.",
+			    OutputDir.c_str());
+   }
+   
+   if (encode_prep)
+     encode_prep_summary (*operation_fetcher);
+
+   return true;
+}
+
+bool
+operation_doit_1 ()
+{
+   // Run it
+   while (1)
+   {
+      bool Transient = false;
+      if (operation_fetcher->Run() == pkgAcquire::Failed)
+	 return false;
+      
+      // Print out errors
+      bool Failed = false;
+      for (pkgAcquire::ItemIterator I = operation_fetcher->ItemsBegin(); I != operation_fetcher->ItemsEnd(); I++)
+      {
+	 if ((*I)->Status == pkgAcquire::Item::StatDone &&
+	     (*I)->Complete == true)
+	    continue;
+	 
+	 if ((*I)->Status == pkgAcquire::Item::StatIdle)
+	 {
+	    Transient = true;
+	    // Failed = true;
+	    continue;
+	 }
+
+	 fprintf (stderr, 
+		  "Failed to fetch %s: %s\n",
+		  (*I)->DescURI().c_str(),
+		  (*I)->ErrorText.c_str());
+	 Failed = true;
+      }
+
+      if (Failed == true)
+	{
+	  return _error->Error("Unable to fetch some archives.");
+	}
+      
+      _system->UnLock();
+      pkgPackageManager::OrderResult Res = operation_pm->DoInstall (status_fd);
+      if (Res == pkgPackageManager::Failed || _error->PendingError() == true)
+	 return false;
+      if (Res == pkgPackageManager::Completed)
+	 return true;
+      
+      // Reload the fetcher object and loop again for media swapping
+      operation_fetcher->Shutdown();
+      if (operation_pm->GetArchives(operation_fetcher,
+				    operation_list,
+				    operation_recs) == false)
+	 return false;
+      
+      _system->Lock();
+   }
 }

@@ -31,11 +31,19 @@
 
 enum apt_command {
   APTCMD_NOOP,
+
   APTCMD_STATUS,
+
   APTCMD_GET_PACKAGE_LIST,
   APTCMD_GET_PACKAGE_INFO,
   APTCMD_GET_PACKAGE_DETAILS,
+
   APTCMD_UPDATE_PACKAGE_CACHE,
+
+  APTCMD_INSTALL_PREPARE,
+  APTCMD_INSTALL_DOIT,
+
+  APTCMD_REMOVE_PACKAGE,
 
   APTCMD_MAX
 };
@@ -194,5 +202,45 @@ enum apt_proto_sumtype {
   sumtype_missing,
   sumtype_conflicting,
 };
+
+// INSTALL_PREPARE - Prepare to install a package.
+//
+// This will setup the download operation and figure out whether there
+// are any not-authenticated or not-certified packages.  When this
+// request succeeded, continue with INSTALL_DOIT.
+//
+// Parameters:
+//
+// - name (string).  The package to be installed.
+//
+// Response:
+//
+// - summary (preptype,string)*,(preptype_end)
+// - success (int).
+
+enum apt_proto_preptype {
+  preptype_end,
+  preptype_notauth,
+  preptype_notcert
+};
+
+// INSTALL_DOIT - Do the actual installation after preparing.
+//
+// No parameters.
+//
+// Response:
+//
+// - success (int).
+
+
+// REMOVE_PACKAGE - remove one package
+//
+// Parameters:
+//
+// - name (string).
+//
+// Response:
+//
+// - success (int).
 
 #endif /* !APT_WORKER_PROTO_H */

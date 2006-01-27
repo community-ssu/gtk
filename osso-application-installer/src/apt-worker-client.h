@@ -22,16 +22,18 @@
  *
  */
 
-#ifndef APT_WORKER_CLIENTH
-#define APT_WORKER_CLIENTH
+#ifndef APT_WORKER_CLIENT_H
+#define APT_WORKER_CLIENT_H
+
+#include "apt-worker-proto.h"
 
 extern int apt_worker_in_fd, apt_worker_out_fd;
 
-void start_apt_worker ();
+void start_apt_worker (gchar *prog);
 void stop_apt_worker ();
 
 typedef void apt_worker_callback (int cmd,
-				  char *response_data, int response_len,
+				  apt_proto_decoder *dec,
 				  void *callback_data);
 
 /* There can be only one non-completed request per command.  If you
@@ -68,5 +70,16 @@ void apt_worker_get_package_details (const char *package,
 				     int summary_kind,
 				     apt_worker_callback *callback,
 				     void *data);
+
+void apt_worker_install_prepare (const char *package,
+				 apt_worker_callback *callback,
+				 void *data);
+
+void apt_worker_install_doit (apt_worker_callback *callback,
+			      void *data);
+
+void apt_worker_remove_package (const char *package,
+				apt_worker_callback *callback,
+				void *data);
 
 #endif /* !APT_WORKER_CLIENT_H */

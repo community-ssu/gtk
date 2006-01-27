@@ -89,13 +89,6 @@ menu_close ()
   exit (0);
 }
 
-static void
-menu_refresh ()
-{
-  if (ask_yes_no ("Do you want to refresh the list of packages?"))
-    annoy_user ("Not yet, sorry.");
-}
-
 static GtkWidget *details_menu_item = NULL;
 static GtkWidget *operation_menu_item = NULL;
 
@@ -129,7 +122,7 @@ create_menu (GtkMenu *main)
   GtkWidget *fullscreen_group;
 
   operation_menu_item = add_item (packages, "", do_current_operation);
-  add_item (packages, "Refresh list of packages", menu_refresh);
+  add_item (packages, "Refresh list of packages", refresh_package_cache);
   add_item (packages, "Install from file ...", NULL);
   details_menu_item = add_item (packages, "Details", show_current_details);
 

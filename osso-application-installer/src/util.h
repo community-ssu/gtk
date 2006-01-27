@@ -29,40 +29,32 @@
 
 #include "main.h"
 
-bool ask_yes_no (const gchar *question_fmt);
+void ask_yes_no (const gchar *question_fmt,
+		 void (*cont) (bool res, void *data), void *data);
+
 void annoy_user (const gchar *text);
+void annoy_user_with_details (const gchar *text,
+			      package_info *pi, bool installed);
+void annoy_user_with_log (const gchar *text);
 
-struct progress_with_cancel {
+void show_progress (const char *title);
+void set_progress (const gchar *title, float fraction);
+void hide_progress ();
 
-  void set (const gchar *title, float fraction);
-  bool is_cancelled ();
-
-  void close ();
-
-  progress_with_cancel ();
-  ~progress_with_cancel ();
-
- private:
-  GtkWidget *dialog;
-  GtkProgressBar *bar;
-  bool cancelled;
-};
-
-typedef void item_widget_attacher (GtkTable *tabel, gint row,
-				   gpointer item);
-
-GtkWidget *make_scrolled_table (GList *items, gint columns,
-				item_widget_attacher *attacher);
-
-typedef void section_activated (section_info *);
-GtkWidget *make_section_list (GList *packages, section_activated *act);
+GtkWidget *make_small_text_view (const char *text);
 
 typedef void package_info_callback (package_info *);
-GtkWidget *make_package_list (GList *packages,
+
+GtkWidget *get_global_package_list_widget ();
+void set_global_package_list (GList *packages,
 			      bool installed,
 			      package_info_callback *selected,
 			      package_info_callback *activated);
+void global_package_info_changed (package_info *pi);
 
-GtkWidget *make_small_text_view (const char *text);
+typedef void section_activated (section_info *);
+
+GtkWidget *get_global_section_list_widget ();
+void set_global_section_list (GList *sections, section_activated *act);
 
 #endif /* !UTIL_H */

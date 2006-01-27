@@ -28,20 +28,25 @@
 #include "apt-worker-proto.h"
 
 struct package_info {
-  const char *name;
-  const char *installed_version;
+  char *name;
+  char *installed_version;
   int installed_size;
-  const char *available_version;
-  const char *available_section;
+  char *available_version;
+  char *available_section;
 
   bool have_info;
   apt_proto_package_info info;
-  const char *installed_short_description;
-  const char *available_short_description;
+  char *installed_short_description;
+  char *available_short_description;
+ 
+  GtkTreeModel *model;
+  GtkTreeIter iter;
 };
 
-void call_with_package_info (package_info *pi,
-			     void (*func) (package_info *, void *), void *);
+void get_intermediate_package_info (package_info *pi,
+				    void (*func) (package_info *, void *,
+						  bool),
+				    void *);
 
 package_info *alloc_package_info ();
 void free_package_info (package_info *);
@@ -53,5 +58,6 @@ struct section_info {
 
 void show_current_details ();
 void do_current_operation ();
+void refresh_package_cache ();
 
 #endif /* !MAIN_H */

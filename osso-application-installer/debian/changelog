@@ -1,3 +1,21 @@
+osso-application-installer (4.0.pre3) unstable; urgency=low
+
+  * First public prototype.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 27 Jan 2006 14:38:09 +0200
+
+osso-application-installer (4.0.pre2) unstable; urgency=low
+
+  * Next prototype release.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 24 Jan 2006 21:35:06 +0200
+
+osso-application-installer (4.0.pre1) unstable; urgency=low
+
+  * Next prototype release.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 23 Jan 2006 18:38:32 +0200
+
 osso-application-installer (4.0.pre0) unstable; urgency=low
 
   * Prototype release.

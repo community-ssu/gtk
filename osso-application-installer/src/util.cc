@@ -28,23 +28,50 @@
 #include <hildon-widgets/hildon-note.h>
 
 #include "util.h"
+#include "details.h"
+#include "log.h"
 
-bool
-ask_yes_no (const gchar *question)
+struct ayn_closure {
+  void (*cont) (bool res, void *data);
+  void *data;
+};
+  
+static void
+yes_no_response (GtkDialog *dialog, gint response, gpointer clos)
+{
+  ayn_closure *c = (ayn_closure *)clos;
+  void (*cont) (bool res, void *data) = c->cont; 
+  void *data = c->data;
+  delete c;
+
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+  cont (response == GTK_RESPONSE_YES, data);
+}
+
+void
+ask_yes_no (const gchar *question,
+	    void (*cont) (bool res, void *data),
+	    void *data)
 {
   GtkWidget *dialog;
-  gint response;
+  ayn_closure *c = new ayn_closure;
+  c->cont = cont;
+  c->data = data;
 
   dialog =
     hildon_note_new_confirmation_add_buttons (NULL, question,
 					      "Yes", GTK_RESPONSE_YES,
 					      "No", GTK_RESPONSE_NO,
 					      NULL);
+  g_signal_connect (dialog, "response",
+		    G_CALLBACK (yes_no_response), c);
   gtk_widget_show_all (dialog);
-  response = gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy(dialog);
+}
 
-  return response == GTK_RESPONSE_YES;
+static void
+annoy_user_response (GtkDialog *dialog, gint response, gpointer data)
+{
+  gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 void
@@ -53,407 +80,114 @@ annoy_user (const gchar *text)
   GtkWidget *dialog;
 
   dialog = hildon_note_new_information (NULL, text);
-
+  g_signal_connect (dialog, "response", 
+		    G_CALLBACK (annoy_user_response), NULL);
   gtk_widget_show_all (dialog);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy(dialog);
 }
 
-/***********************
- * progress_with_cancel
- */
+struct auwe_closure {
+  void (*func) (void *, void *);
+  void *data1, *data2;
+};
 
-progress_with_cancel::progress_with_cancel ()
+static void
+annoy_user_with_extra_response (GtkDialog *dialog, gint response,
+				gpointer data)
 {
-  dialog = NULL;
-  bar = NULL;
-  cancelled = false;
+  auwe_closure *c = (auwe_closure *)data;
+  void (*func) (void *, void *) = c->func;
+  void *data1 = c->data1;
+  void *data2 = c->data2;
+  delete c;
+
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+  if (response == 1)
+    func (data1, data2);
 }
 
-progress_with_cancel::~progress_with_cancel ()
+static void
+annoy_user_with_extra (const gchar *text,
+		       const gchar *extra,
+		       void (*func) (void *, void *),
+		       void *data1, void *data2)
 {
-  assert (dialog == NULL);
+  GtkWidget *dialog, *action_area;
+  GtkWidget *details_button;
+  auwe_closure *c = new auwe_closure;
+  gint response;
+
+  dialog = hildon_note_new_information (NULL, text);
+  gtk_dialog_add_button (GTK_DIALOG (dialog), extra, 1);
+
+  c->func = func;
+  c->data1 = data1;
+  c->data2 = data2;
+  g_signal_connect (dialog, "response", 
+		    G_CALLBACK (annoy_user_with_extra_response), c);
+  gtk_widget_show_all (dialog);
+}
+
+static void
+show_pd (void *data1, void *data2)
+{
+  show_package_details ((package_info *)data1, (bool)data2);
 }
 
 void
-progress_with_cancel::set (const gchar *title, float fraction)
+annoy_user_with_details (const gchar *text,
+			 package_info *pi, bool installed)
 {
-  if (dialog == NULL)
-    {
-      bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
-      dialog = hildon_note_new_cancel_with_progress_bar (NULL,
-							 title,
-							 bar);
-
-      gtk_widget_show (dialog);
-    }
- 
-  g_object_set (dialog, "description", title, NULL);
-  gtk_progress_bar_set_fraction (bar, fraction);
-  gdk_display_flush (gdk_display_get_default ());
-  gtk_main_iteration_do (FALSE);
-
-  // fprintf (stderr, "%s %f\n", title, fraction);
+  annoy_user_with_extra (text, "Details",
+			 show_pd, (void *)pi, (void *)installed);
 }
 
-bool
-progress_with_cancel::is_cancelled ()
+static void
+show_lg (void *data1, void *data2)
 {
-  return cancelled;
+  show_log ();
 }
 
 void
-progress_with_cancel::close ()
+annoy_user_with_log (const gchar *text)
 {
-  if (dialog)
+  annoy_user_with_extra (text, "Log", show_lg, NULL, NULL);
+}
+
+static GtkWidget *progress_dialog = NULL;
+static GtkProgressBar *progress_bar;
+
+void
+show_progress (const gchar *title)
+{
+  if (progress_dialog == NULL)
     {
-      gtk_widget_destroy (dialog);
-      dialog = NULL;
-    }
-}
-
-GtkWidget *
-make_scrolled_table (GList *items, gint columns,
-		     item_widget_attacher *attacher)
-{
-  int rows = g_list_length (items);
-  GtkWidget *scrolled = gtk_scrolled_window_new (NULL, NULL);
-  GtkWidget *table = gtk_table_new (rows, columns, false);
-  for (int i = 0; i < rows; i++, items = items->next)
-    attacher (GTK_TABLE (table), i, items->data);
-  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled),
-					 table);
-  return scrolled;
-}
-
-
-static void
-section_name_func (GtkTreeViewColumn *column,
-		   GtkCellRenderer *cell,
-		   GtkTreeModel *model,
-		   GtkTreeIter *iter,
-		   gpointer data)
-{
-  section_info *si;
-  gtk_tree_model_get (model, iter, 0, &si, -1);
-  g_object_set (cell, "text", si->name, NULL);
-}
-
-static void
-section_row_activated (GtkTreeView *treeview,
-		       GtkTreePath *path,
-		       GtkTreeViewColumn *column,
-		       gpointer data)
-{
-  GtkTreeModel *model = gtk_tree_view_get_model (treeview);
-  GtkTreeIter iter;
-  section_activated *act = (section_activated *)data;
-
-  if (gtk_tree_model_get_iter (model, &iter, path))
-    {
-      section_info *si;
-      gtk_tree_model_get (model, &iter, 0, &si, -1);
-      act (si);
-    }
-}
-
-GtkWidget *
-make_section_list (GList *sections, section_activated *act)
-{
-  GtkListStore *store = gtk_list_store_new (1, GTK_TYPE_POINTER);
-  GtkCellRenderer *renderer;
-  GtkWidget *tree, *scroller;
-
-  while (sections)
-    {
-      GtkTreeIter iter;
-      gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-			  0, sections->data,
-			  -1);
-      sections = sections->next;
-    }
-
-  tree = gtk_tree_view_new_with_model (GTK_TREE_MODEL (store));
-
-  renderer = gtk_cell_renderer_text_new ();
-  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
-					      -1,
-					      NULL,
-					      renderer,
-					      section_name_func,
-					      tree,
-					      NULL);
-
-  scroller = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroller),
-				  GTK_POLICY_AUTOMATIC,
-				  GTK_POLICY_ALWAYS);
-  gtk_container_add (GTK_CONTAINER (scroller), tree);
-
-  g_signal_connect (tree, "row-activated", 
-		    G_CALLBACK (section_row_activated),
-		    gpointer (act));
-
-  return scroller;
-}
-
-static void
-package_name_func (GtkTreeViewColumn *column,
-		   GtkCellRenderer *cell,
-		   GtkTreeModel *model,
-		   GtkTreeIter *iter,
-		   gpointer data,
-		   bool installed)
-{
-  GtkTreeView *tree = (GtkTreeView *)data;
-  GtkTreeSelection *selection = gtk_tree_view_get_selection (tree);
-  package_info *pi;
-
-  gtk_tree_model_get (model, iter, 0, &pi, -1);
-
-  if (gtk_tree_selection_iter_is_selected (selection, iter))
-    {
-      const gchar *desc;
-      gchar *markup;
-      if (pi->have_info)
-	{
-	  if (installed)
-	    desc = pi->installed_short_description;
-	  else
-	    {
-	      desc = pi->available_short_description;
-	      if (desc == NULL)
-		desc = pi->installed_short_description;
-	    }
-	}
-      else
-	desc = "...";
-      markup = g_markup_printf_escaped ("%s\n<small>%s</small>",
-					pi->name, desc);
-      g_object_set (cell, "markup", markup, NULL);
-      g_free (markup);
+      progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
+      progress_dialog =
+	hildon_note_new_cancel_with_progress_bar (NULL,
+						  title,
+						  progress_bar);
     }
   else
-    g_object_set (cell, "text", pi->name, NULL);
+    set_progress (title, 0.0);
+
+  gtk_widget_show (progress_dialog);
 }
 
-static void
-installed_name_func (GtkTreeViewColumn *column,
-		     GtkCellRenderer *cell,
-		     GtkTreeModel *model,
-		     GtkTreeIter *iter,
-		     gpointer data)
+void
+set_progress (const gchar *title, float fraction)
 {
-  package_name_func (column, cell, model, iter, data, true);
-}
-
-
-static void
-available_name_func (GtkTreeViewColumn *column,
-		     GtkCellRenderer *cell,
-		     GtkTreeModel *model,
-		     GtkTreeIter *iter,
-		     gpointer data)
-{
-  package_name_func (column, cell, model, iter, data, false);
-}
-
-static void
-installed_version_func (GtkTreeViewColumn *column,
-			GtkCellRenderer *cell,
-			GtkTreeModel *model,
-			GtkTreeIter *iter,
-			gpointer data)
-{
-  package_info *pi;
-  gtk_tree_model_get (model, iter, 0, &pi, -1);
-  g_object_set (cell, "text", pi->installed_version, NULL);
-}
-
-static void
-available_version_func (GtkTreeViewColumn *column,
-			GtkCellRenderer *cell,
-			GtkTreeModel *model,
-			GtkTreeIter *iter,
-			gpointer data)
-{
-  package_info *pi;
-  gtk_tree_model_get (model, iter, 0, &pi, -1);
-  g_object_set (cell, "text", pi->available_version, NULL);
-}
-
-static void
-installed_size_func (GtkTreeViewColumn *column,
-		     GtkCellRenderer *cell,
-		     GtkTreeModel *model,
-		     GtkTreeIter *iter,
-		     gpointer data)
-{
-  package_info *pi;
-  char buf[20];
-  gtk_tree_model_get (model, iter, 0, &pi, -1);
-  sprintf (buf, "%d", pi->installed_size);
-  g_object_set (cell, "text", buf, NULL);
-}
-
-static void
-download_size_func (GtkTreeViewColumn *column,
-		    GtkCellRenderer *cell,
-		    GtkTreeModel *model,
-		    GtkTreeIter *iter,
-		    gpointer data)
-{
-  package_info *pi;
-  char buf[20];
-  gtk_tree_model_get (model, iter, 0, &pi, -1);
-  if (pi->have_info)
-    sprintf (buf, "%d", pi->info.download_size);
-  else
-    buf[0] = '\0';
-  g_object_set (cell, "text", buf, NULL);
-}
-
-static bool have_last_selection;
-static GtkTreeIter last_selection;
-static GtkTreeModel *last_model;
-
-static void
-row_changed (GtkTreeModel *model, GtkTreeIter *iter)
-{
-  GtkTreePath *path;
-
-  path = gtk_tree_model_get_path (model, iter);
-  g_signal_emit_by_name (model, "row-changed", path, iter);
-  gtk_tree_path_free (path);
-}
-
-static void
-package_selection_changed (GtkTreeSelection *selection, gpointer data)
-{
-  package_info_callback *sel = (package_info_callback *)data;
-  GtkTreeModel *model;
-  GtkTreeIter iter;
-
-  if (have_last_selection)
-    row_changed (last_model, &last_selection);
-
-  if (gtk_tree_selection_get_selected (selection, &model, &iter))
+  if (progress_dialog)
     {
-      package_info *pi;
-
-      row_changed (model, &iter);
-      last_selection = iter;
-      last_model = model;
-      have_last_selection = true;
-      
-      if (sel)
-	{
-	  gtk_tree_model_get (model, &iter, 0, &pi, -1);
-	  sel (pi);
-	}
-    }
-  else
-    {
-      if (sel)
-	sel (NULL);
+      g_object_set (progress_dialog, "description", title, NULL);
+      gtk_progress_bar_set_fraction (progress_bar, fraction);
     }
 }
 
-static void
-package_row_activated (GtkTreeView *treeview,
-		       GtkTreePath *path,
-		       GtkTreeViewColumn *column,
-		       gpointer data)
+void
+hide_progress ()
 {
-  GtkTreeModel *model = gtk_tree_view_get_model (treeview);
-  GtkTreeIter iter;
-  package_info_callback *act = (package_info_callback *)data;
-
-  if (gtk_tree_model_get_iter (model, &iter, path))
-    {
-      package_info *pi;
-      gtk_tree_model_get (model, &iter, 0, &pi, -1);
-      act (pi);
-    }
-}
-
-GtkWidget *
-make_package_list (GList *packages,
-		   bool installed,
-		   package_info_callback *selected,
-		   package_info_callback *activated)
-{
-  GtkListStore *store = gtk_list_store_new (1, GTK_TYPE_POINTER);
-  GtkCellRenderer *renderer;
-  GtkWidget *tree, *scroller;
-
-  while (packages)
-    {
-      GtkTreeIter iter;
-      gtk_list_store_append (store, &iter);
-      gtk_list_store_set (store, &iter,
-			  0, packages->data,
-			  -1);
-      packages = packages->next;
-    }
-
-  tree = gtk_tree_view_new_with_model (GTK_TREE_MODEL (store));
-
-  renderer = gtk_cell_renderer_text_new ();
-  g_object_set (renderer, "yalign", 0.0, NULL);
-  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
-					      -1,
-					      NULL,
-					      renderer,
-					      (installed
-					       ? installed_name_func
-					       : available_name_func),
-					      tree,
-					      NULL);
-
-  renderer = gtk_cell_renderer_text_new ();
-  g_object_set (renderer, "yalign", 0.0, NULL);
-  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
-					      -1,
-					      NULL,
-					      renderer,
-					      (installed
-					       ? installed_version_func
-					       : available_version_func),
-					      tree,
-					      NULL);
-
-  renderer = gtk_cell_renderer_text_new ();
-  g_object_set (renderer, "yalign", 0.0, NULL);
-  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
-					      -1,
-					      NULL,
-					      renderer,
-					      (installed
-					       ? installed_size_func
-					       : download_size_func),
-					      tree,
-					      NULL);
-
-  scroller = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroller),
-				  GTK_POLICY_AUTOMATIC,
-				  GTK_POLICY_ALWAYS);
-  gtk_container_add (GTK_CONTAINER (scroller), tree);
-
-  have_last_selection = false;
-  g_signal_connect
-    (G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (tree))),
-     "changed",
-     G_CALLBACK (package_selection_changed),
-     (gpointer) selected);
-
-  g_signal_connect (tree, "row-activated", 
-		    G_CALLBACK (package_row_activated),
-		    gpointer (activated));
-
-  return scroller;
+  if (progress_dialog)
+    gtk_widget_hide (progress_dialog);
 }
 
 static PangoFontDescription *
@@ -491,3 +225,341 @@ make_small_text_view (const char *text)
   return scroll;
 }
 
+static GtkWidget *global_list_widget = NULL;
+static GtkListStore *global_list_store = NULL;
+static bool global_installed;
+
+static void
+global_name_func (GtkTreeViewColumn *column,
+		  GtkCellRenderer *cell,
+		  GtkTreeModel *model,
+		  GtkTreeIter *iter,
+		  gpointer data)
+{
+  GtkTreeView *tree = (GtkTreeView *)data;
+  GtkTreeSelection *selection = gtk_tree_view_get_selection (tree);
+  package_info *pi;
+
+  gtk_tree_model_get (model, iter, 0, &pi, -1);
+
+  if (gtk_tree_selection_iter_is_selected (selection, iter))
+    {
+      const gchar *desc;
+      gchar *markup;
+      if (pi->have_info)
+	{
+	  if (global_installed)
+	    desc = pi->installed_short_description;
+	  else
+	    {
+	      desc = pi->available_short_description;
+	      if (desc == NULL)
+		desc = pi->installed_short_description;
+	    }
+	}
+      else
+	desc = "(updating ...)";
+      markup = g_markup_printf_escaped ("%s\n<small>%s</small>",
+					pi->name, desc);
+      g_object_set (cell, "markup", markup, NULL);
+      g_free (markup);
+    }
+  else
+    g_object_set (cell, "text", pi->name, NULL);
+}
+
+static void
+global_row_changed (GtkTreeIter *iter)
+{
+  GtkTreePath *path;
+  GtkTreeModel *model = GTK_TREE_MODEL (global_list_store);
+
+  path = gtk_tree_model_get_path (model, iter);
+  g_signal_emit_by_name (model, "row-changed", path, iter);
+  gtk_tree_path_free (path);
+}
+
+static void
+global_version_func (GtkTreeViewColumn *column,
+		     GtkCellRenderer *cell,
+		     GtkTreeModel *model,
+		     GtkTreeIter *iter,
+		     gpointer data)
+{
+  package_info *pi;
+  gtk_tree_model_get (model, iter, 0, &pi, -1);
+  g_object_set (cell, "text", (global_installed
+			       ? pi->installed_version
+			       : pi->available_version),
+		NULL);
+}
+
+static void
+global_size_func (GtkTreeViewColumn *column,
+		  GtkCellRenderer *cell,
+		  GtkTreeModel *model,
+		  GtkTreeIter *iter,
+		  gpointer data)
+{
+  package_info *pi;
+  char buf[20];
+  gtk_tree_model_get (model, iter, 0, &pi, -1);
+  if (global_installed)
+    sprintf (buf, "%d", pi->installed_size);
+  else if (pi->have_info)
+    sprintf (buf, "%d", pi->info.download_size);
+  else
+    buf[0] = '\0';
+  g_object_set (cell, "text", buf, NULL);
+}
+
+static bool global_have_last_selection;
+static GtkTreeIter global_last_selection;
+static package_info_callback *global_selection_callback;
+
+static void
+global_selection_changed (GtkTreeSelection *selection, gpointer data)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  if (global_have_last_selection)
+    global_row_changed (&global_last_selection);
+
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
+    {
+      package_info *pi;
+
+      assert (model == GTK_TREE_MODEL (global_list_store));
+
+      global_row_changed (&iter);
+      global_last_selection = iter;
+      global_have_last_selection = true;
+      
+      if (global_selection_callback)
+	{
+	  gtk_tree_model_get (model, &iter, 0, &pi, -1);
+	  global_selection_callback (pi);
+	}
+    }
+  else
+    {
+      if (global_selection_callback)
+	global_selection_callback (NULL);
+    }
+}
+
+static package_info_callback *global_activation_callback;
+
+static void
+global_row_activated (GtkTreeView *treeview,
+		      GtkTreePath *path,
+		      GtkTreeViewColumn *column,
+		      gpointer data)
+{
+  GtkTreeModel *model = gtk_tree_view_get_model (treeview);
+  GtkTreeIter iter;
+
+  assert (model == GTK_TREE_MODEL (global_list_store));
+
+  if (global_activation_callback &&
+      gtk_tree_model_get_iter (model, &iter, path))
+    {
+      package_info *pi;
+      gtk_tree_model_get (model, &iter, 0, &pi, -1);
+      global_activation_callback (pi);
+    }
+}
+
+GtkWidget *
+get_global_package_list_widget ()
+{
+  if (global_list_widget)
+    return global_list_widget;
+
+  global_list_store = gtk_list_store_new (1, GTK_TYPE_POINTER);
+  GtkCellRenderer *renderer;
+  GtkWidget *tree, *scroller;
+
+  tree = gtk_tree_view_new_with_model (GTK_TREE_MODEL (global_list_store));
+
+  renderer = gtk_cell_renderer_text_new ();
+  g_object_set (renderer, "yalign", 0.0, NULL);
+  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
+					      -1,
+					      NULL,
+					      renderer,
+					      global_name_func,
+					      tree,
+					      NULL);
+
+  renderer = gtk_cell_renderer_text_new ();
+  g_object_set (renderer, "yalign", 0.0, NULL);
+  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
+					      -1,
+					      NULL,
+					      renderer,
+					      global_version_func,
+					      tree,
+					      NULL);
+
+  renderer = gtk_cell_renderer_text_new ();
+  g_object_set (renderer, "yalign", 0.0, NULL);
+  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
+					      -1,
+					      NULL,
+					      renderer,
+					      global_size_func,
+					      tree,
+					      NULL);
+
+  scroller = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroller),
+				  GTK_POLICY_AUTOMATIC,
+				  GTK_POLICY_ALWAYS);
+  gtk_container_add (GTK_CONTAINER (scroller), tree);
+
+  global_have_last_selection = false;
+  g_signal_connect
+    (G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (tree))),
+     "changed",
+     G_CALLBACK (global_selection_changed), NULL);
+
+  g_signal_connect (tree, "row-activated", 
+		    G_CALLBACK (global_row_activated), NULL);
+
+  return scroller;
+}
+
+static GList *global_packages;
+
+void
+set_global_package_list (GList *packages,
+			 bool installed,
+			 package_info_callback *selected,
+			 package_info_callback *activated)
+{
+  global_have_last_selection = false;
+
+  for (GList *p = global_packages; p; p = p->next)
+    {
+      package_info *pi = (package_info *)p->data;
+      pi->model = NULL;
+    }
+  if (global_list_store)
+    gtk_list_store_clear (global_list_store);
+
+  global_installed = installed;
+  global_selection_callback = selected;
+  global_activation_callback = activated;
+  global_packages = packages;
+  
+  for (GList *p = global_packages; p; p = p->next)
+    {
+      GtkTreeIter iter;
+      package_info *pi = (package_info *)p->data;
+      pi->model = GTK_TREE_MODEL (global_list_store);
+      gtk_list_store_append (global_list_store, &pi->iter);
+      gtk_list_store_set (global_list_store, &pi->iter,
+			  0, pi,
+			  -1);
+    }
+}
+
+void
+global_package_info_changed (package_info *pi)
+{
+  if (pi->model == GTK_TREE_MODEL (global_list_store))
+    global_row_changed (&pi->iter);
+}
+
+static GtkWidget *global_section_list_widget = NULL;
+static GtkListStore *global_section_store;
+
+static void
+global_section_name_func (GtkTreeViewColumn *column,
+			  GtkCellRenderer *cell,
+			  GtkTreeModel *model,
+			  GtkTreeIter *iter,
+			  gpointer data)
+{
+  section_info *si;
+  gtk_tree_model_get (model, iter, 0, &si, -1);
+  g_object_set (cell, "text", si->name, NULL);
+}
+
+static section_activated *global_section_activated = NULL;
+
+static void
+global_section_row_activated (GtkTreeView *treeview,
+			      GtkTreePath *path,
+			      GtkTreeViewColumn *column,
+			      gpointer data)
+{
+  GtkTreeModel *model = gtk_tree_view_get_model (treeview);
+  GtkTreeIter iter;
+  section_activated *act = global_section_activated;
+
+  if (act && gtk_tree_model_get_iter (model, &iter, path))
+    {
+      section_info *si;
+      gtk_tree_model_get (model, &iter, 0, &si, -1);
+      act (si);
+    }
+}
+
+GtkWidget *
+get_global_section_list_widget ()
+{
+  if (global_section_list_widget)
+    return global_section_list_widget;
+
+  global_section_store = gtk_list_store_new (1, GTK_TYPE_POINTER);
+  GtkCellRenderer *renderer;
+  GtkWidget *tree, *scroller;
+
+  tree = gtk_tree_view_new_with_model (GTK_TREE_MODEL (global_section_store));
+
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
+					      -1,
+					      NULL,
+					      renderer,
+					      global_section_name_func,
+					      tree,
+					      NULL);
+
+  scroller = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroller),
+				  GTK_POLICY_AUTOMATIC,
+				  GTK_POLICY_ALWAYS);
+  gtk_container_add (GTK_CONTAINER (scroller), tree);
+
+  g_signal_connect (tree, "row-activated", 
+		    G_CALLBACK (global_section_row_activated),
+		    NULL);
+
+  return scroller;
+}
+
+static GList *global_sections;
+
+void
+set_global_section_list (GList *sections, section_activated *act)
+{
+  if (global_section_store)
+    gtk_list_store_clear (global_section_store);
+
+  global_sections = sections;
+  while (sections)
+    {
+      GtkTreeIter iter;
+      gtk_list_store_append (global_section_store, &iter);
+      gtk_list_store_set (global_section_store, &iter,
+			  0, sections->data,
+			  -1);
+      sections = sections->next;
+    }
+
+  global_section_activated = act;
+}

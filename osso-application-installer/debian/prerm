@@ -10,7 +10,5 @@ rem_sudoer ()
 }
 
 ## Remove the sudoer line
-##
-## XXX - this is a bloody hack.  It will go away, don't worry.
 
-rem_sudoer 'user ALL = NOPASSWD: /usr/bin/run-standalone.sh /usr/bin/osso-application-installer'
+rem_sudoer 'user ALL = NOPASSWD: /usr/libexec/apt-worker'

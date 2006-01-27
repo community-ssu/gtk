@@ -85,10 +85,8 @@ add_log_no_fmt (const gchar *str, size_t n)
   g_string_append_len (log_text, str, n);
 }
 
-int old_stdout_fd = 1;
-
 static gboolean
-read_stderr (GIOChannel *channel, GIOCondition cond, gpointer data)
+read_for_log (GIOChannel *channel, GIOCondition cond, gpointer data)
 {
   gchar buf[256];
   gsize count;
@@ -118,8 +116,7 @@ read_stderr (GIOChannel *channel, GIOCondition cond, gpointer data)
 
   if (status == G_IO_STATUS_NORMAL)
     {
-      write (old_stdout_fd, buf, count);
-      add_log_no_fmt (buf, count);
+       add_log_no_fmt (buf, count);
       return TRUE;
     }
   else
@@ -130,20 +127,10 @@ read_stderr (GIOChannel *channel, GIOCondition cond, gpointer data)
 }
 
 void
-redirect_fd_to_log (int fd)
+log_from_fd (int fd)
 {
-  int fds[2];
-  if (pipe (fds) < 0)
-    perror ("pipe");
-  
-  if (fd == 1)
-    old_stdout_fd = dup (1);
-
-  GIOChannel *channel = g_io_channel_unix_new (fds[0]);
+  GIOChannel *channel = g_io_channel_unix_new (fd);
   g_io_add_watch (channel, GIOCondition (G_IO_IN | G_IO_HUP | G_IO_ERR),
-		  read_stderr, NULL);
+		  read_for_log, NULL);
   g_io_channel_unref (channel);
-
-  if (dup2 (fds[1], fd) < 0)
-    perror ("dup2");
 }

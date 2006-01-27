@@ -74,3 +74,9 @@ Commands will be:
  - get package details: all the rest of a package for the details dialog.
 
  - install package, remove package: this executes the operation.
+
+BUGS
+----
+
+- non-ASCII text in package info
+- depcache.Init () is too slow

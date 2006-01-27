@@ -26,7 +26,7 @@
 #define LOG_H
 
 void add_log (const char *fmt, ...);
-void redirect_fd_to_log (int fd);
+void log_from_fd (int fd);
 
 void show_log ();
 
