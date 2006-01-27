@@ -1,0 +1,12 @@
+Package: package-A
+Version: 1
+Architecture: all
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Description: Test package number one.
+ Package number one, only for testing.
+ It also has a very long description to
+ see some bugs with the way these descriptions
+ are displayed by the Application installer.
+ You know, long as in longer than anyone would
+ want to read.

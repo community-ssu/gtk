@@ -1,0 +1,7 @@
+Package: package-C
+Version: 1
+Architecture: all
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Depends: package-B
+Description: Test package C, version 1.
