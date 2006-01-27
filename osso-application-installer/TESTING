@@ -1,0 +1,6 @@
+Test repository
+---------------
+
+- Package A_1 installed, A_2 available.  Package B_1 available,
+  conflicts with A_1 but not A_2.  Installing B_1 should upgrade to
+  A_2.
