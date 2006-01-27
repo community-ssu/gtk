@@ -1,3 +1,9 @@
+osso-application-installer (4.0.pre5) unstable; urgency=low
+
+  * Next try at tagging something that build with svn-buildpackage.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 27 Jan 2006 15:15:44 +0200
+
 osso-application-installer (4.0.pre4) unstable; urgency=low
 
   * Added test-data directory to source code repository.  Fixed
