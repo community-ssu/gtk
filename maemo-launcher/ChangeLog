@@ -1,5 +1,10 @@
 2006-01-27  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (create_pidfile): Declare as taking void as
+	parameter.
+
+2006-01-27  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/invoker.c (get_linux_lowmem_modifier, get_delay, main): A
 	delay is an unsigned int, fix accordingly.
 

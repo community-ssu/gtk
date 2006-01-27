@@ -349,7 +349,7 @@ sigs_restore(void)
 }
 
 static void
-create_pidfile()
+create_pidfile(void)
 {
   FILE *pidfile = fopen(pidfilename, "w");
 
