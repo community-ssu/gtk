@@ -136,12 +136,12 @@ get_file_int(const char *filename)
  * This function is Linux specific and depends on the lowmem LSM kernel module,
  * but should behave as a nop on systems not supporting it.
  */
-static int
+static unsigned int
 get_linux_lowmem_modifier(void)
 {
   uint32_t mem_allowed;
   uint32_t mem_used;
-  const int lowmem_threshold = 80; /* Memory use percentage. */
+  const unsigned int lowmem_threshold = 80; /* Memory use percentage. */
   int modifier;
 
   mem_allowed = get_file_int("/proc/sys/vm/lowmem_allowed_pages");
@@ -159,11 +159,11 @@ get_linux_lowmem_modifier(void)
   return modifier + 1;
 }
 
-static int
+static unsigned int
 get_delay(char *delay_arg)
 {
   char *delay_str;
-  int delay;
+  unsigned int delay;
 
   if (delay_arg)
     delay_str = delay_arg;
@@ -176,7 +176,7 @@ get_delay(char *delay_arg)
   }
 
   if (delay_str)
-    delay = strtol(delay_str, NULL, 10);
+    delay = strtoul(delay_str, NULL, 10);
   else
     delay = DEFAULT_DELAY;
 
@@ -215,7 +215,7 @@ main(int argc, char *argv[])
   char *prog_name = NULL;
   char *launch = NULL;
   char *delay_str = NULL;
-  int delay;
+  unsigned int delay;
 
   if (strstr(argv[0], PROG_NAME))
   {
@@ -273,7 +273,7 @@ main(int argc, char *argv[])
 
   /* DBUS cannot cope some times if the invoker exits too early. */
   delay = get_delay(delay_str);
-  debug("delaying exit for %d seconds\n", delay);
+  debug("delaying exit for %u seconds\n", delay);
   sleep(delay);
 
   return 0;
