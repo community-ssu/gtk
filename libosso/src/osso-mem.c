@@ -99,7 +99,7 @@ enum
 
 /*For lowmem_ functions */
 /*System limits*/
-static size_t sys_avail_ram;
+static size_t sys_avail_ram = 0;
 static size_t sys_deny_limit =  0;
 static size_t sys_lowmem_limit = 0;
 static size_t sys_pagesize = 0;
@@ -352,8 +352,8 @@ osso_mem_get_usage(osso_mem_usage_t* usage)
 		  * based on deny limit 
 		  * or 87.5% if deny limit is disabled */
 		 usage->usable = usage->deny 
-						  	 ? (usage->total - usage->deny)  
-							 : (usage->total >> 3) ;
+						  	 ? (osso_mem_get_avail_ram() - usage->deny)  
+							 : (osso_mem_get_avail_ram() >> 3) ;
 		 usage->usable = usage->usable  > usage->free 
 				 			? 0 
 							: usage->free - usage->usable;
@@ -371,6 +371,17 @@ osso_mem_get_usage(osso_mem_usage_t* usage)
    /* Something wrong, shows as error */
    return -1;
 } /* memusage */
+
+/* ------------------------------------------------------------------------- *
+ * osso_mem_get_avail_ram -- returns available ram
+ * ------------------------------------------------------------------------- */
+/*Deny limit, bytes*/
+size_t 
+osso_mem_get_avail_ram(void) 
+{
+	if(!sys_avail_ram) lm_read_proc();
+	return sys_avail_ram;
+}
 
 /* ------------------------------------------------------------------------- *
  * osso_mem_get_deny_limit -- returns deny limit

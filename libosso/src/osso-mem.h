@@ -71,6 +71,12 @@ typedef void     (*osso_mem_saw_oom_func_t)(size_t current_sz, size_t max_sz,voi
 int osso_mem_get_usage(osso_mem_usage_t* usage);
 
 /*
+ * returns the total allocated RAM in system
+ * 		according to /proc/sys/vm/lowmem_*
+*/
+size_t osso_mem_get_avail_ram(void);
+
+/*
  * returns deny limit (in bytes, the total allocated RAM in system)
  * 		according to /proc/sys/vm/lowmem_* settings
 */

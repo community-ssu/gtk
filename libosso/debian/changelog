@@ -1,8 +1,9 @@
-libosso (1.1-2) unstable; urgency=low
+libosso (1.2-1) unstable; urgency=low
 
   * Re-run autogen.sh to get LIBOSSO_DEBUG undefined.
+  * Applied patch to osso-mem.c to fix swap issue (N#22468).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 30 Jan 2006 14:54:00 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 30 Jan 2006 17:34:36 +0200
 
 libosso (1.1-1) unstable; urgency=low
 
