@@ -23,10 +23,6 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-/* Modified by Nokia Corporation - 2005.
- * 
- */
-
 #ifndef __GTK_LABEL_H__
 #define __GTK_LABEL_H__
 
@@ -165,15 +161,6 @@ void         gtk_label_get_layout_offsets (GtkLabel *label,
 void         gtk_label_set_single_line_mode  (GtkLabel *label,
                                               gboolean single_line_mode);
 gboolean     gtk_label_get_single_line_mode  (GtkLabel *label);
-
-/* Additional Hildon functions for run-time locale change */
-
-void     gtk_label_set_translatable       (GtkLabel *label, gboolean newstatus);
-gboolean gtk_label_get_translatable       (GtkLabel *label);
-
-void     gtk_label_retranslate            (GtkLabel *label);
-
-/* ----- */
 
 #ifndef GTK_DISABLE_DEPRECATED
 
