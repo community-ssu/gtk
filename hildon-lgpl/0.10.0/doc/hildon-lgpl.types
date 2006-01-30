@@ -1,9 +1,0 @@
-#include <hildon-app.h>
-#include <hildon-appview.h>
-#include <hildon-caption.h>
-#include <hildon-find-toolbar.h>
-
-hildon_app_get_type
-hildon_appview_get_type
-hildon_caption_get_type
-hildon_find_toolbar_get_type
