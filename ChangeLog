@@ -1,5 +1,10 @@
 2006-01-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* configure.in (LIBTOOL_EXPORT_OPTIONS): Revert back to upstream and
+	stop exporting extra symbols ('-export-symbols-regex "^[[^_]].*"')
+
+2006-01-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtklabel.[ch] (gtk_label_get_translatable,
 	gtk_label_set_translatable, gtk_label_retranslate,
 	GtkLabel::translatable): Remove unused run-time locale change feature.
