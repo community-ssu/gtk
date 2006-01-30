@@ -1,0 +1,377 @@
+Index: head/glib/dbus-gtype-specialized.c
+===================================================================
+--- head.orig/glib/dbus-gtype-specialized.c	2006-01-27 15:26:46.751311728 +0000
++++ head/glib/dbus-gtype-specialized.c	2006-01-27 15:32:49.859110952 +0000
+@@ -91,7 +91,15 @@
+       data = lookup_specialization_data (type);
+       g_assert (data != NULL);
+ 
+-      data->klass->vtable->free_func (type, value->data[0].v_pointer);
++      if (data->klass->vtable->free_func)
++        {
++          data->klass->vtable->free_func (type, value->data[0].v_pointer);
++        }
++      else
++        {
++          g_assert (data->klass->vtable->simple_free_func != NULL);
++          data->klass->vtable->simple_free_func (value->data[0].v_pointer);
++        }
+     }
+ }
+ 
+@@ -227,6 +235,29 @@
+   register_container (name, DBUS_G_SPECTYPE_MAP, (const DBusGTypeSpecializedVtable*) vtable);
+ }
+ 
++const DBusGTypeSpecializedMapVtable* dbus_g_type_map_peek_vtable (GType map_type)
++{
++  DBusGTypeSpecializedData *data;
++  g_return_val_if_fail (dbus_g_type_is_map(map_type), NULL);
++
++  data = lookup_specialization_data (map_type);
++  g_assert (data != NULL);
++
++  return (DBusGTypeSpecializedMapVtable *)(data->klass->vtable);
++}
++
++const DBusGTypeSpecializedCollectionVtable* dbus_g_type_collection_peek_vtable (GType collection_type)
++{
++  DBusGTypeSpecializedData *data;
++  g_return_val_if_fail (dbus_g_type_is_collection(collection_type), NULL);
++
++  data = lookup_specialization_data (collection_type);
++  g_assert (data != NULL);
++
++  return (DBusGTypeSpecializedCollectionVtable *)(data->klass->vtable);
++}
++
++
+ static GType
+ register_specialized_instance (const DBusGTypeSpecializedContainer   *klass,
+ 			       char                                  *name,
+Index: head/glib/dbus-gtype-specialized.h
+===================================================================
+--- head.orig/glib/dbus-gtype-specialized.h	2006-01-27 15:26:46.752311576 +0000
++++ head/glib/dbus-gtype-specialized.h	2006-01-27 15:32:49.860110800 +0000
+@@ -89,7 +89,7 @@
+   DBusGTypeSpecializedConstructor    constructor;
+   DBusGTypeSpecializedFreeFunc       free_func;
+   DBusGTypeSpecializedCopyFunc       copy_func;
+-  gpointer                           padding1;
++  GDestroyNotify                     simple_free_func; /* for type-independent freeing if possible */
+   gpointer                           padding2;
+   gpointer                           padding3;
+ } DBusGTypeSpecializedVtable;
+@@ -125,6 +125,8 @@
+ void           dbus_g_type_register_map               (const char                                   *name,
+ 						       const DBusGTypeSpecializedMapVtable          *vtable,
+ 						       guint                                         flags);
++const DBusGTypeSpecializedMapVtable* dbus_g_type_map_peek_vtable (GType map_type);
++const DBusGTypeSpecializedCollectionVtable* dbus_g_type_collection_peek_vtable (GType collection_type);
+ 
+ G_END_DECLS
+ 
+Index: head/glib/dbus-gvalue-utils.c
+===================================================================
+--- head.orig/glib/dbus-gvalue-utils.c	2006-01-27 15:26:46.769308992 +0000
++++ head/glib/dbus-gvalue-utils.c	2006-01-27 15:32:49.863110344 +0000
+@@ -311,10 +311,29 @@
+ 	}
+       else if (gtype == G_TYPE_VALUE_ARRAY)
+         {
+-          *func = g_value_array_free;
+-	  return TRUE;
++          *func = (GDestroyNotify) g_value_array_free;
++          return TRUE;
++        }
++      else if (dbus_g_type_is_collection (gtype))
++        {
++          const DBusGTypeSpecializedCollectionVtable* vtable;
++          vtable = dbus_g_type_collection_peek_vtable (gtype);
++          if (vtable->base_vtable.simple_free_func)
++            {
++              *func = vtable->base_vtable.simple_free_func;
++              return TRUE;
++            }
++        }
++      else if (dbus_g_type_is_map (gtype))
++        {
++          const DBusGTypeSpecializedMapVtable* vtable;
++          vtable = dbus_g_type_map_peek_vtable (gtype);
++          if (vtable->base_vtable.simple_free_func)
++            {
++              *func = vtable->base_vtable.simple_free_func;
++              return TRUE;
++            }
+         }
+-
+       return FALSE;
+     }
+ }
+@@ -587,7 +606,7 @@
+ }
+ 
+ static void
+-hashtable_free (GType type, gpointer val)
++hashtable_simple_free (gpointer val)
+ {
+   g_hash_table_destroy (val);
+ }
+@@ -629,7 +648,7 @@
+ }
+ 
+ static void
+-array_free (GType type, gpointer val)
++array_simple_free (gpointer val)
+ {
+   GArray *array;
+   array = val;
+@@ -768,6 +787,7 @@
+ static void
+ ptrarray_free (GType type, gpointer val)
+ {
++  /* XXX: this function appears to leak the contents of the array */
+   GPtrArray *array;
+   array = val;
+   g_ptr_array_free (array, TRUE);
+@@ -852,6 +872,7 @@
+ static void
+ slist_free (GType type, gpointer val)
+ {
++  /* XXX: this function appears to leak the contents of the list */
+   GSList *list;
+   list = val;
+   g_slist_free (list);
+@@ -860,11 +881,18 @@
+ void
+ _dbus_g_type_specialized_builtins_init (void)
+ {
++  /* types with a simple_free function can be freed at run-time without
++   * the destroy function needing to know the type, so they can be
++   * stored in hash tables */
++
+   static const DBusGTypeSpecializedCollectionVtable array_vtable = {
+     {
+       array_constructor,
+-      array_free,
++      NULL,
+       array_copy,
++      array_simple_free,
++      NULL,
++      NULL,
+     },
+     array_fixed_accessor,
+     NULL,
+@@ -878,6 +906,9 @@
+       ptrarray_constructor,
+       ptrarray_free,
+       ptrarray_copy,
++      NULL,
++      NULL,
++      NULL,
+     },
+     NULL,
+     ptrarray_iterator,
+@@ -891,6 +922,9 @@
+       slist_constructor,
+       slist_free,
+       slist_copy,
++      NULL,
++      NULL,
++      NULL,
+     },
+     NULL,
+     slist_iterator,
+@@ -901,9 +935,9 @@
+   static const DBusGTypeSpecializedMapVtable hashtable_vtable = {
+     {
+       hashtable_constructor,
+-      hashtable_free,
+-      hashtable_copy,
+       NULL,
++      hashtable_copy,
++      hashtable_simple_free,
+       NULL,
+       NULL
+     },
+Index: head/test/glib/test-dbus-glib.c
+===================================================================
+--- head.orig/test/glib/test-dbus-glib.c	2006-01-27 15:26:46.770308840 +0000
++++ head/test/glib/test-dbus-glib.c	2006-01-27 15:32:49.865110040 +0000
+@@ -1164,6 +1164,95 @@
+ 
+     g_value_unset (variant);
+   }
++
++  for (i=0; i<3; i++)
++  {
++    gchar *val;
++    GHashTable *table;
++    GHashTable *subtable;
++    GHashTable *ret_table;
++
++    table = g_hash_table_new_full (g_str_hash, g_str_equal,
++				   (GDestroyNotify) (g_free),
++                                   (GDestroyNotify) (g_hash_table_destroy));
++
++    subtable = g_hash_table_new_full (g_str_hash, g_str_equal,
++                                      (GDestroyNotify) (g_free),
++                                      (GDestroyNotify) (g_free));
++    g_hash_table_insert (subtable, g_strdup ("foo"), g_strdup("1"));
++    g_hash_table_insert (subtable, g_strdup ("bar"), g_strdup("2"));
++    g_hash_table_insert (subtable, g_strdup ("baz"), g_strdup("3"));
++
++    g_hash_table_insert (table, g_strdup("dict1"), subtable);
++
++    subtable = g_hash_table_new_full (g_str_hash, g_str_equal,
++                                      (GDestroyNotify) (g_free),
++                                      (GDestroyNotify) (g_free));
++    g_hash_table_insert (subtable, g_strdup ("foo"), g_strdup("4"));
++    g_hash_table_insert (subtable, g_strdup ("bar"), g_strdup("5"));
++    g_hash_table_insert (subtable, g_strdup ("baz"), g_strdup("6"));
++
++    g_hash_table_insert (table, g_strdup("dict2"), subtable);
++
++    subtable = NULL;
++
++    ret_table = NULL;
++
++    g_print ("Calling DictOfDicts\n");
++    if (!dbus_g_proxy_call (proxy, "DictOfDicts", &error,
++			    dbus_g_type_get_map ("GHashTable", G_TYPE_STRING,
++                              dbus_g_type_get_map ("GHashTable", G_TYPE_STRING,
++                                G_TYPE_STRING)), table,
++			    G_TYPE_INVALID,
++			    dbus_g_type_get_map ("GHashTable", G_TYPE_STRING,
++                              dbus_g_type_get_map ("GHashTable", G_TYPE_STRING,
++                                G_TYPE_STRING)), &ret_table,
++			    G_TYPE_INVALID))
++      lose_gerror ("Failed to complete DictOfDicts call", error);
++
++    g_assert (ret_table != NULL);
++    g_assert (g_hash_table_size (ret_table) == 2);
++
++    subtable = g_hash_table_lookup (ret_table, "dict1");
++    g_assert(subtable);
++    g_assert (g_hash_table_size (subtable) == 3);
++
++    val = g_hash_table_lookup (subtable, "foo");
++    g_assert (val != NULL);
++    g_assert (!strcmp ("dict1 1", val));
++
++    val = g_hash_table_lookup (subtable, "bar");
++    g_assert (val != NULL);
++    g_assert (!strcmp ("dict1 2", val));
++
++    val = g_hash_table_lookup (subtable, "baz");
++    g_assert (val != NULL);
++    g_assert (!strcmp ("dict1 3", val));
++
++    subtable = g_hash_table_lookup (ret_table, "dict2");
++    g_assert(subtable);
++    g_assert (g_hash_table_size (subtable) == 3);
++
++    val = g_hash_table_lookup (subtable, "foo");
++    g_assert (val != NULL);
++    g_assert (!strcmp ("dict2 4", val));
++
++    val = g_hash_table_lookup (subtable, "bar");
++    g_assert (val != NULL);
++    g_assert (!strcmp ("dict2 5", val));
++
++    val = g_hash_table_lookup (subtable, "baz");
++    g_assert (val != NULL);
++    g_assert (!strcmp ("dict2 6", val));
++
++    g_hash_table_destroy (table);
++    g_hash_table_destroy (ret_table);
++
++    g_mem_profile ();
++  }
++
++
++
+   /* Signal handling tests */
+   
+   g_print ("Testing signal handling\n");
+Index: head/test/glib/test-service-glib.c
+===================================================================
+--- head.orig/test/glib/test-service-glib.c	2006-01-27 15:26:46.770308840 +0000
++++ head/test/glib/test-service-glib.c	2006-01-27 15:32:49.867109736 +0000
+@@ -101,6 +101,8 @@
+ 
+ gboolean my_object_process_variant_of_array_of_ints123 (MyObject *obj, GValue *variant, GError **error);
+ 
++gboolean my_object_dict_of_dicts (MyObject *obj, GHashTable *dict, GHashTable **ret, GError **error);
++
+ gboolean my_object_terminate (MyObject *obj, GError **error);
+ 
+ void my_object_async_increment (MyObject *obj, gint32 x, DBusGMethodInvocation *context);
+@@ -706,6 +708,51 @@
+   return FALSE;
+ }
+ 
++
++typedef struct _HashAndString HashAndString;
++
++struct _HashAndString
++{
++  GHashTable *hash;
++  gchar* string;
++};
++
++static void
++hash_foreach_prepend_string (gpointer key, gpointer val, gpointer user_data)
++{
++  HashAndString *data = (HashAndString*) user_data;
++  gchar *in = (gchar*) val;
++  g_hash_table_insert (data->hash, g_strdup ((gchar*) key),
++                       g_strjoin (" ", data->string, in, NULL));
++}
++
++
++static void
++hash_foreach_mangle_dict_of_strings (gpointer key, gpointer val, gpointer user_data)
++{
++  GHashTable *out = (GHashTable*) user_data;
++  GHashTable *in_dict = (GHashTable *) val;
++  HashAndString *data = g_new0 (HashAndString, 1);
++
++  data->string = (gchar*) key;
++  data->hash = g_hash_table_new_full (g_str_hash, g_str_equal,
++                                            g_free, g_free);
++  g_hash_table_foreach (in_dict, hash_foreach_prepend_string, data);
++
++  g_hash_table_insert(out, g_strdup ((gchar*) key), data->hash);
++}
++
++gboolean
++my_object_dict_of_dicts (MyObject *obj, GHashTable *in,
++                                GHashTable **out, GError **error)
++{
++  *out = g_hash_table_new_full (g_str_hash, g_str_equal,
++				(GDestroyNotify) g_free,
++                                (GDestroyNotify) g_hash_table_destroy);
++  g_hash_table_foreach (in, hash_foreach_mangle_dict_of_strings, *out);
++  return TRUE;
++}
++
+ gboolean
+ my_object_emit_frobnicate (MyObject *obj, GError **error)
+ {
+Index: head/test/glib/test-service-glib.xml
+===================================================================
+--- head.orig/test/glib/test-service-glib.xml	2006-01-27 15:26:46.787306256 +0000
++++ head/test/glib/test-service-glib.xml	2006-01-27 15:32:49.868109584 +0000
+@@ -137,6 +137,11 @@
+       <arg type="v" direction="in" />
+     </method>
+ 
++    <method name="DictOfDicts">
++      <arg type="a{sa{ss}}" direction="in"/>
++      <arg type="a{sa{ss}}" direction="out"/>
++    </method>
++
+     <method name="EmitFrobnicate">
+     </method>
+ 
