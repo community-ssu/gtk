@@ -1,3 +1,9 @@
+hildon-fm (0.12-1) unstable; urgency=low
+
+  * Applied quite big patch for minor drag and drop bug (N#15006).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 30 Jan 2006 16:54:48 +0200
+
 hildon-fm (0.11-1) unstable; urgency=low
 
   * Changed package maintainer.

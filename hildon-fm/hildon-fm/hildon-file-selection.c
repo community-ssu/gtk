@@ -2315,156 +2315,6 @@ static gboolean path_is_available_folder(GtkTreeView *view, GtkTreeIter *iter, G
   return is_folder && is_available;   
 }
 
-/* Helper functions for autoscrolling and autoexpanding while dragging */
-
-#define DRAG_TIMER "hildon-file-selection-drag-timer"
-#define SCROLL_DIRECTION "hildon-file-selection-auto-scroll-direction"
-#define EXPAND_TIMER "hildon-file-selection-expand-timer"
-#define EXPAND_TIMEOUT 6
-
-/* Used for auto scrolling. Determine which path is shown just below 
-   the given one */
-static GtkTreePath *get_path_below(GtkTreeView *view, GtkTreePath *path)
-{
-  GtkTreePath *copy = gtk_tree_path_copy(path);
-
-  g_assert(path && gtk_tree_path_get_depth(path) > 0);
-
-  /* If row is expanded we use the first child */
-  if (gtk_tree_view_row_expanded(view, path))
-  {
-    gtk_tree_path_down(copy);
-    return copy;
-  }
-
-  /* Let's try the next sibbling, possibly climbing upwards */
-  do {
-    GtkTreeIter iter;
-
-    gtk_tree_path_next(copy);
-
-    if (gtk_tree_model_get_iter(gtk_tree_view_get_model(view), &iter, copy))
-      return copy;
-    gtk_tree_path_up(copy);
-  } while (gtk_tree_path_get_depth(copy) > 0); 
-
-  gtk_tree_path_free(copy);
-
-  return NULL;
-}
-
-static void ensure_expand_timeout(GtkTreeView *view, GtkTreePath *path)
-{
-  GtkTreePath *old_target;
-
-  gtk_tree_view_get_drag_dest_row(view, &old_target, NULL);
-
-  if (old_target == NULL || gtk_tree_path_compare(old_target, path) != 0)
-  {
-    g_object_set_data(G_OBJECT(view), EXPAND_TIMER, GINT_TO_POINTER(EXPAND_TIMEOUT));
-    gtk_tree_view_set_drag_dest_row(view, path,
-      GTK_TREE_VIEW_DROP_INTO_OR_AFTER);
-  }
-  
-  if (old_target)
-    gtk_tree_path_free(old_target);
-}
-
-static gboolean on_drag_timer(gpointer data)
-{
-  GObject *obj;
-  GtkTreeView *view;
-  GtkTreePath *path;
-  gint direction, expand_timer;
-
-  g_assert(GTK_IS_TREE_VIEW(data));
-
-  obj = G_OBJECT(data);
-  view = GTK_TREE_VIEW(data);
-
-  direction = GPOINTER_TO_INT(g_object_get_data(obj, SCROLL_DIRECTION));
-  expand_timer = GPOINTER_TO_INT(g_object_get_data(obj, EXPAND_TIMER));
-  gtk_tree_view_get_drag_dest_row(view, &path, NULL);
-
-  ULOG_DEBUG("Widget = %p, DIR = %d, TIMER = %d", data, direction, expand_timer);
-
-  /* Let's check if it's time to expand selected row */
-  if (expand_timer >= 1)
-  {
-    expand_timer--;
-    g_object_set_data(obj, EXPAND_TIMER, GINT_TO_POINTER(expand_timer));
-
-    if (expand_timer == 0 && path)
-      gtk_tree_view_expand_row(view, path, FALSE);
-  }
-
-  if (path)
-  {
-    if (direction < 0)     /* We'll have to scroll upwards */
-    {
-      if (gtk_tree_path_prev(path) || ( gtk_tree_path_up(path), gtk_tree_path_get_depth(path) > 0 ))
-      {
-        gtk_tree_view_scroll_to_cell(view, path, NULL, FALSE, 0.0f, 0.0f);
-        if (path_is_available_folder(view, NULL, path))
-          ensure_expand_timeout(view, path);
-      }  
-    }
-    else if (direction > 0)     /* We have to scroll downwards */
-    {
-      GtkTreePath *new_path = get_path_below(view, path);
-
-      if (new_path)      
-      {
-        gtk_tree_view_scroll_to_cell(view, new_path, NULL, FALSE, 0.0f, 0.0f);
-        if (path_is_available_folder(view, NULL, new_path))
-          ensure_expand_timeout(view, new_path);
-
-        gtk_tree_path_free(new_path);
-      }
-    }
-
-    gtk_tree_path_free(path);
-  }
-
-  return TRUE;
-}
-
-static guint get_drag_timer(GtkWidget *widget)
-{
-  return GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(widget), DRAG_TIMER));
-}
-
-static void ensure_drag_timer(GtkWidget *widget)
-{
-  guint timer_id = get_drag_timer(widget);
-
-  if (timer_id == 0)
-  {
-    timer_id = g_timeout_add(150, on_drag_timer, widget);
-    g_object_set_data(G_OBJECT(widget), 
-      DRAG_TIMER, GUINT_TO_POINTER(timer_id));
-  }
-}
-
-static void clean_drag_timer(GtkWidget *widget)
-{
-  guint timer_id = get_drag_timer(widget);
-  
-  if (timer_id != 0) 
-    g_source_remove(timer_id);
-
-  g_object_set_data(G_OBJECT(widget), DRAG_TIMER, NULL);
-  g_object_set_data(G_OBJECT(widget), SCROLL_DIRECTION, NULL);
-  g_object_set_data(G_OBJECT(widget), EXPAND_TIMER, NULL);
-}
-
-static void set_autoscroll_direction(GtkWidget *widget, gint direction)
-{
-  g_object_set_data(G_OBJECT(widget), 
-    SCROLL_DIRECTION, GINT_TO_POINTER(direction));
-  ensure_drag_timer(widget);
-}
-
 static void on_drag_data_received(GtkWidget * widget,
                                   GdkDragContext * context, int x, int y,
                                   GtkSelectionData * seldata, guint info,
@@ -2641,6 +2491,9 @@ static void drag_begin(GtkWidget * widget, GdkDragContext * drag_context,
 
     gtk_drag_set_icon_pixbuf(drag_context, pixbuf, w/2, h/2);
     g_object_unref(pixbuf);
+
+    /* We do not want GtkTreeView to create the default drag cursor */
+    g_signal_stop_emission_by_name(widget, "drag-begin");
 }
 
 static void drag_data_get(GtkWidget * widget,
@@ -2663,6 +2516,10 @@ static void drag_data_get(GtkWidget * widget,
 
   g_strfreev(self->priv->drag_data_uris);
   self->priv->drag_data_uris = NULL;
+
+  /* We do not want to use GtkTreeView's default implementation,
+     because it does not support dragging multiple rows. */
+  g_signal_stop_emission_by_name(widget, "drag-data-get");
 }
 
 static gboolean drag_motion(GtkWidget * widget,
@@ -2671,8 +2528,10 @@ static gboolean drag_motion(GtkWidget * widget,
 {
     HildonFileSelectionPrivate *priv;
     GtkTreeView *view;
+    GtkWidgetClass *klass;
     GtkTreePath *path;
-    gboolean result = FALSE;
+    GtkTreeViewDropPosition pos;
+    gboolean valid_location = FALSE;
 
     g_assert(GTK_IS_TREE_VIEW(widget));
     g_assert(HILDON_IS_FILE_SELECTION(userdata));
@@ -2680,42 +2539,73 @@ static gboolean drag_motion(GtkWidget * widget,
     view = GTK_TREE_VIEW(widget);
     priv = HILDON_FILE_SELECTION(userdata)->priv;
 
-    /* Dragging from navigation pane to content pane do not work well,
-       because content pane always displayes contents of selected folder. */
-    if (widget == priv->dir_tree || 
-        gtk_drag_get_source_widget(drag_context) != priv->dir_tree)
+#if 0
+    We rely on the default handler of GtkTreeView to do most of the work
+    and then adjust the result when the handler returns. We want to make
+    sure that two additional restrictions apply:
+      * Drop position is new _BEFORE_ OR _AFTER_, but always
+        INTO_OR_BEFORE or INTO_OR_AFTER, since we do not like
+        those horizontal lines that are drawn by default.
+      * We do not allow drops to all locations (dimmed folders + files).
+
+    GtkTreeView contains only the following to decide whether
+    a row is a valid target (in set_destination_row):
+
+    if (TRUE /* FIXME if the location droppable predicate */)
     {
-      /* We accept only copy type of actions of uri types */
-      if ((drag_context->suggested_action == GDK_ACTION_COPY || 
-           drag_context->actions & GDK_ACTION_COPY) && 
-          gtk_drag_dest_find_target(widget, drag_context, NULL) &&
-          gtk_tree_view_get_dest_row_at_pos(view, x, y, &path, NULL))
+      can_drop = TRUE;
+    } 
+
+    This is likely because in Gtk, cursor can be moved to insensitive
+    tree items as well, but this is not true in our case.
+       
+    To be able to apply these conditions, we must use a hack and
+    call default handler manually and then do our special cases.
+    We cannot use "after" type of signals, since the default handler
+    terminates signal emission on success.
+#endif
+
+    klass = GTK_WIDGET_CLASS(G_OBJECT_GET_CLASS(widget));
+    valid_location = klass->drag_motion(widget, drag_context, x, y, time);
+
+    if (valid_location)
+    {
+      gtk_tree_view_get_drag_dest_row(view, &path, &pos);
+
+      /* We need to adjust drop position type after we default handler.
+         The reason is that we do not like those horizontal lines
+         that come from BEFORE and AFTER types. */
+      if (path)
       {
-        GdkRectangle rect;
-        gint tree_x, tree_y;
-
-        gtk_tree_view_get_visible_rect(view, &rect);
-        gtk_tree_view_widget_to_tree_coords(view, x, y, &tree_x, &tree_y);
-
-        if (ABS(rect.y - tree_y) < 10)
-          set_autoscroll_direction(widget, -1);
-        else if (ABS(rect.y + rect.height - tree_y) < 10)
-          set_autoscroll_direction(widget, 1);
+        /* Dragging from navigation pane to content pane do not work well,
+           because content pane always displayes contents of selected folder. 
+         */
+        if ((widget == priv->dir_tree || 
+             gtk_drag_get_source_widget(drag_context) != priv->dir_tree) &&
+	    (path_is_available_folder(view, NULL, path)))
+        {
+          if (pos == GTK_TREE_VIEW_DROP_BEFORE)
+            gtk_tree_view_set_drag_dest_row(view, path,
+              GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+          else if (pos == GTK_TREE_VIEW_DROP_AFTER)
+	    gtk_tree_view_set_drag_dest_row(view, path,
+              GTK_TREE_VIEW_DROP_INTO_OR_AFTER);
+        }
         else
-          set_autoscroll_direction(widget, 0);
-
-        result = path_is_available_folder(view, NULL, path);
-
-        if (result)
-          ensure_expand_timeout(view, path);
+        {
+          /* Treeview would allow to drop here, but we do not */
+          gtk_tree_view_set_drag_dest_row(view, NULL, 0);
+          gdk_drag_status(drag_context, 0, time);
+          valid_location = FALSE;
+        }
 
         gtk_tree_path_free(path);
       }
     }
 
-    gdk_drag_status(drag_context, result ? GDK_ACTION_COPY : 0, time);
+    g_signal_stop_emission_by_name(widget, "drag-motion");
 
-    return result;
+    return valid_location;
 }
 
 static gboolean drag_drop(GtkWidget *widget, GdkDragContext *context,
@@ -2723,7 +2613,6 @@ static gboolean drag_drop(GtkWidget *widget, GdkDragContext *context,
 {
   GdkAtom target;
 
-  clean_drag_timer(widget);  
   target = gtk_drag_dest_find_target (widget, context, NULL);
 
   if (target == GDK_NONE)
@@ -2737,26 +2626,37 @@ static gboolean drag_drop(GtkWidget *widget, GdkDragContext *context,
   return TRUE;
 }
 
+/* Target types for DnD from the FileSelection widget */
+static GtkTargetEntry hildon_file_selection_source_targets[] = {
+  { "text/uri-list", 0, 0 }
+};
+
 static void hildon_file_selection_setup_dnd_view(HildonFileSelection *
                                                  self, GtkWidget * view)
 {
-    gtk_drag_dest_set(view, GTK_DEST_DEFAULT_HIGHLIGHT, NULL, 0, GDK_ACTION_COPY);
+    gtk_drag_dest_set(view, 0, NULL, 0, GDK_ACTION_COPY);
     gtk_drag_dest_add_uri_targets(view);
 
     g_signal_connect_object(view, "drag-data-received",
                      G_CALLBACK(on_drag_data_received), self, 0);
 
-    gtk_drag_source_set(view, GDK_BUTTON1_MASK, NULL, 0, GDK_ACTION_COPY);
-    gtk_drag_source_add_uri_targets(view);
-    gtk_drag_source_add_text_targets(view);
+    /* We cannot use "add_uri_targets" or similar, since GtkTreeView
+       only accepts raw table */
+    gtk_tree_view_enable_model_drag_source(GTK_TREE_VIEW(view),
+      GDK_BUTTON1_MASK, hildon_file_selection_source_targets, 
+      G_N_ELEMENTS(hildon_file_selection_source_targets), GDK_ACTION_COPY);
 
     g_signal_connect_object(view, "drag-begin", G_CALLBACK(drag_begin), self,0 );
     g_signal_connect_object(view, "drag-data-get", G_CALLBACK(drag_data_get),
                      self, 0);
     g_signal_connect_object(view, "drag-motion", G_CALLBACK(drag_motion), self, 0);
-    g_signal_connect_object(view, "drag-drop", G_CALLBACK(drag_drop), self ,0);
-    g_signal_connect(view, "drag-end", G_CALLBACK(clean_drag_timer), NULL);
-    g_signal_connect(view, "drag-leave", G_CALLBACK(clean_drag_timer), NULL);
+
+    /* We want to connect after, because we want to give GtkTreeView a choice
+       to clear drag timers. GtkTreeView never accepts the drag, since 
+       our model does not implement DragDest iface. */
+    g_signal_connect_object(view, "drag-drop", G_CALLBACK(drag_drop), 
+      self, G_CONNECT_AFTER);
+
     /* We don't connect "drag-data-delete", because file system
        notifications tell us about what to update */
     /* g_signal_connect(view, "drag-data-delete",

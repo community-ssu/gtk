@@ -30,6 +30,7 @@
 #include <gtk/gtkicontheme.h>
 #include <gtk/gtkmain.h>
 #include <gtk/gtkmarshal.h>
+#include <gtk/gtktreednd.h>
 #include <osso-thumbnail-factory.h>
 #include <osso-log.h>
 #include "hildon-file-system-model.h"
@@ -152,6 +153,9 @@ enum {
 };
 
 static void hildon_file_system_model_iface_init(GtkTreeModelIface * iface);
+static void
+hildon_file_system_model_drag_source_iface_init(GtkTreeDragSourceIface *iface);
+
 static void hildon_file_system_model_init(HildonFileSystemModel * self);
 static void hildon_file_system_model_class_init(HildonFileSystemModelClass
                                                 * klass);
@@ -203,10 +207,14 @@ flightmode_changed(GObject *settings, GParamSpec *param, gpointer data);
     ((HildonFileSystemModelPrivate *) HILDON_FILE_SYSTEM_MODEL(o)->priv)
 #define MODEL_FROM_NODE(n) ((HildonFileSystemModelNode *) n->data)->model
 
+/* Note! G_IMPLEMENT_INTERFACE macros together form the 5th parameter for
+   G_DEFINE_TYPE_EXTENDED */
 G_DEFINE_TYPE_EXTENDED(HildonFileSystemModel, hildon_file_system_model,
                        G_TYPE_OBJECT, 0,
                        G_IMPLEMENT_INTERFACE(GTK_TYPE_TREE_MODEL,
-                           hildon_file_system_model_iface_init))
+                           hildon_file_system_model_iface_init)
+                       G_IMPLEMENT_INTERFACE(GTK_TYPE_TREE_DRAG_SOURCE,
+                           hildon_file_system_model_drag_source_iface_init))
 
 static void handle_possibly_finished_node(GNode *node)
 {
@@ -2123,6 +2131,14 @@ static void hildon_file_system_model_class_init(HildonFileSystemModelClass
                      GTK_TYPE_TREE_ITER);
 }
 
+/* We currently assume that all selectable rows can be dragged */
+static gboolean
+hildon_file_system_model_row_draggable(GtkTreeDragSource *source, GtkTreePath *path)
+{
+  ULOG_DEBUG_F("entered");
+  return TRUE;
+}
+
 static void hildon_file_system_model_iface_init(GtkTreeModelIface * iface)
 {
     iface->get_flags = hildon_file_system_model_get_flags;
@@ -2137,6 +2153,16 @@ static void hildon_file_system_model_iface_init(GtkTreeModelIface * iface)
     iface->iter_n_children = hildon_file_system_model_iter_n_children;
     iface->iter_nth_child = hildon_file_system_model_iter_nth_child;
     iface->iter_parent = hildon_file_system_model_iter_parent;
+}
+
+/* All bookkeeping related to DnD is in HildonFileSelection, since
+   GtkTreeDnD does not support dragging of multiple items. We only
+   use the interface because we want GtkTreeView to limit drag start
+   points to real rows (not empty space). */
+static void
+hildon_file_system_model_drag_source_iface_init(GtkTreeDragSourceIface *iface)
+{
+  iface->row_draggable = hildon_file_system_model_row_draggable;
 }
 
 static void
