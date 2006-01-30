@@ -8106,7 +8106,8 @@ stop_tap_and_hold_animation (GtkWidget *widget)
 }
 #endif
 
-void tap_and_hold_remove_timer (GtkWidget *widget)
+static void
+tap_and_hold_remove_timer (GtkWidget *widget)
 {
   GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE (widget);
   if (priv->timer_id)
