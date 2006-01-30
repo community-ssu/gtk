@@ -1,3 +1,9 @@
+dbus (0.60-1osso7) experimental; urgency=low
+
+  * Added GValue patch from Rob (N#22506).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 30 Jan 2006 13:59:16 +0200
+
 dbus (0.60-1osso6) experimental; urgency=low
 
   * Added cleaned-up version of the previous GPtrArray patch.
