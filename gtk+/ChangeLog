@@ -1,5 +1,25 @@
 2006-01-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Merge from GNOME CVS, use G_MODULE_BIND_LAZY and G_MODULE_BIND_LOCAL
+	when opening modules.
+
+    2005-12-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilesystem.c (gtk_file_system_module_load):
+	* gtk/gtkimmodule.c (gtk_im_module_load):
+	* gtk/gtkthemes.c (gtk_theme_engine_load):
+	* gtk/gtkmodules.c (find_module): Use G_MODULE_BIND_LAZY when
+	opening modules.
+
+    2005-10-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilesystem.c (gtk_file_system_module_load):
+	* gtk/gtkthemes.c (gtk_theme_engine_load):
+	* gtk/gtkimmodule.c (gtk_im_module_load): Use G_MODULE_BIND_LAZY
+	when dlopening modules.  (#319557, Laszlo Peter)
+
+2006-01-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* configure.in (LIBTOOL_EXPORT_OPTIONS): Revert back to upstream and
 	stop exporting extra symbols ('-export-symbols-regex "^[[^_]].*"')
 
