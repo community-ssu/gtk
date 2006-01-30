@@ -1,6 +1,12 @@
+osso-application-installer (4.0.pre6) unstable; urgency=low
+
+  * Added Build-Depenencies.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Jan 2006 13:22:39 +0200
+
 osso-application-installer (4.0.pre5) unstable; urgency=low
 
-  * Next try at tagging something that build with svn-buildpackage.
+  * Next try at tagging something that builds with svn-buildpackage.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 27 Jan 2006 15:15:44 +0200
 
