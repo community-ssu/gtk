@@ -1,3 +1,7 @@
+2006-01-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkwidget.c (tap_and_hold_remove_timer): Made static.
+
 2006-01-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenu.c (gtk_menu_handle_scrolling): Return TRUE if scrolling
