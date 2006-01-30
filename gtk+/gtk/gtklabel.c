@@ -81,9 +81,6 @@ enum {
   LAST_SIGNAL
 };
 
-/* Hildon mod.
-   A property PROP_TRANSLATABLE has been added here. If new Gtk+
-   versions add items here, the compability will break. */
 enum {
   PROP_0,
   PROP_LABEL,
@@ -98,19 +95,12 @@ enum {
   PROP_MNEMONIC_WIDGET,
   PROP_CURSOR_POSITION,
   PROP_SELECTION_BOUND,
-  PROP_TRANSLATABLE,
   PROP_ELLIPSIZE,
   PROP_WIDTH_CHARS,
   PROP_SINGLE_LINE_MODE,
   PROP_ANGLE,
   PROP_MAX_WIDTH_CHARS
 };
-
-/* Hildon mod. A few keys. These are used to store data for label
- * without changing the private structures. */
-#define LABEL_KEY_TRANSLATABLE "label_translatable"
-#define LABEL_KEY_TRANSLATABLETEXT "label_translatabletext"
-#define LABEL_KEY_ORIGINAL_LAYOUT "label_original_layout"
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
@@ -532,16 +522,6 @@ gtk_label_class_init (GtkLabelClass *class)
                                                      G_MAXINT,
                                                      -1,
                                                      G_PARAM_READWRITE));
- /* Hildon mod. Add property for a widget - whether it supports run-time
-  +    locale change. Please note that this functionality is not yet
-  +    completed and may change. */
-  g_object_class_install_property (gobject_class,
-                                   PROP_TRANSLATABLE,
-                                   g_param_spec_boolean ("translatable",
-                                                         _("Is translatable"),
-	                                                 _("Whether label should be translatable."),
-	                                                 FALSE,
-	                                                 G_PARAM_READWRITE));
 
  /* Hildonlike class property */
  gtk_widget_class_install_style_property (widget_class,
@@ -684,10 +664,6 @@ gtk_label_set_property (GObject      *object,
     case PROP_MAX_WIDTH_CHARS:
       gtk_label_set_max_width_chars (label, g_value_get_int (value));
       break;
-/* Hildon add. */
-    case PROP_TRANSLATABLE:
-      gtk_label_set_translatable (label, g_value_get_boolean (value));
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -768,10 +744,6 @@ gtk_label_get_property (GObject     *object,
     case PROP_MAX_WIDTH_CHARS:
       g_value_set_int (value, gtk_label_get_max_width_chars (label));
       break;
-/* Hildon mod. */
-    case PROP_TRANSLATABLE:
-      g_value_set_boolean (value, gtk_label_get_translatable (label));
-      break;
 
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -809,15 +781,6 @@ gtk_label_init (GtkLabel *label)
   label->mnemonic_window = NULL;
   
   gtk_label_set_text (label, "");
-   
-/* Hildon Addition. */
-   
-  g_object_set_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLE, FALSE);
-  g_object_set_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT, NULL);
-  g_object_set_data (G_OBJECT (label), LABEL_KEY_ORIGINAL_LAYOUT, NULL);
-   
-/* /Hildon Addition. */
-   
 }
 
 /**
@@ -4065,69 +4028,6 @@ gtk_label_do_popup (GtkLabel       *label,
                     popup_position_func, label,
                     0, gtk_get_current_event_time ());
 }
-
-/* Hildon mod.
- * Functions for run-time locale changing. Beware though that this
-   functionality is not yet completed. Therefore it's suggested
-   that these functions shouldn't be used yet outside testing.  */
-   
-void     gtk_label_set_translatable       (GtkLabel *label, gboolean newstatus)
-{
-  if (newstatus == gtk_label_get_translatable (label)) return;
-   
-  if (newstatus == TRUE)
-    {
-      if (g_object_get_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT) != NULL)
-        g_free (g_object_get_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT));
-      g_object_set_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT, g_strdup (label->label));
-      g_object_set_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLE, (void*) TRUE);
-      if (label->text != NULL)
-        g_free (label->text);
-      if (label->label != NULL)
-        g_free (label->label);
-      label->text = g_strdup(_(g_object_get_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT)));
-      label->label = g_strdup(_(g_object_get_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT)));
-    }
-  else
-    {
-      if (label->text != NULL)
-        g_free (label->text);
-      if (label->label != NULL)
-        g_free (label->label);
-      label->text = g_strdup (g_object_get_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT));
-      label->label = g_strdup (g_object_get_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT));
-      g_object_set_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLE, FALSE);
-      if (g_object_get_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT) != NULL)
-        g_free (g_object_get_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT));
-      g_object_set_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT, NULL);
-    }
-  gtk_label_recalculate (label);
-}
-
-gboolean gtk_label_get_translatable       (GtkLabel *label)
-{
-  return (gboolean) (g_object_get_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLE));
-}
-
-   
-void     gtk_label_retranslate            (GtkLabel *label)
-{
-  g_object_freeze_notify (G_OBJECT (label));
-  if (gtk_label_get_translatable (label) == TRUE)
-    {
-      if (label->label != NULL)
-        g_free (label->label);
-      label->label = g_strdup(gettext(g_object_get_data (G_OBJECT (label), LABEL_KEY_TRANSLATABLETEXT)));
-    }
-  if (g_object_get_data (G_OBJECT (label), LABEL_KEY_ORIGINAL_LAYOUT)) g_object_unref (g_object_get_data (G_OBJECT (label), LABEL_KEY_ORIGINAL_LAYOUT));
-  g_object_set_data (G_OBJECT (label), LABEL_KEY_ORIGINAL_LAYOUT, NULL);
-  g_object_notify (G_OBJECT (label), "label");
-  gtk_label_recalculate (label);
-  g_object_thaw_notify (G_OBJECT (label));
-  gtk_label_set_text (label, label->label);
-}
-
-/* End of hildon mods for run-time locale change. */
 
 #define __GTK_LABEL_C__
 #include "gtkaliasdef.c"
