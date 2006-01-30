@@ -1,6 +1,7 @@
 dbus (0.60-1osso7) experimental; urgency=low
 
   * Added GValue patch from Rob (N#22506).
+  * Added another glib binding tool patch (N#22225).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 30 Jan 2006 13:59:16 +0200
 
