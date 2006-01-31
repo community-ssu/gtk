@@ -1,3 +1,20 @@
+gtk+2.0 (2:2.6.10-1.osso3) unstable; urgency=low
+
+  * GtkIMContext API additions:
+    - GtkIMContext extensions redesigned
+    - backwards compatibility supported
+    - debian/rules: update shlibs
+  * Fix module loading so that two theme engines (both derived from the pixbuf
+    engine) can be used at the same time.
+  * GtkLabel API/ABI change: remove unused functions and properties:
+    - GtkLabel::translatable (get_translatable, set_translatable)
+    - gtk_label_retranslate
+  * Stop exporting private symbols:
+    - anything begining with an underscore
+    - tap_and_hold_remove_timer (in gtkwidget.c)
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 31 Jan 2006 14:58:34 +0200
+
 gtk+2.0 (2:2.6.10-1.osso2) unstable; urgency=low
 
   * Backport GtkWindow::urgency-hint from 2.8
