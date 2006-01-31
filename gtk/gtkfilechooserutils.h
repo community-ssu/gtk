@@ -45,6 +45,9 @@ typedef enum {
 
 void _gtk_file_chooser_install_properties (GObjectClass *klass);
 
+/* _gtk_file_chooser_install_properties exported for hildon-fm */
+void hildon_gtk_file_chooser_install_properties (GObjectClass *klass);
+
 void _gtk_file_chooser_delegate_iface_init (GtkFileChooserIface *iface);
 void _gtk_file_chooser_set_delegate        (GtkFileChooser *receiver,
 					    GtkFileChooser *delegate);

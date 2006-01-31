@@ -113,6 +113,20 @@ _gtk_file_chooser_install_properties (GObjectClass *klass)
 }
 
 /**
+ * hildon_gtk_file_chooser_install_properties:
+ *
+ * Exactly the same as private _gtk_file_chooser_install_properties() but
+ * exported for hildon-fm.
+ *
+ * Since: maemo 2.0
+ */
+void
+hildon_gtk_file_chooser_install_properties (GObjectClass *klass)
+{
+  _gtk_file_chooser_install_properties (klass);
+}
+
+/**
  * _gtk_file_chooser_delegate_iface_init:
  * @iface: a #GtkFileChoserIface structure
  *

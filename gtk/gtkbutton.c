@@ -1895,6 +1895,21 @@ _gtk_button_set_depressed (GtkButton *button,
     }
 }
 
+/**
+ * hildon_gtk_button_set_depressed:
+ *
+ * Exactly the same as private _gtk_button_set_depressed() but exported for
+ * hildon.
+ *
+ * Since: maemo 2.0
+ */
+void
+hildon_gtk_button_set_depressed (GtkButton *button,
+				 gboolean   depressed)
+{
+  _gtk_button_set_depressed (button, depressed);
+}
+
 static void
 gtk_button_update_state (GtkButton *button)
 {
