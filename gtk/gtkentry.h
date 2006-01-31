@@ -195,6 +195,9 @@ gint       gtk_entry_layout_index_to_text_index (GtkEntry      *entry,
 gint       gtk_entry_text_index_to_layout_index (GtkEntry      *entry,
                                                  gint           text_index);
 
+void               hildon_gtk_entry_set_input_mode (GtkEntry          *entry,
+                                                    HildonGtkInputMode input_mode);
+HildonGtkInputMode hildon_gtk_entry_get_input_mode (GtkEntry          *entry);
 
 /* Deprecated compatibility functions
  */

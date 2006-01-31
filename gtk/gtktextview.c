@@ -152,6 +152,7 @@ enum
   PROP_ACCEPTS_TAB,
   PROP_AUTOCAP,
   PROP_INPUT_MODE,
+  PROP_HILDON_INPUT_MODE,
   LAST_PROP
 };
 
@@ -205,7 +206,6 @@ static gboolean gtk_text_view_focus            (GtkWidget        *widget,
                                                 GtkDirectionType  direction);
 static void gtk_text_view_select_all           (GtkWidget        *widget,
                                                 gboolean          select);
-static void gtk_text_view_unmap                (GtkWidget        *widget);
 
 
 /* Source side drag signals */
@@ -317,6 +317,11 @@ static gboolean gtk_text_view_delete_surrounding_handler   (GtkIMContext  *conte
 							    gint           offset,
 							    gint           n_chars,
 							    GtkTextView   *text_view);
+static gboolean gtk_text_view_has_selection_handler        (GtkIMContext  *context,
+                                                            GtkTextView   *text_view);
+static void     gtk_text_view_clipboard_operation_handler  (GtkIMContext  *context,
+                                                            GtkIMContextClipboardOperation op,
+                                                            GtkTextView   *text_view);
 
 static void gtk_text_view_mark_set_handler       (GtkTextBuffer     *buffer,
                                                   const GtkTextIter *location,
@@ -351,12 +356,6 @@ static void     gtk_text_view_flush_first_validate (GtkTextView *text_view);
 
 static void gtk_text_view_update_im_spot_location (GtkTextView *text_view);
 
-static void     gtk_text_view_set_autocap          (GtkTextView *text_view,
-                                                    gboolean    autocap);
-static gboolean gtk_text_view_get_autocap          (GtkTextView *text_view);
-static void     gtk_text_view_set_input_mode       (GtkTextView *text_view,
-                                                    gint         mode);
-static gint     gtk_text_view_get_input_mode       (GtkTextView *text_view);
 
 /* Container methods */
 static void gtk_text_view_add    (GtkContainer *container,
@@ -367,6 +366,11 @@ static void gtk_text_view_forall (GtkContainer *container,
                                   gboolean      include_internals,
                                   GtkCallback   callback,
                                   gpointer      callback_data);
+
+/* The code for these functions is in gtkentry.c. We don't really want to add
+   these to any header file since they're only for backwards compatibility. */
+HildonGtkInputMode _gtk_input_mode_convert_old_to_new (gint old_mode);
+gint _gtk_input_mode_convert_new_to_old (HildonGtkInputMode mode);
 
 /* FIXME probably need the focus methods. */
 
@@ -538,7 +542,6 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
   widget_class->drag_motion = gtk_text_view_drag_motion;
   widget_class->drag_drop = gtk_text_view_drag_drop;
   widget_class->drag_data_received = gtk_text_view_drag_data_received;
-  widget_class->unmap = gtk_text_view_unmap;
 
   widget_class->popup_menu = gtk_text_view_popup_menu;
   
@@ -689,6 +692,15 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
 							 TRUE,
 							 G_PARAM_READWRITE));
 
+  /**
+   * GtkTextView:autocap:
+   *
+   * Automatically capitalize words at the beginning of sentences.
+   *
+   * Since: maemo 1.0
+   *
+   * @Deprecated: Use hildon-input-mode instead.
+   **/
   g_object_class_install_property (gobject_class,
                                    PROP_AUTOCAP,
                                    g_param_spec_boolean ("autocap",
@@ -696,7 +708,17 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
                                                          P_("Enable autocap support"),
                                                          TRUE,
                                                          G_PARAM_READABLE | G_PARAM_WRITABLE)); 
-  
+
+  /**
+   * GtkTextView:input-mode:
+   *
+   * Allowed characters for the text view, specified by
+   * HILDON_INPUT_MODE_HINT_*
+   *
+   * Since: maemo 1.0
+   *
+   * @Deprecated: Use hildon-input-mode instead.
+   **/
   g_object_class_install_property (gobject_class,
                                    PROP_INPUT_MODE,
                                    g_param_spec_int ("input_mode",
@@ -706,6 +728,24 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
                                                      9, /* keep me updated */
                                                      0,
                                                      G_PARAM_READABLE | G_PARAM_WRITABLE)); 
+
+  /**
+   * GtkTextView:hildon-input-mode:
+   *
+   * Allowed characters and input mode for the text view.
+   * See #HildonGtkInputMode.
+   *
+   * Since: maemo 2.0
+   **/
+  g_object_class_install_property (gobject_class,
+                                   PROP_HILDON_INPUT_MODE,
+                                   g_param_spec_flags ("hildon_input_mode",
+                                                       P_("Hildon input mode"),
+                                                       P_("Define widget's input mode"),
+                                                       GTK_TYPE_GTK_INPUT_MODE,
+                                                       HILDON_GTK_INPUT_MODE_FULL |
+                                                       HILDON_GTK_INPUT_MODE_AUTOCAP,
+                                                       G_PARAM_READABLE | G_PARAM_WRITABLE));
 
   /*
    * Style properties
@@ -717,14 +757,6 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
 							       GDK_TYPE_COLOR,
 							       G_PARAM_READABLE));
 
-  gtk_widget_class_install_style_property (widget_class,
-                                          g_param_spec_boolean ("autocap",
-                                                                _("auto capitalization"),
-                                                                _("Enable autocap support"),
-                                                            TRUE,
-                                                            G_PARAM_READABLE));
-  
-  
   /*
    * Signals
    */
@@ -1121,10 +1153,6 @@ gtk_text_view_init (GtkTextView *text_view)
    * to it; so we create it here and destroy it in finalize ().
    */
   text_view->im_context = gtk_im_multicontext_new ();
-  /* Set default stuff. */
-  gtk_text_view_set_autocap (text_view, TRUE);
-  gtk_text_view_set_input_mode (text_view, 0); /* alpha-numeric-special */
-  g_object_set (G_OBJECT (text_view->im_context), "use-show-hide", TRUE, NULL);
 
   g_signal_connect (text_view->im_context, "commit",
                     G_CALLBACK (gtk_text_view_commit_handler), text_view);
@@ -1134,6 +1162,10 @@ gtk_text_view_init (GtkTextView *text_view)
  		    G_CALLBACK (gtk_text_view_retrieve_surrounding_handler), text_view);
   g_signal_connect (text_view->im_context, "delete_surrounding",
  		    G_CALLBACK (gtk_text_view_delete_surrounding_handler), text_view);
+  g_signal_connect (text_view->im_context, "has_selection",
+ 		    G_CALLBACK (gtk_text_view_has_selection_handler), text_view);
+  g_signal_connect (text_view->im_context, "clipboard_operation",
+ 		    G_CALLBACK (gtk_text_view_clipboard_operation_handler), text_view);
 
   text_view->cursor_visible = TRUE;
 
@@ -2661,6 +2693,7 @@ gtk_text_view_set_property (GObject         *object,
 			    GParamSpec      *pspec)
 {
   GtkTextView *text_view;
+  HildonGtkInputMode mode;
 
   text_view = GTK_TEXT_VIEW (object);
 
@@ -2721,13 +2754,22 @@ gtk_text_view_set_property (GObject         *object,
     case PROP_ACCEPTS_TAB:
       gtk_text_view_set_accepts_tab (text_view, g_value_get_boolean (value));
       break;
-      
+
     case PROP_AUTOCAP:
-      gtk_text_view_set_autocap (text_view, g_value_get_boolean (value));
+      mode = hildon_gtk_text_view_get_input_mode (text_view) & ~HILDON_GTK_INPUT_MODE_AUTOCAP;
+      if (g_value_get_boolean (value))
+        mode |= HILDON_GTK_INPUT_MODE_AUTOCAP;
+      hildon_gtk_text_view_set_input_mode (text_view, mode);
       break;
 
     case PROP_INPUT_MODE:
-      gtk_text_view_set_input_mode (text_view, g_value_get_int (value));
+      mode = _gtk_input_mode_convert_old_to_new (g_value_get_int (value));
+      mode |= hildon_gtk_text_view_get_input_mode (text_view) & ~HILDON_GTK_INPUT_MODE_FULL;
+      hildon_gtk_text_view_set_input_mode (text_view, mode);
+      break;
+      
+    case PROP_HILDON_INPUT_MODE:
+      hildon_gtk_text_view_set_input_mode (text_view, g_value_get_int (value));
       break;
       
     default:
@@ -2743,6 +2785,7 @@ gtk_text_view_get_property (GObject         *object,
 			    GParamSpec      *pspec)
 {
   GtkTextView *text_view;
+  HildonGtkInputMode mode;
 
   text_view = GTK_TEXT_VIEW (object);
 
@@ -2803,13 +2846,20 @@ gtk_text_view_get_property (GObject         *object,
     case PROP_ACCEPTS_TAB:
       g_value_set_boolean (value, text_view->accepts_tab);
       break;
-      
+
     case PROP_AUTOCAP:
-      g_value_set_boolean (value, gtk_text_view_get_autocap (text_view));
+      mode = hildon_gtk_text_view_get_input_mode (text_view) & HILDON_GTK_INPUT_MODE_AUTOCAP;
+      g_value_set_boolean (value, mode != 0);
       break;
-      
+
     case PROP_INPUT_MODE:
-      g_value_set_int (value, gtk_text_view_get_input_mode (text_view));
+      /* reverse back to old mode for backwards compatibility */
+      mode = hildon_gtk_text_view_get_input_mode (text_view);
+      g_value_set_int (value, _gtk_input_mode_convert_new_to_old (mode));
+      break;
+
+    case PROP_HILDON_INPUT_MODE:
+      g_value_set_int (value, hildon_gtk_text_view_get_input_mode (text_view));
       break;
       
     default:
@@ -4122,9 +4172,6 @@ gtk_text_view_button_release_event (GtkWidget *widget, GdkEventButton *event)
   if (event->window != text_view->text_window->bin_window)
     return FALSE;
 
-  if (text_view->editable)
-    gtk_im_context_show (text_view->im_context);
-  
   if (event->button == 1)
     {
       if (text_view->drag_start_x >= 0)
@@ -6859,6 +6906,47 @@ gtk_text_view_delete_surrounding_handler (GtkIMContext  *context,
   return TRUE;
 }
 
+static gboolean
+gtk_text_view_has_selection_handler(GtkIMContext *context,
+                                    GtkTextView *text_view)
+{
+  GtkTextBuffer *buffer;
+
+  buffer = gtk_text_view_get_buffer (text_view);
+  return gtk_text_buffer_get_selection_bounds (buffer, NULL, NULL);
+}
+
+static void
+gtk_text_view_clipboard_operation_handler(GtkIMContext *context,
+                                          GtkIMContextClipboardOperation op,
+                                          GtkTextView *text_view)
+{
+  GtkTextBuffer *buffer;
+  GtkTextIter iter;
+
+  /* Similar to gtk_editable_*_clipboard(), handle these by sending signals
+   * instead of directly calling our internal functions. That way the
+   * application can hook into them if needed. */
+  switch (op)
+    {
+    case GTK_IM_CONTEXT_CLIPBOARD_OP_COPY:
+      g_signal_emit_by_name (text_view, "copy_clipboard");
+
+      /* copying removes selection */
+      buffer = gtk_text_view_get_buffer (text_view);
+      gtk_text_buffer_get_iter_at_mark (buffer, &iter,
+                                        gtk_text_buffer_get_insert (buffer));
+      gtk_text_buffer_move_mark_by_name (buffer, "selection_bound", &iter);
+      break;
+    case GTK_IM_CONTEXT_CLIPBOARD_OP_CUT:
+      g_signal_emit_by_name (text_view, "cut_clipboard");
+      break;
+    case GTK_IM_CONTEXT_CLIPBOARD_OP_PASTE:
+      g_signal_emit_by_name (text_view, "paste_clipboard");
+      break;
+    }
+}
+
 static void
 gtk_text_view_mark_set_handler (GtkTextBuffer     *buffer,
                                 const GtkTextIter *location,
@@ -8533,91 +8621,47 @@ gtk_text_view_move_visually (GtkTextView *text_view,
   return gtk_text_layout_move_iter_visually (text_view->layout, iter, count);
 }
 
-/*
- * gtk_text_view_set_autocap:
- * @entry: a #GtkTextView
- * @autocap: autocap
- *
- * Sets autocapitalization of the widget.
- */
-static void
-gtk_text_view_set_autocap (GtkTextView *text_view,
-                           gboolean     autocap)
-{
-  g_return_if_fail (GTK_IS_TEXT_VIEW (text_view));
-
-  if (gtk_text_view_get_autocap (text_view) != autocap)
-  {
-    g_object_set (G_OBJECT (text_view->im_context), "autocap", autocap, NULL);
-    g_object_notify (G_OBJECT (text_view), "autocap");
-  }
-}
-
-/*
- * gtk_text_view_get_autocap:
- * @entry: a #GtkTextView
- *
- * Gets autocapitalization state of the widget.
- *
- * Return value: a state
- */
-static gboolean
-gtk_text_view_get_autocap (GtkTextView *text_view)
-{
-  gboolean autocap;
-  g_return_val_if_fail (GTK_IS_TEXT_VIEW (text_view), FALSE);
-
-  g_object_get (G_OBJECT (text_view->im_context), "autocap", &autocap, NULL);
-
-  return autocap;
-}
-
-/*
- * gtk_text_view_set_input_mode:
+/**
+ * hildon_gtk_text_view_set_input_mode:
  * @text_view: a #GtkTextView
  * @mode: input mode
  *
- * Sets autocapitalization of the widget.
+ * Sets input mode of the widget.
+ *
+ * Since: maemo 2.0
  */
-static void
-gtk_text_view_set_input_mode (GtkTextView *text_view,
-                              gint         mode)
+void
+hildon_gtk_text_view_set_input_mode (GtkTextView *text_view, HildonGtkInputMode mode)
 {
   g_return_if_fail (GTK_IS_TEXT_VIEW (text_view));
 
-  if (gtk_text_view_get_input_mode (text_view) != mode)
+  if (hildon_gtk_text_view_get_input_mode (text_view) != mode)
   {
-    g_object_set (G_OBJECT (text_view->im_context), "input_mode", mode, NULL);
+    g_object_set (G_OBJECT (text_view->im_context), "hildon_input_mode", mode, NULL);
     g_object_notify (G_OBJECT (text_view), "input_mode");
+    g_object_notify (G_OBJECT (text_view), "hildon_input_mode");
   }
 }
 
-/*
- * gtk_text_view_get_input_mode:
+/**
+ * hildon_gtk_text_view_get_input_mode:
  * @text_view: a #GtkTextView
  *
  * Gets input mode of the widget.
  *
  * Return value: input mode
+ *
+ * Since: maemo 2.0
  */
-static gint
-gtk_text_view_get_input_mode (GtkTextView *text_view)
+HildonGtkInputMode
+hildon_gtk_text_view_get_input_mode (GtkTextView *text_view)
 {
-  gint mode;
+  HildonGtkInputMode mode;
   g_return_val_if_fail (GTK_IS_TEXT_VIEW (text_view), FALSE);
 
-  g_object_get (G_OBJECT (text_view->im_context), "input_mode", &mode, NULL);
+  g_object_get (G_OBJECT (text_view->im_context), "hildon_input_mode", &mode, NULL);
 
   return mode;
-}
-
-static void
-gtk_text_view_unmap (GtkWidget *widget)
-{
-  gtk_im_context_hide (GTK_TEXT_VIEW (widget)->im_context);
-
-  if (GTK_WIDGET_CLASS (parent_class)->unmap)
-    (* GTK_WIDGET_CLASS (parent_class)->unmap) (widget);
 }
 
 #define __GTK_TEXT_VIEW_C__

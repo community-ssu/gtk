@@ -45,11 +45,7 @@
 #include "gtkwindow.h"
 #include "gtkbindings.h"
 #include "gtkprivate.h"
-#include "gtktreeview.h"
 #include "gtkentry.h"
-#include "gtktextview.h"
-#include "gtkimcontext.h"
-#include "gtkmenu.h"
 #include "gdk/gdk.h"
 #include "gdk/gdkprivate.h" /* Used in gtk_reset_shapes_recurse to avoid copy */
 #include <gobject/gvaluecollector.h>
@@ -59,14 +55,8 @@
 #include "gtkaccessible.h"
 #include "gtktooltips.h"
 #include "gtkinvisible.h"
-#include "gtkscrollbar.h"   /* Following are needed for special focus changes */
-#include "gtktoolbar.h"
 #include "gtkmenu.h"
 #include "gtkmenuitem.h"
-#include "gtktogglebutton.h"
-#include "gtkcomboboxentry.h"
-#include "gtktogglebutton.h"
-#include "gtkcomboboxentry.h"
 #include "gtkicontheme.h"
 #include "gtkalias.h"
 
@@ -251,8 +241,6 @@ static void	gtk_widget_style_set		 (GtkWidget	    *widget,
 static void	gtk_widget_direction_changed	 (GtkWidget	    *widget,
 						  GtkTextDirection   previous_direction);
 
-static void     gtk_widget_set_valid_context     (GtkIMContext     **valid_context,
-                                                  GtkWidget         *widget);
 static void	gtk_widget_real_grab_focus	 (GtkWidget         *focus_widget);
 static gboolean gtk_widget_real_show_help        (GtkWidget         *widget,
                                                   GtkWidgetHelpType  help_type);
@@ -313,7 +301,6 @@ static GSList          *colormap_stack = NULL;
 static guint            composite_child_stack = 0;
 static GtkTextDirection gtk_default_direction = GTK_TEXT_DIR_LTR;
 static GParamSpecPool  *style_property_spec_pool = NULL;
-static GtkWidget       *selection_widget = NULL;
 
 static gboolean on_same_widget = FALSE; /*Hildon focus handling*/
 static gboolean mouse_pressed = FALSE; /*Hildon focus handling*/
@@ -4290,40 +4277,13 @@ reset_focus_recurse (GtkWidget *widget,
 }
 
 static void
-gtk_widget_set_valid_context (GtkIMContext **valid_context, GtkWidget *widget)
-{
-  GtkIMContext *context;
-
-  if (GTK_IS_ENTRY (widget))
-    context = GTK_ENTRY (widget)->im_context;
-  else if (GTK_IS_TEXT_VIEW (widget))
-    context = GTK_TEXT_VIEW (widget)->im_context;
-  else
-    return;
-
-  if (*valid_context != NULL)
-    g_object_unref (*valid_context);
-  *valid_context = context;
-  g_object_ref (*valid_context);
-}
-
-static void
 gtk_widget_real_grab_focus (GtkWidget *focus_widget)
 {
-  if (GTK_WIDGET_CAN_FOCUS (focus_widget) &&
-      GTK_WIDGET_VISIBLE (focus_widget))
+  if (GTK_WIDGET_CAN_FOCUS (focus_widget))
     {
-      /* we can't hide IM without IM context. it's possible to move
-       * focus to widget which doesn't have IM context, but which
-       * doesn't want IM to be hidden either. So, we have this
-       * static valid_context variable which is used... */
-      static GtkIMContext *valid_context = NULL;
       GtkWidget *toplevel;
       GtkWidget *widget;
-      GtkIMContext *context;
-
-      gtk_widget_set_valid_context (&valid_context, focus_widget);
-
+      
       /* clear the current focus setting, break if the current widget
        * is the focus widget's parent, since containers above that will
        * be set by the next loop.
@@ -4344,89 +4304,7 @@ gtk_widget_real_grab_focus (GtkWidget *focus_widget)
 
 	      return;
 	    }
-
-	  gtk_widget_set_valid_context (&valid_context, widget);
-
-          if (valid_context)
-            {
-              gboolean is_combo, is_inside_toolbar;
-	      gboolean is_editable_entry, is_editable_text_view;
-              gboolean allow_deselect;
-              GtkWidget *parent, *deselect = NULL;
-
-              parent = gtk_widget_get_parent (focus_widget);
-              is_combo = GTK_IS_TOGGLE_BUTTON (focus_widget) &&
-                (GTK_IS_COMBO_BOX_ENTRY (parent) ||
-                 GTK_IS_COMBO_BOX (parent));
-              is_inside_toolbar =
-                gtk_widget_get_ancestor (focus_widget,
-                                         GTK_TYPE_TOOLBAR) != NULL;
-	      is_editable_entry = GTK_IS_ENTRY (focus_widget) &&
-		gtk_editable_get_editable (GTK_EDITABLE(focus_widget));
-	      is_editable_text_view = GTK_IS_TEXT_VIEW (focus_widget) &&
-		gtk_text_view_get_editable (GTK_TEXT_VIEW (focus_widget));
-
-              if (focus_widget == NULL ||
-		  !is_editable_entry &&
-		  !is_editable_text_view &&
-                  !GTK_IS_SCROLLBAR (focus_widget) &&
-                  !GTK_IS_MENU_ITEM (focus_widget) &&
-                  !GTK_IS_MENU (focus_widget) &&
-                  !is_inside_toolbar &&
-                  !is_combo)
-                {
-                  gtk_im_context_hide (valid_context);
-                }
-
-              /* remove text highlight (selection) unless focus is not moved
-                 inside a toolbar */
-              allow_deselect = (!is_inside_toolbar ||
-                                GTK_IS_ENTRY (focus_widget) ||
-                                GTK_IS_TEXT_VIEW (focus_widget));
-
-              if (selection_widget && allow_deselect)
-                {
-                  g_object_remove_weak_pointer (G_OBJECT (selection_widget),
-                                                (gpointer) &selection_widget);
-                  deselect = selection_widget;
-                  selection_widget = NULL;
-                }
-              else if (GTK_IS_ENTRY (widget) || GTK_IS_TEXT_VIEW (widget))
-                {
-                  if (allow_deselect)
-                    deselect = widget;
-                  else
-                    {
-                      selection_widget = widget;
-                      g_object_add_weak_pointer (G_OBJECT (selection_widget),
-                                                 (gpointer) &selection_widget);
-                    }
-                }
-
-              if (deselect)
-                {
-                  if (GTK_IS_ENTRY (deselect) &&
-                      gtk_editable_get_selection_bounds (GTK_EDITABLE (deselect), NULL, NULL))
-                    {
-                      gint pos;
-                      pos = gtk_editable_get_position (GTK_EDITABLE (deselect));
-                      gtk_editable_set_position (GTK_EDITABLE (deselect), pos);
-                    }
-                  else if (GTK_IS_TEXT_VIEW (deselect))
-                    {
-                      GtkTextBuffer *text_buff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (deselect));
-
-                      if (gtk_text_buffer_get_selection_bounds (text_buff, NULL, NULL))
-                        {
-                          GtkTextIter insert;
-                          gtk_text_buffer_get_iter_at_mark (text_buff, &insert,
-                                  gtk_text_buffer_get_insert (text_buff));
-                          gtk_text_buffer_place_cursor (text_buff, &insert);
-                        }
-                    }
-                }
-            }
-
+	  
 	  if (widget)
 	    {
 	      while (widget->parent && widget->parent != focus_widget->parent)
