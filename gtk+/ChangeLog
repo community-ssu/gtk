@@ -1,3 +1,13 @@
+2006-01-31  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.in (LIBTOOL_EXPORT_OPTIONS): Temporarily export a couple
+	of private symbols (_gtk_button_set_depressed,
+	_gtk_file_chooser_install_properties, _gtk_file_system_create) to work
+	around broken hildon.
+	* gtk/gtkfilechooserutils.[ch]
+	(hildon_gtk_file_chooser_install_properties): Added
+	* gtk/gtkbutton.[ch] (hildon_gtk_button_set_depressed): Added
+
 2006-01-31  Mohammad Anwari  <mohammad.anwari@nokia.com>
 	
 	IM context extension redesigned.

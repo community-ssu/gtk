@@ -132,6 +132,9 @@ void _gtk_button_paint                     (GtkButton     *button,
 					    const gchar   *main_detail,
 					    const gchar   *default_detail);
 
+void hildon_gtk_button_set_depressed       (GtkButton     *button,
+					    gboolean       depressed);
+
 /* Osso addition : Button attach flags */
 typedef enum {
   OSSO_GTK_BUTTON_ATTACH_NORTH =    1 << 0,
