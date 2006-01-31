@@ -12,7 +12,7 @@ AC_PROG_LIBTOOL
 AC_PROG_RANLIB
 
 AC_HEADER_STDC
-CFLAGS="$CFLAGS -Wall -ansi -pedantic -Wmissing-prototypes -Wmissing-declarations"
+CFLAGS="$CFLAGS -Wall -Werror -ansi -pedantic -Wmissing-prototypes -Wmissing-declarations"
 #-Werror"
 
 GTK_VERSION=2.4.0
