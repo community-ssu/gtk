@@ -127,7 +127,8 @@ enum {
   PROP_TEXT,
   PROP_XALIGN,
   PROP_AUTOCAP,
-  PROP_INPUT_MODE
+  PROP_INPUT_MODE,
+  PROP_HILDON_INPUT_MODE
 };
 
 static guint signals[LAST_SIGNAL] = { 0 };
@@ -188,7 +189,6 @@ static void   gtk_entry_state_changed        (GtkWidget        *widget,
 					      GtkStateType      previous_state);
 static void   gtk_entry_screen_changed       (GtkWidget        *widget,
 					      GdkScreen        *old_screen);
-static void   gtk_entry_unmap                (GtkWidget        *widget);
 
 static gboolean gtk_entry_drag_drop          (GtkWidget        *widget,
                                               GdkDragContext   *context,
@@ -287,7 +287,11 @@ static gboolean gtk_entry_delete_surrounding_cb   (GtkIMContext *context,
 						   gint          offset,
 						   gint          n_chars,
 						   GtkEntry     *entry);
-
+static gboolean gtk_entry_has_selection_cb        (GtkIMContext *context,
+                                                   GtkEntry     *entry);
+static void     gtk_entry_clipboard_operation_cb  (GtkIMContext *context,
+                                                   GtkIMContextClipboardOperation op,
+                                                   GtkEntry     *entry);
 /* Internal routines
  */
 static void         gtk_entry_enter_text               (GtkEntry       *entry,
@@ -348,12 +352,6 @@ static void         get_widget_window_size             (GtkEntry       *entry,
 							gint           *y,
 							gint           *width,
 							gint           *height);
-static void         gtk_entry_set_autocap              (GtkEntry       *entry,
-                                                        gboolean       autocap);
-static gboolean     gtk_entry_get_autocap              (GtkEntry       *entry);
-static void         gtk_entry_set_input_mode           (GtkEntry       *entry,
-                                                        gboolean       mode);
-static gint         gtk_entry_get_input_mode           (GtkEntry       *entry);
 
 /*Change for Hildon
  *returns an iterator to the character at position x,y of the
@@ -504,7 +502,6 @@ gtk_entry_class_init (GtkEntryClass *class)
   widget_class->drag_data_received = gtk_entry_drag_data_received;
   widget_class->drag_data_get = gtk_entry_drag_data_get;
   widget_class->drag_data_delete = gtk_entry_drag_data_delete;
-  widget_class->unmap = gtk_entry_unmap; 
 
   widget_class->popup_menu = gtk_entry_popup_menu;
 
@@ -564,7 +561,16 @@ gtk_entry_class_init (GtkEntryClass *class)
 							 P_("FALSE displays the \"invisible char\" instead of the actual text (password mode)"),
                                                          TRUE,
 							 G_PARAM_READABLE | G_PARAM_WRITABLE));
-  
+
+  /**
+   * GtkEntry:autocap:
+   *
+   * Automatically capitalize words at the beginning of sentences.
+   *
+   * Since: maemo 1.0
+   *
+   * @Deprecated: Use hildon-input-mode instead.
+   **/
   g_object_class_install_property (gobject_class,
                                    PROP_AUTOCAP,
                                    g_param_spec_boolean ("autocap",
@@ -572,7 +578,16 @@ gtk_entry_class_init (GtkEntryClass *class)
                                                          P_("Enable autocap support"),
                                                          TRUE,
                                                          G_PARAM_READABLE | G_PARAM_WRITABLE)); 
-  
+
+  /**
+   * GtkEntry:input-mode:
+   *
+   * Allowed characters for the entry, specified by HILDON_INPUT_MODE_HINT_*
+   *
+   * Since: maemo 1.0
+   *
+   * @Deprecated: Use hildon-input-mode instead.
+   **/
   g_object_class_install_property (gobject_class,
                                    PROP_INPUT_MODE,
                                    g_param_spec_int ("input_mode",
@@ -582,6 +597,23 @@ gtk_entry_class_init (GtkEntryClass *class)
                                                      9, /* keep me updated */
                                                      0,
                                                      G_PARAM_READABLE | G_PARAM_WRITABLE)); 
+  
+  /**
+   * GtkEntry:hildon-input-mode:
+   *
+   * Allowed characters and input mode for the entry. See #HildonGtkInputMode.
+   *
+   * Since: maemo 2.0
+   **/
+  g_object_class_install_property (gobject_class,
+                                   PROP_HILDON_INPUT_MODE,
+                                   g_param_spec_flags ("hildon_input_mode",
+                                                       P_("Hildon input mode"),
+                                                       P_("Define widget's input mode"),
+                                                       GTK_TYPE_GTK_INPUT_MODE,
+                                                       HILDON_GTK_INPUT_MODE_FULL |
+                                                       HILDON_GTK_INPUT_MODE_AUTOCAP,
+                                                       G_PARAM_READABLE | G_PARAM_WRITABLE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_HAS_FRAME,
@@ -972,6 +1004,54 @@ static gboolean
     return FALSE;
 }
 
+HildonGtkInputMode
+_gtk_input_mode_convert_old_to_new (gint old_mode)
+{
+  /* FIXME: this exists only for backwards compatibility. Values are defined
+     in hildon-input-mode-hint.h but we can't include it here.. */
+  switch (old_mode)
+    {
+    case 0: /* HILDON_INPUT_MODE_HINT_ALPHANUMERICSPECIAL */
+      return HILDON_GTK_INPUT_MODE_ALPHA | HILDON_GTK_INPUT_MODE_NUMERIC |
+        HILDON_GTK_INPUT_MODE_SPECIAL;
+    case 1: /* HILDON_INPUT_MODE_HINT_NUMERIC */
+      return HILDON_GTK_INPUT_MODE_NUMERIC;
+    case 2: /* HILDON_INPUT_MODE_HINT_ALPHA */
+      return HILDON_GTK_INPUT_MODE_ALPHA;
+    case 3: /* HILDON_INPUT_MODE_HINT_NUMERICSPECIAL */
+      return HILDON_GTK_INPUT_MODE_NUMERIC | HILDON_GTK_INPUT_MODE_SPECIAL;
+    case 4: /* HILDON_INPUT_MODE_HINT_ALPHASPECIAL */
+      return HILDON_GTK_INPUT_MODE_ALPHA |  HILDON_GTK_INPUT_MODE_SPECIAL;
+    case 5: /* HILDON_INPUT_MODE_HINT_ALPHANUMERIC */
+      return HILDON_GTK_INPUT_MODE_ALPHA | HILDON_GTK_INPUT_MODE_NUMERIC;
+    case 6: /* HILDON_INPUT_MODE_HINT_HEXA */
+      return HILDON_GTK_INPUT_MODE_HEXA;
+    case 7: /* HILDON_INPUT_MODE_HINT_HEXASPECIAL */
+      return HILDON_GTK_INPUT_MODE_HEXA | HILDON_GTK_INPUT_MODE_SPECIAL;
+    case 8: /* HILDON_INPUT_MODE_HINT_TELE */
+      return HILDON_GTK_INPUT_MODE_TELE;
+    case 9: /* HILDON_INPUT_MODE_HINT_TELESPECIAL */
+      return HILDON_GTK_INPUT_MODE_TELE | HILDON_GTK_INPUT_MODE_SPECIAL;
+    }
+  return 0;
+}
+
+gint
+_gtk_input_mode_convert_new_to_old (HildonGtkInputMode mode)
+{
+  gint i;
+
+  /* old mode specifies only acceptable characters */
+  mode &= HILDON_GTK_INPUT_MODE_FULL;
+  for (i = 0; i <= 9; i++)
+  {
+    if (_gtk_input_mode_convert_old_to_new (i) == mode)
+      return i;
+  }
+
+  return 0;
+}
+
 static void
 gtk_entry_set_property (GObject         *object,
                         guint            prop_id,
@@ -979,6 +1059,7 @@ gtk_entry_set_property (GObject         *object,
                         GParamSpec      *pspec)
 {
   GtkEntry *entry = GTK_ENTRY (object);
+  HildonGtkInputMode mode;
 
   switch (prop_id)
     {
@@ -1016,13 +1097,22 @@ gtk_entry_set_property (GObject         *object,
     case PROP_VISIBILITY:
       gtk_entry_set_visibility (entry, g_value_get_boolean (value));
       break;
-      
+
     case PROP_AUTOCAP:
-      gtk_entry_set_autocap (entry, g_value_get_boolean (value));
+      mode = hildon_gtk_entry_get_input_mode (entry) & ~HILDON_GTK_INPUT_MODE_AUTOCAP;
+      if (g_value_get_boolean (value))
+        mode |= HILDON_GTK_INPUT_MODE_AUTOCAP;
+      hildon_gtk_entry_set_input_mode (entry, mode);
       break;
 
     case PROP_INPUT_MODE:
-      gtk_entry_set_input_mode (entry, g_value_get_int (value));
+      mode = _gtk_input_mode_convert_old_to_new (g_value_get_int (value));
+      mode |= hildon_gtk_entry_get_input_mode (entry) & ~HILDON_GTK_INPUT_MODE_FULL;
+      hildon_gtk_entry_set_input_mode (entry, mode);
+      break;
+
+    case PROP_HILDON_INPUT_MODE:
+      hildon_gtk_entry_set_input_mode (entry, g_value_get_flags (value));
       break;
 
     case PROP_HAS_FRAME:
@@ -1064,6 +1154,7 @@ gtk_entry_get_property (GObject         *object,
                         GParamSpec      *pspec)
 {
   GtkEntry *entry = GTK_ENTRY (object);
+  HildonGtkInputMode mode;
 
   switch (prop_id)
     {
@@ -1083,10 +1174,16 @@ gtk_entry_get_property (GObject         *object,
       g_value_set_boolean (value, entry->visible);
       break;
     case PROP_AUTOCAP:
-      g_value_set_boolean (value, gtk_entry_get_autocap (entry));
+      mode = hildon_gtk_entry_get_input_mode (entry) & HILDON_GTK_INPUT_MODE_AUTOCAP;
+      g_value_set_boolean (value, mode != 0);
       break;
     case PROP_INPUT_MODE:
-	g_value_set_int (value, gtk_entry_get_input_mode (entry));
+      /* reverse back to old mode for backwards compatibility */
+      mode = hildon_gtk_entry_get_input_mode (entry);
+      g_value_set_int (value, _gtk_input_mode_convert_new_to_old (mode));
+      break;
+    case PROP_HILDON_INPUT_MODE:
+      g_value_set_flags (value, hildon_gtk_entry_get_input_mode (entry));
       break;
     case PROP_HAS_FRAME:
       g_value_set_boolean (value, entry->has_frame);
@@ -1161,11 +1258,7 @@ gtk_entry_init (GtkEntry *entry)
    * to it; so we create it here and destroy it in finalize().
    */
   entry->im_context = gtk_im_multicontext_new ();
-  /* Set default stuff. */
-  gtk_entry_set_autocap (entry, TRUE);
-  gtk_entry_set_input_mode (entry, 0); /* alpha-numeric-special */
-  g_object_set (G_OBJECT (entry->im_context), "use-show-hide", TRUE, NULL);
-  
+
   g_signal_connect (entry->im_context, "commit",
 		    G_CALLBACK (gtk_entry_commit_cb), entry);
   g_signal_connect (entry->im_context, "preedit_changed",
@@ -1174,6 +1267,10 @@ gtk_entry_init (GtkEntry *entry)
 		    G_CALLBACK (gtk_entry_retrieve_surrounding_cb), entry);
   g_signal_connect (entry->im_context, "delete_surrounding",
 		    G_CALLBACK (gtk_entry_delete_surrounding_cb), entry);
+  g_signal_connect (entry->im_context, "has_selection",
+		    G_CALLBACK (gtk_entry_has_selection_cb), entry);
+  g_signal_connect (entry->im_context, "clipboard_operation",
+		    G_CALLBACK (gtk_entry_clipboard_operation_cb), entry);
 }
 
 /*
@@ -1821,9 +1918,6 @@ gtk_entry_button_release (GtkWidget      *widget,
   if (event->window != entry->text_area || entry->button != event->button)
     return FALSE;
 
-  if (entry->editable)
-    gtk_im_context_show (entry->im_context);
-
   if (entry->in_drag)
     {
       gint tmp_pos = gtk_entry_find_position (entry, entry->drag_start_x);
@@ -2382,57 +2476,51 @@ gtk_entry_start_editing (GtkCellEditable *cell_editable,
 		    G_CALLBACK (gtk_cell_editable_key_press_event), NULL);
 }
 
-static gboolean g_unichar_notalpha (gunichar c)
+/* Returns TRUE if chr is valid in given input mode. Probably should be made
+   public, but there's no good place for it and the input mode design might
+   change, so for now we'll keep this here. */
+static gboolean
+hildon_gtk_input_mode_is_valid_char(HildonGtkInputMode mode, gunichar chr)
 {
-  return !g_unichar_isalpha (c);
-}
+  static const char *tele_chars_ascii = "pwPW/().-+*#?, ";
 
-static gboolean g_unichar_notdigit (gunichar c)
-{
-  return !g_unichar_isdigit (c);
-}
+  if (g_unichar_isalpha(chr) || chr == ' ')
+  {
+    if ((mode & HILDON_GTK_INPUT_MODE_ALPHA) != 0)
+      return TRUE;
+    if ((mode & HILDON_GTK_INPUT_MODE_HEXA) != 0 && g_unichar_isxdigit(chr))
+      return TRUE;
+  }
+  else if (g_unichar_isdigit(chr))
+  {
+    if ((mode & (HILDON_GTK_INPUT_MODE_NUMERIC | HILDON_GTK_INPUT_MODE_HEXA |
+                 HILDON_GTK_INPUT_MODE_TELE)) != 0)
+      return TRUE;
+  }
+  else
+  {
+    /* special = anything else than alphanumeric/space */
+    if ((mode & HILDON_GTK_INPUT_MODE_SPECIAL) != 0)
+      return TRUE;
 
-static gboolean g_unichar_isalpspace (gunichar c)
-{
-  return g_unichar_isalpha (c) || g_unichar_isspace (c);
-}
+    /* numeric also contains '-', but hexa doesn't */
+    if ((mode & HILDON_GTK_INPUT_MODE_NUMERIC) != 0 && chr == '-')
+      return TRUE;
+  }
 
-static gboolean g_unichar_isdigitminus (gunichar c)
-{
-  return g_unichar_isdigit (c) || c == '-';
-}
+  /* check special tele chars last */
+  if ((mode & HILDON_GTK_INPUT_MODE_TELE) != 0 &&
+      strchr(tele_chars_ascii, chr) != NULL)
+    return TRUE;
 
-static gboolean g_unichar_isalnumspa (gunichar c)
-{
-  return g_unichar_isdigitminus (c) ||
-         g_unichar_isalpha (c) ||
-         g_unichar_isspace (c);
-}
-
-static gboolean g_unichar_isxdigitspecial (gunichar c)
-{
-  return g_unichar_isxdigit (c) || !g_unichar_isalnum (c);
-}
-
-static gboolean g_unichar_istelephone (gunichar c)
-{
-  return g_unichar_isdigitminus (c) ||
-         c == 'P' || c == 'W' || c == 'p' || c == 'w' ||
-         c == '/' || c == '(' || c == ')' || c == '.' ||
-         c == '+' || c == '*' || c == '#' || c == '?' ||
-         c == ',';
-}
-
-static gboolean g_unichar_istelephonespecial (gunichar c)
-{
-  return g_unichar_istelephone (c) || !g_unichar_isalnum (c);
+  return FALSE;
 }
 
 static gboolean
 gtk_entry_filter_text (GtkEntry *entry, const gchar *str,
 		       gint length)
 {
-  gboolean (*filter_func) (gunichar) = NULL;
+  HildonGtkInputMode input_mode;
 
   g_assert (GTK_IS_ENTRY (entry));
 
@@ -2442,54 +2530,14 @@ gtk_entry_filter_text (GtkEntry *entry, const gchar *str,
   if (!g_utf8_validate (str, -1, NULL))
     return FALSE;
 
-  /*Input modes are nokia 770 specific - check hildon-input-mode-hint.h*/
-  switch (gtk_entry_get_input_mode (entry))
-    {
-    case 1:
-      filter_func = g_unichar_isdigitminus;
-      break;
-
-    case 2:
-      filter_func = g_unichar_isalpspace;
-      break;
-
-    case 3:
-      filter_func = g_unichar_notalpha;
-      break;
-
-    case 4:
-      filter_func = g_unichar_notdigit;
-      break;
-
-    case 5:
-      filter_func = g_unichar_isalnumspa;
-      break;
-
-    case 6:
-      filter_func = g_unichar_isxdigit;
-      break;
-
-    case 7:
-      filter_func = g_unichar_isxdigitspecial;
-      break;
-
-    case 8:
-      filter_func = g_unichar_istelephone;
-      break;
-
-    case 9:
-      filter_func = g_unichar_istelephonespecial;
-      break;
-
-    default:
-      return TRUE;
-      break;
-    }
-
+  input_mode = hildon_gtk_entry_get_input_mode (entry);
   while(length)
     {
-      if (!filter_func (g_utf8_get_char (str)))
-	return FALSE;
+      gunichar chr = g_utf8_get_char (str);
+
+      if (!hildon_gtk_input_mode_is_valid_char(input_mode, chr))
+        return FALSE;
+
       str = g_utf8_next_char (str);
       length--;
     }
@@ -2516,8 +2564,6 @@ gtk_entry_real_insert_text (GtkEditable *editable,
 
   n_chars = g_utf8_strlen (new_text, new_text_length);
 
-  if (g_object_class_find_property (G_OBJECT_GET_CLASS (entry->im_context),
-				    "input_mode"))
   if (!gtk_entry_filter_text (entry, new_text, n_chars))
     {
       g_signal_emit (entry,
@@ -3101,6 +3147,40 @@ gtk_entry_delete_surrounding_cb (GtkIMContext *slave,
                               entry->current_pos + offset + n_chars);
 
   return TRUE;
+}
+
+static gboolean
+gtk_entry_has_selection_cb(GtkIMContext *context, GtkEntry *entry)
+{
+  return gtk_editable_get_selection_bounds (GTK_EDITABLE (entry), NULL, NULL);
+}
+
+static void
+gtk_entry_clipboard_operation_cb(GtkIMContext *context,
+                                 GtkIMContextClipboardOperation op,
+                                 GtkEntry *entry)
+{
+  gint pos;
+
+  /* Similar to gtk_editable_*_clipboard(), handle these by sending signals
+   * instead of directly calling our internal functions. That way the
+   * application can hook into them if needed. */
+  switch (op)
+    {
+    case GTK_IM_CONTEXT_CLIPBOARD_OP_COPY:
+      g_signal_emit_by_name (entry, "copy_clipboard");
+
+      /* copying removes selection */
+      pos = gtk_editable_get_position (GTK_EDITABLE (entry));
+      gtk_editable_select_region (GTK_EDITABLE (entry), pos, pos);
+      break;
+    case GTK_IM_CONTEXT_CLIPBOARD_OP_CUT:
+      g_signal_emit_by_name (entry, "cut_clipboard");
+      break;
+    case GTK_IM_CONTEXT_CLIPBOARD_OP_PASTE:
+      g_signal_emit_by_name (entry, "paste_clipboard");
+      break;
+    }
 }
 
 /* Internal functions
@@ -4441,13 +4521,9 @@ gtk_entry_set_visibility (GtkEntry *entry,
 {
   g_return_if_fail (GTK_IS_ENTRY (entry));
 
-  g_object_set(G_OBJECT(entry->im_context), "visibility", visible, NULL);
   entry->visible = visible ? TRUE : FALSE;
   g_object_notify (G_OBJECT (entry), "visibility");
 
-  if (gtk_entry_get_autocap (entry) != visible)
-    gtk_entry_set_autocap (entry, visible);
-    
   gtk_entry_recompute (entry);
 }
 
@@ -5978,97 +6054,49 @@ static PangoLayoutIter *get_char_at_pos( PangoLayout *layout, gint x, gint y )
      return iter;
 }
 
-/*
- * gtk_entry_set_autocap:
+/**
+ * hildon_gtk_entry_set_input_mode:
  * @entry: a #GtkEntry
- * @autocap: autocap
+ * @mode: input mode
  *
- * Sets autocapitalization of the widget.
+ * Sets input mode of the widget.
+ *
+ * Since: maemo 2.0
  */
-static void
-gtk_entry_set_autocap (GtkEntry *entry,
-                       gboolean autocap)
+void
+hildon_gtk_entry_set_input_mode (GtkEntry *entry, HildonGtkInputMode mode)
 {
   g_return_if_fail (GTK_IS_ENTRY (entry));
 
-  if (gtk_entry_get_autocap (entry) != autocap)
+  if (!entry->visible)
+    mode |= HILDON_GTK_INPUT_MODE_INVISIBLE;
+
+  if (hildon_gtk_entry_get_input_mode (entry) != mode)
   {
-    g_object_set (G_OBJECT (entry->im_context), "autocap", autocap, NULL);
-    g_object_notify (G_OBJECT (entry), "autocap");
-  }
-}
-
-/*
- * gtk_entry_get_autocap:
- * @entry: a #GtkEntry
- *
- * Gets autocapitalization state of the widget.
- *
- * Return value: a state
- */
-static gboolean
-gtk_entry_get_autocap (GtkEntry *entry)
-{
-  gboolean autocap;
-  g_return_val_if_fail (GTK_IS_ENTRY (entry), FALSE);
-
-  g_object_get (G_OBJECT (entry->im_context), "autocap", &autocap, NULL);
-
-  return autocap;
-}
-
-/*
- * gtk_entry_set_input_mode:
- * @entry: a #GtkEntry
- * @autocap: input mode
- *
- * Sets autocapitalization of the widget.
- */
-static void
-gtk_entry_set_input_mode (GtkEntry *entry,
-                          gint      mode)
-{
-  g_return_if_fail (GTK_IS_ENTRY (entry));
-
-  if (g_object_class_find_property (G_OBJECT_GET_CLASS (entry->im_context),
-				    "input_mode"))
-  if (gtk_entry_get_input_mode (entry) != mode)
-  {
-    g_object_set (G_OBJECT (entry->im_context), "input_mode", mode, NULL);
+    g_object_set (G_OBJECT (entry->im_context), "hildon_input_mode", mode, NULL);
     g_object_notify (G_OBJECT (entry), "input_mode");
+    g_object_notify (G_OBJECT (entry), "hildon_input_mode");
   }
 }
 
-/*
- * gtk_entry_get_input_mode:
+/**
+ * hildon_gtk_entry_get_input_mode:
  * @entry: a #GtkEntry
  *
  * Gets input mode of the widget.
  *
  * Return value: input mode
+ *
+ * Since: maemo 2.0
  */
-static gint
-gtk_entry_get_input_mode (GtkEntry *entry)
+HildonGtkInputMode
+hildon_gtk_entry_get_input_mode (GtkEntry *entry)
 {
-  gint mode;
+  HildonGtkInputMode mode;
   g_return_val_if_fail (GTK_IS_ENTRY (entry), FALSE);
 
-  if (g_object_class_find_property (G_OBJECT_GET_CLASS (entry->im_context),
-				    "input_mode"))
-    g_object_get (G_OBJECT (entry->im_context), "input_mode", &mode, NULL);
-  else
-    mode = 0;
-
+  g_object_get (G_OBJECT (entry->im_context), "hildon_input_mode", &mode, NULL);
   return mode;
-}
-
-static void
-gtk_entry_unmap (GtkWidget *widget)
-{
-  gtk_im_context_hide (GTK_ENTRY (widget)->im_context);
-  
-  if (GTK_WIDGET_CLASS (parent_class)->unmap)
-    (* GTK_WIDGET_CLASS (parent_class)->unmap) (widget);
 }
 
 #define __GTK_ENTRY_C__

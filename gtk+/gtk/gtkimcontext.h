@@ -37,6 +37,13 @@ G_BEGIN_DECLS
 typedef struct _GtkIMContext       GtkIMContext;
 typedef struct _GtkIMContextClass  GtkIMContextClass;
 
+typedef enum
+{
+  GTK_IM_CONTEXT_CLIPBOARD_OP_COPY,
+  GTK_IM_CONTEXT_CLIPBOARD_OP_CUT,
+  GTK_IM_CONTEXT_CLIPBOARD_OP_PASTE
+} GtkIMContextClipboardOperation;
+
 struct _GtkIMContext
 {
   GObject parent_instance;
@@ -84,13 +91,15 @@ struct _GtkIMContextClass
 				   gint           *cursor_index);
   void     (*show)                (GtkIMContext   *context);
   void     (*hide)                (GtkIMContext   *context);
-   
+
+  /* Signals again: */
+  gboolean (*has_selection)       (GtkIMContext   *context);
+  void     (*clipboard_operation) (GtkIMContext   *context,
+                                   GtkIMContextClipboardOperation operation);
 
   /* Padding for future expansion */
-  void (*_gtk_reserved1) (void);
-  void (*_gtk_reserved2) (void);
-  void (*_gtk_reserved3) (void);
-  void (*_gtk_reserved4) (void);
+  void (*_gtk_reserved5) (void);
+  void (*_gtk_reserved6) (void);
 };
 
 GType    gtk_im_context_get_type            (void) G_GNUC_CONST;
@@ -122,6 +131,13 @@ gboolean gtk_im_context_delete_surrounding  (GtkIMContext   *context,
 					     gint            n_chars);
 void     gtk_im_context_show                (GtkIMContext   *context);
 void     gtk_im_context_hide                (GtkIMContext   *context);
+
+void     hildon_gtk_im_context_show          (GtkIMContext   *context);
+void     hildon_gtk_im_context_hide          (GtkIMContext   *context);
+gboolean hildon_gtk_im_context_has_selection(GtkIMContext   *context);
+void     hildon_gtk_im_context_copy         (GtkIMContext   *context);
+void     hildon_gtk_im_context_cut          (GtkIMContext   *context);
+void     hildon_gtk_im_context_paste        (GtkIMContext   *context);
 
 G_END_DECLS
 

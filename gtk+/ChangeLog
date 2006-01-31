@@ -1,3 +1,80 @@
+2006-01-31  Mohammad Anwari  <mohammad.anwari@nokia.com>
+	
+	IM context extension redesigned.
+
+	Added "hildon-input-mode" property and related code:
+
+	* gtk/gtktextview.h
+	* gtkentry.h
+	* gtk/gtktextview.c (gtk_text_view_class_init)
+	(gtk_text_view_set_property) (gtk_text_view_get_property)
+	(hildon_gtk_text_view_set_input_mode)
+	(hildon_gtk_text_view_get_input_mode) (gtk_text_view_init),
+	* gtk/gtkentry.c (gtk_entry_class_init)
+	(_gtk_input_mode_convert_old_to_new)
+	(_gtk_input_mode_convert_new_to_old) (gtk_entry_set_property)
+	(gtk_entry_get_property) (gtk_entry_init)
+	(hildon_gtk_entry_set_input_mode) (hildon_gtk_entry_get_input_mode):
+	Added "hildon_input_mode" property and deprecated "input_mode" and
+	"autocap" properties.
+	* gtk/gtkentry.c (hildon_gtk_input_mode_is_valid_char)
+	(gtk_entry_filter_text): Rewrote character validation code. Removed
+	g_unichar_*() functions that before were used for the validation.
+	* gtk/gtkimmulticontext.c (gtk_im_multicontext_set_property)
+	(gtk_im_multicontext_get_property) (gtk_im_multicontext_class_init)
+	(gtk_im_multicontext_set_slave) (gtk_im_multicontext_notify)
+	(gtk_im_multicontext_slave_input_mode_changed_cb): Removed all
+	properties from GtkIMMultiContext. Instead keep the
+	"hildon-input-mode" property from slave GtkIMContext mirrored.
+	* gtk/gtkimcontext.c (gtk_im_context_class_init)
+	(gtk_im_context_set_property) (gtk_im_context_get_property)
+	(gtk_im_context_init): Added "hildon-input-mode" property.
+	* gtk/gtkenums.h: Added HildonGtkInputMode.
+	* docs/reference/gtk/tmpl/gtkenums.sgml: Added HildonGtkInputMode
+	documentation.
+
+	Added clipboard handling for GtkIMContext:
+
+	* gtk/gtkimcontext.h: Added GtkIMContextClipboardOperation,
+	has_selection and clipboard_operation signals,
+	hildon_gtk_im_context_has_selection, _copy, _cut and _paste.
+	* gtk/gtkimcontext.c (gtk_im_context_class_init): Added
+	"has_selection" and "clipboard_operation" signals.
+	* gtk/gtkimcontext.c (hildon_gtk_im_context_has_selection)
+	(hildon_gtk_im_context_copy) (hildon_gtk_im_context_cut)
+	(hildon_gtk_im_context_paste): Added convenience functions for sending
+	clipboard handling signals.
+	* gtk/gtkimmulticontext.c (gtk_im_multicontext_class_init)
+	(gtk_im_multicontext_has_selection_cb)
+	(gtk_im_multicontext_clipboard_operation_cb): Forward "has_selection"
+	and "clipboard_operation" signals from slave GtkIMContext to ourself.
+	* gtk/gtktextview.c (gtk_text_view_init)
+	(gtk_text_view_has_selection_handler)
+	* gtk/gtkentry.c (gtk_entry_init) (gtk_entry_has_selection_cb)
+	(gtk_entry_clipboard_operation_cb): Implemented clipboard
+	functionality required by GtkIMContext.
+
+	Misc:
+
+	* gtk/gtktextview.c (gtk_text_view_class_init): Removed unused
+	"autocap" style property.
+	* gtk/gtkentry.c (gtk_entry_set_visibility): Removed unnecessary code.
+	* gtk/gtkimmulticontext.c (get_global_context_id): When fallbacking to
+	default locale, g_strdup() returned value so we don't crash.
+	* gtk/gtkimcontext.c (gtk_im_context_show) (gtk_im_context_hide):
+	Deprecated for hildon_gtk_im_context_show/hide.
+
+	Removed all IM showing/hiding code:
+
+	* gtk/gtktextview.c (gtk_text_view_init)
+   	* gtk/gtkentry.c (gtk_entry_init): Removed "use-show-hide" property.
+	* gtk/gtkwidget.c (gtk_widget_set_valid_context)
+	(gtk_widget_real_grab_focus)
+	* gtk/gtktextview.c (gtk_text_view_button_press_event)
+	(gtk_text_view_unmap)
+	* gtk/gtkentry.c (gtk_entry_button_release) (gtk_entry_unmap): Removed
+	IM show/hide handling code
+
 2006-01-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Merge from GNOME CVS, use G_MODULE_BIND_LAZY and G_MODULE_BIND_LOCAL
