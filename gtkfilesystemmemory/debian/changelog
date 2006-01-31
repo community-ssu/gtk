@@ -1,3 +1,10 @@
+gtkfilesystemmemory (0.11-1) unstable; urgency=low
+
+  * Fixed information banner when user tries to create already
+    existing folder (N#12997).
+
+ -- Kimmo H√§m√§l√§inen <kimmo.hamalainen@nokia.com>  Tue, 31 Jan 2006 11:07:02 +0200
+
 gtkfilesystemmemory (0.10.1-1) unstable; urgency=low
 
   * N#21990 Unable move bookmarks with ‰ or ˆ
@@ -10,4 +17,4 @@ gtkfilesystemmemory (0.10.0-1) unstable; urgency=low
   * Added COPYING file.
   * Added copyright headers to code files.
 
- -- Kimmo H‰m‰l‰inen <kimmo.hamalainen@nokia.com>  Tue, 22 Nov 2005 11:36:58 +0200
+ -- Kimmo H√§m√§l√§inen <kimmo.hamalainen@nokia.com>  Tue, 22 Nov 2005 11:36:58 +0200

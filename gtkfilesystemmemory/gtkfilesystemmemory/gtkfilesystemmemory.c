@@ -1032,7 +1032,7 @@ gtk_file_system_memory_create_folder( GtkFileSystem *file_system,
                                                                   path )) )
   {
     g_set_error( error, GTK_FILE_SYSTEM_ERROR, 
-                 GTK_FILE_SYSTEM_ERROR_BAD_FILENAME,
+                 GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS,
                  "Folder %s already exists", (gchar*)path );
     return FALSE;
   }
