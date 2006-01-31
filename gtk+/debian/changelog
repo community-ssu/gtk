@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.6.10-1.osso4) unstable; urgency=low
+
+  * Export a couple of private symbols for hildon. 
+  * debian/rules: export LINGUAS to build only en_GB catalogs as the rest is
+    useless.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 31 Jan 2006 19:00:32 +0200
+
 gtk+2.0 (2:2.6.10-1.osso3) unstable; urgency=low
 
   * GtkIMContext API additions:
