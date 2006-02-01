@@ -234,8 +234,11 @@ hn_wm_memory_update_lowmem_ui (gboolean lowmem)
       
       first_time = FALSE;
       hn_wm_memory_connect_lowmem_explain(others_menu_get_button(tasknav.others_menu));
+      /*
+       * We will need to go through the list of TN plugins now -- Johan
       hn_wm_memory_connect_lowmem_explain(tasknav.bookmark_button);
       hn_wm_memory_connect_lowmem_explain(tasknav.mail_button);
+      */
       hn_wm_memory_connect_lowmem_explain(as->toggle_button1);
       hn_wm_memory_connect_lowmem_explain(as->toggle_button2);
       hn_wm_memory_connect_lowmem_explain(as->toggle_button3);
@@ -244,8 +247,10 @@ hn_wm_memory_update_lowmem_ui (gboolean lowmem)
 
   gtk_widget_set_sensitive(others_menu_get_button(tasknav.others_menu),
 			   !lowmem);
+  /*
   gtk_widget_set_sensitive(tasknav.bookmark_button, !lowmem);
   gtk_widget_set_sensitive(tasknav.mail_button, !lowmem);
+  */
   
   application_switcher_update_lowmem_situation(tasknav.app_switcher, lowmem);
 }

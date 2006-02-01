@@ -30,14 +30,15 @@
 #ifndef HILDON_NAVIGATOR_LIB_FUNCTIONS_H
 #define HILDON_NAVIGATOR_LIB_FUNCTIONS_H
 
-#include <glib.h>
-#include <hildon-navigator-plugin.h>
+#include <gtk/gtkwidget.h>
 
 G_BEGIN_DECLS
 
 /** 
- * the functions that need to be in global scope for the plugin's library*/
+ * the functions that need to be in global scope for the plugin's library
  *
+*/
+
 /* hildon_navigator_lib_create
  * Called to initialise the plugin and the navigator button.  
  * This is called when the plugin is first loaded.

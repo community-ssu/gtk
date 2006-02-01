@@ -57,8 +57,7 @@ typedef struct
 {
     GtkWidget *main_window;
     
-    GtkWidget *bookmark_button;
-    GtkWidget *mail_button;
+    GtkBox *box;
     GtkWidget *app_switcher_button;
     GtkWidget *others_menu_button;
     
@@ -77,7 +76,25 @@ typedef struct
 
     void *app_switcher_dnotify_cb;
 
+    GList *plugins;
 } Navigator;
+
+/* The plugin structure */
+typedef struct
+{
+    gchar *name;
+    gchar *library;
+    gint position;
+    gboolean mandatory;
+    
+    void *handle;
+    void *data;
+    GtkWidget *button;
+    
+    FILE *watch;
+    gint actions;
+    
+} NavigatorPlugin;
 
 /*Symbols */
 enum {

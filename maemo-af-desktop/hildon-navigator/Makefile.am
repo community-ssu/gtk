@@ -63,7 +63,8 @@ hildon_othersmenu_DATA = .empty
 
 libhildonnavigatorincludeinstdir=$(includedir)/hildon-navigator-dev
 libhildonnavigatorincludeinst_DATA = \
-	hildon-navigator-interface.h
+	hildon-navigator-interface.h \
+	hildon-navigator-lib.h
 
 install-data-hook:
 	mkdir -p $(DESTDIR)/$(hildon_othersmenudir); \

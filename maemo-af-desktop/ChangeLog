@@ -1,4 +1,12 @@
 2006-02-01  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-navigator/*: Imported task navigator plugin framework
+	* configure.ac: 2.4.0
+
+2006-02-01  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-home/*: Imported hildon-home refactoring
+	* configure.ac: 2.3.0
+
+2006-02-01  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-home/hildon-home-image-loader.c: Don't copy GdkPixBuf
       when we can use the source directly.
 	* Closes N#22549
