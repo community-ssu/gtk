@@ -1,3 +1,16 @@
+maemo-af-desktop (2.2.2-1) unstable; urgency=low
+
+  * Closes N#20138
+  * Closes N#22549
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  1 Feb 2006 09:56:28 +0200
+
+maemo-af-desktop (2.2.1-1) unstable; urgency=low
+
+  * Added depency on libgtk2.0-bin (required by post-intall script)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 24 Jan 2006 14:31:31 +0200
+
 maemo-af-desktop (2.2.1-0) unstable; urgency=low
 
   * Applied fix to N#22407

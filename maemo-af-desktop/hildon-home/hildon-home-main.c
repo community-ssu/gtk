@@ -274,7 +274,11 @@ void toggle_applet_visibility(GtkCheckMenuItem *menuitem,
             g_free(statedata);
         }
 
-        osso_state_close(osso_home, fd);
+        if (fd != -1)
+        {
+            osso_state_close(osso_home, fd);
+        }
+
         if(plugin_exists[applet_num])
         {
             set_applet_width_and_position(applet_num);
@@ -2179,7 +2183,10 @@ void construct_applets()
     g_object_set(G_OBJECT(applet_area[HILDON_HOME_APPLET_WEB_SHORTCUT]), 
                  "visible", 
                  applet_info[HILDON_HOME_APPLET_WEB_SHORTCUT].status, NULL);
-    osso_state_close(osso_home, fd);
+    if (fd != -1)
+    {
+        osso_state_close(osso_home, fd);
+    }
 }
 
 /**

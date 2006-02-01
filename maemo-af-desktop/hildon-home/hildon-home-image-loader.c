@@ -312,7 +312,7 @@ gint save_image(GdkPixbuf *pixbuf, const gchar *path)
  */
 
 static
-gint create_background_pixbuf(GdkPixbuf **pixbuf, const GdkPixbuf *src_pixbuf,
+gint create_background_pixbuf(GdkPixbuf **pixbuf, GdkPixbuf *src_pixbuf,
                               gint width, gint height)
 {
     gint src_width = -1, src_height = -1;
@@ -332,7 +332,8 @@ gint create_background_pixbuf(GdkPixbuf **pixbuf, const GdkPixbuf *src_pixbuf,
     {
         /* source pixbuf is in the exactly wanted size,
            we can use it directly */
-        *pixbuf = gdk_pixbuf_copy(src_pixbuf);
+        *pixbuf = src_pixbuf;
+        g_object_ref (*pixbuf);
         return HILDON_HOME_IMAGE_LOADER_OK; 
     }
 
@@ -363,11 +364,7 @@ gint create_background_pixbuf(GdkPixbuf **pixbuf, const GdkPixbuf *src_pixbuf,
         {
             /* cropped pixbuf is in the exactly wanted size,
                we can use it directly */
-            *pixbuf = gdk_pixbuf_copy(part_pixbuf);
-            if (part_pixbuf != NULL) 
-            {
-                g_object_unref(part_pixbuf);
-            }
+            *pixbuf = part_pixbuf;
             return HILDON_HOME_IMAGE_LOADER_OK; 
         }
     } else {
@@ -496,8 +493,7 @@ void blend_new_skin_to_image_area(GdkPixbuf **pixbuf_orig,
             HILDON_HOME_SIDEBAR_HEIGHT_LOADER,
             GDK_INTERP_NEAREST);                
         g_object_unref(pixbuf_blend);
-        pixbuf_blend = gdk_pixbuf_copy(pixbuf_temp);
-        g_object_unref(pixbuf_temp);
+        pixbuf_blend = pixbuf_temp;
         width_blend = HILDON_HOME_SIDEBAR_WIDTH_LOADER;
         height_blend = HILDON_HOME_SIDEBAR_HEIGHT_LOADER;
     }
