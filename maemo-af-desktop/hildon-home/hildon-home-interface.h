@@ -29,6 +29,8 @@
 #ifndef HILDON_HOME_IF_KS_H
 #define HILDON_HOME_IF_KS_H
 
+#define HILDON_HOME_TITLEBAR_HEIGHT     60
+#define HILDON_TASKNAV_WIDTH            80
 
 /* Additions by Karoliina Salminen <karoliina.t.salminen at nokia dot com> */
 
@@ -36,7 +38,7 @@ int hildon_home_main(void);
 
 void home_deinitialize(gint keysnooper_id);
 
-
+GtkMenu * set_menu (GtkMenu * new_menu);
                                                  
 #endif
 

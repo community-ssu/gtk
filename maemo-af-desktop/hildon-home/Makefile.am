@@ -30,13 +30,16 @@ afinitdir=$(sysconfdir)/osso-af-init
 libhildonhome_la_SOURCES = \
 	hildon-home-main.h \
 	hildon-home-main.c \
-	hildon-home-applet.h \
-	hildon-home-applet.c \
-	hildon-home-plugin-loader.h \
-	hildon-home-plugin-loader.c \
-	hildon-home-plugin-interface.h \
-	hildon-home-interface.h
-	hildon-home-image-loader.h
+	applet-manager.h \
+	applet-manager.c \
+	layout-manager.h \
+	layout-manager.c \
+	home-applet-handler.h \
+	home-applet-handler.c \
+	home-applet-interface.h \
+	hildon-home-interface.h \
+	home-select-applets-dialog.h \
+	home-select-applets-dialog.c
 
 libhildonhome_la_LIBADD = $(HILDON_LIBS) $(MB_LIBS) $(OSSO_LIBS) $(COMMON_ERROR_LIBS)
 
@@ -48,4 +51,4 @@ home_image_loader_LDADD = $(GDK_LIBS) $(GNOME_VFS_LIBS) $(GCONF_LIBS) $(OSSO_LIB
 
 
 hildon_home_pluginincludeinstdir=$(includedir)/hildon-home-plugin
-hildon_home_pluginincludeinst_DATA = hildon-home-plugin-interface.h
+hildon_home_pluginincludeinst_DATA = home-applet-interface.h

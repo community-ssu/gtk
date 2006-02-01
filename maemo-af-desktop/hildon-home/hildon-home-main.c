@@ -1,7 +1,7 @@
 /*
  * This file is part of maemo-af-desktop
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2006 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -64,11 +64,12 @@
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
 #include <hildon-widgets/hildon-defines.h>
 #include <hildon-widgets/hildon-caption.h>
-#include "hildon-home-applet.h"
-#include "hildon-home-plugin-loader.h"
+#include "home-applet-handler.h"
 #include "hildon-home-main.h"
-#include "hildon-home-interface.h"
+#include "applet-manager.h"
+#include "home-select-applets-dialog.h"
 #include "osso-common-error.h"
+#include "layout-manager.h"
 #include "../kstrace.h"
 
 /* log include */
@@ -83,25 +84,14 @@ static gboolean home_is_topmost;
 
 static GtkWidget *home_fixed;
 /* Menu and titlebar */
+static GtkWidget *menu_used;
 static GtkWidget *titlebar_menu = NULL;
-static GtkWidget *menu_item[MAX_APPLETS];
-static GtkWidget *shortcut_properties;
 static GtkWidget *titlebar_submenu = NULL;
 
-static gboolean shortcut_applet_hideable;     /* FALSE if not allowed */
-static gboolean shortcut_properties_editable; /* FALSE if not allowed */
 static gboolean background_changable;         /* FALSE if not allowed */
 
 /* applet area */
 static GtkWidget *home_area_eventbox;
-static GtkWidget *applet_area[MAX_APPLETS];
-
-static gboolean plugin_exists[MAX_APPLETS];
-
-AppletInfo applet_info[MAX_APPLETS];
-
-static HildonHomePluginLoader *plugin[MAX_APPLETS];
-
 static GtkIconTheme *icon_theme;
 static osso_context_t *osso_home;
 
@@ -124,9 +114,6 @@ static const gchar *sidebar_original_image_savefile;
 static GtkWidget *loading_image_note = NULL;
 static gboolean loading_image_process_active = FALSE;
 static GPid image_loader_pid = -1;
-
-static gint num_applets = NUM_STATIC_APPLETS;
-static gchar *user_applets;  
 
 static MBDotDesktop *personalization;
 static MBDotDesktop *screen_calibration;
@@ -189,11 +176,11 @@ gboolean menu_popup_handler(GtkWidget *titlebar,
     {
         return FALSE;
     }
-    gtk_menu_popup(GTK_MENU(titlebar_menu), NULL, NULL,
+    gtk_menu_popup(GTK_MENU(menu_used), NULL, NULL,
                    (GtkMenuPositionFunc)titlebar_menu_position_func,
                    NULL, 1,
                    gtk_get_current_event_time());
-    gtk_menu_shell_select_first (GTK_MENU_SHELL(titlebar_menu), TRUE);
+    gtk_menu_shell_select_first (GTK_MENU_SHELL(menu_used), TRUE);
     return TRUE;
 }
 
@@ -220,120 +207,8 @@ gboolean menu_popdown_handler(GtkWidget *titlebar, GdkEvent *event,
     {
         return TRUE;
     }
-    gtk_menu_popdown(GTK_MENU(titlebar_menu));
+    gtk_menu_popdown(GTK_MENU(menu_used));
     return FALSE;
-}
-
-/**
- * @toggle_applet_visibility
- *
- * @param menuitem
- * @param user_data
- *
- * If applet is not created and loaded, do before toggle.
- * Toggles the visiblity of the individual applets.
- */
-
-static 
-void toggle_applet_visibility(GtkCheckMenuItem *menuitem,
-                              gpointer user_data)
-{
-    gboolean visibility = gtk_check_menu_item_get_active(menuitem);
-    gint applet_num = (gint)user_data;
-
-    applet_info[applet_num].status = !(applet_info[applet_num].status);
-    if (applet_info[applet_num].status && applet_area[applet_num] == NULL)
-    {
-        gint statesize = 0;
-        void *statedata = NULL;
-        gint fd;
-
-        fd = osso_state_open_read(osso_home);
-
-        if (fd != -1)
-        {
-            read(fd, &statesize, sizeof(int));
-            if (statesize > 0)
-            {
-                if ((statedata = g_malloc0(statesize*sizeof(void))) 
-                    == NULL)
-                {
-                    osso_state_close(osso_home, fd);
-                    return;
-                }
-                read(fd, statedata, statesize);
-            }
-        }
-        applet_area[applet_num] = 
-            create_applet(&plugin[applet_num], 
-                          applet_info[applet_num].plugin_name,
-                          statesize, statedata,
-                          applet_num);
-        if (statedata != NULL)
-        {
-            g_free(statedata);
-        }
-
-        if (fd != -1)
-        {
-            osso_state_close(osso_home, fd);
-        }
-
-        if(plugin_exists[applet_num])
-        {
-            set_applet_width_and_position(applet_num);
-        }
-    }
-    if(!plugin_exists[applet_num]) 
-    {
-        applet_info[applet_num].status = FALSE;
-        gtk_check_menu_item_set_active(
-            GTK_CHECK_MENU_ITEM(menu_item[applet_num]),FALSE);
-        return;
-    }
-
-    if (applet_num == HILDON_HOME_APPLET_WEB_SHORTCUT &&
-        shortcut_properties_editable &&
-        shortcut_properties != NULL) 
-    {
-        gtk_widget_set_sensitive(GTK_WIDGET(shortcut_properties), 
-                                 applet_info[applet_num].status);
-        if(applet_info[applet_num].status)
-        {
-            hildon_home_plugin_applet_foreground(plugin[applet_num]);
-        }
-    }
-    
-    g_object_set(G_OBJECT(applet_area[applet_num]), 
-                 "visible", visibility, NULL);
-
-    if (applet_num >= NUM_STATIC_APPLETS)
-    {
-        gchar *user_applets_new;
-
-        if (applet_info[applet_num].status)
-        {
-            if (user_applets)
-                user_applets_new = g_strconcat(g_strstrip(user_applets),
-                    " ", applet_info[applet_num].plugin_name, NULL);
-            else
-                user_applets_new = g_strdup(applet_info[applet_num].plugin_name);
-        } else
-        {
-            gchar **tokens;
-
-            tokens = g_strsplit(user_applets,
-                                applet_info[applet_num].plugin_name,
-                                2);
-            user_applets_new = g_strconcat(tokens[0], tokens[1], NULL);
-            g_strfreev(tokens);
-        }
-        g_free(user_applets);
-        user_applets = user_applets_new;
-    }
-
-    hildon_home_save_configure();
-    return;
 }
 
 /**
@@ -381,6 +256,134 @@ void construct_titlebar_area()
     gtk_widget_show(titlebar_label);
 }
 
+/* FIXME applet handler testing code. to be removed before refactoring 
+ * will be integrated 
+
+static 
+void move_applets_selected(GtkWidget *widget, 
+                           GdkEvent *event,
+                           gpointer data)
+{
+    applet_manager_t *man;
+    GList *list_item;
+    GtkWidget *applet;
+    gchar *identifier;
+
+    gint applet_x;
+    gint applet_y;
+    
+    man = applet_manager_singleton_get_instance();
+    
+    applet_manager_print_all(man);
+
+    for(list_item = applet_manager_get_identifier_all(man); 
+        list_item != NULL; list_item = list_item->next)
+    {
+        identifier = (gchar *)list_item->data;
+
+        applet = GTK_WIDGET(applet_manager_get_eventbox(man, identifier));
+        applet_manager_get_coordinates(man, identifier, &applet_x, &applet_y);
+        */
+        /* If not set place, cannot be show directly */
+        /* This will be handled by calling layout mode in real code*/
+/*
+        if(applet_x == -1 || applet_y == -1)
+        {
+            continue;
+        }
+
+        if(applet_x > 300)
+        {
+            applet_x = 20;
+        } else
+        {
+            applet_x += 100;
+        }
+        
+        gtk_fixed_move(GTK_FIXED(home_fixed), 
+                       applet, 
+                       applet_x, 
+                       applet_y);
+        applet_manager_set_coordinates(man, identifier, applet_x, applet_y);
+        gtk_widget_show_all(applet);
+    }
+    applet_manager_print_all(man);
+    applet_manager_configure_save_all(man);
+}
+
+static 
+void load_applet_configure_selected(GtkWidget *widget, 
+                                    GdkEvent *event,
+                                    gpointer data)
+{
+    applet_manager_t *man;
+    GList *old_list_item;
+    
+    GList *list_item;
+    GtkWidget *applet;
+    gchar *identifier;
+    gint applet_x = 20;
+    gint applet_y = -100;
+
+    man = applet_manager_singleton_get_instance();
+    applet_manager_print_all(man);
+    old_list_item = applet_manager_get_identifier_all(man);
+
+    applet_manager_configure_load_all(man);
+
+    for(list_item = applet_manager_get_identifier_all(man); 
+        list_item != NULL; list_item = list_item->next)
+    {
+        identifier = (gchar *)list_item->data;
+        applet_manager_get_coordinates(man, identifier, &applet_x, &applet_y);
+        fprintf(stderr, "\n-------\nHOME setting applet %s to %d,%d\n", 
+                identifier, 
+                applet_x, applet_y);
+        if(applet_x != -1 && applet_y != -1 )
+        {
+            gboolean identifier_exists = FALSE;
+            for(;old_list_item != NULL; old_list_item = old_list_item->next)
+            {
+                fprintf(stderr, "\nload: checking old_identifier %s\n", 
+                        (gchar *)old_list_item->data);
+                if(identifier != NULL && old_list_item->data != NULL &&
+                   g_str_equal(identifier, (gchar *)old_list_item->data))
+                {
+                    fprintf(stderr, "FOUND\n");
+                    identifier_exists = TRUE;
+                    break;
+                }   
+            }
+
+            applet = 
+                GTK_WIDGET(applet_manager_get_eventbox(man, identifier));
+
+            if(identifier_exists == FALSE)
+            {
+                fprintf(stderr, "\nload didn't find identifier %s\n", identifier);
+                gtk_fixed_put(GTK_FIXED(home_fixed),
+                              applet, 
+                              applet_x, 
+                              applet_y);
+            } else
+            {
+                fprintf(stderr, "\nload found identifier %s\n", identifier);
+                gtk_fixed_move(GTK_FIXED(home_fixed), 
+                               applet, 
+                               applet_x, 
+                               applet_y);
+            }
+
+            gtk_widget_show_all(applet);
+        }
+        
+    }
+    applet_manager_foreground_all(man);
+
+    gtk_widget_show_all(home_fixed);
+    applet_manager_print_all(man);
+}
+*/
 
 /**
  * @construct_titlebar_menu
@@ -396,63 +399,63 @@ void construct_titlebar_menu()
     GtkWidget *set_bg_image_item;
     GtkWidget *personalisation_item;
     GtkWidget *calibration_item;
-    gint applet_num;
+    GtkWidget *select_applets_item;
+    GtkWidget *layout_item;
+
+    /* FIXME applet handler testing code. to be removed before refactoring 
+     * will be integrated 
+    GtkWidget *menu_item;
+    GtkWidget *menu_item2;
+     */
 
     titlebar_menu = gtk_menu_new();
-    
+    menu_used = titlebar_menu;
+
     gtk_widget_set_name(titlebar_menu, HILDON_HOME_TITLEBAR_MENU_NAME); 
 
-    for(applet_num=0;applet_num<NUM_STATIC_APPLETS;applet_num++)
-    {
-        if(applet_num != HILDON_HOME_APPLET_WEB_SHORTCUT || 
-           shortcut_applet_hideable) 
-        {
-            menu_item[applet_num] = 
-                gtk_check_menu_item_new_with_label(
-                    applet_info[applet_num].label);
-            gtk_widget_show(menu_item[applet_num]);
-            gtk_menu_append(GTK_MENU(titlebar_menu), 
-                            menu_item[applet_num]);
-            if (applet_info[applet_num].status)
-            {
-                if(plugin_exists[applet_num])
-                {
-                    gtk_check_menu_item_set_active(
-                            GTK_CHECK_MENU_ITEM(menu_item[applet_num]),TRUE);                
-                    g_object_set(G_OBJECT(applet_area[applet_num]), 
-                                 "visible", TRUE, NULL);
-                }
-            }
-            g_signal_connect(G_OBJECT(menu_item[applet_num]), 
-                             "toggled",
-                             G_CALLBACK(toggle_applet_visibility), 
-                             (gint *)applet_num);
-        }
-    }
+    /* FIXME applet handler testing code. to be removed before refactoring 
+     * will be integrated 
+    menu_item = gtk_menu_item_new_with_label("Appletti siirry");
+    gtk_widget_show(menu_item);
+    gtk_menu_append(GTK_MENU(titlebar_menu), menu_item);
+    g_signal_connect(G_OBJECT(menu_item), 
+                     "activate",
+                     G_CALLBACK(move_applets_selected), NULL);
+    menu_item2 = gtk_menu_item_new_with_label("Lataa konffikset");
+    gtk_widget_show(menu_item2);
+    gtk_menu_append(GTK_MENU(titlebar_menu), menu_item2);
+    g_signal_connect(G_OBJECT(menu_item2), 
+                     "activate",
+                     G_CALLBACK(load_applet_configure_selected), NULL);
+     */
+            
 
     separator_item = gtk_separator_menu_item_new();
     gtk_widget_show(separator_item);
     gtk_menu_append(GTK_MENU(titlebar_menu), separator_item);
 
-    if(shortcut_properties_editable && 
-       plugin_exists[HILDON_HOME_APPLET_WEB_SHORTCUT])
-    {
-        shortcut_properties =
-            hildon_home_plugin_applet_properties(
-                plugin[HILDON_HOME_APPLET_WEB_SHORTCUT],
-                GTK_WINDOW(window));
-        if(shortcut_properties != NULL)
-        {
-            gtk_widget_show(shortcut_properties);
-            gtk_menu_append(GTK_MENU(titlebar_menu), shortcut_properties);
-            gtk_widget_set_sensitive(
-                GTK_WIDGET(shortcut_properties), 
-                applet_info[HILDON_HOME_APPLET_WEB_SHORTCUT].status);
-        }
-    }
+    /* 'Select Applets' dialog select */
+    select_applets_item =
+	            gtk_menu_item_new_with_label(_("home_me_select_applets"));
+    gtk_widget_show(select_applets_item);
+    gtk_menu_append(GTK_MENU(titlebar_menu), select_applets_item);
+    g_signal_connect(G_OBJECT(select_applets_item), "activate",
+		     G_CALLBACK(call_select_applets_dialog), 
+		     NULL);
 
+    /* Applet settings submenu should go here */
 
-    /* Sub menu */
+    /* Layout mode launch */
+
+    layout_item = gtk_menu_item_new_with_label(_("home_me_edit_layout"));
+    gtk_widget_show(layout_item);
+    gtk_menu_append(GTK_MENU(titlebar_menu), layout_item);
+    g_signal_connect(G_OBJECT(layout_item), "activate",
+		     G_CALLBACK(layout_mode_selected), 
+		     NULL);
+
+    /* Sub menu: tools */
+
     titlebar_submenu = gtk_menu_new();
 
     screen_item =
@@ -491,6 +494,24 @@ void construct_titlebar_menu()
                          G_CALLBACK(screen_calibration_selected), NULL);
     }
 }
+
+/**
+ * @call_select_applets_dialog
+ *
+ * @param GtkWidget * titlemenubar item caller (not used) 
+ * @param gpointer user_data (not used);
+ *
+ * @return void
+ *
+ * Calls Select Applets -dialog
+ **/
+static void call_select_applets_dialog(GtkWidget *widget, 
+		                       gpointer unused_data)
+{
+    select_applets_selected(GTK_EVENT_BOX(home_area_eventbox), 
+		            GTK_FIXED(home_fixed));
+}
+
 
 /* ------------------------*/
 /* titlebar area ends here */
@@ -661,9 +682,9 @@ gboolean screen_calibration_selected(GtkWidget *widget,
     return TRUE;
 }
 
-/**
+/** 
  * @load_original_bg_image_uri
- * 
+ *
  * Sets original image uri to global variable from save file. If not     
  * set uses hc default. Also sets the shortened filename without         
  * path to a global variable.    
@@ -932,6 +953,29 @@ void set_background_response_handler(GtkWidget *dialog,
 }
 
 /**
+ * @layout_mode_selected
+ *
+ * @param widget The parent widget
+ * @param event The event that caused this callback
+ * @param data standard cb data pointer, unused (null) 
+ * 
+ * @return TRUE (keeps cb alive)
+ * 
+ * Selects layout mode.
+ **/
+static 
+gboolean layout_mode_selected(GtkWidget *widget, 
+			      GdkEvent *event,
+			      gpointer data)
+
+{    
+    layout_mode_begin(GTK_EVENT_BOX(home_area_eventbox), 
+		      GTK_FIXED(home_fixed),
+		      NULL, NULL);
+    return TRUE;
+}
+
+/**
  * @set_background_dialog_selected
  *
  * @param widget The parent widget
@@ -1051,10 +1095,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                         g_str_equal(image_path, home_bg_image_uri)) 
                     {
                         bg_image_is_default = TRUE;
-                        /* This is calculated after the
-                           combobox_contents is sorted 
-                           combobox_active = active_count;
-                        */
                     }   
                     
                     gtk_list_store_append(GTK_LIST_STORE
@@ -1519,12 +1559,6 @@ void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
         break;
     }
     image_loader_pid = -1;
-    if(plugin_exists[HILDON_HOME_APPLET_WEB_SHORTCUT] &&
-       applet_info[HILDON_HOME_APPLET_WEB_SHORTCUT].status)
-    {
-        hildon_home_plugin_applet_foreground(
-            plugin[HILDON_HOME_APPLET_WEB_SHORTCUT]);
-    }
 }
 
 /**
@@ -2052,243 +2086,43 @@ void refresh_background_image()
 }
 
 /**
- * @create_applet
- *
- * @param plugin pointer to plugin loader 
- * @param plugin_name name of plugin
- * @param statesize size of state save data
- * @param statedata state save data
- * @param applet_num applets number in home
- *
- * @returns A new applet with child applet
- *
- * creates applet area widget
- */
-static 
-GtkWidget *create_applet(HildonHomePluginLoader **plugin,
-                         gchar *plugin_name, gint statesize,
-                         void *statedata, gint applet_num)
-{
-    GtkWidget *applet = NULL;
-    GtkWidget *parent_applet = NULL;
-
-    *plugin = hildon_home_plugin_loader_new(plugin_name,
-                                            statedata, &statesize, 
-                                            &applet);
-
-    if(applet != NULL) 
-    {
-        if (applet_num < NUM_STATIC_APPLETS)
-        {
-            parent_applet = hildon_home_applet_new();
-            gtk_container_add(GTK_CONTAINER(parent_applet), applet);
-        }
-        plugin_exists[applet_num] = TRUE;
-    } else 
-    {
-        plugin_exists[applet_num] = FALSE;
-    }
-
-    if (parent_applet)
-        return parent_applet;
-    else
-        return applet;
-}
-
-/**
- * @set_applet_width_and_position
- *
- * @param applet_num number of applet to added
- *
- * Sets size and position of the applet
- */
-static
-void set_applet_width_and_position(gint applet_num)
-{
-    gtk_widget_set_size_request(
-        GTK_WIDGET(applet_area[applet_num]),
-        applet_info[applet_num].width,
-        applet_info[applet_num].height);
-    
-    gtk_fixed_put(GTK_FIXED(home_fixed),
-                  GTK_WIDGET(applet_area[applet_num]),
-                  applet_info[applet_num].x,
-                  applet_info[applet_num].y);
-    gtk_widget_show_all(applet_area[applet_num]);
-    gtk_container_set_border_width(GTK_CONTAINER(applet_area[applet_num]),
-                                   HILDON_HOME_APPLET_BORDER_WIDTH);
-    hildon_home_plugin_applet_foreground(plugin[applet_num]);
-}
-
-/**
  * @construct_applets
  *
- * Constructs applets, which are visible except webshortcut is needed always
+ * Constructs applets, which are visible
  */
 
-static
-void construct_applets()
+static void construct_applets(void)
 {
 
-    gint applet_num, fd;
-    
-    fd = osso_state_open_read(osso_home);
-
-    for(applet_num= 0;applet_num<NUM_STATIC_APPLETS;applet_num++)
-    {
-        gint statesize = 0;
-        void *statedata = NULL;
-
-        if(!applet_info[applet_num].status && 
-            applet_num != HILDON_HOME_APPLET_WEB_SHORTCUT)
-        {
-            applet_area[applet_num] = NULL;
-            continue;
-        }
-
-        if (fd != -1)
-        {
-            read(fd, &statesize, sizeof(int));
-            if (statesize > 0)
-            {
-                if ((statedata = g_malloc0(statesize*sizeof(void))) 
-                    == NULL)
-                {
-                    continue;
-                }
-                read(fd, statedata, statesize);
-            }
-        }
-        applet_area[applet_num] = 
-            create_applet(&plugin[applet_num], 
-                          applet_info[applet_num].plugin_name,
-                          statesize, statedata,
-                          applet_num);
-
-        g_free(statedata);
-
-        if(plugin_exists[applet_num]) 
-        {
-            set_applet_width_and_position(applet_num);
-        }
-        if (applet_num == HILDON_HOME_APPLET_WEB_SHORTCUT &&
-            shortcut_properties_editable &&
-            shortcut_properties != NULL) 
-        {
-            gtk_widget_set_sensitive(GTK_WIDGET(shortcut_properties), 
-                                     applet_info[applet_num].status);
-        }
-    }
-
-    g_object_set(G_OBJECT(applet_area[HILDON_HOME_APPLET_WEB_SHORTCUT]), 
-                 "visible", 
-                 applet_info[HILDON_HOME_APPLET_WEB_SHORTCUT].status, NULL);
-    if (fd != -1)
-    {
-        osso_state_close(osso_home, fd);
-    }
-}
-
-/**
- * @construct_user_applets
- *
- * Constructs third party applets
- */
-static
-void construct_user_applets(void)
-{
-    gchar *pattern;
-    glob_t globbuf;
-    FILE *fp;
-    gint applet_num;
-    AppletInfo *info;
+    GList *list_item;
     GtkWidget *applet;
-    char buf[512];
-    gchar **tokens;
-    int i;
+    gchar *identifier;
+    applet_manager_t *man = applet_manager_singleton_get_instance();
+    gint applet_x = 20;
+    gint applet_y = -100;
     
-    pattern = g_strconcat(HILDON_HOME_USER_PLUGIN_PATH, "*conf", NULL);
-    
-    glob(pattern, 0, NULL, &globbuf);
-        
-    for (i = 0; i < globbuf.gl_pathc && num_applets < MAX_APPLETS; i++)
+    for(list_item = applet_manager_get_identifier_all(man); 
+        list_item != NULL; list_item = list_item->next)
     {
-        applet_num = num_applets;
-
-        info = &applet_info[applet_num];
-        info->label = malloc(HILDON_HOME_PATH_STR_LENGTH);
-        /* Terminate the string */
-        info->label[0] = 0;
-        info->plugin_name = malloc(HILDON_HOME_PATH_STR_LENGTH);
-        info->plugin_name[0] = 0;
-	
-        fp = fopen(globbuf.gl_pathv[i], "r");
-        if (fp != NULL)
+        identifier = (gchar *)list_item->data;
+        applet_manager_get_coordinates(man, identifier, &applet_x, &applet_y);
+        fprintf(stderr, "HOME setting applet %s to %d,%d\n", 
+                identifier, 
+                applet_x, applet_y);
+        if(applet_x != -1 && applet_y != -1 )
         {
-            /* Extract the applet name */
-            if (fgets(buf, sizeof(buf), fp))
-            {
-                tokens = g_strsplit(buf, "=", 2);
-                free(info->label);
-                info->label = g_strdup(g_strstrip(tokens[1]));
-                g_strfreev(tokens);
-            }
-            /* Exract the rest of the applet parameters */
-            if (fscanf(fp,
-                       HILDON_HOME_USER_PLUGIN_CONF_FORMAT,
-                       info->plugin_name,
-                       &info->width,
-                       &info->height,
-                       &info->x,
-                       &info->y)
-                < 0) {
-                 osso_log(LOG_ERR, "Couldn't load plugin conf file %s\n",
-                          globbuf.gl_pathv[i]);
-            } else
-            {
-                if (user_applets && strstr(user_applets, info->plugin_name))
-                    info->status = TRUE;
-                else
-                    info->status = FALSE;
+            applet = 
+                GTK_WIDGET(applet_manager_get_eventbox(man, identifier));
+            gtk_fixed_put(GTK_FIXED(home_fixed),
+                          applet, 
+                          applet_x, 
+                          applet_y);
 
-                num_applets++;
-
-                menu_item[applet_num] = 
-                    gtk_check_menu_item_new_with_label(
-                        info->label);
-                gtk_widget_show(menu_item[applet_num]);
-                gtk_menu_insert(GTK_MENU(titlebar_menu), 
-                                menu_item[applet_num], applet_num);
-                gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM (menu_item[applet_num]),
-                                               info->status);
-                g_signal_connect(G_OBJECT(menu_item[applet_num]), 
-                                 "toggled",
-                                 G_CALLBACK(toggle_applet_visibility), 
-                                 (gint *)applet_num);
-
-                if (info->status)
-                {
-                    applet = create_applet(&plugin[applet_num], 
-                                           info->plugin_name,
-                                           0, NULL,
-                                           applet_num);
-                    if (applet)
-                    {
-                        applet_area[applet_num] = applet;
-                        set_applet_width_and_position(applet_num);
-                    }
-                }
-            }
-            /* Added checking of NULL to prevent crashes Karoliina Salminen 13092005 */
-            if(fp!=NULL){
-                fclose(fp);
-            } 
-            /* End of fix 13092005 */
+            gtk_widget_show_all(applet);
         }
+        
     }
-    
-    globfree(&globbuf);
-    g_free(pattern);
+    applet_manager_foreground_all(man);
 }
 
 /* ----------------------*/
@@ -2364,10 +2198,6 @@ void hildon_home_initiliaze()
     gchar *configure_file;
     gchar bg_orig_filename[HILDON_HOME_PATH_STR_LENGTH] = {0};
     gchar image_dir[HILDON_HOME_PATH_STR_LENGTH] = {0};
-    gint applet_num;
-    gboolean applet_statusinfo[MAX_APPLETS_HC];
-    char buf[2048];
-    gchar **tokens;
 
     hildon_home_get_enviroment_variables();
     hildon_home_set_hardcode_values();
@@ -2413,38 +2243,8 @@ void hildon_home_initiliaze()
                  configure_file);
     } else 
     {
-        if(fscanf(fp, 
-                  HILDON_HOME_CONF_USER_FORMAT_SAVE,
-                  bg_orig_filename, image_dir, 
-                  &applet_statusinfo[0],
-                  &applet_statusinfo[1],
-                  &applet_statusinfo[2],
-                  &applet_statusinfo[3]) 
-           < 0)
-        {
-            osso_log(LOG_ERR, 
-                     "Couldn't load statusinfo from configure file %s", 
-                     user_original_bg_image);            
-        }
-        if (fgets(buf, sizeof(buf), fp))
-        {
-            tokens = g_strsplit(buf, ":", 2);
-            if (tokens)
-            {
-                if (tokens[1])
-                    user_applets = g_strdup(g_strstrip(tokens[1]));
-                else
-                    user_applets = "";
-
-                g_strfreev(tokens);
-            }
-        }
-        
-        for(applet_num= 0;applet_num<NUM_STATIC_APPLETS;applet_num++)
-        {
-            applet_info[applet_num].status =
-                applet_statusinfo[applet_num];
-        }
+        applet_manager_t *man = applet_manager_singleton_get_instance();
+        applet_manager_initialize_all(man);
     }
     if(fp != NULL && fclose(fp) != 0) 
     {
@@ -2472,6 +2272,8 @@ void hildon_home_initiliaze()
 
     g_free(configure_file);
 
+    layout_mode_init(osso_home);
+
     hildon_home_cp_read_desktop_entries();
 }
 
@@ -2484,66 +2286,7 @@ void hildon_home_initiliaze()
 static
 void hildon_home_set_hardcode_values( void)
 {
-    gint applet_num;
-    gchar *label;
-    gchar *plugin_name;
-    gint width;
-    gint height;
-    gint x;
-    gint y;
-
-    for(applet_num= 0;applet_num<NUM_STATIC_APPLETS;applet_num++)
-    {
-        switch(applet_num) {
-        case 0:
-            label =       HILDON_HOME_APPLET_0_LABEL;
-            plugin_name = HILDON_HOME_PLUGIN_0_NAME;
-            width =       HILDON_HOME_APPLET_0_WIDTH;
-            height =      HILDON_HOME_APPLET_0_HEIGHT;
-            x =           HILDON_HOME_APPLET_0_X;
-            y =           HILDON_HOME_APPLET_0_Y;
-            break;
-        case 1:
-            label =       HILDON_HOME_APPLET_1_LABEL;
-            plugin_name = HILDON_HOME_PLUGIN_1_NAME;
-            width =       HILDON_HOME_APPLET_1_WIDTH;
-            height =      HILDON_HOME_APPLET_1_HEIGHT;
-            x =           HILDON_HOME_APPLET_1_X;
-            y =           HILDON_HOME_APPLET_1_Y;
-            break;
-        case 2:
-            label =       HILDON_HOME_APPLET_2_LABEL;
-            plugin_name = HILDON_HOME_PLUGIN_2_NAME;
-            width =       HILDON_HOME_APPLET_2_WIDTH;
-            height =      HILDON_HOME_APPLET_2_HEIGHT;
-            x =           HILDON_HOME_APPLET_2_X;
-            y =           HILDON_HOME_APPLET_2_Y;
-            break;
-        case 3:
-            label =       HILDON_HOME_APPLET_3_LABEL;
-            plugin_name = HILDON_HOME_PLUGIN_3_NAME;
-            width =       HILDON_HOME_APPLET_3_WIDTH;
-            height =      HILDON_HOME_APPLET_3_HEIGHT;
-            x =           HILDON_HOME_APPLET_3_X;
-            y =           HILDON_HOME_APPLET_3_Y;
-            break;
-        default:
-            label = "";
-            plugin_name = "";
-            width = 0;
-            height = 0;
-            x = 0;
-            y = 0;
-            break;
-        }
-        applet_info[applet_num].label = label;
-        applet_info[applet_num].plugin_name = plugin_name;
-        applet_info[applet_num].width = width;
-        applet_info[applet_num].height = height;
-        applet_info[applet_num].x = x;
-        applet_info[applet_num].y = y;
-        applet_info[applet_num].status = HILDON_HOME_CONF_USER_APPLET_STATUS_DEFAULT;
-    }
+    /* FIXME */
 }
 
 /**
@@ -2583,15 +2326,6 @@ void hildon_home_get_factory_settings( void )
             osso_log(LOG_ERR, "Couldn't close file %s", 
                      user_original_bg_image);
         }
-    }
-    if(HILDON_HOME_APPLET_WEB_SHORTCUT < NUM_STATIC_APPLETS) 
-    {
-        shortcut_applet_hideable = ws_hide;
-        shortcut_properties_editable = ws_properties;
-    } else 
-    {
-        shortcut_applet_hideable = FALSE;
-        shortcut_properties_editable = FALSE;
     }
     background_changable = bg_change;
     if(bg_fact_filename != NULL) 
@@ -2700,50 +2434,7 @@ void hildon_home_construct_user_system_dir()
 static 
 void hildon_home_create_configure()
 {
-    FILE *fp;
-    gchar *configure_file;
-    gboolean applet_statusinfo[MAX_APPLETS_HC];
-    gint applet_num;
-
-    configure_file = 
-        g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
-                     HILDON_HOME_CONF_USER_FILENAME, NULL);
-    
-    fp = fopen (configure_file, "w");
-    if(fp == NULL) 
-    {
-        osso_log(LOG_ERR, "Couldn't open configure file %s", 
-                 configure_file);
-    } else 
-    {
-        for(applet_num=0;applet_num<MAX_APPLETS_HC;applet_num++)
-        {
-            applet_statusinfo[applet_num] = 
-                HILDON_HOME_CONF_USER_APPLET_STATUS_DEFAULT;
-        }
-        if(fprintf(fp, 
-                   HILDON_HOME_CONF_USER_FORMAT,
-                   HILDON_HOME_CONF_USER_ORIGINAL_FILENAME,
-                   HILDON_HOME_CONF_USER_IMAGE_DIR,
-                   applet_statusinfo[0], 
-                   applet_statusinfo[1], 
-                   applet_statusinfo[2], 
-                   applet_statusinfo[3],
-                   user_applets)
-           < 0)
-        {
-            osso_log(LOG_ERR, 
-                     "Couldn't write default values to configure file %s", 
-                     configure_file);
-        }
-    }
-    if(fp != NULL && fclose(fp) != 0) 
-    {
-        osso_log(LOG_ERR, "Couldn't close configure file %s", 
-                 configure_file);
-    }
-    
-    g_free(configure_file);
+    /* FIXME */
 }
 
 
@@ -2756,59 +2447,9 @@ void hildon_home_create_configure()
 static 
 void hildon_home_save_configure()
 {
-    FILE *fp;
-    gchar *configure_file;
-    gint applet_num;
-    gboolean applet_statusinfo[MAX_APPLETS_HC];
+    applet_manager_t *man = applet_manager_singleton_get_instance();
 
-    configure_file = 
-        g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
-                     HILDON_HOME_CONF_USER_FILENAME, NULL);
-        
-    fp = fopen (configure_file, "w");
-    if(fp == NULL) 
-    {
-        osso_log(LOG_ERR, "Couldn't open configure file %s", 
-                 configure_file);
-    } else 
-    {
-        for(applet_num= 0;applet_num<MAX_APPLETS_HC;applet_num++)
-        {
-            if(applet_num < NUM_STATIC_APPLETS && plugin_exists[applet_num])
-            {
-                applet_statusinfo[applet_num] = 
-                    applet_info[applet_num].status;
-                    
-            } else
-            {
-                applet_statusinfo[applet_num] = FALSE;
-            }
-        }
-        if(fprintf(fp, 
-                   HILDON_HOME_CONF_USER_FORMAT,
-                   HILDON_HOME_CONF_USER_ORIGINAL_FILENAME,
-                   HILDON_HOME_CONF_USER_IMAGE_DIR,
-                   applet_statusinfo[0], 
-                   applet_statusinfo[1], 
-                   applet_statusinfo[2], 
-                   applet_statusinfo[3],
-                   user_applets)
-           < 0)
-        {
-           osso_log(LOG_ERR, 
-                     "Couldn't write values to configure file %s", 
-                     configure_file);
-        }
-        
-
-    }
-    if(fp != NULL && fclose(fp) != 0) 
-    {
-        osso_log(LOG_ERR, "Couldn't close configure file %s", configure_file);
-    }
-    
-    g_free(configure_file);
-
+    applet_manager_configure_save_all(man);
 }
 
 /**
@@ -2909,11 +2550,11 @@ gint hildon_home_key_press_listener (GtkWidget * widget,
         if (!menu_key_pressed)
         {
             menu_key_pressed = TRUE;
-            gtk_menu_popup(GTK_MENU(titlebar_menu), NULL, NULL,
+            gtk_menu_popup(GTK_MENU(menu_used), NULL, NULL,
                            (GtkMenuPositionFunc)
                            titlebar_menu_position_func,
                            NULL, 0, gtk_get_current_event_time ());
-            gtk_menu_shell_select_first (GTK_MENU_SHELL(titlebar_menu), TRUE);
+            gtk_menu_shell_select_first (GTK_MENU_SHELL(menu_used), TRUE);
 
             /* we'll have to grab this widget so we can catch the key
                release signal, which is needed to prevent menu opening/closing
@@ -2950,78 +2591,6 @@ gint hildon_home_key_release_listener (GtkWidget * widget,
 }
 
 
-/**
- * @set_focus_to_widget_cb
- * 
- * @param window
- * @param widget
- * @param user_data
- * 
- * Handles the keyboard events for the Home
- */
-
-static void
-set_focus_to_widget_cb(GtkWindow *window,
-                       GtkWidget *widget,
-                       gpointer user_data)
-{
-    GtkWidget *parent = NULL;
-    gboolean applet_selected = FALSE;
-
-    if (GTK_IS_WIDGET(widget))
-    {
-        parent = gtk_widget_get_parent(widget);
-    }
-
-    while (parent)
-    {
-        if (HILDON_IS_HOME_APPLET(parent))
-        {
-            gint applet_num;
-
-            for(applet_num=0;applet_num<num_applets;applet_num++)
-            {
-                if(plugin_exists[applet_num]) 
-                {                
-                    if (parent == applet_area[applet_num])
-                    {
-                        hildon_home_applet_has_focus(
-                            HILDON_HOME_APPLET(applet_area[applet_num]), 
-                            TRUE);
-                        applet_selected = TRUE;
-                    } else
-                    {
-                        hildon_home_applet_has_focus(
-                            HILDON_HOME_APPLET(applet_area[applet_num]), 
-                            FALSE);
-                    }
-                }
-            }
-
-            if (applet_selected)
-            {
-                return;
-            }
-        }
-
-        parent = gtk_widget_get_parent(parent);
-    }
-
-    /* None applet selected */
-    if (!applet_selected)
-    {
-        gint applet_num;
-
-        for(applet_num=0;applet_num<num_applets;applet_num++)
-        {
-            if(plugin_exists[applet_num]) 
-            {
-                hildon_home_applet_has_focus(
-                    HILDON_HOME_APPLET(applet_area[applet_num]), FALSE);
-            }
-        }
-    }
-}
 
 /**
  * @hildon_home_deinitiliaze
@@ -3032,7 +2601,7 @@ set_focus_to_widget_cb(GtkWindow *window,
 static 
 void hildon_home_deinitiliaze()
 {
-    gint applet_num;
+    applet_manager_t *man = applet_manager_singleton_get_instance();
 
     if(home_user_image_dir != NULL)
     {
@@ -3058,15 +2627,9 @@ void hildon_home_deinitiliaze()
     {
         g_free((gchar *)sidebar_original_image_savefile);
     }
-
-    for(applet_num=0;applet_num<num_applets;applet_num++)
-    {
-        if(plugin_exists[applet_num])
-        {
-            hildon_home_plugin_deinitialize(plugin[applet_num]);
-        }
-    }
+    applet_manager_deinitialize_all(man);
 }
+
 /**
  * @get_active_main_window
  *
@@ -3150,7 +2713,6 @@ GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent,
     if (prop->window == GDK_ROOT_WINDOW () && prop->atom == active_window_atom)
     { 
         Atom realtype;
-        gint applet_num = 0;
         gint error_trap = 0;
         int format;
         int status;
@@ -3185,52 +2747,17 @@ GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent,
             get_active_main_window(win.win[0]) != my_window &&
             home_is_topmost == TRUE)
         {
-            int fd = 0, retval = 0;
-            gchar *statedata = NULL;
-            gint statesize = 0;
-            /* We're no longer topmost, so we will statesave
-               the applet states */
+            applet_manager_t *man = applet_manager_singleton_get_instance();
 
-            home_is_topmost = FALSE;
-            fd = osso_state_open_write(osso_home);
+            applet_manager_background_state_save_all(man);
 
-            if (fd == -1)
-            {
-                return GDK_FILTER_CONTINUE;
-            }
-            for (applet_num = 0; applet_num < num_applets; applet_num++)
-            {
-                if (plugin_exists[applet_num])
-                {
-                    hildon_home_plugin_applet_background(plugin[applet_num]);
-                    retval = 
-                        hildon_home_plugin_applet_save_state(
-                            plugin[applet_num], 
-                            (void *)&statedata, &statesize);
-                    if (retval != 1 || statesize == 0)
-                    {
-                        /* Indicate that this plugin has no saved state */
-                        write(fd, "\0", 1);
-                        continue;
-                    }
-                    write(fd, &statesize, sizeof(int));
-                    write(fd, statedata, statesize);
-                }
-            }
-            fsync(fd);
-            osso_state_close(osso_home, fd);
-            g_free(statedata);
         } else if (win.win[0] == my_window &&
                    home_is_topmost == FALSE)
         {
+            applet_manager_t *man = applet_manager_singleton_get_instance();
+
+            applet_manager_foreground_all(man);
             home_is_topmost = TRUE;
-            for (applet_num = 0; applet_num < num_applets; applet_num++)
-            {
-                if (plugin_exists[applet_num] && applet_info[applet_num].status)
-                {
-                    hildon_home_plugin_applet_foreground(plugin[applet_num]);
-                }
-            }
         }
 
         if (win.win != NULL)
@@ -3276,7 +2803,16 @@ gboolean remove_startup_lock_timeout(gpointer data)
      unlink(STARTUP_LOCK_FILE);
      return FALSE;
 }
+
  
+GtkMenu * set_menu (GtkMenu * new_menu)
+{
+    GtkMenu * previous;
+    previous = GTK_MENU(menu_used);
+    gtk_menu_popdown(previous);
+    menu_used = GTK_WIDGET(new_menu);
+    return previous;
+} 
 
 int hildon_home_main(void)
 {
@@ -3291,9 +2827,6 @@ int hildon_home_main(void)
     
     home_is_topmost = TRUE;    
 
-    g_signal_connect_after(window, "set-focus", 
-                           G_CALLBACK(set_focus_to_widget_cb), NULL);
-    
     gtk_window_set_has_frame( GTK_WINDOW( window ), FALSE );
     
     gdk_window_get_geometry(gdk_xid_table_lookup(GDK_ROOT_WINDOW ()),
@@ -3316,12 +2849,9 @@ int hildon_home_main(void)
     hildon_home_display_base();
     
     construct_applets();
-    
+
     construct_titlebar_menu();
     
-    /* added for constructing user installable applets, courtesy Tomas Junnonen */ 
-    construct_user_applets();
- 
     /* Remove the lock to mark a successfull startup */
     g_timeout_add(STARTUP_LOCK_TIME, remove_startup_lock_timeout, NULL);
 
@@ -3333,8 +2863,6 @@ int hildon_home_main(void)
     g_signal_connect(G_OBJECT(window), "key_release_event",
                      G_CALLBACK(hildon_home_key_release_listener), NULL);
 
-    /*gdk_window_add_filter(GDK_WINDOW(window->window),
-                          hildon_home_event_filter, NULL);*/
     
     /* Hand applied Mathew's patch here, Karoliina Salminen 07092005 bugfixcamp */
     /* Set up the filter so we _only_ get notified for propertys

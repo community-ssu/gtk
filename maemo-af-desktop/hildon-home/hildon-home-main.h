@@ -1,7 +1,7 @@
 /*
  * This file is part of maemo-af-desktop
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2006 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -31,6 +31,7 @@
 #define HILDON_CLOCKAPP_HOME_MAIN_H
 
 #include "hildon-home-image-loader.h"
+#include "hildon-home-interface.h"
 
 G_BEGIN_DECLS
 
@@ -38,11 +39,9 @@ G_BEGIN_DECLS
 #define _(a) gettext(a)
 
 #define HILDON_MENU_KEY                 GDK_F4
-#define MAX_APPLETS                     10
-#define NUM_STATIC_APPLETS              4
+
 #define WINDOW_WIDTH                    800
 #define WINDOW_HEIGHT                   480
-#define HILDON_TASKNAV_WIDTH            80
 #define HILDON_HOME_ENV_HOME            "HOME"
 
 #define HILDON_HOME_MMC_NOT_OPEN_TEXT   _("home_ib_mem_cov_open_not_text")
@@ -97,18 +96,10 @@ G_BEGIN_DECLS
 #define HILDON_HOME_FILE_CHOOSER_EMPTY  _("ckdg_va_select_object_no_images")
 
 
-/* if this is changed, following defines and functions needs to be
- * changed accordingly
- * functions: 
- * - hildon_home_save_configure()
- * - hildon_home_create_configure()           
- * - hildon_home_initiliaze()
- */  
-#define MAX_APPLETS_HC                  4
 #define HILDON_HOME_CONF_USER_FORMAT \
-        "user_original:%s\nimage_dir:%s\napplets:0=%d,1=%d,2=%d,3=%d\nuser-applets:%s\n"
+        "user_original:%s\nimage_dir:%s\n"
 #define HILDON_HOME_CONF_USER_FORMAT_SAVE \
-        "user_original:%200s\nimage_dir:%200s\napplets:0=%d,1=%d,2=%d,3=%d\n"
+        "user_original:%200s\nimage_dir:%200s\n"
 
 #define HILDON_HOME_USER_PLUGIN_PATH "/var/lib/install/usr/lib/hildon-home/"
 #define HILDON_HOME_USER_PLUGIN_CONF_FORMAT    \
@@ -144,7 +135,6 @@ G_BEGIN_DECLS
 
 /* title bar and menu */
 #define HILDON_HOME_TITLEBAR_NAME       "HildonHomeTitleBar"
-#define HILDON_HOME_TITLEBAR_HEIGHT     60
 #define HILDON_HOME_TITLEBAR_WIDTH      (WINDOW_WIDTH-HILDON_TASKNAV_WIDTH)
 #define HILDON_HOME_TITLEBAR_X          0
 #define HILDON_HOME_TITLEBAR_Y          0
@@ -198,58 +188,10 @@ G_BEGIN_DECLS
 
 /* generic applet values */
 #define HILDON_HOME_APPLET_BORDER_WIDTH 6
-#define HILDON_HOME_APPLET_LEFT_WIDTH   396
 #define HILDON_HOME_APPLET_LEFT_X       HILDON_HOME_APP_AREA_X+\
                                         HILDON_HOME_APP_AREA_MARGIN
-
-#define HILDON_HOME_APPLET_RIGHT_X      HILDON_HOME_APPLET_LEFT_X+\
-                                        HILDON_HOME_APPLET_LEFT_WIDTH+\
-                                        HILDON_HOME_APP_AREA_MARGIN_INNER
-
-#define HILDON_HOME_APPLET_RIGHT_WIDTH  290
 #define HILDON_HOME_APPLET_TOP_Y        HILDON_HOME_APP_AREA_Y+\
                                         HILDON_HOME_APP_AREA_MARGIN
-
-
-/* internet radio applet */
-#define HILDON_HOME_APPLET_RADIO        0
-#define HILDON_HOME_APPLET_0_LABEL      _("home_me_internet_radio")
-#define HILDON_HOME_PLUGIN_0_NAME       "libhome_radio_plugin.so"
-#define HILDON_HOME_APPLET_0_WIDTH      HILDON_HOME_APPLET_RIGHT_WIDTH
-#define HILDON_HOME_APPLET_0_HEIGHT     142
-#define HILDON_HOME_APPLET_0_X          HILDON_HOME_APPLET_RIGHT_X
-#define HILDON_HOME_APPLET_0_Y          HILDON_HOME_APPLET_TOP_Y
-
-/* clock applet */
-#define HILDON_HOME_APPLET_CLOCK        1
-#define HILDON_HOME_APPLET_1_LABEL      _("home_me_clock")
-#define HILDON_HOME_PLUGIN_1_NAME       "libhome_clock_plugin.so"
-#define HILDON_HOME_APPLET_1_WIDTH      HILDON_HOME_APPLET_RIGHT_WIDTH
-#define HILDON_HOME_APPLET_1_HEIGHT     114
-#define HILDON_HOME_APPLET_1_X          HILDON_HOME_APPLET_RIGHT_X
-#define HILDON_HOME_APPLET_1_Y          (WINDOW_HEIGHT-\
-                                         (HILDON_HOME_APPLET_1_HEIGHT+\
-                                          HILDON_HOME_APP_AREA_MARGIN))
-
-/* rss applet */
-#define HILDON_HOME_APPLET_NEWS         2
-#define HILDON_HOME_APPLET_2_LABEL      _("home_me_news")
-#define HILDON_HOME_PLUGIN_2_NAME       "libhome_rss_plugin.so"
-#define HILDON_HOME_APPLET_2_WIDTH      HILDON_HOME_APPLET_LEFT_WIDTH
-#define HILDON_HOME_APPLET_2_HEIGHT     402
-#define HILDON_HOME_APPLET_2_X          HILDON_HOME_APPLET_LEFT_X
-#define HILDON_HOME_APPLET_2_Y          HILDON_HOME_APPLET_TOP_Y
-
-/* image viewer applet */
-#define HILDON_HOME_APPLET_WEB_SHORTCUT 3
-#define HILDON_HOME_APPLET_3_LABEL      _("home_me_web_shrt")
-#define HILDON_HOME_PLUGIN_3_NAME       "libhome_image_viewer_plugin.so"
-#define HILDON_HOME_APPLET_3_WIDTH      HILDON_HOME_APPLET_RIGHT_WIDTH
-#define HILDON_HOME_APPLET_3_HEIGHT     134 
-#define HILDON_HOME_APPLET_3_X          HILDON_HOME_APPLET_RIGHT_X
-#define HILDON_HOME_APPLET_3_Y          HILDON_HOME_APPLET_TOP_Y+\
-                                        HILDON_HOME_APPLET_0_HEIGHT+\
-                                        HILDON_HOME_APP_AREA_MARGIN_INNER
 
 /* HOM-NOT006*/
 #define HILDON_HOME_LOADING_IMAGE_TEXT   _("home_ib_loading_image")
@@ -267,27 +209,14 @@ G_BEGIN_DECLS
 #define HILDON_HOME_FILE_UNREADABLE_TEXT _("sfil_ib_opening_not_allowed")
 
 #define TRANSIENCY_MAXITER 50
-
-/* Adding new applet needs following functions to be changed accordingly
- * functions: 
- * - hildon_home_set_hardcode_values()
- */  
-
-typedef struct {
-    gchar *label;
-    gchar *plugin_name;
-    gint width;
-    gint height;
-    gint x;
-    gint y;
-    gboolean status;
-} AppletInfo;
-
+					
+					
 enum { 	 
      BG_IMAGE_NAME, 	 
      BG_IMAGE_FILENAME, 	 
      BG_IMAGE_PRIORITY 	 
 }; 	 
+
   	 
 /* titlebar functions */
 static void titlebar_menu_position_func(GtkMenu *menu, gint *x, gint *y,
@@ -297,15 +226,18 @@ static gboolean menu_popup_handler(GtkWidget *titlebar,
                                GdkEvent *event, gpointer user_data);
 static gboolean menu_popdown_handler(GtkWidget *titlebar,
                                      GdkEvent *event, gpointer user_data);
-static void toggle_applet_visibility(GtkCheckMenuItem *menuitem,
-                                     gpointer user_data);
 static void construct_titlebar_area(void);
 static void construct_titlebar_menu(void);
-
+static void call_select_applets_dialog(GtkWidget *widget,
+		                       gpointer unused_data);
 
 /* applet area functions */
 static gchar *get_filename_from_treemodel(GtkComboBox *box, gint index);
 static gint get_priority_from_treemodel(GtkTreeModel *tree, GtkTreeIter *iter);
+
+static gboolean layout_mode_selected(GtkWidget *widget, 
+				     GdkEvent *event, 
+				     gpointer data);
 
 static gboolean personalisation_selected(GtkWidget *widget, 
                                          GdkEvent *event, 
@@ -357,11 +289,6 @@ static GdkPixbuf *get_background_image(void);
 static GdkPixbuf *get_factory_default_background_image(void);
 static void set_default_background_image(void);
 static void refresh_background_image(void);
-
-static GtkWidget *create_applet(HildonHomePluginLoader **plugin,
-                                gchar *plugin_name, gint statesize,
-                                void *statedata, gint applet_num);
-static void set_applet_width_and_position(gint applet_num);
 static void construct_applets(void);
 
 /* generic functions */
@@ -383,14 +310,12 @@ static gint hildon_home_key_release_listener(GtkWidget *widget,
                                              GdkEventKey *keyevent,
                                              gpointer data);
 
-static void set_focus_to_widget_cb(GtkWindow *window, GtkWidget *widget,
-                                   gpointer user_data);
-
 static void hildon_home_deinitiliaze(void);
 
 static GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent, 
                                                  GdkEvent *event, 
                                                  gpointer data);
+
 G_END_DECLS
 
 #endif

@@ -206,12 +206,16 @@ afinitdir = $(sysconfdir)/osso-af-init
 libhildonhome_la_SOURCES = \
 	hildon-home-main.h \
 	hildon-home-main.c \
-	hildon-home-applet.h \
-	hildon-home-applet.c \
-	hildon-home-plugin-loader.h \
-	hildon-home-plugin-loader.c \
-	hildon-home-plugin-interface.h \
-	hildon-home-interface.h
+	applet-manager.h \
+	applet-manager.c \
+	layout-manager.h \
+	layout-manager.c \
+	home-applet-handler.h \
+	home-applet-handler.c \
+	home-applet-interface.h \
+	hildon-home-interface.h \
+	home-select-applets-dialog.h \
+	home-select-applets-dialog.c
 
 
 libhildonhome_la_LIBADD = $(HILDON_LIBS) $(MB_LIBS) $(OSSO_LIBS) $(COMMON_ERROR_LIBS)
@@ -224,7 +228,7 @@ home_image_loader_SOURCES = \
 home_image_loader_LDADD = $(GDK_LIBS) $(GNOME_VFS_LIBS) $(GCONF_LIBS) $(OSSO_LIBS)
 
 hildon_home_pluginincludeinstdir = $(includedir)/hildon-home-plugin
-hildon_home_pluginincludeinst_DATA = hildon-home-plugin-interface.h
+hildon_home_pluginincludeinst_DATA = home-applet-interface.h
 subdir = hildon-home
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -234,8 +238,9 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 
 libhildonhome_la_LDFLAGS =
 libhildonhome_la_DEPENDENCIES =
-am_libhildonhome_la_OBJECTS = hildon-home-main.lo hildon-home-applet.lo \
-	hildon-home-plugin-loader.lo
+am_libhildonhome_la_OBJECTS = hildon-home-main.lo applet-manager.lo \
+	layout-manager.lo home-applet-handler.lo \
+	home-select-applets-dialog.lo
 libhildonhome_la_OBJECTS = $(am_libhildonhome_la_OBJECTS)
 bin_PROGRAMS = home-image-loader$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
@@ -248,10 +253,12 @@ home_image_loader_LDFLAGS =
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/hildon-home-applet.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/applet-manager.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-home-image-loader.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-home-main.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hildon-home-plugin-loader.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/home-applet-handler.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/home-select-applets-dialog.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/layout-manager.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -345,10 +352,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-home-applet.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/applet-manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-home-image-loader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-home-main.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-home-plugin-loader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/home-applet-handler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/home-select-applets-dialog.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/layout-manager.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
@@ -614,7 +623,6 @@ uninstall-am: uninstall-binPROGRAMS \
 	uninstall-hildon_home_pluginincludeinstDATA uninstall-info-am \
 	uninstall-libLTLIBRARIES uninstall-pkgconfigDATA
 
-	hildon-home-image-loader.h
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
