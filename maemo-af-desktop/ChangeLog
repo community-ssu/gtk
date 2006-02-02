@@ -1,4 +1,10 @@
 2006-02-02  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-home/hildon-home-main.c:
+	  - get_sidebar_image_to_blend: Don't increment the style reference
+	    counter if we don't actually keep a reference on the style.
+	* Closes N#22605
+
+2006-02-02  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/application-switcher.c:
 	(application_switcher_init), (button_toggled),
 	(app_switcher_icon_anim_timeout),

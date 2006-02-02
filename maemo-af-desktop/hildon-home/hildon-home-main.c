@@ -1758,7 +1758,6 @@ char *get_sidebar_image_to_blend()
     if(style != NULL && style->rc_style->bg_pixmap_name[0] != NULL)
     {
         image_name = g_strdup(style->rc_style->bg_pixmap_name[0]);
-        g_object_ref(style);
     }
     return image_name;
 }
@@ -1785,7 +1784,6 @@ char *get_titlebar_image_to_blend()
     if(style != NULL && style->rc_style->bg_pixmap_name[0] != NULL)
     {
         image_name = g_strdup(style->rc_style->bg_pixmap_name[0]);
-        g_object_ref(style);
     }
     return image_name;
 }
