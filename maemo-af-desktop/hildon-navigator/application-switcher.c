@@ -67,6 +67,16 @@
 /* Blinking pixbuf anim widget */
 #include "hildon-pixbuf-anim-blinker.h"
 
+#define ANIM_DURATION 5000 	/* 5 Secs for blinking icons */
+#define ANIM_FPS      2
+
+typedef struct AppSwitcherTimeoutData
+{
+  ApplicationSwitcher_t *as;
+  GtkWidget             *menuitem;
+
+} AppSwitcherTimeoutData;
+
 static gboolean button_expose_event(GtkWidget *widget,
                                      GdkEventExpose *event,
                                      gpointer user_data);
@@ -116,6 +126,9 @@ static void show_tooltip_menu(GtkWidget *menu,
 static void button_toggled(GtkToggleButton *togglebutton,
                             gpointer data);
 
+static GdkPixbuf*
+app_switcher_get_pixbuf_icon_from_theme (const char *icon_name);
+
 static GtkWidget*
 app_switcher_get_icon_from_window (ApplicationSwitcher_t *as,
 				   HNWMWatchedWindow     *window);
@@ -132,7 +145,8 @@ static void add_item_to_button(ApplicationSwitcher_t *as);
 
 static void update_menu_items(ApplicationSwitcher_t *as);
 
-static void store_item(GArray *items,const gchar *app_name,
+static void store_item(ApplicationSwitcher_t *as,
+		       GArray *items,const gchar *app_name,
                         const gchar *item_text,
                         const gchar *icon_name, 
 		       GtkWidget *item);    
@@ -149,7 +163,9 @@ static gboolean dimming_on = FALSE;
 ApplicationSwitcher_t *application_switcher_init(void)
 {
     ApplicationSwitcher_t *ret;
-    GtkWidget *topmost_align, *lowest_align;
+    GtkWidget             *topmost_align, *lowest_align;
+    GdkPixbuf             *pixbuf;
+    GdkPixbufAnimation    *pixbuf_anim;
     
     ret = (ApplicationSwitcher_t *) g_malloc0(sizeof(
                                                 ApplicationSwitcher_t));
@@ -171,8 +187,19 @@ ApplicationSwitcher_t *application_switcher_init(void)
     ret->toggle_button_as = gtk_toggle_button_new();
                       
     /* Create icon for applications switcher button */
-    ret->as_button_icon = app_switcher_get_icon_from_theme(AS_SWITCHER_BUTTON_ICON);
-    
+
+    pixbuf = app_switcher_get_pixbuf_icon_from_theme (AS_SWITCHER_BUTTON_ICON);
+
+    /* FIXME: Redo as non animated */
+    pixbuf_anim 
+      = GDK_PIXBUF_ANIMATION (hildon_pixbuf_anim_blinker_new (pixbuf, 
+							      1000/ANIM_FPS,
+							      0)); 
+
+    /*hildon_pixbuf_anim_blinker_stop (HILDON_PIXBUF_ANIM_BLINKER(pixbuf_anim));*/
+
+    ret->as_button_icon =  gtk_image_new_from_animation (pixbuf_anim);
+
 
     /* Create alignments. Needed for pixel perfecting things */
     topmost_align = gtk_alignment_new(0,0,0,0);
@@ -1233,6 +1260,71 @@ static void button_toggled(GtkToggleButton *togglebutton,
     
 }
 
+static gboolean
+app_switcher_icon_anim_timeout (gpointer data)
+{
+  AppSwitcherTimeoutData *timeout;
+  ApplicationSwitcher_t  *as;
+  GtkWidget              *menu_image, *static_image;
+  GdkPixbuf              *pixbuf;
+  gint                    n;
+
+  timeout = (AppSwitcherTimeoutData *)data;
+  as = timeout->as;
+
+  /* Switch animated icons to non animated */
+
+  /* grab static image from menu item and reset */
+
+  menu_image = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM(timeout->menuitem));
+
+  pixbuf = gdk_pixbuf_animation_get_static_image (gtk_image_get_animation (GTK_IMAGE(menu_image)));
+
+  static_image = gtk_image_new_from_pixbuf(pixbuf);
+
+  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(timeout->menuitem),
+				static_image);
+
+  /* also set TN bar icon to static */
+
+  for (n=0;n<(as->items)->len;n++)
+    if (g_array_index(as->items,container,n).item == timeout->menuitem)
+      break;
+
+  gtk_image_set_from_pixbuf (GTK_IMAGE(g_array_index(as->items,container,n).icon),
+			     pixbuf);
+
+  return False;
+}
+
+static void
+app_switcher_icon_anim_timeout_destroy (gpointer data)
+{
+  AppSwitcherTimeoutData *timeout;
+
+  timeout = (AppSwitcherTimeoutData *)data;
+
+  g_free(timeout);
+}
+
+static guint
+app_switcher_icon_anim_timeout_add (ApplicationSwitcher_t *as,
+				    GtkWidget             *menuitem)
+{
+  AppSwitcherTimeoutData *timeout;
+
+  timeout = g_new0(AppSwitcherTimeoutData, 1);
+
+  timeout->as       = as;
+  timeout->menuitem = menuitem;
+
+  return g_timeout_add_full (G_PRIORITY_DEFAULT_IDLE,
+			     ANIM_DURATION,
+			     app_switcher_icon_anim_timeout,
+			     timeout,
+			     app_switcher_icon_anim_timeout_destroy);
+}
+
 static GdkPixbuf*
 app_switcher_get_pixbuf_icon_from_theme (const char *icon_name)
 {
@@ -1282,8 +1374,9 @@ app_switcher_get_icon_from_window (ApplicationSwitcher_t *as,
 
 	pixbuf_anim 
 	  = GDK_PIXBUF_ANIMATION (hildon_pixbuf_anim_blinker_new (pixbuf, 
-								  500, 
+								  1000/ANIM_FPS,
 								  -1));
+
 	return gtk_image_new_from_animation (pixbuf_anim);
     }
 
@@ -1439,7 +1532,8 @@ static void update_menu_items(ApplicationSwitcher_t *as)
 
 /* Store information of new window/view */
 static void 
-store_item (GArray      *items,
+store_item (ApplicationSwitcher_t *as,
+	    GArray      *items,
 	    const gchar *item_text,
 	    const gchar *app_name,
 	    const gchar *icon_name, 
@@ -1454,7 +1548,8 @@ store_item (GArray      *items,
   cont.item_text = g_strdup(item_text);
   cont.icon_name = g_strdup(icon_name); 
   cont.killable_item = FALSE;
-  
+  cont.icon_anim_timeout_id = 0;
+
   icon_image = gtk_image_menu_item_get_image(GTK_IMAGE_MENU_ITEM(item));
   
   if (gtk_image_get_storage_type(GTK_IMAGE(icon_image)) == GTK_IMAGE_ANIMATION)
@@ -1465,10 +1560,12 @@ store_item (GArray      *items,
       
       pixbuf_anim 
 	= GDK_PIXBUF_ANIMATION (hildon_pixbuf_anim_blinker_new (pixbuf, 
-								500, 
+								1000/ANIM_FPS,
 								-1));
       cont.icon = gtk_image_new_from_animation (pixbuf_anim);
-      
+
+      cont.icon_anim_timeout_id 
+	= app_switcher_icon_anim_timeout_add (as, item);
     }
   else
     {
@@ -1542,7 +1639,8 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
   /* connect signal */
   g_signal_connect(G_OBJECT(item), "activate",G_CALLBACK(activate_item), as);
 
-  store_item(as->items, 
+  store_item(as,
+	     as->items, 
 	     hn_wm_watchable_app_get_name (app), 
 	     buf, 
 	     hn_wm_watchable_app_get_icon_name(app), 
@@ -1592,6 +1690,9 @@ app_switcher_remove_item (ApplicationSwitcher_t *as,
     if (g_array_index(as->items,container,n).item == menuitem)
       break;
   
+  if (g_array_index(as->items,container,n).icon_anim_timeout_id)
+    g_source_remove (g_array_index(as->items,container,n).icon_anim_timeout_id);
+
   g_free(g_array_index(as->items, container, n).app_name);
   g_free(g_array_index(as->items, container, n).icon_name);
   g_free(g_array_index(as->items, container, n).item_text);
@@ -1646,7 +1747,6 @@ app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
   gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menuitem),
 				menu_item_icon);
 
-
   for (n=0;n<(as->items)->len;n++)
     if (g_array_index(as->items,container,n).item == menuitem)
       break;
@@ -1661,12 +1761,19 @@ app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
 
       pixbuf_anim 
 	= GDK_PIXBUF_ANIMATION (hildon_pixbuf_anim_blinker_new (pixbuf, 
-								500, 
-								  -1));
-      
+								1000/ANIM_FPS,
+							        -1));
       gtk_image_set_from_animation (GTK_IMAGE(g_array_index(as->items,container,n).icon),
 				    pixbuf_anim);
       
+      /* Setup a timeout to stop the animation. */
+
+      if (g_array_index(as->items,container,n).icon_anim_timeout_id != 0)
+	g_source_remove (g_array_index(as->items,container,n).icon_anim_timeout_id);
+
+      g_array_index(as->items,container,n).icon_anim_timeout_id 
+	= app_switcher_icon_anim_timeout_add (as, menuitem);
+
       g_object_unref(pixbuf_anim);
     }
   else
@@ -1679,7 +1786,14 @@ app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
   
   if (n > 4)
     {
-      /* FIXME: Make the '>>' flash */
+#if 0
+      /* Blinking icon is only in menu, therefore make that button flash */
+      HildonPixbufAnimBlinker *anim;
+
+      anim = HILDON_PIXBUF_ANIM_BLINKER(gtk_image_get_animation (GTK_IMAGE(as->as_button_icon)));
+
+      hildon_pixbuf_anim_blinker_restart (anim);
+#endif
     }
   
   g_object_unref(pixbuf); 
@@ -1811,6 +1925,8 @@ static DBusHandlerResult mce_handler( DBusConnection *conn,
 {
     ApplicationSwitcher_t *as = (ApplicationSwitcher_t *)data;
     const gchar *member = NULL;
+
+    fprintf(stderr, "started mce_handler\n");
     
     if( dbus_message_get_type( msg ) != DBUS_MESSAGE_TYPE_SIGNAL )
     {
@@ -1818,6 +1934,8 @@ static DBusHandlerResult mce_handler( DBusConnection *conn,
     }
 
     member = dbus_message_get_member(msg);
+
+    fprintf( stderr, "member is %s\n", member);
 
     if (member == NULL)
     {

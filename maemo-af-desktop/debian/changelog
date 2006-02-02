@@ -1,3 +1,10 @@
+maemo-af-desktop (2.4.1-1) unstable; urgency=low
+
+  * Make blinking icons blink in sync and timeout to static
+    after 5000ms
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  2 Feb 2006 12:57:34 +0200
+
 maemo-af-desktop (2.4.0-1) unstable; urgency=low
 
   * Imported task navigator plugin framework

@@ -209,6 +209,7 @@ typedef struct container {
     gboolean killed_item;
     gchar *dialog_name;
     GtkWidget *icon;
+    guint      icon_anim_timeout_id;
 } container;
 
 /* Enum to define which button is pressed */

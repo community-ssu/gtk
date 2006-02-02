@@ -1,3 +1,27 @@
+2006-02-02  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-navigator/application-switcher.c:
+	(application_switcher_init), (button_toggled),
+	(app_switcher_icon_anim_timeout),
+	(app_switcher_icon_anim_timeout_destroy),
+	(app_switcher_icon_anim_timeout_add),
+	(app_switcher_get_pixbuf_icon_from_theme),
+	(app_switcher_get_icon_from_window), (get_item_from_glist),
+	(add_item_to_button), (update_menu_items), (store_item),
+	(app_switcher_add_new_item), (app_switcher_remove_item),
+	(app_switcher_item_icon_sync):
+	* hildon-navigator/application-switcher.h:
+	* hildon-navigator/hildon-pixbuf-anim-blinker.c:
+	(hildon_pixbuf_anim_blinker_finalize), (get_size), (get_iter),
+	(hildon_pixbuf_anim_blinker_iter_init),
+	(hildon_pixbuf_anim_blinker_iter_class_init),
+	(hildon_pixbuf_anim_blinker_iter_finalize), (advance),
+	(get_delay_time), (get_pixbuf), (on_currently_loading_frame),
+	(hildon_pixbuf_anim_blinker_new):
+	* hildon-navigator/hildon-pixbuf-anim-blinker.h:
+	Make blinking icons blink in sync and timeout to static
+	after 5000ms
+	* configure.ac: 2.4.1
+
 2006-02-01  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/*: Imported task navigator plugin framework
 	* configure.ac: 2.4.0

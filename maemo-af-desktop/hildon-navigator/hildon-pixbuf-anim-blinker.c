@@ -33,6 +33,7 @@ struct _HildonPixbufAnimBlinker
 {
         GdkPixbufAnimation parent_instance;
 
+	gboolean stopped;
 	gint period;
 	gint length;
 	
@@ -73,6 +74,7 @@ struct _HildonPixbufAnimBlinkerIter
         
         GTimeVal start_time;
         GTimeVal current_time;
+        gint length;
 };
 
 static void hildon_pixbuf_anim_blinker_finalize (GObject *object);
@@ -87,7 +89,8 @@ static GdkPixbufAnimationIter *get_iter (GdkPixbufAnimation *anim,
                                          const GTimeVal     *start_time);
 
 
-G_DEFINE_TYPE(HildonPixbufAnimBlinker, hildon_pixbuf_anim_blinker, GDK_TYPE_PIXBUF_ANIMATION);
+G_DEFINE_TYPE(HildonPixbufAnimBlinker, hildon_pixbuf_anim_blinker,
+	      GDK_TYPE_PIXBUF_ANIMATION);
 
 static void
 hildon_pixbuf_anim_blinker_init (HildonPixbufAnimBlinker *anim)
@@ -120,7 +123,8 @@ hildon_pixbuf_anim_blinker_finalize (GObject *object)
         
         g_object_unref (anim->pixbuf);
         
-        G_OBJECT_CLASS (hildon_pixbuf_anim_blinker_parent_class)->finalize (object);
+        G_OBJECT_CLASS (hildon_pixbuf_anim_blinker_parent_class)->
+        	finalize (object);
 }
 
 static gboolean
@@ -158,18 +162,31 @@ static GdkPixbufAnimationIter *
 get_iter (GdkPixbufAnimation *anim,
           const GTimeVal    *start_time)
 {
-        HildonPixbufAnimBlinkerIter *iter;
-        
-        iter = g_object_new (TYPE_HILDON_PIXBUF_ANIM_BLINKER_ITER, NULL);
+	HildonPixbufAnimBlinkerIter *iter;
+	HildonPixbufAnimBlinker *blinker = HILDON_PIXBUF_ANIM_BLINKER (anim);
+	gint i;
 
-        iter->hildon_pixbuf_anim_blinker = HILDON_PIXBUF_ANIM_BLINKER (anim);
+	iter = g_object_new (TYPE_HILDON_PIXBUF_ANIM_BLINKER_ITER, NULL);
 
-        g_object_ref (iter->hildon_pixbuf_anim_blinker);
-        
-        iter->start_time = *start_time;
-        iter->current_time = *start_time;
-        
-        return GDK_PIXBUF_ANIMATION_ITER (iter);
+	iter->hildon_pixbuf_anim_blinker = blinker;
+
+	g_object_ref (iter->hildon_pixbuf_anim_blinker);
+
+	iter->start_time = *start_time;
+	iter->current_time = *start_time;
+
+	/* Find out how many seconds it is before a period repeats */
+	/* (e.g. for 500ms, 1 second, for 333ms, 2 seconds, etc.) */
+	/* This is to keep multiple anims in sync */
+	for (i = 1; ((blinker->period * i) % 2000) != 0; i++);
+	i = iter->start_time.tv_sec % ((blinker->period*i)/1000);
+
+	/* Make sure to offset length as well as start time */
+	iter->length = blinker->length + (i * 1000);
+	iter->start_time.tv_sec -= i;
+	iter->start_time.tv_usec = 0;
+
+	return GDK_PIXBUF_ANIMATION_ITER (iter);
 }
 
 static void hildon_pixbuf_anim_blinker_iter_finalize (GObject *object);
@@ -178,9 +195,10 @@ static gint       get_delay_time             (GdkPixbufAnimationIter *iter);
 static GdkPixbuf *get_pixbuf                 (GdkPixbufAnimationIter *iter);
 static gboolean   on_currently_loading_frame (GdkPixbufAnimationIter *iter);
 static gboolean   advance                    (GdkPixbufAnimationIter *iter,
-                                              const GTimeVal         *current_time);
+					      const GTimeVal *current_time);
 
-G_DEFINE_TYPE (HildonPixbufAnimBlinkerIter, hildon_pixbuf_anim_blinker_iter, GDK_TYPE_PIXBUF_ANIMATION_ITER);
+G_DEFINE_TYPE (HildonPixbufAnimBlinkerIter, hildon_pixbuf_anim_blinker_iter,
+	       GDK_TYPE_PIXBUF_ANIMATION_ITER);
 
 static void
 hildon_pixbuf_anim_blinker_iter_init (HildonPixbufAnimBlinkerIter *iter)
@@ -188,7 +206,8 @@ hildon_pixbuf_anim_blinker_iter_init (HildonPixbufAnimBlinkerIter *iter)
 }
 
 static void
-hildon_pixbuf_anim_blinker_iter_class_init (HildonPixbufAnimBlinkerIterClass *klass)
+hildon_pixbuf_anim_blinker_iter_class_init (
+	HildonPixbufAnimBlinkerIterClass *klass)
 {
         GObjectClass *object_class;
         GdkPixbufAnimationIterClass *anim_iter_class;
@@ -200,7 +219,8 @@ hildon_pixbuf_anim_blinker_iter_class_init (HildonPixbufAnimBlinkerIterClass *kl
         
         anim_iter_class->get_delay_time = get_delay_time;
         anim_iter_class->get_pixbuf = get_pixbuf;
-        anim_iter_class->on_currently_loading_frame = on_currently_loading_frame;
+        anim_iter_class->on_currently_loading_frame =
+        	on_currently_loading_frame;
         anim_iter_class->advance = advance;
 }
 
@@ -213,7 +233,8 @@ hildon_pixbuf_anim_blinker_iter_finalize (GObject *object)
         
         g_object_unref (iter->hildon_pixbuf_anim_blinker);
         
-        G_OBJECT_CLASS (hildon_pixbuf_anim_blinker_iter_parent_class)->finalize (object);
+        G_OBJECT_CLASS (hildon_pixbuf_anim_blinker_iter_parent_class)->
+        	finalize (object);
 }
 
 static gboolean
@@ -227,12 +248,16 @@ advance (GdkPixbufAnimationIter *anim_iter,
         
         iter->current_time = *current_time;
         
+        if (iter->hildon_pixbuf_anim_blinker->stopped)
+        	return FALSE;
+        	
         if (iter->hildon_pixbuf_anim_blinker->length == -1)
         	return TRUE;
         
         /* We use milliseconds for all times */
-        elapsed = (((iter->current_time.tv_sec - iter->start_time.tv_sec) * G_USEC_PER_SEC +
-                    iter->current_time.tv_usec - iter->start_time.tv_usec)) / 1000;
+        elapsed = (((iter->current_time.tv_sec - iter->start_time.tv_sec) *
+        	G_USEC_PER_SEC + iter->current_time.tv_usec -
+        	iter->start_time.tv_usec)) / 1000;
         
         if (elapsed < 0) {
                 /* Try to compensate; probably the system clock
@@ -242,7 +267,7 @@ advance (GdkPixbufAnimationIter *anim_iter,
                 elapsed = 0;
         }
 
-	if (elapsed < iter->hildon_pixbuf_anim_blinker->length)
+	if (elapsed < iter->length)
 		return TRUE;
 	else
 		return FALSE;
@@ -256,11 +281,15 @@ get_delay_time (GdkPixbufAnimationIter *anim_iter)
 
         iter = HILDON_PIXBUF_ANIM_BLINKER_ITER (anim_iter);
         
-        elapsed = (((iter->current_time.tv_sec - iter->start_time.tv_sec) * G_USEC_PER_SEC +
-                    iter->current_time.tv_usec - iter->start_time.tv_usec)) / 1000;
+        elapsed = (((iter->current_time.tv_sec - iter->start_time.tv_sec) *
+        	G_USEC_PER_SEC + iter->current_time.tv_usec -
+        	iter->start_time.tv_usec)) / 1000;
 
-	if ((elapsed < iter->hildon_pixbuf_anim_blinker->length) || (iter->hildon_pixbuf_anim_blinker->length == -1))
-		return iter->hildon_pixbuf_anim_blinker->period - (elapsed % iter->hildon_pixbuf_anim_blinker->period);
+	if (((elapsed < iter->length) ||
+	    (iter->hildon_pixbuf_anim_blinker->length == -1)) &&
+	    (!iter->hildon_pixbuf_anim_blinker->stopped))
+		return iter->hildon_pixbuf_anim_blinker->period -
+			(elapsed % iter->hildon_pixbuf_anim_blinker->period);
 	else
 		return -1;
 }
@@ -273,14 +302,19 @@ get_pixbuf (GdkPixbufAnimationIter *anim_iter)
         
         iter = HILDON_PIXBUF_ANIM_BLINKER_ITER (anim_iter);
         
-        elapsed = (((iter->current_time.tv_sec - iter->start_time.tv_sec) * G_USEC_PER_SEC +
-                    iter->current_time.tv_usec - iter->start_time.tv_usec)) / 1000;
+        elapsed = (((iter->current_time.tv_sec - iter->start_time.tv_sec) *
+        	G_USEC_PER_SEC + iter->current_time.tv_usec -
+        	iter->start_time.tv_usec)) / 1000;
 	
-	if ((elapsed > iter->hildon_pixbuf_anim_blinker->length && iter->hildon_pixbuf_anim_blinker->length != -1) ||
-	    ((elapsed / iter->hildon_pixbuf_anim_blinker->period) % 2))
-		return iter->hildon_pixbuf_anim_blinker->pixbuf;
-	else
+	if ((iter->hildon_pixbuf_anim_blinker->stopped) ||
+	    (elapsed > iter->length &&
+	     iter->hildon_pixbuf_anim_blinker->length != -1))
+	  return iter->hildon_pixbuf_anim_blinker->pixbuf;
+
+	if ((elapsed / iter->hildon_pixbuf_anim_blinker->period) % 2)
 		return iter->hildon_pixbuf_anim_blinker->empty;
+	else
+		return iter->hildon_pixbuf_anim_blinker->pixbuf;
 }
 
 static gboolean
@@ -306,3 +340,16 @@ hildon_pixbuf_anim_blinker_new (GdkPixbuf *pixbuf, gint period, gint length)
 
   return anim;
 }
+
+void
+hildon_pixbuf_anim_blinker_stop (HildonPixbufAnimBlinker *anim)
+{
+	anim->stopped = TRUE;
+}
+
+void
+hildon_pixbuf_anim_blinker_restart (HildonPixbufAnimBlinker *anim)
+{
+	g_warning ("Restarting blinking unimplemented");
+}
+

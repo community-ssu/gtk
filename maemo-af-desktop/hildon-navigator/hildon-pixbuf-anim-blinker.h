@@ -53,6 +53,13 @@ HildonPixbufAnimBlinker *hildon_pixbuf_anim_blinker_new (GdkPixbuf *pixbuf,
 							 gint       period,
 							 gint       length);
 
+void
+hildon_pixbuf_anim_blinker_stop (HildonPixbufAnimBlinker *anim);
+
+void
+hildon_pixbuf_anim_blinker_restart (HildonPixbufAnimBlinker *anim);
+
 G_END_DECLS
 
 #endif
+
