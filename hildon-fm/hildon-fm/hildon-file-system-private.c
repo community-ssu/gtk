@@ -1,7 +1,7 @@
 /*
  * This file is part of hildon-fm package
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -528,7 +528,7 @@ GtkFileSystem *hildon_file_system_create_backend(const gchar *name, gboolean use
         name = default_name;
     }
     if (name) {
-        result = _gtk_file_system_create(name);
+        result = hildon_gtk_file_system_create(name);
         if (!GTK_IS_FILE_SYSTEM(result))
             ULOG_WARN("Cannot create \"%s\" backend", name);
     }

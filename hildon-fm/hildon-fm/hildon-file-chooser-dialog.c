@@ -134,7 +134,7 @@ enum {
     PROP_MAX_FULL_PATH_LENGTH
 };
 
-void _gtk_file_chooser_install_properties(GObjectClass * klass);
+void hildon_gtk_file_chooser_install_properties(GObjectClass * klass);
 
 /* CopyPaste ends */
 
@@ -1458,7 +1458,7 @@ hildon_file_chooser_dialog_class_init(HildonFileChooserDialogClass * klass)
                              "from MAX_FILENAME_LENGTH environment variable", 
                              -1, G_MAXINT, 0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
-    _gtk_file_chooser_install_properties(gobject_class);
+    hildon_gtk_file_chooser_install_properties(gobject_class);
 }
 
 static void hildon_file_chooser_dialog_sort_changed(GtkWidget * item,

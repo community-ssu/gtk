@@ -1,3 +1,11 @@
+hildon-fm (0.13-1) unstable; urgency=low
+
+  * Using hildon_gtk_file_chooser_install_properties instead of private
+    _gtk_file_chooser_install_properties and hildon_gtk_file_system_create
+    instead of _gtk_file_system_create (N#22558).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 02 Feb 2006 17:54:12 +0200
+
 hildon-fm (0.12-1) unstable; urgency=low
 
   * Applied quite big patch for minor drag and drop bug (N#15006).

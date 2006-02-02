@@ -2,13 +2,13 @@ Source: hildon-fm
 Section: x11
 Priority: optional
 Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com> 
-Build-Depends: debhelper (>= 4.0.0), pkg-config, libosso-dev (>= 0.9.1-1), libgtk2.0-dev (>= 2:2.6.4-1.osso53), outo, libxi-dev, libxt-dev, libpng12-dev, libgconf2-dev, hildon-lgpl-dev (>= 0.9.24-1), osso-thumbnail-dev, osso-gwconnect-dev, mce-dev, osso-bttools-dev (>= 0.22), libdbus-glib-1-dev (>= 0.50-1osso)
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libosso-dev (>= 0.9.1-1), libgtk2.0-dev (>= 2:2.6.10-1.osso4), outo, libxi-dev, libxt-dev, libpng12-dev, libgconf2-dev, hildon-lgpl-dev (>= 0.9.24-1), osso-thumbnail-dev, osso-gwconnect-dev, mce-dev, osso-bttools-dev (>= 0.22), libdbus-glib-1-dev (>= 0.50-1osso)
 Standards-Version: 3.6.0
 
 Package: hildon-fm-dev
 Section: devel
 Architecture: any
-Depends: hildon-fm1 (= ${Source-Version}), libgtk2.0-dev (>= 2:2.6.4-1.osso53), hildon-lgpl-dev (>= 0.9.24-1), osso-thumbnail-dev, osso-gwconnect-dev
+Depends: hildon-fm1 (= ${Source-Version}), libgtk2.0-dev (>= 2:2.6.10-1.osso4), hildon-lgpl-dev (>= 0.9.24-1), osso-thumbnail-dev, osso-gwconnect-dev
 Recommends: hildon-libs-dev (>= 0.7.3)
 Description: LGPL-licensed File Management libraries development files
 
