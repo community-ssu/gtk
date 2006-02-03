@@ -279,7 +279,8 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     g_snprintf(service, 255, "%s.%s", OSSO_BUS_ROOT, osso->application);
     dprint("service='%s'",service);
 
-    i = dbus_bus_request_name(conn, service, 0, &err);
+    i = dbus_bus_request_name(conn, service,
+                              DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &err);
     dprint("acquire service returned '%d'", i);
     if (i == -1) {
         ULOG_ERR_F("dbus_bus_request_name failed: %s", err.message);
