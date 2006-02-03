@@ -1,8 +1,9 @@
 glib2.0 (2.8.6-1osso1) unstable; urgency=low
 
   * Upgrade to glib 2.8.6
+  * debian/control.in: set myself as maintainer
 
- -- Placeholder <changeme@foo.com>  Fri,  4 Jan 2006 10:53:00 +0100
+ -- Tapani Päll <tapani.palli@nokia.com>  Fri,  4 Jan 2006 10:53:00 +0100
 
 glib2.0 (2.6.6-1osso2) unstable; urgency=low
 
