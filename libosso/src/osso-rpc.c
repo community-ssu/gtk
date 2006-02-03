@@ -446,7 +446,8 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
     dprint("requesting service '%s'", service);
 
     ret = dbus_bus_request_name(use_system_bus ? osso->sys_conn : osso->conn,
-			service, DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &err);
+                        service, DBUS_NAME_FLAG_ALLOW_REPLACEMENT |
+                        DBUS_NAME_FLAG_REPLACE_EXISTING, &err);
     if (ret < 0) {
         ULOG_ERR_F("dbus_bus_request_name for '%s' failed: %s",
                    service, err.message);
