@@ -1,26 +1,88 @@
-2005-08-01  Matthias Clasen  <mclasen@redhat.com>
+2006-01-18  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.6 ===
+	* === Released 2.8.6 ===
+
+2006-01-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.5 ===
+	
+2005-11-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* ===  Released 2.8.4 ===
+
+2005-10-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.3 ===
+
+2005-09-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.2 ===
+
+2005-08-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.1 ===
+
+2005-08-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.0 ===
+
+2005-08-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.7 ===
+
+2005-08-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.6 ===
+
+2005-08-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.5 ===
+
+2005-07-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.4 ===
+
+2005-07-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.3 ===
+	
+2005-07-09  Tor Lillqvist  <tml@novell.com>
+
+	* Makefile.am: Don't use the scripts in build/win32 to compile
+	gmodule.rc into a resource object file. (This means we lose the
+	build number increment magic, but I doubt it was that useful
+	anyway.) Instead use windres directly. To pass the normal .o file
+	produced by windres through libtool, which wants .lo files, pass
+	it directly to the linker using a -Wl option.
+
+	* gmodule.rc.in: Thus replace BUILDNUMBER with 0.
+
+2005-07-08  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.7.2 ===
+
+2005-06-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.1 ===
 
 2005-06-30  Matthias Clasen  <mclasen@redhat.com>
 
 	* gmodule-ar.c: Include stdlib.h
 
+2005-06-26  Tor Lillqvist  <tml@novell.com>
+
+	* Makefile.am: libtool installs/uninstalls the import library, no
+	need to do it ourselves. Do still install/uninstall the .def file,
+	though.
+
+2005-06-24  Tor Lillqvist  <tml@novell.com>
+
+	* Makefile.am (install-libtool-import-lib): Current GNU tools do
+	understand the PRIVATE keyword.
+
 2005-06-10  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.5 ===
-
-2005-04-06  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.6.4 ===
-
-2005-02-28  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.6.3 ===
-
-2005-02-02  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.6.2 ===
+	* === Released 2.7.0 ===
 
 2005-01-07  Matthias Clasen  <mclasen@redhat.com>
 

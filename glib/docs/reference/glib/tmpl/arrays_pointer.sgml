@@ -68,8 +68,7 @@ To free a pointer array, use g_ptr_array_free().
 Contains the public fields of a pointer array.
 </para>
 
-@pdata: points to the array of pointers, which may be moved when the 
-        array grows.
+@pdata: points to the array of pointers, which may be moved when the array grows.
 @len: number of pointers in the array.
 
 <!-- ##### FUNCTION g_ptr_array_new ##### -->

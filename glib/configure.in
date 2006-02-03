@@ -26,7 +26,7 @@ m4_include(m4macros/glib-gettext.m4)dnl
 # set glib_binary_age _and_ glib_interface_age to 0.
 #
 m4_define([glib_major_version], [2])
-m4_define([glib_minor_version], [6])
+m4_define([glib_minor_version], [8])
 m4_define([glib_micro_version], [6])
 m4_define([glib_interface_age], [6])
 m4_define([glib_binary_age],
@@ -122,10 +122,6 @@ AC_MSG_CHECKING([for Win32])
 case "$host" in
   *-*-mingw*)
     glib_native_win32=yes
-    G_LIB_WIN32_RESOURCE=glib-win32res.lo
-    G_MODULE_WIN32_RESOURCE=gmodule-win32res.lo
-    G_OBJECT_WIN32_RESOURCE=gobject-win32res.lo
-    G_THREAD_WIN32_RESOURCE=gthread-win32res.lo
     GLIB_DEF=glib.def
     GMODULE_DEF=gmodule.def
     GOBJECT_DEF=gobject.def
@@ -135,10 +131,6 @@ case "$host" in
     ;;
   *)
     glib_native_win32=no
-    G_LIB_WIN32_RESOURCE=
-    G_MODULE_WIN32_RESOURCE=
-    G_OBJECT_WIN32_RESOURCE=
-    G_THREAD_WIN32_RESOURCE=
     GLIB_DEF=
     GMODULE_DEF=
     GOBJECT_DEF=
@@ -158,10 +150,6 @@ AC_MSG_RESULT([$glib_native_win32])
 AM_CONDITIONAL(OS_WIN32, [test "$glib_native_win32" = "yes"])
 AM_CONDITIONAL(OS_UNIX, [test "$glib_native_win32" != "yes"])
 AM_CONDITIONAL(OS_LINUX, [test "$glib_os_linux" = "yes"])
-AC_SUBST(G_LIB_WIN32_RESOURCE)
-AC_SUBST(G_MODULE_WIN32_RESOURCE)
-AC_SUBST(G_OBJECT_WIN32_RESOURCE)
-AC_SUBST(G_THREAD_WIN32_RESOURCE)
 AC_SUBST(GLIB_DEF)
 AC_SUBST(GMODULE_DEF)
 AC_SUBST(GOBJECT_DEF)
@@ -169,6 +157,10 @@ AC_SUBST(GTHREAD_DEF)
 AC_SUBST(TESTGMODULE_EXP)
 
 if test "$glib_native_win32" = "yes"; then
+  AC_CHECK_TOOL(WINDRES, windres, no)
+  if test "$WINDRES" = no; then
+    AC_MSG_ERROR([*** Could not find an implementation of windres in your PATH.])
+  fi
   AC_CHECK_TOOL(NM, nm, no)
   if test "$NM" = no; then
     AC_MSG_ERROR([*** Could not find an implementation of nm in your PATH.])
@@ -202,10 +194,6 @@ AC_ARG_ENABLE(mem_pools,
               [AC_HELP_STRING([--disable-mem-pools],
 			      [disable all glib memory pools])],,
 	      [disable_mem_pools=no])
-AC_ARG_ENABLE(ansi,
-              [AC_HELP_STRING([--enable-ansi],
-                              [turn on strict ansi [default=no]])],,
-	      [enable_ansi=no])
 AC_ARG_ENABLE(threads,
               [AC_HELP_STRING([--enable-threads],
                               [turn on basic thread support [default=yes]
@@ -408,11 +396,39 @@ if test "x$found_iconv" = "xno" ; then
    AC_MSG_ERROR([*** No iconv() implementation found in C library or libiconv])
 fi
 
+jm_GLIBC21
+AC_ARG_ENABLE(iconv-cache, 
+              [AC_HELP_STRING([--enable-iconv-cache=@<:@yes/no/auto@:>@],
+                              [cache iconv descriptors [default=auto]])],,
+              [enable_iconv_cache=auto])
+
+AC_MSG_CHECKING([Whether to cache iconv descriptors])
+case $enable_iconv_cache in
+  auto)
+    if test $ac_cv_gnu_library_2_1 = yes; then
+      enable_iconv_cache=no
+    else 
+      enable_iconv_cache=yes
+    fi
+  ;;
+  yes|no) 
+  ;;
+  *) AC_MSG_ERROR([Value given to --enable-iconv-cache must be one of yes, no or auto])
+  ;;
+esac
+
+if test $enable_iconv_cache = yes; then
+   AC_DEFINE(NEED_ICONV_CACHE,1,[Do we cache iconv descriptors])
+fi
+
+AC_MSG_RESULT($enable_iconv_cache)
+
+
 dnl
 dnl gettext support
 dnl
 
-ALL_LINGUAS="am ar az be bg bn bs ca cs cy da de el en_CA en_GB eo es et eu fa fi fr ga gl gu he hi hr hu id is it ja ko lt lv mk mn ms nb ne nl nn no or pa pl pt pt_BR ro ru rw sk sl sq sr sr@ije sr@Latn sv ta te tl tr uk vi wa xh yi zh_CN zh_TW"
+ALL_LINGUAS="am ar az be bg bn bs ca cs cy da de el en_CA en_GB eo es et eu fa fi fr ga gl gu he hi hr hu id is it ja ko lt lv mk ml mn ms nb ne nl nn no or pa pl pt pt_BR ro ru rw sk sl sq sr sr@Latn sr@ije sv ta te th tl tr uk vi wa xh yi zh_CN zh_HK zh_TW"
 GLIB_GNU_GETTEXT
 
 if test "$gt_cv_have_gettext" != "yes" ; then
@@ -462,18 +478,6 @@ if test "x$GCC" = "xyes"; then
   *[[\ \	]]-Wall[[\ \	]]*) ;;
   *) CFLAGS="$CFLAGS -Wall" ;;
   esac
-
-  if test "x$enable_ansi" = "xyes"; then
-    case " $CFLAGS " in
-    *[[\ \	]]-ansi[[\ \	]]*) ;;
-    *) CFLAGS="$CFLAGS -ansi" ;;
-    esac
-
-    case " $CFLAGS " in
-    *[[\ \	]]-pedantic[[\ \	]]*) ;;
-    *) CFLAGS="$CFLAGS -pedantic" ;;
-    esac
-  fi
 fi
 
 dnl
@@ -517,7 +521,7 @@ AC_HEADER_STDC
 
 # Checks for library functions.
 AC_FUNC_VPRINTF
-
+AC_FUNC_MMAP
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS(posix_memalign)
 AC_CHECK_FUNCS(memalign)
@@ -771,7 +775,7 @@ AC_C_BIGENDIAN
 
 # check for header files
 AC_CHECK_HEADERS([dirent.h float.h limits.h pwd.h sys/param.h sys/poll.h sys/select.h sys/types.h])
-AC_CHECK_HEADERS([sys/time.h sys/times.h unistd.h values.h stdint.h sched.h])
+AC_CHECK_HEADERS([sys/time.h sys/times.h sys/wait.h unistd.h values.h stdint.h sched.h])
 
 # Checks for libcharset
 jm_LANGINFO_CODESET
@@ -835,6 +839,9 @@ AC_MSG_RESULT(unsigned $glib_size_type)
 
 # Check for some functions
 AC_CHECK_FUNCS(lstat strerror strsignal memmove mkstemp vsnprintf stpcpy strcasecmp strncasecmp poll getcwd nanosleep vasprintf setenv unsetenv getc_unlocked readlink symlink)
+
+AC_CHECK_HEADERS(crt_externs.h)
+AC_CHECK_FUNCS(_NSGetEnviron)
 
 AC_FUNC_VSNPRINTF_C99
 AC_FUNC_PRINTF_UNIX98
@@ -1507,7 +1514,7 @@ if test x"$have_threads" != xno; then
          # skip cygwin -pthread or -pthreads test
          ;;
       *)
-        for flag in pthread pthreads; do
+        for flag in pthread pthreads mt; do
           glib_save_CFLAGS="$CFLAGS"
           CFLAGS="$CFLAGS -$flag"
           AC_TRY_RUN(glib_thread_test(0),
@@ -1994,6 +2001,12 @@ if test x"$GCC" = xyes; then
 		   	 [ia64 atomic implementation])
       glib_memory_barrier_needed=yes
       ;;	
+    s390|s390x)
+      AC_MSG_RESULT([s390])
+      AC_DEFINE_UNQUOTED(G_ATOMIC_S390, 1,
+		   	 [s390 atomic implementation])
+      glib_memory_barrier_needed=no
+      ;;	
     *)
       AC_MSG_RESULT([none])
       glib_memory_barrier_needed=yes
@@ -2040,7 +2053,7 @@ case $host in
 	G_LIBS_EXTRA="-luser32 -lkernel32"
     ;;
   *-*-mingw*)
-	G_LIBS_EXTRA="-lwsock32 -lole32"
+	G_LIBS_EXTRA="-lws2_32 -lole32"
     ;;
   *)
 	G_LIBS_EXTRA=""
@@ -2077,7 +2090,7 @@ dnl **************************
 dnl *** Checks for gtk-doc ***
 dnl **************************
 
-GTK_DOC_CHECK([1.0])
+GTK_DOC_CHECK([1.4])
 
 AC_ARG_ENABLE(man,
               [AC_HELP_STRING([--enable-man],
@@ -2604,7 +2617,7 @@ esac
 case xyes in
 x$ac_cv_func_memmove)
   glib_memmove='
-#define g_memmove(d,s,n) G_STMT_START { memmove ((d), (s), (n)); } G_STMT_END'
+#define g_memmove(dest,src,len) G_STMT_START { memmove ((dest), (src), (len)); } G_STMT_END'
   ;;
 x$glib_cv_working_bcopy)
   glib_memmove="
@@ -2719,6 +2732,7 @@ AC_CONFIG_FILES([
 glib-2.0.pc
 glib-2.0-uninstalled.pc
 gmodule-2.0.pc
+gmodule-export-2.0.pc
 gmodule-no-export-2.0.pc
 gmodule-2.0-uninstalled.pc
 gmodule-no-export-2.0-uninstalled.pc
@@ -2749,6 +2763,7 @@ docs/reference/gobject/Makefile
 docs/reference/gobject/version.xml
 tests/Makefile
 tests/gobject/Makefile
+tests/refcount/Makefile
 m4macros/Makefile
 ])
 

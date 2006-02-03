@@ -1,87 +1,89 @@
 # Telugu translation of glib
-# Copyright (C) 2004 THE GLIB'S COPYRIGHT HOLDER
+# Copyright (C) 2005 Free Software Foundation, Andhra Pradesh.
 # This file is distributed under the same license as the GLIB package.
+#
 # విక్రం ఫణీంద్ర <vikramphaneendra@yahoo.co.in>, 2005
 # దండు ప్రసాద్ <dandu_prasad2000@yahoo.com>, 2005
 # రమణ సాయి <rmn_sai@yahoo.co.in>, 2005
-# Free Software Foundation, Andhra Pradesh
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: GLIB\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-01 10:25-0400\n"
+"POT-Creation-Date: 2006-01-18 12:03-0500\n"
 "PO-Revision-Date: 2004-12-13 20:16+0100\n"
-"Last-Translator: దండు ప్రసాద్ <dandu_prasad2000@yahoo.com>\n"
+"Last-Translator: రమణ సాయి <rmn_sai@yahoo.com>\n"
 "Language-Team: Free Software Foundation, Andhra Pradesh <fsfap@gnu.org.in>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Last-Transalator: రమణ సాయి <rmn_sai@yahoo.com>\n"
 
-#: glib/gconvert.c:406
+#: glib/gconvert.c:408 glib/gconvert.c:486
 #, c-format
 msgid "Conversion from character set '%s' to '%s' is not supported"
 msgstr "అక్షరమాలలొ కల '%s' నుండి '%s'  కు పరివర్తించడానికి  సహకరించదు"
 
-#: glib/gconvert.c:410
+#: glib/gconvert.c:412 glib/gconvert.c:490
 #, c-format
 msgid "Could not open converter from '%s' to '%s'"
 msgstr "'%s' నుండి  '%s' కు పరివర్తించడం సాధ్యం కాదు "
 
-#: glib/gconvert.c:618 glib/gconvert.c:908 glib/giochannel.c:1319
-#: glib/giochannel.c:1361 glib/giochannel.c:2203 glib/gutf8.c:911
+#: glib/gconvert.c:606 glib/gconvert.c:995 glib/giochannel.c:1322
+#: glib/giochannel.c:1364 glib/giochannel.c:2206 glib/gutf8.c:912
 #: glib/gutf8.c:1361
+#, c-format
 msgid "Invalid byte sequence in conversion input"
 msgstr "ఎగుబడి బైట్ క్రమంను పరివర్తించుట నిస్సారమగును"
 
-#: glib/gconvert.c:624 glib/gconvert.c:841 glib/giochannel.c:1326
-#: glib/giochannel.c:2215
+#: glib/gconvert.c:612 glib/gconvert.c:922 glib/giochannel.c:1329
+#: glib/giochannel.c:2218
 #, c-format
 msgid "Error during conversion: %s"
 msgstr "పరివర్తనం నందు దోషం కలదు: %s"
 
-#: glib/gconvert.c:643 glib/gutf8.c:907 glib/gutf8.c:1112 glib/gutf8.c:1253
+#: glib/gconvert.c:647 glib/gutf8.c:908 glib/gutf8.c:1112 glib/gutf8.c:1253
 #: glib/gutf8.c:1357
+#, c-format
 msgid "Partial character sequence at end of input"
 msgstr "చివరి ఎగుబడి నందు పాక్షికముగా అక్షర క్రమము కలదు."
 
-#: glib/gconvert.c:817
+#: glib/gconvert.c:897
 #, c-format
 msgid "Cannot convert fallback '%s' to codeset '%s'"
 msgstr "ఫాల్ బ్యాక్ '%s' ను  '%s'"
 
-#: glib/gconvert.c:1617
+#: glib/gconvert.c:1706
 #, c-format
 msgid "The URI '%s' is not an absolute URI using the \"file\" scheme"
 msgstr "\"దస్త్రం\" యోచనను ఉపయోగించిన యుఆర్ఐ '%s' సంపూర్ణమైన యుఆర్ఐ కాదు"
 
-#: glib/gconvert.c:1627
+#: glib/gconvert.c:1716
 #, c-format
 msgid "The local file URI '%s' may not include a '#'"
 msgstr "స్థానిక యుఆర్ఐ '%s'   '#' ను కలుపుకొనియండలెదు  "
 
-#: glib/gconvert.c:1644
+#: glib/gconvert.c:1733
 #, c-format
 msgid "The URI '%s' is invalid"
 msgstr " '%s' యుఆర్ఐ నిస్సారము"
 
-#: glib/gconvert.c:1656
+#: glib/gconvert.c:1745
 #, c-format
 msgid "The hostname of the URI '%s' is invalid"
 msgstr "ఆతిథ్య నామం యొక్క యుఆర్ఐ '%s' నిస్సారము"
 
-#: glib/gconvert.c:1672
+#: glib/gconvert.c:1761
 #, c-format
 msgid "The URI '%s' contains invalidly escaped characters"
 msgstr "యుఆర్ఐ '%s' నిస్సారమైన ఎస్కేప్ అక్షరాలు కలిగియున్నాయి."
 
-#: glib/gconvert.c:1766
+#: glib/gconvert.c:1855
 #, c-format
 msgid "The pathname '%s' is not an absolute path"
 msgstr " '%s' త్రోవ నామం సరిఐనది కాదు."
 
-#: glib/gconvert.c:1776
+#: glib/gconvert.c:1865
+#, c-format
 msgid "Invalid hostname"
 msgstr "నిస్సారమైన ఆతిథ్య నామము"
 
@@ -90,85 +92,150 @@ msgstr "నిస్సారమైన ఆతిథ్య నామము"
 msgid "Error opening directory '%s': %s"
 msgstr " వివరణ తెరచుటలో దోషం '%s': %s"
 
-#: glib/gfileutils.c:502 glib/gfileutils.c:570
+#: glib/gfileutils.c:576 glib/gfileutils.c:649
 #, c-format
 msgid "Could not allocate %lu bytes to read file \"%s\""
 msgstr "%lu బైట్లని దస్త్రం  \"%s\" చదువుటకు ఇవ్వలేము"
 
-#: glib/gfileutils.c:515
+#: glib/gfileutils.c:591
 #, c-format
 msgid "Error reading file '%s': %s"
 msgstr "దస్త్రం '%s': %s చదువుటలో దోషం"
 
-#: glib/gfileutils.c:594
+#: glib/gfileutils.c:673
 #, c-format
 msgid "Failed to read from file '%s': %s"
 msgstr " దస్త్రం '%s': %s నుండి చదువుటలో విఫలమైనారు"
 
-#: glib/gfileutils.c:645 glib/gfileutils.c:732
+#: glib/gfileutils.c:724 glib/gfileutils.c:811
 #, c-format
 msgid "Failed to open file '%s': %s"
 msgstr " దస్త్రం '%s': %s తెరుచుటలో విఫలమైనారు"
 
-#: glib/gfileutils.c:662
+#: glib/gfileutils.c:741 glib/gmappedfile.c:133
 #, c-format
 msgid "Failed to get attributes of file '%s': fstat() failed: %s"
 msgstr "దస్త్ర ఆపాదనలు విఫలమగును '%s': ఎఫ్ స్టాట్() విఫలమైనది: %s"
 
-#: glib/gfileutils.c:696
+#: glib/gfileutils.c:775
 #, c-format
 msgid "Failed to open file '%s': fdopen() failed: %s"
 msgstr "దస్త్రం '%s' తెరుచుటలో విఫలమైనారు: ఎఫ్ డిఓపన్()  విఫలమైనది: %s"
 
-#: glib/gfileutils.c:1031
-#, c-format
-msgid "Template '%s' invalid, should not contain a '%s'"
-msgstr " '%s' మాదిరి,  '%s' కలిగియుండలెదు. "
+#: glib/gfileutils.c:909
+#, fuzzy, c-format
+msgid "Failed to rename file '%s' to '%s': g_rename() failed: %s"
+msgstr "దస్త్రం '%s' తెరుచుటలో విఫలమైనారు: ఎఫ్ డిఓపన్()  విఫలమైనది: %s"
 
-#: glib/gfileutils.c:1045
-#, c-format
-msgid "Template '%s' doesn't end with XXXXXX"
-msgstr " '%s' మాదిరి XXXXXX అంతం అవలేదు. "
+#: glib/gfileutils.c:952
+#, fuzzy, c-format
+msgid "Could not change file mode: fork() failed: %s"
+msgstr "దస్త్రం '%s' తెరుచుటలో విఫలమైనారు: ఎఫ్ డిఓపన్()  విఫలమైనది: %s"
 
-#: glib/gfileutils.c:1070
+#: glib/gfileutils.c:983
+#, fuzzy, c-format
+msgid "Could not change file mode: waitpid() failed: %s"
+msgstr "%lu బైట్లని దస్త్రం  \"%s\" చదువుటకు ఇవ్వలేము"
+
+#: glib/gfileutils.c:1002
+#, fuzzy, c-format
+msgid "Could not change file mode: chmod() failed: %s"
+msgstr "దస్త్రం '%s' తెరుచుటలో విఫలమైనారు: ఎఫ్ డిఓపన్()  విఫలమైనది: %s"
+
+#: glib/gfileutils.c:1013
+#, c-format
+msgid "Could not change file mode: Child terminated by signal: %s"
+msgstr ""
+
+#: glib/gfileutils.c:1024
+#, c-format
+msgid "Could not change file mode: Child terminated abnormally"
+msgstr ""
+
+#: glib/gfileutils.c:1058 glib/gfileutils.c:1524
 #, c-format
 msgid "Failed to create file '%s': %s"
 msgstr " '%s' దస్త్రమును సృష్టించుటలో విఫలమయినావు. :%s"
 
-#: glib/gfileutils.c:1448
+#: glib/gfileutils.c:1080
+#, fuzzy, c-format
+msgid "Failed to open file '%s' for writing: fdopen() failed: %s"
+msgstr "దస్త్రం '%s' తెరుచుటలో విఫలమైనారు: ఎఫ్ డిఓపన్()  విఫలమైనది: %s"
+
+#: glib/gfileutils.c:1105
+#, fuzzy, c-format
+msgid "Failed to write file '%s': fwrite() failed: %s"
+msgstr "దస్త్రం '%s' తెరుచుటలో విఫలమైనారు: ఎఫ్ డిఓపన్()  విఫలమైనది: %s"
+
+#: glib/gfileutils.c:1124
+#, fuzzy, c-format
+msgid "Failed to close file '%s': fclose() failed: %s"
+msgstr "దస్త్రం '%s' తెరుచుటలో విఫలమైనారు: ఎఫ్ డిఓపన్()  విఫలమైనది: %s"
+
+#: glib/gfileutils.c:1242
+#, c-format
+msgid "Existing file '%s' could not be removed: g_unlink() failed: %s"
+msgstr ""
+
+#: glib/gfileutils.c:1485
+#, c-format
+msgid "Template '%s' invalid, should not contain a '%s'"
+msgstr " '%s' మాదిరి,  '%s' కలిగియుండలెదు. "
+
+#: glib/gfileutils.c:1499
+#, c-format
+msgid "Template '%s' doesn't end with XXXXXX"
+msgstr " '%s' మాదిరి XXXXXX అంతం అవలేదు. "
+
+#: glib/gfileutils.c:1974
 #, c-format
 msgid "Failed to read the symbolic link '%s': %s"
 msgstr " '%s'  చిహ్న పూరితజోడి చదువుటలో విఫలమయినావు : %s"
 
-#: glib/gfileutils.c:1469
+#: glib/gfileutils.c:1995
+#, c-format
 msgid "Symbolic links not supported"
 msgstr "చిహ్న పూరితజోడి సహకరించలెదు. "
 
-#: glib/giochannel.c:1147
+#: glib/giochannel.c:1150
 #, c-format
 msgid "Conversion from character set `%s' to `%s' is not supported"
 msgstr " అక్షరమాలో`%s' నుండి `%s' కు పరివర్తన చెందడం సాధ్యం కాదు "
 
-#: glib/giochannel.c:1151
+#: glib/giochannel.c:1154
 #, c-format
 msgid "Could not open converter from `%s' to `%s': %s"
 msgstr " తెరచుటలో `%s' నుండి `%s' సాధ్యం కాదు  : %s"
 
-#: glib/giochannel.c:1496
+#: glib/giochannel.c:1499
+#, c-format
 msgid "Can't do a raw read in g_io_channel_read_line_string"
 msgstr " జి_ఐఓ_ఛానెల్_రీడ్_లైన్_స్ర్టింగ్ ముడి చదువు సాధ్యపడదు  "
 
-#: glib/giochannel.c:1543 glib/giochannel.c:1800 glib/giochannel.c:1886
+#: glib/giochannel.c:1546 glib/giochannel.c:1803 glib/giochannel.c:1889
+#, c-format
 msgid "Leftover unconverted data in read buffer"
 msgstr " మిగిలిన దత్తాంశమును రీడ్ బఫర్ లో పరివర్తించలెము  "
 
-#: glib/giochannel.c:1623 glib/giochannel.c:1700
+#: glib/giochannel.c:1626 glib/giochannel.c:1703
+#, c-format
 msgid "Channel terminates in a partial character"
 msgstr " పూర్తికాని అక్షరాన్ని ప్రసార మార్గం ముగించును. "
 
-#: glib/giochannel.c:1686
+#: glib/giochannel.c:1689
+#, c-format
 msgid "Can't do a raw read in g_io_channel_read_to_end"
 msgstr "జి_ఐఓ_ఛానెల్_రీడ్_లైన్_ఎండ్ ముడి చదువు సాధ్యపడదు"
+
+#: glib/gmappedfile.c:116
+#, fuzzy, c-format
+msgid "Failed to open file '%s': open() failed: %s"
+msgstr "దస్త్రం '%s' తెరుచుటలో విఫలమైనారు: ఎఫ్ డిఓపన్()  విఫలమైనది: %s"
+
+#: glib/gmappedfile.c:185
+#, fuzzy, c-format
+msgid "Failed to map file '%s': mmap() failed: %s"
+msgstr "దస్త్రం '%s' తెరుచుటలో విఫలమైనారు: ఎఫ్ డిఓపన్()  విఫలమైనది: %s"
 
 #: glib/gmarkup.c:232
 #, c-format
@@ -380,10 +447,12 @@ msgid "Document ended unexpectedly inside a comment or processing instruction"
 msgstr " లోపల వ్యాఖ్య క్రమగతి ఆదేశం ఉండగా ఊహించకుండా పాఠం ముగింపు  అయినది "
 
 #: glib/gshell.c:73
+#, c-format
 msgid "Quoted text doesn't begin with a quotation mark"
 msgstr "కోటెడ్ పాఠం కొటేషన్ చిహ్నంతో ప్రారంభవరాదు"
 
 #: glib/gshell.c:163
+#, c-format
 msgid "Unmatched quotation mark in command line or other shell-quoted text"
 msgstr " కమాండ్ లైన్ లేద షల్_కోటెడ్ పాఠం లో సామ్యంలేని కొటేషన్ చిహ్నం కలదు "
 
@@ -398,38 +467,42 @@ msgid "Text ended before matching quote was found for %c. (The text was '%s')"
 msgstr "సామ్యమైన కొటేషన్ చిహ్నం %c లభించకముందె పాఠం ముగింపు అయినది . (ఈ పాఠము'%s')"
 
 #: glib/gshell.c:560
+#, c-format
 msgid "Text was empty (or contained only whitespace)"
 msgstr "పాఠం ఏమి లేదు (లేక ఒక వైట్ స్పేస్ కలదు)"
 
-#: glib/gspawn-win32.c:264
+#: glib/gspawn-win32.c:277
+#, c-format
 msgid "Failed to read data from child process"
 msgstr " శిశు కార్యం నుండి చదువుటలో విఫలమయినావు "
 
-#: glib/gspawn-win32.c:281 glib/gspawn.c:1354
+#: glib/gspawn-win32.c:292 glib/gspawn.c:1375
 #, c-format
 msgid "Failed to create pipe for communicating with child process (%s)"
 msgstr " (%s) శిశు కార్యం తో తెలియచేయుటకు పైప్ ను సృష్టించుటలో విఫలమైనావు "
 
-#: glib/gspawn-win32.c:321 glib/gspawn.c:1018
+#: glib/gspawn-win32.c:330 glib/gspawn.c:1039
 #, c-format
 msgid "Failed to read from child pipe (%s)"
 msgstr " శిశు పైప్ నుండి చదువుటలో విఫలమయినావు(%s)"
 
-#: glib/gspawn-win32.c:349 glib/gspawn.c:1223
+#: glib/gspawn-win32.c:356 glib/gspawn.c:1244
 #, c-format
 msgid "Failed to change to directory '%s' (%s)"
 msgstr " '%s' (%s) వివరణ మార్చుటలో విఫలమయినావు  "
 
-#: glib/gspawn-win32.c:357 glib/gspawn-win32.c:442
+#: glib/gspawn-win32.c:362 glib/gspawn-win32.c:582
 #, c-format
 msgid "Failed to execute child process (%s)"
 msgstr "(%s) శిశు కార్యం నిర్వర్తించుటలో విఫలమయినావు  "
 
-#: glib/gspawn-win32.c:599
-msgid "Failed to execute helper program"
+#: glib/gspawn-win32.c:891
+#, fuzzy, c-format
+msgid "Failed to execute helper program (%s)"
 msgstr " సహాయ కార్యక్రమం నిర్వర్తించుటలో విఫలమయినావు "
 
-#: glib/gspawn-win32.c:797
+#: glib/gspawn-win32.c:1091
+#, c-format
 msgid ""
 "Unexpected error in g_io_channel_win32_poll() reading data from a child "
 "process"
@@ -440,108 +513,124 @@ msgstr "  శిశు కార్యం నుండి జి_ఐఓ_ఛా�
 msgid "Failed to read data from child process (%s)"
 msgstr "(%s) శిశు కార్యం నుండి వివరము చదువుటలో విఫలమయినావు "
 
-#: glib/gspawn.c:310
+#: glib/gspawn.c:311
 #, c-format
 msgid "Unexpected error in select() reading data from a child process (%s)"
 msgstr " శిశు కార్యం (%s) నుండి పాఠం చదువుటలో సెలెక్ట్() లో ఊహించని దోషం కలదు.  "
 
-#: glib/gspawn.c:393
+#: glib/gspawn.c:394
 #, c-format
 msgid "Unexpected error in waitpid() (%s)"
 msgstr "వెయిట్ పిడ్() లో ఊహించని దోషం కలదు(%s)"
 
-#: glib/gspawn.c:1083
+#: glib/gspawn.c:1104
 #, c-format
 msgid "Failed to fork (%s)"
 msgstr "(%s) ఫోర్క్ విఫలమయినది  "
 
-#: glib/gspawn.c:1233
+#: glib/gspawn.c:1254
 #, c-format
 msgid "Failed to execute child process \"%s\" (%s)"
 msgstr " \"%s\" శిశుకార్యం నిర్వర్తించుటలో విఫలమయినావు (%s)"
 
-#: glib/gspawn.c:1243
+#: glib/gspawn.c:1264
 #, c-format
 msgid "Failed to redirect output or input of child process (%s)"
 msgstr "ఎగుబడికి రిడైరెక్ట్ చేయుటలో విఫలమైనది లేక శిశు కార్యం యొక్క దిగుబడి  (%s)"
 
-#: glib/gspawn.c:1252
+#: glib/gspawn.c:1273
 #, c-format
 msgid "Failed to fork child process (%s)"
 msgstr " (%s) శిశుకార్యం యెక్క ఫోర్క్ విఫలమయినది "
 
-#: glib/gspawn.c:1260
+#: glib/gspawn.c:1281
 #, c-format
 msgid "Unknown error executing child process \"%s\""
 msgstr " \"%s\" శిశుకార్యం నిర్వర్తించుటలో తెలియని ధోషం కలదు  "
 
-#: glib/gspawn.c:1282
+#: glib/gspawn.c:1303
 #, c-format
 msgid "Failed to read enough data from child pid pipe (%s)"
 msgstr "శిశు పిడ్ పైప్ (%s) నుండి సరిపడునంత చదువుటలో విఫలమైనావు.  "
 
 #: glib/gutf8.c:986
+#, c-format
 msgid "Character out of range for UTF-8"
 msgstr "అక్షరము  యుటిఫ్-8 శ్రేణియందు లేదు "
 
 #: glib/gutf8.c:1080 glib/gutf8.c:1089 glib/gutf8.c:1221 glib/gutf8.c:1230
 #: glib/gutf8.c:1371 glib/gutf8.c:1467
+#, c-format
 msgid "Invalid sequence in conversion input"
 msgstr "పరివర్తన ఎగుబడి వరుస నిస్సారము "
 
 # ../glib/gutf8.c:1382 ../glib/gutf8.c:1478
 #: glib/gutf8.c:1382 glib/gutf8.c:1478
+#, c-format
 msgid "Character out of range for UTF-16"
 msgstr "అక్షరము UTF-16 శ్రేణియందు లేదు"
 
-#: glib/goption.c:442
+#: glib/goption.c:468
 msgid "Usage:"
 msgstr "వినిమయం:"
 
-#: glib/goption.c:442
+#: glib/goption.c:468
 msgid "[OPTION...]"
 msgstr "[ఇచ్చాపూర్వరకం...]"
 
-#: glib/goption.c:525
+#: glib/goption.c:556
 msgid "Help Options:"
 msgstr "సహాయ ఇచ్ఛాపూర్వకాలు:"
 
-#: glib/goption.c:526
+#: glib/goption.c:557
 msgid "Show help options"
 msgstr "సహాయ ఇచ్ఛాపూర్వకాలను చూపించుట"
 
-#: glib/goption.c:531
+#: glib/goption.c:562
 msgid "Show all help options"
 msgstr "సహాయ ఇచ్ఛాపూర్వకాలన్నింటని చూపించుట"
 
-#: glib/goption.c:581
+#: glib/goption.c:612
 msgid "Application Options:"
 msgstr "కార్యక్షేత్ర ఇచ్ఛాపూర్వకాలు :"
 
-#: glib/goption.c:622
-#, c-format
-msgid "Cannot parse integer value '%s' for --%s"
+#: glib/goption.c:653
+#, fuzzy, c-format
+msgid "Cannot parse integer value '%s' for %s"
 msgstr "పూర్ణాంకం విలువ '%s' పార్స్ చేయలేదు --%s"
 
-#: glib/goption.c:632
+#: glib/goption.c:663
 #, c-format
 msgid "Integer value '%s' for %s out of range"
 msgstr " పూర్ణాంకం విలువ '%s' లో విస్రృతి లో లేని %s "
 
-#: glib/goption.c:1362
+#: glib/goption.c:926
+#, fuzzy, c-format
+msgid "Error parsing option %s"
+msgstr "పరివర్తనం నందు దోషం కలదు: %s"
+
+#: glib/goption.c:959 glib/goption.c:1070
+#, c-format
+msgid "Missing argument for %s"
+msgstr ""
+
+#: glib/goption.c:1474
 #, c-format
 msgid "Unknown option %s"
 msgstr "తెలియని  ఇచ్ఛాపూర్వకము %s"
 
 #: glib/gkeyfile.c:339
+#, c-format
 msgid "Valid key file could not be found in data dirs"
 msgstr " సరియైన మీటదస్త్రం దత్తాంశవివరణలో లభించలేదు  "
 
 #: glib/gkeyfile.c:374
+#, c-format
 msgid "Not a regular file"
 msgstr "క్రమబద్దమైన దస్త్రం కాదు"
 
 #: glib/gkeyfile.c:382
+#, c-format
 msgid "File is empty"
 msgstr " కాళీ దస్త్రం "
 
@@ -552,6 +641,7 @@ msgid ""
 msgstr "ఏదైతే మీట-విలువలు , గ్రూప్ ,లేక వ్యాఖ్య కాదో అది మీట దస్త్రంలో లైన్ '%s' కలిగియున్నది"
 
 #: glib/gkeyfile.c:765
+#, c-format
 msgid "Key file does not start with a group"
 msgstr " మీట దస్త్రం సముదాయంతో ప్రారంభమవలెదు.  "
 
@@ -595,26 +685,27 @@ msgstr ""
 msgid "Key file does not have key '%s' in group '%s'"
 msgstr "'%s' మీట దస్త్రం యొక్క మీట ను గ్రూప్ '%s' లో కలిగియుండలేదు "
 
-#: glib/gkeyfile.c:3072
+#: glib/gkeyfile.c:3067
+#, c-format
 msgid "Key file contains escape character at end of line"
 msgstr " మీట దస్త్రం గీత చివర ఎస్పేప్ అక్షరము కలదు"
 
-#: glib/gkeyfile.c:3094
+#: glib/gkeyfile.c:3089
 #, c-format
 msgid "Key file contains invalid escape sequence '%s'"
 msgstr " '%s' మీట దస్త్రం నిస్సారమైన ఎస్పేప్ వరుస కలదు "
 
-#: glib/gkeyfile.c:3235
+#: glib/gkeyfile.c:3230
 #, c-format
 msgid "Value '%s' cannot be interpreted as a number."
 msgstr "'%s' విలువను సంఖ్య గా చదువుటకు సాధ్యపడదు."
 
-#: glib/gkeyfile.c:3245
+#: glib/gkeyfile.c:3240
 #, fuzzy, c-format
 msgid "Integer value '%s' out of range"
 msgstr " పూర్ణాంకం విలువ '%s' లో విస్రృతి లో లేని %s "
 
-#: glib/gkeyfile.c:3275
+#: glib/gkeyfile.c:3270
 #, c-format
 msgid "Value '%s' cannot be interpreted as a boolean."
 msgstr "%s' విలువను బులియన్ గా చదువుటకు సాధ్యపడదు."

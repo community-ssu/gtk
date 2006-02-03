@@ -196,8 +196,8 @@ g_queue_find (GQueue        *queue,
  * Finds an element in a #GQueue, using a supplied function to find the
  * desired element. It iterates over the queue, calling the given function
  * which should return 0 when the desired element is found. The function
- * takes two gconstpointer arguments, the #GQueue element's data and the
- * given user data.
+ * takes two gconstpointer arguments, the #GQueue element's data as the
+ * first argument and the given user data as the second argument.
  * 
  * Return value: The found link, or %NULL if it wasn't found
  * 
@@ -942,7 +942,7 @@ g_queue_insert_after (GQueue   *queue,
  *     called with two elements of the @queue and @user_data. It should
  *     return 0 if the elements are equal, a negative value if the first
  *     element comes before the second, and a positive value if the second
- *     element comes after the first.
+ *     element comes before the first.
  * @user_data: user data passed to @func.
  * 
  * Inserts @data into @queue using @func to determine the new position.

@@ -267,8 +267,23 @@ Flags which modify individual options.
    output.
 @G_OPTION_FLAG_IN_MAIN: The option appears in the main section of the
    <option>--help</option> output, even if it is defined in a group.
-@G_OPTION_FLAG_REVERSE: For options of the G_OPTION_ARG_NONE kind, this flag
+@G_OPTION_FLAG_REVERSE: For options of the %G_OPTION_ARG_NONE kind, this flag
    indicates that the sense of the option is reversed.
+@G_OPTION_FLAG_NO_ARG: For options of the %G_OPTION_ARG_CALLBACK kind,
+   this flag indicates that the callback does not take any argument
+   (like a %G_OPTION_ARG_NONE option). Since 2.8
+@G_OPTION_FLAG_FILENAME: For options of the %G_OPTION_ARG_CALLBACK
+   kind, this flag indicates that the argument should be passed to the
+   callback in the GLib filename encoding rather than UTF-8. Since 2.8
+@G_OPTION_FLAG_OPTIONAL_ARG: For options of the %G_OPTION_ARG_CALLBACK 
+   kind, this flag indicates that the argument supply is optional. If no argument
+   is given then data of %GOptionParseFunc will be set to NULL. Since 2.8
+@G_OPTION_FLAG_NOALIAS: This flag turns off the automatic conflict resolution
+   which prefixes long option names with <literal>groupname-</literal> if 
+   there is a conflict. This option should only be used in situations where
+   aliasing is necessary to model some legacy commandline interface. It is
+   not safe to use this option, unless all option groups are under your 
+   direct control. Since 2.8.
 
 <!-- ##### MACRO G_OPTION_REMAINING ##### -->
 <para>
@@ -301,7 +316,9 @@ g_option_context_add_main_entries() or g_option_group_add_entries().
   specify the option as 
   --<replaceable>groupname</replaceable>-<replaceable>long_name</replaceable>.
 @short_name: If an option has a short name, it can be specified
-  -<replaceable>short_name</replaceable> in a commandline.
+  -<replaceable>short_name</replaceable> in a commandline. @short_name must be 
+  a printable ASCII character different from '-', or zero if the option has no
+  short name.
 @flags: Flags from #GOptionFlags.
 @arg: The type of the option, as a #GOptionArg.
 @arg_data:  If the @arg type is %G_OPTION_ARG_CALLBACK, then @arg_data must 
@@ -427,9 +444,7 @@ the application can then add to its #GOptionContext.
 The type of function that can be called before and after parsing.
 </para>
 
-@context The active #GOptionContext
-
-@context: 
+@context: The active #GOptionContext
 @group: The group to which the function belongs
 @data: User data added to the #GOptionGroup containing the option when it
   was created with g_option_group_new()
@@ -454,9 +469,7 @@ The type of function to be used as callback when a parse error
 occurs.
 </para>
 
-@context The active #GOptionContext
-
-@context: 
+@context: The active #GOptionContext
 @group: The group to which the function belongs
 @data: User data added to the #GOptionGroup containing the option when it
   was created with g_option_group_new()

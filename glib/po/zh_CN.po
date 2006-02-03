@@ -1,83 +1,86 @@
 # glib simplified chinese translation
 # Copyright (C) YERA Free Software Foundation, Inc.
 # He Qiangqiang <carton@263.net>, 2001.
-# Funda Wang <fundawang@linux.net.cn>, 2004.
+# Funda Wang <fundawang@linux.net.cn>, 2004, 2005.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: glib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-01 10:25-0400\n"
-"PO-Revision-Date: 2005-06-15 17:16+0800\n"
+"POT-Creation-Date: 2006-01-18 12:03-0500\n"
+"PO-Revision-Date: 2005-12-25 11:22+0800\n"
 "Last-Translator: He Qiangqiang <carton@263.net>\n"
 "Language-Team: zh_CN <i18n-translation@lists.linux.net.cn>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: glib/gconvert.c:406
+#: glib/gconvert.c:408 glib/gconvert.c:486
 #, c-format
 msgid "Conversion from character set '%s' to '%s' is not supported"
 msgstr "不支持从字符集“%s”到“%s”的转换"
 
-#: glib/gconvert.c:410
+#: glib/gconvert.c:412 glib/gconvert.c:490
 #, c-format
 msgid "Could not open converter from '%s' to '%s'"
 msgstr "无法打开从“%s”到“%s”的转换器"
 
-#: glib/gconvert.c:618 glib/gconvert.c:908 glib/giochannel.c:1319
-#: glib/giochannel.c:1361 glib/giochannel.c:2203 glib/gutf8.c:911
+#: glib/gconvert.c:606 glib/gconvert.c:995 glib/giochannel.c:1322
+#: glib/giochannel.c:1364 glib/giochannel.c:2206 glib/gutf8.c:912
 #: glib/gutf8.c:1361
+#, c-format
 msgid "Invalid byte sequence in conversion input"
 msgstr "转换输入中出现无效字符序列"
 
-#: glib/gconvert.c:624 glib/gconvert.c:841 glib/giochannel.c:1326
-#: glib/giochannel.c:2215
+#: glib/gconvert.c:612 glib/gconvert.c:922 glib/giochannel.c:1329
+#: glib/giochannel.c:2218
 #, c-format
 msgid "Error during conversion: %s"
 msgstr "转换过程中出错：%s"
 
-#: glib/gconvert.c:643 glib/gutf8.c:907 glib/gutf8.c:1112 glib/gutf8.c:1253
+#: glib/gconvert.c:647 glib/gutf8.c:908 glib/gutf8.c:1112 glib/gutf8.c:1253
 #: glib/gutf8.c:1357
+#, c-format
 msgid "Partial character sequence at end of input"
 msgstr "输入末尾出现未尽字符序列"
 
-#: glib/gconvert.c:817
+#: glib/gconvert.c:897
 #, c-format
 msgid "Cannot convert fallback '%s' to codeset '%s'"
 msgstr "无法转换后备字符集“%s”到字符集“%s”"
 
-#: glib/gconvert.c:1617
+#: glib/gconvert.c:1706
 #, c-format
 msgid "The URI '%s' is not an absolute URI using the \"file\" scheme"
 msgstr "URI“%s”不是“file”格式的绝对 URI"
 
-#: glib/gconvert.c:1627
+#: glib/gconvert.c:1716
 #, c-format
 msgid "The local file URI '%s' may not include a '#'"
 msgstr "本地文件 URI“%s”不能包含“#”"
 
-#: glib/gconvert.c:1644
+#: glib/gconvert.c:1733
 #, c-format
 msgid "The URI '%s' is invalid"
 msgstr "URI“%s”无效"
 
-#: glib/gconvert.c:1656
+#: glib/gconvert.c:1745
 #, c-format
 msgid "The hostname of the URI '%s' is invalid"
 msgstr "URI中的主机名“%s”无效"
 
-#: glib/gconvert.c:1672
+#: glib/gconvert.c:1761
 #, c-format
 msgid "The URI '%s' contains invalidly escaped characters"
 msgstr "URI“%s”中包含无效的转义字符"
 
-#: glib/gconvert.c:1766
+#: glib/gconvert.c:1855
 #, c-format
 msgid "The pathname '%s' is not an absolute path"
 msgstr "路径名“%s”不是绝对路径"
 
-#: glib/gconvert.c:1776
+#: glib/gconvert.c:1865
+#, c-format
 msgid "Invalid hostname"
 msgstr "无效的主机名"
 
@@ -86,85 +89,150 @@ msgstr "无效的主机名"
 msgid "Error opening directory '%s': %s"
 msgstr "打开目录“%s”时发生错误：%s"
 
-#: glib/gfileutils.c:502 glib/gfileutils.c:570
+#: glib/gfileutils.c:576 glib/gfileutils.c:649
 #, c-format
 msgid "Could not allocate %lu bytes to read file \"%s\""
 msgstr "无法分配 %lu 字节以读取文件“%s”"
 
-#: glib/gfileutils.c:515
+#: glib/gfileutils.c:591
 #, c-format
 msgid "Error reading file '%s': %s"
 msgstr "读取文件“%s”出错：%s"
 
-#: glib/gfileutils.c:594
+#: glib/gfileutils.c:673
 #, c-format
 msgid "Failed to read from file '%s': %s"
-msgstr "无法读取文件“%s”：%s"
+msgstr "读取文件“%s”失败：%s"
 
-#: glib/gfileutils.c:645 glib/gfileutils.c:732
+#: glib/gfileutils.c:724 glib/gfileutils.c:811
 #, c-format
 msgid "Failed to open file '%s': %s"
-msgstr "无法打开文件“%s”：%s"
+msgstr "打开文件“%s”失败：%s"
 
-#: glib/gfileutils.c:662
+#: glib/gfileutils.c:741 glib/gmappedfile.c:133
 #, c-format
 msgid "Failed to get attributes of file '%s': fstat() failed: %s"
-msgstr "无法获得文件“%s”的属性：fstat() 失败：%s"
+msgstr "获得文件“%s”的属性失败：fstat() 失败：%s"
 
-#: glib/gfileutils.c:696
+#: glib/gfileutils.c:775
 #, c-format
 msgid "Failed to open file '%s': fdopen() failed: %s"
-msgstr "无法打开文件“%s”：fdopen() 失败：%s"
+msgstr "打开文件“%s”失败：fdopen() 失败：%s"
 
-#: glib/gfileutils.c:1031
+#: glib/gfileutils.c:909
+#, c-format
+msgid "Failed to rename file '%s' to '%s': g_rename() failed: %s"
+msgstr "将文件“%s”重命名为“%s”失败：g_rename() 失败：%s"
+
+#: glib/gfileutils.c:952
+#, c-format
+msgid "Could not change file mode: fork() failed: %s"
+msgstr "无法更改文件模式：fork() 失败：%s"
+
+#: glib/gfileutils.c:983
+#, c-format
+msgid "Could not change file mode: waitpid() failed: %s"
+msgstr "无法更改文件模式：waitpid() 失败：%s"
+
+#: glib/gfileutils.c:1002
+#, c-format
+msgid "Could not change file mode: chmod() failed: %s"
+msgstr "无法更改文件模式：chmod() 失败：%s"
+
+#: glib/gfileutils.c:1013
+#, c-format
+msgid "Could not change file mode: Child terminated by signal: %s"
+msgstr "无法更改文件模式：子进程被信号中止：%s"
+
+#: glib/gfileutils.c:1024
+#, c-format
+msgid "Could not change file mode: Child terminated abnormally"
+msgstr "无法更改文件模式：子进程异常中止"
+
+#: glib/gfileutils.c:1058 glib/gfileutils.c:1524
+#, c-format
+msgid "Failed to create file '%s': %s"
+msgstr "创建文件“%s”失败：%s"
+
+#: glib/gfileutils.c:1080
+#, c-format
+msgid "Failed to open file '%s' for writing: fdopen() failed: %s"
+msgstr "打开文件“%s”写入失败：fdopen() 失败：%s"
+
+#: glib/gfileutils.c:1105
+#, c-format
+msgid "Failed to write file '%s': fwrite() failed: %s"
+msgstr "写入文件“%s”失败：fwrite() 失败：%s"
+
+#: glib/gfileutils.c:1124
+#, c-format
+msgid "Failed to close file '%s': fclose() failed: %s"
+msgstr "关闭文件“%s”失败：fclose() 失败：%s"
+
+#: glib/gfileutils.c:1242
+#, c-format
+msgid "Existing file '%s' could not be removed: g_unlink() failed: %s"
+msgstr "无法删除已有文件“%s”：g_unlink() 失败：%s"
+
+#: glib/gfileutils.c:1485
 #, c-format
 msgid "Template '%s' invalid, should not contain a '%s'"
 msgstr "模板“%s”无效，不应该包含“%s”"
 
-#: glib/gfileutils.c:1045
+#: glib/gfileutils.c:1499
 #, c-format
 msgid "Template '%s' doesn't end with XXXXXX"
 msgstr "模板“%s”的结尾不是 XXXXXX"
 
-#: glib/gfileutils.c:1070
-#, c-format
-msgid "Failed to create file '%s': %s"
-msgstr "无法创建文件“%s”：%s"
-
-#: glib/gfileutils.c:1448
+#: glib/gfileutils.c:1974
 #, c-format
 msgid "Failed to read the symbolic link '%s': %s"
 msgstr "读取符号连接“%s”失败：%s"
 
-#: glib/gfileutils.c:1469
+#: glib/gfileutils.c:1995
+#, c-format
 msgid "Symbolic links not supported"
 msgstr "不支持符号连接"
 
-#: glib/giochannel.c:1147
+#: glib/giochannel.c:1150
 #, c-format
 msgid "Conversion from character set `%s' to `%s' is not supported"
 msgstr "不支持从字符集“%s”到“%s”的转换"
 
-#: glib/giochannel.c:1151
+#: glib/giochannel.c:1154
 #, c-format
 msgid "Could not open converter from `%s' to `%s': %s"
 msgstr "无法打开从“%s”到“%s”的转换器：%s"
 
-#: glib/giochannel.c:1496
+#: glib/giochannel.c:1499
+#, c-format
 msgid "Can't do a raw read in g_io_channel_read_line_string"
 msgstr "g_io_channel_read_line_string 函数无法进行原始读取"
 
-#: glib/giochannel.c:1543 glib/giochannel.c:1800 glib/giochannel.c:1886
+#: glib/giochannel.c:1546 glib/giochannel.c:1803 glib/giochannel.c:1889
+#, c-format
 msgid "Leftover unconverted data in read buffer"
 msgstr "在读缓冲里留有未转换数据"
 
-#: glib/giochannel.c:1623 glib/giochannel.c:1700
+#: glib/giochannel.c:1626 glib/giochannel.c:1703
+#, c-format
 msgid "Channel terminates in a partial character"
 msgstr "通道终止于未尽字符"
 
-#: glib/giochannel.c:1686
+#: glib/giochannel.c:1689
+#, c-format
 msgid "Can't do a raw read in g_io_channel_read_to_end"
 msgstr "g_io_channel_read_to_end 函数无法进行原始读取"
+
+#: glib/gmappedfile.c:116
+#, c-format
+msgid "Failed to open file '%s': open() failed: %s"
+msgstr "打开文件“%s”失败：open() 失败：%s"
+
+#: glib/gmappedfile.c:185
+#, c-format
+msgid "Failed to map file '%s': mmap() failed: %s"
+msgstr "映射文件“%s”失败：mmap() 失败：%s"
 
 #: glib/gmarkup.c:232
 #, c-format
@@ -365,10 +433,12 @@ msgid "Document ended unexpectedly inside a comment or processing instruction"
 msgstr "文档在注释或处理指令中意外结束"
 
 #: glib/gshell.c:73
+#, c-format
 msgid "Quoted text doesn't begin with a quotation mark"
 msgstr "引用的文本没有以引号开头"
 
 #: glib/gshell.c:163
+#, c-format
 msgid "Unmatched quotation mark in command line or other shell-quoted text"
 msgstr "命令行或其他shell引用文本中出现不匹配的引号"
 
@@ -383,38 +453,42 @@ msgid "Text ended before matching quote was found for %c. (The text was '%s')"
 msgstr "文本在找到与 %c 匹配的引号之前结束。(文本为“%s”)"
 
 #: glib/gshell.c:560
+#, c-format
 msgid "Text was empty (or contained only whitespace)"
 msgstr "空文本(或仅含空白字符)"
 
-#: glib/gspawn-win32.c:264
+#: glib/gspawn-win32.c:277
+#, c-format
 msgid "Failed to read data from child process"
-msgstr "无法从子进程中读取数据"
+msgstr "从子进程中读取数据失败"
 
-#: glib/gspawn-win32.c:281 glib/gspawn.c:1354
+#: glib/gspawn-win32.c:292 glib/gspawn.c:1375
 #, c-format
 msgid "Failed to create pipe for communicating with child process (%s)"
-msgstr "无法创建与子进程通讯的管道 (%s)"
+msgstr "创建与子进程通讯的管道失败(%s)"
 
-#: glib/gspawn-win32.c:321 glib/gspawn.c:1018
+#: glib/gspawn-win32.c:330 glib/gspawn.c:1039
 #, c-format
 msgid "Failed to read from child pipe (%s)"
-msgstr "无法从子管道中读取 (%s)"
+msgstr "从子管道中读取失败(%s)"
 
-#: glib/gspawn-win32.c:349 glib/gspawn.c:1223
+#: glib/gspawn-win32.c:356 glib/gspawn.c:1244
 #, c-format
 msgid "Failed to change to directory '%s' (%s)"
-msgstr "无法切换到目录“%s” (%s)"
+msgstr "更改到目录“%s”失败(%s)"
 
-#: glib/gspawn-win32.c:357 glib/gspawn-win32.c:442
+#: glib/gspawn-win32.c:362 glib/gspawn-win32.c:582
 #, c-format
 msgid "Failed to execute child process (%s)"
-msgstr "无法执行子进程 (%s)"
+msgstr "执行子进程失败(%s)"
 
-#: glib/gspawn-win32.c:599
-msgid "Failed to execute helper program"
-msgstr "无法执行助手程序"
+#: glib/gspawn-win32.c:891
+#, c-format
+msgid "Failed to execute helper program (%s)"
+msgstr "执行助手程序失败(%s)"
 
-#: glib/gspawn-win32.c:797
+#: glib/gspawn-win32.c:1091
+#, c-format
 msgid ""
 "Unexpected error in g_io_channel_win32_poll() reading data from a child "
 "process"
@@ -423,109 +497,125 @@ msgstr "g_io_channel_win32_poll() 从子进程中读取数据时出现异常错�
 #: glib/gspawn.c:179
 #, c-format
 msgid "Failed to read data from child process (%s)"
-msgstr "无法从子进程中读取数据 (%s)"
+msgstr "从子进程中读取数据失败(%s)"
 
-#: glib/gspawn.c:310
+#: glib/gspawn.c:311
 #, c-format
 msgid "Unexpected error in select() reading data from a child process (%s)"
 msgstr "select() 在从子进程中读取数据时出现异常错误 (%s)"
 
-#: glib/gspawn.c:393
+#: glib/gspawn.c:394
 #, c-format
 msgid "Unexpected error in waitpid() (%s)"
 msgstr "waitpid() 出现异常错误 (%s)"
 
-#: glib/gspawn.c:1083
+#: glib/gspawn.c:1104
 #, c-format
 msgid "Failed to fork (%s)"
-msgstr "无法 fork (%s)"
+msgstr "fork 失败(%s)"
 
-#: glib/gspawn.c:1233
+#: glib/gspawn.c:1254
 #, c-format
 msgid "Failed to execute child process \"%s\" (%s)"
-msgstr "无法执行子进程 “%s” (%s)"
+msgstr "执行子进程“%s”失败(%s)"
 
-#: glib/gspawn.c:1243
+#: glib/gspawn.c:1264
 #, c-format
 msgid "Failed to redirect output or input of child process (%s)"
-msgstr "无法重定向子进程(%s)的输入或输出"
+msgstr "重定向子进程(%s)的输入或输出失败"
 
-#: glib/gspawn.c:1252
+#: glib/gspawn.c:1273
 #, c-format
 msgid "Failed to fork child process (%s)"
-msgstr "无法 fork 子进程 (%s)"
+msgstr "fork 子进程失败 (%s)"
 
-#: glib/gspawn.c:1260
+#: glib/gspawn.c:1281
 #, c-format
 msgid "Unknown error executing child process \"%s\""
 msgstr "执行子进程“%s”时出现未知错误"
 
-#: glib/gspawn.c:1282
+#: glib/gspawn.c:1303
 #, c-format
 msgid "Failed to read enough data from child pid pipe (%s)"
-msgstr "无法从子进程管道中读取足够的数据(%s)"
+msgstr "从子进程管道中读取足够的数据失败(%s)"
 
 #: glib/gutf8.c:986
+#, c-format
 msgid "Character out of range for UTF-8"
 msgstr "字符超出 UTF-8 范围"
 
 #: glib/gutf8.c:1080 glib/gutf8.c:1089 glib/gutf8.c:1221 glib/gutf8.c:1230
 #: glib/gutf8.c:1371 glib/gutf8.c:1467
+#, c-format
 msgid "Invalid sequence in conversion input"
 msgstr "转换输入中出现无效序列"
 
 #: glib/gutf8.c:1382 glib/gutf8.c:1478
+#, c-format
 msgid "Character out of range for UTF-16"
 msgstr "字符超出 UTF-16 范围"
 
-#: glib/goption.c:442
+#: glib/goption.c:468
 msgid "Usage:"
 msgstr "用法："
 
-#: glib/goption.c:442
+#: glib/goption.c:468
 msgid "[OPTION...]"
 msgstr "[选项...]"
 
-#: glib/goption.c:525
+#: glib/goption.c:556
 msgid "Help Options:"
 msgstr "帮助选项："
 
-#: glib/goption.c:526
+#: glib/goption.c:557
 msgid "Show help options"
 msgstr "显示帮助选项"
 
-#: glib/goption.c:531
+#: glib/goption.c:562
 msgid "Show all help options"
 msgstr "显示全部帮助选项"
 
-#: glib/goption.c:581
+#: glib/goption.c:612
 msgid "Application Options:"
 msgstr "应用程序选项："
 
-#: glib/goption.c:622
+#: glib/goption.c:653
 #, c-format
-msgid "Cannot parse integer value '%s' for --%s"
-msgstr "无法处理 --%2$s 所用的整数值“%1$s”"
+msgid "Cannot parse integer value '%s' for %s"
+msgstr "无法处理 %2$s 所用的整数值“%1$s”"
 
-#: glib/goption.c:632
+#: glib/goption.c:663
 #, c-format
 msgid "Integer value '%s' for %s out of range"
-msgstr "%2$s所用的整数值“%1$s”超出范围"
+msgstr "%2$s 所用的整数值“%1$s”超出范围"
 
-#: glib/goption.c:1362
+#: glib/goption.c:926
+#, c-format
+msgid "Error parsing option %s"
+msgstr "分析选项 %s 出错"
+
+#: glib/goption.c:959 glib/goption.c:1070
+#, c-format
+msgid "Missing argument for %s"
+msgstr "缺少 %s 的参数"
+
+#: glib/goption.c:1474
 #, c-format
 msgid "Unknown option %s"
 msgstr "未知选项 %s"
 
 #: glib/gkeyfile.c:339
+#, c-format
 msgid "Valid key file could not be found in data dirs"
 msgstr "无法在数据目录中找到有效的键文件"
 
 #: glib/gkeyfile.c:374
+#, c-format
 msgid "Not a regular file"
 msgstr "不是普通文件"
 
 #: glib/gkeyfile.c:382
+#, c-format
 msgid "File is empty"
 msgstr "文件为空"
 
@@ -536,6 +626,7 @@ msgid ""
 msgstr "键文件中的行“%s”不是键-值对、组或注释"
 
 #: glib/gkeyfile.c:765
+#, c-format
 msgid "Key file does not start with a group"
 msgstr "键文件不以组开始"
 
@@ -578,26 +669,27 @@ msgstr "键文件在“%2$s”中包含“%1$s”，其值无法解释。"
 msgid "Key file does not have key '%s' in group '%s'"
 msgstr "键文件的组“%2$s”中不包含键“%1$s”"
 
-#: glib/gkeyfile.c:3072
+#: glib/gkeyfile.c:3067
+#, c-format
 msgid "Key file contains escape character at end of line"
 msgstr "键文件在行尾含有转义字符"
 
-#: glib/gkeyfile.c:3094
+#: glib/gkeyfile.c:3089
 #, c-format
 msgid "Key file contains invalid escape sequence '%s'"
 msgstr "键文件中包含无效的转义序列“%s”"
 
-#: glib/gkeyfile.c:3235
+#: glib/gkeyfile.c:3230
 #, c-format
 msgid "Value '%s' cannot be interpreted as a number."
 msgstr "无法将值“%s”解释为数值。"
 
-#: glib/gkeyfile.c:3245
+#: glib/gkeyfile.c:3240
 #, c-format
 msgid "Integer value '%s' out of range"
 msgstr "整数值“%s”超出范围"
 
-#: glib/gkeyfile.c:3275
+#: glib/gkeyfile.c:3270
 #, c-format
 msgid "Value '%s' cannot be interpreted as a boolean."
 msgstr "无法将值“%s”解释为布尔值。"

@@ -20,8 +20,17 @@ by application programmers.
 
 <!-- ##### MACRO G_INLINE_FUNC ##### -->
 <para>
-Used to declare inline functions. If inline functions are not supported on
-the particular platform, the macro evaluates to the empty string.
+This macro is used to export function prototypes so they can be linked
+with an external version when no inlining is performed. The file which
+implements the functions should define %G_IMPLEMENTS_INLINES
+before including the headers which contain %G_INLINE_FUNC declarations.
+Since inlining is very compiler-dependent using these macros correctly
+is very difficult. Their use is strongly discouraged.
+</para>
+<para>
+This macro is often mistaken for a replacement for the inline keyword;
+inline is already declared in a portable manner in the glib headers
+and can be used normally.
 </para>
 
 
@@ -81,7 +90,6 @@ yourself, because this macro may use <function>memmove()</function> and GLib
 does not include <function>string.h</function> for you.
 </para>
 
-<!-- # Unused Parameters # -->
 @ap1: the <type>va_list</type> variable to place a copy of @ap2 in.
 @ap2: a <type>va_list</type>.
 
@@ -228,6 +236,19 @@ gchar *g_dgettext (gchar *domain_name, gchar *msgid) G_GNUC_FORMAT (2);
 </programlisting></informalexample>
 
 @arg_idx: the index of the argument.
+
+
+<!-- ##### MACRO G_GNUC_NULL_TERMINATED ##### -->
+<para>
+Expands to the GNU C <literal>sentinel</literal> function attribute if the 
+compiler is <command>gcc</command>, or "" if it isn't. This function attribute
+only applies to variadic functions and instructs the compiler to check that 
+the argument list is terminated with an explicit %NULL.
+See the GNU C documentation for details. 
+</para>
+
+Since: 2.8
+
 
 
 <!-- ##### MACRO G_GNUC_FUNCTION ##### -->

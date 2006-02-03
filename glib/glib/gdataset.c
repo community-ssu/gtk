@@ -27,8 +27,7 @@
  */
 
 /* 
- * MT safe ; FIXME: might still freeze, watch out, not thoroughly
- * looked at yet.  
+ * MT safe ; except for g_data*_foreach()
  */
 
 #include "config.h"
@@ -37,11 +36,20 @@
 
 #include "glib.h"
 #include "galias.h"
+#include "gdatasetprivate.h"
 
 
 /* --- defines --- */
 #define	G_QUARK_BLOCK_SIZE			(512)
 #define	G_DATA_CACHE_MAX			(512)
+
+/* datalist pointer modifications have to be done with the g_dataset_global mutex held */
+#define G_DATALIST_GET_POINTER(datalist)						\
+  ((GData*) ((gsize) *(datalist) & ~(gsize) G_DATALIST_FLAGS_MASK))
+#define G_DATALIST_SET_POINTER(datalist, pointer) G_STMT_START {			\
+  *(datalist) = (GData*) (G_DATALIST_GET_FLAGS (datalist) |				\
+			  (gsize) pointer);						\
+} G_STMT_END
 
 
 /* --- structures --- */
@@ -87,7 +95,6 @@ static GHashTable   *g_quark_ht = NULL;
 static gchar       **g_quarks = NULL;
 static GQuark        g_quark_seq_id = 0;
 
-
 /* --- functions --- */
 
 /* HOLDS: g_dataset_global_lock */
@@ -98,8 +105,8 @@ g_datalist_clear_i (GData **datalist)
   
   /* unlink *all* items before walking their destructors
    */
-  list = *datalist;
-  *datalist = NULL;
+  list = G_DATALIST_GET_POINTER (datalist);
+  G_DATALIST_SET_POINTER (datalist, NULL);
   
   while (list)
     {
@@ -135,7 +142,7 @@ g_datalist_clear (GData **datalist)
   if (!g_dataset_location_ht)
     g_data_initialize ();
 
-  while (*datalist)
+  while (G_DATALIST_GET_POINTER (datalist))
     g_datalist_clear_i (datalist);
   G_UNLOCK (g_dataset_global);
 }
@@ -206,7 +213,7 @@ g_data_set_internal (GData	  **datalist,
 {
   register GData *list;
   
-  list = *datalist;
+  list = G_DATALIST_GET_POINTER (datalist);
   if (!data)
     {
       register GData *prev;
@@ -222,12 +229,12 @@ g_data_set_internal (GData	  **datalist,
 		prev->next = list->next;
 	      else
 		{
-		  *datalist = list->next;
+		  G_DATALIST_SET_POINTER (datalist, list->next);
 		  
 		  /* the dataset destruction *must* be done
-		   * prior to invokation of the data destroy function
+		   * prior to invocation of the data destroy function
 		   */
-		  if (!*datalist && dataset)
+		  if (!list->next && dataset)
 		    g_dataset_destroy_internal (dataset);
 		}
 	      
@@ -284,7 +291,7 @@ g_data_set_internal (GData	  **datalist,
 		  list->destroy_func = destroy_func;
 		  
 		  /* we need to have updated all structures prior to
-		   * invokation of the destroy function
+		   * invocation of the destroy function
 		   */
 		  G_UNLOCK (g_dataset_global);
 		  dfunc (ddata);
@@ -305,11 +312,11 @@ g_data_set_internal (GData	  **datalist,
 	}
       else
         list = g_slice_new (GData);
-      list->next = *datalist;
+      list->next = G_DATALIST_GET_POINTER (datalist);
       list->id = key_id;
       list->data = data;
       list->destroy_func = destroy_func;
-      *datalist = list;
+      G_DATALIST_SET_POINTER (datalist, list);
     }
 
   return NULL;
@@ -449,18 +456,21 @@ gpointer
 g_datalist_id_get_data (GData	 **datalist,
 			GQuark     key_id)
 {
+  gpointer data = NULL;
   g_return_val_if_fail (datalist != NULL, NULL);
-  
   if (key_id)
     {
       register GData *list;
-      
-      for (list = *datalist; list; list = list->next)
+      G_LOCK (g_dataset_global);
+      for (list = G_DATALIST_GET_POINTER (datalist); list; list = list->next)
 	if (list->id == key_id)
-	  return list->data;
+	  {
+            data = list->data;
+            break;
+          }
+      G_UNLOCK (g_dataset_global);
     }
-  
-  return NULL;
+  return data;
 }
 
 void
@@ -505,7 +515,7 @@ g_datalist_foreach (GData	   **datalist,
   g_return_if_fail (datalist != NULL);
   g_return_if_fail (func != NULL);
   
-  for (list = *datalist; list; list = next)
+  for (list = G_DATALIST_GET_POINTER (datalist); list; list = next)
     {
       next = list->next;
       func (list->id, list->data, user_data);
@@ -518,6 +528,74 @@ g_datalist_init (GData **datalist)
   g_return_if_fail (datalist != NULL);
   
   *datalist = NULL;
+}
+
+/**
+ * g_datalist_set_flags:
+ * @datalist: pointer to the location that holds a list
+ * @flags: the flags to turn on. The values of the flags are
+ *   restricted by %G_DATALIST_FLAGS_MASK (currently
+ *   3; giving two possible boolean flags).
+ *   A value for @flags that doesn't fit within the mask is
+ *   an error.
+ * 
+ * Turns on flag values for a data list. This function is used
+ * to keep a small number of boolean flags in an object with
+ * a data list without using any additional space. It is
+ * not generally useful except in circumstances where space
+ * is very tight. (It is used in the base #GObject type, for
+ * example.)
+ **/
+void
+g_datalist_set_flags (GData **datalist,
+		      guint   flags)
+{
+  g_return_if_fail (datalist != NULL);
+  g_return_if_fail ((flags & ~G_DATALIST_FLAGS_MASK) == 0);
+
+  G_LOCK (g_dataset_global);
+  *datalist = (GData*) (flags | (gsize) *datalist);
+  G_UNLOCK (g_dataset_global);
+}
+
+/**
+ * g_datalist_unset_flags:
+ * @datalist: pointer to the location that holds a list
+ * @flags: the flags to turn off. The values of the flags are
+ *   restricted by %G_DATALIST_FLAGS_MASK (currently
+ *   3: giving two possible boolean flags).
+ *   A value for @flags that doesn't fit within the mask is
+ *   an error.
+ * 
+ * Turns off flag values for a data list. See g_datalist_unset_flags()
+ **/
+void
+g_datalist_unset_flags (GData **datalist,
+			guint   flags)
+{
+  g_return_if_fail (datalist != NULL);
+  g_return_if_fail ((flags & ~G_DATALIST_FLAGS_MASK) == 0);
+
+  G_LOCK (g_dataset_global);
+  *datalist = (GData*) (~(gsize) flags & (gsize) *datalist);
+  G_UNLOCK (g_dataset_global);
+}
+
+/**
+ * g_datalist_get_flags:
+ * @datalist: pointer to the location that holds a list
+ * 
+ * Gets flags values packed in together with the datalist.
+ * See g_datalist_set_flags().
+ * 
+ * Return value: the flags of the datalist
+ **/
+guint
+g_datalist_get_flags (GData **datalist)
+{
+  g_return_val_if_fail (datalist != NULL, 0);
+
+  return G_DATALIST_GET_FLAGS (datalist); /* atomic macro */
 }
 
 /* HOLDS: g_dataset_global_lock */

@@ -1,4 +1,4 @@
-SUBDIRS=gobject
+SUBDIRS=gobject refcount
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/glib -I$(top_srcdir)/gmodule $(GLIB_DEBUG_FLAGS)
 
@@ -71,6 +71,7 @@ test_programs =					\
 	$(CXX_TEST)				\
 	child-test				\
 	completion-test				\
+	convert-test				\
 	date-test				\
 	dirname-test				\
 	file-test				\
@@ -81,6 +82,7 @@ test_programs =					\
 	keyfile-test				\
 	list-test				\
 	mainloop-test				\
+	mapping-test				\
 	markup-escape-test			\
 	module-test				\
 	node-test				\
@@ -128,6 +130,7 @@ atomic_test_LDADD = $(progs_ldadd)
 array_test_LDADD = $(progs_ldadd)
 child_test_LDADD = $(thread_ldadd)
 completion_test_LDADD = $(progs_ldadd)
+convert_test_LDADD = $(progs_ldadd)
 date_test_LDADD = $(progs_ldadd)
 dirname_test_LDADD = $(progs_ldadd)
 file_test_LDADD = $(progs_ldadd)
@@ -139,6 +142,7 @@ keyfile_test_LDADD = $(progs_ldadd)
 list_test_LDADD = $(progs_ldadd)
 mainloop_test_LDADD = $(thread_ldadd)
 markup_test_LDADD = $(progs_ldadd)
+mapping_test_LDADD = $(progs_ldadd)
 markup_escape_test_LDADD = $(progs_ldadd)
 module_test_LDADD = $(module_ldadd) $(module_test_exp)
 module_test_LDFLAGS = $(G_MODULE_LDFLAGS)
@@ -192,4 +196,7 @@ dist-hook: $(BUILT_EXTRA_DIST)
 	  cp $$f $(distdir)/markups;       \
 	done
 
-DISTCLEANFILES = iochannel-test-outfile
+DISTCLEANFILES = iochannel-test-outfile \
+		file-test-get-contents \
+		maptest \
+		mapchild

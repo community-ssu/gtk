@@ -41,7 +41,7 @@ shortver=$(major).$(minor)
 apiver=2.0
 soname=0
 gtkver=2.0
-shver=2.6.6-1osso2
+shver=2.8.6-1osso1
 libpath=$(BUILD_DEB_DIR)/glib/.libs:$(BUILD_DEB_DIR)/gmodule/.libs:$(BUILD_DEB_DIR)/gobject/.libs:$(BUILD_DEB_DIR)/gthread/.libs
 
 _echo_cfiles = for f in ${1}; do if [ -f $$f ]; then echo $$f; fi; done

@@ -51,6 +51,10 @@
 #ifdef G_OS_WIN32
 #include <process.h>		/* For getpid() */
 #include <io.h>
+#  define STRICT		/* Strict typing, please */
+#  define _WIN32_WINDOWS 0x0401 /* to get IsDebuggerPresent */
+#  include <windows.h>
+#  undef STRICT
 #endif
 
 #ifdef MAEMO_SYSLOG_ENABLED
@@ -1147,7 +1151,8 @@ _g_debug_init (void)
   if (val != NULL)
     {
       static const GDebugKey keys[] = {
-	{"fatal_warnings", G_DEBUG_FATAL_WARNINGS}
+	{"fatal_warnings", G_DEBUG_FATAL_WARNINGS},
+	{"fatal_criticals", G_DEBUG_FATAL_CRITICALS}
       };
       
       _g_debug_flags = g_parse_debug_string (val, keys, G_N_ELEMENTS (keys));
@@ -1159,6 +1164,15 @@ _g_debug_init (void)
       
       fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
       fatal_mask |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
+      g_log_set_always_fatal (fatal_mask);
+    }
+  
+  if (_g_debug_flags & G_DEBUG_FATAL_CRITICALS) 
+    {
+      GLogLevelFlags fatal_mask;
+      
+      fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
+      fatal_mask |= G_LOG_LEVEL_CRITICAL;
       g_log_set_always_fatal (fatal_mask);
     }
 }

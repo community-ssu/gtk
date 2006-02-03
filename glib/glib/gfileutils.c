@@ -33,6 +33,9 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef G_OS_WIN32
+#include <sys/wait.h>
+#endif
 #include <fcntl.h>
 #include <stdlib.h>
 
@@ -53,6 +56,78 @@
 #include "glibintl.h"
 
 #include "galias.h"
+
+/**
+ * g_mkdir_with_parents:
+ * @pathname: a pathname in the GLib file name encoding
+ * @mode: permissions to use for newly created directories
+ *
+ * Create a directory if it doesn't already exist. Create intermediate
+ * parent directories as needed, too.
+ *
+ * Returns: 0 if the directory already exists, or was successfully
+ * created. Returns -1 if an error occurred, with errno set.
+ *
+ * Since: 2.8
+ */
+int
+g_mkdir_with_parents (const gchar *pathname,
+		      int          mode)
+{
+  gchar *fn, *p;
+
+  if (pathname == NULL || *pathname == '\0')
+    {
+      errno = EINVAL;
+      return -1;
+    }
+
+  fn = g_strdup (pathname);
+
+  if (g_path_is_absolute (fn))
+    p = (gchar *) g_path_skip_root (fn);
+  else
+    p = fn;
+
+  do
+    {
+      while (*p && !G_IS_DIR_SEPARATOR (*p))
+	p++;
+      
+      if (!*p)
+	p = NULL;
+      else
+	*p = '\0';
+      
+      if (!g_file_test (fn, G_FILE_TEST_EXISTS))
+	{
+	  if (g_mkdir (fn, mode) == -1)
+	    {
+	      int errno_save = errno;
+	      g_free (fn);
+	      errno = errno_save;
+	      return -1;
+	    }
+	}
+      else if (!g_file_test (fn, G_FILE_TEST_IS_DIR))
+	{
+	  g_free (fn);
+	  errno = ENOTDIR;
+	  return -1;
+	}
+      if (p)
+	{
+	  *p++ = G_DIR_SEPARATOR;
+	  while (*p && G_IS_DIR_SEPARATOR (*p))
+	    p++;
+	}
+    }
+  while (p);
+
+  g_free (fn);
+
+  return 0;
+}
 
 /**
  * g_file_test:
@@ -465,48 +540,49 @@ static gboolean
 get_contents_stdio (const gchar *display_filename,
                     FILE        *f,
                     gchar      **contents,
-                    gsize       *length, 
+                    gsize       *length,
                     GError     **error)
 {
-  gchar buf[2048];
+  gchar buf[4096];
   size_t bytes;
-  char *str;
-  size_t total_bytes;
-  size_t total_allocated;
-  
+  gchar *str = NULL;
+  size_t total_bytes = 0;
+  size_t total_allocated = 0;
+  gchar *tmp;
+
   g_assert (f != NULL);
 
-#define STARTING_ALLOC 64
-  
-  total_bytes = 0;
-  total_allocated = STARTING_ALLOC;
-  str = g_malloc (STARTING_ALLOC);
-  
   while (!feof (f))
     {
-      int save_errno;
+      gint save_errno;
 
-      bytes = fread (buf, 1, 2048, f);
+      bytes = fread (buf, 1, sizeof (buf), f);
       save_errno = errno;
 
       while ((total_bytes + bytes + 1) > total_allocated)
         {
-          total_allocated *= 2;
-          str = g_try_realloc (str, total_allocated);
+          if (str)
+            total_allocated *= 2;
+          else
+            total_allocated = MIN (bytes + 1, sizeof (buf));
 
-          if (str == NULL)
+          tmp = g_try_realloc (str, total_allocated);
+
+          if (tmp == NULL)
             {
               g_set_error (error,
                            G_FILE_ERROR,
                            G_FILE_ERROR_NOMEM,
                            _("Could not allocate %lu bytes to read file \"%s\""),
-                           (gulong) total_allocated, 
+                           (gulong) total_allocated,
 			   display_filename);
 
               goto error;
             }
+
+	  str = tmp;
         }
-      
+
       if (ferror (f))
         {
           g_set_error (error,
@@ -525,21 +601,24 @@ get_contents_stdio (const gchar *display_filename,
 
   fclose (f);
 
+  if (total_allocated == 0)
+    str = g_new (gchar, 1);
+
   str[total_bytes] = '\0';
-  
+
   if (length)
     *length = total_bytes;
-  
+
   *contents = str;
-  
+
   return TRUE;
 
  error:
 
   g_free (str);
   fclose (f);
-  
-  return FALSE;  
+
+  return FALSE;
 }
 
 #ifndef G_OS_WIN32
@@ -811,6 +890,381 @@ g_file_get_contents (const gchar *filename,
 }
 
 #endif
+
+static gboolean
+rename_file (const char *old_name,
+	     const char *new_name,
+	     GError **err)
+{
+  errno = 0;
+  if (g_rename (old_name, new_name) == -1)
+    {
+      int save_errno = errno;
+      gchar *display_old_name = g_filename_display_name (old_name);
+      gchar *display_new_name = g_filename_display_name (new_name);
+
+      g_set_error (err,
+		   G_FILE_ERROR,
+		   g_file_error_from_errno (save_errno),
+		   _("Failed to rename file '%s' to '%s': g_rename() failed: %s"),
+		   display_old_name,
+		   display_new_name,
+		   g_strerror (save_errno));
+
+      g_free (display_old_name);
+      g_free (display_new_name);
+      
+      return FALSE;
+    }
+  
+  return TRUE;
+}
+
+static gboolean
+set_umask_permissions (int	     fd,
+		       GError      **err)
+{
+#ifdef G_OS_WIN32
+
+  return TRUE;
+
+#else
+  /* All of this function is just to work around the fact that
+   * there is no way to get the umask without changing it.
+   *
+   * We can't just change-and-reset the umask because that would
+   * lead to a race condition if another thread tried to change
+   * the umask in between the getting and the setting of the umask.
+   * So we have to do the whole thing in a child process.
+   */
+
+  int save_errno;
+  pid_t pid;
+
+  pid = fork ();
+  
+  if (pid == -1)
+    {
+      save_errno = errno;
+      g_set_error (err,
+		   G_FILE_ERROR,
+		   g_file_error_from_errno (save_errno),
+		   _("Could not change file mode: fork() failed: %s"),
+		   g_strerror (save_errno));
+      
+      return FALSE;
+    }
+  else if (pid == 0)
+    {
+      /* child */
+      mode_t mask = umask (0666);
+
+      errno = 0;
+      if (fchmod (fd, 0666 & ~mask) == -1)
+	_exit (errno);
+      else
+	_exit (0);
+
+      return TRUE; /* To quiet gcc */
+    }
+  else
+    { 
+      /* parent */
+      int status;
+
+      errno = 0;
+      if (waitpid (pid, &status, 0) == -1)
+	{
+	  save_errno = errno;
+
+	  g_set_error (err,
+		       G_FILE_ERROR,
+		       g_file_error_from_errno (save_errno),
+		       _("Could not change file mode: waitpid() failed: %s"),
+		       g_strerror (save_errno));
+
+	  return FALSE;
+	}
+
+      if (WIFEXITED (status))
+	{
+	  save_errno = WEXITSTATUS (status);
+
+	  if (save_errno == 0)
+	    {
+	      return TRUE;
+	    }
+	  else
+	    {
+	      g_set_error (err,
+			   G_FILE_ERROR,
+			   g_file_error_from_errno (save_errno),
+			   _("Could not change file mode: chmod() failed: %s"),
+			   g_strerror (save_errno));
+      
+	      return FALSE;
+	    }
+	}
+      else if (WIFSIGNALED (status))
+	{
+	  g_set_error (err,
+		       G_FILE_ERROR,
+		       G_FILE_ERROR_FAILED,
+		       _("Could not change file mode: Child terminated by signal: %s"),
+		       g_strsignal (WTERMSIG (status)));
+		       
+	  return FALSE;
+	}
+      else
+	{
+	  /* This shouldn't happen */
+	  g_set_error (err,
+		       G_FILE_ERROR,
+		       G_FILE_ERROR_FAILED,
+		       _("Could not change file mode: Child terminated abnormally"));
+	  return FALSE;
+	}
+    }
+#endif
+}
+
+static gchar *
+write_to_temp_file (const gchar *contents,
+		    gssize length,
+		    const gchar *template,
+		    GError **err)
+{
+  gchar *tmp_name;
+  gchar *display_name;
+  gchar *retval;
+  FILE *file;
+  gint fd;
+  int save_errno;
+
+  retval = NULL;
+  
+  tmp_name = g_strdup_printf ("%s.XXXXXX", template);
+
+  errno = 0;
+  fd = g_mkstemp (tmp_name);
+  display_name = g_filename_display_name (tmp_name);
+      
+  if (fd == -1)
+    {
+      save_errno = errno;
+      g_set_error (err,
+		   G_FILE_ERROR,
+		   g_file_error_from_errno (save_errno),
+		   _("Failed to create file '%s': %s"),
+		   display_name, g_strerror (save_errno));
+      
+      goto out;
+    }
+
+  if (!set_umask_permissions (fd, err))
+    {
+      close (fd);
+      g_unlink (tmp_name);
+
+      goto out;
+    }
+  
+  errno = 0;
+  file = fdopen (fd, "wb");
+  if (!file)
+    {
+      save_errno = errno;
+      g_set_error (err,
+		   G_FILE_ERROR,
+		   g_file_error_from_errno (save_errno),
+		   _("Failed to open file '%s' for writing: fdopen() failed: %s"),
+		   display_name,
+		   g_strerror (save_errno));
+
+      close (fd);
+      g_unlink (tmp_name);
+      
+      goto out;
+    }
+
+  if (length > 0)
+    {
+      size_t n_written;
+      
+      errno = 0;
+
+      n_written = fwrite (contents, 1, length, file);
+
+      if (n_written < length)
+	{
+	  save_errno = errno;
+      
+ 	  g_set_error (err,
+		       G_FILE_ERROR,
+		       g_file_error_from_errno (save_errno),
+		       _("Failed to write file '%s': fwrite() failed: %s"),
+		       display_name,
+		       g_strerror (save_errno));
+
+	  fclose (file);
+	  g_unlink (tmp_name);
+	  
+	  goto out;
+	}
+    }
+   
+  errno = 0;
+  if (fclose (file) == EOF)
+    { 
+      save_errno = 0;
+      
+      g_set_error (err,
+		   G_FILE_ERROR,
+		   g_file_error_from_errno (save_errno),
+		   _("Failed to close file '%s': fclose() failed: %s"),
+		   display_name, 
+		   g_strerror (save_errno));
+
+      g_unlink (tmp_name);
+      
+      goto out;
+    }
+
+  retval = g_strdup (tmp_name);
+  
+ out:
+  g_free (tmp_name);
+  g_free (display_name);
+  
+  return retval;
+}
+
+/**
+ * g_file_set_contents:
+ * @filename: name of a file to write @contents to, in the GLib file name
+ *   encoding
+ * @contents: string to write to the file
+ * @length: length of @contents, or -1 if @contents is a nul-terminated string
+ * @error: return location for a #GError, or %NULL
+ *
+ * Writes all of @contents to a file named @filename, with good error checking.
+ * If a file called @filename already exists it will be overwritten.
+ *
+ * This write is atomic in the sense that it is first written to a temporary
+ * file which is then renamed to the final name. Notes:
+ * <itemizedlist>
+ * <listitem>
+ *    On Unix, if @filename already exists hard links to @filename will break.
+ *    Also since the file is recreated, existing permissions, access control
+ *    lists, metadata etc. may be lost. If @filename is a symbolic link,
+ *    the link itself will be replaced, not the linked file.
+ * </listitem>
+ * <listitem>
+ *   On Windows renaming a file will not remove an existing file with the
+ *   new name, so on Windows there is a race condition between the existing
+ *   file being removed and the temporary file being renamed.
+ * </listitem>
+ * <listitem>
+ *   On Windows there is no way to remove a file that is open to some
+ *   process, or mapped into memory. Thus, this function will fail if
+ *   @filename already exists and is open.
+ * </listitem>
+ * </itemizedlist>
+ *
+ * If the call was sucessful, it returns %TRUE. If the call was not successful,
+ * it returns %FALSE and sets @error. The error domain is #G_FILE_ERROR.
+ * Possible error codes are those in the #GFileError enumeration.
+ *
+ * Return value: %TRUE on success, %FALSE if an error occurred
+ *
+ * Since: 2.8
+ **/
+gboolean
+g_file_set_contents (const gchar *filename,
+		     const gchar *contents,
+		     gssize	     length,
+		     GError	   **error)
+{
+  gchar *tmp_filename;
+  gboolean retval;
+  GError *rename_error = NULL;
+  
+  g_return_val_if_fail (filename != NULL, FALSE);
+  g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+  g_return_val_if_fail (contents != NULL || length == 0, FALSE);
+  g_return_val_if_fail (length >= -1, FALSE);
+  
+  if (length == -1)
+    length = strlen (contents);
+
+  tmp_filename = write_to_temp_file (contents, length, filename, error);
+  
+  if (!tmp_filename)
+    {
+      retval = FALSE;
+      goto out;
+    }
+
+  if (!rename_file (tmp_filename, filename, &rename_error))
+    {
+#ifndef G_OS_WIN32
+
+      g_unlink (tmp_filename);
+      g_propagate_error (error, rename_error);
+      retval = FALSE;
+      goto out;
+
+#else /* G_OS_WIN32 */
+      
+      /* Renaming failed, but on Windows this may just mean
+       * the file already exists. So if the target file
+       * exists, try deleting it and do the rename again.
+       */
+      if (!g_file_test (filename, G_FILE_TEST_EXISTS))
+	{
+	  g_unlink (tmp_filename);
+	  g_propagate_error (error, rename_error);
+	  retval = FALSE;
+	  goto out;
+	}
+
+      g_error_free (rename_error);
+      
+      if (g_unlink (filename) == -1)
+	{
+          gchar *display_filename = g_filename_display_name (filename);
+
+	  int save_errno = errno;
+	  
+	  g_set_error (error,
+		       G_FILE_ERROR,
+		       g_file_error_from_errno (save_errno),
+		       _("Existing file '%s' could not be removed: g_unlink() failed: %s"),
+		       display_filename,
+		       g_strerror (save_errno));
+
+	  g_free (display_filename);
+	  g_unlink (tmp_filename);
+	  retval = FALSE;
+	  goto out;
+	}
+      
+      if (!rename_file (tmp_filename, filename, error))
+	{
+	  g_unlink (tmp_filename);
+	  retval = FALSE;
+	  goto out;
+	}
+
+#endif
+    }
+
+  retval = TRUE;
+  
+ out:
+  g_free (tmp_filename);
+  return retval;
+}
 
 /*
  * mkstemp() implementation is from the GNU C library.
@@ -1116,9 +1570,10 @@ g_file_open_tmp (const gchar *tmpl,
 #endif
 
 static gchar *
-g_build_pathv (const gchar *separator,
-	       const gchar *first_element,
-	       va_list      args)
+g_build_path_va (const gchar  *separator,
+		 const gchar  *first_element,
+		 va_list      *args,
+		 gchar       **str_array)
 {
   GString *result;
   gint separator_len = strlen (separator);
@@ -1127,10 +1582,14 @@ g_build_pathv (const gchar *separator,
   const gchar *single_element = NULL;
   const gchar *next_element;
   const gchar *last_trailing = NULL;
+  gint i = 0;
 
   result = g_string_new (NULL);
 
-  next_element = first_element;
+  if (str_array)
+    next_element = str_array[i++];
+  else
+    next_element = first_element;
 
   while (TRUE)
     {
@@ -1141,7 +1600,10 @@ g_build_pathv (const gchar *separator,
       if (next_element)
 	{
 	  element = next_element;
-	  next_element = va_arg (args, gchar *);
+	  if (str_array)
+	    next_element = str_array[i++];
+	  else
+	    next_element = va_arg (*args, gchar *);
 	}
       else
 	break;
@@ -1212,6 +1674,30 @@ g_build_pathv (const gchar *separator,
 }
 
 /**
+ * g_build_pathv:
+ * @separator: a string used to separator the elements of the path.
+ * @args: %NULL-terminated array of strings containing the path elements.
+ * 
+ * Behaves exactly like g_build_path(), but takes the path elements 
+ * as a string array, instead of varargs. This function is mainly
+ * meant for language bindings.
+ *
+ * Return value: a newly-allocated string that must be freed with g_free().
+ *
+ * Since: 2.8
+ */
+gchar *
+g_build_pathv (const gchar  *separator,
+	       gchar       **args)
+{
+  if (!args)
+    return NULL;
+
+  return g_build_path_va (separator, NULL, NULL, args);
+}
+
+
+/**
  * g_build_path:
  * @separator: a string used to separator the elements of the path.
  * @first_element: the first element in the path
@@ -1258,54 +1744,22 @@ g_build_path (const gchar *separator,
   g_return_val_if_fail (separator != NULL, NULL);
 
   va_start (args, first_element);
-  str = g_build_pathv (separator, first_element, args);
+  str = g_build_path_va (separator, first_element, &args, NULL);
   va_end (args);
 
   return str;
 }
 
-/**
- * g_build_filename:
- * @first_element: the first element in the path
- * @Varargs: remaining elements in path, terminated by %NULL
- * 
- * Creates a filename from a series of elements using the correct
- * separator for filenames.
- *
- * On Unix, this function behaves identically to <literal>g_build_path
- * (G_DIR_SEPARATOR_S, first_element, ....)</literal>.
- *
- * On Windows, it takes into account that either the backslash
- * (<literal>\</literal> or slash (<literal>/</literal>) can be used
- * as separator in filenames, but otherwise behaves as on Unix. When
- * file pathname separators need to be inserted, the one that last
- * previously occurred in the parameters (reading from left to right)
- * is used.
- *
- * No attempt is made to force the resulting filename to be an absolute
- * path. If the first element is a relative path, the result will
- * be a relative path. 
- * 
- * Return value: a newly-allocated string that must be freed with g_free().
- **/
-gchar *
-g_build_filename (const gchar *first_element, 
-		  ...)
+#ifdef G_OS_WIN32
+
+static gchar *
+g_build_pathname_va (const gchar  *first_element,
+		     va_list      *args,
+		     gchar       **str_array)
 {
-#ifndef G_OS_WIN32
-  gchar *str;
-  va_list args;
-
-  va_start (args, first_element);
-  str = g_build_pathv (G_DIR_SEPARATOR_S, first_element, args);
-  va_end (args);
-
-  return str;
-#else
-  /* Code copied from g_build_pathv(), and modifed to use two
+  /* Code copied from g_build_pathv(), and modified to use two
    * alternative single-character separators.
    */
-  va_list args;
   GString *result;
   gboolean is_first = TRUE;
   gboolean have_leading = FALSE;
@@ -1313,13 +1767,15 @@ g_build_filename (const gchar *first_element,
   const gchar *next_element;
   const gchar *last_trailing = NULL;
   gchar current_separator = '\\';
-
-  va_start (args, first_element);
+  gint i = 0;
 
   result = g_string_new (NULL);
 
-  next_element = first_element;
-
+  if (str_array)
+    next_element = str_array[i++];
+  else
+    next_element = first_element;
+  
   while (TRUE)
     {
       const gchar *element;
@@ -1329,7 +1785,10 @@ g_build_filename (const gchar *first_element,
       if (next_element)
 	{
 	  element = next_element;
-	  next_element = va_arg (args, gchar *);
+	  if (str_array)
+	    next_element = str_array[i++];
+	  else
+	    next_element = va_arg (*args, gchar *);
 	}
       else
 	break;
@@ -1391,8 +1850,6 @@ g_build_filename (const gchar *first_element,
       is_first = FALSE;
     }
 
-  va_end (args);
-
   if (single_element)
     {
       g_string_free (result, TRUE);
@@ -1405,7 +1862,76 @@ g_build_filename (const gchar *first_element,
   
       return g_string_free (result, FALSE);
     }
+}
+
 #endif
+
+/**
+ * g_build_filenamev:
+ * @args: %NULL-terminated array of strings containing the path elements.
+ * 
+ * Behaves exactly like g_build_filename(), but takes the path elements 
+ * as a string array, instead of varargs. This function is mainly
+ * meant for language bindings.
+ *
+ * Return value: a newly-allocated string that must be freed with g_free().
+ * 
+ * Since: 2.8
+ */
+gchar *
+g_build_filenamev (gchar **args)
+{
+  gchar *str;
+
+#ifndef G_OS_WIN32
+  str = g_build_path_va (G_DIR_SEPARATOR_S, NULL, NULL, args);
+#else
+  str = g_build_pathname_va (NULL, NULL, args);
+#endif
+
+  return str;
+}
+
+/**
+ * g_build_filename:
+ * @first_element: the first element in the path
+ * @Varargs: remaining elements in path, terminated by %NULL
+ * 
+ * Creates a filename from a series of elements using the correct
+ * separator for filenames.
+ *
+ * On Unix, this function behaves identically to <literal>g_build_path
+ * (G_DIR_SEPARATOR_S, first_element, ....)</literal>.
+ *
+ * On Windows, it takes into account that either the backslash
+ * (<literal>\</literal> or slash (<literal>/</literal>) can be used
+ * as separator in filenames, but otherwise behaves as on Unix. When
+ * file pathname separators need to be inserted, the one that last
+ * previously occurred in the parameters (reading from left to right)
+ * is used.
+ *
+ * No attempt is made to force the resulting filename to be an absolute
+ * path. If the first element is a relative path, the result will
+ * be a relative path. 
+ * 
+ * Return value: a newly-allocated string that must be freed with g_free().
+ **/
+gchar *
+g_build_filename (const gchar *first_element, 
+		  ...)
+{
+  gchar *str;
+  va_list args;
+
+  va_start (args, first_element);
+#ifndef G_OS_WIN32
+  str = g_build_path_va (G_DIR_SEPARATOR_S, first_element, &args, NULL);
+#else
+  str = g_build_pathname_va (first_element, &args, NULL);
+#endif
+  va_end (args);
+
+  return str;
 }
 
 /**

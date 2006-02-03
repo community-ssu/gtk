@@ -46,13 +46,15 @@ CLEANFILES = stamp-testmarshal.h
 LDADD = libtestgobject.la $(libgobject) 
 
 test_programs =					\
+	gvalue-test				\
 	accumulator				\
 	defaultiface				\
 	ifacecheck				\
 	ifaceinit				\
 	ifaceinherit				\
 	ifaceproperties				\
-	override
+	override				\
+	references
 
 check_PROGRAMS = $(test_programs)
 

@@ -98,8 +98,8 @@ value returned by the last callback.
 @ihint: 	Signal invocation hint, see #GSignalInvocationHint.
 @return_accu: 	Accumulator to collect callback return values in, this
 		is the return value of the current signal emission.
-@handler_return: 
-@data: 
+@handler_return: A #GValue holding the return value of the signal handler.
+@data:          Callback data that was specified when creating the signal.
 @Returns: 	The accumulator function returns whether the signal emission
 		should be aborted. Returning %FALSE means to abort the
 		current emission and %TRUE is returned for continuation.
@@ -909,7 +909,7 @@ identified by @itype.
 A predefined #GSignalAccumulator for signals that return a
 boolean values. The behavior that this accumulator gives is
 that a return of %TRUE stops the signal emission: no further
-callbacks will be invokced, while a return of %FALSE allows
+callbacks will be invoked, while a return of %FALSE allows
 the emission to coninue. The idea here is that a %TRUE return
 indicates that the callback <emphasis>handled</emphasis> the signal,
 and no further handling is needed.

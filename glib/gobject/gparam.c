@@ -64,7 +64,6 @@ static gchar*	value_param_lcopy_value		(const GValue	*value,
 
 /* --- variables --- */
 static GQuark quark_floating = 0;
-G_LOCK_DEFINE_STATIC (pspec_ref_count);
 
 
 /* --- functions --- */
@@ -169,43 +168,26 @@ GParamSpec*
 g_param_spec_ref (GParamSpec *pspec)
 {
   g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
+  g_return_val_if_fail (pspec->ref_count > 0, NULL);
 
-  G_LOCK (pspec_ref_count);
-  if (pspec->ref_count > 0)
-    {
-      pspec->ref_count += 1;
-      G_UNLOCK (pspec_ref_count);
-    }
-  else
-    {
-      G_UNLOCK (pspec_ref_count);
-      g_return_val_if_fail (pspec->ref_count > 0, NULL);
-    }
-  
+  g_atomic_int_inc (&pspec->ref_count);
+
   return pspec;
 }
 
 void
 g_param_spec_unref (GParamSpec *pspec)
 {
+  gboolean is_zero;
+
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  g_return_if_fail (pspec->ref_count > 0);
 
-  G_LOCK (pspec_ref_count);
-  if (pspec->ref_count > 0)
-    {
-      gboolean need_finalize;
+  is_zero = g_atomic_int_dec_and_test (&pspec->ref_count);
 
-      /* sync with _sink */
-      pspec->ref_count -= 1;
-      need_finalize = pspec->ref_count == 0;
-      G_UNLOCK (pspec_ref_count);
-      if (need_finalize)
-	G_PARAM_SPEC_GET_CLASS (pspec)->finalize (pspec);
-    }
-  else
+  if (G_UNLIKELY (is_zero))
     {
-      G_UNLOCK (pspec_ref_count);
-      g_return_if_fail (pspec->ref_count > 0);
+      G_PARAM_SPEC_GET_CLASS (pspec)->finalize (pspec);
     }
 }
 
@@ -213,30 +195,10 @@ void
 g_param_spec_sink (GParamSpec *pspec)
 {
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  g_return_if_fail (pspec->ref_count > 0);
 
-  G_LOCK (pspec_ref_count);
-  if (pspec->ref_count > 0)
-    {
-      if (g_datalist_id_remove_no_notify (&pspec->qdata, quark_floating))
-	{
-	  /* sync with _unref */
-	  if (pspec->ref_count > 1)
-	    pspec->ref_count -= 1;
-	  else
-	    {
-	      G_UNLOCK (pspec_ref_count);
-	      g_param_spec_unref (pspec);
-
-	      return;
-	    }
-	}
-      G_UNLOCK (pspec_ref_count);
-    }
-  else
-    {
-      G_UNLOCK (pspec_ref_count);
-      g_return_if_fail (pspec->ref_count > 0);
-    }
+  if (g_datalist_id_remove_no_notify (&pspec->qdata, quark_floating))
+    g_param_spec_unref (pspec);
 }
 
 G_CONST_RETURN gchar*
@@ -303,9 +265,10 @@ canonicalize_key (gchar *key)
 }
 
 static gboolean
-is_canonical (gchar *key)
+is_canonical (const gchar *key)
 {
-  gchar* p;
+  const gchar *p;
+
   for (p = key; *p != 0; p++)
     {
       gchar c = *p;
@@ -332,14 +295,12 @@ g_param_spec_internal (GType        param_type,
   g_return_val_if_fail (G_TYPE_IS_PARAM (param_type) && param_type != G_TYPE_PARAM, NULL);
   g_return_val_if_fail (name != NULL, NULL);
   g_return_val_if_fail ((name[0] >= 'A' && name[0] <= 'Z') || (name[0] >= 'a' && name[0] <= 'z'), NULL);
+  g_return_val_if_fail (!(flags & G_PARAM_STATIC_NAME) || is_canonical (name), NULL);
   
   pspec = (gpointer) g_type_create_instance (param_type);
 
-  if (!is_canonical (name))
-    flags = flags & ~G_PARAM_STATIC_NAME;
-
   if ((flags & G_PARAM_STATIC_NAME))
-    pspec->name = name;
+    pspec->name = (gchar *) name;
   else
     {
       pspec->name = g_strdup (name);
@@ -347,12 +308,12 @@ g_param_spec_internal (GType        param_type,
     }
 
   if (flags & G_PARAM_STATIC_NICK)
-    pspec->_nick = nick;
+    pspec->_nick = (gchar *) nick;
   else
     pspec->_nick = g_strdup (nick);
 
   if (flags & G_PARAM_STATIC_BLURB)
-    pspec->_blurb = blurb;
+    pspec->_blurb = (gchar *) blurb;
   else
     pspec->_blurb = g_strdup (blurb);
 
@@ -740,7 +701,7 @@ param_spec_ht_lookup (GHashTable  *hash_table,
   else
     pspec = g_hash_table_lookup (hash_table, &key);
 
-  if (!pspec)
+  if (!pspec && !is_canonical (param_name))
     {
       /* try canonicalized form */
       key.name = g_strdup (param_name);

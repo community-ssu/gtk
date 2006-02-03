@@ -27,12 +27,11 @@
 #ifndef __G_DEBUG_H__
 #define __G_DEBUG_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS 
 
 typedef enum {
-  G_DEBUG_FATAL_WARNINGS = 1 << 0
+  G_DEBUG_FATAL_WARNINGS  = 1 << 0,
+  G_DEBUG_FATAL_CRITICALS = 1 << 1
 } GDebugFlag;
 
 
@@ -55,9 +54,6 @@ GLIB_VAR guint _g_debug_flags;
 
 void _g_debug_init (void) G_GNUC_INTERNAL;
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __G_DEBUG_H__ */

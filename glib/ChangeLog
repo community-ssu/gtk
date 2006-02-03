@@ -1,859 +1,428 @@
-Tue Dec 20 18:14:14 2005  Tim Janik  <timj@imendio.com>
+2006-02-03  Michael Natterer  <mitch@imendio.com>
 
-        * glib/gslice.[hc]: added mem_error() and mem_assert() to test and 
-        handle  errors without depending on gmessage.c which might not be
-        setup when the error occours.
-        removed G_SLICE_CONFIG_ALWAYS_FREE config option, fixed the code so
-        always freeing can be achieved by adjusting the working set time to
-        0 with G_SLICE_CONFIG_WORKING_SET_MSECS.
-        added G_SLICE_CONFIG_COLOR_INCREMENT to test different color increments
-        (mainly 0 and 1). reduced the minimum block size to 128 bytes, to
-        minimize wastage if small amounts of differently sized structrues are
-        allocated, this does come at a performance cost of roughly 5% though.
-        fixed up block alignment calculation, so it works for varying
-        block sizes. only use strerror() not g_strerror() since the latter
-        depends on working GQuark and GSlice.
-        mem_error(): implemented in terms of fprintf and vfprintf.
+	Upgrade maemo-glib to version 2.8.6:
 
-        * tests/slice-color.c: new program to test cache colorization effects.
+	- take over all changes from gnomecvs
+	- moved maemo ChangeLogs to ChangeLog.pre-2-8.maemo
+	- reset ChangeLogs to upstream state
 
-        * tests/slice-test.c: trade G_SLICE_CONFIG_ALWAYS_FREE for 0 duration
-        G_SLICE_CONFIG_WORKING_SET_MSECS.
+	SVN repository version before the upgrade is 2225.
 
-Thu Dec  8 17:16:08 2005  Tim Janik  <timj@imendio.com>
+2006-01-18  Matthias Clasen  <mclasen@redhat.com>
 
-	* merged g_slice*() from upstream.
+	* === Released 2.8.6 ===
 
-	* glib/gmacros.h: define G_GNUC_WARN_UNUSED_RESULT.
+	* configure.in: Bump version
+	
+	* NEWS: Updates
+	
+2006-01-17  Matthias Clasen  <mclasen@redhat.com>
 
-Thu Dec  1 17:32:46 2005  Tim Janik  <timj@imendio.com>
+	* glib/gkeyfile.c (g_key_file_get_groups): Correct a g_new0()
+	call.  (#327421, Morten Welinder)
 
-	* glib/gslice.[hc]: new slice allocator implementation.
+2006-01-11  Matthias Clasen  <mclasen@redhat.com>
 
-        * tests/slice-test.c: added random slice allocation test.
+	* tests/convert-test.c: Don't test items_read and
+	items_written in error cases where it is not set.
 
-        * glib/gthreadinit.h:
-        * glib/gmessages.c:
-        * glib/gthread.c:
-        * glib/gmem.c: divided glib threading initialisation into three phases,
-        initialisation where private keys and messaging are not available (only
-        needed by gmem.c), initialisation without messaging but private keys
-        available (gslice.c, gmessage.c), and full fledged initialisers that
-        server the rest of glib. initialisation functions got renamed to reflect
-        the limitations of their corresponding phases.
+2006-01-04  Abel Cheung  <maddog@linuxhall.org>
 
-        * glib/gmem.c: removed memchunk code, defer allocations to 
-        g_slice_* instead.
+	* configure.in: Added "ml" "zh_HK" to ALL_LINGUAS.
 
-        * glib/gmem.[hc]: removed g_slice_* skeletons.
+2006-01-03  Matthias Clasen  <mclasen@redhat.com>
 
-        * glib/glib.symbols: added g_slice_* symbols.
+	* === Released 2.8.5 ===
+	
+	* NEWS: Updates
 
-        * configure.in: check for availability of posix_memalign(3), memalign(3)
-        and valloc(3). 
+2006-01-01  Tor Lillqvist  <tml@novell.com>
 
-        * glib/Makefile.am: added gslice.[hc].
+	* glib/gspawn-win32.c (g_spawn_sync_utf8): Set the GIOChannels for
+	stdout and stderr to unbuffered. Otherwise the giochannel layer
+	will try to read from them regardless whether the
+	g_io_channel_win32_poll() call here has indicated
+	readability or not. (#325310)
 
-Tue Nov  1 16:24:20 2005  Tim Janik  <timj@imendio.com>
+2005-12-29  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/gmem.[hc]:
-	added g_slice_*() API to allocate and cache small bits of memory.
-	an actuall allocator implementation for g_slice_*() is still pending.
+	* glib/gutils.c (glib_check_version): Fix a copy-and-paste error
+	in the docs.  (#325273, Declan Naughton)
 
-	* glib/gthread.[hc]: changes from a patch by Matthias Clasen.
-	changed GRealThread list to use in-structure *next; fields instead
-	of GSList, in order for thread iteration to not depenend on g_slice_*()
-	indirectly.
+2005-12-26  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/gthread.[hc]:
-	g_thread_foreach(): new public API function to loop over all existing threads.
+	* AUTHORS: Update my email
 
-	* glib/gdataset.c:
-	* glib/gstring.c:
-	* glib/gcache.c:
-	* glib/garray.c: 
-	* glib/gqueue.c:
-	* glib/gslist.c:
-	* glib/glist.c:
-	* glib/ghash.c:
-	* glib/gtree.c:
-	* glib/ghook.c:
-	* glib/gmain.c:
-	* glib/gnode.c:
-	removed GAllocator and free list usages and accompanying locks.
-	use g_slice_*() API to allocate and cache small bits of memory.
+2005-12-17  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/ghook.h: removed GMemChunk field from public API.
+	* glib/goption.c (parse_short_option): Set an error in all
+	failure cases.  (#324332, Tim-Philipp Müller)
 
-	* glib/gslist.h:
-	* glib/glist.h: provide _free1() for consistency.
+2005-12-17  Sebastian Wilhelmi  <seppi@seppi.de>
 
-	* glib/gmain.c: reordered GPollRec fields so g_slice_free_chain() can
-	be used for poll rec lists.
+	* glib/gatomic.c: Fix memory barrier position in g_atomic_int_get
+	and g_atomic_pointer_get.
 
-	* glib/grel.c: removed mem chunk usage, and allocated tuples via g_slice_*().
-	g_relation_destroy(): free all tuples from the all_tuples hash table,
-	this effectively maintains the life time track keeping of tuples.
-	g_relation_delete_tuple(): free tuples which are removed from the
-	all_tuples hash table. this fixes a temporary leak that was present
-	in the memchunk code until the destruction of the relation.
+2005-12-07  Tor Lillqvist  <tml@novell.com>
 
-  2005-10-29  Matthias Clasen  <mclasen@redhat.com>
-  
-  	* tests/convert-test.c: Add some tests for conversions between
-Wed Dec  7 14:31:21 2005  Tim Janik  <timj@imendio.com>
+	* glib-gettextize.in: Look up prefix at run-time on Win32,
+	assuming the standard directory structure with glib-gettextize in
+	$prefix/bin.
 
-	* tests/Makefile.am: added missing libraries for ARM builds.
+2005-12-01  Tor Lillqvist  <tml@novell.com>
 
-2005-08-01  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gstdio.c (g_stat): In the Win32 implementation, strip
+	trailing slash(es) for non-root folders. stat() fails if non-root
+	folders are specified with trailing slashes. It's too much hassle
+	to demand that callers strip such slashes themselves, especially
+	as it is easy to get it wrong and strip the slash of a root
+	folder.
+	(g_rename): On NT-based Windows, use MoveFileEx() with
+	MOVEFILE_REPLACE_EXISTING to better match Unix behaviour.
 
-	* === Released 2.6.6 ===
+2005-11-27  Matthias Clasen  <mclasen@redhat.com>
 
-2005-07-23  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gunicollate.c (g_utf8_collate_key_for_filename): 
+	Don't read beyond len.  (#322520, Christian Persch)
+
+2005-11-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/gbacktrace.c:
+	* glib/gdate.c:
+	* glib/gthread.c: const correctness fixes, found
+	by Arjan van de Ven and gcc.
+	
+2005-11-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Bump version
+
+	* ===  Released 2.8.4 ===
+
+2005-11-13  Matthias Clasen  <mclasen@redhat.com>
 
 	* NEWS: Updates
 
-	* glib/gthreadpool.c (g_thread_pool_free): Don't get
-	stuck in here if immediate is TRUE.  (#310954,
-	Hong Jen Yee)
+2005-11-05  Tor Lillqvist  <tml@novell.com>
 
-	* tests/threadpool-test.c (main): Test immediate == TRUE.
+	* glib/giowin32.c (g_io_win32_set_flags): Don't call
+	g_warning(). (#320688)
 
-2005-07-19  Matthias Clasen  <mclasen@redhat.com>
+2005-11-07  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/gatomic.c (g_atomic_pointer_compare_and_exchange):
-	Fix g_atomic_pointer_compare_and_exchange on sparc64.
-	(#167572, Gert Doering)
+	* glib/gmain.c (g_main_dispatch): Don't call cb_funcs->unref
+	while holding the context lock.  (#320886, Andy Wingo)
 
-2005-07-14  Tor Lillqvist  <tml@novell.com>
+2005-11-04  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/gmessages.c: Include <process.h> on Win32 for getpid()
-	prototype with MSVC. (#305462, Kazuki Iwamoto)
+	* glib/gmain.c (g_child_watch_source_new): Expand
+	the docs.  (#320466, Steffen Gutmann)
 
-2005-07-07  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gscanner.h: Include gdataset.h.  (#320322)
 
-	* configure.in: Make the size_t size detection work on AIX. 
-	(#309725)
+	* glib/gdebug.h: add new GDebugFlag for fatal_criticals
+	* glib/gmessages.c: (_g_debug_init): handle G_DEBUG=fatal_criticals,
+	to help find critical warnings in applications.  (#320017,
+	Vincent Untz)
 
-2005-07-01  Matthias Clasen  <mclasen@redhat.com>
+2005-10-29  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/gkeyfile.c (g_key_file_get_key_comment): 
-	(g_key_file_get_top_comment): Don't reverse the order of multiline 
-	comments.
-	(g_key_file_get_group_comment): Actually get the group comment.
+	* tests/convert-test.c: Add some tests for conversions between
+	UTF-8, UCS-4 and UTF-16.
 
-	* tests/keyfile-test.c (test_comments): Test that comments are
-	handled properly.  (#309263, Mikael Magnusson) 
+	* glib/gutf8.c (g_utf8_to_ucs4, g_utf8_to_utf16): Fix handling
+	of len == -1, noticed by Morten Welinder.
 
-2005-06-30  Matthias Clasen  <mclasen@redhat.com>
+2005-10-26  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/gstring.c (g_str_hash): Fix portability issues.
-	(#307064, Morten Welinder)
+	* glib/gutf8.c (g_ucs4_to_utf8): Don't set items_read twice
+	in the error case, and add some documentation.  (#319806, Morten
+	Welinder)
 
-	Apply a patch which may make GLib work on BeOS again.  
-	(#309157, Kian Duffy)
+2005-10-19  Manish Singh  <yosh@gimp.org>
 
-	* glib/gmain.c: Update the BeOS includes.
+	* configure.in: Use AC_CHECK_FUNCS for _NSGetEnviron, to get the
+	config.h symbol automatically. Fixes bug #313731.
 
-	* glib/gstdio.c: 
-	* glib/gutils.c (g_find_program_in_path): 
-	* glib/gbacktrace.c (g_on_error_stack_trace): Use the UNIX
-	implementation on BeOS, as well.
+2005-10-19  Tor Lillqvist  <tml@novell.com>
 
-	* configure.in: Don't put glib 1.0 into G_MODULE_LIBS, even
-	on BeOS.
+	* glib/gwin32.c (g_win32_get_package_installation_directory):
+	Return a g_strdup()ed copy of the value stored in the hash table,
+	so that it can be g_free()d without leaving a dangling pointer in
+	the hash table. (#319232)
 
-2005-06-23  Matthias Clasen  <mclasen@redhat.com>
+2005-10-06  Matthias Clasen  <mclasen@redhat.com>
 
-	* tests/keyfile-test.c (test_group_remove): Don't leak
-	memory here.
+	* glib/gunicollate.c (g_utf8_collate_key_for_filename): Handle
+	all-zero sequences correctly.  (#317930, Sebastien Bacher)
 
-	* glib/gkeyfile.c (g_key_file_load_from_data_dirs): Don't
-	leak output_path.  (#308546, Kjartan Maraas)
-
-2005-06-22  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/goption.c (parse_arg): Properly store changes 
-	for arrays.  (#308528, Roger Leigh)
-
-2005-06-21  Runa Bhattacharjee <runa@bengalinux.org>
-
-	* configure.in: Added "te" to ALL_LINGUAS.
-
-2005-06-10  Matthias Clasen  <mclasen@redhat.com>
+2005-10-03  Matthias Clasen  <mclasen@redhat.com>
 
 	* configure.in: Bump version number
 
-	* === Released 2.6.5 ===
+	* === Released 2.8.3 ===
+	* === 
+2005-11-13  Matthias Clasen  <mclasen@redhat.com>
 
 	* NEWS: Updates
 
-2005-06-09  Matthias Clasen  <mclasen@redhat.com>
+2005-11-05  Tor Lillqvist  <tml@novell.com>
 
-	* glib/gkeyfile.c (g_key_file_parse_value_as_integer): Better
-	error checking. (#306389, Morten Welinder)
+	* glib/giowin32.c (g_io_win32_set_flags): Don't call
+	g_warning(). (#320688)
 
-	* glib/goption.c (parse_int): Set errno to 0 before calling
-	strtol.  (#306388, Morten Welinder)
+2005-11-07  Matthias Clasen  <mclasen@redhat.com>
 
-2005-06-08  Tor Lillqvist  <tml@novell.com>
+	* glib/gmain.c (g_main_dispatch): Don't call cb_funcs->unref
+	while holding the context lock.  (#320886, Andy Wingo)
 
-	* glib/gutils.c (get_windows_directory_root): New helper function
-	on Win32, returns the root of the drive (or possibly share) where
-	the Windows directory is. (In the case of Terminal Server sessions
-	the Windows directory is a per-user folder.)
-	(g_get_any_init): Use get_windows_directory_root() as last resort
-	for both temp directory and home directory. g_get_home_dir() now
-	never returns NULL on Win32. Don't look at HOMEDRIVE and
-	HOMEPATH. HOME, USERPROFILE, CSIDL_PROFILE and Windows directory
-	drive root should be enough.
+2005-11-04  Matthias Clasen  <mclasen@redhat.com>
 
-2005-05-25  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gmain.c (g_child_watch_source_new): Expand
+	the docs.  (#320466, Steffen Gutmann)
 
-	* glib/gunidecomp.c (combine_hangul): Don't eat Hangul 
-	when normalizing.  (#301742, reported by Christian Biere,
-	patch by Noah Levitt)
+	* glib/gscanner.h: Include gdataset.h.  (#320322)
 
-2005-05-20  Federico Mena Quintero  <federico@ximian.com>
+	* glib/gdebug.h: add new GDebugFlag for fatal_criticals
+	* glib/gmessages.c: (_g_debug_init): handle G_DEBUG=fatal_criticals,
+	to help find critical warnings in applications.  (#320017,
+	Vincent Untz)
 
-	* glib/gspawn.c (g_spawn_command_line_sync): Clarify the meaning
-	of exit_status(); it's not the return code from the child, but
-	rather the waitpid() status.
+2005-10-29  Matthias Clasen  <mclasen@redhat.com>
 
-2005-05-18  Matthias Clasen  <mclasen@redhat.com>
+	* tests/convert-test.c: Add some tests for conversions between
+	UTF-8, UCS-4 and UTF-16.
 
-	* gmodule-no-export-2.0-uninstalled.pc.in (prefix): New file.
-	
-	* configure.in: 
-	* Makefile.am (EXTRA_DIST): Add gmodule-no-export-2.0-uninstalled.pc.in
-	
-2005-05-06  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gutf8.c (g_utf8_to_ucs4, g_utf8_to_utf16): Fix handling
+	of len == -1, noticed by Morten Welinder.
 
-	* tests/option-test.c: Add a testcase.
-	
-	* glib/goption.c (g_option_context_parse): Treat '-'
-	on its own as a non-option argument.  (#168008, Tim Musson,
-	Thomas Leonard and others)
+2005-10-26  Matthias Clasen  <mclasen@redhat.com>
 
-2005-04-29  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gutf8.c (g_ucs4_to_utf8): Don't set items_read twice
+	in the error case, and add some documentation.  (#319806, Morten
+	Welinder)
 
-	* glib/gtree.c: Clarify some docs. (#302062, Matthew F. Barnes)
+2005-10-19  Manish Singh  <yosh@gimp.org>
 
-2005-04-28  Matthias Clasen  <mclasen@redhat.com>
+	* configure.in: Use AC_CHECK_FUNCS for _NSGetEnviron, to get the
+	config.h symbol automatically. Fixes bug #313731.
 
-	* glib/gstrfuncs.c (g_strcompress): Warn and don't crash
-	when meeting a trailing \\.  (#301373, Benjamin Otte)
+2005-10-19  Tor Lillqvist  <tml@novell.com>
 
-2005-04-27  Tor Lillqvist  <tml@novell.com>
+	* glib/gwin32.c (g_win32_get_package_installation_directory):
+	Return a g_strdup()ed copy of the value stored in the hash table,
+	so that it can be g_free()d without leaving a dangling pointer in
+	the hash table. (#319232)
 
-	* glib/gconvert.c (open_converter, g_convert_with_iconv): Don't
-	call g_set_error() unless the GError pointer is non-NULL. This
-	avoids infinite recursion problems in certain rare situations on
-	Windows, when g_locale_from_utf8() is called from
-	_glib_get_locale_dir() after the change below. It's the
-	_glib_gettext() calls to translate error messages that cause the
-	recursion, not g_set_error() itself.
+2005-10-06  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/gutils.c (_glib_get_locale_dir): No need to cache the
-	result, this function is normally called only once. Return the
-	path to the locale directory in system codepage, not UTF-8. The
-	path is passed to bindtextdomain(), which doesn't use UTF-8 file
-	names. If the full pathname with long filenames can't be converted
-	to system codepage, try getting the pathname with short (8.3)
-	components. (#301772)
+	* glib/gunicollate.c (g_utf8_collate_key_for_filename): Handle
+	all-zero sequences correctly.  (#317930, Sebastien Bacher)
 
-	Don't do run-time lookup of message catalog directory on
-	Cygwin. Cygwin is supposed to look and feel like Unix, and on Unix
-	we use paths fixed at configure time.
+2005-10-03  Matthias Clasen  <mclasen@redhat.com>
 
-2005-04-19  Tor Lillqvist  <tml@novell.com>
+	* configure.in: Bump version number
 
-	* glib/gutils.h: Minor comment improvement.
-
-2005-04-10  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gmessages.h (g_debug): Use G_LOG_LEVEL_DEBUG in
-	both definitions.  (#300071, Tommi Komulainen)
-
-2005-04-08  Tor Lillqvist  <tml@novell.com>
-
-	* glib/gutils.c (read_aliases): Not used on Windows.
-	(unalias_lang): Don't do anything on Windows, there is no
-	/usr/share/locale/locale.alias file..
-	
-	* glib/gutils.c (g_get_system_data_dirs): After investigating more
-	closely the actual use cases of this function, I understand better
-	what it needs to do on Windows. In addition to the Windows
-	COMMON_APPDATA and COMMON_DOCUMENTS folders, also return the
-	"share" subfolders of GLib's installation location and the
-	application .exe's installation location, hoping that either
-	matches what the function's caller is looking for.
-
-	* glib/gutils.h (G_WIN32_DLLMAIN_FOR_DLL_NAME): Use wide char API
-	if available, and store dll name in UTF-8.
-
-2005-04-06  Matthias Clasen  <mclasen@redhat.com>
-
-	* configure.in: Bump version
-
-	* === Released 2.6.4 ===
-
-	* gobject/Makefile.am (BUILT_EXTRA_DIST): add gobjectaliasdef.c
+	* === Released 2.8.3 ===
 
 	* NEWS: Updates
 
-2005-04-04  Matthias Clasen  <mclasen@redhat.com>
+2005-09-26  Matthias Clasen  <mclasen@redhat.com>
+	
+	* configure.in: Bump version number
 
-	* glib/gconvert.c: Clarify docs in some places. (#172404, 
-	Morten Welinder)
+	* === Released 2.8.2 ===
 
 	* NEWS: Updates
 
-2005-04-03  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gstrfuncs.c (g_ascii_strtoull): Add details to the 
+	docs.  (#314393, Matthew F. Barnes)
 
-	* glib/gutils.h: Undef G_CAN_INLINE if G_IMPLEMENT_INLINES is 
-	defined. This was the pre-2.6 behaviour, and without it,
-	G_IMPLEMENT_INLINES cannot be used in multiple .c files
-	at all.  (#165852, Dave Benson)
+2005-09-20  Matthias Clasen  <mclasen@redhat.com>
 
-2005-04-01  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gqueue.c (g_queue_insert_sorted): Fix the docs.
+	(#316703, Mark Drago)
 
-	* glib/gmain.c (g_child_watch_source_new): Add a note regarding
-	waitpid(-1).
-	(g_child_watch_source_init_multi_threaded): 
-	(g_child_watch_source_init_single): Don't use SA_RESTART,
-	since it causes problems on at least one platform. (#168352)
+2005-09-16  Tor Lillqvist  <tml@novell.com>
 
-2005-03-31  Steve Murphy  <murf@e-tools.com>
+	* glib/gstrfuncs.c (g_ascii_strcasecmp, g_ascii_strncasecmp): Add
+	warning to doc comment that these functions should not be used on
+	encodings like CP932.
 
-	* configure.in: Added "rw" to ALL_LINGUAS.
+2005-09-14  Matthias Clasen  <mclasen@redhat.com>
 
-2005-03-30  Tor Lillqvist  <tml@novell.com>
+	* tests/keyfile-test.c: Add a test for grup names of length 1.
 
-	* glib/giowin32.c (g_io_win32_fd_get_flags_internal): Always claim
-	file descriptors open to devices are readable, since we can't
-	know. fstat() doesn't give any useful information. (#145326)
+	* glib/gkeyfile.c (g_key_file_line_is_group): Accept group names
+	of length 1.  (#316309)
 
-2005-03-29  Tor Lillqvist  <tml@novell.com>
+2005-09-12  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/gmain.c (g_poll): [Win32] If the event fired, assign
-	f->revents=f->events. We can't know whether the upper layer using
-	the event actually is readable, writeable or what, so say that all
-	the conditions hold. Remove the ResetEvent() call that has been
-	ifdeffed out anyway for a long time. Remove an "#ifdef 1" and
-	#endif pair of lines, that code is not optional.
-	(g_get_current_time): [Win32] Use GetSystemTimeAsFileTime()
-	instead of time() and GetTickCount(). Much simpler.
+	* glib/gmarkup.c (g_markup_escape_text): Clarify docs.
 
-2005-03-27  Tor Lillqvist  <tml@novell.com>
+2005-09-11  Sebastian Wilhelmi  <seppi@seppi.de>
 
-	* configure.in: Apparently AC_LIBTOOL_WIN32_DLL isn't deprecated
-	after all, and in fact necessary with HEAD libtool.
+	* tests/refcount/Makefile.am (INCLUDES): Link the the refcount
+	tests to the system thread library $(G_THREAD_LIBS). Fixes #313744
+	and #314217.
 
-2005-03-23  Tor Lillqvist  <tml@novell.com>
+2005-09-07  Tor Lillqvist  <tml@novell.com>
 
-	* glib/gutils.c (g_getenv): [Win32] Fix corner case bug when
-	environment variable value is exactly one character.
-
-2005-03-20  Tor Lillqvist  <tml@novell.com>
-
-	* glib/gspawn-win32.c (do_spawn_with_pipes): Close the process
-	handle if the caller doesn't want it also in the case without a
-	helper process.
-	(g_spawn_sync): Don't ask for a child pid which we don't need.
-
-	* glib/gtimer.c: On Win32, use GetSystemTimeAsFileTime() instead
-	of GetTickCount(). (#159507)
-
-	* glib/gmessages.c (g_log_default_handler)
-	* glib/gutils.c (g_get_prgname): Move the Win32 code that asks the
-	program name from the system to g_get_prgname(). Do output the pid
-	also on Win32 (useful in case there are several instances of the
-	same program running).
-
-	* tests/testglib.c (main): Print more detailled output from the
-	timer tests. Don't print home directory twice. Test
-	g_win32_error_message().
-
-	* tests/spawn-test.c (run_tests): On Win32, run netstat instead of
-	ipconfig. On Windows XP collecting output from ipconfig doesn't
-	seem to work for some reason.
-
-2005-03-17  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gkeyfile.c: Update the documentation, reflecting the
-	fact that the special case for !group_name --> start_group
-	got removed.  (#170566, Tim-Philipp Müller)
+	* glib/Makefile.am: Create also a console version of the
+	gspawn-win32-helper program, gspawn-win32-helper-console.exe.
+	It's otherwise identical to gspawn-win32-helper.exe, except marked
+	as a console application (linked without the -mwindows option).
 	
-2005-03-15  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gspawn-win32.c (do_spawn_directly, do_spawn_with_pipes):
+	Drop the dont_wait parameter. Its truth value correlated 100% with
+	the NULLness of the exit_status parameter anyway, so it's enough
+	to check whether exit_status is NULL. Invert the sense of the
+	dont_return_handle parameter and rename it to do_return_handle, to
+	make the code easier to read by avoiding double negations.
 
-	* glib/goption.c (g_option_context_set_main_group): Warn 
-	if there already is a main group.  (#170445, Jeff Franks)
+	(g_spawn_sync_utf8, g_spawn_async_with_pipes_utf8): Modify calls
+	to do_spawn_with_pipes() accordingly.
 
-Sun Mar 13 21:28:47 2005  Manish Singh  <yosh@gimp.org>
+	(do_spawn_with_pipes): If we have a console, use the console
+	version of the helper program, otherwise use the GUI one. This
+	avoids extra console windows opening up in some situations. (In
+	case a console application uses the GUI gspawn-win32-helper.exe to
+	spawn another console application we would get a separate console
+	for the spawned console application).
 
-	* glib/gdataset.c: remove spurious IA prefix from g_quark_try_string.
+	* glib-zip.in: Distribute also gspawn-win32-helper-console.exe.
 
-2005-03-13  Matthias Clasen  <mclasen@redhat.com>
+2005-09-05  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/gatomic.c:
-	* glib/gcache.c: Small fixes to the previous commit.
+	* glib/gmappedfile.c (g_mapped_file_new): Report an error
+	if the file is too large.  (#315275, Kjartan Maraas)
 
-2005-03-13  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gkeyfile.c (g_key_file_load_from_fd): The return value
+	of read() is signed.  (#315273, Kjartan Maraas)
 
-	* glib/gatomic.c: Include galias.h last.
+2005-08-31  Tor Lillqvist  <tml@novell.com>
 
-2005-03-13  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gutils.h: Wrapping atexit() is a bad idea on Windows, where
+	the EXE and each DLL have their own atexit function chains.
 
-	Make PLT-reduction work with gcc4, and don't include
-	everything in galias.h:
-	
-	* glib/glib.symbols: Group symbols by header and source file.
-	* glib/makegalias.pl: Protect definitions by the same 
-	preprocessor symbols used to guard the headers. Move
-	the alias declarations to a separate file which is 
-	produced when calling makegalias.pl -def
-	* glib/Makefile.am (galiasdef.c): Add a rule to generate this
-	file.
-	* glib/*.c: Include galias.h after the other GLib headers,
-	include galiasdef.c at the bottom.
+	#define g_atexit as atexit instead. This means it has a
+	better chance of doing what the caller wants. For instance,
+	gtkhtml calls g_atexit() registering a function in gtkhtml
+	itself. This caused a crash when g_atexit() was implemented as a
+	function in the GLib DLL. The gtkhtml DLL was already unloaded by
+	the time the GLib DLL got unloaded.
 
-2005-03-11  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gutils.c: #undef the #define mentioned above, to also get a
+	real g_atexit() into the DLL for backward compatibility. Document
+	the Windows behaviour of g_atexit(), and document the varying ways
+	atexit() can behave in the context of dynamically loaded modules
+	on Unix.
 
-	* m4macros/glib-gettext.m4: Avoid stupid compiler complaints
-	about precision loss.
+2005-08-30  Tor Lillqvist  <tml@novell.com>
 
-2005-03-10  Matthias Clasen  <mclasen@redhat.com>
+	Make also the g_spawn*() functions take parameters in the GLib
+	file name encoding, i.e. UTF-8, on Windows. Has no impact on Unix
+	API or ABI. Like the other GLib API that was earlier changed to
+	use UTF-8 on Windows, the names of the functions that take UTF-8
+	have _utf8 suffixes added by using preprocessor macros in the
+	header file. The old names are kept for functions with the old
+	behaviour, taking parameters in the system codepage, for DLL ABI
+	stability.
 
-	* tests/date-test.c: 
-	* tests/testgdate.c: Add tests for 
-	g_date_get_iso8601_week_of_year().
+	* NEWS: Mention this.
 
-	* glib/gdate.c (g_date_get_iso8601_week_of_year): 
-	Fix the calculation.  (#169858, Jon-Kare Hellan)
+	* glib/gspawn.h: On Win32 add the suffix _utf8 to the names of the
+	g_spawn*() functions.
 
-2005-03-09  Tor Lillqvist  <tml@novell.com>
+	* glib/gspawn-win32.c: Use wide-char API on NT-based
+	Windows. Convert parameters from UTF-8 to wide chars (NT) or
+	system codepage (Win9x) and call the C library _wspawn*() or
+	spawn*() functions respectvely. Add DLL ABI stability versions
+	that take parameters in the system codepage.
 
-	* glib/Makefile.am
-	* gmodule/Makefile.am: Merge from HEAD: Use grep | head -n 1
-	instead of grep -m 1 which doesn't work with slightly older
-	versions of GNU grep in install-libtool-import-lib rule.
+	* glib/gspawn-win32-helper.c: On NT-based Windows use the
+	wide-char versions of argv and envp, and use wide-char API to
+	change directory and spawn the program to run. Remove the verbose
+	debugging output, it was too complex to modify for the wide-char
+	features. (Just add temporary debugging printouts if needed, no
+	need to have them permanently in the source.)
 
-	* glib/gutils.c (g_get_user_data_dir, g_get_user_config_dir,
-	g_get_user_cache_dir, g_get_system_data_dirs,
-	g_get_system_config_dirs): [Win32] Don't leak return value from
-	get_special_folder(). (#169348, Daniel Atallah) Guard against
-	g_home_dir being NULL, use g_tmp_dir/g_user_name in that case.
+	* glib/gspawn.c: Corresponding documentation updates.
 
-2005-03-06  Matthias Clasen  <mclasen@redhat.com>
+	* glib/glib.symbols: Corresponding changes: Mark the ABI stability
+	symbols as PRIVATE, add the new _utf8-suffixed ones.
 
-	* glib/gmarkup.c: Add G_GNUC_PRINTF attribute
-	to set_error. 
-	(g_markup_parse_context_end_parse): Fix an
-	error message, noticed by Tim Janik. 
+2005-08-24  Stepan Kasal  <kasal@ucw.cz>
 
-2005-02-28  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gtypes.h (G_MININT64): Cast the constant to gint64; it is
+	guint64 otherwise and that can produce warnings about comparison
+	between signed and unsigned.
 
-	* Bump version.
+2005-08-23  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.3 ===
+	* glib/gutils.c: Fix the crt_externs.h include.
 
-	* NEWS: Updates.
+2005-08-23  Stepan Kasal  <kasal@ucw.cz>
 
-2005-02-24  Tor Lillqvist  <tml@novell.com>
+	* NEWS: Fix spelling of my first name.
 
-	* glib/Makefile.am (BUILT_EXTRA_DIST): Don't distribute
-	glib.def. (#167496, J. Ali Harlow)
+2005-08-23  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/gfileutils.c (get_contents_win32): Use g_fopen(). (#168341,
-	Daniel Atallah)
+	* Bump version
 
-2005-02-24  Matthias Clasen  <mclasen@redhat.com>
-
-	* NEWS: Updates.
-
-2005-02-23  Matthias Clasen  <mclasen@redhat.com>
-
-	* configure.in: Don't forget to set G_THREAD_LIBS_FOR_GTHREAD 
-	on non-linux platforms.  (#168177, Michael Banck)
-
-	* tests/keyfile-test.c (test_locale_string): Set LANGUAGE 
-	instead of LC_ALL to shield against LANGUAGE being set in 
-	the environment.  (#168311, Suren A. Chilingaryan)
-
-Tue Feb 22 22:03:38 2005  Manish Singh  <yosh@gimp.org>
-
-	* glib/gstdio.h: On G_OS_UNIX, simple #define g_open and co. as
-	aliases for their respective C library functions, instead of
-	using the function wrappers. This avoids library users having to
-	care about matching large file support with whatever glib has been
-	built with. Fixes bug #167942.
-
-	* glib/gstdio.c
-	* glib/abicheck.sh
-	* glib/glib.symbols
-	* glib/makegalias.pl: Logic to make the gstdio wrappers still
-	available for compatibility, but not used in new code.
-
-Tue Feb 22 18:33:07 2005  Manish Singh  <yosh@gimp.org>
-
-	* glib/gtimer.c (g_usleep): Simplify the loop for the fix below.
-
-2005-02-20  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gtimer.c (g_usleep): Fix usage of
-	nanosleep().  (#163039, Bastien Nocera)
-
-2005-02-16  Adi Attar  <aattar@cvs.gnome.org>
-
-	* configure.in: Added "xh" to ALL_LINGUAS.
-
-2005-02-10  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/goption.c (print_help): Take main group options into
-	account when calculating column size.  (#166921)
-	(g_option_context_parse): Accept -? as documented.  (#166977)
-
-2005-02-09  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gkeyfile.c (find_file_in_data_dirs): Don't leak path
-	here.  (#166801, Kjartan Maraas)
-
-2005-02-08  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gkeyfile.c (g_key_file_parse_value_as_string): Don't
-	write out of bounds.
-
-	* glib/goption.c (g_option_context_parse): Fix a 
-	one-too-short memory allocation.  (#166609, Nicolas Laurent)
-
-	* tests/Makefile.am (TESTS_ENVIRONMENT): Add tests with
-	MALLOC_CHECK_.
-
-	* tests/option-test.c: Add a test for unkown short options.
-
-2005-02-07  Tor Lillqvist  <tml@novell.com>
-
-	* glib-zip.in: Add gmodule-no-export-2.0.pc.
-
-Sun Feb  6 21:59:09 2005  Manish Singh  <yosh@gimp.org>
-
-	* glib/abicheck.sh: feed the contents of config.h and glibconfig.h
-	into the preprocessor, since glib.symbols could need #defines
-	from them.
-
-Sun Feb  6 12:09:55 2005  Manish Singh  <yosh@gimp.org>
-
-	* glib/gatomic.c: Don't use matching constraints for asm mem
-	parameters. This makes the code match with current glibc, and
-	quiets some warnings with gcc 3.4.
-
-2005-02-05  Tor Lillqvist  <tml@novell.com>
-
-	* glib/gfileutils.c (g_file_get_contents): In the Win32 ABI
-	stability version, call g_file_get_contents_utf8(), not
-	itself. (#166386, Bill Skaggs)
-
-2005-02-04  Matthias Clasen  <mclasen@redhat.com>
-
-	* configure.in: Define a HAVE_GNUC_VISIBILITY automake
-	conditional.
-
-	* glib/Makefile.am (TESTS): Only check the abi if
-	the compiler supports visibility, otherwise we
-	know there will be (harmless) extra symbols.  
-	(#166181, Ed Avis)
-
-2005-02-02  Matthias Clasen  <mclasen@redhat.com>
-
-	* configure.in: Post-release version bump
-
-	* === Released 2.6.2 ===
+	* === Released 2.8.1 ===
 
 	* NEWS: Updates
 
-2005-02-02  Tor Lillqvist  <tml@novell.com>
+2005-08-20  Hans Breuer  <hans@breuer.org>
 
-	* glib/gwin32.h: Remove unnecessary MSVC-only typedef for
-	pid_t. (#165910) GLib does not pretend to be a POSIX emulation
-	library.
+	* glib/makefile.msc.in : link with ws2_32.lib
 
-	* glib/gstdio.c: In the Win32 part of all functions, handle
-	invalid UTF-8 more robustly. Don't pass the resulting NULL
-	wide-char or codepage strings on to C library functions, but bail
-	out early. (#166084)
+2005-08-18  Tor Lillqvist  <tml@novell.com>
 
-	* glib/gfileutils.c: Don't use potentially incorrect errno in
-	several places. (#165951)
-	(g_mkstemp): Set errno appropriately.
+	* configure.in: Check for <sys/wait.h>
 
-2005-02-02  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gbacktrace.c: Include <sys/wait.h> on if HAVE_SYS_WAIT_H.
 
-	* NEWS: Updates
+2005-08-18  Ross Burton  <ross@burtonini.com>
 
-2005-02-01  Matthias Clasen  <mclasen@redhat.com>
-
-	* tests/keyfile-test.c (test_key_remove): Add test case for
-	key removal.
-
-	* glib/gkeyfile.c (g_key_file_remove_key): Actually remove 
-	the key from the list of pairs.  (#165980, David Hoover)
-
-	* glib/gkeyfile.c: Doc clarifications.  (#165907, Vincent Untz)
-
-	* tests/keyfile-test.c (test_group_remove): Add test case for
-	group removal.
-
-	* glib/gkeyfile.c (g_key_file_remove_group): Don't segfault
-	if the group doesn't exist.  (#165887, Mathias Hasselmann)
-
-2005-01-30  Matthias Clasen  <mclasen@redhat.com>
-
-	* tests/keyfile-test.c: Some more unit tests.
-
-2005-01-28  Christian Rose  <menthos@menthos.com>
-
-	* configure.in: Added "tl" to ALL_LINGUAS.
-
-2005-01-24  Matthias Clasen  <mclasen@redhat.com>
-
-	* tests/run-markup-tests.sh: Let $srcdir default to .
-
-	* tests/markups/fail-40.gmarkup: Add a test with a long entity
-	name.
-
-	* glib/gmarkup.c (unescape_text_state_inside_entity_name): Don't
-	copy the entity name into a short buffer of fixed length. Instead,
-	compare it in place with strncmp(), and do a full strdup() in the
-	error path.  (#165100, Simon Budig)
-
-2005-01-22  Tor Lillqvist  <tml@novell.com>
-
-	* glib/gdate.c (g_date_set_time): Don't g_assert that localtime()
-	returns non-NULL. It does return NULL at least on Win32 if you
-	pass it a negative time_t, which although wrong, shouldn't cause
-	an application to abort. Instead return 2000-01-01 as a default
-	date. Print a warning unless G_DISABLE_CHECKS. (#164622)
-
-2005-01-20  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gkeyfile.c (g_key_file_parse_value_as_integer): Don't
-	interpret leading zeros as octal. The specification requires
-	%f parsing, and %f doesn't allow octal.  
-
-	* tests/keyfile-test.c: Add some more tests.
-
-	* glib/gkeyfile.c (g_key_file_get_keys): Return keys in
-	the order found in the file, rather than the opposite.
-	(g_key_file_parse_value_as_string): Fix error reporting.
-
-2005-01-19  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gkeyfile.c (g_key_file_parse_data): Accept \r\n as 
-	line end.  (#163030, Bastian Nocera)
-	(g_key_file_load_from_data): Make -1 work as a size.
+	* glib/gstring.c:
+	Optimise single-character insertions.
 	
-	* tests/keyfile-test.c: Some unit tests for the keyfile
-	parser.  
-
-	* tests/Makefile.am (test_programs): Add keyfile-test.
-
-2005-01-19  Tor Lillqvist  <tml@novell.com>
-
-	* configure.in: sh portability fix. Use "test" and not [.
-	(#163144, Robert Ögren)
-
-	* glib/gbacktrace.c (g_on_error_stack_trace): On Win32 call
-	G_BREAKPOINT() if being debugged.
-
-	* glib/gmessages.c (g_logv): For fatal messages on Win32, use
-	G_BREAKPOINT() also without G_ENABLE_DEBUG, but only if being
-	debugged. Suggestion by Ulf Lamping.
-
-2005-01-18  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gkeyfile.c (g_key_file_get_boolean_list): Fix a
-	sparse warning.  (#164467, Kjartan Maraas)
-
-2005-01-17  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gconvert.c (g_get_filename_charsets): Don't crash
-	if G_FILENAME_ENCODING is empty.  (#164330, Pawel Sakowski)
-
-2005-01-10  Owen Taylor  <otaylor@redhat.com>
-
-	* Makefile.am (EXTRA_DIST): Add missing ChangeLog.pre*
-
-2005-01-09  Hans Breuer  <hans@breuer.org>
-
-	* glib/gfileutils.c : make it compile with mvc6 default sdk,
-	(#define INVALID_FILE_ATTRIBUTES, FILE_ATTRIBUTE_DEVICE)
-
-2005-01-09  Tor Lillqvist  <tlillqvist@novell.com>
-
-	* glib/gwin32.c: Include also wchar.h for wcslen on
-	Cygwin.
-	(g_win32_error_message): Fix cast. (#163133, Roger Leigh)
-
-	* glib/gfileutils.c: Include <io.h> on Windows for
-	prototypes. (#163390, Kazuki Iwamoto)
-
-2005-01-07  Matthias Clasen  <mclasen@redhat.com>
-
-	* NEWS: Typo fixes.
-
-	* configure.in: Bump version
-
-	* === Released 2.6.1 ===
-
-2005-01-07  Matthias Clasen  <mclasen@redhat.com>
-
-	* configure.in: 
-	* Makefile.am: Generate and distribute gmodule-export-2.0.pc,
-	which is currently just a copy of gmodule-2.0.pc, but makes
-	it explicit that it adds --export-dynamic.
+	* glib/gutf8.c:
+	Note copied code.
 	
-	* gmodule-export-2.0.pc.in: Copy of gmodule-2.0.pc.in.
+	* tests/string-test.c:
+	Add tests for new optimisation, and fix a leak.
 
-2005-01-06  Tor Lillqvist  <tml@iki.fi>
+2005-08-17  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/Makefile.am
-	* gobject/Makefile.am: glib.def and gobject.def are generated, not
-	in $(srcdir). (#163143, J. Ali Harlow)
+	* configure.in: Check for crt_externs.h and _NSGetEnviron.
 
-	* configure.in
-	* glib/Makefile.am
-	* gobject/Makefile.am: Win32 cross-compilation fixes. (#163144,
-	J. Ali Harlow)
+	* glib/gutils.c: On Darwin, include crt-externs.h and
+	define environ using _NSGetEnviron().  (#313731)
 
-2005-01-05  Matthias Clasen  <mclasen@redhat.com>
+2005-08-16  Stepan Kasal  <kasal@ucw.cz>
 
-	* glib/gutils.h: Simplify the inlining magic to make it
-	work at Oh zero.  (#162990, Kalpesh Shah) 
+	* glib/gutils.c (g_get_any_init): Move the body of the big if...
+	(g_get_any_init_do): ... to this new function.
+	(g_get_any_init): Declare as inline.
+	(g_get_any_init_locked): New inline function, does the locking.
+	Make use of these two throughout the code.
 
-2005-01-04  Tor Lillqvist  <tml@iki.fi>
+2005-08-15  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib/guniprop.c (get_locale_type): Use g_win32_getlocale()
-	instead of setlocale() on Windows. setlocale() returns strings
-	like "Turkish_Turkey".
+	* glib/gbacktrace.c (g_on_error_stack_trace): Wait for
+	the child process and then simply return. This makes 
+	The "S" option work as documented in g_on_error_query().
+	(#313125, Matthew F. Barnes)
 
-2005-01-04  Matthias Clasen  <mclasen@redhat.com>
+	* glib/gunicode.h: Update the link to Unicode category
+	values.  (#313369, Behnam Esfahbod)
 
-	Fix the inlining magic.  (#157536, Jens Hatlak, and
-	#149907, Morten Welinder)
-	
-	* configure.in: Define G_CAN_INLINE in glibconfig.h
+	* glib/gqueue.c (g_queue_find_custom): Clarify docs
+	a little.  (#311727, Tristan van Berkom)
 
-	* glib/gutils.h: Streamline the inlining magic a bit,
-	don't use extern when implementing the non-inlined 
-	version.
-
-2005-01-03  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gutils.c (g_find_program_in_path): Don't return
-	directories.  (#160738, Tommi Komulainen)
-
-	* glib/gfileutils.c (g_file_get_contents): Clarify the 
-	documentation.  (#162251, Mariano Suárez-Alvarez)
-
-2005-01-02  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gutils.c (g_setenv, g_unsetenv): Clarify the 
-	docs.  (#162747, Crispin Flowerday)
-
-2005-01-01  J. Ali Harlow  <ali@juiblex.co.uk>
-
-	* configure.in: Don't use AC_TRY_RUN to test for long long format
-	when using the MSVCRT.DLL runtime since we know the answer anyway
-	and it causes some mild inconvience when cross compiling.
-
-	* README.win32: Add a reference to the cross compiling section
-	of the reference manual.
-
-	* docs/reference/glib/cross.sgml: MinGW uses MSVCRT.DLL which
-	requires %I64i instead of %lli. (#161306)
-
-2005-01-01  Tor Lillqvist  <tml@iki.fi>
-
-	* glib/gutils.c: Make the g_getenv() ABI backward compatibility
-	wrapper more robust.
-
-2005-01-01  Tor Lillqvist  <tml@iki.fi>
-
-	* glib/glib.symbols
-	* glib/gutils.h
-	* glib/gutils.c: Make also g_getenv(), g_setenv(), g_unsetenv()
-	and g_find_program_in_path() take and return UTF-8 strings on
-	Win32. Implement DLL ABI backward compatility for them, too. Move
-	all the DLL ABI stability wrappers to the end of the file. Use
-	wide character API when available in inner_find_program_in_path().
-
-	* glib/gfileutils.c: With the UTF-8ness of g_getenv() above, just
-	use g_getenv() to get PATHEXT. (Yeah, it's probably overdoing it
-	to consider somebody actually having anything else than ASCII
-	in PATHEXT, but...)
-
-2004-12-31  Tor Lillqvist  <tml@iki.fi>
-
-	* glib/gfileutils.c (g_file_test): Rewrite the Win32 version to
-	use GetFileAttributes() instead of stat(). stat() is unreliable
-	for corner cases like '\\server\share' or '.\'. Part of fixing
-	#161797. When testing for executability, in addition to the fixed
-	set of executable file name extensions also check the PATHEXT
-	environment variable.
-
-2004-12-30  Tor Lillqvist  <tml@iki.fi>
-
-	* glib/gutils.c (g_get_current_dir): In the Win32 version, use
-	GetCurrentDirectory() directly for simpler buffer length
-	management. I don't trust getcwd() getting it right all the time.
-
-2004-12-30  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/gfileutils.c (g_file_test): Typo fix.
-
-2004-12-30  Tor Lillqvist  <tml@iki.fi>
-
-	* glib/gutils.c (g_path_skip_root): Require UNC paths to start
-	with exactly two slashes.
-	(g_get_current_dir): Use wide character API when available.
-	(g_path_get_dirname): Handle UNC paths better. Part of fix for
-	#161797.
-
-2004-12-27  Matthias Clasen  <mclasen@redhat.com>
-
-	* configure.in: Add an OS_LINUX conditional.
-
-	* glib/Makefile.am (TESTS): Only check the ABI on 
-	linux, since the shell script is not portable, and libtool
-	deficiencies may distort the ABI on other platforms.  (#161741)
-
-2004-12-21  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/goption.c (print_entry): Don't show
-	the special G_OPTION_REMAINING entry.  (#161934,
-	Matthew F. Barnes)
-
-2004-12-20  Tor Lillqvist  <tml@iki.fi>
-
-	* glib/gconvert.c (g_locale_to_utf8, g_filename_to_uri): Improve
-	docs.
-
-2004-12-20  Matthias Clasen  <mclasen@redhat.com>
-
-	* tests/option-test.c: Add some tests for '--' 
-	stripping.
-
-	* glib/goption.c (g_option_context_parse): Don't
-	strip '--' if it would be needed by a second option
-	parser.  (#161701)
-
-	* glib/gunicollate.c (g_utf8_collate): Make docs 
-	more accurate.  (#161683, Marcin Krzyzanowski)
-
-2004-12-19  Matthias Clasen  <mclasen@redhat.com>
-
-	* glib/goption.c (g_option_context_parse): Call
-	post-parse hooks also if argv is NULL.  (#161668,
-	Marcin Krzyzanowski)
+	* glib/abicheck.sh, gobject/abicheck.sh: Make the 
+	check work on ia64 too, where some symbols ended up 
+	in yet another section.
 

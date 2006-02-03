@@ -45,6 +45,9 @@
 #include <sys/times.h>
 #endif
 #include <sys/types.h>
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
 
 #include <time.h>
 #ifdef HAVE_UNISTD_H
@@ -61,6 +64,7 @@
 
 #ifdef G_OS_WIN32
 #  define STRICT		/* Strict typing, please */
+#  define _WIN32_WINDOWS 0x0401 /* to get IsDebuggerPresent */
 #  include <windows.h>
 #  undef STRICT
 #endif
@@ -88,9 +92,9 @@ void
 g_on_error_query (const gchar *prg_name)
 {
 #ifndef G_OS_WIN32
-  static const gchar *query1 = "[E]xit, [H]alt";
-  static const gchar *query2 = ", show [S]tack trace";
-  static const gchar *query3 = " or [P]roceed";
+  static const gchar * const query1 = "[E]xit, [H]alt";
+  static const gchar * const query2 = ", show [S]tack trace";
+  static const gchar * const query3 = " or [P]roceed";
   gchar buf[16];
 
   if (!prg_name)
@@ -160,6 +164,7 @@ g_on_error_stack_trace (const gchar *prg_name)
   pid_t pid;
   gchar buf[16];
   gchar *args[4] = { "gdb", NULL, NULL, NULL };
+  int status;
 
   if (!prg_name)
     return;
@@ -180,10 +185,8 @@ g_on_error_stack_trace (const gchar *prg_name)
       perror ("unable to fork gdb");
       return;
     }
-  
-  while (glib_on_error_halt)
-    ;
-  glib_on_error_halt = TRUE;
+
+  waitpid (pid, &status, 0);
 #else
   if (IsDebuggerPresent ())
     G_BREAKPOINT ();

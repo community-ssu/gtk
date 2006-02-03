@@ -6,7 +6,9 @@ UNIX emulation on Windows.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+These functions provide some level of UNIX emulation on the Windows platform.
+If your application really needs the POSIX APIs, we suggest you try the Cygwin
+project.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -32,7 +34,7 @@ Provided for UNIX emulation on Windows; see documentation for <function>pipe()</
 in any UNIX manual.
 </para>
 
-@phandles: 
+@phandles: file descriptors, the first one for reading, the second one for writing.
 
 
 <!-- ##### FUNCTION g_win32_error_message ##### -->
@@ -78,6 +80,15 @@ in any UNIX manual.
 
 </para>
 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_win32_locale_filename_from_utf8 ##### -->
+<para>
+
+</para>
+
+@utf8filename: 
 @Returns: 
 
 

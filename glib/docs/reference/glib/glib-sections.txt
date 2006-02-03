@@ -322,6 +322,7 @@ G_GNUC_UNUSED
 G_GNUC_PRINTF
 G_GNUC_SCANF
 G_GNUC_FORMAT
+G_GNUC_NULL_TERMINATED
 G_GNUC_FUNCTION
 G_GNUC_PRETTY_FUNCTION
 G_GNUC_NO_INSTRUMENT
@@ -762,12 +763,16 @@ g_io_watch_funcs
 g_new
 g_new0
 g_renew
+g_try_new
+g_try_new0
+g_try_renew
 
 <SUBSECTION>
 g_malloc
 g_malloc0
 g_realloc
 g_try_malloc
+g_try_malloc0
 g_try_realloc
 
 <SUBSECTION>
@@ -975,10 +980,12 @@ G_FILE_ERROR
 GFileTest
 g_file_error_from_errno
 g_file_get_contents
+g_file_set_contents
 g_file_test
 g_mkstemp
 g_file_open_tmp
 g_file_read_link
+g_mkdir_with_parents
 
 <SUBSECTION>
 GDir
@@ -986,6 +993,13 @@ g_dir_open
 g_dir_read_name
 g_dir_rewind
 g_dir_close
+
+<SUBSECTION>
+GMappedFile
+g_mapped_file_new
+g_mapped_file_free
+g_mapped_file_get_length
+g_mapped_file_get_contents
 
 <SUBSECTION>
 g_open
@@ -998,6 +1012,10 @@ g_remove
 g_rmdir
 g_fopen
 g_freopen
+g_chmod
+g_access
+g_creat
+g_chdir
 
 <SUBSECTION Private>
 g_file_error_quark
@@ -1211,6 +1229,7 @@ g_date_sunday_week_of_year
 g_date_days_in_month
 g_date_monday_weeks_in_year
 g_date_sunday_weeks_in_year
+tm
 </SECTION>
 
 <SECTION>
@@ -1283,6 +1302,7 @@ g_set_prgname
 g_getenv
 g_setenv
 g_unsetenv
+g_listenv
 g_get_user_name
 g_get_real_name
 g_get_user_cache_dir
@@ -1292,6 +1312,7 @@ g_get_system_data_dirs
 g_get_system_config_dirs
 
 <SUBSECTION>
+g_get_host_name
 g_get_home_dir
 g_get_tmp_dir
 g_get_current_dir
@@ -1302,7 +1323,9 @@ g_path_skip_root
 g_path_get_basename
 g_path_get_dirname
 g_build_filename
+g_build_filenamev
 g_build_path
+g_build_pathv
 
 <SUBSECTION>
 g_find_program_in_path
@@ -1335,6 +1358,7 @@ g_nullify_pointer
 <SUBSECTION Private>
 G_NATIVE_ATEXIT
 g_ATEXIT
+g_win32_get_system_data_dirs_for_module
 ATEXIT
 
 </SECTION>
@@ -1490,7 +1514,6 @@ g_completion_free
 <TITLE>Windows Compatability Functions</TITLE>
 <FILE>windows</FILE>
 MAXPATHLEN
-pid_t
 pipe
 
 g_win32_error_message
@@ -1498,6 +1521,7 @@ g_win32_getlocale
 g_win32_get_package_installation_directory
 g_win32_get_package_installation_subdirectory
 g_win32_get_windows_version
+g_win32_locale_filename_from_utf8
 G_WIN32_DLLMAIN_FOR_DLL_NAME
 G_WIN32_HAVE_WIDECHAR_API
 G_WIN32_IS_NT_BASED
@@ -1960,6 +1984,10 @@ g_datalist_remove_no_notify
 <SUBSECTION>
 g_datalist_foreach
 g_datalist_clear
+g_datalist_set_flags
+g_datalist_unset_flags
+g_datalist_get_flags
+G_DATALIST_FLAGS_MASK
 </SECTION>
 
 
@@ -2154,6 +2182,7 @@ g_utf8_normalize
 GNormalizeMode
 g_utf8_collate
 g_utf8_collate_key
+g_utf8_collate_key_for_filename
 
 <SUBSECTION>
 g_utf8_to_utf16

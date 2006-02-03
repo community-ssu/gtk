@@ -82,7 +82,8 @@ g_atomic_int_add
 g_atomic_int_compare_and_exchange
 g_atomic_int_exchange_and_add
 g_atomic_pointer_compare_and_exchange
-#ifdef G_ATOMIC_OP_MEMORY_BARRIER_NEEDED
+#ifdef INCLUDE_INTERNAL_SYMBOLS
+ /* these are not internal, but we don't want to alias them */
 g_atomic_int_get
 g_atomic_pointer_get
 #endif
@@ -152,9 +153,12 @@ g_uri_list_extract_uris G_GNUC_MALLOC
 #if IN_FILE(__G_DATASET_C__)
 g_datalist_clear
 g_datalist_foreach
+g_datalist_get_flags
 g_datalist_id_get_data
 g_datalist_id_remove_no_notify
 g_datalist_id_set_data_full
+g_datalist_set_flags
+g_datalist_unset_flags
 g_datalist_init
 g_dataset_destroy
 g_dataset_foreach
@@ -247,15 +251,19 @@ g_set_error G_GNUC_PRINTF(4,5)
 
 #if IN_HEADER(__G_FILEUTILS_H__)
 #if IN_FILE(__G_FILEUTILS_C__)
-g_build_filename
-g_build_path
+g_build_filename G_GNUC_MALLOC G_GNUC_NULL_TERMINATED
+g_build_filenamev G_GNUC_MALLOC
+g_build_path G_GNUC_MALLOC G_GNUC_NULL_TERMINATED
+g_build_pathv G_GNUC_MALLOC 
 g_file_error_from_errno
 g_file_error_quark
 g_file_get_contents PRIVATE
+g_file_set_contents
 g_file_open_tmp PRIVATE
 g_file_test PRIVATE
 g_file_read_link
 g_mkstemp PRIVATE
+g_mkdir_with_parents
 #ifdef G_OS_WIN32
 g_file_get_contents_utf8
 g_file_open_tmp_utf8
@@ -525,6 +533,15 @@ g_timeout_source_new
 #endif
 #endif
 
+#if IN_HEADER(__G_MAPPED_FILE_H__)
+#if IN_FILE(__G_MAPPED_FILE_C__)
+g_mapped_file_new G_GNUC_MALLOC
+g_mapped_file_get_length
+g_mapped_file_get_contents
+g_mapped_file_free
+#endif
+#endif
+
 #if IN_HEADER(__G_MARKUP_H__)
 #if IN_FILE(__G_MARKUP_C__)
 g_markup_error_quark
@@ -543,16 +560,6 @@ g_markup_vprintf_escaped
 #if IN_HEADER(__G_MEM_H__)
 #if IN_FILE(__G_MEM_C__)
 g_free
-g_malloc G_GNUC_MALLOC
-g_malloc0 G_GNUC_MALLOC
-g_mem_is_system_malloc
-g_mem_profile
-g_mem_set_vtable
-g_realloc
-g_try_malloc G_GNUC_MALLOC
-g_try_realloc
-g_allocator_free
-g_allocator_new
 g_mem_chunk_alloc
 g_mem_chunk_alloc0
 g_mem_chunk_clean
@@ -562,7 +569,18 @@ g_mem_chunk_info
 g_mem_chunk_new
 g_mem_chunk_print
 g_mem_chunk_reset
+g_malloc G_GNUC_MALLOC
+g_malloc0 G_GNUC_MALLOC
+g_mem_is_system_malloc
+g_mem_profile
+g_mem_set_vtable
+g_realloc
+g_allocator_free
+g_allocator_new
 g_blow_chunks
+g_try_malloc G_GNUC_MALLOC
+g_try_malloc0 G_GNUC_MALLOC
+g_try_realloc
 #endif
 #endif
 
@@ -833,13 +851,20 @@ g_slist_sort_with_data
 
 #if IN_HEADER(__G_SPAWN_H__)
 #if IN_FILE(__G_SPAWN_C__)
-g_spawn_async
-g_spawn_async_with_pipes
+g_spawn_async PRIVATE
+g_spawn_async_with_pipes PRIVATE
 g_spawn_close_pid
-g_spawn_command_line_async
-g_spawn_command_line_sync
+g_spawn_command_line_async PRIVATE
+g_spawn_command_line_sync PRIVATE
 g_spawn_error_quark
-g_spawn_sync
+g_spawn_sync PRIVATE
+#ifdef G_OS_WIN32
+g_spawn_async_utf8
+g_spawn_async_with_pipes_utf8
+g_spawn_command_line_async_utf8
+g_spawn_command_line_sync_utf8
+g_spawn_sync_utf8
+#endif
 #endif
 #endif
 
@@ -847,9 +872,13 @@ g_spawn_sync
 #if IN_FILE(__G_STDIO_C__)
 #if !defined(G_OS_UNIX) || defined(G_STDIO_NO_WRAP_ON_UNIX)
 /* gstdio wrappers */
+g_access
+g_chmod
 g_open
+g_creat
 g_rename
 g_mkdir
+g_chdir
 g_stat
 g_lstat
 g_unlink
@@ -881,7 +910,7 @@ g_strcanon
 g_strchomp
 g_strchug
 g_strcompress G_GNUC_MALLOC
-g_strconcat G_GNUC_MALLOC
+g_strconcat G_GNUC_MALLOC G_GNUC_NULL_TERMINATED
 g_strdelimit
 g_strdup G_GNUC_MALLOC
 g_strdup_printf G_GNUC_PRINTF(1,2) G_GNUC_MALLOC
@@ -892,7 +921,7 @@ g_strescape G_GNUC_MALLOC
 g_strfreev
 g_str_has_prefix
 g_str_has_suffix
-g_strjoin G_GNUC_MALLOC
+g_strjoin G_GNUC_MALLOC G_GNUC_NULL_TERMINATED
 g_strjoinv G_GNUC_MALLOC
 g_strlcat
 g_strlcpy
@@ -1066,6 +1095,7 @@ g_unichar_break_type G_GNUC_CONST
 #if IN_FILE(__G_UNICOLLATE_C__)
 g_utf8_collate
 g_utf8_collate_key G_GNUC_MALLOC
+g_utf8_collate_key_for_filename G_GNUC_MALLOC
 #endif
 #endif
 
@@ -1155,7 +1185,9 @@ g_get_current_dir PRIVATE
 g_getenv PRIVATE
 g_unsetenv PRIVATE
 g_get_home_dir PRIVATE
+g_get_host_name
 g_setenv PRIVATE
+g_listenv PRIVATE
 #ifdef G_OS_WIN32
 g_find_program_in_path_utf8
 g_get_current_dir_utf8
@@ -1172,6 +1204,9 @@ g_get_real_name_utf8
 #endif
 g_get_system_config_dirs
 g_get_system_data_dirs
+#ifdef G_OS_WIN32
+g_win32_get_system_data_dirs_for_module
+#endif
 g_get_tmp_dir PRIVATE
 #ifdef G_OS_WIN32
 g_get_tmp_dir_utf8
@@ -1216,6 +1251,7 @@ g_win32_get_package_installation_subdirectory PRIVATE
 g_win32_get_package_installation_subdirectory_utf8
 g_win32_get_windows_version
 g_win32_getlocale
+g_win32_locale_filename_from_utf8
 #endif
 #endif
 #endif
@@ -1233,5 +1269,6 @@ glib_major_version
 glib_mem_profiler_table
 glib_micro_version
 glib_minor_version
+glib_on_error_halt
 #endif
 

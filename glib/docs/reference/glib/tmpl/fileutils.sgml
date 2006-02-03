@@ -168,6 +168,18 @@ A test to perform on a file using g_file_test().
 @Returns: 
 
 
+<!-- ##### FUNCTION g_file_set_contents ##### -->
+<para>
+
+</para>
+
+@filename: 
+@contents: 
+@length: 
+@error: 
+@Returns: 
+
+
 <!-- ##### FUNCTION g_file_test ##### -->
 <para>
 
@@ -205,6 +217,16 @@ A test to perform on a file using g_file_test().
 
 @filename: 
 @error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mkdir_with_parents ##### -->
+<para>
+
+</para>
+
+@pathname: 
+@mode: 
 @Returns: 
 
 
@@ -248,6 +270,51 @@ An opaque structure representing an opened directory.
 </para>
 
 @dir: 
+
+
+<!-- ##### STRUCT GMappedFile ##### -->
+<para>
+The #GMappedFile represents a file mapping created with
+g_mapped_file_new(). It has only private members and should
+not be accessed directly.
+</para>
+
+
+<!-- ##### FUNCTION g_mapped_file_new ##### -->
+<para>
+
+</para>
+
+@filename: 
+@writable: 
+@error: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mapped_file_free ##### -->
+<para>
+
+</para>
+
+@file: 
+
+
+<!-- ##### FUNCTION g_mapped_file_get_length ##### -->
+<para>
+
+</para>
+
+@file: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mapped_file_get_contents ##### -->
+<para>
+
+</para>
+
+@file: 
+@Returns: 
 
 
 <!-- ##### FUNCTION g_open ##### -->
@@ -346,6 +413,45 @@ An opaque structure representing an opened directory.
 @filename: 
 @mode: 
 @stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_chmod ##### -->
+<para>
+
+</para>
+
+@filename: 
+@mode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_access ##### -->
+<para>
+
+</para>
+
+@filename: 
+@mode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_creat ##### -->
+<para>
+
+</para>
+
+@filename: 
+@mode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_chdir ##### -->
+<para>
+
+</para>
+
+@path: 
 @Returns: 
 
 

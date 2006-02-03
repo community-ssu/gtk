@@ -41,8 +41,8 @@ No user-defined entities.
 </listitem>
 <listitem>
 <para>
-Processing instructions, comments and the doctype declaration are "passed through" but are not 
-interpreted in any way.
+Processing instructions, comments and the doctype declaration are "passed 
+through" but are not interpreted in any way.
 </para>
 </listitem>
 <listitem>

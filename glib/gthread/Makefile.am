@@ -43,29 +43,34 @@ endif
 if OS_WIN32
 export_symbols = -export-symbols $(srcdir)/gthread.def
 
-install-libtool-import-lib:
-	$(INSTALL) .libs/libgthread-2.0.dll.a $(DESTDIR)$(libdir)
+install-def-file:
 	$(INSTALL) $(srcdir)/gthread.def $(DESTDIR)$(libdir)/gthread-2.0.def
 
-uninstall-libtool-import-lib:
-	-rm $(DESTDIR)$(libdir)/libgthread-2.0.dll.a $(DESTDIR)$(libdir)/gthread-2.0.def
+uninstall-def-file:
+	-rm $(DESTDIR)$(libdir)/gthread-2.0.def
 else
-install-libtool-import-lib:
-uninstall-libtool-import-lib:
+install-def-file:
+uninstall-def-file:
+endif
+
+if OS_WIN32
+gthread_win32_res = gthread-win32-res.o
+gthread_win32_res_ldflag = -Wl,$(gthread_win32_res)
 endif
 
 libgthread_2_0_la_SOURCES = gthread-impl.c
 libgthread_2_0_la_LDFLAGS = \
+	$(gthread_win32_res_ldflag) \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-export-dynamic $(no_undefined) $(export_symbols)
 
-libgthread_2_0_la_LIBADD = $(G_THREAD_WIN32_RESOURCE) $(G_THREAD_LIBS_EXTRA) $(G_THREAD_LIBS_FOR_GTHREAD) $(libglib)
+libgthread_2_0_la_LIBADD = $(G_THREAD_LIBS_EXTRA) $(G_THREAD_LIBS_FOR_GTHREAD) $(libglib)
 
-libgthread_2_0_la_DEPENDENCIES = $(G_THREAD_WIN32_RESOURCE) $(GTHREAD_DEF)
+libgthread_2_0_la_DEPENDENCIES = $(gthread_win32_res) $(GTHREAD_DEF)
 
 if OS_WIN32
-$(G_THREAD_WIN32_RESOURCE): gthread.rc
-	$(top_srcdir)/build/win32/lt-compile-resource gthread.rc $@
+gthread-win32-res.o: gthread.rc
+	$(WINDRES) gthread.rc $@
 endif
 
 gthread-2.0.lib: libgthread-2.0.la gthread.def
@@ -77,7 +82,7 @@ dist-hook: $(BUILT_EXTRA_DIST)
 	  if test -f $$f; then d=.; else d=$(srcdir); fi; \
 	  cp $$d/$$f $(distdir) || exit 1; done
 
-install-data-local: install-ms-lib install-libtool-import-lib
+install-data-local: install-ms-lib install-def-file
 
-uninstall-local: uninstall-ms-lib uninstall-libtool-import-lib
+uninstall-local: uninstall-ms-lib uninstall-def-file
 

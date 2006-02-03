@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: glib HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-01 10:25-0400\n"
-"PO-Revision-Date: 2005-06-13 09:27+0300\n"
+"POT-Creation-Date: 2006-01-18 12:03-0500\n"
+"PO-Revision-Date: 2005-12-21 15:08+0200\n"
 "Last-Translator: Alexander Shopov <ash@contact.bg>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,71 +17,74 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: glib/gconvert.c:406
+#: glib/gconvert.c:408 glib/gconvert.c:486
 #, c-format
 msgid "Conversion from character set '%s' to '%s' is not supported"
 msgstr "Преобразуването от набора символи „%s“ към „%s“ не се поддържа"
 
-#: glib/gconvert.c:410
+#: glib/gconvert.c:412 glib/gconvert.c:490
 #, c-format
 msgid "Could not open converter from '%s' to '%s'"
 msgstr "Не може да се отвори конвертор от „%s“ към „%s“"
 
-#: glib/gconvert.c:618 glib/gconvert.c:908 glib/giochannel.c:1319
-#: glib/giochannel.c:1361 glib/giochannel.c:2203 glib/gutf8.c:911
+#: glib/gconvert.c:606 glib/gconvert.c:995 glib/giochannel.c:1322
+#: glib/giochannel.c:1364 glib/giochannel.c:2206 glib/gutf8.c:912
 #: glib/gutf8.c:1361
+#, c-format
 msgid "Invalid byte sequence in conversion input"
 msgstr "Грешна байтова последователност на входа за преобразуване"
 
-#: glib/gconvert.c:624 glib/gconvert.c:841 glib/giochannel.c:1326
-#: glib/giochannel.c:2215
+#: glib/gconvert.c:612 glib/gconvert.c:922 glib/giochannel.c:1329
+#: glib/giochannel.c:2218
 #, c-format
 msgid "Error during conversion: %s"
 msgstr "Грешка по време на преобразуване: %s"
 
-#: glib/gconvert.c:643 glib/gutf8.c:907 glib/gutf8.c:1112 glib/gutf8.c:1253
+#: glib/gconvert.c:647 glib/gutf8.c:908 glib/gutf8.c:1112 glib/gutf8.c:1253
 #: glib/gutf8.c:1357
+#, c-format
 msgid "Partial character sequence at end of input"
 msgstr "Непълна символна последователност в края на входните данни"
 
-#: glib/gconvert.c:817
+#: glib/gconvert.c:897
 #, c-format
 msgid "Cannot convert fallback '%s' to codeset '%s'"
 msgstr ""
 "Заместващият символ „%s“ не може да бъде преобразуван към символ от набора „%"
 "s“"
 
-#: glib/gconvert.c:1617
+#: glib/gconvert.c:1706
 #, c-format
 msgid "The URI '%s' is not an absolute URI using the \"file\" scheme"
 msgstr "URI „%s“ не е абсолютен URI при използване на схемата „файл“"
 
-#: glib/gconvert.c:1627
+#: glib/gconvert.c:1716
 #, c-format
 msgid "The local file URI '%s' may not include a '#'"
 msgstr "URI „%s“ към локален файл не може да включва „#“"
 
-#: glib/gconvert.c:1644
+#: glib/gconvert.c:1733
 #, c-format
 msgid "The URI '%s' is invalid"
 msgstr "URI „%s“ е неправилен"
 
-#: glib/gconvert.c:1656
+#: glib/gconvert.c:1745
 #, c-format
 msgid "The hostname of the URI '%s' is invalid"
 msgstr "Името на хоста в URI „%s“ е невалидно"
 
-#: glib/gconvert.c:1672
+#: glib/gconvert.c:1761
 #, c-format
 msgid "The URI '%s' contains invalidly escaped characters"
 msgstr "URI „%s“ съдържа грешни екраниращи последователности"
 
-#: glib/gconvert.c:1766
+#: glib/gconvert.c:1855
 #, c-format
 msgid "The pathname '%s' is not an absolute path"
 msgstr "Пътят „%s“ не е абсолютен"
 
-#: glib/gconvert.c:1776
+#: glib/gconvert.c:1865
+#, c-format
 msgid "Invalid hostname"
 msgstr "Неправилно име на хост"
 
@@ -90,87 +93,172 @@ msgstr "Неправилно име на хост"
 msgid "Error opening directory '%s': %s"
 msgstr "Грешка при отваряне на папка „%s“: %s"
 
-#: glib/gfileutils.c:502 glib/gfileutils.c:570
+#: glib/gfileutils.c:576 glib/gfileutils.c:649
 #, c-format
 msgid "Could not allocate %lu bytes to read file \"%s\""
 msgstr "Неуспех при заделянето на %lu байта за четене на файла „%s“"
 
-#: glib/gfileutils.c:515
+#: glib/gfileutils.c:591
 #, c-format
 msgid "Error reading file '%s': %s"
 msgstr "Грешка при четене на файл „%s“: %s"
 
-#: glib/gfileutils.c:594
+#: glib/gfileutils.c:673
 #, c-format
 msgid "Failed to read from file '%s': %s"
 msgstr "Неуспех при четене от файл „%s“: %s"
 
-#: glib/gfileutils.c:645 glib/gfileutils.c:732
+#: glib/gfileutils.c:724 glib/gfileutils.c:811
 #, c-format
 msgid "Failed to open file '%s': %s"
 msgstr "Неуспех при отваряне на файл „%s“: %s"
 
-#: glib/gfileutils.c:662
+#: glib/gfileutils.c:741 glib/gmappedfile.c:133
 #, c-format
 msgid "Failed to get attributes of file '%s': fstat() failed: %s"
 msgstr ""
 "Неуспех при получаване на атрибутите на файл „%s“: неуспешно изпълнение на "
 "fstat(): %s"
 
-#: glib/gfileutils.c:696
+#: glib/gfileutils.c:775
 #, c-format
 msgid "Failed to open file '%s': fdopen() failed: %s"
-msgstr "Неуспех за отваряне на файл „%s“: неуспешно изпълнение на fdopen(): %s"
+msgstr ""
+"Неуспех при отваряне на файл „%s“: неуспешно изпълнение на fdopen(): %s"
 
-#: glib/gfileutils.c:1031
+#: glib/gfileutils.c:909
 #, c-format
-msgid "Template '%s' invalid, should not contain a '%s'"
-msgstr "Шаблонът „%s“ е неправилен, не трябва да съдържа „%s“"
+msgid "Failed to rename file '%s' to '%s': g_rename() failed: %s"
+msgstr ""
+"Неуспех при преименуване на файл „%s“ на „%s“: неуспешно изпълнение на "
+"g_rename(): %s"
 
-#: glib/gfileutils.c:1045
+#: glib/gfileutils.c:952
 #, c-format
-msgid "Template '%s' doesn't end with XXXXXX"
-msgstr "Шаблонът „%s“ не завършва с XXXXXX"
+msgid "Could not change file mode: fork() failed: %s"
+msgstr ""
+"Неуспех при промяната на правата за достъп до файл: неуспешно изпълнение на "
+"fork(): %s"
 
-#: glib/gfileutils.c:1070
+#: glib/gfileutils.c:983
+#, c-format
+msgid "Could not change file mode: waitpid() failed: %s"
+msgstr ""
+"Неуспех при промяната на правата за достъп до файл: неуспешно изпълнение на "
+"waitpid(): %s"
+
+#: glib/gfileutils.c:1002
+#, c-format
+msgid "Could not change file mode: chmod() failed: %s"
+msgstr ""
+"Неуспех при промяната на правата за достъп до файл: неуспешно изпълнение на "
+"chmod(): %s"
+
+#: glib/gfileutils.c:1013
+#, c-format
+msgid "Could not change file mode: Child terminated by signal: %s"
+msgstr ""
+"Неуспех при промяната на правата за достъп до файл: дъщерният процес е "
+"прекратен със сигнал: %s"
+
+#: glib/gfileutils.c:1024
+#, c-format
+msgid "Could not change file mode: Child terminated abnormally"
+msgstr ""
+"Неуспех при промяната на правата за достъп до файл: дъщерният процес завърши "
+"по неочакван начин"
+
+#: glib/gfileutils.c:1058 glib/gfileutils.c:1524
 #, c-format
 msgid "Failed to create file '%s': %s"
 msgstr "Неуспех при създаване на файл „%s“: %s"
 
-#: glib/gfileutils.c:1448
+#: glib/gfileutils.c:1080
+#, c-format
+msgid "Failed to open file '%s' for writing: fdopen() failed: %s"
+msgstr ""
+"Неуспех при отваряне на файл „%s“ за писане: неуспешно изпълнение на fdopen"
+"(): %s"
+
+#: glib/gfileutils.c:1105
+#, c-format
+msgid "Failed to write file '%s': fwrite() failed: %s"
+msgstr "Неуспех при запис на файл „%s“: неуспешно изпълнение на fwrite(): %s"
+
+#: glib/gfileutils.c:1124
+#, c-format
+msgid "Failed to close file '%s': fclose() failed: %s"
+msgstr ""
+"Неуспех при затваряне на файл „%s“: неуспешно изпълнение на fclose(): %s"
+
+#: glib/gfileutils.c:1242
+#, c-format
+msgid "Existing file '%s' could not be removed: g_unlink() failed: %s"
+msgstr ""
+"Неуспех при изтриването на съществуващия файл „%s“: неуспешно изпълнение на "
+"g_unlink(): %s"
+
+#: glib/gfileutils.c:1485
+#, c-format
+msgid "Template '%s' invalid, should not contain a '%s'"
+msgstr "Шаблонът „%s“ е неправилен, не трябва да съдържа „%s“"
+
+#: glib/gfileutils.c:1499
+#, c-format
+msgid "Template '%s' doesn't end with XXXXXX"
+msgstr "Шаблонът „%s“ не завършва с XXXXXX"
+
+#: glib/gfileutils.c:1974
 #, c-format
 msgid "Failed to read the symbolic link '%s': %s"
 msgstr "Неуспех при четене на символната връзка „%s“: %s"
 
-#: glib/gfileutils.c:1469
+#: glib/gfileutils.c:1995
+#, c-format
 msgid "Symbolic links not supported"
 msgstr "Символни връзки не се поддържат"
 
-#: glib/giochannel.c:1147
+#: glib/giochannel.c:1150
 #, c-format
 msgid "Conversion from character set `%s' to `%s' is not supported"
 msgstr "Преобразуването от набора символи „%s“ към „%s“ не се поддържа"
 
-#: glib/giochannel.c:1151
+#: glib/giochannel.c:1154
 #, c-format
 msgid "Could not open converter from `%s' to `%s': %s"
 msgstr "Не може да се отвори конвертор от „%s“ към „%s“: %s"
 
-#: glib/giochannel.c:1496
+#: glib/giochannel.c:1499
+#, c-format
 msgid "Can't do a raw read in g_io_channel_read_line_string"
 msgstr "Не може да се чете от g_io_channel_read_line_string"
 
-#: glib/giochannel.c:1543 glib/giochannel.c:1800 glib/giochannel.c:1886
+#: glib/giochannel.c:1546 glib/giochannel.c:1803 glib/giochannel.c:1889
+#, c-format
 msgid "Leftover unconverted data in read buffer"
 msgstr "В буфера за четене останаха непреобразувани данни"
 
-#: glib/giochannel.c:1623 glib/giochannel.c:1700
+#: glib/giochannel.c:1626 glib/giochannel.c:1703
+#, c-format
 msgid "Channel terminates in a partial character"
 msgstr "Каналът прекъсна на непълен символ"
 
-#: glib/giochannel.c:1686
+#: glib/giochannel.c:1689
+#, c-format
 msgid "Can't do a raw read in g_io_channel_read_to_end"
 msgstr "Не може да се чете от g_io_channel_read_to_end"
+
+#: glib/gmappedfile.c:116
+#, c-format
+msgid "Failed to open file '%s': open() failed: %s"
+msgstr "Неуспех при отваряне на файл „%s“: неуспешно изпълнение на open(): %s"
+
+#: glib/gmappedfile.c:185
+#, c-format
+msgid "Failed to map file '%s': mmap() failed: %s"
+msgstr ""
+"Неуспех при отваряне на файл в паметта „%s“: неуспешно изпълнение на mmap(): "
+"%s"
 
 #: glib/gmarkup.c:232
 #, c-format
@@ -286,8 +374,8 @@ msgstr ""
 msgid ""
 "Odd character '%s', expected a '=' after attribute name '%s' of element '%s'"
 msgstr ""
-"Неподходящ символ „%s“, очаква се „=“ след име на атрибут „%s“ на елемент „%"
-"s“"
+"Неподходящ символ „%s“, очаква се „=“ след името на атрибут „%s“ на елемент "
+"„%s“"
 
 #: glib/gmarkup.c:1294
 #, c-format
@@ -398,10 +486,12 @@ msgid "Document ended unexpectedly inside a comment or processing instruction"
 msgstr "Документът завършва неочаквано в коментар или инструкция за обработка"
 
 #: glib/gshell.c:73
+#, c-format
 msgid "Quoted text doesn't begin with a quotation mark"
 msgstr "Цитиран текст не започва със символ „\"“"
 
 #: glib/gshell.c:163
+#, c-format
 msgid "Unmatched quotation mark in command line or other shell-quoted text"
 msgstr ""
 "Липсват затварящи кавички в команден ред или друг текст цитиран от обвивката"
@@ -418,38 +508,42 @@ msgstr ""
 "Текстът свърши преди откриването на затварящи кавички за %c. (Текстът е „%s“)"
 
 #: glib/gshell.c:560
+#, c-format
 msgid "Text was empty (or contained only whitespace)"
 msgstr "Текстът е празен (или съдържа само празни символи)"
 
-#: glib/gspawn-win32.c:264
+#: glib/gspawn-win32.c:277
+#, c-format
 msgid "Failed to read data from child process"
 msgstr "Неуспех при четене на данни от дъщерен процес"
 
-#: glib/gspawn-win32.c:281 glib/gspawn.c:1354
+#: glib/gspawn-win32.c:292 glib/gspawn.c:1375
 #, c-format
 msgid "Failed to create pipe for communicating with child process (%s)"
 msgstr "Неуспех при създаването на канал за комуникация с дъщерен процес (%s)"
 
-#: glib/gspawn-win32.c:321 glib/gspawn.c:1018
+#: glib/gspawn-win32.c:330 glib/gspawn.c:1039
 #, c-format
 msgid "Failed to read from child pipe (%s)"
 msgstr "Неуспех при четене от дъщерен канал (%s)"
 
-#: glib/gspawn-win32.c:349 glib/gspawn.c:1223
+#: glib/gspawn-win32.c:356 glib/gspawn.c:1244
 #, c-format
 msgid "Failed to change to directory '%s' (%s)"
-msgstr "Неуспех при да промяна към папка „%s“ (%s)"
+msgstr "Неуспех при промяна към папка „%s“ (%s)"
 
-#: glib/gspawn-win32.c:357 glib/gspawn-win32.c:442
+#: glib/gspawn-win32.c:362 glib/gspawn-win32.c:582
 #, c-format
 msgid "Failed to execute child process (%s)"
 msgstr "Неуспех при изпълнение на дъщерен процес (%s)"
 
-#: glib/gspawn-win32.c:599
-msgid "Failed to execute helper program"
-msgstr "Неуспех при изпълнение на програмата за помощта"
+#: glib/gspawn-win32.c:891
+#, c-format
+msgid "Failed to execute helper program (%s)"
+msgstr "Неуспех при изпълнение на програмата за помощта (%s)"
 
-#: glib/gspawn-win32.c:797
+#: glib/gspawn-win32.c:1091
+#, c-format
 msgid ""
 "Unexpected error in g_io_channel_win32_poll() reading data from a child "
 "process"
@@ -462,43 +556,43 @@ msgstr ""
 msgid "Failed to read data from child process (%s)"
 msgstr "Неуспех при четене на данни от дъщерен процес (%s)"
 
-#: glib/gspawn.c:310
+#: glib/gspawn.c:311
 #, c-format
 msgid "Unexpected error in select() reading data from a child process (%s)"
 msgstr ""
 "Неочаквана грешка в select() при четене на данни от дъщерен процес (%s)"
 
-#: glib/gspawn.c:393
+#: glib/gspawn.c:394
 #, c-format
 msgid "Unexpected error in waitpid() (%s)"
 msgstr "Неочаквана грешка в waitpid() (%s)"
 
-#: glib/gspawn.c:1083
+#: glib/gspawn.c:1104
 #, c-format
 msgid "Failed to fork (%s)"
 msgstr "Неуспешно разклоняване (%s)"
 
-#: glib/gspawn.c:1233
+#: glib/gspawn.c:1254
 #, c-format
 msgid "Failed to execute child process \"%s\" (%s)"
 msgstr "Неуспех при изпълнение на дъщерен процес „%s“ (%s)"
 
-#: glib/gspawn.c:1243
+#: glib/gspawn.c:1264
 #, c-format
 msgid "Failed to redirect output or input of child process (%s)"
 msgstr "Неуспех при пренасочване на изхода или входа на дъщерен процес (%s)"
 
-#: glib/gspawn.c:1252
+#: glib/gspawn.c:1273
 #, c-format
 msgid "Failed to fork child process (%s)"
 msgstr "Неуспех при разклоняване на дъщерен процес (%s)"
 
-#: glib/gspawn.c:1260
+#: glib/gspawn.c:1281
 #, c-format
 msgid "Unknown error executing child process \"%s\""
 msgstr "Неизвестна грешка при изпълнение на дъщерен процес „%s“"
 
-#: glib/gspawn.c:1282
+#: glib/gspawn.c:1303
 #, c-format
 msgid "Failed to read enough data from child pid pipe (%s)"
 msgstr ""
@@ -506,67 +600,83 @@ msgstr ""
 "s)"
 
 #: glib/gutf8.c:986
+#, c-format
 msgid "Character out of range for UTF-8"
 msgstr "Символ извън обхвата на UTF-8"
 
 #: glib/gutf8.c:1080 glib/gutf8.c:1089 glib/gutf8.c:1221 glib/gutf8.c:1230
 #: glib/gutf8.c:1371 glib/gutf8.c:1467
+#, c-format
 msgid "Invalid sequence in conversion input"
 msgstr "Неправилна последователност на входа за преобразуване"
 
 #: glib/gutf8.c:1382 glib/gutf8.c:1478
+#, c-format
 msgid "Character out of range for UTF-16"
 msgstr "Символ извън обхвата на UTF-16"
 
-#: glib/goption.c:442
+#: glib/goption.c:468
 msgid "Usage:"
 msgstr "Употреба:"
 
-#: glib/goption.c:442
+#: glib/goption.c:468
 msgid "[OPTION...]"
 msgstr "[ОПЦИЯ...]"
 
-#: glib/goption.c:525
+#: glib/goption.c:556
 msgid "Help Options:"
 msgstr "Настройки на помощта:"
 
-#: glib/goption.c:526
+#: glib/goption.c:557
 msgid "Show help options"
 msgstr "Показване на настройките на помощта"
 
-#: glib/goption.c:531
+#: glib/goption.c:562
 msgid "Show all help options"
 msgstr "Показване на всички настройки на помощта"
 
-#: glib/goption.c:581
+#: glib/goption.c:612
 msgid "Application Options:"
 msgstr "Настройки на приложението:"
 
-#: glib/goption.c:622
+#: glib/goption.c:653
 #, c-format
-msgid "Cannot parse integer value '%s' for --%s"
-msgstr "Не може да се анализира целочислената стойност „%s“ за --%s"
+msgid "Cannot parse integer value '%s' for %s"
+msgstr "Не може да се анализира целочислената стойност „%s“ за %s"
 
-#: glib/goption.c:632
+#: glib/goption.c:663
 #, c-format
 msgid "Integer value '%s' for %s out of range"
 msgstr ""
 "Целочислената стойност „%s“ за %s е извън интервала на допустими стойности"
 
-#: glib/goption.c:1362
+#: glib/goption.c:926
+#, c-format
+msgid "Error parsing option %s"
+msgstr "Грешка при анализ на опцията %s"
+
+#: glib/goption.c:959 glib/goption.c:1070
+#, c-format
+msgid "Missing argument for %s"
+msgstr "Липсва аргумент за %s"
+
+#: glib/goption.c:1474
 #, c-format
 msgid "Unknown option %s"
 msgstr "Непозната опция %s"
 
 #: glib/gkeyfile.c:339
+#, c-format
 msgid "Valid key file could not be found in data dirs"
 msgstr "Не може да се открие валиден ключов файл в папките с данни"
 
 #: glib/gkeyfile.c:374
+#, c-format
 msgid "Not a regular file"
 msgstr "Не е обикновен файл"
 
 #: glib/gkeyfile.c:382
+#, c-format
 msgid "File is empty"
 msgstr "Файлът е празен"
 
@@ -579,6 +689,7 @@ msgstr ""
 "група, нито коментар"
 
 #: glib/gkeyfile.c:765
+#, c-format
 msgid "Key file does not start with a group"
 msgstr "Ключовият файл не започва с група"
 
@@ -625,83 +736,27 @@ msgstr ""
 msgid "Key file does not have key '%s' in group '%s'"
 msgstr "Ключовият файл не съдържа ключа „%s“ в групата „%s“"
 
-#: glib/gkeyfile.c:3072
+#: glib/gkeyfile.c:3067
+#, c-format
 msgid "Key file contains escape character at end of line"
 msgstr "Ключовият файл съдържа екранираща последователност в край на ред"
 
-#: glib/gkeyfile.c:3094
+#: glib/gkeyfile.c:3089
 #, c-format
 msgid "Key file contains invalid escape sequence '%s'"
 msgstr "Ключовият файл съдържа грешна екранираща последователност - „%s“"
 
-#: glib/gkeyfile.c:3235
+#: glib/gkeyfile.c:3230
 #, c-format
 msgid "Value '%s' cannot be interpreted as a number."
 msgstr "Стойността „%s“ не може да се интерпретира като число."
 
-#: glib/gkeyfile.c:3245
+#: glib/gkeyfile.c:3240
 #, c-format
 msgid "Integer value '%s' out of range"
 msgstr "Целочислената стойност „%s“ е извън интервала на допустими стойности"
 
-#: glib/gkeyfile.c:3275
+#: glib/gkeyfile.c:3270
 #, c-format
 msgid "Value '%s' cannot be interpreted as a boolean."
 msgstr "Стойността „%s“ не може да се интерпретира като булева."
-
-#~ msgid "Failed to rename file '%s' to '%s': g_rename() failed: %s"
-#~ msgstr ""
-#~ "Неуспех при преименуване на файл „%s“ на „%s“: неуспешно изпълнение на "
-#~ "g_rename(): %s"
-
-#~ msgid "Could not change file mode: fork() failed: %s"
-#~ msgstr ""
-#~ "Неуспех при промяната на правата за достъп до файл: неуспешно изпълнение "
-#~ "на fork(): %s"
-
-#~ msgid "Could not change file mode: waitpid() failed: %s"
-#~ msgstr ""
-#~ "Неуспех при промяната на правата за достъп до файл: неуспешно изпълнение "
-#~ "на waitpid(): %s"
-
-#~ msgid "Could not change file mode: chmod() failed: %s"
-#~ msgstr ""
-#~ "Неуспех при промяната на правата за достъп до файл: неуспешно изпълнение "
-#~ "на chmod(): %s"
-
-#~ msgid "Could not change file mode: Child terminated by signal: %s"
-#~ msgstr ""
-#~ "Неуспех при промяната на правата за достъп до файл: дъщерният процес е "
-#~ "прекратен със сигнал: %s"
-
-#~ msgid "Could not change file mode: Child terminated abnormally"
-#~ msgstr ""
-#~ "Неуспех при промяната на правата за достъп до файл: дъщерният процес "
-#~ "завърши по неочакван начин"
-
-#~ msgid "Failed to open file '%s' for writing: fdopen() failed: %s"
-#~ msgstr ""
-#~ "Неуспех при отваряне на файл „%s“ за писане: неуспешно изпълнение на "
-#~ "fdopen(): %s"
-
-#~ msgid "Failed to write file '%s': fwrite() failed: %s"
-#~ msgstr ""
-#~ "Неуспех при запис на файл „%s“: неуспешно изпълнение на fwrite(): %s"
-
-#~ msgid "Failed to close file '%s': fclose() failed: %s"
-#~ msgstr ""
-#~ "Неуспех при затваряне на файл „%s“: неуспешно изпълнение на fclose(): %s"
-
-#~ msgid "Existing file '%s' could not be removed: g_unlink() failed: %s"
-#~ msgstr ""
-#~ "Неуспех при изтриването на съществуващия файл „%s“: неуспешно изпълнение "
-#~ "на g_unlink(): %s"
-
-#~ msgid "Missing argument for %s"
-#~ msgstr "Липсва аргумент за %s"
-
-#~ msgid "Incorrect message size"
-#~ msgstr "Неправилен размер на съобщение"
-
-#~ msgid "Socket error"
-#~ msgstr "Грешка в цокъл"

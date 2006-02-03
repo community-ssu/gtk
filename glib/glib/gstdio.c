@@ -33,6 +33,7 @@
 #endif
 
 #ifdef G_OS_WIN32
+#include <windows.h>
 #include <errno.h>
 #include <wchar.h>
 #include <direct.h>
@@ -49,8 +50,147 @@
 
 
 /**
+ * g_access:
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
+ * @mode: as in access()
+ *
+ * A wrapper for the POSIX access() function. This function is used to
+ * test a pathname for one or several of read, write or execute
+ * permissions, or just existence. On Windows, the underlying access()
+ * function in the C library only checks the READONLY attribute, and
+ * does not look at the ACL at all. Software that needs to handle file
+ * permissions on Windows more exactly should use the Win32 API.
+ *
+ * See the C library manual for more details about access().
+ *
+ * Returns: zero if the pathname refers to an existing file system
+ * object that has all the tested permissions, or -1 otherwise or on
+ * error.
+ * 
+ * Since: 2.8
+ */
+int
+g_access (const gchar *filename,
+	  int          mode)
+{
+#ifdef G_OS_WIN32
+  if (G_WIN32_HAVE_WIDECHAR_API ())
+    {
+      wchar_t *wfilename = g_utf8_to_utf16 (filename, -1, NULL, NULL, NULL);
+      int retval;
+      int save_errno;
+      
+      if (wfilename == NULL)
+	{
+	  errno = EINVAL;
+	  return -1;
+	}
+
+      retval = _waccess (wfilename, mode);
+      save_errno = errno;
+
+      g_free (wfilename);
+
+      errno = save_errno;
+      return retval;
+    }
+  else
+    {    
+      gchar *cp_filename = g_locale_from_utf8 (filename, -1, NULL, NULL, NULL);
+      int retval;
+      int save_errno;
+
+      if (cp_filename == NULL)
+	{
+	  errno = EINVAL;
+	  return -1;
+	}
+
+      retval = access (cp_filename, mode);
+      save_errno = errno;
+
+      g_free (cp_filename);
+
+      errno = save_errno;
+      return retval;
+    }
+#else
+  return access (filename, mode);
+#endif
+}
+
+/**
+ * g_chmod:
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
+ * @mode: as in chmod()
+ *
+ * A wrapper for the POSIX chmod() function. The chmod() function is
+ * used to set the permissions of a file system object. Note that on
+ * Windows the file protection mechanism is not at all POSIX-like, and
+ * the underlying chmod() function in the C library just sets or
+ * clears the READONLY attribute. It does not touch any ACL. Software
+ * that needs to manage file permissions on Windows exactly should
+ * use the Win32 API.
+ *
+ * See the C library manual for more details about chmod().
+ *
+ * Returns: zero if the operation succeeded, -1 on error.
+ * 
+ * Since: 2.8
+ */
+int
+g_chmod (const gchar *filename,
+	 int          mode)
+{
+#ifdef G_OS_WIN32
+  if (G_WIN32_HAVE_WIDECHAR_API ())
+    {
+      wchar_t *wfilename = g_utf8_to_utf16 (filename, -1, NULL, NULL, NULL);
+      int retval;
+      int save_errno;
+      
+      if (wfilename == NULL)
+	{
+	  errno = EINVAL;
+	  return -1;
+	}
+
+      retval = _wchmod (wfilename, mode);
+      save_errno = errno;
+
+      g_free (wfilename);
+
+      errno = save_errno;
+      return retval;
+    }
+  else
+    {    
+      gchar *cp_filename = g_locale_from_utf8 (filename, -1, NULL, NULL, NULL);
+      int retval;
+      int save_errno;
+
+      if (cp_filename == NULL)
+	{
+	  errno = EINVAL;
+	  return -1;
+	}
+
+      retval = chmod (cp_filename, mode);
+      save_errno = errno;
+
+      g_free (cp_filename);
+
+      errno = save_errno;
+      return retval;
+    }
+#else
+  return chmod (filename, mode);
+#endif
+}
+
+/**
  * g_open:
- * @filename: a pathname in the GLib file name encoding
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
  * @flags: as in open()
  * @mode: as in open()
  *
@@ -120,18 +260,86 @@ g_open (const gchar *filename,
 }
 
 /**
+ * g_creat:
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
+ * @mode: as in creat()
+ *
+ * A wrapper for the POSIX creat() function. The creat() function is
+ * used to convert a pathname into a file descriptor, creating a file
+ * if necessar. Note that on POSIX systems file descriptors are
+ * implemented by the operating system. On Windows, it's the C library
+ * that implements creat() and file descriptors. The actual Windows
+ * API for opening files is something different.
+ *
+ * See the C library manual for more details about creat().
+ *
+ * Returns: a new file descriptor, or -1 if an error occurred. The
+ * return value can be used exactly like the return value from creat().
+ * 
+ * Since: 2.8
+ */
+int
+g_creat (const gchar *filename,
+	 int          mode)
+{
+#ifdef G_OS_WIN32
+  if (G_WIN32_HAVE_WIDECHAR_API ())
+    {
+      wchar_t *wfilename = g_utf8_to_utf16 (filename, -1, NULL, NULL, NULL);
+      int retval;
+      int save_errno;
+      
+      if (wfilename == NULL)
+	{
+	  errno = EINVAL;
+	  return -1;
+	}
+
+      retval = _wcreat (wfilename, mode);
+      save_errno = errno;
+
+      g_free (wfilename);
+
+      errno = save_errno;
+      return retval;
+    }
+  else
+    {    
+      gchar *cp_filename = g_locale_from_utf8 (filename, -1, NULL, NULL, NULL);
+      int retval;
+      int save_errno;
+
+      if (cp_filename == NULL)
+	{
+	  errno = EINVAL;
+	  return -1;
+	}
+
+      retval = creat (cp_filename, mode);
+      save_errno = errno;
+
+      g_free (cp_filename);
+
+      errno = save_errno;
+      return retval;
+    }
+#else
+  return creat (filename, mode);
+#endif
+}
+
+/**
  * g_rename:
- * @oldfilename: a pathname in the GLib file name encoding
+ * @oldfilename: a pathname in the GLib file name encoding (UTF-8 on Windows)
  * @newfilename: a pathname in the GLib file name encoding
  *
  * A wrapper for the POSIX rename() function. The rename() function 
  * renames a file, moving it between directories if required.
  * 
  * See your C library manual for more details about how rename() works
- * on your system. Note in particular that on Windows, it is in
- * general not possible to rename a file if a file with the new name
- * already exists. Also it is not possible in general to rename an
- * open file.
+ * on your system. Note in particular that on Win9x it is not possible
+ * to rename a file if a file with the new name already exists. Also
+ * it is not possible in general on Windows to rename an open file.
  *
  * Returns: 0 if the renaming succeeded, -1 if an error occurred
  * 
@@ -164,8 +372,26 @@ g_rename (const gchar *oldfilename,
 	  return -1;
 	}
 
-      retval = _wrename (woldfilename, wnewfilename);
-      save_errno = errno;
+      if (MoveFileExW (woldfilename, wnewfilename, MOVEFILE_REPLACE_EXISTING))
+	retval = 0;
+      else
+	{
+	  retval = -1;
+	  switch (GetLastError ())
+	    {
+#define CASE(a,b) case ERROR_##a: save_errno = b; break
+	    CASE (FILE_NOT_FOUND, ENOENT);
+	    CASE (PATH_NOT_FOUND, ENOENT);
+	    CASE (ACCESS_DENIED, EACCES);
+	    CASE (NOT_SAME_DEVICE, EXDEV);
+	    CASE (LOCK_VIOLATION, EACCES);
+	    CASE (SHARING_VIOLATION, EACCES);
+	    CASE (FILE_EXISTS, EEXIST);
+	    CASE (ALREADY_EXISTS, EEXIST);
+#undef CASE
+	    default: save_errno = EIO;
+	    }
+	}
 
       g_free (woldfilename);
       g_free (wnewfilename);
@@ -211,7 +437,7 @@ g_rename (const gchar *oldfilename,
 
 /**
  * g_mkdir: 
- * @filename: a pathname in the GLib file name encoding
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
  * @mode: permissions to use for the newly created directory
  *
  * A wrapper for the POSIX mkdir() function. The mkdir() function 
@@ -275,8 +501,70 @@ g_mkdir (const gchar *filename,
 }
 
 /**
+ * g_chdir: 
+ * @path: a pathname in the GLib file name encoding (UTF-8 on Windows)
+ *
+ * A wrapper for the POSIX chdir() function. The function changes the
+ * current directory of the process to @path.
+ * 
+ * See your C library manual for more details about chdir().
+ *
+ * Returns: 0 on success, -1 if an error occurred.
+ * 
+ * Since: 2.8
+ */
+int
+g_chdir (const gchar *path)
+{
+#ifdef G_OS_WIN32
+  if (G_WIN32_HAVE_WIDECHAR_API ())
+    {
+      wchar_t *wpath = g_utf8_to_utf16 (path, -1, NULL, NULL, NULL);
+      int retval;
+      int save_errno;
+
+      if (wpath == NULL)
+	{
+	  errno = EINVAL;
+	  return -1;
+	}
+
+      retval = _wchdir (wpath);
+      save_errno = errno;
+
+      g_free (wpath);
+      
+      errno = save_errno;
+      return retval;
+    }
+  else
+    {
+      gchar *cp_path = g_locale_from_utf8 (path, -1, NULL, NULL, NULL);
+      int retval;
+      int save_errno;
+
+      if (cp_path == NULL)
+	{
+	  errno = EINVAL;
+	  return -1;
+	}
+
+      retval = chdir (cp_path);
+      save_errno = errno;
+
+      g_free (cp_path);
+
+      errno = save_errno;
+      return retval;
+    }
+#else
+  return chdir (path);
+#endif
+}
+
+/**
  * g_stat: 
- * @filename: a pathname in the GLib file name encoding
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
  * @buf: a pointer to a <structname>stat</structname> struct, which
  *    will be filled with the file information
  *
@@ -300,12 +588,20 @@ g_stat (const gchar *filename,
       wchar_t *wfilename = g_utf8_to_utf16 (filename, -1, NULL, NULL, NULL);
       int retval;
       int save_errno;
+      int len;
 
       if (wfilename == NULL)
 	{
 	  errno = EINVAL;
 	  return -1;
 	}
+
+      len = wcslen (wfilename);
+      while (len > 0 && G_IS_DIR_SEPARATOR (wfilename[len-1]))
+	len--;
+      if (len > 0 &&
+	  (!g_path_is_absolute (filename) || len > g_path_skip_root (filename) - filename))
+	wfilename[len] = '\0';
 
       retval = _wstat (wfilename, (struct _stat *) buf);
       save_errno = errno;
@@ -320,6 +616,7 @@ g_stat (const gchar *filename,
       gchar *cp_filename = g_locale_from_utf8 (filename, -1, NULL, NULL, NULL);
       int retval;
       int save_errno;
+      int len;
 
       if (cp_filename == NULL)
 	{
@@ -327,6 +624,13 @@ g_stat (const gchar *filename,
 	  return -1;
 	}
 
+      len = strlen (cp_filename);
+      while (len > 0 && G_IS_DIR_SEPARATOR (cp_filename[len-1]))
+	len--;
+      if (len > 0 &&
+	  (!g_path_is_absolute (filename) || len > g_path_skip_root (filename) - filename))
+	cp_filename[len] = '\0';
+      
       retval = stat (cp_filename, buf);
       save_errno = errno;
 
@@ -342,7 +646,7 @@ g_stat (const gchar *filename,
 
 /**
  * g_lstat: 
- * @filename: a pathname in the GLib file name encoding
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
  * @buf: a pointer to a <structname>stat</structname> struct, which
  *    will be filled with the file information
  *
@@ -373,7 +677,7 @@ g_lstat (const gchar *filename,
 
 /**
  * g_unlink:
- * @filename: a pathname in the GLib file name encoding
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
  *
  * A wrapper for the POSIX unlink() function. The unlink() function 
  * deletes a name from the filesystem. If this was the last link to the 
@@ -440,7 +744,7 @@ g_unlink (const gchar *filename)
 
 /**
  * g_remove:
- * @filename: a pathname in the GLib file name encoding
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
  *
  * A wrapper for the POSIX remove() function. The remove() function
  * deletes a name from the filesystem.
@@ -514,7 +818,7 @@ g_remove (const gchar *filename)
 
 /**
  * g_rmdir:
- * @filename: a pathname in the GLib file name encoding
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
  *
  * A wrapper for the POSIX rmdir() function. The rmdir() function
  * deletes a directory from the filesystem.
@@ -578,7 +882,7 @@ g_rmdir (const gchar *filename)
 
 /**
  * g_fopen:
- * @filename: a pathname in the GLib file name encoding
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
  * @mode: a string describing the mode in which the file should be 
  *   opened
  *
@@ -587,7 +891,7 @@ g_rmdir (const gchar *filename)
  * 
  * See the C library manual for more details about fopen().
  *
- * Returns: A <typename>FILE</typename> pointer if the file was successfully
+ * Returns: A <type>FILE</type> pointer if the file was successfully
  *    opened, or %NULL if an error occurred
  * 
  * Since: 2.6
@@ -655,7 +959,7 @@ g_fopen (const gchar *filename,
 
 /**
  * g_freopen:
- * @filename: a pathname in the GLib file name encoding
+ * @filename: a pathname in the GLib file name encoding (UTF-8 on Windows)
  * @mode: a string describing the mode in which the file should be 
  *   opened
  * @stream: an existing stream which will be reused, or %NULL
@@ -665,7 +969,7 @@ g_fopen (const gchar *filename,
  * 
  * See the C library manual for more details about freopen().
  *
- * Returns: A <typename>FILE</typename> pointer if the file was successfully
+ * Returns: A <type>FILE</type> pointer if the file was successfully
  *    opened, or %NULL if an error occurred.
  * 
  * Since: 2.6

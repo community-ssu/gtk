@@ -53,13 +53,14 @@ typedef enum
   G_PARAM_CONSTRUCT	      = 1 << 2,
   G_PARAM_CONSTRUCT_ONLY      = 1 << 3,
   G_PARAM_LAX_VALIDATION      = 1 << 4,
-  G_PARAM_PRIVATE	      = 1 << 5,
-  G_PARAM_STATIC_NAME         = 1 << 6,
-  G_PARAM_STATIC_NICK         = 1 << 7,
-  G_PARAM_STATIC_BLURB        = 1 << 8
+  G_PARAM_STATIC_NAME	      = 1 << 5,
+#ifndef G_DISABLE_DEPRECATED
+  G_PARAM_PRIVATE	      = G_PARAM_STATIC_NAME,
+#endif
+  G_PARAM_STATIC_NICK	      = 1 << 6,
+  G_PARAM_STATIC_BLURB	      = 1 << 7
 } GParamFlags;
 #define	G_PARAM_READWRITE	(G_PARAM_READABLE | G_PARAM_WRITABLE)
-#define	G_PARAM_STATIC_STRINGS  (G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB)
 #define	G_PARAM_MASK		(0x000000ff)
 /* bits in the range 0xffffff00 are reserved for 3rd party usage */
 #define	G_PARAM_USER_SHIFT	(8)

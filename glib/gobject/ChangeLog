@@ -1,18 +1,219 @@
-Thu Dec  8 17:17:15 2005  Tim Janik  <timj@imendio.com>
+2006-01-18  Matthias Clasen  <mclasen@redhat.com>
 
-	* gsignal.c: allocate signal handlers and handler match structures
-	via the new g_slice_*() API (get's rid of GList allocation hack).
+	* === Released 2.8.6 ===
 
-	* gtype.c: got rid of per-type memchunks. objects are now
-	allocated via g_slice_*() instead of g_malloc().
+2006-01-18  Matthias Clasen  <mclasen@redhat.com>
 
-2005-08-01  Matthias Clasen  <mclasen@redhat.com>
+	* gobject.h: Make g_object_compat_control() visible
+	for GTK+ compilation, to avoid segfaults on 64bit
+	platforms.
 
-	* === Released 2.6.6 ===
+2006-01-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.5 ===
+	
+Thu Dec 22 16:33:49 2005  Tim Janik  <timj@imendio.com>
+
+	* gobject.[hc]: added g_object_compat_control().
+
+2005-12-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* genums.h (G_FLAGS_CLASS_TYPE_NAME): Use G_FLAGS_CLASS_TYPE.
+	(#323273, Kalle Vahlman)
+
+2005-11-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib-genmarshal.c:
+	* gtype.c: const correctness fixes, found
+	by Arjan van de Ven and gcc.
+	
+2005-11-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* ===  Released 2.8.4 ===
+
+2005-10-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.3 ===
+
+2005-10-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib-mkenums.in: Really fix #314890.
+
+2005-09-28  Michael Natterer  <mitch@gimp.org>
+
+	* gtype.h (G_IMPLEMENT_INTERFACE): revert last change, it breaks
+	all users of G_IMPLEMENT_INTERFACE() inside
+	G_DEFINE_TYPE_WITH_CODE(), since apparently GCC doesn't like
+	commas enclosed in {}, not (), in nested macro calls.
+
+2005-09-26  DindinX  <dindinx@gimp.org>
+
+	* gtype.h: initialize all the fields of GInterfaceInfo in the
+	G_IMPLEMENT_INTERFACE macro, to shut up a warning when compiling at -W
+
+2005-09-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.2 ===
+
+2005-09-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib-mkenums.in: Don't hang on '{' following a trigraph comment
+	in the same line.  (#314890, Mathias Hasselmann)
+
+2005-08-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.1 ===
+
+2005-08-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.0 ===
+
+2005-08-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gvaluetransform.c: Access enum and flags
+	values as v_long/v_ulong, not v_int/v_uint,
+	to make value transformation of such types
+	work on bigendian 64bit machines.  (#312485,
+	Michael Lorenz)
+
+2005-08-05  Matthias Clasen  <mclasen@redhat.com>
+	
+	* abicheck.sh: Also check exported variables
+
+	* === Released 2.7.7 ===
+
+2005-08-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.6 ===
+
+2005-08-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* gclosure.c (union ClosureInt): Mark the vint member as
+	volatile, which seems to be necessary to make atomic operations
+	work on s390.
+
+	* === Released 2.7.5 ===
+
+Mon Aug  1 23:00:42 2005  Tim Janik  <timj@imendio.com>
+
+	* gclosure.c: turned all modifications to the first 32 integer bits in a 
+	closure into atomic accesses. wrapped write accesses into special macros
+	to keep the atomic modification logic in a single place. comment cleanups.
+
+	* gclosure.h: made all atomicly accessed closure fields volatile.
+
+	* gobject.h: made ref_count field volatile.
+
+Sun Jul 31 02:04:23 2005  Tim Janik  <timj@gtk.org>
+
+	* gobject.c: use g_datalist_set_flags() and g_datalist_unset_flags() to
+	allow proper locking around &qdata modifications.
+
+Sat Jul 30 21:10:26 2005  Tim Janik  <timj@gtk.org>
+
+	* gobject.c: reverted notify_mutex introduction, since this prevents
+	parallelized setting of object properties on different objects, and
+	serves no apparent purpose (to me at least).
+	g_object_real_dispose(): removed non-atomic reference count 
+	modifications.
+	g_object_unref(): make sure the closures array is destroyed when
+	destroying signal handlers.
+
+	* gparam.c: cosmetic changes.
+
+	* gsignal.c: comment fixup. allow 16bit blocking count.
+
+	* gsignal.c: reverted GClosure related changes.
+
+	* gclosure.c: reverted premature commit of atomic reference
+	counting attempt.
+
+2005-07-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.4 ===
+
+2005-07-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.3 ===
+	
+2005-07-15  Matthias Clasen  <mclasen@redhat.com>
+
+	Make refcounting threadsafe by using atomic 
+	operations.  (#166020, Wim Taymans)
+	
+	* gobject.c: Use a recursive lock to protect the 
+	notify queue.
+	(g_object_unref): Get rid of g_object_last_unref and
+	do the last unref handling in g_object_unref.
+	(g_object_ref, g_object_unref): Use atomic operations.
+
+	* gsignal.c (struct _HandlerMatch): Use a full integer
+	for the ref_count field.
+	(handler_ref, handler_unref_R): Use atomic operations.
+
+	* gparam.c (g_param_spec_ref, g_param_spec_unref): 
+	Use atomic operations instead of a lock to make the
+	refcounting threadsafe.
+
+	* gclosure.c (g_closure_ref, g_closure_unref): Use atomic
+	operations. This is more complicated here, since the
+	refcount is stored in a bitfield, so we also have
+	to access all other bitfield members atomically.
+
+	* gsignal.c (handlers_find): Read the meta_marshal flag
+	of the closure atomically.
+
+2005-07-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject.h: 
+	* gobject.symbols: Remove G_GNUC_NULL_TERMINATED from
+	g_object_new again, since that makes gcc warn on calls of 
+	the form g_object_new (some_type, NULL)
+
+2005-07-09  Tor Lillqvist  <tml@novell.com>
+
+	* Makefile.am: Don't use the scripts in build/win32 to compile
+	gobject.rc into a resource object file. (This means we lose the
+	build number increment magic, but I doubt it was that useful
+	anyway.) Instead use windres directly. To pass the normal .o file
+	produced by windres through libtool, which wants .lo files, pass
+	it directly to the linker using a -Wl option.
+
+	* gobject.rc.in: Thus replace BUILDNUMBER with 0.
+
+2005-07-08  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.7.2 ===
+
+2005-06-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.1 ===
+
+2005-06-26  Tor Lillqvist  <tml@novell.com>
+
+	* Makefile.am: libtool installs/uninstalls the import library, no
+	need to do it ourselves. Do still install/uninstall the .def file,
+	though.
+
+2005-06-24  Tor Lillqvist  <tml@novell.com>
+
+	* Makefile.am (install-libtool-import-lib): Current GNU tools do
+	understand the PRIVATE keyword.
+
+2005-06-19  Matthias Clasen  <mclasen@redhat.com>
+
+	* gparam.h (GParamFlags): Avoid a warning.  (#308295,
+	Murray Cumming).
+
+2005-06-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* gparam.h (GParamFlags): Re-add G_PARAM_PRIVATE as a 
+	deprecated name for bit 5, since some language bindings
+	have it bound.
 
 2005-06-10  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.5 ===
+	* === Released 2.7.0 ===
 
 2005-05-20  Matthias Clasen  <mclasen@redhat.com>
 
@@ -20,20 +221,55 @@ Thu Dec  8 17:17:15 2005  Tim Janik  <timj@imendio.com>
 	before freeing the old, just in case.  (#172142, Morten
 	Welinder)
 
-2005-04-06  Matthias Clasen  <mclasen@redhat.com>
+2005-05-13  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.4 ===
+	* glib-genmarshal.1: Mention 64bit integer types.
+
+2005-05-05  Owen Taylor  <otaylor@redhat.com>
+
+	* gobject.[ch] gobject.symbols: Add
+	g_object_add/remove_toggle_ref() functions to get notification
+	when a reference count is the last remaining reference; this
+	enables better memory management for language bindings.
+	(http://mail.gnome.org/archives/gtk-devel-list/2005-April/msg00095.html)
+
+2005-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject.symbols: 
+	* gboxed.h (G_TYPE_DATE): 
+	* gboxed.c: Add a boxed type for GDate. (#301787, Tim-Philipp 
+	Müller)
+
+2005-03-25  Matthias Clasen  <mclasen@redhat.com>
+
+	* gparam.c (param_spec_ht_lookup): Don't do the second
+	lookup if the name was already canonical.  (#171502, Morten
+	Welinder)
+
+Tue Mar 22 14:15:23 2005  Manish Singh <yosh@gimp.org>
+
+	* gparam.c (g_param_spec_internal): cast away any constness on
+	assignment.
 
 2005-03-21  Matthias Clasen  <mclasen@redhat.com>
 
 	* glib-mkenums.in: Avoid forcing extra newlines when using
 	template files.  (#171005)
 
+2005-03-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* gparam.c (g_param_spec_internal): Don't copy strings
+	which are marked as static. Don't allow non-canonical static 
+	names.
+
+	* gparam.h (GParamFlags): Add G_PARAM_STATIC_{NAME,NICK,BLURB}
+	flags.  (#160655, Ben Maurer)
+	
+2005-03-18  Hans Breuer  <hans@breuer.org>
+
+	* makefile.msc.in : handle gobjectaliasdef.c
+
 2005-03-14  Matthias Clasen  <mclasen@redhat.com>
-
-	* abicheck.sh: Make work again.
-
-	* gsourceclosure.c: Fix a typo.
 
 	Make PLT-reduction work with gcc4, and don't include
 	everything in gobjectalias.h:
@@ -46,24 +282,23 @@ Thu Dec  8 17:17:15 2005  Tim Janik  <timj@imendio.com>
 	produced when calling makegalias.pl -def
 	* Makefile.am (gobjectaliasdef.c): Add a rule to 
 	build this file.
-	* *.c: Include gobjectalias.h after the other 
+	* *.c: Include gobjectalias.h after the other i
 	GLib headers, include gobjectaliasdef.c at the bottom.
 
-2005-02-28  Matthias Clasen  <mclasen@redhat.com>
+2005-03-08  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.3 ===
+	* gobject.symbols: Add the new attributes here, too.
+
+	* gobject.h: Use G_GNUC_NULL_TERMINATED where
+	appropriate.  (#164706, Marc Meissner)
+
+	* gvaluearray.h: Small cleanup (use G_BEGIN/END_DECLS).
+	(#168474, Fabricio Barros Cabral)
 
 2005-02-24  Tor Lillqvist  <tml@novell.com>
 
 	* Makefile.am (EXTRA_DIST): Don't distribute
 	gobject.def. (#167496, J. Ali Harlow)
-
-2005-02-04  Matthias Clasen  <mclasen@redhat.com>
-
-	* Makefile.am (TESTS): Only check the abi if
-	the compiler supports visibility, otherwise we
-	know there will be (harmless) extra symbols.  
-	(#166181, Ed Avis)
 
 Sun Feb  6 22:00:46 2005  Manish Singh  <yosh@gimp.org>
 
@@ -71,9 +306,14 @@ Sun Feb  6 22:00:46 2005  Manish Singh  <yosh@gimp.org>
 	into the preprocessor, since glib.symbols could need #defines
 	from them.
 
-2005-02-02  Matthias Clasen  <mclasen@redhat.com>
+2005-01-12  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.2 ===
+	Cosmetic fixes (#163792, Benoît Carpentier):
+	
+	* gobject-query.c (main): Remove duplicate lines.
+
+	* gvaluetransform.c: Remove duplicate definitions of
+	value_transform_[u]int64_[u]int64.
 
 2005-01-07  Matthias Clasen  <mclasen@redhat.com>
 
@@ -2331,8 +2571,8 @@ Fri Oct 27 16:33:41 2000  Tim Janik  <timj@gtk.org>
 	that gets passed in to closure invocations. added signal details.
 	renamed GSignalType to GSignalFlags to comply with conventions.
 	quite some cleanups and minor fixes. avoid uneccessary handler list
-	walks upon invokation of after handlers. relookup handler list for
-	restarted emissions. preliminary abort normal handler invokation if
+	walks upon invocation of after handlers. relookup handler list for
+	restarted emissions. preliminary abort normal handler invocation if
 	after handler is encountered.
 
 	* glib-genmarshal.c:

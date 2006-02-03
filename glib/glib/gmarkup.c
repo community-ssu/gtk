@@ -206,11 +206,11 @@ mark_error (GMarkupParseContext *context,
     (*context->parser->error) (context, error, context->user_data);
 }
 
-static void set_error (GMarkupParseContext *context, 
-		       GError             **error, 
-		       GMarkupError         code,
-                       const gchar         *format,
-                       ...) G_GNUC_PRINTF (4, 5);
+static void set_error (GMarkupParseContext *context,
+           	       GError             **error,
+           	       GMarkupError         code,
+           	       const gchar         *format,
+           	       ...) G_GNUC_PRINTF (4, 5);
 
 static void
 set_error (GMarkupParseContext *context,
@@ -1934,7 +1934,7 @@ append_escaped_text (GString     *str,
  * from being processed according to the XML rules for normalization
  * of line endings and attribute values.
  * 
- * Return value: escaped text
+ * Return value: a newly allocated string with the escaped text
  **/
 gchar*
 g_markup_escape_text (const gchar *text,

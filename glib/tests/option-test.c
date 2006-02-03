@@ -9,6 +9,12 @@ int arg_test1_int;
 gchar *arg_test2_string;
 gchar *arg_test3_filename;
 
+gchar *callback_test1_string;
+gboolean callback_test2_int;
+
+gchar *callback_test_optional_string;
+gboolean callback_test_optional_boolean;
+
 gchar **array_test1_array;
 
 gboolean ignore_test1_boolean;
@@ -319,6 +325,355 @@ arg_test3 (void)
   g_assert (strcmp (arg_test3_filename, "foo.txt") == 0);
 
   g_free (arg_test3_filename);
+  
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+static gboolean
+callback_parse1 (const gchar *option_name, const gchar *value,
+		 gpointer data, GError **error)
+{
+	callback_test1_string = g_strdup (value);
+	return TRUE;
+}
+
+void
+callback_test1 (void)
+{
+  GOptionContext *context;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "test", 0, 0, G_OPTION_ARG_CALLBACK, callback_parse1, NULL, NULL },
+      { NULL } };
+  
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program --test foo.txt", &argc);
+  
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  g_assert (strcmp (callback_test1_string, "foo.txt") == 0);
+
+  g_free (callback_test1_string);
+  
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+static gboolean
+callback_parse2 (const gchar *option_name, const gchar *value,
+		 gpointer data, GError **error)
+{
+	callback_test2_int++;
+	return TRUE;
+}
+
+void
+callback_test2 (void)
+{
+  GOptionContext *context;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "test", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, callback_parse2, NULL, NULL },
+      { NULL } };
+  
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program --test --test", &argc);
+  
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  g_assert (callback_test2_int == 2);
+  
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+static gboolean
+callback_parse_optional (const gchar *option_name, const gchar *value,
+		 gpointer data, GError **error)
+{
+	callback_test_optional_boolean = TRUE;
+	if (value)
+		callback_test_optional_string = g_strdup (value);
+	else
+		callback_test_optional_string = NULL;
+	return TRUE;
+}
+
+void
+callback_test_optional_1 (void)
+{
+  GOptionContext *context;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "test", 0, G_OPTION_FLAG_OPTIONAL_ARG, G_OPTION_ARG_CALLBACK, 
+	callback_parse_optional, NULL, NULL },
+      { NULL } };
+  
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program --test foo.txt", &argc);
+  
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  g_assert (strcmp (callback_test_optional_string, "foo.txt") == 0);
+  
+  g_assert (callback_test_optional_boolean);
+
+  g_free (callback_test_optional_string);
+  
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+void
+callback_test_optional_2 (void)
+{
+  GOptionContext *context;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "test", 0, G_OPTION_FLAG_OPTIONAL_ARG, G_OPTION_ARG_CALLBACK, 
+	callback_parse_optional, NULL, NULL },
+      { NULL } };
+  
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program --test", &argc);
+  
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  g_assert (callback_test_optional_string == NULL);
+  
+  g_assert (callback_test_optional_boolean);
+
+  g_free (callback_test_optional_string);
+  
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+void
+callback_test_optional_3 (void)
+{
+  GOptionContext *context;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "test", 't', G_OPTION_FLAG_OPTIONAL_ARG, G_OPTION_ARG_CALLBACK, 
+	callback_parse_optional, NULL, NULL },
+      { NULL } };
+  
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program -t foo.txt", &argc);
+  
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  g_assert (strcmp (callback_test_optional_string, "foo.txt") == 0);
+  
+  g_assert (callback_test_optional_boolean);
+
+  g_free (callback_test_optional_string);
+  
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+
+void
+callback_test_optional_4 (void)
+{
+  GOptionContext *context;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "test", 't', G_OPTION_FLAG_OPTIONAL_ARG, G_OPTION_ARG_CALLBACK, 
+	callback_parse_optional, NULL, NULL },
+      { NULL } };
+  
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program -t", &argc);
+  
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  g_assert (callback_test_optional_string == NULL);
+  
+  g_assert (callback_test_optional_boolean);
+
+  g_free (callback_test_optional_string);
+  
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+void
+callback_test_optional_5 (void)
+{
+  GOptionContext *context;
+  gboolean dummy;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "dummy", 'd', 0, G_OPTION_ARG_NONE, &dummy, NULL },
+      { "test", 't', G_OPTION_FLAG_OPTIONAL_ARG, G_OPTION_ARG_CALLBACK, 
+	callback_parse_optional, NULL, NULL },
+      { NULL } };
+  
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program --test --dummy", &argc);
+  
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  g_assert (callback_test_optional_string == NULL);
+  
+  g_assert (callback_test_optional_boolean);
+
+  g_free (callback_test_optional_string);
+  
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+void
+callback_test_optional_6 (void)
+{
+  GOptionContext *context;
+  gboolean dummy;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "dummy", 'd', 0, G_OPTION_ARG_NONE, &dummy, NULL },
+      { "test", 't', G_OPTION_FLAG_OPTIONAL_ARG, G_OPTION_ARG_CALLBACK, 
+	callback_parse_optional, NULL, NULL },
+      { NULL } };
+  
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program -t -d", &argc);
+  
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  g_assert (callback_test_optional_string == NULL);
+  
+  g_assert (callback_test_optional_boolean);
+
+  g_free (callback_test_optional_string);
+  
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+void
+callback_test_optional_7 (void)
+{
+  GOptionContext *context;
+  gboolean dummy;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "dummy", 'd', 0, G_OPTION_ARG_NONE, &dummy, NULL },
+      { "test", 't', G_OPTION_FLAG_OPTIONAL_ARG, G_OPTION_ARG_CALLBACK, 
+	callback_parse_optional, NULL, NULL },
+      { NULL } };
+  
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program -td", &argc);
+  
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  g_assert (callback_test_optional_string == NULL);
+  
+  g_assert (callback_test_optional_boolean);
+
+  g_free (callback_test_optional_string);
+  
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+void
+callback_test_optional_8 (void)
+{
+  GOptionContext *context;
+  gboolean dummy;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "dummy", 'd', 0, G_OPTION_ARG_NONE, &dummy, NULL },
+      { "test", 't', G_OPTION_FLAG_OPTIONAL_ARG, G_OPTION_ARG_CALLBACK, 
+	callback_parse_optional, NULL, NULL },
+      { NULL } };
+  
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program -dt foo.txt", &argc);
+  
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  g_assert (callback_test_optional_string);
+  
+  g_assert (callback_test_optional_boolean);
+
+  g_free (callback_test_optional_string);
   
   g_strfreev (argv);
   g_option_context_free (context);
@@ -883,6 +1238,41 @@ void lonely_dash_test (void)
   g_option_context_free (context);
 }
 
+void
+missing_arg_test (void)
+{
+  GOptionContext *context;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  gchar *arg = NULL;
+  GOptionEntry entries [] =
+    { { "test", 't', 0, G_OPTION_ARG_STRING, &arg, NULL, NULL },
+      { NULL } };
+
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program --test", &argc);
+
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval == FALSE);
+  g_clear_error (&error);
+
+  g_strfreev (argv);
+
+  /* Try parsing again */
+  argv = split_string ("program --t", &argc);
+
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval == FALSE);
+
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -902,6 +1292,20 @@ main (int argc, char **argv)
   /* Test string arrays */
   array_test1 ();
 
+  /* Test callback args */
+  callback_test1 ();
+  callback_test2 ();
+
+  /* Test optional arg flag for callback */
+  callback_test_optional_1 ();
+  callback_test_optional_2 ();
+  callback_test_optional_3 ();
+  callback_test_optional_4 ();
+  callback_test_optional_5 ();
+  callback_test_optional_6 ();
+  callback_test_optional_7 ();
+  callback_test_optional_8 ();
+  
   /* Test ignoring options */
   ignore_test1 ();
   ignore_test2 ();
@@ -930,6 +1334,9 @@ main (int argc, char **argv)
 
   /* test for bug 168008 */
   lonely_dash_test ();
+
+  /* test for bug 305576 */
+  missing_arg_test ();
 
   return 0;
 }

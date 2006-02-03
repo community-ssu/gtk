@@ -70,6 +70,7 @@ libglib_2_0_la_SOURCES = 	\
 	gcompletion.c		\
 	gconvert.c		\
 	gdataset.c		\
+	gdatasetprivate.h	\
 	gdate.c         	\
 	gdir.c			\
 	gerror.c		\
@@ -81,6 +82,7 @@ libglib_2_0_la_SOURCES = 	\
 	glibintl.h		\
 	glist.c			\
 	gmain.c         	\
+	gmappedfile.c		\
 	gmarkup.c		\
 	gmem.c			\
 	gmessages.c		\
@@ -155,6 +157,7 @@ glibsubinclude_HEADERS =   \
 	glist.h		\
 	gmacros.h	\
 	gmain.h		\
+	gmappedfile.h	\
 	gmarkup.h	\
 	gmem.h		\
 	gmessages.h	\
@@ -185,14 +188,14 @@ glibsubinclude_HEADERS =   \
 	gwin32.h	\
 	gprintf.h
 
-install-data-local: install-ms-lib install-libtool-import-lib
+install-data-local: install-ms-lib install-def-file
 	@if test -f $(glibincludedir)/glist.h ; then					\
 	  echo "*** Old headers found in $(glibincludedir). You should remove the" ;	\
 	  echo "*** contents of this directory and type 'make install' again." ;	\
 	  false ;									\
         fi
 
-uninstall-local: uninstall-ms-lib uninstall-libtool-import-lib
+uninstall-local: uninstall-ms-lib uninstall-def-file
 
 if PLATFORM_WIN32
 no_undefined = -no-undefined
@@ -202,43 +205,43 @@ if OS_WIN32
 # This requires a very new libtool
 export_symbols = -export-symbols glib.def
 
-install-libtool-import-lib:
-# 	Don't put the binary compatibility entries in the import lib!
-#	(Unfortunately the GNU linker doesn't yet understand the PRIVATE
-#	directive in .def files.)
-#
-	for entry in `grep PRIVATE glib.def | sed -e 's/PRIVATE//'`; do \
-	  file=`$(NM) -A .libs/libglib-2.0.dll.a | tr -d '\r' | grep -E $$entry'$$' | head -n 1 | cut -d: -f2`; \
-	  ar d .libs/libglib-2.0.dll.a $$file; \
-	done
-	$(RANLIB) .libs/libglib-2.0.dll.a
-	$(INSTALL) .libs/libglib-2.0.dll.a $(DESTDIR)$(libdir)
+install-def-file:
 	$(INSTALL) glib.def $(DESTDIR)$(libdir)/glib-2.0.def
 
-uninstall-libtool-import-lib:
-	-rm $(DESTDIR)$(libdir)/libglib-2.0.dll.a $(DESTDIR)$(libdir)/glib-2.0.def
+uninstall-def-file:
+	-rm $(DESTDIR)$(libdir)/glib-2.0.def
 else
-install-libtool-import-lib:
-uninstall-libtool-import-lib:
+install-def-file:
+uninstall-def-file:
 
 export_symbols = $(LIBTOOL_EXPORT_OPTIONS)
 endif
 
-libglib_2_0_la_LIBADD = libcharset/libcharset.la $(printf_la) @GIO@ @GSPAWN@ @PLATFORMDEP@ @G_LIB_WIN32_RESOURCE@ @ICONV_LIBS@ @G_LIBS_EXTRA@ 
-libglib_2_0_la_DEPENDENCIES = libcharset/libcharset.la $(printf_la) @GIO@ @GSPAWN@ @PLATFORMDEP@ @G_LIB_WIN32_RESOURCE@ @GLIB_DEF@
+if OS_WIN32
+glib_win32_res = glib-win32-res.o
+glib_win32_res_ldflag = -Wl,$(glib_win32_res)
+endif
+
+libglib_2_0_la_LIBADD = libcharset/libcharset.la $(printf_la) @GIO@ @GSPAWN@ @PLATFORMDEP@ @ICONV_LIBS@ @G_LIBS_EXTRA@ 
+libglib_2_0_la_DEPENDENCIES = libcharset/libcharset.la $(printf_la) @GIO@ @GSPAWN@ @PLATFORMDEP@ $(glib_win32_res) @GLIB_DEF@
 
 libglib_2_0_la_LDFLAGS = \
+	 $(glib_win32_res_ldflag) \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-export-dynamic $(no_undefined) $(export_symbols)
 
 if OS_WIN32
-bin_PROGRAMS = gspawn-win32-helper
+bin_PROGRAMS = gspawn-win32-helper gspawn-win32-helper-console
 gspawn_win32_helper_LDADD = libglib-2.0.la
 gspawn_win32_helper_LDFLAGS = -mwindows
+gspawn_win32_helper_console_LDADD = libglib-2.0.la
 
-$(G_LIB_WIN32_RESOURCE): glib.rc
-	$(top_srcdir)/build/win32/lt-compile-resource glib.rc $@
+glib-win32-res.o: glib.rc
+	$(WINDRES) glib.rc $@
 endif
+
+gspawn-win32-helper-console.c:
+	echo '#include "gspawn-win32-helper.c"' >$@
 
 glib-2.0.lib: libglib-2.0.la glib.def
 	lib -name:libglib-2.0-$(LT_CURRENT_MINUS_AGE).dll -def:glib.def -out:$@

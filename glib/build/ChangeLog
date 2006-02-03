@@ -1,3 +1,15 @@
+2005-07-09  Tor Lillqvist  <tml@novell.com>
+
+	* README: When using auto*/libtool/gcc to build GLib, Pango and
+	GTK+, the scripts to compile resource files in build/win32 are no
+	longer used. Still here in case somebody wants to have a look,
+	though.
+	
+2005-02-06  Hans Breuer  <hans@breuer.org>
+
+	* win32/make.msc win32/module.defs : updated to include Cairo,
+	gnome-canvas, gnome-print(ui), libart, pangoft2, libxml2, libxslt
+
 2004-12-29  Tor Lillqvist  <tml@iki.fi>
 
 	* win32/cl-wrapper.c: More hacking. Implement -idirafter
@@ -182,7 +194,7 @@
 
 2001-09-17  Tor Lillqvist  <tml@iki.fi>
 
-	* win32/build-dll: Invokation changed. We now expect a version
+	* win32/build-dll: Invocation changed. We now expect a version
 	info like libtool's -version-info parameter. The intention is to
 	produce the same name DLL as libtool would, i.e. use "current -
 	age" as the DLL name suffix.

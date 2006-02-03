@@ -186,10 +186,9 @@ struct _Handler
   Handler      *next;
   Handler      *prev;
   GQuark	detail;
-  guint         ref_count : 16;
-#define HANDLER_MAX_REF_COUNT   (1 << 16)
-  guint         block_count : 12;
-#define HANDLER_MAX_BLOCK_COUNT (1 << 12)
+  guint         ref_count;
+  guint         block_count : 16;
+#define HANDLER_MAX_BLOCK_COUNT (1 << 16)
   guint         after : 1;
   GClosure     *closure;
 };
@@ -526,12 +525,7 @@ handler_ref (Handler *handler)
 {
   g_return_if_fail (handler->ref_count > 0);
   
-#ifndef G_DISABLE_CHECKS
-  if (handler->ref_count >= HANDLER_MAX_REF_COUNT - 1)
-    g_error (G_STRLOC ": handler ref_count overflow, %s", REPORT_BUG);
-#endif
-  
-  handler->ref_count += 1;
+  g_atomic_int_inc (&handler->ref_count);
 }
 
 static inline void
@@ -539,10 +533,13 @@ handler_unref_R (guint    signal_id,
 		 gpointer instance,
 		 Handler *handler)
 {
+  gboolean is_zero;
+
   g_return_if_fail (handler->ref_count > 0);
   
-  handler->ref_count -= 1;
-  if (!handler->ref_count)
+  is_zero = g_atomic_int_dec_and_test (&handler->ref_count);
+
+  if (G_UNLIKELY (is_zero))
     {
       HandlerList *hlist = NULL;
 
