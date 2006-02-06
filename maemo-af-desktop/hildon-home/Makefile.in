@@ -228,7 +228,7 @@ home_image_loader_SOURCES = \
 home_image_loader_LDADD = $(GDK_LIBS) $(GNOME_VFS_LIBS) $(GCONF_LIBS) $(OSSO_LIBS)
 
 hildon_home_pluginincludeinstdir = $(includedir)/hildon-home-plugin
-hildon_home_pluginincludeinst_DATA = home-applet-interface.h
+hildon_home_pluginincludeinst_DATA = home-applet-interface.h hildon-home-plugin-interface.h
 subdir = hildon-home
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

@@ -51,4 +51,4 @@ home_image_loader_LDADD = $(GDK_LIBS) $(GNOME_VFS_LIBS) $(GCONF_LIBS) $(OSSO_LIB
 
 
 hildon_home_pluginincludeinstdir=$(includedir)/hildon-home-plugin
-hildon_home_pluginincludeinst_DATA = home-applet-interface.h
+hildon_home_pluginincludeinst_DATA = home-applet-interface.h hildon-home-plugin-interface.h

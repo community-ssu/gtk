@@ -1,3 +1,9 @@
+maemo-af-desktop (2.4.2-2) unstable; urgency=low
+
+  * Added hildon-home-plugin-interface.h to the distribution 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  6 Feb 2006 14:46:06 +0200
+
 maemo-af-desktop (2.4.2-1) unstable; urgency=low
 
   * Much improve icon animation/blinking to more closely
