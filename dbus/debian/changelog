@@ -1,6 +1,7 @@
 dbus (0.60-1osso8) experimental; urgency=low
 
   * Renamed patches so that they have some deterministic order.
+  * Added another patch for Glib bindings from Rob (N#22633).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 06 Feb 2006 17:11:33 +0200
 
