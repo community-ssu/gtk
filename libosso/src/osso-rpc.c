@@ -432,9 +432,9 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
     int ret;
     dbus_bool_t bret;
 
-    ULOG_DEBUG_F("registering method service '%s' at '%s' on "
-        "interface '%s', on the %s bus", service, object_path, interface,
-	use_system_bus ? "system" : "session");
+    ULOG_DEBUG_F("s '%s' o '%s' i '%s', %s bus",
+                 service, object_path, interface,
+                 use_system_bus ? "system" : "session");
     
     rpc = (_osso_rpc_t *)calloc(1, sizeof(_osso_rpc_t));
     if (rpc == NULL) {
