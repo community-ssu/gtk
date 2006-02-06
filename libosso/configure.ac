@@ -1,5 +1,5 @@
 # -*- sh -*-
-AC_INIT(libosso, 1.1)
+AC_INIT(libosso, 1.3)
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER([config.h])
 AC_LANG(C)
@@ -20,7 +20,7 @@ AC_ARG_ENABLE(debug,
 ## g_array_index gives bogus warnings for -Wcast-align on ARM, so we
 ## don't us that warning as well.
 
-WFLAGS="-Werror -Wall -Wmissing-prototypes -std=c99 -DOSSOLOG_COMPILE"
+WFLAGS="-Werror -Wall -Wmissing-prototypes -std=c99 -DOSSOLOG_COMPILE -DOSSOLOG_STDERR"
 if test x${libosso_use_debug} = xyes ; then
     AC_DEFINE(DEBUG,1,[Build extra debug code])
     OSSO_CFLAGS="-g -ansi  -D_BSD_SOURCE -rdynamic $WFLAGS"
