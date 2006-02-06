@@ -1,6 +1,9 @@
 libosso (1.3-1) unstable; urgency=low
 
   * Fixed calling of dbus_bus_request_name DBus function (N#22620).
+  * Fixed calling of dbus_connection_register_object_path -- error needed
+    ignoring (N#22620).
+  * Logging redirected to stderr, since there's no syslogd now.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 06 Feb 2006 14:25:35 +0200
 

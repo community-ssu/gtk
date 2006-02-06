@@ -473,7 +473,8 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
                (void *)osso);
     if (!bret) {
         ULOG_ERR_F("dbus_connection_register_object_path failed");
-        return OSSO_ERROR;
+	/* error ignored because we cannot distinguish OOM and already
+	 * registered object path */
     }
 
     rpc->func = cb;
