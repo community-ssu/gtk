@@ -44,6 +44,7 @@
 #define HN_WM_SYNC_HILDON_VIEW_LIST    (1<<7)
 #define HN_WM_SYNC_HILDON_VIEW_ACTIVE  (1<<8)
 #define HN_WM_SYNC_ICON                (1<<9)
+#define HN_WM_SYNC_USER_TIME           (1<<10)
 #define HN_WM_SYNC_ALL                 (G_MAXULONG)
 
 HNWMWatchedWindow*
@@ -60,6 +61,9 @@ hn_wm_watched_window_get_x_win (HNWMWatchedWindow *win);
 
 gboolean
 hn_wm_watched_window_is_urgent (HNWMWatchedWindow *win);
+
+gboolean
+hn_wm_watched_window_wants_no_initial_focus (HNWMWatchedWindow *win);
 
 const gchar*
 hn_wm_watched_window_get_name (HNWMWatchedWindow *win);

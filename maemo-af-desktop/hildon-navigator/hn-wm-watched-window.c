@@ -17,6 +17,7 @@ struct HNWMWatchedWindow
   GdkPixbuf              *pixb_icon;
   Window                  xwin_group;
   gboolean                is_urgent;
+  gboolean                no_initial_focus;
 };
 
 struct xwinv
@@ -47,11 +48,15 @@ static void
 hn_wm_watched_window_process_net_wm_icon (HNWMWatchedWindow *win);
 
 static void
+hn_wm_watched_window_process_net_wm_user_time (HNWMWatchedWindow *win);
+
+static void
 pixbuf_destroy (guchar *pixels, gpointer data)
 {
   /* For hn_wm_watched_window_process_net_wm_icon  */
   g_free(pixels);
 }
+
 
 static void
 hn_wm_watched_window_process_net_wm_icon (HNWMWatchedWindow *win)
@@ -343,6 +348,31 @@ hn_wm_watched_window_process_wm_hints (HNWMWatchedWindow *win)
   XFree(wm_hints);
 }
 
+static void
+hn_wm_watched_window_process_net_wm_user_time (HNWMWatchedWindow *win)
+{
+  gulong *data;
+
+  data 
+    = hn_wm_util_get_win_prop_data_and_validate (hn_wm_watched_window_get_x_win (win),
+						 hnwm->atoms[HN_ATOM_NET_WM_USER_TIME],
+						 XA_CARDINAL,
+						 0,
+						 0,
+						 NULL);
+  
+  HN_DBG("#### processing _NET_WM_USER_TIME ####");
+
+  if (data == NULL)
+	return;
+
+  if (*data == 0)
+    win->no_initial_focus = TRUE;
+  
+  if (data)
+    XFree(data);
+}
+
 static void 
 hn_wm_watched_window_process_hildon_view_list (HNWMWatchedWindow *win)
 {
@@ -468,7 +498,8 @@ hn_wm_watched_window_new (Window            xid,
 				   HN_WM_SYNC_NAME
 				   |HN_WM_SYNC_WMHINTS
 				   |HN_WM_SYNC_ICON
-				   |HN_WM_SYNC_HILDON_APP_KILLABLE);
+				   |HN_WM_SYNC_HILDON_APP_KILLABLE
+				   |HN_WM_SYNC_USER_TIME);
 
   return win;
 }
@@ -489,7 +520,13 @@ hn_wm_watched_window_get_x_win (HNWMWatchedWindow *win)
 gboolean
 hn_wm_watched_window_is_urgent (HNWMWatchedWindow *win)
 {
-  return win->is_urgent;
+  return win->is_urgent; 
+}
+
+gboolean
+hn_wm_watched_window_wants_no_initial_focus (HNWMWatchedWindow *win)
+{
+  return win->no_initial_focus;
 }
 
 const gchar*
@@ -738,6 +775,10 @@ hn_wm_watched_window_props_sync (HNWMWatchedWindow *win, gulong props)
       hn_wm_watched_window_process_net_wm_icon (win);
     }
 
+  if (props & HN_WM_SYNC_USER_TIME)
+    {
+      hn_wm_watched_window_process_net_wm_user_time (win);
+    }
   gdk_error_trap_pop();
 
   return TRUE;

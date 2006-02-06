@@ -1,3 +1,45 @@
+2006-02-06  Johan Bilien <johan.bilien@nokia.com>
+	* Imported changes by Matthew Allum:	
+	* hildon-navigator/hn-wm-watched-window.h:
+	Add missing HN_WM_SYNC_USER_TIME def.
+	* hildon-navigator/application-switcher.c:
+	(application_switcher_init),
+	(app_switcher_menu_button_anim_needed),
+	(app_switcher_icon_anim_stop), (app_switcher_icon_anim_timeout),
+	(app_switcher_icon_anim_timeout_destroy),
+	(app_switcher_icon_anim_timeout_add),
+	(app_switcher_get_pixbuf_icon_from_theme),
+	(app_switcher_get_icon_from_window), (add_item_to_button),
+	(update_menu_items), (store_item), (app_switcher_add_new_item),
+	(app_switcher_remove_item), (app_switcher_item_icon_sync),
+	(app_switcher_update_item):
+	* hildon-navigator/application-switcher.h:
+	Much improve icon animation/blinking to more closely
+	match specs so far.
+
+	* hildon-navigator/hildon-pixbuf-anim-blinker.c: (get_iter),
+	(get_delay_time), (get_pixbuf), (on_currently_loading_frame),
+	(hildon_pixbuf_anim_blinker_new):
+	* hildon-navigator/hildon-pixbuf-anim-blinker.h:
+	Improve to do faded blinking with alpha.  Unoptimised as yet.
+	Needs testing on device for performance. (Chris )
+
+	* hildon-navigator/hn-wm-types.h:
+	* hildon-navigator/hn-wm-watched-window.c:
+	(hn_wm_watched_window_process_wm_hints),
+	(hn_wm_watched_window_new), (hn_wm_watched_window_get_app),
+	(hn_wm_watched_window_get_x_win),
+	(hn_wm_watched_window_props_sync):
+	* hildon-navigator/hn-wm-watched-window.h:
+	* hildon-navigator/hn-wm.c: (hn_wm_atoms_init),
+	(hn_wm_lookup_watched_window_via_service_find_func),
+	(hn_wm_lookup_watchable_app_via_service_find_func):
+	Add support for tracking _NET_WM_USER_TIME set to 0 for
+	new windows not mapping topped. ( Tomas )
+	Fix a couple of potential crashers if service name is NULL. (Tomas)
+
+	* configure.ac: 2.4.2
+
 2006-02-02  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-home/hildon-home-main.c:
 	  - get_sidebar_image_to_blend: Don't increment the style reference

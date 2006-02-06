@@ -51,7 +51,8 @@ GType hildon_pixbuf_anim_blinker_iter_get_type (void) G_GNUC_CONST;
 
 HildonPixbufAnimBlinker *hildon_pixbuf_anim_blinker_new (GdkPixbuf *pixbuf, 
 							 gint       period,
-							 gint       length);
+							 gint       length,
+							 gint       frequency);
 
 void
 hildon_pixbuf_anim_blinker_stop (HildonPixbufAnimBlinker *anim);

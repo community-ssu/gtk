@@ -1,3 +1,16 @@
+maemo-af-desktop (2.4.2-1) unstable; urgency=low
+
+  * Much improve icon animation/blinking to more closely
+    match specs so far.
+  * Improve to do faded blinking with alpha.  Unoptimised as yet.
+    Needs testing on device for performance.
+  * Add support for tracking _NET_WM_USER_TIME set to 0 for
+    new windows not mapping topped.
+  * Fix a couple of potential crashers if service name is NULL.
+  * Fixed N#22605
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  6 Feb 2006 10:52:02 +0200
+
 maemo-af-desktop (2.4.1-1) unstable; urgency=low
 
   * Make blinking icons blink in sync and timeout to static

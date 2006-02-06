@@ -169,6 +169,7 @@ struct ApplicationSwitcher {
     
     /* Application switcher menu button icon */
     GtkWidget *as_button_icon;
+    gboolean   menu_icon_is_blinking;
     
     /* Used to define which button is pressed */
     gint toggled_button_id;

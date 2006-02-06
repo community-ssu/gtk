@@ -301,6 +301,7 @@ hn_wm_atoms_init()
     "_NET_ACTIVE_WINDOW",
     "_NET_CLIENT_LIST",
     "_NET_WM_ICON",
+    "_NET_WM_USER_TIME",
 
     "_HILDON_APP_KILLABLE",	/* Hildon only props */
     "_NET_CLIENT_LIST",         /* NOTE: Hildon uses these values on app wins*/
@@ -409,13 +410,17 @@ hn_wm_lookup_watched_window_via_service_find_func (gpointer key,
 
   win = (HNWMWatchedWindow*)value;
 
+  if (win == NULL || user_data == NULL)
+    return FALSE;
+  
   app = hn_wm_watched_window_get_app (win);
 
   if (!app)
     return FALSE;
 
-  if (!strcmp(hn_wm_watchable_app_get_service (app), 
-	      (gchar*)user_data))
+  if (hn_wm_watchable_app_get_service (app) 
+      && !strcmp(hn_wm_watchable_app_get_service (app), 
+		 (gchar*)user_data))
     return TRUE;
 
   return FALSE;
@@ -489,10 +494,14 @@ hn_wm_lookup_watchable_app_via_service_find_func (gpointer key,
 
   app = (HNWMWatchableApp *)value;
 
+  if (app == NULL || user_data == NULL)
+    return FALSE;
+
   if (hn_wm_watchable_app_get_service (app) == NULL)
     return FALSE;
 
-  if (!strcmp(hn_wm_watchable_app_get_service (app), (gchar*)user_data))
+  if (hn_wm_watchable_app_get_service (app) &&
+      !strcmp(hn_wm_watchable_app_get_service (app), (gchar*)user_data))
     return TRUE;
 
   return FALSE;

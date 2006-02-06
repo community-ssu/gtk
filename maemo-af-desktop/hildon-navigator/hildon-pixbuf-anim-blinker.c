@@ -36,9 +36,10 @@ struct _HildonPixbufAnimBlinker
 	gboolean stopped;
 	gint period;
 	gint length;
+	gint frequency;
 	
 	GdkPixbuf *pixbuf;
-	GdkPixbuf *empty;
+	GdkPixbuf *blended;
 };
 
 struct _HildonPixbufAnimBlinkerClass
@@ -177,7 +178,6 @@ get_iter (GdkPixbufAnimation *anim,
 
 	/* Find out how many seconds it is before a period repeats */
 	/* (e.g. for 500ms, 1 second, for 333ms, 2 seconds, etc.) */
-	/* This is to keep multiple anims in sync */
 	for (i = 1; ((blinker->period * i) % 2000) != 0; i++);
 	i = iter->start_time.tv_sec % ((blinker->period*i)/1000);
 
@@ -276,10 +276,11 @@ advance (GdkPixbufAnimationIter *anim_iter,
 static gint
 get_delay_time (GdkPixbufAnimationIter *anim_iter)
 {
-        HildonPixbufAnimBlinkerIter *iter;
+        HildonPixbufAnimBlinkerIter *iter =
+        	HILDON_PIXBUF_ANIM_BLINKER_ITER (anim_iter);
         gint elapsed;
-
-        iter = HILDON_PIXBUF_ANIM_BLINKER_ITER (anim_iter);
+        gint period = iter->hildon_pixbuf_anim_blinker->period /
+        	iter->hildon_pixbuf_anim_blinker->frequency;
         
         elapsed = (((iter->current_time.tv_sec - iter->start_time.tv_sec) *
         	G_USEC_PER_SEC + iter->current_time.tv_usec -
@@ -288,8 +289,7 @@ get_delay_time (GdkPixbufAnimationIter *anim_iter)
 	if (((elapsed < iter->length) ||
 	    (iter->hildon_pixbuf_anim_blinker->length == -1)) &&
 	    (!iter->hildon_pixbuf_anim_blinker->stopped))
-		return iter->hildon_pixbuf_anim_blinker->period -
-			(elapsed % iter->hildon_pixbuf_anim_blinker->period);
+		return period - (elapsed % period);
 	else
 		return -1;
 }
@@ -297,10 +297,10 @@ get_delay_time (GdkPixbufAnimationIter *anim_iter)
 static GdkPixbuf *
 get_pixbuf (GdkPixbufAnimationIter *anim_iter)
 {
-        HildonPixbufAnimBlinkerIter *iter;
-        gint elapsed;
-        
-        iter = HILDON_PIXBUF_ANIM_BLINKER_ITER (anim_iter);
+        HildonPixbufAnimBlinkerIter *iter =
+        	HILDON_PIXBUF_ANIM_BLINKER_ITER (anim_iter);
+        gint elapsed, alpha;
+        gint period = iter->hildon_pixbuf_anim_blinker->period;
         
         elapsed = (((iter->current_time.tv_sec - iter->start_time.tv_sec) *
         	G_USEC_PER_SEC + iter->current_time.tv_usec -
@@ -311,10 +311,21 @@ get_pixbuf (GdkPixbufAnimationIter *anim_iter)
 	     iter->hildon_pixbuf_anim_blinker->length != -1))
 	  return iter->hildon_pixbuf_anim_blinker->pixbuf;
 
-	if ((elapsed / iter->hildon_pixbuf_anim_blinker->period) % 2)
-		return iter->hildon_pixbuf_anim_blinker->empty;
-	else
-		return iter->hildon_pixbuf_anim_blinker->pixbuf;
+	gdk_pixbuf_fill (iter->hildon_pixbuf_anim_blinker->blended,
+		0x00000000);
+	/* Use period * 2 and 512 so that alpha pulses down as well as up */
+	alpha = MIN (((elapsed % (period*2)) * 511) / (period*2), 511);
+	if (alpha > 255) alpha = 511-alpha;
+	gdk_pixbuf_composite (iter->hildon_pixbuf_anim_blinker->pixbuf,
+		iter->hildon_pixbuf_anim_blinker->blended,
+		0, 0,
+		gdk_pixbuf_get_width (iter->hildon_pixbuf_anim_blinker->pixbuf),
+		gdk_pixbuf_get_height (iter->hildon_pixbuf_anim_blinker->pixbuf),
+		0, 0,
+		1, 1,
+		GDK_INTERP_NEAREST,
+		alpha);
+	return iter->hildon_pixbuf_anim_blinker->blended;
 }
 
 static gboolean
@@ -326,7 +337,8 @@ on_currently_loading_frame (GdkPixbufAnimationIter *anim_iter)
 
 /* vals in millisecs, length = -1 for infinity */
 HildonPixbufAnimBlinker *
-hildon_pixbuf_anim_blinker_new (GdkPixbuf *pixbuf, gint period, gint length)
+hildon_pixbuf_anim_blinker_new (GdkPixbuf *pixbuf, gint period, gint length,
+				gint frequency)
 {
   HildonPixbufAnimBlinker *anim;
 
@@ -334,9 +346,9 @@ hildon_pixbuf_anim_blinker_new (GdkPixbuf *pixbuf, gint period, gint length)
   anim->pixbuf = g_object_ref (pixbuf);
   anim->period = period;
   anim->length = length;
-  anim->empty = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8,
+  anim->frequency = frequency;
+  anim->blended = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8,
   	gdk_pixbuf_get_width (pixbuf), gdk_pixbuf_get_height (pixbuf));
-  gdk_pixbuf_fill (anim->empty, 0x00000000);
 
   return anim;
 }
