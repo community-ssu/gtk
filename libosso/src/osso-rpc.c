@@ -418,22 +418,23 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
 }
 
 /************************************************************************/
-static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
-				   const gchar *object_path,
-				   const gchar *interface,
-				   osso_rpc_cb_f *cb, gpointer data,
-				   osso_rpc_retval_free_f *retval_free,
-				   gboolean use_system_bus)
+static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
+                                   const gchar *service,
+                                   const gchar *object_path,
+                                   const gchar *interface,
+                                   osso_rpc_cb_f *cb, gpointer data,
+                                   osso_rpc_retval_free_f *retval_free,
+                                   gboolean use_system_bus)
 {
     DBusError err;
     struct DBusObjectPathVTable vt;
     _osso_rpc_t *rpc;
-    gint ret;
-    dbus_bool_t b;
+    int ret;
+    dbus_bool_t bret;
 
-    ULOG_DEBUG_F("registering method service '%s' at '%s' on interface '%s',"
-	   " on the %sbus", service, object_path, interface,
-	   use_system_bus?"SYSTEM":"SESSION");
+    ULOG_DEBUG_F("registering method service '%s' at '%s' on "
+        "interface '%s', on the %s bus", service, object_path, interface,
+	use_system_bus ? "system" : "session");
     
     rpc = (_osso_rpc_t *)calloc(1, sizeof(_osso_rpc_t));
     if (rpc == NULL) {
@@ -444,26 +445,33 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
     dbus_error_init(&err);
 
     dprint("requesting service '%s'", service);
-
-    ret = dbus_bus_request_name(use_system_bus ? osso->sys_conn : osso->conn,
-                        service, DBUS_NAME_FLAG_ALLOW_REPLACEMENT |
-                        DBUS_NAME_FLAG_REPLACE_EXISTING, &err);
-    if (ret < 0) {
+    ret = dbus_bus_request_name(use_system_bus ? osso->sys_conn :
+              osso->conn, service, DBUS_NAME_FLAG_ALLOW_REPLACEMENT |
+              DBUS_NAME_FLAG_REPLACE_EXISTING |
+              DBUS_NAME_FLAG_DO_NOT_QUEUE, &err);
+    if (ret == DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER ||
+        ret == DBUS_REQUEST_NAME_REPLY_ALREADY_OWNER) {
+        /* success */ 
+    } else if (ret == DBUS_REQUEST_NAME_REPLY_IN_QUEUE ||
+               ret == DBUS_REQUEST_NAME_REPLY_EXISTS) {
+        /* this should be impossible */
+        ULOG_ERR_F("dbus_bus_request_name is broken");
+        return OSSO_ERROR;
+    } else if (ret == -1) {
         ULOG_ERR_F("dbus_bus_request_name for '%s' failed: %s",
                    service, err.message);
+	dbus_error_free(&err);
         return OSSO_ERROR;
     }
-    dbus_error_free(&err);
 
     vt.message_function = _msg_handler;
     vt.unregister_function = NULL;
     
-    dprint("registering object_path: '%s'",object_path);
-    b = dbus_connection_register_object_path(use_system_bus?
-					     osso->sys_conn:osso->conn,
-					     object_path,
-					     &vt, (void *)osso);
-    if (!b) {
+    dprint("registering object_path: '%s'", object_path);
+    bret = dbus_connection_register_object_path(use_system_bus ?
+               osso->sys_conn : osso->conn, object_path, &vt,
+               (void *)osso);
+    if (!bret) {
         ULOG_ERR_F("dbus_connection_register_object_path failed");
         return OSSO_ERROR;
     }
@@ -471,13 +479,9 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso, const gchar *service,
     rpc->func = cb;
     rpc->retval_free = retval_free;
     rpc->data = data;
-    dprint("rpc = %p",rpc);
-    dprint("rpc->func = %p",rpc->func);
 
     _msg_handler_set_cb_f(osso, interface, _rpc_handler,
-			  (gpointer)rpc, TRUE);
-    dprint("rpc->func = %p",rpc->func);
-
+                          (gpointer)rpc, TRUE);
     return OSSO_OK;
 }
 

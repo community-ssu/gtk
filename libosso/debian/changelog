@@ -1,9 +1,8 @@
 libosso (1.3-1) unstable; urgency=low
 
-  * Allowing replacement of service when calling dbus_bus_request_name
-    to get the old behaviour (N#22620).
+  * Fixed calling of dbus_bus_request_name DBus function (N#22620).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 03 Feb 2006 17:28:54 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 06 Feb 2006 14:25:35 +0200
 
 libosso (1.2-1) unstable; urgency=low
 
