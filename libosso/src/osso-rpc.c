@@ -472,7 +472,8 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
                osso->sys_conn : osso->conn, object_path, &vt,
                (void *)osso);
     if (!bret) {
-        ULOG_ERR_F("dbus_connection_register_object_path failed");
+        ULOG_ERR_F("dbus_connection_register_object_path failed, "
+                   "maybe it was already registered");
 	/* error ignored because we cannot distinguish OOM and already
 	 * registered object path */
     }
