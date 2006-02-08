@@ -40,6 +40,7 @@
 #include <unistd.h>
 #include <dlfcn.h>
 #include <errno.h>
+#include <assert.h>
 
 #include "config.h"
 #include "ui.h"
@@ -51,10 +52,24 @@
 
 typedef struct
 {
+  int options;
   int argc;
   char **argv;
   char *filename;
 } prog_t;
+
+typedef struct
+{
+  pid_t pid;
+  int sock;
+} child_t;
+
+typedef struct
+{
+  int n;
+  int used;
+  child_t *list;
+} kindergarten_t;
 
 static char *pidfilename = LAUNCHER_PIDFILE;
 static pid_t is_parent = 1;
@@ -163,7 +178,7 @@ invoked_init(void)
 }
 
 static bool
-invoked_get_magic(int fd)
+invoked_get_magic(int fd, prog_t *prog)
 {
   uint32_t msg;
 
@@ -184,6 +199,8 @@ invoked_get_magic(int fd)
     error("receiving bad magic (%08x)\n", msg);
     return false;
   }
+
+  prog->options = msg & INVOKER_MSG_MAGIC_OPTION_MASK;
 
   return true;
 }
@@ -267,6 +284,15 @@ invoked_get_actions(int fd, prog_t *prog)
   }
 }
 
+static bool
+invoked_send_exit(int fd, int status)
+{
+  invoke_send_msg(fd, INVOKER_MSG_EXIT);
+  invoke_send_msg(fd, status);
+
+  return true;
+}
+
 static void
 clean_daemon(int signal)
 {
@@ -280,8 +306,115 @@ clean_daemon(int signal)
   exit(0);
 }
 
+static kindergarten_t *
+alloc_childs(int n)
+{
+  kindergarten_t *childs;
+
+  childs = malloc(sizeof(kindergarten_t));
+  if (!childs)
+  {
+    error("allocating a kindergarten\n");
+    return NULL;
+  }
+
+  childs->used = 0;
+  childs->n = n;
+  childs->list = calloc(n, sizeof(child_t));
+  if (!childs->list)
+  {
+    error("allocating a child list\n");
+    return NULL;
+  }
+
+  return childs;
+}
+
+static bool
+grow_childs(kindergarten_t *childs)
+{
+  int halfsize = childs->n * sizeof(child_t);
+  int size = halfsize * 2;
+  void *p;
+
+  p = realloc(childs->list, size);
+  if (!p)
+    return false;
+
+  childs->list = p;
+  memset(childs->list + childs->n, 0, halfsize);
+
+  childs->n *= 2;
+
+  return true;
+}
+
+static int
+get_child_slot_by_pid(kindergarten_t *childs, pid_t pid)
+{
+  child_t *list = childs->list;
+  int i;
+
+  for (i = 0; i < childs->n; i++)
+    if (list[i].pid == pid)
+      return i;
+
+  return -1;
+}
+
+static bool
+assign_child_slot(kindergarten_t *childs, pid_t pid, int sock)
+{
+  int child_id;
+
+  if (childs->used == childs->n)
+  {
+    if (!grow_childs(childs))
+    {
+      error("cannot make a bigger kindergarten, not tracking child %u\n", pid);
+
+      /* Send a fake exit code, so the invoker does not wait for us. */
+      invoked_send_exit(sock, 0);
+      close(sock);
+
+      return false;
+    }
+  }
+
+  child_id = get_child_slot_by_pid(childs, 0);
+
+  /* Cannot happen! */
+  assert(child_id >= 0);
+
+  childs->list[child_id].sock = sock;
+  childs->list[child_id].pid = pid;
+  childs->used++;
+
+  return true;
+}
+
+static bool
+release_child_slot(kindergarten_t *childs, pid_t pid, int status)
+{
+  int id = get_child_slot_by_pid(childs, pid);
+
+  if (id >= 0)
+  {
+    invoked_send_exit(childs->list[id].sock, status);
+    close(childs->list[id].sock);
+
+    childs->list[id].sock = 0;
+    childs->list[id].pid = 0;
+    childs->used--;
+  }
+  else
+    info("no child %i found in the kindergarten.\n", pid);
+
+  return true;
+}
+
 static void
-clean_childs(void)
+clean_childs(kindergarten_t *childs)
 {
   int status;
   char *cause;
@@ -289,6 +422,8 @@ clean_childs(void)
 
   while ((childpid = waitpid(-1, &status, WNOHANG)) > 0)
   {
+    release_child_slot(childs, childpid, status);
+
     if (WIFEXITED(status))
       asprintf(&cause, "exit()=%d", WEXITSTATUS(status));
     else if (WIFSIGNALED(status))
@@ -426,6 +561,8 @@ int
 main(int argc, char *argv[])
 {
   ui_state state;
+  kindergarten_t *childs;
+  const int initial_child_slots = 64;
   int i;
   int fd;
   bool daemon = false;
@@ -460,6 +597,9 @@ main(int argc, char *argv[])
 
   sigs_init();
 
+  /* Setup child tracking. */
+  childs = alloc_childs(initial_child_slots);
+
   /* Setup the conversation channel with the invoker. */
   fd = invoked_init();
 
@@ -489,7 +629,7 @@ main(int argc, char *argv[])
     /* Handle signals received. */
     if (sigchild_catched)
     {
-      clean_childs();
+      clean_childs(childs);
       sigchild_catched = false;
     }
 
@@ -509,7 +649,8 @@ main(int argc, char *argv[])
     }
 
     /* Start conversation with the invoker. */
-    if (!invoked_get_magic(sd))
+    memset(&prog, 0, sizeof(prog));
+    if (!invoked_get_magic(sd, &prog))
     {
       close(sd);
       continue;
@@ -544,7 +685,10 @@ main(int argc, char *argv[])
       break;
 
     default: /* Parent. */
-      close(sd);
+      if (prog.options & INVOKER_MSG_MAGIC_OPTION_WAIT)
+	assign_child_slot(childs, is_parent, sd);
+      else
+	close(sd);
       break;
     }
   }

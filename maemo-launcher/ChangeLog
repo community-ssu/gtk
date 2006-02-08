@@ -1,3 +1,42 @@
+2006-02-09  Guillem Jover  <guillem.jover@nokia.com>
+
+	Support child tracking.
+
+	* README: Document the new behaviour.
+	* launcher/invoker.1.in: Document the new default in --delay changed
+	to wait for the invoked program to exit.
+	* launcher/invokelib.h (INVOKER_MSG_EXIT): New macro.
+	* launcher/invoker.c (DEFAULT_DELAY): Set to 0.
+	(invoker_init): Take a delay argument. New options variable. Set
+	options to INVOKER_MSG_MAGIC_OPTION_WAIT of there's no delay.
+	Send the options as part of the magic.
+	(invoker_recv_exit): New function.
+	(get_delay): Move get_linux_lowmem_modifier call to ...
+	(main): ... here. New prog_ret variable. Move get_delay call before
+	invoker_init, as we are passing the delay variable to it. Move the
+	file description closing to just before exit. If delay, sleep for the
+	given seconds, else wait for the returned exit code from the launcher.
+	Exit with the proxied return code, or otherwise.
+	* launcher/launcher.c: Include <assert.h>.
+	(prog_t): Add new member options.
+	(child_t): New type.
+	(kindergarten_t): Likewise.
+	(invoked_get_magic): Take a prog_t argument. Fix all callers. Set
+	its options member to the result of masking with
+	INVOKER_MSG_MAGIC_OPTION_MASK.
+	(invoked_send_exit): New function.
+	(alloc_childs): Likewise.
+	(grow_childs): Likewise.
+	(get_child_slot_by_pid): Likewise.
+	(assign_child_slot): Likewise.
+	(release_child_slot): Likewise.
+	(clean_childs): Take a kindergarten_t argument. Fix all callers. Call
+	release_child_slot.
+	(main): New childs and initial_child_slots variables. Allocate childs.
+	Pass it to clean_childs. Initialize prog to 0 on each loop iteration
+	before passing it to invoked_get_magic. If the invoker is waiting
+	for our exit reply, call assign_child_slot to keep track of it.
+
 2006-01-27  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/launcher.c (create_pidfile): Declare as taking void as

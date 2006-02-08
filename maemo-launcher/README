@@ -20,7 +20,8 @@ if it had been started directy, dynamically opens the application, opens a
 new display and associates its screen with the stored state (the GtkSettings;
 this is the second hack which only works because we *know* the new display's
 properties are identical to the old display's ones). And afterwards launches
-the application by calling the "main" function.
+the application by calling the "main" function. The maemo-invoker will proxy
+the application exit status back by default.
 
 The launcher is listening to a unix socket for notifications of new
 applications to be launched. The maemo-invoker is the program in charge to
@@ -32,11 +33,13 @@ Read the man pages for further information.
 Current known issues
 ====================
 
-The maemo-invoker does not return the exit value of the launched program.
+The maemo-invoker does not proxy the signals to the the launched program.
 
-If the application takes too much time to register the DBUS service the
-maemo-invoker may have exited already, so dbus will not allow the application
-to register it after the process it has started has finished already.
+If maemo-invoker has been told not to wait for the application to exit and
+use a delay instead and that application takes too much time to register the
+DBUS service the maemo-invoker may have exited already, so dbus will not
+allow the application to register it after the process it has started has
+finished already.
 
 Binaries intended to be run by maemo-launcher must be linked with the
 "-pie -rdynamic" linker flags if they should transparently work as

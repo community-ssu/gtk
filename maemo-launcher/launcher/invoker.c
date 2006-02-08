@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2005 Nokia
+ * Copyright (C) 2005, 2006 Nokia
  *
  * Author: Guillem Jover <guillem.jover@nokia.com>
  *
@@ -36,7 +36,7 @@
 #include "report.h"
 #include "invokelib.h"
 
-#define DEFAULT_DELAY 10
+#define DEFAULT_DELAY 0
 
 static bool
 invoke_recv_ack(int fd)
@@ -53,9 +53,10 @@ invoke_recv_ack(int fd)
 }
 
 static int
-invoker_init(void)
+invoker_init(unsigned int delay)
 {
   int fd;
+  int options = 0;
   struct sockaddr_un sun;
 
   fd = socket(PF_UNIX, SOCK_STREAM, 0);
@@ -68,8 +69,11 @@ invoker_init(void)
   if (connect(fd, (struct sockaddr *)&sun, sizeof(sun)) < 0)
     die(1, "connecting to the launcher\n");
 
+  if (!delay)
+    options |= INVOKER_MSG_MAGIC_OPTION_WAIT;
+
   /* Send magic. */
-  invoke_send_msg(fd, INVOKER_MSG_MAGIC | INVOKER_MSG_MAGIC_VERSION);
+  invoke_send_msg(fd, INVOKER_MSG_MAGIC | INVOKER_MSG_MAGIC_VERSION | options);
   invoke_recv_ack(fd);
 
   return fd;
@@ -112,6 +116,23 @@ invoker_send_end(int fd)
   invoke_recv_ack(fd);
 
   return true;
+}
+
+static int
+invoker_recv_exit(int fd)
+{
+  uint32_t msg;
+
+  /* Receive action. */
+  invoke_recv_msg(fd, &msg);
+
+  if (msg != INVOKER_MSG_EXIT)
+    die(1, "receiving bad exit status (%08x)\n", msg);
+
+  /* Receive status. */
+  invoke_recv_msg(fd, &msg);
+
+  return msg;
 }
 
 static uint32_t
@@ -180,8 +201,6 @@ get_delay(char *delay_arg)
   else
     delay = DEFAULT_DELAY;
 
-  delay *= get_linux_lowmem_modifier();
-
   return delay;
 }
 
@@ -213,6 +232,7 @@ main(int argc, char *argv[])
   int prog_argc = 0;
   char **prog_argv = NULL;
   char *prog_name = NULL;
+  int prog_ret = 0;
   char *launch = NULL;
   char *delay_str = NULL;
   unsigned int delay;
@@ -262,20 +282,31 @@ main(int argc, char *argv[])
 
   debug("invoking execution: '%s'\n", prog_name);
 
-  fd = invoker_init();
+  delay = get_delay(delay_str);
+
+  fd = invoker_init(delay);
   invoker_send_exec(fd, prog_name);
   invoker_send_args(fd, prog_argc, prog_argv);
   invoker_send_end(fd);
-  close(fd);
 
   if (launch)
     free(launch);
 
-  /* DBUS cannot cope some times if the invoker exits too early. */
-  delay = get_delay(delay_str);
-  debug("delaying exit for %u seconds\n", delay);
-  sleep(delay);
+  if (delay)
+  {
+    /* DBUS cannot cope some times if the invoker exits too early. */
+    delay *= get_linux_lowmem_modifier();
+    debug("delaying exit for %d seconds\n", delay);
+    sleep(delay);
+  }
+  else
+  {
+    debug("waiting for invoked program to exit\n");
+    prog_ret = invoker_recv_exit(fd);
+  }
 
-  return 0;
+  close(fd);
+
+  return prog_ret;
 }
 

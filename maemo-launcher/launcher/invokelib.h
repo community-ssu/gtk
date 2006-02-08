@@ -46,6 +46,7 @@ char *invoke_recv_str(int fd);
 #define INVOKER_MSG_EXEC		0xe8ec0000
 #define INVOKER_MSG_ARGS		0xa4650000
 #define INVOKER_MSG_END			0xdead0000
+#define INVOKER_MSG_EXIT		0xe4170000
 #define INVOKER_MSG_ACK			0x600d0000
 
 #endif

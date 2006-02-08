@@ -18,7 +18,9 @@ options starting with two dashes (`-').
 A summary of options is included below.
 .TP
 .B \-\-delay SECS
-After invoking the program sleep for SECS seconds before exiting.
+After invoking the program sleep for SECS seconds before exiting. If SECS is
+0 maemo\-invoker will wait until the program finishes, returning its exit
+status. The default behaviour is to wait for the invoked program to exit.
 .TP
 .B \-\-help
 Show summary of options.
