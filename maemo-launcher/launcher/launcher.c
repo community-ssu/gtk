@@ -40,7 +40,6 @@
 #include <unistd.h>
 #include <dlfcn.h>
 #include <errno.h>
-#include <assert.h>
 
 #include "config.h"
 #include "ui.h"
@@ -363,28 +362,35 @@ get_child_slot_by_pid(kindergarten_t *childs, pid_t pid)
 }
 
 static bool
+invoked_send_fake_exit(int sock)
+{
+  /* Send a fake exit code, so the invoker does not wait for us. */
+  invoked_send_exit(sock, 0);
+  close(sock);
+
+  return true;
+}
+
+static bool
 assign_child_slot(kindergarten_t *childs, pid_t pid, int sock)
 {
   int child_id;
 
-  if (childs->used == childs->n)
+  if (childs->used == childs->n && !grow_childs(childs))
   {
-    if (!grow_childs(childs))
-    {
-      error("cannot make a bigger kindergarten, not tracking child %u\n", pid);
-
-      /* Send a fake exit code, so the invoker does not wait for us. */
-      invoked_send_exit(sock, 0);
-      close(sock);
-
-      return false;
-    }
+    error("cannot make a bigger kindergarten, not tracking child %d\n", pid);
+    invoked_send_fake_exit(sock);
+    return false;
   }
 
   child_id = get_child_slot_by_pid(childs, 0);
-
-  /* Cannot happen! */
-  assert(child_id >= 0);
+  if (child_id < 0)
+  {
+    error("this cannot be happening! no free slots on the kindergarten,\n"
+	  "not tracking child %d\n", pid);
+    invoked_send_fake_exit(sock);
+    return false;
+  }
 
   childs->list[child_id].sock = sock;
   childs->list[child_id].pid = pid;
