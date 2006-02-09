@@ -1,5 +1,10 @@
 2006-02-09  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (clean_childs): Print a newline when informing
+	of the child exit code.
+
+2006-02-09  Guillem Jover  <guillem.jover@nokia.com>
+
 	Support child tracking.
 
 	* README: Document the new behaviour.

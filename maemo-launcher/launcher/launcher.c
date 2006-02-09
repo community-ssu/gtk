@@ -431,7 +431,7 @@ clean_childs(kindergarten_t *childs)
     else if (WCOREDUMP(status))
       cause = strdup("coredump");
 
-    info("child (pid=%d) exited due to %s", childpid, cause);
+    info("child (pid=%d) exited due to %s\n", childpid, cause);
 
     free(cause);
   }
