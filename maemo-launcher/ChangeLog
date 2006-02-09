@@ -16,7 +16,7 @@
 	invoker_init, as we are passing the delay variable to it. Move the
 	file description closing to just before exit. If delay, sleep for the
 	given seconds, else wait for the returned exit code from the launcher.
-	Exit with the proxied return code, or otherwise.
+	Exit with the proxied return code, or otherwise default to 0.
 	* launcher/launcher.c: Include <assert.h>.
 	(prog_t): Add new member options.
 	(child_t): New type.
