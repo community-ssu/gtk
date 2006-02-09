@@ -30,7 +30,7 @@ if [ "x$OSSO_CUD_DOES_NOT_DESTROY" = "x" ]; then
   OLDDIR=`pwd`
   cd $HOME/.osso-cud-scripts
   for f in `ls *.sh`; do
-    $f
+    ./$f
     RC=$?
     if [ $RC != 0 ]; then
       echo "$0: Warning, '$f' returned non-zero return code $RC"
