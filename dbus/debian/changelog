@@ -1,3 +1,9 @@
+dbus (0.60-1osso9) experimental; urgency=low
+
+  * Added patch to fix previous patch from Rob.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 09 Feb 2006 17:58:14 +0200
+
 dbus (0.60-1osso8) experimental; urgency=low
 
   * Renamed patches so that they have some deterministic order.
