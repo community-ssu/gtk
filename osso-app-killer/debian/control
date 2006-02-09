@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 4.0.0)
 Standards-Version: 3.6.0
 
 Package: osso-app-killer
-Architecture: any
+Architecture: all
 Depends: hildon-initscripts (>= 0.9.9)
 Description: Collection of scripts for RFS, CUD, restore.
  A bunch of some scripts.

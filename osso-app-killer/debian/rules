@@ -12,37 +12,9 @@
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
-
-CFLAGS = -DDEBUG -Wall -g \
-         -Wmissing-prototypes -Wunreachable-code -Wcast-align
-# -pedantic-errors -std=c99
-
-CPPFLAGS = -DBONOBO_DISABLE_DEPRECATED \
-           -DBONOBO_UI_DISABLE_DEPRECATED \
-	   -DEEL_DISABLE_DEPRECATED \
-	   -DGCONF_DISABLE_DEPRECATED \
-	   -DG_DISABLE_DEPRECATED \
-	   -DGDK_DISABLE_DEPRECATED \
-	   -DGNOME_DISABLE_DEPRECATED \
-	   -DGNOME_VFS_DISABLE_DEPRECATED \
-	   -DGTK_DISABLE_DEPRECATED \
-	   -DLIBGLADE_DISABLE_DEPRECATED
-
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -O0
-else
-	CFLAGS += -O2
-endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
-endif
-
-#CFLAGS += -Wl,--retain-symbols-file=/tmp/app-kill-syms
-
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	CPPFLAGS="$(CPPFLAGS)" CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
 
 
 build: build-stamp
@@ -51,7 +23,7 @@ build-stamp:  config.status
 	dh_testdir
 
 	# Add here commands to compile the package.
-	$(MAKE)
+	# $(MAKE)
 	#/usr/bin/docbook-to-man debian/osso-app-killer.sgml > osso-app-killer.1
 
 	touch build-stamp
@@ -62,14 +34,6 @@ clean:
 	rm -f build-stamp 
 
 	# Add here commands to clean up after the build process.
-	-$(MAKE) distclean
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp -f /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp -f /usr/share/misc/config.guess config.guess
-endif
-
 
 	dh_clean 
 
@@ -80,7 +44,6 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/osso-app-killer.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/osso-app-killer
 
 
 # Build architecture-independent files here.
@@ -106,7 +69,7 @@ binary-arch: build install
 #	dh_installinfo
 	dh_installman
 	dh_link
-	dh_strip
+#	dh_strip
 	dh_compress
 	dh_fixperms
 #	dh_perl
