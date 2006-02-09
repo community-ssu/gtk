@@ -95,13 +95,6 @@ struct _HomeAppletHandlerClass {
 };
 
 
-#define HOME_APPLET_DESKTOP_TYPE     "Type"
-#define HOME_APPLET_DESKTOP_NAME     "Name"
-#define HOME_APPLET_DESKTOP_LIBRARY  "Library"
-#define HOME_APPLET_DESKTOP_X        "X"
-#define HOME_APPLET_DESKTOP_Y        "Y"
-
-
 /**
  *  home_applet_handler_get_type: 
  *

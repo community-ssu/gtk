@@ -141,17 +141,17 @@ G_BEGIN_DECLS
 #define HILDON_HOME_TITLEBAR_LEFT_X     "0"
 #define HILDON_HOME_TITLEBAR_TOP_Y      "0"
 
-#define HILDON_HOME_TITLEBAR_MENU_LABEL_FONT "osso-TitleFont"
-#define HILDON_HOME_TITLEBAR_MENU_LABEL_COLOR "TitleTextColor"
 #define HILDON_HOME_TITLEBAR_MENU_NAME       "menu_force_with_corners"
 #define HILDON_HOME_TITLEBAR_MENU_LABEL      _("home_ap_home_name")
-#define HILDON_HOME_TITLEBAR_MENU_LABEL_X    35
-#define HILDON_HOME_TITLEBAR_MENU_LABEL_Y    12
-#define HILDON_HOME_TITLEBAR_MENU_SCREEN     _("Home_me_screen")
 
-#define HILDON_HOME_TITLEBAR_SUB_SET_BG      _("home_me_set_home_background")
-#define HILDON_HOME_TITLEBAR_SUB_PERSONALISATION _("pers_ti_personalisation")
-#define HILDON_HOME_TITLEBAR_SUB_CALIBRATION _("ctrp_ti_screen_calibration")
+#define HILDON_HOME_TITLEBAR_MENU_SELECT_APPLETS  _("home_me_select_applets")
+#define HILDON_HOME_TITLEBAR_MENU_APPLET_SETTINGS _("home_me_applet_settings")
+#define HILDON_HOME_TITLEBAR_MENU_EDIT_LAYOUT     _("home_me_edit_layout")
+#define HILDON_HOME_TITLEBAR_MENU_TOOLS           _("home_me_tools")
+#define HILDON_HOME_TITLEBAR_SUB_SET_BG           _("home_me_tools_set_home_background")
+#define HILDON_HOME_TITLEBAR_SUB_PERSONALISATION  _("home_me_tools_personalisation")
+#define HILDON_HOME_TITLEBAR_SUB_CALIBRATION      _("home_me_tools_screen_calibration")
+#define HILDON_HOME_TITLEBAR_SUB_HELP             _("home_me_tools_help")
 
 #define HILDON_CP_DESKTOP_NAME               "Name"
 #define HILDON_CP_PLUGIN_PERSONALISATION     "personalisation.desktop"

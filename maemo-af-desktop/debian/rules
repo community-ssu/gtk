@@ -24,6 +24,10 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -ggdb -DOSSOLOG_STDERR -DDEBUG
+endif
+
 # shared library versions, option 1
 version=2.0.5
 major=2

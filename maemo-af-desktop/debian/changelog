@@ -1,3 +1,9 @@
+maemo-af-desktop (2.4.3-1) unstable; urgency=low
+
+  * Updated home refactoring
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  9 Feb 2006 09:39:46 +0200
+
 maemo-af-desktop (2.4.2-2) unstable; urgency=low
 
   * Added hildon-home-plugin-interface.h to the distribution 

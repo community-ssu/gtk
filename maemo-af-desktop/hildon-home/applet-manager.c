@@ -28,7 +28,7 @@
  * @file applet-manager.c
  *
  */
- 
+
 /* System includes */
 #include <glib.h>
 #include <string.h>
@@ -37,14 +37,13 @@
 #include <sys/stat.h>
 
 /* log include */
-#include <log-functions.h>
-
+#include <osso-log.h>
 #include <stdio.h>
 
 
 /* hildon includes */
 #include "applet-manager.h"
-
+#include "hildon-home-interface.h" 
 
 /* --------------- applet manager private start ---------------- */
 
@@ -96,18 +95,18 @@ void applet_manager_initialize(applet_manager_t *man,
 
     if(applet_manager_identifier_exists(man, desktoppath) == TRUE)
     {
-        fprintf(stderr, "Identifier %s exists==TRUE \n", desktoppath);
+        ULOG_ERR( "Identifier %s exists==TRUE \n", desktoppath);
         return;
     }
 
     handler = home_applet_handler_new(desktoppath, librarypath, 
                                       state_data, state_size);
-    g_assert(handler);
     if(handler == NULL)
     {
-        fprintf(stderr, "Couldn't retrieve Handler for %s\n", desktoppath);
+        ULOG_ERR( "Couldn't retrieve Handler for %s\n", desktoppath);
         return;
     }
+    g_assert(handler);
 
     if(applet_x != APPLET_INVALID_COORDINATE && 
        applet_y != APPLET_INVALID_COORDINATE)
@@ -131,7 +130,6 @@ void applet_manager_initialize_new(applet_manager_t *man,
 
     if(applet_manager_identifier_exists(man, desktoppath) == FALSE)
     {
-        fprintf(stderr, "Identifier %s exists==FALSE \n", desktoppath);
         applet_manager_initialize(man, librarypath, desktoppath, applet_x, applet_y);
     }
 }
@@ -167,9 +165,8 @@ void applet_manager_initialize_all(applet_manager_t *man)
                               G_KEY_FILE_NONE, &error);
     if (error != NULL)
     {
-        osso_log(LOG_WARNING, 
-                "Config file error %s: %s\n", 
-                configure_file, error->message);    
+        ULOG_WARN("Config file error %s: %s\n", 
+                  configure_file, error->message);    
 
         g_key_file_free(keyfile);
         g_error_free(error);
@@ -192,9 +189,8 @@ void applet_manager_initialize_all(applet_manager_t *man)
                                             APPLET_KEY_LIBRARY, &error);
         if (error != NULL)
         {
-            osso_log(LOG_WARNING, 
-                    "Invalid applet specification for %s: %s\n", 
-                    groups[i], error->message);
+            ULOG_WARN("Invalid applet specification for %s: %s\n", 
+                      groups[i], error->message);
 
             g_error_free(error);
             error = NULL;
@@ -206,7 +202,7 @@ void applet_manager_initialize_all(applet_manager_t *man)
                                             APPLET_KEY_DESKTOP, &error);
         if (error != NULL)
         {
-            osso_log(LOG_WARNING, 
+            ULOG_WARN( 
                     "Invalid applet specification for %s: %s\n", 
                     groups[i], error->message);
 
@@ -220,6 +216,9 @@ void applet_manager_initialize_all(applet_manager_t *man)
                                           APPLET_KEY_X, &error);
         if (error != NULL || applet_x == APPLET_INVALID_COORDINATE)
         {
+            ULOG_WARN("Invalid applet specification or invalid coordinate '%d'"
+                      "for %s: %s\n", 
+                      applet_x, groups[i], error->message);
             applet_x = APPLET_INVALID_COORDINATE;
             g_error_free(error);
             error = NULL;
@@ -231,6 +230,9 @@ void applet_manager_initialize_all(applet_manager_t *man)
                                           APPLET_KEY_Y, &error);
         if (error != NULL || applet_y == APPLET_INVALID_COORDINATE)
         {
+            ULOG_WARN("Invalid applet specification or invalid coordinate '%d'"
+                      "for %s: %s\n", 
+                      applet_y, groups[i], error->message);
             applet_y = APPLET_INVALID_COORDINATE;
             g_error_free(error);
             error = NULL;
@@ -249,12 +251,11 @@ void applet_manager_initialize_all(applet_manager_t *man)
 void applet_manager_deinitialize_handler(applet_manager_t *man,
                                          HomeAppletHandler *handler)
 {
-    fprintf(stderr, "applet_manager_deinitialize_handler()\n");
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
 
     home_applet_handler_deinitialize(handler);
     man->applet_list = g_list_remove(man->applet_list, handler);
@@ -265,39 +266,18 @@ void applet_manager_deinitialize(applet_manager_t *man,
 {
     HomeAppletHandler *handler = applet_manager_get_handler(man, identifier);
 
-    fprintf(stderr, "applet_manager_deinitialize()\n");
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
-
-    fprintf(stderr, "Given identifier=%s ", identifier);
-    if(applet_manager_identifier_exists(man, identifier) == FALSE)
-    {
-        fprintf(stderr, " .. not exists\n");
-    } else
-    {
-        fprintf(stderr, " .. exists\n");
-    }
+    g_assert(handler);
 
     applet_manager_deinitialize_handler(man, handler);
-
-    fprintf(stderr, "\nGiven identifier=%s ", identifier);
-    if(applet_manager_identifier_exists(man, identifier) == FALSE)
-    {
-        fprintf(stderr, " .. not exists\n");
-    } else
-    {
-        fprintf(stderr, " .. exists\n");
-    }
-
 }
 
 void applet_manager_deinitialize_all(applet_manager_t *man)
 {
     GList *handler;
-    fprintf(stderr, "applet_manager_deinitialize_all()\n");
 
     for(handler = man->applet_list; handler != NULL; handler = handler->next)
     {
@@ -307,7 +287,7 @@ void applet_manager_deinitialize_all(applet_manager_t *man)
 
 void applet_manager_configure_save_all(applet_manager_t *man)
 {
-    gint i;
+    gint i=0;
     gchar **groups;
     
     GKeyFile *keyfile;
@@ -320,39 +300,42 @@ void applet_manager_configure_save_all(applet_manager_t *man)
     gsize length;
     FILE *new_config_file;
 
-    if(configure_file == NULL || stat(configure_file, &buf) == -1)
+    if(configure_file == NULL)
     {
-        g_free(configure_file);
+        ULOG_ERR( "configure_file == NULL\n");
         return;
     }
     keyfile = g_key_file_new();
 
-    error = NULL;
-    g_key_file_load_from_file(keyfile, configure_file,
-                              G_KEY_FILE_NONE, &error);
-    if (error != NULL)
+    if(stat(configure_file, &buf) != -1 && buf.st_size != 0)
     {
-        osso_log(LOG_WARNING, 
-                "Config file error %s: %s\n", 
-                configure_file, error->message);    
 
-        g_key_file_free(keyfile);
-        g_error_free(error);
-        g_free(configure_file);
-        return;
-    }
+        error = NULL;
+        g_key_file_load_from_file(keyfile, configure_file,
+                                  G_KEY_FILE_NONE, &error);
+        if (error != NULL)
+        {
+            ULOG_WARN("Config file error %s: %s\n", 
+                      configure_file, error->message);    
+            
+            g_key_file_free(keyfile);
+            g_error_free(error);
+            g_free(configure_file);
+            return;
+        }
     
-    /* Groups are a list of applets in this context */
-    groups = g_key_file_get_groups(keyfile, NULL);
-    i = 0;
-    while (groups[i] != NULL)
-    {
-        g_key_file_remove_group (keyfile,
-                                 groups[i],
-                                 &error);
-        i++;
+        /* Groups are a list of applets in this context */
+        groups = g_key_file_get_groups(keyfile, NULL);
+
+        while (groups[i] != NULL)
+        {
+            g_key_file_remove_group (keyfile,
+                                     groups[i],
+                                     &error);
+            i++;
+        }
+        g_strfreev(groups);
     }
-    g_strfreev(groups);
 
     for(handler_listitem = man->applet_list; handler_listitem != NULL; 
         handler_listitem = handler_listitem->next)
@@ -370,12 +353,13 @@ void applet_manager_configure_save_all(applet_manager_t *man)
         g_key_file_set_integer(keyfile, desktop, APPLET_KEY_X, applet_x);
         g_key_file_set_integer(keyfile, desktop, APPLET_KEY_Y, applet_y);
     }    
-    /*gchar *new_data = g_key_file_to_data(plugin_file, &length, &error);*/
+
     conf_data = g_key_file_to_data(keyfile, &length, &error);    
+
     new_config_file = fopen(configure_file, "w"); 
     if(&length == NULL || fprintf(new_config_file, "%s", conf_data))
     {
-        g_warning("FAILED to write new conf data into %s\n", configure_file);
+        ULOG_WARN("FAILED to write new conf data into %s\n", configure_file);
     }
     fclose(new_config_file);
     g_key_file_free(keyfile);
@@ -417,9 +401,8 @@ void applet_manager_configure_load_all(applet_manager_t *man)
                               G_KEY_FILE_NONE, &error);
     if (error != NULL)
     {
-        osso_log(LOG_WARNING, 
-                "Config file error %s: %s\n", 
-                configure_file, error->message);    
+        ULOG_WARN("Config file error %s: %s\n", 
+                  configure_file, error->message);    
 
         g_key_file_free(keyfile);
         g_error_free(error);
@@ -442,9 +425,8 @@ void applet_manager_configure_load_all(applet_manager_t *man)
                                             APPLET_KEY_LIBRARY, &error);
         if (error != NULL)
         {
-            osso_log(LOG_WARNING, 
-                    "Invalid applet specification for %s: %s\n", 
-                    groups[i], error->message);
+            ULOG_WARN("Invalid applet specification for %s: %s\n", 
+                      groups[i], error->message);
 
             g_error_free(error);
             error = NULL;
@@ -456,9 +438,8 @@ void applet_manager_configure_load_all(applet_manager_t *man)
                                             APPLET_KEY_DESKTOP, &error);
         if (error != NULL)
         {
-            osso_log(LOG_WARNING, 
-                    "Invalid applet specification for %s: %s\n", 
-                    groups[i], error->message);
+            ULOG_WARN("Invalid applet specification for %s: %s\n", 
+                      groups[i], error->message);
 
             g_error_free(error);
             error = NULL;
@@ -470,6 +451,9 @@ void applet_manager_configure_load_all(applet_manager_t *man)
                                           APPLET_KEY_X, &error);
         if (error != NULL || applet_x == APPLET_INVALID_COORDINATE)
         {
+            ULOG_WARN("Invalid applet specification or invalid coordinate '%d'"
+                      "for %s: %s\n", 
+                      applet_x, groups[i], error->message);
             applet_x = APPLET_INVALID_COORDINATE;
             g_error_free(error);
             error = NULL;
@@ -481,6 +465,9 @@ void applet_manager_configure_load_all(applet_manager_t *man)
                                           APPLET_KEY_Y, &error);
         if (error != NULL || applet_y == APPLET_INVALID_COORDINATE)
         {
+            ULOG_WARN("Invalid applet specification or invalid coordinate '%d'"
+                      "for %s: %s\n", 
+                      applet_y, groups[i], error->message);
             applet_y = APPLET_INVALID_COORDINATE;
             g_error_free(error);
             error = NULL;
@@ -499,8 +486,6 @@ void applet_manager_configure_load_all(applet_manager_t *man)
         }
 
         conf_identifier_list = g_list_append(conf_identifier_list, desktopfile);
-
-        fprintf(stderr, "\nGroup #%d has identifier %s\n", i, desktopfile);
         i++;
     }
 
@@ -526,8 +511,6 @@ void applet_manager_configure_load_all(applet_manager_t *man)
         }
         if (identifier_exists == FALSE)
         {
-            fprintf(stderr, "\n Removing identifier %s\n", identifier);
-            
             applet_manager_deinitialize_handler(man, 
                 (HomeAppletHandler *)handler_listitem->data);
         }
@@ -540,11 +523,11 @@ void applet_manager_configure_load_all(applet_manager_t *man)
 void applet_manager_foreground_handler(applet_manager_t *man, 
                                        HomeAppletHandler *handler)
 {
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
 
     home_applet_handler_foreground(handler);
 }
@@ -554,11 +537,11 @@ void applet_manager_foreground(applet_manager_t *man,
 {
     HomeAppletHandler *handler = applet_manager_get_handler(man, identifier);
 
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
     applet_manager_foreground_handler(man, handler);
 }
 
@@ -584,11 +567,11 @@ void applet_manager_state_save_handler(applet_manager_t *man,
                                        void *state_data, 
                                        int *state_size)
 {
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
 
     home_applet_handler_save_state(handler, &state_data, state_size);
 }
@@ -600,11 +583,11 @@ void applet_manager_state_save(applet_manager_t *man,
 {
     HomeAppletHandler *handler = applet_manager_get_handler(man, identifier);
 
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
     applet_manager_state_save_handler(man, handler, state_data, state_size);
 }
 
@@ -624,11 +607,11 @@ void applet_manager_state_save_all(applet_manager_t *man)
 void applet_manager_background_handler(applet_manager_t *man, 
                                        HomeAppletHandler *handler)
 {
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
 
     home_applet_handler_background(handler);
 }
@@ -638,11 +621,11 @@ void applet_manager_background(applet_manager_t *man,
 {
     HomeAppletHandler *handler = applet_manager_get_handler(man, identifier);
 
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
 
     applet_manager_background_handler(man, handler);
 }
@@ -673,6 +656,8 @@ HomeAppletHandler *applet_manager_get_handler(applet_manager_t *man,
     /* NULL is invalid identifier */
     if (identifier == NULL) 
     {
+        ULOG_ERR("Trying to get handler for invalid identifier %s\n", 
+                 identifier);
         return NULL;
     }
 
@@ -700,11 +685,11 @@ GList *applet_manager_get_handler_all(applet_manager_t *man)
 GtkEventBox *applet_manager_get_eventbox_handler(applet_manager_t *man, 
                                                  HomeAppletHandler *handler)
 {
-    g_assert(handler);
     if(handler == NULL)
     {
         return NULL;
     }
+    g_assert(handler);
 
     return home_applet_handler_get_eventbox(handler);
 }
@@ -714,11 +699,11 @@ GtkEventBox *applet_manager_get_eventbox(applet_manager_t *man,
 {
     HomeAppletHandler *handler = applet_manager_get_handler(man, identifier);
 
-    g_assert(handler);
     if(handler == NULL)
     {
         return NULL;
     }
+    g_assert(handler);
 
     return applet_manager_get_eventbox_handler(man, handler);
 }
@@ -726,11 +711,11 @@ GtkEventBox *applet_manager_get_eventbox(applet_manager_t *man,
 gchar *applet_manager_get_identifier_handler(applet_manager_t *man, 
                                              HomeAppletHandler *handler)
 {
-    g_assert(handler);
     if(handler == NULL)
     {
         return NULL;
     }
+    g_assert(handler);
 
     return home_applet_handler_get_desktop_filepath(handler);
 }
@@ -760,11 +745,11 @@ void applet_manager_set_coordinates_handler(applet_manager_t *man,
                                             HomeAppletHandler *handler,
                                             gint x, gint y)
 {
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
 
     home_applet_handler_set_coordinates(handler, x, y);
 }
@@ -775,11 +760,11 @@ void applet_manager_set_coordinates(applet_manager_t *man,
 {
     HomeAppletHandler *handler = applet_manager_get_handler(man, identifier);
 
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
 
     applet_manager_set_coordinates_handler(man, handler, x, y);
 }
@@ -788,11 +773,11 @@ void applet_manager_get_coordinates_handler(applet_manager_t *man,
                                             HomeAppletHandler *handler,
                                             gint *x, gint *y)
 {
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
 
     home_applet_handler_get_coordinates(handler, x, y);
 }
@@ -803,11 +788,11 @@ void applet_manager_get_coordinates(applet_manager_t *man,
 {
     HomeAppletHandler *handler = applet_manager_get_handler(man, identifier);
 
-    g_assert(handler);
     if(handler == NULL)
     {
         return;
     }
+    g_assert(handler);
 
     applet_manager_get_coordinates_handler(man, handler, x, y);
 }
@@ -818,12 +803,9 @@ gboolean applet_manager_identifier_exists(applet_manager_t *man,
     GList *handler_listitem;
     gchar *handler_identifier;
 
-    fprintf(stderr, "Checking if identifier %s exists = ", identifier);
-
     /* NULL is invalid identifier */
     if (identifier == NULL) 
     {
-        fprintf(stderr, "FALSE (NULL identifier)\n");
         return FALSE;
     }
 
@@ -836,43 +818,10 @@ gboolean applet_manager_identifier_exists(applet_manager_t *man,
         if(handler_identifier != NULL && identifier != NULL && 
            g_str_equal(identifier, handler_identifier))
         {
-            fprintf(stderr, "TRUE\n");
             return TRUE;
         }
     }
-    fprintf(stderr, "FALSE\n");
     return FALSE;
 }
-
-
-void applet_manager_print_all(applet_manager_t *man)
-{
-    GList *handler_listitem;
-    gchar *identifier;
-    gint i=0, x=-1, y=-1;
-    HomeAppletHandler *handlerItem;
-
-    fprintf(stderr, "\napplet_manager_print_all \n");
-
-    for(handler_listitem = man->applet_list; handler_listitem != NULL; 
-        handler_listitem = handler_listitem->next)
-    {
-        handlerItem = (HomeAppletHandler *)handler_listitem->data;
-        i++;
-        identifier = home_applet_handler_get_desktop_filepath(handlerItem);
-        home_applet_handler_get_coordinates(handlerItem, &x, &y);
-        fprintf(stderr, "\n----------------------------------\n");
-        fprintf(stderr, 
-                "PrintItem #%d\nidentifier=%s\nhan->identifier=%s\nhan->lib=%s\n%d,%d",
-                i, identifier, handlerItem->desktoppath, handlerItem->librarypath,
-                x, y);
-        fprintf(stderr, "\n----------------------------------\n");
-    }
-
-    fprintf(stderr, "\napplet_manager_print_all sleeping \n");
-    fprintf(stderr, "\n----------------------------------\n");
-    sleep(2);
-}
-
 
 /* --------------- applet manager public end ----------------- */

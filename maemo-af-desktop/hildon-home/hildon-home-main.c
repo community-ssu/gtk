@@ -51,6 +51,7 @@
 #include <libosso.h>
 #include <libmb/mbutil.h>
 #include <glob.h>
+#include <osso-log.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -71,9 +72,6 @@
 #include "osso-common-error.h"
 #include "layout-manager.h"
 #include "../kstrace.h"
-
-/* log include */
-#include <log-functions.h>  	 
 
 static GtkWidget *window = NULL;
 static GtkWidget *home_base_fixed;
@@ -256,135 +254,6 @@ void construct_titlebar_area()
     gtk_widget_show(titlebar_label);
 }
 
-/* FIXME applet handler testing code. to be removed before refactoring 
- * will be integrated 
-
-static 
-void move_applets_selected(GtkWidget *widget, 
-                           GdkEvent *event,
-                           gpointer data)
-{
-    applet_manager_t *man;
-    GList *list_item;
-    GtkWidget *applet;
-    gchar *identifier;
-
-    gint applet_x;
-    gint applet_y;
-    
-    man = applet_manager_singleton_get_instance();
-    
-    applet_manager_print_all(man);
-
-    for(list_item = applet_manager_get_identifier_all(man); 
-        list_item != NULL; list_item = list_item->next)
-    {
-        identifier = (gchar *)list_item->data;
-
-        applet = GTK_WIDGET(applet_manager_get_eventbox(man, identifier));
-        applet_manager_get_coordinates(man, identifier, &applet_x, &applet_y);
-        */
-        /* If not set place, cannot be show directly */
-        /* This will be handled by calling layout mode in real code*/
-/*
-        if(applet_x == -1 || applet_y == -1)
-        {
-            continue;
-        }
-
-        if(applet_x > 300)
-        {
-            applet_x = 20;
-        } else
-        {
-            applet_x += 100;
-        }
-        
-        gtk_fixed_move(GTK_FIXED(home_fixed), 
-                       applet, 
-                       applet_x, 
-                       applet_y);
-        applet_manager_set_coordinates(man, identifier, applet_x, applet_y);
-        gtk_widget_show_all(applet);
-    }
-    applet_manager_print_all(man);
-    applet_manager_configure_save_all(man);
-}
-
-static 
-void load_applet_configure_selected(GtkWidget *widget, 
-                                    GdkEvent *event,
-                                    gpointer data)
-{
-    applet_manager_t *man;
-    GList *old_list_item;
-    
-    GList *list_item;
-    GtkWidget *applet;
-    gchar *identifier;
-    gint applet_x = 20;
-    gint applet_y = -100;
-
-    man = applet_manager_singleton_get_instance();
-    applet_manager_print_all(man);
-    old_list_item = applet_manager_get_identifier_all(man);
-
-    applet_manager_configure_load_all(man);
-
-    for(list_item = applet_manager_get_identifier_all(man); 
-        list_item != NULL; list_item = list_item->next)
-    {
-        identifier = (gchar *)list_item->data;
-        applet_manager_get_coordinates(man, identifier, &applet_x, &applet_y);
-        fprintf(stderr, "\n-------\nHOME setting applet %s to %d,%d\n", 
-                identifier, 
-                applet_x, applet_y);
-        if(applet_x != -1 && applet_y != -1 )
-        {
-            gboolean identifier_exists = FALSE;
-            for(;old_list_item != NULL; old_list_item = old_list_item->next)
-            {
-                fprintf(stderr, "\nload: checking old_identifier %s\n", 
-                        (gchar *)old_list_item->data);
-                if(identifier != NULL && old_list_item->data != NULL &&
-                   g_str_equal(identifier, (gchar *)old_list_item->data))
-                {
-                    fprintf(stderr, "FOUND\n");
-                    identifier_exists = TRUE;
-                    break;
-                }   
-            }
-
-            applet = 
-                GTK_WIDGET(applet_manager_get_eventbox(man, identifier));
-
-            if(identifier_exists == FALSE)
-            {
-                fprintf(stderr, "\nload didn't find identifier %s\n", identifier);
-                gtk_fixed_put(GTK_FIXED(home_fixed),
-                              applet, 
-                              applet_x, 
-                              applet_y);
-            } else
-            {
-                fprintf(stderr, "\nload found identifier %s\n", identifier);
-                gtk_fixed_move(GTK_FIXED(home_fixed), 
-                               applet, 
-                               applet_x, 
-                               applet_y);
-            }
-
-            gtk_widget_show_all(applet);
-        }
-        
-    }
-    applet_manager_foreground_all(man);
-
-    gtk_widget_show_all(home_fixed);
-    applet_manager_print_all(man);
-}
-*/
-
 /**
  * @construct_titlebar_menu
  *
@@ -394,60 +263,42 @@ void load_applet_configure_selected(GtkWidget *widget,
 static 
 void construct_titlebar_menu()
 {    
-    GtkWidget *separator_item;
-    GtkWidget *screen_item;
+    GtkWidget *select_applets_item;
+    GtkWidget *applets_settings_item;
+    GtkWidget *layout_item;
+
+    GtkWidget *tools_item;
     GtkWidget *set_bg_image_item;
     GtkWidget *personalisation_item;
     GtkWidget *calibration_item;
-    GtkWidget *select_applets_item;
-    GtkWidget *layout_item;
-
-    /* FIXME applet handler testing code. to be removed before refactoring 
-     * will be integrated 
-    GtkWidget *menu_item;
-    GtkWidget *menu_item2;
-     */
+    GtkWidget *help_item;
 
     titlebar_menu = gtk_menu_new();
     menu_used = titlebar_menu;
 
     gtk_widget_set_name(titlebar_menu, HILDON_HOME_TITLEBAR_MENU_NAME); 
 
-    /* FIXME applet handler testing code. to be removed before refactoring 
-     * will be integrated 
-    menu_item = gtk_menu_item_new_with_label("Appletti siirry");
-    gtk_widget_show(menu_item);
-    gtk_menu_append(GTK_MENU(titlebar_menu), menu_item);
-    g_signal_connect(G_OBJECT(menu_item), 
-                     "activate",
-                     G_CALLBACK(move_applets_selected), NULL);
-    menu_item2 = gtk_menu_item_new_with_label("Lataa konffikset");
-    gtk_widget_show(menu_item2);
-    gtk_menu_append(GTK_MENU(titlebar_menu), menu_item2);
-    g_signal_connect(G_OBJECT(menu_item2), 
-                     "activate",
-                     G_CALLBACK(load_applet_configure_selected), NULL);
-     */
-            
-
-    separator_item = gtk_separator_menu_item_new();
-    gtk_widget_show(separator_item);
-    gtk_menu_append(GTK_MENU(titlebar_menu), separator_item);
-
     /* 'Select Applets' dialog select */
     select_applets_item =
-	            gtk_menu_item_new_with_label(_("home_me_select_applets"));
+	gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_MENU_SELECT_APPLETS);
     gtk_widget_show(select_applets_item);
     gtk_menu_append(GTK_MENU(titlebar_menu), select_applets_item);
     g_signal_connect(G_OBJECT(select_applets_item), "activate",
 		     G_CALLBACK(call_select_applets_dialog), 
 		     NULL);
 
-    /* Applet settings submenu should go here */
+    /* Applet settings submenu */
+    /* FIXME implementation missing thus dimmed */
+    applets_settings_item =
+        gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_MENU_APPLET_SETTINGS);
+    gtk_widget_set_sensitive(applets_settings_item, FALSE);
+    gtk_widget_show(applets_settings_item);
+    gtk_menu_append(GTK_MENU(titlebar_menu), applets_settings_item);
 
     /* Layout mode launch */
 
-    layout_item = gtk_menu_item_new_with_label(_("home_me_edit_layout"));
+    layout_item = 
+        gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_MENU_EDIT_LAYOUT);
     gtk_widget_show(layout_item);
     gtk_menu_append(GTK_MENU(titlebar_menu), layout_item);
     g_signal_connect(G_OBJECT(layout_item), "activate",
@@ -458,12 +309,13 @@ void construct_titlebar_menu()
 
     titlebar_submenu = gtk_menu_new();
 
-    screen_item =
-        gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_MENU_SCREEN);
+    tools_item =
+        gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_MENU_TOOLS);
 
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(screen_item), titlebar_submenu);
-    gtk_menu_append(GTK_MENU(titlebar_menu), screen_item);
-    gtk_widget_show(screen_item);    
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(tools_item), titlebar_submenu);
+    gtk_menu_append(GTK_MENU(titlebar_menu), tools_item);
+    gtk_widget_show(tools_item);    
+    /* FIXME is this option anymore ?*/
     if(background_changable)
     {
         set_bg_image_item =
@@ -493,6 +345,12 @@ void construct_titlebar_menu()
         g_signal_connect(G_OBJECT(calibration_item), "activate",
                          G_CALLBACK(screen_calibration_selected), NULL);
     }
+
+    help_item =
+        gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_SUB_HELP);
+    gtk_widget_show(help_item);
+    gtk_menu_append(GTK_MENU(titlebar_submenu), help_item);
+    /* FIXME needs to implement help */
 }
 
 /**
@@ -620,16 +478,16 @@ gboolean personalisation_selected(GtkWidget *widget,
     case OSSO_OK:
         break;
     case OSSO_ERROR:
-        osso_log(LOG_ERR,"OSSO_ERROR (No help for such topic ID)\n");
+        ULOG_ERR("OSSO_ERROR (No help for such topic ID)\n");
         break;
     case OSSO_RPC_ERROR:
-        osso_log(LOG_ERR,"OSSO_RPC_ERROR (RPC failed for Personalization)\n");
+        ULOG_ERR("OSSO_RPC_ERROR (RPC failed for Personalization)\n");
         break;
     case OSSO_INVALID:
-        osso_log(LOG_ERR,"OSSO_INVALID (invalid argument)\n");
+        ULOG_ERR("OSSO_INVALID (invalid argument)\n");
         break;
     default:
-        osso_log(LOG_ERR,"Unknown error!\n");
+        ULOG_ERR("Unknown error!\n");
         break;
     }
 
@@ -666,16 +524,16 @@ gboolean screen_calibration_selected(GtkWidget *widget,
     case OSSO_OK:
         break;
     case OSSO_ERROR:
-        osso_log(LOG_ERR,"OSSO_ERROR (No help for such topic ID)\n");
+        ULOG_ERR("OSSO_ERROR (No help for such topic ID)\n");
         break;
     case OSSO_RPC_ERROR:
-        osso_log(LOG_ERR,"OSSO_RPC_ERROR (RPC failed for Screen calibration)\n");
+        ULOG_ERR("OSSO_RPC_ERROR (RPC failed for Screen calibration)\n");
         break;
     case OSSO_INVALID:
-        osso_log(LOG_ERR,"OSSO_INVALID (invalid argument)\n");
+        ULOG_ERR("OSSO_INVALID (invalid argument)\n");
         break;
     default:
-        osso_log(LOG_ERR,"Unknown error!\n");
+        ULOG_ERR("Unknown error!\n");
         break;
     }
 
@@ -699,7 +557,7 @@ void load_original_bg_image_uri()
     fp = fopen (user_original_bg_image, "r");
     if(fp == NULL) 
     {
-        osso_log(LOG_ERR, "Couldn't open file %s for reading image name", 
+        ULOG_ERR( "Couldn't open file %s for reading image name", 
                  user_original_bg_image);
         home_bg_image_uri = "";
 
@@ -709,12 +567,12 @@ void load_original_bg_image_uri()
     }
     if(fscanf(fp, HILDON_HOME_BG_FILENAME_FORMAT_SAVE, bg_uri) < 0)
     {
-        osso_log(LOG_ERR, "Couldn't load image uri from file %s", 
+        ULOG_ERR( "Couldn't load image uri from file %s", 
                  user_original_bg_image);
     }
     if(fp != NULL && fclose(fp) != 0) 
     {
-        osso_log(LOG_ERR, "Couldn't close file %s", 
+        ULOG_ERR( "Couldn't close file %s", 
                  user_original_bg_image);
     }
     home_bg_image_uri = g_strdup_printf("%s", bg_uri);
@@ -775,7 +633,7 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
     if(!gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER (dialog),
                                             home_user_image_dir))
     {
-        osso_log(LOG_ERR, "Couldn't set default image dir for dialog %s", 
+        ULOG_ERR( "Couldn't set default image dir for dialog %s", 
                  home_user_image_dir);
     }
 
@@ -1034,7 +892,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
 
     if (bg_image_desc_base_dir == NULL) 
     {
-        osso_log(LOG_ERR, "Failed to open path: %s", error->message);
+        ULOG_ERR( "Failed to open path: %s", error->message);
         if(error != NULL)
         {
             g_error_free(error);
@@ -1060,7 +918,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
             
             if (file_contents == NULL) 
             {
-                osso_log(LOG_ERR, "Failed to read file: %s\n", 
+                ULOG_ERR( "Failed to read file: %s\n", 
                          image_desc_file);
             } else 
             {
@@ -1108,7 +966,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                                       BG_IMAGE_PRIORITY, image_order, -1);
                } else 
                {
-                   osso_log(LOG_ERR, "Desktop file malformed: %s", 
+                   ULOG_ERR( "Desktop file malformed: %s", 
                             image_desc_file);
                }
 
@@ -1119,7 +977,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
             }            
         } else /*suffix test*/ 
         {
-            osso_log(LOG_ERR, "Skipping non-.desktop file: %s ",image_desc_file);
+            ULOG_ERR( "Skipping non-.desktop file: %s ",image_desc_file);
         }
         
         image_desc_file = g_dir_read_name(bg_image_desc_base_dir);
@@ -1471,7 +1329,7 @@ void construct_background_image(char *argument_list[],
            &error)
         )
     {
-        osso_log(LOG_ERR, "construct_background_image():%s", 
+        ULOG_ERR( "construct_background_image():%s", 
                  error->message);
         if(error != NULL)
         {
@@ -1484,7 +1342,7 @@ void construct_background_image(char *argument_list[],
     if(setpriority(PRIO_PROCESS, image_loader_pid, 
                    HILDON_HOME_IMAGE_LOADER_NICE) == -1)
     {
-        osso_log(LOG_ERR, 
+        ULOG_ERR( 
                  "setting process priority %d: image loader process failed\n",
                  HILDON_HOME_IMAGE_LOADER_NICE);
     }
@@ -1553,7 +1411,7 @@ void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
         show_mmc_cover_open_note();
         break;
     default:
-        osso_log(LOG_ERR, 
+        ULOG_ERR( 
                  "image_loader_callback() child_exit_status %d NOT_HANDLED",
                  child_exit_status);
         break;
@@ -1807,7 +1665,7 @@ GdkPixbuf *get_background_image()
     
     if (error != NULL)
     {
-        osso_log(LOG_ERR, "get_background_image():%s", error->message);
+        ULOG_ERR( "get_background_image():%s", error->message);
         g_error_free(error);
         return NULL;
     }
@@ -1842,7 +1700,7 @@ GdkPixbuf *get_factory_default_background_image()
     
     if (error != NULL)
     {
-        osso_log(LOG_ERR, "get_factory_default_background_image():%s", 
+        ULOG_ERR( "get_factory_default_background_image():%s", 
                  error->message);
         g_error_free(error);
         error = NULL;
@@ -1876,7 +1734,7 @@ void set_default_background_image()
 
     if (bg_image_desc_base_dir == NULL) 
     {
-        osso_log(LOG_ERR, "Failed to open path: %s", error->message);
+        ULOG_ERR( "Failed to open path: %s", error->message);
         if(error != NULL)
         {
             g_error_free(error);
@@ -1927,7 +1785,7 @@ void set_default_background_image()
                                           BG_DESKTOP_IMAGE_FILENAME));
                 } else 
                 {
-                    osso_log(LOG_ERR, "Desktop file malformed: %s", 
+                    ULOG_ERR( "Desktop file malformed: %s", 
                              image_desc_file);
                 }
                 
@@ -2070,8 +1928,7 @@ void refresh_background_image()
 
     } else
     {
-        osso_log(LOG_ERR, 
-                 "refresh_background_image(): failed to retrieve any image");
+        ULOG_ERR("refresh_background_image(): failed to retrieve any image");
     }
     gtk_event_box_set_visible_window(GTK_EVENT_BOX(home_base_eventbox),
                                      TRUE); 
@@ -2104,9 +1961,8 @@ static void construct_applets(void)
     {
         identifier = (gchar *)list_item->data;
         applet_manager_get_coordinates(man, identifier, &applet_x, &applet_y);
-        fprintf(stderr, "HOME setting applet %s to %d,%d\n", 
-                identifier, 
-                applet_x, applet_y);
+        ULOG_ERR("HOME setting applet %s to %d,%d\n", 
+                identifier, applet_x, applet_y);
         if(applet_x != -1 && applet_y != -1 )
         {
             applet = 
@@ -2237,7 +2093,7 @@ void hildon_home_initiliaze()
 
     if(fp == NULL) 
     {
-        osso_log(LOG_ERR, "Couldn't open configure file %s", 
+        ULOG_ERR( "Couldn't open configure file %s", 
                  configure_file);
     } else 
     {
@@ -2246,7 +2102,7 @@ void hildon_home_initiliaze()
     }
     if(fp != NULL && fclose(fp) != 0) 
     {
-        osso_log(LOG_ERR, "Couldn't close configure file %s", 
+        ULOG_ERR( "Couldn't close configure file %s", 
                  configure_file);
     }
 
@@ -2306,8 +2162,7 @@ void hildon_home_get_factory_settings( void )
     fp = fopen (HILDON_HOME_FACTORY_FILENAME, "r");
     if(fp == NULL) 
     {
-        osso_log(LOG_ERR, 
-                 "Couldn't open file %s for reading factory set image name",
+        ULOG_ERR("Couldn't open file %s for reading factory set image name",
                  user_original_bg_image);
     } else
     {
@@ -2315,13 +2170,12 @@ void hildon_home_get_factory_settings( void )
                   &ws_hide, &ws_properties, &bg_change, bg_fact_filename)
            < 0) 
         {
-            osso_log(LOG_ERR, 
-                     "Couldn't load factory settings from file %s", 
+            ULOG_ERR("Couldn't load factory settings from file %s", 
                      user_original_bg_image);
         }
         if(fp != NULL && fclose(fp) != 0) 
         {
-            osso_log(LOG_ERR, "Couldn't close file %s", 
+            ULOG_ERR("Couldn't close file %s", 
                      user_original_bg_image);
         }
     }
@@ -2374,7 +2228,7 @@ void hildon_home_construct_user_system_dir()
     {
         if(mkdir (system_dir, HILDON_HOME_SYSTEM_DIR_ACCESS) != 0) 
         {
-            osso_log(LOG_ERR, "Couldn't create directory %s for user settings", 
+            ULOG_ERR("Couldn't create directory %s for user settings", 
                      system_dir);
         }
         
@@ -2469,7 +2323,7 @@ static void hildon_home_cp_read_desktop_entries(void)
     dir = g_dir_open(dir_path, 0, &error);
     if(!dir)
     {
-        osso_log( LOG_ERR, error->message);
+        ULOG_ERR(error->message);
         if(error != NULL)
         {
             g_error_free(error);
@@ -2492,9 +2346,8 @@ static void hildon_home_cp_read_desktop_entries(void)
         personalization = mb_dotdesktop_new_from_file(path);
         if(!personalization)
         {
-            osso_log(LOG_WARNING, 
-                     "Error reading entry file %s for personalisation applet", 
-                     path );
+            ULOG_WARN("Error reading entry file %s for personalisation applet",
+                      path );
             personalization = NULL;
         }       
         g_free(path);
@@ -2512,9 +2365,8 @@ static void hildon_home_cp_read_desktop_entries(void)
         screen_calibration = mb_dotdesktop_new_from_file(path);
         if(!screen_calibration)
         {
-            osso_log(LOG_WARNING, 
-                     "Error reading entry file %s for screen calibration applet", 
-                     path );
+            ULOG_WARN("Error reading entry file %s for screen"
+                      "calibration applet", path );
             screen_calibration = NULL;
         }       
         g_free(path);
@@ -2786,7 +2638,9 @@ void create_startup_lock(void)
      
      f = fopen(STARTUP_LOCK_FILE, "w");
      if (f)
-             fclose(f);
+     {
+         fclose(f);
+     }
 }
  
 static

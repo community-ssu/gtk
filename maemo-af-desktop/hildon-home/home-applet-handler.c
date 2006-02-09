@@ -32,6 +32,7 @@
 /* Applet includes */
 #include "home-applet-handler.h"
 #include "home-applet-interface.h"
+#include "hildon-home-interface.h"
 #include "libmb/mbdotdesktop.h"
 
 /* Systems includes */
@@ -42,7 +43,7 @@
 #include <gtk/gtk.h>
 
 /* log include */
-#include <log-functions.h>
+#include <osso-log.h>
 
 #define HOME_APPLET_HANDLER_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE ((obj),\
@@ -132,7 +133,7 @@ static void home_applet_handler_class_init(HomeAppletHandlerClass * applet_class
     object_class->finalize = home_applet_handler_finalize;
    
     g_type_class_add_private(applet_class,
-                          sizeof(struct _HomeAppletHandlerPrivate));
+                             sizeof(struct _HomeAppletHandlerPrivate));
     
 }
 
@@ -159,8 +160,8 @@ static void home_applet_handler_init(HomeAppletHandler * self)
     self->librarypath = NULL;
     self->desktoppath = NULL;
     self->eventbox = NULL;
-    self->x = -1;
-    self->y = -1;
+    self->x = APPLET_INVALID_COORDINATE;
+    self->y = APPLET_INVALID_COORDINATE;
 }
 
 static void home_applet_handler_finalize(GObject * obj_self)
@@ -188,7 +189,7 @@ static void home_applet_handler_finalize(GObject * obj_self)
 
 static void warning_function( void )
 {
-    osso_log(LOG_ERR, "Item not properly loaded.\n"  
+    ULOG_ERR("Item not properly loaded.\n"  
              "\tThis function is only called, if a item couldn't "
              "initialise itself properly. See\n"
              "\thome_applet_handler_new for more information\n");
@@ -233,18 +234,24 @@ static const char *load_symbols(HomeAppletHandler *handler,
 /*Public functions*/
 /*******************/
 
-/*FIXME: .desktop reading for values **/
 HomeAppletHandler *home_applet_handler_new(const char *desktoppath, 
                                            const char *librarypath, 
                                            void *state_data, int *state_size)
 {
     GtkWidget *applet;
     HomeAppletHandlerPrivate *priv;
-    HomeAppletHandler *handler = g_object_new(HOME_TYPE_APPLET_HANDLER,
-                                              NULL); 
-    gint applet_x = -1, applet_y = -1;
+    HomeAppletHandler *handler;
+    gint applet_x = APPLET_INVALID_COORDINATE;
+    gint applet_y = APPLET_INVALID_COORDINATE;
 
-    fprintf(stderr, "\n-------\nhome_applet_handler_new\n");
+    if (desktoppath == NULL)
+    {
+        ULOG_ERR("Identifier is required to be able create applet\n");
+        return NULL;
+    }
+
+    handler = g_object_new(HOME_TYPE_APPLET_HANDLER,
+                                              NULL);
     g_assert(handler);
 
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
@@ -253,9 +260,6 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     {
         MBDotDesktop *file_contents;
 
-        /* FIXME debug print only. to be removed end of refactoring */
-        fprintf(stderr, " librarypath == NULL\n");
-
         file_contents = mb_dotdesktop_new_from_file(desktoppath);
         if (file_contents != NULL) 
         {
@@ -263,31 +267,30 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
 
             desktop_field = 
                 mb_dotdesktop_get(file_contents, 
-                                  HOME_APPLET_DESKTOP_LIBRARY);
+                                  APPLET_KEY_LIBRARY);
             if(desktop_field != NULL)
             {
                 librarypath = g_strdup(
                     mb_dotdesktop_get(file_contents,
-                                      HOME_APPLET_DESKTOP_LIBRARY));
+                                      APPLET_KEY_LIBRARY));
             } else
             {
-                osso_log(LOG_WARNING, 
-                         "Unable find library path from desktop file %s\n", 
-                         desktoppath);
+                ULOG_WARN("Unable find library path from desktop file %s\n",
+                          desktoppath);
                 return NULL;
             }
 
             desktop_field = mb_dotdesktop_get(file_contents,
-                                              HOME_APPLET_DESKTOP_X);
+                                              APPLET_KEY_X);
                                               
-            if (desktop_field != NULL && g_ascii_isdigit(*desktop_field)) 
+            if (desktop_field != NULL && g_ascii_isdigit(*desktop_field))
             {
                 applet_x = (gint)atoi(desktop_field);
             }
 
             desktop_field = NULL; /* reset */
             desktop_field = mb_dotdesktop_get(file_contents,
-                                              HOME_APPLET_DESKTOP_Y);
+                                              APPLET_KEY_Y);
                                               
             if (desktop_field != NULL && g_ascii_isdigit(*desktop_field)) 
             {
@@ -301,12 +304,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     
     if (!priv->dlhandle)
     {   
-        /* FIXME debug print only. to be removed end of refactoring */
-        fprintf(stderr, "Unable to open Home Applet %s\n",
-                 librarypath);
-        osso_log(LOG_WARNING, 
-                 "Unable to open Home Applet %s\n",
-                 librarypath);
+        ULOG_WARN("Unable to open Home Applet %s\n", librarypath);
 
         return NULL;
     }
@@ -318,12 +316,8 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
             
         if (error_str)
         {
-            /* FIXME debug print only. to be removed end of refactoring */
-            fprintf(stderr, "Unable to load symbols from Applet %s: %s\n", 
-                    librarypath, error_str);
-            osso_log(LOG_WARNING, 
-                     "Unable to load symbols from Applet %s: %s\n", 
-                     librarypath, error_str);
+            ULOG_WARN("Unable to load symbols from Applet %s: %s\n", 
+                      librarypath, error_str);
 
             dlclose(priv->dlhandle);
             return NULL;
@@ -333,18 +327,11 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
         handler->eventbox = GTK_EVENT_BOX(gtk_event_box_new());
         gtk_container_add(GTK_CONTAINER(handler->eventbox), applet);
         handler->librarypath = (gchar *)librarypath;
-        handler->desktoppath = (gchar *)desktoppath;
-        if(applet_x)
-        {
-            handler->x = applet_x;
-        }
-        if(applet_y)
-        {
-            handler->y = applet_y;
-        }
+        handler->desktoppath = g_strdup((gchar *)desktoppath);
+        handler->x = applet_x;
+        handler->y = applet_y;
     }
 
-    fprintf(stderr, " handler ok\n");
     return handler;
 }
 

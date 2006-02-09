@@ -48,11 +48,6 @@ struct applet_manager {
 #define APPLET_MANAGER_FACTORY_PATH   "/etc/hildon-home"
 #define APPLET_MANAGER_USER_PATH      ".osso/hildon-home"
 #define APPLET_MANAGER_ENV_HOME       "HOME"
-#define APPLET_KEY_LIBRARY            "Library"
-#define APPLET_KEY_DESKTOP            "Desktop"
-#define APPLET_KEY_X                  "X"
-#define APPLET_KEY_Y                  "Y"
-#define APPLET_INVALID_COORDINATE     -1
 
 /** applet_manager_singleton_get_instance
  *
@@ -463,10 +458,6 @@ void applet_manager_get_coordinates(applet_manager_t *man,
  **/
 gboolean applet_manager_identifier_exists(applet_manager_t *man, 
                                           gchar *identifier);
-
-/* FIXME debug function to be removed */
-void applet_manager_print_all(applet_manager_t *man);
-
 
 G_END_DECLS
 

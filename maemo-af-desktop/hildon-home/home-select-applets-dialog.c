@@ -39,11 +39,24 @@
 #include "layout-manager.h"
 
 /* log include */
-#include <log-functions.h>
+#include <osso-log.h>
 
 
+/* Dialog data contents structure */
 SelectAppletsData data_t;
-   
+
+
+/* Private function declarations */
+static 
+void select_applets_toggled_cb(GtkCellRendererToggle *cell_renderer, 
+		               gchar *path, 
+			       gpointer user_data);
+static
+void select_applets_reload_applets(char *applets_path,
+		                   gpointer user_data); 
+
+
+/* Function definitions */
 
 /**
  * @show_select_applets_dialog
@@ -75,10 +88,9 @@ void show_select_applets_dialog(GList *applets,
     /* GList containers */
     GList *add_list = NULL;
     GList *remove_list = NULL;
-    
-    
-
-    
+      
+   
+ 
     /* TreeView model */
     data_t.model_data = GTK_TREE_MODEL(gtk_list_store_new
 		    (APPLETS_LIST_COLUMNS, 
@@ -119,7 +131,7 @@ void show_select_applets_dialog(GList *applets,
 		     (char *)HILDON_HOME_APPLETS_DESKTOP_DIR, 
 		     NULL) == HILDON_ERR ) 
     {
-        g_warning("Could not set notify for directory:%s\n", 
+        ULOG_WARN("Could not set notify for directory:%s\n", 
 		  HILDON_HOME_APPLETS_DESKTOP_DIR);
     }
     
@@ -179,7 +191,7 @@ void show_select_applets_dialog(GList *applets,
 	
 	if( !gtk_tree_model_get_iter_first(data_t.model_data, &iter) )
         {
-	    g_warning("FAILED to initialize GtkTreeIter, "
+	    ULOG_WARN("FAILED to initialize GtkTreeIter, "
 		      "could not save or remove applets.\n");
 	}
         else
@@ -201,18 +213,20 @@ void show_select_applets_dialog(GList *applets,
 		}*/	
 		
 		/* find the applet in selected applets */
-		find_list = g_list_find_custom(data_t.list_data, desktop_file,								                                                       (GCompareFunc)strcmp);
+		find_list = g_list_find_custom(data_t.list_data, desktop_file, 
+                                               (GCompareFunc)strcmp);
 		
 		/* if not found but enabled, add it to the added list */
 		if ( find_list == NULL && desktop_file && enabled ) {
 		    add_list = g_list_append(add_list, desktop_file);
-	            fprintf(stderr,"\nADDING-APPLET: %s", desktop_file);	    
+	            ULOG_WARN("\nADDING-APPLET: %s", desktop_file);	    
 		}
 		/* or if disabled but found from selected list, removed list */
 		else if( find_list && desktop_file && !enabled && 
-			 g_str_equal(find_list->data, desktop_file) ) { 
+			 find_list->data != NULL &&
+                         g_str_equal(find_list->data, desktop_file) ) { 
 		    remove_list = g_list_append(remove_list, desktop_file);	
-		    fprintf(stderr,"\nREMOVING-APPLET: %s", desktop_file);    
+		    ULOG_WARN("\nREMOVING-APPLET: %s", desktop_file);    
 		}
 		
 		find_list = NULL;
@@ -229,9 +243,10 @@ void show_select_applets_dialog(GList *applets,
    } /* .. if OK */
     
 	  
-   if( hildon_dnotify_remove_cb(HILDON_HOME_APPLETS_DESKTOP_DIR) == HILDON_ERR ) {
-              g_warning("FAILED to remove notify for the directory:%s!\n",
-		                    HILDON_HOME_APPLETS_DESKTOP_DIR);
+   if( hildon_dnotify_remove_cb
+		   (HILDON_HOME_APPLETS_DESKTOP_DIR) == HILDON_ERR ) {
+       ULOG_WARN("FAILED to remove notify for the directory:%s!\n",
+                 HILDON_HOME_APPLETS_DESKTOP_DIR);
    }
 
    /* Store the return values */
@@ -262,9 +277,14 @@ void select_applets_selected(GtkEventBox *home_event_box,
    GList *added_applets;
    GList *removed_applets;  
 	
+   /* Return if no home available */
+   g_return_if_fail(home_event_box && home_fixed);
+   
    /* Get currently showed applets from the applet manager */
    applet_manager_t *applet_manager_instance = 
 	   applet_manager_singleton_get_instance();
+   /* Return if no applet manager available */
+   g_return_if_fail(applet_manager_instance); 
    GList *showed_list = applet_manager_get_identifier_all
 	   (applet_manager_instance);
 
@@ -273,8 +293,9 @@ void select_applets_selected(GtkEventBox *home_event_box,
    
    /* If applets to be added, call layout manager */
    if( added_applets )
-   {   fprintf(stderr,"\nHOME-SELECT-APPLET-DIALOG - "
-		      "adding applets now calling layout mode\n");
+   {   
+       ULOG_ERR("\nHOME-SELECT-APPLET-DIALOG - "
+                "adding applets now calling layout mode\n");
 	   
        layout_mode_begin(home_event_box, home_fixed,
 		        added_applets, removed_applets);
@@ -299,6 +320,7 @@ void select_applets_selected(GtkEventBox *home_event_box,
 	   
            removed_applets = removed_applets->next;
        }	  
+       applet_manager_configure_save_all(applet_manager_instance);   
    }
 
    /* Cleanup */
@@ -321,16 +343,19 @@ void select_applets_selected(GtkEventBox *home_event_box,
  *
  * Changes the toggle_button state on the TreeModel
  **/
+static 
 void select_applets_toggled_cb(GtkCellRendererToggle *cell_renderer,
-		               gchar *path, gpointer user_data)
+		               gchar *path, 
+			       gpointer user_data)
 {
     GtkTreeIter iter;
     gboolean active;
     
     /* Get the GtkTreeModel iter */
     GtkTreeModel *model = GTK_TREE_MODEL(user_data);
+
     if ( !gtk_tree_model_get_iter_from_string(model, &iter, path) ) {
-        g_warning("FAILED to find Tree path, not toggled!");	
+        ULOG_ERR("FAILED to find Tree path, not toggled!");
 	return;
     }
 
@@ -350,6 +375,7 @@ void select_applets_toggled_cb(GtkCellRendererToggle *cell_renderer,
  *
  * Reload the applets list from monitored .desktop directory path
  **/
+static
 void select_applets_reload_applets(char *applets_path, 
                                    gpointer user_data)	
 {
@@ -363,11 +389,10 @@ void select_applets_reload_applets(char *applets_path,
     GtkTreeIter iter;
 
     
-
     /* Open the .desktop directory */
     if( (applet_desktop_base_dir = g_dir_open(HILDON_HOME_APPLETS_DESKTOP_DIR,
 				              0, &error)) == NULL ) {
-        g_warning("FAILED to open path: %s", error->message);
+        ULOG_WARN("FAILED to open path: %s", error->message);
 	g_error_free(error);
 	
 	return;
@@ -391,7 +416,7 @@ void select_applets_reload_applets(char *applets_path,
 	    if ( !g_key_file_load_from_file(desktop, indexfile,
 				            G_KEY_FILE_NONE, &error) )
 	    {
-	        g_warning("FAILED to open applet .desktop file: %s\n",
+	        ULOG_WARN("FAILED to open applet .desktop file: %s\n",
 			  error->message);
 		g_error_free(error);
 	    }
@@ -403,7 +428,7 @@ void select_applets_reload_applets(char *applets_path,
 					HILDON_HOME_APPLETS_DESKTOP_GROUP, 
 					HILDON_HOME_APPLETS_DESKTOP_NAME_KEY, 
 					&error)) == NULL) {
-                   g_warning("FAILED to read desktop file Icon key value: %s\n",
+                   ULOG_WARN("FAILED to read desktop file Icon key value: %s\n",
 	                     error->message);
                    g_error_free(error);
                    error = NULL;
@@ -416,7 +441,7 @@ void select_applets_reload_applets(char *applets_path,
 				       APPLET_NAME_COL, applet_name,
 				       DESKTOP_FILE_COL, indexfile, -1);
 		    
-                    /* if the applet already exists on applet manager */
+                    /* if the applet already exists in applet manager */
                     if( (g_list_find_custom(data_t.list_data, indexfile, 
 				            (GCompareFunc)strcmp)) != NULL ) {
                         gtk_list_store_set(GTK_LIST_STORE(data_t.model_data), &iter,

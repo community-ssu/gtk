@@ -32,6 +32,18 @@
 #define HILDON_HOME_TITLEBAR_HEIGHT     60
 #define HILDON_TASKNAV_WIDTH            80
 
+#define HILDON_HOME_TITLEBAR_MENU_LABEL_X    35
+#define HILDON_HOME_TITLEBAR_MENU_LABEL_Y    12
+#define HILDON_HOME_TITLEBAR_MENU_LABEL_FONT "osso-TitleFont"
+#define HILDON_HOME_TITLEBAR_MENU_LABEL_COLOR "TitleTextColor"
+
+#define APPLET_KEY_LIBRARY            "Library"
+#define APPLET_KEY_DESKTOP            "Desktop"
+#define APPLET_KEY_X                  "X"
+#define APPLET_KEY_Y                  "Y"
+#define APPLET_INVALID_COORDINATE     -1
+
+
 /* Additions by Karoliina Salminen <karoliina.t.salminen at nokia dot com> */
 
 int hildon_home_main(void);

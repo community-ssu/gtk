@@ -61,20 +61,13 @@ typedef struct {
 } SelectAppletsData;
 
 
-/* Function definitions */
+/* Public function declarations */
 void show_select_applets_dialog(GList *applets, 
 		                GList **added_list, 
 				GList **removed_list);
 
 void select_applets_selected(GtkEventBox *home_event_box,
 		             GtkFixed *home_fixed);
-
-void select_applets_reload_applets(char *applets_path, 
-		                   gpointer user_data);
-				   
-void select_applets_toggled_cb(GtkCellRendererToggle *cell_renderer,
-		               gchar *path, 
-			       gpointer user_data);
 
 G_END_DECLS
 

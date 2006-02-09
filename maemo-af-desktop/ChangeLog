@@ -1,3 +1,7 @@
+2006-02-09  Johan Bilien <johan.bilien@nokia.com>
+	* Import from hildon-refactoring branch (matches r12951)
+	* configure.ac: 2.4.3
+
 2006-02-06  Johan Bilien <johan.bilien@nokia.com>
 	* Imported changes by Matthew Allum:	
 	* hildon-navigator/hn-wm-watched-window.h:
