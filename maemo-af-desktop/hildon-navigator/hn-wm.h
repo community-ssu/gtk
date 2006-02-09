@@ -1,3 +1,5 @@
+/* -*- mode:C; c-file-style:"gnu"; -*- */
+
 /*
  * This file is part of maemo-af-desktop
  *
@@ -23,8 +25,8 @@
  */
 
 /**
-* @file hn-wm.h
-*/
+ * @file hn-wm.h
+ */
 
 #ifndef HILDON_NAVIGATOR_WM_H
 #define HILDON_NAVIGATOR_WM_H
@@ -77,7 +79,7 @@
 #endif
 #define HN_MARK() HN_DBG("--mark--");
 
-/* .desktop file related defines, mainly for keys 
+/* .desktop file related defines, mainly for keys
  */
 #define DESKTOP_BIN_FIELD     "Exec"
 #define DESKTOP_LAUNCH_FIELD  "X-Osso-Service"
@@ -88,10 +90,8 @@
 #define DESKTOP_SUFFIX        ".desktop"
 #define UNKNOWN_TITLE         "Unknown"
 
-/* DBus/Banner etc related defines  
-*/
-#define APPKILLER_SIGNAL_INTERFACE           "com.nokia.osso_app_killer"
-#define APPKILLER_EXIT_SIGNAL                "exit"
+/* DBus/Banner etc related defines
+ */
 #define APP_LAUNCH_BANNER_METHOD_INTERFACE   "com.nokia.tasknav.app_launch_banner"
 #define APP_LAUNCH_BANNER_METHOD_PATH        "/com/nokia/tasknav/app_launch_banner"
 #define APP_LAUNCH_BANNER_METHOD             "app_launch_banner"
@@ -104,8 +104,8 @@
 /* Interval for checking for new window or timeout, in seconds */
 #define APP_LAUNCH_BANNER_CHECK_INTERVAL     0.5
 
-/* Low memory settings 
-*/
+/* Low memory settings
+ */
 #define LAUNCH_SUCCESS_TIMEOUT 20
 
 /* For gathering available memory information */
@@ -129,6 +129,7 @@ struct HNWMLaunchBannerInfo
 {
   GtkWidget         *parent;
   struct timeval     launch_time;
+  gchar             *msg;
   HNWMWatchableApp  *app;
 };
 
@@ -137,28 +138,33 @@ struct HNWM   /* Our main struct, used globally unfortunatly.. */
 
   Atom          atoms[HN_ATOM_COUNT];
 
-  /* WatchedWindows is a hash of watched windows hashed via in X window ID. 
+  /* WatchedWindows is a hash of watched windows hashed via in X window ID.
    * As most lookups happen via window ID's makes sense to hash on this,
    */
-  GHashTable   *watched_windows; 
+  GHashTable   *watched_windows;
 
-  /* watched windows that are 'hibernating' - i.e there actually not  
+  /* watched windows that are 'hibernating' - i.e there actually not
    * running any more but still appear in HN as if they are ( for memory ).
-   * Split into seperate hash for efficiency reasons. 
+   * Split into seperate hash for efficiency reasons.
    */
-  GHashTable   *watched_windows_hibernating; 
+  GHashTable   *watched_windows_hibernating;
 
-  /* A hash of valid watchable apps ( hashed on class name ). This is built 
+  /* A hash of valid watchable apps ( hashed on class name ). This is built
    * on startup by slurping in /usr/share/applications/hildon .desktop's
    * NOTE: previous code used service/exec/class to refer to class name so
    *       quite confusing.
    */
-  GHashTable   *watched_apps; 
+  GHashTable   *watched_apps;
 
   ApplicationSwitcher_t *app_switcher;
 
+  /* stack for the launch banner messages. 
+   * Needed to work round gtk(hindon)_infoprint issues.
+  */
+  GList        *banner_stack;
+
   /* FIXME: Below memory management related not 100% sure what they do */
-  
+
   gulong        lowmem_banner_timeout;
   gulong        lowmem_min_distance;
   gulong        lowmem_timeout_multiplier;
@@ -201,29 +207,32 @@ hn_wm_lookup_watchable_app_via_service (const gchar *service_name);
 HNWMWatchableApp*
 hn_wm_lookup_watchable_app_via_menu (GtkWidget *menu);
 
-HNWMWatchedWindow* 
+HNWMWatchedWindow*
 hn_wm_lookup_watched_window_view (GtkWidget *menu_widget);
 
+gchar *
+hn_wm_compute_watched_window_hibernation_key (Window xwin,
+					      HNWMWatchableApp *app);
 
-gboolean 
+gboolean
 hn_wm_init (ApplicationSwitcher_t *as);
 
 /**** Likely deprecated stuff *****/
 
 typedef struct
 {
-    Window window_id;
-    union win_value *viewlist;
-    gulong num_views;
+  Window window_id;
+  union win_value *viewlist;
+  gulong num_views;
 } view_clean_t;
 
 typedef struct
 {
-    gpointer menu_ptr;
-    gulong view_id;
-    gchar *service;
-    gchar *wm_class;
-    gulong window_id;
+  gpointer menu_ptr;
+  gulong view_id;
+  gchar *service;
+  gchar *wm_class;
+  gulong window_id;
 } menuitem_comp_t;
 
 

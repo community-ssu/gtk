@@ -364,6 +364,7 @@ void applet_manager_configure_save_all(applet_manager_t *man)
     fclose(new_config_file);
     g_key_file_free(keyfile);
     g_free(configure_file);
+    g_free(conf_data);
 }
 
 void applet_manager_configure_load_all(applet_manager_t *man)

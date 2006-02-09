@@ -604,9 +604,8 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
     GtkWidget *dialog;
     GtkFileFilter *mime_type_filter;
     gint response;
-    gchar *name_str, *temp_name, *dot;
+    gchar *name_str, *temp_mime, *temp_name, *dot;
     gchar *chooser_name;
-
 
     dialog = hildon_file_chooser_dialog_new_with_properties(
         GTK_WINDOW(window),
@@ -626,7 +625,7 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
     gtk_file_filter_add_mime_type (mime_type_filter, "image/png");
     gtk_file_filter_add_mime_type (mime_type_filter, "image/bmp");
     gtk_file_filter_add_mime_type (mime_type_filter, "image/tiff");
-    gtk_file_filter_add_pattern (mime_type_filter, "*.png");    
+    gtk_file_filter_add_mime_type (mime_type_filter, "sketch/png");
 
     gtk_file_chooser_set_filter (GTK_FILE_CHOOSER (dialog),
                                  mime_type_filter);
@@ -641,13 +640,34 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
     
     if (response == GTK_RESPONSE_OK) 
     {
-	GnomeVFSURI *uri_tmp;
+        GnomeVFSURI *uri_tmp;
 
         chooser_name = 
             gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
         
-	uri_tmp = gnome_vfs_uri_new (chooser_name);
+        uri_tmp = gnome_vfs_uri_new (chooser_name);
         name_str = gnome_vfs_uri_extract_short_name(uri_tmp);
+        temp_mime = 
+            (gchar *)gnome_vfs_get_mime_type(gnome_vfs_uri_get_path(uri_tmp));
+
+        if(temp_mime != NULL) 
+        {
+            if(g_str_equal(temp_mime, "sketch/png"))
+            {
+                temp_name = g_strdup(name_str);
+                dot = g_strrstr(temp_name, ".");
+                if (dot && dot != temp_name) 
+                {
+                    *dot = '\0';
+                    g_free((gchar *)name_str);
+                    name_str = g_strdup(temp_name);
+                }
+
+                g_free(temp_name);
+            }
+            g_free(temp_mime);
+        }
+
 	gnome_vfs_uri_unref (uri_tmp);
 
         temp_name = g_strdup(name_str);

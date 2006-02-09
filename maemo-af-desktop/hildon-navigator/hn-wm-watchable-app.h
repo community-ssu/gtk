@@ -198,7 +198,8 @@ hn_wm_watchable_app_launch_banner_show (GtkWidget        *parent,
  * @param parent 
  */
 void 
-hn_wm_watchable_app_launch_banner_close (GtkWidget *parent);
+hn_wm_watchable_app_launch_banner_close (GtkWidget            *parent,
+					 HNWMLaunchBannerInfo *info);
 
 /** 
  * FIXME: this can be static

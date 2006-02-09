@@ -32,6 +32,7 @@
 /* hildon includes */
 #include "osso-manager.h"
 #include "hildon-navigator.h"
+#include "hn-wm-memory.h"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -83,4 +84,9 @@ char *hildon_navigator_get_root_dir( void )
     const char *result = g_getenv( HOME_ENV );
     
     return g_strdup(result);
+}
+
+void hildon_navigator_killall(void)
+{
+    hn_wm_memory_kill_all_watched(FALSE);
 }

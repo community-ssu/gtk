@@ -1,3 +1,46 @@
+2006-02-09  Johan Bilien <johan.bilien@nokia.com>,
+	* Applied fix to N#20498:
+	* hildon-home/hildon-home-main.c
+	  - set_background_select_file_dialog(): In case of sketch mime type,
+	    extra extension is removed for having displaying the extensions
+	    consistent.
+	* maemo-af-desktop-main.c:
+	  - on SIGINT: try to exit properly
+	  - on SIGTERM: send SIGTERM to all the watched applications (to get
+	    rid of the EXIT DBus signal from application killer)
+	* hildon-navigator/hn-wm.{c,h}: Removed handling of EXIT DBus signal,
+	  which is not sent anymore by application killer.
+	* removed legacy hildon-navigator/windowmanager.{c,h}
+
+	* Imported latest changes from task navigator refactoring:
+	* hildon-navigator/hn-wm-watched-window.c:
+	 (hn_wm_watched_window_process_wm_state):
+	 Fix minimise stacking order, see bug #22596
+	 * hildon-navigator/application-switcher.c:
+	 (app_switcher_update_item):
+	 Fix out of bounds array access ( Tomas )
+	 * hildon-navigator/hn-wm-watchable-app.c:
+	 (banner_msg_stack_remove),
+	 (hn_wm_watchable_app_launch_banner_close):
+	 Fix a couple of snafu's in previous commit.
+	 * hildon-navigator/hn-wm-watchable-app.c:
+	 * hildon-navigator/hn-wm-watchable-app.h:
+	 * hildon-navigator/hn-wm.h:
+	 Hopeful fix to multiple displayed gtk_banner issues.
+	 See bug #22614.
+	 * hildon-navigator/hn-wm-memory.c:
+	 * hildon-navigator/hn-wm-types.h:
+	 * hildon-navigator/hn-wm-watched-window.c:
+	 * hildon-navigator/hn-wm-watched-window.h:
+	 * hildon-navigator/hn-wm.c:
+	 (hn_wm_compute_watched_window_hibernation_key),
+	 * hildon-navigator/hn-wm.h:
+	Add support for tracking WM_WINDOW_ROLE and handling
+	grouped HildonProgram windows awakening from hibernation.
+	Some formatting cleanups.
+
+	* configure.ac: 2.4.4
+
 2006-02-09  Johan Bilien <johan.bilien@nokia.com>
 	* Import from hildon-refactoring branch (matches r12951)
 	* configure.ac: 2.4.3

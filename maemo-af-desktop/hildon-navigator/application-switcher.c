@@ -1959,9 +1959,8 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
             {
 	      gtk_container_remove(GTK_CONTAINER(as->menu),
 				   GTK_WIDGET(menuitem));
-	      gtk_menu_shell_insert(GTK_MENU_SHELL(as->menu),
-				    GTK_WIDGET(menuitem), 
-				    ((as->items)->len)+1);
+	      gtk_menu_shell_append(GTK_MENU_SHELL(as->menu),
+				    GTK_WIDGET(menuitem));
 	      
 	      /* In practice, the buttons have to be always updated,
 		 because user can iconize only the topmost app. */

@@ -1,3 +1,5 @@
+/* -*- mode:C; c-file-style:"gnu"; -*- */
+
 #include "hn-wm-watched-window.h"
 #include "osso-manager.h"
 
@@ -8,16 +10,17 @@
 
 struct HNWMWatchedWindow
 {
-  Window                  xwin;         
+  Window                  xwin;
   gchar                  *name;
   GtkWidget              *menu_widget;   /* Active if no views */
   HNWMWatchableApp       *app_parent;
-  GList                  *views; 
+  GList                  *views;
   HNWMWatchedWindowView  *view_active;
   GdkPixbuf              *pixb_icon;
   Window                  xwin_group;
   gboolean                is_urgent;
   gboolean                no_initial_focus;
+  gchar                  *hibernation_key;
 };
 
 struct xwinv
@@ -32,7 +35,7 @@ extern HNWM *hnwm;
 static void
 hn_wm_watched_window_process_wm_state (HNWMWatchedWindow *win);
 
-static void 
+static void
 hn_wm_watched_window_process_hildon_view_list (HNWMWatchedWindow *win);
 
 static void
@@ -51,6 +54,9 @@ static void
 hn_wm_watched_window_process_net_wm_user_time (HNWMWatchedWindow *win);
 
 static void
+hn_wm_watched_window_process_wm_window_role (HNWMWatchedWindow *win);
+
+static void
 pixbuf_destroy (guchar *pixels, gpointer data)
 {
   /* For hn_wm_watched_window_process_net_wm_icon  */
@@ -67,7 +73,7 @@ hn_wm_watched_window_process_net_wm_icon (HNWMWatchedWindow *win)
 
   rgba_data = p = NULL;
 
-  data 
+  data
     = hn_wm_util_get_win_prop_data_and_validate (hn_wm_watched_window_get_x_win (win),
 						 hnwm->atoms[HN_ATOM_NET_WM_ICON],
 						 XA_CARDINAL,
@@ -83,14 +89,14 @@ hn_wm_watched_window_process_net_wm_icon (HNWMWatchedWindow *win)
   offset = 0;
 
   /* Do we have an icon of required size ?
-   * NOTE: ICON_SIZE set in application-switcher.h, defaults to 26 
+   * NOTE: ICON_SIZE set in application-switcher.h, defaults to 26
    * FIXME: figure out best way to handle scaling here
-  */
+   */
   do
     {
-      w = data[offset]; 
+      w = data[offset];
       h = data[offset+1];
-      
+
       HN_DBG("got w:%i, h:%im offset is %i\n", w, h, offset);
 
       if (w == ICON_SIZE && h == ICON_SIZE)
@@ -147,7 +153,7 @@ hn_wm_watched_window_process_net_wm_icon (HNWMWatchedWindow *win)
     XFree(data);
 }
 
-static void 
+static void
 hn_wm_watched_window_process_hildon_view_active (HNWMWatchedWindow *win)
 {
   Window                *new_active_view_id;
@@ -163,7 +169,7 @@ hn_wm_watched_window_process_hildon_view_active (HNWMWatchedWindow *win)
   if (!app)
     return;
 
-  new_active_view_id 
+  new_active_view_id
     = hn_wm_util_get_win_prop_data_and_validate (hn_wm_watched_window_get_x_win (win),
 						 hnwm->atoms[HN_ATOM_HILDON_VIEW_ACTIVE],
 						 XA_WINDOW,
@@ -173,26 +179,26 @@ hn_wm_watched_window_process_hildon_view_active (HNWMWatchedWindow *win)
 
   if (!new_active_view_id)
     return;
-  
+
   current_active_view = hn_wm_watched_window_get_active_view (win);
 
   /* Check the prop value is valid and not alreday active */
 
-  if (current_active_view 
+  if (current_active_view
       && hn_wm_watched_window_view_get_id(current_active_view) == *new_active_view_id)
     goto out;
 
   iter = hn_wm_watched_window_get_views (win);
 
-  /* Find what the view id matches for this window's views and  
+  /* Find what the view id matches for this window's views and
    * update.
-  */
+   */
   while (iter != NULL)
     {
       HNWMWatchedWindowView *view;
-      
+
       view = (HNWMWatchedWindowView *)iter->data;
-      
+
       if (hn_wm_watched_window_view_get_id (view) == *new_active_view_id)
 	{
 	  app_switcher_update_item (hnwm->app_switcher, win, view,
@@ -205,8 +211,8 @@ hn_wm_watched_window_process_hildon_view_active (HNWMWatchedWindow *win)
       iter  = g_list_next(iter);
     }
 
-out:
-  
+ out:
+
   if (new_active_view_id)
     XFree(new_active_view_id);
 
@@ -218,15 +224,15 @@ hn_wm_watched_window_process_wm_name (HNWMWatchedWindow *win)
 {
   HNWMWatchedWindowView *view;
 
-  if (win->name) 
+  if (win->name)
     XFree(win->name);
-  
+
   win->name = NULL;
 
   /* FIXME: handle UTF8 naming */
   XFetchName(GDK_DISPLAY(), win->xwin, &win->name);
 
-  if (win->name == NULL) 
+  if (win->name == NULL)
     win->name = g_strdup("unknown");
 
   view = hn_wm_watched_window_get_active_view(win);
@@ -239,6 +245,27 @@ hn_wm_watched_window_process_wm_name (HNWMWatchedWindow *win)
 			    AS_MENUITEM_SAME_POSITION);
 }
 
+
+static void
+hn_wm_watched_window_process_wm_window_role (HNWMWatchedWindow *win)
+{
+  gchar *new_key = NULL;
+
+  g_return_if_fail(win);
+
+  new_key =
+    hn_wm_compute_watched_window_hibernation_key(win->xwin,
+						 hn_wm_watched_window_get_app (win));
+
+  if (new_key)
+    {
+      if (win->hibernation_key)
+	g_free(win->hibernation_key);
+      win->hibernation_key = new_key;
+    }
+}
+
+
 static void
 hn_wm_watched_window_process_hibernation_prop (HNWMWatchedWindow *win)
 {
@@ -246,20 +273,20 @@ hn_wm_watched_window_process_hibernation_prop (HNWMWatchedWindow *win)
   HNWMWatchableApp *app;
 
   app = hn_wm_watched_window_get_app (win);
-  
-  if (!app) 
+
+  if (!app)
     return;
-  
-  /* NOTE: foo has no 'value' if set the app is killable (hibernatable), 
-   *       deletes to unset 
+
+  /* NOTE: foo has no 'value' if set the app is killable (hibernatable),
+   *       deletes to unset
    */
-  foo = hn_wm_util_get_win_prop_data_and_validate (win->xwin, 
+  foo = hn_wm_util_get_win_prop_data_and_validate (win->xwin,
 						   hnwm->atoms[HN_ATOM_HILDON_APP_KILLABLE],
 						   XA_STRING,
 						   8,
 						   0,
 						   NULL);
-  
+
   hn_wm_watchable_app_set_able_to_hibernate (app,
 					     (foo != NULL) ? TRUE : FALSE );
   if (foo)
@@ -274,18 +301,18 @@ hn_wm_watched_window_process_wm_state (HNWMWatchedWindow *win)
 
   app = hn_wm_watched_window_get_app (win);
 
-  state 
+  state
     = hn_wm_util_get_win_prop_data_and_validate (win->xwin,
 						 hnwm->atoms[HN_ATOM_WM_STATE],
 						 hnwm->atoms[HN_ATOM_WM_STATE],
 						 0, /* FIXME: format */
 						 0,
 						 NULL);
-  
-  if (!state 
+
+  if (!state
       || (hn_wm_watchable_app_is_minimised(app) && state[0] == IconicState) )
     goto out;
-  
+
   if (state[0] == IconicState)
     {
       hn_wm_watchable_app_set_minimised (app, TRUE);
@@ -294,13 +321,13 @@ hn_wm_watched_window_process_wm_state (HNWMWatchedWindow *win)
 	{
 	  GList      *iter;
 	  iter = hn_wm_watched_window_get_views (win);
-	  
+
 	  while (iter != NULL)
 	    {
 	      HNWMWatchedWindowView *view;
-	      
+
 	      view = (HNWMWatchedWindowView *)iter->data;
-	      
+
 	      app_switcher_update_item (hnwm->app_switcher, win, view,
 					AS_MENUITEM_TO_LAST_POSITION);
 
@@ -314,6 +341,10 @@ hn_wm_watched_window_process_wm_state (HNWMWatchedWindow *win)
 				    AS_MENUITEM_TO_LAST_POSITION );
 	}
     }
+  else /* Assume non minimised state */
+   {
+     hn_wm_watchable_app_set_minimised (app, FALSE);
+   }
 
  out:
 
@@ -328,7 +359,7 @@ hn_wm_watched_window_process_wm_hints (HNWMWatchedWindow *win)
   XWMHints         *wm_hints;
   gboolean          need_icon_sync = FALSE;
 
-  app = hn_wm_watched_window_get_app (win);  
+  app = hn_wm_watched_window_get_app (win);
 
   wm_hints = XGetWMHints (GDK_DISPLAY(), win->xwin);
 
@@ -336,7 +367,7 @@ hn_wm_watched_window_process_wm_hints (HNWMWatchedWindow *win)
     return;
 
   win->xwin_group = wm_hints->window_group;
-  
+
   if (win->is_urgent != (wm_hints->flags & XUrgencyHint))
     need_icon_sync = TRUE;
 
@@ -353,37 +384,37 @@ hn_wm_watched_window_process_net_wm_user_time (HNWMWatchedWindow *win)
 {
   gulong *data;
 
-  data 
+  data
     = hn_wm_util_get_win_prop_data_and_validate (hn_wm_watched_window_get_x_win (win),
 						 hnwm->atoms[HN_ATOM_NET_WM_USER_TIME],
 						 XA_CARDINAL,
 						 0,
 						 0,
 						 NULL);
-  
+
   HN_DBG("#### processing _NET_WM_USER_TIME ####");
 
   if (data == NULL)
-	return;
+    return;
 
   if (*data == 0)
     win->no_initial_focus = TRUE;
-  
+
   if (data)
     XFree(data);
 }
 
-static void 
+static void
 hn_wm_watched_window_process_hildon_view_list (HNWMWatchedWindow *win)
 {
   struct xwinv xwins;
   int          i;
   GList       *iter = NULL, *next_iter;
-  
+
   if (hn_wm_watched_window_is_hibernating(win))
     return;
 
-  xwins.wins 
+  xwins.wins
     = hn_wm_util_get_win_prop_data_and_validate (win->xwin,
 						 hnwm->atoms[HN_ATOM_HILDON_VIEW_LIST],
 						 XA_WINDOW,
@@ -403,19 +434,19 @@ hn_wm_watched_window_process_hildon_view_list (HNWMWatchedWindow *win)
     {
       HNWMWatchedWindowView *view;
       gboolean               view_found;
-      
+
       view       = (HNWMWatchedWindowView *)iter->data;
       view_found = FALSE;
 
       next_iter  = g_list_next(iter);
-      
+
       for (i=0; i < xwins.n_wins; i++)
 	if (xwins.wins[i] == hn_wm_watched_window_view_get_id (view))
 	  {
 	    view_found = TRUE;
 	    break;
 	  }
-      
+
       if (!view_found)
 	{
 	  /* view is not listed on client - delete the list entry */
@@ -431,16 +462,16 @@ hn_wm_watched_window_process_hildon_view_list (HNWMWatchedWindow *win)
   for (i=0; i < xwins.n_wins; i++)
     {
       gboolean view_found;
-      
+
       iter       = hn_wm_watched_window_get_views (win);
       view_found = FALSE;
 
       while (iter != NULL)
 	{
 	  HNWMWatchedWindowView *view;
-
+		  
 	  view = (HNWMWatchedWindowView *)iter->data;
-
+		  
 	  if (hn_wm_watched_window_view_get_id (view) == xwins.wins[i])
 	    {
 	      view_found = TRUE;
@@ -471,36 +502,59 @@ hn_wm_watched_window_new (Window            xid,
 			  HNWMWatchableApp *app)
 {
   HNWMWatchedWindow *win = NULL;
+  gchar             *hkey;
 
-  win = g_hash_table_lookup(hnwm->watched_windows_hibernating, 
-			    (gconstpointer)hn_wm_watchable_app_get_class_name (app));
-  
+  /*  Check if this window is actually one coming out
+   *  of 'hibernation', we use its WM_CLASS[+WM_WINDOW_ROLE] 
+   *  to identify.
+   *
+   *  WM_WINDOW_ROLE should be unique for grouped/HildonProgram 
+   *  windows.
+   *
+  */
+  hkey = hn_wm_compute_watched_window_hibernation_key(xid, app);
+
+  g_return_val_if_fail(hkey, NULL);
+
+  win = g_hash_table_lookup(hnwm->watched_windows_hibernating,
+			    (gconstpointer)hkey);
+
   if (win)
     {
-      /* Window already exists in our hibernating window hash.  
+      /* Window already exists in our hibernating window hash.
        * There for we can reuse by just updating its var with
-       * new window values	  
+       * new window values
        */
-      g_hash_table_steal(hnwm->watched_windows_hibernating, 
-			 hn_wm_watchable_app_get_class_name (app)); 
+      g_hash_table_steal(hnwm->watched_windows_hibernating,
+			 hkey);
+
+      /* We already have this value */
+      g_free(hkey); 
+      hkey = NULL;
     }
-  else 
-    win = g_new0 (HNWMWatchedWindow, 1);  
-  
-  if (!win) 	 /* FIXME: Handle OOM */
-    return NULL;
+  else
+    win = g_new0 (HNWMWatchedWindow, 1);
+
+  if (!win)
+    {
+      if (hkey)
+	g_free(hkey); 
+      return NULL;
+    }
 
   win->xwin       = xid;
   win->app_parent = app;
 
+  if(hkey)
+    win->hibernation_key = hkey;
+
   /* Grab some initial props */
-  hn_wm_watched_window_props_sync (win, 
+  hn_wm_watched_window_props_sync (win,
 				   HN_WM_SYNC_NAME
 				   |HN_WM_SYNC_WMHINTS
 				   |HN_WM_SYNC_ICON
 				   |HN_WM_SYNC_HILDON_APP_KILLABLE
 				   |HN_WM_SYNC_USER_TIME);
-
   return win;
 }
 
@@ -520,7 +574,7 @@ hn_wm_watched_window_get_x_win (HNWMWatchedWindow *win)
 gboolean
 hn_wm_watched_window_is_urgent (HNWMWatchedWindow *win)
 {
-  return win->is_urgent; 
+  return win->is_urgent;
 }
 
 gboolean
@@ -533,6 +587,12 @@ const gchar*
 hn_wm_watched_window_get_name (HNWMWatchedWindow *win)
 {
   return win->name;
+}
+
+const gchar*
+hn_wm_watched_window_get_hibernation_key (HNWMWatchedWindow *win)
+{
+  return win->hibernation_key;
 }
 
 void
@@ -585,7 +645,7 @@ hn_wm_watched_window_remove_view (HNWMWatchedWindow     *win,
 {
   GList *view_link;
 
-  view_link = g_list_find (win->views, view);             
+  view_link = g_list_find (win->views, view);
 
   if (view_link)
     win->views = g_list_delete_link(win->views, view_link);
@@ -622,9 +682,9 @@ hn_wm_watched_window_attempt_pid_kill (HNWMWatchedWindow *win)
 
   if(kill(pid_result[0]+256*pid_result[1], SIGTERM) != 0)
     {
-      osso_log(LOG_ERR, "Failed to kill pid %d with SIGTERM", 
+      osso_log(LOG_ERR, "Failed to kill pid %d with SIGTERM",
 	       pid_result[0]+256*pid_result[1]);
-      
+
       XFree(pid_result);
       return FALSE;
     }
@@ -636,7 +696,7 @@ hn_wm_watched_window_attempt_pid_kill (HNWMWatchedWindow *win)
 gboolean
 hn_wm_watched_window_is_hibernating (HNWMWatchedWindow *win)
 {
-  HNWMWatchableApp      *app; 
+  HNWMWatchableApp      *app;
 
   app = hn_wm_watched_window_get_app(win);
 
@@ -649,7 +709,7 @@ hn_wm_watched_window_is_hibernating (HNWMWatchedWindow *win)
 void
 hn_wm_watched_window_hibernate (HNWMWatchedWindow *win)
 {
-  HNWMWatchableApp      *app; 
+  HNWMWatchableApp      *app;
 
   app = hn_wm_watched_window_get_app(win);
 
@@ -658,8 +718,8 @@ hn_wm_watched_window_hibernate (HNWMWatchedWindow *win)
       hn_wm_watchable_app_set_hibernate (app, TRUE);
 
       win->xwin           = None;
-      g_hash_table_insert (hnwm->watched_windows_hibernating, 
-			   g_strdup(hn_wm_watchable_app_get_class_name (app)),
+      g_hash_table_insert (hnwm->watched_windows_hibernating,
+			   g_strdup(hn_wm_watched_window_get_hibernation_key(win)),
 			   win);
       HN_DBG("'%s' now hibernating, moved to WatchedWindowsHibernating hash",
 	     win->name);
@@ -669,7 +729,7 @@ hn_wm_watched_window_hibernate (HNWMWatchedWindow *win)
 void
 hn_wm_watched_window_awake (HNWMWatchedWindow *win)
 {
-  HNWMWatchableApp      *app; 
+  HNWMWatchableApp      *app;
   osso_manager_t        *osso_man;
 
   app = hn_wm_watched_window_get_app(win);
@@ -678,7 +738,7 @@ hn_wm_watched_window_awake (HNWMWatchedWindow *win)
     {
       /* Relaunch it with RESTORED */
       osso_man = osso_manager_singleton_get_instance();
-      osso_manager_launch(osso_man, hn_wm_watchable_app_get_service (app), 
+      osso_manager_launch(osso_man, hn_wm_watchable_app_get_service (app),
 			  RESTORED);
 
       /* Remove it from our hibernating hash, on mapping it should
@@ -694,12 +754,12 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
   GList                 *iter, *next_iter;
   HNWMWatchedWindowView *view;
 
-  HN_DBG("Removing '%s'", win->name); 
+  HN_DBG("Removing '%s'", win->name);
 
   /* Dont destroy windows that are hiberating */
   if (hn_wm_watched_window_is_hibernating(win))
     {
-      HN_DBG("### Aborting destroying '%s' as hibernating ###", win->name); 
+      HN_DBG("### Aborting destroying '%s' as hibernating ###", win->name);
       return;
     }
 
@@ -726,8 +786,11 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
       iter = next_iter;
     }
 
-  if (win->name) 
+  if (win->name)
     XFree(win->name);
+
+  if (win->hibernation_key)
+    g_free(win->hibernation_key);
 
   if (win->pixb_icon)
     g_object_unref(win->pixb_icon);
@@ -742,19 +805,19 @@ hn_wm_watched_window_props_sync (HNWMWatchedWindow *win, gulong props)
 
   if (props & HN_WM_SYNC_NAME)
     {
-      hn_wm_watched_window_process_wm_name (win);      
+      hn_wm_watched_window_process_wm_name (win);
     }
-  
+
   if (props & HN_WM_SYNC_HILDON_APP_KILLABLE)
     {
       hn_wm_watched_window_process_hibernation_prop (win);
     }
-  
+
   if (props & HN_WM_SYNC_WM_STATE)
     {
       hn_wm_watched_window_process_wm_state (win);
     }
-  
+
   if (props & HN_WM_SYNC_HILDON_VIEW_LIST)
     {
       hn_wm_watched_window_process_hildon_view_list (win);
@@ -779,6 +842,12 @@ hn_wm_watched_window_props_sync (HNWMWatchedWindow *win, gulong props)
     {
       hn_wm_watched_window_process_net_wm_user_time (win);
     }
+
+  if (props & HN_WM_SYNC_WINDOW_ROLE)
+    {
+      hn_wm_watched_window_process_wm_window_role (win);
+    }
+
   gdk_error_trap_pop();
 
   return TRUE;

@@ -211,8 +211,19 @@ gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
                      sizeof(int), bytes_read);
             continue;
         }
-        
-        exit(0);
+
+        switch(buf.signal)
+        {
+            case SIGINT:
+                /* Exit properly */
+                gtk_main_quit();
+                break;
+            case SIGTERM:
+                /* Kill all the applications we where handling in TN */
+                hildon_navigator_killall();
+            default:
+                exit(0);
+        }
     }
   
     /* 

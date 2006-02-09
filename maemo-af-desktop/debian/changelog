@@ -1,3 +1,13 @@
+maemo-af-desktop (2.4.4-1) unstable; urgency=low
+
+  * Fixed N#20498
+  * Send SIGTERM to all apps when we receive it
+  * Removed legacy hildon-navigator/windowmanager.{c,h} 
+  * Imported latest changes from task navigator refactoring. Fixes 22614 and
+    22596 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  9 Feb 2006 16:18:24 +0200
+
 maemo-af-desktop (2.4.3-1) unstable; urgency=low
 
   * Updated home refactoring

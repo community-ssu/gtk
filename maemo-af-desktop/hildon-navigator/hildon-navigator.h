@@ -127,6 +127,9 @@ char *hildon_navigator_get_root_dir( void );
 /** Returns the library dir. */
 char *hildon_navigator_get_lib_dir( void );
 
+/** Kill all applications watched by the task navigator **/
+void hildon_navigator_killall( void );
+
 G_END_DECLS
 
 #endif /* HILDON_NAVIGATOR_H*/

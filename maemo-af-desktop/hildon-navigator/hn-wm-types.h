@@ -1,3 +1,5 @@
+/* -*- mode:C; c-file-style:"gnu"; -*- */
+
 /*
  * This file is part of maemo-af-desktop
  *
@@ -36,7 +38,8 @@ enum
   HN_ATOM_WM_STATE,
   HN_ATOM_WM_TRANSIENT_FOR,
   HN_ATOM_WM_HINTS,
-
+  HN_ATOM_WM_WINDOW_ROLE,
+  
   HN_ATOM_NET_WM_WINDOW_TYPE,
   HN_ATOM_NET_WM_WINDOW_TYPE_MENU,
   HN_ATOM_NET_WM_WINDOW_TYPE_NORMAL,

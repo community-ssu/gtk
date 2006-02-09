@@ -45,6 +45,7 @@
 #define HN_WM_SYNC_HILDON_VIEW_ACTIVE  (1<<8)
 #define HN_WM_SYNC_ICON                (1<<9)
 #define HN_WM_SYNC_USER_TIME           (1<<10)
+#define HN_WM_SYNC_WINDOW_ROLE         (1<<11)
 #define HN_WM_SYNC_ALL                 (G_MAXULONG)
 
 HNWMWatchedWindow*
@@ -71,6 +72,11 @@ hn_wm_watched_window_get_name (HNWMWatchedWindow *win);
 void
 hn_wm_watched_window_set_name (HNWMWatchedWindow *win,
 			       gchar             *name);
+
+const gchar*
+hn_wm_watched_window_get_hibernation_key (HNWMWatchedWindow *win);
+
+
 GtkWidget*
 hn_wm_watched_window_get_menu (HNWMWatchedWindow *win);
 

@@ -22,6 +22,54 @@ hn_wm_watchable_app_has_windows_find_func (gpointer key,
 					   gpointer value,
 					   gpointer user_data);
 
+/* Simple stack to remember last message displayed that can get  
+ * lost in certain situations with gtk_infoprints.
+ * Probably better for gtk_infoprint to handle this..
+ */
+static void
+banner_msg_stack_push (const gchar *msg)
+{
+  hnwm->banner_stack = g_list_append(hnwm->banner_stack, g_strdup(msg));
+}
+
+static const gchar*
+banner_msg_stack_remove (const gchar *msg)
+{
+  GList *item;
+
+  /* Remove a msg from stack and free. Return either the previous 
+   * stored message
+  */
+  
+  item = g_list_find_custom(hnwm->banner_stack, msg, (GCompareFunc)strcmp);
+
+  if (item)
+    {
+      /* Free the msg */
+      g_free(item->data);
+
+      hnwm->banner_stack = g_list_remove_link(hnwm->banner_stack, item);
+
+      g_list_free(item);
+    }
+  
+   item = g_list_last(hnwm->banner_stack);
+  
+  if (item)
+    return item->data;
+  
+  return NULL;
+}
+
+static void
+hn_wm_launch_banner_info_free (HNWMLaunchBannerInfo* info)
+{
+  g_return_if_fail(info);
+  
+  g_free(info->msg);
+  g_free(info);
+}
+
 HNWMWatchableApp*
 hn_wm_watchable_app_new (MBDotDesktop *desktop)
 {
@@ -200,7 +248,6 @@ hn_wm_watchable_app_launch_banner_show (GtkWidget        *parent,
 					HNWMWatchableApp *app) 
 {
   HNWMLaunchBannerInfo *info;
-  gchar                *message;
   guint                 interval;
 
   interval = APP_LAUNCH_BANNER_CHECK_INTERVAL * 1000;
@@ -213,22 +260,39 @@ hn_wm_watchable_app_launch_banner_show (GtkWidget        *parent,
 
   gdk_error_trap_push(); 	/* Needed ? */
         
-  message = g_strdup_printf(_( APP_LAUNCH_BANNER_MSG_LOADING ),
-			    app->app_name ? app->app_name : "" );
+  info->msg = g_strdup_printf(_( APP_LAUNCH_BANNER_MSG_LOADING ),
+			     app->app_name ? app->app_name : "" );
         
-  gtk_banner_show_animation( NULL, message );
+  gtk_banner_show_animation( NULL, info->msg );
+
+  /* Store a copy of message so we can work round multuple gtk_banner issues */
+  banner_msg_stack_push (info->msg);
         
   gdk_error_trap_pop();
 
   g_timeout_add(interval, hn_wm_watchable_app_launch_banner_timeout, info);
 
-  g_free( message );
 }
 
 void 
-hn_wm_watchable_app_launch_banner_close ( GtkWidget *parent )
+hn_wm_watchable_app_launch_banner_close (GtkWidget            *parent,
+					 HNWMLaunchBannerInfo *info)
 {
+  const gchar *prev_msg;
+
+  if (!(info && info->msg))
+    return;
+
+  /* Note: below may not close banner, works on refcnt */
   gtk_banner_close( NULL );
+  
+  /* remove message from stack and possibly get an old one to redisplay */
+  prev_msg = banner_msg_stack_remove(info->msg);
+
+  hn_wm_launch_banner_info_free(info);
+
+  if (prev_msg)
+    gtk_banner_set_text(NULL, prev_msg);
 }
 
 gboolean 
@@ -253,7 +317,9 @@ hn_wm_watchable_app_launch_banner_timeout (gpointer data)
   /* End of addition 26092005 */
 
 #if 0 // needed ???
-  if ( find_service_from_tree( hnwm->callbacks.model, &iter, info->service_name ) > 0) 
+  if ( find_service_from_tree( hnwm->callbacks.model, 
+			       &iter, 
+			       info->service_name ) > 0) 
     {
     } else {
       /* This should never happen. Bail out! */
@@ -275,14 +341,13 @@ hn_wm_watchable_app_launch_banner_timeout (gpointer data)
       || hn_wm_watchable_app_has_windows (info->app))
     {
       /* Close the banner */
-      hn_wm_watchable_app_launch_banner_close( NULL );
+      hn_wm_watchable_app_launch_banner_close( NULL, info );
       
-      if ( time_left >= APP_LAUNCH_BANNER_TIMEOUT && hnwm->lowmem_situation == TRUE)
+      if (time_left >= APP_LAUNCH_BANNER_TIMEOUT 
+	  && hnwm->lowmem_situation == TRUE)
 	{
 	  gtk_infoprintf(NULL, _("memr_ib_unable_to_switch_to_application"));
 	}
-      
-      g_free (info);
       
       return FALSE;
     }
