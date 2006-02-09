@@ -1,9 +1,10 @@
 /**
   @file app-killer.c
 
-  Application killer program.
+  Program providing DBus interfaces for running scripts to implement
+  Reset factory settings and Cleanup user data and Restore preparation.
   
-  Copyright (C) 2004-2005 Nokia Corporation.
+  Copyright (C) 2004-2006 Nokia Corporation.
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License as
@@ -32,16 +33,18 @@ static GMainLoop *mainloop = NULL;
 static void libosso_init(void);
 
 /**
-  Send error reply to backup application.
+  Send error reply.
   @param c D-BUS connection.
   @param m D-BUS message.
+  @param e error string.
 */
-static void send_restore_error(DBusConnection *c, DBusMessage *m)
+static void send_error(DBusConnection *c, DBusMessage *m,
+                       const char* e)
 {
     DBusMessage *err = NULL;
     dbus_bool_t rc = FALSE;
     assert(c != NULL && m != NULL);
-    err = dbus_message_new_error(m, RESTORE_ERROR, NULL);
+    err = dbus_message_new_error(m, e, NULL);
     if (err == NULL) {
         ULOG_ERR_F("dbus_message_new_error failed");
         return;
@@ -80,52 +83,8 @@ send_success_reply(DBusConnection *c, DBusMessage *m)
     return TRUE;
 }
 
-/**
-  Send error reply to locale change message.
-  @param c D-BUS connection.
-  @param m D-BUS message.
-*/
-static void send_locale_error(DBusConnection *c, DBusMessage *m)
-{
-    DBusMessage *err = NULL;
-    dbus_bool_t rc = FALSE;
-    assert(c != NULL && m != NULL);
-    err = dbus_message_new_error(m, LOCALE_ERROR, NULL);
-    if (err == NULL) {
-        ULOG_ERR_F("dbus_message_new_error failed");
-        return;
-    }
-    rc = dbus_connection_send(c, err, NULL);
-    if (!rc) {
-        ULOG_ERR_F("dbus_connection_send failed");
-    }
-    dbus_message_unref(err);
-}
-
-/**
-  Send error reply to RFS message.
-  @param c D-BUS connection.
-  @param m D-BUS message.
-  @param e error name.
-*/
-static void send_rfs_error(DBusConnection *c, DBusMessage *m,
-                const char* e)
-{
-    DBusMessage *err = NULL;
-    dbus_bool_t rc = FALSE;
-    assert(c != NULL && m != NULL);
-    err = dbus_message_new_error(m, e, NULL);
-    if (err == NULL) {
-        ULOG_ERR_F("dbus_message_new_error failed");
-        return;
-    }
-    rc = dbus_connection_send(c, err, NULL);
-    if (!rc) {
-        ULOG_ERR_F("dbus_connection_send failed");
-    }
-    dbus_message_unref(err);
-}
-
+/* this might not be needed */
+#if 0
 /**
   Sends the Exit signal for applications.
   @return TRUE on success, FALSE if the signal was not sent.
@@ -152,6 +111,7 @@ static gboolean send_exit_signal()
     ULOG_DEBUG_F("leaving");
     return TRUE;
 }
+#endif
 
 /**
   Executes script handling RFS things.
@@ -161,21 +121,6 @@ static gboolean do_rfs()
 {
     static char* const args[] = {AK_RFS_SCRIPT, NULL};
     int ret = exec_prog(AK_RFS_SCRIPT, args);
-    if (ret) {
-        return FALSE;
-    } else {
-        return TRUE;
-    }
-}
-
-/**
-  Executes script handling Locale change things.
-  @return TRUE on success, FALSE on failure.
-*/
-static gboolean do_locale_change()
-{
-    static char* const args[] = {AK_LOCALE_SCRIPT, NULL};
-    int ret = exec_prog(AK_LOCALE_SCRIPT, args);
     if (ret) {
         return FALSE;
     } else {
@@ -199,144 +144,80 @@ static gboolean do_restore()
 }
 
 /**
-  Sends a window state saving message to Task Navigator.
-  Blocks until gets a reply or timeouts.
-  @return TRUE on success, FALSE on error.
-*/
-static gboolean send_save_msg()
-{
-    DBusMessage *m = NULL;
-    DBusMessage *reply = NULL;
-    DBusError err;
-    assert(ses_conn != NULL);
-
-    m = dbus_message_new_method_call(TN_SVC, TN_OP, TN_IF, TN_SAVE_METHOD);
-    if (m == NULL) {
-        ULOG_ERR_F("could not create message");
-        return FALSE;
-    }
-    dbus_error_init(&err);
-    reply = dbus_connection_send_with_reply_and_block(ses_conn,
-                    m, MSG_TIMEOUT, &err);
-    if (reply == NULL) {
-        if (dbus_error_has_name(&err, DBUS_ERROR_NO_REPLY)) {
-            ULOG_ERR_F("no reply from TN received (in time)");
-        } else {
-            ULOG_ERR_F("error when sending message");
-        }
-        dbus_message_unref(m);
-        return FALSE;
-    }
-    dbus_message_unref(m);
-    return TRUE;
-}
-
-/**
-  Message handler callback function for changing locale.
-  This function broadcasts a D-BUS message that suggests 
-  applications to exit and shuts down the base applications and
-  shuts down the session bus. 
-  After that, it waits for a while and then re-starts the session
-  bus and base applications. Lastly, this function causes the AK
-  to exit (to allow use of a shell script and simpler C code); it
-  is restarted on demand by the D-BUS daemon.
-
-  @param c D-BUS connection.
-  @param m D-BUS message.
-  @param data User data passed to the function.
-  @return Does not return.
-*/
-static DBusHandlerResult 
-locale_handler(DBusConnection *c, DBusMessage *m, void *data)
-{
-    ULOG_DEBUG_F("entered");
-    ULOG_DEBUG_F("method: %s", dbus_message_get_member(m)); 
-
-    if (!send_save_msg()) {
-        ULOG_ERR_F("could not send save message "
-                        "to (or no reply from) TN");
-        send_locale_error(c, m);
-	exit(0);
-    }
-    if (!send_exit_signal()) {
-        ULOG_ERR_F("could not send the exit signal");
-        send_locale_error(c, m);
-	exit(0);
-    }
-    if (!do_locale_change()) {
-        ULOG_ERR_F("locale change operation wasn't successful");
-	/* no point to send error, no-one receives it */
-	exit(0);
-    }
-    exit(0);
-}
-
-/**
   Message handler callback function for shutting down applications
   because of the restore operation.
-  This function broadcasts a D-BUS message that suggests 
-  applications to exit and shuts down the base applications and
+  This function shuts down the base applications and
   kills the GConf daemon.
 
   @param c D-BUS connection.
   @param m D-BUS message.
-  @param data User data passed to the function.
+  @param data Not used.
   @return DBUS_HANDLER_RESULT_HANDLED
 */
 static DBusHandlerResult 
 restore_handler(DBusConnection *c, DBusMessage *m, void *data)
 {
     ULOG_DEBUG_F("entered");
-    ULOG_DEBUG_F("method: %s", dbus_message_get_member(m)); 
 
-    if (!send_exit_signal()) {
-        ULOG_ERR_F("could not send the exit signal");
-        send_restore_error(c, m);
-        return DBUS_HANDLER_RESULT_HANDLED;
-    }
     if (!do_restore()) {
-        ULOG_ERR_F("could not shutdown programs for restore operation");
-        send_restore_error(c, m);
-        return DBUS_HANDLER_RESULT_HANDLED;
-    }
-    if (!send_success_reply(c, m)) {
+        ULOG_ERR_F("error when running the restore script");
+        send_error(c, m, RESTORE_ERROR);
+    } else if (!send_success_reply(c, m)) {
         ULOG_ERR_F("could not send reply to Backup");
-        /* most probably this also fails in this situation... */
-        send_restore_error(c, m);
     }
+    dbus_connection_flush(c);
+    g_main_loop_quit(mainloop);
     return DBUS_HANDLER_RESULT_HANDLED;
 }
 
 /**
   Message handler callback function for shutting down applications
   because of the RFS operation.
-  This function broadcasts a D-BUS message that suggests 
-  applications to exit, kills the GConf daemon, restarts base
-  applications and D-BUS session bus. Lastly, the AK exits (to
-  enable simpler C code and use of a shell script).
 
   @param c D-BUS connection.
   @param m D-BUS message.
-  @param data User data passed to the function.
-  @return Does not return
+  @param data Not used.
+  @return DBUS_HANDLER_RESULT_HANDLED  
 */
 static DBusHandlerResult 
-rfs_shutdown_handler(DBusConnection *c, DBusMessage *m, void *data)
+rfs_handler(DBusConnection *c, DBusMessage *m, void *data)
 {
     ULOG_DEBUG_F("entered");
-    ULOG_DEBUG_F("method: %s", dbus_message_get_member(m)); 
 
-    if (!send_exit_signal()) {
-        ULOG_ERR_F("could not send the exit signal");
-        send_rfs_error(c, m, RFS_SHUTDOWN_ERROR);
-	exit(0);
-    }
     if (!do_rfs()) {
-        ULOG_ERR_F("could not shut down and restart programs for RFS");
-        send_rfs_error(c, m, RFS_SHUTDOWN_ERROR);
-	exit(0);
+        ULOG_ERR_F("RFS script returned an error");
+        send_error(c, m, RFS_SHUTDOWN_ERROR);
+    } else if (!send_success_reply(c, m)) {
+        ULOG_ERR_F("could not send reply");
     }
-    exit(0);
+    dbus_connection_flush(c);
+    g_main_loop_quit(mainloop);
+    return DBUS_HANDLER_RESULT_HANDLED;
+}
+
+/**
+  Message handler callback function for implementing the
+  Cleanup user data operation.
+
+  @param c D-BUS connection.
+  @param m D-BUS message.
+  @param data Not used.
+  @return DBUS_HANDLER_RESULT_HANDLED  
+*/
+static DBusHandlerResult 
+cud_handler(DBusConnection *c, DBusMessage *m, void *data)
+{
+    ULOG_DEBUG_F("entered");
+
+    if (!do_cud()) {
+        ULOG_ERR_F("CUD script returned an error");
+        send_error(c, m, CUD_ERROR);
+    } else if (!send_success_reply(c, m)) {
+        ULOG_ERR_F("could not send reply");
+    }
+    dbus_connection_flush(c);
+    g_main_loop_quit(mainloop);
+    return DBUS_HANDLER_RESULT_HANDLED;
 }
 
 /**
@@ -412,14 +293,6 @@ static void libosso_init()
         exit(1);
     }
 
-    /* reg. locale handler */
-    bu_vt.message_function = locale_handler;
-    rc = dbus_connection_register_object_path(ses_conn, LOCALE_OP,
-                    &bu_vt, NULL);
-    if (!rc) {
-        ULOG_CRIT("could not register locale handler");
-        exit(1);
-    }
     /* reg. restore handler */
     bu_vt.message_function = restore_handler;
     rc = dbus_connection_register_object_path(ses_conn, RESTORE_OP,
@@ -428,12 +301,20 @@ static void libosso_init()
         ULOG_CRIT("could not register restore handler");
         exit(1);
     }
-    /* reg. RFS shutdown handler */
-    bu_vt.message_function = rfs_shutdown_handler;
+    /* reg. RFS handler */
+    bu_vt.message_function = rfs_handler;
     rc = dbus_connection_register_object_path(ses_conn, RFS_SHUTDOWN_OP,
                     &bu_vt, NULL);
     if (!rc) {
-        ULOG_CRIT("could not register RFS shutdown handler");
+        ULOG_CRIT("could not register RFS handler");
+        exit(1);
+    }
+    /* reg. CUD handler */
+    bu_vt.message_function = cud_handler;
+    rc = dbus_connection_register_object_path(ses_conn, CUD_OP,
+                    &bu_vt, NULL);
+    if (!rc) {
+        ULOG_CRIT("could not register CUD handler");
         exit(1);
     }
     assert(osso != NULL); 
@@ -441,17 +322,12 @@ static void libosso_init()
     assert(sys_conn != NULL);
 }
 
-/**
-  The main function of app-killer.
-  Does initialisations and goes to the Glib main loop.
-*/
 int main()
 {
     char* ses_bus_socket = NULL;
     ULOG_OPEN(APPL_NAME);
 
     mainloop = g_main_loop_new(NULL, TRUE);
-    ULOG_DEBUG("Glib main loop created");
 
     ses_bus_socket = getenv("DBUS_SESSION_BUS_ADDRESS");
     if (ses_bus_socket == NULL) {
@@ -464,6 +340,5 @@ int main()
     ULOG_DEBUG("Going to the main loop");
     g_main_loop_run(mainloop); 
     ULOG_DEBUG("Returned from the main loop");
-    ULOG_WARN("Glib main loop returned without a known reason");
     exit(0);
 }

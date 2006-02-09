@@ -3,7 +3,7 @@
   
   Application killer header file.
 
-  Copyright (C) 2004-2005 Nokia Corporation.
+  Copyright (C) 2004-2006 Nokia Corporation.
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License as
@@ -49,12 +49,6 @@ extern "C" {
 #define APPL_DBUS_NAME "osso_app_killer"
 #define SVC_NAME "com.nokia." APPL_DBUS_NAME
 
-        /*
-#define BU_START_IF SVC_NAME ".backup_start"
-#define BU_START_OP "/com/nokia/" APPL_DBUS_NAME "/backup_start"
-#define BU_START_MSG "start"
-*/
-
 #define AF_BASE_APPS "/etc/init.d/af-base-apps"
 #define MESSAGEBUS_USER "messagebus"
 #define ROOT_USER "root"
@@ -79,16 +73,6 @@ extern "C" {
 #define GCONF_DAEMON_SCRIPT "/etc/osso-af-init/gconf-daemon.sh"
 #define OSSO_LOCALE_FILE "/etc/osso-af-init/locale"
 
-/*
-#define BU_END_IF SVC_NAME ".backup_end"
-#define BU_END_OP "/com/nokia/" APPL_DBUS_NAME "/backup_end"
-#define BU_END_MSG "start"
-
-#define LOWMEM_IF SVC_NAME ".lowmem"
-#define LOWMEM_OP "/com/nokia/" APPL_DBUS_NAME "/lowmem"
-#define LOWMEM_MSG "start"
-*/
-
 /* locale change interface */
 #define LOCALE_IF SVC_NAME ".locale"
 #define LOCALE_OP "/com/nokia/" APPL_DBUS_NAME "/locale"
@@ -102,12 +86,13 @@ extern "C" {
 #define RFS_SHUTDOWN_MSG "shutdown"
 #define RFS_SHUTDOWN_ERROR RFS_SHUTDOWN_IF ".error"
 #define AK_RFS_SCRIPT "/usr/sbin/osso-app-killer-rfs.sh"
-/*
-#define RFS_RESTART_IF SVC_NAME ".rfs_restart"
-#define RFS_RESTART_OP "/com/nokia/" APPL_DBUS_NAME "/rfs_restart"
-#define RFS_RESTART_MSG "restart"
-#define RFS_RESTART_ERROR RFS_RESTART_IF ".error"
-*/
+
+/* cleanup user data interface */
+#define CUD_IF SVC_NAME ".cud"
+#define CUD_OP "/com/nokia/" APPL_DBUS_NAME "/cud"
+#define CUD_MSG "cud"
+#define CUD_ERROR CUD_IF ".error"
+#define AK_CUD_SCRIPT "/usr/sbin/osso-app-killer-cud.sh"
 
 /* restore interface for the Backup application */
 #define RESTORE_IF SVC_NAME ".restore"
@@ -123,19 +108,6 @@ extern "C" {
 #define AK_EXIT_MATCH_RULE \
         "type='signal',interface='" AK_BROADCAST_IF "',member='" \
 	AK_BROADCAST_EXIT "'"
-        /*
-#define AK_BROADCAST_EXITIF "exit_if_possible"
-#define AK_EXITIF_MATCH_RULE \
-        "type='signal',interface='" AK_BROADCAST_IF "',member='" \
-	AK_BROADCAST_EXITIF "'"
-        */
-
-        /*
-#define BU_APP_SVC "com.nokia.osso_backup"
-#define BU_APP_IF BU_APP_SVC ".ak_reply"
-#define BU_APP_OP "/com/nokia/osso_backup/ak_reply"
-#define BU_APP_MSG "reply"
-*/
 
 #ifdef __cplusplus
 }

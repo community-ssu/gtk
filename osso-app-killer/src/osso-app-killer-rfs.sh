@@ -8,36 +8,12 @@ sudo /etc/init.d/af-base-apps stop
 # define AF-wide environment
 source $DIR/af-defines.sh
 sudo $DIR/gconf-daemon.sh stop
-if [ -x $DIR/osso-media-server.sh ]; then
-  # media-server cannot live without D-BUS session bus
-  $DIR/osso-media-server.sh stop
-fi
-$DIR/dbus-sessionbus.sh stop
-source $DIR/matchbox.defs
-source $DIR/matchbox.sh stop
 
 # Remove user-modified settings
 if [ "x$OSSO_RFS_DOES_NOT_DESTROY" = "x" ]; then
   sudo /usr/sbin/gconf-clean.sh 
   rm -rf /home/user/.osso/*
 else
-  echo "app-killer: OSSO_RFS_DOES_NOT_DESTROY defined, no data deleted"
+  echo "$0: OSSO_RFS_DOES_NOT_DESTROY defined, no data deleted"
 fi
-
-# wait for D-BUS to exit
-TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
-while [ $TMP = 1 ]; do
-  sleep 1
-  TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
-done
-
-# restart things
-if [ -x /etc/init.d/maemo-launcher ]; then
-  /etc/init.d/maemo-launcher restart
-fi
-source $DIR/matchbox.sh start
-$DIR/dbus-sessionbus.sh start
-# start GConf by D-BUS activation
-gconftool-2 -g /foo
-/usr/sbin/waitdbus session
-sudo /etc/init.d/af-base-apps start
+exit 0
