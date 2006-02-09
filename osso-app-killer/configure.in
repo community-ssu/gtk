@@ -1,5 +1,0 @@
-AC_INIT(src/app-killer.c)
-AM_INIT_AUTOMAKE(app-killer, 1.0)
-AC_PROG_CC
-AC_OUTPUT(Makefile src/Makefile)
-

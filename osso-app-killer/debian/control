@@ -2,14 +2,11 @@ Source: osso-app-killer
 Section: base
 Priority: optional
 Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), libosso-dev, libglib2.0-dev, pkg-config
+Build-Depends: debhelper (>= 4.0.0)
 Standards-Version: 3.6.0
 
 Package: osso-app-killer
 Architecture: any
 Depends: hildon-initscripts (>= 0.9.9)
-Description: Program for restarting some programs on locale change etc.
- This package contains the application killer program of the Application
- Framework. The killer restarts some programs on locale change, restore
- factory settings, and restore backup operations.
- It has nothing to do with the background killing.
+Description: Collection of scripts for RFS, CUD, restore.
+ A bunch of some scripts.

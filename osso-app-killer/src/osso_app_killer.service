@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=com.nokia.osso_app_killer
-Exec=/etc/osso-af-init/osso-app-killer-dbus.sh

@@ -1,4 +1,1 @@
-*.service /usr/lib/dbus-1.0/services
-*.conf /etc/dbus-1/system.d
 *.sh /usr/sbin
-../osso-app-killer-dbus.sh /etc/osso-af-init
