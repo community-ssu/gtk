@@ -2,6 +2,8 @@ osso-app-killer (1.1-1) unstable; urgency=low
 
   * Removed all C code and DBus stuff. This package is now just a
     collection of shell scripts.
+  * Added script for the Cleanup user data operation.
+  * Removed the now-unneeded locale change script.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 09 Feb 2006 16:17:22 +0200
 

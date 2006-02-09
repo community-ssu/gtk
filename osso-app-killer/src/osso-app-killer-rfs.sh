@@ -3,6 +3,11 @@
 
 DIR=/etc/osso-af-init
 
+if [ "x$USER" = "xroot" ]; then
+  echo "$0: Error, I'm root"
+  exit 1
+fi
+
 # shut down things
 sudo /etc/init.d/af-base-apps stop
 # define AF-wide environment

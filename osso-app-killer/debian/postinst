@@ -3,8 +3,6 @@
 #
 # see: dh_installdeb(1)
 
-set -e
-
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
 #        * <old-postinst> `abort-upgrade' <new version>
@@ -17,11 +15,22 @@ set -e
 # the debian-policy package
 #
 
+TGT=''
+if [ -e /targets/links/scratchbox.config ]; then
+  . /targets/links/scratchbox.config
+  TGT=$SBOX_TARGET_DIR
+fi
+
+USER=user
+GROUP=users
+HOME="$TGT/home/$USER"
+
 case "$1" in
     configure)
-
-#       chown root.root /usr/bin/app-killer
-#	chmod +s /usr/bin/app-killer
+      if [ ! -e $HOME/.osso-cud-scripts ]; then
+        mkdir $HOME/.osso-cud-scripts
+        chown $USER.$GROUP $HOME/.osso-cud-scripts
+      fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
