@@ -1,3 +1,15 @@
+osso-application-installer (4.0.pre8) unstable; urgency=low
+
+  * More features, close to being testable.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  6 Feb 2006 21:24:40 +0200
+
+osso-application-installer (4.0.pre7) unstable; urgency=low
+
+  * For test repository.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 31 Jan 2006 15:57:37 +0200
+
 osso-application-installer (4.0.pre6) unstable; urgency=low
 
   * Added Build-Depenencies.

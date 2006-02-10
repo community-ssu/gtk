@@ -35,6 +35,7 @@
 #include <sys/statvfs.h>
 #include <sys/types.h>
 #include <sys/fcntl.h>
+#include <sys/stat.h>
 
 #include <apt-pkg/init.h>
 #include <apt-pkg/error.h>
@@ -56,7 +57,7 @@
 
 using namespace std;
 
-//#define DEBUG
+#define DEBUG
 
 /* This is the process that runs as root and does all the work.
 
@@ -71,10 +72,10 @@ using namespace std;
    It will output stuff to stdin and stderr, which the GUI process is
    supposed to catch and put into its log.
 
-   Invocation: apt-worker input-fifo output-fifo status-fifo
+   Invocation: apt-worker input-fifo output-fifo status-fifo cancel-fifo
  */
 
-int input_fd, output_fd, status_fd;
+int input_fd, output_fd, status_fd, cancel_fd;
 
 void
 log_stderr (const char *fmt, ...)
@@ -126,6 +127,35 @@ must_write (void *buf, size_t n)
       perror ("write");
       exit (1);
     }
+}
+
+static int
+maybe_read_byte (int fd)
+{
+  fd_set set;
+  FD_ZERO (&set);
+  FD_SET (fd, &set);
+  struct timeval timeout;
+  timeout.tv_sec = 0;
+  timeout.tv_usec = 0;
+
+  if (select (fd+1, &set, NULL, NULL, &timeout) > 0)
+    {
+      if (FD_ISSET (fd, &set))
+	{
+	  unsigned char byte;
+	  if (read (fd, &byte, 1) == 1)
+	    return byte;
+	}
+    }
+  return -1;
+}
+
+static void
+drain_fd (int fd)
+{
+  while (maybe_read_byte (fd) >= 0)
+    ;
 }
 
 char *
@@ -190,16 +220,23 @@ send_status (const char *label, int percent)
 }
 
 void cache_init ();
-void make_package_list_response ();
+void make_package_list_response (bool only_maemo);
 void make_package_info_response (const char *package);
 void make_package_details_response (const char *package,
 				    const char *version,
 				    int summary_kind);
 
 bool update_package_cache ();
-void install_prepare (const char *package);
-void install_doit ();
+void make_get_sources_list_response ();
+bool set_sources_list ();
+
+void install_check (const char *package);
+void install_package (const char *package);
 bool remove_package (const char *package);
+bool clean ();
+
+bool install_file (const char *filename);
+void make_file_details_response (const char *filename);
 
 void
 handle_request ()
@@ -214,6 +251,8 @@ handle_request ()
   reqbuf = alloc_buf (req.len, stack_reqbuf, 4096);
   must_read (reqbuf, req.len);
 
+  drain_fd (cancel_fd);
+
   switch (req.cmd)
     {
     case APTCMD_NOOP:
@@ -223,7 +262,10 @@ handle_request ()
       }
     case APTCMD_GET_PACKAGE_LIST:
       {
-	make_package_list_response ();
+	request.reset (reqbuf, req.len);
+	bool only_maemo = request.decode_int ();
+	make_package_list_response (only_maemo);
+	_error->DumpErrors ();
 	send_response (&req);
 	break;
       }
@@ -232,6 +274,7 @@ handle_request ()
 	request.reset (reqbuf, req.len);
 	const char *package = request.decode_string_in_place ();
 	make_package_info_response (package);
+	_error->DumpErrors ();
 	send_response (&req);
 	break;
       }
@@ -242,6 +285,7 @@ handle_request ()
 	const char *version = request.decode_string_in_place ();
 	int summary_kind = request.decode_int ();
 	make_package_details_response (package, version, summary_kind);
+	_error->DumpErrors ();
 	send_response (&req);
 	break;
       }
@@ -254,17 +298,36 @@ handle_request ()
 	send_response (&req);
 	break;
       }
-    case APTCMD_INSTALL_PREPARE:
+    case APTCMD_GET_SOURCES_LIST:
       {
-	request.reset (reqbuf, req.len);
-	const char *package = request.decode_string_in_place ();
-	install_prepare (package);
+	make_get_sources_list_response ();
+	_error->DumpErrors ();
 	send_response (&req);
 	break;
       }
-    case APTCMD_INSTALL_DOIT:
+    case APTCMD_SET_SOURCES_LIST:
       {
-	install_doit ();
+	response.reset ();
+	request.reset (reqbuf, req.len);
+	bool success = set_sources_list ();
+	_error->DumpErrors ();
+	response.encode_int (success? 1 : 0);
+	send_response (&req);
+	break;
+      }
+    case APTCMD_INSTALL_CHECK:
+      {
+	request.reset (reqbuf, req.len);
+	const char *package = request.decode_string_in_place ();
+	install_check (package);
+	send_response (&req);
+	break;
+      }
+    case APTCMD_INSTALL_PACKAGE:
+      {
+	request.reset (reqbuf, req.len);
+	const char *package = request.decode_string_in_place ();
+	install_package (package);
 	send_response (&req);
 	break;
       }
@@ -276,6 +339,32 @@ handle_request ()
 	bool success = remove_package (package);
 	_error->DumpErrors ();
 	response.encode_int (success? 1 : 0);
+	send_response (&req);
+	break;
+      }
+    case APTCMD_CLEAN:
+      {
+	response.reset ();
+	bool success = clean ();
+	_error->DumpErrors ();
+	response.encode_int (success? 1 : 0);
+	send_response (&req);
+	break;
+      }
+    case APTCMD_GET_FILE_DETAILS:
+      {
+	request.reset (reqbuf, req.len);
+	const char *filename = request.decode_string_in_place ();
+	make_file_details_response (filename);
+	send_response (&req);
+	break;
+      }
+    case APTCMD_INSTALL_FILE:
+      {
+	response.reset ();
+	request.reset (reqbuf, req.len);
+	const char *filename = request.decode_string_in_place ();
+	bool success = install_file (filename);
 	send_response (&req);
 	break;
       }
@@ -304,7 +393,7 @@ must_open (char *filename, int flags)
 int
 main (int argc, char **argv)
 {
-  if (argc != 4)
+  if (argc != 5)
     {
       log_stderr ("wrong invocation");
       exit (1);
@@ -315,9 +404,10 @@ main (int argc, char **argv)
   input_fd = must_open (argv[1], O_RDONLY);
   output_fd = must_open (argv[2], O_WRONLY);
   status_fd = must_open (argv[3], O_WRONLY);
+  cancel_fd = must_open (argv[4], O_RDONLY);
 
-  DBG ("starting with pid %d, in %d, out %d, stat %d",
-       getpid (), input_fd, output_fd, status_fd);
+  DBG ("starting with pid %d, in %d, out %d, stat %d, cancel %d",
+       getpid (), input_fd, output_fd, status_fd, cancel_fd);
 
   cache_init ();
 
@@ -352,6 +442,9 @@ class myAcquireStatus : public pkgAcquireStatus
 		      double(TotalBytes + TotalItems));
     send_status ("downloading", (int)(fraction*100));
 
+    if (maybe_read_byte (cancel_fd) >= 0)
+      return false;
+
     return true;
   }
 };
@@ -385,8 +478,16 @@ cache_init ()
    }
 }
 
+bool
+is_maemo_package (pkgCache::VerIterator &ver)
+{
+  const char *section = ver.Section ();
+ 
+  return section && !strncmp (section, "maemo/", 6);
+}
+
 void
-make_package_list_response ()
+make_package_list_response (bool only_maemo)
 {
   pkgCache &cache = *package_cache;
 
@@ -396,6 +497,13 @@ make_package_list_response ()
        pkg++)
     {
       pkgCache::VerIterator installed = pkg.CurrentVer ();
+
+      // skip non maemo packages if requested
+      //
+      if (only_maemo
+	  && !installed.end ()
+	  && !is_maemo_package (installed))
+	continue;
 
       bool have_latest = false;
       pkgCache::VerIterator latest;
@@ -409,6 +517,13 @@ make_package_list_response ()
 	      have_latest = true;
 	    }
 	}
+
+      // skip non maemo packages if requested
+      //
+      if (only_maemo
+	  && have_latest
+	  && !is_maemo_package (latest))
+	continue;
 
       // skip packages that are not installed and not available
       //
@@ -663,7 +778,7 @@ encode_install_summary (pkgCache::PkgIterator &want)
   cache.Init(NULL);
 
   if (cache.BrokenCount() > 0)
-    log_stderr ("[ Some installed packages are broken! ]\n");
+    fprintf (stderr, "[ Some installed packages are broken! ]\n");
 
   (*package_cache)->MarkInstall (want);
 
@@ -800,7 +915,7 @@ update_package_cache ()
 	return _error->Error ("Unable to lock the list directory");
     }
    
-   // Create the download object
+  // Create the download object
   myAcquireStatus Stat;
   pkgAcquire Fetcher(&Stat);
 
@@ -845,11 +960,102 @@ update_package_cache ()
   return !Failed;
 }
 
-bool operation_prepare (bool encode_prep);
-bool operation_doit ();
+bool
+encode_file_response (const char *name)
+{
+  int fd = open (name, O_RDONLY);
+  if (fd < 0)
+    {
+    fail:
+      perror (name);
+      response.encode_string ("");
+      return false;
+    }
+
+  struct stat buf;
+  if (fstat (fd, &buf) < 0)
+    goto fail;
+  
+  DBG ("size %d", buf.st_size);
+
+  // XXX
+  char *mem = new char[buf.st_size+1];
+  int n = read (fd, mem, buf.st_size);
+  mem[buf.st_size-1] = '\0';
+  close (fd);
+
+  DBG ("read %d", n);
+
+  response.encode_string (mem);
+  delete[] mem;
+
+  return true;
+}
+  
+void
+make_get_sources_list_response ()
+{
+  response.reset ();
+
+  string name = _config->FindFile("Dir::Etc::sourcelist");
+  FILE *f = fopen (name.c_str(), "r");
+
+  if (f)
+    {
+      char *line = NULL;
+      size_t len = 0;
+      ssize_t n;
+
+      while ((n = getline (&line, &len, f)) != -1)
+	{
+	  if (n > 0 && line[n-1] == '\n')
+	    line[n-1] = '\0';
+
+	  response.encode_string (line);
+	}
+      response.encode_string (NULL);
+      response.encode_int (1);
+
+      free (line);
+      fclose (f);
+    }
+  else
+    {
+      perror (name.c_str());
+      response.encode_string (NULL);
+      response.encode_int (0);
+    }
+}
+
+bool
+set_sources_list ()
+{
+  string name = _config->FindFile("Dir::Etc::sourcelist");
+  FILE *f = fopen (name.c_str(), "w");
+  
+  if (f)
+    {
+      while (true)
+	{
+	  const char *str = request.decode_string_in_place ();
+	  if (str == NULL)
+	    break;
+	  fprintf (f, "%s\n", str);
+	}
+      fclose (f);
+      return true;
+    }
+  else
+    {
+      perror (name.c_str ());
+      return false;
+    }
+}
+
+bool operation (bool only_check);
 
 void
-install_prepare (const char *package)
+install_check (const char *package)
 {
   pkgDepCache &cache = *package_cache;
   pkgCache::PkgIterator pkg = cache.FindPkg (package);
@@ -860,7 +1066,7 @@ install_prepare (const char *package)
     {
       cache.Init (NULL);
       cache.MarkInstall (pkg);
-      success = operation_prepare (true);
+      success = operation (true);
     }
   else
     success = false;
@@ -869,10 +1075,23 @@ install_prepare (const char *package)
 }
 
 void
-install_doit ()
+install_package (const char *package)
 {
+  pkgDepCache &cache = *package_cache;
+  pkgCache::PkgIterator pkg = cache.FindPkg (package);
+  bool success;
+
   response.reset ();
-  response.encode_int (operation_doit ());
+  if (!pkg.end ())
+    {
+      cache.Init (NULL);
+      cache.MarkInstall (pkg);
+      success = operation (false);
+    }
+  else
+    success = false;
+
+  response.encode_int (success);
 }
 
 bool
@@ -885,7 +1104,7 @@ remove_package (const char *package)
     {
       cache.Init (NULL);
       cache.MarkDelete (pkg);
-      return operation_prepare (false) && operation_doit ();
+      return operation (false);
     }
   else
     return false;
@@ -906,45 +1125,22 @@ encode_prep_summary (pkgAcquire& Fetcher)
   response.encode_int (preptype_end);
 }
 
-bool operation_prepare_1 (bool);
-bool operation_doit_1 ();
+bool operation_1 (bool only_check);
 
 bool
-operation_prepare (bool encode_prep)
+operation (bool only_check)
 {
-  bool res = operation_prepare_1 (encode_prep);
-  _error->DumpErrors ();
-  return res;
-}
-
-// XXX - Check whether we really need to loop in operations_doit_1.
-//       If not, operation_recs and operation_list need not be global.
-
-myAcquireStatus *operation_stat;
-pkgAcquire *operation_fetcher;
-SPtr<pkgPackageManager> operation_pm;
-pkgRecords *operation_recs;
-pkgSourceList *operation_list;
-
-bool
-operation_doit ()
-{
-  bool res = operation_doit_1 ();
-  delete operation_fetcher;
-  delete operation_stat;
-  // XXX - leak: delete operation_pm;
-  delete operation_recs;
-  delete operation_list;
-
+  bool res = operation_1 (only_check);
   _error->DumpErrors ();
   cache_init ();
   return res;
 }
 
 bool
-operation_prepare_1 (bool encode_prep)
+operation_1 (bool check_only)
 {
    pkgCacheFile &Cache = *package_cache;
+   SPtr<pkgPackageManager> operation_pm;
 
    if (_config->FindB("APT::Get::Purge",false) == true)
    {
@@ -969,7 +1165,7 @@ operation_prepare_1 (bool encode_prep)
       return true;
    
    // Create the text record parser
-   operation_recs = new pkgRecords (Cache);
+   pkgRecords Recs (Cache);
    if (_error->PendingError() == true)
       return false;
    
@@ -983,26 +1179,24 @@ operation_prepare_1 (bool encode_prep)
    }
    
    // Create the download object
-   operation_stat = new myAcquireStatus;
-   operation_fetcher = new pkgAcquire (operation_stat);
+   myAcquireStatus Stat;
+   pkgAcquire Fetcher (&Stat);
 
    // Read the source list
-   operation_list = new pkgSourceList;
-   if (operation_list->ReadMainList() == false)
+   pkgSourceList List;
+   if (List.ReadMainList() == false)
       return _error->Error("The list of sources could not be read.");
    
    // Create the package manager and prepare to download
-   operation_pm = _system->CreatePM(Cache);
-   if (operation_pm->GetArchives(operation_fetcher,
-				 operation_list,
-				 operation_recs) == false || 
+   SPtr<pkgPackageManager> Pm = _system->CreatePM(Cache);
+   if (Pm->GetArchives(&Fetcher,&List,&Recs) == false || 
        _error->PendingError() == true)
       return false;
 
    // Display statistics
-   double FetchBytes = operation_fetcher->FetchNeeded();
-   double FetchPBytes = operation_fetcher->PartialPresent();
-   double DebBytes = operation_fetcher->TotalNeeded();
+   double FetchBytes = Fetcher.FetchNeeded();
+   double FetchPBytes = Fetcher.PartialPresent();
+   double DebBytes = Fetcher.TotalNeeded();
    if (DebBytes != Cache->DebSize())
      {
        fprintf (stderr, "%f != %f\n", DebBytes, Cache->DebSize());
@@ -1043,25 +1237,23 @@ operation_prepare_1 (bool encode_prep)
 			    OutputDir.c_str());
    }
    
-   if (encode_prep)
-     encode_prep_summary (*operation_fetcher);
+   if (check_only)
+     {
+       encode_prep_summary (Fetcher);
+       return true;
+     }
 
-   return true;
-}
-
-bool
-operation_doit_1 ()
-{
    // Run it
    while (1)
    {
       bool Transient = false;
-      if (operation_fetcher->Run() == pkgAcquire::Failed)
-	 return false;
+      if (Fetcher.Run() == pkgAcquire::Failed)
+	return false;
       
       // Print out errors
       bool Failed = false;
-      for (pkgAcquire::ItemIterator I = operation_fetcher->ItemsBegin(); I != operation_fetcher->ItemsEnd(); I++)
+      for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin();
+	   I != Fetcher.ItemsEnd(); I++)
       {
 	 if ((*I)->Status == pkgAcquire::Item::StatDone &&
 	     (*I)->Complete == true)
@@ -1087,19 +1279,106 @@ operation_doit_1 ()
 	}
       
       _system->UnLock();
-      pkgPackageManager::OrderResult Res = operation_pm->DoInstall (status_fd);
+
+      pkgPackageManager::OrderResult Res = Pm->DoInstall (status_fd);
       if (Res == pkgPackageManager::Failed || _error->PendingError() == true)
 	 return false;
       if (Res == pkgPackageManager::Completed)
 	 return true;
       
       // Reload the fetcher object and loop again for media swapping
-      operation_fetcher->Shutdown();
-      if (operation_pm->GetArchives(operation_fetcher,
-				    operation_list,
-				    operation_recs) == false)
+      Fetcher.Shutdown();
+      if (Pm->GetArchives(&Fetcher,&List,&Recs) == false)
 	 return false;
       
       _system->Lock();
    }
+}
+
+bool
+clean ()
+{
+  // Lock the archive directory
+  FileFd Lock;
+  if (_config->FindB("Debug::NoLocking",false) == false)
+    {
+      Lock.Fd(GetLock(_config->FindDir("Dir::Cache::Archives") + "lock"));
+      if (_error->PendingError() == true)
+	return _error->Error("Unable to lock the download directory");
+    }
+   
+  pkgAcquire Fetcher;
+  Fetcher.Clean(_config->FindDir("Dir::Cache::archives"));
+  Fetcher.Clean(_config->FindDir("Dir::Cache::archives") + "partial/");
+  return true;
+}
+
+// XXX - interpret status codes, call dpkg-deb only once, maybe, or
+//       use the libapt record parser or whatever.
+
+static char *
+get_deb_field (const char *filename, const char *field,
+	       char *buf, size_t max)
+{
+  char *cmd =
+    g_strdup_printf ("/usr/bin/dpkg-deb -f '%s' %s", filename, field);
+  fprintf (stderr, "%s\n", cmd);
+  FILE *f = popen (cmd, "r");
+  g_free (cmd);
+  if (f)
+    {
+      size_t n = fread (buf, 1, max-1, f);
+      if (n > 0 && buf[n-1] == '\n')
+	n--;
+      if (n >= 0)
+	buf[n] = '\0';
+      
+      int status = pclose (f);
+      if (status != 0)
+	return NULL;
+      return buf;
+    }
+  return NULL;
+}
+
+void
+make_file_details_response (const char *filename)
+{
+  const size_t max = 2048;
+  char buf[max];
+  
+  response.reset ();
+  response.encode_string (get_deb_field (filename, "Package", buf, max));
+  response.encode_string (get_deb_field (filename, "Version", buf, max));
+  response.encode_string (get_deb_field (filename, "Maintainer", buf, max));
+  response.encode_string (get_deb_field (filename, "Section", buf, max));
+  response.encode_string (get_deb_field (filename, "Installed-Size", buf,
+					 max));
+  response.encode_string (get_deb_field (filename, "Description", buf, max));
+}
+
+bool
+install_file (const char *filename)
+{
+  _system->UnLock();
+
+  char *cmd = g_strdup_printf ("/usr/bin/dpkg --install '%s'", filename);
+  fprintf (stderr, "%s\n", cmd);
+  int res = system (cmd);
+  g_free (cmd);
+
+  if (res)
+    {
+      char *cmd =
+	g_strdup_printf ("/usr/bin/dpkg --purge "
+			 "`/usr/bin/dpkg-deb -f '%s' Package`",
+			 filename);
+      fprintf (stderr, "%s\n", cmd);
+      system (cmd);
+      g_free (cmd);
+    }
+
+  _system->Lock();
+
+  return res == 0;
 }

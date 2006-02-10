@@ -93,11 +93,29 @@ decode_dependencies (apt_proto_decoder *dec)
   return chars;
 }
 
-static char *
-decode_summary (apt_proto_decoder *dec)
+static void
+format_string_list (GString *str, const char *title,
+		    GList *list)
 {
+  if (list)
+    g_string_append (str, title);
+
+  while (list)
+    {
+      g_string_append_printf (str, "  %s\n", (char *)list->data);
+      list = list->next;
+    }
+}
+
+static char *
+decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
+{
+  GList *sum[sumtype_max];
   GString *str = g_string_new ("");
-  char *chars;
+  char size_buf[20];
+
+  for (int i = 0; i < sumtype_max; i++)
+    sum[i] = NULL;
 
   while (true)
     {
@@ -106,10 +124,118 @@ decode_summary (apt_proto_decoder *dec)
 	break;
       
       const char *target = dec->decode_string_in_place ();
-      g_string_append_printf (str, "%s: %s\n", sumtype_name (type), target);
+      if (type >= 0 && type < sumtype_max)
+	sum[type] = g_list_append (sum[type], (void *)target);
     }
 
-  chars = str->str;
+  bool possible = true;
+  if (installed)
+    {
+      if (pi->info.removable)
+	{
+	  size_string_detailed (size_buf, 20,
+				-pi->info.remove_user_size_delta);
+	  g_string_append_printf
+	    (str, "Summary: Uninstalling %s frees %s in the device.\n",
+	     pi->name, size_buf);
+	}
+      else
+	{
+	  g_string_append_printf
+	    (str, "Summary: Unable to uninstall %s\n", pi->name);
+	  possible = false;
+	}
+    }
+  else
+    {
+      if (pi->installed_version)
+	{
+	  if (pi->info.installable)
+	    {
+	      if (pi->info.install_user_size_delta >= 0)
+		{
+		  size_string_detailed (size_buf, 20,
+					pi->info.install_user_size_delta);
+		  g_string_append_printf
+		    (str, "Summary: Updating %s uses %s in the device.\n",
+		     pi->name, size_buf);
+		}
+	      else
+		{
+		  size_string_detailed (size_buf, 20,
+					-pi->info.install_user_size_delta);
+		  g_string_append_printf
+		    (str, "Summary: Updating %s frees %s in the device.\n",
+		     pi->name, size_buf);
+		}
+	    }
+	  else
+	    {
+	      g_string_append_printf
+		(str, "Summary: Unable to update %s\n", pi->name);
+	      possible = false;
+	    }
+	}
+      else
+	{
+	  if (pi->info.installable)
+	    {
+	      if (pi->info.install_user_size_delta >= 0)
+		{
+		  size_string_detailed (size_buf, 20,
+					pi->info.install_user_size_delta);
+		  g_string_append_printf
+		    (str, "Summary: Installing %s uses %s in the device.\n",
+		     pi->name, size_buf);
+		}
+	      else
+		{
+		  size_string_detailed (size_buf, 20,
+					-pi->info.install_user_size_delta);
+		  g_string_append_printf
+		    (str, "Summary: Installing %s frees %s in the device.\n",
+		     pi->name, size_buf);
+		}
+	    }
+	  else
+	    {
+	      g_string_append_printf
+		(str, "Summary: Unable to install %s\n",
+		 pi->name, size_buf);
+	      possible = false;
+	    }
+	}
+    }
+
+  if (possible)
+    {
+      format_string_list (str,
+			  "Packages to install:\n",
+			  sum[sumtype_installing]);
+      format_string_list (str,
+			  "Packages to update:\n",
+			  sum[sumtype_upgrading]);
+      format_string_list (str,
+			  "Packages to remove:\n",
+			  sum[sumtype_removing]);
+    }
+  else
+    {
+      format_string_list (str,
+			  "Packages missing:\n",
+			  sum[sumtype_missing]);
+      format_string_list (str,
+			  "Packages conflicting:\n",
+			  sum[sumtype_conflicting]);
+      format_string_list (str,
+			  "Packages needing it:\n",
+			  sum[sumtype_needed_by]);
+    }
+
+  for (int i = 0; i < sumtype_max; i++)
+    g_list_free (sum[i]);
+
+  char *chars = str->str;
   g_string_free (str, 0);
   return chars;
 }
@@ -121,11 +247,13 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   package_info *pi = c->pi;
   bool installed = c->installed;
   delete c;
+  char size_buf[20];
 
   const char *maintainer = dec->decode_string_in_place ();
+  char *maintainer_utf8;
   const char *description = dec->decode_string_in_place ();
   char *dependencies = decode_dependencies (dec);
-  char *summary = decode_summary (dec);
+  char *summary = decode_summary (dec, pi, installed);
   const char *operation;
 
   if (dec->corrupted ())
@@ -162,19 +290,23 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   g_string_append_printf (common, "Status:\t\t\t\t%s%s%s\n",
 			  broken? "broken, ":"",
 			  able? "" : "not ", status);
-  g_string_append_printf (common, "Maintainer:\t\t\t%s\n", maintainer);
+  maintainer_utf8 = g_convert (maintainer, -1,
+			       "UTF-8", "ISO-8859-1",
+			       NULL, NULL, NULL);
+  g_string_append_printf (common, "Maintainer:\t\t\t%s\n", maintainer_utf8);
+  g_free (maintainer_utf8);
   g_string_append_printf (common, "Installed version:\t\t%s\n",
 			  (pi->installed_version
 			   ? pi->installed_version
 			   : "<none>"));
-  g_string_append_printf (common, "Installed size:\t\t%d\n",
-			  pi->installed_size);
+  size_string_detailed (size_buf, 20, pi->installed_size);
+  g_string_append_printf (common, "Installed size:\t\t%s\n", size_buf);
   g_string_append_printf (common, "Available version:\t%s\n",
 			  (pi->available_version 
 			   ? pi->available_version
 			   : "<none>"));
-  g_string_append_printf (common, "Download size:\t\t%d\n",
-			  pi->info.download_size);
+  size_string_detailed (size_buf, 20, pi->info.download_size);
+  g_string_append_printf (common, "Download size:\t\t%s\n", size_buf);
   
   if (!installed)
     {
@@ -199,12 +331,14 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_small_text_view (description),
 			    gtk_label_new ("Description"));
+#if 0
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_small_text_view (dependencies),
 			    gtk_label_new ("Dependencies"));
+#endif
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_small_text_view (summary),
-			    gtk_label_new (operation));
+			    gtk_label_new ("Dependencies"));
   
   g_string_free (common, 1);
   g_free (dependencies);

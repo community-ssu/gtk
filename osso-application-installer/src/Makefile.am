@@ -11,6 +11,10 @@ osso_application_installer_SOURCES = main.h			\
                                      menu.cc			\
                                      log.h			\
                                      log.cc			\
+                                     settings.h			\
+                                     settings.cc		\
+                                     repo.h			\
+                                     repo.cc			\
                                      hildonbreadcrumbtrail.h	\
                                      hildonbreadcrumbtrail.c	\
                                      apt-worker-client.h	\

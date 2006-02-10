@@ -42,6 +42,7 @@
 
 int apt_worker_out_fd = -1;
 int apt_worker_in_fd = -1;
+int apt_worker_cancel_fd = -1;
 
 static GString *pmstatus_line;
 
@@ -107,14 +108,26 @@ setup_pmstatus_from_fd (int fd)
   g_io_channel_unref (channel);
 }
 
-static void
+static bool
 must_mkfifo (char *filename, int mode)
 {
-  if (mkfifo (filename, mode) < 0 && errno != EEXIST)
+  if (mkfifo (filename, mode) < 0)
     {
-      perror (filename);
-      exit (1);
+      log_perror (filename);
+      return false;
     }
+  return true;
+}
+
+static bool
+must_unlink (char *filename)
+{
+  if (unlink (filename) < 0)
+    {
+      log_perror (filename);
+      return false;
+    }
+  return true;
 }
 
 static int
@@ -123,32 +136,27 @@ must_open (char *filename, int flags)
   int fd = open (filename, flags);
   if (fd < 0)
     {
-      perror (filename);
-      exit (1);
+      log_perror (filename);
+      return -1;
     }
+  return fd;
 }
 
-static void
-apt_worker_child_setup (gpointer data)
-{
-  int *fds = (int *)data;
-  close (fds[0]);
-  close (fds[1]);
-  close (fds[2]);
-}
-
-void
+bool
 start_apt_worker (gchar *prog)
 {
   int stdout_fd, stderr_fd, status_fd;
   GError *error = NULL;
   gchar *sudo;
 
-  // XXX - be more careful with the /tmp files.
+  // XXX - be more careful with the /tmp files by putting them in a
+  //       temporary directory, maybe.
 
-  must_mkfifo ("/tmp/apt-worker.to", 0600);
-  must_mkfifo ("/tmp/apt-worker.from", 0600);
-  must_mkfifo ("/tmp/apt-worker.status", 0600);
+  if (!must_mkfifo ("/tmp/apt-worker.to", 0600)
+      || !must_mkfifo ("/tmp/apt-worker.from", 0600)
+      || !must_mkfifo ("/tmp/apt-worker.status", 0600)
+      || !must_mkfifo ("/tmp/apt-worker.cancel", 0600))
+    return false;
 
   struct stat info;
   if (stat ("/targets/links/scratchbox.config", &info))
@@ -159,11 +167,10 @@ start_apt_worker (gchar *prog)
   gchar *args[] = {
     sudo,
     prog,
-    "/tmp/apt-worker.to", "/tmp/apt-worker.from", "/tmp/apt-worker.status",
+    "/tmp/apt-worker.to", "/tmp/apt-worker.from",
+    "/tmp/apt-worker.status", "/tmp/apt-worker.cancel",
     NULL
   };
-
-  // XXX - a non-starting apt-worker should not be fatal.
 
   if (!g_spawn_async_with_pipes (NULL,
 				 args,
@@ -177,9 +184,9 @@ start_apt_worker (gchar *prog)
 				 &stderr_fd,
 				 &error))
     {
-      fprintf (stderr, "can't spawn %s: %s\n", prog, error->message);
+      add_log ("can't spawn %s: %s\n", prog, error->message);
       g_error_free (error);
-      exit (1);
+      return false;
     }
 
   // The order here is important and must be the same as in apt-worker
@@ -188,25 +195,45 @@ start_apt_worker (gchar *prog)
   // XXX - we should open the fifo with O_NONBLOCK to deal
   //       with apt-worker startup failures.
 
-  apt_worker_out_fd = must_open ("/tmp/apt-worker.to", O_WRONLY);
-  apt_worker_in_fd = must_open ("/tmp/apt-worker.from", O_RDONLY);
-  status_fd = must_open ("/tmp/apt-worker.status", O_RDONLY);
+  if ((apt_worker_out_fd = must_open ("/tmp/apt-worker.to", O_WRONLY)) < 0
+      || (apt_worker_in_fd = must_open ("/tmp/apt-worker.from", O_RDONLY)) < 0
+      || (status_fd = must_open ("/tmp/apt-worker.status", O_RDONLY)) < 0
+      || (apt_worker_cancel_fd = must_open ("/tmp/apt-worker.cancel", 
+					    O_WRONLY)) < 0)
+    return false;
+
+  must_unlink ("/tmp/apt-worker.to");
+  must_unlink ("/tmp/apt-worker.from");
+  must_unlink ("/tmp/apt-worker.status");
+  must_unlink ("/tmp/apt-worker.cancel");
 
   log_from_fd (stdout_fd);
   log_from_fd (stderr_fd);
   setup_pmstatus_from_fd (status_fd);
+  return true;
 }
 
 void
-stop_apt_worker ()
+cancel_apt_worker ()
 {
-  if (apt_worker_out_fd >= 0)
+  if (apt_worker_cancel_fd >= 0)
     {
-      if (close (apt_worker_out_fd) < 0)
-	perror ("close");
+      unsigned char byte = 0;
+      if (write (apt_worker_cancel_fd, &byte, 1) != 1)
+	log_perror ("cancel");
     }
-  apt_worker_out_fd = -1;
+}
+
+static void
+notice_apt_worker_failure ()
+{
+  //close (apt_worker_in_fd);
+  //close (apt_worker_out_fd);
+  //close (apt_worker_cancel_fd);
+
   apt_worker_in_fd = -1;
+  apt_worker_out_fd = -1;
+  apt_worker_cancel_fd = -1;
 }
 
 static bool
@@ -219,14 +246,12 @@ must_read (void *buf, size_t n)
       r = read (apt_worker_in_fd, buf, n);
       if (r < 0)
 	{
-	  perror ("read");
-	  stop_apt_worker ();
+	  log_perror ("read");
 	  return false;
 	}
       else if (r == 0)
 	{
-	  printf ("apt-worker exited.\n");
-	  stop_apt_worker ();
+	  add_log ("apt-worker exited.\n");
 	  return false;
 	}
       n -= r;
@@ -235,11 +260,28 @@ must_read (void *buf, size_t n)
   return true;
 }
 
-static void
+static bool
 must_write (void *buf, int n)
 {
-  if (write (apt_worker_out_fd, buf, n) != n)
-    perror ("client write");
+  int r;
+
+  while (n > 0)
+    {
+      r = write (apt_worker_out_fd, buf, n);
+      if (r < 0)
+	{
+	  log_perror ("write");
+	  return false;
+	}
+      else if (r == 0)
+	{
+	  add_log ("apt-worker exited.\n");
+	  return false;
+	}
+      n -= r;
+      buf = ((char *)buf) + r;
+    }
+  return true;
 }
 
 bool
@@ -252,8 +294,9 @@ void
 send_apt_worker_request (int cmd, int seq, char *data, int len)
 {
   apt_request_header req = { cmd, seq, len };
-  must_write (&req, sizeof (req));
-  must_write (data, len);
+  if (!must_write (&req, sizeof (req))
+      || !must_write (data, len))
+    annoy_user_with_log ("Something bad happened, see log.");
 }
 
 static int
@@ -305,10 +348,12 @@ handle_one_apt_worker_response ()
   int cmd;
 
   assert (!running);
-  running = true;
     
   if (!must_read (&res, sizeof (res)))
-    return;
+    {
+      notice_apt_worker_failure ();
+      return;
+    }
       
   //printf ("got response %d/%d/%d\n", res.cmd, res.seq, res.len);
   cmd = res.cmd;
@@ -323,14 +368,13 @@ handle_one_apt_worker_response ()
 
   if (!must_read (response_data, res.len))
     {
-      running = false;
+      notice_apt_worker_failure ();
       return;
     }
 
   if (cmd < 0 || cmd >= APTCMD_MAX)
     {
       fprintf (stderr, "unrecognized command %d\n", res.cmd);
-      running = false;
       return;
     }
 
@@ -338,6 +382,7 @@ handle_one_apt_worker_response ()
 
   if (cmd == APTCMD_STATUS)
     {
+      running = true;
       if (pending[cmd].done_callback)
 	pending[cmd].done_callback (cmd, &dec, pending[cmd].done_data);
       running = false;
@@ -347,16 +392,15 @@ handle_one_apt_worker_response ()
   if (pending[cmd].seq != res.seq)
     {
       fprintf (stderr, "ignoring out of sequence reply.\n");
-      running = false;
       return;
     }
   
   apt_worker_callback *done_callback = pending[cmd].done_callback;
   pending[cmd].done_callback = NULL;
 
+  running = true;
   assert (done_callback);
   done_callback (cmd, &dec, pending[cmd].done_data);
-
   running = false;
 }
 
@@ -370,9 +414,13 @@ apt_worker_set_status_callback (apt_worker_callback *callback, void *data)
 }
 
 void
-apt_worker_get_package_list (apt_worker_callback *callback, void *data)
+apt_worker_get_package_list (bool only_maemo,
+			     apt_worker_callback *callback, void *data)
 {
-  call_apt_worker (APTCMD_GET_PACKAGE_LIST, NULL, 0,
+  request.reset ();
+  request.encode_int (only_maemo);
+  call_apt_worker (APTCMD_GET_PACKAGE_LIST,
+		   request.get_buf (), request.get_len (),
 		   callback, data);
 }
 
@@ -380,6 +428,25 @@ void
 apt_worker_update_cache (apt_worker_callback *callback, void *data)
 {
   call_apt_worker (APTCMD_UPDATE_PACKAGE_CACHE, NULL, 0,
+		   callback, data);
+}
+
+void
+apt_worker_get_sources_list (apt_worker_callback *callback, void *data)
+{
+  call_apt_worker (APTCMD_GET_SOURCES_LIST, NULL, 0,
+		   callback, data);
+}
+
+void
+apt_worker_set_sources_list (void (*encoder) (apt_proto_encoder *, void *),
+			     void *encoder_data,
+			     apt_worker_callback *callback, void *data)
+{
+  request.reset ();
+  encoder (&request, encoder_data);
+  call_apt_worker (APTCMD_SET_SOURCES_LIST,
+		   request.get_buf (), request.get_len (),
 		   callback, data);
 }
 
@@ -411,20 +478,24 @@ apt_worker_get_package_details (const char *package,
 }
 
 void
-apt_worker_install_prepare (const char *package,
-			    apt_worker_callback *callback, void *data)
+apt_worker_install_check (const char *package,
+			  apt_worker_callback *callback, void *data)
 {
   request.reset ();
   request.encode_string (package);
-  call_apt_worker (APTCMD_INSTALL_PREPARE,
+  call_apt_worker (APTCMD_INSTALL_CHECK,
 		   request.get_buf (), request.get_len (),
 		   callback, data);
 }
 
 void
-apt_worker_install_doit (apt_worker_callback *callback, void *data)
+apt_worker_install_package (const char *package,
+			    apt_worker_callback *callback, void *data)
 {
-  call_apt_worker (APTCMD_INSTALL_DOIT, NULL, 0,
+  request.reset ();
+  request.encode_string (package);
+  call_apt_worker (APTCMD_INSTALL_PACKAGE,
+		   request.get_buf (), request.get_len (),
 		   callback, data);
 }
 
@@ -435,6 +506,35 @@ apt_worker_remove_package (const char *package,
   request.reset ();
   request.encode_string (package);
   call_apt_worker (APTCMD_REMOVE_PACKAGE,
+		   request.get_buf (), request.get_len (),
+		   callback, data);
+}
+
+void
+apt_worker_clean (apt_worker_callback *callback, void *data)
+{
+  call_apt_worker (APTCMD_CLEAN, NULL, 0,
+		   callback, data);
+}
+
+void
+apt_worker_install_file (const char *file,
+			 apt_worker_callback *callback, void *data)
+{
+  request.reset ();
+  request.encode_string (file);
+  call_apt_worker (APTCMD_INSTALL_FILE,
+		   request.get_buf (), request.get_len (),
+		   callback, data);
+}
+
+void
+apt_worker_get_file_details (const char *file,
+			     apt_worker_callback *callback, void *data)
+{
+  request.reset ();
+  request.encode_string (file);
+  call_apt_worker (APTCMD_GET_FILE_DETAILS,
 		   request.get_buf (), request.get_len (),
 		   callback, data);
 }

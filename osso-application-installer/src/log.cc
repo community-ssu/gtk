@@ -23,6 +23,8 @@
  */
 
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 
 #include <gtk/gtk.h>
 
@@ -56,12 +58,15 @@ show_log ()
 static void
 g_string_append_vprintf (GString *str, const gchar *fmt, va_list args)
 {
-  /* As found on the net.  Hackish.  Also, uses args twice.
+  /* As found on the net.  Hackish.
    */
+  va_list args2;
+  va_copy (args2, args);
   gsize old_len = str->len;
   gsize fmt_len = g_printf_string_upper_bound (fmt, args) + 1;
   g_string_set_size (str, old_len + fmt_len);
-  str->len = old_len + g_vsnprintf (str->str + old_len, fmt_len, fmt, args);
+  str->len = old_len + g_vsnprintf (str->str + old_len, fmt_len, fmt, args2);
+  va_end (args2);
 }
 
 void
@@ -75,6 +80,12 @@ add_log (const char *text, ...)
   g_string_append_vprintf (log_text, text, args);
 
   va_end (args);
+}
+
+void
+log_perror (const char *msg)
+{
+  add_log ("%s: %s\n", msg, strerror (errno));
 }
 
 static void
@@ -116,7 +127,8 @@ read_for_log (GIOChannel *channel, GIOCondition cond, gpointer data)
 
   if (status == G_IO_STATUS_NORMAL)
     {
-       add_log_no_fmt (buf, count);
+      add_log_no_fmt (buf, count);
+      write (2, buf, count);
       return TRUE;
     }
   else

@@ -56,8 +56,10 @@ struct section_info {
   GList *packages;
 };
 
+void get_package_list ();
 void show_current_details ();
 void do_current_operation ();
 void refresh_package_cache ();
+void install_from_file ();
 
 #endif /* !MAIN_H */

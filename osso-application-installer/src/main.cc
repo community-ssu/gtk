@@ -39,6 +39,7 @@
 #include "details.h"
 #include "menu.h"
 #include "log.h"
+#include "settings.h"
 
 #define _(x) x
 
@@ -46,6 +47,7 @@ extern "C" {
   #include "hildonbreadcrumbtrail.h"
   #include <hildon-widgets/hildon-app.h>
   #include <hildon-widgets/hildon-appview.h>
+  #include <libosso.h>
 }
 
 using namespace std;
@@ -329,10 +331,10 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
     set_global_lists_for_view (cur_view_struct);
 }
 
-static void
+void
 get_package_list ()
 {
-  apt_worker_get_package_list (get_package_list_reply, NULL);
+  apt_worker_get_package_list (!red_pill_mode, get_package_list_reply, NULL);
 }
 
 struct gpi_closure {
@@ -460,11 +462,17 @@ refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *clos)
     annoy_user_with_log ("Failed, see log.");
 }
 
+static bool refreshed_this_session = false;
+
 static void
 refresh_package_cache_cont (bool res, void *unused)
 {
   if (res)
     {
+      refreshed_this_session = true;
+      last_update = time (NULL);
+      save_settings ();
+
       show_progress ("Refreshing");
       apt_worker_update_cache (refresh_package_cache_reply, NULL);
     }
@@ -474,6 +482,39 @@ void
 refresh_package_cache ()
 {
   ask_yes_no ("Refresh package list?", refresh_package_cache_cont, NULL);
+}
+
+static int
+days_elapsed_since (time_t past)
+{
+  time_t now = time (NULL);
+  if (now == (time_t)-1)
+    return 0;
+
+  /* Truncating is the right rounding mode here.
+   */
+  return (now - past) / (24*60*60);
+}
+
+void
+maybe_refresh_package_cache ()
+{
+  if (update_interval_index == UPDATE_INTERVAL_NEVER)
+    return;
+
+  if (update_interval_index == UPDATE_INTERVAL_SESSION
+      && refreshed_this_session)
+    return;
+
+  if (update_interval_index == UPDATE_INTERVAL_WEEK
+      && days_elapsed_since (last_update) < 7)
+    return;
+
+  if (update_interval_index == UPDATE_INTERVAL_MONTH
+      && days_elapsed_since (last_update) < 30)
+    return;
+
+  refresh_package_cache ();
 }
 
 static bool
@@ -492,12 +533,24 @@ confirm_install (package_info *pi,
 }
 
 static void
-install_doit_reply (int cmd, apt_proto_decoder *dec, void *data)
+clean_reply (int cmd, apt_proto_decoder *dec, void *data)
+{
+  /* Failure messages are in the log.  We don't annoy the user here.
+     However, if cleaning takes really long, the user might get
+     confused since apt-worker is not responding.
+   */
+}
+
+static void
+install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
   int success = dec->decode_int ();
 
   hide_progress ();
   get_package_list ();
+
+  if (clean_after_install)
+    apt_worker_clean (clean_reply, NULL);
 
   if (!dec->corrupted () && success)
     annoy_user ("Done.");
@@ -508,10 +561,11 @@ install_doit_reply (int cmd, apt_proto_decoder *dec, void *data)
 static void
 install_package_cont3 (bool res, void *data)
 {
+  package_info *pi = (package_info *)data;
   if (res)
     {
       show_progress ("Installing");
-      apt_worker_install_doit (install_doit_reply, NULL);
+      apt_worker_install_package (pi->name, install_package_reply, NULL);
     }
 }
 
@@ -524,14 +578,15 @@ format_string_list (GString *str, const char *title,
 
   while (list)
     {
-      g_string_append_printf (str, "- %s\n", (char *)list->data);
+      //g_string_append_printf (str, "- %s\n", (char *)list->data);
       list = list->next;
     }
 }
 
 static void
-install_prepare_reply (int cmd, apt_proto_decoder *dec, void *data)
+install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
+  package_info *pi = (package_info *)data;
   GList *notauth = NULL, *notcert = NULL;
 
   while (true)
@@ -555,8 +610,7 @@ install_prepare_reply (int cmd, apt_proto_decoder *dec, void *data)
 	{
 	  GString *text = g_string_new ("");
 	  format_string_list (text, 
-			      "The integrity of the following\n"
-			      "packages could not be verified:\n",
+			      "This software is neither verified nor delivered to you by Nokia. Please note that some software may harm your device and installation will be at your own risk.\n",
 			      notauth);
 	  format_string_list (text, 
 			      "The following packages are not\n"
@@ -564,7 +618,7 @@ install_prepare_reply (int cmd, apt_proto_decoder *dec, void *data)
 			      notcert);
 	  g_string_append (text, "Continue anyway?");
 	  hide_progress ();
-	  ask_yes_no (text->str, install_package_cont3, NULL);
+	  ask_yes_no (text->str, install_package_cont3, pi);
 	  g_string_free (text, 1);
 	}
       else
@@ -597,8 +651,7 @@ install_package_cont2 (bool res, void *data)
 	    add_log ("Installing %s %s\n", pi->name, pi->available_version);
 	  
 	  show_progress ("Installing");
-	  apt_worker_install_prepare (pi->name,
-				      install_prepare_reply, NULL);
+	  apt_worker_install_check (pi->name, install_check_reply, pi);
 	}
       else
 	annoy_user_with_details ("Impossible, see details.", pi, false);
@@ -679,6 +732,8 @@ make_install_section_view (view *v)
   view = get_global_package_list_widget ();
   set_global_lists_for_view (v);
   gtk_widget_show_all (view);
+
+  maybe_refresh_package_cache ();
 
   return view;
 }
@@ -869,6 +924,84 @@ set_operation_callback (const char *label,
 }
 
 static void
+install_from_file_reply (int cmd, apt_proto_decoder *dec, void *data)
+{
+  hide_progress ();
+  int success = dec->decode_int ();
+  if (success)
+    annoy_user ("Done.");
+  else
+    annoy_user_with_log ("Failed, see log.");
+}
+
+void
+install_from_file_cont2 (bool res, void *data)
+{
+  char *filename = (char *)data;
+  if (res)
+    {
+      show_progress ("Installing");
+      apt_worker_install_file (filename,
+			       install_from_file_reply, NULL);
+    }
+  g_free (filename);
+}
+
+static bool
+is_maemo_section (const char *section)
+{
+  return section && !strncmp (section, "maemo/", 6);
+}
+
+static void
+file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
+{
+  char *filename = (char *)data;
+
+  const char *package = dec->decode_string_in_place ();
+  const char *version = dec->decode_string_in_place ();
+  const char *maintainer = dec->decode_string_in_place ();
+  const char *section = dec->decode_string_in_place ();
+  const char *installed_size = dec->decode_string_in_place ();
+  const char *description = dec->decode_string_in_place ();
+
+  if (dec->corrupted ())
+    {
+      annoy_user_with_log ("Failed, see log.");
+      g_free (filename);
+      return;
+    }
+
+  if (!red_pill_mode && !is_maemo_section (section))
+    {
+      annoy_user ("Package not compatible");
+      g_free (filename);
+      return;
+    }
+
+  GString *text = g_string_new ("");
+
+  g_string_printf (text, "Do you want to install\n%s %s",
+		   package, version);
+
+  ask_yes_no (text->str, install_from_file_cont2, filename);
+  g_string_free (text, 1);
+}
+
+static void
+install_from_file_cont (char *filename, void *unused)
+{
+  apt_worker_get_file_details (filename,
+			       file_details_reply, filename);
+}
+
+void
+install_from_file ()
+{
+  show_deb_file_chooser (install_from_file_cont, NULL);
+}
+
+static void
 window_destroy (GtkWidget* widget, gpointer data)
 {
   gtk_main_quit ();
@@ -897,12 +1030,6 @@ handle_apt_worker (GIOChannel *channel, GIOCondition cond, gpointer data)
 }
 
 void
-handle_apt_worker_2 (gpointer unused, gint fd, GdkInputCondition condition)
-{
-  handle_one_apt_worker_response ();
-}
-
-void
 add_apt_worker_handler ()
 {
   GIOChannel *channel = g_io_channel_unix_new (apt_worker_in_fd);
@@ -910,6 +1037,16 @@ add_apt_worker_handler ()
 				  GIOCondition (G_IO_IN | G_IO_HUP | G_IO_ERR),
 				  handle_apt_worker, NULL);
   g_io_channel_unref (channel);
+}
+
+static void
+mime_open_handler (gpointer raw_data, int argc, char **argv)
+{
+  for (int i = 0; i < argc; i++)
+    printf ("mime-open: %s\n", argv[i]);
+
+  if (argc > 0)
+    install_from_file_cont (g_strdup (argv[0]), NULL);
 }
 
 int
@@ -925,9 +1062,6 @@ main (int argc, char **argv)
   if (argc > 1)
     apt_worker_prog = argv[1];
 
-  start_apt_worker (apt_worker_prog);
-  apt_worker_set_status_callback (apt_status_callback, NULL);
-  add_apt_worker_handler ();
 
   app_view = hildon_appview_new (NULL);
   app = hildon_app_new_with_appview (HILDON_APPVIEW (app_view));
@@ -960,9 +1094,28 @@ main (int argc, char **argv)
   main_menu = hildon_appview_get_menu (HILDON_APPVIEW (app_view));
   create_menu (main_menu);
 
+  load_settings ();
+
   gtk_widget_show_all (app);
   show_view (&main_view);
-  get_package_list ();
+
+  /* XXX - check errors.
+   */
+  osso_context_t *ctxt;
+  ctxt = osso_initialize ("osso_application_installer",
+			  PACKAGE_VERSION, TRUE, NULL);
+  osso_mime_set_cb (ctxt, mime_open_handler, NULL);
+
+  if (start_apt_worker (apt_worker_prog))
+    {
+      apt_worker_set_status_callback (apt_status_callback, NULL);
+      add_apt_worker_handler ();
+
+      maybe_refresh_package_cache ();
+      get_package_list ();
+    }
+  else
+    annoy_user_with_log ("Unexpected startup problem, see log.");
 
   gtk_main ();
 }

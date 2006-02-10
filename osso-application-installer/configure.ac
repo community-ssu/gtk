@@ -16,10 +16,7 @@ if test x$ac_cv_header_apt_pkg_configuration_h != xyes; then
   AC_ERROR([libapt-pkg not found.])
 fi
 
-PKG_CHECK_MODULES(AI_DEPS,
-                  glib-2.0
-                  gtk+-2.0
-                  hildon-libs)
+PKG_CHECK_MODULES(AI_DEPS, glib-2.0 gtk+-2.0 hildon-libs libosso)
 AC_SUBST(AI_DEPS_CFLAGS)
 AC_SUBST(AI_DEPS_LIBS)
 

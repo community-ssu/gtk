@@ -39,11 +39,17 @@ enum apt_command {
   APTCMD_GET_PACKAGE_DETAILS,
 
   APTCMD_UPDATE_PACKAGE_CACHE,
+  APTCMD_GET_SOURCES_LIST,
+  APTCMD_SET_SOURCES_LIST,
 
-  APTCMD_INSTALL_PREPARE,
-  APTCMD_INSTALL_DOIT,
-
+  APTCMD_INSTALL_CHECK,
+  APTCMD_INSTALL_PACKAGE,
   APTCMD_REMOVE_PACKAGE,
+
+  APTCMD_GET_FILE_DETAILS,
+  APTCMD_INSTALL_FILE,
+
+  APTCMD_CLEAN,
 
   APTCMD_MAX
 };
@@ -121,7 +127,10 @@ private:
 // GET_PACKAGE_LIST - get a list of packages with their names,
 //                    versions, and partial status
 //
-// No parameters
+// Parameters:
+//
+// - only_maemo (int).  Whether to return only packages from sections
+//                      starting with "maemo/".
 //
 // For each interesting package, the response contains:
 //
@@ -140,6 +149,26 @@ private:
 // - success (int)
 //
 // Error messages appear on stdout/stderr of the apt-worker process.
+
+
+// GET_SOURCES_LIST - read the main sources.list files, unparsed.
+//
+// No parameters.
+//
+// Response contains:
+//
+// - source_lines (string)*,(null).
+// - success (int).
+
+// SET_SOURCES_LIST - write the main sources.list files, unparsed.
+//
+// Parameters:
+//
+// - sources (string).
+//
+// Response:
+//
+// - success (int).
 
 // GET_PACKAGE_INFO - get some more information about a specific
 //                    package.  This information is used to augment
@@ -201,13 +230,14 @@ enum apt_proto_sumtype {
   sumtype_needed_by,
   sumtype_missing,
   sumtype_conflicting,
+  sumtype_max
 };
 
-// INSTALL_PREPARE - Prepare to install a package.
+// INSTALL_CHECK - Check for non-authenticated and non-certified
+//                 packages.
 //
 // This will setup the download operation and figure out whether there
-// are any not-authenticated or not-certified packages.  When this
-// request succeeded, continue with INSTALL_DOIT.
+// are any not-authenticated or not-certified packages.
 //
 // Parameters:
 //
@@ -224,9 +254,11 @@ enum apt_proto_preptype {
   preptype_notcert
 };
 
-// INSTALL_DOIT - Do the actual installation after preparing.
+// INSTALL_PACKAGE - Do the actual installation of a package
 //
-// No parameters.
+// Parameters:
+//
+// - name (string).  The package to be installed.
 //
 // Response:
 //
@@ -242,5 +274,44 @@ enum apt_proto_preptype {
 // Response:
 //
 // - success (int).
+
+// CLEAN - empty the cache of downloaded archives
+//
+// No parameters.
+//
+// Response:
+//
+// - success (int).
+
+
+// GET_FILE_DETAILS - get selected details about a package in a .deb file
+//
+// Parameters:
+//
+// - filename (string).
+//
+// Response:
+//
+// - name (string).
+// - version (string).
+// - maintainer (string).
+// - section (string).
+// - installed_size (string). String!
+// - description (string).
+
+// INSTALL_FILE - install a package from a .deb file
+//
+// Parameters:
+//
+// - filename (string).
+//
+// Response:
+//
+// - success (int).
+//
+// This command is not smart about what is going on.  It just call
+// "dpkg --install" and reports whether it worked or not.  If "dpkg
+// --install" fails, "dpkg --purge" is called automatically as an
+// attempt to clean up.
 
 #endif /* !APT_WORKER_PROTO_H */

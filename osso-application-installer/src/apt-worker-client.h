@@ -25,12 +25,14 @@
 #ifndef APT_WORKER_CLIENT_H
 #define APT_WORKER_CLIENT_H
 
+#include <glib/gtypes.h>
+
+#include "util.h"
 #include "apt-worker-proto.h"
 
 extern int apt_worker_in_fd, apt_worker_out_fd;
 
-void start_apt_worker (gchar *prog);
-void stop_apt_worker ();
+bool start_apt_worker (gchar *prog);
 
 typedef void apt_worker_callback (int cmd,
 				  apt_proto_decoder *dec,
@@ -55,11 +57,20 @@ void handle_one_apt_worker_response ();
 void apt_worker_set_status_callback (apt_worker_callback *callback,
 				     void *data);
 
-void apt_worker_get_package_list (apt_worker_callback *callback,
+void apt_worker_get_package_list (bool only_maemo,
+				  apt_worker_callback *callback,
 				  void *data);
 
 void apt_worker_update_cache (apt_worker_callback *callback,
 			      void *data);
+
+void apt_worker_get_sources_list (apt_worker_callback *callback,
+				  void *data);
+
+void apt_worker_set_sources_list (void (*encoder) (apt_proto_encoder *,
+						   void *),
+				  void *encoder_data,
+				  apt_worker_callback *callback, void *data);
 
 void apt_worker_get_package_info (const char *package,
 				  apt_worker_callback *callback,
@@ -71,15 +82,27 @@ void apt_worker_get_package_details (const char *package,
 				     apt_worker_callback *callback,
 				     void *data);
 
-void apt_worker_install_prepare (const char *package,
+void apt_worker_install_check (const char *package,
+			       apt_worker_callback *callback,
+			       void *data);
+
+void apt_worker_install_package (const char *package,
 				 apt_worker_callback *callback,
 				 void *data);
-
-void apt_worker_install_doit (apt_worker_callback *callback,
-			      void *data);
 
 void apt_worker_remove_package (const char *package,
 				apt_worker_callback *callback,
 				void *data);
+
+void apt_worker_clean (apt_worker_callback *callback,
+		       void *data);
+
+void apt_worker_install_file (const char *filename,
+			      apt_worker_callback *callback,
+			      void *data);
+
+void apt_worker_get_file_details (const char *filename,
+				  apt_worker_callback *callback,
+				  void *data);
 
 #endif /* !APT_WORKER_CLIENT_H */

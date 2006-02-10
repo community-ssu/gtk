@@ -22,10 +22,12 @@
  *
  */
 
+#include <string.h>
 #include <unistd.h>
 #include <assert.h>
 #include <gtk/gtk.h>
 #include <hildon-widgets/hildon-note.h>
+#include <hildon-fm/hildon-widgets/hildon-file-chooser-dialog.h>
 
 #include "util.h"
 #include "details.h"
@@ -241,6 +243,8 @@ global_name_func (GtkTreeViewColumn *column,
   package_info *pi;
 
   gtk_tree_model_get (model, iter, 0, &pi, -1);
+  if (!pi)
+    return;
 
   if (gtk_tree_selection_iter_is_selected (selection, iter))
     {
@@ -288,6 +292,9 @@ global_version_func (GtkTreeViewColumn *column,
 {
   package_info *pi;
   gtk_tree_model_get (model, iter, 0, &pi, -1);
+  if (!pi)
+    return;
+
   g_object_set (cell, "text", (global_installed
 			       ? pi->installed_version
 			       : pi->available_version),
@@ -303,13 +310,17 @@ global_size_func (GtkTreeViewColumn *column,
 {
   package_info *pi;
   char buf[20];
+
   gtk_tree_model_get (model, iter, 0, &pi, -1);
+  if (!pi)
+    return;
+
   if (global_installed)
-    sprintf (buf, "%d", pi->installed_size);
+    size_string_general (buf, 20, pi->installed_size);
   else if (pi->have_info)
-    sprintf (buf, "%d", pi->info.download_size);
+    size_string_general (buf, 20, pi->info.download_size);
   else
-    buf[0] = '\0';
+    strcpy (buf, "-");
   g_object_set (cell, "text", buf, NULL);
 }
 
@@ -339,7 +350,8 @@ global_selection_changed (GtkTreeSelection *selection, gpointer data)
       if (global_selection_callback)
 	{
 	  gtk_tree_model_get (model, &iter, 0, &pi, -1);
-	  global_selection_callback (pi);
+	  if (pi)
+	    global_selection_callback (pi);
 	}
     }
   else
@@ -367,7 +379,8 @@ global_row_activated (GtkTreeView *treeview,
     {
       package_info *pi;
       gtk_tree_model_get (model, &iter, 0, &pi, -1);
-      global_activation_callback (pi);
+      if (pi)
+	global_activation_callback (pi);
     }
 }
 
@@ -379,6 +392,7 @@ get_global_package_list_widget ()
 
   global_list_store = gtk_list_store_new (1, GTK_TYPE_POINTER);
   GtkCellRenderer *renderer;
+  GtkTreeViewColumn *column;
   GtkWidget *tree, *scroller;
 
   tree = gtk_tree_view_new_with_model (GTK_TREE_MODEL (global_list_store));
@@ -392,9 +406,14 @@ get_global_package_list_widget ()
 					      global_name_func,
 					      tree,
 					      NULL);
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 0);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_column_set_expand (column, TRUE);
+  gtk_tree_view_column_set_fixed_width (column, 400);
 
   renderer = gtk_cell_renderer_text_new ();
   g_object_set (renderer, "yalign", 0.0, NULL);
+  g_object_set (renderer, "xalign", 1.0, NULL);
   gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
 					      -1,
 					      NULL,
@@ -402,9 +421,14 @@ get_global_package_list_widget ()
 					      global_version_func,
 					      tree,
 					      NULL);
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 1);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_column_set_expand (column, FALSE);
+  gtk_tree_view_column_set_fixed_width (column, 150);
 
   renderer = gtk_cell_renderer_text_new ();
   g_object_set (renderer, "yalign", 0.0, NULL);
+  g_object_set (renderer, "xalign", 1.0, NULL);
   gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
 					      -1,
 					      NULL,
@@ -412,11 +436,15 @@ get_global_package_list_widget ()
 					      global_size_func,
 					      tree,
 					      NULL);
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 2);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_column_set_expand (column, FALSE);
+  gtk_tree_view_column_set_fixed_width (column, 80);
 
   scroller = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroller),
-				  GTK_POLICY_AUTOMATIC,
-				  GTK_POLICY_ALWAYS);
+				  GTK_POLICY_NEVER,
+				  GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER (scroller), tree);
 
   global_have_last_selection = false;
@@ -485,7 +513,8 @@ global_section_name_func (GtkTreeViewColumn *column,
 {
   section_info *si;
   gtk_tree_model_get (model, iter, 0, &si, -1);
-  g_object_set (cell, "text", si->name, NULL);
+  if (si)
+    g_object_set (cell, "text", si->name, NULL);
 }
 
 static section_activated *global_section_activated = NULL;
@@ -504,7 +533,8 @@ global_section_row_activated (GtkTreeView *treeview,
     {
       section_info *si;
       gtk_tree_model_get (model, &iter, 0, &si, -1);
-      act (si);
+      if (si)
+	act (si);
     }
 }
 
@@ -562,4 +592,125 @@ set_global_section_list (GList *sections, section_activated *act)
     }
 
   global_section_activated = act;
+}
+
+#define KILO 1000
+
+void
+size_string_general (char *buf, size_t n, int bytes)
+{
+  size_t num = bytes;
+
+  if (num == 0)
+    snprintf (buf, n, "0kB");
+  else if (num < 1*KILO)
+    snprintf (buf, n, "1kB");
+  else
+    {
+      // round to nearest KILO
+      // bytes ~ num * KILO
+      num = (bytes + KILO/2) / KILO;
+      if (num < 100)
+	snprintf (buf, n, "%dkB", num);
+      else
+	{
+	  // round to nearest 100 KILO
+	  // bytes ~ num * 100 * KILO
+	  num = (bytes + 50*KILO) / (100*KILO);
+	  if (num < 100)
+	    snprintf (buf, n, "%.1fMB", num/10.0);
+	  else
+	    {
+	      // round to nearest KILO KILO
+	      // bytes ~ num * KILO * KILO
+	      num = (bytes + KILO*KILO/2) / (KILO*KILO);
+	      if (num < KILO)
+		snprintf (buf, n, "%dMB", num);
+	      else
+		snprintf (buf, n, "%.1fGB", ((float)num)/KILO);
+	    }
+	}
+    }
+}
+
+void
+size_string_detailed (char *buf, size_t n, int bytes)
+{
+  size_t num = bytes;
+
+  if (num == 0)
+    snprintf (buf, n, "0kB");
+  else if (num < 1*KILO)
+    snprintf (buf, n, "1kB");
+  else
+    {
+      // round to nearest KILO
+      // bytes ~ num * KILO
+      num = (bytes + KILO/2) / KILO;
+      if (num < 1000)
+	snprintf (buf, n, "%dkB", num);
+      else
+	{
+	  // round to nearest 10 KILO
+	  // bytes ~ num * 10 * KILO
+	  num = (bytes + 5*KILO) / (10*KILO);
+	  if (num < 1000)
+	    snprintf (buf, n, "%.2fMB", num/100.0);
+	  else
+	    {
+	      if (num < 10000)
+		snprintf (buf, n, "%.1fMB", num/100.0);
+	      else
+		snprintf (buf, n, "%.2fGB", ((float)num)/(100*KILO));
+	    }
+	}
+    }
+}
+
+struct fcd_closure {
+  void (*cont) (char *filename, void *data);
+  void *data;
+};
+
+static void
+fcd_response (GtkDialog *dialog, gint response, gpointer clos)
+{
+  fcd_closure *c = (fcd_closure *)clos;
+  void (*cont) (char *filename, void *data) = c->cont; 
+  void *data = c->data;
+  delete c;
+
+  char *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+
+  if (response == GTK_RESPONSE_OK)
+    cont (filename, data);
+  else
+    g_free (filename);
+}
+
+void
+show_deb_file_chooser (void (*cont) (char *filename, void *data),
+		       void *data)
+{
+  fcd_closure *c = new fcd_closure;
+  c->cont = cont;
+  c->data = data;
+
+  GtkWidget *fcd;
+  GtkFileFilter *filter;
+
+  fcd = hildon_file_chooser_dialog_new (NULL, GTK_FILE_CHOOSER_ACTION_OPEN);
+
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_add_pattern (filter, "*.deb");
+  gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(fcd), filter);
+
+  gtk_window_set_title (GTK_WINDOW(fcd), "Select package");
+
+  g_signal_connect (fcd, "response",
+		    G_CALLBACK (fcd_response), c);
+
+  gtk_widget_show_all (fcd);
 }

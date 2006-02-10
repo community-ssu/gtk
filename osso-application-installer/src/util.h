@@ -57,4 +57,10 @@ typedef void section_activated (section_info *);
 GtkWidget *get_global_section_list_widget ();
 void set_global_section_list (GList *sections, section_activated *act);
 
+void size_string_general (char *buf, size_t n, int bytes);
+void size_string_detailed (char *buf, size_t n, int bytes);
+
+void show_deb_file_chooser (void (*cont) (char *filename, void *data),
+			    void *data);
+
 #endif /* !UTIL_H */

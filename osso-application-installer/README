@@ -32,51 +32,44 @@ and osso-application installer and not have anything break.
 Design notes
 ------------
 
-First phase: wild experimentation with libapt-pkg and widget writing
-for Gtk+.  No design whatsoever.
-
 The libapt-pkg specific code is written in C++, but some of the GUI
 code will be plain C to enable easier transportation into external
 libraries or reuse.  This is not a deeply object oriented program, but
 we'll use STL without prejudice.
 
-The current way to keep the GUI alive is the put PM->DoInstall into a
-new thread.  That seems to work fine on the target, but the DoInstall
-thread sometimes blocks indefinitely when running in x86 scratchbox.
-This is very weird, I declare it non-debuggable for now, and blame it
-on scratchbox oddities.  In any case, using libapt-pkg in the
-'obvious' way and keeping the GUI alive from OpProgress and
-pkgAcquireStatus objects does not feel sufficiently smooth on a slow
-device.  Also, I don't feel confident enough about using threads.
-
-Therefore, the internal design will be changed to use two processes:
-one to run the GUI, one to do stuff with libapt-pkg.  They will
-communicate via pipes (or sockets).  The libapt-pkg will be command
-driven: it reads a command, executes it, ships back the result, adn
-then reads the next command.  Long running commands might or might not
-be interuptible, depending on how feasible that is.  The GUI process
-will do the usual event-loop thing.  It will request stuff from the
-libapt-pkg process and then react to it when the result arrives.
-Commands and results are linked with sequence numbers, making it
-simple to just forget about some request.
+The internal design uses two processes: one to run the GUI, one to do
+stuff with libapt-pkg.  They communicate via pipes (or sockets).  The
+libapt-pkg will be command driven: it reads a command, executes it,
+ships back the result, and then reads the next command.  It
+periodically sends status upates.  Some long running commands are
+interuptible in certain phases.
 
 Stdout and stderr from the libapt-pkg process are being redirected to
 the 'log'.
 
-Commands will be:
+The GUI process will do the usual event-loop thing.  It will request
+stuff from the libapt-pkg process and then react to it when the result
+arrives.  Somewhat unusually, it will just run one event loop and no
+recursive ones for modal dialogs.  In effect, the control flow is
+implemented in continuation passing style.  (The event loop is the
+trampoline that gives us the needed tail-call elimination for this.)
+The motivation for using continuation passing style was to avoid
+spontanous recursive calls of event callbacks, which are not supported
+by Gtk+ and are tricky in general, but still have a fully concurrent
+'UI experience'.  Not having recursive calls allows us to confidently
+access data structures so that we can run background jobs that gather
+expensive information while showing dialogs, for example.
 
- - get list of packages.  This will include just enough information
-   for the package list: name, version, section, status.
+Writing in continuation passing style in C is a bit cumbersome, but
+worth it, in my opinion.
 
- - get package info: more, like download size, installability, etc.
-   This will be used to fill the displayed list asynchronously.
-
- - get package details: all the rest of a package for the details dialog.
-
- - install package, remove package: this executes the operation.
 
 BUGS
 ----
 
 - non-ASCII text in package info
 - depcache.Init () is too slow
+- make apt-worker robust against malformed config files
+- handle broken packages
+- empty section after installing last package in it
+- toppin on mime-open
