@@ -1,14 +1,14 @@
 Source: hildon-control-panel
 Section: x11
 Priority: optional
-Maintainer: Karoliina Salminen <karoliina.t.salminen@nokia.com>
+Maintainer: Johan Bilien <johan.bilien@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), hildon-libs-dev (>= 0.7.0), hildon-lgpl-dev, hildon-base-lib-dev, pkg-config, libosso-dev (>= 0.10.0), libmatchbox-dev, osso-af-settings, libosso-help-dev
 Standards-Version: 3.6.0
 
 Package: hildon-control-panel
 Section: x11
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, libmatchbox1, hildon-control-panel-l10n-4.0-engb | hildon-control-panel-l10n-4.0-english
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, libmatchbox1, hildon-control-panel-l10n-4.0-engb | hildon-control-panel-l10n-4.0-english, osso-app-killer (>= 1.1)
 Recommends: hildon-theme-harry, hildon-keyboard, matchbox-window-manager, hildon-base-lib
 Suggests: hildon-tests
 Conflicts: hildon-base

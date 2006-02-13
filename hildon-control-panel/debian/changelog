@@ -1,8 +1,15 @@
+hildon-control-panel (1.0.2-1) unstable; urgency=low
+
+  * Fixed a crash when building DBUS messages
+  * Replaced RFS DBus call with shell script call
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 13 Feb 2006 15:36:29 +0200
+
 hildon-control-panel (1.0.1-0) unstable; urgency=low
 
   * Fixed N#21333
 
- -- Johan Bilien <jobi@localhost.localdomain>  Thu, 26 Jan 2006 17:55:25 +0200
+ -- Johan Bilien <johan.bilien@nokia.com>>  Thu, 26 Jan 2006 17:55:25 +0200
 
 hildon-control-panel (1.0.0-1) unstable; urgency=low
 

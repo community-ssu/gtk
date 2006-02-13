@@ -74,6 +74,7 @@ AppData state_data;
  HILDON_CP_APPL_DBUS_NAME "/rfs_shutdown"
 #define HILDON_CP_RFS_SHUTDOWN_IF HILDON_CP_SVC_NAME ".rfs_shutdown"
 #define HILDON_CP_RFS_SHUTDOWN_MSG "shutdown"
+#define HILDON_CP_RFS_SCRIPT "/usr/sbin/osso-app-killer-rfs.sh"
 
 /* Definitions for mobile operator wizard launch*/
 #define HILDON_CONTROL_PANEL_DBUS_OPERATOR_WIZARD_SERVICE "operator_wizard"
@@ -164,6 +165,14 @@ static void _hw_signal_cb( osso_hw_state_t *state, gpointer data );
 int 
 main(int argc, char ** argv)
 {
+
+    FILE* test=fopen("/home/jobi/args", "w");
+    fprintf( test, "CONTROL PANEL STARTING, argc: %i\n", argc);
+    if(argc>=2){
+    fprintf( test, "first arg: %s\n", argv[1]);
+    }
+    fclose(test);
+
 
     setlocale( LC_ALL, "" );
     
@@ -997,6 +1006,8 @@ static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
 
     password = rindex (crypted_password, c)+1;
 
+    fprintf( stderr, "Before password rpc call, password = %s\n", password);
+
     returnstatus = _cp_run_rpc_system_request
         (state_data.osso, 
          HILDON_CP_DBUS_MCE_SERVICE, 
@@ -1039,48 +1050,19 @@ static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
         osso_log(LOG_ERR, "Unknown error type %d", returnstatus);
     }
     
-    
     if (returnvalues.type == DBUS_TYPE_BOOLEAN &&
         returnvalues.value.b == TRUE) { 
+        GError * error = NULL;
 
-        osso_rpc_free_val (&returnvalues);
-        returnstatus = osso_rpc_run(state_data.osso, 
-                                    HILDON_CP_SVC_NAME, 
-                                    HILDON_CP_RFS_SHUTDOWN_OP,
-                                    HILDON_CP_RFS_SHUTDOWN_IF, 
-                                    HILDON_CP_RFS_SHUTDOWN_MSG,
-                                    &returnvalues, 
-                                    DBUS_TYPE_INVALID);
-        
-        
-
-        switch (returnstatus)
+        if (!g_spawn_command_line_async (HILDON_CP_RFS_SCRIPT,
+                                    &error))
         {
-        case OSSO_INVALID:
-            osso_log(LOG_ERR, "Invalid parameter\n");
-            break;
-        case OSSO_RPC_ERROR:
-        case OSSO_ERROR:
-        case OSSO_ERROR_NAME:
-        case OSSO_ERROR_NO_STATE:
-        case OSSO_ERROR_STATE_SIZE:
-            if (returnvalues.type == DBUS_TYPE_STRING) {
-                osso_log(LOG_ERR, "Appkiller call failed: %s\n", 
-                         returnvalues.value.s);
+            osso_log (LOG_ERR, "Call to RFS script failed");
+            if (error)
+            {
+                osso_log (LOG_ERR, error->message);
+                g_error_free (error);
             }
-            else {
-                osso_log(LOG_ERR, 
-                         "Appkiller call failed, unspecified");
-            }
-            break;
-            
-        case OSSO_OK:
-	    osso_rpc_free_val (&returnvalues);
-            return TRUE;
-            /* There is no real need for case OSSO_OK: we'll be dead
-               ... if everyhting goes as planned, anyway! */
-        default:
-            osso_log(LOG_ERR, "Unknown error type %d", returnstatus);
         }
 
     }
@@ -1294,39 +1276,28 @@ static void _append_args(DBusMessage *msg, int type, va_list var_args)
 	guint32 u;
 	gdouble d;
 	gboolean b;
-	
+
 	switch(type) {
 	  case DBUS_TYPE_INT32:
 	    i = va_arg(var_args, gint32);
-	    dbus_message_append_args(msg, type, i, DBUS_TYPE_INVALID);
+	    dbus_message_append_args(msg, type, &i, DBUS_TYPE_INVALID);
 	    break;
 	  case DBUS_TYPE_UINT32:
 	    u = va_arg(var_args, guint32);
-	    dbus_message_append_args(msg, type, u, DBUS_TYPE_INVALID);
+	    dbus_message_append_args(msg, type, &u, DBUS_TYPE_INVALID);
 	    break;
 	  case DBUS_TYPE_BOOLEAN:
 	    b = va_arg(var_args, gboolean);
-	    dbus_message_append_args(msg, type, b, DBUS_TYPE_INVALID);
+	    dbus_message_append_args(msg, type, &b, DBUS_TYPE_INVALID);
 	    break;
 	  case DBUS_TYPE_DOUBLE:
 	    d = va_arg(var_args, gdouble);
-	    dbus_message_append_args(msg, type, d, DBUS_TYPE_INVALID);
+	    dbus_message_append_args(msg, type, &d, DBUS_TYPE_INVALID);
 	    break;
 	  case DBUS_TYPE_STRING:
 	    s = va_arg(var_args, gchar *);
-#if 0
-	    if(s == NULL)
-		dbus_message_append_args(msg, DBUS_TYPE_NIL,
-					 DBUS_TYPE_INVALID);
-	    else
-#endif
-		dbus_message_append_args(msg, type, s, DBUS_TYPE_INVALID);
-	    break;
-#if 0
-	  case DBUS_TYPE_NIL:	    
-		dbus_message_append_args(msg, DBUS_TYPE_NIL,
-					 DBUS_TYPE_INVALID);
-#endif
+        fprintf( stderr, "got string %s! \n", s);
+		dbus_message_append_args(msg, type, &s, DBUS_TYPE_INVALID);
 	    break;
 	  default:
 	    break;	    
@@ -1371,12 +1342,6 @@ static void _get_arg(DBusMessageIter *iter, osso_rpc_t *retval)
 	  dprint("got STRING:'%s'",retval->value.s);
 	}
 	break;
-#if 0
-      case DBUS_TYPE_NIL:
-	retval->value.s = NULL;	    
-	dprint("got NIL");
-	break;
-#endif
       default:
 	retval->type = DBUS_TYPE_INVALID;
 	retval->value.i = 0;	    
