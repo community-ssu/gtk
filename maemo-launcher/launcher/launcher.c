@@ -90,7 +90,7 @@ launch_process(prog_t *prog, ui_state state)
   int prio;
 
   /* Load the launched application. */
-  module = dlopen(prog->filename, RTLD_LAZY);
+  module = dlopen(prog->filename, RTLD_LAZY | RTLD_GLOBAL);
   if (!module)
   {
     error("loading invoked application: '%s'\n", dlerror());

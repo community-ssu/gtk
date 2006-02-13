@@ -1,3 +1,7 @@
+2006-02-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (launch_process): Pass RTLD_GLOBAL to dlopen.
+
 2006-02-09  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/launcher.c: Remove <assert.h> include.
