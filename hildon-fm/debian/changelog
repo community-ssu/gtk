@@ -1,3 +1,10 @@
+hildon-fm (0.14-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Applied a patch from Murray Cumming (M#182).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Feb 2006 13:27:13 +0200
+
 hildon-fm (0.13-1) unstable; urgency=low
 
   * Using hildon_gtk_file_chooser_install_properties instead of private

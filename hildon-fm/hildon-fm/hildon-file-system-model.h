@@ -96,10 +96,12 @@ typedef gboolean(*HildonFileSystemModelThumbnailCallback) (const gchar *
 
 typedef struct _HildonFileSystemModelPrivate HildonFileSystemModelPrivate;
 
-typedef struct {
+typedef struct _HildonFileSystemModel HildonFileSystemModel;
+
+typedef struct _HildonFileSystemModel {
     GObject parent;
     HildonFileSystemModelPrivate *priv;
-} HildonFileSystemModel;
+};
 
 typedef struct {
     GObjectClass parent_class;

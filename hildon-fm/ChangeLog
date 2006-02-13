@@ -1,3 +1,10 @@
+2006-02-13  Murray Cumming  <murrayc@murrayc.com>
+
+	* hildon-fm/hildon-file-system-model.h: 
+	Use a prototype declaration for HildonFileSystemModel, 
+	as with other structs, so that the C++ bindings can hide the 
+	full implementation from their headers.
+
 2006-01-12  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	N#19820 Memory leaks in the file selector dialog and underlying components
