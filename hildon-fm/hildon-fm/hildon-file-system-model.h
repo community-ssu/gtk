@@ -98,10 +98,10 @@ typedef struct _HildonFileSystemModelPrivate HildonFileSystemModelPrivate;
 
 typedef struct _HildonFileSystemModel HildonFileSystemModel;
 
-typedef struct _HildonFileSystemModel {
+typedef struct {
     GObject parent;
     HildonFileSystemModelPrivate *priv;
-};
+} _HildonFileSystemModel;
 
 typedef struct {
     GObjectClass parent_class;
