@@ -1092,9 +1092,13 @@ static void hildon_file_selection_class_init(HildonFileSelectionClass *
 static gboolean
 content_pane_selection_changed_idle(gpointer data)
 {
+    GDK_THREADS_ENTER();
+
     g_assert(HILDON_IS_FILE_SELECTION(data));
     g_signal_emit(data, signal_selection_changed, 0);
     HILDON_FILE_SELECTION(data)->priv->content_pane_changed_id = 0;
+
+    GDK_THREADS_LEAVE();
 
     return FALSE;
 }
@@ -1269,6 +1273,8 @@ static gboolean delayed_select_idle(gpointer data)
   GtkTreePath *sort_path = NULL;
   gboolean found = FALSE;
 
+  GDK_THREADS_ENTER();
+
   self = HILDON_FILE_SELECTION(data);
   priv = self->priv;
 
@@ -1319,6 +1325,8 @@ static gboolean delayed_select_idle(gpointer data)
 
   /* We have to return TRUE, because cancel removes the handler now */
   hildon_file_selection_cancel_delayed_select(priv);
+
+  GDK_THREADS_LEAVE();
 
   return TRUE;
 }

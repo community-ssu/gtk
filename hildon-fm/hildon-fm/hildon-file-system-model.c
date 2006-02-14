@@ -359,6 +359,8 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
     delayed_list_type *current_list;
     GNode *node;
 
+    GDK_THREADS_ENTER();
+
     model = HILDON_FILE_SYSTEM_MODEL(data);
     priv = model->priv;
 
@@ -368,12 +370,14 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
   	if ( (node = g_queue_pop_head(priv->reload_list)) != NULL)
   	{
   	  hildon_file_system_model_delayed_add_children(model, node, FALSE);
+          GDK_THREADS_LEAVE();
   	  return TRUE;
   	}
   
     current_list = g_queue_peek_head(priv->delayed_lists);
     if (!current_list) { /* No items to insert => remove idle handler */
         priv->timeout_id = 0;
+        GDK_THREADS_LEAVE();
         return FALSE;
     }
 
@@ -391,8 +395,12 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
       current_list->iter = g_slist_next(current_list->iter);
 
     if (current_list->iter)
+    {
+      GDK_THREADS_LEAVE();
       return TRUE;  /* Ok, there is items left. Continue with this
                        idle handler */
+    }
+
     /* Current list ends here. We now have to check
   	         if loading of some folder is really finished. If this is a
   	         case we then have to check if there are unflagged
@@ -402,6 +410,8 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
     delayed_list_free(current_list);
     g_queue_pop_head(priv->delayed_lists);
     handle_possibly_finished_node(node);
+
+    GDK_THREADS_LEAVE();
 
     return TRUE;
 }
