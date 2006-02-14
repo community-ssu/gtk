@@ -1,3 +1,12 @@
+hildon-fm (0.15-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Moved hildon-file-details-dialog from hildon-libs to hildon-fm.
+  * debian/control: removed dependency on hildon-lgpl
+  * debian/control: updated dependency on hildon-libs to 0.12.0
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Tue, 14 Feb 2006 14:19:10 +0200
+
 hildon-fm (0.14-1) unstable; urgency=low
 
   * UNRELEASED
