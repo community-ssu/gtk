@@ -1,11 +1,8 @@
-SUBDIRS = hildon-lgpl timer ut doc
 EXTRA_DIST = \
 	debian/changelog \
 	debian/control \
 	debian/copyright \
 	debian/hildon-lgpl-dev.install \
-	debian/hildon-lgpl0.install \
-	debian/hildon-lgpl0-dbg.install \
 	debian/hildon-lgpl-dev.docs \
 	debian/rules
 

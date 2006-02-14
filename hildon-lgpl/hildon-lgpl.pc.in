@@ -5,7 +5,7 @@ includedir=@includedir@
 
 Name: hildon-lgpl
 Description: LGPL-licensed widgets for the Hildon framework
-Requires: gtk+-2.0 >= @GTK_VERSION@
+Requires: gtk+-2.0 >= @GTK_VERSION@ hildon-libs >= 0.12.0
 Version: @VERSION@
-Libs: -L${libdir} -lhildonlgpl @X_LIBS@ 
-Cflags: -I${includedir}/hildon-lgpl @X_CFLAGS@
+Libs: -L${libdir} -lhildonwidgets @X_LIBS@ 
+Cflags: -I${includedir} @X_CFLAGS@

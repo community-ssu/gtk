@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-lgpl, 0.10.1)
+AM_INIT_AUTOMAKE(hildon-lgpl, 0.12.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
@@ -112,11 +112,4 @@ AC_SUBST(outomoduledir)
 AC_SUBST(HTML_DIR)
 AC_SUBST(X_DIR)
 
-AC_OUTPUT(Makefile \
-        hildon-lgpl/Makefile \
-	timer/Makefile \
-	ut/Makefile \
-	po/Makefile \
-	po/porules.mk \
-	doc/Makefile \
-	hildon-lgpl.pc)
+AC_OUTPUT(Makefile hildon-lgpl.pc)

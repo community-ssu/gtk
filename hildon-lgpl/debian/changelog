@@ -1,3 +1,14 @@
+hildon-lgpl (0.12.0-1) unstable; urgency=low
+
+  * Merged hildon-lgpl into hildon-libs.
+  * hildon-lgpl is now just a proxy package.
+
+  * debian/control: depends/requires only hildonlibs
+  * debian/hildon-lgpl-dev.install: removed all except pkgconfig
+  * debian/hildon-lgpl-dev.docs: removed all
+	
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Tue, 14 Feb 2006 23:30:45 +0200
+
 hildon-lgpl (0.10.1-2) unstable; urgency=low
 
   * increment debian revision to overwrite 0.10.1-1pre (which hides 0.10.1-1)

@@ -1778,7 +1778,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=hildon-lgpl
- VERSION=0.10.1
+ VERSION=0.12.0
 
 
 cat >>confdefs.h <<_ACEOF
@@ -22705,7 +22705,7 @@ HTML_DIR=${docdir}/html
 
 
 
-                                                                                ac_config_files="$ac_config_files Makefile hildon-lgpl/Makefile timer/Makefile ut/Makefile po/Makefile po/porules.mk doc/Makefile hildon-lgpl.pc"
+                    ac_config_files="$ac_config_files Makefile hildon-lgpl.pc"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -23271,12 +23271,6 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-  "hildon-lgpl/Makefile" ) CONFIG_FILES="$CONFIG_FILES hildon-lgpl/Makefile" ;;
-  "timer/Makefile" ) CONFIG_FILES="$CONFIG_FILES timer/Makefile" ;;
-  "ut/Makefile" ) CONFIG_FILES="$CONFIG_FILES ut/Makefile" ;;
-  "po/Makefile" ) CONFIG_FILES="$CONFIG_FILES po/Makefile" ;;
-  "po/porules.mk" ) CONFIG_FILES="$CONFIG_FILES po/porules.mk" ;;
-  "doc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
   "hildon-lgpl.pc" ) CONFIG_FILES="$CONFIG_FILES hildon-lgpl.pc" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;

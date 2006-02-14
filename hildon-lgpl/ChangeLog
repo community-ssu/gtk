@@ -1,3 +1,36 @@
+2006-02-14  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.12.0
+
+        Merge hildon-lgpl into hidon-libs. hildon-lgpl is now just a dummy
+	package, temporarily kept for compatibility.
+	
+	* Makefile.am (SUBDIRS): removed all subfolders
+	* Makefile.am (EXTRA_DIST): removed lib install
+	* configure.ac (AC_OUTPUT): removed all except .pc file 
+	* hildon-lgpl.pc.in (Requires): requires hildon-libs 0.12.0
+	
+	* hildon-lgpl/gtk-infoprint.c: moved to hildon-lgpl.
+	* hildon-lgpl/gtk-infoprint.h: likewise.
+	* hildon-lgpl/hildon-app-private.h: likewise.
+	* hildon-lgpl/hildon-app.c: likewise.
+	* hildon-lgpl/hildon-app.h: likewise.
+	* hildon-lgpl/hildon-appview.c: likewise.
+	* hildon-lgpl/hildon-appview.h: likewise.
+	* hildon-lgpl/hildon-caption.c: likewise.
+	* hildon-lgpl/hildon-caption.h: likewise.
+	* hildon-lgpl/hildon-defines.c: likewise.
+	* hildon-lgpl/hildon-defines.h: likewise.
+	* hildon-lgpl/hildon-find-toolbar.c: likewise.
+	* hildon-lgpl/hildon-find-toolbar.h: likewise.
+	* hildon-lgpl/hildon-input-mode-hint.h: likewise.
+
+	* timer/*: moved to hildon-libs
+	* doc/*: likewise.
+
+	* po/*: merged into hildon-libs (4 msgstr)
+
+
 2006-01-18  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.10.1
