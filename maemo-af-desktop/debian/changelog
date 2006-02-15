@@ -1,3 +1,9 @@
+maemo-af-desktop (2.4.5-2) unstable; urgency=low
+
+  * Fixed typo in default TN configuration file
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 15 Feb 2006 13:55:14 +0200
+
 maemo-af-desktop (2.4.5-1) unstable; urgency=low
 
   * Imported latest changes from home refactoring.
@@ -5,7 +11,7 @@ maemo-af-desktop (2.4.5-1) unstable; urgency=low
   * Added default TN configuration file
   * Added .desktop path variable to pkg-config for home
 
- -- Johan Bilien <jobi@localhost.localdomain>  Wed, 15 Feb 2006 13:01:43 +0200
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 15 Feb 2006 13:01:43 +0200
 
 maemo-af-desktop (2.4.4-1) unstable; urgency=low
 
