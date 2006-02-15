@@ -1,6 +1,19 @@
-Test repository
----------------
+Test repository / files
+-----------------------
 
-- Package A_1 installed, A_2 available.  Package B_1 available,
-  conflicts with A_1 but not A_2.  Installing B_1 should upgrade to
-  A_2.
+- should have package that is listed in Packages but the .deb is not there.
+
+- should have corrupted package / wrong checksum
+
+- should have old maemo packages
+
+- package whose posinst fails
+
+- package that pops up dialog
+
+- package that pops up Location selection dialog
+
+- package that conflicts with other package
+
+- package that depends on other package
+

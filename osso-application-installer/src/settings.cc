@@ -205,7 +205,7 @@ show_settings_dialog ()
   GtkWidget *dialog, *notebook;
   settings_closure *c = new settings_closure;
 
-  dialog = gtk_dialog_new_with_buttons ("Package details",
+  dialog = gtk_dialog_new_with_buttons ("Settings",
 					NULL,
 					GTK_DIALOG_MODAL,
 					"OK", GTK_RESPONSE_OK,

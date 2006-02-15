@@ -1,6 +1,7 @@
 #! /bin/sh
 
 ROOT="$1"
+DIR="$2"
 
 set -e
 rm -rf build."$ROOT"
@@ -8,5 +9,5 @@ mkdir -p build."$ROOT"/DEBIAN
 for f in "$ROOT".*; do
   cp $f  build."$ROOT"/DEBIAN/`echo $f | sed -e 's/.*\.//'`
 done
-dpkg-deb --build build."$ROOT" .
+dpkg-deb --build build."$ROOT" "$DIR"
 rm -rf build."$ROOT"

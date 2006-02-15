@@ -3,7 +3,7 @@ SUBDIRS = src test-data
 desktopdir = $(datadir)/applications/hildon
 desktop_DATA = osso-application-installer.desktop
 
-servicefiledir=$(prefix)/lib/dbus-1.0/services
+servicefiledir=$(prefix)/share/dbus-1/services
 servicefile_DATA=com.nokia.osso_application_installer.service
 
 mimedir = $(datadir)/mime/packages

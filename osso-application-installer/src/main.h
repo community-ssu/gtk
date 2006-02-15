@@ -28,6 +28,15 @@
 #include "apt-worker-proto.h"
 
 struct package_info {
+
+  package_info ();
+  ~package_info ();
+
+  void ref ();
+  void unref ();
+
+  int ref_count;
+
   char *name;
   char *installed_version;
   int installed_size;
@@ -47,9 +56,6 @@ void get_intermediate_package_info (package_info *pi,
 				    void (*func) (package_info *, void *,
 						  bool),
 				    void *);
-
-package_info *alloc_package_info ();
-void free_package_info (package_info *);
 
 struct section_info {
   const char *name;

@@ -50,28 +50,6 @@ deptype_name (apt_proto_deptype dep)
     }
 }
 
-static const char *
-sumtype_name (apt_proto_sumtype sum)
-{
-  switch (sum)
-    {
-    case sumtype_installing:
-      return "Installing";
-    case sumtype_upgrading:
-      return "Upgrading";
-    case sumtype_removing:
-      return "Removing";
-    case sumtype_needed_by:
-      return "Needed by";
-    case sumtype_missing:
-      return "Missing";
-    case sumtype_conflicting:
-      return "Conflicting";
-    default:
-      return "Unknown";
-    }
-}
-
 static char *
 decode_dependencies (apt_proto_decoder *dec)
 {
@@ -241,6 +219,12 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 }
 
 static void
+details_response (GtkDialog *dialog, gint response, gpointer clos)
+{
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
 get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
 {
   spd_closure *c = (spd_closure *)clos;
@@ -254,7 +238,6 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   const char *description = dec->decode_string_in_place ();
   char *dependencies = decode_dependencies (dec);
   char *summary = decode_summary (dec, pi, installed);
-  const char *operation;
 
   if (dec->corrupted ())
     return;
@@ -263,65 +246,91 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   GString *common = g_string_new ("");
   
   gchar *status;
-  bool able, broken = false;
+  bool broken = false;
 
   if (pi->installed_version && pi->available_version)
     {
-      status = "upgradeable";
-      able = pi->info.installable;
+      if (broken)
+	{
+	  if (pi->info.installable)
+	    status = "Broken, but updateable";
+	  else
+	    status = "Broken, and not updateable";
+	}
+      else
+	{
+	  if (pi->info.installable)
+	    status = "Updateable";
+	  else
+	    status = "Update available, but not updateable";
+	}
     }
   else if (pi->installed_version)
     {
-      status = "installed";
-      able = true;
+      if (broken)
+	status = "Broken";
+      else
+	status = "Installed";
     }
   else if (pi->available_version)
     {
-      status = "installable";
-      able = pi->info.installable;
+      if (pi->info.installable)
+	status = "Installable";
+      else
+	status = "Not installable";
     }
   else
-    {
-      status = "???";
-      able = true;
-    }
+    status = "Unknown";
   
   g_string_append_printf (common, "Name:\t\t\t\t%s\n", pi->name);
-  g_string_append_printf (common, "Status:\t\t\t\t%s%s%s\n",
-			  broken? "broken, ":"",
-			  able? "" : "not ", status);
+
+  gchar *short_description = (installed
+			      ? pi->installed_short_description
+			      : pi->available_short_description);
+  if (short_description == NULL)
+    short_description = pi->installed_short_description;
+  g_string_append_printf (common, "\t\t\t\t\t%s\n", short_description);
+
   maintainer_utf8 = g_convert (maintainer, -1,
 			       "UTF-8", "ISO-8859-1",
 			       NULL, NULL, NULL);
   g_string_append_printf (common, "Maintainer:\t\t\t%s\n", maintainer_utf8);
   g_free (maintainer_utf8);
+
+  g_string_append_printf (common, "Status:\t\t\t\t%s\n", status);
   g_string_append_printf (common, "Installed version:\t\t%s\n",
 			  (pi->installed_version
 			   ? pi->installed_version
-			   : "<none>"));
-  size_string_detailed (size_buf, 20, pi->installed_size);
-  g_string_append_printf (common, "Installed size:\t\t%s\n", size_buf);
+			   : "-"));
+  if (pi->installed_version)
+    {
+      size_string_detailed (size_buf, 20, pi->installed_size);
+      g_string_append_printf (common, "\t\t\t\t\t%s\n", size_buf);
+    }
   g_string_append_printf (common, "Available version:\t%s\n",
 			  (pi->available_version 
 			   ? pi->available_version
-			   : "<none>"));
-  size_string_detailed (size_buf, 20, pi->info.download_size);
-  g_string_append_printf (common, "Download size:\t\t%s\n", size_buf);
-  
-  if (!installed)
+			   : "-"));
+  if (pi->available_version)
     {
-      if (pi->installed_version)
-	operation = "Upgrade";
-      else
-	operation = "Install";
+      size_string_detailed (size_buf, 20, pi->info.download_size);
+      g_string_append_printf (common, "Download size:\t\t%s\n", size_buf);
     }
+
+  const gchar *summary_label;
+  if (installed)
+    summary_label = "Uninstalling";
+  else if (!pi->info.installable)
+    summary_label = "Problems";
+  else if (pi->installed_version && pi->available_version)
+    summary_label = "Updating";
   else
-    operation = "Remove";
-  
+    summary_label = "Installing";
+
   dialog = gtk_dialog_new_with_buttons ("Package details",
 					NULL,
 					GTK_DIALOG_MODAL,
-					"OK", GTK_RESPONSE_OK,
+					"Close", GTK_RESPONSE_OK,
 					NULL);
   notebook = gtk_notebook_new ();
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
@@ -331,23 +340,21 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_small_text_view (description),
 			    gtk_label_new ("Description"));
-#if 0
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_small_text_view (dependencies),
-			    gtk_label_new ("Dependencies"));
-#endif
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_small_text_view (summary),
-			    gtk_label_new ("Dependencies"));
+			    gtk_label_new (summary_label));
   
   g_string_free (common, 1);
   g_free (dependencies);
   g_free (summary);
-  
-  gtk_widget_set_usize (dialog, 600, 350);
+
+  pi->unref ();
+
+  g_signal_connect (dialog, "response",
+		    G_CALLBACK (details_response), NULL);
+
+  gtk_widget_set_usize (dialog, 600, 300);
   gtk_widget_show_all (dialog);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
 }
 
 void
@@ -368,5 +375,6 @@ show_package_details (package_info *pi, bool installed)
   spd_closure *c = new spd_closure;
   c->pi = pi;
   c->installed = installed;
+  pi->ref ();
   get_intermediate_package_info (pi, spd_cont, c);
 }

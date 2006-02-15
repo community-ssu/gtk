@@ -1,6 +1,4 @@
-packages:
-	./make-deb package-a1
-	./make-deb package-a2
-	./make-deb package-b1
-	./make-deb package-c1
-	apt-ftparchive packages . >Packages
+# The machinery for the repo is in a separate Makefile so that it can
+# be run more easily from outside of scratchbox.
+
+EXTRADIST = Makefile.repo

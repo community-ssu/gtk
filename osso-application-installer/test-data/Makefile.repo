@@ -1,0 +1,39 @@
+repodir = testrepo
+distsdir = $(repodir)/dists
+olddir = $(distsdir)/old
+newdir = $(distsdir)/new
+oldpkgdir = $(olddir)/main/binary-arm
+newpkgdir = $(newdir)/main/binary-arm
+
+all:
+
+repodirs:
+	mkdir -p $(oldpkgdir)
+	mkdir -p $(newpkgdir)
+
+packages: repodirs
+	./make-deb package-a1 $(oldpkgdir)
+	./make-deb package-a2 $(newpkgdir)
+	./make-deb package-b1 $(oldpkgdir)
+	./make-deb package-b1 $(newpkgdir)
+	./make-deb package-c1 $(oldpkgdir)
+	./make-deb package-c1 $(newpkgdir)
+	./make-deb testrepo-conf-mmc $(repodir)
+
+repo: packages
+	cd $(repodir) && apt-ftparchive packages dists/old >../$(oldpkgdir)/Packages
+	cd $(repodir) && apt-ftparchive packages dists/new >../$(newpkgdir)/Packages
+	rm -f $(olddir)/Release
+	apt-ftparchive -c=apt.conf.old release $(olddir) > $(olddir)/.Release
+	mv $(olddir)/.Release $(olddir)/Release
+	rm -f $(newdir)/Release
+	gpg --default-key 3267077C --yes --sign -ba -o $(olddir)/Release.gpg $(olddir)/Release
+	apt-ftparchive -c=apt.conf.new release $(newdir) > $(newdir)/.Release
+	mv $(newdir)/.Release $(newdir)/Release
+	gpg --default-key 3267077C --yes --sign -ba -o $(newdir)/Release.gpg $(newdir)/Release
+
+tar: repo
+	tar czf $(repodir).tar.gz $(repodir)
+
+clean:
+	rm -rf $(repodir)

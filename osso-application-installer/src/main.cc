@@ -136,21 +136,21 @@ view main_view = {
 
 view install_applications_view = {
   &main_view,
-  "Install applications",
+  "Install new",
   make_install_applications_view,
   NULL
 };
 
 view upgrade_applications_view = {
   &main_view,
-  "Upgrade applications",
+  "Update",
   make_upgrade_applications_view,
   NULL
 };
 
 view uninstall_applications_view = {
   &main_view,
-  "Uninstall applications",
+  "Installed applications",
   make_uninstall_applications_view,
   NULL
 };
@@ -166,27 +166,38 @@ GtkWidget *
 make_main_view (view *v)
 {
   GtkWidget *view;
+  GtkWidget *vbox;
   GtkWidget *btn;
+  
+  view = gtk_hbox_new (FALSE, 0);
+  vbox = gtk_vbox_new (FALSE, 10);
+  gtk_box_pack_start (GTK_BOX (view), vbox, FALSE, FALSE, 0);
 
-  view = gtk_vbox_new (TRUE, 10);
+  gtk_box_pack_start (GTK_BOX (vbox),
+		      gtk_label_new ("My Device Nokia 770"),
+		      FALSE, FALSE, 5);
+  
+  btn = gtk_button_new_with_label ("List installed applications");
+  gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 5);
+  g_signal_connect (G_OBJECT (btn), "clicked",
+		    G_CALLBACK (show_view_callback),
+		    &uninstall_applications_view);
 
-  btn = gtk_button_new_with_label ("Install Applications");
-  gtk_box_pack_start (GTK_BOX (view), btn, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox),
+		      gtk_label_new ("Repository"),
+		      FALSE, FALSE, 5);
+
+  btn = gtk_button_new_with_label ("Install new applications");
+  gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 5);
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &install_applications_view);
   
-  btn = gtk_button_new_with_label ("Upgrade Applications");
-  gtk_box_pack_start (GTK_BOX (view), btn, TRUE, TRUE, 0);
+  btn = gtk_button_new_with_label ("Check for updates");
+  gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 5);
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &upgrade_applications_view);
-
-  btn = gtk_button_new_with_label ("Uninstall Applications");
-  gtk_box_pack_start (GTK_BOX (view), btn, TRUE, TRUE, 0);
-  g_signal_connect (G_OBJECT (btn), "clicked",
-		    G_CALLBACK (show_view_callback),
-		    &uninstall_applications_view);
 
   gtk_widget_show_all (view);
 
@@ -201,26 +212,48 @@ static GList *installed_packages = NULL;
 
 static section_info *cur_section;
 
-void
-free_package_info (package_info *pi)
+package_info::package_info ()
 {
-  g_free (pi->name);
-  g_free (pi->installed_version);
-  g_free (pi->available_version);
-  g_free (pi->available_section);
-  if (pi->have_info)
-    {
-      g_free (pi->installed_short_description);
-      g_free (pi->available_short_description);
-    }
-  delete pi;
+  ref_count = 1;
+  name = NULL;
+  installed_version = NULL;
+  available_version = NULL;
+  available_section = NULL;
+  have_info = false;
+  installed_short_description = NULL;
+  available_short_description = NULL;
+  model = NULL;
+}
+
+package_info::~package_info ()
+{
+  g_free (name);
+  g_free (installed_version);
+  g_free (available_version);
+  g_free (available_section);
+  g_free (installed_short_description);
+  g_free (available_short_description);
+}
+
+void
+package_info::ref ()
+{
+  ref_count += 1;
+}
+
+void
+package_info::unref ()
+{
+  ref_count -= 1;
+  if (ref_count == 0)
+    delete this;
 }
 
 static void
 free_packages (GList *list)
 {
   for (GList *p = list; p; p = p->next)
-    free_package_info ((package_info *)p->data);
+    ((package_info *)p->data)->unref ();
   g_list_free (list);
 }
 
@@ -295,9 +328,6 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
       info->available_version = dec->decode_string_dup ();
       info->available_section = dec->decode_string_dup ();
       
-      info->have_info = false;
-      info->model = NULL;
-      
       count++;
       if (info->installed_version && info->available_version)
 	{
@@ -359,6 +389,7 @@ gpi_reply  (int cmd, apt_proto_decoder *dec, void *clos)
     {
       pi->have_info = true;
       func (pi, data, true);
+      pi->unref ();
     }
 }
 
@@ -375,6 +406,7 @@ call_with_package_info (package_info *pi,
       c->func = func;
       c->data = data;
       c->pi = pi;
+      pi->ref ();
       apt_worker_get_package_info (pi->name, gpi_reply, c);
     }
 }
@@ -524,9 +556,33 @@ confirm_install (package_info *pi,
   GString *text = g_string_new ("");
 
   g_string_printf (text,
-		   "Do you want to %s\n%s %s",
-		   pi->installed_version? "upgrade" : "install",
+		   "%s\n"
+		   "%s %s\n",
+		   (pi->installed_version
+		    ? "Do you want to update?"
+		    : "Do you want to install?"),
 		   pi->name, pi->available_version);
+  
+  if (pi->info.installable)
+    {
+      char download_buf[20], user_buf[20];
+      size_string_general (download_buf, 20, pi->info.download_size);
+      if (pi->info.install_user_size_delta >= 0)
+	{
+	  size_string_general (user_buf, 20, pi->info.install_user_size_delta);
+	  g_string_append_printf (text,
+				  "Downloading %s, using %s",
+				  download_buf, user_buf);
+	}
+      else
+	{
+	  size_string_general (user_buf, 20,
+			       -pi->info.install_user_size_delta);
+	  g_string_append_printf (text,
+				  "Downloading %s, freeing %s",
+				  download_buf, user_buf);
+	}
+    }
 
   ask_yes_no (text->str, cont, data);
   g_string_free (text, 1);
@@ -567,6 +623,7 @@ install_package_cont3 (bool res, void *data)
       show_progress ("Installing");
       apt_worker_install_package (pi->name, install_package_reply, NULL);
     }
+  pi->unref ();
 }
 
 static void
@@ -622,12 +679,13 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 	  g_string_free (text, 1);
 	}
       else
-	install_package_cont3 (true, NULL);
+	install_package_cont3 (true, pi);
     }
   else
     {
       hide_progress ();
       annoy_user_with_log ("Failed, see log.");
+      pi->unref ();
     }
 
   g_list_free (notauth);
@@ -654,7 +712,10 @@ install_package_cont2 (bool res, void *data)
 	  apt_worker_install_check (pi->name, install_check_reply, pi);
 	}
       else
-	annoy_user_with_details ("Impossible, see details.", pi, false);
+	{
+	  annoy_user_with_details ("Impossible, see details.", pi, false);
+	  pi->unref ();
+	}
     }
 }
 
@@ -667,6 +728,7 @@ install_package_cont (package_info *pi, void *data, bool changed)
 static void
 install_package (package_info *pi)
 {
+  pi->ref ();
   get_intermediate_package_info (pi, install_package_cont, NULL);
 }
 
@@ -683,7 +745,10 @@ available_package_selected (package_info *pi)
   if (pi)
     {
       set_details_callback (available_package_details, pi);
-      set_operation_callback ("Install", (void (*)(void*))install_package, pi);
+      set_operation_callback ((pi->installed_version
+			       ? "Update"
+			       : "Install"),
+			      (void (*)(void*))install_package, pi);
       get_intermediate_package_info (pi, NULL, NULL);
     }
   else
@@ -779,9 +844,17 @@ confirm_uninstall (package_info *pi,
   GString *text = g_string_new ("");
 
   g_string_printf (text,
-		   "Do you want to uninstall\n%s %s",
+		   "Do you want to uninstall?\n"
+		   "%s %s",
 		   pi->name, pi->installed_version);
-  
+
+  if (pi->info.removable)
+    {
+      char size_buf[20];
+      size_string_general (size_buf, 20, -pi->info.remove_user_size_delta);
+      g_string_append_printf (text, "\nFreeing %s", size_buf);
+    }
+
   ask_yes_no (text->str, cont, data);
   g_string_free (text, 1);
 }
@@ -818,6 +891,8 @@ uninstall_package_cont2 (bool res, void *data)
       else
 	annoy_user_with_details ("Impossible, see details.", pi, true);
     }
+
+  pi->unref ();
 }
 
 static void
@@ -829,6 +904,7 @@ uninstall_package_cont (package_info *pi, void *data, bool changed)
 static void
 uninstall_package (package_info *pi)
 {
+  pi->ref ();
   get_intermediate_package_info (pi, uninstall_package_cont, NULL);
 }
 
@@ -1065,7 +1141,7 @@ main (int argc, char **argv)
 
   app_view = hildon_appview_new (NULL);
   app = hildon_app_new_with_appview (HILDON_APPVIEW (app_view));
-  hildon_app_set_title (HILDON_APP (app), "Applications");
+  hildon_app_set_title (HILDON_APP (app), "Application installer");
 
   toolbar = gtk_toolbar_new ();
   image = gtk_image_new_from_icon_name ("qgn_toolb_gene_detailsbutton",

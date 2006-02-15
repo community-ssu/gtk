@@ -365,6 +365,7 @@ handle_request ()
 	request.reset (reqbuf, req.len);
 	const char *filename = request.decode_string_in_place ();
 	bool success = install_file (filename);
+	response.encode_int (success? 1 : 0);
 	send_response (&req);
 	break;
       }
@@ -589,7 +590,7 @@ make_package_info_response (const char *package)
       // simulate install
 
       cache.Init(NULL); // XXX - this is very slow
-      
+
       old_broken_count = cache.BrokenCount();
       (*package_cache)->MarkInstall (pkg);
       if (cache.BrokenCount() > old_broken_count)
@@ -628,6 +629,10 @@ make_package_info_response (const char *package)
 	  info.remove_user_size_delta = (int) cache.UsrSize ();
 	}
 
+      // We might sleep here to simulate the slowness of this
+      // operation on the device.
+      //
+      //sleep (2);
     }
   else
     {

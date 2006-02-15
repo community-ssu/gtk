@@ -107,7 +107,7 @@ set_operation_menu_label (const char *label, bool sensitive)
   if (operation_menu_item)
     {
       if (label == NULL)
-	label = "Install/Upgrade/Uninstall";
+	label = "Install";
       gtk_label_set 
 	(GTK_LABEL (gtk_bin_get_child (GTK_BIN (operation_menu_item))),
 	 label);
@@ -124,7 +124,6 @@ create_menu (GtkMenu *main)
   GtkWidget *fullscreen_group;
 
   operation_menu_item = add_item (packages, "", do_current_operation);
-  add_item (packages, "Refresh list of packages", refresh_package_cache);
   add_item (packages, "Install from file ...", install_from_file);
   details_menu_item = add_item (packages, "Details", show_current_details);
 
@@ -140,6 +139,7 @@ create_menu (GtkMenu *main)
   fullscreen_group = add_radio (toolbar, "Normal screen", NULL, NULL);
   add_radio (toolbar, "Full screen", NULL, fullscreen_group);
 
+  add_item (tools, "Refresh list of packages ...", refresh_package_cache);
   add_item (tools, "Settings ...", show_settings_dialog);
   add_item (tools, "Repositories ...", show_repo_dialog);
   add_item (tools, "Search ...", NULL);
