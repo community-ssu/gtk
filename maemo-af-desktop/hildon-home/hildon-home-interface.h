@@ -37,7 +37,7 @@
 #define HILDON_HOME_TITLEBAR_MENU_LABEL_FONT "osso-TitleFont"
 #define HILDON_HOME_TITLEBAR_MENU_LABEL_COLOR "TitleTextColor"
 
-#define APPLET_KEY_LIBRARY            "Library"
+#define APPLET_KEY_LIBRARY            "X-home-applet"
 #define APPLET_KEY_DESKTOP            "Desktop"
 #define APPLET_KEY_X                  "X"
 #define APPLET_KEY_Y                  "Y"

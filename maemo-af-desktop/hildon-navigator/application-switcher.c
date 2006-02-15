@@ -1,3 +1,5 @@
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 /*
  * This file is part of maemo-af-desktop
  *
@@ -1354,8 +1356,9 @@ static gboolean
 app_switcher_icon_anim_timeout (gpointer data)
 {
   AppSwitcherTimeoutData *timeout;
-
   timeout = (AppSwitcherTimeoutData *)data;
+
+  g_return_val_if_fail(timeout && timeout->as, FALSE);
 
   app_switcher_icon_anim_stop (timeout->as, timeout->widget);
 
@@ -1877,10 +1880,21 @@ app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
     }
   else
     {
+      /*
+         If we have a timeout id for the icon anim, remove the timeout first
+      */
+      if(g_array_index(as->items,container,n).icon_anim_timeout_id)
+        {
+          g_source_remove (
+                    g_array_index(as->items,container,n).icon_anim_timeout_id);
+          g_array_index(as->items,container,n).icon_anim_timeout_id = 0;
+        }
+      
       pixbuf =  gtk_image_get_pixbuf(GTK_IMAGE(menu_item_icon));
       
-      gtk_image_set_from_pixbuf (GTK_IMAGE(g_array_index(as->items,container,n).icon),
-				 pixbuf);
+      gtk_image_set_from_pixbuf (
+                          GTK_IMAGE(g_array_index(as->items,container,n).icon),
+                          pixbuf);
     }
     
   g_object_unref(pixbuf); 

@@ -31,7 +31,7 @@
  
 /* Applet includes */
 #include "home-applet-handler.h"
-#include "home-applet-interface.h"
+#include "hildon-home-plugin-interface.h"
 #include "hildon-home-interface.h"
 #include "libmb/mbdotdesktop.h"
 
@@ -45,6 +45,7 @@
 /* log include */
 #include <osso-log.h>
 
+#define HOME_APPLET_HANDLER_LIBRARY_DIR "/usr/lib/hildon-home/"
 #define HOME_APPLET_HANDLER_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE ((obj),\
      HOME_TYPE_APPLET_HANDLER, HomeAppletHandlerPrivate))
@@ -72,7 +73,7 @@ struct _HomeAppletHandlerPrivate {
     AppletSaveStateFn save_state;
     AppletBackgroundFn background;
     AppletForegroundFn foreground;
-    AppletPropertiesFn properties;
+    AppletSettingsFn settings;
     AppletDeinitializeFn deinitialize;
 };
 
@@ -82,7 +83,7 @@ enum {
     SYMBOL_SAVE_STATE,                        
     SYMBOL_BACKGROUND,                                                  
     SYMBOL_FOREGROUND, 
-    SYMBOL_PROPERTIES,
+    SYMBOL_SETTINGS,
     SYMBOL_DEINITIALIZE,
     MAX_SYMBOLS
 };
@@ -90,12 +91,12 @@ enum {
 /*lookup table of symbol names, indexed by the appropriate enum*/
 /*The order of this table should match the order of the enum!*/
 static char *SYMBOL_NAME[MAX_SYMBOLS] ={
-                           "home_applet_lib_initialize",
-                           "home_applet_lib_save_state",
-                           "home_applet_lib_background",
-                           "home_applet_lib_foreground",
-                           "home_applet_lib_properties",
-                           "home_applet_lib_deinitialize"};
+                           "hildon_home_applet_lib_initialize",
+                           "hildon_home_applet_lib_save_state",
+                           "hildon_home_applet_lib_background",
+                           "hildon_home_applet_lib_foreground",
+                           "hildon_home_applet_lib_settings",
+                           "hildon_home_applet_lib_deinitialize"};
                                           
 GType home_applet_handler_get_type(void)
 {
@@ -154,10 +155,10 @@ static void home_applet_handler_init(HomeAppletHandler * self)
     priv->save_state = (AppletSaveStateFn)warning_function;
     priv->background = (AppletBackgroundFn)warning_function;
     priv->foreground = (AppletForegroundFn)warning_function;
-    priv->properties = (AppletPropertiesFn)warning_function;
+    priv->settings = (AppletSettingsFn)warning_function;
     priv->deinitialize = (AppletDeinitializeFn)warning_function;
 
-    self->librarypath = NULL;
+    self->libraryfile = NULL;
     self->desktoppath = NULL;
     self->eventbox = NULL;
     self->x = APPLET_INVALID_COORDINATE;
@@ -224,7 +225,7 @@ static const char *load_symbols(HomeAppletHandler *handler,
     priv->save_state = (AppletSaveStateFn)symbol[SYMBOL_SAVE_STATE];
     priv->background = (AppletBackgroundFn)symbol[SYMBOL_BACKGROUND];
     priv->foreground = (AppletForegroundFn)symbol[SYMBOL_FOREGROUND];
-    priv->properties = (AppletPropertiesFn)symbol[SYMBOL_PROPERTIES];
+    priv->settings = (AppletSettingsFn)symbol[SYMBOL_SETTINGS];
     priv->deinitialize=(AppletDeinitializeFn)symbol[SYMBOL_DEINITIALIZE];
     return NULL;
 }
@@ -235,7 +236,7 @@ static const char *load_symbols(HomeAppletHandler *handler,
 /*******************/
 
 HomeAppletHandler *home_applet_handler_new(const char *desktoppath, 
-                                           const char *librarypath, 
+                                           const char *libraryfile, 
                                            void *state_data, int *state_size)
 {
     GtkWidget *applet;
@@ -243,6 +244,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     HomeAppletHandler *handler;
     gint applet_x = APPLET_INVALID_COORDINATE;
     gint applet_y = APPLET_INVALID_COORDINATE;
+    gchar *librarypath = NULL;
 
     if (desktoppath == NULL)
     {
@@ -252,11 +254,16 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
 
     handler = g_object_new(HOME_TYPE_APPLET_HANDLER,
                                               NULL);
+    if(handler == NULL)
+    {
+        ULOG_ERR("home_applet_handler_new() returns NULL");
+        return NULL;
+    }
     g_assert(handler);
 
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
 
-    if (librarypath == NULL)
+    if (libraryfile == NULL)
     {
         MBDotDesktop *file_contents;
 
@@ -270,9 +277,10 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
                                   APPLET_KEY_LIBRARY);
             if(desktop_field != NULL)
             {
-                librarypath = g_strdup(
-                    mb_dotdesktop_get(file_contents,
-                                      APPLET_KEY_LIBRARY));
+                librarypath = 
+                    g_strconcat(HOME_APPLET_HANDLER_LIBRARY_DIR,
+                                desktop_field, NULL);
+                libraryfile = g_strdup(desktop_field);
             } else
             {
                 ULOG_WARN("Unable find library path from desktop file %s\n",
@@ -288,7 +296,6 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
                 applet_x = (gint)atoi(desktop_field);
             }
 
-            desktop_field = NULL; /* reset */
             desktop_field = mb_dotdesktop_get(file_contents,
                                               APPLET_KEY_Y);
                                               
@@ -297,7 +304,14 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
                 applet_y = (gint)atoi(desktop_field);
             }
             mb_dotdesktop_free(file_contents);
+        } else
+        {
+            return NULL;
         }
+    } else
+    {
+        librarypath =
+            g_strconcat(HOME_APPLET_HANDLER_LIBRARY_DIR, libraryfile, NULL);
     }
 
     priv->dlhandle = dlopen(librarypath, RTLD_NOW);
@@ -306,6 +320,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     {   
         ULOG_WARN("Unable to open Home Applet %s\n", librarypath);
 
+        g_free(librarypath);
         return NULL;
     }
     else
@@ -320,13 +335,14 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
                       librarypath, error_str);
 
             dlclose(priv->dlhandle);
+            g_free(librarypath);
             return NULL;
         }
         
         priv->applet_data = priv->initialize(state_data, state_size, &applet);
         handler->eventbox = GTK_EVENT_BOX(gtk_event_box_new());
         gtk_container_add(GTK_CONTAINER(handler->eventbox), applet);
-        handler->librarypath = (gchar *)librarypath;
+        handler->libraryfile = (gchar *)librarypath;
         handler->desktoppath = g_strdup((gchar *)desktoppath);
         handler->x = applet_x;
         handler->y = applet_y;
@@ -383,8 +399,8 @@ void home_applet_handler_foreground(HomeAppletHandler *handler)
     }
 }
 
-GtkWidget *home_applet_handler_properties(HomeAppletHandler *handler,
-                                          GtkWindow *parent)
+GtkWidget *home_applet_handler_settings(HomeAppletHandler *handler,
+                                        GtkWindow *parent)
 {
     HomeAppletHandlerPrivate *priv;
     
@@ -395,7 +411,7 @@ GtkWidget *home_applet_handler_properties(HomeAppletHandler *handler,
     if (priv->applet_data)
     {
         return
-            priv->properties(priv->applet_data, parent);
+            priv->settings(priv->applet_data, parent);
     }
     return NULL;
 }
@@ -422,11 +438,11 @@ gchar *home_applet_handler_get_desktop_filepath(HomeAppletHandler *handler)
     return handler->desktoppath;
 }
 
-gchar *home_applet_handler_get_library_filepath(HomeAppletHandler *handler)
+gchar *home_applet_handler_get_libraryfile(HomeAppletHandler *handler)
 {
     g_assert(handler);
 
-    return handler->librarypath;
+    return handler->libraryfile;
 }
 
 void home_applet_handler_set_coordinates(HomeAppletHandler *handler, 

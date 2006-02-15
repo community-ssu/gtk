@@ -15,7 +15,6 @@
 @SET_MAKE@
 
 # Copyright (c) 2005 Nokia Corporation
-
 # SUBDIRS = po
 
 srcdir = @srcdir@
@@ -155,6 +154,7 @@ datadir = @datadir@
 exec_prefix = @exec_prefix@
 hildoncpdesktopentrydir = @hildoncpdesktopentrydir@
 hildondesktopentrydir = @hildondesktopentrydir@
+hildonhomedesktopentrydir = @hildonhomedesktopentrydir@
 hildonhomelibdir = @hildonhomelibdir@
 hildonnavigatorlibdir = @hildonnavigatorlibdir@
 hildonstatusbarlibdir = @hildonstatusbarlibdir@

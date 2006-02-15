@@ -45,7 +45,8 @@
 void layout_mode_begin (GtkEventBox * home_event_box,
 			GtkFixed * home_fixed,
 			GList * added_applets,
-			GList * removed_applets); 
+			GList * removed_applets,
+                        GtkWidget * titlebar_label); 
 
 /** layout_mode_end
  *

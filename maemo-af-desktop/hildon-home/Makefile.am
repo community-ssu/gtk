@@ -36,7 +36,7 @@ libhildonhome_la_SOURCES = \
 	layout-manager.c \
 	home-applet-handler.h \
 	home-applet-handler.c \
-	home-applet-interface.h \
+	hildon-home-plugin-interface.h \
 	hildon-home-interface.h \
 	home-select-applets-dialog.h \
 	home-select-applets-dialog.c
@@ -51,4 +51,4 @@ home_image_loader_LDADD = $(GDK_LIBS) $(GNOME_VFS_LIBS) $(GCONF_LIBS) $(OSSO_LIB
 
 
 hildon_home_pluginincludeinstdir=$(includedir)/hildon-home-plugin
-hildon_home_pluginincludeinst_DATA = home-applet-interface.h hildon-home-plugin-interface.h
+hildon_home_pluginincludeinst_DATA = hildon-home-plugin-interface.h

@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-af-desktop, 2.4.2)
+AM_INIT_AUTOMAKE(maemo-af-desktop, 2.4.5)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -107,6 +107,8 @@ hildonnavigatorlibdir=${libdir}/hildon-navigator
 hildonstatusbarmainlibdir=${libdir}/hildon-status-bar
 hildonstatusbarlibdir=${libdir}/hildon-status-bar
 hildonhomelibdir=${libdir}/hildon-home
+hildonhomedesktopentrydir=${datadir}/applications/hildon-home
+AC_SUBST(hildonhomedesktopentrydir)
 
 hildondesktopentrydir=`pkg-config osso-af-settings --variable=desktopentrydir`
 AC_SUBST(hildondesktopentrydir)

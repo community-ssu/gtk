@@ -66,7 +66,7 @@ typedef int (*AppletSaveStateFn)(void *data,
                                   int *state_size);
 typedef void (*AppletBackgroundFn)(void *data);
 typedef void (*AppletForegroundFn)(void *data);
-typedef GtkWidget *(*AppletPropertiesFn)(void *data, GtkWindow *parent);
+typedef GtkWidget *(*AppletSettingsFn)(void *data, GtkWindow *parent);
 typedef void (*AppletDeinitializeFn)(void *data);
 
 typedef struct _HomeAppletHandler HomeAppletHandler;
@@ -84,7 +84,7 @@ typedef struct _HomeAppletHandlerPrivate
 struct _HomeAppletHandler {
     GObject parent;
     gchar *desktoppath;
-    gchar *librarypath;
+    gchar *libraryfile;
     GtkEventBox *eventbox;
     gint x;
     gint y;
@@ -114,7 +114,7 @@ GType home_applet_handler_get_type(void);
  *                     file. This is also unique identifier for applet 
  *                     in Home context
  *
- *  @param librarypath The path of the applet implementation library
+ *  @param libraryfile The file name of the applet implementation library
  *
  *  @param state_data Statesaved data as returned by applet_save_state.
  *                    NULL if applet is to be loaded in initial state.
@@ -124,7 +124,7 @@ GType home_applet_handler_get_type(void);
  *  @Returns A @HomeAppletHandler.
  **/
 HomeAppletHandler *home_applet_handler_new(const char *desktoppath, 
-                                           const char *librarypath, 
+                                           const char *libraryfile, 
                                            void *state_data, 
                                            int *state_size);
 
@@ -175,7 +175,7 @@ void home_applet_handler_background(HomeAppletHandler *handler);
 void home_applet_handler_foreground(HomeAppletHandler *handler);
 
 /**    
- *  home_applet_handler_properties:
+ *  home_applet_handler_settings:
  *   
  *  Called when the applet needs to open a properties dialog
  *
@@ -185,8 +185,8 @@ void home_applet_handler_foreground(HomeAppletHandler *handler);
  *
  *  @returns usually gtkmenuitem
  */
-GtkWidget *home_applet_handler_properties(HomeAppletHandler *handler,
-                                          GtkWindow *parent);
+GtkWidget *home_applet_handler_settings(HomeAppletHandler *handler,
+                                        GtkWindow *parent);
 
 
 /**   
@@ -214,16 +214,16 @@ void home_applet_handler_deinitialize(HomeAppletHandler *handler);
 gchar *home_applet_handler_get_desktop_filepath(HomeAppletHandler *handler);
 
 /**    
- *  home_applet_handler_get_library_filepath:
+ *  home_applet_handler_get_libraryfile:
  *   
- *  Called when libraryfilepath is wanted
+ *  Called when libraryfile is wanted
  *
  *  @param handler A handler as returned by 
  *                home_applet_handler_new.
  *
  *  @returns library filepath
  **/
-gchar *home_applet_handler_get_library_filepath(HomeAppletHandler *handler);
+gchar *home_applet_handler_get_libraryfile(HomeAppletHandler *handler);
 
 /**    
  *  home_applet_handler_get_set_coordinates:

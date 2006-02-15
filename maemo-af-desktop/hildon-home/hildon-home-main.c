@@ -83,6 +83,7 @@ static gboolean home_is_topmost;
 static GtkWidget *home_fixed;
 /* Menu and titlebar */
 static GtkWidget *menu_used;
+static GtkWidget *titlebar_label;
 static GtkWidget *titlebar_menu = NULL;
 static GtkWidget *titlebar_submenu = NULL;
 
@@ -219,7 +220,6 @@ static
 void construct_titlebar_area()
 {
     GtkWidget *titlebar_eventbox;
-    GtkWidget *titlebar_label;
 
     titlebar_eventbox = gtk_event_box_new();
     gtk_widget_set_size_request( GTK_WIDGET( titlebar_eventbox ), 
@@ -367,7 +367,8 @@ static void call_select_applets_dialog(GtkWidget *widget,
 		                       gpointer unused_data)
 {
     select_applets_selected(GTK_EVENT_BOX(home_area_eventbox), 
-		            GTK_FIXED(home_fixed));
+		            GTK_FIXED(home_fixed),
+                            titlebar_label);
 }
 
 
@@ -849,7 +850,8 @@ gboolean layout_mode_selected(GtkWidget *widget,
 {    
     layout_mode_begin(GTK_EVENT_BOX(home_area_eventbox), 
 		      GTK_FIXED(home_fixed),
-		      NULL, NULL);
+		      NULL, NULL,
+                      titlebar_label);
     return TRUE;
 }
 

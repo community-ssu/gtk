@@ -67,7 +67,8 @@ void show_select_applets_dialog(GList *applets,
 				GList **removed_list);
 
 void select_applets_selected(GtkEventBox *home_event_box,
-		             GtkFixed *home_fixed);
+		             GtkFixed *home_fixed,
+                             GtkWidget *titlebar_label);
 
 G_END_DECLS
 

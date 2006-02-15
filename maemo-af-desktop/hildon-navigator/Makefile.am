@@ -1,5 +1,4 @@
 # Copyright (c) 2005 Nokia Corporation
-
 # SUBDIRS = po
 
 EXTRA_DIST = .empty hildon-navigator.pc empty_exec.sh

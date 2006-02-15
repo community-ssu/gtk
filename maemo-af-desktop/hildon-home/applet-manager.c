@@ -346,7 +346,7 @@ void applet_manager_configure_save_all(applet_manager_t *man)
             (HomeAppletHandler *)handler_listitem->data;
 
         desktop = home_applet_handler_get_desktop_filepath(handlerItem);
-        library = home_applet_handler_get_library_filepath(handlerItem);
+        library = home_applet_handler_get_libraryfile(handlerItem);
         home_applet_handler_get_coordinates(handlerItem, &applet_x, &applet_y);
         g_key_file_set_string(keyfile, desktop, APPLET_KEY_LIBRARY, library);
         g_key_file_set_string(keyfile, desktop, APPLET_KEY_DESKTOP, desktop);
@@ -357,7 +357,7 @@ void applet_manager_configure_save_all(applet_manager_t *man)
     conf_data = g_key_file_to_data(keyfile, &length, &error);    
 
     new_config_file = fopen(configure_file, "w"); 
-    if(&length == NULL || fprintf(new_config_file, "%s", conf_data))
+    if(&length == NULL || fprintf(new_config_file, "%s", conf_data) < 0)
     {
         ULOG_WARN("FAILED to write new conf data into %s\n", configure_file);
     }

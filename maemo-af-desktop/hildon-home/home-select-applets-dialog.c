@@ -272,7 +272,8 @@ void show_select_applets_dialog(GList *applets,
  * Calls activation of Select Applets dialog
  **/
 void select_applets_selected(GtkEventBox *home_event_box,
-	                     GtkFixed *home_fixed)
+	                     GtkFixed *home_fixed,
+                             GtkWidget *titlebar_label)
 {	
    GList *added_applets;
    GList *removed_applets;  
@@ -298,7 +299,8 @@ void select_applets_selected(GtkEventBox *home_event_box,
                 "adding applets now calling layout mode\n");
 	   
        layout_mode_begin(home_event_box, home_fixed,
-		        added_applets, removed_applets);
+                         added_applets, removed_applets,
+                         titlebar_label);
        
        g_list_foreach(added_applets, (GFunc)g_free, NULL);
        g_list_free(added_applets);

@@ -1,3 +1,12 @@
+2006-02-15  Johan Bilien <johan.bilien@nokia.com>,
+	* Imported latest changes from home refactoring.
+	  - Reverted to announced AP
+	  - Fixed a crash in applets loading error
+	  - Closes N#22691, N#22636
+	* Added default TN configuration file
+	* Added .desktop path variable to pkg-config for home
+	* configure.ac: 2.4.5
+
 2006-02-09  Johan Bilien <johan.bilien@nokia.com>,
 	* Applied fix to N#20498:
 	* hildon-home/hildon-home-main.c

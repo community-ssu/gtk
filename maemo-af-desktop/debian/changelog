@@ -1,3 +1,12 @@
+maemo-af-desktop (2.4.5-1) unstable; urgency=low
+
+  * Imported latest changes from home refactoring.
+  * Closes N#22691, N#22636
+  * Added default TN configuration file
+  * Added .desktop path variable to pkg-config for home
+
+ -- Johan Bilien <jobi@localhost.localdomain>  Wed, 15 Feb 2006 13:01:43 +0200
+
 maemo-af-desktop (2.4.4-1) unstable; urgency=low
 
   * Fixed N#20498

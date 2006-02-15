@@ -41,6 +41,9 @@
 #include "home-select-applets-dialog.h"
 #include "hildon-home-interface.h"
 #include <hildon-widgets/hildon-defines.h>
+#include <hildon-widgets/gtk-infoprint.h>
+#include <hildon-widgets/hildon-note.h>
+
 
 /* Osso includes */
 /* No help available yet
@@ -54,9 +57,9 @@
 #define LAYOUT_AREA_MENU_WIDTH 348 /* FIXME: calculte somehow? */
 
 #define LAYOUT_AREA_TITLEBAR_HEIGHT HILDON_HOME_TITLEBAR_HEIGHT
-#define LAYOUT_AREA_LEFT_BORDER_PADDING 0
-#define LAYOUT_AREA_BOTTOM_BORDER_PADDING 0
-#define LAYOUT_AREA_RIGHT_BORDER_PADDING 0
+#define LAYOUT_AREA_LEFT_BORDER_PADDING 10
+#define LAYOUT_AREA_BOTTOM_BORDER_PADDING 10
+#define LAYOUT_AREA_RIGHT_BORDER_PADDING 10
 
 #define APPLET_ADD_Y_MIN  12 + LAYOUT_AREA_TITLEBAR_HEIGHT
 /* Unspecified. Using Stetson, Sleeve et Al. */
@@ -87,6 +90,13 @@
 #define LAYOUT_MENU_ITEM_CANCEL_LAYOUT _("home_me_layout_cancel")
 #define LAYOUT_MENU_ITEM_HELP _("home_me_layout_help")
 
+#define LAYOUT_MODE_NOTIFICATION_MODE_BEGIN_TEXT   _("home_ib_layout_mode")
+#define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_TEXT  _("home_nc_cancel_layout")
+#define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_YES   _("home_bd_cancel_layout_yes")
+#define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_NO    _("home_bd_cancel_layout_no")
+#define LAYOUT_MODE_NOTIFICATION_MODE_ACCEPT_TEXT  _("home_ni_overlapping_applets")
+
+
 typedef struct _layout_mode_internal_t LayoutInternal;
 typedef struct _layout_node_t LayoutNode;
 
@@ -97,6 +107,7 @@ struct _layout_mode_internal_t {
     LayoutNode * active;   
     GtkWidget * layout_menu;
     GtkWidget * home_menu;
+    GtkWidget * titlebar_label;
     GtkWidget * menu_label;
     GtkWidget * ok_button;
     GtkWidget * cancel_button;
@@ -152,8 +163,9 @@ static void overlap_indicate (LayoutNode * modme, gboolean overlap);
 static void overlap_check(GtkWidget * self,
 			  GdkRectangle * event_area);
 
-static gboolean check_drag(GtkWidget *widget,
-			   GdkEventButton *event, gpointer data);
+static gboolean button_click_cb(GtkWidget *widget,
+				GdkEventButton *event, gpointer data);
+
 static gboolean handle_drag_motion(GtkWidget *widget,
 				   GdkDragContext *context,
 				   gint x,
@@ -167,6 +179,8 @@ static gboolean drag_is_finished(GtkWidget *widget, GdkDragContext *context,
 
 static void drag_begin(GtkWidget *widget, GdkDragContext *context,
 		       gpointer data);
+
+static gboolean event_within_widget(GdkEventButton *event, GtkWidget * widget);
 
 static 
 void layout_menu_position_function(GtkMenu *menu, gint *x, gint *y,
@@ -195,7 +209,8 @@ void layout_mode_init (osso_context_t * osso_context)
 void layout_mode_begin ( GtkEventBox *home_event_box,
 			 GtkFixed * home_fixed,
 			 GList * added_applets,
-			 GList * removed_applets)
+			 GList * removed_applets,
+                         GtkWidget * titlebar_label)
 {
     applet_manager_t * manager;
     LayoutNode * node;
@@ -217,6 +232,10 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 	ULOG_ERR("Home Layout Mode startup while running!");
 	return;
     }
+   
+    /* Show information banner to user about layout mode beginning */    
+    gtk_confirmation_banner_with_icon_name
+	    (NULL, LAYOUT_MODE_NOTIFICATION_MODE_BEGIN_TEXT, NULL);		  
     
     added_applets = g_list_first(added_applets);
 
@@ -266,11 +285,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 	node->added = FALSE;
 	node->removed = FALSE;
 	node->highlighted = FALSE;
-	if (node->drag_icon == NULL)
-	{
-	    /* FIXME?: alternate drag_icon? */
-	}
-	
+	node->drag_icon = NULL;
 	node->queued = FALSE;
 	node->add_list = NULL;
 	
@@ -293,7 +308,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     general_data.button_press_handler = 
 	g_signal_connect(general_data.home_area_eventbox, 
 			 "button-press-event",
-			 G_CALLBACK(check_drag), general_data.area);
+			 G_CALLBACK(button_click_cb), general_data.area);
     general_data.drag_drop_handler = 
 	g_signal_connect(general_data.home_area_eventbox, "drag-drop",
 			 G_CALLBACK(drag_is_finished), general_data.area);
@@ -306,6 +321,8 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 			 G_CALLBACK(handle_drag_motion), general_data.area);
 
 
+    general_data.titlebar_label = titlebar_label;
+    gtk_widget_hide(general_data.titlebar_label);
 
     general_data.menu_label = gtk_label_new(LAYOUT_MODE_MENU_LABEL_NAME);
     hildon_gtk_widget_set_logical_font (general_data.menu_label,
@@ -361,7 +378,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 
 	
     general_data.cancel_button = gtk_button_new_with_label("");
-    g_object_set(general_data.ok_button, "image", 
+    g_object_set(general_data.cancel_button, "image", 
 		 gtk_image_new_from_icon_name
 		 (LAYOUT_MODE_CANCEL_BUTTON, GTK_ICON_SIZE_BUTTON),
 		 NULL);
@@ -420,6 +437,26 @@ void layout_mode_end ( gboolean rollback )
     LayoutNode * node;
     gint x, y;
     applet_manager_t * man;
+
+ 
+    /* Show Confirmation note if layout mode was cancelled */   
+    if( rollback == ROLLBACK_LAYOUT ) {    
+        int ret;
+	GtkWidget *note = hildon_note_new_confirmation_add_buttons
+		(NULL, 
+		 LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_TEXT,
+	         LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_YES,	 
+		 GTK_RESPONSE_ACCEPT,
+		 LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_NO,
+		 GTK_RESPONSE_REJECT, NULL);
+	
+	ret = gtk_dialog_run(GTK_DIALOG(note));
+	gtk_widget_destroy(GTK_WIDGET(note));
+	
+	if(ret == GTK_RESPONSE_REJECT)
+           return;		
+    }	    
+
     man = applet_manager_singleton_get_instance();    
     
     iter = g_list_first(general_data.main_applet_list);
@@ -431,7 +468,7 @@ void layout_mode_end ( gboolean rollback )
     while(iter)
     {
 	ULOG_ERR("LAYOUT: iterating applets\n");
-	node = (LayoutNode*)iter->data;
+	node = (LayoutNode*)iter->data;	
 	
 	g_signal_handler_disconnect(node->ebox, node->event_handler);
     
@@ -451,6 +488,10 @@ void layout_mode_end ( gboolean rollback )
 						*/
 		applet_manager_deinitialize(man, node->applet_identifier );
 	    }
+	    else 
+	    {
+		gtk_widget_queue_draw(node->ebox);
+	    }
 	    if (!node->added)
 	    {
 		applet_manager_get_coordinates(man,
@@ -462,6 +503,10 @@ void layout_mode_end ( gboolean rollback )
 			       x,
 			       y);
 	    }
+	}
+	else 
+	{
+	    gtk_widget_queue_draw(node->ebox);
 	}
 	iter=g_list_next(iter);
 	ULOG_ERR("Free applet_identifier\n");
@@ -486,6 +531,8 @@ void layout_mode_end ( gboolean rollback )
     gtk_widget_destroy (general_data.ok_button);
     gtk_widget_destroy (general_data.layout_menu);
     gtk_widget_destroy (general_data.menu_label);
+
+    gtk_widget_show(general_data.titlebar_label);
 
     gtk_drag_source_unset((GtkWidget*)general_data.home_area_eventbox); 
 
@@ -601,7 +648,7 @@ void _ok_button_click (GtkButton *button, gpointer data)
 }
 void _cancel_button_click (GtkButton *button, gpointer data)
 {
-    layout_mode_end(ROLLBACK_LAYOUT);
+    layout_mode_end(ROLLBACK_LAYOUT);     
 }
 
 
@@ -612,7 +659,7 @@ void _applet_expose_cb(GtkWidget * widget, GdkEventExpose * expose,
     node = (LayoutNode *)data;
 
     ULOG_ERR("LAYOUT: _applet_expose_cb\n");
-
+    
     if (node->drag_icon == NULL)
     {
 	node->drag_icon = gdk_pixbuf_get_from_drawable
@@ -725,13 +772,20 @@ static void add_new_applets(GtkWidget *widget, gpointer data)
 
     man = applet_manager_singleton_get_instance();
     
-    node = g_new(struct _layout_node_t, 1);
-
     applet_manager_initialize_new(man,
 				  new_applet_identifier);
 
+    if(applet_manager_identifier_exists(man, new_applet_identifier) == FALSE)
+    {
+        ULOG_ERR("LAYOUT: Failed to add item %s to applet_manager\n",
+                 new_applet_identifier);
+        return;
+    }
+
     ULOG_ERR("LAYOUT: added item %s to applet_manager\n",
 	     new_applet_identifier);
+
+    node = g_new(struct _layout_node_t, 1);
 
     node->ebox = GTK_WIDGET(applet_manager_get_eventbox
 			    (man,
@@ -755,11 +809,13 @@ static void add_new_applets(GtkWidget *widget, gpointer data)
     {
 	g_list_free(addable_list); 
     }
-    
+
+    node->drag_icon = NULL; 
     node->highlighted = FALSE;
     node->removed = FALSE;
     node->added = TRUE;
     node->queued = TRUE;
+    node->drag_icon = NULL;
     node->applet_identifier = new_applet_identifier;
     node->height = general_data.max_height;    
     general_data.max_height++;
@@ -900,14 +956,19 @@ static gboolean layout_mode_status_check(void)
 	position = g_list_next(position);
     }
     
+    ULOG_ERR("LAYOUT: status check");
+
+    fp_mlist();
+
     position = g_list_first(applets);
     
     while (position->next) /* if there is no next one, there's no need */
     {                      /* to compare */
 	lnode = (LayoutNode*)position->data;
-	
+
 	if (!lnode->removed)
 	{
+	    
 	    position_ebox = lnode->ebox;
 	    
 	    iter = g_list_next(position);
@@ -969,7 +1030,12 @@ static void layout_mode_done(void)
     else 
     {
 	ULOG_ERR("LAYOUT:save cancelled\n");
-	/* FIXME: gtk_infoprint */
+	
+        /* Show information note about overlapping applets */
+        GtkWidget *note = hildon_note_new_information
+		(NULL, LAYOUT_MODE_NOTIFICATION_MODE_ACCEPT_TEXT);
+	gtk_dialog_run(GTK_DIALOG(note));
+	gtk_widget_destroy(GTK_WIDGET(note));
     }
 }
 
@@ -1035,6 +1101,7 @@ static gboolean save_before_exit(void)
 
 static void draw_red_borders (LayoutNode * highlighted)
 {    
+
     GdkGC * gc;
     gc = gdk_gc_new(highlighted->ebox->window);
     gdk_gc_set_rgb_fg_color(gc, &general_data.highlight_color);
@@ -1042,6 +1109,9 @@ static void draw_red_borders (LayoutNode * highlighted)
 			       GDK_LINE_SOLID,
 			       GDK_CAP_BUTT,
 			       GDK_JOIN_MITER);
+
+    gdk_gc_set_clip_rectangle (gc, NULL);
+
     gdk_draw_rectangle(highlighted->ebox->window,
 		       gc, FALSE, 0,0,
 		       highlighted->ebox->allocation.width,
@@ -1053,12 +1123,19 @@ static void overlap_indicate (LayoutNode * modme, gboolean overlap)
     if (overlap) 
     {
 	if (modme->highlighted)
-	{ /* FIXME: We may need to redraw the borders anyway!*/ 
+	{ 
 	    return;
 	}
-	ULOG_ERR("LAYOUT: overlap detected! OVERLAP OVERLAP OVERLAP OVERLAP OVERLAP\n");
+	ULOG_ERR("LAYOUT: OVERLAP\n");
 	modme->highlighted = TRUE;
-	/* FIXME: set the highlight */
+	gtk_widget_queue_draw(modme->ebox);
+	/* Performance improvement: invalidate only the border areas? 
+	 * If so, do the same to the gtk_widget_queue_draw below in this
+         * same function */
+	while (gtk_events_pending ())
+	{
+	    gtk_main_iteration ();
+	}	
     }
     else
     {
@@ -1067,8 +1144,12 @@ static void overlap_indicate (LayoutNode * modme, gboolean overlap)
 	    return;
 	}
 	modme->highlighted = FALSE;
-	ULOG_ERR("LAYOUT: Overlap removed REMOVED REMOVED REMOVED REMOVED REMOVED\n");
-	/* FIXME: remove highlight */
+	ULOG_ERR("LAYOUT: Overlap REMOVED\n");
+	gtk_widget_queue_draw(modme->ebox);
+	while (gtk_events_pending ())
+	{
+	    gtk_main_iteration ();
+	}
     }
 
 }
@@ -1107,6 +1188,18 @@ static void overlap_check(GtkWidget * self,
     }
 }
 
+static gboolean event_within_widget(GdkEventButton *event, GtkWidget * widget)
+{
+    GtkAllocation *alloc = &widget->allocation;
+    if (alloc->x < event->x &&
+	alloc->x + alloc->width > event->x &&
+	alloc->y < event->y &&
+	alloc->y + alloc->height > event->y)
+    {
+	return TRUE;
+    }
+    return FALSE;
+}
 
 static 
 void layout_menu_position_function(GtkMenu *menu, gint *x, gint *y,
@@ -1125,8 +1218,8 @@ void layout_menu_position_function(GtkMenu *menu, gint *x, gint *y,
 
 /****************** Drag'n drop event handlers *************************/
 
-static gboolean check_drag(GtkWidget *widget,
-			   GdkEventButton *event, gpointer data)
+static gboolean button_click_cb(GtkWidget *widget,
+				GdkEventButton *event, gpointer data)
 {
     gboolean candidate = FALSE;
     GList * iter;
@@ -1134,23 +1227,35 @@ static gboolean check_drag(GtkWidget *widget,
     LayoutNode *candidate_node;
     general_data.active = NULL;
 
-    ULOG_ERR("LAYOUT:check_drag\n");
+    ULOG_ERR("LAYOUT:button_click_cb\n");
 
-    if (event->y < LAYOUT_AREA_TITLEBAR_HEIGHT && 
-	event->x < LAYOUT_AREA_MENU_WIDTH)
+    if (event->y < LAYOUT_AREA_TITLEBAR_HEIGHT)
     {
-	ULOG_ERR("LAYOUT:layout mode menu popup!\n");
-	gtk_menu_popup(GTK_MENU(general_data.layout_menu), NULL, NULL,
-		       (GtkMenuPositionFunc)
-		       layout_menu_position_function,
-		       NULL, 0, gtk_get_current_event_time ());
-	gtk_menu_shell_select_first (GTK_MENU_SHELL
+	if (event->x < LAYOUT_AREA_MENU_WIDTH)
+	{
+	    ULOG_ERR("LAYOUT:layout mode menu popup!\n");
+	    gtk_menu_popup(GTK_MENU(general_data.layout_menu), NULL, NULL,
+			   (GtkMenuPositionFunc)
+			   layout_menu_position_function,
+			   NULL, 0, gtk_get_current_event_time ());
+	    gtk_menu_shell_select_first (GTK_MENU_SHELL
 					 (general_data.layout_menu), TRUE);
-	
-       	return TRUE;
+	    
+	    return TRUE;
+	}
+	else
+	{
+	    if (event_within_widget(event, general_data.ok_button))
+	    {
+		gtk_button_clicked(GTK_BUTTON(general_data.ok_button));
+	    }
+	    else if (event_within_widget(event, general_data.cancel_button))
+	    {
+		gtk_button_clicked(GTK_BUTTON(general_data.cancel_button));
+	    }
+	    return TRUE;
+	}
     }
-    
-
 
     if (event->button == 1)
     {
@@ -1168,28 +1273,22 @@ static gboolean check_drag(GtkWidget *widget,
 	
 	while (iter)
 	{
-	    ULOG_ERR("LAYOUT:Looping iter\n");	    
 	    candidate_node = (LayoutNode*)iter->data;
 	    evbox = candidate_node->ebox;
-	    GdkRectangle *rect = &(evbox->allocation);
 	    
 	    if 
 		(!(GTK_EVENT_BOX(evbox) == general_data.home_area_eventbox))
 	    {
 
-		if (rect->x < event->x && event->x < rect->x + rect->width
-		    && rect->y < event->y/**/ 
-		    && event->y < rect->y/**/ + rect->height)
+		if (event_within_widget(event, candidate_node->ebox))
 		{
-		    g_message("Child at that position (%d, %d, %d, %d)",
-			      rect->x, rect->y, rect->width, rect->height);
 		    
 		    if (general_data.active == NULL || 
 			general_data.active->height < 
 			candidate_node->height)
 		    {
-			general_data.offset_x = event->x - rect->x;
-			general_data.offset_y = event->y - rect->y;
+			general_data.offset_x = event->x - evbox->allocation.x;
+			general_data.offset_y = event->y - evbox->allocation.y;
 			general_data.active = candidate_node;
 			ULOG_ERR("Candidate changed!");
 		    }
@@ -1329,7 +1428,14 @@ static gboolean drag_is_finished(GtkWidget *widget, GdkDragContext *context,
     gtk_event_box_set_above_child(general_data.home_area_eventbox, TRUE);  
 
     gtk_drag_finish(context, TRUE, FALSE, time);  
+
+    while (gtk_events_pending ())
+    {
+	gtk_main_iteration ();
+    }	
     
+    layout_mode_status_check();
+
     return TRUE;
     
 }
@@ -1340,8 +1446,17 @@ gpointer data)
     ULOG_ERR("LAYOUT:drag_begin\n");
     
     if (!general_data.active) return;
+    
+    general_data.active->highlighted = FALSE;
     general_data.drag_item_width = general_data.active->ebox->allocation.width;
     general_data.drag_item_height = general_data.active->ebox->allocation.height;
+    if (general_data.active->drag_icon == NULL)
+    {
+	fprintf(stderr, "Drag ICON NULL! ");
+    }
+
+    fprintf(stderr, "offset x: %d, offset y: %d\n", 
+	    general_data.offset_x, general_data.offset_y);
     
     gtk_drag_set_icon_pixbuf(context, general_data.active->drag_icon, 
 			     general_data.offset_x, general_data.offset_y/**/);

@@ -32,6 +32,7 @@ pkgconfig_DATA = hildon-navigator/hildon-navigator.pc \
 	hildon-status-bar/hildon-status-bar-lib.pc \
 	hildon-home/hildon-home.pc
 
+
 bin_PROGRAMS = \
 	maemo_af_desktop 
 
@@ -55,6 +56,9 @@ initexec_SCRIPTS = maemo-af-desktop-launch.sh
 
 afinitdir=$(sysconfdir)/osso-af-init
 afinit_SCRIPTS = maemo-af-desktop.sh maemo-af-desktop.defs
+
+hildonnavigatorconfigdir = $(sysconfdir)/hildon-navigator
+hildonnavigatorconfig_DATA = hildon-navigator/plugins.conf
 
 clean:
 	echo "Cleaning debian/build directory..."

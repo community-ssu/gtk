@@ -1,7 +1,7 @@
 /*
  * This file is part of maemo-af-desktop
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2006 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -26,13 +26,13 @@
  *
  * @file hildon-home-plugin-interface.h
  * <p>
- * @brief Definitions of Hildon Home Plugin API. All plugin applets use this 
+ * @brief Definitions of Home Applet API. All applet applets use this 
  *        public API.
  *
  */
  
-#ifndef HILDON_HOME_PLUGIN_API_H
-#define HILDON_HOME_PLUGIN_API_H
+#ifndef HILDON_HOME_APPLET_API_H
+#define HILDON_HOME_APPLET_API_H
 
 #include <gtk/gtk.h>
 #include <gtk/gtkwidget.h>
@@ -59,17 +59,6 @@ G_BEGIN_DECLS
 void *hildon_home_applet_lib_initialize(void *state_data,
                                         int *state_size, 
                                         GtkWidget **widget);
-
-/** Method that returns width that the applet needs to be displayed without
-    any truncation. Home may set the width of the widget narower than this
-    if needed. The priorities are listed in Home Layout Guide.
-    
-    @param applet_data Applet data as returned by applet_initialize.
-
-    @returns Requested size of the applet.
-*/
-int hildon_home_applet_lib_get_requested_width(void *applet_data);
-
 
 /** Method called to save the UI state of the applet 
     
@@ -117,14 +106,15 @@ void hildon_home_applet_lib_deinitialize(void *applet_data);
 
 
 /**
-   Called when the applet needs to open a properties dialog
+ *  Called when the applet needs to be able to access settings of
+ *  applet from Home menu.
  */
 
-GtkWidget *hildon_home_applet_lib_properties(void *applet_data,
-                                             GtkWindow *parent);
+GtkWidget *hildon_home_applet_lib_settings(void *applet_data,
+                                           GtkWindow *parent);
 
 
 
 
 G_END_DECLS
-#endif /* HILDON_HOME_PLUGIN_LOADER_H */
+#endif /* HILDON_HOME_APPLET_API_H */
