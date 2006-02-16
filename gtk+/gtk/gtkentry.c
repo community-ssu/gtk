@@ -1764,6 +1764,15 @@ gtk_entry_button_press (GtkWidget      *widget,
       (entry->button && event->button != entry->button))
     return FALSE;
 
+  if (entry->editable)
+    {
+      if (hildon_gtk_im_context_filter_event (entry->im_context, event))
+        {
+          entry->need_im_reset = TRUE;
+          return TRUE;
+        }
+    }
+
   entry->button = event->button;
 
   if (!GTK_WIDGET_HAS_FOCUS (widget))
@@ -1917,6 +1926,15 @@ gtk_entry_button_release (GtkWidget      *widget,
 
   if (event->window != entry->text_area || entry->button != event->button)
     return FALSE;
+
+  if (entry->editable)
+    {
+      if (hildon_gtk_im_context_filter_event (entry->im_context, event))
+        {
+          entry->need_im_reset = TRUE;
+          return TRUE;
+        }
+    }
 
   if (entry->in_drag)
     {

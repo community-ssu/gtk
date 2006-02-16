@@ -1,3 +1,15 @@
+2006-02-16  Tomas Junnonen  <tomas.junnonen@nokia.com>
+
+	* gtk/gtkimcontext.c
+	* gtk/gtkimcontext.h
+	* gtk/gtkimmulticontext.c: Added "hildon_gtk_im_context_filter_event"
+	function
+	* gtk/gtktextview.c (gtk_text_view_button_release_event)
+	(gtk_text_view_button_press_event): Filter button events with
+	imcontext
+	* gtk/gtkentry.c (gtk_entry_button_press) (gtk_entry_button_release):
+	Filter button events with imcontext
+
 2006-01-31  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* configure.in (LIBTOOL_EXPORT_OPTIONS): Temporarily export a couple

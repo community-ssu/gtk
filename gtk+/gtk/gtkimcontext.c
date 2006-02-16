@@ -69,6 +69,8 @@ static void     gtk_im_context_real_get_preedit_string (GtkIMContext   *context,
 							gint           *cursor_pos);
 static gboolean gtk_im_context_real_filter_keypress    (GtkIMContext   *context,
 							GdkEventKey    *event);
+static gboolean gtk_im_context_real_filter_event       (GtkIMContext   *context,
+						        GdkEvent    *event);
 static gboolean gtk_im_context_real_get_surrounding    (GtkIMContext   *context,
 							gchar         **text,
 							gint           *cursor_index);
@@ -113,6 +115,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
 
   klass->get_preedit_string = gtk_im_context_real_get_preedit_string;
   klass->filter_keypress = gtk_im_context_real_filter_keypress;
+  klass->filter_event = gtk_im_context_real_filter_event;
   klass->get_surrounding = gtk_im_context_real_get_surrounding;
   klass->set_surrounding = gtk_im_context_real_set_surrounding;
 
@@ -291,6 +294,13 @@ gtk_im_context_real_filter_keypress (GtkIMContext       *context,
   return FALSE;
 }
 
+static gboolean
+gtk_im_context_real_filter_event (GtkIMContext       *context,
+				  GdkEvent        *event)
+{
+  return FALSE;
+}
+
 typedef struct
 {
   gchar *text;
@@ -433,6 +443,33 @@ gtk_im_context_filter_keypress (GtkIMContext *context,
 
   klass = GTK_IM_CONTEXT_GET_CLASS (context);
   return klass->filter_keypress (context, key);
+}
+
+/**
+ * hildon_gtk_im_context_filter_event:
+ * @context: a #GtkIMContext
+ * @event: the event
+ * 
+ * Allow an input method to internally handle an event.
+ * If this function returns %TRUE, then no further processing
+ * should be done for this event.
+ * 
+ * Return value: %TRUE if the input method handled the event.
+ *
+ * Since: maemo 2.0
+ *
+ **/
+gboolean
+hildon_gtk_im_context_filter_event (GtkIMContext *context,
+				    GdkEvent     *event)
+{
+  GtkIMContextClass *klass;
+  
+  g_return_val_if_fail (GTK_IS_IM_CONTEXT (context), FALSE);
+  g_return_val_if_fail (event != NULL, FALSE);
+
+  klass = GTK_IM_CONTEXT_GET_CLASS (context);
+  return klass->filter_event (context, event);
 }
 
 /**
