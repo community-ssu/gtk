@@ -126,7 +126,8 @@ GtkWidget *make_install_applications_view (view *v);
 GtkWidget *make_install_section_view (view *v);
 GtkWidget *make_upgrade_applications_view (view *v);
 GtkWidget *make_uninstall_applications_view (view *v);
- 
+GtkWidget *make_search_results_view (view *v);
+
 view main_view = {
   NULL,
   "Main",
@@ -159,6 +160,13 @@ view install_section_view = {
   &install_applications_view,
   NULL,
   make_install_section_view,
+  NULL
+};
+
+view search_results_view = {
+  &main_view,
+  "Search results",
+  make_search_results_view,
   NULL
 };
 
@@ -209,6 +217,7 @@ make_main_view (view *v)
 static GList *install_sections = NULL;
 static GList *upgradeable_packages = NULL;
 static GList *installed_packages = NULL;
+static GList *search_result_packages = NULL;
 
 static section_info *cur_section;
 
@@ -289,6 +298,12 @@ free_all_packages ()
       free_packages (installed_packages);
       installed_packages = NULL;
     }
+
+  if (search_result_packages)
+    {
+      free_packages (search_result_packages);
+      search_result_packages = NULL;
+    }
 }
 
 static section_info *
@@ -309,6 +324,110 @@ find_section_info (GList **list_ptr, const char *name)
 }
 
 static void set_global_lists_for_view (view *);
+
+static gint
+compare_section_names (gconstpointer a, gconstpointer b)
+{
+  section_info *si_a = (section_info *)a;
+  section_info *si_b = (section_info *)b;
+
+  return package_sort_sign * g_ascii_strcasecmp (si_a->name, si_b->name);
+}
+
+static gint
+compare_package_names (gconstpointer a, gconstpointer b)
+{
+  package_info *pi_a = (package_info *)a;
+  package_info *pi_b = (package_info *)b;
+
+  return package_sort_sign * g_ascii_strcasecmp (pi_a->name, pi_b->name);
+}
+
+static gint
+compare_versions (const gchar *a, const gchar *b)
+{
+  // XXX - wrong, of course
+  return package_sort_sign * g_ascii_strcasecmp (a, b);
+}
+
+static gint
+compare_package_installed_versions (gconstpointer a, gconstpointer b)
+{
+  package_info *pi_a = (package_info *)a;
+  package_info *pi_b = (package_info *)b;
+
+  return compare_versions (pi_a->installed_version, pi_b->installed_version);
+}
+
+static gint
+compare_package_available_versions (gconstpointer a, gconstpointer b)
+{
+  package_info *pi_a = (package_info *)a;
+  package_info *pi_b = (package_info *)b;
+
+  return compare_versions (pi_a->available_version, pi_b->available_version);
+}
+
+static gint
+compare_package_installed_sizes (gconstpointer a, gconstpointer b)
+{
+  package_info *pi_a = (package_info *)a;
+  package_info *pi_b = (package_info *)b;
+
+  return (package_sort_sign *
+	  (pi_a->installed_size - pi_b->installed_size));
+}
+
+static gint
+compare_package_download_sizes (gconstpointer a, gconstpointer b)
+{
+  package_info *pi_a = (package_info *)a;
+  package_info *pi_b = (package_info *)b;
+
+  // Download size might not be known when we sort so we sort by name
+  // instead in that case.
+  
+  if (pi_a->have_info && pi_b->have_info)
+    return (package_sort_sign * 
+	    (pi_a->info.download_size - pi_b->info.download_size));
+  else
+    return compare_package_names (a, b);
+}
+
+void
+sort_all_packages ()
+{
+  install_sections = g_list_sort (install_sections,
+				  compare_section_names);
+
+  GCompareFunc compare_packages_inst = compare_package_names;
+  GCompareFunc compare_packages_avail = compare_package_names;
+  if (package_sort_key == SORT_BY_VERSION)
+    {
+      compare_packages_inst = compare_package_installed_versions;
+      compare_packages_avail = compare_package_available_versions;
+    }
+  else if (package_sort_key == SORT_BY_SIZE)
+    {
+      compare_packages_inst = compare_package_installed_sizes;
+      compare_packages_avail = compare_package_download_sizes;
+    }
+
+  for (GList *s = install_sections; s; s = s->next)
+    {
+      section_info *si = (section_info *)s->data;
+      si->packages = g_list_sort (si->packages,
+				  compare_packages_avail);
+    }
+
+  installed_packages = g_list_sort (installed_packages,
+				    compare_packages_inst);
+
+  upgradeable_packages = g_list_sort (upgradeable_packages,
+				      compare_packages_avail);
+
+  set_global_lists_for_view (cur_view_struct);
+}
 
 static void
 get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
@@ -354,11 +473,8 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
   
   printf ("%d packages, %d new, %d upgradable, %d installed\n",
 	  count, new_p, upg_p, inst_p);
-  
-  if (dec->corrupted ())
-    printf ("reply corrupted.\n");
-  else
-    set_global_lists_for_view (cur_view_struct);
+
+  sort_all_packages ();
 }
 
 void
@@ -557,7 +673,7 @@ confirm_install (package_info *pi,
 
   g_string_printf (text,
 		   "%s\n"
-		   "%s %s\n",
+		   "%s %s",
 		   (pi->installed_version
 		    ? "Do you want to update?"
 		    : "Do you want to install?"),
@@ -565,23 +681,9 @@ confirm_install (package_info *pi,
   
   if (pi->info.installable)
     {
-      char download_buf[20], user_buf[20];
+      char download_buf[20];
       size_string_general (download_buf, 20, pi->info.download_size);
-      if (pi->info.install_user_size_delta >= 0)
-	{
-	  size_string_general (user_buf, 20, pi->info.install_user_size_delta);
-	  g_string_append_printf (text,
-				  "Downloading %s, using %s",
-				  download_buf, user_buf);
-	}
-      else
-	{
-	  size_string_general (user_buf, 20,
-			       -pi->info.install_user_size_delta);
-	  g_string_append_printf (text,
-				  "Downloading %s, freeing %s",
-				  download_buf, user_buf);
-	}
+      g_string_append_printf (text, "\n%s", download_buf);
     }
 
   ask_yes_no (text->str, cont, data);
@@ -921,6 +1023,18 @@ make_uninstall_applications_view (view *v)
   return view;
 }
 
+GtkWidget *
+make_search_results_view (view *v)
+{
+  GtkWidget *view;
+
+  view = get_global_package_list_widget ();
+  set_global_lists_for_view (v);
+  gtk_widget_show_all (view);
+
+  return view;
+}
+
 static void
 set_global_lists_for_view (view *v)
 {
@@ -955,6 +1069,14 @@ set_global_lists_for_view (view *v)
 			       installed_package_selected,
 			       uninstall_package);
       //packages_for_info = installed_packages;
+    }
+  else if (v == &search_results_view)
+    {
+      set_global_package_list (search_result_packages,
+			       false,
+			       available_package_selected,
+			       install_package);
+      packages_for_info = search_result_packages;
     }
 
   get_package_list_info (packages_for_info);

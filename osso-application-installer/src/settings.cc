@@ -31,9 +31,12 @@
 #include <string.h>
 
 #include <gtk/gtk.h>
+#include <hildon-widgets/hildon-sort-dialog.h>
 
 bool clean_after_install = true;
-int  update_interval_index = 1;
+int  update_interval_index = UPDATE_INTERVAL_WEEK;
+int  package_sort_key = SORT_BY_NAME;
+int  package_sort_sign = 1;
 
 int  last_update = 0;
 bool red_pill_mode = false;
@@ -74,6 +77,10 @@ load_settings ()
 	    clean_after_install = val;
 	  else if (sscanf (line, "update-interval-index %d", &val) == 1)
 	    update_interval_index = val;
+	  else if (sscanf (line, "package-sort-key %d", &val) == 1)
+	    package_sort_key = val;
+	  else if (sscanf (line, "package-sort-sign %d", &val) == 1)
+	    package_sort_sign = val;
 	  else if (sscanf (line, "last-update %d", &val) == 1)
 	    last_update = val;
 	  else if (sscanf (line, "red-pill-mode %d", &val) == 1)
@@ -97,6 +104,8 @@ save_settings ()
     {
       fprintf (f, "clean-after-install %d\n", clean_after_install);
       fprintf (f, "update-interval-index %d\n", update_interval_index);
+      fprintf (f, "package-sort-key %d\n", package_sort_key);
+      fprintf (f, "package-sort-sign %d\n", package_sort_sign);
       fprintf (f, "last-update %d\n", last_update);
       fprintf (f, "red-pill-mode %d\n", red_pill_mode);
       fclose (f);
@@ -224,5 +233,47 @@ show_settings_dialog ()
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (settings_dialog_response),
 		    c);
+  gtk_widget_show_all (dialog);
+}
+
+static void
+sort_settings_dialog_response (GtkDialog *dialog, gint response, gpointer clos)
+{
+  if (response == GTK_RESPONSE_OK)
+    {
+      package_sort_key =
+	hildon_sort_dialog_get_sort_key (HILDON_SORT_DIALOG (dialog));
+      if (hildon_sort_dialog_get_sort_order (HILDON_SORT_DIALOG (dialog))
+	  == GTK_SORT_ASCENDING)
+	package_sort_sign = 1;
+      else
+	package_sort_sign = -1;
+      save_settings ();
+      sort_all_packages ();
+    }
+
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+void
+show_sort_settings_dialog ()
+{
+  GtkWidget *dialog;
+
+  dialog = hildon_sort_dialog_new (NULL);
+  hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog), "Name");
+  hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog), "Version");
+  hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog), "Size");
+
+  hildon_sort_dialog_set_sort_key (HILDON_SORT_DIALOG (dialog),
+				   package_sort_key);
+  hildon_sort_dialog_set_sort_order (HILDON_SORT_DIALOG (dialog),
+				     (package_sort_sign > 0
+				      ? GTK_SORT_ASCENDING
+				      : GTK_SORT_DESCENDING));
+
+  g_signal_connect (dialog, "response",
+		    G_CALLBACK (sort_settings_dialog_response),
+		    NULL);
   gtk_widget_show_all (dialog);
 }

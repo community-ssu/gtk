@@ -85,6 +85,28 @@ format_string_list (GString *str, const char *title,
     }
 }
 
+/* Same as format_string_list, but when there is only one entry and it
+   is equal to MYSELF, the list is not shown.
+*/
+
+static void
+format_string_list_1 (GString *str, const char *title,
+		      gchar *myself_name, gchar *myself_version,
+		      GList *list)
+{
+  if (list && list->next == NULL)
+    {
+      gchar *myself_target = g_strdup_printf ("%s %s",
+					      myself_name, myself_version);
+      bool only_me = !g_ascii_strcasecmp ((gchar *)list->data, myself_target);
+      g_free (myself_target);
+      if (only_me)
+	return;
+    }
+
+  format_string_list (str, title, list);
+}
+
 static char *
 decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 {
@@ -114,13 +136,13 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 	  size_string_detailed (size_buf, 20,
 				-pi->info.remove_user_size_delta);
 	  g_string_append_printf
-	    (str, "Summary: Uninstalling %s frees %s in the device.\n",
+	    (str, "Uninstalling %s frees %s in the device.\n",
 	     pi->name, size_buf);
 	}
       else
 	{
 	  g_string_append_printf
-	    (str, "Summary: Unable to uninstall %s\n", pi->name);
+	    (str, "Unable to uninstall %s\n", pi->name);
 	  possible = false;
 	}
     }
@@ -135,7 +157,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 		  size_string_detailed (size_buf, 20,
 					pi->info.install_user_size_delta);
 		  g_string_append_printf
-		    (str, "Summary: Updating %s uses %s in the device.\n",
+		    (str, "Updating %s uses %s in the device.\n",
 		     pi->name, size_buf);
 		}
 	      else
@@ -143,7 +165,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 		  size_string_detailed (size_buf, 20,
 					-pi->info.install_user_size_delta);
 		  g_string_append_printf
-		    (str, "Summary: Updating %s frees %s in the device.\n",
+		    (str, "Updating %s frees %s in the device.\n",
 		     pi->name, size_buf);
 		}
 	    }
@@ -163,7 +185,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 		  size_string_detailed (size_buf, 20,
 					pi->info.install_user_size_delta);
 		  g_string_append_printf
-		    (str, "Summary: Installing %s uses %s in the device.\n",
+		    (str, "Installing %s uses %s in the device.\n",
 		     pi->name, size_buf);
 		}
 	      else
@@ -171,7 +193,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 		  size_string_detailed (size_buf, 20,
 					-pi->info.install_user_size_delta);
 		  g_string_append_printf
-		    (str, "Summary: Installing %s frees %s in the device.\n",
+		    (str, "Installing %s frees %s in the device.\n",
 		     pi->name, size_buf);
 		}
 	    }
@@ -187,15 +209,18 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 
   if (possible)
     {
-      format_string_list (str,
-			  "Packages to install:\n",
-			  sum[sumtype_installing]);
-      format_string_list (str,
-			  "Packages to update:\n",
-			  sum[sumtype_upgrading]);
-      format_string_list (str,
-			  "Packages to remove:\n",
-			  sum[sumtype_removing]);
+      format_string_list_1 (str,
+			    "Packages to install:\n",
+			    pi->name, pi->available_version,
+			    sum[sumtype_installing]);
+      format_string_list_1 (str,
+			    "Packages to update:\n",
+			    pi->name, pi->available_version,
+			    sum[sumtype_upgrading]);
+      format_string_list_1 (str,
+			    "Packages to remove:\n",
+			    pi->name, pi->installed_version,
+			    sum[sumtype_removing]);
     }
   else
     {

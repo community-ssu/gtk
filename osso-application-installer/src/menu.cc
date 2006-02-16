@@ -131,7 +131,7 @@ create_menu (GtkMenu *main)
   add_item (view, "Forward", NULL);
   add_item (view, "Main", NULL);
   add_sep (view);
-  add_item (view, "Sort ...", NULL);
+  add_item (view, "Sort ...", show_sort_settings_dialog);
   add_sep (view);
   add_check (view, "Full screen", NULL);
   GtkMenu *toolbar = add_menu (view, "Show toolbar");

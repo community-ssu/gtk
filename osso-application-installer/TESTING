@@ -7,7 +7,7 @@ Test repository / files
 
 - should have old maemo packages
 
-- package whose posinst fails
+- package whose postinst fails
 
 - package that pops up dialog
 
@@ -17,3 +17,15 @@ Test repository / files
 
 - package that depends on other package
 
+- package with missing dependencies
+
+- there should be a big package
+
+- there should be a non-user package
+
+- there should be Nokia-certified and non-Nokia-certfied packages
+
+- there should be different generations of repositories to test
+  upgrading
+
+- repo should be on web

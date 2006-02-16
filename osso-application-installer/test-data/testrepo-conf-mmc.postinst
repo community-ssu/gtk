@@ -3,7 +3,8 @@
 set -e
 
 cp /etc/apt/sources.list /etc/apt/sources.list.testrepo-bak
-echo "deb file:///media/mmc1/testrepo demo main" >/etc/apt/sources.list
+echo "deb file:///media/mmc1/testrepo old main" >/etc/apt/sources.list
+echo "#deb file:///media/mmc1/testrepo new main" >>/etc/apt/sources.list
 
 apt-key add - <<-HERE
 -----BEGIN PGP PUBLIC KEY BLOCK-----

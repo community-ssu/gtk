@@ -32,11 +32,17 @@ void save_settings ();
 //
 extern bool   clean_after_install;
 extern int    update_interval_index;
+extern int    package_sort_key;
+extern int    package_sort_sign;
 
 #define UPDATE_INTERVAL_SESSION 0
 #define UPDATE_INTERVAL_WEEK    1
 #define UPDATE_INTERVAL_MONTH   2
 #define UPDATE_INTERVAL_NEVER   3
+
+#define SORT_BY_NAME    0
+#define SORT_BY_VERSION 1
+#define SORT_BY_SIZE    2
 
 // Persistent state
 //
@@ -44,5 +50,6 @@ extern int  last_update;    // not a time_t until 2036
 extern bool red_pill_mode;
 
 void show_settings_dialog ();
+void show_sort_settings_dialog ();
 
 #endif /* !SETTINGS_H */
