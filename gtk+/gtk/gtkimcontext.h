@@ -75,8 +75,6 @@ struct _GtkIMContextClass
 				   gint           *cursor_pos);
   gboolean (*filter_keypress)     (GtkIMContext   *context,
 			           GdkEventKey    *event);
-  gboolean (*filter_event)        (GtkIMContext   *context,
-			           GdkEvent       *event);
   void     (*focus_in)            (GtkIMContext   *context);
   void     (*focus_out)           (GtkIMContext   *context);
   void     (*reset)               (GtkIMContext   *context);
@@ -99,9 +97,12 @@ struct _GtkIMContextClass
   void     (*clipboard_operation) (GtkIMContext   *context,
                                    GtkIMContextClipboardOperation operation);
 
+  /* Virtual functions again: */
+  gboolean (*filter_event)        (GtkIMContext   *context,
+			           GdkEvent       *event);
+
   /* Padding for future expansion */
   void (*_gtk_reserved5) (void);
-  void (*_gtk_reserved6) (void);
 };
 
 GType    gtk_im_context_get_type            (void) G_GNUC_CONST;
