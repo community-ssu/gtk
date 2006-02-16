@@ -4074,6 +4074,13 @@ gtk_text_view_button_press_event (GtkWidget *widget, GdkEventButton *event)
 
   gtk_widget_grab_focus (widget);
 
+  if (text_view->editable &&
+      hildon_gtk_im_context_filter_event (text_view->im_context, event))
+    {
+      text_view->need_im_reset = TRUE;
+      return TRUE;
+    }
+
   if (event->window != text_view->text_window->bin_window)
     {
       /* Remove selection if any. */
@@ -4171,6 +4178,13 @@ gtk_text_view_button_release_event (GtkWidget *widget, GdkEventButton *event)
 
   if (event->window != text_view->text_window->bin_window)
     return FALSE;
+
+  if (text_view->editable &&
+      hildon_gtk_im_context_filter_event (text_view->im_context, event))
+    {
+      text_view->need_im_reset = TRUE;
+      return TRUE;
+    }
 
   if (event->button == 1)
     {

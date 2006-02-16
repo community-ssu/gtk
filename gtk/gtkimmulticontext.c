@@ -56,6 +56,8 @@ static void     gtk_im_multicontext_get_preedit_string (GtkIMContext            
 							gint                   *cursor_pos);
 static gboolean gtk_im_multicontext_filter_keypress    (GtkIMContext            *context,
 							GdkEventKey             *event);
+static gboolean hildon_gtk_im_multicontext_filter_event(GtkIMContext            *context,
+							GdkEvent                *event);
 static void     gtk_im_multicontext_focus_in           (GtkIMContext            *context);
 static void     gtk_im_multicontext_focus_out          (GtkIMContext            *context);
 static void     gtk_im_multicontext_reset              (GtkIMContext            *context);
@@ -197,6 +199,7 @@ gtk_im_multicontext_class_init (GtkIMMulticontextClass *class)
   im_context_class->set_client_window = gtk_im_multicontext_set_client_window;
   im_context_class->get_preedit_string = gtk_im_multicontext_get_preedit_string;
   im_context_class->filter_keypress = gtk_im_multicontext_filter_keypress;
+  im_context_class->filter_event = hildon_gtk_im_multicontext_filter_event;
   im_context_class->focus_in = gtk_im_multicontext_focus_in;
   im_context_class->focus_out = gtk_im_multicontext_focus_out;
   im_context_class->reset = gtk_im_multicontext_reset;
@@ -414,6 +417,19 @@ gtk_im_multicontext_filter_keypress (GtkIMContext *context,
 
   if (slave)
     return gtk_im_context_filter_keypress (slave, event);
+  else
+    return FALSE;
+}
+
+static gboolean
+hildon_gtk_im_multicontext_filter_event (GtkIMContext *context,
+				  GdkEvent *event)
+{
+  GtkIMMulticontext *multicontext = GTK_IM_MULTICONTEXT (context);
+  GtkIMContext *slave = gtk_im_multicontext_get_slave (multicontext);
+
+  if (slave)
+    return hildon_gtk_im_context_filter_event (slave, event);
   else
     return FALSE;
 }

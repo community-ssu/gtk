@@ -75,6 +75,8 @@ struct _GtkIMContextClass
 				   gint           *cursor_pos);
   gboolean (*filter_keypress)     (GtkIMContext   *context,
 			           GdkEventKey    *event);
+  gboolean (*filter_event)        (GtkIMContext   *context,
+			           GdkEvent       *event);
   void     (*focus_in)            (GtkIMContext   *context);
   void     (*focus_out)           (GtkIMContext   *context);
   void     (*reset)               (GtkIMContext   *context);
@@ -112,6 +114,8 @@ void     gtk_im_context_get_preedit_string  (GtkIMContext   *context,
 					     gint           *cursor_pos);
 gboolean gtk_im_context_filter_keypress     (GtkIMContext   *context,
 					     GdkEventKey    *event);
+gboolean hildon_gtk_im_context_filter_event (GtkIMContext   *context,
+					     GdkEvent        *event);
 void     gtk_im_context_focus_in            (GtkIMContext   *context);
 void     gtk_im_context_focus_out           (GtkIMContext   *context);
 void     gtk_im_context_reset               (GtkIMContext   *context);
