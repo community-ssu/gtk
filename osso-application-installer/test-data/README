@@ -1,0 +1,124 @@
+[ This is twiki markuo, for easy pasting. ]
+
+---++ About the test repository
+
+The test repository contains two distributions: =old= and =new=.  They
+contain mostly the same packages, but =new= might contain newer
+versions of some of the packages in =old=, for example.
+
+When configured by installing =testrepo-conf-mmc= (see previous
+section), the =old= distribution is enabled and the =new= one is
+disabled.  You can switch to =new= by disabling =old= and enabling
+=new=, obviously.  You can have both =old= and =new= enabled at the
+same time, but that is not a very useful thing to do.
+
+The packages.  If only one version is given, that version is in both
+=old= and =new=.
+
+
+   * *package-A 1* (old), *package-A 2* (new)
+     <p>
+     Standalone package that depends on nothing and conflicts with
+     nothing.  You can use it to test basic installation, upgrading and
+     uninstallation.
+     <p>
+     To test upgrading, first install version 1 from =old=, then switch
+     to =new=.  Package-A version 2 should be listed in the "Check for
+     updates" view.
+
+   * *package-B 1*
+     <p>
+     Conflicts with package-A 1 (but no other version of package-A).
+     You can use it together with package-A to test the behavior when
+     conflicts are present.  It must not be possible to install
+     package-A version 1 and package B at the same time.  You can
+     install package-A version 2 and package-B at the same time,
+     however.
+
+   * *package-C 1*
+     <p>
+     Depends on package-B, any version.  You can use it to test
+     dependencies between packages, and indirect conflicts.
+     <p>
+     When package-A version 1 and package-B are not installed,
+     installing package-C should automatically install package-B as
+     well.
+     <p>
+     When package-A version 1 is installed (and consequently, package-B
+     is not installed), installing package-C should not be possible,
+     listing package-A as the reason.
+     <p>
+     When uninstalling package-C, package-B should be automatically
+     uninstalled as well, but only when package-B has been
+     automatically installed in the first place.  When package-B has
+     been installed explicitely (e.g. by selecting it from the list and
+     clicking "Install"), it should not be automatically uninstalled
+     when uninstalling package-C.
+
+---++ Sample test cases
+
+Here are some test cases you can do with the packages in the test
+repository.
+
+---+++ Install, then update, then uninstall
+
+   * Configure the =old= distribution.
+   * Make sure that package-A is not installed.
+   * Install package-A version 1 (from the "Games" section).
+   * Configure the =new= distribution.
+   * Update package-A to version 2 (via "Check for updates").
+   * Uninstall package-A (via "List installed applications").
+
+---+++ Install dependencies
+
+   * Configure the =old= distribution.
+   * Make sure none of package-A, package-B, and package-C are
+     installed.
+   * Open Details dialog for package-C.
+   * Note that the "Installing" tab lists both package-B and package-C 
+     to be installed.
+   * Install package-C
+   * Note that package-B has been installed as well.
+
+---+++ Detect and resolve direct conflict
+
+   * Configure the =old= distribution.
+   * Make sure that package-B is not installed and that package-A
+     version 1 is installed.
+   * Try to install package-B.
+   * Note that the installation will fail and that package-A is listed
+     as the reason for it.
+   * Uninstall package-A.
+   * Install package-B, which should now succeed.
+
+---+++ Detect and resolve indirect conflict
+
+   * Configure the =old= distribution.
+   * Make sure that package-C and package-B are not installed and that
+     package-A version 1 is installed.
+   * Try to install package-C.
+   * Note that the installation will fail and that package-A is listed
+     as the reason for it.
+   * Uninstall package-A.
+   * Install package-C, which should now succeed and automatically
+     install package-B as well.
+
+---+++ Detect and resolve direct conflict by updating
+
+   * Configure the =old= distribution.
+   * Make sure that package-B is not installed and that package-A
+     version 1 is installed.
+   * Try to install package-B.
+   * Note that the installation will fail and that package-A is listed
+     as the reason for it.
+   * Configure the =new= distribution.
+   * Install package-B, which should now succeed and automatically
+     update package-A to version 2.
+
+---+++ Refusal to uninstall needed package
+
+   * Configure the =old= distribution.
+   * Make sure that package-B and package-C are installed.
+   * Try to uninstall package-B.
+   * Note that the uninstallation will fail and list package-C as the
+     reason for it.
