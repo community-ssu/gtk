@@ -3,7 +3,7 @@ gtk+2.0 (2:2.6.10-1.osso5) unstable; urgency=low
   * GtkIMContext API addition for passing more events through IM context:
     - hildon_gtk_im_context_filter_event added
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 16 Feb 2006 17:48:40 +0200
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 16 Feb 2006 19:05:59 +0200
 
 gtk+2.0 (2:2.6.10-1.osso4) unstable; urgency=low
 
