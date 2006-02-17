@@ -40,8 +40,8 @@ source $DIR/keyboard.sh stop
 source $DIR/dbus-sessionbus.sh stop
 # TODO: stop ke-recv
 
-# wait for the D-BUS session bus to die
-sleep 10
+# wait for the D-BUS session bus to die FIXME
+sleep 1
 #TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
 #while [ $TMP = 1 ]; do
 #  sleep 1
