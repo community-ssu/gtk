@@ -5,7 +5,7 @@
 
 AC_INIT([maemo-launcher], [0.10])
 AC_PREREQ([2.59])
-AC_REVISION([$Revision: 1042 $])
+AC_REVISION([$Revision$])
 AC_CONFIG_SRCDIR([launcher/launcher.c])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_HEADERS([config.h])
