@@ -1,3 +1,10 @@
+osso-app-killer (1.2-1) unstable; urgency=low
+
+  * RFS and CUD scripts now ask MCE to reboot.
+  * Modified CUD script so that it could be run also as root.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 17 Feb 2006 14:41:47 +0200
+
 osso-app-killer (1.1-1) unstable; urgency=low
 
   * Removed all C code and DBus stuff. This package is now just a

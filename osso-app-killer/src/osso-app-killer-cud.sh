@@ -3,33 +3,44 @@
 
 DIR=/etc/osso-af-init
 
+if [ "x$USER" = "xroot" ]; then
+  SUDO=''
+  echo "$0: Warning, I'm root"
+else
+  if [ "x$USER" = "x" ]; then
+    SUDO=''
+    USER=root
+    echo "$0: Warning, USER is not defined, assuming '$USER'"
+  else
+    SUDO='sudo'
+  fi
+fi
+
 # sanity checks
 if [ "x$MYDOCSDIR" = "x" ]; then
-  echo "$0: Error, MYDOCSDIR is not defined"
-  exit 1
+  MYDOCSDIR=/home/user/MyDocs
+  echo "$0: Warning, MYDOCSDIR is not defined, assuming '$MYDOCSDIR'"
 fi
 if [ "x$HOME" = "x" ]; then
-  echo "$0: Error, HOME is not defined"
-  exit 1
-fi
-if [ "x$USER" = "xroot" ]; then
-  echo "$0: Error, I'm root"
-  exit 1
+  HOME=/home/user
+  echo "$0: Warning, HOME is not defined, assuming '$HOME'"
 fi
 
 # shut down things
-sudo /etc/init.d/af-base-apps stop
+$SUDO /etc/init.d/af-base-apps stop
 # define AF-wide environment
 source $DIR/af-defines.sh
-sudo $DIR/gconf-daemon.sh stop
+$SUDO $DIR/gconf-daemon.sh stop
 
 if [ "x$OSSO_CUD_DOES_NOT_DESTROY" = "x" ]; then
   # Remove all user data
-  sudo /usr/sbin/gconf-clean.sh 
+  $SUDO /usr/sbin/gconf-clean.sh 
   rm -rf $HOME/.osso/*
   OLDDIR=`pwd`
   cd $HOME/.osso-cud-scripts
   for f in `ls *.sh`; do
+    # if we are root, this is run as root (but no can do because
+    # user 'user' might not exist)
     ./$f
     RC=$?
     if [ $RC != 0 ]; then
@@ -46,4 +57,9 @@ if [ "x$OSSO_CUD_DOES_NOT_DESTROY" = "x" ]; then
 else
   echo "$0: OSSO_CUD_DOES_NOT_DESTROY defined, no data deleted"
 fi
+# ask MCE to reboot the system
+dbus-send --system --type=method_call \
+  --dest="com.nokia.mce" --print-reply \
+  "/com/nokia/mce/request" \
+  com.nokia.mce.request.req_reboot
 exit 0

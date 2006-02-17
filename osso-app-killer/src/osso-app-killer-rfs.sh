@@ -21,4 +21,9 @@ if [ "x$OSSO_RFS_DOES_NOT_DESTROY" = "x" ]; then
 else
   echo "$0: OSSO_RFS_DOES_NOT_DESTROY defined, no data deleted"
 fi
+# ask MCE to reboot the system
+dbus-send --system --type=method_call \
+  --dest="com.nokia.mce" --print-reply \
+  "/com/nokia/mce/request" \
+  com.nokia.mce.request.req_reboot
 exit 0
