@@ -1,5 +1,5 @@
 .\" $Id$
-.TH maemo\-invoker 1 2005-09-27 @VERSION@ "Maemo Launcher manual"
+.TH maemo\-invoker 1 2006-02-17 @VERSION@ "Maemo Launcher manual"
 .SH NAME
 maemo\-invoker \- invoke a program from the launcher
 .SH SYNOPSIS
