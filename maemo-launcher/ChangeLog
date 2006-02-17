@@ -1,5 +1,11 @@
 2006-02-17  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/invoker.1.in: Use italics for option arguments, bold for
+	program names. Escape hyphens.
+	* launcher/launcher.1.in: Likewise.
+
+2006-02-17  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (usage): Print "Options:" before actually
 	listimg them.
 	* launcher/invoker.c (usage): Likewise.

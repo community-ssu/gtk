@@ -22,7 +22,7 @@ A summary of options is included below.
 .B \-\-daemon
 Fork and go to background.
 .TP
-.B \-\-pidfile PIDFILE
+.B \-\-pidfile \fIPIDFILE\fP
 Specify a different filename for the pid file.
 .TP
 .B \-\-quiet
@@ -36,5 +36,6 @@ Show version of program.
 .SH SEE ALSO
 .BR maemo\-invoker (1).
 .SH AUTHOR
-maemo\-launcher was written by Michael Natterer <mitch@imendio.com> and
+.B maemo\-launcher
+was written by Michael Natterer <mitch@imendio.com> and
 Guillem Jover <guillem.jover@nokia.com>.
