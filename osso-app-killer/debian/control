@@ -7,6 +7,6 @@ Standards-Version: 3.6.0
 
 Package: osso-app-killer
 Architecture: all
-Depends: osso-af-startup
+Depends: osso-af-startup, dbus
 Description: Collection of scripts for RFS, CUD, restore.
  A bunch of some scripts.

@@ -2,15 +2,17 @@
 # Script for doing the Cleanup user data (CUD) operation.
 
 DIR=/etc/osso-af-init
+DEFHOME=/home/user
 
 if [ "x$USER" = "xroot" ]; then
   SUDO=''
+  HOME=$DEFHOME
   echo "$0: Warning, I'm root"
 else
   if [ "x$USER" = "x" ]; then
     SUDO=''
-    USER=root
-    echo "$0: Warning, USER is not defined, assuming '$USER'"
+    HOME=$DEFHOME
+    echo "$0: Warning, USER is not defined, assuming 'root'"
   else
     SUDO='sudo'
   fi
@@ -18,11 +20,11 @@ fi
 
 # sanity checks
 if [ "x$MYDOCSDIR" = "x" ]; then
-  MYDOCSDIR=/home/user/MyDocs
+  MYDOCSDIR=$DEFHOME/MyDocs
   echo "$0: Warning, MYDOCSDIR is not defined, assuming '$MYDOCSDIR'"
 fi
 if [ "x$HOME" = "x" ]; then
-  HOME=/home/user
+  HOME=$DEFHOME
   echo "$0: Warning, HOME is not defined, assuming '$HOME'"
 fi
 
