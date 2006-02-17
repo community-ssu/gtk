@@ -1,5 +1,14 @@
 2006-02-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Merge from GNOME CVS. Fixes N#22693
+
+    2005-08-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/x11/gdkproperty-x11.c (gdk_property_get): Don't warn
+	when G_MAXLONG is passed as length.
+
+2006-02-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	Merge from GNOME CVS. Fixes M#352
 
     2006-01-06  Matthias Clasen  <mclasen@redhat.com>
