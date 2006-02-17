@@ -59,22 +59,9 @@ AppData state_data;
 /* delay to wait from callback to actually reading the entries in msecs*/
 #define DIRREADDELAY 500
 
-/* Message bus definitions */
-/* Definitions for password validation call */
-#define HILDON_CP_DBUS_MCE_SERVICE "com.nokia.mce"
-#define HILDON_CP_DBUS_MCE_REQUEST_IF "com.nokia.mce.request"
-#define HILDON_CP_DBUS_MCE_REQUEST_PATH "/com/nokia/mce/request"
-#define HILDON_CP_MCE_PASSWORD_VALIDATE "validate_devicelock_code"
-#define HILDON_CP_DEFAULT_SALT "$1$JE5Gswee$"
-
-/* Definitions for appkiller call */
-#define HILDON_CP_APPL_DBUS_NAME "osso_app_killer"
-#define HILDON_CP_SVC_NAME "com.nokia." HILDON_CP_APPL_DBUS_NAME
-#define HILDON_CP_RFS_SHUTDOWN_OP "/com/nokia/" \
- HILDON_CP_APPL_DBUS_NAME "/rfs_shutdown"
-#define HILDON_CP_RFS_SHUTDOWN_IF HILDON_CP_SVC_NAME ".rfs_shutdown"
-#define HILDON_CP_RFS_SHUTDOWN_MSG "shutdown"
 #define HILDON_CP_RFS_SCRIPT "/usr/sbin/osso-app-killer-rfs.sh"
+
+#define HILDON_CP_CUD_SCRIPT "/usr/sbin/osso-app-killer-cud.sh"
 
 /* Definitions for mobile operator wizard launch*/
 #define HILDON_CONTROL_PANEL_DBUS_OPERATOR_WIZARD_SERVICE "operator_wizard"
@@ -93,31 +80,6 @@ static void _init_gui (void);
 static void _large_icons(void);
 static void _small_icons(void);
 
-/* Make a DBUS system call.  When RETVAL is non-NULL, it needs to be
-   freed with osso_rpc_free_val.  */
-static osso_return_t _cp_run_rpc_system_request (osso_context_t *osso, 
-                                                 const gchar *service, 
-                                                 const gchar *object_path,
-                                                 const gchar *interface, 
-                                                 const gchar *method,
-                                                 osso_rpc_t *retval, 
-                                                 int first_arg_type,
-                                                 ...);
-
-/* When RETVAL is non-NULL, it needs to be freed with
-   osso_rpc_free_val.
-*/
-static osso_return_t _rpc_system_request (osso_context_t *osso, 
-                                          DBusConnection *conn,
-                                          const gchar *service, 
-                                          const gchar *object_path,
-                                          const gchar *interface, 
-                                          const gchar *method,
-                                          osso_rpc_t *retval, 
-                                          int first_arg_type,
-                                          va_list var_args);
-static void _append_args(DBusMessage *msg, int type, va_list var_args);
-static void _get_arg(DBusMessageIter *iter, osso_rpc_t *retval);
 
 /* Create & free state data */
 static void _create_data(void);
@@ -141,6 +103,8 @@ static void _topmost_status_acquire(void);
 static void _topmost_status_lose(void);
 /* Callback for resetting factory settings */
 static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data );
+/* Callback for clear user data */
+static gboolean _clear_user_data( GtkWidget *widget, gpointer data );
 /* Callback for operator wizard launch */
 static void _run_operator_wizard( GtkWidget *widget, gpointer data );
 /* Callback for help function */
@@ -165,15 +129,6 @@ static void _hw_signal_cb( osso_hw_state_t *state, gpointer data );
 int 
 main(int argc, char ** argv)
 {
-
-    FILE* test=fopen("/home/jobi/args", "w");
-    fprintf( test, "CONTROL PANEL STARTING, argc: %i\n", argc);
-    if(argc>=2){
-    fprintf( test, "first arg: %s\n", argv[1]);
-    }
-    fclose(test);
-
-
     setlocale( LC_ALL, "" );
     
     bindtextdomain( PACKAGE, LOCALEDIR );
@@ -393,12 +348,21 @@ static void _init_gui(void)
 
     /* Reset Factory Settings */
     mi = gtk_menu_item_new_with_label
-        ( HILDON_CONTROL_PANEL_MENU_RESET_SETTINGS);
+        ( HILDON_CONTROL_PANEL_MENU_RFS );
 
     gtk_menu_shell_append( GTK_MENU_SHELL( sub_tools ), mi );
     
     g_signal_connect( G_OBJECT( mi ), "activate", 
                       G_CALLBACK(_reset_factory_settings), NULL);
+    
+    /* Clean User Data */
+    mi = gtk_menu_item_new_with_label
+        ( HILDON_CONTROL_PANEL_MENU_CUD );
+
+    gtk_menu_shell_append( GTK_MENU_SHELL( sub_tools ), mi );
+    
+    g_signal_connect( G_OBJECT( mi ), "activate", 
+                      G_CALLBACK(_clear_user_data), NULL);
 
     
     /* Help! */
@@ -910,177 +874,16 @@ static void _run_operator_wizard( GtkWidget *widget, gpointer data)
 static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
 {
 
-    gint i, retry;
-    gchar *password;
-    gchar *crypted_password;
-    GtkWidget *confirm_dialog;
-    gchar *dollarsign = "$";
-    osso_rpc_t returnvalues;
-    osso_return_t returnstatus;
+    hildon_cp_rfs( state_data.osso, HILDON_CP_RFS_WARNING, HILDON_CP_RFS_SCRIPT );
 
-    retry=1;
+    return TRUE;
+}
 
-    if ( data == NULL ) { /* In retries, we don't confirm again  */
-        
-        confirm_dialog = hildon_note_new_confirmation
-            (GTK_WINDOW(state_data.window), 
-             RESET_FACTORY_SETTINGS_INFOBANNER);
-        
-        hildon_note_set_button_texts
-            (HILDON_NOTE(confirm_dialog),
-             RESET_FACTORY_SETTINGS_INFOBANNER_CLOSE_ALL,
-             RESET_FACTORY_SETTINGS_INFOBANNER_CANCEL);
-        
-        gtk_widget_show_all(confirm_dialog);
-        i = gtk_dialog_run(GTK_DIALOG(confirm_dialog));
+static gboolean _clear_user_data( GtkWidget *widget, gpointer data )
+{
 
-        gtk_widget_destroy(GTK_WIDGET(confirm_dialog));
+    hildon_cp_rfs( state_data.osso, HILDON_CP_CUD_WARNING, HILDON_CP_CUD_SCRIPT );
 
-        if (i == GTK_RESPONSE_CANCEL ||
-            i == GTK_RESPONSE_DELETE_EVENT) {
-            return TRUE;    
-        }
-
-    }
-    else {
-        retry = GPOINTER_TO_INT(data) +1;
-    }
-    
-    GtkWidget *pw_dialog = (hildon_get_password_dialog_new(
-                                GTK_WINDOW(state_data.window), FALSE));
-
-    hildon_get_password_dialog_set_title
-        (HILDON_GET_PASSWORD_DIALOG(pw_dialog), 
-         RESET_FACTORY_SETTINGS_PASSWORD_DIALOG_TITLE);
-
-    hildon_get_password_dialog_set_caption
-        (HILDON_GET_PASSWORD_DIALOG(pw_dialog), 
-         RESET_FACTORY_SETTINGS_PASSWORD_DIALOG_CAPTION);
-/*    
-    hildon_get_password_dialog_set_max_characters
-        (HILDON_GET_PASSWORD_DIALOG(pw_dialog),
-         HILDON_CP_ASSUMED_LOCKCODE_MAXLENGTH);
-
-         open issue: widget spec just dropped max characters altogether.
-         retaining code, but as the logical string no longer exits...
-*/
-    g_object_set( G_OBJECT(pw_dialog),
-                  "numbers_only", NULL, NULL );
-    
-
-    gtk_widget_show (pw_dialog);
-    
-    switch(gtk_dialog_run (GTK_DIALOG(pw_dialog)))
-    {
-      case GTK_RESPONSE_CANCEL:
-      case GTK_RESPONSE_DELETE_EVENT:
-
-        if (pw_dialog !=NULL)
-            gtk_widget_destroy(GTK_WIDGET(pw_dialog));        
-        return TRUE;
-    }  
-
-    password = strdup(hildon_get_password_dialog_get_password
-                      (HILDON_GET_PASSWORD_DIALOG(pw_dialog)));
-    
-    if (password == NULL || strcmp(password,"") == 0) {        
-
-        gtk_infoprint (GTK_WINDOW(state_data.window), 
-                       RESET_FACTORY_SETTINGS_IB_NO_LOCKCODE );
-        if (pw_dialog)
-        {            
-            gtk_widget_destroy(GTK_WIDGET(pw_dialog));
-        }
-        if (password != NULL) 
-        {
-            g_free (password);
-        }
-        _reset_factory_settings(widget, GINT_TO_POINTER(retry));
-        return TRUE;
-    }
-
-    crypted_password = crypt(password, HILDON_CP_DEFAULT_SALT);
-    g_free(password);
-
-    gint c = (gint)dollarsign[0];
-
-    password = rindex (crypted_password, c)+1;
-
-    fprintf( stderr, "Before password rpc call, password = %s\n", password);
-
-    returnstatus = _cp_run_rpc_system_request
-        (state_data.osso, 
-         HILDON_CP_DBUS_MCE_SERVICE, 
-         HILDON_CP_DBUS_MCE_REQUEST_PATH,
-         HILDON_CP_DBUS_MCE_REQUEST_IF,
-         HILDON_CP_MCE_PASSWORD_VALIDATE,
-         &returnvalues, 
-         DBUS_TYPE_STRING,
-         password,
-         DBUS_TYPE_STRING,
-         HILDON_CP_DEFAULT_SALT,
-         DBUS_TYPE_INVALID);
-     
-    password = NULL; /* password pointed to middle of crypted password */
-
-    switch (returnstatus)
-    {
-    case OSSO_INVALID:
-        osso_log(LOG_ERR, "Invalid parameter\n");
-        fprintf(stderr, "got invalid");
-        break;
-    case OSSO_RPC_ERROR:
-    case OSSO_ERROR:
-    case OSSO_ERROR_NAME:
-    case OSSO_ERROR_NO_STATE:
-    case OSSO_ERROR_STATE_SIZE:
-        if (returnvalues.type == DBUS_TYPE_STRING) {
-            osso_log(LOG_ERR, "Lockcode query call failed: %s\n", 
-                     returnvalues.value.s);
-        }
-        else {
-            osso_log(LOG_ERR, 
-                     "Lockcode query call failed, unspecified");
-        }
-        break;
-        
-    case OSSO_OK:
-        break;
-    default:
-        osso_log(LOG_ERR, "Unknown error type %d", returnstatus);
-    }
-    
-    if (returnvalues.type == DBUS_TYPE_BOOLEAN &&
-        returnvalues.value.b == TRUE) { 
-        GError * error = NULL;
-
-        if (!g_spawn_command_line_async (HILDON_CP_RFS_SCRIPT,
-                                    &error))
-        {
-            osso_log (LOG_ERR, "Call to RFS script failed");
-            if (error)
-            {
-                osso_log (LOG_ERR, error->message);
-                g_error_free (error);
-            }
-        }
-
-    }
-    else if (returnvalues.type == DBUS_TYPE_BOOLEAN &&
-             returnvalues.value.b == FALSE) { 
-        
-        gtk_infoprint (GTK_WINDOW(state_data.window), 
-                       RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE );
-        gtk_widget_destroy(GTK_WIDGET(pw_dialog));
-        _reset_factory_settings(widget, GINT_TO_POINTER(retry));
-	osso_rpc_free_val (&returnvalues);
-        return TRUE;
-    }
-
-    if (pw_dialog)
-        gtk_widget_destroy(GTK_WIDGET(pw_dialog));
-
-    osso_rpc_free_val (&returnvalues);
     return TRUE;
 }
 
@@ -1160,192 +963,5 @@ static void _focus_change(MBDotDesktop* dd, gpointer data )
             g_free(state_data.focused_filename);
         state_data.focused_filename = g_strdup(
             mb_dotdesktop_get_filename(dd));
-    }
-}
-
-/***** DBUS system calls *****/
-
-
-
-static osso_return_t _cp_run_rpc_system_request (osso_context_t *osso, 
-                                                 const gchar *service, 
-                                                 const gchar *object_path,
-                                                 const gchar *interface, 
-                                                 const gchar *method,
-                                                 osso_rpc_t *retval, 
-                                                 int first_arg_type, ...)
-{    
-    osso_return_t ret;
-    va_list arg_list;
-    
-    if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
-	(interface == NULL) || (method == NULL))
-	return OSSO_INVALID;
-    
-    va_start(arg_list, first_arg_type);
-    
-    ret = _rpc_system_request(osso, 
-                              (DBusConnection*)osso_get_sys_dbus_connection
-                              (osso), 
-                              service, 
-                              object_path, interface,
-                              method, retval, first_arg_type, arg_list);
-    va_end(arg_list);
-    return ret;
-}
-
-static osso_return_t _rpc_system_request (osso_context_t *osso, 
-                                          DBusConnection *conn,
-                                          const gchar *service, 
-                                          const gchar *object_path,
-                                          const gchar *interface, 
-                                          const gchar *method,
-                                          osso_rpc_t *retval, 
-                                          int first_arg_type,
-                                          va_list var_args)
-{
-    gint timeout;
-    DBusMessage *msg;
-    DBusError err;
-    DBusMessage *ret;
-    osso_return_t timeout_retval;
-
-    if(conn == NULL)
-	return OSSO_INVALID;
-    
-    dprint("New method: %s%s::%s:%s",service,object_path,interface,method);
-    msg = dbus_message_new_method_call(service, object_path,
-				       interface, method);
-    if(msg == NULL)
-    {
-	return OSSO_ERROR;
-    }
-
-
-    if(first_arg_type != DBUS_TYPE_INVALID)
-	_append_args(msg, first_arg_type, var_args);
-    
-    dbus_message_set_auto_start(msg, FALSE);
-
-    dbus_error_init(&err);
-    timeout_retval = osso_rpc_get_timeout(osso, &timeout);
-    ret = dbus_connection_send_with_reply_and_block(conn, msg, 
-                                                    timeout,
-                                                    &err);
-    if (!ret) {
-        dprint("Error return: %s",err.message);
-        retval->type = DBUS_TYPE_STRING;
-        retval->value.s = g_strdup(err.message);
-        dbus_error_free(&err);
-        return OSSO_RPC_ERROR;
-    }
-    else {
-        DBusMessageIter iter;
-        DBusError err;
-
-        switch(dbus_message_get_type(ret)) {
-        case DBUS_MESSAGE_TYPE_ERROR:
-            dbus_set_error_from_message(&err, ret);
-            retval->type = DBUS_TYPE_STRING;
-            retval->value.s = g_strdup(err.message);
-            dbus_error_free(&err);
-            return OSSO_RPC_ERROR;
-        case DBUS_MESSAGE_TYPE_METHOD_RETURN:
-            dprint("message return");
-            dbus_message_iter_init(ret, &iter);
-	    
-            _get_arg(&iter, retval);
-            
-            dbus_message_unref(ret);
-            
-            return OSSO_OK;
-        default:
-            retval->type = DBUS_TYPE_STRING;
-            retval->value.s = g_strdup("Invalid return value");
-            return OSSO_RPC_ERROR;
-        }
-    }
-}    
-
-
-static void _append_args(DBusMessage *msg, int type, va_list var_args)
-{
-    while(type != DBUS_TYPE_INVALID) {
-	gchar *s;
-	gint32 i;
-	guint32 u;
-	gdouble d;
-	gboolean b;
-
-	switch(type) {
-	  case DBUS_TYPE_INT32:
-	    i = va_arg(var_args, gint32);
-	    dbus_message_append_args(msg, type, &i, DBUS_TYPE_INVALID);
-	    break;
-	  case DBUS_TYPE_UINT32:
-	    u = va_arg(var_args, guint32);
-	    dbus_message_append_args(msg, type, &u, DBUS_TYPE_INVALID);
-	    break;
-	  case DBUS_TYPE_BOOLEAN:
-	    b = va_arg(var_args, gboolean);
-	    dbus_message_append_args(msg, type, &b, DBUS_TYPE_INVALID);
-	    break;
-	  case DBUS_TYPE_DOUBLE:
-	    d = va_arg(var_args, gdouble);
-	    dbus_message_append_args(msg, type, &d, DBUS_TYPE_INVALID);
-	    break;
-	  case DBUS_TYPE_STRING:
-	    s = va_arg(var_args, gchar *);
-        fprintf( stderr, "got string %s! \n", s);
-		dbus_message_append_args(msg, type, &s, DBUS_TYPE_INVALID);
-	    break;
-	  default:
-	    break;	    
-	}
-	
-	type = va_arg(var_args, int);
-    }
-    return;
-}
-
-static void _get_arg(DBusMessageIter *iter, osso_rpc_t *retval)
-{
-    dprint("");
-
-    retval->type = dbus_message_iter_get_arg_type(iter);
-    switch(retval->type) {
-      case DBUS_TYPE_INT32:
-	dbus_message_iter_get_basic(iter,&retval->value.i);
-	dprint("got INT32:%d",retval->value.i);
-	break;
-      case DBUS_TYPE_UINT32:
-    dbus_message_iter_get_basic(iter,&retval->value.u);
-	dprint("got UINT32:%u",retval->value.u);
-	break;
-      case DBUS_TYPE_BOOLEAN:
-	dbus_message_iter_get_basic(iter,&retval->value.b);
-	dprint("got BOOLEAN:%s",retval->value.s?"TRUE":"FALSE");
-	break;
-      case DBUS_TYPE_DOUBLE:
-	dbus_message_iter_get_basic(iter,&retval->value.d);
-	dprint("got DOUBLE:%f",retval->value.d);
-	break;
-      case DBUS_TYPE_STRING:
-	{
-	  gchar *dbus_string;
-      dbus_message_iter_get_basic(iter,&dbus_string);
-	  retval->value.s = g_strdup (dbus_string);
-	  dbus_free (dbus_string);
-	  if(retval->value.s == NULL) {
-	    retval->type = DBUS_TYPE_INVALID;
-	  }
-	  dprint("got STRING:'%s'",retval->value.s);
-	}
-	break;
-      default:
-	retval->type = DBUS_TYPE_INVALID;
-	retval->value.i = 0;	    
-	dprint("got unknown type:'%c'(%d)",retval->type,retval->type);
-	break;	
     }
 }

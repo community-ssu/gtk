@@ -1,3 +1,9 @@
+hildon-control-panel (1.1.0-1) unstable; urgency=low
+
+  * New implementation of RFS and CUD
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 17 Feb 2006 15:04:21 +0200
+
 hildon-control-panel (1.0.2-1) unstable; urgency=low
 
   * Fixed a crash when building DBUS messages

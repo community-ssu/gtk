@@ -1,3 +1,9 @@
+2006-02-17 Johan Bilien <johan.bilien@nokia.com>
+	* Implemented new version of RFS UI:
+	  - Use codelockui instead of old dbus cruft
+	  - Added Clean-User-Data UI
+	* configure.ac: 1.1.0
+
 2006-02-13 Johan Bilien <johan.bilien@nokia.com>
 	* hildon-control-panel-main.c:
 	  - Fixed a crash when building DBUS messages

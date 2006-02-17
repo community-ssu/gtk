@@ -36,6 +36,10 @@ fi
 CFLAGS="$CFLAGS -Wall -ansi -Wmissing-prototypes -Wmissing-declarations -Werror -lcrypt" 
 AC_SUBST(CFLAGS)
 
+PKG_CHECK_MODULES(CODELOCKUI, codelockui >= 1.2.1)
+AC_SUBST(CODELOCKUI_LIBS)
+AC_SUBST(CODELOCKUI_CFLAGS)
+
 PKG_CHECK_MODULES(OSSO,libosso >= 0.10.0)
 AC_SUBST(OSSO_LIBS)
 AC_SUBST(OSSO_CFLAGS)

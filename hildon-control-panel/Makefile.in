@@ -51,6 +51,8 @@ CATOBJEXT = @CATOBJEXT@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CODELOCKUI_CFLAGS = @CODELOCKUI_CFLAGS@
+CODELOCKUI_LIBS = @CODELOCKUI_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -176,6 +178,7 @@ INCLUDES = \
 	$(MAEMO_LAUNCHER_CFLAGS) \
 	$(MB_CFLAGS) $(OSSO_CFLAGS)\
 	$(LIBOSSOHELP_CFLAGS) \
+	$(CODELOCKUI_CFLAGS) \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DPREFIXDIR=\"$(prefix)\" \
 	-DCONTROLPANEL_ENTRY_DIR=\"$(hildoncpdesktopentrydir)\"
@@ -201,6 +204,7 @@ controlpanel_SOURCES = \
 	hildon-control-panel-main.c \
 	hildon-cp-applist.h \
 	hildon-cp-applist.c \
+	hildon-cp-rfs.c \
 	hildon-cp-plugin-interface.h
 
 
@@ -213,7 +217,7 @@ hildondesktopentry_DATA = hildon-control-panel.desktop
 
 controlpanel_LDADD = \
 	$(HILDON_LIBS) $(HILDONBASELIB_LIBS) $(MB_LIBS) $(OSSO_LIBS)\
-	$(LIBOSSOHELP_LIBS)
+	$(LIBOSSOHELP_LIBS) $(CODELOCKUI_LIBS)
 
 
 hildon_cp_pluginincludeinstdir = $(includedir)/hildon-cp-plugin
@@ -231,7 +235,7 @@ bin_PROGRAMS = controlpanel$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_controlpanel_OBJECTS = hildon-control-panel-main.$(OBJEXT) \
-	hildon-cp-applist.$(OBJEXT)
+	hildon-cp-applist.$(OBJEXT) hildon-cp-rfs.$(OBJEXT)
 controlpanel_OBJECTS = $(am_controlpanel_OBJECTS)
 controlpanel_DEPENDENCIES =
 
@@ -239,7 +243,8 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir) -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/hildon-control-panel-main.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/hildon-cp-applist.Po
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-cp-applist.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-cp-rfs.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -353,6 +358,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-control-panel-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-cp-applist.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-cp-rfs.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \

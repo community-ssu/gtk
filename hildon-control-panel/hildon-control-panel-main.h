@@ -80,24 +80,17 @@ G_BEGIN_DECLS
 #define HILDON_CONTROL_PANEL_MENU_LARGE_ITEMS _("copa_me_view_large")
 #define HILDON_CONTROL_PANEL_MENU_SUB_TOOLS _("copa_me_tools")
 #define HILDON_CONTROL_PANEL_MENU_SETUP_WIZARD _("copa_me_tools_setup_wizard")
-#define HILDON_CONTROL_PANEL_MENU_RESET_SETTINGS _("copa_me_tools_rfs")
+#define HILDON_CONTROL_PANEL_MENU_RFS _("copa_me_tools_rfs")
+#define HILDON_CONTROL_PANEL_MENU_CUD _("copa_me_tools_cud")
 #define HILDON_CONTROL_PANEL_MENU_HELP _("copa_me_tools_help")
 #define HILDON_CONTROL_PANEL_MENU_CLOSE _("copa_me_close")
 
-#define RESET_FACTORY_SETTINGS_PASSWORD_DIALOG_TITLE \
- _("rfs_ti_lock_code_protected")
-#define RESET_FACTORY_SETTINGS_PASSWORD_DIALOG_CAPTION _("rfs_fi_enter_lock_code")
-#define RESET_FACTORY_SETTINGS_PASSWORD_OK _("refs_bd_ok")
-#define RESET_FACTORY_SETTINGS_PASSWORD_CANCEL _("refs_bd_cancel2")
+#define RESET_FACTORY_SETTINGS_INFOBANNER_OK _("rfs_bd_ok")
+#define RESET_FACTORY_SETTINGS_INFOBANNER_CANCEL _("rfs_bd_cancel")
+#define HILDON_CP_RFS_WARNING _("rfs_ia_text")
+#define HILDON_CP_CUD_WARNING _("cud_ia_text")
 
-
-#define RESET_FACTORY_SETTINGS_INFOBANNER \
- _("refs_la_all_application_must_be_closed")
-#define RESET_FACTORY_SETTINGS_INFOBANNER_CLOSE_ALL _("refs_bd_close_all")
-#define RESET_FACTORY_SETTINGS_INFOBANNER_CANCEL _("refs_bd_cancel1")
-
-#define RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE _("rfs_ia_incorrect_lock_code")
-#define RESET_FACTORY_SETTINGS_IB_NO_LOCKCODE _("rfs_ia_enter_lock_code")
+#define RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE _("secu_info_incorrect_code")
 
 /* The logical IDs for the applets, needed for automatical generation
    of the .pot files*/
@@ -130,6 +123,10 @@ G_BEGIN_DECLS
 #define HILDON_CONTROL_PANEL_STATEFILE_MAX 1024
 #define OSSO_HELP_ID_CONTROL_PANEL "Utilities_controlpanel_mainview"
 #define HILDON_CP_ASSUMED_LOCKCODE_MAXLENGTH 5 /* Note that max number of characters is removed from widget specs. */
+
+gboolean hildon_cp_rfs( osso_context_t *osso, 
+                        const char *warning,
+                        const char *script );
 
 G_END_DECLS
 
