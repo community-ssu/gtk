@@ -22,7 +22,7 @@ if [ "x$LAUNCHWRAPPER_NICE" = "x" ]; then
   echo "$0: Error, LAUNCHWRAPPER_NICE is not defined"
   exit 2
 fi
-PROG=/usr/bin/dbus-daemon-1
+PROG=/usr/bin/dbus-daemon
 SVC="D-BUS session bus daemon"
 PARAMS="--session --print-address=1 1> ${SESSION_BUS_ADDRESS_FILE}.in"
 
