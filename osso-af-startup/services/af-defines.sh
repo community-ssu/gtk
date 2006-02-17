@@ -54,10 +54,12 @@ else
   MACH=`uname -m`
   if [ "x$MACH" = "xarmv5tejl" -a -x /usr/sbin/dsmetool ]; then
     export LAUNCHWRAPPER_NICE=$AF_INIT_DIR/nice-launch-wrapper.sh
+    export LAUNCHWRAPPER_NICE_KILL=$AF_INIT_DIR/nice-kill-launch-wrapper.sh
     export LAUNCHWRAPPER_NICE_TRYRESTART=$AF_INIT_DIR/nice-launch-wrapper-tryrestart.sh
     export LAUNCHWRAPPER_TRYRESTART=$AF_INIT_DIR/launch-wrapper-tryrestart.sh
   else
     export LAUNCHWRAPPER_NICE=$LAUNCHWRAPPER
+    export LAUNCHWRAPPER_NICE_KILL=$LAUNCHWRAPPER
     export LAUNCHWRAPPER_NICE_TRYRESTART=$LAUNCHWRAPPER
     export LAUNCHWRAPPER_TRYRESTART=$LAUNCHWRAPPER
   fi

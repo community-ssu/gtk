@@ -1,6 +1,4 @@
 #!/bin/sh
-# D-BUS session bus daemon startup/shutdown script
-
 # Copyright (C) 2004-2005 Nokia Corporation.
 #
 # This program is free software; you can redistribute it and/or
@@ -18,26 +16,44 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-PROG=/usr/bin/dbus-daemon
-SVC="D-BUS session bus daemon"
-PARAMS="--session --print-address=1 1> ${SESSION_BUS_ADDRESS_FILE}.in"
+
+if [ $# -lt 3 ]; then
+  echo "Usage: $0 {start|stop|restart} servicename cmd [params]"
+  exit 1
+fi
+
+STOP=FALSE
+START=FALSE
 
 case "$1" in
-start)
-  source $LAUNCHWRAPPER_NICE_KILL start "$SVC" $PROG $PARAMS
-  sleep 2
-  if [ -r ${SESSION_BUS_ADDRESS_FILE}.in ]; then
-    TMP=`cat ${SESSION_BUS_ADDRESS_FILE}.in`
-    echo "export DBUS_SESSION_BUS_ADDRESS=$TMP" > $SESSION_BUS_ADDRESS_FILE
-    rm -f ${SESSION_BUS_ADDRESS_FILE}.in
-  fi
-  ;;
-stop)
-  # giving parameter also here so that dsmetool works...
-  source $LAUNCHWRAPPER_NICE_KILL stop "$SVC" $PROG $PARAMS
-  ;;
-*)
-  echo "Usage: $0 {start|stop}"
-  exit 1
-  ;;
+start)  START=TRUE
+        ;;
+stop)   STOP=TRUE
+        ;;
+restart)
+        STOP=TRUE
+        START=TRUE
+        ;;
+*)      echo "Usage: $0 {start|stop|restart} servicename cmd [params]"
+        exit 1
+        ;;
 esac
+
+shift
+SVC="$1"
+shift
+CMD=$1
+BASENAME=`basename $CMD`
+PIDFILE=$AF_PIDDIR/$BASENAME.pid
+shift
+PARAMS=$@
+
+if [ $STOP = TRUE ]; then
+  echo "Stopping $SVC"
+  /usr/sbin/dsmetool -S 9 -k "$CMD $PARAMS"
+fi
+
+if [ $START = TRUE ]; then
+  echo "Starting $SVC"
+  /usr/sbin/dsmetool -n -1 -r "$CMD $PARAMS"
+fi
