@@ -464,7 +464,7 @@ viewport_set_adjustment (GtkViewport    *viewport,
     adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 0.0,
 						     0.0, 0.0, 0.0));
   if (*adjustmentp)
-    g_object_unref (*adjustmentp);
+    viewport_disconnect_adjustment (viewport, orientation);
   *adjustmentp = adjustment;
   g_object_ref (adjustment);
   gtk_object_sink (GTK_OBJECT (adjustment));
