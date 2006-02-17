@@ -549,6 +549,8 @@ static void
 usage(int status)
 {
   printf("Usage: %s [options]\n"
+	 "\n"
+	 "Options:\n"
 	 "  --daemon            Fork and go into the background.\n"
 	 "  --pidfile FILE      Specify a different pid file (default %s).\n"
 	 "  --quiet             Do not print anything.\n"

@@ -216,6 +216,8 @@ static void
 usage(int status)
 {
   printf("Usage: %s [options] file [file-options]\n"
+	 "\n"
+	 "Options:\n"
 	 "  --delay SECS        After invoking sleep for SECS seconds (default %d).\n"
 	 "  --version           Print program version.\n"
 	 "  --help              Print this help message.\n",
