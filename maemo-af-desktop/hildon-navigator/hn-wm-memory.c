@@ -1,3 +1,5 @@
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #include "hn-wm-memory.h"
 #include "application-switcher.h"
 #include "osso-manager.h"
@@ -88,8 +90,9 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 	  HN_DBG("hn_wm_watched_window_attempt_pid_kill() for '%s'", hn_wm_watched_window_get_name (win));
 	  if (hn_wm_watched_window_attempt_pid_kill (win))
 	    {
-	      HN_DBG("app->hibernating now '%s'", hn_wm_watchable_app_is_hibernating ? "true" : "false");
-	      hn_wm_watched_window_hibernate(win);
+          HN_DBG("app->hibernating now '%s'",
+                 hn_wm_watchable_app_is_hibernating ? "true" : "false");
+          hn_wm_watchable_app_hibernate(hn_wm_watched_window_get_app(win));
 	    }
 	}
 

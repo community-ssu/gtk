@@ -4,11 +4,12 @@
 EXTRA_DIST = .empty hildon-navigator.pc empty_exec.sh
 
 INCLUDES = \
-	$(HILDON_CFLAGS) -g $(MB_CFLAGS) $(OSSO_CFLAGS) $(MB_CFLAGS)\
+	$(HILDON_CFLAGS) -g $(MB_CFLAGS) $(OSSO_CFLAGS) $(MB_CFLAGS) $(LIBXML_CFLAGS)\
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
 	-DOTHERS_MENU_CONF_DIR=\"$(sysconfdir)/others-menu\" \
-	-DPREFIX=\"$(prefix)\"
+	-DPREFIX=\"$(prefix)\" \
+    -I../libhildonmenu
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = hildon-navigator.pc
@@ -55,7 +56,9 @@ libhildonnavigator_la_LIBADD = \
 	$(HILDON_LIBS) \
 	$(HILDONBASELIB_LIBS) \
 	$(MB_LIBS) \
-	$(OSSO_LIBS)
+	$(OSSO_LIBS) \
+    $(LIBXML2_LIBS) \
+    ../libhildonmenu/libhildonmenu.la
 
 hildon_othersmenudir = $(sysconfdir)/others-menu
 hildon_othersmenu_DATA = .empty

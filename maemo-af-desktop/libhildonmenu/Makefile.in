@@ -14,9 +14,6 @@
 
 @SET_MAKE@
 
-# Copyright (c) 2005 Nokia Corporation
-# SUBDIRS = po
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -180,108 +177,48 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-
-EXTRA_DIST = .empty hildon-navigator.pc empty_exec.sh
-
 INCLUDES = \
-	$(HILDON_CFLAGS) -g $(MB_CFLAGS) $(OSSO_CFLAGS) $(MB_CFLAGS) $(LIBXML_CFLAGS)\
-	-DLOCALEDIR=\"$(localedir)\" \
-	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
-	-DOTHERS_MENU_CONF_DIR=\"$(sysconfdir)/others-menu\" \
-	-DPREFIX=\"$(prefix)\" \
-    -I../libhildonmenu
+	$(HILDON_CFLAGS)  \
+	$(GLIB_CFLAGS) \
+	$(OSSO_CFLAGS) \
+	$(LIBXML_CFLAGS) \
+	-DPREFIXDIR=\"$(prefix)\" \
+	-DLOCALEDIR=\"$(localedir)\"
 
 
+lib_LTLIBRARIES = libhildonmenu.la
+
+EXTRA_DIST = 
+
+libhildonmenu_la_LIBADD = -ldl -lc $(GLIB_LIBS)
+
+#libhildonmenu_la_LDFLAGS = -version-info 0:0:1
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = hildon-navigator.pc
+pkgconfig_DATA = libhildonmenu.pc
 
-lib_LTLIBRARIES = libhildonnavigator.la
+menuincludedir = $(includedir)
+menuinclude_HEADERS = libhildonmenu.h
 
+libhildonmenu_la_SOURCES = \
+	libhildonmenu.c \
+	libhildonmenu.h
 
-# commented out from the combined build
-#bin_PROGRAMS = \
-#	hildon-navigator 
-libhildonnavigator_la_SOURCES = \
-	hildon-navigator.h \
-	hildon-navigator.c \
-	hildon-navigator-main.c \
-	hildon-navigator-main.h \
-	hildon-navigator-interface.h \
-	hildon-navigator-lib.h \
-	osso-manager.c \
-	osso-manager.h \
-	hn-wm.c \
-	hn-wm.h \
-	hn-wm-types.h \
-	hn-wm-util.c \
-	hn-wm-util.h \
-	hn-wm-memory.c \
-	hn-wm-memory.h \
-	hn-wm-session.c \
-	hn-wm-session.h \
-	hn-wm-watched-window.c \
-	hn-wm-watched-window.h \
-	hn-wm-watched-window-view.c \
-	hn-wm-watched-window-view.h \
-	hn-wm-watchable-app.c \
-	hn-wm-watchable-app.h \
-	hildon-pixbuf-anim-blinker.c \
-	hildon-pixbuf-anim-blinker.h \
-	application-switcher.c \
-	application-switcher.h \
-	others-menu.c \
-	others-menu.h
-
-
-libhildonnavigator_la_LIBADD = \
-	$(HILDON_LIBS) \
-	$(HILDONBASELIB_LIBS) \
-	$(MB_LIBS) \
-	$(OSSO_LIBS) \
-    $(LIBXML2_LIBS) \
-    ../libhildonmenu/libhildonmenu.la
-
-
-hildon_othersmenudir = $(sysconfdir)/others-menu
-hildon_othersmenu_DATA = .empty
-
-libhildonnavigatorincludeinstdir = $(includedir)/hildon-navigator-dev
-libhildonnavigatorincludeinst_DATA = \
-	hildon-navigator-interface.h \
-	hildon-navigator-lib.h
-
-subdir = hildon-navigator
+subdir = libhildonmenu
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = hildon-navigator.pc
+CONFIG_CLEAN_FILES = libhildonmenu.pc
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
-libhildonnavigator_la_LDFLAGS =
-libhildonnavigator_la_DEPENDENCIES = ../libhildonmenu/libhildonmenu.la
-am_libhildonnavigator_la_OBJECTS = hildon-navigator.lo \
-	hildon-navigator-main.lo osso-manager.lo hn-wm.lo hn-wm-util.lo \
-	hn-wm-memory.lo hn-wm-session.lo hn-wm-watched-window.lo \
-	hn-wm-watched-window-view.lo hn-wm-watchable-app.lo \
-	hildon-pixbuf-anim-blinker.lo application-switcher.lo \
-	others-menu.lo
-libhildonnavigator_la_OBJECTS = $(am_libhildonnavigator_la_OBJECTS)
+libhildonmenu_la_LDFLAGS =
+libhildonmenu_la_DEPENDENCIES =
+am_libhildonmenu_la_OBJECTS = libhildonmenu.lo
+libhildonmenu_la_OBJECTS = $(am_libhildonmenu_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/application-switcher.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hildon-navigator-main.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hildon-navigator.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hildon-pixbuf-anim-blinker.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-memory.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-session.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-util.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-watchable-app.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-watched-window-view.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hn-wm-watched-window.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hn-wm.Plo ./$(DEPDIR)/osso-manager.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/others-menu.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/libhildonmenu.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -289,12 +226,14 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(libhildonnavigator_la_SOURCES)
-DATA = $(hildon_othersmenu_DATA) $(libhildonnavigatorincludeinst_DATA) \
-	$(pkgconfig_DATA)
+DIST_SOURCES = $(libhildonmenu_la_SOURCES)
+DATA = $(pkgconfig_DATA)
 
-DIST_COMMON = $(srcdir)/Makefile.in Makefile.am hildon-navigator.pc.in
-SOURCES = $(libhildonnavigator_la_SOURCES)
+HEADERS = $(menuinclude_HEADERS)
+
+DIST_COMMON = $(menuinclude_HEADERS) $(srcdir)/Makefile.in Makefile.am \
+	libhildonmenu.pc.in
+SOURCES = $(libhildonmenu_la_SOURCES)
 
 all: all-am
 
@@ -302,10 +241,10 @@ all: all-am
 .SUFFIXES: .c .lo .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.ac $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  hildon-navigator/Makefile
+	  $(AUTOMAKE) --foreign  libhildonmenu/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
-hildon-navigator.pc: $(top_builddir)/config.status hildon-navigator.pc.in
+libhildonmenu.pc: $(top_builddir)/config.status libhildonmenu.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 libLTLIBRARIES_INSTALL = $(INSTALL)
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
@@ -335,8 +274,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libhildonnavigator.la: $(libhildonnavigator_la_OBJECTS) $(libhildonnavigator_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libhildonnavigator_la_LDFLAGS) $(libhildonnavigator_la_OBJECTS) $(libhildonnavigator_la_LIBADD) $(LIBS)
+libhildonmenu.la: $(libhildonmenu_la_OBJECTS) $(libhildonmenu_la_DEPENDENCIES) 
+	$(LINK) -rpath $(libdir) $(libhildonmenu_la_LDFLAGS) $(libhildonmenu_la_OBJECTS) $(libhildonmenu_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -344,19 +283,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/application-switcher.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-navigator-main.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-navigator.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-pixbuf-anim-blinker.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-memory.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-session.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-util.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-watchable-app.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-watched-window-view.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-watched-window.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-manager.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/others-menu.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhildonmenu.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
@@ -400,42 +327,6 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
-hildon_othersmenuDATA_INSTALL = $(INSTALL_DATA)
-install-hildon_othersmenuDATA: $(hildon_othersmenu_DATA)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(hildon_othersmenudir)
-	@list='$(hildon_othersmenu_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(hildon_othersmenuDATA_INSTALL) $$d$$p $(DESTDIR)$(hildon_othersmenudir)/$$f"; \
-	  $(hildon_othersmenuDATA_INSTALL) $$d$$p $(DESTDIR)$(hildon_othersmenudir)/$$f; \
-	done
-
-uninstall-hildon_othersmenuDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(hildon_othersmenu_DATA)'; for p in $$list; do \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f $(DESTDIR)$(hildon_othersmenudir)/$$f"; \
-	  rm -f $(DESTDIR)$(hildon_othersmenudir)/$$f; \
-	done
-libhildonnavigatorincludeinstDATA_INSTALL = $(INSTALL_DATA)
-install-libhildonnavigatorincludeinstDATA: $(libhildonnavigatorincludeinst_DATA)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(libhildonnavigatorincludeinstdir)
-	@list='$(libhildonnavigatorincludeinst_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(libhildonnavigatorincludeinstDATA_INSTALL) $$d$$p $(DESTDIR)$(libhildonnavigatorincludeinstdir)/$$f"; \
-	  $(libhildonnavigatorincludeinstDATA_INSTALL) $$d$$p $(DESTDIR)$(libhildonnavigatorincludeinstdir)/$$f; \
-	done
-
-uninstall-libhildonnavigatorincludeinstDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(libhildonnavigatorincludeinst_DATA)'; for p in $$list; do \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f $(DESTDIR)$(libhildonnavigatorincludeinstdir)/$$f"; \
-	  rm -f $(DESTDIR)$(libhildonnavigatorincludeinstdir)/$$f; \
-	done
 pkgconfigDATA_INSTALL = $(INSTALL_DATA)
 install-pkgconfigDATA: $(pkgconfig_DATA)
 	@$(NORMAL_INSTALL)
@@ -453,6 +344,24 @@ uninstall-pkgconfigDATA:
 	  f="`echo $$p | sed -e 's|^.*/||'`"; \
 	  echo " rm -f $(DESTDIR)$(pkgconfigdir)/$$f"; \
 	  rm -f $(DESTDIR)$(pkgconfigdir)/$$f; \
+	done
+menuincludeHEADERS_INSTALL = $(INSTALL_HEADER)
+install-menuincludeHEADERS: $(menuinclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(menuincludedir)
+	@list='$(menuinclude_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(menuincludeHEADERS_INSTALL) $$d$$p $(DESTDIR)$(menuincludedir)/$$f"; \
+	  $(menuincludeHEADERS_INSTALL) $$d$$p $(DESTDIR)$(menuincludedir)/$$f; \
+	done
+
+uninstall-menuincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(menuinclude_HEADERS)'; for p in $$list; do \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " rm -f $(DESTDIR)$(menuincludedir)/$$f"; \
+	  rm -f $(DESTDIR)$(menuincludedir)/$$f; \
 	done
 
 ETAGS = etags
@@ -542,10 +451,10 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(DATA)
+all-am: Makefile $(LTLIBRARIES) $(DATA) $(HEADERS)
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(libdir) $(DESTDIR)$(hildon_othersmenudir) $(DESTDIR)$(libhildonnavigatorincludeinstdir) $(DESTDIR)$(pkgconfigdir)
+	$(mkinstalldirs) $(DESTDIR)$(libdir) $(DESTDIR)$(pkgconfigdir) $(DESTDIR)$(menuincludedir)
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -589,10 +498,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-hildon_othersmenuDATA \
-	install-libhildonnavigatorincludeinstDATA install-pkgconfigDATA
-	@$(NORMAL_INSTALL)
-	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
+install-data-am: install-menuincludeHEADERS install-pkgconfigDATA
 
 install-exec-am: install-libLTLIBRARIES
 
@@ -620,36 +526,24 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-hildon_othersmenuDATA uninstall-info-am \
-	uninstall-libLTLIBRARIES \
-	uninstall-libhildonnavigatorincludeinstDATA \
-	uninstall-pkgconfigDATA
+uninstall-am: uninstall-info-am uninstall-libLTLIBRARIES \
+	uninstall-menuincludeHEADERS uninstall-pkgconfigDATA
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libLTLIBRARIES clean-libtool ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am info info-am install \
 	install-am install-data install-data-am install-exec \
-	install-exec-am install-hildon_othersmenuDATA install-info \
-	install-info-am install-libLTLIBRARIES \
-	install-libhildonnavigatorincludeinstDATA install-man \
+	install-exec-am install-info install-info-am \
+	install-libLTLIBRARIES install-man install-menuincludeHEADERS \
 	install-pkgconfigDATA install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-hildon_othersmenuDATA \
-	uninstall-info-am uninstall-libLTLIBRARIES \
-	uninstall-libhildonnavigatorincludeinstDATA \
+	tags uninstall uninstall-am uninstall-info-am \
+	uninstall-libLTLIBRARIES uninstall-menuincludeHEADERS \
 	uninstall-pkgconfigDATA
 
-
-install-data-hook:
-	mkdir -p $(DESTDIR)/$(hildon_othersmenudir); \
-	cd $(DESTDIR)/$(hildon_othersmenudir); \
-	ln -sf .empty 1000_separator; \
-	ln -sf .empty 2000_separator; \
-	mkdir -p $(DESTDIR)/$(hildon_othersmenudir)/1400_tana_fi_utilities; \
-	mkdir -p $(DESTDIR)/$(hildon_othersmenudir)/2100_tana_fi_games;
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

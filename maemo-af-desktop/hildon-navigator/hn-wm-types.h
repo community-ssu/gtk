@@ -1,4 +1,4 @@
-/* -*- mode:C; c-file-style:"gnu"; -*- */
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 /*
  * This file is part of maemo-af-desktop
@@ -55,6 +55,7 @@ enum
   HN_ATOM_NET_WM_USER_TIME,
 
   HN_ATOM_HILDON_APP_KILLABLE,
+  HN_ATOM_HILDON_ABLE_TO_HIBERNATE,
   HN_ATOM_HILDON_VIEW_LIST,
   HN_ATOM_HILDON_VIEW_ACTIVE,
 

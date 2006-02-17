@@ -60,6 +60,10 @@ fi
 
 AC_SUBST(CFLAGS)
 
+PKG_CHECK_MODULES(LIBXML,libxml-2.0 )
+AC_SUBST(LIBXML_LIBS)
+AC_SUBST(LIBXML_CFLAGS)
+
 PKG_CHECK_MODULES(OSSO,libosso >= 0.9.19 )
 AC_SUBST(OSSO_LIBS)
 AC_SUBST(OSSO_CFLAGS)
@@ -127,6 +131,8 @@ AC_SUBST(hildonstatusbarlibdir)
 
 
 AC_OUTPUT(Makefile \
+    libhildonmenu/Makefile \
+    libhildonmenu/libhildonmenu.pc \
 	hildon-navigator/Makefile \
 	hildon-navigator/hildon-navigator.pc \
 	hildon-status-bar/Makefile \

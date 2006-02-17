@@ -1,3 +1,5 @@
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 /*
  * This file is part of maemo-af-desktop
  *
@@ -210,5 +212,9 @@ hn_wm_watchable_app_launch_banner_close (GtkWidget            *parent,
  */
 gboolean 
 hn_wm_watchable_app_launch_banner_timeout (gpointer data);
+
+
+void
+hn_wm_watchable_app_hibernate (HNWMWatchableApp *app);
 
 #endif

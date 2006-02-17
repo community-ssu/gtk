@@ -1,3 +1,5 @@
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 /*
  * This file is part of maemo-af-desktop
  *
@@ -69,6 +71,9 @@ hn_wm_watched_window_wants_no_initial_focus (HNWMWatchedWindow *win);
 const gchar*
 hn_wm_watched_window_get_name (HNWMWatchedWindow *win);
 
+const gchar*
+hn_wm_watched_window_get_sub_name (HNWMWatchedWindow *win);
+
 void
 hn_wm_watched_window_set_name (HNWMWatchedWindow *win,
 			       gchar             *name);
@@ -112,12 +117,14 @@ gboolean
 hn_wm_watched_window_is_hibernating (HNWMWatchedWindow *win);
 
 void
-hn_wm_watched_window_hibernate (HNWMWatchedWindow *win);
-
-void
 hn_wm_watched_window_awake (HNWMWatchedWindow *win);
 
 void
 hn_wm_watched_window_destroy (HNWMWatchedWindow *win);
+
+
+gboolean hn_wm_watched_window_hibernate_func(gpointer key,
+                                             gpointer value,
+                                             gpointer user_data);
 
 #endif

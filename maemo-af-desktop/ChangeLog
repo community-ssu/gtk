@@ -1,3 +1,42 @@
+2006-02-17  Johan Bilien <johan.bilien@nokia.com>,
+	* hildon-navigator/other-menu.{c,h}: Imported changes for
+	  user-configurable menu.
+	* hildon-home/applet-manager.c: Fixed a crash when 
+	  save_state was called on applets.
+	* hildon-navigator/application-switcher.c:
+	  - recreate_tooltip_menuitem: Removed an invalid free. (Closes N#22957)
+	* libhildonmenu/*: Imported libhildonmenu
+
+	* Imported latest changes on TN refactoring:
+
+	* hildon-navigator/application-switcher.c: (store_item),
+	(app_switcher_make_item_text), (app_switcher_add_new_item),
+	(app_switcher_item_icon_sync), (app_switcher_update_item):
+	* hildon-navigator/hn-wm-watched-window.c:
+	(hn_wm_watched_window_process_wm_name),
+	(hn_wm_watched_window_get_name), (hn_wm_watched_window_destroy):
+	* hildon-navigator/hn-wm-watched-window.h:
+	* hildon-navigator/hn-wm.c: (hn_wm_x_event_filter):
+	Re-add suport for subname property and update app switcher
+	text naming accordingly.
+
+	* hildon-navigator/hn-wm-memory.c:
+	(hn_wm_memory_kill_all_watched_foreach_func):
+	* hildon-navigator/hn-wm-types.h:
+	* hildon-navigator/hn-wm-watchable-app.c:
+	(hn_wm_watchable_app_launch_banner_timeout):
+	* hildon-navigator/hn-wm-watchable-app.h:
+	* hildon-navigator/hn-wm-watched-window.c:
+	(hn_wm_watched_window_process_hibernation_prop),
+	(hn_wm_watched_window_new),
+	(hn_wm_watched_window_attempt_pid_kill),
+	(hn_wm_watched_window_is_hibernating):
+	* hildon-navigator/hn-wm-watched-window.h:
+	* hildon-navigator/hn-wm.c: (hn_wm_atoms_init),
+	(hn_wm_x_event_filter):
+	* hildon-navigator/hn-wm.h:
+	Improved support for hibernation of grouped windows.
+
 2006-02-15  Johan Bilien <johan.bilien@nokia.com>,
 	* Imported latest changes from home refactoring.
 	  - Reverted to announced AP

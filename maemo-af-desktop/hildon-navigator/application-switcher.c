@@ -909,7 +909,7 @@ static void recreate_tooltip_menuitem(ApplicationSwitcher_t *as)
     gtk_container_remove(GTK_CONTAINER(as->tooltip_menu), oldTooltipMenuItem);
     gtk_container_add(GTK_CONTAINER(as->tooltip_menu),as->tooltip_menu_item);
     gtk_widget_show(as->tooltip_menu_item);
-    g_free(oldTooltipMenuItem);
+    /*g_free(oldTooltipMenuItem);*/
 }
 
 static void add_item_to_tooltip_menu(gint item_pos_in_list,
@@ -1359,7 +1359,7 @@ app_switcher_icon_anim_timeout (gpointer data)
   timeout = (AppSwitcherTimeoutData *)data;
 
   g_return_val_if_fail(timeout && timeout->as, FALSE);
-
+  
   app_switcher_icon_anim_stop (timeout->as, timeout->widget);
 
   return False;
@@ -1660,6 +1660,47 @@ store_item (ApplicationSwitcher_t *as,
   g_array_append_val(items,cont);
 }
 
+static void
+app_switcher_make_item_text (ApplicationSwitcher_t *as,
+                             HNWMWatchableApp      *app,
+                             HNWMWatchedWindow     *win,
+                             HNWMWatchedWindowView *view,
+                             gchar                 *buf,
+                             gint                   buf_len)
+{
+    const gchar *window_name = hn_wm_watched_window_get_name(win);
+
+    g_snprintf(buf, buf_len, "%s", window_name);
+#if 0
+    
+  if (app == NULL || win == NULL)
+    return;
+
+  if (view &&
+      !g_str_equal(hn_wm_watched_window_view_get_name (view), 
+		   window_name))
+    {
+      g_snprintf(buf, buf_len, "%s - %s", 
+		 window_name,
+		 hn_wm_watched_window_view_get_name (view));
+    }
+  else
+    {
+      if (hn_wm_watched_window_get_sub_name (win) && 
+          !g_str_equal(hn_wm_watched_window_get_sub_name (win), 
+                       window_name))
+        {
+          g_snprintf(buf, buf_len, "%s - %s", 
+                     window_name,
+                     hn_wm_watched_window_get_sub_name (win));
+        }
+      else
+        g_snprintf(buf, buf_len, "%s", 
+                   window_name);
+    }
+#endif
+}
+
 GtkWidget*
 app_switcher_add_new_item (ApplicationSwitcher_t *as,
 			   HNWMWatchedWindow     *window,
@@ -1679,19 +1720,7 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
 
   app = hn_wm_watched_window_get_app (window);
 
-  if (view &&
-      !g_str_equal(hn_wm_watched_window_view_get_name (view), 
-		   hn_wm_watchable_app_get_name (app)))
-    {
-      g_snprintf(buf, sizeof(buf), "%s - %s", 
-		 hn_wm_watchable_app_get_name (app),
-		 hn_wm_watched_window_view_get_name (view));
-    }
-  else
-    {
-      g_snprintf(buf, sizeof(buf), "%s", 
-		 hn_wm_watchable_app_get_name (app));
-    }
+  app_switcher_make_item_text (as, app, window, view, buf, sizeof(buf));
 
   item_not_focused = (hn_wm_watched_window_wants_no_initial_focus (window)
 		      && (as->items)->len > 0);
@@ -1920,7 +1949,6 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
   HNWMWatchableApp *app;
   GtkWidget        *menuitem;
   gchar             buf[TEMP_LABEL_BUFFER_SIZE];
-  const gchar      *name;
   gint              n;
     
   g_return_if_fail(as);
@@ -1987,14 +2015,8 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
       /* Corresponds to the "same position"; i.e. do not reorder. */
       break;
     }
-  
-  name = hn_wm_watchable_app_get_name (app);
 
-  if (view && !g_str_equal(hn_wm_watched_window_view_get_name (view), name))
-    g_snprintf(buf, sizeof(buf), "%s - %s", 
-	       name, hn_wm_watched_window_view_get_name (view));
-  else
-    g_snprintf(buf, sizeof(buf), "%s", name);
+  app_switcher_make_item_text (as, app, window, view, buf, sizeof(buf));
 
   /* Find the item */ 
   for (n=0;n<(as->items)->len;n++)
@@ -2008,7 +2030,7 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
   /* Save the new app name */
   /* FIXME: should this be view name >> */
   g_free(g_array_index(as->items,container,n).app_name);
-  g_array_index(as->items,container,n).app_name = g_strdup(name);
+  g_array_index(as->items,container,n).app_name = g_strdup(hn_wm_watchable_app_get_name (app));
   
   /* Save the killable status */
   g_array_index(as->items,container,n).killable_item = hn_wm_watchable_app_is_able_to_hibernate (app);

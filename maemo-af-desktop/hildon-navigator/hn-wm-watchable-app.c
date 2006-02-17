@@ -1,3 +1,5 @@
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+
 #include "hn-wm-watchable-app.h"
 
 /* watchable apps */
@@ -353,4 +355,16 @@ hn_wm_watchable_app_launch_banner_timeout (gpointer data)
     }
   
   return TRUE;
+}
+
+
+void
+hn_wm_watchable_app_hibernate (HNWMWatchableApp *app)
+{
+  g_return_if_fail(app);
+  g_hash_table_foreach_steal(hnwm->watched_windows,
+                             hn_wm_watched_window_hibernate_func,
+                             app);
+  
+  hn_wm_watchable_app_set_hibernate (app, TRUE);
 }

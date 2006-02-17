@@ -32,14 +32,7 @@
 #define OTHERS_MENU_H
 
 #include <gtk/gtkbutton.h>
-#include <libmb/mbdotdesktop.h>
-
-/* .desktop file's fields */
-#define DESKTOP_NAME_FIELD            "Name"
-#define DESKTOP_SERVICE_FIELD         "X-Osso-Service"
-#define DESKTOP_EXEC_FIELD            "Exec"
-#define DESKTOP_ICON_FIELD            "Icon"
-#define DESKTOP_ICON_PATH_FIELD       "X-Icon-path"
+#include <gtk/gtktreemodel.h>
 
 /* Button Icon */
 #define OTHERS_MENU_ICON_NAME "qgn_grid_tasknavigator_others"
@@ -62,13 +55,11 @@
 
 #define WORKAREA_ATOM "_NET_WORKAREA"
 #define NAVIGATOR_BUTTON_THREE "hildon-navigator-button-three"
-#define DESKTOP_SUFFIX ".desktop"
-#define SEPARATOR_STR "separator"
 
 typedef struct OthersMenu OthersMenu_t;
 typedef struct _om_changed_cb_data_st _om_changed_cb_data_t;
 
-typedef void (_as_update_callback)(MBDotDesktop *desktop);
+typedef void (_as_update_callback)(GKeyFile *keyfile);
 
 OthersMenu_t *others_menu_init( void );
 
@@ -78,7 +69,7 @@ void others_menu_initialize_menu( OthersMenu_t *am , void *as_menu_cb);
 
 void others_menu_deinit( OthersMenu_t *am );
 
-gint others_menu_get_items( GtkWidget *widget,
-                            char *directory, OthersMenu_t *am );
+void others_menu_get_items( GtkWidget *widget, OthersMenu_t *am,
+		GtkTreeModel *model, GtkTreeIter *iter );
 
 #endif /* OTHERS_MENU_H */

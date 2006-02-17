@@ -91,7 +91,7 @@ void applet_manager_initialize(applet_manager_t *man,
 {
     HomeAppletHandler *handler;
     void *state_data = NULL; 
-    int *state_size = 0;
+    int state_size = 0;
 
     if(applet_manager_identifier_exists(man, desktoppath) == TRUE)
     {
@@ -100,7 +100,7 @@ void applet_manager_initialize(applet_manager_t *man,
     }
 
     handler = home_applet_handler_new(desktoppath, librarypath, 
-                                      state_data, state_size);
+                                      state_data, &state_size);
     if(handler == NULL)
     {
         ULOG_ERR( "Couldn't retrieve Handler for %s\n", desktoppath);
@@ -596,12 +596,12 @@ void applet_manager_state_save_all(applet_manager_t *man)
 {
     GList *handler;
     void *state_data = NULL; 
-    int *state_size = 0;
+    int state_size = 0;
 
     for(handler = man->applet_list; handler != NULL; handler = handler->next)
     {
         applet_manager_state_save_handler(man, 
-            (HomeAppletHandler *)handler->data, state_data, state_size);
+            (HomeAppletHandler *)handler->data, state_data, &state_size);
     }
 }
 

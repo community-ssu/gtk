@@ -1,4 +1,4 @@
-/* -*- mode:C; c-file-style:"gnu"; -*- */
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #include "hn-wm-watched-window.h"
 #include "osso-manager.h"
@@ -12,6 +12,7 @@ struct HNWMWatchedWindow
 {
   Window                  xwin;
   gchar                  *name;
+  gchar                  *subname;
   GtkWidget              *menu_widget;   /* Active if no views */
   HNWMWatchableApp       *app_parent;
   GList                  *views;
@@ -235,6 +236,21 @@ hn_wm_watched_window_process_wm_name (HNWMWatchedWindow *win)
   if (win->name == NULL)
     win->name = g_strdup("unknown");
 
+  /* Handle sub naming */
+
+  if (win->subname)
+    XFree(win->subname);
+
+  win->subname = NULL;
+
+  win->subname 
+    = hn_wm_util_get_win_prop_data_and_validate (win->xwin,
+                                                 hnwm->atoms[HN_ATOM_MB_WIN_SUB_NAME],
+                                                 XA_STRING,
+                                                 8,
+                                                 0,
+                                                 NULL);
+
   view = hn_wm_watched_window_get_active_view(win);
 
   /* Duplicate to topped view also */
@@ -244,7 +260,6 @@ hn_wm_watched_window_process_wm_name (HNWMWatchedWindow *win)
   app_switcher_update_item (hnwm->app_switcher, win, view,
 			    AS_MENUITEM_SAME_POSITION);
 }
-
 
 static void
 hn_wm_watched_window_process_wm_window_role (HNWMWatchedWindow *win)
@@ -286,6 +301,17 @@ hn_wm_watched_window_process_hibernation_prop (HNWMWatchedWindow *win)
 						   8,
 						   0,
 						   NULL);
+
+  if(!foo)
+	{
+	  /*try the alias*/
+	  foo = hn_wm_util_get_win_prop_data_and_validate (win->xwin,
+						   hnwm->atoms[HN_ATOM_HILDON_ABLE_TO_HIBERNATE],
+						   XA_STRING,
+						   8,
+						   0,
+						   NULL);
+	}
 
   hn_wm_watchable_app_set_able_to_hibernate (app,
 					     (foo != NULL) ? TRUE : FALSE );
@@ -514,10 +540,14 @@ hn_wm_watched_window_new (Window            xid,
   */
   hkey = hn_wm_compute_watched_window_hibernation_key(xid, app);
 
+  HN_DBG("^^^^ new watched window, key %s ^^^^", hkey);
+  
   g_return_val_if_fail(hkey, NULL);
 
   win = g_hash_table_lookup(hnwm->watched_windows_hibernating,
 			    (gconstpointer)hkey);
+
+  HN_DBG("^^^^ win 0x%x ^^^^", (int)win);
 
   if (win)
     {
@@ -587,6 +617,12 @@ const gchar*
 hn_wm_watched_window_get_name (HNWMWatchedWindow *win)
 {
   return win->name;
+}
+
+const gchar*
+hn_wm_watched_window_get_sub_name (HNWMWatchedWindow *win)
+{
+  return win->subname;
 }
 
 const gchar*
@@ -707,26 +743,6 @@ hn_wm_watched_window_is_hibernating (HNWMWatchedWindow *win)
 }
 
 void
-hn_wm_watched_window_hibernate (HNWMWatchedWindow *win)
-{
-  HNWMWatchableApp      *app;
-
-  app = hn_wm_watched_window_get_app(win);
-
-  if (g_hash_table_steal (hnwm->watched_windows, (gconstpointer)&win->xwin))
-    {
-      hn_wm_watchable_app_set_hibernate (app, TRUE);
-
-      win->xwin           = None;
-      g_hash_table_insert (hnwm->watched_windows_hibernating,
-			   g_strdup(hn_wm_watched_window_get_hibernation_key(win)),
-			   win);
-      HN_DBG("'%s' now hibernating, moved to WatchedWindowsHibernating hash",
-	     win->name);
-    }
-}
-
-void
 hn_wm_watched_window_awake (HNWMWatchedWindow *win)
 {
   HNWMWatchableApp      *app;
@@ -788,6 +804,9 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
 
   if (win->name)
     XFree(win->name);
+
+  if (win->subname)
+    XFree(win->subname);
 
   if (win->hibernation_key)
     g_free(win->hibernation_key);
@@ -851,4 +870,31 @@ hn_wm_watched_window_props_sync (HNWMWatchedWindow *win, gulong props)
   gdk_error_trap_pop();
 
   return TRUE;
+}
+
+gboolean hn_wm_watched_window_hibernate_func(gpointer key,
+                                             gpointer value,
+                                             gpointer user_data)
+{
+  HNWMWatchedWindow * win;
+  HNWMWatchableApp *app;
+
+  g_return_val_if_fail(key && value && user_data, FALSE);
+  
+  win = (HNWMWatchedWindow *)value;
+  app = hn_wm_watched_window_get_app(win);
+  g_return_val_if_fail(app, FALSE);
+
+  if(app == (HNWMWatchableApp *)user_data)
+    {
+      win->xwin = None;
+      g_hash_table_insert (hnwm->watched_windows_hibernating,
+                           g_strdup(win->hibernation_key),
+                           win);
+      HN_DBG("'%s' now hibernating, moved to WatchedWindowsHibernating hash",
+             win->name);
+
+      return TRUE;
+    }
+  return FALSE;
 }

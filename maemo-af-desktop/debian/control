@@ -22,6 +22,18 @@ Conflicts: hildon-status-bar-lib
 Replaces: hildon-status-bar-lib
 Description: Hildon Status Bar library
 
+Package: libhildonmenu0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Library to handle freedesktop.org applications menu.
+
+Package: libhildonmenu-dev
+Section: devel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libhildonmenu0 (=${Source-Version}
+Description: libhildonmenu development files
+
 Package: hildon-status-bar-lib-dev
 Section: devel
 Architecture: any

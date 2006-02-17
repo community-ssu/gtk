@@ -1,4 +1,4 @@
-/* -*- mode:C; c-file-style:"gnu"; -*- */
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #include "hn-wm.h"
 
@@ -307,6 +307,7 @@ hn_wm_atoms_init()
     "_NET_WM_USER_TIME",
 
     "_HILDON_APP_KILLABLE",	/* Hildon only props */
+    "_HILDON_ABLE_TO_HIBERNATE",	/* alias for the above */
     "_NET_CLIENT_LIST",         /* NOTE: Hildon uses these values on app wins*/
     "_NET_ACTIVE_WINDOW",       /* for views, thus index is named different  */
                                 /* to improve code readablity.               */
@@ -860,11 +861,13 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
 	   || prop->atom == hnwm->atoms[HN_ATOM_HILDON_VIEW_LIST]
 	   || prop->atom == hnwm->atoms[HN_ATOM_HILDON_VIEW_ACTIVE]
 	   || prop->atom == hnwm->atoms[HN_ATOM_HILDON_APP_KILLABLE]
+	   || prop->atom == hnwm->atoms[HN_ATOM_HILDON_ABLE_TO_HIBERNATE]
 	   || prop->atom == hnwm->atoms[HN_ATOM_NET_WM_STATE]
 	   || prop->atom == hnwm->atoms[HN_ATOM_WM_HINTS]
 	   || prop->atom == hnwm->atoms[HN_ATOM_NET_WM_ICON]
-	   || prop->atom == hnwm->atoms[HN_ATOM_WM_WINDOW_ROLE])
-
+           || prop->atom == hnwm->atoms[HN_ATOM_MB_WIN_SUB_NAME]
+           || prop->atom == hnwm->atoms[HN_ATOM_WM_WINDOW_ROLE])
+        
 	{
 	  win = g_hash_table_lookup(hnwm->watched_windows,
 				    (gconstpointer)&prop->window);
@@ -873,7 +876,8 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
       if (!win)
 	return GDK_FILTER_CONTINUE;
 
-      if (prop->atom == hnwm->atoms[HN_ATOM_WM_NAME])
+      if (prop->atom == hnwm->atoms[HN_ATOM_WM_NAME]
+          || prop->atom == hnwm->atoms[HN_ATOM_MB_WIN_SUB_NAME])
 	{
 	  hn_wm_watched_window_props_sync (win, HN_WM_SYNC_NAME);
 	}
@@ -902,7 +906,8 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
 	  /* Windows realy shouldn't do this... */
 	  hn_wm_watched_window_props_sync (win, HN_WM_SYNC_WINDOW_ROLE);
 	}
-      else if (prop->atom == hnwm->atoms[HN_ATOM_HILDON_APP_KILLABLE])
+      else if (prop->atom == hnwm->atoms[HN_ATOM_HILDON_APP_KILLABLE]
+			   || prop->atom == hnwm->atoms[HN_ATOM_HILDON_ABLE_TO_HIBERNATE])
 	{
 	  HNWMWatchableApp *app;
 

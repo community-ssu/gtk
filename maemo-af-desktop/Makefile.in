@@ -93,6 +93,8 @@ LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
+LIBXML_CFLAGS = @LIBXML_CFLAGS@
+LIBXML_LIBS = @LIBXML_LIBS@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
@@ -180,7 +182,7 @@ target_alias = @target_alias@
 # Authors: Karoliina Salminen <karoliina.t.salminen@nokia.com>
 # 
 # Subdirectories
-SUBDIRS = hildon-navigator hildon-status-bar hildon-home
+SUBDIRS = libhildonmenu hildon-navigator hildon-status-bar hildon-home
 
 #
 EXTRA_DIST = debian/changelog debian/control debian/copyright debian/rules \
@@ -210,7 +212,8 @@ INCLUDES = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = hildon-navigator/hildon-navigator.pc \
 	hildon-status-bar/hildon-status-bar-lib.pc \
-	hildon-home/hildon-home.pc
+	hildon-home/hildon-home.pc \
+	libhildonmenu/libhildonmenu.pc
 
 
 bin_PROGRAMS = \
@@ -225,6 +228,7 @@ maemo_af_desktop_LDADD = \
 	hildon-status-bar/.libs/libhildonstatusbarmain.a \
 	hildon-status-bar/.libs/libhildonstatusbar.a \
 	hildon-home/.libs/libhildonhome.a \
+	libhildonmenu/libhildonmenu.la \
 	$(HILDON_LIBS) \
 	$(HILDONBASELIB_LIBS) \
 	$(MB_LIBS) \
@@ -254,7 +258,8 @@ maemo_af_desktop_DEPENDENCIES = \
 	hildon-navigator/.libs/libhildonnavigator.a \
 	hildon-status-bar/.libs/libhildonstatusbarmain.a \
 	hildon-status-bar/.libs/libhildonstatusbar.a \
-	hildon-home/.libs/libhildonhome.a
+	hildon-home/.libs/libhildonhome.a \
+	libhildonmenu/libhildonmenu.la
 maemo_af_desktop_LDFLAGS =
 SCRIPTS = $(afinit_SCRIPTS) $(initexec_SCRIPTS)
 
@@ -624,7 +629,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/debian $(distdir)/hildon-home $(distdir)/hildon-navigator $(distdir)/hildon-status-bar
+	$(mkinstalldirs) $(distdir)/debian $(distdir)/hildon-home $(distdir)/hildon-navigator $(distdir)/hildon-status-bar $(distdir)/libhildonmenu
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
