@@ -13,6 +13,8 @@ osso_application_installer_SOURCES = main.h			\
                                      log.cc			\
                                      settings.h			\
                                      settings.cc		\
+                                     search.h			\
+                                     search.cc			\
                                      repo.h			\
                                      repo.cc			\
                                      hildonbreadcrumbtrail.h	\

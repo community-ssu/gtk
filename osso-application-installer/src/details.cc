@@ -323,6 +323,10 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   g_free (maintainer_utf8);
 
   g_string_append_printf (common, "Status:\t\t\t\t%s\n", status);
+
+  g_string_append_printf (common, "Category:\t\t\t%s\n",
+			  pi->available_section);
+
   g_string_append_printf (common, "Installed version:\t\t%s\n",
 			  (pi->installed_version
 			   ? pi->installed_version
@@ -330,16 +334,17 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   if (pi->installed_version)
     {
       size_string_detailed (size_buf, 20, pi->installed_size);
-      g_string_append_printf (common, "\t\t\t\t\t%s\n", size_buf);
+      g_string_append_printf (common, "Size:\t\t\t\t%s\n", size_buf);
     }
-  g_string_append_printf (common, "Available version:\t%s\n",
+
+  g_string_append_printf (common, "Available version:\t%s",
 			  (pi->available_version 
 			   ? pi->available_version
 			   : "-"));
   if (pi->available_version)
     {
       size_string_detailed (size_buf, 20, pi->info.download_size);
-      g_string_append_printf (common, "Download size:\t\t%s\n", size_buf);
+      g_string_append_printf (common, "\nDownload size:\t\t%s", size_buf);
     }
 
   const gchar *summary_label;

@@ -31,6 +31,7 @@
 #include "log.h"
 #include "settings.h"
 #include "repo.h"
+#include "search.h"
 
 static GtkWidget *
 add_item (GtkMenu *menu, const gchar *label, void (*func)())
@@ -142,7 +143,7 @@ create_menu (GtkMenu *main)
   add_item (tools, "Refresh list of packages ...", refresh_package_cache);
   add_item (tools, "Settings ...", show_settings_dialog);
   add_item (tools, "Repositories ...", show_repo_dialog);
-  add_item (tools, "Search ...", NULL);
+  add_item (tools, "Search ...", show_search_dialog);
   add_item (tools, "Log ...", show_log);
   add_item (tools, "Help", NULL);
 

@@ -220,7 +220,10 @@ send_status (const char *label, int percent)
 }
 
 void cache_init ();
-void make_package_list_response (bool only_maemo);
+void make_package_list_response (bool only_maemo,
+				 bool only_installed,
+				 bool only_available,
+				 const char *pattern);
 void make_package_info_response (const char *package);
 void make_package_details_response (const char *package,
 				    const char *version,
@@ -264,7 +267,13 @@ handle_request ()
       {
 	request.reset (reqbuf, req.len);
 	bool only_maemo = request.decode_int ();
-	make_package_list_response (only_maemo);
+	bool only_installed = request.decode_int ();
+	bool only_available = request.decode_int ();
+	const char *pattern = request.decode_string_in_place ();
+	make_package_list_response (only_maemo,
+				    only_installed,
+				    only_available,
+				    pattern);
 	_error->DumpErrors ();
 	send_response (&req);
 	break;
@@ -487,10 +496,33 @@ is_maemo_package (pkgCache::VerIterator &ver)
   return section && !strncmp (section, "maemo/", 6);
 }
 
+bool
+name_matches_pattern (pkgCache::PkgIterator &pkg,
+		      const char *pattern)
+{
+  return strcasestr (pkg.Name(), pattern);
+}
+
+bool
+description_matches_pattern (pkgCache::VerIterator &ver,
+			     const char *pattern)
+{
+  pkgRecords Recs (*package_cache);
+  pkgRecords::Parser &P = Recs.Lookup (ver.FileList ());
+  const char *desc = P.LongDesc().c_str();
+
+  return strcasestr (desc, pattern);
+}
+
 void
-make_package_list_response (bool only_maemo)
+make_package_list_response (bool only_maemo,
+			    bool only_installed,
+			    bool only_available,
+			    const char *pattern)
 {
   pkgCache &cache = *package_cache;
+
+  DBG ("pattern %s", pattern);
 
   response.reset ();
   for (pkgCache::PkgIterator pkg = cache.PkgBegin();
@@ -504,6 +536,12 @@ make_package_list_response (bool only_maemo)
       if (only_maemo
 	  && !installed.end ()
 	  && !is_maemo_package (installed))
+	continue;
+
+      // skip not-installed packaged if requested
+      //
+      if (only_installed
+	  && installed.end ())
 	continue;
 
       bool have_latest = false;
@@ -526,11 +564,27 @@ make_package_list_response (bool only_maemo)
 	  && !is_maemo_package (latest))
 	continue;
 
+      // skip non-available packages if requested
+      //
+      if (only_available
+	  && !have_latest)
+	continue;
+
       // skip packages that are not installed and not available
       //
       if (installed.end () && !have_latest)
 	continue;
 
+      // skip packages that don't match the pattern if requested
+      //
+      if (pattern
+	  && !(name_matches_pattern (pkg, pattern)
+	       || (!installed.end ()
+		   && description_matches_pattern (installed, pattern))
+	       || (have_latest
+		   && description_matches_pattern (latest, pattern))))
+	continue;
+      
       // Name
       response.encode_string (pkg.Name ());
 

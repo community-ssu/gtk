@@ -37,6 +37,7 @@ enum apt_command {
   APTCMD_GET_PACKAGE_LIST,
   APTCMD_GET_PACKAGE_INFO,
   APTCMD_GET_PACKAGE_DETAILS,
+  APTCMD_SEARCH_PACKAGES,
 
   APTCMD_UPDATE_PACKAGE_CACHE,
   APTCMD_GET_SOURCES_LIST,
@@ -129,8 +130,11 @@ private:
 //
 // Parameters:
 //
-// - only_maemo (int).  Whether to return only packages from sections
-//                      starting with "maemo/".
+// - only_maemo (int).     Whether to return only packages from sections
+//                         starting with "maemo/".
+// - only_installed (int). Include only packages that are installed.
+// - only_available (int). Include only packages that are available.
+// - pattern (string).     Include only packages that match pattern.
 //
 // For each interesting package, the response contains:
 //
@@ -232,6 +236,20 @@ enum apt_proto_sumtype {
   sumtype_conflicting,
   sumtype_max
 };
+
+// SEARCH_PACKAGES - Search thru all packages and their descriptions
+//
+// Parameters:
+//
+// - only_maemo (int).
+// - only_installed (int).
+// - only_available (int).
+// - pattern (string).
+//
+// Response:
+//
+// - names (string*),(null).
+
 
 // INSTALL_CHECK - Check for non-authenticated and non-certified
 //                 packages.

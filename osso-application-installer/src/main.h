@@ -25,6 +25,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include <gtk/gtk.h>
+
 #include "apt-worker-proto.h"
 
 struct package_info {
@@ -68,5 +70,7 @@ void do_current_operation ();
 void refresh_package_cache ();
 void install_from_file ();
 void sort_all_packages ();
+
+void search_packages (const char *pattern, bool in_descriptions);
 
 #endif /* !MAIN_H */

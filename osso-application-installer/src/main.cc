@@ -475,12 +475,19 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	  count, new_p, upg_p, inst_p);
 
   sort_all_packages ();
+
+  if (cur_view_struct == &search_results_view)
+    show_view (search_results_view.parent);
 }
 
 void
 get_package_list ()
 {
-  apt_worker_get_package_list (!red_pill_mode, get_package_list_reply, NULL);
+  apt_worker_get_package_list (!red_pill_mode,
+			       false, 
+			       false, 
+			       NULL,
+			       get_package_list_reply, NULL);
 }
 
 struct gpi_closure {
@@ -944,18 +951,14 @@ confirm_uninstall (package_info *pi,
 		   void (*cont) (bool res, void *data), void *data)
 {
   GString *text = g_string_new ("");
-
+  char size_buf[20];
+  
+  size_string_general (size_buf, 20, pi->installed_size);
   g_string_printf (text,
 		   "Do you want to uninstall?\n"
-		   "%s %s",
-		   pi->name, pi->installed_version);
-
-  if (pi->info.removable)
-    {
-      char size_buf[20];
-      size_string_general (size_buf, 20, -pi->info.remove_user_size_delta);
-      g_string_append_printf (text, "\nFreeing %s", size_buf);
-    }
+		   "%s %s\n"
+		   "%s",
+		   pi->name, pi->installed_version, size_buf);
 
   ask_yes_no (text->str, cont, data);
   g_string_free (text, 1);
@@ -1036,6 +1039,145 @@ make_search_results_view (view *v)
 }
 
 static void
+search_package_list (GList **result,
+		     GList *packages, const char *pattern)
+{
+  while (packages)
+    {
+      package_info *pi = (package_info *)packages->data;
+      
+      // XXX
+      if (strcasestr (pi->name, pattern))
+	{
+	  pi->ref ();
+	  *result = g_list_append (*result, pi);
+	}
+
+      packages = packages->next;
+    }
+}
+
+static void
+search_section_list (GList **result,
+		     GList *sections, const char *pattern)
+{
+  while (sections)
+    {
+      section_info *si = (section_info *)sections->data;
+      search_package_list (result, si->packages, pattern);
+
+      sections = sections->next;
+    }
+}
+
+static void
+find_in_package_list (GList **result,
+		      GList *packages, const char *name)
+{
+  while (packages)
+    {
+      package_info *pi = (package_info *)packages->data;
+      
+      if (!strcmp (pi->name, name))
+	{
+	  pi->ref ();
+	  *result = g_list_append (*result, pi);
+	}
+
+      packages = packages->next;
+    }
+}
+
+static void
+find_in_section_list (GList **result,
+		      GList *sections, const char *name)
+{
+  while (sections)
+    {
+      section_info *si = (section_info *)sections->data;
+      find_in_package_list (result, si->packages, name);
+
+      sections = sections->next;
+    }
+}
+
+static void
+search_packages_reply (int cmd, apt_proto_decoder *dec, void *data)
+{
+  view *parent = (view *)data;
+
+  while (!dec->at_end ())
+    {
+      const char *name = dec->decode_string_in_place ();
+      dec->decode_string_in_place (); // installed_version
+      dec->decode_int ();             // installed_size
+      dec->decode_string_in_place (); // available_version
+      dec->decode_string_in_place (); // available_section
+
+      if (parent == &install_applications_view)
+	find_in_section_list (&search_result_packages,
+			      install_sections, name);
+      else if (parent == &upgrade_applications_view)
+	find_in_package_list (&search_result_packages,
+			      upgradeable_packages, name);
+      else if (parent == &uninstall_applications_view)
+	find_in_package_list (&search_result_packages,
+			      installed_packages, name);
+    }
+
+  show_view (&search_results_view);
+}
+
+void
+search_packages (const char *pattern, bool in_descriptions)
+{
+  free_packages (search_result_packages);
+  search_result_packages = NULL;
+
+  view *parent;
+
+  if (cur_view_struct == &search_results_view)
+    parent = search_results_view.parent;
+  else if (cur_view_struct == &install_section_view)
+    parent = &install_applications_view;
+  else if (cur_view_struct == &main_view)
+    parent = &uninstall_applications_view;
+  else
+    parent = cur_view_struct;
+
+  search_results_view.parent = parent;
+
+  printf ("Searching %s in %s\n", pattern, parent->label);
+
+  if (!in_descriptions)
+    {
+      if (parent == &install_applications_view)
+	search_section_list (&search_result_packages,
+			     install_sections, pattern);
+      else if (parent == &upgrade_applications_view)
+	search_package_list (&search_result_packages,
+			     upgradeable_packages, pattern);
+      else if (parent == &uninstall_applications_view)
+	search_package_list (&search_result_packages,
+			     installed_packages, pattern);
+
+      show_view (&search_results_view);
+    }
+  else
+    {
+      bool only_installed = (parent == &uninstall_applications_view
+			     || parent == &upgrade_applications_view);
+      bool only_available = (parent == &install_applications_view
+			     || parent == &upgrade_applications_view);
+      apt_worker_get_package_list (!red_pill_mode,
+				   only_installed,
+				   only_available, 
+				   pattern,
+				   search_packages_reply, parent);
+    }
+}
+
+static void
 set_global_lists_for_view (view *v)
 {
   GList *packages_for_info = NULL;
@@ -1072,11 +1214,22 @@ set_global_lists_for_view (view *v)
     }
   else if (v == &search_results_view)
     {
-      set_global_package_list (search_result_packages,
-			       false,
-			       available_package_selected,
-			       install_package);
-      packages_for_info = search_result_packages;
+      if (v->parent == &install_applications_view
+	  || v->parent == &upgrade_applications_view)
+	{
+	  set_global_package_list (search_result_packages,
+				   false,
+				   available_package_selected,
+				   install_package);
+	  packages_for_info = search_result_packages;
+	}
+      else
+	{
+	  set_global_package_list (search_result_packages,
+				   true,
+				   installed_package_selected,
+				   uninstall_package);
+	}
     }
 
   get_package_list_info (packages_for_info);

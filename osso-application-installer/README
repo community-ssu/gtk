@@ -72,4 +72,5 @@ BUGS
 - make apt-worker robust against malformed config files
 - handle broken packages
 - empty section after installing last package in it
-- toppin on mime-open
+- topping on mime-open
+- get character encoding straight

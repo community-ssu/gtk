@@ -58,6 +58,9 @@ void apt_worker_set_status_callback (apt_worker_callback *callback,
 				     void *data);
 
 void apt_worker_get_package_list (bool only_maemo,
+				  bool only_installed,
+				  bool only_available,
+				  const char *pattern,
 				  apt_worker_callback *callback,
 				  void *data);
 
