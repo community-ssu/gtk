@@ -16,6 +16,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+DIR=$AF_INIT_DIR
+
 if [ -x /etc/init.d/maemo-launcher ]; then
   /etc/init.d/maemo-launcher restart
 fi
@@ -39,11 +41,12 @@ source $DIR/dbus-sessionbus.sh stop
 # TODO: stop ke-recv
 
 # wait for the D-BUS session bus to die
-TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
-while [ $TMP = 1 ]; do
-  sleep 1
-  TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
-done
+sleep 10
+#TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
+#while [ $TMP = 1 ]; do
+#  sleep 1
+#  TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
+#done
 if [ -f $DIR/osso-application-installer.defs ]; then
   source $DIR/osso-application-installer.defs
 fi

@@ -24,33 +24,20 @@ if [ "x$LAUNCHWRAPPER_NICE" = "x" ]; then
 fi
 PROG=/usr/bin/dbus-daemon-1
 SVC="D-BUS session bus daemon"
+PARAMS="--session --print-address=1 1> ${SESSION_BUS_ADDRESS_FILE}.in"
 
 case "$1" in
 start)
-  if [ ! -e $SESSION_BUS_PID_FILE ]; then
-    echo "Starting $SVC"
-    eval `dbus-launch --sh-syntax`
-    echo -e \
-     "#!/bin/sh\nexport DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS" \
-     > $SESSION_BUS_ADDRESS_FILE
-     echo $DBUS_SESSION_BUS_PID > $SESSION_BUS_PID_FILE
-  else
-    echo "AF Warning: session bus PID file '$SESSION_BUS_PID_FILE' exists, not starting it"
+  source $LAUNCHWRAPPER_NICE start "$SVC" $PROG $PARAMS
+  if [ -r ${SESSION_BUS_ADDRESS_FILE}.in ]; then
+    TMP=`cat ${SESSION_BUS_ADDRESS_FILE}.in`
+    echo "export DBUS_SESSION_BUS_ADDRESS=$TMP" > $SESSION_BUS_ADDRESS_FILE
+    rm -f ${SESSION_BUS_ADDRESS_FILE}.in
   fi
-  #source $LAUNCHWRAPPER_NICE start "$SVC" $PROG --session
   ;;
 stop)
-  if [ -r $SESSION_BUS_PID_FILE ]; then
-    echo "Stopping $SVC"
-    PID=`cat $SESSION_BUS_PID_FILE`
-    kill $PID
-    sleep 1
-    kill -9 $PID
-    rm -f $SESSION_BUS_PID_FILE
-    rm -f $SESSION_BUS_ADDRESS_FILE
-  fi
   # giving parameter also here so that dsmetool works...
-  #source $LAUNCHWRAPPER_NICE stop "$SVC" $PROG --session
+  source $LAUNCHWRAPPER_NICE stop "$SVC" $PROG $PARAMS
   ;;
 *)
   echo "Usage: $0 {start|stop}"
