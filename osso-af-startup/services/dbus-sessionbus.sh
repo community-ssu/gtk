@@ -29,6 +29,7 @@ PARAMS="--session --print-address=1 1> ${SESSION_BUS_ADDRESS_FILE}.in"
 case "$1" in
 start)
   source $LAUNCHWRAPPER_NICE start "$SVC" $PROG $PARAMS
+  sleep 2
   if [ -r ${SESSION_BUS_ADDRESS_FILE}.in ]; then
     TMP=`cat ${SESSION_BUS_ADDRESS_FILE}.in`
     echo "export DBUS_SESSION_BUS_ADDRESS=$TMP" > $SESSION_BUS_ADDRESS_FILE

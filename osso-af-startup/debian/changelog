@@ -2,6 +2,7 @@ osso-af-startup (1.3-1) unstable; urgency=low
 
   * Fixed dbus-sessionbus.sh to use dsmetool.
   * Fixed the first-boot restarting script (N#23037).
+  * Appended user name to DBus address file for multi-user Scratchbox.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 17 Feb 2006 17:41:30 +0200
 

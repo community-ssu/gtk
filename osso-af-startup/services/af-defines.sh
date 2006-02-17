@@ -2,7 +2,7 @@
 # Application Framework environment variable defines for all AF programs,
 # programs started by AF startup scripts and the D-BUS session bus.
 
-# Copyright (C) 2004-2005 Nokia Corporation.
+# Copyright (C) 2004-2006 Nokia Corporation.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -20,7 +20,12 @@
 # USA
 
 export AF_INIT_DIR=/etc/osso-af-init
-export SESSION_BUS_ADDRESS_FILE=/tmp/session_bus_address
+# user name is appended for multi-user Scratchbox
+if [ "x$USER" = "xroot" ]; then
+  export SESSION_BUS_ADDRESS_FILE=/tmp/session_bus_address.user
+else
+  export SESSION_BUS_ADDRESS_FILE=/tmp/session_bus_address.$USER
+fi
 export SESSION_BUS_PID_FILE=/tmp/dbus_session_bus.pid
 
 # these could have changed since last sourcing
