@@ -23,10 +23,11 @@ export AF_INIT_DIR=/etc/osso-af-init
 # user name is appended for multi-user Scratchbox
 if [ "x$USER" = "xroot" ]; then
   export SESSION_BUS_ADDRESS_FILE=/tmp/session_bus_address.user
+  export SESSION_BUS_PID_FILE=/tmp/dbus_session_bus.pid.user
 else
   export SESSION_BUS_ADDRESS_FILE=/tmp/session_bus_address.$USER
+  export SESSION_BUS_PID_FILE=/tmp/dbus_session_bus.pid.$USER
 fi
-export SESSION_BUS_PID_FILE=/tmp/dbus_session_bus.pid
 
 # these could have changed since last sourcing
 source $AF_INIT_DIR/locale
