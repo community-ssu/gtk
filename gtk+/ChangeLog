@@ -1,3 +1,14 @@
+2006-02-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Merge from GNOME CVS. Fixes M#353
+
+    2005-12-07  Ross Burton  <ross@burtonini.com>
+
+	* docs/reference/gtk/tmpl/gtkenums.sgml:
+	* gtk/gtktoolbutton.c:
+	If the toolbar mode is ICONS and there is no icon set then show
+	the label, and vice versa (#322019)
+
 2006-02-16  Tomas Junnonen  <tomas.junnonen@nokia.com>
 
 	* gtk/gtkimcontext.c
