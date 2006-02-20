@@ -1,0 +1,134 @@
+Howto make a package for the Application installer 2006
+=======================================================
+
+This is a short guide about how to make packages for the Appliction
+installer of the Internet Tablet OS 2006.
+
+The main point to take away is that the AI 2006 is a graphical
+frontend to the standard Debian package management infrastructure,
+similar to Synpatic, but aimed at a different clientele.
+
+The AI 2006 uses the same backend tools as Synaptic, Aptitude, or
+apt-get (namely libapt-pkg), and it does it in the standard way
+without imposing any constraints: packages are installed as root and
+can touch the whole system, for example.
+
+The normal way to distribute a package is therefore to put it into
+some repository and make it accessible to apt.  See the "Repository
+Maintainers Guide" for more information on how to setup such a
+repository.
+
+You can freely alternate between AI 2006 and apt-get, say.  Changes
+done to the system via apt-get or dpkg are picked up by the AI 2006
+without confusing it.
+
+Packages made for the Application 2006 need to follow a few extra
+rules, tho, if they want to integrate nicely.  These rules are related
+to sections, icons, and the policy engine of the AI.
+
+
+Relationship with Application installer 2005
+--------------------------------------------
+
+The Application installer 2006 is very different from the one in
+Internet Tablet OS 2005 (ITOS 2005) and the two are not at all
+compatible.  If you have packages that work with ITOS 2005, you need
+to redo their packaging in order to make them work with ITOS 2006.
+This is not really that bad, since ITOS 2005 and ITOS 2006 are not
+binary compatible with each other and you need to make separate
+packages for them anyway.
+
+The Application installer 2005 will reject packages made for 2006 and
+vice versa.
+
+The two versions of the AI are visually different and there should be
+no risk to confuse the two.  The AI 2005, for example, is a Control
+panel applet, and the AI 2006 is a regular application started from
+the "Tools" menu.
+
+
+Sections
+--------
+
+By default, the AI 2006 only shows packages in certain sections to the
+user.  This has been done to hide the existence of the hundreds of
+system packages that make up the ITOS 2006 itself.  The AI is, at this
+point, not intended to let the user manage the whole system, only a
+smaller set of third party applications.
+
+The AI only shows packages in sections with names of the form
+
+    maemo/<SECTION>
+
+where <SECTION> is arbitrary.  <SECTION> should be a nice capitalised,
+English word like "Ringtones".  There is no support for localising
+that word yet, unfortunately.
+
+However, there is also predefined set of sections.  If your package
+fits into one these sections, you should put it there.  This will
+avoid fragmenting the section names, and the names of these sections
+will be correctly localised.
+
+The [PRELIMINARY!] list of predefined sections is:
+
+    maemo/Games
+    maemo/Applications
+    maemo/Tools
+    maemo/Education
+    maemo/Plugins
+    maemo/Support
+    maemo/Artwork
+    maemo/Miscellaneous
+
+
+Icons
+-----
+
+A package can have a icon that is displayed next to its name by the
+AI.  Icons are included as a base64 encoded field named
+"X-Maemo-Icon-26" in the 'control' part of a .deb package.
+
+The image format of the icon can be anything that is understood by
+GdkPixbufLoader, but is most commonly the PNG format.
+
+The image should be 26x26 pixels with a transparent background.
+
+Here is an example of a correctly formatted X-Maemo-Icon-26 field:
+
+X-Maemo-Icon-26:
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABGdBTUEAAK/INwWK6QAAABl0
+ RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAALxSURBVHja3FZNTBNREP669J/S
+ XYxtKRWl1JOSFBIPhkitCQeNiaKBmzdj9Ggk0ZOBxHDWixcTjV6MF+WiIB40YEyMBMGYEqQK
+ tLS2lG7pdre0pF3WtxslgJRuD2J0kpfdTN7O976Z782sRpIk7IZR2C2TGW1cv8xaY5WuXLy8
+ iW5XV5fk8/kkr9e7ya/T6SSNRiOViikvbbmDDD590SusZBGYDiDwJbDud7vdvYIgIJfLYXV1
+ tSwhrQrSfRX6/26N/j+gkjW6ce06HE4HGEctGuj9oEwUzFYz5ubmEA6HQVEUisUi8vn8b4rd
+ zjRbNxCZrr+3t7XTzjrnvMfdxMi7xj6OIRaPIbWcQjabVdRWKBTkrX4SZ2SjvCtKXf+tkxxD
+ M5MetwfHj/lwwueHy+WCVqvdehdHKq7R6JvbpfNMAGiGhs1mg9ls3sS+4hodbDqCwef9mA9P
+ 7vhhVVWV3BGUOomiaCSufEWMxNwimlweMFYbpoMfyp70J6t8xanLZgWs8Ak07N0Hau0P3qOs
+ wIHnl5FJx2E1WlUFuXrzIS713KusRplMCoLAgl2O4N34ODQ4VRaot6cbUzMRNNQ/w/uJWXWM
+ eH5JARkYHsLQMIe1NZEpB7Sn1uKFhkL3maO4cL5NHVAo+hkPnrzEq2HqQIf/3ICzvr7FXmeH
+ 3qBXlslkgtFoVBS3YfbcKRRFfJpagE6vUwd0//FbjI7mkcvnGoNfg51ORx3sNju+hWYxMxsk
+ jHlF2jJgdXU1DAaDrDx/kQAVRREJlldXo8kJoPlQ8wHSevosFgs5MmE5H0IingDP8eAzPAQC
+ tkJakDz05Hsks+poPzwg6+Luo9chVb2O3Hilv7V6W5nO02cVX3wxjsj3CMKRBUSjUcQWY0iy
+ SQVoi6XJaiQxubKpI02yj2xk6BoaBr0BqXRKCZpYSiCZlIXCguM4pWtvY0ypyUtt87PSIj/t
+ pJ/JICzLKiBLySTYVArpdFrp3DuMhRZVqfvnJ+wPAQYA1hdr5EDqltYAAAAASUVORK5CYII=
+
+
+Policy engine
+-------------
+
+The Application installer has its own policy engine that is tuned to
+give little surprises for simple package management operations, but is
+in turn not useable for complicated things like "apt-get
+dist-upgrade".  When designing the conflicts of your packages, you
+might want to take this into account.
+
+Specifically, the AI will never automatically uninstall an explicitly
+installed package.
+
+If a conflict can be resolved by upgrading a package, it might do the
+upgrade.  If a conflict can be resolved by uninstalling a implicitly
+installed package, it might do the uninstall.  (A implicitely
+installed package is one that has been installed to satisfy a
+dependency of some other package.  A explicitely installed package is
+one that the user has requested to be installed.)
