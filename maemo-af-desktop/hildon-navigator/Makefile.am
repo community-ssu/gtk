@@ -63,6 +63,9 @@ libhildonnavigator_la_LIBADD = \
 hildon_othersmenudir = $(sysconfdir)/others-menu
 hildon_othersmenu_DATA = .empty
 
+applications_menudir = $(sysconfdir)/xdg/menus
+applications_menu_DATA = applications.menu
+
 libhildonnavigatorincludeinstdir=$(includedir)/hildon-navigator-dev
 libhildonnavigatorincludeinst_DATA = \
 	hildon-navigator-interface.h \

@@ -1,3 +1,14 @@
+maemo-af-desktop (2.5.0-1) unstable; urgency=low
+
+  * Imported latest changes on TN refactoring
+  * Fixed N#22992
+  * Fixed N#22957
+  * Fixed a crash when save_state was called on applets
+  * Imported user-configurable Others menu
+  * Imported libhildonmenu
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 20 Feb 2006 10:37:19 +0200
+
 maemo-af-desktop (2.4.5-2) unstable; urgency=low
 
   * Fixed typo in default TN configuration file

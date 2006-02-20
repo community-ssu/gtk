@@ -1,3 +1,8 @@
+2006-02-20  Johan Bilien <johan.bilien@nokia.com>,
+	* hildon-navigator/applications.menu: Added default menu layout
+	  (Closes N#22992)
+	* configure.ac: 2.5.0
+
 2006-02-17  Johan Bilien <johan.bilien@nokia.com>,
 	* hildon-navigator/other-menu.{c,h}: Imported changes for
 	  user-configurable menu.
