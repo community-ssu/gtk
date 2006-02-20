@@ -46,7 +46,6 @@ start)
 
   if [ -x $AF_INIT_DIR/startup-greeting.sh ]; then
     source $AF_INIT_DIR/startup-greeting.sh start
-    sleep 2
   fi
 
   if [ -e $HOME/first-boot-flag ]; then
