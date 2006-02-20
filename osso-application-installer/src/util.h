@@ -32,6 +32,10 @@
 void ask_yes_no (const gchar *question_fmt,
 		 void (*cont) (bool res, void *data), void *data);
 
+void ask_yes_no_with_details (const gchar *question_fmt,
+			      package_info *pi, bool installed,
+			      void (*cont) (bool res, void *data), void *data);
+
 void annoy_user (const gchar *text);
 void annoy_user_with_details (const gchar *text,
 			      package_info *pi, bool installed);
@@ -62,5 +66,7 @@ void size_string_detailed (char *buf, size_t n, int bytes);
 
 void show_deb_file_chooser (void (*cont) (char *filename, void *data),
 			    void *data);
+
+GdkPixbuf *pixbuf_from_base64 (const char *base64);
 
 #endif /* !UTIL_H */

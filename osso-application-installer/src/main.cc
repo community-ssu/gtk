@@ -170,6 +170,19 @@ view search_results_view = {
   NULL
 };
 
+void
+show_main_view ()
+{
+  show_view (&main_view);
+}
+
+void
+show_parent_view ()
+{
+  if (cur_view_struct && cur_view_struct->parent)
+    show_view (cur_view_struct->parent);
+}
+
 GtkWidget *
 make_main_view (view *v)
 {
@@ -231,6 +244,8 @@ package_info::package_info ()
   have_info = false;
   installed_short_description = NULL;
   available_short_description = NULL;
+  installed_icon = NULL;
+  available_icon = NULL;
   model = NULL;
 }
 
@@ -242,6 +257,10 @@ package_info::~package_info ()
   g_free (available_section);
   g_free (installed_short_description);
   g_free (available_short_description);
+  if (installed_icon)
+    g_object_unref (installed_icon);
+  if (available_icon)
+    g_object_unref (available_icon);
 }
 
 void
@@ -504,10 +523,26 @@ gpi_reply  (int cmd, apt_proto_decoder *dec, void *clos)
   void *data = c->data;
   package_info *pi = c->pi;
   delete c;
-  
+
+  const char *installed_icon, *available_icon;
+
   dec->decode_mem (&(pi->info), sizeof (pi->info));
   pi->installed_short_description = dec->decode_string_dup ();
+  installed_icon = dec->decode_string_in_place ();
   pi->available_short_description = dec->decode_string_dup ();
+  available_icon = dec->decode_string_in_place ();
+
+  if (installed_icon)
+    pi->installed_icon = pixbuf_from_base64 (installed_icon);
+  if (available_icon)
+    pi->available_icon = pixbuf_from_base64 (available_icon);
+  else
+    {
+      pi->available_icon = pi->installed_icon;
+      if (pi->available_icon)
+	g_object_ref (pi->available_icon);
+    }
+
   if (!dec->corrupted ())
     {
       pi->have_info = true;
@@ -693,7 +728,7 @@ confirm_install (package_info *pi,
       g_string_append_printf (text, "\n%s", download_buf);
     }
 
-  ask_yes_no (text->str, cont, data);
+  ask_yes_no_with_details (text->str, pi, false, cont, data);
   g_string_free (text, 1);
 }
 
@@ -960,7 +995,7 @@ confirm_uninstall (package_info *pi,
 		   "%s",
 		   pi->name, pi->installed_version, size_buf);
 
-  ask_yes_no (text->str, cont, data);
+  ask_yes_no_with_details (text->str, pi, true, cont, data);
   g_string_free (text, 1);
 }
 
@@ -1210,7 +1245,7 @@ set_global_lists_for_view (view *v)
 			       true,
 			       installed_package_selected,
 			       uninstall_package);
-      //packages_for_info = installed_packages;
+      packages_for_info = installed_packages;
     }
   else if (v == &search_results_view)
     {
@@ -1229,6 +1264,7 @@ set_global_lists_for_view (view *v)
 				   true,
 				   installed_package_selected,
 				   uninstall_package);
+	  packages_for_info = search_result_packages;
 	}
     }
 

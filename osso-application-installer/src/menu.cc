@@ -128,9 +128,8 @@ create_menu (GtkMenu *main)
   add_item (packages, "Install from file ...", install_from_file);
   details_menu_item = add_item (packages, "Details", show_current_details);
 
-  add_item (view, "Back", NULL);
-  add_item (view, "Forward", NULL);
-  add_item (view, "Main", NULL);
+  add_item (view, "Back", show_parent_view);
+  add_item (view, "Main", show_main_view);
   add_sep (view);
   add_item (view, "Sort ...", show_sort_settings_dialog);
   add_sep (view);

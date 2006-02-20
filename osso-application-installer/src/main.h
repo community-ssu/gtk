@@ -48,7 +48,9 @@ struct package_info {
   bool have_info;
   apt_proto_package_info info;
   char *installed_short_description;
+  GdkPixbuf *installed_icon;
   char *available_short_description;
+  GdkPixbuf *available_icon;
  
   GtkTreeModel *model;
   GtkTreeIter iter;
@@ -70,6 +72,8 @@ void do_current_operation ();
 void refresh_package_cache ();
 void install_from_file ();
 void sort_all_packages ();
+void show_main_view ();
+void show_parent_view ();
 
 void search_packages (const char *pattern, bool in_descriptions);
 

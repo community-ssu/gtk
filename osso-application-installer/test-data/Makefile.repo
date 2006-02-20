@@ -1,9 +1,12 @@
+arch = i386
+#arch = arm
+
 repodir = testrepo
 distsdir = $(repodir)/dists
 olddir = $(distsdir)/old
 newdir = $(distsdir)/new
-oldpkgdir = $(olddir)/main/binary-arm
-newpkgdir = $(newdir)/main/binary-arm
+oldpkgdir = $(olddir)/main/binary-i386
+newpkgdir = $(newdir)/main/binary-i386
 
 all:
 

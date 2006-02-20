@@ -317,7 +317,10 @@ repo_response (GtkDialog *dialog, gint response, gpointer clos)
     }
 
   if (response == GTK_RESPONSE_OK)
-    apt_worker_set_sources_list (repo_encoder, c, repo_reply, NULL);
+    {
+      apt_worker_set_sources_list (repo_encoder, c, repo_reply, NULL);
+      refresh_package_cache ();
+    }
 
   if (response == GTK_RESPONSE_CANCEL
       && c->lines

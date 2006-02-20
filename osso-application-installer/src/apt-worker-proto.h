@@ -189,10 +189,13 @@ private:
 //
 // - info (apt_proto_package_info).
 // - installed_short_description or null (string).
+// - installed_icon or null (int,memchunk).
 // - available_short_description or null (string).
+// - available_icon or null (int,memchunk).
 //
 // When the available_short_description would be identical to the
-// installed_short_description, it is set to null.
+// installed_short_description, it is set to null.  Likewise for the
+// icon.
 
 struct apt_proto_package_info {
   int installable;

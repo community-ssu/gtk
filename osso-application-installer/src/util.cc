@@ -34,6 +34,8 @@
 #include "log.h"
 
 struct ayn_closure {
+  package_info *pi;
+  bool installed;
   void (*cont) (bool res, void *data);
   void *data;
 };
@@ -42,6 +44,14 @@ static void
 yes_no_response (GtkDialog *dialog, gint response, gpointer clos)
 {
   ayn_closure *c = (ayn_closure *)clos;
+  
+  if (response == 1)
+    {
+      if (c->pi)
+	show_package_details (c->pi, c->installed);
+      return;
+    }
+
   void (*cont) (bool res, void *data) = c->cont; 
   void *data = c->data;
   delete c;
@@ -57,12 +67,37 @@ ask_yes_no (const gchar *question,
 {
   GtkWidget *dialog;
   ayn_closure *c = new ayn_closure;
+  c->pi = NULL;
   c->cont = cont;
   c->data = data;
 
   dialog =
     hildon_note_new_confirmation_add_buttons (NULL, question,
 					      "Yes", GTK_RESPONSE_YES,
+					      "No", GTK_RESPONSE_NO,
+					      NULL);
+  g_signal_connect (dialog, "response",
+		    G_CALLBACK (yes_no_response), c);
+  gtk_widget_show_all (dialog);
+}
+
+void
+ask_yes_no_with_details (const gchar *question,
+			 package_info *pi, bool installed,
+			 void (*cont) (bool res, void *data),
+			 void *data)
+{
+  GtkWidget *dialog;
+  ayn_closure *c = new ayn_closure;
+  c->pi = pi;
+  c->installed = installed;
+  c->cont = cont;
+  c->data = data;
+
+  dialog =
+    hildon_note_new_confirmation_add_buttons (NULL, question,
+					      "Yes", GTK_RESPONSE_YES,
+					      "Details", 1,
 					      "No", GTK_RESPONSE_NO,
 					      NULL);
   g_signal_connect (dialog, "response",
@@ -232,6 +267,24 @@ static GtkListStore *global_list_store = NULL;
 static bool global_installed;
 
 static void
+global_icon_func (GtkTreeViewColumn *column,
+		  GtkCellRenderer *cell,
+		  GtkTreeModel *model,
+		  GtkTreeIter *iter,
+		  gpointer data)
+{
+  package_info *pi;
+  gtk_tree_model_get (model, iter, 0, &pi, -1);
+  if (!pi)
+    return;
+
+  g_object_set (cell, "pixbuf", (global_installed
+				 ? pi->installed_icon
+				 : pi->available_icon),
+		NULL);
+}
+
+static void
 global_name_func (GtkTreeViewColumn *column,
 		  GtkCellRenderer *cell,
 		  GtkTreeModel *model,
@@ -397,6 +450,20 @@ get_global_package_list_widget ()
 
   tree = gtk_tree_view_new_with_model (GTK_TREE_MODEL (global_list_store));
 
+  renderer = gtk_cell_renderer_pixbuf_new ();
+  g_object_set (renderer, "yalign", 0.0, NULL);
+  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
+					      -1,
+					      NULL,
+					      renderer,
+					      global_icon_func,
+					      tree,
+					      NULL);
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 0);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_column_set_expand (column, FALSE);
+  gtk_tree_view_column_set_fixed_width (column, 30);
+
   renderer = gtk_cell_renderer_text_new ();
   g_object_set (renderer, "yalign", 0.0, NULL);
   gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
@@ -406,7 +473,7 @@ get_global_package_list_widget ()
 					      global_name_func,
 					      tree,
 					      NULL);
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 0);
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 1);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_expand (column, TRUE);
   gtk_tree_view_column_set_fixed_width (column, 400);
@@ -421,7 +488,7 @@ get_global_package_list_widget ()
 					      global_version_func,
 					      tree,
 					      NULL);
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 1);
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 2);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_expand (column, FALSE);
   gtk_tree_view_column_set_fixed_width (column, 150);
@@ -436,7 +503,7 @@ get_global_package_list_widget ()
 					      global_size_func,
 					      tree,
 					      NULL);
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 2);
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 3);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_expand (column, FALSE);
   gtk_tree_view_column_set_fixed_width (column, 80);
@@ -713,4 +780,111 @@ show_deb_file_chooser (void (*cont) (char *filename, void *data),
 		    G_CALLBACK (fcd_response), c);
 
   gtk_widget_show_all (fcd);
+}
+
+static void
+b64decode (const unsigned char *str, GdkPixbufLoader *loader)
+{
+  unsigned const char *cur, *start;
+  int d, dlast, phase;
+  unsigned char c;
+  static int table[256] = {
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* 00-0F */
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* 10-1F */
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,62,-1,-1,-1,63,  /* 20-2F */
+    52,53,54,55,56,57,58,59,60,61,-1,-1,-1,-1,-1,-1,  /* 30-3F */
+    -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,  /* 40-4F */
+    15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,  /* 50-5F */
+    -1,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,  /* 60-6F */
+    41,42,43,44,45,46,47,48,49,50,51,-1,-1,-1,-1,-1,  /* 70-7F */
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* 80-8F */
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* 90-9F */
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* A0-AF */
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* B0-BF */
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* C0-CF */
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* D0-DF */
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,  /* E0-EF */
+    -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1   /* F0-FF */
+  };
+
+  const size_t loader_size = 2048;
+  unsigned char loader_buf[loader_size], *loader_ptr;
+  GError *error = NULL;
+
+  d = dlast = phase = 0;
+  start = str;
+  loader_ptr = loader_buf;
+
+  for (cur = str; *cur != '\0'; ++cur )
+    {
+      d = table[(int)*cur];
+      if(d != -1)
+        {
+	  switch(phase)
+            {
+            case 0:
+	      ++phase;
+	      break;
+            case 1:
+	      c = ((dlast << 2) | ((d & 0x30) >> 4));
+	      *loader_ptr++ = c;
+	      ++phase;
+	      break;
+            case 2:
+	      c = (((dlast & 0xf) << 4) | ((d & 0x3c) >> 2));
+	      *loader_ptr++ = c;
+	      ++phase;
+	      break;
+            case 3:
+	      c = (((dlast & 0x03 ) << 6) | d);
+	      *loader_ptr++ = c;
+	      phase = 0;
+	      break;
+            }
+	  dlast = d;
+	  if (loader_ptr > loader_buf + loader_size)
+	    {
+	      gdk_pixbuf_loader_write (loader, loader_buf, loader_size,
+				       &error);
+	      if (error)
+		{
+		  fprintf (stderr, "PX: %s\n", error->message);
+		  g_error_free (error);
+		  return;
+		}
+	    }
+        }
+    }
+  
+  gdk_pixbuf_loader_write (loader, loader_buf, loader_ptr - loader_buf,
+			   &error);
+  if (error)
+    {
+      fprintf (stderr, "PX: %s\n", error->message);
+      g_error_free (error);
+      return;
+    }
+}
+
+
+GdkPixbuf *
+pixbuf_from_base64 (const char *base64)
+{
+  GError *error = NULL;
+
+  GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
+  b64decode ((const unsigned char *)base64, loader);
+  gdk_pixbuf_loader_close (loader, &error);
+  if (error)
+    {
+      fprintf (stderr, "PX: %s\n", error->message);
+      g_error_free (error);
+      g_object_unref (loader);
+      return NULL;
+    }
+  
+  GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
+  g_object_ref (pixbuf);
+  g_object_unref (loader);
+  return pixbuf;
 }
