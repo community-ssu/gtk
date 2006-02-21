@@ -1,20 +1,26 @@
+## This is all very ad-hoc...
+
 arch = i386
 #arch = arm
 
 repodir = testrepo
 distsdir = $(repodir)/dists
+certdir = $(distsdir)/cert
 olddir = $(distsdir)/old
 newdir = $(distsdir)/new
-oldpkgdir = $(olddir)/main/binary-i386
-newpkgdir = $(newdir)/main/binary-i386
+certpkgdir = $(certdir)/main/binary-$(arch)
+oldpkgdir = $(olddir)/main/binary-$(arch)
+newpkgdir = $(newdir)/main/binary-$(arch)
 
 all:
 
 repodirs:
+	mkdir -p $(certpkgdir)
 	mkdir -p $(oldpkgdir)
 	mkdir -p $(newpkgdir)
 
 packages: repodirs
+	./make-deb certified $(certpkgdir)
 	./make-deb package-a1 $(oldpkgdir)
 	./make-deb package-a2 $(newpkgdir)
 	./make-deb package-b1 $(oldpkgdir)
@@ -24,9 +30,14 @@ packages: repodirs
 	./make-deb testrepo-conf-mmc $(repodir)
 
 repo: packages
+	cd $(repodir) && apt-ftparchive packages dists/cert >../$(certpkgdir)/Packages
 	cd $(repodir) && apt-ftparchive packages dists/old >../$(oldpkgdir)/Packages
 	cd $(repodir) && apt-ftparchive packages dists/new >../$(newpkgdir)/Packages
+	rm -f $(certdir)/Release
+	apt-ftparchive -c=apt.conf.cert release $(certdir) > $(certdir)/.Release
+	mv $(certdir)/.Release $(certdir)/Release
 	rm -f $(olddir)/Release
+	gpg --default-key 3267077C --yes --sign -ba -o $(certdir)/Release.gpg $(certdir)/Release
 	apt-ftparchive -c=apt.conf.old release $(olddir) > $(olddir)/.Release
 	mv $(olddir)/.Release $(olddir)/Release
 	rm -f $(newdir)/Release

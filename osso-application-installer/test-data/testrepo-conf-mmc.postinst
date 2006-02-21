@@ -3,10 +3,19 @@
 set -e
 
 cp /etc/apt/sources.list /etc/apt/sources.list.testrepo-bak
-echo "deb file:///media/mmc1/testrepo old main" >/etc/apt/sources.list
-echo "#deb file:///media/mmc1/testrepo new main" >>/etc/apt/sources.list
 
-apt-key add - <<-HERE
+cat >/etc/apt/sources.list <<EOF
+#maemo:essential
+deb file:///media/mmc1/testrepo cert main
+deb file:///media/mmc1/testrepo old main
+#deb file:///media/mmc1/testrepo new main
+EOF
+
+cat >/etc/osso-application-installer/certified.list <<EOF
+uri-prefix file:///media/mmc1/testrepo/dists/cert/main/
+EOF
+
+apt-key add - <<HERE
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1.4.2 (GNU/Linux)
 
