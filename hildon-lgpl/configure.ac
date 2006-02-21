@@ -1,4 +1,4 @@
-AC_INIT([hildon-lgpl], [0.12.0])
+AC_INIT([hildon-lgpl], [0.12.1])
 AC_CONFIG_SRCDIR([Makefile.am])
 
 AM_INIT_AUTOMAKE([foreign 1.6])

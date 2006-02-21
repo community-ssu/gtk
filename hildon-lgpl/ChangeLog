@@ -1,3 +1,7 @@
+2006-02-21  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.12.1
+
 2006-02-17  Guillem Jover  <guillem.jover@nokia.com>
 
         * hildon-lgpl.pc.in (Requires): Remove indirect dependency gtk+-2.0.
