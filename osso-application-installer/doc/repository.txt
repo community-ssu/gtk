@@ -1,0 +1,74 @@
+About Repositories for the Application Installer 2006
+=====================================================
+
+Setting up a certified repository
+---------------------------------
+
+The AI can recognize certain parts of repositories as 'certified'.
+Packages coming from those parts are installed without showing the big
+fat warning dialog to the user.  (But that is the only difference
+between certified parts and non-certified ones.)
+
+The way to configure such a certified part is to specify a URI prefix;
+all archive files downloaded from a location with that prefix are
+considered certified if the corresponding Release file has been signed
+and successfully verified.
+
+The Release file can be signed by _any_ key known apt to be accepted
+for a certified part.  This is acceptable since only known-good public
+keys are factory-configured and if the attacker has enough access to
+the device to configure a key for his dns-spoofed repository, he has
+breached the device already from our point of view.
+
+The reason for basing the 'is-certified' test on a URI prefix instead
+of on "deb" lines in sources.list, say, or (URI, Distribution,
+Component) tuples is simplicity: The URI prefix test can be done very
+easily, and without modifying libapt-pkg.  (It might or not might not
+be a good idea to use pool/ directories for certified parts of a
+repository.  It is probably simpler to not use them.)
+
+The reason that any key is accepted when verifying the signature on
+the Release file of a certified part is again simplicity and the
+desire not to modify libapt-pkg at this point.  As far as I can see,
+libapt-pkg does not remember which keys succeeded in verifying the
+signature.  This could be improved in the future.
+
+
+The list of URI prefixes of certified repository parts is contained in
+the file /etc/osso-application-installer/certified.list.  It consists
+of lines of the forms
+
+    uri-prefix <uri-prefix>
+
+where <uri-prefix> must not contain whitespace and must match the URI
+of a downloaded package literally (i.e., no %xx escape expansion is
+done, etc).  Everything after and including the first '#' in a line is
+ignored.  Blank lines are allowed, of course.
+
+
+Disabling repositories
+----------------------
+
+The Application installer lets the user edit parts of the contents of
+/etc/apt/sources.list.  It recognizes lines marked with "deb" and
+"#deb" and preserves everything else.  A "deb" line is the usual
+specification for a source of binary packages.  A "#deb" line is the
+same, but disabled.  When enabling/disabling a repository, the
+Application installer switches between the "deb" and "#deb" marker.
+
+There must be no space between "#" and "deb" in the "#deb" marker for
+it to be recognized by the Application installer.
+
+
+Marking a repository as essential
+---------------------------------
+
+A "deb" or "#deb" line in /etc/apt/sources.list can be marked as
+'essential'.  The Application installer will refuse to change or
+remove such a line.
+
+The way to mark a line as essential is to put a line of the form
+"#maemo:essential" before the line.  The "#maemo:essential" marker
+must be on a line of its own, with no whitespace between "#" and
+"maemo:essential".  The marker does not have to immediately precede
+the "deb" or "#deb" line.
