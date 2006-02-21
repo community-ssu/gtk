@@ -58,7 +58,7 @@
 
 using namespace std;
 
-#define DEBUG
+//#define DEBUG
 
 /* This is the process that runs as root and does all the work.
 
@@ -1234,12 +1234,25 @@ remove_package (const char *package)
     return false;
 }
 
+static bool
+is_certified_source (string uri)
+{
+  return g_str_has_prefix (uri.c_str(), "file:///home/mvo/");
+}
+
 static void
 encode_prep_summary (pkgAcquire& Fetcher)
 {
   for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin();
        I < Fetcher.ItemsEnd(); ++I)
     {
+      if (!is_certified_source ((*I)->DescURI ())
+	  || !(*I)->IsTrusted())
+	{
+	  response.encode_int (preptype_notcert);
+	  response.encode_string ((*I)->ShortDesc().c_str());
+	}
+	
       if (!(*I)->IsTrusted())
 	{
 	  response.encode_int (preptype_notauth);

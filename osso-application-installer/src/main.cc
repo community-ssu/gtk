@@ -798,29 +798,31 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 
       const char *string = dec->decode_string_in_place ();
       if (prep == preptype_notauth)
-	notauth = g_list_append (notauth, (void*)string);
+	{
+	  fprintf (stderr, "notauth: %s\n", string);
+	  notauth = g_list_append (notauth, (void*)string);
+	}
       else if (prep == preptype_notcert)
-	notcert = g_list_append (notcert, (void*)string);
+	{
+	  fprintf (stderr, "notcert: %s\n", string);
+	  notcert = g_list_append (notcert, (void*)string);
+	}
     }
 
   int success = dec->decode_int ();
 
   if (!dec->corrupted () && success)
     {
-      if (notauth || notcert)
+      if (notcert)
 	{
-	  GString *text = g_string_new ("");
-	  format_string_list (text, 
-			      "This software is neither verified nor delivered to you by Nokia. Please note that some software may harm your device and installation will be at your own risk.\n",
-			      notauth);
-	  format_string_list (text, 
-			      "The following packages are not\n"
-			      "certified by Nokia:\n",
-			      notcert);
-	  g_string_append (text, "Continue anyway?");
 	  hide_progress ();
-	  ask_yes_no (text->str, install_package_cont3, pi);
-	  g_string_free (text, 1);
+	  ask_yes_no ("This software is neither verified "
+		      "nor delivered to you by Nokia. Please "
+		      "note that some software may harm your "
+		      "device and installation will be at "
+		      "your own risk.\n"
+		      "Continue anyway?",
+		      install_package_cont3, pi);
 	}
       else
 	install_package_cont3 (true, pi);

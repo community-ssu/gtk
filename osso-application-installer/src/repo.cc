@@ -49,6 +49,7 @@ struct repo_line {
   char *line;
   char *deb_line;
   bool enabled;
+  bool essential;
 };
 
 struct repo_closure {
@@ -59,6 +60,9 @@ struct repo_closure {
   repo_line *lines;
   GtkTreeView *tree;
   GtkListStore *store;
+  
+  // parsing state
+  bool next_is_essential;
 };
 
 
@@ -125,10 +129,17 @@ repo_line::repo_line (repo_closure *c, const char *l)
 	enabled = true;
       else if (end - type == 4 && !strncmp (type, "#deb", 4))
 	enabled = false;
+      else if (end - type == 16 && !strncmp (type, "#maemo:essential", 16))
+	{
+	  c->next_is_essential = true;
+	  return;
+	}
       else
 	return;
 
       deb_line = end;
+      essential = c->next_is_essential;
+      c->next_is_essential = false;
       parse_quoted_word (&deb_line, &end, false);
     }
 }
@@ -141,6 +152,7 @@ repo_line::~repo_line ()
 repo_closure::repo_closure ()
 {
   lines = NULL;
+  next_is_essential = false;
 }
 
 repo_closure::~repo_closure ()
@@ -310,7 +322,12 @@ repo_response (GtkDialog *dialog, gint response, gpointer clos)
 	{
 	  repo_line *r;
 	  gtk_tree_model_get (model, &iter, 0, &r, -1);
-	  if (r)
+	  if (r == NULL)
+	    return;
+
+	  if (r->essential)
+	    annoy_user ("This repository can not be removed.");
+	  else
 	    remove_repo (r);
 	}
       return;
@@ -374,7 +391,12 @@ repo_row_activated (GtkTreeView *treeview,
     {
       repo_line *r;
       gtk_tree_model_get (model, &iter, 0, &r, -1);
-      if (r)
+      if (r == NULL)
+	return;
+
+      if (r->essential)
+	annoy_user ("This repository can not be edited.");
+      else
 	show_repo_edit_dialog (r);
     }
 }
