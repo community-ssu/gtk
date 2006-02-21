@@ -813,7 +813,10 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   if (!dec->corrupted () && success)
     {
-      if (notcert)
+      // A non-authenticated package can never be certified.
+      // Apt-worker does not implement that rule, tho.
+
+      if (notcert || notauth)
 	{
 	  hide_progress ();
 	  ask_yes_no ("This software is neither verified "

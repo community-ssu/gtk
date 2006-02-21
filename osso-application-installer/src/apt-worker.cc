@@ -36,6 +36,7 @@
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include <apt-pkg/init.h>
 #include <apt-pkg/error.h>
@@ -50,6 +51,7 @@
 #include <apt-pkg/sptr.h>
 #include <apt-pkg/packagemanager.h>
 
+#include <glib/glist.h>
 #include <glib/gstring.h>
 #include <glib/gstrfuncs.h>
 #include <glib/gmem.h>
@@ -58,7 +60,7 @@
 
 using namespace std;
 
-//#define DEBUG
+#define DEBUG
 
 /* This is the process that runs as root and does all the work.
 
@@ -401,6 +403,8 @@ must_open (char *filename, int flags)
     }
 }
 
+static void read_certified_conf ();
+
 int
 main (int argc, char **argv)
 {
@@ -421,6 +425,7 @@ main (int argc, char **argv)
        getpid (), input_fd, output_fd, status_fd, cancel_fd);
 
   cache_init ();
+  read_certified_conf ();
 
   while (true)
     handle_request ();
@@ -1234,10 +1239,62 @@ remove_package (const char *package)
     return false;
 }
 
+static GList *certified_uri_prefixes = NULL;
+
+static void
+read_certified_conf ()
+{
+  const char *name = "/etc/osso-application-installer/certified.list";
+
+  FILE *f = fopen (name, "r");
+
+  if (f)
+    {
+      char *line = NULL;
+      size_t len = 0;
+      ssize_t n;
+
+      while ((n = getline (&line, &len, f)) != -1)
+	{
+	  if (n > 0 && line[n-1] == '\n')
+	    line[n-1] = '\0';
+
+	  char *hash = strchr (line, '#');
+	  if (hash)
+	    *hash = '\0';
+
+	  char *saveptr;
+	  char *type = strtok_r (line, " \t", &saveptr);
+	  if (type)
+	    {
+	      if (!strcmp (type, "uri-prefix"))
+		{
+		  char *prefix = strtok_r (NULL, " \t", &saveptr);
+		  DBG ("certified: %s", prefix);
+		  certified_uri_prefixes =
+		    g_list_append (certified_uri_prefixes,
+				   g_strdup (prefix));
+		}
+	      else
+		fprintf (stderr, "unsupported type in certified.list: %s\n",
+			 type);
+	    }
+	}
+
+      free (line);
+      fclose (f);
+    }
+  else if (errno != ENOENT)
+    perror (name);
+}
+
 static bool
 is_certified_source (string uri)
 {
-  return g_str_has_prefix (uri.c_str(), "file:///home/mvo/");
+  for (GList *p = certified_uri_prefixes; p; p = p->next)
+    if (g_str_has_prefix (uri.c_str(), (char *)p->data))
+      return true;
+  return false;
 }
 
 static void
@@ -1246,13 +1303,12 @@ encode_prep_summary (pkgAcquire& Fetcher)
   for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin();
        I < Fetcher.ItemsEnd(); ++I)
     {
-      if (!is_certified_source ((*I)->DescURI ())
-	  || !(*I)->IsTrusted())
+      if (!is_certified_source ((*I)->DescURI ()))
 	{
 	  response.encode_int (preptype_notcert);
 	  response.encode_string ((*I)->ShortDesc().c_str());
 	}
-	
+      
       if (!(*I)->IsTrusted())
 	{
 	  response.encode_int (preptype_notauth);
