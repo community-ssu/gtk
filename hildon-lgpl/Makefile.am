@@ -3,7 +3,6 @@ EXTRA_DIST = \
 	debian/control \
 	debian/copyright \
 	debian/hildon-lgpl-dev.install \
-	debian/hildon-lgpl-dev.docs \
 	debian/rules
 
 pkgconfigdir = $(libdir)/pkgconfig

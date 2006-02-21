@@ -1,3 +1,27 @@
+2006-02-17  Guillem Jover  <guillem.jover@nokia.com>
+
+        * hildon-lgpl.pc.in (Requires): Remove indirect dependency gtk+-2.0.
+        (Libs): Remove indirect dependency @X_LIBS@.
+        (Cflags): Remove indirect cflags @X_CFGLAGS@.
+        * configure.ac (AC_CANONICAL_HOST, AC_PROG_CC, AC_PROG_CPP)
+        (AC_PROG_INSTALL, AC_PROG_AWK, AC_PROG_LIBTOOL, AC_HEADER_STDC)
+        (ALL_LINGUAS, AM_GLIB_GNU_GETTEXT, AC_PATH_XTRA, localedir)
+        (outomoduledir, docdir, HTML_DIR, CFLAGS, GTK_VERSION): Remove macros.
+        (OUTO, GTK, GCONF, LIBMB, GTKDOC): Remove modules.
+        (AC_INIT, AM_INIT_AUTOMAKE): Switch to autoconf 2.50 macro form.
+        (AC_CONFIG_SRCDIR): New macro.
+        (AM_CONFIG_HEADER): Renamed to ...
+        (AC_CONFIG_HEADERS): ... this.
+        (AC_OUTPUT): Move contents to ...
+        (AC_CONFIG_FILES): ... here. New macro.
+        * Makefile.am (EXTRA_DIST): Remove 'debian/hildon-lgpl-dev.docs'.
+        * autogen.sh: Replace individual autotool calls with autoreconf.
+        * config.guess: Remove file.
+        * config.sub: Likewise.
+        * depcomp: Likewise.
+        * ltmain.sh: Likewise.
+        * mkinstalldirs: Likewise.
+
 2006-02-14  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.12.0

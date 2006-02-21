@@ -1,17 +1,16 @@
 Source: hildon-lgpl
-Section: x11
+Section: oldlibs
 Priority: optional
 Maintainer: Luc Pionchon <luc.pionchon@nokia.com>
+Build-Depends: debhelper (>= 4)
 Standards-Version: 3.6.0
 
 Package: hildon-lgpl-dev
-Section: devel
-Architecture: any
-Depends: hildon-libs0 
+Architecture: all
+Depends: hildon-libs-dev
 Description: LGPL-licensed Hildon libraries development files
 
 Package: hildon-lgpl0
-Section: libs
-Architecture: any
+Architecture: all
 Depends: hildon-libs0
 Description: LGPL-licensed Hildon libraries
