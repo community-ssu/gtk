@@ -1,0 +1,28 @@
+Index: head/dbus/dbus-marshal-basic.c
+===================================================================
+--- head.orig/dbus/dbus-marshal-basic.c	2005-03-09 17:09:11.000000000 +0000
++++ head/dbus/dbus-marshal-basic.c	2006-01-30 15:12:43.206397592 +0000
+@@ -1030,13 +1030,16 @@
+   if (!_dbus_string_insert_alignment (str, &array_start, alignment))
+     goto error;
+ 
+-  _dbus_string_init_const_len (&t,
+-                               (const unsigned char*) value,
+-                               len_in_bytes);
+-
+-  if (!_dbus_string_copy (&t, 0,
+-                          str, array_start))
+-    goto error;
++  if (len_in_bytes > 0)
++    {
++      _dbus_string_init_const_len (&t,
++                                   (const unsigned char*) value,
++                                   len_in_bytes);
++
++      if (!_dbus_string_copy (&t, 0,
++                              str, array_start))
++        goto error;
++    }
+ 
+   swap_array (str, array_start, n_elements, byte_order, alignment);
+ 

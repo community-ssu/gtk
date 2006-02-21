@@ -1,3 +1,9 @@
+dbus (0.60-1osso10) experimental; urgency=low
+
+  * Added four patches fixing garray stuff (N#23096).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 21 Feb 2006 16:31:03 +0200
+
 dbus (0.60-1osso9) experimental; urgency=low
 
   * Added patch to fix previous patch from Rob.

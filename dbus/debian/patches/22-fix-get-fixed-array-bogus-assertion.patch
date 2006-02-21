@@ -1,0 +1,18 @@
+Index: dbus/dbus/dbus-message.c
+===================================================================
+--- dbus.orig/dbus/dbus-message.c	2006-02-07 00:20:07.000000000 +0000
++++ dbus/dbus/dbus-message.c	2006-02-07 09:00:59.000000000 +0000
+@@ -1735,10 +1735,12 @@
+                                    int              *n_elements)
+ {
+   DBusMessageRealIter *real = (DBusMessageRealIter *)iter;
++  int subtype = _dbus_type_reader_get_current_type(&real->u.reader);
+ 
+   _dbus_return_if_fail (_dbus_message_iter_check (real));
+   _dbus_return_if_fail (value != NULL);
+-  _dbus_return_if_fail (dbus_type_is_fixed (_dbus_type_reader_get_current_type (&real->u.reader)));
++  _dbus_return_if_fail ((subtype == DBUS_TYPE_INVALID) ||
++                         dbus_type_is_fixed (subtype));
+ 
+   _dbus_type_reader_read_fixed_multi (&real->u.reader,
+                                       value, n_elements);

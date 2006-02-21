@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=org.freedesktop.DBus.TestSuiteSegfaultService
-Exec=/home/kihamala/projects-2006/dbus/test/test-segfault
+Exec=/home/kihamala/stage-svn/dbus/test/test-segfault
 
