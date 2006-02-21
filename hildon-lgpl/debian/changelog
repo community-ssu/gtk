@@ -1,3 +1,12 @@
+hildon-lgpl (0.12.1-2) unstable; urgency=low
+
+  * really remove
+    - debian/hildon-lgpl0.install
+    - debian/hildon-lgpl0-dbg.install
+    - debian/hildon-lgpl-dev.docs
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Tue, 21 Feb 2006 17:10:06 +0200
+
 hildon-lgpl (0.12.1-1) unstable; urgency=low
 
   * 0.12.1
