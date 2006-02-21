@@ -4,6 +4,8 @@ hildon-lgpl (0.12.1-2) unstable; urgency=low
     - debian/hildon-lgpl0.install
     - debian/hildon-lgpl0-dbg.install
     - debian/hildon-lgpl-dev.docs
+  * really add
+    - debian/compat
 
  -- Luc Pionchon <luc.pionchon@nokia.com>  Tue, 21 Feb 2006 17:10:06 +0200
 
