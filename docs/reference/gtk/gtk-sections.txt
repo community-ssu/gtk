@@ -3918,6 +3918,8 @@ gtk_tree_store_reorder
 gtk_tree_store_swap
 gtk_tree_store_move_before
 gtk_tree_store_move_after
+gtk_tree_store_insert_with_values
+gtk_tree_store_insert_with_valuesv
 <SUBSECTION Standard>
 GTK_TREE_STORE
 GTK_IS_TREE_STORE
