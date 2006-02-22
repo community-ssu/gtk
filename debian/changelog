@@ -1,12 +1,14 @@
-gtk+2.0 (2:2.6.10-1.osso6) UNRELEASED; urgency=low
+gtk+2.0 (2:2.6.10-1.osso6) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * GtkTreeStore API addition to benefit GtkFileSystemMemory:
+    - gtk_tree_store_insert_with_values
+    - gtk_tree_store_insert_with_valuesv
   * Bugs fixed:
     M#352: GtkViewPort not releasing signal handlers on destruction / Gnome
            Bugzilla #325869
     N#22693: GDK warning when using GtkEntry
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 17 Feb 2006 16:55:42 +0200
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 22 Feb 2006 12:28:18 +0200
 
 gtk+2.0 (2:2.6.10-1.osso5) unstable; urgency=low
 
