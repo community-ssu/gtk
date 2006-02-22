@@ -684,6 +684,11 @@ gtk_entry_class_init (GtkEntryClass *class)
 						       0.0,
 						       G_PARAM_READABLE | G_PARAM_WRITABLE));
   
+  /**
+   * GtkEntry:horizontal-border:
+   *
+   * Since: maemo 1.0
+   */
  gtk_widget_class_install_style_property (widget_class,
                                           g_param_spec_int ("horizontal-border",
 							      P_("Horizontal borders for entry"),
@@ -693,6 +698,11 @@ gtk_entry_class_init (GtkEntryClass *class)
  							      INNER_BORDER,
 							      G_PARAM_READWRITE));
 
+  /**
+   * GtkEntry:vertical-border:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                           g_param_spec_int ("vertical-border",
 							      P_("Vertical borders for entry"),
@@ -702,6 +712,11 @@ gtk_entry_class_init (GtkEntryClass *class)
               						      INNER_BORDER,
 							      G_PARAM_READWRITE));
 
+  /**
+   * GtkEntry:icon-width:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                           g_param_spec_int ("icon-width",
 							      P_("Icon Width"),
@@ -711,6 +726,11 @@ gtk_entry_class_init (GtkEntryClass *class)
               						      0,
 							      G_PARAM_READWRITE));
   
+  /**
+   * GtkEntry:show-last-char:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                           g_param_spec_boolean ("show-last-char",
 							      P_("Show last char in invisible mode for a while"),
@@ -818,6 +838,11 @@ gtk_entry_class_init (GtkEntryClass *class)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
 
+  /**
+   * GtkEntry::invalid-input:
+   *
+   * Since: maemo 1.0
+   */
   signals[INVALID_INPUT] =
     g_signal_new ("invalid_input",
 		  G_OBJECT_CLASS_TYPE (gobject_class),

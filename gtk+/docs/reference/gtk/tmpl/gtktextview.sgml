@@ -154,6 +154,11 @@ types related to the text widget and how they work together.
 
 </para>
 
+<!-- ##### ARG GtkTextView:autocap ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkTextView:buffer ##### -->
 <para>
 
@@ -169,7 +174,17 @@ types related to the text widget and how they work together.
 
 </para>
 
+<!-- ##### ARG GtkTextView:hildon-input-mode ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkTextView:indent ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkTextView:input-mode ##### -->
 <para>
 
 </para>
@@ -840,5 +855,23 @@ The priority at which the text view validates onscreen lines
 in an idle job in the background.
 </para>
 
+
+
+<!-- ##### FUNCTION hildon_gtk_text_view_get_input_mode ##### -->
+<para>
+
+</para>
+
+@text_view: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_gtk_text_view_set_input_mode ##### -->
+<para>
+
+</para>
+
+@text_view: 
+@mode: 
 
 

@@ -252,7 +252,11 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
 						      PANGO_ELLIPSIZE_NONE,
                                                       G_PARAM_READWRITE));
 
-  /* OSSO addition. */
+  /**
+   * GtkProgressBar:text-spacing:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("text-spacing",
 							     "Text Spacing",
@@ -262,6 +266,11 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
 							     DEFAULT_TEXT_SPACING,
 							     G_PARAM_READWRITE));
 
+  /**
+   * GtkProgressBar:width-increment:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("width-increment",
 							     "width Increment",
@@ -271,6 +280,11 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
 							     DEFAULT_WIDTH_INCREMENT,
 							     G_PARAM_READWRITE));
 
+  /**
+   * GtkProgressBar:height-increment:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("height-increment",
 							     "Height Increment",
@@ -280,6 +294,11 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
 							     DEFAULT_WIDTH_INCREMENT,
 							     G_PARAM_READWRITE));
 
+  /**
+   * GtkProgressBar:text-xnudge:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("text-xnudge",
 							     "Text XNudge",
@@ -289,6 +308,11 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
 							     DEFAULT_TEXT_XNUDGE,
 							     G_PARAM_READWRITE));
 
+  /**
+   * GtkProgressBar:text-ynudge:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("text-ynudge",
 							     "Text YNudge",

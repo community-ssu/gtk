@@ -249,8 +249,12 @@ gtk_menu_item_class_init (GtkMenuItemClass *klass)
 							     10,
 							     G_PARAM_READABLE));
 
-   /* Hildon modification - allow themeing of separator height */
-   gtk_widget_class_install_style_property (widget_class,
+  /**
+   * GtkMenuItem:separator-height:
+   *
+   * Since: maemo 1.0
+   */
+  gtk_widget_class_install_style_property (widget_class,
                                           g_param_spec_int ("separator_height",
                                                             "Separator height",
                                                             "Draw a separator graphics with height of x pixels.",

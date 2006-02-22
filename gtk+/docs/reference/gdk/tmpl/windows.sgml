@@ -212,6 +212,7 @@ window types.
 @GDK_WINDOW_TYPE_HINT_DOCK: Used for creating dock or panel windows.
 @GDK_WINDOW_TYPE_HINT_DESKTOP: Used for creating the desktop background 
 window.
+@GDK_WINDOW_TYPE_HINT_MESSAGE: 
 
 <!-- ##### STRUCT GdkWindowAttr ##### -->
 <para>

@@ -164,6 +164,21 @@ Emitted when the user or a function changes the current page.
 
 </para>
 
+<!-- ##### ARG GtkNotebook:arrow-height ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkNotebook:arrow-spacing ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkNotebook:arrow-width ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkNotebook:has-backward-stepper ##### -->
 <para>
 
@@ -180,6 +195,31 @@ Emitted when the user or a function changes the current page.
 </para>
 
 <!-- ##### ARG GtkNotebook:has-secondary-forward-stepper ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkNotebook:inner-left-border ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkNotebook:inner-right-border ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkNotebook:label-padding ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkNotebook:tab-curvature ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkNotebook:tab-overlap ##### -->
 <para>
 
 </para>

@@ -2229,6 +2229,8 @@ gdk_window_set_type_hint (GdkWindow        *window,
  * This function returns the type hint set for a window.
  *
  * Return value: The type hint set for @window
+ *
+ * Since: maemo 1.0
  **/
 GdkWindowTypeHint
 gdk_window_get_type_hint (GdkWindow *window)

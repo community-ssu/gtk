@@ -368,6 +368,11 @@ gtk_range_class_init (GtkRangeClass *class)
                                                          FALSE,
                                                          G_PARAM_READWRITE));
   
+  /**
+   * GtkRange:stream-indicator:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (gobject_class,
                                    PROP_STREAM_INDICATOR,
                                    g_param_spec_boolean ("stream_indicator",
@@ -376,6 +381,11 @@ gtk_range_class_init (GtkRangeClass *class)
                                                         FALSE,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
+  /**
+   * GtkRange:minimum-visible-bars:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (gobject_class,
 		  PROP_MINIMUM_VISIBLE_BARS,
 		  g_param_spec_int ("minimum_visible_bars",
@@ -386,6 +396,11 @@ gtk_range_class_init (GtkRangeClass *class)
 			  0,
 			  G_PARAM_READWRITE));
   
+  /**
+   * GtkRange:stream-position:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (gobject_class,
                                    PROP_STREAM_POSITION,
                                    g_param_spec_double ("stream_position",
@@ -445,6 +460,11 @@ gtk_range_class_init (GtkRangeClass *class)
 							     0,
 							     G_PARAM_READABLE));
 
+  /**
+   * GtkRange:hildonlike:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("hildonlike",
                                                                  _("hildonlike"),
@@ -452,6 +472,11 @@ gtk_range_class_init (GtkRangeClass *class)
                                                                  FALSE,
                                                                  G_PARAM_READABLE));
 
+  /**
+   * GtkRange:two-part-trough:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("two_part_trough",
                                                                  _("Two-part trough"),
@@ -459,6 +484,11 @@ gtk_range_class_init (GtkRangeClass *class)
                                                                  FALSE,
                                                                  G_PARAM_READABLE));
 
+  /**
+   * GtkRange:stream-indicator-padding:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("stream_indicator_padding",
                                                              P_("Stream Indicator Padding"),
@@ -468,6 +498,11 @@ gtk_range_class_init (GtkRangeClass *class)
                                                              1,
                                                              G_PARAM_READABLE));
 
+  /**
+   * GtkRange:autodimmed-steppers:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("autodimmed_steppers",
                                                                  _("Autodimmed steppers"),
@@ -475,6 +510,11 @@ gtk_range_class_init (GtkRangeClass *class)
                                                                  FALSE,
                                                                  G_PARAM_READABLE));
 
+  /**
+   * GtkRange:arrow-paint-box-layout:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("arrow_paint_box_layout",
                                                                  _("Arrow paint box layout"),
@@ -482,6 +522,11 @@ gtk_range_class_init (GtkRangeClass *class)
                                                                  FALSE,
                                                                  G_PARAM_READABLE));
 
+  /**
+   * GtkRange:draw-trough-under-steppers:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("draw_trough_under_steppers",
                                                                  _("Draw trough under steppers"),
@@ -2927,12 +2972,14 @@ gtk_range_remove_update_timer (GtkRange *range)
 
 /**
  * osso_gtk_range_set_stream_indicator:
- * @range: A GtkRange
+ * @range: A #GtkRange
  * @stream_indicator: Whether stream indicator graphics is shown and restricts slider.
  *
  * Sets whether a graphical stream indicator
  * is show on the trough and the slider is restricted
  * to streamed area.
+ *
+ * Since: maemo 1.0
  **/
 void
 osso_gtk_range_set_stream_indicator (GtkRange *range, gboolean stream_indicator)
@@ -2952,11 +2999,13 @@ osso_gtk_range_set_stream_indicator (GtkRange *range, gboolean stream_indicator)
 
 /**
  * osso_gtk_range_get_stream_indicator:
- * @range: A GtkRange
+ * @range: A #GtkRange
  *
  * Return value: Whether GtkRange displays an 
  *   stream indicator graphics and slider is restricted
  *   to streamed area
+ *
+ * Since: maemo 1.0
  **/
 gboolean
 osso_gtk_range_get_stream_indicator (GtkRange *range)
@@ -2972,13 +3021,15 @@ osso_gtk_range_get_stream_indicator (GtkRange *range)
 
 /**
  * osso_gtk_range_set_stream_position:
- * @range : A GtkRange
+ * @range : A #GtkRange
  * @position : The new position of the stream indicator
  *
  * Sets the new position of the stream indicator.
  * It is automatically clamped between lower and upper.
  * Note that you need to enable stream_indicator
  * before any stream-functionality is active.
+ *
+ * Since: maemo 1.0
  **/
 void
 osso_gtk_range_set_stream_position (GtkRange *range,
@@ -3003,11 +3054,13 @@ osso_gtk_range_set_stream_position (GtkRange *range,
 }
 /**
  * osso_gtk_range_get_stream_position:
- * @range : A GtkRange
+ * @range : A #GtkRange
  *
  * Return value: The current position of the stream
  *   indicator. Note that this value is undefined
  *   when stream indicator is not enabled.
+ *
+ * Since: maemo 1.0
  **/
 gdouble
 osso_gtk_range_get_stream_position (GtkRange *range)

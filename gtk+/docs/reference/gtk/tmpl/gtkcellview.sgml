@@ -134,3 +134,13 @@ and drag and drop.
 @cellview: 
 
 
+<!-- ##### FUNCTION gtk_cell_view_set_cell_data ##### -->
+<para>
+
+</para>
+
+@cellview: 
+<!-- # Unused Parameters # -->
+@cell_view: 
+
+

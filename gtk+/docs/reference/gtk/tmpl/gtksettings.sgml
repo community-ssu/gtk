@@ -88,6 +88,11 @@ Sharing settings between applications
 
 </para>
 
+<!-- ##### ARG GtkSettings:gtk-initial-timeout ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkSettings:gtk-key-theme-name ##### -->
 <para>
 
@@ -133,12 +138,22 @@ Sharing settings between applications
 
 </para>
 
+<!-- ##### ARG GtkSettings:gtk-toolbar-animation ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkSettings:gtk-toolbar-icon-size ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG GtkSettings:gtk-toolbar-style ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-update-timeout ##### -->
 <para>
 
 </para>
@@ -164,6 +179,11 @@ Sharing settings between applications
 </para>
 
 <!-- ##### ARG GtkSettings:gtk-xft-rgba ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:hildon-keyboard-navigation ##### -->
 <para>
 
 </para>

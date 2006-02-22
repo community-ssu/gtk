@@ -305,6 +305,11 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 		  _gtk_marshal_VOID__BOOLEAN,
 		  G_TYPE_NONE, 1, 
 		  G_TYPE_BOOLEAN);
+  /**
+   * GtkMenuShell::close:
+   *
+   * Since: maemo 1.0
+   */
   menu_shell_signals[CLOSE] =
     g_signal_new ("close",
 		  G_OBJECT_CLASS_TYPE (object_class),
@@ -375,7 +380,7 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
    * keyboard focus. See gtk_menu_shell_set_take_focus() and
    * gtk_menu_shell_get_take_focus().
    *
-   * Since: 2.8
+   * Since: 2.8 (maemo 1.0)
    **/
   g_object_class_install_property (object_class,
 		  		   PROP_TAKE_FOCUS,
@@ -1600,7 +1605,7 @@ _gtk_menu_shell_remove_mnemonic (GtkMenuShell *menu_shell,
  *
  * @returns: %TRUE if the menu_shell will take the keyboard focus on popup.
  *
- * Since: 2.8
+ * Since: 2.8 (maemo 1.0)
  **/
 gboolean
 gtk_menu_shell_get_take_focus (GtkMenuShell *menu_shell)
@@ -1645,7 +1650,7 @@ gtk_menu_shell_get_take_focus (GtkMenuShell *menu_shell)
  *
  * See also gdk_keyboard_grab()
  *
- * Since: 2.8
+ * Since: 2.8 (maemo 1.0)
  **/
 void
 gtk_menu_shell_set_take_focus (GtkMenuShell *menu_shell,

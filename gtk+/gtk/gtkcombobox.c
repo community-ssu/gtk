@@ -748,6 +748,11 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
 							 TRUE,
 							 G_PARAM_READWRITE));
 
+  /**
+   * GtkComboBox:propagate-lr-keys:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (object_class,
                                    PROP_PROPAGATE_LR_KEYS,
                                    g_param_spec_boolean ("propagate-lr-keys",
@@ -763,6 +768,11 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
                                                                  FALSE,
                                                                  G_PARAM_READABLE));
 
+  /**
+   * GtkComboBox:hildonlike:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                   g_param_spec_boolean ("hildonlike",
                                   _("Size request"),
@@ -770,6 +780,11 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
                                   FALSE,
                                   G_PARAM_READABLE));
 
+  /**
+   * GtkComboBox:arrow-height:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                           g_param_spec_int ("arrow-height",
 							      P_("Arrow height for option menu"),
@@ -779,6 +794,11 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
 							      28,
 							      G_PARAM_READWRITE));
 
+  /**
+   * GtkComboBox:arrow-width:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                           g_param_spec_int ("arrow-width",
 							      P_("Arrow width for option menu"),
@@ -788,6 +808,11 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
 							      26,
 							      G_PARAM_READWRITE));
 
+  /**
+   * GtkComboBox:separator-width:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                           g_param_spec_int ("separator-width",
 							      P_("Separator Width"),
@@ -797,7 +822,11 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
 							      6,
 							      G_PARAM_READWRITE));
 
-  /* Hildon hack: style property for enabling the autodimming hack */
+  /**
+   * GtkComboBox:autodimmed-button:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (
     widget_class,
     g_param_spec_boolean ("autodimmed_button",

@@ -579,6 +579,11 @@ gtk_cell_view_get_cell_info (GtkCellView     *cellview,
   return NULL;
 }
 
+/**
+ * gtk_cell_view_set_cell_data:
+ *
+ * Since: maemo 1.0
+ */
 void
 gtk_cell_view_set_cell_data (GtkCellView *cell_view)
 {

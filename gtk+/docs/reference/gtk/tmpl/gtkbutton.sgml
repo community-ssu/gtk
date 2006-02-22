@@ -75,12 +75,27 @@ mouse cursor is.
 
 @button: the object which received the signal.
 
+<!-- ##### ARG GtkButton:automatic-detail ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkButton:detail ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkButton:focus-on-click ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG GtkButton:image ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkButton:keyboard-button ##### -->
 <para>
 
 </para>
@@ -125,6 +140,16 @@ mouse cursor is.
 
 </para>
 
+<!-- ##### ARG GtkButton:child-offset-y ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkButton:child-spacing ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkButton:default-border ##### -->
 <para>
 
@@ -136,6 +161,26 @@ mouse cursor is.
 </para>
 
 <!-- ##### ARG GtkButton:displace-focus ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkButton:listboxheader ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkButton:minimum-width ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkButton:padding ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkButton:separator-height ##### -->
 <para>
 
 </para>
@@ -351,5 +396,23 @@ Returns the current relief style of the given #GtkButton.
 
 @button: 
 @Returns: 
+
+
+<!-- ##### FUNCTION osso_gtk_button_set_detail_from_attach_flags ##### -->
+<para>
+
+</para>
+
+@button: 
+@flags: 
+
+
+<!-- ##### FUNCTION hildon_gtk_button_set_depressed ##### -->
+<para>
+
+</para>
+
+@button: 
+@depressed: 
 
 

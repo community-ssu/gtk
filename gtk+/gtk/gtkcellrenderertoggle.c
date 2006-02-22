@@ -172,6 +172,11 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 							 G_PARAM_READABLE |
 							 G_PARAM_WRITABLE));
 
+  /**
+   * GtkCellRendererToggle:checkbox-mode:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (object_class,
                                    PROP_CHECKBOX_MODE,
                                    g_param_spec_boolean ("checkbox-mode",

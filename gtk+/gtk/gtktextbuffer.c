@@ -202,12 +202,22 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                                                         P_("Text Tag Table"),
                                                         GTK_TYPE_TEXT_TAG_TABLE,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+  /**
+   * GtkTextBuffer:can-paste-rich-text:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (object_class,
                                   PROP_CAN_PASTE_RICH_TEXT,
                                   g_param_spec_boolean ("can_paste_rich_text",
                                                         P_("Can paste rich text"),
                                                         P_("Whether it should be possible to paste rich text to the buffer"),
                                                         FALSE, G_PARAM_READWRITE));
+  /**
+   * GtkTextBuffer:rich-text-format:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (object_class,
                                   PROP_RICH_TEXT_FORMAT,
                                   g_param_spec_string ("rich_text_format",
@@ -3793,6 +3803,15 @@ gtk_text_buffer_end_user_action (GtkTextBuffer *buffer)
     }
 }
 
+/**
+ * gtk_text_buffer_set_can_paste_rich_text:
+ * @buffer: a #GtkTextBuffer
+ * @can_paste_rich_text: whether rich text pasting and dropping is enabled
+ *
+ * Sets whether rich text can be pasted and dropped to the text buffer.
+ *
+ * Since: maemo 1.0
+ */
 void
 gtk_text_buffer_set_can_paste_rich_text (GtkTextBuffer *buffer,
                                         gboolean       can_paste_rich_text)
@@ -3813,6 +3832,14 @@ gtk_text_buffer_set_can_paste_rich_text (GtkTextBuffer *buffer,
     }
 }
 
+/**
+ * gtk_text_buffer_get_can_paste_rich_text:
+ * @buffer: a #GtkTextBuffer
+ *
+ * Return value: whether rich text pasting and dropping is enabled
+ *
+ * Since: maemo 1.0
+ */
 gboolean
 gtk_text_buffer_get_can_paste_rich_text (GtkTextBuffer *buffer)
 {
@@ -3825,6 +3852,13 @@ gtk_text_buffer_get_can_paste_rich_text (GtkTextBuffer *buffer)
   return priv->can_paste_rich_text;
 }
 
+/**
+ * gtk_text_buffer_set_rich_text_format:
+ * @buffer: a #GtkTextBuffer
+ * @format:
+ *
+ * Since: maemo 1.0
+ */
 void
 gtk_text_buffer_set_rich_text_format (GtkTextBuffer *buffer,
                                      const gchar   *format)
@@ -3843,6 +3877,14 @@ gtk_text_buffer_set_rich_text_format (GtkTextBuffer *buffer,
   g_object_notify (G_OBJECT (buffer), "rich_text_format");
 }
 
+/**
+ * gtk_text_buffer_get_rich_text_format:
+ * @buffer: a #GtkTextBuffer
+ *
+ * Return value:
+ *
+ * Since: maemo 1.0
+ */
 G_CONST_RETURN gchar *
 gtk_text_buffer_get_rich_text_format (GtkTextBuffer *buffer)
 {

@@ -24,3 +24,8 @@ The #GtkSeparator-struct struct contains private data only.
 </para>
 
 
+<!-- ##### ARG GtkSeparator:hildonlike-drawing ##### -->
+<para>
+
+</para>
+

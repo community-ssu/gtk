@@ -61,6 +61,13 @@ Causes the GtkMenuShell::selection-done signal to be emitted.
 
 @menushell: the object which received the signal.
 
+<!-- ##### SIGNAL GtkMenuShell::close ##### -->
+<para>
+
+</para>
+
+@menushell: the object which received the signal.
+
 <!-- ##### SIGNAL GtkMenuShell::cycle-focus ##### -->
 <para>
 
@@ -92,6 +99,11 @@ shell.
 </para>
 
 @menushell: the object which received the signal.
+
+<!-- ##### ARG GtkMenuShell:take-focus ##### -->
+<para>
+
+</para>
 
 <!-- ##### FUNCTION gtk_menu_shell_append ##### -->
 <para>
@@ -212,4 +224,22 @@ An enumeration representing directional movements within a menu.
 @GTK_MENU_DIR_CHILD: 
 @GTK_MENU_DIR_NEXT: 
 @GTK_MENU_DIR_PREV: 
+
+<!-- ##### FUNCTION gtk_menu_shell_get_take_focus ##### -->
+<para>
+
+</para>
+
+@menu_shell: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_menu_shell_set_take_focus ##### -->
+<para>
+
+</para>
+
+@menu_shell: 
+@take_focus: 
+
 

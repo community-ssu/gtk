@@ -585,6 +585,11 @@ gtk_window_class_init (GtkWindowClass *klass)
                                                          FALSE,
                                                          G_PARAM_READWRITE));  
 
+  /**
+   * GtkWindow:urgency-hint:
+   *
+   * Since: 2.8 (maemo 2.0)
+   */
   g_object_class_install_property (gobject_class,
                    PROP_URGENCY_HINT,
                    g_param_spec_boolean ("urgency-hint",
@@ -7602,12 +7607,28 @@ gtk_window_set_default_icon_from_file (const gchar *filename,
 
 #endif
 /*Hildon focus handling*/
+
+/**
+ * gtk_window_get_prev_focus_widget:
+ * @window: a #GtkWindow
+ *
+ * Return value:
+ *
+ * Since: maemo 1.0
+ */
 GtkWidget *gtk_window_get_prev_focus_widget (GtkWindow *window)
 {
   g_return_val_if_fail (GTK_IS_WINDOW (window), NULL);
   return GTK_WINDOW_GET_PRIVATE (window)->prev_focus_widget;
 }
 
+/**
+ * gtk_window_set_prev_focus_widget:
+ * @window: a #GtkWindow
+ * @widget: a #GtkWidget
+ *
+ * Since: maemo 1.0
+ */
 void gtk_window_set_prev_focus_widget (GtkWindow *window, GtkWidget *widget)
 {
   GtkWindowPrivate *priv;

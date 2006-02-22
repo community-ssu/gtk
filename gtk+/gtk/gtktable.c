@@ -508,8 +508,16 @@ gtk_table_new (guint	rows,
   return GTK_WIDGET (table);
 }
 
-void osso_gtk_table_find_button_detail (GtkTable *table,
-					GtkTableChild *table_child)
+/**
+ * osso_gtk_table_find_button_detail:
+ * @table: a #GtkTable
+ * @table_child:
+ *
+ * Since: maemo 1.0
+ */
+void 
+osso_gtk_table_find_button_detail (GtkTable *table,
+				   GtkTableChild *table_child)
 {
   OssoGtkButtonAttachFlags attachflags = 0;
   gboolean automatic_detail;

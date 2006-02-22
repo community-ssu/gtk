@@ -1147,8 +1147,13 @@ _gtk_file_system_create (const char *file_system_name)
   return fs;
 }
 
-/* In Hildon we need to publish the previous symbol */
-GtkFileSystem *hildon_gtk_file_system_create(const char *file_system_name)
+/**
+ * hildon_gtk_file_system_create:
+ *
+ * Since: maemo 1.0
+ */
+GtkFileSystem *
+hildon_gtk_file_system_create(const char *file_system_name)
 {
   return _gtk_file_system_create (file_system_name);
 }

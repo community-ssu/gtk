@@ -601,7 +601,7 @@ gtk_calendar_class_init (GtkCalendarClass *class)
  *
  * Determines the start day of the week (0 for Sunday, 1 for Monday etc.)
  *
- * Since: OSSO addition
+ * Since: maemo 1.0
  */
   g_object_class_install_property (gobject_class,
                                    PROP_WEEK_START,
@@ -611,6 +611,11 @@ gtk_calendar_class_init (GtkCalendarClass *class)
                                                      0, 6, 0,
                                                      G_PARAM_READWRITE));
 
+  /**
+   * GtkCalendar:min-year:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (gobject_class,
                                    PROP_MIN_YEAR,
                                    g_param_spec_int ("min_year",
@@ -619,6 +624,11 @@ gtk_calendar_class_init (GtkCalendarClass *class)
                                                      0, 2100, 0,
                                                      G_PARAM_READWRITE));
 
+  /**
+   * GtkCalendar:max-year:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (gobject_class,
                                    PROP_MAX_YEAR,
                                    g_param_spec_int ("max_year",
@@ -627,6 +637,11 @@ gtk_calendar_class_init (GtkCalendarClass *class)
                                                      0, 2100, 0,
                                                      G_PARAM_READWRITE));
 
+  /**
+   * GtkCalendar:hildonlike:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                   g_param_spec_boolean ("hildonlike",
                                   _("Size request"),
@@ -690,7 +705,12 @@ gtk_calendar_class_init (GtkCalendarClass *class)
                   NULL, NULL,
                   _gtk_marshal_VOID__VOID,
                   G_TYPE_NONE, 0);
-   gtk_calendar_signals[ERRONEOUS_DATE_SIGNAL] =
+  /**
+   * GtkCalendar::erroneous-date:
+   *
+   * Since: maemo 1.0
+   */
+  gtk_calendar_signals[ERRONEOUS_DATE_SIGNAL] =
      g_signal_new ("erroneous_date",
                    G_OBJECT_CLASS_TYPE (gobject_class),
                    G_SIGNAL_RUN_FIRST,
@@ -698,7 +718,12 @@ gtk_calendar_class_init (GtkCalendarClass *class)
                    NULL, NULL,
                    _gtk_marshal_VOID__VOID,
                    G_TYPE_NONE, 0);
-   gtk_calendar_signals[SELECTED_DATE_SIGNAL] =
+  /**
+   * GtkCalendar::selected-date:
+   *
+   * Since: maemo 1.0
+   */
+  gtk_calendar_signals[SELECTED_DATE_SIGNAL] =
      g_signal_new ("selected_date",
                    G_OBJECT_CLASS_TYPE(gobject_class),
                    G_SIGNAL_RUN_FIRST,

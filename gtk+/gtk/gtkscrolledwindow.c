@@ -289,6 +289,11 @@ gtk_scrolled_window_class_init (GtkScrolledWindowClass *class)
 							     DEFAULT_SCROLLBAR_SPACING,
 							     G_PARAM_READABLE));
 
+  /**
+   * GtkScrolledWindow:scrollbar-dislocation:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_boolean ("scrollbar_dislocation",
     								 P_("Scrollbar dislocation"),

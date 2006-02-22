@@ -54,6 +54,11 @@ GtkHButtonBox does not contain any public fields.
 </para>
 
 
+<!-- ##### ARG GtkHButtonBox:hildonlike ##### -->
+<para>
+
+</para>
+
 <!-- ##### FUNCTION gtk_hbutton_box_new ##### -->
 <para>
 Creates a new horizontal button box.

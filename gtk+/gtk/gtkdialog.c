@@ -189,6 +189,11 @@ gtk_dialog_class_init (GtkDialogClass *class)
                                                              G_MAXINT,
                                                              2,
                                                              G_PARAM_READABLE));
+  /**
+   * GtkDialog:content-area-spacing:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("content_area_spacing",
                                                              P_("Content area spacing"),
@@ -215,6 +220,11 @@ gtk_dialog_class_init (GtkDialogClass *class)
                                                              5,
                                                              G_PARAM_READABLE));
 
+  /**
+   * GtkDialog:extended-left-border:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("extended_left_border",
                                                              _("Content area extra left border"),
@@ -223,6 +233,11 @@ gtk_dialog_class_init (GtkDialogClass *class)
                                                              G_MAXINT,
                                                              0,
                                                              G_PARAM_READABLE));
+  /**
+   * GtkDialog:extended-right-border:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("extended_right_border",
                                                              _("Content area extra right border"),

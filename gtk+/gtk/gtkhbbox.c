@@ -96,8 +96,10 @@ gtk_hbutton_box_class_init (GtkHButtonBoxClass *class)
   widget_class->size_request = gtk_hbutton_box_size_request;
   widget_class->size_allocate = gtk_hbutton_box_size_allocate;
 
-  /* HILDON:
-   * Name buttons only if hildon like style property is set
+  /**
+   * GtkHButtonBox:hildonlike:
+   *
+   * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_boolean 
