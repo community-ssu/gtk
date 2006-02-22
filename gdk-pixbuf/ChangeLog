@@ -1,3 +1,8 @@
+2006-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* io-png.c (png_text_to_pixbuf_option): Avoid loading iconv if the
+	text is plain ASCII as it wastes quite a bit of memory for no benefit.
+
 2006-01-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Merge from GNOME CVS.
