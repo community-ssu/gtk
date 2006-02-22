@@ -1,7 +1,7 @@
 /*
  * This file is part of maemo-af-desktop
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -22,6 +22,7 @@
  *
  */
  
+#include <string.h> /* for memset */
 /* Hildon includes */
 #include "hildon-status-bar-lib.h"
 
@@ -34,173 +35,242 @@
 /* log include */
 #include <log-functions.h>
 
-static SystemDialog dialogs[HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS];
-static gint dialog_index = 0;
+/* Queue for dialogs is a rotating buffer.
+ * Dialogs are shown in the FIFO order. */
+static SystemDialog dialog_queue[HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS];
+static gint next_free_index = 0;
+static gboolean showing_dialog = FALSE;
 
 static void hildon_status_bar_lib_show_dialog( gint dialog_id );
-static void hildon_status_bar_lib_destroy_dialog( GtkDialog *dialog, gint arg1, 
+static void hildon_status_bar_lib_destroy_dialog( GtkDialog *dialog,
+                                                  gint arg1, 
                                                   gpointer data );
+static gint hildon_status_bar_lib_append_to_queue( gint type,
+                                                   const gchar *icon,
+                                                   const gchar *msg,
+                                                   gint int_type,
+                                                   dialog_closed_cb cb,
+                                                   gpointer data );
 
-static void hildon_status_bar_lib_show_dialog( gint dialog_id )
+
+static void hildon_status_bar_lib_show_dialog( gint id )
 {
-    GtkWidget *note;
-
     /* These must match with the D-BUS system note types */
-    /* osso_system_note_type_t; */
-    static gchar *icon[HILDON_STATUS_BAR_MAX_NOTE_TYPE] = {
-        "qgn_note_gene_syswarning",         /* OSSO_GN_WARNING */
-        "qgn_note_gene_syserror", /* OSSO_GN_ERROR */
-        "qgn_note_info",  /* OSSO_GN_NOTICE */
-        "qgn_note_gene_wait"  /* OSSO_GN_WAIT */
+    /* osso_system_note_type_t (defined in libosso.h) */
+    static const gchar *icon[HILDON_STATUS_BAR_MAX_NOTE_TYPE + 1] = {
+        "qgn_note_gene_syswarning",   /* OSSO_GN_WARNING */
+        "qgn_note_gene_syserror",     /* OSSO_GN_ERROR */
+        "qgn_note_info",              /* OSSO_GN_NOTICE */
+        "qgn_note_gene_wait"          /* OSSO_GN_WAIT */
     };
 
-    /* no type, so it's required by a plugin */
-    if( dialogs[dialog_id].type == -1 )
-        note = hildon_note_new_information_with_icon_theme( 
-            NULL, 
-            dialogs[dialog_id].msg, 
-            dialogs[dialog_id].icon );
-    else
-        note = hildon_note_new_information_with_icon_name( 
-            NULL, 
-            dialogs[dialog_id].msg, 
-            icon[dialogs[dialog_id].type] );
+    g_assert( id < HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS && id >= 0 );
+    osso_log( LOG_DEBUG, "next_free_index = %d", next_free_index );
+    osso_log( LOG_DEBUG, "showing_dialog = %d", showing_dialog );
 
-    g_signal_connect( G_OBJECT( note ), "response",
-                      G_CALLBACK( hildon_status_bar_lib_destroy_dialog ),
-		      (gpointer)dialog_id );
-
-    dialogs[dialog_id].visible = TRUE;
-    gtk_widget_show( note );
-}
-
-static void hildon_status_bar_lib_destroy_dialog( GtkDialog *dialog, gint arg1, 
-					   gpointer data )
-{
-    gint dialog_i = (int)data;
-    gint int_type;
-    
-    g_return_if_fail( dialog );
-
-    gtk_widget_destroy( GTK_WIDGET( dialog ) );
-
-    int_type = dialogs[dialog_i].int_type; 
-
-    /* if requested by a plugin, inform it, that the dialog is closed */
-    if( dialogs[dialog_i].cb )
+    /* create the widget if it does not exist */
+    if( dialog_queue[id].widget == NULL )
     {
-        dialogs[dialog_i].cb( dialogs[dialog_i].int_type,
-                              dialogs[dialog_i].data );
-        dialogs[dialog_i].cb = NULL;
+        if( dialog_queue[id].type == -1 )
+        {
+            /* no type, a plugin is showing the dialog */
+            dialog_queue[id].widget =
+                hildon_note_new_information_with_icon_theme( NULL, 
+                    dialog_queue[id].msg, dialog_queue[id].icon );
+        }
+        else
+        {
+            dialog_queue[id].widget =
+                hildon_note_new_information_with_icon_name( NULL, 
+                    dialog_queue[id].msg, icon[dialog_queue[id].type] );
+        }
+
+        g_signal_connect( G_OBJECT( dialog_queue[id].widget ), "response",
+            G_CALLBACK( hildon_status_bar_lib_destroy_dialog ),
+            (gpointer)id );
     }
 
-    /* clear current dialog struct */
-    dialogs[dialog_i].visible = FALSE;
-
-    dialogs[dialog_i].type = 0;
-    dialogs[dialog_i].int_type = 0;
-
-    g_free( dialogs[dialog_i].msg );
-    dialogs[dialog_i].msg = NULL;
-
-    g_free( dialogs[dialog_i].icon );
-    dialogs[dialog_i].icon = NULL;
-    dialogs[dialog_i].data = NULL;
-
-    /* show next dialog, if one in queue */
-    if( ++dialog_i == HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS )
-        dialog_i = 0;
-
-    if( dialogs[dialog_i].msg != NULL )
-        hildon_status_bar_lib_show_dialog( dialog_i );
+    if( showing_dialog )
+    {
+        /* We are currently showing a dialog, don't show it yet. */
+        osso_log( LOG_DEBUG, "Some dialog is already shown" );
+        return;
+    }
+    gtk_widget_show( dialog_queue[id].widget );
+    showing_dialog = TRUE;
 }
 
-void hildon_status_bar_lib_queue_dialog( const gchar *icon, const gchar *msg, 
-					 gint int_type,
-					 dialog_closed_cb cb, gpointer data )
+static void hildon_status_bar_lib_destroy_dialog( GtkDialog *dialog,
+                                                  gint arg1, 
+                                                  gpointer data )
 {
-    g_return_if_fail( cb );
+    gint id = (gint)data;
 
-    /* call the callback immediately if mandatory parameters are not given */
-    if( !icon || !msg )
+    g_assert( id < HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS && id >= 0 );
+    g_assert( showing_dialog == TRUE );
+    if( dialog == NULL )
+    {
+        osso_log( LOG_ERR, "Invalid arguments" );
+        return;
+    }
+    osso_log( LOG_DEBUG, "destroying dialog %d", id );
+
+    g_assert( GTK_WIDGET( dialog ) == dialog_queue[id].widget );
+    gtk_widget_destroy( GTK_WIDGET( dialog ) );
+    showing_dialog = FALSE;
+
+    /* inform that the dialog is closed */
+    if( dialog_queue[id].cb != NULL )
+    {
+        dialog_queue[id].cb( dialog_queue[id].int_type,
+                             dialog_queue[id].data );
+    }
+
+    /* clear current dialog struct (memset sets occupied to FALSE) */
+    g_free( dialog_queue[id].msg );
+    g_free( dialog_queue[id].icon );
+    memset( &dialog_queue[id], 0, sizeof( SystemDialog ) );
+
+    /* show next dialog, if there is one in the queue */
+    if( ++id == HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS )
+    {
+        id = 0;
+    }
+
+    if( dialog_queue[id].occupied )
+    {
+        hildon_status_bar_lib_show_dialog( id );
+    }
+}
+
+static gint hildon_status_bar_lib_append_to_queue( gint type,
+                                                   const gchar *icon,
+                                                   const gchar *msg,
+                                                   gint int_type,
+                                                   dialog_closed_cb cb,
+                                                   gpointer data )
+{
+    gint id = next_free_index;
+
+    if( dialog_queue[id].occupied )
+    {
+        osso_log( LOG_ERR, "Dialog queue overflow" );
+        return -1;
+    }
+
+    dialog_queue[id].type = type;
+    dialog_queue[id].icon = g_strdup( icon );
+    dialog_queue[id].msg = g_strdup( msg );
+    dialog_queue[id].int_type = int_type;
+    dialog_queue[id].cb = cb;
+    dialog_queue[id].data = data;
+    dialog_queue[id].occupied = TRUE;
+    dialog_queue[id].widget = NULL;
+
+    if( ++next_free_index == HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS )
+    {
+        next_free_index = 0;
+    }
+    return id;
+}
+
+void hildon_status_bar_lib_queue_dialog( const gchar *icon,
+                                         const gchar *msg, gint int_type,
+                                         dialog_closed_cb cb,
+                                         gpointer data )
+{
+    gint id = -1;
+
+    if( icon == NULL || msg == NULL || cb == NULL )
+    {
+        osso_log( LOG_ERR, "Invalid arguments" );
+        if( cb != NULL )
+        {
+            cb( int_type, data );
+        }
+        return;
+    }
+
+    id = hildon_status_bar_lib_append_to_queue( -1, icon, msg, int_type,
+                                                cb, data );
+    if( id == -1 )
     {
         cb( int_type, data );
         return;
     }
 
-    hildon_status_bar_lib_prepare_dialog( -1, icon, msg, int_type, cb, data );
+    hildon_status_bar_lib_show_dialog( id );
 }
 
 void hildon_status_bar_lib_prepare_dialog( gint type, const gchar *icon, 
-					   const gchar *msg, gint int_type,
-					   dialog_closed_cb cb, gpointer data )
+                                           const gchar *msg, gint int_type,
+                                           dialog_closed_cb cb,
+                                           gpointer data )
 {
-    gboolean queue = TRUE;
-    gboolean overwrite = FALSE;
-    gint dialog_id = dialog_index;
+    gint id = -1;
 
-    /* no messages in queue */
-    if( dialogs[dialog_id].msg == NULL )
-        queue = FALSE;
-    else 
+    if( msg == NULL || type > HILDON_STATUS_BAR_MAX_NOTE_TYPE || type < 0 )
     {
-        /* requested by a plugin */
-        if( cb )
+        osso_log( LOG_ERR, "Invalid arguments" );
+        if( cb != NULL )
         {
-            int i;
-            /* search for the same plugin and same internal type */
-            for( i = 0; i < HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS; ++i )
-            {
-                if( cb == dialogs[i].cb )
-                {
-                    if( int_type == dialogs[i].int_type )
-                    {
-                        /* If the dialog is not visible, replace it */
-                        if( !dialogs[i].visible )
-                        {
-                            dialog_id = i;
-                            overwrite = TRUE;
-
-                            g_free( dialogs[i].msg );
-                            dialogs[i].msg = NULL;
-
-                            g_free( dialogs[i].icon );
-                            dialogs[i].icon = NULL;
-                            break;
-                        }
-                    }
-                }       
-            }
-        }
-        
-        if( !overwrite && ++dialog_id == HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS )
-            dialog_id = 0;
-    }
-
-    /* too many system dialogs */
-    if( dialogs[dialog_id].msg != NULL )
-    {
-        osso_log( LOG_ERR, "Too many system dialogs. Defined maximum is %d!", 
-                  HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS );
-
-        /* tell the plugin, it's dialog is closed */
-        if( type == -1 )
             cb( int_type, data );
+        }
         return;
     }
 
-    dialogs[dialog_id].type = type;
-    dialogs[dialog_id].msg = g_strdup( msg );
-    dialogs[dialog_id].icon = g_strdup( icon );
-    dialogs[dialog_id].int_type = int_type;
-    dialogs[dialog_id].cb = cb;
-    dialogs[dialog_id].data = data;
-    dialogs[dialog_id].visible = FALSE;
-    
-    if( !overwrite )
-        dialog_index = dialog_id;
+    id = hildon_status_bar_lib_append_to_queue( type, icon, msg, int_type,
+                                                cb, data );
+    if( id == -1 )
+    {
+        if( cb != NULL )
+        {
+            cb( int_type, data );
+        }
+        return;
+    }
 
-    if( !queue )
-        hildon_status_bar_lib_show_dialog( dialog_id );
-
+    hildon_status_bar_lib_show_dialog( id );
 }
+
+gint hildon_status_bar_lib_open_closeable_dialog( gint type,
+                                                  const gchar *msg )
+{
+    gint id = -1;
+
+    if( msg == NULL || type > HILDON_STATUS_BAR_MAX_NOTE_TYPE || type < 0 )
+    {
+        osso_log( LOG_ERR, "Invalid arguments" );
+        return -1;
+    }
+
+    id = hildon_status_bar_lib_append_to_queue( type, NULL, msg, -1,
+                                                NULL, NULL );
+    if( id == -1 )
+    {
+        return -1;
+    }
+
+    hildon_status_bar_lib_show_dialog( id );
+    return id;
+}
+
+void hildon_status_bar_lib_close_closeable_dialog( gint id )
+{
+    if( id >= HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS || id < 0 )
+    {
+        osso_log( LOG_ERR, "Invalid dialog id given as argument" );
+        return;
+    }
+
+    if( !showing_dialog || !dialog_queue[id].occupied )
+    {
+        osso_log( LOG_DEBUG, "Dialog is already closed" );
+        return;
+    }
+
+    g_assert( dialog_queue[id].widget != NULL );
+
+    g_signal_emit_by_name( dialog_queue[id].widget, "response" );
+}
+

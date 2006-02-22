@@ -306,6 +306,48 @@ static gint rpc_cb( const gchar *interface,
         hildon_status_bar_lib_prepare_dialog( val[1]->value.i, NULL, 
                                               val[0]->value.s, 0, NULL, NULL );
     }
+    /* open closeable system dialog */
+    else if( g_str_equal( "open_closeable_system_dialog", method ) )
+    {
+        gint id;
+        /* check arguments */
+        if( arguments->len < 2 || val[0]->type != DBUS_TYPE_STRING || 
+            val[1]->type != DBUS_TYPE_INT32 ) 
+        {
+            retval->type = DBUS_TYPE_STRING;
+            if( arguments->len < 2 ) {
+                retval->value.s = "Not enough args to dialog";
+            } else {
+                retval->value.s = "Wrong type of arguments to dialog";
+            }
+            osso_log( LOG_ERR, retval->value.s );
+            return OSSO_ERROR;       
+        }
+
+        id = hildon_status_bar_lib_open_closeable_dialog( val[1]->value.i,
+                 val[0]->value.s );
+        /* return id of the dialog to the caller */
+        retval->type = DBUS_TYPE_INT32;
+        retval->value.i = id;
+    }
+    /* close closeable system dialog */
+    else if( g_str_equal( "close_closeable_system_dialog", method ) )
+    {
+        /* the id of the dialog is given as argument */
+        if( arguments->len < 1 || val[0]->type != DBUS_TYPE_INT32 ) 
+        {
+            retval->type = DBUS_TYPE_STRING;
+            if( arguments->len < 1 ) {
+                retval->value.s = "Not enough args to dialog";
+            } else {
+                retval->value.s = "Argument has invalid type";
+            }
+            osso_log( LOG_ERR, retval->value.s );
+            return OSSO_ERROR;       
+        }
+
+        hildon_status_bar_lib_close_closeable_dialog( val[0]->value.i );
+    }
     /* plugin */
     else if( g_str_equal( "event", method ) )
     {

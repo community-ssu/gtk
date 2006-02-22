@@ -17,22 +17,21 @@
 #include <config.h>
 #endif
 
-#include <libintl.h>
-#define _(a) dgettext(PACKAGE, a)
-
 #include <dirent.h>
 #include <sys/stat.h>
 #include <libxml/xmlreader.h>
 #include <string.h>
 #include <errno.h>
 
+/* For XML */
+#include <libxml/encoding.h>
+#include <libxml/xmlwriter.h>
+
 #define DESKTOP_FILE_SUFFIX ".desktop"
 #define DESKTOP_ENTRY_GROUP "Desktop Entry"
 
 /* This comes from Task Navigator */
 #define EXTRAS_MENU_STRING "tana_fi_extras"
-
-#define DEBUG TRUE
 
 typedef struct {
 	gchar *name;
@@ -261,42 +260,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		xmlDocPtr doc, xmlNodePtr root_element, GtkTreeIter *iterator,
 		GList *desktop_files)
 {
-	if (doc == NULL) {
-		doc = xmlReadFile(filename, NULL, 0);
-
-		if (doc == NULL) {
-			ULOG_ERR( "read_menu_conf: unable to read '%s'", filename );
-			return;
-		}
-	}
-
-	if (root_element == NULL) {
-		root_element = xmlDocGetRootElement(doc);
-
-		if (root_element == NULL) {
-			ULOG_DEBUG( "read_menu_conf: failed to get root element." );
-			xmlFreeDoc(doc);
-			return;
-		}
-	}
-
-	if (xmlStrcmp(root_element->name, (const xmlChar *) "Menu") != 0) {
-		/* Not a menu */
-		ULOG_DEBUG( "read_menu_conf: not a menu.");
-		return;
-	}
-
-
-	xmlNodePtr current_element = NULL;
-	xmlChar *key;
-	
 	gint level = 0;
-	
-	GtkTreeIter child_iterator;
-	desktop_entry_t *item;
-
-	GdkPixbuf *icon;
-
 
 	/* Make sure we have a valid iterator */
 	if (!gtk_tree_store_iter_is_valid(menu_tree, iterator)) {
@@ -307,29 +271,65 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		level = gtk_tree_store_iter_depth(menu_tree, iterator);
 	}
 
+	/* Always add the "Favourites" */
+	if (level == 0) {
+		gtk_tree_store_set(menu_tree,
+				iterator,
+				TREE_MODEL_NAME,
+				/* FIXME: log. str? */
+				g_strdup( "Favourites" ),
+				TREE_MODEL_ICON,
+				get_icon(ICON_FOLDER, ICON_SIZE),
+				TREE_MODEL_EXEC,
+				"",
+				TREE_MODEL_SERVICE,
+				"",
+				TREE_MODEL_DESKTOP_ID,
+				"",
+				-1);
+	}
+
+	if (doc == NULL) {
+		doc = xmlReadFile(filename, NULL, 0);
+
+		if (doc == NULL) {
+			ULOG_ERR( "read_menu_conf: unable to read '%s'", filename );
+			goto check_unallocated;
+		}
+	}
+
+	if (root_element == NULL) {
+		root_element = xmlDocGetRootElement(doc);
+
+		if (root_element == NULL) {
+			ULOG_DEBUG( "read_menu_conf: failed to get root element." );
+			xmlFreeDoc(doc);
+			goto check_unallocated;
+		}
+	}
+
+	if (xmlStrcmp(root_element->name, (const xmlChar *) "Menu") != 0) {
+		/* Not a menu */
+		ULOG_DEBUG( "read_menu_conf: not a menu.");
+		goto check_unallocated;
+	}
+
+
+	xmlNodePtr current_element = NULL;
+	xmlChar *key;
+		
+	GtkTreeIter child_iterator;
+	desktop_entry_t *item;
+
+	GdkPixbuf *icon;
+
+
 	/* Loop through the elements and add to parent */
 	for (current_element = root_element->xmlChildrenNode;
 			current_element != NULL;
 			current_element = current_element->next) {
 
 		if (strcmp(current_element->name, "Menu") == 0) {
-
-			if (level == 0) {
-				gtk_tree_store_set(menu_tree,
-						iterator,
-						TREE_MODEL_NAME,
-						/* FIXME: log. str? */
-						g_strdup( _( "Favourites" ) ),
-						TREE_MODEL_ICON,
-						get_icon(ICON_FOLDER, ICON_SIZE),
-						TREE_MODEL_EXEC,
-						"",
-						TREE_MODEL_SERVICE,
-						"",
-						TREE_MODEL_DESKTOP_ID,
-						"",
-						-1);
-			}
 			
 			/* Submenu */
 			ULOG_DEBUG( "read_menu_conf: "
@@ -343,7 +343,6 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 			if (level == 0) {
 				/* H4rd c0d3d for top level */
-				/*key = (xmlChar *) g_strdup("Favourites");*/
 				continue;
 			} else {
 				key = xmlNodeListGetString(doc,
@@ -356,7 +355,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 			gtk_tree_store_set(menu_tree, iterator,
 					TREE_MODEL_NAME,
-					g_strdup( _( key ) ),
+					g_strdup( key ),
 					TREE_MODEL_ICON,
 					get_icon(ICON_FOLDER, ICON_SIZE),
 					TREE_MODEL_EXEC,
@@ -439,7 +438,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					gtk_tree_store_set(menu_tree,
 							&child_iter,
 							TREE_MODEL_NAME,
-							g_strdup( _( item->name) ),
+							g_strdup( item->name ),
 							TREE_MODEL_ICON,
 							icon,
 							TREE_MODEL_EXEC,
@@ -482,6 +481,8 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		}
 
 	}
+
+	check_unallocated:
 
 	if ( level == 0 ) {
 
@@ -581,10 +582,7 @@ GtkTreeModel *get_menu_contents(void)
 	gchar *user_home_dir;
 	gchar *user_menu_conf_file;
 
-	bindtextdomain(PACKAGE, LOCALEDIR);
-
 	desktop_files = get_desktop_files(g_strdup(DEFAULT_APPS_DIR), desktop_files);
-
 
 	contents = gtk_tree_store_new(
 			TREE_MODEL_COLUMNS,
@@ -604,11 +602,11 @@ GtkTreeModel *get_menu_contents(void)
 	
 	/* If the user has her own menu file.. */
 	if ( g_file_test( user_menu_conf_file, G_FILE_TEST_EXISTS ) ) {
-		fprintf( stderr, "DEBUG: Using user menu file = '%s'\n",
+		ULOG_DEBUG( "get_menu_contents: using user menu file = '%s'\n",
 				user_menu_conf_file );
 
 		/* .. read it */
-		read_menu_conf(SYSTEMWIDE_MENU_FILE, contents,
+		read_menu_conf(user_menu_conf_file, contents,
 				NULL, NULL, &content_iter, desktop_files);
 	} else {
 		/* Use the system-wide menu file */
@@ -625,11 +623,255 @@ GtkTreeModel *get_menu_contents(void)
 	return GTK_TREE_MODEL(contents);
 } /* static GtkTreeModel *get_menu_contents() */
 
-/*foo create_xml_tree();*/
 
+/* NOTE!
+ *
+ * This function is NOT recursive and only supports depth specified
+ * in the TN UI spec. Also, separators are not supported in submenus.
+ * 
+ * This works just fine for our current needs, but is teh sux. */
 gboolean set_menu_contents( GtkTreeModel *model )
 {
-	/* FIXME: Cleaned up for now :) But don't worry, coming soon... */
-	return TRUE;
+	g_assert( GTK_IS_TREE_MODEL( model ) );
+
+	gboolean return_value = FALSE;
+
+	gboolean include_open = FALSE;	
+
+	GtkTreeIter root_iter;
+	GtkTreeIter iter;
+	GtkTreeIter child_iter;
+
+	gchar *root_name = NULL;
+	gchar *name = NULL;
+	gchar *desktop_id = NULL;
+
+	gchar *child_name = NULL;
+	gchar *child_desktop_id = NULL;
+
+
+	gtk_tree_model_get_iter_first( model, &root_iter );
+
+	if ( !gtk_tree_store_iter_is_valid(
+				GTK_TREE_STORE( model ), &root_iter ) ) {
+		ULOG_ERR( "set_menu_contents: failed to get root iterator." );
+		return FALSE;
+
+	} else if ( !gtk_tree_model_iter_children( model, &iter, &root_iter ) ) {
+		ULOG_ERR( "set_menu_contents: the root node has no children." );
+		return FALSE;
+	}
+
+	/* Initialize libxml */
+	LIBXML_TEST_VERSION
+
+	gchar *user_home_dir = getenv( "HOME" );
+	gchar *user_menu_conf_file = g_build_filename(
+			user_home_dir, USER_MENU_FILE, NULL );
+
+	/* Make sure we have the directory for user's menu file */
+	gchar *user_menu_dir = g_path_get_dirname( user_menu_conf_file );
+	
+	if ( g_mkdir_with_parents( user_menu_dir, 0755  ) < 0 ) {
+		ULOG_ERR( "set_menu_contents: "
+				"failed to create directory '%s'.",
+				user_menu_dir );
+
+		g_free( user_menu_dir );
+		return FALSE;
+	}
+			
+	xmlTextWriterPtr writer;
+	
+	/* Always write to the user-specific file */
+	writer = xmlNewTextWriterFilename( user_menu_conf_file, 0);
+
+	if (writer == NULL) {
+		ULOG_ERR( "set_menu_contents: failed to create xml writer." );
+		return FALSE;
+	}
+
+	/* Start the document */
+	int ret = xmlTextWriterStartDocument(writer, NULL, "UTF-8", NULL);
+
+	if ( ret < 0 ) {
+		ULOG_ERR( "set_menu_contents: failed to start the document writing." );
+		return FALSE;
+	}
+
+	/* Start the top -level menu */
+	ret = xmlTextWriterStartElement(writer, BAD_CAST "Menu");
+
+	if ( ret < 0 ) {
+		ULOG_ERR( "set_menu_contents: failed to start top level menu." );
+		return FALSE;
+	}
+
+	/* Get the name */
+	gtk_tree_model_get( model, &root_iter, 
+			TREE_MODEL_NAME,
+			&root_name,
+			-1 );
+
+	/* The name is not really needed for top-level, but let's add it anyway */
+	ret = xmlTextWriterWriteElement( writer, "Name", root_name );
+
+
+	
+	/* Loop! */
+	do {
+		gtk_tree_model_get( model, &iter, 
+				TREE_MODEL_NAME,
+				&name,
+				TREE_MODEL_DESKTOP_ID,
+				&desktop_id,
+				-1 );
+
+	
+		if ( desktop_id && strcmp( desktop_id, SEPARATOR_STRING ) == 0 ) {
+			/* </Include> */
+			if ( include_open == TRUE ) {
+				ret = xmlTextWriterEndElement( writer );
+
+				include_open = FALSE;
+			}
+			
+			/* <Separator/> */
+			ret = xmlTextWriterWriteElement( writer, "Separator", NULL );
+			ret = xmlTextWriterEndElement( writer );
+			
+		} else if ( !desktop_id || strlen( desktop_id ) == 0 ) {
+			/* </Include> */
+			if ( include_open == TRUE ) {
+				ret = xmlTextWriterEndElement(writer );
+				include_open = FALSE;
+			}
+	
+			/* <Menu> */
+			ret = xmlTextWriterStartElement( writer, BAD_CAST "Menu" );
+			
+			/* <Name> ... </Name> */
+			ret = xmlTextWriterWriteElement( writer, "Name", name );
+			 
+			/* .. and has children.. */
+			if ( gtk_tree_model_iter_children( model,
+						&child_iter, &iter ) ) {
+				
+				/* <Include> */
+				ret = xmlTextWriterStartElement(writer,
+						BAD_CAST "Include");
+				
+				/* ..loop them! */
+				do {
+					gtk_tree_model_get( model, &child_iter, 
+							TREE_MODEL_NAME,
+							&child_name,
+							TREE_MODEL_DESKTOP_ID,
+							&child_desktop_id,
+							-1 );
+
+					if ( child_desktop_id &&
+							strlen( child_desktop_id ) > 0 ) {
+						
+						/* <Filename> ... </Filename> */
+						ret = xmlTextWriterWriteElement( writer,
+								"Filename",
+								child_desktop_id );
+					}
+					
+					if ( child_name ) {
+						g_free( child_name );
+					}
+
+					if ( child_desktop_id ) {
+						g_free( child_desktop_id );
+					}
+
+				} while ( gtk_tree_model_iter_next(
+							model, &child_iter ) );
+
+				/* </Include> */
+				ret = xmlTextWriterEndElement( writer );
+			}
+
+			/* </Menu> */
+			ret = xmlTextWriterEndElement( writer );
+
+		} else {
+			if ( include_open == FALSE ) {
+				ret = xmlTextWriterStartElement(writer,
+						BAD_CAST "Include");
+
+				include_open = TRUE;
+			}
+
+			/* <Filename> ... </Filename> */
+			ret = xmlTextWriterWriteElement( writer,
+					"Filename", desktop_id );
+		}
+
+		if ( name ) {
+			g_free( name );
+		}
+
+		if ( desktop_id ) {
+			g_free( desktop_id );
+		}
+	
+	} while ( gtk_tree_model_iter_next( model, &iter ) );
+	
+
+	/* </Menu> */
+	ret = xmlTextWriterEndElement( writer );
+
+	/* End the document */
+	ret = xmlTextWriterEndDocument( writer );
+
+	if ( ret < 0 ) {
+		ULOG_ERR( "set_menu_contents: failed to write menu conf." );
+	} else {
+		ULOG_DEBUG( "set_menu_contents: wrote '%s'", user_menu_conf_file );
+		return_value = TRUE;
+	}
+
+	/* Cleanup */
+	xmlFreeTextWriter( writer );
+	xmlCleanupParser();
+	
+	if ( user_home_dir ) {
+		g_free( user_home_dir );
+	}
+
+	if ( user_menu_conf_file ) {
+		g_free( user_menu_conf_file );
+	}
+
+	if ( user_menu_dir ) {
+		g_free( user_menu_dir );
+	}
+	
+	if ( root_name ) {
+		g_free( root_name );
+	}
+
+	/*
+	if ( name ) {
+		g_free( name );
+	}
+
+	if ( desktop_id ) {
+		g_free( desktop_id );
+	}
+
+	if ( child_name ) {
+		g_free( child_name );
+	}
+
+	if ( child_desktop_id ) {
+		g_free( child_desktop_id );
+	}
+	*/
+
+	return return_value;
 }
 

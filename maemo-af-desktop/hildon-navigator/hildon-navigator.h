@@ -55,6 +55,7 @@ enum
 #define BINDIR "bin"
 #define APPDIR "share/applications/hildon"
 #define LIBDIR "lib/hildon-navigator"
+#define HILDON_NAVIGATOR_MENU_NAME "menu_from_navigator"
 
 #define _(String) gettext(String)
 

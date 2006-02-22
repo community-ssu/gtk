@@ -54,7 +54,7 @@
 #include "osso-manager.h"
 
 /* log include */
-#include <log-functions.h>
+#include <osso-log.h>
 
 /* For menu conf dir monitoring */
 #include <hildon-base-lib/hildon-base-dnotify.h>
@@ -104,7 +104,8 @@ OthersMenu_t *others_menu_init(void)
     
     ret = (OthersMenu_t *) g_malloc0(sizeof(OthersMenu_t));
     if (!ret) {
-	osso_log(LOG_ERR, "Could not allocate memory for OthersMenu");
+	ULOG_ERR("others_menu_init: "
+			"failed to allocate memory for OthersMenu.");
     }
     /* OK, let's do it! */
     ret->toggle_button = gtk_toggle_button_new();
@@ -122,7 +123,8 @@ OthersMenu_t *others_menu_init(void)
 
     /* Initialize dnotify handler */
     if ( hildon_dnotify_handler_init() != HILDON_OK ) {
-	    osso_log( LOG_ERR, "Could not initialize directory notify!\n" );
+	    ULOG_ERR( "others_menu_init: "
+			    "failed to initialize directory notify." );
     }
     return ret;
 }
@@ -210,7 +212,8 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
                           &error);
             
             if (error) {
-                osso_log( LOG_ERR,"Failed to execute %s: %s\n",
+                ULOG_ERR( "others_menu_activate_item: "
+				"failed to execute %s: %s.",
                           arg_list[0], error->message);
                 g_clear_error(&error);
             } else {
@@ -233,7 +236,8 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
              * have a path to the executable so it would be
              * quite difficult to launch the app.
              */
-            osso_log( LOG_ERR, "Both service name and binary path missing."
+            ULOG_ERR( "others_menu_activate_item: "
+			    "both service name and binary path missing."
                       "Unable to launch.");
         }
     }
@@ -365,6 +369,8 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
     g_return_if_fail(om);
     om->menu = GTK_MENU(gtk_menu_new());
 
+    gtk_widget_set_name(GTK_WIDGET(om->menu), HILDON_NAVIGATOR_MENU_NAME);
+
     if (om->as_menu_cb == NULL) {
 	    om->as_menu_cb = as_menu_cb;
     }
@@ -429,8 +435,9 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 			    (hildon_dnotify_cb_f *)others_menu_changed_cb,
 			    g_path_get_dirname( SYSTEMWIDE_MENU_FILE ),
 			    cb_data ) != HILDON_OK) {
-	    osso_log( LOG_ERR, "Error setting dnotify callback "
-			    "for systemwide menu conf!\n" );
+	    ULOG_ERR( "others_menu_initialize_menu: "
+			    "failed setting dnotify callback "
+			    "for systemwide menu conf." );
     }
 
     /* Watch user specific menu conf */
@@ -438,18 +445,27 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
     user_menu_conf_file = g_build_filename(
 		    user_home_dir, USER_MENU_FILE, NULL );
 
+    /* Make sure we have the directory for user's menu file */
+    gchar *user_menu_dir = g_path_get_dirname( user_menu_conf_file );
+
+    if ( g_mkdir_with_parents( user_menu_dir, 0755  ) < 0 ) {
+	    ULOG_ERR( "others_menu_initialize_menu: "
+			    "failed to create directory '%s'", user_menu_dir );
+    }
+
     if ( hildon_dnotify_set_cb(
 			    (hildon_dnotify_cb_f *)others_menu_changed_cb,
-			    g_path_get_dirname( user_menu_conf_file ),
+			    user_menu_dir,
 			    cb_data ) != HILDON_OK) {
-	    osso_log( LOG_ERR, "Error setting dnotify callback "
-			    "for user spcesific menu conf!\n" );
+	    ULOG_ERR( "others_menu_initialize_menu: "
+			    "failed setting dnotify callback "
+			    "for user spesific menu conf." );
     }
 
     /* Cleanup */
     g_free( user_home_dir );
     g_free( user_menu_conf_file );
-
+    g_free( user_menu_dir );
 
     gtk_widget_show_all(GTK_WIDGET(om->menu));
 
@@ -464,8 +480,7 @@ void others_menu_deinit(OthersMenu_t * om)
 
 static void others_menu_changed_cb( char *path, _om_changed_cb_data_t *data )
 {
-	/* FIXME: for debugging */
-	fprintf( stderr, "DEBUG: others_menu_changed_cb() called!\n" );
+	ULOG_DEBUG( "others_menu_changed_cb()" );
 
 	/* Remove callbacks */
  	hildon_dnotify_remove_every_cb();
@@ -490,9 +505,6 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
     GtkMenu *submenu = NULL;
 
     GtkWidget *menu_item = NULL;
-
-    gchar     *menu_name       = NULL;
-    GdkPixbuf *menu_icon       = NULL;
 
     gchar     *item_name       = NULL;
     GdkPixbuf *item_icon       = NULL;
@@ -548,38 +560,50 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
     
    
     /* Loop! */
-    do {	    
+    do  {
+	    item_name       = NULL;
+	    item_icon       = NULL;
+	    item_exec       = NULL;
+	    item_service    = NULL;
+	    item_desktop_id = NULL;
+
+	    gtk_tree_model_get( model, iter,
+			    TREE_MODEL_NAME,
+			    &item_name,
+			    TREE_MODEL_ICON,
+			    &item_icon,
+			    TREE_MODEL_EXEC,
+			    &item_exec,
+			    TREE_MODEL_SERVICE,
+			    &item_service,
+			    TREE_MODEL_DESKTOP_ID,
+			    &item_desktop_id,
+			    -1);
+
+
+
 	    /* If the item has children.. */
 	    if ( gtk_tree_model_iter_children( model, &child_iter, iter ) ) {
 		    
 		    /* ..it's a submenu */
 		    submenu = GTK_MENU(gtk_menu_new());
-
-		    menu_name = NULL;
-		    menu_icon = NULL;
-
-		    gtk_tree_model_get( model, iter,
-				    TREE_MODEL_NAME,
-				    &menu_name,
-				    TREE_MODEL_ICON,
-				    &menu_icon,
-				    -1);
-
-		    fprintf( stderr, "OM: Submenu '%s'\n", menu_name );
+    
+            gtk_widget_set_name(GTK_WIDGET(submenu),
+                    HILDON_NAVIGATOR_MENU_NAME);
 
 		    /* Create a menu item and add it to the menu. */
 		    menu_item = gtk_image_menu_item_new_with_label(
-				    _(menu_name));
+				    _(item_name));
 
 		    gtk_menu_shell_append(GTK_MENU_SHELL(menu),
 				    GTK_WIDGET(menu_item));
 
 		    /* Add the submenu icon */
-		    if ( menu_icon ) {
+		    if ( item_icon ) {
 			    gtk_image_menu_item_set_image(
 					    (GtkImageMenuItem *) menu_item,
 					    gtk_image_new_from_pixbuf(
-						    menu_icon));
+						    item_icon));
 		    }
 		    
 		    gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item),
@@ -588,95 +612,86 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 		    /* Recurse! */
 		    others_menu_get_items(GTK_WIDGET(submenu), om, model, &child_iter);
 
-	    } else {
+	    } else if ( !item_desktop_id || strlen( item_desktop_id ) == 0 ) {
+		    
+		   /* Empty submenu. Skip "Extras" */
+		   if ( strcmp( item_name, "tana_fi_extras" ) != 0 ) {
 
-		    item_name       = NULL;
-		    item_icon       = NULL;
-		    item_exec       = NULL;
-		    item_service    = NULL;
-		    item_desktop_id = NULL;
+               fprintf( stderr, "empty submenu: %s\n", item_name );
 
-		    gtk_tree_model_get( model, iter,
-				    TREE_MODEL_NAME,
-				    &item_name,
-				    TREE_MODEL_ICON,
-				    &item_icon,
-				    TREE_MODEL_EXEC,
-				    &item_exec,
-				    TREE_MODEL_SERVICE,
-				    &item_service,
-				    TREE_MODEL_DESKTOP_ID,
-				    &item_desktop_id,
-				    -1);
-		   
+			    submenu = GTK_MENU(gtk_menu_new());
+    
+                gtk_widget_set_name(GTK_WIDGET(submenu),
+                        HILDON_NAVIGATOR_MENU_NAME);
 
-		    /* Separator */
-		    if ( strcmp( item_desktop_id, SEPARATOR_STRING ) == 0 ) {
-			    menu_item = gtk_separator_menu_item_new();
+			    /* Create a menu item and add it to the menu. */
+			    menu_item = gtk_image_menu_item_new_with_label(
+					    _(item_name));
+
 			    gtk_menu_shell_append(GTK_MENU_SHELL(menu),
 					    GTK_WIDGET(menu_item));
-		    } else {
-			    
-			    /* Application or empty menu */
-			    menu_item =
-				    gtk_image_menu_item_new_with_label(
-						    _(item_name));
 
-			    if ( !item_icon ) {
-				    item_icon = get_icon(
-						    MENU_ITEM_DEFAULT_APP_ICON,
-						    MENU_ITEM_ICON_SIZE);
-			    }
-
+			    /* Add the submenu icon */
 			    if ( item_icon ) {
 				    gtk_image_menu_item_set_image(
 						    (GtkImageMenuItem *) menu_item,
 						    gtk_image_new_from_pixbuf(
-							    item_icon )
-						    );
+							    item_icon));
 			    }
 
-			    gtk_menu_shell_append(GTK_MENU_SHELL(menu),
-					    GTK_WIDGET(menu_item));
+			    gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item),
+					    GTK_WIDGET(submenu));
+		   }
+ 
+	    } else if ( strcmp( item_desktop_id, SEPARATOR_STRING ) == 0 ) {
+		    
+		    /* Separator */
+		    menu_item = gtk_separator_menu_item_new();
+		    gtk_menu_shell_append(GTK_MENU_SHELL(menu),
+				    GTK_WIDGET(menu_item));
+		    
+	    } else {
+		    /* Application */
 
-			    /* If it doesn't have a desktop ID.. */
-			    if ( !item_desktop_id || strlen(item_desktop_id) == 0 ) {
-				    fprintf( stderr, "OM: Submenu '%s'\n", item_name );
+		    menu_item =
+			    gtk_image_menu_item_new_with_label(
+					    _(item_name));
 
-				    /* It's a(n empty) submenu! */ 
-				    submenu = GTK_MENU(gtk_menu_new());
+		    if ( !item_icon ) {
+			    item_icon = get_icon(
+					    MENU_ITEM_DEFAULT_APP_ICON,
+					    MENU_ITEM_ICON_SIZE);
+		    }
 
-				    gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item),
-						    GTK_WIDGET(submenu));
+		    if ( item_icon ) {
+			    gtk_image_menu_item_set_image(
+					    (GtkImageMenuItem *) menu_item,
+					    gtk_image_new_from_pixbuf(
+						    item_icon )
+					    );
+		    }
 
-			    } else {
-				    fprintf( stderr, "OM: Menu item '%s'\n", item_name );
+		    gtk_menu_shell_append(GTK_MENU_SHELL(menu),
+				    GTK_WIDGET(menu_item));
 
-				    /* It's an application, enable launching */
+		    g_object_set_data_full(G_OBJECT(menu_item),
+				    DESKTOP_ENTRY_EXEC_FIELD,
+				    g_strdup(item_exec), g_free);
 
-				    g_object_set_data_full(G_OBJECT(menu_item),
-						    DESKTOP_ENTRY_EXEC_FIELD,
-						    g_strdup(item_exec), g_free);
+		    g_object_set_data_full(G_OBJECT(menu_item),
+				    DESKTOP_ENTRY_SERVICE_FIELD,
+				    g_strdup(item_service), g_free);
 
-				    g_object_set_data_full(G_OBJECT(menu_item),
-						    DESKTOP_ENTRY_SERVICE_FIELD,
-						    g_strdup(item_service), g_free);
-
-				    /* Connect the signal and callback */
-				    g_signal_connect(G_OBJECT(menu_item), "activate",
-						    G_CALLBACK(
-							    others_menu_activate_item),
-						    om);
-			    }
-		    } 
+		    /* Connect the signal and callback */
+		    g_signal_connect(G_OBJECT(menu_item), "activate",
+				    G_CALLBACK(
+					    others_menu_activate_item),
+				    om);
 	    }
 	    
     } while (gtk_tree_model_iter_next(model, iter));
 
     /* FIXME: When done we should cleanup the GtkTreeModel */
-
-    fprintf( stderr, "OM: Depth = %i\n",
-		    gtk_tree_store_iter_depth(GTK_TREE_STORE(model), iter) );
 
     return;
 }

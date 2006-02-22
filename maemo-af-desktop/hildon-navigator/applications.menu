@@ -44,7 +44,7 @@
   <Menu>
     <Name>tana_fi_tools</Name>
     <Include>
-      <Filename>osso_application_installer.desktop</Filename>
+      <Filename>osso-application-installer.desktop</Filename>
       <Filename>hildon-control-panel.desktop</Filename>
       <Filename>osso-connectivity-ui-connmgr.desktop</Filename>
       <Filename>hwr-teacher.desktop</Filename>

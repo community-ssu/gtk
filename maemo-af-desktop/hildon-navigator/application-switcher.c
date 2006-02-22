@@ -288,6 +288,9 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
     
     /* Create a tooltip menu for open applications*/ 
     as->menu = GTK_MENU(gtk_menu_new());
+
+    /* Set name for propper theming */
+    gtk_widget_set_name(GTK_WIDGET(as->menu), HILDON_NAVIGATOR_MENU_NAME);
     
     /* Create a tooltip menu. Small icons buttons uses this menu. */
     as->tooltip_menu = gtk_window_new(GTK_WINDOW_TOPLEVEL); 

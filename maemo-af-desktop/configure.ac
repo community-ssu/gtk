@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-af-desktop, 2.5.0)
+AM_INIT_AUTOMAKE(maemo-af-desktop, 2.5.1)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -59,6 +59,11 @@ else
 fi
 
 AC_SUBST(CFLAGS)
+
+PKG_CHECK_MODULES(HILDON_FM,hildon-fm >= 0.15 )
+AC_SUBST(HILDON_FM_LIBS)
+AC_SUBST(HILDON_FM_CFLAGS)
+
 
 PKG_CHECK_MODULES(LIBXML,libxml-2.0 )
 AC_SUBST(LIBXML_LIBS)

@@ -1,7 +1,7 @@
 /*
  * This file is part of maemo-af-desktop
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -33,10 +33,11 @@
 #define HILDON_STATUR_BAR_LIB_FUNCTIONS_H
 
 #include <glib.h>
+#include <gtk/gtkdialog.h>
 
 G_BEGIN_DECLS
 
-#define HILDON_STATUS_BAR_MAX_NOTE_TYPE      4  /* highest system note type */
+#define HILDON_STATUS_BAR_MAX_NOTE_TYPE      3  /* highest system note type */
 #define HILDON_STATUS_BAR_MAX_NO_OF_DIALOGS 30  /* maximum number of dialogs */
 
 typedef struct system_dialog_st SystemDialog;
@@ -45,64 +46,105 @@ typedef void (*dialog_closed_cb)( gint type, gpointer data );
 
 struct system_dialog_st
 {
-    gint             type;   /* type of the dialog, -1 for plugins */
-    gchar            *icon;  /* icon to be shown */
-    gchar            *msg;   /* msg to be shown */
-    gint             int_type; /* plugin's internal dialog type */
-    dialog_closed_cb cb;     /* callback */
-    gpointer         data;   /* data to be passed to cb */
-    gboolean         visible; /* is this dialog visible at the moment */
+    gint             type;      /* type of the dialog, -1 for plugins */
+    gchar            *icon;     /* icon to be shown */
+    gchar            *msg;      /* msg to be shown */
+    gint             int_type;  /* first parameter to cb */
+    dialog_closed_cb cb;        /* callback */
+    gpointer         data;      /* second parameter to cb */
+    gboolean         occupied;  /* is this slot free */
+    GtkWidget        *widget;   /* the dialog widget (for closing it) */
 };
-
 
 
 /**
  * @hildon_status_bar_lib_prepare_dialog
  *
- * @param *type describing dialog type
+ * @param *type Dialog type, must be valid osso_system_note_type_t
+ * (defined in libosso.h).
  *
- * @param *icon stock icon used
+ * @param *icon Stock icon to show on the dialog. This parameter is
+ * ignored, the type determines the icon to show.
  *
- * @param *msg message to show
+ * @param *msg Message string to show.
  *
- * @param int_type internal type
+ * @param int_type First parameter to the callback, ignored by this
+ * function.
  *
- * @param cb callback to call after dialog closes
+ * @param cb Callback to call after dialog closes, or when there was
+ * an error.
  *
- * @param data data to forward to callback function
+ * @param data Second parameter to the callback, ignored by this
+ * function.
  *
- * This function prepares the dialog and shows it
+ * This function shows a system modal dialog. If there is already a
+ * dialog shown, then the dialog is queued and shown later.
  */
 
-void hildon_status_bar_lib_prepare_dialog( gint type, const gchar *icon, 
-                                           const gchar *msg, gint int_type, 
-                                           dialog_closed_cb cb, gpointer data );
+void hildon_status_bar_lib_prepare_dialog( gint type,
+                                           const gchar *icon, 
+                                           const gchar *msg,
+                                           gint int_type, 
+                                           dialog_closed_cb cb,
+                                           gpointer data );
 /**
  * @hildon_status_bar_lib_queue_dialog
  *
- * @param *icon stock icon used
+ * @param *icon Stock icon to show on the dialog.
  * 
- * @param *msg  message to show
+ * @param *msg Message string to show.
  * 
- * @param *int_type plugin's internal type
+ * @param int_type First parameter to the callback, ignored by this
+ * function.
  *
- * @param *cb callback to be called after dialog is closed
+ * @param *cb Callback to be called after dialog is closed. It is also
+ * called if there is an error.
  *
- * @param data data passed to callback
+ * @param data Second parameter to the callback, ignored by this
+ * function.
  *
- * The dialog will be added to queue and will be shown later.
+ * This function shows a system modal dialog. If there is already a
+ * dialog shown, then the dialog is queued and shown later. This is
+ * almost identical to hildon_status_bar_lib_prepare_dialog but meant
+ * for plugins.
  */
 
-void hildon_status_bar_lib_queue_dialog( const gchar *icon,  /* stock icon */
-                                         const gchar *msg,   /* msg to show */
-                                         gint int_type,     /* plugin's internal
-                                                               msg type */
-                                         dialog_closed_cb cb,/* cb to be called
-                                                              * after the dialog
-                                                              * is closed */
-                                         gpointer data );    /* data passed to 
-                                                              * cb */
+void hildon_status_bar_lib_queue_dialog( const gchar *icon,
+                                         const gchar *msg,
+                                         gint int_type,
+                                         dialog_closed_cb cb,
+                                         gpointer data );
 
+/**
+ * @hildon_status_bar_lib_open_closeable_dialog
+ *
+ * @param *type Dialog type, must be valid osso_system_note_type_t
+ * (defined in libosso.h).
+ * @param *msg Message string to show.
+ * @return Id of the dialog or -1 on error. This id can be used to close
+ * the dialog with hildon_status_bar_lib_close_closeable_dialog.
+ * 
+ * This function shows a system modal dialog. If there is already a
+ * dialog shown, then the dialog is queued and shown later.
+ * The dialog can be closed by calling
+ * hildon_status_bar_lib_close_closeable_dialog (if it was not already
+ * closed by the user).
+ */
+
+gint hildon_status_bar_lib_open_closeable_dialog( gint type,
+                                                  const gchar *msg );
+
+/**
+ * @hildon_status_bar_lib_close_closeable_dialog
+ *
+ * @param id Dialog to close.
+ * 
+ * This function closes a system modal dialog opened with
+ * hildon_status_bar_lib_open_closeable_dialog, if it was not closed
+ * by the user already.
+ */
+
+void hildon_status_bar_lib_close_closeable_dialog( gint id );
 
 G_END_DECLS
 

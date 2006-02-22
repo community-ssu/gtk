@@ -2073,7 +2073,7 @@ void hildon_home_initiliaze()
     FILE *fp;
     gchar *configure_file;
     gchar bg_orig_filename[HILDON_HOME_PATH_STR_LENGTH] = {0};
-    gchar image_dir[HILDON_HOME_PATH_STR_LENGTH] = {0};
+    /*gchar image_dir[HILDON_HOME_PATH_STR_LENGTH] = {0};*/
 
     hildon_home_get_enviroment_variables();
     hildon_home_set_hardcode_values();
@@ -2135,6 +2135,7 @@ void hildon_home_initiliaze()
                          bg_orig_filename, NULL);
     }
 
+#if 0
     if(image_dir != NULL) 
     {
         home_user_image_dir = 
@@ -2145,6 +2146,10 @@ void hildon_home_initiliaze()
             g_build_path("/", home_user_dir, 
                          HILDON_HOME_HC_USER_IMAGE_DIR, NULL);
     }
+#endif
+    home_user_image_dir = 
+            g_build_path("/", home_user_dir, 
+                         HILDON_HOME_HC_USER_IMAGE_DIR, NULL);
 
     g_free(configure_file);
 
