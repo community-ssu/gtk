@@ -124,7 +124,17 @@ should be accessed using the functions below.
 
 </para>
 
+<!-- ##### ARG GtkMenu:double-arrows ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkMenu:horizontal-offset ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkMenu:horizontal-padding ##### -->
 <para>
 
 </para>

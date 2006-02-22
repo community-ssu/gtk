@@ -69,6 +69,21 @@ Emitted when the range value changes.
 
 </para>
 
+<!-- ##### ARG GtkRange:minimum-visible-bars ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkRange:stream-indicator ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkRange:stream-position ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkRange:update-policy ##### -->
 <para>
 
@@ -80,6 +95,26 @@ Emitted when the range value changes.
 </para>
 
 <!-- ##### ARG GtkRange:arrow-displacement-y ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkRange:arrow-paint-box-layout ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkRange:autodimmed-steppers ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkRange:draw-trough-under-steppers ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkRange:hildonlike ##### -->
 <para>
 
 </para>
@@ -99,7 +134,17 @@ Emitted when the range value changes.
 
 </para>
 
+<!-- ##### ARG GtkRange:stream-indicator-padding ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkRange:trough-border ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkRange:two-part-trough ##### -->
 <para>
 
 </para>
@@ -194,5 +239,41 @@ Emitted when the range value changes.
 
 @range: 
 @value: 
+
+
+<!-- ##### FUNCTION osso_gtk_range_get_stream_indicator ##### -->
+<para>
+
+</para>
+
+@range: 
+@Returns: 
+
+
+<!-- ##### FUNCTION osso_gtk_range_get_stream_position ##### -->
+<para>
+
+</para>
+
+@range: 
+@Returns: 
+
+
+<!-- ##### FUNCTION osso_gtk_range_set_stream_indicator ##### -->
+<para>
+
+</para>
+
+@range: 
+@stream_indicator: 
+
+
+<!-- ##### FUNCTION osso_gtk_range_set_stream_position ##### -->
+<para>
+
+</para>
+
+@range: 
+@position: 
 
 

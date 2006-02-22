@@ -116,6 +116,31 @@ and should be accessed using the functions below.
 
 </para>
 
+<!-- ##### ARG GtkProgressBar:height-increment ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkProgressBar:text-spacing ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkProgressBar:text-xnudge ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkProgressBar:text-ynudge ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkProgressBar:width-increment ##### -->
+<para>
+
+</para>
+
 <!-- ##### FUNCTION gtk_progress_bar_new ##### -->
 <para>
 Creates a new #GtkProgressBar.

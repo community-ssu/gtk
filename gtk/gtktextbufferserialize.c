@@ -588,6 +588,17 @@ serialize_pixbufs (SerializationContext *context,
     }
 }
 
+/**
+ * gtk_text_buffer_serialize_rich_text:
+ * @buffer: a #GtkTextBuffer
+ * @start:
+ * @end:
+ * @len:
+ *
+ * Return value: Contents of the %buffer serialized as a string, or %NULL
+ *
+ * Since: maemo 1.0
+ */
 gchar *
 gtk_text_buffer_serialize_rich_text (GtkTextBuffer     *buffer,
 				     const GtkTextIter *start,
@@ -1818,6 +1829,19 @@ deserialize_text (GtkTextBuffer *buffer,
   return retval;
 }
 
+/**
+ * gtk_text_buffer_deserialize_rich_text:
+ * @buffer: a #GtkTextBuffer
+ * @iter:
+ * @text:
+ * @len:
+ * @create_tags:
+ * @error
+ *
+ * Return value: %TRUE if deserializing rich text data succeeded
+ *
+ * Since: maemo 1.0
+ */
 gboolean
 gtk_text_buffer_deserialize_rich_text (GtkTextBuffer *buffer,
 				       GtkTextIter   *iter,

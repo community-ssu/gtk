@@ -179,6 +179,11 @@ Toplevel which can contain other widgets
 
 </para>
 
+<!-- ##### ARG GtkWindow:urgency-hint ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkWindow:window-position ##### -->
 <para>
 
@@ -1072,6 +1077,42 @@ Deprecated alias for gtk_window_set_position().
 
 </para>
 
+@setting: 
+
+
+<!-- ##### FUNCTION gtk_window_get_prev_focus_widget ##### -->
+<para>
+
+</para>
+
+@window: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_window_get_urgency_hint ##### -->
+<para>
+
+</para>
+
+@window: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_window_set_prev_focus_widget ##### -->
+<para>
+
+</para>
+
+@window: 
+@widget: 
+
+
+<!-- ##### FUNCTION gtk_window_set_urgency_hint ##### -->
+<para>
+
+</para>
+
+@window: 
 @setting: 
 
 

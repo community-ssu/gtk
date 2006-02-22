@@ -761,6 +761,11 @@ gtk_menu_class_init (GtkMenuClass *class)
      replaced with horizontal-padding and
      vertical-padding (which already is an style
      property for GtkMenu). */
+  /**
+   * GtkMenu:horizontal-padding:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("horizontal-padding",
 							     P_("Horizontal Padding"),
@@ -770,6 +775,11 @@ gtk_menu_class_init (GtkMenuClass *class)
 							     0, /* 1, */
 							     G_PARAM_READABLE));
 
+  /**
+   * GtkMenu:double-arrows:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_boolean ("double_arrows",
 								 P_("Double Arrows"),

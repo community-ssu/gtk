@@ -411,6 +411,10 @@ gtk_button_get_alignment
 gtk_button_set_image
 gtk_button_get_image
 
+<SUBSECTION Hildon>
+osso_gtk_button_set_detail_from_attach_flags
+hildon_gtk_button_set_depressed
+
 <SUBSECTION Standard>
 GTK_BUTTON
 GTK_IS_BUTTON
@@ -1085,6 +1089,9 @@ gtk_entry_get_max_length
 gtk_entry_get_visibility
 gtk_entry_set_completion
 gtk_entry_get_completion
+<SUBSECTION Hildon>
+hildon_gtk_entry_get_input_mode
+hildon_gtk_entry_set_input_mode
 <SUBSECTION Standard>
 GTK_ENTRY
 GTK_IS_ENTRY
@@ -1235,6 +1242,9 @@ gtk_file_chooser_list_shortcut_folders
 gtk_file_chooser_add_shortcut_folder_uri
 gtk_file_chooser_remove_shortcut_folder_uri
 gtk_file_chooser_list_shortcut_folder_uris
+<SUBSECTION Hildon>
+hildon_gtk_file_chooser_install_properties
+hildon_gtk_file_system_create
 <SUBSECTION Standard>
 GTK_FILE_CHOOSER
 GTK_IS_FILE_CHOOSER
@@ -1764,6 +1774,16 @@ gtk_im_context_set_use_preedit
 gtk_im_context_set_surrounding
 gtk_im_context_get_surrounding
 gtk_im_context_delete_surrounding
+<SUBSECTION Hildon>
+gtk_im_context_hide
+gtk_im_context_show
+hildon_gtk_im_context_copy
+hildon_gtk_im_context_cut
+hildon_gtk_im_context_filter_event
+hildon_gtk_im_context_has_selection
+hildon_gtk_im_context_hide
+hildon_gtk_im_context_paste
+hildon_gtk_im_context_show
 <SUBSECTION Standard>
 GTK_IM_CONTEXT
 GTK_IS_IM_CONTEXT
@@ -1773,6 +1793,7 @@ GTK_IS_IM_CONTEXT_CLASS
 GTK_IM_CONTEXT_GET_CLASS
 <SUBSECTION Private>
 gtk_im_context_get_type
+gtk_im_context_clipboard_operation_get_type
 </SECTION>
 
 <SECTION>
@@ -2192,6 +2213,9 @@ gtk_menu_shell_deselect
 gtk_menu_shell_activate_item
 gtk_menu_shell_cancel
 GtkMenuDirectionType
+<SUBSECTION Hildon>
+gtk_menu_shell_get_take_focus
+gtk_menu_shell_set_take_focus
 <SUBSECTION Standard>
 GTK_MENU_SHELL
 GTK_IS_MENU_SHELL
@@ -2616,6 +2640,12 @@ gtk_range_get_value
 gtk_range_set_increments
 gtk_range_set_range
 gtk_range_set_value
+<SUBSECTION Hildon>
+osso_gtk_range_get_stream_indicator
+osso_gtk_range_get_stream_position
+osso_gtk_range_set_stream_indicator
+osso_gtk_range_set_stream_position
+
 <SUBSECTION Standard>
 GTK_RANGE
 GTK_IS_RANGE
@@ -2905,6 +2935,8 @@ gtk_table_get_homogeneous
 gtk_table_get_row_spacing
 gtk_table_get_col_spacing
 gtk_table_get_default_col_spacing
+<SUBSECTION Hildon>
+osso_gtk_table_find_button_detail
 <SUBSECTION Standard>
 GTK_TABLE
 GTK_IS_TABLE
@@ -3031,6 +3063,13 @@ gtk_text_buffer_begin_user_action
 gtk_text_buffer_end_user_action
 gtk_text_buffer_add_selection_clipboard
 gtk_text_buffer_remove_selection_clipboard
+<SUBSECTION Hildon>
+gtk_text_buffer_deserialize_rich_text
+gtk_text_buffer_get_can_paste_rich_text
+gtk_text_buffer_get_rich_text_format
+gtk_text_buffer_serialize_rich_text
+gtk_text_buffer_set_can_paste_rich_text
+gtk_text_buffer_set_rich_text_format
 <SUBSECTION Standard>
 GTK_TEXT_BUFFER
 GTK_IS_TEXT_BUFFER
@@ -3280,6 +3319,9 @@ gtk_text_view_set_accepts_tab
 gtk_text_view_get_accepts_tab
 gtk_text_view_get_default_attributes
 GTK_TEXT_VIEW_PRIORITY_VALIDATE
+<SUBSECTION Hildon>
+hildon_gtk_text_view_get_input_mode
+hildon_gtk_text_view_set_input_mode
 <SUBSECTION Standard>
 GTK_TEXT_VIEW
 GTK_IS_TEXT_VIEW
@@ -3918,6 +3960,7 @@ gtk_tree_store_reorder
 gtk_tree_store_swap
 gtk_tree_store_move_before
 gtk_tree_store_move_after
+<SUBSECTION Hildon>
 gtk_tree_store_insert_with_values
 gtk_tree_store_insert_with_valuesv
 <SUBSECTION Standard>
@@ -4107,6 +4150,8 @@ gtk_cell_view_get_displayed_row
 gtk_cell_view_get_size_of_row
 gtk_cell_view_set_background_color
 gtk_cell_view_get_cell_renderers
+<SUBSECTION Hildon>
+gtk_cell_view_set_cell_data
 <SUBSECTION Standard>
 GtkCellViewClass
 GTK_TYPE_CELL_VIEW
@@ -4626,6 +4671,12 @@ gtk_widget_remove_mnemonic_label
 gtk_requisition_copy
 gtk_requisition_free
 
+<SUBSECTION Hildon>
+gtk_widget_insensitive_press
+gtk_widget_set_direction_recursive
+gtk_widget_tap_and_hold_flags_get_type
+gtk_widget_tap_and_hold_menu_position_top
+gtk_widget_tap_and_hold_setup
 <SUBSECTION Standard>
 GTK_WIDGET
 GTK_IS_WIDGET
@@ -4732,6 +4783,11 @@ gtk_window_set_icon_list
 gtk_window_set_icon_from_file
 gtk_window_set_icon_name
 gtk_window_set_auto_startup_notification
+<SUBSECTION Hildon>
+gtk_window_get_prev_focus_widget
+gtk_window_get_urgency_hint
+gtk_window_set_prev_focus_widget
+gtk_window_set_urgency_hint
 <SUBSECTION Standard>
 GTK_WINDOW
 GTK_IS_WINDOW
@@ -4953,6 +5009,9 @@ gtk_border_free
 <SUBSECTION>
 GtkRcProperty
 GtkRcPropertyParser
+
+<SUBSECTION Hildon>
+gtk_style_lookup_logical_color
 
 <SUBSECTION Standard>
 GtkStyleClass

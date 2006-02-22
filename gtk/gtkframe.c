@@ -178,8 +178,12 @@ gtk_frame_class_init (GtkFrameClass *class)
                                                         GTK_TYPE_WIDGET,
                                                         G_PARAM_READABLE | G_PARAM_WRITABLE));
 
-   /* draw hildonlike frame */
-   gtk_widget_class_install_style_property (widget_class,
+  /**
+   * GtkFrame:hildonlike:
+   *
+   * Since: maemo 1.0
+   */
+  gtk_widget_class_install_style_property (widget_class,
  					   g_param_spec_boolean ("hildonlike",
 								 _("hildonlike looks"),
 								 _("Draw frame, 1/0"),

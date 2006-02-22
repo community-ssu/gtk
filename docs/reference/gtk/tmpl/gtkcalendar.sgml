@@ -82,6 +82,13 @@ Emitted when the user selects a day.
 
 @calendar: the object which received the signal.
 
+<!-- ##### SIGNAL GtkCalendar::erroneous-date ##### -->
+<para>
+
+</para>
+
+@calendar: the object which received the signal.
+
 <!-- ##### SIGNAL GtkCalendar::month-changed ##### -->
 <para>
 Emitted when the user clicks a button to change the selected month on a
@@ -118,7 +125,24 @@ calendar.
 
 @calendar: the object which received the signal.
 
+<!-- ##### SIGNAL GtkCalendar::selected-date ##### -->
+<para>
+
+</para>
+
+@calendar: the object which received the signal.
+
 <!-- ##### ARG GtkCalendar:day ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkCalendar:max-year ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkCalendar:min-year ##### -->
 <para>
 
 </para>
@@ -148,7 +172,17 @@ calendar.
 
 </para>
 
+<!-- ##### ARG GtkCalendar:week-start ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkCalendar:year ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkCalendar:hildonlike ##### -->
 <para>
 
 </para>

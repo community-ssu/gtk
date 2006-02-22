@@ -67,6 +67,11 @@ gtk_separator_class_init (GtkSeparatorClass *class)
 {
   GParamSpec* pspec;
   
+  /**
+   * GtkSeparator:hildonlike-drawing:
+   *
+   * Since: maemo 1.0
+   */
   pspec = g_param_spec_boolean("hildonlike-drawing",
                                "hildonlike looks.",
                                "hildonlike looks. "

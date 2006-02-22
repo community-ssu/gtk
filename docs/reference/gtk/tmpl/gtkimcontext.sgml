@@ -23,6 +23,14 @@ Base class for input method contexts
 </para>
 
 
+<!-- ##### SIGNAL GtkIMContext::clipboard-operation ##### -->
+<para>
+
+</para>
+
+@imcontext: the object which received the signal.
+@arg1: 
+
 <!-- ##### SIGNAL GtkIMContext::commit ##### -->
 <para>
 
@@ -39,6 +47,14 @@ Base class for input method contexts
 @imcontext: the object which received the signal.
 @arg1: 
 @arg2: 
+@Returns: 
+
+<!-- ##### SIGNAL GtkIMContext::has-selection ##### -->
+<para>
+
+</para>
+
+@imcontext: the object which received the signal.
 @Returns: 
 
 <!-- ##### SIGNAL GtkIMContext::preedit-changed ##### -->
@@ -69,6 +85,11 @@ Base class for input method contexts
 
 @imcontext: the object which received the signal.
 @Returns: 
+
+<!-- ##### ARG GtkIMContext:hildon-input-mode ##### -->
+<para>
+
+</para>
 
 <!-- ##### FUNCTION gtk_im_context_set_client_window ##### -->
 <para>
@@ -173,5 +194,80 @@ Base class for input method contexts
 @offset: 
 @n_chars: 
 @Returns: 
+
+
+<!-- ##### FUNCTION gtk_im_context_hide ##### -->
+<para>
+
+</para>
+
+@context: 
+
+
+<!-- ##### FUNCTION gtk_im_context_show ##### -->
+<para>
+
+</para>
+
+@context: 
+
+
+<!-- ##### FUNCTION hildon_gtk_im_context_copy ##### -->
+<para>
+
+</para>
+
+@context: 
+
+
+<!-- ##### FUNCTION hildon_gtk_im_context_cut ##### -->
+<para>
+
+</para>
+
+@context: 
+
+
+<!-- ##### FUNCTION hildon_gtk_im_context_filter_event ##### -->
+<para>
+
+</para>
+
+@context: 
+@event: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_gtk_im_context_has_selection ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+
+<!-- ##### FUNCTION hildon_gtk_im_context_hide ##### -->
+<para>
+
+</para>
+
+@context: 
+
+
+<!-- ##### FUNCTION hildon_gtk_im_context_paste ##### -->
+<para>
+
+</para>
+
+@context: 
+
+
+<!-- ##### FUNCTION hildon_gtk_im_context_show ##### -->
+<para>
+
+</para>
+
+@context: 
 
 

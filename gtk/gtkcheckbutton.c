@@ -136,6 +136,11 @@ gtk_check_button_class_init (GtkCheckButtonClass *class)
                                                              G_MAXINT,
                                                              INDICATOR_SPACING,
                                                              G_PARAM_READABLE));
+  /**
+   * GtkCheckButton:focus-x-padding:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (class,
 					   g_param_spec_int ("focus-x-padding",
                                                              P_("Horizontal focus padding"),

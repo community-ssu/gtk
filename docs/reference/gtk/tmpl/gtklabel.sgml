@@ -258,6 +258,11 @@ described below.
 
 </para>
 
+<!-- ##### ARG GtkLabel:hildonlike ##### -->
+<para>
+
+</para>
+
 <!-- ##### FUNCTION gtk_label_new ##### -->
 <para>
 

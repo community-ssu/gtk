@@ -476,6 +476,11 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 
   g_type_class_add_private( klass, sizeof(GtkWidgetPrivate) );
 
+  /** 
+   * GtkWidget:tap-and-hold-state:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (gobject_class,
 				   PROP_TAP_AND_HOLD,
 				   g_param_spec_int ("tap_and_hold_state",
@@ -1472,12 +1477,14 @@ gtk_widget_class_init (GtkWidgetClass *klass)
                   G_TYPE_BOOLEAN, 1, G_TYPE_UINT);
 
   /**	
-   * GtkWidget::insensitive-press	
+   * GtkWidget::insensitive-press:
    * @widget: the object which received the signal	
    *	
    * If a widget is insensitive and it receives click event,	
    * the signal is emited.  Signal is made to clarify situations where	
    * a widget is not easily noticable as an insenitive widget.	
+   *
+   * Since: maemo 1.0
    */
   widget_signals[INSENSITIVE_PRESS] =
     g_signal_new ("insensitive_press",
@@ -1489,10 +1496,12 @@ gtk_widget_class_init (GtkWidgetClass *klass)
                   G_TYPE_NONE, 0);
   
   /**	
-   * GtkWidget::tap-and-hold	
+   * GtkWidget::tap-and-hold:
    * @widget: the object which received the signal	
    *	
    * The signal is emited when tap and hold activity occurs.	
+   *
+   * Since: maemo 1.0
    */
   widget_signals[TAP_AND_HOLD] =
     g_signal_new("tap_and_hold", G_TYPE_FROM_CLASS(gobject_class),
@@ -1503,7 +1512,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
                   G_TYPE_NONE, 0);
 
   /**	
-   * GtkWidget::tap-and-hold-setup	
+   * GtkWidget::tap-and-hold-setup:
    * @widget: the object which received the signal	
    * @menu: the menu to be opened.	
    * @func: the menu position function	
@@ -1515,6 +1524,10 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * may be connected to it as well.  Usually this signal is not used,	
    * instead the virtual function is over written.	
    * Signal is deprecated and should not be used.
+   *
+   * @Deprecated
+   *
+   * Since: maemo 1.0
    */
   widget_signals[TAP_AND_HOLD_SETUP] =  
     g_signal_new("tap_and_hold_setup", G_TYPE_FROM_CLASS(gobject_class),
@@ -1525,7 +1538,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		 G_TYPE_NONE, 3, G_TYPE_OBJECT, G_TYPE_POINTER, G_TYPE_UINT);
 
   /**
-   * GtkWidget::tap-and-hold-query
+   * GtkWidget::tap-and-hold-query:
    * @widget: the object which received the signal
    * @returns: %FALSE if tap and hold is allowed to be started
    *
@@ -1533,6 +1546,8 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * started in some mysterious reason.  A good mysterious reason could be,
    * a widget which area is big and only part of it is allowed to start
    * tap and hold.
+   *
+   * Since: maemo 1.0
    */
     widget_signals[TAP_AND_HOLD_QUERY] =
     g_signal_new ("tap_and_hold_query",
@@ -1572,6 +1587,11 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 								 P_("Whether to draw the focus indicator inside widgets"),
 								 TRUE,
 								 G_PARAM_READABLE));
+  /**
+   * GtkWidget:hildon-focus-handling:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (klass,
 				   g_param_spec_boolean ("hildon-focus-handling",
  							 P_("Hildon focus handling"),
@@ -6756,7 +6776,18 @@ gtk_widget_set_default_direction_recurse (GtkWidget *widget, gpointer data)
 }
 
 /* Non static */
-void gtk_widget_set_direction_recursive(GtkWidget * widget,  GtkTextDirection dir )
+/**
+ * gtk_widget_set_direction_recursive:
+ * @widget: a #GtkWidget
+ * @dir: the new direction
+ *
+ * Sets the reading direction on a particular widget and all widgets it
+ * contains. See gtk_widget_set_direction()
+ *
+ * Since: maemo 1.0
+ */
+void
+gtk_widget_set_direction_recursive(GtkWidget * widget,  GtkTextDirection dir )
 {
   gtk_widget_set_default_direction_recurse( widget, GUINT_TO_POINTER(dir) );
 }
@@ -7961,7 +7992,14 @@ gtk_widget_set_no_show_all (GtkWidget *widget,
   g_object_notify (G_OBJECT (widget), "no-show-all");
 }
 
-void gtk_widget_insensitive_press ( GtkWidget *widget )
+/**
+ * gtk_widget_insensitive_press:
+ * @widget: a #GtkWidget
+ *
+ * Since: maemo 1.0
+ */
+void
+gtk_widget_insensitive_press ( GtkWidget *widget )
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
@@ -8091,6 +8129,8 @@ timeout_tap_and_hold_animation (GtkWidget *widget)
  * If the @menu is wanted to be positioned in a different way than the
  * gtk+ default, the menuposition @func can be passed as a third parameter.
  * Fourth parameter, @flags is debricated and has no effect.
+ *
+ * Since: maemo 1.0
  */
 void gtk_widget_tap_and_hold_setup (GtkWidget *widget, GtkWidget *menu,
 				    GtkCallback func,
@@ -8309,6 +8349,7 @@ static gboolean gtk_widget_tap_and_hold_event_stop (GtkWidget *widget,
  * Pre-made menu positioning function.
  * It positiones the @menu over the @widget.
  *
+ * Since: maemo 1.0
  **/
 void gtk_widget_tap_and_hold_menu_position_top (GtkWidget *menu,
 						gint *x, gint *y,

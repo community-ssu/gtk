@@ -963,3 +963,14 @@ Deprecated alias for gtk_style_apply_default_background().
 @Returns: 
 
 
+<!-- ##### FUNCTION gtk_style_lookup_logical_color ##### -->
+<para>
+
+</para>
+
+@style: 
+@color_name: 
+@color: 
+@Returns: 
+
+

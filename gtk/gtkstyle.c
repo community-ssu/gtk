@@ -1035,6 +1035,8 @@ gtk_style_lookup_icon_set (GtkStyle   *style,
  * switch occurs.
  *
  * Return value: %TRUE if the mapping was found.
+ *
+ * Since: maemo 1.0
  */
 gboolean
 gtk_style_lookup_logical_color (GtkStyle   *style,

@@ -85,6 +85,11 @@ gtk_combo_box_get_active_text().
 
 </para>
 
+<!-- ##### ARG GtkComboBox:propagate-lr-keys ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkComboBox:row-span-column ##### -->
 <para>
 
@@ -96,6 +101,31 @@ gtk_combo_box_get_active_text().
 </para>
 
 <!-- ##### ARG GtkComboBox:appears-as-list ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkComboBox:arrow-height ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkComboBox:arrow-width ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkComboBox:autodimmed-button ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkComboBox:hildonlike ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkComboBox:separator-width ##### -->
 <para>
 
 </para>

@@ -44,6 +44,11 @@ property. When activated, it emits the toggled signal.
 
 </para>
 
+<!-- ##### ARG GtkCellRendererToggle:checkbox-mode ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkCellRendererToggle:inconsistent ##### -->
 <para>
 

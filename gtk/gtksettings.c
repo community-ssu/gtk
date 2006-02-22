@@ -434,6 +434,11 @@ gtk_settings_class_init (GtkSettingsClass *class)
   g_assert (result == PROP_XFT_DPI);
 #endif  /* GDK_WINDOWING_X11 */
 
+  /**
+   * GtkSettings:gtk-initial-timeout:
+   *
+   * Since: maemo 1.0
+   */
   result = settings_install_property_parser (class,
 					     g_param_spec_int ("gtk-initial-timeout",
  							       P_("Start timeout"),
@@ -444,6 +449,11 @@ gtk_settings_class_init (GtkSettingsClass *class)
 
   g_assert (result == PROP_INITIAL_TIMEOUT);
 
+  /**
+   * GtkSettings:gtk-update-timeout:
+   *
+   * Since: maemo 1.0
+   */
   result = settings_install_property_parser (class,
 					     g_param_spec_int ("gtk-update-timeout",
  							       P_("Repeat timeout"),
@@ -454,6 +464,11 @@ gtk_settings_class_init (GtkSettingsClass *class)
 
   g_assert (result == PROP_UPDATE_TIMEOUT);
 
+  /**
+   * GtkSettings:hildon-keyboard-navigation:
+   *
+   * Since: maemo 1.0
+   */
   result = settings_install_property_parser (class,
                                              g_param_spec_boolean ("hildon-keyboard-navigation",
 								   P_("Keyboard navigation"),

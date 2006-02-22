@@ -721,7 +721,8 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
      * GtkTreeView:dotted-lines:
      *
      * Enables or disables the dotted lines for hierarchical trees.
-     * Hildon patch.
+     *
+     * Since: maemo 1.0
      */
     g_object_class_install_property (o_class,
                                      PROP_DOTTED_LINES,
@@ -738,6 +739,8 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
      * implementation is scheduled: if this property is set, then rows
      * can be activated by tapping even if the underlying tree model is
      * not technically a list.
+     *
+     * Since: maemo 1.0
      */
     g_object_class_install_property (o_class,
                                      PROP_FORCE_LIST_KLUDGE,
@@ -753,6 +756,8 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
      * Another Hildon kludge for allowing the existence of GtkTreeViews
      * that have activatable columns but that still is not a Text Listbox
      * in multiple selection with checkboxes mode.
+     *
+     * Since: maemo 1.0
      */
     g_object_class_install_property (o_class,
                                      PROP_ALLOW_CHECKBOX_MODE,
@@ -777,6 +782,11 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
 							     _TREE_VIEW_EXPANDER_SIZE,
 							     G_PARAM_READABLE));
 
+  /**
+   * GtkTreeView:expander-indent:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("expander_indent",
                                                              P_("Expander intent"),
@@ -832,6 +842,11 @@ G_PARAM_READABLE));
 							       GDK_TYPE_COLOR,
 G_PARAM_READABLE));
 
+  /**
+   * GtkTreeView:passive-focus:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("passive_focus",
                                                                  P_("Enables passive focus"),
@@ -1002,6 +1017,11 @@ G_PARAM_READABLE));
 		  _gtk_marshal_BOOLEAN__NONE,
 		  G_TYPE_BOOLEAN, 0);
 
+  /**
+   * GtkTreeView::row-insensitive:
+   *
+   * Since: maemo 1.0
+   */
   tree_view_signals[ROW_INSENSITIVE] =
      g_signal_new ("row_insensitive",
                   G_TYPE_FROM_CLASS (o_class),

@@ -590,6 +590,11 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                                    G_PARAM_READABLE));
 
   /* Hildon: for adding paddings to the inner borders of the visible page */
+  /**
+   * GtkNotebook:inner-left-border:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("inner_left_border",
                                                              _("Inner left border of the visible page"),
@@ -598,6 +603,11 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              G_MAXINT,
                                                              0,
                                                              G_PARAM_READABLE));
+  /**
+   * GtkNotebook:inner-right-border:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("inner_right_border",
                                                              _("Inner right border of the visible page"),
@@ -609,6 +619,11 @@ gtk_notebook_class_init (GtkNotebookClass *class)
 
   /* Hildon: previously hardcoded constants ARROW_WIDTH, ARROW_HEIGHT,
      ARROW_SPACING, TAB_OVERLAP and TAB_CURVATURE are now style properties */
+  /**
+   * GtkNotebook:arrow-width:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("arrow-width",
                                                              _("Arrow width"),
@@ -617,6 +632,11 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              G_MAXINT,
                                                              ARROW_WIDTH,
                                                              G_PARAM_READABLE));
+  /**
+   * GtkNotebook:arrow-height:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("arrow-height",
                                                              _("Arrow height"),
@@ -625,6 +645,11 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              G_MAXINT,
                                                              ARROW_HEIGHT,
                                                              G_PARAM_READABLE));
+  /**
+   * GtkNotebook:arrow-spacing:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("arrow-spacing",
                                                              _("Arrow spacing"),
@@ -633,6 +658,11 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              G_MAXINT,
                                                              ARROW_SPACING,
                                                              G_PARAM_READABLE));
+  /**
+   * GtkNotebook:tab-overlap:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("tab-overlap",
                                                              _("Tab overlap"),
@@ -641,6 +671,11 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              G_MAXINT,
                                                              TAB_OVERLAP,
                                                              G_PARAM_READABLE));
+  /**
+   * GtkNotebook:tab-curvature:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("tab-curvature",
                                                              _("Tab curvature"),
@@ -649,6 +684,11 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              G_MAXINT,
                                                              TAB_CURVATURE,
                                                              G_PARAM_READABLE));
+  /**
+   * GtkNotebook:label-padding:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("label-padding",
                                                              _("Label padding"),

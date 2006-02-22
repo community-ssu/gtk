@@ -92,6 +92,14 @@ they work together.
 @arg1: 
 @arg2: 
 
+<!-- ##### SIGNAL GtkTreeView::row-insensitive ##### -->
+<para>
+
+</para>
+
+@treeview: the object which received the signal.
+@arg1: 
+
 <!-- ##### SIGNAL GtkTreeView::select-all ##### -->
 <para>
 
@@ -170,6 +178,16 @@ they work together.
 @treeview: the object which received the signal.
 @Returns: 
 
+<!-- ##### ARG GtkTreeView:allow-checkbox-mode ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkTreeView:dotted-lines ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkTreeView:enable-search ##### -->
 <para>
 
@@ -181,6 +199,11 @@ they work together.
 </para>
 
 <!-- ##### ARG GtkTreeView:fixed-height-mode ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkTreeView:force-list-kludge ##### -->
 <para>
 
 </para>
@@ -245,6 +268,11 @@ they work together.
 
 </para>
 
+<!-- ##### ARG GtkTreeView:expander-indent ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkTreeView:expander-size ##### -->
 <para>
 
@@ -261,6 +289,11 @@ they work together.
 </para>
 
 <!-- ##### ARG GtkTreeView:odd-row-color ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkTreeView:passive-focus ##### -->
 <para>
 
 </para>

@@ -180,7 +180,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
                   G_TYPE_INT,
 		  G_TYPE_INT);
   /**
-   * GtkIMContext:has-selection:
+   * GtkIMContext::has-selection:
    *
    * This signal is emitted when input context needs to know if there is
    * any text selected in the widget. Return TRUE if there is.
@@ -196,7 +196,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
                   _gtk_marshal_BOOLEAN__VOID,
                   G_TYPE_BOOLEAN, 0);
   /**
-   * GtkIMContext:clipboard-operation:
+   * GtkIMContext::clipboard-operation:
    *
    * This signal is emitted when input context wants to copy, cut or paste
    * text. The widget needs to implement these operations.

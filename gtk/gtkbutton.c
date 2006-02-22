@@ -266,6 +266,11 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                         FALSE,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   
+  /**
+   * GtkButton:keyboard-button:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (gobject_class,
 				   PROP_KEYBOARD_BUTTON,
                                    g_param_spec_boolean ("keyboard_button",
@@ -463,6 +468,11 @@ gtk_button_class_init (GtkButtonClass *klass)
 						       TRUE,
 						       G_PARAM_READWRITE));
 
+  /**
+   * GtkButton:child-spacing:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("child_spacing",
 							     _("Child spacing"),
@@ -471,7 +481,11 @@ gtk_button_class_init (GtkButtonClass *klass)
 							     G_MAXINT,
 							     CHILD_SPACING,
 							     G_PARAM_READABLE));
-  /* Osso additions below */
+  /**
+   * GtkButton:detail:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (gobject_class,
 				   PROP_DETAIL,
 				   g_param_spec_string ("detail",
@@ -480,6 +494,11 @@ gtk_button_class_init (GtkButtonClass *klass)
 							"buttondefault",
 							G_PARAM_READWRITE));
 
+  /**
+   * GtkButton:automatic_detail:
+   *
+   * Since: maemo 1.0
+   */
   g_object_class_install_property (gobject_class,
 				   PROP_AUTOMATIC_DETAIL,
 				   g_param_spec_boolean ("automatic_detail",
@@ -489,6 +508,11 @@ gtk_button_class_init (GtkButtonClass *klass)
 							 G_PARAM_READWRITE));
 
 
+  /**
+   * GtkButton:child-offset-y:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("child_offset_y",
 							     _("Child Y Offset"),
@@ -498,9 +522,13 @@ gtk_button_class_init (GtkButtonClass *klass)
 							     0,
 							     G_PARAM_READABLE));
 
-  /* OSSO: This is used to find out whether
-   * button is a GtkTreeView column Listbox
-   * header or not */
+  /**
+   * GtkButton:listboxheader:
+   *
+   * Used to find out whether button is a GtkTreeView column Listbox header.
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_boolean ("listboxheader",
 								 P_( "Listbox header" ),
@@ -508,7 +536,13 @@ gtk_button_class_init (GtkButtonClass *klass)
 								 FALSE,
 								 G_PARAM_READABLE));
 
-  /* OSSO: Column Listbox header separator height */
+  /**
+   * GtkButton::separator-height:
+   *
+   * Column Listbox header separator height
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("separator-height",
 							     P_( "Separator height" ),
@@ -518,6 +552,11 @@ gtk_button_class_init (GtkButtonClass *klass)
 							     0,
 							     G_PARAM_READABLE));
 
+  /**
+   * GtkButton:padding:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_boxed ("padding",
 							       P_("Padding"),
@@ -525,6 +564,11 @@ gtk_button_class_init (GtkButtonClass *klass)
 							       GTK_TYPE_BORDER,
 							       G_PARAM_READABLE));
 
+  /**
+   * GtkButton:minimum-width:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("minimum_width",
 							     P_("Minimum Width"),
@@ -2072,6 +2116,14 @@ gtk_button_get_image (GtkButton *button)
   
   return priv->image;
 }
+
+/**
+ * osso_gtk_button_set_detail_from_attach_flags:
+ * @button: a #GtkButton
+ * @flags: 
+ *
+ * Since: maemo 1.0
+ */
 void osso_gtk_button_set_detail_from_attach_flags (GtkButton *button,OssoGtkButtonAttachFlags flags)
 {
   g_return_if_fail (GTK_IS_BUTTON (button));

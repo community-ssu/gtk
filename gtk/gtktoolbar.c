@@ -570,6 +570,11 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
                                                              DEFAULT_IPADDING,
                                                              G_PARAM_READABLE));
   
+  /**
+   * GtkToolbar:max-child-expand:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("max_child_expand",
 							     P_("Maximum toolbar item spacing"),
@@ -616,6 +621,11 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
                                                     DEFAULT_ICON_SIZE,
                                                     G_PARAM_READWRITE));  
 
+  /**
+   * GtkSettings:gtk-toolbar-animation:
+   *
+   * Since: maemo 1.0
+   */
   gtk_settings_install_property (g_param_spec_boolean ("gtk-toolbar-animation",
                                                     P_("Toolbar animation"),
                                                     P_("Are we using toolbar animation"),

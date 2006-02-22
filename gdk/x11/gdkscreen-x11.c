@@ -736,6 +736,8 @@ gdk_screen_make_display_name (GdkScreen *screen)
  *
  * Return value: a #GdkWindow wrapper for the currently active window,
  * or %NULL.
+ *
+ * Since: maemo 1.0
  */
 GdkWindow *
 gdk_screen_get_active_window (GdkScreen *screen)
@@ -791,6 +793,8 @@ gdk_screen_get_active_window (GdkScreen *screen)
  *
  * Return value: a list of #GdkWindow wrappers for the current window stack,
  * or %NULL.
+ *
+ * Since: maemo 1.0
  */
 GList *
 gdk_screen_get_window_stack (GdkScreen *screen)

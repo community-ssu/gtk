@@ -523,9 +523,13 @@ gtk_label_class_init (GtkLabelClass *class)
                                                      -1,
                                                      G_PARAM_READWRITE));
 
- /* Hildonlike class property */
- gtk_widget_class_install_style_property (widget_class,
-	                                  g_param_spec_boolean ("hildonlike",
+  /**
+   * GtkLabel:hildonlike:
+   *
+   * Since: maemo 1.0
+   */
+  gtk_widget_class_install_style_property (widget_class,
+	                                   g_param_spec_boolean ("hildonlike",
 		                                  _("hildonlike looks"),
 		                                  _("Changes wrapping etc behaviour, 1/0"),
 		                                  FALSE,

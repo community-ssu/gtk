@@ -88,6 +88,11 @@ submenu. For normal applications, the relevant signal is "activate".
 
 </para>
 
+<!-- ##### ARG GtkMenuItem:separator-height ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkMenuItem:toggle-spacing ##### -->
 <para>
 

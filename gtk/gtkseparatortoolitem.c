@@ -138,12 +138,21 @@ gtk_separator_tool_item_class_init (GtkSeparatorToolItemClass *class)
 							 P_("Whether the separator is drawn, or just blank"),
 							 TRUE,
 							 G_PARAM_READWRITE));
-  /* Hildon addition : some new style properties we need. */
+  /**
+   * GtkSeparatorToolItem:separator-size:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property(widget_class,
 					   g_param_spec_int ("separator_size",
 							      P_("Separator size"), P_("The thickness of the separator. -1 for default behaviour."),
 							     -1, G_MAXINT, -1, G_PARAM_READWRITE));
 
+  /**
+   * GtkSeparatorToolItem:is-image:
+   *
+   * Since: maemo 1.0
+   */
   gtk_widget_class_install_style_property (widget_class,
 				   g_param_spec_boolean ("is_image",
 							 P_("Is separator an image or a line"),

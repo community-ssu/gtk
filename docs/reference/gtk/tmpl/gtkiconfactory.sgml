@@ -73,6 +73,10 @@ looking up the icon to use for a given stock ID.
 @GTK_ICON_SIZE_BUTTON: 
 @GTK_ICON_SIZE_DND: 
 @GTK_ICON_SIZE_DIALOG: 
+@HILDON_ICON_SIZE_26: 
+@HILDON_ICON_SIZE_40: 
+@HILDON_ICON_SIZE_50: 
+@HILDON_ICON_SIZE_64: 
 
 <!-- ##### FUNCTION gtk_icon_source_copy ##### -->
 <para>
