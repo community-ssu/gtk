@@ -1,7 +1,7 @@
 ## This is all very ad-hoc...
 
-arch = i386
-#arch = arm
+#arch = i386
+arch = arm
 
 repodir = testrepo
 distsdir = $(repodir)/dists
@@ -27,6 +27,8 @@ packages: repodirs
 	./make-deb package-b1 $(newpkgdir)
 	./make-deb package-c1 $(oldpkgdir)
 	./make-deb package-c1 $(newpkgdir)
+	./make-deb borken $(oldpkgdir)
+	./make-deb borken $(newpkgdir)
 	./make-deb testrepo-conf-mmc $(repodir)
 
 repo: packages

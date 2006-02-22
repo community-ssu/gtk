@@ -1,6 +1,6 @@
 Package: package-C
 Version: 1
-Section: maemo/games
+Section: maemo/Games
 Architecture: all
 Installed-Size: 1
 Maintainer: <marius.vollmer@nokia.com>

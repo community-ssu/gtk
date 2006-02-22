@@ -1,20 +1,27 @@
-[ This is twiki markuo, for easy pasting. ]
+[ This is twiki markup, for easy pasting. ]
 
----++ About the test repository
+---+++ About the test repository
 
-The test repository contains two distributions: =old= and =new=.  They
-contain mostly the same packages, but =new= might contain newer
-versions of some of the packages in =old=, for example.
+The test repository contains three distributions: =cert=, =old= and
+=new=.  The =cert= distribution is intended to be configured as a
+certified source.  The two distributions =old= and =new= contain
+mostly the same packages, but =new= might contain newer versions of
+some of the packages in =old=, for example.
 
 When configured by installing =testrepo-conf-mmc= (see previous
-section), the =old= distribution is enabled and the =new= one is
+section), the =cert= distribution is configured as 'certified' and
+'essential'.  The =old= distribution is enabled and the =new= one is
 disabled.  You can switch to =new= by disabling =old= and enabling
 =new=, obviously.  You can have both =old= and =new= enabled at the
-same time, but that is not a very useful thing to do.
+same time, but that is not a very useful thing to do.  Neither =old=
+nor =new= are certified or essential.
 
-The packages.  If only one version is given, that version is in both
-=old= and =new=.
+The packages and the distributions they are in:
 
+   * *certified 1* (cert)
+     <p>
+     The only package in the =cert= distribution.  Installing it
+     should not show the disclaimer dialog.
 
    * *package-A 1* (old), *package-A 2* (new)
      <p>
@@ -26,7 +33,7 @@ The packages.  If only one version is given, that version is in both
      to =new=.  Package-A version 2 should be listed in the "Check for
      updates" view.
 
-   * *package-B 1*
+   * *package-B 1* (old, new)
      <p>
      Conflicts with package-A 1 (but no other version of package-A).
      You can use it together with package-A to test the behavior when
@@ -35,7 +42,7 @@ The packages.  If only one version is given, that version is in both
      install package-A version 2 and package-B at the same time,
      however.
 
-   * *package-C 1*
+   * *package-C 1* (old, new)
      <p>
      Depends on package-B, any version.  You can use it to test
      dependencies between packages, and indirect conflicts.
@@ -55,12 +62,16 @@ The packages.  If only one version is given, that version is in both
      clicking "Install"), it should not be automatically uninstalled
      when uninstalling package-C.
 
----++ Sample test cases
+   * *borken 1* (old, new)
+     <p>
+     A broken packages whose maintainer scripts will always fail.
+
+---+++ Sample test cases
 
 Here are some test cases you can do with the packages in the test
 repository.
 
----+++ Install, then update, then uninstall
+---++++ Install, then update, then uninstall
 
    * Configure the =old= distribution.
    * Make sure that package-A is not installed.
@@ -69,7 +80,7 @@ repository.
    * Update package-A to version 2 (via "Check for updates").
    * Uninstall package-A (via "List installed applications").
 
----+++ Install dependencies
+---++++ Install dependencies
 
    * Configure the =old= distribution.
    * Make sure none of package-A, package-B, and package-C are
@@ -80,7 +91,7 @@ repository.
    * Install package-C
    * Note that package-B has been installed as well.
 
----+++ Detect and resolve direct conflict
+---++++ Detect and resolve direct conflict
 
    * Configure the =old= distribution.
    * Make sure that package-B is not installed and that package-A
@@ -91,7 +102,7 @@ repository.
    * Uninstall package-A.
    * Install package-B, which should now succeed.
 
----+++ Detect and resolve indirect conflict
+---++++ Detect and resolve indirect conflict
 
    * Configure the =old= distribution.
    * Make sure that package-C and package-B are not installed and that
@@ -103,7 +114,7 @@ repository.
    * Install package-C, which should now succeed and automatically
      install package-B as well.
 
----+++ Detect and resolve direct conflict by updating
+---++++ Detect and resolve direct conflict by updating
 
    * Configure the =old= distribution.
    * Make sure that package-B is not installed and that package-A
@@ -115,10 +126,25 @@ repository.
    * Install package-B, which should now succeed and automatically
      update package-A to version 2.
 
----+++ Refusal to uninstall needed package
+---++++ Refusal to uninstall needed package
 
    * Configure the =old= distribution.
    * Make sure that package-B and package-C are installed.
    * Try to uninstall package-B.
    * Note that the uninstallation will fail and list package-C as the
      reason for it.
+
+---++++ Install Nokia certfied software
+
+   * Install certified.
+   * Note that the installation succeeds and does not show the
+     legal disclaimer dialog.
+
+---++++ Refusal to edit/remove essential repositories
+
+   * Open the Tools/Repositories dialog.
+   * Select the =cert= distribution.
+   * Click again.
+   * Note that the repository can not be edited.
+   * Click on Remove.
+   * Note that the repository is not removed.

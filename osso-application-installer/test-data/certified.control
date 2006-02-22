@@ -3,7 +3,7 @@ Version: 1
 Architecture: all
 Installed-Size: 1
 Maintainer: <marius.vollmer@nokia.com>
-Section: maemo/games
+Section: maemo/Games
 Description: A certified package
  This package is in a certfied repository.  You should be
  able to install it without the scarecrow dialog.
