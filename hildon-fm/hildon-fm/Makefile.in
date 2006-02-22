@@ -200,7 +200,9 @@ libhildonfm_la_SOURCES = \
 	hildon-file-system-info.h \
 	hildon-file-system-info.c \
 	hildon-file-system-settings.h \
-	hildon-file-system-settings.c
+	hildon-file-system-settings.c \
+	hildon-file-details-dialog.h \
+	hildon-file-details-dialog.c
 
 
 hildonwidgetsincludeinstdir = $(includedir)/hildon-fm/hildon-widgets
@@ -209,7 +211,8 @@ hildonwidgetsincludeinst_DATA = \
 	hildon-file-system-model.h \
 	hildon-file-chooser-dialog.h \
 	hildon-file-system-common.h \
-	hildon-file-system-info.h
+	hildon-file-system-info.h \
+	hildon-file-details-dialog.h
 
 subdir = hildon-fm
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -222,13 +225,14 @@ libhildonfm_la_DEPENDENCIES =
 am_libhildonfm_la_OBJECTS = hildon-file-selection.lo \
 	hildon-file-system-model.lo hildon-file-chooser-dialog.lo \
 	hildon-file-system-private.lo hildon-file-system-info.lo \
-	hildon-file-system-settings.lo
+	hildon-file-system-settings.lo hildon-file-details-dialog.lo
 libhildonfm_la_OBJECTS = $(am_libhildonfm_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/hildon-file-chooser-dialog.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-file-details-dialog.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-selection.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-info.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-model.Plo \
@@ -294,6 +298,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-chooser-dialog.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-details-dialog.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-selection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-model.Plo@am__quote@
