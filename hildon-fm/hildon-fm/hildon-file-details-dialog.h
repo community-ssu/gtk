@@ -27,7 +27,7 @@
 
 #include <gtk/gtkdialog.h>
 #include <gtk/gtktreemodel.h>
-#include <hildon-widgets/hildon-file-system-model.h>
+#include "hildon-file-system-model.h"
 
 G_BEGIN_DECLS
 
