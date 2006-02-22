@@ -1,3 +1,9 @@
+gtkfilesystemmemory (0.12-1) unstable; urgency=low
+
+  * Code refactoring.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 22 Feb 2006 11:19:12 +0200
+
 gtkfilesystemmemory (0.11-1) unstable; urgency=low
 
   * Fixed information banner when user tries to create already

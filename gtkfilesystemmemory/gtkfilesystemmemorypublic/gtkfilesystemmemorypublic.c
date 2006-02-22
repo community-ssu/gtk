@@ -98,6 +98,8 @@ gtk_file_system_memory_file_path_to_tree_iter( GtkFileSystem *file_system,
   gchar *str = NULL, *current = NULL;
   gchar **tokens = NULL;
 
+  /* FIXME: this function is fuzzy, needs simplification */
+
   if( !path )
     return FALSE;
 
@@ -175,7 +177,7 @@ gtk_file_system_memory_file_path_to_tree_iter( GtkFileSystem *file_system,
 }
 
 /**
- * gtk_file_system_memory_file_path_to_tree_iter:
+ * gtk_file_system_memory_tree_iter_to_file_path:
  * @file_system: #GtkFileSystem
  * @iter: #GtkTreeIter
  *
@@ -187,45 +189,45 @@ GtkFilePath *
 gtk_file_system_memory_tree_iter_to_file_path( GtkFileSystem *file_system,
                                                GtkTreeIter *iter )
 {
-  gboolean result;
   GtkTreeModel *model= NULL;
   GtkTreeIter iterator;
-  GtkTreeIter parent;
-  gchar *str = NULL, *tmp = NULL, *cac = NULL;
+  GtkTreeIter child;
+  GString *path = NULL;
+  gchar *name = NULL;
 
   model = GTK_TREE_MODEL(file_system);
   iterator = *iter;
+  path = g_string_new(NULL);
 
-  gtk_tree_model_get( model, &iterator, GTK_FILE_SYSTEM_MEMORY_COLUMN_NAME, 
-                      &str, -1 );
-
-  while( gtk_tree_model_iter_parent(model, &parent, &iterator) )
+  do
   {
-    iterator = parent;
     gtk_tree_model_get( model, &iterator, GTK_FILE_SYSTEM_MEMORY_COLUMN_NAME,
-                        &tmp, -1 );
-    if( strcmp( tmp, "/" ) )
-      cac = g_strconcat( tmp, "/", str, NULL );
-    else
-      cac = g_strconcat( tmp, str, NULL );
-    g_free(tmp);
-    g_free(str);
-    str = cac;
+                        &name, -1 );
+    if( name == NULL)
+    {
+      g_string_insert(path, 0, "/?");
+    }
+
+    /* FIXME: This doesn't work nicely for other "volumes" than "/".
+       for example: c:\foobar => "/c:/foobar" */
+    else if( strcmp( name, "/" ) != 0 )
+    {
+      /* non-root folder */
+      g_string_insert(path, 0, name);
+      g_string_insert(path, 0, "/");
+    }
+    g_free(name);
+
+    child = iterator;
+  } while( gtk_tree_model_iter_parent(model, &iterator, &child) );
+
+  if (path->len == 0)
+  {
+    /* asking root node's path */
+    g_string_append_c(path, '/');
   }
   
-  gtk_tree_model_get( model, &iterator, GTK_FILE_SYSTEM_MEMORY_COLUMN_IS_FOLDER,
-                      &result, -1 );
-  if( result )
-  {
-    if( str[0] != '/' )
-    {
-      tmp = g_strconcat( str, "/", NULL );
-      g_free(str);
-      str = tmp;
-    }
-  }
-
-  return (GtkFilePath*)str;
+  return (GtkFilePath*)g_string_free(path, FALSE);
 }
 
 
@@ -242,45 +244,28 @@ gtk_file_system_memory_tree_iter_to_file_path( GtkFileSystem *file_system,
 gboolean gtk_file_system_memory_remove( GtkFileSystem *file_system,
                                         GtkTreePath *path )
 {
+  /* FIXME: gtkfilesystemmemory library is loaded dynamically, so we can't reference
+     anything in it directly. So we can't use GTK_FILE_SYSTEM_MEMORY() macro
+     or anything else. 
+     
+     We cannot really move the type registration here either,
+     since that would cause program that just creates empty memorybackend
+     through backend name (without linking against this library) to crash 
+     because of missing symbol. This is not very likely use case, though. */
+  GtkFileSystemMemory *fsm = (GtkFileSystemMemory *)file_system;
   GtkTreeIter iter;
-  GtkTreeIter child;
-  GtkFilePath *file_path = NULL;
-  GtkFileSystemMemory *fsm = (GtkFileSystemMemory*)file_system;
-  GtkTreeModel *model = GTK_TREE_MODEL(fsm);
 
-  file_path = gtk_file_system_memory_tree_path_to_file_path(
-                                              file_system, path);
-
-  fsm->parent_path = gtk_tree_path_copy(path);
-  gtk_tree_path_up(fsm->parent_path);
-
-  if( !gtk_tree_model_get_iter( GTK_TREE_MODEL(fsm), &iter, path ) )
+  if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(file_system), &iter, path))
     return FALSE;
 
-  if( gtk_tree_model_iter_children(GTK_TREE_MODEL(fsm), &child, &iter) )
-  do
-  {
-    GtkTreePath *child_path = gtk_tree_model_get_path( model, &iter );
-    fsm->file_paths_to_be_deleted = g_slist_append( fsm->file_paths_to_be_deleted,
-                                      gtk_file_system_memory_tree_path_to_file_path(
-       				      file_system, child_path));
-    gtk_tree_path_free( child_path );
-  } while( gtk_tree_model_iter_next(model, &child) );
+  /* save file path for "row-deleted" signal before it's removed from model. */
+  fsm->deleted_file_path =
+    gtk_file_system_memory_tree_path_to_file_path(file_system, path);
 
-  fsm->file_paths_to_be_deleted = g_slist_append( fsm->file_paths_to_be_deleted,
-                                      file_path);
+  gtk_tree_store_remove(GTK_TREE_STORE(file_system), &iter);
 
-  /* with ! --> success
-   * If we were not able to remove anything, we haveto NULL the variable
-   */
-  if( gtk_tree_store_remove(GTK_TREE_STORE(fsm), &iter) )
-  {
-    g_slist_free(fsm->file_paths_to_be_deleted);
-    fsm->file_paths_to_be_deleted = NULL;
-    gtk_tree_path_free(fsm->parent_path);
-    fsm->parent_path = NULL;
-  }
-  
+  gtk_file_path_free(fsm->deleted_file_path);
+  fsm->deleted_file_path = NULL;
   return TRUE;
 }
 

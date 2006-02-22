@@ -43,13 +43,16 @@ G_BEGIN_DECLS
 GtkFileSystem *gtk_file_system_memory_new       (void);
 GType          gtk_file_system_memory_get_type (void);
 
+void           gtk_file_system_memory_remove_iter (GtkFileSystem *fs,
+                                                   GtkTreePath *path,
+                                                   GtkTreeIter *iter);
 
 struct _GtkFileSystemMemory
 {
   GtkTreeStore parent_instance;
-  GSList *file_paths_to_be_deleted;
-  GtkTreePath *parent_path;
+  GSList *folders;
   GSList *bookmarks;
+  GtkFilePath *deleted_file_path;
 };
 
 

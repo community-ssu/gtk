@@ -228,16 +228,6 @@ void signal_row_changed( GtkTreeModel *treemodel, GtkTreePath *path,
 void signal_row_deleted( GtkTreeModel *treemodel, GtkTreePath *path,
                          gpointer data);
 
-                         
-void
-signal_row_reference_inserted( GtkTreeModel *treemodel, GtkTreePath *path,
-                               GtkTreeIter *iter, GtkFileFolderMemory *ffm );
-void
-signal_row_reference_changed( GtkTreeModel *treemodel, GtkTreePath *path,
-                               GtkTreeIter *iter, GtkFileFolderMemory *ffm );
-void
-signal_row_reference_deleted( GtkTreeModel *treemodel, GtkTreePath *path,
-                               GtkFileFolderMemory *ffm );
 
 void
 fs_module_init( GTypeModule *module );
@@ -432,9 +422,9 @@ gtk_file_system_memory_new( void )
 {
   GtkFileSystemMemory *mfs;
 
-  mfs = g_object_new( GTK_TYPE_FILE_SYSTEM_MEMORY, NULL );
-
   DTEXT( ":"__FUNCTION__"\n" );
+
+  mfs = g_object_new( GTK_TYPE_FILE_SYSTEM_MEMORY, NULL );
 
   return GTK_FILE_SYSTEM( mfs );
 }
@@ -496,8 +486,8 @@ gtk_file_system_memory_init(GtkFileSystemMemory *mfs)
   gtk_tree_store_set_column_types( GTK_TREE_STORE(mfs), G_N_ELEMENTS(types), types );
 
   mfs->bookmarks = NULL;
-  mfs->file_paths_to_be_deleted = NULL;
 
+  /* FIXME: override virtual functions instead */
   g_signal_connect( G_OBJECT(mfs), "row-inserted", 
                     G_CALLBACK(signal_row_inserted), NULL );
   g_signal_connect( G_OBJECT(mfs), "row-deleted",
@@ -629,99 +619,183 @@ gtk_file_system_memory_finalize(GObject *object)
 
   DTEXT( ":"__FUNCTION__"\n" );
 
+  g_slist_free(mfs->folders);
   g_slist_free(mfs->bookmarks);
   object_class->finalize( object );
 }
 
+static GSList *
+gtk_file_system_memory_path_find(GtkFileSystemMemory *fsm,
+                                 GtkTreePath *path)
+{
+  GSList *link;
+
+  for (link = fsm->folders; link != NULL; link = link->next)
+  {
+    GtkFileFolderMemory *ffm = link->data;
+    GtkTreePath *child_path;
+
+    /* The reference should always valid here. The invalidated references are
+       removed in "row-deleted" handler. */
+    child_path = gtk_tree_row_reference_get_path(ffm->data);
+    g_assert(child_path != NULL);
+
+    if (gtk_tree_path_compare(path, child_path) == 0)
+    {
+      gtk_tree_path_free(child_path);
+      return link;
+    }
+    gtk_tree_path_free(child_path);
+  }
+  return NULL;
+}
+
+static GtkFileFolderMemory *
+gtk_file_system_memory_path_lookup_parent(GtkFileSystemMemory *fsm,
+                                          GtkTreePath *path)
+{
+  GtkTreePath *folder_path = gtk_tree_path_copy(path);
+  GSList *link;
+
+  /* Move to parent folder's path */
+  if (!gtk_tree_path_up(folder_path))
+  {
+    gtk_tree_path_free(folder_path);
+    g_return_val_if_reached(NULL);
+  }
+
+  /* Lookup the parent folder. It exists if get_folder() has been called
+     for it. */
+  link = gtk_file_system_memory_path_find(fsm, folder_path);
+  gtk_tree_path_free(folder_path);
+
+  return link != NULL ? link->data : NULL;
+}
 
 void signal_row_inserted( GtkTreeModel *treemodel, GtkTreePath *path,
                           GtkTreeIter *iter, gpointer data)
 {
+  GtkFileSystemMemory *fsm = GTK_FILE_SYSTEM_MEMORY(treemodel);
+  GtkFileFolderMemory *ffm = NULL;
+  GtkFilePath *file_path = NULL;
+  GSList *paths = NULL;
+  gchar *name;
+
   DTEXT( ":"__FUNCTION__"\n" );
+
+  if( gtk_tree_path_get_depth( path ) == 1 )
+  {
+    g_signal_emit_by_name( GTK_FILE_SYSTEM(treemodel), "volumes-changed" );
+    return;
+  }
+
+  ffm = gtk_file_system_memory_path_lookup_parent(fsm, path);
+  if (ffm == NULL)
+    return;
+
+  gtk_tree_model_get(treemodel, iter, GTK_FILE_SYSTEM_MEMORY_COLUMN_NAME,
+                     &name, -1 );
+  if (name == NULL)
+  {
+    /* Node inserted without initial values. Don't show it until its values
+       are set (we get "row-changed" signal). This way is deprecated. */
+    ffm->appended = TRUE;
+  }
+  else
+  {
+    file_path =
+      gtk_file_system_memory_tree_path_to_file_path(GTK_FILE_SYSTEM(treemodel),
+                                                    path);
+    paths = g_slist_append(NULL, (gchar *)file_path);
+    g_signal_emit_by_name(ffm, "files-added", paths);
+    g_slist_free(paths);
+    g_free(file_path);
+    g_free(name);
+  }
 }
 
 void signal_row_changed( GtkTreeModel *treemodel, GtkTreePath *path,
                           GtkTreeIter *iter, gpointer data)
 {
+  GtkFileSystemMemory *fsm = GTK_FILE_SYSTEM_MEMORY(treemodel);
+  GtkFileFolderMemory *ffm = NULL;
+  GtkFilePath *file_path = NULL;
+  GSList *paths = NULL;
+
   DTEXT( ":"__FUNCTION__"\n" );
 
   if( gtk_tree_path_get_depth( path ) == 1 )
+  {
     g_signal_emit_by_name( GTK_FILE_SYSTEM(treemodel), "volumes-changed" );
+    return;
+  }
+
+  ffm = gtk_file_system_memory_path_lookup_parent(fsm, path);
+  if (ffm == NULL)
+    return;
+
+  /* Note that we can't handle filename changes here. Only content changes.
+     Filename changes would have to send "files-removed" signal, but we don't
+     have the old name for that anymore. API caller is expected to do renames
+     with remove+add. */
+  file_path =
+    gtk_file_system_memory_tree_path_to_file_path(GTK_FILE_SYSTEM(treemodel),
+                                                  path);
+  paths = g_slist_append(NULL, (gchar *)file_path);
+  if (!ffm->appended)
+    g_signal_emit_by_name(ffm, "files-changed", paths);
+  else
+  {
+    /* Initial values for added node were set only now. This way is
+       deprecated. */
+    ffm->appended = FALSE;
+    g_signal_emit_by_name(ffm, "files-added", paths);
+  }
+  g_slist_free(paths);
+  g_free(file_path);
 }
 
 void signal_row_deleted( GtkTreeModel *treemodel, GtkTreePath *path,
                          gpointer data)
 {
-  DTEXT( ":"__FUNCTION__"\n" );
-}
+  GtkFileSystemMemory *fsm = GTK_FILE_SYSTEM_MEMORY(treemodel);
+  GtkFileFolderMemory *ffm = NULL;
+  GSList *link = NULL, *next = NULL;
 
-
-void
-signal_row_reference_inserted( GtkTreeModel *treemodel, GtkTreePath *path,
-                               GtkTreeIter *iter, GtkFileFolderMemory *ffm )
-{
-  DTEXT( ":"__FUNCTION__"\n" );
-  ffm->appended = TRUE;
-}
-
-void
-signal_row_reference_changed( GtkTreeModel *treemodel, GtkTreePath *path,
-                              GtkTreeIter *iter, GtkFileFolderMemory *ffm )
-{
-  GtkTreePath *folder_path = NULL;
-  GtkTreeRowReference *row = ffm->data;
-
-  DTEXT( ":"__FUNCTION__"\n" );
-
-  if( !gtk_tree_row_reference_valid(row) )
+  if (fsm->deleted_file_path == NULL)
+  {
+    g_error("Use gtk_file_system_remove() instead of gtk_tree_store_remove()");
     return;
+  }
 
-  folder_path = gtk_tree_row_reference_get_path( row );
-  
-  if( gtk_tree_path_is_ancestor( folder_path, path ) && 
-    (gtk_tree_path_get_depth(path) == gtk_tree_path_get_depth(folder_path) + 1))
+  /* remove all invalid row references. there's as many of them as there are
+     deleted folders. */
+  for (link = fsm->folders; link != NULL; link = next)
+  {
+    GtkFileFolderMemory *link_ffm = link->data;
+
+    next = link->next;
+    if (!gtk_tree_row_reference_valid(link_ffm->data))
+    {
+      fsm->folders = g_slist_delete_link(fsm->folders, link);
+    }
+  }
+
+  if( gtk_tree_path_get_depth( path ) == 1 )
+  {
+    g_signal_emit_by_name( GTK_FILE_SYSTEM(treemodel), "volumes-changed" );
+    return;
+  }
+
+  /* notify parent folder that it lost files */
+  ffm = gtk_file_system_memory_path_lookup_parent(fsm, path);
+  if (ffm != NULL)
   {
     GSList *paths = NULL;
-    paths = g_slist_append( paths, 
-                          (gchar*)gtk_file_system_memory_tree_path_to_file_path( 
-                          GTK_FILE_SYSTEM(treemodel), path ) );
-    if( ffm->appended )
-    {
-      g_signal_emit_by_name(ffm, "files-added", paths);
-      ffm->appended = FALSE;
-    }
-    else
-      g_signal_emit_by_name( ffm, "files-changed", paths );
 
-    g_slist_free( paths );
-  }
-}
-
-void
-signal_row_reference_deleted( GtkTreeModel *treemodel, GtkTreePath *path,
-                              GtkFileFolderMemory *ffm )
-{
-  GtkTreePath *folder_path = NULL;
-  GtkTreePath *row_path = NULL;
-  GtkTreeRowReference *row = ffm->data;
-  GtkFileSystemMemory *fsm = GTK_FILE_SYSTEM_MEMORY(treemodel);
-
-  DTEXT( ":"__FUNCTION__"\n" );
-
-  if( !fsm->parent_path || !fsm->file_paths_to_be_deleted )
-    return;
-
-  folder_path = fsm->parent_path;
-  row_path = gtk_tree_row_reference_get_path( row );
-
-  if( !gtk_tree_path_compare(folder_path, row_path) )
-  {
-    GSList *paths = fsm->file_paths_to_be_deleted;
-    g_signal_emit_by_name( ffm, "files-removed", paths );
-    g_slist_free( paths );
-    fsm->file_paths_to_be_deleted = NULL;
-    gtk_tree_path_free( folder_path );
-    fsm->parent_path = NULL;
+    paths = g_slist_append(NULL, (gchar *)fsm->deleted_file_path);
+    g_signal_emit_by_name(ffm, "files-removed", paths);
+    g_slist_free(paths);
   }
 }
 
@@ -754,13 +828,25 @@ gtk_file_folder_memory_iface_init( GtkFileFolderIface *iface )
 static void
 gtk_file_folder_memory_finalize( GObject *object )
 {
-  GtkTreePath *path = NULL;
   GtkFileFolderMemory *folder = GTK_FILE_FOLDER_MEMORY( object );
+  GtkFileSystemMemory *fsm = GTK_FILE_SYSTEM_MEMORY(folder->model);
+  GtkTreePath *path;
 
   DTEXT( ":"__FUNCTION__"\n" );
 
-  path = gtk_tree_row_reference_get_path( folder->data );
-  gtk_tree_path_free( path );
+  /* If reference is invalid, it means we already removed it from folders tree
+     in gtk_file_system_memory_remove() */
+  path = gtk_tree_row_reference_get_path(folder->data);
+  if (path != NULL)
+  {
+    GSList *link;
+
+    link = gtk_file_system_memory_path_find(fsm, path);
+    g_assert(link != NULL);
+    fsm->folders = g_slist_delete_link(fsm->folders, link);
+
+    gtk_tree_path_free(path);
+  }
   gtk_tree_row_reference_free( folder->data );
 }
 
@@ -976,12 +1062,12 @@ gtk_file_system_memory_get_volume_for_path( GtkFileSystem *file_system,
   return (GtkFileSystemVolume*)row;
 }
 
-/* FIXME: Some kind of cache (=hashmap) for created folders would be nice */
 static GtkFileFolder *
 gtk_file_system_memory_get_folder( GtkFileSystem *file_system,
 				                           const GtkFilePath *path,
                                    GtkFileInfoType types, GError **error )
 {
+  GtkFileSystemMemory *fsm = GTK_FILE_SYSTEM_MEMORY(file_system);
   GtkFileFolderMemory *ffm;
   GtkTreeModel *model;
   GtkTreePath *tree_path;
@@ -998,20 +1084,16 @@ gtk_file_system_memory_get_folder( GtkFileSystem *file_system,
   }
 
   model = GTK_TREE_MODEL(file_system);
-  
+
+  /* FIXME: Reuse earlier created folder object if it exists. */  
   ffm = g_object_new( GTK_TYPE_FILE_FOLDER_MEMORY, NULL );
   ffm->data = gtk_tree_row_reference_new( model, tree_path );
   ffm->model = model;
 
-  g_signal_connect_object( G_OBJECT(model), "row-changed",
-                    G_CALLBACK(signal_row_reference_changed), ffm, 0 );
-  g_signal_connect_object( G_OBJECT(model), "row-inserted",
-                    G_CALLBACK(signal_row_reference_inserted), ffm, 0 );
-  g_signal_connect_object( G_OBJECT(model), "row-deleted",
-                    G_CALLBACK(signal_row_reference_deleted), ffm, 0 );
+  /* Pointer is removed from this list in folder finalize */
+  fsm->folders = g_slist_prepend(fsm->folders, ffm);
 
   gtk_tree_path_free( tree_path );
-                    
   return GTK_FILE_FOLDER(ffm);
 }
 
@@ -1027,6 +1109,8 @@ gtk_file_system_memory_create_folder( GtkFileSystem *file_system,
   GtkTreeIter iter, ipath;
 
   DTEXT( ":"__FUNCTION__"\n" );
+
+  /* FIXME: This function is fuzzy, rework needed... */
 
   if( (tree_path = gtk_file_system_memory_file_path_to_tree_path( file_system, 
                                                                   path )) )
@@ -1127,8 +1211,8 @@ gtk_file_system_memory_volume_mount( GtkFileSystem *file_system,
                                      GError **error )
 {
   DTEXT( ":"__FUNCTION__"\n" );
-  /* DONTKNOW - Should we emit a signal or not? */
-  /*g_signal_emit_by_name (file_system, "volumes-changed", NULL);*/
+  /* Volumes are always mounted in memory filesystem, so there's no need to
+     do anything here. */
   return TRUE;
 }
 
