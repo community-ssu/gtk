@@ -1,3 +1,30 @@
+2006-02-22  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+
+	Added FIXMEs
+
+	Volume comment update.
+
+	Emit "volumes-changed" signal in row-inserted/row-deleted handlers
+	too if root node is being inserted or deleted. Fixed a few comments.
+
+	gtk_file_system_memory_tree_iter_to_file_path() was returning
+	"" instead of "/" for root node. Also fixed the function's comment. 
+
+	Added back appended-hack to have backwards compatibility if row
+	wasn't inserted with gtk_tree_store_append/insert_with_values().
+
+	* gtkfilesystemmemory/gtkfilesystemmemory.c,
+	  gtkfilesystemmemoryprivate.h:
+	"row-*" signals are connected to only once now per model.
+	"row-changed" append hack removed.
+
+	* gtkfilesystemmemorypublic/gtkfilesystemmemorypublic.c: Private API
+	for deletion changed. Implement the new way.
+
+	* gtkfilesystemmemorypublic/gtkfilesystemmemorypublic.c
+	(gtk_file_system_memory_tree_iter_to_file_path): Changed the code
+	to be more understandable
+
 2006-01-03  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.10.1
@@ -13,4 +40,3 @@
 	(gtk_file_system_memory_path_to_uri): Use g_filename_to_uri() to
 	escape the filename if needed.
 
-	
