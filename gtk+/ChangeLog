@@ -1,4 +1,11 @@
 2006-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gdk/x11/gdkwindow-x11.c (set_wm_name, gdk_window_set_title,
+	gdk_window_set_icon_name): Set non-UTF-8 legacy WM hints only if
+	ENABLE_ICCCM_LEGACY is defined. Avoids needlessly loading iconv as it
+	wastes quite a bit of memory for no benefit.
+
+2006-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* */*.c: Add missing Since: tags for custom additions
 	* docs/reference/gtk/gtk-sections: Add missing symbols
