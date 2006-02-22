@@ -2644,6 +2644,7 @@ gdk_window_get_geometry_hints (GdkWindow      *window,
     }
 }
 
+#ifdef ENABLE_ICCCM_LEGACY
 static gboolean
 utf8_is_latin1 (const gchar *str)
 {
@@ -2711,6 +2712,7 @@ set_text_property (GdkDisplay  *display,
 	g_free (prop_text);
     }
 }
+#endif
 
 /* Set WM_NAME and _NET_WM_NAME
  */
@@ -2724,9 +2726,11 @@ set_wm_name (GdkDisplay  *display,
 		   gdk_x11_get_xatom_by_name_for_display (display, "UTF8_STRING"), 8,
 		   PropModeReplace, name, strlen (name));
   
+#ifdef ENABLE_ICCCM_LEGACY
   set_text_property (display, xwindow,
 		     gdk_x11_get_xatom_by_name_for_display (display, "WM_NAME"),
 		     name);
+#endif
 }
 
 /**
@@ -2768,9 +2772,11 @@ gdk_window_set_title (GdkWindow   *window,
 		       gdk_x11_get_xatom_by_name_for_display (display, "UTF8_STRING"), 8,
 		       PropModeReplace, title, strlen (title));
       
+#ifdef ENABLE_ICCCM_LEGACY
       set_text_property (display, xwindow,
 			 gdk_x11_get_xatom_by_name_for_display (display, "WM_ICON_NAME"),
 			 title);
+#endif
     }
 }
 
@@ -4114,10 +4120,12 @@ gdk_window_set_icon_name (GdkWindow   *window,
 		   gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_ICON_NAME"),
 		   gdk_x11_get_xatom_by_name_for_display (display, "UTF8_STRING"), 8,
 		   PropModeReplace, name, strlen (name));
-  
+
+#ifdef ENABLE_ICCCM_LEGACY
   set_text_property (display, GDK_WINDOW_XID (window),
 		     gdk_x11_get_xatom_by_name_for_display (display, "WM_ICON_NAME"),
 		     name);
+#endif
 }
 
 /**
