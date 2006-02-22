@@ -28,7 +28,7 @@ libhildonfm_la_SOURCES = \
 	hildon-file-details-dialog.h \
 	hildon-file-details-dialog.c
 
-hildonwidgetsincludeinstdir=$(includedir)/hildon-fm
+hildonwidgetsincludeinstdir=$(includedir)/hildon-fm/hildon-widgets
 hildonwidgetsincludeinst_DATA = \
 	hildon-file-selection.h \
 	hildon-file-system-model.h \
