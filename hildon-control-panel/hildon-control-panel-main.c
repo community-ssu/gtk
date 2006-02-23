@@ -39,10 +39,9 @@ static GtkCheckMenuItem *cp_view_large_icons;
 
 struct _AppData
 {
-    HildonApp *app;
-    HildonAppView *appview;
+    HildonProgram *program;
+    HildonWindow *window;
     GtkWidget * grid;
-    GtkWindow *window;
     osso_context_t *osso;
 
     /* for state save data */
@@ -98,9 +97,8 @@ static gint _cp_keyboard_listener(GtkWidget *widget,
                                   GdkEventKey * keyevent, gpointer data);
 
 /* Callback for topping */
-static void _topmost_status_acquire(void);
-/* Callback for saving state */
-static void _topmost_status_lose(void);
+static void _topmost_status_change(GObject *gobject, GParamSpec *arg1,
+                                   gpointer user_data);;
 /* Callback for resetting factory settings */
 static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data );
 /* Callback for clear user data */
@@ -157,7 +155,7 @@ main(int argc, char ** argv)
 
     _enforce_state();     /* realize the saved state */
 
-    gtk_widget_show_all( GTK_WIDGET( state_data.app ) );
+    gtk_widget_show_all( GTK_WIDGET( state_data.window ) );
 
     if(state_data.execute==1) {
         _launch(hildon_cp_applist_get_entry(state_data.focused_filename),
@@ -253,28 +251,24 @@ static void _init_gui(void)
     GSList *menugroup = NULL;
     GtkWidget *grid = NULL;
 
-    state_data.app = HILDON_APP( hildon_app_new() );
+    state_data.window = HILDON_WINDOW( hildon_window_new() );
+    state_data.program = HILDON_PROGRAM( hildon_program_get_instance() );
 
-    hildon_app_set_title( state_data.app, HILDON_CONTROL_PANEL_TITLE );
+    hildon_program_add_window( state_data.program, state_data.window );
 
-    hildon_app_set_two_part_title( state_data.app, FALSE );
-
-    g_signal_connect( G_OBJECT( state_data.app ), "destroy", 
+    gtk_window_set_title( GTK_WINDOW( state_data.window ),
+            HILDON_CONTROL_PANEL_TITLE );
+    
+    g_signal_connect( G_OBJECT( state_data.window ), "destroy", 
                       G_CALLBACK( _my_quit ),NULL);
-
-    state_data.appview = HILDON_APPVIEW( hildon_appview_new(
-                                             "MainView" ) );
-
-    hildon_app_set_appview( state_data.app, state_data.appview );
     
-    g_signal_connect(G_OBJECT(state_data.app), "topmost_status_lose",
-                     G_CALLBACK(_topmost_status_lose), NULL);
-    g_signal_connect(G_OBJECT(state_data.app), "topmost_status_acquire",
-                     G_CALLBACK(_topmost_status_acquire), NULL);
-    
-    /* Menu */
-    menu = GTK_MENU( hildon_appview_get_menu( state_data.appview ) );
+    g_signal_connect(G_OBJECT(state_data.program), "notify::is-topmost",
+                     G_CALLBACK(_topmost_status_change), NULL);
 
+    menu = GTK_MENU( gtk_menu_new() );
+
+    hildon_window_set_menu( state_data.window, menu );
+    
     mi = gtk_menu_item_new_with_label( HILDON_CONTROL_PANEL_MENU_OPEN );
     
     g_signal_connect( G_OBJECT( mi ), "activate", 
@@ -388,7 +382,7 @@ static void _init_gui(void)
     
     hildon_cp_applist_initialize( _launch, NULL,
                                     _focus_change, NULL,
-                                    GTK_WIDGET( state_data.appview ), 
+                                    GTK_WIDGET( state_data.window ), 
                                     CONTROLPANEL_ENTRY_DIR);
 
     grid = hildon_cp_applist_get_grid();
@@ -400,10 +394,7 @@ static void _init_gui(void)
 	g_value_unset(&val);
     }
 
-    gtk_widget_show_all(GTK_WIDGET(state_data.app));
-
-    state_data.window = GTK_WINDOW( gtk_widget_get_toplevel(
-                                        GTK_WIDGET( state_data.app ) ) );
+    gtk_widget_show_all(GTK_WIDGET(state_data.window));
 
     state_data.grid = hildon_cp_applist_get_grid();
 
@@ -440,7 +431,7 @@ static void _create_data(void)
     }
     
     g_assert(state_data.osso);
-    state_data.icon_size=1;
+    state_data.icon_size=0;
     state_data.focused_filename=NULL;
     state_data.saved_focused_filename=NULL;
     state_data.execute = 0;
@@ -706,6 +697,7 @@ static void _retrieve_configuration()
         {
             osso_log(LOG_ERR, 
                      "Couldn't load statusinfo from configure file");
+            state_data.icon_size = 0;
         }
         else {
             g_return_if_fail (iconsize_data != NULL);
@@ -719,7 +711,7 @@ static void _retrieve_configuration()
                 state_data.icon_size = 0;
             }
             else {
-                state_data.icon_size = 1;
+                state_data.icon_size = 0;
             }
         }
     }
@@ -774,22 +766,22 @@ static gint _cp_keyboard_listener( GtkWidget * widget,
 
 /***** Top/Untop callbacks *****/
 
-/* save state when we get untopped*/
-static void _topmost_status_lose(void)
+static void _topmost_status_change(GObject *gobject, GParamSpec *arg1,
+                                   gpointer user_data)
 {
-    _save_state(FALSE);
-    hildon_app_set_killable(state_data.app, TRUE);
+    HildonProgram *program = HILDON_PROGRAM( gobject );
+
+    if( hildon_program_get_is_topmost (program) )
+    {
+        hildon_program_set_can_hibernate(program, FALSE);
+    }
+    else
+    {
+        _save_state(FALSE);
+        hildon_program_set_can_hibernate(program, TRUE);
+    }
+
 }
-
-/* Remove the "save to OOM kill" hint when topped */
-
-static void _topmost_status_acquire(void)
-{
-    mb_util_window_activate(GDK_DISPLAY(), GDK_WINDOW_XWINDOW(
-                                GTK_WIDGET(state_data.app)->window));
-    hildon_app_set_killable(state_data.app, FALSE);
-}
-
 
 /****** Menu callbacks ******/
 
@@ -801,7 +793,6 @@ static void _my_open( GtkWidget *widget, gpointer data )
 
 static void _my_quit(GtkWidget *widget, gpointer data)
 {
-    hildon_app_set_killable(state_data.app, FALSE);
     _save_state( TRUE );
     gtk_main_quit();
 }

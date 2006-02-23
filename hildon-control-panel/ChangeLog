@@ -1,3 +1,9 @@
+2006-02-23 Johan Bilien <johan.bilien@nokia.com>
+	* hildon-control-panel-main.[ch]: Ported to HildonWindow / HildonProgram
+
+2006-02-21 Johan Bilien <johan.bilien@nokia.com>
+	* Small icon size is now the default (Closes N#22927)
+
 2006-02-17 Johan Bilien <johan.bilien@nokia.com>
 	* Implemented new version of RFS UI:
 	  - Use codelockui instead of old dbus cruft

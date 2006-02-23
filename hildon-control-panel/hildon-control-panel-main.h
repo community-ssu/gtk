@@ -49,12 +49,13 @@
 #include <dbus/dbus.h>
 
 #include <hildon-widgets/hildon-get-password-dialog.h>
-#include <hildon-widgets/hildon-app.h>
+#include <hildon-widgets/hildon-window.h>
+#include <hildon-widgets/hildon-program.h>
 #include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-grid.h>
 #include <hildon-base-lib/hildon-base-dnotify.h>
-#include <hildon-lgpl/hildon-widgets/gtk-infoprint.h>
-#include <hildon-lgpl/hildon-widgets/hildon-defines.h>
+#include <hildon-widgets/gtk-infoprint.h>
+#include <hildon-widgets/hildon-defines.h>
 
 #include <libmb/mbdotdesktop.h>
 #include <libmb/mbutil.h>

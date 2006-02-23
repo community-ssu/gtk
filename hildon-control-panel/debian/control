@@ -2,7 +2,7 @@ Source: hildon-control-panel
 Section: x11
 Priority: optional
 Maintainer: Johan Bilien <johan.bilien@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), hildon-libs-dev (>= 0.7.0), hildon-lgpl-dev, hildon-base-lib-dev, pkg-config, libosso-dev (>= 0.10.0), libmatchbox-dev, osso-af-settings, libosso-help-dev, codelockui-dev (>= 1.2.1)
+Build-Depends: debhelper (>= 4.0.0), hildon-libs-dev (>= 0.7.0), hildon-libs-dev(>= 0.12.0), hildon-base-lib-dev, pkg-config, libosso-dev (>= 0.10.0), libmatchbox-dev, osso-af-settings, libosso-help-dev, codelockui-dev (>= 1.2.1)
 Standards-Version: 3.6.0
 
 Package: hildon-control-panel
