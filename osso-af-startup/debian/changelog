@@ -1,6 +1,5 @@
 osso-af-startup (1.4-1) unstable; urgency=low
 
-  * UNRELEASED
   * Removed the sleep after startup greeting.
   * Now using whoami in af-defines.sh, and removed a needless warning.
 
