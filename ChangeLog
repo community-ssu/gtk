@@ -1,3 +1,8 @@
+2006-02-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkbutton.c (:keyboard-button): Remove obsolete VKB specific
+	hack.
+
 2006-02-23  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_rows_reordered):

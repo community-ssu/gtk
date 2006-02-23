@@ -98,8 +98,7 @@ enum {
   PROP_XALIGN,
   PROP_YALIGN,
   PROP_DETAIL,
-  PROP_AUTOMATIC_DETAIL,
-  PROP_KEYBOARD_BUTTON
+  PROP_AUTOMATIC_DETAIL
 };
 
 #define GTK_BUTTON_GET_PRIVATE(o)       (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_BUTTON, GtkButtonPrivate))
@@ -114,8 +113,6 @@ struct _GtkButtonPrivate
   guint        image_is_stock : 1;
   gchar       *detail;
   gboolean     automatic_detail;
-  gboolean     keyboard_button;
-  GtkLabel    *keyboard_label;
 };
 
 static void gtk_button_class_init     (GtkButtonClass   *klass);
@@ -263,19 +260,6 @@ gtk_button_class_init (GtkButtonClass *klass)
                                    g_param_spec_boolean ("use_underline",
 							 P_("Use underline"),
 							 P_("If set, an underline in the text indicates the next character should be used for the mnemonic accelerator key"),
-                                                        FALSE,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
-  
-  /**
-   * GtkButton:keyboard-button:
-   *
-   * Since: maemo 1.0
-   */
-  g_object_class_install_property (gobject_class,
-				   PROP_KEYBOARD_BUTTON,
-                                   g_param_spec_boolean ("keyboard_button",
-							 P_("Keyboard button"),
-							 P_("If set, label foo"),
                                                         FALSE,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   
@@ -606,8 +590,6 @@ gtk_button_init (GtkButton *button)
   priv->align_set = 0;
   priv->detail = g_strdup ("buttondefault");
   priv->automatic_detail = TRUE;
-  priv->keyboard_button = FALSE;
-  priv->keyboard_label = NULL;
   priv->image_is_stock = TRUE;
 
   g_object_set (G_OBJECT (button), "tap_and_hold_state",
@@ -742,9 +724,6 @@ gtk_button_set_property (GObject         *object,
     case PROP_AUTOMATIC_DETAIL:
       priv->automatic_detail = g_value_get_boolean (value);
       break;
-    case PROP_KEYBOARD_BUTTON:
-      priv->keyboard_button = g_value_get_boolean (value);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -792,9 +771,6 @@ gtk_button_get_property (GObject         *object,
     case PROP_AUTOMATIC_DETAIL:
       g_value_set_boolean (value, priv->automatic_detail);
       break;
-    case PROP_KEYBOARD_BUTTON:
-      g_value_set_boolean (value, priv->keyboard_button);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -834,26 +810,6 @@ gtk_button_construct_child (GtkButton *button)
   
   if (button->label_text == NULL)
     return;
-
-  if (priv->keyboard_button)
-    {
-      if (priv->keyboard_label)
-	{
-	  gtk_label_set_label (priv->keyboard_label, button->label_text);
-	}
-      else
-	{
-	  GtkWidget *label = gtk_label_new (button->label_text);
-	  priv->keyboard_label = GTK_LABEL (label);
-  	  
-	  if (priv->align_set)
-	    gtk_misc_set_alignment (GTK_MISC (label),
-				    priv->xalign, priv->yalign);
-	  gtk_widget_show (priv->keyboard_label);
-	  gtk_container_add (GTK_CONTAINER (button), label);
-	}
-      return;
-    }
 
   if (GTK_BIN (button)->child)
     {
