@@ -15,9 +15,6 @@
 2006-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* */*.c: Add missing Since: tags for custom additions
-	* docs/reference/gtk/gtk-sections: Add missing symbols
-	* docs/reference/gtk/gtk-docs.sgml: Add new indices to collect symbols
-	that would otherwise be missing from existing ones.
 
 2006-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
