@@ -1,3 +1,7 @@
+2006-02-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtk-docs.sgml: Add missing '2.10 (maemo 2.0)' index
+	
 2006-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtk-sections.txt: Add missing symbols
