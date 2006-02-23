@@ -28,8 +28,7 @@
  * This function strdups application name and makes it
  * suitable for being part of an object path, or returns NULL.
  * Currently needed for allowing '.' in application name. */
-gchar* __attribute__ ((visibility("hidden")))
-appname_to_valid_path_component(const gchar *application)
+gchar* appname_to_valid_path_component(const gchar *application)
 {
     gchar* copy = NULL, *p = NULL;
     g_assert(application != NULL);
