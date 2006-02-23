@@ -21,6 +21,7 @@
 
 export AF_INIT_DIR=/etc/osso-af-init
 # user name is appended for multi-user Scratchbox
+USER=`whoami`
 if [ "x$USER" = "xroot" ]; then
   export SESSION_BUS_ADDRESS_FILE=/tmp/session_bus_address.user
   export SESSION_BUS_PID_FILE=/tmp/dbus_session_bus.pid.user
@@ -35,12 +36,8 @@ if [ -r $SESSION_BUS_ADDRESS_FILE ]; then
   source $SESSION_BUS_ADDRESS_FILE
 fi
 
-if [ "x$AF_DEFINES_SOURCED" != "x" ]; then
-
-  echo "AF Warning: af-defines.sh was sourced again"
-
-else
-
+# the following should not change in run-time
+if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
   export AF_PIDDIR=/tmp/af-piddir
   if [ ! -d $AF_PIDDIR ]; then
     # note, no write to flash involved here
