@@ -3,35 +3,25 @@
 
 DIR=/etc/osso-af-init
 DEFHOME=/home/user
+USER=`whoami`
 
 if [ "x$USER" = "xroot" ]; then
   SUDO=''
   HOME=$DEFHOME
   echo "$0: Warning, I'm root"
 else
-  if [ "x$USER" = "x" ]; then
-    SUDO=''
+  SUDO='sudo'
+  if [ "x$HOME" = "x" ]; then
     HOME=$DEFHOME
-    echo "$0: Warning, USER is not defined, assuming 'root'"
-  else
-    SUDO='sudo'
+    echo "$0: Warning, HOME is not defined, assuming '$HOME'"
   fi
 fi
 
-# sanity checks
-if [ "x$MYDOCSDIR" = "x" ]; then
-  MYDOCSDIR=$DEFHOME/MyDocs
-  echo "$0: Warning, MYDOCSDIR is not defined, assuming '$MYDOCSDIR'"
-fi
-if [ "x$HOME" = "x" ]; then
-  HOME=$DEFHOME
-  echo "$0: Warning, HOME is not defined, assuming '$HOME'"
-fi
+# define MYDOCSDIR etc.
+source $DIR/af-defines.sh
 
 # shut down things
 $SUDO /etc/init.d/af-base-apps stop
-# define AF-wide environment
-source $DIR/af-defines.sh
 $SUDO $DIR/gconf-daemon.sh stop
 
 if [ "x$OSSO_CUD_DOES_NOT_DESTROY" = "x" ]; then
