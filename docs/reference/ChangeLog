@@ -1,3 +1,9 @@
+2006-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtk-sections.txt: Add missing symbols
+	* gtk/gtk-docs.sgml: Add new indices to collect symbols that would
+	otherwise be missing from existing ones.
+
 2005-08-18  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.6.10 ===
