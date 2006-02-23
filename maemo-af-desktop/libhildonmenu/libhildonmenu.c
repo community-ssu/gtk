@@ -61,6 +61,18 @@ static void read_menu_conf(const char *filename,
 /* Function for writing the menu to a file */
 gboolean write_menu_conf( GtkTreeModel *model, gint menu_type );
 
+static void destroy_desktop_item(gpointer data, gpointer null)
+{
+    desktop_entry_t * de = (desktop_entry_t *)data;
+
+    g_free(de->name);
+    g_free(de->icon);
+    g_free(de->exec);
+    g_free(de->service);
+    g_free(de->desktop_id);
+
+    g_free(de);
+}
 
 GdkPixbuf *get_icon(const char *icon_name, int icon_size)
 {
@@ -114,7 +126,7 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
 
 	ULOG_DEBUG( "get_desktop_files: reading dir '%s'", full_path );
 
-	gchar *current_path;
+	gchar *current_path = NULL;
 
 	GKeyFile *key_file = NULL;
 	GError *error = NULL;
@@ -158,13 +170,11 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
 				
 				g_error_free(error);
 				error = NULL;
+                g_free(current_path);
 				
 				continue;
 			}
 						
-
-			item = (desktop_entry_t *)
-				g_malloc0(sizeof(desktop_entry_t));
 
 			gchar *type = g_key_file_get_string(
 					key_file,
@@ -175,8 +185,15 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
 			/* We're only interested in apps */
 			if ( !type || strcmp(type, "Application") != 0 ) {
 				g_key_file_free(key_file);
+                g_free(current_path);
+                g_free(type);
 				continue;
 			}
+
+            g_free(type);
+
+			item = (desktop_entry_t *)
+				g_malloc0(sizeof(desktop_entry_t));
 
 			item->icon = g_key_file_get_string(
 					key_file,
@@ -438,15 +455,15 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					gtk_tree_store_set(menu_tree,
 							&child_iter,
 							TREE_MODEL_NAME,
-							g_strdup( item->name ),
+							item->name,
 							TREE_MODEL_ICON,
 							icon,
 							TREE_MODEL_EXEC,
-							g_strdup(item->exec),
+							item->exec,
 							TREE_MODEL_SERVICE,
-							g_strdup(item->service),
+							item->service,
 							TREE_MODEL_DESKTOP_ID,
-							g_strdup(item->desktop_id),
+							item->desktop_id,
 							-1);
 
 					/* Mark the item allocated */
@@ -615,9 +632,8 @@ GtkTreeModel *get_menu_contents(void)
 	}
 
 	/* Cleanup */
-	g_free( user_home_dir );
 	g_free( user_menu_conf_file );
-	g_list_foreach( desktop_files, (GFunc) g_free, NULL );
+	g_list_foreach( desktop_files, (GFunc) destroy_desktop_item, NULL );
 	g_list_free( desktop_files );
 
 	return GTK_TREE_MODEL(contents);

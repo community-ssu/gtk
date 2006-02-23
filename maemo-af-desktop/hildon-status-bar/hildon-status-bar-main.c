@@ -248,7 +248,7 @@ static gint rpc_cb( const gchar *interface,
     if( !interface || !method || !arguments || !data )
     {
         retval->type = DBUS_TYPE_STRING;
-        retval->value.s = "NULL parameter";
+        retval->value.s = g_strdup( "NULL parameter" );
         g_warning( "%s\n", retval->value.s );
         return OSSO_ERROR;
     }
@@ -277,9 +277,7 @@ static gint rpc_cb( const gchar *interface,
             }
             if(retval->value.s){
                 osso_log( LOG_ERR, retval->value.s );
-                g_free((gchar*)retval->value.s);
             }
-            retval->value.s = "Wrong param type to infoprint";
 
             return OSSO_ERROR;       
         }
@@ -295,9 +293,9 @@ static gint rpc_cb( const gchar *interface,
         {
             retval->type = DBUS_TYPE_STRING;
             if( arguments->len < 2 ) {
-                retval->value.s = "Not enough args to dialog";
+                retval->value.s = g_strdup( "Not enough args to dialog" );
             } else {
-                retval->value.s = "Wrong type of arguments to dialog";
+                retval->value.s = g_strdup( "Wrong type of arguments to dialog" );
             }
             osso_log( LOG_ERR, retval->value.s );
             return OSSO_ERROR;       
@@ -316,9 +314,9 @@ static gint rpc_cb( const gchar *interface,
         {
             retval->type = DBUS_TYPE_STRING;
             if( arguments->len < 2 ) {
-                retval->value.s = "Not enough args to dialog";
+                retval->value.s = g_strdup( "Not enough args to dialog" );
             } else {
-                retval->value.s = "Wrong type of arguments to dialog";
+                retval->value.s = g_strdup( "Wrong type of arguments to dialog" );
             }
             osso_log( LOG_ERR, retval->value.s );
             return OSSO_ERROR;       
@@ -338,9 +336,9 @@ static gint rpc_cb( const gchar *interface,
         {
             retval->type = DBUS_TYPE_STRING;
             if( arguments->len < 1 ) {
-                retval->value.s = "Not enough args to dialog";
+                retval->value.s = g_strdup( "Not enough args to dialog" );
             } else {
-                retval->value.s = "Argument has invalid type";
+                retval->value.s = g_strdup( "Argument has invalid type" );
             }
             osso_log( LOG_ERR, retval->value.s );
             return OSSO_ERROR;       
@@ -377,10 +375,6 @@ static gint rpc_cb( const gchar *interface,
                                      //DBUS_TYPE_NIL);
             }
             osso_log( LOG_ERR, retval->value.s );
-            if(retval->value.s){
-                g_free((gchar*)retval->value.s);
-            }
-            retval->value.s = "Wrong type of args to plugin";
             return OSSO_ERROR;
         }
 
@@ -396,9 +390,7 @@ static gint rpc_cb( const gchar *interface,
                                                val[0]->value.s );
             if(retval->value.s){
                 osso_log( LOG_ERR, retval->value.s );
-                g_free((gchar*)retval->value.s);
             }
-            retval->value.s="Failed to load plugin";
             return OSSO_ERROR;
         }
 
@@ -435,9 +427,7 @@ static gint rpc_cb( const gchar *interface,
             }
             if(retval->value.s){
                 osso_log( LOG_ERR, retval->value.s );
-                g_free((gchar*)retval->value.s);
             }
-            retval->value.s = "Wrong type of args";
             return OSSO_ERROR;
  
 	  }	
@@ -465,9 +455,7 @@ static gint rpc_cb( const gchar *interface,
             }
             if(retval->value.s){
                 osso_log( LOG_ERR, retval->value.s );
-                g_free((gchar*)retval->value.s);
             }
-            retval->value.s = "Wrong type args";
             return OSSO_ERROR;
 	      
 	  }	
@@ -484,9 +472,7 @@ static gint rpc_cb( const gchar *interface,
         retval->value.s = g_strdup_printf( "Unknown method '%s'", method );
         if(retval->value.s){
             osso_log( LOG_ERR, retval->value.s );
-            g_free((gchar*)retval->value.s);
         }
-        retval->value.s = "Unknown method";
         return OSSO_ERROR;
     }
 
@@ -838,7 +824,8 @@ int status_bar_main(osso_context_t *osso, StatusBar **panel){
     gtk_widget_show_all( sb_panel->window );
     TRACE(TDEBUG,"status_bar_main: 7 if rpc...");
     /* set RPC cb */
-    if( osso_rpc_set_default_cb_f( osso, rpc_cb, sb_panel ) != OSSO_OK )
+    if( osso_rpc_set_default_cb_f_with_free( osso, rpc_cb, sb_panel,
+               osso_rpc_free_val ) != OSSO_OK )
     {
         osso_log( LOG_ERR, "osso_rpc_set_default_cb_f() failed" );
     }

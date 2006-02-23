@@ -1,3 +1,9 @@
+2006-02-23  Johan Bilien <johan.bilien@nokia.com>,
+	* hildon-status-bar/hildon-status-bar-main.c: a few cleanups in
+	  the osso RPC callback.
+	* libhildonmenu/libhildonmenu.c, hildon-navigator/others-menu.c:
+	  fixed numerous memory leaks in the new OthersMenu handling.
+
 2006-02-22  Johan Bilien <johan.bilien@nokia.com>,
 	* hildon-navigator/applications.menu: Corrected .desktop name
 	  for application installer, and de-dossfified (Closes N#23177)

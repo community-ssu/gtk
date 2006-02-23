@@ -406,7 +406,7 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
     if( !user_home_dir )
     {
         /* FIXME */
-        user_home_dir = g_strdup( "" );
+        user_home_dir = "";
     }
     user_menu_conf_file = g_build_filename(
            user_home_dir, USER_MENU_FILE, NULL );
@@ -420,7 +420,6 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
     }
 
     /* Cleanup */
-    g_free( user_home_dir );
     g_free( user_menu_conf_file );
 
 
@@ -442,6 +441,10 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 
     /* Watch user specific menu conf */
     user_home_dir = getenv( "HOME" );
+    if( !user_home_dir ){
+        /* FIXME */
+        user_home_dir = "";
+    }
     user_menu_conf_file = g_build_filename(
 		    user_home_dir, USER_MENU_FILE, NULL );
 
@@ -463,7 +466,6 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
     }
 
     /* Cleanup */
-    g_free( user_home_dir );
     g_free( user_menu_conf_file );
     g_free( user_menu_dir );
 
@@ -512,10 +514,13 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
     gchar     *item_service    = NULL;
     gchar     *item_desktop_id = NULL;
 
+    gboolean iter_created_by_me = FALSE;
+
 
     menu = GTK_MENU(widget);
 
     /* Monitor changes to the directory */
+#if 0
     _om_changed_cb_data_t *cb_data = g_malloc0(sizeof(_om_changed_cb_data_t));
     cb_data->widget = GTK_WIDGET(om->menu);
     cb_data->om = om;
@@ -533,6 +538,7 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 	    }
 	    */
     }
+#endif
 
     /* Make sure we have the model and iterator */
     if ( !model ) {
@@ -544,6 +550,7 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 	    
 	    /* .. and allocate memory for the actual iterator.. */
 	    iter = g_malloc0 (sizeof( GtkTreeIter ) );
+        iter_created_by_me = TRUE;
 	    
 	    /* .. get the top level iterator.. */
 	    if ( !gtk_tree_model_get_iter_first( model, &temp_iter ) ) {
@@ -691,6 +698,9 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 	    
     } while (gtk_tree_model_iter_next(model, iter));
 
+
+    if( iter_created_by_me )
+        g_free(iter);
     /* FIXME: When done we should cleanup the GtkTreeModel */
 
     return;
