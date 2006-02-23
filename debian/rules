@@ -88,7 +88,8 @@ $(BUILD_SHARED_DIR)/build-stamp:
 
 	# Add here commands to compile the package.
 	$(MAKE) -C $(BUILD_SHARED_DIR) \
-		LD_LIBRARY_PATH=$(libpath):$(LD_LIBRARY_PATH)
+		LD_LIBRARY_PATH=$(libpath):$(LD_LIBRARY_PATH) \
+		SRC_SUBDIRS="gdk-pixbuf gdk gtk modules contrib"
 
 	# The FAQ and tutorial are normally built only during 'make dist'
 	$(MAKE) -C $(BUILD_SHARED_DIR)/docs/faq html
@@ -105,6 +106,7 @@ clean: debian/control
 	# Add here commands to clean up after the build process.
 	-make maintainer-clean
 	-rm -f $(SOURCE_DIR)/install-test-stamp
+	-rm -f $(SOURCE_DIR)/build-stamp
 
 	dh_clean
 
@@ -120,7 +122,8 @@ $(SOURCE_DIR)/install-test-stamp:
 install-shared: build-shared install-test
 	# Add here commands to install the package into debian/tmp
 	$(MAKE) -C $(BUILD_SHARED_DIR) install \
-		DESTDIR=$(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix)
+		DESTDIR=$(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix) \
+		SRC_SUBDIRS="gdk-pixbuf gdk gtk modules contrib"
 
 install: install-shared
 	# generating debian files from .in
