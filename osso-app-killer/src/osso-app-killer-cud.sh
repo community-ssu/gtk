@@ -3,6 +3,7 @@
 
 DIR=/etc/osso-af-init
 DEFHOME=/home/user
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11'
 USER=`whoami`
 
 if [ "x$USER" = "xroot" ]; then
