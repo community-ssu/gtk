@@ -177,12 +177,6 @@ static void add_prespecified_items( StatusBar *panel )
             osso_log( LOG_ERR, "Statusbar item add failed for internet" );
         }
     }
-    if (add_item( panel, "gateway" ) ==NULL)
-    {
-        if(IS_SDK==FALSE){
-            osso_log( LOG_ERR, "Statusbar item add failed for gateway" );
-        }
-    }
     if (add_item( panel, "battery" ) == NULL)
     {
         if(IS_SDK==FALSE){
@@ -513,8 +507,6 @@ static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *plugin )
         slot = HILDON_STATUS_BAR_SOUND_SLOT;
     else if( g_str_equal( "internet", plugin ) )
         slot = HILDON_STATUS_BAR_INTERNET_SLOT;
-    else if( g_str_equal( "gateway", plugin ) )
-        slot = HILDON_STATUS_BAR_GATEWAY_SLOT;
     else if( g_str_equal( "battery", plugin ) )
         slot = HILDON_STATUS_BAR_BATTERY_SLOT;
     else if( g_str_equal( "display", plugin ) )

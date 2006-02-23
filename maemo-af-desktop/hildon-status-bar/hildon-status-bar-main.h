@@ -55,12 +55,11 @@
 
 
 /* hardcoded slot position for the four prespecified items, 0,1,2.. */
-#define HILDON_STATUS_BAR_FIRST_DYN_SLOT  5   /* first slot for dynamic 
+#define HILDON_STATUS_BAR_FIRST_DYN_SLOT 44   /* first slot for dynamic 
                                                * plugins */
-#define HILDON_STATUS_BAR_DISPLAY_SLOT    4
-#define HILDON_STATUS_BAR_SOUND_SLOT      3
-#define HILDON_STATUS_BAR_INTERNET_SLOT   2
-#define HILDON_STATUS_BAR_GATEWAY_SLOT    1
+#define HILDON_STATUS_BAR_DISPLAY_SLOT    3
+#define HILDON_STATUS_BAR_SOUND_SLOT      2
+#define HILDON_STATUS_BAR_INTERNET_SLOT   1
 #define HILDON_STATUS_BAR_BATTERY_SLOT    0
 
 #define XLIB_FORMAT_32_BIT 32
