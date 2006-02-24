@@ -137,7 +137,7 @@ int test_unset_autosave_cb_without_set(void)
     memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_unset_autosave_cb(&osso, cb, (gpointer)1);
     
-    if(r == OSSO_ERROR)
+    if(r == OSSO_OK)
 	return 1;
     else
 	return 0;
