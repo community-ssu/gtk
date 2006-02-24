@@ -14,11 +14,11 @@ all archive files downloaded from a location with that prefix are
 considered certified if the corresponding Release file has been signed
 and successfully verified.
 
-The Release file can be signed by _any_ key known apt to be accepted
-for a certified part.  This is acceptable since only known-good public
-keys are factory-configured and if the attacker has enough access to
-the device to configure a key for his dns-spoofed repository, he has
-breached the device already from our point of view.
+The Release file can be signed by _any_ key known to apt to be
+accepted for a certified part.  This is acceptable since only
+known-good public keys are factory-configured and if the attacker has
+enough access to the device to configure a key for his dns-spoofed
+repository, he has breached the device already from our point of view.
 
 The reason for basing the 'is-certified' test on a URI prefix instead
 of on "deb" lines in sources.list, say, or (URI, Distribution,
