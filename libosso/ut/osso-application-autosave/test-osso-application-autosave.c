@@ -71,7 +71,7 @@ int test_set_autosave_cb_invalid_cb(void)
     osso_context_t osso;
     gint r;
     
-    osso.autosave = NULL;
+    memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_set_autosave_cb(&osso, NULL, NULL);
     
     if(r == OSSO_INVALID)
@@ -86,17 +86,15 @@ int test_set_autosave_cb(void)
     osso_context_t osso;
     gint r;
     
-    osso.autosave = NULL;
+    memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_set_autosave_cb(&osso, cb, (gpointer)1);
     
     if(r != OSSO_OK)
 	return 0;
     else {
-	if(osso.autosave == NULL)
+	if(osso.autosave.func != &cb)
 	    return 0;
-	if(osso.autosave->func != &cb)
-	    return 0;
-	if(osso.autosave->data != (gpointer)1)
+	if(osso.autosave.data != (gpointer)1)
 	    return 0;
 	return 1;
     }
@@ -121,7 +119,7 @@ int test_unset_autosave_cb_invalid_cb(void)
     osso_context_t osso;
     gint r;
     
-    osso.autosave = NULL;
+    memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_unset_autosave_cb(&osso, NULL, NULL);
     
     if(r == OSSO_INVALID)
@@ -136,10 +134,10 @@ int test_unset_autosave_cb_without_set(void)
     osso_context_t osso;
     gint r;
     
-    osso.autosave = NULL;
+    memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_unset_autosave_cb(&osso, cb, (gpointer)1);
     
-    if(r == OSSO_INVALID)
+    if(r == OSSO_ERROR)
 	return 1;
     else
 	return 0;
@@ -150,16 +148,17 @@ int test_unset_autosave_cb(void)
     osso_context_t osso;
     gint r;
     
-    osso.autosave = NULL;
+    memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_set_autosave_cb(&osso, cb, (gpointer)1);
-    assert(r == OSSO_OK);
+    if(r != OSSO_OK)
+        return 0;
     r = osso_application_unset_autosave_cb(&osso, cb, (gpointer)1);
         
     if(r != OSSO_OK)
 	return 0;
     else {
-	dprint("osso.autosave = %p",osso.autosave);
-	if(osso.autosave == NULL)
+	dprint("osso.autosave.func = %p", osso.autosave.func);
+	if(osso.autosave.func == NULL)
 	    return 1;
 	return 0;
     }	
@@ -181,10 +180,10 @@ int test_userdata_changed_without_set(void)
     osso_context_t osso;
     gint r;
     
-    osso.autosave = NULL;
+    memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_userdata_changed(&osso);
 
-    if(r == OSSO_INVALID)
+    if(r == OSSO_ERROR)
 	return 1;
     else
 	return 0;
@@ -195,14 +194,15 @@ int test_userdata_changed(void)
     osso_context_t osso;
     gint r;
     
-    osso.autosave = NULL;
+    memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_set_autosave_cb(&osso, cb, (gpointer)1);
-    assert(r == OSSO_OK);
+    if(r != OSSO_OK)
+        return 0;
 
     r = osso_application_userdata_changed(&osso);
 
     if(r == OSSO_OK) {
-	if(osso.autosave->id != 0)
+	if(osso.autosave.id != 0)
 	    return 1;
 	return 0;
     }
@@ -218,17 +218,20 @@ int test_userdata_changed2(void)
     
     loop = g_main_loop_new(NULL, FALSE);
     
-    osso.autosave = NULL;
+    memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_set_autosave_cb(&osso, cb, loop);
-    assert(r == OSSO_OK);
+    if(r != OSSO_OK)
+        return 0;
 
     r = osso_application_userdata_changed(&osso);
-    assert(r == OSSO_OK);
+    if(r != OSSO_OK)
+        return 0;
 
     g_main_loop_run(loop);
     
     r = osso_application_unset_autosave_cb(&osso, cb, loop);
-    assert(r == OSSO_OK);
+    if(r != OSSO_OK)
+        return 0;
 
     return 1;
 }
@@ -249,7 +252,7 @@ int test_autosave_force_without_set(void)
     osso_context_t osso;
     gint r;
     
-    osso.autosave = NULL;
+    memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_autosave_force(&osso);
 
     if(r == OSSO_INVALID)
@@ -263,7 +266,7 @@ int test_autosave_force(void)
     osso_context_t osso;
     gint r, t = 77;
     
-    osso.autosave = NULL;
+    memset(&osso, 0, sizeof(osso_context_t));
     r = osso_application_set_autosave_cb(&osso, cb2, &t);
     assert(r == OSSO_OK);
 
