@@ -193,21 +193,19 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
 
 static void _deinit(osso_context_t *osso)
 {
-    if(osso == NULL)
+    if (osso == NULL) {
 	return;
+    }
     if (osso->application != NULL) {
 	g_free(osso->application);
-	osso->application = NULL;
     }
     if (osso->version != NULL) {
 	g_free(osso->version);
-	osso->version = NULL;
     }
     if (osso->object_path != NULL) {
 	g_free(osso->object_path);
-	osso->object_path = NULL;
     }
-    if(osso->ifs != NULL) {
+    if (osso->ifs != NULL) {
         int i;
         _osso_interface_t *elem;
         /* some members need to be freed separately */
@@ -224,23 +222,18 @@ static void _deinit(osso_context_t *osso)
             }
         }
         g_array_free(osso->ifs, TRUE);
-        osso->ifs = NULL;
     }
-    if(osso->autosave != NULL) {
+    if (osso->autosave != NULL) {
 	free(osso->autosave);
-	osso->autosave = NULL;
-    }
-    if(osso->mime != NULL) {
-	free(osso->mime);
-	osso->mime = NULL;
     }
     osso->exit.cb = NULL;
     osso->exit.data = NULL;
     
 #ifdef LIBOSSO_DEBUG
     g_log_remove_handler(NULL, osso->log_handler);
-    osso->log_handler = 0;
+    osso->log_handler = NULL;
 #endif
+    memset(osso, 0, sizeof(osso_context_t));
     free(osso);
     osso = NULL;
 }
