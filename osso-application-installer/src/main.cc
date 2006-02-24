@@ -1352,7 +1352,7 @@ install_from_file_reply (int cmd, apt_proto_decoder *dec, void *data)
 }
 
 void
-install_from_file_cont2 (bool res, void *data)
+install_from_file_cont3 (bool res, void *data)
 {
   char *filename = (char *)data;
   if (res)
@@ -1362,6 +1362,16 @@ install_from_file_cont2 (bool res, void *data)
 			       install_from_file_reply, NULL);
     }
   g_free (filename);
+}
+
+void
+install_from_file_fail (bool res, void *data)
+{
+  package_info *pi = (package_info *)data;
+
+  if (res)
+    annoy_user_with_details ("Impossible, see details.", pi, false);
+  pi->unref ();
 }
 
 static bool
@@ -1407,24 +1417,35 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   pi->summary = decode_summary (dec, pi, false);
 
-  GString *text = g_string_new ("");
-
   if (!red_pill_mode && !is_maemo_section (pi->available_section))
     {
-      annoy_user_with_details ("Package not compatible", pi, false);
-      g_free (filename);
-      pi->unref ();
-      return;
+      pi->info.installable = false;
+      g_free (pi->summary);
+      pi->summary = g_strdup_printf ("Summary: Unable to install %s\n"
+				     "Incompatible package.",
+				     pi->name);
     }
+
+  GString *text = g_string_new ("");
 
   char size_buf[20];
   size_string_general (size_buf, 20, pi->info.install_user_size_delta);
   g_string_printf (text, "Do you want to install\n%s %s\n%s",
 		   pi->name, pi->available_version, size_buf);
 
-  ask_yes_no_with_details (text->str,
-			   pi, false,
-			   install_from_file_cont2, filename);
+  if (pi->info.installable)
+    ask_yes_no_with_details (text->str,
+			     pi, false,
+			     install_from_file_cont3, filename);
+  else
+    {
+      g_free (filename);
+      pi->ref ();
+      ask_yes_no_with_details (text->str,
+			       pi, false,
+			       install_from_file_fail, pi);
+    }
+    
   g_string_free (text, 1);
   pi->unref ();
 }
