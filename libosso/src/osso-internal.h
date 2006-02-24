@@ -63,6 +63,9 @@
 #define MAX_SVC_LEN 255
 #define MAX_OP_LEN 255
 
+#define MAX_APP_NAME_LEN 50
+#define MAX_VERSION_LEN 30
+
 typedef DBusHandlerResult (_osso_interface_cb_f)(osso_context_t *osso,
 						 DBusMessage *msg,
 						 gpointer data);
@@ -122,7 +125,7 @@ struct osso_af_context_t {
     DBusConnection *conn;
     DBusConnection *sys_conn;
     DBusConnection *cur_conn;
-    gchar *application;
+    gchar application[MAX_APP_NAME_LEN];
     gchar *version;
     gchar *object_path;
     GArray *ifs;

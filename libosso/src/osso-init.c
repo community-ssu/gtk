@@ -160,11 +160,7 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
 	return NULL;
     }	
 
-    osso->application = g_strdup(application);
-    if (osso->application == NULL) {
-	ULOG_ERR_F("g_strdup failed");
-	goto register_error0;
-    }
+    g_snprintf(&osso->application, MAX_APP_NAME_LEN, "%s", application);
     osso->version = g_strdup(version);
     if (osso->version == NULL) {
 	ULOG_ERR_F("g_strdup failed");
@@ -179,10 +175,6 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
     /**** ERROR HANDLING ****/
     
     register_error1:
-    if (osso->application != NULL) {
-      g_free(osso->application);
-    }
-    register_error0:
 
     free(osso);
         
@@ -195,9 +187,6 @@ static void _deinit(osso_context_t *osso)
 {
     if (osso == NULL) {
 	return;
-    }
-    if (osso->application != NULL) {
-	g_free(osso->application);
     }
     if (osso->version != NULL) {
 	g_free(osso->version);
