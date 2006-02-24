@@ -4,7 +4,7 @@
  * which is called whenever a D-BUS message idicates that a file should
  * be opened.
  * 
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,31 +23,28 @@
  */
 
 #include "osso-internal.h"
+#define MAX_MIME_ARGS 30
+#define MAX_IF_LEN 255
 
 static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       DBusMessage *msg,
 				       gpointer data);
-static gchar * _get_arg(DBusMessageIter *iter);
-static void _freeargv(int argc, gchar **argv);
+static char * _get_arg(DBusMessageIter *iter);
 
 osso_return_t osso_mime_set_cb(osso_context_t *osso, osso_mime_cb_f *cb,
 			       gpointer data)
 {
-    gchar interface[256];
-    if (osso == NULL || cb == NULL)
+    char interface[MAX_IF_LEN + 1];
+    if (osso == NULL || cb == NULL) {
+        ULOG_ERR_F("invalid arguments");
 	return OSSO_INVALID;
-    if(osso->mime == NULL) {
-	osso->mime = (_osso_mime_t *)calloc(1, sizeof(_osso_mime_t));
-	if(osso->mime == NULL) {
-            ULOG_ERR_F("calloc failed");
-	    return OSSO_ERROR;
-	}
     }
 
-    g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT, osso->application);
+    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
+               osso->application);
 
-    osso->mime->func = cb;
-    osso->mime->data = data;
+    osso->mime.func = cb;
+    osso->mime.data = data;
     
     _msg_handler_set_cb_f(osso, interface, _mime_handler, NULL, TRUE);
     return OSSO_OK;
@@ -55,17 +52,21 @@ osso_return_t osso_mime_set_cb(osso_context_t *osso, osso_mime_cb_f *cb,
 
 osso_return_t osso_mime_unset_cb(osso_context_t *osso)
 {
-    gchar interface[256];
-    if (osso == NULL)
+    char interface[MAX_IF_LEN + 1];
+    if (osso == NULL) {
+        ULOG_ERR_F("osso context is NULL");
 	return OSSO_INVALID;
-    if(osso->mime == NULL) {
+    }
+    if (osso->mime.func == NULL) {
+        ULOG_ERR_F("MIME callback is NULL");
 	return OSSO_INVALID;
     }
 
-    g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT, osso->application);
+    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
+               osso->application);
 
-    osso->mime->func = NULL;
-    osso->mime->data = NULL;
+    osso->mime.func = NULL;
+    osso->mime.data = NULL;
     
     _msg_handler_rm_cb_f(osso, interface, _mime_handler, TRUE);
     return OSSO_OK;
@@ -75,47 +76,33 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       DBusMessage *msg,
 				       gpointer data)
 {
-    gchar interface[256] = {0};
+    char interface[MAX_IF_LEN + 1] = {0};
+    g_assert(osso != NULL);
+    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
+               osso->application);
 
-    g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT,
-	       osso->application);
-
-    if(dbus_message_is_method_call(msg, interface, OSSO_BUS_MIMEOPEN) == TRUE)
-    {	
-	int argc=0;
-	gchar **argv=NULL;
+    if(dbus_message_is_method_call(msg, interface, OSSO_BUS_MIMEOPEN)) {
+	int argc = 0;
+        gchar *argv[MAX_MIME_ARGS];
+        gchar *arg = NULL;
 	DBusMessageIter iter;
 	
-	dbus_message_iter_init(msg, &iter);
-	while(TRUE) {
-	    gchar *arg, **pp;
-	    
-	    arg = _get_arg(&iter);
-	    if(arg == NULL) {
-		_freeargv(argc, argv);
-		return DBUS_HANDLER_RESULT_HANDLED;
-	    }
-	    
-	    argc++;
-	    pp = realloc(argv, argc*sizeof(gchar*));
-	    if(pp == NULL) {
-		_freeargv(argc-1, argv);
-		return DBUS_HANDLER_RESULT_HANDLED;
-	    }
-	    else {
-		argv = pp;
-	    }
-	    argv[argc-1] = arg;
-	
-	    if(dbus_message_iter_has_next(&iter))
-		dbus_message_iter_next(&iter);
-	    else
-		break;
+	if(!dbus_message_iter_init(msg, &iter)) {
+            ULOG_DEBUG_F("No arguments in message");
+            return DBUS_HANDLER_RESULT_HANDLED;
+        }
+	while((arg = _get_arg(&iter)) != NULL) {
+            if(argc >= MAX_MIME_ARGS) {
+                ULOG_ERR_F("Message had more than %d arguments!",
+                           MAX_MIME_ARGS);
+                return DBUS_HANDLER_RESULT_HANDLED;
+            }
+	    argv[argc++] = arg;
+	    dbus_message_iter_next(&iter);
 	}
+        argv[argc] = NULL;
 	
-	(osso->mime->func)(osso->mime->data, argc, argv);
-
-	_freeargv(argc, argv);
+	(osso->mime.func)(osso->mime.data, argc, argv);
 
 	return DBUS_HANDLER_RESULT_HANDLED;
     }
@@ -124,11 +111,9 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
     }
 }
 
-static gchar * _get_arg(DBusMessageIter *iter)
+static char * _get_arg(DBusMessageIter *iter)
 {
-    gint type;
-    
-    dprint("");
+    int type;
 
     type = dbus_message_iter_get_arg_type(iter);
 
@@ -136,24 +121,8 @@ static gchar * _get_arg(DBusMessageIter *iter)
 	return NULL;
     }
     else {
-        char *str;
+        char *str = NULL;
         dbus_message_iter_get_basic(iter, &str);
         return str;
-    }
-}
-
-static void _freeargv(int argc, gchar **argv)
-{
-    if(argv!=NULL) {
-	int i;
-	for(i=0;i<argc;i++) {
-	    if(argv[i] != NULL) {
-		dbus_free(argv[i]);
-	    }
-	}
-	free(argv);
-    }
-    else {
-	return;
     }
 }

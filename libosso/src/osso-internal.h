@@ -127,7 +127,7 @@ struct osso_af_context_t {
     osso_hw_state_t hw_state;
     int environment_set;
     guint rpc_timeout;
-    _osso_mime_t *mime;
+    _osso_mime_t mime;
     GArray *cp_plugins;
     _osso_exit_t exit;
 };

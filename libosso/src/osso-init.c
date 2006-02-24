@@ -171,12 +171,6 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
 	goto register_error1;
     }
 
-    osso->mime = (_osso_mime_t *)calloc(1, sizeof(_osso_mime_t));
-    if (osso->mime == NULL) {
-        ULOG_ERR_F("calloc failed");
-        goto register_error1;
-    }
-
     osso->ifs = g_array_new(FALSE, FALSE, sizeof(_osso_interface_t));
     osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
     osso->rpc_timeout = -1;
