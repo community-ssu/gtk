@@ -112,7 +112,7 @@ int open_statefile_without_appdata_w(void)
     if (osso == NULL) {
         return 0;
     }
-    osso->application = NULL;
+    osso->application[0] = '\0';
     osso->version = NULL;
     fd = osso_state_open_write(osso);
     osso_deinitialize(osso);
@@ -131,7 +131,7 @@ int open_statefile_without_appdata_r(void)
     if (osso == NULL) {
         return 0;
     }
-    osso->application = NULL;
+    osso->application[0] = '\0';
     osso->version = NULL;
     fd = osso_state_open_read(osso);
     osso_deinitialize(osso);
@@ -172,7 +172,7 @@ int open_statefile_with_illegal_appname_w(void)
 {
     osso_context_t osso;
     gint fd;
-    osso.application = APP_ILLEGALNAME;
+    strcpy(&osso.application[0], APP_ILLEGALNAME);
     osso.version = APP_VER;
 
     fd = osso_state_open_write(&osso);
@@ -188,7 +188,7 @@ int open_statefile_with_illegal_appname_r(void)
 {
     osso_context_t osso;
     gint fd;
-    osso.application = APP_ILLEGALNAME;
+    strcpy(&osso.application[0], APP_ILLEGALNAME);
     osso.version = APP_VER;
 
     fd = osso_state_open_read(&osso);
@@ -204,7 +204,7 @@ int open_statefile_with_illegal_appversion_w(void)
 {
     osso_context_t osso;
     gint fd;
-    osso.application = APP_NAME;
+    strcpy(&osso.application[0], APP_NAME);
     osso.version = APP_ILLEGALVER;
 
     fd = osso_state_open_write(&osso);
@@ -219,7 +219,7 @@ int open_statefile_with_illegal_appversion_r(void)
 {
     osso_context_t osso;
     gint fd;
-    osso.application = APP_NAME;
+    strcpy(&osso.application[0], APP_NAME);
     osso.version = APP_ILLEGALVER;
 
     fd = osso_state_open_read(&osso);
