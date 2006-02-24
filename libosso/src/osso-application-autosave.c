@@ -32,23 +32,17 @@ osso_return_t osso_application_set_autosave_cb(osso_context_t *osso,
 				      gpointer data)
 {
     if ( (osso == NULL) || (cb == NULL) ) {
+        ULOG_ERR_F("Invalid arguments");
 	return OSSO_INVALID;
     }
-    if (osso->autosave != NULL) {
-	osso_application_unset_autosave_cb(osso, cb, data);
-	ULOG_ERR_F("error: autosave already set!");
+    if (osso->autosave.func != NULL) {
+	ULOG_ERR_F("autosave callback already set!");
 	return OSSO_ERROR;
     }
 
-    osso->autosave = (_osso_autosave_t *)malloc(sizeof(_osso_autosave_t));
-    if(osso->autosave == NULL) {
-	ULOG_ERR_F("error: not enough memory!");
-	return OSSO_ERROR;
-    }
-
-    osso->autosave->func = cb;
-    osso->autosave->data = data;
-    osso->autosave->id = 0;
+    osso->autosave.func = cb;
+    osso->autosave.data = data;
+    osso->autosave.id = 0;
 
     return OSSO_OK;
 }
@@ -58,34 +52,35 @@ osso_return_t osso_application_unset_autosave_cb(osso_context_t *osso,
 					gpointer data)
 {
     if ( (osso == NULL) || (cb == NULL) ) {
+        ULOG_ERR_F("Invalid arguments");
 	return OSSO_INVALID;
     }
-    if (osso->autosave == NULL) {
-	ULOG_ERR_F("error: no autosave set!");
-	return OSSO_INVALID;
+    if (osso->autosave.func == NULL) {
+	ULOG_WARN_F("no autosave callback set");
     }
     else {
-	if(osso->autosave->id != 0) {
-	    g_source_remove(osso->autosave->id);
-	    osso->autosave->id = 0;
+	if(osso->autosave.id != 0) {
+	    g_source_remove(osso->autosave.id);
+	    osso->autosave.id = 0;
 	}
-	free(osso->autosave);
-	osso->autosave = NULL;
-	return OSSO_OK;
+	osso->autosave.func = NULL;
+	osso->autosave.data = NULL;
     }
+    return OSSO_OK;
 }
 
 osso_return_t osso_application_userdata_changed(osso_context_t *osso)
 {
     if (osso == NULL) {
+        ULOG_ERR_F("Invalid argument");
 	return OSSO_INVALID;
     }
-    if (osso->autosave == NULL) {
-	ULOG_ERR_F("error: no autosave set!");
-	return OSSO_INVALID;
+    if (osso->autosave.func == NULL) {
+	ULOG_ERR_F("no autosave callback set!");
+	return OSSO_ERROR;
     }
 
-    osso->autosave->id = g_timeout_add(AUTOSAVE_TIMEOUT,
+    osso->autosave.id = g_timeout_add(AUTOSAVE_TIMEOUT,
 				       _autosave_timeout, osso);
     
     return OSSO_OK;
@@ -96,17 +91,17 @@ osso_return_t osso_application_autosave_force(osso_context_t *osso)
     if (osso == NULL) {
 	return OSSO_INVALID;
     }
-    if (osso->autosave == NULL) {
-	ULOG_ERR_F("error: no autosave set!");
-	return OSSO_INVALID;
+    if (osso->autosave.func == NULL) {
+	ULOG_ERR_F("no autosave callback set!");
+	return OSSO_ERROR;
     }
 
-    if(osso->autosave->id != 0) {
-	g_source_remove(osso->autosave->id);
-	osso->autosave->id = 0;
+    if(osso->autosave.id != 0) {
+	g_source_remove(osso->autosave.id);
+	osso->autosave.id = 0;
     }
 
-    (osso->autosave->func)(osso->autosave->data);
+    (osso->autosave.func)(osso->autosave.data);
 
     return OSSO_OK;
 }
@@ -115,8 +110,8 @@ static gboolean _autosave_timeout(gpointer data)
 {
     osso_context_t *osso = data;
 
-    (osso->autosave->func)(osso->autosave->data);
-    osso->autosave->id = 0;
+    (osso->autosave.func)(osso->autosave.data);
+    osso->autosave.id = 0;
 
     return FALSE;
 }

@@ -2,7 +2,7 @@
  * @file osso-rpc.c
  * This file implements rpc calls from one application to another.
  * 
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#define TASK_NAV_SERVICE                    "com.nokia.tasknav"
-/* NOTICE: Keep these in sync with values in hildon-navigator/windowmanager.c! */
-#define APP_LAUNCH_BANNER_METHOD_INTERFACE  "com.nokia.tasknav.app_launch_banner"
-#define APP_LAUNCH_BANNER_METHOD_PATH       "/com/nokia/tasknav/app_launch_banner"
-#define APP_LAUNCH_BANNER_METHOD            "app_launch_banner"
+#define TASK_NAV_SERVICE "com.nokia.tasknav"
+/* NOTICE: Keep these in sync with values in
+ * hildon-navigator/windowmanager.c! */
+#define APP_LAUNCH_BANNER_METHOD_INTERFACE \
+            "com.nokia.tasknav.app_launch_banner"
+#define APP_LAUNCH_BANNER_METHOD_PATH \
+            "/com/nokia/tasknav/app_launch_banner"
+#define APP_LAUNCH_BANNER_METHOD "app_launch_banner"
 
 
 #include "osso-internal.h"
@@ -221,7 +224,8 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
 					 int argument_type,
 					 ...)
 {
-    gchar service[256] = {0}, object_path[256] = {0}, interface[256] = {0};
+    char service[MAX_SVC_LEN] = {0}, object_path[MAX_OP_LEN] = {0},
+         interface[MAX_IF_LEN] = {0};
     va_list arg_list;
     osso_return_t ret;
     gchar* copy = NULL;
@@ -230,15 +234,15 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
     if( (osso == NULL) || (application == NULL) || (method == NULL) )
 	return OSSO_INVALID;
     
-    g_snprintf(service, 255, "%s.%s", OSSO_BUS_ROOT, application);
+    g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
     copy = appname_to_valid_path_component(application);
     if (copy == NULL) {
 	ULOG_ERR_F("failure in appname_to_valid_path_component");
 	return OSSO_ERROR;
     }
-    g_snprintf(object_path, 255, "%s/%s", OSSO_BUS_ROOT_PATH, copy);
+    g_snprintf(object_path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", copy);
     g_free(copy); copy = NULL;
-    g_snprintf(interface, 255, "%s", service);
+    g_snprintf(interface, MAX_IF_LEN, "%s", service);
 
     va_start(arg_list, argument_type);
 
@@ -271,7 +275,7 @@ static osso_return_t _rpc_async_run(osso_context_t *osso,
         return OSSO_INVALID;
     }
 
-    dprint("New method: %s%s::%s:%s",service,object_path,interface,method);
+    dprint("New method: %s:%s:%s:%s",service,object_path,interface,method);
     msg = dbus_message_new_method_call(service, object_path,
 				       interface, method);
     if (msg == NULL) {
@@ -390,21 +394,22 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
 {
     va_list arg_list;
     osso_return_t ret;
-    gchar service[256] = {0}, object_path[256] = {0}, interface[256] = {0};
+    char service[MAX_SVC_LEN] = {0}, object_path[MAX_OP_LEN] = {0},
+         interface[MAX_IF_LEN] = {0};
     gchar* copy = NULL;
 
     if( (osso == NULL) || (application == NULL) || (method == NULL) )
 	return OSSO_INVALID;
     
-    g_snprintf(service, 255, "%s.%s", OSSO_BUS_ROOT, application);
+    g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
     copy = appname_to_valid_path_component(application);
     if (copy == NULL) {
         ULOG_ERR_F("failure in appname_to_valid_path_component");
 	return OSSO_ERROR;
     }
-    g_snprintf(object_path, 255, "%s/%s", OSSO_BUS_ROOT_PATH, copy);
+    g_snprintf(object_path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", copy);
     g_free(copy); copy = NULL;
-    g_snprintf(interface, 255, "%s", service);
+    g_snprintf(interface, MAX_IF_LEN, "%s", service);
 
     va_start(arg_list, argument_type);
 
@@ -524,7 +529,7 @@ osso_return_t osso_rpc_set_default_cb_f_with_free (osso_context_t *osso,
 						   gpointer data,
 						   osso_rpc_retval_free_f *retval_free)
 {
-    gchar interface[256] = {0};
+    gchar interface[MAX_IF_LEN] = {0};
     _osso_rpc_t *rpc;
     
     if( (osso == NULL) || (cb == NULL) )
@@ -536,7 +541,8 @@ osso_return_t osso_rpc_set_default_cb_f_with_free (osso_context_t *osso,
 	return OSSO_ERROR;
     }
     
-    g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT, osso->application);    
+    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
+               osso->application);    
     rpc->func = cb;
     rpc->retval_free = retval_free;
     rpc->data = data;
@@ -576,16 +582,14 @@ osso_return_t osso_rpc_unset_cb_f(osso_context_t *osso,
 osso_return_t osso_rpc_unset_default_cb_f(osso_context_t *osso,
 					  osso_rpc_cb_f *cb, gpointer data)
 {
-    gchar interface[256] = {0};
+    gchar interface[MAX_IF_LEN] = {0};
     
     if(osso == NULL) return OSSO_INVALID;
     if(cb == NULL) return OSSO_INVALID;
     
-    g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT,
+    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
 	       osso->application);
 
-/*    dbus_connection_unregister_object_path(osso->conn, osso->object_path); */
-    
     _rm_cb_f(osso, interface, cb, data);
 
     return OSSO_OK;

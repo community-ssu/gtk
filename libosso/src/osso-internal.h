@@ -126,7 +126,7 @@ struct osso_af_context_t {
     gchar *version;
     gchar *object_path;
     GArray *ifs;
-    _osso_autosave_t *autosave;
+    _osso_autosave_t autosave;
     guint log_handler;
     _osso_hw_cb_t hw_cbs;
     osso_hw_state_t hw_state;

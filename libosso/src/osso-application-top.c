@@ -218,7 +218,7 @@ static void _set_environment(DBusMessageIter *iter)
     for (;dbus_message_iter_has_next(iter);
             dbus_message_iter_next(iter))
     {
-	char *tstr;
+	char *tstr = NULL;
         gchar **splitted;
         if (dbus_message_iter_get_arg_type(iter)
                 != DBUS_TYPE_STRING)
@@ -228,10 +228,6 @@ static void _set_environment(DBusMessageIter *iter)
 	
         d_log(LOG_D,"Osso got env: %s", tstr);
 
-        tstr=NULL;
-	
-	dbus_message_iter_get_basic (iter, &tstr);
-	
         splitted = g_strsplit(tstr, "=",2);
 
         if (splitted == NULL || splitted[0] == NULL || splitted[1]==NULL)

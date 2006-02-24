@@ -223,9 +223,6 @@ static void _deinit(osso_context_t *osso)
         }
         g_array_free(osso->ifs, TRUE);
     }
-    if (osso->autosave != NULL) {
-	free(osso->autosave);
-    }
     osso->exit.cb = NULL;
     osso->exit.data = NULL;
     
@@ -246,7 +243,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     DBusConnection *conn;
     DBusError err;
     DBusObjectPathVTable vtable;
-    gchar service[255];
+    gchar service[MAX_SVC_LEN];
     gint i;
     
     dbus_error_init(&err);
@@ -254,7 +251,6 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     conn = dbus_bus_get(bus_type, &err);
     if (conn == NULL) {
         ULOG_ERR_F("Unable to connect to the D-BUS daemon: %s", err.message);
-        dprint("Unable to connect to the D-BUS daemon: %s", err.message);
         dbus_error_free(&err);
         return NULL;
     }
@@ -262,7 +258,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     
     dprint("connection to the D-BUS daemon was a success");
     
-    g_snprintf(service, 255, "%s.%s", OSSO_BUS_ROOT, osso->application);
+    g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", osso->application);
     dprint("service='%s'",service);
 
     i = dbus_bus_request_name(conn, service,
