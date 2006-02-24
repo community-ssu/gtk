@@ -172,8 +172,8 @@ int open_statefile_with_illegal_appname_w(void)
 {
     osso_context_t osso;
     gint fd;
-    strcpy(&osso.application[0], APP_ILLEGALNAME);
-    osso.version = APP_VER;
+    strcpy(osso.application, APP_ILLEGALNAME);
+    strcpy(osso.version, APP_VER);
 
     fd = osso_state_open_write(&osso);
 
