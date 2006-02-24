@@ -1,3 +1,9 @@
+osso-application-installer (4.0.pre12) unstable; urgency=low
+
+  * Complete except for SWR 124712 (untested) and 124688 (unimplemented).
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 24 Feb 2006 17:10:22 +0200
+
 osso-application-installer (4.0.pre11) unstable; urgency=low
 
   * Don't make .desktop symlink for others menu.  Run
