@@ -22,6 +22,7 @@
  */
 
 #include "libosso.h"
+#include "osso-log.h"
 
 osso_return_t osso_application_set_exit_cb(osso_context_t *osso,
 					   osso_application_exit_cb *cb,
