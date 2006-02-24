@@ -58,6 +58,11 @@
 
 # define OSSO_RPC_REPLY_TIMEOUT -1
 
+/* DBus interface, service, and object path maximum lengths */
+#define MAX_IF_LEN 255
+#define MAX_SVC_LEN 255
+#define MAX_OP_LEN 255
+
 typedef DBusHandlerResult (_osso_interface_cb_f)(osso_context_t *osso,
 						 DBusMessage *msg,
 						 gpointer data);

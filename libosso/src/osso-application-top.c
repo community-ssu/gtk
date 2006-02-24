@@ -32,9 +32,9 @@ static void _append_environment(DBusMessage *msg);
 osso_return_t osso_application_top(osso_context_t *osso, const gchar *application,
 			  const gchar *arguments)
 {
-    char service[255], path[255], interface[255];
+    char service[MAX_SVC_LEN], path[MAX_OP_LEN], interface[MAX_IF_LEN];
     guint serial;
-    DBusMessage *msg;
+    DBusMessage *msg = NULL;
     gchar* copy = NULL;
 
     if(osso == NULL) return OSSO_INVALID;
@@ -43,19 +43,19 @@ osso_return_t osso_application_top(osso_context_t *osso, const gchar *applicatio
     dprint("Topping application (service) '%s' with args %s",
 	   application, arguments);
     
-    g_snprintf(service, 255, "%s.%s", OSSO_BUS_ROOT, application);
+    g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
 
     copy = appname_to_valid_path_component(application);
     if (copy == NULL) {
         ULOG_ERR_F("failure in appname_to_valid_path_component");
         return OSSO_ERROR;
     }
-    g_snprintf(path, 255, "%s/%s", OSSO_BUS_ROOT_PATH, copy);
+    g_snprintf(path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", copy);
     g_free(copy); copy = NULL;
 
-    g_snprintf(interface, 255, "%s", service);
+    g_snprintf(interface, MAX_IF_LEN, "%s", service);
 
-    dprint("New method: %s%s::%s:%s",service,path,interface,OSSO_BUS_TOP);
+    dprint("New method: %s:%s:%s:%s",service,path,interface,OSSO_BUS_TOP);
     msg = dbus_message_new_method_call(service, path, interface,
 				       OSSO_BUS_TOP);
 
@@ -80,8 +80,6 @@ osso_return_t osso_application_top(osso_context_t *osso, const gchar *applicatio
 	dbus_message_unref(msg);
 	return OSSO_OK;
     }
-
-
 }
 
 /************************************************************************/
@@ -131,11 +129,11 @@ static DBusHandlerResult _top_handler(osso_context_t *osso,
                                       DBusMessage *msg, gpointer data)
 {
     struct _osso_top *top;
-    gchar interface[256] = {0};
+    gchar interface[MAX_IF_LEN] = {0};
 
     top = (struct _osso_top *)data;
 
-    g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT,
+    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
 	       osso->application);
 
     if(dbus_message_is_method_call(msg, interface, OSSO_BUS_TOP) == TRUE)
@@ -143,7 +141,10 @@ static DBusHandlerResult _top_handler(osso_context_t *osso,
 	char *arguments = NULL;
 	DBusMessageIter iter;
 	
-	dbus_message_iter_init(msg, &iter);
+	if(!dbus_message_iter_init(msg, &iter)) {
+            ULOG_ERR_F("Message has no arguments");
+            return DBUS_HANDLER_RESULT_HANDLED;
+        }
 	if(dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_STRING) {
 	    dbus_message_iter_get_basic(&iter, &arguments);
             if (!osso->environment_set)
@@ -155,7 +156,7 @@ static DBusHandlerResult _top_handler(osso_context_t *osso,
 	else {
 	    arguments = "";
 	}
-dprint("arguments = '%s'",arguments);	
+        dprint("arguments = '%s'",arguments);
 	top->handler(arguments, top->data);
 	return DBUS_HANDLER_RESULT_HANDLED;
     }
@@ -168,7 +169,7 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
 					  gpointer data)
 {
     struct _osso_top *top;
-    gchar interface[256] = {0};
+    gchar interface[MAX_IF_LEN] = {0};
     if(osso == NULL) return OSSO_INVALID;
     if(cb == NULL) return OSSO_INVALID;
     
@@ -180,7 +181,7 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
     top->handler = cb;
     top->data = data;
 
-    g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT,
+    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
 	       osso->application);
 
     /* register our top_application handler to the main message handler */
@@ -195,12 +196,12 @@ osso_return_t osso_application_unset_top_cb(osso_context_t *osso,
 					    gpointer data)
 {
     struct _osso_top *top;
-    gchar interface[256] = {0};
+    gchar interface[MAX_IF_LEN] = {0};
     
     if(osso == NULL) return OSSO_INVALID;
     if(cb == NULL) return OSSO_INVALID;
     
-    g_snprintf(interface, 255, "%s.%s", OSSO_BUS_ROOT,
+    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
 	       osso->application);
     
     top = (struct _osso_top *)_msg_handler_rm_cb_f(osso, interface,
@@ -239,8 +240,5 @@ static void _set_environment(DBusMessageIter *iter)
         setenv(splitted[0],splitted[1],1);
         
         g_strfreev(splitted);
-    
     }
-    
 }
-

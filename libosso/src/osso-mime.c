@@ -24,7 +24,6 @@
 
 #include "osso-internal.h"
 #define MAX_MIME_ARGS 30
-#define MAX_IF_LEN 255
 
 static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       DBusMessage *msg,
