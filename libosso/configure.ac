@@ -173,8 +173,6 @@ AC_CONFIG_FILES(Makefile \
                 ut/osso-application-top/com.nokia.unit_test_top.service \
                 ut/osso-application-top/Makefile \
                 ut/osso-application-autosave/Makefile \
-                ut/osso-application-exit/com.nokia.unit_test_exit.service \
-                ut/osso-application-exit/Makefile \
                 ut/osso-system-note/Makefile \
                 ut/osso-time/com.nokia.unit_test_time.service \
 		ut/osso-cp-plugin/Makefile \

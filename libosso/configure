@@ -21831,7 +21831,7 @@ whoami=`whoami`
 
 
 
-                                                                                                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile Doxyfile libosso.conf libosso.pc dbus-launch.sh dbus-launch-systembus.sh sessionbus-libosso.conf src/Makefile ut/Makefile ut/osso-state/com.nokia.unit_test_state.service ut/osso-state/Makefile ut/osso-init/com.nokia.unit_test.service ut/osso-init/Makefile ut/osso-rpc/com.nokia.unit_test_rpc.service ut/osso-rpc/Makefile ut/osso-hw/com.nokia.unit_test_hw.service ut/osso-hw/Makefile ut/osso-mime/Makefile ut/osso-mime/com.nokia.unit_test_mime.service ut/osso-statusbar/com.nokia.unit_test_sb.service ut/osso-statusbar/Makefile ut/osso-application-top/com.nokia.unit_test_top.service ut/osso-application-top/Makefile ut/osso-application-autosave/Makefile ut/osso-application-exit/com.nokia.unit_test_exit.service ut/osso-application-exit/Makefile ut/osso-system-note/Makefile ut/osso-time/com.nokia.unit_test_time.service ut/osso-cp-plugin/Makefile ut/osso-time/Makefile"
+                                                                                                                                                                                                                                                                                        ac_config_files="$ac_config_files Makefile Doxyfile libosso.conf libosso.pc dbus-launch.sh dbus-launch-systembus.sh sessionbus-libosso.conf src/Makefile ut/Makefile ut/osso-state/com.nokia.unit_test_state.service ut/osso-state/Makefile ut/osso-init/com.nokia.unit_test.service ut/osso-init/Makefile ut/osso-rpc/com.nokia.unit_test_rpc.service ut/osso-rpc/Makefile ut/osso-hw/com.nokia.unit_test_hw.service ut/osso-hw/Makefile ut/osso-mime/Makefile ut/osso-mime/com.nokia.unit_test_mime.service ut/osso-statusbar/com.nokia.unit_test_sb.service ut/osso-statusbar/Makefile ut/osso-application-top/com.nokia.unit_test_top.service ut/osso-application-top/Makefile ut/osso-application-autosave/Makefile ut/osso-system-note/Makefile ut/osso-time/com.nokia.unit_test_time.service ut/osso-cp-plugin/Makefile ut/osso-time/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -22413,8 +22413,6 @@ do
   "ut/osso-application-top/com.nokia.unit_test_top.service" ) CONFIG_FILES="$CONFIG_FILES ut/osso-application-top/com.nokia.unit_test_top.service" ;;
   "ut/osso-application-top/Makefile" ) CONFIG_FILES="$CONFIG_FILES ut/osso-application-top/Makefile" ;;
   "ut/osso-application-autosave/Makefile" ) CONFIG_FILES="$CONFIG_FILES ut/osso-application-autosave/Makefile" ;;
-  "ut/osso-application-exit/com.nokia.unit_test_exit.service" ) CONFIG_FILES="$CONFIG_FILES ut/osso-application-exit/com.nokia.unit_test_exit.service" ;;
-  "ut/osso-application-exit/Makefile" ) CONFIG_FILES="$CONFIG_FILES ut/osso-application-exit/Makefile" ;;
   "ut/osso-system-note/Makefile" ) CONFIG_FILES="$CONFIG_FILES ut/osso-system-note/Makefile" ;;
   "ut/osso-time/com.nokia.unit_test_time.service" ) CONFIG_FILES="$CONFIG_FILES ut/osso-time/com.nokia.unit_test_time.service" ;;
   "ut/osso-cp-plugin/Makefile" ) CONFIG_FILES="$CONFIG_FILES ut/osso-cp-plugin/Makefile" ;;

@@ -472,7 +472,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/. $(distdir)/debian $(distdir)/ut/osso-application-exit $(distdir)/ut/osso-application-top $(distdir)/ut/osso-hw $(distdir)/ut/osso-init $(distdir)/ut/osso-mime $(distdir)/ut/osso-rpc $(distdir)/ut/osso-state $(distdir)/ut/osso-statusbar $(distdir)/ut/osso-time
+	$(mkinstalldirs) $(distdir)/. $(distdir)/debian $(distdir)/ut/osso-application-top $(distdir)/ut/osso-hw $(distdir)/ut/osso-init $(distdir)/ut/osso-mime $(distdir)/ut/osso-rpc $(distdir)/ut/osso-state $(distdir)/ut/osso-statusbar $(distdir)/ut/osso-time
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
