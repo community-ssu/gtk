@@ -453,26 +453,6 @@ osso_return_t osso_rpc_set_timeout(osso_context_t * osso, gint timeout);
  * @{
  */
 
-/**
- * This is the type of the exit callback function.
- * @param die_now This parameter is obsolete and should be ignored.
- * @param data The data given to #osso_application_set_exit_cb.
- */
-typedef void (osso_application_exit_cb)(gboolean die_now, gpointer data);
-
-/**
- * This function registers the application's exit callback function.
- * When Libosso calls the application's exit callback function, the application
- * should save its GUI state and unsaved user data and exit as soon as possible.
- *
- * @param osso The library context as returned by #osso_initialize.
- * @param cb The exit callback function to register.
- * @param data Arbitrary application specific pointer that will be passed
- * to the callback and ignored by Libosso.
- * */
-osso_return_t osso_application_set_exit_cb(osso_context_t *osso,
-					   osso_application_exit_cb *cb,
-					   gpointer data);
 
 /**
  * This function tops an application (i.e. brings it to the foreground).
@@ -1160,6 +1140,27 @@ gpointer osso_get_sys_dbus_connection(osso_context_t *osso);
  *
  */
 /* @{*/
+
+/**
+ * This is the type of the exit callback function.
+ * @param die_now This parameter is obsolete and should be ignored.
+ * @param data The data given to #osso_application_set_exit_cb.
+ */
+typedef void (osso_application_exit_cb)(gboolean die_now, gpointer data);
+
+/**
+ * This function registers the application's exit callback function.
+ * When Libosso calls the application's exit callback function, the application
+ * should save its GUI state and unsaved user data and exit as soon as possible.
+ *
+ * @param osso The library context as returned by #osso_initialize.
+ * @param cb The exit callback function to register.
+ * @param data Arbitrary application specific pointer that will be passed
+ * to the callback and ignored by Libosso.
+ * */
+osso_return_t osso_application_set_exit_cb(osso_context_t *osso,
+					   osso_application_exit_cb *cb,
+					   gpointer data);
 
 /**
  * This function opens a state file for writing. If the state file already
