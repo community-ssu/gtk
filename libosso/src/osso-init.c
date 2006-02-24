@@ -176,9 +176,6 @@ static void _deinit(osso_context_t *osso)
     if (osso == NULL) {
 	return;
     }
-    if (osso->object_path != NULL) {
-	g_free(osso->object_path);
-    }
     if (osso->ifs != NULL) {
         int i;
         _osso_interface_t *elem;
@@ -242,15 +239,14 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 	goto dbus_conn_error1;
     }
     
-    if (osso->object_path == NULL) {
+    if (osso->object_path[0] == '\0') {
         char* copy = NULL;
         copy = appname_to_valid_path_component(osso->application);
-        osso->object_path = g_strdup_printf("/com/nokia/%s", copy);
-        if (osso->object_path == NULL) {
-            ULOG_ERR_F("g_strdup_printf failed");
-            g_free(copy);
+        if (copy == NULL) {
             goto dbus_conn_error1;
         }
+        g_snprintf(&osso->object_path[0], MAX_OP_LEN,
+                   OSSO_BUS_ROOT_PATH "/%s", copy);
         g_free(copy);
     }
     dprint("osso->object_path='%s'", osso->object_path);
@@ -294,7 +290,6 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     dbus_connection_unregister_object_path(conn, osso->object_path);
 
     dbus_conn_error2:
-    g_free(osso->object_path);
     dbus_conn_error1:
         
     /* no explicit disconnection, because the connections are shared */
