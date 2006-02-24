@@ -55,7 +55,7 @@ gboolean __attribute__ ((visibility("hidden")))
 validate_osso_context(const osso_context_t * osso)
 {
     if (osso == NULL || !validate_appname(osso->application) ||
-        osso->version == NULL) {
+        osso->version[0] == '\0') {
        return FALSE;
     }
     if (strstr(osso->version, "/") != NULL) {
@@ -161,24 +161,12 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
     }	
 
     g_snprintf(&osso->application[0], MAX_APP_NAME_LEN, "%s", application);
-    osso->version = g_strdup(version);
-    if (osso->version == NULL) {
-	ULOG_ERR_F("g_strdup failed");
-	goto register_error1;
-    }
+    g_snprintf(&osso->version[0], MAX_VERSION_LEN, "%s", version);
 
     osso->ifs = g_array_new(FALSE, FALSE, sizeof(_osso_interface_t));
     osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
     osso->rpc_timeout = -1;
     return osso;
-
-    /**** ERROR HANDLING ****/
-    
-    register_error1:
-
-    free(osso);
-        
-    return NULL;
 }
 
 /*************************************************************************/
@@ -187,9 +175,6 @@ static void _deinit(osso_context_t *osso)
 {
     if (osso == NULL) {
 	return;
-    }
-    if (osso->version != NULL) {
-	g_free(osso->version);
     }
     if (osso->object_path != NULL) {
 	g_free(osso->object_path);
@@ -212,8 +197,6 @@ static void _deinit(osso_context_t *osso)
         }
         g_array_free(osso->ifs, TRUE);
     }
-    osso->exit.cb = NULL;
-    osso->exit.data = NULL;
     
 #ifdef LIBOSSO_DEBUG
     g_log_remove_handler(NULL, osso->log_handler);

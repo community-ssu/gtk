@@ -69,7 +69,7 @@ osso_return_t osso_state_write(osso_context_t *osso, osso_state_t *state)
       }
     else 
       {
-	path = g_strconcat(FALLBACK_PREFIX, "/",
+	path = g_strconcat(FALLBACK_PREFIX "/",
 			   osso->application, "/",
 			   osso->version, NULL);
       }
@@ -115,7 +115,7 @@ osso_return_t osso_state_read(osso_context_t *osso, osso_state_t *state)
       }
     else
       {
-	path = g_strconcat(FALLBACK_PREFIX, "/",
+	path = g_strconcat(FALLBACK_PREFIX "/",
 			   osso->application, "/",
 			   osso->version, NULL);
       }
@@ -155,7 +155,7 @@ int osso_state_open_write(osso_context_t *osso)
       }
     else
       {
-	path = g_strconcat(FALLBACK_PREFIX, "/",
+	path = g_strconcat(FALLBACK_PREFIX "/",
 			   osso->application, "/",
 			   osso->version, NULL);
       }
@@ -169,7 +169,7 @@ int osso_state_open_write(osso_context_t *osso)
 
     if (tmpdir_path == NULL)
       {
-	app_path = g_strconcat(FALLBACK_PREFIX, "/",
+	app_path = g_strconcat(FALLBACK_PREFIX "/",
 			       osso->application,
 			       NULL);
       }
@@ -228,7 +228,7 @@ int osso_state_open_read(osso_context_t *osso)
     tmpdir_path = getenv(LOCATION_VAR);
     if (tmpdir_path == NULL)
       {
-	path = g_strconcat(FALLBACK_PREFIX, "/",
+	path = g_strconcat(FALLBACK_PREFIX "/",
 			   osso->application, "/",
 			   osso->version, NULL);
       }

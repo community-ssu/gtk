@@ -126,7 +126,7 @@ struct osso_af_context_t {
     DBusConnection *sys_conn;
     DBusConnection *cur_conn;
     gchar application[MAX_APP_NAME_LEN];
-    gchar *version;
+    gchar version[MAX_VERSION_LEN];
     gchar *object_path;
     GArray *ifs;
     _osso_autosave_t autosave;

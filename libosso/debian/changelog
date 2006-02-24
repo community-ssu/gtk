@@ -6,6 +6,7 @@ libosso (1.4-1) unstable; urgency=low
   * Mime struct in osso context is now allocated with the context.
   * Autosave struct in osso context is now allocated with the context.
   * osso_application_set_exit_cb moved to deprecated API in libosso.h.
+  * Application name is now stored to fixed-sized buffer.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 24 Feb 2006 15:41:13 +0200
 
