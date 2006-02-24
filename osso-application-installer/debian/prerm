@@ -5,7 +5,7 @@ set -e
 rem_sudoer ()
 {
     line="$1"
-    grep -v -F -q "$line" /etc/sudoers >/etc/sudoers.tmp
+    grep -v -F "$line" /etc/sudoers >/etc/sudoers.tmp || true
     mv /etc/sudoers.tmp /etc/sudoers.
 }
 

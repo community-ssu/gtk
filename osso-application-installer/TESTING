@@ -5,6 +5,8 @@ Test repository / files
 
 - should have corrupted package / wrong checksum
 
+- should have broken package / failing postinst script
+
 - should have old maemo packages
 
 - package whose postinst fails

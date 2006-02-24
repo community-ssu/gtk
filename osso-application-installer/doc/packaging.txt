@@ -24,7 +24,14 @@ without confusing it.
 
 Packages made for the Application 2006 need to follow a few extra
 rules, tho, if they want to integrate nicely.  These rules are related
-to sections, icons, and the policy engine of the AI.
+to
+
+  - sections
+  - icons
+  - the policy engine of the AI
+  - limited feedback to the user
+  - warning about removing running applications
+  - utilities to use in your maintainer scripts
 
 
 Relationship with Application installer 2005
@@ -64,8 +71,8 @@ where <SECTION> is arbitrary.  <SECTION> should be a nice capitalised,
 English word like "Ringtones".  There is no support for localising
 that word yet, unfortunately.
 
-However, there is also predefined set of sections.  If your package
-fits into one these sections, you should put it there.  This will
+However, there is also a predefined set of sections.  If your package
+fits into one of these sections, you should put it there.  This will
 avoid fragmenting the section names, and the names of these sections
 will be correctly localised.
 
@@ -84,9 +91,9 @@ The [PRELIMINARY!] list of predefined sections is:
 Icons
 -----
 
-A package can have a icon that is displayed next to its name by the
-AI.  Icons are included as a base64 encoded field named
-"X-Maemo-Icon-26" in the 'control' part of a .deb package.
+A package can have an icon that is displayed next to its name by the
+AI.  Icons are included in the control information of a package as a
+base64 encoded field named "X-Maemo-Icon-26".
 
 The image format of the icon can be anything that is understood by
 GdkPixbufLoader, but is most commonly the PNG format.
@@ -132,3 +139,49 @@ installed package, it might do the uninstall.  (A implicitely
 installed package is one that has been installed to satisfy a
 dependency of some other package.  A explicitely installed package is
 one that the user has requested to be installed.)
+
+
+Feedback from maintainer scripts
+--------------------------------
+
+The Application installer collects a transcript of the
+installation/uninstallation process, including the output of
+maintainer scripts.  However, this output is hidden away in the "Log",
+and you should not expect users to look there and understand its
+contents.
+
+Thus, you should try really hard to not fail in your maintainer
+scripts.  This does not mean that you should ignore errors, of course,
+but that you should only do things that have a very high chance of
+succeeding.  The simpler, the better.
+
+
+Warning about removing running applications
+-------------------------------------------
+
+The Application installer can run a script provided by your package
+before removing it.  That script can tell the Application installer to
+cancel the uninstallation attempt.
+
+The canonical use for this feature is to warn the user when he tries
+to remove an application that is currently running.  If your
+application has a .desktop file, you can use the utility
+'check-running-appliction' to perform this test.  (See below for
+details.)
+
+[DETAILS TO BE DETERMINED]
+
+
+Utilities to use in your maintainer scripts
+-------------------------------------------
+
+There are some utilities available that you can use in your maintainer
+scripts to interact with the user:
+
+[PRELIMINARY!]
+
+  - select-menu-location ...
+
+  To be documented.
+
+  - 

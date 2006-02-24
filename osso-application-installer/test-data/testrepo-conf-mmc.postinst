@@ -17,6 +17,10 @@ cat >/etc/osso-application-installer/certified.list <<EOF
 uri-prefix file:///media/mmc1/testrepo/dists/cert/main/
 EOF
 
+## XXX - apt-key is not executable in some images
+##
+chmod a+x /usr/bin/apt-key
+
 apt-key add - <<HERE
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1.4.2 (GNU/Linux)

@@ -50,6 +50,8 @@
 #include <apt-pkg/strutl.h>
 #include <apt-pkg/sptr.h>
 #include <apt-pkg/packagemanager.h>
+#include <apt-pkg/deblistparser.h>
+#include <apt-pkg/debversion.h>
 
 #include <glib/glist.h>
 #include <glib/gstring.h>
@@ -60,7 +62,7 @@
 
 using namespace std;
 
-#define DEBUG
+//#define DEBUG
 
 /* This is the process that runs as root and does all the work.
 
@@ -594,16 +596,18 @@ make_package_list_response (bool only_maemo,
       // Name
       response.encode_string (pkg.Name ());
 
-      // Installed version and installed size
+      // Installed version, size, and section
       if (!installed.end())
 	{
 	  response.encode_string (installed.VerStr ());
 	  response.encode_int (installed->InstalledSize);
+	  response.encode_string (installed.Section ());
 	}
       else
 	{
 	  response.encode_string (NULL);
 	  response.encode_int (0);
+	  response.encode_string (NULL);
 	}
 
       // Available version and section
@@ -649,11 +653,11 @@ get_icon (pkgCache::VerIterator &ver)
   const char *start, *stop;
   P.GetRec (start, stop);
 
-  /* NOTE: pkTagSection::Scan only succeeds when the records in two
-           newlines, but pkgRecords::Parser::GetRec does not include the
-           second newline in its returned region.  However, that second
-           newline is always there, so we just pass one more character to
-           Scan.
+  /* NOTE: pkTagSection::Scan only succeeds when the record ends in
+           two newlines, but pkgRecords::Parser::GetRec does not
+           include the second newline in its returned region.
+           However, that second newline is always there, so we just
+           pass one more character to Scan.
   */
 
   pkgTagSection section;
@@ -1506,48 +1510,232 @@ clean ()
   return true;
 }
 
-// XXX - interpret status codes, call dpkg-deb only once, maybe, or
-//       use the libapt record parser or whatever.
+// XXX - interpret status codes
 
 static char *
-get_deb_field (const char *filename, const char *field,
-	       char *buf, size_t max)
+get_deb_record (const char *filename)
 {
   char *cmd =
-    g_strdup_printf ("/usr/bin/dpkg-deb -f '%s' %s", filename, field);
+    g_strdup_printf ("/usr/bin/dpkg-deb -f '%s'", filename);
   fprintf (stderr, "%s\n", cmd);
   FILE *f = popen (cmd, "r");
   g_free (cmd);
   if (f)
     {
-      size_t n = fread (buf, 1, max-1, f);
-      if (n > 0 && buf[n-1] == '\n')
-	n--;
-      if (n >= 0)
-	buf[n] = '\0';
-      
+      const size_t incr = 2000;
+      char *record = NULL;
+      size_t size = 0;
+
+      do
+	{
+	  // increase buffer and try to fill it, leaving room for the
+	  // trailing newlines and nul.
+	  // XXX - do it properly.
+	  
+	  char *new_record = new char[size+incr+3];
+	  if (record)
+	    {
+	      memcpy (new_record, record, size);
+	      delete record;
+	    }
+	  record = new_record;
+	  
+	  size += fread (record+size, 1, incr, f);
+	}
+      while (!feof (f));
+
       int status = pclose (f);
       if (status != 0)
-	return NULL;
-      return buf;
+	{
+	  delete (record);
+	  return NULL;
+	}
+
+      record[size] = '\n';
+      record[size+1] = '\n';
+      record[size+2] = '\0';
+      return record;
     }
   return NULL;
+}
+
+static bool
+check_dependency (string &package, string &version, unsigned int op)
+{
+  pkgDepCache &cache = (*package_cache);
+  pkgCache::PkgIterator pkg;
+  pkgCache::VerIterator installed;
+
+  pkg = cache.FindPkg (package);
+  if (pkg.end ())
+    return false;
+
+  installed = pkg.CurrentVer ();
+  if (installed.end ())
+    {
+      // might be a virtual package, check the provides list.
+
+      pkgCache::PrvIterator P = pkg.ProvidesList();
+
+      for (; P.end() != true; P++)
+	{
+	  // Check if the provides is a hit
+	  if (P.OwnerPkg().CurrentVer() != P.OwnerVer())
+	    continue;
+
+	  // Compare the versions.
+	  if (debVS.CheckDep (P.ProvideVersion(), op, version.c_str ()))
+	    return true;
+	}
+
+      return false;
+    }
+  else
+    return debVS.CheckDep (installed.VerStr (), op, version.c_str ());
+}
+
+static void
+add_dep_string (string &str,
+		string &package, string &version, unsigned int op)
+{
+  str += package;
+  if (op != pkgCache::Dep::NoOp)
+    {
+      str += " (";
+      str += pkgCache::CompType (op);
+      str += " ";
+      str += version;
+      str += ")";
+    }
+}
+
+static bool
+check_and_encode_missing_dependencies (const char *deps, bool only_check)
+{
+  const char *ptr = deps, *end = deps + strlen (deps);
+  string package, version;
+  unsigned int op;
+  bool dep_ok = true;
+
+  while (true)
+    {
+      // check one 'or group'
+
+      bool group_ok = false;
+      string group_string = "";
+
+      while (true)
+	{
+	  ptr = debListParser::ParseDepends (ptr, end,
+					     package, version, op,
+					     false);
+	  if (ptr == NULL)
+	    {
+	      cerr << "Error parsing depends list\n";
+	      return false;
+	    }
+
+	  add_dep_string (group_string, package, version, op);
+
+	  if (!group_ok)
+	    group_ok = check_dependency (package, version,
+					 op & ~pkgCache::Dep::Or);
+
+	  if ((op & pkgCache::Dep::Or) == 0)
+	    break;
+
+	  group_string += " | ";
+	}
+
+      if (!group_ok)
+	{
+	  if (only_check)
+	    cerr << "FAILED: " << group_string << "\n";
+	  else
+	    {
+	      response.encode_int (sumtype_missing);
+	      response.encode_string (group_string.c_str ());
+	    }
+	  dep_ok = false;
+	}
+
+      if (ptr == end)
+	break;
+    }
+
+  return dep_ok;
+}
+
+static const char *
+get_field (pkgTagSection *section, const char *field)
+{
+  const char *value = section->FindS (field).c_str();
+  if (all_white_space (value))
+    value = NULL;
+  fprintf (stderr, "%s = %s\n", field, value? value : "<undefined>");
+
+  // XXX - should probably not return pointers into dead strings.
+  return value;
+}
+
+static bool
+check_installable (pkgTagSection &section)
+{
+  bool installable = true;
+
+  const char *pre_depends = get_field (&section, "Pre-Depends");
+  if (pre_depends)
+    installable = (check_and_encode_missing_dependencies (pre_depends, true)
+		   && installable);
+
+  const char *depends = get_field (&section, "Depends");
+  if (depends)
+    installable = (check_and_encode_missing_dependencies (depends, true)
+		   && installable);
+
+  return installable;
+}
+
+static void
+encode_missing_dependencies (pkgTagSection &section)
+{
+  const char *pre_depends = get_field (&section, "Pre-Depends");
+  if (pre_depends)
+    check_and_encode_missing_dependencies (pre_depends, false);
+
+  const char *depends = get_field (&section, "Depends");
+  if (depends)
+    check_and_encode_missing_dependencies (depends, false);
 }
 
 void
 make_file_details_response (const char *filename)
 {
-  const size_t max = 2048;
-  char buf[max];
-  
   response.reset ();
-  response.encode_string (get_deb_field (filename, "Package", buf, max));
-  response.encode_string (get_deb_field (filename, "Version", buf, max));
-  response.encode_string (get_deb_field (filename, "Maintainer", buf, max));
-  response.encode_string (get_deb_field (filename, "Section", buf, max));
-  response.encode_string (get_deb_field (filename, "Installed-Size", buf,
-					 max));
-  response.encode_string (get_deb_field (filename, "Description", buf, max));
+
+  char *record = get_deb_record (filename);
+  pkgTagSection section;
+  if (!section.Scan (record, strlen (record)))
+    return;
+
+  bool installable = check_installable (section);
+
+  response.encode_string (get_field (&section, "Package"));
+  response.encode_string (NULL);  // installed_version
+  response.encode_int (0);        // installed_size
+  response.encode_string (get_field (&section, "Version"));
+  response.encode_string (get_field (&section, "Maintainer"));
+  response.encode_string (get_field (&section, "Section"));
+  response.encode_int (installable);
+  response.encode_int (1000 * atoi (get_field (&section, "Installed-Size")));
+  response.encode_string (get_field (&section, "Description"));
+  response.encode_string (get_field (&section, "X-Maemo-Icon-26"));
+
+  if (!installable)
+    encode_missing_dependencies (section);
+  response.encode_int (sumtype_end);
+
+  delete[] record;
 }
 
 bool

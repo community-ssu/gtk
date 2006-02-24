@@ -42,6 +42,7 @@ struct package_info {
   char *name;
   char *installed_version;
   int installed_size;
+  char *installed_section;
   char *available_version;
   char *available_section;
 
@@ -52,6 +53,11 @@ struct package_info {
   char *available_short_description;
   GdkPixbuf *available_icon;
  
+  bool have_details;
+  char *maintainer;
+  char *description;
+  char *summary;
+  
   GtkTreeModel *model;
   GtkTreeIter iter;
 };
@@ -76,5 +82,7 @@ void show_main_view ();
 void show_parent_view ();
 
 void search_packages (const char *pattern, bool in_descriptions);
+
+const char *nicify_section_name (const char *name);
 
 #endif /* !MAIN_H */

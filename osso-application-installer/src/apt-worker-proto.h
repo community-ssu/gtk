@@ -141,6 +141,7 @@ private:
 // - name (string) 
 // - installed version or null (string) 
 // - installed_size (int)
+// - installed_section or null (string)
 // - available version or null (string) 
 // - section of available version or null (string)
 
@@ -305,7 +306,11 @@ enum apt_proto_preptype {
 // - success (int).
 
 
-// GET_FILE_DETAILS - get selected details about a package in a .deb file
+// GET_FILE_DETAILS - Get details about a package in a .deb file.
+//                    This is more or less the union of the
+//                    information provided by GET_PACKAGE_LIST,
+//                    GET_PACKAGE_INFO and GET_PACKAGE_DETAILS for a
+//                    package.
 //
 // Parameters:
 //
@@ -314,11 +319,17 @@ enum apt_proto_preptype {
 // Response:
 //
 // - name (string).
-// - version (string).
+// - installed_version (string).
+// - installed_size (int).
+// - available_version (string).
 // - maintainer (string).
-// - section (string).
-// - installed_size (string). String!
+// - available_section (string).
+// - installable (int).
+// - install_user_size_delta (int).
 // - description (string).
+// - available_icon (string).
+// - summary (symtype,string)*,(sumtype_end).
+
 
 // INSTALL_FILE - install a package from a .deb file
 //

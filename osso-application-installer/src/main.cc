@@ -239,13 +239,21 @@ package_info::package_info ()
   ref_count = 1;
   name = NULL;
   installed_version = NULL;
+  installed_section = NULL;
   available_version = NULL;
   available_section = NULL;
+
   have_info = false;
   installed_short_description = NULL;
   available_short_description = NULL;
   installed_icon = NULL;
   available_icon = NULL;
+
+  have_details = false;
+  maintainer = NULL;
+  description = NULL;
+  summary = NULL;
+
   model = NULL;
 }
 
@@ -253,6 +261,7 @@ package_info::~package_info ()
 {
   g_free (name);
   g_free (installed_version);
+  g_free (installed_section);
   g_free (available_version);
   g_free (available_section);
   g_free (installed_short_description);
@@ -261,6 +270,9 @@ package_info::~package_info ()
     g_object_unref (installed_icon);
   if (available_icon)
     g_object_unref (available_icon);
+  g_free (maintainer);
+  g_free (description);
+  g_free (summary);
 }
 
 void
@@ -325,11 +337,22 @@ free_all_packages ()
     }
 }
 
+const char *
+nicify_section_name (const char *name)
+{
+  if (name && !red_pill_mode && !strncmp (name, "maemo/", 6))
+    return name + 6;
+  else
+    return name;
+}
+
 static section_info *
 find_section_info (GList **list_ptr, const char *name)
 {
   if (name == NULL)
-    name = "none";
+    name = "unknown";
+
+  name = nicify_section_name (name);
 
   for (GList *ptr = *list_ptr; ptr; ptr = ptr->next)
     if (!strcmp (((section_info *)ptr->data)->name, name))
@@ -463,6 +486,7 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
       info->name = dec->decode_string_dup ();
       info->installed_version = dec->decode_string_dup ();
       info->installed_size = dec->decode_int ();
+      info->installed_section = dec->decode_string_dup ();
       info->available_version = dec->decode_string_dup ();
       info->available_section = dec->decode_string_dup ();
       
@@ -1151,6 +1175,7 @@ search_packages_reply (int cmd, apt_proto_decoder *dec, void *data)
       const char *name = dec->decode_string_in_place ();
       dec->decode_string_in_place (); // installed_version
       dec->decode_int ();             // installed_size
+      dec->decode_string_in_place (); // installed_section
       dec->decode_string_in_place (); // available_version
       dec->decode_string_in_place (); // available_section
 
@@ -1345,46 +1370,76 @@ is_maemo_section (const char *section)
   return section && !strncmp (section, "maemo/", 6);
 }
 
+static char *
+first_line_of (const char *text)
+{
+  const char *end = strchr (text, '\n');
+  if (end == NULL)
+    return g_strdup (text);
+  else
+    return g_strndup (text, end-text);
+}
+
 static void
 file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
   char *filename = (char *)data;
 
-  const char *package = dec->decode_string_in_place ();
-  const char *version = dec->decode_string_in_place ();
-  const char *maintainer = dec->decode_string_in_place ();
-  const char *section = dec->decode_string_in_place ();
-  const char *installed_size = dec->decode_string_in_place ();
-  const char *description = dec->decode_string_in_place ();
+  package_info *pi = new package_info;
 
-  if (dec->corrupted ())
-    {
-      annoy_user_with_log ("Failed, see log.");
-      g_free (filename);
-      return;
-    }
+  pi->name = dec->decode_string_dup ();
+  pi->installed_version = dec->decode_string_dup ();
+  pi->installed_size = dec->decode_int ();;
+  pi->available_version = dec->decode_string_dup ();
+  pi->maintainer = dec->decode_string_dup ();
+  pi->available_section = dec->decode_string_dup ();
+  pi->info.installable = dec->decode_int ();
+  pi->info.install_user_size_delta = dec->decode_int ();
+  pi->info.removable = false; // not used
+  pi->info.remove_user_size_delta = 0;
+  pi->info.download_size = 0;
+  pi->description = dec->decode_string_dup ();
+  pi->available_short_description = first_line_of (pi->description);
+  pi->available_icon = pixbuf_from_base64 (dec->decode_string_in_place ());
 
-  if (!red_pill_mode && !is_maemo_section (section))
-    {
-      annoy_user ("Package not compatible");
-      g_free (filename);
-      return;
-    }
+  pi->have_info = true;
+  pi->have_details = true;
+
+  pi->summary = decode_summary (dec, pi, false);
 
   GString *text = g_string_new ("");
 
-  g_string_printf (text, "Do you want to install\n%s %s",
-		   package, version);
+  if (!red_pill_mode && !is_maemo_section (pi->available_section))
+    {
+      annoy_user_with_details ("Package not compatible", pi, false);
+      g_free (filename);
+      pi->unref ();
+      return;
+    }
 
-  ask_yes_no (text->str, install_from_file_cont2, filename);
+  char size_buf[20];
+  size_string_general (size_buf, 20, pi->info.install_user_size_delta);
+  g_string_printf (text, "Do you want to install\n%s %s\n%s",
+		   pi->name, pi->available_version, size_buf);
+
+  ask_yes_no_with_details (text->str,
+			   pi, false,
+			   install_from_file_cont2, filename);
   g_string_free (text, 1);
+  pi->unref ();
 }
 
 static void
-install_from_file_cont (char *filename, void *unused)
+install_from_file_cont2 (char *filename, void *unused)
 {
   apt_worker_get_file_details (filename,
 			       file_details_reply, filename);
+}
+
+static void
+install_from_file_cont (char *uri, void *unused)
+{
+  localize_file (uri, install_from_file_cont2, NULL);
 }
 
 void

@@ -29,4 +29,7 @@
 
 void show_package_details (package_info *p, bool installed);
 
+char *decode_summary (apt_proto_decoder *dec,
+		      package_info *pi, bool installed);
+
 #endif /* !DETAILS_H */

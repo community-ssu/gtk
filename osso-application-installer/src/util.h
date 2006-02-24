@@ -69,4 +69,8 @@ void show_deb_file_chooser (void (*cont) (char *filename, void *data),
 
 GdkPixbuf *pixbuf_from_base64 (const char *base64);
 
+void localize_file (char *uri,
+		    void (*cont) (char *local, void *data),
+		    void *data);
+
 #endif /* !UTIL_H */

@@ -54,6 +54,8 @@ yes_no_response (GtkDialog *dialog, gint response, gpointer clos)
 
   void (*cont) (bool res, void *data) = c->cont; 
   void *data = c->data;
+  if (c->pi)
+    c->pi->unref ();
   delete c;
 
   gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -90,6 +92,7 @@ ask_yes_no_with_details (const gchar *question,
   GtkWidget *dialog;
   ayn_closure *c = new ayn_closure;
   c->pi = pi;
+  pi->ref ();
   c->installed = installed;
   c->cont = cont;
   c->data = data;
@@ -122,72 +125,72 @@ annoy_user (const gchar *text)
   gtk_widget_show_all (dialog);
 }
 
-struct auwe_closure {
-  void (*func) (void *, void *);
-  void *data1, *data2;
+struct auwd_closure {
+  package_info *pi;
+  bool installed;
 };
 
 static void
-annoy_user_with_extra_response (GtkDialog *dialog, gint response,
-				gpointer data)
+annoy_user_with_details_response (GtkDialog *dialog, gint response,
+				  gpointer data)
 {
-  auwe_closure *c = (auwe_closure *)data;
-  void (*func) (void *, void *) = c->func;
-  void *data1 = c->data1;
-  void *data2 = c->data2;
+  auwd_closure *c = (auwd_closure *)data;
+  package_info *pi = c->pi;
+  bool installed = c->installed;
   delete c;
 
   gtk_widget_destroy (GTK_WIDGET (dialog));
   if (response == 1)
-    func (data1, data2);
-}
-
-static void
-annoy_user_with_extra (const gchar *text,
-		       const gchar *extra,
-		       void (*func) (void *, void *),
-		       void *data1, void *data2)
-{
-  GtkWidget *dialog, *action_area;
-  GtkWidget *details_button;
-  auwe_closure *c = new auwe_closure;
-  gint response;
-
-  dialog = hildon_note_new_information (NULL, text);
-  gtk_dialog_add_button (GTK_DIALOG (dialog), extra, 1);
-
-  c->func = func;
-  c->data1 = data1;
-  c->data2 = data2;
-  g_signal_connect (dialog, "response", 
-		    G_CALLBACK (annoy_user_with_extra_response), c);
-  gtk_widget_show_all (dialog);
-}
-
-static void
-show_pd (void *data1, void *data2)
-{
-  show_package_details ((package_info *)data1, (bool)data2);
+    show_package_details (pi, installed);
+  pi->unref ();
 }
 
 void
 annoy_user_with_details (const gchar *text,
 			 package_info *pi, bool installed)
 {
-  annoy_user_with_extra (text, "Details",
-			 show_pd, (void *)pi, (void *)installed);
+  GtkWidget *dialog, *action_area;
+  GtkWidget *details_button;
+  auwd_closure *c = new auwd_closure;
+  gint response;
+
+  dialog = hildon_note_new_information (NULL, text);
+  gtk_dialog_add_button (GTK_DIALOG (dialog), "Details", 1);
+
+  pi->ref ();
+  c->pi = pi;
+  c->installed = installed;
+  g_signal_connect (dialog, "response", 
+		    G_CALLBACK (annoy_user_with_details_response), c);
+  gtk_widget_show_all (dialog);
 }
 
+struct auwe_closure {
+  void (*func) (void *, void *);
+  void *data1, *data2;
+};
+
 static void
-show_lg (void *data1, void *data2)
+annoy_user_with_log_response (GtkDialog *dialog, gint response,
+			      gpointer data)
 {
-  show_log ();
+  gtk_widget_destroy (GTK_WIDGET (dialog));
+  if (response == 1)
+    show_log ();
 }
 
 void
 annoy_user_with_log (const gchar *text)
 {
-  annoy_user_with_extra (text, "Log", show_lg, NULL, NULL);
+  GtkWidget *dialog, *action_area;
+  GtkWidget *details_button;
+
+  dialog = hildon_note_new_information (NULL, text);
+  gtk_dialog_add_button (GTK_DIALOG (dialog), "Log", 1);
+
+  g_signal_connect (dialog, "response", 
+		    G_CALLBACK (annoy_user_with_log_response), NULL);
+  gtk_widget_show_all (dialog);
 }
 
 static GtkWidget *progress_dialog = NULL;
@@ -870,6 +873,9 @@ b64decode (const unsigned char *str, GdkPixbufLoader *loader)
 GdkPixbuf *
 pixbuf_from_base64 (const char *base64)
 {
+  if (base64 == NULL)
+    return NULL;
+
   GError *error = NULL;
 
   GdkPixbufLoader *loader = gdk_pixbuf_loader_new ();
@@ -887,4 +893,21 @@ pixbuf_from_base64 (const char *base64)
   g_object_ref (pixbuf);
   g_object_unref (loader);
   return pixbuf;
+}
+
+void
+localize_file (char *uri,
+	       void (*cont) (char *local, void *data),
+	       void *data)
+{
+  if (uri[0] == '/')
+    cont (uri, data);
+  else if (g_str_has_prefix (uri, "file://"))
+    {
+      char *local = g_strdup (uri + 6);
+      g_free (uri);
+      cont (local, data);
+    }
+  else
+    annoy_user ("Unsupported file location.");
 }

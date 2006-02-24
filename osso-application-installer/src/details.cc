@@ -107,7 +107,7 @@ format_string_list_1 (GString *str, const char *title,
   format_string_list (str, title, list);
 }
 
-static char *
+char *
 decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 {
   GList *sum[sumtype_max];
@@ -250,23 +250,8 @@ details_response (GtkDialog *dialog, gint response, gpointer clos)
 }
 
 static void
-get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
+show_with_details (package_info *pi, bool installed)
 {
-  spd_closure *c = (spd_closure *)clos;
-  package_info *pi = c->pi;
-  bool installed = c->installed;
-  delete c;
-  char size_buf[20];
-
-  const char *maintainer = dec->decode_string_in_place ();
-  char *maintainer_utf8;
-  const char *description = dec->decode_string_in_place ();
-  char *dependencies = decode_dependencies (dec);
-  char *summary = decode_summary (dec, pi, installed);
-
-  if (dec->corrupted ())
-    return;
-
   GtkWidget *dialog, *notebook;
   GString *common = g_string_new ("");
   
@@ -316,16 +301,14 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
     short_description = pi->installed_short_description;
   g_string_append_printf (common, "\t\t\t\t\t%s\n", short_description);
 
-  maintainer_utf8 = g_convert (maintainer, -1,
-			       "UTF-8", "ISO-8859-1",
-			       NULL, NULL, NULL);
-  g_string_append_printf (common, "Maintainer:\t\t\t%s\n", maintainer_utf8);
-  g_free (maintainer_utf8);
+  g_string_append_printf (common, "Maintainer:\t\t\t%s\n", pi->maintainer);
 
   g_string_append_printf (common, "Status:\t\t\t\t%s\n", status);
 
   g_string_append_printf (common, "Category:\t\t\t%s\n",
-			  pi->available_section);
+			  nicify_section_name (installed
+					       ? pi->installed_section
+					       : pi->available_section));
 
   g_string_append_printf (common, "Installed version:\t\t%s\n",
 			  (pi->installed_version
@@ -333,6 +316,7 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
 			   : "-"));
   if (pi->installed_version)
     {
+      char size_buf[20];
       size_string_detailed (size_buf, 20, pi->installed_size);
       g_string_append_printf (common, "Size:\t\t\t\t%s\n", size_buf);
     }
@@ -343,6 +327,7 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
 			   : "-"));
   if (pi->available_version)
     {
+      char size_buf[20];
       size_string_detailed (size_buf, 20, pi->info.download_size);
       g_string_append_printf (common, "\nDownload size:\t\t%s", size_buf);
     }
@@ -368,15 +353,13 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
 			    make_small_text_view (common->str),
 			    gtk_label_new ("Common"));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_small_text_view (description),
+			    make_small_text_view (pi->description),
 			    gtk_label_new ("Description"));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_small_text_view (summary),
+			    make_small_text_view (pi->summary),
 			    gtk_label_new (summary_label));
   
   g_string_free (common, 1);
-  g_free (dependencies);
-  g_free (summary);
 
   pi->unref ();
 
@@ -387,16 +370,49 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   gtk_widget_show_all (dialog);
 }
 
+static void
+get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
+{
+  spd_closure *c = (spd_closure *)clos;
+  package_info *pi = c->pi;
+  bool installed = c->installed;
+  delete c;
+
+  const char *maintainer = dec->decode_string_in_place ();
+  pi->maintainer = g_convert (maintainer, -1,
+			      "UTF-8", "ISO-8859-1",
+			      NULL, NULL, NULL);
+
+  pi->description = dec->decode_string_dup ();
+
+  g_free (decode_dependencies (dec));
+
+  pi->summary = decode_summary (dec, pi, installed);
+
+  pi->have_details = true;
+
+  show_with_details (pi, installed);
+}
+
 void
 spd_cont (package_info *pi, void *data, bool changed)
 {
   spd_closure *c = (spd_closure *)data;
-  apt_worker_get_package_details (pi->name, (c->installed
-					     ? pi->installed_version
-					     : pi->available_version),
-				  c->installed? 2 : 1, // XXX - magic
-				  get_package_details_reply,
-				  data);
+  
+  if (!pi->have_details)
+    apt_worker_get_package_details (pi->name, (c->installed
+					       ? pi->installed_version
+					       : pi->available_version),
+				    c->installed? 2 : 1, // XXX - magic
+				    get_package_details_reply,
+				    data);
+  else
+    {
+      bool installed = c->installed;
+      delete c;
+
+      show_with_details (pi, installed);
+    }
 }
 
 void

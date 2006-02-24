@@ -1,3 +1,17 @@
+osso-application-installer (4.0.pre11) unstable; urgency=low
+
+  * Don't make .desktop symlink for others menu.  Run
+    osso-update-category-database and update-mime-database in postinst.
+    Put correct icon name in osso-application-installer.desktop.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 22 Feb 2006 15:08:01 +0200
+
+osso-application-installer (4.0.pre10) unstable; urgency=low
+
+  * Nearly feature complete.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 21 Feb 2006 13:21:05 +0200
+
 osso-application-installer (4.0.pre9) unstable; urgency=low
 
   * Added refcounting for package_info.
