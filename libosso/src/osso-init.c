@@ -160,7 +160,7 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
 	return NULL;
     }	
 
-    g_snprintf(&osso->application, MAX_APP_NAME_LEN, "%s", application);
+    g_snprintf(&osso->application[0], MAX_APP_NAME_LEN, "%s", application);
     osso->version = g_strdup(version);
     if (osso->version == NULL) {
 	ULOG_ERR_F("g_strdup failed");
