@@ -73,4 +73,8 @@ void localize_file (char *uri,
 		    void (*cont) (char *local, void *data),
 		    void *data);
 
+void run_cmd (char **argv,
+	      void (*cont) (int status, void *data),
+	      void *data);
+
 #endif /* !UTIL_H */

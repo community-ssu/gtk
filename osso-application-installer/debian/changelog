@@ -1,3 +1,9 @@
+osso-application-installer (4.1) unstable; urgency=low
+
+  * Feature complete.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 27 Feb 2006 14:57:51 +0200
+
 osso-application-installer (4.0.pre12) unstable; urgency=low
 
   * Complete except for SWR 124712 (untested) and 124688 (unimplemented).

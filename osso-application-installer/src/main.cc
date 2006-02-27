@@ -1043,25 +1043,99 @@ uninstall_package_reply (int cmd, apt_proto_decoder *dec, void *data)
 }
 
 static void
+uninstall_package_doit (package_info *pi)
+{
+  if (pi->info.removable)
+    {
+      add_log ("-----\n");
+      add_log ("Uninstalling %s %s", pi->name, pi->installed_version);
+      
+      show_progress ("Uninstalling");
+      apt_worker_remove_package (pi->name, uninstall_package_reply, NULL);
+    }
+  else
+    annoy_user_with_details ("Impossible, see details.", pi, true);
+
+  pi->unref ();
+}
+
+struct uip_closure {
+  package_info *pi;
+  GSList *to_remove;
+};
+
+static void
+check_uninstall_scripts2 (int status, void *data)
+{
+  uip_closure *c = (uip_closure *)data;
+
+  if (status != -1 && WIFEXITED (status) && WEXITSTATUS (status) == 111)
+    {
+      annoy_user ("Cancelled");
+      c->pi->unref ();
+      // delete rest of list
+      delete c;
+    }
+  else if (c->to_remove)
+    {
+      GSList *next = c->to_remove->next;
+      char *name = (char *)c->to_remove->data;
+      g_slist_free_1 (c->to_remove);
+      c->to_remove = next;
+
+      char *cmd =
+	g_strdup_printf ("/var/lib/osso-application-installer/info/%s.checkrm",
+			 name);
+      
+      printf ("Checking %s\n", cmd);
+      char *argv[] = { cmd, NULL };
+      run_cmd (argv, check_uninstall_scripts2, c);
+      g_free (name);
+      g_free (cmd);
+    }
+  else
+    {
+      uninstall_package_doit (c->pi);
+      delete c;
+    }
+}
+
+static void
+get_packages_to_remove_reply (int cmd, apt_proto_decoder *dec, void *data)
+{
+  package_info *pi = (package_info *)data;
+  GSList *names = NULL;
+  
+  while (true)
+    {
+      char *name = dec->decode_string_dup ();
+      if (name == NULL)
+	break;
+      names = g_slist_prepend (names, name);
+    }
+
+  uip_closure *c = new uip_closure;
+  c->pi = pi;
+  c->to_remove = names;
+  check_uninstall_scripts2 (0, c);
+}
+
+static void
+check_uninstall_scripts (package_info *pi)
+{
+  apt_worker_get_packages_to_remove (pi->name,
+				     get_packages_to_remove_reply, pi);
+}
+
+static void
 uninstall_package_cont2 (bool res, void *data)
 {
   package_info *pi = (package_info *)data;
 
   if (res)
-    {
-      if (pi->info.removable)
-	{
-	  add_log ("-----\n");
-	  add_log ("Uninstalling %s %s", pi->name, pi->installed_version);
-
-	  show_progress ("Uninstalling");
-	  apt_worker_remove_package (pi->name, uninstall_package_reply, NULL);
-	}
-      else
-	annoy_user_with_details ("Impossible, see details.", pi, true);
-    }
-
-  pi->unref ();
+    check_uninstall_scripts (pi);
+  else
+    pi->unref ();
 }
 
 static void

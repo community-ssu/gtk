@@ -156,20 +156,29 @@ but that you should only do things that have a very high chance of
 succeeding.  The simpler, the better.
 
 
-Warning about removing running applications
--------------------------------------------
+Warning about removing/upgrading running applications
+-----------------------------------------------------
 
 The Application installer can run a script provided by your package
-before removing it.  That script can tell the Application installer to
-cancel the uninstallation attempt.
+before removing or upgrading it.  That script can tell the Application
+installer to cancel the operation.
 
 The canonical use for this feature is to warn the user when he tries
-to remove an application that is currently running.  If your
-application has a .desktop file, you can use the utility
-'check-running-appliction' to perform this test.  (See below for
-details.)
+to remove or upgrade an application that is currently running.  If
+your application has a .desktop file, you can use the utility
+'check-appliction-for-uninstall' to perform this test and to show
+appropriate messages to the user.  (See below for details.)
 
-[DETAILS TO BE DETERMINED]
+When uninstalling or upgrading a package named PACKAGE, the
+Application installer will run the program named
+
+    /var/lib/osso-application-installer/info/PACKAGE.checkrm
+
+if it exists.  When this program exist with code 111, the operation is
+cancelled.  In all other cases, including when the program terminates
+with a signal, the operation is carried out.
+
+[MORE DETAILS TO BE DETERMINED]
 
 
 Utilities to use in your maintainer scripts

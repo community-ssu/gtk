@@ -258,7 +258,7 @@ make_small_text_view (const char *text)
   gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (view), 0);
   gtk_container_add (GTK_CONTAINER (scroll), view);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll),
-				  GTK_POLICY_NEVER,
+				  GTK_POLICY_AUTOMATIC,
 				  GTK_POLICY_AUTOMATIC);
   gtk_widget_modify_font (view, get_small_font ());
 
@@ -910,4 +910,57 @@ localize_file (char *uri,
     }
   else
     annoy_user ("Unsupported file location.");
+}
+
+struct rc_closure {
+  void (*cont) (int status, void *data);
+  void *data;
+};
+
+static void
+reap_process (GPid pid, int status, gpointer raw_data)
+{
+  rc_closure *c = (rc_closure *)raw_data;
+  void (*cont) (int status, void *data) = c->cont;
+  void *data = c->data;
+  delete c;
+
+  fprintf (stderr, "exit: %d\n", status);
+  cont (status, data);
+}
+
+void
+run_cmd (char **argv,
+	 void (*cont) (int status, void *data),
+	 void *data)
+{
+  int stdout_fd, stderr_fd;
+  GError *error = NULL;
+  GPid child_pid;
+  
+  if (!g_spawn_async_with_pipes (NULL,
+				 argv,
+				 NULL,
+				 GSpawnFlags (G_SPAWN_DO_NOT_REAP_CHILD),
+				 NULL,
+				 NULL,
+				 &child_pid,
+				 NULL,
+				 &stdout_fd,
+				 &stderr_fd,
+				 &error))
+    {
+      add_log ("Can't run %s: %s\n", argv[0], error->message);
+      g_error_free (error);
+      cont (-1, data);
+      return;
+    }
+
+  log_from_fd (stdout_fd);
+  log_from_fd (stderr_fd);
+
+  rc_closure *c = new rc_closure;
+  c->cont = cont;
+  c->data = data;
+  g_child_watch_add (child_pid, reap_process, c);
 }

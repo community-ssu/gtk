@@ -78,3 +78,5 @@ BUGS
 - streamline package_info and GET_PACKAGE_INFO to only store/return
   the needed info for the list that the package will be in (packages
   do not move from list to list).
+
+- Check when upgrading as well as when removing

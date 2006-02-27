@@ -1,7 +1,7 @@
 ## This is all very ad-hoc...
 
-#arch = i386
-arch = arm
+arch = i386
+#arch = arm
 
 repodir = testrepo
 distsdir = $(repodir)/dists

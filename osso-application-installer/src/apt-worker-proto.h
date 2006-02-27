@@ -45,6 +45,7 @@ enum apt_command {
 
   APTCMD_INSTALL_CHECK,
   APTCMD_INSTALL_PACKAGE,
+  APTCMD_GET_PACKAGES_TO_REMOVE,
   APTCMD_REMOVE_PACKAGE,
 
   APTCMD_GET_FILE_DETAILS,
@@ -287,6 +288,21 @@ enum apt_proto_preptype {
 // - success (int).
 
 
+// GET_PACKAGES_TO_REMOVE - Return the names of packages that would be
+//                          removed if the given package would be
+//                          removed with REMOVE_PACKAGE.  If the given
+//                          package can not be removed, the returned
+//                          list is empty.
+//
+// Parameters:
+//
+// - name (string).
+//
+// Response:
+//
+// - names (string)*,(null).
+
+
 // REMOVE_PACKAGE - remove one package
 //
 // Parameters:
@@ -296,6 +312,7 @@ enum apt_proto_preptype {
 // Response:
 //
 // - success (int).
+
 
 // CLEAN - empty the cache of downloaded archives
 //

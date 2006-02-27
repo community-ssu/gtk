@@ -93,6 +93,10 @@ void apt_worker_install_package (const char *package,
 				 apt_worker_callback *callback,
 				 void *data);
 
+void apt_worker_get_packages_to_remove (const char *package,
+					apt_worker_callback *callback,
+					void *data);
+
 void apt_worker_remove_package (const char *package,
 				apt_worker_callback *callback,
 				void *data);

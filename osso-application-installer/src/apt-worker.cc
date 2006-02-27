@@ -240,6 +240,7 @@ bool set_sources_list ();
 
 void install_check (const char *package);
 void install_package (const char *package);
+void make_packages_to_remove_response (const char *package);
 bool remove_package (const char *package);
 bool clean ();
 
@@ -342,6 +343,15 @@ handle_request ()
 	request.reset (reqbuf, req.len);
 	const char *package = request.decode_string_in_place ();
 	install_package (package);
+	send_response (&req);
+	break;
+      }
+    case APTCMD_GET_PACKAGES_TO_REMOVE:
+      {
+	response.reset ();
+	request.reset (reqbuf, req.len);
+	const char *package = request.decode_string_in_place ();
+	make_packages_to_remove_response (package);
 	send_response (&req);
 	break;
       }
@@ -1225,6 +1235,29 @@ install_package (const char *package)
     success = false;
 
   response.encode_int (success);
+}
+
+void
+make_packages_to_remove_response (const char *package)
+{
+  pkgDepCache &cache = *package_cache;
+  pkgCache::PkgIterator pkg = cache.FindPkg (package);
+
+  if (!pkg.end ())
+    {
+      cache.Init (NULL);
+      cache.MarkDelete (pkg);
+
+      for (pkgCache::PkgIterator pkg = cache.PkgBegin();
+	   pkg.end() != true;
+	   pkg++)
+	{
+	  if (cache[pkg].Delete())
+	    response.encode_string (pkg.Name());
+	}
+    }
+
+  response.encode_string (NULL);
 }
 
 bool
