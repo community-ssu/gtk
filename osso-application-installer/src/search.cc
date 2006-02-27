@@ -22,13 +22,18 @@
  *
  */
 
-#include "search.h"
-#include "main.h"
-
 #include <string.h>
+#include <libintl.h>
+
 #include <gtk/gtk.h>
 #include <hildon-widgets/hildon-caption.h>
 #include <hildon-widgets/gtk-infoprint.h>
+
+#include "search.h"
+#include "util.h"
+#include "main.h"
+
+#define _(x) gettext (x)
 
 struct search_dialog_closure {
   GtkWidget *search_words_entry;
@@ -96,7 +101,7 @@ search_dialog_response (GtkDialog *dialog, gint response, gpointer clos)
 
       if (*pattern == '\0')
 	{
-	  gtk_infoprintf (NULL, "Enter text");
+	  irritate_user (_("ai_ib_enter_text"));
 	  return;
 	}
 
@@ -117,11 +122,13 @@ show_search_dialog ()
 
   search_dialog_closure *c = new search_dialog_closure;
 
-  dialog = gtk_dialog_new_with_buttons ("Search",
+  dialog = gtk_dialog_new_with_buttons (_("ai_ti_search"),
 					NULL,
 					GTK_DIALOG_MODAL,
-					"OK", GTK_RESPONSE_OK,
-					"Cancel", GTK_RESPONSE_CANCEL,
+					_("ai_bd_search_ok"),
+					GTK_RESPONSE_OK,
+					_("ai_bd_search_cancel"),
+					GTK_RESPONSE_CANCEL,
 					NULL);
   vbox = GTK_DIALOG (dialog)->vbox;
 
@@ -129,18 +136,18 @@ show_search_dialog ()
 
   entry = gtk_combo_box_entry_new_text ();
   fill_with_saved_search_words (GTK_COMBO_BOX (entry));
-  caption = hildon_caption_new (group, "Search words", entry,
+  caption = hildon_caption_new (group, _("ai_fi_search_words"), entry,
 				NULL, HILDON_CAPTION_OPTIONAL);
   gtk_box_pack_start_defaults (GTK_BOX (vbox), caption);
   c->search_words_entry = entry;
 
   combo = gtk_combo_box_new_text ();
   gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-			     "Package name");
+			     _("ai_va_search_name"));
   gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
-			     "Package name and description");
+			     _("ai_va_search_name_description"));
   gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
-  caption = hildon_caption_new (group, "Search area", combo,
+  caption = hildon_caption_new (group, _("ai_fi_search_area"), combo,
 				NULL, HILDON_CAPTION_OPTIONAL);
   gtk_box_pack_start_defaults (GTK_BOX (vbox), caption);
   c->search_area_combo = combo;

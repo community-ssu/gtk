@@ -23,6 +23,8 @@
  */
 
 #include <stdlib.h>
+#include <libintl.h>
+
 #include <gtk/gtk.h>
 
 #include "menu.h"
@@ -32,6 +34,8 @@
 #include "settings.h"
 #include "repo.h"
 #include "search.h"
+
+#define _(x) gettext (x)
 
 static GtkWidget *
 add_item (GtkMenu *menu, const gchar *label, void (*func)())
@@ -108,7 +112,7 @@ set_operation_menu_label (const char *label, bool sensitive)
   if (operation_menu_item)
     {
       if (label == NULL)
-	label = "Install";
+	label = _("ai_me_package_install");
       gtk_label_set 
 	(GTK_LABEL (gtk_bin_get_child (GTK_BIN (operation_menu_item))),
 	 label);
@@ -119,34 +123,36 @@ set_operation_menu_label (const char *label, bool sensitive)
 void
 create_menu (GtkMenu *main)
 {
-  GtkMenu *packages = add_menu (main, "Packages");
-  GtkMenu *view = add_menu (main, "View");
-  GtkMenu *tools = add_menu (main, "Tools");
+  GtkMenu *packages = add_menu (main, _("ai_me_package"));
+  GtkMenu *view = add_menu (main, _("ai_me_view"));
+  GtkMenu *tools = add_menu (main, _("ai_me_tools"));
   GtkWidget *fullscreen_group;
 
   operation_menu_item = add_item (packages, "", do_current_operation);
-  add_item (packages, "Install from file ...", install_from_file);
-  details_menu_item = add_item (packages, "Details", show_current_details);
+  add_item (packages, _("ai_me_package_install_file"), install_from_file);
+  details_menu_item = add_item (packages, _("ai_me_package_details"),
+				show_current_details);
 
-  add_item (view, "Back", show_parent_view);
-  add_item (view, "Main", show_main_view);
+  add_item (view, _("ai_me_view_main"), show_main_view);
   add_sep (view);
-  add_item (view, "Sort ...", show_sort_settings_dialog);
+  add_item (view, _("ai_me_view_sort"), show_sort_settings_dialog);
   add_sep (view);
-  add_check (view, "Full screen", NULL);
-  GtkMenu *toolbar = add_menu (view, "Show toolbar");
+  add_check (view, _("ai_me_view_fullscreen"), NULL);
+  GtkMenu *toolbar = add_menu (view, _("ai_me_view_show_toolbar"));
   
-  fullscreen_group = add_radio (toolbar, "Normal screen", NULL, NULL);
-  add_radio (toolbar, "Full screen", NULL, fullscreen_group);
+  fullscreen_group = add_radio (toolbar, _("ai_me_view_show_toolbar_normal"),
+				NULL, NULL);
+  add_radio (toolbar, _("ai_me_view_show_toolbar_fullscreen"),
+	     NULL, fullscreen_group);
 
-  add_item (tools, "Refresh list of packages ...", refresh_package_cache);
-  add_item (tools, "Settings ...", show_settings_dialog);
-  add_item (tools, "Repositories ...", show_repo_dialog);
-  add_item (tools, "Search ...", show_search_dialog);
-  add_item (tools, "Log ...", show_log);
-  add_item (tools, "Help", NULL);
+  add_item (tools, _("ai_me_tools_refresh"), refresh_package_cache);
+  add_item (tools, _("ai_me_tools_settings"), show_settings_dialog);
+  add_item (tools, _("ai_me_tools_repository"), show_repo_dialog);
+  add_item (tools, _("ai_me_tools_search"), show_search_dialog);
+  add_item (tools, _("ai_me_tools_log"), show_log);
+  add_item (tools, _("ai_me_tools_help"), NULL);
 
-  add_item (main, "Close", menu_close);
+  add_item (main, _("ai_me_close"), menu_close);
 
   gtk_widget_show_all (GTK_WIDGET (main));
 }

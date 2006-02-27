@@ -7,6 +7,6 @@ Standards-Version: 3.6.0
 
 Package: osso-application-installer
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, osso-application-installer-l10-mr0 | osso-application-installer-l10-mr
 Description: A program for managing user installed applications.
  It's not done yet.

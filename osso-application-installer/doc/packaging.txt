@@ -1,7 +1,7 @@
 Howto make a package for the Application installer 2006
 =======================================================
 
-This is a short guide about how to make packages for the Appliction
+This is a short guide about how to make packages for the Application
 installer of the Internet Tablet OS 2006.
 
 The main point to take away is that the AI 2006 is a graphical
@@ -78,14 +78,16 @@ will be correctly localised.
 
 The [PRELIMINARY!] list of predefined sections is:
 
-    maemo/Games
     maemo/Applications
     maemo/Tools
+    maemo/Utilities
+    maemo/Games
+    maemo/Programming
     maemo/Education
     maemo/Plugins
     maemo/Support
-    maemo/Artwork
-    maemo/Miscellaneous
+    maemo/Personalisation
+    maemo/Extras
 
 
 Icons

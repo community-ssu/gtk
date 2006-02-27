@@ -25,11 +25,14 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <assert.h>
+#include <libintl.h>
 
 #include "details.h"
 #include "util.h"
 #include "apt-worker-client.h"
 #include "apt-worker-proto.h"
+
+#define _(x) gettext (x)
 
 struct spd_closure {
   package_info *pi;
@@ -76,7 +79,10 @@ format_string_list (GString *str, const char *title,
 		    GList *list)
 {
   if (list)
-    g_string_append (str, title);
+    {
+      g_string_append (str, title);
+      g_string_append (str, "\n");
+    }
 
   while (list)
     {
@@ -136,13 +142,13 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 	  size_string_detailed (size_buf, 20,
 				-pi->info.remove_user_size_delta);
 	  g_string_append_printf
-	    (str, "Uninstalling %s frees %s in the device.\n",
+	    (str, _("ai_va_details_uninstall_frees"),
 	     pi->name, size_buf);
 	}
       else
 	{
 	  g_string_append_printf
-	    (str, "Unable to uninstall %s\n", pi->name);
+	    (str, _("ai_va_details_unable_uninstall"), pi->name);
 	  possible = false;
 	}
     }
@@ -157,7 +163,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 		  size_string_detailed (size_buf, 20,
 					pi->info.install_user_size_delta);
 		  g_string_append_printf
-		    (str, "Updating %s uses %s in the device.\n",
+		    (str, _("ai_va_details_updating_requires"),
 		     pi->name, size_buf);
 		}
 	      else
@@ -165,14 +171,14 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 		  size_string_detailed (size_buf, 20,
 					-pi->info.install_user_size_delta);
 		  g_string_append_printf
-		    (str, "Updating %s frees %s in the device.\n",
+		    (str, _("ai_va_details_updating_frees"),
 		     pi->name, size_buf);
 		}
 	    }
 	  else
 	    {
 	      g_string_append_printf
-		(str, "Summary: Unable to update %s\n", pi->name);
+		(str, _("ai_va_details_unable_update"), pi->name);
 	      possible = false;
 	    }
 	}
@@ -185,7 +191,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 		  size_string_detailed (size_buf, 20,
 					pi->info.install_user_size_delta);
 		  g_string_append_printf
-		    (str, "Installing %s uses %s in the device.\n",
+		    (str, _("ai_va_details_install_requires"),
 		     pi->name, size_buf);
 		}
 	      else
@@ -193,45 +199,47 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 		  size_string_detailed (size_buf, 20,
 					-pi->info.install_user_size_delta);
 		  g_string_append_printf
-		    (str, "Installing %s frees %s in the device.\n",
+		    (str, _("ai_va_details_install_frees"),
 		     pi->name, size_buf);
 		}
 	    }
 	  else
 	    {
 	      g_string_append_printf
-		(str, "Summary: Unable to install %s\n",
+		(str, _("ai_va_details_unable_install"),
 		 pi->name, size_buf);
 	      possible = false;
 	    }
 	}
     }
 
+  g_string_append (str, "\n");
+
   if (possible)
     {
       format_string_list_1 (str,
-			    "Packages to install:\n",
+			    _("ai_fi_packages_install"),
 			    pi->name, pi->available_version,
 			    sum[sumtype_installing]);
       format_string_list_1 (str,
-			    "Packages to update:\n",
+			    _("ai_fi_packages_update"),
 			    pi->name, pi->available_version,
 			    sum[sumtype_upgrading]);
       format_string_list_1 (str,
-			    "Packages to remove:\n",
+			    _("ai_fi_packages_uninstall"),
 			    pi->name, pi->installed_version,
 			    sum[sumtype_removing]);
     }
   else
     {
       format_string_list (str,
-			  "Packages missing:\n",
+			  _("ai_fi_details_packages_missing"),
 			  sum[sumtype_missing]);
       format_string_list (str,
-			  "Packages conflicting:\n",
+			  _("ai_fi_details_packages_conflicting"),
 			  sum[sumtype_conflicting]);
       format_string_list (str,
-			  "Packages needing it:\n",
+			  _("ai_fi_details_packages_needing"),
 			  sum[sumtype_needed_by]);
     }
 
@@ -263,36 +271,37 @@ show_with_details (package_info *pi, bool installed)
       if (broken)
 	{
 	  if (pi->info.installable)
-	    status = "Broken, but updateable";
+	    status = _("ai_va_details_status_broken_updateable");
 	  else
-	    status = "Broken, and not updateable";
+	    status = _("ai_va_details_status_broken_not_updateable");
 	}
       else
 	{
 	  if (pi->info.installable)
-	    status = "Updateable";
+	    status = _("ai_va_details_status_updateable");
 	  else
-	    status = "Update available, but not updateable";
+	    status = _("ai_va_details_status_not_updateable");
 	}
     }
   else if (pi->installed_version)
     {
       if (broken)
-	status = "Broken";
+	status = _("ai_va_details_status_broken");
       else
-	status = "Installed";
+	status = _("ai_va_details_status_installed");
     }
   else if (pi->available_version)
     {
       if (pi->info.installable)
-	status = "Installable";
+	status = _("ai_va_details_status_installable");
       else
-	status = "Not installable";
+	status = _("ai_va_details_status_not_installable");
     }
   else
-    status = "Unknown";
+    status = "?";
   
-  g_string_append_printf (common, "Name:\t\t\t\t%s\n", pi->name);
+  g_string_append_printf (common, "%s\t\t\t%s\n",
+			  _("ai_fi_details_package"), pi->name);
 
   gchar *short_description = (installed
 			      ? pi->installed_short_description
@@ -301,60 +310,68 @@ show_with_details (package_info *pi, bool installed)
     short_description = pi->installed_short_description;
   g_string_append_printf (common, "\t\t\t\t\t%s\n", short_description);
 
-  g_string_append_printf (common, "Maintainer:\t\t\t%s\n", pi->maintainer);
+  g_string_append_printf (common, "%s\t\t\t%s\n",
+			  _("ai_fi_details_maintainer"), pi->maintainer);
 
-  g_string_append_printf (common, "Status:\t\t\t\t%s\n", status);
+  g_string_append_printf (common, "%s\t\t\t\t%s\n",
+			  _("ai_fi_details_status"), status);
 
-  g_string_append_printf (common, "Category:\t\t\t%s\n",
+  g_string_append_printf (common, "%s\t\t\t%s\n",
+			  _("ai_fi_details_category"),
 			  nicify_section_name (installed
 					       ? pi->installed_section
 					       : pi->available_section));
 
-  g_string_append_printf (common, "Installed version:\t\t%s\n",
+  g_string_append_printf (common, "%s\t\t%s\n",
+			  _("ai_va_details_installed_version"),
 			  (pi->installed_version
 			   ? pi->installed_version
-			   : "-"));
+			   : _("ai_va_details_no_info")));
   if (pi->installed_version)
     {
       char size_buf[20];
       size_string_detailed (size_buf, 20, pi->installed_size);
-      g_string_append_printf (common, "Size:\t\t\t\t%s\n", size_buf);
+      g_string_append_printf (common, "%s\t\t\t\t%s\n",
+			      _("ai_va_details_size"), size_buf);
     }
 
-  g_string_append_printf (common, "Available version:\t%s",
+  g_string_append_printf (common, "%s\t%s",
+			  _("ai_va_details_available_version"),
 			  (pi->available_version 
 			   ? pi->available_version
-			   : "-"));
+			   : _("ai_va_details_no_info")));
   if (pi->available_version)
     {
       char size_buf[20];
       size_string_detailed (size_buf, 20, pi->info.download_size);
-      g_string_append_printf (common, "\nDownload size:\t\t%s", size_buf);
+      g_string_append_printf (common, "\n%s\t\t%s",
+			      _("ai_va_details_download_size"), size_buf);
     }
 
   const gchar *summary_label;
   if (installed)
-    summary_label = "Uninstalling";
+    summary_label = _("ai_ti_details_noteb_installing");
   else if (!pi->info.installable)
-    summary_label = "Problems";
+    summary_label = _("ai_ti_details_noteb_problems");
   else if (pi->installed_version && pi->available_version)
-    summary_label = "Updating";
+    summary_label = _("ai_ti_details_noteb_updating");
   else
-    summary_label = "Installing";
+    summary_label = _("ai_ti_details_noteb_installing");
 
-  dialog = gtk_dialog_new_with_buttons ("Package details",
+  dialog = gtk_dialog_new_with_buttons (_("ai_ti_details"),
 					NULL,
 					GTK_DIALOG_MODAL,
-					"Close", GTK_RESPONSE_OK,
+					_("ai_bd_details_close"),
+					GTK_RESPONSE_OK,
 					NULL);
   notebook = gtk_notebook_new ();
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_small_text_view (common->str),
-			    gtk_label_new ("Common"));
+			    gtk_label_new (_("ai_ti_details_noteb_common")));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_small_text_view (pi->description),
-			    gtk_label_new ("Description"));
+			    gtk_label_new (_("ai_ti_details_noteb_description")));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_small_text_view (pi->summary),
 			    gtk_label_new (summary_label));

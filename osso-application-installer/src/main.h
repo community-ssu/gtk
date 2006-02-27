@@ -60,6 +60,8 @@ struct package_info {
   
   GtkTreeModel *model;
   GtkTreeIter iter;
+
+  char *filename;
 };
 
 void get_intermediate_package_info (package_info *pi,

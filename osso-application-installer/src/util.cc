@@ -25,13 +25,18 @@
 #include <string.h>
 #include <unistd.h>
 #include <assert.h>
+#include <libintl.h>
+
 #include <gtk/gtk.h>
 #include <hildon-widgets/hildon-note.h>
-#include <hildon-fm/hildon-widgets/hildon-file-chooser-dialog.h>
+#include <hildon-widgets/hildon-file-chooser-dialog.h>
+#include <hildon-widgets/gtk-infoprint.h>
 
 #include "util.h"
 #include "details.h"
 #include "log.h"
+
+#define _(x) gettext (x)
 
 struct ayn_closure {
   package_info *pi;
@@ -59,7 +64,7 @@ yes_no_response (GtkDialog *dialog, gint response, gpointer clos)
   delete c;
 
   gtk_widget_destroy (GTK_WIDGET (dialog));
-  cont (response == GTK_RESPONSE_YES, data);
+  cont (response == GTK_RESPONSE_OK, data);
 }
 
 void
@@ -73,11 +78,8 @@ ask_yes_no (const gchar *question,
   c->cont = cont;
   c->data = data;
 
-  dialog =
-    hildon_note_new_confirmation_add_buttons (NULL, question,
-					      "Yes", GTK_RESPONSE_YES,
-					      "No", GTK_RESPONSE_NO,
-					      NULL);
+  dialog = hildon_note_new_confirmation (NULL, question);
+
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (yes_no_response), c);
   gtk_widget_show_all (dialog);
@@ -97,12 +99,14 @@ ask_yes_no_with_details (const gchar *question,
   c->cont = cont;
   c->data = data;
 
-  dialog =
-    hildon_note_new_confirmation_add_buttons (NULL, question,
-					      "Yes", GTK_RESPONSE_YES,
-					      "Details", 1,
-					      "No", GTK_RESPONSE_NO,
-					      NULL);
+  dialog = hildon_note_new_confirmation_add_buttons
+    (NULL, question,
+     dgettext ("hildon-libs", "Ecdg_bd_confirmation_note_ok"),
+     GTK_RESPONSE_OK,
+     _("ai_nc_bd_details"), 1,
+     dgettext ("hildon-libs", "Ecdg_bd_confirmation_note_cancel"),
+     GTK_RESPONSE_CANCEL,
+     NULL);
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (yes_no_response), c);
   gtk_widget_show_all (dialog);
@@ -154,8 +158,11 @@ annoy_user_with_details (const gchar *text,
   auwd_closure *c = new auwd_closure;
   gint response;
 
+  // XXX - the buttons should be "Details" "Close", but this gives
+  //       "Ok" "Details".
+
   dialog = hildon_note_new_information (NULL, text);
-  gtk_dialog_add_button (GTK_DIALOG (dialog), "Details", 1);
+  gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_details"), 1);
 
   pi->ref ();
   c->pi = pi;
@@ -186,11 +193,25 @@ annoy_user_with_log (const gchar *text)
   GtkWidget *details_button;
 
   dialog = hildon_note_new_information (NULL, text);
-  gtk_dialog_add_button (GTK_DIALOG (dialog), "Log", 1);
+  gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_log"), 1);
 
   g_signal_connect (dialog, "response", 
 		    G_CALLBACK (annoy_user_with_log_response), NULL);
   gtk_widget_show_all (dialog);
+}
+
+void
+irritate_user (const gchar *text)
+{
+  gtk_infoprintf (NULL, "%s", text);
+}
+
+void
+scare_user_with_legalese (void (*cont) (bool res, void *data),
+			  void *data)
+{
+  ask_yes_no (_("ai_nc_non_verified_package"),
+	      cont, data);
 }
 
 static GtkWidget *progress_dialog = NULL;
@@ -318,7 +339,7 @@ global_name_func (GtkTreeViewColumn *column,
 	    }
 	}
       else
-	desc = "(updating ...)";
+	desc = _("ai_ti_updating");
       markup = g_markup_printf_escaped ("%s\n<small>%s</small>",
 					pi->name, desc);
       g_object_set (cell, "markup", markup, NULL);
@@ -672,32 +693,33 @@ size_string_general (char *buf, size_t n, int bytes)
   size_t num = bytes;
 
   if (num == 0)
-    snprintf (buf, n, "0kB");
+    snprintf (buf, n, _("ai_li_size_max_99kb"), 0);
   else if (num < 1*KILO)
-    snprintf (buf, n, "1kB");
+    snprintf (buf, n, _("ai_li_size_max_99kb"), 1);
   else
     {
       // round to nearest KILO
       // bytes ~ num * KILO
       num = (bytes + KILO/2) / KILO;
       if (num < 100)
-	snprintf (buf, n, "%dkB", num);
+	snprintf (buf, n, _("ai_li_size_max_99kb"), num);
       else
 	{
 	  // round to nearest 100 KILO
 	  // bytes ~ num * 100 * KILO
 	  num = (bytes + 50*KILO) / (100*KILO);
 	  if (num < 100)
-	    snprintf (buf, n, "%.1fMB", num/10.0);
+	    snprintf (buf, n, _("ai_li_size_max_100kb_10mb"), num/10.0);
 	  else
 	    {
 	      // round to nearest KILO KILO
 	      // bytes ~ num * KILO * KILO
 	      num = (bytes + KILO*KILO/2) / (KILO*KILO);
 	      if (num < KILO)
-		snprintf (buf, n, "%dMB", num);
+		snprintf (buf, n, _("ai_li_size_max_10mb_1gb"), num);
 	      else
-		snprintf (buf, n, "%.1fGB", ((float)num)/KILO);
+		snprintf (buf, n, _("ai_li_size_larger_than_1gb"),
+			  ((float)num)/KILO);
 	    }
 	}
     }
@@ -709,29 +731,30 @@ size_string_detailed (char *buf, size_t n, int bytes)
   size_t num = bytes;
 
   if (num == 0)
-    snprintf (buf, n, "0kB");
+    snprintf (buf, n, _("ai_li_de_size_max_999kb"), 0);
   else if (num < 1*KILO)
-    snprintf (buf, n, "1kB");
+    snprintf (buf, n, _("ai_li_de_size_max_999kb"), 1);
   else
     {
       // round to nearest KILO
       // bytes ~ num * KILO
       num = (bytes + KILO/2) / KILO;
       if (num < 1000)
-	snprintf (buf, n, "%dkB", num);
+	snprintf (buf, n, _("ai_li_de_size_max_999kb"), num);
       else
 	{
 	  // round to nearest 10 KILO
 	  // bytes ~ num * 10 * KILO
 	  num = (bytes + 5*KILO) / (10*KILO);
 	  if (num < 1000)
-	    snprintf (buf, n, "%.2fMB", num/100.0);
+	    snprintf (buf, n, _("ai_li_de_size_1mb_10mb"), num/100.0);
 	  else
 	    {
 	      if (num < 10000)
-		snprintf (buf, n, "%.1fMB", num/100.0);
+		snprintf (buf, n, _("ai_li_de_size_max_10mb_1gb"), num/100.0);
 	      else
-		snprintf (buf, n, "%.2fGB", ((float)num)/(100*KILO));
+		snprintf (buf, n, _("ai_li_de_size_larger_than_1g"),
+			  ((float)num)/(100*KILO));
 	    }
 	}
     }
@@ -777,7 +800,9 @@ show_deb_file_chooser (void (*cont) (char *filename, void *data),
   gtk_file_filter_add_pattern (filter, "*.deb");
   gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(fcd), filter);
 
-  gtk_window_set_title (GTK_WINDOW(fcd), "Select package");
+  // XXX - make it display "(no packages)" text.
+
+  gtk_window_set_title (GTK_WINDOW(fcd), _("ai_ti_select_package"));
 
   g_signal_connect (fcd, "response",
 		    G_CALLBACK (fcd_response), c);

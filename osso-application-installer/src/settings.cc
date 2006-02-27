@@ -22,16 +22,19 @@
  *
  */
 
+#include <errno.h>
+#include <string.h>
+#include <libintl.h>
+
+#include <gtk/gtk.h>
+#include <hildon-widgets/hildon-sort-dialog.h>
+
 #include "settings.h"
 #include "util.h"
 #include "log.h"
 #include "apt-worker-client.h"
 
-#include <errno.h>
-#include <string.h>
-
-#include <gtk/gtk.h>
-#include <hildon-widgets/hildon-sort-dialog.h>
+#define _(x) gettext (x)
 
 bool clean_after_install = true;
 int  update_interval_index = UPDATE_INTERVAL_WEEK;
@@ -123,16 +126,16 @@ clean_reply (int cmd, apt_proto_decoder *dec, void *data)
   bool success = dec->decode_int ();
 
   hide_progress ();
-  if (!dec->corrupted () && success)
-    annoy_user ("Done.");
+  if (success)
+    irritate_user (_("ai_ib_files_deleted"));
   else
-    annoy_user_with_log ("Failed, see log.");
+    annoy_user_with_log ("Unable to delete files");
 }
 
 static void
 clean_callback (GtkWidget *button, gpointer data)
 {
-  show_progress ("Deleting");
+  show_progress (_("ai_nw_deleting"));
   apt_worker_clean (clean_reply, NULL);
 }
 
@@ -142,22 +145,19 @@ make_temp_files_tab (settings_closure *c)
   GtkWidget *vbox = gtk_vbox_new (TRUE, 30);
   GtkWidget *radio, *btn;
 
-  radio = gtk_radio_button_new_with_label
-    (NULL, 
-     "Leave all downloaded packages in the cache");
+  radio = gtk_radio_button_new_with_label (NULL, _("ai_li_settings_leave"));
   gtk_box_pack_start_defaults (GTK_BOX (vbox), radio);
   if (!clean_after_install)
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio),
 				  TRUE);
 
-  btn = gtk_button_new_with_label ("Delete files now");
+  btn = gtk_button_new_with_label (_("ai_bd_settings_delete"));
   gtk_box_pack_start_defaults (GTK_BOX (vbox), btn);
   g_signal_connect (btn, "clicked",
 		    G_CALLBACK (clean_callback), NULL);
 
   radio = gtk_radio_button_new_with_label_from_widget
-    (GTK_RADIO_BUTTON (radio), 
-     "Delete downloaded packages after installation");
+    (GTK_RADIO_BUTTON (radio), _("ai_li_settings_delete_after"));
   gtk_box_pack_start_defaults (GTK_BOX (vbox), radio);
   if (clean_after_install)
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio),
@@ -174,13 +174,16 @@ make_updates_tab (settings_closure *c)
 
   GtkWidget *combo = gtk_combo_box_new_text ();
   gtk_box_pack_start_defaults (GTK_BOX (hbox), 
-			       gtk_label_new ("Update the\n"
-					      "list of packages"));
+			       gtk_label_new (_("ai_fi_settings_update_list")));
   gtk_box_pack_start_defaults (GTK_BOX (hbox), combo);
-  gtk_combo_box_append_text (GTK_COMBO_BOX (combo), "Oncer per session");
-  gtk_combo_box_append_text (GTK_COMBO_BOX (combo), "Once a week");
-  gtk_combo_box_append_text (GTK_COMBO_BOX (combo), "Once a month");
-  gtk_combo_box_append_text (GTK_COMBO_BOX (combo), "Only manually");
+  gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
+			     _("ai_va_settings_once_session"));
+  gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
+			     _("ai_va_settings_once_week"));
+  gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
+			     _("ai_va_settings_once_month"));
+  gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
+			     _("ai_va_settings_only_manually"));
   gtk_combo_box_set_active (GTK_COMBO_BOX (combo), update_interval_index);
 
   c->update_combo = combo;
@@ -214,21 +217,23 @@ show_settings_dialog ()
   GtkWidget *dialog, *notebook;
   settings_closure *c = new settings_closure;
 
-  dialog = gtk_dialog_new_with_buttons ("Settings",
+  dialog = gtk_dialog_new_with_buttons (_("ai_ti_settings"),
 					NULL,
 					GTK_DIALOG_MODAL,
-					"OK", GTK_RESPONSE_OK,
-					"Cancel", GTK_RESPONSE_CANCEL,
+					_("ai_bd_settings_ok"),
+					GTK_RESPONSE_OK,
+					_("ai_bd_settings_cancel"),
+					GTK_RESPONSE_CANCEL,
 					NULL);
 
   notebook = gtk_notebook_new ();
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_temp_files_tab (c),
-			    gtk_label_new ("Temporary files"));
+			    gtk_label_new (_("ai_ti_settings_temp_files")));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_updates_tab (c),
-			    gtk_label_new ("Updates"));
+			    gtk_label_new (_("ai_ti_settings_updates")));
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (settings_dialog_response),
@@ -261,9 +266,12 @@ show_sort_settings_dialog ()
   GtkWidget *dialog;
 
   dialog = hildon_sort_dialog_new (NULL);
-  hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog), "Name");
-  hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog), "Version");
-  hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog), "Size");
+  hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog),
+				   _("ai_va_sort_name"));
+  hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog),
+				   _("ai_va_sort_version"));
+  hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog),
+				   _("ai_va_sort_size"));
 
   hildon_sort_dialog_set_sort_key (HILDON_SORT_DIALOG (dialog),
 				   package_sort_key);

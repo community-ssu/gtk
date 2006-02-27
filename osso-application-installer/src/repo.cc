@@ -28,6 +28,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <libintl.h>
 
 #include <gtk/gtk.h>
 #include <hildon-widgets/hildon-note.h>
@@ -35,6 +36,8 @@
 #include "repo.h"
 #include "settings.h"
 #include "apt-worker-client.h"
+
+#define _(x) gettext (x)
 
 struct repo_closure;
 
@@ -216,18 +219,22 @@ add_entry (GtkWidget *box, const char *label,
 }
 
 static void
-show_repo_edit_dialog (repo_line *r)
+show_repo_edit_dialog (repo_line *r, bool isnew)
 {
   GtkWidget *dialog, *vbox;
   repo_edit_closure *c = new repo_edit_closure;
 
   c->line = r;
 
-  dialog = gtk_dialog_new_with_buttons ("Edit repository",
+  dialog = gtk_dialog_new_with_buttons ((isnew
+					 ? _("ai_ti_new_repository")
+					 : _("ai_ti_edit_repository")),
 					NULL,
 					GTK_DIALOG_MODAL,
-					"OK", GTK_RESPONSE_OK,
-					"Cancel", GTK_RESPONSE_CANCEL,
+					_("ai_bd_new_repository_ok"),
+					GTK_RESPONSE_OK,
+					_("ai_bd_new_repository_cancel"),
+					GTK_RESPONSE_CANCEL,
 					NULL);
   vbox = GTK_DIALOG (dialog)->vbox;
   
@@ -235,18 +242,22 @@ show_repo_edit_dialog (repo_line *r)
 
   start = r->deb_line;
   parse_quoted_word (&start, &end, false);
-  c->uri_entry = add_entry (vbox, "Web address", start, end);
+  c->uri_entry = add_entry (vbox, _("ai_fi_new_repository_web_address"),
+			    start, end);
 
   start = end;
   parse_quoted_word (&start, &end, false);
-  c->dist_entry = add_entry (vbox, "Distribution", start, end);
+  c->dist_entry = add_entry (vbox, _("ai_fi_new_repository_distribution"),
+			     start, end);
 
   start = end;
   parse_quoted_word (&start, &end, false);
   end = start + strlen (start);
-  c->components_entry = add_entry (vbox, "Components", start, end);
+  c->components_entry = add_entry (vbox, _("ai_fi_new_repository_component"),
+				   start, end);
 
-  c->enabled_button = gtk_check_button_new_with_label ("Enabled");
+  c->enabled_button =
+    gtk_check_button_new_with_label (_("ai_fi_new_repository_enabled"));
   gtk_box_pack_start_defaults (GTK_BOX (vbox), c->enabled_button);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (c->enabled_button),
 			       r->enabled);
@@ -262,7 +273,7 @@ add_new_repo (repo_closure *c)
   repo_line *r = new repo_line (c, "deb ");
   r->next = c->lines;
   c->lines = r;
-  show_repo_edit_dialog (r);
+  show_repo_edit_dialog (r, true);
 }
 
 static void
@@ -296,7 +307,7 @@ repo_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
   int success = dec->decode_int ();
   if (!success)
-    annoy_user_with_log ("Failed to save repositories, see log.");
+    annoy_user_with_log (_("ai_ni_error_general"));
 }
 
 #define REPO_RESPONSE_NEW    1
@@ -326,7 +337,7 @@ repo_response (GtkDialog *dialog, gint response, gpointer clos)
 	    return;
 
 	  if (r->essential)
-	    annoy_user ("This repository can not be removed.");
+	    annoy_user (_("ai_ni_unable_remove_repository"));
 	  else
 	    remove_repo (r);
 	}
@@ -395,9 +406,9 @@ repo_row_activated (GtkTreeView *treeview,
 	return;
 
       if (r->essential)
-	annoy_user ("This repository can not be edited.");
+	annoy_user (_("ai_ni_unable_edit_repository"));
       else
-	show_repo_edit_dialog (r);
+	show_repo_edit_dialog (r, false);
     }
 }
 
@@ -425,18 +436,6 @@ make_repo_list (repo_closure *c)
   c->store = gtk_list_store_new (1, GTK_TYPE_POINTER);
   c->tree =
     GTK_TREE_VIEW (gtk_tree_view_new_with_model (GTK_TREE_MODEL (c->store)));
-
-#if 0
-  // doesn't work...
-  renderer = gtk_cell_renderer_toggle_new ();
-  gtk_tree_view_insert_column_with_data_func (c->tree,
-					      -1,
-					      NULL,
-					      renderer,
-					      repo_enable_func,
-					      c->tree,
-					      NULL);
-#endif
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_tree_view_insert_column_with_data_func (c->tree,
@@ -483,12 +482,14 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
     printf ("failed.\n");
 
   GtkWidget *dialog;
-  dialog = gtk_dialog_new_with_buttons ("Repositories",
+  dialog = gtk_dialog_new_with_buttons (_("ai_ti_repository"),
 					NULL,
 					GTK_DIALOG_MODAL,
 					"OK", GTK_RESPONSE_OK,
-					"New", REPO_RESPONSE_NEW,
-					"Remove", REPO_RESPONSE_REMOVE,
+					_("ai_bd_repository_new"),
+					REPO_RESPONSE_NEW,
+					_("ai_bd_repository_delete"),
+					REPO_RESPONSE_REMOVE,
 					"Cancel", GTK_RESPONSE_CANCEL,
 					NULL);
   
@@ -536,4 +537,3 @@ ask_the_pill_question ()
 		    G_CALLBACK (pill_response), NULL);
   gtk_widget_show_all (dialog);
 }
-

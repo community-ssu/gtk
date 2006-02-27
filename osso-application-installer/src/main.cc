@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <iostream>
+#include <libintl.h>
 
 #include <gtk/gtk.h>
 
@@ -41,7 +42,7 @@
 #include "log.h"
 #include "settings.h"
 
-#define _(x) x
+#define _(x) gettext (x)
 
 extern "C" {
   #include "hildonbreadcrumbtrail.h"
@@ -112,7 +113,7 @@ show_view_callback (GtkWidget *btn, gpointer data)
 static const gchar *
 get_view_label (GList *node)
 {
-  return ((view *)node->data)->label;
+  return gettext (((view *)node->data)->label);
 }
 
 static void
@@ -130,28 +131,28 @@ GtkWidget *make_search_results_view (view *v);
 
 view main_view = {
   NULL,
-  "Main",
+  "ai_ti_main",
   make_main_view,
   NULL
 };
 
 view install_applications_view = {
   &main_view,
-  "Install new",
+  "ai_li_install",
   make_install_applications_view,
   NULL
 };
 
 view upgrade_applications_view = {
   &main_view,
-  "Update",
+  "ai_li_update",
   make_upgrade_applications_view,
   NULL
 };
 
 view uninstall_applications_view = {
   &main_view,
-  "Installed applications",
+  "ai_li_uninstall",
   make_uninstall_applications_view,
   NULL
 };
@@ -165,7 +166,7 @@ view install_section_view = {
 
 view search_results_view = {
   &main_view,
-  "Search results",
+  "ai_ti_search_results",
   make_search_results_view,
   NULL
 };
@@ -198,7 +199,7 @@ make_main_view (view *v)
 		      gtk_label_new ("My Device Nokia 770"),
 		      FALSE, FALSE, 5);
   
-  btn = gtk_button_new_with_label ("List installed applications");
+  btn = gtk_button_new_with_label (_("ai_li_uninstall"));
   gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 5);
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
@@ -208,13 +209,13 @@ make_main_view (view *v)
 		      gtk_label_new ("Repository"),
 		      FALSE, FALSE, 5);
 
-  btn = gtk_button_new_with_label ("Install new applications");
+  btn = gtk_button_new_with_label (_("ai_li_install"));
   gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 5);
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &install_applications_view);
   
-  btn = gtk_button_new_with_label ("Check for updates");
+  btn = gtk_button_new_with_label (_("ai_li_update"));
   gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 5);
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
@@ -255,6 +256,8 @@ package_info::package_info ()
   summary = NULL;
 
   model = NULL;
+  
+  filename = NULL;
 }
 
 package_info::~package_info ()
@@ -273,6 +276,7 @@ package_info::~package_info ()
   g_free (maintainer);
   g_free (description);
   g_free (summary);
+  g_free (filename);
 }
 
 void
@@ -668,12 +672,12 @@ refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *clos)
   hide_progress ();
 
   int success = dec->decode_int ();
-  get_package_list ();
 
-  if (!dec->corrupted () && success)
-    annoy_user ("Done.");
+  // XXX - Cancelling
+  if (!success)
+    annoy_user_with_log (_("ai_ni_update_list_not_successful"));
   else
-    annoy_user_with_log ("Failed, see log.");
+    get_package_list ();
 }
 
 static bool refreshed_this_session = false;
@@ -687,7 +691,8 @@ refresh_package_cache_cont (bool res, void *unused)
       last_update = time (NULL);
       save_settings ();
 
-      show_progress ("Refreshing");
+      // XXX - include size in progress
+      show_progress (_("ai_nw_updating_list"));
       apt_worker_update_cache (refresh_package_cache_reply, NULL);
     }
 }
@@ -695,7 +700,7 @@ refresh_package_cache_cont (bool res, void *unused)
 void
 refresh_package_cache ()
 {
-  ask_yes_no ("Refresh package list?", refresh_package_cache_cont, NULL);
+  ask_yes_no (_("ai_nc_confirm_update"), refresh_package_cache_cont, NULL);
 }
 
 static int
@@ -736,22 +741,22 @@ confirm_install (package_info *pi,
 		 void (*cont) (bool res, void *data), void *data)
 {
   GString *text = g_string_new ("");
-
-  g_string_printf (text,
-		   "%s\n"
-		   "%s %s",
-		   (pi->installed_version
-		    ? "Do you want to update?"
-		    : "Do you want to install?"),
-		   pi->name, pi->available_version);
+  char download_buf[20];
   
   if (pi->info.installable)
     {
-      char download_buf[20];
       size_string_general (download_buf, 20, pi->info.download_size);
       g_string_append_printf (text, "\n%s", download_buf);
     }
+  else
+    strcpy (download_buf, "-");
 
+  g_string_printf (text,
+		   (pi->installed_version
+		    ? _("ai_nc_update")
+		    : _("ai_nc_install")),
+		   pi->name, pi->available_version, download_buf);
+  
   ask_yes_no_with_details (text->str, pi, false, cont, data);
   g_string_free (text, 1);
 }
@@ -768,6 +773,8 @@ clean_reply (int cmd, apt_proto_decoder *dec, void *data)
 static void
 install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
+  package_info *pi = (package_info *)data;
+
   int success = dec->decode_int ();
 
   hide_progress ();
@@ -776,36 +783,36 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
   if (clean_after_install)
     apt_worker_clean (clean_reply, NULL);
 
-  if (!dec->corrupted () && success)
-    annoy_user ("Done.");
+  if (success)
+    {
+      char *str = g_strdup_printf (_("ai_ni_install_successful"),
+				   pi->name);
+      annoy_user (str);
+      g_free (str);
+    }
   else
-    annoy_user_with_log ("Failed, see log.");
+    {
+      char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
+				   pi->name);
+      annoy_user_with_details (str, pi, false);
+      g_free (str);
+    }
+
+  pi->unref ();
 }
 
 static void
 install_package_cont3 (bool res, void *data)
 {
   package_info *pi = (package_info *)data;
+
   if (res)
     {
-      show_progress ("Installing");
-      apt_worker_install_package (pi->name, install_package_reply, NULL);
+      show_progress (_("ai_nw_installing"));
+      apt_worker_install_package (pi->name, install_package_reply, pi);
     }
-  pi->unref ();
-}
-
-static void
-format_string_list (GString *str, const char *title,
-		    GList *list)
-{
-  if (list)
-    g_string_append (str, title);
-
-  while (list)
-    {
-      //g_string_append_printf (str, "- %s\n", (char *)list->data);
-      list = list->next;
-    }
+  else
+    pi->unref ();
 }
 
 static void
@@ -822,20 +829,14 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 
       const char *string = dec->decode_string_in_place ();
       if (prep == preptype_notauth)
-	{
-	  fprintf (stderr, "notauth: %s\n", string);
-	  notauth = g_list_append (notauth, (void*)string);
-	}
+	notauth = g_list_append (notauth, (void*)string);
       else if (prep == preptype_notcert)
-	{
-	  fprintf (stderr, "notcert: %s\n", string);
-	  notcert = g_list_append (notcert, (void*)string);
-	}
+	notcert = g_list_append (notcert, (void*)string);
     }
 
   int success = dec->decode_int ();
 
-  if (!dec->corrupted () && success)
+  if (success)
     {
       // A non-authenticated package can never be certified.
       // Apt-worker does not implement that rule, tho.
@@ -843,13 +844,7 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
       if (notcert || notauth)
 	{
 	  hide_progress ();
-	  ask_yes_no ("This software is neither verified "
-		      "nor delivered to you by Nokia. Please "
-		      "note that some software may harm your "
-		      "device and installation will be at "
-		      "your own risk.\n"
-		      "Continue anyway?",
-		      install_package_cont3, pi);
+	  scare_user_with_legalese (install_package_cont3, pi);
 	}
       else
 	install_package_cont3 (true, pi);
@@ -857,7 +852,10 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
   else
     {
       hide_progress ();
-      annoy_user_with_log ("Failed, see log.");
+      char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
+				   pi->name);
+      annoy_user_with_log ("ai_ni_error_installation_failed");
+      g_free (str);
       pi->unref ();
     }
 
@@ -886,7 +884,10 @@ install_package_cont2 (bool res, void *data)
 	}
       else
 	{
-	  annoy_user_with_details ("Impossible, see details.", pi, false);
+	  char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
+				       pi->name);
+	  annoy_user_with_details (str, pi, false);
+	  g_free (str);
 	  pi->unref ();
 	}
     }
@@ -919,8 +920,8 @@ available_package_selected (package_info *pi)
     {
       set_details_callback (available_package_details, pi);
       set_operation_callback ((pi->installed_version
-			       ? "Update"
-			       : "Install"),
+			       ? _("ai_me_package_update")
+			       : _("ai_me_package_install")),
 			      (void (*)(void*))install_package, pi);
       get_intermediate_package_info (pi, NULL, NULL);
     }
@@ -946,7 +947,7 @@ installed_package_selected (package_info *pi)
   if (pi)
     {
       set_details_callback (installed_package_details, pi);
-      set_operation_callback ("Uninstall",
+      set_operation_callback (_("ai_me_package_uninstall"),
 			      (void (*)(void*))uninstall_package, pi);
       get_intermediate_package_info (pi, NULL, NULL);
     }
@@ -988,7 +989,7 @@ make_install_applications_view (view *v)
 {
   GtkWidget *view;
 
-  set_operation_callback ("Install", NULL, NULL);
+  set_operation_callback (_("ai_me_package_install"), NULL, NULL);
   cur_section = NULL;
   view = get_global_section_list_widget ();
   set_global_lists_for_view (v);
@@ -1018,10 +1019,7 @@ confirm_uninstall (package_info *pi,
   char size_buf[20];
   
   size_string_general (size_buf, 20, pi->installed_size);
-  g_string_printf (text,
-		   "Do you want to uninstall?\n"
-		   "%s %s\n"
-		   "%s",
+  g_string_printf (text, _("ai_nc_uninstall"),
 		   pi->name, pi->installed_version, size_buf);
 
   ask_yes_no_with_details (text->str, pi, true, cont, data);
@@ -1031,15 +1029,29 @@ confirm_uninstall (package_info *pi,
 static void
 uninstall_package_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
+  package_info *pi = (package_info *)data;
+
   hide_progress ();
 
   int success = dec->decode_int ();
   get_package_list ();
 
-  if (!dec->corrupted() && success)
-    annoy_user ("Done.");
+  if (success)
+    {
+      char *str = g_strdup_printf (_("ai_ni_uninstall_successful"),
+				   pi->name);
+      annoy_user (str);
+      g_free (str);
+    }
   else
-    annoy_user ("Failed, see log.");
+    {
+      char *str = g_strdup_printf (_("ai_ni_error_uninstallation_failed"),
+				   pi->name);
+      annoy_user_with_details (str, pi, true);
+      g_free (str);
+    }
+
+  pi->unref ();
 }
 
 static void
@@ -1050,13 +1062,17 @@ uninstall_package_doit (package_info *pi)
       add_log ("-----\n");
       add_log ("Uninstalling %s %s", pi->name, pi->installed_version);
       
-      show_progress ("Uninstalling");
-      apt_worker_remove_package (pi->name, uninstall_package_reply, NULL);
+      show_progress (_("ai_nw_uninstalling"));
+      apt_worker_remove_package (pi->name, uninstall_package_reply, pi);
     }
   else
-    annoy_user_with_details ("Impossible, see details.", pi, true);
-
-  pi->unref ();
+    {
+      char *str = g_strdup_printf (_("ai_ni_error_uninstallation_failed"),
+				   pi->name);
+      annoy_user_with_details (str, pi, true);
+      g_free (str);
+      pi->unref ();
+    }
 }
 
 struct uip_closure {
@@ -1071,9 +1087,9 @@ check_uninstall_scripts2 (int status, void *data)
 
   if (status != -1 && WIFEXITED (status) && WEXITSTATUS (status) == 111)
     {
-      annoy_user ("Cancelled");
+      annoy_user (_("ai_ni_uninstall_cancelled"));
       c->pi->unref ();
-      // delete rest of list
+      // XXX delete c->to_remove list
       delete c;
     }
   else if (c->to_remove)
@@ -1087,7 +1103,7 @@ check_uninstall_scripts2 (int status, void *data)
 	g_strdup_printf ("/var/lib/osso-application-installer/info/%s.checkrm",
 			 name);
       
-      printf ("Checking %s\n", cmd);
+      add_log ("Checking %s\n", cmd);
       char *argv[] = { cmd, NULL };
       run_cmd (argv, check_uninstall_scripts2, c);
       g_free (name);
@@ -1286,8 +1302,6 @@ search_packages (const char *pattern, bool in_descriptions)
 
   search_results_view.parent = parent;
 
-  printf ("Searching %s in %s\n", pattern, parent->label);
-
   if (!in_descriptions)
     {
       if (parent == &install_applications_view)
@@ -1417,25 +1431,55 @@ set_operation_callback (const char *label,
 static void
 install_from_file_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
+  package_info *pi = (package_info *)data;
+
   hide_progress ();
   int success = dec->decode_int ();
+
+  get_package_list ();
+
   if (success)
-    annoy_user ("Done.");
+    {
+      char *str = g_strdup_printf (_("ai_ni_install_successful"),
+				   pi->name);
+      annoy_user (str);
+      g_free (str);
+    }
   else
-    annoy_user_with_log ("Failed, see log.");
+    {
+      char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
+				   pi->name);
+      annoy_user_with_log (str);
+      g_free (str);
+    }
+
+  pi->unref ();
+}
+
+void
+install_from_file_cont4 (bool res, void *data)
+{
+  package_info *pi = (package_info *)data;
+
+  if (res)
+    {
+      show_progress ("Installing");
+      apt_worker_install_file (pi->filename,
+			       install_from_file_reply, pi);
+    }
+  else
+    pi->unref ();
 }
 
 void
 install_from_file_cont3 (bool res, void *data)
 {
-  char *filename = (char *)data;
+  package_info *pi = (package_info *)data;
+
   if (res)
-    {
-      show_progress ("Installing");
-      apt_worker_install_file (filename,
-			       install_from_file_reply, NULL);
-    }
-  g_free (filename);
+    scare_user_with_legalese (install_from_file_cont4, pi);
+  else
+    pi->unref ();
 }
 
 void
@@ -1444,7 +1488,13 @@ install_from_file_fail (bool res, void *data)
   package_info *pi = (package_info *)data;
 
   if (res)
-    annoy_user_with_details ("Impossible, see details.", pi, false);
+    {
+      char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
+				   pi->name);
+      annoy_user_with_details (str, pi, false);
+      g_free (str);
+    }
+
   pi->unref ();
 }
 
@@ -1472,6 +1522,7 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
   package_info *pi = new package_info;
 
   pi->name = dec->decode_string_dup ();
+  pi->filename = filename;
   pi->installed_version = dec->decode_string_dup ();
   pi->installed_size = dec->decode_int ();;
   pi->available_version = dec->decode_string_dup ();
@@ -1495,33 +1546,33 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
     {
       pi->info.installable = false;
       g_free (pi->summary);
-      pi->summary = g_strdup_printf ("Summary: Unable to install %s\n"
-				     "Incompatible package.",
-				     pi->name);
+      if (pi->installed_version)
+	pi->summary = g_strdup (_("ai_ni_error_update_incompatible"));
+      else
+	pi->summary = g_strdup (_("ai_ni_error_install_incompatible"));
     }
 
   GString *text = g_string_new ("");
 
   char size_buf[20];
   size_string_general (size_buf, 20, pi->info.install_user_size_delta);
-  g_string_printf (text, "Do you want to install\n%s %s\n%s",
-		   pi->name, pi->available_version, size_buf);
+  if (pi->installed_version)
+    g_string_printf (text, _("ai_nc_update"),
+		     pi->name, pi->available_version, size_buf);
+  else
+    g_string_printf (text, _("ai_nc_install"),
+		     pi->name, pi->available_version, size_buf);
 
   if (pi->info.installable)
     ask_yes_no_with_details (text->str,
 			     pi, false,
-			     install_from_file_cont3, filename);
+			     install_from_file_cont3, pi);
   else
-    {
-      g_free (filename);
-      pi->ref ();
-      ask_yes_no_with_details (text->str,
-			       pi, false,
-			       install_from_file_fail, pi);
-    }
+    ask_yes_no_with_details (text->str,
+			     pi, false,
+			     install_from_file_fail, pi);
     
   g_string_free (text, 1);
-  pi->unref ();
 }
 
 static void
@@ -1584,9 +1635,6 @@ add_apt_worker_handler ()
 static void
 mime_open_handler (gpointer raw_data, int argc, char **argv)
 {
-  for (int i = 0; i < argc; i++)
-    printf ("mime-open: %s\n", argv[i]);
-
   if (argc > 0)
     install_from_file_cont (g_strdup (argv[0]), NULL);
 }
@@ -1599,15 +1647,18 @@ main (int argc, char **argv)
   GtkMenu *main_menu;
   char *apt_worker_prog = "/usr/libexec/apt-worker";
 
+  setlocale (LC_ALL, "");
+  bind_textdomain_codeset ("osso-application-installer", "UTF-8");
+  textdomain ("osso-application-installer");
+
   gtk_init (&argc, &argv);
 
   if (argc > 1)
     apt_worker_prog = argv[1];
 
-
   app_view = hildon_appview_new (NULL);
   app = hildon_app_new_with_appview (HILDON_APPVIEW (app_view));
-  hildon_app_set_title (HILDON_APP (app), "Application installer");
+  hildon_app_set_title (HILDON_APP (app), _("ai_ap_application_installer"));
 
   toolbar = gtk_toolbar_new ();
   image = gtk_image_new_from_icon_name ("qgn_toolb_gene_detailsbutton",
@@ -1657,7 +1708,7 @@ main (int argc, char **argv)
       get_package_list ();
     }
   else
-    annoy_user_with_log ("Unexpected startup problem, see log.");
+    annoy_user_with_log ("Unexpected startup problem.");
 
   gtk_main ();
 }

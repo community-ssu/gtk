@@ -41,6 +41,11 @@ void annoy_user_with_details (const gchar *text,
 			      package_info *pi, bool installed);
 void annoy_user_with_log (const gchar *text);
 
+void irritate_user (const gchar *text);
+
+void scare_user_with_legalese (void (*cont) (bool res, void *data),
+			       void *data);
+
 void show_progress (const char *title);
 void set_progress (const gchar *title, float fraction);
 void hide_progress ();
