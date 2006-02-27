@@ -10,6 +10,21 @@ export NAVIGATOR_LOWMEM_LAUNCH_BANNER_TIMEOUT=20
 export NAVIGATOR_LOWMEM_LAUNCH_THRESHOLD_DISTANCE=2500
 export NAVIGATOR_LOWMEM_TIMEOUT_MULTIPLIER=2
 
+
+# set theme for maemo_af_desktop  
+PREFIX=/usr
+CURRENT_THEME_FILE=$HOME/.osso/current-gtk-theme
+CURRENT_MAEMO_THEME_FILE=$HOME/.osso/current-gtk-theme.maemo_af_desktop
+CURRENT_THEME=$(cat $CURRENT_THEME_FILE | sed -e "s/include\ \"\/usr\/share\/themes\///" -e 's/\/gtk\-2\.0\/gtkrc\"//' | tr -d " ")
+
+export GTK2_RC_FILES=$CURRENT_THEME_FILE:$CURRENT_MAEMO_THEME_FILE
+
+if [ ! -f $CURRENT_MAEMO_THEME_FILE ]; then
+	  echo "include \"$PREFIX/share/themes/$CURRENT_THEME/gtk-2.0/gtkrc.maemo_af_desktop\"" \  > $CURRENT_MAEMO_THEME_FILE
+fi 
+
+
+
 if [ "x$AF_PIDDIR" = "x" ]; then
   echo "$0: Error, AF_PIDDIR is not defined"
   exit 2

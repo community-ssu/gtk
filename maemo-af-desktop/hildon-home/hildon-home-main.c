@@ -27,9 +27,7 @@
  *
  */
  
-
 #define USE_AF_DESKTOP_MAIN__
- 
  
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -65,6 +63,7 @@
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
 #include <hildon-widgets/hildon-defines.h>
 #include <hildon-widgets/hildon-caption.h>
+#include <hildon-widgets/hildon-color-button.h>
 #include "home-applet-handler.h"
 #include "hildon-home-main.h"
 #include "applet-manager.h"
@@ -87,7 +86,7 @@ static GtkWidget *titlebar_label;
 static GtkWidget *titlebar_menu = NULL;
 static GtkWidget *titlebar_submenu = NULL;
 
-static gboolean background_changable;         /* FALSE if not allowed */
+static gboolean background_changable; /* FALSE if not allowed */
 
 /* applet area */
 static GtkWidget *home_area_eventbox;
@@ -95,17 +94,26 @@ static GtkIconTheme *icon_theme;
 static osso_context_t *osso_home;
 
 static const gchar *home_user_dir;
-static const gchar *home_user_image_dir = NULL;  /*full dir path */
+static const gchar *home_user_image_dir = NULL;    /* full dir path */
 
-static const gchar *home_factory_bg_image = NULL;/*full file path */
-static const gchar *user_original_bg_image = "";/*file having file path*/
-static const gchar *home_current_bg_image = NULL;/*full file path */
-static gchar *home_bg_image_uri = NULL;/*full file path */
-static gchar *home_bg_image_in_use_uri = NULL;/*full file path */
-static const gchar *home_bg_image_filename = NULL; /*file name (short)*/
-static gint home_bg_combobox_active_item = -1; 
-static gboolean home_bg_image_loading_necessary = FALSE;
+static const gchar *home_factory_bg_image = NULL;  /* full file path */
+static const gchar *user_original_bg_image = "";   /* file having file path*/
+static const gchar *home_current_bg_image = NULL;  /* full file path */
+static const gchar *home_current_bg_image_preview = NULL;  /* full file path */
+static gchar *home_user_selected_bg_image = NULL;  /* file name */ 
+static gchar *home_bg_image_uri = NULL;            /* full file path */
+
+static GdkColor *home_bg_image_current_color = NULL;
+static const gchar *home_bg_image_filename = NULL; /* file name (short)*/
+static gint home_bg_scale_combobox_active_item = CENTERED;
+
 static gboolean home_bg_image_symlinked = FALSE;
+static gboolean home_bg_image_previewed = FALSE;
+static GtkWidget *home_bg_color_button = NULL;     /* default to black */
+
+static GdkColor *home_bg_image_preview_color = NULL;
+static const gchar *home_bg_image_preview_uri = NULL;
+static gint home_bg_image_preview_mode = -1;
 
 static const gchar *titlebar_original_image_savefile;
 static const gchar *sidebar_original_image_savefile;
@@ -124,7 +132,6 @@ static gboolean startup_lock_exists(void);
 /* titlebar area starts here */
 /* --------------------------*/
 
-
 /**
  * @titlebar_menu_position_func
  *
@@ -136,7 +143,6 @@ static gboolean startup_lock_exists(void);
  * 
  * Handles the positioning of the HildonHome 'titlebar' menu.
  */
-
 static 
 void titlebar_menu_position_func(GtkMenu *menu, gint *x, gint *y,
                                  gboolean *push_in,
@@ -152,7 +158,6 @@ void titlebar_menu_position_func(GtkMenu *menu, gint *x, gint *y,
     *y += HILDON_HOME_TITLEBAR_HEIGHT;
 }
 
-
 /**
  * @menu_popup_handler
  *
@@ -162,7 +167,6 @@ void titlebar_menu_position_func(GtkMenu *menu, gint *x, gint *y,
  *
  * Handles the activation of the titlebar menu
  */
-
 static 
 gboolean menu_popup_handler(GtkWidget *titlebar,
                             GdkEvent *event, gpointer user_data)
@@ -183,7 +187,6 @@ gboolean menu_popup_handler(GtkWidget *titlebar,
     return TRUE;
 }
 
-
 /**
  * @menu_popdown_handler
  *
@@ -194,7 +197,6 @@ gboolean menu_popup_handler(GtkWidget *titlebar,
  * Handles the popdown of the menu for the case where button is released.
  * Automatic handling fails when release happens on the Home titlebar
 */
-
 static 
 gboolean menu_popdown_handler(GtkWidget *titlebar, GdkEvent *event,
                               gpointer user_data)
@@ -215,7 +217,6 @@ gboolean menu_popdown_handler(GtkWidget *titlebar, GdkEvent *event,
  * 
  * constructs titlebar area with label
  */
-
 static 
 void construct_titlebar_area()
 {
@@ -259,7 +260,6 @@ void construct_titlebar_area()
  *
  * Constructs the titlebar menu and sets the relevant callbacks
  */
-
 static 
 void construct_titlebar_menu()
 {    
@@ -290,7 +290,8 @@ void construct_titlebar_menu()
     /* Applet settings submenu */
     /* FIXME implementation missing thus dimmed */
     applets_settings_item =
-        gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_MENU_APPLET_SETTINGS);
+        gtk_menu_item_new_with_label(
+            HILDON_HOME_TITLEBAR_MENU_APPLET_SETTINGS);
     gtk_widget_set_sensitive(applets_settings_item, FALSE);
     gtk_widget_show(applets_settings_item);
     gtk_menu_append(GTK_MENU(titlebar_menu), applets_settings_item);
@@ -314,7 +315,8 @@ void construct_titlebar_menu()
 
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(tools_item), titlebar_submenu);
     gtk_menu_append(GTK_MENU(titlebar_menu), tools_item);
-    gtk_widget_show(tools_item);    
+    gtk_widget_show(tools_item);   
+    
     /* FIXME is this option anymore ?*/
     if(background_changable)
     {
@@ -385,7 +387,6 @@ static void call_select_applets_dialog(GtkWidget *widget,
  *       
  * @param tree GtkTreeModel containing data in colums of         
  *  G_TYPE_STRING, G_TYPE_STRING and G_TYPE_INT          
- *       
  * @param index index of the treemodel where the required data   
  * is to be dug out of   
  *       
@@ -393,8 +394,7 @@ static void call_select_applets_dialog(GtkWidget *widget,
  *       
  *       
  * Digs up a path from the treemodel at index.   
- */      
-         
+ */               
 static 
 gchar *get_filename_from_treemodel(GtkComboBox *box, gint index)
 {        
@@ -407,9 +407,8 @@ gchar *get_filename_from_treemodel(GtkComboBox *box, gint index)
     
     gtk_tree_model_get_iter(tree, &iter, walkthrough);   
    
-    gtk_tree_model_get (tree, &iter,
-                        BG_IMAGE_FILENAME, &name,
-			-1);
+    gtk_tree_model_get(tree, &iter,
+                       BG_IMAGE_FILENAME, &name, -1);
 
     if (walkthrough != NULL) 
     {
@@ -418,14 +417,12 @@ gchar *get_filename_from_treemodel(GtkComboBox *box, gint index)
 
     return name;         
 }        
- 
 
 /**
  * @get_priority_from_treemodel
  *
  * @param tree GtkTreeModel containing priority in column
  *  BG_IMAGE_PRIORITY of type G_TYPE_INT
- *
  * @param *iter a pointer to iterator of the correct node
  *
  * @return gint the priority fetched
@@ -439,8 +436,7 @@ gint get_priority_from_treemodel(GtkTreeModel *tree, GtkTreeIter *iter)
     GValue value = { 0, };
     GValue value_priority = { 0, };        
     
-    gtk_tree_model_get_value(tree, iter, BG_IMAGE_PRIORITY, &value);
-    
+    gtk_tree_model_get_value(tree, iter, BG_IMAGE_PRIORITY, &value);    
     g_value_init(&value_priority, G_TYPE_INT);
     
     if (g_value_transform(&value, &value_priority)) {
@@ -577,13 +573,11 @@ void load_original_bg_image_uri()
                  user_original_bg_image);
     }
     home_bg_image_uri = g_strdup_printf("%s", bg_uri);
-    home_bg_image_in_use_uri = g_strdup(home_bg_image_uri);
 
     uri = gnome_vfs_uri_new (home_bg_image_uri);
     home_bg_image_filename = gnome_vfs_uri_extract_short_name(uri);
     gnome_vfs_uri_unref (uri);
 }
-
 
 /**
  * @set_background_select_file_dialog
@@ -687,6 +681,36 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
             GtkTreePath *path;
             gint priority = 0;
             gtk_list_store_append(GTK_LIST_STORE(tree), &iter);
+
+
+            gtk_list_store_append(GTK_LIST_STORE(tree), &iter);
+
+            /* remove previously selected user image */
+            if( home_user_selected_bg_image )
+            {
+                gchar *remove_name;
+                GtkTreeIter remove_iter;
+                GtkTreePath *remove_path;
+
+                remove_path = gtk_tree_model_get_path(tree, &iter);
+                gtk_tree_path_prev(remove_path);
+                gtk_tree_model_get_iter(tree, &remove_iter, remove_path);
+                gtk_tree_model_get(tree, &remove_iter,
+                        BG_IMAGE_NAME, &remove_name, -1);
+
+                if( g_str_equal(home_user_selected_bg_image, remove_name) )
+                {
+                    gtk_list_store_remove(GTK_LIST_STORE(tree), &remove_iter);
+                }
+
+                g_free(remove_name);
+                gtk_tree_path_free(remove_path);
+            }
+
+            /* set a new user selectable image name */
+            g_free(home_user_selected_bg_image);
+            home_user_selected_bg_image = g_strdup(name_str);
+
             gtk_list_store_set(GTK_LIST_STORE(tree),
                                &iter,
                                BG_IMAGE_NAME, name_str,
@@ -694,11 +718,8 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
                                BG_IMAGE_PRIORITY, G_MAXINT, -1);
 
             gtk_combo_box_set_active_iter(box, &iter);
-            home_bg_combobox_active_item = 
-                gtk_combo_box_get_active(GTK_COMBO_BOX(box));
 
             path = gtk_tree_model_get_path(tree, &iter);
-
             gtk_tree_path_next(path);
 
             if (gtk_tree_model_get_iter(tree, &iter, path)) 
@@ -712,15 +733,18 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
             }
             gtk_tree_path_free(path);
         }
+	
+	/* Clean up */
         g_free(name_str);
         gtk_widget_destroy(dialog);    
-        return TRUE;
+        
+	return TRUE;
     }  
     
     gtk_widget_destroy(dialog);
+    
     return FALSE;
 }
-
 
 /**
  * @combobox_active_tracer
@@ -731,40 +755,45 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
  * Handles changed - signals, recording the active combobox item
  * to global variable so as to be accesible in other functions.
  **/
-
-
-static void combobox_active_tracer(GtkWidget *combobox,
-                                   gpointer data)
+static void combobox_scale_active_tracer(GtkWidget *combobox,
+		                        gpointer data)
 {
     gint active_index = -1;
-    GtkDialog *dialog = GTK_DIALOG(data);
+    active_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combobox));
+
+    if(active_index < 0)
+    {
+        active_index = CENTERED;
+    }
+    home_bg_scale_combobox_active_item = active_index;
+}
+
+/**
+ * @combobox_image_active_tracer
+ *
+ * @param combobox the emitting combobox
+ * @param data Pointer to GtkDialog containing the combobox
+ *
+ * Handles changed - signals, recording the active combobox item
+ * to global variable so as to be accesible in other functions.
+ **/
+static void combobox_image_active_tracer(GtkWidget *combobox,
+                                         gpointer data)
+{
+    gint active_index = -1;
 
     active_index = gtk_combo_box_get_active(GTK_COMBO_BOX(combobox));
-    home_bg_combobox_active_item = active_index; 
 
     if (active_index != -1) 
     {       
-        gchar *image_name = get_filename_from_treemodel
-            (GTK_COMBO_BOX(combobox), 
-             active_index);
-        if (home_bg_image_in_use_uri != NULL &&
-            image_name != NULL &&
-            g_str_equal(home_bg_image_in_use_uri, image_name))
+        gchar *image_name;
+        image_name = get_filename_from_treemodel(GTK_COMBO_BOX(combobox),
+                                                 active_index);
+        if (home_bg_image_uri) 
         {
-            home_bg_image_loading_necessary = FALSE;
-            gtk_dialog_set_response_sensitive(dialog,
-                                              GTK_RESPONSE_APPLY , FALSE);
+            g_free(home_bg_image_uri);
         }
-        else
-        {
-            home_bg_image_loading_necessary = TRUE;
-            if (home_bg_image_uri) {
-                g_free(home_bg_image_uri);
-            }
-            home_bg_image_uri = image_name;
-            gtk_dialog_set_response_sensitive(dialog,
-                                              GTK_RESPONSE_APPLY, TRUE);
-        }
+        home_bg_image_uri = image_name;
     }
 } 
 
@@ -779,7 +808,6 @@ static void combobox_active_tracer(GtkWidget *combobox,
  * Handles response signals and in case of browsing activates
  * new dialog (WID-DIA003) for file retrieving
  **/
-
 static 
 void set_background_response_handler(GtkWidget *dialog, 
                                      gint arg, gpointer data)
@@ -790,40 +818,50 @@ void set_background_response_handler(GtkWidget *dialog,
     
     switch (arg) 
     {
-    case GTK_RESPONSE_YES:
+    case HILDON_HOME_SET_BG_RESPONSE_IMAGE:    
         g_signal_stop_emission_by_name(dialog, "response");
+	
         if (set_background_select_file_dialog(box))
         {
             active_index = gtk_combo_box_get_active(box);
             image_name = get_filename_from_treemodel(box, active_index);
-            if (home_bg_image_in_use_uri != NULL &&
-                image_name != NULL &&
-                g_str_equal(home_bg_image_in_use_uri, image_name))
+            /* FIXME is this idea here?
+            if (home_bg_image_uri) 
             {
-                
-                gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
-                                                  GTK_RESPONSE_APPLY , FALSE);
-                while(gtk_main_iteration());
-            } else
-            {
-                home_bg_image_loading_necessary = TRUE;
-                gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
-                                                  GTK_RESPONSE_APPLY , TRUE);
+                g_free(home_bg_image_uri);
             }
+            home_bg_image_uri = image_name;
+            */
         }
         break;
-    case GTK_RESPONSE_APPLY:
+    case HILDON_HOME_SET_BG_RESPONSE_PREVIEW:
         g_signal_stop_emission_by_name(dialog, "response");
-        home_bg_image_loading_necessary = FALSE;
+        active_index = gtk_combo_box_get_active(box);
+        
+        home_bg_image_preview_color = hildon_color_button_get_color
+                    (HILDON_COLOR_BUTTON(home_bg_color_button));
+        home_bg_image_preview_mode = home_bg_scale_combobox_active_item;
 
-        if (home_bg_combobox_active_item != -1) 
+        if(active_index == 0)
         {
+            home_bg_image_preview_uri = HILDON_HOME_IMAGE_LOADER_NO_IMAGE;
             construct_background_image_with_uri(
-                get_filename_from_treemodel(box, 
-                                            home_bg_combobox_active_item),
-                TRUE);
-            gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
-                                              GTK_RESPONSE_APPLY , FALSE);
+                            HILDON_HOME_IMAGE_LOADER_NO_IMAGE,
+                            TRUE,
+                            TRUE,
+                            home_bg_image_preview_color,
+                            TRUE);
+        } else 
+        {
+            home_bg_image_preview_uri = 
+                get_filename_from_treemodel(box, active_index);
+
+            construct_background_image_with_uri(
+                            home_bg_image_preview_uri,
+			    TRUE,
+			    home_bg_scale_combobox_active_item,
+			    home_bg_image_preview_color,
+                            TRUE);
         }
         break;
     default:
@@ -870,14 +908,20 @@ static
 gboolean set_background_dialog_selected(GtkWidget *widget, 
                                         GdkEvent *event,
                                         gpointer data)
-{ 
+{   
+    /* GtkDialog layout Widgets */ 
     GtkWidget *dialog;
-    GtkWidget *hbox_label;
-
+    GtkWidget *hbox_image;
+    GtkWidget *hbox_color;
+    GtkWidget *hbox_mode;
+    /* HildonCaption Widgets */
     GtkWidget *combobox_image_select;
+    GtkWidget *combobox_mode_select;
+    GtkWidget *color_caption;
     GtkWidget *image_caption;
-    GtkSizeGroup *group;
-
+    GtkWidget *mode_caption; 
+    GtkSizeGroup *group = NULL;
+    /* Image Combobox Widgets */
     GtkCellRenderer *renderer; 
     GtkTreeModel *combobox_contents;
     GtkTreeIter iterator;
@@ -885,36 +929,50 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
     MBDotDesktop *file_contents;
     GError *error = NULL;
     GtkTreeModel * model;
-
+    /* Local strings */
     gchar *dot;
     gchar *temp_name;
     gchar *image_name = NULL;
     gchar *image_path = NULL;
     gint image_order;
     const gchar *image_desc_file;
+    const gchar *image_modes[] = { 
+	HILDON_HOME_SET_BG_MODE_CENTERED,
+        HILDON_HOME_SET_BG_MODE_SCALED,
+        HILDON_HOME_SET_BG_MODE_STRETCHED,
+	HILDON_HOME_SET_BG_MODE_TILED
+    };
     gboolean bg_image_is_default = FALSE;
     gint combobox_active = -1;
-    gint active_count = -1;
+    gint active_count = 0;
     gint width;
-    
+    GdkColor *color_selected = NULL;
+   
     bg_image_desc_base_dir = g_dir_open(
          HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR, 0, &error);
 
     combobox_contents = 
         GTK_TREE_MODEL (
             gtk_list_store_new (
-                3,               /* number of parameters */
-                G_TYPE_STRING,   /* image localised descriptive name */
-                G_TYPE_STRING,   /* image file path &name */
-                G_TYPE_INT       /* Image priority */
+                3,              /* number of parameters */
+                G_TYPE_STRING,  /* image localised descriptive name */
+                G_TYPE_STRING,  /* image file path &name */
+                G_TYPE_INT      /* image priority */
                 )
             );
 
+     /* No background file option */
+     gtk_list_store_append(GTK_LIST_STORE(combobox_contents), &iterator);
+     gtk_list_store_set(GTK_LIST_STORE(combobox_contents), &iterator,
+		     BG_IMAGE_NAME, HILDON_HOME_SET_BG_IMAGE_NONE,
+		     BG_IMAGE_FILENAME, NULL,
+		     BG_IMAGE_PRIORITY, 0, -1);
+			 
     load_original_bg_image_uri();
 
     if (bg_image_desc_base_dir == NULL) 
     {
-        ULOG_ERR( "Failed to open path: %s", error->message);
+        ULOG_ERR("Failed to open path: %s", error->message);
         if(error != NULL)
         {
             g_error_free(error);
@@ -924,8 +982,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
     {
         image_desc_file = g_dir_read_name(bg_image_desc_base_dir);        
     }
-    
-    
+        
     while (image_desc_file != NULL) 
     {
         if (g_str_has_suffix(image_desc_file, 
@@ -940,7 +997,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
             
             if (file_contents == NULL) 
             {
-                ULOG_ERR( "Failed to read file: %s\n", 
+                ULOG_ERR("Failed to read file: %s\n", 
                          image_desc_file);
             } else 
             {
@@ -956,7 +1013,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                 maybe_int = mb_dotdesktop_get(file_contents,
                                               BG_DESKTOP_IMAGE_PRIORITY);
                 
-                
                 if (maybe_int != NULL && g_ascii_isdigit(*maybe_int)) 
                 {
                     image_order = (gint)atoi(maybe_int);
@@ -964,8 +1020,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                 {
                     image_order = HOME_BG_IMG_DEFAULT_PRIORITY;
                 }
-                
-                
+                                
                 if (image_name != NULL && image_path != NULL) 
                 {
                     active_count++;
@@ -981,14 +1036,15 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                                          (combobox_contents),
                                          &iterator);
                    
-                   gtk_list_store_set(GTK_LIST_STORE(combobox_contents),
+                    gtk_list_store_set(GTK_LIST_STORE(combobox_contents),
                                       &iterator,
                                       BG_IMAGE_NAME, _(image_name),
                                       BG_IMAGE_FILENAME, image_path,
                                       BG_IMAGE_PRIORITY, image_order, -1);
+		    
                } else 
                {
-                   ULOG_ERR( "Desktop file malformed: %s", 
+                   ULOG_ERR("Desktop file malformed: %s", 
                             image_desc_file);
                }
 
@@ -997,60 +1053,61 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                g_free(image_name);
                g_free(image_path);
             }            
-        } else /*suffix test*/ 
+        } else /* suffix test */ 
         {
             ULOG_ERR( "Skipping non-.desktop file: %s ",image_desc_file);
         }
         
         image_desc_file = g_dir_read_name(bg_image_desc_base_dir);
 
-    } /*while*/
+    } /* while */
 
     if (bg_image_desc_base_dir != NULL) 
     {
-        g_dir_close(bg_image_desc_base_dir);        
-        
+        g_dir_close(bg_image_desc_base_dir);             
     }
-
+	      
     gtk_tree_sortable_set_sort_column_id(
         GTK_TREE_SORTABLE(combobox_contents),
         BG_IMAGE_PRIORITY, 
         GTK_SORT_ASCENDING);
     
-    
     if (bg_image_is_default == FALSE)
     {
         if(home_bg_image_symlinked)
         {
-            /* default in use, default is first always */
+            /* default in use, default is first bg image listed */
+            combobox_active = 1;
+        } else if (home_bg_image_uri == NULL || 
+                   g_str_equal(home_bg_image_uri, 
+                               HILDON_HOME_IMAGE_LOADER_NO_IMAGE)) 
+        {
             combobox_active = 0;
-        } else
+        } else 
         {
 
-        gtk_list_store_append(GTK_LIST_STORE
-                              (combobox_contents), 
-                              &iterator);
-        
-        temp_name = g_strdup(home_bg_image_filename);
-        dot = g_strrstr(temp_name, ".");
-        if (dot && dot != temp_name) 
-        {
-            *dot = '\0';
-            g_free((gchar *)home_bg_image_filename);
-            home_bg_image_filename = g_strdup(temp_name);
-        }
-        g_free(temp_name);
-        
-
-        gtk_list_store_set(GTK_LIST_STORE(combobox_contents),
-                           &iterator,
-                           BG_IMAGE_NAME, home_bg_image_filename,
-                           BG_IMAGE_FILENAME, home_bg_image_uri,
-                           BG_IMAGE_PRIORITY, G_MAXINT, -1);
-
-        active_count++;
-        
-        combobox_active = active_count;
+            gtk_list_store_append(GTK_LIST_STORE(combobox_contents), 
+                                  &iterator);
+            
+            temp_name = g_strdup(home_bg_image_filename);
+            dot = g_strrstr(temp_name, ".");
+            if (dot && dot != temp_name) 
+            {
+                *dot = '\0';
+                g_free((gchar *)home_bg_image_filename);
+                home_bg_image_filename = g_strdup(temp_name);
+            }
+            g_free(temp_name);
+            
+            gtk_list_store_set(GTK_LIST_STORE(combobox_contents),
+                               &iterator,
+                               BG_IMAGE_NAME, home_bg_image_filename,
+                               BG_IMAGE_FILENAME, home_bg_image_uri,
+                               BG_IMAGE_PRIORITY, G_MAXINT, -1);
+            
+            active_count++;
+            
+            combobox_active = active_count;
         }
     } else 
     {
@@ -1081,7 +1138,8 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
             g_free(filename);
         }
     }
-    
+   
+    /* Create Set Background Image dialog */ 
     dialog = 
         gtk_dialog_new_with_buttons(HILDON_HOME_SET_BG_TITLE,
                                     GTK_WINDOW(window),
@@ -1089,76 +1147,165 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                                     GTK_DIALOG_DESTROY_WITH_PARENT,
                                     HILDON_HOME_SET_BG_OK,
                                     GTK_RESPONSE_OK,
-                                    HILDON_HOME_SET_BG_BROWSE,
-                                    GTK_RESPONSE_YES,
-                                    HILDON_HOME_SET_BG_APPLY,
-                                    GTK_RESPONSE_APPLY,
+                                    HILDON_HOME_SET_BG_PREVIEW,
+                                    HILDON_HOME_SET_BG_RESPONSE_PREVIEW,
+                                    HILDON_HOME_SET_BG_IMAGE,
+                                    HILDON_HOME_SET_BG_RESPONSE_IMAGE,
                                     HILDON_HOME_SET_BG_CANCEL,
                                     GTK_RESPONSE_CANCEL,
                                     NULL);
     
     gtk_dialog_set_has_separator(GTK_DIALOG(dialog), FALSE);
-    gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
-                                      GTK_RESPONSE_APPLY , FALSE);
-    hbox_label = gtk_hbox_new( FALSE, 10);
+
+    /* Hildon Caption HBoxes */
+    hbox_color = gtk_hbox_new(FALSE, 10);
+    hbox_image = gtk_hbox_new(FALSE, 10);
+    hbox_mode  = gtk_hbox_new(FALSE, 10);
+     
+    /* Widgets for Hildon Captions in Set Background Image dialog */	       
+    home_bg_color_button = 
+        hildon_color_button_new_with_color(home_bg_image_current_color);
+    
     combobox_image_select = 
         gtk_combo_box_new_with_model(combobox_contents);
-
+    if(home_bg_image_uri == NULL || 
+       g_str_equal(home_bg_image_uri, HILDON_HOME_IMAGE_LOADER_NO_IMAGE))
+    {
+        combobox_active = 0;
+    }
     gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_image_select),
                              combobox_active);
-
     renderer = gtk_cell_renderer_text_new();
     gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combobox_image_select),
                                renderer, 
                                TRUE);
-
-    
     gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combobox_image_select),
                                    renderer, "text", 
                                    BG_IMAGE_NAME, NULL);
-
-    group= GTK_SIZE_GROUP( gtk_size_group_new( GTK_SIZE_GROUP_HORIZONTAL ) );
+    
+    combobox_mode_select = gtk_combo_box_new_text();
+    gtk_combo_box_append_text(GTK_COMBO_BOX(combobox_mode_select), 
+		              image_modes[CENTERED]);
+    gtk_combo_box_append_text(GTK_COMBO_BOX(combobox_mode_select), 
+		              image_modes[SCALED]);
+    gtk_combo_box_append_text(GTK_COMBO_BOX(combobox_mode_select), 
+		              image_modes[STRETCHED]);
+    gtk_combo_box_append_text(GTK_COMBO_BOX(combobox_mode_select), 
+		              image_modes[TILED]);
+    /* Centered is a default scaling value */
+    gtk_combo_box_set_active(GTK_COMBO_BOX(combobox_mode_select), 
+                             home_bg_scale_combobox_active_item);
+  
+    /* Hildon captions in Set Background Image dialog */
+    group = GTK_SIZE_GROUP( gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL) );
+    color_caption =
+        hildon_caption_new(group,
+			   HILDON_HOME_SET_BG_COLOR_TITLE,  
+			   home_bg_color_button,
+			   NULL,
+			   HILDON_CAPTION_OPTIONAL);
     image_caption = 
         hildon_caption_new(group, 
-                           HILDON_HOME_SET_BG_IMAGE,
+                           HILDON_HOME_SET_BG_IMAGE_TITLE,
                            combobox_image_select, 
                            NULL, 
                            HILDON_CAPTION_OPTIONAL);
-
-    gtk_window_get_size (GTK_WINDOW (dialog), &width, NULL);
-    gtk_widget_set_size_request (combobox_image_select, width, -1);
-    
-    gtk_box_pack_start( GTK_BOX(hbox_label), 
-                        image_caption,
-                        FALSE, FALSE, 0);
-    gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox),hbox_label);
+    mode_caption =
+	hildon_caption_new(group,
+			   HILDON_HOME_SET_BG_MODE_TITLE,
+			   combobox_mode_select,
+			   NULL,
+			   HILDON_CAPTION_OPTIONAL);
+     
+    gtk_window_get_size(GTK_WINDOW(dialog), &width, NULL);
+    gtk_widget_set_size_request(combobox_image_select, width, -1);
+    gtk_widget_set_size_request(combobox_mode_select, width, -1);
+     
+    gtk_box_pack_start(GTK_BOX(hbox_color),
+		       color_caption,
+		       FALSE, FALSE, 0); 
+    gtk_box_pack_start(GTK_BOX(hbox_image), 
+                       image_caption,
+                       FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_mode),
+		       mode_caption,
+		       FALSE, FALSE, 0);
+    gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), hbox_color);
+    gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), hbox_image);
+    gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), hbox_mode);
 
     gtk_widget_show_all(dialog);
 
     g_signal_connect(G_OBJECT(combobox_image_select), "changed", 
-                     G_CALLBACK(combobox_active_tracer), 
+                     G_CALLBACK(combobox_image_active_tracer), 
                      dialog);
-
+    
+    g_signal_connect(G_OBJECT(combobox_mode_select), "changed",
+		     G_CALLBACK(combobox_scale_active_tracer),
+		     dialog); 
+ 
     g_signal_connect(G_OBJECT(dialog), "response", 
                      G_CALLBACK(set_background_response_handler), 
                      combobox_image_select);
 
-
+    
     switch (gtk_dialog_run(GTK_DIALOG(dialog)))
     {
-    case GTK_RESPONSE_OK:
-        if(home_bg_image_uri != NULL && 
-           home_bg_combobox_active_item != -1 &&
-           home_bg_image_loading_necessary) 
-        {              
-            construct_background_image_with_uri(home_bg_image_uri, TRUE);
+      case GTK_RESPONSE_OK:	
+        color_selected = hildon_color_button_get_color(
+                             HILDON_COLOR_BUTTON(home_bg_color_button));
+
+        if(home_bg_image_current_color)
+        {
+            gdk_color_free(home_bg_image_current_color);
+        }
+        home_bg_image_current_color = gdk_color_copy(color_selected);
+        hildon_home_save_configure();
+
+        if(home_bg_image_previewed == TRUE &&
+           gdk_color_equal(home_bg_image_preview_color, color_selected) &&
+           home_bg_image_preview_uri != NULL &&
+           home_bg_image_uri != NULL &&
+           g_str_equal(home_bg_image_preview_uri,home_bg_image_uri) == TRUE &&
+           home_bg_image_preview_mode == home_bg_scale_combobox_active_item)
+        {
+            save_background_preview();
+            break;
+        }
+
+        clear_background_preview();
+
+        combobox_active = 
+            gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_image_select));
+
+        if(combobox_active == 0)
+        {
+            home_bg_image_uri = HILDON_HOME_IMAGE_LOADER_NO_IMAGE;
+        }
+        if(combobox_active != -1 || home_bg_image_uri != NULL) 
+        {   
+            construct_background_image_with_uri(
+				home_bg_image_uri, 
+                                TRUE, 
+				home_bg_scale_combobox_active_item,
+                                color_selected,
+                                FALSE
+				);        	
         }
         break;
-    default:
+      case GTK_RESPONSE_CANCEL:
+        /* Discard files generated by preview */
+        if(home_bg_image_previewed == TRUE)
+        {
+            clear_background_preview();
+        }
+        refresh_background_image();
+        break;
+      default:	    
         break;
     }
-
     gtk_widget_destroy(dialog);
+    
     return TRUE;
 } 
 
@@ -1168,7 +1315,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
  * Shows information note for lack of memory.
  *
  */
-
 static
 void show_no_memory_note(void)
 {
@@ -1191,7 +1337,6 @@ void show_no_memory_note(void)
  * Shows information note for connection breakage
  *
  */
-
 static
 void show_connectivity_broke_note(void)
 {
@@ -1214,7 +1359,6 @@ void show_connectivity_broke_note(void)
  * Shows information note for lack of system resources
  *
  */
-
 static
 void show_system_resource_note(void)
 {
@@ -1222,7 +1366,7 @@ void show_system_resource_note(void)
 
     system_resource_note =
       hildon_note_new_information(GTK_WINDOW(window),
-				  osso_common_error(CERM_CAN_NOT_OPEN_INSUF_RES));
+			    osso_common_error(CERM_CAN_NOT_OPEN_INSUF_RES));
     gtk_dialog_run (GTK_DIALOG (system_resource_note));
     if(system_resource_note != NULL) 
     {
@@ -1236,7 +1380,6 @@ void show_system_resource_note(void)
  * Shows information note for file corruption
  *
  */
-
 static
 void show_file_corrupt_note(void)
 {
@@ -1244,7 +1387,7 @@ void show_file_corrupt_note(void)
 
     file_corrupt_note =
       hildon_note_new_information(GTK_WINDOW(window), 
-				  osso_common_error(CERM_CAN_NOT_OPEN_NO_FILE_INFO));
+			    osso_common_error(CERM_CAN_NOT_OPEN_NO_FILE_INFO));
     
     gtk_dialog_run (GTK_DIALOG (file_corrupt_note));
     if(file_corrupt_note != NULL) 
@@ -1252,13 +1395,13 @@ void show_file_corrupt_note(void)
          gtk_widget_destroy (GTK_WIDGET (file_corrupt_note));
     }
 }
+
 /**
  * @show_file_unreadable_note
  *
  * Shows information note for file opning failure
  *
  */
-
 static
 void show_file_unreadable_note(void)
 {
@@ -1281,7 +1424,6 @@ void show_file_unreadable_note(void)
  * Shows information note when called.
  *
  */
-
 static
 void show_mmc_cover_open_note(void)
 {
@@ -1300,20 +1442,21 @@ void show_mmc_cover_open_note(void)
     }
 }
 
-
 /**
- * @construct_background_image
+ * @constructbackground_image
  * 
  * @argument_list: commandline argumentlist for systemcall
  * @loading_image_note_allowed: whatever if it is nesessary for user to be able
  * cancel image loading
+ * @preview flag to indicate if constructing only preview background
  * 
  * Calls image loader with argument list and waits loader to save
  * results appointed place(s)
  */
 static
 void construct_background_image(char *argument_list[], 
-                                gboolean loading_image_note_allowed)
+                                gboolean loading_image_note_allowed,
+                                gboolean preview)
 {
     GError *error = NULL;
     guint image_loader_callback_id;
@@ -1364,13 +1507,16 @@ void construct_background_image(char *argument_list[],
     if(setpriority(PRIO_PROCESS, image_loader_pid, 
                    HILDON_HOME_IMAGE_LOADER_NICE) == -1)
     {
-        ULOG_ERR( 
-                 "setting process priority %d: image loader process failed\n",
+        ULOG_ERR("setting process priority %d: image loader process failed\n",
                  HILDON_HOME_IMAGE_LOADER_NICE);
     }
 
+    /* FIXME: we need to pass gboolean as pointer value. right
+     * solution would be object or sigleton class object
+     */
     image_loader_callback_id = 
-        g_child_watch_add(image_loader_pid, image_loader_callback, NULL);
+        g_child_watch_add(image_loader_pid, image_loader_callback, 
+                          (gpointer)preview);
 
     if(loading_image_note_allowed)
     {
@@ -1383,13 +1529,15 @@ void construct_background_image(char *argument_list[],
  *
  * @pid Pid of image loader child process
  * @child_exit_status exit status of image loader process
- * @user_data cancel note id
+ * @preview_data preview flag
  *
  * Removes child processes and calls notification functions if needed
  */
 static 
-void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
+void image_loader_callback(GPid pid, gint child_exit_status, 
+                           gpointer preview_data)
 {    
+    gboolean preview = (gboolean) preview_data;
     /* image loader process is done and succesful operation cannot be
        canceled */
     loading_image_process_active = FALSE;
@@ -1406,13 +1554,13 @@ void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
     {
     case HILDON_HOME_IMAGE_LOADER_OK:
         home_bg_image_symlinked = FALSE;
-        if (home_bg_image_in_use_uri) 
+        if(preview == TRUE)
         {
-            g_free(home_bg_image_in_use_uri);
+            refresh_background_image_preview();
+        } else
+        {
+            refresh_background_image();
         }
-        
-        home_bg_image_in_use_uri = g_strdup(home_bg_image_uri);
-        refresh_background_image();
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_MEMORY:
         show_no_memory_note();
@@ -1433,8 +1581,7 @@ void image_loader_callback(GPid pid, gint child_exit_status, gpointer data)
         show_mmc_cover_open_note();
         break;
     default:
-        ULOG_ERR( 
-                 "image_loader_callback() child_exit_status %d NOT_HANDLED",
+        ULOG_ERR("image_loader_callback() child_exit_status %d NOT_HANDLED",
                  child_exit_status);
         break;
     }
@@ -1455,6 +1602,7 @@ void show_loading_image_note()
     GtkIconInfo *info;
     GtkWidget *animation = NULL;
 
+    
     if(loading_image_note != NULL && GTK_IS_WIDGET(loading_image_note))
     {
         gtk_widget_destroy(loading_image_note);
@@ -1523,7 +1671,6 @@ gboolean loading_image_note_handler(GtkWidget *loading_cancel_note,
      loading_image_process_active = FALSE;
      if(image_loader_pid != -1)
      {
-    
          g_spawn_close_pid(image_loader_pid);
          kill(image_loader_pid, SIGTERM);
      }
@@ -1541,43 +1688,90 @@ gboolean loading_image_note_handler(GtkWidget *loading_cancel_note,
  * @construct_background_image_with_uri
  * 
  * @uri: uri to location of image file
- * @new: TRUE if user selected. FALSE when loading system default.
+ * @loading_image_note_allowed: TRUE if user is has option to cancel
+ * loading. FALSE when loading system default.
+ * @scaling Scaling mode used in fitting 
+ * @new_bg_color Base background color
+ * @preview Preview(TRUE) or final construct
  * 
  * Generates argument list for image loader to change original
  * background image from background. If construction was successfull,
  * saves uri it to designstated place for user background image.
  */
 static
-void construct_background_image_with_uri(const gchar *uri, gboolean new)
+void construct_background_image_with_uri(const gchar *uri, 
+                                         gboolean loading_image_note_allowed,
+				         gint scaling, GdkColor *new_bg_color,
+                                         gboolean preview)
 {
-    char *width = g_strdup_printf("%d", HILDON_HOME_AREA_WIDTH);
+    char *scale_mode = g_strdup_printf("%d", scaling);    
+    char *width  = g_strdup_printf("%d", HILDON_HOME_AREA_WIDTH);
     char *height = g_strdup_printf("%d", HILDON_HOME_AREA_HEIGHT);
     char *titlebar_image = get_titlebar_image_to_blend();
-    char *sidebar_image = get_sidebar_image_to_blend();
-    char *argument_list[] = {
-        HILDON_HOME_IMAGE_LOADER_PATH, 
-        HILDON_HOME_IMAGE_LOADER_IMAGE,
-        (char *)home_current_bg_image, 
+    char *sidebar_image  = get_sidebar_image_to_blend();
+    char *color_red = g_strdup_printf("%d", new_bg_color->red );
+    char *color_green = g_strdup_printf("%d", new_bg_color->green );
+    char *color_blue = g_strdup_printf("%d", new_bg_color->blue );
+    char *install = g_strdup_printf("%d", FALSE);
+   
+    char *argument_list[] = { 
+        HILDON_HOME_IMAGE_LOADER_PATH,
+	HILDON_HOME_IMAGE_LOADER_IMAGE,
+	scale_mode,
+	(char *)uri,                   
+	(char *)user_original_bg_image,
+	(char *)home_current_bg_image, 	
 	width,
-	height,
-        (char *)uri, 
-        (char *)user_original_bg_image,
+        height,
+	color_red,
+	color_green,
+	color_blue,
 	titlebar_image,
-        (char *)titlebar_original_image_savefile,
-        HILDON_HOME_TITLEBAR_LEFT_X,
-        HILDON_HOME_TITLEBAR_TOP_Y,
-        sidebar_image,
-        (char *)sidebar_original_image_savefile,
-        HILDON_HOME_SIDEBAR_LEFT_X,
-        HILDON_HOME_SIDEBAR_TOP_Y,
-        NULL };
+	(char *)titlebar_original_image_savefile,
+	HILDON_HOME_TITLEBAR_LEFT_X,
+	HILDON_HOME_TITLEBAR_TOP_Y,
+	sidebar_image,
+	(char *)sidebar_original_image_savefile,
+	HILDON_HOME_SIDEBAR_LEFT_X,
+	HILDON_HOME_SIDEBAR_TOP_Y, 
+	install, 
+	NULL}; 
+    if(preview)
+    {
+        argument_list[4] = 
+            (char *)g_strdup_printf("%s%s", 
+                                    user_original_bg_image,
+                                    HILDON_HOME_TEMPORARY_FILENAME_EXT);
+        argument_list[5] = (char *)home_current_bg_image_preview;
+        argument_list[12] = 
+            (char *)g_strdup_printf("%s%s", 
+                                    titlebar_original_image_savefile,
+                                    HILDON_HOME_TEMPORARY_FILENAME_EXT);
+        argument_list[16] = 
+            (char *)g_strdup_printf("%s%s", 
+                                    sidebar_original_image_savefile,
+                                    HILDON_HOME_TEMPORARY_FILENAME_EXT);
+    }
 
-    construct_background_image(argument_list, new);
+    construct_background_image(argument_list, loading_image_note_allowed, 
+                               preview);
 
-    g_free (width);
-    g_free (height);
-    g_free (titlebar_image);
-    g_free (sidebar_image);
+    g_free(scale_mode);
+    g_free(width);
+    g_free(height);
+    g_free(titlebar_image);
+    g_free(sidebar_image);
+    g_free(color_red);
+    g_free(color_green);
+    g_free(color_blue);
+    g_free(install);
+
+    if(preview)
+    {
+        g_free(argument_list[4]);
+        g_free(argument_list[12]);
+        g_free(argument_list[16]);
+    }
 }
 
 /**
@@ -1595,32 +1789,44 @@ void construct_background_image_with_new_skin(GtkWidget *widget,
                                               GtkStyle *old_style,
                                               gpointer user_data)
 {
-    gchar *width = g_strdup_printf("%d", HILDON_HOME_AREA_WIDTH);
-    gchar *height = g_strdup_printf("%d", HILDON_HOME_AREA_HEIGHT);
-    gchar *titlebar_image = get_titlebar_image_to_blend();
-    gchar *sidebar_image = get_sidebar_image_to_blend();
+    char *pad = g_strdup_printf("%d", 0);
+    char *width  = g_strdup_printf("%d", HILDON_HOME_AREA_WIDTH);
+    char *height = g_strdup_printf("%d", HILDON_HOME_AREA_HEIGHT);
+    char *titlebar_image = get_titlebar_image_to_blend();
+    char *sidebar_image  = get_sidebar_image_to_blend();
+    char *install = g_strdup_printf("%d", FALSE);
+
     char *argument_list[] = {
-        HILDON_HOME_IMAGE_LOADER_PATH, 
-        HILDON_HOME_IMAGE_LOADER_SKIN,
-        (char *)home_current_bg_image, 
+	HILDON_HOME_IMAGE_LOADER_PATH,
+	HILDON_HOME_IMAGE_LOADER_SKIN,
+	pad,
+	(char *)home_bg_image_uri,
+	(char *)user_original_bg_image,
+	(char *)home_current_bg_image,
 	width,
 	height,
+        pad,
+        pad,
+        pad,
 	titlebar_image,
-        (char *)titlebar_original_image_savefile,
-        HILDON_HOME_TITLEBAR_LEFT_X,
-        HILDON_HOME_TITLEBAR_TOP_Y,
+	(char *)titlebar_original_image_savefile,
+	HILDON_HOME_TITLEBAR_LEFT_X,
+	HILDON_HOME_TITLEBAR_TOP_Y,
 	sidebar_image,
-        (char *)sidebar_original_image_savefile,
-        HILDON_HOME_SIDEBAR_LEFT_X,
-        HILDON_HOME_SIDEBAR_TOP_Y,
-        NULL };
+	(char *)sidebar_original_image_savefile,
+	HILDON_HOME_SIDEBAR_LEFT_X,
+	HILDON_HOME_SIDEBAR_TOP_Y,
+	install,
+	NULL };
 
-    construct_background_image(argument_list, FALSE);
+    construct_background_image(argument_list, FALSE, FALSE);
 
-    g_free (width);
-    g_free (height);
-    g_free (titlebar_image);
-    g_free (sidebar_image);
+    g_free(pad);
+    g_free(width);
+    g_free(height);
+    g_free(titlebar_image);
+    g_free(sidebar_image);
+    g_free(install);
 }
 
 
@@ -1649,7 +1855,6 @@ char *get_sidebar_image_to_blend()
  *
  * Gets pixbuf image from theme and saves it to temporary file.
  */
-
 static
 char *get_titlebar_image_to_blend()
 {
@@ -1675,7 +1880,6 @@ char *get_titlebar_image_to_blend()
  *
  * Gets user's saved background image in pixbuf.
  */
- 
 static 
 GdkPixbuf *get_background_image()
 {
@@ -1703,7 +1907,6 @@ GdkPixbuf *get_background_image()
  * Reads image from place designstated by factory configure. If cannot be
  * found, returns NULL.
  */
-
 static
 GdkPixbuf *get_factory_default_background_image()
 {
@@ -1736,7 +1939,6 @@ GdkPixbuf *get_factory_default_background_image()
  * 
  * Set default theme background image 
  */
-
 static
 void set_default_background_image()
 {
@@ -1751,6 +1953,7 @@ void set_default_background_image()
     gchar *image_file;
     struct stat buf;
 
+    
     bg_image_desc_base_dir = g_dir_open(
          HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR, 0, &error);
 
@@ -1781,57 +1984,58 @@ void set_default_background_image()
     {
         if (g_str_has_suffix(image_desc_file, BG_IMG_INFO_FILE_TYPE))
         {
-
             gchar *filename;
             filename = g_build_filename(
                 HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
                 image_desc_file, NULL);
             file_contents = mb_dotdesktop_new_from_file(filename);
             g_free(filename);
-            
+	    
+            /* scan files for one having a lowest priority */ 
             if (file_contents != NULL) 
             {
                 gchar *priority_temp;
-                
                 priority_temp = 
                     mb_dotdesktop_get(file_contents,
                                       BG_DESKTOP_IMAGE_PRIORITY);
-
-                if(priority_temp != NULL && g_ascii_isdigit(*priority_temp) &&
-                   (priority == -1 || (gint)atoi(priority_temp) < priority))
+              
+                if( priority_temp != NULL && g_ascii_isdigit(*priority_temp) &&
+                    (priority == -1 || (gint)atoi(priority_temp) < priority) )
                 {
                     priority = (gint)atoi(priority_temp);
-                    
+	            g_free(image_path);	    
                     image_path = g_strdup(
                         mb_dotdesktop_get(file_contents,
                                           BG_DESKTOP_IMAGE_FILENAME));
                 } else 
                 {
-                    ULOG_ERR( "Desktop file malformed: %s", 
+                    ULOG_ERR("Desktop file malformed: %s", 
                              image_desc_file);
                 }
                 
                 mb_dotdesktop_free(file_contents);
-                
             }            
-
         }
         
         image_desc_file = g_dir_read_name(bg_image_desc_base_dir);
-    } /*while*/
+    } /* while */
 
     if (bg_image_desc_base_dir != NULL) 
     {
-        g_dir_close(bg_image_desc_base_dir);        
-        
+        g_dir_close(bg_image_desc_base_dir);             
     }
 
     if (image_path) 
-    {
-        construct_background_image_with_uri(image_path, FALSE);
+    {    
+        construct_background_image_with_uri(image_path, 
+			                    FALSE, 
+			                    CENTERED, 
+					    home_bg_image_current_color,
+                                            FALSE
+					    );
         g_free(image_path);
 
-        /* remove old files if nesessary and create symlinks */
+        /* remove old files if necessary and create symlinks */
         if(stat(home_current_bg_image, &buf) != -1)
         {
             unlink(home_current_bg_image);
@@ -1890,7 +2094,6 @@ void set_default_background_image()
  * default background image. If found but wrong sized, image is cropped 
  * to right size.
  */
-
 static 
 void refresh_background_image()
 {
@@ -1921,9 +2124,9 @@ void refresh_background_image()
     {
         GdkColormap *colormap = NULL;
         
-        gtk_widget_set_app_paintable (GTK_WIDGET(home_base_eventbox),
-                                      TRUE);
-        gtk_widget_realize(GTK_WIDGET( home_base_eventbox));
+        gtk_widget_set_app_paintable(GTK_WIDGET(home_base_eventbox),
+                                     TRUE);
+        gtk_widget_realize(GTK_WIDGET(home_base_eventbox));
 
         colormap = gdk_drawable_get_colormap(
             GDK_DRAWABLE(GTK_WIDGET(home_base_eventbox)->window));
@@ -1963,14 +2166,197 @@ void refresh_background_image()
 }
 
 /**
+ * @refresh_background_image_preview
+ * 
+ * Tries to get temporary background image set in preview 
+ */
+static 
+void refresh_background_image_preview()
+{
+    GdkPixbuf *pixbuf_bg = NULL;
+    GdkPixmap *pixmap_bg;
+    GdkBitmap *bit_mask;
+    struct stat buf;
+    GError *error = NULL;
+
+    /* if not saved picture, no preview avail */
+    if (stat(home_current_bg_image_preview, &buf) != -1) 
+    {    
+        pixbuf_bg = 
+            gdk_pixbuf_new_from_file(home_current_bg_image_preview, &error);
+        if (error != NULL)
+        {
+            ULOG_ERR( "refresh_background_image_preview():%s", error->message);
+            g_error_free(error);
+            return;
+        }
+    }
+
+    if (pixbuf_bg != NULL)
+    {
+        GdkColormap *colormap = NULL;
+        
+        gtk_widget_set_app_paintable(GTK_WIDGET(home_base_eventbox),
+                                     TRUE);
+        gtk_widget_realize(GTK_WIDGET(home_base_eventbox));
+
+        colormap = gdk_drawable_get_colormap(
+            GDK_DRAWABLE(GTK_WIDGET(home_base_eventbox)->window));
+        
+        g_assert(colormap);
+        
+        gdk_pixbuf_render_pixmap_and_mask_for_colormap(pixbuf_bg, 
+                                                       colormap,
+                                                       &pixmap_bg, 
+                                                       &bit_mask, 0);
+
+        g_object_unref(pixbuf_bg);
+
+        if (pixmap_bg != NULL) 
+        {
+            gdk_window_set_back_pixmap(
+                GTK_WIDGET(home_base_eventbox)->window, 
+                pixmap_bg, FALSE);
+        }
+        if (bit_mask != NULL) 
+        {
+            g_object_unref(bit_mask);
+        }
+
+    } else
+    {
+        ULOG_ERR("refresh_background_image_preview():"
+                 "failed to retrieve image");
+        return;
+    }
+    gtk_event_box_set_visible_window(GTK_EVENT_BOX(home_base_eventbox),
+                                     TRUE); 
+    gtk_widget_queue_draw(home_base_eventbox);
+    if(pixmap_bg != NULL) 
+    {
+        g_object_unref(pixmap_bg);
+    }
+    home_bg_image_previewed = TRUE;
+}
+
+/** 
+ * @clear_background_preview
+ * 
+ * Sets globals and unlinks preview generated during preview
+ */
+
+static 
+void clear_background_preview(void)
+{
+    gchar *filename;
+    struct stat buf;     
+
+    home_bg_image_previewed = FALSE;
+    
+    filename = g_strdup_printf("%s%s", user_original_bg_image,
+                               HILDON_HOME_TEMPORARY_FILENAME_EXT);
+    if(filename != NULL)
+    {
+        if(stat(filename, &buf) != -1)
+        {
+            unlink(filename);
+        }
+        g_free(filename);
+    }
+
+    filename = g_strdup_printf("%s%s", titlebar_original_image_savefile,
+                               HILDON_HOME_TEMPORARY_FILENAME_EXT);
+    if(filename != NULL)
+    {
+        if(stat(filename, &buf) != -1)
+        {
+            unlink(filename);
+        }
+        g_free(filename);
+    }
+
+    filename = g_strdup_printf("%s%s", sidebar_original_image_savefile,
+                               HILDON_HOME_TEMPORARY_FILENAME_EXT);
+    if(filename != NULL)
+    {
+        if(stat(filename, &buf) != -1)
+        {
+            unlink(filename);
+        }
+        g_free(filename);
+    }
+
+    if(home_current_bg_image_preview != NULL)
+    {
+        if(stat(home_current_bg_image_preview, &buf) != -1)
+        {
+            unlink(home_current_bg_image_preview);
+        }
+    }
+}
+
+/** 
+ * @save_background_preview
+ * 
+ * Saves preview generated files 
+ */
+
+static 
+void save_background_preview(void)
+{
+    gchar *filename;
+    struct stat buf;     
+
+    home_bg_image_previewed = FALSE;
+    filename = g_strdup_printf("%s%s", user_original_bg_image,
+                               HILDON_HOME_TEMPORARY_FILENAME_EXT);
+    if(filename != NULL)
+    {
+        if(stat(filename, &buf) != -1)
+        {
+            rename(filename, user_original_bg_image);
+        }
+        g_free(filename);
+    }
+    filename = g_strdup_printf("%s%s", titlebar_original_image_savefile,
+                               HILDON_HOME_TEMPORARY_FILENAME_EXT);
+    if(filename != NULL)
+    {
+        if(stat(filename, &buf) != -1)
+        {
+            rename(filename, titlebar_original_image_savefile);
+        }
+        g_free(filename);
+    }
+
+    filename = g_strdup_printf("%s%s", sidebar_original_image_savefile,
+                               HILDON_HOME_TEMPORARY_FILENAME_EXT);
+    if(filename != NULL)
+    {
+        if(stat(filename, &buf) != -1)
+        {
+            rename(filename, sidebar_original_image_savefile);
+        }
+        g_free(filename);
+    }
+
+    if(home_current_bg_image_preview != NULL)
+    {
+        if(stat(home_current_bg_image_preview, &buf) != -1)
+        {
+            rename(home_current_bg_image_preview, home_current_bg_image);
+        }
+    }
+
+
+}
+/**
  * @construct_applets
  *
  * Constructs applets, which are visible
  */
-
 static void construct_applets(void)
 {
-
     GList *list_item;
     GtkWidget *applet;
     gchar *identifier;
@@ -1978,13 +2364,13 @@ static void construct_applets(void)
     gint applet_x = 20;
     gint applet_y = -100;
     
+    applet_manager_configure_load_all(man);
     for(list_item = applet_manager_get_identifier_all(man); 
         list_item != NULL; list_item = list_item->next)
     {
         identifier = (gchar *)list_item->data;
         applet_manager_get_coordinates(man, identifier, &applet_x, &applet_y);
-        ULOG_ERR("HOME setting applet %s to %d,%d\n", 
-                identifier, applet_x, applet_y);
+
         if(applet_x != -1 && applet_y != -1 )
         {
             applet = 
@@ -2010,7 +2396,6 @@ static void construct_applets(void)
  *
  * Constructs home background.
  */
-
 static
 void construct_home_area()
 {
@@ -2045,7 +2430,6 @@ void construct_home_area()
 
 }
 
-
 /**
  * @hildon_home_display_base
  * 
@@ -2060,13 +2444,11 @@ void hildon_home_display_base(void)
     gtk_widget_show_all( GTK_WIDGET(window) );
 }
 
-
 /**
  * @hildon_home_initiliaze
  * 
  * initialize home variables
  */
-
 static 
 void hildon_home_initiliaze()
 {
@@ -2075,8 +2457,12 @@ void hildon_home_initiliaze()
     gchar bg_orig_filename[HILDON_HOME_PATH_STR_LENGTH] = {0};
     /*gchar image_dir[HILDON_HOME_PATH_STR_LENGTH] = {0};*/
 
+    gint red = HILDON_HOME_CONF_DEFAULT_COLOR;
+    gint green = HILDON_HOME_CONF_DEFAULT_COLOR; 
+    gint blue = HILDON_HOME_CONF_DEFAULT_COLOR;
+    GdkColor color_temp = {0, red, green, blue};
+                               
     hildon_home_get_enviroment_variables();
-    hildon_home_set_hardcode_values();
     hildon_home_get_factory_settings();
 
     /* If the lock file exists, we probably crashed during startup */
@@ -2092,7 +2478,6 @@ void hildon_home_initiliaze()
         g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
                      HILDON_HOME_ORIGINAL_IMAGE_TITLEBAR, NULL);
 
-
     sidebar_original_image_savefile = 
         g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
                      HILDON_HOME_ORIGINAL_IMAGE_SIDEBAR, NULL);
@@ -2100,6 +2485,10 @@ void hildon_home_initiliaze()
     home_current_bg_image = 
         g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
                      HILDON_HOME_BG_USER_FILENAME, NULL);
+
+    home_current_bg_image_preview = 
+        g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
+                     HILDON_HOME_BG_USER_FILENAME_TEMP, NULL);
 
     user_original_bg_image =
         g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
@@ -2115,16 +2504,29 @@ void hildon_home_initiliaze()
 
     if(fp == NULL) 
     {
-        ULOG_ERR( "Couldn't open configure file %s", 
+        ULOG_ERR("Couldn't open configure file %s", 
                  configure_file);
     } else 
     {
-        applet_manager_t *man = applet_manager_singleton_get_instance();
-        applet_manager_initialize_all(man);
+        if(fscanf(fp,
+                  HILDON_HOME_CONF_USER_FORMAT,
+                  &red, &green, &blue,
+                  &home_bg_scale_combobox_active_item)
+           < 0)
+        {
+            ULOG_ERR("Couldn't load statusinfo from configure file %s",
+                     user_original_bg_image);
+        }
     }
+    color_temp.red = red;
+    color_temp.green = green;
+    color_temp.blue = blue;
+
+    home_bg_image_current_color = gdk_color_copy(&color_temp);
+    
     if(fp != NULL && fclose(fp) != 0) 
     {
-        ULOG_ERR( "Couldn't close configure file %s", 
+        ULOG_ERR("Couldn't close configure file %s", 
                  configure_file);
     }
 
@@ -2155,19 +2557,8 @@ void hildon_home_initiliaze()
 
     layout_mode_init(osso_home);
 
+    load_original_bg_image_uri();
     hildon_home_cp_read_desktop_entries();
-}
-
-/**
- * @hildon_home_set_hardcode_values();
- * 
- * Sets hard code values for applets
- */
-
-static
-void hildon_home_set_hardcode_values( void)
-{
-    /* FIXME */
 }
 
 /**
@@ -2219,7 +2610,6 @@ void hildon_home_get_factory_settings( void )
  * 
  * Gets and sets user's home directory from $ENV location
  */
-
 static
 void hildon_home_get_enviroment_variables( void )
 {
@@ -2231,7 +2621,6 @@ void hildon_home_get_enviroment_variables( void )
  * 
  * constructs user's system directory
  */
-
 static 
 void hildon_home_construct_user_system_dir()
 {
@@ -2309,11 +2698,40 @@ void hildon_home_construct_user_system_dir()
  * 
  * create user configure files using hard coded default values
  */
-
 static 
 void hildon_home_create_configure()
 {
-    /* FIXME */
+    FILE *fp;
+    gchar *configure_file;
+
+    configure_file =
+        g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
+                     HILDON_HOME_CONF_USER_FILENAME, NULL);
+
+    fp = fopen (configure_file, "w");
+    if(fp == NULL)
+    {
+        ULOG_ERR("Couldn't open configure file %s",
+                 configure_file);
+    } else
+    {
+        if(fprintf(fp, HILDON_HOME_CONF_USER_FORMAT,
+                   HILDON_HOME_CONF_DEFAULT_COLOR, 
+                   HILDON_HOME_CONF_DEFAULT_COLOR, 
+                   HILDON_HOME_CONF_DEFAULT_COLOR, CENTERED)
+           < 0)
+        {
+            ULOG_ERR("Couldn't write default values to configure file %s",
+                     configure_file);
+        }
+    }
+    if(fp != NULL && fclose(fp) != 0)
+    {
+        ULOG_ERR("Couldn't close configure file %s",
+                 configure_file);
+    }
+
+    g_free(configure_file);
 }
 
 
@@ -2322,13 +2740,58 @@ void hildon_home_create_configure()
  * 
  * saves user applet statues to configure file
  */
-
 static 
 void hildon_home_save_configure()
 {
     applet_manager_t *man = applet_manager_singleton_get_instance();
+    FILE *fp;
+    gchar *configure_file;
+    struct stat buf;     
 
     applet_manager_configure_save_all(man);
+
+    configure_file =
+        g_build_path("/", home_user_dir, HILDON_HOME_SYSTEM_DIR,
+                     HILDON_HOME_CONF_USER_FILENAME, NULL);
+
+    if(configure_file == NULL)
+    {
+        ULOG_ERR("hildon_home_save_configure():"
+                 " failed to generate configure file path");
+        return;
+    }
+
+    if(stat(configure_file, &buf) != -1)
+    {
+        unlink (configure_file);
+    }
+
+    fp = fopen (configure_file, "w");
+    if(fp == NULL)
+    {
+        ULOG_ERR("Couldn't open configure file %s",
+                 configure_file);
+    } else
+    {
+        if(fprintf(fp, HILDON_HOME_CONF_USER_FORMAT,
+                   home_bg_image_current_color->red,
+                   home_bg_image_current_color->green,
+                   home_bg_image_current_color->blue,
+                   home_bg_scale_combobox_active_item)
+           < 0)
+        {
+            ULOG_ERR("Couldn't write values to configure file %s",
+                     configure_file);
+        }
+    }
+    if(fp != NULL && fclose(fp) != 0)
+    {
+        ULOG_ERR("Couldn't close configure file %s",
+                 configure_file);
+    }
+
+    g_free(configure_file);
+    
 }
 
 /**
@@ -2338,13 +2801,13 @@ void hildon_home_save_configure()
  * Reads desktop entries
  *
  **/
-
 static void hildon_home_cp_read_desktop_entries(void)
 {
     GDir *dir;
     GError * error = NULL;
     gchar *dir_path = CONTROLPANEL_ENTRY_DIR;
     gchar *path=NULL;
+   
     
     g_return_if_fail(dir_path);
     dir = g_dir_open(dir_path, 0, &error);
@@ -2416,7 +2879,6 @@ static void hildon_home_cp_read_desktop_entries(void)
  *
  * Handles the keyboard press events for the Home
  */
-
 static
 gint hildon_home_key_press_listener (GtkWidget * widget,
                               GdkEventKey * keyevent,
@@ -2453,7 +2915,6 @@ gint hildon_home_key_press_listener (GtkWidget * widget,
  *
  * Handles the keyboard release events for the Home
  */
-
 static
 gint hildon_home_key_release_listener (GtkWidget * widget,
                                        GdkEventKey * keyevent,
@@ -2468,13 +2929,11 @@ gint hildon_home_key_release_listener (GtkWidget * widget,
 }
 
 
-
 /**
  * @hildon_home_deinitiliaze
  * 
  * deinitialize home variables freeing memory
  */
-
 static 
 void hildon_home_deinitiliaze()
 {
@@ -2487,6 +2946,10 @@ void hildon_home_deinitiliaze()
     if(home_current_bg_image != NULL)
     {
         g_free((gchar *)home_current_bg_image);
+    } 
+    if(home_current_bg_image_preview != NULL)
+    {
+        g_free((gchar *)home_current_bg_image_preview);
     } 
     if(user_original_bg_image != NULL)
     {
@@ -2504,6 +2967,16 @@ void hildon_home_deinitiliaze()
     {
         g_free((gchar *)sidebar_original_image_savefile);
     }
+    if( home_bg_color_button )
+    {
+	gtk_widget_destroy(home_bg_color_button);
+    }
+
+    if( home_bg_image_current_color )
+    {
+        gdk_color_free(home_bg_image_current_color);
+    }
+    
     applet_manager_deinitialize_all(man);
 }
 
@@ -2518,7 +2991,6 @@ void hildon_home_deinitiliaze()
  * Note that there can be several levels of menus/dialogs above
  * the actual main window. 
  */
-
 static Window get_active_main_window(Window window)
 {
     Window parent_window;
@@ -2547,6 +3019,7 @@ static Window get_active_main_window(Window window)
     gdk_error_trap_pop();
     return window;
 }
+
 /**
  * @hildon_home_event_filter
  * 
@@ -2558,8 +3031,6 @@ static Window get_active_main_window(Window window)
  *
  * State saves when home is not topmost
  */
-
-
 static 
 GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent, 
                                           GdkEvent *event, 
@@ -2683,7 +3154,6 @@ gboolean remove_startup_lock_timeout(gpointer data)
      return FALSE;
 }
 
- 
 GtkMenu * set_menu (GtkMenu * new_menu)
 {
     GtkMenu * previous;
@@ -2713,7 +3183,6 @@ int hildon_home_main(void)
                             &window_width, &window_height, NULL);
     
     /* Osso needs to be initialized before creation of applets */
-
     osso_home = osso_initialize(HILDON_HOME_NAME, HILDON_HOME_VERSION, 
                            FALSE, NULL);
     if( !osso_home )
@@ -2734,14 +3203,11 @@ int hildon_home_main(void)
     /* Remove the lock to mark a successfull startup */
     g_timeout_add(STARTUP_LOCK_TIME, remove_startup_lock_timeout, NULL);
 
-
     /* Install key listeners to handle menu toggling */
-
     g_signal_connect(G_OBJECT(window), "key_press_event",
                      G_CALLBACK(hildon_home_key_press_listener), NULL);
     g_signal_connect(G_OBJECT(window), "key_release_event",
                      G_CALLBACK(hildon_home_key_release_listener), NULL);
-
     
     /* Hand applied Mathew's patch here, Karoliina Salminen 07092005 bugfixcamp */
     /* Set up the filter so we _only_ get notified for propertys
@@ -2749,14 +3215,12 @@ int hildon_home_main(void)
      * are currently at the top of the stack
      * Ensure that we do not overwrite existing event mask, but only add
        to it (important as long as statusbar, home and TN are one process) */
-
     gdk_window_set_events(gdk_get_default_root_window(),
 			  gdk_window_get_events(gdk_get_default_root_window())
 			  | GDK_PROPERTY_CHANGE_MASK);
     gdk_window_add_filter(gdk_get_default_root_window(),
                            hildon_home_event_filter, NULL);
 
-    
     g_signal_connect(window, "style-set", 
                      G_CALLBACK(construct_background_image_with_new_skin), 
                      NULL);

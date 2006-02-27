@@ -1,4 +1,7 @@
 2006-02-27  Johan Bilien <johan.bilien@nokia.com>,
+	* Imported home_background_refactoring branch (Closes N#23035)
+
+2006-02-27  Johan Bilien <johan.bilien@nokia.com>,
 	* Imported latest changes from the hoem refactoring (Closes N#23221):
 	
 	* hildon_home_event_filter(): added setting topmost flag when going
