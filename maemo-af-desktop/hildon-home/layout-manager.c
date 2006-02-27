@@ -483,10 +483,10 @@ void layout_mode_end ( gboolean rollback )
 	    else if (node->added)
 	    { 
 		ULOG_ERR("LAYOUT:Added applet, removing\n");
+		applet_manager_deinitialize(man, node->applet_identifier );
 		gtk_widget_destroy(node->ebox); /* How about finalizing the
 						 applet? Memory leak potential
 						*/
-		applet_manager_deinitialize(man, node->applet_identifier );
 	    }
 	    else 
 	    {

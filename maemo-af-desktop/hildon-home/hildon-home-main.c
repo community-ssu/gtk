@@ -2627,7 +2627,7 @@ GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent,
             applet_manager_t *man = applet_manager_singleton_get_instance();
 
             applet_manager_background_state_save_all(man);
-
+            home_is_topmost = FALSE;
         } else if (win.win[0] == my_window &&
                    home_is_topmost == FALSE)
         {

@@ -1,3 +1,13 @@
+2006-02-27  Johan Bilien <johan.bilien@nokia.com>,
+	* Imported latest changes from the hoem refactoring (Closes N#23221):
+	
+	* hildon_home_event_filter(): added setting topmost flag when going
+	  background
+	* layout_mode_end(): changed applet deinitialize and destroy widget
+	  call order
+	* select_applets_selected():changed applet deinitialize and destroy
+	  widget call order
+
 2006-02-23  Johan Bilien <johan.bilien@nokia.com>,
 	* Imported latest changes from the TN refactoring:
 	  

@@ -314,10 +314,10 @@ void select_applets_selected(GtkEventBox *home_event_box,
            /* Deinitialize removed applets */
 	   GtkEventBox *removed_event = applet_manager_get_eventbox
 		   (applet_manager_instance, (gchar *)removed_applets->data);
-	   gtk_container_remove(GTK_CONTAINER(home_fixed), 
-			        GTK_WIDGET(removed_event));
            applet_manager_deinitialize(applet_manager_instance, 
 			               (gchar *)removed_applets->data);
+	   gtk_container_remove(GTK_CONTAINER(home_fixed), 
+			        GTK_WIDGET(removed_event));
 	   removed_event = NULL;
 	   
            removed_applets = removed_applets->next;
