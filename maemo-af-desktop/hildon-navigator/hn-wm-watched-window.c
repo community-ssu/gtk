@@ -224,14 +224,26 @@ static void
 hn_wm_watched_window_process_wm_name (HNWMWatchedWindow *win)
 {
   HNWMWatchedWindowView *view;
+  int                    n_items = 0;
 
   if (win->name)
     XFree(win->name);
 
   win->name = NULL;
 
-  /* FIXME: handle UTF8 naming */
-  XFetchName(GDK_DISPLAY(), win->xwin, &win->name);
+  /* Attempt to get UTF8 name */
+  win->name 
+    = hn_wm_util_get_win_prop_data_and_validate (win->xwin,
+                                                 hnwm->atoms[HN_ATOM_NET_WM_NAME],
+                                                 hnwm->atoms[HN_ATOM_UTF8_STRING],
+                                                 8,
+                                                 0,
+                                                 &n_items);
+
+  /* If that fails grab it basic way */
+  if (win->name == NULL || n_items == 0 
+      || !g_utf8_validate (win->name, n_items, NULL))
+    XFetchName(GDK_DISPLAY(), win->xwin, &win->name);
 
   if (win->name == NULL)
     win->name = g_strdup("unknown");

@@ -21,6 +21,11 @@ lib_LTLIBRARIES = libhildonnavigator.la
 #bin_PROGRAMS = \
 #	hildon-navigator 
 
+bin_PROGRAMS = hn-hung-app-handler
+
+hn_hung_app_handler_SOURCES = hn-hung-app-handler.c
+hn_hung_app_handler_LDADD = $(XLIBS_LIBS)
+
 libhildonnavigator_la_SOURCES = \
 	hildon-navigator.h \
 	hildon-navigator.c \

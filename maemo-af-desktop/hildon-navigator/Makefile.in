@@ -131,6 +131,9 @@ STRIP = @STRIP@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 XGETTEXT = @XGETTEXT@
+XLIBS_CFLAGS = @XLIBS_CFLAGS@
+XLIBS_ERROR_LIBS = @XLIBS_ERROR_LIBS@
+XLIBS_LIBS = @XLIBS_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
@@ -203,6 +206,11 @@ lib_LTLIBRARIES = libhildonnavigator.la
 # commented out from the combined build
 #bin_PROGRAMS = \
 #	hildon-navigator 
+bin_PROGRAMS = hn-hung-app-handler
+
+hn_hung_app_handler_SOURCES = hn-hung-app-handler.c
+hn_hung_app_handler_LDADD = $(XLIBS_LIBS)
+
 libhildonnavigator_la_SOURCES = \
 	hildon-navigator.h \
 	hildon-navigator.c \
@@ -271,6 +279,13 @@ am_libhildonnavigator_la_OBJECTS = hildon-navigator.lo \
 	hildon-pixbuf-anim-blinker.lo application-switcher.lo \
 	others-menu.lo
 libhildonnavigator_la_OBJECTS = $(am_libhildonnavigator_la_OBJECTS)
+bin_PROGRAMS = hn-hung-app-handler$(EXEEXT)
+PROGRAMS = $(bin_PROGRAMS)
+
+am_hn_hung_app_handler_OBJECTS = hn-hung-app-handler.$(OBJEXT)
+hn_hung_app_handler_OBJECTS = $(am_hn_hung_app_handler_OBJECTS)
+hn_hung_app_handler_DEPENDENCIES =
+hn_hung_app_handler_LDFLAGS =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -279,6 +294,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-navigator-main.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-navigator.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-pixbuf-anim-blinker.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hn-hung-app-handler.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/hn-wm-memory.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hn-wm-session.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hn-wm-util.Plo \
@@ -294,12 +310,13 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(libhildonnavigator_la_SOURCES)
+DIST_SOURCES = $(libhildonnavigator_la_SOURCES) \
+	$(hn_hung_app_handler_SOURCES)
 DATA = $(applications_menu_DATA) $(hildon_othersmenu_DATA) \
 	$(libhildonnavigatorincludeinst_DATA) $(pkgconfig_DATA)
 
 DIST_COMMON = $(srcdir)/Makefile.in Makefile.am hildon-navigator.pc.in
-SOURCES = $(libhildonnavigator_la_SOURCES)
+SOURCES = $(libhildonnavigator_la_SOURCES) $(hn_hung_app_handler_SOURCES)
 
 all: all-am
 
@@ -342,6 +359,38 @@ clean-libLTLIBRARIES:
 	done
 libhildonnavigator.la: $(libhildonnavigator_la_OBJECTS) $(libhildonnavigator_la_DEPENDENCIES) 
 	$(LINK) -rpath $(libdir) $(libhildonnavigator_la_LDFLAGS) $(libhildonnavigator_la_OBJECTS) $(libhildonnavigator_la_LIBADD) $(LIBS)
+binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  if test -f $$p \
+	     || test -f $$p1 \
+	  ; then \
+	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f"; \
+	   $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(binPROGRAMS_INSTALL) $$p $(DESTDIR)$(bindir)/$$f || exit 1; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
+	  echo " rm -f $(DESTDIR)$(bindir)/$$f"; \
+	  rm -f $(DESTDIR)$(bindir)/$$f; \
+	done
+
+clean-binPROGRAMS:
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  echo " rm -f $$p $$f"; \
+	  rm -f $$p $$f ; \
+	done
+hn-hung-app-handler$(EXEEXT): $(hn_hung_app_handler_OBJECTS) $(hn_hung_app_handler_DEPENDENCIES) 
+	@rm -f hn-hung-app-handler$(EXEEXT)
+	$(LINK) $(hn_hung_app_handler_LDFLAGS) $(hn_hung_app_handler_OBJECTS) $(hn_hung_app_handler_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -353,6 +402,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-navigator-main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-navigator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-pixbuf-anim-blinker.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-hung-app-handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-memory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-session.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hn-wm-util.Plo@am__quote@
@@ -565,10 +615,12 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(DATA)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(DATA)
+install-binPROGRAMS: install-libLTLIBRARIES
+
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(libdir) $(DESTDIR)$(applications_menudir) $(DESTDIR)$(hildon_othersmenudir) $(DESTDIR)$(libhildonnavigatorincludeinstdir) $(DESTDIR)$(pkgconfigdir)
+	$(mkinstalldirs) $(DESTDIR)$(libdir) $(DESTDIR)$(bindir) $(DESTDIR)$(applications_menudir) $(DESTDIR)$(hildon_othersmenudir) $(DESTDIR)$(libhildonnavigatorincludeinstdir) $(DESTDIR)$(pkgconfigdir)
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -595,8 +647,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
-	mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -618,7 +670,7 @@ install-data-am: install-applications_menuDATA \
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 
-install-exec-am: install-libLTLIBRARIES
+install-exec-am: install-binPROGRAMS install-libLTLIBRARIES
 
 install-info: install-info-am
 
@@ -644,18 +696,18 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-applications_menuDATA \
+uninstall-am: uninstall-applications_menuDATA uninstall-binPROGRAMS \
 	uninstall-hildon_othersmenuDATA uninstall-info-am \
 	uninstall-libLTLIBRARIES \
 	uninstall-libhildonnavigatorincludeinstDATA \
 	uninstall-pkgconfigDATA
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libLTLIBRARIES clean-libtool ctags distclean \
-	distclean-compile distclean-generic distclean-libtool \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
+	clean-generic clean-libLTLIBRARIES clean-libtool ctags \
+	distclean distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am info info-am install \
-	install-am install-applications_menuDATA install-data \
-	install-data-am install-exec install-exec-am \
+	install-am install-applications_menuDATA install-binPROGRAMS \
+	install-data install-data-am install-exec install-exec-am \
 	install-hildon_othersmenuDATA install-info install-info-am \
 	install-libLTLIBRARIES \
 	install-libhildonnavigatorincludeinstDATA install-man \
@@ -664,8 +716,8 @@ uninstall-am: uninstall-applications_menuDATA \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-applications_menuDATA \
-	uninstall-hildon_othersmenuDATA uninstall-info-am \
-	uninstall-libLTLIBRARIES \
+	uninstall-binPROGRAMS uninstall-hildon_othersmenuDATA \
+	uninstall-info-am uninstall-libLTLIBRARIES \
 	uninstall-libhildonnavigatorincludeinstDATA \
 	uninstall-pkgconfigDATA
 

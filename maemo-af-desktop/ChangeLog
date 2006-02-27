@@ -1,4 +1,36 @@
 2006-02-23  Johan Bilien <johan.bilien@nokia.com>,
+	* Imported latest changes from the TN refactoring:
+	  
+	* configure.ac:
+	* hildon-navigator/Makefile.am:
+	* hildon-navigator/hn-hung-app-handler.c:
+	Add new hung app handler binary to be called from MB.
+
+	* hildon-navigator/hn-wm-types.h:
+	* hildon-navigator/hn-wm.c: (hn_wm_atoms_init),
+	(hn_wm_x_event_filter):
+	Add initial support for handling _HILDON_FROZEN_APP X message.
+
+	* hildon-navigator/hn-wm-types.h:
+	* hildon-navigator/hn-wm-watched-window.c:
+	(hn_wm_watched_window_process_wm_name):
+	* hildon-navigator/hn-wm.c: (hn_wm_atoms_init),
+	(hn_wm_x_event_filter):
+	Track UTF8 window titles in preference to old ICCCM
+	window naming. (Closes 23218)
+
+	* hildon-navigator/application-switcher.c: (store_item),
+	(app_switcher_make_item_text), (app_switcher_add_new_item),
+	(app_switcher_item_icon_sync), (app_switcher_update_item):
+	* hildon-navigator/hn-wm-watched-window.c:
+	(hn_wm_watched_window_process_wm_name),
+	(hn_wm_watched_window_get_name), (hn_wm_watched_window_destroy):
+	* hildon-navigator/hn-wm-watched-window.h:
+	* hildon-navigator/hn-wm.c: (hn_wm_x_event_filter):
+	Re-add suport for subname property and update app switcher
+	text naming accordingly.
+
+2006-02-23  Johan Bilien <johan.bilien@nokia.com>,
 	* hildon-status-bar/hildon-status-bar-main.[ch]: the gateway
 	  plugin is gone (Closes N#23163)
 

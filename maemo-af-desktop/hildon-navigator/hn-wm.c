@@ -305,14 +305,16 @@ hn_wm_atoms_init()
     "_NET_CLIENT_LIST",
     "_NET_WM_ICON",
     "_NET_WM_USER_TIME",
+    "_NET_WM_NAME",
 
     "_HILDON_APP_KILLABLE",	/* Hildon only props */
-    "_HILDON_ABLE_TO_HIBERNATE",	/* alias for the above */
+    "_HILDON_ABLE_TO_HIBERNATE",/* alias for the above */
     "_NET_CLIENT_LIST",         /* NOTE: Hildon uses these values on app wins*/
     "_NET_ACTIVE_WINDOW",       /* for views, thus index is named different  */
                                 /* to improve code readablity.               */
                                 /* Ultimatly the props should be renamed with*/
                                 /* a _HILDON prefix  */
+    "_HILDON_FROZEN_WINDOW",
 
     "_MB_WIN_SUB_NAME",		/* MB Only props */
     "_MB_COMMAND",              /* FIXME: Unused */
@@ -810,6 +812,35 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
   XPropertyEvent *prop;
   HNWMWatchedWindow     *win = NULL;
 
+  /* Handle client messages */
+
+  if (((XEvent*)xevent)->type == ClientMessage)
+    {
+      XClientMessageEvent *cev = (XClientMessageEvent *)xevent;
+
+      if (cev->message_type == hnwm->atoms[HN_ATOM_HILDON_FROZEN_WINDOW])
+        {
+          Window   xwin_hung;
+          gboolean has_reawoken; 
+
+          xwin_hung    = (Window)cev->data.l[0];
+          has_reawoken = (gboolean)cev->data.l[1];
+
+          HN_DBG("@@@@ FROZEN: Window %li status %i @@@@",
+                 xwin_hung, has_reawoken);
+
+          /* TODO: 
+           * 
+           *  WatchedWindow = g_hash_table_lookup(hnwm->watched_windows,
+           *                                      xwin_hung);
+           *
+           *  if (WatchedWindow) then call func to handle this..
+          */
+
+        }
+      return GDK_FILTER_CONTINUE;
+    }
+
   /* If this isn't a property change event ignore ASAP */
   if (((XEvent*)xevent)->type != PropertyNotify)
     return GDK_FILTER_CONTINUE;
@@ -866,6 +897,7 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
 	   || prop->atom == hnwm->atoms[HN_ATOM_WM_HINTS]
 	   || prop->atom == hnwm->atoms[HN_ATOM_NET_WM_ICON]
            || prop->atom == hnwm->atoms[HN_ATOM_MB_WIN_SUB_NAME]
+           || prop->atom == hnwm->atoms[HN_ATOM_NET_WM_NAME]
            || prop->atom == hnwm->atoms[HN_ATOM_WM_WINDOW_ROLE])
         
 	{
@@ -877,7 +909,8 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
 	return GDK_FILTER_CONTINUE;
 
       if (prop->atom == hnwm->atoms[HN_ATOM_WM_NAME]
-          || prop->atom == hnwm->atoms[HN_ATOM_MB_WIN_SUB_NAME])
+          || prop->atom == hnwm->atoms[HN_ATOM_MB_WIN_SUB_NAME]
+          || prop->atom == hnwm->atoms[HN_ATOM_NET_WM_NAME])
 	{
 	  hn_wm_watched_window_props_sync (win, HN_WM_SYNC_NAME);
 	}
