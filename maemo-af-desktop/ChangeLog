@@ -1,3 +1,6 @@
+2006-02-28  Johan Bilien <johan.bilien@nokia.com>,
+	* Moved hildon-navogator/applications.menu to maemo-af-desktop-config
+
 2006-02-27  Johan Bilien <johan.bilien@nokia.com>,
 	* Imported home_background_refactoring branch (Closes N#23035)
 

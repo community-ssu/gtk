@@ -255,9 +255,6 @@ libhildonnavigator_la_LIBADD = \
 hildon_othersmenudir = $(sysconfdir)/others-menu
 hildon_othersmenu_DATA = .empty
 
-applications_menudir = $(sysconfdir)/xdg/menus
-applications_menu_DATA = applications.menu
-
 libhildonnavigatorincludeinstdir = $(includedir)/hildon-navigator-dev
 libhildonnavigatorincludeinst_DATA = \
 	hildon-navigator-interface.h \
@@ -312,8 +309,8 @@ LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES = $(libhildonnavigator_la_SOURCES) \
 	$(hn_hung_app_handler_SOURCES)
-DATA = $(applications_menu_DATA) $(hildon_othersmenu_DATA) \
-	$(libhildonnavigatorincludeinst_DATA) $(pkgconfig_DATA)
+DATA = $(hildon_othersmenu_DATA) $(libhildonnavigatorincludeinst_DATA) \
+	$(pkgconfig_DATA)
 
 DIST_COMMON = $(srcdir)/Makefile.in Makefile.am hildon-navigator.pc.in
 SOURCES = $(libhildonnavigator_la_SOURCES) $(hn_hung_app_handler_SOURCES)
@@ -455,24 +452,6 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
-applications_menuDATA_INSTALL = $(INSTALL_DATA)
-install-applications_menuDATA: $(applications_menu_DATA)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(applications_menudir)
-	@list='$(applications_menu_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " $(applications_menuDATA_INSTALL) $$d$$p $(DESTDIR)$(applications_menudir)/$$f"; \
-	  $(applications_menuDATA_INSTALL) $$d$$p $(DESTDIR)$(applications_menudir)/$$f; \
-	done
-
-uninstall-applications_menuDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(applications_menu_DATA)'; for p in $$list; do \
-	  f="`echo $$p | sed -e 's|^.*/||'`"; \
-	  echo " rm -f $(DESTDIR)$(applications_menudir)/$$f"; \
-	  rm -f $(DESTDIR)$(applications_menudir)/$$f; \
-	done
 hildon_othersmenuDATA_INSTALL = $(INSTALL_DATA)
 install-hildon_othersmenuDATA: $(hildon_othersmenu_DATA)
 	@$(NORMAL_INSTALL)
@@ -620,7 +599,7 @@ install-binPROGRAMS: install-libLTLIBRARIES
 
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(libdir) $(DESTDIR)$(bindir) $(DESTDIR)$(applications_menudir) $(DESTDIR)$(hildon_othersmenudir) $(DESTDIR)$(libhildonnavigatorincludeinstdir) $(DESTDIR)$(pkgconfigdir)
+	$(mkinstalldirs) $(DESTDIR)$(libdir) $(DESTDIR)$(bindir) $(DESTDIR)$(hildon_othersmenudir) $(DESTDIR)$(libhildonnavigatorincludeinstdir) $(DESTDIR)$(pkgconfigdir)
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -664,8 +643,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-applications_menuDATA \
-	install-hildon_othersmenuDATA \
+install-data-am: install-hildon_othersmenuDATA \
 	install-libhildonnavigatorincludeinstDATA install-pkgconfigDATA
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
@@ -696,9 +674,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-applications_menuDATA uninstall-binPROGRAMS \
-	uninstall-hildon_othersmenuDATA uninstall-info-am \
-	uninstall-libLTLIBRARIES \
+uninstall-am: uninstall-binPROGRAMS uninstall-hildon_othersmenuDATA \
+	uninstall-info-am uninstall-libLTLIBRARIES \
 	uninstall-libhildonnavigatorincludeinstDATA \
 	uninstall-pkgconfigDATA
 
@@ -706,18 +683,17 @@ uninstall-am: uninstall-applications_menuDATA uninstall-binPROGRAMS \
 	clean-generic clean-libLTLIBRARIES clean-libtool ctags \
 	distclean distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am info info-am install \
-	install-am install-applications_menuDATA install-binPROGRAMS \
-	install-data install-data-am install-exec install-exec-am \
-	install-hildon_othersmenuDATA install-info install-info-am \
-	install-libLTLIBRARIES \
+	install-am install-binPROGRAMS install-data install-data-am \
+	install-exec install-exec-am install-hildon_othersmenuDATA \
+	install-info install-info-am install-libLTLIBRARIES \
 	install-libhildonnavigatorincludeinstDATA install-man \
 	install-pkgconfigDATA install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-applications_menuDATA \
-	uninstall-binPROGRAMS uninstall-hildon_othersmenuDATA \
-	uninstall-info-am uninstall-libLTLIBRARIES \
+	tags uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-hildon_othersmenuDATA uninstall-info-am \
+	uninstall-libLTLIBRARIES \
 	uninstall-libhildonnavigatorincludeinstDATA \
 	uninstall-pkgconfigDATA
 
