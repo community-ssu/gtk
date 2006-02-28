@@ -1,8 +1,3 @@
-2006-02-22  Johan Bilien  <johan.bilien@nokia.com>
-
-	* debian/hildon-lgpl0.links: Added link to libhildonwidgets, to
-	  avoid recompilation of applications.
-
 2006-02-21  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.12.1
