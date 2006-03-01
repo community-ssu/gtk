@@ -57,7 +57,11 @@ if [ $START = TRUE ]; then
     echo "$0: Error, SUPERMODAL is not defined"
     exit 2
   fi
-		  
+
+# _NET_WM_PING ping handler
+export MB_HUNG_APP_HANDLER=''
+export MB_AGGRESSIVE_PING=1
+
   $LAUNCHWRAPPER_NICE start "$SVC" $PROG \
       -theme $MBTHEME \
       -use_titlebar $TITLEBAR \
