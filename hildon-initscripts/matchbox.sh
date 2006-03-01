@@ -59,7 +59,7 @@ if [ $START = TRUE ]; then
   fi
 
 # _NET_WM_PING ping handler
-export MB_HUNG_APP_HANDLER=''
+export MB_HUNG_APP_HANDLER='/usr/bin/hn-hung-app-handler'
 export MB_AGGRESSIVE_PING=1
 
   $LAUNCHWRAPPER_NICE start "$SVC" $PROG \
