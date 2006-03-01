@@ -350,7 +350,7 @@ show_with_details (package_info *pi, bool installed)
 
   const gchar *summary_label;
   if (installed)
-    summary_label = _("ai_ti_details_noteb_installing");
+    summary_label = _("ai_ti_details_noteb_uninstalling");
   else if (!pi->info.installable)
     summary_label = _("ai_ti_details_noteb_problems");
   else if (pi->installed_version && pi->available_version)

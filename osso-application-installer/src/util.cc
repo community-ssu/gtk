@@ -474,6 +474,8 @@ get_global_package_list_widget ()
 
   tree = gtk_tree_view_new_with_model (GTK_TREE_MODEL (global_list_store));
 
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), TRUE);
+
   renderer = gtk_cell_renderer_pixbuf_new ();
   g_object_set (renderer, "yalign", 0.0, NULL);
   gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
@@ -507,27 +509,29 @@ get_global_package_list_widget ()
   g_object_set (renderer, "xalign", 1.0, NULL);
   gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
 					      -1,
-					      NULL,
+					      "Version",
 					      renderer,
 					      global_version_func,
 					      tree,
 					      NULL);
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 2);
+  gtk_tree_view_column_set_alignment (column, 1.0);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_expand (column, FALSE);
-  gtk_tree_view_column_set_fixed_width (column, 150);
+  gtk_tree_view_column_set_fixed_width (column, 140);
 
   renderer = gtk_cell_renderer_text_new ();
   g_object_set (renderer, "yalign", 0.0, NULL);
   g_object_set (renderer, "xalign", 1.0, NULL);
   gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
 					      -1,
-					      NULL,
+					      "Size",
 					      renderer,
 					      global_size_func,
 					      tree,
 					      NULL);
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 3);
+  gtk_tree_view_column_set_alignment (column, 1.0);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_expand (column, FALSE);
   gtk_tree_view_column_set_fixed_width (column, 80);
@@ -709,14 +713,14 @@ size_string_general (char *buf, size_t n, int bytes)
 	  // bytes ~ num * 100 * KILO
 	  num = (bytes + 50*KILO) / (100*KILO);
 	  if (num < 100)
-	    snprintf (buf, n, _("ai_li_size_max_100kb_10mb"), num/10.0);
+	    snprintf (buf, n, _("ai_li_size_100kb_10mb"), num/10.0);
 	  else
 	    {
 	      // round to nearest KILO KILO
 	      // bytes ~ num * KILO * KILO
 	      num = (bytes + KILO*KILO/2) / (KILO*KILO);
 	      if (num < KILO)
-		snprintf (buf, n, _("ai_li_size_max_10mb_1gb"), num);
+		snprintf (buf, n, _("ai_li_size_10mb_1gb"), num);
 	      else
 		snprintf (buf, n, _("ai_li_size_larger_than_1gb"),
 			  ((float)num)/KILO);
@@ -751,7 +755,7 @@ size_string_detailed (char *buf, size_t n, int bytes)
 	  else
 	    {
 	      if (num < 10000)
-		snprintf (buf, n, _("ai_li_de_size_max_10mb_1gb"), num/100.0);
+		snprintf (buf, n, _("ai_li_de_size_10mb_1gb"), num/100.0);
 	      else
 		snprintf (buf, n, _("ai_li_de_size_larger_than_1g"),
 			  ((float)num)/(100*KILO));

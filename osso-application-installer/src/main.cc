@@ -41,6 +41,7 @@
 #include "menu.h"
 #include "log.h"
 #include "settings.h"
+#include "search.h"
 
 #define _(x) gettext (x)
 
@@ -56,8 +57,8 @@ using namespace std;
 static guint apt_source_id;
 
 static void set_details_callback (void (*func) (gpointer), gpointer data);
-static void set_operation_callback (const char *label,
-				    void (*func) (gpointer), gpointer data);
+static void set_operation_label (const char *label);
+static void set_operation_callback (void (*func) (gpointer), gpointer data);
 
 void get_package_list_info (GList *packages);
 
@@ -90,7 +91,8 @@ show_view (view *v)
     gtk_widget_destroy (cur_view);
 
   set_details_callback (NULL, NULL);
-  set_operation_callback (NULL, NULL, NULL);
+  set_operation_label (NULL);
+  set_operation_callback (NULL, NULL);
 
   cur_view = v->maker (v);
   cur_view_struct = v;
@@ -99,7 +101,7 @@ show_view (view *v)
     v->path = make_view_path (v);
   hildon_bread_crumb_trail_set_path (main_trail, v->path);
   
-  gtk_box_pack_start (GTK_BOX (main_vbox), cur_view, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (main_vbox), cur_view, TRUE, TRUE, 10);
 }
 
 static void
@@ -184,43 +186,78 @@ show_parent_view ()
     show_view (cur_view_struct->parent);
 }
 
+static GtkWidget *
+make_padded_button (const char *label)
+{
+  GtkWidget *l = gtk_label_new (label);
+  gtk_misc_set_padding (GTK_MISC (l), 15, 15);
+  GtkWidget *btn = gtk_button_new ();
+  gtk_container_add (GTK_CONTAINER (btn), l);
+  return btn;
+}
+
 GtkWidget *
 make_main_view (view *v)
 {
   GtkWidget *view;
-  GtkWidget *vbox;
-  GtkWidget *btn;
+  GtkWidget *table, *vbox;
+  GtkWidget *btn, *label, *image;
   
   view = gtk_hbox_new (FALSE, 0);
-  vbox = gtk_vbox_new (FALSE, 10);
+  vbox = gtk_vbox_new (FALSE, 0);
+  table = gtk_table_new (5, 2, FALSE);
+  gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (view), vbox, FALSE, FALSE, 0);
 
-  gtk_box_pack_start (GTK_BOX (vbox),
-		      gtk_label_new ("My Device Nokia 770"),
-		      FALSE, FALSE, 5);
+  gtk_table_set_row_spacings (GTK_TABLE (table), 10);
+  gtk_table_set_col_spacings (GTK_TABLE (table), 10);
+
+  image = gtk_image_new_from_icon_name ("qgn_list_filesys_divc_cls",
+					HILDON_ICON_SIZE_26);
+  gtk_table_attach_defaults (GTK_TABLE (table), image,
+			     0, 1, 0, 1);
+
+  label = gtk_label_new ("My Device Nokia 770");
+  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+  gtk_table_attach_defaults (GTK_TABLE (table), label,
+			     1, 2, 0, 1);
   
-  btn = gtk_button_new_with_label (_("ai_li_uninstall"));
-  gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 5);
+  btn = make_padded_button (_("ai_li_uninstall"));
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &uninstall_applications_view);
+  gtk_table_attach_defaults (GTK_TABLE (table), btn,
+			     1, 2, 1, 2);
 
-  gtk_box_pack_start (GTK_BOX (vbox),
-		      gtk_label_new ("Repository"),
-		      FALSE, FALSE, 5);
+  image = gtk_image_new_from_icon_name ("qgn_list_browser",
+					HILDON_ICON_SIZE_26);
+  gtk_table_attach_defaults (GTK_TABLE (table), image,
+			     0, 1, 2, 3);
+  label = gtk_label_new ("Repository");
+  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+  gtk_table_attach_defaults (GTK_TABLE (table), label,
+			     1, 2, 2, 3);
 
-  btn = gtk_button_new_with_label (_("ai_li_install"));
-  gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 5);
+  btn = make_padded_button (_("ai_li_install"));
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &install_applications_view);
+  gtk_table_attach_defaults (GTK_TABLE (table), btn,
+			     1, 2, 3, 4);
   
-  btn = gtk_button_new_with_label (_("ai_li_update"));
-  gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 5);
+  btn = make_padded_button (_("ai_li_update"));
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &upgrade_applications_view);
+  gtk_table_attach_defaults (GTK_TABLE (table), btn,
+			     1, 2, 4, 5);
 
+  // XXX - find the proper way to load this image.
+  vbox = gtk_vbox_new (TRUE, 0);
+  gtk_box_pack_end (GTK_BOX (view), vbox, FALSE, FALSE, 0);
+  image = gtk_image_new_from_file ("/usr/share/themes/default/images/qgn_plat_application_installer_image.png");
+  gtk_box_pack_end (GTK_BOX (vbox), image, FALSE, FALSE, 0);
+  
   gtk_widget_show_all (view);
 
   get_package_list_info (NULL);
@@ -919,16 +956,13 @@ available_package_selected (package_info *pi)
   if (pi)
     {
       set_details_callback (available_package_details, pi);
-      set_operation_callback ((pi->installed_version
-			       ? _("ai_me_package_update")
-			       : _("ai_me_package_install")),
-			      (void (*)(void*))install_package, pi);
+      set_operation_callback ((void (*)(void*))install_package, pi);
       get_intermediate_package_info (pi, NULL, NULL);
     }
   else
     {
       set_details_callback (NULL, NULL);
-      set_operation_callback (NULL, NULL, NULL);
+      set_operation_callback (NULL, NULL);
     }
 }
 
@@ -947,15 +981,44 @@ installed_package_selected (package_info *pi)
   if (pi)
     {
       set_details_callback (installed_package_details, pi);
-      set_operation_callback (_("ai_me_package_uninstall"),
-			      (void (*)(void*))uninstall_package, pi);
+      set_operation_callback ((void (*)(void*))uninstall_package, pi);
       get_intermediate_package_info (pi, NULL, NULL);
     }
   else
     {
       set_details_callback (NULL, NULL);
-      set_operation_callback (NULL, NULL, NULL);
+      set_operation_callback (NULL, NULL);
     }
+}
+
+static GtkWidget *
+make_last_update_label ()
+{
+  char text[1024];
+  time_t t = last_update;
+  struct tm *broken = localtime (&t);
+  strftime (text, 1024, _("ai_li_updated_%x"), broken);
+  return gtk_label_new (text);
+}
+
+static GtkWidget *
+make_package_list_view (bool with_updated_label)
+{
+  GtkWidget *view;
+
+  if (with_updated_label)
+    {
+      GtkWidget *label = make_last_update_label ();
+      view = gtk_vbox_new (FALSE, 10);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+      gtk_box_pack_start (GTK_BOX (view), label, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX (view), get_global_package_list_widget (),
+			  TRUE, TRUE, 0);
+    }
+  else
+    view = get_global_package_list_widget ();
+  
+  return view;
 }
 
 GtkWidget *
@@ -964,13 +1027,13 @@ make_install_section_view (view *v)
   GtkWidget *view;
   GList *packages;
 
-  if (v->label)
-    g_free ((gchar *)v->label);
+  g_free ((gchar *)v->label);
   v->label = g_strdup (cur_section->name);
 
-  view = get_global_package_list_widget ();
-  set_global_lists_for_view (v);
+  set_operation_label (_("ai_me_package_install"));
+  view = make_package_list_view (true);
   gtk_widget_show_all (view);
+  set_global_lists_for_view (v);
 
   maybe_refresh_package_cache ();
 
@@ -987,13 +1050,22 @@ view_section (section_info *si)
 GtkWidget *
 make_install_applications_view (view *v)
 {
-  GtkWidget *view;
+  GtkWidget *view, *label;
 
-  set_operation_callback (_("ai_me_package_install"), NULL, NULL);
+  set_operation_label (_("ai_me_package_install"));
+  
   cur_section = NULL;
-  view = get_global_section_list_widget ();
-  set_global_lists_for_view (v);
+
+  label = make_last_update_label ();
+  view = gtk_vbox_new (FALSE, 10);
+  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+  gtk_box_pack_start (GTK_BOX (view), label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (view), get_global_section_list_widget (),
+		      TRUE, TRUE, 0);
+
   gtk_widget_show_all (view);
+
+  set_global_lists_for_view (v);
 
   return view;
 }
@@ -1004,9 +1076,10 @@ make_upgrade_applications_view (view *v)
   GtkWidget *view;
   GList *packages;
 
-  view = get_global_package_list_widget ();
-  set_global_lists_for_view (v);
+  set_operation_label (_("ai_me_package_update"));
+  view = make_package_list_view (true);
   gtk_widget_show_all (view);
+  set_global_lists_for_view (v);
 
   return view;
 }
@@ -1173,9 +1246,10 @@ make_uninstall_applications_view (view *v)
   GtkWidget *view;
   GList *packages;
 
-  view = get_global_package_list_widget ();
-  set_global_lists_for_view (v);
+  set_operation_label (_("ai_me_package_uninstall"));
+  view = make_package_list_view (false);
   gtk_widget_show_all (view);
+  set_global_lists_for_view (v);
 
   return view;
 }
@@ -1411,6 +1485,7 @@ set_details_callback (void (*func) (gpointer), gpointer data)
 
 static void (*operation_func) (gpointer);
 static gpointer operation_data;
+static const char *operation_label;
 
 void
 do_current_operation ()
@@ -1419,13 +1494,25 @@ do_current_operation ()
     operation_func (operation_data);
 }
 
+static void set_operation_toolbar_label (const char *label, bool enable);
+
 static void
-set_operation_callback (const char *label, 
-			void (*func) (gpointer), gpointer data)
+set_operation_label (const char *label)
+{
+  if (label == NULL)
+    label = _("ai_me_package_install");
+
+  operation_label = label;
+  set_operation_menu_label (label, operation_func != NULL);
+  set_operation_toolbar_label (label, operation_func != NULL);
+}
+
+static void
+set_operation_callback (void (*func) (gpointer), gpointer data)
 {
   operation_data = data;
   operation_func = func;
-  set_operation_menu_label (label, func != NULL);
+  set_operation_label (operation_label);
 }
 
 static void
@@ -1639,11 +1726,23 @@ mime_open_handler (gpointer raw_data, int argc, char **argv)
     install_from_file_cont (g_strdup (argv[0]), NULL);
 }
 
+static GtkWidget *toolbar_operation_label = NULL;
+static GtkWidget *toolbar_operation_item = NULL;
+
+static void
+set_operation_toolbar_label (const char *label, bool sensitive)
+{
+  if (toolbar_operation_label)
+    gtk_label_set_text (GTK_LABEL (toolbar_operation_label), label);
+  if (toolbar_operation_item)
+    gtk_widget_set_sensitive (toolbar_operation_item, sensitive);
+}
+
 int
 main (int argc, char **argv)
 {
   GtkWidget *app_view, *app;
-  GtkWidget *toolbar, *image;
+  GtkWidget *toolbar, *image, *search_button;
   GtkMenu *main_menu;
   char *apt_worker_prog = "/usr/libexec/apt-worker";
 
@@ -1661,15 +1760,43 @@ main (int argc, char **argv)
   hildon_app_set_title (HILDON_APP (app), _("ai_ap_application_installer"));
 
   toolbar = gtk_toolbar_new ();
+
+  toolbar_operation_label = gtk_label_new ("");
+  toolbar_operation_item =
+    GTK_WIDGET (gtk_tool_button_new (toolbar_operation_label, NULL));
+  gtk_tool_item_set_expand (GTK_TOOL_ITEM (toolbar_operation_item), TRUE);
+  gtk_tool_item_set_homogeneous (GTK_TOOL_ITEM (toolbar_operation_item), TRUE);
+  g_signal_connect (toolbar_operation_item, "clicked",
+		    G_CALLBACK (do_current_operation),
+		    NULL);
+  gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
+		      GTK_TOOL_ITEM (toolbar_operation_item),
+		      -1);
+
   image = gtk_image_new_from_icon_name ("qgn_toolb_gene_detailsbutton",
 					HILDON_ICON_SIZE_26);
   details_button = GTK_WIDGET (gtk_tool_button_new (image, NULL));
+  gtk_tool_item_set_expand (GTK_TOOL_ITEM (details_button), TRUE);
+  gtk_tool_item_set_homogeneous (GTK_TOOL_ITEM (details_button), TRUE);
   g_signal_connect (details_button, "clicked",
 		    G_CALLBACK (show_current_details),
 		    NULL);
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 		      GTK_TOOL_ITEM (details_button),
-		      0);
+		      -1);
+
+  image = gtk_image_new_from_icon_name ("qgn_toolb_gene_findbutton",
+					HILDON_ICON_SIZE_26);
+  search_button = GTK_WIDGET (gtk_tool_button_new (image, NULL));
+  gtk_tool_item_set_expand (GTK_TOOL_ITEM (search_button), TRUE);
+  gtk_tool_item_set_homogeneous (GTK_TOOL_ITEM (search_button), TRUE);
+  g_signal_connect (search_button, "clicked",
+		    G_CALLBACK (show_search_dialog),
+		    NULL);
+  gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
+		      GTK_TOOL_ITEM (search_button),
+		      -1);
+
   hildon_appview_set_toolbar (HILDON_APPVIEW (app_view),
 			      GTK_TOOLBAR (toolbar));
 

@@ -111,8 +111,6 @@ set_operation_menu_label (const char *label, bool sensitive)
 {
   if (operation_menu_item)
     {
-      if (label == NULL)
-	label = _("ai_me_package_install");
       gtk_label_set 
 	(GTK_LABEL (gtk_bin_get_child (GTK_BIN (operation_menu_item))),
 	 label);

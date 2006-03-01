@@ -36,16 +36,20 @@ hildon_bread_crumb_trail_set_path (GtkWidget *trail, GList *path)
   while (path)
     {
       const gchar *label = get_label (path);
+      GtkWidget *lbl, *btn, *arw;
+
+      lbl = gtk_label_new (label);
+      gtk_misc_set_padding (GTK_MISC (lbl), 0, 10);
+      btn = gtk_button_new ();
+      gtk_container_add (GTK_CONTAINER (btn), lbl);
+      gtk_box_pack_start (GTK_BOX (trail), btn, FALSE, FALSE, 0);
+      gtk_widget_show_all (btn);
+      
       if (path->next)
 	{
-	  GtkWidget *btn, *arw;
-
-	  btn = gtk_button_new_with_label (label);
-	  gtk_box_pack_start (GTK_BOX (trail), btn, FALSE, FALSE, 0);
 	  g_signal_connect (G_OBJECT (btn), "clicked",
 			    G_CALLBACK (btn_callback),
 			    path);
-	  gtk_widget_show (btn);
 	  arw = gtk_arrow_new (GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
 	  gtk_widget_set_size_request (arw, 40, 40);
 	  gtk_box_pack_start (GTK_BOX (trail), arw, FALSE, FALSE, 0);
@@ -53,11 +57,10 @@ hildon_bread_crumb_trail_set_path (GtkWidget *trail, GList *path)
 	}
       else
 	{
-	  GtkWidget *lbl;
-	  lbl = gtk_label_new (label);
-	  gtk_box_pack_start (GTK_BOX (trail), lbl, FALSE, FALSE, 0);
-	  gtk_widget_show (lbl);
+	  gtk_button_set_relief (GTK_BUTTON (btn), GTK_RELIEF_NONE);
+	  gtk_widget_set_sensitive (btn, FALSE);
 	}
+
       path = path->next;
     }
 }

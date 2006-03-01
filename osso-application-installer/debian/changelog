@@ -1,3 +1,10 @@
+osso-application-installer (4.3) unstable; urgency=low
+
+  * Fixed typo in Depends: it's l10n, not l10.  Also, miscellaneous
+    changes towards UI spec and layout compliance.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  1 Mar 2006 11:35:09 +0200
+
 osso-application-installer (4.2) unstable; urgency=low
 
   * I18N, added missing files.
