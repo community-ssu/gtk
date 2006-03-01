@@ -1,3 +1,9 @@
+osso-af-startup (1.5-1) unstable; urgency=low
+
+  * Added multi-user Scratchbox hack for the PID directory.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 01 Mar 2006 17:46:21 +0200
+
 osso-af-startup (1.4-1) unstable; urgency=low
 
   * Removed the sleep after startup greeting.

@@ -38,7 +38,11 @@ fi
 
 # the following should not change in run-time
 if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
-  export AF_PIDDIR=/tmp/af-piddir
+  if [ -e /targets/links/scratchbox.config ]; then
+    export AF_PIDDIR=/tmp/$USER.pids
+  else
+    export AF_PIDDIR=/tmp/af-piddir
+  fi
   if [ ! -d $AF_PIDDIR ]; then
     # note, no write to flash involved here
     mkdir $AF_PIDDIR
