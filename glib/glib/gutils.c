@@ -576,6 +576,11 @@ g_parse_debug_string  (const gchar     *string,
   guint result = 0;
   
   g_return_val_if_fail (string != NULL, 0);
+
+  /* this function is used by gmem.c/gslice.c initialization code,
+   * so introducing malloc dependencies here would require adaptions
+   * of those code portions.
+   */
   
   if (!g_ascii_strcasecmp (string, "all"))
     {
@@ -618,7 +623,7 @@ g_parse_debug_string  (const gchar     *string,
  * 
  * Return value: the name of the file without any leading directory components.
  *
- * Deprecated: Use g_path_get_basename() instead, but notice that
+ * Deprecated:2.2: Use g_path_get_basename() instead, but notice that
  * g_path_get_basename() allocates new memory for the returned string, unlike
  * this function which returns a pointer into the argument.
  **/
@@ -1155,6 +1160,30 @@ g_getenv (const gchar *variable)
 #endif /* G_OS_WIN32 */
 }
 
+/* _g_getenv_nomalloc
+ * this function does a getenv() without doing any kind of allocation
+ * through glib. it's suitable for chars <= 127 only (both, for the
+ * variable name and the contents) and for contents < 1024 chars in
+ * length. also, it aliases "" to a NULL return value.
+ **/
+const gchar*
+_g_getenv_nomalloc (const gchar *variable,
+                    gchar        buffer[1024])
+{
+  const gchar *retval = getenv (variable);
+  if (retval && retval[0])
+    {
+      gint l = strlen (retval);
+      if (l < 1024)
+        {
+          strncpy (buffer, retval, l);
+          buffer[l] = 0;
+          return buffer;
+        }
+    }
+  return NULL;
+}
+
 /**
  * g_setenv:
  * @variable: the environment variable to set, must not contain '='.
@@ -1555,7 +1584,8 @@ g_get_any_init_do (void)
     struct passwd *pw = NULL;
     gpointer buffer = NULL;
     gint error;
-    
+    gchar *logname;
+
 #  if defined (HAVE_POSIX_GETPWUID_R) || defined (HAVE_NONPOSIX_GETPWUID_R)
     struct passwd pwd;
 #    ifdef _SC_GETPW_R_SIZE_MAX  
@@ -1567,7 +1597,9 @@ g_get_any_init_do (void)
 #    else /* _SC_GETPW_R_SIZE_MAX */
     glong bufsize = 64;
 #    endif /* _SC_GETPW_R_SIZE_MAX */
-    
+
+    logname = (gchar *) g_getenv ("LOGNAME");
+        
     do
       {
 	g_free (buffer);
@@ -1578,7 +1610,15 @@ g_get_any_init_do (void)
 	errno = 0;
 	
 #    ifdef HAVE_POSIX_GETPWUID_R
-	error = getpwuid_r (getuid (), &pwd, buffer, bufsize, &pw);
+	if (logname) {
+	  error = getpwnam_r (logname, &pwd, buffer, bufsize, &pw);
+	  if (!pw || (pw->pw_uid != getuid ())) {
+	    /* LOGNAME is lying, fall back to looking up the uid */
+	    error = getpwuid_r (getuid (), &pwd, buffer, bufsize, &pw);
+	  }
+	} else {
+	  error = getpwuid_r (getuid (), &pwd, buffer, bufsize, &pw);
+	}
 	error = error < 0 ? errno : error;
 #    else /* HAVE_NONPOSIX_GETPWUID_R */
    /* HPUX 11 falls into the HAVE_POSIX_GETPWUID_R case */
@@ -1586,7 +1626,15 @@ g_get_any_init_do (void)
 	error = getpwuid_r (getuid (), &pwd, buffer, bufsize);
 	pw = error == 0 ? &pwd : NULL;
 #      else /* !_AIX */
-	pw = getpwuid_r (getuid (), &pwd, buffer, bufsize);
+	if (logname) {
+	  pw = getpwnam_r (logname, &pwd, buffer, bufsize);
+	  if (!pw || (pw->pw_uid != getuid ())) {
+	    /* LOGNAME is lying, fall back to looking up the uid */
+	    pw = getpwuid_r (getuid (), &pwd, buffer, bufsize);
+	  }
+	} else {
+	  pw = getpwuid_r (getuid (), &pwd, buffer, bufsize);
+	}
 	error = pw ? 0 : errno;
 #      endif /* !_AIX */            
 #    endif /* HAVE_NONPOSIX_GETPWUID_R */

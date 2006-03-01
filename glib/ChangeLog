@@ -1,3 +1,110 @@
+Wed Mar  1 16:26:52 2006  Tim Janik  <timj@imendio.com>
+
+	* applied GSlice changes from glib-2.10 that inroduce
+	G_DEBUG=gc-friendly and G_SLICE=always-malloc. also it
+	refines configure.in to detect a properly working memalign()
+	implementation. it also brings gutils.[hc] in sync with glib-2.10.
+
+Tue Feb 14 17:00:43 2006  Tim Janik  <timj@imendio.com>
+
+        * glib/gslice.c: only define _XOPEN_SOURCE to 600 to get at 
+        posix_memalign() in case we actually are going to use it, because
+        we detected a compliant implementation (#328997).
+
+        * configure.in (enable_included_printf): don't include malloc.h when
+        testing for posix_memalign() funcitonality, since this may break the 
+        test on some systems (#328997).
+
+2006-01-26  Matthias Clasen  <mclasen@redhat.com>
+
+        * glib/gmem.c (g_mem_init_nomessage): Fix C99isms.  (#328705, 
+        Kazuki Iwamoto)
+
+Wed Jan 25 19:16:57 2006  Tim Janik  <timj@imendio.com>
+
+        * fixed buglets reported by Jens Granseuer in #328254.
+
+        * configure.in: free the memory allocated in posix_memalign() tests.
+
+        * glib/gslice.c: spelling fixes.
+
+Wed Jan 25 16:39:18 2006  Tim Janik  <timj@imendio.com>
+
+        * glib/gslice.c: honour g_mem_gc_friendly settings when freeing
+        slices, make sure g_mem_gc_friendly is properly initialized.
+
+        * gmem.[hc]: ensure g_mem_gc_friendly is initialized from G_DEBUG upon
+        the first allocation. applied some branching optimizations.
+
+        * tests/slice-test.c: fixed leaks, reported by Kjartan Maraas.
+
+Tue Jan 24 17:49:36 2006  Tim Janik  <timj@imendio.com>
+
+        * glib/gslice.c: only use posix_memalign() if it's known to work,
+        revert to memalign() otherwise.
+
+        * configure.in: check for broken posix_memalign() implementations
+        to fix #328254.
+
+Mon Jan 23 17:30:33 2006  Tim Janik  <timj@imendio.com>
+
+        * glib/gutils.c (_g_getenv_nomalloc): wiped out all the wonderfull
+        G_OS_WIN32 code i wrote ;-[) after tml told me windows has getenv()
+        as well.
+
+Mon Jan 23 16:46:20 2006  Tim Janik  <timj@imendio.com>
+
+        * glib/gslice.c (slice_config_init): initialize GSlice config from
+        G_SLICE environment variable. we support G_SLICE=always-malloc
+        currently, which forces all g_slice_*() allocations to use the system
+        malloc instead.
+
+        * glib/gutils.c: 
+        g_parse_debug_string(): added a note about not using g_malloc() here.
+        _g_getenv_nomalloc(): getenv() variant that doesn't use g_malloc or 
+        g_slice. contains only guesswork in the WIN32 branch.
+
+2006-01-08  Matthias Clasen  <mclasen@redhat.com>
+
+        * glib/gtree.c: Break some long lines.
+
+        * tests/tree-test.c: Add more tests.
+
+        * glib/gslice.c: Include config.h first, pointed out
+        by Bogdan Nicula.
+
+2006-01-06  Matthias Clasen  <mclasen@redhat.com>
+
+        * glib/gslice.c: Only define _XOPEN_SOURCE if we know
+        that we have posix_memalign().  (#323937, Bogdan Nicula)
+
+Wed Jan  4 13:33:25 2006  Tim Janik  <timj@gtk.org>
+
+        * glib/gslice.c (magazine_cache_pop_magazine): don't reverse chunk 
+        order when creating magazines, so we hand out chunks with ascending
+        adresses.
+
+2005-12-29  Matthias Clasen  <mclasen@redhat.com>
+
+        * glib/gutils.c (glib_check_version): Fix a copy-and-paste error
+        in the docs.  (#325273, Declan Naughton)
+
+2005-12-16  Matthias Clasen  <mclasen@redhat.com>
+
+        *  glib/gmem.c (g_allocator_new): Don't return a pointer to
+        a const struct, since apps expect to be able to modify it. 
+        (#324179, J. Ali Harlow)
+
+2005-12-04  Matthias Clasen  <mclasen@redhat.com>
+
+        Handle multiple user names with the same UID better.
+        (#319535, Laszlo Peter)
+        
+        * glib/gutils.c (g_get_any_init_do): When determining user
+        data, first look up $LOGNAME. If the UID doesn't match
+        getuid(), fall back to the current behaviour of looking
+        up the user data based on getuid().
+
 2006-02-03  Michael Natterer  <mitch@imendio.com>
 
 	Upgrade maemo-glib to version 2.8.6:

@@ -92,6 +92,8 @@ struct _GMemVTable
 void	 g_mem_set_vtable (GMemVTable	*vtable);
 gboolean g_mem_is_system_malloc (void);
 
+GLIB_VAR gboolean g_mem_gc_friendly;
+
 /* Memory profiler and checker, has to be enabled via g_mem_set_vtable()
  */
 GLIB_VAR GMemVTable	*glib_mem_profiler_table;
@@ -99,6 +101,7 @@ void	g_mem_profile	(void);
 
 
 /* deprecated memchunks and allocators */
+//#if !defined (G_DISABLE_DEPRECATED) || defined (GTK_COMPILATION) || defined (GDK_COMPILATION)
 typedef struct _GAllocator GAllocator;
 typedef struct _GMemChunk  GMemChunk;
 #define g_mem_chunk_create(type, pre_alloc, alloc_type)	( \
@@ -138,6 +141,7 @@ void       g_allocator_free    (GAllocator   *allocator);
 #define	G_ALLOCATOR_LIST       (1)
 #define	G_ALLOCATOR_SLIST      (2)
 #define	G_ALLOCATOR_NODE       (3)
+//#endif /* G_DISABLE_DEPRECATED */
 
 G_END_DECLS
 
