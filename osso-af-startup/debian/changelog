@@ -1,6 +1,6 @@
 osso-af-startup (1.5-1) unstable; urgency=low
 
-  * Added Scratchbox hack for the PID directory.
+  * Not restarting SystemUI in first boot because it fails now.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 01 Mar 2006 17:46:21 +0200
 

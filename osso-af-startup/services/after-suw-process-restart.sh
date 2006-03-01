@@ -57,7 +57,7 @@ fi
 source $DIR/dbus-sessionbus.sh start
 /usr/sbin/waitdbus session
 # TODO: start ke-recv
-sudo /etc/init.d/osso-systemui restart
+#sudo /etc/init.d/osso-systemui restart
 if [ "x$DSME_STATE" = "xACTDEAD" ]; then
   if [ -x $DIR/osso-media-server.sh ]; then
     $DIR/osso-media-server.sh start
