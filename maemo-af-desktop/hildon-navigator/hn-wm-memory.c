@@ -88,7 +88,7 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 	  && hn_wm_watched_window_get_x_win (win) != *top_xwin) 
 	{
 	  HN_DBG("hn_wm_watched_window_attempt_pid_kill() for '%s'", hn_wm_watched_window_get_name (win));
-	  if (hn_wm_watched_window_attempt_pid_kill (win))
+	  if (hn_wm_watched_window_attempt_signal_kill (win, SIGTERM))
 	    {
           HN_DBG("app->hibernating now '%s'",
                  hn_wm_watchable_app_is_hibernating ? "true" : "false");
@@ -107,7 +107,7 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
     {
       /* Totally kill everthing and remove from our hash */
       HN_DBG("killing everything, currently '%s'", hn_wm_watched_window_get_name (win));
-      hn_wm_watched_window_attempt_pid_kill (win);
+      hn_wm_watched_window_attempt_signal_kill (win, SIGTERM);
       HN_DBG("### leave ###");
       return TRUE;
     }
@@ -295,7 +295,7 @@ hn_wm_memory_kill_lru( void )
 	  app = hn_wm_watched_window_get_app (win);
 	  
 	  if (hn_wm_watchable_app_is_able_to_hibernate (app))
-	    hn_wm_watched_window_attempt_pid_kill (win);
+	    hn_wm_watched_window_attempt_signal_kill (win, SIGTERM);
 	}
     }
   

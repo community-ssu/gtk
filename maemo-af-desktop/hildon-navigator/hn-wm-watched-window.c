@@ -714,7 +714,7 @@ hn_wm_watched_window_get_active_view (HNWMWatchedWindow     *win)
 
 
 gboolean
-hn_wm_watched_window_attempt_pid_kill (HNWMWatchedWindow *win)
+hn_wm_watched_window_attempt_signal_kill (HNWMWatchedWindow *win, int sig)
 {
   guchar *pid_result = NULL;
 
@@ -728,7 +728,7 @@ hn_wm_watched_window_attempt_pid_kill (HNWMWatchedWindow *win)
   if (pid_result == NULL)
     return FALSE;
 
-  if(kill(pid_result[0]+256*pid_result[1], SIGTERM) != 0)
+  if(kill(pid_result[0]+256*pid_result[1], sig /*SIGTERM*/) != 0)
     {
       osso_log(LOG_ERR, "Failed to kill pid %d with SIGTERM",
 	       pid_result[0]+256*pid_result[1]);

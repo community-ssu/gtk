@@ -1,3 +1,16 @@
+2006-03-01  Johan Bilien <johan.bilien@nokia.com>,
+	* Imported latest changes in TN refactoring:
+
+	* hildon-navigator/hn-wm-memory.c:
+	  (hn_wm_memory_kill_all_watched_foreach_func),
+	  (hn_wm_memory_kill_lru):
+	* hildon-navigator/hn-wm-watched-window.c:
+	  (hn_wm_watched_window_attempt_signal_kill):
+	* hildon-navigator/hn-wm-watched-window.h:
+	* hildon-navigator/hn-wm.c: (hn_wm_osso_kill_method):
+	  rename hn_wm_watched_window_attempt_pid_kill and add new
+	  arg for signal to be sent. ( Needed to kill hung apps )
+
 2006-02-28  Johan Bilien <johan.bilien@nokia.com>,
 	* Moved hildon-navogator/applications.menu to maemo-af-desktop-config
 
