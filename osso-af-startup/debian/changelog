@@ -1,6 +1,7 @@
 osso-af-startup (1.5-1) unstable; urgency=low
 
-  * Not restarting SystemUI in first boot because it fails (N#23373).
+  * Added re-reading of DBus session bus address to the restarting
+    script in the first boot (N#23373).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 01 Mar 2006 17:46:21 +0200
 
