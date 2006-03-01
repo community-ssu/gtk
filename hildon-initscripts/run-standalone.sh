@@ -8,9 +8,4 @@ else
   exit 1
 fi
 
-for i in /etc/osso-af-init/*.defs
-do
-  source $i
-done
-
 $*

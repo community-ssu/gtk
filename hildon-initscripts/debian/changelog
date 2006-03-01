@@ -1,3 +1,10 @@
+hildon-initscripts (1.2-1) unstable; urgency=low
+
+  * Modified matchbox.sh to enable application pinging.
+  * Updated run-standalone.sh for OS2006 startup scripts.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 01 Mar 2006 16:58:34 +0200
+
 hildon-initscripts (1.1-1) unstable; urgency=low
 
   * Fixed an issue with the session bus address not properly defined by
