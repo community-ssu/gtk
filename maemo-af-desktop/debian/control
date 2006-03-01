@@ -31,7 +31,7 @@ Description: Library to handle freedesktop.org applications menu.
 Package: libhildonmenu-dev
 Section: devel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libhildonmenu0 (=${Source-Version}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libhildonmenu0 (=${Source-Version})
 Description: libhildonmenu development files
 
 Package: hildon-status-bar-lib-dev
