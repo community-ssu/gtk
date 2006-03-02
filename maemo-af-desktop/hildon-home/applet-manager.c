@@ -709,6 +709,34 @@ GtkEventBox *applet_manager_get_eventbox(applet_manager_t *man,
     return applet_manager_get_eventbox_handler(man, handler);
 }
 
+GtkWidget *applet_manager_get_settings_handler(applet_manager_t *man, 
+                                               HomeAppletHandler *handler,
+                                               GtkWindow *parent)
+{
+    if(handler == NULL)
+    {
+        return NULL;
+    }
+    g_assert(handler);
+
+    return home_applet_handler_settings(handler, parent);
+}
+
+GtkWidget *applet_manager_get_settings(applet_manager_t *man,
+                                       gchar *identifier,
+                                       GtkWindow *parent)
+{
+    HomeAppletHandler *handler = applet_manager_get_handler(man, identifier);
+
+    if(handler == NULL)
+    {
+        return NULL;
+    }
+    g_assert(handler);
+
+    return applet_manager_get_settings_handler(man, handler, parent);
+}
+
 gchar *applet_manager_get_identifier_handler(applet_manager_t *man, 
                                              HomeAppletHandler *handler)
 {

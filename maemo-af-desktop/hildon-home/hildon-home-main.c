@@ -84,7 +84,8 @@ static GtkWidget *home_fixed;
 static GtkWidget *menu_used;
 static GtkWidget *titlebar_label;
 static GtkWidget *titlebar_menu = NULL;
-static GtkWidget *titlebar_submenu = NULL;
+static GtkWidget *applets_settings_item = NULL;
+static GtkWidget *titlebar_submenu_settings = NULL;
 
 static gboolean background_changable; /* FALSE if not allowed */
 
@@ -179,6 +180,7 @@ gboolean menu_popup_handler(GtkWidget *titlebar,
     {
         return FALSE;
     }
+    applets_settings_menu_refill();
     gtk_menu_popup(GTK_MENU(menu_used), NULL, NULL,
                    (GtkMenuPositionFunc)titlebar_menu_position_func,
                    NULL, 1,
@@ -264,10 +266,10 @@ static
 void construct_titlebar_menu()
 {    
     GtkWidget *select_applets_item;
-    GtkWidget *applets_settings_item;
     GtkWidget *layout_item;
 
     GtkWidget *tools_item;
+    GtkWidget *titlebar_submenu;
     GtkWidget *set_bg_image_item;
     GtkWidget *personalisation_item;
     GtkWidget *calibration_item;
@@ -288,13 +290,16 @@ void construct_titlebar_menu()
 		     NULL);
 
     /* Applet settings submenu */
-    /* FIXME implementation missing thus dimmed */
+
     applets_settings_item =
         gtk_menu_item_new_with_label(
             HILDON_HOME_TITLEBAR_MENU_APPLET_SETTINGS);
+    titlebar_submenu_settings = gtk_menu_new();
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(applets_settings_item),
+                              titlebar_submenu_settings);
     gtk_widget_set_sensitive(applets_settings_item, FALSE);
-    gtk_widget_show(applets_settings_item);
     gtk_menu_append(GTK_MENU(titlebar_menu), applets_settings_item);
+    gtk_widget_show(applets_settings_item);
 
     /* Layout mode launch */
 
@@ -2382,9 +2387,64 @@ static void construct_applets(void)
 
             gtk_widget_show_all(applet);
         }
-        
     }
     applet_manager_foreground_all(man);
+}
+
+/**
+ * @applets_settings_menu_fill
+ *
+ * Fills applets settings menu with applet settings
+ */
+
+static void applets_settings_menu_fill(void)
+{
+
+    GList *list_item;
+    gchar *identifier;
+    applet_manager_t *man = applet_manager_singleton_get_instance();
+    GtkWidget *menu_item = NULL;
+    gboolean applet_has_settings = FALSE;
+   
+    for(list_item = applet_manager_get_identifier_all(man); 
+        list_item != NULL; list_item = list_item->next)
+    {
+        identifier = (gchar *)list_item->data;
+        menu_item = applet_manager_get_settings(man, identifier, 
+                                                GTK_WINDOW(window));
+        if(menu_item != NULL && GTK_IS_MENU_ITEM(menu_item))
+        {
+            gtk_widget_show(menu_item);
+            gtk_menu_append(GTK_MENU(titlebar_submenu_settings), 
+                            menu_item);
+            applet_has_settings = TRUE;
+        }
+    }
+    gtk_widget_set_sensitive(applets_settings_item, applet_has_settings);
+}
+
+/**
+ * @applets_settings_menu_refill
+ *
+ * Fills applets settings menu with applet settings
+ */
+
+static void applets_settings_menu_refill(void)
+{
+
+    GList *list_item;
+   
+    list_item = 
+            gtk_container_get_children(
+                GTK_CONTAINER(titlebar_submenu_settings));
+
+    for(;list_item != NULL; list_item = list_item->next)
+    {
+        gtk_container_remove(GTK_CONTAINER(titlebar_submenu_settings), 
+                             GTK_WIDGET(list_item->data));
+    }
+    g_list_free(list_item);
+    applets_settings_menu_fill();
 }
 
 /* ----------------------*/
@@ -3197,7 +3257,7 @@ int hildon_home_main(void)
     hildon_home_display_base();
     
     construct_applets();
-
+    
     construct_titlebar_menu();
     
     /* Remove the lock to mark a successfull startup */

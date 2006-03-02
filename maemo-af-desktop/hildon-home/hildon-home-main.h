@@ -247,7 +247,6 @@ static
 gchar *get_filename_from_treemodel(GtkComboBox *box, gint index);
 static 
 gint get_priority_from_treemodel(GtkTreeModel *tree, GtkTreeIter *iter);
-	
 static gboolean layout_mode_selected(GtkWidget *widget, 
 				     GdkEvent *event, 
 				     gpointer data);
@@ -319,7 +318,8 @@ static void refresh_background_image_preview(void);
 static void clear_background_preview(void);
 static void save_background_preview(void);
 static void construct_applets(void);
-
+static void applets_settings_menu_fill(void);
+static void applets_settings_menu_refill(void);
 /* generic functions */
 static void construct_home_area(void);
 static void hildon_home_display_base(void);

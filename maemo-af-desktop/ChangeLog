@@ -1,3 +1,29 @@
+2006-03-02  Johan Bilien <johan.bilien@nokia.com>,
+	* Imported applet settings handling:
+
+	hildon-home/applet-manager.h
+	* applet_manager_get_settings_handler(): new function for retrieving
+	  menu item for applet settings access
+	* applet_manager_get_settings(): new function for retrieving menu item
+	  for applet settings access
+	* documentation update
+	
+	hildon-home/applet-manager.c
+	* applet_manager_get_settings_handler(): new function implementation
+	* applet_manager_get_settings(): new function implementation
+	
+	hildon-home/hildon-home-main.c
+	* global changes
+	
+	* menu_popup_handler(): call submenu recreation function before user
+	  is able to open submenu
+	* construct_titlebar_menu(): submenu creation added
+	* applets_settings_menu_fill(): fills submenu with available settings
+	  menu items
+	* applets_settings_menu_refill(): removes old settings items from
+	  submenu and calls filling function
+	* documentation update, debug only loggings removed
+
 2006-03-01  Johan Bilien <johan.bilien@nokia.com>,
 	* Imported latest changes in TN refactoring:
 

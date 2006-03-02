@@ -329,7 +329,7 @@ GList *applet_manager_get_handler_all(applet_manager_t *man);
  *   
  *  @param handler Applet handler containing all information about applet
  *   
- *  @ return eventbox of applet 
+ *  @Returns eventbox of applet 
  **/
 GtkEventBox *applet_manager_get_eventbox_handler(applet_manager_t *man, 
                                                  HomeAppletHandler *handler);
@@ -343,10 +343,44 @@ GtkEventBox *applet_manager_get_eventbox_handler(applet_manager_t *man,
  *   
  *  @param identifier Unique identier of applet instance
  *   
- *  @ return eventbox of applet 
+ *  @Returns eventbox of applet 
  **/
 GtkEventBox *applet_manager_get_eventbox(applet_manager_t *man, 
                                          gchar *identifier);
+
+/** applet_manager_get_settings_handler
+ *
+ *  Retrieves given applet's menu item widget
+ *   
+ *  @param man Applet manager as returned by 
+ *             applet_manager_singleton_get_instance
+ *   
+ *  @param handler Applet handler containing all information about applet
+ *   
+ *  @param parent a parent window.
+ *
+ *  @Returns menu item widget connected to settings of applet 
+ **/
+GtkWidget *applet_manager_get_settings_handler(applet_manager_t *man, 
+                                               HomeAppletHandler *handler,
+                                               GtkWindow *parent);
+
+/** applet_manager_get_settings
+ *
+ *  Retrieves given applet's menu item widget 
+ *   
+ *  @param man Applet manager as returned by 
+ *             applet_manager_singleton_get_instance
+ *   
+ *  @param identifier Unique identier of applet instance
+ *   
+ *  @param parent a parent window.
+ *
+ *  @Returns menu item widget connected to settings of applet 
+ **/
+GtkWidget *applet_manager_get_settings(applet_manager_t *man, 
+                                       gchar *identifier,
+                                       GtkWindow *parent);
 
 /** applet_manager_get_identifier_handler
  *
