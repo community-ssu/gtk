@@ -51,10 +51,6 @@ enum
 
 #define TEEMADIR "TEEMADIR"
 #define HOME_ENV "HOME"
-#define DATADIR "share"
-#define BINDIR "bin"
-#define APPDIR "share/applications/hildon"
-#define LIBDIR "lib/hildon-navigator"
 #define HILDON_NAVIGATOR_MENU_NAME "menu_from_navigator"
 
 #define _(String) gettext(String)
@@ -96,37 +92,6 @@ G_BEGIN_DECLS
  */
 void hildon_navigator_activate( const char* name, const char *exec, 
                                 const char *param );
-
-/*returns the data directory of the navigator
- *caller must free the string.
- *This function relies on the TEEMADIR environment variable being set.
- *This variable is currently always set in run.sh.
- *If unset, then defaults to /usr.
- */
-char *hildon_navigator_get_data_dir( void );
-
-/*returns the bin directory of the navigator
- *caller must free the string.
- *This function relies on the TEEMADIR environment variable being set.
- *This variable is currently always set in run.sh.
- *If unset, then defaults to /usr.
- */
-char *hildon_navigator_get_bin_dir( void );
-
-/** Returns the directory containing all the .desktop files
- *  caller must free the string.
- */
-char *hildon_navigator_get_app_dir( void );
-
-/** Returns the directory containing all the root order file
- *  caller must free the string.
- */
-char *hildon_navigator_get_root_dir( void );
-
-
-
-/** Returns the library dir. */
-char *hildon_navigator_get_lib_dir( void );
 
 /** Kill all applications watched by the task navigator **/
 void hildon_navigator_killall( void );

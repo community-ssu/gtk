@@ -777,7 +777,7 @@ static gpointer create_new_plugin(Navigator *tasknav,
                                   const gchar *name,
                                   const gchar *plugin_name)
 {
-    char *lib_path,*full_path;
+    char *full_path;
     NavigatorPlugin *plugin;
 
     g_assert (tasknav != NULL);
@@ -795,9 +795,7 @@ static gpointer create_new_plugin(Navigator *tasknav,
     }
     else
     {
-        lib_path = hildon_navigator_get_lib_dir();
-        full_path = g_build_path("/", lib_path, plugin_name, NULL);
-        g_free(lib_path);
+        full_path = g_build_path("/", PLUGINDIR, plugin_name, NULL);
     }
 
     plugin = g_new0(NavigatorPlugin, 1);

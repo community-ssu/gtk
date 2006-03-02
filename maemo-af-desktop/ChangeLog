@@ -1,4 +1,9 @@
 2006-03-02  Johan Bilien <johan.bilien@nokia.com>,
+	* hildon-navigator/hildon-navigator.[ch]: removed unused functions
+	* hildon-navigator/application-switcher.c: Play sound on opening
+	  and closing windows
+
+2006-03-02  Johan Bilien <johan.bilien@nokia.com>,
 	* Imported applet settings handling:
 
 	hildon-home/applet-manager.h

@@ -34,6 +34,7 @@
 /* Hildon includes */
 #include "application-switcher.h"
 #include "hn-wm.h"
+#include <hildon-widgets/hildon-system-sound.h>
 
 /* GLib include */
 #include <glib.h>
@@ -1796,6 +1797,9 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
   if (app_switcher_menu_button_anim_needed (as) && !as->menu_icon_is_blinking)
     app_switcher_menu_button_anim_start (as);
 
+  /* Play a sound */
+  hildon_play_system_sound(HILDON_NAVIGATOR_WINDOW_OPEN_SOUND);
+
   /* return menu item */
   return item;
 }
@@ -1849,6 +1853,8 @@ app_switcher_remove_item (ApplicationSwitcher_t *as,
   if (GTK_WIDGET_VISIBLE(as->menu))
     gtk_menu_reposition(as->menu);
 
+  /* Play a sound */
+  hildon_play_system_sound(HILDON_NAVIGATOR_WINDOW_CLOSE_SOUND);
 
 }
 

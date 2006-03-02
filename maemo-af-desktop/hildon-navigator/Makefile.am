@@ -3,12 +3,16 @@
 
 EXTRA_DIST = .empty hildon-navigator.pc empty_exec.sh
 
+plugindir = $(libdir)/hildon-navigator
+
 INCLUDES = \
 	$(HILDON_CFLAGS) -g $(MB_CFLAGS) $(OSSO_CFLAGS) $(MB_CFLAGS) $(LIBXML_CFLAGS)\
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
 	-DOTHERS_MENU_CONF_DIR=\"$(sysconfdir)/others-menu\" \
 	-DPREFIX=\"$(prefix)\" \
+	-DDATADIR=\"$(datadir)\" \
+	-DPLUGINDIR=\"$(plugindir)\" \
     -I../libhildonmenu
 
 pkgconfigdir = $(libdir)/pkgconfig

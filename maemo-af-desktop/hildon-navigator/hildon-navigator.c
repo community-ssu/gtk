@@ -38,7 +38,6 @@
 #include <config.h>
 #endif
 
-static char *build_dir( const char *dir );
 /* do the actual activating of the application */
 /* based on code from the old desk*/
 void hildon_navigator_activate( const char* name, const char *exec,
@@ -50,40 +49,6 @@ void hildon_navigator_activate( const char* name, const char *exec,
 
     osso_manager_launch(osso_man,exec,param);
     
-}
-
-/*caller must free the memory*/
-
-static char *build_dir( const char *dir )
-{
-
-    return g_build_path( "/", PREFIX, dir, NULL );
-}
-
-char *hildon_navigator_get_data_dir( void )
-{
-    return build_dir( DATADIR );
-}
-
-char *hildon_navigator_get_bin_dir( void )
-{
-    return build_dir( BINDIR );
-}
-
-char *hildon_navigator_get_app_dir( void )
-{
-    return build_dir( APPDIR );
-}
-
-char *hildon_navigator_get_lib_dir( void )
-{
-    return build_dir( LIBDIR );
-}
-char *hildon_navigator_get_root_dir( void )
-{
-    const char *result = g_getenv( HOME_ENV );
-    
-    return g_strdup(result);
 }
 
 void hildon_navigator_killall(void)

@@ -129,6 +129,9 @@
 #define BGKILL_OFF_SIGNAL_PATH "/com/nokia/ke_recv/bgkill_off"
 #define BGKILL_OFF_SIGNAL_NAME "bgkill_off"
 
+#define HILDON_NAVIGATOR_WINDOW_OPEN_SOUND DATADIR"/sounds/ui-window_open.wav"
+#define HILDON_NAVIGATOR_WINDOW_CLOSE_SOUND DATADIR"/sounds/ui-window_close.wav"
+
 #define LAST_AS_BUTTON 4
 
 #define TIMEOUT_HALF_SECOND 500
