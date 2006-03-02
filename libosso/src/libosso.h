@@ -227,6 +227,16 @@ osso_return_t osso_rpc_run (osso_context_t * osso, const gchar * service,
                             osso_rpc_t * retval, int argument_type, ...);
 
 /**
+ * See #osso_rpc_run. The RPC call is sent on the system bus instead
+ *
+ */
+osso_return_t osso_rpc_run_system (osso_context_t * osso, const gchar * service,
+                            const gchar * object_path,
+                            const gchar * interface, const gchar * method,
+                            osso_rpc_t * retval, int argument_type, ...);
+
+
+/**
  * This function is a wrapper for #osso_rpc_run. It calls an RPC 
  * function of an other application. This call is blocking.
  * The service name of the other application is "com.nokia.A", where A

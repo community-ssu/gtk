@@ -83,6 +83,28 @@ osso_return_t osso_rpc_run(osso_context_t *osso, const gchar *service,
     return ret;
 }
 
+/************************************************************************/
+osso_return_t osso_rpc_run_system(osso_context_t *osso, const gchar *service,
+			   const gchar *object_path,
+			   const gchar *interface,
+			   const gchar *method, osso_rpc_t *retval,
+			   int argument_type, ...)
+{
+    osso_return_t ret;
+    va_list arg_list;
+    
+    if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
+	(interface == NULL) || (method == NULL))
+	return OSSO_INVALID;
+
+    va_start(arg_list, argument_type);
+    
+    ret = _rpc_run(osso, osso->sys_conn, service, object_path, interface,
+		   method, retval, argument_type, arg_list);
+    va_end(arg_list);
+    return ret;
+}
+
 
 /************************************************************************/
 osso_return_t __attribute__ ((visibility("hidden")))
