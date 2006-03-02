@@ -252,6 +252,20 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 }
 
 static void
+add_table_field (GtkWidget *table, int row,
+		 const char *field, const char *value)
+{
+  GtkWidget *label;
+
+  label = make_small_label (field);
+  gtk_misc_set_alignment (GTK_MISC (label), 1.0, 0.0);
+  gtk_table_attach_defaults (GTK_TABLE (table), label, 0, 1, row, row+1);
+  label = make_small_label (value);
+  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.0);
+  gtk_table_attach_defaults (GTK_TABLE (table), label, 1, 2, row, row+1);
+}
+
+static void
 details_response (GtkDialog *dialog, gint response, gpointer clos)
 {
   gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -261,8 +275,8 @@ static void
 show_with_details (package_info *pi, bool installed)
 {
   GtkWidget *dialog, *notebook;
-  GString *common = g_string_new ("");
-  
+  GtkWidget *table, *common;
+
   gchar *status;
   bool broken = false;
 
@@ -299,54 +313,58 @@ show_with_details (package_info *pi, bool installed)
     }
   else
     status = "?";
-  
-  g_string_append_printf (common, "%s\t\t\t%s\n",
-			  _("ai_fi_details_package"), pi->name);
+
+  table = gtk_table_new (9, 2, FALSE);
+  gtk_table_set_col_spacings (GTK_TABLE (table), 10);
+  gtk_table_set_row_spacings (GTK_TABLE (table), 0);
+
+  add_table_field (table, 0,
+		   _("ai_fi_details_package"), pi->name);
 
   gchar *short_description = (installed
 			      ? pi->installed_short_description
 			      : pi->available_short_description);
   if (short_description == NULL)
     short_description = pi->installed_short_description;
-  g_string_append_printf (common, "\t\t\t\t\t%s\n", short_description);
+  add_table_field (table, 1, "", short_description);
 
-  g_string_append_printf (common, "%s\t\t\t%s\n",
-			  _("ai_fi_details_maintainer"), pi->maintainer);
+  add_table_field (table, 2, _("ai_fi_details_maintainer"), pi->maintainer);
 
-  g_string_append_printf (common, "%s\t\t\t\t%s\n",
-			  _("ai_fi_details_status"), status);
+  add_table_field (table, 3, _("ai_fi_details_status"), status);
 
-  g_string_append_printf (common, "%s\t\t\t%s\n",
-			  _("ai_fi_details_category"),
-			  nicify_section_name (installed
-					       ? pi->installed_section
-					       : pi->available_section));
+  add_table_field (table, 4, _("ai_fi_details_category"),
+		   nicify_section_name (installed
+					? pi->installed_section
+					: pi->available_section));
 
-  g_string_append_printf (common, "%s\t\t%s\n",
-			  _("ai_va_details_installed_version"),
-			  (pi->installed_version
-			   ? pi->installed_version
-			   : _("ai_va_details_no_info")));
+  add_table_field (table, 5, _("ai_va_details_installed_version"),
+		   (pi->installed_version
+		    ? pi->installed_version
+		    : _("ai_va_details_no_info")));
+
   if (pi->installed_version)
     {
       char size_buf[20];
       size_string_detailed (size_buf, 20, pi->installed_size);
-      g_string_append_printf (common, "%s\t\t\t\t%s\n",
-			      _("ai_va_details_size"), size_buf);
+      add_table_field (table, 6, _("ai_va_details_size"), size_buf);
     }
 
-  g_string_append_printf (common, "%s\t%s",
-			  _("ai_va_details_available_version"),
-			  (pi->available_version 
-			   ? pi->available_version
-			   : _("ai_va_details_no_info")));
+  add_table_field (table, 7, _("ai_va_details_available_version"),
+		   (pi->available_version 
+		    ? pi->available_version
+		    : _("ai_va_details_no_info")));
+
   if (pi->available_version)
     {
       char size_buf[20];
       size_string_detailed (size_buf, 20, pi->info.download_size);
-      g_string_append_printf (common, "\n%s\t\t%s",
-			      _("ai_va_details_download_size"), size_buf);
+      add_table_field (table, 8, _("ai_va_details_download_size"), size_buf);
     }
+
+  common = gtk_vbox_new (FALSE, 0);
+  GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), table, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (common), hbox, FALSE, FALSE, 0);
 
   const gchar *summary_label;
   if (installed)
@@ -367,17 +385,16 @@ show_with_details (package_info *pi, bool installed)
   notebook = gtk_notebook_new ();
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_small_text_view (common->str),
+			    common,
 			    gtk_label_new (_("ai_ti_details_noteb_common")));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_small_text_view (pi->description),
-			    gtk_label_new (_("ai_ti_details_noteb_description")));
+			    gtk_label_new
+			    (_("ai_ti_details_noteb_description")));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    make_small_text_view (pi->summary),
 			    gtk_label_new (summary_label));
   
-  g_string_free (common, 1);
-
   pi->unref ();
 
   g_signal_connect (dialog, "response",

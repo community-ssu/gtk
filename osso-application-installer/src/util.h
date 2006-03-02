@@ -1,7 +1,7 @@
 /*
  * This file is part of osso-application-installer
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005, 2006 Nokia Corporation.
  *
  * Contact: Marius Vollmer <marius.vollmer@nokia.com>
  *
@@ -51,26 +51,36 @@ void set_progress (const gchar *title, float fraction);
 void hide_progress ();
 
 GtkWidget *make_small_text_view (const char *text);
+void set_small_text_view_text (GtkWidget *, const char *text);
+
+GtkWidget *make_small_label (const char *text);
 
 typedef void package_info_callback (package_info *);
 
-GtkWidget *get_global_package_list_widget ();
-void set_global_package_list (GList *packages,
-			      bool installed,
-			      package_info_callback *selected,
-			      package_info_callback *activated);
+GtkWidget *make_global_package_list (GList *packages,
+				     bool installed,
+				     const char *empty_label,
+				     package_info_callback *selected,
+				     package_info_callback *activated);
+void clear_global_package_list ();
+
 void global_package_info_changed (package_info *pi);
 
 typedef void section_activated (section_info *);
 
-GtkWidget *get_global_section_list_widget ();
-void set_global_section_list (GList *sections, section_activated *act);
+GtkWidget *make_global_section_list (GList *sections, section_activated *act);
+void clear_global_section_list ();
 
 void size_string_general (char *buf, size_t n, int bytes);
 void size_string_detailed (char *buf, size_t n, int bytes);
 
 void show_deb_file_chooser (void (*cont) (char *filename, void *data),
 			    void *data);
+
+void show_file_chooser_for_save (const char *title,
+				 const char *default_filename,
+				 void (*cont) (char *filename, void *data),
+				 void *data);
 
 GdkPixbuf *pixbuf_from_base64 (const char *base64);
 

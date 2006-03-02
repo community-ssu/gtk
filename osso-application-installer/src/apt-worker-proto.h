@@ -113,7 +113,7 @@ private:
   bool corrupted_flag, at_end_flag;
 };
 
-// NOOP - do nothing, no paramters, no results
+// NOOP - do nothing, no parameters, no results
 
 // STATUS - status report
 //
@@ -123,8 +123,15 @@ private:
 //
 // The response always has seq == -1.  It contains:
 //
-// - label or null (string).  If null, use last one.
-// - percent (int)
+// - operation (int).  See enum below.
+// - already (int).    Amount of work already done.
+// - total (int).      Total amount of work to do.
+
+enum apt_proto_operation {
+  op_updating_cache,
+  op_downloading,
+  op_general
+};
 
 // GET_PACKAGE_LIST - get a list of packages with their names,
 //                    versions, and partial status

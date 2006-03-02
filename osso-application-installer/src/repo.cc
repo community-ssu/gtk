@@ -32,6 +32,7 @@
 
 #include <gtk/gtk.h>
 #include <hildon-widgets/hildon-note.h>
+#include <hildon-widgets/hildon-caption.h>
 
 #include "repo.h"
 #include "settings.h"
@@ -63,7 +64,9 @@ struct repo_closure {
   repo_line *lines;
   GtkTreeView *tree;
   GtkListStore *store;
-  
+
+  bool dirty;
+
   // parsing state
   bool next_is_essential;
 };
@@ -156,6 +159,7 @@ repo_closure::repo_closure ()
 {
   lines = NULL;
   next_is_essential = false;
+  dirty = false;
 }
 
 repo_closure::~repo_closure ()
@@ -169,6 +173,7 @@ repo_closure::~repo_closure ()
 }
 
 struct repo_edit_closure {
+  bool isnew;
   repo_line *line;
   GtkWidget *uri_entry;
   GtkWidget *dist_entry;
@@ -197,7 +202,10 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
 	 gtk_entry_get_text (GTK_ENTRY (c->components_entry)));
       r->deb_line = r->line + (r->enabled? 4 : 5);
       refresh_repo_list (r->clos);
+      r->clos->dirty = true;
     }
+  else if (c->isnew)
+    remove_repo (c->line);
 
   delete c;
 
@@ -205,27 +213,34 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
 }
 
 static GtkWidget *
-add_entry (GtkWidget *box, const char *label,
+add_entry (GtkWidget *box, GtkSizeGroup *group,
+	   const char *label,
 	   const char *text, const char *end)
 {
-  GtkWidget *hbox = gtk_hbox_new (0, FALSE);
-  GtkWidget *entry = gtk_entry_new ();
+  GtkWidget *caption, *entry;
   gint pos = 0;
+
+  entry = gtk_entry_new ();
   gtk_editable_insert_text (GTK_EDITABLE (entry), text, end-text, &pos);
-  gtk_box_pack_start_defaults (GTK_BOX (hbox), gtk_label_new (label));
-  gtk_box_pack_start_defaults (GTK_BOX (hbox), entry);
-  gtk_box_pack_start_defaults (GTK_BOX (box), hbox);
+
+  caption = hildon_caption_new (group, label, entry,
+				NULL, HILDON_CAPTION_OPTIONAL);
+  gtk_box_pack_start_defaults (GTK_BOX (box), caption);
+
   return entry;
 }
 
 static void
 show_repo_edit_dialog (repo_line *r, bool isnew)
 {
-  GtkWidget *dialog, *vbox;
+  GtkWidget *dialog, *vbox, *caption;
+  GtkSizeGroup *group;
+
   repo_edit_closure *c = new repo_edit_closure;
 
+  c->isnew = isnew;
   c->line = r;
-
+  
   dialog = gtk_dialog_new_with_buttons ((isnew
 					 ? _("ai_ti_new_repository")
 					 : _("ai_ti_edit_repository")),
@@ -237,30 +252,38 @@ show_repo_edit_dialog (repo_line *r, bool isnew)
 					GTK_RESPONSE_CANCEL,
 					NULL);
   vbox = GTK_DIALOG (dialog)->vbox;
+  group = GTK_SIZE_GROUP (gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL));
   
   char *start, *end;
 
   start = r->deb_line;
   parse_quoted_word (&start, &end, false);
-  c->uri_entry = add_entry (vbox, _("ai_fi_new_repository_web_address"),
+  c->uri_entry = add_entry (vbox, group,
+			    _("ai_fi_new_repository_web_address"),
 			    start, end);
 
   start = end;
   parse_quoted_word (&start, &end, false);
-  c->dist_entry = add_entry (vbox, _("ai_fi_new_repository_distribution"),
+  c->dist_entry = add_entry (vbox, group,
+			     _("ai_fi_new_repository_distribution"),
 			     start, end);
 
   start = end;
   parse_quoted_word (&start, &end, false);
   end = start + strlen (start);
-  c->components_entry = add_entry (vbox, _("ai_fi_new_repository_component"),
+  c->components_entry = add_entry (vbox, group,
+				   _("ai_fi_new_repository_component"),
 				   start, end);
 
-  c->enabled_button =
-    gtk_check_button_new_with_label (_("ai_fi_new_repository_enabled"));
-  gtk_box_pack_start_defaults (GTK_BOX (vbox), c->enabled_button);
+  c->enabled_button = gtk_check_button_new ();
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (c->enabled_button),
 			       r->enabled);
+  caption = hildon_caption_new (group,
+				_("ai_fi_new_repository_enabled"),
+				c->enabled_button,
+				NULL, HILDON_CAPTION_OPTIONAL);
+  gtk_box_pack_start_defaults (GTK_BOX (vbox), caption);
+
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (repo_edit_response), c);
@@ -311,7 +334,35 @@ repo_reply (int cmd, apt_proto_decoder *dec, void *data)
 }
 
 #define REPO_RESPONSE_NEW    1
-#define REPO_RESPONSE_REMOVE 2
+#define REPO_RESPONSE_EDIT   2
+#define REPO_RESPONSE_REMOVE 3
+
+static repo_line *
+get_selected_repo_line (repo_closure *c)
+{
+  GtkTreeSelection *selection = gtk_tree_view_get_selection (c->tree);
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
+    {
+      repo_line *r;
+      gtk_tree_model_get (model, &iter, 0, &r, -1);
+      return r;
+    }
+ 
+  return NULL;
+}
+
+static void
+remove_repo_cont (bool res, void *data)
+{
+  if (res)
+    {
+      repo_line *r = (repo_line *)data;
+      r->clos->dirty = true;
+      remove_repo (r);
+    }
+}
 
 static void
 repo_response (GtkDialog *dialog, gint response, gpointer clos)
@@ -324,53 +375,79 @@ repo_response (GtkDialog *dialog, gint response, gpointer clos)
       return;
     }
 
-  if (response == REPO_RESPONSE_REMOVE)
+  if (response == REPO_RESPONSE_EDIT)
     {
-      GtkTreeSelection *selection = gtk_tree_view_get_selection (c->tree);
-      GtkTreeIter iter;
-      GtkTreeModel *model;
-      if (gtk_tree_selection_get_selected (selection, &model, &iter))
-	{
-	  repo_line *r;
-	  gtk_tree_model_get (model, &iter, 0, &r, -1);
-	  if (r == NULL)
-	    return;
+      repo_line *r = get_selected_repo_line (c);
+      if (r == NULL)
+	return;
 
-	  if (r->essential)
-	    annoy_user (_("ai_ni_unable_remove_repository"));
-	  else
-	    remove_repo (r);
-	}
+      if (r->essential)
+	annoy_user (_("ai_ni_unable_edit_repository"));
+      else
+	show_repo_edit_dialog (r, false);
+
       return;
     }
 
-  if (response == GTK_RESPONSE_OK)
+  if (response == REPO_RESPONSE_REMOVE)
     {
-      apt_worker_set_sources_list (repo_encoder, c, repo_reply, NULL);
-      refresh_package_cache ();
+      repo_line *r = get_selected_repo_line (c);
+      if (r == NULL)
+	return;
+
+      if (r->essential)
+	annoy_user (_("ai_ni_unable_remove_repository"));
+      else
+	{
+	  char *text = g_strdup_printf (_("ai_nc_remove_repository"),
+					r->deb_line);
+	  ask_yes_no (text, remove_repo_cont, r);
+	  g_free (text);
+	}
+      
+      return;
     }
 
-  if (response == GTK_RESPONSE_CANCEL
-      && c->lines
-      && !strcmp (c->lines->line, "deb matrix  "))
-    ask_the_pill_question ();
-
-  delete c;
-  gtk_widget_destroy (GTK_WIDGET (dialog));
+  if (response == GTK_RESPONSE_CLOSE)
+    {
+      if (c->dirty)
+	{
+	  apt_worker_set_sources_list (repo_encoder, c, repo_reply, NULL);
+	  refresh_package_cache ();
+	}
+      
+      delete c;
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+    }
 }
 
 static void
-repo_enable_func (GtkTreeViewColumn *column,
-		  GtkCellRenderer *cell,
-		  GtkTreeModel *model,
-		  GtkTreeIter *iter,
-		  gpointer data)
+repo_icon_func (GtkTreeViewColumn *column,
+		GtkCellRenderer *cell,
+		GtkTreeModel *model,
+		GtkTreeIter *iter,
+		gpointer data)
 {
+  static GdkPixbuf *repo_browser_pixbuf;
+
+  if (repo_browser_pixbuf == NULL)
+    {
+      GtkIconTheme *icon_theme = gtk_icon_theme_get_default ();
+      repo_browser_pixbuf =
+	gtk_icon_theme_load_icon (icon_theme,
+				  "qgn_list_browser",
+				  26,
+				  GtkIconLookupFlags (0),
+				  NULL);
+    }
+
   repo_line *r;
   gtk_tree_model_get (model, iter, 0, &r, -1);
-  if (r)
-    gtk_cell_renderer_toggle_set_active (GTK_CELL_RENDERER_TOGGLE (cell),
-					 r->enabled);
+
+  g_object_set (cell,
+		"pixbuf", repo_browser_pixbuf,
+		"sensitive", r && r->enabled,
+		NULL);
 }
 
 static void
@@ -382,11 +459,9 @@ repo_text_func (GtkTreeViewColumn *column,
 {
   repo_line *r;
   gtk_tree_model_get (model, iter, 0, &r, -1);
-  if (r)
-    g_object_set (cell,
-		  "text", r->deb_line,
-		  "foreground", r->enabled? "black":"grey",
-		  NULL);
+  g_object_set (cell,
+		"text", r? r->deb_line : "",
+		NULL);
 }
 
 static void
@@ -437,6 +512,15 @@ make_repo_list (repo_closure *c)
   c->tree =
     GTK_TREE_VIEW (gtk_tree_view_new_with_model (GTK_TREE_MODEL (c->store)));
 
+  renderer = gtk_cell_renderer_pixbuf_new ();
+  gtk_tree_view_insert_column_with_data_func (c->tree,
+					      -1,
+					      NULL,
+					      renderer,
+					      repo_icon_func,
+					      c->tree,
+					      NULL);
+
   renderer = gtk_cell_renderer_text_new ();
   gtk_tree_view_insert_column_with_data_func (c->tree,
 					      -1,
@@ -482,16 +566,13 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
     printf ("failed.\n");
 
   GtkWidget *dialog;
-  dialog = gtk_dialog_new_with_buttons (_("ai_ti_repository"),
-					NULL,
-					GTK_DIALOG_MODAL,
-					"OK", GTK_RESPONSE_OK,
-					_("ai_bd_repository_new"),
-					REPO_RESPONSE_NEW,
-					_("ai_bd_repository_delete"),
-					REPO_RESPONSE_REMOVE,
-					"Cancel", GTK_RESPONSE_CANCEL,
-					NULL);
+  dialog = gtk_dialog_new_with_buttons
+    (_("ai_ti_repository"), get_main_window (), GTK_DIALOG_MODAL,
+     _("ai_bd_repository_new"), REPO_RESPONSE_NEW,
+     _("ai_bd_repository_edit"), REPO_RESPONSE_EDIT,
+     _("ai_bd_repository_delete"), REPO_RESPONSE_REMOVE,
+     _("ai_bd_repository_close"), GTK_RESPONSE_CLOSE,
+     NULL);
   
   gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (dialog)->vbox),
 			       make_repo_list (c));
@@ -528,7 +609,7 @@ ask_the_pill_question ()
   GtkWidget *dialog;
 
   dialog =
-    hildon_note_new_confirmation_add_buttons (NULL, 
+    hildon_note_new_confirmation_add_buttons (get_main_window (), 
 					      "Which pill?",
 					      "Red", GTK_RESPONSE_YES,
 					      "Blue", GTK_RESPONSE_NO,

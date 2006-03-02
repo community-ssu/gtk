@@ -1,3 +1,10 @@
+osso-application-installer (4.4) unstable; urgency=low
+
+  * First serious pass over UI spec and layout guide.  Should be quite
+    close now.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  2 Mar 2006 22:42:47 +0200
+
 osso-application-installer (4.3) unstable; urgency=low
 
   * Fixed typo in Depends: it's l10n, not l10.  Also, miscellaneous

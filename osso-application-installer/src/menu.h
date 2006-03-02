@@ -31,4 +31,6 @@ void create_menu (GtkMenu *main);
 void set_details_menu_sensitive (bool);
 void set_operation_menu_label (const gchar *label, bool sensitive);
 
+void set_fullscreen_menu_check (bool f);
+
 #endif /* !MENU_H */

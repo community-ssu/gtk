@@ -142,26 +142,29 @@ clean_callback (GtkWidget *button, gpointer data)
 static GtkWidget *
 make_temp_files_tab (settings_closure *c)
 {
-  GtkWidget *vbox = gtk_vbox_new (TRUE, 30);
+  GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
   GtkWidget *radio, *btn;
 
   radio = gtk_radio_button_new_with_label (NULL, _("ai_li_settings_leave"));
-  gtk_box_pack_start_defaults (GTK_BOX (vbox), radio);
+  gtk_box_pack_start (GTK_BOX (vbox), radio, FALSE, FALSE, 5);
   if (!clean_after_install)
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio),
 				  TRUE);
 
+  GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
   btn = gtk_button_new_with_label (_("ai_bd_settings_delete"));
-  gtk_box_pack_start_defaults (GTK_BOX (vbox), btn);
   g_signal_connect (btn, "clicked",
 		    G_CALLBACK (clean_callback), NULL);
+  gtk_box_pack_end (GTK_BOX (hbox), btn, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 5);
 
   radio = gtk_radio_button_new_with_label_from_widget
     (GTK_RADIO_BUTTON (radio), _("ai_li_settings_delete_after"));
-  gtk_box_pack_start_defaults (GTK_BOX (vbox), radio);
+  gtk_box_pack_start (GTK_BOX (vbox), radio, FALSE, FALSE, 5);
   if (clean_after_install)
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio),
 				  TRUE);
+
   c->clean_radio = radio;
 
   return vbox;

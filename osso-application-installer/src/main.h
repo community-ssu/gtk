@@ -87,4 +87,11 @@ void search_packages (const char *pattern, bool in_descriptions);
 
 const char *nicify_section_name (const char *name);
 
+GtkWindow *get_main_window ();
+
+void set_fullscreen (bool);
+void toggle_fullscreen ();
+
+void set_toolbar_visibility (bool fullscreen, bool visibility);
+
 #endif /* !MAIN_H */

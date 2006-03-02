@@ -70,7 +70,7 @@ interpret_pmstatus (char *str)
     }
 	
   // printf ("STATUS: %3d %s\n", int (percentage), title);
-  set_progress (title, percentage/100.0);
+  set_progress (NULL, percentage/100.0);
 }
 
 static gboolean

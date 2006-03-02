@@ -73,10 +73,38 @@ BUGS
 - handle broken packages
 - empty section after installing last package in it
 - topping on mime-open
-- get character encoding straight
 
 - streamline package_info and GET_PACKAGE_INFO to only store/return
   the needed info for the list that the package will be in (packages
   do not move from list to list).
 
 - Check when upgrading as well as when removing
+
+- Format description nicely in details dialog.
+
+
+Progress indications
+--------------------
+
+- Refreshing list of packages
+
+  - Downloading        (size)
+  - Creating cache     (percent)
+
+- Installing/updating package
+
+  - Checking           (???)
+  - Downloading        (size)
+  - Installing         (pmstatus)
+  - Creating cache     (percent)
+
+- Removing package
+
+  - Removing           (pmstatus)
+  - Creating cache     (percent)
+
+- Installing from file
+
+  - Copying to local   (size)
+  - Installing         (pulse)
+  - Creating cache     (percent)

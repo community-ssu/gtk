@@ -78,7 +78,7 @@ ask_yes_no (const gchar *question,
   c->cont = cont;
   c->data = data;
 
-  dialog = hildon_note_new_confirmation (NULL, question);
+  dialog = hildon_note_new_confirmation (get_main_window (), question);
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (yes_no_response), c);
@@ -100,7 +100,7 @@ ask_yes_no_with_details (const gchar *question,
   c->data = data;
 
   dialog = hildon_note_new_confirmation_add_buttons
-    (NULL, question,
+    (get_main_window (), question,
      dgettext ("hildon-libs", "Ecdg_bd_confirmation_note_ok"),
      GTK_RESPONSE_OK,
      _("ai_nc_bd_details"), 1,
@@ -161,7 +161,7 @@ annoy_user_with_details (const gchar *text,
   // XXX - the buttons should be "Details" "Close", but this gives
   //       "Ok" "Details".
 
-  dialog = hildon_note_new_information (NULL, text);
+  dialog = hildon_note_new_information (get_main_window (), text);
   gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_details"), 1);
 
   pi->ref ();
@@ -192,7 +192,7 @@ annoy_user_with_log (const gchar *text)
   GtkWidget *dialog, *action_area;
   GtkWidget *details_button;
 
-  dialog = hildon_note_new_information (NULL, text);
+  dialog = hildon_note_new_information (get_main_window (), text);
   gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_log"), 1);
 
   g_signal_connect (dialog, "response", 
@@ -216,6 +216,7 @@ scare_user_with_legalese (void (*cont) (bool res, void *data),
 
 static GtkWidget *progress_dialog = NULL;
 static GtkProgressBar *progress_bar;
+static const gchar *general_title;
 
 void
 show_progress (const gchar *title)
@@ -224,12 +225,14 @@ show_progress (const gchar *title)
     {
       progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
       progress_dialog =
-	hildon_note_new_cancel_with_progress_bar (NULL,
+	hildon_note_new_cancel_with_progress_bar (get_main_window (),
 						  title,
 						  progress_bar);
     }
   else
     set_progress (title, 0.0);
+
+  general_title = title;
 
   gtk_widget_show (progress_dialog);
 }
@@ -237,6 +240,11 @@ show_progress (const gchar *title)
 void
 set_progress (const gchar *title, float fraction)
 {
+  if (title == NULL)
+    title = general_title;
+
+  // printf ("STATUS: %s -- %f\n", title, fraction);
+
   if (progress_dialog)
     {
       g_object_set (progress_dialog, "description", title, NULL);
@@ -286,7 +294,22 @@ make_small_text_view (const char *text)
   return scroll;
 }
 
-static GtkWidget *global_list_widget = NULL;
+void
+set_small_text_view_text (GtkWidget *scroll, const char *text)
+{
+  GtkWidget *view = gtk_bin_get_child (GTK_BIN (scroll));
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (view));
+  gtk_text_buffer_set_text (buffer, text, -1);
+}
+
+GtkWidget *
+make_small_label (const char *text)
+{
+  GtkWidget *label = gtk_label_new (text);
+  gtk_widget_modify_font (label, get_small_font ());
+  return label;
+}
+
 static GtkListStore *global_list_store = NULL;
 static bool global_installed;
 
@@ -461,13 +484,35 @@ global_row_activated (GtkTreeView *treeview,
     }
 }
 
-GtkWidget *
-get_global_package_list_widget ()
-{
-  if (global_list_widget)
-    return global_list_widget;
+static void set_global_package_list (GList *packages,
+				     bool installed,
+				     package_info_callback *selected,
+				     package_info_callback *activated);
 
-  global_list_store = gtk_list_store_new (1, GTK_TYPE_POINTER);
+static GList *global_packages;
+
+GtkWidget *
+make_global_package_list (GList *packages,
+			  bool installed,
+			  const char *empty_label,
+			  package_info_callback *selected,
+			  package_info_callback *activated)
+{
+  // XXX - refcounting of package_info
+
+  if (global_list_store == NULL)
+    {
+      global_list_store = gtk_list_store_new (1, GTK_TYPE_POINTER);
+      g_object_ref (global_list_store);
+    }
+
+  if (packages == NULL)
+    {
+      GtkWidget *label = gtk_label_new (empty_label);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.5, 0.0);
+      return label;
+    }
+
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
   GtkWidget *tree, *scroller;
@@ -551,12 +596,12 @@ get_global_package_list_widget ()
   g_signal_connect (tree, "row-activated", 
 		    G_CALLBACK (global_row_activated), NULL);
 
+  set_global_package_list (packages, installed, selected, activated);
+
   return scroller;
 }
 
-static GList *global_packages;
-
-void
+static void
 set_global_package_list (GList *packages,
 			 bool installed,
 			 package_info_callback *selected,
@@ -590,103 +635,77 @@ set_global_package_list (GList *packages,
 }
 
 void
+clear_global_package_list ()
+{
+  set_global_package_list (NULL, false, NULL, NULL);
+}
+
+void
 global_package_info_changed (package_info *pi)
 {
   if (pi->model == GTK_TREE_MODEL (global_list_store))
     global_row_changed (&pi->iter);
 }
 
-static GtkWidget *global_section_list_widget = NULL;
-static GtkListStore *global_section_store;
+static GtkWidget *global_section_list;
+static section_activated *global_section_activated;
 
 static void
-global_section_name_func (GtkTreeViewColumn *column,
-			  GtkCellRenderer *cell,
-			  GtkTreeModel *model,
-			  GtkTreeIter *iter,
-			  gpointer data)
+section_clicked (GtkWidget *widget, gpointer data)
 {
-  section_info *si;
-  gtk_tree_model_get (model, iter, 0, &si, -1);
-  if (si)
-    g_object_set (cell, "text", si->name, NULL);
-}
-
-static section_activated *global_section_activated = NULL;
-
-static void
-global_section_row_activated (GtkTreeView *treeview,
-			      GtkTreePath *path,
-			      GtkTreeViewColumn *column,
-			      gpointer data)
-{
-  GtkTreeModel *model = gtk_tree_view_get_model (treeview);
-  GtkTreeIter iter;
-  section_activated *act = global_section_activated;
-
-  if (act && gtk_tree_model_get_iter (model, &iter, path))
-    {
-      section_info *si;
-      gtk_tree_model_get (model, &iter, 0, &si, -1);
-      if (si)
-	act (si);
-    }
+  section_info *si = (section_info *)data;
+  if (global_section_activated)
+    global_section_activated (si);
 }
 
 GtkWidget *
-get_global_section_list_widget ()
+make_global_section_list (GList *sections, section_activated *act)
 {
-  if (global_section_list_widget)
-    return global_section_list_widget;
+  global_section_activated = act;
 
-  global_section_store = gtk_list_store_new (1, GTK_TYPE_POINTER);
-  GtkCellRenderer *renderer;
-  GtkWidget *tree, *scroller;
+  if (sections == NULL)
+    {
+      GtkWidget *label = gtk_label_new (_("ai_li_no_applications_available"));
+      gtk_misc_set_alignment (GTK_MISC (label), 0.5, 0.0);
+      return label;
+    }
 
-  tree = gtk_tree_view_new_with_model (GTK_TREE_MODEL (global_section_store));
+  GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
+  GtkWidget *vbox = gtk_vbox_new (FALSE, 5);
+  GtkWidget *scroller;
 
-  renderer = gtk_cell_renderer_text_new ();
-  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
-					      -1,
-					      NULL,
-					      renderer,
-					      global_section_name_func,
-					      tree,
-					      NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, FALSE, FALSE, 10);
+
+  for (GList *s = sections; s; s = s ->next)
+    {
+      section_info *si = (section_info *)s->data;
+      GtkWidget *label = gtk_label_new (si->name);
+      gtk_misc_set_padding (GTK_MISC (label), 15, 15);
+      GtkWidget *btn = gtk_button_new ();
+      gtk_container_add (GTK_CONTAINER (btn), label);
+      gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 0);
+      g_signal_connect (btn, "clicked",
+			G_CALLBACK (section_clicked), si);
+    }
 
   scroller = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroller),
-				  GTK_POLICY_AUTOMATIC,
-				  GTK_POLICY_ALWAYS);
-  gtk_container_add (GTK_CONTAINER (scroller), tree);
+				  GTK_POLICY_NEVER,
+				  GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scroller),
+					 hbox);
 
-  g_signal_connect (tree, "row-activated", 
-		    G_CALLBACK (global_section_row_activated),
-		    NULL);
+  global_section_list = scroller;
 
   return scroller;
 }
 
-static GList *global_sections;
-
 void
-set_global_section_list (GList *sections, section_activated *act)
+clear_global_section_list ()
 {
-  if (global_section_store)
-    gtk_list_store_clear (global_section_store);
-
-  global_sections = sections;
-  while (sections)
-    {
-      GtkTreeIter iter;
-      gtk_list_store_append (global_section_store, &iter);
-      gtk_list_store_set (global_section_store, &iter,
-			  0, sections->data,
-			  -1);
-      sections = sections->next;
-    }
-
-  global_section_activated = act;
+  if (global_section_list)
+    gtk_widget_destroy (global_section_list);
+  global_section_list = NULL;
 }
 
 #define KILO 1000
@@ -798,15 +817,47 @@ show_deb_file_chooser (void (*cont) (char *filename, void *data),
   GtkWidget *fcd;
   GtkFileFilter *filter;
 
-  fcd = hildon_file_chooser_dialog_new (NULL, GTK_FILE_CHOOSER_ACTION_OPEN);
+  fcd = hildon_file_chooser_dialog_new_with_properties
+    (get_main_window (),
+     "action",            GTK_FILE_CHOOSER_ACTION_OPEN,
+     "title",             _("ai_ti_select_package"),
+     "empty_text",        _("ai_ia_select_package_no_packages"),
+     "open_button_text",  _("ai_bd_select_package"),
+     NULL);
+  gtk_window_set_modal (GTK_WINDOW (fcd), TRUE);
 
   filter = gtk_file_filter_new ();
-  gtk_file_filter_add_pattern (filter, "*.deb");
+  gtk_file_filter_add_mime_type (filter, "application/x-deb");
+  gtk_file_filter_add_mime_type (filter, "application/x-debian-package");
   gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(fcd), filter);
+  // XXX - gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER(fcd), TRUE);
 
-  // XXX - make it display "(no packages)" text.
+  g_signal_connect (fcd, "response",
+		    G_CALLBACK (fcd_response), c);
 
-  gtk_window_set_title (GTK_WINDOW(fcd), _("ai_ti_select_package"));
+  gtk_widget_show_all (fcd);
+}
+
+void
+show_file_chooser_for_save (const char *title,
+			    const char *default_filename,
+			    void (*cont) (char *filename, void *data),
+			    void *data)
+{
+  fcd_closure *c = new fcd_closure;
+  c->cont = cont;
+  c->data = data;
+
+  GtkWidget *fcd;
+
+  fcd = hildon_file_chooser_dialog_new_with_properties
+    (get_main_window (),
+     "action",            GTK_FILE_CHOOSER_ACTION_SAVE,
+     "title",             title,
+     NULL);
+  gtk_window_set_modal (GTK_WINDOW (fcd), TRUE);
+
+  gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (fcd), default_filename);
 
   g_signal_connect (fcd, "response",
 		    G_CALLBACK (fcd_response), c);

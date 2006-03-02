@@ -25,34 +25,86 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <libintl.h>
 
 #include <gtk/gtk.h>
 
 #include "log.h"
 #include "util.h"
+#include "main.h"
+
+#define _(x) gettext (x)
 
 static GString *log_text = NULL;
+
+enum {
+  RESPONSE_SAVE = 1,
+  RESPONSE_CLEAR = 2
+};
+
+static void
+save_log (char *filename, void *data)
+{
+  // XXX - check some errors.
+
+  FILE *f = fopen (filename, "w");
+  if (f)
+    {
+      if (log_text)
+	fputs (log_text->str, f);
+      fclose (f);
+    }
+
+  g_free (filename);
+}
+
+static void
+log_response (GtkDialog *dialog, gint response, gpointer clos)
+{
+  GtkWidget *text_view = (GtkWidget *)clos;
+
+  if (response == RESPONSE_CLEAR)
+    {
+      set_small_text_view_text (text_view, "");
+      if (log_text)
+	g_string_truncate (log_text, 0);
+    }
+
+  if (response == RESPONSE_SAVE)
+    show_file_chooser_for_save (_("ai_ti_save_log"),
+				_("ai_li_save_log_default_name"),
+				save_log, NULL);
+
+  if (response == GTK_RESPONSE_CLOSE)
+    gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
 
 void
 show_log ()
 {
-  GtkWidget *dialog;
+  GtkWidget *dialog, *text_view;
 
-  dialog = gtk_dialog_new_with_buttons ("Application installer log",
-					NULL,
+  dialog = gtk_dialog_new_with_buttons (_("ai_ti_log"),
+					get_main_window (),
 					GTK_DIALOG_MODAL,
-					"OK", GTK_RESPONSE_OK,
+					_("ai_bd_log_save_as"),
+					RESPONSE_SAVE,
+					_("ai_bd_log_clear"),
+					RESPONSE_CLEAR,
+					_("ai_bd_log_close"),
+					GTK_RESPONSE_CLOSE,
 					NULL);
 
-  if (log_text)
-    gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
-		       make_small_text_view (log_text->str));
+  text_view = make_small_text_view (log_text? log_text->str : "");
+  
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), text_view);
 
   gtk_widget_set_usize (dialog, 600,300);
-
   gtk_widget_show_all (dialog);
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
+
+  g_signal_connect (dialog, "response",
+		    G_CALLBACK (log_response), text_view);
 }
 
 static void

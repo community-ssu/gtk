@@ -200,24 +200,27 @@ send_response (apt_request_header *req)
 }
 
 void
-send_status (const char *label, int percent)
+send_status (int op, int already, int total, int min_change)
 {
 
   static apt_proto_encoder status_response;
-  static char last_label[80];
-  static int last_percent;
+  static int last_op;
+  static int last_already;
+  static int last_total;
 
-  percent -= percent % 10;
-
-  if (percent != last_percent
-      || strncmp (label, last_label, 80))
+  if (already < last_already 
+      || already >= last_already + min_change
+      || total != last_total
+      || op != last_op)
     {
-      last_percent = percent;
-      strncpy (last_label, label, 80);
+      last_already = already;
+      last_total = total;
+      last_op = op;
       
       status_response.reset ();
-      status_response.encode_string (label);
-      status_response.encode_int (percent);
+      status_response.encode_int (op);
+      status_response.encode_int (already);
+      status_response.encode_int (total);
       send_response_raw (APTCMD_STATUS, -1, 
 			 status_response.get_buf (),
 			 status_response.get_len ());
@@ -449,7 +452,7 @@ class myProgress : public OpProgress
   virtual void
   Update ()
   {
-    send_status ("updating", (int)Percent);
+    send_status (op_updating_cache, (int)Percent, 100, 5);
   }
 };
 
@@ -466,9 +469,7 @@ class myAcquireStatus : public pkgAcquireStatus
   {
     pkgAcquireStatus::Pulse (Owner);
 
-    float fraction = (double(CurrentBytes + CurrentItems) / 
-		      double(TotalBytes + TotalItems));
-    send_status ("downloading", (int)(fraction*100));
+    send_status (op_downloading, (int)CurrentBytes, (int)TotalBytes, 1000);
 
     if (maybe_read_byte (cancel_fd) >= 0)
       return false;
@@ -1508,6 +1509,8 @@ operation_1 (bool check_only)
 	  return _error->Error("Unable to fetch some archives.");
 	}
       
+      send_status (op_general, 0, 1, 0);
+
       _system->UnLock();
 
       pkgPackageManager::OrderResult Res = Pm->DoInstall (status_fd);

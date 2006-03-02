@@ -118,30 +118,76 @@ set_operation_menu_label (const char *label, bool sensitive)
     }
 }
 
+static void
+fullscreen_activated (GtkWidget *item)
+{
+  bool active =
+    gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (item));
+  set_fullscreen (active);
+}
+
+static GtkWidget *fullscreen_item;
+
+void
+set_fullscreen_menu_check (bool f)
+{
+  if (fullscreen_item)
+    gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (fullscreen_item), f);
+}
+
+static void
+normal_toolbar_activated (GtkWidget *item)
+{
+  bool active =
+    gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (item));
+  set_toolbar_visibility (false, active);
+}
+
+static void
+fullscreen_toolbar_activated (GtkWidget *item)
+{
+  bool active =
+    gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (item));
+  set_toolbar_visibility (true, active);
+}
+
 void
 create_menu (GtkMenu *main)
 {
   GtkMenu *packages = add_menu (main, _("ai_me_package"));
   GtkMenu *view = add_menu (main, _("ai_me_view"));
   GtkMenu *tools = add_menu (main, _("ai_me_tools"));
-  GtkWidget *fullscreen_group;
+  GtkWidget *fullscreen_group, *item;
 
   operation_menu_item = add_item (packages, "", do_current_operation);
   add_item (packages, _("ai_me_package_install_file"), install_from_file);
   details_menu_item = add_item (packages, _("ai_me_package_details"),
 				show_current_details);
 
+#if 0
   add_item (view, _("ai_me_view_main"), show_main_view);
   add_sep (view);
+#endif
+
   add_item (view, _("ai_me_view_sort"), show_sort_settings_dialog);
   add_sep (view);
-  add_check (view, _("ai_me_view_fullscreen"), NULL);
+  fullscreen_item = add_check (view, _("ai_me_view_fullscreen"), NULL);
+  g_signal_connect (fullscreen_item, "activate",
+		    G_CALLBACK (fullscreen_activated), NULL);
+
   GtkMenu *toolbar = add_menu (view, _("ai_me_view_show_toolbar"));
-  
-  fullscreen_group = add_radio (toolbar, _("ai_me_view_show_toolbar_normal"),
-				NULL, NULL);
-  add_radio (toolbar, _("ai_me_view_show_toolbar_fullscreen"),
-	     NULL, fullscreen_group);
+
+  item = add_check (toolbar,
+		    _("ai_me_view_show_toolbar_normal"), NULL);
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item), TRUE);
+  g_signal_connect (item, "activate",
+		    G_CALLBACK (normal_toolbar_activated), NULL);
+
+  item = add_check (toolbar,
+		    _("ai_me_view_show_toolbar_fullscreen"), NULL);
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item), TRUE);
+  g_signal_connect (item, "activate",
+		    G_CALLBACK (fullscreen_toolbar_activated), NULL);
 
   add_item (tools, _("ai_me_tools_refresh"), refresh_package_cache);
   add_item (tools, _("ai_me_tools_settings"), show_settings_dialog);

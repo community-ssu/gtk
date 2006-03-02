@@ -31,6 +31,7 @@
 #include <libintl.h>
 
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 
 #include "apt-worker-client.h"
 #include "apt-worker-proto.h"
@@ -253,7 +254,7 @@ make_main_view (view *v)
 			     1, 2, 4, 5);
 
   // XXX - find the proper way to load this image.
-  vbox = gtk_vbox_new (TRUE, 0);
+  vbox = gtk_vbox_new (FALSE, 0);
   gtk_box_pack_end (GTK_BOX (view), vbox, FALSE, FALSE, 0);
   image = gtk_image_new_from_file ("/usr/share/themes/default/images/qgn_plat_application_installer_image.png");
   gtk_box_pack_end (GTK_BOX (vbox), image, FALSE, FALSE, 0);
@@ -406,8 +407,6 @@ find_section_info (GList **list_ptr, const char *name)
   return si;
 }
 
-static void set_global_lists_for_view (view *);
-
 static gint
 compare_section_names (gconstpointer a, gconstpointer b)
 {
@@ -509,7 +508,15 @@ sort_all_packages ()
   upgradeable_packages = g_list_sort (upgradeable_packages,
 				      compare_packages_avail);
 
-  set_global_lists_for_view (cur_view_struct);
+  if (search_results_view.parent == &install_applications_view
+      || search_results_view.parent == &upgrade_applications_view)
+    search_result_packages = g_list_sort (search_result_packages,
+					  compare_packages_avail);
+  else
+    search_result_packages = g_list_sort (search_result_packages,
+					  compare_packages_inst);
+
+  show_view (cur_view_struct);
 }
 
 static void
@@ -517,8 +524,8 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
   int count = 0, new_p = 0, upg_p = 0, inst_p = 0;
 
-  set_global_package_list (NULL, false, NULL, NULL);
-  set_global_section_list (NULL, NULL);
+  clear_global_package_list ();
+  clear_global_section_list ();
   free_all_packages ();
   
   while (!dec->at_end ())
@@ -916,7 +923,7 @@ install_package_cont2 (bool res, void *data)
 	  else
 	    add_log ("Installing %s %s\n", pi->name, pi->available_version);
 	  
-	  show_progress ("Installing");
+	  show_progress (_("ai_nw_installing"));
 	  apt_worker_install_check (pi->name, install_check_reply, pi);
 	}
       else
@@ -1002,7 +1009,8 @@ make_last_update_label ()
 }
 
 static GtkWidget *
-make_package_list_view (bool with_updated_label)
+make_package_list_view (GtkWidget *list_widget,
+			bool with_updated_label)
 {
   GtkWidget *view;
 
@@ -1012,13 +1020,19 @@ make_package_list_view (bool with_updated_label)
       view = gtk_vbox_new (FALSE, 10);
       gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_box_pack_start (GTK_BOX (view), label, FALSE, FALSE, 0);
-      gtk_box_pack_start (GTK_BOX (view), get_global_package_list_widget (),
-			  TRUE, TRUE, 0);
+      gtk_box_pack_start (GTK_BOX (view), list_widget, TRUE, TRUE, 0);
     }
   else
-    view = get_global_package_list_widget ();
+    view = list_widget;
   
   return view;
+}
+
+static void
+set_install_section_name (const char *name)
+{
+  g_free ((gchar *)install_section_view.label);
+  install_section_view.label = g_strdup (name);
 }
 
 GtkWidget *
@@ -1027,14 +1041,22 @@ make_install_section_view (view *v)
   GtkWidget *view;
   GList *packages;
 
-  g_free ((gchar *)v->label);
-  v->label = g_strdup (cur_section->name);
-
   set_operation_label (_("ai_me_package_install"));
-  view = make_package_list_view (true);
-  gtk_widget_show_all (view);
-  set_global_lists_for_view (v);
 
+  cur_section = find_section_info (&install_sections,
+				   install_section_view.label);
+  
+  GtkWidget *list =
+    make_global_package_list (cur_section->packages,
+			      false,
+			      _("ai_li_no_applications_available"),
+			      available_package_selected, 
+			      install_package);
+
+  view = make_package_list_view (list, true);
+  gtk_widget_show_all (view);
+
+  get_package_list_info (cur_section->packages);
   maybe_refresh_package_cache ();
 
   return view;
@@ -1044,28 +1066,28 @@ static void
 view_section (section_info *si)
 {
   cur_section = si;
+  set_install_section_name (si->name);
   show_view (&install_section_view);
 }
 
 GtkWidget *
 make_install_applications_view (view *v)
 {
-  GtkWidget *view, *label;
+  GtkWidget *list, *view, *label;
 
   set_operation_label (_("ai_me_package_install"));
   
   cur_section = NULL;
 
+  list = make_global_section_list (install_sections, view_section);
   label = make_last_update_label ();
   view = gtk_vbox_new (FALSE, 10);
+
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   gtk_box_pack_start (GTK_BOX (view), label, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (view), get_global_section_list_widget (),
-		      TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (view), list, TRUE, TRUE, 0);
 
   gtk_widget_show_all (view);
-
-  set_global_lists_for_view (v);
 
   return view;
 }
@@ -1074,12 +1096,20 @@ GtkWidget *
 make_upgrade_applications_view (view *v)
 {
   GtkWidget *view;
-  GList *packages;
 
   set_operation_label (_("ai_me_package_update"));
-  view = make_package_list_view (true);
+
+  GtkWidget *list =
+    make_global_package_list (upgradeable_packages,
+			      false,
+			      _("ai_li_no_updates_available"),
+			      available_package_selected,
+			      install_package);
+
+  view = make_package_list_view (list, true);
   gtk_widget_show_all (view);
-  set_global_lists_for_view (v);
+
+  get_package_list_info (upgradeable_packages);
 
   return view;
 }
@@ -1120,7 +1150,7 @@ uninstall_package_reply (int cmd, apt_proto_decoder *dec, void *data)
     {
       char *str = g_strdup_printf (_("ai_ni_error_uninstallation_failed"),
 				   pi->name);
-      annoy_user_with_details (str, pi, true);
+      annoy_user_with_log (str);
       g_free (str);
     }
 
@@ -1247,10 +1277,16 @@ make_uninstall_applications_view (view *v)
   GList *packages;
 
   set_operation_label (_("ai_me_package_uninstall"));
-  view = make_package_list_view (false);
-  gtk_widget_show_all (view);
-  set_global_lists_for_view (v);
 
+  view = make_global_package_list (installed_packages,
+				   true,
+				   _("ai_li_no_installed_applications"),
+				   installed_package_selected,
+				   uninstall_package);
+  gtk_widget_show_all (view);
+
+  get_package_list_info (installed_packages);
+  
   return view;
 }
 
@@ -1259,9 +1295,26 @@ make_search_results_view (view *v)
 {
   GtkWidget *view;
 
-  view = get_global_package_list_widget ();
-  set_global_lists_for_view (v);
+  if (v->parent == &install_applications_view
+      || v->parent == &upgrade_applications_view)
+    {
+      view = make_global_package_list (search_result_packages,
+				       false,
+				       _("ai_li_no_packages_found"),
+				       available_package_selected,
+				       install_package);
+    }
+  else
+    {
+      view = make_global_package_list (search_result_packages,
+				       true,
+				       _("ai_ib_no_matches"),
+				       installed_package_selected,
+				       uninstall_package);
+    }
   gtk_widget_show_all (view);
+
+  get_package_list_info (search_result_packages);
 
   return view;
 }
@@ -1404,65 +1457,6 @@ search_packages (const char *pattern, bool in_descriptions)
     }
 }
 
-static void
-set_global_lists_for_view (view *v)
-{
-  GList *packages_for_info = NULL;
-
-  if (v == &install_applications_view)
-    {
-      set_global_section_list (install_sections, view_section);
-    }
-  else if (v == &install_section_view)
-    {
-      cur_section = find_section_info (&install_sections,
-				       install_section_view.label);
-      set_global_package_list (cur_section->packages,
-			       false,
-			       available_package_selected, 
-			       install_package);
-      packages_for_info = cur_section->packages;
-    }
-  else if (v == &upgrade_applications_view)
-    {
-      set_global_package_list (upgradeable_packages,
-			       false,
-			       available_package_selected,
-			       install_package);
-      packages_for_info = upgradeable_packages;
-    }
-  else if (v == &uninstall_applications_view)
-    {
-      set_global_package_list (installed_packages,
-			       true,
-			       installed_package_selected,
-			       uninstall_package);
-      packages_for_info = installed_packages;
-    }
-  else if (v == &search_results_view)
-    {
-      if (v->parent == &install_applications_view
-	  || v->parent == &upgrade_applications_view)
-	{
-	  set_global_package_list (search_result_packages,
-				   false,
-				   available_package_selected,
-				   install_package);
-	  packages_for_info = search_result_packages;
-	}
-      else
-	{
-	  set_global_package_list (search_result_packages,
-				   true,
-				   installed_package_selected,
-				   uninstall_package);
-	  packages_for_info = search_result_packages;
-	}
-    }
-
-  get_package_list_info (packages_for_info);
-}
-
 static GtkWidget *details_button;
 static void (*details_func) (gpointer);
 static gpointer details_data;
@@ -1550,7 +1544,7 @@ install_from_file_cont4 (bool res, void *data)
 
   if (res)
     {
-      show_progress ("Installing");
+      show_progress (_("ai_nw_installing"));
       apt_worker_install_file (pi->filename,
 			       install_from_file_reply, pi);
     }
@@ -1690,11 +1684,31 @@ window_destroy (GtkWidget* widget, gpointer data)
 static void
 apt_status_callback (int cmd, apt_proto_decoder *dec, void *unused)
 {
-  const char *label = dec->decode_string_in_place ();
-  int percent = dec->decode_int ();
+  const char *label;
+  int op = dec->decode_int ();
+  int already = dec->decode_int ();
+  int total = dec->decode_int ();
 
-  //printf ("STATUS: %3d %s\n", percent, label);
-  set_progress (label, percent/100.0);
+  if (op == op_downloading)
+    {
+      static int last_total;
+      static char *dynlabel = NULL;
+
+      if (dynlabel == NULL || total != last_total)
+	{
+	  char size_buf[20];
+	  size_string_detailed (size_buf, 20, total);
+	  g_free (dynlabel);
+	  dynlabel =  g_strdup_printf (_("ai_nw_downloading"), size_buf);
+	}
+      label = dynlabel;
+    }
+  else if (op == op_updating_cache)
+    label = _("ai_nw_updating_list");
+  else
+    label = NULL;
+
+  set_progress (label, ((double)already)/total);
 }
 
 static gboolean
@@ -1738,6 +1752,97 @@ set_operation_toolbar_label (const char *label, bool sensitive)
     gtk_widget_set_sensitive (toolbar_operation_item, sensitive);
 }
 
+static GtkWindow *main_window = NULL;
+static GtkWidget *main_appview = NULL;
+static GtkWidget *main_toolbar;
+
+static bool fullscreen_toolbar_visibility = true;
+static bool normal_toolbar_visibility = true;
+static bool is_fullscreen = false;
+
+GtkWindow *
+get_main_window ()
+{
+  return main_window;
+}
+
+static void
+set_current_toolbar_visibility (bool f)
+{
+  if (main_toolbar)
+    {
+      if (f)
+	gtk_widget_show (main_toolbar);
+      else
+	gtk_widget_hide (main_toolbar);
+    }
+}
+
+void
+set_fullscreen (bool f)
+{
+  hildon_appview_set_fullscreen (HILDON_APPVIEW (main_appview), f);
+}
+
+void
+toggle_fullscreen ()
+{
+  set_fullscreen (!is_fullscreen);
+}
+
+void
+set_toolbar_visibility (bool fullscreen, bool visibility)
+{
+  if (fullscreen)
+    {
+      fullscreen_toolbar_visibility = visibility;
+      if (is_fullscreen)
+	set_current_toolbar_visibility (visibility);
+    }
+  else
+    {
+      normal_toolbar_visibility = visibility;
+      if (!is_fullscreen)
+	set_current_toolbar_visibility (visibility);
+    }
+}
+
+static gboolean
+handle_key_event (GtkWidget *widget,
+		  GdkEventKey *event,
+		  gpointer data)
+{
+  if (event->type == GDK_KEY_PRESS)
+    {
+      switch (event->keyval)
+	{
+	case HILDON_FULLSCREEN_KEY:
+	case GDK_Return:
+	case GDK_KP_Enter:
+	  toggle_fullscreen ();
+	  return TRUE;
+	default:
+	  return FALSE;
+	}
+    }
+
+  return FALSE;
+}
+
+static void
+fullscreen_state_changed (GtkWidget *widget, bool f)
+{
+  if (is_fullscreen != f)
+    {
+      is_fullscreen = f;
+      set_fullscreen_menu_check (f);
+      if (is_fullscreen)
+	set_current_toolbar_visibility (fullscreen_toolbar_visibility);
+      else
+	set_current_toolbar_visibility (normal_toolbar_visibility);
+    }
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1759,7 +1864,21 @@ main (int argc, char **argv)
   app = hildon_app_new_with_appview (HILDON_APPVIEW (app_view));
   hildon_app_set_title (HILDON_APP (app), _("ai_ap_application_installer"));
 
+  main_window = GTK_WINDOW (app);
+  main_appview = app_view;
+
+#if 0
+  g_signal_connect (app, "key_press_event",
+		    G_CALLBACK (handle_key_event), NULL);
+#endif
+
+  hildon_appview_set_fullscreen_key_allowed (HILDON_APPVIEW (app_view), TRUE);
+  g_signal_connect (app_view, "fullscreen_state_change",
+		    G_CALLBACK (fullscreen_state_changed), NULL);
+
   toolbar = gtk_toolbar_new ();
+
+  main_toolbar = toolbar;
 
   toolbar_operation_label = gtk_label_new ("");
   toolbar_operation_item =
