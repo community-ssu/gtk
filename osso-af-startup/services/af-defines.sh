@@ -35,6 +35,8 @@ source $AF_INIT_DIR/locale
 if [ -r $SESSION_BUS_ADDRESS_FILE ]; then
   source $SESSION_BUS_ADDRESS_FILE
 fi
+# Note: TMPDIR uses flash but UI states are saved to RAM
+export TMPDIR=/var/tmp ;# needed here because sudo clears this
 
 # the following should not change in run-time
 if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
@@ -61,8 +63,6 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
     export LAUNCHWRAPPER_TRYRESTART=$LAUNCHWRAPPER
   fi
 
-  # Note: TMPDIR uses flash but UI states are saved to RAM
-  export TMPDIR=/var/tmp
   export STATESAVEDIR=/tmp/osso-appl-states
   if [ ! -d $STATESAVEDIR ]; then
     mkdir $STATESAVEDIR
