@@ -1,4 +1,8 @@
 2006-03-03  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-status-bar/{hildon-status-bar-{main,item}.c: Hardcode
+	  loading of the presence status bar applet
+
+2006-03-03  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/hn-wm-watchable-app.[ch]
 	  hildon-navigator/hn-wm.c
 	  hildon-navigator/hn-wm-watched-window.[ch]:

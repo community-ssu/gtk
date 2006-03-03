@@ -63,8 +63,6 @@
 #include "hildon-status-bar-interface.h"
 #include "../kstrace.h"
 
-gboolean IS_SDK=FALSE;
-
 static gint _delayed_infobanner_add(gint32 pid, gint32 begin, gint32 timeout,
 				    const gchar *text );
 gboolean _delayed_infobanner_remove(gpointer data);
@@ -167,28 +165,25 @@ static void add_prespecified_items( StatusBar *panel )
 
     if (add_item( panel, "sound" )==NULL)
     {
-        if(IS_SDK==FALSE){
-            osso_log( LOG_ERR, "Statusbar item add failed for sound" );
-        }
+        osso_log( LOG_WARNING, "Statusbar item add failed for sound" );
     }
     if (add_item( panel, "internet" )==NULL)
     {
-        if(IS_SDK==FALSE){
-            osso_log( LOG_ERR, "Statusbar item add failed for internet" );
-        }
+        osso_log( LOG_WARNING, "Statusbar item add failed for internet" );
     }
     if (add_item( panel, "battery" ) == NULL)
     {
-        if(IS_SDK==FALSE){
-            osso_log( LOG_ERR, "Statusbar item add failed for battery" );
-        }
+        osso_log( LOG_WARNING, "Statusbar item add failed for battery" );
     }
     if (add_item( panel, "display" ) == NULL)
     {
-        if(IS_SDK==FALSE){
-            osso_log( LOG_ERR, "Statusbar item add failed for display" );
-        }
+        osso_log( LOG_WARNING, "Statusbar item add failed for presence" );
     }
+    if (add_item( panel, "presence" ) == NULL)
+    {
+        osso_log( LOG_WARNING, "Statusbar item add failed for presence" );
+    }
+    
 }
 
 static void add_user_items( StatusBar *panel )
@@ -209,7 +204,7 @@ static void add_user_items( StatusBar *panel )
 
         if (add_item( panel, name ) == NULL)
         {
-            osso_log( LOG_ERR, "Statusbar item add failed for %s", name );
+            osso_log( LOG_WARNING, "Statusbar item add failed for %s", name );
         }
 
         g_free(name);
@@ -349,10 +344,6 @@ static gint rpc_cb( const gchar *interface,
             val[1]->type != DBUS_TYPE_INT32 ||
             val[2]->type != DBUS_TYPE_INT32 ||
             val[3]->type != DBUS_TYPE_STRING )
-#if 0
-            ( val[3]->type != DBUS_TYPE_STRING && 
-              val[3]->type != DBUS_TYPE_NIL ) )
-#endif
         {
             retval->type = DBUS_TYPE_STRING;
             if( arguments->len < 4 )
@@ -511,6 +502,10 @@ static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *plugin )
         slot = HILDON_STATUS_BAR_BATTERY_SLOT;
     else if( g_str_equal( "display", plugin ) )
         slot = HILDON_STATUS_BAR_DISPLAY_SLOT;
+    else if( g_str_equal( "display", plugin ) )
+        slot = HILDON_STATUS_BAR_DISPLAY_SLOT;
+    else if( g_str_equal( "presence_plugin", plugin ) )
+        slot = HILDON_STATUS_BAR_PRESENCE_SLOT;
 
     item = hildon_status_bar_item_new( plugin );
 

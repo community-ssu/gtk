@@ -60,9 +60,6 @@ struct _HildonStatusBarItemPrivate
     HildonStatusBarItemEntryFn  entryfn;
 };
 
-/* Added to fix bug N#20197 */
-gboolean SB_ITEM_IS_SDK=FALSE;
-
 /* parent class pointer */
 static GtkContainerClass *parent_class;
 
@@ -219,6 +216,13 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
     }
 #endif
 
+#ifdef STATIC_DISPLAY_PRESENCE
+    else if( !g_ascii_strcasecmp( plugin, "presence" ) )
+    {
+        ;
+    }
+#endif
+
     else
     {
         /* generate the absolute path to plugin file */
@@ -239,10 +243,8 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
        target directory */
     if( !priv->dlhandle )
     {
-        if(SB_ITEM_IS_SDK==FALSE){
-            osso_log( LOG_ERR, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
-                  plugin, dlerror() );
-        }
+        osso_log( LOG_WARNING, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
+                plugin, dlerror() );
         pluginname = g_strdup_printf( "%s/lib%s.so", 
                                       HILDON_STATUS_BAR_USER_PLUGIN_PATH,
                                       plugin );
@@ -252,10 +254,8 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
 
     if( !priv->dlhandle )
     {
-        if(SB_ITEM_IS_SDK==FALSE){
-            osso_log( LOG_ERR, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
-                  plugin, dlerror() );
-        }
+        osso_log( LOG_WARNING, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
+                plugin, dlerror() );
         gtk_object_sink( GTK_OBJECT( item ) );
         return NULL;
     }
@@ -394,7 +394,7 @@ static gboolean hildon_status_bar_item_load_symbols( HildonStatusBarItem *item )
     /* check for mandatory functions */
     if( !priv->fn->initialize )
     {
-        osso_log( LOG_ERR, "HildonStatusBarItem: "
+        osso_log( LOG_WARNING, "HildonStatusBarItem: "
                   "Plugin '%s' did not set initialize()", 
                   priv->name);
         return FALSE;
@@ -402,7 +402,7 @@ static gboolean hildon_status_bar_item_load_symbols( HildonStatusBarItem *item )
 
     if( !priv->fn->get_priority )
     {
-        osso_log( LOG_ERR, "HildonStatusBarItem: "
+        osso_log( LOG_WARNING, "HildonStatusBarItem: "
                   "Plugin '%s' did not set get_priority()", 
                   priv->name);
         return FALSE;
@@ -410,7 +410,7 @@ static gboolean hildon_status_bar_item_load_symbols( HildonStatusBarItem *item )
 
     if( !priv->fn->destroy )
     {
-        osso_log( LOG_ERR, "HildonStatusBarItem: "
+        osso_log( LOG_WARNING, "HildonStatusBarItem: "
                   "Plugin '%s' did not set destroy()", 
                   priv->name);
         return FALSE;
