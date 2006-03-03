@@ -17,6 +17,7 @@ struct HNWMWatchableApp
   gboolean   hibernating;
   gboolean   is_minimised;
   gboolean   startup_notify;
+  GtkWidget *ping_timeout_note; /* The note that is shown when the app quits responding */
 };
 
 static gboolean
@@ -367,4 +368,16 @@ hn_wm_watchable_app_hibernate (HNWMWatchableApp *app)
                              app);
   
   hn_wm_watchable_app_set_hibernate (app, TRUE);
+}
+
+void
+hn_wm_watchable_app_set_ping_timeout_note(HNWMWatchableApp *app, GtkWidget *note)
+{
+	app->ping_timeout_note = note;
+}
+
+GtkWidget*
+hn_wm_watchable_app_get_ping_timeout_note(HNWMWatchableApp *app)
+{
+	return app->ping_timeout_note;
 }

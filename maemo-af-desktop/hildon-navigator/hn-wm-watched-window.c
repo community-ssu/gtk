@@ -8,6 +8,15 @@
 /* Application relaunch indicator data*/
 #define RESTORED "restored"
 
+#define PING_TIMEOUT_MESSAGE_STRING       _( "qgn_nc_apkil_notresponding" )
+#define PING_TIMEOUT_RESPONSE_STRING      _( "qgn_ib_apkil_responded" )
+#define PING_TIMEOUT_KILL_SUCCESS_STRING  _( "qgn_ib_apkil_closed" )
+#define PING_TIMEOUT_KILL_FAILURE_STRING  _( "" )
+
+#define PING_TIMEOUT_BUTTON_OK_STRING     _( "qgn_bd_apkil_ok" )
+#define PING_TIMEOUT_BUTTON_CANCEL_STRING _( "qgn_bd_apkil_cancel" )
+
+
 struct HNWMWatchedWindow
 {
   Window                  xwin;
@@ -909,4 +918,78 @@ gboolean hn_wm_watched_window_hibernate_func(gpointer key,
       return TRUE;
     }
   return FALSE;
+}
+
+
+void hn_wm_ping_timeout( HNWMWatchedWindow *win )
+{
+	GtkWidget *note;
+	gint return_value;
+
+	HNWMWatchableApp *app = hn_wm_watched_window_get_app( win );
+		
+	gchar *timeout_message = g_strdup_printf(
+			PING_TIMEOUT_MESSAGE_STRING, win->name );
+	
+	gchar *killed_message = g_strdup_printf(
+			PING_TIMEOUT_KILL_SUCCESS_STRING, win->name );
+	
+	/* FIXME: Do we need to check if the note already exists? */
+	note = hn_wm_watchable_app_get_ping_timeout_note( app );
+	
+	if ( note && GTK_IS_WIDGET( note ) ) {
+		HN_DBG( "hn_wm_ping_timeout: "
+				"the note already exists. ");
+
+		goto cleanup_and_exit;
+	}
+	
+	note = hildon_note_new_confirmation(
+			NULL, timeout_message );
+
+	hn_wm_watchable_app_set_ping_timeout_note(app, note);
+	
+	hildon_note_set_button_texts( HILDON_NOTE( note ),
+			PING_TIMEOUT_BUTTON_OK_STRING,
+			PING_TIMEOUT_BUTTON_CANCEL_STRING );
+
+	return_value = gtk_dialog_run( GTK_DIALOG( note ) );
+
+	gtk_widget_destroy( GTK_WIDGET( note ) );
+	
+
+	if ( return_value == GTK_RESPONSE_OK ) {
+		/* Kill the app */
+		if ( !hn_wm_watched_window_attempt_signal_kill( win, SIGKILL ) ) {
+			HN_DBG( "hn_wm_ping_timeout: "
+					"failed to kill application '%s'.",
+					win->name );
+		} else {
+			gtk_infoprint( NULL, killed_message );
+		}
+	}
+
+	
+	cleanup_and_exit:
+	
+	g_free( timeout_message );
+	g_free( killed_message );
+}
+
+
+void hn_wm_ping_timeout_cancel( HNWMWatchedWindow *win )
+{
+	HNWMWatchableApp *app = hn_wm_watched_window_get_app( win );
+
+	GtkWidget *note = hn_wm_watchable_app_get_ping_timeout_note(app);
+	
+	gchar *response_message = g_strdup_printf(
+			PING_TIMEOUT_RESPONSE_STRING, win->name );
+
+	gtk_widget_destroy( note );
+
+	/* Show the infoprint */
+	gtk_infoprint( NULL, response_message );
+
+	g_free( response_message );
 }

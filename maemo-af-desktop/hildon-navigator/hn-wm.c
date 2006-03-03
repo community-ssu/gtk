@@ -5,6 +5,7 @@
 #define SAVE_METHOD      "save"
 #define KILL_APPS_METHOD "kill_app"
 
+
 static GdkFilterReturn
 hn_wm_x_event_filter (GdkXEvent *xevent,
 		      GdkEvent  *event,
@@ -29,6 +30,7 @@ struct xwinv
 };
 
 HNWM *hnwm; 			/* Single, global soon to go... */
+
 
 static gboolean
 hn_wm_add_watched_window (HNWMWatchedWindow *win);
@@ -826,16 +828,19 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
           xwin_hung    = (Window)cev->data.l[0];
           has_reawoken = (gboolean)cev->data.l[1];
 
-          HN_DBG("@@@@ FROZEN: Window %li status %i @@@@",
-                 xwin_hung, has_reawoken);
+	  HN_DBG("@@@@ FROZEN: Window %li status %i @@@@",
+			  xwin_hung, has_reawoken);
 
-          /* TODO: 
-           * 
-           *  WatchedWindow = g_hash_table_lookup(hnwm->watched_windows,
-           *                                      xwin_hung);
-           *
-           *  if (WatchedWindow) then call func to handle this..
-          */
+	  win = g_hash_table_lookup(hnwm->watched_windows,
+			  &xwin_hung);
+
+	  if ( win ) {
+		  if ( has_reawoken == TRUE ) {
+			  hn_wm_ping_timeout_cancel( win );
+		  } else {
+			  hn_wm_ping_timeout( win );
+		  }
+	  }
 
         }
       return GDK_FILTER_CONTINUE;

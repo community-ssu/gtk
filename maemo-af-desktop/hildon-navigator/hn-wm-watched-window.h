@@ -127,4 +127,9 @@ gboolean hn_wm_watched_window_hibernate_func(gpointer key,
                                              gpointer value,
                                              gpointer user_data);
 
+void hn_wm_ping_timeout( HNWMWatchedWindow *win );
+
+void hn_wm_ping_timeout_cancel( HNWMWatchedWindow *win );
+
+
 #endif

@@ -624,8 +624,6 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 		   /* Empty submenu. Skip "Extras" */
 		   if ( strcmp( item_name, "tana_fi_extras" ) != 0 ) {
 
-               fprintf( stderr, "empty submenu: %s\n", item_name );
-
 			    submenu = GTK_MENU(gtk_menu_new());
     
                 gtk_widget_set_name(GTK_WIDGET(submenu),
