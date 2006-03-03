@@ -68,8 +68,11 @@ gboolean         dbus_g_error_has_name    (GError      *error,
 const char *     dbus_g_error_get_name    (GError      *error);
 
 void             dbus_g_thread_init (void);
-DBusGConnection* dbus_g_bus_get     (DBusBusType   type,
-                                     GError      **error);
+
+DBusGConnection* dbus_g_connection_open (const gchar  *address,
+                                         GError      **error);
+DBusGConnection* dbus_g_bus_get         (DBusBusType   type,
+                                         GError      **error);
 
 typedef struct _DBusGObjectInfo DBusGObjectInfo;
 typedef struct _DBusGMethodInfo DBusGMethodInfo;
@@ -153,6 +156,15 @@ typedef struct _DBusGProxyClass  DBusGProxyClass;
 #define DBUS_IS_G_PROXY_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), DBUS_TYPE_G_PROXY))
 #define DBUS_G_PROXY_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), DBUS_TYPE_G_PROXY, DBusGProxyClass))
 
+struct _DBusGProxy
+{
+  GObject parent;
+};
+
+struct _DBusGProxyClass
+{
+  GObjectClass parent_class;  /**< Parent class */
+};
 
 typedef struct _DBusGProxyCall DBusGProxyCall;
 typedef void (* DBusGProxyCallNotify) (DBusGProxy       *proxy,

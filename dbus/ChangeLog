@@ -1,3 +1,231 @@
+2006-02-24  John (J5) Palmieri  <johnp@redhat.com>
+
+	* Released 0.61
+
+2006-02-24  John (J5) Palmieri  <johnp@redhat.com>
+	
+	* proxies.py: Fix the callchain
+
+2006-02-24  John (J5) Palmieri <johnp@redhat.com>
+	
+	* patch from Sjoerd Simons <sjoerd at debian.org>:	
+
+	* dbus/dbus-sysdeps-util.c (_dbus_group_info_free): Moved to 
+	dbus/dbus-sysdeps.c
+
+	* dbus/dbus-userdb.c (_dbus_group_info_free_allocated): Don't
+	call _dbus_group_info_free_allocated which causes infinite loop,
+	correctly call _dbus_group_info_free
+
+2006-02-20  Thiago Macieira <thiago.macieira@trolltech.com>
+
+	* qt/qdbusinterface_p.h:
+	* qt/qdbusinterface.cpp: Use the standard
+	org.freedesktop.DBus.Method.NoReply annotation for the "async"
+	calls instead of creating one for us.
+
+	* qt/qdbusconnection_p.h:
+	* qt/qdbusintegrator.cpp: Remove debugging code.
+
+	* qt/qdbusintegrator.cpp:
+	* qt/qdbusmessage.cpp:
+	* qt/qdbusmessage_p.h:
+	* qt/qdbusmessage.h: Change the behaviour of automatic
+	reply-sending: now a reply is always sent, unless the caller
+	didn't request one or if the user slot has already sent one.
+
+2006-02-16  Robert McQueen  <robot101@debian.org>
+
+	* configure.in: Patch from Debian packages by Sjoerd Simons
+	<sjoerd@debian.org> to add --with-qt-moc and --with-qt3-moc
+	arguments so it's possible to build both bindings in the
+	same tree.
+
+	* qt/Makefile.am: Fix truncated value so that make dist works.
+
+2006-02-16  Robert McQueen  <robot101@debian.org>
+
+	* acinclude.m4, configure.in: Patch from Brad Hards
+	<bradh@frogmouth.net> to avoid warnings from autoconf 1.9 by
+	improving quoting, re-ordering a few checks, and a few other
+	aesthetic tidy-ups.
+
+2006-02-16  Robert McQueen  <robot101@debian.org>
+
+	* dbus/dbus-message.c (dbus_message_iter_get_fixed_array):
+	Patch from Rob Taylor <rob.taylor@collabora.co.uk> to correct a bogus
+	assertion that the next element to read from the iter is fixed in
+	size. This is not the case when you are at the end of the iter,
+	because the next element type is INVALID.
+
+	* dbus/dbus-string.c (_dbus_string_init_const_len): Correct a
+	a bogus assert which means that you may not initialise a 0-length
+	string unless you provide a non-NULL pointer. This prevented
+	you from marshalling messages containing zero-length arrays in
+	some cases.
+
+	* glib/dbus-gvalue.c (demarshal_collection_array): Another patch
+	from Rob to correct bogus asserts when trying to demarshal an
+	array and get_fixed_array got you 0 elements. Append nothing to
+	the GArray in this case.
+
+	* test/glib/test-dbus-glib.c: Add a test case for round-tripping
+	an empty array via the glib bindings. Without all of the above
+	patches, this new test fails.
+
+2006-02-16  Robert McQueen  <robot101@debian.org>
+
+	* glib/dbus-gmain.c: Make the previous commit compile.
+
+	* python/_dbus.py, python/matchrules.py: Patch from Ole Andre
+	Ravnaas <ole.andre.ravnaas@collabora.co.uk> to allow you to
+	specify sender_keyword="foo", path_keyword="bar" when adding
+	a signal listener, so that you can bind to signals generically
+	but still do something useful in your callback.
+
+	* python/dbus_bindings.pyx: Demarshal the byte type as unsigned
+	chars so that they're not cast to chars and made negative. Thanks
+	to Jakub Stachowski for reporting this and testing the fix.
+
+2006-02-15  John (J5) Palmieri  <johnp@redhat.com>
+
+	* dbus/dbus-glib.h:
+	* glib/dbus-gmain.h:
+	(dbus_g_connection_open): new method for openning
+	a connection to an arbitrary address in the glib bindings
+
+	* ChangeLog: checkin last entry which doesn't seem to be commited
+
+2006-02-13  John (J5) Palmieri  <johnp@redhat.com>
+
+	* tools/dbus-launch.c: Fixed sh syntax output
+
+2006-02-13  Robert McQueen  <robot101@debian.org>
+
+	* glib/dbus-binding-tool-glib.c, glib/dbus-gmain.c,
+	glib/dbus-gsignature.c, glib/dbus-gtype-specialized.c,
+	glib/dbus-gtype-specialized.h, glib/dbus-gvalue-utils.c,
+	glib/dbus-gvalue-utils.h, glib/dbus-gvalue.c:
+	Patch from Rob Taylor <rob.taylor@collabora.co.uk> to add a big
+	missing piece of the glib bindings jigsaw puzzle. This modifies
+	the existing specialised types to have N type parameters (rather
+	than the current 1 or 2 for arrays and dictionaries respectively).
+	You can then use this to get a glib type to represent any arbitrary
+	D-Bus struct type using dbus_g_type_get_struct. The only
+	implementation of these types is with GValueArrays as before,
+	but it's now possible to store these in arrays, emit them in
+	signals, etc.
+
+2006-02-10  John (J5) Palmieri  <johnp@redhat.com>
+
+	* dbus/dbus-signature.c (dbus_signature_iter_recurse): Correctly
+	deal with nested arrays (Bug #5823) Patch by Thiago Macieira 
+	<thiago.macieira at trolltech.com>
+
+2006-02-10  John (J5) Palmieri  <johnp@redhat.com>
+
+	* mono/doc/Makefile.am: Fix parallel make problem with mono-doc
+	(Bug #4213) Patch from Doug Goldstein <cardoe at gentoo.org>
+
+2006-02-10  John (J5) Palmieri  <johnp@redhat.com>
+
+	* bus/connection.c (bus_connections_expect_reply): Make
+	pending reply limit not common to all connections (Bug #5416)
+	Patch from Kimmo Hämäläinen <kimmo.hamalainen at nokia.com>
+
+2006-02-10  John (J5) Palmieri  <johnp@redhat.com>
+
+	* tools/dbus-launch.c: Fixed csh syntax output (Bug #5720)
+
+2006-02-10  John (J5) Palmieri  <johnp@redhat.com>
+
+	* gcj/Makefile.am: point to correct jar command (Bug #4529)
+	patch from Doug Goldstein <cardoe at gentoo.org>
+
+2006-02-09  Joe Shaw  <joeshaw@novell.com>
+
+	* mono/Arguments.cs: Fix a magic number in the mono bindings
+	that doesn't work on 64 bit arches.  Patch from Peter Johanson.
+
+2006-01-27  Robert McQueen  <robot101@debian.org>
+
+	* glib/dbus-binding-tool-glib.[ch]: Patch based on Ricardo Kekki's
+	patch to use an annotation org.freedesktop.DBus.GLib.ClientCSymbol
+	when generating the client-side methods, instead of overloading
+	CSymbol which broke everything horribly. My apologies.
+
+2006-01-27  Robert McQueen  <robot101@debian.org>
+
+	* glib/dbus-gtype-specialized.[ch], glib/dbus-gvalue-utils.c: Patch
+	by me and Rob Taylor to add a simple_free function to D-Bus map
+	and collection types, which allows those types which can be freed
+	with a GDestroyNotify (such as GHashTables and GArrays, but not
+	GPtrArrays) to be stored as the values in hashtables.
+
+	* test/glib/test-dbus-glib.c, test/glib/test-service-glib.{c,xml}:
+	Patch by Rob Taylor to add nested dicts to the glib tests to check
+	the above code works, and appears not to leak when called repeatedly.
+
+2006-01-27  Robert McQueen  <robot101@debian.org>
+
+	* glib/dbus-gvalue.c (demarshal_valuearray): Patch from Rob Taylor
+	to free a D-Bus allocated string with dbus_free () instead of
+	g_free ().
+
+2006-01-27  Iain Holmes  <iain@openedhand.com>
+
+	* glib/dbus-gproxy.c (dbus_g_proxy_dispose): Protect the dispose
+	method from being called multiple times.
+
+2006-01-19  Robert McQueen  <robot101@debian.org>
+
+	* glib/dbus-binding-tool-glib.c: Patch from Rob Taylor
+	<rob.taylor@collabora.co.uk> to add support for generating bindings
+	to arrays that are represented as GPtrArrays rather than GArrays (ie
+	size-variable things, such as strings, objects, structs, etc).
+
+2006-01-05  Robert McQueen  <robot101@debian.org>
+
+	* dbus/dbus-glib.h, glib/dbus-gproxy.c: Patch from Ricardo Kekki
+	<ricardo.kekki@movial.fi> to make it possible to inherit from
+	DBusGProxy, by splitting the DBusGProxy struct into a public part and
+	a private part, and moving the setting of the DBusGProxyManager into a
+	connection property, allowing proper GObject construction.
+
+2006-01-05  Robert McQueen  <robot101@debian.org>
+
+	* glib/dbus-binding-tool-glib.c: Patch from Ricardo Kekki
+	<ricardo.kekki@movial.fi> to make dbus-binding-tool heed C symbol name
+	annotations when generating glib client bindings.
+
+2005-12-19 John (J5) Palmieri  <johnp@redhat.com>
+
+	* dbus/dbus-shared.h: Call it shared constants instead of shared macros
+
+	* dbus/dbus-protocol.h: add DOxygen markup to quiet warnings
+
+2005-12-19 John (J5) Palmieri  <johnp@redhat.com>
+
+	* dbus/dbus-shared.h: add DOxygen markup to quiet warnings
+
+2005-12-19 John (J5) Palmieri  <johnp@redhat.com> 
+
+	* dbus/dbus-macros.h: correct DOxygen end of section (s/}@/@})
+
+2005-12-19  Ross Burton  <ross@openedhand.com>
+
+	* doc/dbus-tutorial.xml:
+	Document the Glib client-side bindings, and list all possible annotations.
+
+2005-12-19  John (J5) Palmieri  <johnp@redhat.com>
+
+	* dbus/bus.c (dbus_bus_release_name): Add documentation
+
+2005-12-06  Robert McQueen  <robot101@debian.org>
+
+	* python/service.py: s/sucessful/successful/ so we're allocating to
+	and reading from the same variable. Oops.
+
 2005-11-30  John (J5) Palmieri  <johnp@redhat.com>
 
 	* Released 0.60

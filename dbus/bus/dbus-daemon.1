@@ -30,9 +30,9 @@ a different configuration file.
 
 .PP
 The \-\-session option is equivalent to
-"\-\-config-file=/etc/dbus-1/session.conf" and the \-\-system
+"\-\-config-file=/usr/local/etc/dbus-1/session.conf" and the \-\-system
 option is equivalent to
-"\-\-config-file=/etc/dbus-1/system.conf". By creating 
+"\-\-config-file=/usr/local/etc/dbus-1/system.conf". By creating 
 additional configuration files and using the \-\-config-file option,
 additional special-purpose message bus daemons could be created.
 
@@ -105,8 +105,8 @@ document is documentation, not specification.
 
 .PP
 The standard systemwide and per-session message bus setups are
-configured in the files "/etc/dbus-1/system.conf" and
-"/etc/dbus-1/session.conf".  These files normally
+configured in the files "/usr/local/etc/dbus-1/system.conf" and
+"/usr/local/etc/dbus-1/session.conf".  These files normally
 <include> a system-local.conf or session-local.conf; you can put local
 overrides in those files to avoid modifying the primary configuration
 files.
@@ -168,7 +168,7 @@ Only files ending in ".conf" are included.
 This is intended to allow extension of the system bus by particular
 packages. For example, if CUPS wants to be able to send out
 notification of printer queue changes, it could install a file to
-/etc/dbus-1/system.d that allowed all apps to receive
+/usr/local/etc/dbus-1/system.d that allowed all apps to receive
 this message and allowed the printer daemon user to send it.
 
 .TP

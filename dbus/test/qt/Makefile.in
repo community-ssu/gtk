@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(qdbusconnection_SOURCES)
+SOURCES = $(hal_SOURCES) $(qdbusconnection_SOURCES) $(qdbusinterface_SOURCES) $(qdbusobject_SOURCES) $(qdbustype_SOURCES) $(qdbusxmlparser_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -48,18 +48,48 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(mkdir_p)
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-@DBUS_BUILD_TESTS_TRUE@am__EXEEXT_1 = qdbusconnection$(EXEEXT)
+@DBUS_BUILD_TESTS_TRUE@am__EXEEXT_1 = qdbusconnection$(EXEEXT) \
+@DBUS_BUILD_TESTS_TRUE@	qdbusobject$(EXEEXT) \
+@DBUS_BUILD_TESTS_TRUE@	qdbusinterface$(EXEEXT) \
+@DBUS_BUILD_TESTS_TRUE@	qdbustype$(EXEEXT) \
+@DBUS_BUILD_TESTS_TRUE@	qdbusxmlparser$(EXEEXT) hal$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
-am_qdbusconnection_OBJECTS = tst_qdbusconnection.$(OBJEXT)
-qdbusconnection_OBJECTS = $(am_qdbusconnection_OBJECTS)
+am_hal_OBJECTS = tst_hal.$(OBJEXT)
+hal_OBJECTS = $(am_hal_OBJECTS)
+hal_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) \
 	$(top_builddir)/qt/libdbus-qt4-1.la
+hal_DEPENDENCIES = $(am__DEPENDENCIES_2)
+am_qdbusconnection_OBJECTS = tst_qdbusconnection.$(OBJEXT)
+qdbusconnection_OBJECTS = $(am_qdbusconnection_OBJECTS)
+qdbusconnection_LDADD = $(LDADD)
 qdbusconnection_DEPENDENCIES = $(am__DEPENDENCIES_2)
+am_qdbusinterface_OBJECTS = tst_qdbusinterface.$(OBJEXT)
+qdbusinterface_OBJECTS = $(am_qdbusinterface_OBJECTS)
+qdbusinterface_LDADD = $(LDADD)
+qdbusinterface_DEPENDENCIES = $(am__DEPENDENCIES_2)
+am_qdbusobject_OBJECTS = tst_qdbusobject.$(OBJEXT)
+qdbusobject_OBJECTS = $(am_qdbusobject_OBJECTS)
+qdbusobject_LDADD = $(LDADD)
+qdbusobject_DEPENDENCIES = $(am__DEPENDENCIES_2)
+am_qdbustype_OBJECTS = tst_qdbustype.$(OBJEXT)
+qdbustype_OBJECTS = $(am_qdbustype_OBJECTS)
+qdbustype_LDADD = $(LDADD)
+qdbustype_DEPENDENCIES = $(am__DEPENDENCIES_2)
+am_qdbusxmlparser_OBJECTS = tst_qdbusxmlparser.$(OBJEXT)
+qdbusxmlparser_OBJECTS = $(am_qdbusxmlparser_OBJECTS)
+qdbusxmlparser_LDADD = $(LDADD)
+qdbusxmlparser_DEPENDENCIES = $(am__DEPENDENCIES_2)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/tst_qdbusconnection.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/tst_hal.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tst_qdbusconnection.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tst_qdbusinterface.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tst_qdbusobject.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tst_qdbustype.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/tst_qdbusxmlparser.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -68,8 +98,12 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(qdbusconnection_SOURCES)
-DIST_SOURCES = $(qdbusconnection_SOURCES)
+SOURCES = $(hal_SOURCES) $(qdbusconnection_SOURCES) \
+	$(qdbusinterface_SOURCES) $(qdbusobject_SOURCES) \
+	$(qdbustype_SOURCES) $(qdbusxmlparser_SOURCES)
+DIST_SOURCES = $(hal_SOURCES) $(qdbusconnection_SOURCES) \
+	$(qdbusinterface_SOURCES) $(qdbusobject_SOURCES) \
+	$(qdbustype_SOURCES) $(qdbusxmlparser_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -202,6 +236,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INSTOBJEXT = @INSTOBJEXT@
 INTLLIBS = @INTLLIBS@
+JAR = @JAR@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
@@ -287,8 +322,6 @@ am__fastdepGCJ_TRUE = @am__fastdepGCJ_TRUE@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
-am__tar = @am__tar@
-am__untar = @am__untar@
 bindir = @bindir@
 build = @build@
 build_alias = @build_alias@
@@ -327,14 +360,17 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/qt $(DBUS_CLIENT_CFLAGS) $(DBUS_QT_CFLAGS) $(DBUS_QTESTLIB_CFLAGS) -DDBUS_COMPILATION
 @DBUS_BUILD_TESTS_FALSE@TEST_BINARIES = 
-@DBUS_BUILD_TESTS_TRUE@TEST_BINARIES = qdbusconnection
+@DBUS_BUILD_TESTS_TRUE@TEST_BINARIES = qdbusconnection qdbusobject qdbusinterface qdbustype qdbusxmlparser hal
 @DBUS_BUILD_TESTS_FALSE@TESTS = 
 @DBUS_BUILD_TESTS_TRUE@TESTS = 
-qdbusconnection_SOURCES = \
-	tst_qdbusconnection.cpp
-
+qdbusconnection_SOURCES = tst_qdbusconnection.cpp
+qdbusobject_SOURCES = tst_qdbusobject.cpp
+qdbusinterface_SOURCES = tst_qdbusinterface.cpp
+qdbustype_SOURCES = tst_qdbustype.cpp
+qdbusxmlparser_SOURCES = tst_qdbusxmlparser.cpp
+hal_SOURCES = tst_hal.cpp
 TEST_LIBS = $(DBUS_QTESTLIB_LIBS) $(top_builddir)/qt/libdbus-qt4-1.la
-qdbusconnection_LDADD = $(TEST_LIBS)
+LDADD = $(TEST_LIBS)
 CLEANFILES = tst_qdbusconnection.moc
 all: all-am
 
@@ -376,9 +412,24 @@ clean-noinstPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
+hal$(EXEEXT): $(hal_OBJECTS) $(hal_DEPENDENCIES) 
+	@rm -f hal$(EXEEXT)
+	$(CXXLINK) $(hal_LDFLAGS) $(hal_OBJECTS) $(hal_LDADD) $(LIBS)
 qdbusconnection$(EXEEXT): $(qdbusconnection_OBJECTS) $(qdbusconnection_DEPENDENCIES) 
 	@rm -f qdbusconnection$(EXEEXT)
 	$(CXXLINK) $(qdbusconnection_LDFLAGS) $(qdbusconnection_OBJECTS) $(qdbusconnection_LDADD) $(LIBS)
+qdbusinterface$(EXEEXT): $(qdbusinterface_OBJECTS) $(qdbusinterface_DEPENDENCIES) 
+	@rm -f qdbusinterface$(EXEEXT)
+	$(CXXLINK) $(qdbusinterface_LDFLAGS) $(qdbusinterface_OBJECTS) $(qdbusinterface_LDADD) $(LIBS)
+qdbusobject$(EXEEXT): $(qdbusobject_OBJECTS) $(qdbusobject_DEPENDENCIES) 
+	@rm -f qdbusobject$(EXEEXT)
+	$(CXXLINK) $(qdbusobject_LDFLAGS) $(qdbusobject_OBJECTS) $(qdbusobject_LDADD) $(LIBS)
+qdbustype$(EXEEXT): $(qdbustype_OBJECTS) $(qdbustype_DEPENDENCIES) 
+	@rm -f qdbustype$(EXEEXT)
+	$(CXXLINK) $(qdbustype_LDFLAGS) $(qdbustype_OBJECTS) $(qdbustype_LDADD) $(LIBS)
+qdbusxmlparser$(EXEEXT): $(qdbusxmlparser_OBJECTS) $(qdbusxmlparser_DEPENDENCIES) 
+	@rm -f qdbusxmlparser$(EXEEXT)
+	$(CXXLINK) $(qdbusxmlparser_LDFLAGS) $(qdbusxmlparser_OBJECTS) $(qdbusxmlparser_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -386,7 +437,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tst_hal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tst_qdbusconnection.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tst_qdbusinterface.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tst_qdbusobject.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tst_qdbustype.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tst_qdbusxmlparser.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -664,10 +720,15 @@ uninstall-am: uninstall-info-am
 	tags uninstall uninstall-am uninstall-info-am
 
 
-tst_qdbusconnection.cpp: tst_qdbusconnection.moc
+tst_qdbusconnection.o: tst_qdbusconnection.moc
+tst_qdbusobject.o: tst_qdbusobject.moc
+tst_qdbusinterface.o: tst_qdbusinterface.moc
+tst_qdbustype.o: tst_qdbustype.moc
+tst_qdbusxmlparser.o: tst_qdbusxmlparser.moc
+tst_hal.o: tst_hal.moc
 
-tst_qdbusconnection.moc:
-	$(QT_MOC) $(srcdir)/tst_qdbusconnection.cpp > tst_qdbusconnection.moc
+%.moc: %.cpp
+	$(QT_MOC) $< > $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

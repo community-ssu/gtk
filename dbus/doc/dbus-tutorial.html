@@ -1,10 +1,4 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>D-BUS Tutorial</title><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="index"></a>D-BUS Tutorial</h1></div><div><div class="authorgroup"><div class="author"><h3 class="author"><span class="firstname">Havoc</span> <span class="surname">Pennington</span></h3><div class="affiliation"><span class="orgname">Red Hat, Inc.<br></span><div class="address"><p><br>
-	    <code class="email">&lt;<a href="mailto:hp@pobox.com">hp@pobox.com</a>&gt;</code><br>
-	  </p></div></div></div><div class="author"><h3 class="author"><span class="firstname">David</span> <span class="surname">Wheeler</span></h3></div><div class="author"><h3 class="author"><span class="firstname">John</span> <span class="surname">Palmieri</span></h3><div class="affiliation"><span class="orgname">Red Hat, Inc.<br></span><div class="address"><p><br>
-	    <code class="email">&lt;<a href="mailto:johnp@redhat.com">johnp@redhat.com</a>&gt;</code><br>
-	  </p></div></div></div><div class="author"><h3 class="author"><span class="firstname">Colin</span> <span class="surname">Walters</span></h3><div class="affiliation"><span class="orgname">Red Hat, Inc.<br></span><div class="address"><p><br>
-	    <code class="email">&lt;<a href="mailto:walters@redhat.com">walters@redhat.com</a>&gt;</code><br>
-	  </p></div></div></div></div></div><div><p class="releaseinfo">Version 0.4.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#whatis">What is D-BUS?</a></span></dt><dd><dl><dt><span class="sect2"><a href="#uses">D-BUS applications</a></span></dt></dl></dd><dt><span class="sect1"><a href="#concepts">Concepts</a></span></dt><dd><dl><dt><span class="sect2"><a href="#objects">Objects and Object Paths</a></span></dt><dt><span class="sect2"><a href="#interfaces">Interfaces</a></span></dt><dt><span class="sect2"><a href="#messages">Message Types</a></span></dt><dt><span class="sect2"><a href="#bus-names">Bus Names</a></span></dt><dt><span class="sect2"><a href="#addresses">Addresses</a></span></dt><dt><span class="sect2"><a href="#bigpicture">Big Conceptual Picture</a></span></dt></dl></dd><dt><span class="sect1"><a href="#glib-client">GLib API: Using Remote Objects</a></span></dt><dd><dl><dt><span class="sect2"><a href="#glib-typemappings">D-BUS - GLib type mappings</a></span></dt><dt><span class="sect2"><a href="#sample-program-1">A sample program</a></span></dt><dt><span class="sect2"><a href="#glib-program-setup">Program initalization</a></span></dt><dt><span class="sect2"><a href="#glib-method-invocation">Understanding method invocation</a></span></dt><dt><span class="sect2"><a href="#glib-signal-connection">Connecting to object signals</a></span></dt><dt><span class="sect2"><a href="#glib-error-handling">Error handling and remote exceptions</a></span></dt><dt><span class="sect2"><a href="#glib-more-examples">More examples of method invocation</a></span></dt></dl></dd><dt><span class="sect1"><a href="#glib-server">GLib API: Implementing Objects</a></span></dt><dt><span class="sect1"><a href="#python-client">Python API: Using Remote Objects</a></span></dt><dd><dl><dt><span class="sect2"><a href="#python-typemappings">D-BUS - Python type mappings</a></span></dt><dt><span class="sect2"><a href="#python-invoking-methods">Invoking Methods</a></span></dt><dt><span class="sect2"><a href="#python-listening-for-signals">Listening for Signals</a></span></dt></dl></dd><dt><span class="sect1"><a href="#python-server">Python API: Implementing Objects</a></span></dt><dd><dl><dt><span class="sect2"><a href="#python-inheriting-from-dbus-object">Inheriting From dbus.service.Object</a></span></dt><dt><span class="sect2"><a href="#python-exporting-methods">Exporting Methods Over The Bus</a></span></dt><dt><span class="sect2"><a href="#python-emitting-signals">Emitting Signals</a></span></dt><dt><span class="sect2"><a href="#python-inheriting-and-overriding">Inheriting from HelloWorldObject</a></span></dt><dt><span class="sect2"><a href="#python-conclusion">Conclusion</a></span></dt></dl></dd><dt><span class="sect1"><a href="#qt-client">Qt API: Using Remote Objects</a></span></dt><dt><span class="sect1"><a href="#qt-server">Qt API: Implementing Objects</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="whatis"></a>What is D-BUS?</h2></div></div></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>D-BUS Tutorial</title><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="index"></a>D-BUS Tutorial</h1></div><div><div class="authorgroup"><div class="author"><h3 class="author"><span class="firstname">Havoc</span> <span class="surname">Pennington</span></h3><div class="affiliation"><span class="orgname">Red Hat, Inc.<br></span><div class="address"><p><code class="email">&lt;<a href="mailto:hp@pobox.com">hp@pobox.com</a>&gt;</code></p></div></div></div><div class="author"><h3 class="author"><span class="firstname">David</span> <span class="surname">Wheeler</span></h3></div><div class="author"><h3 class="author"><span class="firstname">John</span> <span class="surname">Palmieri</span></h3><div class="affiliation"><span class="orgname">Red Hat, Inc.<br></span><div class="address"><p><code class="email">&lt;<a href="mailto:johnp@redhat.com">johnp@redhat.com</a>&gt;</code></p></div></div></div><div class="author"><h3 class="author"><span class="firstname">Colin</span> <span class="surname">Walters</span></h3><div class="affiliation"><span class="orgname">Red Hat, Inc.<br></span><div class="address"><p><code class="email">&lt;<a href="mailto:walters@redhat.com">walters@redhat.com</a>&gt;</code></p></div></div></div></div></div><div><p class="releaseinfo">Version 0.4.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#whatis">What is D-BUS?</a></span></dt><dd><dl><dt><span class="sect2"><a href="#uses">D-BUS applications</a></span></dt></dl></dd><dt><span class="sect1"><a href="#concepts">Concepts</a></span></dt><dd><dl><dt><span class="sect2"><a href="#objects">Objects and Object Paths</a></span></dt><dt><span class="sect2"><a href="#interfaces">Interfaces</a></span></dt><dt><span class="sect2"><a href="#messages">Message Types</a></span></dt><dt><span class="sect2"><a href="#bus-names">Bus Names</a></span></dt><dt><span class="sect2"><a href="#addresses">Addresses</a></span></dt><dt><span class="sect2"><a href="#bigpicture">Big Conceptual Picture</a></span></dt></dl></dd><dt><span class="sect1"><a href="#glib-client">GLib API: Using Remote Objects</a></span></dt><dd><dl><dt><span class="sect2"><a href="#glib-typemappings">D-BUS - GLib type mappings</a></span></dt><dt><span class="sect2"><a href="#sample-program-1">A sample program</a></span></dt><dt><span class="sect2"><a href="#glib-program-setup">Program initalization</a></span></dt><dt><span class="sect2"><a href="#glib-method-invocation">Understanding method invocation</a></span></dt><dt><span class="sect2"><a href="#glib-signal-connection">Connecting to object signals</a></span></dt><dt><span class="sect2"><a href="#glib-error-handling">Error handling and remote exceptions</a></span></dt><dt><span class="sect2"><a href="#glib-more-examples">More examples of method invocation</a></span></dt><dt><span class="sect2"><a href="#glib-generated-bindings">Generated Bindings</a></span></dt></dl></dd><dt><span class="sect1"><a href="#glib-server">GLib API: Implementing Objects</a></span></dt><dd><dl><dt><span class="sect2"><a href="#glib-annotations">Server-side Annotations</a></span></dt></dl></dd><dt><span class="sect1"><a href="#python-client">Python API: Using Remote Objects</a></span></dt><dd><dl><dt><span class="sect2"><a href="#python-typemappings">D-BUS - Python type mappings</a></span></dt><dt><span class="sect2"><a href="#python-invoking-methods">Invoking Methods</a></span></dt><dt><span class="sect2"><a href="#python-listening-for-signals">Listening for Signals</a></span></dt></dl></dd><dt><span class="sect1"><a href="#python-server">Python API: Implementing Objects</a></span></dt><dd><dl><dt><span class="sect2"><a href="#python-inheriting-from-dbus-object">Inheriting From dbus.service.Object</a></span></dt><dt><span class="sect2"><a href="#python-exporting-methods">Exporting Methods Over The Bus</a></span></dt><dt><span class="sect2"><a href="#python-emitting-signals">Emitting Signals</a></span></dt><dt><span class="sect2"><a href="#python-inheriting-and-overriding">Inheriting from HelloWorldObject</a></span></dt><dt><span class="sect2"><a href="#python-conclusion">Conclusion</a></span></dt></dl></dd><dt><span class="sect1"><a href="#qt-client">Qt API: Using Remote Objects</a></span></dt><dt><span class="sect1"><a href="#qt-server">Qt API: Implementing Objects</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="whatis"></a>What is D-BUS?</h2></div></div></div><p>
       D-BUS is a system for <em class="firstterm">interprocess communication</em>
       (IPC). Architecturally, it has several layers:
 
@@ -272,7 +266,7 @@
         it is undefined which method will be invoked.
       </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="glib-client"></a>GLib API: Using Remote Objects</h2></div></div></div><p>
       The GLib binding is defined in the header file
-      &lt;dbus/dbus-glib.h&gt;.
+      <code class="literal">&lt;dbus/dbus-glib.h&gt;</code>.
     </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="glib-typemappings"></a>D-BUS - GLib type mappings</h3></div></div></div><p>
 	The heart of the GLib bindings for D-BUS is the mapping it
 	provides between D-BUS "type signatures" and GLib types
@@ -281,7 +275,7 @@
       </p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="glib-basic-typemappings"></a>Basic type mappings</h4></div></div></div><p>
 	  Below is a list of the basic types, along with their associated
 	  mapping to a <code class="literal">GType</code>.
-	  </p><div class="informaltable"><table border="1"><colgroup><col><col><col><col></colgroup><thead><tr><th>D-BUS basic type</th><th>GType</th><th>Free function</th><th>Notes</th></tr></thead><tbody><tr><td><code class="literal">BYTE</code></td><td><code class="literal">G_TYPE_UCHAR</code></td><td> </td><td> </td></tr><tr><td><code class="literal">BOOLEAN</code></td><td><code class="literal">G_TYPE_BOOLEAN</code></td><td> </td><td> </td></tr><tr><td><code class="literal">INT16</code></td><td><code class="literal">G_TYPE_INT</code></td><td> </td><td>Will be changed to a G_TYPE_INT16 once GLib has it</td></tr><tr><td><code class="literal">UINT16</code></td><td><code class="literal">G_TYPE_UINT</code></td><td> </td><td>Will be changed to a G_TYPE_UINT16 once GLib has it</td></tr><tr><td><code class="literal">INT32</code></td><td><code class="literal">G_TYPE_INT</code></td><td> </td><td>Will be changed to a G_TYPE_INT32 once GLib has it</td></tr><tr><td><code class="literal">UINT32</code></td><td><code class="literal">G_TYPE_UINT</code></td><td> </td><td>Will be changed to a G_TYPE_UINT32 once GLib has it</td></tr><tr><td><code class="literal">INT64</code></td><td><code class="literal">G_TYPE_GINT64</code></td><td> </td><td> </td></tr><tr><td><code class="literal">UINT64</code></td><td><code class="literal">G_TYPE_GUINT64</code></td><td> </td><td> </td></tr><tr><td><code class="literal">DOUBLE</code></td><td><code class="literal">G_TYPE_DOUBLE</code></td><td> </td><td> </td></tr><tr><td><code class="literal">STRING</code></td><td><code class="literal">G_TYPE_STRING</code></td><td>g_free</td><td> </td></tr><tr><td><code class="literal">OBJECT_PATH</code></td><td><code class="literal">DBUS_TYPE_G_PROXY</code></td><td>g_object_unref</td><td>The returned proxy does not have an interface set; use <code class="literal">dbus_g_proxy_set_interface</code> to invoke methods</td></tr></tbody></table></div><p>
+	  </p><div class="informaltable"><table border="1"><colgroup><col><col><col><col></colgroup><thead><tr><th>D-BUS basic type</th><th>GType</th><th>Free function</th><th>Notes</th></tr></thead><tbody><tr><td><code class="literal">BYTE</code></td><td><code class="literal">G_TYPE_UCHAR</code></td><td> </td><td> </td></tr><tr><td><code class="literal">BOOLEAN</code></td><td><code class="literal">G_TYPE_BOOLEAN</code></td><td> </td><td> </td></tr><tr><td><code class="literal">INT16</code></td><td><code class="literal">G_TYPE_INT</code></td><td> </td><td>Will be changed to a <code class="literal">G_TYPE_INT16</code> once GLib has it</td></tr><tr><td><code class="literal">UINT16</code></td><td><code class="literal">G_TYPE_UINT</code></td><td> </td><td>Will be changed to a <code class="literal">G_TYPE_UINT16</code> once GLib has it</td></tr><tr><td><code class="literal">INT32</code></td><td><code class="literal">G_TYPE_INT</code></td><td> </td><td>Will be changed to a <code class="literal">G_TYPE_INT32</code> once GLib has it</td></tr><tr><td><code class="literal">UINT32</code></td><td><code class="literal">G_TYPE_UINT</code></td><td> </td><td>Will be changed to a <code class="literal">G_TYPE_UINT32</code> once GLib has it</td></tr><tr><td><code class="literal">INT64</code></td><td><code class="literal">G_TYPE_GINT64</code></td><td> </td><td> </td></tr><tr><td><code class="literal">UINT64</code></td><td><code class="literal">G_TYPE_GUINT64</code></td><td> </td><td> </td></tr><tr><td><code class="literal">DOUBLE</code></td><td><code class="literal">G_TYPE_DOUBLE</code></td><td> </td><td> </td></tr><tr><td><code class="literal">STRING</code></td><td><code class="literal">G_TYPE_STRING</code></td><td><code class="literal">g_free</code></td><td> </td></tr><tr><td><code class="literal">OBJECT_PATH</code></td><td><code class="literal">DBUS_TYPE_G_PROXY</code></td><td><code class="literal">g_object_unref</code></td><td>The returned proxy does not have an interface set; use <code class="literal">dbus_g_proxy_set_interface</code> to invoke methods</td></tr></tbody></table></div><p>
 	  As you can see, the basic mapping is fairly straightforward.
 	</p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="glib-container-typemappings"></a>Container type mappings</h4></div></div></div><p>
 	  The D-BUS type system also has a number of "container"
@@ -301,8 +295,8 @@
 	  "natural".
 	</p><p>
 	  First, D-BUS type signatures which have an "obvious"
-	  corresponding builtin GLib type are mapped using that type:
-	  </p><div class="informaltable"><table border="1"><colgroup><col><col><col><col><col><col></colgroup><thead><tr><th>D-BUS type signature</th><th>Description</th><th>GType</th><th>C typedef</th><th>Free function</th><th>Notes</th></tr></thead><tbody><tr><td><code class="literal">as</code></td><td>Array of strings</td><td><code class="literal">G_TYPE_STRV</code></td><td><code class="literal">char **</code></td><td>g_strfreev</td><td> </td></tr><tr><td><code class="literal">v</code></td><td>Generic value container</td><td><code class="literal">G_TYPE_VALUE</code></td><td><code class="literal">GValue *</code></td><td>g_value_unset</td><td>The calling conventions for values expect that method callers have allocated return values; see below.</td></tr></tbody></table></div><p>
+	  corresponding built-in GLib type are mapped using that type:
+	  </p><div class="informaltable"><table border="1"><colgroup><col><col><col><col><col><col></colgroup><thead><tr><th>D-BUS type signature</th><th>Description</th><th>GType</th><th>C typedef</th><th>Free function</th><th>Notes</th></tr></thead><tbody><tr><td><code class="literal">as</code></td><td>Array of strings</td><td><code class="literal">G_TYPE_STRV</code></td><td><code class="literal">char **</code></td><td><code class="literal">g_strfreev</code></td><td> </td></tr><tr><td><code class="literal">v</code></td><td>Generic value container</td><td><code class="literal">G_TYPE_VALUE</code></td><td><code class="literal">GValue *</code></td><td><code class="literal">g_value_unset</code></td><td>The calling conventions for values expect that method callers have allocated return values; see below.</td></tr></tbody></table></div><p>
 	</p><p>
 	  The next most common recursive type signatures are arrays of
 	  basic values.  The most obvious mapping for arrays of basic
@@ -410,7 +404,7 @@ main (int argc, char **argv)
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="glib-method-invocation"></a>Understanding method invocation</h3></div></div></div><p>
 	You have a number of choices for method invocation.  First, as
 	used above, <code class="literal">dbus_g_proxy_call</code> sends a
-	method call to the remote object, and blocks until reply is
+	method call to the remote object, and blocks until a reply is
 	recieved.  The outgoing arguments are specified in the varargs
 	array, terminated with <code class="literal">G_TYPE_INVALID</code>.
 	Next, pointers to return values are specified, followed again
@@ -596,7 +590,75 @@ main (int argc, char **argv)
     ...
   g_value_unset (&amp;val);
 </pre><p>
-	</p></div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="glib-server"></a>GLib API: Implementing Objects</h2></div></div></div><p>
+	</p></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="glib-generated-bindings"></a>Generated Bindings</h3></div></div></div><p>
+        By using the Introspection XML files, convenient client-side bindings
+        can be automatically created to ease the use of a remote DBus object.
+      </p><p>
+        Here is a sample XML file which describes an object that exposes
+        one method, named <code class="literal">ManyArgs</code>.
+        </p><pre class="programlisting">
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;node name="/com/example/MyObject"&gt;
+  &lt;interface name="com.example.MyObject"&gt;
+    &lt;method name="ManyArgs"&gt;
+      &lt;arg type="u" name="x" direction="in" /&gt;
+      &lt;arg type="s" name="str" direction="in" /&gt;
+      &lt;arg type="d" name="trouble" direction="in" /&gt;
+      &lt;arg type="d" name="d_ret" direction="out" /&gt;
+      &lt;arg type="s" name="str_ret" direction="out" /&gt;
+    &lt;/method&gt;
+  &lt;/interface&gt;
+&lt;/node&gt;
+</pre><p>
+      </p><p>
+        Run <code class="literal">dbus-binding-tool --mode=glib-client
+          <em class="replaceable"><code>FILENAME</code></em> &gt;
+          <em class="replaceable"><code>HEADER_NAME</code></em></code> to generate the header
+        file.  For example: <span><strong class="command">dbus-binding-tool --mode=glib-client
+          my-object.xml &gt; my-object-bindings.h</strong></span>.  This will generate
+        inline functions with the following prototypes:
+        </p><pre class="programlisting">
+/* This is a blocking call */
+gboolean
+com_example_MyObject_many_args (DBusGProxy *proxy, const guint IN_x,
+                                const char * IN_str, const gdouble IN_trouble,
+                                gdouble* OUT_d_ret, char ** OUT_str_ret,
+                                GError **error);
+
+/* This is a non-blocking call */
+DBusGProxyCall*
+com_example_MyObject_many_args_async (DBusGProxy *proxy, const guint IN_x,
+                                      const char * IN_str, const gdouble IN_trouble,
+                                      com_example_MyObject_many_args_reply callback,
+                                      gpointer userdata);
+
+/* This is the typedef for the non-blocking callback */
+typedef void
+(*com_example_MyObject_many_args_reply)
+(DBusGProxy *proxy, gdouble OUT_d_ret, char * OUT_str_ret,
+ GError *error, gpointer userdata);
+</pre><p>
+        The first argument in all functions is a <code class="literal">DBusGProxy
+        *</code>, which you should create with the usual
+        <code class="literal">dbus_g_proxy_new_*</code> functions.  Following that are the
+        "in" arguments, and then either the "out" arguments and a
+        <code class="literal">GError *</code> for the synchronous (blocking) function, or
+        callback and user data arguments for the asynchronous (non-blocking)
+        function.  The callback in the asynchronous function passes the
+        <code class="literal">DBusGProxy *</code>, the returned "out" arguments, an
+        <code class="literal">GError *</code> which is set if there was an error otherwise
+        <code class="literal">NULL</code>, and the user data.
+      </p><p>
+        As with the server-side bindings support (see <a href="#glib-server" title="GLib API: Implementing Objects">the section called &#8220;GLib API: Implementing Objects&#8221;</a>), the exact behaviour of the client-side
+        bindings can be manipulated using "annotations".  Currently the only
+        annotation used by the client bindings is
+        <code class="literal">org.freedesktop.DBus.GLib.NoReply</code>, which sets the
+        flag indicating that the client isn't expecting a reply to the method
+        call, so a reply shouldn't be sent.  This is often used to speed up
+        rapid method calls where there are no "out" arguments, and not knowing
+        if the method succeeded is an acceptable compromise to half the traffic
+        on the bus.
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="glib-server"></a>GLib API: Implementing Objects</h2></div></div></div><p>
       At the moment, to expose a GObject via D-BUS, you must
       write XML by hand which describes the methods exported
       by the object.  In the future, this manual step will
@@ -634,12 +696,12 @@ main (int argc, char **argv)
       giving the C symbol.
     </p><p>
       Once you have written this XML, run <code class="literal">dbus-binding-tool --mode=glib-server <em class="replaceable"><code>FILENAME</code></em> &gt; <em class="replaceable"><code>HEADER_NAME</code></em>.</code> to
-      generate a header file.  For example: <span><strong class="command">dbus-binding-tool --mode=glib-server my-objet.xml &gt; my-object-glue.h</strong></span>.
+      generate a header file.  For example: <span><strong class="command">dbus-binding-tool --mode=glib-server my-object.xml &gt; my-object-glue.h</strong></span>.
     </p><p>
       Next, include the generated header in your program, and invoke
-      <code class="literal">dbus_g_object_class_install_info</code>, passing the
-      object class and "object info" included in the header.  For
-      example:
+      <code class="literal">dbus_g_object_class_install_info</code> in the class
+      initializer, passing the object class and "object info" included in the
+      header.  For example:
       </p><pre class="programlisting">
 	dbus_g_object_type_install_info (COM_FOO_TYPE_MY_OBJECT, &amp;com_foo_my_object_info);
       </pre><p>
@@ -673,7 +735,105 @@ main (int argc, char **argv)
                                                "/com/foo/MyObject",
                                                obj);
       </pre><p>
-    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="python-client"></a>Python API: Using Remote Objects</h2></div></div></div><p>
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="glib-annotations"></a>Server-side Annotations</h3></div></div></div><p>
+        There are several annotations that are used when generating the
+        server-side bindings.  The most common annotation is
+        <code class="literal">org.freedesktop.DBus.GLib.CSymbol</code> but there are other
+        annotations which are often useful.
+        </p><div class="variablelist"><dl><dt><span class="term"><code class="literal">org.freedesktop.DBus.GLib.CSymbol</code></span></dt><dd><p>
+                This annotation is used to specify the C symbol names for
+                the various types (interface, method, etc), if it differs from the
+                name DBus generates.
+              </p></dd><dt><span class="term"><code class="literal">org.freedesktop.DBus.GLib.Async</code></span></dt><dd><p>
+                This annotation marks the method implementation as an
+                asynchronous function, which doesn't return a response straight
+                away but will send the response at some later point to complete
+                the call.  This is used to implement non-blocking services where
+                method calls can take time.
+              </p><p>
+                When a method is asynchronous, the function prototype is
+                different. It is required that the function conform to the
+                following rules:
+                </p><div class="itemizedlist"><ul type="disc"><li><p>
+                      The function must return a value of type <code class="literal">gboolean</code>;
+                      <code class="literal">TRUE</code> on success, and <code class="literal">FALSE</code>
+                      otherwise. TODO: the return value is currently ignored.
+                    </p></li><li><p>
+                      The first parameter is a pointer to an instance of the object.
+                    </p></li><li><p>
+                      Following the object instance pointer are the method
+                      input values.
+                    </p></li><li><p>
+                      The final parameter must be a
+                      <code class="literal">DBusGMethodInvocation *</code>.  This is used
+                      when sending the response message back to the client, by
+                      calling <code class="literal">dbus_g_method_return</code> or
+                      <code class="literal">dbus_g_method_return_error</code>.
+                    </p></li></ul></div><p>
+              </p></dd><dt><span class="term"><code class="literal">org.freedesktop.DBus.GLib.Const</code></span></dt><dd><p>This attribute can only be applied to "out"
+              <code class="literal">&lt;arg&gt;</code> nodes, and specifies that the
+              parameter isn't being copied when returned.  For example, this
+              turns a 's' argument from a <code class="literal">char **</code> to a
+              <code class="literal">const char **</code>, and results in the argument not
+              being freed by DBus after the message is sent.
+              </p></dd><dt><span class="term"><code class="literal">org.freedesktop.DBus.GLib.ReturnVal</code></span></dt><dd><p>
+                This attribute can only be applied to "out"
+                <code class="literal">&lt;arg&gt;</code> nodes, and alters the expected
+                function signature.  It currently can be set to two values:
+                <code class="literal">""</code> or <code class="literal">"error"</code>.  The
+                argument marked with this attribute is not returned via a
+                pointer argument, but by the function's return value.  If the
+                attribute's value is the empty string, the <code class="literal">GError
+                *</code> argument is also omitted so there is no standard way
+                to return an error value.  This is very useful for interfacing
+                with existing code, as it is possible to match existing APIs.
+                If the attribute's value is <code class="literal">"error"</code>, then the
+                final argument is a <code class="literal">GError *</code> as usual.
+              </p><p>
+                Some examples to demonstrate the usage. This introspection XML:
+                </p><pre class="programlisting">
+&lt;method name="Increment"&gt;
+  &lt;arg type="u" name="x" /&gt;
+  &lt;arg type="u" direction="out" /&gt;
+&lt;/method&gt;
+                </pre><p>
+                Expects the following function declaration:
+                </p><pre class="programlisting">
+gboolean
+my_object_increment (MyObject *obj, gint32 x, gint32 *ret, GError **error);
+                </pre><p>
+              </p><p>
+                This introspection XML:
+                </p><pre class="programlisting">
+&lt;method name="IncrementRetval"&gt;
+  &lt;arg type="u" name="x" /&gt;
+  &lt;arg type="u" direction="out" &gt;
+    &lt;annotation name="org.freedesktop.DBus.GLib.ReturnVal" value=""/&gt;
+  &lt;/arg&gt;
+&lt;/method&gt;
+                </pre><p>
+                Expects the following function declaration:
+                </p><pre class="programlisting">
+gint32
+my_object_increment_retval (MyObject *obj, gint32 x)
+                </pre><p>
+              </p><p>
+                This introspection XML:
+                </p><pre class="programlisting">
+&lt;method name="IncrementRetvalError"&gt;
+  &lt;arg type="u" name="x" /&gt;
+  &lt;arg type="u" direction="out" &gt;
+    &lt;annotation name="org.freedesktop.DBus.GLib.ReturnVal" value="error"/&gt;
+  &lt;/arg&gt;
+&lt;/method&gt;
+                </pre><p>
+                Expects the following function declaration:
+                </p><pre class="programlisting">
+gint32
+my_object_increment_retval_error (MyObject *obj, gint32 x, GError **error)
+                </pre><p>
+              </p></dd></dl></div><p>
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="python-client"></a>Python API: Using Remote Objects</h2></div></div></div><p>
       The Python bindings provide a simple to use interface for talking over D-BUS.
       Where possible much of the inner-workings of D-BUS are hidden behind what looks
       like normal Python objects.

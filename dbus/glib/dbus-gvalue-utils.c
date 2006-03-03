@@ -311,10 +311,39 @@ hash_free_from_gtype (GType gtype, GDestroyNotify *func)
 	}
       else if (gtype == G_TYPE_VALUE_ARRAY)
         {
-          *func = g_value_array_free;
-	  return TRUE;
+          *func = (GDestroyNotify) g_value_array_free;
+          return TRUE;
         }
-
+      else if (dbus_g_type_is_collection (gtype))
+        {
+          const DBusGTypeSpecializedCollectionVtable* vtable;
+          vtable = dbus_g_type_collection_peek_vtable (gtype);
+          if (vtable->base_vtable.simple_free_func)
+            {
+              *func = vtable->base_vtable.simple_free_func;
+              return TRUE;
+            }
+        }
+      else if (dbus_g_type_is_map (gtype))
+        {
+          const DBusGTypeSpecializedMapVtable* vtable;
+          vtable = dbus_g_type_map_peek_vtable (gtype);
+          if (vtable->base_vtable.simple_free_func)
+            {
+              *func = vtable->base_vtable.simple_free_func;
+              return TRUE;
+            }
+        }
+      else if (dbus_g_type_is_struct (gtype))
+        {
+          const DBusGTypeSpecializedStructVtable *vtable;
+          vtable = dbus_g_type_struct_peek_vtable (gtype);
+          if (vtable->base_vtable.simple_free_func)
+            {
+              *func = vtable->base_vtable.simple_free_func;
+              return TRUE;
+            }
+        }
       return FALSE;
     }
 }
@@ -587,10 +616,71 @@ hashtable_copy (GType type, gpointer src)
 }
 
 static void
-hashtable_free (GType type, gpointer val)
+hashtable_simple_free (gpointer val)
 {
   g_hash_table_destroy (val);
 }
+
+static gpointer
+valuearray_constructor (GType type)
+{
+  GValueArray *ret;
+  guint size = dbus_g_type_get_struct_size (type);
+  guint i;
+  ret = g_value_array_new (size);
+  for (i=0; i < size; i++)
+    {
+      GValue val = {0,};
+      g_value_init (&val, dbus_g_type_get_struct_member_type (type, i));
+      g_value_array_append(ret, &val);
+    }
+  return (gpointer)ret;
+}
+
+static gpointer
+valuearray_copy (GType type, gpointer src)
+{
+  return g_value_array_copy ((GValueArray*) src);
+}
+
+static void
+valuearray_simple_free (gpointer val)
+{
+  g_value_array_free (val);
+}
+
+static gboolean
+valuearray_get_member (GType type, gpointer instance,
+                       guint member, GValue *ret)
+{
+  GValueArray *va = (GValueArray*) instance;
+  const GValue *val;
+  if (member < dbus_g_type_get_struct_size (type))
+    {
+      val = g_value_array_get_nth (va, member);
+      g_value_copy (val, ret);
+      return TRUE;
+    }
+  else
+    return FALSE;
+}
+
+static gboolean
+valuearray_set_member (GType type, gpointer instance,
+                       guint member, const GValue *member_type)
+{
+  GValueArray *va = (GValueArray*) instance;
+  GValue *vp;
+  if (member < dbus_g_type_get_struct_size (type))
+    {
+      vp = g_value_array_get_nth (va, member);
+      g_value_copy (member_type, vp);
+      return TRUE;
+    }
+  else
+    return FALSE;
+}
+
 
 static gpointer
 array_constructor (GType type)
@@ -629,7 +719,7 @@ array_copy (GType type, gpointer src)
 }
 
 static void
-array_free (GType type, gpointer val)
+array_simple_free (gpointer val)
 {
   GArray *array;
   array = val;
@@ -768,6 +858,7 @@ ptrarray_append (DBusGTypeSpecializedAppendContext *ctx, GValue *value)
 static void
 ptrarray_free (GType type, gpointer val)
 {
+  /* XXX: this function appears to leak the contents of the array */
   GPtrArray *array;
   array = val;
   g_ptr_array_free (array, TRUE);
@@ -852,6 +943,7 @@ slist_end_append (DBusGTypeSpecializedAppendContext *ctx)
 static void
 slist_free (GType type, gpointer val)
 {
+  /* XXX: this function appears to leak the contents of the list */
   GSList *list;
   list = val;
   g_slist_free (list);
@@ -860,11 +952,18 @@ slist_free (GType type, gpointer val)
 void
 _dbus_g_type_specialized_builtins_init (void)
 {
+  /* types with a simple_free function can be freed at run-time without
+   * the destroy function needing to know the type, so they can be
+   * stored in hash tables */
+
   static const DBusGTypeSpecializedCollectionVtable array_vtable = {
     {
       array_constructor,
-      array_free,
+      NULL,
       array_copy,
+      array_simple_free,
+      NULL,
+      NULL,
     },
     array_fixed_accessor,
     NULL,
@@ -878,6 +977,9 @@ _dbus_g_type_specialized_builtins_init (void)
       ptrarray_constructor,
       ptrarray_free,
       ptrarray_copy,
+      NULL,
+      NULL,
+      NULL,
     },
     NULL,
     ptrarray_iterator,
@@ -891,6 +993,9 @@ _dbus_g_type_specialized_builtins_init (void)
       slist_constructor,
       slist_free,
       slist_copy,
+      NULL,
+      NULL,
+      NULL,
     },
     NULL,
     slist_iterator,
@@ -901,9 +1006,9 @@ _dbus_g_type_specialized_builtins_init (void)
   static const DBusGTypeSpecializedMapVtable hashtable_vtable = {
     {
       hashtable_constructor,
-      hashtable_free,
-      hashtable_copy,
       NULL,
+      hashtable_copy,
+      hashtable_simple_free,
       NULL,
       NULL
     },
@@ -911,10 +1016,24 @@ _dbus_g_type_specialized_builtins_init (void)
     hashtable_append
   };
 
+  static const DBusGTypeSpecializedStructVtable valuearray_vtable = {
+    {
+      valuearray_constructor,
+      NULL,
+      valuearray_copy,
+      valuearray_simple_free,
+      NULL,
+      NULL
+    },
+    valuearray_get_member,
+    valuearray_set_member
+  };
+
   dbus_g_type_register_collection ("GSList", &slist_vtable, 0);
   dbus_g_type_register_collection ("GArray", &array_vtable, 0);
   dbus_g_type_register_collection ("GPtrArray", &ptrarray_vtable, 0);
   dbus_g_type_register_map ("GHashTable", &hashtable_vtable, 0);
+  dbus_g_type_register_struct ("GValueArray", &valuearray_vtable, 0);
 }
 
 #ifdef DBUS_BUILD_TESTS
@@ -1125,6 +1244,105 @@ _dbus_gvalue_utils_test (const char *datadir)
 
     g_value_unset (&val);
   }
+
+  type = dbus_g_type_get_struct ("GValueArray", G_TYPE_STRING, G_TYPE_UINT, DBUS_TYPE_G_OBJECT_PATH, G_TYPE_INVALID);
+  g_assert (dbus_g_type_is_struct (type));
+  g_assert (dbus_g_type_get_struct_size (type) == 3);
+  g_assert (dbus_g_type_get_struct_member_type (type, 0) == G_TYPE_STRING);
+  g_assert (dbus_g_type_get_struct_member_type (type, 1) == G_TYPE_UINT);
+  g_assert (dbus_g_type_get_struct_member_type (type, 2) == DBUS_TYPE_G_OBJECT_PATH);
+  {
+    GValueArray *instance;
+    GValue val = {0, };
+    GValue memval = {0, };
+
+    instance = dbus_g_type_specialized_construct (type);
+
+    g_assert (instance->n_values == 3);
+
+    g_value_init (&val, type);
+    g_value_set_boxed_take_ownership (&val, instance);
+
+    g_value_init (&memval, G_TYPE_STRING);
+    g_value_set_static_string (&memval, "foo");
+    dbus_g_type_struct_set_member (&val, 0, &memval);
+    g_value_unset (&memval);
+
+    g_value_init (&memval, G_TYPE_UINT);
+    g_value_set_uint (&memval, 42);
+    dbus_g_type_struct_set_member (&val, 1, &memval);
+    g_value_unset (&memval);
+
+    g_value_init (&memval, DBUS_TYPE_G_OBJECT_PATH);
+    g_value_set_static_boxed (&memval, "/bar/moo/foo/baz");
+    dbus_g_type_struct_set_member (&val, 2, &memval);
+    g_value_unset (&memval);
+
+    g_assert (instance->n_values == 3);
+
+    g_value_init (&memval, G_TYPE_STRING);
+    dbus_g_type_struct_get_member (&val, 0, &memval);
+    g_assert (0 == strcmp (g_value_get_string (&memval), "foo"));
+    g_value_unset (&memval);
+
+    g_value_init (&memval, G_TYPE_UINT);
+    dbus_g_type_struct_get_member (&val, 1, &memval);
+    g_assert (g_value_get_uint (&memval) == 42);
+    g_value_unset (&memval);
+
+    g_value_init (&memval, DBUS_TYPE_G_OBJECT_PATH);
+    dbus_g_type_struct_get_member (&val, 2, &memval);
+    g_assert (0 == strcmp ((gchar*) g_value_get_boxed (&memval),
+                           "/bar/moo/foo/baz"));
+    g_value_unset (&memval);
+
+    g_value_unset (&val);
+  }
+
+  type = dbus_g_type_get_struct ("GValueArray", G_TYPE_STRING, G_TYPE_UINT, DBUS_TYPE_G_OBJECT_PATH, G_TYPE_INVALID);
+  g_assert (dbus_g_type_is_struct (type));
+  g_assert (dbus_g_type_get_struct_size (type) == 3);
+  g_assert (dbus_g_type_get_struct_member_type (type, 0) == G_TYPE_STRING);
+  g_assert (dbus_g_type_get_struct_member_type (type, 1) == G_TYPE_UINT);
+  g_assert (dbus_g_type_get_struct_member_type (type, 2) == DBUS_TYPE_G_OBJECT_PATH);
+  {
+    GValueArray *instance;
+    GValue val = {0, };
+
+    instance = dbus_g_type_specialized_construct (type);
+
+    g_assert (instance->n_values == 3);
+
+    g_value_init (&val, type);
+    g_value_set_boxed_take_ownership (&val, instance);
+
+    dbus_g_type_struct_set (&val,
+                            0,"foo",
+                            1, 42,
+                            2, "/bar/moo/foo/baz",
+                            G_MAXUINT);
+
+    g_assert (instance->n_values == 3);
+
+    {
+      gchar *string;
+      guint intval;
+      gchar *path;
+
+      dbus_g_type_struct_get (&val,
+                              0, &string,
+                              1, &intval,
+                              2, &path,
+                              G_MAXUINT);
+
+      g_assert (0 == strcmp (string, "foo"));
+      g_assert (intval == 42);
+      g_assert (0 == strcmp (path, "/bar/moo/foo/baz"));
+    }
+
+    g_value_unset (&val);
+  }
+
 
   return TRUE;
 }

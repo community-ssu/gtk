@@ -1,13 +1,13 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>D-BUS FAQ</title><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="index"></a>D-BUS FAQ</h1></div><div><div class="authorgroup"><div class="author"><h3 class="author"><span class="firstname">Havoc</span> <span class="surname">Pennington</span></h3><div class="affiliation"><span class="orgname">Red Hat, Inc.<br></span><div class="address"><p><br>
 	    <code class="email">&lt;<a href="mailto:hp@pobox.com">hp@pobox.com</a>&gt;</code><br>
-	  </p></div></div></div><div class="author"><h3 class="author"><span class="firstname">David</span> <span class="othername">A</span> <span class="surname">Wheeler</span></h3></div></div></div><div><p class="releaseinfo">Version 0.1</p></div></div><hr></div><div class="qandaset"><dl><dt>1. <a href="#id2757939">
+	  </p></div></div></div><div class="author"><h3 class="author"><span class="firstname">David</span> <span class="othername">A</span> <span class="surname">Wheeler</span></h3></div></div></div><div><p class="releaseinfo">Version 0.1</p></div></div><hr></div><div class="qandaset"><dl><dt>1. <a href="#id2546029">
           What is D-BUS?
-        </a></dt><dt>2. <a href="#id2788627">
+        </a></dt><dt>2. <a href="#id2576718">
           Is D-BUS stable/finished?
-        </a></dt><dt>3. <a href="#id2788657">
+        </a></dt><dt>3. <a href="#id2576748">
           How is the reference implementation licensed? Can I use it in 
           proprietary applications?
-        </a></dt><dt>4. <a href="#id2753165">
+        </a></dt><dt>4. <a href="#id2541253">
           What is the difference between a bus name, and object path, 
           and an interface?
         </a></dt><dt>5. <a href="#service">
@@ -39,16 +39,16 @@
           How does D-BUS differ from [yet more IPC mechanisms]?
         </a></dt><dt>18. <a href="#which-ipc">
           Which IPC mechanism should I use?
-        </a></dt><dt>19. <a href="#id2797854">
+        </a></dt><dt>19. <a href="#id2585947">
           How can I submit a bug or patch?
-        </a></dt></dl><table border="0" summary="Q and A Set"><col align="left" width="1%"><tbody><tr class="question"><td align="left" valign="top"><a name="id2757939"></a><a name="id2757941"></a><b>1.</b></td><td align="left" valign="top"><p>
+        </a></dt></dl><table border="0" summary="Q and A Set"><col align="left" width="1%"><tbody><tr class="question"><td align="left" valign="top"><a name="id2546029"></a><a name="id2546032"></a><b>1.</b></td><td align="left" valign="top"><p>
           What is D-BUS?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           This is probably best answered by reading the D-BUS <a href="dbus-tutorial.html" target="_top">tutorial</a>. In
           short, it is a system consisting of 1) a wire protocol for exposing a
           typical object-oriented language/framework to other applications; and
           2) a bus daemon that allows applications to find and monitor one another.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2788627"></a><a name="id2788629"></a><b>2.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2576718"></a><a name="id2576720"></a><b>2.</b></td><td align="left" valign="top"><p>
           Is D-BUS stable/finished?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           D-BUS has not yet reached 1.0. The <a href="README" target="_top">README</a>
@@ -57,7 +57,7 @@
           of both protocol and reference library will be maintained after 1.0.
           As of January 2005 we don't expect major protocol or API changes prior
           to the 1.0 release, but anything is possible.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2788657"></a><a name="id2788659"></a><b>3.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2576748"></a><a name="id2576750"></a><b>3.</b></td><td align="left" valign="top"><p>
           How is the reference implementation licensed? Can I use it in 
           proprietary applications?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
@@ -72,7 +72,7 @@
           use D-BUS</em></span>.  If you're going to sue, you have to stop using
           the software. Read the licenses to determine their meaning, this FAQ
           entry is not intended to change the meaning or terms of the licenses.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2753165"></a><a name="id2753167"></a><b>4.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2541253"></a><a name="id2541256"></a><b>4.</b></td><td align="left" valign="top"><p>
           What is the difference between a bus name, and object path, 
           and an interface?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
@@ -102,14 +102,14 @@
           interfaces, such as <code class="literal">org.freedesktop.DBus.Introspectable</code>,
           <code class="literal">org.freedesktop.BasicTextField</code>,
           <code class="literal">org.kde.RichTextDocument</code>.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="service"></a><a name="id2753272"></a><b>5.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="service"></a><a name="id2541360"></a><b>5.</b></td><td align="left" valign="top"><p>
           What is a "service"?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           A service is a program that can be launched by the bus daemon 
           to provide some functionality to other programs. Services
           are normally launched according to the bus name they will 
           have.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="components"></a><a name="id2753297"></a><b>6.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="components"></a><a name="id2541385"></a><b>6.</b></td><td align="left" valign="top"><p>
           Is D-BUS a "component system"?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           D-BUS is not a component system. "Component system" was originally
@@ -157,7 +157,7 @@
           from component/object systems, though perhaps a "plugin" tends to be a
           bundle of objects with a user-visible name and can be
           downloaded/packaged as a unit.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="speed"></a><a name="id2753423"></a><b>7.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="speed"></a><a name="id2541511"></a><b>7.</b></td><td align="left" valign="top"><p>
           How fast is the D-BUS reference implementation?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           Of course it depends a bit on what you're doing. 
@@ -185,7 +185,7 @@
           enable asynchronous communication and avoid round trips.
           This is frequently a more important performance issue 
           than throughput.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="size"></a><a name="id2757242"></a><b>8.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="size"></a><a name="id2545332"></a><b>8.</b></td><td align="left" valign="top"><p>
           How large is the D-BUS reference implementation?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           A production build (with assertions, unit tests, and verbose logging
@@ -194,7 +194,7 @@
           A much, much smaller implementation would be possible by omitting out
           of memory handling, hardcoding a main loop (or always using blocking
           I/O), skipping validation, and otherwise simplifying things.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="other-ipc"></a><a name="id2757273"></a><b>9.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="other-ipc"></a><a name="id2545362"></a><b>9.</b></td><td align="left" valign="top"><p>
           How does D-BUS differ from other interprocess communication
           or networking protocols?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
@@ -223,7 +223,7 @@
           Note: the D-BUS mailing list subscribers are <span class="emphasis"><em>very much not
           interested</em></span> in debating which IPC system is the One True
           System. So if you want to discuss that, please use another forum.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="corba"></a><a name="id2757358"></a><b>10.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="corba"></a><a name="id2545448"></a><b>10.</b></td><td align="left" valign="top"><p>
           How does D-BUS differ from CORBA?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           Start by reading <a href="#other-ipc">Q: 9</a>.
@@ -275,7 +275,7 @@
         </p><p>
           On a more trivial note, D-BUS involves substantially fewer acronyms
           than CORBA.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="xmlrpcsoap"></a><a name="id2752886"></a><b>11.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="xmlrpcsoap"></a><a name="id2540977"></a><b>11.</b></td><td align="left" valign="top"><p>
           How does D-BUS differ from XML-RPC and SOAP?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           Start by reading <a href="#other-ipc">Q: 9</a>.
@@ -294,7 +294,7 @@
           supports lifecycle tracking of other applications connected
           to the bus. With XML-RPC and SOAP, typically each method call 
           exists in isolation and has its own HTTP connection.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="dce"></a><a name="id2752949"></a><b>12.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="dce"></a><a name="id2541039"></a><b>12.</b></td><td align="left" valign="top"><p>
           How does D-BUS differ from DCE?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           Start by reading <a href="#other-ipc">Q: 9</a>.
@@ -307,7 +307,7 @@
           a distributed time service.  As the name implies, DCE is intended for
           use in a large, multi-computer distributed application. D-BUS would
           not be well-suited for this.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="dcom"></a><a name="id2753000"></a><b>13.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="dcom"></a><a name="id2541090"></a><b>13.</b></td><td align="left" valign="top"><p>
           How does D-BUS differ from DCOM and COM?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           Start by reading <a href="#other-ipc">Q: 9</a>.
@@ -317,7 +317,7 @@
         </p><p>
           DCOM (distributed COM) is a Windows IPC system designed for use with
           the COM object system. It's similar in some ways to DCE and CORBA.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="internet-communications-engine"></a><a name="id2797594"></a><b>14.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="internet-communications-engine"></a><a name="id2585686"></a><b>14.</b></td><td align="left" valign="top"><p>
           How does D-BUS differ from ZeroC's Internet Communications Engine (Ice)
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           Start by reading <a href="#other-ipc">Q: 9</a>.
@@ -327,7 +327,7 @@
           on the level of SOAP or CORBA than D-BUS.  Ice has a "dual-license"
           business around it; i.e. you can use it under the GPL, or pay for a
           proprietary license.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="inter-client-exchange"></a><a name="id2797636"></a><b>15.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="inter-client-exchange"></a><a name="id2585728"></a><b>15.</b></td><td align="left" valign="top"><p>
           How does D-BUS differ from Inter-Client Exchange (ICE)?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           <a href="http://www.x.org/X11R6.8.1/docs/ICE/ice.pdf" target="_top">ICE</a>
@@ -345,7 +345,7 @@
           DCOP and XSMP are the only two widely-used applications of ICE,
           and both could in principle be replaced by D-BUS. (Though whether 
           GNOME and KDE will bother is an open question.)
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="dcop"></a><a name="id2797684"></a><b>16.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="dcop"></a><a name="id2585777"></a><b>16.</b></td><td align="left" valign="top"><p>
           How does D-BUS differ from DCOP?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           Start by reading <a href="#other-ipc">Q: 9</a>.
@@ -372,14 +372,14 @@
           DCOP's implementation to use D-BUS internally (so that GNOME and KDE
           would end up using exactly the same bus). See the KDE mailing list 
           archives for some of these discussions.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="yet-more-ipc"></a><a name="id2797756"></a><b>17.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="yet-more-ipc"></a><a name="id2585848"></a><b>17.</b></td><td align="left" valign="top"><p>
           How does D-BUS differ from [yet more IPC mechanisms]?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           Start by reading <a href="#other-ipc">Q: 9</a>.
         </p><p>
           There are countless uses of network sockets in the world.  <a href="http://www.mbus.org/" target="_top">MBUS</a>, Sun ONC/RPC, Jabber/XMPP,
           SIP, are some we can think of quickly.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="which-ipc"></a><a name="id2797795"></a><b>18.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="which-ipc"></a><a name="id2585887"></a><b>18.</b></td><td align="left" valign="top"><p>
           Which IPC mechanism should I use?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           Start by reading <a href="#other-ipc">Q: 9</a>.
@@ -407,7 +407,7 @@
           to search the list archives is probably to use 
           an Internet engine such as Google. On Google, 
           include "site:freedesktop.org" in your search.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2797854"></a><a name="id2797857"></a><b>19.</b></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2585947"></a><a name="id2585949"></a><b>19.</b></td><td align="left" valign="top"><p>
           How can I submit a bug or patch?
         </p></td></tr><tr class="answer"><td align="left" valign="top"><b></b></td><td align="left" valign="top"><p>
           The D-BUS <a href="http://dbus.freedesktop.org" target="_top">web site</a>

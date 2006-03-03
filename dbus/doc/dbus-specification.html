@@ -4,7 +4,7 @@
             <code class="email">&lt;<a href="mailto:andersca@codefactory.se">andersca@codefactory.se</a>&gt;</code><br>
           </p></div></div></div><div class="author"><h3 class="author"><span class="firstname">Alexander</span> <span class="surname">Larsson</span></h3><div class="affiliation"><span class="orgname">Red Hat, Inc.<br></span><div class="address"><p><br>
             <code class="email">&lt;<a href="mailto:alexl@redhat.com">alexl@redhat.com</a>&gt;</code><br>
-          </p></div></div></div></div></div><div><p class="releaseinfo">Version 0.11</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#introduction">Introduction</a></span></dt><dt><span class="sect1"><a href="#message-protocol">Message Protocol</a></span></dt><dd><dl><dt><span class="sect2"><a href="#message-protocol-signatures">Type Signatures</a></span></dt><dt><span class="sect2"><a href="#message-protocol-marshaling">Marshaling (Wire Format)</a></span></dt><dt><span class="sect2"><a href="#message-protocol-messages">Message Format</a></span></dt><dt><span class="sect2"><a href="#message-protocol-names">Valid Names</a></span></dt><dt><span class="sect2"><a href="#message-protocol-types">Message Types</a></span></dt><dt><span class="sect2"><a href="#message-protocol-handling-invalid">Invalid Protocol and Spec Extensions</a></span></dt></dl></dd><dt><span class="sect1"><a href="#auth-protocol">Authentication Protocol</a></span></dt><dd><dl><dt><span class="sect2"><a href="#auth-protocol-overview">Protocol Overview</a></span></dt><dt><span class="sect2"><a href="#auth-nul-byte">Special credentials-passing nul byte</a></span></dt><dt><span class="sect2"><a href="#auth-command-auth">AUTH command</a></span></dt><dt><span class="sect2"><a href="#auth-command-cancel">CANCEL Command</a></span></dt><dt><span class="sect2"><a href="#auth-command-data">DATA Command</a></span></dt><dt><span class="sect2"><a href="#auth-command-begin">BEGIN Command</a></span></dt><dt><span class="sect2"><a href="#auth-command-rejected">REJECTED Command</a></span></dt><dt><span class="sect2"><a href="#auth-command-ok">OK Command</a></span></dt><dt><span class="sect2"><a href="#auth-command-error">ERROR Command</a></span></dt><dt><span class="sect2"><a href="#auth-examples">Authentication examples</a></span></dt><dt><span class="sect2"><a href="#auth-states">Authentication state diagrams</a></span></dt><dt><span class="sect2"><a href="#auth-mechanisms">Authentication mechanisms</a></span></dt></dl></dd><dt><span class="sect1"><a href="#addresses">Server Addresses</a></span></dt><dt><span class="sect1"><a href="#transports">Transports</a></span></dt><dd><dl><dt><span class="sect2"><a href="#transports-unix-domain-sockets">Unix Domain Sockets</a></span></dt></dl></dd><dt><span class="sect1"><a href="#naming-conventions">Naming Conventions</a></span></dt><dt><span class="sect1"><a href="#standard-interfaces">Standard Interfaces</a></span></dt><dd><dl><dt><span class="sect2"><a href="#standard-interfaces-peer"><code class="literal">org.freedesktop.DBus.Peer</code></a></span></dt><dt><span class="sect2"><a href="#standard-interfaces-introspectable"><code class="literal">org.freedesktop.DBus.Introspectable</code></a></span></dt><dt><span class="sect2"><a href="#standard-interfaces-properties"><code class="literal">org.freedesktop.DBus.Properties</code></a></span></dt></dl></dd><dt><span class="sect1"><a href="#introspection-format">Introspection Data Format</a></span></dt><dt><span class="sect1"><a href="#message-bus">Message Bus Specification</a></span></dt><dd><dl><dt><span class="sect2"><a href="#message-bus-overview">Message Bus Overview</a></span></dt><dt><span class="sect2"><a href="#message-bus-names">Message Bus Names</a></span></dt><dt><span class="sect2"><a href="#message-bus-routing">Message Bus Message Routing</a></span></dt><dt><span class="sect2"><a href="#message-bus-starting-services">Message Bus Starting Services</a></span></dt><dt><span class="sect2"><a href="#message-bus-types">Well-known Message Bus Instances</a></span></dt><dt><span class="sect2"><a href="#message-bus-messages">Message Bus Messages</a></span></dt></dl></dd><dt><span class="glossary"><a href="#id2794895">Glossary</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="introduction"></a>Introduction</h2></div></div></div><p>
+          </p></div></div></div></div></div><div><p class="releaseinfo">Version 0.11</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#introduction">Introduction</a></span></dt><dt><span class="sect1"><a href="#message-protocol">Message Protocol</a></span></dt><dd><dl><dt><span class="sect2"><a href="#message-protocol-signatures">Type Signatures</a></span></dt><dt><span class="sect2"><a href="#message-protocol-marshaling">Marshaling (Wire Format)</a></span></dt><dt><span class="sect2"><a href="#message-protocol-messages">Message Format</a></span></dt><dt><span class="sect2"><a href="#message-protocol-names">Valid Names</a></span></dt><dt><span class="sect2"><a href="#message-protocol-types">Message Types</a></span></dt><dt><span class="sect2"><a href="#message-protocol-handling-invalid">Invalid Protocol and Spec Extensions</a></span></dt></dl></dd><dt><span class="sect1"><a href="#auth-protocol">Authentication Protocol</a></span></dt><dd><dl><dt><span class="sect2"><a href="#auth-protocol-overview">Protocol Overview</a></span></dt><dt><span class="sect2"><a href="#auth-nul-byte">Special credentials-passing nul byte</a></span></dt><dt><span class="sect2"><a href="#auth-command-auth">AUTH command</a></span></dt><dt><span class="sect2"><a href="#auth-command-cancel">CANCEL Command</a></span></dt><dt><span class="sect2"><a href="#auth-command-data">DATA Command</a></span></dt><dt><span class="sect2"><a href="#auth-command-begin">BEGIN Command</a></span></dt><dt><span class="sect2"><a href="#auth-command-rejected">REJECTED Command</a></span></dt><dt><span class="sect2"><a href="#auth-command-ok">OK Command</a></span></dt><dt><span class="sect2"><a href="#auth-command-error">ERROR Command</a></span></dt><dt><span class="sect2"><a href="#auth-examples">Authentication examples</a></span></dt><dt><span class="sect2"><a href="#auth-states">Authentication state diagrams</a></span></dt><dt><span class="sect2"><a href="#auth-mechanisms">Authentication mechanisms</a></span></dt></dl></dd><dt><span class="sect1"><a href="#addresses">Server Addresses</a></span></dt><dt><span class="sect1"><a href="#transports">Transports</a></span></dt><dd><dl><dt><span class="sect2"><a href="#transports-unix-domain-sockets">Unix Domain Sockets</a></span></dt></dl></dd><dt><span class="sect1"><a href="#naming-conventions">Naming Conventions</a></span></dt><dt><span class="sect1"><a href="#standard-interfaces">Standard Interfaces</a></span></dt><dd><dl><dt><span class="sect2"><a href="#standard-interfaces-peer"><code class="literal">org.freedesktop.DBus.Peer</code></a></span></dt><dt><span class="sect2"><a href="#standard-interfaces-introspectable"><code class="literal">org.freedesktop.DBus.Introspectable</code></a></span></dt><dt><span class="sect2"><a href="#standard-interfaces-properties"><code class="literal">org.freedesktop.DBus.Properties</code></a></span></dt></dl></dd><dt><span class="sect1"><a href="#introspection-format">Introspection Data Format</a></span></dt><dt><span class="sect1"><a href="#message-bus">Message Bus Specification</a></span></dt><dd><dl><dt><span class="sect2"><a href="#message-bus-overview">Message Bus Overview</a></span></dt><dt><span class="sect2"><a href="#message-bus-names">Message Bus Names</a></span></dt><dt><span class="sect2"><a href="#message-bus-routing">Message Bus Message Routing</a></span></dt><dt><span class="sect2"><a href="#message-bus-starting-services">Message Bus Starting Services</a></span></dt><dt><span class="sect2"><a href="#message-bus-types">Well-known Message Bus Instances</a></span></dt><dt><span class="sect2"><a href="#message-bus-messages">Message Bus Messages</a></span></dt></dl></dd><dt><span class="glossary"><a href="#id2607701">Glossary</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="introduction"></a>Introduction</h2></div></div></div><p>
       D-BUS is a system for low-latency, low-overhead, easy to use
       interprocess communication (IPC). In more detail:
       </p><div class="itemizedlist"><ul type="disc"><li><p>
@@ -803,14 +803,14 @@
         ERROR feature of the auth protocol is an escape hatch that lets us
         negotiate extensions or changes to the D-BUS protocol in the future.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="auth-examples"></a>Authentication examples</h3></div></div></div><p>
-        </p><div class="figure"><a name="id2790963"></a><p class="title"><b>Figure 1. Example of successful magic cookie authentication</b></p><pre class="programlisting">
+        </p><div class="figure"><a name="id2603769"></a><p class="title"><b>Figure 1. Example of successful magic cookie authentication</b></p><pre class="programlisting">
             (MAGIC_COOKIE is a made up mechanism)
 
             C: AUTH MAGIC_COOKIE 3138363935333137393635383634
             S: OK 1234deadbeef
             C: BEGIN
           </pre></div><p>
-        </p><div class="figure"><a name="id2790981"></a><p class="title"><b>Figure 2. Example of finding out mechanisms then picking one</b></p><pre class="programlisting">
+        </p><div class="figure"><a name="id2603787"></a><p class="title"><b>Figure 2. Example of finding out mechanisms then picking one</b></p><pre class="programlisting">
             C: AUTH
             S: REJECTED KERBEROS_V4 SKEY
             C: AUTH SKEY 7ab83f32ee
@@ -819,14 +819,14 @@
             S: OK 1234deadbeef
             C: BEGIN
           </pre></div><p>
-        </p><div class="figure"><a name="id2791000"></a><p class="title"><b>Figure 3. Example of client sends unknown command then falls back to regular auth</b></p><pre class="programlisting">
+        </p><div class="figure"><a name="id2603806"></a><p class="title"><b>Figure 3. Example of client sends unknown command then falls back to regular auth</b></p><pre class="programlisting">
             C: FOOBAR
             S: ERROR
             C: AUTH MAGIC_COOKIE 3736343435313230333039
             S: OK 1234deadbeef
             C: BEGIN
           </pre></div><p>
-        </p><div class="figure"><a name="id2791019"></a><p class="title"><b>Figure 4. Example of server doesn't support initial auth mechanism</b></p><pre class="programlisting">
+        </p><div class="figure"><a name="id2603825"></a><p class="title"><b>Figure 4. Example of server doesn't support initial auth mechanism</b></p><pre class="programlisting">
             C: AUTH MAGIC_COOKIE 3736343435313230333039
             S: REJECTED KERBEROS_V4 SKEY
             C: AUTH SKEY 7ab83f32ee
@@ -835,7 +835,7 @@
             S: OK 1234deadbeef
             C: BEGIN
           </pre></div><p>
-        </p><div class="figure"><a name="id2791039"></a><p class="title"><b>Figure 5. Example of wrong password or the like followed by successful retry</b></p><pre class="programlisting">
+        </p><div class="figure"><a name="id2603845"></a><p class="title"><b>Figure 5. Example of wrong password or the like followed by successful retry</b></p><pre class="programlisting">
             C: AUTH MAGIC_COOKIE 3736343435313230333039
             S: REJECTED KERBEROS_V4 SKEY
             C: AUTH SKEY 7ab83f32ee
@@ -848,7 +848,7 @@
             S: OK 1234deadbeef
             C: BEGIN
           </pre></div><p>
-        </p><div class="figure"><a name="id2791062"></a><p class="title"><b>Figure 6. Example of skey cancelled and restarted</b></p><pre class="programlisting">
+        </p><div class="figure"><a name="id2603868"></a><p class="title"><b>Figure 6. Example of skey cancelled and restarted</b></p><pre class="programlisting">
             C: AUTH MAGIC_COOKIE 3736343435313230333039
             S: REJECTED KERBEROS_V4 SKEY
             C: AUTH SKEY 7ab83f32ee
@@ -1126,7 +1126,7 @@
                 fails, the lock fails. Servers should retry for a reasonable
                 period of time, then they may choose to delete an existing lock
                 to keep users from having to manually delete a stale
-                lock. <sup>[<a name="id2791895" href="#ftn.id2791895">1</a>]</sup>
+                lock. <sup>[<a name="id2604701" href="#ftn.id2604701">1</a>]</sup>
               </p></li><li><p>
                 Once the lockfile has been created, the server loads the cookie
                 file. It should then delete any cookies that are old (the
@@ -1606,7 +1606,7 @@
         must be namespaced using the same mechanism as messages and service
         names.
 
-        </p><div class="figure"><a name="id2793620"></a><p class="title"><b>Figure 7. Example service description file</b></p><pre class="programlisting">
+        </p><div class="figure"><a name="id2606426"></a><p class="title"><b>Figure 7. Example service description file</b></p><pre class="programlisting">
             # Sample service description file
             [D-BUS Service]
             Names=org.freedesktop.ConfigurationDatabase;org.gnome.GConf;
@@ -1689,7 +1689,7 @@
           variable. If that variable is not set, applications should try 
           to connect to the well-known address
           <code class="literal">unix:path=/var/run/dbus/system_bus_socket</code>.
-          <sup>[<a name="id2793878" href="#ftn.id2793878">2</a>]</sup>
+          <sup>[<a name="id2606684" href="#ftn.id2606684">2</a>]</sup>
         </p><p>
           [FIXME specify location of system bus .service files]
         </p></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="message-bus-messages"></a>Message Bus Messages</h3></div></div></div><p>
@@ -1803,7 +1803,7 @@
         Returns the unix uid of the process connected to the server. If unable to
 	determine it, a <code class="literal">org.freedesktop.DBus.Error.Failed</code>
 	error is returned.
-       </p></div></div></div><div class="glossary"><div class="titlepage"><div><div><h2 class="title"><a name="id2794895"></a>Glossary</h2></div></div></div><p>
+       </p></div></div></div><div class="glossary"><div class="titlepage"><div><div><h2 class="title"><a name="id2607701"></a>Glossary</h2></div></div></div><p>
       This glossary defines some of the terms used in this specification.
     </p><dl><dt><a name="term-bus-name"></a>Bus Name</dt><dd><p>
           The message bus maintains an association between names and
@@ -1877,10 +1877,10 @@
           message bus. This name will never change owner, and will be unique
           (never reused during the lifetime of the message bus).
           It will begin with a ':' character.
-        </p></dd></dl></div><div class="footnotes"><br><hr width="100" align="left"><div class="footnote"><p><sup>[<a name="ftn.id2791895" href="#id2791895">1</a>] </sup>Lockfiles are used instead of real file
+        </p></dd></dl></div><div class="footnotes"><br><hr width="100" align="left"><div class="footnote"><p><sup>[<a name="ftn.id2604701" href="#id2604701">1</a>] </sup>Lockfiles are used instead of real file
                 locking <code class="literal">fcntl()</code> because real locking
                 implementations are still flaky on network
-                filesystems.</p></div><div class="footnote"><p><sup>[<a name="ftn.id2793878" href="#id2793878">2</a>] </sup>
+                filesystems.</p></div><div class="footnote"><p><sup>[<a name="ftn.id2606684" href="#id2606684">2</a>] </sup>
               The D-BUS reference implementation actually honors the 
               <code class="literal">$(localstatedir)</code> configure option 
               for this address, on both client and server side.

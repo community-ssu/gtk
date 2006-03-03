@@ -179,6 +179,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INSTOBJEXT = @INSTOBJEXT@
 INTLLIBS = @INTLLIBS@
+JAR = @JAR@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
@@ -264,8 +265,6 @@ am__fastdepGCJ_TRUE = @am__fastdepGCJ_TRUE@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
-am__tar = @am__tar@
-am__untar = @am__untar@
 bindir = @bindir@
 build = @build@
 build_alias = @build_alias@
@@ -487,7 +486,9 @@ uninstall-am: uninstall-info-am uninstall-local
 @ENABLE_MONODOC_TRUE@	rm -f $(DESTDIR)/`monodoc --get-sourcesdir`/dbus-sharp-docs.tree
 @ENABLE_MONODOC_TRUE@	rm -f $(DESTDIR)/`monodoc --get-sourcesdir`/dbus-sharp-docs.zip
 
-dbus-sharp-docs.zip dbus-sharp-docs.tree: $(srcdir)/en/*/*.xml $(srcdir)/en/*.xml
+dbus-sharp-docs.zip: dbus-sharp-docs.tree
+
+dbus-sharp-docs.tree: $(srcdir)/en/*/*.xml $(srcdir)/en/*.xml
 	$(ASSEMBLER) --ecma $(srcdir)/en -o dbus-sharp-docs
 
 update:

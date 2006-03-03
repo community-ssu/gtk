@@ -697,6 +697,43 @@ dbus_server_setup_with_g_main (DBusServer   *server,
 }
 
 /**
+ * Returns a connection to the given address.
+ *
+ * (Internally, calls dbus_connection_open() then calls
+ * dbus_connection_setup_with_g_main() on the result.)
+ *
+ * @param address address of the connection to open
+ * @param error address where an error can be returned.
+ * @returns a DBusConnection
+ */
+DBusGConnection*
+dbus_g_connection_open (const gchar  *address,
+                        GError      **error)
+{
+  DBusConnection *connection;
+  DBusError derror;
+
+  g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+  _dbus_g_value_types_init ();
+
+  dbus_error_init (&derror);
+
+  connection = dbus_connection_open (address, &derror);
+  if (connection == NULL)
+    {
+      dbus_set_g_error (error, &derror);
+      dbus_error_free (&derror);
+      return NULL;
+    }
+
+  /* does nothing if it's already been done */
+  dbus_connection_setup_with_g_main (connection, NULL);
+
+  return DBUS_G_CONNECTION_FROM_CONNECTION (connection);
+}
+
+/**
  * Returns a connection to the given bus. The connection is a global variable
  * shared with other callers of this function.
  * 
@@ -754,14 +791,14 @@ _dbus_gmain_test (const char *test_data_dir)
 
   rectype = dbus_g_type_get_collection ("GArray", G_TYPE_UINT);
   g_assert (rectype != G_TYPE_INVALID);
-  g_assert (!strcmp (g_type_name (rectype), "GArray+guint"));
+  g_assert (!strcmp (g_type_name (rectype), "GArray_guint_"));
 
   type = _dbus_gtype_from_signature ("au", TRUE);
   g_assert (type == rectype);
 
   rectype = dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, G_TYPE_STRING);
   g_assert (rectype != G_TYPE_INVALID);
-  g_assert (!strcmp (g_type_name (rectype), "GHashTable+gchararray+gchararray"));
+  g_assert (!strcmp (g_type_name (rectype), "GHashTable_gchararray+gchararray_"));
 
   type = _dbus_gtype_from_signature ("a{ss}", TRUE);
   g_assert (type == rectype);

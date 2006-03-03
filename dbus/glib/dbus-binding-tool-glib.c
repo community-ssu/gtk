@@ -97,11 +97,23 @@ dbus_g_type_get_marshal_name (GType gtype)
 static const char *
 dbus_g_type_get_c_name (GType gtype)
 {
+  GType subtype;
+  if (dbus_g_type_is_struct (gtype))
+    {
+      return "GValueArray";
+    }
   if (dbus_g_type_is_collection (gtype))
-    return "GArray";
+    {
+      subtype = dbus_g_type_get_collection_specialization(gtype);
+      if (_dbus_g_type_is_fixed (subtype))
+        return "GArray";
+      else
+        return "GPtrArray";
+    }
+
   if (dbus_g_type_is_map (gtype))
     return "GHashTable";
-  
+
   if (g_type_is_a (gtype, G_TYPE_STRING))
     return "char *";
 
@@ -110,9 +122,10 @@ dbus_g_type_get_c_name (GType gtype)
    */
   if (g_type_is_a (gtype, G_TYPE_STRV))
     return "char *";
+
   if (g_type_is_a (gtype, DBUS_TYPE_G_OBJECT_PATH))
     return "char";
-  
+
   return g_type_name (gtype);
 }
 
@@ -889,16 +902,13 @@ iface_to_c_prefix (const char *iface)
 static char *
 compute_client_method_name (const char *iface_prefix, MethodInfo *method)
 {
-  GString *ret;
-  char *method_name_uscored;
+  char *method_name_uscored, *ret;
 
-  ret = g_string_new (iface_prefix);
-  
   method_name_uscored = _dbus_gutils_wincaps_to_uscore (method_info_get_name (method));
-  g_string_append_c (ret, '_');
-  g_string_append (ret, method_name_uscored);
+  ret = g_strdup_printf ("%s_%s", iface_prefix, method_name_uscored);
   g_free (method_name_uscored);
-  return g_string_free (ret, FALSE);
+
+  return ret;
 }
 
 static gboolean
@@ -1005,13 +1015,24 @@ dbus_g_type_get_lookup_function (GType gtype)
     {
       GType elt_gtype;
       char *sublookup;
-      
+
       elt_gtype = dbus_g_type_get_collection_specialization (gtype);
       sublookup = dbus_g_type_get_lookup_function (elt_gtype);
       g_assert (sublookup);
-      type_lookup = g_strdup_printf ("dbus_g_type_get_collection (\"GArray\", %s)",
-				     sublookup);
+
+      if (_dbus_g_type_is_fixed (elt_gtype))
+        {
+          type_lookup = g_strdup_printf ("dbus_g_type_get_collection "
+              "(\"GArray\", %s)", sublookup);
+        }
+      else
+        {
+          type_lookup = g_strdup_printf ("dbus_g_type_get_collection "
+              "(\"GPtrArray\", %s)", sublookup);
+        }
+
       g_free (sublookup);
+
       return type_lookup;
     }
   else if (dbus_g_type_is_map (gtype))
@@ -1033,6 +1054,28 @@ dbus_g_type_get_lookup_function (GType gtype)
       g_free (value_lookup);
       return type_lookup;
     }
+  else if (dbus_g_type_is_struct (gtype))
+    {
+      GType value_gtype;
+      GString *string;
+      char *value_lookup = NULL;
+      guint size, i;
+
+      string = g_string_new ("dbus_g_type_get_struct (\"GValueArray\"");
+
+      size = dbus_g_type_get_struct_size (gtype);
+      for (i=0; i < size; i++)
+        {
+          value_gtype = dbus_g_type_get_struct_member_type(gtype, i);
+          value_lookup = dbus_g_type_get_lookup_function (value_gtype);
+          g_assert (value_lookup);
+          g_string_append_printf (string, ", %s", value_lookup);
+          g_free (value_lookup);
+        }
+      g_string_append (string, ", G_TYPE_INVALID)");
+      return g_string_free (string, FALSE);
+    }
+
   MAP_KNOWN(G_TYPE_VALUE);
   MAP_KNOWN(G_TYPE_STRV);
   MAP_KNOWN(G_TYPE_VALUE_ARRAY);
@@ -1311,9 +1354,22 @@ static gboolean
 write_async_method_client (GIOChannel *channel, InterfaceInfo *interface, MethodInfo *method, GError **error)
 {
   char *method_name, *iface_prefix;
+  const char *interface_c_name;
+
   iface_prefix = iface_to_c_prefix (interface_info_get_name (interface));
-  method_name = compute_client_method_name (iface_prefix, method);
-  
+  interface_c_name = interface_info_get_annotation (interface, DBUS_GLIB_ANNOTATION_CLIENT_C_SYMBOL);
+  if (interface_c_name == NULL)
+    {
+      interface_c_name = (const char *) iface_prefix;
+    }
+
+  method_name = g_strdup (method_info_get_annotation (method, DBUS_GLIB_ANNOTATION_CLIENT_C_SYMBOL));
+  if (method_name == NULL)
+    {
+      method_name = compute_client_method_name (interface_c_name, method);
+    }
+  g_free(iface_prefix);
+
   /* Write the typedef for the client callback */
   if (!write_printf_to_iochannel ("typedef void (*%s_reply) (DBusGProxy *proxy, ", channel, error, method_name))
     goto io_lose;
@@ -1387,6 +1443,7 @@ write_async_method_client (GIOChannel *channel, InterfaceInfo *interface, Method
   g_free (method_name);
   return TRUE;
  io_lose:
+  g_free (method_name);
   return FALSE;
  }
 
@@ -1424,6 +1481,7 @@ generate_client_glue (BaseInfo *base, DBusBindingToolCData *data, GError **error
       GSList *methods;
       GSList *tmp;
       char *iface_prefix;
+      const char *interface_c_name;
 
       channel = data->channel;
 
@@ -1432,6 +1490,11 @@ generate_client_glue (BaseInfo *base, DBusBindingToolCData *data, GError **error
       methods = interface_info_get_methods (interface);
 
       iface_prefix = iface_to_c_prefix (interface_info_get_name (interface));
+      interface_c_name = interface_info_get_annotation (interface, DBUS_GLIB_ANNOTATION_CLIENT_C_SYMBOL);
+      if (interface_c_name == NULL)
+      {
+          interface_c_name = (const char *) iface_prefix;
+      }
 
       if (!write_printf_to_iochannel ("#ifndef DBUS_GLIB_CLIENT_WRAPPERS_%s\n"
 				      "#define DBUS_GLIB_CLIENT_WRAPPERS_%s\n\n",
@@ -1445,10 +1508,15 @@ generate_client_glue (BaseInfo *base, DBusBindingToolCData *data, GError **error
       for (tmp = methods; tmp != NULL; tmp = g_slist_next (tmp))
         {
 	  MethodInfo *method;
-	  char *method_name;
+	  char *method_c_name;
 	  gboolean is_noreply;
 
           method = (MethodInfo *) tmp->data;
+	  method_c_name = g_strdup (method_info_get_annotation (method, DBUS_GLIB_ANNOTATION_CLIENT_C_SYMBOL));
+          if (method_c_name == NULL)
+	    {
+              method_c_name = compute_client_method_name (interface_c_name, method);
+            }
 
 	  is_noreply = method_info_get_annotation (method, DBUS_GLIB_ANNOTATION_NOREPLY) != NULL;
 
@@ -1460,13 +1528,12 @@ generate_client_glue (BaseInfo *base, DBusBindingToolCData *data, GError **error
 	      continue;
 	    }
 
-	  method_name = compute_client_method_name (iface_prefix, method);
 
 	  WRITE_OR_LOSE ("static\n#ifdef G_HAVE_INLINE\ninline\n#endif\ngboolean\n");
 	  if (!write_printf_to_iochannel ("%s (DBusGProxy *proxy", channel, error,
-					  method_name))
+					  method_c_name))
 	    goto io_lose;
-	  g_free (method_name);
+	  g_free (method_c_name);
 
 	  if (!write_formal_parameters (interface, method, channel, error))
 	    goto io_lose;
@@ -1517,6 +1584,8 @@ generate_client_glue (BaseInfo *base, DBusBindingToolCData *data, GError **error
 	  g_free (iface_prefix);
 	  goto io_lose;
 	}
+
+      g_free (iface_prefix);
     }
   return TRUE;
  io_lose:

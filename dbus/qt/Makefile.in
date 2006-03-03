@@ -39,8 +39,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
 subdir = qt
-DIST_COMMON = $(am__dbusinclude_HEADERS_DIST) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+DIST_COMMON = README $(am__dbusinclude_HEADERS_DIST) \
+	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.in
@@ -62,26 +62,58 @@ am__libdbus_qt4_1_la_SOURCES_DIST =  \
 	$(top_srcdir)/qt/qdbusmarshall.cpp \
 	$(top_srcdir)/qt/qdbusmessage.cpp \
 	$(top_srcdir)/qt/qdbusserver.cpp \
+	$(top_srcdir)/qt/qdbustype.cpp \
+	$(top_srcdir)/qt/qdbusobject.cpp \
+	$(top_srcdir)/qt/qdbusinterface.cpp \
+	$(top_srcdir)/qt/qdbusstandardinterfaces.cpp \
+	$(top_srcdir)/qt/qdbusxmlparser.cpp \
+	$(top_srcdir)/qt/qdbusutil.cpp \
+	$(top_srcdir)/qt/qdbusintrospection.cpp \
+	$(top_srcdir)/qt/qdbusabstractadaptor.cpp \
+	$(top_srcdir)/qt/qdbusthread.cpp $(top_srcdir)/dbus/qdbus.h \
+	$(top_srcdir)/qt/qdbusabstractadaptor.h \
 	$(top_srcdir)/qt/qdbusconnection.h \
-	$(top_srcdir)/qt/qdbuserror.h $(top_srcdir)/qt/qdbusmessage.h \
-	$(top_srcdir)/qt/qdbusserver.h \
 	$(top_srcdir)/qt/qdbusconnection_p.h \
-	$(top_srcdir)/dbus/qdbus.h $(top_srcdir)/qt/qdbusmarshall.h \
+	$(top_srcdir)/qt/qdbuserror.h \
+	$(top_srcdir)/qt/qdbusinterface.h \
+	$(top_srcdir)/qt/qdbusinterface_p.h \
+	$(top_srcdir)/qt/qdbusintrospection.h \
+	$(top_srcdir)/qt/qdbusmacros.h \
+	$(top_srcdir)/qt/qdbusmarshall.h \
+	$(top_srcdir)/qt/qdbusmessage.h \
 	$(top_srcdir)/qt/qdbusmessage_p.h \
-	$(top_srcdir)/qt/qdbusvariant.h
+	$(top_srcdir)/qt/qdbusobject.h \
+	$(top_srcdir)/qt/qdbusobject_p.h \
+	$(top_srcdir)/qt/qdbusserver.h \
+	$(top_srcdir)/qt/qdbusstandardinterfaces.h \
+	$(top_srcdir)/qt/qdbustype.h $(top_srcdir)/qt/qdbusvariant.h \
+	$(top_srcdir)/qt/qdbusxmlparser_p.h
 @HAVE_QT_TRUE@am_libdbus_qt4_1_la_OBJECTS = qdbusconnection.lo \
 @HAVE_QT_TRUE@	qdbuserror.lo qdbusintegrator.lo \
-@HAVE_QT_TRUE@	qdbusmarshall.lo qdbusmessage.lo qdbusserver.lo
+@HAVE_QT_TRUE@	qdbusmarshall.lo qdbusmessage.lo qdbusserver.lo \
+@HAVE_QT_TRUE@	qdbustype.lo qdbusobject.lo qdbusinterface.lo \
+@HAVE_QT_TRUE@	qdbusstandardinterfaces.lo qdbusxmlparser.lo \
+@HAVE_QT_TRUE@	qdbusutil.lo qdbusintrospection.lo \
+@HAVE_QT_TRUE@	qdbusabstractadaptor.lo qdbusthread.lo
 libdbus_qt4_1_la_OBJECTS = $(am_libdbus_qt4_1_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/qdbusconnection.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/qdbusabstractadaptor.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/qdbusconnection.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/qdbuserror.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/qdbusintegrator.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/qdbusinterface.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/qdbusintrospection.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/qdbusmarshall.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/qdbusmessage.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/qdbusserver.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/qdbusobject.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/qdbusserver.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/qdbusstandardinterfaces.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/qdbusthread.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/qdbustype.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/qdbusutil.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/qdbusxmlparser.Plo
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -100,8 +132,11 @@ LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libdbus_qt4_1_la_SOURCES)
 DIST_SOURCES = $(am__libdbus_qt4_1_la_SOURCES_DIST)
-am__dbusinclude_HEADERS_DIST = qdbuserror.h qdbusmessage.h \
-	qdbusserver.h qdbusconnection.h qdbusvariant.h
+am__dbusinclude_HEADERS_DIST = qdbusmacros.h qdbuserror.h \
+	qdbusmessage.h qdbusserver.h qdbusconnection.h qdbusvariant.h \
+	qdbusobject.h qdbusinterface.h qdbustype.h \
+	qdbusstandardinterfaces.h qdbusutil.h qdbusintrospection.h \
+	qdbusabstractadaptor.h
 dbusincludeHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(dbusinclude_HEADERS)
 ETAGS = etags
@@ -236,6 +271,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INSTOBJEXT = @INSTOBJEXT@
 INTLLIBS = @INTLLIBS@
+JAR = @JAR@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
@@ -321,8 +357,6 @@ am__fastdepGCJ_TRUE = @am__fastdepGCJ_TRUE@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
-am__tar = @am__tar@
-am__untar = @am__untar@
 bindir = @bindir@
 build = @build@
 build_alias = @build_alias@
@@ -363,11 +397,19 @@ target_vendor = @target_vendor@
 @HAVE_QT_TRUE@dbusincludedir = $(includedir)/dbus-1.0/dbus
 @HAVE_QT_TRUE@lib_LTLIBRARIES = libdbus-qt4-1.la
 @HAVE_QT_TRUE@dbusinclude_HEADERS = \
-@HAVE_QT_TRUE@	qdbuserror.h \
-@HAVE_QT_TRUE@	qdbusmessage.h \
-@HAVE_QT_TRUE@	qdbusserver.h \
+@HAVE_QT_TRUE@	qdbusmacros.h	\
+@HAVE_QT_TRUE@	qdbuserror.h 	\
+@HAVE_QT_TRUE@	qdbusmessage.h	\
+@HAVE_QT_TRUE@	qdbusserver.h	\
 @HAVE_QT_TRUE@	qdbusconnection.h \
-@HAVE_QT_TRUE@	qdbusvariant.h
+@HAVE_QT_TRUE@	qdbusvariant.h	\
+@HAVE_QT_TRUE@	qdbusobject.h	\
+@HAVE_QT_TRUE@	qdbusinterface.h \
+@HAVE_QT_TRUE@	qdbustype.h	\
+@HAVE_QT_TRUE@	qdbusstandardinterfaces.h \
+@HAVE_QT_TRUE@	qdbusutil.h	\
+@HAVE_QT_TRUE@	qdbusintrospection.h \
+@HAVE_QT_TRUE@	qdbusabstractadaptor.h
 
 @HAVE_QT_TRUE@libdbus_qt4_1_la_SOURCES = \
 @HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusconnection.cpp    \
@@ -376,17 +418,37 @@ target_vendor = @target_vendor@
 @HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusmarshall.cpp      \
 @HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusmessage.cpp       \
 @HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusserver.cpp        \
-@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusconnection.h      \
-@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbuserror.h           \
-@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusmessage.h         \
-@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusserver.h          \
-@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusconnection_p.h    \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbustype.cpp          \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusobject.cpp        \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusinterface.cpp     \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusstandardinterfaces.cpp	\
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusxmlparser.cpp     \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusutil.cpp          \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusintrospection.cpp \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusabstractadaptor.cpp	\
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusthread.cpp        \
+@HAVE_QT_TRUE@						\
 @HAVE_QT_TRUE@	$(top_srcdir)/dbus/qdbus.h              \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusabstractadaptor.h \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusconnection.h      \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusconnection_p.h    \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbuserror.h           \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusinterface.h       \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusinterface_p.h     \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusintrospection.h   \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusmacros.h          \
 @HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusmarshall.h        \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusmessage.h         \
 @HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusmessage_p.h       \
-@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusvariant.h
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusobject.h          \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusobject_p.h        \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusserver.h          \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusstandardinterfaces.h \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbustype.h            \
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusvariant.h		\
+@HAVE_QT_TRUE@	$(top_srcdir)/qt/qdbusxmlparser_p.h     
 
-@HAVE_QT_TRUE@CLEANFILES = qdbusserver.moc qdbusconnection.moc
+@HAVE_QT_TRUE@CLEANFILES = qdbusabstractadaptor.moc qdbusserver.moc qdbusconnection.moc
 @HAVE_QT_TRUE@libdbus_qt4_1_la_LIBADD = $(DBUS_QT_LIBS) $(top_builddir)/dbus/libdbus-1.la
 @HAVE_QT_TRUE@libdbus_qt4_1_la_LDFLAGS = -version-info 1:0 -no-undefined
 all: all-am
@@ -458,12 +520,21 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusabstractadaptor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusconnection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbuserror.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusintegrator.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusinterface.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusintrospection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusmarshall.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusmessage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusobject.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusserver.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusstandardinterfaces.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusthread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbustype.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusutil.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/qdbusxmlparser.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -632,6 +703,222 @@ qdbusserver.lo: $(top_srcdir)/qt/qdbusserver.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusserver.Plo' tmpdepfile='$(DEPDIR)/qdbusserver.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusserver.lo `test -f '$(top_srcdir)/qt/qdbusserver.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusserver.cpp
+
+qdbustype.o: $(top_srcdir)/qt/qdbustype.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbustype.o -MD -MP -MF "$(DEPDIR)/qdbustype.Tpo" -c -o qdbustype.o `test -f '$(top_srcdir)/qt/qdbustype.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbustype.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbustype.Tpo" "$(DEPDIR)/qdbustype.Po"; else rm -f "$(DEPDIR)/qdbustype.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbustype.cpp' object='qdbustype.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbustype.Po' tmpdepfile='$(DEPDIR)/qdbustype.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbustype.o `test -f '$(top_srcdir)/qt/qdbustype.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbustype.cpp
+
+qdbustype.obj: $(top_srcdir)/qt/qdbustype.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbustype.obj -MD -MP -MF "$(DEPDIR)/qdbustype.Tpo" -c -o qdbustype.obj `if test -f '$(top_srcdir)/qt/qdbustype.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbustype.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbustype.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbustype.Tpo" "$(DEPDIR)/qdbustype.Po"; else rm -f "$(DEPDIR)/qdbustype.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbustype.cpp' object='qdbustype.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbustype.Po' tmpdepfile='$(DEPDIR)/qdbustype.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbustype.obj `if test -f '$(top_srcdir)/qt/qdbustype.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbustype.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbustype.cpp'; fi`
+
+qdbustype.lo: $(top_srcdir)/qt/qdbustype.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbustype.lo -MD -MP -MF "$(DEPDIR)/qdbustype.Tpo" -c -o qdbustype.lo `test -f '$(top_srcdir)/qt/qdbustype.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbustype.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbustype.Tpo" "$(DEPDIR)/qdbustype.Plo"; else rm -f "$(DEPDIR)/qdbustype.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbustype.cpp' object='qdbustype.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbustype.Plo' tmpdepfile='$(DEPDIR)/qdbustype.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbustype.lo `test -f '$(top_srcdir)/qt/qdbustype.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbustype.cpp
+
+qdbusobject.o: $(top_srcdir)/qt/qdbusobject.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusobject.o -MD -MP -MF "$(DEPDIR)/qdbusobject.Tpo" -c -o qdbusobject.o `test -f '$(top_srcdir)/qt/qdbusobject.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusobject.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusobject.Tpo" "$(DEPDIR)/qdbusobject.Po"; else rm -f "$(DEPDIR)/qdbusobject.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusobject.cpp' object='qdbusobject.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusobject.Po' tmpdepfile='$(DEPDIR)/qdbusobject.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusobject.o `test -f '$(top_srcdir)/qt/qdbusobject.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusobject.cpp
+
+qdbusobject.obj: $(top_srcdir)/qt/qdbusobject.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusobject.obj -MD -MP -MF "$(DEPDIR)/qdbusobject.Tpo" -c -o qdbusobject.obj `if test -f '$(top_srcdir)/qt/qdbusobject.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusobject.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusobject.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusobject.Tpo" "$(DEPDIR)/qdbusobject.Po"; else rm -f "$(DEPDIR)/qdbusobject.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusobject.cpp' object='qdbusobject.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusobject.Po' tmpdepfile='$(DEPDIR)/qdbusobject.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusobject.obj `if test -f '$(top_srcdir)/qt/qdbusobject.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusobject.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusobject.cpp'; fi`
+
+qdbusobject.lo: $(top_srcdir)/qt/qdbusobject.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusobject.lo -MD -MP -MF "$(DEPDIR)/qdbusobject.Tpo" -c -o qdbusobject.lo `test -f '$(top_srcdir)/qt/qdbusobject.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusobject.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusobject.Tpo" "$(DEPDIR)/qdbusobject.Plo"; else rm -f "$(DEPDIR)/qdbusobject.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusobject.cpp' object='qdbusobject.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusobject.Plo' tmpdepfile='$(DEPDIR)/qdbusobject.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusobject.lo `test -f '$(top_srcdir)/qt/qdbusobject.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusobject.cpp
+
+qdbusinterface.o: $(top_srcdir)/qt/qdbusinterface.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusinterface.o -MD -MP -MF "$(DEPDIR)/qdbusinterface.Tpo" -c -o qdbusinterface.o `test -f '$(top_srcdir)/qt/qdbusinterface.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusinterface.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusinterface.Tpo" "$(DEPDIR)/qdbusinterface.Po"; else rm -f "$(DEPDIR)/qdbusinterface.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusinterface.cpp' object='qdbusinterface.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusinterface.Po' tmpdepfile='$(DEPDIR)/qdbusinterface.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusinterface.o `test -f '$(top_srcdir)/qt/qdbusinterface.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusinterface.cpp
+
+qdbusinterface.obj: $(top_srcdir)/qt/qdbusinterface.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusinterface.obj -MD -MP -MF "$(DEPDIR)/qdbusinterface.Tpo" -c -o qdbusinterface.obj `if test -f '$(top_srcdir)/qt/qdbusinterface.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusinterface.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusinterface.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusinterface.Tpo" "$(DEPDIR)/qdbusinterface.Po"; else rm -f "$(DEPDIR)/qdbusinterface.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusinterface.cpp' object='qdbusinterface.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusinterface.Po' tmpdepfile='$(DEPDIR)/qdbusinterface.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusinterface.obj `if test -f '$(top_srcdir)/qt/qdbusinterface.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusinterface.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusinterface.cpp'; fi`
+
+qdbusinterface.lo: $(top_srcdir)/qt/qdbusinterface.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusinterface.lo -MD -MP -MF "$(DEPDIR)/qdbusinterface.Tpo" -c -o qdbusinterface.lo `test -f '$(top_srcdir)/qt/qdbusinterface.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusinterface.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusinterface.Tpo" "$(DEPDIR)/qdbusinterface.Plo"; else rm -f "$(DEPDIR)/qdbusinterface.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusinterface.cpp' object='qdbusinterface.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusinterface.Plo' tmpdepfile='$(DEPDIR)/qdbusinterface.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusinterface.lo `test -f '$(top_srcdir)/qt/qdbusinterface.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusinterface.cpp
+
+qdbusstandardinterfaces.o: $(top_srcdir)/qt/qdbusstandardinterfaces.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusstandardinterfaces.o -MD -MP -MF "$(DEPDIR)/qdbusstandardinterfaces.Tpo" -c -o qdbusstandardinterfaces.o `test -f '$(top_srcdir)/qt/qdbusstandardinterfaces.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusstandardinterfaces.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusstandardinterfaces.Tpo" "$(DEPDIR)/qdbusstandardinterfaces.Po"; else rm -f "$(DEPDIR)/qdbusstandardinterfaces.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusstandardinterfaces.cpp' object='qdbusstandardinterfaces.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusstandardinterfaces.Po' tmpdepfile='$(DEPDIR)/qdbusstandardinterfaces.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusstandardinterfaces.o `test -f '$(top_srcdir)/qt/qdbusstandardinterfaces.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusstandardinterfaces.cpp
+
+qdbusstandardinterfaces.obj: $(top_srcdir)/qt/qdbusstandardinterfaces.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusstandardinterfaces.obj -MD -MP -MF "$(DEPDIR)/qdbusstandardinterfaces.Tpo" -c -o qdbusstandardinterfaces.obj `if test -f '$(top_srcdir)/qt/qdbusstandardinterfaces.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusstandardinterfaces.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusstandardinterfaces.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusstandardinterfaces.Tpo" "$(DEPDIR)/qdbusstandardinterfaces.Po"; else rm -f "$(DEPDIR)/qdbusstandardinterfaces.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusstandardinterfaces.cpp' object='qdbusstandardinterfaces.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusstandardinterfaces.Po' tmpdepfile='$(DEPDIR)/qdbusstandardinterfaces.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusstandardinterfaces.obj `if test -f '$(top_srcdir)/qt/qdbusstandardinterfaces.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusstandardinterfaces.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusstandardinterfaces.cpp'; fi`
+
+qdbusstandardinterfaces.lo: $(top_srcdir)/qt/qdbusstandardinterfaces.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusstandardinterfaces.lo -MD -MP -MF "$(DEPDIR)/qdbusstandardinterfaces.Tpo" -c -o qdbusstandardinterfaces.lo `test -f '$(top_srcdir)/qt/qdbusstandardinterfaces.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusstandardinterfaces.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusstandardinterfaces.Tpo" "$(DEPDIR)/qdbusstandardinterfaces.Plo"; else rm -f "$(DEPDIR)/qdbusstandardinterfaces.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusstandardinterfaces.cpp' object='qdbusstandardinterfaces.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusstandardinterfaces.Plo' tmpdepfile='$(DEPDIR)/qdbusstandardinterfaces.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusstandardinterfaces.lo `test -f '$(top_srcdir)/qt/qdbusstandardinterfaces.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusstandardinterfaces.cpp
+
+qdbusxmlparser.o: $(top_srcdir)/qt/qdbusxmlparser.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusxmlparser.o -MD -MP -MF "$(DEPDIR)/qdbusxmlparser.Tpo" -c -o qdbusxmlparser.o `test -f '$(top_srcdir)/qt/qdbusxmlparser.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusxmlparser.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusxmlparser.Tpo" "$(DEPDIR)/qdbusxmlparser.Po"; else rm -f "$(DEPDIR)/qdbusxmlparser.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusxmlparser.cpp' object='qdbusxmlparser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusxmlparser.Po' tmpdepfile='$(DEPDIR)/qdbusxmlparser.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusxmlparser.o `test -f '$(top_srcdir)/qt/qdbusxmlparser.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusxmlparser.cpp
+
+qdbusxmlparser.obj: $(top_srcdir)/qt/qdbusxmlparser.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusxmlparser.obj -MD -MP -MF "$(DEPDIR)/qdbusxmlparser.Tpo" -c -o qdbusxmlparser.obj `if test -f '$(top_srcdir)/qt/qdbusxmlparser.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusxmlparser.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusxmlparser.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusxmlparser.Tpo" "$(DEPDIR)/qdbusxmlparser.Po"; else rm -f "$(DEPDIR)/qdbusxmlparser.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusxmlparser.cpp' object='qdbusxmlparser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusxmlparser.Po' tmpdepfile='$(DEPDIR)/qdbusxmlparser.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusxmlparser.obj `if test -f '$(top_srcdir)/qt/qdbusxmlparser.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusxmlparser.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusxmlparser.cpp'; fi`
+
+qdbusxmlparser.lo: $(top_srcdir)/qt/qdbusxmlparser.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusxmlparser.lo -MD -MP -MF "$(DEPDIR)/qdbusxmlparser.Tpo" -c -o qdbusxmlparser.lo `test -f '$(top_srcdir)/qt/qdbusxmlparser.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusxmlparser.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusxmlparser.Tpo" "$(DEPDIR)/qdbusxmlparser.Plo"; else rm -f "$(DEPDIR)/qdbusxmlparser.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusxmlparser.cpp' object='qdbusxmlparser.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusxmlparser.Plo' tmpdepfile='$(DEPDIR)/qdbusxmlparser.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusxmlparser.lo `test -f '$(top_srcdir)/qt/qdbusxmlparser.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusxmlparser.cpp
+
+qdbusutil.o: $(top_srcdir)/qt/qdbusutil.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusutil.o -MD -MP -MF "$(DEPDIR)/qdbusutil.Tpo" -c -o qdbusutil.o `test -f '$(top_srcdir)/qt/qdbusutil.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusutil.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusutil.Tpo" "$(DEPDIR)/qdbusutil.Po"; else rm -f "$(DEPDIR)/qdbusutil.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusutil.cpp' object='qdbusutil.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusutil.Po' tmpdepfile='$(DEPDIR)/qdbusutil.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusutil.o `test -f '$(top_srcdir)/qt/qdbusutil.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusutil.cpp
+
+qdbusutil.obj: $(top_srcdir)/qt/qdbusutil.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusutil.obj -MD -MP -MF "$(DEPDIR)/qdbusutil.Tpo" -c -o qdbusutil.obj `if test -f '$(top_srcdir)/qt/qdbusutil.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusutil.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusutil.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusutil.Tpo" "$(DEPDIR)/qdbusutil.Po"; else rm -f "$(DEPDIR)/qdbusutil.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusutil.cpp' object='qdbusutil.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusutil.Po' tmpdepfile='$(DEPDIR)/qdbusutil.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusutil.obj `if test -f '$(top_srcdir)/qt/qdbusutil.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusutil.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusutil.cpp'; fi`
+
+qdbusutil.lo: $(top_srcdir)/qt/qdbusutil.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusutil.lo -MD -MP -MF "$(DEPDIR)/qdbusutil.Tpo" -c -o qdbusutil.lo `test -f '$(top_srcdir)/qt/qdbusutil.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusutil.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusutil.Tpo" "$(DEPDIR)/qdbusutil.Plo"; else rm -f "$(DEPDIR)/qdbusutil.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusutil.cpp' object='qdbusutil.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusutil.Plo' tmpdepfile='$(DEPDIR)/qdbusutil.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusutil.lo `test -f '$(top_srcdir)/qt/qdbusutil.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusutil.cpp
+
+qdbusintrospection.o: $(top_srcdir)/qt/qdbusintrospection.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusintrospection.o -MD -MP -MF "$(DEPDIR)/qdbusintrospection.Tpo" -c -o qdbusintrospection.o `test -f '$(top_srcdir)/qt/qdbusintrospection.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusintrospection.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusintrospection.Tpo" "$(DEPDIR)/qdbusintrospection.Po"; else rm -f "$(DEPDIR)/qdbusintrospection.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusintrospection.cpp' object='qdbusintrospection.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusintrospection.Po' tmpdepfile='$(DEPDIR)/qdbusintrospection.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusintrospection.o `test -f '$(top_srcdir)/qt/qdbusintrospection.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusintrospection.cpp
+
+qdbusintrospection.obj: $(top_srcdir)/qt/qdbusintrospection.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusintrospection.obj -MD -MP -MF "$(DEPDIR)/qdbusintrospection.Tpo" -c -o qdbusintrospection.obj `if test -f '$(top_srcdir)/qt/qdbusintrospection.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusintrospection.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusintrospection.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusintrospection.Tpo" "$(DEPDIR)/qdbusintrospection.Po"; else rm -f "$(DEPDIR)/qdbusintrospection.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusintrospection.cpp' object='qdbusintrospection.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusintrospection.Po' tmpdepfile='$(DEPDIR)/qdbusintrospection.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusintrospection.obj `if test -f '$(top_srcdir)/qt/qdbusintrospection.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusintrospection.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusintrospection.cpp'; fi`
+
+qdbusintrospection.lo: $(top_srcdir)/qt/qdbusintrospection.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusintrospection.lo -MD -MP -MF "$(DEPDIR)/qdbusintrospection.Tpo" -c -o qdbusintrospection.lo `test -f '$(top_srcdir)/qt/qdbusintrospection.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusintrospection.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusintrospection.Tpo" "$(DEPDIR)/qdbusintrospection.Plo"; else rm -f "$(DEPDIR)/qdbusintrospection.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusintrospection.cpp' object='qdbusintrospection.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusintrospection.Plo' tmpdepfile='$(DEPDIR)/qdbusintrospection.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusintrospection.lo `test -f '$(top_srcdir)/qt/qdbusintrospection.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusintrospection.cpp
+
+qdbusabstractadaptor.o: $(top_srcdir)/qt/qdbusabstractadaptor.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusabstractadaptor.o -MD -MP -MF "$(DEPDIR)/qdbusabstractadaptor.Tpo" -c -o qdbusabstractadaptor.o `test -f '$(top_srcdir)/qt/qdbusabstractadaptor.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusabstractadaptor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusabstractadaptor.Tpo" "$(DEPDIR)/qdbusabstractadaptor.Po"; else rm -f "$(DEPDIR)/qdbusabstractadaptor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusabstractadaptor.cpp' object='qdbusabstractadaptor.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusabstractadaptor.Po' tmpdepfile='$(DEPDIR)/qdbusabstractadaptor.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusabstractadaptor.o `test -f '$(top_srcdir)/qt/qdbusabstractadaptor.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusabstractadaptor.cpp
+
+qdbusabstractadaptor.obj: $(top_srcdir)/qt/qdbusabstractadaptor.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusabstractadaptor.obj -MD -MP -MF "$(DEPDIR)/qdbusabstractadaptor.Tpo" -c -o qdbusabstractadaptor.obj `if test -f '$(top_srcdir)/qt/qdbusabstractadaptor.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusabstractadaptor.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusabstractadaptor.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusabstractadaptor.Tpo" "$(DEPDIR)/qdbusabstractadaptor.Po"; else rm -f "$(DEPDIR)/qdbusabstractadaptor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusabstractadaptor.cpp' object='qdbusabstractadaptor.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusabstractadaptor.Po' tmpdepfile='$(DEPDIR)/qdbusabstractadaptor.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusabstractadaptor.obj `if test -f '$(top_srcdir)/qt/qdbusabstractadaptor.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusabstractadaptor.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusabstractadaptor.cpp'; fi`
+
+qdbusabstractadaptor.lo: $(top_srcdir)/qt/qdbusabstractadaptor.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusabstractadaptor.lo -MD -MP -MF "$(DEPDIR)/qdbusabstractadaptor.Tpo" -c -o qdbusabstractadaptor.lo `test -f '$(top_srcdir)/qt/qdbusabstractadaptor.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusabstractadaptor.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusabstractadaptor.Tpo" "$(DEPDIR)/qdbusabstractadaptor.Plo"; else rm -f "$(DEPDIR)/qdbusabstractadaptor.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusabstractadaptor.cpp' object='qdbusabstractadaptor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusabstractadaptor.Plo' tmpdepfile='$(DEPDIR)/qdbusabstractadaptor.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusabstractadaptor.lo `test -f '$(top_srcdir)/qt/qdbusabstractadaptor.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusabstractadaptor.cpp
+
+qdbusthread.o: $(top_srcdir)/qt/qdbusthread.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusthread.o -MD -MP -MF "$(DEPDIR)/qdbusthread.Tpo" -c -o qdbusthread.o `test -f '$(top_srcdir)/qt/qdbusthread.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusthread.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusthread.Tpo" "$(DEPDIR)/qdbusthread.Po"; else rm -f "$(DEPDIR)/qdbusthread.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusthread.cpp' object='qdbusthread.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusthread.Po' tmpdepfile='$(DEPDIR)/qdbusthread.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusthread.o `test -f '$(top_srcdir)/qt/qdbusthread.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusthread.cpp
+
+qdbusthread.obj: $(top_srcdir)/qt/qdbusthread.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusthread.obj -MD -MP -MF "$(DEPDIR)/qdbusthread.Tpo" -c -o qdbusthread.obj `if test -f '$(top_srcdir)/qt/qdbusthread.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusthread.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusthread.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusthread.Tpo" "$(DEPDIR)/qdbusthread.Po"; else rm -f "$(DEPDIR)/qdbusthread.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusthread.cpp' object='qdbusthread.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusthread.Po' tmpdepfile='$(DEPDIR)/qdbusthread.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusthread.obj `if test -f '$(top_srcdir)/qt/qdbusthread.cpp'; then $(CYGPATH_W) '$(top_srcdir)/qt/qdbusthread.cpp'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/qt/qdbusthread.cpp'; fi`
+
+qdbusthread.lo: $(top_srcdir)/qt/qdbusthread.cpp
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT qdbusthread.lo -MD -MP -MF "$(DEPDIR)/qdbusthread.Tpo" -c -o qdbusthread.lo `test -f '$(top_srcdir)/qt/qdbusthread.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusthread.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/qdbusthread.Tpo" "$(DEPDIR)/qdbusthread.Plo"; else rm -f "$(DEPDIR)/qdbusthread.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$(top_srcdir)/qt/qdbusthread.cpp' object='qdbusthread.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/qdbusthread.Plo' tmpdepfile='$(DEPDIR)/qdbusthread.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o qdbusthread.lo `test -f '$(top_srcdir)/qt/qdbusthread.cpp' || echo '$(srcdir)/'`$(top_srcdir)/qt/qdbusthread.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -834,12 +1121,9 @@ uninstall-am: uninstall-dbusincludeHEADERS uninstall-info-am \
 	uninstall-libLTLIBRARIES
 
 
-@HAVE_QT_TRUE@$(top_srcdir)/qt/qdbusserver.cpp: qdbusserver.moc
-@HAVE_QT_TRUE@$(top_srcdir)/qt/qdbusconnection.cpp: qdbusconnection.moc
-
-# _p.h files are a exception
-@HAVE_QT_TRUE@qdbusconnection.moc: qdbusconnection_p.h
-@HAVE_QT_TRUE@	$(QT_MOC) -o qdbusconnection.moc $(top_srcdir)/qt/qdbusconnection_p.h
+@HAVE_QT_TRUE@$(top_srcdir)/qt/qdbusabstractadaptor.lo: qdbusabstractadaptor.moc
+@HAVE_QT_TRUE@$(top_srcdir)/qt/qdbusserver.lo: qdbusserver.moc
+@HAVE_QT_TRUE@$(top_srcdir)/qt/qdbusconnection.lo: qdbusconnection_p.moc
 
 @HAVE_QT_TRUE@%.moc: %.h
 @HAVE_QT_TRUE@	$(QT_MOC) $< > $@
