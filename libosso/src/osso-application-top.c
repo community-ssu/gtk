@@ -94,6 +94,20 @@ static DBusHandlerResult _top_handler(osso_context_t *osso,
 
     if(dbus_message_is_method_call(msg, interface, OSSO_BUS_TOP))
     {	
+        char *arguments = NULL;
+        DBusMessageIter iter;
+
+        if(!dbus_message_iter_init(msg, &iter)) {
+            ULOG_ERR_F("Message has no arguments");
+            return DBUS_HANDLER_RESULT_HANDLED;
+        }
+        if(dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_STRING) {
+            dbus_message_iter_get_basic(&iter, &arguments);
+        } else {
+            arguments = "";
+        }
+        dprint("arguments = '%s'", arguments);
+
 	top->handler(arguments, top->data);
 	return DBUS_HANDLER_RESULT_HANDLED;
     }
