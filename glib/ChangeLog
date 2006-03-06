@@ -1,3 +1,7 @@
+Mon Mar  6 12:59:00 Tapani Palli <tapani.palli@nokia.com>
+
+	* applied patch from http://bugzilla.gnome.org/show_bug.cgi?id=332312
+
 Wed Mar  1 16:26:52 2006  Tim Janik  <timj@imendio.com>
 
 	* applied GSlice changes from glib-2.10 that inroduce
