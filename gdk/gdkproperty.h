@@ -16,6 +16,9 @@ typedef enum
 
 GdkAtom gdk_atom_intern (const gchar *atom_name,
 			 gboolean     only_if_exists);
+/* Provide source compatible version to reduce porting effort.
+ * GdkAtom gdk_atom_intern_static_string (const gchar *atom_name); */
+#define gdk_atom_intern_static_string(x) gdk_atom_intern((x), FALSE)
 gchar*  gdk_atom_name   (GdkAtom      atom);
 
 gboolean gdk_property_get    (GdkWindow     *window,
