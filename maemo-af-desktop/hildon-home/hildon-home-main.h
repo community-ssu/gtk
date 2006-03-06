@@ -153,7 +153,7 @@ G_BEGIN_DECLS
 #define HILDON_HOME_TITLEBAR_TOP_Y   "0"
 
 #define HILDON_HOME_TITLEBAR_MENU_NAME   "menu_force_with_corners"
-#define HILDON_HOME_TITLEBAR_MENU_LABEL  _("home_ap_home_name")
+#define HILDON_HOME_TITLEBAR_MENU_LABEL  _("home_ap_home_view")
 
 #define HILDON_HOME_TITLEBAR_MENU_SELECT_APPLETS   _("home_me_select_applets")
 #define HILDON_HOME_TITLEBAR_MENU_APPLET_SETTINGS  _("home_me_applet_settings")

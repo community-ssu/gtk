@@ -1,4 +1,10 @@
 2006-03-06  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-home/hildon-home-main.h: Corrected an id which changed
+	  in the UI specs
+	* libhildonmenu/libhildonmenu.c: Use a different icon for the
+	  "Favourites" folder
+
+2006-03-06  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/hn-wm-memory.c: Fixed bogus debug statement
 	  (Closes N#23595)
 	* hildon-status-bar/hildon-status-bar-main.c: renamed presence_plugin

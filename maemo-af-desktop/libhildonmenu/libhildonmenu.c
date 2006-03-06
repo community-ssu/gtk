@@ -296,7 +296,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 				/* FIXME: log. str? */
 				g_strdup( "Favourites" ),
 				TREE_MODEL_ICON,
-				get_icon(ICON_FOLDER, ICON_SIZE),
+				get_icon(ICON_FAVOURITES, ICON_SIZE),
 				TREE_MODEL_EXEC,
 				"",
 				TREE_MODEL_SERVICE,
