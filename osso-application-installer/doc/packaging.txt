@@ -22,7 +22,7 @@ You can freely alternate between AI 2006 and apt-get, say.  Changes
 done to the system via apt-get or dpkg are picked up by the AI 2006
 without confusing it.
 
-Packages made for the Application 2006 need to follow a few extra
+Packages made for the Application 2006 should follow a few extra
 rules, tho, if they want to integrate nicely.  These rules are related
 to
 
@@ -51,7 +51,8 @@ vice versa.
 The two versions of the AI are visually different and there should be
 no risk to confuse the two.  The AI 2005, for example, is a Control
 panel applet, and the AI 2006 is a regular application started from
-the "Tools" menu.
+the "Tools" menu.  Also the AI 2006 actually calls itself "Application
+manager" on the screen.
 
 
 Sections
@@ -191,8 +192,48 @@ scripts to interact with the user:
 
 [PRELIMINARY!]
 
-  - select-menu-location ...
+- maemo-select-menu-location <app>.desktop [default-folder]
 
-  To be documented.
+  When your package contains a .desktop file and consequently has an
+  entry in the Desktop menu for this file, it can call
+  maemo-select-menu-location in its postinst script to let the user
+  choose a location for the entry.
 
-  - 
+  The "<app>.desktop" parameter is the name of your .desktop file,
+  without any directories.  The default-folder parameter is optional,
+  and when given determines the default folder of the menu entry.  If
+  you omit it, the menu entry will appear in "Extras".
+
+  The way to specify a folder that is provided by the system is by
+  giving its logical name as listed in the
+  /etc/xdg/menus/applications.menu file, NOT by giving its English
+  name.  Example logical names are
+
+    tana_fi_games
+    tana_fi_tools
+    tana_fi_utilities
+  
+  If you use a folder name that does not yet exist, it is created.  In
+  that case, you should NOT use a logical name, since there will
+  likely be no translations available for that logical name.  When
+  creating a new folder, use a plain text name in a language that is
+  appropriate.  But, try to use existing folders as much as you can.
+
+  Thus, if your package installs the file
+
+    /usr/share/applications/hildon/foo.desktop
+
+  and you want it to go to the "Utilities" menu, you would put this
+  invokation into your postinst script:
+
+    maemo-select-menu-location foo.desktop tana_fi_utilities
+
+  If you want it to go into a non-existing folder, use something like
+
+    maemo-select-menu-location foo.desktop "Cute hacks"
+
+  In order to use maemo-select-menu-location in postinst, you should
+  Pre-Depend on the "maemo-select-menu-location" package.
+
+  You might want to skip calling maemo-select-menu-location when
+  merely upgrading as opposed to installing from scratch.
