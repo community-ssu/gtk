@@ -504,7 +504,7 @@ static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *plugin )
         slot = HILDON_STATUS_BAR_DISPLAY_SLOT;
     else if( g_str_equal( "display", plugin ) )
         slot = HILDON_STATUS_BAR_DISPLAY_SLOT;
-    else if( g_str_equal( "presence_plugin", plugin ) )
+    else if( g_str_equal( "presence", plugin ) )
         slot = HILDON_STATUS_BAR_PRESENCE_SLOT;
 
     item = hildon_status_bar_item_new( plugin );

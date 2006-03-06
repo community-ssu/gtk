@@ -91,7 +91,7 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 	  if (hn_wm_watched_window_attempt_signal_kill (win, SIGTERM))
 	    {
           HN_DBG("app->hibernating now '%s'",
-                 hn_wm_watchable_app_is_hibernating ? "true" : "false");
+                 hn_wm_watchable_app_is_hibernating(app) ? "true" : "false");
           hn_wm_watchable_app_hibernate(hn_wm_watched_window_get_app(win));
 	    }
 	}

@@ -1,3 +1,28 @@
+maemo-af-desktop (2.6.0-1) unstable; urgency=low
+
+  * fixed numerous memory leaks in the new OthersMenu handling
+  * a few cleanups in the osso RPC callback. 
+  * hildon-status-bar/hildon-status-bar-main.[ch]: the gateway lugin is gone
+    (Closes N#23163)
+  * Imported latest changes from the TN refactoring (Closes 23218)
+  * Imported latest changes from the hoem refactoring (Closes N#23221)
+  * Imported home_background_refactoring branch (Closes N#23035)
+  * Moved hildon-navogator/applications.menu to maemo-af-desktop-config
+  * Imported applet settings handling
+  * hildon-navigator/hildon-navigator.[ch]: removed unused functions
+  * hildon-navigator/application-switcher.c: Play sound on opening
+    and closing windows
+  * Imported unresponsive application killing confirmation note
+  * hildon-status-bar/{hildon-status-bar-{main,item}.c: Hardcode
+    loading of the presence status bar applet
+  * hildon-navigator/hn-wm-memory.c: Fixed bogus debug statement (Closes
+    N#23595)
+  * hildon-status-bar/hildon-status-bar-main.c: renamed presence_plugin
+    to presence
+
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  6 Mar 2006 14:44:07 +0200
+
 maemo-af-desktop (2.5.1-1) unstable; urgency=low
 
   * hildon-navigator/applications.menu: Corrected .desktop name

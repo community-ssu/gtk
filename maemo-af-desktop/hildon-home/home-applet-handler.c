@@ -347,7 +347,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
         handler->x = applet_x;
         handler->y = applet_y;
     }
-
+            
     return handler;
 }
 
