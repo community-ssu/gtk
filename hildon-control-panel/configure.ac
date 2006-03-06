@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-control-panel, 1.0.2)
+AM_INIT_AUTOMAKE(hildon-control-panel, 1.2.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -36,10 +36,6 @@ fi
 CFLAGS="$CFLAGS -Wall -ansi -Wmissing-prototypes -Wmissing-declarations -Werror -lcrypt" 
 AC_SUBST(CFLAGS)
 
-PKG_CHECK_MODULES(CODELOCKUI, codelockui >= 1.2.1)
-AC_SUBST(CODELOCKUI_LIBS)
-AC_SUBST(CODELOCKUI_CFLAGS)
-
 PKG_CHECK_MODULES(OSSO,libosso >= 0.10.0)
 AC_SUBST(OSSO_LIBS)
 AC_SUBST(OSSO_CFLAGS)
@@ -55,6 +51,10 @@ AC_SUBST(HILDON_CFLAGS)
 PKG_CHECK_MODULES(HILDONBASELIB, hildon-base-lib >= 0.7.1)
 AC_SUBST(HILDONBASELIB_LIBS)
 AC_SUBST(HILDONBASELIB_CFLAGS)
+
+PKG_CHECK_MODULES(HTML, libgtkhtml-3.8)
+AC_SUBST(HTML_LIBS)
+AC_SUBST(HTML_CFLAGS)
 
 PKG_CHECK_MODULES(OSSOSETTINGS, osso-af-settings >= 0.8.1)
 localedir=`pkg-config osso-af-settings --variable=localedir`

@@ -24,12 +24,15 @@
 
 #include "hildon-control-panel-main.h"
 
-#include <codelockui.h>
+#include <hildon-widgets/hildon-code-dialog.h>
+#include <libosso.h>
+
 #include <log-functions.h>
 
 
 static gboolean hildon_cp_rfs_display_warning( const char * warning );
-static gboolean hildon_cp_rfs_check_lock_code( osso_context_t * osso );
+static gboolean hildon_cp_rfs_check_lock_code_dialog( osso_context_t * osso );
+static gint hildon_cp_rfs_check_lock_code( const gchar *, osso_context_t * );
 static void hildon_cp_rfs_launch_script( const gchar * );
 
 
@@ -46,7 +49,7 @@ gboolean hildon_cp_rfs( osso_context_t * osso,
         }
     }
             
-    if( hildon_cp_rfs_check_lock_code( osso ) )
+    if( hildon_cp_rfs_check_lock_code_dialog( osso ) )
     {
         /* Password is correct, proceed */
         hildon_cp_rfs_launch_script( script );
@@ -96,16 +99,15 @@ static gboolean hildon_cp_rfs_display_warning( const gchar *warning )
  * Prompts the user for the lock password.
  * Returns TRUE if correct password, FALSE if cancelled
  */
-static gboolean hildon_cp_rfs_check_lock_code( osso_context_t * osso )
+static gboolean hildon_cp_rfs_check_lock_code_dialog( osso_context_t * osso )
 {
-    CodeLockUI *lock_ui = g_malloc0( sizeof( CodeLockUI ) );
     GtkWidget *dialog;
     gint ret;
-    gboolean password_correct = FALSE;
+    gint password_correct = FALSE;
 
-    codelockui_init(osso);
+    dialog = hildon_code_dialog_new();
 
-    dialog = codelock_create_dialog( lock_ui, TIMEOUT_FOOBAR );
+    gtk_widget_show_all (dialog);
 
     while( !password_correct )
     {
@@ -115,31 +117,109 @@ static gboolean hildon_cp_rfs_check_lock_code( osso_context_t * osso )
 
         gtk_widget_set_sensitive( dialog, FALSE );
 
-        if (ret == GTK_RESPONSE_NO /* XXX cancel triggers NO, not CANCEL */ ||
+        if (ret == GTK_RESPONSE_CANCEL ||
                 ret == GTK_RESPONSE_DELETE_EVENT) {
-            codelock_destroy_dialog( lock_ui ); 
-            g_free( lock_ui );
+            gtk_widget_destroy( dialog );
             
-            codelockui_deinit();
             return FALSE;
         }
 
-        password_correct = codelock_is_passwd_correct( gtk_entry_get_text(                     GTK_ENTRY( lock_ui->entry1 ) ) );
+        password_correct = hildon_cp_rfs_check_lock_code( 
+                hildon_code_dialog_get_code( HILDON_CODE_DIALOG( dialog ) ),
+                osso );
 
         if( !password_correct )
         {
             gtk_infoprint (NULL,
                            RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE );
-            gtk_entry_set_text( GTK_ENTRY( lock_ui->entry1 ), "" );
+            hildon_code_dialog_clear_code( HILDON_CODE_DIALOG( dialog ) );
         }
     }
 
-    codelock_destroy_dialog( lock_ui ); 
-    g_free( lock_ui );
-    
-    codelockui_deinit();
+    gtk_widget_destroy( dialog );
+
+    if( password_correct == -1 )
+    {
+        /* An error occured in the lock code verification query */
+        return FALSE;
+    }
 
     return TRUE;
+}
+
+/*
+ * Sends dbus message to MCE to check the lock code
+ * Returns 0 if not correct, 1 if correct, -1 if an error occured
+ */
+static gint hildon_cp_rfs_check_lock_code( const gchar * code,
+                                           osso_context_t *osso )
+{
+    gchar * crypted_code;
+    osso_return_t ret;
+    osso_rpc_t returnvalue;
+    gint result;
+
+    crypted_code = crypt( code, HILDON_CP_DEFAULT_SALT );
+    crypted_code = rindex( crypted_code, '$' ) + 1;
+
+    ret = osso_rpc_run_system( osso, 
+                        HILDON_CP_DBUS_MCE_SERVICE,
+                        HILDON_CP_DBUS_MCE_REQUEST_PATH,
+                        HILDON_CP_DBUS_MCE_REQUEST_IF,
+                        HILDON_CP_MCE_PASSWORD_VALIDATE,
+                        &returnvalue,
+                        DBUS_TYPE_STRING,
+                        crypted_code,
+                        DBUS_TYPE_STRING,
+                        HILDON_CP_DEFAULT_SALT,
+                        DBUS_TYPE_INVALID );
+
+    switch( ret )
+    {
+        case OSSO_INVALID:
+            osso_log( LOG_ERR, "Lockcode query call failed: Invalid "
+                               "parameter\n" );
+            osso_rpc_free_val( &returnvalue );
+            return -1;
+        case OSSO_RPC_ERROR:
+        case OSSO_ERROR:
+        case OSSO_ERROR_NAME:
+        case OSSO_ERROR_NO_STATE:
+        case OSSO_ERROR_STATE_SIZE:
+            if( returnvalue.type == DBUS_TYPE_STRING )
+            {
+                osso_log( LOG_ERR, "Lockcode query call failed: %s\n",
+                          returnvalue.value.s );
+            }
+            else
+            {
+                osso_log( LOG_ERR,
+                          "Lockcode query call failed: unspecified" );
+            }
+            osso_rpc_free_val( &returnvalue );
+            return -1;
+
+        case OSSO_OK:
+            break;
+        default:
+            osso_log( LOG_ERR, "Lockcode query call failed: unknown"
+                               " error type %d", ret );
+            osso_rpc_free_val( &returnvalue );
+            return -1;
+    }
+        
+    if( returnvalue.type != DBUS_TYPE_BOOLEAN )
+    {
+        osso_log( LOG_ERR, "Lockcode query call failed: unexpected return "
+                "value type %d", returnvalue.type );
+
+        osso_rpc_free_val( &returnvalue );
+        return -1;
+    }
+
+    result = (gint)returnvalue.value.b;
+    osso_rpc_free_val( &returnvalue );
+    return result;
 }
 
 static void hildon_cp_rfs_launch_script( const gchar * script )

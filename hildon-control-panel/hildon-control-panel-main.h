@@ -119,6 +119,13 @@ G_BEGIN_DECLS
  "iconsize=%20s\n"
 #define HILDON_CP_MAX_FILE_LENGTH 30 /* CONF FILE FORMAT MUST NOT BE LARGER */
 
+
+#define HILDON_CP_DBUS_MCE_SERVICE "com.nokia.mce"
+#define HILDON_CP_DBUS_MCE_REQUEST_IF "com.nokia.mce.request"
+#define HILDON_CP_DBUS_MCE_REQUEST_PATH "/com/nokia/mce/request"
+#define HILDON_CP_MCE_PASSWORD_VALIDATE "validate_devicelock_code"
+#define HILDON_CP_DEFAULT_SALT "$1$JE5Gswee$"
+
 /* max length of state save file */
 
 #define HILDON_CONTROL_PANEL_STATEFILE_MAX 1024

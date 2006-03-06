@@ -1,3 +1,8 @@
+2006-03-06 Johan Bilien <johan.bilien@nokia.com>
+	* hildon-cp-rfc.c: Replaced calls to codelockui with calls to
+	  hildon-libs and libosso
+	* configure.ac: 1.2.0
+
 2006-02-23 Johan Bilien <johan.bilien@nokia.com>
 	* hildon-control-panel-main.[ch]: Ported to HildonWindow / HildonProgram
 

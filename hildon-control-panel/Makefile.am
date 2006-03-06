@@ -6,7 +6,7 @@ INCLUDES = \
 	$(MAEMO_LAUNCHER_CFLAGS) \
 	$(MB_CFLAGS) $(OSSO_CFLAGS)\
 	$(LIBOSSOHELP_CFLAGS) \
-	$(CODELOCKUI_CFLAGS) \
+	$(HTML_CFLAGS)\
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DPREFIXDIR=\"$(prefix)\" \
 	-DCONTROLPANEL_ENTRY_DIR=\"$(hildoncpdesktopentrydir)\"
@@ -41,7 +41,7 @@ hildondesktopentry_DATA = hildon-control-panel.desktop
 
 controlpanel_LDADD = \
 	$(HILDON_LIBS) $(HILDONBASELIB_LIBS) $(MB_LIBS) $(OSSO_LIBS)\
-	$(LIBOSSOHELP_LIBS) $(CODELOCKUI_LIBS)
+	$(LIBOSSOHELP_LIBS)  $(HTML_LIBS)
 
 hildon_cp_pluginincludeinstdir=$(includedir)/hildon-cp-plugin
 hildon_cp_pluginincludeinst_DATA = hildon-cp-plugin-interface.h

@@ -1,3 +1,12 @@
+hildon-control-panel (1.2.0-1) unstable; urgency=low
+
+  * Small icon size is now the default (Closes N#22927)
+  * hildon-control-panel-main.[ch]: Ported to HildonWindow / HildonProgram
+  * hildon-cp-rfc.c: Replaced calls to codelockui with calls to
+    hildon-libs and libosso
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  6 Mar 2006 16:38:34 +0200
+
 hildon-control-panel (1.1.0-1) unstable; urgency=low
 
   * New implementation of RFS and CUD
