@@ -10,4 +10,9 @@
 #define P_(String) (String)
 #endif
 
+/* not really I18N-related, but also a string marker macro */
+/* Provide source compatible version to reduce porting effort.
+ * #define I_(string) g_intern_static_string (string) */
+#define I_(string) (string)
+
 #endif

@@ -103,6 +103,10 @@ gboolean _gtk_fnmatch (const char *pattern,
 		       const char *string,
 		       gboolean    no_leading_period);
 
+#define GTK_PARAM_READABLE G_PARAM_READABLE|G_PARAM_STATIC_NAME|G_PARAM_STATIC_NICK|G_PARAM_STATIC_BLURB
+#define GTK_PARAM_WRITABLE G_PARAM_WRITABLE|G_PARAM_STATIC_NAME|G_PARAM_STATIC_NICK|G_PARAM_STATIC_BLURB
+#define GTK_PARAM_READWRITE G_PARAM_READWRITE|G_PARAM_STATIC_NAME|G_PARAM_STATIC_NICK|G_PARAM_STATIC_BLURB
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
