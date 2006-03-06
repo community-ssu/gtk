@@ -1,4 +1,15 @@
 2006-03-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	Merge from GNOME CVS.
+
+    2005-05-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtk.symbols:
+	* gtk/gtkdialog.h:
+	* gtk/gtkdialog.c (gtk_dialog_get_response_for_widget):
+	Make this function public.  (#170748, Morten Welinder)
+
+2006-03-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gdk/gdkproperty.h (gdk_atom_intern_static_string):
 	* gtk/gtkintl.h (I_(string)): Provide source compatible versions as
