@@ -3,7 +3,7 @@
  * This file implements functionality related to the top_application
  * D-Bus message.
  * 
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,11 +26,9 @@
 #include "osso-application-top.h"
 #include <stdlib.h>
 
-static void _set_environment(DBusMessageIter *iter);
-static void _append_environment(DBusMessage *msg);
-
-osso_return_t osso_application_top(osso_context_t *osso, const gchar *application,
-			  const gchar *arguments)
+osso_return_t osso_application_top(osso_context_t *osso,
+                                   const gchar *application,
+                                   const gchar *arguments)
 {
     char service[MAX_SVC_LEN], path[MAX_OP_LEN], interface[MAX_IF_LEN];
     guint serial;
@@ -66,60 +64,18 @@ osso_return_t osso_application_top(osso_context_t *osso, const gchar *applicatio
 	return OSSO_ERROR;
     }
     
-    _append_environment(msg);
-
     dbus_message_set_no_reply(msg, TRUE);
     dbus_message_set_auto_start(msg, TRUE);
 
-    if(dbus_connection_send(osso->conn, msg, &serial)==FALSE) {
+    if(!dbus_connection_send(osso->conn, msg, &serial)) {
+        ULOG_ERR_F("dbus_connection_send failed");
 	dbus_message_unref(msg);
 	return OSSO_ERROR;
     }
     else {
-	dbus_connection_flush(osso->conn);
 	dbus_message_unref(msg);
 	return OSSO_OK;
     }
-}
-
-/************************************************************************/
-extern char **environ;
-
-/* XXX - The environment variables of this process are transmitted in
-         the "top_application" message as DBUS_TYPE_STRING elements.
-         DBUS_TYPE_STRING implies that the characters are encoded as
-         UTF-8, but the environment variables are not necessarily in
-         UTF-8.  The real fix would be to transmit the variables as
-         DBUS_TYPE_ARRAY of DBUS_TYPE_BYTE, but for now we just skip
-         everything that is not ASCII.
-*/
-
-static int utf8_safe (char *str)
-{
-  while (*str)
-    {
-      if (*str & 0x80)
-	return 0;
-      str++;
-    }
-  return 1;
-}
-
-static void _append_environment(DBusMessage *msg)
-{
-    char **iter;
-    iter = environ;
-
-    for (;*iter;iter++)
-    {
-        if (utf8_safe (*iter))
-          dbus_message_append_args(msg,DBUS_TYPE_STRING,
-                              *iter,DBUS_TYPE_INVALID);
-
-        dprint("append %s",*iter);
-    }
-    dbus_message_append_args(msg,DBUS_TYPE_INT32,0,DBUS_TYPE_INVALID);
-    
 }
 
 /************************************************************************/
@@ -136,27 +92,8 @@ static DBusHandlerResult _top_handler(osso_context_t *osso,
     g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
 	       osso->application);
 
-    if(dbus_message_is_method_call(msg, interface, OSSO_BUS_TOP) == TRUE)
+    if(dbus_message_is_method_call(msg, interface, OSSO_BUS_TOP))
     {	
-	char *arguments = NULL;
-	DBusMessageIter iter;
-	
-	if(!dbus_message_iter_init(msg, &iter)) {
-            ULOG_ERR_F("Message has no arguments");
-            return DBUS_HANDLER_RESULT_HANDLED;
-        }
-	if(dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_STRING) {
-	    dbus_message_iter_get_basic(&iter, &arguments);
-            if (!osso->environment_set)
-            {
-                _set_environment(&iter);
-                osso->environment_set = TRUE;
-            }
-	}
-	else {
-	    arguments = "";
-	}
-        dprint("arguments = '%s'",arguments);
 	top->handler(arguments, top->data);
 	return DBUS_HANDLER_RESULT_HANDLED;
     }
@@ -209,32 +146,4 @@ osso_return_t osso_application_unset_top_cb(osso_context_t *osso,
 
     free(top);
     return OSSO_OK;
-}
-
-static void _set_environment(DBusMessageIter *iter)
-{
-    dbus_message_iter_next(iter);
-    
-    for (;dbus_message_iter_has_next(iter);
-            dbus_message_iter_next(iter))
-    {
-	char *tstr = NULL;
-        gchar **splitted;
-        if (dbus_message_iter_get_arg_type(iter)
-                != DBUS_TYPE_STRING)
-            continue;
-        
-	dbus_message_iter_get_basic (iter, &tstr);
-	
-        d_log(LOG_D,"Osso got env: %s", tstr);
-
-        splitted = g_strsplit(tstr, "=",2);
-
-        if (splitted == NULL || splitted[0] == NULL || splitted[1]==NULL)
-            continue;
-        
-        setenv(splitted[0],splitted[1],1);
-        
-        g_strfreev(splitted);
-    }
 }
