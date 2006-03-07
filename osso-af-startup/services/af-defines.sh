@@ -90,8 +90,6 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
 
   # from real-af-services
   source_if_is osso-gtk.defs
-  source_if_is osso-application-installer.defs
-  source_if_is browser.defs
   source_if_is matchbox.defs
 
   # from real-af-startup
