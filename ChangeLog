@@ -1,5 +1,11 @@
 2006-03-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkselection.c (gtk_selection_data_set_uris): Don't
+	leak result.
+	N#21336
+
+2006-03-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	Merge from GNOME CVS. N#21857
 
     2005-12-09  Matthias Clasen  <mclasen@redhat.com>
