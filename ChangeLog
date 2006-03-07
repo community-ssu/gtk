@@ -1,3 +1,13 @@
+2006-03-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcheckbutton.c
+	* gtk/gtkdialog.c
+	* gtk/gtkentry.c
+	* gtk/gtkrange.c
+	* gtk/gtktextbuffer.c
+	* gtk/gtktextview.c
+	* gtk/gtkwidget.c: Silence compiler warnings.
+
 2006-03-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	Merge from GNOME CVS.
