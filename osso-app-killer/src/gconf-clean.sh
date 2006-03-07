@@ -8,7 +8,7 @@ if [ $? = 0 ]; then
     if [ "x$CUD" != "x" ]; then
       if [ "x$d" = "xsystem" ]; then
         for f in `find system -name *.xml`; do
-          grep connectivity "$f" > /dev/null
+          echo "$f" | grep connectivity > /dev/null
           if [ $? = 1 ]; then
             echo "$0: removing $f"
             rm -f $f
