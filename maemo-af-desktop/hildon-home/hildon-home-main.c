@@ -687,13 +687,10 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
             gint priority = 0;
             gtk_list_store_append(GTK_LIST_STORE(tree), &iter);
 
-
-            gtk_list_store_append(GTK_LIST_STORE(tree), &iter);
-
             /* remove previously selected user image */
             if( home_user_selected_bg_image )
             {
-                gchar *remove_name;
+                gchar *remove_name = NULL;
                 GtkTreeIter remove_iter;
                 GtkTreePath *remove_path;
 
@@ -703,7 +700,8 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
                 gtk_tree_model_get(tree, &remove_iter,
                         BG_IMAGE_NAME, &remove_name, -1);
 
-                if( g_str_equal(home_user_selected_bg_image, remove_name) )
+                if( remove_name && 
+                        g_str_equal(home_user_selected_bg_image, remove_name) )
                 {
                     gtk_list_store_remove(GTK_LIST_STORE(tree), &remove_iter);
                 }

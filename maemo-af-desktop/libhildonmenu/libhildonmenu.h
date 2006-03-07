@@ -23,6 +23,8 @@ G_BEGIN_DECLS
 #define ICON_DEFAULT_APP "qgn_list_gene_default_app"
 #define ICON_SIZE        26
 
+#define FAVOURITES_NAME  "tncpa_li_of_favourites"
+
 /* Default systemwide menu */
 #define SYSTEMWIDE_MENU_FILE "/etc/xdg/menus/applications.menu"
 

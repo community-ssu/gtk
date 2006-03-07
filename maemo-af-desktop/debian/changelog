@@ -1,3 +1,15 @@
+maemo-af-desktop (2.6.1-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-main.c: Fixed a bug introduced when
+    applying home background refactoring patch. Closes N#23715
+  * libhildonmenu/libhildonmenu.[ch]: Use Favourites name logical_id
+  * hildon-home/hildon-home-main.h: Corrected an id which changed
+    in the UI specs
+  * libhildonmenu/libhildonmenu.c: Use a different icon for the
+    "Favourites" folder
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  7 Mar 2006 11:31:24 +0200
+
 maemo-af-desktop (2.6.0-1) unstable; urgency=low
 
   * fixed numerous memory leaks in the new OthersMenu handling
