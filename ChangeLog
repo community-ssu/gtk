@@ -1,5 +1,14 @@
 2006-03-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Merge from GNOME CVS. N#21857
+
+    2005-12-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkselection.c (gtk_selection_data_get_uris): Don't
+	leak list[0].  (#323629, Markku Vire)
+
+2006-03-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktoolbutton (gtk_tool_button_construct_contents): If the
 	toolbar mode is ICONS and there is no icon set then show the label,
 	and vice versa (#322019)
