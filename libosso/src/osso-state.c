@@ -44,6 +44,7 @@ osso_return_t osso_state_write(osso_context_t *osso, osso_state_t *state)
 {
     gchar *path;
     gchar *tmpdir_path = NULL;
+    osso_return_t ret;
 
     if (_validate_state(state) == FALSE)
     {
@@ -79,11 +80,11 @@ osso_return_t osso_state_write(osso_context_t *osso, osso_state_t *state)
 	return OSSO_ERROR;
     }
     
-    _write_state(path, state);
+    ret = _write_state(path, state);
     
     g_free(path);
 
-    return OSSO_OK;
+    return ret;
 }
 
 

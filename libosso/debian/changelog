@@ -1,6 +1,7 @@
 libosso (1.6-1) unstable; urgency=low
 
   * Fixed DBus porting bug in osso_time_set (N#23725).
+  * Added checking of _write_state return value (N#23248).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 07 Mar 2006 13:07:32 +0200
 
