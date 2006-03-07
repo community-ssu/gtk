@@ -1791,7 +1791,7 @@ gtk_entry_button_press (GtkWidget      *widget,
 
   if (entry->editable)
     {
-      if (hildon_gtk_im_context_filter_event (entry->im_context, event))
+      if (hildon_gtk_im_context_filter_event (entry->im_context, (GdkEvent*)event))
         {
           entry->need_im_reset = TRUE;
           return TRUE;
@@ -1954,7 +1954,7 @@ gtk_entry_button_release (GtkWidget      *widget,
 
   if (entry->editable)
     {
-      if (hildon_gtk_im_context_filter_event (entry->im_context, event))
+      if (hildon_gtk_im_context_filter_event (entry->im_context, (GdkEvent*)event))
         {
           entry->need_im_reset = TRUE;
           return TRUE;

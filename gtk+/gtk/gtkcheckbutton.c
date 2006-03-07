@@ -141,7 +141,7 @@ gtk_check_button_class_init (GtkCheckButtonClass *class)
    *
    * Since: maemo 1.0
    */
-  gtk_widget_class_install_style_property (class,
+  gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("focus-x-padding",
                                                              P_("Horizontal focus padding"),
                                                              P_("Additional horizontal focus padding for the checkbox indicator"),

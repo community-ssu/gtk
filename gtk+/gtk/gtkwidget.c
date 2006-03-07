@@ -8072,7 +8072,7 @@ timeout_tap_and_hold_animation (GtkWidget *widget)
       GdkScreen *screen;
       GdkPixbuf *pic;
       GdkCursor *cursor;
-      gchar *x_hot, *y_hot;
+      const gchar *x_hot, *y_hot;
       gint x, y;
 
       g_get_current_time (&time);

@@ -4075,7 +4075,7 @@ gtk_text_view_button_press_event (GtkWidget *widget, GdkEventButton *event)
   gtk_widget_grab_focus (widget);
 
   if (text_view->editable &&
-      hildon_gtk_im_context_filter_event (text_view->im_context, event))
+      hildon_gtk_im_context_filter_event (text_view->im_context, (GdkEvent*)event))
     {
       text_view->need_im_reset = TRUE;
       return TRUE;
@@ -4180,7 +4180,7 @@ gtk_text_view_button_release_event (GtkWidget *widget, GdkEventButton *event)
     return FALSE;
 
   if (text_view->editable &&
-      hildon_gtk_im_context_filter_event (text_view->im_context, event))
+      hildon_gtk_im_context_filter_event (text_view->im_context, (GdkEvent*)event))
     {
       text_view->need_im_reset = TRUE;
       return TRUE;

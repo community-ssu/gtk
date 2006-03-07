@@ -2890,7 +2890,7 @@ clipboard_get_contents_cb (GtkClipboard     *clipboard,
   else if (info == TARGET_TEXT_VIEW_MARKUP)
     {
       gchar *str;
-      gint *len;
+      gint len;
       GtkTextIter start, end;
       
       gtk_text_buffer_get_bounds (contents, &start, &end);

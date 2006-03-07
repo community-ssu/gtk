@@ -34,6 +34,7 @@
 #include "gtklabel.h"
 #include "gtkhseparator.h"
 #include "gtkmarshalers.h"
+#include "gtkhbox.h"
 #include "gtkvbox.h"
 #include "gdkkeysyms.h"
 #include "gtkmain.h"

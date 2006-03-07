@@ -3067,7 +3067,7 @@ osso_gtk_range_get_stream_position (GtkRange *range)
 {
   OssoGtkRangePrivate *priv;
 
-  g_return_if_fail (GTK_IS_RANGE (range));
+  g_return_val_if_fail (GTK_IS_RANGE (range), 0.0);
   
   priv = OSSO_GTK_RANGE_GET_PRIVATE (range);
   
