@@ -1,3 +1,10 @@
+2006-03-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/tmpl/gtkenums.sgml (GtkToolbarStyle): If the toolbar mode is
+	ICONS and there is no icon set then show the label, and vice versa
+	(#322019)
+	M#353, N#23669
+
 2006-02-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtk-docs.sgml: Add missing '2.10 (maemo 2.0)' index
