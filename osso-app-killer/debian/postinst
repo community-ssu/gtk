@@ -31,6 +31,9 @@ case "$1" in
         mkdir $HOME/.osso-cud-scripts
         chown $USER.$GROUP $HOME/.osso-cud-scripts
       fi
+      if [ ! -e /etc/osso-cud-scripts ]; then
+        mkdir /etc/osso-cud-scripts
+      fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

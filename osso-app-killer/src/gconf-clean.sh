@@ -5,6 +5,18 @@ if [ $? = 0 ]; then
     if [ "x$d" = "xschemas" ]; then
       continue
     fi
+    if [ "x$CUD" != "x" ]; then
+      if [ "x$d" = "xsystem" ]; then
+        for f in `find system -name *.xml`; do
+          grep connectivity "$f" > /dev/null
+          if [ $? = 1 ]; then
+            echo "$0: removing $f"
+            rm -f $f
+          fi
+        done
+        continue
+      fi
+    fi
     echo "$0: removing GConf subdirectory $d"
     rm -rf $d
   done

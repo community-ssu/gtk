@@ -27,10 +27,22 @@ $SUDO $DIR/gconf-daemon.sh stop
 
 if [ "x$OSSO_CUD_DOES_NOT_DESTROY" = "x" ]; then
   # Remove all user data
+  export CUD=foo
   $SUDO /usr/sbin/gconf-clean.sh 
+  unset CUD
   rm -rf $HOME/.osso/*
   OLDDIR=`pwd`
-  cd $HOME/.osso-cud-scripts
+  cd $HOME/.osso-cud-scripts ;# this location should be deprecated
+  for f in `ls *.sh`; do
+    # if we are root, this is run as root (but no can do because
+    # user 'user' might not exist)
+    ./$f
+    RC=$?
+    if [ $RC != 0 ]; then
+      echo "$0: Warning, '$f' returned non-zero return code $RC"
+    fi
+  done
+  cd /etc/osso-cud-scripts
   for f in `ls *.sh`; do
     # if we are root, this is run as root (but no can do because
     # user 'user' might not exist)
