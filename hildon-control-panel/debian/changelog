@@ -1,3 +1,10 @@
+hildon-control-panel (1.2.0-2) unstable; urgency=low
+
+  * Reintroduced a temporary build dependency on hildon-lgpl-dev until
+    all basic libraries have removed their dependency on it.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  7 Mar 2006 15:58:05 +0200
+
 hildon-control-panel (1.2.0-1) unstable; urgency=low
 
   * Small icon size is now the default (Closes N#22927)
