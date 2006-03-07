@@ -34,7 +34,7 @@ osso_return_t osso_application_top(osso_context_t *osso,
     guint serial;
     DBusMessage *msg = NULL;
     gchar* copy = NULL;
-    char *arg = "";
+    const char *arg = "";
 
     if (osso == NULL) return OSSO_INVALID;
     if (application == NULL) return OSSO_INVALID;
