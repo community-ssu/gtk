@@ -1,3 +1,15 @@
+gtk+2.0 (2:2.6.10-1.osso8) unstable; urgency=low
+
+  * Bugs fixed:
+    M#353: Toolbars without icons are invisible in icon-only mode
+    N#21336: Gtk loses memory on D&D selections
+    N#21857: hildon-fm leaks gdk_text properties on D&D
+    N#23669: The Alpha shortcut buttons are not visible in the main view
+    N#23240: _gtk_im_module_get_default_context_id returns a duplicated string
+             as const char *
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue,  7 Mar 2006 18:46:30 +0200
+
 gtk+2.0 (2:2.6.10-1.osso7) unstable; urgency=low
 
   * Most if not all custom additions tagged with 'Since:' tags to enable
