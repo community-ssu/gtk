@@ -1,0 +1,17 @@
+Source: osso-application-installer-test-packages
+Section: unknown
+Priority: optional
+Maintainer:  <marius.vollmer@nokia.com>
+Standards-Version: 3.5.8
+Build-Depends: debmake
+
+Package: test-app-1
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Test application number 1.
+ This package adds a boring application to the Desktop menu.
+
+Package: test-app-2
+Architecture: all
+Description: Test application number 2.
+ This package adds a boring application to the Desktop menu.
