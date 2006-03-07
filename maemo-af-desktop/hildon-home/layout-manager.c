@@ -40,15 +40,15 @@
 #include "layout-manager.h"
 #include "home-select-applets-dialog.h"
 #include "hildon-home-interface.h"
+#include "hildon-home-main.h"
 #include <hildon-widgets/hildon-defines.h>
 #include <hildon-widgets/gtk-infoprint.h>
 #include <hildon-widgets/hildon-note.h>
 
 
 /* Osso includes */
-/* No help available yet
 #include <osso-helplib.h>
-*/
+
 /* l10n includes */
 #include <libintl.h>
 
@@ -73,7 +73,6 @@
 #define LAYOUTMODE_MENU_Y_OFFSET_DEFAULT  -13 
 
 #define ROLLBACK_LAYOUT TRUE
-#define OSSO_HELP_ID_LAYOUT_MODE "uiframework_home_layout_mode"
 
 #define LAYOUT_MODE_CANCEL_BUTTON "qgn_indi_home_cancel"
 #define LAYOUT_MODE_ACCEPT_BUTTON "qgn_indi_home_accept"
@@ -140,6 +139,7 @@ struct _layout_node_t {
     GList * add_list;
 };
 
+extern osso_context_t *osso_home;
 
 static void add_new_applets(GtkWidget *widget, gpointer data);
 static void mark_applets_for_removal(GList * main_list_ptr,
@@ -151,9 +151,7 @@ void _applet_expose_cb(GtkWidget * widget, GdkEventExpose * expose,
 void _select_applets_cb(GtkWidget * widget, gpointer data);
 void _accept_layout_cb(GtkWidget * widget, gpointer data);
 void _cancel_layout_cb(GtkWidget * widget, gpointer data);
-/* HELP not available yet 
 void _help_cb(GtkWidget * widget, gpointer data);
- */
 static void draw_red_borders (LayoutNode * highlighted);
 static gboolean within_eventbox_applet_area(gint x, gint y);
 static gboolean layout_mode_status_check(void);
@@ -610,13 +608,13 @@ void _cancel_layout_cb(GtkWidget * widget, gpointer data)
 {
     layout_mode_end(ROLLBACK_LAYOUT);
 }
-/* No help available yet
+
 void _help_cb(GtkWidget * widget, gpointer data)
 {
     osso_return_t help_ret;
     
     help_ret = ossohelp_show(general_data.osso, 
-			     OSSO_HELP_ID_LAYOUT_MODE, 0);
+			     HILDON_HOME_LAYOUT_HELP_TOPIC, 0);
 
     switch (help_ret)
     {
@@ -637,7 +635,6 @@ void _help_cb(GtkWidget * widget, gpointer data)
     }
     
 }
-*/
 
 /* --------------- applet manager public end ----------------- */
 

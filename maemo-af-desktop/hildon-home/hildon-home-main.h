@@ -159,7 +159,7 @@ G_BEGIN_DECLS
 #define HILDON_HOME_TITLEBAR_MENU_APPLET_SETTINGS  _("home_me_applet_settings")
 #define HILDON_HOME_TITLEBAR_MENU_EDIT_LAYOUT      _("home_me_edit_layout")
 #define HILDON_HOME_TITLEBAR_MENU_TOOLS            _("home_me_tools")
-#define HILDON_HOME_TITLEBAR_SUB_SET_BG            _("home_me_tools_set_home_background")
+#define HILDON_HOME_TITLEBAR_SUB_SET_BG            _("home_me_tools_set_background")
 #define HILDON_HOME_TITLEBAR_SUB_PERSONALISATION   _("home_me_tools_personalisation")
 #define HILDON_HOME_TITLEBAR_SUB_CALIBRATION       _("home_me_tools_screen_calibration")
 #define HILDON_HOME_TITLEBAR_SUB_HELP              _("home_me_tools_help")
@@ -167,6 +167,13 @@ G_BEGIN_DECLS
 #define HILDON_CP_DESKTOP_NAME            "Name"
 #define HILDON_CP_PLUGIN_PERSONALISATION  "personalisation.desktop"
 #define HILDON_CP_PLUGIN_CALIBRATION      "tscalibrate.desktop"
+
+/* help topics */
+#define HILDON_HOME_NORMAL_HELP_TOPIC           "uiframework_home_normal_mode"
+#define HILDON_HOME_LAYOUT_HELP_TOPIC           "uiframework_home_layout_mode"
+#define HILDON_HOME_SELECT_APPLETS_HELP_TOPIC   "uiframework_home_select_applets"
+#define HILDON_HOME_SET_BACKGROUND_HELP_TOPIC   "uiframework_home_set_background"
+#define HILDON_HOME_SELECT_IMAGE_HELP_TOPIC   "uiframework_home_select_image"
 
 /* The edge offsets used for aligning the menu if no theme information is
    available */
@@ -226,123 +233,6 @@ enum {
      BG_IMAGE_FILENAME, 	 
      BG_IMAGE_PRIORITY
 }; 	
-
-
-/* titlebar functions */
-static void titlebar_menu_position_func(GtkMenu *menu, gint *x, gint *y,
-                                        gboolean *push_in,
-                                        gpointer user_data);
-static gboolean menu_popup_handler(GtkWidget *titlebar,
-                               GdkEvent *event, gpointer user_data);
-static gboolean menu_popdown_handler(GtkWidget *titlebar,
-                                     GdkEvent *event, gpointer user_data);
-static void construct_titlebar_area(void);
-static void construct_titlebar_menu(void);
-static 
-void call_select_applets_dialog(GtkWidget *widget,
-		                gpointer unused_data);
-
-/* applet area functions */
-static 
-gchar *get_filename_from_treemodel(GtkComboBox *box, gint index);
-static 
-gint get_priority_from_treemodel(GtkTreeModel *tree, GtkTreeIter *iter);
-static gboolean layout_mode_selected(GtkWidget *widget, 
-				     GdkEvent *event, 
-				     gpointer data);
-
-static gboolean personalisation_selected(GtkWidget *widget, 
-                                         GdkEvent *event, 
-                                         gpointer data);
-
-static gboolean screen_calibration_selected(GtkWidget *widget, 
-                                            GdkEvent *event, 
-                                            gpointer data);
-
-
-static void load_original_bg_image_uri(void);
-static gboolean set_background_select_file_dialog(GtkComboBox *box);
-static 
-void combobox_image_active_tracer(GtkWidget *combobox,
-                                  gpointer data);
-static
-void combobox_scale_active_tracer(GtkWidget *combobox,
-		                  gpointer data);
-static 
-void set_background_response_handler(GtkWidget *dialog, 
-                                     gint arg, gpointer data);
-static 
-gboolean set_background_dialog_selected(GtkWidget *widget, 
-                                        GdkEvent *event, 
-                                        gpointer data);
-
-static void show_no_memory_note(void);
-static void show_connectivity_broke_note(void);
-static void show_system_resource_note(void);
-static void show_file_corrupt_note(void);
-static void show_file_unreadable_note(void);
-
-static void show_mmc_cover_open_note(void);
-
-static void construct_background_image(char *argument_list[], 
-                                       gboolean loading_image_note_allowed,
-                                       gboolean preview);
-
-static void image_loader_callback(GPid pid, 
-                                  gint child_exit_status, 
-                                  gpointer preview_data);
-static void show_loading_image_note(void);
-static gboolean loading_image_note_handler(GtkWidget *loading_image_note,
-                                           GdkEvent *event, 
-                                           gpointer user_data);
-
-/*static void construct_background_image_with_uri(const gchar *uri,
-                                                gboolean new); */
-static
-void construct_background_image_with_uri(const gchar *uri, 
-                                         gboolean loading_image_note_allowed,
-		                         gint scaling, GdkColor *new_bg_color,
-                                         gboolean preview);
-static 
-void construct_background_image_with_new_skin(GtkWidget *widget, 
-                                              GtkStyle *old_style,
-                                              gpointer user_data);
-static char *get_sidebar_image_to_blend(void);
-static char *get_titlebar_image_to_blend(void);
-
-static GdkPixbuf *get_background_image(void);
-static GdkPixbuf *get_factory_default_background_image(void);
-static void set_default_background_image(void);
-static void refresh_background_image(void);
-static void refresh_background_image_preview(void);
-static void clear_background_preview(void);
-static void save_background_preview(void);
-static void construct_applets(void);
-static void applets_settings_menu_fill(void);
-static void applets_settings_menu_refill(void);
-/* generic functions */
-static void construct_home_area(void);
-static void hildon_home_display_base(void);
-static void hildon_home_initiliaze(void);
-static void hildon_home_get_factory_settings(void);
-static void hildon_home_get_enviroment_variables(void);
-static void hildon_home_construct_user_system_dir(void);
-static void hildon_home_create_configure(void);
-static void hildon_home_save_configure(void);
-static void hildon_home_cp_read_desktop_entries(void);
-
-static gint hildon_home_key_press_listener(GtkWidget *widget,
-                                           GdkEventKey *keyevent,
-                                           gpointer data);
-static gint hildon_home_key_release_listener(GtkWidget *widget,
-                                             GdkEventKey *keyevent,
-                                             gpointer data);
-
-static void hildon_home_deinitiliaze(void);
-
-static GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent, 
-                                                 GdkEvent *event, 
-                                                 gpointer data);
 
 G_END_DECLS
 

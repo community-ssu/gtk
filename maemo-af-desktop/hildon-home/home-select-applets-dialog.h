@@ -33,6 +33,8 @@
 #include "hildon-base-lib/hildon-base-dnotify.h"
 #include <gtk/gtk.h>
 
+#include <libosso.h>
+
 G_BEGIN_DECLS
 
 /* generic values */
@@ -63,11 +65,11 @@ typedef struct {
 
 /* Public function declarations */
 void show_select_applets_dialog(GList *applets, 
-		                GList **added_list, 
-				GList **removed_list);
+        		                GList **added_list, 
+		                		GList **removed_list);
 
 void select_applets_selected(GtkEventBox *home_event_box,
-		             GtkFixed *home_fixed,
+                             GtkFixed *home_fixed,
                              GtkWidget *titlebar_label);
 
 G_END_DECLS

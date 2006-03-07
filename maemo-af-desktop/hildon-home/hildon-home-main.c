@@ -50,6 +50,7 @@
 #include <libmb/mbutil.h>
 #include <glob.h>
 #include <osso-log.h>
+#include <osso-helplib.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -92,7 +93,7 @@ static gboolean background_changable; /* FALSE if not allowed */
 /* applet area */
 static GtkWidget *home_area_eventbox;
 static GtkIconTheme *icon_theme;
-static osso_context_t *osso_home;
+osso_context_t *osso_home;
 
 static const gchar *home_user_dir;
 static const gchar *home_user_image_dir = NULL;    /* full dir path */
@@ -128,6 +129,124 @@ static MBDotDesktop *screen_calibration;
 
 static void create_startup_lock(void);
 static gboolean startup_lock_exists(void);
+
+
+/* titlebar functions */
+static void titlebar_menu_position_func(GtkMenu *menu, gint *x, gint *y,
+                                        gboolean *push_in,
+                                        gpointer user_data);
+static gboolean menu_popup_handler(GtkWidget *titlebar,
+                               GdkEvent *event, gpointer user_data);
+static gboolean menu_popdown_handler(GtkWidget *titlebar,
+                                     GdkEvent *event, gpointer user_data);
+static void construct_titlebar_area(void);
+static void construct_titlebar_menu(void);
+static
+void call_select_applets_dialog(GtkWidget *widget,
+                        gpointer unused_data);
+
+/* applet area functions */
+static
+gchar *get_filename_from_treemodel(GtkComboBox *box, gint index);
+static
+gint get_priority_from_treemodel(GtkTreeModel *tree, GtkTreeIter *iter);
+static gboolean layout_mode_selected(GtkWidget *widget,
+                     GdkEvent *event,
+                     gpointer data);
+
+static gboolean personalisation_selected(GtkWidget *widget,
+                                         GdkEvent *event,
+                                         gpointer data);
+
+static gboolean screen_calibration_selected(GtkWidget *widget,
+                                            GdkEvent *event,
+                                            gpointer data);
+static gboolean help_selected(GtkWidget *widget,
+                              GdkEvent *event,
+                              gpointer data);
+
+
+static void load_original_bg_image_uri(void);
+static gboolean set_background_select_file_dialog(GtkComboBox *box);
+static
+void combobox_image_active_tracer(GtkWidget *combobox,
+                                  gpointer data);
+static
+void combobox_scale_active_tracer(GtkWidget *combobox,
+                          gpointer data);
+static
+void set_background_response_handler(GtkWidget *dialog,
+                                     gint arg, gpointer data);
+static
+gboolean set_background_dialog_selected(GtkWidget *widget,
+                                        GdkEvent *event,
+                                        gpointer data);
+
+static void show_no_memory_note(void);
+static void show_connectivity_broke_note(void);
+static void show_system_resource_note(void);
+static void show_file_corrupt_note(void);
+static void show_file_unreadable_note(void);
+
+static void show_mmc_cover_open_note(void);
+
+static void construct_background_image(char *argument_list[],
+                                       gboolean loading_image_note_allowed,
+                                       gboolean preview);
+
+static void image_loader_callback(GPid pid,
+                                  gint child_exit_status,
+                                  gpointer preview_data);
+static void show_loading_image_note(void);
+static gboolean loading_image_note_handler(GtkWidget *loading_image_note,
+                                           GdkEvent *event,
+                                           gpointer user_data);
+
+static
+void construct_background_image_with_uri(const gchar *uri,
+                                         gboolean loading_image_note_allowed,
+                                 gint scaling, GdkColor *new_bg_color,
+                                         gboolean preview);
+static
+void construct_background_image_with_new_skin(GtkWidget *widget,
+                                              GtkStyle *old_style,
+                                              gpointer user_data);
+static char *get_sidebar_image_to_blend(void);
+static char *get_titlebar_image_to_blend(void);
+
+static GdkPixbuf *get_background_image(void);
+static GdkPixbuf *get_factory_default_background_image(void);
+static void set_default_background_image(void);
+static void refresh_background_image(void);
+static void refresh_background_image_preview(void);
+static void clear_background_preview(void);
+static void save_background_preview(void);
+static void construct_applets(void);
+static void applets_settings_menu_fill(void);
+static void applets_settings_menu_refill(void);
+/* generic functions */
+static void construct_home_area(void);
+static void hildon_home_display_base(void);
+static void hildon_home_initiliaze(void);
+static void hildon_home_get_factory_settings(void);
+static void hildon_home_get_enviroment_variables(void);
+static void hildon_home_construct_user_system_dir(void);
+static void hildon_home_create_configure(void);
+static void hildon_home_save_configure(void);
+static void hildon_home_cp_read_desktop_entries(void);
+
+static gint hildon_home_key_press_listener(GtkWidget *widget,
+                                           GdkEventKey *keyevent,
+                                           gpointer data);
+static gint hildon_home_key_release_listener(GtkWidget *widget,
+                                             GdkEventKey *keyevent,
+                                             gpointer data);
+
+static void hildon_home_deinitiliaze(void);
+
+static GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent,
+                                                 GdkEvent *event,
+                                                 gpointer data);
 
 /* --------------------------*/
 /* titlebar area starts here */
@@ -357,7 +476,8 @@ void construct_titlebar_menu()
         gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_SUB_HELP);
     gtk_widget_show(help_item);
     gtk_menu_append(GTK_MENU(titlebar_submenu), help_item);
-    /* FIXME needs to implement help */
+    g_signal_connect(G_OBJECT(help_item), "activate",
+                     G_CALLBACK(help_selected), NULL);
 }
 
 /**
@@ -374,7 +494,7 @@ static void call_select_applets_dialog(GtkWidget *widget,
 		                       gpointer unused_data)
 {
     select_applets_selected(GTK_EVENT_BOX(home_area_eventbox), 
-		            GTK_FIXED(home_fixed),
+                            GTK_FIXED(home_fixed),
                             titlebar_label);
 }
 
@@ -542,6 +662,47 @@ gboolean screen_calibration_selected(GtkWidget *widget,
     return TRUE;
 }
 
+/**
+ * @help_selected
+ *
+ * @param widget The parent widget
+ * @param event The event that caused this callback
+ * @param data Pointer to the data (not actually used by this function)
+ * 
+ * @return TRUE (keeps cb alive)
+ * 
+ * Calls activation of the help for home
+ **/
+static 
+gboolean help_selected(GtkWidget *widget, 
+                       GdkEvent *event,
+                       gpointer data)
+{ 
+    osso_return_t ret;
+
+    ret = ossohelp_show(osso_home, HILDON_HOME_NORMAL_HELP_TOPIC, 0);
+
+    switch(ret)
+    {
+        case OSSO_OK:
+            break;
+        case OSSO_ERROR:
+            ULOG_ERR("OSSO_ERROR (No help for such topic ID)\n");
+            break;
+        case OSSO_RPC_ERROR:
+            ULOG_ERR("OSSO_RPC_ERROR (Unable to contact HelpApp or Browser)\n");
+            break;
+        case OSSO_INVALID:
+            ULOG_ERR("OSSO_INVALID (Param not formally right)\n");
+            break;
+        default:
+            ULOG_ERR("Unknown error!\n");
+            break;
+    }
+
+    return TRUE;
+}
+
 /** 
  * @load_original_bg_image_uri
  *
@@ -618,6 +779,11 @@ gboolean set_background_select_file_dialog(GtkComboBox *box)
         HILDON_HOME_FILE_CHOOSER_EMPTY_PROP,
         HILDON_HOME_FILE_CHOOSER_EMPTY,
         NULL);
+
+    /* Add help button */
+    ossohelp_dialog_help_enable(GTK_DIALOG(dialog), 
+                                HILDON_HOME_SELECT_IMAGE_HELP_TOPIC,
+                                osso_home);
         
     mime_type_filter = gtk_file_filter_new();
     gtk_file_filter_add_mime_type (mime_type_filter, "image/jpeg");
@@ -1159,6 +1325,11 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                                     NULL);
     
     gtk_dialog_set_has_separator(GTK_DIALOG(dialog), FALSE);
+
+    /* Add help button */
+    ossohelp_dialog_help_enable(GTK_DIALOG(dialog),
+                                HILDON_HOME_SET_BACKGROUND_HELP_TOPIC,
+                                osso_home);
 
     /* Hildon Caption HBoxes */
     hbox_color = gtk_hbox_new(FALSE, 10);

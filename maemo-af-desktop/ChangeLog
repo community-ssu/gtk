@@ -1,4 +1,14 @@
 2006-03-07  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-home/hildon-home-main.[ch]:
+      - Moved static prototypes to the c file
+	  - Added implementation of the help menu item
+	  - Added help button to "Set background" and "Select image" dialogs
+	  - Corrected a logical_id
+	* hildon-home/home-select-applets-dialo.[ch]:
+	  - Added help button to "Select applet" dialog
+	* libhildonmenu/libhildonmenu.pc.in: added desktopentrydir variable
+
+2006-03-07  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-home/hildon-home-main.c: Fixed a bug introduced when
 	  applying home background refactoring patch. Closes N#23715
 	* libhildonmenu/libhildonmenu.[ch]: Use Favourites name logical_id

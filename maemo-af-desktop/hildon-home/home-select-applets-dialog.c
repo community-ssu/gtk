@@ -35,12 +35,16 @@
 #endif
 
 #include "home-select-applets-dialog.h"
+#include "hildon-home-main.h"
 #include "applet-manager.h"
 #include "layout-manager.h"
 
 /* log include */
 #include <osso-log.h>
 
+#include <osso-helplib.h>
+
+extern osso_context_t *osso_home;
 
 /* Dialog data contents structure */
 SelectAppletsData data_t;
@@ -64,12 +68,13 @@ void select_applets_reload_applets(char *applets_path,
  * @param GList*  currently showed applets
  * @param GList** added desktop file strings 
  * @param GList** removed desktop file strings
+ * @param osso_context* home_help the home libosso context
  *
  * Select and deselect applets
  **/
 void show_select_applets_dialog(GList *applets, 
-		                GList **added_list, 
-			        GList **removed_list)
+        		                GList **added_list, 
+		            	        GList **removed_list)
 {
     /* Dialog widget */
     GtkWidget *dialog = NULL;
@@ -165,6 +170,11 @@ void show_select_applets_dialog(GList *applets,
 		                         GTK_DIALOG_MODAL | 
 					 GTK_DIALOG_DESTROY_WITH_PARENT |
 					 GTK_DIALOG_NO_SEPARATOR, NULL);
+
+    /* Add help button to the dialog */
+    ossohelp_dialog_help_enable(GTK_DIALOG(dialog),
+                                HILDON_HOME_SELECT_APPLETS_HELP_TOPIC,
+                                osso_home);
     
     /* Add "OK" button to the dialog */
     button_ok = gtk_dialog_add_button(GTK_DIALOG(dialog), 
@@ -272,7 +282,7 @@ void show_select_applets_dialog(GList *applets,
  * Calls activation of Select Applets dialog
  **/
 void select_applets_selected(GtkEventBox *home_event_box,
-	                     GtkFixed *home_fixed,
+	                         GtkFixed *home_fixed,
                              GtkWidget *titlebar_label)
 {	
    GList *added_applets;
