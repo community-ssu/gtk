@@ -2,8 +2,9 @@ osso-af-startup (1.6-1) unstable; urgency=low
 
   * Restarting SystemUI again because fix in af-defines.sh now makes
     it possible.
+  * Restarting maemo-launcher after session bus in first boot (N#23555).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 02 Mar 2006 12:42:35 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 07 Mar 2006 13:54:32 +0200
 
 osso-af-startup (1.5-1) unstable; urgency=low
 

@@ -18,9 +18,6 @@
 
 DIR=$AF_INIT_DIR
 
-if [ -x /etc/init.d/maemo-launcher ]; then
-  /etc/init.d/maemo-launcher restart
-fi
 # media-server was only started if we went directly to ACTDEAD
 DSME_STATE=`/usr/sbin/bootstate`
 if [ "x$DSME_STATE" = "xACTDEAD" ]; then
@@ -57,6 +54,9 @@ fi
 source $DIR/dbus-sessionbus.sh start
 source $DIR/af-defines.sh ;# re-read session bus address
 /usr/sbin/waitdbus session
+if [ -x /etc/init.d/maemo-launcher ]; then
+  /etc/init.d/maemo-launcher restart
+fi
 # TODO: start ke-recv
 sudo /etc/init.d/osso-systemui restart
 if [ "x$DSME_STATE" = "xACTDEAD" ]; then
