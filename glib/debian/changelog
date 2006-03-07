@@ -1,3 +1,9 @@
+glib2.0 (2.8.6-1osso2) unstable; urgency=low
+
+  * took Jorn's patch from http://bugzilla.gnome.org/show_bug.cgi?id=332312 
+
+ -- Tapani Päll <tapani.palli@nokia.com>  Tue,  7 Mar 2006 11:26:41 +0200
+
 glib2.0 (2.8.6-1osso1) unstable; urgency=low
 
   * Upgrade to glib 2.8.6
