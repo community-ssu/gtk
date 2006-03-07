@@ -34,9 +34,10 @@ osso_return_t osso_application_top(osso_context_t *osso,
     guint serial;
     DBusMessage *msg = NULL;
     gchar* copy = NULL;
+    char *arg = "";
 
-    if(osso == NULL) return OSSO_INVALID;
-    if(application == NULL) return OSSO_INVALID;
+    if (osso == NULL) return OSSO_INVALID;
+    if (application == NULL) return OSSO_INVALID;
 
     dprint("Topping application (service) '%s' with args %s",
 	   application, arguments);
@@ -57,9 +58,11 @@ osso_return_t osso_application_top(osso_context_t *osso,
     msg = dbus_message_new_method_call(service, path, interface,
 				       OSSO_BUS_TOP);
 
-    if(dbus_message_append_args(msg, DBUS_TYPE_STRING, 
-				(arguments == NULL)?"":arguments,
-                                DBUS_TYPE_INVALID) != TRUE) {
+    if (arguments != NULL) {
+        arg = arguments;
+    }
+    if (!dbus_message_append_args(msg, DBUS_TYPE_STRING, &arg,
+                                  DBUS_TYPE_INVALID)) {
 	dbus_message_unref(msg);
 	return OSSO_ERROR;
     }
@@ -67,7 +70,7 @@ osso_return_t osso_application_top(osso_context_t *osso,
     dbus_message_set_no_reply(msg, TRUE);
     dbus_message_set_auto_start(msg, TRUE);
 
-    if(!dbus_connection_send(osso->conn, msg, &serial)) {
+    if (!dbus_connection_send(osso->conn, msg, &serial)) {
         ULOG_ERR_F("dbus_connection_send failed");
 	dbus_message_unref(msg);
 	return OSSO_ERROR;
