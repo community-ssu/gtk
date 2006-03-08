@@ -5,6 +5,10 @@
 	* src/repo.cc (repo_edit_response): Disallow empty URLs and
 	distributions.
 
+	* utils/check-application-for-uninstall.c: Proper parsing of
+	command line options.  Look into /proc to find the executable.
+	Include application name in dialog.
+
 2005-12-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Started from scratch, thus no detailed ChangeLog entries until the
