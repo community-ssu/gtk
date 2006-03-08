@@ -1,3 +1,10 @@
+2006-03-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        * util.h, util.c (all_white_space): New function.
+	
+	* src/repo.cc (repo_edit_response): Disallow empty URLs and
+	distributions.
+
 2005-12-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Started from scratch, thus no detailed ChangeLog entries until the

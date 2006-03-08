@@ -190,16 +190,28 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
 
   if (response == GTK_RESPONSE_OK)
     {
+      const char *uri = gtk_entry_get_text (GTK_ENTRY (c->uri_entry));
+      const char *dist = gtk_entry_get_text (GTK_ENTRY (c->dist_entry));
+      const char *comps = gtk_entry_get_text (GTK_ENTRY (c->components_entry));
+
+      if (all_white_space (uri))
+	{
+	  irritate_user ("The web address can not be empty");
+	  return;
+	}
+
+      if (all_white_space (dist))
+	{
+	  irritate_user ("The distribution can not be empty");
+	  return;
+	}
+
       repo_line *r = c->line;
       free (r->line);
       r->enabled =
 	gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (c->enabled_button));
-      r->line = g_strdup_printf
-	("%s %s %s %s",
-	 r->enabled? "deb" : "#deb",
-	 gtk_entry_get_text (GTK_ENTRY (c->uri_entry)),
-	 gtk_entry_get_text (GTK_ENTRY (c->dist_entry)),
-	 gtk_entry_get_text (GTK_ENTRY (c->components_entry)));
+      r->line = g_strdup_printf ("%s %s %s %s",
+				 r->enabled? "deb" : "#deb", uri, dist, comps);
       r->deb_line = r->line + (r->enabled? 4 : 5);
       refresh_repo_list (r->clos);
       r->clos->dirty = true;

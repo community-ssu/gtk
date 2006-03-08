@@ -92,4 +92,6 @@ void run_cmd (char **argv,
 	      void (*cont) (int status, void *data),
 	      void *data);
 
+int all_white_space (const char *str);
+
 #endif /* !UTIL_H */

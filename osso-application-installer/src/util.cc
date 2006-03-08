@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <libintl.h>
+#include <ctype.h>
 
 #include <gtk/gtk.h>
 #include <hildon-widgets/hildon-note.h>
@@ -1005,7 +1006,6 @@ reap_process (GPid pid, int status, gpointer raw_data)
   void *data = c->data;
   delete c;
 
-  fprintf (stderr, "exit: %d\n", status);
   cont (status, data);
 }
 
@@ -1043,4 +1043,13 @@ run_cmd (char **argv,
   c->cont = cont;
   c->data = data;
   g_child_watch_add (child_pid, reap_process, c);
+}
+
+int
+all_white_space (const char *text)
+{
+  while (*text)
+    if (!isspace (*text++))
+      return 0;
+  return 1;
 }
