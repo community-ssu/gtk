@@ -84,6 +84,8 @@ BUGS
 
 - search results has wrong parent sometimes.
 
+- Removing a .desktop file leaves the entry in the menu anyway.
+
 
 Progress indications
 --------------------
