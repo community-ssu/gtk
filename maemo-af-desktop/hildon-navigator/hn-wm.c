@@ -1191,7 +1191,7 @@ hn_wm_compute_watched_window_hibernation_key (Window            xwin,
 						    0,
 						    NULL);
 
-  if (!role || !*role || gdk_error_trap_pop())
+  if (gdk_error_trap_pop()||!role || !*role)
     hibernation_key = g_strdup(hn_wm_watchable_app_get_class_name (app));
   else
     hibernation_key = g_strdup_printf("%s%s", 

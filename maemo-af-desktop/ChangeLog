@@ -1,3 +1,16 @@
+2006-03-08  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-home/hildon-home-main.[ch]:
+      - global menu status flag added
+	  - hildon_home_key_press_listener(): removed widget grabing add. Menu
+	    closing added when open and menu key is pressed.
+	  - hildon_home_key_release_listener(): removed widget grabing remove
+      - Closes N#22637
+	* configure.ac: Don't check for hildon-lgpl which is deprecated
+	* hildon-navigator/hn-wm.c:
+	  - hn_wm_compute_watched_window_hibernation_key(): Replaced
+	    conditional gdk_error_trap_pop with unconditional one
+	    (Closes N#23940)
+
 2006-03-07  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-home/hildon-home-main.[ch]:
       - Moved static prototypes to the c file

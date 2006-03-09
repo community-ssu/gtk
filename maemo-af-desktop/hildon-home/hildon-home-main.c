@@ -78,6 +78,7 @@ static GtkWidget *home_base_fixed;
 static GtkWidget *home_base_eventbox;
 
 static gboolean menu_key_pressed = FALSE;
+static gboolean menu_popup_status = FALSE;
 static gboolean home_is_topmost;
 
 static GtkWidget *home_fixed;
@@ -139,6 +140,8 @@ static gboolean menu_popup_handler(GtkWidget *titlebar,
                                GdkEvent *event, gpointer user_data);
 static gboolean menu_popdown_handler(GtkWidget *titlebar,
                                      GdkEvent *event, gpointer user_data);
+static gboolean titlebar_menu_deactivated(GtkWidget *titlebar, GdkEvent *event,
+                                          gpointer unused);
 static void construct_titlebar_area(void);
 static void construct_titlebar_menu(void);
 static
@@ -304,7 +307,8 @@ gboolean menu_popup_handler(GtkWidget *titlebar,
                    (GtkMenuPositionFunc)titlebar_menu_position_func,
                    NULL, 1,
                    gtk_get_current_event_time());
-    gtk_menu_shell_select_first (GTK_MENU_SHELL(menu_used), TRUE);
+    menu_popup_status = TRUE;
+
     return TRUE;
 }
 
@@ -330,7 +334,20 @@ gboolean menu_popdown_handler(GtkWidget *titlebar, GdkEvent *event,
         return TRUE;
     }
     gtk_menu_popdown(GTK_MENU(menu_used));
+    menu_popup_status = FALSE;
+
     return FALSE;
+}
+
+
+static 
+gboolean titlebar_menu_deactivated(GtkWidget *titlebar, GdkEvent *event,
+                                   gpointer unused)
+{
+    menu_key_pressed = FALSE;
+    menu_popup_status = FALSE;
+
+    return TRUE;
 }
 
 /**
@@ -398,6 +415,9 @@ void construct_titlebar_menu()
     menu_used = titlebar_menu;
 
     gtk_widget_set_name(titlebar_menu, HILDON_HOME_TITLEBAR_MENU_NAME); 
+    g_signal_connect(G_OBJECT(menu_used), "deactivate",
+		     G_CALLBACK(titlebar_menu_deactivated), 
+		     NULL);
 
     /* 'Select Applets' dialog select */
     select_applets_item =
@@ -3115,20 +3135,7 @@ gint hildon_home_key_press_listener (GtkWidget * widget,
 {
     if (keyevent->keyval == HILDON_MENU_KEY)
     {
-        if (!menu_key_pressed)
-        {
-            menu_key_pressed = TRUE;
-            gtk_menu_popup(GTK_MENU(menu_used), NULL, NULL,
-                           (GtkMenuPositionFunc)
-                           titlebar_menu_position_func,
-                           NULL, 0, gtk_get_current_event_time ());
-            gtk_menu_shell_select_first (GTK_MENU_SHELL(menu_used), TRUE);
-
-            /* we'll have to grab this widget so we can catch the key
-               release signal, which is needed to prevent menu opening/closing
-               repeatedly when menu key is being pressed for a long time */
-            gtk_grab_add(widget);
-        }
+        menu_key_pressed = TRUE;
     }
     return FALSE;
 }
@@ -3151,8 +3158,22 @@ gint hildon_home_key_release_listener (GtkWidget * widget,
 {
     if (keyevent->keyval == HILDON_MENU_KEY)
     {
-        gtk_grab_remove(widget);
-        menu_key_pressed = FALSE;
+        if (menu_key_pressed)
+        {
+            menu_key_pressed = FALSE;
+            if(!menu_popup_status)
+            {
+                gtk_menu_popup(GTK_MENU(menu_used), NULL, NULL,
+                               (GtkMenuPositionFunc)
+                               titlebar_menu_position_func,
+                               NULL, 0, gtk_get_current_event_time ());
+                menu_popup_status = TRUE;
+            } else
+            {
+                gtk_menu_popdown(GTK_MENU(menu_used));
+                menu_popup_status = FALSE;
+            }
+        }
     }
     return FALSE;
 }
