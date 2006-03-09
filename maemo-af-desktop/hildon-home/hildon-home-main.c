@@ -3475,8 +3475,6 @@ int hildon_home_main(void)
                      G_CALLBACK(construct_background_image_with_new_skin), 
                      NULL);
     
-    hildon_home_save_configure();
-    
     return 0;
 }
 

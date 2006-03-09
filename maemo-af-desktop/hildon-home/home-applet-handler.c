@@ -332,7 +332,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
         if (error_str)
         {
             ULOG_WARN("Unable to load symbols from Applet %s: %s\n", 
-                      librarypath, error_str);
+                      libraryfile, error_str);
 
             dlclose(priv->dlhandle);
             g_free(librarypath);
@@ -342,7 +342,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
         priv->applet_data = priv->initialize(state_data, state_size, &applet);
         handler->eventbox = GTK_EVENT_BOX(gtk_event_box_new());
         gtk_container_add(GTK_CONTAINER(handler->eventbox), applet);
-        handler->libraryfile = (gchar *)librarypath;
+        handler->libraryfile = (gchar *)libraryfile;
         handler->desktoppath = g_strdup((gchar *)desktoppath);
         handler->x = applet_x;
         handler->y = applet_y;

@@ -1,4 +1,10 @@
 2006-03-08  Johan Bilien <johan.bilien@nokia.com>
+	* Applied fix to N#23750:
+	  - hildon_home_main(): removing old saving configure function call
+	    causing reseting values
+	  - hildon-home/home-applet-handler.c: libraryfile value fixed to correct
+
+2006-03-08  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-home/hildon-home-main.[ch]:
       - global menu status flag added
 	  - hildon_home_key_press_listener(): removed widget grabing add. Menu
