@@ -7,7 +7,7 @@ Standards-Version: 3.6.0
 
 Package: hildon-lgpl-dev
 Architecture: all
-Depends: hildon-libs-dev
+Depends: hildon-libs-dev, hildon-fm-dev
 Description: LGPL-licensed Hildon libraries development files
 
 Package: hildon-lgpl0
