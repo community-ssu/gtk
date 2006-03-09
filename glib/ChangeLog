@@ -1,3 +1,7 @@
+Thu Mar  9 17:34:00 Johan Bilien <johan.bilien@nokia.com>
+
+	* glib/gmem.h: Don't use // comments in C<99 code
+
 Mon Mar  6 12:59:00 Tapani Palli <tapani.palli@nokia.com>
 
 	* applied patch from http://bugzilla.gnome.org/show_bug.cgi?id=332312

@@ -1,3 +1,9 @@
+glib2.0 (2.8.6-1osso3) unstable; urgency=low
+
+  * glib/gmem.h: Don't use // comments in C<99 code
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  9 Mar 2006 17:43:45 +0200
+
 glib2.0 (2.8.6-1osso2) unstable; urgency=low
 
   * took Jorn's patch from http://bugzilla.gnome.org/show_bug.cgi?id=332312 

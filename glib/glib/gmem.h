@@ -101,7 +101,7 @@ void	g_mem_profile	(void);
 
 
 /* deprecated memchunks and allocators */
-//#if !defined (G_DISABLE_DEPRECATED) || defined (GTK_COMPILATION) || defined (GDK_COMPILATION)
+/* #if !defined (G_DISABLE_DEPRECATED) || defined (GTK_COMPILATION) || defined (GDK_COMPILATION */
 typedef struct _GAllocator GAllocator;
 typedef struct _GMemChunk  GMemChunk;
 #define g_mem_chunk_create(type, pre_alloc, alloc_type)	( \
