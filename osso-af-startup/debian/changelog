@@ -1,6 +1,6 @@
 osso-af-startup (1.7-1) unstable; urgency=low
 
-  * Made fix to dbus-sessionbus.sh for Bash.
+  * Made fix to dbus-sessionbus.sh for Bash (in Scratchbox).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 09 Mar 2006 16:49:34 +0200
 
