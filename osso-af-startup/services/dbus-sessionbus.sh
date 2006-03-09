@@ -1,7 +1,7 @@
 #!/bin/sh
 # D-BUS session bus daemon startup/shutdown script
 
-# Copyright (C) 2004-2005 Nokia Corporation.
+# Copyright (C) 2004-2006 Nokia Corporation.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -20,11 +20,11 @@
 
 PROG=/usr/bin/dbus-daemon
 SVC="D-BUS session bus daemon"
-PARAMS="--session --print-address=1 1> ${SESSION_BUS_ADDRESS_FILE}.in"
+PARAMS="--session --print-address=2"
 
 case "$1" in
 start)
-  source $LAUNCHWRAPPER_NICE_KILL start "$SVC" $PROG $PARAMS
+  $LAUNCHWRAPPER_NICE_KILL start "$SVC" $PROG $PARAMS 2>${SESSION_BUS_ADDRESS_FILE}.in
   sleep 2
   if [ -r ${SESSION_BUS_ADDRESS_FILE}.in ]; then
     TMP=`cat ${SESSION_BUS_ADDRESS_FILE}.in`
