@@ -18,13 +18,25 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+if [ -e /targets/links/scratchbox.config ]; then
+  SBOX='yes'
+  PARAMS="--session --print-address=2"
+else
+  SBOX=''
+  PARAMS="--session --print-address=1 1> ${SESSION_BUS_ADDRESS_FILE}.in"
+fi
+
 PROG=/usr/bin/dbus-daemon
 SVC="D-BUS session bus daemon"
-PARAMS="--session --print-address=2"
 
 case "$1" in
 start)
-  $LAUNCHWRAPPER_NICE_KILL start "$SVC" $PROG $PARAMS 2>${SESSION_BUS_ADDRESS_FILE}.in
+  if [ "x$SBOX" = "x" ]; then
+    source $LAUNCHWRAPPER_NICE_KILL start "$SVC" $PROG $PARAMS
+  else
+    $LAUNCHWRAPPER_NICE_KILL start "$SVC" $PROG \
+                             $PARAMS 2>${SESSION_BUS_ADDRESS_FILE}.in
+  fi
   sleep 2
   if [ -r ${SESSION_BUS_ADDRESS_FILE}.in ]; then
     TMP=`cat ${SESSION_BUS_ADDRESS_FILE}.in`
