@@ -1,3 +1,9 @@
+2006-03-09  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* configure.ac: Include hildon-fm in PKG_CHECK_MODULES since the
+	hildon_file_chooser_dialog has been moved from hildon-libs to
+	hildon-fm.
+
 2006-03-08  Marius Vollmer  <marius.vollmer@nokia.com>
 
         * util.h, util.c (all_white_space): New function.
