@@ -141,7 +141,7 @@ void       g_allocator_free    (GAllocator   *allocator);
 #define	G_ALLOCATOR_LIST       (1)
 #define	G_ALLOCATOR_SLIST      (2)
 #define	G_ALLOCATOR_NODE       (3)
-//#endif /* G_DISABLE_DEPRECATED */
+/*#endif*/ /* G_DISABLE_DEPRECATED */
 
 G_END_DECLS
 
