@@ -74,8 +74,8 @@
 
 #define ROLLBACK_LAYOUT TRUE
 
-#define LAYOUT_MODE_CANCEL_BUTTON "qgn_indi_home_cancel"
-#define LAYOUT_MODE_ACCEPT_BUTTON "qgn_indi_home_accept"
+#define LAYOUT_MODE_CANCEL_BUTTON "qgn_indi_home_layout_cancel"
+#define LAYOUT_MODE_ACCEPT_BUTTON "qgn_indi_home_layout_accept"
 
 #define LAYOUT_MODE_MENU_LABEL_NAME _("home_ti_layout_mode")
 #define LAYOUT_MODE_MENU_STYLE_NAME "menu_force_with_corners"

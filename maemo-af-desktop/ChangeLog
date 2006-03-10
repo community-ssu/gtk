@@ -1,3 +1,8 @@
+2006-03-10  Johan Bilien <johan.bilien@nokia.com>
+	* hildon-navigator/hn-wm-watchable-app.c: use localized program name
+	  in the starting info banner (Closes N#23428)
+	* hildon-navigator/hn-*.c: Added Copyright and licensing notices
+
 2006-03-08  Johan Bilien <johan.bilien@nokia.com>
 	* Applied fix to N#23750:
 	  - hildon_home_main(): removing old saving configure function call
