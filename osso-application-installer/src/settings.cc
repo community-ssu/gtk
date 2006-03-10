@@ -36,6 +36,16 @@
 
 #define _(x) gettext (x)
 
+/* Defining this to non-zero will add the "Temporary files" tab to the
+   settings dialog.  It is currently disabled since files in the cache
+   are not visible to the user, and he/she might get confused what is
+   taking all the memory.
+
+   Only the UI is affected.  The setting itself is always implemented
+   and a power-user could change it be editing .appinstaller directly.
+*/
+#define SHOW_CLEANING_SETTINGS 0
+
 bool clean_after_install = true;
 int  update_interval_index = UPDATE_INTERVAL_WEEK;
 int  package_sort_key = SORT_BY_NAME;
@@ -120,6 +130,8 @@ struct settings_closure {
   GtkWidget *update_combo;
 };
 
+#if SHOW_CLEANING_SETTINGS
+
 static void 
 clean_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
@@ -169,6 +181,7 @@ make_temp_files_tab (settings_closure *c)
 
   return vbox;
 }
+#endif /* SHOW_CLEANING_SETTINGS */
 
 static GtkWidget *
 make_updates_tab (settings_closure *c)
@@ -201,8 +214,10 @@ settings_dialog_response (GtkDialog *dialog, gint response, gpointer clos)
 
   if (response == GTK_RESPONSE_OK)
     {
+#if SHOW_CLEANING_SETTINGS
       clean_after_install =
 	gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (c->clean_radio));
+#endif
       update_interval_index =
 	gtk_combo_box_get_active (GTK_COMBO_BOX (c->update_combo));
 
@@ -217,7 +232,7 @@ settings_dialog_response (GtkDialog *dialog, gint response, gpointer clos)
 void
 show_settings_dialog ()
 {
-  GtkWidget *dialog, *notebook;
+  GtkWidget *dialog;
   settings_closure *c = new settings_closure;
 
   dialog = gtk_dialog_new_with_buttons (_("ai_ti_settings"),
@@ -229,14 +244,22 @@ show_settings_dialog ()
 					GTK_RESPONSE_CANCEL,
 					NULL);
 
-  notebook = gtk_notebook_new ();
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_temp_files_tab (c),
-			    gtk_label_new (_("ai_ti_settings_temp_files")));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_updates_tab (c),
-			    gtk_label_new (_("ai_ti_settings_updates")));
+#if SHOW_CLEANING_SETTINGS
+  {
+    GtkWidget *notebook = gtk_notebook_new ();
+    gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
+    gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+			      make_temp_files_tab (c),
+			      gtk_label_new (_("ai_ti_settings_temp_files")));
+    gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+			      make_updates_tab (c),
+			      gtk_label_new (_("ai_ti_settings_updates")));
+  }
+#else
+  gtk_box_pack_start (GTK_BOX (GTK_DIALOG(dialog)->vbox),
+		      make_updates_tab (c),
+		      FALSE, FALSE, 20);
+#endif
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (settings_dialog_response),
