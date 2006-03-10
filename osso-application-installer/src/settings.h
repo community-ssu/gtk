@@ -30,10 +30,14 @@ void save_settings ();
 
 // User serviceable settings
 //
-extern bool   clean_after_install;
 extern int    update_interval_index;
 extern int    package_sort_key;
 extern int    package_sort_sign;
+
+// Non-user serviceable settings, please ask your local geek.
+//
+extern bool   clean_after_install;
+extern bool   assume_connection;
 
 #define UPDATE_INTERVAL_SESSION 0
 #define UPDATE_INTERVAL_WEEK    1

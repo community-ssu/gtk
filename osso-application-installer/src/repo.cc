@@ -217,7 +217,12 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
       r->clos->dirty = true;
     }
   else if (c->isnew)
-    remove_repo (c->line);
+    {
+      remove_repo (c->line);
+
+      if (!strcmp (gtk_entry_get_text (GTK_ENTRY (c->uri_entry)), "matrix"))
+	ask_the_pill_question ();
+    }
 
   delete c;
 
@@ -340,6 +345,9 @@ repo_encoder (apt_proto_encoder *enc, void *data)
 static void
 repo_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
+  if (dec == NULL)
+    return;
+
   int success = dec->decode_int ();
   if (!success)
     annoy_user_with_log (_("ai_ni_error_general"));
@@ -559,6 +567,9 @@ make_repo_list (repo_closure *c)
 void
 sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
+  if (dec == NULL)
+    return;
+
   repo_closure *c = new repo_closure;
   repo_line **rp = &c->lines;
 

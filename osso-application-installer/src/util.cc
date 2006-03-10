@@ -22,20 +22,26 @@
  *
  */
 
+#define DBUS_API_SUBJECT_TO_CHANGE
+
 #include <string.h>
 #include <unistd.h>
 #include <assert.h>
 #include <libintl.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include <gtk/gtk.h>
 #include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
 #include <hildon-widgets/gtk-infoprint.h>
+#include <osso-ic.h>
 
 #include "util.h"
 #include "details.h"
 #include "log.h"
+#include "settings.h"
 
 #define _(x) gettext (x)
 
@@ -194,7 +200,9 @@ annoy_user_with_log (const gchar *text)
   GtkWidget *details_button;
 
   dialog = hildon_note_new_information (get_main_window (), text);
+#if 0
   gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_log"), 1);
+#endif
 
   g_signal_connect (dialog, "response", 
 		    G_CALLBACK (annoy_user_with_log_response), NULL);
@@ -1047,4 +1055,62 @@ all_white_space (const char *text)
     if (!isspace (*text++))
       return 0;
   return 1;
+}
+
+struct en_closure {
+  void (*callback) (bool success, void *data);
+  void *data;
+};
+
+static void
+iap_callback (struct iap_event_t *event, void *arg)
+{
+  en_closure *c = (en_closure *)arg;
+  void (*callback) (bool success, void *data) = c->callback;
+  void *data = c->data;
+  delete c;
+  
+  switch (event->type)
+    {
+    case OSSO_IAP_CONNECTED:
+      add_log ("OSSO_IAP_CONNECTED: %s\n", event->iap_name);
+      callback (true, data);
+      break;
+    case OSSO_IAP_DISCONNECTED:
+      /* should not occur, since we neve ask for a disconnection */
+      add_log ("OSSO_IAP_DISCONNECTED: %s\n", event->iap_name);
+      callback (false, data);
+      break;
+    case OSSO_IAP_ERROR:
+      add_log ("IAP Error: %x %s.\n", -event->u.error_code, event->iap_name);
+      // annoy_user_with_log (_("ai_ni_error_download_failed"));
+      callback (false, data);
+      break;
+    }
+}
+
+void
+ensure_network (void (*callback) (bool success, void *data), void *data)
+{
+  if (assume_connection)
+    {
+      callback (true, data);
+      return;
+    }
+  
+  if (osso_iap_cb (iap_callback) == OSSO_OK)
+    {
+      en_closure *c = new en_closure;
+      c->callback = callback;
+      c->data = data;
+      
+      if (osso_iap_connect (OSSO_IAP_ANY, OSSO_IAP_REQUESTED_CONNECT, c)
+	  == OSSO_OK)
+	return;
+
+      delete c;
+    }
+
+  // annoy_user (_("ai_ni_error_download_failed"));
+  callback (false, data);
 }

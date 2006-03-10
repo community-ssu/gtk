@@ -94,4 +94,6 @@ void run_cmd (char **argv,
 
 int all_white_space (const char *str);
 
+void ensure_network (void (*callback) (bool success, void *data), void *data);
+
 #endif /* !UTIL_H */

@@ -46,10 +46,12 @@
 */
 #define SHOW_CLEANING_SETTINGS 0
 
-bool clean_after_install = true;
 int  update_interval_index = UPDATE_INTERVAL_WEEK;
 int  package_sort_key = SORT_BY_NAME;
 int  package_sort_sign = 1;
+
+bool clean_after_install = true;
+bool assume_connection = false;
 
 int  last_update = 0;
 bool red_pill_mode = false;
@@ -98,6 +100,8 @@ load_settings ()
 	    last_update = val;
 	  else if (sscanf (line, "red-pill-mode %d", &val) == 1)
 	    red_pill_mode = val;
+	  else if (sscanf (line, "assume-connection %d", &val) == 1)
+	    assume_connection = val;
 	  else
 	    add_log ("Unrecognized configuration line: '%s'\n", line);
 	}
@@ -121,6 +125,7 @@ save_settings ()
       fprintf (f, "package-sort-sign %d\n", package_sort_sign);
       fprintf (f, "last-update %d\n", last_update);
       fprintf (f, "red-pill-mode %d\n", red_pill_mode);
+      fprintf (f, "assume-connection %d\n", assume_connection);
       fclose (f);
     }
 }
@@ -135,9 +140,13 @@ struct settings_closure {
 static void 
 clean_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
+  hide_progress ();
+
+  if (dec == NULL)
+    return;
+
   bool success = dec->decode_int ();
 
-  hide_progress ();
   if (success)
     irritate_user (_("ai_ib_files_deleted"));
   else

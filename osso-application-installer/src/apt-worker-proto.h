@@ -39,12 +39,12 @@ enum apt_command {
   APTCMD_GET_PACKAGE_DETAILS,
   APTCMD_SEARCH_PACKAGES,
 
-  APTCMD_UPDATE_PACKAGE_CACHE,
+  APTCMD_UPDATE_PACKAGE_CACHE,        // needs network
   APTCMD_GET_SOURCES_LIST,
   APTCMD_SET_SOURCES_LIST,
 
   APTCMD_INSTALL_CHECK,
-  APTCMD_INSTALL_PACKAGE,
+  APTCMD_INSTALL_PACKAGE,             // needs network
   APTCMD_GET_PACKAGES_TO_REMOVE,
   APTCMD_REMOVE_PACKAGE,
 
@@ -144,7 +144,9 @@ enum apt_proto_operation {
 // - only_available (int). Include only packages that are available.
 // - pattern (string).     Include only packages that match pattern.
 //
-// For each interesting package, the response contains:
+// The response starts with an int that tells whether the request
+// succeeded.  When that int is 0, no data follows.  When it is 1 then
+// the response contains for each interesting package:
 //
 // - name (string) 
 // - installed_version or null (string) 

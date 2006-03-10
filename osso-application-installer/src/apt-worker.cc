@@ -64,21 +64,29 @@ using namespace std;
 
 //#define DEBUG
 
+#define ENABLE_OLD_MAEMO_SECTION_TEST 1
+
 /* This is the process that runs as root and does all the work.
 
    It is started from a separate program (as opposed to being forked
    directly from the GUI process) since that allows us to use sudo for
    starting it.
 
-   This process communicates with the GUI process via some pipes that
-   are inherited from that process.  You can't really use it from the
+   This process communicates with the GUI process via some named pipes
+   that are created by that process.  You can't really use it from the
    command line.
 
    It will output stuff to stdin and stderr, which the GUI process is
    supposed to catch and put into its log.
 
+   The program tries hard not to exit prematurely.  Once the
+   connection between the GUI process and this process has been
+   established, the apt-worker is supposed to stick around until that
+   connection is broken, even if it has to fail every request send to
+   it.
+
    Invocation: apt-worker input-fifo output-fifo status-fifo cancel-fifo
- */
+*/
 
 int input_fd, output_fd, status_fd, cancel_fd;
 
@@ -483,27 +491,38 @@ class myAcquireStatus : public pkgAcquireStatus
 void
 cache_init ()
 {
-  myProgress progress;
+  static bool global_initialized = false;
 
   if (package_cache)
     {
       DBG ("closing");
       package_cache->Close ();
       delete package_cache;
+      package_cache = NULL;
       DBG ("done");
     }
 
+  if (!global_initialized)
+    {
+      if (pkgInitConfig(*_config) == false ||
+	  pkgInitSystem(*_config,_system) == false)
+	{
+	  _error->DumpErrors ();
+	  return;
+	}
+      global_initialized = true;
+    }
+
+  myProgress progress;
   package_cache = new pkgCacheFile;
 
   DBG ("init.");
-  if (pkgInitConfig(*_config) == false ||
-      pkgInitSystem(*_config,_system) == false ||
-      package_cache->Open (progress) == false)
+  if (!package_cache->Open (progress))
    {
-     // XXX - launch into a deaf, blind and dumb mode.
      DBG ("failed.");
      _error->DumpErrors();
-     exit (1);
+     delete package_cache;
+     package_cache = NULL;
    }
 }
 
@@ -511,8 +530,21 @@ bool
 is_maemo_package (pkgCache::VerIterator &ver)
 {
   const char *section = ver.Section ();
- 
-  return section && !strncmp (section, "maemo/", 6);
+
+  if (section == NULL)
+    return false;
+
+#if ENABLE_OLD_MAEMO_SECTION_TEST
+  if (!strncmp (section, "maemo/", 6))
+    return true;
+#endif
+  
+  // skip over component prefix
+  const char *category = strchr (section, '/');
+  if (category == NULL)
+    category = section;
+
+  return !strncmp (category, "maemo_", 6);
 }
 
 bool
@@ -617,11 +649,17 @@ make_package_list_response (bool only_maemo,
 			    bool only_available,
 			    const char *pattern)
 {
+  response.reset ();
+
+  if (package_cache == NULL)
+    {
+      response.encode_int (0);
+      return;
+    }
+  
+  response.encode_int (1);
   pkgCache &cache = *package_cache;
 
-  DBG ("pattern %s", pattern);
-
-  response.reset ();
   for (pkgCache::PkgIterator pkg = cache.PkgBegin();
        pkg != cache.PkgEnd();
        pkg++)
@@ -706,63 +744,64 @@ make_package_info_response (const char *package)
   int old_broken_count;
   apt_proto_package_info info;
 
-  pkgDepCache &cache = *package_cache;
-  pkgCache::PkgIterator pkg = cache.FindPkg (package);
+  info.installable = 0;
+  info.download_size = 0;
+  info.install_user_size_delta = 0;
+  info.removable = 0;
+  info.remove_user_size_delta = 0;
 
-  if (!pkg.end ())
+  if (package_cache)
     {
-      pkgCache::VerIterator inst = pkg.CurrentVer ();
+      pkgDepCache &cache = *package_cache;
+      pkgCache::PkgIterator pkg = cache.FindPkg (package);
 
-      // simulate install
-
-      cache.Init(NULL); // XXX - this is very slow
-
-      old_broken_count = cache.BrokenCount();
-      (*package_cache)->MarkInstall (pkg);
-      if (cache.BrokenCount() > old_broken_count)
+      if (!pkg.end ())
 	{
-	  info.installable = 0;
-	  info.download_size = 0;
-	  info.install_user_size_delta = 0;
+	  pkgCache::VerIterator inst = pkg.CurrentVer ();
+	  
+	  // simulate install
+	  
+	  cache.Init(NULL); // XXX - this is very slow
+	  
+	  old_broken_count = cache.BrokenCount();
+	  (*package_cache)->MarkInstall (pkg);
+	  if (cache.BrokenCount() > old_broken_count)
+	    {
+	      info.installable = 0;
+	      info.download_size = 0;
+	      info.install_user_size_delta = 0;
+	    }
+	  else
+	    {
+	      info.installable = 1;
+	      info.download_size = (int) cache.DebSize ();
+	      info.install_user_size_delta = (int) cache.UsrSize ();
+	    }
+	  
+	  pkgCache::VerIterator avail (cache, cache[pkg].CandidateVer);
+	  
+	  // simulate remove
+	  
+	  cache.Init(NULL); // XXX - this is very slow
+	  
+	  old_broken_count = cache.BrokenCount();
+	  (*package_cache)->MarkDelete (pkg);
+	  if (cache.BrokenCount() > old_broken_count)
+	    {
+	      info.removable = 0;
+	      info.remove_user_size_delta = 0;
+	    }
+	  else
+	    {
+	      info.removable = 1;
+	      info.remove_user_size_delta = (int) cache.UsrSize ();
+	    }
+	  
+	  // We might sleep here to simulate the slowness of this
+	  // operation on the device.
+	  //
+	  //sleep (2);
 	}
-      else
-	{
-	  info.installable = 1;
-	  info.download_size = (int) cache.DebSize ();
-	  info.install_user_size_delta = (int) cache.UsrSize ();
-	}
-
-      pkgCache::VerIterator avail (cache, cache[pkg].CandidateVer);
-
-      // simulate remove
-
-      cache.Init(NULL); // XXX - this is very slow
-      
-      old_broken_count = cache.BrokenCount();
-      (*package_cache)->MarkDelete (pkg);
-      if (cache.BrokenCount() > old_broken_count)
-	{
-	  info.removable = 0;
-	  info.remove_user_size_delta = 0;
-	}
-      else
-	{
-	  info.removable = 1;
-	  info.remove_user_size_delta = (int) cache.UsrSize ();
-	}
-
-      // We might sleep here to simulate the slowness of this
-      // operation on the device.
-      //
-      //sleep (2);
-    }
-  else
-    {
-      info.installable = 0;
-      info.download_size = 0;
-      info.install_user_size_delta = 0;
-      info.removable = 0;
-      info.remove_user_size_delta = 0;
     }
 
   response.reset ();
@@ -960,14 +999,15 @@ encode_remove_summary (pkgCache::PkgIterator &want)
 }
 
 bool
-find_package_version (pkgDepCache &cache,
+find_package_version (pkgCacheFile *cache_file,
 		      pkgCache::PkgIterator &pkg,
 		      pkgCache::VerIterator &ver,
 		      const char *package, const char *version)
 {
-  if (package == NULL || version == NULL)
+  if (cache_file == NULL || package == NULL || version == NULL)
     return false;
 
+  pkgDepCache &cache = *cache_file;
   pkg = cache.FindPkg (package);
   if (!pkg.end ())
     {
@@ -984,12 +1024,12 @@ make_package_details_response (const char *package, const char *version,
 {
   response.reset ();
 
-  pkgDepCache &cache = *package_cache;
   pkgCache::PkgIterator pkg;
   pkgCache::VerIterator ver;
 
-  if (find_package_version (cache, pkg, ver, package, version))
+  if (find_package_version (package_cache, pkg, ver, package, version))
     {
+      pkgDepCache &cache = *package_cache;
       pkgRecords Recs (cache);
       pkgRecords::Parser &P = Recs.Lookup (ver.FileList ());
 
@@ -1067,7 +1107,7 @@ update_package_cache ()
   // Prepare the cache.   
   {
     myProgress Prog;
-    if (!package_cache->BuildCaches (Prog))
+    if (package_cache == NULL || !package_cache->BuildCaches (Prog))
       return false;
     cache_init ();
   }
@@ -1172,19 +1212,22 @@ bool operation (bool only_check);
 void
 install_check (const char *package)
 {
-  pkgDepCache &cache = *package_cache;
-  pkgCache::PkgIterator pkg = cache.FindPkg (package);
-  bool success;
+  bool success = false;
 
   response.reset ();
-  if (!pkg.end ())
+
+  if (package_cache)
     {
-      cache.Init (NULL);
-      cache.MarkInstall (pkg);
-      success = operation (true);
+      pkgDepCache &cache = *package_cache;
+      pkgCache::PkgIterator pkg = cache.FindPkg (package);
+
+      if (!pkg.end ())
+	{
+	  cache.Init (NULL);
+	  cache.MarkInstall (pkg);
+	  success = operation (true);
+	}
     }
-  else
-    success = false;
 
   response.encode_int (success);
 }
@@ -1192,19 +1235,22 @@ install_check (const char *package)
 void
 install_package (const char *package)
 {
-  pkgDepCache &cache = *package_cache;
-  pkgCache::PkgIterator pkg = cache.FindPkg (package);
-  bool success;
+  bool success = false;
 
   response.reset ();
-  if (!pkg.end ())
+
+  if (package_cache)
     {
-      cache.Init (NULL);
-      cache.MarkInstall (pkg);
-      success = operation (false);
+      pkgDepCache &cache = *package_cache;
+      pkgCache::PkgIterator pkg = cache.FindPkg (package);
+
+      if (!pkg.end ())
+	{
+	  cache.Init (NULL);
+	  cache.MarkInstall (pkg);
+	  success = operation (false);
+	}
     }
-  else
-    success = false;
 
   response.encode_int (success);
 }
@@ -1212,20 +1258,23 @@ install_package (const char *package)
 void
 make_packages_to_remove_response (const char *package)
 {
-  pkgDepCache &cache = *package_cache;
-  pkgCache::PkgIterator pkg = cache.FindPkg (package);
-
-  if (!pkg.end ())
+  if (package_cache)
     {
-      cache.Init (NULL);
-      cache.MarkDelete (pkg);
+      pkgDepCache &cache = *package_cache;
+      pkgCache::PkgIterator pkg = cache.FindPkg (package);
 
-      for (pkgCache::PkgIterator pkg = cache.PkgBegin();
-	   pkg.end() != true;
-	   pkg++)
+      if (!pkg.end ())
 	{
-	  if (cache[pkg].Delete())
-	    response.encode_string (pkg.Name());
+	  cache.Init (NULL);
+	  cache.MarkDelete (pkg);
+	  
+	  for (pkgCache::PkgIterator pkg = cache.PkgBegin();
+	       pkg.end() != true;
+	       pkg++)
+	    {
+	      if (cache[pkg].Delete())
+		response.encode_string (pkg.Name());
+	    }
 	}
     }
 
@@ -1235,17 +1284,20 @@ make_packages_to_remove_response (const char *package)
 bool
 remove_package (const char *package)
 {
-  pkgDepCache &cache = *package_cache;
-  pkgCache::PkgIterator pkg = cache.FindPkg (package);
-
-  if (!pkg.end ())
+  if (package_cache)
     {
-      cache.Init (NULL);
-      cache.MarkDelete (pkg);
-      return operation (false);
+      pkgDepCache &cache = *package_cache;
+      pkgCache::PkgIterator pkg = cache.FindPkg (package);
+
+      if (!pkg.end ())
+	{
+	  cache.Init (NULL);
+	  cache.MarkDelete (pkg);
+	  return operation (false);
+	}
     }
-  else
-    return false;
+
+  return false;
 }
 
 static GList *certified_uri_prefixes = NULL;
@@ -1395,10 +1447,12 @@ operation_1 (bool check_only)
        _error->PendingError() == true)
       return false;
 
-   // Display statistics
    double FetchBytes = Fetcher.FetchNeeded();
    double FetchPBytes = Fetcher.PartialPresent();
    double DebBytes = Fetcher.TotalNeeded();
+
+#if 0
+   // Display statistics
    if (DebBytes != Cache->DebSize())
      {
        fprintf (stderr, "%f != %f\n", DebBytes, Cache->DebSize());
@@ -1423,6 +1477,7 @@ operation_1 (bool check_only)
      fprintf (stderr, 
 	      "After unpacking %sB disk space will be freed.\n",
 	      SizeToStr(-1*Cache->UsrSize()).c_str());
+#endif
 
    if (_error->PendingError() == true)
       return false;
@@ -1569,6 +1624,9 @@ get_deb_record (const char *filename)
 static bool
 check_dependency (string &package, string &version, unsigned int op)
 {
+  if (package_cache == NULL)
+    return false;
+
   pkgDepCache &cache = (*package_cache);
   pkgCache::PkgIterator pkg;
   pkgCache::VerIterator installed;

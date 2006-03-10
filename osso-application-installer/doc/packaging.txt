@@ -66,29 +66,52 @@ smaller set of third party applications.
 
 The AI only shows packages in sections with names of the form
 
-    maemo/<SECTION>
+    maemo_<CATEGORY>
 
-where <SECTION> is arbitrary.  <SECTION> should be a nice capitalised,
-English word like "Ringtones".  There is no support for localising
-that word yet, unfortunately.
+where <CATEGORY> is arbitrary.  <CATEGORY> should be a nice
+capitalised, English word like "Ringtones".  There is no support for
+localising that word yet, unfortunately.
 
-However, there is also a predefined set of sections.  If your package
-fits into one of these sections, you should put it there.  This will
-avoid fragmenting the section names, and the names of these sections
-will be correctly localised.
+However, there is also a predefined set of categories.  If your
+package fits into one of these categories, you should put it there.
+This will avoid fragmenting the category names, and the names of these
+categories will be correctly localised.
 
-The [PRELIMINARY!] list of predefined sections is:
+The [PRELIMINARY!] list of predefined sections and their English names
+is:
 
-    maemo/Applications
-    maemo/Tools
-    maemo/Utilities
-    maemo/Games
-    maemo/Programming
-    maemo/Education
-    maemo/Plugins
-    maemo/Support
-    maemo/Personalisation
-    maemo/Extras
+    maemo_office	     Office		   
+    maemo_internet	     Internet		   
+    maemo_multimedia	     Multimedia		   
+    maemo_travel	     Travel		   
+    maemo_games		     Games			   
+    maemo_system-tools 	     System Tools 		   
+    maemo_utilities	     Utilities		   
+    maemo_programming	     Programming		   
+    maemo_education	     Education		   
+    maemo_accessories	     Accessories		   
+    maemo_themes	     Themes		   
+    maemo_graphics	     Graphics		   
+    maemo_support	     Support		   
+    maemo_other              Other                    
+
+You can use the usual component prefixes like "non-free/" in the
+section names.  The AI will ignore these prefixes.
+
+Thus, if you want to put your package into the Office category,
+include the field
+
+    Section: maemo_office
+
+in your control information.  If you want to put it into "Ringtones"
+(which is not pre-defined), use
+
+    Section: maemo_Ringtones
+
+The following variants have the same meaning to the AI:
+
+    Section: non-free/maemo_office
+    Section: contrib/maemo_Ringtones
 
 
 Icons

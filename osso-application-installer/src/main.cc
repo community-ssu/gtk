@@ -382,10 +382,23 @@ free_all_packages ()
 const char *
 nicify_section_name (const char *name)
 {
-  if (name && !red_pill_mode && !strncmp (name, "maemo/", 6))
+  if (name == NULL || red_pill_mode)
+    return name;
+
+  // XXX
+  if (!strncmp (name, "maemo/", 6))
     return name + 6;
   else
-    return name;
+    {
+      const char *category = strrchr (name, '/');
+      if (category == NULL)
+	category = name;
+
+      if (!strncmp (category, "maemo_", 6))
+	return category + 6;
+      else
+	return category;
+    }
 }
 
 static section_info *
@@ -413,7 +426,9 @@ compare_section_names (gconstpointer a, gconstpointer b)
   section_info *si_a = (section_info *)a;
   section_info *si_b = (section_info *)b;
 
-  return package_sort_sign * g_ascii_strcasecmp (si_a->name, si_b->name);
+  // The sorting of sections can not be configured.
+  
+  return g_ascii_strcasecmp (si_a->name, si_b->name);
 }
 
 static gint
@@ -528,56 +543,63 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
   clear_global_section_list ();
   free_all_packages ();
   
-  while (!dec->at_end ())
+  if (dec == NULL)
+    ;
+  else if (dec->decode_int () == 0)
+    annoy_user_with_log ("Operation failed");
+  else
     {
-      const char *installed_icon, *available_icon;
-      package_info *info = new package_info;
+      while (!dec->at_end ())
+	{
+	  const char *installed_icon, *available_icon;
+	  package_info *info = new package_info;
 
-      info->name = dec->decode_string_dup ();
-      info->installed_version = dec->decode_string_dup ();
-      info->installed_size = dec->decode_int ();
-      info->installed_section = dec->decode_string_dup ();
-      info->installed_short_description = dec->decode_string_dup ();
-      installed_icon = dec->decode_string_in_place ();
-      info->available_version = dec->decode_string_dup ();
-      info->available_section = dec->decode_string_dup ();
-      info->available_short_description = dec->decode_string_dup ();
-      available_icon = dec->decode_string_in_place ();
-
-      info->installed_icon = pixbuf_from_base64 (installed_icon);
-      if (available_icon)
-	info->available_icon = pixbuf_from_base64 (available_icon);
-      else
-	{
-	  info->available_icon = info->installed_icon;
-	  if (info->available_icon)
-	    g_object_ref (info->available_icon);
-	}
-      
-      count++;
-      if (info->installed_version && info->available_version)
-	{
-	  upgradeable_packages = g_list_prepend (upgradeable_packages,
-						 info);
-	  upg_p++;
-	}
-      else if (info->available_version)
-	{
-	  section_info *sec = find_section_info (&install_sections,
-						 info->available_section);
-	  sec->packages = g_list_prepend (sec->packages,
-					  info);
-	  new_p++;
-	}
-      
-      if (info->installed_version)
-	{
-	  installed_packages = g_list_prepend (installed_packages,
-					       info);
-	  inst_p++;
+	  info->name = dec->decode_string_dup ();
+	  info->installed_version = dec->decode_string_dup ();
+	  info->installed_size = dec->decode_int ();
+	  info->installed_section = dec->decode_string_dup ();
+	  info->installed_short_description = dec->decode_string_dup ();
+	  installed_icon = dec->decode_string_in_place ();
+	  info->available_version = dec->decode_string_dup ();
+	  info->available_section = dec->decode_string_dup ();
+	  info->available_short_description = dec->decode_string_dup ();
+	  available_icon = dec->decode_string_in_place ();
+	  
+	  info->installed_icon = pixbuf_from_base64 (installed_icon);
+	  if (available_icon)
+	    info->available_icon = pixbuf_from_base64 (available_icon);
+	  else
+	    {
+	      info->available_icon = info->installed_icon;
+	      if (info->available_icon)
+		g_object_ref (info->available_icon);
+	    }
+	  
+	  count++;
+	  if (info->installed_version && info->available_version)
+	    {
+	      upgradeable_packages = g_list_prepend (upgradeable_packages,
+						     info);
+	      upg_p++;
+	    }
+	  else if (info->available_version)
+	    {
+	      section_info *sec = find_section_info (&install_sections,
+						     info->available_section);
+	      sec->packages = g_list_prepend (sec->packages,
+					      info);
+	      new_p++;
+	    }
+	  
+	  if (info->installed_version)
+	    {
+	      installed_packages = g_list_prepend (installed_packages,
+						   info);
+	      inst_p++;
+	    }
 	}
     }
-  
+
   printf ("%d packages, %d new, %d upgradable, %d installed\n",
 	  count, new_p, upg_p, inst_p);
 
@@ -612,14 +634,17 @@ gpi_reply  (int cmd, apt_proto_decoder *dec, void *clos)
   package_info *pi = c->pi;
   delete c;
 
-  dec->decode_mem (&(pi->info), sizeof (pi->info));
-
-  if (!dec->corrupted ())
+  if (dec)
     {
-      pi->have_info = true;
-      func (pi, data, true);
-      pi->unref ();
+      dec->decode_mem (&(pi->info), sizeof (pi->info));
+      if (!dec->corrupted ())
+	{
+	  pi->have_info = true;
+	  func (pi, data, true);
+	}
     }
+
+  pi->unref ();
 }
 
 void
@@ -713,6 +738,9 @@ static void
 refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *clos)
 {
   hide_progress ();
+
+  if (dec == NULL)
+    return;
 
   int success = dec->decode_int ();
 
@@ -818,9 +846,16 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
   package_info *pi = (package_info *)data;
 
+  hide_progress ();
+
+  if (dec == NULL)
+    {
+      pi->unref ();
+      return;
+    }
+
   int success = dec->decode_int ();
 
-  hide_progress ();
   get_package_list ();
 
   if (clean_after_install)
@@ -863,6 +898,12 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
   package_info *pi = (package_info *)data;
   GList *notauth = NULL, *notcert = NULL;
+      
+  if (dec == NULL)
+    {
+      pi->unref ();
+      return;
+    }
 
   while (true)
     {
@@ -1135,6 +1176,12 @@ uninstall_package_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   hide_progress ();
 
+  if (dec == NULL)
+    {
+      pi->unref ();
+      return;
+    }
+
   int success = dec->decode_int ();
   get_package_list ();
 
@@ -1386,6 +1433,9 @@ search_packages_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
   view *parent = (view *)data;
 
+  if (dec == NULL)
+    return;
+
   while (!dec->at_end ())
     {
       const char *name = dec->decode_string_in_place ();
@@ -1518,6 +1568,13 @@ install_from_file_reply (int cmd, apt_proto_decoder *dec, void *data)
   package_info *pi = (package_info *)data;
 
   hide_progress ();
+
+  if (dec == NULL)
+    {
+      pi->unref ();
+      return;
+    }
+
   int success = dec->decode_int ();
 
   get_package_list ();
@@ -1585,7 +1642,19 @@ install_from_file_fail (bool res, void *data)
 static bool
 is_maemo_section (const char *section)
 {
-  return section && !strncmp (section, "maemo/", 6);
+  if (section == NULL)
+    return false;
+
+  // XXX
+  if (!strncmp (section, "maemo/", 6))
+    return true;
+
+  // skip over component prefix
+  const char *category = strchr (section, '/');
+  if (category == NULL)
+    category = section;
+
+  return !strncmp (category, "maemo_", 6);
 }
 
 static char *
@@ -1602,6 +1671,9 @@ static void
 file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
   char *filename = (char *)data;
+
+  if (dec == NULL)
+    return;
 
   package_info *pi = new package_info;
 
@@ -1859,6 +1931,8 @@ main (int argc, char **argv)
   textdomain ("osso-application-installer");
 
   gtk_init (&argc, &argv);
+
+  add_log ("%s %s\n", PACKAGE, VERSION);
 
   if (argc > 1)
     apt_worker_prog = argv[1];

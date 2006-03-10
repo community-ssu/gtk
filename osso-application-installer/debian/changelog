@@ -1,3 +1,9 @@
+osso-application-installer (4.6) unstable; urgency=low
+
+  * Removed "Temp files" settings dialog.  Performance improvements.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 10 Mar 2006 19:33:05 +0200
+
 osso-application-installer (4.5) unstable; urgency=low
 
   * Make it work with hildon-libs 0.12.

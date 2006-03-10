@@ -412,6 +412,12 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   bool installed = c->installed;
   delete c;
 
+  if (dec == NULL)
+    {
+      pi->unref ();
+      return;
+    }
+
   const char *maintainer = dec->decode_string_in_place ();
   pi->maintainer = g_convert (maintainer, -1,
 			      "UTF-8", "ISO-8859-1",

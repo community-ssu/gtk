@@ -3,7 +3,7 @@ Version: 1
 Architecture: all
 Installed-Size: 1
 Maintainer: <marius.vollmer@nokia.com>
-Section: maemo/Games
+Section: maemo_Games
 Description: Test package number one.
  Package number one, only for testing.
  It also has a very long description to

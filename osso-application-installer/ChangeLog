@@ -1,5 +1,12 @@
 2006-03-10  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	General improvement of robustness in failure cases.  Bring up
+	network when needed.  Changed scheme for identifying user
+	packages.
+	
+	* configure.ac: Include osso-ic PKG_CHECK_MODULES.
+	* debian/control: Include osso-ic-dev in Build-Depends.
+	
 	* settings.cc: Removed "clean_after_install" setting from UI.
 
 	* main.h, main.cc, util.cc, apt-worker-proto.h, apt-worker.cc:
