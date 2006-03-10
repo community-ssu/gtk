@@ -2,6 +2,11 @@
 
 	* settings.cc: Removed "clean_after_install" setting from UI.
 
+	* main.h, main.cc, util.cc, apt-worker-proto.h, apt-worker.cc:
+	Return short descriptions and icons in the GET_PACKAGE_LIST
+	response, not in the GET_PACKAGE_INFO response.  Expect these
+	values to always be valid, not only when have_info is true.
+
 2006-03-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* configure.ac: Include hildon-fm in PKG_CHECK_MODULES since the
