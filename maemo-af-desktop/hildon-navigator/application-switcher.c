@@ -150,8 +150,9 @@ static void add_item_to_button(ApplicationSwitcher_t *as);
 static void update_menu_items(ApplicationSwitcher_t *as);
 
 static void store_item(ApplicationSwitcher_t *as,
-		       GArray *items,const gchar *app_name,
+		       GArray *items,
                         const gchar *item_text,
+                        const gchar *app_name,
                         const gchar *icon_name, 
 		       GtkWidget *item);    
                                                                                       
@@ -904,7 +905,6 @@ static gboolean as_key_press(GtkWidget *widget,
 
 static void recreate_tooltip_menuitem(ApplicationSwitcher_t *as)
 {
-  
     GtkWidget * oldTooltipMenuItem = as->tooltip_menu_item;
 
     /* Create a tooltip menu label */
@@ -913,7 +913,6 @@ static void recreate_tooltip_menuitem(ApplicationSwitcher_t *as)
     gtk_container_remove(GTK_CONTAINER(as->tooltip_menu), oldTooltipMenuItem);
     gtk_container_add(GTK_CONTAINER(as->tooltip_menu),as->tooltip_menu_item);
     gtk_widget_show(as->tooltip_menu_item);
-    /*g_free(oldTooltipMenuItem);*/
 }
 
 static void add_item_to_tooltip_menu(gint item_pos_in_list,
@@ -1664,47 +1663,6 @@ store_item (ApplicationSwitcher_t *as,
   g_array_append_val(items,cont);
 }
 
-static void
-app_switcher_make_item_text (ApplicationSwitcher_t *as,
-                             HNWMWatchableApp      *app,
-                             HNWMWatchedWindow     *win,
-                             HNWMWatchedWindowView *view,
-                             gchar                 *buf,
-                             gint                   buf_len)
-{
-    const gchar *window_name = hn_wm_watched_window_get_name(win);
-
-    g_snprintf(buf, buf_len, "%s", window_name);
-#if 0
-    
-  if (app == NULL || win == NULL)
-    return;
-
-  if (view &&
-      !g_str_equal(hn_wm_watched_window_view_get_name (view), 
-		   window_name))
-    {
-      g_snprintf(buf, buf_len, "%s - %s", 
-		 window_name,
-		 hn_wm_watched_window_view_get_name (view));
-    }
-  else
-    {
-      if (hn_wm_watched_window_get_sub_name (win) && 
-          !g_str_equal(hn_wm_watched_window_get_sub_name (win), 
-                       window_name))
-        {
-          g_snprintf(buf, buf_len, "%s - %s", 
-                     window_name,
-                     hn_wm_watched_window_get_sub_name (win));
-        }
-      else
-        g_snprintf(buf, buf_len, "%s", 
-                   window_name);
-    }
-#endif
-}
-
 GtkWidget*
 app_switcher_add_new_item (ApplicationSwitcher_t *as,
 			   HNWMWatchedWindow     *window,
@@ -1713,8 +1671,8 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
   GtkWidget        *item;
   GtkWidget        *menu_item_icon = NULL;
   HNWMWatchableApp *app;
-  gchar             buf[TEMP_LABEL_BUFFER_SIZE];
   gboolean          item_not_focused = FALSE;
+  const gchar      *window_name;
 
   if (window == NULL && view == NULL)
     return NULL;
@@ -1723,14 +1681,14 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
     window = hn_wm_watched_window_view_get_parent (view);
 
   app = hn_wm_watched_window_get_app (window);
-
-  app_switcher_make_item_text (as, app, window, view, buf, sizeof(buf));
+  
+  window_name = hn_wm_watched_window_get_name(window);
 
   item_not_focused = (hn_wm_watched_window_wants_no_initial_focus (window)
 		      && (as->items)->len > 0);
 
   /* create menu item */
-  item = gtk_image_menu_item_new_with_label(buf);
+  item = gtk_image_menu_item_new_with_label(window_name);
 
   /* Get its icon but disable the animated version if this is topped */
   menu_item_icon = app_switcher_get_icon_from_window (as, 
@@ -1763,8 +1721,8 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
 
   store_item(as,
 	     as->items, 
+	     window_name, 
 	     hn_wm_watchable_app_get_name (app), 
-	     buf, 
 	     hn_wm_watchable_app_get_icon_name(app), 
 	     item);
   
@@ -1957,8 +1915,8 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
 {
   HNWMWatchableApp *app;
   GtkWidget        *menuitem;
-  gchar             buf[TEMP_LABEL_BUFFER_SIZE];
   gint              n;
+  const gchar      *window_name;
     
   g_return_if_fail(as);
 
@@ -2025,7 +1983,7 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
       break;
     }
 
-  app_switcher_make_item_text (as, app, window, view, buf, sizeof(buf));
+  window_name = hn_wm_watched_window_get_name(window);
 
   /* Find the item */ 
   for (n=0;n<(as->items)->len;n++)
@@ -2034,7 +1992,7 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
   
   /* Save the new item text */
   g_free(g_array_index(as->items,container,n).item_text);
-  g_array_index(as->items,container,n).item_text = g_strdup(buf);
+  g_array_index(as->items,container,n).item_text = g_strdup(window_name);
   
   /* Save the new app name */
   /* FIXME: should this be view name >> */
@@ -2045,7 +2003,7 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
   g_array_index(as->items,container,n).killable_item = hn_wm_watchable_app_is_able_to_hibernate (app);
   
   /* Set the label text */
-  gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(menuitem))), buf);
+  gtk_label_set_text(GTK_LABEL(gtk_bin_get_child(GTK_BIN(menuitem))), window_name);
   
   /* Show button pressed only if the desktop is not topmost */ 
   if (as->switched_to_desktop == FALSE) 

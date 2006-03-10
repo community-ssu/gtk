@@ -1,5 +1,11 @@
 2006-03-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/application-switcher.c: arguments of store_item
+	  differed in prototype and implementation. This resulted in it
+	  being called with wrong order of arguments (Closes N#22987)
+
+2006-03-10  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/layout-manager.c: (Close N#23344)
 	  - layout_mode_begin(): after adding applets function call raise layout
 	     mode eventbox to top
