@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Version=2.14-0
+Version=0.9.4
 Type=Application
 Name=Application installer
 Exec=/usr/bin/osso-application-installer
