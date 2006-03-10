@@ -45,13 +45,13 @@ struct package_info {
   char *installed_section;
   char *available_version;
   char *available_section;
-
-  bool have_info;
-  apt_proto_package_info info;
   char *installed_short_description;
   GdkPixbuf *installed_icon;
   char *available_short_description;
   GdkPixbuf *available_icon;
+
+  bool have_info;
+  apt_proto_package_info info;
  
   bool have_details;
   char *maintainer;

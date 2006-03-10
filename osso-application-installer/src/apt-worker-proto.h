@@ -134,7 +134,7 @@ enum apt_proto_operation {
 };
 
 // GET_PACKAGE_LIST - get a list of packages with their names,
-//                    versions, and partial status
+//                    versions, and assorted information
 //
 // Parameters:
 //
@@ -147,11 +147,19 @@ enum apt_proto_operation {
 // For each interesting package, the response contains:
 //
 // - name (string) 
-// - installed version or null (string) 
+// - installed_version or null (string) 
 // - installed_size (int)
 // - installed_section or null (string)
-// - available version or null (string) 
-// - section of available version or null (string)
+// - installed_short_description or null (string).
+// - installed_icon or null (string).
+// - available_version or null (string) 
+// - available_section (string)
+// - available_short_description or null (string).
+// - available_icon or null (string).
+//
+// When the available_short_description would be identical to the
+// installed_short_description, it is set to null.  Likewise for the
+// icon.
 
 // UPDATE_PACKAGE_CACHE - recreate package cache
 //
@@ -197,14 +205,6 @@ enum apt_proto_operation {
 // Response:
 //
 // - info (apt_proto_package_info).
-// - installed_short_description or null (string).
-// - installed_icon or null (int,memchunk).
-// - available_short_description or null (string).
-// - available_icon or null (int,memchunk).
-//
-// When the available_short_description would be identical to the
-// installed_short_description, it is set to null.  Likewise for the
-// icon.
 
 struct apt_proto_package_info {
   int installable;

@@ -281,12 +281,12 @@ package_info::package_info ()
   installed_section = NULL;
   available_version = NULL;
   available_section = NULL;
-
-  have_info = false;
   installed_short_description = NULL;
   available_short_description = NULL;
   installed_icon = NULL;
   available_icon = NULL;
+
+  have_info = false;
 
   have_details = false;
   maintainer = NULL;
@@ -530,13 +530,29 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
   
   while (!dec->at_end ())
     {
+      const char *installed_icon, *available_icon;
       package_info *info = new package_info;
+
       info->name = dec->decode_string_dup ();
       info->installed_version = dec->decode_string_dup ();
       info->installed_size = dec->decode_int ();
       info->installed_section = dec->decode_string_dup ();
+      info->installed_short_description = dec->decode_string_dup ();
+      installed_icon = dec->decode_string_in_place ();
       info->available_version = dec->decode_string_dup ();
       info->available_section = dec->decode_string_dup ();
+      info->available_short_description = dec->decode_string_dup ();
+      available_icon = dec->decode_string_in_place ();
+
+      info->installed_icon = pixbuf_from_base64 (installed_icon);
+      if (available_icon)
+	info->available_icon = pixbuf_from_base64 (available_icon);
+      else
+	{
+	  info->available_icon = info->installed_icon;
+	  if (info->available_icon)
+	    g_object_ref (info->available_icon);
+	}
       
       count++;
       if (info->installed_version && info->available_version)
@@ -596,24 +612,7 @@ gpi_reply  (int cmd, apt_proto_decoder *dec, void *clos)
   package_info *pi = c->pi;
   delete c;
 
-  const char *installed_icon, *available_icon;
-
   dec->decode_mem (&(pi->info), sizeof (pi->info));
-  pi->installed_short_description = dec->decode_string_dup ();
-  installed_icon = dec->decode_string_in_place ();
-  pi->available_short_description = dec->decode_string_dup ();
-  available_icon = dec->decode_string_in_place ();
-
-  if (installed_icon)
-    pi->installed_icon = pixbuf_from_base64 (installed_icon);
-  if (available_icon)
-    pi->available_icon = pixbuf_from_base64 (available_icon);
-  else
-    {
-      pi->available_icon = pi->installed_icon;
-      if (pi->available_icon)
-	g_object_ref (pi->available_icon);
-    }
 
   if (!dec->corrupted ())
     {
@@ -1393,8 +1392,12 @@ search_packages_reply (int cmd, apt_proto_decoder *dec, void *data)
       dec->decode_string_in_place (); // installed_version
       dec->decode_int ();             // installed_size
       dec->decode_string_in_place (); // installed_section
+      dec->decode_string_in_place (); // installed_short_description
+      dec->decode_string_in_place (); // installed_icon
       dec->decode_string_in_place (); // available_version
       dec->decode_string_in_place (); // available_section
+      dec->decode_string_in_place (); // available_short_description
+      dec->decode_string_in_place (); // available_icon
 
       if (parent == &install_applications_view)
 	find_in_section_list (&search_result_packages,

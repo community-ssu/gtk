@@ -533,6 +533,84 @@ description_matches_pattern (pkgCache::VerIterator &ver,
   return strcasestr (desc, pattern);
 }
 
+char *
+get_short_description (pkgCache::VerIterator &ver)
+{
+  pkgRecords Recs (*package_cache);
+  pkgRecords::Parser &P = Recs.Lookup (ver.FileList ());
+  return g_strdup (P.ShortDesc().c_str());
+}
+
+int
+all_white_space (const char *text)
+{
+  while (*text)
+    if (!isspace (*text++))
+      return 0;
+  return 1;
+}
+
+char *
+get_icon (pkgCache::VerIterator &ver)
+{
+  // XXX - merge with get_short_description to only setup the parser
+  //       once.
+
+  pkgRecords Recs (*package_cache);
+  pkgRecords::Parser &P = Recs.Lookup (ver.FileList ());
+
+  const char *start, *stop;
+  P.GetRec (start, stop);
+
+  /* NOTE: pkTagSection::Scan only succeeds when the record ends in
+           two newlines, but pkgRecords::Parser::GetRec does not
+           include the second newline in its returned region.
+           However, that second newline is always there, so we just
+           pass one more character to Scan.
+  */
+
+  pkgTagSection section;
+  if (!section.Scan (start, stop-start+1))
+    return NULL;
+
+  char *icon = g_strdup (section.FindS ("X-Maemo-Icon-26").c_str());
+  if (all_white_space (icon))
+    {
+      g_free (icon);
+      return NULL;
+    }
+  else
+    return icon;
+}
+
+static void
+encode_version_info (pkgCache::VerIterator &ver, bool include_size)
+{
+  char *desc, *icon;
+
+  response.encode_string (ver.VerStr ());
+  if (include_size)
+    response.encode_int (ver->InstalledSize);
+  response.encode_string (ver.Section ());
+  desc = get_short_description (ver);
+  response.encode_string (desc);
+  g_free (desc);
+  icon = get_icon (ver);
+  response.encode_string (icon);
+  g_free (icon);
+}
+
+static void
+encode_empty_version_info (bool include_size)
+{
+  response.encode_string (NULL);
+  if (include_size)
+    response.encode_int (0);
+  response.encode_string (NULL);
+  response.encode_string (NULL);
+  response.encode_string (NULL);
+}
+
 void
 make_package_list_response (bool only_maemo,
 			    bool only_installed,
@@ -607,82 +685,19 @@ make_package_list_response (bool only_maemo,
       // Name
       response.encode_string (pkg.Name ());
 
-      // Installed version, size, and section
+      // Installed version
       if (!installed.end())
-	{
-	  response.encode_string (installed.VerStr ());
-	  response.encode_int (installed->InstalledSize);
-	  response.encode_string (installed.Section ());
-	}
+	encode_version_info (installed, true);
       else
-	{
-	  response.encode_string (NULL);
-	  response.encode_int (0);
-	  response.encode_string (NULL);
-	}
+	encode_empty_version_info (true);
 
       // Available version and section
+      // XXX - avoid duplicating information
       if (have_latest && installed.CompareVer (latest) < 0)
-	{
-	  response.encode_string (latest.VerStr ());
-	  response.encode_string (latest.Section ());
-	}
+	encode_version_info (latest, false);
       else
-	{
-	  response.encode_string (NULL);
-	  response.encode_string (NULL);
-	}
+	encode_empty_version_info (false);
     }
-}
-
-char *
-get_short_description (pkgCache::VerIterator &ver)
-{
-  pkgRecords Recs (*package_cache);
-  pkgRecords::Parser &P = Recs.Lookup (ver.FileList ());
-  return g_strdup (P.ShortDesc().c_str());
-}
-
-int
-all_white_space (const char *text)
-{
-  while (*text)
-    if (!isspace (*text++))
-      return 0;
-  return 1;
-}
-
-char *
-get_icon (pkgCache::VerIterator &ver)
-{
-  // XXX - merge with get_short_description to only setup the parser
-  //       once.
-
-  pkgRecords Recs (*package_cache);
-  pkgRecords::Parser &P = Recs.Lookup (ver.FileList ());
-
-  const char *start, *stop;
-  P.GetRec (start, stop);
-
-  /* NOTE: pkTagSection::Scan only succeeds when the record ends in
-           two newlines, but pkgRecords::Parser::GetRec does not
-           include the second newline in its returned region.
-           However, that second newline is always there, so we just
-           pass one more character to Scan.
-  */
-
-  pkgTagSection section;
-  if (!section.Scan (start, stop-start+1))
-    return NULL;
-
-  char *icon = g_strdup (section.FindS ("X-Maemo-Icon-26").c_str());
-  if (all_white_space (icon))
-    {
-      g_free (icon);
-      return NULL;
-    }
-  else
-    return icon;
 }
 
 void
@@ -690,10 +705,6 @@ make_package_info_response (const char *package)
 {
   int old_broken_count;
   apt_proto_package_info info;
-  char *installed_description;
-  char *available_description;
-  char *installed_icon;
-  char *available_icon;
 
   pkgDepCache &cache = *package_cache;
   pkgCache::PkgIterator pkg = cache.FindPkg (package);
@@ -701,16 +712,6 @@ make_package_info_response (const char *package)
   if (!pkg.end ())
     {
       pkgCache::VerIterator inst = pkg.CurrentVer ();
-      if (!inst.end ())
-	{
-	  installed_description = get_short_description (inst);
-	  installed_icon = get_icon (inst);
-	}
-      else
-	{
-	  installed_description = NULL;
-	  installed_icon = NULL;
-	}
 
       // simulate install
 
@@ -732,17 +733,7 @@ make_package_info_response (const char *package)
 	}
 
       pkgCache::VerIterator avail (cache, cache[pkg].CandidateVer);
-      if (!avail.end ())
-	{
-	  available_description = get_short_description (avail);
-	  available_icon = get_icon (avail);
-	}
-      else
-	{
-	  available_description = NULL;
-	  available_icon = NULL;
-	}
-      
+
       // simulate remove
 
       cache.Init(NULL); // XXX - this is very slow
@@ -772,30 +763,10 @@ make_package_info_response (const char *package)
       info.install_user_size_delta = 0;
       info.removable = 0;
       info.remove_user_size_delta = 0;
-      installed_description = NULL;
-      available_description = NULL;
-      installed_icon = NULL;
-      available_icon = NULL;
     }
 
   response.reset ();
   response.encode_mem (&info, sizeof (apt_proto_package_info));
-  response.encode_string (installed_description);
-  response.encode_string (installed_icon);
-  if (available_description && installed_description
-      && !strcmp (available_description, installed_description))
-    response.encode_string (NULL);
-  else
-    response.encode_string (available_description);
-  if (available_icon && installed_icon
-      && !strcmp (available_icon, installed_icon))
-    response.encode_string (NULL);
-  else
-    response.encode_string (available_icon);
-  g_free (installed_description);
-  g_free (installed_icon);
-  g_free (available_description);
-  g_free (available_icon);
 }
 
 void

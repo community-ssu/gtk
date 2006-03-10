@@ -351,19 +351,14 @@ global_name_func (GtkTreeViewColumn *column,
     {
       const gchar *desc;
       gchar *markup;
-      if (pi->have_info)
-	{
-	  if (global_installed)
-	    desc = pi->installed_short_description;
-	  else
-	    {
-	      desc = pi->available_short_description;
-	      if (desc == NULL)
-		desc = pi->installed_short_description;
-	    }
-	}
+      if (global_installed)
+	desc = pi->installed_short_description;
       else
-	desc = _("ai_ti_updating");
+	{
+	  desc = pi->available_short_description;
+	  if (desc == NULL)
+	    desc = pi->installed_short_description;
+	}
       markup = g_markup_printf_escaped ("%s\n<small>%s</small>",
 					pi->name, desc);
       g_object_set (cell, "markup", markup, NULL);
