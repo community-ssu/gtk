@@ -85,9 +85,6 @@ hn_wm_session_save (GArray *arguments, gpointer data)
   
   osso = get_context(man);
 
-  /* Assuming 32-bit unsigned int; 2^32 views should suffice... */
-  gchar view_id[10];
-
   /* Acquire list of menu items from the Application Switcher */
   mitems = application_switcher_get_menuitems(hnwm->app_switcher);
 
@@ -115,24 +112,18 @@ hn_wm_session_save (GArray *arguments, gpointer data)
       
       if (menu_comp.service != NULL)
         {
-	  /* +12 comes from the linefeed, space and the view ID */
-	  if ((strlen(menu_comp.service) + 12 + state_position) >
-	      MAX_SESSION_SIZE)
+      int remaining = sizeof(statedata.running_apps) - state_position;
+      /* service name + space + view id + linefeed + '\0' */
+	  if ((strlen(menu_comp.service) + 13) > remaining)
             {
 	      osso_log(LOG_WARNING, "Can't add entries anymore");
 	      break;
             }
 	  else
             {
-	      strcat(statedata.running_apps, menu_comp.service);
-	      strncat(statedata.running_apps, " ", 1);
-	      memset(&(view_id), '\0', sizeof(view_id));
-	      g_snprintf(view_id, 10, "%lu", menu_comp.view_id);
-	      strncat(statedata.running_apps, view_id, strlen(view_id));
-	      strcat(statedata.running_apps, "\n");
-	      state_position = 
-		state_position + strlen(menu_comp.service) +
-		strlen(view_id);
+          state_position += g_snprintf(
+                  &(statedata.running_apps[state_position]), remaining, 
+                  "%s %lu\n", menu_comp.service, menu_comp.view_id);
 	      
 	      if (menu_comp.window_id != 0)
                 {
