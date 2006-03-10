@@ -1,3 +1,9 @@
+glib2.0 (2.8.6-1osso4) unstable; urgency=low
+
+  * glib/gmem.h: Don't use // comments in C<99 code 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Fri, 10 Mar 2006 13:24:00 +0200
+
 glib2.0 (2.8.6-1osso3) unstable; urgency=low
 
   * glib/gmem.h: Don't use // comments in C<99 code
