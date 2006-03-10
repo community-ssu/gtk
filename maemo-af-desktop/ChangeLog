@@ -1,4 +1,14 @@
 2006-03-10  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/layout-manager.c: (Close N#23344)
+	  - layout_mode_begin(): after adding applets function call raise layout
+	     mode eventbox to top
+	  - _select_applets_cb(): after adding applets function call raise layout
+	    mode eventbox to top
+	  - _applet_expose_cb(): after adding applets function call raise layout
+	     mode eventbox to top and cleaning extra else clause
+
+2006-03-10  Johan Bilien <johan.bilien@nokia.com>
 	* hildon-navigator/hn-wm-session.c: Fixed incorrect check
 	  when saving state (Closes N#23930)
 

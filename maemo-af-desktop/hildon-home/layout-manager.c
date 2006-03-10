@@ -410,6 +410,8 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     {
 	add_new_applets(GTK_WIDGET(general_data.home_area_eventbox),
 			addable_applets);
+        gtk_event_box_set_above_child(GTK_EVENT_BOX
+                                      (general_data.home_area_eventbox), TRUE);
     }
     if (removed_applets)
     {
@@ -436,7 +438,6 @@ void layout_mode_end ( gboolean rollback )
     gint x, y;
     applet_manager_t * man;
 
- 
     /* Show Confirmation note if layout mode was cancelled */   
     if( rollback == ROLLBACK_LAYOUT ) {    
         int ret;
@@ -588,6 +589,8 @@ void _select_applets_cb(GtkWidget * widget, gpointer data)
 	
 	add_new_applets(GTK_WIDGET(general_data.home_area_eventbox), 
 			new_applets);
+        gtk_event_box_set_above_child(GTK_EVENT_BOX
+                                      (general_data.home_area_eventbox), TRUE);
     }
     if (removable)
     {
@@ -684,12 +687,8 @@ void _applet_expose_cb(GtkWidget * widget, GdkEventExpose * expose,
 	    add_new_applets(widget, node->add_list);
 	    node->add_list = NULL;
 	}
-	else
-	{
-	    ULOG_ERR("LAYOUT: setting eventbox top\n");
-	    gtk_event_box_set_above_child(general_data.home_area_eventbox, 
-					  TRUE);
-	}
+        gtk_event_box_set_above_child(general_data.home_area_eventbox, 
+                                      TRUE);
     }
 
     if (node->highlighted)
