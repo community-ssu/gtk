@@ -88,7 +88,7 @@ G_BEGIN_DECLS
 
 #define RESET_FACTORY_SETTINGS_INFOBANNER_OK _("rfs_bd_ok")
 #define RESET_FACTORY_SETTINGS_INFOBANNER_CANCEL _("rfs_bd_cancel")
-#define HILDON_CP_RFS_WARNING _("rfs_ia_text")
+#define HILDON_CP_RFS_WARNING _("refs_ia_text")
 #define HILDON_CP_CUD_WARNING _("cud_ia_text")
 
 #define RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE _("secu_info_incorrect_code")
