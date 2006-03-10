@@ -1,3 +1,7 @@
+2006-03-10  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* settings.cc: Removed "clean_after_install" setting from UI.
+
 2006-03-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* configure.ac: Include hildon-fm in PKG_CHECK_MODULES since the
