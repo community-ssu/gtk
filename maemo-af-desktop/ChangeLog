@@ -1,5 +1,10 @@
 2006-03-13  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/application-switcher.c: Use GTK_WINDOW_POPUP
+	  instead of GTK_WINDOW_TOPLEVEL for the tooltip (Closes N#19590)
+
+2006-03-13  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-status-bar/hildon-status-bar-lib.[ch]: Applied
 	  patch by Kimmo Hämälainen to specify the text and query the
 	  response of system dialogs (Closes N#24060)
