@@ -310,7 +310,7 @@ show_repo_edit_dialog (repo_line *r, bool isnew)
 static void
 add_new_repo (repo_closure *c)
 {
-  repo_line *r = new repo_line (c, "deb ");
+  repo_line *r = new repo_line (c, "deb http:// mistral user");
   r->next = c->lines;
   c->lines = r;
   show_repo_edit_dialog (r, true);
