@@ -1,9 +1,11 @@
 Components: main
-Date: Mon, 13 Mar 2006 13:51:31 UTC
+Date: Mon, 13 Mar 2006 13:52:26 UTC
 Origin: Nokia
 Suite: new
 Version: 1.0
 MD5Sum:
+ b5e5e67049f5eddae60d0c49f87e9446            10014 main/binary-arm/Packages
  e21d293d6807f29c199cd4e7b0e10bd7             5009 main/binary-i386/Packages
 SHA1:
+ ab9e98f1fa4a20b5dd1fe97141ffe0c063941736            10014 main/binary-arm/Packages
  264def2545a217b8f7b6b98dc102472e6170d7b1             5009 main/binary-i386/Packages
