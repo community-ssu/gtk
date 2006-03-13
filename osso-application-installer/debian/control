@@ -2,11 +2,12 @@ Source: osso-application-installer
 Section: unknown
 Priority: optional
 Maintainer: Marius Vollmer <marius.vollmer@nokia>
-Build-Depends: debhelper (>= 4.0.0), libapt-pkg-dev, libglib2.0-dev, libgtk2.0-dev, hildon-libs-dev, hildon-fm-dev, osso-ic-dev
+Build-Depends: debhelper (>= 4.0.0), libapt-pkg-dev, libglib2.0-dev, libgtk2.0-dev, hildon-libs-dev (>= 0.12.0), hildon-fm-dev, osso-ic-dev
 Standards-Version: 3.6.0
 
 Package: osso-application-installer
 Architecture: any
 Depends: ${shlibs:Depends}, osso-application-installer-l10n-mr0 | osso-application-installer-l10n-mr
+Provides: maemo-installer-utils
 Description: A program for managing user installed applications.
  It's not done yet.
