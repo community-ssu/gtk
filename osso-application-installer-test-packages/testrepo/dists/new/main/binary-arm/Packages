@@ -112,7 +112,7 @@ Architecture: all
 Version: 2
 Filename: dists/new/main/binary-arm/package-a_2_all.deb
 Size: 2386
-MD5sum: c158cefc572da6d53e4feda95d675d83
+MD5sum: acac3b9beb75bfd4a16063707af05e5a
 Description: Test package A, version two.
  Package A, version 2, only for testing.
  It also has a very long description to
@@ -160,7 +160,7 @@ Version: 1
 Conflicts: package-A (= 1)
 Filename: dists/new/main/binary-arm/package-b_1_all.deb
 Size: 720
-MD5sum: 5e9b3a0d4a82980f75e338262d363786
+MD5sum: ec6b397e1e9c0cf625438b9b8523c19a
 Description: Test package B, version 1.
  Package number one, only for testing.
  It also has a very long description to
@@ -178,7 +178,7 @@ Version: 1
 Depends: package-B
 Filename: dists/new/main/binary-arm/package-c_1_all.deb
 Size: 1522
-MD5sum: 4d01ab7ac553d8df248756d4721ca2f2
+MD5sum: c39bcf37acb627f36d9935a9304c96df
 Description: Test package C, version 1.
 X-Maemo-Icon-26:
  iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABGdBTUEAAK/INwWK6QAAABl0
@@ -206,7 +206,7 @@ Architecture: all
 Version: 1
 Filename: dists/new/main/binary-arm/borken_1_all.deb
 Size: 652
-MD5sum: 0ea84e5a04d098bb85817093152507ce
+MD5sum: e28841faf41cf5c01dabd182b270e208
 Description: A broken package
  The postinst script of this package will always fail.
 

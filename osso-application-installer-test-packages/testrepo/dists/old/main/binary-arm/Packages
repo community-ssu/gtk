@@ -104,6 +104,41 @@ MD5sum: 78829170b2fc3ff990a9e190a4ac6f42
 Description: A broken package
  The postinst script of this package will always fail.
 
+Package: package-2
+Priority: optional
+Section: maemo/Test
+Installed-Size: 64
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: i386
+Source: osso-application-installer-test-packages
+Version: 0
+Depends: hildon-fm1 (>= 0.13-1), hildon-lgpl0 (>= 0.10.1-2hw9), hildon-libs0 (>= 0.10.2-1), libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.2.ds1-4), libdbus-1-2 (>= 0.60), libdbus-glib-1-2 (>= 0.60), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso5), libosso1 (>= 1.3-1), libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/main/binary-i386/package-2_0_i386.deb
+Size: 3678
+MD5sum: 105eb277e795898656e4d098db29135b
+Description: Test application two.
+ When installing this package, you get to choose the location for its
+ menu entry.  When uninstalling this application while it is running,
+ you should be informed about this and be offered the option to cancel
+ the operation.
+
+Package: package-1
+Priority: optional
+Section: maemo/Test
+Installed-Size: 40
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: i386
+Source: osso-application-installer-test-packages
+Version: 0
+Depends: hildon-fm1 (>= 0.13-1), hildon-lgpl0 (>= 0.10.1-2hw9), hildon-libs0 (>= 0.10.2-1), libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.2.ds1-4), libdbus-1-2 (>= 0.60), libdbus-glib-1-2 (>= 0.60), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso5), libosso1 (>= 1.3-1), libpango1.0-0 (>= 1.8.1)
+Pre-Depends: maemo-select-menu-location
+Filename: dists/old/main/binary-i386/package-1_0_i386.deb
+Size: 2990
+MD5sum: 81d349de517eb5e6d054ea165deb2315
+Description: Test application one.
+ When installing this package, you get to choose the location for its
+ menu entry.
+
 Package: package-A
 Section: maemo_Games
 Installed-Size: 1
@@ -112,7 +147,7 @@ Architecture: all
 Version: 1
 Filename: dists/old/main/binary-arm/package-a_1_all.deb
 Size: 2384
-MD5sum: 071f0dc9c0b4800fe32f19fb16f94f10
+MD5sum: b71b17236bc81ab7963f130f30fee9be
 Description: Test package number one.
  Package number one, only for testing.
  It also has a very long description to
@@ -160,7 +195,7 @@ Version: 1
 Conflicts: package-A (= 1)
 Filename: dists/old/main/binary-arm/package-b_1_all.deb
 Size: 720
-MD5sum: 5e9b3a0d4a82980f75e338262d363786
+MD5sum: ec6b397e1e9c0cf625438b9b8523c19a
 Description: Test package B, version 1.
  Package number one, only for testing.
  It also has a very long description to
@@ -178,7 +213,7 @@ Version: 1
 Depends: package-B
 Filename: dists/old/main/binary-arm/package-c_1_all.deb
 Size: 1522
-MD5sum: 4d01ab7ac553d8df248756d4721ca2f2
+MD5sum: c39bcf37acb627f36d9935a9304c96df
 Description: Test package C, version 1.
 X-Maemo-Icon-26:
  iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABGdBTUEAAK/INwWK6QAAABl0
@@ -206,7 +241,7 @@ Architecture: all
 Version: 1
 Filename: dists/old/main/binary-arm/borken_1_all.deb
 Size: 652
-MD5sum: 0ea84e5a04d098bb85817093152507ce
+MD5sum: e28841faf41cf5c01dabd182b270e208
 Description: A broken package
  The postinst script of this package will always fail.
 
