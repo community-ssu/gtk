@@ -55,5 +55,5 @@ fi
 
 if [ $START = TRUE ]; then
   echo "Starting $SVC"
-  /usr/sbin/dsmetool -n -1 -r "$CMD $PARAMS"
+  /usr/sbin/dsmetool -n -1 -o "$CMD $PARAMS"
 fi

@@ -1,3 +1,10 @@
+osso-af-startup (1.8-1) unstable; urgency=low
+
+  * Not using '-r' anymore in launch wrappers because of ndm.
+  * Fixed the uname check in af-defines.sh (N#24039).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Mar 2006 13:57:13 +0200
+
 osso-af-startup (1.7-1) unstable; urgency=low
 
   * Made fix to dbus-sessionbus.sh for Bash (in Scratchbox).
