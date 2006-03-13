@@ -15,7 +15,7 @@ Package: libosso1
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libosso-dbus-conf
-Description: Libosso libraries
+Description: Libosso library
  Libosso contains D-BUS-related functionality for Maemo applications.
 
 Package: libosso-test
