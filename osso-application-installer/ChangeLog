@@ -1,3 +1,21 @@
+2006-03-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* utils/Makefile.am: Removed check-application-for-uninstall,
+	added maemo-application-running and maemo-confirm-text.
+
+	* src/repo.cc (add_new_repo): Provide defaults for distribution
+	and components.
+
+	* src/main.cc: Use HildonWindow instead of HildonApp and
+	HildonAppview.  Thanks to Johan Bilien!
+
+	* src/apt-worker-client.h, src/apt-worker-client.cc,
+	src/apt-worker-proto.h, src/apt-worker.cc, src/main.cc: Changed
+	identification of user packages; now we look at the component, not
+	the category, and the value should be "user", not "maemo".
+	Changed parameter name of GET_PACKAGE_LIST request from
+	"only_maemo" to "only_user".
+
 2006-03-10  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	General improvement of robustness in failure cases.  Bring up
