@@ -1,3 +1,11 @@
+hildon-control-panel (1.2.1-1) unstable; urgency=low
+
+  * Fixed localization of the wrong code infobanner
+  * Fixed a localisation logical ID
+  * Depend on correct l10n
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 13 Mar 2006 14:36:38 +0200
+
 hildon-control-panel (1.2.0-2) unstable; urgency=low
 
   * Reintroduced a temporary build dependency on hildon-lgpl-dev until

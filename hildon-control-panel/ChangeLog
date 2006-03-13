@@ -1,3 +1,7 @@
+2006-03-13 Johan Bilien <johan.bilien@nokia.com>
+	* Fixed localization of the wrong code infobanner
+	* configure.ac: 1.2.1
+
 2006-03-10 Johan Bilien <johan.bilien@nokia.com>
 	* Fixed a localisation logical ID
 

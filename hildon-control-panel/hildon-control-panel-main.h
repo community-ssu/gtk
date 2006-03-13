@@ -91,12 +91,11 @@ G_BEGIN_DECLS
 #define HILDON_CP_RFS_WARNING _("refs_ia_text")
 #define HILDON_CP_CUD_WARNING _("cud_ia_text")
 
-#define RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE _("secu_info_incorrect_code")
+#define RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE dgettext("hildon-libs", "secu_info_incorrect_code")
 
 /* The logical IDs for the applets, needed for automatical generation
    of the .pot files*/
 
-#define HILDON_CP_APPINST_APPLET _("ai_ap_application_title")
 #define HILDON_CP_BUPREST_APPLET _("back_ti_dia001_title")
 #define HILDON_CP_CERTMAN_APPLET _("cema_ap_application_title")
 #define HILDON_CP_CONNE_APPLET _("conn_set_ti_conn_set")
