@@ -48,8 +48,7 @@
 
 extern "C" {
   #include "hildonbreadcrumbtrail.h"
-  #include <hildon-widgets/hildon-app.h>
-  #include <hildon-widgets/hildon-appview.h>
+  #include <hildon-widgets/hildon-window.h>
   #include <libosso.h>
 }
 
@@ -388,17 +387,10 @@ nicify_section_name (const char *name)
   // XXX
   if (!strncmp (name, "maemo/", 6))
     return name + 6;
+  else if (!strncmp (name, "user/", 5))
+    return name + 5;
   else
-    {
-      const char *category = strrchr (name, '/');
-      if (category == NULL)
-	category = name;
-
-      if (!strncmp (category, "maemo_", 6))
-	return category + 6;
-      else
-	return category;
-    }
+    return name;
 }
 
 static section_info *
@@ -1640,7 +1632,7 @@ install_from_file_fail (bool res, void *data)
 }
 
 static bool
-is_maemo_section (const char *section)
+is_user_section (const char *section)
 {
   if (section == NULL)
     return false;
@@ -1649,12 +1641,7 @@ is_maemo_section (const char *section)
   if (!strncmp (section, "maemo/", 6))
     return true;
 
-  // skip over component prefix
-  const char *category = strchr (section, '/');
-  if (category == NULL)
-    category = section;
-
-  return !strncmp (category, "maemo_", 6);
+  return !strncmp (section, "user/", 5);
 }
 
 static char *
@@ -1698,7 +1685,7 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   pi->summary = decode_summary (dec, pi, false);
 
-  if (!red_pill_mode && !is_maemo_section (pi->available_section))
+  if (!red_pill_mode && !is_user_section (pi->available_section))
     {
       pi->info.installable = false;
       g_free (pi->summary);
@@ -1828,7 +1815,6 @@ set_operation_toolbar_label (const char *label, bool sensitive)
 }
 
 static GtkWindow *main_window = NULL;
-static GtkWidget *main_appview = NULL;
 static GtkWidget *main_toolbar;
 
 static bool fullscreen_toolbar_visibility = true;
@@ -1856,7 +1842,9 @@ set_current_toolbar_visibility (bool f)
 void
 set_fullscreen (bool f)
 {
-  hildon_appview_set_fullscreen (HILDON_APPVIEW (main_appview), f);
+#if 0
+  hildon_window_set_fullscreen (HILDON_WINDOW (main_window), f);
+#endif
 }
 
 void
@@ -1882,28 +1870,6 @@ set_toolbar_visibility (bool fullscreen, bool visibility)
     }
 }
 
-static gboolean
-handle_key_event (GtkWidget *widget,
-		  GdkEventKey *event,
-		  gpointer data)
-{
-  if (event->type == GDK_KEY_PRESS)
-    {
-      switch (event->keyval)
-	{
-	case HILDON_FULLSCREEN_KEY:
-	case GDK_Return:
-	case GDK_KP_Enter:
-	  toggle_fullscreen ();
-	  return TRUE;
-	default:
-	  return FALSE;
-	}
-    }
-
-  return FALSE;
-}
-
 static void
 fullscreen_state_changed (GtkWidget *widget, bool f)
 {
@@ -1921,7 +1887,7 @@ fullscreen_state_changed (GtkWidget *widget, bool f)
 int
 main (int argc, char **argv)
 {
-  GtkWidget *app_view, *app;
+  GtkWidget *window;
   GtkWidget *toolbar, *image, *search_button;
   GtkMenu *main_menu;
   char *apt_worker_prog = "/usr/libexec/apt-worker";
@@ -1937,21 +1903,16 @@ main (int argc, char **argv)
   if (argc > 1)
     apt_worker_prog = argv[1];
 
-  app_view = hildon_appview_new (NULL);
-  app = hildon_app_new_with_appview (HILDON_APPVIEW (app_view));
-  hildon_app_set_title (HILDON_APP (app), _("ai_ap_application_installer"));
+  window = hildon_window_new();
+  gtk_window_set_title (GTK_WINDOW (window), _("ai_ap_application_installer"));
 
-  main_window = GTK_WINDOW (app);
-  main_appview = app_view;
+  main_window = GTK_WINDOW (window);
 
 #if 0
-  g_signal_connect (app, "key_press_event",
-		    G_CALLBACK (handle_key_event), NULL);
-#endif
-
   hildon_appview_set_fullscreen_key_allowed (HILDON_APPVIEW (app_view), TRUE);
   g_signal_connect (app_view, "fullscreen_state_change",
 		    G_CALLBACK (fullscreen_state_changed), NULL);
+#endif
 
   toolbar = gtk_toolbar_new ();
 
@@ -1993,26 +1954,27 @@ main (int argc, char **argv)
 		      GTK_TOOL_ITEM (search_button),
 		      -1);
 
-  hildon_appview_set_toolbar (HILDON_APPVIEW (app_view),
-			      GTK_TOOLBAR (toolbar));
+  hildon_window_add_toolbar (HILDON_WINDOW (window),
+			     GTK_TOOLBAR (toolbar));
 
   main_vbox = gtk_vbox_new (FALSE, 0);
-  gtk_container_add (GTK_CONTAINER (app_view), main_vbox);
+  gtk_container_add (GTK_CONTAINER (window), main_vbox);
 
   main_trail = hildon_bread_crumb_trail_new (get_view_label, view_clicked);
   gtk_box_pack_start (GTK_BOX (main_vbox), main_trail, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (main_vbox), gtk_hseparator_new (), 
 		      FALSE, FALSE, 0);
 
-  g_signal_connect (G_OBJECT (app_view), "destroy",
+  g_signal_connect (G_OBJECT (window), "destroy",
 		    G_CALLBACK (window_destroy), NULL);
 
-  main_menu = hildon_appview_get_menu (HILDON_APPVIEW (app_view));
+  main_menu = GTK_MENU (gtk_menu_new ());
   create_menu (main_menu);
+  hildon_window_set_menu (HILDON_WINDOW (window), GTK_MENU (main_menu));
 
   load_settings ();
 
-  gtk_widget_show_all (app);
+  gtk_widget_show_all (window);
   show_view (&main_view);
 
   /* XXX - check errors.
