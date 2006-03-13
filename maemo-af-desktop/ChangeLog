@@ -14,6 +14,7 @@
 	      settings menu item
 	    . no_applets_settings_callback(): added new function showing infobanner 
 	* hildon-home/hildon-home-main.h: Fixed a string logical id
+	* configure.ac: 2.6.2
 
 2006-03-10  Johan Bilien <johan.bilien@nokia.com>
 

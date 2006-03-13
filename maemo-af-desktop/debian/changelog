@@ -1,3 +1,60 @@
+maemo-af-desktop (2.6.2-1) unstable; urgency=low
+
+  * hildon-status-bar/hildon-status-bar-lib.[ch]: Applied
+    patch by Kimmo Hamalainen to specify the text and query the
+    response of system dialogs (Closes N#24060)
+  * Applied fix to "No information banner is shown when dimmed item is
+    tapped in Home" (Closes N#23033)
+    - hildon-home/hildon-home-main.h:
+      . added new infobanner text logical id
+      . added new function declaration
+    - hildon-home/hildon-home-main.c:
+      . added header include for infoprint
+      . construct_titlebar_menu(): added callback for insensitive press of
+        settings menu item
+      . no_applets_settings_callback(): added new function showing infobanner
+  * hildon-home/hildon-home-main.h: Fixed a string logical id
+  * hildon-navigator/application-switcher.c: arguments of store_item
+    differed in prototype and implementation. This resulted in it
+    being called with wrong order of arguments (Closes N#22987)
+  * hildon-home/layout-manager.c: (Close N#23344)
+    - layout_mode_begin(): after adding applets function call raise layout
+      mode eventbox to top
+    - _select_applets_cb(): after adding applets function call raise layout
+      mode eventbox to top
+    - _applet_expose_cb(): after adding applets function call raise layout
+      mode eventbox to top and cleaning extra else clause
+  * hildon-navigator/hn-wm-session.c: Fixed incorrect check
+    when saving state (Closes N#23930)
+  * hildon-navigator/hn-wm-watchable-app.c: use localized program name
+    in the starting info banner (Closes N#23428)
+  * hildon-navigator/hn-*.c: Added Copyright and licensing notices
+  * Applied fix to N#23750:
+    - hildon_home_main(): removing old saving configure function call
+      causing reseting values
+    - hildon-home/home-applet-handler.c: libraryfile value fixed to correct
+  * hildon-home/hildon-home-main.[ch]:
+    - global menu status flag added
+    - hildon_home_key_press_listener(): removed widget grabing add. Menu
+      closing added when open and menu key is pressed.
+    - hildon_home_key_release_listener(): removed widget grabing remove
+    - Closes N#22637
+  * configure.ac: Don't check for hildon-lgpl which is deprecated
+  * hildon-navigator/hn-wm.c:
+    - hn_wm_compute_watched_window_hibernation_key(): Replaced
+      conditional gdk_error_trap_pop with unconditional one
+      (Closes N#23940)
+  * hildon-home/hildon-home-main.[ch]:
+    - Moved static prototypes to the c file
+    - Added implementation of the help menu item
+    - Added help button to "Set background" and "Select image" dialogs
+    - Corrected a logical_id
+  * hildon-home/home-select-applets-dialo.[ch]:
+    - Added help button to "Select applet" dialog
+  * libhildonmenu/libhildonmenu.pc.in: added desktopentrydir variable
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 13 Mar 2006 14:45:13 +0200
+
 maemo-af-desktop (2.6.1-1) unstable; urgency=low
 
   * hildon-home/hildon-home-main.c: Fixed a bug introduced when
