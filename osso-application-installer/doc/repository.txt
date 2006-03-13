@@ -1,8 +1,40 @@
 About Repositories for the Application Installer 2006
 =====================================================
 
-Setting up a certified repository
----------------------------------
+Repository structure
+--------------------
+
+The Application installer can deal with any repository that "apt-get"
+can use.  However, the Application installer only shows 'user'
+packages to the user.  A user packages is identified by being in the
+"user" component (or 'section') of a distribution.
+
+More precisely, any package with a "Section" value of the form
+"user/<category>" is a user package.
+
+Thus, you can not freely choose the components of the distributions in
+your repository.
+
+(The Application installer is able to automatically satisfy
+dependencies from any configured component of a distribution, the
+"user" component is only used to determine which packages to show to
+the user.)
+
+
+"New repository dialog" defaults
+--------------------------------
+
+When adding a new repository from the UI, the Application installer
+provides default values for distribution and components.
+
+The distribution will default to the distribution that contains the
+Application installer itself [NOT DECIDED YET.  "maemoX.Y"?].
+
+The component list defaults to just "user".
+
+
+Setting up a repository with certified packages
+-----------------------------------------------
 
 The AI can recognize certain parts of repositories as 'certified'.
 Packages coming from those parts are installed without showing the big

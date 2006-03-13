@@ -29,7 +29,7 @@ to
   - sections
   - icons
   - the policy engine of the AI
-  - limited feedback to the user
+  - limited feedback to the user, no controlling terminal
   - warning about removing running applications
   - utilities to use in your maintainer scripts
 
@@ -58,15 +58,17 @@ manager" on the screen.
 Sections
 --------
 
-By default, the AI 2006 only shows packages in certain sections to the
-user.  This has been done to hide the existence of the hundreds of
-system packages that make up the ITOS 2006 itself.  The AI is, at this
-point, not intended to let the user manage the whole system, only a
-smaller set of third party applications.
+By default, the AI 2006 only shows packages in certain components (or
+"sections" in Debian policy manual lingo) to the user.  This has been
+done to hide the existence of the hundreds of system packages that
+make up the ITOS 2006 itself.  The AI is, at this point, not intended
+to let the user manage the whole system, only a smaller set of third
+party applications.
 
-The AI only shows packages in sections with names of the form
+The AI only shows packages in the "user" component of a distribution.
+Thus, your "Section:" field in the control file should be of the form
 
-    maemo_<CATEGORY>
+    Section: user/<CATEGORY>
 
 where <CATEGORY> is arbitrary.  <CATEGORY> should be a nice
 capitalised, English word like "Ringtones".  There is no support for
@@ -77,41 +79,33 @@ package fits into one of these categories, you should put it there.
 This will avoid fragmenting the category names, and the names of these
 categories will be correctly localised.
 
-The [PRELIMINARY!] list of predefined sections and their English names
-is:
+The [PRELIMINARY!] list of predefined categories and their English
+names is:
 
-    maemo_office	     Office		   
-    maemo_internet	     Internet		   
-    maemo_multimedia	     Multimedia		   
-    maemo_travel	     Travel		   
-    maemo_games		     Games			   
-    maemo_system-tools 	     System Tools 		   
-    maemo_utilities	     Utilities		   
-    maemo_programming	     Programming		   
-    maemo_education	     Education		   
-    maemo_accessories	     Accessories		   
-    maemo_themes	     Themes		   
-    maemo_graphics	     Graphics		   
-    maemo_support	     Support		   
-    maemo_other              Other                    
-
-You can use the usual component prefixes like "non-free/" in the
-section names.  The AI will ignore these prefixes.
+    user/office	      Office		   
+    user/internet     Internet		   
+    user/multimedia   Multimedia		   
+    user/travel	      Travel		   
+    user/games	      Games			   
+    user/system-tools System Tools 		   
+    user/utilities    Utilities		   
+    user/programming  Programming		   
+    user/education    Education		   
+    user/accessories  Accessories		   
+    user/themes	      Themes		   
+    user/graphics     Graphics		   
+    user/support      Support		   
+    user/other        Other                    
 
 Thus, if you want to put your package into the Office category,
 include the field
 
-    Section: maemo_office
+    Section: user/office
 
 in your control information.  If you want to put it into "Ringtones"
 (which is not pre-defined), use
 
-    Section: maemo_Ringtones
-
-The following variants have the same meaning to the AI:
-
-    Section: non-free/maemo_office
-    Section: contrib/maemo_Ringtones
+    Section: user/Ringtones
 
 
 Icons
@@ -169,6 +163,10 @@ one that the user has requested to be installed.)
 
 Feedback from maintainer scripts
 --------------------------------
+
+When the Application installer runs your maintainer scripts, they have
+no controlling terminal; their standard input is connected to
+/dev/null.  DISPLAY is set correctly, tho.
 
 The Application installer collects a transcript of the
 installation/uninstallation process, including the output of
@@ -260,3 +258,45 @@ scripts to interact with the user:
 
   You might want to skip calling maemo-select-menu-location when
   merely upgrading as opposed to installing from scratch.
+
+
+- maemo-application-running -x executable-file
+  maemo-application-running -d <app>.desktop
+
+  This utility checks whether the application specified on the
+  commandline is currently running.  If it is running, it exits with
+  code 0.  If it is not running, it exits with code 1.  If some error
+  occured, it exits with code 2.
+
+  When using the -x option, the utility checks whether any process is
+  currently executing that file, by looking into /proc/PID/exe.
+
+  When using the -d option, the utility uses the given .desktop file
+  to find the service name of the application und queries D-BUS
+  whether this service is currently registered.  If there is no
+  service name in the .desktop file, the utility uses the executable
+  file as with the -x option.
+
+  In order to use maemo-application-running in postinst, you should
+  Pre-Depend on the "maemo-installer-utils" package.
+
+
+- maemo-confirm-text [title] file
+
+  Displays the contents of FILE in a dialog with "Ok" and "Cancel"
+  buttons.  The default title of the dialog is "License agreement".
+  FILE can be "-", in which case stdin is shown.
+
+  When the user clicks "Ok", this utility exits with code 0; when he
+  clicks "Cancel", it exits with code 1; and when an error occurs, it
+  exits with ocde 2.
+
+  If you do in fact show a license agreement in your postinst script,
+  it is probably not a good idea to make the postinst script fail when
+  the user does not agree to the license terms.  Instead, you could
+  configure your application in such a way that it will ask the user
+  to agree to the license agreement again when the application is
+  started and refuse to run when he disagrees.
+
+  In order to use maemo-confirm-text in postinst, you should
+  Pre-Depend on the "maemo-installer-utils" package.
