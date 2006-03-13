@@ -55,8 +55,10 @@
         IV_PAIR(ENU_MU_MEMFREE,     "MemFree:"     )\
         IV_PAIR(ENU_MU_BUFFERS,     "Buffers:"    )\
         IV_PAIR(ENU_MU_CACHED,         "Cached:"    )\
-        IV_PAIR(ENU_MU_SWAPFREE,    "SwapFree:"    )\
-        IV_PAIR(ENU_MU_SLAB,         "Slab:"     )
+        IV_PAIR(ENU_MU_SWAPFREE,    "SwapFree:"    )
+/*        IV_PAIR(ENU_MU_SLAB,         "Slab:"     )*/ /* If we try to read 
+slab, then we break compatibility with 2.4 kernels on x86 and since slab
+isn't needed anyway, let's leave it commented out */
 
 /*a. local strings*/
 #define IV_PAIR(ID,STRING) \
@@ -310,6 +312,7 @@ static void
 int 
 osso_mem_get_usage(osso_mem_usage_t* usage)
 {
+   size_t available_ram;
    /* Check the pointer validity first */
    if ( usage )
    {
@@ -351,9 +354,15 @@ osso_mem_get_usage(osso_mem_usage_t* usage)
 		 /*From the usage->free we deduct the delta
 		  * based on deny limit 
 		  * or 87.5% if deny limit is disabled */
+		 available_ram = osso_mem_get_avail_ram();
+		 if (available_ram <= 0)
+		 {
+		    available_ram = vals[ENU_MU_MEMTOTAL];
+		    available_ram <<= 10;
+		 }
 		 usage->usable = usage->deny 
-						  	 ? (osso_mem_get_avail_ram() - usage->deny)  
-							 : (osso_mem_get_avail_ram() >> 3) ;
+						  	 ? (available_ram - usage->deny)  
+							 : (available_ram >> 3) ;
 		 usage->usable = usage->usable  > usage->free 
 				 			? 0 
 							: usage->free - usage->usable;

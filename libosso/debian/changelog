@@ -1,3 +1,9 @@
+libosso (1.7-1) unstable; urgency=low
+
+  * Fixed problem with osso_mem_* in Scratchbox (N#20647).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Mar 2006 18:09:53 +0200
+
 libosso (1.6-1) unstable; urgency=low
 
   * Fixed DBus porting bug in osso_time_set (N#23725).
