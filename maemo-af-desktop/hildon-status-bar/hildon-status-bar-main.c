@@ -297,12 +297,16 @@ static gint rpc_cb( const gchar *interface,
     else if( g_str_equal( "open_closeable_system_dialog", method ) )
     {
         gint id;
+        const gchar *btext = NULL;
         /* check arguments */
-        if( arguments->len < 2 || val[0]->type != DBUS_TYPE_STRING || 
-            val[1]->type != DBUS_TYPE_INT32 ) 
+        if( arguments->len < 4 ||
+            val[0]->type != DBUS_TYPE_STRING || 
+            val[1]->type != DBUS_TYPE_INT32 ||
+            val[2]->type != DBUS_TYPE_STRING ||
+            val[3]->type != DBUS_TYPE_BOOLEAN ) 
         {
             retval->type = DBUS_TYPE_STRING;
-            if( arguments->len < 2 ) {
+            if( arguments->len < 4 ) {
                 retval->value.s = g_strdup( "Not enough args to dialog" );
             } else {
                 retval->value.s = g_strdup( "Wrong type of arguments to dialog" );
@@ -310,9 +314,14 @@ static gint rpc_cb( const gchar *interface,
             osso_log( LOG_ERR, retval->value.s );
             return OSSO_ERROR;       
         }
+        
+        if( (val[2]->value.s)[0] != '\0' )
+        {
+            btext = val[2]->value.s;
+        }
 
         id = hildon_status_bar_lib_open_closeable_dialog( val[1]->value.i,
-                 val[0]->value.s );
+                 val[0]->value.s, btext, val[0]->value.b );
         /* return id of the dialog to the caller */
         retval->type = DBUS_TYPE_INT32;
         retval->value.i = id;
@@ -334,6 +343,28 @@ static gint rpc_cb( const gchar *interface,
         }
 
         hildon_status_bar_lib_close_closeable_dialog( val[0]->value.i );
+    }
+    /* get response value of system dialog */
+    else if( g_str_equal( "get_system_dialog_response", method ) )
+    {
+        gint response = -1;
+        /* the id of the dialog is given as argument */
+        if( arguments->len < 1 || val[0]->type != DBUS_TYPE_INT32 ) 
+        {
+            retval->type = DBUS_TYPE_STRING;
+            if( arguments->len < 1 ) {
+                retval->value.s = g_strdup( "Not enough args to dialog" );
+            } else {
+                retval->value.s = g_strdup( "Argument has invalid type" );
+            }
+            osso_log( LOG_ERR, retval->value.s );
+            return OSSO_ERROR;       
+        }
+
+        response = hildon_status_bar_lib_get_dialog_response(
+                        val[0]->value.i );
+        retval->type = DBUS_TYPE_INT32;
+        retval->value.i = response;
     }
     /* plugin */
     else if( g_str_equal( "event", method ) )

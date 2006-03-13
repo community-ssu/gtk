@@ -1,3 +1,20 @@
+2006-03-13  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-lib.[ch]: Applied
+	  patch by Kimmo Hämälainen to specify the text and query the
+	  response of system dialogs (Closes N#24060)
+	* Applied fix to "No information banner is shown when dimmed item is
+	  tapped in Home" (Closes N#23033):
+	  - hildon-home/hildon-home-main.h:
+        . added new infobanner text logical id
+	    . added new function declaration
+	  - hildon-home/hildon-home-main.c:
+	    . added header include for infoprint
+	    . construct_titlebar_menu(): added callback for insensitive press of
+	      settings menu item
+	    . no_applets_settings_callback(): added new function showing infobanner 
+	* hildon-home/hildon-home-main.h: Fixed a string logical id
+
 2006-03-10  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/application-switcher.c: arguments of store_item

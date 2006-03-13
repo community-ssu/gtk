@@ -49,10 +49,17 @@ struct system_dialog_st
     gint             type;      /* type of the dialog, -1 for plugins */
     gchar            *icon;     /* icon to be shown */
     gchar            *msg;      /* msg to be shown */
+    gchar            *button;   /* text to be shown in the button */
     gint             int_type;  /* first parameter to cb */
     dialog_closed_cb cb;        /* callback */
     gpointer         data;      /* second parameter to cb */
     gboolean         occupied;  /* is this slot free */
+    gboolean         save_result;  /* should the response be saved */
+    gboolean         result_ready;  /* is the response ready */
+    gboolean         do_not_show;  /* true, if dialog should not be showed
+                                      ('closed' before it was shown) */
+    gboolean         is_showing;  /* is the dialog showing now */
+    gint             result;    /* response to the dialog */
     GtkWidget        *widget;   /* the dialog widget (for closing it) */
 };
 
@@ -121,6 +128,10 @@ void hildon_status_bar_lib_queue_dialog( const gchar *icon,
  * @param *type Dialog type, must be valid osso_system_note_type_t
  * (defined in libosso.h).
  * @param *msg Message string to show.
+ * @param *btext Text shown on the button, or NULL for default text.
+ * @param save_result Whether the response value should be saved. If this
+ * is TRUE, the caller must call hildon_status_bar_lib_get_dialog_response
+ * to get the value, even if the value is not interesting anymore.
  * @return Id of the dialog or -1 on error. This id can be used to close
  * the dialog with hildon_status_bar_lib_close_closeable_dialog.
  * 
@@ -129,22 +140,45 @@ void hildon_status_bar_lib_queue_dialog( const gchar *icon,
  * The dialog can be closed by calling
  * hildon_status_bar_lib_close_closeable_dialog (if it was not already
  * closed by the user).
+ *
+ * NOTICE: This API is not stable.
  */
 
 gint hildon_status_bar_lib_open_closeable_dialog( gint type,
-                                                  const gchar *msg );
+                                                  const gchar *msg,
+                                                  const gchar *btext,
+                                                  gboolean save_result );
 
 /**
  * @hildon_status_bar_lib_close_closeable_dialog
  *
  * @param id Dialog to close.
+ * @return 
  * 
  * This function closes a system modal dialog opened with
  * hildon_status_bar_lib_open_closeable_dialog, if it was not closed
  * by the user already.
+ *
+ * NOTICE: This API is not stable.
  */
 
 void hildon_status_bar_lib_close_closeable_dialog( gint id );
+
+/**
+ * @hildon_status_bar_lib_get_dialog_response
+ *
+ * @param id Dialog id.
+ * @return Response value (<0), or 2 if the dialog is not closed, or 1 if
+ * the id is invalid (e.g. it was not saved for the dialog, or the value
+ * has been asked already).
+ * 
+ * This function returns the response value of the dialog (value telling
+ * what button was pressed). The value can be asked only once.
+ *
+ * NOTICE: This API is not stable.
+ */
+
+gint hildon_status_bar_lib_get_dialog_response( gint id );
 
 G_END_DECLS
 

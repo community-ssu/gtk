@@ -90,7 +90,7 @@ G_BEGIN_DECLS
 #define HILDON_HOME_SET_BG_COLOR_TITLE     _("home_fi_set_backgr_color")
 #define HILDON_HOME_SET_BG_IMAGE_TITLE     _("home_fi_set_backgr_image")
 #define HILDON_HOME_SET_BG_IMAGE_NONE      _("home_va_set_backgr_none")
-#define HILDON_HOME_SET_BG_MODE_TITLE      _("me_fi_set_backgr_mode") 
+#define HILDON_HOME_SET_BG_MODE_TITLE      _("home_fi_set_backgr_mode") 
 #define HILDON_HOME_SET_BG_MODE_CENTERED   _("home_va_set_backgr_centered")
 #define HILDON_HOME_SET_BG_MODE_SCALED     _("home_va_set_backgr_scaled")
 #define HILDON_HOME_SET_BG_MODE_STRETCHED  _("home_va_set_backgr_stretched")
@@ -157,6 +157,7 @@ G_BEGIN_DECLS
 
 #define HILDON_HOME_TITLEBAR_MENU_SELECT_APPLETS   _("home_me_select_applets")
 #define HILDON_HOME_TITLEBAR_MENU_APPLET_SETTINGS  _("home_me_applet_settings")
+#define HILDON_HOME_MENU_APPLET_SETTINGS_NOAVAIL   _("home_ib_not_available")
 #define HILDON_HOME_TITLEBAR_MENU_EDIT_LAYOUT      _("home_me_edit_layout")
 #define HILDON_HOME_TITLEBAR_MENU_TOOLS            _("home_me_tools")
 #define HILDON_HOME_TITLEBAR_SUB_SET_BG            _("home_me_tools_set_background")

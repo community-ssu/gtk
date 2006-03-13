@@ -60,6 +60,7 @@
 #include <libgnomevfs/gnome-vfs.h>
 
 #include "libmb/mbdotdesktop.h"
+#include <hildon-widgets/gtk-infoprint.h>
 #include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
 #include <hildon-widgets/hildon-defines.h>
@@ -153,6 +154,11 @@ static
 gchar *get_filename_from_treemodel(GtkComboBox *box, gint index);
 static
 gint get_priority_from_treemodel(GtkTreeModel *tree, GtkTreeIter *iter);
+
+static gboolean no_applets_settings_callback(GtkWidget *widget,
+                                             GdkEvent *event,
+                                             gpointer unused);
+
 static gboolean layout_mode_selected(GtkWidget *widget,
                      GdkEvent *event,
                      gpointer data);
@@ -438,6 +444,9 @@ void construct_titlebar_menu()
                               titlebar_submenu_settings);
     gtk_widget_set_sensitive(applets_settings_item, FALSE);
     gtk_menu_append(GTK_MENU(titlebar_menu), applets_settings_item);
+    g_signal_connect(G_OBJECT(applets_settings_item), "insensitive_press",
+            G_CALLBACK(no_applets_settings_callback),
+            NULL);
     gtk_widget_show(applets_settings_item);
 
     /* Layout mode launch */
@@ -1056,6 +1065,28 @@ void set_background_response_handler(GtkWidget *dialog,
     default:
         break;
     }
+}
+
+/**
+ * @no_applets_settings_callback
+ *
+ * @param widget The parent widget
+ * @param event The event that caused this callback
+ * @param unused standard cb data pointer, unused (null) 
+ * 
+ * @return TRUE (keeps cb alive)
+ * 
+ * Shows infoprint when no applet has settings given
+ **/
+static 
+gboolean no_applets_settings_callback(GtkWidget *widget, 
+                                      GdkEvent *event,
+                                      gpointer unused)
+
+{    
+    gtk_infoprint(NULL, HILDON_HOME_MENU_APPLET_SETTINGS_NOAVAIL);
+
+    return TRUE;
 }
 
 /**
