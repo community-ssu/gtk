@@ -417,14 +417,14 @@ apt_worker_set_status_callback (apt_worker_callback *callback, void *data)
 }
 
 void
-apt_worker_get_package_list (bool only_maemo,
+apt_worker_get_package_list (bool only_user,
 			     bool only_installed,
 			     bool only_available,
 			     const char *pattern,
 			     apt_worker_callback *callback, void *data)
 {
   request.reset ();
-  request.encode_int (only_maemo);
+  request.encode_int (only_user);
   request.encode_int (only_installed);
   request.encode_int (only_available);
   request.encode_string (pattern);

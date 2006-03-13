@@ -236,7 +236,7 @@ send_status (int op, int already, int total, int min_change)
 }
 
 void cache_init ();
-void make_package_list_response (bool only_maemo,
+void make_package_list_response (bool only_user,
 				 bool only_installed,
 				 bool only_available,
 				 const char *pattern);
@@ -283,11 +283,11 @@ handle_request ()
     case APTCMD_GET_PACKAGE_LIST:
       {
 	request.reset (reqbuf, req.len);
-	bool only_maemo = request.decode_int ();
+	bool only_user = request.decode_int ();
 	bool only_installed = request.decode_int ();
 	bool only_available = request.decode_int ();
 	const char *pattern = request.decode_string_in_place ();
-	make_package_list_response (only_maemo,
+	make_package_list_response (only_user,
 				    only_installed,
 				    only_available,
 				    pattern);
@@ -527,7 +527,7 @@ cache_init ()
 }
 
 bool
-is_maemo_package (pkgCache::VerIterator &ver)
+is_user_package (pkgCache::VerIterator &ver)
 {
   const char *section = ver.Section ();
 
@@ -539,12 +539,7 @@ is_maemo_package (pkgCache::VerIterator &ver)
     return true;
 #endif
   
-  // skip over component prefix
-  const char *category = strchr (section, '/');
-  if (category == NULL)
-    category = section;
-
-  return !strncmp (category, "maemo_", 6);
+  return !strncmp (section, "user/", 5);
 }
 
 bool
@@ -644,7 +639,7 @@ encode_empty_version_info (bool include_size)
 }
 
 void
-make_package_list_response (bool only_maemo,
+make_package_list_response (bool only_user,
 			    bool only_installed,
 			    bool only_available,
 			    const char *pattern)
@@ -666,11 +661,11 @@ make_package_list_response (bool only_maemo,
     {
       pkgCache::VerIterator installed = pkg.CurrentVer ();
 
-      // skip non maemo packages if requested
+      // skip non user packages if requested
       //
-      if (only_maemo
+      if (only_user
 	  && !installed.end ()
-	  && !is_maemo_package (installed))
+	  && !is_user_package (installed))
 	continue;
 
       // skip not-installed packaged if requested
@@ -692,11 +687,11 @@ make_package_list_response (bool only_maemo,
 	    }
 	}
 
-      // skip non maemo packages if requested
+      // skip non user packages if requested
       //
-      if (only_maemo
+      if (only_user
 	  && have_latest
-	  && !is_maemo_package (latest))
+	  && !is_user_package (latest))
 	continue;
 
       // skip non-available packages if requested

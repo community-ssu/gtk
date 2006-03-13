@@ -57,7 +57,7 @@ void handle_one_apt_worker_response ();
 void apt_worker_set_status_callback (apt_worker_callback *callback,
 				     void *data);
 
-void apt_worker_get_package_list (bool only_maemo,
+void apt_worker_get_package_list (bool only_user,
 				  bool only_installed,
 				  bool only_available,
 				  const char *pattern,
