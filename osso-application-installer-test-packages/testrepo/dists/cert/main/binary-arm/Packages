@@ -48,8 +48,8 @@ Maintainer: <marius.vollmer@nokia.com>
 Architecture: all
 Version: 1
 Filename: dists/cert/main/binary-arm/certified_1_all.deb
-Size: 2306
-MD5sum: 28643a0d1090083f0d8fd9599ef33ccd
+Size: 2308
+MD5sum: 5b3a29ce53ef5c0da0c2c2b0db05db81
 Description: A certified package
  This package is in a certfied repository.  You should be
  able to install it without the scarecrow dialog.
