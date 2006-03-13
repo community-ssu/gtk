@@ -1,3 +1,9 @@
+osso-af-startup (1.9-1) unstable; urgency=low
+
+  * Changed the uname check to be '^armv' because of SB/ARM.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Mar 2006 14:56:00 +0200
+
 osso-af-startup (1.8-1) unstable; urgency=low
 
   * Not using '-r' anymore in LAUNCHWRAPPER_NICE because of ndm.

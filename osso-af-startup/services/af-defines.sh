@@ -52,7 +52,7 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
   export LAUNCHWRAPPER=$AF_INIT_DIR/launch-wrapper.sh
 
   # check the machine
-  echo `uname -m` | grep "^arm" > /dev/null
+  echo `uname -m` | grep "^armv" > /dev/null
   if [ $? = 0 -a -x /usr/sbin/dsmetool ]; then
     export LAUNCHWRAPPER_NICE=$AF_INIT_DIR/nice-launch-wrapper.sh
     export LAUNCHWRAPPER_NICE_KILL=$AF_INIT_DIR/nice-kill-launch-wrapper.sh
