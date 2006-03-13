@@ -1,5 +1,9 @@
-bin_PROGRAMS = check-application-for-uninstall
+bin_PROGRAMS = maemo-application-running \
+               maemo-confirm-text.user
 
-check_application_for_uninstall_CFLAGS = $(AI_DEPS_CFLAGS)
-check_application_for_uninstall_CXXFLAGS = $(AI_DEPS_CFLAGS)
-check_application_for_uninstall_LDADD = $(AI_DEPS_LIBS)
+bin_SCRIPTS = maemo-confirm-text
+
+maemo_confirm_text_user_SOURCES = maemo-confirm-text-user.c
+maemo_confirm_text_user_CFLAGS = $(AI_DEPS_CFLAGS)
+maemo_confirm_text_user_CXXFLAGS = $(AI_DEPS_CFLAGS)
+maemo_confirm_text_user_LDADD = $(AI_DEPS_LIBS)
