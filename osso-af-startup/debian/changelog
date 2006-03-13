@@ -1,3 +1,9 @@
+osso-af-startup (1.10-1) unstable; urgency=low
+
+  * Using ndm instead of init to start the AF scripts.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Mar 2006 17:53:25 +0200
+
 osso-af-startup (1.9-1) unstable; urgency=low
 
   * Changed the uname check to be '^armv' because of SB/ARM.

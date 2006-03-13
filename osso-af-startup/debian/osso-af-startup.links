@@ -1,0 +1,3 @@
+etc/init.d/af-services etc/ndm/session.d/22af-services
+etc/init.d/af-startup etc/ndm/session.d/50af-startup
+etc/init.d/af-base-apps etc/ndm/session.d/51af-base-apps
