@@ -3,8 +3,9 @@ maemo-launcher (0.10.1-1) unstable; urgency=low
   * New Upstream Release.
   * Link init scripts into /etc/ndm/session.d, not with update-rc.d.
     Thanks to Daniel Stone <daniel.stone@nokia.com>.
+  * Depend on ndm.
 
- -- Guillem Jover <guillem.jover@nokia.com>  Tue, 14 Mar 2006 15:00:50 +0200
+ -- Guillem Jover <guillem.jover@nokia.com>  Tue, 14 Mar 2006 15:49:04 +0200
 
 maemo-launcher (0.10-1) unstable; urgency=low
 
