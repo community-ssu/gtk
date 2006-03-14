@@ -1,3 +1,9 @@
+gconf2 (2.6.4.13-osso5) unstable; urgency=low
+
+  * Hard-coded the config source for makefile-install-rule (N#23809).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 14 Mar 2006 12:41:52 +0200
+
 gconf2 (2.6.4.13-osso4) unstable; urgency=low
 
   * Upgraded the upstream tar to _real_ 2.6.4.13.

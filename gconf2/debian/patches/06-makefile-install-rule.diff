@@ -1,0 +1,30 @@
+diff -ur gconf-dbus-2.6.4.13/gconf/gconftool.c gconf-dbus-2.6.4.13.new/gconf/gconftool.c
+--- gconf-dbus-2.6.4.13/gconf/gconftool.c	2005-04-26 10:39:38.000000000 +0300
++++ gconf-dbus-2.6.4.13.new/gconf/gconftool.c	2006-03-14 12:38:38.057365320 +0200
+@@ -755,22 +755,10 @@
+ 
+   if (makefile_install_mode || makefile_uninstall_mode)
+     {
+-      g_assert (config_source == NULL);
+-
+-      /* Try the environment variable */
+-      config_source = g_getenv ("GCONF_CONFIG_SOURCE");
+-
+-      if (config_source == NULL)
+-        {
+-          g_printerr (_("Must set the GCONF_CONFIG_SOURCE environment variable\n"));
+-          return 1;
+-        }
+-
+-      if (*config_source == '\0')
+-        {
+-          /* Properly set, but set to nothing (use default source) */
+-          config_source = NULL;
+-        }
++      config_source = "xml::/etc/gconf/gconf.xml.defaults";
++      g_print ("gconftool-2: I've been haxored to use %s as the config"
++               " source because the integration doesn't like wrappers\n",
++               config_source);
+ 
+       use_local_source = TRUE;
+ 
