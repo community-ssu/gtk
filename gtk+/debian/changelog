@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.6.10-1.osso9) unstable; urgency=low
+
+  * debian/libgtk2.0-{common,dev}.files: Move localisation for property
+    descriptions (gtk20-properties.mo) in the -dev package as it has little
+    value outside GUI builders.
+  * Bugs fixed:
+    N#20679: Valgrind warnings from the Gtk
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 14 Mar 2006 16:35:13 +0200
+
 gtk+2.0 (2:2.6.10-1.osso8) unstable; urgency=low
 
   * Bugs fixed:
