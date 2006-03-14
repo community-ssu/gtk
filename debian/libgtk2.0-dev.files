@@ -5,4 +5,5 @@ usr/lib/pkgconfig/*.pc
 usr/lib/*/*/*/*{la,a}
 usr/lib/*/include/*.h
 usr/share/aclocal/*
+usr/share/locale/*/*/gtk20-properties.mo
 usr/share/man/man1/gdk-pixbuf-csource.1*
