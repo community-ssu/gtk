@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2005 Nokia
+ * Copyright (C) 2005, 2006 Nokia
  *
  * Author: Guillem Jover <guillem.jover@nokia.com>
  *
@@ -24,6 +24,12 @@
 #ifndef REPORT_H
 #define REPORT_H
 
+#ifdef __GNUC__
+#define ATTR_NORET __attribute__((noreturn))
+#else
+#define ATTR_NORET
+#endif
+
 enum report_output {
   report_console,
   report_syslog,
@@ -40,7 +46,7 @@ extern void debug(char *msg, ...);
 
 extern void info(char *msg, ...);
 extern void error(char *msg, ...);
-extern void __attribute__((noreturn)) die(int status, char *msg, ...);
+extern void ATTR_NORET die(int status, char *msg, ...);
 
 #endif
 

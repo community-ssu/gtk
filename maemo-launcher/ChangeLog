@@ -1,3 +1,8 @@
+2006-03-14  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/report.h (ATTR_NORET): New macro.
+	(die): Use the macro instead of the unconditional attribute.
+
 2006-02-17  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/invoker.1.in: Use italics for option arguments, bold for
