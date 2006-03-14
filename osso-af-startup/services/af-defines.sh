@@ -77,7 +77,10 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
   export MMC_MOUNTPOINT=/media/mmc1 MMC_DEVICE_FILE=/dev/mmcblk0p1
   export ILLEGAL_FAT_CHARS=\\\/\:\*\?\<\>\| MAX_FILENAME_LENGTH=255
 
-  # this is for Application installer
+  # MMC swap file location (directory)
+  export OSSO_SWAP=$MMC_MOUNTPOINT
+
+  # this is for Control Panel
   export User_Applets_Dir=/var/lib/install/usr/share/applications/hildon-control-panel/
 
   source_if_is()
@@ -90,13 +93,8 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
     fi
   }
 
-  # from real-af-services
   source_if_is osso-gtk.defs
   source_if_is matchbox.defs
-
-  # from real-af-startup
-
-  # from real-af-base
   source_if_is maemo-af-desktop.defs
   source_if_is keyboard.defs
 

@@ -1,3 +1,10 @@
+osso-af-startup (1.11-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added OSSO_SWAP definition to af-defines.sh.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 14 Mar 2006 13:51:22 +0200
+
 osso-af-startup (1.10-1) unstable; urgency=low
 
   * Using ndm instead of init to start the AF scripts.
