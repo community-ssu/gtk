@@ -81,7 +81,7 @@ Description: simple interprocess messaging system (development headers)
 Package: libdbus-glib-1-dev
 Section: libdevel
 Architecture: any
-Depends: libdbus-glib-1-2 (= ${Source-Version}), libdbus-1-dev (= ${Source-Version}), libglib2.0-dev
+Depends: libdbus-glib-1-2 (= ${Source-Version}), libdbus-1-dev (= ${Source-Version}), libglib2.0-dev, libexpat1
 Conflicts: libdbus-glib-dev, dbus-glib-1-dev, dbus-1-utils (<< 0.50-2)
 Replaces: libdbus-glib0-dev, dbus-glib-1-dev
 Description: simple interprocess messaging system (GLib interface)
