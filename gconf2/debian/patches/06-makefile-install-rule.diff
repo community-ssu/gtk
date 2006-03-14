@@ -23,7 +23,7 @@ diff -ur gconf-dbus-2.6.4.13/gconf/gconftool.c gconf-dbus-2.6.4.13.new/gconf/gco
 -        }
 +      config_source = "xml::/etc/gconf/gconf.xml.defaults";
 +      g_print ("gconftool-2: I've been haxored to use %s as the config"
-+               " source because the integration doesn't like wrappers\n",
++               " source.\n",
 +               config_source);
  
        use_local_source = TRUE;
