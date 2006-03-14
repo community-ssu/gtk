@@ -1,9 +1,10 @@
 osso-af-startup (1.11-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added OSSO_SWAP definition to af-defines.sh.
+  * Now restarting ke-recv in first boot (N#23857).
+  * Added swappiness adjustment to af-services (N#24168).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 14 Mar 2006 13:51:22 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 14 Mar 2006 14:24:04 +0200
 
 osso-af-startup (1.10-1) unstable; urgency=low
 

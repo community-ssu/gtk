@@ -1,5 +1,14 @@
 #!/bin/sh
 
+add_sudoer ()
+{
+  line="$1"
+  if ! grep -F -q "$line" /etc/sudoers; then
+    echo "+$line"
+    echo "$line" >>/etc/sudoers
+  fi
+}
+
 TGT=''
 if [ -e /targets/links/scratchbox.config ] ; then
         . /targets/links/scratchbox.config
@@ -51,3 +60,7 @@ if ! grep -F -q "$line" /etc/profile; then
   echo "+$line"
   echo "$line" >> /etc/profile
 fi
+
+add_sudoer 'user ALL = NOPASSWD: /etc/init.d/ke-recv start'
+add_sudoer 'user ALL = NOPASSWD: /etc/init.d/ke-recv stop'
+

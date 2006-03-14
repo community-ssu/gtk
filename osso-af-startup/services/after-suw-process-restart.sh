@@ -35,7 +35,7 @@ if [ -f $DIR/keyboard.defs ]; then
 fi
 source $DIR/keyboard.sh stop
 source $DIR/dbus-sessionbus.sh stop
-# TODO: stop ke-recv
+sudo /etc/init.d/ke-recv stop
 
 # wait for the D-BUS session bus to die FIXME
 sleep 1
@@ -57,7 +57,7 @@ source $DIR/af-defines.sh ;# re-read session bus address
 if [ -x /etc/init.d/maemo-launcher ]; then
   /etc/init.d/maemo-launcher restart
 fi
-# TODO: start ke-recv
+sudo /etc/init.d/ke-recv start
 sudo /etc/init.d/osso-systemui restart
 if [ "x$DSME_STATE" = "xACTDEAD" ]; then
   if [ -x $DIR/osso-media-server.sh ]; then

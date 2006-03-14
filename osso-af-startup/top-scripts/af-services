@@ -32,7 +32,7 @@ echo 75 > /proc/sys/vm/lowmem_notify_low
 echo 4 > /proc/sys/kernel/pty/max
 echo 256 > /proc/sys/kernel/threads-max
 echo 2048 > /proc/sys/fs/file-max
-
+echo 1 > /proc/sys/vm/swappiness
 
 SCRIPT=/etc/osso-af-init/real-af-services
 
