@@ -1,3 +1,9 @@
+2006-03-14  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_button_press): Be more
+	careful about initializing cell_area.
+	N#20679
+
 2006-03-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkimmulticontext.c (get_global_context_id): Don't leak the
