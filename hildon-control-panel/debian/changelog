@@ -1,3 +1,9 @@
+hildon-control-panel (1.2.1-2) unstable; urgency=low
+
+  * Forgot to put dh_strip back. Closes N#24225
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 15 Mar 2006 14:47:41 +0200
+
 hildon-control-panel (1.2.1-1) unstable; urgency=low
 
   * Fixed localization of the wrong code infobanner
