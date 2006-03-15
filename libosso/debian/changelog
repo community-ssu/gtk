@@ -1,3 +1,10 @@
+libosso (1.8-1) unstable; urgency=low
+
+  * Now initialising Glib and DBus threads. This is done to enable
+    safe use of threads in GnomeVFS.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 15 Mar 2006 19:27:54 +0200
+
 libosso (1.7-1) unstable; urgency=low
 
   * Fixed problem with osso_mem_* in Scratchbox (N#20647).

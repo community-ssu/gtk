@@ -6,7 +6,7 @@ INCLUDES = \
 
 lib_LTLIBRARIES = libosso.la
 
-libosso_la_LIBADD = -ldl -lc $(GLIB_LIBS) $(DBUS_LIBS) $(GNOMEVFS_LIBS)
+libosso_la_LIBADD = -ldl -lc $(GTHREAD_LIBS) $(GLIB_LIBS) $(DBUS_LIBS) $(GNOMEVFS_LIBS)
 libosso_la_LDFLAGS = -version-info 4:0:3
 
 ossoincludedir=$(includedir)
