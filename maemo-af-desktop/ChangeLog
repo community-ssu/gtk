@@ -1,5 +1,11 @@
 2006-03-15  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/application-switcher.c: Reverted to use 
+	  GTK_WINDOW_TOPLEVEL for the tooltip, and set accept focus to FALSE
+	  instead
+
+2006-03-15  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/*:
 	  . Export the show_*_banner functions
 	  . Report about flash full when write ops fail (Closes N#)

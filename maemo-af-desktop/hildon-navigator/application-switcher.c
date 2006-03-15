@@ -295,7 +295,7 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
     gtk_widget_set_name(GTK_WIDGET(as->menu), HILDON_NAVIGATOR_MENU_NAME);
     
     /* Create a tooltip menu. Small icons buttons uses this menu. */
-    as->tooltip_menu = gtk_window_new(GTK_WINDOW_POPUP); 
+    as->tooltip_menu = gtk_window_new(GTK_WINDOW_TOPLEVEL); 
     gtk_widget_set_name(GTK_WIDGET(as->tooltip_menu), 
                         "hildon-task-navigator-tooltip");
     gtk_window_set_decorated(GTK_WINDOW(as->tooltip_menu), FALSE);
@@ -303,6 +303,8 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
                              GDK_WINDOW_TYPE_HINT_DIALOG);
     gtk_container_set_border_width(GTK_CONTAINER(as->tooltip_menu), 
                                    MENU_BORDER_WIDTH);              
+
+    gtk_window_set_accept_focus(GTK_WINDOW(as->tooltip_menu), FALSE);
                                                                               
     /* Create a tooltip menu label */    
     as->tooltip_menu_item = gtk_label_new("empty");
