@@ -44,6 +44,7 @@
 /* hildon includes */
 #include "applet-manager.h"
 #include "hildon-home-interface.h" 
+#include "hildon-home-main.h"
 
 /* --------------- applet manager private start ---------------- */
 
@@ -360,6 +361,7 @@ void applet_manager_configure_save_all(applet_manager_t *man)
     if(&length == NULL || fprintf(new_config_file, "%s", conf_data) < 0)
     {
         ULOG_WARN("FAILED to write new conf data into %s\n", configure_file);
+        show_flash_full_note();
     }
     fclose(new_config_file);
     g_key_file_free(keyfile);

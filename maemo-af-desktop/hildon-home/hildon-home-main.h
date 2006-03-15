@@ -227,6 +227,8 @@ G_BEGIN_DECLS
 /* FIL-INF010 */
 #define HILDON_HOME_FILE_UNREADABLE_TEXT _("sfil_ib_opening_not_allowed")
 
+#define HILDON_HOME_FLASH_FULL_TEXT      dgettext("libosso-common-error", "memr_ni_device_memory_full")
+
 #define TRANSIENCY_MAXITER 50
 										
 enum { 	 
@@ -234,6 +236,15 @@ enum {
      BG_IMAGE_FILENAME, 	 
      BG_IMAGE_PRIORITY
 }; 	
+
+
+void show_no_memory_note(void);
+void show_connectivity_broke_note(void);
+void show_system_resource_note(void);
+void show_file_corrupt_note(void);
+void show_file_unreadable_note(void);
+void show_mmc_cover_open_note(void);
+void show_flash_full_note(void);
 
 G_END_DECLS
 

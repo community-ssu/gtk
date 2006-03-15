@@ -191,14 +191,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                                         GdkEvent *event,
                                         gpointer data);
 
-static void show_no_memory_note(void);
-static void show_connectivity_broke_note(void);
-static void show_system_resource_note(void);
-static void show_file_corrupt_note(void);
-static void show_file_unreadable_note(void);
-
-static void show_mmc_cover_open_note(void);
-
 static void construct_background_image(char *argument_list[],
                                        gboolean loading_image_note_allowed,
                                        gboolean preview);
@@ -1540,7 +1532,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
  * Shows information note for lack of memory.
  *
  */
-static
 void show_no_memory_note(void)
 {
     GtkWidget *no_memory_note = NULL;
@@ -1562,7 +1553,6 @@ void show_no_memory_note(void)
  * Shows information note for connection breakage
  *
  */
-static
 void show_connectivity_broke_note(void)
 {
     GtkWidget *connectivity_broke_note = NULL;
@@ -1584,7 +1574,6 @@ void show_connectivity_broke_note(void)
  * Shows information note for lack of system resources
  *
  */
-static
 void show_system_resource_note(void)
 {
     GtkWidget *system_resource_note = NULL;
@@ -1605,7 +1594,6 @@ void show_system_resource_note(void)
  * Shows information note for file corruption
  *
  */
-static
 void show_file_corrupt_note(void)
 {
     GtkWidget *file_corrupt_note = NULL;
@@ -1627,7 +1615,6 @@ void show_file_corrupt_note(void)
  * Shows information note for file opning failure
  *
  */
-static
 void show_file_unreadable_note(void)
 {
     GtkWidget *file_unreadable_note = NULL;
@@ -1649,7 +1636,6 @@ void show_file_unreadable_note(void)
  * Shows information note when called.
  *
  */
-static
 void show_mmc_cover_open_note(void)
 {
     GtkWidget *cover_open_note = NULL;
@@ -1664,6 +1650,27 @@ void show_mmc_cover_open_note(void)
     if(cover_open_note != NULL) 
     {
          gtk_widget_destroy (GTK_WIDGET (cover_open_note));
+    }
+}
+
+/**
+ * @show_flash_full_note
+ *
+ * Shows information note when called.
+ *
+ */
+void show_flash_full_note(void)
+{
+    GtkWidget *flash_full_note = NULL;
+
+    flash_full_note =
+        hildon_note_new_information(GTK_WINDOW(window), 
+                                    HILDON_HOME_FLASH_FULL_TEXT);
+    
+    gtk_dialog_run (GTK_DIALOG (flash_full_note));
+    if(flash_full_note != NULL) 
+    {
+         gtk_widget_destroy (GTK_WIDGET (flash_full_note));
     }
 }
 
@@ -1804,6 +1811,9 @@ void image_loader_callback(GPid pid, gint child_exit_status,
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_MMC_OPEN:
         show_mmc_cover_open_note();
+        break;
+    case HILDON_HOME_IMAGE_LOADER_ERROR_FLASH_FULL:
+        show_flash_full_note();
         break;
     default:
         ULOG_ERR("image_loader_callback() child_exit_status %d NOT_HANDLED",
@@ -3003,6 +3013,8 @@ void hildon_home_create_configure()
         {
             ULOG_ERR("Couldn't write default values to configure file %s",
                      configure_file);
+            /* FIXME it could fail for other reasons */
+            show_flash_full_note();
         }
     }
     if(fp != NULL && fclose(fp) != 0)
@@ -3062,6 +3074,8 @@ void hildon_home_save_configure()
         {
             ULOG_ERR("Couldn't write values to configure file %s",
                      configure_file);
+            /* FIXME it could fail for other reasons */
+            show_flash_full_note();
         }
     }
     if(fp != NULL && fclose(fp) != 0)

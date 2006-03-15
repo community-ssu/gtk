@@ -286,6 +286,15 @@ gint save_image(GdkPixbuf *pixbuf, const gchar *path)
     if (!gdk_pixbuf_save(pixbuf, temp_path, 
                          HILDON_HOME_IMAGE_FORMAT, &error, NULL)) 
     {
+        if (error && error->domain == G_FILE_ERROR 
+                  && error->code == G_FILE_ERROR_NOSPC)
+        {
+            /* Flash full! */
+            g_error_free(error);
+            unlink(temp_path);
+            g_free(temp_path);
+            return HILDON_HOME_IMAGE_LOADER_ERROR_FLASH_FULL;
+        }
         g_error_free(error);
         unlink(temp_path);
         g_free(temp_path);
