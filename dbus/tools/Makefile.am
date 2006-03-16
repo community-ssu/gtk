@@ -60,5 +60,4 @@ man_MANS = dbus-send.1 dbus-monitor.1 dbus-launch.1 dbus-cleanup-sockets.1
 EXTRA_DIST = $(man_MANS) run-with-tmp-session-bus.sh
 CLEANFILES = 				\
 	run-with-tmp-session-bus.conf	\
-	dbus-bus-introspect.xml		\
 	dbus-glib-bindings.h

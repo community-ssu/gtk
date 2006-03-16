@@ -493,6 +493,8 @@ find_name_in_info (gconstpointer a, gconstpointer b)
   const DBusGProxyNameOwnerInfo *info = a;
   const char *name = b;
 
+  if (info->name == NULL)
+    return 1;
   return strcmp (info->name, name);
 }
 
@@ -713,23 +715,20 @@ dbus_g_proxy_manager_replace_name_owner (DBusGProxyManager  *manager,
 
       names = g_hash_table_lookup (manager->owner_names, prev_owner);
 
-      if (names != NULL && names->name != NULL && name != NULL)
+      link = g_slist_find_custom (names, name, find_name_in_info);
+
+      info = NULL;
+      if (link != NULL)
         {
-          link = g_slist_find_custom (names, name, find_name_in_info);
-
-          info = NULL;
-          if (link != NULL)
-            {
-	      info = link->data;
+          info = link->data;
 	  
-	      names = g_slist_delete_link (names, link);
+          names = g_slist_delete_link (names, link);
 
-	      if (names == NULL)
-	        g_hash_table_remove (manager->owner_names, prev_owner);
-	    }
+          if (names == NULL)
+            g_hash_table_remove (manager->owner_names, prev_owner);
         }
 
-      if (new_owner[0] == '\0' && name != NULL)
+      if (new_owner[0] == '\0')
 	{
 	  DBusGProxyUnassociateData data;
 	  GSList *tmp;
