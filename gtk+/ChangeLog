@@ -1,4 +1,11 @@
 2006-03-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_timeout):
+	* gtk/gtkentry.c (hildon_remove_visible_character):
+	* gtk/gtktreeview.c (check_if_can_focus_idle): Add missing
+	GDK_THREADS_ENTER/LEAVE. N#24266
+
+2006-03-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gdk/*.c
 	* gdk-pixbuf/*.c
