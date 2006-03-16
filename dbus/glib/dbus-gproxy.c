@@ -713,7 +713,7 @@ dbus_g_proxy_manager_replace_name_owner (DBusGProxyManager  *manager,
 
       names = g_hash_table_lookup (manager->owner_names, prev_owner);
 
-      if (names != NULL && name != NULL)
+      if (names != NULL && names->name != NULL && name != NULL)
         {
           link = g_slist_find_custom (names, name, find_name_in_info);
 
