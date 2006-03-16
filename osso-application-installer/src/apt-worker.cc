@@ -62,7 +62,7 @@
 
 using namespace std;
 
-//#define DEBUG
+#define DEBUG
 
 #define ENABLE_OLD_MAEMO_SECTION_TEST 1
 
@@ -319,8 +319,11 @@ handle_request ()
       {
 	request.reset (reqbuf, req.len);
 	const char *http_proxy = request.decode_string_in_place ();
-	setenv ("http_proxy", http_proxy, 1);
-	DBG ("http_proxy: %s\n", http_proxy);
+	if (http_proxy)
+	  {
+	    setenv ("http_proxy", http_proxy, 1);
+	    DBG ("http_proxy: %s\n", http_proxy);
+	  }
 	response.reset ();
 	bool success = update_package_cache ();
 	_error->DumpErrors ();
@@ -358,8 +361,11 @@ handle_request ()
 	request.reset (reqbuf, req.len);
 	const char *package = request.decode_string_in_place ();
 	const char *http_proxy = request.decode_string_in_place ();
-	setenv ("http_proxy", http_proxy, 1);
-	DBG ("http_proxy: %s\n", http_proxy);
+	if (http_proxy)
+	  {
+	    setenv ("http_proxy", http_proxy, 1);
+	    DBG ("http_proxy: %s\n", http_proxy);
+	  }
 	install_package (package);
 	send_response (&req);
 	break;
