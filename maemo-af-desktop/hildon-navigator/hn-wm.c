@@ -219,7 +219,6 @@ hn_wm_top_service(const gchar *service_name)
     {
       HNWMWatchableApp      *app;
       HNWMWatchedWindowView *view = NULL;
-      Window                 xid;
 
       app = hn_wm_watched_window_get_app (win);
 
@@ -257,24 +256,42 @@ hn_wm_top_service(const gchar *service_name)
       HN_DBG("sending x message to activate app");
       
       if (view)
-	xid = hn_wm_watched_window_view_get_id (view);
+	{
+      
+	  hn_wm_util_send_x_message (hn_wm_watched_window_view_get_id (view),
+				     hn_wm_watched_window_get_x_win (win),
+				     hnwm->atoms[HN_ATOM_HILDON_VIEW_ACTIVE],
+				     SubstructureRedirectMask
+				     |SubstructureNotifyMask,
+				     0,
+				     0,
+				     0,
+				     0,
+				     0);
+
+	  app_switcher_update_item (hnwm->app_switcher, win, view,
+				    AS_MENUITEM_TO_FIRST_POSITION);
+	}
       else
-	xid = hn_wm_watched_window_get_x_win (win);
-      
-      hn_wm_util_send_x_message (xid,
-				 hn_wm_watched_window_get_x_win (win),
-				 hnwm->atoms[HN_ATOM_HILDON_VIEW_ACTIVE],
-				 SubstructureRedirectMask
-				 |SubstructureNotifyMask,
-				 0,
-				 0,
-				 0,
-				 0,
-				 0);
-      
-      /* FIXME: Should we just wait till its actually raised by wm ? */
-      app_switcher_update_item (hnwm->app_switcher, win, view,
-				AS_MENUITEM_TO_FIRST_POSITION);
+	{
+	  /* Regular or grouped win, get MB to top */
+	  XEvent ev;
+
+	  memset(&ev, 0, sizeof(ev));
+	  
+	  ev.xclient.type         = ClientMessage;
+	  ev.xclient.window       = hn_wm_watched_window_get_x_win (win);
+	  ev.xclient.message_type = hnwm->atoms[HN_ATOM_NET_ACTIVE_WINDOW];
+	  ev.xclient.format       = 32;
+
+	  gdk_error_trap_push();
+	  XSendEvent(GDK_DISPLAY(), GDK_ROOT_WINDOW(), False,
+		     SubstructureRedirectMask, &ev);
+	  XSync(GDK_DISPLAY(),FALSE);
+	  gdk_error_trap_pop();
+
+	}
+
     }
 }
 

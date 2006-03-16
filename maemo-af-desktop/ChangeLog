@@ -1,3 +1,11 @@
+2006-03-16  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-wm.c: Applied fix to "The Address book doesnot
+	  appear to foreground when other applications open." - use
+	  MB to top windows when they have no views and are topped
+	  from Others-Menu
+	  (Closes N#23973)
+
 2006-03-15  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/application-switcher.c: Reverted to use 
