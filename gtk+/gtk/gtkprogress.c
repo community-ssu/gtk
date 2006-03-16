@@ -30,6 +30,7 @@
 #include <string.h>
 #include "gtkprogress.h" 
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define EPSILON  1e-5
@@ -127,38 +128,38 @@ gtk_progress_class_init (GtkProgressClass *class)
 
   g_object_class_install_property (gobject_class,
                                    PROP_ACTIVITY_MODE,
-                                   g_param_spec_boolean ("activity_mode",
+                                   g_param_spec_boolean ("activity-mode",
 							 P_("Activity mode"),
 							 P_("If TRUE the GtkProgress is in activity mode, meaning that it signals something is happening, but not how much of the activity is finished. This is used when you're doing something that you don't know how long it will take"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_SHOW_TEXT,
-                                   g_param_spec_boolean ("show_text",
+                                   g_param_spec_boolean ("show-text",
 							 P_("Show text"),
 							 P_("Whether the progress is shown as text"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
 				   PROP_TEXT_XALIGN,
-				   g_param_spec_float ("text_xalign",
+				   g_param_spec_float ("text-xalign",
 						       P_("Text x alignment"),
 						       P_("A number between 0.0 and 1.0 specifying the horizontal alignment of the text in the progress widget"),
 						       0.0,
 						       1.0,
 						       0.5,
-						       G_PARAM_READWRITE));  
+						       GTK_PARAM_READWRITE));  
     g_object_class_install_property (gobject_class,
 				   PROP_TEXT_YALIGN,
-				   g_param_spec_float ("text_yalign",
+				   g_param_spec_float ("text-yalign",
 						       P_("Text y alignment"),
 						       P_("A number between 0.0 and 1.0 specifying the vertical alignment of the text in the progress widget"),
 						       0.0,
 						       1.0,
 						       0.5,
-						       G_PARAM_READWRITE));
+						       GTK_PARAM_READWRITE));
 }
 
 static void

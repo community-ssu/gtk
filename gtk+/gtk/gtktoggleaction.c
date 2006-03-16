@@ -36,6 +36,7 @@
 #include "gtktoggletoolbutton.h"
 #include "gtktogglebutton.h"
 #include "gtkcheckmenuitem.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 enum 
@@ -126,11 +127,11 @@ gtk_toggle_action_class_init (GtkToggleActionClass *klass)
 
   g_object_class_install_property (gobject_class,
                                    PROP_DRAW_AS_RADIO,
-                                   g_param_spec_boolean ("draw_as_radio",
+                                   g_param_spec_boolean ("draw-as-radio",
                                                          P_("Create the same proxies as a radio action"),
                                                          P_("Whether the proxies for this action look like radio action proxies"),
                                                          FALSE,
-                                                         G_PARAM_READWRITE));
+                                                         GTK_PARAM_READWRITE));
 
   action_signals[TOGGLED] =
     g_signal_new ("toggled",

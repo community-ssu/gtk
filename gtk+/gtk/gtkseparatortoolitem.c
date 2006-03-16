@@ -26,6 +26,7 @@
 #include "gtkseparatortoolitem.h"
 #include "gtkintl.h"
 #include "gtktoolbar.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define MENU_ID "gtk-separator-tool-item-menu-id"
@@ -137,16 +138,16 @@ gtk_separator_tool_item_class_init (GtkSeparatorToolItemClass *class)
 							 P_("Draw"),
 							 P_("Whether the separator is drawn, or just blank"),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   /**
    * GtkSeparatorToolItem:separator-size:
    *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property(widget_class,
-					   g_param_spec_int ("separator_size",
+					   g_param_spec_int ("separator-size",
 							      P_("Separator size"), P_("The thickness of the separator. -1 for default behaviour."),
-							     -1, G_MAXINT, -1, G_PARAM_READWRITE));
+							     -1, G_MAXINT, -1, GTK_PARAM_READWRITE));
 
   /**
    * GtkSeparatorToolItem:is-image:
@@ -154,11 +155,11 @@ gtk_separator_tool_item_class_init (GtkSeparatorToolItemClass *class)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-				   g_param_spec_boolean ("is_image",
+				   g_param_spec_boolean ("is-image",
 							 P_("Is separator an image or a line"),
 							 P_("Whether the separator is drawn as an image, or just as a line"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   
   g_type_class_add_private (object_class, sizeof (GtkSeparatorToolItemPrivate));
 }

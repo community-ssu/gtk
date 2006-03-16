@@ -36,6 +36,7 @@
 #include "gtkradiobutton.h"
 #include "gtktable.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define RADIUS		3	/* radius of the control points */
@@ -119,53 +120,53 @@ gtk_curve_class_init (GtkCurveClass *class)
   
   g_object_class_install_property (gobject_class,
 				   PROP_CURVE_TYPE,
-				   g_param_spec_enum ("curve_type",
+				   g_param_spec_enum ("curve-type",
 						      P_("Curve type"),
 						      P_("Is this curve linear, spline interpolated, or free-form"),
 						      GTK_TYPE_CURVE_TYPE,
 						      GTK_CURVE_TYPE_LINEAR,
-						      G_PARAM_READABLE |
-						      G_PARAM_WRITABLE));
+						      GTK_PARAM_READABLE |
+						      GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
 				   PROP_MIN_X,
-				   g_param_spec_float ("min_x",
+				   g_param_spec_float ("min-x",
 						       P_("Minimum X"),
 						       P_("Minimum possible value for X"),
 						       -G_MAXFLOAT,
 						       G_MAXFLOAT,
 						       0.0,
-						       G_PARAM_READABLE |
-						       G_PARAM_WRITABLE));
+						       GTK_PARAM_READABLE |
+						       GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
 				   PROP_MAX_X,
-				   g_param_spec_float ("max_x",
+				   g_param_spec_float ("max-x",
 						       P_("Maximum X"),
 						       P_("Maximum possible X value"),
 						       -G_MAXFLOAT,
 						       G_MAXFLOAT,
                                                        1.0,
-						       G_PARAM_READABLE |
-						       G_PARAM_WRITABLE));
+						       GTK_PARAM_READABLE |
+						       GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
 				   PROP_MIN_Y,
-				   g_param_spec_float ("min_y",
+				   g_param_spec_float ("min-y",
 						       P_("Minimum Y"),
 						       P_("Minimum possible value for Y"),
                                                        -G_MAXFLOAT,
 						       G_MAXFLOAT,
 						       0.0,
-						       G_PARAM_READABLE |
-						       G_PARAM_WRITABLE));  
+						       GTK_PARAM_READABLE |
+						       GTK_PARAM_WRITABLE));  
   g_object_class_install_property (gobject_class,
 				   PROP_MAX_Y,
-				   g_param_spec_float ("max_y",
+				   g_param_spec_float ("max-y",
 						       P_("Maximum Y"),
 						       P_("Maximum possible value for Y"),
 						       -G_MAXFLOAT,
 						       G_MAXFLOAT,
 						       1.0,
-						       G_PARAM_READABLE |
-						       G_PARAM_WRITABLE));
+						       GTK_PARAM_READABLE |
+						       GTK_PARAM_WRITABLE));
 
   curve_type_changed_signal =
     g_signal_new ("curve_type_changed",

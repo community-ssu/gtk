@@ -32,6 +32,7 @@
 #include "gtkstatusbar.h"
 #include "gtkwindow.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 typedef struct _GtkStatusbarMsg GtkStatusbarMsg;
@@ -173,11 +174,11 @@ gtk_statusbar_class_init (GtkStatusbarClass *class)
    */
   g_object_class_install_property (gobject_class,
 				   PROP_HAS_RESIZE_GRIP,
-				   g_param_spec_boolean ("has_resize_grip",
+				   g_param_spec_boolean ("has-resize-grip",
  							 P_("Has Resize Grip"),
  							 P_("Whether the statusbar has a grip for resizing the toplevel"),
  							 TRUE,
- 							 G_PARAM_READWRITE));
+ 							 GTK_PARAM_READWRITE));
   statusbar_signals[SIGNAL_TEXT_PUSHED] =
     g_signal_new ("text_pushed",
 		  G_OBJECT_CLASS_TYPE (class),
@@ -200,12 +201,12 @@ gtk_statusbar_class_init (GtkStatusbarClass *class)
 		  G_TYPE_STRING);
 
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_enum ("shadow_type",
+                                           g_param_spec_enum ("shadow-type",
                                                               P_("Shadow type"),
                                                               P_("Style of bevel around the statusbar text"),
                                                               GTK_TYPE_SHADOW_TYPE,
                                                               GTK_SHADOW_IN,
-                                                              G_PARAM_READABLE));
+                                                              GTK_PARAM_READABLE));
 }
 
 static void

@@ -30,6 +30,7 @@
 
 #include "gtkcellrendererprogress.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define GTK_CELL_RENDERER_PROGRESS_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object),                        \
@@ -115,7 +116,7 @@ gtk_cell_renderer_progress_class_init (GtkCellRendererProgressClass *klass)
 						     P_("Value"),
 						     P_("Value of the progress bar"),
 						     0, 100, 0,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
   /**
    * GtkCellRendererProgress:text:
@@ -133,7 +134,7 @@ gtk_cell_renderer_progress_class_init (GtkCellRendererProgressClass *klass)
 							P_("Text"),
 							P_("Text on the progress bar"),
 							NULL,
-							G_PARAM_READWRITE));
+							GTK_PARAM_READWRITE));
 
   g_type_class_add_private (object_class, 
 			    sizeof (GtkCellRendererProgressPrivate));

@@ -32,6 +32,7 @@
 #include <config.h>
 #include "gtkaspectframe.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 enum {
@@ -110,28 +111,28 @@ gtk_aspect_frame_class_init (GtkAspectFrameClass *class)
                                                        P_("Horizontal Alignment"),
                                                        P_("X alignment of the child"),
                                                        0.0, 1.0, 0.5,
-                                                       G_PARAM_READABLE | G_PARAM_WRITABLE ));
+                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE ));
   g_object_class_install_property (gobject_class,
                                    PROP_YALIGN,
                                    g_param_spec_float ("yalign",
                                                        P_("Vertical Alignment"),
                                                        P_("Y alignment of the child"),
                                                        0.0, 1.0, 0.5,
-                                                       G_PARAM_READABLE | G_PARAM_WRITABLE ));
+                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE ));
   g_object_class_install_property (gobject_class,
                                    PROP_RATIO,
                                    g_param_spec_float ("ratio",
                                                        P_("Ratio"),
                                                        P_("Aspect ratio if obey_child is FALSE"),
                                                        MIN_RATIO, MAX_RATIO, 0.5,
-                                                       G_PARAM_READABLE | G_PARAM_WRITABLE ));
+                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE ));
   g_object_class_install_property (gobject_class,
                                    PROP_OBEY_CHILD,
-                                   g_param_spec_boolean ("obey_child",
+                                   g_param_spec_boolean ("obey-child",
                                                          P_("Obey child"),
                                                          P_("Force aspect ratio to match that of the frame's child"),
                                                          TRUE,
-                                                         G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 }
 
 static void

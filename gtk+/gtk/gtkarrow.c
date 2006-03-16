@@ -28,6 +28,7 @@
 #include <math.h>
 #include "gtkarrow.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define MIN_ARROW_SIZE  15
@@ -96,20 +97,20 @@ gtk_arrow_class_init (GtkArrowClass *class)
   
   g_object_class_install_property (gobject_class,
                                    PROP_ARROW_TYPE,
-                                   g_param_spec_enum ("arrow_type",
+                                   g_param_spec_enum ("arrow-type",
                                                       P_("Arrow direction"),
                                                       P_("The direction the arrow should point"),
 						      GTK_TYPE_ARROW_TYPE,
 						      GTK_ARROW_RIGHT,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
                                    PROP_SHADOW_TYPE,
-                                   g_param_spec_enum ("shadow_type",
+                                   g_param_spec_enum ("shadow-type",
                                                       P_("Arrow shadow"),
                                                       P_("Appearance of the shadow surrounding the arrow"),
 						      GTK_TYPE_SHADOW_TYPE,
 						      GTK_SHADOW_OUT,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
   
   widget_class->expose_event = gtk_arrow_expose;
 }

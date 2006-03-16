@@ -29,6 +29,7 @@
 #include "gdk-pixbuf/gdk-pixdata.h"
 #include "gtktextbufferserialize.h"
 #include "gtkintl.h"
+#include "gtkalias.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -1881,3 +1882,6 @@ gtk_text_buffer_deserialize_rich_text (GtkTextBuffer *buffer,
 
   return retval;
 }
+
+#define __GTK_TEXT_BUFFER_SERIALIZE_C__
+#include "gtkaliasdef.c"

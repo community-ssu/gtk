@@ -1,3 +1,10 @@
+2006-03-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gdk/*.c
+	* gdk-pixbuf/*.c
+	* gtk/*.c: Canonicalize all property descriptions and use the static
+	flag to avoid extra (~37K worth) allocations.
+
 2006-03-14  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_button_press): Be more

@@ -25,6 +25,7 @@
 #include "gtkcellrenderertext.h"
 
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define GTK_COMBO_BOX_ENTRY_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_COMBO_BOX_ENTRY, GtkComboBoxEntryPrivate))
@@ -117,13 +118,13 @@ gtk_combo_box_entry_class_init (GtkComboBoxEntryClass *klass)
   
   g_object_class_install_property (object_class,
                                    PROP_TEXT_COLUMN,
-                                   g_param_spec_int ("text_column",
+                                   g_param_spec_int ("text-column",
                                                      P_("Text Column"),
                                                      P_("A column in the data source model to get the strings from"),
                                                      -1,
                                                      G_MAXINT,
                                                      -1,
-                                                     G_PARAM_READWRITE));
+                                                     GTK_PARAM_READWRITE));
 
   g_type_class_add_private ((GObjectClass *) klass,
                             sizeof (GtkComboBoxEntryPrivate));

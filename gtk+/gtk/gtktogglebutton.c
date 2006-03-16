@@ -30,6 +30,7 @@
 #include "gtkmarshalers.h"
 #include "gtktogglebutton.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define DEFAULT_LEFT_POS  4
@@ -134,7 +135,7 @@ gtk_toggle_button_class_init (GtkToggleButtonClass *class)
 							 P_("Active"),
 							 P_("If the toggle button should be pressed in or not"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_INCONSISTENT,
@@ -142,15 +143,15 @@ gtk_toggle_button_class_init (GtkToggleButtonClass *class)
 							 P_("Inconsistent"),
 							 P_("If the toggle button is in an \"in between\" state"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_DRAW_INDICATOR,
-                                   g_param_spec_boolean ("draw_indicator",
+                                   g_param_spec_boolean ("draw-indicator",
 							 P_("Draw Indicator"),
 							 P_("If the toggle part of the button is displayed"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   toggle_button_signals[TOGGLED] =
     g_signal_new ("toggled",

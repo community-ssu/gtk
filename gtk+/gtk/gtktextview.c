@@ -568,33 +568,33 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
  
   g_object_class_install_property (gobject_class,
                                    PROP_PIXELS_ABOVE_LINES,
-                                   g_param_spec_int ("pixels_above_lines",
+                                   g_param_spec_int ("pixels-above-lines",
 						     P_("Pixels Above Lines"),
 						     P_("Pixels of blank space above paragraphs"),
 						     0,
 						     G_MAXINT,
 						     0,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
  
   g_object_class_install_property (gobject_class,
                                    PROP_PIXELS_BELOW_LINES,
-                                   g_param_spec_int ("pixels_below_lines",
+                                   g_param_spec_int ("pixels-below-lines",
 						     P_("Pixels Below Lines"),
 						     P_("Pixels of blank space below paragraphs"),
 						     0,
 						     G_MAXINT,
 						     0,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
  
   g_object_class_install_property (gobject_class,
                                    PROP_PIXELS_INSIDE_WRAP,
-                                   g_param_spec_int ("pixels_inside_wrap",
+                                   g_param_spec_int ("pixels-inside-wrap",
 						     P_("Pixels Inside Wrap"),
 						     P_("Pixels of blank space between wrapped lines in a paragraph"),
 						     0,
 						     G_MAXINT,
 						     0,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_EDITABLE,
@@ -602,16 +602,16 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
 							 P_("Editable"),
 							 P_("Whether the text can be modified by the user"),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_WRAP_MODE,
-                                   g_param_spec_enum ("wrap_mode",
+                                   g_param_spec_enum ("wrap-mode",
 						      P_("Wrap Mode"),
 						      P_("Whether to wrap lines never, at word boundaries, or at character boundaries"),
 						      GTK_TYPE_WRAP_MODE,
 						      GTK_WRAP_NONE,
-						      G_PARAM_READWRITE));
+						      GTK_PARAM_READWRITE));
  
   g_object_class_install_property (gobject_class,
                                    PROP_JUSTIFICATION,
@@ -620,27 +620,27 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
 						      P_("Left, right, or center justification"),
 						      GTK_TYPE_JUSTIFICATION,
 						      GTK_JUSTIFY_LEFT,
-						      G_PARAM_READWRITE));
+						      GTK_PARAM_READWRITE));
  
   g_object_class_install_property (gobject_class,
                                    PROP_LEFT_MARGIN,
-                                   g_param_spec_int ("left_margin",
+                                   g_param_spec_int ("left-margin",
 						     P_("Left Margin"),
 						     P_("Width of the left margin in pixels"),
 						     0,
 						     G_MAXINT,
 						     0,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_RIGHT_MARGIN,
-                                   g_param_spec_int ("right_margin",
+                                   g_param_spec_int ("right-margin",
 						     P_("Right Margin"),
 						     P_("Width of the right margin in pixels"),
 						     0,
 						     G_MAXINT,
 						     0,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_INDENT,
@@ -650,7 +650,7 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
 						     0,
 						     G_MAXINT,
 						     0,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_TABS,
@@ -658,15 +658,15 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
                                                        P_("Tabs"),
                                                        P_("Custom tabs for this text"),
                                                        PANGO_TYPE_TAB_ARRAY,
-						       G_PARAM_READWRITE));
+						       GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_CURSOR_VISIBLE,
-                                   g_param_spec_boolean ("cursor_visible",
+                                   g_param_spec_boolean ("cursor-visible",
 							 P_("Cursor Visible"),
 							 P_("If the insertion cursor is shown"),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_BUFFER,
@@ -674,7 +674,7 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
 							P_("Buffer"),
 							P_("The buffer which is displayed"),
 							GTK_TYPE_TEXT_BUFFER,
-							G_PARAM_READWRITE));
+							GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_OVERWRITE,
@@ -682,15 +682,15 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
 							 P_("Overwrite mode"),
 							 P_("Whether entered text overwrites existing contents"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_ACCEPTS_TAB,
-                                   g_param_spec_boolean ("accepts_tab",
+                                   g_param_spec_boolean ("accepts-tab",
 							 P_("Accepts tab"),
 							 P_("Whether Tab will result in a tab character being entered"),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   /**
    * GtkTextView:autocap:
@@ -707,7 +707,7 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
                                                          P_("auto capitalization"),
                                                          P_("Enable autocap support"),
                                                          TRUE,
-                                                         G_PARAM_READABLE | G_PARAM_WRITABLE)); 
+                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE)); 
 
   /**
    * GtkTextView:input-mode:
@@ -721,13 +721,13 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
    **/
   g_object_class_install_property (gobject_class,
                                    PROP_INPUT_MODE,
-                                   g_param_spec_int ("input_mode",
+                                   g_param_spec_int ("input-mode",
                                                      P_("input mode"),
                                                      P_("Define widget's input mode"),
                                                      0,
                                                      9, /* keep me updated */
                                                      0,
-                                                     G_PARAM_READABLE | G_PARAM_WRITABLE)); 
+                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE)); 
 
   /**
    * GtkTextView:hildon-input-mode:
@@ -739,13 +739,13 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
    **/
   g_object_class_install_property (gobject_class,
                                    PROP_HILDON_INPUT_MODE,
-                                   g_param_spec_flags ("hildon_input_mode",
+                                   g_param_spec_flags ("hildon-input-mode",
                                                        P_("Hildon input mode"),
                                                        P_("Define widget's input mode"),
                                                        GTK_TYPE_GTK_INPUT_MODE,
                                                        HILDON_GTK_INPUT_MODE_FULL |
                                                        HILDON_GTK_INPUT_MODE_AUTOCAP,
-                                                       G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
   /*
    * Style properties
@@ -755,7 +755,7 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
 							       P_("Error underline color"),
 							       P_("Color with which to draw error-indication underlines"),
 							       GDK_TYPE_COLOR,
-							       G_PARAM_READABLE));
+							       GTK_PARAM_READABLE));
 
   /*
    * Signals

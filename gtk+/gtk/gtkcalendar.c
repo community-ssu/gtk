@@ -47,6 +47,7 @@
 #include "gtkmarshalers.h"
 #include "gtkintl.h"
 #include "gdk/gdkkeysyms.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 /***************************************************************************/
@@ -521,21 +522,21 @@ gtk_calendar_class_init (GtkCalendarClass *class)
                                                      P_("Year"),
                                                      P_("The selected year"),
                                                      0, G_MAXINT, 0,
-                                                     G_PARAM_READWRITE));
+                                                     GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_MONTH,
                                    g_param_spec_int ("month",
                                                      P_("Month"),
                                                      P_("The selected month (as a number between 0 and 11)"),
                                                      0, 11, 0,
-                                                     G_PARAM_READWRITE));
+                                                     GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_DAY,
                                    g_param_spec_int ("day",
                                                      P_("Day"),
                                                      P_("The selected day (as a number between 1 and 31, or 0 to unselect the currently selected day)"),
                                                      0, 31, 0,
-                                                     G_PARAM_READWRITE));
+                                                     GTK_PARAM_READWRITE));
 
 /**
  * GtkCalendar:show-heading:
@@ -546,11 +547,11 @@ gtk_calendar_class_init (GtkCalendarClass *class)
  */
   g_object_class_install_property (gobject_class,
                                    PROP_SHOW_HEADING,
-                                   g_param_spec_boolean ("show_heading",
+                                   g_param_spec_boolean ("show-heading",
                                                          P_("Show Heading"),
                                                          P_("If TRUE, a heading is displayed"),
                                                          TRUE,
-                                                         G_PARAM_READWRITE));
+                                                         GTK_PARAM_READWRITE));
 
 /**
  * GtkCalendar:show-day-names:
@@ -561,11 +562,11 @@ gtk_calendar_class_init (GtkCalendarClass *class)
  */
   g_object_class_install_property (gobject_class,
                                    PROP_SHOW_DAY_NAMES,
-                                   g_param_spec_boolean ("show_day_names",
+                                   g_param_spec_boolean ("show-day-names",
                                                          P_("Show Day Names"),
                                                          P_("If TRUE, day names are displayed"),
                                                          TRUE,
-                                                         G_PARAM_READWRITE));
+                                                         GTK_PARAM_READWRITE));
 /**
  * GtkCalendar:no-month-change:
  *
@@ -575,11 +576,11 @@ gtk_calendar_class_init (GtkCalendarClass *class)
  */
   g_object_class_install_property (gobject_class,
                                    PROP_NO_MONTH_CHANGE,
-                                   g_param_spec_boolean ("no_month_change",
+                                   g_param_spec_boolean ("no-month-change",
                                                          P_("No Month Change"),
                                                          P_("If TRUE, the selected month cannot be changed"),
                                                          FALSE,
-                                                         G_PARAM_READWRITE));
+                                                         GTK_PARAM_READWRITE));
 
 /**
  * GtkCalendar:show-week-numbers:
@@ -590,11 +591,11 @@ gtk_calendar_class_init (GtkCalendarClass *class)
  */
   g_object_class_install_property (gobject_class,
                                    PROP_SHOW_WEEK_NUMBERS,
-                                   g_param_spec_boolean ("show_week_numbers",
+                                   g_param_spec_boolean ("show-week-numbers",
                                                          P_("Show Week Numbers"),
                                                          P_("If TRUE, week numbers are displayed"),
                                                          FALSE,
-                                                         G_PARAM_READWRITE));
+                                                         GTK_PARAM_READWRITE));
 
 /**
  * GtkCalendar:week-start:
@@ -605,11 +606,11 @@ gtk_calendar_class_init (GtkCalendarClass *class)
  */
   g_object_class_install_property (gobject_class,
                                    PROP_WEEK_START,
-                                   g_param_spec_int ("week_start",
+                                   g_param_spec_int ("week-start",
                                                      P_("Week start day"),
                                                      P_("First day of the week; 0 for Sunday, 1 for Monday etc."),
                                                      0, 6, 0,
-                                                     G_PARAM_READWRITE));
+                                                     GTK_PARAM_READWRITE));
 
   /**
    * GtkCalendar:min-year:
@@ -618,11 +619,11 @@ gtk_calendar_class_init (GtkCalendarClass *class)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_MIN_YEAR,
-                                   g_param_spec_int ("min_year",
+                                   g_param_spec_int ("min-year",
                                                      "Minimum valid year",
                                                      "Minimum valid year (0 if no limit)",
                                                      0, 2100, 0,
-                                                     G_PARAM_READWRITE));
+                                                     GTK_PARAM_READWRITE));
 
   /**
    * GtkCalendar:max-year:
@@ -631,11 +632,11 @@ gtk_calendar_class_init (GtkCalendarClass *class)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_MAX_YEAR,
-                                   g_param_spec_int ("max_year",
+                                   g_param_spec_int ("max-year",
                                                      "Maximum valid year",
                                                      "Maximum valid year (0 if no limit)",
                                                      0, 2100, 0,
-                                                     G_PARAM_READWRITE));
+                                                     GTK_PARAM_READWRITE));
 
   /**
    * GtkCalendar:hildonlike:
@@ -647,7 +648,7 @@ gtk_calendar_class_init (GtkCalendarClass *class)
                                   _("Size request"),
                                   _("Size allocate"),
                                   FALSE,
-                                  G_PARAM_READABLE));
+                                  GTK_PARAM_READABLE));
 
   gtk_calendar_signals[MONTH_CHANGED_SIGNAL] =
     g_signal_new ("month_changed",

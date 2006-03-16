@@ -38,6 +38,7 @@
 #include "gtkrange.h"
 #include "gtkintl.h"
 #include "gtkscrollbar.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define SCROLL_INITIAL_DELAY 250  /* must hold button this long before ... */
@@ -345,12 +346,12 @@ gtk_range_class_init (GtkRangeClass *class)
   
   g_object_class_install_property (gobject_class,
                                    PROP_UPDATE_POLICY,
-                                   g_param_spec_enum ("update_policy",
+                                   g_param_spec_enum ("update-policy",
 						      P_("Update policy"),
 						      P_("How the range should be updated on the screen"),
 						      GTK_TYPE_UPDATE_TYPE,
 						      GTK_UPDATE_CONTINUOUS,
-						      G_PARAM_READWRITE));
+						      GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_ADJUSTMENT,
@@ -358,7 +359,7 @@ gtk_range_class_init (GtkRangeClass *class)
 							P_("Adjustment"),
 							P_("The GtkAdjustment that contains the current value of this range object"),
                                                         GTK_TYPE_ADJUSTMENT,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
   g_object_class_install_property (gobject_class,
                                    PROP_INVERTED,
@@ -366,7 +367,7 @@ gtk_range_class_init (GtkRangeClass *class)
 							P_("Inverted"),
 							P_("Invert direction slider moves to increase range value"),
                                                          FALSE,
-                                                         G_PARAM_READWRITE));
+                                                         GTK_PARAM_READWRITE));
   
   /**
    * GtkRange:stream-indicator:
@@ -375,11 +376,11 @@ gtk_range_class_init (GtkRangeClass *class)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_STREAM_INDICATOR,
-                                   g_param_spec_boolean ("stream_indicator",
+                                   g_param_spec_boolean ("stream-indicator",
 							P_("Stream Indicator"),
 							P_("Whether to display a stream indicator graphics on trough."),
                                                         FALSE,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
   /**
    * GtkRange:minimum-visible-bars:
@@ -388,13 +389,13 @@ gtk_range_class_init (GtkRangeClass *class)
    */
   g_object_class_install_property (gobject_class,
 		  PROP_MINIMUM_VISIBLE_BARS,
-		  g_param_spec_int ("minimum_visible_bars",
+		  g_param_spec_int ("minimum-visible-bars",
 			  P_("Minimum visible bars"),
 			  P_("The minimum number of visible bars in a HildonControlBar"),
 			  0,
 			  G_MAXINT,
 			  0,
-			  G_PARAM_READWRITE));
+			  GTK_PARAM_READWRITE));
   
   /**
    * GtkRange:stream-position:
@@ -403,62 +404,62 @@ gtk_range_class_init (GtkRangeClass *class)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_STREAM_POSITION,
-                                   g_param_spec_double ("stream_position",
+                                   g_param_spec_double ("stream-position",
 							P_("Stream Position"),
 							P_("The position of the streaming."),
 							-G_MAXDOUBLE,
 							G_MAXDOUBLE,
                                                         0.0,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("slider_width",
+					   g_param_spec_int ("slider-width",
 							     P_("Slider Width"),
 							     P_("Width of scrollbar or scale thumb"),
 							     0,
 							     G_MAXINT,
 							     14,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("trough_border",
+					   g_param_spec_int ("trough-border",
                                                              P_("Trough Border"),
                                                              P_("Spacing between thumb/steppers and outer trough bevel"),
                                                              0,
                                                              G_MAXINT,
                                                              1,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("stepper_size",
+					   g_param_spec_int ("stepper-size",
 							     P_("Stepper Size"),
 							     P_("Length of step buttons at ends"),
 							     0,
 							     G_MAXINT,
 							     14,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("stepper_spacing",
+					   g_param_spec_int ("stepper-spacing",
 							     P_("Stepper Spacing"),
 							     P_("Spacing between step buttons and thumb"),
                                                              0,
 							     G_MAXINT,
 							     0,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("arrow_displacement_x",
+					   g_param_spec_int ("arrow-displacement-x",
 							     P_("Arrow X Displacement"),
 							     P_("How far in the x direction to move the arrow when the button is depressed"),
 							     G_MININT,
 							     G_MAXINT,
 							     0,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("arrow_displacement_y",
+					   g_param_spec_int ("arrow-displacement-y",
 							     P_("Arrow Y Displacement"),
 							     P_("How far in the y direction to move the arrow when the button is depressed"),
 							     G_MININT,
 							     G_MAXINT,
 							     0,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
 
   /**
    * GtkRange:hildonlike:
@@ -470,7 +471,7 @@ gtk_range_class_init (GtkRangeClass *class)
                                                                  _("hildonlike"),
                                                                  _("Change focus out behaviour, 1/0"),
                                                                  FALSE,
-                                                                 G_PARAM_READABLE));
+                                                                 GTK_PARAM_READABLE));
 
   /**
    * GtkRange:two-part-trough:
@@ -478,11 +479,11 @@ gtk_range_class_init (GtkRangeClass *class)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_boolean ("two_part_trough",
+                                           g_param_spec_boolean ("two-part-trough",
                                                                  _("Two-part trough"),
                                                                  _("Allow different trough graphics on different sides of the slider, 1/0"),
                                                                  FALSE,
-                                                                 G_PARAM_READABLE));
+                                                                 GTK_PARAM_READABLE));
 
   /**
    * GtkRange:stream-indicator-padding:
@@ -490,13 +491,13 @@ gtk_range_class_init (GtkRangeClass *class)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("stream_indicator_padding",
+					   g_param_spec_int ("stream-indicator-padding",
                                                              P_("Stream Indicator Padding"),
                                                              P_("How many pixels smallerthan the trough the stream indicator is drawn from both ends ."),
                                                              0,
                                                              G_MAXINT,
                                                              1,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
 
   /**
    * GtkRange:autodimmed-steppers:
@@ -504,11 +505,11 @@ gtk_range_class_init (GtkRangeClass *class)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_boolean ("autodimmed_steppers",
+                                           g_param_spec_boolean ("autodimmed-steppers",
                                                                  _("Autodimmed steppers"),
                                                                  _("Automatically dim steppers when maximum or minimum value has been reached"),
                                                                  FALSE,
-                                                                 G_PARAM_READABLE));
+                                                                 GTK_PARAM_READABLE));
 
   /**
    * GtkRange:arrow-paint-box-layout:
@@ -516,11 +517,11 @@ gtk_range_class_init (GtkRangeClass *class)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_boolean ("arrow_paint_box_layout",
+                                           g_param_spec_boolean ("arrow-paint-box-layout",
                                                                  _("Arrow paint box layout"),
                                                                  _("Allows to use images instead of normal arrows."),
                                                                  FALSE,
-                                                                 G_PARAM_READABLE));
+                                                                 GTK_PARAM_READABLE));
 
   /**
    * GtkRange:draw-trough-under-steppers:
@@ -528,11 +529,11 @@ gtk_range_class_init (GtkRangeClass *class)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_boolean ("draw_trough_under_steppers",
+                                           g_param_spec_boolean ("draw-trough-under-steppers",
                                                                  _("Draw trough under steppers"),
                                                                  _("Whether to draw trought for full length of range or exclude the steppers and spacing"),
                                                                  TRUE,
-                                                                 G_PARAM_READABLE));
+                                                                 GTK_PARAM_READABLE));
    
   g_type_class_add_private (gobject_class, sizeof (OssoGtkRangePrivate));
 }

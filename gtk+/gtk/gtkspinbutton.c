@@ -40,6 +40,7 @@
 #include "gtkmarshalers.h"
 #include "gtksettings.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define MIN_SPIN_BUTTON_WIDTH              30
@@ -242,17 +243,17 @@ gtk_spin_button_class_init (GtkSpinButtonClass *class)
                                                         P_("Adjustment"),
                                                         P_("The adjustment that holds the value of the spinbutton"),
                                                         GTK_TYPE_ADJUSTMENT,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_CLIMB_RATE,
-                                   g_param_spec_double ("climb_rate",
+                                   g_param_spec_double ("climb-rate",
 							P_("Climb Rate"),
 							P_("The acceleration rate when you hold down a button"),
 							0.0,
 							G_MAXDOUBLE,
 							0.0,
-							G_PARAM_READWRITE));  
+							GTK_PARAM_READWRITE));  
   
   g_object_class_install_property (gobject_class,
                                    PROP_DIGITS,
@@ -262,15 +263,15 @@ gtk_spin_button_class_init (GtkSpinButtonClass *class)
 						      0,
 						      MAX_DIGITS,
 						      0,
-						      G_PARAM_READWRITE));
+						      GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_SNAP_TO_TICKS,
-                                   g_param_spec_boolean ("snap_to_ticks",
+                                   g_param_spec_boolean ("snap-to-ticks",
 							 P_("Snap to Ticks"),
 							 P_("Whether erroneous values are automatically changed to a spin button's nearest step increment"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_NUMERIC,
@@ -278,7 +279,7 @@ gtk_spin_button_class_init (GtkSpinButtonClass *class)
 							 P_("Numeric"),
 							 P_("Whether non-numeric characters should be ignored"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_WRAP,
@@ -286,16 +287,16 @@ gtk_spin_button_class_init (GtkSpinButtonClass *class)
 							 P_("Wrap"),
 							 P_("Whether a spin button should wrap upon reaching its limits"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_UPDATE_POLICY,
-                                   g_param_spec_enum ("update_policy",
+                                   g_param_spec_enum ("update-policy",
 						      P_("Update Policy"),
 						      P_("Whether the spin button should update always, or only when the value is legal"),
 						      GTK_TYPE_SPIN_BUTTON_UPDATE_POLICY,
 						      GTK_UPDATE_ALWAYS,
-						      G_PARAM_READWRITE));
+						      GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_VALUE,
@@ -305,15 +306,15 @@ gtk_spin_button_class_init (GtkSpinButtonClass *class)
 							-G_MAXDOUBLE,
 							G_MAXDOUBLE,
 							0.0,
-							G_PARAM_READWRITE));  
+							GTK_PARAM_READWRITE));  
   
   gtk_widget_class_install_style_property_parser (widget_class,
-						  g_param_spec_enum ("shadow_type", 
+						  g_param_spec_enum ("shadow-type", 
 								     "Shadow Type", 
 								     P_("Style of bevel around the spin button"),
 								     GTK_TYPE_SHADOW_TYPE,
 								     GTK_SHADOW_IN,
-								     G_PARAM_READABLE),
+								     GTK_PARAM_READABLE),
 						  gtk_rc_property_parse_enum);
   spinbutton_signals[INPUT] =
     g_signal_new ("input",

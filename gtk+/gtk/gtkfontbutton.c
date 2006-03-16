@@ -40,6 +40,7 @@
 #include "gtkimage.h"
 #include "gtkmarshalers.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #include <string.h>
@@ -176,8 +177,8 @@ gtk_font_button_class_init (GtkFontButtonClass *klass)
                                                         P_("Title"),
                                                         P_("The title of the font selection dialog"),
                                                         _("Pick a Font"),
-                                                        (G_PARAM_READABLE |
-                                                         G_PARAM_WRITABLE)));
+                                                        (GTK_PARAM_READABLE |
+                                                         GTK_PARAM_WRITABLE)));
 
   /**
    * GtkFontButton:font-name:
@@ -188,12 +189,12 @@ gtk_font_button_class_init (GtkFontButtonClass *klass)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_FONT_NAME,
-                                   g_param_spec_string ("font_name",
+                                   g_param_spec_string ("font-name",
                                                         P_("Font name"),
                                                         P_("The name of the selected font"),
                                                         P_("Sans 12"),
-                                                        (G_PARAM_READABLE |
-                                                         G_PARAM_WRITABLE)));
+                                                        (GTK_PARAM_READABLE |
+                                                         GTK_PARAM_WRITABLE)));
 
   /**
    * GtkFontButton:use-font:
@@ -204,12 +205,12 @@ gtk_font_button_class_init (GtkFontButtonClass *klass)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_USE_FONT,
-                                   g_param_spec_boolean ("use_font",
+                                   g_param_spec_boolean ("use-font",
                                                          P_("Use font in label"),
                                                          P_("Whether the label is drawn in the selected font"),
                                                          FALSE,
-                                                         (G_PARAM_READABLE |
-                                                          G_PARAM_WRITABLE)));
+                                                         (GTK_PARAM_READABLE |
+                                                          GTK_PARAM_WRITABLE)));
 
   /**
    * GtkFontButton:use-size:
@@ -220,12 +221,12 @@ gtk_font_button_class_init (GtkFontButtonClass *klass)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_USE_SIZE,
-                                   g_param_spec_boolean ("use_size",
+                                   g_param_spec_boolean ("use-size",
                                                          P_("Use size in label"),
                                                          P_("Whether the label is drawn with the selected font size"),
                                                          FALSE,
-                                                         (G_PARAM_READABLE |
-                                                          G_PARAM_WRITABLE)));
+                                                         (GTK_PARAM_READABLE |
+                                                          GTK_PARAM_WRITABLE)));
 
   /**
    * GtkFontButton:show-style:
@@ -237,12 +238,12 @@ gtk_font_button_class_init (GtkFontButtonClass *klass)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_SHOW_STYLE,
-                                   g_param_spec_boolean ("show_style",
+                                   g_param_spec_boolean ("show-style",
                                                          P_("Show style"),
                                                          P_("Whether the selected font style is shown in the label"),
                                                          TRUE,
-                                                         (G_PARAM_READABLE |
-                                                          G_PARAM_WRITABLE)));
+                                                         (GTK_PARAM_READABLE |
+                                                          GTK_PARAM_WRITABLE)));
   /**
    * GtkFontButton:show-size:
    * 
@@ -253,12 +254,12 @@ gtk_font_button_class_init (GtkFontButtonClass *klass)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_SHOW_SIZE,
-                                   g_param_spec_boolean ("show_size",
+                                   g_param_spec_boolean ("show-size",
                                                          P_("Show size"),
                                                          P_("Whether selected font size is shown in the label"),
                                                          TRUE,
-                                                         (G_PARAM_READABLE |
-                                                          G_PARAM_WRITABLE)));
+                                                         (GTK_PARAM_READABLE |
+                                                          GTK_PARAM_WRITABLE)));
 
   /**
    * GtkFontButton::font-set:

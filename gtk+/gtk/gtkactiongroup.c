@@ -37,6 +37,7 @@
 #include "gtkaccelmap.h"
 #include "gtkmarshalers.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define GTK_ACTION_GROUP_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_ACTION_GROUP, GtkActionGroupPrivate))
@@ -134,7 +135,7 @@ gtk_action_group_class_init (GtkActionGroupClass *klass)
 							P_("Name"),
 							P_("A name for the action group."),
 							NULL,
-							G_PARAM_READWRITE |
+							GTK_PARAM_READWRITE |
 							G_PARAM_CONSTRUCT_ONLY));
   g_object_class_install_property (gobject_class,
 				   PROP_SENSITIVE,
@@ -142,14 +143,14 @@ gtk_action_group_class_init (GtkActionGroupClass *klass)
 							 P_("Sensitive"),
 							 P_("Whether the action group is enabled."),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_VISIBLE,
 				   g_param_spec_boolean ("visible",
 							 P_("Visible"),
 							 P_("Whether the action group is visible."),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   /**
    * GtkActionGroup::connect-proxy:

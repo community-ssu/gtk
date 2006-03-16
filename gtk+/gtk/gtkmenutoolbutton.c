@@ -28,6 +28,7 @@
 #include "gtkvbox.h"
 #include "gtkmenu.h"
 #include "gtkmain.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 
@@ -250,7 +251,7 @@ gtk_menu_tool_button_class_init (GtkMenuToolButtonClass *klass)
                                                         P_("Menu"),
                                                         P_("The dropdown menu"),
                                                         GTK_TYPE_MENU,
-                                                        G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
   g_type_class_add_private (object_class, sizeof (GtkMenuToolButtonPrivate));
 }

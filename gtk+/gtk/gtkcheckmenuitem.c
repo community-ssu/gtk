@@ -29,6 +29,7 @@
 #include "gtkaccellabel.h"
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 enum {
@@ -118,7 +119,7 @@ gtk_check_menu_item_class_init (GtkCheckMenuItemClass *klass)
                                                          P_("Active"),
                                                          P_("Whether the menu item is checked"),
                                                          FALSE,
-                                                         G_PARAM_READWRITE));
+                                                         GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_INCONSISTENT,
@@ -126,25 +127,25 @@ gtk_check_menu_item_class_init (GtkCheckMenuItemClass *klass)
                                                          P_("Inconsistent"),
                                                          P_("Whether to display an \"inconsistent\" state"),
                                                          FALSE,
-                                                         G_PARAM_READWRITE));
+                                                         GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_DRAW_AS_RADIO,
-                                   g_param_spec_boolean ("draw_as_radio",
+                                   g_param_spec_boolean ("draw-as-radio",
                                                          P_("Draw as radio menu item"),
                                                          P_("Whether the menu item looks like a radio menu item"),
                                                          FALSE,
-                                                         G_PARAM_READWRITE));
+                                                         GTK_PARAM_READWRITE));
   
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("indicator_size",
+                                           g_param_spec_int ("indicator-size",
                                                              P_("Indicator Size")
 ,
                                                              P_("Size of check or radio indicator"),
                                                              0,
                                                              G_MAXINT,
                                                              12,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
 
   widget_class->expose_event = gtk_check_menu_item_expose;
   

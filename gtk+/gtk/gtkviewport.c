@@ -28,6 +28,7 @@
 #include "gtkviewport.h"
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 enum {
@@ -136,7 +137,7 @@ gtk_viewport_class_init (GtkViewportClass *class)
 							P_("Horizontal adjustment"),
 							P_("The GtkAdjustment that determines the values of the horizontal position for this viewport"),
                                                         GTK_TYPE_ADJUSTMENT,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
   g_object_class_install_property (gobject_class,
                                    PROP_VADJUSTMENT,
@@ -144,16 +145,16 @@ gtk_viewport_class_init (GtkViewportClass *class)
 							P_("Vertical adjustment"),
 							P_("The GtkAdjustment that determines the values of the vertical position for this viewport"),
                                                         GTK_TYPE_ADJUSTMENT,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
   g_object_class_install_property (gobject_class,
                                    PROP_SHADOW_TYPE,
-                                   g_param_spec_enum ("shadow_type",
+                                   g_param_spec_enum ("shadow-type",
 						      P_("Shadow type"),
 						      P_("Determines how the shadowed box around the viewport is drawn"),
 						      GTK_TYPE_SHADOW_TYPE,
 						      GTK_SHADOW_NONE,
-						      G_PARAM_READWRITE));
+						      GTK_PARAM_READWRITE));
 
   widget_class->set_scroll_adjustments_signal =
     g_signal_new ("set_scroll_adjustments",

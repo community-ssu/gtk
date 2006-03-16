@@ -28,6 +28,7 @@
 #include "gtkcheckbutton.h"
 #include "gtkintl.h"
 #include "gtklabel.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 
@@ -121,21 +122,21 @@ gtk_check_button_class_init (GtkCheckButtonClass *class)
   class->draw_indicator = gtk_real_check_button_draw_indicator;
 
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("indicator_size",
+					   g_param_spec_int ("indicator-size",
                                                              P_("Indicator Size"),
                                                              P_("Size of check or radio indicator"),
                                                              0,
                                                              G_MAXINT,
                                                              INDICATOR_SIZE,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("indicator_spacing",
+					   g_param_spec_int ("indicator-spacing",
                                                              P_("Indicator Spacing"),
                                                              P_("Spacing around check or radio indicator"),
                                                              0,
                                                              G_MAXINT,
                                                              INDICATOR_SPACING,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   /**
    * GtkCheckButton:focus-x-padding:
    *
@@ -148,7 +149,7 @@ gtk_check_button_class_init (GtkCheckButtonClass *class)
                                                              0,
                                                              G_MAXINT,
                                                              FOCUS_X_PADDING,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
 }
 
 static void

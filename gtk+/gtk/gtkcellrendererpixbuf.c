@@ -23,6 +23,7 @@
 #include "gtkiconfactory.h"
 #include "gtkicontheme.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 static void gtk_cell_renderer_pixbuf_get_property  (GObject                    *object,
@@ -142,52 +143,52 @@ gtk_cell_renderer_pixbuf_class_init (GtkCellRendererPixbufClass *class)
 							P_("Pixbuf Object"),
 							P_("The pixbuf to render"),
 							GDK_TYPE_PIXBUF,
-							G_PARAM_READABLE |
-							G_PARAM_WRITABLE));
+							GTK_PARAM_READABLE |
+							GTK_PARAM_WRITABLE));
 
   g_object_class_install_property (object_class,
 				   PROP_PIXBUF_EXPANDER_OPEN,
-				   g_param_spec_object ("pixbuf_expander_open",
+				   g_param_spec_object ("pixbuf-expander-open",
 							P_("Pixbuf Expander Open"),
 							P_("Pixbuf for open expander"),
 							GDK_TYPE_PIXBUF,
-							G_PARAM_READABLE |
-							G_PARAM_WRITABLE));
+							GTK_PARAM_READABLE |
+							GTK_PARAM_WRITABLE));
 
   g_object_class_install_property (object_class,
 				   PROP_PIXBUF_EXPANDER_CLOSED,
-				   g_param_spec_object ("pixbuf_expander_closed",
+				   g_param_spec_object ("pixbuf-expander-closed",
 							P_("Pixbuf Expander Closed"),
 							P_("Pixbuf for closed expander"),
 							GDK_TYPE_PIXBUF,
-							G_PARAM_READABLE |
-							G_PARAM_WRITABLE));
+							GTK_PARAM_READABLE |
+							GTK_PARAM_WRITABLE));
 
   g_object_class_install_property (object_class,
 				   PROP_STOCK_ID,
-				   g_param_spec_string ("stock_id",
+				   g_param_spec_string ("stock-id",
 							P_("Stock ID"),
 							P_("The stock ID of the stock icon to render"),
 							NULL,
-							G_PARAM_READWRITE));
+							GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
 				   PROP_STOCK_SIZE,
-				   g_param_spec_uint ("stock_size",
+				   g_param_spec_uint ("stock-size",
 						      P_("Size"),
 						      P_("The GtkIconSize value that specifies the size of the rendered icon"),
 						      0,
 						      G_MAXUINT,
 						      GTK_ICON_SIZE_MENU,
-						      G_PARAM_READWRITE));
+						      GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
 				   PROP_STOCK_DETAIL,
-				   g_param_spec_string ("stock_detail",
+				   g_param_spec_string ("stock-detail",
 							P_("Detail"),
 							P_("Render detail to pass to the theme engine"),
 							NULL,
-							G_PARAM_READWRITE));
+							GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class, 
                                    PROP_ICON_NAME,
@@ -195,7 +196,7 @@ gtk_cell_renderer_pixbuf_class_init (GtkCellRendererPixbufClass *class)
                                                         P_("Icon Name"),
                                                         P_("The name of the icon from the icon theme"),
                                                         NULL,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
 
   g_type_class_add_private (object_class, sizeof (GtkCellRendererPixbufPrivate));
 }
