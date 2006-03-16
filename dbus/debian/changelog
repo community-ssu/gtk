@@ -1,10 +1,9 @@
 dbus (0.61-osso3) experimental; urgency=low
 
-  * UNRELEASED
   * Added dependency to libexpat1 to libdbus-glib-1-dev package.
-  * Fixing segfault in dbus-gproxy.c...
+  * Fixed a segfault in dbus-gproxy.c (N#24224).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 14 Mar 2006 11:58:52 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 16 Mar 2006 17:51:12 +0200
 
 dbus (0.61-osso2) experimental; urgency=low
 
