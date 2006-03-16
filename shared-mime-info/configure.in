@@ -1,0 +1,43 @@
+dnl Process this file with autoconf to produce a configure script.
+
+AC_INIT(freedesktop.org.xml)
+AM_INIT_AUTOMAKE(shared-mime-info, 0.15)
+
+AM_CONFIG_HEADER(config.h)
+
+dnl Checks for programs.
+AC_PROG_CC
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+
+dnl Check pkg-config is installed
+PKG_CHECK_MODULES(ALL, \
+		  libxml-2.0 >= 2.4 \
+                  glib-2.0 >= 2.0.0)
+AC_SUBST(ALL_CFLAGS)
+AC_SUBST(ALL_LIBS)
+
+dnl Use -Wall, etc if possible
+[
+if test "x$GCC" = "xyes"; then
+  case " $CFLAGS " in
+  *[\ \	]-Wall[\ \	]*) ;;
+  *) CFLAGS="$CFLAGS -Wall -Wstrict-prototypes -Wmissing-prototypes -Wwrite-strings" ;;
+  esac
+fi
+]
+	
+AC_ARG_ENABLE(update-mimedb,
+   AC_HELP_STRING([--disable-update-mimedb],
+                   [disable the update-mime-database after install [default=no]]),,
+    enable_update_mimedb=yes)
+ AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x$enable_update_mimedb = xyes)
+
+mimedir=['${datadir}/mime']
+AC_SUBST(mimedir)
+
+AC_OUTPUT(
+Makefile
+shared-mime-info.pc
+)

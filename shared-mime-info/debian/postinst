@@ -1,0 +1,10 @@
+#!	/bin/sh -e
+
+
+if [ "$1" = "configure" ]; then
+	if [ -d /usr/doc -a ! -e /usr/doc/shared-mime-info -a -d /usr/share/doc/shared-mime-info ]; then
+		ln -sf ../share/doc/shared-mime-info /usr/doc/shared-mime-info
+	fi
+	/usr/bin/update-mime-database /usr/share/mime
+fi
+

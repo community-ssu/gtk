@@ -1,0 +1,20 @@
+Source: shared-mime-info
+Section: misc
+Priority: optional
+Maintainer: Filip Van Raemdonck <mechanix@debian.org>
+Uploaders: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>, Akira TAGOH <tagoh@debian.org>, Andreas Rottmann <rotty@debian.org>, Andrew Lau <netsnipe@users.sourceforge.net>, Carlos Perelló Marín <carlos@pemas.net>, Edd Dumbill <ejad@debian.org>, Emil Soleyman-Zomalan <emil@nishra.com>, Gustavo Noronha Silva <kov@debian.org>, J.H.M. Dassen (Ray) <jdassen@debian.org>, Johannes Rohr <j.rohr@comlink.org>, Jordi Mallach <jordi@debian.org>, Jose Carlos Garcia Sogo <jsogo@debian.org>, Josselin Mouette <joss@debian.org>, Ondřej Surý <ondrej@debian.org>, Rob Bradford <rob@debianplanet.org>, Rob Taylor <robtaylor@fastmail.fm>, Robert McQueen <robot101@debian.org>, Ross Burton <ross@debian.org>, Sebastien Bacher <seb128@debian.org>, Takuo KITAME <kitame@debian.org>
+Build-Depends: cdbs, debhelper, gnome-pkg-tools, libglib2.0-dev, libxml2-dev, libxml-parser-perl
+Standards-Version: 3.6.1.0
+Bugs: debbugs://bugs.debian.org/
+Origin: Debian
+
+Package: shared-mime-info
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: FreeDesktop.org shared MIME database and spec
+ This is the shared MIME-info database from the X Desktop Group. It is required
+ by any program complying to the Shared MIME-Info Database spec, which is also
+ included in this package.
+ .
+ At this time, only ROX uses this database. GNOME and KDE are expected to
+ follow soon, and hopefully others too.

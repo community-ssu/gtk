@@ -1,0 +1,10 @@
+#!	/bin/sh -e
+
+if [ "$1" = purge ]; then
+	/bin/rm -fr /usr/share/mime/globs /usr/share/mime/magic
+	/bin/rm -fr /usr/share/mime/text 		/usr/share/mime/inode /usr/share/mime/image       		/usr/share/mime/video /usr/share/mime/message     		/usr/share/mime/model /usr/share/mime/multipart   		/usr/share/mime/audio /usr/share/mime/application
+	rmdir --ignore-fail-on-non-empty /usr/share/mime
+fi
+
+exit 0
+

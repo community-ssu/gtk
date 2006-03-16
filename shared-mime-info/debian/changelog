@@ -1,0 +1,94 @@
+shared-mime-info (0.15-4) unstable; urgency=low
+
+  * Removed documentation to avoid dependences
+    (docbook->jadetex->tetex)
+
+ -- Yauheni Kaliuta <yauheni.kaliuta@nokia.com>  Mon, 20 Feb 2006 18:33:10 +0200
+
+shared-mime-info (0.15-3) unstable; urgency=medium
+
+  * Strip out locale data, since it's not needed in this context.
+
+ -- Richard Hult <richard@imendio.com>  Tue,  7 Jun 2005 17:32:08 +0200
+
+shared-mime-info (0.15-1) unstable; urgency=medium
+
+  * New upstream version.
+  * Add magic for non-gzipped dia files. (Closes: #260765)
+  * Register documentation with doc-base. (Closes: #267439)
+  * Refine the Lotus 123 magic pattern, to avoid some Truevision Targa files
+    getting detected as such.
+
+ -- Filip Van Raemdonck <mechanix@debian.org>  Wed,  1 Sep 2004 21:21:02 +0200
+
+shared-mime-info (0.14-2) unstable; urgency=low
+
+  * Acknowledge NMU. (Closes: #240754, #243964, #247398)
+  * Add Ruby shebang line variation. (Closes: #255692)
+  * Improve SMIL detection. (Closes: #256750)
+  * Add GNOME team to uploaders.
+
+ -- Filip Van Raemdonck <mechanix@debian.org>  Tue, 31 Aug 2004 19:13:48 +0200
+
+shared-mime-info (0.14-1.1) unstable; urgency=low
+
+  * NMU to fix a RC bug (Closes: #240754). 
+  * Repackaged with CDBS since the previous system seems to be totally broken
+    on all archs.
+  * debian/patches/001_gdesklets-mime.patch:
+    + support for gdesklets .display files (Closes: #243964).
+  * debian/control:
+    + updated Build-Depends.
+    + updated Standards-Version to 3.6.1.0.
+  
+ -- Sebastien Bacher <seb128@debian.org>  Sat, 24 Apr 2004 18:41:08 +0200
+
+shared-mime-info (0.14-1) unstable; urgency=low
+
+  * New upstream version.
+  * Acknowledge NMU. (Closes: #232912)
+  * Upload to unstable.
+
+ -- Filip Van Raemdonck <mechanix@debian.org>  Thu, 25 Mar 2004 19:36:22 +0100
+
+shared-mime-info (0.13-1) experimental; urgency=low
+
+  * NMU with maintainers permission
+  * New upstream release (closes: #232912)
+
+ -- Ross Burton <ross@debian.org>  Wed, 24 Mar 2004 11:59:08 +0000
+
+shared-mime-info (0.12-1) experimental; urgency=low
+
+  * New upstream version.
+
+ -- Filip Van Raemdonck <mechanix@debian.org>  Tue, 30 Sep 2003 21:08:27 +0200
+
+shared-mime-info (0.9-1) experimental; urgency=low
+
+  * New upstream version.
+  * First real upload, to experimental.
+  * Add --mandir to configure call, since autoconf is apparently still
+    ass-backwards enough to not add the share/ part in the man path.
+
+ -- Filip Van Raemdonck <mechanix@debian.org>  Mon, 29 Jul 2002 23:42:47 +0200
+
+shared-mime-info (0.8-1) unstable; urgency=low
+
+  * New upstream version.
+  * Clarify copyright.
+  * The package builds a mime installer now, so make it architecture dependent
+    and add the necessary builddependencies.
+  * Patch the makefile so that the update-mime-database program isn't run on
+    "$(MAKE) install".
+  * Build a pdf and html version of the spec.
+  * Make sure install-sh strips the .note and .comment sections, too.
+
+ -- Filip Van Raemdonck <mechanix@debian.org>  Thu, 25 Jul 2002 23:26:59 +0200
+
+shared-mime-info (0.7-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Filip Van Raemdonck <mechanix@debian.org>  Thu,  4 Jul 2002 19:32:21 +0200
+
