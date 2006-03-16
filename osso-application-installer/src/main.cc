@@ -1903,7 +1903,7 @@ main (int argc, char **argv)
   if (argc > 1)
     apt_worker_prog = argv[1];
 
-  window = hildon_window_new();
+  window = hildon_window_new ();
   gtk_window_set_title (GTK_WINDOW (window), _("ai_ap_application_installer"));
 
   main_window = GTK_WINDOW (window);
