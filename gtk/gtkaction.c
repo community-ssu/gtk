@@ -44,6 +44,7 @@
 #include "gtktearoffmenuitem.h"
 #include "gtktoolbutton.h"
 #include "gtktoolbar.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 
@@ -196,7 +197,7 @@ gtk_action_class_init (GtkActionClass *klass)
 							P_("Name"),
 							P_("A unique name for the action."),
 							NULL,
-							G_PARAM_READWRITE |
+							GTK_PARAM_READWRITE |
 							G_PARAM_CONSTRUCT_ONLY));
   g_object_class_install_property (gobject_class,
 				   PROP_LABEL,
@@ -205,37 +206,37 @@ gtk_action_class_init (GtkActionClass *klass)
 							P_("The label used for menu items and buttons "
 							   "that activate this action."),
 							NULL,
-							G_PARAM_READWRITE));
+							GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_SHORT_LABEL,
-				   g_param_spec_string ("short_label",
+				   g_param_spec_string ("short-label",
 							P_("Short label"),
 							P_("A shorter label that may be used on toolbar buttons."),
 							NULL,
-							G_PARAM_READWRITE));
+							GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_TOOLTIP,
 				   g_param_spec_string ("tooltip",
 							P_("Tooltip"),
 							P_("A tooltip for this action."),
 							NULL,
-							G_PARAM_READWRITE));
+							GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_STOCK_ID,
-				   g_param_spec_string ("stock_id",
+				   g_param_spec_string ("stock-id",
 							P_("Stock Icon"),
 							P_("The stock icon displayed in widgets representing "
 							   "this action."),
 							NULL,
-							G_PARAM_READWRITE));
+							GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_VISIBLE_HORIZONTAL,
-				   g_param_spec_boolean ("visible_horizontal",
+				   g_param_spec_boolean ("visible-horizontal",
 							 P_("Visible when horizontal"),
 							 P_("Whether the toolbar item is visible when the toolbar "
 							    "is in a horizontal orientation."),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   /**
    * GtkAction:visible-overflown:
    *
@@ -246,57 +247,57 @@ gtk_action_class_init (GtkActionClass *klass)
    */
   g_object_class_install_property (gobject_class,
 				   PROP_VISIBLE_OVERFLOWN,
-				   g_param_spec_boolean ("visible_overflown",
+				   g_param_spec_boolean ("visible-overflown",
 							 P_("Visible when overflown"),
 							 P_("When TRUE, toolitem proxies for this action "
 							    "are represented in the toolbar overflow menu."),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_VISIBLE_VERTICAL,
-				   g_param_spec_boolean ("visible_vertical",
+				   g_param_spec_boolean ("visible-vertical",
 							 P_("Visible when vertical"),
 							 P_("Whether the toolbar item is visible when the toolbar "
 							    "is in a vertical orientation."),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_IS_IMPORTANT,
-				   g_param_spec_boolean ("is_important",
+				   g_param_spec_boolean ("is-important",
 							 P_("Is important"),
 							 P_("Whether the action is considered important. "
 							    "When TRUE, toolitem proxies for this action "
 							    "show text in GTK_TOOLBAR_BOTH_HORIZ mode."),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_HIDE_IF_EMPTY,
-				   g_param_spec_boolean ("hide_if_empty",
+				   g_param_spec_boolean ("hide-if-empty",
 							 P_("Hide if empty"),
 							 P_("When TRUE, empty menu proxies for this action are hidden."),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_SENSITIVE,
 				   g_param_spec_boolean ("sensitive",
 							 P_("Sensitive"),
 							 P_("Whether the action is enabled."),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_VISIBLE,
 				   g_param_spec_boolean ("visible",
 							 P_("Visible"),
 							 P_("Whether the action is visible."),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_ACTION_GROUP,
-				   g_param_spec_object ("action_group",
+				   g_param_spec_object ("action-group",
 							 P_("Action Group"),
 							 P_("The GtkActionGroup this GtkAction is associated with, or NULL (for internal use)."),
 							 GTK_TYPE_ACTION_GROUP,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   /**
    * GtkAction::activate:

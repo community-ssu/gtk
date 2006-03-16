@@ -40,6 +40,7 @@
 #include "gtkstock.h"
 #include "gtkiconfactory.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 /* Osso addition:
@@ -253,31 +254,31 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                         P_("Label"),
                                                         P_("Text of the label widget inside the button, if the button contains a label widget"),
                                                         NULL,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   
   g_object_class_install_property (gobject_class,
                                    PROP_USE_UNDERLINE,
-                                   g_param_spec_boolean ("use_underline",
+                                   g_param_spec_boolean ("use-underline",
 							 P_("Use underline"),
 							 P_("If set, an underline in the text indicates the next character should be used for the mnemonic accelerator key"),
                                                         FALSE,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   
   g_object_class_install_property (gobject_class,
                                    PROP_USE_STOCK,
-                                   g_param_spec_boolean ("use_stock",
+                                   g_param_spec_boolean ("use-stock",
 							 P_("Use stock"),
 							 P_("If set, the label is used to pick a stock item instead of being displayed"),
                                                         FALSE,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   
   g_object_class_install_property (gobject_class,
                                    PROP_FOCUS_ON_CLICK,
-                                   g_param_spec_boolean ("focus_on_click",
+                                   g_param_spec_boolean ("focus-on-click",
 							 P_("Focus on click"),
 							 P_("Whether the button grabs focus when it is clicked with the mouse"),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_RELIEF,
@@ -286,7 +287,7 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                       P_("The border relief style"),
                                                       GTK_TYPE_RELIEF_STYLE,
                                                       GTK_RELIEF_NORMAL,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
   
   /**
    * GtkButton:xalign:
@@ -305,7 +306,7 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                       0.0,
                                                       1.0,
                                                       0.5,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
   /**
    * GtkButton:yalign:
@@ -324,7 +325,7 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                       0.0,
                                                       1.0,
                                                       0.5,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
   /**
    * GtkButton::image:
@@ -339,7 +340,7 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                         P_("Image widget"),
                                                         P_("Child widget to appear next to the button text"),
                                                         GTK_TYPE_WIDGET,
-                                                        G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
   button_signals[PRESSED] =
     g_signal_new ("pressed",
@@ -402,34 +403,34 @@ gtk_button_class_init (GtkButtonClass *klass)
   widget_class->activate_signal = button_signals[ACTIVATE];
 
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boxed ("default_border",
+					   g_param_spec_boxed ("default-border",
 							       P_("Default Spacing"),
 							       P_("Extra space to add for CAN_DEFAULT buttons"),
 							       GTK_TYPE_BORDER,
-							       G_PARAM_READABLE));
+							       GTK_PARAM_READABLE));
 
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boxed ("default_outside_border",
+					   g_param_spec_boxed ("default-outside-border",
 							       P_("Default Outside Spacing"),
 							       P_("Extra space to add for CAN_DEFAULT buttons that is always drawn outside the border"),
 							       GTK_TYPE_BORDER,
-							       G_PARAM_READABLE));
+							       GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("child_displacement_x",
+					   g_param_spec_int ("child-displacement-x",
 							     P_("Child X Displacement"),
 							     P_("How far in the x direction to move the child when the button is depressed"),
 							     G_MININT,
 							     G_MAXINT,
 							     0,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("child_displacement_y",
+					   g_param_spec_int ("child-displacement-y",
 							     P_("Child Y Displacement"),
 							     P_("How far in the y direction to move the child when the button is depressed"),
 							     G_MININT,
 							     G_MAXINT,
 							     0,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
 
   /**
    * GtkButton:displace-focus:
@@ -444,13 +445,13 @@ gtk_button_class_init (GtkButtonClass *klass)
 								 P_("Displace focus"),
 								 P_("Whether the child_displacement_x/_y properties should also affect the focus rectangle"),
 						       FALSE,
-						       G_PARAM_READABLE));
+						       GTK_PARAM_READABLE));
 
   gtk_settings_install_property (g_param_spec_boolean ("gtk-button-images",
 						       P_("Show button images"),
 						       P_("Whether stock icons should be shown in buttons"),
 						       TRUE,
-						       G_PARAM_READWRITE));
+						       GTK_PARAM_READWRITE));
 
   /**
    * GtkButton:child-spacing:
@@ -458,13 +459,13 @@ gtk_button_class_init (GtkButtonClass *klass)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("child_spacing",
+					   g_param_spec_int ("child-spacing",
 							     _("Child spacing"),
 							     _("Spacing between button edges and child."),
 							     0,
 							     G_MAXINT,
 							     CHILD_SPACING,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
   /**
    * GtkButton:detail:
    *
@@ -476,7 +477,7 @@ gtk_button_class_init (GtkButtonClass *klass)
 							P_("Detail"),
 							P_("The detail the button is drawn with."),
 							"buttondefault",
-							G_PARAM_READWRITE));
+							GTK_PARAM_READWRITE));
 
   /**
    * GtkButton:automatic_detail:
@@ -485,11 +486,11 @@ gtk_button_class_init (GtkButtonClass *klass)
    */
   g_object_class_install_property (gobject_class,
 				   PROP_AUTOMATIC_DETAIL,
-				   g_param_spec_boolean ("automatic_detail",
+				   g_param_spec_boolean ("automatic-detail",
 							 P_("Automatic Detail"),
 							 P_("Whether setting detail is automatic based on GtkTable/GtkHButtonBox."),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
 
   /**
@@ -498,13 +499,13 @@ gtk_button_class_init (GtkButtonClass *klass)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("child_offset_y",
+					   g_param_spec_int ("child-offset-y",
 							     _("Child Y Offset"),
 							     _("Enable hack how many pixels to add/take away from GtkButton's child size allocation."),
 							     G_MININT,
 							     G_MAXINT,
 							     0,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
 
   /**
    * GtkButton:listboxheader:
@@ -518,7 +519,7 @@ gtk_button_class_init (GtkButtonClass *klass)
 								 P_( "Listbox header" ),
 								 P_( "Listbox header ( FALSE / TRUE )" ),
 								 FALSE,
-								 G_PARAM_READABLE));
+								 GTK_PARAM_READABLE));
 
   /**
    * GtkButton::separator-height:
@@ -534,7 +535,7 @@ gtk_button_class_init (GtkButtonClass *klass)
 							     0,
 							     G_MAXINT,
 							     0,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
 
   /**
    * GtkButton:padding:
@@ -546,7 +547,7 @@ gtk_button_class_init (GtkButtonClass *klass)
 							       P_("Padding"),
 							       P_("Paddings around the button child"),
 							       GTK_TYPE_BORDER,
-							       G_PARAM_READABLE));
+							       GTK_PARAM_READABLE));
 
   /**
    * GtkButton:minimum-width:
@@ -554,13 +555,13 @@ gtk_button_class_init (GtkButtonClass *klass)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("minimum_width",
+					   g_param_spec_int ("minimum-width",
 							     P_("Minimum Width"),
 							     P_("Minimum width of the button"),
 							     0,
 							     G_MAXINT,
 							     0,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
   
   g_type_class_add_private (gobject_class, sizeof (GtkButtonPrivate));  
 }

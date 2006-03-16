@@ -33,6 +33,7 @@
 #include "gtkframe.h"
 #include "gtklabel.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define LABEL_PAD 1
@@ -132,51 +133,51 @@ gtk_frame_class_init (GtkFrameClass *class)
                                                         P_("Label"),
                                                         P_("Text of the frame's label"),
                                                         NULL,
-                                                        G_PARAM_READABLE |
-							G_PARAM_WRITABLE));
+                                                        GTK_PARAM_READABLE |
+							GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
 				   PROP_LABEL_XALIGN,
-				   g_param_spec_float ("label_xalign",
+				   g_param_spec_float ("label-xalign",
 						       P_("Label xalign"),
 						       P_("The horizontal alignment of the label"),
 						       0.0,
 						       1.0,
 						       0.5,
-						       G_PARAM_READABLE |
-						       G_PARAM_WRITABLE));
+						       GTK_PARAM_READABLE |
+						       GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
 				   PROP_LABEL_YALIGN,
-				   g_param_spec_float ("label_yalign",
+				   g_param_spec_float ("label-yalign",
 						       P_("Label yalign"),
 						       P_("The vertical alignment of the label"),
 						       0.0,
 						       1.0,
 						       0.5,
-						       G_PARAM_READABLE |
-						       G_PARAM_WRITABLE));
+						       GTK_PARAM_READABLE |
+						       GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
                                    PROP_SHADOW,
                                    g_param_spec_enum ("shadow", NULL,
                                                       P_("Deprecated property, use shadow_type instead"),
 						      GTK_TYPE_SHADOW_TYPE,
 						      GTK_SHADOW_ETCHED_IN,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
                                    PROP_SHADOW_TYPE,
-                                   g_param_spec_enum ("shadow_type",
+                                   g_param_spec_enum ("shadow-type",
                                                       P_("Frame shadow"),
                                                       P_("Appearance of the frame border"),
 						      GTK_TYPE_SHADOW_TYPE,
 						      GTK_SHADOW_ETCHED_IN,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_LABEL_WIDGET,
-                                   g_param_spec_object ("label_widget",
+                                   g_param_spec_object ("label-widget",
                                                         P_("Label widget"),
                                                         P_("A widget to display in place of the usual frame label"),
                                                         GTK_TYPE_WIDGET,
-                                                        G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
   /**
    * GtkFrame:hildonlike:
@@ -188,7 +189,7 @@ gtk_frame_class_init (GtkFrameClass *class)
 								 _("hildonlike looks"),
 								 _("Draw frame, 1/0"),
 								 FALSE,
-								 G_PARAM_READABLE));
+								 GTK_PARAM_READABLE));
   
   widget_class->expose_event = gtk_frame_expose;
   widget_class->size_request = gtk_frame_size_request;

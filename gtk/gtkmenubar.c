@@ -36,6 +36,7 @@
 #include "gtksettings.h"
 #include "gtkintl.h"
 #include "gtkwindow.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 
@@ -153,21 +154,21 @@ gtk_menu_bar_class_init (GtkMenuBarClass *class)
 				GTK_MENU_DIR_CHILD);
 
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_enum ("shadow_type",
+					   g_param_spec_enum ("shadow-type",
                                                               P_("Shadow type"),
                                                               P_("Style of bevel around the menubar"),
                                                               GTK_TYPE_SHADOW_TYPE,
                                                               GTK_SHADOW_OUT,
-                                                              G_PARAM_READABLE));
+                                                              GTK_PARAM_READABLE));
 
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("internal_padding",
+					   g_param_spec_int ("internal-padding",
 							     P_("Internal padding"),
 							     P_("Amount of border space between the menubar shadow and the menu items"),
 							     0,
 							     G_MAXINT,
                                                              DEFAULT_IPADDING,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
 
   gtk_settings_install_property (g_param_spec_int ("gtk-menu-bar-popup-delay",
 						   P_("Delay before drop down menus appear"),
@@ -175,7 +176,7 @@ gtk_menu_bar_class_init (GtkMenuBarClass *class)
 						   0,
 						   G_MAXINT,
 						   0,
-						   G_PARAM_READWRITE));
+						   GTK_PARAM_READWRITE));
 }
  
 GtkWidget*

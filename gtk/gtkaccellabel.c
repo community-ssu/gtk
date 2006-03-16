@@ -34,6 +34,7 @@
 #include "gtkaccelmap.h"
 #include "gtkmain.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 enum {
@@ -135,18 +136,18 @@ gtk_accel_label_class_init (GtkAccelLabelClass *class)
   
   g_object_class_install_property (gobject_class,
                                    PROP_ACCEL_CLOSURE,
-                                   g_param_spec_boxed ("accel_closure",
+                                   g_param_spec_boxed ("accel-closure",
 						       P_("Accelerator Closure"),
 						       P_("The closure to be monitored for accelerator changes"),
 						       G_TYPE_CLOSURE,
-						       G_PARAM_READABLE | G_PARAM_WRITABLE));
+						       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
                                    PROP_ACCEL_WIDGET,
-                                   g_param_spec_object ("accel_widget",
+                                   g_param_spec_object ("accel-widget",
                                                         P_("Accelerator Widget"),
                                                         P_("The widget to be monitored for accelerator changes"),
                                                         GTK_TYPE_WIDGET,
-                                                        G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 }
 
 static void

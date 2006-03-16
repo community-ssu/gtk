@@ -41,6 +41,7 @@
 #include "gtkintl.h"
 #include "gtkbindings.h"
 #include "gtkalignment.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_DIALOG, GtkDialogPrivate))
@@ -157,11 +158,11 @@ gtk_dialog_class_init (GtkDialogClass *class)
 
   g_object_class_install_property (gobject_class,
                                    PROP_HAS_SEPARATOR,
-                                   g_param_spec_boolean ("has_separator",
+                                   g_param_spec_boolean ("has-separator",
 							 P_("Has separator"),
 							 P_("The dialog has a separator bar above its buttons"),
                                                          TRUE,
-                                                         G_PARAM_READWRITE));
+                                                         GTK_PARAM_READWRITE));
   
   dialog_signals[RESPONSE] =
     g_signal_new ("response",
@@ -183,43 +184,43 @@ gtk_dialog_class_init (GtkDialogClass *class)
 		  G_TYPE_NONE, 0);
   
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("content_area_border",
+					   g_param_spec_int ("content-area-border",
                                                              P_("Content area border"),
                                                              P_("Width of border around the main dialog area"),
                                                              0,
                                                              G_MAXINT,
                                                              2,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   /**
    * GtkDialog:content-area-spacing:
    *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("content_area_spacing",
+					   g_param_spec_int ("content-area-spacing",
                                                              P_("Content area spacing"),
                                                              P_("Spacing between elements of the main dialog area"),
                                                              0,
                                                              G_MAXINT,
                                                              0,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("button_spacing",
+                                           g_param_spec_int ("button-spacing",
                                                              P_("Button spacing"),
                                                              P_("Spacing between buttons"),
                                                              0,
                                                              G_MAXINT,
                                                              10,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("action_area_border",
+                                           g_param_spec_int ("action-area-border",
                                                              P_("Action area border"),
                                                              P_("Width of border around the button area at the bottom of the dialog"),
                                                              0,
                                                              G_MAXINT,
                                                              5,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
 
   /**
    * GtkDialog:extended-left-border:
@@ -227,26 +228,26 @@ gtk_dialog_class_init (GtkDialogClass *class)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("extended_left_border",
+                                           g_param_spec_int ("extended-left-border",
                                                              _("Content area extra left border"),
                                                              _("Width of extra left border around the main dialog area"),
                                                              0,
                                                              G_MAXINT,
                                                              0,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   /**
    * GtkDialog:extended-right-border:
    *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("extended_right_border",
+                                           g_param_spec_int ("extended-right-border",
                                                              _("Content area extra right border"),
                                                              _("Width of extra right border around the main dialog area"),
                                                              0,
                                                              G_MAXINT,
                                                              0,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
 
   binding_set = gtk_binding_set_by_class (class);
   

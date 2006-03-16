@@ -40,6 +40,7 @@
 #include "gtktextiterprivate.h"
 #include "gtktextbufferserialize.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define GTK_TEXT_BUFFER_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_TEXT_BUFFER, GtkTextBufferPrivate))
@@ -197,11 +198,11 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
   /* Construct */
   g_object_class_install_property (object_class,
                                    PROP_TAG_TABLE,
-                                   g_param_spec_object ("tag_table",
+                                   g_param_spec_object ("tag-table",
                                                         P_("Tag Table"),
                                                         P_("Text Tag Table"),
                                                         GTK_TYPE_TEXT_TAG_TABLE,
-                                                        G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
   /**
    * GtkTextBuffer:can-paste-rich-text:
    *
@@ -209,10 +210,10 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
    */
   g_object_class_install_property (object_class,
                                   PROP_CAN_PASTE_RICH_TEXT,
-                                  g_param_spec_boolean ("can_paste_rich_text",
+                                  g_param_spec_boolean ("can-paste-rich-text",
                                                         P_("Can paste rich text"),
                                                         P_("Whether it should be possible to paste rich text to the buffer"),
-                                                        FALSE, G_PARAM_READWRITE));
+                                                        FALSE, GTK_PARAM_READWRITE));
   /**
    * GtkTextBuffer:rich-text-format:
    *
@@ -220,10 +221,10 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
    */
   g_object_class_install_property (object_class,
                                   PROP_RICH_TEXT_FORMAT,
-                                  g_param_spec_string ("rich_text_format",
+                                  g_param_spec_string ("rich-text-format",
                                                        P_("Rich Text Format"),
                                                        P_("Name of a collection of tags that the text view supports"),
-                                                       NULL, G_PARAM_READWRITE));
+                                                       NULL, GTK_PARAM_READWRITE));
 
   
   signals[INSERT_TEXT] =

@@ -32,6 +32,7 @@
 #include "gtkmarshalers.h"
 #include "gdk/gdkkeysyms.h"
 #include "gtkbindings.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 
@@ -174,42 +175,42 @@ gtk_scale_class_init (GtkScaleClass *class)
 						     -1,
 						     MAX_DIGITS,
 						     1,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_DRAW_VALUE,
-                                   g_param_spec_boolean ("draw_value",
+                                   g_param_spec_boolean ("draw-value",
 							 P_("Draw Value"),
 							 P_("Whether the current value is displayed as a string next to the slider"),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_VALUE_POS,
-                                   g_param_spec_enum ("value_pos",
+                                   g_param_spec_enum ("value-pos",
 						      P_("Value Position"),
 						      P_("The position in which the current value is displayed"),
 						      GTK_TYPE_POSITION_TYPE,
 						      GTK_POS_TOP,
-						      G_PARAM_READWRITE));
+						      GTK_PARAM_READWRITE));
 
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("slider_length",
+					   g_param_spec_int ("slider-length",
 							     P_("Slider Length"),
 							     P_("Length of scale's slider"),
 							     0,
 							     G_MAXINT,
 							     31,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
 
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("value_spacing",
+					   g_param_spec_int ("value-spacing",
 							     P_("Value spacing"),
 							     P_("Space between value text and the slider/trough area"),
 							     0,
 							     G_MAXINT,
 							     2,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
   
   /* All bindings (even arrow keys) are on both h/v scale, because
    * blind users etc. don't care about scale orientation.

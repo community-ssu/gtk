@@ -37,6 +37,7 @@
 #include "gtkhbbox.h"
 /* Hildon : We need this to deal with buttons graphics. */
 #include "gtkbutton.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 static void gtk_hbutton_box_class_init    (GtkHButtonBoxClass   *klass);
@@ -107,7 +108,7 @@ gtk_hbutton_box_class_init (GtkHButtonBoxClass *class)
 					     "hildonlike looks",
 					     "Name buttons, 1/0",
 					     FALSE,
-					     G_PARAM_READABLE) );
+					     GTK_PARAM_READABLE) );
 }
 
 static void

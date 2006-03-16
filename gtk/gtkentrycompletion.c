@@ -21,7 +21,6 @@
 #include "gtkentrycompletion.h"
 #include "gtkentryprivate.h"
 #include "gtkcelllayout.h"
-#include "gtkalias.h"
 
 #include "gtkintl.h"
 #include "gtkcellrenderertext.h"
@@ -36,8 +35,10 @@
 #include "gtksignal.h"
 #include "gtkmarshalers.h"
 
-#include <string.h>
+#include "gtkprivate.h"
+#include "gtkalias.h"
 
+#include <string.h>
 
 /* signals */
 enum
@@ -272,16 +273,16 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
                                                         P_("Completion Model"),
                                                         P_("The model to find matches in"),
                                                         GTK_TYPE_TREE_MODEL,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
   g_object_class_install_property (object_class,
                                    PROP_MINIMUM_KEY_LENGTH,
-                                   g_param_spec_int ("minimum_key_length",
+                                   g_param_spec_int ("minimum-key-length",
                                                      P_("Minimum Key Length"),
                                                      P_("Minimum length of the search key in order to look up matches"),
                                                      0,
                                                      G_MAXINT,
                                                      1,
-                                                     G_PARAM_READWRITE));
+                                                     GTK_PARAM_READWRITE));
   /**
    * GtkEntryCompletion:text-column:
    *
@@ -291,13 +292,13 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    */
   g_object_class_install_property (object_class,
                                    PROP_TEXT_COLUMN,
-                                   g_param_spec_int ("text_column",
+                                   g_param_spec_int ("text-column",
                                                      P_("Text column"),
                                                      P_("The column of the model containing the strings."),
                                                      -1,
                                                      G_MAXINT,
                                                      -1,
-                                                     G_PARAM_READWRITE));
+                                                     GTK_PARAM_READWRITE));
 
   /**
    * GtkEntryCompletion:inline-completion:
@@ -311,11 +312,11 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    **/
   g_object_class_install_property (object_class,
 				   PROP_INLINE_COMPLETION,
-				   g_param_spec_boolean ("inline_completion",
+				   g_param_spec_boolean ("inline-completion",
  							 P_("Inline completion"),
  							 P_("Whether the common prefix should be inserted automatically"),
  							 FALSE,
- 							 G_PARAM_READWRITE));
+ 							 GTK_PARAM_READWRITE));
   /**
    * GtkEntryCompletion:popup-completion:
    * 
@@ -326,11 +327,11 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    **/
   g_object_class_install_property (object_class,
 				   PROP_POPUP_COMPLETION,
-				   g_param_spec_boolean ("popup_completion",
+				   g_param_spec_boolean ("popup-completion",
  							 P_("Popup completion"),
  							 P_("Whether the completions should be shown in a popup window"),
  							 TRUE,
- 							 G_PARAM_READWRITE));
+ 							 GTK_PARAM_READWRITE));
 
   g_type_class_add_private (object_class, sizeof (GtkEntryCompletionPrivate));
 }

@@ -34,6 +34,7 @@
 #include "gtkaccessible.h"
 #include "gtkwindow.h"
 #include "gtktextbuffer.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #undef DEBUG_ICON_VIEW
@@ -327,12 +328,12 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
    */
   g_object_class_install_property (gobject_class,
 				   PROP_SELECTION_MODE,
-				   g_param_spec_enum ("selection_mode",
+				   g_param_spec_enum ("selection-mode",
 						      P_("Selection mode"),
 						      P_("The selection mode"),
 						      GTK_TYPE_SELECTION_MODE,
 						      GTK_SELECTION_SINGLE,
-						      G_PARAM_READWRITE));
+						      GTK_PARAM_READWRITE));
 
   /**
    * GtkIconView:pixbuf-column:
@@ -346,11 +347,11 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
    */
   g_object_class_install_property (gobject_class,
 				   PROP_PIXBUF_COLUMN,
-				   g_param_spec_int ("pixbuf_column",
+				   g_param_spec_int ("pixbuf-column",
 						     P_("Pixbuf column"),
 						     P_("Model column used to retrieve the icon pixbuf from"),
 						     -1, G_MAXINT, -1,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
   /**
    * GtkIconView:text-column:
@@ -364,11 +365,11 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
    */
   g_object_class_install_property (gobject_class,
 				   PROP_TEXT_COLUMN,
-				   g_param_spec_int ("text_column",
+				   g_param_spec_int ("text-column",
 						     P_("Text column"),
 						     P_("Model column used to retrieve the text from"),
 						     -1, G_MAXINT, -1,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
   
   /**
@@ -384,11 +385,11 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
    */
   g_object_class_install_property (gobject_class,
 				   PROP_MARKUP_COLUMN,
-				   g_param_spec_int ("markup_column",
+				   g_param_spec_int ("markup-column",
 						     P_("Markup column"),
 						     P_("Model column used to retrieve the text if using Pango markup"),
 						     -1, G_MAXINT, -1,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_MODEL,
@@ -396,7 +397,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 							P_("Icon View Model"),
 							P_("The model for the icon view"),
 							GTK_TYPE_TREE_MODEL,
-							G_PARAM_READWRITE));
+							GTK_PARAM_READWRITE));
   
   /**
    * GtkIconView:columns:
@@ -413,7 +414,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 						     P_("Number of columns"),
 						     P_("Number of columns to display"),
 						     -1, G_MAXINT, -1,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
   
 
   /**
@@ -427,11 +428,11 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
    */
   g_object_class_install_property (gobject_class,
 				   PROP_ITEM_WIDTH,
-				   g_param_spec_int ("item_width",
+				   g_param_spec_int ("item-width",
 						     P_("Width for each item"),
 						     P_("The width used for each item"),
 						     -1, G_MAXINT, -1,
-						     G_PARAM_READWRITE));  
+						     GTK_PARAM_READWRITE));  
 
   /**
    * GtkIconView::spacing:
@@ -447,7 +448,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 						     P_("Spacing"),
 						     P_("Space which is inserted between cells of an item"),
 						     0, G_MAXINT, 0,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
   /**
    * GtkIconView::row-spacing:
@@ -459,11 +460,11 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_ROW_SPACING,
-                                   g_param_spec_int ("row_spacing",
+                                   g_param_spec_int ("row-spacing",
 						     P_("Row Spacing"),
 						     P_("Space which is inserted between grid rows"),
 						     0, G_MAXINT, 6,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
   /**
    * GtkIconView::column-spacing:
@@ -475,11 +476,11 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_COLUMN_SPACING,
-                                   g_param_spec_int ("column_spacing",
+                                   g_param_spec_int ("column-spacing",
 						     P_("Column Spacing"),
 						     P_("Space which is inserted between grid column"),
 						     0, G_MAXINT, 6,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
   /**
    * GtkIconView::margin:
@@ -495,7 +496,7 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 						     P_("Margin"),
 						     P_("Space which is inserted at the edges of the icon view"),
 						     0, G_MAXINT, 6,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
 
 
   /**
@@ -513,23 +514,23 @@ gtk_icon_view_class_init (GtkIconViewClass *klass)
 						      P_("How the text and icon of each item are positioned relative to each other"),
 						      GTK_TYPE_ORIENTATION,
 						      GTK_ORIENTATION_VERTICAL,
-						      G_PARAM_READWRITE));
+						      GTK_PARAM_READWRITE));
 
   /* Style properties */
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_boxed ("selection_box_color",
+                                           g_param_spec_boxed ("selection-box-color",
                                                                P_("Selection Box Color"),
                                                                P_("Color of the selection box"),
                                                                GDK_TYPE_COLOR,
-                                                               G_PARAM_READABLE));
+                                                               GTK_PARAM_READABLE));
 
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_uchar ("selection_box_alpha",
+                                           g_param_spec_uchar ("selection-box-alpha",
                                                                P_("Selection Box Alpha"),
                                                                P_("Opacity of the selection box"),
                                                                0, 0xff,
                                                                0x40,
-                                                               G_PARAM_READABLE));
+                                                               GTK_PARAM_READABLE));
 
   /* Signals */
   widget_class->set_scroll_adjustments_signal =

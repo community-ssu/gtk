@@ -22,6 +22,7 @@
 #include "gtkimcontext.h"
 #include "gtkmain.h"		/* For _gtk_boolean_handled_accumulator */
 #include "gtkmarshalers.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 typedef struct _GtkIMContextPrivate GtkIMContextPrivate;
@@ -224,7 +225,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
         g_param_spec_flags("hildon-input-mode", "Hildon input mode",
           "Allowed characters and input mode", GTK_TYPE_GTK_INPUT_MODE,
           HILDON_GTK_INPUT_MODE_FULL | HILDON_GTK_INPUT_MODE_AUTOCAP,
-          G_PARAM_READWRITE));
+          GTK_PARAM_READWRITE));
 }
 
 static void

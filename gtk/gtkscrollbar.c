@@ -28,6 +28,7 @@
 #include <config.h>
 #include "gtkscrollbar.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 static void gtk_scrollbar_class_init (GtkScrollbarClass *klass);
@@ -78,53 +79,53 @@ gtk_scrollbar_class_init (GtkScrollbarClass *class)
   widget_class->style_set = gtk_scrollbar_style_set;
   
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("min_slider_length",
+					   g_param_spec_int ("min-slider-length",
 							     P_("Minimum Slider Length"),
 							     P_("Minimum length of scrollbar slider"),
 							     0,
 							     G_MAXINT,
 							     21,
-							     G_PARAM_READABLE));
+							     GTK_PARAM_READABLE));
 
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boolean ("fixed_slider_length",
+					   g_param_spec_boolean ("fixed-slider-length",
                                                                  P_("Fixed slider size"),
                                                                  P_("Don't change slider size, just lock it to the minimum length"),
                                                                  FALSE,
                                                                  
-                                                                 G_PARAM_READABLE));
+                                                                 GTK_PARAM_READABLE));
   
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boolean ("has_backward_stepper",
+					   g_param_spec_boolean ("has-backward-stepper",
                                                                  P_("Backward stepper"),
                                                                  P_("Display the standard backward arrow button"),
                                                                  TRUE,
                                                                  
-                                                                 G_PARAM_READABLE));
+                                                                 GTK_PARAM_READABLE));
 
     gtk_widget_class_install_style_property (widget_class,
-                                             g_param_spec_boolean ("has_forward_stepper",
+                                             g_param_spec_boolean ("has-forward-stepper",
                                                                    P_("Forward stepper"),
                                                                    P_("Display the standard forward arrow button"),
                                                                    TRUE,
                                                                    
-                                                                   G_PARAM_READABLE));
+                                                                   GTK_PARAM_READABLE));
 
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boolean ("has_secondary_backward_stepper",
+					   g_param_spec_boolean ("has-secondary-backward-stepper",
                                                                  P_("Secondary backward stepper"),
                                                                  P_("Display a second backward arrow button on the opposite end of the scrollbar"),
                                                                  FALSE,
                                                                  
-                                                                 G_PARAM_READABLE));
+                                                                 GTK_PARAM_READABLE));
 
     gtk_widget_class_install_style_property (widget_class,
-                                             g_param_spec_boolean ("has_secondary_forward_stepper",
+                                             g_param_spec_boolean ("has-secondary-forward-stepper",
                                                                    P_("Secondary forward stepper"),
                                                                    P_("Display a secondary forward arrow button on the opposite end of the scrollbar"),
                                                                    FALSE,
                                                                    
-                                                                   G_PARAM_READABLE));
+                                                                   GTK_PARAM_READABLE));
 }
 
 static void

@@ -35,6 +35,7 @@
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
 #include "gtkbindings.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 
@@ -408,120 +409,120 @@ gtk_notebook_class_init (GtkNotebookClass *class)
  						     0,
  						     G_MAXINT,
  						     0,
- 						     G_PARAM_READWRITE));
+ 						     GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_TAB_POS,
-				   g_param_spec_enum ("tab_pos",
+				   g_param_spec_enum ("tab-pos",
  						      P_("Tab Position"),
  						      P_("Which side of the notebook holds the tabs"),
  						      GTK_TYPE_POSITION_TYPE,
  						      GTK_POS_TOP,
- 						      G_PARAM_READWRITE));
+ 						      GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_TAB_BORDER,
-				   g_param_spec_uint ("tab_border",
+				   g_param_spec_uint ("tab-border",
  						      P_("Tab Border"),
  						      P_("Width of the border around the tab labels"),
  						      0,
  						      G_MAXUINT,
  						      2,
- 						      G_PARAM_WRITABLE));
+ 						      GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
 				   PROP_TAB_HBORDER,
-				   g_param_spec_uint ("tab_hborder",
+				   g_param_spec_uint ("tab-hborder",
  						      P_("Horizontal Tab Border"),
  						      P_("Width of the horizontal border of tab labels"),
  						      0,
  						      G_MAXUINT,
  						      2,
- 						      G_PARAM_READWRITE));
+ 						      GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_TAB_VBORDER,
-				   g_param_spec_uint ("tab_vborder",
+				   g_param_spec_uint ("tab-vborder",
  						      P_("Vertical Tab Border"),
  						      P_("Width of the vertical border of tab labels"),
  						      0,
  						      G_MAXUINT,
  						      2,
- 						      G_PARAM_READWRITE));
+ 						      GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_SHOW_TABS,
-				   g_param_spec_boolean ("show_tabs",
+				   g_param_spec_boolean ("show-tabs",
  							 P_("Show Tabs"),
  							 P_("Whether tabs should be shown or not"),
  							 TRUE,
- 							 G_PARAM_READWRITE));
+ 							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_SHOW_BORDER,
-				   g_param_spec_boolean ("show_border",
+				   g_param_spec_boolean ("show-border",
  							 P_("Show Border"),
  							 P_("Whether the border should be shown or not"),
  							 TRUE,
- 							 G_PARAM_READWRITE));
+ 							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_SCROLLABLE,
 				   g_param_spec_boolean ("scrollable",
  							 P_("Scrollable"),
  							 P_("If TRUE, scroll arrows are added if there are too many tabs to fit"),
  							 TRUE,
- 							 G_PARAM_READWRITE));
+ 							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_ENABLE_POPUP,
-				   g_param_spec_boolean ("enable_popup",
+				   g_param_spec_boolean ("enable-popup",
  							 P_("Enable Popup"),
  							 P_("If TRUE, pressing the right mouse button on the notebook pops up a menu that you can use to go to a page"),
  							 FALSE,
- 							 G_PARAM_READWRITE));
+ 							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_HOMOGENEOUS,
 				   g_param_spec_boolean ("homogeneous",
  							 P_("Homogeneous"),
  							 P_("Whether tabs should have homogeneous sizes"),
  							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   gtk_container_class_install_child_property (container_class,
 					      CHILD_PROP_TAB_LABEL,
-					      g_param_spec_string ("tab_label", 
+					      g_param_spec_string ("tab-label", 
 								   P_("Tab label"),
 								   P_("The string displayed on the child's tab label"),
 								   NULL,
-								   G_PARAM_READWRITE));
+								   GTK_PARAM_READWRITE));
   gtk_container_class_install_child_property (container_class,
 					      CHILD_PROP_MENU_LABEL,
-					      g_param_spec_string ("menu_label", 
+					      g_param_spec_string ("menu-label", 
 								   P_("Menu label"), 
 								   P_("The string displayed in the child's menu entry"),
 								   NULL,
-								   G_PARAM_READWRITE));
+								   GTK_PARAM_READWRITE));
   gtk_container_class_install_child_property (container_class,
 					      CHILD_PROP_POSITION,
 					      g_param_spec_int ("position", 
 								P_("Position"), 
 								P_("The index of the child in the parent"),
 								-1, G_MAXINT, 0,
-								G_PARAM_READWRITE));
+								GTK_PARAM_READWRITE));
   gtk_container_class_install_child_property (container_class,
 					      CHILD_PROP_TAB_EXPAND,
-					      g_param_spec_boolean ("tab_expand", 
+					      g_param_spec_boolean ("tab-expand", 
 								    P_("Tab expand"), 
 								    P_("Whether to expand the child's tab or not"),
 								    TRUE,
-								    G_PARAM_READWRITE));
+								    GTK_PARAM_READWRITE));
   gtk_container_class_install_child_property (container_class,
 					      CHILD_PROP_TAB_FILL,
-					      g_param_spec_boolean ("tab_fill", 
+					      g_param_spec_boolean ("tab-fill", 
 								    P_("Tab fill"), 
 								    P_("Whether the child's tab should fill the allocated area or not"),
 								    TRUE,
-								    G_PARAM_READWRITE));
+								    GTK_PARAM_READWRITE));
   gtk_container_class_install_child_property (container_class,
 					      CHILD_PROP_TAB_PACK,
-					      g_param_spec_enum ("tab_pack", 
+					      g_param_spec_enum ("tab-pack", 
 								 P_("Tab pack type"),
 								 P_("A GtkPackType indicating whether the child is packed with reference to the start or end of the parent"),
 								 GTK_TYPE_PACK_TYPE, GTK_PACK_START,
-								 G_PARAM_READWRITE));
+								 GTK_PARAM_READWRITE));
 
 /**
  * GtkNotebook:has-secondary-backward-stepper:
@@ -533,12 +534,12 @@ gtk_notebook_class_init (GtkNotebookClass *class)
  * Since: 2.4
  */  
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boolean ("has_secondary_backward_stepper",
+					   g_param_spec_boolean ("has-secondary-backward-stepper",
 								 P_("Secondary backward stepper"),
 								 P_("Display a second backward arrow button on the opposite end of the tab area"),
 								 FALSE,
 								 
-								 G_PARAM_READABLE));
+								 GTK_PARAM_READABLE));
 
 /**
  * GtkNotebook:has-secondary-forward-stepper:
@@ -550,12 +551,12 @@ gtk_notebook_class_init (GtkNotebookClass *class)
  * Since: 2.4
  */  
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boolean ("has_secondary_forward_stepper",
+					   g_param_spec_boolean ("has-secondary-forward-stepper",
 								 P_("Secondary forward stepper"),
 								 P_("Display a second forward arrow button on the opposite end of the tab area"),
 								 FALSE,
 								 
-								 G_PARAM_READABLE));
+								 GTK_PARAM_READABLE));
 
 /**
  * GtkNotebook:has-backward-stepper:
@@ -566,12 +567,12 @@ gtk_notebook_class_init (GtkNotebookClass *class)
  * Since: 2.4
  */  
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boolean ("has_backward_stepper",
+					   g_param_spec_boolean ("has-backward-stepper",
 								 P_("Backward stepper"),
 								 P_("Display the standard backward arrow button"),
 								 TRUE,
 								 
-                                                                   G_PARAM_READABLE));
+                                                                   GTK_PARAM_READABLE));
 
 /**
  * GtkNotebook:has-forward-stepper:
@@ -582,12 +583,12 @@ gtk_notebook_class_init (GtkNotebookClass *class)
  * Since: 2.4
  */  
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boolean ("has_forward_stepper",
+					   g_param_spec_boolean ("has-forward-stepper",
 								 P_("Forward stepper"),
 								 P_("Display the standard forward arrow button"),
 								 TRUE,
 								 
-                                                                   G_PARAM_READABLE));
+                                                                   GTK_PARAM_READABLE));
 
   /* Hildon: for adding paddings to the inner borders of the visible page */
   /**
@@ -596,26 +597,26 @@ gtk_notebook_class_init (GtkNotebookClass *class)
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("inner_left_border",
+                                           g_param_spec_int ("inner-left-border",
                                                              _("Inner left border of the visible page"),
                                                              _("Width of inner left border of the visible page"),
                                                              0,
                                                              G_MAXINT,
                                                              0,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   /**
    * GtkNotebook:inner-right-border:
    *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("inner_right_border",
+                                           g_param_spec_int ("inner-right-border",
                                                              _("Inner right border of the visible page"),
                                                              _("Width of inner right border of the visible page"),
                                                              0,
                                                              G_MAXINT,
                                                              0,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
 
   /* Hildon: previously hardcoded constants ARROW_WIDTH, ARROW_HEIGHT,
      ARROW_SPACING, TAB_OVERLAP and TAB_CURVATURE are now style properties */
@@ -631,7 +632,7 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              0,
                                                              G_MAXINT,
                                                              ARROW_WIDTH,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   /**
    * GtkNotebook:arrow-height:
    *
@@ -644,7 +645,7 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              0,
                                                              G_MAXINT,
                                                              ARROW_HEIGHT,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   /**
    * GtkNotebook:arrow-spacing:
    *
@@ -657,7 +658,7 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              0,
                                                              G_MAXINT,
                                                              ARROW_SPACING,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   /**
    * GtkNotebook:tab-overlap:
    *
@@ -670,7 +671,7 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              0,
                                                              G_MAXINT,
                                                              TAB_OVERLAP,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   /**
    * GtkNotebook:tab-curvature:
    *
@@ -683,7 +684,7 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              0,
                                                              G_MAXINT,
                                                              TAB_CURVATURE,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
   /**
    * GtkNotebook:label-padding:
    *
@@ -696,7 +697,7 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              0,
                                                              G_MAXINT,
                                                              LABEL_PADDING,
-                                                             G_PARAM_READABLE));
+                                                             GTK_PARAM_READABLE));
 
   notebook_signals[SWITCH_PAGE] =
     g_signal_new ("switch_page",

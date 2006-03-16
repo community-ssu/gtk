@@ -27,6 +27,7 @@
 #include <config.h>
 #include "gtkalignment.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 enum {
@@ -120,7 +121,7 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0.0,
                                                       1.0,
                                                       0.5,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
    
   g_object_class_install_property (gobject_class,
                                    PROP_YALIGN,
@@ -130,7 +131,7 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0.0,
                                                       1.0,
 						      0.5,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
                                    PROP_XSCALE,
                                    g_param_spec_float("xscale",
@@ -139,7 +140,7 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0.0,
                                                       1.0,
                                                       1.0,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class,
                                    PROP_YSCALE,
                                    g_param_spec_float("yscale",
@@ -148,7 +149,7 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0.0,
                                                       1.0,
                                                       1.0,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
 
 /**
@@ -160,13 +161,13 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
  */
   g_object_class_install_property (gobject_class,
                                    PROP_TOP_PADDING,
-                                   g_param_spec_uint("top_padding",
+                                   g_param_spec_uint("top-padding",
                                                       P_("Top Padding"),
                                                       P_("The padding to insert at the top of the widget."),
                                                       0,
                                                       G_MAXINT,
                                                       0,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
 /**
  * GtkAlignment:top-padding:
@@ -177,13 +178,13 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
  */
   g_object_class_install_property (gobject_class,
                                    PROP_BOTTOM_PADDING,
-                                   g_param_spec_uint("bottom_padding",
+                                   g_param_spec_uint("bottom-padding",
                                                       P_("Bottom Padding"),
                                                       P_("The padding to insert at the bottom of the widget."),
                                                       0,
                                                       G_MAXINT,
                                                       0,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
 /**
  * GtkAlignment:top-padding:
@@ -194,13 +195,13 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
  */
   g_object_class_install_property (gobject_class,
                                    PROP_LEFT_PADDING,
-                                   g_param_spec_uint("left_padding",
+                                   g_param_spec_uint("left-padding",
                                                       P_("Left Padding"),
                                                       P_("The padding to insert at the left of the widget."),
                                                       0,
                                                       G_MAXINT,
                                                       0,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
 /**
  * GtkAlignment:top-padding:
@@ -211,13 +212,13 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
  */
   g_object_class_install_property (gobject_class,
                                    PROP_RIGHT_PADDING,
-                                   g_param_spec_uint("right_padding",
+                                   g_param_spec_uint("right-padding",
                                                       P_("Right Padding"),
                                                       P_("The padding to insert at the right of the widget."),
                                                       0,
                                                       G_MAXINT,
                                                       0,
-                                                      G_PARAM_READABLE | G_PARAM_WRITABLE));
+                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
 
   g_type_class_add_private (gobject_class, sizeof (GtkAlignmentPrivate));  
 }

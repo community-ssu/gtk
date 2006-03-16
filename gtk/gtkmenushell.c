@@ -388,7 +388,7 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 					   		 P_("Take Focus"),
 							 P_("A boolean that determines whether the menu grabs the keyboard focus"),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   g_type_class_add_private (object_class, sizeof (GtkMenuShellPrivate));
 }

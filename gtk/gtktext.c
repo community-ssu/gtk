@@ -43,6 +43,7 @@
 #include "line-wrap.xbm"
 #include "line-arrow.xbm"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 
@@ -605,7 +606,7 @@ gtk_text_class_init (GtkTextClass *class)
                                                         P_("Horizontal Adjustment"),
                                                         P_("Horizontal adjustment for the text widget"),
                                                         GTK_TYPE_ADJUSTMENT,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_VADJUSTMENT,
@@ -613,23 +614,23 @@ gtk_text_class_init (GtkTextClass *class)
                                                         P_("Vertical Adjustment"),
                                                         P_("Vertical adjustment for the text widget"),
                                                         GTK_TYPE_ADJUSTMENT,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_LINE_WRAP,
-                                   g_param_spec_boolean ("line_wrap",
+                                   g_param_spec_boolean ("line-wrap",
 							 P_("Line Wrap"),
 							 P_("Whether lines are wrapped at widget edges"),
 							 TRUE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_WORD_WRAP,
-                                   g_param_spec_boolean ("word_wrap",
+                                   g_param_spec_boolean ("word-wrap",
 							 P_("Word Wrap"),
 							 P_("Whether words are wrapped at widget edges"),
 							 FALSE,
-							 G_PARAM_READWRITE));
+							 GTK_PARAM_READWRITE));
 
   widget_class->set_scroll_adjustments_signal =
     gtk_signal_new ("set_scroll_adjustments",

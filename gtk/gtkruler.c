@@ -27,6 +27,7 @@
 #include <config.h>
 #include "gtkruler.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 enum {
@@ -122,7 +123,7 @@ gtk_ruler_class_init (GtkRulerClass *class)
 							-G_MAXDOUBLE,
 							G_MAXDOUBLE,
 							0.0,
-							G_PARAM_READWRITE));  
+							GTK_PARAM_READWRITE));  
 
   g_object_class_install_property (gobject_class,
                                    PROP_UPPER,
@@ -132,7 +133,7 @@ gtk_ruler_class_init (GtkRulerClass *class)
 							-G_MAXDOUBLE,
 							G_MAXDOUBLE,
 							0.0,
-							G_PARAM_READWRITE));  
+							GTK_PARAM_READWRITE));  
 
   g_object_class_install_property (gobject_class,
                                    PROP_POSITION,
@@ -142,17 +143,17 @@ gtk_ruler_class_init (GtkRulerClass *class)
 							-G_MAXDOUBLE,
 							G_MAXDOUBLE,
 							0.0,
-							G_PARAM_READWRITE));  
+							GTK_PARAM_READWRITE));  
 
   g_object_class_install_property (gobject_class,
                                    PROP_MAX_SIZE,
-                                   g_param_spec_double ("max_size",
+                                   g_param_spec_double ("max-size",
 							P_("Max Size"),
 							P_("Maximum size of the ruler"),
 							-G_MAXDOUBLE,
 							G_MAXDOUBLE,
 							0.0,
-							G_PARAM_READWRITE));  
+							GTK_PARAM_READWRITE));  
 }
 
 static void

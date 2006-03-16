@@ -58,6 +58,7 @@
 #include "gtkscrolledwindow.h"
 #include "gtkintl.h"
 #include "gtkaccessible.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 /* We don't enable the font and style entries because they don't add
@@ -211,25 +212,25 @@ gtk_font_selection_class_init (GtkFontSelectionClass *klass)
    
   g_object_class_install_property (gobject_class,
                                    PROP_FONT_NAME,
-                                   g_param_spec_string ("font_name",
+                                   g_param_spec_string ("font-name",
                                                         P_("Font name"),
                                                         P_("The X string that represents this font"),
                                                         NULL,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_FONT,
 				   g_param_spec_boxed ("font",
 						       P_("Font"),
 						       P_("The GdkFont that is currently selected"),
 						       GDK_TYPE_FONT,
-						       G_PARAM_READABLE));
+						       GTK_PARAM_READABLE));
   g_object_class_install_property (gobject_class,
                                    PROP_PREVIEW_TEXT,
-                                   g_param_spec_string ("preview_text",
+                                   g_param_spec_string ("preview-text",
                                                         P_("Preview text"),
                                                         P_("The text to display in order to demonstrate the selected font"),
                                                         PREVIEW_TEXT,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
   gobject_class->finalize = gtk_font_selection_finalize;
 }
 

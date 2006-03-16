@@ -23,6 +23,7 @@
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
 #include "gtktreeprivate.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 static void gtk_cell_renderer_toggle_get_property  (GObject                    *object,
@@ -142,8 +143,8 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 							 P_("Toggle state"),
 							 P_("The toggle state of the button"),
 							 FALSE,
-							 G_PARAM_READABLE |
-							 G_PARAM_WRITABLE));
+							 GTK_PARAM_READABLE |
+							 GTK_PARAM_WRITABLE));
 
   g_object_class_install_property (object_class,
 		                   PROP_INCONSISTENT,
@@ -151,8 +152,8 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 					                 P_("Inconsistent state"),
 							 P_("The inconsistent state of the button"),
 							 FALSE,
-							 G_PARAM_READABLE |
-							 G_PARAM_WRITABLE));
+							 GTK_PARAM_READABLE |
+							 GTK_PARAM_WRITABLE));
   
   g_object_class_install_property (object_class,
 				   PROP_ACTIVATABLE,
@@ -160,8 +161,8 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 							 P_("Activatable"),
 							 P_("The toggle button can be activated"),
 							 TRUE,
-							 G_PARAM_READABLE |
-							 G_PARAM_WRITABLE));
+							 GTK_PARAM_READABLE |
+							 GTK_PARAM_WRITABLE));
 
   g_object_class_install_property (object_class,
 				   PROP_RADIO,
@@ -169,8 +170,8 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 							 P_("Radio state"),
 							 P_("Draw the toggle button as a radio button"),
 							 FALSE,
-							 G_PARAM_READABLE |
-							 G_PARAM_WRITABLE));
+							 GTK_PARAM_READABLE |
+							 GTK_PARAM_WRITABLE));
 
   /**
    * GtkCellRendererToggle:checkbox-mode:
@@ -183,8 +184,8 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
                                                          P_("Checkbox Mode"),
                                                          P_("Activates the checkbox mode of drawing selection"),
                                                          FALSE,
-                                                         G_PARAM_READABLE |
-                                                         G_PARAM_WRITABLE));
+                                                         GTK_PARAM_READABLE |
+                                                         GTK_PARAM_WRITABLE));
   
   /**
    * GtkCellRendererToggle::toggled:

@@ -26,6 +26,7 @@
 
 #include <config.h>
 #include "gtkseparator.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 
@@ -78,7 +79,7 @@ gtk_separator_class_init (GtkSeparatorClass *class)
 			       "Draws with paint_box "
 			       "instead of paint_(vh)line, 1/0",
                                FALSE,
-                               G_PARAM_READABLE);
+                               GTK_PARAM_READABLE);
   
   gtk_widget_class_install_style_property(GTK_WIDGET_CLASS(class),
                                           pspec);

@@ -32,6 +32,7 @@
 #include "gtkstock.h"
 #include "gtkicontheme.h"
 #include "gtkintl.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 #include <string.h>
 
@@ -158,7 +159,7 @@ gtk_image_class_init (GtkImageClass *class)
                                                         P_("Pixbuf"),
                                                         P_("A GdkPixbuf to display"),
                                                         GDK_TYPE_PIXBUF,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_PIXMAP,
@@ -166,7 +167,7 @@ gtk_image_class_init (GtkImageClass *class)
                                                         P_("Pixmap"),
                                                         P_("A GdkPixmap to display"),
                                                         GDK_TYPE_PIXMAP,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_IMAGE,
@@ -174,7 +175,7 @@ gtk_image_class_init (GtkImageClass *class)
                                                         P_("Image"),
                                                         P_("A GdkImage to display"),
                                                         GDK_TYPE_IMAGE,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_MASK,
@@ -182,7 +183,7 @@ gtk_image_class_init (GtkImageClass *class)
                                                         P_("Mask"),
                                                         P_("Mask bitmap to use with GdkImage or GdkPixmap"),
                                                         GDK_TYPE_PIXMAP,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_FILE,
@@ -190,7 +191,7 @@ gtk_image_class_init (GtkImageClass *class)
                                                         P_("Filename"),
                                                         P_("Filename to load and display"),
                                                         NULL,
-                                                        G_PARAM_WRITABLE));
+                                                        GTK_PARAM_WRITABLE));
   
 
   g_object_class_install_property (gobject_class,
@@ -199,24 +200,24 @@ gtk_image_class_init (GtkImageClass *class)
                                                         P_("Stock ID"),
                                                         P_("Stock ID for a stock image to display"),
                                                         NULL,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_ICON_SET,
-                                   g_param_spec_boxed ("icon_set",
+                                   g_param_spec_boxed ("icon-set",
                                                        P_("Icon set"),
                                                        P_("Icon set to display"),
                                                        GTK_TYPE_ICON_SET,
-                                                       G_PARAM_READWRITE));
+                                                       GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_ICON_SIZE,
-                                   g_param_spec_int ("icon_size",
+                                   g_param_spec_int ("icon-size",
                                                      P_("Icon size"),
                                                      P_("Symbolic size to use for stock icon, icon set or named icon"),
                                                      0, G_MAXINT,
                                                      DEFAULT_ICON_SIZE,
-                                                     G_PARAM_READWRITE));
+                                                     GTK_PARAM_READWRITE));
   /**
    * GtkImage:pixel-size:
    *
@@ -228,20 +229,20 @@ gtk_image_class_init (GtkImageClass *class)
    */
   g_object_class_install_property (gobject_class,
 				   PROP_PIXEL_SIZE,
-				   g_param_spec_int ("pixel_size",
+				   g_param_spec_int ("pixel-size",
 						     P_("Pixel size"),
 						     P_("Pixel size to use for named icon"),
 						     -1, G_MAXINT,
 						     -1,
-						     G_PARAM_READWRITE));
+						     GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_PIXBUF_ANIMATION,
-                                   g_param_spec_object ("pixbuf_animation",
+                                   g_param_spec_object ("pixbuf-animation",
                                                         P_("Animation"),
                                                         P_("GdkPixbufAnimation to display"),
                                                         GDK_TYPE_PIXBUF_ANIMATION,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
 
   /**
    * GtkImage:icon-name:
@@ -253,20 +254,20 @@ gtk_image_class_init (GtkImageClass *class)
    */
   g_object_class_install_property (gobject_class,
                                    PROP_ICON_NAME,
-                                   g_param_spec_string ("icon_name",
+                                   g_param_spec_string ("icon-name",
                                                         P_("Icon Name"),
                                                         P_("The name of the icon from the icon theme"),
                                                         NULL,
-                                                        G_PARAM_READWRITE));
+                                                        GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_STORAGE_TYPE,
-                                   g_param_spec_enum ("storage_type",
+                                   g_param_spec_enum ("storage-type",
                                                       P_("Storage type"),
                                                       P_("The representation being used for image data"),
                                                       GTK_TYPE_IMAGE_TYPE,
                                                       GTK_IMAGE_EMPTY,
-                                                      G_PARAM_READABLE));
+                                                      GTK_PARAM_READABLE));
 
   g_type_class_add_private (object_class, sizeof (GtkImagePrivate));
 }
