@@ -1,9 +1,12 @@
 #! /bin/sh
 
-if [ -f /targets/links/scratchbox.config ]; then
-  SU="su $USER env HOME=/home/$USER"
+if [ `whoami` = root ]; then
+  if [ -f /targets/links/scratchbox.config ]; then
+    SU="su $USER env HOME=/home/$USER"
+  else
+    SU="su - user"
+  fi
+  $SU /usr/bin/run-standalone.sh /usr/bin/maemo-confirm-text.user "$@"
 else
-  SU="su - user"
+  /usr/bin/maemo-confirm-text.user "$@"
 fi
-
-$SU /usr/bin/run-standalone.sh /usr/bin/maemo-confirm-text.user "$@"
