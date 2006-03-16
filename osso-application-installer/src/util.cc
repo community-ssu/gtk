@@ -43,6 +43,7 @@
 #include "details.h"
 #include "log.h"
 #include "settings.h"
+#include "apt-worker-client.h"
 
 #define _(x) gettext (x)
 
@@ -227,6 +228,38 @@ scare_user_with_legalese (void (*cont) (bool res, void *data),
 static GtkWidget *progress_dialog = NULL;
 static GtkProgressBar *progress_bar;
 static const gchar *general_title;
+static gint pulse_id = -1;
+
+static gboolean
+pulse_progress (gpointer unused)
+{
+  if (progress_bar)
+    gtk_progress_bar_pulse (progress_bar);
+}
+
+static void
+start_pulsing ()
+{
+  if (pulse_id < 0)
+    pulse_id = gtk_timeout_add (500, pulse_progress, NULL);
+}
+
+static void
+stop_pulsing ()
+{
+  if (pulse_id >= 0)
+    {
+      g_source_remove (pulse_id);
+      pulse_id = -1;
+    }
+}
+
+static void
+cancel_response (GtkDialog *dialog, gint response, gpointer data)
+{
+  fprintf (stderr, "cancel\n");
+  cancel_apt_worker ();
+}
 
 void
 show_progress (const gchar *title)
@@ -238,9 +271,14 @@ show_progress (const gchar *title)
 	hildon_note_new_cancel_with_progress_bar (get_main_window (),
 						  title,
 						  progress_bar);
+      g_signal_connect (progress_dialog, "response",
+			G_CALLBACK (cancel_response), NULL);
     }
   else
-    set_progress (title, 0.0);
+    {
+      set_progress (title, 0.0);
+      start_pulsing ();
+    }
 
   general_title = title;
 
@@ -257,6 +295,7 @@ set_progress (const gchar *title, float fraction)
 
   if (progress_dialog)
     {
+      stop_pulsing ();
       g_object_set (progress_dialog, "description", title, NULL);
       gtk_progress_bar_set_fraction (progress_bar, fraction);
     }
@@ -1078,9 +1117,8 @@ iap_callback (struct iap_event_t *event, void *arg)
       callback (true, data);
       break;
     case OSSO_IAP_DISCONNECTED:
-      /* should not occur, since we neve ask for a disconnection */
       add_log ("OSSO_IAP_DISCONNECTED: %s\n", event->iap_name);
-      callback (false, data);
+      // cancel_apt_worker ();
       break;
     case OSSO_IAP_ERROR:
       add_log ("IAP Error: %x %s.\n", -event->u.error_code, event->iap_name);
