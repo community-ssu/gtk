@@ -33,6 +33,7 @@
 extern int apt_worker_in_fd, apt_worker_out_fd;
 
 bool start_apt_worker (gchar *prog);
+void cancel_apt_worker ();
 
 typedef void apt_worker_callback (int cmd,
 				  apt_proto_decoder *dec,
