@@ -1,3 +1,26 @@
+2006-03-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* configure.ac: Check for gconf-2.0 module.
+
+	* osso-application-installer.desktop (Name): Use logical id.
+
+	Pass http_proxy to apt-worker when needed.
+	
+	* src/apt-worker-proto.h: Added http_proxy parameter to
+	APTCMD_UPDATE_PACKAGE_CACHE and APTCMD_INSTALL_PACKAGE.
+	* src/util.h, src/util.cc (get_http_proxy): New.
+	* src/apt-worker-client.cc (apt_worker_update_cache_cont,
+	apt_worker_install_package_cont): Use it to pass the http proxy to
+	apt-worker.
+	* src/apt-worker.cc (handle_request): Set http_proxy envvar for
+	APTCMD_UPDATE_PACKAGE_CACHE and APTCMD_INSTALL_PACKAGE.
+	
+	* utils/maemo-confirm-text-user.c (main): Bugfix: correctly use
+	'file' parameter instead of argv[1].
+
+	* utils/maemo-confirm-text: Only "su" when invoked as root,
+	otherwise just run maemo-confirm-text.user.
+
 2006-03-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* utils/Makefile.am: Removed check-application-for-uninstall,
