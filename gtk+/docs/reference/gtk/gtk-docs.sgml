@@ -597,15 +597,6 @@ that is, GUI components such as <link linkend="GtkButton">GtkButton</link> or
   <index role="deprecated">
     <title>Index of deprecated symbols</title>
   </index>
-  <index role="deprecated 2.2">
-    <title>Index of deprecated symbols (new symbol in 2.2)</title>
-  </index>
-  <index role="deprecated 2.4">
-    <title>Index of deprecated symbols (new symbol in 2.4)</title>
-  </index>
-  <index role="deprecated maemo 1.0">
-    <title>Index of deprecated symbols (new symbol in maemo 1.0)</title>
-  </index>
   <index role="2.2">
     <title>Index of new symbols in 2.2</title>
   </index>
@@ -614,6 +605,9 @@ that is, GUI components such as <link linkend="GtkButton">GtkButton</link> or
   </index>  
   <index role="2.6">
     <title>Index of new symbols in 2.6</title>
+  </index>  
+  <index role="2.8 (maemo 1.0)">
+    <title>Index of new symbols in 2.8 (maemo 1.0)</title>
   </index>  
   <index role="2.8 (maemo 2.0)">
     <title>Index of new symbols in 2.8 (maemo 2.0)</title>
