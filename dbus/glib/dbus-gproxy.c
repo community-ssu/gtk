@@ -493,7 +493,7 @@ find_name_in_info (gconstpointer a, gconstpointer b)
   const DBusGProxyNameOwnerInfo *info = a;
   const char *name = b;
 
-  if (info->name == NULL)
+  if (info == NULL || info->name == NULL)
     return 1;
   return strcmp (info->name, name);
 }
