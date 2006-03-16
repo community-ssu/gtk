@@ -139,7 +139,7 @@ main (int argc, char **argv)
      NULL);
 
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
-		     make_small_text_view (argv[1]));
+		     make_small_text_view (file));
   gtk_widget_set_usize (dialog, 600, 300);
   gtk_widget_show_all (dialog);
 
