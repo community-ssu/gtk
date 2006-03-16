@@ -317,6 +317,10 @@ handle_request ()
       }
     case APTCMD_UPDATE_PACKAGE_CACHE:
       {
+	request.reset (reqbuf, req.len);
+	const char *http_proxy = request.decode_string_in_place ();
+	setenv ("http_proxy", http_proxy, 1);
+	DBG ("http_proxy: %s\n", http_proxy);
 	response.reset ();
 	bool success = update_package_cache ();
 	_error->DumpErrors ();
@@ -353,6 +357,9 @@ handle_request ()
       {
 	request.reset (reqbuf, req.len);
 	const char *package = request.decode_string_in_place ();
+	const char *http_proxy = request.decode_string_in_place ();
+	setenv ("http_proxy", http_proxy, 1);
+	DBG ("http_proxy: %s\n", http_proxy);
 	install_package (package);
 	send_response (&req);
 	break;
@@ -1348,8 +1355,10 @@ static bool
 is_certified_source (string uri)
 {
   for (GList *p = certified_uri_prefixes; p; p = p->next)
-    if (g_str_has_prefix (uri.c_str(), (char *)p->data))
-      return true;
+    {
+      if (g_str_has_prefix (uri.c_str(), (char *)p->data))
+	return true;
+    }
   return false;
 }
 
@@ -1361,12 +1370,14 @@ encode_prep_summary (pkgAcquire& Fetcher)
     {
       if (!is_certified_source ((*I)->DescURI ()))
 	{
+	  cerr << "notcert: " << (*I)->DescURI () << "\n";
 	  response.encode_int (preptype_notcert);
 	  response.encode_string ((*I)->ShortDesc().c_str());
 	}
       
       if (!(*I)->IsTrusted())
 	{
+	  cerr << "notauth: " << (*I)->DescURI () << "\n";
 	  response.encode_int (preptype_notauth);
 	  response.encode_string ((*I)->ShortDesc().c_str());
 	}

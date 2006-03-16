@@ -448,8 +448,15 @@ apt_worker_update_cache_cont (bool success, void *clos)
   delete c;
 
   if (success)
-    call_apt_worker (APTCMD_UPDATE_PACKAGE_CACHE, NULL, 0,
-		     callback, data);
+    {
+      char *http_proxy = get_http_proxy ();
+      request.reset ();
+      request.encode_string (http_proxy);
+      g_free (http_proxy);
+      call_apt_worker (APTCMD_UPDATE_PACKAGE_CACHE,
+		       request.get_buf (), request.get_len (),
+		       callback, data);
+    }
   else
     callback (APTCMD_UPDATE_PACKAGE_CACHE, NULL, data);
 }
@@ -538,8 +545,11 @@ apt_worker_install_package_cont (bool success, void *clos)
 
   if (success)
     {
+      char *http_proxy = get_http_proxy ();
       request.reset ();
       request.encode_string (package);
+      request.encode_string (http_proxy);
+      g_free (http_proxy);
       call_apt_worker (APTCMD_INSTALL_PACKAGE,
 		       request.get_buf (), request.get_len (),
 		       callback, data);

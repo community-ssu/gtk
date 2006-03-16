@@ -164,7 +164,9 @@ enum apt_proto_operation {
 
 // UPDATE_PACKAGE_CACHE - recreate package cache
 //
-// No parameters.
+// Parameters:
+//
+// - http_proxy (string).   The value of the http_proxy envvar to use.
 //
 // Response contains:
 //
@@ -275,7 +277,8 @@ enum apt_proto_preptype {
 //
 // Parameters:
 //
-// - name (string).  The package to be installed.
+// - name (string).         The package to be installed.
+// - http_proxy (string).   The value of the http_proxy envvar to use.
 //
 // Response:
 //

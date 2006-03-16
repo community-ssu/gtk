@@ -96,4 +96,6 @@ int all_white_space (const char *str);
 
 void ensure_network (void (*callback) (bool success, void *data), void *data);
 
+char *get_http_proxy ();
+
 #endif /* !UTIL_H */

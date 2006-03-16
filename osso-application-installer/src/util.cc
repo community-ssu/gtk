@@ -33,6 +33,7 @@
 #include <sys/stat.h>
 
 #include <gtk/gtk.h>
+#include <gconf/gconf-client.h>
 #include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
 #include <hildon-widgets/gtk-infoprint.h>
@@ -1113,4 +1114,66 @@ ensure_network (void (*callback) (bool success, void *data), void *data)
 
   // annoy_user (_("ai_ni_error_download_failed"));
   callback (false, data);
+}
+
+char *
+get_http_proxy ()
+{
+  char *proxy;
+
+  GConfClient *conf = gconf_client_get_default ();
+
+  /* We clear the cache here in order to force a fresh fetch of the
+     values.  Otherwise, there is a race condition with the
+     iap_callback: the OSSO_IAP_CONNECTED message might come before
+     the GConf cache has picked up the new proxy settings.
+
+     At least, that's the theory.
+  */
+  gconf_client_clear_cache (conf);
+
+  if (gconf_client_get_bool (conf, "/system/http_proxy/use_http_proxy",
+			     NULL))
+    {
+      char *user = NULL;
+      char *password = NULL;
+      char *host;
+      gint port;
+
+      if (gconf_client_get_bool (conf, "/system/http_proxy/use_authentication",
+				 NULL))
+	{
+	  user = gconf_client_get_string
+	    (conf, "/system/http_proxy/authentication_user", NULL);
+	  password = gconf_client_get_string
+	    (conf, "/system/http_proxy/authentication_password", NULL);
+	}
+
+      host = gconf_client_get_string (conf, "/system/http_proxy/host", NULL);
+      port = gconf_client_get_int (conf, "/system/http_proxy/port", NULL);
+
+      if (user)
+	{
+	  // XXX - encoding of '@', ':' in user and password?
+
+	  if (password)
+	    proxy = g_strdup_printf ("http://%s:%s@%s:%d",
+				     user, password, host, port);
+	  else
+	    proxy = g_strdup_printf ("http://%s@%s:%d", user, host, port);
+	}
+      else
+	proxy = g_strdup_printf ("http://%s:%d", host, port);
+    }
+  else
+    proxy = NULL;
+
+  /* XXX - there is also ignore_hosts, which we ignore for now, since
+           transcribing it to no_proxy is hard... mandatory,
+           non-transparent proxies are evil anyway.
+   */
+
+  g_object_unref (conf);
+
+  return proxy;
 }
