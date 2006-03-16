@@ -8245,15 +8245,21 @@ static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
   gboolean result = TRUE;
   gint x = 0, y = 0;
 
+  GDK_THREADS_ENTER ();
+
   if (!GDK_IS_WINDOW (priv->tah_on_window))
     {
       tap_and_hold_remove_timer (widget);
+
+      GDK_THREADS_LEAVE ();
       return FALSE;
     }
   /* A small timeout before starting the tap and hold */
   if (priv->timer_counter == GTK_TAP_AND_HOLD_TIMER_COUNTER)
     {
       priv->timer_counter--;
+
+      GDK_THREADS_LEAVE ();
       return TRUE;
     }
 
@@ -8276,6 +8282,8 @@ static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
       (abs (y - priv->y) > GTK_TAP_THRESHOLD))
     {
       tap_and_hold_remove_timer (widget);
+
+      GDK_THREADS_LEAVE ();
       return FALSE;
     }
 
@@ -8285,8 +8293,12 @@ static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
       tap_and_hold_remove_timer (widget);
       _gtk_widget_grab_notify (widget, FALSE);
       g_signal_emit (widget, widget_signals[TAP_AND_HOLD], 0);
+
+      GDK_THREADS_LEAVE ();
       return FALSE;
     }
+
+  GDK_THREADS_LEAVE ();
   return result;
 }
 

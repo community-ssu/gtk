@@ -8249,9 +8249,13 @@ check_selection_helper (GtkRBTree *tree,
 static gboolean
 check_if_can_focus_idle (GtkTreeView *tree_view)
 {
+  GDK_THREADS_ENTER ();
+
   check_if_can_focus (tree_view);
 
   tree_view->priv->check_if_can_focus_idle_id = 0;
+
+  GDK_THREADS_LEAVE ();
 
   return FALSE;
 }

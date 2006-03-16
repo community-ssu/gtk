@@ -1022,10 +1022,14 @@ static gboolean
     g_return_val_if_fail (GTK_IS_WIDGET (data), FALSE);
 
     GtkEntry * entry = GTK_ENTRY( data );
-                                                                                        
+
+    GDK_THREADS_ENTER ();
+
     /* Force the string to redrawn, but now without a visible character */
     gtk_entry_recompute( entry );
-                                                                                        
+
+    GDK_THREADS_LEAVE ();
+
     /* Return false so this timeout is not called again and destroyed */
     return FALSE;
 }
