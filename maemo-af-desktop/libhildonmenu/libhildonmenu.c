@@ -278,6 +278,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		GList *desktop_files)
 {
 	gint level = 0;
+    gboolean doc_created = FALSE;
 
 	/* Make sure we have a valid iterator */
 	if (!gtk_tree_store_iter_is_valid(menu_tree, iterator)) {
@@ -293,7 +294,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		gtk_tree_store_set(menu_tree,
 				iterator,
 				TREE_MODEL_NAME,
-				g_strdup( FAVOURITES_NAME ),
+				FAVOURITES_NAME,
 				TREE_MODEL_ICON,
 				get_icon(ICON_FAVOURITES, ICON_SIZE),
 				TREE_MODEL_EXEC,
@@ -312,6 +313,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 			ULOG_ERR( "read_menu_conf: unable to read '%s'", filename );
 			goto check_unallocated;
 		}
+        doc_created = TRUE;
 	}
 
 	if (root_element == NULL) {
@@ -327,6 +329,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 	if (xmlStrcmp(root_element->name, (const xmlChar *) "Menu") != 0) {
 		/* Not a menu */
 		ULOG_DEBUG( "read_menu_conf: not a menu.");
+        xmlFreeDoc(doc);
 		goto check_unallocated;
 	}
 
@@ -496,6 +499,13 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		}
 
 	}
+			
+
+    if ( doc_created )
+    {
+        /* The doc handle was created in this call */
+        xmlFreeDoc(doc);
+    }
 
 	check_unallocated:
 

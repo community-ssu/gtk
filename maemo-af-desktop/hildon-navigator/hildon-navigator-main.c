@@ -194,6 +194,7 @@ static void start_plugin_watch(NavigatorPlugin *plugin)
                                  soname);
 
     plugin->watch = fopen(watch_name, "w");
+    g_free(soname);
     g_free(watch_name);
 
 }
@@ -805,6 +806,7 @@ static gpointer create_new_plugin(Navigator *tasknav,
                  "Memory exhausted when loading %s\n",
                  plugin_name);
 
+        g_free(full_path);
         return NULL;
     }
         
@@ -824,6 +826,9 @@ static gpointer create_new_plugin(Navigator *tasknav,
         osso_log(LOG_WARNING, 
                  "Unable to open Task Navigator Plugin %s\n",
                  plugin_name);
+        g_free(plugin->name);
+        g_free(plugin->library);
+        g_free(plugin);
 
         return NULL;
     }
@@ -844,6 +849,9 @@ static gpointer create_new_plugin(Navigator *tasknav,
             
             dlclose(plugin->handle);
             plugin->handle = NULL;
+            g_free(plugin->name);
+            g_free(plugin->library);
+            g_free(plugin);
 
             return NULL;
         }

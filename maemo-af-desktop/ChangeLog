@@ -1,5 +1,13 @@
 2006-03-17  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hildon-navigator-main.c:
+   	  - Fixed several leaks when a plugin cannot be loaded.
+	  - Fixed leak of a string in create_new_plugin()
+	* libhildonmenu/libhildonmenu.c: Free the document handle
+	  when not used anymore (Closes N#23989)
+
+2006-03-17  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.c: Initialize a TreeStore iterator
 	  before accessing it. (Closes N#24341)
 
