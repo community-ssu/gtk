@@ -1,3 +1,8 @@
+2006-03-17  Johan Bilien <johan.bilien@nokia.com>
+
+	* libhildonmenu/libhildonmenu.c: Initialize a TreeStore iterator
+	  before accessing it. (Closes N#24341)
+
 2006-03-16  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-wm.c: Applied fix to "The Address book doesnot

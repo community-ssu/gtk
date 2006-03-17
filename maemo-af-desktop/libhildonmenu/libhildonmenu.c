@@ -339,7 +339,6 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 	GdkPixbuf *icon;
 
-
 	/* Loop through the elements and add to parent */
 	for (current_element = root_element->xmlChildrenNode;
 			current_element != NULL;
@@ -608,7 +607,8 @@ GtkTreeModel *get_menu_contents(void)
 			G_TYPE_STRING,	   /* Service  */
 			G_TYPE_STRING	   /* Desktop ID */
 			);
-
+		
+    gtk_tree_store_append(contents, &content_iter, NULL);
 
 	/* Get $HOME */
 	user_home_dir = getenv( "HOME" );
