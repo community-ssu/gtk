@@ -1,3 +1,4 @@
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This file is part of maemo-af-desktop
  *
@@ -22,7 +23,6 @@
  *
  */
 
-/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #include "hn-wm.h"
 
@@ -168,6 +168,8 @@ hn_wm_top_view (GtkMenuItem *menuitem)
       XSync(GDK_DISPLAY(),FALSE);
       gdk_error_trap_pop();
 
+      hn_wm_watchable_app_set_active_window(app, win);
+
       return;
     }
 
@@ -276,11 +278,15 @@ hn_wm_top_service(const gchar *service_name)
 	{
 	  /* Regular or grouped win, get MB to top */
 	  XEvent ev;
+      HNWMWatchedWindow *active_win = hn_wm_watchable_app_get_active_window(app);
 
 	  memset(&ev, 0, sizeof(ev));
-	  
+      
+	  HN_DBG("@@@@ Last active window %s\n",
+             active_win ? hn_wm_watched_window_get_hibernation_key(active_win) : "none");
+      
 	  ev.xclient.type         = ClientMessage;
-	  ev.xclient.window       = hn_wm_watched_window_get_x_win (win);
+	  ev.xclient.window       = hn_wm_watched_window_get_x_win (active_win ? active_win : win);
 	  ev.xclient.message_type = hnwm->atoms[HN_ATOM_NET_ACTIVE_WINDOW];
 	  ev.xclient.format       = 32;
 
@@ -290,6 +296,7 @@ hn_wm_top_service(const gchar *service_name)
 	  XSync(GDK_DISPLAY(),FALSE);
 	  gdk_error_trap_pop();
 
+      hn_wm_watchable_app_set_active_window(app, win);
 	}
 
     }

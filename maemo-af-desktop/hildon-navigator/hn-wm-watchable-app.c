@@ -1,3 +1,4 @@
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This file is part of maemo-af-desktop
  *
@@ -22,7 +23,6 @@
  *
  */
 
-/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #include "hn-wm-watchable-app.h"
 
@@ -42,6 +42,7 @@ struct HNWMWatchableApp
   gboolean   is_minimised;
   gboolean   startup_notify;
   GtkWidget *ping_timeout_note; /* The note that is shown when the app quits responding */
+  HNWMWatchedWindow * active_window;
 };
 
 static gboolean
@@ -151,6 +152,7 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop)
     /* note bin_name actually maps to the Exec key */
     app->class_name = g_path_get_basename(bin_name);
 
+  app->active_window = NULL;
   HN_DBG("Registered new watchable app\n\tapp_name: %s\n\tclass name: %s\n\texec name (service): %s", 
 	 app->app_name, app->class_name, app->service);
 
@@ -404,4 +406,16 @@ GtkWidget*
 hn_wm_watchable_app_get_ping_timeout_note(HNWMWatchableApp *app)
 {
 	return app->ping_timeout_note;
+}
+
+HNWMWatchedWindow *
+hn_wm_watchable_app_get_active_window (HNWMWatchableApp *app)
+{
+  return app->active_window;
+}
+
+void
+hn_wm_watchable_app_set_active_window (HNWMWatchableApp *app, HNWMWatchedWindow * win)
+{
+  app->active_window = win;
 }

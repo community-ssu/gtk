@@ -223,4 +223,11 @@ hn_wm_watchable_app_set_ping_timeout_note (HNWMWatchableApp *app, GtkWidget *not
 GtkWidget*
 hn_wm_watchable_app_get_ping_timeout_note (HNWMWatchableApp *app);
 
+HNWMWatchedWindow *
+hn_wm_watchable_app_get_active_window (HNWMWatchableApp *app);
+
+void
+hn_wm_watchable_app_set_active_window (HNWMWatchableApp *app,
+                                       HNWMWatchedWindow * win);
+
 #endif

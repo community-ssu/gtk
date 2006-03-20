@@ -155,7 +155,9 @@ static void store_item(ApplicationSwitcher_t *as,
                         const gchar *app_name,
                         const gchar *icon_name, 
 		       GtkWidget *item);    
-                                                                                      
+
+static void app_switcher_menu_button_anim_stop (ApplicationSwitcher_t *as);
+
 static DBusHandlerResult mce_handler( DBusConnection *conn,
                                       DBusMessage *msg,
                                       void *data);
@@ -1031,6 +1033,11 @@ static void show_application_switcher_menu(ApplicationSwitcher_t *as)
     {
         return;
     }
+
+    /* Stop blinking */
+    
+    if (as->menu_icon_is_blinking)
+      app_switcher_menu_button_anim_stop(as);
     
     gtk_menu_popup(GTK_MENU(as->menu), NULL, NULL,
                    (GtkMenuPositionFunc)get_menu_position, 

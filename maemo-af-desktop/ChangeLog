@@ -1,3 +1,12 @@
+2006-03-20  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/application-switcher.c: Stop blinking the
+	  arrow when a clicked (Closes N#23155)
+	* hildon-navigator/hn-wm-watched-window.c,
+	  hildon-navigator/hn-wm-watchable-app.c:
+	  Bring focus to the last active window when multiple-windows app
+	  are topped through dbus
+
 2006-03-17  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hildon-navigator-main.c:

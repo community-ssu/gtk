@@ -1,3 +1,4 @@
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This file is part of maemo-af-desktop
  *
@@ -21,8 +22,6 @@
  * 02110-1301 USA
  *
  */
-
-/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #include "hn-wm-watched-window.h"
 #include "osso-manager.h"
@@ -859,6 +858,12 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
   if (win->pixb_icon)
     g_object_unref(win->pixb_icon);
 
+  if(win->app_parent &&
+     win == hn_wm_watchable_app_get_active_window(win->app_parent))
+    {
+	  hn_wm_watchable_app_set_active_window(win->app_parent, NULL);
+    }
+  
   g_free(win);
 }
 
