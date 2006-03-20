@@ -1,3 +1,34 @@
+maemo-af-desktop (2.6.3-1) unstable; urgency=low
+
+  * hildon-navigator/application-switcher.c: Stop blinking the
+    arrow when a clicked (Closes N#23155)
+  * hildon-navigator/hn-wm-watched-window.c,
+    hildon-navigator/hn-wm-watchable-app.c:
+    Bring focus to the last active window when multiple-windows app
+    are topped through dbus
+  * hildon-navigator/hildon-navigator-main.c:
+    - Fixed several leaks when a plugin cannot be loaded.
+    - Fixed leak of a string in create_new_plugin()
+  * libhildonmenu/libhildonmenu.c: Free the document handle
+     when not used anymore (Closes N#23989)
+  * libhildonmenu/libhildonmenu.c: Initialize a TreeStore iterator
+    before accessing it. (Closes N#24341)
+  * hildon-navigator/hn-wm.c: Applied fix to "The Address book doesnot
+    appear to foreground when other applications open." - use
+    MB to top windows when they have no views and are topped
+    from Others-Menu
+    (Closes N#23973)
+  * hildon-navigator/application-switcher.c: Reverted to use
+    GTK_WINDOW_TOPLEVEL for the tooltip, and set accept focus to FALSE
+    instead
+  * hildon-home/*:
+    . Export the show_*_banner functions
+    . Report about flash full when write ops fail (Closes N#20324)
+  * hildon-navigator/application-switcher.c: Use GTK_WINDOW_POPUP
+    instead of GTK_WINDOW_TOPLEVEL for the tooltip (Closes N#19590)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 20 Mar 2006 14:05:06 +0200
+
 maemo-af-desktop (2.6.2-1) unstable; urgency=low
 
   * hildon-status-bar/hildon-status-bar-lib.[ch]: Applied

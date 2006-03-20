@@ -1,5 +1,9 @@
 2006-03-20  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.6.3
+
+2006-03-20  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/application-switcher.c: Stop blinking the
 	  arrow when a clicked (Closes N#23155)
 	* hildon-navigator/hn-wm-watched-window.c,
@@ -38,7 +42,7 @@
 
 	* hildon-home/*:
 	  . Export the show_*_banner functions
-	  . Report about flash full when write ops fail (Closes N#)
+	  . Report about flash full when write ops fail (Closes N#20324)
 
 2006-03-13  Johan Bilien <johan.bilien@nokia.com>
 
