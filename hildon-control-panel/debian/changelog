@@ -1,3 +1,13 @@
+hildon-control-panel (1.2.2-1) unstable; urgency=low
+
+  * hildon-control-panel-main.c:
+    - Move back to big icon by default, as per new specifications.
+      (Closes N#24453)
+    - Send the library file to cp_plugin_save_state, not the .desktop file
+      filename (Closes N#24287)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 20 Mar 2006 16:32:29 +0200
+
 hildon-control-panel (1.2.1-2) unstable; urgency=low
 
   * Forgot to put dh_strip back. Closes N#24225

@@ -431,7 +431,7 @@ static void _create_data(void)
     }
     
     g_assert(state_data.osso);
-    state_data.icon_size=0;
+    state_data.icon_size=1;
     state_data.focused_filename=NULL;
     state_data.saved_focused_filename=NULL;
     state_data.execute = 0;
@@ -457,6 +457,7 @@ static void _save_state( gboolean clear_state ) {
                                                         state_data.grid));
     gchar contents[HILDON_CONTROL_PANEL_STATEFILE_MAX];
     gint fd, ret;
+					
 
     if (clear_state) {
         ret=g_sprintf(contents, "%s\n",
@@ -466,11 +467,19 @@ static void _save_state( gboolean clear_state ) {
     {
         if (state_data.focused_filename != NULL) 
 	  {
-  	      osso_cp_plugin_save_state(
-		 		        state_data.osso,
-					state_data.focused_filename,
+          
+          MBDotDesktop* dd = 
+              hildon_cp_applist_get_entry( state_data.focused_filename );
+          char * lib_file = NULL;
+          if(dd && (lib_file = 
+               (char *)mb_dotdesktop_get(dd, "X-control-panel-plugin")))
+          {
+              osso_cp_plugin_save_state(
+		 		    state_data.osso,
+					lib_file,
 					NULL
 					);
+          }
 	  }
         ret = g_snprintf(contents, HILDON_CONTROL_PANEL_STATEFILE_MAX,
                          "focused=%s\n"
@@ -933,15 +942,17 @@ static void _hw_signal_cb( osso_hw_state_t *state, gpointer data )
 static void _launch(MBDotDesktop* dd, gpointer data, gboolean user_activated )
 {
     int ret;
+    char * lib_file = NULL;
 
-    if(dd) {
+    if(dd && (lib_file = 
+                (char *)mb_dotdesktop_get(dd, "X-control-panel-plugin")))
+    {
+
         state_data.execute=1;
-        /* FIXME: What if mb_dotdesktop_get returns NULL? --> Segfault */
         ret = osso_cp_plugin_execute( state_data.osso, 
-                                      (char *)mb_dotdesktop_get(
-                                          dd, "X-control-panel-plugin"),
+                                      lib_file,
                                       (gpointer)state_data.window,
-				      user_activated );
+                                      user_activated );
         state_data.execute = 0;
     }
 }
