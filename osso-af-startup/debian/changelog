@@ -1,3 +1,9 @@
+osso-af-startup (1.12-1) unstable; urgency=low
+
+  * Removed ndm dependency and changes.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 21 Mar 2006 11:46:36 +0200
+
 osso-af-startup (1.11-1) unstable; urgency=low
 
   * Added OSSO_SWAP definition to af-defines.sh.

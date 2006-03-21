@@ -25,6 +25,9 @@ ln -s /var/lib/gconf /etc/osso-af-init/gconf-dir
 # startup wizard needs to be able to modify the locale
 chown $USER.$GROUP /etc/osso-af-init/locale
 
+update-rc.d af-services start 22 2 3 4 5 . stop 22 0 1 6 . > /dev/null
+update-rc.d af-startup start 50 2 3 4 . stop 21 0 1 6 . > /dev/null
+update-rc.d af-base-apps start 51 2 3 4 . stop 20 0 1 5 6 . > /dev/null
 update-rc.d clean-tmp-dirs start 1 2 . > /dev/null
 
 # create MMC mount point ("if" is for Scratchbox)
