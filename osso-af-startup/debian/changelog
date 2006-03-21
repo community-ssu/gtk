@@ -1,6 +1,8 @@
 osso-af-startup (1.12-1) unstable; urgency=low
 
   * Removed ndm dependency and changes.
+  * Corrected dependency dbus-1-utils to dbus, because dbus-send is now
+    installed by the dbus package.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 21 Mar 2006 11:46:36 +0200
 
