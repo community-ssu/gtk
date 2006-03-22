@@ -344,7 +344,6 @@ static void others_menu_show(OthersMenu_t * om)
 		   gtk_get_current_event_time());
     gtk_menu_shell_select_first(GTK_MENU_SHELL(om->menu), TRUE);
 }
-
 static gboolean others_menu_button_button_press(GtkToggleButton * togglebutton,
                                                 GdkEventButton * event,
                                                 gpointer data)
@@ -394,43 +393,6 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 
     /* Watch systemwide menu conf */
     if ( hildon_dnotify_set_cb(
-               (hildon_dnotify_cb_f *)others_menu_changed_cb,
-               g_path_get_dirname( SYSTEMWIDE_MENU_FILE ),
-               cb_data ) != HILDON_OK) {
-       osso_log( LOG_ERR, "Error setting dnotify callback "
-               "for systemwide menu conf!\n" );
-    }
-
-    /* Watch user specific menu conf */
-    user_home_dir = getenv( "HOME" );
-    if( !user_home_dir )
-    {
-        /* FIXME */
-        user_home_dir = "";
-    }
-    user_menu_conf_file = g_build_filename(
-           user_home_dir, USER_MENU_FILE, NULL );
-
-    if ( hildon_dnotify_set_cb(
-               (hildon_dnotify_cb_f *)others_menu_changed_cb,
-               g_path_get_dirname( user_menu_conf_file ),
-               cb_data ) != HILDON_OK) {
-       osso_log( LOG_ERR, "Error setting dnotify callback "
-               "for user spcesific menu conf!\n" );
-    }
-
-    /* Cleanup */
-    g_free( user_menu_conf_file );
-
-
-
-    /* Monitor changes to the directory */
-    cb_data = g_malloc0(sizeof(_om_changed_cb_data_t));
-    cb_data->widget = GTK_WIDGET(om->menu);
-    cb_data->om = om;
-
-    /* Watch systemwide menu conf */
-    if ( hildon_dnotify_set_cb(
 			    (hildon_dnotify_cb_f *)others_menu_changed_cb,
 			    g_path_get_dirname( SYSTEMWIDE_MENU_FILE ),
 			    cb_data ) != HILDON_OK) {
@@ -463,6 +425,18 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 	    ULOG_ERR( "others_menu_initialize_menu: "
 			    "failed setting dnotify callback "
 			    "for user spesific menu conf." );
+    }
+
+    /* Monitor the .desktop directories, so we can regenerate the menu
+     * when a new application is installed */
+    
+    if ( hildon_dnotify_set_cb(
+			    (hildon_dnotify_cb_f *)others_menu_changed_cb,
+			    DESKTOPENTRYDIR,
+			    cb_data ) != HILDON_OK) {
+	    ULOG_ERR( "others_menu_initialize_menu: "
+			    "failed setting dnotify callback "
+			    "for .desktop directory." );
     }
 
     /* Cleanup */

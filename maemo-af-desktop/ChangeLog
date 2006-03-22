@@ -1,3 +1,10 @@
+2006-03-22  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/other-menu.c:
+	  - Removed code that got duplicated in branch merges
+	  - Added a dnotify callback on the .desktop directory,
+	    to allow new applications to appear in the menu (Closes N#24511)
+
 2006-03-20  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.6.3
