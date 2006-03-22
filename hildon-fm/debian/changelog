@@ -6,7 +6,7 @@ hildon-fm (0.16-1) unstable; urgency=low
   * Fixed logical strings to be in lower case.
   * Added a hack for the UI string bug.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 22 Mar 2006 12:53:57 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 22 Mar 2006 16:04:47 +0200
 
 hildon-fm (0.15-2) unstable; urgency=low
 
