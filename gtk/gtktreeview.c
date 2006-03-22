@@ -2395,6 +2395,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
       gboolean force_list_kludge;
       GtkRBNode *cursor = NULL;
       gboolean focus_grab = FALSE;
+      gboolean stop_collapse = FALSE;
 
       if (!GTK_WIDGET_HAS_FOCUS (widget))
          focus_grab = TRUE;
@@ -2495,6 +2496,14 @@ gtk_tree_view_button_press (GtkWidget      *widget,
             {
               _gtk_tree_view_find_node (tree_view, cursor_path,
                                         &cursor_tree, &cursor);
+
+              /* Check if we have tapped in the previously focused row. We do
+               * not want to collapse the tree if this is the first tap on a
+               * not previously selected row.
+               */ 
+              stop_collapse = gtk_tree_path_compare (path, cursor_path) && 
+                              gtk_tree_view_row_expanded (tree_view, path);
+
               gtk_tree_path_free (cursor_path);
             }
          }
@@ -2762,7 +2771,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
         }
 
       /* Hildon: if selected row is tapped -> the row gets activated and expands */
-      if (!focus_grab)
+      if (!focus_grab && !stop_collapse)
         {
           /* ...although not until button is released */
           gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
@@ -11695,7 +11704,6 @@ gtk_tree_view_real_expand_row (GtkTreeView *tree_view,
   GtkTreeIter iter;
   GtkTreeIter temp;
   gboolean expand;
-  GtkTreePath *collapse_path;
   GtkRBTree *tree2;
   GtkRBNode *node2;
   GtkTreePath *child_path = NULL;
@@ -11750,35 +11758,6 @@ gtk_tree_view_real_expand_row (GtkTreeView *tree_view,
 
       return retval;
     }
-
-  /* Hildon: collapse other items in the same level */
-
-  /* find the first child */
-  collapse_path = gtk_tree_path_copy (path);
-  while (gtk_tree_path_prev (collapse_path))
-    ;
-
-  do {
-    if (gtk_tree_path_compare (collapse_path, path) != 0)
-      {
-        _gtk_tree_view_find_node (tree_view, collapse_path, &tree2, &node2);
- 
-        if (tree2 == NULL)
-          /* end reached already */
-          break;
- 
-        if (node2->children != NULL &&
-            gtk_tree_view_real_collapse_row (tree_view, collapse_path,
-                                             tree2, node2, FALSE))
-            /* no need to do anything else since only one row may
-               be expanded on any particular level at any time */
-            break;
-      }
-
-    gtk_tree_path_next (collapse_path);
-  } while (1);
-
-  gtk_tree_path_free (collapse_path);
 
   g_signal_emit (tree_view, tree_view_signals[TEST_EXPAND_ROW], 0, &iter, path, &expand);
 

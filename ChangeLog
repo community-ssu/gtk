@@ -1,3 +1,11 @@
+2006-03-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_button_press): Collapse a branch on
+	tap only if it was already focused.
+	* gtk/gtktreeview.c (gtk_tree_view_real_expand_row): Stop collapsing
+	other branches on the same level when expanding an item.
+	IMP-12
+
 2006-03-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_timeout):
