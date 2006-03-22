@@ -2,7 +2,7 @@
  * Framebuffer Progressbar
  * 
  * Compile with:
- *	gcc -s -O2 -W -Wall -o fb-progress fb-progress.c -lpng
+ *	gcc -s -Os -W -Wall -o fb-progress fb-progress.c -lpng
  * 
  * This shows a progress bar on screen for a given time.
  * Progressbar advances the always the same amount to appear
@@ -12,7 +12,7 @@
  * - Framebuffer and its signal handling was originally based on
  *   the code from Torsten Scherer's W window system m68k-linux
  *   graphics initialization code
- * - PNG handling comes from Henrik Saari
+ * - PNG handling came originally from Henrik Saari
  * - The screen width has to be taken from finfo.line_length
  *   instead of vinfo.xres(_virtual) as some screens might include
  *   padding there.  Framebuffer is panned to the bottom so that
@@ -43,14 +43,18 @@
  *   - Catch SIGINT for more pleasent testing
  * 2005-09-12
  *   - Add option for an image progress bar
+ * 2005-10-04
+ *   - Remove remains of "night rider" mode
+ * 2005-03-22
+ *   - Fix fd leak and add more debugging output
  * 
  * This is free software; you can redistribute it and/or modify it
  * under the terms specified in the GNU Public Licence (GPL).
  *
  * Copyright (C) 1998 Torsten Scherer (fb init and its signal handling)
- * Copyright (C) 2005 Nokia Corporation
+ * Copyright (C) 2005,2006 Nokia Corporation
  * Author: Eero Tamminen
- * Contact: Kimmo H‰m‰l‰inen <kimmo.hamalainen@nokia.com>
+ * Contact: Kimmo H√§m√§l√§inen <kimmo.hamalainen@nokia.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -86,7 +90,6 @@
 #include <png.h>
 #include "omapfb.h"	/* stuff needed by fb_flush() */
 
-#define PROGRESS_FPS  5		/* default speed for "night rider" mode */
 #define PROGRESS_HEIGHT_MAX 200	/* max. height for image progressbar */
 #define PROGRESS_HEIGHT 20	/* height for non-image progressbar */
 #define PROGRESS_ADVANCE 8	/* advance this many pixels at the time */
@@ -130,14 +133,8 @@ typedef struct {
 	uint16_t *pixel_buffer;
 } image_info_t;
 
-enum {
-	MODE_ABSOLUTE,
-	MODE_NIGHT_RIDER
-};
 
 typedef struct {
-	/* whether to use absolute or "night rider" progressbar */
-	int mode;
 	/* whether to switch my own console/VT */
 	int use_vt;
 	/* set when program should exit (due to SIGTERM etc) */
@@ -234,6 +231,7 @@ static int console_ioctl(int op, int val, const char *name, const char *msg)
 	}
 	if ((fd = console_open()) >= 0) {
 		if (ioctl(fd, op, val) == 0) {
+			close(fd);
 			return 0;
 		} else {
 			perror(name);
@@ -284,36 +282,36 @@ static void signal_set_handlers(void)
  */
 static int signal_process(void)
 {
-	/* screen needs redraw */
-	int ret = 1;
+	/* screen does not need redraw */
+	int ret = 0;
 
 	switch(Fb.sig) {
 
 	case SIGUSR1:
-		if (console_ioctl(VT_RELDISP, 1, "VT_RELDISP", "Release VT")) {
-			/* error */
-			perror("ioctl(VT_RELDISP)");
-			Options.do_exit = 1;
+		if (console_ioctl(VT_RELDISP, 1, "VT_RELDISP", "Release VT") == 0) {
+			/* switched screen OK */
+			ret = 1;
 		}
 		break;
 
 	case SIGUSR2:
-		if (console_ioctl(VT_ACKACQ, 1, "VT_ACKACQ", "Acquire VT")) {
-			/* error */
-			perror("ioctl(VT_ACKACQ)");
-			Options.do_exit = 1;
+		if (console_ioctl(VT_ACKACQ, 1, "VT_ACKACQ", "Acquire VT") == 0) {
+			/* switched screen OK */
+			ret = 1;
 		}
 		break;
 
+	case SIGHUP:
 	case SIGINT:
 	case SIGTERM:
+		fprintf(stderr,
+			"fb-progress: Exiting on INT/TERM/HUP %d signal\n",
+			Fb.sig);
 		Options.do_exit = 1;
-		ret = 0;
 		break;
 	default:
 		fprintf(stderr, "fb-progress: Unknown signal %d\n", Fb.sig);
 		Options.do_exit = 1;
-		ret = 0;
 		break;
 	}
 	/* no signal */
@@ -824,7 +822,7 @@ static void free_image(image_info_t *img)
 static void usage(const char *name, const char *error)
 {
 	fprintf(stderr, "\nERROR: %s!\n\n", error);
-	printf("Usage: %s [options] <steps>\n\n"
+	printf("Usage: %s [options] <secs>\n\n"
 	       "A progress bar for the the framebuffer, show at the bottom.\n"
 	       "Options:\n"
 	       "-v\t\tverbose\n"
@@ -833,21 +831,20 @@ static void usage(const char *name, const char *error)
 	       "-p <color>\tcolor to use for the progressbar, as 24-bit hex value\n"
 	       "-l <image>\tlogo PNG image to show on the background\n"
 	       "-g <image>\tgraphics PNG image to use for drawing the progressbar\n"
-	       "-s\t\tadvances through progress within <steps> seconds (default)\n"
 	       "-t <vt>\t\tswitch to given virtual terminal while showing the progress\n"
-	       "-i <step>\tinitial step (< steps) for default mode\n\n"
+	       "-i <step>\tinitial seconds (< all secs)\n\n"
 	       "Examples:\n"
 	       "\t%s -s -c -t 3 -b ffffff -l logo.png 30\n"
 	       "\tsleep 30\n"
-	       "\t%s -n -i 1 3\n",
+	       "\t%s -n -i 1 3\n\n"
+	       "NOTE: this program need to be run as root (for VT ioctls)!\n",
 	       name, name, name);
-	       // "-n\t\tnight-rider mode, progress goes back and forth <steps> times\n"
 	exit(1);
 }
 
 int main(int argc, const char *argv[])
 {
-	int vt = 0, i, color, steps, step = 0, oldstep = 0;
+	int vt = 0, i, color, steps, step = 0, oldstep = 0, secs;
 	struct timespec sleep_req, sleep_rem;
 	myfb_t *fb;
 
@@ -913,13 +910,6 @@ int main(int argc, const char *argv[])
 			if (Options.img_progress->wd != 3*PROGRESS_ADVANCE) {
 				usage(*argv, "progress image width not 3*8");
 			}
-			break;
-		case 'n':
-			usage(*argv, "\"Night-rider\" mode not yet implemented");
-			Options.mode = MODE_NIGHT_RIDER;
-			break;
-		case 's':
-			Options.mode = MODE_ABSOLUTE;
 			break;
 		case 'v':
 			Options.verbose = 1;
@@ -988,50 +978,40 @@ int main(int argc, const char *argv[])
 		fb_flush();
 	}
 	
-	if (Options.mode == MODE_ABSOLUTE) {
-		int secs = steps;
-		/* re-calculate steps to correspond to seconds */
-		steps = fb->wd / PROGRESS_ADVANCE;
-		step = step * fb->wd / secs / PROGRESS_ADVANCE;
-		if (step < 2) {
-			/* image progress will be always at least two steps */
-			step = 2;
-		}
-		/* calculate advancing time interval */
-		sleep_req.tv_sec = secs / steps;
-		sleep_req.tv_nsec = (long long)(secs % steps) * 1000000000L / steps;
-
-		if (Options.img_progress) {
-			draw_steps_with_image(oldstep, step, steps);
-		} else {
-			draw_steps(oldstep, step, steps);
-		}
-		fb_flush();
+	/* re-calculate steps to correspond to seconds */
+	secs = steps;
+	steps = fb->wd / PROGRESS_ADVANCE;
+	step = step * fb->wd / secs / PROGRESS_ADVANCE;
+	if (step < 2) {
+		/* image progress will be always at least two steps */
+		step = 2;
+	}
+	/* calculate advancing time interval */
+	sleep_req.tv_sec = secs / steps;
+	sleep_req.tv_nsec = (long long)(secs % steps) * 1000000000L / steps;
+	
+	if (Options.img_progress) {
+		draw_steps_with_image(oldstep, step, steps);
 	} else {
-		/* night rider mode has no initial steps
-		 * and predefined time interval
-		 */
-		step = 0;
-		sleep_req.tv_sec = 0;
-		sleep_req.tv_nsec = 1000/PROGRESS_FPS*1000000L;
+		draw_steps(oldstep, step, steps);
 	}
+	fb_flush();
+
 	if (Options.verbose) {
-		printf("fb-progress: time interval %ldms\n",
-		       sleep_req.tv_sec * 1000 + sleep_req.tv_nsec / 1000000);
+		printf("fb-progress: time interval %ldms for %d steps\n",
+		       sleep_req.tv_sec * 1000 + sleep_req.tv_nsec / 1000000,
+		       steps);
 	}
 
-	/* ----- setup, read&progress and close progress fifo -------- */
+	/* ------ show progress and redraw logo -------- */
 	
 	while (step < steps && !Options.do_exit) {
 
-		if (Options.mode == MODE_ABSOLUTE) {
-			/* just advance the progress bar */
-			sleep_rem.tv_sec = sleep_rem.tv_nsec = 0;
-			nanosleep(&sleep_req, &sleep_rem);
-			step++;
-		} else {
-			/* TODO: night rider mode */
-		}
+		/* just advance the progress bar */
+		sleep_rem.tv_sec = sleep_rem.tv_nsec = 0;
+		nanosleep(&sleep_req, &sleep_rem);
+		step++;
+
 		if (Fb.sig) {
 			if (signal_process()) {
 				struct timespec sleep_x;

@@ -1,3 +1,9 @@
+osso-af-utils (1.2-1) unstable; urgency=low
+
+  * fb-progress upstream update.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 22 Mar 2006 16:25:57 +0200
+
 osso-af-utils (1.1-1) unstable; urgency=low
 
   * Replaced the script with Guillem's temp-reaper.
