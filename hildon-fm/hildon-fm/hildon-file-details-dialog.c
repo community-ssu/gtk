@@ -45,6 +45,8 @@
 #include "hildon-file-details-dialog.h"
 #include "hildon-file-system-model.h"
 
+#include <string.h> /* strstr() */
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
