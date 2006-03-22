@@ -674,11 +674,21 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
   g_object_set(self->priv->file_type, "label", _(mime), NULL);
 
   if (size < 1024)
-    g_snprintf(buffer, sizeof(buffer),
-               _("ckdg_va_properties_size_bytes"), (gint) size);
+  {
+    /* FIXME when UI string is fixed */
+    const char* fmt = _("ckdg_va_properties_size_bytes");
+    if (strstr(fmt, "%S") != NULL)
+      fmt = "%d B";
+    g_snprintf(buffer, sizeof(buffer), fmt, (gint) size);
+  }
   else
-    g_snprintf(buffer, sizeof(buffer),
-               _("ckdg_va_properties_size_kb"), (gint) size / 1024);
+  {
+    /* FIXME when UI string is fixed */
+    const char* fmt = _("ckdg_va_properties_size_kb");
+    if (strstr(fmt, "%S") != NULL)
+      fmt = "%d kB";
+    g_snprintf(buffer, sizeof(buffer), fmt, (gint) size / 1024);
+  }
 
   g_object_set(self->priv->file_size, "label", buffer, NULL);
 
