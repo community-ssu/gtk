@@ -67,6 +67,12 @@ enum {
 #define USB_CABLE_DIR "/system/osso/af"
 #define USB_CABLE_KEY USB_CABLE_DIR "/usb-cable-attached"
 
+
+#define MCE_MATCH_RULE "type='signal',interface='" MCE_SIGNAL_IF \
+                       "',member='" MCE_DEVICE_MODE_SIG "'"
+#define BTNAME_MATCH_RULE "type='signal',interface='" BTNAME_SIGNAL_IF \
+                          "',member='" BTNAME_SIG_CHANGED "'"
+
 struct _HildonFileSystemSettingsPrivate
 {
   DBusConnection *dbus_conn;
@@ -153,8 +159,9 @@ static void set_gateway_from_gconf_value(
   g_object_notify(G_OBJECT(self), "gateway-ftp");
 }
 
-static void set_usb_from_gconf_value(
-    HildonFileSystemSettings *self, GConfValue *value)
+static void
+set_usb_from_gconf_value(HildonFileSystemSettings *self,
+                         GConfValue *value)
 {
   if (value && value->type == GCONF_VALUE_BOOL)
   {
@@ -164,32 +171,42 @@ static void set_usb_from_gconf_value(
 }
 
 static void
-set_bt_name_from_message(HildonFileSystemSettings *self, DBusMessage *message)
+set_bt_name_from_message(HildonFileSystemSettings *self,
+                         DBusMessage *message)
 {
   DBusMessageIter iter;
-  gchar *name;
+  const char *name = NULL;
 
-  if (!dbus_message_iter_init(message, &iter)) return;
+  g_assert(message != NULL);
+  if (!dbus_message_iter_init(message, &iter))
+  {
+    ULOG_ERR_F("message did not have argument");
+    return;
+  }
   dbus_message_iter_get_basic(&iter, &name);
-  if (!name) return;
 
-  ULOG_INFO("BT name changed into \"%s\"", name);
+  ULOG_INFO_F("BT name changed into \"%s\"", name);
 
   g_free(self->priv->btname);
-  self->priv->btname = name;
+  self->priv->btname = g_strdup(name);
   g_object_notify(G_OBJECT(self), "btname");
 }
 
 static void 
-set_flight_mode_from_message(HildonFileSystemSettings *self, DBusMessage *message)
+set_flight_mode_from_message(HildonFileSystemSettings *self,
+                             DBusMessage *message)
 {
   DBusMessageIter iter;
   gboolean new_mode;
-  char *mode_name;
+  const char *mode_name = NULL;
 
-  if (!dbus_message_iter_init(message, &iter)) return;
+  g_assert(message != NULL);
+  if (!dbus_message_iter_init(message, &iter))
+  {
+    ULOG_ERR_F("message did not have argument");
+    return;
+  }
   dbus_message_iter_get_basic(&iter, &mode_name);
-  if (!mode_name) return;
 
   if (g_ascii_strcasecmp(mode_name, MCE_FLIGHT_MODE) == 0)
     new_mode = TRUE;
@@ -203,12 +220,12 @@ set_flight_mode_from_message(HildonFileSystemSettings *self, DBusMessage *messag
     self->priv->flightmode = new_mode;
     g_object_notify(G_OBJECT(self), "flight-mode");
   }
-
-  g_free(mode_name);
 }
 
 static DBusHandlerResult
-hildon_file_system_settings_handle_dbus_signal(DBusConnection *conn, DBusMessage *msg, gpointer data)
+hildon_file_system_settings_handle_dbus_signal(DBusConnection *conn,
+                                               DBusMessage *msg,
+                                               gpointer data)
 {
   g_assert(HILDON_IS_FILE_SYSTEM_SETTINGS(data));
 
@@ -234,13 +251,17 @@ static void mode_received(DBusPendingCall *call, void *user_data)
 
   g_assert(dbus_pending_call_get_completed(call));
   message = dbus_pending_call_steal_reply(call);
-  if (!message) return;
+  if (message == NULL)
+  {
+    ULOG_ERR_F("no reply");
+    return;
+  }
 
   dbus_error_init(&error);
 
   if (dbus_set_error_from_message(&error, message))
   {
-    ULOG_ERR("%s: %s", error.name, error.message);
+    ULOG_ERR_F("%s: %s", error.name, error.message);
     dbus_error_free(&error);
   }
   else
@@ -261,13 +282,17 @@ static void btname_received(DBusPendingCall *call, void *user_data)
 
   g_assert(dbus_pending_call_get_completed(call));
   message = dbus_pending_call_steal_reply(call);
-  if (!message) return;
+  if (message == NULL)
+  {
+    ULOG_ERR_F("no reply");
+    return;
+  }
 
   dbus_error_init(&error);
 
   if (dbus_set_error_from_message(&error, message))
   {
-    ULOG_ERR("%s: %s", error.name, error.message);
+    ULOG_ERR_F("%s: %s", error.name, error.message);
     dbus_error_free(&error);
   }
   else
@@ -284,14 +309,14 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
   DBusConnection *conn;
   DBusMessage *request;
   DBusError error;
-  DBusPendingCall *call;
+  DBusPendingCall *call = NULL;
 
   dbus_error_init(&error);
-  self->priv->dbus_conn = conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
-  if (!conn)
+  self->priv->dbus_conn = conn = dbus_bus_get(DBUS_BUS_SYSTEM, &error);
+  if (conn == NULL)
   {
-    ULOG_ERR("%s: %s", error.name, error.message);
-    ULOG_ERR("This causes that device state changes are not refreshed");
+    ULOG_ERR_F("%s: %s", error.name, error.message);
+    ULOG_ERR_F("This causes that device state changes are not refreshed");
     dbus_error_free(&error);
     return;
   }
@@ -300,7 +325,11 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
      consume too much startup time */
   request = dbus_message_new_method_call(MCE_SERVICE, 
         MCE_REQUEST_PATH, MCE_REQUEST_IF, MCE_DEVICE_MODE_GET);
-  g_assert(request != NULL);
+  if (request == NULL)
+  {
+    ULOG_ERR_F("dbus_message_new_method_call failed");
+    return;
+  }
   dbus_message_set_auto_start(request, TRUE);
 
   if (dbus_connection_send_with_reply(conn, request, &call, -1))
@@ -313,7 +342,11 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
 
   request = dbus_message_new_method_call(BTNAME_SERVICE,
         BTNAME_REQUEST_PATH, BTNAME_REQUEST_IF, BTNAME_REQ_GET);
-  g_assert(request != NULL);
+  if (request == NULL)
+  {
+    ULOG_ERR_F("dbus_message_new_method_call failed");
+    return;
+  }
   dbus_message_set_auto_start(request, TRUE);
 
   if (dbus_connection_send_with_reply(conn, request, &call, -1))
@@ -324,10 +357,26 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
 
   dbus_message_unref(request);
 
-  dbus_connection_setup_with_g_main (conn, NULL);
-  dbus_bus_add_match (conn, "type='signal'", NULL);
-  dbus_connection_add_filter (conn, 
-      hildon_file_system_settings_handle_dbus_signal, self, NULL);
+  dbus_connection_setup_with_g_main(conn, NULL);
+  dbus_bus_add_match(conn, MCE_MATCH_RULE, &error);
+  if (dbus_error_is_set(&error))
+  {
+    ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
+    dbus_error_free(&error);
+  }
+
+  dbus_bus_add_match(conn, BTNAME_MATCH_RULE, &error);
+  if (dbus_error_is_set(&error))
+  {
+    ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
+    dbus_error_free(&error);
+  }
+
+  if (!dbus_connection_add_filter(conn,
+      hildon_file_system_settings_handle_dbus_signal, self, NULL))
+  {
+    ULOG_ERR_F("dbus_connection_add_filter failed");
+  }
 }
 
 static void
@@ -368,9 +417,8 @@ hildon_file_system_settings_finalize(GObject *obj)
 
   if (priv->dbus_conn)    
   {
-    /* Seems that dbus do not automatically cancel all settings
-       associated to connection when connection is freed. */
-    dbus_bus_remove_match (priv->dbus_conn, "type='signal'", NULL);
+    dbus_bus_remove_match(priv->dbus_conn, MCE_MATCH_RULE, NULL);
+    dbus_bus_remove_match(priv->dbus_conn, BTNAME_MATCH_RULE, NULL);
     dbus_connection_remove_filter(priv->dbus_conn,
       hildon_file_system_settings_handle_dbus_signal, obj);
     dbus_connection_unref(priv->dbus_conn);
@@ -424,38 +472,69 @@ static gboolean delayed_init(gpointer data)
 
   self->priv->gconf = gconf_client_get_default();
   gconf_client_add_dir(self->priv->gconf, BTCOND_GCONF_PATH,
-  	 GCONF_CLIENT_PRELOAD_NONE, &error);
-
-  if (!error)
-    gconf_client_add_dir(self->priv->gconf, USB_CABLE_DIR,
-      GCONF_CLIENT_PRELOAD_NONE, &error);
-
-  if (!error)
-    gconf_client_notify_add(self->priv->gconf, BTCOND_GCONF_PATH,
-      gconf_gateway_changed, self, NULL, &error);
-
-  if (!error)
-    gconf_client_notify_add(self->priv->gconf, USB_CABLE_DIR,
-      gconf_usb_changed, self, NULL, &error);
-
-  if (error)
+                       GCONF_CLIENT_PRELOAD_NONE, &error);
+  if (error != NULL)
   {
-    ULOG_ERR(error->message);
+    ULOG_ERR_F("gconf_client_add_dir failed: %s", error->message);
     g_error_free(error);
+    error = NULL;
   }
 
-  value = gconf_client_get_without_default(self->priv->gconf, BTCOND_GCONF_PREFERRED, NULL);
-  if (value)
+  gconf_client_add_dir(self->priv->gconf, USB_CABLE_DIR,
+                       GCONF_CLIENT_PRELOAD_NONE, &error);
+  if (error != NULL)
+  {
+    ULOG_ERR_F("gconf_client_add_dir failed: %s", error->message);
+    g_error_free(error);
+    error = NULL;
+  }
+
+  gconf_client_notify_add(self->priv->gconf, BTCOND_GCONF_PATH,
+                          gconf_gateway_changed, self, NULL, &error);
+  if (error != NULL)
+  {
+    ULOG_ERR_F("gconf_client_notify_add failed: %s", error->message);
+    g_error_free(error);
+    error = NULL;
+  }
+
+  gconf_client_notify_add(self->priv->gconf, USB_CABLE_DIR,
+                          gconf_usb_changed, self, NULL, &error);
+  if (error != NULL)
+  {
+    ULOG_ERR_F("gconf_client_notify_add failed: %s", error->message);
+    g_error_free(error);
+    error = NULL;
+  }
+
+  value = gconf_client_get_without_default(self->priv->gconf,
+                                           BTCOND_GCONF_PREFERRED, &error);
+  if (error != NULL)
+  {
+    ULOG_ERR_F("gconf_client_get_without_default failed: %s",
+               error->message);
+    g_error_free(error);
+    error = NULL;
+  }
+  else if (value != NULL)
   {
     set_gateway_from_gconf_value(self, value);
-  	gconf_value_free(value);
+    gconf_value_free(value);
   }
 
-  value = gconf_client_get_without_default(self->priv->gconf, USB_CABLE_KEY, NULL);
-  if (value)
+  value = gconf_client_get_without_default(self->priv->gconf,
+                                           USB_CABLE_KEY, &error);
+  if (error != NULL)
+  {
+    ULOG_ERR_F("gconf_client_get_without_default failed: %s",
+               error->message);
+    g_error_free(error);
+    error = NULL;
+  }
+  else if (value != NULL)
   {
     set_usb_from_gconf_value(self, value);
-  	gconf_value_free(value);
+    gconf_value_free(value);
   }
 
   self->priv->gconf_ready = TRUE;
@@ -517,30 +596,45 @@ void _hildon_file_system_prepare_banner(void)
   HildonFileSystemSettings *settings;
   DBusConnection *conn;
   DBusMessage *message;
-  DBusMessageIter iter;
-  dbus_int32_t value;
+  dbus_int32_t pid;
+  static const dbus_int32_t initial_value = 1000;
+  static const dbus_int32_t display_timeout = 30000;
   const char *ckdg_pb_updating_str = _("ckdg_pb_updating");
+  dbus_bool_t ret;
 
   settings = _hildon_file_system_settings_get_instance();
+  g_assert(settings != NULL);
   conn = settings->priv->dbus_conn;
+  g_assert(conn != NULL);
   message = dbus_message_new_method_call(BANNER_SERVICE,
         BANNER_REQUEST_PATH, BANNER_REQUEST_IF, BANNER_SHOW);
-  g_assert(message != NULL);
+  if (message == NULL)
+  {
+    ULOG_ERR_F("dbus_message_new_method_call failed");
+    return;
+  }
 
-  dbus_message_iter_init_append(message, &iter);
-  value = getpid(); /* id */
-  dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &value); 
-  value = 1000;     /* Initial value */
-  dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &value); 
-  value = 30000;    /* Display timeout */
-  dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &value); 
-  
-  dbus_message_iter_append_basic(&iter, DBUS_TYPE_STRING, 
-          &ckdg_pb_updating_str);
+  pid = getpid(); /* id */
+  ret = dbus_message_append_args(message, DBUS_TYPE_INT32, &pid,
+                                 DBUS_TYPE_INT32, &initial_value,
+                                 DBUS_TYPE_INT32, &display_timeout,
+                                 DBUS_TYPE_STRING, &ckdg_pb_updating_str,
+                                 DBUS_TYPE_INVALID);
+  if (!ret)
+  {
+    ULOG_ERR_F("dbus_message_append_args failed");
+    dbus_message_unref(message);
+    return;
+  }
 
-  (void) dbus_connection_send(conn, message, NULL);
-
-  dbus_connection_flush(conn);
+  if (!dbus_connection_send(conn, message, NULL))
+  {
+    ULOG_ERR_F("dbus_connection_send failed");
+  }
+  else
+  {
+    dbus_connection_flush(conn);
+  }
   dbus_message_unref(message);
 }
 
@@ -549,21 +643,37 @@ void _hildon_file_system_cancel_banner(void)
   HildonFileSystemSettings *settings;
   DBusConnection *conn;
   DBusMessage *message;
-  DBusMessageIter iter;
   dbus_int32_t pid;
 
   settings = _hildon_file_system_settings_get_instance();
+  g_assert(settings != NULL);
   conn = settings->priv->dbus_conn;
+  g_assert(conn != NULL);
   message = dbus_message_new_method_call(BANNER_SERVICE,
         BANNER_REQUEST_PATH, BANNER_REQUEST_IF, BANNER_HIDE);
-  g_assert(message != NULL);
+  if (message == NULL)
+  {
+    ULOG_ERR_F("dbus_message_new_method_call failed");
+    return;
+  }
 
-  dbus_message_iter_init_append(message, &iter);
   pid = getpid();
-  dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &pid);
+  if (!dbus_message_append_args(message, DBUS_TYPE_INT32, &pid,
+                                DBUS_TYPE_INVALID))
+  {
+    ULOG_ERR_F("dbus_message_append_args failed");
+    dbus_message_unref(message);
+    return;
+  }
 
-  (void) dbus_connection_send(conn, message, NULL);
-
+  if (!dbus_connection_send(conn, message, NULL))
+  {
+    ULOG_ERR_F("dbus_connection_send failed");
+  }
+  else
+  {
+    dbus_connection_flush(conn);
+  }
   dbus_message_unref(message);
 }
 
