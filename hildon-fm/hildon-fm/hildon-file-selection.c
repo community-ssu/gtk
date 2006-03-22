@@ -1871,26 +1871,26 @@ static void list_size_data_func(GtkTreeViewColumn * tree_column,
         buffer[0] = 0; 
     else if (size < (gint64) 100)
         g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_max_100B"), (gint) size); /* safe conversion */
+            _("sfil_li_size_max_100b"), (gint) size); /* safe conversion */
     else if (size < (gint64) 1024)
         g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_100B_10kB"), size / 1024.0f);
+            _("sfil_li_size_100b_10kb"), size / 1024.0f);
     else if (size < (gint64) 100 * 1024)
         g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_10kB_100kB"), (gint) size / 1024);  /* safe */
+            _("sfil_li_size_10kb_100kb"), (gint) size / 1024);  /* safe */
     else if (size < (gint64) 10 * 1024 * 1024)
         g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_100kB_10MB"), size / (1024.0f * 1024.0f));
+            _("sfil_li_size_100kb_10mb"), size / (1024.0f * 1024.0f));
     else if (size < (gint64) 100 * 1024 * 1024)
         g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_10MB_100MB"), (gint) size / (1024 * 1024));
+            _("sfil_li_size_10mb_100mb"), (gint) size / (1024 * 1024));
     else if (size < 10 * ((gint64) 1024 * 1024 * 1024))
         g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_100MB_10GB"), size / (1024.0 * 1024.0 * 1024.0));
+            _("sfil_li_size_100mb_10gb"), size / (1024.0 * 1024.0 * 1024.0));
     else
         /* Following calculation doesn't fit into 32 bits if the filesize is larger than 2^62 ;) */
         g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_more_than_100GB"), (gint) (size / (1024 * 1024 * 1024)));
+            _("sfil_li_size_more_than_100gb"), (gint) (size / (1024 * 1024 * 1024)));
 
     g_object_set(cell, "text", buffer, "sensitive", sensitive, NULL);
 }
