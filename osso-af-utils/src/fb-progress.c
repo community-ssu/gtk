@@ -45,7 +45,7 @@
  *   - Add option for an image progress bar
  * 2005-10-04
  *   - Remove remains of "night rider" mode
- * 2005-03-22
+ * 2006-03-22
  *   - Fix fd leak and add more debugging output
  * 
  * This is free software; you can redistribute it and/or modify it
