@@ -33,6 +33,7 @@
 #include <glib.h>
 #include <stdlib.h>
 #include <osso-log.h>
+#include <gdk/gdkkeysyms.h>
 
 /* hildon includes */
 #include "applet-manager.h"
@@ -123,6 +124,7 @@ struct _layout_mode_internal_t {
     gulong drag_motion_handler;
     osso_context_t * osso;
     GdkColor highlight_color;
+    gulong keylistener_id;
 };
 
 struct _layout_node_t {
@@ -185,6 +187,9 @@ void layout_menu_position_function(GtkMenu *menu, gint *x, gint *y,
 				   gboolean *push_in,
 				   gpointer user_data);
 
+static gint layout_mode_key_press_listener (GtkWidget * widget,
+                                            GdkEventKey * keyevent,
+                                            gpointer unused);
 static void fp_mlist(void);
 LayoutInternal general_data;
 
@@ -217,7 +222,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     GtkWidget * mi;
     gint x, y;
     GList * addable_applets =NULL;
-
+    GtkWidget *window;
 
     node = NULL;
 
@@ -425,6 +430,14 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 	gtk_main_iteration ();
     }
 
+    window = gtk_widget_get_toplevel(GTK_WIDGET(general_data.area));
+    
+    general_data.keylistener_id = 
+        g_signal_connect(G_OBJECT(window),
+                         "key_press_event",
+                         G_CALLBACK(layout_mode_key_press_listener), NULL);
+   
+
     ULOG_ERR("LAYOUT:Layout mode start ends here\n");
     fp_mlist();
     
@@ -437,9 +450,11 @@ void layout_mode_end ( gboolean rollback )
     LayoutNode * node;
     gint x, y;
     applet_manager_t * man;
+    GtkWidget *window;
 
     /* Show Confirmation note if layout mode was cancelled */   
-    if( rollback == ROLLBACK_LAYOUT ) {    
+    if( rollback == ROLLBACK_LAYOUT ) 
+    {    
         int ret;
 	GtkWidget *note = hildon_note_new_confirmation_add_buttons
 		(NULL, 
@@ -447,13 +462,16 @@ void layout_mode_end ( gboolean rollback )
 	         LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_YES,	 
 		 GTK_RESPONSE_ACCEPT,
 		 LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_NO,
-		 GTK_RESPONSE_REJECT, NULL);
+		 GTK_RESPONSE_CANCEL, NULL);
 	
 	ret = gtk_dialog_run(GTK_DIALOG(note));
 	gtk_widget_destroy(GTK_WIDGET(note));
-	
-	if(ret == GTK_RESPONSE_REJECT)
+        /* No action if dialog is canceled */
+	if(ret == GTK_RESPONSE_CANCEL ||
+           ret == GTK_RESPONSE_DELETE_EVENT)
+        {
            return;		
+        }
     }	    
 
     man = applet_manager_singleton_get_instance();    
@@ -524,6 +542,9 @@ void layout_mode_end ( gboolean rollback )
 				general_data.drag_begin_handler);
     g_signal_handler_disconnect(general_data.home_area_eventbox,
 				general_data.drag_motion_handler);
+    window = gtk_widget_get_toplevel(GTK_WIDGET(general_data.area));
+    g_signal_handler_disconnect(window,
+				general_data.keylistener_id);
     
     applet_manager_configure_load_all(man);
     gtk_widget_destroy (general_data.cancel_button);
@@ -1458,6 +1479,29 @@ gpointer data)
 			     general_data.offset_x, general_data.offset_y/**/);
     ULOG_ERR("LAYOUT:end of drag_begin\n");
     
+}
+
+/**
+ * @layout_mode_key_press_listener
+ *
+ * @param widget
+ * @param keyevent
+ * @param unused
+ *
+ * @return
+ *
+ * Handles the keyboard press events for the Layout Mode
+ */
+static
+gint layout_mode_key_press_listener (GtkWidget * widget,
+                                     GdkEventKey * keyevent,
+                                     gpointer unused)
+{
+    if (keyevent->keyval == HILDON_HARDKEY_ESC)
+    {
+        layout_mode_end (ROLLBACK_LAYOUT);
+    }
+    return FALSE;
 }
 
 

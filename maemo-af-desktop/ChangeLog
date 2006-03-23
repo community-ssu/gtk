@@ -1,5 +1,21 @@
 2006-03-23  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/layout-manager.c: (Closes N#24439 and N#24767)
+	  - added field to layout mode internal struct to hold handler id
+	  - layout_mode_end(): added disconnecting signal handler to catch ESC
+	    hw key event to cancel
+	  - gdkkeysyms include added for ESC hw key
+	  - layout_mode_start(): added signal connect to key press listener
+	  - layout_mode_end(): added check to catch ESC hw key event to cancel
+	    dialog and NOT exiting from layout mode
+	  - layout_mode_key_press_listener() new function to listen hw key
+	    events. ESC hw key pressing launches layout mode ending with cancel
+		confirmation
+	  - layout_mode_end(): changed GTK_RESPONSE_REJECT to
+	    GTK_RESPONSE_CANCEL to catch ESC hw key event
+
+2006-03-23  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/layout-manager.c: Fixed the cancel layout button (Closes
 	  N#24428)
 
