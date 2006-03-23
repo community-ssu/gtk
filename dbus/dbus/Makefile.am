@@ -1,5 +1,5 @@
 
-INCLUDES=-I$(top_srcdir) $(DBUS_CLIENT_CFLAGS) -DDBUS_COMPILATION
+INCLUDES=-I$(top_srcdir) $(DBUS_CLIENT_CFLAGS) $(DBUS_GLIB_CFLAGS) -DDBUS_COMPILATION
 
 if HAVE_GLIB
 DBUS_GLIB_BUILT_INCLUDES=			\
@@ -124,6 +124,7 @@ DBUS_SHARED_SOURCES=				\
 	dbus-sysdeps.c				\
 	dbus-sysdeps.h				\
 	dbus-userdb.c				\
+	../glib/dbus-gthread.c \
 	dbus-userdb.h
 
 ### source code that is generic utility functionality used
@@ -160,6 +161,7 @@ libdbus_convenience_la_SOURCES=			\
 	$(DBUS_SHARED_SOURCES)			\
 	$(DBUS_UTIL_SOURCES)
 
+libdbus_convenience_la_LIBADD=$(DBUS_GLIB_LIBS) -lgthread-2.0
 
 BUILT_SOURCES=$(dbusarchinclude_HEADERS) $(DBUS_GLIB_BUILT_INCLUDES)
 EXTRA_DIST=dbus-arch-deps.h.in make-dbus-glib-error-enum.sh
@@ -169,7 +171,7 @@ CLEANFILES=$(DBUS_GLIB_BUILT_INCLUDES)
 ## and is only used for static linking within the dbus package.
 noinst_LTLIBRARIES=libdbus-convenience.la
 
-libdbus_1_la_LIBADD= $(DBUS_CLIENT_LIBS)
+libdbus_1_la_LIBADD= $(DBUS_CLIENT_LIBS) $(DBUS_GLIB_LIBS) -lglib-2.0 -lgthread-2.0
 ## don't export symbols that start with "_" (we use this 
 ## convention for internal symbols)
 libdbus_1_la_LDFLAGS= -export-symbols-regex "^[^_].*" -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -no-undefined

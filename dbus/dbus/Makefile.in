@@ -56,7 +56,8 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(dbusarchincludedir)" "$(DES
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libdbus_1_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libdbus_1_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am__objects_1 = dbus-address.lo dbus-auth.lo dbus-auth-script.lo \
 	dbus-bus.lo dbus-connection.lo dbus-errors.lo dbus-keyring.lo \
 	dbus-marshal-header.lo dbus-marshal-byteswap.lo \
@@ -68,10 +69,11 @@ am__objects_1 = dbus-address.lo dbus-auth.lo dbus-auth-script.lo \
 	dbus-transport-unix.lo dbus-watch.lo
 am__objects_2 = dbus-dataslot.lo dbus-hash.lo dbus-internals.lo \
 	dbus-list.lo dbus-marshal-basic.lo dbus-memory.lo \
-	dbus-mempool.lo dbus-string.lo dbus-sysdeps.lo dbus-userdb.lo
+	dbus-mempool.lo dbus-string.lo dbus-sysdeps.lo dbus-userdb.lo \
+	dbus-gthread.lo
 am_libdbus_1_la_OBJECTS = $(am__objects_1) $(am__objects_2)
 libdbus_1_la_OBJECTS = $(am_libdbus_1_la_OBJECTS)
-libdbus_convenience_la_LIBADD =
+libdbus_convenience_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__objects_3 = dbus-auth-util.lo dbus-mainloop.lo \
 	dbus-marshal-byteswap-util.lo dbus-marshal-recursive-util.lo \
 	dbus-marshal-validate-util.lo dbus-message-factory.lo \
@@ -96,6 +98,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/dbus-connection.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/dbus-dataslot.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/dbus-errors.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/dbus-gthread.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/dbus-hash.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/dbus-internals.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/dbus-keyring.Plo \
@@ -412,7 +415,7 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-INCLUDES = -I$(top_srcdir) $(DBUS_CLIENT_CFLAGS) -DDBUS_COMPILATION
+INCLUDES = -I$(top_srcdir) $(DBUS_CLIENT_CFLAGS) $(DBUS_GLIB_CFLAGS) -DDBUS_COMPILATION
 @HAVE_GLIB_TRUE@DBUS_GLIB_BUILT_INCLUDES = \
 @HAVE_GLIB_TRUE@	dbus-glib-error-enum.h
 
@@ -524,6 +527,7 @@ DBUS_SHARED_SOURCES = \
 	dbus-sysdeps.c				\
 	dbus-sysdeps.h				\
 	dbus-userdb.c				\
+	../glib/dbus-gthread.c \
 	dbus-userdb.h
 
 
@@ -561,11 +565,12 @@ libdbus_convenience_la_SOURCES = \
 	$(DBUS_SHARED_SOURCES)			\
 	$(DBUS_UTIL_SOURCES)
 
+libdbus_convenience_la_LIBADD = $(DBUS_GLIB_LIBS) -lgthread-2.0
 BUILT_SOURCES = $(dbusarchinclude_HEADERS) $(DBUS_GLIB_BUILT_INCLUDES)
 EXTRA_DIST = dbus-arch-deps.h.in make-dbus-glib-error-enum.sh
 CLEANFILES = $(DBUS_GLIB_BUILT_INCLUDES)
 noinst_LTLIBRARIES = libdbus-convenience.la
-libdbus_1_la_LIBADD = $(DBUS_CLIENT_LIBS)
+libdbus_1_la_LIBADD = $(DBUS_CLIENT_LIBS) $(DBUS_GLIB_LIBS) -lglib-2.0 -lgthread-2.0
 libdbus_1_la_LDFLAGS = -export-symbols-regex "^[^_].*" -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -no-undefined
 @DBUS_BUILD_TESTS_TRUE@TESTS_ENVIRONMENT = DBUS_TEST_DATA=$(top_builddir)/test/data DBUS_TEST_HOMEDIR=$(top_builddir)/dbus
 @DBUS_BUILD_TESTS_FALSE@TESTS = 
@@ -675,6 +680,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-connection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-dataslot.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-errors.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-gthread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-hash.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-internals.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-keyring.Plo@am__quote@
@@ -740,6 +746,30 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+dbus-gthread.o: ../glib/dbus-gthread.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dbus-gthread.o -MD -MP -MF "$(DEPDIR)/dbus-gthread.Tpo" -c -o dbus-gthread.o `test -f '../glib/dbus-gthread.c' || echo '$(srcdir)/'`../glib/dbus-gthread.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/dbus-gthread.Tpo" "$(DEPDIR)/dbus-gthread.Po"; else rm -f "$(DEPDIR)/dbus-gthread.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../glib/dbus-gthread.c' object='dbus-gthread.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/dbus-gthread.Po' tmpdepfile='$(DEPDIR)/dbus-gthread.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dbus-gthread.o `test -f '../glib/dbus-gthread.c' || echo '$(srcdir)/'`../glib/dbus-gthread.c
+
+dbus-gthread.obj: ../glib/dbus-gthread.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dbus-gthread.obj -MD -MP -MF "$(DEPDIR)/dbus-gthread.Tpo" -c -o dbus-gthread.obj `if test -f '../glib/dbus-gthread.c'; then $(CYGPATH_W) '../glib/dbus-gthread.c'; else $(CYGPATH_W) '$(srcdir)/../glib/dbus-gthread.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/dbus-gthread.Tpo" "$(DEPDIR)/dbus-gthread.Po"; else rm -f "$(DEPDIR)/dbus-gthread.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../glib/dbus-gthread.c' object='dbus-gthread.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/dbus-gthread.Po' tmpdepfile='$(DEPDIR)/dbus-gthread.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dbus-gthread.obj `if test -f '../glib/dbus-gthread.c'; then $(CYGPATH_W) '../glib/dbus-gthread.c'; else $(CYGPATH_W) '$(srcdir)/../glib/dbus-gthread.c'; fi`
+
+dbus-gthread.lo: ../glib/dbus-gthread.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dbus-gthread.lo -MD -MP -MF "$(DEPDIR)/dbus-gthread.Tpo" -c -o dbus-gthread.lo `test -f '../glib/dbus-gthread.c' || echo '$(srcdir)/'`../glib/dbus-gthread.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/dbus-gthread.Tpo" "$(DEPDIR)/dbus-gthread.Plo"; else rm -f "$(DEPDIR)/dbus-gthread.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../glib/dbus-gthread.c' object='dbus-gthread.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/dbus-gthread.Plo' tmpdepfile='$(DEPDIR)/dbus-gthread.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dbus-gthread.lo `test -f '../glib/dbus-gthread.c' || echo '$(srcdir)/'`../glib/dbus-gthread.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

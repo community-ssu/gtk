@@ -24,8 +24,8 @@ fi
 
 test "$ENABLED" != "0" || exit 0
 
-TMP=`uname -m`
-if [ "x$TMP" = "xarmv5tejl" -a -x /usr/sbin/dsmetool ]; then
+echo `uname -m` | grep "^armv" > /dev/null
+if [ $? = 0 -a -x /usr/sbin/dsmetool ]; then
   USE_DT=1
 else
   USE_DT=""
@@ -62,7 +62,7 @@ start_it_up()
   # start with dsmetool
   rm -f $PIDFILE
   echo -n "Starting $DESC: "
-  /usr/sbin/dsmetool -r "$DAEMON --system $PARAMS" -n -1
+  /usr/sbin/dsmetool -r "$DAEMON --system $PARAMS" -n -5
   echo "$NAME."
  fi
 }
