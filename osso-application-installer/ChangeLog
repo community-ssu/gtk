@@ -1,5 +1,8 @@
 2006-03-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* utils/maemo-list-user-packages: New.
+	* utils/Makefile.am (bin_SCRIPTS): Added it.
+
 	* configure.ac: Check for gnome-vfs-2.0 module.
 
 	* src/main.h, src/main.c (present_main_window): New.
