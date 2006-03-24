@@ -1,5 +1,16 @@
 2006-03-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtktreeprivate.h
+	* gtktreeviewcolumn.c
+	(_gtk_tree_view_column_cell_set_cell_data_for_validation): Add variant
+	of _gtk_tree_view_column_cell_set_cell_data() which skips setting cell
+	data on all cells which have a fixed width and height set. Should stop
+	triggering excessive icon loading in hildon-fm.
+	* gtktreeview.c (validate_row): Use the new function.
+	N#22807
+
+2006-03-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	Merge from GNOME CVS. N#22537
 
     2005-11-27  Matthias Clasen  <mclasen@redhat.com>

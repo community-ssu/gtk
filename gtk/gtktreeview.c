@@ -5510,9 +5510,9 @@ validate_row (GtkTreeView *tree_view,
       if (GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_COLUMN_INVALID) && !column->dirty)
 	continue;
 
-      gtk_tree_view_column_cell_set_cell_data (column, tree_view->priv->model, iter,
-					       GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_PARENT),
-					       node->children?TRUE:FALSE);
+      _gtk_tree_view_column_cell_set_cell_data_for_validation (column, tree_view->priv->model, iter,
+							       GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_PARENT),
+							       node->children?TRUE:FALSE);
       gtk_tree_view_column_cell_get_size (column,
 					  NULL, NULL, NULL,
 					  &tmp_width, &tmp_height);

@@ -2512,6 +2512,59 @@ gtk_tree_view_column_get_sort_order      (GtkTreeViewColumn     *tree_column)
   return tree_column->sort_order;
 }
 
+void
+_gtk_tree_view_column_cell_set_cell_data_for_validation (GtkTreeViewColumn *tree_column,
+							 GtkTreeModel      *tree_model,
+							 GtkTreeIter       *iter,
+							 gboolean           is_expander,
+							 gboolean           is_expanded)
+{
+  GSList *list;
+  GValue value = { 0, };
+  GList *cell_list;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW_COLUMN (tree_column));
+
+  if (tree_model == NULL)
+    return;
+
+  for (cell_list = tree_column->cell_list; cell_list; cell_list = cell_list->next)
+    {
+      GtkTreeViewColumnCellInfo *info = (GtkTreeViewColumnCellInfo *) cell_list->data;
+      GObject *cell = (GObject *) info->cell;
+      gint width, height;
+
+      gtk_cell_renderer_get_fixed_size (info->cell, &width, &height);
+      if (width != -1 && height != -1)
+	continue;
+
+      list = info->attributes;
+
+      g_object_freeze_notify (cell);
+
+      if (info->cell->is_expander != is_expander)
+	g_object_set (cell, "is_expander", is_expander, NULL);
+
+      if (info->cell->is_expanded != is_expanded)
+	g_object_set (cell, "is_expanded", is_expanded, NULL);
+
+      while (list && list->next)
+	{
+	  gtk_tree_model_get_value (tree_model, iter,
+				    GPOINTER_TO_INT (list->next->data),
+				    &value);
+	  g_object_set_property (cell, (gchar *) list->data, &value);
+	  g_value_unset (&value);
+	  list = list->next->next;
+	}
+
+      if (info->func)
+	(* info->func) (tree_column, info->cell, tree_model, iter, info->func_data);
+      g_object_thaw_notify (G_OBJECT (info->cell));
+    }
+
+}
+
 /**
  * gtk_tree_view_column_cell_set_cell_data:
  * @tree_column: A #GtkTreeViewColumn.

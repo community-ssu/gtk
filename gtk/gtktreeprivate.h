@@ -429,6 +429,12 @@ void              _gtk_tree_view_column_get_neighbor_sizes (GtkTreeViewColumn *c
 							    gint              *left,
 							    gint              *right);
 
+void              _gtk_tree_view_column_cell_set_cell_data_for_validation (GtkTreeViewColumn *tree_column,
+									   GtkTreeModel      *model,
+									   GtkTreeIter       *iter,
+									   gboolean           is_expander,
+									   gboolean           is_expanded);
+
 
 #ifdef __cplusplus
 }
