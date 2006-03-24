@@ -314,3 +314,17 @@ scripts to interact with the user:
 
   In order to use maemo-confirm-text in postinst, you should
   Pre-Depend on the "maemo-installer-utils" package.
+
+
+Other utilities
+---------------
+
+- maemo-list-user-packages
+
+  Lists all packages that the user can manage with the Application
+  installer in this format
+
+    name<TAB>version<TAB>section-field<TAB>installed-size<NL>
+
+  where 'section-field' is the value of the "Section:" field for the
+  package.
