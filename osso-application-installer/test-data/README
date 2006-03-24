@@ -66,6 +66,28 @@ The packages and the distributions they are in:
      <p>
      A broken packages whose maintainer scripts will always fail.
 
+   * *package-1 0* (old, new)
+     <p>
+     A package with a real program in it.  Installing it will pop up
+     the "Select Location Dialog" to let the user choose a location in
+     the menu.
+
+   * *package-2 0* (old, new)
+     <p>
+     A package with a real program in it and a checkrm script.  If you
+     uninstall this package while the contained program is running,
+     the uninstallation should be cancelled automatically.
+
+   * *licensed 0* (old, new)
+     <p>
+     A package where the user needs to agree to a license before being
+     allowed to use it.
+
+   * *big 0* (old)
+     <p>
+     A package that contains one big, useless file.
+
+
 ---+++ Sample test cases
 
 Here are some test cases you can do with the packages in the test
@@ -148,3 +170,32 @@ repository.
    * Note that the repository can not be edited.
    * Click on Remove.
    * Note that the repository is not removed.
+
+---++++ Installing a package with a menu entry
+
+   * Install package-1.
+   * A dialog should be shown that let's you select a menu location.
+   * Select a location and verify that the program "TestAppOne" is
+     shown in that location.
+
+---++++ Removing a package while its application is running
+
+   * Make sure that package-2 is installed.
+   * Start "test-app-two" from the menu and leave it running while
+     performing the following steps.
+   * Uninstall package-2 using the Application installer.
+   * Note that the operation fails with an appropriate error message.
+   * Switch to "test-app-two" and close it.
+   * Uninstall package-2 using the Application installer.
+   * Note that it now works.
+
+---++++ Installing/removing a big package
+
+   * Install the "big" package.
+   * Note that the download dialog shows something like 5 Megabytes to
+     be downloaded and that the progressbar works correctly.
+
+---++++ Install a package with a license agreement
+
+   * Install the "licensed" package.
+   * Note that a license agreement is shown during installation.
