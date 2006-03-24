@@ -864,7 +864,7 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
     {
       char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
 				   pi->name);
-      annoy_user_with_details (str, pi, false);
+      annoy_user (str);
       g_free (str);
     }
 
@@ -1350,6 +1350,12 @@ get_packages_to_remove_reply (int cmd, apt_proto_decoder *dec, void *data)
   package_info *pi = (package_info *)data;
   GSList *names = NULL;
   
+  if (dec == NULL)
+    {
+      pi->unref ();
+      return;
+    }
+
   while (true)
     {
       char *name = dec->decode_string_dup ();
@@ -1835,31 +1841,15 @@ window_destroy (GtkWidget* widget, gpointer data)
 static void
 apt_status_callback (int cmd, apt_proto_decoder *dec, void *unused)
 {
+  if (dec == NULL)
+    return;
+
   const char *label;
   int op = dec->decode_int ();
   int already = dec->decode_int ();
   int total = dec->decode_int ();
 
-  if (op == op_downloading)
-    {
-      static int last_total;
-      static char *dynlabel = NULL;
-
-      if (dynlabel == NULL || total != last_total)
-	{
-	  char size_buf[20];
-	  size_string_detailed (size_buf, 20, total);
-	  g_free (dynlabel);
-	  dynlabel =  g_strdup_printf (_("ai_nw_downloading"), size_buf);
-	}
-      label = dynlabel;
-    }
-  else if (op == op_updating_cache)
-    label = _("ai_nw_updating_list");
-  else
-    label = NULL;
-
-  set_progress (label, ((double)already)/total);
+  set_progress ((apt_proto_operation)op, already, total);
 }
 
 static gboolean
@@ -1892,6 +1882,13 @@ mime_open_handler (gpointer raw_data, int argc, char **argv)
       present_main_window ();
       install_from_file_cont (g_strdup (argv[0]), NULL);
     }
+}
+
+static void
+hw_state_handler (osso_hw_state_t *state, gpointer data)
+{
+  if (state->shutdown_ind)
+    gtk_main_quit ();
 }
 
 static GtkWidget *toolbar_operation_label = NULL;
@@ -2106,7 +2103,12 @@ main (int argc, char **argv)
   osso_context_t *ctxt;
   ctxt = osso_initialize ("osso_application_installer",
 			  PACKAGE_VERSION, TRUE, NULL);
+
   osso_mime_set_cb (ctxt, mime_open_handler, NULL);
+
+  osso_hw_state_t state = { 0 };
+  state.shutdown_ind = true;
+  osso_hw_set_event_cb (ctxt, &state, hw_state_handler, NULL);
 
   if (start_apt_worker (apt_worker_prog))
     {

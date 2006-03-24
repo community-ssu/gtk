@@ -31,6 +31,7 @@
 #include <sys/types.h>
 #include <sys/fcntl.h>
 #include <errno.h>
+#include <libintl.h>
 
 #include <gtk/gtk.h>
 #include <glib/gspawn.h>
@@ -40,9 +41,14 @@
 #include "apt-worker-client.h"
 #include "apt-worker-proto.h"
 
+#define _(x) gettext (x)
+
 int apt_worker_out_fd = -1;
 int apt_worker_in_fd = -1;
 int apt_worker_cancel_fd = -1;
+
+static void cancel_request (int cmd);
+static void cancel_all_pending_requests ();
 
 static GString *pmstatus_line;
 
@@ -69,8 +75,7 @@ interpret_pmstatus (char *str)
       title = str;
     }
 	
-  // printf ("STATUS: %3d %s\n", int (percentage), title);
-  set_progress (NULL, percentage/100.0);
+  set_progress (op_general, (int)percentage, 100);
 }
 
 static gboolean
@@ -234,6 +239,10 @@ notice_apt_worker_failure ()
   apt_worker_in_fd = -1;
   apt_worker_out_fd = -1;
   apt_worker_cancel_fd = -1;
+
+  cancel_all_pending_requests ();
+
+  annoy_user_with_log (_("ai_ni_operation_failed"));
 }
 
 static bool
@@ -331,11 +340,28 @@ call_apt_worker (int cmd, char *data, int len,
       pending[cmd].done_data = done_data;
       if (!send_apt_worker_request (cmd, pending[cmd].seq, data, len))
 	{
-	  pending[cmd].done_callback = NULL;
-	  annoy_user_with_log ("Operation failed.");
-	  done_callback (cmd, NULL, done_data);
+	  annoy_user_with_log (_("ai_ni_operation_failed"));
+	  cancel_request (cmd);
 	}
     }
+}
+
+static void
+cancel_request (int cmd)
+{
+  apt_worker_callback *done_callback = pending[cmd].done_callback;
+  void *done_data = pending[cmd].done_data;
+
+  pending[cmd].done_callback = NULL;
+  if (done_callback)
+    done_callback (cmd, NULL, done_data);
+}
+
+static void
+cancel_all_pending_requests ()
+{
+  for (int i = 0; i < APTCMD_MAX; i++)
+    cancel_request (i);
 }
 
 void

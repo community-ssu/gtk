@@ -227,8 +227,10 @@ scare_user_with_legalese (void (*cont) (bool res, void *data),
 }
 
 static GtkWidget *progress_dialog = NULL;
+static GtkWidget *progress_cancel_button;
 static GtkProgressBar *progress_bar;
 static const gchar *general_title;
+static apt_proto_operation current_status_operation = op_general;
 static gint pulse_id = -1;
 
 static gboolean
@@ -264,32 +266,60 @@ cancel_response (GtkDialog *dialog, gint response, gpointer data)
 }
 
 void
-show_progress (const gchar *title)
+show_progress (const char *title)
 {
   if (progress_dialog == NULL)
     {
       progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
       progress_dialog =
 	hildon_note_new_cancel_with_progress_bar (get_main_window (),
-						  title,
+						  NULL,
 						  progress_bar);
       g_signal_connect (progress_dialog, "response",
 			G_CALLBACK (cancel_response), NULL);
+      GtkWidget *box = GTK_DIALOG (progress_dialog)->action_area;
+      GList *kids = gtk_container_get_children (GTK_CONTAINER (box));
+      if (kids)
+	progress_cancel_button = GTK_WIDGET (kids->data);
+      else
+	progress_cancel_button = NULL;
+      g_list_free (kids);
     }
-  else
-    set_progress (title, 0.0);
 
   general_title = title;
+  set_progress (op_general, -1, 0);
 
-  start_pulsing ();
   gtk_widget_show (progress_dialog);
 }
 
 void
-set_progress (const gchar *title, float fraction)
+set_progress (apt_proto_operation op, int already, int total)
 {
-  if (title == NULL)
+  const char *title;
+
+  if (op == op_downloading)
+    {
+      static int last_total;
+      static char *dynlabel = NULL;
+
+      if (dynlabel == NULL || total != last_total)
+	{
+	  char size_buf[20];
+	  size_string_detailed (size_buf, 20, total);
+	  g_free (dynlabel);
+	  dynlabel =  g_strdup_printf (_("ai_nw_downloading"), size_buf);
+	}
+      title = dynlabel;
+    }
+  else if (op == op_updating_cache)
+    title = _("ai_nw_updating_list");
+  else
     title = general_title;
+
+  current_status_operation = op;
+
+  if (progress_cancel_button)
+    gtk_widget_set_sensitive (progress_cancel_button, op == op_downloading);
 
   // printf ("STATUS: %s -- %f\n", title, fraction);
 
@@ -297,10 +327,11 @@ set_progress (const gchar *title, float fraction)
     {
       g_object_set (progress_dialog, "description", title, NULL);
       
-      if (fraction >= 0)
+      if (already >= 0)
 	{
 	  stop_pulsing ();
-	  gtk_progress_bar_set_fraction (progress_bar, fraction);
+	  gtk_progress_bar_set_fraction (progress_bar,
+					 ((double)already)/total);
 	}
       else
 	start_pulsing ();
@@ -312,6 +343,7 @@ hide_progress ()
 {
   if (progress_dialog)
     gtk_widget_hide (progress_dialog);
+  current_status_operation = op_general;
 }
 
 static PangoFontDescription *
@@ -1140,25 +1172,35 @@ struct en_closure {
 static void
 iap_callback (struct iap_event_t *event, void *arg)
 {
-  en_closure *c = (en_closure *)arg;
-  void (*callback) (bool success, void *data) = c->callback;
-  void *data = c->data;
-  delete c;
-  
+  void (*callback) (bool success, void *data) = NULL;
+  void *data;
+
+  if (arg)
+    {
+      en_closure *c = (en_closure *)arg;
+      callback = c->callback;
+      data = c->data;
+      delete c;
+    }
+
   switch (event->type)
     {
     case OSSO_IAP_CONNECTED:
       add_log ("OSSO_IAP_CONNECTED: %s\n", event->iap_name);
-      callback (true, data);
+      if (callback)
+	callback (true, data);
       break;
+
     case OSSO_IAP_DISCONNECTED:
       add_log ("OSSO_IAP_DISCONNECTED: %s\n", event->iap_name);
-      // cancel_apt_worker ();
+      if (current_status_operation == op_downloading)
+	cancel_apt_worker ();
       break;
+
     case OSSO_IAP_ERROR:
       add_log ("IAP Error: %x %s.\n", -event->u.error_code, event->iap_name);
-      // annoy_user_with_log (_("ai_ni_error_download_failed"));
-      callback (false, data);
+      if (callback)
+	callback (false, data);
       break;
     }
 }

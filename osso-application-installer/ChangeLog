@@ -1,5 +1,23 @@
 2006-03-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/main.cc (hw_state_handler): New.
+	(main): Register it.
+	(refresh_package_cache_reply, status_callback): Handle cancelling
+	of request.
+	
+	* src/util.h, src/util.cc (set_progress): Changed arguments to
+	match APTCMD_STATUS responses.  Updated all callers.  Dim cancel
+	button when not in op_downloading.
+	(iap_callback): Cancel apt-worker when disconnected and the
+	current operation is op_downloading.
+	
+	* src/apt-worker-client.cc (cancel_request,
+	cancel_all_pending_requests): New.
+	(notice_apt_worker_failure): Call cancel_all_pending_requests, put
+	up error note.
+	(call_apt_worker): Use cancel_request instead of doing it
+	explicitely.
+
 	* utils/maemo-list-user-packages: New.
 	* utils/Makefile.am (bin_SCRIPTS): Added it.
 

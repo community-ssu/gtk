@@ -47,7 +47,7 @@ void scare_user_with_legalese (void (*cont) (bool res, void *data),
 			       void *data);
 
 void show_progress (const char *title);
-void set_progress (const gchar *title, float fraction);
+void set_progress (apt_proto_operation op, int already, int total);
 void hide_progress ();
 
 GtkWidget *make_small_text_view (const char *text);
