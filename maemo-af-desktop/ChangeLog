@@ -1,5 +1,12 @@
 2006-03-24  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm-memory.c: (Closes N#20305)
+	  - hn_wm_memory_kill_all_watched_foreach_func: fixed a bug when accessing
+	    the only_kill_able_to_hibernate argument (passed as reference,
+	    accessed as value).
+
+2006-03-24  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/layout-manager.c: If the applet EventBox has a child,
 	  draw the red border on the child's window, or it will be
 	  overwritten by the child's painting (Closes N#24722)

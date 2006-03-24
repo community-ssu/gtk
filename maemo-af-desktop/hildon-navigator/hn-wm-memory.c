@@ -85,7 +85,7 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 
   HN_DBG("### enter ###");
 
-  only_kill_able_to_hibernate = (gboolean)userdata;
+  only_kill_able_to_hibernate = *(gboolean*)(userdata);
   win                         = (HNWMWatchedWindow *)value;
   app                         = hn_wm_watched_window_get_app(win);
 
