@@ -72,19 +72,14 @@ BUGS
 - make apt-worker robust against malformed config files
 - handle broken packages
 - empty section after installing last package in it
-- topping on mime-open
 
 - streamline package_info and GET_PACKAGE_INFO to only store/return
   the needed info for the list that the package will be in (packages
   do not move from list to list).
 
-- Check when upgrading as well as when removing
-
 - Format description nicely in details dialog.
 
 - search results has wrong parent sometimes.
-
-- Removing a .desktop file leaves the entry in the menu anyway.
 
 
 Progress indications

@@ -1,3 +1,38 @@
+2006-03-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* configure.ac: Check for gnome-vfs-2.0 module.
+
+	* src/main.h, src/main.c (present_main_window): New.
+	(install_check_reply, install_package_cont3,
+	install_package_cont4): Retrieve upgraded packages and call
+	checkrm scripts.
+	(check_uninstall_scripts2): Include package name in dialog text.
+	(mime_open_handler): Call present_main_window.
+	(set_fullscreen): Use gtk functions for fullscreening.
+	(fullscreen_state_change, window_state_event): Replaced former
+	with latter.
+	(key_press_event): New.
+	(main): Connect new event handlers.
+	
+	* src/util.h, src/util.cc (push, pop): New.
+	* src/util.cc (pulse_progress): Return TRUE so that the pulsing
+	doesn't stop.
+	(show_progress): Call start_pulsing always, not only when the
+	dialog already exists.
+	(set_progress): Pulse when fraction is negative, stop pulsing
+	otherwise.
+	(localize_file): Use GnomeVFS to parse the URI and unescape it.
+
+	* src/apt-worker.cc (encode_upgrades): New.
+	(operation_1): Call it when checking only.  Also, send -1 as
+	percentage when starting the real operation so that the progress
+	bar starts pulsing.
+	
+2006-03-22  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/apt-worker.cc (get_icon, make_file_details_response): The
+	icon field is now named "Maemo-Icon-26".
+
 2006-03-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/apt-worker.cc (handle_request): Only set http_proxy when the

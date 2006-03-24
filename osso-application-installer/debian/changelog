@@ -1,3 +1,9 @@
+osso-application-installer (4.7.post1) unstable; urgency=low
+
+  * Build-Depend on ibosso-gnome-vfs2-dev.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 21 Mar 2006 13:45:00 +0200
+
 osso-application-installer (4.7) unstable; urgency=low
 
   * Build-Depend on libgconf2-dev.

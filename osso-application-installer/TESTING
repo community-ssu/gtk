@@ -9,8 +9,6 @@ Test repository / files
 
 - should have old maemo packages
 
-- package whose postinst fails
-
 - package that pops up dialog
 
 - package that pops up Location selection dialog
