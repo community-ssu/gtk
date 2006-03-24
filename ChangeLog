@@ -1,3 +1,18 @@
+2006-03-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Merge from GNOME CVS. N#22537
+
+    2005-11-27  Matthias Clasen  <mclasen@redhat.com>
+
+	Fix two memory handling problems in GtkTreeView: (#322350,
+	Søren Sandmann)
+
+	* gtk/gtktreeview.c (gtk_tree_view_destroy)
+	(gtk_tree_view_set_model): Remove all references to nodes in
+	the old model.
+	(gtk_tree_view_real_collapse_row): Unmark expanded_collapsed_node
+	before removing the children.
+
 2006-03-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_button_press): Collapse a branch on
