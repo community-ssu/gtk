@@ -113,16 +113,16 @@ Icons
 
 A package can have an icon that is displayed next to its name by the
 AI.  Icons are included in the control information of a package as a
-base64 encoded field named "X-Maemo-Icon-26".
+base64 encoded field named "Maemo-Icon-26".
 
 The image format of the icon can be anything that is understood by
 GdkPixbufLoader, but is most commonly the PNG format.
 
 The image should be 26x26 pixels with a transparent background.
 
-Here is an example of a correctly formatted X-Maemo-Icon-26 field:
+Here is an example of a correctly formatted Maemo-Icon-26 field:
 
-X-Maemo-Icon-26:
+Maemo-Icon-26:
  iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABGdBTUEAAK/INwWK6QAAABl0
  RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAALxSURBVHja3FZNTBNREP669J/S
  XYxtKRWl1JOSFBIPhkitCQeNiaKBmzdj9Ggk0ZOBxHDWixcTjV6MF+WiIB40YEyMBMGYEqQK
@@ -139,6 +139,10 @@ X-Maemo-Icon-26:
  tkJakDz05Hsks+poPzwg6+Luo9chVb2O3Hilv7V6W5nO02cVX3wxjsj3CMKRBUSjUcQWY0iy
  SQVoi6XJaiQxubKpI02yj2xk6BoaBr0BqXRKCZpYSiCZlIXCguM4pWtvY0ypyUtt87PSIj/t
  pJ/JICzLKiBLySTYVArpdFrp3DuMhRZVqfvnJ+wPAQYA1hdr5EDqltYAAAAASUVORK5CYII=
+
+The way to get these fields into your .deb files is to include them
+with a "XB-" prefix in your debian/control file, see the Debian Policy
+Manual, section 5.7.
 
 
 Policy engine
@@ -201,6 +205,16 @@ Application installer will run the program named
 if it exists.  When this program exist with code 111, the operation is
 cancelled.  In all other cases, including when the program terminates
 with a signal, the operation is carried out.
+
+The arguments given to the *.checkrm program are either
+
+    foo.checkrm remove
+
+when the package is going to be removed
+
+    foo.checkrm upgrade <VERSION>
+
+when it is going to be upgraded to version <VERSION>.
 
 [MORE DETAILS TO BE DETERMINED]
 
