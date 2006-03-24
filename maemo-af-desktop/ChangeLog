@@ -1,5 +1,11 @@
 2006-03-24  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/layout-manager.c: If the applet EventBox has a child,
+	  draw the red border on the child's window, or it will be
+	  overwritten by the child's painting (Closes N#24722)
+
+2006-03-24  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-image-loader.c: Removed an unnecessary
 	  image copy. (Closes N#22549)
 

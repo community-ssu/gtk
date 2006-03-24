@@ -1120,7 +1120,19 @@ static void draw_red_borders (LayoutNode * highlighted)
 {    
 
     GdkGC * gc;
-    gc = gdk_gc_new(highlighted->ebox->window);
+    GdkWindow * window;
+    
+    if(GTK_IS_BIN(highlighted->ebox) &&
+            GTK_BIN(highlighted->ebox)->child && 
+            GTK_BIN(highlighted->ebox)->child->window)
+    {
+        window = GTK_BIN(highlighted->ebox)->child->window;
+    }
+    else
+    {
+        window = highlighted->ebox->window;
+    }
+    gc = gdk_gc_new(window);
     gdk_gc_set_rgb_fg_color(gc, &general_data.highlight_color);
     gdk_gc_set_line_attributes(gc, LAYOUT_MODE_HIGHLIGHT_WIDTH,
 			       GDK_LINE_SOLID,
@@ -1129,7 +1141,7 @@ static void draw_red_borders (LayoutNode * highlighted)
 
     gdk_gc_set_clip_rectangle (gc, NULL);
 
-    gdk_draw_rectangle(highlighted->ebox->window,
+    gdk_draw_rectangle(window,
 		       gc, FALSE, 0,0,
 		       highlighted->ebox->allocation.width,
 		       highlighted->ebox->allocation.height);
