@@ -871,36 +871,99 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
   pi->unref ();
 }
 
+struct ip_closure {
+  package_info *pi;
+  GSList *upgrade_names;
+  GSList *upgrade_versions;
+  char *cur_name;
+};
+
+static void install_package_cont3 (bool res, void *data);
+
+static void
+install_package_cont4 (int status, void *data)
+{
+  ip_closure *c = (ip_closure *)data;
+
+  if (status != -1 && WIFEXITED (status) && WEXITSTATUS (status) == 111)
+    {
+      char *str =
+	g_strdup_printf (_("ai_ni_error_uninstall_applicationrunning"),
+			 c->cur_name);
+      annoy_user (str);
+      g_free (str);
+
+      install_package_cont3 (false, data);
+    }
+  else
+    install_package_cont3 (true, data);
+}
+
 static void
 install_package_cont3 (bool res, void *data)
 {
-  package_info *pi = (package_info *)data;
+  ip_closure *c = (ip_closure *)data;
 
-  if (res)
+  if (c->upgrade_names == NULL)
     {
-      show_progress (_("ai_nw_installing"));
-      apt_worker_install_package (pi->name, install_package_reply, pi);
+      if (res)
+	{
+	  show_progress (_("ai_nw_installing"));
+	  apt_worker_install_package (c->pi->name,
+				      install_package_reply, c->pi);
+	}
+      else
+	c->pi->unref ();
+
+      g_free (c->cur_name);
+      delete c;
     }
   else
-    pi->unref ();
+    {
+      char *name = (char *)pop (c->upgrade_names);
+      char *version = (char *)pop (c->upgrade_versions);
+
+      if (res)
+	{
+	  char *cmd =
+	    g_strdup_printf ("/var/lib/osso-application-installer/info/%s.checkrm",
+			     name);
+      
+	  add_log ("Checking %s\n", cmd);
+	  char *argv[] = { cmd, "upgrade", version, NULL };
+	  run_cmd (argv, install_package_cont4, c);
+	  g_free (cmd);
+	}
+      else
+	install_package_cont3 (false, data);
+
+      g_free (c->cur_name);
+      c->cur_name = name;
+      g_free (version);
+    }
 }
 
 static void
 install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
-  package_info *pi = (package_info *)data;
   GList *notauth = NULL, *notcert = NULL;
-      
+
+  ip_closure *c = new ip_closure;
+  c->pi = (package_info *)data;
+  c->upgrade_names = c->upgrade_versions = NULL;
+  c->cur_name = NULL;
+
   if (dec == NULL)
     {
-      pi->unref ();
+      c->pi->unref ();
+      delete c;
       return;
     }
 
-  while (true)
+  while (!dec->corrupted ())
     {
       apt_proto_preptype prep = apt_proto_preptype (dec->decode_int ());
-      if (dec->corrupted () || prep == preptype_end)
+      if (prep == preptype_end)
 	break;
 
       const char *string = dec->decode_string_in_place ();
@@ -910,29 +973,43 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 	notcert = g_list_append (notcert, (void*)string);
     }
 
+  while (!dec->corrupted ())
+    {
+      char *name = dec->decode_string_dup ();
+      if (name == NULL)
+	break;
+
+      char *version = dec->decode_string_dup ();
+      fprintf (stderr, "upgrade %s %s\n", name, version);
+
+      push (c->upgrade_names, name);
+      push (c->upgrade_versions, version);
+    }
+
   int success = dec->decode_int ();
 
   if (success)
     {
       // A non-authenticated package can never be certified.
-      // Apt-worker does not implement that rule, tho.
+      // Apt-worker does not implement that rule, tho, so we do it
+      // here.
 
       if (notcert || notauth)
 	{
 	  hide_progress ();
-	  scare_user_with_legalese (install_package_cont3, pi);
+	  scare_user_with_legalese (install_package_cont3, c);
 	}
       else
-	install_package_cont3 (true, pi);
+	install_package_cont3 (true, c);
     }
   else
     {
       hide_progress ();
       char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
-				   pi->name);
+				   c->pi->name);
       annoy_user_with_log ("ai_ni_error_installation_failed");
       g_free (str);
-      pi->unref ();
+      install_package_cont3 (false, c);
     }
 
   g_list_free (notauth);
@@ -1219,6 +1296,7 @@ uninstall_package_doit (package_info *pi)
 struct uip_closure {
   package_info *pi;
   GSList *to_remove;
+  char *cur_name;
 };
 
 static void
@@ -1228,8 +1306,14 @@ check_uninstall_scripts2 (int status, void *data)
 
   if (status != -1 && WIFEXITED (status) && WEXITSTATUS (status) == 111)
     {
-      annoy_user (_("ai_ni_uninstall_cancelled"));
+      char *str =
+	g_strdup_printf (_("ai_ni_error_uninstall_applicationrunning"),
+			 c->cur_name);
+      annoy_user (str);
+      g_free (str);
+
       c->pi->unref ();
+      g_free (c->cur_name);
       // XXX delete c->to_remove list
       delete c;
     }
@@ -1240,19 +1324,22 @@ check_uninstall_scripts2 (int status, void *data)
       g_slist_free_1 (c->to_remove);
       c->to_remove = next;
 
+      g_free (c->cur_name);
+      c->cur_name = name;
+
       char *cmd =
 	g_strdup_printf ("/var/lib/osso-application-installer/info/%s.checkrm",
 			 name);
       
       add_log ("Checking %s\n", cmd);
-      char *argv[] = { cmd, NULL };
+      char *argv[] = { cmd, "remove", NULL };
       run_cmd (argv, check_uninstall_scripts2, c);
-      g_free (name);
       g_free (cmd);
     }
   else
     {
       uninstall_package_doit (c->pi);
+      g_free (c->cur_name);
       delete c;
     }
 }
@@ -1274,6 +1361,7 @@ get_packages_to_remove_reply (int cmd, apt_proto_decoder *dec, void *data)
   uip_closure *c = new uip_closure;
   c->pi = pi;
   c->to_remove = names;
+  c->cur_name = NULL;
   check_uninstall_scripts2 (0, c);
 }
 
@@ -1721,8 +1809,9 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
 static void
 install_from_file_cont2 (char *filename, void *unused)
 {
-  apt_worker_get_file_details (filename,
-			       file_details_reply, filename);
+  if (filename)
+    apt_worker_get_file_details (filename,
+				 file_details_reply, filename);
 }
 
 static void
@@ -1799,7 +1888,10 @@ static void
 mime_open_handler (gpointer raw_data, int argc, char **argv)
 {
   if (argc > 0)
-    install_from_file_cont (g_strdup (argv[0]), NULL);
+    {
+      present_main_window ();
+      install_from_file_cont (g_strdup (argv[0]), NULL);
+    }
 }
 
 static GtkWidget *toolbar_operation_label = NULL;
@@ -1827,6 +1919,13 @@ get_main_window ()
   return main_window;
 }
 
+void
+present_main_window ()
+{
+  if (main_window)
+    gtk_window_present (main_window);
+}
+
 static void
 set_current_toolbar_visibility (bool f)
 {
@@ -1842,9 +1941,10 @@ set_current_toolbar_visibility (bool f)
 void
 set_fullscreen (bool f)
 {
-#if 0
-  hildon_window_set_fullscreen (HILDON_WINDOW (main_window), f);
-#endif
+  if (f)
+    gtk_window_fullscreen (main_window);
+  else
+    gtk_window_unfullscreen (main_window);
 }
 
 void
@@ -1870,9 +1970,12 @@ set_toolbar_visibility (bool fullscreen, bool visibility)
     }
 }
 
-static void
-fullscreen_state_changed (GtkWidget *widget, bool f)
+static gboolean
+window_state_event (GtkWidget *widget, GdkEventWindowState *event,
+		    gpointer unused)
 {
+  bool f = (event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN);
+
   if (is_fullscreen != f)
     {
       is_fullscreen = f;
@@ -1882,6 +1985,28 @@ fullscreen_state_changed (GtkWidget *widget, bool f)
       else
 	set_current_toolbar_visibility (normal_toolbar_visibility);
     }
+
+  return FALSE;
+}
+
+static gboolean
+key_press_event (GtkWidget *widget,
+		 GdkEventKey *event,
+		 gpointer data)
+{
+  if (event->type == GDK_KEY_PRESS)
+    {
+      switch (event->keyval)
+	{
+	case HILDON_HARDKEY_FULLSCREEN:
+	  toggle_fullscreen ();
+	  return TRUE;
+	default:
+	  return FALSE;
+	}
+    }
+
+  return FALSE;
 }
 
 int
@@ -1908,11 +2033,10 @@ main (int argc, char **argv)
 
   main_window = GTK_WINDOW (window);
 
-#if 0
-  hildon_appview_set_fullscreen_key_allowed (HILDON_APPVIEW (app_view), TRUE);
-  g_signal_connect (app_view, "fullscreen_state_change",
-		    G_CALLBACK (fullscreen_state_changed), NULL);
-#endif
+  g_signal_connect (window, "window_state_event",
+		    G_CALLBACK (window_state_event), NULL);
+  g_signal_connect (window, "key_press_event",
+		    G_CALLBACK (key_press_event), NULL);
 
   toolbar = gtk_toolbar_new ();
 

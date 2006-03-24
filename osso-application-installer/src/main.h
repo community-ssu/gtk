@@ -91,6 +91,7 @@ GtkWindow *get_main_window ();
 
 void set_fullscreen (bool);
 void toggle_fullscreen ();
+void present_main_window ();
 
 void set_toolbar_visibility (bool fullscreen, bool visibility);
 
