@@ -1,5 +1,7 @@
 2006-03-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.8
+	
 	* src/main.cc (hw_state_handler): New.
 	(main): Register it.
 	(refresh_package_cache_reply, status_callback): Handle cancelling

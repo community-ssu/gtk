@@ -1,8 +1,17 @@
-osso-application-installer (4.7.post1) unstable; urgency=low
+osso-application-installer (4.8) unstable; urgency=low
+
+  * Added maemo-list-user-packages script for the memory applet.
+    Top window on mime-open.
+    Fullscreening works again.
+    Keep on pulsing when no real progress indication is available.
+    Cancel button is dimmed when cancelling is known not to work.
+    Download is cancelled automatically when net is disconnected.
+    Backend crashes are noticed.
+    Handle shutdown_ind hw state change (#23249). 
 
   * Build-Depend on ibosso-gnome-vfs2-dev.
 
- -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 21 Mar 2006 13:45:00 +0200
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 24 Mar 2006 20:40:37 +0200
 
 osso-application-installer (4.7) unstable; urgency=low
 
