@@ -410,6 +410,8 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     gtk_widget_show(general_data.cancel_button);
     
     gtk_widget_show_all(general_data.layout_menu);
+    general_data.home_menu =
+        GTK_WIDGET(set_menu(GTK_MENU(general_data.layout_menu)));
 
     if (addable_applets)
     {
@@ -547,6 +549,9 @@ void layout_mode_end ( gboolean rollback )
 				general_data.keylistener_id);
     
     applet_manager_configure_load_all(man);
+    general_data.layout_menu =
+        GTK_WIDGET(set_menu(GTK_MENU(general_data.home_menu)));
+
     gtk_widget_destroy (general_data.cancel_button);
     gtk_widget_destroy (general_data.ok_button);
     gtk_widget_destroy (general_data.layout_menu);

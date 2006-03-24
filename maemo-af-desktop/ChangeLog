@@ -1,5 +1,12 @@
 2006-03-24  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/layout-manager.c: (Closes N#24617)
+	  - layout_mode_begin(): switch layout and home menus while saving home
+	    menu
+	  - layout_mode_end(): switch layout and home menus
+
+2006-03-24  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.[ch]: Fixed various logical ids in
 	  the home background settings (Closes N#24837)
 
