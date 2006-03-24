@@ -1853,7 +1853,7 @@ void show_loading_image_note()
             "",
             GTK_WINDOW(window),
             GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-            HILDON_HOME_LOADING_IMAGE_BUTTON,
+            HILDON_HOME_SET_BG_CANCEL,
             GTK_RESPONSE_CANCEL,
             NULL);
     

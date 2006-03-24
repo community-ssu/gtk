@@ -1,5 +1,10 @@
 2006-03-24  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.[ch]: Fixed various logical ids in
+	  the home background settings (Closes N#24837)
+
+2006-03-24  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-memory.c: (Closes N#20305)
 	  - hn_wm_memory_kill_all_watched_foreach_func: fixed a bug when accessing
 	    the only_kill_able_to_hibernate argument (passed as reference,

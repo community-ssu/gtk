@@ -213,7 +213,7 @@ G_BEGIN_DECLS
                                         HILDON_HOME_APP_AREA_MARGIN
 
 /* HOM-NOT006*/
-#define HILDON_HOME_LOADING_IMAGE_TEXT    _("home_ib_loading_image")
+#define HILDON_HOME_LOADING_IMAGE_TEXT    _("home_nw_loading_image")
 #define HILDON_HOME_LOADING_IMAGE_ANI     "qgn_indi_process_a"
 #define HILDON_HOME_LOADING_IMAGE_BUTTON  _("home_bd_loading_image_cancel")
 #define HILDON_NOTE_INFORMATION_ICON      "qgn_note_info"
