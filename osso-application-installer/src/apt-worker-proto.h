@@ -256,7 +256,9 @@ enum apt_proto_sumtype {
 //                 packages.
 //
 // This will setup the download operation and figure out whether there
-// are any not-authenticated or not-certified packages.
+// are any not-authenticated or not-certified packages.  It will also
+// report information about which packages will be upgraded to which
+// version.
 //
 // Parameters:
 //
@@ -265,6 +267,8 @@ enum apt_proto_sumtype {
 // Response:
 //
 // - summary (preptype,string)*,(preptype_end)
+// - upgrades (string,string)*,(null)   First string is package name,
+//                                      second is version.
 // - success (int).
 
 enum apt_proto_preptype {
