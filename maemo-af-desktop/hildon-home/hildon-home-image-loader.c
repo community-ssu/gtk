@@ -570,8 +570,7 @@ void blend_new_skin_to_image_area(GdkPixbuf **pixbuf_orig,
             HILDON_HOME_SIDEBAR_HEIGHT_LOADER,
             GDK_INTERP_NEAREST);                
         g_object_unref(pixbuf_blend);
-        pixbuf_blend = gdk_pixbuf_copy(pixbuf_temp);
-        g_object_unref(pixbuf_temp);
+        pixbuf_blend = pixbuf_temp;
         width_blend = HILDON_HOME_SIDEBAR_WIDTH_LOADER;
         height_blend = HILDON_HOME_SIDEBAR_HEIGHT_LOADER;
     }
