@@ -1,7 +1,7 @@
 bin_PROGRAMS = maemo-application-running \
                maemo-confirm-text.user
 
-bin_SCRIPTS = maemo-confirm-text
+bin_SCRIPTS = maemo-confirm-text maemo-list-user-packages
 
 maemo_confirm_text_user_SOURCES = maemo-confirm-text-user.c
 maemo_confirm_text_user_CFLAGS = $(AI_DEPS_CFLAGS)
