@@ -216,7 +216,8 @@ send_status (int op, int already, int total, int min_change)
   static int last_already;
   static int last_total;
 
-  if (already < last_already 
+  if (already == -1 
+      || already < last_already 
       || already >= last_already + min_change
       || total != last_total
       || op != last_op)
@@ -613,7 +614,7 @@ get_icon (pkgCache::VerIterator &ver)
   if (!section.Scan (start, stop-start+1))
     return NULL;
 
-  char *icon = g_strdup (section.FindS ("X-Maemo-Icon-26").c_str());
+  char *icon = g_strdup (section.FindS ("Maemo-Icon-26").c_str());
   if (all_white_space (icon))
     {
       g_free (icon);
@@ -1391,6 +1392,28 @@ encode_prep_summary (pkgAcquire& Fetcher)
   response.encode_int (preptype_end);
 }
 
+static void
+encode_upgrades ()
+{
+  if (package_cache)
+    {
+      pkgDepCache &cache = *package_cache;
+
+      for (pkgCache::PkgIterator pkg = cache.PkgBegin();
+	   pkg.end() != true;
+	   pkg++)
+	{
+	  if (cache[pkg].Upgrade() /* && !cache[pkg].NewInstall() */)
+	    {
+	      response.encode_string (pkg.Name());
+	      response.encode_string (cache[pkg].CandVersion);
+	    }
+	}
+    }
+
+  response.encode_string (NULL);
+}
+
 bool operation_1 (bool only_check);
 
 bool
@@ -1509,6 +1532,7 @@ operation_1 (bool check_only)
    if (check_only)
      {
        encode_prep_summary (Fetcher);
+       encode_upgrades ();
        return true;
      }
 
@@ -1547,7 +1571,7 @@ operation_1 (bool check_only)
 	  return _error->Error("Unable to fetch some archives.");
 	}
       
-      send_status (op_general, 0, 1, 0);
+      send_status (op_general, -1, 0, 0);
 
       _system->UnLock();
 
@@ -1806,7 +1830,7 @@ make_file_details_response (const char *filename)
   response.encode_int (installable);
   response.encode_int (1000 * atoi (get_field (&section, "Installed-Size")));
   response.encode_string (get_field (&section, "Description"));
-  response.encode_string (get_field (&section, "X-Maemo-Icon-26"));
+  response.encode_string (get_field (&section, "Maemo-Icon-26"));
 
   if (!installable)
     encode_missing_dependencies (section);
