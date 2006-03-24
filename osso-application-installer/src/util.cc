@@ -38,6 +38,7 @@
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
 #include <hildon-widgets/gtk-infoprint.h>
 #include <osso-ic.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include "util.h"
 #include "details.h"
@@ -235,6 +236,7 @@ pulse_progress (gpointer unused)
 {
   if (progress_bar)
     gtk_progress_bar_pulse (progress_bar);
+  return TRUE;
 }
 
 static void
@@ -275,13 +277,11 @@ show_progress (const gchar *title)
 			G_CALLBACK (cancel_response), NULL);
     }
   else
-    {
-      set_progress (title, 0.0);
-      start_pulsing ();
-    }
+    set_progress (title, 0.0);
 
   general_title = title;
 
+  start_pulsing ();
   gtk_widget_show (progress_dialog);
 }
 
@@ -295,9 +295,15 @@ set_progress (const gchar *title, float fraction)
 
   if (progress_dialog)
     {
-      stop_pulsing ();
       g_object_set (progress_dialog, "description", title, NULL);
-      gtk_progress_bar_set_fraction (progress_bar, fraction);
+      
+      if (fraction >= 0)
+	{
+	  stop_pulsing ();
+	  gtk_progress_bar_set_fraction (progress_bar, fraction);
+	}
+      else
+	start_pulsing ();
     }
 }
 
@@ -1024,16 +1030,45 @@ localize_file (char *uri,
 	       void (*cont) (char *local, void *data),
 	       void *data)
 {
-  if (uri[0] == '/')
-    cont (uri, data);
-  else if (g_str_has_prefix (uri, "file://"))
+  if (!gnome_vfs_init ())
     {
-      char *local = g_strdup (uri + 6);
-      g_free (uri);
-      cont (local, data);
+      // XXX
+      annoy_user ("Couldn't init GnomeVFS.");
+      cont (NULL, data);
+      return;
+    }
+
+  GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
+
+  if (vfs_uri == NULL)
+    {
+      fprintf (stderr, "uri: %s\n", uri);
+      annoy_user ("Malformed URI");
+      cont (NULL, data);
+      return;
+    }
+
+  /* The app-worker can access all "file://" URIs, whether they are
+     considered local by GnomeVFS or not.  (GnomeVFS considers a
+     file:// URI pointing to a NFS mounted volume as remote, but we
+     can read that just fine of course.)
+  */
+
+  const gchar *scheme = gnome_vfs_uri_get_scheme (vfs_uri);
+  if (scheme && !strcmp (scheme, "file"))
+    {
+      const gchar *path = gnome_vfs_uri_get_path (vfs_uri);
+      gchar *unescaped_path = gnome_vfs_unescape_string (path, NULL);
+      if (unescaped_path == NULL)
+	annoy_user ("Hmm.");
+      cont (unescaped_path, data);
     }
   else
-    annoy_user ("Unsupported file location.");
+    {
+      // XXX
+      annoy_user ("Unsupported file location.");
+      cont (NULL, data);
+    }
 }
 
 struct rc_closure {
@@ -1214,4 +1249,20 @@ get_http_proxy ()
   g_object_unref (conf);
 
   return proxy;
+}
+
+void
+push (GSList *&ptr, void *data)
+{
+  ptr = g_slist_prepend (ptr, data);
+}
+
+void *
+pop (GSList *&ptr)
+{
+  void *data = ptr->data;
+  GSList *next = ptr->next;
+  g_slist_free_1 (ptr);
+  ptr = next;
+  return data;
 }

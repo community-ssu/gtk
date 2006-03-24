@@ -98,4 +98,7 @@ void ensure_network (void (*callback) (bool success, void *data), void *data);
 
 char *get_http_proxy ();
 
+void push (GSList *&ptr, void *data);
+void *pop (GSList *&ptr);
+
 #endif /* !UTIL_H */
