@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.6.10-1.osso10) unstable; urgency=low
+
+  * UI change: Collapse folders only when tapping on already focused folder.
+  * Bugs fixed:
+    N#22537: Fileselection widget crashes when traversing through a hierarchy
+             of folders
+    N#22807: NOKGTK-58 GtkTreeView calculates cell sizes very inefficiently
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 24 Mar 2006 19:31:31 +0200
+
 gtk+2.0 (2:2.6.10-1.osso9) unstable; urgency=low
 
   * debian/libgtk2.0-{common,dev}.files: Move localisation for property
