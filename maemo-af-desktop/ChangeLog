@@ -1,5 +1,10 @@
 2006-03-27  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/application-switcher.c: Factorized creation
+	  of AS buttons (patch courtesy of Guillem Jover, Closes N#24957)
+
+2006-03-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/layout-manager.c: Fixed launching of the help from the
 	  menu (Closes N#24891)
 

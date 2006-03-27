@@ -167,6 +167,19 @@ static gboolean dimming_on = FALSE;
 				                     
 /* <Public functions> */
 
+static GtkWidget *as_toggle_button_new(gchar *name)
+{
+    GtkWidget *button;
+
+    button = gtk_toggle_button_new();
+    gtk_widget_set_size_request(button, -1, SMAL_BUTTON_HEIGHT);
+    gtk_widget_set_name(button, name);
+    gtk_widget_set_sensitive(button, FALSE);
+    g_object_set(G_OBJECT(button), "can-focus", FALSE, NULL);
+
+    return button;
+}
+
 ApplicationSwitcher_t *application_switcher_init(void)
 {
     ApplicationSwitcher_t *ret;
@@ -186,11 +199,11 @@ ApplicationSwitcher_t *application_switcher_init(void)
                                    BUTTON_BORDER_WIDTH);
     
     /* Create buttons */                                  
-    ret->toggle_button1 = gtk_toggle_button_new();   
-    ret->toggle_button2 = gtk_toggle_button_new(); 
-    ret->toggle_button3 = gtk_toggle_button_new(); 
-    ret->toggle_button4 = gtk_toggle_button_new(); 
-    ret->toggle_button_as = gtk_toggle_button_new();
+    ret->toggle_button1 = as_toggle_button_new(SMALL_BUTTON1_NORMAL);
+    ret->toggle_button2 = as_toggle_button_new(SMALL_BUTTON2_NORMAL);
+    ret->toggle_button3 = as_toggle_button_new(SMALL_BUTTON3_NORMAL);
+    ret->toggle_button4 = as_toggle_button_new(SMALL_BUTTON4_NORMAL);
+    ret->toggle_button_as = as_toggle_button_new(NAME_SMAL_MENU_BUTTON_ITEM);
                       
     /* Create icon for applications switcher button */
 
@@ -213,38 +226,9 @@ ApplicationSwitcher_t *application_switcher_init(void)
     g_signal_connect(G_OBJECT(lowest_align), "expose-event", 
                      G_CALLBACK(button_expose_event), NULL);
 
-    gtk_widget_set_size_request(ret->toggle_button1,-1,
-                                SMAL_BUTTON_HEIGHT);
-    gtk_widget_set_size_request(ret->toggle_button2,-1,
-                                SMAL_BUTTON_HEIGHT);
-    gtk_widget_set_size_request(ret->toggle_button3,-1,
-                                SMAL_BUTTON_HEIGHT);
-    gtk_widget_set_size_request(ret->toggle_button4,-1,
-                                SMAL_BUTTON_HEIGHT);
-    gtk_widget_set_size_request(ret->toggle_button_as,-1,
-                                SMAL_BUTTON_HEIGHT);
-    
     gtk_widget_set_size_request(topmost_align,-1,SEPARATOR_HEIGHT);
     gtk_widget_set_size_request(lowest_align,-1,SEPARATOR_HEIGHT);
         
-    gtk_widget_set_name(ret->toggle_button1, SMALL_BUTTON1_NORMAL);
-    gtk_widget_set_name(ret->toggle_button2, SMALL_BUTTON2_NORMAL);
-    gtk_widget_set_name(ret->toggle_button3, SMALL_BUTTON3_NORMAL);
-    gtk_widget_set_name(ret->toggle_button4, SMALL_BUTTON4_NORMAL);
-    gtk_widget_set_name(ret->toggle_button_as, NAME_SMAL_MENU_BUTTON_ITEM);
-        
-    gtk_widget_set_sensitive(ret->toggle_button1, FALSE);
-    gtk_widget_set_sensitive(ret->toggle_button2, FALSE);
-    gtk_widget_set_sensitive(ret->toggle_button3, FALSE);
-    gtk_widget_set_sensitive(ret->toggle_button4, FALSE);
-    gtk_widget_set_sensitive(ret->toggle_button_as, FALSE);
-    
-    g_object_set (G_OBJECT (ret->toggle_button1), "can-focus", FALSE, NULL);
-    g_object_set (G_OBJECT (ret->toggle_button2), "can-focus", FALSE, NULL);
-    g_object_set (G_OBJECT (ret->toggle_button3), "can-focus", FALSE, NULL);
-    g_object_set (G_OBJECT (ret->toggle_button4), "can-focus", FALSE, NULL);
-    g_object_set (G_OBJECT (ret->toggle_button_as), "can-focus", FALSE, NULL);
-    
     /* Pack the widgets */
     gtk_box_pack_start(GTK_BOX(ret->vbox), 
                        topmost_align, TRUE, TRUE, 0);    
