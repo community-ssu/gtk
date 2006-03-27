@@ -3463,6 +3463,14 @@ int hildon_home_main(void)
     gint window_width;
     gint window_height;
     
+    /* Osso needs to be initialized before creation of applets */
+    osso_home = osso_initialize(HILDON_HOME_NAME, HILDON_HOME_VERSION, 
+                           FALSE, NULL);
+    if( !osso_home )
+    {
+        return 1;
+    }
+    
     hildon_home_initiliaze();
     
     icon_theme = gtk_icon_theme_get_default();
@@ -3477,14 +3485,6 @@ int hildon_home_main(void)
                             NULL, NULL, 
                             &window_width, &window_height, NULL);
     
-    /* Osso needs to be initialized before creation of applets */
-    osso_home = osso_initialize(HILDON_HOME_NAME, HILDON_HOME_VERSION, 
-                           FALSE, NULL);
-    if( !osso_home )
-    {
-        return 1;
-    }
-
     construct_home_area();
     
     construct_titlebar_area();

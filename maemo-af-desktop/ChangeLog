@@ -1,5 +1,10 @@
 2006-03-27  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/layout-manager.c: Fixed launching of the help from the
+	  menu (Closes N#24891)
+
+2006-03-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.6.4
 
 2006-03-24  Johan Bilien <johan.bilien@nokia.com>

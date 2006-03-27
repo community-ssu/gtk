@@ -368,10 +368,8 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 
     gtk_menu_append (GTK_MENU(general_data.layout_menu), mi);
     
-/* No help available yet
     g_signal_connect( G_OBJECT( mi ), "activate", 
                       G_CALLBACK( _help_cb ), NULL ); 
-*/
 
     general_data.ok_button = gtk_button_new_with_label("");
     g_object_set(general_data.ok_button, "image", 
