@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2004-2005 Nokia Corporation.
+# Copyright (C) 2004-2006 Nokia Corporation.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -19,7 +19,7 @@
 DIR=$AF_INIT_DIR
 
 # media-server was only started if we went directly to ACTDEAD
-DSME_STATE=`/usr/sbin/bootstate`
+DSME_STATE=`/usr/sbin/bootstate 2> /dev/null`
 if [ "x$DSME_STATE" = "xACTDEAD" ]; then
   if [ -x $DIR/osso-media-server.sh ]; then
     $DIR/osso-media-server.sh stop

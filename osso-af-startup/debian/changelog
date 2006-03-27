@@ -1,6 +1,7 @@
 osso-af-startup (1.13-1) unstable; urgency=low
 
   * Fixed problem with get-devlock.sh (N#22474).
+  * Fixed possible problem with querying bootstate.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 27 Mar 2006 11:14:01 +0300
 

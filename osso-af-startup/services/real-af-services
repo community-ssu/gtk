@@ -50,7 +50,7 @@ start)
   fi
 
   # media-server is only started here if we go directly to ACTDEAD
-  DSME_STATE=`/usr/sbin/bootstate`
+  DSME_STATE=`/usr/sbin/bootstate 2> /dev/null`
   if [ "x$DSME_STATE" = "xACTDEAD" ]; then
     if [ -x $AF_INIT_DIR/osso-media-server.sh ]; then
       # media server wants the session bus
