@@ -1,3 +1,43 @@
+maemo-af-desktop (2.6.4-1) unstable; urgency=low
+
+  * hildon-home/layout-manager.c: (Closes N#24617)
+    - layout_mode_begin(): switch layout and home menus while saving home
+      menu
+    - layout_mode_end(): switch layout and home menus
+  * hildon-home/hildon-home-main.[ch]: Fixed various logical ids in
+    the home background settings (Closes N#24837)
+  * hildon-navigator/hn-wm-memory.c: (Closes N#20305)
+    - hn_wm_memory_kill_all_watched_foreach_func: fixed a bug when accessing
+      the only_kill_able_to_hibernate argument (passed as reference,
+      accessed as value).
+  * hildon-home/layout-manager.c: If the applet EventBox has a child,
+    draw the red border on the child's window, or it will be
+    overwritten by the child's painting (Closes N#24722)
+  * hildon-home/hildon-home-image-loader.c: Removed an unnecessary
+    image copy. (Closes N#22549)
+  * hildon-home/layout-manager.c: (Closes N#24439 and N#24767)
+    - added field to layout mode internal struct to hold handler id
+    - layout_mode_end(): added disconnecting signal handler to catch ESC
+      hw key event to cancel
+    - gdkkeysyms include added for ESC hw key
+    - layout_mode_start(): added signal connect to key press listener
+    - layout_mode_end(): added check to catch ESC hw key event to cancel
+      dialog and NOT exiting from layout mode
+    - layout_mode_key_press_listener() new function to listen hw key
+      events. ESC hw key pressing launches layout mode ending with cancel
+      confirmation
+    - layout_mode_end(): changed GTK_RESPONSE_REJECT to
+      GTK_RESPONSE_CANCEL to catch ESC hw key event
+  * hildon-home/layout-manager.c: Fixed the cancel layout button (Closes
+    N#24428)
+  * hildon-navigator/other-menu.c:
+    - Removed code that got duplicated in branch merges
+    - Added a dnotify callback on the .desktop directory,
+      to allow new applications to appear in the menu (Closes N#24511)
+  * debian/control: Put myself as maintainer
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 27 Mar 2006 10:37:45 +0300
+
 maemo-af-desktop (2.6.3-1) unstable; urgency=low
 
   * hildon-navigator/application-switcher.c: Stop blinking the
