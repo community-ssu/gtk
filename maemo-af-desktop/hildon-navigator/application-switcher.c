@@ -258,13 +258,42 @@ GtkWidget *application_switcher_get_button(ApplicationSwitcher_t *as)
     return as->vbox;
 }
 
+static gboolean as_add_signal(ApplicationSwitcher_t *as,
+			      DBusConnection *conn,
+			      DBusObjectPathVTable *vtable,
+			      gchar *path, gchar *iface)
+{
+    gchar *match_rule;
+
+    if (!dbus_connection_register_object_path(conn, path, vtable, as))
+    {
+	osso_log(LOG_ERR, "Failed registering %s handler", path);
+	return FALSE;
+    }
+
+    match_rule = g_strdup_printf("type='signal', interface='%s'", iface);
+    if (match_rule)
+    {
+	dbus_bus_add_match(conn, match_rule, NULL);
+	g_free(match_rule);
+	dbus_connection_flush(conn);
+	return FALSE;
+    }
+    else
+    {
+	osso_log(LOG_ERR, "Could not create match rule for %s", iface);
+	return FALSE;
+    }
+
+    return TRUE;
+}
+
 void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
 {
     DBusConnection *conn = NULL;
     DBusObjectPathVTable vtable;
     GtkWidget *separator;
     GtkWidget *home_item_icon;
-    gchar *match_rule = NULL;
     gboolean init_succeed = FALSE;
     
     g_return_if_fail(as);
@@ -375,95 +404,11 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
     vtable.message_function = mce_handler;
     vtable.unregister_function = NULL;
 
-    if (!dbus_connection_register_object_path(conn,
-                                              MCE_SIGNAL_PATH,
-                                              &vtable,
-                                              as))
-    {
-        osso_log(LOG_ERR, "Failed registering MCE handler");
-    }
-    
-    match_rule = g_strdup_printf("type='signal', interface='%s'",
-                                 MCE_SIGNAL_INTERFACE);
-    if (match_rule != NULL)
-    {
-        dbus_bus_add_match(conn, match_rule, NULL);
-        g_free(match_rule);
-        dbus_connection_flush(conn);
-    }
-    else
-    {
-        osso_log(LOG_ERR, "Could not create match rule");
-    }
-    if (!dbus_connection_register_object_path(conn, LOWMEM_ON_SIGNAL_PATH, &vtable, as)) {
-        osso_log(LOG_ERR, "Failed registering LOWMEM_ON handler");
-    }
-
-    match_rule = g_strdup_printf("type='signal', interface='%s'",
-                                 LOWMEM_ON_SIGNAL_INTERFACE);
-    
-    if (match_rule != NULL) {
-	    dbus_bus_add_match(conn, match_rule, NULL);
-	    g_free(match_rule);
-	    dbus_connection_flush(conn);
-    } else {
-	    osso_log(LOG_ERR, "Could not create match rule for %s",
-                     LOWMEM_ON_SIGNAL_INTERFACE);
-    }
-    
-    if (!dbus_connection_register_object_path(conn, LOWMEM_OFF_SIGNAL_PATH, &vtable, as)) {
-        osso_log(LOG_ERR, "Failed registering LOWMEM_OFF handler");
-    }
-
-    match_rule = g_strdup_printf("type='signal', interface='%s'",
-                                 LOWMEM_OFF_SIGNAL_INTERFACE);
-    
-    if (match_rule != NULL) {
-	    dbus_bus_add_match(conn, match_rule, NULL);
-	    g_free(match_rule);
-	    dbus_connection_flush(conn);
-    } else {
-	    osso_log(LOG_ERR, "Could not create match rule for %s",
-                     LOWMEM_OFF_SIGNAL_INTERFACE);
-    }
-
-    if (!dbus_connection_register_object_path(conn, BGKILL_ON_SIGNAL_PATH, &vtable, as))
-    {
-        osso_log(LOG_ERR, "Failed registering BGKILL_ON handler");
-    }
-
-    match_rule = g_strdup_printf("type='signal', interface='%s'",
-                                 BGKILL_ON_SIGNAL_INTERFACE);
-    if (match_rule != NULL)
-    {
-	dbus_bus_add_match(conn, match_rule, NULL);
-	g_free(match_rule);
-	dbus_connection_flush(conn);
-    }
-    else
-    {
-	osso_log(LOG_ERR, "Could not create match rule for %s",
-		 BGKILL_ON_SIGNAL_INTERFACE);
-    }
-
-    if (!dbus_connection_register_object_path(conn, BGKILL_OFF_SIGNAL_PATH, &vtable, as))
-    {
-	osso_log(LOG_ERR, "Failed registering BGKILL_OFF handler");
-    }
-
-    match_rule = g_strdup_printf("type='signal', interface='%s'",
-                                 BGKILL_OFF_SIGNAL_INTERFACE);
-    if (match_rule != NULL)
-    {
-	dbus_bus_add_match(conn, match_rule, NULL);
-	g_free(match_rule);
-	dbus_connection_flush(conn);
-    }
-    else
-    {
-	osso_log(LOG_ERR, "Could not create match rule for %s",
-		 BGKILL_OFF_SIGNAL_INTERFACE);
-    }
+    as_add_signal(as, conn, &vtable, MCE_SIGNAL_PATH, MCE_SIGNAL_INTERFACE);
+    as_add_signal(as, conn, &vtable, LOWMEM_ON_SIGNAL_PATH, LOWMEM_ON_SIGNAL_INTERFACE);
+    as_add_signal(as, conn, &vtable, LOWMEM_OFF_SIGNAL_PATH, LOWMEM_OFF_SIGNAL_INTERFACE);
+    as_add_signal(as, conn, &vtable, BGKILL_ON_SIGNAL_PATH, BGKILL_ON_SIGNAL_INTERFACE);
+    as_add_signal(as, conn, &vtable, BGKILL_OFF_SIGNAL_PATH, BGKILL_OFF_SIGNAL_INTERFACE);
 
     gtk_widget_show(as->home_menu_item);
     gtk_widget_show(separator);
