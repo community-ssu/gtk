@@ -1572,19 +1572,20 @@ operation_1 (bool check_only)
 	}
       
       send_status (op_general, -1, 0, 0);
-
+      
       _system->UnLock();
 
       pkgPackageManager::OrderResult Res = Pm->DoInstall (status_fd);
       if (Res == pkgPackageManager::Failed || _error->PendingError() == true)
-	 return false;
+	return false;
+
       if (Res == pkgPackageManager::Completed)
 	 return true;
       
       // Reload the fetcher object and loop again for media swapping
       Fetcher.Shutdown();
       if (Pm->GetArchives(&Fetcher,&List,&Recs) == false)
-	 return false;
+	return false;
       
       _system->Lock();
    }
@@ -1711,13 +1712,15 @@ add_dep_string (string &str,
 }
 
 static bool
-check_and_encode_missing_dependencies (const char *deps, bool only_check)
+check_and_encode_missing_dependencies (const char *deps, const char *end,
+				       bool only_check)
 {
-  const char *ptr = deps, *end = deps + strlen (deps);
+  const char *ptr;
   string package, version;
   unsigned int op;
   bool dep_ok = true;
 
+  ptr = deps;
   while (true)
     {
       // check one 'or group'
@@ -1767,31 +1770,54 @@ check_and_encode_missing_dependencies (const char *deps, bool only_check)
   return dep_ok;
 }
 
-static const char *
-get_field (pkgTagSection *section, const char *field)
+static bool
+get_field (pkgTagSection *section, const char *field,
+	   const char *&start, const char *&end)
 {
-  const char *value = section->FindS (field).c_str();
-  if (all_white_space (value))
-    value = NULL;
-  fprintf (stderr, "%s = %s\n", field, value? value : "<undefined>");
+  if (section->Find (field, start, end))
+    {
+      fprintf (stderr, "%s = %.*s\n", field, end-start, start);
+      return true;
+    }
+  else
+    {
+      fprintf (stderr, "%s = <undefined>\n", field);
+      return false;
+    }
+}
 
-  // XXX - should probably not return pointers into dead strings.
-  return value;
+static int
+get_field_int (pkgTagSection *section, const char *field, int def)
+{
+  const char *start, *end;
+  if (get_field (section, field, start, end))
+    return atoi (start);
+  else
+    return def;
+}
+
+static void
+encode_field (pkgTagSection *section, const char *field)
+{
+  const char *start, *end;
+  if (get_field (section, field, start, end))
+    response.encode_stringn (start, end-start);
+  else
+    response.encode_string (NULL);
 }
 
 static bool
 check_installable (pkgTagSection &section)
 {
   bool installable = true;
+  const char *start, *end;
 
-  const char *pre_depends = get_field (&section, "Pre-Depends");
-  if (pre_depends)
-    installable = (check_and_encode_missing_dependencies (pre_depends, true)
+  if (get_field (&section, "Pre-Depends", start, end))
+    installable = (check_and_encode_missing_dependencies (start, end, true)
 		   && installable);
 
-  const char *depends = get_field (&section, "Depends");
-  if (depends)
-    installable = (check_and_encode_missing_dependencies (depends, true)
+  if (get_field (&section, "Depends", start, end))
+    installable = (check_and_encode_missing_dependencies (start, end, true)
 		   && installable);
 
   return installable;
@@ -1800,13 +1826,13 @@ check_installable (pkgTagSection &section)
 static void
 encode_missing_dependencies (pkgTagSection &section)
 {
-  const char *pre_depends = get_field (&section, "Pre-Depends");
-  if (pre_depends)
-    check_and_encode_missing_dependencies (pre_depends, false);
+  const char *start, *end;
 
-  const char *depends = get_field (&section, "Depends");
-  if (depends)
-    check_and_encode_missing_dependencies (depends, false);
+  if (get_field (&section, "Pre-Depends", start, end))
+    check_and_encode_missing_dependencies (start, end, false);
+
+  if (get_field (&section, "Depends", start, end))
+    check_and_encode_missing_dependencies (start, end, false);
 }
 
 void
@@ -1821,16 +1847,16 @@ make_file_details_response (const char *filename)
 
   bool installable = check_installable (section);
 
-  response.encode_string (get_field (&section, "Package"));
+  encode_field (&section, "Package");
   response.encode_string (NULL);  // installed_version
   response.encode_int (0);        // installed_size
-  response.encode_string (get_field (&section, "Version"));
-  response.encode_string (get_field (&section, "Maintainer"));
-  response.encode_string (get_field (&section, "Section"));
+  encode_field (&section, "Version");
+  encode_field (&section, "Maintainer");
+  encode_field (&section, "Section");
   response.encode_int (installable);
-  response.encode_int (1000 * atoi (get_field (&section, "Installed-Size")));
-  response.encode_string (get_field (&section, "Description"));
-  response.encode_string (get_field (&section, "Maemo-Icon-26"));
+  response.encode_int (1000 * get_field_int (&section, "Installed-Size", 0));
+  encode_field (&section, "Description");
+  encode_field (&section, "Maemo-Icon-26");
 
   if (!installable)
     encode_missing_dependencies (section);
