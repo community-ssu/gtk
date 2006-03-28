@@ -556,7 +556,7 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	  info->available_section = dec->decode_string_dup ();
 	  info->available_short_description = dec->decode_string_dup ();
 	  available_icon = dec->decode_string_in_place ();
-	  
+
 	  info->installed_icon = pixbuf_from_base64 (installed_icon);
 	  if (available_icon)
 	    info->available_icon = pixbuf_from_base64 (available_icon);
@@ -566,7 +566,7 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	      if (info->available_icon)
 		g_object_ref (info->available_icon);
 	    }
-	  
+
 	  count++;
 	  if (info->installed_version && info->available_version)
 	    {
@@ -955,6 +955,7 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   if (dec == NULL)
     {
+      hide_progress ();
       c->pi->unref ();
       delete c;
       return;
