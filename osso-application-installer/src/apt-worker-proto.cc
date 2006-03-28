@@ -79,12 +79,19 @@ apt_proto_encoder::grow (int delta)
 }
 
 void
-apt_proto_encoder::encode_mem (const void *val, int n)
+apt_proto_encoder::encode_mem_plus_zeros (const void *val, int n, int z)
 {
-  int r = roundup (n, sizeof (int));
+  int r = roundup (n+z, sizeof (int));
   grow (r);
   memcpy (buf+len, (char *)val, n);
+  memset (buf+len+n, 0, z);
   len += r;
+}
+
+void
+apt_proto_encoder::encode_mem (const void *val, int n)
+{
+  encode_mem_plus_zeros (val, n, 0);
 }
 
 void
@@ -96,13 +103,20 @@ apt_proto_encoder::encode_int (int val)
 void
 apt_proto_encoder::encode_string (const char *val)
 {
+  encode_stringn (val, -1);
+}
+
+void
+apt_proto_encoder::encode_stringn (const char *val, int len)
+{
   if (val == NULL)
     encode_int (-1);
   else
     {
-      int len = strlen (val);
+      if (len == -1)
+	len = strlen (val);
       encode_int (len);
-      encode_mem (val, len+1);
+      encode_mem_plus_zeros (val, len, 1);
     }
 }
 

@@ -79,6 +79,7 @@ struct apt_proto_encoder {
   void encode_mem (const void *, int);
   void encode_int (int);
   void encode_string (const char *);
+  void encode_stringn (const char *, int len);
 
   char *get_buf ();
   int get_len ();
@@ -87,7 +88,9 @@ private:
   char *buf;
   int buf_len;
   int len;
+
   void grow (int delta);
+  void encode_mem_plus_zeros (const void *, int, int);
 };
 
 struct apt_proto_decoder {
