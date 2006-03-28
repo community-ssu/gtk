@@ -8,7 +8,7 @@ Standards-Version: 3.6.0
 Package: libosso-common-error0
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, libosso-common-error-l10n-3.0-engb | libosso-common-error-l10n-3.0-english
+Depends: ${shlibs:Depends}, libosso-common-error-l10n-mr0
 Description: OSSO Common Error libray
  Library for common error.
 
