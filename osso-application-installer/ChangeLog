@@ -1,3 +1,26 @@
+2006-03-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/apt-worker.cc (get_field): Return string by setting start
+	and end pointers, not as a pointer into a dead C++ 'string'.
+	Changed callers.
+	(get_field_int, encode_field): New.
+	(check_and_encode_missing_dependencies): Expect start and end
+	pointers.
+	(make_file_details_response): Use encode_field and get_field_int
+	instead of long-hand.
+
+	* src/apt-worker-proto.cc, src/apt-worker-proto.h
+	(apt_proto_encoder::encode_stringn,
+	apt_proto_encoder::encode_mem_plus_zeros): New.
+	(apt_proto_encoder::encode_mem, apt_proto_encoder::encode_mem):
+	Use them respectively.
+	
+	* src/hildonbreadcrumbtrail.c (hildon_bread_crumb_trail_set_path):
+	Set name of buttons, do not unset relief, make padding smaller.
+
+	* src/main.cc (install_check_reply): Hide progress when apt-worker
+	has failed.
+
 2006-03-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.8
