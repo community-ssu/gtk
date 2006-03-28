@@ -1,3 +1,11 @@
+2006-03-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* hildon-navigator/application-switcher.h
+	(NAME_SMAL_MENU_BUTTON_ITEM): Renamed to ...
+	(NAME_SMALL_MENU_BUTTON_ITEM): ... this. Fix all users.
+	(SMAL_BUTTON_HEIGHT): Rename to ...
+	(SMALL_BUTTON_HEIGHT): ... this. Fix all users.
+
 2006-03-27  Guillem Jover  <guillem.jover@nokia.com>
 
 	* hildon-navigator/application-switcher.c

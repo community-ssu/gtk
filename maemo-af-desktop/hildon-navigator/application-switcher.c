@@ -172,7 +172,7 @@ static GtkWidget *as_toggle_button_new(gchar *name)
     GtkWidget *button;
 
     button = gtk_toggle_button_new();
-    gtk_widget_set_size_request(button, -1, SMAL_BUTTON_HEIGHT);
+    gtk_widget_set_size_request(button, -1, SMALL_BUTTON_HEIGHT);
     gtk_widget_set_name(button, name);
     gtk_widget_set_sensitive(button, FALSE);
     g_object_set(G_OBJECT(button), "can-focus", FALSE, NULL);
@@ -203,7 +203,7 @@ ApplicationSwitcher_t *application_switcher_init(void)
     ret->toggle_button2 = as_toggle_button_new(SMALL_BUTTON2_NORMAL);
     ret->toggle_button3 = as_toggle_button_new(SMALL_BUTTON3_NORMAL);
     ret->toggle_button4 = as_toggle_button_new(SMALL_BUTTON4_NORMAL);
-    ret->toggle_button_as = as_toggle_button_new(NAME_SMAL_MENU_BUTTON_ITEM);
+    ret->toggle_button_as = as_toggle_button_new(NAME_SMALL_MENU_BUTTON_ITEM);
                       
     /* Create icon for applications switcher button */
 

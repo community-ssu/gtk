@@ -74,7 +74,7 @@
 #define SMALL_BUTTON3_PRESSED "hildon-navigator-small-button3-pressed"
 #define SMALL_BUTTON4_PRESSED "hildon-navigator-small-button4-pressed"
 
-#define NAME_SMAL_MENU_BUTTON_ITEM "hildon-navigator-small-button5"
+#define NAME_SMALL_MENU_BUTTON_ITEM "hildon-navigator-small-button5"
 
 #define NAME_UPPER_SEPARATOR "hildon-navigator-upper-separator"
 #define NAME_LOWER_SEPARATOR "hildon-navigator-lower-separator"
@@ -88,7 +88,7 @@
 /* Hardcoded pixel perfecting values */
 #define BUTTON_BORDER_WIDTH 0 
 #define MENU_BORDER_WIDTH 20
-#define SMAL_BUTTON_HEIGHT 38
+#define SMALL_BUTTON_HEIGHT 38
 #define ROW_HEIGHT 30
 #define ICON_SIZE 26
 #define MAX_AREA_WIDTH 360
@@ -96,12 +96,12 @@
 #define BUTTON_1_Y_POS 280 /*First three buttons (3*90px = 270px) + 
                              Inactive scin graphic area height(10px)*/                          
 #define BUTTON_2_Y_POS 318 /* BUTTON_1_Y_POS(280px) + 
-                              SMAL_BUTTON_HEIGHT(38px) */
+                              SMALL_BUTTON_HEIGHT(38px) */
 #define BUTTON_3_Y_POS 356 /* BUTTON_2_Y_POS(318px) + 
-                              SMAL_BUTTON_HEIGHT(38px) */ 
+                              SMALL_BUTTON_HEIGHT(38px) */
                                               
 #define BUTTON_4_Y_POS 394 /* BUTTON_3_Y_POS(356px) + 
-                              SMAL_BUTTON_HEIGHT(38px) */
+                              SMALL_BUTTON_HEIGHT(38px) */
 
 /* Needed for catching the MCE D-BUS messages */
 
