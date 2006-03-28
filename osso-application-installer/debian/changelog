@@ -1,3 +1,9 @@
+osso-application-installer (4.9) unstable; urgency=low
+
+  * Fixed for GCC 3.4.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 28 Mar 2006 17:30:51 +0300
+
 osso-application-installer (4.8) unstable; urgency=low
 
   * Added maemo-list-user-packages script for the memory applet.
