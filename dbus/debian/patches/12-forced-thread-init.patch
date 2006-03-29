@@ -47,3 +47,25 @@ diff -ur ../../dbus/glib/dbus-gmain.c glib/dbus-gmain.c
    dbus_error_init (&derror);
  
    connection = dbus_bus_get (type, &derror);
+--- ../../dbus/dbus/dbus-connection.c	2006-03-03 19:23:46.000000000 +0200
++++ dbus/dbus-connection.c	2006-03-29 14:20:44.146709792 +0300
+@@ -39,6 +39,7 @@
+ #include "dbus-pending-call.h"
+ #include "dbus-object-tree.h"
+ #include "dbus-threads-internal.h"
++#include <glib.h>
+ 
+ #ifdef DBUS_DISABLE_CHECKS
+ #define TOOK_LOCK_CHECK(connection)
+@@ -1589,6 +1590,11 @@
+ 
+   _DBUS_ASSERT_ERROR_IS_CLEAR (error);
+   
++  /* evil init threads hack */
++  if (!g_thread_supported())
++    g_thread_init(NULL);
++  dbus_g_thread_init();
++
+   connection = NULL;
+ 
+   dbus_error_init (&tmp_error);
