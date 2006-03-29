@@ -1,3 +1,10 @@
+2006-03-29  Guillem Jover  <guillem.jover@nokia.com>
+
+	* hildon-navigator/application-switcher.c
+	  (application_switcher_initialize_menu): Refactor toggle button signal
+      connection into ...
+	  (as_toggle_button_connect): ... here. New function.
+
 2006-03-29  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/application-switcher.[ch]:

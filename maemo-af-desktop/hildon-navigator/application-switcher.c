@@ -319,6 +319,16 @@ static gboolean as_add_signal(ApplicationSwitcher_t *as,
     return TRUE;
 }
 
+static void as_toggle_button_connect(ApplicationSwitcher_t *as,
+				     GtkWidget *button)
+{
+    g_signal_connect(G_OBJECT(button), "button-release-event",
+                     G_CALLBACK(tooltip_button_release), as);
+
+    g_signal_connect(G_OBJECT(button), "pressed",
+                     G_CALLBACK(button_toggled), as);
+}
+
 void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
 {
     DBusConnection *conn = NULL;
@@ -379,37 +389,13 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
     g_signal_connect(G_OBJECT(as->menu), "key-press-event", 
                      G_CALLBACK(as_key_press), as);
     
-    /* Signal handler for tooltip menu */               
-    g_signal_connect(G_OBJECT(as->toggle_button1), 
-                     "button-release-event", 
-                     G_CALLBACK(tooltip_button_release), as);        
-               
-    g_signal_connect(G_OBJECT(as->toggle_button2), 
-                     "button-release-event", 
-                     G_CALLBACK(tooltip_button_release), as);
-              
-    g_signal_connect(G_OBJECT(as->toggle_button3), 
-                     "button-release-event", 
-                     G_CALLBACK(tooltip_button_release), as);
-              
-    g_signal_connect(G_OBJECT(as->toggle_button4), 
-                     "button-release-event", 
-                     G_CALLBACK(tooltip_button_release), as);
+    as_toggle_button_connect(as, as->toggle_button1);
+    as_toggle_button_connect(as, as->toggle_button2);
+    as_toggle_button_connect(as, as->toggle_button3);
+    as_toggle_button_connect(as, as->toggle_button4);
 
-    /* Signal handler for small icons buttons and 
-       application switcher menu button */
-    g_signal_connect(G_OBJECT(as->toggle_button1), "pressed", 
-                     G_CALLBACK(button_toggled), as);
-    g_signal_connect(G_OBJECT(as->toggle_button2), "pressed", 
-                     G_CALLBACK(button_toggled), as);
-    g_signal_connect(G_OBJECT(as->toggle_button3), "pressed", 
-                     G_CALLBACK(button_toggled), as);
-    g_signal_connect(G_OBJECT(as->toggle_button4), "pressed", 
-                     G_CALLBACK(button_toggled), as);                    
     g_signal_connect(G_OBJECT(as->toggle_button_as), "pressed", 
                      G_CALLBACK(button_toggled), as);
-                         
-                         	      	      
     
     /* Create array to get information open windows */
     as->items = g_array_new(FALSE,FALSE,sizeof(container));
