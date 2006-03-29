@@ -896,68 +896,37 @@ static const char *load_symbols(Navigator *tasknav, void *dlhandle,
 {
 
     const char *result = NULL;
-    void *symbol[ MAX_SYMBOLS ];
+    void *symbol;
 
     g_assert (tasknav != NULL);
     g_assert (dlhandle != NULL);
     
-    if (symbol_id == CREATE_SYMBOL)
+    switch (symbol_id)
     {
-        symbol[CREATE_SYMBOL] = dlsym(dlhandle, 
-                                       "hildon_navigator_lib_create");
-
+    case CREATE_SYMBOL:
+        symbol = dlsym(dlhandle, "hildon_navigator_lib_create");
         result = dlerror();
-        
         if ( result )
-        {
             return result;
-        }
-        tasknav->create = (PluginCreateFn)symbol[CREATE_SYMBOL];
-    }             
-
-    else if (symbol_id == GET_BUTTON_SYMBOL)
-    {
-        symbol[GET_BUTTON_SYMBOL] = dlsym(dlhandle,
-                             "hildon_navigator_lib_get_button_widget");
-        
+        tasknav->create = (PluginCreateFn)symbol;
+    case GET_BUTTON_SYMBOL:
+        symbol = dlsym(dlhandle, "hildon_navigator_lib_get_button_widget");
         result = dlerror();
-        
         if ( result )
-        {
             return result;
-        }
-
-        tasknav->navigator_button = (PluginGetButtonFn)symbol[
-                                                    GET_BUTTON_SYMBOL];
-    }
-
-    else if (symbol_id == INITIALIZE_MENU_SYMBOL)
-    {
-        symbol[INITIALIZE_MENU_SYMBOL] = dlsym(dlhandle,
-                                 "hildon_navigator_lib_initialize_menu");
-
+        tasknav->navigator_button = (PluginGetButtonFn)symbol;
+    case INITIALIZE_MENU_SYMBOL:
+        symbol = dlsym(dlhandle, "hildon_navigator_lib_initialize_menu");
         result = dlerror();
-        
         if ( result )
-        {
             return result;
-        }
-        tasknav->initialize_menu = (PluginInitializeMenuFn)symbol[
-                                                INITIALIZE_MENU_SYMBOL];
-    }
-
-    else if (symbol_id == DESTROY_SYMBOL)
-    {
-        symbol[DESTROY_SYMBOL] = dlsym(dlhandle, 
-                                        "hildon_navigator_lib_destroy");
-
+        tasknav->initialize_menu = (PluginInitializeMenuFn)symbol;
+    case DESTROY_SYMBOL:
+        symbol = dlsym(dlhandle, "hildon_navigator_lib_destroy");
         result = dlerror();
-        
         if ( result )
-        {
             return result;
-        }
-        tasknav->destroy = (PluginDestroyFn)symbol[DESTROY_SYMBOL];
+        tasknav->destroy = (PluginDestroyFn)symbol;
     }
     
     return NULL;

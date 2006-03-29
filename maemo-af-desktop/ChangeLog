@@ -1,3 +1,16 @@
+2006-03-29  Guillem Jover  <guillem.jover@nokia.com>
+
+	* hildon-navigator/hildon-navigator-main.c (load_symbols): Make symbol
+      a single pointer instead of an array of pointers. Change the if
+      sentences to a switch block.
+
+2006-03-29  Guillem Jover  <guillem.jover@nokia.com>
+
+	* hildon-navigator/application-switcher.h
+	  (BIG_BUTTON_HEIGHT): New macro.
+	  (BUTTON_1_Y_POS, BUTTON_2_Y_POS, BUTTON_3_Y_POS, BUTTON_4_Y_POS):
+	  Use macros instead of hardcoded values.
+
 2006-03-28  Guillem Jover  <guillem.jover@nokia.com>
 
 	* hildon-navigator/application-switcher.h

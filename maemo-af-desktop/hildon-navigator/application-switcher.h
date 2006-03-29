@@ -88,20 +88,16 @@
 /* Hardcoded pixel perfecting values */
 #define BUTTON_BORDER_WIDTH 0 
 #define MENU_BORDER_WIDTH 20
+#define BIG_BUTTON_HEIGHT 90
 #define SMALL_BUTTON_HEIGHT 38
 #define ROW_HEIGHT 30
 #define ICON_SIZE 26
 #define MAX_AREA_WIDTH 360
 #define SEPARATOR_HEIGHT 10 /* Inactive skin graphic area height(10px) */
-#define BUTTON_1_Y_POS 280 /*First three buttons (3*90px = 270px) + 
-                             Inactive scin graphic area height(10px)*/                          
-#define BUTTON_2_Y_POS 318 /* BUTTON_1_Y_POS(280px) + 
-                              SMALL_BUTTON_HEIGHT(38px) */
-#define BUTTON_3_Y_POS 356 /* BUTTON_2_Y_POS(318px) + 
-                              SMALL_BUTTON_HEIGHT(38px) */
-                                              
-#define BUTTON_4_Y_POS 394 /* BUTTON_3_Y_POS(356px) + 
-                              SMALL_BUTTON_HEIGHT(38px) */
+#define BUTTON_1_Y_POS (BIG_BUTTON_HEIGHT * 3 + SEPARATOR_HEIGHT)
+#define BUTTON_2_Y_POS (BUTTON_1_Y_POS + SMALL_BUTTON_HEIGHT)
+#define BUTTON_3_Y_POS (BUTTON_2_Y_POS + SMALL_BUTTON_HEIGHT)
+#define BUTTON_4_Y_POS (BUTTON_3_Y_POS + SMALL_BUTTON_HEIGHT)
 
 /* Needed for catching the MCE D-BUS messages */
 
