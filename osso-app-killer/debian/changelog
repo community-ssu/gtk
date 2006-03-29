@@ -1,3 +1,9 @@
+osso-app-killer (1.5-1) unstable; urgency=low
+
+  * Sparing more connectivity settings in CUD (N#23376).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 29 Mar 2006 15:44:53 +0300
+
 osso-app-killer (1.4-1) unstable; urgency=low
 
   * Added /etc/osso-cud-scripts as an alternative directory for
