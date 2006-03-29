@@ -27,9 +27,7 @@ $SUDO $DIR/gconf-daemon.sh stop
 
 if [ "x$OSSO_CUD_DOES_NOT_DESTROY" = "x" ]; then
   # Remove all user data
-  export CUD=foo
-  $SUDO /usr/sbin/gconf-clean.sh 
-  unset CUD
+  CUD=foo /usr/sbin/gconf-clean.sh 
   rm -rf $HOME/.osso/*
   OLDDIR=`pwd`
   cd $HOME/.osso-cud-scripts ;# this location should be deprecated
