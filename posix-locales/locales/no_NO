@@ -2132,23 +2132,23 @@ LC_MONETARY
 int_curr_symbol         "<U004E><U004F><U004B><U0020>"
 currency_symbol         "<U006B><U0072>"
 mon_decimal_point       "<U002C>"
-mon_thousands_sep       "<U002E>"
+mon_thousands_sep       "<U0020>"
 mon_grouping            3;3
 positive_sign           ""
 negative_sign           "<U002D>"
 int_frac_digits         2
 frac_digits             2
 p_cs_precedes           1
-p_sep_by_space          0
+p_sep_by_space          1
 n_cs_precedes           1
-n_sep_by_space          0
+n_sep_by_space          1
 p_sign_posn             4
 n_sign_posn             4
 END LC_MONETARY
 
 LC_NUMERIC
 decimal_point           "<U002C>"
-thousands_sep           "<U002E>"
+thousands_sep           "<U0020>"
 grouping                3;3
 END LC_NUMERIC
 
@@ -2183,14 +2183,17 @@ mon         "<U006A><U0061><U006E><U0075><U0061><U0072>";/
             "<U006E><U006F><U0076><U0065><U006D><U0062><U0065><U0072>";/
             "<U0064><U0065><U0073><U0065><U006D><U0062><U0065><U0072>"
 % usual date representation
-d_t_fmt     "<U0025><U0061><U0020><U0025><U0064><U002D><U0025><U006D><U002D><U0025><U0059><U0020><U0025><U0054><U0020><U0025><U005A>"
-d_fmt       "<U0025><U0064><U002D><U0025><U006D><U002D><U0025><U0059>"
+d_t_fmt     "<U0025><U0061><U0020><U0025><U0064><U002E><U0025><U006D><U002E><U0025><U0059><U0020><U0025><U0054><U0020><U0025><U005A>"
+d_fmt       "<U0025><U0064><U002E><U0025><U006D><U002E><U0025><U0059>"
 t_fmt       "<U0025><U0054>"
 am_pm       "";""
 t_fmt_ampm  ""
-date_fmt       "<U0025><U0061><U0020><U0025><U0062><U0020><U0025><U0065>/
-<U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053><U0020>/
-<U0025><U005A><U0020><U0025><U0059>"
+date_fmt       "<U0025><U0061><U0020><U0025><U0065><U0020><U0025><U0062><U0020><U0025><U0059>/
+								<U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053><U0020><U0025><U005A>"
+week				7;19971201;4
+first_weekday   1
+first_workday   1
+timezone    "<U0043><U0045><U0054>"
 END LC_TIME
 
 LC_MESSAGES

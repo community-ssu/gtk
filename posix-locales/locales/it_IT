@@ -68,24 +68,24 @@ positive_sign             ""
 negative_sign             "<U002D>"
 int_frac_digits           2
 p_cs_precedes             1
-p_sep_by_space            1
-n_cs_precedes             0
-n_sep_by_space            1
-p_sign_posn               1
-n_sign_posn               1
+p_sep_by_space            0
+n_cs_precedes             1
+n_sep_by_space            0
+p_sign_posn               4
+n_sign_posn               4
 frac_digits               2
-int_n_cs_precedes         0
+int_n_cs_precedes         1
 int_n_sep_by_space        1
-int_n_sign_posn           1
+int_n_sign_posn           4
 int_p_cs_precedes         1
 int_p_sep_by_space        1
-int_p_sign_posn           1
+int_p_sign_posn           4
 END LC_MONETARY
 
 LC_NUMERIC
 decimal_point             "<U002C>"
 thousands_sep             "<U002E>"
-grouping                  0;0
+grouping                  3;3
 END LC_NUMERIC
 
 LC_TIME
@@ -123,10 +123,10 @@ d_fmt   "<U0025><U0064><U002F><U0025><U006D><U002F><U0025><U0059>"
 t_fmt   "<U0025><U0054>"
 am_pm   "";""
 t_fmt_ampm ""
-date_fmt       "<U0025><U0061><U0020><U0025><U0065><U0020><U0025><U0062><U0020><U0025><U005A><U0020><U0025>/
-<U0059><U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053>"
-first_weekday 2
-first_workday 2
+date_fmt       "<U0025><U0061><U0020><U0025><U0065><U0020><U0025><U0062><U0020>/
+<U0025><U0059><U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053><U0020><U0025><U005A>"
+first_weekday 1
+first_workday 1
 timezone      "<U0043><U0045><U0054>"
 week          7;19971201;4
 END LC_TIME
@@ -141,7 +141,7 @@ END LC_PAPER
 LC_TELEPHONE
 tel_int_fmt    "<U002B><U0025><U0063><U0020><U0025><U0061><U0020><U0025>/
 <U006C>"
-tel_dom_fmt    "<U0025><U0061><U0020><U0025><U006C>"
+tel_dom_fmt    "<U0025><U0041><U0020><U0025><U006C>"
 int_select     "<U0030><U0030>"
 int_prefix     "<U0033><U0039>"
 END LC_TELEPHONE

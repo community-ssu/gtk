@@ -2161,11 +2161,11 @@ negative_sign           "<U002D>"
 int_frac_digits         2
 frac_digits             2
 p_cs_precedes           1
-p_sep_by_space          2
+p_sep_by_space          1
 n_cs_precedes           1
-n_sep_by_space          2
-p_sign_posn             4
-n_sign_posn             4
+n_sep_by_space          1
+p_sign_posn             1
+n_sign_posn             1
 END LC_MONETARY
 
 LC_NUMERIC
@@ -2204,14 +2204,13 @@ mon         "<U006A><U0061><U006E><U0075><U0061><U0072>";/
             "<U006F><U006B><U0074><U006F><U0062><U0065><U0072>";/
             "<U006E><U006F><U0076><U0065><U006D><U0062><U0065><U0072>";/
             "<U0064><U0065><U0063><U0065><U006D><U0062><U0065><U0072>"
-d_t_fmt     "<U0025><U0061><U0020><U0025><U0064><U0020><U0025><U0062><U0020><U0025><U0059><U0020><U0025><U0054><U0020><U0025><U005A>"
+d_t_fmt     "<U0025><U0061><U0020><U0025><U0065><U0020><U0025><U0062><U0020><U0025><U0059><U0020><U0025><U0054><U0020><U0025><U005A>"
 d_fmt       "<U0025><U0064><U002D><U0025><U006D><U002D><U0025><U0059>"
 t_fmt       "<U0025><U0054>"
 am_pm       "";""
 t_fmt_ampm  ""
-date_fmt	"<U0025><U0061><U0020><U0025><U0062><U0020><U0025><U0065>/
-<U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053><U0020>/
-<U0025><U005A><U0020><U0025><U0059>"
+date_fmt	"<U0025><U0061><U0020><U0025><U0062><U0020><U0025><U0065><U0020><U0025><U0059>/
+<U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053><U0020><U0025><U005A>"
 END LC_TIME
 
 LC_MESSAGES

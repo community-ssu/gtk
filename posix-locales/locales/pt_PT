@@ -57,7 +57,7 @@ END LC_MESSAGES
 LC_MONETARY
 int_curr_symbol           "<U0045><U0055><U0052><U0020>"
 currency_symbol           "<U20AC>"
-mon_decimal_point         "<U0024>"
+mon_decimal_point         "<U002C>"
 mon_thousands_sep         "<U002E>"
 mon_grouping              3;3
 positive_sign             ""
@@ -117,11 +117,12 @@ d_fmt   "<U0025><U0064><U002D><U0025><U006D><U002D><U0025><U0059>"
 t_fmt   "<U0025><U0054>"
 am_pm   "";""
 t_fmt_ampm ""
-date_fmt       "<U0025><U0061><U0020><U0025><U0062><U0020><U0025><U0065>/
-<U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053><U0020>/
-<U0025><U005A><U0020><U0025><U0059>"
+date_fmt       "<U0025><U0061><U0020><U0025><U0062><U0020><U0025><U0065><U0020><U0025><U0059><U0020>/
+<U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053><U0020><U0025><U005A>"
 first_weekday 1
 first_workday 2
+week 					7;19971207;4
+timezone			"<U0047><U004D><U0054>"
 END LC_TIME
 
 LC_PAPER
@@ -157,4 +158,7 @@ postal_fmt    "<U0025><U0066><U0025><U004E><U0025><U0061><U0025><U004E>/
 <U004E><U0025><U0063><U0025><U004E>"
 lang_name     "<U0070><U006F><U0072><U0074><U0075><U0067><U0075><U00EA><U0073>"
 country_name "<U0050><U006F><U0072><U0074><U0075><U0067><U0061><U006C>"
+lang_ab "<U0070><U0074>"
+lang_term "<U0070><U0074>"
+lang_lib "<U0070><U0074>"
 END LC_ADDRESS

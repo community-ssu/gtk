@@ -66,14 +66,20 @@ mon_thousands_sep     "<U002E>"
 mon_grouping          3
 positive_sign         ""
 negative_sign         "<U002D>"
-int_frac_digits       4
-frac_digits           4
+int_frac_digits       2
+frac_digits           2
 p_cs_precedes         0
-p_sep_by_space        0
-n_cs_precedes         1
-n_sep_by_space        0
+p_sep_by_space        1
+n_cs_precedes         0
+n_sep_by_space        1
 p_sign_posn           1
 n_sign_posn           1
+int_n_cs_precedes     0
+int_n_sep_by_space    1
+int_n_sign_posn       1
+int_p_cs_precedes     1
+int_p_sep_by_space    1
+int_p_sign_posn       1
 END LC_MONETARY
 
 LC_NUMERIC
@@ -114,12 +120,14 @@ mon     "<U0399><U03B1><U03BD><U03BF><U03C5><U03AC><U03C1><U03B9><U03BF><U03C2>"
         "<U0394><U03B5><U03BA><U03AD><U03BC><U03B2><U03C1><U03B9><U03BF><U03C2>"
 d_t_fmt "<U0025><U0061><U0020><U0025><U0064><U0020><U0025><U0062><U0020><U0025><U0059><U0020><U0025><U0054><U0020><U0025><U005A>"
 d_fmt   "<U0025><U0064><U002F><U0025><U006D><U002F><U0025><U0059>"
-t_fmt   "<U0025><U0054>"
-am_pm   "";""
-t_fmt_ampm ""
-date_fmt	"<U0025><U0061><U0020><U0025><U0062><U0020><U0025><U0065>/
-<U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053><U0020>/
-<U0025><U005A><U0020><U0025><U0059>"
+t_fmt   "<U0025><U0072>"
+am_pm   "<U03C0><U03BC>";"<U03BC><U03BC>"
+t_fmt_ampm "<U0025><U0049><U003A><U0025><U004D><U0020><U0025><U0070>"
+date_fmt	"<U0025><U0061><U0020><U0025><U0064><U0020><U0025><U0062><U0020><U0025><U0059>"
+week    7;19971207;4
+first_weekday  1
+first_workday  2
+timezone  "<U0045><U0045><U0054>"
 END LC_TIME
 
 LC_PAPER
@@ -132,6 +140,7 @@ END LC_PAPER
 LC_TELEPHONE
 tel_int_fmt    "<U002B><U0025><U0063><U0020><U0025><U0061><U0020><U0025>/
 <U006C>"
+tel_dom_fmt    "<U0025><U0061><U0020><U0025><U006C>"
 int_prefix     "<U0033><U0030>"
 int_select     "<U0030><U0030>"
 END LC_TELEPHONE
@@ -144,17 +153,21 @@ END LC_MEASUREMENT
 LC_NAME
 name_fmt    "<U0025><U0064><U0025><U0074><U0025><U0067><U0025><U0074>/
 <U0025><U006D><U0025><U0074><U0025><U0066>"
+name_mr     "<U039A><U03BF>"
+name_ms     "<U039A><U03B1>"
 END LC_NAME
 
 LC_ADDRESS
-postal_fmt    "<U0025><U0066><U0025><U004E><U0025><U0061><U0025><U004E>/
-<U0025><U0064><U0025><U004E><U0025><U0062><U0025><U004E><U0025><U0073>/
-<U0020><U0025><U0068><U0020><U0025><U0065><U0020><U0025><U0072><U0025>/
-<U004E><U0025><U0025><U007A><U0020><U0025><U0054><U0025>/
-<U004E><U0025><U0063><U0025><U004E>"
+postal_fmt    "<U0025><U0066><U0025><U004E><U0025><U0061><U0025><U004E><U0025><U0064><U0025>/
+<U004E><U0025><U0062><U0025><U004E><U0025><U0073><U0020><U0025><U0068><U0020><U0025><U0065>/
+<U0020><U0025><U0072><U0025><U004E><U0025><U007A><U0020><U0025><U0054><U0025><U004E><U0025><U0063><U0025><U004E>"
 country_ab2 "<U0047><U0052>"
 country_ab3 "<U0047><U0052><U0043>"
 country_num 300
 lang_name "<U0395><U03BB><U03BB><U03B7><U03BD><U03B9><U03BA><U03AC>"
-country_name "<U0395><U03BB><U03BB><U03B7><U03BD><U03B9><U03BA><U03AC>"
+country_name "<U0395><U03BB><U03BB><U03AC><U03B4><U03B1>"
+country_post "<U0047><U0052>"
+lang_ab      "<U0065><U006C>"
+lang_term    "<U0065><U006C><U006C>"
+lang_lib     "<U0067><U0072><U0065>"
 END LC_ADDRESS

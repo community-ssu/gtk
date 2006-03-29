@@ -69,14 +69,14 @@ p_cs_precedes           1
 p_sep_by_space          0
 n_cs_precedes           1
 n_sep_by_space          0
-p_sign_posn             4
+p_sign_posn             2
 n_sign_posn             1
-int_n_cs_precedes	1
-int_n_sep_by_space      0
-int_n_sign_posn		1
-int_p_cs_precedes	1
-int_p_sep_by_space	1
-int_p_sign_posn		4
+int_n_cs_precedes				1
+int_n_sep_by_space      1
+int_n_sign_posn					1
+int_p_cs_precedes				1
+int_p_sep_by_space			1
+int_p_sign_posn					2
 
 END LC_MONETARY
 
@@ -116,16 +116,17 @@ mon         "<U004A><U0061><U006E><U0075><U0061><U0072><U0079>";/
             "<U004F><U0063><U0074><U006F><U0062><U0065><U0072>";/
             "<U004E><U006F><U0076><U0065><U006D><U0062><U0065><U0072>";/
             "<U0044><U0065><U0063><U0065><U006D><U0062><U0065><U0072>"
-d_t_fmt     "<U0025><U0061><U0020><U0025><U0065><U0020><U0025><U0062><U0020><U0025><U0059><U0020><U0025><U0054><U0020><U0025><U005A>"
+d_t_fmt     "<U0025><U0061><U002C><U0020><U0025><U0065><U0020><U0025><U0062><U0020><U0025>/
+						<U0059><U002C><U0020><U0025><U0054><U0020><U0025><U005A>"
 d_fmt       "<U0025><U0064><U002F><U0025><U006D><U002F><U0025><U0079>"
 t_fmt       "<U0025><U0072>"
 am_pm       "<U0061><U006D>";"<U0070><U006D>"
 t_fmt_ampm  "<U0025><U0049><U003A><U0025><U004D><U003A><U0025><U0053><U0025><U0070>"
-date_fmt	"<U0025><U0061><U0020><U0025><U0065><U0020><U0025><U0062><U0020><U0025><U005A><U0020><U0025>/
-<U0059><U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053>"
+date_fmt	"<U0025><U0061><U002C><U0020><U0025><U0065><U0020><U0025><U0062><U0020><U0025><U0059><U002C>/
+<U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053><U0020><U0025><U005A>"
 first_weekday   1
 first_workday   1
-week		7;19971207;4
+week		7;19971201;4
 timezone        "<U0047><U004D><U0054>"
 END LC_TIME
 
