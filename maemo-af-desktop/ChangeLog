@@ -1,3 +1,9 @@
+2006-03-29  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/application-switcher.[ch]:
+	  - Removed the blinking timeout as per new specifications
+	  - Stop blinking when the screen is blanked
+
 2006-03-29  Guillem Jover  <guillem.jover@nokia.com>
 
 	* hildon-navigator/hildon-navigator-main.c (load_symbols): Make symbol

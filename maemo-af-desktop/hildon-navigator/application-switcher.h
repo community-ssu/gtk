@@ -196,7 +196,7 @@ struct ApplicationSwitcher {
     _bgkill_callback *bgkill_handler;
 
     gboolean prev_sig_was_long_press;
-
+	gboolean system_inactivity;
 };
 
 /* Information of the item */
@@ -209,7 +209,8 @@ typedef struct container {
     gboolean killed_item;
     gchar *dialog_name;
     GtkWidget *icon;
-    guint      icon_anim_timeout_id;
+    gboolean is_blinking;
+	gboolean ignore_blinking;
 } container;
 
 /* Enum to define which button is pressed */
@@ -323,5 +324,8 @@ app_switcher_top_desktop_item (ApplicationSwitcher_t *as);
 void 
 app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
 			     HNWMWatchedWindow     *window);
+
+void
+app_switcher_system_inactivity_change(ApplicationSwitcher_t *as);
 
 #endif /* APPLICATION_SWITCHER_H */

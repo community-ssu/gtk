@@ -73,13 +73,6 @@
 #define ANIM_DURATION 5000 	/* 5 Secs for blinking icons */
 #define ANIM_FPS      2
 
-typedef struct AppSwitcherTimeoutData
-{
-  ApplicationSwitcher_t *as;
-  GtkWidget             *widget;
-
-} AppSwitcherTimeoutData;
-
 static gboolean button_expose_event(GtkWidget *widget,
                                      GdkEventExpose *event,
                                      gpointer user_data);
@@ -164,7 +157,23 @@ static DBusHandlerResult mce_handler( DBusConnection *conn,
 
 static gboolean dimming_on = FALSE;
 
-				                     
+
+static void osso_hw_cb_func (osso_hw_state_t *state, gpointer data);
+
+/* call back for system inactivity HW state */
+static
+void osso_hw_cb_func (osso_hw_state_t *state, gpointer data)
+{
+  g_return_if_fail(state && data);
+  ApplicationSwitcher_t * as = (ApplicationSwitcher_t*)data;
+
+  if(state->system_inactivity_ind != as->system_inactivity)
+    {
+      app_switcher_system_inactivity_change(as);
+    }
+}
+
+
 /* <Public functions> */
 
 static GtkWidget *as_toggle_button_new(gchar *name)
@@ -189,8 +198,30 @@ ApplicationSwitcher_t *application_switcher_init(void)
     ret = (ApplicationSwitcher_t *) g_malloc0(sizeof(
                                                 ApplicationSwitcher_t));
 
-    if (!ret) 
+    if (!ret)
+      {
         osso_log(LOG_ERR,"Couldn't allocate memory for app. switcher");
+        return NULL;
+      }
+    
+    ret->system_inactivity = FALSE;
+
+    ret->osso = osso_initialize("AS_DIMMED_infoprint", "0.1", 
+                               FALSE, NULL);
+
+    if (!ret->osso)
+      {
+        osso_log(LOG_ERR,"AS: unable to initialise libosso");
+        return NULL;
+      }
+
+    /* register stystem inactivity handler */
+    osso_hw_state_t hs = {0};
+    hs.system_inactivity_ind = TRUE;
+    
+    osso_hw_set_event_cb(ret->osso, &hs,
+                         osso_hw_cb_func, ret);
+    
     
     /*Create vbox*/
     ret->vbox = gtk_vbox_new(FALSE, 0);
@@ -389,12 +420,8 @@ void application_switcher_initialize_menu(ApplicationSwitcher_t *as)
     if (init_succeed == FALSE)
         d_log(LOG_D,"Failed initializing window manager");
 
-    as->osso = osso_initialize("AS_DIMMED_infoprint", "0.1", 
-                               FALSE, NULL);
-
     /* Set up the monitoring of MCE events in order to be able to
        top Home or open the menu */
-
     conn = osso_get_sys_dbus_connection(as->osso);
     if (conn == NULL)
     {
@@ -954,6 +981,9 @@ static void show_application_switcher_menu(ApplicationSwitcher_t *as)
 { 
     GtkWidget *focusable_item;
     guint32 time;
+    gint n, j;
+    GtkWidget *item;
+    
     time = gtk_get_current_event_time();
 
     /* Do not show the menu if there are no apps to display */
@@ -963,10 +993,27 @@ static void show_application_switcher_menu(ApplicationSwitcher_t *as)
         return;
     }
 
-    /* Stop blinking */
-    
-    if (as->menu_icon_is_blinking)
-      app_switcher_menu_button_anim_stop(as);
+    /* Stop animation */
+    if(as->menu_icon_is_blinking)
+      {
+        /*
+           Stop the blinking and note which entries in our menu were causing the
+           blinking.
+        */
+        for (n=6;n<(as->items)->len+2;n++)
+          {
+            item = g_list_nth_data(GTK_MENU_SHELL(as->menu)->children, n);
+      
+            for (j=0;j<(as->items)->len;j++)
+              if (g_array_index(as->items,container,j).item == item)
+                {
+                  if (g_array_index(as->items,container,j).is_blinking)
+                    g_array_index(as->items,container,j).ignore_blinking = TRUE;
+                }
+          }
+        
+        app_switcher_menu_button_anim_stop (as);
+      }
     
     gtk_menu_popup(GTK_MENU(as->menu), NULL, NULL,
                    (GtkMenuPositionFunc)get_menu_position, 
@@ -1200,7 +1247,10 @@ app_switcher_menu_button_anim_start (ApplicationSwitcher_t *as)
   GdkPixbuf          *pixbuf;
   GdkPixbufAnimation *pixbuf_anim;
 
-  if (gtk_image_get_storage_type(GTK_IMAGE(as->as_button_icon)) == GTK_IMAGE_ANIMATION)
+  g_return_if_fail(as);
+  
+  if (as->system_inactivity ||
+      gtk_image_get_storage_type(GTK_IMAGE(as->as_button_icon)) == GTK_IMAGE_ANIMATION)
     return;   /* Already animated */
 
   pixbuf = gtk_image_get_pixbuf (GTK_IMAGE(as->as_button_icon));
@@ -1249,89 +1299,13 @@ app_switcher_menu_button_anim_needed (ApplicationSwitcher_t *as)
       for (j=0;j<(as->items)->len;j++)
 	if (g_array_index(as->items,container,j).item == item)
 	  {
-	    if (g_array_index(as->items,container,j).icon_anim_timeout_id)
+	    if (g_array_index(as->items,container,j).is_blinking &&
+            !g_array_index(as->items,container,j).ignore_blinking)
 	      return TRUE;
 	  }
     }
 
   return FALSE;
-}
-
-static void
-app_switcher_icon_anim_stop (ApplicationSwitcher_t  *as,
-			     GtkWidget              *widget)
-{
-  GtkWidget              *image = NULL, *static_image = NULL;
-  GdkPixbuf              *pixbuf = NULL;
-  gint                    n;
-
-  /* Switch animated icons to non animated */
-
-  /* grab static image from menu item and reset */
-
-  image = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM(widget));
-
-  pixbuf = gdk_pixbuf_animation_get_static_image (gtk_image_get_animation (GTK_IMAGE(image)));
-
-  static_image = gtk_image_new_from_pixbuf(pixbuf);
-
-  gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(widget), static_image);
-
-  /* also set TN bar icon to static */
-
-  for (n=0;n<(as->items)->len;n++)
-    if (g_array_index(as->items,container,n).item == widget)
-      break;
-
-  gtk_image_set_from_pixbuf (GTK_IMAGE(g_array_index(as->items,container,n).icon),
-			     pixbuf);
-
-  g_array_index(as->items,container,n).icon_anim_timeout_id = 0;
-
-  /* sync up the flashing of the menu button */
-  if (!app_switcher_menu_button_anim_needed (as) && as->menu_icon_is_blinking)
-    app_switcher_menu_button_anim_stop (as);
-}
-
-static gboolean
-app_switcher_icon_anim_timeout (gpointer data)
-{
-  AppSwitcherTimeoutData *timeout;
-  timeout = (AppSwitcherTimeoutData *)data;
-
-  g_return_val_if_fail(timeout && timeout->as, FALSE);
-  
-  app_switcher_icon_anim_stop (timeout->as, timeout->widget);
-
-  return False;
-}
-
-static void
-app_switcher_icon_anim_timeout_destroy (gpointer data)
-{
-  AppSwitcherTimeoutData *timeout;
-
-  timeout = (AppSwitcherTimeoutData *)data;
-
-  g_free(timeout);
-}
-
-static guint
-app_switcher_icon_anim_timeout_add (ApplicationSwitcher_t *as,
-				    GtkWidget             *widget)
-{
-  AppSwitcherTimeoutData *timeout;
-
-  timeout = g_new0(AppSwitcherTimeoutData, 1);
-
-  timeout->as     = as;
-  timeout->widget = widget;
-
-  return g_timeout_add_full (G_PRIORITY_DEFAULT_IDLE,
-			     ANIM_DURATION,
-			     app_switcher_icon_anim_timeout,
-			     timeout,
-			     app_switcher_icon_anim_timeout_destroy);
 }
 
 static GdkPixbuf*
@@ -1561,8 +1535,9 @@ store_item (ApplicationSwitcher_t *as,
   cont.item_text = g_strdup(item_text);
   cont.icon_name = g_strdup(icon_name); 
   cont.killable_item = FALSE;
-  cont.icon_anim_timeout_id = 0;
-
+  cont.is_blinking = FALSE;
+  cont.ignore_blinking = FALSE;
+  
   icon_image = gtk_image_menu_item_get_image(GTK_IMAGE_MENU_ITEM(item));
   
   if (gtk_image_get_storage_type(GTK_IMAGE(icon_image)) == GTK_IMAGE_ANIMATION)
@@ -1578,8 +1553,7 @@ store_item (ApplicationSwitcher_t *as,
 								10));
       cont.icon = gtk_image_new_from_animation (pixbuf_anim);
 
-      cont.icon_anim_timeout_id 
-	= app_switcher_icon_anim_timeout_add (as, item);
+      cont.is_blinking = TRUE;
     }
   else
     {
@@ -1631,7 +1605,7 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
   /* Get its icon but disable the animated version if this is topped */
   menu_item_icon = app_switcher_get_icon_from_window (as, 
 						      window, 
-						      item_not_focused);
+						      FALSE);
 
   if (menu_item_icon == NULL)
     menu_item_icon = app_switcher_get_icon_from_theme (MENU_ITEM_DEFAULT_APP_ICON);
@@ -1641,7 +1615,7 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
 
   if (item_not_focused)
     {
-      /* Insert the menuitem to first place in list */
+      /* Insert the menuitem to second place in list */
       gtk_menu_shell_insert(GTK_MENU_SHELL(as->menu), 
 			    item, 
 			    ITEM_2_LIST_POS); 
@@ -1690,7 +1664,9 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
     gtk_menu_reposition(as->menu);
 
   /* sync up the flashing of the menu button */
-  if (app_switcher_menu_button_anim_needed (as) && !as->menu_icon_is_blinking)
+  if (!as->menu_icon_is_blinking &&
+      !as->system_inactivity &&
+      app_switcher_menu_button_anim_needed (as))
     app_switcher_menu_button_anim_start (as);
 
   /* Play a sound */
@@ -1713,9 +1689,6 @@ app_switcher_remove_item (ApplicationSwitcher_t *as,
   for (n=0;n<(as->items)->len;n++)
     if (g_array_index(as->items,container,n).item == menuitem)
       break;
-  
-  if (g_array_index(as->items,container,n).icon_anim_timeout_id)
-    g_source_remove (g_array_index(as->items,container,n).icon_anim_timeout_id);
 
   g_free(g_array_index(as->items, container, n).app_name);
   g_free(g_array_index(as->items, container, n).icon_name);
@@ -1758,22 +1731,21 @@ void
 app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
 			     HNWMWatchedWindow     *window)
 {
-  GtkWidget *menuitem;
+  GtkWidget          *menuitem;
   GtkWidget          *menu_item_icon = NULL;
   GdkPixbuf          *pixbuf;
   GdkPixbufAnimation *pixbuf_anim;
-  int        n;
-
-  HN_DBG("called");
-
+  int                 n;
+  
   menuitem = hn_wm_watched_window_get_menu (window);
 
   if (menuitem == NULL)
     return;
 
   /* grab image widget - will set as animated if hint set */
-
-  menu_item_icon = app_switcher_get_icon_from_window (as, window, FALSE);
+ 
+  menu_item_icon = app_switcher_get_icon_from_window (as, window,
+                                                      as->system_inactivity);
 
   if (menu_item_icon == NULL)
     menu_item_icon = app_switcher_get_icon_from_theme (MENU_ITEM_DEFAULT_APP_ICON);
@@ -1801,27 +1773,32 @@ app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
 								10));
       gtk_image_set_from_animation (GTK_IMAGE(g_array_index(as->items,container,n).icon),
 				    pixbuf_anim);
-      
-      /* Setup a timeout to stop the animation. */
-      
-      if (g_array_index(as->items,container,n).icon_anim_timeout_id != 0)
-	g_source_remove (g_array_index(as->items,container,n).icon_anim_timeout_id);
 
-      g_array_index(as->items,container,n).icon_anim_timeout_id 
-	= app_switcher_icon_anim_timeout_add (as, menuitem);
-
+      g_array_index(as->items,container,n).is_blinking = TRUE;
+      
       g_object_unref(pixbuf_anim);
     }
   else
     {
-      /*
-         If we have a timeout id for the icon anim, remove the timeout first
-      */
-      if(g_array_index(as->items,container,n).icon_anim_timeout_id)
+      if(g_array_index(as->items,container,n).is_blinking == TRUE)
         {
-          g_source_remove (
-                    g_array_index(as->items,container,n).icon_anim_timeout_id);
-          g_array_index(as->items,container,n).icon_anim_timeout_id = 0;
+          /* the urgency hint has changed, clear the ignore flag */
+          g_array_index(as->items,container,n).ignore_blinking = FALSE;
+        }
+
+      if (hn_wm_watched_window_is_urgent (window) && as->system_inactivity)
+        {
+          /*
+             We are in inactive state so we are using a static icon for an
+             urgent window, but we still want to know the icon should be
+             blinking so that when we come out of the inactivity, we can make it
+             blink again.
+          */
+          g_array_index(as->items,container,n).is_blinking = TRUE;
+        }
+      else if(g_array_index(as->items,container,n).is_blinking)
+        {
+          g_array_index(as->items,container,n).is_blinking = FALSE;
         }
       
       pixbuf =  gtk_image_get_pixbuf(GTK_IMAGE(menu_item_icon));
@@ -1830,18 +1807,19 @@ app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
                           GTK_IMAGE(g_array_index(as->items,container,n).icon),
                           pixbuf);
     }
-    
   g_object_unref(pixbuf); 
 
+    
   HN_DBG("Checking if menu button needs anim");
 
   /* sync up the flashing of the menu button */
-  if (app_switcher_menu_button_anim_needed (as) && !as->menu_icon_is_blinking)
+  if (!as->menu_icon_is_blinking &&
+      !as->system_inactivity &&
+      app_switcher_menu_button_anim_needed (as))
     {
       HN_DBG("It does, starting");
       app_switcher_menu_button_anim_start (as);
     }
-
 }
 
 /* FIXME: Add flags for whats actually changed, or rename _sync() ? */
@@ -1855,7 +1833,8 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
   GtkWidget        *menuitem;
   gint              n;
   const gchar      *window_name;
-    
+  gboolean          menu_button_anim_needed;
+  
   g_return_if_fail(as);
 
   if (window == NULL && view == NULL)
@@ -1881,13 +1860,6 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
       for (n=0;n<(as->items)->len;n++)
 	if (g_array_index(as->items,container,n).item == menuitem)
 	  {
-	    /* Stop any animation */
-	    if (g_array_index(as->items,container,n).icon_anim_timeout_id)
-	      {
-		g_source_remove (g_array_index(as->items,container,n).icon_anim_timeout_id);
-		app_switcher_icon_anim_stop (as, menuitem);
-	      }
-
 	    gtk_container_remove(GTK_CONTAINER(as->menu),
 				 GTK_WIDGET(menuitem));
 	    
@@ -1946,9 +1918,16 @@ app_switcher_update_item (ApplicationSwitcher_t *as,
   /* Show button pressed only if the desktop is not topmost */ 
   if (as->switched_to_desktop == FALSE) 
     gtk_widget_set_name(as->toggle_button1, SMALL_BUTTON1_PRESSED);
+
+
+  menu_button_anim_needed = app_switcher_menu_button_anim_needed (as);
+  
+  if(menu_button_anim_needed && !as->menu_icon_is_blinking)
+    app_switcher_menu_button_anim_start (as);
+  else if(!menu_button_anim_needed && as->menu_icon_is_blinking)
+    app_switcher_menu_button_anim_stop (as);
   
   /* Finally, if AS menu is visible, resize it */
-  
   if (GTK_WIDGET_VISIBLE(as->menu))
     gtk_menu_reposition(as->menu);
 } 
@@ -2032,3 +2011,153 @@ static DBusHandlerResult mce_handler( DBusConnection *conn,
     /* End of MCE signals that TN handles */
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
+
+/*
+   This function responds to the change of system inactivity state.
+
+   When system is in inactive state, all blinking icons are replaced
+   with static ones to reduce processor load; when the system comes
+   back to the active state, the icons are restored back to animations.
+*/
+void
+app_switcher_system_inactivity_change(ApplicationSwitcher_t *as)
+{
+  int n = 0;
+  GtkWidget * menuitem, * image, * static_image, * menu_icon = NULL;
+  GdkPixbuf * pixbuf;
+  GdkPixbufAnimation * pixbuf_anim;
+  
+  g_return_if_fail(as);
+
+  as->system_inactivity = !as->system_inactivity;
+  
+  if(as->system_inactivity)
+    {
+      HN_DBG("AS: going into system inactivity");
+      
+      /*
+         System going into inactivity; find all animating icons and make them
+         static.
+      */
+      for (n=0; n < as->items ->len; ++n)
+        {
+          if (g_array_index(as->items,container,n).is_blinking)
+            {
+              menuitem = g_array_index(as->items,container,n).item;
+
+              if(!menuitem)
+                {
+                  /* ups, try the next one*/
+                  continue;
+                }
+              
+              HN_DBG("AS: stopping animation %d", n);
+
+              /* grab static image from menu item and reset */
+              image
+                = gtk_image_menu_item_get_image(GTK_IMAGE_MENU_ITEM(menuitem));
+
+              if(!image)
+                {
+                  /* an item that is below the visible 4 icons */
+                  continue;
+                }
+              
+              pixbuf
+                = gdk_pixbuf_animation_get_static_image (gtk_image_get_animation (GTK_IMAGE(image)));
+
+              static_image = gtk_image_new_from_pixbuf(pixbuf);
+              gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menuitem),
+                                            static_image);
+
+              /* also set TN bar icon to static */
+              gtk_image_set_from_pixbuf (GTK_IMAGE(g_array_index(as->items,
+                                                                 container,
+                                                                 n).icon),
+                                         pixbuf);
+
+              g_object_unref(pixbuf);
+
+              /* we do not reset is_blinking so we can restore the state */
+            }
+        }
+
+      if (as->menu_icon_is_blinking)
+        {
+          HN_DBG("AS: stopping animation of menu button");
+          app_switcher_menu_button_anim_stop (as);
+        }
+    }
+  else
+    {
+      /*
+         system returning to activity; find all icons that should be blinking
+         and make them.
+      */
+      HN_DBG("AS: waking up from system inactivity", n);
+
+      for (n=0; n < as->items ->len; ++n)
+        {
+          if (g_array_index(as->items,container,n).is_blinking)
+            {
+              menuitem = g_array_index(as->items,container,n).item;
+
+              if(!menuitem)
+                {
+                  /* ups, try the next one*/
+                  continue;
+                }
+
+              HN_DBG("AS: restoring animation %d", n);
+
+              image
+                = gtk_image_menu_item_get_image(GTK_IMAGE_MENU_ITEM(menuitem));
+
+              pixbuf = gtk_image_get_pixbuf (GTK_IMAGE(image));
+              
+              pixbuf_anim 
+                = GDK_PIXBUF_ANIMATION (hildon_pixbuf_anim_blinker_new (
+                                                      pixbuf,
+                                                      1000/ANIM_FPS,
+                                                      -1,
+                                                      10));
+              
+              /*g_object_unref(g_array_index(as->items,container,n).icon);*/
+              gtk_image_set_from_animation (GTK_IMAGE(g_array_index(as->items,
+                                                                    container,
+                                                                    n).icon),
+                                            pixbuf_anim);
+
+              /*g_object_ref(g_array_index(as->items,container,n).icon);*/
+
+              /* must not unref the pixbuffer, it is not ours */
+              g_object_unref(pixbuf_anim);
+
+              /* now do the same for the menu icon */
+              pixbuf_anim 
+                = GDK_PIXBUF_ANIMATION (hildon_pixbuf_anim_blinker_new (
+                                                      pixbuf,
+                                                      1000/ANIM_FPS,
+                                                      -1,
+                                                      10));
+
+              menu_icon = gtk_image_new_from_animation (pixbuf_anim);
+              
+              gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menuitem),
+                                            menu_icon);
+
+              g_object_unref(pixbuf);
+            }
+        }
+
+      /* sync up the flashing of the menu button */
+      if (!as->menu_icon_is_blinking &&
+          !as->system_inactivity &&
+          app_switcher_menu_button_anim_needed (as))
+        {
+          HN_DBG("AS: restoring animation of menu button");
+          app_switcher_menu_button_anim_start (as);
+        }
+    }
+}
+
