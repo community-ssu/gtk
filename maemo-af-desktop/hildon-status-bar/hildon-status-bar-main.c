@@ -84,15 +84,17 @@ static gint rpc_cb( const gchar *interface,
 static HildonStatusBarItem *get_item( StatusBar *panel, const gchar *plugin );
 static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *plugin );
 
+static void statusbar_insensitive_cb( GtkWidget *widget, gpointer data);
+static void statusbar_sensitive_cb( GtkWidget *widget, gpointer data);
+
 static void free_slot( StatusBar *panel );
 static void reorder_items( StatusBar *panel );
 static void destroy_item( GtkObject *object,
                           gpointer user_data );
 
+static gboolean sb_is_sensitive;
 static GHashTable *delayed_banners;
 static gpointer delayed_ib_onscreen;
-
-
 
 static void init_dock( StatusBar *panel )
 {
@@ -482,6 +484,25 @@ static gint rpc_cb( const gchar *interface,
         return OSSO_OK;
 
     }
+    else if( g_str_equal( "statusbar_insensitive", method ) )
+    {
+	sb_is_sensitive = FALSE;	
+	gtk_container_foreach(GTK_CONTAINER(panel->fixed), 
+			      (GtkCallback)(statusbar_insensitive_cb),
+			      NULL);
+	    
+	
+	return OSSO_OK;
+    }
+    else if( g_str_equal( "statusbar_sensitive", method ) )
+    {
+	sb_is_sensitive = TRUE;	
+	gtk_container_foreach(GTK_CONTAINER(panel->fixed), 
+			      (GtkCallback)(statusbar_sensitive_cb),
+			      NULL);
+	
+	return OSSO_OK;
+    }
     else
     {
         retval->type = DBUS_TYPE_STRING;
@@ -584,6 +605,31 @@ static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *plugin )
                       panel );
 
     return item;
+}
+
+static void statusbar_insensitive_cb( GtkWidget *widget, gpointer data)
+{
+    
+    gtk_widget_set_sensitive(widget, FALSE);
+
+    if (GTK_IS_CONTAINER(widget))
+    {
+	gtk_container_foreach(GTK_CONTAINER(widget), 
+			      (GtkCallback)(statusbar_insensitive_cb),
+			      NULL);	
+    }
+}
+static void statusbar_sensitive_cb( GtkWidget *widget, gpointer data)
+{
+
+    gtk_widget_set_sensitive(widget, TRUE);
+
+    if (GTK_IS_CONTAINER(widget))
+    {
+	gtk_container_foreach(GTK_CONTAINER(widget), 
+			      (GtkCallback)(statusbar_sensitive_cb),
+			      NULL);	
+    }
 }
 
 static void free_slot( StatusBar *panel )
@@ -886,7 +932,6 @@ void status_bar_deinitialize(osso_context_t *osso, StatusBar **panel){
   g_hash_table_destroy(delayed_banners);
 
 }
-
 
 #ifndef USE_AF_DESKTOP_MAIN__
 

@@ -28,6 +28,10 @@
 
 #define SAVE_METHOD      "save"
 #define KILL_APPS_METHOD "kill_app"
+#define TASKNAV_GENERAL_PATH "/com/nokia/tasknav"
+#define TASKNAV_SERVICE_NAME "com.nokia.tasknav"
+#define TASKNAV_INSENSITIVE_INTERFACE "com.nokia.tasknav.tasknav_insensitive"
+#define TASKNAV_SENSITIVE_INTERFACE "com.nokia.tasknav.tasknav_sensitive"
 
 
 static GdkFilterReturn
@@ -1022,6 +1026,8 @@ hn_wm_dbus_method_call_handler (DBusConnection *connection,
 				DBusMessage    *message,
 				void           *data )
 {
+  const gchar *path;
+
   /* Catch APP_LAUNCH_BANNER_METHOD */
   if (dbus_message_is_method_call (message,
 				   APP_LAUNCH_BANNER_METHOD_INTERFACE,
@@ -1047,12 +1053,14 @@ hn_wm_dbus_method_call_handler (DBusConnection *connection,
 	  return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 	}
 
+
       if (!g_str_has_prefix(service_name, SERVICE_PREFIX))
 	{
-	  return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+            return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 	}
 
       service = g_strdup (service_name + strlen(SERVICE_PREFIX));
+
 
       HN_DBG("Checking if service: '%s' is watchable", service);
 
@@ -1075,6 +1083,24 @@ hn_wm_dbus_method_call_handler (DBusConnection *connection,
 	}
       g_free (service);
     }
+
+  path = dbus_message_get_path(message);
+  if (path != NULL && g_str_equal(path, TASKNAV_GENERAL_PATH))
+    {
+      const gchar * interface = dbus_message_get_interface(message);
+      if (g_str_equal(interface, TASKNAV_SENSITIVE_INTERFACE))
+        {
+          navigator_set_sensitive(TRUE);
+          return DBUS_HANDLER_RESULT_HANDLED;
+        }
+      else if (g_str_equal(interface, TASKNAV_INSENSITIVE_INTERFACE))
+        {
+          navigator_set_sensitive(FALSE);
+          return DBUS_HANDLER_RESULT_HANDLED;          
+        } 
+    }
+
+
 
   return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
@@ -1351,6 +1377,13 @@ hn_wm_init (ApplicationSwitcher_t *as)
 
       dbus_bus_add_match( connection, match_rule, NULL );
 
+      g_free (match_rule);
+
+      match_rule = g_strdup_printf("interface='%s'",
+				   TASKNAV_INSENSITIVE_INTERFACE );
+
+      dbus_bus_add_match( connection, match_rule, NULL );
+
       dbus_connection_add_filter( connection, hn_wm_dbus_method_call_handler,
 				  /* model */ NULL, NULL );
       g_free(match_rule);
@@ -1363,6 +1396,7 @@ hn_wm_init (ApplicationSwitcher_t *as)
 
       add_method_cb(osso_man, SAVE_METHOD,
 		    &hn_wm_session_save, osso_man);
+
     }
 
   /* We need to postpone the restoration of applications until

@@ -39,6 +39,7 @@ int task_navigator_main(Navigator *tasknav);
 
 int task_navigator_deinitialize(Navigator *tasknav);
 
+void navigator_set_sensitive(gboolean sensitivity);
                                                  
 #endif
 

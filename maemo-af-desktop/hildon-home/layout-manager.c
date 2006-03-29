@@ -46,7 +46,6 @@
 #include <hildon-widgets/gtk-infoprint.h>
 #include <hildon-widgets/hildon-note.h>
 
-
 /* Osso includes */
 #include <osso-helplib.h>
 
@@ -95,7 +94,19 @@
 #define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_YES   _("home_bd_cancel_layout_yes")
 #define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_NO    _("home_bd_cancel_layout_no")
 #define LAYOUT_MODE_NOTIFICATION_MODE_ACCEPT_TEXT  _("home_ni_overlapping_applets")
+/* DBUS defines */
+#define STATUSBAR_SERVICE_NAME "statusbar"
+#define STATUSBAR_INSENSITIVE_METHOD "statusbar_insensitive"
+#define STATUSBAR_SENSITIVE_METHOD "statusbar_sensitive"
 
+#define TASKNAV_SERVICE_NAME "com.nokia.tasknav"
+#define TASKNAV_GENERAL_PATH "/com/nokia/tasknav"
+#define TASKNAV_INSENSITIVE_INTERFACE \
+ TASKNAV_SERVICE_NAME "." TASKNAV_INSENSITIVE_METHOD
+#define TASKNAV_SENSITIVE_INTERFACE \
+ TASKNAV_SERVICE_NAME "." TASKNAV_SENSITIVE_METHOD
+#define TASKNAV_INSENSITIVE_METHOD "tasknav_insensitive"
+#define TASKNAV_SENSITIVE_METHOD "tasknav_sensitive"
 
 typedef struct _layout_mode_internal_t LayoutInternal;
 typedef struct _layout_node_t LayoutNode;
@@ -438,6 +449,22 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
                          G_CALLBACK(layout_mode_key_press_listener), NULL);
    
 
+    osso_rpc_run_with_defaults (general_data.osso, 
+			        STATUSBAR_SERVICE_NAME, 
+				STATUSBAR_INSENSITIVE_METHOD, 
+				NULL, 
+				0,
+				NULL);
+
+    osso_rpc_run (general_data.osso, 
+		  TASKNAV_SERVICE_NAME, 
+		  TASKNAV_GENERAL_PATH,
+		  TASKNAV_INSENSITIVE_INTERFACE, 
+		  TASKNAV_INSENSITIVE_METHOD,
+		  NULL, 
+		  0,
+		  NULL);
+
     ULOG_ERR("LAYOUT:Layout mode start ends here\n");
     fp_mlist();
     
@@ -564,6 +591,22 @@ void layout_mode_end ( gboolean rollback )
     g_list_free(general_data.main_applet_list);
     general_data.main_applet_list = NULL;
 
+    osso_rpc_run_with_defaults (general_data.osso, 
+				STATUSBAR_SERVICE_NAME, 
+				STATUSBAR_SENSITIVE_METHOD, 
+				NULL, 
+				0,
+				NULL);
+
+    osso_rpc_run (general_data.osso, 
+		  TASKNAV_SERVICE_NAME, 
+		  TASKNAV_GENERAL_PATH,
+		  TASKNAV_SENSITIVE_INTERFACE, 
+		  TASKNAV_SENSITIVE_METHOD,
+		  NULL, 
+		  0,
+		  NULL);
+    
 }
 
 /* ----------------- menu callbacks -------------------------- */

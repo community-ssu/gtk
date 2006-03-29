@@ -88,6 +88,7 @@ gboolean config_lowmem_dim;
 gboolean config_lowmem_notify_enter;
 gboolean config_lowmem_notify_leave;
 gboolean config_lowmem_pavlov_dialog;
+gboolean tn_is_sensitive=TRUE;
 
 /* Callbacks */
 static void initialize_navigator_menus(Navigator *tasknav);
@@ -112,6 +113,9 @@ static void destroy_plugin(Navigator *tasknav, NavigatorPlugin *plugin);
 static void reload_plugins(Navigator *tasknav, GList *list);
 static gint compare_plugins(NavigatorPlugin *a, NavigatorPlugin *b);
 
+static void tasknav_sensitive_cb( GtkWidget *widget, gpointer data);
+static void tasknav_insensitive_cb( GtkWidget *widget, gpointer data);
+
 static void plugin_configuration_changed( char *path,
                                           gpointer *data );
 /* Plugin configuration files */
@@ -123,6 +127,7 @@ static void plugin_configuration_changed( char *path,
 #define NAVIGATOR_WATCH_DIR             ".osso"
 
 
+Navigator *task_nav;
 gchar *home_dir;
 
 static gboolean getenv_yesno(const char *env, gboolean def)
@@ -682,6 +687,49 @@ static void reload_plugins(Navigator *tasknav, GList *list)
 
 }
 
+void navigator_set_sensitive(gboolean sensitivity)
+{
+    tn_is_sensitive=sensitivity;
+    if (sensitivity)
+    {
+	gtk_container_foreach(GTK_CONTAINER(task_nav->box), 
+			      (GtkCallback)(tasknav_sensitive_cb),
+			      NULL);
+
+    }
+    else 
+    {
+	gtk_container_foreach(GTK_CONTAINER(task_nav->box), 
+			      (GtkCallback)(tasknav_insensitive_cb),
+			      NULL);
+	
+    }
+}
+
+static void tasknav_insensitive_cb( GtkWidget *widget, gpointer data)
+{
+    
+    gtk_widget_set_sensitive(widget, FALSE);
+
+    if (GTK_IS_CONTAINER(widget))
+    {
+	gtk_container_foreach(GTK_CONTAINER(widget), 
+			      (GtkCallback)(tasknav_insensitive_cb),
+			      NULL);	
+    }
+}
+static void tasknav_sensitive_cb( GtkWidget *widget, gpointer data)
+{
+    gtk_widget_set_sensitive(widget, TRUE);
+
+    if (GTK_IS_CONTAINER(widget))
+    {
+	gtk_container_foreach(GTK_CONTAINER(widget), 
+			      (GtkCallback)(tasknav_sensitive_cb),
+			      NULL);	
+    }
+}
+
 
 /* This callback creates/loads the button widgets and packs them
    into the vbox */
@@ -689,6 +737,8 @@ static void create_navigator(Navigator *tasknav)
 {
     gchar *plugin_dir;
     
+    task_nav = tasknav;
+
     home_dir = getenv("HOME");
 
     /* Get configuration options from the environment.

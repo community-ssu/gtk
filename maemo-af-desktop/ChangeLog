@@ -1,3 +1,17 @@
+2006-03-29  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Task Navigator and Status bar are accessible when Home
+	is in Layout mode" (Closes N#23028)
+	* hildon-home/layout-manager.c:
+	  - Added dbus calls to statusbar and tasknav to dim/undim.
+	* hildon-status-bar/hildon-status-bar-main.c :
+	  - added to method rpc_cb the code to handle insensitivity dbus calls 
+	  - added the methods that do the actual insensitivity
+	* hildon-navigator/hildon-navigator-main.c:
+	  - added functions to handle the sensitivity
+	* hildon-navigator/hn-wm.c:
+	  - modified listening functions to listen to new type of signals
+
 2006-03-29  Guillem Jover  <guillem.jover@nokia.com>
 
 	* hildon-navigator/application-switcher.c

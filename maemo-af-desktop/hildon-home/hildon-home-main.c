@@ -2845,8 +2845,6 @@ void hildon_home_initiliaze()
 
     g_free(configure_file);
 
-    layout_mode_init(osso_home);
-
     load_original_bg_image_uri();
     hildon_home_cp_read_desktop_entries();
 }
@@ -3490,6 +3488,8 @@ int hildon_home_main(void)
     construct_titlebar_area();
     
     hildon_home_display_base();
+
+    layout_mode_init(osso_home);
     
     construct_applets();
     
