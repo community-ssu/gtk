@@ -3409,6 +3409,29 @@ GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent,
     return GDK_FILTER_CONTINUE;
 }
 
+/**
+ * @hildon_home_osso_hw_cb
+ * 
+ * @param state 
+ * @param data
+ *
+ * Set the applet in "hidden" mode when the screen is dimmed, to save
+ * battery power.
+ */
+static
+void hildon_home_osso_hw_cb (osso_hw_state_t *state, gpointer null)
+{
+    applet_manager_t * man = applet_manager_singleton_get_instance ();
+
+    g_return_if_fail (state && man);
+
+    if (state->system_inactivity_ind)
+        /* tell the applets to go in background mode */
+        applet_manager_background_all (man);
+    else
+        applet_manager_foreground_all (man);
+}
+
 void home_deinitialize(gint keysnooper_id)
 {
     /* keysnooper_id is no longer used, and the keyboard listener needs not
@@ -3460,6 +3483,7 @@ int hildon_home_main(void)
 {
     gint window_width;
     gint window_height;
+    osso_hw_state_t hs = {0};
     
     /* Osso needs to be initialized before creation of applets */
     osso_home = osso_initialize(HILDON_HOME_NAME, HILDON_HOME_VERSION, 
@@ -3468,6 +3492,12 @@ int hildon_home_main(void)
     {
         return 1;
     }
+
+    /* Register callback for handling the screen dimmed event
+     * We need to signal this to our applets */
+    hs.system_inactivity_ind = TRUE;
+
+    osso_hw_set_event_cb(osso_home, &hs, hildon_home_osso_hw_cb, NULL);
     
     hildon_home_initiliaze();
     

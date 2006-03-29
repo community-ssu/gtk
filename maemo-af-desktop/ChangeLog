@@ -1,5 +1,12 @@
 2006-03-29  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: (Closes N#19498)
+	  - Add a callback for hardware events
+	  - when told to lower our activity, put the applets in background
+	    mode
+
+2006-03-29  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Task Navigator and Status bar are accessible when Home
 	is in Layout mode" (Closes N#23028)
 	* hildon-home/layout-manager.c:
