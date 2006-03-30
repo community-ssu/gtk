@@ -1,0 +1,77 @@
+/* -*- Mode: C; c-basic-offset: 4 -*-
+ * pygtk- Python bindings for the GTK toolkit.
+ * Copyright (C) 1998-2003  James Henstridge
+ *
+ *   atk.override: overrides for the ATK library
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA
+ */
+%%
+headers
+#define NO_IMPORT_PYGOBJECT
+#include "pygobject.h"
+#include <atk/atk.h>
+#include <atk/atk-enum-types.h>
+#include <atk/atknoopobjectfactory.h>
+#include <atk/atknoopobject.h>
+%%
+modulename atk
+%%
+import gobject.GObject as PyGObject_Type
+%%
+ignore-glob
+  *_get_type
+%%
+override atk_relation_new kwargs
+static int
+_wrap_atk_relation_new (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "targets", "relationship", NULL };
+    AtkObject **targets;
+    int relationship, count, i;
+    PyObject *py_targets;
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				     "Oi#:relation_new", kwlist,
+				     &py_targets, &relationship))
+	return -1;
+
+    if (!PySequence_Check(py_targets)) {
+	PyErr_SetString(PyExc_TypeError, "targets argument must be a sequence");
+	return -1;
+    }
+
+    count = PySequence_Length(py_targets);
+    targets = g_new(AtkObject *, count);
+    for (i = 0; i < count; i++) {
+	PyObject *item = PySequence_GetItem(py_targets, i);
+	Py_DECREF(item); /* PySequence_GetItem INCREF's */
+	if (!pygobject_check(item, &PyAtkObject_Type)) {
+	    PyErr_SetString(PyExc_TypeError, "targets argument must be a sequence of AtkObjects.");
+	    g_free(targets);
+	    return -1;
+	}
+	    
+	targets[i] = (AtkObject *) pygobject_get(item);
+    }
+
+    self->obj = (GObject *) atk_relation_new(targets, count, relationship);
+    
+    g_free(targets);
+
+    pygobject_register_wrapper((PyObject *) self);
+    return 0;
+}

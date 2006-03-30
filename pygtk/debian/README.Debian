@@ -1,0 +1,10 @@
+python-gtk2 for Debian
+----------------------
+
+To use the new gtk, you'll need to use the following code:
+
+import pygtk
+pygtk.require('2.0')
+import gtk
+
+
