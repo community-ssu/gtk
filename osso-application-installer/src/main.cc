@@ -50,6 +50,7 @@ extern "C" {
   #include "hildonbreadcrumbtrail.h"
   #include <hildon-widgets/hildon-window.h>
   #include <libosso.h>
+  #include <osso-helplib.h>
 }
 
 using namespace std;
@@ -59,6 +60,8 @@ static guint apt_source_id;
 static void set_details_callback (void (*func) (gpointer), gpointer data);
 static void set_operation_label (const char *label);
 static void set_operation_callback (void (*func) (gpointer), gpointer data);
+static void enable_search (bool f);
+static void set_current_help_topic (const char *topic);
 
 void get_package_list_info (GList *packages);
 
@@ -233,7 +236,7 @@ make_main_view (view *v)
 					HILDON_ICON_SIZE_26);
   gtk_table_attach_defaults (GTK_TABLE (table), image,
 			     0, 1, 2, 3);
-  label = gtk_label_new ("Repository");
+  label = gtk_label_new (_("ai_li_repository"));
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   gtk_table_attach_defaults (GTK_TABLE (table), label,
 			     1, 2, 2, 3);
@@ -261,6 +264,9 @@ make_main_view (view *v)
   gtk_widget_show_all (view);
 
   get_package_list_info (NULL);
+
+  enable_search (false);
+  set_current_help_topic (AI_TOPIC ("mainview"));
 
   return view;
 }
@@ -387,8 +393,17 @@ nicify_section_name (const char *name)
   // XXX
   if (!strncmp (name, "maemo/", 6))
     return name + 6;
-  else if (!strncmp (name, "user/", 5))
-    return name + 5;
+
+  if (!strncmp (name, "user/", 5))
+    {
+      const char *subsection = name + 5;
+      char *logical_id = g_strdup_printf ("ai_category_%s", subsection);
+      const char *translated_name = gettext (logical_id);
+      if (translated_name != logical_id)
+	subsection = translated_name;
+      g_free (logical_id);
+      return subsection;
+    }
   else
     return name;
 }
@@ -729,18 +744,46 @@ get_intermediate_package_info (package_info *pi,
 static void
 refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *clos)
 {
+  /* The updating might have been 'cancelled' or it might have failed,
+     and we want to distinguish between those two situations in the
+     message shown to the user.
+
+     It would be good to consider all explicit user actions as
+     cancelling, but we don't get enough information for that.  Thus,
+     the updating is considered cancelled only when the user hits our
+     own cancel button, and not for example the cancel button in the
+     "Select connection" dialog, or when the user explicitely
+     disconnects the network.
+  */
+
   hide_progress ();
 
   if (dec == NULL)
-    return;
+    {
+      /* Network connection failed or apt-worker crashed.  An error
+	 message has already been displayed.
+      */
+      return;
+    }
+     
+  if (progress_was_cancelled ())
+    {
+      /* The user hit cancel.  We don't care whether the operation was
+	 successful or not.
+      */
+      annoy_user (_("ai_ni_update_list_cancelled"));
+      return;
+    }
 
   int success = dec->decode_int ();
 
-  // XXX - Cancelling
   if (!success)
-    annoy_user_with_log (_("ai_ni_update_list_not_successful"));
-  else
-    get_package_list ();
+    {
+      annoy_user_with_log (_("ai_ni_update_list_not_successful"));
+      return;
+    }
+
+  get_package_list ();
 }
 
 static bool refreshed_this_session = false;
@@ -748,13 +791,12 @@ static bool refreshed_this_session = false;
 static void
 refresh_package_cache_cont (bool res, void *unused)
 {
+  refreshed_this_session = true;
+  last_update = time (NULL);
+  save_settings ();
+
   if (res)
     {
-      refreshed_this_session = true;
-      last_update = time (NULL);
-      save_settings ();
-
-      // XXX - include size in progress
       show_progress (_("ai_nw_updating_list"));
       apt_worker_update_cache (refresh_package_cache_reply, NULL);
     }
@@ -820,7 +862,10 @@ confirm_install (package_info *pi,
 		    : _("ai_nc_install")),
 		   pi->name, pi->available_version, download_buf);
   
-  ask_yes_no_with_details (text->str, pi, false, cont, data);
+  ask_yes_no_with_details ((pi->installed_version
+			    ? _("ai_ti_update")
+			    : _("ai_ti_install")),
+			   text->str, pi, false, cont, data);
   g_string_free (text, 1);
 }
 
@@ -862,10 +907,15 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
     }
   else
     {
-      char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
-				   pi->name);
-      annoy_user (str);
-      g_free (str);
+      if (progress_was_cancelled ())
+	annoy_user (_("ai_ni_install_cancelled"));
+      else
+	{
+	  char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
+				       pi->name);
+	  annoy_user_with_log (str);
+	  g_free (str);
+	}
     }
 
   pi->unref ();
@@ -944,6 +994,16 @@ install_package_cont3 (bool res, void *data)
 }
 
 static void
+install_package_cont5 (bool res, void *data)
+{
+  if (!res)
+    annoy_user (_("ai_ni_install_cancelled"));
+  else
+    install_package_cont3 (true, data);
+}
+
+
+static void
 install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
   GList *notauth = NULL, *notcert = NULL;
@@ -998,7 +1058,7 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
       if (notcert || notauth)
 	{
 	  hide_progress ();
-	  scare_user_with_legalese (install_package_cont3, c);
+	  scare_user_with_legalese (true, install_package_cont5, c);
 	}
       else
 	install_package_cont3 (true, c);
@@ -1045,6 +1105,8 @@ install_package_cont2 (bool res, void *data)
 	  pi->unref ();
 	}
     }
+  else
+    annoy_user (_("ai_ni_install_cancelled"));
 }
 
 static void
@@ -1169,6 +1231,9 @@ make_install_section_view (view *v)
   get_package_list_info (cur_section->packages);
   maybe_refresh_package_cache ();
 
+  enable_search (true);
+  set_current_help_topic (AI_TOPIC ("sectionsview"));
+
   return view;
 }
 
@@ -1189,6 +1254,9 @@ make_install_applications_view (view *v)
   
   cur_section = NULL;
 
+  // XXX - provide "All" section, don't show sections when there are
+  //       only few packages.
+
   list = make_global_section_list (install_sections, view_section);
   label = make_last_update_label ();
   view = gtk_vbox_new (FALSE, 10);
@@ -1198,6 +1266,9 @@ make_install_applications_view (view *v)
   gtk_box_pack_start (GTK_BOX (view), list, TRUE, TRUE, 0);
 
   gtk_widget_show_all (view);
+
+  enable_search (true);
+  set_current_help_topic (AI_TOPIC ("packagesview"));
 
   return view;
 }
@@ -1221,6 +1292,9 @@ make_upgrade_applications_view (view *v)
 
   get_package_list_info (upgradeable_packages);
 
+  enable_search (true);
+  set_current_help_topic (AI_TOPIC ("updateview"));
+
   return view;
 }
 
@@ -1235,7 +1309,8 @@ confirm_uninstall (package_info *pi,
   g_string_printf (text, _("ai_nc_uninstall"),
 		   pi->name, pi->installed_version, size_buf);
 
-  ask_yes_no_with_details (text->str, pi, true, cont, data);
+  ask_yes_no_with_details (_("ai_ti_confirm_uninstall"), text->str,
+			   pi, true, cont, data);
   g_string_free (text, 1);
 }
 
@@ -1387,7 +1462,10 @@ uninstall_package_cont2 (bool res, void *data)
   if (res)
     check_uninstall_scripts (pi);
   else
-    pi->unref ();
+    {
+      annoy_user (_("ai_ni_uninstall_cancelled"));
+      pi->unref ();
+    }
 }
 
 static void
@@ -1420,6 +1498,9 @@ make_uninstall_applications_view (view *v)
 
   get_package_list_info (installed_packages);
   
+  enable_search (true);
+  set_current_help_topic (AI_TOPIC ("uninstallview"));
+
   return view;
 }
 
@@ -1448,6 +1529,9 @@ make_search_results_view (view *v)
   gtk_widget_show_all (view);
 
   get_package_list_info (search_result_packages);
+
+  enable_search (true);
+  set_current_help_topic (AI_TOPIC ("searchresultsview"));
 
   return view;
 }
@@ -1696,7 +1780,10 @@ install_from_file_cont4 (bool res, void *data)
 			       install_from_file_reply, pi);
     }
   else
-    pi->unref ();
+    {
+      annoy_user (_("ai_ni_install_cancelled"));
+      pi->unref ();
+    }
 }
 
 void
@@ -1705,7 +1792,7 @@ install_from_file_cont3 (bool res, void *data)
   package_info *pi = (package_info *)data;
 
   if (res)
-    scare_user_with_legalese (install_from_file_cont4, pi);
+    scare_user_with_legalese (false, install_from_file_cont4, pi);
   else
     pi->unref ();
 }
@@ -1801,14 +1888,18 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
     g_string_printf (text, _("ai_nc_install"),
 		     pi->name, pi->available_version, size_buf);
 
+  void (*cont) (bool res, void *);
+
   if (pi->info.installable)
-    ask_yes_no_with_details (text->str,
-			     pi, false,
-			     install_from_file_cont3, pi);
+    cont = install_from_file_cont3;
   else
-    ask_yes_no_with_details (text->str,
-			     pi, false,
-			     install_from_file_fail, pi);
+    cont = install_from_file_fail;
+
+  ask_yes_no_with_details ((pi->installed_version
+			    ? _("ai_ti_confirm_update")
+			    : _("ai_ti_confirm_install")),
+			   text->str,
+			   pi, false, cont, pi);
     
   g_string_free (text, 1);
 }
@@ -2007,11 +2098,53 @@ key_press_event (GtkWidget *widget,
   return FALSE;
 }
 
+static GtkWidget *search_button;
+
+static void
+enable_search (bool f)
+{
+  if (search_button)
+    gtk_widget_set_sensitive (search_button, f);
+}
+
+static void
+insensitive_press (GtkButton *button, gpointer data)
+{
+  irritate_user (_("ai_ib_not_available"));
+}
+
+static osso_context_t *osso_ctxt;
+
+void
+set_dialog_help (GtkWidget *dialog, const char *topic)
+{
+  if (osso_ctxt)
+    {
+      if (!ossohelp_dialog_help_enable (GTK_DIALOG (dialog), topic, osso_ctxt))
+	add_log ("no help for %s", topic);
+    }
+}
+
+static const char *current_topic;
+
+void
+show_help ()
+{
+  if (osso_ctxt && current_topic)
+    ossohelp_show (osso_ctxt, current_topic, OSSO_HELP_SHOW_DIALOG);
+}
+
+static void
+set_current_help_topic (const char *topic)
+{
+  current_topic = topic;
+}
+
 int
 main (int argc, char **argv)
 {
   GtkWidget *window;
-  GtkWidget *toolbar, *image, *search_button;
+  GtkWidget *toolbar, *image;
   GtkMenu *main_menu;
   char *apt_worker_prog = "/usr/libexec/apt-worker";
 
@@ -2048,6 +2181,8 @@ main (int argc, char **argv)
   g_signal_connect (toolbar_operation_item, "clicked",
 		    G_CALLBACK (do_current_operation),
 		    NULL);
+  g_signal_connect (G_OBJECT (toolbar_operation_item), "insensitive_press",
+		    G_CALLBACK (insensitive_press), NULL);
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 		      GTK_TOOL_ITEM (toolbar_operation_item),
 		      -1);
@@ -2060,6 +2195,8 @@ main (int argc, char **argv)
   g_signal_connect (details_button, "clicked",
 		    G_CALLBACK (show_current_details),
 		    NULL);
+  g_signal_connect (G_OBJECT (details_button), "insensitive_press",
+		    G_CALLBACK (insensitive_press), NULL);
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 		      GTK_TOOL_ITEM (details_button),
 		      -1);
@@ -2072,6 +2209,8 @@ main (int argc, char **argv)
   g_signal_connect (search_button, "clicked",
 		    G_CALLBACK (show_search_dialog),
 		    NULL);
+  g_signal_connect (G_OBJECT (search_button), "insensitive_press",
+		    G_CALLBACK (insensitive_press), NULL);
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 		      GTK_TOOL_ITEM (search_button),
 		      -1);
@@ -2101,15 +2240,14 @@ main (int argc, char **argv)
 
   /* XXX - check errors.
    */
-  osso_context_t *ctxt;
-  ctxt = osso_initialize ("osso_application_installer",
-			  PACKAGE_VERSION, TRUE, NULL);
+  osso_ctxt = osso_initialize ("osso_application_installer",
+			       PACKAGE_VERSION, TRUE, NULL);
 
-  osso_mime_set_cb (ctxt, mime_open_handler, NULL);
+  osso_mime_set_cb (osso_ctxt, mime_open_handler, NULL);
 
   osso_hw_state_t state = { 0 };
   state.shutdown_ind = true;
-  osso_hw_set_event_cb (ctxt, &state, hw_state_handler, NULL);
+  osso_hw_set_event_cb (osso_ctxt, &state, hw_state_handler, NULL);
 
   if (start_apt_worker (apt_worker_prog))
     {
@@ -2120,7 +2258,7 @@ main (int argc, char **argv)
       get_package_list ();
     }
   else
-    annoy_user_with_log ("Unexpected startup problem.");
+    annoy_user_with_log (_("ai_ni_operation_failed"));
 
   gtk_main ();
 }

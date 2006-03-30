@@ -95,4 +95,9 @@ void present_main_window ();
 
 void set_toolbar_visibility (bool fullscreen, bool visibility);
 
+#define AI_TOPIC(x) ("Utilities_ApplicationInstaller_" x)
+
+void set_dialog_help (GtkWidget *dialog, const char *topic);
+void show_help ();
+
 #endif /* !MAIN_H */
