@@ -70,17 +70,29 @@ BUGS
 - non-ASCII text in package info
 - depcache.Init () is too slow
 - make apt-worker robust against malformed config files
+- maybe restart apt-worker when it exits after handling a request
 - handle broken packages
 - empty section after installing last package in it
-
-- streamline package_info and GET_PACKAGE_INFO to only store/return
-  the needed info for the list that the package will be in (packages
-  do not move from list to list).
 
 - Format description nicely in details dialog.
 
 - search results has wrong parent sometimes.
 
+- Provide "All" section or no sections, optionally.
+
+- Save toolbar shown/hidden state.
+
+- Show/hide toolbar correctly.
+
+- Context sensitive menu
+
+- Dim Edit and Delete in Catalog dialog.
+
+- Put new catalogs at end of list.
+
+- Don't show search results when result is empty.
+
+- Show all info banners when appropriate
 
 Progress indications
 --------------------
