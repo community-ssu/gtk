@@ -41,7 +41,7 @@ hildon_bread_crumb_trail_set_path (GtkWidget *trail, GList *path)
       lbl = gtk_label_new (label);
       gtk_misc_set_padding (GTK_MISC (lbl), 0, 3);
       btn = gtk_button_new ();
-      gtk_widget_set_name (btn, "osso-link-button");
+      gtk_widget_set_name (btn, "osso-breadcrumb-button");
       gtk_container_add (GTK_CONTAINER (btn), lbl);
       gtk_box_pack_start (GTK_BOX (trail), btn, FALSE, FALSE, 0);
       gtk_widget_show_all (btn);
@@ -52,7 +52,7 @@ hildon_bread_crumb_trail_set_path (GtkWidget *trail, GList *path)
 			    G_CALLBACK (btn_callback),
 			    path);
 	  arw = gtk_arrow_new (GTK_ARROW_RIGHT, GTK_SHADOW_OUT);
-	  gtk_widget_set_size_request (arw, 40, 40);
+	  gtk_widget_set_size_request (arw, 30, 30);
 	  gtk_box_pack_start (GTK_BOX (trail), arw, FALSE, FALSE, 0);
 	  gtk_widget_show (arw);
 	}
