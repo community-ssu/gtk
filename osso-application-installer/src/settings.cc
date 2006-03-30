@@ -252,6 +252,7 @@ show_settings_dialog ()
 					_("ai_bd_settings_cancel"),
 					GTK_RESPONSE_CANCEL,
 					NULL);
+  set_dialog_help (dialog, AI_TOPIC ("settings"));
 
 #if SHOW_CLEANING_SETTINGS
   {
@@ -301,6 +302,7 @@ show_sort_settings_dialog ()
   GtkWidget *dialog;
 
   dialog = hildon_sort_dialog_new (NULL);
+
   hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog),
 				   _("ai_va_sort_name"));
   hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog),

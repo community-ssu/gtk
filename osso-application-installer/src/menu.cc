@@ -194,7 +194,7 @@ create_menu (GtkMenu *main)
   add_item (tools, _("ai_me_tools_repository"), show_repo_dialog);
   add_item (tools, _("ai_me_tools_search"), show_search_dialog);
   add_item (tools, _("ai_me_tools_log"), show_log);
-  add_item (tools, _("ai_me_tools_help"), NULL);
+  add_item (tools, _("ai_me_tools_help"), show_help);
 
   add_item (main, _("ai_me_close"), menu_close);
 

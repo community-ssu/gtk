@@ -377,11 +377,14 @@ show_with_details (package_info *pi, bool installed)
     summary_label = _("ai_ti_details_noteb_installing");
 
   dialog = gtk_dialog_new_with_buttons (_("ai_ti_details"),
-					NULL,
+					get_main_window (),
 					GTK_DIALOG_MODAL,
 					_("ai_bd_details_close"),
 					GTK_RESPONSE_OK,
 					NULL);
+
+  set_dialog_help (dialog, AI_TOPIC ("packagedetailsview"));
+
   notebook = gtk_notebook_new ();
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),

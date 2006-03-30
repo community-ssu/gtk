@@ -130,6 +130,8 @@ show_search_dialog ()
 					_("ai_bd_search_cancel"),
 					GTK_RESPONSE_CANCEL,
 					NULL);
+  set_dialog_help (dialog, AI_TOPIC ("search"));
+
   vbox = GTK_DIALOG (dialog)->vbox;
 
   group = GTK_SIZE_GROUP (gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL));

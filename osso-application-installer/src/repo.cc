@@ -268,6 +268,10 @@ show_repo_edit_dialog (repo_line *r, bool isnew)
 					_("ai_bd_new_repository_cancel"),
 					GTK_RESPONSE_CANCEL,
 					NULL);
+  set_dialog_help (dialog, (isnew
+			    ? AI_TOPIC ("newrepository")
+			    : AI_TOPIC ("editrepository")));
+
   vbox = GTK_DIALOG (dialog)->vbox;
   group = GTK_SIZE_GROUP (gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL));
   
@@ -596,6 +600,7 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
      _("ai_bd_repository_delete"), REPO_RESPONSE_REMOVE,
      _("ai_bd_repository_close"), GTK_RESPONSE_CLOSE,
      NULL);
+  set_dialog_help (dialog, AI_TOPIC ("repository"));
   
   gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (dialog)->vbox),
 			       make_repo_list (c));

@@ -96,6 +96,8 @@ show_log ()
 					GTK_RESPONSE_CLOSE,
 					NULL);
 
+  set_dialog_help (dialog, AI_TOPIC ("log"));
+
   text_view = make_small_text_view (log_text? log_text->str : "");
   
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), text_view);
