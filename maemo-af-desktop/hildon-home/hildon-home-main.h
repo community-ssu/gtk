@@ -78,7 +78,7 @@ G_BEGIN_DECLS
 #define BG_LOADING_SUCCESS        0
 #define MAX_CHARS_HERE            6
 
-#define HILDON_HOME_SET_BG_TITLE    _("home_ti_set_backgr_title")
+#define HILDON_HOME_SET_BG_TITLE    _("home_ti_set_backgr")
 #define HILDON_HOME_SET_BG_OK       _("home_bd_set_backgr_ok")
 #define HILDON_HOME_SET_BG_PREVIEW  _("home_bd_set_backgr_preview")
 #define HILDON_HOME_SET_BG_IMAGE    _("home_bd_set_backgr_image")  

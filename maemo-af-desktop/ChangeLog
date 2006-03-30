@@ -1,5 +1,10 @@
 2006-03-30  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.h: Fixed L10n of the
+	  set background dialog title (id has changed in the UI spec).
+
+2006-03-30  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hildon-navigator-main.c: (Closes N#23928)
       - Add defines for watchfile name
       - (task_navigator_deinitialize): Remove watchfiles
