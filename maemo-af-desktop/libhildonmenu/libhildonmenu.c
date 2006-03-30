@@ -279,6 +279,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 {
 	gint level = 0;
     gboolean doc_created = FALSE;
+    GdkPixbuf *icon;
 
 	/* Make sure we have a valid iterator */
 	if (!gtk_tree_store_iter_is_valid(menu_tree, iterator)) {
@@ -291,12 +292,13 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 	/* Always add the "Favourites" */
 	if (level == 0) {
+        icon = get_icon(ICON_FAVOURITES, ICON_SIZE);
 		gtk_tree_store_set(menu_tree,
 				iterator,
 				TREE_MODEL_NAME,
 				FAVOURITES_NAME,
 				TREE_MODEL_ICON,
-				get_icon(ICON_FAVOURITES, ICON_SIZE),
+				icon,
 				TREE_MODEL_EXEC,
 				"",
 				TREE_MODEL_SERVICE,
@@ -304,6 +306,9 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 				TREE_MODEL_DESKTOP_ID,
 				"",
 				-1);
+        if ( icon )
+            g_object_unref (G_OBJECT(icon));
+
 	}
 
 	if (doc == NULL) {
@@ -340,8 +345,6 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 	GtkTreeIter child_iterator;
 	desktop_entry_t *item;
 
-	GdkPixbuf *icon;
-
 	/* Loop through the elements and add to parent */
 	for (current_element = root_element->xmlChildrenNode;
 			current_element != NULL;
@@ -370,12 +373,14 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 			ULOG_DEBUG( "read_menu_conf: "
 					"level %i: Name = '%s'", level, key);
+            
+            icon = get_icon(ICON_FOLDER, ICON_SIZE);
 
 			gtk_tree_store_set(menu_tree, iterator,
 					TREE_MODEL_NAME,
-					g_strdup( key ),
+					key,
 					TREE_MODEL_ICON,
-					get_icon(ICON_FOLDER, ICON_SIZE),
+					icon,
 					TREE_MODEL_EXEC,
 					"",
 					TREE_MODEL_SERVICE,
@@ -383,6 +388,9 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					TREE_MODEL_DESKTOP_ID,
 					"",
 					-1);
+
+            if ( icon )
+                g_object_unref( G_OBJECT( icon ) );
 
 			if ( strcmp( key, EXTRAS_MENU_STRING ) == 0 ) {
 				extras_iter = gtk_tree_iter_copy( iterator );
@@ -467,6 +475,10 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 							item->desktop_id,
 							-1);
 
+                    if ( icon ){
+                        g_object_unref(G_OBJECT(icon));
+                    }
+
 					/* Mark the item allocated */
 					item->allocated = TRUE;
 					
@@ -535,12 +547,14 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 				return;
 			}
 
+            icon = get_icon(ICON_FOLDER, ICON_SIZE);
+
 			gtk_tree_store_set(menu_tree,
 					extras_iter,
 					TREE_MODEL_NAME,
 					EXTRAS_MENU_STRING,
 					TREE_MODEL_ICON,
-					get_icon(ICON_FOLDER, ICON_SIZE),
+					icon,
 					TREE_MODEL_EXEC,
 					"",
 					TREE_MODEL_SERVICE,
@@ -548,6 +562,9 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					TREE_MODEL_DESKTOP_ID,
 					"",
 					-1 );
+
+            if ( icon )
+                g_object_unref(G_OBJECT(icon));
 
 			ULOG_DEBUG( "Menu '%s' created.", EXTRAS_MENU_STRING );
 		} else {
@@ -569,13 +586,15 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 				gtk_tree_store_append( menu_tree,
 						&item_iter, extras_iter );
+                
+                icon = get_icon( item->icon, ICON_SIZE );
 
 				gtk_tree_store_set(menu_tree,
 						&item_iter,
 						TREE_MODEL_NAME,
 						item->name,
 						TREE_MODEL_ICON,
-						get_icon( item->icon, ICON_SIZE ),
+						icon,
 						TREE_MODEL_EXEC,
 						item->exec,
 						TREE_MODEL_SERVICE,
@@ -583,6 +602,9 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						TREE_MODEL_DESKTOP_ID,
 						item->desktop_id,
 						-1 );
+
+                if ( icon )
+                    g_object_unref( G_OBJECT ( icon ) );
 				
 				item->allocated = TRUE;
 			}

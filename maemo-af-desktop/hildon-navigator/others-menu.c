@@ -493,27 +493,6 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 
     menu = GTK_MENU(widget);
 
-    /* Monitor changes to the directory */
-#if 0
-    _om_changed_cb_data_t *cb_data = g_malloc0(sizeof(_om_changed_cb_data_t));
-    cb_data->widget = GTK_WIDGET(om->menu);
-    cb_data->om = om;
-
-    /* Only do this once */
-    /* FIXME: it isn't really necessary to set the cb here anymore. we can move it. */
-    if ( !model ) {
-
-	    /* Watch the default app dir */
-	    /*
-	    if ( hildon_dnotify_set_cb(
-				    (hildon_dnotify_cb_f *)others_menu_changed_cb,
-				    DEFAULT_APPS_DIR, cb_data ) != HILDON_OK) {
-		    osso_log( LOG_ERR, "Error setting dir notify callback!\n" );
-	    }
-	    */
-    }
-#endif
-
     /* Make sure we have the model and iterator */
     if ( !model ) {
 	    /* New model.. */
@@ -528,14 +507,18 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 	    
 	    /* .. get the top level iterator.. */
 	    if ( !gtk_tree_model_get_iter_first( model, &temp_iter ) ) {
+            g_object_unref(G_OBJECT(model));
 		    return;
 		    
 	    /* .. and skip the top level since we don't need it here. */
 	    } else if ( !gtk_tree_model_iter_children( model, iter, &temp_iter ) ) {
+            g_object_unref(G_OBJECT(model));
 		    return;
 	    }
 
     } else {
+        g_object_ref(G_OBJECT(model));
+
 	    /* We assume model and iterator are OK? Or.. ? */
     }
     
@@ -560,8 +543,7 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 			    TREE_MODEL_DESKTOP_ID,
 			    &item_desktop_id,
 			    -1);
-
-
+            
 
 	    /* If the item has children.. */
 	    if ( gtk_tree_model_iter_children( model, &child_iter, iter ) ) {
@@ -668,12 +650,21 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 				    om);
 	    }
 	    
+        g_free(item_name);
+        if(item_icon){
+            g_object_unref(G_OBJECT(item_icon));
+        }
+	    g_free(item_exec);
+	    g_free(item_service);
+	    g_free(item_desktop_id);
+	    
     } while (gtk_tree_model_iter_next(model, iter));
 
 
     if( iter_created_by_me )
-        g_free(iter);
-    /* FIXME: When done we should cleanup the GtkTreeModel */
+        gtk_tree_iter_free (iter);
+
+    g_object_unref(G_OBJECT(model));
 
     return;
 }

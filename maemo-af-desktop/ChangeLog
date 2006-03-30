@@ -1,5 +1,10 @@
 2006-03-30  Johan Bilien <johan.bilien@nokia.com>
 
+	* libhildonmenu/libhildonmenu.c, hildon-navigator/others-menu.c:
+	  fixed numerous (and big) memory leaks in menu generation.
+
+2006-03-30  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.h: Fixed L10n of the
 	  set background dialog title (id has changed in the UI spec).
 
