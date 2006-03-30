@@ -484,7 +484,10 @@ apt_worker_update_cache_cont (bool success, void *clos)
 		       callback, data);
     }
   else
-    callback (APTCMD_UPDATE_PACKAGE_CACHE, NULL, data);
+    {
+      annoy_user_with_log (_("ai_ni_update_list_not_successful"));
+      callback (APTCMD_UPDATE_PACKAGE_CACHE, NULL, data);
+    }
 }
 
 void
