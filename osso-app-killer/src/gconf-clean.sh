@@ -8,7 +8,8 @@ if [ $? = 0 ]; then
     if [ "x$CUD" != "x" ]; then
       if [ "x$d" = "xsystem" ]; then
         for f in `find system -name *.xml`; do
-          echo "$f" | grep -e '\(connectivity\)\|\(bluetooth\)' > /dev/null
+          echo "$f" | grep -e '\(connectivity\)\|\(bluetooth\)\|\(proxy\)' \
+	              > /dev/null
           if [ $? = 1 ]; then
             echo "$0: removing $f"
             rm -f $f
