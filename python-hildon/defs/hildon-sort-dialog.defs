@@ -1,0 +1,62 @@
+;;
+(define-object SortDialog
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonSortDialog")
+  (gtype-id "HILDON_TYPE_SORT_DIALOG")
+)
+
+(define-function hildon_sort_dialog_get_type
+  (c-name "hildon_sort_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_sort_dialog_new
+  (c-name "hildon_sort_dialog_new")
+  (is-constructor-of "HildonSortDialog")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+  )
+)
+
+(define-method get_sort_key
+  (of-object "HildonSortDialog")
+  (c-name "hildon_sort_dialog_get_sort_key")
+  (return-type "gint")
+)
+
+(define-method get_sort_order
+  (of-object "HildonSortDialog")
+  (c-name "hildon_sort_dialog_get_sort_order")
+  (return-type "GtkSortType")
+)
+
+(define-method set_sort_key
+  (of-object "HildonSortDialog")
+  (c-name "hildon_sort_dialog_set_sort_key")
+  (return-type "none")
+  (parameters
+    '("gint" "key")
+  )
+)
+
+(define-method set_sort_order
+  (of-object "HildonSortDialog")
+  (c-name "hildon_sort_dialog_set_sort_order")
+  (return-type "none")
+  (parameters
+    '("GtkSortType" "order")
+  )
+)
+
+(define-method add_sort_key
+  (of-object "HildonSortDialog")
+  (c-name "hildon_sort_dialog_add_sort_key")
+  (return-type "gint")
+  (parameters
+    '("const-gchar*" "sort_key")
+  )
+)
+
+

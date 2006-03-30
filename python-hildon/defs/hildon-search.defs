@@ -1,0 +1,32 @@
+;;
+(define-object Search
+  (in-module "Hildon")
+  (parent "GtkBin")
+  (c-name "HildonSearch")
+  (gtype-id "HILDON_TYPE_SEARCH")
+)
+
+(define-function hildon_search_get_type
+  (c-name "hildon_search_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_search_new
+  (c-name "hildon_search_new")
+  (is-constructor-of "HildonSearch")
+  (return-type "GtkWidget*")
+  (parameters
+    '("const-gchar*" "image")
+  )
+)
+
+(define-method set_image_stock
+  (of-object "HildonSearch")
+  (c-name "hildon_search_set_image_stock")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "stock_icon")
+  )
+)
+
+

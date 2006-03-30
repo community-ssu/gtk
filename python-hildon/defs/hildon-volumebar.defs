@@ -1,0 +1,56 @@
+;;
+(define-object Volumebar
+  (in-module "Hildon")
+  (parent "GtkContainer")
+  (c-name "HildonVolumebar")
+  (gtype-id "HILDON_TYPE_VOLUMEBAR")
+)
+
+(define-function hildon_volumebar_get_type
+  (c-name "hildon_volumebar_get_type")
+  (return-type "GType")
+)
+
+(define-method set_level
+  (of-object "HildonVolumebar")
+  (c-name "hildon_volumebar_set_level")
+  (return-type "none")
+  (parameters
+    '("gdouble" "level")
+  )
+)
+
+(define-method get_level
+  (of-object "HildonVolumebar")
+  (c-name "hildon_volumebar_get_level")
+  (return-type "double")
+)
+
+(define-method set_mute
+  (of-object "HildonVolumebar")
+  (c-name "hildon_volumebar_set_mute")
+  (return-type "none")
+  (parameters
+    '("gboolean" "mute")
+  )
+)
+
+(define-method get_mute
+  (of-object "HildonVolumebar")
+  (c-name "hildon_volumebar_get_mute")
+  (return-type "gboolean")
+)
+
+(define-method level_change
+  (of-object "HildonVolumebar")
+  (c-name "hildon_volumebar_level_change")
+  (return-type "none")
+)
+
+(define-method get_adjustment
+  (of-object "HildonVolumebar")
+  (c-name "hildon_volumebar_get_adjustment")
+  (return-type "GtkAdjustment*")
+)
+
+

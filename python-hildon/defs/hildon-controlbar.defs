@@ -1,0 +1,79 @@
+;;
+(define-object Controlbar
+  (in-module "Hildon")
+  (parent "GtkScale")
+  (c-name "HildonControlbar")
+  (gtype-id "HILDON_TYPE_CONTROLBAR")
+)
+
+(define-function hildon_controlbar_get_type
+  (c-name "hildon_controlbar_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_controlbar_new
+  (c-name "hildon_controlbar_new")
+  (is-constructor-of "HildonControlbar")
+  (properties
+    '("min")
+    '("max")
+  )
+  (return-type "GtkWidget*")
+)
+
+(define-method set_value
+  (of-object "HildonControlbar")
+  (c-name "hildon_controlbar_set_value")
+  (return-type "none")
+  (parameters
+    '("gint" "value")
+  )
+)
+
+(define-method get_value
+  (of-object "HildonControlbar")
+  (c-name "hildon_controlbar_get_value")
+  (return-type "gint")
+)
+
+(define-method get_max
+  (of-object "HildonControlbar")
+  (c-name "hildon_controlbar_get_max")
+  (return-type "gint")
+)
+
+(define-method get_min
+  (of-object "HildonControlbar")
+  (c-name "hildon_controlbar_get_min")
+  (return-type "gint")
+)
+
+(define-method set_max
+  (of-object "HildonControlbar")
+  (c-name "hildon_controlbar_set_max")
+  (return-type "none")
+  (parameters
+    '("gint" "max")
+  )
+)
+
+(define-method set_min
+  (of-object "HildonControlbar")
+  (c-name "hildon_controlbar_set_min")
+  (return-type "none")
+  (parameters
+    '("gint" "min")
+  )
+)
+
+(define-method set_range
+  (of-object "HildonControlbar")
+  (c-name "hildon_controlbar_set_range")
+  (return-type "none")
+  (parameters
+    '("gint" "min")
+    '("gint" "max")
+  )
+)
+
+

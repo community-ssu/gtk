@@ -1,0 +1,229 @@
+/* -*- Mode: C; c-basic-offset: 4 -*-
+ * python-hildon - Python bindings for the Hildon toolkit.
+ *
+ *   hildon.override: overrides for the hildon module.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA
+ */
+%%
+headers
+#define NO_IMPORT_PYGOBJECT
+#include <pygobject.h>
+
+#include <hildon-base-lib/hildon-base-dnotify.h>
+#include <hildon-base-lib/hildon-base-types.h>
+#include <hildon-widgets/hildon-scroll-area.h>
+#include <hildon-widgets/hildon-grid.h>
+#include <hildon-widgets/hildon-get-password-dialog.h>
+#include <hildon-widgets/hildon-vvolumebar.h>
+#include <hildon-widgets/hildon-note.h>
+#include <hildon-widgets/hildon-dialoghelp.h>
+#include <hildon-widgets/hildon-set-password-dialog.h>
+#include <hildon-widgets/hildon-telephone-editor.h>
+#include <hildon-widgets/hildon-file-handling-note.h>
+#include <hildon-widgets/hildon-name-password-dialog.h>
+#include <hildon-widgets/hildon-seekbar.h>
+#include <hildon-widgets/hildon-insert-object-dialog.h>
+#include <hildon-widgets/hildon-range-editor.h>
+#include <hildon-widgets/hildon-number-editor.h>
+#include <hildon-widgets/hildon-file-details-dialog.h>
+#include <hildon-widgets/hildon-file-chooser-dialog.h>
+#include <hildon-widgets/hildon-controlbar.h>
+#include <hildon-widgets/hildon-grid-item.h>
+#include <hildon-widgets/hildon-sort-dialog.h>
+#include <hildon-widgets/hildon-weekday-picker.h>
+#include <hildon-widgets/hildon-time-editor.h>
+#include <hildon-widgets/hildon-font-selection-dialog.h>
+#include <hildon-widgets/hildon-color-button.h>
+#include <hildon-widgets/hildon-volumebar.h>
+#include <hildon-widgets/hildon-wizard-dialog.h>
+#include <hildon-widgets/hildon-add-home-dialog.h>
+#include <hildon-widgets/hildon-color-selector.h>
+#include <hildon-widgets/hildon-date-editor.h>
+#include <hildon-widgets/hildon-calendar-popup.h>
+#include <hildon-widgets/hildon-time-picker.h>
+#include <hildon-widgets/hildon-hvolumebar.h>
+#include <hildon-widgets/hildon-file-system-model.h>
+#include <hildon-widgets/hildon-file-system-common.h>
+#include <hildon-widgets/hildon-find-toolbar.h>
+#ifndef HILDON_DISABLE_DEPRECATED
+#include <hildon-widgets/hildon-search.h>
+#include <hildon-widgets/hildon-find-object-dialog.h>
+#include <hildon-widgets/hildon-find-replace-dialog.h>
+#endif
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+#include <libintl.h>
+
+#include <glib-object.h>
+
+#include "hildon-extra.h"
+
+%%
+modulename hildon
+%%
+import gtk.Window as PyGtkWindow_Type
+import gtk.Widget as PyGtkWidget_Type
+import gtk.Adjustment as PyGtkAdjustment_Type
+import gtk.Toolbar as PyGtkToolbar_Type
+import gtk.Dialog as PyGtkDialog_Type
+import gtk.Button as PyGtkButton_Type
+import gtk.Scale as PyGtkScale_Type
+import gtk.Container as PyGtkContainer_Type
+import gtk.TextBuffer as PyGtkTextBuffer_Type
+import gtk.ProgressBar as PyGtkProgressBar_Type
+import gtk.ListStore as PyGtkListStore_Type
+import gtk.Bin as PyGtkBin_Type
+import pango.FontDescription as PyPangoFontDescription_Type
+
+%%
+ignore-glob *_get_type
+
+%%
+override hildon_calendar_popup_get_date noargs
+static PyObject *
+_wrap_hildon_calendar_popup_get_date (PyGObject *self)
+{
+   int year, month, day;
+
+   hildon_calendar_popup_get_date(HILDON_CALENDAR_POPUP(self->obj), &year, &month, &day);
+
+   return Py_BuildValue("(iii)", year, month, day);
+}
+
+%%
+override hildon_date_editor_get_date noargs
+static PyObject *
+_wrap_hildon_date_editor_get_date (PyGObject *self)
+{
+   int year, month, day;
+
+   hildon_date_editor_get_date(HILDON_DATE_EDITOR(self->obj), &year, &month, &day);
+ 
+   return Py_BuildValue("(iii)", year, month, day);
+}
+
+%%
+override hildon_range_editor_get_range noargs
+static PyObject *
+_wrap_hildon_range_editor_get_range (PyGObject *self)
+{
+   int start, end;
+
+   hildon_range_editor_get_range(HILDON_RANGE_EDITOR(self->obj), &start, &end);
+ 
+   return Py_BuildValue("(ii)", start, end);
+}
+
+%%
+override hildon_time_editor_get_time noargs
+static PyObject *
+_wrap_hildon_time_editor_get_time (PyGObject *self)
+{
+   int hours, minutes, seconds;
+
+   hildon_time_editor_get_time(HILDON_TIME_EDITOR(self->obj), &hours, &minutes, &seconds);
+ 
+   return Py_BuildValue("(iii)", hours, minutes, seconds);
+}
+
+%%
+override hildon_time_editor_get_duration_range noargs
+static PyObject *
+_wrap_hildon_time_editor_get_duration_range (PyGObject *self)
+{
+   int min_seconds, max_seconds;
+
+   hildon_time_editor_get_duration_range(HILDON_TIME_EDITOR(self->obj), &min_seconds, &max_seconds);
+ 
+   return Py_BuildValue("(ii)", min_seconds, max_seconds);
+}
+
+%%
+override hildon_time_picker_get_time noargs
+static PyObject *
+_wrap_hildon_time_picker_get_time (PyGObject *self)
+{
+   int hours, minutes;
+
+   hildon_time_picker_get_time(HILDON_TIME_PICKER(self->obj), &hours, &minutes);
+ 
+   return Py_BuildValue("(ii)", hours, minutes);
+}
+
+%%
+override hildon_file_chooser_dialog_get_filename noargs
+static PyObject *
+_wrap_hildon_file_chooser_dialog_get_filename (PyGObject *self)
+{
+    gchar *ret;
+
+    ret = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(self->obj));
+    if (ret) {
+        PyObject *py_ret = PyString_FromString(ret);
+        g_free(ret);
+        return py_ret;
+    }
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+%%
+override hildon_file_chooser_dialog_new kwargs
+static int
+_wrap_hildon_file_chooser_dialog_new(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "parent", "action", NULL };
+    PyGObject *parent;
+    PyObject *py_action = NULL;
+    GtkFileChooserAction action;
+    PyGILState_STATE state;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!O:HildonFileChooserDialog.__init__", kwlist, &PyGtkWindow_Type, &parent, &py_action))
+        return -1;
+    if (pyg_enum_get_value(GTK_TYPE_FILE_CHOOSER_ACTION, py_action, (gint *)&action))
+        return -1;
+    self->obj = (GObject *)hildon_file_chooser_dialog_new(GTK_WINDOW(parent->obj), action);
+
+    if (!self->obj) {
+        PyErr_SetString(PyExc_RuntimeError, "could not create HildonFileChooserDialog object");
+        return -1;
+    }
+
+    state = pyg_gil_state_ensure();
+    g_object_ref(self->obj); /* we don't own the first reference of windows */
+    pyg_gil_state_release(state);
+
+    pygobject_register_wrapper((PyObject *)self);
+    return 0;
+}
+
+%%
+override hildon_appview_get_vbox noargs
+static PyObject *
+_wrap_hildon_appview_get_vbox (PyGObject *self)
+{
+    GtkWidget *ret;
+    HildonAppView *appview;
+
+    appview = HILDON_APPVIEW(self->obj);
+    ret = appview->vbox;
+
+    return pygobject_new((GObject *)ret);
+}
+

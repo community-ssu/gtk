@@ -1,0 +1,85 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object FileHandlingNote
+  (in-module "Hildon")
+  (parent "HildonNote")
+  (c-name "HildonFileHandlingNote")
+  (gtype-id "HILDON_TYPE_FILE_HANDLING_NOTE")
+)
+
+;; Enumerations and flags ...
+
+
+;; From /usr/include/hildon-widgets/hildon-file-handling-note.h
+
+(define-function hildon_file_handling_note_new_moving
+  (c-name "hildon_file_handling_note_new_moving")
+  (is-constructor-of "HildonFileHandlingNote")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+  )
+)
+
+(define-function hildon_file_handling_note_new_deleting
+  (c-name "hildon_file_handling_note_new_deleting")
+  (is-constructor-of "HildonFileHandlingNote")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+  )
+)
+
+(define-function hildon_file_handling_note_new_opening
+  (c-name "hildon_file_handling_note_new_opening")
+  (is-constructor-of "HildonFileHandlingNote")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+  )
+)
+
+(define-function hildon_file_handling_note_new_saving
+  (c-name "hildon_file_handling_note_new_saving")
+  (is-constructor-of "HildonFileHandlingNote")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+  )
+)
+
+(define-method set_fraction
+  (of-object "HildonFileHandlingNote")
+  (c-name "hildon_file_handling_note_set_fraction")
+  (return-type "none")
+  (parameters
+    '("gfloat" "frac")
+  )
+)
+
+(define-method set_counter_and_name
+  (of-object "HildonFileHandlingNote")
+  (c-name "hildon_file_handling_note_set_counter_and_name")
+  (return-type "none")
+  (parameters
+    '("guint" "current")
+    '("guint" "maximum")
+    '("const-gchar*" "name")
+  )
+)
+
+(define-method set_name
+  (of-object "HildonFileHandlingNote")
+  (c-name "hildon_file_handling_note_set_name")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "name")
+  )
+)
+
+(define-function hildon_file_handling_note_get_type
+  (c-name "hildon_file_handling_note_get_type")
+  (return-type "GType")
+)
+
+

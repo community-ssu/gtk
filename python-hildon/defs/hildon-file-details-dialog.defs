@@ -1,0 +1,42 @@
+;;
+(define-object FileDetailsDialog
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonFileDetailsDialog")
+  (gtype-id "HILDON_TYPE_FILE_DETAILS_DIALOG")
+)
+
+(define-function hildon_file_details_dialog_get_type
+  (c-name "hildon_file_details_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_file_details_dialog_new
+  (c-name "hildon_file_details_dialog_new")
+  (is-constructor-of "HildonFileDetailsDialog")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "filename")
+  )
+)
+
+(define-method set_file_iter
+  (of-object "HildonFileDetailsDialog")
+  (c-name "hildon_file_details_dialog_set_file_iter")
+  (return-type "none")
+  (parameters
+    '("GtkTreeIter*" "iter")
+  )
+)
+
+(define-method get_file_iter
+  (of-object "HildonFileDetailsDialog")
+  (c-name "hildon_file_details_dialog_get_file_iter")
+  (return-type "gboolean")
+  (parameters
+    '("GtkTreeIter*" "iter")
+  )
+)
+
+

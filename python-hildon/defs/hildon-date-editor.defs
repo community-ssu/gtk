@@ -1,0 +1,47 @@
+;;
+(define-object DateEditor
+  (in-module "Hildon")
+  (parent "GtkContainer")
+  (c-name "HildonDateEditor")
+  (gtype-id "HILDON_TYPE_DATE_EDITOR")
+)
+
+(define-function hildon_date_editor_get_type
+  (c-name "hildon_date_editor_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_date_editor_new
+  (c-name "hildon_date_editor_new")
+  (is-constructor-of "HildonDateEditor")
+  (properties
+    '("year" (optional))
+    '("month" (optional))
+    '("day" (optional))
+  )
+  (return-type "GtkWidget*")
+)
+
+(define-method set_date
+  (of-object "HildonDateEditor")
+  (c-name "hildon_date_editor_set_date")
+  (return-type "none")
+  (parameters
+    '("guint" "year")
+    '("guint" "month")
+    '("guint" "day")
+  )
+)
+
+(define-method get_date
+  (of-object "HildonDateEditor")
+  (c-name "hildon_date_editor_get_date")
+  (return-type "none")
+  (parameters
+    '("guint*" "year")
+    '("guint*" "month")
+    '("guint*" "day")
+  )
+)
+
+

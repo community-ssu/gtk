@@ -1,0 +1,56 @@
+(define-object TimeEditor
+  (in-module "Hildon")
+  (parent "GtkContainer")
+  (c-name "HildonTimeEditor")
+  (gtype-id "HILDON_TYPE_TIME_EDITOR")
+)
+
+(define-function hildon_time_editor_new
+  (c-name "hildon_time_editor_new")
+  (is-constructor-of "HildonTimeEditor")
+  (return-type "GtkWidget*")
+)
+
+(define-method set_time
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_set_time")
+  (return-type "none")
+  (parameters
+    '("guint" "hours")
+    '("guint" "minutes")
+    '("guint" "seconds")
+  )
+)
+
+(define-method get_time
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_get_time")
+  (return-type "none")
+  (parameters
+    '("guint*" "hours")
+    '("guint*" "minutes")
+    '("guint*" "seconds")
+  )
+)
+
+(define-method set_duration_range
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_set_duration_range")
+  (return-type "none")
+  (parameters
+    '("guint" "min_seconds")
+    '("guint" "max_seconds")
+  )
+)
+
+(define-method get_duration_range
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_get_duration_range")
+  (return-type "none")
+  (parameters
+    '("guint*" "min_seconds")
+    '("guint*" "max_seconds")
+  )
+)
+
+

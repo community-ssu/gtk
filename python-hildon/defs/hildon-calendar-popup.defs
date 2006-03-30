@@ -1,0 +1,48 @@
+;;
+(define-object CalendarPopup
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonCalendarPopup")
+  (gtype-id "HILDON_TYPE_CALENDAR_POPUP")
+)
+
+(define-function hildon_calendar_popup_get_type
+  (c-name "hildon_calendar_popup_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_calendar_popup_new
+  (c-name "hildon_calendar_popup_new")
+  (is-constructor-of "HildonCalendarPopup")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("guint" "year")
+    '("guint" "month")
+    '("guint" "day")
+  )
+)
+
+(define-method set_date
+  (of-object "HildonCalendarPopup")
+  (c-name "hildon_calendar_popup_set_date")
+  (return-type "none")
+  (parameters
+    '("guint" "year")
+    '("guint" "month")
+    '("guint" "day")
+  )
+)
+
+(define-method get_date
+  (of-object "HildonCalendarPopup")
+  (c-name "hildon_calendar_popup_get_date")
+  (return-type "none")
+  (parameters
+    '("guint*" "year")
+    '("guint*" "month")
+    '("guint*" "day")
+  )
+)
+
+

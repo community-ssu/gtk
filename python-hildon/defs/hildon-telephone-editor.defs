@@ -1,0 +1,126 @@
+;; TODO: verify other constructors
+(define-object TelephoneEditor
+  (in-module "Hildon")
+  (parent "GtkContainer")
+  (c-name "HildonTelephoneEditor")
+  (gtype-id "HILDON_TYPE_TELEPHONE_EDITOR")
+)
+
+(define-enum TelephoneEditorFormat
+  (in-module "Hildon")
+  (c-name "HildonTelephoneEditorFormat")
+  (gtype-id "HILDON_TYPE_TELEPHONE_EDITOR_FORMAT")
+  (values
+    '("free" "HILDON_TELEPHONE_EDITOR_FORMAT_FREE")
+    '("coerce" "HILDON_TELEPHONE_EDITOR_FORMAT_COERCE")
+    '("coerce-country" "HILDON_TELEPHONE_EDITOR_FORMAT_COERCE_COUNTRY")
+    '("coerce-area" "HILDON_TELEPHONE_EDITOR_FORMAT_COERCE_AREA")
+  )
+)
+
+(define-function hildon_telephone_editor_new
+  (c-name "hildon_telephone_editor_new")
+  (is-constructor-of "HildonTelephoneEditor")
+  (return-type "GtkWidget*")
+  (parameters
+    '("HildonTelephoneEditorFormat" "format")
+  )
+)
+
+(define-method set_editable
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_set_editable")
+  (return-type "none")
+  (parameters
+    '("gboolean" "country")
+    '("gboolean" "area")
+    '("gboolean" "number")
+  )
+)
+
+(define-method set_show_plus
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_set_show_plus")
+  (return-type "none")
+  (parameters
+    '("gboolean" "show")
+  )
+)
+
+(define-method get_show_plus
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_get_show_plus")
+  (return-type "gboolean")
+)
+
+(define-method set_show_border
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_set_show_border")
+  (return-type "none")
+  (parameters
+    '("gboolean" "show")
+  )
+)
+
+(define-method get_show_border
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_get_show_border")
+  (return-type "gboolean")
+)
+
+(define-method set_widths
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_set_widths")
+  (return-type "none")
+  (parameters
+    '("guint" "country")
+    '("guint" "area")
+    '("guint" "number")
+  )
+)
+
+(define-method get_country
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_get_country")
+  (return-type "const-gchar*")
+)
+
+(define-method set_country
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_set_country")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "country")
+  )
+)
+
+(define-method get_area
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_get_area")
+  (return-type "const-gchar*")
+)
+
+(define-method set_area
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_set_area")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "area")
+  )
+)
+
+(define-method get_number
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_get_number")
+  (return-type "const-gchar*")
+)
+
+(define-method set_number
+  (of-object "HildonTelephoneEditor")
+  (c-name "hildon_telephone_editor_set_number")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "number")
+  )
+)
+

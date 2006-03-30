@@ -1,0 +1,43 @@
+;; TODO: verify other constructors
+(define-object RangeEditor
+  (in-module "Hildon")
+  (parent "GtkContainer")
+  (c-name "HildonRangeEditor")
+  (gtype-id "HILDON_TYPE_RANGE_EDITOR")
+)
+
+(define-function hildon_range_editor_new
+  (c-name "hildon_range_editor_new")
+  (is-constructor-of "HildonRangeEditor")
+  (return-type "GtkWidget*")
+)
+
+(define-method set_range
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_set_range")
+  (return-type "none")
+  (parameters
+    '("gint" "start")
+    '("gint" "end")
+  )
+)
+
+(define-method get_range
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_get_range")
+  (return-type "none")
+  (parameters
+    '("gint*" "start")
+    '("gint*" "end")
+  )
+)
+
+(define-method set_limits
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_set_limits")
+  (return-type "none")
+  (parameters
+    '("gint" "start")
+    '("gint" "end")
+  )
+)

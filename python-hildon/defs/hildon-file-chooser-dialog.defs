@@ -1,0 +1,76 @@
+;;
+(define-object FileChooserDialog
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonFileChooserDialog")
+  (gtype-id "HILDON_TYPE_FILE_CHOOSER_DIALOG")
+)
+
+(define-function hildon_file_chooser_dialog_new
+  (c-name "hildon_file_chooser_dialog_new")
+  (is-constructor-of "HildonFileChooserDialog")
+  (return-type "GtkWidget*")
+  (properties
+    '("empty-text" (optional))
+    '("file-system-model" (optional))
+    '("show-folder-button" (optional))
+    '("show-location" (optional))
+    '("autonaming" (optional))
+    '("open-button-text" (optional))
+    '("save-multiple" (optional))
+    '("max-name-length" (optional))
+    '("max-full-path-length" (optional))
+  )
+  (parameters
+    '("GtkWindow*" "parent")
+    '("GtkFileChooserAction" "action")
+  )
+)
+
+(define-function hildon_file_chooser_dialog_new_with_properties
+  (c-name "hildon_file_chooser_dialog_new_with_properties")
+  (is-constructor-of "HildonFileChooserDialog")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "first_property")
+  )
+  (varargs #t)
+)
+
+(define-method set_safe_folder
+  (of-object "HildonFileChooserDialog")
+  (c-name "hildon_file_chooser_dialog_set_safe_folder")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "local_path")
+  )
+)
+
+(define-method set_safe_folder_uri
+  (of-object "HildonFileChooserDialog")
+  (c-name "hildon_file_chooser_dialog_set_safe_folder_uri")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "uri")
+  )
+)
+
+(define-method get_safe_folder
+  (of-object "HildonFileChooserDialog")
+  (c-name "hildon_file_chooser_dialog_get_safe_folder")
+  (return-type "gchar*")
+)
+
+(define-method get_safe_folder_uri
+  (of-object "HildonFileChooserDialog")
+  (c-name "hildon_file_chooser_dialog_get_safe_folder_uri")
+  (return-type "gchar*")
+)
+
+(define-method get_filename
+  (of-object "HildonFileChooserDialog")
+  (c-name "hildon_file_chooser_dialog_get_filename")
+  (return-type "gchar*")
+)
+

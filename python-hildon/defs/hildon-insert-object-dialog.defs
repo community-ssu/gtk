@@ -1,0 +1,33 @@
+;;
+(define-object InsertObjectDialog
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonInsertObjectDialog")
+  (gtype-id "HILDON_TYPE_INSERT_OBJECT_DIALOG")
+)
+
+(define-function hildon_insert_object_dialog_get_type
+  (c-name "hildon_insert_object_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_insert_object_dialog_new
+  (c-name "hildon_insert_object_dialog_new")
+  (is-constructor-of "HildonInsertObjectDialog")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+  )
+)
+
+(define-method get_name
+  (of-object "HildonInsertObjectDialog")
+  (c-name "hildon_insert_object_dialog_get_name")
+  (return-type "const-gchar*")
+)
+
+(define-method get_mime_type
+  (of-object "HildonInsertObjectDialog")
+  (c-name "hildon_insert_object_dialog_get_mime_type")
+  (return-type "const-gchar*")
+)

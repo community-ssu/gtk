@@ -1,0 +1,49 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object FindObjectDialog
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonFindObjectDialog")
+  (gtype-id "HILDON_TYPE_FIND_OBJECT_DIALOG")
+)
+
+;; Enumerations and flags ...
+
+
+;; From /usr/include/hildon-widgets/hildon-find-object-dialog.h
+
+(define-function hildon_find_object_dialog_new
+  (c-name "hildon_find_object_dialog_new")
+  (is-constructor-of "HildonFindObjectDialog")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+  )
+)
+
+(define-function hildon_find_object_dialog_new_with_options
+  (c-name "hildon_find_object_dialog_new_with_options")
+  (is-constructor-of "HildonFindObjectDialog")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("GtkDialog*" "dialog")
+  )
+)
+
+(define-method get_text
+  (of-object "HildonFindObjectDialog")
+  (c-name "hildon_find_object_dialog_get_text")
+  (return-type "const-gchar*")
+)
+
+(define-method set_label
+  (of-object "HildonFindObjectDialog")
+  (c-name "hildon_find_object_dialog_set_label")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "label")
+  )
+)
+
+

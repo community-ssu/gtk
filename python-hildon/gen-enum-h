@@ -1,0 +1,4 @@
+glib-mkenums \
+  --fprod "/* enumerations from \"@filename@\" */\n" \
+  --vhead "GType @enum_name@_get_type (void) G_GNUC_CONST;\n#define HILDON_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" \
+  "$@"

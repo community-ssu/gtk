@@ -1,0 +1,14 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+
+;; From /usr/include/hildon-widgets/hildon-dialoghelp.h
+
+(define-method help_enable
+  (of-object "GtkDialog")
+  (c-name "gtk_dialog_help_enable")
+  (return-type "none")
+)
+
+

@@ -1,0 +1,81 @@
+(define-object WeekdayPicker
+  (in-module "Hildon")
+  (parent "GtkContainer")
+  (c-name "HildonWeekdayPicker")
+  (gtype-id "HILDON_TYPE_WEEKDAY_PICKER")
+)
+
+
+(define-enum Weekday
+  (in-module "Hildon")
+  (c-name "GDateWeekday")
+  (values
+    '("bad-weekday" "G_DATE_BAD_WEEKDAY")
+    '("monday" "G_DATE_MONDAY")
+    '("tuesday" "G_DATE_TUESDAY")
+    '("wednesday" "G_DATE_WEDNESDAY")
+    '("thursday" "G_DATE_THURSDAY")
+    '("friday" "G_DATE_FRIDAY")
+    '("saturday" "G_DATE_SATURDAY")
+    '("sunday" "G_DATE_SUNDAY")
+  )
+)
+
+(define-function hildon_weekday_picker_get_type
+  (c-name "hildon_weekday_picker_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_weekday_picker_new
+  (c-name "hildon_weekday_picker_new")
+  (is-constructor-of "HildonWeekdayPicker")
+  (return-type "GtkWidget*")
+)
+
+(define-method set_day
+  (of-object "HildonWeekdayPicker")
+  (c-name "hildon_weekday_picker_set_day")
+  (return-type "none")
+  (parameters
+    '("GDateWeekday" "day")
+  )
+)
+
+(define-method unset_day
+  (of-object "HildonWeekdayPicker")
+  (c-name "hildon_weekday_picker_unset_day")
+  (return-type "none")
+  (parameters
+    '("GDateWeekday" "day")
+  )
+)
+
+(define-method toggle_day
+  (of-object "HildonWeekdayPicker")
+  (c-name "hildon_weekday_picker_toggle_day")
+  (return-type "none")
+  (parameters
+    '("GDateWeekday" "day")
+  )
+)
+
+(define-method set_all
+  (of-object "HildonWeekdayPicker")
+  (c-name "hildon_weekday_picker_set_all")
+  (return-type "none")
+)
+
+(define-method unset_all
+  (of-object "HildonWeekdayPicker")
+  (c-name "hildon_weekday_picker_unset_all")
+  (return-type "none")
+)
+
+(define-method isset_day
+  (of-object "HildonWeekdayPicker")
+  (c-name "hildon_weekday_picker_isset_day")
+  (return-type "gboolean")
+  (parameters
+    '("GDateWeekday" "day")
+  )
+)

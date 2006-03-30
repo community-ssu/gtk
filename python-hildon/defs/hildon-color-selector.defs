@@ -1,0 +1,36 @@
+;;
+(define-object ColorSelector
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonColorSelector")
+  (gtype-id "HILDON_TYPE_COLOR_SELECTOR")
+)
+
+(define-function hildon_color_selector_get_type
+  (c-name "hildon_color_selector_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_color_selector_new
+  (c-name "hildon_color_selector_new")
+  (is-constructor-of "HildonColorSelector")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+  )
+)
+
+(define-method get_color
+  (of-object "HildonColorSelector")
+  (c-name "hildon_color_selector_get_color")
+  (return-type "GdkColor*")
+)
+
+(define-method set_color
+  (of-object "HildonColorSelector")
+  (c-name "hildon_color_selector_set_color")
+  (return-type "none")
+  (parameters
+    '("GdkColor*" "color")
+  )
+)

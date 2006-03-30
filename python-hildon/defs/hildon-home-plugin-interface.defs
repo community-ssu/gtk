@@ -1,0 +1,63 @@
+;; TODO
+(define-function hildon_home_applet_lib_initialize
+  (c-name "hildon_home_applet_lib_initialize")
+  (return-type "void*")
+  (parameters
+    '("void*" "state_data")
+    '("int*" "state_size")
+    '("GtkWidget**" "widget")
+  )
+)
+
+(define-function hildon_home_applet_lib_get_requested_width
+  (c-name "hildon_home_applet_lib_get_requested_width")
+  (return-type "int")
+  (parameters
+    '("void*" "applet_data")
+  )
+)
+
+(define-function hildon_home_applet_lib_save_state
+  (c-name "hildon_home_applet_lib_save_state")
+  (return-type "int")
+  (parameters
+    '("void*" "applet_data")
+    '("void**" "state_data")
+    '("int*" "state_size")
+  )
+)
+
+(define-function hildon_home_applet_lib_background
+  (c-name "hildon_home_applet_lib_background")
+  (return-type "none")
+  (parameters
+    '("void*" "applet_data")
+  )
+)
+
+(define-function hildon_home_applet_lib_foreground
+  (c-name "hildon_home_applet_lib_foreground")
+  (return-type "none")
+  (parameters
+    '("void*" "applet_data")
+  )
+)
+
+(define-function hildon_home_applet_lib_deinitialize
+  (c-name "hildon_home_applet_lib_deinitialize")
+  (return-type "none")
+  (parameters
+    '("void*" "applet_data")
+  )
+)
+
+(define-function hildon_home_applet_lib_properties
+  (c-name "hildon_home_applet_lib_properties")
+  (return-type "GtkWidget*")
+  (parameters
+    '("void*" "applet_data")
+    '("GtkWindow*" "parent")
+  )
+)
+
+

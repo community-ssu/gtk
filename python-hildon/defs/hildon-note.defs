@@ -1,0 +1,31 @@
+;; TODO: verify other contructors
+(define-object Note
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonNote")
+  (gtype-id "HILDON_TYPE_NOTE")
+)
+
+(define-function hildon_note_new_confirmation
+  (c-name "hildon_note_new_confirmation")
+  (is-constructor-of "HildonNote")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "description")
+  )
+)
+
+(define-method set_button_text
+  (of-object "HildonNote")
+  (c-name "hildon_note_set_button_text")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "text")
+  )
+)
+
+(define-function hildon_note_get_type
+  (c-name "hildon_note_get_type")
+  (return-type "GType")
+)

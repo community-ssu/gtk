@@ -1,0 +1,22 @@
+;;
+(define-object VVolumebar
+  (in-module "Hildon")
+  (parent "HildonVolumebar")
+  (c-name "HildonVVolumebar")
+  (gtype-id "HILDON_TYPE_VVOLUMEBAR")
+)
+
+(define-function hildon_vvolumebar_get_type
+  (c-name "hildon_vvolumebar_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_vvolumebar_new
+  (c-name "hildon_vvolumebar_new")
+  (is-constructor-of "HildonVvolumebar")
+  (return-type "GtkWidget*")
+  (properties
+    '("can-focus" (optional))
+    '("has-mute" (optional))
+  )
+)

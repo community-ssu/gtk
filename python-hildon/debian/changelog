@@ -1,0 +1,44 @@
+python-hildon (0.7.0-1osso2) unstable; urgency=low
+
+  * Recompiled against SDK 1.2
+
+ -- Ruda Moura <ruda.moura@indt.org.br>  Thu, 09 Feb 2006 13:25:07 -0300
+
+python-hildon (0.7.0-1osso1) unstable; urgency=low
+
+  * new release to add hildonglade.py
+  * added license information (LGPL)
+  * create a package for examples
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri, 27 Jan 2006 18:03:00 -0300
+
+python-hildon (0.6.0-1indt1) unstable; urgency=low
+
+  * new release to fix python-hildon to accomplish new hildon-libs API
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 10 Aug 2005 09:45:00 -0300
+
+python-hildon (0.5.1-1indt1) unstable; urgency=low
+
+  * new release
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 10 Aug 2005 09:45:00 -0300
+
+python-hildon (0.5.0-1indt1) unstable; urgency=low
+
+  * complete hildon widgets mapping
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 03 Aug 2005 17:03:00 -0300
+
+python-hildon (0.0.0-1indt2) unstable; urgency=low
+
+  * added other hildon widgets into module
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu, 06 Jul 2005 15:28:17 -0300
+
+python-hildon (0.0.0-1indt1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu, 16 Jun 2005 15:58:17 -0300
+

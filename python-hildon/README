@@ -1,0 +1,9 @@
+Warning!
+
+    - To compile python-hildon you will want to apply a patch in Hildon header
+      files to create stardard GLib macro names. This patch won't break
+      compatibility with other applications.
+
+    $ cd /usr/include
+    $ fakeroot patch -p1 < {python-hildon-directory}/hildon-libs-types.patch
+

@@ -1,0 +1,30 @@
+(define-object AddHomeDialog
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonAddHomeDialog")
+  (gtype-id "HILDON_TYPE_ADD_HOME_DIALOG")
+)
+
+(define-function hildon_add_home_dialog_get_type
+  (c-name "hildon_add_home_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_add_home_dialog_new
+  (c-name "hildon_add_home_dialog_new")
+  (is-constructor-of "HildonAddHomeDialog")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "name")
+    '("const-gchar*" "new_name")
+  )
+)
+
+(define-method get_name
+  (of-object "HildonAddHomeDialog")
+  (c-name "hildon_add_home_dialog_get_name")
+  (return-type "const-gchar*")
+)
+
+

@@ -1,0 +1,27 @@
+0.6.0 - 20050906
+    - Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+        - Fixed for new hildon-libs API
+
+0.5.1 - 20050810
+    - Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+        - Added hildon-types.patch to fix hildon header files. This patch is
+          needed to compile python-hildon.
+
+0.5.0 - 20050805
+    - Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+        - added support for other hildon classes:
+            - file-system-model, add-home-dialog, calendar-popup,
+              color-button, color-popup, color-selector, controlbar,
+              date-editor, dialoghelp, file-details-dialog,
+              file-handling-note, find-object-dialog, find-replace-dialog,
+              font-selection-dialog, get-password-dialog, grid, grid-item,
+              insert-object-dialog, name-password-dialog, note, number-editor,
+              range-editor, scroll-area, search, seekbar, set-password-dialog,
+              sort-dialog, telephone-editor, time-editor, time-picker,
+              volumebar, hvolumebar, vvolumebar, weekday-picker, wizard-dialog 
+
+0.0.0 - 20050606
+    - Marius Vollmer <marius.vollmer@nokia.com>
+        - initial release
+        - Covered App and Appview classes
+

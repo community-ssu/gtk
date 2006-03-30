@@ -1,0 +1,70 @@
+;;
+(define-object Grid
+  (in-module "Hildon")
+  (parent "GtkContainer")
+  (c-name "HildonGrid")
+  (gtype-id "HILDON_TYPE_GRID")
+)
+
+(define-function hildon_grid_get_type
+  (c-name "hildon_grid_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_grid_new
+  (c-name "hildon_grid_new")
+  (is-constructor-of "HildonGrid")
+  (return-type "GtkWidget*")
+  (properties
+    '("empty-label" (argname "empty_label") (optional))
+    '("item-width" (argname "item_width") (optional))
+    '("item-height" (argname "item_height") (optional))
+    '("item-hspacing" (argname "item_hspacing") (optional))
+    '("item-vspacing" (argname "item_vspacing") (optional))
+    '("label-hspacing" (argname "label_hspacing") (optional))
+    '("label-vspacing" (argname "label_vspacing") (optional))
+    '("n-columns" (argname "n_columns") (optional))
+    '("label-pos" (argname "label_pos") (optional))
+    '("icon-size" (argname "icon_size") (optional))
+    '("emblem-size" (argname "emblem_size") (optional))
+  )
+)
+
+(define-method set_style
+  (of-object "HildonGrid")
+  (c-name "hildon_grid_set_style")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "style_name")
+  )
+)
+
+(define-method get_style
+  (of-object "HildonGrid")
+  (c-name "hildon_grid_get_style")
+  (return-type "const-gchar*")
+)
+
+(define-method set_scrollbar_pos
+  (of-object "HildonGrid")
+  (c-name "hildon_grid_set_scrollbar_pos")
+  (return-type "none")
+  (parameters
+    '("gint" "scrollbar_pos")
+  )
+)
+
+(define-method get_scrollbar_pos
+  (of-object "HildonGrid")
+  (c-name "hildon_grid_get_scrollbar_pos")
+  (return-type "gint")
+)
+
+(define-method activate_child
+  (of-object "HildonGrid")
+  (c-name "hildon_grid_activate_child")
+  (return-type "none")
+  (parameters
+    '("HildonGridItem*" "item")
+  )
+)

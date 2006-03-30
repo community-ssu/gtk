@@ -1,0 +1,15 @@
+(define-object FindToolbar
+  (in-module "Hildon")
+  (parent "GtkToolbar")
+  (c-name "HildonFindToolbar")
+  (gtype-id "HILDON_TYPE_FIND_TOOLBAR")
+)
+
+(define-function hildon_find_toolbar_new
+  (c-name "hildon_find_toolbar_new")
+  (is-constructor-of "HildonFindToolbar")
+  (return-type "GtkWidget*")
+  (parameters
+    '("gchar*" "label")
+  )
+)

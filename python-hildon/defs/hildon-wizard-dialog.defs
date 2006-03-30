@@ -1,0 +1,152 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+(define-enum FileSystemModelColumns
+  (in-module "Hildon")
+  (c-name "HildonFileSystemModelColumns")
+  (gtype-id "HILDON_TYPE_FILE_SYSTEM_MODEL_COLUMNS")
+  (values
+    '("column-gtk-path" "HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH")
+    '("column-local-path" "HILDON_FILE_SYSTEM_MODEL_COLUMN_LOCAL_PATH")
+    '("column-uri" "HILDON_FILE_SYSTEM_MODEL_COLUMN_URI")
+    '("column-file-name" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME")
+    '("column-display-name" "HILDON_FILE_SYSTEM_MODEL_COLUMN_DISPLAY_NAME")
+    '("column-sort-key" "HILDON_FILE_SYSTEM_MODEL_COLUMN_SORT_KEY")
+    '("column-mime-type" "HILDON_FILE_SYSTEM_MODEL_COLUMN_MIME_TYPE")
+    '("column-file-size" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_SIZE")
+    '("column-file-time" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_TIME")
+    '("column-is-folder" "HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER")
+    '("column-is-available" "HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE")
+    '("column-has-local-path" "HILDON_FILE_SYSTEM_MODEL_COLUMN_HAS_LOCAL_PATH")
+    '("column-type" "HILDON_FILE_SYSTEM_MODEL_COLUMN_TYPE")
+    '("column-icon" "HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON")
+    '("column-icon-expanded" "HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_EXPANDED")
+    '("column-icon-collapsed" "HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_COLLAPSED")
+    '("column-thumbnail" "HILDON_FILE_SYSTEM_MODEL_COLUMN_THUMBNAIL")
+    '("column-load-ready" "HILDON_FILE_SYSTEM_MODEL_COLUMN_LOAD_READY")
+    '("column-free-space" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FREE_SPACE")
+    '("column-title" "HILDON_FILE_SYSTEM_MODEL_COLUMN_TITLE")
+    '("column-author" "HILDON_FILE_SYSTEM_MODEL_COLUMN_AUTHOR")
+    '("num-columns" "HILDON_FILE_SYSTEM_MODEL_NUM_COLUMNS")
+  )
+)
+
+
+;; From /usr/include/hildon-fm/hildon-widgets/hildon-file-system-model.h
+
+(define-function hildon_file_system_model_get_type
+  (c-name "hildon_file_system_model_get_type")
+  (return-type "GType")
+)
+
+(define-method finished_loading
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_finished_loading")
+  (return-type "gboolean")
+)
+
+(define-method search_local_path
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_search_local_path")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar*" "path")
+    '("GtkTreeIter*" "iter")
+    '("GtkTreeIter*" "start_iter")
+    '("gboolean" "recursive")
+  )
+)
+
+(define-method search_uri
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_search_uri")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar*" "uri")
+    '("GtkTreeIter*" "iter")
+    '("GtkTreeIter*" "start_iter")
+    '("gboolean" "recursive")
+  )
+)
+
+(define-method search_path
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_search_path")
+  (return-type "gboolean")
+  (parameters
+    '("const-GtkFilePath*" "path")
+    '("GtkTreeIter*" "iter")
+    '("GtkTreeIter*" "start_iter")
+    '("gboolean" "recursive")
+  )
+)
+
+(define-method load_local_path
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_load_local_path")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar*" "path")
+    '("GtkTreeIter*" "iter")
+  )
+)
+
+(define-method load_uri
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_load_uri")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar*" "uri")
+    '("GtkTreeIter*" "iter")
+  )
+)
+
+(define-method load_path
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_load_path")
+  (return-type "gboolean")
+  (parameters
+    '("const-GtkFilePath*" "path")
+    '("GtkTreeIter*" "iter")
+  )
+)
+
+(define-method new_item
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_new_item")
+  (return-type "gchar*")
+  (parameters
+    '("GtkTreeIter*" "parent")
+    '("const-gchar*" "stub_name")
+    '("const-gchar*" "extension")
+  )
+)
+
+(define-method autoname_uri
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_autoname_uri")
+  (return-type "gchar*")
+  (parameters
+    '("const-gchar*" "uri")
+    '("GError**" "error")
+  )
+)
+
+(define-method iter_available
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_iter_available")
+  (return-type "none")
+  (parameters
+    '("GtkTreeIter*" "iter")
+    '("gboolean" "available")
+  )
+)
+
+(define-method reset_available
+  (of-object "HildonFileSystemModel")
+  (c-name "hildon_file_system_model_reset_available")
+  (return-type "none")
+)
+
+

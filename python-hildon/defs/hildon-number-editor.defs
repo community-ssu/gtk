@@ -1,0 +1,48 @@
+;;
+(define-object NumberEditor
+  (in-module "Hildon")
+  (parent "GtkContainer")
+  (c-name "HildonNumberEditor")
+  (gtype-id "HILDON_TYPE_NUMBER_EDITOR")
+)
+
+(define-function hildon_number_editor_get_type
+  (c-name "hildon_number_editor_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_number_editor_new
+  (c-name "hildon_number_editor_new")
+  (is-constructor-of "HildonNumberEditor")
+  (return-type "GtkWidget*")
+  (parameters
+    '("gint" "min")
+    '("gint" "max")
+  )
+)
+
+(define-method set_range
+  (of-object "HildonNumberEditor")
+  (c-name "hildon_number_editor_set_range")
+  (return-type "none")
+  (parameters
+    '("gint" "min")
+    '("gint" "max")
+  )
+)
+
+(define-method get_value
+  (of-object "HildonNumberEditor")
+  (c-name "hildon_number_editor_get_value")
+  (return-type "gint")
+)
+
+(define-method set_value
+  (of-object "HildonNumberEditor")
+  (c-name "hildon_number_editor_set_value")
+  (return-type "none")
+  (parameters
+    '("gint" "value")
+  )
+)
+

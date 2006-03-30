@@ -1,0 +1,156 @@
+diff -uNr hildon-libs-0.9.6.orig/hildon-widgets/hildon-calendar-popup.h hildon-libs-0.9.6/hildon-widgets/hildon-calendar-popup.h
+--- hildon-libs-0.9.6.orig/hildon-widgets/hildon-calendar-popup.h	2005-05-22 16:57:07.000000000 -0300
++++ hildon-libs-0.9.6/hildon-widgets/hildon-calendar-popup.h	2005-07-05 16:35:17.822598096 -0300
+@@ -29,19 +29,20 @@
+ 
+ G_BEGIN_DECLS
+ /**
+- * HILDON_CALENDAR_POPUP_TYPE:
++ * HILDON_TYPE_CALENDAR_POPUP:
+  *
+  * Macro for getting type of calendar popup.
+  */
+-#define HILDON_CALENDAR_POPUP_TYPE ( hildon_calendar_popup_get_type() )
++#define HILDON_TYPE_CALENDAR_POPUP ( hildon_calendar_popup_get_type() )
++#define HILDON_CALENDAR_POPUP_TYPE HILDON_TYPE_CALENDAR_POPUP
+ #define HILDON_CALENDAR_POPUP(obj) (GTK_CHECK_CAST (obj,\
+-  HILDON_CALENDAR_POPUP_TYPE, HildonCalendarPopup))
++  HILDON_TYPE_CALENDAR_POPUP, HildonCalendarPopup))
+ #define HILDON_CALENDAR_POPUP_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass),\
+-  HILDON_CALENDAR_POPUP_TYPE, HildonCalendarPopupClass))
++  HILDON_TYPE_CALENDAR_POPUP, HildonCalendarPopupClass))
+ #define HILDON_IS_CALENDAR_POPUP(obj) (GTK_CHECK_TYPE (obj,\
+-  HILDON_CALENDAR_POPUP_TYPE))
++  HILDON_TYPE_CALENDAR_POPUP))
+ #define HILDON_IS_CALENDAR_POPUP_CLASS(klass) \
+-  (GTK_CHECK_CLASS_TYPE ((klass), HILDON_CALENDAR_POPUP_TYPE))
++  (GTK_CHECK_CLASS_TYPE ((klass), HILDON_TYPE_CALENDAR_POPUP))
+ 
+ /**
+  * HildonCalendarPopup:
+diff -uNr hildon-libs-0.9.6.orig/hildon-widgets/hildon-date-editor.h hildon-libs-0.9.6/hildon-widgets/hildon-date-editor.h
+--- hildon-libs-0.9.6.orig/hildon-widgets/hildon-date-editor.h	2005-05-22 16:57:07.000000000 -0300
++++ hildon-libs-0.9.6/hildon-widgets/hildon-date-editor.h	2005-07-05 16:34:27.873191560 -0300
+@@ -29,19 +29,20 @@
+ 
+ G_BEGIN_DECLS
+ /**
+- * HILDON_DATE_EDITOR_TYPE:
++ * HILDON_TYPE_DATE_EDITOR:
+  *
+  * Macro for getting type of date editor.
+  */
+-#define HILDON_DATE_EDITOR_TYPE ( hildon_date_editor_get_type() )
++#define HILDON_TYPE_DATE_EDITOR ( hildon_date_editor_get_type() )
++#define HILDON_DATE_EDITOR_TYPE HILDON_TYPE_DATE_EDITOR
+ #define HILDON_DATE_EDITOR(obj) (GTK_CHECK_CAST (obj,\
+-  HILDON_DATE_EDITOR_TYPE, HildonDateEditor))
++  HILDON_TYPE_DATE_EDITOR, HildonDateEditor))
+ #define HILDON_DATE_EDITOR_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass),\
+-  HILDON_DATE_EDITOR_TYPE, HildonDateEditorClass))
++  HILDON_TYPE_DATE_EDITOR, HildonDateEditorClass))
+ #define HILDON_IS_DATE_EDITOR(obj) (GTK_CHECK_TYPE (obj,\
+-  HILDON_DATE_EDITOR_TYPE))
++  HILDON_TYPE_DATE_EDITOR))
+ #define HILDON_IS_DATE_EDITOR_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass),\
+-  HILDON_DATE_EDITOR_TYPE))
++  HILDON_TYPE_DATE_EDITOR))
+ 
+ /**
+  * HildonDateEditor:
+diff -uNr hildon-libs-0.9.6.orig/hildon-widgets/hildon-range-editor.h hildon-libs-0.9.6/hildon-widgets/hildon-range-editor.h
+--- hildon-libs-0.9.6.orig/hildon-widgets/hildon-range-editor.h	2005-05-22 16:57:07.000000000 -0300
++++ hildon-libs-0.9.6/hildon-widgets/hildon-range-editor.h	2005-07-05 16:36:10.565579944 -0300
+@@ -33,19 +33,20 @@
+ 
+ G_BEGIN_DECLS
+ /**
+- * HILDON_RANGE_EDITOR_TYPE
++ * HILDON_TYPE_RANGE_EDITOR
+  *
+  * Macro for getting type of range editor.
+  */
+-#define HILDON_RANGE_EDITOR_TYPE (hildon_range_editor_get_type())
++#define HILDON_TYPE_RANGE_EDITOR (hildon_range_editor_get_type())
++#define HILDON_RANGE_EDITOR_TYPE HILDON_TYPE_RANGE_EDITOR
+ #define HILDON_RANGE_EDITOR(obj) \
+-        (GTK_CHECK_CAST (obj, HILDON_RANGE_EDITOR_TYPE, HildonRangeEditor))
++        (GTK_CHECK_CAST (obj, HILDON_TYPE_RANGE_EDITOR, HildonRangeEditor))
+ #define HILDON_RANGE_EDITOR_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass),\
+-         HILDON_RANGE_EDITOR_TYPE, HildonRangeEditorClass))
++         HILDON_TYPE_RANGE_EDITOR, HildonRangeEditorClass))
+ #define HILDON_IS_RANGE_EDITOR(obj) \
+-        (GTK_CHECK_TYPE (obj, HILDON_RANGE_EDITOR_TYPE))
++        (GTK_CHECK_TYPE (obj, HILDON_TYPE_RANGE_EDITOR))
+ #define HILDON_IS_RANGE_EDITOR_CLASS(klass) \
+-        (GTK_CHECK_CLASS_TYPE ((klass), HILDON_RANGE_EDITOR_TYPE))
++        (GTK_CHECK_CLASS_TYPE ((klass), HILDON_TYPE_RANGE_EDITOR))
+ /**
+  * HildonRangeEditor:
+  *
+diff -uNr hildon-libs-0.9.6.orig/hildon-widgets/hildon-telephone-editor.h hildon-libs-0.9.6/hildon-widgets/hildon-telephone-editor.h
+--- hildon-libs-0.9.6.orig/hildon-widgets/hildon-telephone-editor.h	2005-05-22 16:57:07.000000000 -0300
++++ hildon-libs-0.9.6/hildon-widgets/hildon-telephone-editor.h	2005-07-05 16:37:37.301394096 -0300
+@@ -29,22 +29,23 @@
+ 
+ G_BEGIN_DECLS
+ /**
+- * HILDON_TELEPHONE_EDITOR_TYPE:
++ * HILDON_TYPE_TELEPHONE_EDITOR:
+  *
+  * Macro for getting type of telephone editor.
+  */
+-#define HILDON_TELEPHONE_EDITOR_TYPE \
++#define HILDON_TYPE_TELEPHONE_EDITOR \
+   ( hildon_telephone_editor_get_type() )
++#define HILDON_TELEPHONE_EDITOR_TYPE HILDON_TYPE_TELEPHONE_EDITOR
+ #define HILDON_TELEPHONE_EDITOR(obj) \
+-  (GTK_CHECK_CAST (obj, HILDON_TELEPHONE_EDITOR_TYPE, \
++  (GTK_CHECK_CAST (obj, HILDON_TYPE_TELEPHONE_EDITOR, \
+   HildonTelephoneEditor))
+ #define HILDON_TELEPHONE_EDITOR_CLASS(klass) \
+-  (GTK_CHECK_CLASS_CAST ((klass), HILDON_TELEPHONE_EDITOR_TYPE, \
++  (GTK_CHECK_CLASS_CAST ((klass), HILDON_TYPE_TELEPHONE_EDITOR, \
+   HildonTelephoneEditorClass))
+ #define HILDON_IS_TELEPHONE_EDITOR(obj) \
+-  (GTK_CHECK_TYPE (obj, HILDON_TELEPHONE_EDITOR_TYPE))
++  (GTK_CHECK_TYPE (obj, HILDON_TYPE_TELEPHONE_EDITOR))
+ #define HILDON_IS_TELEPHONE_EDITOR_CLASS(klass) \
+-  (GTK_CHECK_CLASS_TYPE ((klass), HILDON_TELEPHONE_EDITOR_TYPE))
++  (GTK_CHECK_CLASS_TYPE ((klass), HILDON_TYPE_TELEPHONE_EDITOR))
+ /**
+  * HildonTelephoneEditorFormat:
+  * @HILDON_TELEPHONE_EDITOR_FORMAT_FREE: Free format.
+diff -uNr hildon-libs-0.9.6.orig/hildon-widgets/hildon-weekday-picker.h hildon-libs-0.9.6/hildon-widgets/hildon-weekday-picker.h
+--- hildon-libs-0.9.6.orig/hildon-widgets/hildon-weekday-picker.h	2005-05-22 16:57:07.000000000 -0300
++++ hildon-libs-0.9.6/hildon-widgets/hildon-weekday-picker.h	2005-07-05 16:38:51.868058240 -0300
+@@ -29,22 +29,23 @@
+ 
+ G_BEGIN_DECLS
+ /**
+- * HILDON_WEEKDAY_PICKER_TYPE:
++ * HILDON_TYPE_WEEKDAY_PICKER:
+  *
+  * Macro for getting type of weekday picker.
+  */
+-#define HILDON_WEEKDAY_PICKER_TYPE \
++#define HILDON_TYPE_WEEKDAY_PICKER \
+         ( hildon_weekday_picker_get_type() )
++#define HILDON_WEEKDAY_PICKER_TYPE HILDON_TYPE_WEEKDAY_PICKER
+ #define HILDON_WEEKDAY_PICKER(obj) \
+-        (GTK_CHECK_CAST (obj, HILDON_WEEKDAY_PICKER_TYPE, \
++        (GTK_CHECK_CAST (obj, HILDON_TYPE_WEEKDAY_PICKER, \
+          HildonWeekdayPicker))
+ #define HILDON_WEEKDAY_PICKER_CLASS(klass) \
+         (GTK_CHECK_CLASS_CAST ((klass), \
+-         HILDON_WEEKDAY_PICKER_TYPE, HildonWeekdayPickerClass))
++         HILDON_TYPE_WEEKDAY_PICKER, HildonWeekdayPickerClass))
+ #define HILDON_IS_WEEKDAY_PICKER(obj) \
+-        (GTK_CHECK_TYPE (obj, HILDON_WEEKDAY_PICKER_TYPE))
++        (GTK_CHECK_TYPE (obj, HILDON_TYPE_WEEKDAY_PICKER))
+ #define HILDON_IS_WEEKDAY_PICKER_CLASS(klass) \
+-        (GTK_CHECK_CLASS_TYPE ((klass), HILDON_WEEKDAY_PICKER_TYPE))
++        (GTK_CHECK_CLASS_TYPE ((klass), HILDON_TYPE_WEEKDAY_PICKER))
+ /**
+  * HildonWeekdayPicker:
+  *

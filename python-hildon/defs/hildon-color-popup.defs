@@ -1,0 +1,28 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+
+;; From /usr/include/hildon-widgets/hildon-color-popup.h
+
+(define-function hildon_color_popup_new
+  (c-name "hildon_color_popup_new")
+  (is-constructor-of "HildonColorPopup")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("GdkColor*" "initial_color")
+    '("HildonColorPopup*" "popupdata")
+  )
+)
+
+(define-function hildon_color_popup_set_color_from_sliders
+  (c-name "hildon_color_popup_set_color_from_sliders")
+  (return-type "none")
+  (parameters
+    '("GdkColor*" "color")
+    '("HildonColorPopup*" "popupdata")
+  )
+)
+
+

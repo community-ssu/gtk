@@ -1,0 +1,53 @@
+;;
+(define-object GridItem
+  (in-module "Hildon")
+  (parent "GtkContainer")
+  (c-name "HildonGridItem")
+  (gtype-id "HILDON_TYPE_GRID_ITEM")
+)
+
+(define-enum GridPositionType
+  (in-module "Hildon")
+  (c-name "HildonGridPositionType")
+  (gtype-id "HILDON_TYPE_GRID_POSITION_TYPE")
+  (values
+    '("bottom" "HILDON_GRID_ITEM_LABEL_POS_BOTTOM")
+    '("right" "HILDON_GRID_ITEM_LABEL_POS_RIGHT")
+  )
+)
+
+(define-enum GridItemIconSizeType
+  (in-module "Hildon")
+  (c-name "HildonGridItemIconSizeType")
+  (gtype-id "HILDON_TYPE_GRID_ITEM_ICON_SIZE_TYPE")
+  (values
+    '("27x27" "HILDON_GRID_ITEM_ICON_27x27")
+    '("128x128" "HILDON_GRID_ITEM_ICON_128x128")
+  )
+)
+
+(define-function hildon_grid_item_new
+  (c-name "hildon_grid_item_new")
+  (is-constructor-of "HildonGridItem")
+  (return-type "GtkWidget*")
+  (parameters
+    '("const-gchar*" "icon_basename")
+  )
+)
+
+(define-method set_emblem_type
+  (of-object "HildonGridItem")
+  (c-name "hildon_grid_item_set_emblem_type")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "emblem_basename")
+  )
+)
+
+(define-method get_emblem_type
+  (of-object "HildonGridItem")
+  (c-name "hildon_grid_item_get_emblem_type")
+  (return-type "const-gchar*")
+)
+
+

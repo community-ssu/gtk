@@ -1,0 +1,43 @@
+;; TODO: verify properties
+(define-object TimePicker
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonTimePicker")
+  (gtype-id "HILDON_TYPE_TIME_PICKER")
+)
+
+(define-function hildon_time_picker_get_type
+  (c-name "hildon_time_picker_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_time_picker_new
+  (c-name "hildon_time_picker_new")
+  (is-constructor-of "HildonTimePicker")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWindow*" "parent")
+  )
+)
+
+(define-method set_time
+  (of-object "HildonTimePicker")
+  (c-name "hildon_time_picker_set_time")
+  (return-type "none")
+  (parameters
+    '("guint" "hours")
+    '("guint" "minutes")
+  )
+)
+
+(define-method get_time
+  (of-object "HildonTimePicker")
+  (c-name "hildon_time_picker_get_time")
+  (return-type "none")
+  (parameters
+    '("guint*" "hours")
+    '("guint*" "minutes")
+  )
+)
+
+
