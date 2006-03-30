@@ -1,3 +1,56 @@
+2006-03-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/apt-worker-client.cc (apt_worker_update_cache_cont): Show
+	error message when network connection could not be established.
+
+	* src/hildonbreadcrumbtrail.c (hildon_bread_crumb_trail_set_path):
+	Set button widget name to "osso-breadcrumb-button".  Make arrow
+	smaller.
+
+	* src/main.h, src/main.cc (AI_TOPIC, set_dialog_help, show_help):
+	New.
+	(enable_search, set_current_help_topic): New.  Call them in all
+	view makers to use them appropriately.
+	(make_main_view): Use logical id instead of "Repository".
+	(nicify_section_name): Try to get translation for category name.
+	(refresh_package_cache_reply, install_package_reply,
+	install_package_cont5, install_package_cont2,
+	uninstall_package_cont2, install_from_file_cont4): Notice a
+	cancelled operation and show appropriate info note.
+	(refresh_package_cache_cont): Remember time etc of this refresh
+	also when it was cancelled or unsuccessful.
+	(main): Show info banner when insensitive things in the toolbar
+	are pressed.
+	
+	* src/settings.cc (show_settings_dialog): Activate help.
+	* src/search.cc (show_search_dialog): Likewise.
+	* src/repo.cc (show_repo_edit_dialog, sources_list_reply): Likewise
+	* src/log.cc (show_log): Likewise.
+	* src/details.cc (show_with_details): Set parent of dialog.
+	Activate help.
+
+	* src/util.h, src/utils.cc (ask_yes_no_with_details): Use a
+	GtkDialog.  Added title parameter for that.  Changed all callers
+	to provide the correct title.
+	(scare_user_with_legalese): Added 'sure' parameter and display the
+	certain or uncertain version of the text accordingly.  Changed
+	callers.  Create a dialog, not a confirmation note.
+	(progress_was_cancelled, progress_cancelled): New.
+	(set_progress): Never make cancel button insensitive.
+	(cancel_response): Make decisison whether to cancel here and show
+	info banner when not doing it.  Set progress_cancelled.
+	(show_progress): Reset progress_cancelled.
+	(default_icon): New.
+	(global_icon_func): Fetch default icon if needed.  Use it as
+	default.
+	
+	* configure.ac (AI_DEPS): Addd libossohelp.
+	(AW_DEPS): New, to get rid of dependencies on UI libraries in
+	apt-worker.
+
+	* src/Makefile.am (apt_worker_CFLAGS, apt_worker_CXXFLAGS,
+	apt_worker_LDADD): Use AW_DEPS instead of AI_DEPS.
+
 2006-03-28  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.9
