@@ -1,3 +1,8 @@
+2006-03-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-navigator/osso-manager.c (osso_manager_infoprint): Free
+	  retval
+
 2006-03-30  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/home-select-applet-dialog.c: Localize the applet
