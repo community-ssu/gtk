@@ -1,0 +1,28 @@
+Source: python2.4
+Section: python
+Priority: optional
+Maintainer: Matthias Klose <doko@debian.org>
+Build-Depends: debhelper (>= 4.2), autoconf, libreadline4-dev, libncurses5-dev (>= 5.3), zlib1g-dev, libgmp3-dev, libssl-dev, sharutils, libbz2-dev, libbluetooth1-dev [!hurd-i386], gcc-4.0 (>= 4.0.1-8.0.1) [m68k]
+Build-Depends-Indep: libhtml-tree-perl, tar, gzip, bzip2, sharutils
+Standards-Version: 3.6.2
+
+Package: python2.4
+Architecture: any
+Priority: optional
+Conflicts: python2.4-dev (<< 2.3.95-2)
+Description: An interactive high-level object-oriented language (version 2.4)
+ Version 2.4 of the high-level, interactive object oriented language,
+ includes an extensive class library with lots of goodies for
+ network programming, system administration, sounds and graphics.
+
+Package: python2.4-dev
+Architecture: any
+Depends: python2.4 (= ${Source-Version})
+Suggests: libc6-dev | libc-dev
+Description: Header files and a static library for Python (v2.4)
+ Header files, a static library and development tools for building
+ Python (v2.4) modules, extending the Python interpreter or embedding
+ Python (v2.4) in applications.
+ .
+ Maintainers of Python packages should read README.maintainers.
+
