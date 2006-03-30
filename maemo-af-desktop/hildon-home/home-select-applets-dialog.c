@@ -450,7 +450,7 @@ void select_applets_reload_applets(char *applets_path,
 		    gtk_list_store_append(GTK_LIST_STORE(data_t.model_data), &iter);
 	            gtk_list_store_set(GTK_LIST_STORE(data_t.model_data), &iter,
 				       CHECKBOX_COL, FALSE,
-				       APPLET_NAME_COL, applet_name,
+				       APPLET_NAME_COL, _(applet_name),
 				       DESKTOP_FILE_COL, indexfile, -1);
 		    
                     /* if the applet already exists in applet manager */

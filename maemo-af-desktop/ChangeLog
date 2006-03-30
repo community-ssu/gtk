@@ -1,5 +1,10 @@
 2006-03-30  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/home-select-applet-dialog.c: Localize the applet
+	  name (Closes N#25271)
+
+2006-03-30  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.c, hildon-navigator/others-menu.c:
 	  fixed numerous (and big) memory leaks in menu generation.
 
