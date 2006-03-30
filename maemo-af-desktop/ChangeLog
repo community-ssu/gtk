@@ -1,3 +1,9 @@
+2006-03-30  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hildon-navigator-main.c: (Closes N#23928)
+      - Add defines for watchfile name
+      - (task_navigator_deinitialize): Remove watchfiles
+
 2006-03-29  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-main.c: (Closes N#19498)

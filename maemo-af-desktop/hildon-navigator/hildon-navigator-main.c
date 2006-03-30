@@ -1,7 +1,7 @@
 /*
  * This file is part of maemo-af-desktop
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005, 2006 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -50,6 +50,7 @@
 
 /* log include */
 #include <log-functions.h>
+#include <osso-log.h>
 
 /* Locale include */
 #include <locale.h>
@@ -75,7 +76,6 @@
 #define PLUGIN_KEY_LIB                  "Library"
 #define PLUGIN_KEY_POSITION             "Position"
 #define PLUGIN_KEY_MANDATORY            "Mandatory"
-
 
 #include "kstrace.h"
 
@@ -125,6 +125,8 @@ static void plugin_configuration_changed( char *path,
 #define NAVIGATOR_USER_DIR              ".osso/hildon-navigator/"
 #define NAVIGATOR_USER_PLUGINS          NAVIGATOR_USER_DIR CFG_FNAME
 #define NAVIGATOR_WATCH_DIR             ".osso"
+#define NAVIGATOR_WATCH_PREFIX          "navigator-"
+#define NAVIGATOR_WATCH_SUFFIX          ".watch"
 
 
 Navigator *task_nav;
@@ -172,10 +174,12 @@ static void stop_plugin_watch(NavigatorPlugin *plugin)
     plugin->watch = NULL;
 
     soname = g_path_get_basename(plugin->library);
-    watch_name = g_strdup_printf("%s/%s/navigator-%s.watch",
+    watch_name = g_strdup_printf("%s/%s/%s%s%s",
                                  home_dir,
                                  NAVIGATOR_WATCH_DIR,
-                                 soname);
+                                 NAVIGATOR_WATCH_PREFIX,
+                                 soname,
+                                 NAVIGATOR_WATCH_SUFFIX);
     remove(watch_name);
     g_free(soname);
     g_free(watch_name);
@@ -1054,8 +1058,50 @@ int task_navigator_main(Navigator *tasknav){
 
 int task_navigator_deinitialize(Navigator *tasknav){
 
+    gchar *watch_dir;
+    const gchar *filename;
+    GDir *dir;
+    GError *error;
 
     destroy_navigator(tasknav);
+    
+    /* Everybody deserves a second chance:
+     * Clear the plugin watchfiles after a succesfull lifecycle
+     */
+
+    watch_dir = g_strdup_printf("%s/%s", home_dir, NAVIGATOR_WATCH_DIR);
+    hildon_dnotify_remove_cb(NAVIGATOR_WATCH_DIR);
+    
+    error = NULL;
+    dir = g_dir_open (watch_dir, 0, &error);
+    
+    if (dir == NULL)
+      {
+        ULOG_WARN("Cannot open watch dir %s: %s", watch_dir, error->message);
+        g_error_free(error);
+        g_free(watch_dir);
+        return 0;
+      }
+
+    filename = g_dir_read_name(dir);
+    while (filename != NULL)
+      {
+        /* If the format of the name matches, unlink the file */
+        if (g_str_has_prefix(filename, NAVIGATOR_WATCH_PREFIX)
+            && g_str_has_suffix(filename, ".watch"))
+          {
+            gchar *path = g_strdup_printf("%s/%s", watch_dir, filename);
+            if (remove(path) < 0)
+              {
+                ULOG_WARN("Unable to remove watch file %s!", path);
+              }
+              
+          }
+        filename = g_dir_read_name(dir);
+      }
+    
+    g_free(watch_dir);
+
     return 0;
 }
 #endif
