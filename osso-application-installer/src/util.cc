@@ -96,7 +96,8 @@ ask_yes_no (const gchar *question,
 }
 
 void
-ask_yes_no_with_details (const gchar *question,
+ask_yes_no_with_details (const gchar *title,
+			 const gchar *question,
 			 package_info *pi, bool installed,
 			 void (*cont) (bool res, void *data),
 			 void *data)
@@ -109,14 +110,18 @@ ask_yes_no_with_details (const gchar *question,
   c->cont = cont;
   c->data = data;
 
-  dialog = hildon_note_new_confirmation_add_buttons
-    (get_main_window (), question,
-     dgettext ("hildon-libs", "Ecdg_bd_confirmation_note_ok"),
-     GTK_RESPONSE_OK,
-     _("ai_nc_bd_details"), 1,
-     dgettext ("hildon-libs", "Ecdg_bd_confirmation_note_cancel"),
-     GTK_RESPONSE_CANCEL,
+  dialog = gtk_dialog_new_with_buttons
+    (title,
+     get_main_window (),
+     GTK_DIALOG_MODAL,
+     _("ai_bd_confirm_ok"),      GTK_RESPONSE_OK,
+     _("ai_bd_confirm_details"), 1,
+     _("ai_bd_confirm_cancel"),  GTK_RESPONSE_CANCEL,
      NULL);
+
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
+		     gtk_label_new (question));
+
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (yes_no_response), c);
   gtk_widget_show_all (dialog);
@@ -219,15 +224,41 @@ irritate_user (const gchar *text)
 }
 
 void
-scare_user_with_legalese (void (*cont) (bool res, void *data),
+scare_user_with_legalese (bool sure,
+			  void (*cont) (bool res, void *data),
 			  void *data)
 {
-  ask_yes_no (_("ai_nc_non_verified_package"),
-	      cont, data);
+  ayn_closure *c = new ayn_closure;
+  c->pi = NULL;
+  c->cont = cont;
+  c->data = data;
+
+  GtkWidget *dialog;
+
+  dialog = gtk_dialog_new_with_buttons
+    (_("ai_ti_notice"),
+     get_main_window (),
+     GTK_DIALOG_MODAL,
+     _("ai_bd_notice_ok"),      GTK_RESPONSE_OK,
+     _("ai_bd_notice_cancel"),  GTK_RESPONSE_CANCEL,
+     NULL);
+
+  const char *text = (sure
+		      ? _("ai_nc_non_verified_package")
+		      : _("ai_nc_unsure_package"));
+
+  GtkWidget *label = gtk_label_new (text);
+  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), label);
+
+  g_signal_connect (dialog, "response",
+		    G_CALLBACK (yes_no_response), c);
+  gtk_widget_show_all (dialog);
 }
 
 static GtkWidget *progress_dialog = NULL;
 static GtkWidget *progress_cancel_button;
+static bool progress_cancelled;
 static GtkProgressBar *progress_bar;
 static const gchar *general_title;
 static apt_proto_operation current_status_operation = op_general;
@@ -261,8 +292,19 @@ stop_pulsing ()
 static void
 cancel_response (GtkDialog *dialog, gint response, gpointer data)
 {
-  fprintf (stderr, "cancel\n");
-  cancel_apt_worker ();
+  if (current_status_operation == op_downloading)
+    {
+      progress_cancelled = true;
+      cancel_apt_worker ();
+    }
+  else
+    irritate_user (_("ai_ib_unable_cancel"));
+}
+
+bool
+progress_was_cancelled ()
+{
+  return progress_cancelled;
 }
 
 void
@@ -290,6 +332,8 @@ show_progress (const char *title)
   set_progress (op_general, -1, 0);
 
   gtk_widget_show (progress_dialog);
+
+  progress_cancelled = false;
 }
 
 void
@@ -318,8 +362,10 @@ set_progress (apt_proto_operation op, int already, int total)
 
   current_status_operation = op;
 
+#if 0
   if (progress_cancel_button)
     gtk_widget_set_sensitive (progress_cancel_button, op == op_downloading);
+#endif
 
   // printf ("STATUS: %s -- %f\n", title, fraction);
 
@@ -400,6 +446,8 @@ make_small_label (const char *text)
 static GtkListStore *global_list_store = NULL;
 static bool global_installed;
 
+static GdkPixbuf *default_icon = NULL;
+
 static void
 global_icon_func (GtkTreeViewColumn *column,
 		  GtkCellRenderer *cell,
@@ -412,10 +460,23 @@ global_icon_func (GtkTreeViewColumn *column,
   if (!pi)
     return;
 
-  g_object_set (cell, "pixbuf", (global_installed
-				 ? pi->installed_icon
-				 : pi->available_icon),
-		NULL);
+  GdkPixbuf *icon = (global_installed
+		     ? pi->installed_icon
+		     : pi->available_icon);
+
+  if (default_icon == NULL)
+    {
+      GtkIconTheme *icon_theme;
+
+      icon_theme = gtk_icon_theme_get_default ();
+      default_icon = gtk_icon_theme_load_icon (icon_theme,
+					       "qgn_list_gene_default_app",
+					       26,
+					       GtkIconLookupFlags(0),
+					       NULL);
+    }
+
+  g_object_set (cell, "pixbuf", icon? icon : default_icon, NULL);
 }
 
 static void

@@ -29,10 +29,11 @@
 
 #include "main.h"
 
-void ask_yes_no (const gchar *question_fmt,
+void ask_yes_no (const gchar *question,
 		 void (*cont) (bool res, void *data), void *data);
 
-void ask_yes_no_with_details (const gchar *question_fmt,
+void ask_yes_no_with_details (const gchar *title,
+			      const gchar *question,
 			      package_info *pi, bool installed,
 			      void (*cont) (bool res, void *data), void *data);
 
@@ -43,11 +44,13 @@ void annoy_user_with_log (const gchar *text);
 
 void irritate_user (const gchar *text);
 
-void scare_user_with_legalese (void (*cont) (bool res, void *data),
+void scare_user_with_legalese (bool sure,
+			       void (*cont) (bool res, void *data),
 			       void *data);
 
 void show_progress (const char *title);
 void set_progress (apt_proto_operation op, int already, int total);
+bool progress_was_cancelled ();
 void hide_progress ();
 
 GtkWidget *make_small_text_view (const char *text);
