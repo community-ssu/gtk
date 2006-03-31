@@ -240,6 +240,9 @@ home_image_loader_LDADD = $(GDK_LIBS) $(GNOME_VFS_LIBS) $(GCONF_LIBS) $(OSSO_LIB
 
 hildon_home_pluginincludeinstdir = $(includedir)/hildon-home-plugin
 hildon_home_pluginincludeinst_DATA = hildon-home-plugin-interface.h
+
+hildon_home_backup_script_SCRIPTS = hildon-home-restore-background.sh
+hildon_home_backup_scriptdir = $(sysconfdir)/osso-backup/restore.d/it2006
 subdir = hildon-home
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -260,6 +263,8 @@ am_home_image_loader_OBJECTS = hildon-home-image-loader.$(OBJEXT)
 home_image_loader_OBJECTS = $(am_home_image_loader_OBJECTS)
 home_image_loader_DEPENDENCIES =
 home_image_loader_LDFLAGS =
+SCRIPTS = $(hildon_home_backup_script_SCRIPTS)
+
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -356,6 +361,26 @@ clean-binPROGRAMS:
 home-image-loader$(EXEEXT): $(home_image_loader_OBJECTS) $(home_image_loader_DEPENDENCIES) 
 	@rm -f home-image-loader$(EXEEXT)
 	$(LINK) $(home_image_loader_LDFLAGS) $(home_image_loader_OBJECTS) $(home_image_loader_LDADD) $(LIBS)
+hildon_home_backup_scriptSCRIPT_INSTALL = $(INSTALL_SCRIPT)
+install-hildon_home_backup_scriptSCRIPTS: $(hildon_home_backup_script_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(hildon_home_backup_scriptdir)
+	@list='$(hildon_home_backup_script_SCRIPTS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f $$d$$p; then \
+	    f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
+	    echo " $(hildon_home_backup_scriptSCRIPT_INSTALL) $$d$$p $(DESTDIR)$(hildon_home_backup_scriptdir)/$$f"; \
+	    $(hildon_home_backup_scriptSCRIPT_INSTALL) $$d$$p $(DESTDIR)$(hildon_home_backup_scriptdir)/$$f; \
+	  else :; fi; \
+	done
+
+uninstall-hildon_home_backup_scriptSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(hildon_home_backup_script_SCRIPTS)'; for p in $$list; do \
+	  f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
+	  echo " rm -f $(DESTDIR)$(hildon_home_backup_scriptdir)/$$f"; \
+	  rm -f $(DESTDIR)$(hildon_home_backup_scriptdir)/$$f; \
+	done
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -536,12 +561,12 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(DATA)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(SCRIPTS) $(DATA)
 install-binPROGRAMS: install-libLTLIBRARIES
 
 
 installdirs:
-	$(mkinstalldirs) $(DESTDIR)$(libdir) $(DESTDIR)$(bindir) $(DESTDIR)$(hildon_home_pluginincludeinstdir) $(DESTDIR)$(pkgconfigdir)
+	$(mkinstalldirs) $(DESTDIR)$(libdir) $(DESTDIR)$(bindir) $(DESTDIR)$(hildon_home_backup_scriptdir) $(DESTDIR)$(hildon_home_pluginincludeinstdir) $(DESTDIR)$(pkgconfigdir)
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -585,8 +610,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-hildon_home_pluginincludeinstDATA \
-	install-pkgconfigDATA
+install-data-am: install-hildon_home_backup_scriptSCRIPTS \
+	install-hildon_home_pluginincludeinstDATA install-pkgconfigDATA
 
 install-exec-am: install-binPROGRAMS install-libLTLIBRARIES
 
@@ -615,6 +640,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS \
+	uninstall-hildon_home_backup_scriptSCRIPTS \
 	uninstall-hildon_home_pluginincludeinstDATA uninstall-info-am \
 	uninstall-libLTLIBRARIES uninstall-pkgconfigDATA
 
@@ -624,6 +650,7 @@ uninstall-am: uninstall-binPROGRAMS \
 	distclean-tags distdir dvi dvi-am info info-am install \
 	install-am install-binPROGRAMS install-data install-data-am \
 	install-exec install-exec-am \
+	install-hildon_home_backup_scriptSCRIPTS \
 	install-hildon_home_pluginincludeinstDATA install-info \
 	install-info-am install-libLTLIBRARIES install-man \
 	install-pkgconfigDATA install-strip installcheck \
@@ -631,6 +658,7 @@ uninstall-am: uninstall-binPROGRAMS \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-hildon_home_backup_scriptSCRIPTS \
 	uninstall-hildon_home_pluginincludeinstDATA uninstall-info-am \
 	uninstall-libLTLIBRARIES uninstall-pkgconfigDATA
 

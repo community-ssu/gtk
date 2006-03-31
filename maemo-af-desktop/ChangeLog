@@ -1,7 +1,14 @@
+2006-03-31  Johan Bilien <johan.bilien@nokia.com>
+
+	* Added hildon-home/hildon-home-restore-background.sh
+	* hildon-home/hildon-home-restore-background.sh: Restores the
+	  default background after a backup from older releases is
+	  restored (Closes N#23524)
+
 2006-03-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-navigator/osso-manager.c (osso_manager_infoprint): Free
-	  retval
+	  retval (Closes N#20883)
 
 2006-03-30  Johan Bilien <johan.bilien@nokia.com>
 
