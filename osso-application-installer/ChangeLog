@@ -1,3 +1,25 @@
+2006-03-31  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/main.h, src/main.cc
+	(section_info): Added reference counting; updated all users.
+	(cur_section): Removed.
+	(cur_section_name): Use this instead.
+	(view_section): Set cur_section_name here.
+	(make_install_section_view): Use it here to find the current
+	section_info struct.
+	(find_section_info): Added create parameter, updated callers.
+
+	* src/details.cc (get_package_details_reply): Don't recode
+	maintainer name.
+
+	* src/apt-worker-proto.h, src/apt-worker-proto.cc: Specify that
+	strings are in UTF-8.
+	(apt_proto_decoder::decode_string_in_place): Check for UTF-8
+	validity and correct if necessary.
+
+	* src/apt-worker.cc (install_file): Call cache_init after
+	everything has been done.
+
 2006-03-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/apt-worker-client.cc (apt_worker_update_cache_cont): Show
