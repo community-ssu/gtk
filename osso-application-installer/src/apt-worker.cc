@@ -1888,5 +1888,6 @@ install_file (const char *filename)
 
   _system->Lock();
 
+  cache_init ();
   return res == 0;
 }
