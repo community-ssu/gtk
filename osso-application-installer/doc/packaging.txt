@@ -26,6 +26,7 @@ Packages made for the Application 2006 should follow a few extra
 rules, tho, if they want to integrate nicely.  These rules are related
 to
 
+  - general stuff
   - sections
   - icons
   - the policy engine of the AI
@@ -53,6 +54,15 @@ no risk to confuse the two.  The AI 2005, for example, is a Control
 panel applet, and the AI 2006 is a regular application started from
 the "Tools" menu.  Also the AI 2006 actually calls itself "Application
 manager" on the screen.
+
+
+General
+-------
+
+All strings coming from the control information of a package are
+interpreted in UTF-8 when they are shown in the UI.  If a string is
+not valid UTF-8, all bytes above 127 are replaced with '?' before
+displaying it.
 
 
 Sections
