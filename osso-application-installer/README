@@ -67,12 +67,10 @@ worth it, in my opinion.
 BUGS
 ----
 
-- non-ASCII text in package info
 - depcache.Init () is too slow
-- make apt-worker robust against malformed config files
 - maybe restart apt-worker when it exits after handling a request
 - handle broken packages
-- empty section after installing last package in it
+- handle removed, non-purged packages
 
 - Format description nicely in details dialog.
 
