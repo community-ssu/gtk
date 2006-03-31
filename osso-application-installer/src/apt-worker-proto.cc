@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <glib.h>
+
 #include "apt-worker-proto.h"
 
 apt_proto_encoder::apt_proto_encoder ()
@@ -196,6 +198,14 @@ apt_proto_decoder::decode_string_in_place ()
 
   str = ptr;
   decode_mem (NULL, len+1);
+
+  if (!g_utf8_validate (str, -1, NULL))
+    {
+      for (unsigned char *p = (unsigned char *)str; *p; p++)
+	if (*p > 127)
+	  *p = '?';
+    }
+
   return str;
 }
 

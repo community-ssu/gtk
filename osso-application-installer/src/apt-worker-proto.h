@@ -68,6 +68,8 @@ struct apt_response_header {
 };
 
 // Encoding and decoding of data types
+//
+// All strings are in UTF-8.
 
 struct apt_proto_encoder {
 
