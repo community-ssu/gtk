@@ -1,3 +1,11 @@
+osso-application-installer (4.10) unstable; urgency=low
+
+  * Added libosso-help-dev to Build-Depends.
+  * Activated online help.
+  * Reduced library dependencies of apt-worker.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 31 Mar 2006 18:32:09 +0300
+
 osso-application-installer (4.9) unstable; urgency=low
 
   * Fixed for GCC 3.4.

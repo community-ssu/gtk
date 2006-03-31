@@ -1,14 +1,19 @@
 2006-03-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
+        Released 4.10
+	
 	* src/main.h, src/main.cc
 	(section_info): Added reference counting; updated all users.
+	The name member is now allocated and not nicified.
 	(cur_section): Removed.
 	(cur_section_name): Use this instead.
 	(view_section): Set cur_section_name here.
 	(make_install_section_view): Use it here to find the current
 	section_info struct.
 	(find_section_info): Added create parameter, updated callers.
-
+	(set_install_section_name): Nicify the view label here.
+	* src/util.cc (make_global_section_list): Nicify section name here.
+	
 	* src/details.cc (get_package_details_reply): Don't recode
 	maintainer name.
 
