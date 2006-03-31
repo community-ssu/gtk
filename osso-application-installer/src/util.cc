@@ -822,7 +822,7 @@ make_global_section_list (GList *sections, section_activated *act)
   for (GList *s = sections; s; s = s ->next)
     {
       section_info *si = (section_info *)s->data;
-      GtkWidget *label = gtk_label_new (si->name);
+      GtkWidget *label = gtk_label_new (nicify_section_name (si->name));
       gtk_misc_set_padding (GTK_MISC (label), 15, 15);
       GtkWidget *btn = gtk_button_new ();
       gtk_container_add (GTK_CONTAINER (btn), label);

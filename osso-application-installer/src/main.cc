@@ -276,7 +276,7 @@ static GList *upgradeable_packages = NULL;
 static GList *installed_packages = NULL;
 static GList *search_result_packages = NULL;
 
-static section_info *cur_section;
+static char *cur_section_name;
 
 package_info::package_info ()
 {
@@ -344,15 +344,38 @@ free_packages (GList *list)
   g_list_free (list);
 }
 
+section_info::section_info ()
+{
+  ref_count = 1;
+  name = NULL;
+  packages = NULL;
+}
+
+section_info::~section_info ()
+{
+  g_free (name);
+  free_packages (packages);
+}
+
+void
+section_info::ref ()
+{
+  ref_count += 1;
+}
+
+void
+section_info::unref ()
+{
+  ref_count -= 1;
+  if (ref_count == 0)
+    delete this;
+}
+
 static void
 free_sections (GList *list)
 {
   for (GList *s = list; s; s = s->next)
-    {
-      section_info *si = (section_info *)s->data;
-      free_packages (si->packages);
-      delete si;
-    }
+    ((section_info *)s->data)->unref ();
   g_list_free (list);
 }
 
@@ -409,19 +432,20 @@ nicify_section_name (const char *name)
 }
 
 static section_info *
-find_section_info (GList **list_ptr, const char *name)
+find_section_info (GList **list_ptr, const char *name, bool create)
 {
   if (name == NULL)
-    name = "unknown";
-
-  name = nicify_section_name (name);
+    name = "other";
 
   for (GList *ptr = *list_ptr; ptr; ptr = ptr->next)
     if (!strcmp (((section_info *)ptr->data)->name, name))
       return (section_info *)ptr->data;
 
+  if (!create)
+    return NULL;
+	    
   section_info *si = new section_info;
-  si->name = name;
+  si->name = g_strdup (name);
   si->packages = NULL;
   *list_ptr = g_list_prepend (*list_ptr, si);
   return si;
@@ -592,7 +616,8 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	  else if (info->available_version)
 	    {
 	      section_info *sec = find_section_info (&install_sections,
-						     info->available_section);
+						     info->available_section,
+						     true);
 	      sec->packages = g_list_prepend (sec->packages,
 					      info);
 	      new_p++;
@@ -1204,7 +1229,7 @@ static void
 set_install_section_name (const char *name)
 {
   g_free ((gchar *)install_section_view.label);
-  install_section_view.label = g_strdup (name);
+  install_section_view.label = g_strdup (nicify_section_name (name));
 }
 
 GtkWidget *
@@ -1215,11 +1240,11 @@ make_install_section_view (view *v)
 
   set_operation_label (_("ai_me_package_install"));
 
-  cur_section = find_section_info (&install_sections,
-				   install_section_view.label);
-  
+  section_info *si = find_section_info (&install_sections,
+					cur_section_name, false);
+
   GtkWidget *list =
-    make_global_package_list (cur_section->packages,
+    make_global_package_list (si? si->packages : NULL,
 			      false,
 			      _("ai_li_no_applications_available"),
 			      available_package_selected, 
@@ -1228,7 +1253,8 @@ make_install_section_view (view *v)
   view = make_package_list_view (list, true);
   gtk_widget_show_all (view);
 
-  get_package_list_info (cur_section->packages);
+  if (si)
+    get_package_list_info (si->packages);
   maybe_refresh_package_cache ();
 
   enable_search (true);
@@ -1240,8 +1266,11 @@ make_install_section_view (view *v)
 static void
 view_section (section_info *si)
 {
-  cur_section = si;
-  set_install_section_name (si->name);
+  g_free (cur_section_name);
+  cur_section_name = g_strdup (si->name);
+
+  install_section_view.label = nicify_section_name (cur_section_name);
+
   show_view (&install_section_view);
 }
 
@@ -1252,8 +1281,6 @@ make_install_applications_view (view *v)
 
   set_operation_label (_("ai_me_package_install"));
   
-  cur_section = NULL;
-
   // XXX - provide "All" section, don't show sections when there are
   //       only few packages.
 

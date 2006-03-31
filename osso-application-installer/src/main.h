@@ -70,7 +70,16 @@ void get_intermediate_package_info (package_info *pi,
 				    void *);
 
 struct section_info {
-  const char *name;
+
+  section_info ();
+  ~section_info ();
+
+  void ref ();
+  void unref ();
+
+  int ref_count;
+
+  char *name;
   GList *packages;
 };
 
