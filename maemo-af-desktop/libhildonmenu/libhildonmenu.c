@@ -279,7 +279,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 {
 	gint level = 0;
     gboolean doc_created = FALSE;
-    GdkPixbuf *icon;
+    GdkPixbuf *icon = NULL;
     static GdkPixbuf *folder_icon = NULL;
 
     if ( !folder_icon ) {
@@ -611,6 +611,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
         /* We don't need our reference to the folder icon pixbuf anymore */
         if ( folder_icon ) {
             g_object_unref( G_OBJECT( folder_icon ) );
+            folder_icon = NULL;
         }
 
 		ULOG_DEBUG( "read_menu_conf: DONE!" );
