@@ -421,11 +421,7 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
       return;
     }
 
-  const char *maintainer = dec->decode_string_in_place ();
-  pi->maintainer = g_convert (maintainer, -1,
-			      "UTF-8", "ISO-8859-1",
-			      NULL, NULL, NULL);
-
+  pi->maintainer = dec->decode_string_dup ();
   pi->description = dec->decode_string_dup ();
 
   g_free (decode_dependencies (dec));
