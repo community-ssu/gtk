@@ -280,6 +280,12 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 	gint level = 0;
     gboolean doc_created = FALSE;
     GdkPixbuf *icon;
+    static GdkPixbuf *folder_icon = NULL;
+
+    if ( !folder_icon ) {
+        /* Use the same pixbuf for all the instances of the folder icon */
+        folder_icon = get_icon(ICON_FOLDER, ICON_SIZE);
+    }
 
 	/* Make sure we have a valid iterator */
 	if (!gtk_tree_store_iter_is_valid(menu_tree, iterator)) {
@@ -373,14 +379,12 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 			ULOG_DEBUG( "read_menu_conf: "
 					"level %i: Name = '%s'", level, key);
-            
-            icon = get_icon(ICON_FOLDER, ICON_SIZE);
 
 			gtk_tree_store_set(menu_tree, iterator,
 					TREE_MODEL_NAME,
 					key,
 					TREE_MODEL_ICON,
-					icon,
+                    folder_icon,
 					TREE_MODEL_EXEC,
 					"",
 					TREE_MODEL_SERVICE,
@@ -388,9 +392,6 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					TREE_MODEL_DESKTOP_ID,
 					"",
 					-1);
-
-            if ( icon )
-                g_object_unref( G_OBJECT( icon ) );
 
 			if ( strcmp( key, EXTRAS_MENU_STRING ) == 0 ) {
 				extras_iter = gtk_tree_iter_copy( iterator );
@@ -547,14 +548,12 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 				return;
 			}
 
-            icon = get_icon(ICON_FOLDER, ICON_SIZE);
-
 			gtk_tree_store_set(menu_tree,
 					extras_iter,
 					TREE_MODEL_NAME,
 					EXTRAS_MENU_STRING,
 					TREE_MODEL_ICON,
-					icon,
+                    folder_icon,
 					TREE_MODEL_EXEC,
 					"",
 					TREE_MODEL_SERVICE,
@@ -562,9 +561,6 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					TREE_MODEL_DESKTOP_ID,
 					"",
 					-1 );
-
-            if ( icon )
-                g_object_unref(G_OBJECT(icon));
 
 			ULOG_DEBUG( "Menu '%s' created.", EXTRAS_MENU_STRING );
 		} else {
@@ -611,6 +607,11 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 			loop = loop->next;
 		}
+
+        /* We don't need our reference to the folder icon pixbuf anymore */
+        if ( folder_icon ) {
+            g_object_unref( G_OBJECT( folder_icon ) );
+        }
 
 		ULOG_DEBUG( "read_menu_conf: DONE!" );
 	}

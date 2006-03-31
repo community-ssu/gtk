@@ -1,5 +1,10 @@
 2006-03-31  Johan Bilien <johan.bilien@nokia.com>
 
+	* libhildonmenu/libhildonmenu.c: load the folder icon only once
+	  (Closes N#25288)
+
+2006-03-31  Johan Bilien <johan.bilien@nokia.com>
+
 	* Added hildon-home/hildon-home-restore-background.sh
 	* hildon-home/hildon-home-restore-background.sh: Restores the
 	  default background after a backup from older releases is
