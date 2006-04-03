@@ -142,6 +142,7 @@ set_gateway_from_gconf_value(HildonFileSystemSettings *self,
   g_free(self->priv->gateway);
   self->priv->gateway = NULL;
   self->priv->gateway_ftp = FALSE;
+  ULOG_DEBUG_F("entered");
 
   if (value && value->type == GCONF_VALUE_STRING)
   {
@@ -154,6 +155,7 @@ set_gateway_from_gconf_value(HildonFileSystemSettings *self,
       gchar key[256];
       GSList *list;
 
+      ULOG_DEBUG_F("got address '%s'", address);
       self->priv->gateway = g_strdup(address);
 
       g_snprintf(key, sizeof(key), "%s/%s/services",
@@ -165,7 +167,9 @@ set_gateway_from_gconf_value(HildonFileSystemSettings *self,
         ULOG_ERR_F("gconf_client_get_list failed");
       } else {
         const GSList *p;
-        for (p = list; p != NULL; p = g_slist_next(list)) {
+        ULOG_DEBUG_F("got a list, first string '%s'",
+                     list ? (char*)(list->data): "none");
+        for (p = list; p != NULL; p = g_slist_next(p)) {
           if (strstr((const char*)(p->data), "FTP") != NULL) {
             self->priv->gateway_ftp = TRUE;
             break;
