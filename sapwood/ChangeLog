@@ -7,11 +7,6 @@
 
 2006-04-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
-	* src/sapwood-draw.c (get_window_for_shape): Use original logic as
-	temporary fallback to give time to update the themes.
-
-2006-04-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
-
 	* src/sapwood-draw.c (draw_simple_image, get_window_for_shape): Use
 	flag from gtkrc to figure out need for shape mask.
 	* src/sapwood-rc-style.c (theme_symbols, theme_parse_shaped,
