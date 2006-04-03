@@ -24,8 +24,11 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
+configure:
+	NOCONFIGURE=1 ./autogen.sh
+
 build: build-stamp
-build-stamp:
+build-stamp: configure
 	dh_testdir
 	./configure	--host=$(DEB_HOST_GNU_TYPE) \
 			--build=$(DEB_BUILD_GNU_TYPE) \
