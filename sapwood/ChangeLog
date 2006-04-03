@@ -1,5 +1,11 @@
 2006-04-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* Makefile.am (MAINTAINERCLEANFILES): Add compile and depcomp.
+	* src/Makefile.am (sapwood_server_CFLAGS): Add dummy cflags to work
+	with newer autotools.
+
+2006-04-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-pixmap.c (sapwood_pixmap_render_rects): Use clip mask
 	only if one was drawn using the tile masks from theme.
 	* src/sapwood-server.c (extract_pixmap_single): Create masks only for

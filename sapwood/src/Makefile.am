@@ -25,6 +25,7 @@ daemon_PROGRAMS = sapwood-server
 
 sapwood_server_SOURCES = sapwood-server.c sapwood-proto.c sapwood-proto.h
 sapwood_server_LDADD = $(GDK_LIBS)
+sapwood_server_CFLAGS = $(AM_CFLAGS)	# created both with libtool and without
 
 MAINTAINERCLEANFILES = Makefile.in
 
