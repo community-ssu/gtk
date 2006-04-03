@@ -31,7 +31,7 @@
 /* Hildon includes */
 #include "hildon-status-bar-lib.h"
 #include "hildon-status-bar-item.h"
-#include <hildon-widgets/gtk-infoprint.h>
+#include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-note.h>
 
 /* System includes */
@@ -221,7 +221,7 @@ static void show_infoprint( const gchar *msg )
 {
     g_return_if_fail( msg );
 
-    gtk_infoprint( NULL, msg );
+    hildon_banner_show_information( NULL, NULL, msg);
 }
 
 static gint rpc_cb( const gchar *interface, 
@@ -824,8 +824,11 @@ static gint _delayed_infobanner_add(gint32 pid, gint32 begin, gint32 timeout,
                         data
                         );
      
+#if 0
      gtk_banner_show_animation(NULL, 
                  info->text);
+#endif
+     info->banner = hildon_banner_show_animation(NULL, NULL, info->text);
                  
  
      return FALSE;
@@ -849,7 +852,8 @@ static gint _delayed_infobanner_add(gint32 pid, gint32 begin, gint32 timeout,
      
      if ( delayed_ib_onscreen == key)
      {
-       gtk_banner_close(NULL);
+       if(data->banner)
+         gtk_widget_destroy(data->banner);
        delayed_ib_onscreen = NULL;
      }
      

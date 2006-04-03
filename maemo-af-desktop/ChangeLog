@@ -1,3 +1,11 @@
+2006-04-03  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-wm-watchable-app.c: (Closes N#24483)
+	  - Replaced gtk_infoprint with hildon_banne_
+	  - Removed message stacking work around, which seems no longer necessary
+	* hildon-status-bar/hildon-status-bar-main.c: Replaced gtk_infoprint
+	  with hildon_banner_
+
 2006-03-31  Johan Bilien <johan.bilien@nokia.com>
 
 	* libhildonmenu/libhildonmenu.c: Fixed a potential crash

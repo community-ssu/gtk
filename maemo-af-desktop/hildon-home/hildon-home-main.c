@@ -60,7 +60,7 @@
 #include <libgnomevfs/gnome-vfs.h>
 
 #include "libmb/mbdotdesktop.h"
-#include <hildon-widgets/gtk-infoprint.h>
+#include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
 #include <hildon-widgets/hildon-defines.h>
@@ -1076,7 +1076,8 @@ gboolean no_applets_settings_callback(GtkWidget *widget,
                                       gpointer unused)
 
 {    
-    gtk_infoprint(NULL, HILDON_HOME_MENU_APPLET_SETTINGS_NOAVAIL);
+    hildon_banner_show_information(NULL, NULL, 
+            HILDON_HOME_MENU_APPLET_SETTINGS_NOAVAIL);
 
     return TRUE;
 }

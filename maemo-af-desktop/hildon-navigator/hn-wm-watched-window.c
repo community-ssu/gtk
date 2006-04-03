@@ -994,7 +994,7 @@ void hn_wm_ping_timeout( HNWMWatchedWindow *win )
 					"failed to kill application '%s'.",
 					win->name );
 		} else {
-			gtk_infoprint( NULL, killed_message );
+            hildon_banner_show_information( NULL, NULL, killed_message );
 		}
 	}
 
@@ -1018,7 +1018,7 @@ void hn_wm_ping_timeout_cancel( HNWMWatchedWindow *win )
 	gtk_widget_destroy( note );
 
 	/* Show the infoprint */
-	gtk_infoprint( NULL, response_message );
+    hildon_banner_show_information( NULL, NULL, response_message );
 
 	g_free( response_message );
 }

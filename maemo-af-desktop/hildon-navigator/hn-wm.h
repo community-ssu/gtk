@@ -42,7 +42,7 @@
 
 #include <hildon-navigator.h>
 #include <hildon-widgets/hildon-defines.h>
-#include <hildon-widgets/gtk-infoprint.h>
+#include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-note.h>
 
 #include <libosso.h>
@@ -128,6 +128,7 @@
 struct HNWMLaunchBannerInfo
 {
   GtkWidget         *parent;
+  GtkWidget         *banner;
   struct timeval     launch_time;
   gchar             *msg;
   HNWMWatchableApp  *app;
@@ -157,11 +158,6 @@ struct HNWM   /* Our main struct, used globally unfortunatly.. */
   GHashTable   *watched_apps;
 
   ApplicationSwitcher_t *app_switcher;
-
-  /* stack for the launch banner messages. 
-   * Needed to work round gtk(hindon)_infoprint issues.
-  */
-  GList        *banner_stack;
 
   /* FIXME: Below memory management related not 100% sure what they do */
 

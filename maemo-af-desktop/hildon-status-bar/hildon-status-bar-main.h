@@ -94,6 +94,7 @@ struct status_bar_del_ib_st
   gchar *text;
   guint timeout_to_show_id;
   guint timeout_onscreen_id;
+  GtkWidget *banner;
 };
 
 int status_bar_main(osso_context_t *osso, StatusBar **panel);

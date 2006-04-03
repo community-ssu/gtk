@@ -25,6 +25,7 @@
 
 
 #include "hn-wm-watchable-app.h"
+#include <hildon-widgets/hildon-banner.h>
 
 /* watchable apps */
 
@@ -50,44 +51,6 @@ hn_wm_watchable_app_has_windows_find_func (gpointer key,
 					   gpointer value,
 					   gpointer user_data);
 
-/* Simple stack to remember last message displayed that can get  
- * lost in certain situations with gtk_infoprints.
- * Probably better for gtk_infoprint to handle this..
- */
-static void
-banner_msg_stack_push (const gchar *msg)
-{
-  hnwm->banner_stack = g_list_append(hnwm->banner_stack, g_strdup(msg));
-}
-
-static const gchar*
-banner_msg_stack_remove (const gchar *msg)
-{
-  GList *item;
-
-  /* Remove a msg from stack and free. Return either the previous 
-   * stored message
-  */
-  
-  item = g_list_find_custom(hnwm->banner_stack, msg, (GCompareFunc)strcmp);
-
-  if (item)
-    {
-      /* Free the msg */
-      g_free(item->data);
-
-      hnwm->banner_stack = g_list_remove_link(hnwm->banner_stack, item);
-
-      g_list_free(item);
-    }
-  
-   item = g_list_last(hnwm->banner_stack);
-  
-  if (item)
-    return item->data;
-  
-  return NULL;
-}
 
 static void
 hn_wm_launch_banner_info_free (HNWMLaunchBannerInfo* info)
@@ -292,10 +255,7 @@ hn_wm_watchable_app_launch_banner_show (GtkWidget        *parent,
   info->msg = g_strdup_printf(_( APP_LAUNCH_BANNER_MSG_LOADING ),
 			     app->app_name ? _(app->app_name) : "" );
         
-  gtk_banner_show_animation( NULL, info->msg );
-
-  /* Store a copy of message so we can work round multuple gtk_banner issues */
-  banner_msg_stack_push (info->msg);
+  info->banner = GTK_WIDGET(hildon_banner_show_animation(NULL, NULL, info->msg));
         
   gdk_error_trap_pop();
 
@@ -307,21 +267,13 @@ void
 hn_wm_watchable_app_launch_banner_close (GtkWidget            *parent,
 					 HNWMLaunchBannerInfo *info)
 {
-  const gchar *prev_msg;
-
   if (!(info && info->msg))
     return;
 
-  /* Note: below may not close banner, works on refcnt */
-  gtk_banner_close( NULL );
+  if(info->banner)
+    gtk_widget_destroy(info->banner);
   
-  /* remove message from stack and possibly get an old one to redisplay */
-  prev_msg = banner_msg_stack_remove(info->msg);
-
   hn_wm_launch_banner_info_free(info);
-
-  if (prev_msg)
-    gtk_banner_set_text(NULL, prev_msg);
 }
 
 gboolean 
@@ -375,7 +327,7 @@ hn_wm_watchable_app_launch_banner_timeout (gpointer data)
       if (time_left >= APP_LAUNCH_BANNER_TIMEOUT 
 	  && hnwm->lowmem_situation == TRUE)
 	{
-	  gtk_infoprintf(NULL, _("memr_ib_unable_to_switch_to_application"));
+	  hildon_banner_show_information(NULL, NULL, _("memr_ib_unable_to_switch_to_application"));
 	}
       
       return FALSE;

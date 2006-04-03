@@ -2,7 +2,7 @@ Source: maemo-af-desktop
 Section: x11
 Priority: optional
 Maintainer: Johan Bilien <johan.bilien@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), hildon-libs-dev (>= 0.7.1), pkg-config, libosso-dev (>= 0.9.19), libosso-gnomevfs2-dev, libmatchbox-dev, osso-af-settings, hildon-base-lib-dev (>= 0.9.3), shared-mime-info, libosso-common-error-dev (>= 0.1.6-2), hildon-fm-dev (>= 0.15), libosso-help-dev
+Build-Depends: debhelper (>= 4.0.0), hildon-libs-dev (>= 0.12.2), pkg-config, libosso-dev (>= 0.9.19), libosso-gnomevfs2-dev, libmatchbox-dev, osso-af-settings, hildon-base-lib-dev (>= 0.9.3), shared-mime-info, libosso-common-error-dev (>= 0.1.6-2), hildon-fm-dev (>= 0.15), libosso-help-dev
 Standards-Version: 3.6.0
  
 Package: maemo-af-desktop
