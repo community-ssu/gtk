@@ -50,6 +50,7 @@ theme_symbols[] =
   { "file", 		TOKEN_FILE },
   { "stretch", 		TOKEN_STRETCH },
   { "border", 		TOKEN_BORDER },
+  { "shaped",           TOKEN_SHAPED },
   { "detail", 		TOKEN_DETAIL },
   { "state", 		TOKEN_STATE },
   { "shadow", 		TOKEN_SHADOW },
@@ -497,6 +498,34 @@ theme_parse_orientation(GScanner * scanner,
   return G_TOKEN_NONE;
 }
 
+static guint
+theme_parse_shaped(GScanner * scanner,
+		   ThemeImage * data)
+{
+  guint    token;
+  gboolean shaped;
+
+  token = g_scanner_get_next_token(scanner);
+  if (token != TOKEN_SHAPED)
+    return TOKEN_SHAPED;
+
+  token = g_scanner_get_next_token(scanner);
+  if (token != G_TOKEN_EQUAL_SIGN)
+    return G_TOKEN_EQUAL_SIGN;
+
+  token = g_scanner_get_next_token(scanner);
+  if (token == TOKEN_TRUE)
+    shaped = TRUE;
+  else if (token == TOKEN_FALSE)
+    shaped = FALSE;
+  else
+    return TOKEN_TRUE;
+
+  data->background_shaped = shaped != FALSE;
+
+  return G_TOKEN_NONE;
+}
+
 static void
 theme_image_ref (ThemeImage *data)
 {
@@ -591,6 +620,9 @@ theme_parse_image(GtkSettings  *settings,
 	  break;
 	case TOKEN_STRETCH:
 	  token = theme_parse_stretch(scanner, &data->background);
+	  break;
+	case TOKEN_SHAPED:
+	  token = theme_parse_shaped(scanner, data);
 	  break;
 	case TOKEN_GAP_FILE:
 	  token = theme_parse_file(settings, scanner, &data->gap);

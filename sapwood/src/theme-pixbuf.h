@@ -39,7 +39,7 @@ enum
   TOKEN_FUNCTION,
   TOKEN_FILE,
   TOKEN_STRETCH,
-  TOKEN_RECOLORABLE,
+  TOKEN_SHAPED,
   TOKEN_BORDER,
   TOKEN_DETAIL,
   TOKEN_STATE,
@@ -153,8 +153,6 @@ struct _ThemeMatchData
 
 struct _ThemeImage
 {
-  guint           refcount;
-
   ThemePixbuf    *background;
   ThemePixbuf    *overlay;
   ThemePixbuf    *gap_start;
@@ -162,6 +160,9 @@ struct _ThemeImage
   ThemePixbuf    *gap_end;
   
   ThemeMatchData  match_data;
+
+  guint           refcount : 31;
+  guint           background_shaped : 1;
 };
 
 

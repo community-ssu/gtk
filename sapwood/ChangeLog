@@ -1,5 +1,16 @@
 2006-04-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* src/sapwood-draw.c (draw_simple_image, get_window_for_shape): Use
+	flag from gtkrc to figure out need for shape mask.
+	* src/sapwood-rc-style.c (theme_symbols, theme_parse_shaped,
+	theme_parse_image): Add 'shaped' (default=FALSE) token to explicitly
+	enable support for shaped windows from gtkrc.
+	* src/theme-pixbuf.h (ThemeImage): Trade one bit from 'refcount' to
+	hold the value for TOKEN_SHAPED (replaces unused TOKEN_RECOLORABLE) in
+	'background_shaped' member.
+
+2006-04-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-draw.c (get_window_for_shape, draw_simple_image):
 	Refactor shape mask requirement logic into separate function.
 
