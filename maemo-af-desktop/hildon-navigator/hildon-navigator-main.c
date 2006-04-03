@@ -388,7 +388,7 @@ static GList *load_plugins_from_file(Navigator *tasknav,
     i = 0;
     while (groups[i] != NULL)
     {
-        gchar *library;
+        gchar *library = NULL;
         gint position;
         gboolean mandatory;
 
@@ -404,12 +404,16 @@ static GList *load_plugins_from_file(Navigator *tasknav,
             g_error_free(error);
             error = NULL;
             i++;
+            g_free(library);
+            library=NULL;
             continue;
         }
 
         if (!watchfile_check(library))
         {
             i++;
+            g_free(library);
+            library=NULL;
             continue;
         }
         
@@ -440,12 +444,14 @@ static GList *load_plugins_from_file(Navigator *tasknav,
                     groups[i], library);
 
             g_free(library);
+            library = NULL;
             i++;
             continue;
             
         }        
         
         g_free(library);
+        library = NULL;
 
         plugin->position = position;
 

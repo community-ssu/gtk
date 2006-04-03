@@ -1,5 +1,10 @@
 2006-04-03  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hildon-navogator-main.c: 
+	  (load_navigator_plugin_list) Fix the leak the library string
+
+2006-04-03  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.h: localize the "Favourites" string
 	  (Closes N#25393)
 	* configure.ac: 2.6.6
