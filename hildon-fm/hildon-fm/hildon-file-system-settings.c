@@ -42,6 +42,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <libintl.h>
+#include <string.h>
 
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
@@ -151,13 +152,14 @@ set_gateway_from_gconf_value(HildonFileSystemSettings *self,
       ULOG_ERR_F("gconf_value_get_string failed");
     } else {
       gchar key[256];
-      const GSList *list;
+      GSList *list;
 
       self->priv->gateway = g_strdup(address);
 
       g_snprintf(key, sizeof(key), "%s/%s/services",
                  GNOME_BT_DEVICE, address);
-      list = gconf_client_get_list(self->priv->gconf, key, NULL);
+      list = gconf_client_get_list(self->priv->gconf, key,
+                                   GCONF_VALUE_STRING, NULL);
 
       if (list == NULL) {
         ULOG_ERR_F("gconf_client_get_list failed");
@@ -169,6 +171,7 @@ set_gateway_from_gconf_value(HildonFileSystemSettings *self,
             break;
           }
         }
+        g_list_free(list);
       }
     }
   }
