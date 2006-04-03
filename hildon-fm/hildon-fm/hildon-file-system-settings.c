@@ -164,14 +164,14 @@ set_gateway_from_gconf_value(HildonFileSystemSettings *self,
       if (list == NULL) {
         ULOG_ERR_F("gconf_client_get_list failed");
       } else {
-        gpointer p;
+        const GSList *p;
         for (p = list; p != NULL; p = g_slist_next(list)) {
           if (strstr((const char*)(p->data), "FTP") != NULL) {
             self->priv->gateway_ftp = TRUE;
             break;
           }
         }
-        g_list_free(list);
+        g_slist_free(list);
       }
     }
   }
