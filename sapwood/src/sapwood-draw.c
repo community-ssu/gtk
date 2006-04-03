@@ -90,12 +90,30 @@ match_theme_image (GtkStyle       *style,
 static GdkBitmap *
 get_window_for_shape (ThemeImage *image, GdkWindow *window, GtkWidget *widget)
 {
+  const gchar *name;
+
   if (image->background_shaped)
     {
       if (GTK_IS_MENU (widget))
 	return gtk_widget_get_parent_window (widget);
       else if (GTK_IS_WINDOW (widget))
 	return window;
+    }
+
+  if (GTK_IS_MENU (widget))
+    {
+      g_warning ("Rounded corners support implicitly enabled.\nPlease use explicit 'shaped = 1' in gtkrc file instead.");
+      return gtk_widget_get_parent_window (widget);
+    }
+
+  name = gtk_widget_get_name (widget);
+  if (GTK_IS_WINDOW (widget) &&
+      (strcmp (name, "gtk-tooltips") == 0 ||
+       strcmp (name, "hildon-navigator-list") == 0 ||
+       strcmp (name, "hildon-status-bar-popup") == 0))
+    {
+      g_warning ("Rounded corners support implicitly enabled.\nPlease use explicit 'shaped = 1' in gtkrc file instead.");
+      return window;
     }
 
   return NULL;
