@@ -87,6 +87,24 @@ match_theme_image (GtkStyle       *style,
   return NULL;
 }
 
+static GdkBitmap *
+get_window_for_shape (GdkWindow *window, GtkWidget *widget)
+{
+  const gchar *name;
+
+  if (GTK_IS_MENU (widget))
+    return gtk_widget_get_parent_window (widget);
+
+  name = gtk_widget_get_name (widget);
+  if (GTK_IS_WINDOW (widget) &&
+      (strcmp (name, "gtk-tooltips") == 0 ||
+       strcmp (name, "hildon-navigator-list") == 0 ||
+       strcmp (name, "hildon-status-bar-popup") == 0))
+    return window;
+
+  return NULL;
+}
+
 static gboolean
 draw_simple_image(GtkStyle       *style,
 		  GdkWindow      *window,
@@ -129,23 +147,10 @@ draw_simple_image(GtkStyle       *style,
     {
       if (image->background)
 	{
-	  const gchar *name;
-	  GdkWindow *maskwin = NULL;
+	  GdkWindow *maskwin;
 	  GdkBitmap *mask = NULL;
 
-          name = gtk_widget_get_name (widget);
-	  if (GTK_IS_MENU (widget))
-	    {
-	      maskwin = gtk_widget_get_parent_window (widget);
-	    }
-	  else if (GTK_IS_WINDOW (widget) &&
-		   (strcmp (name, "gtk-tooltips") == 0 ||
-		    strcmp (name, "hildon-navigator-list") == 0 ||
-		    strcmp (name, "hildon-status-bar-popup") == 0))
-	    {
-	      maskwin = window;
-	    }
-
+	  maskwin = get_window_for_shape (window, widget);
 	  if (maskwin)
 	    mask = gdk_pixmap_new (maskwin, width, height, 1);
 
