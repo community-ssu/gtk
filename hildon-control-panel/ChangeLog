@@ -1,7 +1,11 @@
+2006-04-03 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-control-panel-main.h: Corrected two logical ids
+
 2006-03-20 Johan Bilien <johan.bilien@nokia.com>
 	* hildon-control-panel-main.c:
 	  - Move back to big icon by default, as per new specifications.
-	    (Closes N#24453)
+	    (Closes N#24453, N#24777)
 	  - Send the library file to cp_plugin_save_state, not the .desktop file
 	    filename (Closes N#24287)
 	* configure.ac: 1.2.2

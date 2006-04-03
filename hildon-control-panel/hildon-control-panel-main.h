@@ -91,24 +91,7 @@ G_BEGIN_DECLS
 #define HILDON_CP_RFS_WARNING _("refs_ia_text")
 #define HILDON_CP_CUD_WARNING _("cud_ia_text")
 
-#define RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE dgettext("hildon-libs", "secu_info_incorrect_code")
-
-/* The logical IDs for the applets, needed for automatical generation
-   of the .pot files*/
-
-#define HILDON_CP_BUPREST_APPLET _("back_ti_dia001_title")
-#define HILDON_CP_CERTMAN_APPLET _("cema_ap_application_title")
-#define HILDON_CP_CONNE_APPLET _("conn_set_ti_conn_set")
-#define HILDON_CP_DATETIME_APPLET _("dati_ap_application_title")
-#define HILDON_CP_DEVICE_APPLET _("devi_ap_application_title")
-#define HILDON_CP_DISPLAY_APPLET _("disp_ap_application_title")
-#define HILDON_CP_LANGREG_APPLET _("cpal_ti_language_and_regional_title")
-#define HILDON_CP_MEMORY_APPLET _("memo_ti_memory")
-#define HILDON_CP_PERS_APPLET _("pers_ti_personalization")
-#define HILDON_CP_SCREENCAL_APPLET _("ctrp_ti_screen_calibration")
-#define HILDON_CP_SECURITY_APPLET _("secu_security_dialog_title")
-#define HILDON_CP_SOUNDS_APPLET _("snds_ti_sound_settings")
-#define HILDON_CP_TEXTINPUT_APPLET _("tein_ti_text_input_title")
+#define RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE dgettext("hildon-libs", "secu_info_incorrectcode")
 
 #define HILDON_CP_SYSTEM_DIR ".osso/hildon-cp"
 #define HILDON_CP_CONF_USER_FILENAME "hildon-cp.conf"
