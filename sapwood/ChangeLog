@@ -1,5 +1,12 @@
 2006-04-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* === Release 2.14 ===
+
+	* configure.in
+	* NEWS: Updated
+
+2006-04-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* Makefile.am (MAINTAINERCLEANFILES): Add compile and depcomp.
 	* src/Makefile.am (sapwood_server_CFLAGS): Add dummy cflags to work
 	with newer autotools.

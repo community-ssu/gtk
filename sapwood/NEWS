@@ -1,3 +1,14 @@
+sapwood 2.14 - 2006-04-03
+=========================
+
+Changes
+-------
+Introduce new 'shaped' gtkrc keyword to explicitly enable support for shaped
+windows to improve performance of non-shaped windows. Themes wanting shaped
+windows must include 'shaped = TRUE' in gtkrc (and the file must also have
+alpha channel.)
+
+
 sapwood 1.36 - 2005-09-02
 =========================
 
