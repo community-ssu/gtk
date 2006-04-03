@@ -1,3 +1,9 @@
+hildon-fm (0.17-1) unstable; urgency=low
+
+  * Now using new Connectivity GConf API (N#25139).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 03 Apr 2006 15:03:26 +0300
+
 hildon-fm (0.16-1) unstable; urgency=low
 
   * Replaced some asserts with proper run-time error checking.

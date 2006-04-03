@@ -134,8 +134,9 @@ hildon_file_system_settings_set_property(GObject *object,
   G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 }
 
-static void set_gateway_from_gconf_value(
-    HildonFileSystemSettings *self, GConfValue *value)
+static void
+set_gateway_from_gconf_value(HildonFileSystemSettings *self,
+                             GConfValue *value)
 {
   g_free(self->priv->gateway);
   self->priv->gateway = NULL;
@@ -143,15 +144,32 @@ static void set_gateway_from_gconf_value(
 
   if (value && value->type == GCONF_VALUE_STRING)
   {
-    const gchar *address = gconf_value_get_string(value); 
-    if (address) 
-    {
-      gchar key[256];
+    const gchar *address;
+    address = gconf_value_get_string(value);
 
-      g_snprintf(key, sizeof(key), "%s/%s/ftp", GNOME_BT_DEVICE, address);
+    if (address == NULL) {
+      ULOG_ERR_F("gconf_value_get_string failed");
+    } else {
+      gchar key[256];
+      const GSList *list;
+
       self->priv->gateway = g_strdup(address);
-      self->priv->gateway_ftp = gconf_client_get_bool(
-        self->priv->gconf, key, NULL);
+
+      g_snprintf(key, sizeof(key), "%s/%s/services",
+                 GNOME_BT_DEVICE, address);
+      list = gconf_client_get_list(self->priv->gconf, key, NULL);
+
+      if (list == NULL) {
+        ULOG_ERR_F("gconf_client_get_list failed");
+      } else {
+        gpointer p;
+        for (p = list; p != NULL; p = g_slist_next(list)) {
+          if (strstr((const char*)(p->data), "FTP") != NULL) {
+            self->priv->gateway_ftp = TRUE;
+            break;
+          }
+        }
+      }
     }
   }
 
