@@ -3,6 +3,7 @@
 
 #include <libxml/xmlreader.h>
 #include <gtk/gtk.h>
+#include <libintl.h>
 
 G_BEGIN_DECLS
 
@@ -23,7 +24,8 @@ G_BEGIN_DECLS
 #define ICON_DEFAULT_APP "qgn_list_gene_default_app"
 #define ICON_SIZE        26
 
-#define FAVOURITES_NAME  "tncpa_li_of_favourites"
+/* This string is only displayed in the task navigator applet */
+#define FAVOURITES_NAME  dgettext("osso-applet-tasknavigator", "tncpa_li_of_favourites")
 
 /* Default systemwide menu */
 #define SYSTEMWIDE_MENU_FILE "/etc/xdg/menus/applications.menu"
