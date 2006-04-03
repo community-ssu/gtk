@@ -475,6 +475,7 @@ sapwood_pixmap_render_rects (SapwoodPixmap *self,
   gint          xofs;
   gint          yofs;
   gint          n;
+  gboolean      have_mask = FALSE;
 
   xofs = draw_x - mask_x;
   yofs = draw_y - mask_y;
@@ -508,6 +509,8 @@ sapwood_pixmap_render_rects (SapwoodPixmap *self,
 	  gdk_gc_set_values (mask_gc, &values, GDK_GC_TILE|GDK_GC_TS_X_ORIGIN|GDK_GC_TS_Y_ORIGIN);
 
 	  gdk_draw_rectangle (mask, mask_gc, TRUE, area.x - xofs, area.y - yofs, area.width, area.height);
+
+	  have_mask = TRUE;
 	}
     }
 
@@ -518,7 +521,7 @@ sapwood_pixmap_render_rects (SapwoodPixmap *self,
       draw_gc = gdk_gc_new_with_values (draw, &values, GDK_GC_FILL);
     }
 
-  values.clip_mask = mask;
+  values.clip_mask = have_mask ? mask : NULL;
   values.clip_x_origin = xofs;
   values.clip_y_origin = yofs;
   gdk_gc_set_values (draw_gc, &values, GDK_GC_CLIP_MASK|GDK_GC_CLIP_X_ORIGIN|GDK_GC_CLIP_Y_ORIGIN);

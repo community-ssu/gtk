@@ -95,8 +95,8 @@ extract_pixmap_single (GdkPixbuf  *pixbuf,
 		   GDK_RGB_DITHER_NORMAL,
 		   0, 0);
 
-  /* FIXME: if the mask would be all ones, skip creating it altogether */
-  need_mask = TRUE;
+  need_mask = gdk_pixbuf_get_has_alpha (pixbuf);
+  /* FIXME: if the mask would still be all ones, skip creating it altogether */
 
   if (need_mask)
     {
