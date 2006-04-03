@@ -613,6 +613,7 @@ gboolean _hildon_file_system_settings_get_flight_mode(void)
 #define BANNER_REQUEST_IF "com.nokia.statusbar"
 #define BANNER_SHOW "delayed_infobanner"
 #define BANNER_HIDE "cancel_delayed_infobanner"
+#define HCS(X) dgettext("hildon-common-strings", X)
 
 /* Communication with tasknavigator for displaying possible
    banner while making blocking calls */
@@ -624,9 +625,10 @@ void _hildon_file_system_prepare_banner(void)
   dbus_int32_t pid;
   static const dbus_int32_t initial_value = 1000;
   static const dbus_int32_t display_timeout = 30000;
-  const char *ckdg_pb_updating_str = _("ckdg_pb_updating");
+  const char *ckdg_pb_updating_str;
   dbus_bool_t ret;
 
+  ckdg_pb_updating_str = HCS("ckdg_pb_updating");
   settings = _hildon_file_system_settings_get_instance();
   g_assert(settings != NULL);
   conn = settings->priv->dbus_conn;

@@ -53,6 +53,7 @@
 #endif
 
 #define _(String) dgettext(PACKAGE, String)
+#define HCS(X) dgettext("hildon-common-strings", X)
 
 /* I wonder where does that additional +2 come from. 
     Anyway I have to add it to make cell 60 + two 
@@ -1167,7 +1168,8 @@ static gboolean hildon_file_selection_check_load_banner(gpointer data)
         if (window) {
             self->priv->banner_shown = TRUE;
             ULOG_DEBUG("Showing update banner");
-            gtk_banner_show_animation(GTK_WINDOW(window), _("ckdg_pb_updating"));
+            gtk_banner_show_animation(GTK_WINDOW(window),
+                                      HCS("ckdg_pb_updating"));
         }
       }
     }
