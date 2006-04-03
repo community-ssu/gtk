@@ -1,5 +1,9 @@
 2006-04-03 Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 1.2.3
+
+2006-04-03 Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-control-panel-main.h: Corrected two logical ids
 
 2006-03-20 Johan Bilien <johan.bilien@nokia.com>

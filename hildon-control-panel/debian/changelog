@@ -1,3 +1,10 @@
+hildon-control-panel (1.2.3-1) unstable; urgency=low
+
+  * hildon-control-panel-main.h: Corrected two logical ids
+  * removed deprecated build dependency on hildon-lgpl-dev
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  3 Apr 2006 14:56:55 +0300
+
 hildon-control-panel (1.2.2-1) unstable; urgency=low
 
   * hildon-control-panel-main.c:
