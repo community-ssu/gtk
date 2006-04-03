@@ -1,3 +1,9 @@
+sapwood (2.14-1) unstable; urgency=low
+
+  * Make shaped window theming explicit.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  3 Apr 2006 16:37:43 +0300
+
 sapwood (1.36-1) unstable; urgency=low
 
   * Fixes #16158 - Most of memory used by g_strdup calls in applications come
