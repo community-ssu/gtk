@@ -102,7 +102,7 @@ get_window_for_shape (ThemeImage *image, GdkWindow *window, GtkWidget *widget)
 
   if (GTK_IS_MENU (widget))
     {
-      g_warning ("Rounded corners support implicitly enabled.\nPlease use explicit 'shaped = 1' in gtkrc file instead.");
+      g_warning ("Rounded corners support implicitly enabled.\nPlease use explicit 'shaped = TRUE' in gtkrc file instead.");
       return gtk_widget_get_parent_window (widget);
     }
 
@@ -112,7 +112,7 @@ get_window_for_shape (ThemeImage *image, GdkWindow *window, GtkWidget *widget)
        strcmp (name, "hildon-navigator-list") == 0 ||
        strcmp (name, "hildon-status-bar-popup") == 0))
     {
-      g_warning ("Rounded corners support implicitly enabled.\nPlease use explicit 'shaped = 1' in gtkrc file instead.");
+      g_warning ("Rounded corners support implicitly enabled.\nPlease use explicit 'shaped = TRUE' in gtkrc file instead.");
       return window;
     }
 
