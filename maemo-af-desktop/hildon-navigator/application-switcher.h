@@ -48,7 +48,6 @@
 
 /* Menu item strings */
 #define STRING_HOME _("tana_fi_home")
-#define STRING_INSENSITIVE_INFOPRINT _("tana_ib_please_close_dialog") 
 
 /* Defined workarea atom */
 #define WORKAREA_ATOM "_NET_WORKAREA"

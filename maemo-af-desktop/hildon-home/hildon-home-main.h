@@ -36,6 +36,7 @@ G_BEGIN_DECLS
 
 /* generic and not home specific values */
 #define _(a) gettext(a)
+#define COMMON_STRING(a) dgettext("hildon-common-strings", a)
 
 #define HILDON_MENU_KEY                 GDK_F4
 
@@ -43,8 +44,9 @@ G_BEGIN_DECLS
 #define WINDOW_HEIGHT                   480
 #define HILDON_HOME_ENV_HOME            "HOME"
 
-#define HILDON_HOME_MMC_NOT_OPEN_TEXT   _("home_ib_mem_cov_open_not_text")
-#define HILDON_HOME_MMC_NOT_OPEN_CLOSE  _("home_bd_mem_cov_open_not_close")
+#define HILDON_HOME_FLASH_FULL_TEXT      dgettext("libosso-common-error", "cerm_device_memory_full")
+#define HILDON_HOME_MMC_NOT_OPEN_TEXT   COMMON_STRING("sfil_ni_cannot_open_mmc_cover_open")
+#define HILDON_HOME_MMC_NOT_OPEN_CLOSE  COMMON_STRING("sfil_ni_cannot_open_mmc_cover_open_ok")
 
 /* Home */
 #define HILDON_HOME_NAME                "Home"
@@ -215,7 +217,6 @@ G_BEGIN_DECLS
 /* HOM-NOT006*/
 #define HILDON_HOME_LOADING_IMAGE_TEXT    _("home_nw_loading_image")
 #define HILDON_HOME_LOADING_IMAGE_ANI     "qgn_indi_process_a"
-#define HILDON_HOME_LOADING_IMAGE_BUTTON  _("home_bd_loading_image_cancel")
 #define HILDON_NOTE_INFORMATION_ICON      "qgn_note_info"
 
 /* WID-NOT201*/
@@ -227,7 +228,6 @@ G_BEGIN_DECLS
 /* FIL-INF010 */
 #define HILDON_HOME_FILE_UNREADABLE_TEXT _("sfil_ib_opening_not_allowed")
 
-#define HILDON_HOME_FLASH_FULL_TEXT      dgettext("libosso-common-error", "memr_ni_device_memory_full")
 
 #define TRANSIENCY_MAXITER 50
 										

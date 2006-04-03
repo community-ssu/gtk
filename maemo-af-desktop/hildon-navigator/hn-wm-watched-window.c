@@ -32,7 +32,7 @@
 #define RESTORED "restored"
 
 #define PING_TIMEOUT_MESSAGE_STRING       _( "qgn_nc_apkil_notresponding" )
-#define PING_TIMEOUT_RESPONSE_STRING      _( "qgn_ib_apkil_responded" )
+#define PING_TIMEOUT_RESPONSE_STRING      _( "Qgn_ib_apkil_responded" )
 #define PING_TIMEOUT_KILL_SUCCESS_STRING  _( "qgn_ib_apkil_closed" )
 #define PING_TIMEOUT_KILL_FAILURE_STRING  _( "" )
 

@@ -1,3 +1,74 @@
+maemo-af-desktop (2.6.5-1) unstable; urgency=low
+
+  * */*: Corrected some deprecated logical ids.
+  * hildon-navigator/hn-wm-watchable-app.c: (Closes N#24483)
+    - Replaced gtk_infoprint with hildon_banne_
+    - Removed message stacking work around, which seems no longer necessary
+  * hildon-status-bar/hildon-status-bar-main.c: Replaced gtk_infoprint
+    with hildon_banner_
+  * libhildonmenu/libhildonmenu.c: Fixed a potential crash
+    I just introduced
+  * libhildonmenu/libhildonmenu.c: load the folder icon only once
+    (Closes N#25288)
+  * Added hildon-home/hildon-home-restore-background.sh
+  * hildon-home/hildon-home-restore-background.sh: Restores the
+    default background after a backup from older releases is
+    restored (Closes N#23524)
+  * hildon-navigator/osso-manager.c (osso_manager_infoprint): Free
+    retval (Closes N#20883)
+  * hildon-home/home-select-applet-dialog.c: Localize the applet
+    name (Closes N#25271)
+  * libhildonmenu/libhildonmenu.c, hildon-navigator/others-menu.c:
+    fixed numerous (and big) memory leaks in menu generation.
+  * hildon-home/hildon-home-main.h: Fixed L10n of the
+    set background dialog title (id has changed in the UI spec).
+  * hildon-navigator/hildon-navigator-main.c: (Closes N#23928)
+      - Add defines for watchfile name
+      - (task_navigator_deinitialize): Remove watchfiles
+  * hildon-home/hildon-home-main.c: (Closes N#19498)
+    - Add a callback for hardware events
+    - when told to lower our activity, put the applets in background
+      mode
+    Applied fix to "Task Navigator and Status bar are accessible when Home
+    is in Layout mode" (Closes N#23028)
+  * hildon-home/layout-manager.c:
+    - Added dbus calls to statusbar and tasknav to dim/undim.
+  * hildon-status-bar/hildon-status-bar-main.c :
+    - added to method rpc_cb the code to handle insensitivity dbus calls 
+    - added the methods that do the actual insensitivity
+  * hildon-navigator/hildon-navigator-main.c:
+    - added functions to handle the sensitivity
+  * hildon-navigator/hn-wm.c:
+    - modified listening functions to listen to new type of signals
+  * hildon-navigator/application-switcher.c
+    (application_switcher_initialize_menu): Refactor toggle button signal
+      connection into ...
+    (as_toggle_button_connect): ... here. New function.
+  * hildon-navigator/application-switcher.[ch]:
+    - Removed the blinking timeout as per new specifications
+    - Stop blinking when the screen is blanked
+  * hildon-navigator/hildon-navigator-main.c (load_symbols): Make symbol
+      a single pointer instead of an array of pointers. Change the if
+      sentences to a switch block.
+  * hildon-navigator/application-switcher.h
+    (BIG_BUTTON_HEIGHT): New macro.
+    (BUTTON_1_Y_POS, BUTTON_2_Y_POS, BUTTON_3_Y_POS, BUTTON_4_Y_POS):
+    Use macros instead of hardcoded values.
+  * hildon-navigator/application-switcher.h
+    (NAME_SMAL_MENU_BUTTON_ITEM): Renamed to ...
+    (NAME_SMALL_MENU_BUTTON_ITEM): ... this. Fix all users.
+    (SMAL_BUTTON_HEIGHT): Rename to ...
+    (SMALL_BUTTON_HEIGHT): ... this. Fix all users.
+  * hildon-navigator/application-switcher.c
+    (application_switcher_initialize_menu): Refactor signal addition to ...
+    (as_add_signal): ... here. New function.
+  * hildon-navigator/application-switcher.c: Factorized creation
+    of AS buttons (patch courtesy of Guillem Jover, Closes N#24957)
+  * hildon-home/layout-manager.c: Fixed launching of the help from the
+    menu (Closes N#24891)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  3 Apr 2006 14:49:41 +0300
+
 maemo-af-desktop (2.6.4-2) unstable; urgency=low
 
   * Updated build-dependency on hildon-libs-dev >= 0.12.2

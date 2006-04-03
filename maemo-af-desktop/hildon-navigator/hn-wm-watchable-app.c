@@ -327,7 +327,7 @@ hn_wm_watchable_app_launch_banner_timeout (gpointer data)
       if (time_left >= APP_LAUNCH_BANNER_TIMEOUT 
 	  && hnwm->lowmem_situation == TRUE)
 	{
-	  hildon_banner_show_information(NULL, NULL, _("memr_ib_unable_to_switch_to_application"));
+	  hildon_banner_show_information(NULL, NULL, _("ckct_ib_application_lowmem"));
 	}
       
       return FALSE;

@@ -207,7 +207,7 @@ hn_wm_top_service(const gchar *service_name)
   if (pages_available > 0 && pages_available < hnwm->lowmem_min_distance)
     {
       hildon_banner_show_information(NULL, NULL, 
-              _("memr_ib_unable_to_switch_to_application"));
+              _("ckct_ib_application_lowmem"));
       return;
     }
 
@@ -1185,7 +1185,7 @@ hn_wm_relaunch_timeout(gpointer data)
   if (!win && hnwm->lowmem_situation)
     {
       hildon_banner_show_information(NULL, NULL, 
-              _("memr_ib_unable_to_switch_to_application"));
+              _("ckct_ib_application_lowmem"));
     }
 
   g_free(service_name);

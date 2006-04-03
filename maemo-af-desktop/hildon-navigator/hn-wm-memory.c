@@ -199,19 +199,9 @@ hn_wm_memory_lowmem_func(gboolean is_on)
 	  else
 	  */
 	    {
-	      /*
-	       * The string supposed to be displayed here is
-	       * "memr_ib_unable_to_switch_to_application".
-	       */
           hildon_banner_show_information(NULL, NULL, 
                   _("memr_ni_application_memory_low"));
 	    }
-	}
-      /* NOTE: again in hildon-navigator-main.h */
-      else if (!is_on && config_lowmem_notify_leave)
-	{
-      hildon_banner_show_information(NULL, NULL, 
-                  _("memr_ib_no_more_memory_low"));
 	}
     }
 }
@@ -230,7 +220,7 @@ hn_wm_memory_explain_lowmem (void)
     if (hnwm->lowmem_situation)
     {
       hildon_banner_show_information(NULL, NULL, 
-                  _("memr_ib_unable_to_switch_to_application"));
+                  _("ckct_ib_application_lowmem"));
     }
 }
 
