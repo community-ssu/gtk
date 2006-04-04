@@ -1,5 +1,9 @@
 2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
 
+	* TODO: Add new item. Mark another as questionable.
+
+2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (clean_childs): Remove handling of WCOREDUMP.
 	* launcher/invoker.c (main): Return the exit code from status when
 	exiting, or raise the signal. Thanks to Marius Vollmer for noticing.
