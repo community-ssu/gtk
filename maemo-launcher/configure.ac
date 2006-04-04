@@ -60,7 +60,6 @@ MINIMAL_DEPENDS="
 EXTRA_DEPENDS="$MINIMAL_DEPENDS
 	gnome-vfs-2.0 >= 2.8.0
 	hildon-libs >= 0.7.5
-	hildon-lgpl >= 0.7.5
 "
 
 if test x$extra_libs = xtrue

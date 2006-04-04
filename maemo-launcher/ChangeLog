@@ -1,5 +1,9 @@
 2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac (EXTRA_DEPENDS): Remove disappeared hildon-lgpl.
+
+2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
+
 	* TODO: New file.
 
 2006-03-14  Guillem Jover  <guillem.jover@nokia.com>
