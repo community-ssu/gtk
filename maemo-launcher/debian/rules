@@ -62,7 +62,7 @@ binary-arch: build install
 #	dh_install
 #	dh_installlogrotate
 #	dh_installpam
-	dh_installinit -n
+	dh_installinit -- start 45 2 3 4 . stop 45 0 1 5 6 .
 	dh_installman
 	dh_link
 	dh_strip

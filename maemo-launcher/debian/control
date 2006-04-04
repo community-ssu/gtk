@@ -10,7 +10,7 @@ Standards-Version: 3.6.2
 
 Package: maemo-launcher
 Architecture: any
-Depends: ${shlibs:Depends}, ndm, hildon-initscripts
+Depends: ${shlibs:Depends}, hildon-initscripts
 Description: Maemo Launcher for GTK applications
  Maemo Launcher for any gtk+ application. Tries to reduce startup time by
  pre-initializing the state of some libraries and then dynamically loading
