@@ -60,6 +60,9 @@ enum
   PROP_POPUP_COMPLETION
 };
 
+/* Hildon: identify the window of the completion */
+#define HILDON_ENTRY_COMPLETION_POPUP "hildon-completion-window"
+
 #define GTK_ENTRY_COMPLETION_GET_PRIVATE(obj)(G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletionPrivate))
 
 static void     gtk_entry_completion_class_init          (GtkEntryCompletionClass *klass);
@@ -453,6 +456,8 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
   gtk_container_add (GTK_CONTAINER (priv->scrolled_window), priv->tree_view);
   gtk_box_pack_start (GTK_BOX (priv->vbox), priv->scrolled_window,
                       TRUE, TRUE, 0);
+
+  gtk_widget_set_name (priv->popup_window, HILDON_ENTRY_COMPLETION_POPUP); 
 
   /* we don't want to see the action treeview when no actions have
    * been inserted, so we pack the action treeview after the first

@@ -1,5 +1,11 @@
 2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkentrycompletion.c (gtk_entry_completion_init): Set a name for
+	the popup window widget to enable more specific theming.
+	IMP-6
+
+2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkexpander.c (gtk_expander_paint): Replace gtk_paint_expander()
 	call with gtk_paint_arrow() for Hildon-like theming.
 	IMP-4
