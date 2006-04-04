@@ -1,3 +1,28 @@
+2006-04-04  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/repo.cc (repo_reply): use ai_ni_operation_failed instead of
+	ai_ni_error_general.
+
+	* src/main.h (section_info): Renamed 'name' member to
+	symbolic_name.  Added new 'name' member that points to the UI
+	string.  Updated all users to use the right one.
+	(canonicalize_section_name, nicify_section_name): Split off
+	subsection extraction from latter into former.
+	(find_section_info): Use canonicalize_section_name for the
+	symbolic name, and nicify_section_name for the UI name.  Added
+	allow_all parameter and change section to "other" when it is "all"
+	but not allowed.
+	(get_package_details_reply): Put all new packages into the
+	artificial "all" section.
+	(sort_all_packages): Exclude "all" section when sorting sections.
+	
+	* src/details.cc (show_with_details): Use correct logical ids
+	instead of ai_va_details_updating_requires,
+	ai_va_details_updating_frees, ai_fi_packages_install,
+	ai_fi_packages_update, ai_fi_packages_uninstall.
+
+	* Makefile.am (mo_DATA): Install en_GB translation.
+
 2006-03-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
         Released 4.10
