@@ -778,6 +778,24 @@ gtk_expander_paint (GtkExpander *expander)
       gtk_expander_paint_prelight (expander);
     }
 
+#if 1
+  /* FIXME: Update the theme engine to recognize the original
+   * gtk_paint_expander() call below.
+   */
+  gtk_paint_arrow (widget->style,
+                   widget->window,
+                   state,
+                   GTK_SHADOW_OUT,
+                   &clip,
+                   widget,
+                   "expander",
+                   (expander->priv->expander_style == GTK_EXPANDER_COLLAPSED) ? GTK_ARROW_RIGHT : GTK_ARROW_DOWN,
+                   FALSE,
+                   clip.x,
+                   clip.y,
+                   clip.x + clip.width / 2,
+                   clip.y + clip.height / 2);
+#else
   gtk_paint_expander (widget->style,
 		      widget->window,
 		      state,
@@ -787,6 +805,7 @@ gtk_expander_paint (GtkExpander *expander)
 		      clip.x + clip.width / 2,
 		      clip.y + clip.height / 2,
 		      expander->priv->expander_style);
+#endif
 }
 
 static void
