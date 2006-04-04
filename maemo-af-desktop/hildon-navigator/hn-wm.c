@@ -25,6 +25,7 @@
 
 
 #include "hn-wm.h"
+#include "close-application-dialog.h"
 
 #define SAVE_METHOD      "save"
 #define KILL_APPS_METHOD "kill_app"
@@ -58,6 +59,14 @@ struct xwinv
 };
 
 HNWM *hnwm; 			/* Single, global soon to go... */
+
+/* Since it hasn't, add API to get it so we can access it elsewhere
+ * without everything suddenly breaking when it goes...
+ */
+HNWM *hn_wm_get_singleton(void)
+{
+  return hnwm;
+}
 
 
 static gboolean
@@ -195,6 +204,88 @@ hn_wm_top_service(const gchar *service_name)
       return;
     }
 
+  if (hnwm->app_switcher->show_tooltip_timeout_id)
+    {
+      g_source_remove(hnwm->app_switcher->show_tooltip_timeout_id);
+      hnwm->app_switcher->show_tooltip_timeout_id = 0;
+    }
+  
+  win = hn_wm_lookup_watched_window_via_service (service_name);
+
+  if (hn_wm_in_lowmem())
+    {
+      gboolean killed = TRUE;
+      if (win == NULL)
+        {
+          killed = tn_close_application_dialog(CAD_ACTION_OPENING);
+        }
+      else if (hn_wm_watched_window_is_hibernating(win))
+        {
+          killed = tn_close_application_dialog(CAD_ACTION_SWITCHING);
+        }
+      
+      if (!killed)
+        {
+          HNWMWatchableApp      *app;
+          HNWMWatchedWindowView *view = NULL;
+           
+          hildon_banner_show_information(NULL, NULL, 
+                         _("ckct_ib_application_lowmem"));
+          
+          /* We need to top the active application again to adjust the TN
+             buttons back to correct order */
+          
+          view = hn_wm_watched_window_get_active_view(win);
+          app = hn_wm_watched_window_get_app (win);
+                    
+          /* This is c&p from below, if it works, move to own function */  
+          if (view)
+    	{
+          
+    	  hn_wm_util_send_x_message (hn_wm_watched_window_view_get_id (view),
+    				     hn_wm_watched_window_get_x_win (win),
+    				     hnwm->atoms[HN_ATOM_HILDON_VIEW_ACTIVE],
+    				     SubstructureRedirectMask
+    				     |SubstructureNotifyMask,
+    				     0,
+    				     0,
+    				     0,
+    				     0,
+    				     0);
+
+    	  app_switcher_update_item (hnwm->app_switcher, win, view,
+    				    AS_MENUITEM_TO_FIRST_POSITION);
+    	}
+          else
+    	{
+    	  /* Regular or grouped win, get MB to top */
+    	  XEvent ev;
+          HNWMWatchedWindow *active_win = hn_wm_watchable_app_get_active_window(app);
+
+    	  memset(&ev, 0, sizeof(ev));
+          
+    	  HN_DBG("@@@@ Last active window %s\n",
+                 active_win ? hn_wm_watched_window_get_hibernation_key(active_win) : "none");
+          
+    	  ev.xclient.type         = ClientMessage;
+    	  ev.xclient.window       = hn_wm_watched_window_get_x_win (active_win ? active_win : win);
+    	  ev.xclient.message_type = hnwm->atoms[HN_ATOM_NET_ACTIVE_WINDOW];
+    	  ev.xclient.format       = 32;
+
+    	  gdk_error_trap_push();
+    	  XSendEvent(GDK_DISPLAY(), GDK_ROOT_WINDOW(), False,
+    		     SubstructureRedirectMask, &ev);
+    	  XSync(GDK_DISPLAY(),FALSE);
+    	  gdk_error_trap_pop();
+
+          hn_wm_watchable_app_set_active_window(app, win);
+    	}
+          
+          return;
+        }
+    }
+
+
   /* Check how much memory we do have until the lowmem threshold */
 
   if (!hn_wm_memory_get_limits (&pages_used, &pages_available))
@@ -206,12 +297,26 @@ hn_wm_top_service(const gchar *service_name)
    */
   if (pages_available > 0 && pages_available < hnwm->lowmem_min_distance)
     {
-      hildon_banner_show_information(NULL, NULL, 
-              _("ckct_ib_application_lowmem"));
-      return;
+      
+       gboolean killed = TRUE;
+       if (win == NULL)
+         {
+           killed = tn_close_application_dialog(CAD_ACTION_OPENING);
+         }
+       else if (hn_wm_watched_window_is_hibernating(win))
+         {
+           killed = tn_close_application_dialog(CAD_ACTION_SWITCHING);
+         }
+
+       if (!killed)
+         {
+           hildon_banner_show_information(NULL, NULL, 
+                         _("ckct_ib_application_lowmem"));
+           return;
+         }
     }
 
-  if ((win = hn_wm_lookup_watched_window_via_service (service_name)) == NULL)
+  if (win == NULL)
     {
       /* We dont have a watched window for this service currently
        * so just launch it.

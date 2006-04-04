@@ -58,6 +58,8 @@ libhildonnavigator_la_SOURCES = \
 	hildon-pixbuf-anim-blinker.h \
 	application-switcher.c \
 	application-switcher.h \
+	close-application-dialog.c \
+	close-application-dialog.h \
 	others-menu.c \
 	others-menu.h
 

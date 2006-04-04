@@ -33,6 +33,10 @@
 
 extern HNWM *hnwm;
 
+gboolean hn_wm_in_lowmem(void)
+{
+  return hnwm->lowmem_situation;
+}
 
 gboolean 
 hn_wm_memory_get_limits (guint *pages_used,

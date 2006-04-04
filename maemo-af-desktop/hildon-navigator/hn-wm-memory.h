@@ -41,6 +41,9 @@ hn_wm_memory_kill_all_watched (gboolean only_kill_able_to_hibernate);
 void 		
 hn_wm_shutdown_func(void);
 
+/* Convenience function to get lowmem state */
+gboolean hn_wm_in_lowmem(void);
+
 void            
 hn_wm_memory_bgkill_func(gboolean is_on) ;
 

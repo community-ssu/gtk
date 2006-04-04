@@ -53,4 +53,6 @@ hn_wm_util_send_x_message (Window        xwin_src,
 			   unsigned long data3,
 			   unsigned long data4);
 
+gint hn_wm_get_vmdata_for_pid(gint pid);
+
 #endif

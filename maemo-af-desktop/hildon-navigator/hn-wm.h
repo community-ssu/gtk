@@ -171,6 +171,8 @@ struct HNWM   /* Our main struct, used globally unfortunatly.. */
   gboolean      about_to_shutdown;
 };
 
+/* Return the singleton HNWM instance */
+HNWM *hn_wm_get_singleton(void);
 
 /**  Send 'top' request for a certain existing window/view
  *

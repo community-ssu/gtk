@@ -1101,6 +1101,7 @@ int task_navigator_deinitialize(Navigator *tasknav){
               {
                 ULOG_WARN("Unable to remove watch file %s!", path);
               }
+            g_free(path);
               
           }
         filename = g_dir_read_name(dir);

@@ -1,3 +1,35 @@
+maemo-af-desktop (2.6.7-1) unstable; urgency=low
+
+  Applied fix to Close Application Dialog MEM-DIA001 is lost.
+  (Closes N#24388)
+  * Use lowmem state when deciding if CAD will be shown, preserves old
+    method as it probably won't be triggered ever (but just in case the
+    configurability is still wanted, it should work ok)
+  * Reorganize code to make the dialog call only from hn-wm.c
+    and others-menu.c (all roads lead to hn_wm_top_service)
+  * Fixes for behaviour
+  * hildon-navigator/Makefile.am
+    hildon-navigator/close-application-dialog.h
+    hildon-navigator/close-application-dialog.c:
+    - Close application dialog implementation
+  * hildon-navigator/hn-wm-util.h
+    hildon-navigator/hn-wm-util.c:
+    - New function hn_wm_get_vmdata_for_pid():
+      Fetches VMData value for specified pid from /proc/$PID/status
+  * hildon-navigator/application-switcher.c
+     - Add dialog call to item activation
+  * hildon-navigator/hn-wm-memory.h
+    hildon-navigator/hn-wm-memory.c:
+    - Add convenience function to get lowmem state without using
+      global variables in other files
+
+  * hildon-home/hildon-home-main.c: Fixed possible leaks of
+    ugly global variable home_bg_image_uri
+  * hildon-navigator/hildon-navogator-main.c: 
+    (load_navigator_plugin_list) Fix the leak the library string
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  4 Apr 2006 14:22:59 +0300
+
 maemo-af-desktop (2.6.6-1) unstable; urgency=low
 
   * libhildonmenu/libhildonmenu.h: localize the "Favourites" string

@@ -26,6 +26,7 @@
 #include "others-menu.h"
 #include "libhildonmenu.h"
 #include "hn-wm.h"
+#include "close-application-dialog.h"
 #include <libosso.h>
 
 /* GLib includes */
@@ -182,6 +183,17 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
 	hn_wm_top_service(service_field);
 
     } else {
+        /* No way to track hibernation (if any), so call the dialog
+         * unconditionally when in lowmem state
+         */
+        if (hn_wm_in_lowmem())
+          {
+            if(!tn_close_application_dialog(CAD_ACTION_OPENING))
+              {
+                return;
+              }
+          }
+        
 	exec_field =
            g_object_get_data(G_OBJECT(item), DESKTOP_ENTRY_EXEC_FIELD);
         if(exec_field != NULL) {

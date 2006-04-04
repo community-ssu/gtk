@@ -24,6 +24,8 @@
 
 #include "hn-wm-util.h"
 
+#define BUF_SIZE 80
+
 gulong 
 hn_wm_util_getenv_long (gchar *env_str, gulong val_default)
 {
@@ -128,4 +130,83 @@ hn_wm_util_send_x_message (Window        xwin_src,
     }
 
   return TRUE;
+}
+
+/* Function to retrieve the size of VmData for a process
+ * Returns -1 on failure
+ */
+gint hn_wm_get_vmdata_for_pid(gint pid)
+{
+  gchar *fname;
+  const gchar str[7] = "VmData";
+  gchar buf[BUF_SIZE];
+  int c;
+  gint i;
+  gboolean read = FALSE;
+  FILE *f;
+  
+  fname = g_strdup_printf("/proc/%i/status", pid);
+  f = fopen(fname, "r");
+
+  if (f == NULL)
+    {
+      g_print("No process data available for %s\n", fname);
+      g_free (fname);
+      return -1;
+    }
+
+  g_free (fname);
+
+  do
+  {
+    c = fgetc(f);
+    if (c == EOF)
+      {
+        break;
+      }
+    /* Match incrementally until we find the string "VmData" */
+    for (i = 0; i < 6; i++)
+    {
+      if (c != str[i])
+        {
+          break;
+        }
+      c = fgetc(f);
+      if (i == 5)
+        {
+          read = TRUE;
+          break;
+        }
+    }
+    if (read == TRUE)
+      {
+        /* Skip extra chars */
+        while (c != 32 && c != EOF && c != '\n')
+          {
+            c = fgetc(f);
+          }
+        /* Skip whitespace */
+        while (c == 32 && c != EOF && c != '\n')
+          {
+            c = fgetc(f);
+          }
+
+        /* Read the number */
+        i = 0;
+        while (c != 32 && c != EOF && c != '\n' && i < BUF_SIZE)
+          {
+            buf[i] = c;
+            i++;
+            c = fgetc(f);
+          }
+        fclose (f);
+        return (atoi(buf));
+        break;
+      }
+    
+  } while (c != EOF);
+
+  /* Failed, return -1 */
+
+  return -1;
 }
