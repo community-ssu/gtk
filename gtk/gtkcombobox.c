@@ -1747,6 +1747,9 @@ gtk_combo_box_list_position (GtkComboBox *combo_box,
   GdkRectangle monitor;
   GtkRequisition popup_req;
   GtkPolicyType hpolicy, vpolicy;
+  gboolean hildonlike;
+
+  gtk_widget_style_get (GTK_WIDGET (combo_box), "hildonlike", &hildonlike, NULL);
   
   sample = GTK_BIN (combo_box)->child;
 
@@ -1775,7 +1778,9 @@ gtk_combo_box_list_position (GtkComboBox *combo_box,
 
   if (popup_req.width > *width)
     {
-      hpolicy = GTK_POLICY_ALWAYS;
+      /* Hildon: avoid horizontal scrollbars */
+      if (!hildonlike)
+        hpolicy = GTK_POLICY_ALWAYS;
       gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (combo_box->priv->scrolled_window),
 				      hpolicy, vpolicy);
       gtk_widget_size_request (combo_box->priv->popup_frame, &popup_req);
