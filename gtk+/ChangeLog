@@ -1,5 +1,12 @@
 2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkentry.c (gtk_entry_enter_text): Handle position=-1 return
+	value from gtk_editable_insert_text() in a special and don't move the
+	cursor to avoid resetting selection.
+	IMP-13
+
+2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkentrycompletion.c (gtk_entry_completion_init): Set a name for
 	the popup window widget to enable more specific theming.
 	IMP-6
