@@ -680,6 +680,33 @@ hn_wm_lookup_watchable_app_via_service (const gchar *service_name)
 			     (gpointer)service_name);
 }
 
+static gboolean
+hn_wm_lookup_watchable_app_via_exec_find_func (gpointer key,
+					       gpointer value,
+					       gpointer user_data)
+{
+  HNWMWatchableApp *app = (HNWMWatchableApp *)value;
+  const gchar *exec_name;
+
+  if (app == NULL || user_data == NULL)
+    return FALSE;
+
+  exec_name = hn_wm_watchable_app_get_exec(app);
+
+  if (exec_name && !strcmp(exec_name, (gchar*)user_data))
+    return TRUE;
+
+  return FALSE;
+}
+
+HNWMWatchableApp *
+hn_wm_lookup_watchable_app_via_exec (const gchar *exec_name)
+{
+  return g_hash_table_find(hnwm->watched_apps,
+			   hn_wm_lookup_watchable_app_via_exec_find_func,
+			  (gpointer)exec_name);
+}
+
 HNWMWatchableApp*
 hn_wm_lookup_watchable_app_via_menu (GtkWidget *menu)
 {

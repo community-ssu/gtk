@@ -1,3 +1,19 @@
+2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
+
+	* hildon-navigator/hn-wm.h (DESKTOP_BIN_FIELD): Rename to ...
+	  (DESKTOP_EXEC_FIELD): ... this. Fix all users.
+	  (hn_wm_lookup_watchable_app_via_exec): New function prototype.
+	* hildon-navigator/hn-wm.c
+	  (hn_wm_lookup_watchable_app_via_exec_find_func): New function.
+	  (hn_wm_lookup_watchable_app_via_exec): Likewise.
+	* hildon-navigator/hn-wm-watchable-app.h
+	  (hn_wm_watchable_app_get_exec): New function prototype.
+	* hildon-navigator/hn-wm-watchable-app.c (HNWMWatchableApp): Rename
+	  bin_name to exec_name. Fix all users.
+	  (hn_wm_watchable_app_new): Store exec_name in the app struct. Add
+	  exec_name to the HN_DBG registering print call.
+	  (hn_wm_watchable_app_get_exec): New function.
+
 2006-04-04  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.6.7

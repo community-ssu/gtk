@@ -81,7 +81,7 @@
 
 /* .desktop file related defines, mainly for keys
  */
-#define DESKTOP_BIN_FIELD     "Exec"
+#define DESKTOP_EXEC_FIELD    "Exec"
 #define DESKTOP_LAUNCH_FIELD  "X-Osso-Service"
 #define DESKTOP_VISIBLE_FIELD "Name"
 #define DESKTOP_ICON_FIELD    "Icon"
@@ -201,6 +201,9 @@ hn_wm_lookup_watched_window_via_menu_widget (GtkWidget *menu_widget);
 
 HNWMWatchableApp*
 hn_wm_lookup_watchable_app_via_service (const gchar *service_name);
+
+HNWMWatchableApp*
+hn_wm_lookup_watchable_app_via_exec (const gchar *exec_name);
 
 HNWMWatchableApp*
 hn_wm_lookup_watchable_app_via_menu (GtkWidget *menu);

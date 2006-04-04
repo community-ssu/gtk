@@ -55,6 +55,17 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop);
 const gchar*
 hn_wm_watchable_app_get_service (HNWMWatchableApp *app);
 
+/**
+ * Get the Exec field set via .desktop file of an HNWMWatchableApp instance.
+ * You should not free the result.
+ *
+ * @param app HNWMWatchableApp instance
+ *
+ * @return exec field value
+ */
+const gchar*
+hn_wm_watchable_app_get_exec (HNWMWatchableApp *app);
+
 /** 
  * Get the name field set via .desktop file of an HNWMWatchableApp instance. 
  * You should not free the result.

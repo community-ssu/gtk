@@ -36,7 +36,7 @@ struct HNWMWatchableApp
   gchar     *icon_name;
   gchar     *service;
   gchar     *app_name; 		/* window title */
-  gchar     *bin_name; 		/* class || exec field ? */
+  gchar     *exec_name;
   gchar     *class_name;        
   gboolean   able_to_hibernate; /* Can this be killed, but appear running ? */
   gboolean   hibernating;
@@ -66,7 +66,7 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop)
 {
   HNWMWatchableApp *app;
   gchar            *service, *icon_name, *startup_notify;
-  gchar            *startup_wmclass, *bin_name, *app_name;
+  gchar            *startup_wmclass, *exec_name, *app_name;
 
   
   app_name = (gchar *) mb_dotdesktop_get(desktop, 
@@ -74,11 +74,9 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop)
   startup_wmclass = (gchar *) mb_dotdesktop_get(desktop, 
 						DESKTOP_SUP_WMCLASS);
 
-  /* NOTE: DESKTOP_BIN_FIELD maps to exec  */
-  bin_name = (gchar *) mb_dotdesktop_get(desktop,
-					 DESKTOP_BIN_FIELD);
+  exec_name = (gchar *) mb_dotdesktop_get(desktop, DESKTOP_EXEC_FIELD);
   
-  if (app_name == NULL || (bin_name == NULL && startup_wmclass == NULL))
+  if (app_name == NULL || (exec_name == NULL && startup_wmclass == NULL))
     {
       osso_log(LOG_ERR,
 	       "HN: Desktop file has invalid fields");
@@ -104,6 +102,7 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop)
   app->icon_name      = g_strdup(icon_name); 
   app->service        = g_strdup(service);    
   app->app_name       = g_strdup(app_name); 
+  app->exec_name      = g_strdup(exec_name);
   app->startup_notify = TRUE;                /* Default */
 
   if (startup_notify)
@@ -112,12 +111,15 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop)
   if (startup_wmclass != NULL)
     app->class_name = g_strdup(startup_wmclass);
   else
-    /* note bin_name actually maps to the Exec key */
-    app->class_name = g_path_get_basename(bin_name);
+    app->class_name = g_path_get_basename(exec_name);
 
   app->active_window = NULL;
-  HN_DBG("Registered new watchable app\n\tapp_name: %s\n\tclass name: %s\n\texec name (service): %s", 
-	 app->app_name, app->class_name, app->service);
+  HN_DBG("Registered new watchable app\n"
+	 "\texec name: %s\n"
+	 "\tapp name: %s\n"
+	 "\tclass name: %s\n"
+	 "\tservice: %s",
+	 app->exec_name, app->app_name, app->class_name, app->service);
 
   return app;
 }
@@ -184,6 +186,12 @@ const gchar*
 hn_wm_watchable_app_get_service (HNWMWatchableApp *app)
 {
   return app->service;
+}
+
+const gchar*
+hn_wm_watchable_app_get_exec (HNWMWatchableApp *app)
+{
+  return app->exec_name;
 }
 
 const gchar*
