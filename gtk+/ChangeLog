@@ -5,6 +5,8 @@
 	* gtk/gtkcombobox.c (gtk_combo_box_set_popup_widget,
 	gtk_combo_box_list_setup): Make sure the hildon-modified frame gets
 	zero border-width.
+	* gtk/gtkcombobox.c (gtk_combo_box_list_position): Never use horizontal
+	scrollbars.
 	IMP-10
 
 2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
