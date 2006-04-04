@@ -59,10 +59,7 @@ fill_text_buffer_from_file (GtkTextBuffer *text, const char *file)
   char buf[1024];
   int fd, n;
 
-  if (!strcmp (file, "-"))
-    fd = 0;
-  else
-    fd = open (file, O_RDONLY);
+  fd = open (file, O_RDONLY);
 
   if (fd < 0)
     {
@@ -82,7 +79,7 @@ fill_text_buffer_from_file (GtkTextBuffer *text, const char *file)
       perror (file);
       exit (2);
     }
-  // XXX - file is not closed, shouldn't be a problem.
+  close (fd);
 }
 
 GtkWidget *

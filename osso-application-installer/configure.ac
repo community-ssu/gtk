@@ -1,6 +1,6 @@
 # configure.ac for osso-application-installer
 
-AC_INIT(osso-application-installer, 4.10)
+AC_INIT(osso-application-installer, 4.11)
 AC_CONFIG_SRCDIR([src/main.cc])
 AM_INIT_AUTOMAKE
 
@@ -24,6 +24,14 @@ AC_SUBST(AI_DEPS_LIBS)
 PKG_CHECK_MODULES(AW_DEPS, glib-2.0)
 AC_SUBST(AW_DEPS_CFLAGS)
 AC_SUBST(AW_DEPS_LIBS)
+
+# For using the maemo-launcher
+
+LAUNCHER_CFLAGS="-shared"
+LAUNCHER_LDFLAGS="-shared -export-dynamic"
+
+AC_SUBST(LAUNCHER_CFLAGS)
+AC_SUBST(LAUNCHER_LDFLAGS)
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
