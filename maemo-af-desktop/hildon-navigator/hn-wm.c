@@ -1238,6 +1238,48 @@ hn_wm_dbus_method_call_handler (DBusConnection *connection,
   return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
+static DBusHandlerResult
+hn_wm_dbus_signal_handler(DBusConnection *conn, DBusMessage *msg, void *data)
+{
+  if (dbus_message_is_signal(msg, MAEMO_LAUNCHER_SIGNAL_IFACE,
+				  APP_DIED_SIGNAL_NAME))
+  {
+    DBusError err;
+    gchar *filename;
+    int pid;
+    int status;
+    HNWMWatchableApp *app;
+
+    dbus_error_init(&err);
+
+    dbus_message_get_args(msg, &err,
+			  DBUS_TYPE_STRING, &filename,
+			  DBUS_TYPE_INT32, &pid,
+			  DBUS_TYPE_INT32, &status,
+			  DBUS_TYPE_INVALID);
+
+    if (dbus_error_is_set(&err))
+    {
+	osso_log(LOG_WARNING, "Error getting message args: %s\n",
+		 err.message);
+	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    }
+
+    HN_DBG("Checking if filename: '%s' is watchable pid='%i' status='%i'",
+	   filename, pid, status);
+
+    /* Is this 'filename' watchable ? */
+    app = hn_wm_lookup_watchable_app_via_exec(filename);
+    if (app)
+    {
+       HN_DBG("Showing app died dialog ...");
+       hn_wm_watchable_app_died_dialog_show(app);
+    }
+  }
+
+  return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
+
 /* Application switcher callback funcs */
 
 static void
@@ -1520,6 +1562,15 @@ hn_wm_init (ApplicationSwitcher_t *as)
 
       dbus_connection_add_filter( connection, hn_wm_dbus_method_call_handler,
 				  /* model */ NULL, NULL );
+      g_free(match_rule);
+
+      /* Setup match rule for Maemo Launcher */
+      match_rule = g_strdup_printf("type='signal', interface='%s'",
+				   MAEMO_LAUNCHER_SIGNAL_IFACE);
+
+      dbus_bus_add_match(connection, match_rule, NULL);
+      dbus_connection_add_filter(connection, hn_wm_dbus_signal_handler,
+				 NULL, NULL);
       g_free(match_rule);
 
       dbus_connection_flush(connection);

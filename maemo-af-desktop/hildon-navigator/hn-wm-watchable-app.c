@@ -239,6 +239,20 @@ hn_wm_watchable_app_destroy (HNWMWatchableApp *app)
   ; /* Never currently happens */
 }
 
+void
+hn_wm_watchable_app_died_dialog_show(HNWMWatchableApp *app)
+{
+  GtkWidget *dialog;
+  gchar *text;
+
+  text = g_strdup_printf(_("memr_ni_application_closed_no_resources"),
+			 app->app_name ? _(app->app_name) : "");
+  dialog = hildon_note_new_information(NULL, text);
+  gtk_widget_show_all(dialog);
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
+}
+
 /* Launch Banner Dialog */
 
 /* FIXME: rename namespace to watched app */

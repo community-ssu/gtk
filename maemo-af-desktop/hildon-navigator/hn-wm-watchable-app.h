@@ -193,6 +193,14 @@ hn_wm_watchable_app_set_able_to_hibernate (HNWMWatchableApp *app,
 void
 hn_wm_watchable_app_destroy (HNWMWatchableApp *app);
 
+/**
+ * Shows application died dialog
+ *
+ * @param app HNWMWatchableApp instance
+ */
+void
+hn_wm_watchable_app_died_dialog_show (HNWMWatchableApp *app);
+
 /** 
  * FIXME: CAn be static ?
  * Shows launch banner for app 

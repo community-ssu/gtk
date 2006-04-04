@@ -104,6 +104,12 @@
 /* Interval for checking for new window or timeout, in seconds */
 #define APP_LAUNCH_BANNER_CHECK_INTERVAL     0.5
 
+/* Maemo Launcher DBus interface
+ */
+#define MAEMO_LAUNCHER_SIGNAL_IFACE "org.maemo.launcher"
+#define MAEMO_LAUNCHER_SIGNAL_PATH "/org/maemo/launcher"
+#define APP_DIED_SIGNAL_NAME "ApplicationDied"
+
 /* Low memory settings
  */
 #define LAUNCH_SUCCESS_TIMEOUT 20

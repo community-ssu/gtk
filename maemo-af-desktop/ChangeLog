@@ -1,5 +1,16 @@
 2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
 
+	* hildon-navigator/hn-wm.h (MAEMO_LAUNCHER_SIGNAL_IFACE)
+	  (MAEMO_LAUNCHER_SIGNAL_PATH, APP_DIED_SIGNAL_NAME): New macros.
+	* hildon-navigator/hn-wm.c (hn_wm_dbus_signal_handler): New function.
+	  (hn_wm_init): Setup hn_wm_dbus_signal_handler as a match rule.
+	* hildon-navigator/hn-wm-watchable-app.h
+	  (hn_wm_watchable_app_died_dialog_show): New prototype.
+	* hildon-navigator/hn-wm-watchable-app.c
+	  (hn_wm_watchable_app_died_dialog_show): New function.
+
+2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
+
 	* hildon-navigator/hn-wm.h (DESKTOP_BIN_FIELD): Rename to ...
 	  (DESKTOP_EXEC_FIELD): ... this. Fix all users.
 	  (hn_wm_lookup_watchable_app_via_exec): New function prototype.
