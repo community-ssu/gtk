@@ -44,6 +44,8 @@
 #include "settings.h"
 #include "search.h"
 
+#define MAX_PACKAGES_NO_CATEGORIES 7
+
 #define _(x) gettext (x)
 
 extern "C" {
@@ -662,7 +664,12 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	    }
 	}
 
-      if (g_list_length (install_sections) >= 2)
+      if (g_list_length (all_si->packages) <= MAX_PACKAGES_NO_CATEGORIES)
+	{
+	  free_sections (install_sections);
+	  install_sections = g_list_prepend (NULL, all_si);
+	}
+      else  if (g_list_length (install_sections) >= 2)
 	install_sections = g_list_prepend (install_sections, all_si);
       else
 	all_si->unref ();
@@ -1250,7 +1257,7 @@ make_package_list_view (GtkWidget *list_widget,
   if (with_updated_label)
     {
       GtkWidget *label = make_last_update_label ();
-      view = gtk_vbox_new (FALSE, 10);
+      view = gtk_vbox_new (FALSE, 5);
       gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_box_pack_start (GTK_BOX (view), label, FALSE, FALSE, 0);
       gtk_box_pack_start (GTK_BOX (view), list_widget, TRUE, TRUE, 0);
@@ -1291,7 +1298,6 @@ make_install_section_view (view *v)
 
   if (si)
     get_package_list_info (si->packages);
-  maybe_refresh_package_cache ();
 
   enable_search (true);
   set_current_help_topic (AI_TOPIC ("sectionsview"));
@@ -1315,24 +1321,39 @@ make_install_applications_view (view *v)
 {
   GtkWidget *list, *view, *label;
 
+  maybe_refresh_package_cache ();
+
   set_operation_label (_("ai_me_package_install"));
-  
-  // XXX - provide "All" section, don't show sections when there are
-  //       only few packages.
 
-  list = make_global_section_list (install_sections, view_section);
-  label = make_last_update_label ();
-  view = gtk_vbox_new (FALSE, 10);
+  if (install_sections && install_sections->next == NULL)
+    {
+      section_info *si = (section_info *)install_sections->data;
+      GtkWidget *list =
+	make_global_package_list (si->packages,
+				  false,
+				  _("ai_li_no_applications_available"),
+				  available_package_selected, 
+				  install_package);
+      get_package_list_info (si->packages);
 
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  gtk_box_pack_start (GTK_BOX (view), label, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (view), list, TRUE, TRUE, 0);
+      view = make_package_list_view (list, true);
+    }
+  else
+    {
+      list = make_global_section_list (install_sections, view_section);
+      label = make_last_update_label ();
+      view = gtk_vbox_new (FALSE, 10);
+      
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+      gtk_box_pack_start (GTK_BOX (view), label, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX (view), list, TRUE, TRUE, 0);
+    }
 
   gtk_widget_show_all (view);
 
   enable_search (true);
   set_current_help_topic (AI_TOPIC ("packagesview"));
-
+  
   return view;
 }
 
