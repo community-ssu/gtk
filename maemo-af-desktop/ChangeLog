@@ -1,3 +1,7 @@
+2006-04-04  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.6.8
+
 2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
 
 	* hildon-navigator/hn-wm.h (MAEMO_LAUNCHER_SIGNAL_IFACE)
