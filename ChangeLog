@@ -1,3 +1,13 @@
+2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkfilechooserbutton.c (:hildonlike,
+	gtk_file_chooser_button_set_property): Add style property and disable
+	the use of combobox even in select-folder mode.
+	* gtk/gtkfilechooserbutton.c (gtk_file_chooser_button_init,
+	gtk_file_chooser_button_style_set): Finalize the button layout in
+	style-set when we know whether to imitate a combobox (in open mode)
+	IMP-4
+
 2006-03-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtktreeprivate.h

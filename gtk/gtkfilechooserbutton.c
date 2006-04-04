@@ -369,6 +369,18 @@ gtk_file_chooser_button_class_init (GtkFileChooserButtonClass * class)
 						     -1, G_MAXINT, -1,
 						     GTK_PARAM_READWRITE));
 
+  /**
+   * GtkFileChooserButton:hildonlike:
+   *
+   * Since: maemo 2.0
+   */
+  gtk_widget_class_install_style_property (GTK_WIDGET_CLASS(gobject_class),
+                                           g_param_spec_boolean ("hildonlike",
+                                                                 P_("hildonlike"),
+                                                                 P_("Whether the button should look like a button rather than combobox"),
+                                                                 FALSE,
+                                                                 GTK_PARAM_READABLE));
+
   _gtk_file_chooser_install_properties (gobject_class);
 
   g_type_class_add_private (class, sizeof (GtkFileChooserButtonPrivate));
@@ -378,7 +390,7 @@ static void
 gtk_file_chooser_button_init (GtkFileChooserButton *button)
 {
   GtkFileChooserButtonPrivate *priv;
-  GtkWidget *box, *image, *sep;
+  GtkWidget *box;
   GtkTargetList *target_list;
 
   priv = G_TYPE_INSTANCE_GET_PRIVATE (button, GTK_TYPE_FILE_CHOOSER_BUTTON,
@@ -410,14 +422,11 @@ gtk_file_chooser_button_init (GtkFileChooserButton *button)
   gtk_container_add (GTK_CONTAINER (box), priv->label);
   gtk_widget_show (priv->label);
 
-  sep = gtk_vseparator_new ();
-  gtk_box_pack_start (GTK_BOX (box), sep, FALSE, FALSE, 0);
-  gtk_widget_show (sep);
-
-  image = gtk_image_new_from_stock (GTK_STOCK_OPEN,
-				    GTK_ICON_SIZE_MENU);
-  gtk_box_pack_start (GTK_BOX (box), image, FALSE, FALSE, 0);
-  gtk_widget_show (image);
+  /* Hildon: the other part of the layout, the separator and the icon in the
+   * right of the button, is being set in the
+   * gtk_file_chooser_button_style_set() function in case we are not drawing a
+   * hildonlike filechooserbutton
+   */
 
   /* Combo Box */
   /* Keep in sync with columns enum, line 88 */
@@ -746,8 +755,11 @@ gtk_file_chooser_button_set_property (GObject      *object,
 	  gtk_widget_show (priv->button);
 	  break;
 	case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
-	  gtk_widget_hide (priv->button);
-	  gtk_widget_show (priv->combo_box);
+	  /* Hildon: these used to be reversed, we never use the combobox
+	   * FIXME: do this automatically when there are no shortcuts
+	   */
+	  gtk_widget_hide (priv->combo_box);
+	  gtk_widget_show (priv->button);
 	  break;
 	default:
 	  g_assert_not_reached ();
@@ -1120,12 +1132,35 @@ gtk_file_chooser_button_style_set (GtkWidget *widget,
 				   GtkStyle  *old_style)
 {
   GtkFileChooserButtonPrivate *priv;
+  gboolean hildonlike = FALSE;
+
+  gtk_widget_style_get (widget, "hildonlike", &hildonlike, NULL);
 
   if (GTK_WIDGET_CLASS (gtk_file_chooser_button_parent_class)->style_set)
     (*GTK_WIDGET_CLASS (gtk_file_chooser_button_parent_class)->style_set) (widget,
 									   old_style);
 
   priv = GTK_FILE_CHOOSER_BUTTON_GET_PRIVATE (widget);
+
+  /* Hildon: don't try to look like a combobox */
+  if (!hildonlike)
+    {
+      GtkWidget *box, *image, *sep;
+      GtkFileChooserButtonPrivate *priv;
+
+      priv = GTK_FILE_CHOOSER_BUTTON_GET_PRIVATE (widget);
+      
+      box = gtk_bin_get_child(GTK_BIN(priv->button));
+      
+      sep = gtk_vseparator_new ();
+      gtk_box_pack_start (GTK_BOX (box), sep, FALSE, FALSE, 0);
+      gtk_widget_show (sep);
+      
+      image = gtk_image_new_from_stock (GTK_STOCK_OPEN,
+					GTK_ICON_SIZE_MENU);
+      gtk_box_pack_start (GTK_BOX (box), image, FALSE, FALSE, 0);
+      gtk_widget_show (image);
+    }
 
   if (gtk_widget_has_screen (widget))
     change_icon_theme (GTK_FILE_CHOOSER_BUTTON (widget));
