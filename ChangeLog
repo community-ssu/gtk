@@ -1,5 +1,11 @@
 2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkexpander.c (gtk_expander_paint): Replace gtk_paint_expander()
+	call with gtk_paint_arrow() for Hildon-like theming.
+	IMP-4
+
+2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkfilechooserbutton.c (:hildonlike,
 	gtk_file_chooser_button_set_property): Add style property and disable
 	the use of combobox even in select-folder mode.
