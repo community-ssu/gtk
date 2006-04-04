@@ -782,6 +782,20 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
                                   GTK_PARAM_READABLE));
 
   /**
+   * GtkComboBox:minimum-width:
+   *
+   * Since: maemo 2.0
+   */
+  gtk_widget_class_install_style_property (widget_class,
+                                           g_param_spec_int ("minimum-width",
+                                                             P_("Minimum Width"),
+                                                             P_("Minimum width in pixels"),
+                                                             0,
+                                                             G_MAXINT,
+                                                             150,
+                                                             GTK_PARAM_READWRITE));
+  
+  /**
    * GtkComboBox:arrow-height:
    *
    * Since: maemo 1.0
@@ -2136,6 +2150,7 @@ gtk_combo_box_size_request (GtkWidget      *widget,
   gboolean hildonlike;
   gint arrow_width;
   gint arrow_height;
+  gint minimum_width;
 
   GtkComboBox *combo_box = GTK_COMBO_BOX (widget);
 
@@ -2145,7 +2160,8 @@ gtk_combo_box_size_request (GtkWidget      *widget,
   gtk_widget_style_get (widget, "hildonlike",
 		        &hildonlike, "arrow-width",
 			&arrow_width, "arrow-height",
-			&arrow_height, NULL);
+			&arrow_height, "minimum-width", 
+			&minimum_width, NULL);
 
   /* common */
   gtk_widget_size_request (GTK_BIN (widget)->child, &bin_req);
@@ -2228,7 +2244,7 @@ gtk_combo_box_size_request (GtkWidget      *widget,
       requisition->width += button_req.width;
     }
 
-  requisition->width = MIN (requisition->width, HILDON_MAX_WIDTH);
+  requisition->width = MAX (MIN (requisition->width, HILDON_MAX_WIDTH), minimum_width);
   
   /* HILDON quick fix: height forced to be 28px as specified by Hildon specs. */
   if (hildonlike)

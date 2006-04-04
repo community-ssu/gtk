@@ -1,4 +1,10 @@
 2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkcombobox.c (:minimum-width, gtk_combo_box_size_request):
+	Introduce minimum-width style property.
+	IMP-10
+
+2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkentry.c (gtk_entry_enter_text): Handle position=-1 return
 	value from gtk_editable_insert_text() in a special and don't move the
