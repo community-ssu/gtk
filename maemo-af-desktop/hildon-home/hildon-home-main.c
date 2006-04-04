@@ -743,6 +743,7 @@ void load_original_bg_image_uri()
     {
         ULOG_ERR( "Couldn't open file %s for reading image name", 
                  user_original_bg_image);
+        g_free(home_bg_image_uri);
         home_bg_image_uri = "";
 
         home_bg_image_filename = "";
@@ -759,6 +760,7 @@ void load_original_bg_image_uri()
         ULOG_ERR( "Couldn't close file %s", 
                  user_original_bg_image);
     }
+    g_free(home_bg_image_uri);
     home_bg_image_uri = g_strdup_printf("%s", bg_uri);
 
     uri = gnome_vfs_uri_new (home_bg_image_uri);
@@ -979,10 +981,7 @@ static void combobox_image_active_tracer(GtkWidget *combobox,
         gchar *image_name;
         image_name = get_filename_from_treemodel(GTK_COMBO_BOX(combobox),
                                                  active_index);
-        if (home_bg_image_uri) 
-        {
-            g_free(home_bg_image_uri);
-        }
+        g_free(home_bg_image_uri);
         home_bg_image_uri = image_name;
     }
 } 
@@ -1498,6 +1497,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
 
         if(combobox_active == 0)
         {
+            g_free(home_bg_image_uri);
             home_bg_image_uri = HILDON_HOME_IMAGE_LOADER_NO_IMAGE;
         }
         if(combobox_active != -1 || home_bg_image_uri != NULL) 
