@@ -1,5 +1,9 @@
 2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac: Version 0.11.
+
+2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
+
 	* Makefile.am (maemo_launcher_SOURCES): Add comm_dbus.c and
 	comm_dbus.h.
 	* launcher/comm_dbus.h: New file.

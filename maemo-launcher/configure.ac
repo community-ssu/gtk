@@ -3,7 +3,7 @@
 # $Id$
 #
 
-AC_INIT([maemo-launcher], [0.10.1])
+AC_INIT([maemo-launcher], [0.11])
 AC_PREREQ([2.59])
 AC_REVISION([$Revision$])
 AC_CONFIG_SRCDIR([launcher/launcher.c])
