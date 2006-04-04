@@ -313,8 +313,6 @@ main(int argc, char *argv[])
       raise(WTERMSIG(status));
     else if (WIFEXITED(status))
       prog_ret = WEXITSTATUS(status);
-    else
-      prog_ret = 0;
   }
 
   close(fd);
