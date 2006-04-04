@@ -164,11 +164,6 @@ create_menu (GtkMenu *main)
   details_menu_item = add_item (packages, _("ai_me_package_details"),
 				show_current_details);
 
-#if 0
-  add_item (view, _("ai_me_view_main"), show_main_view);
-  add_sep (view);
-#endif
-
   add_item (view, _("ai_me_view_sort"), show_sort_settings_dialog);
   add_sep (view);
   fullscreen_item = add_check (view, _("ai_me_view_fullscreen"), NULL);
