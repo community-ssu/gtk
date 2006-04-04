@@ -347,13 +347,14 @@ free_packages (GList *list)
 section_info::section_info ()
 {
   ref_count = 1;
+  symbolic_name = NULL;
   name = NULL;
   packages = NULL;
 }
 
 section_info::~section_info ()
 {
-  g_free (name);
+  g_free (symbolic_name);
   free_packages (packages);
 }
 
@@ -407,45 +408,58 @@ free_all_packages ()
     }
 }
 
-const char *
-nicify_section_name (const char *name)
+static const char *
+canonicalize_section_name (const char *name)
 {
   if (name == NULL || red_pill_mode)
     return name;
 
-  // XXX
   if (!strncmp (name, "maemo/", 6))
     return name + 6;
 
   if (!strncmp (name, "user/", 5))
-    {
-      const char *subsection = name + 5;
-      char *logical_id = g_strdup_printf ("ai_category_%s", subsection);
-      const char *translated_name = gettext (logical_id);
-      if (translated_name != logical_id)
-	subsection = translated_name;
-      g_free (logical_id);
-      return subsection;
-    }
-  else
+    return name += 5;
+
+  return name;
+}
+
+const char *
+nicify_section_name (const char *name)
+{
+  if (red_pill_mode)
     return name;
+
+  name = canonicalize_section_name (name);
+  char *logical_id = g_strdup_printf ("ai_category_%s", name);
+  const char *translated_name = gettext (logical_id);
+  if (translated_name != logical_id)
+    name = translated_name;
+  g_free (logical_id);
+  return name;
 }
 
 static section_info *
-find_section_info (GList **list_ptr, const char *name, bool create)
+find_section_info (GList **list_ptr, const char *name,
+		   bool create, bool allow_all)
 {
+  name = canonicalize_section_name (name);
+
   if (name == NULL)
     name = "other";
 
+  if (!allow_all && !strcmp (name, "all"))
+    name = "other";
+
   for (GList *ptr = *list_ptr; ptr; ptr = ptr->next)
-    if (!strcmp (((section_info *)ptr->data)->name, name))
+    if (!strcmp (((section_info *)ptr->data)->symbolic_name, name))
       return (section_info *)ptr->data;
 
   if (!create)
     return NULL;
 	    
   section_info *si = new section_info;
-  si->name = g_strdup (name);
+  si->symbolic_name = g_strdup (name);
+  si->name = nicify_section_name (si->symbolic_name);
   si->packages = NULL;
   *list_ptr = g_list_prepend (*list_ptr, si);
   return si;
@@ -458,7 +472,7 @@ compare_section_names (gconstpointer a, gconstpointer b)
   section_info *si_b = (section_info *)b;
 
   // The sorting of sections can not be configured.
-  
+
   return g_ascii_strcasecmp (si_a->name, si_b->name);
 }
 
@@ -525,8 +539,18 @@ compare_package_download_sizes (gconstpointer a, gconstpointer b)
 void
 sort_all_packages ()
 {
-  install_sections = g_list_sort (install_sections,
-				  compare_section_names);
+  // If the first section is the "All" section, exclude it from the
+  // sort.
+  
+  GList **section_ptr;
+  if (install_sections
+      && !strcmp (((section_info *)install_sections->data)->symbolic_name,
+		  "all"))
+    section_ptr = &(install_sections->next);
+  else
+    section_ptr = &install_sections;
+
+  *section_ptr = g_list_sort (*section_ptr, compare_section_names);
 
   GCompareFunc compare_packages_inst = compare_package_names;
   GCompareFunc compare_packages_avail = compare_package_names;
@@ -580,6 +604,10 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
     annoy_user_with_log ("Operation failed");
   else
     {
+      section_info *all_si = new section_info;
+      all_si->symbolic_name = g_strdup ("all");
+      all_si->name = nicify_section_name (all_si->symbolic_name);
+
       while (!dec->at_end ())
 	{
 	  const char *installed_icon, *available_icon;
@@ -617,9 +645,12 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	    {
 	      section_info *sec = find_section_info (&install_sections,
 						     info->available_section,
-						     true);
-	      sec->packages = g_list_prepend (sec->packages,
-					      info);
+						     true, false);
+	      sec->packages = g_list_prepend (sec->packages, info);
+
+	      info->ref ();
+	      all_si->packages = g_list_prepend (all_si->packages, info);
+
 	      new_p++;
 	    }
 	  
@@ -630,6 +661,11 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	      inst_p++;
 	    }
 	}
+
+      if (g_list_length (install_sections) >= 2)
+	install_sections = g_list_prepend (install_sections, all_si);
+      else
+	all_si->unref ();
     }
 
   printf ("%d packages, %d new, %d upgradable, %d installed\n",
@@ -1241,7 +1277,7 @@ make_install_section_view (view *v)
   set_operation_label (_("ai_me_package_install"));
 
   section_info *si = find_section_info (&install_sections,
-					cur_section_name, false);
+					cur_section_name, false, true);
 
   GtkWidget *list =
     make_global_package_list (si? si->packages : NULL,
@@ -1267,7 +1303,7 @@ static void
 view_section (section_info *si)
 {
   g_free (cur_section_name);
-  cur_section_name = g_strdup (si->name);
+  cur_section_name = g_strdup (si->symbolic_name);
 
   install_section_view.label = nicify_section_name (cur_section_name);
 

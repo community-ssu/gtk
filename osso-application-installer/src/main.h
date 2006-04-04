@@ -79,7 +79,9 @@ struct section_info {
 
   int ref_count;
 
-  char *name;
+  char *symbolic_name;
+  const char *name;
+
   GList *packages;
 };
 
