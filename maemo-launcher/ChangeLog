@@ -1,5 +1,13 @@
 2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (assign_child_slot): Take a child_t as a
+	parameter instead of the explicit pid and socket, fix all callers.
+	Rename child_it to id.
+	(release_child_slot): New child variable and set it to the current
+	index in the kindergarten.
+
+2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
+
 	* TODO: Add new item. Mark another as questionable.
 
 2006-04-04  Guillem Jover  <guillem.jover@nokia.com>

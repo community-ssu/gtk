@@ -372,28 +372,29 @@ invoked_send_fake_exit(int sock)
 }
 
 static bool
-assign_child_slot(kindergarten_t *childs, pid_t pid, int sock)
+assign_child_slot(kindergarten_t *childs, child_t *child)
 {
-  int child_id;
+  int id;
 
   if (childs->used == childs->n && !grow_childs(childs))
   {
-    error("cannot make a bigger kindergarten, not tracking child %d\n", pid);
-    invoked_send_fake_exit(sock);
+    error("cannot make a bigger kindergarten, not tracking child %d\n",
+	  child->pid);
+    invoked_send_fake_exit(child->sock);
     return false;
   }
 
-  child_id = get_child_slot_by_pid(childs, 0);
-  if (child_id < 0)
+  id = get_child_slot_by_pid(childs, 0);
+  if (id < 0)
   {
     error("this cannot be happening! no free slots on the kindergarten,\n"
-	  "not tracking child %d\n", pid);
-    invoked_send_fake_exit(sock);
+	  "not tracking child %d\n", child->pid);
+    invoked_send_fake_exit(child->sock);
     return false;
   }
 
-  childs->list[child_id].sock = sock;
-  childs->list[child_id].pid = pid;
+  childs->list[id].sock = child->sock;
+  childs->list[id].pid = child->pid;
   childs->used++;
 
   return true;
@@ -406,11 +407,14 @@ release_child_slot(kindergarten_t *childs, pid_t pid, int status)
 
   if (id >= 0)
   {
-    invoked_send_exit(childs->list[id].sock, status);
-    close(childs->list[id].sock);
+    child_t *child = &childs->list[id];
 
-    childs->list[id].sock = 0;
-    childs->list[id].pid = 0;
+    invoked_send_exit(child->sock, status);
+    close(child->sock);
+
+    child->sock = 0;
+    child->pid = 0;
+
     childs->used--;
   }
   else
@@ -692,7 +696,14 @@ main(int argc, char *argv[])
 
     default: /* Parent. */
       if (prog.options & INVOKER_MSG_MAGIC_OPTION_WAIT)
-	assign_child_slot(childs, is_parent, sd);
+      {
+	child_t child;
+
+	child.pid = is_parent;
+	child.sock = sd;
+
+	assign_child_slot(childs, &child);
+      }
       else
 	close(sd);
       break;
