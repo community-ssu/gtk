@@ -163,7 +163,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 		  size_string_detailed (size_buf, 20,
 					pi->info.install_user_size_delta);
 		  g_string_append_printf
-		    (str, _("ai_va_details_updating_requires"),
+		    (str, _("ai_va_details_update_requires"),
 		     pi->name, size_buf);
 		}
 	      else
@@ -171,7 +171,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 		  size_string_detailed (size_buf, 20,
 					-pi->info.install_user_size_delta);
 		  g_string_append_printf
-		    (str, _("ai_va_details_updating_frees"),
+		    (str, _("ai_va_details_update_frees"),
 		     pi->name, size_buf);
 		}
 	    }
@@ -218,15 +218,15 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
   if (possible)
     {
       format_string_list_1 (str,
-			    _("ai_fi_packages_install"),
+			    _("ai_fi_details_packages_install"),
 			    pi->name, pi->available_version,
 			    sum[sumtype_installing]);
       format_string_list_1 (str,
-			    _("ai_fi_packages_update"),
+			    _("ai_details_fi_packages_update"),
 			    pi->name, pi->available_version,
 			    sum[sumtype_upgrading]);
       format_string_list_1 (str,
-			    _("ai_fi_packages_uninstall"),
+			    _("ai_fi_details_packages_uninstall"),
 			    pi->name, pi->installed_version,
 			    sum[sumtype_removing]);
     }
