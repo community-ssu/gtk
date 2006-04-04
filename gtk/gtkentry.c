@@ -3252,7 +3252,14 @@ gtk_entry_enter_text (GtkEntry       *entry,
 
   tmp_pos = entry->current_pos;
   gtk_editable_insert_text (editable, str, strlen (str), &tmp_pos);
-  gtk_entry_set_position_internal (entry, tmp_pos, FALSE);
+
+  /* Hildon: we gave -1 special meaning of "don't move the cursor" rather than
+   * "end of the line." It is needed when the developer selects a region during
+   * the callback and wants to avoid cursor movement (which would reset the
+   * selection.) Used in HildonTimeEditor.
+   */
+  if (tmp_pos != -1)
+    gtk_entry_set_position_internal (entry, tmp_pos, FALSE);
 }
 
 /* All changes to entry->current_pos and entry->selection_bound
