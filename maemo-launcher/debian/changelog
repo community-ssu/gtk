@@ -4,6 +4,7 @@ maemo-launcher (0.11-1) unstable; urgency=low
   * Do not use ndm, yet.
   * Remove Build-Dependency on deprecated hildon-lgpl-dev.
   * Add Build-Dependency on libdbus-1-dev (>= 0.60-1).
+  * Check for DAEMON instead of LAUNCHER in init.d.
 
  -- Guillem Jover <guillem.jover@nokia.com>  Tue,  4 Apr 2006 22:38:50 +0300
 

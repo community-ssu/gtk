@@ -27,7 +27,7 @@ else
   DAEMON_OPTS="$DAEMON_BASE_OPTS --quiet"
 fi
 
-test -x $LAUNCHER || exit 0
+test -x $DAEMON || exit 0
 
 set -e
 
