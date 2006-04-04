@@ -76,12 +76,6 @@ BUGS
 
 - search results has wrong parent sometimes.
 
-- Provide "All" section or no sections, optionally.
-
-- Save toolbar shown/hidden state.
-
-- Show/hide toolbar correctly.
-
 - Context sensitive menu
 
 - Dim Edit and Delete in Catalog dialog.
