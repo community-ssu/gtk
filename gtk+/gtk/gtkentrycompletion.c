@@ -1413,7 +1413,7 @@ gtk_entry_completion_match_selected (GtkEntryCompletion *completion,
   gchar *str = NULL;
 
   gtk_tree_model_get (model, iter, completion->priv->text_column, &str, -1);
-  gtk_entry_set_text (GTK_ENTRY (completion->priv->entry), str);
+  gtk_entry_set_text (GTK_ENTRY (completion->priv->entry), str ? str : "");
   
   /* move cursor to the end */
   gtk_editable_set_position (GTK_EDITABLE (completion->priv->entry), -1);
@@ -1494,8 +1494,9 @@ gtk_entry_completion_real_insert_prefix (GtkEntryCompletion *completion,
       if (prefix_len > key_len)
 	{
 	  gint pos = prefix_len;
+
 	  gtk_editable_insert_text (GTK_EDITABLE (completion->priv->entry),
-				    prefix + key_len, -1, &pos);
+				    prefix + strlen (key), -1, &pos);
 	  gtk_editable_select_region (GTK_EDITABLE (completion->priv->entry),
 				      key_len, prefix_len);
 
@@ -1520,8 +1521,9 @@ gtk_entry_completion_insert_prefix (GtkEntryCompletion *completion)
   gboolean done;
   gchar *prefix;
 
-  g_signal_handler_block (completion->priv->entry,
-			  completion->priv->insert_text_id);
+  if (completion->priv->insert_text_id > 0)
+    g_signal_handler_block (completion->priv->entry,
+			    completion->priv->insert_text_id);
   prefix = gtk_entry_completion_compute_prefix (completion);
   if (prefix)
     {
@@ -1529,8 +1531,9 @@ gtk_entry_completion_insert_prefix (GtkEntryCompletion *completion)
 		     0, prefix, &done);
       g_free (prefix);
     }
-  g_signal_handler_unblock (completion->priv->entry,
-			    completion->priv->insert_text_id);
+  if (completion->priv->insert_text_id > 0)
+    g_signal_handler_unblock (completion->priv->entry,
+			      completion->priv->insert_text_id);
 }
 
 /**
