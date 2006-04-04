@@ -58,6 +58,9 @@
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
+/* Hildon: constraints to fit popups nicely on screen
+ * See also gtkentrycompletion.c
+ */
 #define HILDON_MAX_WIDTH 406
 #define HILDON_MAX_HEIGHT 305
 #define HILDON_MAX_ITEMS 8

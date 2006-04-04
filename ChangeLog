@@ -1,4 +1,11 @@
 2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkentrycompletion.c (_gtk_entry_completion_resize_popup): Add
+	constraints to keep the completion popup inside the screen similar to
+	comboboxes.
+	* gtk/gtkcombobox.c: Add note about gtkentrycompletion
+
+2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkcombobox.c (:minimum-width, gtk_combo_box_size_request):
 	Introduce minimum-width style property.
