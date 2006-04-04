@@ -17,6 +17,10 @@
 
 	* TODO: New file.
 
+2006-02-14  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.10.1.
+
 2006-03-14  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/report.h (ATTR_NORET): New macro.
