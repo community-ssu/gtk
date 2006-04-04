@@ -1368,6 +1368,10 @@ gtk_combo_box_set_popup_widget (GtkComboBox *combo_box,
                                  gtk_widget_get_screen (GTK_WIDGET (combo_box)));
 
           combo_box->priv->popup_frame = gtk_frame_new (NULL);
+          
+          /* Hildon: undo the changes made to GtkFrame defaults */
+          gtk_container_set_border_width (GTK_CONTAINER (combo_box->priv->popup_frame), 0);
+
           gtk_frame_set_shadow_type (GTK_FRAME (combo_box->priv->popup_frame),
                                      GTK_SHADOW_ETCHED_IN);
           gtk_container_add (GTK_CONTAINER (combo_box->priv->popup_window),
@@ -3708,6 +3712,10 @@ gtk_combo_box_list_setup (GtkComboBox *combo_box)
       if (combo_box->priv->has_frame)
 	{
 	  combo_box->priv->cell_view_frame = gtk_frame_new (NULL);
+
+	  /* Hildon: undo the changes made to GtkFrame defaults */
+	  gtk_container_set_border_width (GTK_CONTAINER (combo_box->priv->cell_view_frame), 0);
+
 	  gtk_frame_set_shadow_type (GTK_FRAME (combo_box->priv->cell_view_frame),
 				     GTK_SHADOW_IN);
 	}

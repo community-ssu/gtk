@@ -2,6 +2,9 @@
 	
 	* gtk/gtkcombobox.c (:minimum-width, gtk_combo_box_size_request):
 	Introduce minimum-width style property.
+	* gtk/gtkcombobox.c (gtk_combo_box_set_popup_widget,
+	gtk_combo_box_list_setup): Make sure the hildon-modified frame gets
+	zero border-width.
 	IMP-10
 
 2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
