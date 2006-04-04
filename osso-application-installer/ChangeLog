@@ -1,5 +1,13 @@
 2006-04-04  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/main.cc (make_install_applications_view): Show package list
+	directly when there is only one category.  Refresh package cache
+	here.
+	(make_install_section_view): Don't do it here.
+	(get_package_details_reply): If less than
+	MAX_PACKAGES_NO_CATEGORIES are in the "all" category, use only
+	that category and forget about the rest.
+
 	* src/repo.cc (repo_reply): use ai_ni_operation_failed instead of
 	ai_ni_error_general.
 
@@ -15,6 +23,8 @@
 	(get_package_details_reply): Put all new packages into the
 	artificial "all" section.
 	(sort_all_packages): Exclude "all" section when sorting sections.
+	* src/util.cc (make_global_section_list): Do not call
+	nicify_section_name since we have the UI string already.
 	
 	* src/details.cc (show_with_details): Use correct logical ids
 	instead of ai_va_details_updating_requires,
