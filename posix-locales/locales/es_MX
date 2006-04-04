@@ -176,7 +176,7 @@ country_car   "<U004D><U0058>"
 country_post  "<U004D><U00E9><U0078><U0069><U0063><U006F>"
 country_ab2		"<U004D><U0058>"
 country_ab3		"<U004D><U0045><U0058>"
-country_num		"<U0034><U0038><U0034>"
+country_num	484	
 country_isbn	968
 lang_name     "<U0045><U0073><U0070><U0061><U00F1><U006F><U006C>"  
 lang_ab       "<U0065><U0073>"

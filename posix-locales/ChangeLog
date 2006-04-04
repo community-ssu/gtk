@@ -1,3 +1,8 @@
+2006-04-04  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* locales/es_MX: Converted from string to int (country_num).
+	* locales/{fr_FR, en_GB, fr_CA, ru_RU, de_DE}: Removed invalid escape sequences
+
 2006-03-29  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* locales/*: Updated
