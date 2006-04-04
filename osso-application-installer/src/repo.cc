@@ -354,7 +354,7 @@ repo_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   int success = dec->decode_int ();
   if (!success)
-    annoy_user_with_log (_("ai_ni_error_general"));
+    annoy_user_with_log (_("ai_ni_operation_failed"));
 }
 
 #define REPO_RESPONSE_NEW    1
