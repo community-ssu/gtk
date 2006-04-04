@@ -28,6 +28,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
@@ -303,8 +304,17 @@ main(int argc, char *argv[])
   }
   else
   {
+    int status;
+
     debug("waiting for invoked program to exit\n");
-    prog_ret = invoker_recv_exit(fd);
+    status = invoker_recv_exit(fd);
+
+    if (WIFSIGNALED(status))
+      raise(WTERMSIG(status));
+    else if (WIFEXITED(status))
+      prog_ret = WEXITSTATUS(status);
+    else
+      prog_ret = 0;
   }
 
   close(fd);

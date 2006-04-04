@@ -434,8 +434,6 @@ clean_childs(kindergarten_t *childs)
       asprintf(&cause, "exit()=%d", WEXITSTATUS(status));
     else if (WIFSIGNALED(status))
       asprintf(&cause, "signal=%d", WTERMSIG(status));
-    else if (WCOREDUMP(status))
-      cause = strdup("coredump");
 
     info("child (pid=%d) exited due to %s\n", childpid, cause);
 

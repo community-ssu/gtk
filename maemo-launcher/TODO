@@ -11,5 +11,4 @@ TODO list
 * Put the socket in the proper dir.
 * Pass the stdio descriptors from the invoker to the launcher and
   connect them.
-* Get the proper exit code in the invoker.
 
