@@ -172,15 +172,16 @@ create_menu (GtkMenu *main)
 
   GtkMenu *toolbar = add_menu (view, _("ai_me_view_show_toolbar"));
 
-  item = add_check (toolbar,
-		    _("ai_me_view_show_toolbar_normal"), NULL);
-  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item), TRUE);
+  item = add_check (toolbar, _("ai_me_view_show_toolbar_normal"), NULL);
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item),
+				  normal_toolbar);
   g_signal_connect (item, "activate",
 		    G_CALLBACK (normal_toolbar_activated), NULL);
 
   item = add_check (toolbar,
 		    _("ai_me_view_show_toolbar_fullscreen"), NULL);
-  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item), TRUE);
+  gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (item),
+				  fullscreen_toolbar);
   g_signal_connect (item, "activate",
 		    G_CALLBACK (fullscreen_toolbar_activated), NULL);
 

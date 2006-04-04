@@ -36,8 +36,9 @@ extern int    package_sort_sign;
 
 // Non-user serviceable settings, please ask your local geek.
 //
-extern bool   clean_after_install;
-extern bool   assume_connection;
+extern bool clean_after_install;
+extern bool assume_connection;
+extern bool red_pill_mode;
 
 #define UPDATE_INTERVAL_SESSION 0
 #define UPDATE_INTERVAL_WEEK    1
@@ -50,8 +51,9 @@ extern bool   assume_connection;
 
 // Persistent state
 //
-extern int  last_update;    // not a time_t until 2036
-extern bool red_pill_mode;
+extern int last_update;    // not a time_t until 2036
+extern bool fullscreen_toolbar;
+extern bool normal_toolbar;
 
 void show_settings_dialog ();
 void show_sort_settings_dialog ();

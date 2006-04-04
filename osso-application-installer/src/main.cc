@@ -966,9 +966,13 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
   if (clean_after_install)
     apt_worker_clean (clean_reply, NULL);
 
+  bool upgrading = (pi->installed_version != NULL);
+
   if (success)
     {
-      char *str = g_strdup_printf (_("ai_ni_install_successful"),
+      char *str = g_strdup_printf ((upgrading
+				    ? _("ai_ni_update_successful")
+				    : _("ai_ni_install_successful")),
 				   pi->name);
       annoy_user (str);
       g_free (str);
@@ -976,11 +980,16 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
   else
     {
       if (progress_was_cancelled ())
-	annoy_user (_("ai_ni_install_cancelled"));
+	annoy_user ((upgrading
+		     ? _("ai_ni_update_cancelled")
+		     : _("ai_ni_install_cancelled")));
       else
 	{
-	  char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
-				       pi->name);
+	  char *str =
+	    g_strdup_printf ((upgrading
+			      ? _("ai_ni_error_updating_failed")
+			      : _("ai_ni_error_installation_failed")),
+			     pi->name);
 	  annoy_user_with_log (str);
 	  g_free (str);
 	}
@@ -1026,7 +1035,9 @@ install_package_cont3 (bool res, void *data)
     {
       if (res)
 	{
-	  show_progress (_("ai_nw_installing"));
+	  show_progress (c->pi->installed_version
+			 ? _("ai_nw_updating")
+			 : _("ai_nw_installing"));
 	  apt_worker_install_package (c->pi->name,
 				      install_package_reply, c->pi);
 	}
@@ -1064,8 +1075,15 @@ install_package_cont3 (bool res, void *data)
 static void
 install_package_cont5 (bool res, void *data)
 {
+  ip_closure *c = (ip_closure *)data;
+
   if (!res)
-    annoy_user (_("ai_ni_install_cancelled"));
+    {
+      annoy_user (c->pi->installed_version
+		  ? _("ai_ni_update_cancelled")
+		  : _("ai_ni_install_cancelled"));
+      install_package_cont3 (false, data);
+    }
   else
     install_package_cont3 (true, data);
 }
@@ -1156,12 +1174,18 @@ install_package_cont2 (bool res, void *data)
 	{
 	  add_log ("-----\n");
 	  if (pi->installed_version)
-	    add_log ("Upgrading %s %s to %s\n", pi->name,
-		     pi->installed_version, pi->available_version);
+	    {
+	      add_log ("Upgrading %s %s to %s\n", pi->name,
+		       pi->installed_version, pi->available_version);
+	      show_progress (_("ai_nw_updating"));	 
+	    }
 	  else
-	    add_log ("Installing %s %s\n", pi->name, pi->available_version);
+	    {
+	      add_log ("Installing %s %s\n", pi->name, pi->available_version);
+	      show_progress (_("ai_nw_installing"));
+	    }
+
 	  
-	  show_progress (_("ai_nw_installing"));
 	  apt_worker_install_check (pi->name, install_check_reply, pi);
 	}
       else
@@ -1174,7 +1198,12 @@ install_package_cont2 (bool res, void *data)
 	}
     }
   else
-    annoy_user (_("ai_ni_install_cancelled"));
+    {
+      if (pi->installed_version)
+	annoy_user (_("ai_ni_update_cancelled"));
+      else
+	annoy_user (_("ai_ni_install_cancelled"));
+    }
 }
 
 static void
@@ -2082,8 +2111,6 @@ set_operation_toolbar_label (const char *label, bool sensitive)
 static GtkWindow *main_window = NULL;
 static GtkWidget *main_toolbar;
 
-static bool fullscreen_toolbar_visibility = true;
-static bool normal_toolbar_visibility = true;
 static bool is_fullscreen = false;
 
 GtkWindow *
@@ -2131,16 +2158,17 @@ set_toolbar_visibility (bool fullscreen, bool visibility)
 {
   if (fullscreen)
     {
-      fullscreen_toolbar_visibility = visibility;
+      fullscreen_toolbar = visibility;
       if (is_fullscreen)
 	set_current_toolbar_visibility (visibility);
     }
   else
     {
-      normal_toolbar_visibility = visibility;
+      normal_toolbar = visibility;
       if (!is_fullscreen)
 	set_current_toolbar_visibility (visibility);
     }
+  save_settings ();
 }
 
 static gboolean
@@ -2154,9 +2182,9 @@ window_state_event (GtkWidget *widget, GdkEventWindowState *event,
       is_fullscreen = f;
       set_fullscreen_menu_check (f);
       if (is_fullscreen)
-	set_current_toolbar_visibility (fullscreen_toolbar_visibility);
+	set_current_toolbar_visibility (fullscreen_toolbar);
       else
-	set_current_toolbar_visibility (normal_toolbar_visibility);
+	set_current_toolbar_visibility (normal_toolbar);
     }
 
   return FALSE;
@@ -2235,6 +2263,8 @@ main (int argc, char **argv)
   setlocale (LC_ALL, "");
   bind_textdomain_codeset ("osso-application-installer", "UTF-8");
   textdomain ("osso-application-installer");
+
+  load_settings ();
 
   gtk_init (&argc, &argv);
 
@@ -2317,10 +2347,11 @@ main (int argc, char **argv)
   create_menu (main_menu);
   hildon_window_set_menu (HILDON_WINDOW (window), GTK_MENU (main_menu));
 
-  load_settings ();
-
   gtk_widget_show_all (window);
   show_view (&main_view);
+
+  set_toolbar_visibility (true, fullscreen_toolbar);
+  set_toolbar_visibility (false, normal_toolbar);
 
   /* XXX - check errors.
    */

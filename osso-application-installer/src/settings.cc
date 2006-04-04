@@ -28,6 +28,7 @@
 
 #include <gtk/gtk.h>
 #include <hildon-widgets/hildon-sort-dialog.h>
+#include <hildon-widgets/hildon-caption.h>
 
 #include "settings.h"
 #include "util.h"
@@ -52,9 +53,11 @@ int  package_sort_sign = 1;
 
 bool clean_after_install = true;
 bool assume_connection = false;
+bool red_pill_mode = false;
 
 int  last_update = 0;
-bool red_pill_mode = false;
+bool fullscreen_toolbar = true;
+bool normal_toolbar = true;
 
 #define SETTINGS_FILE ".appinstaller"
 
@@ -102,6 +105,10 @@ load_settings ()
 	    red_pill_mode = val;
 	  else if (sscanf (line, "assume-connection %d", &val) == 1)
 	    assume_connection = val;
+	  else if (sscanf (line, "fullscreen-toolbar %d", &val) == 1)
+	    fullscreen_toolbar = val;
+	  else if (sscanf (line, "normal-toolbar %d", &val) == 1)
+	    normal_toolbar = val;
 	  else
 	    add_log ("Unrecognized configuration line: '%s'\n", line);
 	}
@@ -126,6 +133,8 @@ save_settings ()
       fprintf (f, "last-update %d\n", last_update);
       fprintf (f, "red-pill-mode %d\n", red_pill_mode);
       fprintf (f, "assume-connection %d\n", assume_connection);
+      fprintf (f, "fullscreen-toolbar %d\n", fullscreen_toolbar);
+      fprintf (f, "normal-toolbar %d\n", normal_toolbar);
       fclose (f);
     }
 }
@@ -195,12 +204,9 @@ make_temp_files_tab (settings_closure *c)
 static GtkWidget *
 make_updates_tab (settings_closure *c)
 {
-  GtkWidget *hbox = gtk_hbox_new (TRUE, 10);
+  GtkWidget *caption, *combo;
 
-  GtkWidget *combo = gtk_combo_box_new_text ();
-  gtk_box_pack_start_defaults (GTK_BOX (hbox), 
-			       gtk_label_new (_("ai_fi_settings_update_list")));
-  gtk_box_pack_start_defaults (GTK_BOX (hbox), combo);
+  combo = gtk_combo_box_new_text ();
   gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
 			     _("ai_va_settings_once_session"));
   gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
@@ -213,7 +219,10 @@ make_updates_tab (settings_closure *c)
 
   c->update_combo = combo;
 
-  return hbox;
+  caption = hildon_caption_new (NULL, _("ai_fi_settings_update_list"),
+				combo,
+				NULL, HILDON_CAPTION_OPTIONAL);
+  return caption;
 }
 
 static void
