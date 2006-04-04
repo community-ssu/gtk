@@ -1,5 +1,20 @@
 2006-04-04  Marius Vollmer  <marius.vollmer@nokia.com>
 
+
+	* src/settings.h, src/setting.cc (fullscreen_toolbar,
+	normal_toolbar): Added.
+	(load_settings): Load them.
+	(save_settings): Save them.
+	(make_updates_tab): Use a HildonCaption (N25613).
+	
+	* src/menu.cc (create_menu): Initialize toolbar checkboxen from
+	settings.
+
+	* src/main.cc: Use "updating" logical IDs instead of the
+	"installing" ones when the operation is in fact an update.
+	(fullscreen_toolbar_visibility, normal_toolbar_visibility): Removed.
+	(set_toolbar_visibility): Use new global settings instead.
+	
 	* src/main.cc (make_install_applications_view): Show package list
 	directly when there is only one category.  Refresh package cache
 	here.
