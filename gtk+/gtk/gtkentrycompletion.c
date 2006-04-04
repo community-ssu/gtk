@@ -63,6 +63,12 @@ enum
 /* Hildon: identify the window of the completion */
 #define HILDON_ENTRY_COMPLETION_POPUP "hildon-completion-window"
 
+/* Hildon: constraints to fit popups nicely on screen
+ * See also gtkcombobox.c
+ */
+#define HILDON_MAX_ITEMS 8
+#define HILDON_MAX_HEIGHT 305
+
 #define GTK_ENTRY_COMPLETION_GET_PRIVATE(obj)(G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletionPrivate))
 
 static void     gtk_entry_completion_class_init          (GtkEntryCompletionClass *klass);
@@ -1267,7 +1273,7 @@ gboolean
 _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
 {
   gint x, y;
-  gint matches, items, height, x_border, y_border;
+  gint matches, items, item_height, height, x_border, y_border;
   GdkScreen *screen;
   gint monitor_num;
   GdkRectangle monitor;
@@ -1285,10 +1291,10 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
 
   matches = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (completion->priv->filter_model), NULL);
 
-  items = MIN (matches, 15);
+  items = MIN (matches, HILDON_MAX_ITEMS);
 
   gtk_tree_view_column_cell_get_size (completion->priv->column, NULL,
-                                      NULL, NULL, NULL, &height);
+                                      NULL, NULL, NULL, &item_height);
 
   if (items <= 0)
     gtk_widget_hide (completion->priv->scrolled_window);
@@ -1301,7 +1307,8 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
   gdk_screen_get_monitor_geometry (screen, monitor_num, &monitor);
 
   width = MIN (completion->priv->entry->allocation.width, monitor.width) - 2 * x_border;
-  gtk_widget_set_size_request (completion->priv->tree_view, width, items * height);
+  height = MIN (items * item_height, HILDON_MAX_HEIGHT);
+  gtk_widget_set_size_request (completion->priv->tree_view, width, height);
 
   /* default on no match */
   completion->priv->current_selected = -1;
