@@ -1,3 +1,7 @@
+2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
+
+	* TODO: New file.
+
 2006-03-14  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/report.h (ATTR_NORET): New macro.

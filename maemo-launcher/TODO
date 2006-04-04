@@ -1,0 +1,15 @@
+TODO list
+---------
+
+* Implement an --exec option to maemo-invoker to just exec and not
+  dlopen apps.
+* Pass environment from maemo-invoker to the launcher?
+* Remove acks in IPC.
+* Rework IPC system to pack the commands and send them at once.
+* Forward signals sent to maemo-invoker.
+* Fix properly the need to send the filename first in the protocol.
+* Put the socket in the proper dir.
+* Pass the stdio descriptors from the invoker to the launcher and
+  connect them.
+* Get the proper exit code in the invoker.
+
