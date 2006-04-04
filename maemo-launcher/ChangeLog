@@ -1,5 +1,26 @@
 2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
 
+	* Makefile.am (maemo_launcher_SOURCES): Add comm_dbus.c and
+	comm_dbus.h.
+	* launcher/comm_dbus.h: New file.
+	* launcher/comm_dbus.c: Likewise.
+	* invokelib.h (INVOKER_MSG_NAME): New macro.
+	* launcher/launcher.c: Include 'comm_dbus.h'.
+	(prog_t): Add a name member.
+	(child_t): Likewise.
+	(invoked_get_name): New function.
+	(assign_child_slot): Copy name from child to the child item in the
+	kindergarten.
+	(release_child_slot): Send the application died signal. Free child's
+	name and set it to NULL.
+	(main): Call invoked_get_name after getting the magic. Free prog.name
+	in the child. Assign prog.name to the child variable passed to
+	assign_child_slot.
+	* launcher/invoker.c (invoker_send_name): New function.
+	(main): Call invoker_send_name atfer invoker_init.
+
+2006-04-04  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (assign_child_slot): Take a child_t as a
 	parameter instead of the explicit pid and socket, fix all callers.
 	Rename child_it to id.

@@ -81,6 +81,18 @@ invoker_init(unsigned int delay)
 }
 
 static bool
+invoker_send_name(int fd, char *name)
+{
+  /* Send action. */
+  invoke_send_msg(fd, INVOKER_MSG_NAME);
+  invoke_send_str(fd, name);
+
+  invoke_recv_ack(fd);
+
+  return true;
+}
+
+static bool
 invoker_send_exec(int fd, char *exec)
 {
   /* Send action. */
@@ -288,6 +300,7 @@ main(int argc, char *argv[])
   delay = get_delay(delay_str);
 
   fd = invoker_init(delay);
+  invoker_send_name(fd, prog_argv[0]);
   invoker_send_exec(fd, prog_name);
   invoker_send_args(fd, prog_argc, prog_argv);
   invoker_send_end(fd);

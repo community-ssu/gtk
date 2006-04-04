@@ -6,7 +6,7 @@
 bin_PROGRAMS = maemo-launcher maemo-invoker
 
 maemo_launcher_SOURCES = launcher.c report.c report.h ui.h ui_gtk.c ui_gtk.h \
-		  invokelib.c invokelib.h
+		  invokelib.c invokelib.h comm_dbus.c comm_dbus.h
 maemo_launcher_CPPFLAGS = $(LAUNCHER_CFLAGS) -DPROG_NAME="\"maemo-launcher\""
 maemo_launcher_LDADD = $(LAUNCHER_LIBS)
 

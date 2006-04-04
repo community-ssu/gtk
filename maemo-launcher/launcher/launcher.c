@@ -45,6 +45,7 @@
 #include "ui.h"
 #include "report.h"
 #include "invokelib.h"
+#include "comm_dbus.h"
 
 /* FIXME: Should go into '/var/run/'. */
 #define LAUNCHER_PIDFILE "/tmp/"PROG_NAME".pid"
@@ -55,10 +56,12 @@ typedef struct
   int argc;
   char **argv;
   char *filename;
+  char *name;
 } prog_t;
 
 typedef struct
 {
+  char *name;
   pid_t pid;
   int sock;
 } child_t;
@@ -200,6 +203,28 @@ invoked_get_magic(int fd, prog_t *prog)
   }
 
   prog->options = msg & INVOKER_MSG_MAGIC_OPTION_MASK;
+
+  return true;
+}
+
+static bool
+invoked_get_name(int fd, prog_t *prog)
+{
+  uint32_t msg;
+
+  /* Get the action. */
+  invoke_recv_msg(fd, &msg);
+  if (msg != INVOKER_MSG_NAME)
+  {
+    error("receiving invalid action (%08x)\n", msg);
+    return false;
+  }
+
+  prog->name = invoke_recv_str(fd);
+  if (!prog->name)
+    return false;
+
+  invoke_send_msg(fd, INVOKER_MSG_ACK);
 
   return true;
 }
@@ -393,6 +418,7 @@ assign_child_slot(kindergarten_t *childs, child_t *child)
     return false;
   }
 
+  childs->list[id].name = child->name;
   childs->list[id].sock = child->sock;
   childs->list[id].pid = child->pid;
   childs->used++;
@@ -409,9 +435,13 @@ release_child_slot(kindergarten_t *childs, pid_t pid, int status)
   {
     child_t *child = &childs->list[id];
 
+    comm_send_app_died(child->name, pid, status);
     invoked_send_exit(child->sock, status);
-    close(child->sock);
 
+    close(child->sock);
+    free(child->name);
+
+    child->name = NULL;
     child->sock = 0;
     child->pid = 0;
 
@@ -665,6 +695,11 @@ main(int argc, char *argv[])
       close(sd);
       continue;
     }
+    if (!invoked_get_name(sd, &prog))
+    {
+      close(sd);
+      continue;
+    }
 
     is_parent = fork();
     switch (is_parent)
@@ -680,6 +715,7 @@ main(int argc, char *argv[])
 
       close(sd);
       close(fd);
+      free(prog.name);
 
       /* Invoke it. */
       if (prog.filename)
@@ -701,6 +737,7 @@ main(int argc, char *argv[])
 
 	child.pid = is_parent;
 	child.sock = sd;
+	child.name = prog.name;
 
 	assign_child_slot(childs, &child);
       }
