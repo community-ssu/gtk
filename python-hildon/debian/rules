@@ -11,7 +11,7 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 d=debian/tmp
 d_base=debian/python$(PYVER)-hildon
-d_examples=debian/python$(PYVER)-hildon-examples
+d_dev=debian/python$(PYVER)-hildon-dev
 
 CFLAGS=-Wall -g
 
@@ -36,7 +36,7 @@ build-stamp:  config.status
 	$(MAKE)
 	touch build-stamp
 
-clean:
+clean: config.status
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
@@ -50,24 +50,28 @@ install: build
 	dh_installdirs
 
 	$(MAKE) install DESTDIR=$(CURDIR)/$(d)
-
 	python$(PYVER) -OO -m compileall -l .
 
-	find . -name "CVS" | xargs rm -rf
+	# base
+	mkdir -p $(d_base)/usr/lib/python$(PYVER)/site-packages/
+	cp hildonglade.pyo $(d_base)/usr/lib/python$(PYVER)/site-packages
+	cp $(d)/usr/lib/python$(PYVER)/site-packages/hildon.so $(d_base)/usr/lib/python$(PYVER)/site-packages
 
-	mkdir -p $(d)/usr/lib/pygtk/$(PYGTKVER)
-	mkdir -p $(d)/usr/lib/python$(PYVER)/site-packages/
-	mkdir -p $(d)/usr/share/doc/python-hildon/examples
-
-	cp -a hildon.defs defs $(d)/usr/lib/pygtk/$(PYGTKVER)
-	cp hildonglade.pyo $(d)/usr/lib/python$(PYVER)/site-packages
-	cp -a examples/*py examples/wip $(d)/usr/share/doc/python-hildon/examples
+	# dev
+	mkdir -p $(d_dev)/usr/share/doc/python-hildon/examples/wip/demos
+	mkdir -p $(d_dev)/usr/share/python-hildon/defs
+	mkdir -p $(d_dev)/usr/lib/python$(PYVER)/site-packages/
+	cp examples/*py           $(d_dev)/usr/share/doc/python-hildon/examples
+	cp examples/wip/*py       $(d_dev)/usr/share/doc/python-hildon/examples/wip
+	cp examples/wip/demos/*py $(d_dev)/usr/share/doc/python-hildon/examples/wip/demos
+	cp hildonglade.py         $(d_dev)/usr/lib/python$(PYVER)/site-packages
+	cp hildon.defs $(d_dev)/usr/share/python-hildon
+	cp defs/*.defs $(d_dev)/usr/share/python-hildon/defs
+	cp $(d)/usr/lib/python$(PYVER)/site-packages/hildon.la $(d_dev)/usr/lib/python$(PYVER)/site-packages
 
 	# finish
-	mkdir -p $(d_examples)/usr/share
-	mv $(d)/usr/share/doc $(d_examples)/usr/share
-
-	mv $(d)/* $(d_base)
+	find $(d_base) $(d_dev) -name "CVS" | xargs rm -rf
+	find $(d_base) $(d_dev) -name ".svn" | xargs rm -rf
 
 binary-indep: build install
 binary-arch: build install

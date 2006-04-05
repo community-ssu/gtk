@@ -1,7 +1,7 @@
 Source: python-hildon
 Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
-Build-Depends: debhelper (>= 4.0.0), python2.4-gtk2-dev, python2.4-gtk2-codegen, python2.4-dev
+Build-Depends: debhelper (>= 4.0.0), python2.4-gtk2-dev, python2.4-dev
 Standards-Version: 3.6.1
 
 Package: python2.4-hildon
@@ -10,9 +10,9 @@ Architecture: any
 Depends: ${shlibs:Depends}
 Description: Python bindings for Hildon library
 
-Package: python2.4-hildon-examples
+Package: python2.4-hildon-dev
 Section: libs
-Architecture: all
+Architecture: any
 Depends: ${shlibs:Depends}
 Description: Examples for Python bindings for Hildon library
 

@@ -1,3 +1,9 @@
+python-hildon (0.7.0-1osso3) unstable; urgency=low
+
+  * Strip some unused files to reduce footprint
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu, 05 Apr 2006 16:54:00 -0300
+
 python-hildon (0.7.0-1osso2) unstable; urgency=low
 
   * Recompiled against SDK 1.2
