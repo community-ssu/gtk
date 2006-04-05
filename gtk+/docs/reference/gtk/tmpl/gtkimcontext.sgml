@@ -7,6 +7,88 @@ Base class for input method contexts
 <!-- ##### SECTION Long_Description ##### -->
 <para>
 
+The following example shows how the IM context filter functions can be used
+in a widget.
+
+<informalexample>
+<programlisting>
+...
+
+static gboolean
+my_custom_widget_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
+{
+  GtkIMContext *context = GTK_IM_CONTEXT(data);
+
+  if (hildon_gtk_im_context_filter_event (context, event))
+    return TRUE;
+
+  if (gtk_im_context_filter_keypress (context, event))
+    return TRUE;
+  else
+    {
+      /* Do something widget specific with the key press,
+	 for example moving the cursor */
+      ...
+
+      return FALSE;
+    }
+}
+
+static gboolean
+my_custom_widget_button_press (GtkWidget *widget, GdkEventButton *event, gpointer data)
+{
+  GtkIMContext *context = GTK_IM_CONTEXT(data);
+
+  if (hildon_gtk_im_context_filter_event (context, event))
+    return TRUE;
+
+  /* Do something widget specific with the button press,
+     for example focusing our widget */
+  if (!GTK_WIDGET_HAS_FOCUS (widget))
+    {
+      entry->in_click = TRUE;
+      gtk_widget_grab_focus (widget);
+      entry->in_click = FALSE;
+    }
+
+  ...
+
+  return FALSE;
+}
+
+static gboolean
+my_custom_widget_focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer data)
+{
+  GtkIMContext *context = GTK_IM_CONTEXT(data);
+
+  if (hildon_gtk_im_context_filter_event (context, event))
+    return TRUE;
+
+  gtk_im_context_focus_in (entry->im_context);
+
+  /* Do something widget specific with the focus event,
+     for example queuing a redraw of the widget */
+  ...
+
+  return FALSE;
+}
+
+...
+
+GtkIMMultiContext *context = gtk_im_multicontext_new (<!-- -->);
+MyCustomWidget *widget = my_custom_widget_new (<!-- -->);
+
+g_signal_connect (widget, "key-press-event",
+                  G_CALLBACK (my_custom_widget_key_press), context);
+g_signal_connect (widget, "button-press-event",
+                  G_CALLBACK (my_custom_widget_button_press), context);
+g_signal_connect (widget, "focus-in-event",
+                  G_CALLBACK (my_custom_widget_focus_in), context);
+
+...
+</programlisting>
+</informalexample>
+
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
