@@ -2202,6 +2202,8 @@ key_press_event (GtkWidget *widget,
 	case HILDON_HARDKEY_FULLSCREEN:
 	  toggle_fullscreen ();
 	  return TRUE;
+	case HILDON_HARDKEY_ESC:
+	  exit (0);
 	default:
 	  return FALSE;
 	}
