@@ -1,3 +1,8 @@
+2006-04-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkimage.c (animation_timeout): Remove optimization hack that
+	breaks horribly on non-solid (white) backgrounds.
+
 2006-04-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Merge from GNOME CVS.
