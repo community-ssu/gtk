@@ -738,10 +738,22 @@ hn_wm_watched_window_set_active_view (HNWMWatchedWindow     *win,
   win->view_active = view;
 }
 
-HNWMWatchedWindowView *
+HNWMWatchedWindowView*
 hn_wm_watched_window_get_active_view (HNWMWatchedWindow     *win)
 {
-  return win->view_active;
+  g_return_val_if_fail (win, NULL);
+
+  if (win->view_active)
+    return win->view_active;
+
+  /* We have no active view set atm so just return the first one. 
+   * Works around some issues with hildon_app_new_with_view() not 
+   * dispatching VIEW_ACTIVE 
+  */
+  if (win->views)
+    return g_list_first(win->views)->data;
+
+  return NULL;
 }
 
 
@@ -950,75 +962,83 @@ gboolean hn_wm_watched_window_hibernate_func(gpointer key,
 }
 
 
-void hn_wm_ping_timeout( HNWMWatchedWindow *win )
+void 
+hn_wm_ping_timeout (HNWMWatchedWindow *win)
 {
-	GtkWidget *note;
-	gint return_value;
+  GtkWidget *note;
+  gint       return_value;
 
-	HNWMWatchableApp *app = hn_wm_watched_window_get_app( win );
+  HNWMWatchableApp *app = hn_wm_watched_window_get_app (win);
 		
-	gchar *timeout_message = g_strdup_printf(
-			PING_TIMEOUT_MESSAGE_STRING, win->name );
+  gchar *timeout_message 
+    = g_strdup_printf (PING_TIMEOUT_MESSAGE_STRING, 
+                       win->name );
+  
+  gchar *killed_message 
+    = g_strdup_printf (PING_TIMEOUT_KILL_SUCCESS_STRING, 
+                       win->name );
 	
-	gchar *killed_message = g_strdup_printf(
-			PING_TIMEOUT_KILL_SUCCESS_STRING, win->name );
+  /* FIXME: Do we need to check if the note already exists? */
+  note = hn_wm_watchable_app_get_ping_timeout_note( app );
 	
-	/* FIXME: Do we need to check if the note already exists? */
-	note = hn_wm_watchable_app_get_ping_timeout_note( app );
+  if (note && GTK_IS_WIDGET(note)) 
+    {
+      HN_DBG( "hn_wm_ping_timeout: "
+              "the note already exists. ");
+    
+      goto cleanup_and_exit;
+    }
 	
-	if ( note && GTK_IS_WIDGET( note ) ) {
-		HN_DBG( "hn_wm_ping_timeout: "
-				"the note already exists. ");
+  note = hildon_note_new_confirmation (NULL, timeout_message );
 
-		goto cleanup_and_exit;
-	}
+  hn_wm_watchable_app_set_ping_timeout_note (app, note);
 	
-	note = hildon_note_new_confirmation(
-			NULL, timeout_message );
+  hildon_note_set_button_texts (HILDON_NOTE(note),
+                                PING_TIMEOUT_BUTTON_OK_STRING,
+                                PING_TIMEOUT_BUTTON_CANCEL_STRING);
 
-	hn_wm_watchable_app_set_ping_timeout_note(app, note);
-	
-	hildon_note_set_button_texts( HILDON_NOTE( note ),
-			PING_TIMEOUT_BUTTON_OK_STRING,
-			PING_TIMEOUT_BUTTON_CANCEL_STRING );
+  return_value = gtk_dialog_run (GTK_DIALOG(note));
 
-	return_value = gtk_dialog_run( GTK_DIALOG( note ) );
-
-	gtk_widget_destroy( GTK_WIDGET( note ) );
+  gtk_widget_destroy (GTK_WIDGET(note));
 	
 
-	if ( return_value == GTK_RESPONSE_OK ) {
-		/* Kill the app */
-		if ( !hn_wm_watched_window_attempt_signal_kill( win, SIGKILL ) ) {
-			HN_DBG( "hn_wm_ping_timeout: "
-					"failed to kill application '%s'.",
-					win->name );
-		} else {
-            hildon_banner_show_information( NULL, NULL, killed_message );
-		}
-	}
-
-	
-	cleanup_and_exit:
-	
-	g_free( timeout_message );
-	g_free( killed_message );
+  if ( return_value == GTK_RESPONSE_OK ) 
+    {
+      /* Kill the app */
+      if ( !hn_wm_watched_window_attempt_signal_kill( win, SIGKILL ) ) 
+        {
+          HN_DBG( "hn_wm_ping_timeout: "
+                  "failed to kill application '%s'.",
+                  win->name );
+        } 
+      else 
+        {
+          hildon_banner_show_information( NULL, NULL, killed_message );
+        }
+    }
+  
+ cleanup_and_exit:
+  
+  g_free( timeout_message );
+  g_free( killed_message );
 }
 
 
-void hn_wm_ping_timeout_cancel( HNWMWatchedWindow *win )
+void 
+hn_wm_ping_timeout_cancel (HNWMWatchedWindow *win)
 {
-	HNWMWatchableApp *app = hn_wm_watched_window_get_app( win );
-
-	GtkWidget *note = hn_wm_watchable_app_get_ping_timeout_note(app);
-	
-	gchar *response_message = g_strdup_printf(
-			PING_TIMEOUT_RESPONSE_STRING, win->name );
-
-	gtk_widget_destroy( note );
-
-	/* Show the infoprint */
-    hildon_banner_show_information( NULL, NULL, response_message );
-
-	g_free( response_message );
+  HNWMWatchableApp *app = hn_wm_watched_window_get_app( win );
+  
+  GtkWidget *note = hn_wm_watchable_app_get_ping_timeout_note(app);
+  
+  gchar *response_message 
+    = g_strdup_printf (PING_TIMEOUT_RESPONSE_STRING, 
+                       win->name );
+  
+  gtk_widget_destroy( note );
+  
+  /* Show the infoprint */
+  hildon_banner_show_information (NULL, NULL, response_message );
+  
+  g_free (response_message);
 }
