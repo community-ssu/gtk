@@ -1,3 +1,20 @@
+gtk+2.0 (2:2.6.10-1.osso11) unstable; urgency=low
+
+  * Widgets updated to comply with Hildon theming:
+    - GtkComboBox (in appear-as-list mode)
+    - GtkEntryCompletion
+    - GtkExpander
+    - GtkFileChooserButton
+  * Performance:
+    - GtkImage animation optimization removed as it breaks blinking icons in
+      TN. As a result applications displaying progress animations will take a
+      small performance hit.
+  * IM context documentation improvements
+  * Bugs fixed:
+    N#25361: Autocompletion choice drops down and blocks IM window
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  5 Apr 2006 19:26:42 +0300
+
 gtk+2.0 (2:2.6.10-1.osso10) unstable; urgency=low
 
   * UI change: Collapse folders only when tapping on already focused folder.
