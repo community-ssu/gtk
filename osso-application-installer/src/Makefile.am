@@ -40,5 +40,5 @@ apt_worker_CXXFLAGS = $(AW_DEPS_CFLAGS)
 apt_worker_LDADD = $(AW_DEPS_LIBS) -lapt-pkg
 
 install-exec-local:
-	rm -f $(bindir)/osso-application-installer
-	ln -s /usr/bin/maemo-invoker $(bindir)/osso-application-installer
+	rm -f $(DESTDIR)$(bindir)/osso-application-installer
+	ln -s /usr/bin/maemo-invoker $(DESTDIR)$(bindir)/osso-application-installer

@@ -1,6 +1,12 @@
-2006-04-05  Marius Vollmer  <marius.vollmer@nokia.com>
+2006-04-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.11
+
+	* Makefile.am (mo_DATA, noinst_DATA): Don't install the engb .mo
+	file.
+	* src/Makefile.am (install-exec-local): Use $(DESTDIR), stupid.
+	
+2006-04-05  Marius Vollmer  <marius.vollmer@nokia.com>
 	
 	* src/menu.h, src/menu.cc (create_package_menu): New.
 	* src/util.h, src/util.cc (make_global_package_list): Use it to

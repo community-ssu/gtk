@@ -13,4 +13,4 @@ etcdir = $(sysconfdir)/osso-application-installer/
 etc_DATA = certified.list
 
 modir = $(datadir)/locale/en_GB/LC_MESSAGES/osso-application-installer/
-mo_DATA = osso-application-installer.mo
+noinst_DATA = osso-application-installer.mo
