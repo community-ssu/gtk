@@ -408,6 +408,41 @@ show_with_details (package_info *pi, bool installed)
 }
 
 static void
+nicify_description_in_place (char *desc)
+{
+  /* The nicifications are this:
+     
+     - spaces at the start of a line are removed.
+
+     - if after that a line consists solely of a '.', that dot is
+       removed.
+  */
+
+  char *src = desc, *dst = desc;
+  char *bol = src;
+
+  while (*src)
+    {
+      if (src == bol && *src == ' ')
+	{
+	  src++;
+	  continue;
+	}
+
+      if (*src == '\n')
+	{
+	  if (bol+2 == src && bol[0] == ' ' && bol[1] == '.')
+	    dst--;
+	  bol = src + 1;
+	}
+
+      *dst++ = *src++;
+    }
+
+  *dst = '\0';
+}
+
+static void
 get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
 {
   spd_closure *c = (spd_closure *)clos;
@@ -423,6 +458,7 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
 
   pi->maintainer = dec->decode_string_dup ();
   pi->description = dec->decode_string_dup ();
+  nicify_description_in_place (pi->description);
 
   g_free (decode_dependencies (dec));
 
