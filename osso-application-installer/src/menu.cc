@@ -97,6 +97,7 @@ menu_close ()
 }
 
 static GtkWidget *details_menu_item = NULL;
+static GtkWidget *search_menu_item = NULL;
 static GtkWidget *operation_menu_item = NULL;
 
 void
@@ -104,6 +105,13 @@ set_details_menu_sensitive (bool flag)
 {
   if (details_menu_item)
     gtk_widget_set_sensitive (details_menu_item, flag);
+}
+
+void
+set_search_menu_sensitive (bool flag)
+{
+  if (search_menu_item)
+    gtk_widget_set_sensitive (search_menu_item, flag);
 }
 
 void
@@ -188,7 +196,8 @@ create_menu (GtkMenu *main)
   add_item (tools, _("ai_me_tools_refresh"), refresh_package_cache);
   add_item (tools, _("ai_me_tools_settings"), show_settings_dialog);
   add_item (tools, _("ai_me_tools_repository"), show_repo_dialog);
-  add_item (tools, _("ai_me_tools_search"), show_search_dialog);
+  search_menu_item =
+    add_item (tools, _("ai_me_tools_search"), show_search_dialog);
   add_item (tools, _("ai_me_tools_log"), show_log);
   add_item (tools, _("ai_me_tools_help"), show_help);
 

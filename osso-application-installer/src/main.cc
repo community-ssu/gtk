@@ -2237,6 +2237,7 @@ enable_search (bool f)
 {
   if (search_button)
     gtk_widget_set_sensitive (search_button, f);
+  set_search_menu_sensitive (f);
 }
 
 static void
