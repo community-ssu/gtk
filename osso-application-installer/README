@@ -72,13 +72,7 @@ BUGS
 - handle broken packages
 - handle removed, non-purged packages
 
-- Format description nicely in details dialog.
-
-- search results has wrong parent sometimes.
-
 - Context sensitive menu
-
-- Don't show search results when result is empty.
 
 Progress indications
 --------------------
