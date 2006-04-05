@@ -309,7 +309,6 @@ scripts to interact with the user:
 
   Displays the contents of FILE in a dialog with "Ok" and "Cancel"
   buttons.  The default title of the dialog is "License agreement".
-  FILE can be "-", in which case stdin is shown.
 
   When the user clicks "Ok", this utility exits with code 0; when he
   clicks "Cancel", it exits with code 1; and when an error occurs, it
