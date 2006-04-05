@@ -1331,7 +1331,17 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
   else if (x + popup_req.width > monitor.x + monitor.width)
     x = monitor.x + monitor.width - popup_req.width;
   
-  if (y + entry_req.height + popup_req.height <= monitor.y + monitor.height)
+  /* Pop-up direction priorities:
+   * 1. above, if it fits on screen (hildon preference)
+   * 2. below, if it fits on screen (gtk+, doesn't take hildon IM into account)
+   * 3. above, otherwise (gtk+)
+   */
+  if (monitor.y + popup_req.height < y)
+    {
+      y -= popup_req.height;
+      above = TRUE;
+    }
+  else if (y + entry_req.height + popup_req.height <= monitor.y + monitor.height)
     {
       y += entry_req.height;
       above = FALSE;
