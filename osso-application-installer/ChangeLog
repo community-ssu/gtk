@@ -1,5 +1,8 @@
 2006-04-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/menu.h, src/menu.cc (set_search_menu_sensitive): New.
+	* src/main.cc (enable_search): Call it.
+
 	* src/details.cc (nicify_description_in_place): New.
 	(get_package_details_reply): Use it.
 
