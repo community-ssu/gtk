@@ -10,40 +10,15 @@ DEB_BUILD_ARCH		?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 DEB_BUILD_ARCH_OS	?= $(shell dpkg-architecture -qDEB_BUILD_ARCH_OS)
 
 export VER=2.4
-export NVER=2.5
 export PVER=python2.4
-export PRIORITY=$(shell echo $(VER) | tr -d '.')0
-
-PREVVER	:= $(shell awk '/^python/ && NR > 1 {print substr($$2,2,length($$2)-2); exit}' debian/changelog)
-
-# default versions are built from the python-defaults source package
-# keep the definition to adjust package priorities.
-DEFAULT_VERSION=yes
-STATIC_PYTHON=no
-WITHOUT_CHECK=yes
-
-# set this (in the environment), when regenerating the docs. requires
-# latex2html as a build dependency.
-USE_L2H ?= no
 
 PY_INTERPRETER = /usr/bin/python$(VER)
-
-ifeq ($(DEFAULT_VERSION),yes)
-  PY_PRIO = standard
-  #PYSTDDEP = , python (>= $(VER))
-else
-  PY_PRIO = optional
-endif
-
-PY_MINPRIO = $(PY_PRIO)
 
 CC = gcc
 OPTSETTINGS = OPT="-g -O0 -Wall -Wstrict-prototypes"
 
 PWD		:= $(shell pwd)
-buildd_static	:= $(PWD)/build-static
 buildd_shared	:= $(PWD)/build-shared
-buildd_debug	:= $(PWD)/build-debug
 
 d		:= debian/tmp
 scriptdir	=  usr/lib/python$(VER)
@@ -56,36 +31,21 @@ d_base		:= debian/$(p_base)
 d_dev		:= debian/$(p_dev)
 
 build: stamp-build
-stamp-build: stamp-build-static stamp-build-shared
+stamp-build: stamp-build-shared
 	touch stamp-build
-
-stamp-build-static: stamp-configure-static
-	dh_testdir
-	$(MAKE) -C $(buildd_static)
-	touch stamp-build-static
 
 stamp-build-shared: stamp-configure-shared
 	dh_testdir
 	$(MAKE) -C $(buildd_shared)
-#	: # build the shared library
-	$(MAKE) -C $(buildd_shared) \
-		libpython$(VER).so
-	: # build a static library with PIC objects
-	$(MAKE) -C $(buildd_shared) \
-		LIBRARY=libpython$(VER)-pic.a libpython$(VER)-pic.a
+	: # build the shared library
+	$(MAKE) -C $(buildd_shared) libpython$(VER).so
 	touch stamp-build-shared
-
-stamp-build-debug: stamp-configure-debug
-	dh_testdir
-	$(MAKE) -C $(buildd_debug)
-	touch stamp-build-debug
 
 common_configure_args = \
 		--prefix=/usr \
 		--with-fpectl \
 		--enable-ipv6 \
 		--enable-unicode=ucs2 \
-		--enable-pydebug \
 		--without-cxx
 
 stamp-configure-shared:
@@ -98,119 +58,6 @@ stamp-configure-shared:
 
 	touch stamp-configure-shared
 
-stamp-configure-static:
-	mkdir -p $(buildd_static)
-	cd $(buildd_static) && \
-	  CC="$(CC)" $(OPTSETTINGS) \
-	    ../configure \
-		$(common_configure_args)
-
-	: # apply workaround for missing os.fsync
-	sed 's/HAVE_SYNC/HAVE_FSYNC/g' $(buildd_static)/pyconfig.h \
-		> $(buildd_static)/pyconfig.h.new
-	touch -r $(buildd_static)/pyconfig.h $(buildd_static)/pyconfig.h.new
-	mv -f $(buildd_static)/pyconfig.h.new $(buildd_static)/pyconfig.h
-
-	touch stamp-configure-static
-
-stamp-configure-debug:
-	mkdir -p $(buildd_debug)
-	cd $(buildd_debug) && \
-	  CC="$(CC)" $(OPTDEBUGSETTINGS) \
-	    ../configure \
-		$(common_configure_args) \
-		--with-pydebug
-
-	: # apply workaround for missing os.fsync
-	sed 's/HAVE_SYNC/HAVE_FSYNC/g' $(buildd_debug)/pyconfig.h \
-		> $(buildd_debug)/pyconfig.h.new
-	touch -r $(buildd_debug)/pyconfig.h $(buildd_debug)/pyconfig.h.new
-	mv -f $(buildd_debug)/pyconfig.h.new $(buildd_debug)/pyconfig.h
-
-	touch stamp-configure-debug
-
-stamp-mincheck:
-	for m in $(MIN_MODS) $(MIN_EXTS) $(MIN_BUILTINS); do \
-	  echo "import $$m"; \
-	done > $(buildd_static)/minmods.py
-	cd $(buildd_static) && ./python ../debian/pymindeps.py minmods.py \
-	  > $(buildd_static)/mindeps.txt
-	if [ -x /usr/bin/dot ]; then \
-	  python debian/depgraph.py < $(buildd_static)/mindeps.txt \
-	    > $(buildd_static)/mindeps.dot; \
-	  dot -Tpng -o $(buildd_static)/mindeps.png \
-	    $(buildd_static)/mindeps.dot; \
-	else true; fi
-	cd $(buildd_static) && ./python ../debian/mincheck.py \
-		minmods.py mindeps.txt
-	touch stamp-mincheck
-
-TESTOPTS = -l -unetwork,bsddb -x test_tcl
-TESTOPTS = -x test_tcl
-stamp-check:
-ifeq ($(WITHOUT_CHECK),yes)
-	echo "check run disabled for this build" > $(buildd_static)/test_results
-else
-	: # build locales needed by the testsuite
-	rm -rf locales
-	mkdir locales
-	chmod +x debian/locale-gen
-	debian/locale-gen
-
-	@echo "BEGIN test static"
-	-time \
-	  LOCPATH=$(PWD)/locales \
-	  $(MAKE) -C $(buildd_static) test \
-	    TESTOPTS="$(TESTOPTS)" 2>&1 \
-	    | tee $(buildd_static)/test_results
-	@echo "END test static"
-	@echo "BEGIN test shared"
-	-time \
-	  LOCPATH=$(PWD)/locales \
-	  $(MAKE) -C $(buildd_shared) test \
-	    TESTOPTS="$(TESTOPTS)" 2>&1 \
-	    | tee $(buildd_shared)/test_results
-	@echo "END test shared"
-endif
-	cp -p $(buildd_static)/test_results debian/
-
-	@echo "BEGIN pystone static"
-	cd $(buildd_static) && ./python ../Lib/test/pystone.py
-	cd $(buildd_static) && ./python ../Lib/test/pystone.py
-	@echo "END pystone static"
-	@echo "BEGIN pystone shared"
-	cd $(buildd_shared) \
-		&& LD_LIBRARY_PATH=. ./python ../Lib/test/pystone.py
-	cd $(buildd_shared) \
-		&& LD_LIBRARY_PATH=. ./python ../Lib/test/pystone.py
-	@echo "END pystone shared"
-	touch stamp-check
-
-minimal-test:
-	rm -rf mintest
-	mkdir -p mintest/lib mintest/dynlib mintest/testlib mintest/all-lib
-	cp -p $(buildd_static)/python mintest/
-	cp -p $(foreach i,$(MIN_MODS),Lib/$(i).py) \
-		mintest/lib/
-	cp -p $(foreach i,$(MIN_EXTS),$(buildd_static)/build/lib*/$(i).so) \
-		mintest/dynlib/
-	cp -p Lib/unittest.py mintest/lib/
-	cp -pr Lib/test mintest/lib/
-	cp -pr Lib mintest/all-lib
-	cp -p $(buildd_static)/build/lib*/*.so mintest/all-lib/
-	( \
-	  echo "import sys"; \
-	  echo "sys.path = ["; \
-	  echo "    '$(PWD)/mintest/lib',"; \
-	  echo "    '$(PWD)/mintest/dynlib',"; \
-	  echo "]"; \
-	  cat Lib/test/regrtest.py; \
-	) > mintest/lib/test/mintest.py
-	cd mintest && ./python -E -S lib/test/mintest.py \
-	     -x test_codecencodings_cn test_codecencodings_hk \
-		test_codecencodings_jp test_codecencodings_kr \
-		test_codecencodings_tw test_codecs test_multibytecodec \
-
 clean:
 	dh_testdir
 	dh_testroot
@@ -220,26 +67,14 @@ clean:
 
 	-$(MAKE) -f Makefile.pre.in srcdir=. distclean
 	rm -rf Lib/test/db_home
-	rm -rf $(buildd_static) $(buildd_shared) $(buildd_debug)
+	rm -rf $(buildd_shared)
 	-find -name '*.py[co]' | xargs -n 50 rm -f
 	rm -rf locales
 	dh_clean
 
-stamp-control:
-	: # We have to prepare the various control files
-
-	for f in debian/*.in; do \
-	    f2=`echo $$f | sed "s,PVER,$(PVER),g;s/@VER@/$(VER)/g;s,\.in$$,,"`; \
-	    if [ $$f2 != debian/control ]; then \
-		sed -e "s/@PVER@/$(PVER)/g;s/@VER@/$(VER)/g" \
-		    -e "s/@PRIORITY@/$(PRIORITY)/g" \
-		    -e "s,@SCRIPTDIR@,/$(scriptdir),g" \
-		  <$$f >$$f2; \
-	    fi; \
-	done
-
 install: build stamp-install
-stamp-install: stamp-build stamp-control
+
+stamp-install: stamp-build
 	dh_testdir
 	dh_testroot
 	dh_clean -k
@@ -248,7 +83,7 @@ stamp-install: stamp-build stamp-control
 	: # make install into tmp and subsequently move the files into
 	: # their packages' directories.
 	install -d $(d)/usr
-	$(MAKE) -C $(buildd_static) install \
+	$(MAKE) -C $(buildd_shared) install \
 		prefix=$(PWD)/$(d)/usr
 
 	: # remove files, which are not packaged
@@ -258,22 +93,21 @@ stamp-install: stamp-build stamp-control
 	mkdir -p $(d)/usr/share/man/man1
 	mv $(d)/usr/man/man1/python.1 \
 		$(d)/usr/share/man/man1/python$(VER).1
+	ln -sf $(d)/usr/share/man/man1/python$(VER).1 $(d)/usr/man/man1/python.1
 
 	: # Symlinks to /usr/bin for some tools
 	mkdir -p $(d_dev)/usr/lib/python$(VER)
 	mkdir -p $(d_dev)/usr/bin
 	mv $(d)/usr/lib/python$(VER)/pdb.py $(d_dev)/usr/lib/python$(VER)/pdb.py
-	(cd $(d_dev)/usr/bin/ && ln -sf ../lib/python$(VER)/pdb.py pdb$(VER))
+	ln -sf $(d_dev)/usr/lib/python$(VER)/pdb.py $(d_dev)/usr/bin/pdb$(VER)
+	mv $(d)/usr/bin/pydoc $(d_dev)/usr/bin/pydoc$(VER)
+	cp -p Tools/i18n/pygettext.py $(d_dev)/usr/bin/pygettext$(VER)
 
 	: # install the shared library
 	cp -p $(buildd_shared)/libpython$(VER).so.1.0 $(d)/usr/lib/
 	ln -sf libpython$(VER).so.1.0 $(d)/usr/lib/libpython$(VER).so.1
 	ln -sf libpython$(VER).so.1 $(d)/usr/lib/libpython$(VER).so
-	ln -sf ../../libpython$(VER).so \
-		$(d)/usr/lib/python$(VER)/config/libpython$(VER).so
-
-	mv $(d)/usr/bin/pydoc $(d_dev)/usr/bin/pydoc$(VER)
-	cp -p Tools/i18n/pygettext.py $(d_dev)/usr/bin/pygettext$(VER)
+	ln -sf ../../libpython$(VER).so $(d)/usr/lib/python$(VER)/config/libpython$(VER).so
 
 	: # install the Makefile of the shared python build
 	sed -e 's,^CXX *=,CXX=		g++ -pthread,' \
@@ -292,9 +126,7 @@ stamp-install: stamp-build stamp-control
 		$(foreach i,$(MIN_MODS),$(scriptdir)/$(i).py)
 
 
-	: # Move the static library and the header files into $(p_dev).
-#	mv $(d)/usr/share/include/python$(VER)/* $(d)/usr/include/python$(VER)/.
-#	rm -rf $(d)/usr/share/include
+	: # Move the library and the header files into $(p_dev).
 	dh_installdirs -p$(p_dev) \
 		$(scriptdir) \
 		$(scriptdir)/doc/html \
@@ -304,8 +136,6 @@ stamp-install: stamp-build stamp-control
 		usr/lib/python$(VER)/config \
 		usr/include/python$(VER) \
 		usr/lib/libpython$(VER).so
-	cp -p $(buildd_shared)/libpython$(VER)-pic.a \
-		$(d_dev)/usr/lib/python$(VER)/config/
 
 	: # Replace all '#!' calls to python with $(PY_INTERPRETER)
 	: # and make them executable
@@ -445,14 +275,13 @@ stamp-install: stamp-build stamp-control
 	rm -rf $(d_dev)/$(scriptdir)/distutils/*wininst*
 	find $(d_dev)/$(scriptdir) -name "*.pyo" -type f -exec rm -f {} \;
 
-	: # generate binfmt file
-	mkdir -p $(d_base)/usr/share/binfmts
-	$(buildd_static)/python debian/mkbinfmt.py $(PVER) \
-		> $(d_base)/usr/share/binfmts/$(PVER)
-
 	: # remove some things
 	-find debian -name CVS | xargs rm -rf
 	-find debian -name .cvsignore | xargs rm -f
+
+	#DEFAULT PYTHON
+	(cd $(d_dev)/usr/bin && ln -sf pdb$(VER) pdb && ln -sf pydoc$(VER) pydoc && ln -sf pygettext$(VER) pygettext)
+	(cd $(d_base)/usr/bin && ln -sf python$(VER) python)
 
 	touch stamp-install
 
@@ -476,18 +305,8 @@ binary-indep: build install
 		$(d_doc)/usr/share/doc/$(p_base)/html/.
 	rmdir $(d_doc)/usr/share/doc/$(p_base)/html/Python-Docs*
 
-	cp -p Doc/info/*info* \
-		$(d_doc)/usr/share/info/
 	dh_link -p$(p_doc) \
 		/usr/share/doc/$(p_base)/html /usr/share/doc/$(p_doc)/html
-
-	: # devhelp docs
-	$(buildd_static)/python debian/pyhtml2devhelp.py \
-		$(d_doc)/usr/share/doc/$(p_base)/html index.html \
-		> $(d_doc)/usr/share/doc/$(p_base)/html/$(PVER).devhelp
-	gzip -9v $(d_doc)/usr/share/doc/$(p_base)/html/$(PVER).devhelp
-	dh_link -p$(p_doc) \
-		/usr/share/doc/$(p_base)/html /usr/share/devhelp/books/$(PVER)
 
 	dh_installdebconf -i
 	dh_installexamples -i
@@ -518,8 +337,7 @@ binary-arch: build install
 	dh_testroot -a
 	dh_installexamples -a
 	dh_installmenu -a
-	#dh_installinfo -a
-	#dh_strip -a
+	dh_strip -a
 	dh_link -a
 	dh_compress -a -X.py
 	dh_fixperms -a

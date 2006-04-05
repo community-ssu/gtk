@@ -1,3 +1,15 @@
+python2.4 (2.4.2-1osso5) unstable; urgency=low
+  
+  * add binary strip
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 04 Apr 2006 10:03:00 -0300
+
+python2.4 (2.4.2-1osso4) unstable; urgency=low
+  
+  * added /usr/bin/* symlinks
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Mon, 03 Apr 2006 17:33:00 -0300
+
 python2.4 (2.4.2-1osso3) unstable; urgency=low
   
   * now including *.so.* files
