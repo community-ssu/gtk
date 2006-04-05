@@ -71,7 +71,6 @@ struct view {
   view *parent;
   const gchar *label;
   GtkWidget *(*maker) (view *);
-  GList *path;
 };
 
 GtkWidget *main_vbox;
@@ -102,9 +101,9 @@ show_view (view *v)
   cur_view = v->maker (v);
   cur_view_struct = v;
 
-  if (v->path == NULL)
-    v->path = make_view_path (v);
-  hildon_bread_crumb_trail_set_path (main_trail, v->path);
+  g_list_free (cur_path);
+  cur_path = make_view_path (v);
+  hildon_bread_crumb_trail_set_path (main_trail, cur_path);
   
   gtk_box_pack_start (GTK_BOX (main_vbox), cur_view, TRUE, TRUE, 10);
 }
@@ -139,43 +138,37 @@ GtkWidget *make_search_results_view (view *v);
 view main_view = {
   NULL,
   "ai_ti_main",
-  make_main_view,
-  NULL
+  make_main_view
 };
 
 view install_applications_view = {
   &main_view,
   "ai_li_install",
-  make_install_applications_view,
-  NULL
+  make_install_applications_view
 };
 
 view upgrade_applications_view = {
   &main_view,
   "ai_li_update",
-  make_upgrade_applications_view,
-  NULL
+  make_upgrade_applications_view
 };
 
 view uninstall_applications_view = {
   &main_view,
   "ai_li_uninstall",
-  make_uninstall_applications_view,
-  NULL
+  make_uninstall_applications_view
 };
 
 view install_section_view = {
   &install_applications_view,
   NULL,
-  make_install_section_view,
-  NULL
+  make_install_section_view
 };
 
 view search_results_view = {
   &main_view,
   "ai_ti_search_results",
-  make_search_results_view,
-  NULL
+  make_search_results_view
 };
 
 void
@@ -1720,6 +1713,16 @@ search_packages_reply (int cmd, apt_proto_decoder *dec, void *data)
   if (dec == NULL)
     return;
 
+  int success = dec->decode_int ();
+
+  if (!success)
+    {
+      annoy_user_with_log (_("ai_ni_operation_failed"));
+      return;
+    }
+
+  GList *result = NULL;
+
   while (!dec->at_end ())
     {
       const char *name = dec->decode_string_in_place ();
@@ -1734,25 +1737,30 @@ search_packages_reply (int cmd, apt_proto_decoder *dec, void *data)
       dec->decode_string_in_place (); // available_icon
 
       if (parent == &install_applications_view)
-	find_in_section_list (&search_result_packages,
+	find_in_section_list (&result,
 			      install_sections, name);
       else if (parent == &upgrade_applications_view)
-	find_in_package_list (&search_result_packages,
+	find_in_package_list (&result,
 			      upgradeable_packages, name);
       else if (parent == &uninstall_applications_view)
-	find_in_package_list (&search_result_packages,
+	find_in_package_list (&result,
 			      installed_packages, name);
     }
 
-  show_view (&search_results_view);
+  if (result)
+    {
+      clear_global_package_list ();
+      free_packages (search_result_packages);
+      search_result_packages = result;
+      show_view (&search_results_view);
+    }
+  else
+    irritate_user (_("ai_ib_no_matches"));
 }
 
 void
 search_packages (const char *pattern, bool in_descriptions)
 {
-  free_packages (search_result_packages);
-  search_result_packages = NULL;
-
   view *parent;
 
   if (cur_view_struct == &search_results_view)
@@ -1768,17 +1776,27 @@ search_packages (const char *pattern, bool in_descriptions)
 
   if (!in_descriptions)
     {
+      GList *result = NULL;
+
       if (parent == &install_applications_view)
-	search_section_list (&search_result_packages,
+	search_section_list (&result,
 			     install_sections, pattern);
       else if (parent == &upgrade_applications_view)
-	search_package_list (&search_result_packages,
+	search_package_list (&result,
 			     upgradeable_packages, pattern);
       else if (parent == &uninstall_applications_view)
-	search_package_list (&search_result_packages,
+	search_package_list (&result,
 			     installed_packages, pattern);
 
-      show_view (&search_results_view);
+      if (result)
+	{
+	  clear_global_package_list ();
+	  free_packages (search_result_packages);
+	  search_result_packages = result;
+	  show_view (&search_results_view);
+	}
+      else
+	irritate_user (_("ai_ib_no_matches"));
     }
   else
     {
