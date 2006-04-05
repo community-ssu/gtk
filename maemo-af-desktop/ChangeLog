@@ -1,5 +1,10 @@
 2006-04-05  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Populate the Applet Settings submenu
+	  even when the menu is triggered from the hardware key
+
+2006-04-05  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-watched-window.c:
 	  - hn_wm_watched_window_get_active_view(): Return the first view of
 	    an application if no one was set yet (Closes N#22987)

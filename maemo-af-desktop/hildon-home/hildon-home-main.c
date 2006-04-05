@@ -3207,6 +3207,7 @@ gint hildon_home_key_release_listener (GtkWidget * widget,
             menu_key_pressed = FALSE;
             if(!menu_popup_status)
             {
+                applets_settings_menu_refill();
                 gtk_menu_popup(GTK_MENU(menu_used), NULL, NULL,
                                (GtkMenuPositionFunc)
                                titlebar_menu_position_func,
