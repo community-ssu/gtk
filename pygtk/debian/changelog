@@ -1,3 +1,9 @@
+python-gtk2 (2.6.1-2osso2) unstable; urgency=low
+
+  * changes to reduce footprint
+ 
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 04 Apr 2006 15:09:00 -0300
+
 python-gtk2 (2.6.1-2osso1) unstable; urgency=low
 
   * First OSSO release for SDK 1.2

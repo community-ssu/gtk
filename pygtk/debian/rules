@@ -1,72 +1,48 @@
 #!/usr/bin/make -f
-# Sample debian/rules that uses debhelper. 
-# GNU copyright 1997 by Joey Hess.
-#
-# This version is for a hypothetical package that builds an
-# architecture-dependant package, as well as an architecture-independent
-# package.
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
-DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+#DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+#DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+#			--host=$(DEB_HOST_GNU_TYPE) 	\
+#			--build=$(DEB_BUILD_GNU_TYPE) 		\
 
 # Install directories
 p_base=python2.4-gtk2
 p_dev=$(p_base)-dev
-p_modules=$(p_base)-modules
-p_examples=$(p_base)-examples
-p_codegen=$(p_base)-codegen
 
 d=debian/tmp
 d_base=debian/$(p_base)
 d_dev=debian/$(p_dev)
-d_modules=debian/$(p_modules)
-d_examples=debian/$(p_examples)
-d_codegen=debian/$(p_codegen)
-
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
-endif
 
 build-2.4/config.status: configure
 	dh_testdir
 	mkdir -p build-2.4
 	autoconf
 	cd build-2.4 && PYTHON=`which python2.4` \
-		../configure --host=$(DEB_HOST_GNU_TYPE) 	\
-			--build=$(DEB_BUILD_GNU_TYPE) 		\
+		../configure \
 			--prefix=/usr \
 			--enable-thread \
 			--disable-numpy
 
-build-arch:  build-2.4/config.status build-arch-stamp
-build-arch-stamp: 
+build:  build-2.4/config.status build-stamp
+build-stamp: 
 	dh_testdir
 	$(MAKE) -C build-2.4
-	touch build-arch-stamp
-
-build-indep: build-2.4/config.status  build-indep-stamp
-build-indep-stamp:
-	dh_testdir
-	touch build-indep-stamp
-
-build: build-arch
+	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-arch-stamp build-indep-stamp 
+	rm -f build-stamp
 	rm -Rf debian/tmp-*
 	-rm -rf debian/python2.4-gtk2
-	-rm -rf debian/python2.4-gtk2-codegen
 	-rm -rf debian/python2.4-gtk2-dev
-	-rm -rf debian/python2.4-gtk2-examples
-	-rm -rf debian/python2.4-gtk2-modules
 	-rm -rf build-2.4
+	find -name "*.pyc" -exec rm -f {} \;
+	find -name "*.pyo" -exec rm -f {} \;
 	dh_clean codegen/*.pyc
 
-install: DH_OPTIONS=
 install: build
 	dh_testdir
 	dh_testroot
@@ -74,90 +50,39 @@ install: build
 	dh_installdirs
 	$(MAKE) -C build-2.4 install DESTDIR=$(CURDIR)/debian/tmp
 
-## FIXME
-
 	rm -rf $(d_base) && mkdir -p $(d_base)
-	rm -rf $(d_examples) && mkdir -p $(d_examples)
-	rm -rf $(d_codegen) && mkdir -p $(d_codegen)
 	rm -rf $(d_dev) && mkdir -p $(d_dev)
-	rm -rf $(d_modules) && mkdir -p $(d_modules)
 
 	# Base
 	mkdir -p $(d_base)/usr/lib
-	mkdir -p $(d_base)/usr/share/pygtk/2.0
 	cp -a $(d)/usr/lib/python2.4		$(d_base)/usr/lib
-	mv $(d)/usr/share/pygtk/2.0/defs	$(d_base)/usr/share/pygtk/2.0
-	find $(d_base) -not -name "__init__.py" -name "*.py" -exec rm -f {} \;
-	find $(d_base) -name "*.pyc" -or -name "__init__.pyo" -exec rm -f {} \;
+	find $(d_base) -name "*.py" -exec rm -f {} \;
+	find $(d_base) -name "*.pyc" -exec rm -f {} \;
+	find $(d_base) -name "*.la" -exec rm -f {} \;
 
-	# Examples
-	mkdir -p $(d_examples)/usr/bin
-	mkdir -p $(d_examples)/usr/lib/pygtk/2.0
-	mv $(d)/usr/bin/pygtk-demo 		$(d_examples)/usr/bin
-	mv $(d)/usr/lib/pygtk/2.0/pygtk-demo.py	$(d_examples)/usr/lib/pygtk/2.0
-	mv $(d)/usr/lib/pygtk/2.0/demos		$(d_examples)/usr/lib/pygtk/2.0
-	find $(d_examples) -name "*.pyo" -exec rm -f {} \;
-
-	# Codegen
-	mkdir -p $(d_codegen)/usr/bin
-	mkdir -p $(d_codegen)/usr/share/pygtk/2.0
-	mv $(d)/usr/bin/pygtk-codegen-2.0	$(d_codegen)/usr/bin
-	mv $(d)/usr/share/pygtk/2.0/codegen	$(d_codegen)/usr/share/pygtk/2.0
-
-	# Development	
-	mkdir -p $(d_dev)/usr/lib
+	# Dev
+	mkdir -p $(d_dev)/usr/bin
+	mkdir -p $(d_dev)/usr/lib/pygtk/2.0
+	mkdir -p $(d_dev)/usr/share/pygtk/2.0
 	mkdir -p $(d_dev)/usr/include
+	mv $(d)/usr/bin/pygtk-demo 		$(d_dev)/usr/bin
 	mv $(d)/usr/lib/pkgconfig		$(d_dev)/usr/lib
+	mv $(d)/usr/lib/python2.4		$(d_dev)/usr/lib
+	mv $(d)/usr/lib/pygtk/2.0/pygtk-demo.py	$(d_dev)/usr/lib/pygtk/2.0
+	mv $(d)/usr/lib/pygtk/2.0/demos		$(d_dev)/usr/lib/pygtk/2.0
+	mv $(d)/usr/bin/pygtk-codegen-2.0	$(d_dev)/usr/bin
+	mv $(d)/usr/share/pygtk/2.0/codegen	$(d_dev)/usr/share/pygtk/2.0
+	mv $(d)/usr/share/pygtk/2.0/defs	$(d_dev)/usr/share/pygtk/2.0
 	mv $(d)/usr/include/pygtk-2.0		$(d_dev)/usr/include
+	find $(d_dev) -name "*.pyc" -exec rm -f {} \;
+	find $(d_dev) -name "*.pyo" -exec rm -f {} \;
+	find $(d_dev) -name "*.so" -exec rm -f {} \;
+	find $(d_dev) -name "*.pth" -exec rm -f {} \;
 
-	# Modules
-	mkdir -p $(d_modules)/usr/lib
-	mv $(d)/usr/lib/python2.4 $(d_modules)/usr/lib
-	find $(d_modules) -type f -and -not -name "*.py" -exec rm -f {} \;
-	find $(d_modules) -name "__init__.py" -exec rm -f {} \;
-
-## End FIXME
-
-# Build architecture-independent files here.
-# Pass -i to all debhelper commands in this target to reduce clutter.
-binary-indep: 
-	dh_testdir -i
-	dh_testroot -i
-	dh_installdocs -i
-	dh_installexamples -i
-
-	# Replace all '#!' calls to python with python
-        # and make them executable
-	for i in `find debian/python-* -type f`; do \
-	  sed '1s,#!.*python[^ ]*\(.*\),#!/usr/bin/python,' \
-		$$i > $$i.temp; \
-	  if cmp --quiet $$i $$i.temp; then \
-	    rm -f $$i.temp; \
-	  else \
-	    mv -f $$i.temp $$i; \
-	    chmod 755 $$i; \
-	    echo "fixed interpreter: $$i"; \
-	  fi; \
-	done
-
-	dh_installmenu -i
-	dh_installcron -i
-	dh_installchangelogs ChangeLog -i
-	dh_link -i
-	dh_compress -i
-	dh_fixperms -i
-	dh_python -i /usr/share/pygtk/2.0/codegen/
-	dh_installdeb -i
-	dh_gencontrol -i
-	dh_md5sums -i
-	dh_builddeb -i
-
-# Build architecture-dependent files here.
-binary-arch: build install
-	dh_testdir -a
-	dh_testroot -a
-	dh_installdocs -a
-	dh_installexamples -a
+binary: build install
+	dh_testdir -a -i
+	dh_testroot -a -i
+	dh_installexamples -a -i
 
 	# Replace all '#!' calls to python with python2.4
         # and make them executable
@@ -173,19 +98,15 @@ binary-arch: build install
 	  fi; \
 	done
 
-	dh_installmenu -a
-	dh_installcron -a
-	dh_installchangelogs ChangeLog -a
-	dh_strip -a
-	dh_link -a
-	dh_compress -a
-	dh_fixperms -a
-	dh_python -a
-	dh_installdeb -a
-	dh_shlibdeps -a
-	dh_gencontrol -a
-	dh_md5sums -a
-	dh_builddeb -a
+	dh_strip -a -i
+	dh_link -a -i
+	dh_compress -a -i
+	dh_fixperms -a -i
+	dh_python -a -i
+	dh_installdeb -a -i
+	dh_shlibdeps -a -i
+	dh_gencontrol -a -i
+	dh_md5sums -a -i
+	dh_builddeb -a -i
 
-binary: binary-arch binary-indep
-.PHONY: build clean binary-indep binary-arch binary install 
+.PHONY: build clean binary install 
