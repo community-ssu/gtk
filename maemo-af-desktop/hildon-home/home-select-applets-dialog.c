@@ -468,6 +468,7 @@ void select_applets_reload_applets(char *applets_path,
         }
 
         entry = g_dir_read_name(applet_desktop_base_dir);
+        g_free(indexfile);
 	
     } /* ..while( entry ) */
 

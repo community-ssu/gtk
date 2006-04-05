@@ -1,5 +1,10 @@
 2006-04-05  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/home-select-applets-dialog.c: Fixed the leak of a string
+	* hildon-home/hildon-home-main.c: Fixed the leak of a g_list
+
+2006-04-05  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.c: Populate the Applet Settings submenu
 	  even when the menu is triggered from the hardware key
 

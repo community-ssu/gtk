@@ -2631,13 +2631,15 @@ static void construct_applets(void)
 static void applets_settings_menu_fill(void)
 {
 
-    GList *list_item;
+    GList *list_item, *list;
     gchar *identifier;
     applet_manager_t *man = applet_manager_singleton_get_instance();
     GtkWidget *menu_item = NULL;
     gboolean applet_has_settings = FALSE;
+
+    list = applet_manager_get_identifier_all(man);
    
-    for(list_item = applet_manager_get_identifier_all(man); 
+    for(list_item = list; 
         list_item != NULL; list_item = list_item->next)
     {
         identifier = (gchar *)list_item->data;
@@ -2651,6 +2653,9 @@ static void applets_settings_menu_fill(void)
             applet_has_settings = TRUE;
         }
     }
+
+    g_list_free(list);
+
     gtk_widget_set_sensitive(applets_settings_item, applet_has_settings);
 }
 
