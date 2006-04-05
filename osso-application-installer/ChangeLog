@@ -25,8 +25,6 @@
 	(search_packages): Likewise for the the searches in package names
 	only.
 
-	* src/main.cc (key_press_event): Exit on ESC.
-	
 	Add new repositories at the end.  Dim Edit and Delete buttons for
 	essential repositories.
 	
