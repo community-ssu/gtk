@@ -1,7 +1,24 @@
 2006-04-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
-	* src/main.cc (key_press_event): Exit on ESC.
+	* src/details.cc (nicify_description_in_place): New.
+	(get_package_details_reply): Use it.
 
+	Fix searching.
+
+	* src/main.cc (struct view): Removed path member.  Updated all
+	initialisations.
+	(show_view): Construct from fresh every time since views might
+	change their parent.
+	(search_packages_reply): Fix by decoding leading success int of
+	response.  First collect results and only switch the search
+	results view when there are some.  Otherwise show information
+	banner.  Free old search results only when actually having new
+	ones.
+	(search_packages): Likewise for the the searches in package names
+	only.
+
+	* src/main.cc (key_press_event): Exit on ESC.
+	
 	Add new repositories at the end.  Dim Edit and Delete buttons for
 	essential repositories.
 	
