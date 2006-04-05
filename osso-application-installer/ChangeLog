@@ -1,5 +1,25 @@
 2006-04-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/main.cc (key_press_event): Exit on ESC.
+
+	Add new repositories at the end.  Dim Edit and Delete buttons for
+	essential repositories.
+	
+	* src/repo.cc (repo_closure): Added edit_button and delete_button
+	members to aid in dimming those buttons for essential
+	repositories.  Added lastp member to aid in adding to the end of
+	the list.
+	(add_new_repo): Add new repo to the end.
+	(remove_repo): Maintain lastp.
+	(repo_response): Don't check for essential repos here, the button
+	are insensitive for them.
+	(repo_row_activated): Use information banner with the correct
+	logical id instead of note.
+	(repo_selection_changed): New, dim buttons appropriately.
+	(make_repo_list): Connect repo_selection_changed.
+	(insensitive_press): New.
+	(sources_list_reply): Use it for the Edit and Delete buttons.
+	
 	Launcherized osso-application-installer.
 	
 	* src/Makefile.am (bin_PROGRAMS): Renamed
