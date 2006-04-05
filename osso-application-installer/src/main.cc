@@ -1312,6 +1312,7 @@ make_install_section_view (view *v)
     make_global_package_list (si? si->packages : NULL,
 			      false,
 			      _("ai_li_no_applications_available"),
+			      _("ai_me_cs_install"),
 			      available_package_selected, 
 			      install_package);
 
@@ -1354,6 +1355,7 @@ make_install_applications_view (view *v)
 	make_global_package_list (si->packages,
 				  false,
 				  _("ai_li_no_applications_available"),
+				  _("ai_me_cs_install"),
 				  available_package_selected, 
 				  install_package);
       get_package_list_info (si->packages);
@@ -1390,6 +1392,7 @@ make_upgrade_applications_view (view *v)
     make_global_package_list (upgradeable_packages,
 			      false,
 			      _("ai_li_no_updates_available"),
+			      _("ai_me_cs_update"),
 			      available_package_selected,
 			      install_package);
 
@@ -1598,6 +1601,7 @@ make_uninstall_applications_view (view *v)
   view = make_global_package_list (installed_packages,
 				   true,
 				   _("ai_li_no_installed_applications"),
+				   _("ai_me_cs_uninstall"),
 				   installed_package_selected,
 				   uninstall_package);
   gtk_widget_show_all (view);
@@ -1620,7 +1624,10 @@ make_search_results_view (view *v)
     {
       view = make_global_package_list (search_result_packages,
 				       false,
-				       _("ai_li_no_packages_found"),
+				       NULL,
+				       (v->parent == &install_applications_view
+					? _("ai_me_cs_install")
+					: _("ai_me_cs_update")),
 				       available_package_selected,
 				       install_package);
     }
@@ -1628,7 +1635,8 @@ make_search_results_view (view *v)
     {
       view = make_global_package_list (search_result_packages,
 				       true,
-				       _("ai_ib_no_matches"),
+				       NULL,
+				       _("ai_me_cs_uninstall"),
 				       installed_package_selected,
 				       uninstall_package);
     }

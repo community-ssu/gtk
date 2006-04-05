@@ -63,6 +63,7 @@ typedef void package_info_callback (package_info *);
 GtkWidget *make_global_package_list (GList *packages,
 				     bool installed,
 				     const char *empty_label,
+				     const char *op_label,
 				     package_info_callback *selected,
 				     package_info_callback *activated);
 void clear_global_package_list ();

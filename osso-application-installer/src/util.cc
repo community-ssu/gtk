@@ -44,6 +44,7 @@
 #include "details.h"
 #include "log.h"
 #include "settings.h"
+#include "menu.h"
 #include "apt-worker-client.h"
 
 #define _(x) gettext (x)
@@ -638,11 +639,10 @@ GtkWidget *
 make_global_package_list (GList *packages,
 			  bool installed,
 			  const char *empty_label,
+			  const char *op_label,
 			  package_info_callback *selected,
 			  package_info_callback *activated)
 {
-  // XXX - refcounting of package_info
-
   if (global_list_store == NULL)
     {
       global_list_store = gtk_list_store_new (1, GTK_TYPE_POINTER);
@@ -738,6 +738,11 @@ make_global_package_list (GList *packages,
 
   g_signal_connect (tree, "row-activated", 
 		    G_CALLBACK (global_row_activated), NULL);
+
+  GtkWidget *menu = create_package_menu (op_label);
+  gtk_widget_show_all (menu);
+  gtk_widget_tap_and_hold_setup (tree, menu, NULL,
+				 GtkWidgetTapAndHoldFlags (0));
 
   set_global_package_list (packages, installed, selected, activated);
 

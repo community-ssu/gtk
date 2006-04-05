@@ -205,3 +205,14 @@ create_menu (GtkMenu *main)
 
   gtk_widget_show_all (GTK_WIDGET (main));
 }
+
+GtkWidget *
+create_package_menu (const char *op_label)
+{
+  GtkWidget *menu = gtk_menu_new ();
+
+  add_item (GTK_MENU (menu), op_label, do_current_operation);
+  add_item (GTK_MENU (menu), _("ai_me_cs_details"), show_current_details);
+
+  return menu;
+}

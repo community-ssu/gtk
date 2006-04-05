@@ -34,4 +34,6 @@ void set_operation_menu_label (const gchar *label, bool sensitive);
 
 void set_fullscreen_menu_check (bool f);
 
+GtkWidget *create_package_menu (const char *op_label);
+
 #endif /* !MENU_H */
