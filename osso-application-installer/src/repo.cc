@@ -62,8 +62,13 @@ struct repo_closure {
   ~repo_closure ();
 
   repo_line *lines;
+  repo_line **lastp;
+
   GtkTreeView *tree;
   GtkListStore *store;
+
+  GtkWidget *edit_button;
+  GtkWidget *delete_button;
 
   bool dirty;
 
@@ -158,6 +163,7 @@ repo_line::~repo_line ()
 repo_closure::repo_closure ()
 {
   lines = NULL;
+  lastp = &lines;
   next_is_essential = false;
   dirty = false;
 }
@@ -315,8 +321,10 @@ static void
 add_new_repo (repo_closure *c)
 {
   repo_line *r = new repo_line (c, "deb http:// mistral user");
-  r->next = c->lines;
-  c->lines = r;
+  r->next = NULL;
+  *c->lastp = r;
+  c->lastp = &r->next;
+
   show_repo_edit_dialog (r, true);
 }
 
@@ -328,6 +336,8 @@ remove_repo (repo_line *r)
     if (*rp == r)
       {
 	*rp = r->next;
+	if (c->lastp == &r->next)
+	  c->lastp = rp;
 	delete r;
 	refresh_repo_list (c);
 	break;
@@ -405,10 +415,7 @@ repo_response (GtkDialog *dialog, gint response, gpointer clos)
       if (r == NULL)
 	return;
 
-      if (r->essential)
-	annoy_user (_("ai_ni_unable_edit_repository"));
-      else
-	show_repo_edit_dialog (r, false);
+      show_repo_edit_dialog (r, false);
 
       return;
     }
@@ -419,15 +426,10 @@ repo_response (GtkDialog *dialog, gint response, gpointer clos)
       if (r == NULL)
 	return;
 
-      if (r->essential)
-	annoy_user (_("ai_ni_unable_remove_repository"));
-      else
-	{
-	  char *text = g_strdup_printf (_("ai_nc_remove_repository"),
-					r->deb_line);
-	  ask_yes_no (text, remove_repo_cont, r);
-	  g_free (text);
-	}
+      char *text = g_strdup_printf (_("ai_nc_remove_repository"),
+				    r->deb_line);
+      ask_yes_no (text, remove_repo_cont, r);
+      g_free (text);
       
       return;
     }
@@ -505,9 +507,28 @@ repo_row_activated (GtkTreeView *treeview,
 	return;
 
       if (r->essential)
-	annoy_user (_("ai_ni_unable_edit_repository"));
+	irritate_user (_("ai_ib_unable_edit"));
       else
 	show_repo_edit_dialog (r, false);
+    }
+}
+
+static void
+repo_selection_changed (GtkTreeSelection *selection, gpointer data)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  repo_closure *c = (repo_closure *)data;
+
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
+    {
+      repo_line *r;
+      gtk_tree_model_get (model, &iter, 0, &r, -1);
+      if (r == NULL)
+	return;
+
+      gtk_widget_set_sensitive (c->edit_button, !r->essential);
+      gtk_widget_set_sensitive (c->delete_button, !r->essential);
     }
 }
 
@@ -557,6 +578,11 @@ make_repo_list (repo_closure *c)
   g_signal_connect (c->tree, "row-activated", 
 		    G_CALLBACK (repo_row_activated), NULL);
 
+  g_signal_connect
+    (G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (c->tree))),
+     "changed",
+     G_CALLBACK (repo_selection_changed), c);
+
   refresh_repo_list (c);
 
   scroller = gtk_scrolled_window_new (NULL, NULL);
@@ -566,6 +592,12 @@ make_repo_list (repo_closure *c)
   gtk_container_add (GTK_CONTAINER (scroller), GTK_WIDGET (c->tree));
 
   return scroller;
+}
+
+static void
+insensitive_press (GtkButton *button, gpointer data)
+{
+  irritate_user ((const gchar *)data);
 }
 
 void
@@ -587,19 +619,36 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
       rp = &(*rp)->next;
     }
   *rp = NULL;
+  c->lastp = rp;
 
   int success = dec->decode_int ();
   if (dec->corrupted () || !success)
     printf ("failed.\n");
 
-  GtkWidget *dialog;
-  dialog = gtk_dialog_new_with_buttons
-    (_("ai_ti_repository"), get_main_window (), GTK_DIALOG_MODAL,
-     _("ai_bd_repository_new"), REPO_RESPONSE_NEW,
-     _("ai_bd_repository_edit"), REPO_RESPONSE_EDIT,
-     _("ai_bd_repository_delete"), REPO_RESPONSE_REMOVE,
-     _("ai_bd_repository_close"), GTK_RESPONSE_CLOSE,
-     NULL);
+  GtkWidget *dialog= gtk_dialog_new ();
+
+  gtk_window_set_title (GTK_WINDOW (dialog), _("ai_ti_repository"));
+  gtk_window_set_transient_for (GTK_WINDOW (dialog), get_main_window ());
+  gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+
+  gtk_dialog_add_button (GTK_DIALOG (dialog), 
+			 _("ai_bd_repository_new"), REPO_RESPONSE_NEW);
+  c->edit_button = 
+    gtk_dialog_add_button (GTK_DIALOG (dialog), 
+			   _("ai_bd_repository_edit"), REPO_RESPONSE_EDIT);
+  c->delete_button =
+    gtk_dialog_add_button (GTK_DIALOG (dialog), 
+			   _("ai_bd_repository_delete"), REPO_RESPONSE_REMOVE);
+  gtk_dialog_add_button (GTK_DIALOG (dialog), 
+			 _("ai_bd_repository_close"), GTK_RESPONSE_CLOSE);
+
+  g_signal_connect (c->edit_button, "insensitive_press",
+		    G_CALLBACK (insensitive_press),
+		    _("ai_ib_unable_edit"));
+  g_signal_connect (c->delete_button, "insensitive_press",
+		    G_CALLBACK (insensitive_press),
+		    _("ai_ib_unable_edit"));
+
   set_dialog_help (dialog, AI_TOPIC ("repository"));
   
   gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (dialog)->vbox),
