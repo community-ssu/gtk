@@ -1,5 +1,33 @@
+2006-04-05  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Launcherized osso-application-installer.
+	
+	* src/Makefile.am (bin_PROGRAMS): Renamed
+	osso-application-installer to osso-application-installer.launch.
+	(osso_application_installer_launch_CFLAGS,
+	osso_application_installer_launch_LDFLAGS,
+	osso_application_installer_launch_CXXFLAGS): Add launcherizing
+	flags.
+	(install-exec-local): Make launcherizing symlink.
+	
+	* debian/control: Depend on maemo-launcher.
+
 2006-04-04  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Maemo-launcherize maemo-confirm-text.
+	
+	* configure.ac (LAUNCHER_CFLAGS, LAUNCHER_LDFLAGS): New.
+	* utils/Makefile.am: Renamed maemo-confirm-text.user to
+	maemo-confirm-text.launch.
+	(maemo_confirm_text_launch_CFLAGS,
+	maemo_confirm_text_launch_LDFLAGS): Use new flags to really turn
+	maemo-confirm-text.user into maemo-confirm-text.launch.
+	* utils/maemo-confirm-text-user.c (fill_text_buffer_from_file):
+	Don't support "-" since the launcher does not support it, either.
+	* utils/maemo-confirm-text: Use maemo-invoker to call
+	maemo-confirm-text.launch.
+
+	* debian/control: Merged bugfix from 4.10-build-depends-fix.
 
 	* src/settings.h, src/setting.cc (fullscreen_toolbar,
 	normal_toolbar): Added.
