@@ -1,5 +1,7 @@
 2006-04-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.11
+	
 	* src/menu.h, src/menu.cc (create_package_menu): New.
 	* src/util.h, src/util.cc (make_global_package_list): Use it to
 	set the tap and hold menu.  Added op_label parameter for this;

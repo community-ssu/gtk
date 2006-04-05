@@ -1,3 +1,23 @@
+osso-application-installer (4.11) unstable; urgency=low
+
+  * Maemo-launcherized osso-application-installer and maemo-confirm-text
+    (N24827).
+  * Implemented context sensitive menu.
+  * Fixed searching to work according to spec.
+  * Add new repositories at end, dim edit and delete for essential repos.
+  * Save toolbar visibility settings.
+  * Be smart about showing/not showing categories.
+  * Fixed N25613.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  6 Apr 2006 00:29:37 +0300
+
+osso-application-installer (4.10.1) unstable; urgency=low
+
+  * Fixed malformed Build-Depends line: insert comma after libgconf2-dev
+    and depend on libosso-gnomevfs2-dev instead of libosso-gnome-vfs2-dev.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue,  4 Apr 2006 18:30:19 +0300
+
 osso-application-installer (4.10) unstable; urgency=low
 
   * Added libosso-help-dev to Build-Depends.
