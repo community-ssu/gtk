@@ -1,5 +1,8 @@
 2006-04-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/repo.cc (add_entry): Set "autocap" to FALSE for all entry
+	widgets.
+
 	* src/apt-worker.cc (main): Be 20 clicks nicer.
 
 	* src/main.cc (main): Set application name to "" to get rid of the
