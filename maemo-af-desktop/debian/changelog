@@ -1,3 +1,9 @@
+maemo-af-desktop (2.6.8-2) unstable; urgency=low
+
+  * Don't install convenience library libstatusbarmain.so (Closes N#25946)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  6 Apr 2006 19:27:08 +0300
+
 maemo-af-desktop (2.6.8-1) unstable; urgency=low
 
   * hildon-navigator/hn-wm.h (MAEMO_LAUNCHER_SIGNAL_IFACE)
