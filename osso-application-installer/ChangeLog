@@ -1,3 +1,8 @@
+2006-04-07  Marius Vollmer  <mvo@zagadka.de>
+
+	* src/util.h, src/util.cc (localize_file): Make uri parameter
+	const.
+
 2006-04-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/repo.cc (add_entry): Set "autocap" to FALSE for all entry
