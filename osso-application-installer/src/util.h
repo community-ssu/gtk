@@ -151,7 +151,7 @@ GtkWidget *make_small_label (const char *text);
 
 /* Global package list widget
 
-  MAKE_GLOBAL_PACKAGE_LIST returns a widget that displays the given
+  MAKE_GLOBAL_PACKAGE_LIST creates a widget that displays the given
   list of packages.  The nodes in PACKAGES must point to package_info
   structs.
 
@@ -171,8 +171,8 @@ GtkWidget *make_small_label (const char *text);
   make_GLOBAL_package_list).  Thus, you can only use one of these
   widgets at any one time.  This could clearly be improved.
 
-  Therefore, PACKAGES must remain valid until make_global_package_list
-  is called a again or until clear_global_package_list is called.
+  PACKAGES must remain valid until make_global_package_list is called
+  again or until clear_global_package_list is called.
 
   CLEAR_GLOBAL_PACKAGE_LIST clears the list in the most recently
   constructed package list widget.
@@ -197,6 +197,22 @@ void global_package_info_changed (package_info *pi);
 
 /* Global section list widget
 
+  MAKE_GLOBAL_SECTION_LIST creates a widget that displays the given
+  list of sections.  The nodes in the SECTIONS list must point to
+  section_info structs.
+
+  ACT is called when a section has been activated.
+
+  XXX - The state of the section list widget is partially stored in
+  global variables (that's why the function is called
+  make_GLOBAL_section_list).  Thus, you can only use one of these
+  widgets at any one time.  This could clearly be improved.
+
+  SECTIONS must remain valid until make_global_section_list is called
+  again or until clear_global_section_list is called.
+  
+  CLEAR_GLOBAL_SECTION_LIST clears the list in the most recently
+  constructed section list widget.
 */
 
 typedef void section_activated (section_info *);
@@ -204,33 +220,98 @@ typedef void section_activated (section_info *);
 GtkWidget *make_global_section_list (GList *sections, section_activated *act);
 void clear_global_section_list ();
 
+/* Formatting sizes
+
+  SIZE_STRING_GENERAL and SIZE_STRING_DETAILED put a string decribing
+  a size of BYTES bytes into BUF, using at most N characters,
+  according to the Hildon rules for displaying file sizes.
+
+  SIZE_STRING_GENERAL uses less space than SIZE_STRING_DETAILED.
+*/
+
 void size_string_general (char *buf, size_t n, int bytes);
 void size_string_detailed (char *buf, size_t n, int bytes);
 
+/* SHOW_DEB_FILE_CHOOSER shows a file chooser dialog for choosing a
+   .deb file.  CONT is called with the selected filename, or NULL when
+   the dialog has been cancelled.
+
+   FILENAME must be freed by CONT with g_free.
+*/
 void show_deb_file_chooser (void (*cont) (char *filename, void *data),
 			    void *data);
 
+/* SHOW_FILE_CHOOSER_FOR_SAVE shows a file chooser for saving a text
+   file, using the given TITLE and DEFAULT_FILENAME.
+
+   CONT is called with the selected filename, or NULL when the dialog
+   has been cancelled.  FILENAME must be freed by CONT with g_free.
+*/
 void show_file_chooser_for_save (const char *title,
 				 const char *default_filename,
 				 void (*cont) (char *filename, void *data),
 				 void *data);
 
+/* PIXBUF_FROM_BASE64 takes a base64 encoded binary blob and loads it
+   into a new pixbuf as a image file.
+
+   When BASE64 is NULL or when the image data is invalid, NULL is
+   returned.
+*/
 GdkPixbuf *pixbuf_from_base64 (const char *base64);
 
-void localize_file (char *uri,
+/* LOCALIZE_FILE makes sure that the file identified by URI is
+   accessible in the local filesystem.
+
+   XXX - If necessary, the file will be copied, but there is no
+   support yet for deleting this temporary copy.
+
+   CONT is called with the local name of the file, or NULL when
+   something went wrong.  In the latter case, an appropriate error
+   message has already been shown and CONT can simply silently clean
+   up.  CONT must free LOCAL with g_free.
+*/
+void localize_file (const char *uri,
 		    void (*cont) (char *local, void *data),
 		    void *data);
 
+/* RUN_CMD spawns a process that executes the command specified by
+   ARGV and calls CONT with the termination status of the process (as
+   returned by waitpid).  When the process can not be spawned, STATUS
+   is -1 and an appropriate error message has been put into the log.
+
+   stdout and stderr of the subprocess are redirected into the log.
+*/
 void run_cmd (char **argv,
 	      void (*cont) (int status, void *data),
 	      void *data);
 
+/* Return true when STR contains only whitspace characters, as
+   determined by isspace.
+ */
 int all_white_space (const char *str);
 
-void ensure_network (void (*callback) (bool success, void *data), void *data);
+/* ENSURE_NETWORK requests an internet connection and calls CONT when
+   it has been established or when the attempt failed.  SUCCESS
+   reflects whether the connection could be established.
 
+   When the connection is disconnected and the current progress
+   operation is op_downloading (see set_progress above),
+   cancel_apt_worker is called.  This does not count as a "cancel" as
+   far as progress_was_cancelled is concerned.
+*/
+void ensure_network (void (*cont) (bool success, void *data),
+		     void *data);
+
+/* Return the current http proxy in a form suitable for the
+   "http_proxy" environment variable.  You must free the return value
+   with g_free.
+*/
 char *get_http_proxy ();
 
+/* PUSH and POP treat the GSList starting at PTR as a stack,
+   allocating and freeng as list nodes as needed.
+ */
 void push (GSList *&ptr, void *data);
 void *pop (GSList *&ptr);
 

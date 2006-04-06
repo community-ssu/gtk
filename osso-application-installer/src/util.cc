@@ -1124,7 +1124,7 @@ pixbuf_from_base64 (const char *base64)
 }
 
 void
-localize_file (char *uri,
+localize_file (const char *uri,
 	       void (*cont) (char *local, void *data),
 	       void *data)
 {
