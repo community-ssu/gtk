@@ -1,5 +1,10 @@
 2006-04-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/apt-worker.cc (main): Be 20 clicks nicer.
+
+	* src/main.cc (main): Set application name to "" to get rid of the
+	two part title.
+
 	Released 4.11
 
 	* Makefile.am (mo_DATA, noinst_DATA): Don't install the engb .mo
