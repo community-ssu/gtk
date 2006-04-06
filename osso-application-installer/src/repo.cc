@@ -244,6 +244,7 @@ add_entry (GtkWidget *box, GtkSizeGroup *group,
   gint pos = 0;
 
   entry = gtk_entry_new ();
+  g_object_set (entry, "autocap", FALSE, NULL);
   gtk_editable_insert_text (GTK_EDITABLE (entry), text, end-text, &pos);
 
   caption = hildon_caption_new (group, label, entry,
