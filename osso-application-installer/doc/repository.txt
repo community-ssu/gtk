@@ -12,8 +12,8 @@ packages to the user.  A user packages is identified by being in the
 More precisely, any package with a "Section" value of the form
 "user/<category>" is a user package.
 
-Thus, you can not freely choose the components of the distributions in
-your repository.
+Thus, you might not be able to freely choose the components of the
+distributions in your repository.
 
 (The Application installer is able to automatically satisfy
 dependencies from any configured component of a distribution, the
@@ -28,7 +28,7 @@ When adding a new repository from the UI, the Application installer
 provides default values for distribution and components.
 
 The distribution will default to the distribution that contains the
-Application installer itself [NOT DECIDED YET.  "maemoX.Y"?].
+Application installer itself.  For maemo 2.0, this will be "mistral".
 
 The component list defaults to just "user".
 
