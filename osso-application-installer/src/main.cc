@@ -1323,7 +1323,7 @@ make_install_section_view (view *v)
     get_package_list_info (si->packages);
 
   enable_search (true);
-  set_current_help_topic (AI_TOPIC ("sectionsview"));
+  set_current_help_topic (AI_TOPIC ("packagesview"));
 
   return view;
 }
@@ -1359,6 +1359,7 @@ make_install_applications_view (view *v)
 				  available_package_selected, 
 				  install_package);
       get_package_list_info (si->packages);
+      set_current_help_topic (AI_TOPIC ("packagesview"));
 
       view = make_package_list_view (list, true);
     }
@@ -1371,12 +1372,13 @@ make_install_applications_view (view *v)
       gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
       gtk_box_pack_start (GTK_BOX (view), label, FALSE, FALSE, 0);
       gtk_box_pack_start (GTK_BOX (view), list, TRUE, TRUE, 0);
+
+      set_current_help_topic (AI_TOPIC ("sectionsview"));
     }
 
   gtk_widget_show_all (view);
 
   enable_search (true);
-  set_current_help_topic (AI_TOPIC ("packagesview"));
   
   return view;
 }
@@ -2294,6 +2296,12 @@ main (int argc, char **argv)
   load_settings ();
 
   gtk_init (&argc, &argv);
+
+  // XXX - We don't want a two-part title and this seems to be the
+  //       only way to get rid of it.  Hopefully, setting an empty
+  //       application name doesn't break other stuff.
+  //
+  g_set_application_name ("");
 
   add_log ("%s %s\n", PACKAGE, VERSION);
 
