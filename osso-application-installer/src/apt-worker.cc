@@ -25,6 +25,30 @@
  *
  */
 
+/* This is the process that runs as root and does all the work.
+
+   It is started from a separate program (as opposed to being forked
+   directly from the GUI process) since that allows us to use sudo for
+   starting it.
+
+   This process communicates with the GUI process via some named pipes
+   that are created by that process.  You can't really use it from the
+   command line.
+
+   It will output stuff to stdin and stderr, which the GUI process is
+   supposed to catch and put into its log.
+
+   The program tries hard not to exit prematurely.  Once the
+   connection between the GUI process and this process has been
+   established, the apt-worker is supposed to stick around until that
+   connection is broken, even if it has to fail every request send to
+   it.  This allows the user to try and fix the system after something
+   went wrong, although the options are limited, of course.  The best
+   example is a corrupted /etc/apt/sources.list: even tho you can't do
+   anything related to packages, you still need the apt-worker to
+   correct /etc/apt/sources.list itself in the UI.
+*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -62,30 +86,151 @@
 
 using namespace std;
 
-#define DEBUG
+/* Table of contents.
+ 
+   COMPILE-TIME CONFIGURATION
+   
+   GENERAL UTILITIES
 
+   COMMUNICATING WITH THE FRONTEND
+
+   COMMAND DISPATCHER
+
+*/
+
+
+/** COMPILE-TIME CONFIGURATION
+ */
+
+/* Defining this to non-zero will also recognize packages in the
+   "maemo" section as user packages.  There are still packages
+   floating around that follow this old rule.
+*/
 #define ENABLE_OLD_MAEMO_SECTION_TEST 1
 
-/* This is the process that runs as root and does all the work.
+/* Requests up to this size are put into a stack allocated buffer.
+ */
+#define FIXED_REQUEST_BUF_SIZE 4096
 
-   It is started from a separate program (as opposed to being forked
-   directly from the GUI process) since that allows us to use sudo for
-   starting it.
+/* You know what this means.
+ */
+//#define DEBUG
 
-   This process communicates with the GUI process via some named pipes
-   that are created by that process.  You can't really use it from the
-   command line.
 
-   It will output stuff to stdin and stderr, which the GUI process is
-   supposed to catch and put into its log.
+/** GENERAL UTILITIES
+ */
 
-   The program tries hard not to exit prematurely.  Once the
-   connection between the GUI process and this process has been
-   established, the apt-worker is supposed to stick around until that
-   connection is broken, even if it has to fail every request send to
-   it.
+/* ALLOC_BUF and FREE_BUF can be used to manage a temporary buffer of
+   arbitrary size without having to allocate memory from the heap when
+   the buffer is small.
 
-   Invocation: apt-worker input-fifo output-fifo status-fifo cancel-fifo
+   The way to use them is to allocate a buffer of 'normal' but fixed
+   size statically or on the stack and the use ALLOC_BUF when the
+   actual size of the needed buffer is known.  If the actual size is
+   small enough, ALLOC_BUF will use the fixed size buffer, otherwise
+   it will allocate a new one.  FREE_BUF will free that buffer.
+*/
+
+/* Return a pointer to LEN bytes of free storage.  When LEN is less
+   than or equal to FIXED_BUF_LEN return FIXED_BUF, otherwise a newly
+   allocated block of memory is returned.  ALLOC_BUF never return
+   NULL.
+*/
+char *
+alloc_buf (int len, char *fixed_buf, int fixed_buf_len)
+{
+  if (len <= fixed_buf_len)
+    return fixed_buf;
+  else
+    return new char[len];
+}
+
+/* Free the block of memory pointed to by BUF if it is different from
+   FIXED_BUF.
+*/
+void
+free_buf (char *buf, char *fixed_buf)
+{
+  if (buf != fixed_buf)
+    delete[] buf;
+}
+
+/* Open FILENAME with FLAGS, or die.
+ */
+static int
+must_open (char *filename, int flags)
+{
+  int fd = open (filename, flags);
+  if (fd < 0)
+    {
+      perror (filename);
+      exit (1);
+    }
+}
+
+/* MAYBE_READ_BYTE reads a byte from FD if one is available without
+   blocking.  If there is one, it is returned (as an unsigned number).
+   Otherwise, -1 is returned.
+*/
+static int
+maybe_read_byte (int fd)
+{
+  fd_set set;
+  FD_ZERO (&set);
+  FD_SET (fd, &set);
+  struct timeval timeout;
+  timeout.tv_sec = 0;
+  timeout.tv_usec = 0;
+
+  if (select (fd+1, &set, NULL, NULL, &timeout) > 0)
+    {
+      if (FD_ISSET (fd, &set))
+	{
+	  unsigned char byte;
+	  if (read (fd, &byte, 1) == 1)
+	    return byte;
+	}
+    }
+  return -1;
+}
+
+/* DRAIN_FD reads all bytes from FD that are available without
+   blocking.
+*/
+static void
+drain_fd (int fd)
+{
+  while (maybe_read_byte (fd) >= 0)
+    ;
+}
+
+/** COMMUNICATING WITH THE FRONTEND.
+ 
+   The communication with the frontend happens over four
+   unidirectional fifos: requests are read from INPUT_FD and
+   responses are sent back via OUTPUT_FD.  No new requests is read
+   until the response to the current one has been completely sent.
+
+   The data read from INPUT_FD must follow the request format
+   specified in <apt-worker-proto.h>.  The data written to OUTPUT_FD
+   follows the response format specified there.
+
+   The CANCEL_FD is polled periodically and when something is
+   available to be read, the current operation is aborted.  There is
+   currently no meaning defined for the actual bytes that are sent,
+   the mere arrival of a byte triggers the abort.
+
+   When using the apt-pkg PackageManager, it is configured in such a
+   way that it sents it "pmstatus:" message lines to STATUS_FD.
+   Other asynchronous status reports are sent as spontaneous
+   APTCMD_STATUS responses via OUTPUT_FD.  'Spontaneous' should mean
+   that no request is required to receive APTCMD_STATUS responses.
+   In fact, APTCMD_STATUS requests are treated as an error by the
+   apt-worker.
+
+   Logging and debug output, and output from dpkg and the maintainer
+   scripts appears normally on stdout and stderr of the apt-worker
+   process.
 */
 
 int input_fd, output_fd, status_fd, cancel_fd;
@@ -107,13 +252,16 @@ log_stderr (const char *fmt, ...)
 #define DBG(...)
 #endif
 
+/* MUST_READ and MUST_WRITE read and write blocks of raw bytes from
+   INPUT_FD and to OUTPUT_FD.  If they return, they have succeeded and
+   read or written the whole block.
+*/
+
 void
 must_read (void *buf, size_t n)
 {
   int r;
 
-  /* XXX - maybe use streams here for buffering.
-   */
   while (n > 0)
     {
       r = read (input_fd, buf, n);
@@ -142,53 +290,9 @@ must_write (void *buf, size_t n)
     }
 }
 
-static int
-maybe_read_byte (int fd)
-{
-  fd_set set;
-  FD_ZERO (&set);
-  FD_SET (fd, &set);
-  struct timeval timeout;
-  timeout.tv_sec = 0;
-  timeout.tv_usec = 0;
-
-  if (select (fd+1, &set, NULL, NULL, &timeout) > 0)
-    {
-      if (FD_ISSET (fd, &set))
-	{
-	  unsigned char byte;
-	  if (read (fd, &byte, 1) == 1)
-	    return byte;
-	}
-    }
-  return -1;
-}
-
-static void
-drain_fd (int fd)
-{
-  while (maybe_read_byte (fd) >= 0)
-    ;
-}
-
-char *
-alloc_buf (int len, char *stack_buf, int stack_buf_len)
-{
-  if (len <= stack_buf_len)
-    return stack_buf;
-  else
-    return new char[len];
-}
-
-void
-free_buf (char *buf, char *stack_buf)
-{
-  if (buf != stack_buf)
-    delete[] buf;
-}
-
-static pkgCacheFile *package_cache = NULL;
-
+/* This function sends a response on OUTPUT_FD with the given CMD and
+   SEQ.  It either succeeds or does not return.
+*/
 void
 send_response_raw (int cmd, int seq, void *response, size_t len)
 {
@@ -197,16 +301,14 @@ send_response_raw (int cmd, int seq, void *response, size_t len)
   must_write (response, len);
 }
 
-apt_proto_decoder request;
-apt_proto_encoder response;
+/* Fabricate and send a APTCMD_STATUS response.  Parameters OP,
+   ALREADY, and TOTAL are as specified in apt-worker-proto.h.
 
-void
-send_response (apt_request_header *req)
-{
-  send_response_raw (req->cmd, req->seq,
-		     response.get_buf (), response.get_len ());
-}
-
+   A status response is only sent when there is enough change since
+   the last time.  The following counts as 'enough': ALREADY has
+   decreased, it has increased by more than MIN_CHANGE, it is equal to
+   -1, LAST_TOTAL has changed, or OP has changed.
+*/
 void
 send_status (int op, int already, int total, int min_change)
 {
@@ -236,211 +338,128 @@ send_status (int op, int already, int total, int min_change)
     }
 }
 
-void cache_init ();
-void make_package_list_response (bool only_user,
-				 bool only_installed,
-				 bool only_available,
-				 const char *pattern);
-void make_package_info_response (const char *package);
-void make_package_details_response (const char *package,
-				    const char *version,
-				    int summary_kind);
 
-bool update_package_cache ();
-void make_get_sources_list_response ();
-bool set_sources_list ();
+/** STARTUP AND COMMAND DISPATCHER.
+ */
 
-void install_check (const char *package);
-void install_package (const char *package);
-void make_packages_to_remove_response (const char *package);
-bool remove_package (const char *package);
-bool clean ();
+/* Since the apt-worker only works on a single command at a time, we
+   use two global encoder and decoder engines that manage the
+   parameters of the request and the result values of the response.
 
-bool install_file (const char *filename);
-void make_file_details_response (const char *filename);
+   Handlers of specific commands will read the parameters from REQUEST
+   and put the results into RESPONSE.  The command dispatcher will
+   prepare REQUEST before calling the command handler and ship out
+   RESPONSE after it returned.
+*/
+apt_proto_decoder request;
+apt_proto_encoder response;
+
+void cmd_get_package_list ();
+void cmd_get_package_info ();
+void cmd_get_package_details ();
+void cmd_update_package_cache ();
+void cmd_get_sources_list ();
+void cmd_set_sources_list ();
+void cmd_install_check ();
+void cmd_install_package ();
+void cmd_get_packages_to_remove ();
+void cmd_remove_package ();
+void cmd_clean ();
+void cmd_get_file_details ();
+void cmd_install_file ();
 
 void
 handle_request ()
 {
   apt_request_header req;
-  char stack_reqbuf[4096];
+  char stack_reqbuf[FIXED_REQUEST_BUF_SIZE];
   char *reqbuf;
 
   must_read (&req, sizeof (req));
   DBG ("got req %d/%d/%d", req.cmd, req.seq, req.len);
 
-  reqbuf = alloc_buf (req.len, stack_reqbuf, 4096);
+  reqbuf = alloc_buf (req.len, stack_reqbuf, FIXED_REQUEST_BUF_SIZE);
   must_read (reqbuf, req.len);
 
   drain_fd (cancel_fd);
 
+  request.reset (reqbuf, req.len);
+  response.reset ();
+
   switch (req.cmd)
     {
+
     case APTCMD_NOOP:
-      {
-	send_response_raw (req.cmd, req.seq, NULL, 0);
-	break;
-      }
+      // Nothing to do.
+      break;
+
     case APTCMD_GET_PACKAGE_LIST:
-      {
-	request.reset (reqbuf, req.len);
-	bool only_user = request.decode_int ();
-	bool only_installed = request.decode_int ();
-	bool only_available = request.decode_int ();
-	const char *pattern = request.decode_string_in_place ();
-	make_package_list_response (only_user,
-				    only_installed,
-				    only_available,
-				    pattern);
-	_error->DumpErrors ();
-	send_response (&req);
-	break;
-      }
+      cmd_get_package_list ();
+      break;
+
     case APTCMD_GET_PACKAGE_INFO:
-      {
-	request.reset (reqbuf, req.len);
-	const char *package = request.decode_string_in_place ();
-	make_package_info_response (package);
-	_error->DumpErrors ();
-	send_response (&req);
-	break;
-      }
+      cmd_get_package_info ();
+      break;
+
     case APTCMD_GET_PACKAGE_DETAILS:
-      {
-	request.reset (reqbuf, req.len);
-	const char *package = request.decode_string_in_place ();
-	const char *version = request.decode_string_in_place ();
-	int summary_kind = request.decode_int ();
-	make_package_details_response (package, version, summary_kind);
-	_error->DumpErrors ();
-	send_response (&req);
-	break;
-      }
+      cmd_get_package_details ();
+      break;
+
     case APTCMD_UPDATE_PACKAGE_CACHE:
-      {
-	request.reset (reqbuf, req.len);
-	const char *http_proxy = request.decode_string_in_place ();
-	if (http_proxy)
-	  {
-	    setenv ("http_proxy", http_proxy, 1);
-	    DBG ("http_proxy: %s\n", http_proxy);
-	  }
-	response.reset ();
-	bool success = update_package_cache ();
-	_error->DumpErrors ();
-	response.encode_int (success? 1 : 0);
-	send_response (&req);
-	break;
-      }
+      cmd_update_package_cache ();
+      break;
+
     case APTCMD_GET_SOURCES_LIST:
-      {
-	make_get_sources_list_response ();
-	_error->DumpErrors ();
-	send_response (&req);
-	break;
-      }
+      cmd_get_sources_list ();
+      break;
+
     case APTCMD_SET_SOURCES_LIST:
-      {
-	response.reset ();
-	request.reset (reqbuf, req.len);
-	bool success = set_sources_list ();
-	_error->DumpErrors ();
-	response.encode_int (success? 1 : 0);
-	send_response (&req);
-	break;
-      }
+      cmd_set_sources_list ();
+      break;
+
     case APTCMD_INSTALL_CHECK:
-      {
-	request.reset (reqbuf, req.len);
-	const char *package = request.decode_string_in_place ();
-	install_check (package);
-	send_response (&req);
-	break;
-      }
+      cmd_install_check ();
+      break;
+
     case APTCMD_INSTALL_PACKAGE:
-      {
-	request.reset (reqbuf, req.len);
-	const char *package = request.decode_string_in_place ();
-	const char *http_proxy = request.decode_string_in_place ();
-	if (http_proxy)
-	  {
-	    setenv ("http_proxy", http_proxy, 1);
-	    DBG ("http_proxy: %s\n", http_proxy);
-	  }
-	install_package (package);
-	send_response (&req);
-	break;
-      }
+      cmd_install_package ();
+      break;
+
     case APTCMD_GET_PACKAGES_TO_REMOVE:
-      {
-	response.reset ();
-	request.reset (reqbuf, req.len);
-	const char *package = request.decode_string_in_place ();
-	make_packages_to_remove_response (package);
-	send_response (&req);
-	break;
-      }
+      cmd_get_packages_to_remove ();
+      break;
+
     case APTCMD_REMOVE_PACKAGE:
-      {
-	response.reset ();
-	request.reset (reqbuf, req.len);
-	const char *package = request.decode_string_in_place ();
-	bool success = remove_package (package);
-	_error->DumpErrors ();
-	response.encode_int (success? 1 : 0);
-	send_response (&req);
-	break;
-      }
+      cmd_remove_package ();
+      break;
+
     case APTCMD_CLEAN:
-      {
-	response.reset ();
-	bool success = clean ();
-	_error->DumpErrors ();
-	response.encode_int (success? 1 : 0);
-	send_response (&req);
-	break;
-      }
+      cmd_clean ();
+      break;
+
     case APTCMD_GET_FILE_DETAILS:
-      {
-	request.reset (reqbuf, req.len);
-	const char *filename = request.decode_string_in_place ();
-	make_file_details_response (filename);
-	send_response (&req);
-	break;
-      }
+      cmd_get_file_details ();
+      break;
+
     case APTCMD_INSTALL_FILE:
-      {
-	response.reset ();
-	request.reset (reqbuf, req.len);
-	const char *filename = request.decode_string_in_place ();
-	bool success = install_file (filename);
-	response.encode_int (success? 1 : 0);
-	send_response (&req);
-	break;
-      }
+      cmd_install_file ();
+      break;
+
     default:
-      {
-	log_stderr ("unrecognized request: %d", req.cmd);
-	send_response_raw (req.cmd, req.seq, NULL, 0);
-	break;
-      }
+      log_stderr ("unrecognized request: %d", req.cmd);
+      break;
     }
+
+  _error->DumpErrors ();
+
+  send_response_raw (req.cmd, req.seq,
+		     response.get_buf (), response.get_len ());
 
   free_buf (reqbuf, stack_reqbuf);
 }
 
-static int
-must_open (char *filename, int flags)
-{
-  int fd = open (filename, flags);
-  if (fd < 0)
-    {
-      perror (filename);
-      exit (1);
-    }
-}
-
-static void read_certified_conf ();
+void cache_init ();
+void read_certified_conf ();
 
 int
 main (int argc, char **argv)
@@ -453,6 +472,8 @@ main (int argc, char **argv)
 
   DBG ("starting up");
 
+  /* The order here is important to avoid deadlocks with the frontend.
+   */
   input_fd = must_open (argv[1], O_RDONLY);
   output_fd = must_open (argv[2], O_WRONLY);
   status_fd = must_open (argv[3], O_WRONLY);
@@ -461,6 +482,8 @@ main (int argc, char **argv)
   DBG ("starting with pid %d, in %d, out %d, stat %d, cancel %d",
        getpid (), input_fd, output_fd, status_fd, cancel_fd);
 
+  /* Don't let our heavy lifting starve the UI.
+   */
   errno = 0;
   if (nice (20) == -1 && errno != 0)
     log_stderr ("nice: %m");
@@ -472,8 +495,19 @@ main (int argc, char **argv)
     handle_request ();
 }
 
+/** COMMAND HANDLERS
+ */
 
-class myProgress : public OpProgress
+/* We only report real progress information when reconstructing the
+   cache and during downloads.  Only downloads can be cancelled.
+
+   The following two classes allow us to hook into libapt-pkgs
+   progress reporting mechanism.  Instances of UPDATE_PROGESS are used
+   for cache related activities, and instances of DOWNLOAD_STATUS are
+   used when 'acquiring' things.
+*/
+
+class UpdateProgress : public OpProgress
 {
   virtual void
   Update ()
@@ -482,7 +516,7 @@ class myProgress : public OpProgress
   }
 };
 
-class myAcquireStatus : public pkgAcquireStatus
+class DownloadStatus : public pkgAcquireStatus
 {
   virtual bool
   MediaChange (string Media, string Drive)
@@ -504,8 +538,22 @@ class myAcquireStatus : public pkgAcquireStatus
   }
 };
 
-// Specific command handlers
+/* We keep a global pointer to a pkgCacheFile instance that is used by
+   most of the command handlers.
 
+   PACKAGE_CACHE might be NULL when CACHE_INIT failed to create it for
+   some reason.  Every command handler must deal with this.
+
+   XXX - there is some voodoo coding here since I don't yet have the
+         full overview about the differences between a pkgCacheFile, a
+         pkgCache, a pkgDebCache, etc.
+*/
+pkgCacheFile *package_cache = NULL;
+
+/* Initialize libapt-pkg if this has not been already and (re-)create
+   PACKAGE_CACHE.  If the cache can not be created, PACKAGE_CACHE is
+   set to NULL and an appropriate message is output.
+*/
 void
 cache_init ()
 {
@@ -531,7 +579,7 @@ cache_init ()
       global_initialized = true;
     }
 
-  myProgress progress;
+  UpdateProgress progress;
   package_cache = new pkgCacheFile;
 
   DBG ("init.");
@@ -543,6 +591,15 @@ cache_init ()
      package_cache = NULL;
    }
 }
+
+
+/* APTCMD_GET_PACKAGE_LIST 
+
+   The get_package_list command can do some filtering and we have a
+   few utility functions for implementing the necessary checks.  The
+   check generally take cache iterators to identify a package or a
+   version.
+ */
 
 bool
 is_user_package (pkgCache::VerIterator &ver)
@@ -575,6 +632,7 @@ description_matches_pattern (pkgCache::VerIterator &ver,
   pkgRecords::Parser &P = Recs.Lookup (ver.FileList ());
   const char *desc = P.LongDesc().c_str();
 
+  // XXX - UTF8?
   return strcasestr (desc, pattern);
 }
 
@@ -598,9 +656,6 @@ all_white_space (const char *text)
 char *
 get_icon (pkgCache::VerIterator &ver)
 {
-  // XXX - merge with get_short_description to only setup the parser
-  //       once.
-
   pkgRecords Recs (*package_cache);
   pkgRecords::Parser &P = Recs.Lookup (ver.FileList ());
 
@@ -657,12 +712,12 @@ encode_empty_version_info (bool include_size)
 }
 
 void
-make_package_list_response (bool only_user,
-			    bool only_installed,
-			    bool only_available,
-			    const char *pattern)
+cmd_get_package_list ()
 {
-  response.reset ();
+  bool only_user = request.decode_int ();
+  bool only_installed = request.decode_int ();
+  bool only_available = request.decode_int ();
+  const char *pattern = request.decode_string_in_place ();
 
   if (package_cache == NULL)
     {
@@ -686,7 +741,7 @@ make_package_list_response (bool only_user,
 	  && !is_user_package (installed))
 	continue;
 
-      // skip not-installed packaged if requested
+      // skip not-installed packages if requested
       //
       if (only_installed
 	  && installed.end ())
@@ -751,10 +806,17 @@ make_package_list_response (bool only_user,
     }
 }
 
+/* APTCMD_GET_PACKAGE_INFO
+
+   This command performs a simulated install and removal of the
+   specified package to gather the requested information.
+ */
+
 void
-make_package_info_response (const char *package)
+cmd_get_package_info ()
 {
-  int old_broken_count;
+  const char *package = request.decode_string_in_place ();
+
   apt_proto_package_info info;
 
   info.installable = 0;
@@ -771,7 +833,8 @@ make_package_info_response (const char *package)
       if (!pkg.end ())
 	{
 	  pkgCache::VerIterator inst = pkg.CurrentVer ();
-	  
+	  int old_broken_count;
+
 	  // simulate install
 	  
 	  cache.Init(NULL); // XXX - this is very slow
@@ -809,17 +872,18 @@ make_package_info_response (const char *package)
 	      info.removable = 1;
 	      info.remove_user_size_delta = (int) cache.UsrSize ();
 	    }
-	  
-	  // We might sleep here to simulate the slowness of this
-	  // operation on the device.
-	  //
-	  //sleep (2);
 	}
     }
 
-  response.reset ();
   response.encode_mem (&info, sizeof (apt_proto_package_info));
 }
+
+/* APTCMD_GET_PACKAGE_DETAILS
+
+   Like APTCMD_GET_PACKAGE_INFO, this command performs a simulated
+   install or removal (as requested), but it gathers a lot more
+   information about the package and what is happening.
+*/
 
 void
 encode_dependencies (pkgCache::VerIterator &ver)
@@ -908,7 +972,7 @@ encode_broken (pkgCache::PkgIterator &pkg, pkgCache::PkgIterator &want)
 	    g_string_append_printf (str, "%s", pkg.Name());
 	  else
 	    {
-	      g_string_append_printf (str, "%s", Start.TargetPkg().Name());
+	      g_string_append_printf (str, "%s", target.Name());
 	      if (Start.TargetVer() != 0)
 		g_string_append_printf (str, " %s %s",
 					Start.CompType(), Start.TargetVer());
@@ -1032,10 +1096,11 @@ find_package_version (pkgCacheFile *cache_file,
 }
 
 void
-make_package_details_response (const char *package, const char *version,
-			       int summary_kind)
+cmd_get_package_details ()
 {
-  response.reset ();
+  const char *package = request.decode_string_in_place ();
+  const char *version = request.decode_string_in_place ();
+  int summary_kind = request.decode_int ();
 
   pkgCache::PkgIterator pkg;
   pkgCache::VerIterator ver;
@@ -1066,6 +1131,11 @@ make_package_details_response (const char *package, const char *version,
     }
 }
 
+/* APTCMD_UPDATE_PACKAGE_CACHE
+
+   This is copied straight from "apt-get update".
+*/
+
 bool
 update_package_cache ()
 {
@@ -1084,7 +1154,7 @@ update_package_cache ()
     }
    
   // Create the download object
-  myAcquireStatus Stat;
+  DownloadStatus Stat;
   pkgAcquire Fetcher(&Stat);
 
   // Populate it with the source selection
@@ -1119,7 +1189,7 @@ update_package_cache ()
    
   // Prepare the cache.   
   {
-    myProgress Prog;
+    UpdateProgress Prog;
     if (package_cache == NULL || !package_cache->BuildCaches (Prog))
       return false;
     cache_init ();
@@ -1128,43 +1198,28 @@ update_package_cache ()
   return !Failed;
 }
 
-bool
-encode_file_response (const char *name)
-{
-  int fd = open (name, O_RDONLY);
-  if (fd < 0)
-    {
-    fail:
-      perror (name);
-      response.encode_string ("");
-      return false;
-    }
-
-  struct stat buf;
-  if (fstat (fd, &buf) < 0)
-    goto fail;
-  
-  DBG ("size %d", buf.st_size);
-
-  // XXX
-  char *mem = new char[buf.st_size+1];
-  int n = read (fd, mem, buf.st_size);
-  mem[buf.st_size-1] = '\0';
-  close (fd);
-
-  DBG ("read %d", n);
-
-  response.encode_string (mem);
-  delete[] mem;
-
-  return true;
-}
-  
 void
-make_get_sources_list_response ()
+cmd_update_package_cache ()
 {
-  response.reset ();
+  const char *http_proxy = request.decode_string_in_place ();
 
+  if (http_proxy)
+    {
+      setenv ("http_proxy", http_proxy, 1);
+      DBG ("http_proxy: %s\n", http_proxy);
+    }
+  
+  bool success = update_package_cache ();
+
+  response.encode_int (success? 1 : 0);
+}
+
+/* APTCMD_GET_SOURCES_LIST
+*/
+
+void
+cmd_get_sources_list ()
+{
   string name = _config->FindFile("Dir::Etc::sourcelist");
   FILE *f = fopen (name.c_str(), "r");
 
@@ -1195,8 +1250,8 @@ make_get_sources_list_response ()
     }
 }
 
-bool
-set_sources_list ()
+void
+cmd_set_sources_list ()
 {
   string name = _config->FindFile("Dir::Etc::sourcelist");
   FILE *f = fopen (name.c_str(), "w");
@@ -1211,23 +1266,22 @@ set_sources_list ()
 	  fprintf (f, "%s\n", str);
 	}
       fclose (f);
-      return true;
+      response.encode_int (1);
     }
   else
     {
       perror (name.c_str ());
-      return false;
+      response.encode_int (0);
     }
 }
 
 bool operation (bool only_check);
 
 void
-install_check (const char *package)
+cmd_install_check ()
 {
+  const char *package = request.decode_string_in_place ();
   bool success = false;
-
-  response.reset ();
 
   if (package_cache)
     {
@@ -1246,11 +1300,17 @@ install_check (const char *package)
 }
 
 void
-install_package (const char *package)
+cmd_install_package ()
 {
+  const char *package = request.decode_string_in_place ();
+  const char *http_proxy = request.decode_string_in_place ();
   bool success = false;
 
-  response.reset ();
+  if (http_proxy)
+    {
+      setenv ("http_proxy", http_proxy, 1);
+      DBG ("http_proxy: %s\n", http_proxy);
+    }
 
   if (package_cache)
     {
@@ -1269,8 +1329,10 @@ install_package (const char *package)
 }
 
 void
-make_packages_to_remove_response (const char *package)
+cmd_get_packages_to_remove ()
 {
+  const char *package = request.decode_string_in_place ();
+
   if (package_cache)
     {
       pkgDepCache &cache = *package_cache;
@@ -1294,9 +1356,12 @@ make_packages_to_remove_response (const char *package)
   response.encode_string (NULL);
 }
 
-bool
-remove_package (const char *package)
+void
+cmd_remove_package ()
 {
+  const char *package = request.decode_string_in_place ();
+  bool success = false;
+
   if (package_cache)
     {
       pkgDepCache &cache = *package_cache;
@@ -1306,16 +1371,16 @@ remove_package (const char *package)
 	{
 	  cache.Init (NULL);
 	  cache.MarkDelete (pkg);
-	  return operation (false);
+	  success = operation (false);
 	}
     }
 
-  return false;
+  response.encode_int (success);
 }
 
 static GList *certified_uri_prefixes = NULL;
 
-static void
+void
 read_certified_conf ()
 {
   const char *name = "/etc/osso-application-installer/certified.list";
@@ -1472,7 +1537,7 @@ operation_1 (bool check_only)
    }
    
    // Create the download object
-   myAcquireStatus Stat;
+   DownloadStatus Stat;
    pkgAcquire Fetcher (&Stat);
 
    // Read the source list
@@ -1595,22 +1660,28 @@ operation_1 (bool check_only)
    }
 }
 
-bool
-clean ()
+void
+cmd_clean ()
 {
+  bool success = true;
+
   // Lock the archive directory
   FileFd Lock;
   if (_config->FindB("Debug::NoLocking",false) == false)
     {
       Lock.Fd(GetLock(_config->FindDir("Dir::Cache::Archives") + "lock"));
       if (_error->PendingError() == true)
-	return _error->Error("Unable to lock the download directory");
+	success = _error->Error("Unable to lock the download directory");
     }
    
-  pkgAcquire Fetcher;
-  Fetcher.Clean(_config->FindDir("Dir::Cache::archives"));
-  Fetcher.Clean(_config->FindDir("Dir::Cache::archives") + "partial/");
-  return true;
+  if (success)
+    {
+      pkgAcquire Fetcher;
+      Fetcher.Clean(_config->FindDir("Dir::Cache::archives"));
+      Fetcher.Clean(_config->FindDir("Dir::Cache::archives") + "partial/");
+    }
+
+  response.encode_int (success);
 }
 
 // XXX - interpret status codes
@@ -1840,9 +1911,9 @@ encode_missing_dependencies (pkgTagSection &section)
 }
 
 void
-make_file_details_response (const char *filename)
+cmd_get_file_details ()
 {
-  response.reset ();
+  const char *filename = request.decode_string_in_place ();
 
   char *record = get_deb_record (filename);
   pkgTagSection section;
@@ -1869,9 +1940,11 @@ make_file_details_response (const char *filename)
   delete[] record;
 }
 
-bool
-install_file (const char *filename)
+void
+cmd_install_file ()
 {
+  const char *filename = request.decode_string_in_place ();
+
   _system->UnLock();
 
   char *cmd = g_strdup_printf ("/usr/bin/dpkg --install '%s'", filename);
@@ -1893,5 +1966,5 @@ install_file (const char *filename)
   _system->Lock();
 
   cache_init ();
-  return res == 0;
+  response.encode_int (res == 0);
 }
