@@ -29,6 +29,53 @@
 
 #include "main.h"
 
+/** General dialog helpers
+
+  The following functions construct and show different kinds of
+  dialogs.  They do not wait for the user to answer these dialog;
+  instead, you need to provide a callback that will be called with the
+  result.  This callback is called the 'continuation'.  Continuations
+  have a void* parameter, usually called DATA, that can be used in the
+  usual fashion to pass arbitrary additional information to it.
+
+  The dialogs are application modal.
+
+  ASK_YES_NO shows QUESTION in a confirmatio note".  The result RES
+  passed to the continuation CONT is true when the user clicks "Ok",
+  of course, and false otherwise.
+
+  ASK_YES_NO_WITH_DETAILS is like ask_yes_no but it constructs a real
+  dialog with title TITLE and adds a third button, "Details".
+  Clicking this button opens the "Details" dialog with the given
+  package info PI and hint INSTALLED.  See show_package_details for
+  the meaning of PI and INSTALLED.
+
+  ANNOY_USER display TEXT in a information note.  Clicking "Ok"
+  removes that information note.  No continuation can be specified.
+
+  ANNOY_USER_WITH_DETAILS is like annoy_user but adds a "Details"
+  button like ask_yes_no_with_details.
+
+  ANNOY_USER_WITH_LOG is the same as annoy_user.  It used to add a
+  "Log" button that would open the log dialog.  This "Log" button is
+  no longer used in order not to push the scary log into the face of
+  the user too much.  The code, however, still uses
+  annoy_user_with_log in preference to annoy_user when showing an
+  error message where the log is expected to contain more details.
+
+  IRRITATE_USER shows TEXT in a information banner which goes away
+  automatically after a certain time.
+
+  SCARE_USER_WITH_LEGALESE shows one of two legal disclaimers,
+  depending on the SURE parameter.  When SURE is true, the disclaimer
+  reflects the fact that you know for sure that the user is about to
+  install uncertified software.  Setting SURE to false means that the
+  software might or might not be certified.  CONT is called with RES
+  set true when the user agrees to take the risk of installing
+  uncertified software.
+
+*/
+
 void ask_yes_no (const gchar *question,
 		 void (*cont) (bool res, void *data), void *data);
 
@@ -48,15 +95,93 @@ void scare_user_with_legalese (bool sure,
 			       void (*cont) (bool res, void *data),
 			       void *data);
 
+/** Progress indicator
+
+  There is a single global progress indication dialog that can be
+  shown or hidden.  The dialog is application modal and has a "Cancel"
+  button.  The progress bar can either pulse or show a 'completed'
+  fraction.
+
+  SHOW_PROGRESS shows the progress dialog, resets it to pulsing mode,
+  and sets the current operation associated with the dialog to
+  op_general (see apt-worker-proto.h).  The TITLE given in the call to
+  show_progress is used whenever the current operation is op_general.
+
+  SET_PROGRESS sets the displayed progress to relfect that ALREADY
+  units out of TOTAL units have been completed.  When ALREADY is -1,
+  however, the prgress bar starts pulsing.  The current operation is
+  set to OP.  When it is op_general, the last title given to
+  show_progress is used; otherwise, a title appropriate for OP is
+  used.  When OP is op_downloading, the unit for TOTAL is taken to be
+  bytes and this size is included in the title.
+
+  When the current operation is op_downloading, clicking on the cancel
+  button will call cancel_apt_worker (see apt-worker-client.h).
+  Otherwise, only an information banner saying "Unableto cancel now.
+  Please wait." is shown.
+
+  HIDE_PROGRESS will hide the progress dialog.  Since the dialog is
+  application modal, it is important to eventually hide it.
+  Otherwise, the application will effectively freeze.
+
+  PROGRESS_WAS_CANCELLED can be used to determine whether
+  cancel_apt_worker was indeed called as the response to a click on
+  the "Cancel" button (since the last call to show_progress).
+
+ */
+
 void show_progress (const char *title);
 void set_progress (apt_proto_operation op, int already, int total);
 bool progress_was_cancelled ();
 void hide_progress ();
 
+/* MAKE_SMALL_TEXT_VIEW constructs a widget that displays TEXT in a
+   small font and with scrollbars if necessary.
+
+   SET_SMALL_TEXT_VIEW_TEXT can be used to change the displayed text.
+
+   MAKE_SMALL_LABEL constructs a GtkLabel that shows TEXT in a small
+   font.
+*/
+
 GtkWidget *make_small_text_view (const char *text);
 void set_small_text_view_text (GtkWidget *, const char *text);
-
 GtkWidget *make_small_label (const char *text);
+
+
+/* Global package list widget
+
+  MAKE_GLOBAL_PACKAGE_LIST returns a widget that displays the given
+  list of packages.  The nodes in PACKAGES must point to package_info
+  structs.
+
+  When INSTALLED is true, information about the installed version of a
+  package is shown, otherwise the available version is used.
+
+  EMPTY_LABEL is shown instead of a list when PACKAGES is NULL.
+
+  OP_LABEL is the text used for the operation item in the context menu
+  or a package.
+
+  SELECTED and ACTIVATED are functions that are called when a row in
+  the list is selected or activated, respectively.
+
+  XXX - The state of the package list widget is partially stored in
+  global variables (that's why the function is called
+  make_GLOBAL_package_list).  Thus, you can only use one of these
+  widgets at any one time.  This could clearly be improved.
+
+  Therefore, PACKAGES must remain valid until make_global_package_list
+  is called a again or until clear_global_package_list is called.
+
+  CLEAR_GLOBAL_PACKAGE_LIST clears the list in the most recently
+  constructed package list widget.
+
+  If a package_info struct has been changed and the display should be
+  udpated to reflect this, call GLOBAL_PACKAGE_INFO_CHANGED.  You can
+  call this function on any package_info struct at any time,
+  regardless of whether it is currently being displayed or not.
+*/
 
 typedef void package_info_callback (package_info *);
 
@@ -67,8 +192,12 @@ GtkWidget *make_global_package_list (GList *packages,
 				     package_info_callback *selected,
 				     package_info_callback *activated);
 void clear_global_package_list ();
-
 void global_package_info_changed (package_info *pi);
+
+
+/* Global section list widget
+
+*/
 
 typedef void section_activated (section_info *);
 
