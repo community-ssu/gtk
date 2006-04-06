@@ -461,6 +461,10 @@ main (int argc, char **argv)
   DBG ("starting with pid %d, in %d, out %d, stat %d, cancel %d",
        getpid (), input_fd, output_fd, status_fd, cancel_fd);
 
+  errno = 0;
+  if (nice (20) == -1 && errno != 0)
+    log_stderr ("nice: %m");
+
   cache_init ();
   read_certified_conf ();
 
