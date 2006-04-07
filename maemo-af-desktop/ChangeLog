@@ -1,4 +1,9 @@
 2006-04-07  Johan Bilien <johan.bilien@nokia.com>
+	
+	* hildon-home/hildon-home-restore-background.sh: Use sh instead of bash,
+	  which doesn't exist on the target (Closes N#23524)
+
+2006-04-07  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/layout-manager.c: Reset the applet offset after the
 	  layout was cancelled (Closes N#24741)
