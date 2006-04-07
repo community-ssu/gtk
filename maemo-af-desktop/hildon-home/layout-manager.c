@@ -586,6 +586,8 @@ void layout_mode_end ( gboolean rollback )
 
     gtk_drag_source_unset((GtkWidget*)general_data.home_area_eventbox); 
 
+    general_data.newapplet_x = APPLET_ADD_X_MIN;
+    general_data.newapplet_y = APPLET_ADD_Y_MIN;
     general_data.active = NULL;
     ULOG_ERR("Free main applet_list\n");
     g_list_free(general_data.main_applet_list);

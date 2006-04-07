@@ -1,5 +1,10 @@
 2006-04-07  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/layout-manager.c: Reset the applet offset after the
+	  layout was cancelled (Closes N#24741)
+
+2006-04-07  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.c: Use the memory XML writer instead
 	  of the disk one, then write everything at once. This should be
 	  faster and hopefully solve the race condition between the TN applet
