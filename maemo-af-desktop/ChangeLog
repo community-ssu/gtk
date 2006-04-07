@@ -1,3 +1,7 @@
+2006-04-07  Johan Bilien <johan.bilien@nokia.com>
+
+	* Makefile.am, debian/rules: Use maemo-launcher for maemo-af-desktop
+
 2006-04-05  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/home-select-applets-dialog.c: Fixed the leak of a string

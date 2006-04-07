@@ -17,7 +17,7 @@ CURRENT_THEME_FILE=$HOME/.osso/current-gtk-theme
 CURRENT_MAEMO_THEME_FILE=$HOME/.osso/current-gtk-theme.maemo_af_desktop
 CURRENT_THEME=$(cat $CURRENT_THEME_FILE | sed -e "s/include\ \"\/usr\/share\/themes\///" -e 's/\/gtk\-2\.0\/gtkrc\"//' | tr -d " ")
 
-export GTK2_RC_FILES=$CURRENT_THEME_FILE:$CURRENT_MAEMO_THEME_FILE
+export GTK2_RC_FILES=$HOME/.osso/current-gtk-theme:$HOME/.osso/current-gtk-theme.maemo_af_desktop
 
 if [ ! -f $CURRENT_MAEMO_THEME_FILE ]; then
 	  echo "include \"$PREFIX/share/themes/$CURRENT_THEME/gtk-2.0/gtkrc.maemo_af_desktop\"" \  > $CURRENT_MAEMO_THEME_FILE
