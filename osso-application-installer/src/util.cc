@@ -1347,7 +1347,7 @@ get_http_proxy ()
 	proxy = g_strdup_printf ("http://%s:%d", host, port);
     }
   else
-    proxy = NULL;
+    proxy = g_strdup (getenv ("http_proxy"));
 
   /* XXX - there is also ignore_hosts, which we ignore for now, since
            transcribing it to no_proxy is hard... mandatory,

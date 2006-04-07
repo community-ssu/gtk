@@ -1,3 +1,8 @@
+2006-04-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (get_http_proxy): Use http_proxy envvar when gconf
+	says there is no proxy.
+
 2006-04-07  Marius Vollmer  <mvo@zagadka.de>
 
 	* src/util.h, src/util.cc (localize_file): Make uri parameter

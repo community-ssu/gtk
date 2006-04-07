@@ -304,8 +304,12 @@ void ensure_network (void (*cont) (bool success, void *data),
 		     void *data);
 
 /* Return the current http proxy in a form suitable for the
-   "http_proxy" environment variable.  You must free the return value
-   with g_free.
+   "http_proxy" environment variable, or NULL if no proxy has
+   currently been configured.  You must free the return value with
+   g_free.
+
+   The current proxy is taken either from gconf or from the http_proxy
+   environment variable.
 */
 char *get_http_proxy ();
 
