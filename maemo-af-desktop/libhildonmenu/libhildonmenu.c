@@ -698,6 +698,8 @@ gboolean set_menu_contents( GtkTreeModel *model )
 	gchar *child_name = NULL;
 	gchar *child_desktop_id = NULL;
 
+    FILE *fp;
+
 
 	gtk_tree_model_get_iter_first( model, &root_iter );
 
@@ -731,12 +733,21 @@ gboolean set_menu_contents( GtkTreeModel *model )
 	}
 			
 	xmlTextWriterPtr writer;
+    xmlBufferPtr buf;
+    buf = xmlBufferCreate();
+    if (buf == NULL) {
+		ULOG_ERR( "set_menu_contents: failed to create xml buffer." );
+		return FALSE;
+    }
+
 	
 	/* Always write to the user-specific file */
-	writer = xmlNewTextWriterFilename( user_menu_conf_file, 0);
+	writer = xmlNewTextWriterMemory( buf, 0);
 
 	if (writer == NULL) {
 		ULOG_ERR( "set_menu_contents: failed to create xml writer." );
+        xmlBufferFree(buf);
+        xmlCleanupParser();
 		return FALSE;
 	}
 
@@ -745,6 +756,9 @@ gboolean set_menu_contents( GtkTreeModel *model )
 
 	if ( ret < 0 ) {
 		ULOG_ERR( "set_menu_contents: failed to start the document writing." );
+        xmlFreeTextWriter(writer);
+        xmlBufferFree(buf);
+        xmlCleanupParser();
 		return FALSE;
 	}
 
@@ -753,6 +767,9 @@ gboolean set_menu_contents( GtkTreeModel *model )
 
 	if ( ret < 0 ) {
 		ULOG_ERR( "set_menu_contents: failed to start top level menu." );
+        xmlFreeTextWriter(writer);
+        xmlBufferFree(buf);
+        xmlCleanupParser();
 		return FALSE;
 	}
 
@@ -883,8 +900,25 @@ gboolean set_menu_contents( GtkTreeModel *model )
 		return_value = TRUE;
 	}
 
+    xmlFreeTextWriter(writer);
+
+    fp = fopen(user_menu_conf_file, "w");
+    
+    if (fp == NULL) {
+		ULOG_ERR( "set_menu_contents: failed to open menu conf." );
+        xmlFreeTextWriter(writer);
+        xmlBufferFree(buf);
+        xmlCleanupParser();
+        return FALSE;
+    }
+
+    fprintf(fp, "%s", (const char *) buf->content);
+
+    fclose(fp);
+
+    xmlBufferFree(buf);
+
 	/* Cleanup */
-	xmlFreeTextWriter( writer );
 	xmlCleanupParser();
 	
 	if ( user_home_dir ) {
@@ -902,24 +936,6 @@ gboolean set_menu_contents( GtkTreeModel *model )
 	if ( root_name ) {
 		g_free( root_name );
 	}
-
-	/*
-	if ( name ) {
-		g_free( name );
-	}
-
-	if ( desktop_id ) {
-		g_free( desktop_id );
-	}
-
-	if ( child_name ) {
-		g_free( child_name );
-	}
-
-	if ( child_desktop_id ) {
-		g_free( child_desktop_id );
-	}
-	*/
 
 	return return_value;
 }

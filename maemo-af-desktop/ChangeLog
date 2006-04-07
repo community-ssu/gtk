@@ -1,5 +1,12 @@
 2006-04-07  Johan Bilien <johan.bilien@nokia.com>
 
+	* libhildonmenu/libhildonmenu.c: Use the memory XML writer instead
+	  of the disk one, then write everything at once. This should be
+	  faster and hopefully solve the race condition between the TN applet
+	  writing to the file while the TN starts reading it. (Closes N#25930)
+
+2006-04-07  Johan Bilien <johan.bilien@nokia.com>
+
 	* Makefile.am, debian/rules: Use maemo-launcher for maemo-af-desktop
 
 2006-04-05  Johan Bilien <johan.bilien@nokia.com>
