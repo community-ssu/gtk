@@ -2,8 +2,7 @@
 
 DESTDIR=$(CURDIR)/debian/posix-locales
 
-set_n770=fr_FR
-# pt_BR en_GB en_US fi_FI fr_CA ru_RU es_ES es_MX de_DE nl_NL da_DK el_GR no_NO sv_SE pt_PT it_IT 
+set_n770= pt_BR en_GB en_US fi_FI fr_CA ru_RU es_ES es_MX de_DE nl_NL da_DK el_GR no_NO sv_SE pt_PT it_IT 
 
 build: build-stamp
 build-stamp:
@@ -28,9 +27,10 @@ install: build
 	dh_clean -k
 	dh_installdirs
 	
+	install -d $(DESTDIR)/usr/lib/locale
 	@for i in $(set_n770); do \
 	  echo "Installing locale $$i (UTF-8)"; \
-	  cp -r build/$$i $(DESTDIR)/usr/lib/locale \
+	  cp -r build/$$i $(DESTDIR)/usr/lib/locale ; \
 	done
 
 binary-indep:
