@@ -1,3 +1,8 @@
+2006-04-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* configure.in (LIBTOOL_EXPORT_OPTIONS): Stop exporting two extra
+	symbols hildon-fm doesn't need anymore.
+
 2006-04-05  Tomas Junnonen  <tomas.junnonen@nokia.com>
 	
 	* gtk/gtkimcontext.c (hildon_gtk_im_context_filter_event): Improve
