@@ -134,6 +134,9 @@ main(int argc, char ** argv)
     bind_textdomain_codeset( PACKAGE, "UTF-8" );
 
     textdomain( PACKAGE );
+
+    /* Don't display the application name in the title bar */
+    g_set_application_name ("");
      
     _init_dnotify( CONTROLPANEL_ENTRY_DIR, 
                    g_getenv(ADDITIONAL_CP_APPLETS_DIR_ENVIRONMENT) == NULL ?
