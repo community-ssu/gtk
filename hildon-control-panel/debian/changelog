@@ -1,3 +1,13 @@
+hildon-control-panel (1.2.4-1) unstable; urgency=low
+
+  * hildon-control-panel-main.[ch], hildon-cp-rfs.c: The warning dialog
+    for RFS and CUD is now implemented with a generic GtkDialog rather
+    than a HildonNote (Closes N#25584 and N#25588)
+  * hildon-control-panel-main.c: Set the application name to "" so
+    it doesn't appear in the title bar (Closes N#26023)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 10 Apr 2006 17:36:42 +0300
+
 hildon-control-panel (1.2.3-1) unstable; urgency=low
 
   * hildon-control-panel-main.h: Corrected two logical ids
