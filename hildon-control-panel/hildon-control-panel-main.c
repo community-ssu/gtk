@@ -877,7 +877,7 @@ static void _run_operator_wizard( GtkWidget *widget, gpointer data)
 static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
 {
 
-    hildon_cp_rfs( state_data.osso, HILDON_CP_RFS_WARNING, HILDON_CP_RFS_SCRIPT );
+    hildon_cp_rfs( state_data.osso, HILDON_CP_RFS_WARNING, HILDON_CP_RFS_WARNING_TITLE, HILDON_CP_RFS_SCRIPT );
 
     return TRUE;
 }
@@ -885,7 +885,7 @@ static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
 static gboolean _clear_user_data( GtkWidget *widget, gpointer data )
 {
 
-    hildon_cp_rfs( state_data.osso, HILDON_CP_CUD_WARNING, HILDON_CP_CUD_SCRIPT );
+    hildon_cp_rfs( state_data.osso, HILDON_CP_CUD_WARNING, HILDON_CP_CUD_WARNING_TITLE, HILDON_CP_CUD_SCRIPT );
 
     return TRUE;
 }

@@ -91,6 +91,9 @@ G_BEGIN_DECLS
 #define HILDON_CP_RFS_WARNING _("refs_ia_text")
 #define HILDON_CP_CUD_WARNING _("cud_ia_text")
 
+#define HILDON_CP_RFS_WARNING_TITLE _("rfs_ti_restore")
+#define HILDON_CP_CUD_WARNING_TITLE _("cud_ti_clear")
+
 #define RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE dgettext("hildon-libs", "secu_info_incorrectcode")
 
 #define HILDON_CP_SYSTEM_DIR ".osso/hildon-cp"
@@ -116,6 +119,7 @@ G_BEGIN_DECLS
 
 gboolean hildon_cp_rfs( osso_context_t *osso, 
                         const char *warning,
+                        const char *title,
                         const char *script );
 
 G_END_DECLS

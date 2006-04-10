@@ -30,7 +30,8 @@
 #include <log-functions.h>
 
 
-static gboolean hildon_cp_rfs_display_warning( const char * warning );
+static gboolean hildon_cp_rfs_display_warning( const gchar * warning,
+                                               const gchar *title );
 static gboolean hildon_cp_rfs_check_lock_code_dialog( osso_context_t * osso );
 static gint hildon_cp_rfs_check_lock_code( const gchar *, osso_context_t * );
 static void hildon_cp_rfs_launch_script( const gchar * );
@@ -38,11 +39,12 @@ static void hildon_cp_rfs_launch_script( const gchar * );
 
 gboolean hildon_cp_rfs( osso_context_t * osso, 
                         const gchar *warning,
+                        const gchar *title,
                         const gchar * script )
 {
     if( warning )
     {
-        if( !hildon_cp_rfs_display_warning( warning ) )
+        if( !hildon_cp_rfs_display_warning( warning, title ) )
         {
             /* User canceled, return */
             return TRUE;
@@ -67,20 +69,30 @@ gboolean hildon_cp_rfs( osso_context_t * osso,
 /*
  * Asks the user for confirmation, returns TRUE if confirmed
  */
-static gboolean hildon_cp_rfs_display_warning( const gchar *warning )
+static gboolean hildon_cp_rfs_display_warning( const gchar *warning,
+                                               const gchar *title ) 
 {
     GtkWidget *confirm_dialog;
+    GtkWidget *label;
     gint ret;
-    
-    confirm_dialog = hildon_note_new_confirmation(
-        NULL,
-        /*(GTK_WINDOW(state_data.window),*/
-         warning);
 
-    hildon_note_set_button_texts
-        ( HILDON_NOTE(confirm_dialog),
-          RESET_FACTORY_SETTINGS_INFOBANNER_OK,
-          RESET_FACTORY_SETTINGS_INFOBANNER_CANCEL );
+    confirm_dialog = gtk_dialog_new_with_buttons (
+        title,
+        NULL,
+        GTK_DIALOG_MODAL, 
+        RESET_FACTORY_SETTINGS_INFOBANNER_OK, GTK_RESPONSE_OK,
+        RESET_FACTORY_SETTINGS_INFOBANNER_CANCEL, GTK_RESPONSE_CANCEL,
+        NULL
+        );
+
+    gtk_dialog_set_has_separator( GTK_DIALOG( confirm_dialog ), FALSE );
+
+    label = gtk_label_new( warning );
+    gtk_label_set_line_wrap( GTK_LABEL( label ), TRUE );
+
+    gtk_container_add( GTK_CONTAINER( GTK_DIALOG( confirm_dialog )->vbox ), 
+                       label );
+
 
     gtk_widget_show_all( confirm_dialog );
     ret = gtk_dialog_run( GTK_DIALOG( confirm_dialog ) );

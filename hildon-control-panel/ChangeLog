@@ -1,3 +1,9 @@
+2006-04-10 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-control-panel-main.[ch], hildon-cp-rfs.c: The warning dialog
+	  for RFS and CUD is now implemented with a generic GtkDialog rather
+	  than a HildonNote (Closes N#25584 and N#25588)
+
 2006-04-07 Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-control-panel-main.c: Set the application name to "" so
