@@ -1,3 +1,31 @@
+maemo-af-desktop (2.6.9-1) unstable; urgency=low
+
+  * maemo-af-desktop.[sh,defs], maemo-af-desktop-main.[ch]: Parse the
+    maemo-af-desktop-specific gtkrc from the application.
+  * hildon-home/layout-manager.c: Fixed the leak of a GdkGC (Closes N#26116)
+  * hildon-home/layout-manager.c: Replaced the "Opening layout mode"
+    confirmation not with an animation banner, as required by  UI
+    specifications.
+  * hildon-home/hildon-home-restore-background.sh: Use sh instead of bash,
+    which doesn't exist on the target (Closes N#23524)
+  * hildon-home/layout-manager.c: Reset the applet offset after the
+    layout was cancelled (Closes N#24741)
+  * libhildonmenu/libhildonmenu.c: Use the memory XML writer instead
+    of the disk one, then write everything at once. This should be
+    faster and hopefully solve the race condition between the TN applet
+    writing to the file while the TN starts reading it. (Closes N#25930)
+  * Makefile.am, debian/rules: Use maemo-launcher for maemo-af-desktop
+  * hildon-home/home-select-applets-dialog.c: Fixed the leak of a string
+  * hildon-home/hildon-home-main.c: Fixed the leak of a g_list
+  * hildon-home/hildon-home-main.c: Populate the Applet Settings submenu
+    even when the menu is triggered from the hardware key
+  * hildon-navigator/hn-wm-watched-window.c:
+    - hn_wm_watched_window_get_active_view(): Return the first view of
+      an application if no one was set yet (Closes N#22987)
+    - Identation fixes
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 10 Apr 2006 17:44:14 +0300
+
 maemo-af-desktop (2.6.8-2) unstable; urgency=low
 
   * Don't install convenience library libstatusbarmain.so (Closes N#25946)
