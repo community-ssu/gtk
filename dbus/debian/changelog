@@ -3,8 +3,9 @@ dbus (0.61-osso4) experimental; urgency=low
   * Using -5 priority again for the system bus.
   * Fixed the uname check.
   * Added DBus multi-threading initialisation to the client library (N#24277).
+  * Added patch for GProxy destruction (N#26107).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 23 Mar 2006 16:45:19 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 10 Apr 2006 11:20:53 +0300
 
 dbus (0.61-osso3) experimental; urgency=low
 

@@ -1,0 +1,23 @@
+Index: head/glib/dbus-gproxy.c
+===================================================================
+--- head.orig/glib/dbus-gproxy.c	2006-04-04 16:09:53.125640062 +0300
++++ head/glib/dbus-gproxy.c	2006-04-09 11:48:22.112675914 +0300
+@@ -740,8 +740,18 @@
+ 
+ 	  UNLOCK_MANAGER (manager);
+ 
++          /* ref all proxies before destroying them, because
++           * destroying one proxy may cause client code to
++           * unref other proxies further down our list, meaning
++           * that we end up calling the destroy method on
++           * objects which have already been finalised. using
++           * weak references would be a neater way to fix this. */
++	  for (tmp = data.destroyed; tmp; tmp = tmp->next)
++	    g_object_ref (tmp->data);
+ 	  for (tmp = data.destroyed; tmp; tmp = tmp->next)
+ 	    dbus_g_proxy_destroy (tmp->data);
++	  for (tmp = data.destroyed; tmp; tmp = tmp->next)
++	    g_object_unref (tmp->data);
+ 	  g_slist_free (data.destroyed);
+ 
+ 	  LOCK_MANAGER (manager);
