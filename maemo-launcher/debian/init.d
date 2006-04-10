@@ -35,9 +35,6 @@ set -e
 if [ -e $DEFSDIR/af-defines.sh ]
 then
   . $DEFSDIR/af-defines.sh
-  for f in $DEFSDIR/*.defs; do
-    . $f
-  done
 else
   echo "$DEFSDIR/af-defines.sh not found!"
   exit 1
