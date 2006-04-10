@@ -281,6 +281,15 @@ invoked_get_args(int fd, prog_t *prog)
 }
 
 static bool
+invoked_send_pid(int fd, int pid)
+{
+  invoke_send_msg(fd, INVOKER_MSG_PID);
+  invoke_send_msg(fd, pid);
+
+  return true;
+}
+
+static bool
 invoked_get_actions(int fd, prog_t *prog)
 {
   while (1)
@@ -300,6 +309,10 @@ invoked_get_actions(int fd, prog_t *prog)
       break;
     case INVOKER_MSG_END:
       invoke_send_msg(fd, INVOKER_MSG_ACK);
+
+      if (prog->options & INVOKER_MSG_MAGIC_OPTION_WAIT)
+        invoked_send_pid(fd, getpid());
+
       return true;
     default:
       error("receiving invalid action (%08x)\n", msg);

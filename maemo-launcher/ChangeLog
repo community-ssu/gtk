@@ -1,5 +1,22 @@
 2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (invoked_send_pid): New function.
+	(invoked_get_actions): Call invoked_send_pid if the invoker is waiting
+	for us.
+	* launcher/invokelib.h (INVOKER_MSG_MAGIC_VERSION): Bump protocol
+	version to 2.
+	(INVOKER_MSG_PID): New macro.
+	* launcher/invoker.c (invoked_pid): New variable.
+	(sig_forwarder): New function.
+	(sigs_set): Likewise.
+	(sigs_init): Likewise.
+	(sigs_restore): Likewise.
+	(invoker_recv_pid): Likewise.
+	(main): Call invoker_recv_pid before invoker_recv_exit, and surround
+	the later with the signal forwarding code.
+
+2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (child_died_painfully): Fix logic.
 
 2006-04-10  Guillem Jover  <guillem.jover@nokia.com>

@@ -39,6 +39,51 @@
 
 #define DEFAULT_DELAY 0
 
+static pid_t invoked_pid = 0;
+
+static void
+sig_forwarder(int sig)
+{
+  if (invoked_pid >= 0)
+    kill(invoked_pid, sig);
+}
+
+static void
+sigs_set(struct sigaction *sig)
+{
+  sigaction(SIGHUP, sig, NULL);
+  sigaction(SIGINT, sig, NULL);
+  sigaction(SIGQUIT, sig, NULL);
+  sigaction(SIGTERM, sig, NULL);
+  sigaction(SIGUSR1, sig, NULL);
+  sigaction(SIGUSR2, sig, NULL);
+  sigaction(SIGWINCH, sig, NULL);
+}
+
+static void
+sigs_init(void)
+{
+  struct sigaction sig;
+
+  memset(&sig, 0, sizeof(sig));
+  sig.sa_flags = SA_RESTART;
+  sig.sa_handler = sig_forwarder;
+
+  sigs_set(&sig);
+}
+
+static void
+sigs_restore(void)
+{
+  struct sigaction sig;
+
+  memset(&sig, 0, sizeof(sig));
+  sig.sa_flags = SA_RESTART;
+  sig.sa_handler = SIG_DFL;
+
+  sigs_set(&sig);
+}
+
 static bool
 invoke_recv_ack(int fd)
 {
@@ -127,6 +172,24 @@ invoker_send_end(int fd)
   invoke_send_msg(fd, INVOKER_MSG_END);
 
   invoke_recv_ack(fd);
+
+  return true;
+}
+
+static bool
+invoker_recv_pid(int fd)
+{
+  uint32_t msg;
+
+  /* Receive action. */
+  invoke_recv_msg(fd, &msg);
+
+  if (msg != INVOKER_MSG_PID)
+    die(1, "receiving bad pid (%08x)\n", msg);
+
+  /* Receive pid. */
+  invoke_recv_msg(fd, &msg);
+  invoked_pid = msg;
 
   return true;
 }
@@ -320,7 +383,11 @@ main(int argc, char *argv[])
     int status;
 
     debug("waiting for invoked program to exit\n");
+
+    invoker_recv_pid(fd);
+    sigs_init();
     status = invoker_recv_exit(fd);
+    sigs_restore();
 
     if (WIFSIGNALED(status))
       raise(WTERMSIG(status));
