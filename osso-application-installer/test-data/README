@@ -62,9 +62,9 @@ The packages and the distributions they are in:
      clicking "Install"), it should not be automatically uninstalled
      when uninstalling package-C.
 
-   * *borken 1* (old, new)
+   * *package-D 1* (old, new)
      <p>
-     A broken packages whose maintainer scripts will always fail.
+     Depends on package "missing", which is not in the repository.
 
    * *package-1 0* (old, new)
      <p>
@@ -78,6 +78,10 @@ The packages and the distributions they are in:
      uninstall this package while the contained program is running,
      the uninstallation should be cancelled automatically.
 
+   * *borken 1* (old, new)
+     <p>
+     A broken packages whose maintainer scripts will always fail.
+
    * *licensed 0* (old, new)
      <p>
      A package where the user needs to agree to a license before being
@@ -86,6 +90,10 @@ The packages and the distributions they are in:
    * *big 0* (old)
      <p>
      A package that contains one big, useless file.
+
+   * *corrupted 1* (old, new)
+     <p>
+     A package whose archive file is corrupted.
 
 
 ---+++ Sample test cases
@@ -199,3 +207,14 @@ repository.
 
    * Install the "licensed" package.
    * Note that a license agreement is shown during installation.
+
+---++++ Refusal to install a package with a missing dependency
+
+   * Try to install the package-D.
+   * Note that it can not be installed and that the details dialog
+     lists "missing" being missing as the problem.
+
+---++++ Failure to install a corrupted package
+
+   * Try to install the "corrupted" package.
+   * Note that this fails because the archive file is corrupted.
