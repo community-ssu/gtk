@@ -429,10 +429,10 @@ assign_child_slot(kindergarten_t *childs, child_t *child)
 static bool
 child_died_painfully(int status)
 {
-  if (WIFEXITED(status) && WEXITSTATUS(status) != 0 ||
-      WIFSIGNALED(status) && (WTERMSIG(status) != SIGINT ||
-			      WTERMSIG(status) != SIGTERM ||
-			      WTERMSIG(status) != SIGKILL))
+  if ((WIFEXITED(status) && WEXITSTATUS(status) != 0) ||
+      (WIFSIGNALED(status) && (WTERMSIG(status) != SIGINT &&
+			       WTERMSIG(status) != SIGTERM &&
+			       WTERMSIG(status) != SIGKILL)))
     return true;
   else
     return false;

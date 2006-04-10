@@ -1,5 +1,9 @@
 2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (child_died_painfully): Fix logic.
+
+2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (child_died_painfully): New function.
 	(release_child_slot): Only send the application died note signal when
 	child_died_painfully.
