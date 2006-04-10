@@ -1,3 +1,9 @@
+2006-04-10  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/layout-manager.c: Replaced the "Opening layout mode"
+	  confirmation not with an animation banner, as required by  UI
+	  specifications.
+
 2006-04-07  Johan Bilien <johan.bilien@nokia.com>
 	
 	* hildon-home/hildon-home-restore-background.sh: Use sh instead of bash,

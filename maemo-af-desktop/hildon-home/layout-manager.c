@@ -43,7 +43,7 @@
 #include "hildon-home-interface.h"
 #include "hildon-home-main.h"
 #include <hildon-widgets/hildon-defines.h>
-#include <hildon-widgets/gtk-infoprint.h>
+#include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-note.h>
 
 /* Osso includes */
@@ -107,6 +107,8 @@
  TASKNAV_SERVICE_NAME "." TASKNAV_SENSITIVE_METHOD
 #define TASKNAV_INSENSITIVE_METHOD "tasknav_insensitive"
 #define TASKNAV_SENSITIVE_METHOD "tasknav_sensitive"
+
+#define LAYOUT_OPENING_BANNER_TIMEOUT 2500
 
 typedef struct _layout_mode_internal_t LayoutInternal;
 typedef struct _layout_node_t LayoutNode;
@@ -220,6 +222,18 @@ void layout_mode_init (osso_context_t * osso_context)
 		    &general_data.highlight_color);
 }
 
+
+/* Destroy the layout mode opening banner after a timeout */
+static gboolean layout_banner_timeout_cb (gpointer banner)
+{
+    if (GTK_IS_WIDGET (banner))
+    {
+        gtk_widget_destroy (GTK_WIDGET(banner));
+    }
+
+    return FALSE;
+}
+
 void layout_mode_begin ( GtkEventBox *home_event_box,
 			 GtkFixed * home_fixed,
 			 GList * added_applets,
@@ -234,6 +248,9 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     gint x, y;
     GList * addable_applets =NULL;
     GtkWidget *window;
+    GtkWidget *anim_banner;
+    GTimeVal tv_s, tv_e;
+    gint ellapsed;
 
     node = NULL;
 
@@ -247,9 +264,13 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 	return;
     }
    
-    /* Show information banner to user about layout mode beginning */    
-    gtk_confirmation_banner_with_icon_name
-	    (NULL, LAYOUT_MODE_NOTIFICATION_MODE_BEGIN_TEXT, NULL);		  
+    /* Show progress banner to user about layout mode beginning */    
+    anim_banner = hildon_banner_show_animation(
+            GTK_WIDGET (home_event_box),
+            NULL, 
+            LAYOUT_MODE_NOTIFICATION_MODE_BEGIN_TEXT);
+
+    g_get_current_time (&tv_s);
     
     added_applets = g_list_first(added_applets);
 
@@ -282,6 +303,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     gtk_drag_dest_set((GtkWidget *)general_data.home_area_eventbox, 
 		      GTK_DEST_DEFAULT_DROP,
 		      &target, 1, GDK_ACTION_COPY);
+    
     while (iter)
     {
 	ULOG_ERR("LAYOUT: iterating nodes\n");
@@ -464,6 +486,22 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 		  NULL, 
 		  0,
 		  NULL);
+
+    /* Delete the banner after max(2500ms, time to open layout mode) */
+    g_get_current_time (&tv_e);
+
+    ellapsed = (tv_e.tv_sec  - tv_s.tv_sec)  * 1000 + 
+               (tv_e.tv_usec - tv_s.tv_usec) / 1000;
+
+    if (ellapsed > LAYOUT_OPENING_BANNER_TIMEOUT)
+    {
+        gtk_widget_destroy(anim_banner);
+    }
+    else
+    {
+        g_timeout_add (LAYOUT_OPENING_BANNER_TIMEOUT - ellapsed,
+                     layout_banner_timeout_cb, anim_banner);
+    }
 
     ULOG_ERR("LAYOUT:Layout mode start ends here\n");
     fp_mlist();
