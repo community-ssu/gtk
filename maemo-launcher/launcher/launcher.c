@@ -427,6 +427,18 @@ assign_child_slot(kindergarten_t *childs, child_t *child)
 }
 
 static bool
+child_died_painfully(int status)
+{
+  if (WIFEXITED(status) && WEXITSTATUS(status) != 0 ||
+      WIFSIGNALED(status) && (WTERMSIG(status) != SIGINT ||
+			      WTERMSIG(status) != SIGTERM ||
+			      WTERMSIG(status) != SIGKILL))
+    return true;
+  else
+    return false;
+}
+
+static bool
 release_child_slot(kindergarten_t *childs, pid_t pid, int status)
 {
   int id = get_child_slot_by_pid(childs, pid);
@@ -435,7 +447,9 @@ release_child_slot(kindergarten_t *childs, pid_t pid, int status)
   {
     child_t *child = &childs->list[id];
 
-    comm_send_app_died(child->name, pid, status);
+    if (child_died_painfully(status))
+      comm_send_app_died(child->name, pid, status);
+
     invoked_send_exit(child->sock, status);
 
     close(child->sock);
