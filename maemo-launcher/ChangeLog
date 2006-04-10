@@ -1,5 +1,9 @@
 2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
 
+	* TODO: Remove signal forwarding. Extend the protocol fixes.
+
+2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (invoked_send_pid): New function.
 	(invoked_get_actions): Call invoked_send_pid if the invoker is waiting
 	for us.

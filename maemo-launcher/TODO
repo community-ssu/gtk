@@ -6,8 +6,8 @@ TODO list
 * Pass environment from maemo-invoker to the launcher?
 * Remove acks in IPC.
 * Rework IPC system to pack the commands and send them at once.
-* Forward signals sent to maemo-invoker.
-* Fix properly the need to send the filename first in the protocol.
+* Fix properly the need to send the filename first in the protocol, and
+  to send the pid from the child.
 * Put the socket in the proper dir.
 * Pass the stdio descriptors from the invoker to the launcher and
   connect them?
