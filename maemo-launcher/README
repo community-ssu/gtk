@@ -33,8 +33,6 @@ Read the man pages for further information.
 Current known issues
 ====================
 
-The maemo-invoker does not proxy the signals to the the launched program.
-
 If maemo-invoker has been told not to wait for the application to exit and
 use a delay instead and that application takes too much time to register the
 DBUS service the maemo-invoker may have exited already, so dbus will not

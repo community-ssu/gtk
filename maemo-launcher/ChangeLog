@@ -1,6 +1,7 @@
 2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
 
 	* TODO: Remove signal forwarding. Extend the protocol fixes.
+	* README: Remove the signal forwarding limitation note.
 
 2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
 
