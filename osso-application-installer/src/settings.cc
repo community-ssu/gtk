@@ -43,7 +43,8 @@
    taking all the memory.
 
    Only the UI is affected.  The setting itself is always implemented
-   and a power-user could change it be editing .appinstaller directly.
+   and a power-user could change it be editing .osso/appinstaller
+   directly.
 */
 #define SHOW_CLEANING_SETTINGS 0
 
@@ -59,7 +60,7 @@ int  last_update = 0;
 bool fullscreen_toolbar = true;
 bool normal_toolbar = true;
 
-#define SETTINGS_FILE ".appinstaller"
+#define SETTINGS_FILE ".osso/appinstaller"
 
 static FILE *
 open_settings_file (const char *mode)
