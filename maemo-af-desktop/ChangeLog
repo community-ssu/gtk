@@ -1,5 +1,10 @@
 2006-04-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm.c: Do not specify type='method' in a
+	  dbus match rule, this is the default (Closes N#26063)
+
+2006-04-10  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.6.9
 
 2006-04-10  Johan Bilien <johan.bilien@nokia.com>

@@ -1548,7 +1548,7 @@ hn_wm_init (ApplicationSwitcher_t *as)
     {
       /* Match rule */
 
-      match_rule = g_strdup_printf("type='method',interface='%s'",
+      match_rule = g_strdup_printf("interface='%s'",
 				   APP_LAUNCH_BANNER_METHOD_INTERFACE );
 
       dbus_bus_add_match( connection, match_rule, NULL );
