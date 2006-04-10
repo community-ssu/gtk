@@ -1,0 +1,13 @@
+This is a modified version of GnuPG 1.4.2.
+
+The modifications consist mainly of two things: Removing files that
+might be problematic for Nokia to distribute and compile-time
+configuration of GnuPG with --enable-minimal.
+
+Since these changes result in a gpg binary that is not really useful
+as a general cryptography tool, we have changed the Debian package
+name to "osso-gnupg".
+
+"osso-gnupg" is compatible with the real "gnupg" in the sense that you
+can replace it with a full featured GnuPG configuration and things
+will still work.

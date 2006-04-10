@@ -1,0 +1,65 @@
+#! /bin/sh -e
+## 22_zero_length_mpi_fix.dpatch
+##
+## DP: Description: Fix bug in reading a zero-length MPI.
+## DP: Author: David Shaw
+## DP: Upstream status: Committed to trunk
+## DP: URL: http://lists.gnupg.org/pipermail/gnupg-commits/2005-September/005972.html
+## DP: Date: 2005-09-01
+
+if [ $# -lt 1 ]; then
+    echo "`basename $0`: script expects -patch|-unpatch as argument" >&2
+    exit 1
+fi
+
+[ -f debian/patches/00patch-opts ] && . debian/patches/00patch-opts
+patch_opts="${patch_opts:--f --no-backup-if-mismatch} ${2:+-d $2}"
+
+case "$1" in
+    -patch) patch -p1 ${patch_opts} < $0;;
+    -unpatch) patch -R -p1 ${patch_opts} < $0;;
+    *)
+        echo "`basename $0`: script expects -patch|-unpatch as argument" >&2
+        exit 1;;
+esac
+
+exit 0
+
+@DPATCH@
+diff -urNad gnupg-1.4.2~/mpi/mpicoder.c gnupg-1.4.2/mpi/mpicoder.c
+--- gnupg-1.4.2~/mpi/mpicoder.c	2005-05-31 06:30:05.000000000 +0000
++++ gnupg-1.4.2/mpi/mpicoder.c	2005-09-29 00:52:19.000000000 +0000
+@@ -80,16 +80,20 @@
+     mpi_limb_t a;
+     MPI val = MPI_NULL;
+ 
++    if (nread == nmax)
++        goto overflow;
+     if( (c = iobuf_get(inp)) == -1 )
+ 	goto leave;
+-    if (++nread >= nmax)
+-        goto overflow;
++    nread++;
+     nbits = c << 8;
++
++    if (nread == nmax)
++        goto overflow;
+     if( (c = iobuf_get(inp)) == -1 )
+ 	goto leave;
+-    if (++nread >= nmax)
+-        goto overflow;
++    nread++;
+     nbits |= c;
++
+     if( nbits > MAX_EXTERN_MPI_BITS ) {
+ 	log_error("mpi too large for this implementation (%u bits)\n", nbits);
+ 	goto leave;
+@@ -112,7 +116,7 @@
+     for( ; j > 0; j-- ) {
+ 	a = 0;
+ 	for(; i < BYTES_PER_MPI_LIMB; i++ ) {
+-            if (nread >= nmax) {
++            if (nread == nmax) {
+ #ifdef M_DEBUG
+                 mpi_debug_free (val);
+ #else

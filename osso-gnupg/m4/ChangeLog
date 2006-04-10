@@ -1,0 +1,125 @@
+2005-07-20  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: Check that our libcurl has
+	curl_version_info(CURLINFO_NOW).
+
+2005-06-22  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: Only do the OS X linker fix on Panther.  Tiger has a
+	clean curl-config.
+
+2005-04-24  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: Add a check for curl_free() since older versions of
+	libcurl don't have it.  Substitute free() as an alternative.
+
+2005-03-21  David Shaw  <dshaw@jabberwocky.com>
+
+	* readline.m4: Check for completion functionality.
+
+	* ldap.m4: Comments.
+
+2005-03-16  David Shaw  <dshaw@jabberwocky.com>
+
+	* ldap.m4: New.  Moved from configure.ac.
+
+2005-02-28  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: Use $LIBS instead of $LDFLAGS.  This should help
+	build problems on Mingw32.
+
+2005-02-03  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: More comments.
+
+2005-01-24  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: All versions of curl-config support --feature.
+
+2005-01-22  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: Note that FTPS existed, but wasn't fully
+	standards-compliant until version 7.11.0.
+
+2005-01-17  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: Use LIBCURL_CPPFLAGS and not LIBCURL_INCLUDES to
+	match automake syntax.
+
+2005-01-03  David Shaw  <dshaw@jabberwocky.com>
+
+	* Makefile.am, libusb.m4: New libusb check macro.
+
+2004-12-24  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: Rewrite this to use the new --protocols flag I gave
+	to the libcurl people.
+
+	* Makefile.am: Add readline.m4 and libcurl.m4.
+
+2004-12-23  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: OSX has a problem with their curl-config script.
+
+	* readline.m4: Make sure that readline is modern enough to
+	understand rl_catch_signals.
+
+	* libcurl.m4: Don't require curl-config to be present since it
+	seems some binary packages don't include it.  Allow users to
+	specify LIBCURL and LIBCURL_INCLUDES for us.
+
+2004-12-22  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: Be much more strict with libcurl by trying to
+	compile and link a test program that uses the features that we
+	need.
+
+2004-12-21  David Shaw  <dshaw@jabberwocky.com>
+
+	* libcurl.m4: New.
+
+2004-12-18  David Shaw  <dshaw@jabberwocky.com>
+
+	* readline.m4: New.
+
+2004-07-27  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* gettext.m4: Upgrade to gettext-0.14.1.
+	* intmax.m4: New file, from gettext-0.14.1.
+	* lib-ld.m4: Upgrade to gettext-0.14.1.
+	* lib-prefix.m4: Upgrade to gettext-0.14.1.
+	* longdouble.m4: New file, from gettext-0.14.1.
+	* longlong.m4: New file, from gettext-0.14.1.
+	* po.m4: Upgrade to gettext-0.14.1.
+	* printf-posix.m4: New file, from gettext-0.14.1.
+	* signed.m4: New file, from gettext-0.14.1.
+	* size_max.m4: New file, from gettext-0.14.1.
+	* ulonglong.m4: Upgrade to gettext-0.14.1.
+	* wchar_t.m4: New file, from gettext-0.14.1.
+	* wint_t.m4: New file, from gettext-0.14.1.
+	* xsize.m4: New file, from gettext-0.14.1.
+	* Makefile.am (EXTRA_DIST): Add the new files.
+
+2003-10-25  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* codeset.m4: New file, from gettext-0.12.1.
+	* gettext.m4: New file, from gettext-0.12.1.
+	* glibc21.m4: New file, from gettext-0.12.1.
+	* iconv.m4: New file, from gettext-0.12.1.
+	* intdiv0.m4: New file, from gettext-0.12.1.
+	* inttypes.m4: New file, from gettext-0.12.1.
+	* inttypes_h.m4: New file, from gettext-0.12.1.
+	* inttypes-pri.m4: New file, from gettext-0.12.1.
+	* isc-posix.m4: New file, from gettext-0.12.1.
+	* lcmessage.m4: New file, from gettext-0.12.1.
+	* lib-ld.m4: New file, from gettext-0.12.1.
+	* lib-link.m4: New file, from gettext-0.12.1.
+	* lib-prefix.m4: New file, from gettext-0.12.1.
+	* nls.m4: New file, from gettext-0.12.1.
+	* po.m4: New file, from gettext-0.12.1.
+	* progtest.m4: New file, from gettext-0.12.1.
+	* stdint_h.m4: New file, from gettext-0.12.1.
+	* uintmax_t.m4: New file, from gettext-0.12.1.
+	* ulonglong.m4: New file, from gettext-0.12.1.
+	* Makefile.am: New file.
+

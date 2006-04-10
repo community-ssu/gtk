@@ -1,0 +1,22 @@
+Source: osso-gnupg
+Section: utils
+Priority: standard
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Standards-Version: 3.6.2.1
+Build-Depends: zlib1g-dev | libz-dev, libbz2-dev, file, gettext, dpatch, libglib2.0-dev
+
+Package: osso-gnupg
+Architecture: any
+Depends: ${shlibs:Depends}
+Suggests: gnupg-doc
+Conflicts: gnupg, gpg-rsa, gpg-rsaref, suidmanager (<< 0.50), gpg-idea (<= 2.2)
+Replaces: gpg-rsa, gpg-rsaref
+Provides: gpg-rsa, gpg-rsaref
+Description: Stripped down version of the GNU privacy guard
+ GnuPG is GNU's tool for secure communication and data storage.  This
+ version has been stripped down to contain only the bare necessities
+ to support APT repository signing.  It is likely no longer compliant
+ with the proposed OpenPGP Internet standard as described in RFC2440.
+ .
+ GnuPG does not use any patented algorithms so it cannot be compatible
+ with PGP2 because it uses IDEA (which is patented worldwide).
