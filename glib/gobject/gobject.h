@@ -44,10 +44,21 @@ G_BEGIN_DECLS
 #define G_OBJECT_CLASS_NAME(class)  (g_type_name (G_OBJECT_CLASS_TYPE (class)))
 #define G_VALUE_HOLDS_OBJECT(value) (G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_OBJECT))
 
+/* --- type macros --- */
+#define G_TYPE_INITIALLY_UNOWNED	      (g_initially_unowned_get_type())
+#define G_INITIALLY_UNOWNED(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), G_TYPE_INITIALLY_UNOWNED, GInitiallyUnowned))
+#define G_INITIALLY_UNOWNED_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), G_TYPE_INITIALLY_UNOWNED, GInitiallyUnownedClass))
+#define G_IS_INITIALLY_UNOWNED(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), G_TYPE_INITIALLY_UNOWNED))
+#define G_IS_INITIALLY_UNOWNED_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), G_TYPE_INITIALLY_UNOWNED))
+#define G_INITIALLY_UNOWNED_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), G_TYPE_INITIALLY_UNOWNED, GInitiallyUnownedClass))
+/* GInitiallyUnowned ia a GObject with initially floating reference count */
+
 
 /* --- typedefs & structures --- */
 typedef struct _GObject                  GObject;
 typedef struct _GObjectClass             GObjectClass;
+typedef struct _GObject                  GInitiallyUnowned;
+typedef struct _GObjectClass             GInitiallyUnownedClass;
 typedef struct _GObjectConstructParam    GObjectConstructParam;
 typedef void (*GObjectGetPropertyFunc)  (GObject      *object,
                                          guint         property_id,
@@ -111,6 +122,7 @@ struct _GObjectConstructParam
 
 
 /* --- prototypes --- */
+GType       g_initially_unowned_get_type      (void);
 void        g_object_class_install_property   (GObjectClass   *oclass,
 					       guint           property_id,
 					       GParamSpec     *pspec);
@@ -166,6 +178,8 @@ void        g_object_freeze_notify            (GObject        *object);
 void        g_object_notify                   (GObject        *object,
 					       const gchar    *property_name);
 void        g_object_thaw_notify              (GObject        *object);
+gboolean    g_object_is_floating    	      (gpointer        object);
+gpointer    g_object_ref_sink       	      (gpointer	       object);
 gpointer    g_object_ref                      (gpointer        object);
 void        g_object_unref                    (gpointer        object);
 void	    g_object_weak_ref		      (GObject	      *object,
@@ -230,8 +244,8 @@ gulong	    g_signal_connect_object           (gpointer	       instance,
 					       gpointer	       gobject,
 					       GConnectFlags   connect_flags);
 
-
 /*< protected >*/
+void        g_object_force_floating           (GObject        *object);
 void        g_object_run_dispose	      (GObject	      *object);
 
 
@@ -246,8 +260,8 @@ void        g_value_set_object_take_ownership (GValue         *value,
 #if 0
 /* end maemo mod */
 #if !defined(G_DISABLE_DEPRECATED) || defined(GTK_COMPILATION)
-gsize       g_object_compat_control           (gsize           what,
-                                               gpointer        data);
+gsize	    g_object_compat_control	      (gsize	       what,
+					       gpointer	       data);
 #endif
 /* start maemo mod */
 #endif

@@ -221,7 +221,7 @@ across invocation of g_type_register_static().
   function for interface types. (optional)
 @class_data: 	 User-supplied data passed to the class init/finalize functions.
 @instance_size:  Size of the instance (object) structure (required for instantiatable types only).
-@n_preallocs: 	 Number of pre-allocated (cached) instances to reserve memory for (0 indicates no caching).
+@n_preallocs: 	 Prior to GLib 2.10, it specified the number of pre-allocated (cached) instances to reserve memory for (0 indicates no caching). Since GLib 2.10, it is ignored, since instances are allocated with the <link linkend="glib-Memory-Slices">slice allocator</link> now.
 @instance_init:  Location of the instance initialization function (optional, for instantiatable types only).
 @value_table: 	 A #GTypeValueTable function table for generic handling of GValues of this type (usually only
 		 useful for fundamental types).
@@ -240,10 +240,9 @@ A structure that provides information to the type system which is
 used specifically for managing interface types.
 </para>
 
-@interface_init: 	Location of the function that initializes the interface.
-@interface_finalize: 	Location of the function that finalizes the interface.
-@interface_data: 	Location of user data passed to the @interface_init and
-	 		@interface_finalize functions (optional).
+@interface_init: 
+@interface_finalize: 
+@interface_data: 
 
 <!-- ##### STRUCT GTypeValueTable ##### -->
 <para>
@@ -470,9 +469,13 @@ This macro should only be used in type implementations.
 <!-- ##### MACRO G_TYPE_INSTANCE_GET_CLASS ##### -->
 <para>
 Returns the class structure of a given @instance, casted
-to a specified anchestor type @g_type of the instance.
-<para>
+to a specified ancestor type @g_type of the instance.
 </para>
+<warning><para>Note
+that while calling a GInstanceInitFunc(), the class pointer gets
+modified, so it might not always return the expected pointer.
+</para></warning>
+<para>
 This macro should only be used in type implementations.
 </para>
 
@@ -507,6 +510,7 @@ This macro should only be used in type implementations.
 @instance: the instance of a type deriving from @private_type.
 @g_type: the type identifying which private data to retrieve.
 @c_type: The C type for the private structure.
+@Since: 2.4
 
 
 <!-- ##### MACRO G_TYPE_CHECK_INSTANCE ##### -->
@@ -823,6 +827,7 @@ my_object_get_some_field (MyObject *my_object)
 
 @g_class: class structure for an instantiatable type
 @private_size: size of private structure.
+@Since: 2.4
 
 
 <!-- ##### FUNCTION g_type_interface_peek ##### -->

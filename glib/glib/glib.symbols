@@ -62,7 +62,11 @@ g_async_queue_pop
 g_async_queue_pop_unlocked
 g_async_queue_push
 g_async_queue_push_unlocked
+g_async_queue_push_sorted
+g_async_queue_push_sorted_unlocked
 g_async_queue_ref
+g_async_queue_sort
+g_async_queue_sort_unlocked
 g_async_queue_timed_pop
 g_async_queue_timed_pop_unlocked
 g_async_queue_try_pop
@@ -86,6 +90,8 @@ g_atomic_pointer_compare_and_exchange
  /* these are not internal, but we don't want to alias them */
 g_atomic_int_get
 g_atomic_pointer_get
+g_atomic_int_set
+g_atomic_pointer_set
 #endif
 #endif
 #endif
@@ -104,7 +110,9 @@ g_cache_insert
 g_cache_key_foreach
 g_cache_new
 g_cache_remove
+#ifndef G_DISABLE_DEPRECATED
 g_cache_value_foreach
+#endif
 #endif
 #endif
 
@@ -165,10 +173,17 @@ g_dataset_foreach
 g_dataset_id_get_data
 g_dataset_id_remove_no_notify
 g_dataset_id_set_data_full
+#endif
+#endif
+
+#if IN_HEADER(__G_QUARK_H__)
+#if IN_FILE(__G_DATASET_C__)
 g_quark_from_static_string
 g_quark_from_string
 g_quark_to_string G_GNUC_CONST
 g_quark_try_string
+g_intern_string
+g_intern_static_string
 #endif
 #endif
 
@@ -206,7 +221,11 @@ g_date_set_dmy
 g_date_set_julian
 g_date_set_month
 g_date_set_parse
+#ifndef G_DISABLE_DEPRECATED
 g_date_set_time
+#endif
+g_date_set_time_t
+g_date_set_time_val
 g_date_set_year
 g_date_strftime
 g_date_subtract_days
@@ -276,6 +295,8 @@ g_mkstemp_utf8
 #if IN_HEADER(__G_HASH_H__)
 #if IN_FILE(__G_HASH_C__)
 g_hash_table_destroy
+g_hash_table_unref
+g_hash_table_ref
 g_hash_table_find
 g_hash_table_foreach
 g_hash_table_foreach_remove
@@ -449,17 +470,20 @@ g_list_index
 g_list_insert
 g_list_insert_before
 g_list_insert_sorted
+g_list_insert_sorted_with_data
 g_list_last
 g_list_length
 g_list_nth
 g_list_nth_data
 g_list_nth_prev
-#ifndef DISABLE_MEM_POOLS
+#ifndef G_DISABLE_DEPRECATED
 g_list_pop_allocator
-g_list_push_allocator
 #endif
 g_list_position
 g_list_prepend
+#ifndef G_DISABLE_DEPRECATED
+g_list_push_allocator
+#endif
 g_list_remove
 g_list_remove_all
 g_list_remove_link
@@ -484,6 +508,7 @@ g_main_context_find_source_by_funcs_user_data
 g_main_context_find_source_by_id
 g_main_context_find_source_by_user_data
 g_main_context_get_poll_func
+g_main_context_is_owner
 g_main_context_iteration
 g_main_context_new
 g_main_context_pending
@@ -560,6 +585,18 @@ g_markup_vprintf_escaped
 #if IN_HEADER(__G_MEM_H__)
 #if IN_FILE(__G_MEM_C__)
 g_free
+g_malloc G_GNUC_MALLOC
+g_malloc0 G_GNUC_MALLOC
+g_mem_is_system_malloc
+g_mem_profile
+g_mem_set_vtable
+g_realloc
+g_try_malloc G_GNUC_MALLOC
+g_try_malloc0 G_GNUC_MALLOC
+g_try_realloc
+#ifndef G_DISABLE_DEPRECATED
+g_allocator_free
+g_allocator_new
 g_mem_chunk_alloc
 g_mem_chunk_alloc0
 g_mem_chunk_clean
@@ -569,18 +606,20 @@ g_mem_chunk_info
 g_mem_chunk_new
 g_mem_chunk_print
 g_mem_chunk_reset
-g_malloc G_GNUC_MALLOC
-g_malloc0 G_GNUC_MALLOC
-g_mem_is_system_malloc
-g_mem_profile
-g_mem_set_vtable
-g_realloc
-g_allocator_free
-g_allocator_new
 g_blow_chunks
-g_try_malloc G_GNUC_MALLOC
-g_try_malloc0 G_GNUC_MALLOC
-g_try_realloc
+#endif
+#endif
+#endif
+
+#if IN_HEADER(__G_SLICE_H__)
+#if IN_FILE(__G_SLICE_C__)
+g_slice_alloc G_GNUC_MALLOC
+g_slice_alloc0 G_GNUC_MALLOC
+g_slice_free1
+g_slice_free_chain_with_offset
+g_slice_set_config
+g_slice_get_config
+g_slice_get_config_state
 #endif
 #endif
 
@@ -628,11 +667,13 @@ g_node_n_children
 g_node_new
 g_node_n_nodes
 g_node_nth_child
-#ifndef DISABLE_MEM_POOLS
+#ifndef G_DISABLE_DEPRECATED
 g_node_pop_allocator
-g_node_push_allocator
 #endif
 g_node_prepend
+#ifndef G_DISABLE_DEPRECATED
+g_node_push_allocator
+#endif
 g_node_reverse_children
 g_node_traverse
 g_node_unlink
@@ -685,12 +726,17 @@ g_spaced_primes_closest G_GNUC_CONST
 g_fprintf G_GNUC_PRINTF(2,3)
 g_printf G_GNUC_PRINTF(1,2)
 g_sprintf G_GNUC_PRINTF(2,3)
-g_snprintf G_GNUC_PRINTF(3,4)
 g_vasprintf
 g_vfprintf
 g_vprintf
-g_vsnprintf
 g_vsprintf
+#endif
+#endif
+
+#if IN_HEADER(__G_UTILS_H__)
+#if IN_FILE(__G_PRINTF_C__)
+g_snprintf G_GNUC_PRINTF(3,4)
+g_vsnprintf
 #endif
 #endif
 
@@ -830,16 +876,19 @@ g_slist_index
 g_slist_insert
 g_slist_insert_before
 g_slist_insert_sorted
+g_slist_insert_sorted_with_data
 g_slist_last
 g_slist_length
 g_slist_nth
 g_slist_nth_data
-#ifndef DISABLE_MEM_POOLS
+#ifndef G_DISABLE_DEPRECATED
 g_slist_pop_allocator
-g_slist_push_allocator
 #endif
 g_slist_position
 g_slist_prepend
+#ifndef G_DISABLE_DEPRECATED
+g_slist_push_allocator
+#endif
 g_slist_remove
 g_slist_remove_all
 g_slist_remove_link
@@ -872,21 +921,21 @@ g_spawn_sync_utf8
 #if IN_FILE(__G_STDIO_C__)
 #if !defined(G_OS_UNIX) || defined(G_STDIO_NO_WRAP_ON_UNIX)
 /* gstdio wrappers */
-g_access
 g_chmod
 g_open
 g_creat
 g_rename
 g_mkdir
-g_chdir
 g_stat
 g_lstat
-g_unlink
 g_remove
-g_rmdir
 g_fopen
 g_freopen
 #endif
+g_access
+g_chdir
+g_unlink
+g_rmdir
 #endif
 #endif
 
@@ -1038,14 +1087,17 @@ g_thread_foreach
 g_thread_pool_free
 g_thread_pool_get_max_threads
 g_thread_pool_get_max_unused_threads
+g_thread_pool_get_max_idle_time
 g_thread_pool_get_num_threads
 g_thread_pool_get_num_unused_threads
 g_thread_pool_new
 g_thread_pool_push
 g_thread_pool_set_max_threads
 g_thread_pool_set_max_unused_threads
+g_thread_pool_set_max_idle_time
 g_thread_pool_stop_unused_threads
 g_thread_pool_unprocessed
+g_thread_pool_set_sort_function
 #endif
 #endif
 
@@ -1187,7 +1239,7 @@ g_unsetenv PRIVATE
 g_get_home_dir PRIVATE
 g_get_host_name
 g_setenv PRIVATE
-g_listenv PRIVATE
+g_listenv
 #ifdef G_OS_WIN32
 g_find_program_in_path_utf8
 g_get_current_dir_utf8
@@ -1270,5 +1322,6 @@ glib_mem_profiler_table
 glib_micro_version
 glib_minor_version
 glib_on_error_halt
+g_mem_gc_friendly
 #endif
 

@@ -1,68 +1,310 @@
-Overview of Changes from GLib 2.8.5 to GLib 2.8.6
-=================================================
+Overview of Changes from GLib 2.10.1 to GLib 2.10.2
+===================================================
 
-* Fix a problem with g_object_compat_control()
-  which can lead to segfaults in GTK+ applications
-  on 64bit platforms.
+* Bugs fixed:
+ 322476 Missing check for .dylib                      [Anders Carlsson]
+ 332841 Segmentation Fault when %llu is passed to 
+        vasnprintf and HAVE_SNPRINTF is not defined  [Michael McDonald]
+ 333098 Add support for write FDs to GIOChannel      [Markus Brinkmann]
+ 334519 Memleak in goption.c::parse_short_option         [Chris Wilson]
+ 334471 g_parse_debug_string reads beyond buffer      [Morten Welinder]
+ 334611 g_option_context_parse() should not set program 
+        name to '<Unknown>' if it is already set      [Chong Kai Xiong]
+ 335207 g_main_context_unref calls g_source_destroy_internal 
+        with incorrect arguments                         [Chris Wilson]
+ 335216 Slight performance gains (GList, GAsyncQueue)    [Chris Wilson]
+ 335209 Use of unitialised memory in g_mem_profile       [Chris Wilson]
+ 334943 make check FAIL: threadpool-test  
+ 336085 g_option_context_new parameter lacks better 
+        explanation                                  [Claudio Saavedra]
+ 335215 Some breakages with GThreadPool                  [Chris Wilson]
+ 333879	gthread/gthread-win32.c: IsDebuggerPresent needs 
+        '#define _WIN32_WINDOWS 0x0401'                [Kazuki Iwamoto]
+ 334440 dlerror() portability issue causes crash on (old) 
+        a.out NetBSD platform                           [ITOH Yasufumi]
+ 333916 g_timer_elapsed docs should mention that 
+        microseconds may be NULL                    [Christian Neumair]
+ 334646 goption + error out params                   [Christian Persch]
+ 335294 Documentation should not reference G_HAVE_GINT64, 
+        as it's deprecated.                            [Richard Laager]
 
-* Fix a memory allocation problem in GKeyFile.
-  [Morten Welinder]
+* Translation updates (dz,et,he,hi,ka,or,pt_BR,ro,tr)
 
-* New and updated translations (ca,ja,ml,sv,zh_HK,zh_TW)
 
-Overview of Changes from GLib 2.8.4 to GLib 2.8.5
-=================================================
-* Bug fixes:
- 322520 g_utf8_collate_key_for_filename reads too 
-        much [Christian Persch]
- 324332 g_option_context_parse() returns false 
-        without setting error [Tim-Philipp Müller]
- 325273 Error in documentation for glib_check_version()
-        [Declan Naughton]
- 325310 g_spawn_sync hangs when catching both stdout 
-        and stderr [Tor Lillqvist]
- 323273 Invalid macro in genums.h: G_FLAGS_TYPE
-        [Kalle Vahlman]
- - Other fixes [Sebastian Wilhelmi, Arjan van de Ven]
-* Add g_object_compat_control() [Tim Janik]
+Overview of Changes from GLib 2.10.0 to GLib 2.10.1
+===================================================
+
+* Bugs fixed:
+ 314794 Broken pthread detection on Darwin [Gregor Riepl]
+ 322476 Missing check for .dylib [Vladimir Panov]
+ 333651 Inconsistent _g_charset_get_aliases prototype [Julio 
+        M. Merino Vidal]
+ 333761 GInitiallyUnowned breaks application code [Sven Herzberg]
+
 * Win32 changes:
- - Strip trailing slashes in g_stat() [Tor Lillqvist]
- - Make g_rename() replace existing files [Tor]
- - Other fixes [Tor]
-* Translation updates (be,bg,en_CA,es,fi,fr,gl,gu,nl,vi,zh_CN)
+ - Fix g_listenv() implementation.
+ - Allow up to 100 GPrivate structs
 
-Overview of Changes from GLib 2.8.3 to GLib 2.8.4
-=================================================
-* Support aborting on critical warnings by setting
-  G_DEBUG=fatal_criticals in the environment 
-  [Vincent Untz]
-* Bug fixes [Sebastien Bacher, Tor Lillqvist,
-  Manish Singh, Morten Welinder, Andy Wingo]
-* Documentation improvements [Steffen Gutmann,
-  Christophe Fergeau]
-* Translation updates (he,ja,nl,th)
+* Translation updates (fr,hu,lt,pl,sv)
 
-Overview of Changes from GLib 2.8.2 to GLib 2.8.3
-=================================================
-* Fix an error that crept in with a change to 
-  glib-mkenums in 2.8.2 [Matthias]
-* Documentation improvements [Davyd Madeley]
-* Translation updates (bn)
 
-Overview of Changes from GLib 2.8.1 to GLib 2.8.2
+Overview of Changes from GLib 2.9.6 to GLib 2.10.0
+==================================================
+
+* Bugs fixed:
+ 328997 64bit pointer trunction in glib slab-allocator
+        [Pascal Hofstee]
+ 331110 g_cond_broadcast(inform_cond) without holding 
+        inform_mutex [Chris Wilson, Sebastian Wilhelmi]
+ 332093 Fix some leaks in the tests [Kjartan Maraas]
+ 332435 g_utf8_strlen returns wrong value if a maximum 
+        number of bytes to check is specified 
+        [Matthias Clasen]
+ 331367 gslice requires more POSIX-like semantics for 
+        GPrivate destructors [Tor Lillqvist]
+
+* Documentation improvements [Matthias, Kang Jeong-Hee,
+  Tor Lillqvist, Stefan Kost]
+
+* Translation updates (el,eu,ka,uk)
+
+Overview of Changes from GLib 2.9.5 to GLib 2.9.6
 =================================================
-* Win32 changes
- - the g_spawn* functions now take their arguments
-   in UTF-8 [Tor Lillqvist]
- - Avoid extra console windows in some situations
-   [Tor Lillqvist]
-* Bug fixes [Kjartan Maraas, Sebastian Wilhelmi,
-  Mathias Hasselmann]
-* Documentation improvements [Matthias, Mark Drago,
-  Matthew F. Barnes, Behdad Esfahbod]
-* Translation updates (bg,ca,cs,cy,da,de,el,en_CA,es,et,
-  eu,fi,fr,gl,gu,hu,it,ja,nb,nl,no,pl,pt,pt_BR,ro,ru,sk,
-  sq,sr,sr@Latn,sv,uk,vi,zh_TW)
+
+* Bugs fixed: 
+ 329124 distclean removes README [Kjartan Maraas, Tim Janik]
+ 317679 GRelation field type not documented [Behdad Esfahbod]
+ 329123 Typo in GTime docs [Kjartan Maraas]
+
+* Documentation improvements [Sven Herzberg, David
+  Schleef, Kjartan Maraas, Behdad Esfahbod]
+
+* Translation updates (cs,cy,it,ko,pt,sq,sr,sr@Latn,ru
+
+Overview of Changes from GLib 2.9.4 to GLib 2.9.5
+=================================================
+
+* Memory management: 
+  Runtime debugging support: The slice allocator
+  can be turned off by setting G_SLICE=always-malloc
+  in the environment. Zeroing of freed memory can
+  now be turned on at runtime by setting
+  G_DEBUG=gc-friendly in the environment. [Tim Janik]
+
+* Bugs fixed:
+ 328253 HP-UX/IA-64 uses ".so" as default shared library 
+        extension [Albert Chin]
+ 143380 unicode-encoding test fails converting to UTF-16 
+        with libiconv [Marc Moorcroft]
+ 328254 Build breakage (GSlice) [Jens Ganseuer]
+ 328705 C99ism in glib/gmem.c [Kazuki Iwamoto]
+
+* Translation updates (da,et,zh_CN)
+
+Overview of Changes from GLib 2.9.3 to GLib 2.9.4
+=================================================
+
+* Type system:
+  Fix a problem with g_object_compat_control() which 
+  can lead to segfaults in GTK+ applications on 64bit 
+  platforms. 
+
+* Thread suppport: 
+  Unused threads now fall back to the global pool after 
+  500 milliseconds, where they wait for another 
+  max-idle-time milliseconds. [Sebastian Wilhelmi]
+
+* Fix a memory allocation problem in GKeyFile. [Morten 
+  Welinder]
+
+
+Overview of Changes from GLib 2.9.2 to GLib 2.9.3
+=================================================
+
+* GTree:
+ - Replace the simple recursive implementation by
+   a nonrecursive, threaded one  [Maurizio Monge]
+
+* Change g_filename_display_name and
+  g_filename_display_basename to use the Unicode
+  replacement character U+FFFD instead of a question
+  mark, and don't append "(invalid encoding)"  [Matthias]
+
+* Documentation improvements [Sven Herzberg, Federico
+  Mena Quintero, Stefan Kost]
+
+* Bugs fixed:
+ 323937 gslice.c in glib 2.9.1 doesn't build on Mac OS X 
+        [Bogdan Nicula]
+ 326558 Some test failures on IRIX 6.5 [Daichi Kawahata]
+ 169285 "threaded" tree implementation for GTree 
+        [Maurizio Monge]
+ 326747 g_filename_display_basename adds (invalid encoding) 
+        [Alberto Ruiz]
+
+Other contributors: Christian Kellner, Murray Cumming
+
+New and updated translations (bg,ca,de,es,et,gu,ja,nl,th,vi)
+
+
+Overview of Changes from GLib 2.9.1 to GLib 2.9.2
+=================================================
+
+* Memory management:
+ - Add tests for cache colorization [Tim Janik]
+ - Minimize space consumption if small amounts of differently
+   sized slices are allocated, at a small performance cost.  [Tim]
+
+* Thread support:
+ - Add g_atomic_pointer_set() and g_atomic_int_set() [Tim Janik,
+   Sebastian Wilhelmi]
+ - Add g_thread_pool_set_sort_function() to allow sorting the 
+   tasks of a threadpool.  [Martyn Russell]
+ - Add g_thread_pool_set_idle_time() to allow unused threads
+   to exit after a certain time.  [Martyn]
+
+* Type system:
+ - introduce a new type GInitiallyUnowned, which has an initial
+   floating reference. [Tim]
+ - Add support for GType parameters. [Matthias]
+
+* Main loop:
+ - Add g_main_context_is_owner() to determine if the current
+   thread is the owner of the context.  [Michael Meeks]
+
+* Provide g_access(), g_chdir(), g_unlink(), g_rmdir() as 
+  wrapper functions instead of macros.  [Manish Singh]
+
+* Documentation improvements [Tim, Matthias, Federico Mena Quintero,
+  Stefan Kasal, Dan Williams]
+
+* New and updated translations (en_CA,fi,fr,gl,ml,nb,no,zh_HK,zh_TW)
+
+* Bugs fixed:
+ 324179 g_allocator_new() returns pointer to const dummy which Gtk+ 2.8 
+        tries to modify [J. Ali Harlow]
+ 324332 g_option_context_parse() returns false without setting error 
+        [Tim-Philipp Müller]
+ 324950 GLIB 2.9.1 testcase errors [Dan Yefimov]
+ 325015 gslice.c: process.h is needed on Windows [Kazuki Iwamoto]
+ 321978 G_DATALIST_GET_FLAGS() macro is not casting datalist to 
+        gpointer [Andrew Paprocki]
+ 316221 G_LOCK warns about breaking strict-aliasing [Michal Benes, 
+        Stanislav Brabec]
+ 325273 Error in documentation for glib_check_version () [Declan Naughton]
+ 325310 g_spawn_sync hangs when catching both stdout and 
+        stderr [Tor Lillqvist]
+ 325249 gcc warning when using g_rmdir from <glib/gstdio.h> [Jani Monoses]
+ 325864 glib/gthreadpool.c:"#define debug(...)" is C99 [Kazuki Iwamoto]
+ 325874 Should say somewhere that source IDs are > 0 [Dan Williams]
+ 325438 a typo (compatability) [Stefan Kasal]
+ 323937 gslice.c in glib 2.9.1 doesn't build on Mac OS X [Bogdan Nicula]
+
+
+Overview of Changes from GLib 2.9.0 to GLib 2.9.1
+=================================================
+
+* Memory management
+ - The slice allocator is implemented [Tim Janik]
+ - g_slice_free_chain() has been renamed to 
+   g_slice_free_chain_with_offset()  [Tim, Behdad Esfahbod]
+ - Mem chunks are deprecated [Matthias Clasen]
+
+* Data structures
+ - Hash tables are refcounted, and have a boxed type [Tim]
+
+* Thread support
+ - Support for Solaris threads has been removed 
+   [Sebastian Wilhelmi, Andrew Paprocki]
+ - g_async_queue_sort(), g_async_queue_push_sorted() have 
+   been added to allow GAsyncQueue to be used as a priority 
+   queue, together with the corresponding _unlocked 
+   variants  [Martyn Russell]
+
+* GObject:
+ - The concept of a floating initial reference has been
+   moved from GtkObject to GObject [Tim]
+
+* Win32 changes:
+ - Make g_rename() replace existing files [Tor Lillqvist]
+
+* Misc new API:
+ - G_GUINT64_CONSTANT macro to define guint64 
+   constants [Andrew Paprocki]
+ - G_GNUC_WARN_UNUSED_RESULT macro to instruct the 
+   compiler to emit a warning if the value returned
+   by a function is ignored. [Arjan van de Ven, Alex Larsson]
+ - GList and GSList now have sort functions which take an
+   extra user data argument [Martyn Russell]
+ - g_param_spec_ref_sink() has been added for consistency [Tim]
+
+* $LOGNAME is respected when determining user data. [Laszlo Peter]
+
+* Other changes and bug fixes [Tim, Matthias, Behdad, 
+  Christian Persch, Benedikt Meurer, Andrew Paprocki, 
+  Kazuki Iwamoto, Alexis S. L. Carvalho, Stanislav Brabec,
+  Andreas Schwab, Kalle Vahlman]
+
+* Documentation
+ - Deprecation warnings carry version information [Matthias]
+ - The slice allocator has been documented [Matthias, Tim]
+ - Other improvements [Morten Welinder]
+
+Overview of Changes from GLib 2.8.x to GLib 2.9.0
+=================================================
+* Unicode support:
+ - The Unicode tables have been updated to Unicode 4.1, 
+   adding several new values to the GUnicodeBreakType 
+   enumeration. This breaks Pango <= 1.10 
+   [Behdad Esfahbod]
+ - The various Unicode character predicate functions 
+   (g_unichar_isalpha, g_unichar_isdigit,...) have
+   been optimized
+   [Behdad]
+ - g_utf8_pointer_to_offset, g_utf8_offset_to_pointer:
+   These functions handle negative offsets now, and
+   going backwards in g_utf8_offset_to_pointer uses
+   "stutter stepping".
+   [Larry Ewing, Matthias Clasen]
+
+* Memory management:
+ - Mem chunks are no longer used internally in GLib and
+   GObject. GMemChunk will be deprecated in GLib 2.10
+ - All APIs based on GAllocator (g_list_push/pop_allocator,
+   and similar push/pop_allocator functions for other
+   data structures) have been deprecated, since they
+   never worked as intended.
+ - The g_slice_* functions have been added as a 
+   new API for fast allocation of small memory blocks. 
+   The implementation in GLib 2.9.0 is just a simple 
+   wrapper around malloc. GLib 2.10 will have an
+   efficient and scalable implementation. 
+   [Tim Janik, Matthias]
+
+* Pattern matching:
+ - g_pattern_match has been optimized to avoid
+   unnecessary recursion.
+   [Tim, Matthias]
+
+* g_intern_string, g_intern_static_string: 
+ - New functions to intern strings. These are now used 
+   by GObject to avoid duplicating static strings 
+   [Matthias]
+
+* g_thread_foreach: 
+ - New function to iterate over all GThreads 
+   [Tim, Matthias]
+
+* g_date_set_time_t, g_date_set_time_val:
+ - New functions to set a GDate from a time_t or
+   GTimeVal value. g_date_set_time has been deprecated 
+   in favor of these.
+   [Roger Leigh]
+
+* g_snprintf and g_vsnprintf:
+ - These functions are no longer declared in gprintf.h, 
+   since they are in glib.h
+   [Matthias]
 
 Overview of Changes from GLib 2.8.0 to GLib 2.8.1
 =================================================

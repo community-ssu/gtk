@@ -139,7 +139,12 @@ $FOLDING_MAPPING = 2;
      'AI' => "G_UNICODE_BREAK_AMBIGUOUS",
      'NL' => "G_UNICODE_BREAK_NEXT_LINE",
      'WJ' => "G_UNICODE_BREAK_WORD_JOINER",
-     'XX' => "G_UNICODE_BREAK_UNKNOWN"
+     'XX' => "G_UNICODE_BREAK_UNKNOWN",
+     'JL' => "G_UNICODE_BREAK_HANGUL_L_JAMO",
+     'JV' => "G_UNICODE_BREAK_HANGUL_V_JAMO",
+     'JT' => "G_UNICODE_BREAK_HANGUL_T_JAMO",
+     'H2' => "G_UNICODE_BREAK_HANGUL_LV_SYLLABLE",
+     'H3' => "G_UNICODE_BREAK_HANGUL_LVT_SYLLABLE"
      );
 
 # Title case mappings.
@@ -171,7 +176,7 @@ if (@ARGV != 2) {
     die "\nUsage: $0 [-decomp | -both] UNICODE-VERSION DIRECTORY\n\n       DIRECTORY should contain the following Unicode data files:\n       UnicodeData.txt, LineBreak.txt, SpecialCasing.txt, CaseFolding.txt,\n       CompositionExclusions.txt, BidiMirroring.txt\n\n";
 }
 
-my ($unicodedatatxt, $linebreaktxt, $specialcasingtxt, $casefoldingtxt, $compositionexclusionstxt, $bidimirroringtxt);
+my ($unicodedatatxt, $linebreaktxt, $specialcasingtxt, $casefoldingtxt, $compositionexclusionstxt);
 
 my $d = $ARGV[1];
 opendir (my $dir, $d) or die "Cannot open Unicode data dir $d: $!\n";
@@ -182,7 +187,6 @@ for my $f (readdir ($dir))
     $specialcasingtxt = "$d/$f" if ($f =~ /SpecialCasing.*\.txt/);
     $casefoldingtxt = "$d/$f" if ($f =~ /CaseFolding.*\.txt/);
     $compositionexclusionstxt = "$d/$f" if ($f =~ /CompositionExclusions.*\.txt/);
-    $bidimirroringtxt = "$d/$f" if ($f =~ /BidiMirroring.*\.txt/);
 }
 
 defined $unicodedatatxt or die "Did not find UnicodeData file";
@@ -190,7 +194,6 @@ defined $linebreaktxt or die "Did not find LineBreak file";
 defined $specialcasingtxt or die "Did not find SpecialCasing file";
 defined $casefoldingtxt or die "Did not find CaseFolding file";
 defined $compositionexclusionstxt or die "Did not find CompositionExclusions file";
-defined $bidimirroringtxt or die "Did not find BidiMirroring file";
 
 print "Creating decomp table\n" if ($do_decomp);
 print "Creating property table\n" if ($do_props);
@@ -481,23 +484,6 @@ while (<INPUT>)
 
 close INPUT;
 
-open (INPUT, "< $bidimirroringtxt") || exit 1;
-
-my @bidimirror;
-while (<INPUT>)
-{
-    chomp;
-
-    next if /^#/;
-    next if /^\s*$/;
-
-    s/\s*#.*//;
-
-    @fields = split ('\s*;\s*', $_, 30);
-
-    push @bidimirror, [hex ($fields[0]), hex ($fields[1])];
-}
- 
 if ($do_props) {
     &print_tables ($last_code)
 }
@@ -673,21 +659,6 @@ sub print_tables
     #
     &output_special_case_table (\*OUT);
     &output_casefold_table (\*OUT);
-
-    print OUT "static const struct {\n";
-    print OUT "    gunichar ch;\n";
-    print OUT "    gunichar mirrored_ch;\n";
-    print OUT "} bidi_mirroring_table[] =\n";
-    print OUT "{\n";
-    $first = 1;
-    foreach $item (@bidimirror)
-    {
-        print OUT ",\n" unless $first;
-        $first = 0;
-        printf OUT "  { 0x%04x, 0x%04x }", $item->[0], $item->[1];
-        $bytes_out += 8;
-    }
-    print OUT "\n};\n\n";
 
     print OUT "#endif /* CHARTABLES_H */\n";
 

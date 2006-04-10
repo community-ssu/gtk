@@ -42,7 +42,8 @@
 
 #define OBJECT_HAS_TOGGLE_REF_FLAG 0x1
 #define OBJECT_HAS_TOGGLE_REF(object) \
-    ((G_DATALIST_GET_FLAGS(&(object)->qdata) & OBJECT_HAS_TOGGLE_REF_FLAG) != 0)
+    ((G_DATALIST_GET_FLAGS (&(object)->qdata) & OBJECT_HAS_TOGGLE_REF_FLAG) != 0)
+#define OBJECT_FLOATING_FLAG 0x2
 
 
 /* --- signals --- */
@@ -101,6 +102,8 @@ static inline void	   object_set_property		(GObject        *object,
 							 GParamSpec     *pspec,
 							 const GValue   *value,
 							 GObjectNotifyQueue *nqueue);
+static guint               object_floating_flag_handler (GObject        *object,
+                                                         gint            job);
 
 static void object_interface_check_properties           (gpointer        func_data,
 							 gpointer        g_iface);
@@ -115,6 +118,7 @@ static GObjectNotifyContext property_notify_context = { 0, };
 static gulong	            gobject_signals[LAST_SIGNAL] = { 0, };
 G_LOCK_DEFINE_STATIC (construct_objects_lock);
 static GSList *construct_objects = NULL;
+static guint (*floating_flag_handler) (GObject*, gint) = object_floating_flag_handler;
 
 /* --- functions --- */
 #ifdef	G_ENABLE_DEBUG
@@ -185,7 +189,7 @@ g_object_type_init (void)
   /* G_TYPE_OBJECT
    */
   info.value_table = &value_table;
-  type = g_type_register_fundamental (G_TYPE_OBJECT, "GObject", &info, &finfo, 0);
+  type = g_type_register_fundamental (G_TYPE_OBJECT, g_intern_static_string ("GObject"), &info, &finfo, 0);
   g_assert (type == G_TYPE_OBJECT);
   g_value_register_transform_func (G_TYPE_OBJECT, G_TYPE_OBJECT, g_value_object_transform_value);
   
@@ -259,7 +263,7 @@ g_object_do_class_init (GObjectClass *class)
   class->notify = NULL;
 
   gobject_signals[NOTIFY] =
-    g_signal_new ("notify",
+    g_signal_new (g_intern_static_string ("notify"),
 		  G_TYPE_FROM_CLASS (class),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_DETAILED | G_SIGNAL_NO_HOOKS | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GObjectClass, notify),
@@ -1518,6 +1522,62 @@ g_object_remove_weak_pointer (GObject  *object,
                        weak_pointer_location);
 }
 
+static guint
+object_floating_flag_handler (GObject        *object,
+                              gint            job)
+{
+  switch (job)
+    {
+      gpointer oldvalue;
+    case +1:    /* force floating if possible */
+      do
+        oldvalue = g_atomic_pointer_get (&object->qdata);
+      while (!g_atomic_pointer_compare_and_exchange ((void**) &object->qdata, oldvalue,
+                                                     (gpointer) ((gsize) oldvalue | OBJECT_FLOATING_FLAG)));
+      return (gsize) oldvalue & OBJECT_FLOATING_FLAG;
+    case -1:    /* sink if possible */
+      do
+        oldvalue = g_atomic_pointer_get (&object->qdata);
+      while (!g_atomic_pointer_compare_and_exchange ((void**) &object->qdata, oldvalue,
+                                                     (gpointer) ((gsize) oldvalue & ~(gsize) OBJECT_FLOATING_FLAG)));
+      return (gsize) oldvalue & OBJECT_FLOATING_FLAG;
+    default:    /* check floating */
+      return 0 != ((gsize) g_atomic_pointer_get (&object->qdata) & OBJECT_FLOATING_FLAG);
+    }
+}
+
+gboolean
+g_object_is_floating (gpointer _object)
+{
+  GObject *object = _object;
+  g_return_val_if_fail (G_IS_OBJECT (object), FALSE);
+  return floating_flag_handler (object, 0);
+}
+
+gpointer
+g_object_ref_sink (gpointer _object)
+{
+  GObject *object = _object;
+  gboolean was_floating;
+  g_return_val_if_fail (G_IS_OBJECT (object), object);
+  g_return_val_if_fail (object->ref_count >= 1, object);
+  g_object_ref (object);
+  was_floating = floating_flag_handler (object, -1);
+  if (was_floating)
+    g_object_unref (object);
+  return object;
+}
+
+void
+g_object_force_floating (GObject *object)
+{
+  gboolean was_floating;
+  g_return_if_fail (G_IS_OBJECT (object));
+  g_return_if_fail (object->ref_count >= 1);
+
+  was_floating = floating_flag_handler (object, +1);
+}
+
 typedef struct {
   GObject *object;
   guint n_toggle_refs;
@@ -2147,8 +2207,16 @@ g_object_compat_control (gsize           what,
 {
   switch (what)
     {
+      gpointer *pp;
     case 1:     /* floating base type */
-      return G_TYPE_OBJECT;
+      return G_TYPE_INITIALLY_UNOWNED;
+    case 2:     /* FIXME: remove this once GLib/Gtk+ break ABI again */
+      floating_flag_handler = (guint(*)(GObject*,gint)) data;
+      return 1;
+    case 3:     /* FIXME: remove this once GLib/Gtk+ break ABI again */
+      pp = data;
+      *pp = floating_flag_handler;
+      return 1;
     default:
       return 0;
     }
@@ -2156,6 +2224,19 @@ g_object_compat_control (gsize           what,
 /* start maemo mod */
 #endif
 /* end maemo mod */
+
+G_DEFINE_TYPE (GInitiallyUnowned, g_initially_unowned, G_TYPE_OBJECT);
+
+static void
+g_initially_unowned_init (GInitiallyUnowned *object)
+{
+  g_object_force_floating (object);
+}
+
+static void
+g_initially_unowned_class_init (GInitiallyUnownedClass *klass)
+{
+}
 
 #define __G_OBJECT_C__
 #include "gobjectaliasdef.c"

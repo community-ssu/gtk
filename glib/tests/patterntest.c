@@ -58,6 +58,7 @@ struct _GPatternSpec
   GMatchType match_type;
   guint      pattern_length;
   guint      min_length;
+  guint      max_length;
   gchar     *pattern;
 };
 
@@ -104,6 +105,7 @@ test_compilation (gchar *src,
       g_print ("failed \t(match_type: %s, expected %s)\n",
 	       match_type_name (spec->match_type), 
 	       match_type_name (match_type));
+      g_pattern_spec_free (spec);
       return FALSE;
     }
   
@@ -112,6 +114,7 @@ test_compilation (gchar *src,
       g_print ("failed \t(pattern: \"%s\", expected \"%s\")\n",
 	       spec->pattern,
 	       pattern);
+      g_pattern_spec_free (spec);
       return FALSE;
     }
   
@@ -120,6 +123,7 @@ test_compilation (gchar *src,
       g_print ("failed \t(pattern_length: %d, expected %d)\n",
 	       spec->pattern_length,
 	       (gint)strlen (spec->pattern));
+      g_pattern_spec_free (spec);
       return FALSE;
     }
   
@@ -128,12 +132,15 @@ test_compilation (gchar *src,
       g_print ("failed \t(min_length: %d, expected %d)\n",
 	       spec->min_length,
 	       min);
+      g_pattern_spec_free (spec);
       return FALSE;
     }
   
   verbose ("passed (%s: \"%s\")\n",
 	   match_type_name (spec->match_type),
 	   spec->pattern);
+
+  g_pattern_spec_free (spec);
   
   return TRUE;
 }
@@ -273,9 +280,28 @@ main (int argc, char** argv)
   TEST_MATCH("ab*", "ab\xc3\xa4\xc3\xb6", TRUE);
   TEST_MATCH("ab*\xc3\xb6", "ab\xc3\xa4\xc3\xb6", TRUE);
   TEST_MATCH("ab*\xc3\xb6", "aba\xc3\xb6x\xc3\xb6", TRUE);
-  TEST_MATCH("", "", TRUE);
   TEST_MATCH("", "abc", FALSE);
-  
+
+  TEST_MATCH("", "", TRUE);
+  TEST_MATCH("abc", "abc", TRUE);
+  TEST_MATCH("*fo1*bar", "yyyfoxfo1bar", TRUE);
+  TEST_MATCH("12*fo1g*bar", "12yyyfoxfo1gbar", TRUE);
+  TEST_MATCH("__________:*fo1g*bar", "__________:yyyfoxfo1gbar", TRUE);
+  TEST_MATCH("*abc*cde", "abcde", FALSE);
+  TEST_MATCH("*abc*cde", "abccde", TRUE);
+  TEST_MATCH("*abc*cde", "abcxcde", TRUE);
+  TEST_MATCH("*abc*?cde", "abccde", FALSE);
+  TEST_MATCH("*abc*?cde", "abcxcde", TRUE);
+  TEST_MATCH("*abc*def", "abababcdededef", TRUE);
+  TEST_MATCH("*abc*def", "abcbcbcdededef", TRUE);
+  TEST_MATCH("*acbc*def", "acbcbcbcdededef", TRUE);
+  TEST_MATCH("*a?bc*def", "acbcbcbcdededef", TRUE);
+  TEST_MATCH("*abc*def", "bcbcbcdefdef", FALSE);
+  TEST_MATCH("*abc*def*ghi", "abcbcbcbcbcbcdefefdefdefghi", TRUE);
+  TEST_MATCH("*abc*def*ghi", "bcbcbcbcbcbcdefdefdefdefghi", FALSE);
+  TEST_MATCH("_1_2_3_4_5_6_7_8_9_0_1_2_3_4_5_*abc*def*ghi", "_1_2_3_4_5_6_7_8_9_0_1_2_3_4_5_abcbcbcbcbcbcdefefdefdefghi", TRUE);
+  TEST_MATCH("fooooooo*a*bc", "fooooooo_a_bd_a_bc", TRUE);
+    
   verbose ("\n%u tests passed, %u failed\n", passed, failed);
 
   return failed;

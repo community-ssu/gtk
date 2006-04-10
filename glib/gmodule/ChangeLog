@@ -1,22 +1,53 @@
-2006-01-18  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.8.6 ===
-
-2006-01-03  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.8.5 ===
+2006-04-07  Matthias Clasen  <mclasen@redhat.com>
 	
-2005-11-15  Matthias Clasen  <mclasen@redhat.com>
+	* === Released 2.10.2 ===
 
-	* ===  Released 2.8.4 ===
+2006-03-29  Matthias Clasen  <mclasen@redhat.com>
 
-2005-10-03  Matthias Clasen  <mclasen@redhat.com>
+	* gmodule.c (g_module_symbol): Make sure to
+	not return TRUE if symbol is NULL.  (#334440,
+	ITOH Yasufumi)
 
-	* === Released 2.8.3 ===
+2006-03-07  Matthias Clasen  <mclasen@redhat.com>
 
-2005-09-26  Matthias Clasen  <mclasen@redhat.com>
+	* ===  Released 2.10.1 ===
 
-	* === Released 2.8.2 ===
+2006-02-24  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.0 ===
+
+2006-02-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.6 ===
+
+2006-01-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.5 ===
+
+2006-01-18  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.9.4 ===
+
+2006-01-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.3 ===
+
+2006-01-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.2 ===
+
+2005-12-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.1 ===
+
+2005-11-28  Matthias Clasen  <mclasen@redhat.com>
+
+	* gmodule.c (parse_libtool_archive): Silence
+	compiler warnings.
+
+2005-11-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.0 ===
 
 2005-08-23  Matthias Clasen  <mclasen@redhat.com>
 

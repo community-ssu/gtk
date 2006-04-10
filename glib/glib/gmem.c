@@ -318,7 +318,8 @@ profiler_log (ProfilerJob job,
   g_mutex_lock (gmem_profile_mutex);
   if (!profile_data)
     {
-      profile_data = standard_malloc ((MEM_PROFILE_TABLE_SIZE + 1) * 8 * sizeof (profile_data[0]));
+      profile_data = standard_calloc ((MEM_PROFILE_TABLE_SIZE + 1) * 8, 
+                                      sizeof (profile_data[0]));
       if (!profile_data)	/* memory system kiddin' me, eh? */
 	{
 	  g_mutex_unlock (gmem_profile_mutex);
@@ -677,7 +678,7 @@ g_allocator_free (GAllocator *allocator)
 {
 }
 
-#ifdef ENABLE_GC_FRIENDLY_DEFAULT || ENABLE_GC_FRIENDLY
+#ifdef ENABLE_GC_FRIENDLY_DEFAULT
 gboolean g_mem_gc_friendly = TRUE;
 #else
 gboolean g_mem_gc_friendly = FALSE;

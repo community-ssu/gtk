@@ -137,6 +137,14 @@ g_mapped_file_new (const gchar  *filename,
       goto out;
     }
 
+  if (st.st_size == 0)
+    {
+      file->length = 0;
+      file->contents = "";
+      close (fd);
+      return file;
+    }
+
   file->contents = MAP_FAILED;
 
 #ifdef HAVE_MMAP
@@ -145,9 +153,9 @@ g_mapped_file_new (const gchar  *filename,
       errno = EINVAL;
     }
   else
-    {
+    {      
       file->length = (gsize) st.st_size;
-      file->contents = (gchar *) mmap (NULL, file->length,
+      file->contents = (gchar *) mmap (NULL,  file->length,
 				       writable ? PROT_READ|PROT_WRITE : PROT_READ,
 				       MAP_PRIVATE, fd, 0);
     }
@@ -251,13 +259,16 @@ g_mapped_file_free (GMappedFile *file)
 {
   g_return_if_fail (file != NULL);
 
+  if (file->length)
+  {
 #ifdef HAVE_MMAP
-  munmap (file->contents, file->length);
+    munmap (file->contents, file->length);
 #endif
 #ifdef G_OS_WIN32
-  UnmapViewOfFile (file->contents);
-  CloseHandle (file->mapping);
+    UnmapViewOfFile (file->contents);
+    CloseHandle (file->mapping);
 #endif
+  }
 
   g_free (file);
 }

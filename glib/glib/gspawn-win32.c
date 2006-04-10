@@ -177,8 +177,7 @@ protect_argv (gchar  **argv,
    * reconstructed correctly in the C runtime startup code.  Note that
    * the unquoting algorithm in the C runtime is really weird, and
    * rather different than what Unix shells do. See stdargv.c in the C
-   * runtime sources (in the Platform SDK, in src/crt), and
-   * http://msdn.microsoft.com/library/default.asp?url=/library/en-us/vccelng/htm/progs_12.asp
+   * runtime sources (in the Platform SDK, in src/crt).
    *
    * Note that an new_argv[0] constructed by this function should
    * *not* be passed as the filename argument to a spawn* or exec*
@@ -469,7 +468,7 @@ do_spawn_directly (gint                 *exit_status,
       if (wargv0 == NULL)
 	{
 	  g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-		       "Invalid program name: %s",
+		       _("Invalid program name: %s"),
 		       conv_error->message);
 	  g_error_free (conv_error);
 	  
@@ -479,7 +478,7 @@ do_spawn_directly (gint                 *exit_status,
       if (!utf8_charv_to_wcharv (new_argv, &wargv, &conv_error_index, &conv_error))
 	{
 	  g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-		       "Invalid string in argument vector at %d: %s",
+		       _("Invalid string in argument vector at %d: %s"),
 		       conv_error_index, conv_error->message);
 	  g_error_free (conv_error);
 	  g_free (wargv0);
@@ -490,7 +489,7 @@ do_spawn_directly (gint                 *exit_status,
       if (!utf8_charv_to_wcharv (envp, &wenvp, NULL, &conv_error))
 	{
 	  g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-		       "Invalid string in environment: %s",
+		       _("Invalid string in environment: %s"),
 		       conv_error->message);
 	  g_error_free (conv_error);
 	  g_free (wargv0);
@@ -525,7 +524,7 @@ do_spawn_directly (gint                 *exit_status,
       if (cpargv0 == NULL)
 	{
 	  g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-		       "Invalid program name: %s",
+		       _("Invalid program name: %s"),
 		       conv_error->message);
 	  g_error_free (conv_error);
 
@@ -535,7 +534,7 @@ do_spawn_directly (gint                 *exit_status,
       if  (!utf8_charv_to_cp_charv (new_argv, &cpargv, &conv_error_index, &conv_error))
 	{
 	  g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-		       "Invalid string in argument vector at %d: %s",
+		       _("Invalid string in argument vector at %d: %s"),
 		       conv_error_index, conv_error->message);
 	  g_error_free (conv_error);
 	  g_free (cpargv0);
@@ -546,7 +545,7 @@ do_spawn_directly (gint                 *exit_status,
       if (!utf8_charv_to_cp_charv (envp, &cpenvp, NULL, &conv_error))
 	{
 	  g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-		       "Invalid string in environment: %s",
+		       _("Invalid string in environment: %s"),
 		       conv_error->message);
 	  g_error_free (conv_error);
 	  g_free (cpargv0);
@@ -774,11 +773,11 @@ do_spawn_with_pipes (gint                 *exit_status,
 	{
 	  if (conv_error_index == ARG_WORKING_DIRECTORY)
 	    g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_CHDIR,
-			 "Invalid working directory: %s",
+			 _("Invalid working directory: %s"),
 			 conv_error->message);
 	  else
 	    g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-			 "Invalid string in argument vector at %d: %s",
+			 _("Invalid string in argument vector at %d: %s"),
 			 conv_error_index - ARG_PROGRAM, conv_error->message);
 	  g_error_free (conv_error);
 	  g_strfreev (protected_argv);
@@ -792,7 +791,7 @@ do_spawn_with_pipes (gint                 *exit_status,
       if (!utf8_charv_to_wcharv (envp, &wenvp, NULL, &conv_error))
 	{
 	  g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-		       "Invalid string in environment: %s",
+		       _("Invalid string in environment: %s"),
 		       conv_error->message);
 	  g_error_free (conv_error);
 	  g_strfreev (protected_argv);
@@ -829,11 +828,11 @@ do_spawn_with_pipes (gint                 *exit_status,
 	{
 	  if (conv_error_index == ARG_WORKING_DIRECTORY)
 	    g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_CHDIR,
-			 "Invalid working directory: %s",
+			 _("Invalid working directory: %s"),
 			 conv_error->message);
 	  else
 	    g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-			 "Invalid string in argument vector at %d: %s",
+			 _("Invalid string in argument vector at %d: %s"),
 			 conv_error_index - ARG_PROGRAM, conv_error->message);
 	  g_error_free (conv_error);
 	  g_strfreev (protected_argv);
@@ -846,7 +845,7 @@ do_spawn_with_pipes (gint                 *exit_status,
       if (!utf8_charv_to_cp_charv (envp, &cpenvp, NULL, &conv_error))
 	{
 	  g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-		       "Invalid string in environment: %s",
+		       _("Invalid string in environment: %s"),
 		       conv_error->message);
 	  g_error_free (conv_error);
 	  g_strfreev (protected_argv);
@@ -1349,7 +1348,7 @@ setup_utf8_copies (const gchar *working_directory,
       if (*utf8_working_directory == NULL)
 	{
 	  g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_CHDIR,
-		       "Invalid working directory: %s",
+		       _("Invalid working directory: %s"),
 		       conv_error->message);
 	  g_error_free (conv_error);
 	  return FALSE;
@@ -1368,7 +1367,7 @@ setup_utf8_copies (const gchar *working_directory,
       if ((*utf8_argv)[i] == NULL)
 	{
 	  g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-		       "Invalid string in argument vector at %d: %s",
+		       _("Invalid string in argument vector at %d: %s"),
 		       i, conv_error->message);
 	  g_error_free (conv_error);
 	  
@@ -1401,7 +1400,7 @@ setup_utf8_copies (const gchar *working_directory,
 	  if ((*utf8_envp)[i] == NULL)
 	    {	
 	      g_set_error (error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
-			   "Invalid string in environment: %s",
+			   _("Invalid string in environment: %s"),
 			   conv_error->message);
 	      g_error_free (conv_error);
 

@@ -26,9 +26,9 @@ m4_include(m4macros/glib-gettext.m4)dnl
 # set glib_binary_age _and_ glib_interface_age to 0.
 #
 m4_define([glib_major_version], [2])
-m4_define([glib_minor_version], [8])
-m4_define([glib_micro_version], [6])
-m4_define([glib_interface_age], [6])
+m4_define([glib_minor_version], [10])
+m4_define([glib_micro_version], [3])
+m4_define([glib_interface_age], [3])
 m4_define([glib_binary_age],
           [m4_eval(100 * glib_minor_version + glib_micro_version)])
 m4_define([glib_version],
@@ -217,8 +217,7 @@ AC_DEFINE_UNQUOTED(G_COMPILED_WITH_DEBUGGING, ["${enable_debug}"],
 
 AC_MSG_CHECKING([whether to enable garbage collector friendliness])
 if test "x$enable_gc_friendly" = "xyes"; then
-  AC_DEFINE(ENABLE_GC_FRIENDLY, 1, [Whether to enable GC friendliness])
-  AC_SUBST(ENABLE_GC_FRIENDLY)
+  AC_DEFINE(ENABLE_GC_FRIENDLY_DEFAULT, 1, [Whether to enable GC friendliness by default])
   AC_MSG_RESULT([yes])
 else
   AC_MSG_RESULT([no])
@@ -428,7 +427,7 @@ dnl
 dnl gettext support
 dnl
 
-ALL_LINGUAS="am ar az be bg bn bs ca cs cy da de el en_CA en_GB eo es et eu fa fi fr ga gl gu he hi hr hu id is it ja ko lt lv mk ml mn ms nb ne nl nn no or pa pl pt pt_BR ro ru rw sk sl sq sr sr@Latn sr@ije sv ta te th tl tr uk vi wa xh yi zh_CN zh_HK zh_TW"
+ALL_LINGUAS="am ar az be bg bn bs ca cs cy da de dz el en_CA en_GB eo es et eu fa fi fr ga gl gu he hi hr hu id is it ja ka ko ku lt lv mk ml mn ms nb ne nl nn no or pa pl pt pt_BR ro ru rw sk sl sq sr sr@Latn sr@ije sv ta te th tl tr tt uk vi wa xh yi zh_CN zh_HK zh_TW"
 GLIB_GNU_GETTEXT
 
 if test "$gt_cv_have_gettext" != "yes" ; then
@@ -703,6 +702,21 @@ main (void) {
 }],[g_can_inline=yes],[g_can_inline=no])
 AC_MSG_RESULT($g_can_inline)
 
+dnl *** check for working do while(0) macros ***
+AC_CACHE_CHECK([for working do while(0) macros], g_support_dowhile_macros, [
+	AC_TRY_COMPILE([],[
+	#define STMT_START do
+	#define STMT_END while(0)
+	#define STMT_TEST STMT_START { i = 0; } STMT_END
+	int main(void) { int i = 1; STMT_TEST; return i; }],
+	[g_support_dowhile_macros=yes],
+	[g_support_dowhile_macros=no],
+	[g_support_dowhile_macros=yes])
+])
+if test x$g_support_dowhile_macros = xyes; then
+  AC_DEFINE(HAVE_DOWHILE_MACROS, 1, [define for working do while(0) macros])
+fi
+
 # check for flavours of varargs macros
 AC_MSG_CHECKING(for ISO C99 varargs macros in C)
 AC_TRY_COMPILE([],[
@@ -774,8 +788,9 @@ AM_CONDITIONAL(HAVE_GNUC_VISIBILITY, [test x$g_have_gnuc_visibility = xyes])
 AC_C_BIGENDIAN
 
 # check for header files
-AC_CHECK_HEADERS([dirent.h float.h limits.h pwd.h sys/param.h sys/poll.h sys/select.h sys/types.h])
-AC_CHECK_HEADERS([sys/time.h sys/times.h sys/wait.h unistd.h values.h stdint.h sched.h])
+AC_CHECK_HEADERS([dirent.h float.h limits.h pwd.h sys/param.h sys/poll.h])
+AC_CHECK_HEADERS([sys/time.h sys/times.h sys/wait.h unistd.h values.h])
+AC_CHECK_HEADERS([sys/select.h sys/types.h stdint.h sched.h malloc.h])
 
 # Checks for libcharset
 jm_LANGINFO_CODESET
@@ -1002,6 +1017,7 @@ AC_TRY_COMPILE([#include <langinfo.h>],
    have_codeset=yes,
    have_codeset=no)
 AC_MSG_RESULT($have_codeset)
+
 
 dnl ****************************************
 dnl *** posix_memalign                   ***
@@ -1291,7 +1307,14 @@ fi
 AC_MSG_CHECKING(for the suffix of shared libraries)
 case "$host_os" in
   hpux9* | hpux10* | hpux11*)  # taken from ltconfig
-    glib_gmodule_suffix='sl'
+    case "$host_cpu" in
+      hppa*)
+	glib_gmodule_suffix='sl'
+	;;
+      ia64*)
+	glib_gmodule_suffix='so'
+	;;
+    esac
     ;;
   cygwin* | mingw*)
     glib_gmodule_suffix='dll'
@@ -1393,7 +1416,7 @@ dnl *** g_thread checks ***
 dnl ***********************
 
 AC_ARG_WITH(threads,
-           [AC_HELP_STRING([--with-threads=@<:@none/posix/dce/solaris/win32@:>@],
+           [AC_HELP_STRING([--with-threads=@<:@none/posix/dce/win32@:>@],
                            [specify a thread implementation to use])],
            [if test "x$with_threads" = x; then
 		want_threads=yes
@@ -1455,13 +1478,6 @@ dnl ***************************************
 # have_threads=none means no default thread implementation
 
 have_threads=no
-if test "x$want_threads" = xyes || test "x$want_threads" = xsolaris; then
-       	case $host in
-               	*-*-solaris*)
-              	AC_CHECK_LIB(thread, cond_init, have_threads=solaris)
-		;;
-	esac
-fi
 if test "x$want_threads" = xyes || test "x$want_threads" = xposix \
 				|| test "x$want_threads" = xdce; then
 	# -D_POSIX4_DRAFT_SOURCE -D_POSIX4A_DRAFT10_SOURCE is for DG/UX
@@ -1552,8 +1568,8 @@ if test x"$have_threads" != xno; then
     # One of them does for most gcc versions and some other platforms/compilers
     # too and could be considered as the canonical way to go. 
     case $host in
-      *-*-cygwin*)
-         # skip cygwin -pthread or -pthreads test
+      *-*-cygwin*|*-*-darwin*)
+         # skip cygwin and darwin -pthread or -pthreads test
          ;;
       *)
         for flag in pthread pthreads mt; do
@@ -1605,16 +1621,6 @@ if test x"$have_threads" != xno; then
 		# So we are using dce threads. posix threads are already 
 		# catched above.
 		G_THREAD_CFLAGS="-threads"
-		G_THREAD_LIBS=$G_THREAD_CFLAGS
-		;;
-	*-solaris*)
-		if test x"$GCC" = xyes; then
-		   # We are using solaris threads. posix threads are 
-		   # already catched above.
-			G_THREAD_CFLAGS="-threads"
-		else
-			G_THREAD_CFLAGS="-mt"
-		fi
 		G_THREAD_LIBS=$G_THREAD_CFLAGS
 		;;
 	*-sysv5uw7*) # UnixWare 7 
@@ -1754,13 +1760,6 @@ case $have_threads in
 	  AC_SUBST(GTHREAD_COMPILE_IMPL_DEFINES)
           CPPFLAGS="$glib_save_CPPFLAGS"
           ;;
-        solaris)
-           mutex_has_default=yes
-           mutex_default_type='mutex_t'
-	   mutex_default_init="DEFAULTMUTEX"
-           mutex_header_file='thread.h'
-	   g_threads_impl="SOLARIS"
-           ;;
 	win32)
 	   g_threads_impl="WIN32"
 	   ;;
@@ -1911,8 +1910,6 @@ int main () {
 	elif test x"$have_threads" = xwin32; then
 		# It's a pointer to a private struct
 		GLIB_SIZEOF(,struct _GThreadData *, system_thread)
-	elif test x"$have_threads" = xsolaris; then 
-		GLIB_SIZEOF([#include <thread.h>], thread_t, system_thread)
 	fi
 
 	LIBS="$glib_save_LIBS"
@@ -2251,6 +2248,7 @@ ${glib_extension}typedef signed $gint64 gint64;
 ${glib_extension}typedef unsigned $gint64 guint64;
 
 #define G_GINT64_CONSTANT(val)	$gint64_constant
+#define G_GUINT64_CONSTANT(val)	$guint64_constant
 _______EOF
 
 	if test x$gint64_format != x ; then
@@ -2409,7 +2407,7 @@ struct _GStaticMutex
 };
 #define	G_STATIC_MUTEX_INIT	{ NULL, { { $g_mutex_contents} } }
 #define	g_static_mutex_get_mutex(mutex) \\
-  (g_thread_use_default_impl ? ((GMutex*) &((mutex)->static_mutex)) : \\
+  (g_thread_use_default_impl ? ((GMutex*) ((mutex)->static_mutex.pad)) : \\
    g_static_mutex_get_mutex_impl_shortcut (&((mutex)->runtime_mutex)))
 _______EOF
 	else
@@ -2574,6 +2572,7 @@ $ac_cv_sizeof_int)
   guint64_format='"u"'
   glib_extension=
   gint64_constant='(val)'
+  guint64_constant='(val)'
   ;;
 $ac_cv_sizeof_long)
   gint64=long
@@ -2582,6 +2581,7 @@ $ac_cv_sizeof_long)
   guint64_format='"lu"'
   glib_extension=
   gint64_constant='(val##L)'
+  guint64_constant='(val##UL)'
   ;;
 $ac_cv_sizeof_long_long)
   gint64='long long'
@@ -2592,6 +2592,7 @@ $ac_cv_sizeof_long_long)
   fi
   glib_extension='G_GNUC_EXTENSION '
   gint64_constant='(G_GNUC_EXTENSION (val##LL))'
+  guint64_constant='(G_GNUC_EXTENSION (val##ULL))'
   ;;
 $ac_cv_sizeof___int64)
   gint64='__int64'
@@ -2602,6 +2603,7 @@ $ac_cv_sizeof___int64)
   fi
   glib_extension=
   gint64_constant='(val##i64)'
+  guint64_constant='(val##ui64)'
   ;;
 esac
 glib_size_t=$ac_cv_sizeof_size_t
@@ -2788,6 +2790,7 @@ Makefile
 build/Makefile
 build/win32/Makefile
 build/win32/dirent/Makefile
+build/win32/vs8/Makefile
 glib/Makefile
 glib/libcharset/Makefile
 glib/gnulib/Makefile

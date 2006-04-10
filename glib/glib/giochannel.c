@@ -174,7 +174,7 @@ g_io_error_get_from_g_error (GIOStatus status,
  * 
  * Return value: %G_IO_ERROR_NONE if the operation was successful. 
  *
- * Deprecated: Use g_io_channel_read_chars() instead.
+ * Deprecated:2.2: Use g_io_channel_read_chars() instead.
  **/
 GIOError 
 g_io_channel_read (GIOChannel *channel, 
@@ -219,7 +219,7 @@ g_io_channel_read (GIOChannel *channel,
  * 
  * Return value:  %G_IO_ERROR_NONE if the operation was successful.
  *
- * Deprecated: Use g_io_channel_write_chars() instead.
+ * Deprecated:2.2: Use g_io_channel_write_chars() instead.
  **/
 GIOError 
 g_io_channel_write (GIOChannel  *channel, 
@@ -257,7 +257,7 @@ g_io_channel_write (GIOChannel  *channel,
  * 
  * Return value: %G_IO_ERROR_NONE if the operation was successful.
  *
- * Deprecated: Use g_io_channel_seek_position() instead.
+ * Deprecated:2.2: Use g_io_channel_seek_position() instead.
  **/
 GIOError 
 g_io_channel_seek  (GIOChannel   *channel,
@@ -320,7 +320,7 @@ g_io_channel_seek  (GIOChannel   *channel,
  * flushed, ignoring errors. The channel will not be freed until the
  * last reference is dropped using g_io_channel_unref(). 
  *
- * Deprecated: Use g_io_channel_shutdown() instead.
+ * Deprecated:2.2: Use g_io_channel_shutdown() instead.
  **/
 void
 g_io_channel_close (GIOChannel *channel)
@@ -1147,11 +1147,11 @@ g_io_channel_set_encoding (GIOChannel	*channel,
 
           if (err == EINVAL)
             g_set_error (error, G_CONVERT_ERROR, G_CONVERT_ERROR_NO_CONVERSION,
-                         _("Conversion from character set `%s' to `%s' is not supported"),
+                         _("Conversion from character set '%s' to '%s' is not supported"),
                          from_enc, to_enc);
           else
             g_set_error (error, G_CONVERT_ERROR, G_CONVERT_ERROR_FAILED,
-                         _("Could not open converter from `%s' to `%s': %s"),
+                         _("Could not open converter from '%s' to '%s': %s"),
                          from_enc, to_enc, g_strerror (err));
 
           if (read_cd != (GIConv) -1)

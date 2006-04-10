@@ -859,6 +859,7 @@ test_key_remove (void)
   g_key_file_free (keyfile);
 }
 
+
 /* http://bugzilla.gnome.org/show_bug.cgi?id=316309 */
 static void
 test_groups (void)

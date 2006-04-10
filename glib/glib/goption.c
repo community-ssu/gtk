@@ -128,10 +128,26 @@ g_option_error_quark (void)
 /**
  * g_option_context_new:
  * @parameter_string: a string which is displayed in
- *    the first line of <option>--help</option> output, after 
- *    <literal><replaceable>programname</replaceable> [OPTION...]</literal>
+ *    the first line of <option>--help</option> output, after the 
+ *    usage summary 
+ *    <literal><replaceable>programname</replaceable> [OPTION...]</literal>.
  *
  * Creates a new option context. 
+ *
+ * The @parameter_text can serve multiple purposes. It can be used
+ * to add descriptions for "rest" arguments, which are not parsed by 
+ * the #GOptionContext, typically something like "FILES" or 
+ * "FILE1 FILE2...". (If you are using #G_OPTION_REMAINING for 
+ * collecting "rest" arguments, GLib handles this automatically by 
+ * using the @arg_description of the corresponding #GOptionEntry in 
+ * the usage summary.)
+ *
+ * Another common usage is to give a summary of the program
+ * functionality. This can be a short summary on the same line, 
+ * like " - frob the strings", or a longer description in a paragraph 
+ * below the usage summary. In this case, @parameter_string should start 
+ * with two newlines, to separate the description from the usage summary:
+ * "\n\nA program to frob strings, which will..."
  *
  * Returns: a newly created #GOptionContext, which must be
  *    freed with g_option_context_free() after use.
@@ -921,15 +937,13 @@ parse_short_option (GOptionContext *context,
 	    {
 	      if (*new_index > index)
 		{
-                  g_set_error (error,
-                               G_OPTION_ERROR, G_OPTION_ERROR_FAILED,
-                               _("Error parsing option %s"), option_name);
-                  g_free (option_name);
-                  return FALSE;
+		  g_set_error (error, 
+			       G_OPTION_ERROR, G_OPTION_ERROR_FAILED,
+			       _("Error parsing option %s"), option_name);
+		  g_free (option_name);
+		  return FALSE;
 		}
 
-	      option_name = g_strdup_printf ("-%c", group->entries[j].short_name);
-	      
 	      if (index < *argc - 1)
 		{
 		  if (!OPTIONAL_ARG (&group->entries[j]))	
@@ -1234,19 +1248,20 @@ g_option_context_parse (GOptionContext   *context,
   GList *list;
 
   /* Set program name */
-  if (argc && argv && *argc)
+  if (!g_get_prgname())
     {
-      gchar *prgname;
-      
-      prgname = g_path_get_basename ((*argv)[0]);
-      g_set_prgname (prgname);
-      g_free (prgname);
+      if (argc && argv && *argc)
+	{
+	  gchar *prgname;
+	  
+	  prgname = g_path_get_basename ((*argv)[0]);
+	  g_set_prgname (prgname);
+	  g_free (prgname);
+	}
+      else
+	g_set_prgname ("<unknown>");
     }
-  else
-    {
-      g_set_prgname ("<unknown>");
-    }
-  
+
   /* Call pre-parse hooks */
   list = context->groups;
   while (list)

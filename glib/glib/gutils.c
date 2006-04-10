@@ -591,23 +591,21 @@ g_parse_debug_string  (const gchar     *string,
     {
       const gchar *p = string;
       const gchar *q;
-      gboolean done = FALSE;
       
-      while (*p && !done)
+      while (*p)
 	{
 	  q = strchr (p, ':');
 	  if (!q)
-	    {
-	      q = p + strlen(p);
-	      done = TRUE;
-	    }
+	    q = p + strlen(p);
 	  
-	  for (i=0; i<nkeys; i++)
+	  for (i = 0; i < nkeys; i++)
 	    if (g_ascii_strncasecmp (keys[i].key, p, q - p) == 0 &&
 		keys[i].key[q - p] == '\0')
 	      result |= keys[i].value;
 	  
-	  p = q + 1;
+	  p = q;
+	  if (*p == ':')
+	    p++;
 	}
     }
   
@@ -1406,6 +1404,7 @@ g_unsetenv (const gchar *variable)
 gchar **
 g_listenv (void)
 {
+#ifndef G_OS_WIN32
   gchar **result, *eq;
   gint len, i, j;
 
@@ -1423,6 +1422,73 @@ g_listenv (void)
   result[j] = NULL;
 
   return result;
+#else
+  gchar **result, *eq;
+  gint len = 0, i, j;
+
+  if (G_WIN32_HAVE_WIDECHAR_API ())
+    {
+      wchar_t *p, *q;
+
+      p = (wchar_t *) GetEnvironmentStringsW ();
+      if (p != NULL)
+	{
+	  q = p;
+	  while (*q)
+	    {
+	      q += wcslen (q) + 1;
+	      len++;
+	    }
+	}
+      result = g_new0 (gchar *, len + 1);
+
+      j = 0;
+      q = p;
+      while (*q)
+	{
+	  result[j] = g_utf16_to_utf8 (q, -1, NULL, NULL, NULL);
+	  if (result[j] != NULL)
+	    {
+	      eq = strchr (result[j], '=');
+	      if (eq && eq > result[j])
+		{
+		  *eq = '\0';
+		  j++;
+		}
+	      else
+		g_free (result[j]);
+	    }
+	  q += wcslen (q) + 1;
+	}
+      result[j] = NULL;
+      FreeEnvironmentStringsW (p);
+    }
+  else
+    {
+      len = g_strv_length (environ);
+      result = g_new0 (gchar *, len + 1);
+      
+      j = 0;
+      for (i = 0; i < len; i++)
+	{
+	  result[j] = g_locale_to_utf8 (environ[i], -1, NULL, NULL, NULL);
+	  if (result[j] != NULL)
+	    {
+	      eq = strchr (result[j], '=');
+	      if (eq && eq > result[j])
+		{
+		  *eq = '\0';
+		  j++;
+		}
+	      else
+		g_free (result[j]);
+	    }
+	}
+      result[j] = NULL;
+    }
+
+  return result;
+#endif
 }
 
 G_LOCK_DEFINE_STATIC (g_utils_global);

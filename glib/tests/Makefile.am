@@ -59,7 +59,6 @@ patterntest_LDADD = $(libglib)
 testgdate_LDADD = $(libglib)
 testgdateparser_LDADD = $(libglib)
 unicode_normalize_LDADD = $(libglib)
-unicode_collate_LDADD = $(libglib)
 if ENABLE_TIMELOOP
 timeloop_LDADD = $(libglib)
 timeloop_closure_LDADD = $(libglib) $(libgobject)
@@ -90,6 +89,7 @@ test_programs =					\
 	patterntest				\
 	printf-test				\
 	queue-test				\
+	asyncqueue-test				\
 	qsort-test				\
 	rand-test				\
 	relation-test				\
@@ -109,18 +109,20 @@ test_programs =					\
 	unicode-caseconv			\
 	unicode-encoding			\
 	utf8-validate				\
+	utf8-pointer				\
 	uri-test
 
-test_scripts = run-markup-tests.sh
+test_scripts = run-markup-tests.sh run-collate-tests.sh
 
-test_script_support_programs = markup-test
+test_script_support_programs = markup-test unicode-collate
 
 check_PROGRAMS = $(test_programs) $(test_script_support_programs)
 
 TESTS = $(test_programs) $(test_scripts)
 TESTS_ENVIRONMENT = srcdir=$(srcdir) \
 	LIBCHARSET_ALIAS_DIR=$(top_builddir)/glib/libcharset \
-	MALLOC_CHECK_=2
+	MALLOC_CHECK_=2	\
+	MALLOC_PERTURB_=$$(($$RANDOM % 256))
 
 progs_ldadd = $(EFENCE) $(libglib) $(EFENCE)
 thread_ldadd = $(libgthread) $(G_THREAD_LIBS) $(progs_ldadd)
@@ -150,6 +152,7 @@ node_test_LDADD = $(progs_ldadd)
 option_test_LDADD = $(progs_ldadd)
 printf_test_LDADD = $(progs_ldadd)
 queue_test_LDADD = $(progs_ldadd)
+asyncqueue_test_LDADD = $(thread_ldadd)
 qsort_test_LDADD = $(progs_ldadd)
 rand_test_LDADD = $(progs_ldadd)
 relation_test_LDADD = $(progs_ldadd)
@@ -169,7 +172,9 @@ tree_test_LDADD = $(progs_ldadd)
 type_test_LDADD = $(progs_ldadd)
 unicode_encoding_LDADD = $(progs_ldadd)
 unicode_caseconv_LDADD = $(progs_ldadd)
+unicode_collate_LDADD = $(progs_ldadd)
 utf8_validate_LDADD = $(progs_ldadd)
+utf8_pointer_LDADD = $(progs_ldadd)
 uri_test_LDADD = $(progs_ldadd)
 
 lib_LTLIBRARIES = libmoduletestplugin_a.la libmoduletestplugin_b.la
@@ -193,10 +198,13 @@ dist-hook: $(BUILT_EXTRA_DIST)
 	  cp $$d/$$f $(distdir) || exit 1; done
 	mkdir $(distdir)/markups;          \
 	for f in $(srcdir)/markups/* ; do  \
-	  cp $$f $(distdir)/markups;       \
-	done
+	  cp $$f $(distdir)/markups; done 
+	mkdir $(distdir)/collate;          \
+	for f in $(srcdir)/collate/* ; do  \
+          if test -f $$f; then cp $$f $(distdir)/collate; fi; done
 
 DISTCLEANFILES = iochannel-test-outfile \
 		file-test-get-contents \
 		maptest \
-		mapchild
+		mapchild \
+		collate.out

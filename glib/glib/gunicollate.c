@@ -417,15 +417,15 @@ g_utf8_collate_key_for_filename (const gchar *str,
 		++digits;
 	      else
                 {
-                  /* count an all-zero sequence as
+ 		  /* count an all-zero sequence as
                    * one digit plus leading zeros
                    */
-                  if (!digits)
+          	  if (!digits)
                     {
                       ++digits;
                       --leading_zeros;
-                    }
-                  break;
+                    }        
+		  break;
                 }
 	    }
 

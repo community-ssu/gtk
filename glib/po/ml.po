@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:glib.glib-2-2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-18 12:03-0500\n"
+"POT-Creation-Date: 2006-04-07 13:20-0400\n"
 "PO-Revision-Date: 2003-07-05 10:29+0530\n"
 "Last-Translator: FSF-India <locale@gnu.org.in>\n"
 "Language-Team: Malayalam <locale@gnu.org.in>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: glib/gconvert.c:408 glib/gconvert.c:486
+#: glib/gconvert.c:408 glib/gconvert.c:486 glib/giochannel.c:1150
 #, fuzzy, c-format
 msgid "Conversion from character set '%s' to '%s' is not supported"
 msgstr "അക്ഷരക്കൂട്ടം'%s'ല് നിന്നും '%s'ലേക്കുളള മാറ്റം സാദ്ധ്യമല്ല"
@@ -28,8 +28,8 @@ msgstr ""
 "%s"
 
 #: glib/gconvert.c:606 glib/gconvert.c:995 glib/giochannel.c:1322
-#: glib/giochannel.c:1364 glib/giochannel.c:2206 glib/gutf8.c:912
-#: glib/gutf8.c:1361
+#: glib/giochannel.c:1364 glib/giochannel.c:2206 glib/gutf8.c:943
+#: glib/gutf8.c:1392
 #, fuzzy, c-format
 msgid "Invalid byte sequence in conversion input"
 msgstr "നിവേശത്തില് അസാധു ബൈറ്റ് ശ്രേണി"
@@ -40,8 +40,8 @@ msgstr "നിവേശത്തില് അസാധു ബൈറ്റ് ശ
 msgid "Error during conversion: %s"
 msgstr "സൂചകം നിറയ‌്ക്കുന്നതില്‌ പരാജയം : %s"
 
-#: glib/gconvert.c:647 glib/gutf8.c:908 glib/gutf8.c:1112 glib/gutf8.c:1253
-#: glib/gutf8.c:1357
+#: glib/gconvert.c:647 glib/gutf8.c:939 glib/gutf8.c:1143 glib/gutf8.c:1284
+#: glib/gutf8.c:1388
 #, c-format
 msgid "Partial character sequence at end of input"
 msgstr "നിവേശത്തിന്റെ അന്ത്യത്തില് ഭാഗികമായ അക്ഷരശ്രേണി"
@@ -128,84 +128,54 @@ msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s
 msgid "Failed to rename file '%s' to '%s': g_rename() failed: %s"
 msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
 
-#: glib/gfileutils.c:952
-#, fuzzy, c-format
-msgid "Could not change file mode: fork() failed: %s"
-msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
-
-#: glib/gfileutils.c:983
-#, fuzzy, c-format
-msgid "Could not change file mode: waitpid() failed: %s"
-msgstr "രചന %s ഉണ്ടാക്കാന്‌ കഴിഞ്ഞില്ല."
-
-#: glib/gfileutils.c:1002
-#, fuzzy, c-format
-msgid "Could not change file mode: chmod() failed: %s"
-msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
-
-#: glib/gfileutils.c:1013
-#, c-format
-msgid "Could not change file mode: Child terminated by signal: %s"
-msgstr ""
-
-#: glib/gfileutils.c:1024
-#, c-format
-msgid "Could not change file mode: Child terminated abnormally"
-msgstr ""
-
-#: glib/gfileutils.c:1058 glib/gfileutils.c:1524
+#: glib/gfileutils.c:950 glib/gfileutils.c:1415
 #, fuzzy, c-format
 msgid "Failed to create file '%s': %s"
 msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
 
-#: glib/gfileutils.c:1080
+#: glib/gfileutils.c:964
 #, fuzzy, c-format
 msgid "Failed to open file '%s' for writing: fdopen() failed: %s"
 msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
 
-#: glib/gfileutils.c:1105
+#: glib/gfileutils.c:989
 #, fuzzy, c-format
 msgid "Failed to write file '%s': fwrite() failed: %s"
 msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
 
-#: glib/gfileutils.c:1124
+#: glib/gfileutils.c:1008
 #, fuzzy, c-format
 msgid "Failed to close file '%s': fclose() failed: %s"
 msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
 
-#: glib/gfileutils.c:1242
+#: glib/gfileutils.c:1126
 #, c-format
 msgid "Existing file '%s' could not be removed: g_unlink() failed: %s"
 msgstr ""
 
-#: glib/gfileutils.c:1485
+#: glib/gfileutils.c:1376
 #, c-format
 msgid "Template '%s' invalid, should not contain a '%s'"
 msgstr "ഉരു \"%s\" അസാധു, \"%s\" ഉള്ക്കൊളളാന് പാടില്ല"
 
-#: glib/gfileutils.c:1499
+#: glib/gfileutils.c:1390
 #, c-format
 msgid "Template '%s' doesn't end with XXXXXX"
 msgstr "ഉരു \"%s\" XXXXXXല് അവസാനിക്കുന്നില്ല"
 
-#: glib/gfileutils.c:1974
+#: glib/gfileutils.c:1865
 #, fuzzy, c-format
 msgid "Failed to read the symbolic link '%s': %s"
 msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
 
-#: glib/gfileutils.c:1995
+#: glib/gfileutils.c:1886
 #, c-format
 msgid "Symbolic links not supported"
 msgstr ""
 
-#: glib/giochannel.c:1150
-#, c-format
-msgid "Conversion from character set `%s' to `%s' is not supported"
-msgstr "%sല് നിന്നും %sലേക്ക് പരിവറ്ത്തനം ചെയ്യാന് കഴിയുന്നില്ല"
-
 #: glib/giochannel.c:1154
 #, fuzzy, c-format
-msgid "Could not open converter from `%s' to `%s': %s"
+msgid "Could not open converter from '%s' to '%s': %s"
 msgstr ""
 "%s ന്റെ ഉള്ളടക്കം നീക്കം ചെയ്യാന് കഴിയുന്നില്ല:\n"
 "%s"
@@ -235,7 +205,7 @@ msgstr ""
 msgid "Failed to open file '%s': open() failed: %s"
 msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
 
-#: glib/gmappedfile.c:185
+#: glib/gmappedfile.c:193
 #, fuzzy, c-format
 msgid "Failed to map file '%s': mmap() failed: %s"
 msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
@@ -468,149 +438,173 @@ msgstr "%cക്ക് തുണയായി %sല് ഉദ്ധരണി-ച�
 msgid "Text was empty (or contained only whitespace)"
 msgstr "ടെക്സ്റ്റ് ശൂന്യം"
 
-#: glib/gspawn-win32.c:277
+#: glib/gspawn-win32.c:276
 #, fuzzy, c-format
 msgid "Failed to read data from child process"
 msgstr "രചന %sലെ പ്രമേയം വായിക്കുന്നതില്‌ പരാജയപ്പെട്ടു: %s\n"
 
-#: glib/gspawn-win32.c:292 glib/gspawn.c:1375
+#: glib/gspawn-win32.c:291 glib/gspawn.c:1364
 #, fuzzy, c-format
 msgid "Failed to create pipe for communicating with child process (%s)"
 msgstr "പ്രമേയം %sുമായി സംവദിക്കുന്നതില് പരാജയം"
 
-#: glib/gspawn-win32.c:330 glib/gspawn.c:1039
+#: glib/gspawn-win32.c:329 glib/gspawn.c:1028
 #, fuzzy, c-format
 msgid "Failed to read from child pipe (%s)"
 msgstr "രചന %sലെ പ്രമേയം വായിക്കുന്നതില്‌ പരാജയപ്പെട്ടു: %s\n"
 
-#: glib/gspawn-win32.c:356 glib/gspawn.c:1244
+#: glib/gspawn-win32.c:355 glib/gspawn.c:1233
 #, fuzzy, c-format
 msgid "Failed to change to directory '%s' (%s)"
 msgstr "'%s'എന്ന കൂട് ഉണ്ടാക്കാന്‌ കഴിയുന്നില്ല: %s\n"
 
-#: glib/gspawn-win32.c:362 glib/gspawn-win32.c:582
+#: glib/gspawn-win32.c:361 glib/gspawn-win32.c:581
 #, fuzzy, c-format
 msgid "Failed to execute child process (%s)"
 msgstr "ഇറക്കുമതി നിര്‍ദ്ദേശങ്ങള്‌ നിര്‍വ്വഹിക്കുന്നതില്‌ പരാജയപ്പെട്ടു."
 
-#: glib/gspawn-win32.c:891
+#: glib/gspawn-win32.c:471 glib/gspawn-win32.c:527
+#, fuzzy, c-format
+msgid "Invalid program name: %s"
+msgstr "സാധുതയില്ലാത്ത രചന നാമം"
+
+#: glib/gspawn-win32.c:481 glib/gspawn-win32.c:537 glib/gspawn-win32.c:780
+#: glib/gspawn-win32.c:835 glib/gspawn-win32.c:1370
+#, c-format
+msgid "Invalid string in argument vector at %d: %s"
+msgstr ""
+
+#: glib/gspawn-win32.c:492 glib/gspawn-win32.c:548 glib/gspawn-win32.c:794
+#: glib/gspawn-win32.c:848 glib/gspawn-win32.c:1403
+#, fuzzy, c-format
+msgid "Invalid string in environment: %s"
+msgstr "അസാധു ശ്രേണി"
+
+#: glib/gspawn-win32.c:776 glib/gspawn-win32.c:831 glib/gspawn-win32.c:1351
+#, fuzzy, c-format
+msgid "Invalid working directory: %s"
+msgstr ""
+"മേല്‌വിലാസ പുസ്തകം തുറക്കുന്നതില്‌‌ പരാജയം '%s'\n"
+"%s"
+
+#: glib/gspawn-win32.c:890
 #, fuzzy, c-format
 msgid "Failed to execute helper program (%s)"
 msgstr "ഇറക്കുമതി നിര്‍ദ്ദേശങ്ങള്‌ നിര്‍വ്വഹിക്കുന്നതില്‌ പരാജയപ്പെട്ടു."
 
-#: glib/gspawn-win32.c:1091
+#: glib/gspawn-win32.c:1090
 #, c-format
 msgid ""
 "Unexpected error in g_io_channel_win32_poll() reading data from a child "
 "process"
 msgstr ""
 
-#: glib/gspawn.c:179
+#: glib/gspawn.c:168
 #, fuzzy, c-format
 msgid "Failed to read data from child process (%s)"
 msgstr "രചന %sലെ പ്രമേയം വായിക്കുന്നതില്‌ പരാജയപ്പെട്ടു: %s\n"
 
-#: glib/gspawn.c:311
+#: glib/gspawn.c:300
 #, c-format
 msgid "Unexpected error in select() reading data from a child process (%s)"
 msgstr ""
 
-#: glib/gspawn.c:394
+#: glib/gspawn.c:383
 #, c-format
 msgid "Unexpected error in waitpid() (%s)"
 msgstr ""
 
-#: glib/gspawn.c:1104
+#: glib/gspawn.c:1093
 #, fuzzy, c-format
 msgid "Failed to fork (%s)"
 msgstr "%s കൊണ്ട് വരാന് കഴിഞ്ഞില്ല: %s\n"
 
-#: glib/gspawn.c:1254
+#: glib/gspawn.c:1243
 #, fuzzy, c-format
 msgid "Failed to execute child process \"%s\" (%s)"
 msgstr "പ്രമേയം %s കൊണ്ട് വരാന് കഴിഞ്ഞില്ല: %s\n"
 
-#: glib/gspawn.c:1264
+#: glib/gspawn.c:1253
 #, fuzzy, c-format
 msgid "Failed to redirect output or input of child process (%s)"
 msgstr "പ്രമേയം %sുമായി സംവദിക്കുന്നതില് പരാജയം"
 
-#: glib/gspawn.c:1273
+#: glib/gspawn.c:1262
 #, fuzzy, c-format
 msgid "Failed to fork child process (%s)"
 msgstr "%s തുറക്കുന്നതില്‌ പരാജയം : %s"
 
-#: glib/gspawn.c:1281
+#: glib/gspawn.c:1270
 #, fuzzy, c-format
 msgid "Unknown error executing child process \"%s\""
 msgstr "'%s' പ്രയോഗം പ്ര‍വ‍ര്ത്തിപ്പിക്കുന്നതില് പരാജയം : %s"
 
-#: glib/gspawn.c:1303
+#: glib/gspawn.c:1292
 #, fuzzy, c-format
 msgid "Failed to read enough data from child pid pipe (%s)"
 msgstr "രചന %sലെ പ്രമേയം വായിക്കുന്നതില്‌ പരാജയപ്പെട്ടു: %s\n"
 
-#: glib/gutf8.c:986
+#: glib/gutf8.c:1017
 #, fuzzy, c-format
 msgid "Character out of range for UTF-8"
 msgstr "ഇടേണ്ട അക്ഷരങ്ങള്"
 
-#: glib/gutf8.c:1080 glib/gutf8.c:1089 glib/gutf8.c:1221 glib/gutf8.c:1230
-#: glib/gutf8.c:1371 glib/gutf8.c:1467
+#: glib/gutf8.c:1111 glib/gutf8.c:1120 glib/gutf8.c:1252 glib/gutf8.c:1261
+#: glib/gutf8.c:1402 glib/gutf8.c:1498
 #, c-format
 msgid "Invalid sequence in conversion input"
 msgstr "അസാധു ശ്രേണി"
 
-#: glib/gutf8.c:1382 glib/gutf8.c:1478
+#: glib/gutf8.c:1413 glib/gutf8.c:1509
 #, fuzzy, c-format
 msgid "Character out of range for UTF-16"
 msgstr "ഇടേണ്ട അക്ഷരങ്ങള്"
 
-#: glib/goption.c:468
+#: glib/goption.c:484
 msgid "Usage:"
 msgstr ""
 
-#: glib/goption.c:468
+#: glib/goption.c:484
 msgid "[OPTION...]"
 msgstr ""
 
-#: glib/goption.c:556
+#: glib/goption.c:572
 msgid "Help Options:"
 msgstr ""
 
-#: glib/goption.c:557
+#: glib/goption.c:573
 msgid "Show help options"
 msgstr ""
 
-#: glib/goption.c:562
+#: glib/goption.c:578
 msgid "Show all help options"
 msgstr ""
 
-#: glib/goption.c:612
+#: glib/goption.c:628
 msgid "Application Options:"
 msgstr ""
 
-#: glib/goption.c:653
+#: glib/goption.c:669
 #, c-format
 msgid "Cannot parse integer value '%s' for %s"
 msgstr ""
 
-#: glib/goption.c:663
+#: glib/goption.c:679
 #, c-format
 msgid "Integer value '%s' for %s out of range"
 msgstr ""
 
-#: glib/goption.c:926
+#: glib/goption.c:942
 #, fuzzy, c-format
 msgid "Error parsing option %s"
 msgstr "സൂചകം നിറയ‌്ക്കുന്നതില്‌ പരാജയം : %s"
 
-#: glib/goption.c:959 glib/goption.c:1070
+#: glib/goption.c:973 glib/goption.c:1084
 #, c-format
 msgid "Missing argument for %s"
 msgstr ""
 
-#: glib/goption.c:1474
+#: glib/goption.c:1489
 #, c-format
 msgid "Unknown option %s"
 msgstr ""
@@ -704,6 +698,15 @@ msgstr ""
 #, c-format
 msgid "Value '%s' cannot be interpreted as a boolean."
 msgstr ""
+
+#~ msgid "Conversion from character set `%s' to `%s' is not supported"
+#~ msgstr "%sല് നിന്നും %sലേക്ക് പരിവറ്ത്തനം ചെയ്യാന് കഴിയുന്നില്ല"
+
+#, fuzzy
+#~ msgid "Could not open converter from `%s' to `%s': %s"
+#~ msgstr ""
+#~ "%s ന്റെ ഉള്ളടക്കം നീക്കം ചെയ്യാന് കഴിയുന്നില്ല:\n"
+#~ "%s"
 
 #, fuzzy
 #~ msgid "Incorrect message size"

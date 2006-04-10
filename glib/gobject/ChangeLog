@@ -1,6 +1,35 @@
-2006-01-18  Matthias Clasen  <mclasen@redhat.com>
+2006-04-07  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.10.2 ===
 
-	* === Released 2.8.6 ===
+2006-03-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* ===  Released 2.10.1 ===
+
+Tue Mar  7 17:09:07 2006  Tim Janik  <timj@gtk.org>
+
+	* gobject.c (g_object_compat_control): added case3 to hand out the
+	original floating flag handler. required by gtk+ >= 2.10.
+
+2006-02-24  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.0 ===
+
+2006-02-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.6 ===
+
+2006-01-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gclosure.c: Remove C++ comment.
+
+2006-01-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.5 ===
+
+2006-01-18  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.9.4 ===
 
 2006-01-18  Matthias Clasen  <mclasen@redhat.com>
 
@@ -8,32 +37,105 @@
 	for GTK+ compilation, to avoid segfaults on 64bit
 	platforms.
 
-2006-01-03  Matthias Clasen  <mclasen@redhat.com>
+2006-01-16  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.8.5 ===
+	* === Released 2.9.3 ===
+
+2006-01-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.2 ===
+
+2006-01-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject.symbols: Add g_initially_unowned_get_type.
+
+2005-12-30  Matthias Clasen  <mclasen@redhat.com>
 	
-Thu Dec 22 16:33:49 2005  Tim Janik  <timj@imendio.com>
+	* gsignal.c: Remove the handler trash stack, which
+	is now unused.
+	(g_signal_init): Remove the restriction that HandlerMatch
+	must be the same size as GList, and obsolete comments 
+	referring to mem chunks.
 
-	* gobject.[hc]: added g_object_compat_control().
+2005-12-24  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject.symbols: Add new functions.
+
+Thu Dec 22 18:53:14 2005  Tim Janik  <timj@gtk.org>
+
+	* gobject.[hc]: renamed GUnowned to GInitiallyUnowned.
+
+Thu Dec 22 14:59:24 2005  Tim Janik  <timj@imendio.com>
+
+	* gvaluetypes.[hc]: implemented G_TYPE_GTPYE. applied patch
+	from matthias which implements GType accessors for GValue.
+
+	* gparamspecs.[hc]: applied patch from matthias which 
+	implements G_TYPE_PARAM_GTYPE.
+
+	* gobject.[hc]:
+	GUnowned: introduced a new object type that has an initially
+	floating reference.
+	g_object_compat_control(): allow setting of a floating flag handler.
+
+2005-12-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.1 ===
 
 2005-12-05  Matthias Clasen  <mclasen@redhat.com>
 
 	* genums.h (G_FLAGS_CLASS_TYPE_NAME): Use G_FLAGS_CLASS_TYPE.
 	(#323273, Kalle Vahlman)
+	
+Thu Dec  1 12:53:26 2005  Tim Janik  <timj@imendio.com>
+
+	* gtype.c: use g_slic_* for all object allocations.
+
+2005-11-28  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobjectnotifyqueue.c (g_object_notify_queue_thaw): 
+	* gobject-query.c (main): Silence compiler warnings.
+
+	* glib-genmarshal.c (main): Use G_N_ELEMENTS.
+
+2005-11-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* gboxed.h: Declare g_hash_table_get_type.
+
+Wed Nov 23 18:01:46 2005  Tim Janik  <timj@imendio.com>
+
+	* gobject.[hc]: added floating reference count.
+	g_object_is_floating():
+	g_object_ref_sink(): new functions to deal with floating references.
+	g_object_force_floating(): new funciton for object implementations
+	to set the floating flag.
+
+	* gobject.c (g_object_init): make objects initially floating.
+
+Wed Nov 23 17:58:13 2005  Tim Janik  <timj@gtk.org>
+
+	* gparam.[hc]: added g_param_spec_ref_sink().
+
+Wed Nov 23 13:36:02 2005  Tim Janik  <timj@gtk.org>
+
+	* gboxed.[hc]: minor cleanups, implemented G_TYPE_HASH_TABLE.
 
 2005-11-17  Matthias Clasen  <mclasen@redhat.com>
 
-	* glib-genmarshal.c:
-	* gtype.c: const correctness fixes, found
+	* === Released 2.9.0 ===
+
+2005-11-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib-genmarshal.c: const correctness fixes, found
 	by Arjan van de Ven and gcc.
 	
-2005-11-15  Matthias Clasen  <mclasen@redhat.com>
+Tue Nov  1 17:07:43 2005  Tim Janik  <timj@imendio.com>
 
-	* ===  Released 2.8.4 ===
+	* gsignal.c: allocate signal handlers and handler match structures
+	via the new g_slice_*() API (get's rid of GList allocation hack).
 
-2005-10-03  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.8.3 ===
+	* gtype.c: got rid of per-type memchunks. if GTypeInfo.n_preallocs
+	is > 0, objects are allocated via g_slice_*() instead of g_malloc().
 
 2005-10-03  Matthias Clasen  <mclasen@redhat.com>
 
@@ -48,17 +150,69 @@ Thu Dec 22 16:33:49 2005  Tim Janik  <timj@imendio.com>
 
 2005-09-26  DindinX  <dindinx@gimp.org>
 
-	* gtype.h: initialize all the fields of GInterfaceInfo in the
+	* gobject/gtype.h: initialize all the fields of GInterfaceInfo in the
 	G_IMPLEMENT_INTERFACE macro, to shut up a warning when compiling at -W
-
-2005-09-26  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.8.2 ===
 
 2005-09-26  Matthias Clasen  <mclasen@redhat.com>
 
 	* glib-mkenums.in: Don't hang on '{' following a trigraph comment
 	in the same line.  (#314890, Mathias Hasselmann)
+
+Thu Sep 22 12:42:12 2005  Tim Janik  <timj@gtk.org>
+
+	* gparam.c (g_param_spec_internal): fix pspec->name assignment which
+	needs to be strdup()ed for non G_PARAM_STATIC_NAME pspecs. this fixes
+	recently introduced crashes during plugin unloading.
+	also, ensure that static pspec names are canonicalized.
+
+	* gsignal.h: reverted last change from matthias, we don't guarantee
+	that type ids aren't mangled with G_SIGNAL_TYPE_STATIC_SCOPE anywhere.
+
+2005-09-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* gsignal.h (struct _GSignalQuery): Remove the misleading comment
+	about G_SIGNAL_TYPE_STATIC_SCOPE, since we don't allow that 
+	on return types.
+
+2005-09-08  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* gclosure.c: (g_closure_set_meta_marshal): Remove some unused
+	code.
+	* gsignal.c: (g_signal_emitv): Same here
+	* gtype.c: (g_type_register_fundamental): And here
+	* testgobject.c: Mark some functions static.
+
+2005-09-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gsignal.c (struct _SignalNode): Make the name field const.
+	(g_signal_newv): Don't keep an unnecessary extra copy of the 
+	signal name around, and don't forget to free the name if
+	an existing node is reused.	
+
+2005-08-31  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject.c (g_object_do_class_init): Intern the signal name.
+
+	* gparam.c (g_param_spec_internal): Intern the name here,
+	since we need the quark anyway when sending change notification.
+
+	* gboxed.c: 
+	* gparamspecs.c: 
+	* gtype.c (g_type_init_with_debug_flags): Intern type name
+	before registering the types.
+
+	* gtype.h (G_DEFINE_TYPE_EXTENDED): Intern type name
+	before registering the type.
+
+	* gvaluetypes.c (g_value_types_init): 
+	* gtypeplugin.c (g_type_plugin_get_type): 
+	* gtypemodule.c (g_type_module_get_type): 
+	* gparam.c (g_param_type_init): 
+	* gobject.c (g_object_type_init): 
+	* genums.c (g_enum_types_init): 
+	* gboxed.c (g_boxed_type_init): Intern type names
+	before registering the type to avoid unnecessary
+	copies.
 
 2005-08-23  Matthias Clasen  <mclasen@redhat.com>
 

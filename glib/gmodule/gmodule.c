@@ -201,9 +201,9 @@ g_module_supported (void)
 static gchar*
 parse_libtool_archive (const gchar* libtool_name)
 {
-  const gint TOKEN_DLNAME = G_TOKEN_LAST + 1;
-  const gint TOKEN_INSTALLED = G_TOKEN_LAST + 2;
-  const gint TOKEN_LIBDIR = G_TOKEN_LAST + 3;
+  const guint TOKEN_DLNAME = G_TOKEN_LAST + 1;
+  const guint TOKEN_INSTALLED = G_TOKEN_LAST + 2;
+  const guint TOKEN_LIBDIR = G_TOKEN_LAST + 3;
   gchar *lt_dlname = NULL;
   gboolean lt_installed = TRUE;
   gchar *lt_libdir = NULL;
@@ -601,7 +601,7 @@ g_module_symbol (GModule	*module,
     }
   
   g_static_rec_mutex_unlock (&g_module_global_lock);
-  return !module_error;
+  return *symbol != NULL;
 }
 
 G_CONST_RETURN gchar*

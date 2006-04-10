@@ -16,7 +16,7 @@ LINKDEBUG =
 OPTIMIZE = 
 CRUNTIME = -MDd
 DEBUGINFO = -Zi -DG_ENABLE_DEBUG=1
-LINKDEBUG = /debug
+LINKDEBUG = /debug /nodefaultlib:msvcrt.lib
 !ENDIF
 
 LDFLAGS = /link /machine:ix86 $(LINKDEBUG)

@@ -1559,8 +1559,8 @@ g_ascii_strup (const gchar *str,
  * 
  * Return value: the string 
  *
- * Deprecated: This function is totally broken for the reasons discussed in 
- * the g_strncasecmp() docs - use g_ascii_strdown() or g_utf8_strdown() 
+ * Deprecated:2.2: This function is totally broken for the reasons discussed 
+ * in the g_strncasecmp() docs - use g_ascii_strdown() or g_utf8_strdown() 
  * instead.
  **/
 gchar*
@@ -1590,8 +1590,8 @@ g_strdown (gchar *string)
  * 
  * Return value: the string
  *
- * Deprecated: This function is totally broken for the reasons discussed in 
- * the g_strncasecmp() docs - use g_ascii_strup() or g_utf8_strup() instead.
+ * Deprecated:2.2: This function is totally broken for the reasons discussed 
+ * in the g_strncasecmp() docs - use g_ascii_strup() or g_utf8_strup() instead.
  **/
 gchar*
 g_strup (gchar *string)
@@ -1748,9 +1748,8 @@ g_ascii_xdigit_value (gchar c)
  * characters include all ASCII letters. If you compare two CP932
  * strings using this function, you will get false matches.
  *
- * Return value: an integer less than, equal to, or greater than
- *               zero if @s1 is found, respectively, to be less than,
- *               to match, or to be greater than @s2.
+ * Return value: 0 if the strings match, a negative value if @s1 &lt; @s2, 
+ *   or a positive value if @s1 &gt; @s2.
  **/
 gint
 g_ascii_strcasecmp (const gchar *s1,
@@ -1790,10 +1789,8 @@ g_ascii_strcasecmp (const gchar *s1,
  * function only on strings known to be in encodings where bytes
  * corresponding to ASCII letters always represent themselves.
  *
- * Return value: an integer less than, equal to, or greater than zero
- *               if the first @n bytes of @s1 is found, respectively,
- *               to be less than, to match, or to be greater than the
- *               first @n bytes of @s2.
+ * Return value: 0 if the strings match, a negative value if @s1 &lt; @s2, 
+ *   or a positive value if @s1 &gt; @s2.
  **/
 gint
 g_ascii_strncasecmp (const gchar *s1,
@@ -1832,8 +1829,8 @@ g_ascii_strncasecmp (const gchar *s1,
  * Return value: 0 if the strings match, a negative value if @s1 &lt; @s2, 
  *   or a positive value if @s1 &gt; @s2.
  *
- * Deprecated: See g_strncasecmp() for a discussion of why this function is 
- *   deprecated and how to replace it.
+ * Deprecated:2.2: See g_strncasecmp() for a discussion of why this function 
+ *   is deprecated and how to replace it.
  **/
 gint
 g_strcasecmp (const gchar *s1,
@@ -1880,7 +1877,7 @@ g_strcasecmp (const gchar *s1,
  * Return value: 0 if the strings match, a negative value if @s1 &lt; @s2, 
  *   or a positive value if @s1 &gt; @s2.
  *
- * Deprecated: The problem with g_strncasecmp() is that it does the 
+ * Deprecated:2.2: The problem with g_strncasecmp() is that it does the 
  * comparison by calling toupper()/tolower(). These functions are
  * locale-specific and operate on single bytes. However, it is impossible
  * to handle things correctly from an I18N standpoint by operating on

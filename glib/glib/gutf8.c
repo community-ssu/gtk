@@ -123,7 +123,7 @@ const gchar * const g_utf8_skip = utf8_skip_data;
  * 
  * Given a position @p with a UTF-8 encoded string @str, find the start
  * of the previous UTF-8 character starting before @p. Returns %NULL if no
- * UTF-8 characters are present in @p before @str.
+ * UTF-8 characters are present in @str before @p.
  *
  * @p does not have to be at the beginning of a UTF-8 character. No check
  * is made to see if the character found is actually valid other than
@@ -242,7 +242,7 @@ g_utf8_strlen (const gchar *p,
       /* only do the last len increment if we got a complete
        * char (don't count partial chars)
        */
-      if (p - start == max)
+      if (p - start <= max)
         ++len;
     }
 
@@ -284,6 +284,11 @@ g_utf8_get_char (const gchar *p)
  * Converts from an integer character offset to a pointer to a position
  * within the string.
  * 
+ * Since 2.10, this function allows to pass a negative @offset to
+ * step backwards. It is usually worth stepping backwards from the end
+ * instead of forwards if @offset is in the last fourth of the string, 
+ * since moving forward is about 3 times faster than moving backward.
+ * 
  * Return value: the resulting pointer
  **/
 gchar *
@@ -291,9 +296,29 @@ g_utf8_offset_to_pointer  (const gchar *str,
 			   glong        offset)    
 {
   const gchar *s = str;
-  while (offset--)
-    s = g_utf8_next_char (s);
-  
+
+  if (offset > 0) 
+    while (offset--)
+      s = g_utf8_next_char (s);
+  else
+    {
+      const char *s1;
+
+      /* This nice technique for fast backwards stepping 
+       * through a UTF-8 string was dubbed "stutter stepping" 
+       * by its inventor, Larry Ewing.
+       */
+      while (offset)
+	{
+	  s1 = s;
+	  s += offset;
+	  while ((*s & 0xc0) == 0x80)
+	    s--;
+
+	  offset += g_utf8_pointer_to_offset (s, s1);
+	}
+    }
+
   return (gchar *)s;
 }
 
@@ -304,6 +329,9 @@ g_utf8_offset_to_pointer  (const gchar *str,
  * 
  * Converts from a pointer to position within a string to a integer
  * character offset.
+ *
+ * Since 2.10, this function allows @pos to be before @str, and returns
+ * a negative offset in this case.
  * 
  * Return value: the resulting character offset
  **/
@@ -313,13 +341,16 @@ g_utf8_pointer_to_offset (const gchar *str,
 {
   const gchar *s = str;
   glong offset = 0;    
-  
-  while (s < pos)
-    {
-      s = g_utf8_next_char (s);
-      offset++;
-    }
 
+  if (pos < str) 
+    offset = - g_utf8_pointer_to_offset (pos, str);
+  else
+    while (s < pos)
+      {
+	s = g_utf8_next_char (s);
+	offset++;
+      }
+  
   return offset;
 }
 
@@ -404,7 +435,7 @@ get_alias_hash (void)
 /* As an abuse of the alias table, the following routines gets
  * the charsets that are aliases for the canonical name.
  */
-const char **
+const char ** G_GNUC_INTERNAL
 _g_charset_get_aliases (const char *canonical_name)
 {
   GHashTable *alias_hash = get_alias_hash ();
@@ -523,7 +554,7 @@ g_get_charset (G_CONST_RETURN char **charset)
 
 /**
  * g_unichar_to_utf8:
- * @c: a ISO10646 character code
+ * @c: a Unicode character code
  * @outbuf: output buffer, must have at least 6 bytes of space.
  *       If %NULL, the length will be computed and returned
  *       and nothing will be written to @outbuf.
@@ -589,9 +620,9 @@ g_unichar_to_utf8 (gunichar c,
  * g_utf8_strchr:
  * @p: a nul-terminated UTF-8 encoded string
  * @len: the maximum length of @p
- * @c: a ISO10646 character
+ * @c: a Unicode character
  * 
- * Finds the leftmost occurrence of the given ISO10646 character
+ * Finds the leftmost occurrence of the given Unicode character
  * in a UTF-8 encoded string, while limiting the search to @len bytes.
  * If @len is -1, allow unbounded search.
  * 
@@ -617,9 +648,9 @@ g_utf8_strchr (const char *p,
  * g_utf8_strrchr:
  * @p: a nul-terminated UTF-8 encoded string
  * @len: the maximum length of @p
- * @c: a ISO10646 character
+ * @c: a Unicode character
  * 
- * Find the rightmost occurrence of the given ISO10646 character
+ * Find the rightmost occurrence of the given Unicode character
  * in a UTF-8 encoded string, while limiting the search to @len bytes.
  * If @len is -1, allow unbounded search.
  * 
@@ -942,8 +973,8 @@ g_utf8_to_ucs4 (const gchar *str,
 /**
  * g_ucs4_to_utf8:
  * @str: a UCS-4 encoded string
- * @len: the maximum length of @str to use. If @len < 0, then
- *       the string is terminated with a 0 character.
+ * @len: the maximum length (number of characters) of @str to use. 
+ *       If @len < 0, then the string is terminated with a 0 character.
  * @items_read: location to store number of characters read, or %NULL.
  * @items_written: location to store number of bytes written or %NULL.
  *                 The value here stored does not include the trailing 0
@@ -1014,8 +1045,8 @@ g_ucs4_to_utf8 (const gunichar *str,
 /**
  * g_utf16_to_utf8:
  * @str: a UTF-16 encoded string
- * @len: the maximum length of @str to use. If @len < 0, then
- *       the string is terminated with a 0 character.
+ * @len: the maximum length (number of <type>gunichar2</type>) of @str to use. 
+ *       If @len < 0, then the string is terminated with a 0 character.
  * @items_read: location to store number of words read, or %NULL.
  *              If %NULL, then %G_CONVERT_ERROR_PARTIAL_INPUT will be
  *              returned in case @str contains a trailing partial
@@ -1163,8 +1194,8 @@ g_utf16_to_utf8 (const gunichar2  *str,
 /**
  * g_utf16_to_ucs4:
  * @str: a UTF-16 encoded string
- * @len: the maximum length of @str to use. If @len < 0, then
- *       the string is terminated with a 0 character.
+ * @len: the maximum length (number of <type>gunichar2</type>) of @str to use. 
+ *       If @len < 0, then the string is terminated with a 0 character.
  * @items_read: location to store number of words read, or %NULL.
  *              If %NULL, then %G_CONVERT_ERROR_PARTIAL_INPUT will be
  *              returned in case @str contains a trailing partial
@@ -1305,21 +1336,21 @@ g_utf16_to_ucs4 (const gunichar2  *str,
 /**
  * g_utf8_to_utf16:
  * @str: a UTF-8 encoded string
- * @len: the maximum length of @str to use. If @len < 0, then
- *       the string is nul-terminated.
+ * @len: the maximum length (number of characters) of @str to use. 
+ *       If @len < 0, then the string is nul-terminated.
  * @items_read: location to store number of bytes read, or %NULL.
  *              If %NULL, then %G_CONVERT_ERROR_PARTIAL_INPUT will be
  *              returned in case @str contains a trailing partial
  *              character. If an error occurs then the index of the
  *              invalid input is stored here.
- * @items_written: location to store number of words written, or %NULL.
- *                 The value stored here does not include the trailing
- *                 0 word.
+ * @items_written: location to store number of <type>gunichar2</type> written, 
+ *                 or %NULL.
+ *                 The value stored here does not include the trailing 0.
  * @error: location to store the error occuring, or %NULL to ignore
  *         errors. Any of the errors in #GConvertError other than
  *         %G_CONVERT_ERROR_NO_CONVERSION may occur.
  *
- * Convert a string from UTF-8 to UTF-16. A 0 word will be
+ * Convert a string from UTF-8 to UTF-16. A 0 character will be
  * added to the result after the converted text.
  * 
  * Return value: a pointer to a newly allocated UTF-16 string.
@@ -1422,19 +1453,19 @@ g_utf8_to_utf16 (const gchar *str,
 /**
  * g_ucs4_to_utf16:
  * @str: a UCS-4 encoded string
- * @len: the maximum length of @str to use. If @len < 0, then
- *       the string is terminated with a 0 character.
+ * @len: the maximum length (number of characters) of @str to use. 
+ *       If @len < 0, then the string is terminated with a 0 character.
  * @items_read: location to store number of bytes read, or %NULL.
  *              If an error occurs then the index of the invalid input
  *              is stored here.
- * @items_written: location to store number of words written, or %NULL.
- *                 The value stored here does not include the trailing
- *                 0 word.
+ * @items_written: location to store number of <type>gunichar2</type> 
+ *                 written, or %NULL. The value stored here does not 
+ *                 include the trailing 0.
  * @error: location to store the error occuring, or %NULL to ignore
  *         errors. Any of the errors in #GConvertError other than
  *         %G_CONVERT_ERROR_NO_CONVERSION may occur.
  *
- * Convert a string from UCS-4 to UTF-16. A 0 word will be
+ * Convert a string from UCS-4 to UTF-16. A 0 character will be
  * added to the result after the converted text.
  * 
  * Return value: a pointer to a newly allocated UTF-16 string.

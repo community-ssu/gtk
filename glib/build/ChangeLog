@@ -1,3 +1,35 @@
+2006-02-08  Tor Lillqvist  <tml@novell.com>
+
+	* win32/vs8/glib-genmarshal.vcproj: New file: Visual Studio
+	project file for glib-genmarshal.exe, by Sergey Scobich.
+
+	* win32/vs8/Makefile.am
+	* win32/vs8/glib.sln: Add it.
+
+2006-01-31  Tor Lillqvist  <tml@novell.com>
+
+	* win32/Makefile.am (EXTRA_DIST): Drop the obsolete shell scripts
+	and make.mingw.
+
+	* win32/vs8/*: Visual Studio 2005 project files for GLib
+	contributed by Sergey Scobich. (#328691)
+
+	* win32/Makefile.am (SUBDIRS): Add vs8.
+
+	* win32/make.msc (LINKDEBUG): Use /nodefaultlib:msvcrt.lib when
+	debugging. (#329325, Timo Linna)
+
+2005-09-01  Tor Lillqvist  <tml@novell.com>
+
+	* win32/cl-wrapper.c: Again spent some hours hacking on this. Now
+	the compilation phase of building libglib autoconfiscated using
+	CC=cl-wrapper seems to work. But problems in the linking phase,
+	for instance -Wl,--whole-archive isn't implemented, and I don't
+	think link.exe even has a such feature to include all of a
+	library. Argh. To implement -Wl,--whole-archive, would need to
+	extract the library contents into a temp directory and link with
+	all the resulting object files. Sigh.
+
 2005-07-09  Tor Lillqvist  <tml@novell.com>
 
 	* README: When using auto*/libtool/gcc to build GLib, Pango and

@@ -189,7 +189,7 @@ struct _GChildWatchSource
 struct _GPollRec
 {
   GPollFD *fd;
-  GPollRec *next; /* chaining via second pointer member allows use of g_slice_free_chain() */
+  GPollRec *next;
   gint priority;
 };
 
@@ -627,7 +627,7 @@ g_main_context_unref (GMainContext *context)
   while (source)
     {
       GSource *next = source->next;
-      g_source_destroy_internal (source, context, TRUE);
+      g_source_destroy_internal (source, context, FALSE);
       source = next;
     }
 
@@ -880,7 +880,8 @@ g_source_list_remove (GSource      *source,
  * Adds a #GSource to a @context so that it will be executed within
  * that context.
  *
- * Return value: the ID for the source within the #GMainContext
+ * Return value: the ID (greater than 0) for the source within the 
+ *   #GMainContext. 
  **/
 guint
 g_source_attach (GSource      *source,
@@ -994,10 +995,11 @@ g_source_destroy (GSource *source)
  * @source: a #GSource
  * 
  * Returns the numeric ID for a particular source. The ID of a source
- * is unique within a particular main loop context. The reverse
+ * is a positive integer which is unique within a particular main loop 
+ * context. The reverse
  * mapping from ID to source is done by g_main_context_find_source_by_id().
  *
- * Return value: the ID for the source
+ * Return value: the ID (greater than 0) for the source
  **/
 guint
 g_source_get_id (GSource *source)
@@ -1441,9 +1443,9 @@ g_source_unref (GSource *source)
 /**
  * g_main_context_find_source_by_id:
  * @context: a #GMainContext (if %NULL, the default context will be used)
- * @source_id: the source ID, as returned by g_source_get_id()
+ * @source_id: the source ID, as returned by g_source_get_id(). 
  * 
- * Finds a #GSource given a pair of context and ID
+ * Finds a #GSource given a pair of context and ID.
  * 
  * Return value: the #GSource if found, otherwise, %NULL
  **/
@@ -1569,9 +1571,10 @@ g_main_context_find_source_by_user_data (GMainContext *context,
 
 /**
  * g_source_remove:
- * @tag: the id of the source to remove.
+ * @tag: the ID of the source to remove.
  * 
- * Removes the source with the given id from the default main context. The id of
+ * Removes the source with the given id from the default main context. 
+ * The id of
  * a #GSource is given by g_source_get_id(), or will be returned by the
  * functions g_source_attach(), g_idle_add(), g_idle_add_full(),
  * g_timeout_add(), g_timeout_add_full(), g_child_watch_add(),
@@ -1919,8 +1922,8 @@ g_main_dispatch (GMainContext *context)
 	    cb_funcs->unref (cb_data);
 
  	  LOCK_CONTEXT (context);
-
-	 if (!was_in_call)
+	  
+	  if (!was_in_call)
 	    source->flags &= ~G_HOOK_FLAG_IN_CALL;
 
 	  if ((source->flags & G_SOURCE_CAN_RECURSE) == 0 &&
@@ -3156,6 +3159,38 @@ g_main_context_wakeup (GMainContext *context)
   UNLOCK_CONTEXT (context);
 }
 
+/**
+ * g_main_context_is_owner:
+ * @context: a #GMainContext
+ * 
+ * Determines whether this thread holds the (recursive)
+ * ownership of this #GMaincontext. This is useful to
+ * know before waiting on another thread that may be
+ * blocking to get ownership of @context.
+ *
+ * Returns: %TRUE if current thread is owner of @context.
+ *
+ * Since: 2.10
+ **/
+gboolean
+g_main_context_is_owner (GMainContext *context)
+{
+  gboolean is_owner;
+
+  if (!context)
+    context = g_main_context_default ();
+
+#ifdef G_THREADS_ENABLED
+  LOCK_CONTEXT (context);
+  is_owner = context->owner == G_THREAD_SELF;
+  UNLOCK_CONTEXT (context);
+#else
+  is_owner = TRUE;
+#endif
+
+  return is_owner;
+}
+
 /* Timeouts */
 
 static void
@@ -3317,7 +3352,7 @@ g_timeout_source_new (guint interval)
  * timeout is recalculated based on the current time and the given interval
  * (it does not try to 'catch up' time lost in delays).
  * 
- * Return value: the id of event source.
+ * Return value: the ID (greater than 0) of the event source.
  **/
 guint
 g_timeout_add_full (gint           priority,
@@ -3362,7 +3397,7 @@ g_timeout_add_full (gint           priority,
  * timeout is recalculated based on the current time and the given interval
  * (it does not try to 'catch up' time lost in delays).
  * 
- * Return value: the id of event source.
+ * Return value: the ID (greater than 0) of the event source.
  **/
 guint 
 g_timeout_add (guint32        interval,
@@ -3456,10 +3491,7 @@ static gboolean
 g_child_watch_prepare (GSource *source,
 		       gint    *timeout)
 {
-  GChildWatchSource *child_watch_source;
   *timeout = -1;
-
-  child_watch_source = (GChildWatchSource *) source;
 
   return check_for_child_exited (source);
 }
@@ -3468,10 +3500,6 @@ g_child_watch_prepare (GSource *source,
 static gboolean 
 g_child_watch_check (GSource  *source)
 {
-  GChildWatchSource *child_watch_source;
-
-  child_watch_source = (GChildWatchSource *) source;
-
   return check_for_child_exited (source);
 }
 
@@ -3537,18 +3565,6 @@ g_child_watch_source_init_single (void)
 static gpointer
 child_watch_helper_thread (gpointer data)
 {
-  GPollFD fds;
-  GPollFunc poll_func;
-
-#ifdef HAVE_POLL
-      poll_func = (GPollFunc)poll;
-#else
-      poll_func = g_poll;
-#endif
-
-  fds.fd = child_watch_wake_up_pipe[0];
-  fds.events = G_IO_IN;
-
   while (1)
     {
       gchar b[20];
@@ -3572,7 +3588,6 @@ child_watch_helper_thread (gpointer data)
 	}
       G_UNLOCK (main_context_list);
     }
-  return NULL;
 }
 
 static void
@@ -3629,16 +3644,16 @@ g_child_watch_source_init (void)
  * @pid: process id of a child process to watch. On Windows, a HANDLE
  * for the process to watch (which actually doesn't have to be a child).
  * 
- * Creates a new child watch source.
+ * Creates a new child_watch source.
  *
  * The source will not initially be associated with any #GMainContext
  * and must be added to one with g_source_attach() before it will be
  * executed.
  * 
- * Note that child watch sources can only be used in conjunction with 
+ * Note that child watch sources can only be used in conjunction with
  * <literal>g_spawn...</literal> when the %G_SPAWN_DO_NOT_REAP_CHILD
  * flag is used.
- * 
+ *
  * Note that on platforms where #GPid must be explicitely closed
  * (see g_spawn_close_pid()) @pid must not be closed while the
  * source is still active. Typically, you will want to call
@@ -3692,7 +3707,7 @@ g_child_watch_source_new (GPid pid)
  * 
  * GLib supports only a single callback per process id.
  *
- * Return value: the id of event source.
+ * Return value: the ID (greater than 0) of the event source.
  *
  * Since: 2.4
  **/
@@ -3736,7 +3751,7 @@ g_child_watch_add_full (gint            priority,
  *
  * GLib supports only a single callback per process id.
  *
- * Return value: the id of event source.
+ * Return value: the ID (greater than 0) of the event source.
  *
  * Since: 2.4
  **/
@@ -3817,7 +3832,7 @@ g_idle_source_new (void)
  * events pending.  If the function returns %FALSE it is automatically
  * removed from the list of event sources and will not be called again.
  * 
- * Return value: the id of the event source.
+ * Return value: the ID (greater than 0) of the event source.
  **/
 guint 
 g_idle_add_full (gint           priority,
@@ -3853,7 +3868,7 @@ g_idle_add_full (gint           priority,
  * returns %FALSE it is automatically removed from the list of event
  * sources and will not be called again.
  * 
- * Return value: the id of the event source.
+ * Return value: the ID (greater than 0) of the event source.
  **/
 guint 
 g_idle_add (GSourceFunc    function,

@@ -103,7 +103,7 @@ g_param_type_init (void)
   };
   GType type;
 
-  type = g_type_register_fundamental (G_TYPE_PARAM, "GParam", &param_spec_info, &finfo, G_TYPE_FLAG_ABSTRACT);
+  type = g_type_register_fundamental (G_TYPE_PARAM, g_intern_static_string ("GParam"), &param_spec_info, &finfo, G_TYPE_FLAG_ABSTRACT);
   g_assert (type == G_TYPE_PARAM);
   g_value_register_transform_func (G_TYPE_PARAM, G_TYPE_PARAM, value_param_transform_value);
 }
@@ -199,6 +199,17 @@ g_param_spec_sink (GParamSpec *pspec)
 
   if (g_datalist_id_remove_no_notify (&pspec->qdata, quark_floating))
     g_param_spec_unref (pspec);
+}
+
+GParamSpec*
+g_param_spec_ref_sink (GParamSpec *pspec)
+{
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
+  g_return_val_if_fail (pspec->ref_count > 0, NULL);
+
+  g_param_spec_ref (pspec);
+  g_param_spec_sink (pspec);
+  return pspec;
 }
 
 G_CONST_RETURN gchar*
@@ -299,21 +310,26 @@ g_param_spec_internal (GType        param_type,
   
   pspec = (gpointer) g_type_create_instance (param_type);
 
-  if ((flags & G_PARAM_STATIC_NAME))
-    pspec->name = (gchar *) name;
+  if (flags & G_PARAM_STATIC_NAME)
+    {
+      pspec->name = g_intern_static_string (name);
+      if (!is_canonical (pspec->name))
+        g_warning ("G_PARAM_STATIC_NAME used with non-canonical pspec name: %s", pspec->name);
+    }
   else
     {
       pspec->name = g_strdup (name);
       canonicalize_key (pspec->name);
+      g_intern_string (pspec->name);
     }
 
   if (flags & G_PARAM_STATIC_NICK)
-    pspec->_nick = (gchar *) nick;
+    pspec->_nick = (gchar*) nick;
   else
     pspec->_nick = g_strdup (nick);
 
   if (flags & G_PARAM_STATIC_BLURB)
-    pspec->_blurb = (gchar *) blurb;
+    pspec->_blurb = (gchar*) blurb;
   else
     pspec->_blurb = g_strdup (blurb);
 

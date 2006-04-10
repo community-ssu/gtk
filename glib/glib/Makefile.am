@@ -30,13 +30,20 @@ endif
 
 BUILT_SOURCES = galias.h galiasdef.c
 
+MIRRORING_TAB_SOURCES = 			\
+	glib-mirroring-tab/Makefile 		\
+	glib-mirroring-tab/gen-mirroring-tab.c	\
+	glib-mirroring-tab/packtab.h		\
+	glib-mirroring-tab/packtab.c
+
 EXTRA_DIST = 			\
 	makefile.msc.in		\
 	glib.rc.in		\
 	gen-unicode-tables.pl	\
 	makegalias.pl		\
 	abicheck.sh		\
-	glib.symbols
+	glib.symbols		\
+	$(MIRRORING_TAB_SOURCES)
 
 # These may be in the builddir too
 BUILT_EXTRA_DIST = 		\
@@ -86,6 +93,7 @@ libglib_2_0_la_SOURCES = 	\
 	gmarkup.c		\
 	gmem.c			\
 	gmessages.c		\
+	gmirroringtable.h	\
 	gnode.c			\
 	goption.c		\
 	gpattern.c		\
@@ -96,8 +104,8 @@ libglib_2_0_la_SOURCES = 	\
 	grand.c			\
 	gscanner.c		\
 	gshell.c		\
-	gslist.c		\
 	gslice.c		\
+	gslist.c		\
 	gstdio.c		\
 	gstrfuncs.c		\
 	gstring.c		\
@@ -172,8 +180,8 @@ glibsubinclude_HEADERS =   \
 	grel.h		\
 	gscanner.h	\
 	gshell.h	\
-	gslist.h	\
 	gslice.h	\
+	gslist.h	\
 	gspawn.h	\
 	gstdio.h	\
 	gstrfuncs.h	\

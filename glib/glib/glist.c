@@ -37,6 +37,7 @@
 void g_list_push_allocator (gpointer dummy) { /* present for binary compat only */ }
 void g_list_pop_allocator  (void)           { /* present for binary compat only */ }
 
+#define _g_list_alloc()         g_slice_new (GList)
 #define _g_list_alloc0()        g_slice_new0 (GList)
 #define _g_list_free1(list)     g_slice_free (GList, list)
 
@@ -65,8 +66,9 @@ g_list_append (GList	*list,
   GList *new_list;
   GList *last;
   
-  new_list = _g_list_alloc0 ();
+  new_list = _g_list_alloc ();
   new_list->data = data;
+  new_list->next = NULL;
   
   if (list)
     {
@@ -78,7 +80,10 @@ g_list_append (GList	*list,
       return list;
     }
   else
-    return new_list;
+    {
+      new_list->prev = NULL;
+      return new_list;
+    }
 }
 
 GList*
@@ -87,19 +92,19 @@ g_list_prepend (GList	 *list,
 {
   GList *new_list;
   
-  new_list = _g_list_alloc0 ();
+  new_list = _g_list_alloc ();
   new_list->data = data;
+  new_list->next = list;
   
   if (list)
     {
+      new_list->prev = list->prev;
       if (list->prev)
-	{
-	  list->prev->next = new_list;
-	  new_list->prev = list->prev;
-	}
+	list->prev->next = new_list;
       list->prev = new_list;
-      new_list->next = list;
     }
+  else
+    new_list->prev = NULL;
   
   return new_list;
 }
@@ -121,14 +126,11 @@ g_list_insert (GList	*list,
   if (!tmp_list)
     return g_list_append (list, data);
   
-  new_list = _g_list_alloc0 ();
+  new_list = _g_list_alloc ();
   new_list->data = data;
-  
+  new_list->prev = tmp_list->prev;
   if (tmp_list->prev)
-    {
-      tmp_list->prev->next = new_list;
-      new_list->prev = tmp_list->prev;
-    }
+    tmp_list->prev->next = new_list;
   new_list->next = tmp_list;
   tmp_list->prev = new_list;
   
@@ -154,20 +156,18 @@ g_list_insert_before (GList   *list,
     {
       GList *node;
 
-      node = g_list_alloc ();
+      node = _g_list_alloc ();
       node->data = data;
-      if (sibling->prev)
+      node->prev = sibling->prev;
+      node->next = sibling;
+      sibling->prev = node;
+      if (node->prev)
 	{
-	  node->prev = sibling->prev;
 	  node->prev->next = node;
-	  node->next = sibling;
-	  sibling->prev = node;
 	  return list;
 	}
       else
 	{
-	  node->next = sibling;
-	  sibling->prev = node;
 	  g_return_val_if_fail (sibling == list, node);
 	  return node;
 	}
@@ -180,9 +180,10 @@ g_list_insert_before (GList   *list,
       while (last->next)
 	last = last->next;
 
-      last->next = g_list_alloc ();
+      last->next = _g_list_alloc ();
       last->next->data = data;
       last->next->prev = last;
+      last->next->next = NULL;
 
       return list;
     }
@@ -310,18 +311,20 @@ g_list_copy (GList *list)
     {
       GList *last;
 
-      new_list = _g_list_alloc0 ();
+      new_list = _g_list_alloc ();
       new_list->data = list->data;
+      new_list->prev = NULL;
       last = new_list;
       list = list->next;
       while (list)
 	{
-	  last->next = _g_list_alloc0 ();
+	  last->next = _g_list_alloc ();
 	  last->next->prev = last;
 	  last = last->next;
 	  last->data = list->data;
 	  list = list->next;
 	}
+      last->next = NULL;
     }
 
   return new_list;
@@ -494,11 +497,11 @@ g_list_foreach (GList	 *list,
     }
 }
 
-
-GList*
-g_list_insert_sorted (GList        *list,
-                      gpointer      data,
-                      GCompareFunc  func)
+static GList*
+g_list_insert_sorted_real (GList    *list,
+			   gpointer  data,
+			   GFunc     func,
+			   gpointer  user_data)
 {
   GList *tmp_list = list;
   GList *new_list;
@@ -513,12 +516,13 @@ g_list_insert_sorted (GList        *list,
       return new_list;
     }
   
-  cmp = (*func) (data, tmp_list->data);
-  
+  cmp = ((GCompareDataFunc) func) (data, tmp_list->data, user_data);
+
   while ((tmp_list->next) && (cmp > 0))
     {
       tmp_list = tmp_list->next;
-      cmp = (*func) (data, tmp_list->data);
+
+      cmp = ((GCompareDataFunc) func) (data, tmp_list->data, user_data);
     }
 
   new_list = _g_list_alloc0 ();
@@ -545,11 +549,27 @@ g_list_insert_sorted (GList        *list,
     return list;
 }
 
+GList*
+g_list_insert_sorted (GList        *list,
+		      gpointer      data,
+		      GCompareFunc  func)
+{
+  return g_list_insert_sorted_real (list, data, (GFunc) func, NULL);
+}
+
+GList*
+g_list_insert_sorted_with_data (GList            *list,
+				gpointer          data,
+				GCompareDataFunc  func,
+				gpointer          user_data)
+{
+  return g_list_insert_sorted_real (list, data, (GFunc) func, user_data);
+}
+
 static GList *
 g_list_sort_merge (GList     *l1, 
 		   GList     *l2,
 		   GFunc     compare_func,
-		   gboolean  use_data,
 		   gpointer  user_data)
 {
   GList list, *l, *lprev;
@@ -560,27 +580,21 @@ g_list_sort_merge (GList     *l1,
 
   while (l1 && l2)
     {
-      if (use_data)
-	cmp = ((GCompareDataFunc) compare_func) (l1->data, l2->data, user_data);
-      else
-	cmp = ((GCompareFunc) compare_func) (l1->data, l2->data);
+      cmp = ((GCompareDataFunc) compare_func) (l1->data, l2->data, user_data);
 
       if (cmp <= 0)
         {
 	  l->next = l1;
-	  l = l->next;
-	  l->prev = lprev; 
-	  lprev = l;
 	  l1 = l1->next;
         } 
       else 
 	{
 	  l->next = l2;
-	  l = l->next;
-	  l->prev = lprev; 
-	  lprev = l;
 	  l2 = l2->next;
         }
+      l = l->next;
+      l->prev = lprev; 
+      lprev = l;
     }
   l->next = l1 ? l1 : l2;
   l->next->prev = l;
@@ -591,7 +605,6 @@ g_list_sort_merge (GList     *l1,
 static GList* 
 g_list_sort_real (GList    *list,
 		  GFunc     compare_func,
-		  gboolean  use_data,
 		  gpointer  user_data)
 {
   GList *l1, *l2;
@@ -613,10 +626,9 @@ g_list_sort_real (GList    *list,
   l2 = l1->next; 
   l1->next = NULL; 
 
-  return g_list_sort_merge (g_list_sort_real (list, compare_func, use_data, user_data),
-			    g_list_sort_real (l2, compare_func, use_data, user_data),
+  return g_list_sort_merge (g_list_sort_real (list, compare_func, user_data),
+			    g_list_sort_real (l2, compare_func, user_data),
 			    compare_func,
-			    use_data,
 			    user_data);
 }
 
@@ -624,7 +636,7 @@ GList *
 g_list_sort (GList        *list,
 	     GCompareFunc  compare_func)
 {
-  return g_list_sort_real (list, (GFunc) compare_func, FALSE, NULL);
+  return g_list_sort_real (list, (GFunc) compare_func, NULL);
 			    
 }
 
@@ -633,7 +645,7 @@ g_list_sort_with_data (GList            *list,
 		       GCompareDataFunc  compare_func,
 		       gpointer          user_data)
 {
-  return g_list_sort_real (list, (GFunc) compare_func, TRUE, user_data);
+  return g_list_sort_real (list, (GFunc) compare_func, user_data);
 }
 
 #define __G_LIST_C__

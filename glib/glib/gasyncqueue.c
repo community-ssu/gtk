@@ -39,6 +39,11 @@ struct _GAsyncQueue
   gint32 ref_count;
 };
 
+typedef struct {
+  GCompareDataFunc func;
+  gpointer         user_data;
+} SortData;
+
 /**
  * g_async_queue_new:
  * 
@@ -83,6 +88,10 @@ g_async_queue_ref (GAsyncQueue *queue)
  * @queue: a #GAsyncQueue.
  * 
  * Increases the reference count of the asynchronous @queue by 1.
+ *
+ * @Deprecated: Since 2.8, reference counting is done atomically
+ * so g_async_queue_ref() can be used regardless of the @queue's
+ * lock.
  **/
 void 
 g_async_queue_ref_unlocked (GAsyncQueue *queue)
@@ -101,6 +110,10 @@ g_async_queue_ref_unlocked (GAsyncQueue *queue)
  * releases the lock. This function must be called while holding the
  * @queue's lock. If the reference count went to 0, the @queue will be
  * destroyed and the memory allocated will be freed.
+ *
+ * @Deprecated: Since 2.8, reference counting is done atomically
+ * so g_async_queue_unref() can be used regardless of the @queue's
+ * lock.
  **/
 void 
 g_async_queue_unref_and_unlock (GAsyncQueue *queue)
@@ -210,13 +223,103 @@ g_async_queue_push_unlocked (GAsyncQueue* queue, gpointer data)
     g_cond_signal (queue->cond);
 }
 
+/**
+ * g_async_queue_push_sorted:
+ * @queue: a #GAsyncQueue
+ * @data: the @data to push into the @queue
+ * @func: the #GCompareDataFunc is used to sort @queue. This function
+ *     is passed two elements of the @queue. The function should return
+ *     0 if they are equal, a negative value if the first element
+ *     should be higher in the @queue or a positive value if the first
+ *     element should be lower in the @queue than the second element.
+ * @user_data: user data passed to @func.
+ * 
+ * Inserts @data into @queue using @func to determine the new
+ * position. 
+ * 
+ * This function requires that the @queue is sorted before pushing on
+ * new elements.
+ * 
+ * This function will lock @queue before it sorts the queue and unlock
+ * it when it is finished.
+ * 
+ * For an example of @func see g_async_queue_sort(). 
+ *
+ * Since: 2.10
+ **/
+void
+g_async_queue_push_sorted (GAsyncQueue      *queue,
+			   gpointer          data,
+			   GCompareDataFunc  func,
+			   gpointer          user_data)
+{
+  g_return_if_fail (queue != NULL);
+
+  g_mutex_lock (queue->mutex);
+  g_async_queue_push_sorted_unlocked (queue, data, func, user_data);
+  g_mutex_unlock (queue->mutex);
+}
+
+static gint 
+g_async_queue_invert_compare (gpointer  v1, 
+			      gpointer  v2, 
+			      SortData *sd)
+{
+  return -sd->func (v1, v2, sd->user_data);
+}
+
+/**
+ * g_async_queue_push_sorted_unlocked:
+ * @queue: a #GAsyncQueue
+ * @data: the @data to push into the @queue
+ * @func: the #GCompareDataFunc is used to sort @queue. This function
+ *     is passed two elements of the @queue. The function should return
+ *     0 if they are equal, a negative value if the first element
+ *     should be higher in the @queue or a positive value if the first
+ *     element should be lower in the @queue than the second element.
+ * @user_data: user data passed to @func.
+ * 
+ * Inserts @data into @queue using @func to determine the new
+ * position.
+ * 
+ * This function requires that the @queue is sorted before pushing on
+ * new elements.
+ * 
+ * This function is called while holding the @queue's lock.
+ * 
+ * For an example of @func see g_async_queue_sort(). 
+ *
+ * Since: 2.10
+ **/
+void
+g_async_queue_push_sorted_unlocked (GAsyncQueue      *queue,
+				    gpointer          data,
+				    GCompareDataFunc  func,
+				    gpointer          user_data)
+{
+  SortData sd;
+  
+  g_return_if_fail (queue != NULL);
+
+  sd.func = func;
+  sd.user_data = user_data;
+
+  g_queue_insert_sorted (queue->queue, 
+			 data, 
+			 (GCompareDataFunc)g_async_queue_invert_compare, 
+			 &sd);
+  if (queue->waiting_threads > 0)
+    g_cond_signal (queue->cond);
+}
+
 static gpointer
-g_async_queue_pop_intern_unlocked (GAsyncQueue* queue, gboolean try, 
-				   GTimeVal *end_time)
+g_async_queue_pop_intern_unlocked (GAsyncQueue *queue, 
+				   gboolean     try, 
+				   GTimeVal    *end_time)
 {
   gpointer retval;
 
-  if (!g_queue_peek_tail (queue->queue))
+  if (!g_queue_peek_tail_link (queue->queue))
     {
       if (try)
 	return NULL;
@@ -227,18 +330,18 @@ g_async_queue_pop_intern_unlocked (GAsyncQueue* queue, gboolean try,
       if (!end_time)
         {
           queue->waiting_threads++;
-	  while (!g_queue_peek_tail (queue->queue))
-            g_cond_wait(queue->cond, queue->mutex);
+	  while (!g_queue_peek_tail_link (queue->queue))
+            g_cond_wait (queue->cond, queue->mutex);
           queue->waiting_threads--;
         }
       else
         {
           queue->waiting_threads++;
-          while (!g_queue_peek_tail (queue->queue))
+          while (!g_queue_peek_tail_link (queue->queue))
             if (!g_cond_timed_wait (queue->cond, queue->mutex, end_time))
               break;
           queue->waiting_threads--;
-          if (!g_queue_peek_tail (queue->queue))
+          if (!g_queue_peek_tail_link (queue->queue))
 	    return NULL;
         }
     }
@@ -442,6 +545,97 @@ g_async_queue_length_unlocked (GAsyncQueue* queue)
   g_return_val_if_fail (g_atomic_int_get (&queue->ref_count) > 0, 0);
 
   return queue->queue->length - queue->waiting_threads;
+}
+
+/**
+ * g_async_queue_sort:
+ * @queue: a #GAsyncQueue
+ * @func: the #GCompareDataFunc is used to sort @queue. This
+ *     function is passed two elements of the @queue. The function
+ *     should return 0 if they are equal, a negative value if the
+ *     first element should be higher in the @queue or a positive
+ *     value if the first element should be lower in the @queue than
+ *     the second element. 
+ * @user_data: user data passed to @func
+ *
+ * Sorts @queue using @func. 
+ *
+ * This function will lock @queue before it sorts the queue and unlock
+ * it when it is finished.
+ *
+ * If you were sorting a list of priority numbers to make sure the
+ * lowest priority would be at the top of the queue, you could use:
+ * <informalexample><programlisting> 
+ *  gint32 id1;
+ *  gint32 id2;
+ *   
+ *  id1 = GPOINTER_TO_INT (element1);
+ *  id2 = GPOINTER_TO_INT (element2);
+ *   
+ *  return (id1 > id2 ? +1 : id1 == id2 ? 0 : -1);
+ * </programlisting></informalexample>
+ *
+ * Since: 2.10
+ **/
+void
+g_async_queue_sort (GAsyncQueue      *queue,
+		    GCompareDataFunc  func,
+		    gpointer          user_data)
+{
+  g_return_if_fail (queue != NULL);
+  g_return_if_fail (func != NULL);
+
+  g_mutex_lock (queue->mutex);
+  g_async_queue_sort_unlocked (queue, func, user_data);
+  g_mutex_unlock (queue->mutex);
+}
+
+/**
+ * g_async_queue_sort_unlocked:
+ * @queue: a #GAsyncQueue
+ * @func: the #GCompareDataFunc is used to sort @queue. This
+ *     function is passed two elements of the @queue. The function
+ *     should return 0 if they are equal, a negative value if the
+ *     first element should be higher in the @queue or a positive
+ *     value if the first element should be lower in the @queue than
+ *     the second element. 
+ * @user_data: user data passed to @func
+ *
+ * Sorts @queue using @func. 
+ *
+ * This function is called while holding the @queue's lock.
+ * 
+ * Since: 2.10
+ **/
+void
+g_async_queue_sort_unlocked (GAsyncQueue      *queue,
+			     GCompareDataFunc  func,
+			     gpointer          user_data)
+{
+  SortData sd;
+
+  g_return_if_fail (queue != NULL);
+  g_return_if_fail (func != NULL);
+
+  sd.func = func;
+  sd.user_data = user_data;
+
+  g_queue_sort (queue->queue, 
+		(GCompareDataFunc)g_async_queue_invert_compare, 
+		&sd);
+}
+
+/*
+ * Private API
+ */
+
+GMutex*
+_g_async_queue_get_mutex (GAsyncQueue* queue)
+{
+  g_return_val_if_fail (queue, NULL);
+  g_return_val_if_fail (g_atomic_int_get (&queue->ref_count) > 0, NULL);
+
+  return queue->mutex;
 }
 
 #define __G_ASYNCQUEUE_C__

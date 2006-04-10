@@ -1,22 +1,73 @@
-2006-01-18  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.8.6 ===
-
-2006-01-03  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.8.5 ===
+2006-04-07  Matthias Clasen  <mclasen@redhat.com>
 	
-2005-11-15  Matthias Clasen  <mclasen@redhat.com>
+	* === Released 2.10.2 ===
 
-	* ===  Released 2.8.4 ===
+2006-03-11  Tor Lillqvist  <tml@novell.com>
 
-2005-10-03  Matthias Clasen  <mclasen@redhat.com>
+	* gthread-win32.c: #define _WIN32_WINDOWS as 0x0401 to get
+	declaration for IsDebuggerPresent() when using MSVC6. (#333879,
+	Kazuki Iwamoto)
 
-	* === Released 2.8.3 ===
+2006-03-07  Matthias Clasen  <mclasen@redhat.com>
 
-2005-09-26  Matthias Clasen  <mclasen@redhat.com>
+	* ===  Released 2.10.1 ===
 
-	* === Released 2.8.2 ===
+2006-03-02  Tor Lillqvist  <tml@novell.com>
+
+	* gthread-win32.c (G_PRIVATE_MAX): Increase to 100. 16 was rather
+	low.
+	(g_private_new_win32_impl): Can't use g_error() here as
+	g_private_new() is called a few times by GLib internally before
+	the messaging system that g_error() requires is ready. Thanks to
+	Tim Janik for noticing. Just display a MessageBox() and abort()
+	instead.
+
+2006-02-24  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.0 ===
+
+2006-02-20  Tor Lillqvist  <tml@novell.com>
+
+	* gthread-win32.c (g_thread_exit_win32_impl): Make the
+	implementation of GPrivate behave more closely as in POSIX
+	threads: The value associacted with a GPrivate must be set to NULL
+	before calling the destructor. (The destructor gets the original
+	value as argument.)  A destructor might re-associate a non-NULL
+	value with some GPrivate. To deal with this, if after all
+	destructors have been called, there still are some non-NULL
+	values, the process is repeated. (#331367)
+
+2006-02-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.6 ===
+
+2006-01-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.5 ===
+
+2006-01-18  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.9.4 ===
+
+2006-01-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.3 ===
+
+2006-01-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.2 ===
+
+2005-12-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.1 ===
+
+2005-12-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* Makefile.am: Remove gthread-solaris.c
+
+2005-11-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.0 ===
 
 2005-08-23  Matthias Clasen  <mclasen@redhat.com>
 

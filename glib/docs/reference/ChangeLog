@@ -1,14 +1,249 @@
+2006-04-07  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.10.2 ===
+
+2006-03-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/types.sgml: Document G_HAVE_GINT64 as deprecated.
+	(#335294, Richard Laager)
+
+2006-03-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/option.sgml: Hint that @error should
+	be set in error cases.  (#334646, Christian Persch)
+
+2006-03-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/templ/timers.sgml: Mention that the second
+	parameter of g_timer_elapsed can be NULL (#333916,
+	Christian Neumair)
+
+2006-03-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* ===  Released 2.10.1 ===
+
+2006-02-24  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.0 ===
+
+2006-02-22  Stefan Kost  <ensonic@users.sf.net>
+
+	* gobject/tmpl/gtype.sgml:
+	  add @since: for _add_private, _GET_PRIVATE
+	* gobject/tut_gobject.xml:
+	  fix example to use ->priv and not ->private
+	* gobject/tut_howto.xml:
+	  fix g_type_class_add_private example
+
+2006-02-14  Tor Lillqvist  <tml@novell.com>
+
+	* glib/tmpl/iochannels.sgml: Document some Windows-specific issues.
+
+	* glib/glib-sections.txt: Move three Windows-specific functions
+	that now are documented from being Private to the correct section.
+
+2006-02-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.6 ===
+
+2006-02-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/date.sgml: Fix a typo (#329123, Kjartan Maraas)
+
+2006-01-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.5 ===
+
+2006-01-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/glib-sections.txt: 
+	* glib/tmpl/memory.sgml: Document g_mem_gc_friendly.
+
+2006-01-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/tut_tools.xml: Mention g_trap_object_ref
+
+	* glib/running.sgml: Add g_trap variables to the index.
+	Mention conditional breakpoints as an alternative.
+
+Wed Jan 25 17:32:22 2006  Tim Janik  <timj@gtk.org>
+
+	* glib/tmpl/memory_slices.sgml: link to G_DEBUG/G_SLICE where appropriate.
+
+Wed Jan 25 17:12:47 2006  Tim Janik  <timj@gtk.org>
+
+	* glib/running.sgml: documented G_SLICE=always-malloc and
+	G_DEBUG=gc-friendly. added anchors for each env var.
+
+2006-01-18  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.9.4 ===
+
 2006-01-18  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.8.6 ===
+	* glib/tmpl/scanner.sgml: Add a note explaining peculiarities
+	of peek_token wrt to scope changes.  (#307922)
+	
+2006-01-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/memory.sgml: Add a note about casting the results
+	of g_new() and g_new0().
+
+2006-01-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.3 ===
+
+2006-01-12  Federico Mena Quintero  <federico@ximian.com>
+
+	* glib/file-name-encodings.sxd: Replaced with the correct file.
+
+	* glib/file-name-encodings.png: Huh?  This was a 6-byte file.
+	Replaced it with the correct one.
+
+2006-01-07  Stefan Kost  <ensonic@users.sf.net>
+
+	* gobject/tut_gtype.xml:
+	  fix internal link, little XXX cleanup
+
+2006-01-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.2 ===
 
 2006-01-03  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.8.5 ===
-	
-2005-11-15  Matthias Clasen  <mclasen@redhat.com>
+	* glib/glib-sections.txt: Add new API 
 
-	* ===  Released 2.8.4 ===
+2006-01-02  Stepan Kasal  <kasal@ucw.cz>
+
+	* glib/glib-docs.sgml (glib-Windows-Compatability-Functions): Rename
+	(glib-Windows-Compatibility-Functions): , ie. s/Compata/Compati/
+	* glib/glib-sections.txt: s/Compata/Compati/
+
+2005-12-24  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/gobject-sections.txt:
+	* gobject/tmpl/param_value_types.sgml: Document GType 
+	paramspecs
+
+2005-12-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/glib-sections.txt: add g_thread_pool_set_sort_function.
+	
+2005-12-19  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/*.sgml: Update versioned deprecation
+
+	* gobject/tmpl/gboxed.sgml: Document G_TYPE_HASH_TABLE.
+
+	* glib/glib-sections.txt: Add g_list_free1
+
+	* glib/glib-overrides.txt: Remove G_THREADS_IMPL_SOLARIS
+
+2005-12-14  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/glib-sections.txt: 
+	* glib/tmpl/atomic_operations.sgml: Document new atomic
+	operations.
+
+2005-12-14  Federico Mena Quintero  <federico@ximian.com>
+
+	* glib/building.sgml: Clarify exactly what happens when you use --enable-gc-friendly.
+
+Mon Dec 12 15:31:41 2005  Tim Janik  <timj@imendio.com>
+
+	* gobject/tmpl/objects.sgml: corrected floating reference documentation.
+
+2005-12-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.1 ===
+
+2005-12-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/tmpl/gparamspec.sgml: 
+	* gobject/tmpl/gtype.sgml: Document n_preallocs as
+	ignored.
+
+2005-12-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/glib-sections.txt: Updates
+	
+	* glib/tmpl/memory_slices.sgml: Fix a small formatting
+	problem.
+
+	* glib/tmpl/trees-nary.sgml: 
+	* glib/tmpl/linked_lists_single.sgml: 
+	* glib/tmpl/linked_lists_double.sgml: 
+	* glib/tmpl/caches.sgml: 
+	* glib/tmpl/strings.sgml: 
+	* glib/tmpl/scanner.sgml: 
+	* glib/tmpl/main.sgml: Add versioned deprecation.
+
+Mon Dec  5 15:53:37 2005  Tim Janik  <timj@imendio.com>
+
+	* glib/tmpl/memory_slices.sgml: updates to new g_slice API
+	and minor fixes.
+
+2005-12-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/tmpl/generic_values.sgml: 
+	* glib/tmpl/trees-nary.sgml: 
+	* glib/tmpl/linked_lists_double.sgml: 
+	* glib/tmpl/linked_lists_single.sgml: 
+	* glib/tmpl/memory_chunks.sgml: 
+	* glib/tmpl/allocators.sgml: 
+	* glib/tmpl/macros_misc.sgml: Updates 
+
+	* glib/Makefile.am: Ignore gmirroringtable.h
+
+2005-12-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/macros_misc.sgml: Document G_GNUC_WARN_UNUSED_RESULT.
+
+2005-12-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/caches.sgml: Document g_cache_value_foreach
+	as deprecated; document g_cache_key_foreach more thorougly
+
+	* glib/glib-sections.txt:
+	* glib/tmpl/linked_lists_single.sgml: Add g_slist_free1.
+
+	* glib/tmpl/memory_chunks.sgml: Document GMemChunk
+	as deprecated.
+
+	* glib/glib-docs.sgml: 
+	* glib/glib-sections.txt: 
+	* glib/tmpl/memory_slices.sgml: Document the slice
+	allocator.
+
+2005-12-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/building.sgml: 
+	* glib/tmpl/threads.sgml: 
+	* glib/glib-sections.txt: Remove G_THREADS_IMPL_SOLARIS
+
+	* glib/tmpl/types.sgml: Document G_GUINT64_CONSTANT.
+
+2005-11-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/gobject-sections.txt: 
+	* gobject/tmpl/gboxed.sgml: Add g_object_ref_sink,
+	g_object_is_floating, g_param_spec_ref_sink, 
+	G_TYPE_HASH_TABLE
+
+2005-11-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/glib-sections.txt: Add g_hash_table_ref
+	and g_hash_table_unref
+
+2005-11-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.0 ===
+
+2005-11-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/date.sgml: 
+	* glib/glib-sections.txt: Add g_date_set_time_t,
+	g_date_set_time_val and g_thread_foreach
 
 2005-11-08  Matthias Clasen  <mclasen@redhat.com>
 
@@ -19,20 +254,43 @@
 
 	* glib/running.sgml: Document fatal_criticals.
 
-2005-10-03  Matthias Clasen  <mclasen@redhat.com>
+2005-10-26  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.8.3 ===
+	* gobject/gobject-sections.txt: 
+	* gobject/tmpl/generic_values.sgml: Document g_value_set_instance(),
+	(#319885, Milosz Derezynski)
+
+2005-10-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/unicode.sgml: Add a footnote about surrogate 
+	pairs.  (#317683, Behdad Esfahbod)
+
+2005-10-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/compiling.sgml: Document gmodule-no-export-2.0
 
 2005-10-01  Davyd Madeley  <davyd@fugro-fsi.com.au>
 
 	* glib/tmpl/string_utils.sgml: Minor documentation improvements for
-	  g_strchug, g_strchomp and g_strstrip.
+	  g_strchug, g_strchomp and g_strstrip. Brought forward from glib-2-8.
 
-2005-09-26  Matthias Clasen  <mclasen@redhat.com>
+2005-08-31  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.8.2 ===
+	* glib/tmpl/quarks.sgml: 
+	* glib/glib-sections.txt: Add string interning functions.
+
+2005-08-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/arrays.sgml: 
+	* glib/tmpl/arrays_pointer.sgml: 
+	* glib/tmpl/arrays_byte.sgml: Enhance sort() documentation.
+	(#314839, Behdad Esfahbod)
 
 2005-08-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/glib-docs.sgml:
+	* gobject/gobject-docs.sgml: Add indices for new
+	symbols in 2.10
 
 	Improvements pointed out by Behdad Esfahbod (#314460):
 	

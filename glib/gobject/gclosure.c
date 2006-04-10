@@ -68,7 +68,7 @@ G_STMT_START {                                                                  
 #define DEC(_closure, _field)                   CHANGE_FIELD (_closure, _field, -=,     1, TRUE,     (void),     (void) )
 #define DEC_ASSIGN(_closure, _field, _newv)     CHANGE_FIELD (_closure, _field, -=,     1, TRUE,     (void), *(_newv) = )
 
-#if 0   // for non-thread-safe closures
+#if 0   /* for non-thread-safe closures */
 #define SWAP(cl,f,v,o)     (void) (*(o) = cl->f, cl->f = v)
 #define SET(cl,f,v)        (void) (cl->f = v)
 #define INC(cl,f)          (void) (cl->f += 1)
@@ -196,7 +196,6 @@ g_closure_set_meta_marshal (GClosure       *closure,
 			    GClosureMarshal meta_marshal)
 {
   GClosureNotifyData *notifiers;
-  guint n;
 
   g_return_if_fail (closure != NULL);
   g_return_if_fail (meta_marshal != NULL);
@@ -204,7 +203,6 @@ g_closure_set_meta_marshal (GClosure       *closure,
   g_return_if_fail (closure->in_marshal == FALSE);
   g_return_if_fail (closure->meta_marshal == 0);
 
-  n = CLOSURE_N_NOTIFIERS (closure);
   notifiers = closure->notifiers;
   closure->notifiers = g_renew (GClosureNotifyData, NULL, CLOSURE_N_NOTIFIERS (closure) + 1);
   if (notifiers)

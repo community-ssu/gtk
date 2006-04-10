@@ -29,6 +29,11 @@ Allocates @n_structs elements of type @struct_type.
 The returned pointer is cast to a pointer to the given type.
 If @n_structs is 0 it returns %NULL.
 </para>
+<para>
+Since the returned pointer is already casted to the right type,
+it is normally unnecessary to cast it explicitly, and doing
+so might hide memory allocation errors.
+</para>
 
 @struct_type: the type of the elements to allocate.
 @n_structs: the number of elements to allocate.
@@ -40,6 +45,11 @@ If @n_structs is 0 it returns %NULL.
 Allocates @n_structs elements of type @struct_type, initialized to 0's.
 The returned pointer is cast to a pointer to the given type.
 If @n_structs is 0 it returns %NULL.
+</para>
+<para>
+Since the returned pointer is already casted to the right type,
+it is normally unnecessary to cast it explicitly, and doing
+so might hide memory allocation errors.
 </para>
 
 @struct_type: the type of the elements to allocate.
@@ -177,6 +187,13 @@ If @mem is %NULL it simply returns.
 </para>
 
 @mem: the memory to free.
+
+
+<!-- ##### VARIABLE g_mem_gc_friendly ##### -->
+<para>
+This variable is %TRUE if the <envar>G_DEBUG</envar> environment variable
+includes the key <link linkend="G_DEBUG">gc-friendly</link>.  
+</para>
 
 
 <!-- ##### MACRO g_alloca ##### -->

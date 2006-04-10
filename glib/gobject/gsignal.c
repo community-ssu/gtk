@@ -139,7 +139,7 @@ struct _SignalNode
   /* permanent portion */
   guint              signal_id;
   GType              itype;
-  gchar             *name;
+  const gchar       *name;
   guint              destroyed : 1;
   
   /* reinitializable portion */
@@ -226,9 +226,6 @@ static GBSearchConfig g_class_closure_bconfig = {
 static GHashTable    *g_handler_list_bsa_ht = NULL;
 static Emission      *g_recursive_emissions = NULL;
 static Emission      *g_restart_emissions = NULL;
-#ifndef DISABLE_MEM_POOLS
-static GTrashStack   *g_handler_ts = NULL;
-#endif
 static gulong         g_handler_sequential_number = 1;
 G_LOCK_DEFINE_STATIC (g_signal_mutex);
 #define	SIGNAL_LOCK()		G_LOCK (g_signal_mutex)
@@ -390,11 +387,6 @@ handler_match_prepend (HandlerMatch *list,
 {
   HandlerMatch *node;
   
-  /* yeah, we could use our own memchunk here, introducing yet more
-   * rarely used cached nodes and extra allocation overhead.
-   * instead, we use GList* nodes, since they are exactly the size
-   * we need and are already cached. g_signal_init() asserts this.
-   */
   node = g_slice_new (HandlerMatch);
   node->handler = handler;
   node->next = list;
@@ -717,9 +709,6 @@ g_signal_init (void)
   SIGNAL_LOCK ();
   if (!g_n_signal_nodes)
     {
-      /* handler_id_node_prepend() requires this */
-      g_assert (sizeof (GList) == sizeof (HandlerMatch));
-      
       /* setup handler list binary searchable array hash table (in german, that'd be one word ;) */
       g_handler_list_bsa_ht = g_hash_table_new (g_direct_hash, NULL);
       g_signal_key_bsa = g_bsearch_array_create (&g_signal_key_bconfig);
@@ -1082,14 +1071,14 @@ G_CONST_RETURN gchar*
 g_signal_name (guint signal_id)
 {
   SignalNode *node;
-  gchar *name;
+  const gchar *name;
   
   SIGNAL_LOCK ();
   node = LOOKUP_SIGNAL_NODE (signal_id);
   name = node ? node->name : NULL;
   SIGNAL_UNLOCK ();
   
-  return name;
+  return (char*) name;
 }
 
 void
@@ -1315,8 +1304,9 @@ g_signal_newv (const gchar       *signal_name,
       key.quark = g_quark_from_string (node->name);
       key.signal_id = signal_id;
       g_signal_key_bsa = g_bsearch_array_insert (g_signal_key_bsa, &g_signal_key_bconfig, &key);
-      g_strdelimit (node->name, "_", '-');
-      key.quark = g_quark_from_static_string (node->name);
+      g_strdelimit (name, "_", '-');
+      node->name = g_intern_string (name);
+      key.quark = g_quark_from_string (name);
       g_signal_key_bsa = g_bsearch_array_insert (g_signal_key_bsa, &g_signal_key_bconfig, &key);
     }
   node->destroyed = FALSE;
@@ -1346,6 +1336,8 @@ g_signal_newv (const gchar       *signal_name,
       node->test_class_offset = TEST_CLASS_MAGIC;
     }
   SIGNAL_UNLOCK ();
+
+  g_free (name);
 
   return signal_id;
 }
@@ -2035,10 +2027,10 @@ g_signal_emitv (const GValue *instance_and_params,
 		GQuark	      detail,
 		GValue       *return_value)
 {
-  const GValue *param_values;
   gpointer instance;
   SignalNode *node;
 #ifdef G_ENABLE_DEBUG
+  const GValue *param_values;
   guint i;
 #endif
   
@@ -2047,8 +2039,10 @@ g_signal_emitv (const GValue *instance_and_params,
   g_return_if_fail (G_TYPE_CHECK_INSTANCE (instance));
   g_return_if_fail (signal_id > 0);
 
+#ifdef G_ENABLE_DEBUG
   param_values = instance_and_params + 1;
-  
+#endif
+
   SIGNAL_LOCK ();
   node = LOOKUP_SIGNAL_NODE (signal_id);
   if (!node || !g_type_is_a (G_TYPE_FROM_INSTANCE (instance), node->itype))

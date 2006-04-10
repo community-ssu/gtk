@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: glib HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-18 12:03-0500\n"
+"POT-Creation-Date: 2006-04-07 13:20-0400\n"
 "PO-Revision-Date: 2005-11-16 11:21+0200\n"
 "Last-Translator: Vital Khilko <vk@altlinux.ru>\n"
 "Language-Team: Belarusian <i18n@mova.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 # glib/gconvert.c:390
-#: glib/gconvert.c:408 glib/gconvert.c:486
+#: glib/gconvert.c:408 glib/gconvert.c:486 glib/giochannel.c:1150
 #, c-format
 msgid "Conversion from character set '%s' to '%s' is not supported"
 msgstr "Пераўтварэньне з набору знакаў \"%s\" у \"%s\" не падтрымліваецца"
@@ -32,8 +32,8 @@ msgstr "Не атрымалася адкрыць пераўтваральнік 
 # glib/giochannel.c:1324 glib/giochannel.c:2163 glib/gutf8.c:875
 # glib/gutf8.c:1320
 #: glib/gconvert.c:606 glib/gconvert.c:995 glib/giochannel.c:1322
-#: glib/giochannel.c:1364 glib/giochannel.c:2206 glib/gutf8.c:912
-#: glib/gutf8.c:1361
+#: glib/giochannel.c:1364 glib/giochannel.c:2206 glib/gutf8.c:943
+#: glib/gutf8.c:1392
 #, c-format
 msgid "Invalid byte sequence in conversion input"
 msgstr "Недапушчальная пасьлядоўнасьць байтаў на ўваходзе пераўтварэньня"
@@ -48,8 +48,8 @@ msgstr "Памылка ў часе пераўтварэньня: %s"
 
 # glib/gconvert.c:615 glib/gutf8.c:871 glib/gutf8.c:1071 glib/gutf8.c:1212
 # glib/gutf8.c:1316
-#: glib/gconvert.c:647 glib/gutf8.c:908 glib/gutf8.c:1112 glib/gutf8.c:1253
-#: glib/gutf8.c:1357
+#: glib/gconvert.c:647 glib/gutf8.c:939 glib/gutf8.c:1143 glib/gutf8.c:1284
+#: glib/gutf8.c:1388
 #, c-format
 msgid "Partial character sequence at end of input"
 msgstr "Няпоўны сымбаль у канцы ўваходнага радку"
@@ -150,96 +150,62 @@ msgstr "Збой адкрыцьця файлу \"%s\": збой fdopen(): %s"
 msgid "Failed to rename file '%s' to '%s': g_rename() failed: %s"
 msgstr "Збой зьмены назвы файлу \"%s\" на '%s': збой g_rename(): %s"
 
-# glib/gfileutils.c:505
-#: glib/gfileutils.c:952
-#, c-format
-msgid "Could not change file mode: fork() failed: %s"
-msgstr "Не магчыма зьмяніць рэжым файлу: збой fork(): %s"
-
-# glib/gfileutils.c:337 glib/gfileutils.c:402
-#: glib/gfileutils.c:983
-#, c-format
-msgid "Could not change file mode: waitpid() failed: %s"
-msgstr "Немагчыма зьмяніць рэжым файлу: збой waitpid(): %s"
-
-# glib/gfileutils.c:505
-#: glib/gfileutils.c:1002
-#, c-format
-msgid "Could not change file mode: chmod() failed: %s"
-msgstr "Не магчыма зьмяніць рэжым файлу: збой chmod(): %s"
-
-#: glib/gfileutils.c:1013
-#, c-format
-msgid "Could not change file mode: Child terminated by signal: %s"
-msgstr "Не магчыма зьмяніць рэжым файлу: Нашчадак забіты сыгналам: %s"
-
-#: glib/gfileutils.c:1024
-#, c-format
-msgid "Could not change file mode: Child terminated abnormally"
-msgstr "Не магчыма зьмяніць рэжым файлу: Нашчадак ненармальна завяршыўся "
-
 # glib/gfileutils.c:745
-#: glib/gfileutils.c:1058 glib/gfileutils.c:1524
+#: glib/gfileutils.c:950 glib/gfileutils.c:1415
 #, c-format
 msgid "Failed to create file '%s': %s"
 msgstr "Збой стварэньня файлу \"%s\": %s"
 
 # glib/gfileutils.c:505
-#: glib/gfileutils.c:1080
+#: glib/gfileutils.c:964
 #, c-format
 msgid "Failed to open file '%s' for writing: fdopen() failed: %s"
 msgstr "Збой адкрыцьця файла %s' для запісу: збой fdopen(): %s"
 
 # glib/gfileutils.c:505
-#: glib/gfileutils.c:1105
+#: glib/gfileutils.c:989
 #, c-format
 msgid "Failed to write file '%s': fwrite() failed: %s"
 msgstr "Збой запісу файлу '%s': збой fwrite(): %s"
 
 # glib/gfileutils.c:505
-#: glib/gfileutils.c:1124
+#: glib/gfileutils.c:1008
 #, c-format
 msgid "Failed to close file '%s': fclose() failed: %s"
 msgstr "Збой закрыцьця файлу %s': збой fclose(): %s"
 
-#: glib/gfileutils.c:1242
+#: glib/gfileutils.c:1126
 #, c-format
 msgid "Existing file '%s' could not be removed: g_unlink() failed: %s"
 msgstr "Наяўны файл '%s' не можа быць выдалены: збой g_unlink(): %s"
 
 # glib/gfileutils.c:712
-#: glib/gfileutils.c:1485
+#: glib/gfileutils.c:1376
 #, c-format
 msgid "Template '%s' invalid, should not contain a '%s'"
 msgstr "Шаблён \"%s\" недапушчальны, не павінны ўтрымліваць \"%s\""
 
 # glib/gfileutils.c:724
-#: glib/gfileutils.c:1499
+#: glib/gfileutils.c:1390
 #, c-format
 msgid "Template '%s' doesn't end with XXXXXX"
 msgstr "Шаблён \"%s\" канчацца не на XXXXXX"
 
 # glib/gfileutils.c:745
-#: glib/gfileutils.c:1974
+#: glib/gfileutils.c:1865
 #, c-format
 msgid "Failed to read the symbolic link '%s': %s"
 msgstr "Немагчыма прачытаць сымбалічную спасылку \"%s\": %s"
 
-#: glib/gfileutils.c:1995
+#: glib/gfileutils.c:1886
 #, c-format
 msgid "Symbolic links not supported"
 msgstr "Сымбалічныя спасылкі не падтрымліваюцца"
 
-# glib/giochannel.c:1110
-#: glib/giochannel.c:1150
-#, c-format
-msgid "Conversion from character set `%s' to `%s' is not supported"
-msgstr "Пераўтварэньне з набору сымбаляў \"%s\" у \"%s\" не падтрымліваецца"
-
 # glib/giochannel.c:1114
 #: glib/giochannel.c:1154
 #, c-format
-msgid "Could not open converter from `%s' to `%s': %s"
+msgid "Could not open converter from '%s' to '%s': %s"
 msgstr "Не атрымалася адкрыць пераўтваральнік з \"%s\" у \"%s\": %s"
 
 # glib/giochannel.c:1460
@@ -276,7 +242,7 @@ msgid "Failed to open file '%s': open() failed: %s"
 msgstr "Збой адкрыцьця файлу \"%s\": збой open(): %s"
 
 # glib/gfileutils.c:505
-#: glib/gmappedfile.c:185
+#: glib/gmappedfile.c:193
 #, c-format
 msgid "Failed to map file '%s': mmap() failed: %s"
 msgstr "Збой мапаваньня файлу  '%s': збой mmap(): %s"
@@ -566,43 +532,69 @@ msgid "Text was empty (or contained only whitespace)"
 msgstr "Тэкст быў пусты (ці утрымліваў толькі прагалы)"
 
 # glib/gspawn-win32.c:214
-#: glib/gspawn-win32.c:277
+#: glib/gspawn-win32.c:276
 #, c-format
 msgid "Failed to read data from child process"
 msgstr "Збой чытаньня даньняў з працэсу-нашчадка"
 
 # glib/gspawn-win32.c:981 glib/gspawn.c:1228
-#: glib/gspawn-win32.c:292 glib/gspawn.c:1375
+#: glib/gspawn-win32.c:291 glib/gspawn.c:1364
 #, c-format
 msgid "Failed to create pipe for communicating with child process (%s)"
 msgstr "Збой стварэньня канала для абмену з працэсам-нашчадкам (%s)"
 
 # glib/gspawn-win32.c:843 glib/gspawn.c:914
-#: glib/gspawn-win32.c:330 glib/gspawn.c:1039
+#: glib/gspawn-win32.c:329 glib/gspawn.c:1028
 #, c-format
 msgid "Failed to read from child pipe (%s)"
 msgstr "Збой чытаньня даньняў з каналу нашчадка (%s)"
 
 # glib/gspawn-win32.c:931 glib/gspawn.c:1119
-#: glib/gspawn-win32.c:356 glib/gspawn.c:1244
+#: glib/gspawn-win32.c:355 glib/gspawn.c:1233
 #, c-format
 msgid "Failed to change to directory '%s' (%s)"
 msgstr "Збой зьмены каталёга \"%s\" (%s)"
 
 # glib/gspawn-win32.c:940
-#: glib/gspawn-win32.c:362 glib/gspawn-win32.c:582
+#: glib/gspawn-win32.c:361 glib/gspawn-win32.c:581
 #, c-format
 msgid "Failed to execute child process (%s)"
 msgstr "Збой выкананьня працэсу-нашчадка (%s)"
 
+# glib/gconvert.c:1729
+#: glib/gspawn-win32.c:471 glib/gspawn-win32.c:527
+#, c-format
+msgid "Invalid program name: %s"
+msgstr "Недапушчальная назва праграмы: %s"
+
+#: glib/gspawn-win32.c:481 glib/gspawn-win32.c:537 glib/gspawn-win32.c:780
+#: glib/gspawn-win32.c:835 glib/gspawn-win32.c:1370
+#, c-format
+msgid "Invalid string in argument vector at %d: %s"
+msgstr "Недапушчальны радок у вэктары аргумэнту ў %d: %s"
+
+# glib/gutf8.c:1039 glib/gutf8.c:1048 glib/gutf8.c:1180 glib/gutf8.c:1189
+# glib/gutf8.c:1330 glib/gutf8.c:1426
+#: glib/gspawn-win32.c:492 glib/gspawn-win32.c:548 glib/gspawn-win32.c:794
+#: glib/gspawn-win32.c:848 glib/gspawn-win32.c:1403
+#, c-format
+msgid "Invalid string in environment: %s"
+msgstr "Недапушчальны радок у асяродзьдзі: %s"
+
+# glib/gdir.c:79
+#: glib/gspawn-win32.c:776 glib/gspawn-win32.c:831 glib/gspawn-win32.c:1351
+#, c-format
+msgid "Invalid working directory: %s"
+msgstr "Недапушчальны працоўны каталёг: %s"
+
 # glib/gspawn-win32.c:940
-#: glib/gspawn-win32.c:891
+#: glib/gspawn-win32.c:890
 #, c-format
 msgid "Failed to execute helper program (%s)"
 msgstr "Збой выкананьня праграмы дапамогі (%s)"
 
 # glib/gspawn-win32.c:365
-#: glib/gspawn-win32.c:1091
+#: glib/gspawn-win32.c:1090
 #, c-format
 msgid ""
 "Unexpected error in g_io_channel_win32_poll() reading data from a child "
@@ -612,127 +604,127 @@ msgstr ""
 "з працэсу-нашчадка"
 
 # glib/gspawn.c:161
-#: glib/gspawn.c:179
+#: glib/gspawn.c:168
 #, c-format
 msgid "Failed to read data from child process (%s)"
 msgstr "Збой чытаньня даньняў з працэсу-нашчадка (%s)"
 
 # glib/gspawn.c:293
-#: glib/gspawn.c:311
+#: glib/gspawn.c:300
 #, c-format
 msgid "Unexpected error in select() reading data from a child process (%s)"
 msgstr ""
 "Непрадбачаная памылка у select() чытаньня даньняў з працэсу-нашчадка (%s)"
 
 # glib/gspawn.c:376
-#: glib/gspawn.c:394
+#: glib/gspawn.c:383
 #, c-format
 msgid "Unexpected error in waitpid() (%s)"
 msgstr "Непрадбачаная памылка ў waitpid() (%s)"
 
 # glib/gspawn.c:979
-#: glib/gspawn.c:1104
+#: glib/gspawn.c:1093
 #, c-format
 msgid "Failed to fork (%s)"
 msgstr "Збой разгалінаваньня  fork() (%s)"
 
 # glib/gspawn.c:1129
-#: glib/gspawn.c:1254
+#: glib/gspawn.c:1243
 #, c-format
 msgid "Failed to execute child process \"%s\" (%s)"
 msgstr "Збой выкананьня працэсу-нашчадка \"%s\" (%s)"
 
 # glib/gspawn.c:1139
-#: glib/gspawn.c:1264
+#: glib/gspawn.c:1253
 #, c-format
 msgid "Failed to redirect output or input of child process (%s)"
 msgstr "Збой перанакіраваньня вываду ці ўводу працэсу-нашчадка (%s)"
 
 # glib/gspawn.c:1148
-#: glib/gspawn.c:1273
+#: glib/gspawn.c:1262
 #, c-format
 msgid "Failed to fork child process (%s)"
 msgstr "Збой разгалінаваньня fork() працэсу-нашчадка (%s)"
 
 # glib/gspawn.c:1156
-#: glib/gspawn.c:1281
+#: glib/gspawn.c:1270
 #, c-format
 msgid "Unknown error executing child process \"%s\""
 msgstr "Невядомая памылка выкананьня працэсу-нашчадка \"%s\""
 
 # glib/gspawn.c:1178
-#: glib/gspawn.c:1303
+#: glib/gspawn.c:1292
 #, c-format
 msgid "Failed to read enough data from child pid pipe (%s)"
 msgstr "Збой чытаньня патрэбнае колькасьці даньняў з pid канала нашчадку (%s)"
 
 # glib/gutf8.c:950
-#: glib/gutf8.c:986
+#: glib/gutf8.c:1017
 #, c-format
 msgid "Character out of range for UTF-8"
 msgstr "Сымбаль па-за дыяпазонам UTF-8"
 
 # glib/gutf8.c:1039 glib/gutf8.c:1048 glib/gutf8.c:1180 glib/gutf8.c:1189
 # glib/gutf8.c:1330 glib/gutf8.c:1426
-#: glib/gutf8.c:1080 glib/gutf8.c:1089 glib/gutf8.c:1221 glib/gutf8.c:1230
-#: glib/gutf8.c:1371 glib/gutf8.c:1467
+#: glib/gutf8.c:1111 glib/gutf8.c:1120 glib/gutf8.c:1252 glib/gutf8.c:1261
+#: glib/gutf8.c:1402 glib/gutf8.c:1498
 #, c-format
 msgid "Invalid sequence in conversion input"
 msgstr "Недапушчальная пасьлядоўнасьць на ўваходзе пераўтварэньня"
 
 # glib/gutf8.c:1341 glib/gutf8.c:1437
-#: glib/gutf8.c:1382 glib/gutf8.c:1478
+#: glib/gutf8.c:1413 glib/gutf8.c:1509
 #, c-format
 msgid "Character out of range for UTF-16"
 msgstr "Сымбаль па-за дыяпазонам UTF-16"
 
-#: glib/goption.c:468
+#: glib/goption.c:484
 msgid "Usage:"
 msgstr "Выкарыстаньне:"
 
-#: glib/goption.c:468
+#: glib/goption.c:484
 msgid "[OPTION...]"
 msgstr "[МОЖНАСЬЦЬ...]"
 
-#: glib/goption.c:556
+#: glib/goption.c:572
 msgid "Help Options:"
 msgstr "Можнасьці дапамогі:"
 
-#: glib/goption.c:557
+#: glib/goption.c:573
 msgid "Show help options"
 msgstr "Адлюстраваць можнасьці дапамогі"
 
-#: glib/goption.c:562
+#: glib/goption.c:578
 msgid "Show all help options"
 msgstr "Адлюстраваць усе можнасьці дапамогі"
 
-#: glib/goption.c:612
+#: glib/goption.c:628
 msgid "Application Options:"
 msgstr "Можнасьці дастасаваньня:"
 
-#: glib/goption.c:653
+#: glib/goption.c:669
 #, c-format
 msgid "Cannot parse integer value '%s' for %s"
 msgstr "Немагчыма разабраць цэлае значэньне '%s' для %s"
 
-#: glib/goption.c:663
+#: glib/goption.c:679
 #, c-format
 msgid "Integer value '%s' for %s out of range"
 msgstr "Цэлае значэньне '%s' для %s па-за межамі"
 
 # glib/gconvert.c:597 glib/gconvert.c:813 glib/giochannel.c:1289
 # glib/giochannel.c:2175
-#: glib/goption.c:926
+#: glib/goption.c:942
 #, fuzzy, c-format
 msgid "Error parsing option %s"
 msgstr "Памылка ў часе пераўтварэньня: %s"
 
-#: glib/goption.c:959 glib/goption.c:1070
+#: glib/goption.c:973 glib/goption.c:1084
 #, c-format
 msgid "Missing argument for %s"
 msgstr "Нестае аргумэнту для %s"
 
-#: glib/goption.c:1474
+#: glib/goption.c:1489
 #, c-format
 msgid "Unknown option %s"
 msgstr "Невядомая можнасьць %s"
@@ -835,21 +827,27 @@ msgstr "Цэлае значэньне '%s' па-за межамі"
 msgid "Value '%s' cannot be interpreted as a boolean."
 msgstr "Значэньне '%s' не можа быць інтэрпрэтаванае як булева."
 
-# glib/gconvert.c:1729
-#~ msgid "Invalid program name: %s"
-#~ msgstr "Недапушчальная назва праграмы: %s"
+# glib/gfileutils.c:505
+#~ msgid "Could not change file mode: fork() failed: %s"
+#~ msgstr "Не магчыма зьмяніць рэжым файлу: збой fork(): %s"
 
-#~ msgid "Invalid string in argument vector at %d: %s"
-#~ msgstr "Недапушчальны радок у вэктары аргумэнту ў %d: %s"
+# glib/gfileutils.c:337 glib/gfileutils.c:402
+#~ msgid "Could not change file mode: waitpid() failed: %s"
+#~ msgstr "Немагчыма зьмяніць рэжым файлу: збой waitpid(): %s"
 
-# glib/gutf8.c:1039 glib/gutf8.c:1048 glib/gutf8.c:1180 glib/gutf8.c:1189
-# glib/gutf8.c:1330 glib/gutf8.c:1426
-#~ msgid "Invalid string in environment: %s"
-#~ msgstr "Недапушчальны радок у асяродзьдзі: %s"
+# glib/gfileutils.c:505
+#~ msgid "Could not change file mode: chmod() failed: %s"
+#~ msgstr "Не магчыма зьмяніць рэжым файлу: збой chmod(): %s"
 
-# glib/gdir.c:79
-#~ msgid "Invalid working directory: %s"
-#~ msgstr "Недапушчальны працоўны каталёг: %s"
+#~ msgid "Could not change file mode: Child terminated by signal: %s"
+#~ msgstr "Не магчыма зьмяніць рэжым файлу: Нашчадак забіты сыгналам: %s"
+
+#~ msgid "Could not change file mode: Child terminated abnormally"
+#~ msgstr "Не магчыма зьмяніць рэжым файлу: Нашчадак ненармальна завяршыўся "
+
+# glib/giochannel.c:1110
+#~ msgid "Conversion from character set `%s' to `%s' is not supported"
+#~ msgstr "Пераўтварэньне з набору сымбаляў \"%s\" у \"%s\" не падтрымліваецца"
 
 # glib/giowin32.c:704 glib/giowin32.c:733
 #~ msgid "Incorrect message size"

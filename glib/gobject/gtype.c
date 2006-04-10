@@ -74,7 +74,7 @@ static GStaticRWLock            type_rw_lock = G_STATIC_RW_LOCK_INIT;
 #define G_WRITE_UNLOCK(rw_lock) g_static_rw_lock_writer_unlock (rw_lock)
 #endif
 #define	INVALID_RECURSION(func, arg, type_name) G_STMT_START{ \
-    static const gchar * const _action = " invalidly modified type "; \
+    static const gchar _action[] = " invalidly modified type ";  \
     gpointer _arg = (gpointer) (arg); const gchar *_tname = (type_name), *_fname = (func); \
     if (_arg) \
       g_error ("%s(%p)%s`%s'", _fname, _arg, _action, _tname); \
@@ -582,7 +582,7 @@ check_plugin_U (GTypePlugin *plugin,
 static gboolean
 check_type_name_I (const gchar *type_name)
 {
-  static const gchar * const extra_chars = "-_+";
+  static const gchar extra_chars[] = "-_+";
   const gchar *p = type_name;
   gboolean name_valid;
   
@@ -2158,7 +2158,6 @@ g_type_register_fundamental (GType                       type_id,
 			     const GTypeFundamentalInfo *finfo,
 			     GTypeFlags			 flags)
 {
-  GTypeFundamentalInfo *node_finfo;
   TypeNode *node;
   
   g_return_val_if_uninitialized (static_quark_type_flags, g_type_init, 0);
@@ -2194,7 +2193,6 @@ g_type_register_fundamental (GType                       type_id,
   
   G_WRITE_LOCK (&type_rw_lock);
   node = type_node_fundamental_new_W (type_id, type_name, finfo->type_flags);
-  node_finfo = type_node_fundamental_info_I (node);
   type_add_flags_W (node, flags);
   
   if (check_type_info_I (NULL, NODE_FUNDAMENTAL_TYPE (node), type_name, info))
@@ -3389,14 +3387,14 @@ g_type_init_with_debug_flags (GTypeDebugFlags debug_flags)
   
   /* void type G_TYPE_NONE
    */
-  node = type_node_fundamental_new_W (G_TYPE_NONE, "void", 0);
+  node = type_node_fundamental_new_W (G_TYPE_NONE, g_intern_static_string ("void"), 0);
   type = NODE_TYPE (node);
   g_assert (type == G_TYPE_NONE);
   
   /* interface fundamental type G_TYPE_INTERFACE (!classed)
    */
   memset (&info, 0, sizeof (info));
-  node = type_node_fundamental_new_W (G_TYPE_INTERFACE, "GInterface", G_TYPE_FLAG_DERIVABLE);
+  node = type_node_fundamental_new_W (G_TYPE_INTERFACE, g_intern_static_string ("GInterface"), G_TYPE_FLAG_DERIVABLE);
   type = NODE_TYPE (node);
   type_data_make_W (node, &info, NULL);
   g_assert (type == G_TYPE_INTERFACE);

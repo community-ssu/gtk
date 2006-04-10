@@ -39,11 +39,13 @@
 #include <glib.h>
 
 #define STRICT
+#define _WIN32_WINDOWS 0x0401 /* to get IsDebuggerPresent */
 #include <windows.h>
 #undef STRICT
 
 #include <process.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #define win32_check_for_error(what) G_STMT_START{			\
   if (!(what))								\
@@ -70,7 +72,7 @@ static GTryEnterCriticalSectionFunc try_enter_critical_section = NULL;
 
 /* As noted in the docs, GPrivate is a limited resource, here we take
  * a rather low maximum to save memory, use GStaticPrivate instead. */
-#define G_PRIVATE_MAX 16
+#define G_PRIVATE_MAX 100
 
 static GDestroyNotify g_private_destructors[G_PRIVATE_MAX];
 
@@ -322,8 +324,16 @@ g_private_new_win32_impl (GDestroyNotify destructor)
   GPrivate *result;
   EnterCriticalSection (&g_thread_global_spinlock);
   if (g_private_next >= G_PRIVATE_MAX)
-    g_error ("Too many GPrivate allocated. Their number is limited to %d.\n"
-	     "Use GStaticPrivate instead.\n", G_PRIVATE_MAX);
+    {
+      char buf[100];
+      sprintf (buf,
+	       "Too many GPrivate allocated. Their number is limited to %d.",
+	       G_PRIVATE_MAX);
+      MessageBox (NULL, buf, NULL, MB_ICONERROR|MB_SETFOREGROUND);
+      if (IsDebuggerPresent ())
+	G_BREAKPOINT ();
+      abort ();
+    }
   g_private_destructors[g_private_next] = destructor;
   result = GUINT_TO_POINTER (g_private_next);
   g_private_next++;
@@ -414,13 +424,24 @@ g_thread_exit_win32_impl (void)
 
   if (array)
     {
-      for (i = 0; i < private_max; i++)
-	{
-	  GDestroyNotify destructor = g_private_destructors[i];
-	  GDestroyNotify data = array[i];
-	  if (destructor && data)
-	    destructor (data);
-	}
+      gboolean some_data_non_null;
+
+      do {
+	some_data_non_null = FALSE;
+	for (i = 0; i < private_max; i++)
+	  {
+	    GDestroyNotify destructor = g_private_destructors[i];
+	    GDestroyNotify data = array[i];
+	    
+	    if (data)
+	      some_data_non_null = TRUE;
+
+	    array[i] = NULL;
+	    
+	    if (destructor && data)
+	      destructor (data);
+	  }
+      } while (some_data_non_null);
 
       g_free (array);
 

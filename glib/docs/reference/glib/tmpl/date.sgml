@@ -136,13 +136,17 @@ month, and year.
 
 <!-- ##### TYPEDEF GTime ##### -->
 <para>
-Simply a replacement for <type>time_t</type>. Unrelated to #GTimer.
+Simply a replacement for <type>time_t</type>. It has been deprected
+since it is <emphasis>not</emphasis> equivalent to <type>time_t</type> 
+on 64-bit platforms with a 64-bit <type>time_t</type>. 
+Unrelated to #GTimer.
 </para>
+
 
 <para>
 Note that <type>GTime</type> is defined to always be a 32bit integer,
 unlike <type>time_t</type> which may be 64bit on some systems. 
-Therefore, <type>GType</type> will overflow in the year 2038, and
+Therefore, <type>GTime</type> will overflow in the year 2038, and
 you cannot use the address of a <type>GTime</type> variable as argument 
 to the UNIX time() function. Instead, do the following:
 <informalexample>
@@ -346,15 +350,29 @@ Sets the value of a #GDate from a Julian day number.
 
 <!-- ##### FUNCTION g_date_set_time ##### -->
 <para>
-Sets the value of a date from a #GTime (<type>time_t</type>) value. 
-To set the value of a date to the current day, you could write:
-<informalexample><programlisting>
-g_date_set_time (date, time (NULL));
-</programlisting></informalexample>
+
 </para>
 
-@date: a #GDate.
-@time_: #GTime value to set.
+@date: 
+@time_: 
+
+
+<!-- ##### FUNCTION g_date_set_time_t ##### -->
+<para>
+
+</para>
+
+@date: 
+@timet: 
+
+
+<!-- ##### FUNCTION g_date_set_time_val ##### -->
+<para>
+
+</para>
+
+@date: 
+@timeval: 
 
 
 <!-- ##### FUNCTION g_date_set_parse ##### -->

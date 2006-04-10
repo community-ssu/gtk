@@ -1,3 +1,9 @@
+glib2.0 (2.10.2-1osso1) unstable; urgency=low
+
+  * Upgrade to glib 2.10.2
+
+ -- Foo Bar <foo@bar.com>  Fri,  7 Apr 2006 10:53:00 +0100
+
 glib2.0 (2.8.6-1osso4) unstable; urgency=low
 
   * glib/gmem.h: Don't use // comments in C<99 code 

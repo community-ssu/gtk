@@ -46,15 +46,16 @@ struct _GPatternSpec
   GMatchType match_type;
   guint      pattern_length;
   guint      min_length;
+  guint      max_length;
   gchar     *pattern;
 };
 
 
 /* --- functions --- */
-
 static inline gboolean
 g_pattern_ph_match (const gchar *match_pattern,
-		    const gchar *match_string)
+		    const gchar *match_string,
+		    gboolean    *wildcard_reached_p)
 {
   register const gchar *pattern, *string;
   register gchar ch;
@@ -75,6 +76,7 @@ g_pattern_ph_match (const gchar *match_pattern,
 	  break;
 
 	case '*':
+	  *wildcard_reached_p = TRUE;
 	  do
 	    {
 	      ch = *pattern;
@@ -91,6 +93,7 @@ g_pattern_ph_match (const gchar *match_pattern,
 	    return TRUE;
 	  do
 	    {
+              gboolean next_wildcard_reached = FALSE;
 	      while (ch != *string)
 		{
 		  if (!*string)
@@ -98,8 +101,16 @@ g_pattern_ph_match (const gchar *match_pattern,
 		  string = g_utf8_next_char (string);
 		}
 	      string++;
-	      if (g_pattern_ph_match (pattern, string))
+	      if (g_pattern_ph_match (pattern, string, &next_wildcard_reached))
 		return TRUE;
+              if (next_wildcard_reached)
+                /* the forthcoming pattern substring up to the next wildcard has
+                 * been matched, but a mismatch occoured for the rest of the
+                 * pattern, following the next wildcard.
+                 * there's no need to advance the current match position any
+                 * further if the rest pattern will not match.
+                 */
+		return FALSE;
 	    }
 	  while (*string);
 	  break;
@@ -128,22 +139,24 @@ g_pattern_match (GPatternSpec *pspec,
   g_return_val_if_fail (pspec != NULL, FALSE);
   g_return_val_if_fail (string != NULL, FALSE);
 
-  if (pspec->min_length > string_length)
+  if (string_length < pspec->min_length ||
+      string_length > pspec->max_length)
     return FALSE;
 
   switch (pspec->match_type)
     {
+      gboolean dummy;
     case G_MATCH_ALL:
-      return g_pattern_ph_match (pspec->pattern, string);
+      return g_pattern_ph_match (pspec->pattern, string, &dummy);
     case G_MATCH_ALL_TAIL:
       if (string_reversed)
-	return g_pattern_ph_match (pspec->pattern, string_reversed);
+	return g_pattern_ph_match (pspec->pattern, string_reversed, &dummy);
       else
 	{
           gboolean result;
           gchar *tmp;
 	  tmp = g_utf8_strreverse (string, string_length);
-	  result = g_pattern_ph_match (pspec->pattern, tmp);
+	  result = g_pattern_ph_match (pspec->pattern, tmp, &dummy);
 	  g_free (tmp);
 	  return result;
 	}
@@ -161,9 +174,9 @@ g_pattern_match (GPatternSpec *pspec,
 	return TRUE;
     case G_MATCH_EXACT:
       if (pspec->pattern_length != string_length)
-	return FALSE;
+        return FALSE;
       else
-	return strcmp (pspec->pattern, string) == 0;
+        return strcmp (pspec->pattern, string) == 0;
     default:
       g_return_val_if_fail (pspec->match_type < G_MATCH_LAST, FALSE);
       return FALSE;
@@ -188,6 +201,7 @@ g_pattern_spec_new (const gchar *pattern)
   pspec = g_new (GPatternSpec, 1);
   pspec->pattern_length = strlen (pattern);
   pspec->min_length = 0;
+  pspec->max_length = 0;
   pspec->pattern = g_new (gchar, pspec->pattern_length + 1);
   d = pspec->pattern;
   for (i = 0, s = pattern; *s != 0; s++)
@@ -208,6 +222,7 @@ g_pattern_spec_new (const gchar *pattern)
 	case '?':
 	  pending_jokers++;
 	  pspec->min_length++;
+	  pspec->max_length += 4; /* maximum UTF-8 character length */
 	  continue;
 	default:
 	  for (; pending_jokers; pending_jokers--, i++) {
@@ -218,6 +233,7 @@ g_pattern_spec_new (const gchar *pattern)
 	  }
 	  follows_wildcard = FALSE;
 	  pspec->min_length++;
+	  pspec->max_length++;
 	  break;
 	}
       *d++ = *s;
@@ -233,6 +249,8 @@ g_pattern_spec_new (const gchar *pattern)
   seen_joker = hj_pos >= 0;
   seen_wildcard = hw_pos >= 0;
   more_wildcards = seen_wildcard && hw_pos != tw_pos;
+  if (seen_wildcard)
+    pspec->max_length = G_MAXUINT;
 
   /* special case sole head/tail wildcard or exact matches */
   if (!seen_joker && !more_wildcards)

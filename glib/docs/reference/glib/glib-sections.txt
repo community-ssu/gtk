@@ -30,6 +30,7 @@ G_HAVE_GINT64
 gint64
 guint64
 G_GINT64_CONSTANT
+G_GUINT64_CONSTANT
 
 <SUBSECTION>
 gfloat
@@ -323,6 +324,7 @@ G_GNUC_PRINTF
 G_GNUC_SCANF
 G_GNUC_FORMAT
 G_GNUC_NULL_TERMINATED
+G_GNUC_WARN_UNUSED_RESULT
 G_GNUC_FUNCTION
 G_GNUC_PRETTY_FUNCTION
 G_GNUC_NO_INSTRUMENT
@@ -418,6 +420,7 @@ g_main_context_find_source_by_funcs_user_data
 g_main_context_wakeup
 g_main_context_acquire
 g_main_context_release
+g_main_context_is_owner
 g_main_context_wait
 g_main_context_prepare
 g_main_context_query
@@ -499,7 +502,6 @@ g_child_watch_funcs
 <SUBSECTION>
 G_THREADS_ENABLED
 G_THREADS_IMPL_POSIX
-G_THREADS_IMPL_SOLARIS
 G_THREADS_IMPL_NONE
 
 <SUBSECTION>
@@ -522,6 +524,7 @@ g_thread_join
 g_thread_set_priority
 g_thread_yield
 g_thread_exit
+g_thread_foreach
 
 <SUBSECTION>
 GMutex
@@ -635,6 +638,9 @@ g_thread_pool_set_max_unused_threads
 g_thread_pool_get_max_unused_threads
 g_thread_pool_get_num_unused_threads
 g_thread_pool_stop_unused_threads
+g_thread_pool_set_sort_function
+g_thread_pool_set_max_idle_time
+g_thread_pool_get_max_idle_time
 </SECTION>
 
 <SECTION>
@@ -645,10 +651,12 @@ g_async_queue_new
 g_async_queue_ref
 g_async_queue_unref
 g_async_queue_push
+g_async_queue_push_sorted
 g_async_queue_pop
 g_async_queue_try_pop
 g_async_queue_timed_pop
 g_async_queue_length
+g_async_queue_sort
 
 <SUBSECTION>
 g_async_queue_lock
@@ -656,20 +664,24 @@ g_async_queue_unlock
 g_async_queue_ref_unlocked
 g_async_queue_unref_and_unlock
 g_async_queue_push_unlocked
+g_async_queue_push_sorted_unlocked
 g_async_queue_pop_unlocked
 g_async_queue_try_pop_unlocked
 g_async_queue_timed_pop_unlocked
 g_async_queue_length_unlocked
+g_async_queue_sort_unlocked
 </SECTION>
 
 <SECTION>
 <TITLE>Atomic Operations</TITLE>
-<FILE>atomic_operations</FILE>
+<FILE>atomic_operations</FILE>g
 g_atomic_int_get
+g_atomic_int_set
 g_atomic_int_add
 g_atomic_int_exchange_and_add
 g_atomic_int_compare_and_exchange
 g_atomic_pointer_get
+g_atomic_pointer_set
 g_atomic_pointer_compare_and_exchange
 g_atomic_int_inc
 g_atomic_int_dec_and_test
@@ -683,6 +695,9 @@ GIOChannel
 <SUBSECTION>
 g_io_channel_unix_new
 g_io_channel_unix_get_fd
+g_io_channel_win32_new_fd
+g_io_channel_win32_new_socket
+g_io_channel_win32_new_messages
 
 <SUBSECTION>
 g_io_channel_init
@@ -738,9 +753,6 @@ g_io_channel_get_close_on_unref
 g_io_channel_set_close_on_unref
 
 <SUBSECTION Private>
-g_io_channel_win32_new_fd
-g_io_channel_win32_new_messages
-g_io_channel_win32_new_socket
 g_io_channel_win32_poll
 g_io_channel_win32_make_pollfd
 g_io_channel_win32_get_fd
@@ -777,6 +789,7 @@ g_try_realloc
 
 <SUBSECTION>
 g_free
+g_mem_gc_friendly
 
 <SUBSECTION>
 g_alloca
@@ -1171,6 +1184,8 @@ g_date_set_year
 g_date_set_dmy
 g_date_set_julian
 g_date_set_time
+g_date_set_time_t
+g_date_set_time_val
 g_date_set_parse
 
 <SUBSECTION>
@@ -1511,7 +1526,7 @@ g_completion_free
 </SECTION>
 
 <SECTION>
-<TITLE>Windows Compatability Functions</TITLE>
+<TITLE>Windows Compatibility Functions</TITLE>
 <FILE>windows</FILE>
 MAXPATHLEN
 pipe
@@ -1565,6 +1580,27 @@ g_mem_chunk_print
 </SECTION>
 
 <SECTION>
+<TITLE>Memory Slices</TITLE>
+<FILE>memory_slices</FILE>
+g_slice_alloc
+g_slice_alloc0
+g_slice_free1
+g_slice_free_chain_with_offset
+
+<SUBSECTION>
+g_slice_new
+g_slice_new0
+g_slice_free
+g_slice_free_chain
+
+<SUBSECTION Private>
+GSliceConfig
+g_slice_set_config
+g_slice_get_config
+g_slice_get_config_state
+</SECTION>
+
+<SECTION>
 <TITLE>Doubly-Linked Lists</TITLE>
 <FILE>linked_lists_double</FILE>
 GList
@@ -1584,6 +1620,7 @@ g_list_free
 <SUBSECTION>
 g_list_alloc
 g_list_free_1
+g_list_free1
 
 <SUBSECTION>
 g_list_length
@@ -1591,6 +1628,7 @@ g_list_copy
 g_list_reverse
 g_list_sort
 GCompareFunc
+g_list_insert_sorted_with_data
 g_list_sort_with_data
 GCompareDataFunc
 g_list_concat
@@ -1635,11 +1673,13 @@ g_slist_delete_link
 g_slist_remove_all
 g_slist_free
 g_slist_free_1
+g_slist_free1
 
 <SUBSECTION>
 g_slist_length
 g_slist_copy
 g_slist_reverse
+g_slist_insert_sorted_with_data
 g_slist_sort
 g_slist_sort_with_data
 g_slist_concat
@@ -1741,6 +1781,8 @@ GHRFunc
 g_hash_table_freeze
 g_hash_table_thaw
 g_hash_table_destroy
+g_hash_table_ref
+g_hash_table_unref
 
 <SUBSECTION>
 g_direct_equal
@@ -1958,7 +2000,8 @@ g_quark_from_string
 g_quark_from_static_string
 g_quark_to_string
 g_quark_try_string
-
+g_intern_string
+g_intern_static_string
 </SECTION>
 
 <SECTION>

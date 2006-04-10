@@ -30,8 +30,9 @@
 <!ENTITY glib-Lexical-Scanner SYSTEM "xml/scanner.xml">
 <!ENTITY glib-Dynamic-Loading-of-Modules SYSTEM "xml/modules.xml">
 <!ENTITY glib-Automatic-String-Completion SYSTEM "xml/completion.xml">
-<!ENTITY glib-Windows-Compatability-Functions SYSTEM "xml/windows.xml">
+<!ENTITY glib-Windows-Compatibility-Functions SYSTEM "xml/windows.xml">
 <!ENTITY glib-Memory-Chunks SYSTEM "xml/memory_chunks.xml">
+<!ENTITY glib-Memory-Slices SYSTEM "xml/memory_slices.xml">
 <!ENTITY glib-Doubly-Linked-Lists SYSTEM "xml/linked_lists_double.xml">
 <!ENTITY glib-Singly-Linked-Lists SYSTEM "xml/linked_lists_single.xml">
 <!ENTITY glib-Double-ended-Queues SYSTEM "xml/queue.xml">
@@ -148,11 +149,12 @@ synchronize their operation.
     &glib-Pattern-Matching;
     &glib-Markup;
     &glib-Keyfile;
-    &glib-Windows-Compatability-Functions;
+    &glib-Windows-Compatibility-Functions;
   </chapter>
 
   <chapter id="glib-data-types">
     <title>GLib Data Types</title>
+    &glib-Memory-Slices;
     &glib-Memory-Chunks;
     &glib-Doubly-Linked-Lists;
     &glib-Singly-Linked-Lists;
@@ -197,6 +199,9 @@ synchronize their operation.
   </index>  
   <index role="2.8">
     <title>Index of new symbols in 2.8</title>
+  </index>  
+  <index role="2.10">
+    <title>Index of new symbols in 2.10</title>
   </index>  
 
 </book>
