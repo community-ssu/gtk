@@ -1,5 +1,9 @@
 2006-04-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/layout-manager.c: Fixed the leak of a GdkGC (Closes N#26116)
+
+2006-04-10  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/layout-manager.c: Replaced the "Opening layout mode"
 	  confirmation not with an animation banner, as required by  UI
 	  specifications.

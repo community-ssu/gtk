@@ -1231,6 +1231,8 @@ static void draw_red_borders (LayoutNode * highlighted)
 		       gc, FALSE, 0,0,
 		       highlighted->ebox->allocation.width,
 		       highlighted->ebox->allocation.height);
+
+    g_object_unref(G_OBJECT(gc));
 }
 
 static void overlap_indicate (LayoutNode * modme, gboolean overlap)
