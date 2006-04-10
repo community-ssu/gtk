@@ -2,6 +2,8 @@ maemo-launcher (0.12-1) unstable; urgency=low
 
   * New Upstream Release.
   * Do not source the .defs files anymore from the init script.
+  * Only set PATH when not in Scratchbox in the inita script.
+    (Closes: #25123@Nokia)
 
  -- Guillem Jover <guillem.jover@nokia.com>  Tue, 11 Apr 2006 00:09:27 +0300
 

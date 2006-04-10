@@ -3,7 +3,6 @@
 # $Id$
 #
 
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 NAME=maemo-launcher
 DESC="Maemo Launcher"
 DAEMON=/usr/bin/$NAME
@@ -17,6 +16,7 @@ DEFSDIR=/etc/osso-af-init/
 if [ -f /targets/links/scratchbox.config ]; then
   DAEMON_OPTS="$DAEMON_BASE_OPTS"
 else
+  PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
   USER=user
   HOME=/home/$USER
   if [ `id -u` = 0 ]; then
