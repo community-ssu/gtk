@@ -35,6 +35,8 @@
 #ifndef __OSSO_AF_DESKTOP_MAIN_H__
 #define __OSSO_AF_DESKTOP_MAIN_H__
 
+#define OSSO_USER_DIR               ".osso"
+#define MAEMO_AF_DESKTOP_GTKRC      "current-gtk-theme.maemo_af_desktop"
 
 void pipe_signals(int signal);
 gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d);

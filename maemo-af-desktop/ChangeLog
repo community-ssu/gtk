@@ -1,5 +1,10 @@
 2006-04-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* maemo-af-desktop.[sh,defs], maemo-af-desktop-main.[ch]: Parse the
+	  maemo-af-desktop-specific gtkrc from the application.
+
+2006-04-10  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/layout-manager.c: Fixed the leak of a GdkGC (Closes N#26116)
 
 2006-04-10  Johan Bilien <johan.bilien@nokia.com>

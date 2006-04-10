@@ -2,5 +2,12 @@
 # osso-af-desktop.defs - AF Desktop defines sourced before AF Desktop is run
 # These are defined in apps launched after AF Desktop in af-base-apps, too.
 
-
-
+export NAVIGATOR_DO_BGKILL=yes
+export NAVIGATOR_LOWMEM_DIM=no
+export NAVIGATOR_LOWMEM_NOTIFY_ENTER=yes
+export NAVIGATOR_LOWMEM_NOTIFY_LEAVE=no
+export NAVIGATOR_LOWMEM_PAVLOV_DIALOG=no
+export NAVIGATOR_LOWMEM_LAUNCH_BANNER_TIMEOUT=20
+export NAVIGATOR_LOWMEM_LAUNCH_THRESHOLD_DISTANCE=2500
+export NAVIGATOR_LOWMEM_TIMEOUT_MULTIPLIER=2
+export GTK2_RC_FILES=$HOME/.osso/current-gtk-theme
