@@ -1,4 +1,4 @@
-osso-application-installer (4.11) unstable; urgency=low
+osso-application-installer (4.13) unstable; urgency=low
 
   * Maemo-launcherized osso-application-installer and maemo-confirm-text
     (N24827).
@@ -6,8 +6,21 @@ osso-application-installer (4.11) unstable; urgency=low
   * Fixed searching to work according to spec.
   * Add new repositories at end, dim edit and delete for essential repos.
   * Save toolbar visibility settings.
-  * Be smart about showing/not showing categories.
-  * Fixed N25613.
+  * Be smart about showing/not showing categories; added "All" category.
+  * Fixed N25613, N26040.
+  * Fixed maintainer email in debian/control.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 10 Apr 2006 11:47:19 +0300
+  
+osso-application-installer (4.12) unstable; urgency=low
+
+  * Skipped.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri,  7 Apr 2006 18:45:07 +0300
+
+osso-application-installer (4.11) unstable; urgency=low
+
+  * Skipped.
   
  -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  6 Apr 2006 00:29:37 +0300
 

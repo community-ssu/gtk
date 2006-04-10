@@ -1,5 +1,7 @@
 2006-04-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.13, skipped 4.12.
+	
 	* src/util.cc (get_http_proxy): Use http_proxy envvar when gconf
 	says there is no proxy.
 
