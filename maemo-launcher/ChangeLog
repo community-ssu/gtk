@@ -1,5 +1,9 @@
 2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac: Version 0.12.
+
+2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
+
 	* TODO: Remove signal forwarding. Extend the protocol fixes.
 	* README: Remove the signal forwarding limitation note.
 
