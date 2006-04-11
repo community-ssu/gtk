@@ -1,3 +1,93 @@
+2006-04-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* configure.ac (AI_DEPS): Use obex-vfs-utils.
+	(DEB_HOST_ARCH): New, for architecture checking of standalone
+	files.
+	* debian/control (Build-Depends): Added osso-gnomevfs-extra-dev.
+
+	* src/main.cc (get_package_list_reply): If current view becomes
+	empty, switch to parent.
+	(refresh_package_cache_reply): Always call get_package_list, even
+	when refresh failed.
+	(annoy_user_with_result_code): New.
+	(install_package_reply): Use it.
+	(install_check_reply): Display correct error message, depending on
+	whether this is an upgrade or an installation.
+	(annoy_user_with_installable_status_details): New.
+	(install_package_cont2): Use it.
+	(annoy_user_with_removable_status_details): New.
+	(uninstall_package_doit): Use it.
+	(install_from_file_reply, install_from_file_cont4,
+	install_from_file_cont3, file_details_reply, file_details_reply):
+	Call cleanup_temp_file appropriately.
+	(install_from_file_fail): Use
+	annoy_user_with_installable_status_details.
+	(file_details_reply): Don't filter non-user packages here, this is
+	now done by apt-worker.
+	Produce appropriate summary for installable_status.
+	(main): Don't call maybe_refresh_package_cache ();
+	(make_upgrade_applications_view): But call it here.
+
+	* src/apt-worker-proto.h (apt_proto_able_status): New.
+	(apt_proto_package_info): Renamed installable to
+	installable_status and removable to removable_status.  Updated all
+	users to use apt_proto_able_status codes with them.
+	(apt_proto_result_code): New.
+	(APTCMD_UPDATE_PACKAGE_CACHE, APTCMD_INSTALL_PACKAGE): Specify
+	that they uses apt_proto_result_code as the return value.
+	(APTCMD_GET_FILE_DETAILS): Added only_user parameter.  Updated all
+	callers.  Use apt_proto_able_status in return values.
+
+	* src/apt-worker.cc (installable_status_1, installable_status,
+	removable_status): New.
+	(cmd_get_package_info): Use them to fill status fields in
+	response.
+	(update_package_cache): Return result code.  Call cache_init
+	always once the BuildCaches has been called.  Don't abort when
+	cleaning old files fails.
+	(cmd_update_package_cache): Return result code in response.
+	(operation, operation_1): Merged these two. cache_init is now
+	called by the individual command handlers, errors are dumped by
+	the handler loop.  Return result code instead of a boolean.
+	Updated all callers.
+	(cmd_install_package): Return result code in response.
+	(check_and_encode_missing_dependencies): Return able_status
+	instead of boolean.  Updated all callers.
+	(combine_status): New.
+	(check_installable): Return able status.  Check for user packages
+	if requested.  Check for correct architecture.
+	(cmd_get_file_details): Create fake response for corrupted packages.
+	Handle only_user parameter.
+	
+	* src/apt-worker-client.h, apt-worker-client.cc
+	(apt_worker_get_file_details): Added only_user parameter.  Updated
+	all callers.
+
+	* src/details.h, src/details.cc (show_package_details): Added
+	show_problems paramater.  Updated all callers.
+	(show_with_details): Switch notebook to problems page when
+	show_problems is true.
+
+	Support installing from remote files.
+	
+	* src/util.h, src/util.cc (cleanup_temp_file): New.
+	(currently_annoying_user): New.
+	(annoy_user_response, annoy_user,
+	annoy_user_with_details_response, annoy_user_with_details,
+	annoy_user_with_log_response, annoy_user_with_log): Maintain it
+	and do nothing when it is true.
+	(copy_copy_cont, copy_progress, do_copy): New, with lots of global
+	state.
+	(localize_file): Use it to really copy remote files.
+	
+	* src/repo.cc (show_repo_edit_dialog): Show help for "New" dialog
+	also for "Edit" dialog since there is no help for the latter.
+
+2006-04-10  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/settings.cc (SETTINGS_FILE): Changed location to be inside
+	.osso/ so that it is automatically backed up.
+
 2006-04-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.13, skipped 4.12.
