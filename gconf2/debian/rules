@@ -75,8 +75,8 @@ install: build
 
 	cd $(BUILD_TREE) && $(MAKE) install DESTDIR=$(CURDIR)/debian/gconf2
 	-rm -f $(CURDIR)/debian/gconf2/usr/bin/gconftool
-	-rm -f $(CURDIR)/debian/gconf2/usr/lib/GConf/2/*.a
-	-rm -f $(CURDIR)/debian/gconf2/usr/lib/GConf/2/*.la
+	-rm -f $(CURDIR)/debian/gconf2/usr/lib/gconf-dbus/2/*.a
+	-rm -f $(CURDIR)/debian/gconf2/usr/lib/gconf-dbus/2/*.la
 	-rm -f $(CURDIR)/debian/gconf2/etc/gconf/schemas/desktop.schemas
 
 	dh_movefiles --sourcedir=debian/gconf2
