@@ -52,9 +52,7 @@
 #include <config.h>
 #endif
 
-#define _(String) dgettext(PACKAGE, String)
-#define HCS(String) dgettext("hildon-common-strings", String)
-#define MAX_FILENAME_LENGTH_DEFAULT 255 /* If env doesn't define, use this */
+#include "hildon-file-common-private.h"
 #define HILDON_RESPONSE_FOLDER_BUTTON 12345
 /* Common height for filetrees. About 8 lines. Filetree sets default margins, 
     so we need to take them into account. See #9962. */

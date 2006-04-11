@@ -1,7 +1,7 @@
 /*
  * This file is part of hildon-fm package
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -48,12 +48,7 @@
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#define _(String) dgettext(PACKAGE, String)
-
+#include "hildon-file-common-private.h"
 #include "hildon-file-system-settings.h"
 
 enum {
@@ -613,7 +608,6 @@ gboolean _hildon_file_system_settings_get_flight_mode(void)
 #define BANNER_REQUEST_IF "com.nokia.statusbar"
 #define BANNER_SHOW "delayed_infobanner"
 #define BANNER_HIDE "cancel_delayed_infobanner"
-#define HCS(X) dgettext("hildon-common-strings", X)
 
 /* Communication with tasknavigator for displaying possible
    banner while making blocking calls */

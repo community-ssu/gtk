@@ -1,7 +1,7 @@
 /*
  * This file is part of hildon-fm package
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -48,12 +48,7 @@
 #include <hildon-widgets/gtk-infoprint.h>
 #include <hildon-widgets/hildon-defines.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#define _(String) dgettext(PACKAGE, String)
-#define HCS(X) dgettext("hildon-common-strings", X)
+#include "hildon-file-common-private.h"
 
 /* I wonder where does that additional +2 come from. 
     Anyway I have to add it to make cell 60 + two 

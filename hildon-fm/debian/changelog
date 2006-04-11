@@ -1,6 +1,7 @@
 hildon-fm (0.18-1) unstable; urgency=low
 
   * Fixed several UI string issues (N#12997, 
+  * Added hildon-file-common-private.h for common definitions.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 11 Apr 2006 14:53:44 +0300
 
