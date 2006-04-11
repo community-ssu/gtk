@@ -1,5 +1,10 @@
 2006-04-11  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Fixed another crash in disk full
+	  situation
+
+2006-04-11  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/applet-manager.c: Fixed a potential crash in low
 	  disk space situation (Closes N#21571)
 

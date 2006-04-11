@@ -744,7 +744,7 @@ void load_original_bg_image_uri()
         ULOG_ERR( "Couldn't open file %s for reading image name", 
                  user_original_bg_image);
         g_free(home_bg_image_uri);
-        home_bg_image_uri = "";
+        home_bg_image_uri = g_strdup("");
 
         home_bg_image_filename = "";
 
@@ -761,7 +761,7 @@ void load_original_bg_image_uri()
                  user_original_bg_image);
     }
     g_free(home_bg_image_uri);
-    home_bg_image_uri = g_strdup_printf("%s", bg_uri);
+    home_bg_image_uri = g_strdup(bg_uri);
 
     uri = gnome_vfs_uri_new (home_bg_image_uri);
     home_bg_image_filename = gnome_vfs_uri_extract_short_name(uri);
@@ -1498,7 +1498,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
         if(combobox_active == 0)
         {
             g_free(home_bg_image_uri);
-            home_bg_image_uri = HILDON_HOME_IMAGE_LOADER_NO_IMAGE;
+            home_bg_image_uri = g_strdup(HILDON_HOME_IMAGE_LOADER_NO_IMAGE);
         }
         if(combobox_active != -1 || home_bg_image_uri != NULL) 
         {   
