@@ -200,7 +200,6 @@ BUGS
 
 - depcache.Init () is too slow
 - handle broken packages
-- handle removed, non-purged packages
 - implement promised policy engine
 
 - support obex file access
