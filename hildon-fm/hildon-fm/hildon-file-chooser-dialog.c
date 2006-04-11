@@ -357,7 +357,7 @@ hildon_file_chooser_dialog_check_limit(GtkEditable *editable,
   if (entry->text_max_length > 0 && 
       entry->text_length + new_text_length > entry->text_max_length)
       gtk_infoprint(GTK_WINDOW(data), 
-          _("ckdg_ib_maximum_characters_reached"));  
+          HCS("ckdg_ib_maximum_characters_reached"));  
 }
 
 static void insensitive_button(GtkWidget *widget, gpointer data)
@@ -1064,8 +1064,9 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                     hildon_file_chooser_dialog_select_text(priv);
                     g_signal_stop_emission_by_name(widget, "response");
 
-                    msg = g_strdup_printf(_("ckdg_ib_illegal_characters_entered"),
-                                          illegals->str);
+                    msg = g_strdup_printf(
+                              HCS("ckdg_ib_illegal_characters_entered"),
+                              illegals->str);
                     gtk_infoprint(window, msg);
                     g_free(msg);
                     g_string_free(illegals, TRUE);
