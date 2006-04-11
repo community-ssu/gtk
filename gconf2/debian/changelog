@@ -1,3 +1,10 @@
+gconf2 (2.6.4.14-osso1) unstable; urgency=low
+
+  * New upstream tarball.
+  * Memory leak fixes (N#25476, N#20476).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 11 Apr 2006 18:41:21 +0300
+
 gconf2 (2.6.4.13-osso5) unstable; urgency=low
 
   * Hard-coded the config source for makefile-install-rule (N#23809).
