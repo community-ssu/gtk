@@ -1,6 +1,6 @@
-diff -ur gconf-dbus-2.6.4.13/gconf/default.path.in gconf-dbus-2.6.4.13.new/gconf/default.path.in
---- gconf-dbus-2.6.4.13/gconf/default.path.in	2005-04-26 12:03:28.000000000 +0300
-+++ gconf-dbus-2.6.4.13.new/gconf/default.path.in	2006-01-19 16:31:08.958365968 +0200
+diff -ur gconf-dbus-2.6.4.14/gconf/default.path.in gconf-dbus-2.6.4.13.new/gconf/default.path.in
+--- gconf-dbus-2.6.4.14/gconf/default.path.in	2005-04-26 12:03:28.000000000 +0300
++++ gconf-dbus-2.6.4.14.new/gconf/default.path.in	2006-01-19 16:31:08.958365968 +0200
 @@ -18,7 +18,7 @@
  include "$(HOME)/.gconf.path"
  
