@@ -41,7 +41,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <libintl.h>
-#include <osso-log.h>
 
 #include "hildon-file-selection.h"
 #include "hildon-file-system-settings.h"

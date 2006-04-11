@@ -1,7 +1,7 @@
 /*
  * This file is part of hildon-fm package
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -32,7 +32,6 @@
 #include <gtk/gtkmarshal.h>
 #include <gtk/gtktreednd.h>
 #include <osso-thumbnail-factory.h>
-#include <osso-log.h>
 #include "hildon-file-system-model.h"
 #include "hildon-file-system-private.h"
 #include "hildon-file-system-settings.h"
@@ -44,11 +43,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#define _(String) dgettext(PACKAGE, String)
+#include "hildon-file-common-private.h"
 
 /*  Reload contents of removable devices after this amount of seconds */
 #define RELOAD_THRESHOLD 30  
@@ -59,13 +54,6 @@
                                    icons to have size 60x51!!! */
 #define DEFAULT_MAX_CACHE 50
 #define MIN_CACHE 20
-
-/* An easy way to add tracing to functions, used while debugging */
-#if 0
-#define TRACE ULOG_DEBUG(__FUNCTION__)
-#else
-#define TRACE
-#endif
 
 static const char *EXPANDED_EMBLEM_NAME = "qgn_list_gene_fldr_exp";
 static const char *COLLAPSED_EMBLEM_NAME = "qgn_list_gene_fldr_clp";

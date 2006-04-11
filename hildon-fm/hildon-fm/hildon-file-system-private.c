@@ -34,18 +34,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gtk/gtkicontheme.h>
-#include <osso-log.h>
 #include "hildon-file-system-private.h"
 #include "hildon-file-system-settings.h"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "hildon-file-common-private.h"
 
 extern GtkFileSystem *gtk_file_system_unix_new();
-
-#define _(String) dgettext(PACKAGE, String)
-#define N_(String) String
 
 typedef struct
 {

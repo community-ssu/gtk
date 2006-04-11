@@ -1,7 +1,7 @@
 /*
  * This file is part of hildon-fm package
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -30,7 +30,6 @@
 #include "hildon-file-chooser-dialog.h"
 #include "hildon-file-system-private.h"
 #include <hildon-widgets/gtk-infoprint.h>
-#include <osso-log.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkbox.h>
 #include <gtk/gtkentry.h>
@@ -47,10 +46,6 @@
 #include <libintl.h>
 #include <gdk/gdkx.h>
 #include <stdlib.h>
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 
 #include "hildon-file-common-private.h"
 #define HILDON_RESPONSE_FOLDER_BUTTON 12345

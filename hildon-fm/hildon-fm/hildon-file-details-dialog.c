@@ -1,7 +1,7 @@
 /*
  * This file is part of hildon-fm
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -47,11 +47,7 @@
 
 #include <string.h> /* strstr() */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#define _(String) dgettext(PACKAGE, String)
+#include "hildon-file-common-private.h"
 
 enum
 {

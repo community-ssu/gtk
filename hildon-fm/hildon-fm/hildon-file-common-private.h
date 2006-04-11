@@ -30,15 +30,26 @@
 
 G_BEGIN_DECLS
 
+#include <osso-log.h>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
 #define _(String) dgettext(PACKAGE, String)
+#define N_(String) String
 #define HCS(String) dgettext("hildon-common-strings", String)
 
 /* If environment doesn't define, use this */
 #define MAX_FILENAME_LENGTH_DEFAULT 255
+
+/* An easy way to add tracing to functions, used while debugging */
+#if 0
+#define TRACE ULOG_DEBUG_F("entered")
+#else
+#define TRACE
+#endif
+
 
 G_END_DECLS
 
