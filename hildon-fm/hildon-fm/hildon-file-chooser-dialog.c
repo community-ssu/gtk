@@ -53,6 +53,7 @@
 #endif
 
 #define _(String) dgettext(PACKAGE, String)
+#define HCS(String) dgettext("hildon-common-strings", String)
 #define MAX_FILENAME_LENGTH_DEFAULT 255 /* If env doesn't define, use this */
 #define HILDON_RESPONSE_FOLDER_BUTTON 12345
 /* Common height for filetrees. About 8 lines. Filetree sets default margins, 
@@ -999,7 +1000,7 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
           We now support this only. */
       if (g_error_matches(error, GTK_FILE_SYSTEM_ERROR,  
               GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS))
-        message = _("ckdg_ib_folder_already_exists");
+        message = HCS("ckdg_ib_folder_already_exists");
       else
         message = _("sfil_ni_operation_failed");
 
