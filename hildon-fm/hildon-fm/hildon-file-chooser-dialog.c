@@ -1054,7 +1054,7 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                 priv->edited = FALSE;
                 hildon_file_chooser_dialog_do_autonaming(priv);
                 hildon_file_chooser_dialog_select_text(priv);
-                gtk_infoprint(window, _("ckdg_ib_enter_name"));
+                gtk_infoprint(window, HCS("ckdg_ib_enter_name"));
             } else {
                 GString *illegals = check_illegal_characters(entry_text);
 

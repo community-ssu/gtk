@@ -1864,29 +1864,26 @@ static void list_size_data_func(GtkTreeViewColumn * tree_column,
     /* No size info for folders in list view */
 
     if (is_folder)
-        buffer[0] = 0; 
-    else if (size < (gint64) 100)
-        g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_max_100b"), (gint) size); /* safe conversion */
-    else if (size < (gint64) 1024)
-        g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_100b_10kb"), size / 1024.0f);
-    else if (size < (gint64) 100 * 1024)
-        g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_10kb_100kb"), (gint) size / 1024);  /* safe */
-    else if (size < (gint64) 10 * 1024 * 1024)
-        g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_100kb_10mb"), size / (1024.0f * 1024.0f));
-    else if (size < (gint64) 100 * 1024 * 1024)
-        g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_10mb_100mb"), (gint) size / (1024 * 1024));
-    else if (size < 10 * ((gint64) 1024 * 1024 * 1024))
-        g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_100mb_10gb"), size / (1024.0 * 1024.0 * 1024.0));
+        buffer[0] = '\0'; 
+    else if (size < 1024)
+        g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_kb"), 1);
+    else if (size < 100 * 1024)
+        g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_1kb_99kb"),
+                   size / 1024);
+    else if (size < 1024 * 1024)
+        g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_100kb_1mb"),
+                   size / (1024.0f * 1024.0f));
+    else if (size < 10 * 1024 * 1024)
+        g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_1mb_10mb"),
+                   size / (1024.0f * 1024.0f));
+    else if (size < 1024 * 1024 * 1024)
+        g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_10mb_1gb"),
+                   size / (1024 * 1024));
     else
-        /* Following calculation doesn't fit into 32 bits if the filesize is larger than 2^62 ;) */
-        g_snprintf(buffer, sizeof(buffer), 
-            _("sfil_li_size_more_than_100gb"), (gint) (size / (1024 * 1024 * 1024)));
+        /* Following calculation doesn't fit into 32 bits if the
+         * filesize is larger than 2^62 ;) */
+        g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_1gb_or_greater"),
+                   size / (1024.0f * 1024.0f * 1024.0f));
 
     g_object_set(cell, "text", buffer, "sensitive", sensitive, NULL);
 }
