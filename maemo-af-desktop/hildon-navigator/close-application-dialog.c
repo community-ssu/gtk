@@ -50,12 +50,15 @@ struct _CADItem
   HNWMWatchedWindow* win;
   GtkToggleButton *button;
   gint vmdata;
+  guint pid;
 };
 
 
 void item_toggled (GtkToggleButton *button,
                    gpointer user_data);
 void kill_selected_items (GList *items);
+
+gint compare_items (gconstpointer a, gconstpointer b);
 
 
 void item_toggled (GtkToggleButton *button,
@@ -97,14 +100,13 @@ void kill_selected_items (GList *items)
   for (l = items; l; l = l->next)
     {
       CADItem *item = (CADItem *) l->data;
-      if (gtk_toggle_button_get_active(item->button))
+      if (gtk_toggle_button_get_active(item->button)
+          && item->win != NULL)
         {
           hn_wm_watched_window_attempt_signal_kill (item->win, SIGTERM);
         }
     }
 }
-
-gint compare_items (gconstpointer a, gconstpointer b);
 
 gint compare_items (gconstpointer a, gconstpointer b)
 {
@@ -143,10 +145,19 @@ gboolean tn_close_application_dialog(CADAction action)
      FIXME: Is there a better way to get them?
    */
   wm = hn_wm_get_singleton();
-  for (l = application_switcher_get_menuitems(wm->app_switcher); l; l = l->next)
+  if (wm == NULL)
+    {
+      ULOG_WARN("%s(): Internal error, global struct is not available!\n", __FUNCTION__);
+    }
+  
+  for (l = application_switcher_get_menuitems(wm->app_switcher);
+       l != NULL;
+       l = l->next)
     {
       guchar *pid_result = NULL;
-      gint pid;
+      guint pid;
+      GList *p;
+      gboolean pid_exists;
       HNWMWatchableApp *app;
       HNWMWatchedWindow* win;
       GdkAtom a;
@@ -161,7 +172,8 @@ gboolean tn_close_application_dialog(CADAction action)
       app = hn_wm_lookup_watchable_app_via_menu(GTK_WIDGET(l->data));
       if (app == NULL)
         {
-          ULOG_WARN("No app found for item %s",gtk_label_get_text(GTK_LABEL(GTK_BIN(l->data)->child)));
+          ULOG_WARN("No app found for item %s",
+                        gtk_label_get_text(GTK_LABEL(GTK_BIN(l->data)->child)));
           continue;
         }
 
@@ -182,7 +194,8 @@ gboolean tn_close_application_dialog(CADAction action)
         }
       if (win == NULL)
         {
-          ULOG_WARN("No win found for item %s",gtk_label_get_text(GTK_LABEL(GTK_BIN(l->data)->child)) );
+          ULOG_WARN("No win found for item %s",
+                       gtk_label_get_text(GTK_LABEL(GTK_BIN(l->data)->child)) );
           continue;
         }
 
@@ -190,7 +203,8 @@ gboolean tn_close_application_dialog(CADAction action)
        * global structures (which are slated for removal anyway).
        */
       a = gdk_atom_intern("_NET_WM_PID", FALSE);
-      pid_result = hn_wm_util_get_win_prop_data_and_validate (hn_wm_watched_window_get_x_win(win),
+      pid_result = hn_wm_util_get_win_prop_data_and_validate (
+                hn_wm_watched_window_get_x_win(win),
 							  gdk_x11_atom_to_xatom (a),
 							  XA_CARDINAL,
 							  32,
@@ -198,11 +212,31 @@ gboolean tn_close_application_dialog(CADAction action)
 							  NULL);
       if (pid_result == NULL)
         {
-          ULOG_WARN("No pid found for item %s",gtk_label_get_text(GTK_LABEL(GTK_BIN(l->data)->child)) );
+          ULOG_WARN("No pid found for item %s",
+                       gtk_label_get_text(GTK_LABEL(GTK_BIN(l->data)->child)) );
           continue;
         }
 
       pid = pid_result[0]+256*pid_result[1];
+
+      /* If we already have the pid, skip item creation */
+      pid_exists = FALSE;
+      for (p = items; p != NULL; p = p->next)
+        {
+          CADItem *item = (CADItem *) p->data;
+          
+          if (item->pid == pid)
+            {
+              pid_exists = TRUE;
+              break;
+            }
+          
+        }
+
+      if (pid_exists)
+        {
+          continue;
+        }
 
       ULOG_DEBUG ("%s(): %s is %s, Pid:%i, VmData: %ikB\n", __FUNCTION__,
         hn_wm_watchable_app_get_name(app),
@@ -214,6 +248,7 @@ gboolean tn_close_application_dialog(CADAction action)
       
       item->win = win;
       item->vmdata = hn_wm_get_vmdata_for_pid(pid);
+      item->pid = pid;
       
       items = g_list_append(items, item);
       
@@ -244,7 +279,8 @@ gboolean tn_close_application_dialog(CADAction action)
   /* Creating the UI */
   dialog = gtk_dialog_new_with_buttons (_("memr_ti_close_applications"),
                                         NULL,
-                                        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                        GTK_DIALOG_MODAL
+                                        | GTK_DIALOG_DESTROY_WITH_PARENT,
                                         _("memr_bd_close_applications_ok"),
                                         GTK_RESPONSE_ACCEPT,
                                         _("memr_bd_close_applications_cancel"),
@@ -285,7 +321,17 @@ gboolean tn_close_application_dialog(CADAction action)
       HNWMWatchableApp *app;
       CADItem *item = (CADItem *) l->data;
 
+      if (item->win == NULL)
+        {
+          continue;
+        }
+
       app = hn_wm_watched_window_get_app(item->win);
+      
+      if (app == NULL)
+        {
+          continue;
+        }
       
       label = gtk_label_new(_(hn_wm_watchable_app_get_name(app)));
       icon_name = hn_wm_watchable_app_get_icon_name(app);

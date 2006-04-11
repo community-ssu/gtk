@@ -1,5 +1,15 @@
 2006-04-11  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Close Application Dialog MEM-DIA001 is lost"
+	(Closes N#24388)
+	* hildon-navigator/hn-wm.c:
+	  - Remove attempt to reset the TN items (wasn't working, needs support
+        from elswhere to be done)
+	* hildon-navigator/close-application-dialog.c:
+	  - Check for already listed pids, so no duplicates will be in the list
+
+2006-04-11  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.c: Fixed another crash in disk full
 	  situation
 

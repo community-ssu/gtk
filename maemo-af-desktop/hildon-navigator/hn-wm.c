@@ -226,61 +226,8 @@ hn_wm_top_service(const gchar *service_name)
       
       if (!killed)
         {
-          HNWMWatchableApp      *app;
-          HNWMWatchedWindowView *view = NULL;
-           
           hildon_banner_show_information(NULL, NULL, 
                          _("ckct_ib_application_lowmem"));
-          
-          /* We need to top the active application again to adjust the TN
-             buttons back to correct order */
-          
-          view = hn_wm_watched_window_get_active_view(win);
-          app = hn_wm_watched_window_get_app (win);
-                    
-          /* This is c&p from below, if it works, move to own function */  
-          if (view)
-    	{
-          
-    	  hn_wm_util_send_x_message (hn_wm_watched_window_view_get_id (view),
-    				     hn_wm_watched_window_get_x_win (win),
-    				     hnwm->atoms[HN_ATOM_HILDON_VIEW_ACTIVE],
-    				     SubstructureRedirectMask
-    				     |SubstructureNotifyMask,
-    				     0,
-    				     0,
-    				     0,
-    				     0,
-    				     0);
-
-    	  app_switcher_update_item (hnwm->app_switcher, win, view,
-    				    AS_MENUITEM_TO_FIRST_POSITION);
-    	}
-          else
-    	{
-    	  /* Regular or grouped win, get MB to top */
-    	  XEvent ev;
-          HNWMWatchedWindow *active_win = hn_wm_watchable_app_get_active_window(app);
-
-    	  memset(&ev, 0, sizeof(ev));
-          
-    	  HN_DBG("@@@@ Last active window %s\n",
-                 active_win ? hn_wm_watched_window_get_hibernation_key(active_win) : "none");
-          
-    	  ev.xclient.type         = ClientMessage;
-    	  ev.xclient.window       = hn_wm_watched_window_get_x_win (active_win ? active_win : win);
-    	  ev.xclient.message_type = hnwm->atoms[HN_ATOM_NET_ACTIVE_WINDOW];
-    	  ev.xclient.format       = 32;
-
-    	  gdk_error_trap_push();
-    	  XSendEvent(GDK_DISPLAY(), GDK_ROOT_WINDOW(), False,
-    		     SubstructureRedirectMask, &ev);
-    	  XSync(GDK_DISPLAY(),FALSE);
-    	  gdk_error_trap_pop();
-
-          hn_wm_watchable_app_set_active_window(app, win);
-    	}
-          
           return;
         }
     }
@@ -294,6 +241,9 @@ hn_wm_top_service(const gchar *service_name)
   /* Here we should compare the amount of pages to a configurable
    *  threshold. Value 0 means that we don't know and assume
    *  slightly riskily that we can start the app...
+   *
+   *  This code is not removed to preserve the configurability as fallback
+   *  for non-lowmem situtations
    */
   if (pages_available > 0 && pages_available < hnwm->lowmem_min_distance)
     {
