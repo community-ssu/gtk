@@ -63,6 +63,9 @@
   annoy_user_with_log in preference to annoy_user when showing an
   error message where the log is expected to contain more details.
 
+  If a 'annoy_user' dialog is already active when any of the
+  annoy_user function is called, no new dialog is displayed.
+
   IRRITATE_USER shows TEXT in a information banner which goes away
   automatically after a certain time.
 
@@ -263,17 +266,22 @@ GdkPixbuf *pixbuf_from_base64 (const char *base64);
 /* LOCALIZE_FILE makes sure that the file identified by URI is
    accessible in the local filesystem.
 
-   XXX - If necessary, the file will be copied, but there is no
-   support yet for deleting this temporary copy.
-
    CONT is called with the local name of the file, or NULL when
    something went wrong.  In the latter case, an appropriate error
    message has already been shown and CONT can simply silently clean
-   up.  CONT must free LOCAL with g_free.
+   up.  CONT must free LOCAL with g_free.  CONT must cause
+   cleanup_temp_file to be called eventually when it received a
+   non-NULL filename.
+
+   CLEANUP_TEMP_FILE cleans up after a file localization.  It must be
+   called after LOCALIZE_FILE has called CONT with a non-NULL filename.
 */
+
 void localize_file (const char *uri,
 		    void (*cont) (char *local, void *data),
 		    void *data);
+
+void cleanup_temp_file ();
 
 /* RUN_CMD spawns a process that executes the command specified by
    ARGV and calls CONT with the termination status of the process (as

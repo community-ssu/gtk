@@ -37,6 +37,7 @@
 struct spd_closure {
   package_info *pi;
   bool installed;
+  bool show_problems;
 };
 
 static const char *
@@ -137,7 +138,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
   bool possible = true;
   if (installed)
     {
-      if (pi->info.removable)
+      if (pi->info.removable_status == status_able)
 	{
 	  size_string_detailed (size_buf, 20,
 				-pi->info.remove_user_size_delta);
@@ -156,7 +157,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
     {
       if (pi->installed_version)
 	{
-	  if (pi->info.installable)
+	  if (pi->info.installable_status == status_able)
 	    {
 	      if (pi->info.install_user_size_delta >= 0)
 		{
@@ -184,7 +185,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 	}
       else
 	{
-	  if (pi->info.installable)
+	  if (pi->info.installable_status == status_able)
 	    {
 	      if (pi->info.install_user_size_delta >= 0)
 		{
@@ -272,7 +273,8 @@ details_response (GtkDialog *dialog, gint response, gpointer clos)
 }
 
 static void
-show_with_details (package_info *pi, bool installed)
+show_with_details (package_info *pi, bool installed,
+		   bool show_problems)
 {
   GtkWidget *dialog, *notebook;
   GtkWidget *table, *common;
@@ -284,14 +286,14 @@ show_with_details (package_info *pi, bool installed)
     {
       if (broken)
 	{
-	  if (pi->info.installable)
+	  if (pi->info.installable_status == status_able)
 	    status = _("ai_va_details_status_broken_updateable");
 	  else
 	    status = _("ai_va_details_status_broken_not_updateable");
 	}
       else
 	{
-	  if (pi->info.installable)
+	  if (pi->info.installable_status == status_able)
 	    status = _("ai_va_details_status_updateable");
 	  else
 	    status = _("ai_va_details_status_not_updateable");
@@ -306,7 +308,7 @@ show_with_details (package_info *pi, bool installed)
     }
   else if (pi->available_version)
     {
-      if (pi->info.installable)
+      if (pi->info.installable_status == status_able)
 	status = _("ai_va_details_status_installable");
       else
 	status = _("ai_va_details_status_not_installable");
@@ -369,7 +371,7 @@ show_with_details (package_info *pi, bool installed)
   const gchar *summary_label;
   if (installed)
     summary_label = _("ai_ti_details_noteb_uninstalling");
-  else if (!pi->info.installable)
+  else if (pi->info.installable_status != status_able)
     summary_label = _("ai_ti_details_noteb_problems");
   else if (pi->installed_version && pi->available_version)
     summary_label = _("ai_ti_details_noteb_updating");
@@ -394,10 +396,11 @@ show_with_details (package_info *pi, bool installed)
 			    make_small_text_view (pi->description),
 			    gtk_label_new
 			    (_("ai_ti_details_noteb_description")));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			    make_small_text_view (pi->summary),
-			    gtk_label_new (summary_label));
-  
+  int problems_page =
+    gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+			      make_small_text_view (pi->summary),
+			      gtk_label_new (summary_label));
+
   pi->unref ();
 
   g_signal_connect (dialog, "response",
@@ -405,6 +408,13 @@ show_with_details (package_info *pi, bool installed)
 
   gtk_widget_set_usize (dialog, 600, 300);
   gtk_widget_show_all (dialog);
+
+  if (show_problems)
+    {
+      printf ("page: %d\n", problems_page);
+      gtk_notebook_set_current_page (GTK_NOTEBOOK (notebook),
+				     problems_page);
+    }
 }
 
 static void
@@ -448,6 +458,7 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   spd_closure *c = (spd_closure *)clos;
   package_info *pi = c->pi;
   bool installed = c->installed;
+  bool show_problems = c->show_problems;
   delete c;
 
   if (dec == NULL)
@@ -466,7 +477,7 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
 
   pi->have_details = true;
 
-  show_with_details (pi, installed);
+  show_with_details (pi, installed, show_problems);
 }
 
 void
@@ -484,18 +495,21 @@ spd_cont (package_info *pi, void *data, bool changed)
   else
     {
       bool installed = c->installed;
+      bool show_problems = c->show_problems;
       delete c;
 
-      show_with_details (pi, installed);
+      show_with_details (pi, installed, show_problems);
     }
 }
 
 void
-show_package_details (package_info *pi, bool installed)
+show_package_details (package_info *pi, bool installed,
+		      bool show_problems)
 {
   spd_closure *c = new spd_closure;
   c->pi = pi;
   c->installed = installed;
+  c->show_problems = show_problems;
   pi->ref ();
   get_intermediate_package_info (pi, spd_cont, c);
 }

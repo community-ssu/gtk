@@ -40,6 +40,10 @@
 #include <osso-ic.h>
 #include <libgnomevfs/gnome-vfs.h>
 
+extern "C" {
+#include <obex-vfs-utils/ovu-xfer.h>
+}
+
 #include "util.h"
 #include "details.h"
 #include "log.h"
@@ -64,7 +68,7 @@ yes_no_response (GtkDialog *dialog, gint response, gpointer clos)
   if (response == 1)
     {
       if (c->pi)
-	show_package_details (c->pi, c->installed);
+	show_package_details (c->pi, c->installed, false);
       return;
     }
 
@@ -128,21 +132,28 @@ ask_yes_no_with_details (const gchar *title,
   gtk_widget_show_all (dialog);
 }
 
+static bool currently_annoying_user = false;
+
 static void
 annoy_user_response (GtkDialog *dialog, gint response, gpointer data)
 {
   gtk_widget_destroy (GTK_WIDGET (dialog));
+  currently_annoying_user = false;
 }
 
 void
 annoy_user (const gchar *text)
 {
+  if (currently_annoying_user)
+    return;
+
   GtkWidget *dialog;
 
   dialog = hildon_note_new_information (NULL, text);
   g_signal_connect (dialog, "response", 
 		    G_CALLBACK (annoy_user_response), NULL);
   gtk_widget_show_all (dialog);
+  currently_annoying_user = true;
 }
 
 struct auwd_closure {
@@ -160,8 +171,10 @@ annoy_user_with_details_response (GtkDialog *dialog, gint response,
   delete c;
 
   gtk_widget_destroy (GTK_WIDGET (dialog));
+  currently_annoying_user = false;
+
   if (response == 1)
-    show_package_details (pi, installed);
+    show_package_details (pi, installed, true);
   pi->unref ();
 }
 
@@ -169,16 +182,30 @@ void
 annoy_user_with_details (const gchar *text,
 			 package_info *pi, bool installed)
 {
+  if (currently_annoying_user)
+    return;
+
   GtkWidget *dialog, *action_area;
   GtkWidget *details_button;
   auwd_closure *c = new auwd_closure;
   gint response;
 
-  // XXX - the buttons should be "Details" "Close", but this gives
-  //       "Ok" "Details".
-
   dialog = hildon_note_new_information (get_main_window (), text);
-  gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_details"), 1);
+
+  {
+    // XXX - the buttons should be "Details" "Close", so we remove the
+    //       "Ok" button from the information note and add our own ones.
+
+    GtkWidget *button_box = GTK_DIALOG(dialog)->action_area;
+    GList *kids = gtk_container_get_children (GTK_CONTAINER (button_box));
+    if (kids)
+      gtk_container_remove (GTK_CONTAINER (button_box),
+			    GTK_WIDGET (kids->data));
+    g_list_free (kids);
+
+    gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_details"), 1);
+    gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_close"), 2);
+  }
 
   pi->ref ();
   c->pi = pi;
@@ -186,6 +213,7 @@ annoy_user_with_details (const gchar *text,
   g_signal_connect (dialog, "response", 
 		    G_CALLBACK (annoy_user_with_details_response), c);
   gtk_widget_show_all (dialog);
+  currently_annoying_user = true;
 }
 
 struct auwe_closure {
@@ -198,6 +226,8 @@ annoy_user_with_log_response (GtkDialog *dialog, gint response,
 			      gpointer data)
 {
   gtk_widget_destroy (GTK_WIDGET (dialog));
+  currently_annoying_user = false;
+
   if (response == 1)
     show_log ();
 }
@@ -205,6 +235,9 @@ annoy_user_with_log_response (GtkDialog *dialog, gint response,
 void
 annoy_user_with_log (const gchar *text)
 {
+  if (currently_annoying_user)
+    return;
+
   GtkWidget *dialog, *action_area;
   GtkWidget *details_button;
 
@@ -216,6 +249,7 @@ annoy_user_with_log (const gchar *text)
   g_signal_connect (dialog, "response", 
 		    G_CALLBACK (annoy_user_with_log_response), NULL);
   gtk_widget_show_all (dialog);
+  currently_annoying_user = true;
 }
 
 void
@@ -1123,16 +1157,134 @@ pixbuf_from_base64 (const char *base64)
   return pixbuf;
 }
 
+/* XXX - there seems to be no good way to really stop copy_progress
+         from being called; I just can not tame gnome_vfs_async_xfer,
+         at least not in its ovu_async_xfer costume.  Thus, I simple
+         punt the issue and use global state.
+*/
+
+GnomeVFSResult copy_result;
+static void (*copy_cont) (char *local, void *data);
+static void *copy_cont_data;
+static char *copy_local;
+static char *copy_target;
+static char *copy_tempdir;
+
+static void
+call_copy_cont (bool success)
+{
+  printf ("copy done %d\n", success);
+
+  hide_progress ();
+
+  if (!success)
+    annoy_user (_("ai_ni_operation_failed"));
+    
+  if (copy_cont)
+    {
+      if (success)
+	copy_cont (copy_target, copy_cont_data);
+      else
+	{
+	  cleanup_temp_file ();
+	  g_free (copy_target);
+	  copy_cont (NULL, copy_cont_data);
+	}
+    }
+
+  copy_cont = NULL;
+}
+
+static gboolean
+copy_progress (GnomeVFSAsyncHandle *handle,
+	       GnomeVFSXferProgressInfo *info,
+	       gpointer unused)
+{
+#if 0
+  fprintf (stderr, "phase %d, status %d, vfs_status %s\n",
+	   info->phase, info->status,
+	   gnome_vfs_result_to_string (info->vfs_status));
+#endif
+
+  if (info->file_size > 0)
+    set_progress (op_downloading, info->bytes_copied, info->file_size);
+
+  if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED)
+    {
+      call_copy_cont (true);
+      gnome_vfs_async_cancel (handle);
+    }
+
+  /* Produce an appropriate return value depending on the status.
+   */
+  if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_OK)
+    {
+      return !progress_was_cancelled ();
+    }
+  else if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR)
+    {
+      call_copy_cont (false);
+      gnome_vfs_async_cancel (handle);
+      return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
+    }
+  else
+    {
+      add_log ("unexpected status %d in copy_progress\n", info->status);
+      return 1;
+    }
+}
+
+static void
+do_copy (const char *source, GnomeVFSURI *source_uri,
+	 gchar *target)
+{
+  GnomeVFSAsyncHandle *handle;
+  GnomeVFSURI *target_uri;
+  GList *source_uri_list, *target_uri_list;
+  GnomeVFSResult result;
+
+  target_uri = gnome_vfs_uri_new (target);
+  if (target_uri == NULL)
+    {
+      call_copy_cont (false);
+      return;
+    }
+
+  source_uri_list = g_list_append (NULL, (gpointer) source_uri);
+  target_uri_list = g_list_append (NULL, (gpointer) target_uri);
+
+  show_progress ("Opening");
+
+  result = ovu_async_xfer (&handle,
+			   source_uri_list,
+			   target_uri_list,
+			   GNOME_VFS_XFER_DEFAULT,
+			   GNOME_VFS_XFER_ERROR_MODE_QUERY,
+			   GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE,
+			   GNOME_VFS_PRIORITY_DEFAULT,
+			   copy_progress,
+			   NULL,
+			   NULL,
+			   NULL);
+
+  if (result != GNOME_VFS_OK)
+    call_copy_cont (false);
+}
+
 void
 localize_file (const char *uri,
 	       void (*cont) (char *local, void *data),
 	       void *data)
 {
+  copy_cont = cont;
+  copy_cont_data = data;
+  copy_target = NULL;
+  copy_local = NULL;
+  copy_tempdir = NULL;
+
   if (!gnome_vfs_init ())
     {
-      // XXX
-      annoy_user ("Couldn't init GnomeVFS.");
-      cont (NULL, data);
+      call_copy_cont (false);
       return;
     }
 
@@ -1140,9 +1292,7 @@ localize_file (const char *uri,
 
   if (vfs_uri == NULL)
     {
-      fprintf (stderr, "uri: %s\n", uri);
-      annoy_user ("Malformed URI");
-      cont (NULL, data);
+      call_copy_cont (false);
       return;
     }
 
@@ -1156,16 +1306,63 @@ localize_file (const char *uri,
   if (scheme && !strcmp (scheme, "file"))
     {
       const gchar *path = gnome_vfs_uri_get_path (vfs_uri);
-      gchar *unescaped_path = gnome_vfs_unescape_string (path, NULL);
-      if (unescaped_path == NULL)
-	annoy_user ("Hmm.");
-      cont (unescaped_path, data);
+      copy_target = gnome_vfs_unescape_string (path, NULL);
+      call_copy_cont (true);
     }
   else
     {
-      // XXX
-      annoy_user ("Unsupported file location.");
-      cont (NULL, data);
+      /* We need to copy.
+       */
+
+      char tempdir_template[] = "/var/tmp/osso-ai-XXXXXX";
+      gchar *basename;
+
+      /* Make a temporary directory and allow everyone to read it.
+       */
+
+      copy_target = NULL;
+      copy_local = NULL;
+
+      copy_tempdir = g_strdup (mkdtemp (tempdir_template));
+      if (copy_tempdir == NULL)
+	{
+	  add_log ("Can not create %s: %m", copy_tempdir);
+	  call_copy_cont (false);
+	}
+      else if (chmod (copy_tempdir, 0755) < 0)
+	{
+	  add_log ("Can not chmod %s: %m", copy_tempdir);
+	  call_copy_cont (false);
+	}
+      else
+	{
+	  basename = gnome_vfs_uri_extract_short_path_name (vfs_uri);
+	  copy_local = g_strdup_printf ("%s/%s", copy_tempdir, basename);
+	  free (basename);
+
+	  copy_target = g_strdup (copy_local);
+	  do_copy (uri, vfs_uri, copy_target);
+	}
+    }
+}
+
+void
+cleanup_temp_file ()
+{
+  /* We don't put up dialogs for errors that happen now.  From the
+     point of the user, the installation has been completed and he
+     has seen the report already.
+  */
+
+  if (copy_local)
+    {
+      if (unlink (copy_local) < 0)
+	add_log ("error unlinking %s: %m\n", copy_local);
+      if (rmdir (copy_tempdir) < 0)
+	add_log ("error removing %s: %m\n", copy_tempdir);
+
+      g_free (copy_local);
+      g_free (copy_tempdir);
     }
 }
 

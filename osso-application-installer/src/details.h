@@ -27,7 +27,8 @@
 
 #include "main.h"
 
-void show_package_details (package_info *p, bool installed);
+void show_package_details (package_info *p, bool installed,
+			   bool show_problems);
 
 char *decode_summary (apt_proto_decoder *dec,
 		      package_info *pi, bool installed);

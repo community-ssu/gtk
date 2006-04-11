@@ -109,7 +109,7 @@ void apt_worker_install_file (const char *filename,
 			      apt_worker_callback *callback,
 			      void *data);
 
-void apt_worker_get_file_details (const char *filename,
+void apt_worker_get_file_details (bool only_user, const char *filename,
 				  apt_worker_callback *callback,
 				  void *data);
 

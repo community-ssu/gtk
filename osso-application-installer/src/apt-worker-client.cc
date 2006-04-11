@@ -642,10 +642,11 @@ apt_worker_install_file (const char *file,
 }
 
 void
-apt_worker_get_file_details (const char *file,
+apt_worker_get_file_details (bool only_user, const char *file,
 			     apt_worker_callback *callback, void *data)
 {
   request.reset ();
+  request.encode_int (only_user);
   request.encode_string (file);
   call_apt_worker (APTCMD_GET_FILE_DETAILS,
 		   request.get_buf (), request.get_len (),

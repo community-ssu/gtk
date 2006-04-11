@@ -114,7 +114,7 @@ using namespace std;
 
 /* You know what this means.
  */
-//#define DEBUG
+#define DEBUG
 
 
 /** GENERAL UTILITIES
@@ -579,6 +579,11 @@ cache_init ()
       global_initialized = true;
     }
 
+  /* We need to dump the errors here since any pending errors will
+     cause the following operations to fail.
+  */
+  _error->DumpErrors ();
+	  
   UpdateProgress progress;
   package_cache = new pkgCacheFile;
 
@@ -602,6 +607,20 @@ cache_init ()
  */
 
 bool
+is_user_section (const char *section, const char *end)
+{
+  if (section == NULL)
+    return false;
+
+#if ENABLE_OLD_MAEMO_SECTION_TEST
+  if (end-section > 6 && !strncmp (section, "maemo/", 6))
+    return true;
+#endif
+  
+  return end-section > 6 && !strncmp (section, "user/", 5);
+}
+
+bool
 is_user_package (pkgCache::VerIterator &ver)
 {
   const char *section = ver.Section ();
@@ -609,12 +628,7 @@ is_user_package (pkgCache::VerIterator &ver)
   if (section == NULL)
     return false;
 
-#if ENABLE_OLD_MAEMO_SECTION_TEST
-  if (!strncmp (section, "maemo/", 6))
-    return true;
-#endif
-  
-  return !strncmp (section, "user/", 5);
+  return is_user_section (section, section + strlen (section));
 }
 
 bool
@@ -724,7 +738,7 @@ cmd_get_package_list ()
       response.encode_int (0);
       return;
     }
-  
+
   response.encode_int (1);
   pkgCache &cache = *package_cache;
 
@@ -787,7 +801,7 @@ cmd_get_package_list ()
 	       || (have_latest
 		   && description_matches_pattern (latest, pattern))))
 	continue;
-      
+
       // Name
       response.encode_string (pkg.Name ());
 
@@ -812,6 +826,74 @@ cmd_get_package_list ()
    specified package to gather the requested information.
  */
 
+static int
+installable_status_1 (pkgCache::PkgIterator &pkg,
+		      pkgCache::PkgIterator &want)
+{
+  pkgDepCache &Cache = *package_cache;
+  pkgCache::VerIterator Ver = Cache[pkg].InstVerIter(Cache);
+
+  bool some_missing = false, some_conflicting = false;
+
+  if (Ver.end() == true)
+    return status_unable;
+      
+  for (pkgCache::DepIterator D = Ver.DependsList(); D.end() == false;)
+    {
+      // Compute a single dependency element (glob or)
+      pkgCache::DepIterator Start;
+      pkgCache::DepIterator End;
+      D.GlobOr(Start,End); // advances D
+
+      if ((Cache[End] & pkgDepCache::DepGInstall)
+	  == pkgDepCache::DepGInstall)
+	continue;
+
+      if (Start->Type == pkgCache::Dep::PreDepends ||
+	  Start->Type == pkgCache::Dep::Depends)
+	some_missing = true;
+      else if (Start->Type == pkgCache::Dep::Conflicts)
+	some_conflicting = true;
+    }
+
+  if (some_missing && !some_conflicting)
+    return status_missing;
+  return status_unable;
+}
+
+static int
+installable_status (pkgCache::PkgIterator &want)
+{
+  pkgDepCache &cache = *package_cache;
+  int installable_status = status_missing;
+  
+  for (pkgCache::PkgIterator pkg = cache.PkgBegin();
+       pkg.end() != true;
+       pkg++)
+    {
+      if (cache[pkg].InstBroken())
+	if (installable_status_1 (pkg, want) == status_unable)
+	  installable_status = status_unable;
+    }
+
+  return installable_status;
+}
+
+static int
+removable_status (pkgCache::PkgIterator &want)
+{
+  pkgDepCache &cache = *package_cache;
+  for (pkgCache::PkgIterator pkg = cache.PkgBegin();
+       pkg.end() != true;
+       pkg++)
+    {
+      if (cache[pkg].InstBroken())
+	return status_needed;
+    }
+
+  return status_unable;
+}
+
 void
 cmd_get_package_info ()
 {
@@ -819,10 +901,10 @@ cmd_get_package_info ()
 
   apt_proto_package_info info;
 
-  info.installable = 0;
+  info.installable_status = status_unable;
   info.download_size = 0;
   info.install_user_size_delta = 0;
-  info.removable = 0;
+  info.removable_status = status_unable;
   info.remove_user_size_delta = 0;
 
   if (package_cache)
@@ -843,13 +925,13 @@ cmd_get_package_info ()
 	  (*package_cache)->MarkInstall (pkg);
 	  if (cache.BrokenCount() > old_broken_count)
 	    {
-	      info.installable = 0;
+	      info.installable_status = installable_status (pkg);
 	      info.download_size = 0;
 	      info.install_user_size_delta = 0;
 	    }
 	  else
 	    {
-	      info.installable = 1;
+	      info.installable_status = status_able;
 	      info.download_size = (int) cache.DebSize ();
 	      info.install_user_size_delta = (int) cache.UsrSize ();
 	    }
@@ -864,12 +946,12 @@ cmd_get_package_info ()
 	  (*package_cache)->MarkDelete (pkg);
 	  if (cache.BrokenCount() > old_broken_count)
 	    {
-	      info.removable = 0;
+	      info.removable_status = removable_status (pkg);
 	      info.remove_user_size_delta = 0;
 	    }
 	  else
 	    {
-	      info.removable = 1;
+	      info.removable_status = status_able;
 	      info.remove_user_size_delta = (int) cache.UsrSize ();
 	    }
 	}
@@ -1136,13 +1218,13 @@ cmd_get_package_details ()
    This is copied straight from "apt-get update".
 */
 
-bool
+int
 update_package_cache ()
 {
   // Get the source list
   pkgSourceList List;
   if (List.ReadMainList () == false)
-    return false;
+    return rescode_failure;
 
   // Lock the list directory
   FileFd Lock;
@@ -1150,7 +1232,10 @@ update_package_cache ()
     {
       Lock.Fd (GetLock (_config->FindDir("Dir::State::Lists") + "lock"));
       if (_error->PendingError () == true)
-	return _error->Error ("Unable to lock the list directory");
+	{
+	  _error->Error ("Unable to lock the list directory");
+	  return rescode_failure;
+	}
     }
    
   // Create the download object
@@ -1159,11 +1244,11 @@ update_package_cache ()
 
   // Populate it with the source selection
   if (List.GetIndexes(&Fetcher) == false)
-    return false;
+    return rescode_failure;
    
   // Run it
   if (Fetcher.Run() == pkgAcquire::Failed)
-    return false;
+    return rescode_failure;
 
   bool Failed = false;
   for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin();
@@ -1182,20 +1267,24 @@ update_package_cache ()
   // Clean out any old list files
   if (_config->FindB("APT::Get::List-Cleanup",true) == true)
     {
-      if (Fetcher.Clean(_config->FindDir("Dir::State::lists")) == false ||
-	  Fetcher.Clean(_config->FindDir("Dir::State::lists") + "partial/") == false)
-	return false;
+      Fetcher.Clean (_config->FindDir("Dir::State::lists"));
+      Fetcher.Clean (_config->FindDir("Dir::State::lists") + "partial/");
     }
-   
+  
   // Prepare the cache.   
-  {
-    UpdateProgress Prog;
-    if (package_cache == NULL || !package_cache->BuildCaches (Prog))
-      return false;
-    cache_init ();
-  }
 
-  return !Failed;
+  UpdateProgress Prog;
+  if (package_cache)
+    {
+      /* We need to call cache_init even if BuildCaches fails.
+	 Otherwise the cache is corrupted.
+      */
+      if (!package_cache->BuildCaches (Prog))
+	Failed = true;
+    }
+
+  cache_init ();
+  return Failed? rescode_failure : rescode_success;
 }
 
 void
@@ -1209,9 +1298,9 @@ cmd_update_package_cache ()
       DBG ("http_proxy: %s\n", http_proxy);
     }
   
-  bool success = update_package_cache ();
+  int result_code = update_package_cache ();
 
-  response.encode_int (success? 1 : 0);
+  response.encode_int (result_code);
 }
 
 /* APTCMD_GET_SOURCES_LIST
@@ -1275,13 +1364,13 @@ cmd_set_sources_list ()
     }
 }
 
-bool operation (bool only_check);
+int operation (bool only_check);
 
 void
 cmd_install_check ()
 {
   const char *package = request.decode_string_in_place ();
-  bool success = false;
+  int result_code = rescode_failure;
 
   if (package_cache)
     {
@@ -1292,11 +1381,12 @@ cmd_install_check ()
 	{
 	  cache.Init (NULL);
 	  cache.MarkInstall (pkg);
-	  success = operation (true);
+	  result_code = operation (true);
 	}
     }
 
-  response.encode_int (success);
+  cache_init ();
+  response.encode_int (result_code == rescode_success);
 }
 
 void
@@ -1304,7 +1394,7 @@ cmd_install_package ()
 {
   const char *package = request.decode_string_in_place ();
   const char *http_proxy = request.decode_string_in_place ();
-  bool success = false;
+  int result_code = rescode_failure;
 
   if (http_proxy)
     {
@@ -1321,11 +1411,12 @@ cmd_install_package ()
 	{
 	  cache.Init (NULL);
 	  cache.MarkInstall (pkg);
-	  success = operation (false);
+	  result_code = operation (false);
 	}
     }
 
-  response.encode_int (success);
+  cache_init ();
+  response.encode_int (result_code);
 }
 
 void
@@ -1360,7 +1451,7 @@ void
 cmd_remove_package ()
 {
   const char *package = request.decode_string_in_place ();
-  bool success = false;
+  int result_code = rescode_failure;
 
   if (package_cache)
     {
@@ -1371,11 +1462,12 @@ cmd_remove_package ()
 	{
 	  cache.Init (NULL);
 	  cache.MarkDelete (pkg);
-	  success = operation (false);
+	  result_code = operation (false);
 	}
     }
 
-  response.encode_int (success);
+  cache_init ();
+  response.encode_int (result_code == rescode_success);
 }
 
 static GList *certified_uri_prefixes = NULL;
@@ -1483,19 +1575,8 @@ encode_upgrades ()
   response.encode_string (NULL);
 }
 
-bool operation_1 (bool only_check);
-
-bool
-operation (bool only_check)
-{
-  bool res = operation_1 (only_check);
-  _error->DumpErrors ();
-  cache_init ();
-  return res;
-}
-
-bool
-operation_1 (bool check_only)
+int
+operation (bool check_only)
 {
    pkgCacheFile &Cache = *package_cache;
    SPtr<pkgPackageManager> operation_pm;
@@ -1515,17 +1596,18 @@ operation_1 (bool check_only)
    // Sanity check
    if (Cache->BrokenCount() != 0)
    {
-     return _error->Error("Internal error, install_packages was called with broken packages!");
+     _error->Error("Internal error, install_packages was called with broken packages!");
+     return rescode_failure;
    }
 
    if (Cache->DelCount() == 0 && Cache->InstCount() == 0 &&
        Cache->BadCount() == 0)
-      return true;
+      return rescode_success;
    
    // Create the text record parser
    pkgRecords Recs (Cache);
    if (_error->PendingError() == true)
-      return false;
+      return rescode_failure;
    
    // Lock the archive directory
    FileFd Lock;
@@ -1533,7 +1615,10 @@ operation_1 (bool check_only)
    {
       Lock.Fd(GetLock(_config->FindDir("Dir::Cache::Archives") + "lock"));
       if (_error->PendingError() == true)
-	 return _error->Error("Unable to lock the download directory");
+	{
+	  _error->Error("Unable to lock the download directory");
+	  return rescode_failure;
+	}
    }
    
    // Create the download object
@@ -1543,66 +1628,48 @@ operation_1 (bool check_only)
    // Read the source list
    pkgSourceList List;
    if (List.ReadMainList() == false)
-      return _error->Error("The list of sources could not be read.");
+     {
+       _error->Error("The list of sources could not be read.");
+       return rescode_failure;
+     }
    
    // Create the package manager and prepare to download
    SPtr<pkgPackageManager> Pm = _system->CreatePM(Cache);
    if (Pm->GetArchives(&Fetcher,&List,&Recs) == false || 
        _error->PendingError() == true)
-      return false;
+     return rescode_failure;
 
    double FetchBytes = Fetcher.FetchNeeded();
    double FetchPBytes = Fetcher.PartialPresent();
    double DebBytes = Fetcher.TotalNeeded();
 
-#if 0
-   // Display statistics
-   if (DebBytes != Cache->DebSize())
-     {
-       fprintf (stderr, "%f != %f\n", DebBytes, Cache->DebSize());
-       fprintf (stderr, "How odd.. The sizes didn't match, "
-		"email apt@packages.debian.org\n");
-     }
-   
-   // Number of bytes
-   if (DebBytes != FetchBytes)
-     fprintf (stderr, "Need to get %sB/%sB of archives.\n",
-	      SizeToStr(FetchBytes).c_str(),SizeToStr(DebBytes).c_str());
-   else
-     fprintf (stderr, "Need to get %sB of archives.\n",
-	      SizeToStr(DebBytes).c_str());
-
-   // Size delta
-   if (Cache->UsrSize() >= 0)
-     fprintf (stderr, 
-	      "After unpacking %sB of additional disk space will be used.\n",
-	      SizeToStr(Cache->UsrSize()).c_str());
-   else
-     fprintf (stderr, 
-	      "After unpacking %sB disk space will be freed.\n",
-	      SizeToStr(-1*Cache->UsrSize()).c_str());
-#endif
-
    if (_error->PendingError() == true)
-      return false;
+      return rescode_failure;
 
    /* Check for enough free space. */
    {
      struct statvfs Buf;
      string OutputDir = _config->FindDir("Dir::Cache::Archives");
      if (statvfs(OutputDir.c_str(),&Buf) != 0)
-       return _error->Errno("statvfs","Couldn't determine free space in %s",
-			    OutputDir.c_str());
+       {
+	 _error->Errno("statvfs","Couldn't determine free space in %s",
+		       OutputDir.c_str());
+	 return rescode_failure;
+       }
+
      if (unsigned(Buf.f_bfree) < (FetchBytes - FetchPBytes)/Buf.f_bsize)
-       return _error->Error("You don't have enough free space in %s.",
-			    OutputDir.c_str());
+       {
+	 _error->Error("You don't have enough free space in %s.",
+		       OutputDir.c_str());
+	 return rescode_out_of_space;
+       }
    }
    
    if (check_only)
      {
        encode_prep_summary (Fetcher);
        encode_upgrades ();
-       return true;
+       return rescode_success;
      }
 
    // Run it
@@ -1610,7 +1677,7 @@ operation_1 (bool check_only)
    {
       bool Transient = false;
       if (Fetcher.Run() == pkgAcquire::Failed)
-	return false;
+	return rescode_failure;
       
       // Print out errors
       bool Failed = false;
@@ -1637,7 +1704,8 @@ operation_1 (bool check_only)
 
       if (Failed == true)
 	{
-	  return _error->Error("Unable to fetch some archives.");
+	  _error->Error("Unable to fetch some archives.");
+	  return rescode_download_failed;
 	}
       
       send_status (op_general, -1, 0, 0);
@@ -1646,15 +1714,15 @@ operation_1 (bool check_only)
 
       pkgPackageManager::OrderResult Res = Pm->DoInstall (status_fd);
       if (Res == pkgPackageManager::Failed || _error->PendingError() == true)
-	return false;
+	return rescode_failure;
 
       if (Res == pkgPackageManager::Completed)
-	 return true;
+	return rescode_success;
       
       // Reload the fetcher object and loop again for media swapping
       Fetcher.Shutdown();
       if (Pm->GetArchives(&Fetcher,&List,&Recs) == false)
-	return false;
+	return rescode_failure;
       
       _system->Lock();
    }
@@ -1786,7 +1854,7 @@ add_dep_string (string &str,
     }
 }
 
-static bool
+static int
 check_and_encode_missing_dependencies (const char *deps, const char *end,
 				       bool only_check)
 {
@@ -1813,6 +1881,9 @@ check_and_encode_missing_dependencies (const char *deps, const char *end,
 	      cerr << "Error parsing depends list\n";
 	      return false;
 	    }
+
+	  if (only_check && package == "maemo")
+	    return status_incompatible_current;
 
 	  add_dep_string (group_string, package, version, op);
 
@@ -1842,7 +1913,7 @@ check_and_encode_missing_dependencies (const char *deps, const char *end,
 	break;
     }
 
-  return dep_ok;
+  return dep_ok? status_able : status_missing;
 }
 
 static bool
@@ -1881,21 +1952,45 @@ encode_field (pkgTagSection *section, const char *field)
     response.encode_string (NULL);
 }
 
-static bool
-check_installable (pkgTagSection &section)
+static int
+combine_status (int s1, int s2)
 {
-  bool installable = true;
+  return max (s1, s2);
+}
+
+static bool
+substreq (const char *start, const char *end, const char *str)
+{
+  return end-start == strlen (str) && !strncmp (start, str, end-start);
+}
+
+static int
+check_installable (pkgTagSection &section, bool only_user)
+{
+  int installable_status = status_able;
   const char *start, *end;
 
+  if (!get_field (&section, "Architecture", start, end)
+      || !(substreq (start, end, DEB_HOST_ARCH)
+	   || substreq (start, end, "all")))
+    installable_status = status_incompatible;
+    
+  if (only_user
+      && get_field (&section, "Section", start, end)
+      && !is_user_section (start, end))
+    installable_status = status_incompatible;
+
   if (get_field (&section, "Pre-Depends", start, end))
-    installable = (check_and_encode_missing_dependencies (start, end, true)
-		   && installable);
+    installable_status =
+      combine_status (check_and_encode_missing_dependencies (start, end, true),
+		      installable_status);
 
   if (get_field (&section, "Depends", start, end))
-    installable = (check_and_encode_missing_dependencies (start, end, true)
-		   && installable);
+    installable_status = 
+      combine_status (check_and_encode_missing_dependencies (start, end, true),
+		      installable_status);
 
-  return installable;
+  return installable_status;
 }
 
 static void
@@ -1913,14 +2008,28 @@ encode_missing_dependencies (pkgTagSection &section)
 void
 cmd_get_file_details ()
 {
+  bool only_user = request.decode_int ();
   const char *filename = request.decode_string_in_place ();
 
   char *record = get_deb_record (filename);
   pkgTagSection section;
-  if (!section.Scan (record, strlen (record)))
-    return;
+  if (record == NULL || !section.Scan (record, strlen (record)))
+    {
+      response.encode_string (basename (filename));
+      response.encode_string (NULL);      // installed_version
+      response.encode_int (0);            // installed_size
+      response.encode_string (NULL);      // version
+      response.encode_string ("");        // maintainer
+      response.encode_string ("");        // section
+      response.encode_int (status_corrupted);
+      response.encode_int (0);            // installed size
+      response.encode_string ("");        // description
+      response.encode_string (NULL);      // icon
+      response.encode_int (sumtype_end);
+      return;
+    }
 
-  bool installable = check_installable (section);
+  int installable_status = check_installable (section, only_user);
 
   encode_field (&section, "Package");
   response.encode_string (NULL);  // installed_version
@@ -1928,12 +2037,12 @@ cmd_get_file_details ()
   encode_field (&section, "Version");
   encode_field (&section, "Maintainer");
   encode_field (&section, "Section");
-  response.encode_int (installable);
+  response.encode_int (installable_status);
   response.encode_int (1000 * get_field_int (&section, "Installed-Size", 0));
   encode_field (&section, "Description");
   encode_field (&section, "Maemo-Icon-26");
 
-  if (!installable)
+  if (installable_status != status_able)
     encode_missing_dependencies (section);
   response.encode_int (sumtype_end);
 

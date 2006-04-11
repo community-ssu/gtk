@@ -67,6 +67,15 @@ struct apt_response_header {
   int len;
 };
 
+enum apt_proto_result_code {
+  rescode_success,              // (success)
+  rescode_failure,              // Operation failed
+  rescode_download_failed,      // Download failed
+  rescode_packages_not_found,   // Unable to download.  The
+                                // package was not found.
+  rescode_out_of_space          // Not enough memory in target location
+};
+
 // Encoding and decoding of data types
 //
 // All strings are in UTF-8.
@@ -175,7 +184,7 @@ enum apt_proto_operation {
 //
 // Response contains:
 //
-// - success (int)
+// - result_code (int)
 //
 // Error messages appear on stdout/stderr of the apt-worker process.
 
@@ -193,7 +202,7 @@ enum apt_proto_operation {
 //
 // Parameters:
 //
-// - sources (string).
+// - source_lines (string)*,(null).
 //
 // Response:
 //
@@ -214,12 +223,22 @@ enum apt_proto_operation {
 //
 // - info (apt_proto_package_info).
 
+enum apt_proto_able_status {
+  status_able,
+  status_unable,                 // unknown reason
+  status_missing,
+  status_needed,
+  status_corrupted,
+  status_incompatible,           // incompatible in general
+  status_incompatible_current    // incompatible with current OS
+};
+
 struct apt_proto_package_info {
-  int installable;
+  int installable_status;
   int download_size;
   int install_user_size_delta;
 
-  int removable;
+  int removable_status;
   int remove_user_size_delta;
 };
 
@@ -291,7 +310,7 @@ enum apt_proto_preptype {
 //
 // Response:
 //
-// - success (int).
+// - result_code (int).
 
 
 // GET_PACKAGES_TO_REMOVE - Return the names of packages that would be
@@ -337,6 +356,7 @@ enum apt_proto_preptype {
 //
 // Parameters:
 //
+// - only_user (int).    - if true, declare all non-user packages incompatible
 // - filename (string).
 //
 // Response:
@@ -347,7 +367,7 @@ enum apt_proto_preptype {
 // - available_version (string).
 // - maintainer (string).
 // - available_section (string).
-// - installable (int).
+// - installable_status (int).
 // - install_user_size_delta (int).
 // - description (string).
 // - available_icon (string).
