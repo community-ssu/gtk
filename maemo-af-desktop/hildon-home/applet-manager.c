@@ -358,10 +358,15 @@ void applet_manager_configure_save_all(applet_manager_t *man)
     conf_data = g_key_file_to_data(keyfile, &length, &error);    
 
     new_config_file = fopen(configure_file, "w"); 
-    if(&length == NULL || fprintf(new_config_file, "%s", conf_data) < 0)
+    if(new_config_file == NULL || &length == NULL || 
+            fprintf(new_config_file, "%s", conf_data) < 0)
     {
         ULOG_WARN("FAILED to write new conf data into %s\n", configure_file);
         show_flash_full_note();
+        g_key_file_free(keyfile);
+        g_free(configure_file);
+        g_free(conf_data);
+        return;
     }
     fclose(new_config_file);
     g_key_file_free(keyfile);

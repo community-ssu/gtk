@@ -1,3 +1,8 @@
+2006-04-11  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/applet-manager.c: Fixed a potential crash in low
+	  disk space situation (Closes N#21571)
+
 2006-04-10  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-wm.c: Do not specify type='method' in a
