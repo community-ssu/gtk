@@ -275,9 +275,12 @@ show_repo_edit_dialog (repo_line *r, bool isnew)
 					_("ai_bd_new_repository_cancel"),
 					GTK_RESPONSE_CANCEL,
 					NULL);
+
+  // XXX - there is no help for the "edit" version of this dialog.
+  //
   set_dialog_help (dialog, (isnew
 			    ? AI_TOPIC ("newrepository")
-			    : AI_TOPIC ("editrepository")));
+			    : AI_TOPIC ("newrepository")));
 
   vbox = GTK_DIALOG (dialog)->vbox;
   group = GTK_SIZE_GROUP (gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL));
