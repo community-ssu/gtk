@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.6.10-1.osso12) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * debian/rules (LINGUAS): disable en_GB locale as well to save footprint
+    (it's not benefiting anyone anyway when the fallback is practically en_US)
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 12 Apr 2006 17:13:36 +0300
+
 gtk+2.0 (2:2.6.10-1.osso11) unstable; urgency=low
 
   * Widgets updated to comply with Hildon theming:
