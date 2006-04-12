@@ -340,6 +340,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
     dbus_error_free(&error);
     return;
   }
+  dbus_connection_ref(self->priv->dbus_conn);
 
   /* Let's query initial state. These calls are async, so they do not
      consume too much startup time */
