@@ -1,7 +1,7 @@
 hildon-fm (0.19-1) unstable; urgency=low
 
-  * UNRELEASED
-  * Added dbus_connection_ref() to match the dbus_connection_unref().
+  * Added dbus_connection_ref() to match the dbus_connection_unref(),
+    fixes a crash (N#25650).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 12 Apr 2006 18:56:48 +0300
 
