@@ -1,3 +1,9 @@
+sapwood (2.14.1-1) unstable; urgency=low
+
+  * Fixes N#26389: Power Key menu is not appearing on pressing Power Key
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 12 Apr 2006 15:38:42 +0300
+
 sapwood (2.14-1) unstable; urgency=low
 
   * Make shaped window theming explicit.
