@@ -18,6 +18,7 @@
  *
  * Written by Tommi Komulainen <tommi.komulainen@nokia.com>
  */
+#include <config.h>
 
 #include "sapwood-proto.h"
 #include <gdk/gdk.h>

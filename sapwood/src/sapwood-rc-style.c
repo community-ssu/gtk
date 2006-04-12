@@ -21,6 +21,7 @@
  * code by Owen Taylor <otaylor@redhat.com> and 
  * Carsten Haitzler <raster@rasterman.com>
  */
+#include <config.h>
 
 #include "theme-pixbuf.h"
 #include "sapwood-style.h"

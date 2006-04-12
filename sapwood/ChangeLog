@@ -1,3 +1,10 @@
+2006-04-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* === Release 2.14.1 ===
+
+	* src/*.c: #include <config.h> to get configure settings correctly...
+	Duh! N#26389
+
 2006-04-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* === Release 2.14 ===
