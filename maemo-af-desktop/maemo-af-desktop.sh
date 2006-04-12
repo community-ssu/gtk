@@ -1,6 +1,12 @@
 #!/bin/sh
 # Task Navigator startup/shutdown script
 
+
+PREFIX=/usr
+CURRENT_THEME_FILE=$HOME/.osso/current-gtk-theme
+CURRENT_MAEMO_THEME_FILE=$HOME/.osso/current-gtk-theme.maemo_af_desktop
+CURRENT_THEME=$(cat $CURRENT_THEME_FILE | sed -e "s/include\ \"\/usr\/share\/themes\///" -e 's/\/gtk\-2\.0\/gtkrc\"//' | tr -d " ")
+
 if [ ! -f $CURRENT_MAEMO_THEME_FILE ]; then
 	  echo "include \"$PREFIX/share/themes/$CURRENT_THEME/gtk-2.0/gtkrc.maemo_af_desktop\"" \  > $CURRENT_MAEMO_THEME_FILE
 fi 

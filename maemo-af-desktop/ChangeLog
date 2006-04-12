@@ -1,5 +1,9 @@
 2006-04-11  Johan Bilien <johan.bilien@nokia.com>
 
+	* maemo-af-desktop.sh: Fixed generation of the gtkrc file
+
+2006-04-11  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Context sensitive menus dont come up for applets displayed
 	in home in both normal mode and layout mode." (Closes N#24424)
 	* hildon-home/layout-manager.c:
