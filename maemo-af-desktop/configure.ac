@@ -138,6 +138,9 @@ AC_SUBST(hildonhomelibdir)
 AC_SUBST(localedir)
 AC_SUBST(hildonstatusbarlibdir)
 
+hildonstatusbardesktopentrydir=${datadir}/applications/hildon-status-bar
+AC_SUBST(hildonstatusbardesktopentrydir)
+
 
 AC_OUTPUT(Makefile \
     libhildonmenu/Makefile \

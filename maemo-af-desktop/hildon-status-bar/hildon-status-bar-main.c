@@ -82,7 +82,8 @@ static gint rpc_cb( const gchar *interface,
                     osso_rpc_t *retval );
 
 static HildonStatusBarItem *get_item( StatusBar *panel, const gchar *plugin );
-static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *plugin );
+static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *path,
+                                                        const gchar *name );
 
 static void statusbar_insensitive_cb( GtkWidget *widget, gpointer data);
 static void statusbar_sensitive_cb( GtkWidget *widget, gpointer data);
@@ -103,7 +104,7 @@ static void init_dock( StatusBar *panel )
     Display   *dpy;
     Window    win;
 
-    for( i = 0; i < HILDON_STATUS_BAR_MAX_NO_OF_ITEMS; ++i )
+    for( i = 0; i < HSB_MAX_NO_OF_ITEMS; ++i )
         panel->items[i] = NULL;
 
     panel->window = gtk_window_new( GTK_WINDOW_TOPLEVEL );
@@ -145,43 +146,45 @@ static void init_dock( StatusBar *panel )
 
     gtk_container_add( GTK_CONTAINER( panel->window ), panel->fixed );
 
-    panel->plugin_pos_x[0] = HILDON_STATUS_BAR_ITEM0_X;
-    panel->plugin_pos_x[1] = HILDON_STATUS_BAR_ITEM1_X;
-    panel->plugin_pos_x[2] = HILDON_STATUS_BAR_ITEM2_X;
-    panel->plugin_pos_x[3] = HILDON_STATUS_BAR_ITEM3_X;
-    panel->plugin_pos_x[4] = HILDON_STATUS_BAR_ITEM4_X;
-    panel->plugin_pos_x[5] = HILDON_STATUS_BAR_ITEM5_X;
-    panel->plugin_pos_x[6] = HILDON_STATUS_BAR_ITEM6_X;
+    panel->plugin_pos_x[0] = HSB_ITEM0_X;
+    panel->plugin_pos_x[1] = HSB_ITEM1_X;
+    panel->plugin_pos_x[2] = HSB_ITEM2_X;
+    panel->plugin_pos_x[3] = HSB_ITEM3_X;
+    panel->plugin_pos_x[4] = HSB_ITEM4_X;
+    panel->plugin_pos_x[5] = HSB_ITEM5_X;
+    panel->plugin_pos_x[6] = HSB_ITEM6_X;
 
-    panel->plugin_pos_y[0] = HILDON_STATUS_BAR_ITEM0_Y;
-    panel->plugin_pos_y[1] = HILDON_STATUS_BAR_ITEM1_Y;
-    panel->plugin_pos_y[2] = HILDON_STATUS_BAR_ITEM2_Y;
-    panel->plugin_pos_y[3] = HILDON_STATUS_BAR_ITEM3_Y;
-    panel->plugin_pos_y[4] = HILDON_STATUS_BAR_ITEM4_Y;
-    panel->plugin_pos_y[5] = HILDON_STATUS_BAR_ITEM5_Y;
-    panel->plugin_pos_y[6] = HILDON_STATUS_BAR_ITEM6_Y;
+    panel->plugin_pos_y[0] = HSB_ITEM0_Y;
+    panel->plugin_pos_y[1] = HSB_ITEM1_Y;
+    panel->plugin_pos_y[2] = HSB_ITEM2_Y;
+    panel->plugin_pos_y[3] = HSB_ITEM3_Y;
+    panel->plugin_pos_y[4] = HSB_ITEM4_Y;
+    panel->plugin_pos_y[5] = HSB_ITEM5_Y;
+    panel->plugin_pos_y[6] = HSB_ITEM6_Y;
 }
 
+
+/* FIXME Remove this mess */
 static void add_prespecified_items( StatusBar *panel )
 {
 
-    if (add_item( panel, "sound" )==NULL)
+    if (add_item( panel, HSB_PLUGIN_PATH"/libsound.so", "sound" )==NULL)
     {
         osso_log( LOG_WARNING, "Statusbar item add failed for sound" );
     }
-    if (add_item( panel, "internet" )==NULL)
+    if (add_item( panel, HSB_PLUGIN_PATH"/libinternet.so", "internet" )==NULL)
     {
         osso_log( LOG_WARNING, "Statusbar item add failed for internet" );
     }
-    if (add_item( panel, "battery" ) == NULL)
+    if (add_item( panel, HSB_PLUGIN_PATH"/libbattery.so", "battery" ) == NULL)
     {
         osso_log( LOG_WARNING, "Statusbar item add failed for battery" );
     }
-    if (add_item( panel, "display" ) == NULL)
+    if (add_item( panel, HSB_PLUGIN_PATH"/libdisplay.so", "display" ) == NULL)
     {
         osso_log( LOG_WARNING, "Statusbar item add failed for presence" );
     }
-    if (add_item( panel, "presence" ) == NULL)
+    if (add_item( panel, HSB_PLUGIN_PATH"/libpresence.so", "presence" ) == NULL)
     {
         osso_log( LOG_WARNING, "Statusbar item add failed for presence" );
     }
@@ -191,29 +194,86 @@ static void add_prespecified_items( StatusBar *panel )
 static void add_user_items( StatusBar *panel )
 {
     glob_t globbuf;
-    gchar *pattern, *mark_prefix, *mark_suffix, *name;
-    int i;
+    gchar *pattern;
+    guint i;
 
-    pattern = g_strconcat(HILDON_STATUS_BAR_USER_PLUGIN_PATH, "/lib*.so", NULL);
-    glob(pattern, 0, NULL, &globbuf);
+    pattern = g_strconcat( HSB_DESKTOP_ENTRY_DIR, "/*.desktop", NULL );
+    glob( pattern, 0, NULL, &globbuf );
 
-    for (i = 0; i < globbuf.gl_pathc; i++)
+    for( i = 0; i < globbuf.gl_pathc; i++ )
     {
-        mark_prefix = strrchr(globbuf.gl_pathv[i], '/');
-        mark_suffix = strrchr(globbuf.gl_pathv[i], '.');
-        /* Extract name, cut of lib prefix and .so suffix */
-        name = g_strndup(mark_prefix + 4, mark_suffix - mark_prefix - 4);
+        GKeyFile *key_file = NULL;
+        GError *error = NULL;
+        gchar *path = NULL;
+        gchar *name = NULL;
+        
+        key_file = g_key_file_new();
+           
+        if( ! g_key_file_load_from_file( key_file, globbuf.gl_pathv[i],
+                    G_KEY_FILE_NONE, &error ) )
+        {
+            osso_log( LOG_WARNING, "Could not load status bar plugin"
+                                   " desktop file %s", globbuf.gl_pathv[i] );
+            g_key_file_free( key_file );
+            g_error_free( error );
+            continue;
+        }
 
-        if (add_item( panel, name ) == NULL)
+        if( ! g_key_file_has_group( key_file, HSB_DESKTOP_ENTRY_GROUP ) )
+        {
+            osso_log( LOG_WARNING, "Status bar plugin desktop file"
+                                   " %s did not have a Desktop group", 
+                                   globbuf.gl_pathv[i] );
+            g_key_file_free( key_file );
+            continue;
+        }
+
+        path = g_key_file_get_string( key_file,
+                                      HSB_DESKTOP_ENTRY_GROUP,
+                                      HSB_DESKTOP_ENTRY_PATH,
+                                      &error );
+
+        if( !path )
+        {
+            osso_log( LOG_WARNING, "Status bar plugin desktop file"
+                                   " %s did not have a X-status-bar-plugin "
+                                   "entry", 
+                                   globbuf.gl_pathv[i] );
+            g_key_file_free( key_file );
+            g_error_free( error );
+            continue;
+        }
+        
+        name = g_key_file_get_string( key_file,
+                                      HSB_DESKTOP_ENTRY_GROUP,
+                                      HSB_DESKTOP_ENTRY_NAME,
+                                      &error );
+
+        if( !name )
+        {
+            osso_log( LOG_WARNING, "Status bar plugin desktop file"
+                                   " %s did not have a Name "
+                                   "entry", 
+                                   globbuf.gl_pathv[i] );
+            g_key_file_free( key_file );
+            g_error_free( error );
+            continue;
+        }
+            
+        g_key_file_free( key_file );
+        
+        if (add_item( panel, path, name ) == NULL)
         {
             osso_log( LOG_WARNING, "Statusbar item add failed for %s", name );
         }
 
-        g_free(name);
+        g_free( path );
+        g_free( name );
+        
     }
 
-    globfree(&globbuf);
-    g_free(pattern);
+    globfree( &globbuf );
+    g_free( pattern );
 }
 
 
@@ -398,7 +458,16 @@ static gint rpc_cb( const gchar *interface,
 
         /* Check if the method item is not already loaded */
         if( !(item = get_item( panel, val[0]->value.s ) ) )
-            item = add_item( panel, val[0]->value.s );
+        {
+            /* FIXME lookup the correct path from the .desktop files */
+            gchar *path = g_strconcat( HSB_PLUGIN_PATH, "/lib", val[0]->value.s,
+                                       ".so", NULL );
+            if( path )
+            {
+                item = add_item( panel, path, val[0]->value.s );
+                g_free( path );
+            }
+        }
         
         /* plugin loading failed */
         if( !item )
@@ -524,7 +593,7 @@ static HildonStatusBarItem *get_item( StatusBar *panel, const gchar *plugin )
     g_return_val_if_fail( plugin, NULL );
 
     /* Go through the array and check if the plugin match */
-    for( i = 0; i < HILDON_STATUS_BAR_MAX_NO_OF_ITEMS; ++i )
+    for( i = 0; i < HSB_MAX_NO_OF_ITEMS; ++i )
     {
         if( panel->items[i] != NULL &&
             g_str_equal( hildon_status_bar_item_get_name(
@@ -537,29 +606,31 @@ static HildonStatusBarItem *get_item( StatusBar *panel, const gchar *plugin )
     return NULL;
 }
 
-static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *plugin )
+static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *path,
+                                                        const gchar *name )
 {
     HildonStatusBarItem *item;
     gint slot = -1;
 
     g_return_val_if_fail( panel, NULL );
-    g_return_val_if_fail( plugin, NULL );
+    g_return_val_if_fail( path, NULL );
+    g_return_val_if_fail( name, NULL );
 
     /* check for prespecified items */
-    if( g_str_equal( "sound", plugin ) )
-        slot = HILDON_STATUS_BAR_SOUND_SLOT;
-    else if( g_str_equal( "internet", plugin ) )
-        slot = HILDON_STATUS_BAR_INTERNET_SLOT;
-    else if( g_str_equal( "battery", plugin ) )
-        slot = HILDON_STATUS_BAR_BATTERY_SLOT;
-    else if( g_str_equal( "display", plugin ) )
-        slot = HILDON_STATUS_BAR_DISPLAY_SLOT;
-    else if( g_str_equal( "display", plugin ) )
-        slot = HILDON_STATUS_BAR_DISPLAY_SLOT;
-    else if( g_str_equal( "presence", plugin ) )
-        slot = HILDON_STATUS_BAR_PRESENCE_SLOT;
+    if( g_str_equal( "sound", name ) )
+        slot = HSB_SOUND_SLOT;
+    else if( g_str_equal( "internet", name ) )
+        slot = HSB_INTERNET_SLOT;
+    else if( g_str_equal( "battery", name ) )
+        slot = HSB_BATTERY_SLOT;
+    else if( g_str_equal( "display", name ) )
+        slot = HSB_DISPLAY_SLOT;
+    else if( g_str_equal( "display", name ) )
+        slot = HSB_DISPLAY_SLOT;
+    else if( g_str_equal( "presence", name ) )
+        slot = HSB_PRESENCE_SLOT;
 
-    item = hildon_status_bar_item_new( plugin );
+    item = hildon_status_bar_item_new( path, name );
 
     if( !item )
     {
@@ -590,11 +661,11 @@ static HildonStatusBarItem *add_item( StatusBar *panel, const gchar *plugin )
         /* free the first slot and put the new item there */
         free_slot( panel );
        
-        panel->items[HILDON_STATUS_BAR_FIRST_DYN_SLOT] = GTK_WIDGET( item );
+        panel->items[HSB_FIRST_DYN_SLOT] = GTK_WIDGET( item );
         gtk_fixed_put( GTK_FIXED( panel->fixed ), 
-                       panel->items[HILDON_STATUS_BAR_FIRST_DYN_SLOT],
-                       panel->plugin_pos_x[HILDON_STATUS_BAR_FIRST_DYN_SLOT],
-                       panel->plugin_pos_y[HILDON_STATUS_BAR_FIRST_DYN_SLOT] );
+                       panel->items[HSB_FIRST_DYN_SLOT],
+                       panel->plugin_pos_x[HSB_FIRST_DYN_SLOT],
+                       panel->plugin_pos_y[HSB_FIRST_DYN_SLOT] );
         gtk_widget_show( GTK_WIDGET( item ) );
 
     }
@@ -639,37 +710,37 @@ static void free_slot( StatusBar *panel )
     g_return_if_fail( panel );
 
     /* remove last item if too many items */
-    if( panel->items[HILDON_STATUS_BAR_MAX_NO_OF_ITEMS - 1] != NULL )
+    if( panel->items[HSB_MAX_NO_OF_ITEMS - 1] != NULL )
     {
         osso_log( LOG_ERR, "Too many plugins. Defined maximum is %d!", 
-                  HILDON_STATUS_BAR_MAX_NO_OF_ITEMS );
+                  HSB_MAX_NO_OF_ITEMS );
         
-        gtk_widget_destroy(panel->items[HILDON_STATUS_BAR_MAX_NO_OF_ITEMS - 1]);
-        g_object_unref( panel->items[HILDON_STATUS_BAR_MAX_NO_OF_ITEMS - 1]);
-        panel->items[HILDON_STATUS_BAR_MAX_NO_OF_ITEMS - 1] = NULL;
+        gtk_widget_destroy(panel->items[HSB_MAX_NO_OF_ITEMS - 1]);
+        g_object_unref( panel->items[HSB_MAX_NO_OF_ITEMS - 1]);
+        panel->items[HSB_MAX_NO_OF_ITEMS - 1] = NULL;
     }    
         
 
     /* find the last item */
-    for( i = HILDON_STATUS_BAR_MAX_NO_OF_ITEMS - 2; 
-         i >= HILDON_STATUS_BAR_FIRST_DYN_SLOT; --i )
+    for( i = HSB_MAX_NO_OF_ITEMS - 2; 
+         i >= HSB_FIRST_DYN_SLOT; --i )
     {
         if( panel->items[i] == NULL )
             continue;
         
         /* move every item by one */
-        for( j = i; j >= HILDON_STATUS_BAR_FIRST_DYN_SLOT; --j )
+        for( j = i; j >= HSB_FIRST_DYN_SLOT; --j )
         {
             panel->items[j + 1] = panel->items[j];
             panel->items[j] = NULL;
 
             /* remove item from container if moved out of the 7 slots */
-            if( j + 1 == HILDON_STATUS_BAR_VISIBLE_ITEMS )
+            if( j + 1 == HSB_VISIBLE_ITEMS )
                 gtk_container_remove( GTK_CONTAINER( panel->fixed ), 
                                       panel->items[j + 1] );
 
             /* update the fixed if item moved inside the 7 slots */
-            if( j + 1 < HILDON_STATUS_BAR_VISIBLE_ITEMS  )
+            if( j + 1 < HSB_VISIBLE_ITEMS  )
                 gtk_fixed_move( GTK_FIXED( panel->fixed ), panel->items[j + 1],
                                 panel->plugin_pos_x[j + 1],
                                 panel->plugin_pos_y[j + 1] );
@@ -688,11 +759,11 @@ static void reorder_items( StatusBar *panel )
 
     g_return_if_fail( panel );
 
-    place_here = HILDON_STATUS_BAR_FIRST_DYN_SLOT;
+    place_here = HSB_FIRST_DYN_SLOT;
 
     /* go through all dynamic items */
     for( i = place_here; 
-         i < HILDON_STATUS_BAR_MAX_NO_OF_ITEMS; ++i )
+         i < HSB_MAX_NO_OF_ITEMS; ++i )
     {
 
         if (panel->items[i] == NULL) 
@@ -712,14 +783,14 @@ static void reorder_items( StatusBar *panel )
 
         
         /* update the fixed because location changes */
-        if( place_here < HILDON_STATUS_BAR_VISIBLE_ITEMS - 1 )
+        if( place_here < HSB_VISIBLE_ITEMS - 1 )
             gtk_fixed_move( GTK_FIXED( panel->fixed ), 
                             panel->items[place_here],
                             panel->plugin_pos_x[place_here],
                             panel->plugin_pos_y[place_here] );
         
         /* add the plugin to the fixed */
-        else if( place_here == HILDON_STATUS_BAR_VISIBLE_ITEMS - 1)
+        else if( place_here == HSB_VISIBLE_ITEMS - 1)
         {
             gtk_fixed_put( GTK_FIXED( panel->fixed ), 
                            panel->items[place_here],
@@ -748,7 +819,7 @@ static void destroy_item( GtkObject *object,
     item = (GtkWidget *)object;
 
     /* find the item and destroy it */
-    for( i = 0; i < HILDON_STATUS_BAR_MAX_NO_OF_ITEMS; ++i )
+    for( i = 0; i < HSB_MAX_NO_OF_ITEMS; ++i )
     {
         if( panel->items[i] == item )
         {
@@ -824,10 +895,6 @@ static gint _delayed_infobanner_add(gint32 pid, gint32 begin, gint32 timeout,
                         data
                         );
      
-#if 0
-     gtk_banner_show_animation(NULL, 
-                 info->text);
-#endif
      info->banner = hildon_banner_show_animation(NULL, NULL, info->text);
                  
  
@@ -914,7 +981,7 @@ void status_bar_deinitialize(osso_context_t *osso, StatusBar **panel){
   StatusBar *sb_panel = (StatusBar *)(*panel);
 
   TRACE(TDEBUG,"status_bar_deinitialize: 1");
-  for( i = 0; i < HILDON_STATUS_BAR_MAX_NO_OF_ITEMS; ++i )
+  for( i = 0; i < HSB_MAX_NO_OF_ITEMS; ++i )
   {
       if( sb_panel->items[i] != NULL )
       {

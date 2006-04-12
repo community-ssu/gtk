@@ -1,7 +1,7 @@
 /*
  * This file is part of maemo-af-desktop
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005, 2006 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -99,6 +99,7 @@ GType hildon_status_bar_item_get_type( void );
 /**
  * @hildon_status_bar_item_new
  *
+ * @param *path full path to the plugin library file
  * @param *name string naming the plugin
  *
  * @return HildonStatusBarItem the newly created plugin reference
@@ -106,7 +107,8 @@ GType hildon_status_bar_item_get_type( void );
  * Creates a new statusbar item.
  */
 
-HildonStatusBarItem *hildon_status_bar_item_new( const char* name );
+HildonStatusBarItem *hildon_status_bar_item_new( const char* path,
+                                                 const char* name );
 
 /**
  * @hildon_status_bar_item_update

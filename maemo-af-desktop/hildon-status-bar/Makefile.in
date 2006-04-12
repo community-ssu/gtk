@@ -166,6 +166,7 @@ hildondesktopentrydir = @hildondesktopentrydir@
 hildonhomedesktopentrydir = @hildonhomedesktopentrydir@
 hildonhomelibdir = @hildonhomelibdir@
 hildonnavigatorlibdir = @hildonnavigatorlibdir@
+hildonstatusbardesktopentrydir = @hildonstatusbardesktopentrydir@
 hildonstatusbarlibdir = @hildonstatusbarlibdir@
 host = @host@
 host_alias = @host_alias@
@@ -232,6 +233,11 @@ libhildonstatusbarmain_la_LIBADD = \
 	libhildonstatusbar.la
 
 
+libhildonstatusbarmain_la_CPPFLAGS = $(INCLUDES) \
+				-DHSB_PLUGIN_PATH=\"$(hildonstatusbarlibdir)\" \
+				-DHSB_DESKTOP_ENTRY_DIR=\"$(hildonstatusbardesktopentrydir)\"
+
+
 initexec_SCRIPTS = empty_exec.sh
 subdir = hildon-status-bar
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -246,7 +252,8 @@ am_libhildonstatusbar_la_OBJECTS = hildon-status-bar-lib.lo \
 libhildonstatusbar_la_OBJECTS = $(am_libhildonstatusbar_la_OBJECTS)
 libhildonstatusbarmain_la_LDFLAGS =
 libhildonstatusbarmain_la_DEPENDENCIES = libhildonstatusbar.la
-am_libhildonstatusbarmain_la_OBJECTS = hildon-status-bar-main.lo
+am_libhildonstatusbarmain_la_OBJECTS = \
+	libhildonstatusbarmain_la-hildon-status-bar-main.lo
 libhildonstatusbarmain_la_OBJECTS = \
 	$(am_libhildonstatusbarmain_la_OBJECTS)
 SCRIPTS = $(initexec_SCRIPTS)
@@ -257,7 +264,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/hildon-status-bar-item.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-status-bar-lib.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hildon-status-bar-main.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -345,7 +352,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-status-bar-item.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-status-bar-lib.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-status-bar-main.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
@@ -379,6 +386,39 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
+
+libhildonstatusbarmain_la-hildon-status-bar-main.o: hildon-status-bar-main.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libhildonstatusbarmain_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libhildonstatusbarmain_la-hildon-status-bar-main.o -MD -MP -MF "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libhildonstatusbarmain_la-hildon-status-bar-main.o `test -f 'hildon-status-bar-main.c' || echo '$(srcdir)/'`hildon-status-bar-main.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Tpo" "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='hildon-status-bar-main.c' object='libhildonstatusbarmain_la-hildon-status-bar-main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Po' tmpdepfile='$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libhildonstatusbarmain_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libhildonstatusbarmain_la-hildon-status-bar-main.o `test -f 'hildon-status-bar-main.c' || echo '$(srcdir)/'`hildon-status-bar-main.c
+
+libhildonstatusbarmain_la-hildon-status-bar-main.obj: hildon-status-bar-main.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libhildonstatusbarmain_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libhildonstatusbarmain_la-hildon-status-bar-main.obj -MD -MP -MF "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libhildonstatusbarmain_la-hildon-status-bar-main.obj `if test -f 'hildon-status-bar-main.c'; then $(CYGPATH_W) 'hildon-status-bar-main.c'; else $(CYGPATH_W) '$(srcdir)/hildon-status-bar-main.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Tpo" "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='hildon-status-bar-main.c' object='libhildonstatusbarmain_la-hildon-status-bar-main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Po' tmpdepfile='$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libhildonstatusbarmain_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libhildonstatusbarmain_la-hildon-status-bar-main.obj `if test -f 'hildon-status-bar-main.c'; then $(CYGPATH_W) 'hildon-status-bar-main.c'; else $(CYGPATH_W) '$(srcdir)/hildon-status-bar-main.c'; fi`
+
+libhildonstatusbarmain_la-hildon-status-bar-main.lo: hildon-status-bar-main.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libhildonstatusbarmain_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libhildonstatusbarmain_la-hildon-status-bar-main.lo -MD -MP -MF "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libhildonstatusbarmain_la-hildon-status-bar-main.lo `test -f 'hildon-status-bar-main.c' || echo '$(srcdir)/'`hildon-status-bar-main.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Tpo" "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='hildon-status-bar-main.c' object='libhildonstatusbarmain_la-hildon-status-bar-main.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.Plo' tmpdepfile='$(DEPDIR)/libhildonstatusbarmain_la-hildon-status-bar-main.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libhildonstatusbarmain_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libhildonstatusbarmain_la-hildon-status-bar-main.lo `test -f 'hildon-status-bar-main.c' || echo '$(srcdir)/'`hildon-status-bar-main.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -463,7 +463,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP RANLIB ac_ct_RANLIB EGREP LN_S ECHO AR ac_ct_AR CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS ALL_LINGUAS USE_NLS MSGFMT GMSGFMT XGETTEXT CATALOGS CATOBJEXT DATADIRNAME GMOFILES INSTOBJEXT INTLLIBS PO_IN_DATADIR_TRUE PO_IN_DATADIR_FALSE POFILES POSUB MKINSTALLDIRS PKG_CONFIG HILDON_FM_CFLAGS HILDON_FM_LIBS LIBXML_CFLAGS LIBXML_LIBS OSSO_CFLAGS OSSO_LIBS MB_CFLAGS MB_LIBS HILDONBASELIB_CFLAGS HILDONBASELIB_LIBS HILDON_CFLAGS HILDON_LIBS GCONF_CFLAGS GCONF_LIBS GNOME_VFS_CFLAGS GNOME_VFS_LIBS GDK_CFLAGS GDK_LIBS OSSOSETTINGS_CFLAGS OSSOSETTINGS_LIBS localedir COMMON_ERROR_CFLAGS COMMON_ERROR_LIBS XLIBS_CFLAGS XLIBS_LIBS XLIBS_ERROR_LIBS OSSO_HELP_CFLAGS OSSO_HELP_LIBS OSSO_HELP_ERROR_LIBS hildonhomedesktopentrydir hildondesktopentrydir hildoncpdesktopentrydir hildonnavigatorlibdir hildonhomelibdir hildonstatusbarlibdir LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP RANLIB ac_ct_RANLIB EGREP LN_S ECHO AR ac_ct_AR CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS ALL_LINGUAS USE_NLS MSGFMT GMSGFMT XGETTEXT CATALOGS CATOBJEXT DATADIRNAME GMOFILES INSTOBJEXT INTLLIBS PO_IN_DATADIR_TRUE PO_IN_DATADIR_FALSE POFILES POSUB MKINSTALLDIRS PKG_CONFIG HILDON_FM_CFLAGS HILDON_FM_LIBS LIBXML_CFLAGS LIBXML_LIBS OSSO_CFLAGS OSSO_LIBS MB_CFLAGS MB_LIBS HILDONBASELIB_CFLAGS HILDONBASELIB_LIBS HILDON_CFLAGS HILDON_LIBS GCONF_CFLAGS GCONF_LIBS GNOME_VFS_CFLAGS GNOME_VFS_LIBS GDK_CFLAGS GDK_LIBS OSSOSETTINGS_CFLAGS OSSOSETTINGS_LIBS localedir COMMON_ERROR_CFLAGS COMMON_ERROR_LIBS XLIBS_CFLAGS XLIBS_LIBS XLIBS_ERROR_LIBS OSSO_HELP_CFLAGS OSSO_HELP_LIBS OSSO_HELP_ERROR_LIBS hildonhomedesktopentrydir hildondesktopentrydir hildoncpdesktopentrydir hildonnavigatorlibdir hildonhomelibdir hildonstatusbarlibdir hildonstatusbardesktopentrydir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -25691,6 +25691,9 @@ hildoncpdesktopentrydir=${datadir}/applications/hildon-control-panel
 
 
 
+hildonstatusbardesktopentrydir=${datadir}/applications/hildon-status-bar
+
+
 
                                                                                           ac_config_files="$ac_config_files Makefile libhildonmenu/Makefile libhildonmenu/libhildonmenu.pc hildon-navigator/Makefile hildon-navigator/hildon-navigator.pc hildon-status-bar/Makefile hildon-status-bar/hildon-status-bar-lib.pc hildon-home/Makefile hildon-home/hildon-home.pc"
 cat >confcache <<\_ACEOF
@@ -26467,6 +26470,7 @@ s,@hildoncpdesktopentrydir@,$hildoncpdesktopentrydir,;t t
 s,@hildonnavigatorlibdir@,$hildonnavigatorlibdir,;t t
 s,@hildonhomelibdir@,$hildonhomelibdir,;t t
 s,@hildonstatusbarlibdir@,$hildonstatusbarlibdir,;t t
+s,@hildonstatusbardesktopentrydir@,$hildonstatusbardesktopentrydir,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

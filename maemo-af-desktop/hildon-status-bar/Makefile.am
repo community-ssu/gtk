@@ -39,4 +39,8 @@ libhildonstatusbarmain_la_LIBADD = \
 	$(OSSO_LIBS) \
 	libhildonstatusbar.la
 
+libhildonstatusbarmain_la_CPPFLAGS = $(INCLUDES) \
+				-DHSB_PLUGIN_PATH=\"$(hildonstatusbarlibdir)\" \
+				-DHSB_DESKTOP_ENTRY_DIR=\"$(hildonstatusbardesktopentrydir)\"
+
 initexec_SCRIPTS = empty_exec.sh

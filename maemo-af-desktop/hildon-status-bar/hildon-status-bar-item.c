@@ -167,101 +167,34 @@ static void hildon_status_bar_item_init (HildonStatusBarItem *item)
     GTK_WIDGET_SET_FLAGS( item, GTK_NO_WINDOW );
 }
 
-HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
+HildonStatusBarItem *hildon_status_bar_item_new( const char *path,
+                                                 const char *name )
 {
     HildonStatusBarItem *item;
     HildonStatusBarItemPrivate *priv;
     const char *error_str;
-    gchar *pluginname = NULL; /* NULL = statically compiled */
     gchar *entryfn_name;
 
-    g_return_val_if_fail( plugin, NULL );
-
-    if( FALSE ) 
-    {
-        /* Ugly hack to have nice if structure */
-    }
-#ifdef STATIC_BATTERY_PLUGIN
-    else if( !g_ascii_strcasecmp( plugin, "battery" ) )
-    {
-        ;
-    }
-#endif
-
-#ifdef STATIC_GATEWAY_PLUGIN
-    else if( !g_ascii_strcasecmp( plugin, "gateway" ) )
-    {
-        ;
-    }
-#endif
-
-#ifdef STATIC_SOUND_PLUGIN
-    else if( !g_ascii_strcasecmp( plugin, "sound" ) )
-    {
-        ;
-    }
-#endif
-
-#ifdef STATIC_INTERNET_PLUGIN
-    else if( !g_ascii_strcasecmp( plugin, "internet" ) )
-    {
-        ;
-    }
-#endif
-
-#ifdef STATIC_DISPLAY_PLUGIN
-    else if( !g_ascii_strcasecmp( plugin, "display" ) )
-    {
-        ;
-    }
-#endif
-
-#ifdef STATIC_DISPLAY_PRESENCE
-    else if( !g_ascii_strcasecmp( plugin, "presence" ) )
-    {
-        ;
-    }
-#endif
-
-    else
-    {
-        /* generate the absolute path to plugin file */
-        pluginname = g_strdup_printf( "%s/lib/hildon-status-bar/lib%s.so", 
-                                      PREFIX, plugin );
-    }
+    g_return_val_if_fail( path, NULL );
+    g_return_val_if_fail( name, NULL );
 
     item = g_object_new( HILDON_STATUS_BAR_ITEM_TYPE, NULL );
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );   
     
     /* Open the pluging */
-    priv->dlhandle = dlopen( pluginname, RTLD_NOW );
-    priv->name = g_strdup( plugin );
-
-    g_free( pluginname );
-
-    /* Failed to load plugin, check in the application installer
-       target directory */
-    if( !priv->dlhandle )
-    {
-        osso_log( LOG_WARNING, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
-                plugin, dlerror() );
-        pluginname = g_strdup_printf( "%s/lib%s.so", 
-                                      HILDON_STATUS_BAR_USER_PLUGIN_PATH,
-                                      plugin );
-        priv->dlhandle = dlopen( pluginname, RTLD_NOW );
-        g_free(pluginname);
-    }
+    priv->dlhandle = dlopen( path, RTLD_NOW );
 
     if( !priv->dlhandle )
     {
-        osso_log( LOG_WARNING, "HildonStatusBarItem: Unable to open plugin %s: %s\n", 
-                plugin, dlerror() );
+        osso_log( LOG_WARNING, "HildonStatusBarItem: Unable to " 
+                               "open plugin %s: %s\n", 
+                path, dlerror() );
         gtk_object_sink( GTK_OBJECT( item ) );
         return NULL;
     }
 
     /* Load the entry symbol */
-    entryfn_name = g_strdup_printf( "%s_entry", plugin );
+    entryfn_name = g_strdup_printf( "%s_entry", name );
     priv->entryfn = (HildonStatusBarItemEntryFn)dlsym( priv->dlhandle, 
                                                        entryfn_name );
     g_free( entryfn_name ); 
@@ -271,7 +204,7 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
         osso_log( LOG_ERR,
                   "HildonStatusBarItem: "
                   "Unable to load entry symbol for plugin %s: %s\n", 
-                  plugin, error_str );
+                  path, error_str );
 
         gtk_object_sink( GTK_OBJECT( item ) );
         return NULL;
@@ -283,6 +216,8 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
         gtk_object_sink( GTK_OBJECT( item ) );
         return NULL;
     }
+    
+    priv->name = g_strdup( name );
     
     /* Initialize the plugin */
     priv->data = priv->fn->initialize( item, &priv->button );
@@ -301,6 +236,7 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin )
 
     /* Get the priority for this item */
     priv->priority = priv->fn->get_priority( priv->data );
+
 
     return item;
 }

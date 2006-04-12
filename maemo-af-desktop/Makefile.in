@@ -164,6 +164,7 @@ hildondesktopentrydir = @hildondesktopentrydir@
 hildonhomedesktopentrydir = @hildonhomedesktopentrydir@
 hildonhomelibdir = @hildonhomelibdir@
 hildonnavigatorlibdir = @hildonnavigatorlibdir@
+hildonstatusbardesktopentrydir = @hildonstatusbardesktopentrydir@
 hildonstatusbarlibdir = @hildonstatusbarlibdir@
 host = @host@
 host_alias = @host_alias@
