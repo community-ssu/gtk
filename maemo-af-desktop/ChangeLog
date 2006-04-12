@@ -1,5 +1,40 @@
 2006-04-11  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Context sensitive menus dont come up for applets displayed
+	in home in both normal mode and layout mode." (Closes N#24424)
+	* hildon-home/layout-manager.c:
+	  - changed wrong menu logical_id for cancel
+	  - added logical_id for tap'n'hold
+	  - Cut&paste tap'n'hold defines from gtk/gtkwidget.c
+	  - added global struct required fields for tap'n'hold handling
+	  - added layout_node struct callback handler
+	  - declarations for new functions
+	  - layout_mode_begin(): added callback signal for launching tap'n'hold
+	    menu to each applet. button release callback added. tap'n'hold
+	    creation call.
+	  - layout_mode_end(): added removing tap'n'hold handler and menu
+	  - _tapnhold_menu_cb(): new function. callback function to launch
+	    tap'n'hold menu
+	  - _tapnhold_close_applet_cb(): new function. callback function to
+	    remove current applet
+	  - add_new_applets(): callback function connected to applet
+	  - button_click_cb(): when candidate is found set tap'n'hold timeout
+	  - button_release_cb(): new function. removes existing tap'n'hold
+	    when released
+	  - drag_begin(): when drag starts tap'n'hold menu is not to be shown
+	  - create_tapnhold_menu(): new function. creates tap'n'hold menu common
+	    for all applets. initiates animation
+	  - create_tapnhold_remove_timer(): new function. Clears all timer
+	    values for tap'n'hold menu
+	  - layout_tapnhold_timeout(): new function. Handles tap'n'hold timeout
+	    before showing menu
+	  - layout_tapnhold_set_timeout(): new function. Sets timeout counting
+	    for tap'n'hold menu
+	  - layout_tapnhold_timeout_animation(): new function. creates cursor
+	    animation
+
+2006-04-11  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Close Application Dialog MEM-DIA001 is lost"
 	(Closes N#24388)
 	* hildon-navigator/hn-wm.c:

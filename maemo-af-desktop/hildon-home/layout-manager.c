@@ -94,6 +94,12 @@
 #define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_YES   _("home_bd_cancel_layout_yes")
 #define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_NO    _("home_bd_cancel_layout_no")
 #define LAYOUT_MODE_NOTIFICATION_MODE_ACCEPT_TEXT  _("home_ni_overlapping_applets")
+#define LAYOUT_MODE_TAPNHOLD_MENU_CLOSE_TEXT       _("home_me_csm_close")
+
+/* Cut&paste from gtk/gtkwidget.c */
+#define GTK_TAP_AND_HOLD_TIMER_COUNTER 11
+#define GTK_TAP_AND_HOLD_TIMER_INTERVAL 100
+
 /* DBUS defines */
 #define STATUSBAR_SERVICE_NAME "statusbar"
 #define STATUSBAR_INSENSITIVE_METHOD "statusbar_insensitive"
@@ -132,11 +138,18 @@ struct _layout_mode_internal_t {
     gint drag_item_height;
     gint max_height;
     gulong button_press_handler;
+    gulong button_release_handler;
     gulong drag_drop_handler;
     gulong drag_begin_handler;
     gulong drag_motion_handler;
     osso_context_t * osso;
     GdkColor highlight_color;
+    GtkWidget *tapnhold_menu;
+    guint tapnhold_timeout_id;
+    gint tapnhold_timer_counter;
+    GdkPixbufAnimation *tapnhold_anim;
+    GdkPixbufAnimationIter *tapnhold_anim_iter;
+    guint tapnhold_interval;
     gulong keylistener_id;
 };
 
@@ -151,6 +164,7 @@ struct _layout_node_t {
     gboolean added;
     gboolean removed;
     guint event_handler;
+    guint tapnhold_handler;
     GList * add_list;
 };
 
@@ -167,6 +181,8 @@ void _select_applets_cb(GtkWidget * widget, gpointer data);
 void _accept_layout_cb(GtkWidget * widget, gpointer data);
 void _cancel_layout_cb(GtkWidget * widget, gpointer data);
 void _help_cb(GtkWidget * widget, gpointer data);
+void _tapnhold_menu_cb(GtkWidget * widget, gpointer unused);
+void _tapnhold_close_applet_cb(GtkWidget * widget, gpointer unused);
 static void draw_red_borders (LayoutNode * highlighted);
 static gboolean within_eventbox_applet_area(gint x, gint y);
 static gboolean layout_mode_status_check(void);
@@ -178,6 +194,8 @@ static void overlap_check(GtkWidget * self,
 
 static gboolean button_click_cb(GtkWidget *widget,
 				GdkEventButton *event, gpointer data);
+static gboolean button_release_cb(GtkWidget *widget,
+                                  GdkEventButton *event, gpointer unused);
 
 static gboolean handle_drag_motion(GtkWidget *widget,
 				   GdkDragContext *context,
@@ -203,6 +221,14 @@ void layout_menu_position_function(GtkMenu *menu, gint *x, gint *y,
 static gint layout_mode_key_press_listener (GtkWidget * widget,
                                             GdkEventKey * keyevent,
                                             gpointer unused);
+static void create_tapnhold_menu(void);
+static void layout_tapnhold_remove_timer(void);
+static gboolean layout_tapnhold_timeout(GtkWidget *widget);
+static void layout_tapnhold_set_timeout(GtkWidget *widget);
+static void layout_tapnhold_timeout_animation_stop(void);
+static gboolean layout_tapnhold_timeout_animation(GtkWidget *widget);
+static void layout_tapnhold_animation_init(void);
+
 static void fp_mlist(void);
 LayoutInternal general_data;
 
@@ -300,7 +326,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 			&target, 1, GDK_ACTION_COPY);
 
     /* COPY instead of MOVE as we handle the reception differently.*/
-    gtk_drag_dest_set((GtkWidget *)general_data.home_area_eventbox, 
+    gtk_drag_dest_set(GTK_WIDGET(general_data.home_area_eventbox), 
 		      GTK_DEST_DEFAULT_DROP,
 		      &target, 1, GDK_ACTION_COPY);
     
@@ -329,6 +355,10 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 	    ( G_OBJECT( node->ebox ), "expose-event", 
 	      G_CALLBACK( _applet_expose_cb ), 
 	      (gpointer)node ); 
+	node->tapnhold_handler = g_signal_connect_after 
+	    ( G_OBJECT( node->ebox ), "tap-and-hold", 
+	      G_CALLBACK( _tapnhold_menu_cb ), 
+	      (gpointer)node ); 
 	
 	iter = iter->next;
     }
@@ -345,6 +375,10 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 	g_signal_connect(general_data.home_area_eventbox, 
 			 "button-press-event",
 			 G_CALLBACK(button_click_cb), general_data.area);
+    general_data.button_release_handler = 
+	g_signal_connect(general_data.home_area_eventbox, 
+			 "button-release-event",
+			 G_CALLBACK(button_release_cb), NULL);
     general_data.drag_drop_handler = 
 	g_signal_connect(general_data.home_area_eventbox, "drag-drop",
 			 G_CALLBACK(drag_is_finished), general_data.area);
@@ -443,6 +477,8 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     gtk_widget_show_all(general_data.layout_menu);
     general_data.home_menu =
         GTK_WIDGET(set_menu(GTK_MENU(general_data.layout_menu)));
+
+    create_tapnhold_menu();
 
     if (addable_applets)
     {
@@ -553,6 +589,7 @@ void layout_mode_end ( gboolean rollback )
 	node = (LayoutNode*)iter->data;	
 	
 	g_signal_handler_disconnect(node->ebox, node->event_handler);
+	g_signal_handler_disconnect(node->ebox, node->tapnhold_handler);
     
 	if (rollback)
 	{
@@ -619,6 +656,7 @@ void layout_mode_end ( gboolean rollback )
     gtk_widget_destroy (general_data.ok_button);
     gtk_widget_destroy (general_data.layout_menu);
     gtk_widget_destroy (general_data.menu_label);
+    gtk_widget_destroy (general_data.tapnhold_menu);
 
     gtk_widget_show(general_data.titlebar_label);
 
@@ -744,6 +782,44 @@ void _help_cb(GtkWidget * widget, gpointer data)
 	break;
     }
     
+}
+
+/** 
+ * @_tapnhold_menu_cb
+ *
+ * @param widget Event box where callback is connected
+ * @param unused
+ * 
+ * Popups tap'n'hold menu
+ */
+void _tapnhold_menu_cb(GtkWidget * widget, gpointer unused)
+{
+    ULOG_DEBUG(__FUNCTION__);
+    gtk_menu_popup (GTK_MENU (general_data.tapnhold_menu), NULL, NULL,
+                    NULL, NULL,
+                    1, gtk_get_current_event_time());
+}
+
+/** 
+ * @_tapnhold_close_applet_cb
+ *
+ * @param widget Event box where callback is connected
+ * @param unused
+ * 
+ * From Tap'n'hold menu closing applet selected and calling
+ * appropriate function
+ */
+void _tapnhold_close_applet_cb(GtkWidget * widget, gpointer unused)
+{
+    GList *remove_list = NULL;
+    LayoutNode *node= general_data.active;
+    
+    ULOG_DEBUG(__FUNCTION__);
+
+    remove_list = g_list_append (remove_list, g_strdup(node->applet_identifier));
+    mark_applets_for_removal(g_list_first(general_data.main_applet_list), 
+                             remove_list);
+
 }
 
 /* --------------- applet manager public end ----------------- */
@@ -928,6 +1004,11 @@ static void add_new_applets(GtkWidget *widget, gpointer data)
 				G_CALLBACK( _applet_expose_cb ), 
 				(gpointer)node ); 
     
+    node->tapnhold_handler = 
+	g_signal_connect_after( G_OBJECT( node->ebox ), "tap-and-hold", 
+				G_CALLBACK( _tapnhold_menu_cb ), 
+				(gpointer)node ); 
+    
     gtk_event_box_set_visible_window(GTK_EVENT_BOX(node->ebox), TRUE);
         
     applet_manager_get_coordinates(man, new_applet_identifier, 
@@ -962,10 +1043,11 @@ static void add_new_applets(GtkWidget *widget, gpointer data)
 	gtk_fixed_put(general_data.area, node->ebox, 
 		      manager_given_x, manager_given_y);
     }
-    
+
     ULOG_ERR("LAYOUT: gtk_widget_show_all\n");
     
     gtk_widget_show_all(node->ebox);
+
 }
 
 
@@ -1308,7 +1390,8 @@ static void overlap_check(GtkWidget * self,
 static gboolean event_within_widget(GdkEventButton *event, GtkWidget * widget)
 {
     GtkAllocation *alloc = &widget->allocation;
-    if (alloc->x < event->x &&
+    if( GTK_WIDGET_VISIBLE(widget) &&
+        alloc->x < event->x &&
 	alloc->x + alloc->width > event->x &&
 	alloc->y < event->y &&
 	alloc->y + alloc->height > event->y)
@@ -1393,8 +1476,7 @@ static gboolean button_click_cb(GtkWidget *widget,
 	    candidate_node = (LayoutNode*)iter->data;
 	    evbox = candidate_node->ebox;
 	    
-	    if 
-		(!(GTK_EVENT_BOX(evbox) == general_data.home_area_eventbox))
+	    if(!(GTK_EVENT_BOX(evbox) == general_data.home_area_eventbox))
 	    {
 
 		if (event_within_widget(event, candidate_node->ebox))
@@ -1407,10 +1489,9 @@ static gboolean button_click_cb(GtkWidget *widget,
 			general_data.offset_x = event->x - evbox->allocation.x;
 			general_data.offset_y = event->y - evbox->allocation.y;
 			general_data.active = candidate_node;
-			ULOG_ERR("Candidate changed!");
+                        ULOG_ERR("Candidate changed!");
 		    }
 
-		    
 		    candidate = TRUE;
 		}
 	    } /*IF (!(GTK_EVENT... */
@@ -1423,6 +1504,7 @@ static gboolean button_click_cb(GtkWidget *widget,
 
     if (candidate)
     {
+        layout_tapnhold_set_timeout(general_data.active->ebox);
 	return TRUE;
     }
     
@@ -1433,6 +1515,26 @@ static gboolean button_click_cb(GtkWidget *widget,
     return FALSE;
 } 
 
+/**
+ * @button_release_cb
+ *
+ * @param widget 
+ * @param event 
+ * @param unused
+ *
+ * @return FALSE
+ *
+ * Handles the button release event for to cancel tap'n'hold menu opening
+ */
+static gboolean button_release_cb(GtkWidget *widget,
+                                  GdkEventButton *event, gpointer unused)
+{
+    if (general_data.tapnhold_timeout_id)
+    {
+        layout_tapnhold_remove_timer();
+    }    
+    return FALSE;
+}
 
 static gboolean handle_drag_motion(GtkWidget *widget,
 				   GdkDragContext *context,
@@ -1563,6 +1665,12 @@ gpointer data)
     ULOG_ERR("LAYOUT:drag_begin\n");
     
     if (!general_data.active) return;
+
+    if (general_data.tapnhold_timeout_id)
+    {
+        layout_tapnhold_remove_timer();
+    }
+
     
     general_data.active->highlighted = FALSE;
     general_data.drag_item_width = general_data.active->ebox->allocation.width;
@@ -1604,6 +1712,280 @@ gint layout_mode_key_press_listener (GtkWidget * widget,
     return FALSE;
 }
 
+/* tapnhold menu starts */
+/**
+ * @create_tapnhold_menu
+ *
+ * Creates tap'n'hold menu common for all applets
+ */
+static void create_tapnhold_menu(void)
+{
+    GtkWidget *tapnhold_menu_item;
+    GdkWindow *window = NULL;
+
+    ULOG_DEBUG(__FUNCTION__);
+
+    general_data.tapnhold_menu = gtk_menu_new();
+    gtk_widget_set_name(general_data.tapnhold_menu, LAYOUT_MODE_MENU_STYLE_NAME); 
+    tapnhold_menu_item = 
+        gtk_menu_item_new_with_label(LAYOUT_MODE_TAPNHOLD_MENU_CLOSE_TEXT);
+    g_signal_connect(G_OBJECT(tapnhold_menu_item), "activate",
+                     G_CALLBACK( _tapnhold_close_applet_cb ), NULL );
+
+    gtk_menu_append (general_data.tapnhold_menu, tapnhold_menu_item);
+    gtk_widget_show_all(general_data.tapnhold_menu);
+
+    window = gdk_get_default_root_window ();
+    general_data.tapnhold_anim = 
+        g_object_get_data(G_OBJECT (window), "gtk-tap-and-hold-animation");    
+
+    if (!GDK_IS_PIXBUF_ANIMATION(general_data.tapnhold_anim))
+    {
+        GtkIconTheme *theme = NULL;
+        GtkIconInfo *info = NULL;
+        GError *error = NULL;
+        const gchar *filename = NULL;
+
+        /* Theme is not needed to check since function either returns
+           current, creates new or stops program if unable to do */
+        theme = gtk_icon_theme_get_default();
+
+        info = gtk_icon_theme_lookup_icon(theme, "qgn_indi_tap_hold_a", 
+                                          GTK_ICON_SIZE_BUTTON,
+                                          GTK_ICON_LOOKUP_NO_SVG);
+        if(!info)
+        {
+            ULOG_DEBUG("Unable to find icon info");
+            return;
+        }
+
+        filename = gtk_icon_info_get_filename(info);
+        if(!filename)
+        {
+            gtk_icon_info_free(info);
+            ULOG_DEBUG("Unable to find tap and hold icon filename");
+            return;
+        }
+
+        general_data.tapnhold_anim = 
+            gdk_pixbuf_animation_new_from_file(filename, &error);
+
+        if(error)
+        {
+            ULOG_DEBUG("Unable to create tap and hold animation: %s", 
+                       error->message);
+            general_data.tapnhold_anim = NULL;
+            g_error_free (error);
+            gtk_icon_info_free (info);
+            return;
+        }
+
+        gtk_icon_info_free (info);
+
+        g_object_set_data(G_OBJECT(window),
+                          "gtk-tap-and-hold-animation", 
+                          general_data.tapnhold_anim);
+    }
+    g_object_ref(general_data.tapnhold_anim);
+    general_data.tapnhold_anim_iter = NULL;
+}
+
+/**
+ * @create_tapnhold_remove_timer
+ *
+ * Clears all timer values for tap'n'hold menu common for all applets
+ */
+static 
+void layout_tapnhold_remove_timer (void)
+{
+    ULOG_DEBUG(__FUNCTION__);
+    if (general_data.tapnhold_timeout_id)
+    {
+        g_source_remove(general_data.tapnhold_timeout_id);
+        general_data.tapnhold_timeout_id = 0;
+    }
+    
+    general_data.tapnhold_timer_counter = 0;
+
+    layout_tapnhold_timeout_animation_stop();
+
+    gtk_menu_popdown(GTK_MENU(general_data.tapnhold_menu));
+}
+
+
+/**
+ * @layout_tapnhold_timeout
+ *
+ * @param widget applet eventbox widget connected to tap'n'hold menu
+ * currently
+ *
+ * @returns TRUE if animation is to be shown
+ *          FALSE when timeout has lapsed
+ *
+ * Handles timeout before showing tap'n'hold menu with animated cursor
+ */
+static 
+gboolean layout_tapnhold_timeout (GtkWidget *widget)
+{
+    gboolean result = TRUE;
+    ULOG_DEBUG(__FUNCTION__);
+    /* A small timeout before starting the tap and hold */
+    if (general_data.tapnhold_timer_counter == GTK_TAP_AND_HOLD_TIMER_COUNTER)
+    {
+        general_data.tapnhold_timer_counter--;
+        return TRUE;
+    }
+
+    result = layout_tapnhold_timeout_animation(widget);
+
+    if(general_data.tapnhold_timer_counter > 0)
+    {
+        general_data.tapnhold_timer_counter--;
+    } else
+    {
+        general_data.tapnhold_timeout_id = 0;
+    }
+
+    if(!general_data.tapnhold_timeout_id)
+    {
+        layout_tapnhold_remove_timer();
+        g_signal_emit_by_name(G_OBJECT(widget), 
+                              "tap-and-hold", G_TYPE_NONE);
+        return FALSE;
+    }
+
+    return result;
+}
+
+/**
+ * @layout_tapnhold_set_timeout
+ *
+ * @param widget applet eventbox widget connected to tap'n'hold menu
+ * currently
+ *
+ * Sets timeout counting
+ */
+static 
+void layout_tapnhold_set_timeout(GtkWidget *widget)
+{
+    ULOG_DEBUG(__FUNCTION__);
+    layout_tapnhold_animation_init();
+    general_data.tapnhold_timer_counter = GTK_TAP_AND_HOLD_TIMER_COUNTER;
+    general_data.tapnhold_timeout_id = 
+        g_timeout_add(GTK_TAP_AND_HOLD_TIMER_INTERVAL,
+                      (GSourceFunc)layout_tapnhold_timeout, 
+                      widget);  
+}
+
+/**
+ * @layout_tapnhold_timeout_animation_stop
+ *
+ * Stops timeout animation in cursor
+ */
+static 
+void layout_tapnhold_timeout_animation_stop(void)
+{
+    ULOG_DEBUG(__FUNCTION__);
+
+    if(general_data.tapnhold_anim)
+    {
+        gdk_window_set_cursor(((GtkWidget*)general_data.home_area_eventbox)->window, 
+                              NULL);
+    }
+}
+
+
+/**
+ * @layout_tapnhold_timeout_animation
+ *
+ * @param widget applet eventbox widget connected to tap'n'hold menu
+ * currently
+ *
+ * @returns TRUE if animation is not to be shown or is failed to show,
+ *          FALSE during animation
+ *
+ * Setps new timeout animation image to cursor 
+ */
+static 
+gboolean layout_tapnhold_timeout_animation (GtkWidget *widget)
+{
+    ULOG_DEBUG(__FUNCTION__);
+
+    if(general_data.tapnhold_anim)
+    {
+        guint new_interval = 0;
+        GTimeVal time;
+        GdkPixbuf *pic;
+        GdkCursor *cursor;
+        gint x, y;
+
+        g_get_current_time(&time);
+        pic = gdk_pixbuf_animation_iter_get_pixbuf(general_data.tapnhold_anim_iter);
+        
+        pic = gdk_pixbuf_copy(pic);
+        
+        if (!GDK_IS_PIXBUF(pic))
+        {
+            ULOG_DEBUG("Failed create animation iter pixbuf");
+            return TRUE;
+        }
+        x = gdk_pixbuf_get_width(pic) / 2;
+        y = gdk_pixbuf_get_height(pic) / 2;
+
+        cursor = gdk_cursor_new_from_pixbuf(gdk_display_get_default (), pic,
+                                            x, y);
+        g_object_unref(pic);
+
+        if (!cursor)
+        {
+            ULOG_DEBUG("Failed create cursor");
+            return TRUE;
+        }
+
+        gdk_window_set_cursor(((GtkWidget*)general_data.home_area_eventbox)->window, 
+                              cursor);
+
+        gdk_pixbuf_animation_iter_advance(general_data.tapnhold_anim_iter, &time);
+
+        new_interval = 
+            gdk_pixbuf_animation_iter_get_delay_time(general_data.tapnhold_anim_iter);
+
+        if (new_interval != general_data.tapnhold_interval && 
+            general_data.tapnhold_timer_counter)
+        {
+            general_data.tapnhold_interval = new_interval;
+            general_data.tapnhold_timeout_id = 
+            g_timeout_add (general_data.tapnhold_interval,
+                           (GSourceFunc)layout_tapnhold_timeout, widget);
+            return FALSE;
+        }
+    }
+    
+    return TRUE;
+}
+
+/**
+ * @layout_tapnhold_animation_init
+ *
+ * Initialize tapnhold values
+ */
+static 
+void layout_tapnhold_animation_init(void)
+{
+    GTimeVal time;
+    if (general_data.tapnhold_anim)
+    {
+        g_get_current_time (&time);
+      
+        if (!general_data.tapnhold_anim_iter)
+        {
+            general_data.tapnhold_anim_iter = 
+                gdk_pixbuf_animation_get_iter(general_data.tapnhold_anim, &time);
+        }
+        general_data.tapnhold_interval = 
+            gdk_pixbuf_animation_iter_get_delay_time(general_data.tapnhold_anim_iter);
+    }
+}
 
 /**********************TEST FUNCTION*********************************/
 
@@ -1612,7 +1994,7 @@ static void fp_mlist(void)
     LayoutNode *node = NULL;
     GList * mainlist = NULL;
     gchar * filename;
-
+    if(1) return;
     mainlist = g_list_first(general_data.main_applet_list);
     
     if (mainlist == NULL)
