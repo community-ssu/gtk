@@ -1,7 +1,7 @@
 Source: libosso
 Section: x11
 Priority: optional
-Maintainer: Kimmo H‰m‰l‰inen <kimmo.hamalainen@nokia.com>
+Maintainer: Kimmo H√§m√§l√§inen <kimmo.hamalainen@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), outo, libdbus-glib-1-dev (>=0.60), libglib2.0-dev
 Standards-Version: 3.6.0
 
