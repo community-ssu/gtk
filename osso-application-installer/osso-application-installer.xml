@@ -15,4 +15,8 @@
      <glob pattern="*.DeB"/>
      <glob pattern="*.DEB"/>
    </mime-type>
+   <mime-type type="application/x-install-instructions">
+     <comment>Application manager install instructions</comment>
+     <glob pattern="*.install"/>
+   </mime-type>
 </mime-info>
