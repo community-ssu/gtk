@@ -410,11 +410,8 @@ show_with_details (package_info *pi, bool installed,
   gtk_widget_show_all (dialog);
 
   if (show_problems)
-    {
-      printf ("page: %d\n", problems_page);
-      gtk_notebook_set_current_page (GTK_NOTEBOOK (notebook),
-				     problems_page);
-    }
+    gtk_notebook_set_current_page (GTK_NOTEBOOK (notebook),
+				   problems_page);
 }
 
 static void
@@ -422,7 +419,7 @@ nicify_description_in_place (char *desc)
 {
   /* The nicifications are this:
      
-     - spaces at the start of a line are removed.
+     - the first space of a line is removed.
 
      - if after that a line consists solely of a '.', that dot is
        removed.
