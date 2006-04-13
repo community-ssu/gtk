@@ -1,3 +1,10 @@
+2006-04-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* io-jpeg.c (gdk_pixbuf__jpeg_image_stop_load): Make sure the return
+	value matches error status, to ensure the caller can handle 'error'
+	correctly.
+	N#26464
+
 2006-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* io-png.c (png_text_to_pixbuf_option): Avoid loading iconv if the
