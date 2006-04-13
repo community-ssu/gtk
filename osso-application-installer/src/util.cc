@@ -991,10 +991,10 @@ size_string_detailed (char *buf, size_t n, int bytes)
 	    snprintf (buf, n, _("ai_li_de_size_1mb_10mb"), num/100.0);
 	  else
 	    {
-	      if (num < 10000)
+	      if (num < 100000)
 		snprintf (buf, n, _("ai_li_de_size_10mb_1gb"), num/100.0);
 	      else
-		snprintf (buf, n, _("ai_li_de_size_larger_than_1g"),
+		snprintf (buf, n, _("ai_li_de_size_larger_than_1gb"),
 			  ((float)num)/(100*KILO));
 	    }
 	}
