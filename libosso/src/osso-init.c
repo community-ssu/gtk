@@ -89,11 +89,6 @@ osso_context_t * osso_initialize(const gchar *application,
 					   (GLogFunc)_osso_log_handler,
 					   (gpointer)application);
 #endif
-    /* needed because GnomeVFS initialises DBus threads the same way */
-    if (!g_thread_supported()) {
-        g_thread_init(NULL);
-    }
-    dbus_g_thread_init();
 
     if (activation) {
         ULOG_WARN_F("connecting to both D-BUS busses, 'activation' "
