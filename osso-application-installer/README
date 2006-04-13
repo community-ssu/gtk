@@ -202,3 +202,4 @@ BUGS
 - handle broken packages
 - implement promised policy engine
 
+- use doubles for sizes.
