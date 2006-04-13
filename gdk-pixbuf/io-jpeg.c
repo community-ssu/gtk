@@ -514,6 +514,7 @@ static gboolean
 gdk_pixbuf__jpeg_image_stop_load (gpointer data, GError **error)
 {
 	JpegProgContext *context = (JpegProgContext *) data;
+	gboolean retval;
 
 	g_return_val_if_fail (context != NULL, TRUE);
 	
@@ -527,9 +528,11 @@ gdk_pixbuf__jpeg_image_stop_load (gpointer data, GError **error)
 	/* if we have an error? */
 	if (sigsetjmp (context->jerr.setjmp_buffer, 1)) {
 		jpeg_destroy_decompress (&context->cinfo);
+		retval = FALSE;
 	} else {
 		jpeg_finish_decompress(&context->cinfo);
 		jpeg_destroy_decompress(&context->cinfo);
+		retval = TRUE;
 	}
 
 	if (context->cinfo.src) {
@@ -540,7 +543,7 @@ gdk_pixbuf__jpeg_image_stop_load (gpointer data, GError **error)
 
 	g_free (context);
 
-        return TRUE;
+        return retval;
 }
 
 
