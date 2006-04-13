@@ -1656,6 +1656,13 @@ operation (bool check_only)
    if (_error->PendingError() == true)
       return rescode_failure;
 
+   if (check_only)
+     {
+       encode_prep_summary (Fetcher);
+       encode_upgrades ();
+       return rescode_success;
+     }
+
    /* Check for enough free space. */
    {
      struct statvfs Buf;
@@ -1675,13 +1682,6 @@ operation (bool check_only)
        }
    }
    
-   if (check_only)
-     {
-       encode_prep_summary (Fetcher);
-       encode_upgrades ();
-       return rescode_success;
-     }
-
    // Run it
    while (1)
    {
