@@ -1,5 +1,7 @@
 2006-04-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
+	* io-jpeg.c (gdk_pixbuf__jpeg_image_load_increment): Use spinguard to
+	avoid infinite looping also when num_left > 0.
 	* io-jpeg.c (gdk_pixbuf__jpeg_image_stop_load): Make sure the return
 	value matches error status, to ensure the caller can handle 'error'
 	correctly.
