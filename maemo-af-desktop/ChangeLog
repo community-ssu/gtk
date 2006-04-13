@@ -1,5 +1,11 @@
 2006-04-13  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/application-switcher.c: Home key toggles
+	  between showing home and topping the last topped application
+	  (Closes N#26294)
+
+2006-04-13  Johan Bilien <johan.bilien@nokia.com>
+
 	* maemo-af-desktop-main.c: Only reparse the rc files when launched
 	  from maemo-launcher
 

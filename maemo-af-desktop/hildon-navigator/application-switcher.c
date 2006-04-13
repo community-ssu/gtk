@@ -1960,8 +1960,28 @@ static DBusHandlerResult mce_handler( DBusConnection *conn,
             as->prev_sig_was_long_press = FALSE;
             return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
         }
+
         as->prev_sig_was_long_press = FALSE;
-        hn_wm_top_desktop();
+        /*
+           HOME key toggles between desktop and the top application
+         */
+        if(as->switched_to_desktop)
+          {
+            /* top the item associated with the first menu item */
+            GtkWidget *item;
+
+            item = g_list_nth_data(GTK_MENU_SHELL(as->menu)->children,
+                           ITEM_1_LIST_POS);
+
+            if(item)
+              hn_wm_top_view(GTK_MENU_ITEM(item));                        
+          }
+        else
+          {
+            hn_wm_top_desktop();
+          }
+        
+        
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
 
