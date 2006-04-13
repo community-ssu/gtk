@@ -1,3 +1,14 @@
+osso-application-installer (4.14) unstable; urgency=low
+
+  * Support installing remote files with "Install from file".
+  * Better error messages.
+  * Avoid corrupted cache when refresh fails.
+  * Support for new "Application installer instruction" files, and
+    associated MIME type.
+  * Support for named repositories.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 11 Apr 2006 20:57:27 +0300
+
 osso-application-installer (4.13) unstable; urgency=low
 
   * Maemo-launcherized osso-application-installer and maemo-confirm-text
