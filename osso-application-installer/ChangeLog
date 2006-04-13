@@ -1,5 +1,13 @@
 2006-04-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.cc (size_string_detailed): Corrected 1Gb threshold.
+	Corrected logical id for sizes larger than 1Gb.
+
+	* src/apt-worker.cc (operation): Don't check for enough free space
+	when we are only checking the 'certified' status of the packages.
+	* src/main.cc (annoy_user_with_result_code): Handle
+	rescode_out_of_space.
+
 	* src/settings.cc (force_ui_version, ui_version): New.
 	(load_settings, save_settings): Handle them.
 
@@ -89,7 +97,7 @@
 	install_from_file_cont3, file_details_reply, file_details_reply):
 	Call cleanup_temp_file appropriately.
 	(install_from_file_fail): Use
-	annoy_user_with_installable_status_details.
+	annoy_user_with_installable_status_details (N26424).
 	(file_details_reply): Don't filter non-user packages here, this is
 	now done by apt-worker.
 	Produce appropriate summary for installable_status.

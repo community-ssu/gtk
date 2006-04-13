@@ -6,6 +6,7 @@ osso-application-installer (4.14) unstable; urgency=low
   * Support for new "Application installer instruction" files, and
     associated MIME type.
   * Support for named repositories.
+  * Fixed bug N26424.
   
  -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 11 Apr 2006 20:57:27 +0300
 
