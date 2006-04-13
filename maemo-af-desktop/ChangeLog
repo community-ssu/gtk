@@ -1,3 +1,14 @@
+2006-04-13  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Select applets -dialog height is too short in Home"
+	(Closes N#25607)
+	* hildon-home/home-select-applets-dialog.h:
+	  - added new defines
+	* hildon-home/home-select-applets-dialog.c
+	  - added scrolled window size request handling
+	  - also some very minor cleanup
+	  - fixed the dialog read only .desktop files
+
 2006-04-12  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-{item,main}.[ch]:

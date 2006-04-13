@@ -44,10 +44,13 @@
 
 #include <osso-helplib.h>
 
+
 extern osso_context_t *osso_home;
 
+
 /* Dialog data contents structure */
-SelectAppletsData data_t;
+static SelectAppletsData data_t;
+static GtkWidget *home_applets_scrollwin;
 
 
 /* Private function declarations */
@@ -73,8 +76,8 @@ void select_applets_reload_applets(char *applets_path,
  * Select and deselect applets
  **/
 void show_select_applets_dialog(GList *applets, 
-        		                GList **added_list, 
-		            	        GList **removed_list)
+        		        GList **added_list, 
+		                GList **removed_list)
 {
     /* Dialog widget */
     GtkWidget *dialog = NULL;
@@ -88,12 +91,10 @@ void show_select_applets_dialog(GList *applets,
     /* GtkTreeView widgets */
     GtkTreeView *treeview;
     GtkCellRenderer *cell_renderer;
-    GtkWidget *scrolled_window;
     
     /* GList containers */
     GList *add_list = NULL;
-    GList *remove_list = NULL;
-      
+    GList *remove_list = NULL;      
    
  
     /* TreeView model */
@@ -127,45 +128,35 @@ void show_select_applets_dialog(GList *applets,
 		    gtk_cell_renderer_text_new(), "text", 
 		    APPLET_NAME_COL, NULL);
     
-    /* Populate the applets list */
-    select_applets_reload_applets(HILDON_HOME_APPLETS_DESKTOP_DIR, NULL);
-    
     /* Initialize the dnotify callback for .desktop directory */
     if( hildon_dnotify_set_cb
 		    ((hildon_dnotify_cb_f *)select_applets_reload_applets,
-		     (char *)HILDON_HOME_APPLETS_DESKTOP_DIR, 
-		     NULL) == HILDON_ERR ) 
-    {
+		     (char *)HOME_APPLETS_DESKTOP_DIR, 
+		     NULL) == HILDON_ERR ) {
         ULOG_WARN("Could not set notify for directory:%s\n", 
-		  HILDON_HOME_APPLETS_DESKTOP_DIR);
+		  HOME_APPLETS_DESKTOP_DIR);
     }
     
     /* Create scrolled window */
-    scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    home_applets_scrollwin = gtk_scrolled_window_new(NULL, NULL);
     
     /* Set the shadow type */
-    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolled_window), 
+    gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(home_applets_scrollwin), 
 		                        GTK_SHADOW_ETCHED_IN);
     
-    /* Set the vertical scrollbar to dis/appear automagically,
-     * horizontal scroll will never appear */   
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), 
-		                   GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    /* Init the vertical scrollbar */   
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(home_applets_scrollwin), 
+		                   GTK_POLICY_NEVER, GTK_POLICY_NEVER);
     
     /* Add the treeview to the window */
-    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(treeview));
+    gtk_container_add(GTK_CONTAINER(home_applets_scrollwin), GTK_WIDGET(treeview));
 
-
-    /* FIXME: Set the size of the area currently visible in scrollbar window
-     *     GtkAdjustment *scrolled_adj = gtk_scrolled_window_get_vadjustment
-     *                 (GTK_SCROLLED_WINDOW(scrolled_window));
-     *     scrolled_adj->page_size = 0.5;
-     *     gtk_scrolled_window_set_vadjustment(GTK_SCROLLED_WINDOW(scrolled_window),
-     *                                         scrolled_adj);
-     *     g_object_unref(scrolled_adj); */
-
+    /* Populate the applets list */
+    select_applets_reload_applets(HOME_APPLETS_DESKTOP_DIR, NULL);
+	
+    
     /* Create the dialog */
-    dialog = gtk_dialog_new_with_buttons(HILDON_HOME_APPLETS_SELECT_TITLE, 
+    dialog = gtk_dialog_new_with_buttons(HOME_APPLETS_SELECT_TITLE, 
 		                         NULL, 
 		                         GTK_DIALOG_MODAL | 
 					 GTK_DIALOG_DESTROY_WITH_PARENT |
@@ -178,16 +169,16 @@ void show_select_applets_dialog(GList *applets,
     
     /* Add "OK" button to the dialog */
     button_ok = gtk_dialog_add_button(GTK_DIALOG(dialog), 
-		                      HILDON_HOME_APPLETS_SELECT_OK, 
+		                      HOME_APPLETS_SELECT_OK, 
 				      GTK_RESPONSE_OK);
     /* Add "Cancel" button to the dialog */
     button_cancel = gtk_dialog_add_button(GTK_DIALOG(dialog), 
-		                          HILDON_HOME_APPLETS_SELECT_CANCEL, 
+		                          HOME_APPLETS_SELECT_CANCEL, 
 					  GTK_RESPONSE_CANCEL);
     
     /* Add the scrolled window to the dialog */
     gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), 
-		                    scrolled_window);
+		      home_applets_scrollwin); 
     
     /* Show 'em! */
     gtk_widget_show_all(dialog);
@@ -199,13 +190,11 @@ void show_select_applets_dialog(GList *applets,
     
         GtkTreeIter iter;
 	
-	if( !gtk_tree_model_get_iter_first(data_t.model_data, &iter) )
-        {
+	if( !gtk_tree_model_get_iter_first(data_t.model_data, &iter) ) {
 	    ULOG_WARN("FAILED to initialize GtkTreeIter, "
 		      "could not save or remove applets.\n");
 	}
-        else
-	{   
+        else {   
 	    GList *find_list = NULL;
 	    gchar *desktop_file = NULL;
 	    gboolean enabled;
@@ -215,12 +204,6 @@ void show_select_applets_dialog(GList *applets,
 	        gtk_tree_model_get(data_t.model_data, &iter, 
 				   CHECKBOX_COL, &enabled, 
 				   DESKTOP_FILE_COL, &desktop_file, -1);
-		
-		/*data_t.list_data = g_list_first(data_t.list_data);
-	        while( data_t.list_data ) {
-		   fprintf(stderr,"\n DATA_T data:%s", (gchar *)data_t.list_data->data);
-		   data_t.list_data = data_t.list_data->next;
-		}*/	
 		
 		/* find the applet in selected applets */
 		find_list = g_list_find_custom(data_t.list_data, desktop_file, 
@@ -254,9 +237,9 @@ void show_select_applets_dialog(GList *applets,
     
 	  
    if( hildon_dnotify_remove_cb
-		   (HILDON_HOME_APPLETS_DESKTOP_DIR) == HILDON_ERR ) {
+		   (HOME_APPLETS_DESKTOP_DIR) == HILDON_ERR ) {
        ULOG_WARN("FAILED to remove notify for the directory:%s!\n",
-                 HILDON_HOME_APPLETS_DESKTOP_DIR);
+                 HOME_APPLETS_DESKTOP_DIR);
    }
 
    /* Store the return values */
@@ -266,7 +249,7 @@ void show_select_applets_dialog(GList *applets,
    remove_list = NULL;
 
    /* Cleanup */			   	 
-   gtk_widget_destroy(scrolled_window);
+   gtk_widget_destroy(home_applets_scrollwin);
    gtk_widget_destroy(dialog);
 
     
@@ -282,7 +265,7 @@ void show_select_applets_dialog(GList *applets,
  * Calls activation of Select Applets dialog
  **/
 void select_applets_selected(GtkEventBox *home_event_box,
-	                         GtkFixed *home_fixed,
+	                     GtkFixed *home_fixed,
                              GtkWidget *titlebar_label)
 {	
    GList *added_applets;
@@ -303,8 +286,7 @@ void select_applets_selected(GtkEventBox *home_event_box,
    show_select_applets_dialog(showed_list, &added_applets, &removed_applets);
    
    /* If applets to be added, call layout manager */
-   if( added_applets )
-   {   
+   if ( added_applets ) {   
        ULOG_ERR("\nHOME-SELECT-APPLET-DIALOG - "
                 "adding applets now calling layout mode\n");
 	   
@@ -316,9 +298,9 @@ void select_applets_selected(GtkEventBox *home_event_box,
        g_list_free(added_applets);
    }
    /* If applets are to be removed */
-   else if( removed_applets )
-   {
+   else if ( removed_applets ) {
        removed_applets = g_list_first(removed_applets);
+       
        while( removed_applets ) {
    	       
            /* Deinitialize removed applets */
@@ -398,11 +380,12 @@ void select_applets_reload_applets(char *applets_path,
     const gchar *entry = NULL;
     gchar *applet_name = NULL;
 
+    int rows = 0;
     GtkTreeIter iter;
 
     
     /* Open the .desktop directory */
-    if( (applet_desktop_base_dir = g_dir_open(HILDON_HOME_APPLETS_DESKTOP_DIR,
+    if( (applet_desktop_base_dir = g_dir_open(HOME_APPLETS_DESKTOP_DIR,
 				              0, &error)) == NULL ) {
         ULOG_WARN("FAILED to open path: %s", error->message);
 	g_error_free(error);
@@ -417,8 +400,14 @@ void select_applets_reload_applets(char *applets_path,
     entry = g_dir_read_name(applet_desktop_base_dir);
 
     while (entry != NULL) {
-        gchar *indexfile = g_strconcat(HILDON_HOME_APPLETS_DESKTOP_DIR,
+        gchar *indexfile = g_strconcat(HOME_APPLETS_DESKTOP_DIR,
 			               entry, NULL);
+
+	/* Read only .desktop file entry */
+	if ( !g_str_has_suffix(entry, HOME_APPLETS_DESKTOP_SUFFIX) ) {
+	    entry = g_dir_read_name(applet_desktop_base_dir); 
+	    continue; 
+	}
 	
 	/* The .desktop path entry */
 	if (g_file_test(indexfile, G_FILE_TEST_EXISTS) == TRUE) {
@@ -426,19 +415,17 @@ void select_applets_reload_applets(char *applets_path,
 	    desktop = g_key_file_new();
 	    
 	    if ( !g_key_file_load_from_file(desktop, indexfile,
-				            G_KEY_FILE_NONE, &error) )
-	    {
+				            G_KEY_FILE_NONE, &error) ) {
 	        ULOG_WARN("FAILED to open applet .desktop file: %s\n",
 			  error->message);
 		g_error_free(error);
 	    }
-	    else
-	    {
+	    else {
                 /* get the applet name key value from .desktop file */
 	       if ( (applet_name = g_key_file_get_string
 				       (desktop, 
-					HILDON_HOME_APPLETS_DESKTOP_GROUP, 
-					HILDON_HOME_APPLETS_DESKTOP_NAME_KEY, 
+					HOME_APPLETS_DESKTOP_GROUP, 
+					HOME_APPLETS_DESKTOP_NAME_KEY, 
 					&error)) == NULL) {
                    ULOG_WARN("FAILED to read desktop file Icon key value: %s\n",
 	                     error->message);
@@ -452,6 +439,8 @@ void select_applets_reload_applets(char *applets_path,
 				       CHECKBOX_COL, FALSE,
 				       APPLET_NAME_COL, _(applet_name),
 				       DESKTOP_FILE_COL, indexfile, -1);
+
+		    rows++;
 		    
                     /* if the applet already exists in applet manager */
                     if( (g_list_find_custom(data_t.list_data, indexfile, 
@@ -478,4 +467,20 @@ void select_applets_reload_applets(char *applets_path,
     /* Sort by the user visible name */
     gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(data_t.model_data),
 	                                 APPLET_NAME_COL, GTK_SORT_ASCENDING);
+
+    /* Update dialog height */
+    if ( rows > HOME_APPLETS_MAXIMUM_VISIBLE_ROWS ) {
+        gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(home_applets_scrollwin), 
+			GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
+	gtk_widget_set_size_request(home_applets_scrollwin, -1, 
+			HOME_APPLETS_DIALOG_HEIGHT);	
+    } else  {
+        gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(home_applets_scrollwin), 
+			GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+	gtk_widget_set_size_request(home_applets_scrollwin, -1, 
+			(gint)((HOME_APPLETS_DIALOG_HEIGHT*rows)/HOME_APPLETS_MAXIMUM_VISIBLE_ROWS));
+    }
+    
+    gtk_widget_queue_draw ( home_applets_scrollwin ); 
+
 }
