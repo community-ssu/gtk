@@ -6,8 +6,9 @@ gtk+2.0 (2:2.6.10-1.osso12) UNRELEASED; urgency=low
   * debian/rules (CFLAGS): Use soft-float and thumb mode if it enabled
   * Bugs fixed:
     N#26453: apply thumb code generation for GTK+
+    N#26464: gdk-pixbuf problem with some specially crafted images
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 12 Apr 2006 17:14:30 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 13 Apr 2006 16:29:30 +0300
 
 gtk+2.0 (2:2.6.10-1.osso11) unstable; urgency=low
 
