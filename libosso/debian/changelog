@@ -2,6 +2,7 @@ libosso (1.8-1) unstable; urgency=low
 
   * UNRELEASED
   * Packaging fixes.
+  * Removed compilation of logging code.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 13 Apr 2006 16:57:27 +0300
 
