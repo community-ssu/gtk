@@ -1,3 +1,11 @@
+Thu Apr 13 16:04:29 2006  Tim Janik  <timj@imendio.com>
+
+	* tests/Makefile.am:
+	* demos/gtk-demo/Makefile.am:
+	* demos/Makefile.am:
+	* modules/engines/pixbuf/Makefile.am: added -DGTK_COMPILATION so 
+	GMemChunk isn't deprecated when including glib-2.10 headers.
+
 2006-04-14  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_set_focus_handling,
