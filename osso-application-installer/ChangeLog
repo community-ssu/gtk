@@ -1,3 +1,71 @@
+2006-04-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/settings.cc (force_ui_version, ui_version): New.
+	(load_settings, save_settings): Handle them.
+
+	* src/util.h, src/util.cc (ask_yes_no_with_arbitrary_details,
+	gettext_alt): New.
+	(show_progress): Use "Refreshing package list" as initial title
+	since it is probably the longest one and the dialog is not
+	resizing automatically when changin the title later... yeah, shoot
+	me.
+	(do_copy): Use "Opening..." logical id fomr hildon-fm.
+
+	* src/apt-worker-proto.h (apt_proto_able_status): Added
+	status_conflicting.
+	* src/apt-worker.cc (installable_status_1, installable_status):
+	Return it when appropriate.
+	* src/main.cc (annoy_user_with_installable_status_details):
+	Produce error message for it.
+
+	* src/apt-worker.cc (cmd_get_file_details): Add information about
+	the installed version of the package.
+	(check_installable): Output explanation about non-user packages to
+	the log.
+	
+	* src/main.cc (get_package_list_with_cont): New.
+	(get_package_list_reply): Call cont when everything has been done.
+	Also, switch to parent view in more cases, as appropriate.
+	(refresh_package_list_with_cont): New.
+	(refresh_package_list_reply): use get_package_list_with_cont to
+	invoke our cont when everything has been done.
+	(refresh_package_list): Update last_updated and save it even when
+	user declines to do the update.
+
+	(install_from_file_reply, install_from_file_cont4): Say "updating"
+	instead of "installing" when the package is already installed.
+	(install_from_file_cont): Free uri string, as required.
+	
+	New MIME type for 'single-click install', named repositories.
+	
+        * src/instr.h, src/instr.cc: New.
+	* src/Makefile.am: Add them.
+	
+	* osso-application-installer.desktop (MimeType): Also list
+	"application/x-install-instructions".
+	* osso-application-installer.xml: Define it here.
+	* src/main.h, src/main.cc (install_named_package): New.
+	(mime_open_handler): Call open_install_instructions for files
+	ending with ".install"
+
+	* src/repo.h, src/repo.cc (maybe_add_repo): New.
+	(repo_line): Added name member.
+	(repo_line::repo_line): Do not handle parsing of "#maemo:" lines
+	here.
+	(sources_list_reply): Do the parsing here.  Launch into the "Add
+	catalog" routine when requested instead of into the "Catalog"
+	dialog routine.
+	(repo_encoder): Output "#maemo:" flags explicitely.
+	(repo_closure::find_repo): New.
+	(repo_edit_closure): Added readonly member.
+	(repo_edit_response): Don't do anything about the repo_line when
+	the dialog is readonly.  Use proper logical IDs.  Handle name
+	attribute.
+	(add_entry): Added autocap and readonly parameters.
+	(show_repo_edit_dialog): Added readonly parameter.  Construct
+	dialog accordingly.  Show name when ui version is at least 2.
+	(repo_text_func): Show name instead of deb_line when there is one.
+	
 2006-04-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* configure.ac (AI_DEPS): Use obex-vfs-utils.
