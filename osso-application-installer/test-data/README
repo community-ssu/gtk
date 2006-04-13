@@ -95,6 +95,13 @@ The packages and the distributions they are in:
      <p>
      A package whose archive file is corrupted.
 
+   * *sized-5k 1*, *sized-50k 1*, *sized-500k 1*, *sized-5m 1*,
+     *sized-50m 1*, *sized-500m 1*, *sized-1500m 1*, *sized-3g 1* (old)
+     <p>
+     Packages that claim to have the indicated Installed-Size.  They
+     are actually empty and wont trigger any out of memory condition.
+     You can use them to test the display of file sizes.
+
 
 ---+++ Sample test cases
 
