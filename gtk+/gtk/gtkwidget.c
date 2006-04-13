@@ -190,7 +190,6 @@ struct _GtkWidgetPrivate
   gint x, y;
   gint timer_counter;
   gint signals_connected : 1;
-  gboolean state_set;
   guint interval;
   GdkWindow *tah_on_window;
   
@@ -284,14 +283,6 @@ static void gtk_widget_set_usize_internal (GtkWidget *widget,
 					   gint       width,
 					   gint       height);
 
-/*Hildon focus handling*/
-static void gtk_widget_set_focus_handling( GtkWidget *widget, gboolean state );
-
-static gboolean gtk_widget_enter_notify_event( GtkWidget *widget, GdkEventCrossing *event );
-static gboolean gtk_widget_leave_notify_event( GtkWidget *widget, GdkEventCrossing *event );
-static gint gtk_widget_button_release_event( GtkWidget *widget, GdkEventButton *event );
-static gint gtk_widget_button_press_event( GtkWidget *widget, GdkEventButton *event );
-
 /* --- variables --- */
 static gpointer         parent_class = NULL;
 static guint            widget_signals[LAST_SIGNAL] = { 0 };
@@ -301,9 +292,6 @@ static GSList          *colormap_stack = NULL;
 static guint            composite_child_stack = 0;
 static GtkTextDirection gtk_default_direction = GTK_TEXT_DIR_LTR;
 static GParamSpecPool  *style_property_spec_pool = NULL;
-
-static gboolean on_same_widget = FALSE; /*Hildon focus handling*/
-static gboolean mouse_pressed = FALSE; /*Hildon focus handling*/
 
 static GQuark		quark_property_parser = 0;
 static GQuark		quark_aux_info = 0;
@@ -1590,6 +1578,8 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   /**
    * GtkWidget:hildon-focus-handling:
    *
+   * This style property is deprecated; it does nothing.
+   *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (klass,
@@ -1826,28 +1816,6 @@ gtk_widget_get_property (GObject         *object,
     }
 }
 
-static void gtk_widget_set_focus_handling( GtkWidget *widget, gboolean state )
-{
-      GtkWidgetPrivate *priv;
-      priv = GTK_WIDGET_GET_PRIVATE (widget);
-
-      if( state && GTK_WIDGET_CAN_FOCUS(widget) )
-      {
-         if (!priv->state_set)
-            {  
-               g_signal_connect( G_OBJECT(widget), "button-press-event",
-                                      G_CALLBACK(gtk_widget_button_press_event), NULL );
-               g_signal_connect( G_OBJECT(widget), "button-release-event",
-                                      G_CALLBACK(gtk_widget_button_release_event), NULL );
-               g_signal_connect( G_OBJECT(widget), "enter-notify-event",
-                                      G_CALLBACK(gtk_widget_enter_notify_event), NULL );
-               g_signal_connect( G_OBJECT(widget), "leave-notify-event",
-                                      G_CALLBACK(gtk_widget_leave_notify_event), NULL );
-               priv->state_set = TRUE;
-            }
-      }
-}
-
 static void
 gtk_widget_init (GtkWidget *widget)
 {
@@ -1874,7 +1842,6 @@ gtk_widget_init (GtkWidget *widget)
   priv->x = priv->y = 0;
   priv->func = NULL;
   priv->timer_counter = 0;
-  priv->state_set = FALSE;
   priv->interval = GTK_TAP_AND_HOLD_TIMER_INTERVAL;
   priv->tah_on_window = NULL;
   
@@ -3619,131 +3586,6 @@ gtk_widget_real_focus_out_event (GtkWidget     *widget,
   return FALSE;
 }
 
-/**
- * gtk_widget_button_press_event
- * @widget: a #GtkWidget
- * @event: a #GtkEventKey
- *
-**/
-static gboolean gtk_widget_button_press_event (GtkWidget *widget, GdkEventButton *event )
-{
-  if (!mouse_pressed)
-    {
-      GtkWidget *toplevel;
-      toplevel = gtk_widget_get_toplevel (widget);
-      if (GTK_IS_WINDOW (toplevel))
-	{
-	  mouse_pressed = TRUE;
-
-	  if (GTK_IS_WIDGET (GTK_WINDOW (toplevel)->focus_widget))
-	    gtk_window_set_prev_focus_widget (GTK_WINDOW (toplevel),
-					      GTK_WINDOW (toplevel)->focus_widget);
-	}
-    }
-  return FALSE;
-}
-
-/**
- * gtk_widget_button_release_event
- * @widget: a #GtkWidget
- * @event: a #GtkEventKey
- *
-**/
-static gboolean gtk_widget_button_release_event (GtkWidget *widget, GdkEventButton *event)
-{
-  if (mouse_pressed)
-    {
-      GtkWidget *toplevel;
-      GtkWidget *event_widget;
-      event_widget = gtk_get_event_widget ((GdkEvent*)event);
-      toplevel = gtk_widget_get_toplevel (widget);
-
-      mouse_pressed = FALSE;
-      on_same_widget = TRUE;
-
-      if (GTK_IS_WINDOW (toplevel))
-	{
-	  if (!on_same_widget &&
-	      GTK_IS_WIDGET (GTK_WINDOW (toplevel)->focus_widget))
-	    gtk_window_set_prev_focus_widget (GTK_WINDOW (toplevel),
-					      GTK_WINDOW (toplevel)->focus_widget);
-	  else if (GTK_IS_WIDGET (event_widget))
-	    gtk_window_set_prev_focus_widget (GTK_WINDOW (toplevel),
-					      event_widget);
-	}
-    }
-  return FALSE;
-}
-
-/**
- * gtk_widget_enter_notify_event
- * @widget: a #GtkWidget
- * @event: a #GtkEventCrossing
- *
-**/
-static gboolean gtk_widget_enter_notify_event (GtkWidget *widget, GdkEventCrossing *event)
-{
-  GtkWidget *toplevel;
-  GtkWidget *event_widget;
-
-  toplevel = gtk_widget_get_toplevel (widget);
-  event_widget = gtk_get_event_widget ((GdkEvent*) event);
-
-  if (mouse_pressed && !on_same_widget && gtk_window_get_prev_focus_widget( GTK_WINDOW(toplevel) ) == event_widget)
-    {
-      on_same_widget = TRUE;
-
-      if (GTK_IS_WIDGET (GTK_WINDOW (toplevel)->focus_widget))
-	{
-	  gtk_window_set_prev_focus_widget (GTK_WINDOW(toplevel), GTK_WINDOW(toplevel)->focus_widget);
-	  if (GTK_WIDGET_CAN_FOCUS (event_widget))
-	    gtk_widget_grab_focus (event_widget);
-	}
-    }
-  return FALSE;
-}
-
-
-/**
- * gtk_widget_leave_notify_event
- * @widget: a #GtkWidget
- * @event: a #GtkEventCrossing
- * 
-**/
-static gboolean gtk_widget_leave_notify_event (GtkWidget *widget, GdkEventCrossing *event)
-{
-  if (mouse_pressed && on_same_widget)
-    {
-      GtkWidget *event_widget;
-      GtkWidget *toplevel;
-      GtkWidget *temp;
-      toplevel = gtk_widget_get_toplevel (widget);
-      event_widget = gtk_get_event_widget ((GdkEvent*) event);
-      on_same_widget = FALSE;
-
-      /* in general what we're trying to do here is to cancel widget selection
-         and go back to previous one if mouse is moved out from it while
-         button is still being pressed.
-
-         this isn't wanted at least between two entry widgets, so there's a
-         special case for it. it might not be wanted with entries at all, but
-         apparently just checking that caused some bug, so playing safe
-         here.. */
-      temp = gtk_window_get_prev_focus_widget (GTK_WINDOW (toplevel));
-      if (GTK_IS_WIDGET (temp) && GTK_IS_WIDGET (event_widget) &&
-          gtk_window_has_toplevel_focus (GTK_WINDOW (toplevel)) &&
-          (!GTK_IS_ENTRY(widget) || !GTK_IS_ENTRY(temp)))
-	{
-	  gtk_window_set_prev_focus_widget (GTK_WINDOW (toplevel),
-					    event_widget);
-	  if (GTK_WIDGET_CAN_FOCUS (temp))
-	    gtk_widget_grab_focus (temp);
-	}
-    }
-  return FALSE;
-}
-
-
 #define WIDGET_REALIZED_FOR_EVENT(widget, event) \
      (event->type == GDK_FOCUS_CHANGE || GTK_WIDGET_REALIZED(widget))
 
@@ -4814,13 +4656,9 @@ gtk_widget_ensure_style (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  if (!GTK_WIDGET_USER_STYLE (widget) && !GTK_WIDGET_RC_STYLE (widget))
-  {
-    gboolean hfh = FALSE;
+  if (!GTK_WIDGET_USER_STYLE (widget) &&
+      !GTK_WIDGET_RC_STYLE (widget))
     gtk_widget_reset_rc_style (widget);
-    gtk_widget_style_get( widget, "hildon-focus-handling", &hfh, NULL );
-    gtk_widget_set_focus_handling( widget, hfh );
-  }
 }
 
 /* Look up the RC style for this widget, unsetting any user style that
