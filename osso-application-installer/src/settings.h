@@ -51,9 +51,12 @@ extern bool red_pill_mode;
 
 // Persistent state
 //
-extern int last_update;    // not a time_t until 2036
+extern int  last_update;    // not a time_t until 2036
 extern bool fullscreen_toolbar;
 extern bool normal_toolbar;
+extern int  force_ui_version;
+
+extern int  ui_version;
 
 void show_settings_dialog ();
 void show_sort_settings_dialog ();

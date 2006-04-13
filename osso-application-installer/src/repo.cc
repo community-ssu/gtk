@@ -37,14 +37,16 @@
 #include "repo.h"
 #include "settings.h"
 #include "apt-worker-client.h"
+#include "util.h"
 
-#define _(x) gettext (x)
+#define _(x)       gettext (x)
+#define _UI2_(x,y) gettext_alt (x,y)
 
 struct repo_closure;
 
 struct repo_line {
 
-  repo_line (repo_closure *clos, const char *line);
+  repo_line (repo_closure *clos, const char *line, bool essential, char *name);
   ~repo_line ();
 
   repo_line *next;
@@ -54,6 +56,7 @@ struct repo_line {
   char *deb_line;
   bool enabled;
   bool essential;
+  char *name;
 };
 
 struct repo_closure {
@@ -72,10 +75,17 @@ struct repo_closure {
 
   bool dirty;
 
-  // parsing state
-  bool next_is_essential;
+  repo_line *find_repo (const char *deb);
 };
 
+struct repo_add_closure {
+  repo_closure *clos;
+  repo_line *new_repo;
+  bool for_install;
+
+  void (*cont) (bool res, void *data);
+  void *cont_data;
+};
 
 static void refresh_repo_list (repo_closure *c);
 static void remove_repo (repo_line *r);
@@ -125,12 +135,14 @@ parse_quoted_word (char **start, char **end, bool term)
   return true;
 }
 
-repo_line::repo_line (repo_closure *c, const char *l)
+repo_line::repo_line (repo_closure *c, const char *l, bool e, char *n)
 {
   char *end;
 
   clos = c;
-  line = strdup (l);
+  line = g_strdup (l);
+  name = n;
+  essential = e;
   deb_line = NULL;
 
   char *type = line;
@@ -140,23 +152,17 @@ repo_line::repo_line (repo_closure *c, const char *l)
 	enabled = true;
       else if (end - type == 4 && !strncmp (type, "#deb", 4))
 	enabled = false;
-      else if (end - type == 16 && !strncmp (type, "#maemo:essential", 16))
-	{
-	  c->next_is_essential = true;
-	  return;
-	}
       else
 	return;
 
       deb_line = end;
-      essential = c->next_is_essential;
-      c->next_is_essential = false;
       parse_quoted_word (&deb_line, &end, false);
     }
 }
 
 repo_line::~repo_line ()
 {
+  free (name);
   free (line);
 }
 
@@ -164,7 +170,6 @@ repo_closure::repo_closure ()
 {
   lines = NULL;
   lastp = &lines;
-  next_is_essential = false;
   dirty = false;
 }
 
@@ -178,9 +183,20 @@ repo_closure::~repo_closure ()
     }
 }
 
+repo_line *
+repo_closure::find_repo (const char *deb)
+{
+  for (repo_line *r = lines; r; r = r->next)
+    if (r->deb_line && !strcmp (r->deb_line, deb))
+      return r;
+  return NULL;
+}
+
 struct repo_edit_closure {
   bool isnew;
+  bool readonly;
   repo_line *line;
+  GtkWidget *name_entry;
   GtkWidget *uri_entry;
   GtkWidget *dist_entry;
   GtkWidget *components_entry;
@@ -194,25 +210,35 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
 {
   repo_edit_closure *c = (repo_edit_closure *)clos;
 
-  if (response == GTK_RESPONSE_OK)
+  if (c->readonly)
+    ;
+  else if (response == GTK_RESPONSE_OK)
     {
+      const char *name = (c->name_entry
+			  ? gtk_entry_get_text (GTK_ENTRY (c->name_entry))
+			  : NULL);
       const char *uri = gtk_entry_get_text (GTK_ENTRY (c->uri_entry));
       const char *dist = gtk_entry_get_text (GTK_ENTRY (c->dist_entry));
       const char *comps = gtk_entry_get_text (GTK_ENTRY (c->components_entry));
 
       if (all_white_space (uri))
 	{
-	  irritate_user ("The web address can not be empty");
+	  irritate_user (_("ai_ib_enter_web_address"));
 	  return;
 	}
 
       if (all_white_space (dist))
 	{
-	  irritate_user ("The distribution can not be empty");
+	  irritate_user (_("ai_ib_enter_distribution"));
 	  return;
 	}
 
       repo_line *r = c->line;
+      if (name && !all_white_space (name))
+	{
+	  free (r->name);
+	  r->name = g_strdup (name);
+	}
       free (r->line);
       r->enabled =
 	gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (c->enabled_button));
@@ -238,14 +264,17 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
 static GtkWidget *
 add_entry (GtkWidget *box, GtkSizeGroup *group,
 	   const char *label,
-	   const char *text, const char *end)
+	   const char *text, const char *end,
+	   bool autocap, bool readonly)
 {
   GtkWidget *caption, *entry;
   gint pos = 0;
 
   entry = gtk_entry_new ();
-  g_object_set (entry, "autocap", FALSE, NULL);
-  gtk_editable_insert_text (GTK_EDITABLE (entry), text, end-text, &pos);
+  g_object_set (entry, "autocap", autocap, NULL);
+  if (text)
+    gtk_editable_insert_text (GTK_EDITABLE (entry), text, end-text, &pos);
+  gtk_editable_set_editable (GTK_EDITABLE (entry), !readonly);
 
   caption = hildon_caption_new (group, label, entry,
 				NULL, HILDON_CAPTION_OPTIONAL);
@@ -255,7 +284,7 @@ add_entry (GtkWidget *box, GtkSizeGroup *group,
 }
 
 static void
-show_repo_edit_dialog (repo_line *r, bool isnew)
+show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
 {
   GtkWidget *dialog, *vbox, *caption;
   GtkSizeGroup *group;
@@ -263,48 +292,75 @@ show_repo_edit_dialog (repo_line *r, bool isnew)
   repo_edit_closure *c = new repo_edit_closure;
 
   c->isnew = isnew;
+  c->readonly = readonly;
   c->line = r;
   
-  dialog = gtk_dialog_new_with_buttons ((isnew
-					 ? _("ai_ti_new_repository")
-					 : _("ai_ti_edit_repository")),
-					NULL,
-					GTK_DIALOG_MODAL,
-					_("ai_bd_new_repository_ok"),
-					GTK_RESPONSE_OK,
-					_("ai_bd_new_repository_cancel"),
-					GTK_RESPONSE_CANCEL,
-					NULL);
+  const char *title;
+  if (readonly)
+    title = _UI2_("ai_ti_catalogue_details",
+		  "Catalogue details");
+  else if (isnew)
+    title = _("ai_ti_new_repository");
+  else
+    title = _("ai_ti_edit_repository");
+
+  if (readonly)
+    dialog = gtk_dialog_new_with_buttons (title,
+					  get_main_window (),
+					  GTK_DIALOG_MODAL,
+					  "Close",
+					  1,
+					  NULL);
+  else
+    dialog = gtk_dialog_new_with_buttons (title,
+					  get_main_window (),
+					  GTK_DIALOG_MODAL,
+					  _("ai_bd_new_repository_ok"),
+					  GTK_RESPONSE_OK,
+					  _("ai_bd_new_repository_cancel"),
+					  GTK_RESPONSE_CANCEL,
+					  NULL);
 
   // XXX - there is no help for the "edit" version of this dialog.
   //
-  set_dialog_help (dialog, (isnew
-			    ? AI_TOPIC ("newrepository")
-			    : AI_TOPIC ("newrepository")));
+  if (isnew)
+    set_dialog_help (dialog, AI_TOPIC ("newrepository"));
 
   vbox = GTK_DIALOG (dialog)->vbox;
   group = GTK_SIZE_GROUP (gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL));
   
   char *start, *end;
 
+  if (ui_version > 1)
+    {
+      if (r->name)
+	end = r->name + strlen (r->name);
+      c->name_entry = add_entry (vbox, group,
+				 _UI2_("ai_fi_new_repository_name",
+				       "Cataloque Name"),
+				 r->name, end, true, readonly);
+    }
+  else
+    c->name_entry = NULL;
+
   start = r->deb_line;
   parse_quoted_word (&start, &end, false);
   c->uri_entry = add_entry (vbox, group,
 			    _("ai_fi_new_repository_web_address"),
-			    start, end);
+			    start, end, false, readonly);
 
   start = end;
   parse_quoted_word (&start, &end, false);
   c->dist_entry = add_entry (vbox, group,
 			     _("ai_fi_new_repository_distribution"),
-			     start, end);
+			     start, end, false, readonly);
 
   start = end;
   parse_quoted_word (&start, &end, false);
   end = start + strlen (start);
   c->components_entry = add_entry (vbox, group,
 				   _("ai_fi_new_repository_component"),
-				   start, end);
+				   start, end, false, readonly);
 
   c->enabled_button = gtk_check_button_new ();
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (c->enabled_button),
@@ -314,7 +370,9 @@ show_repo_edit_dialog (repo_line *r, bool isnew)
 				c->enabled_button,
 				NULL, HILDON_CAPTION_OPTIONAL);
   gtk_box_pack_start_defaults (GTK_BOX (vbox), caption);
+  gtk_widget_set_sensitive (c->enabled_button, !readonly);
 
+  gtk_widget_set_usize (dialog, 400, -1);
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (repo_edit_response), c);
@@ -324,12 +382,12 @@ show_repo_edit_dialog (repo_line *r, bool isnew)
 static void
 add_new_repo (repo_closure *c)
 {
-  repo_line *r = new repo_line (c, "deb http:// mistral user");
+  repo_line *r = new repo_line (c, "deb http:// mistral user", false, NULL);
   r->next = NULL;
   *c->lastp = r;
   c->lastp = &r->next;
 
-  show_repo_edit_dialog (r, true);
+  show_repo_edit_dialog (r, true, false);
 }
 
 static void
@@ -354,7 +412,14 @@ repo_encoder (apt_proto_encoder *enc, void *data)
   repo_closure *c = (repo_closure *)data;
   for (repo_line *r = c->lines; r; r = r->next)
     {
-      printf ("R: %s\n", r->line);
+      if (r->name)
+	{
+	  char *l = g_strdup_printf ("#maemo:name %s", r->name);
+	  enc->encode_string (l);
+	  g_free (l);
+	}
+      if (r->essential)
+	enc->encode_string ("#maemo:essential");
       enc->encode_string (r->line);
     }
   enc->encode_string (NULL);
@@ -419,7 +484,7 @@ repo_response (GtkDialog *dialog, gint response, gpointer clos)
       if (r == NULL)
 	return;
 
-      show_repo_edit_dialog (r, false);
+      show_repo_edit_dialog (r, false, false);
 
       return;
     }
@@ -430,8 +495,10 @@ repo_response (GtkDialog *dialog, gint response, gpointer clos)
       if (r == NULL)
 	return;
 
-      char *text = g_strdup_printf (_("ai_nc_remove_repository"),
-				    r->deb_line);
+      char *name = r->deb_line;
+      if (ui_version > 1 && r->name)
+	name = r->name;
+      char *text = g_strdup_printf (_("ai_nc_remove_repository"), name);
       ask_yes_no (text, remove_repo_cont, r);
       g_free (text);
       
@@ -489,9 +556,13 @@ repo_text_func (GtkTreeViewColumn *column,
 {
   repo_line *r;
   gtk_tree_model_get (model, iter, 0, &r, -1);
-  g_object_set (cell,
-		"text", r? r->deb_line : "",
-		NULL);
+  if (r)
+    {
+      if (r->name)
+	g_object_set (cell, "text", r->name, NULL);
+      else
+	g_object_set (cell, "text", r->deb_line, NULL);
+    }
 }
 
 static void
@@ -513,7 +584,7 @@ repo_row_activated (GtkTreeView *treeview,
       if (r->essential)
 	irritate_user (_("ai_ib_unable_edit"));
       else
-	show_repo_edit_dialog (r, false);
+	show_repo_edit_dialog (r, false, false);
     }
 }
 
@@ -599,6 +670,42 @@ make_repo_list (repo_closure *c)
 }
 
 static void
+maybe_add_new_repo_cont (bool res, void *data)
+{
+  repo_add_closure *ac = (repo_add_closure *)data;
+  repo_closure *c = ac->clos;
+
+  if (res)
+    {
+      repo_line *r = ac->new_repo;
+      ac->new_repo = NULL;
+
+      r->clos = c;
+      r->next = NULL;
+      *c->lastp = r;
+      c->lastp = &r->next;
+
+      apt_worker_set_sources_list (repo_encoder, c, repo_reply, NULL);
+      
+      // Whooo, tail call elimination...
+      refresh_package_cache_with_cont (ac->cont, ac->cont_data);
+    }
+  else
+    ac->cont (false, ac->cont_data);
+
+  delete c;
+  delete ac;
+}
+
+static void
+maybe_add_new_repo_details (void *data)
+{
+  repo_add_closure *ac = (repo_add_closure *)data;
+
+  show_repo_edit_dialog (ac->new_repo, true, true);
+}
+
+static void
 insensitive_press (GtkButton *button, gpointer data)
 {
   irritate_user ((const gchar *)data);
@@ -607,6 +714,9 @@ insensitive_press (GtkButton *button, gpointer data)
 void
 sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
+  bool next_is_essential = false;
+  char *next_name = NULL;
+
   if (dec == NULL)
     return;
 
@@ -619,56 +729,124 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
       if (line == NULL)
 	break;
       
-      *rp = new repo_line (c, line);
-      rp = &(*rp)->next;
+      if (g_str_has_prefix (line, "#maemo:essential"))
+	next_is_essential = true;
+      else if (g_str_has_prefix (line, "#maemo:name "))
+	next_name = g_strdup (line + 12);
+      else
+	{
+	  *rp = new repo_line (c, line, next_is_essential, next_name);
+	  rp = &(*rp)->next;
+	  next_is_essential = false;
+	  next_name = NULL;
+	}
     }
   *rp = NULL;
   c->lastp = rp;
+  free (next_name);
 
   int success = dec->decode_int ();
-  if (dec->corrupted () || !success)
-    printf ("failed.\n");
 
-  GtkWidget *dialog= gtk_dialog_new ();
+  repo_add_closure *ac = (repo_add_closure *)data;
 
-  gtk_window_set_title (GTK_WINDOW (dialog), _("ai_ti_repository"));
-  gtk_window_set_transient_for (GTK_WINDOW (dialog), get_main_window ());
-  gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+  if (ac)
+    {
+      repo_line *old_repo = c->find_repo (ac->new_repo->deb_line);
 
-  gtk_dialog_add_button (GTK_DIALOG (dialog), 
-			 _("ai_bd_repository_new"), REPO_RESPONSE_NEW);
-  c->edit_button = 
-    gtk_dialog_add_button (GTK_DIALOG (dialog), 
-			   _("ai_bd_repository_edit"), REPO_RESPONSE_EDIT);
-  c->delete_button =
-    gtk_dialog_add_button (GTK_DIALOG (dialog), 
-			   _("ai_bd_repository_delete"), REPO_RESPONSE_REMOVE);
-  gtk_dialog_add_button (GTK_DIALOG (dialog), 
-			 _("ai_bd_repository_close"), GTK_RESPONSE_CLOSE);
+      if (old_repo)
+	{
+	  ac->cont (true, ac->cont_data);
 
-  g_signal_connect (c->edit_button, "insensitive_press",
-		    G_CALLBACK (insensitive_press),
-		    _("ai_ib_unable_edit"));
-  g_signal_connect (c->delete_button, "insensitive_press",
-		    G_CALLBACK (insensitive_press),
-		    _("ai_ib_unable_edit"));
+	  delete ac->new_repo;
+	  delete ac;
+	  delete c;
+	}
+      else
+	{
+	  ac->clos = c;
 
-  set_dialog_help (dialog, AI_TOPIC ("repository"));
-  
-  gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (dialog)->vbox),
-			       make_repo_list (c));
+	  char *name = ac->new_repo->deb_line;
+	  if (ac->new_repo->name)
+	    name = ac->new_repo->name;
 
-  g_signal_connect (dialog, "response",
-		    G_CALLBACK (repo_response), c);
-  gtk_widget_show_all (dialog);
+	  gchar *str;
+
+	  if (ac->for_install)
+	    str = g_strdup_printf (_UI2_("ai_ia_add_catalogue_text",
+					 "New catalogue needs to be added.\n"
+					 "Catalogue name: %s"),
+				   name);
+	  else
+	    str = g_strdup_printf (_UI2_("ai_ia_add_catalogue_text2",
+					 "Add new catalogue?\n%s"),
+				   name);
+	    
+	  ask_yes_no_with_arbitrary_details (_UI2_("ai_ti_add_cataloque",
+						   "Add catalogue"),
+					     str,
+					     maybe_add_new_repo_cont,
+					     maybe_add_new_repo_details,
+					     ac);
+	  g_free (str);
+	}
+    }
+  else
+    {
+      GtkWidget *dialog= gtk_dialog_new ();
+
+      gtk_window_set_title (GTK_WINDOW (dialog), _("ai_ti_repository"));
+      gtk_window_set_transient_for (GTK_WINDOW (dialog), get_main_window ());
+      gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+      
+      gtk_dialog_add_button (GTK_DIALOG (dialog), 
+			     _("ai_bd_repository_new"), REPO_RESPONSE_NEW);
+      c->edit_button = 
+	gtk_dialog_add_button (GTK_DIALOG (dialog), 
+			       _("ai_bd_repository_edit"), REPO_RESPONSE_EDIT);
+      c->delete_button =
+	gtk_dialog_add_button (GTK_DIALOG (dialog), 
+			       _("ai_bd_repository_delete"), REPO_RESPONSE_REMOVE);
+      gtk_dialog_add_button (GTK_DIALOG (dialog), 
+			     _("ai_bd_repository_close"), GTK_RESPONSE_CLOSE);
+      
+      g_signal_connect (c->edit_button, "insensitive_press",
+			G_CALLBACK (insensitive_press),
+			_("ai_ib_unable_edit"));
+      g_signal_connect (c->delete_button, "insensitive_press",
+			G_CALLBACK (insensitive_press),
+			_("ai_ib_unable_edit"));
+      
+      set_dialog_help (dialog, AI_TOPIC ("repository"));
+      
+      gtk_box_pack_start_defaults (GTK_BOX (GTK_DIALOG (dialog)->vbox),
+				   make_repo_list (c));
+      
+      g_signal_connect (dialog, "response",
+			G_CALLBACK (repo_response), c);
+      gtk_widget_show_all (dialog);
+    }
 }
-
+  
 void
 show_repo_dialog ()
 {
   apt_worker_get_sources_list (sources_list_reply, NULL);
 }
 
+void
+maybe_add_repo (const char *name, const char *deb_line,	bool for_install,
+		void (*cont) (bool res, void *data), void *data)
+{
+  repo_line *n = new repo_line (NULL, deb_line, false, g_strdup (name));
+  repo_add_closure *ac = new repo_add_closure;
+  ac->clos = NULL;
+  ac->new_repo = n;
+  ac->for_install = for_install;
+  ac->cont = cont;
+  ac->cont_data = data;
+
+  apt_worker_get_sources_list (sources_list_reply, ac);
+}
 
 static void
 pill_response (GtkDialog *dialog, gint response, gpointer unused)
@@ -682,7 +860,6 @@ pill_response (GtkDialog *dialog, gint response, gpointer unused)
       get_package_list ();
     }
 }
-
 
 static void
 ask_the_pill_question ()

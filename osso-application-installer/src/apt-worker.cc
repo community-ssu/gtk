@@ -856,24 +856,34 @@ installable_status_1 (pkgCache::PkgIterator &pkg,
 	some_conflicting = true;
     }
 
-  if (some_missing && !some_conflicting)
+  if (some_missing)
     return status_missing;
+  if (some_conflicting)
+    return status_conflicting;
+
   return status_unable;
+}
+
+static int
+combine_status (int s1, int s2)
+{
+  return max (s1, s2);
 }
 
 static int
 installable_status (pkgCache::PkgIterator &want)
 {
   pkgDepCache &cache = *package_cache;
-  int installable_status = status_missing;
+  int installable_status = status_unable;
   
   for (pkgCache::PkgIterator pkg = cache.PkgBegin();
        pkg.end() != true;
        pkg++)
     {
       if (cache[pkg].InstBroken())
-	if (installable_status_1 (pkg, want) == status_unable)
-	  installable_status = status_unable;
+	installable_status =
+	  combine_status (installable_status_1 (pkg, want), 
+			  installable_status);
     }
 
   return installable_status;
@@ -1295,7 +1305,7 @@ cmd_update_package_cache ()
   if (http_proxy)
     {
       setenv ("http_proxy", http_proxy, 1);
-      DBG ("http_proxy: %s\n", http_proxy);
+      DBG ("http_proxy: %s", http_proxy);
     }
   
   int result_code = update_package_cache ();
@@ -1399,7 +1409,7 @@ cmd_install_package ()
   if (http_proxy)
     {
       setenv ("http_proxy", http_proxy, 1);
-      DBG ("http_proxy: %s\n", http_proxy);
+      DBG ("http_proxy: %s", http_proxy);
     }
 
   if (package_cache)
@@ -1922,12 +1932,12 @@ get_field (pkgTagSection *section, const char *field,
 {
   if (section->Find (field, start, end))
     {
-      fprintf (stderr, "%s = %.*s\n", field, end-start, start);
+      // fprintf (stderr, "%s = %.*s\n", field, end-start, start);
       return true;
     }
   else
     {
-      fprintf (stderr, "%s = <undefined>\n", field);
+      // fprintf (stderr, "%s = <undefined>\n", field);
       return false;
     }
 }
@@ -1952,12 +1962,6 @@ encode_field (pkgTagSection *section, const char *field)
     response.encode_string (NULL);
 }
 
-static int
-combine_status (int s1, int s2)
-{
-  return max (s1, s2);
-}
-
 static bool
 substreq (const char *start, const char *end, const char *str)
 {
@@ -1978,7 +1982,16 @@ check_installable (pkgTagSection &section, bool only_user)
   if (only_user
       && get_field (&section, "Section", start, end)
       && !is_user_section (start, end))
-    installable_status = status_incompatible;
+    {
+      /* Put more information for developers into the log.  They will
+	 likely be confused by the "incompatible" error message when
+	 testing a package that has not been properly 'sectionized'.
+       */
+      fprintf (stderr,
+	       "Package must have \"Section: user/FOO\" "
+	       "to be considered compatible.\n");
+      installable_status = status_incompatible;
+    }
 
   if (get_field (&section, "Pre-Depends", start, end))
     installable_status =
@@ -2031,14 +2044,33 @@ cmd_get_file_details ()
 
   int installable_status = check_installable (section, only_user);
 
+  const char *installed_version = NULL;
+  int installed_size = 0;
+
+  if (package_cache)
+    {
+      pkgDepCache &cache = *package_cache;
+      pkgCache::PkgIterator pkg = cache.FindPkg (section.FindS ("Package"));
+      if (!pkg.end ())
+	{
+	  pkgCache::VerIterator cur = pkg.CurrentVer ();
+	  if (!cur.end ())
+	    {
+	      installed_version = cur.VerStr ();
+	      installed_size = cur->InstalledSize;
+	    }
+	}
+    }
+
   encode_field (&section, "Package");
-  response.encode_string (NULL);  // installed_version
-  response.encode_int (0);        // installed_size
+  response.encode_string (installed_version);
+  response.encode_int (installed_size);
   encode_field (&section, "Version");
   encode_field (&section, "Maintainer");
   encode_field (&section, "Section");
   response.encode_int (installable_status);
-  response.encode_int (1000 * get_field_int (&section, "Installed-Size", 0));
+  response.encode_int (1024 * get_field_int (&section, "Installed-Size", 0)
+		       - installed_size);
   encode_field (&section, "Description");
   encode_field (&section, "Maemo-Icon-26");
 

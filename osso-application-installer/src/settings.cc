@@ -59,6 +59,8 @@ bool red_pill_mode = false;
 int  last_update = 0;
 bool fullscreen_toolbar = true;
 bool normal_toolbar = true;
+int  force_ui_version = 0;
+int  ui_version = 0;
 
 #define SETTINGS_FILE ".osso/appinstaller"
 
@@ -110,6 +112,8 @@ load_settings ()
 	    fullscreen_toolbar = val;
 	  else if (sscanf (line, "normal-toolbar %d", &val) == 1)
 	    normal_toolbar = val;
+	  else if (sscanf (line, "force-ui-version %d", &val) == 1)
+	    force_ui_version = val;
 	  else
 	    add_log ("Unrecognized configuration line: '%s'\n", line);
 	}
@@ -119,6 +123,11 @@ load_settings ()
   
   /* XML - only kidding.
    */
+
+  if (force_ui_version != 0)
+    ui_version = force_ui_version;
+  else
+    ui_version = 1;
 }
 
 void
@@ -136,6 +145,7 @@ save_settings ()
       fprintf (f, "assume-connection %d\n", assume_connection);
       fprintf (f, "fullscreen-toolbar %d\n", fullscreen_toolbar);
       fprintf (f, "normal-toolbar %d\n", normal_toolbar);
+      fprintf (f, "force-ui-version %d\n", force_ui_version);
       fclose (f);
     }
 }

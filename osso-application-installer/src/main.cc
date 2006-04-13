@@ -43,6 +43,7 @@
 #include "log.h"
 #include "settings.h"
 #include "search.h"
+#include "instr.h"
 
 #define MAX_PACKAGES_NO_CATEGORIES 7
 
@@ -584,9 +585,16 @@ sort_all_packages ()
   show_view (cur_view_struct);
 }
 
+struct gpl_closure {
+  void (*cont) (void *data);
+  void *data;
+};
+
 static void
 get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
+  gpl_closure *c = (gpl_closure *)data;
+
   int count = 0, new_p = 0, upg_p = 0, inst_p = 0;
 
   clear_global_package_list ();
@@ -673,21 +681,45 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   sort_all_packages ();
 
+  /* We switch to the parent view if the current one is the search
+     results view.
+     
+     We also switch to the parent when the current view shows a
+     section and that section is no longer available, or when no
+     sections should be shown because there are too few.
+  */
+
   if (cur_view_struct == &search_results_view
       || (cur_view_struct == &install_section_view
-	  && find_section_info (&install_sections, cur_section_name,
-				false, true) == NULL))
+	  && (find_section_info (&install_sections, cur_section_name,
+				false, true) == NULL
+	      || (install_sections && !install_sections->next))))
     show_view (cur_view_struct->parent);
+
+  if (c->cont)
+    c->cont (c->data);
+
+  delete c;
+}
+
+void
+get_package_list_with_cont (void (*cont) (void *data), void *data)
+{
+  gpl_closure *c = new gpl_closure;
+  c->cont = cont;
+  c->data = data;
+
+  apt_worker_get_package_list (!red_pill_mode,
+			       false, 
+			       false, 
+			       NULL,
+			       get_package_list_reply, c);
 }
 
 void
 get_package_list ()
 {
-  apt_worker_get_package_list (!red_pill_mode,
-			       false, 
-			       false, 
-			       NULL,
-			       get_package_list_reply, NULL);
+  get_package_list_with_cont (NULL, NULL);
 }
 
 struct gpi_closure {
@@ -819,9 +851,27 @@ annoy_user_with_result_code (int result_code, const char *failure)
     annoy_user (failure);
 }
 
+struct rpc_clos {
+  void (*cont) (bool res, void *data);
+  bool res;
+  void *data;
+};
+
 static void
-refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *clos)
+refresh_package_cache_cont (void *data)
 {
+  rpc_clos *c = (rpc_clos *)data;
+  if (c->cont)
+    c->cont (c->res, c->data);
+  delete c;
+}
+
+static void
+refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *data)
+{
+  rpc_clos *c = (rpc_clos *)data;
+  bool success = true;
+
   /* The updating might have been 'cancelled' or it might have failed,
      and we want to distinguish between those two situations in the
      message shown to the user.
@@ -841,6 +891,7 @@ refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *clos)
       /* Network connection failed or apt-worker crashed.  An error
 	 message has already been displayed.
       */
+      success = false;
     }
   else if (progress_was_cancelled ())
     {
@@ -848,42 +899,67 @@ refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *clos)
 	 successful or not.
       */
       annoy_user (_("ai_ni_update_list_cancelled"));
+      success = false;
     }
   else
     {
       int result_code = dec->decode_int ();
 
       if (result_code != rescode_success)
-	annoy_user (_("ai_ni_update_list_not_successful"));
+	{
+	  annoy_user (_("ai_ni_update_list_not_successful"));
+	  success = false;
+	}
     }
+
+  c->res = success;
 
   // We get a new list of available packages even when the refresh
   // failed because it might have partially succeeded and changed
   // anyway.  So we need to resynchronize.
   
-  get_package_list ();
+  get_package_list_with_cont (refresh_package_cache_cont, c);
 }
 
 static bool refreshed_this_session = false;
 
 static void
-refresh_package_cache_cont (bool res, void *unused)
+refresh_package_cache_cont (bool res, void *data)
+{
+  rpc_clos *c = (rpc_clos *)data;
+
+  if (res)
+    {
+      show_progress (_("ai_nw_updating_list"));
+      apt_worker_update_cache (refresh_package_cache_reply, c);
+    }
+  else
+    {
+      if (c->cont)
+	c->cont (false, c->data);
+      delete c;
+    }
+}
+
+void
+refresh_package_cache_with_cont (void (*cont) (bool res, void *data), 
+				 void *data)
 {
   refreshed_this_session = true;
   last_update = time (NULL);
   save_settings ();
 
-  if (res)
-    {
-      show_progress (_("ai_nw_updating_list"));
-      apt_worker_update_cache (refresh_package_cache_reply, NULL);
-    }
+  rpc_clos *c = new rpc_clos;
+  c->cont = cont;
+  c->data = data;
+
+  ask_yes_no (_("ai_nc_confirm_update"), refresh_package_cache_cont, c);
 }
 
 void
 refresh_package_cache ()
 {
-  ask_yes_no (_("ai_nc_confirm_update"), refresh_package_cache_cont, NULL);
+  refresh_package_cache_with_cont (NULL, NULL);
 }
 
 static int
@@ -1183,6 +1259,13 @@ annoy_user_with_installable_status_details (package_info *pi)
       annoy_user_with_details ((pi->installed_version
 				? _("ai_ni_error_update_missing")
 				: _("ai_ni_error_install_missing")),
+			       pi, false);
+    }
+  else if (pi->info.installable_status == status_conflicting)
+    {
+      annoy_user_with_details ((pi->installed_version
+				? _("ai_ni_error_update_conflict")
+				: _("ai_ni_error_install_conflict")),
 			       pi, false);
     }
   else if (pi->info.installable_status == status_corrupted)
@@ -1891,6 +1974,27 @@ search_packages (const char *pattern, bool in_descriptions)
     }
 }
 
+void
+install_named_package (const char *package)
+{
+  GList *p = NULL;
+
+  find_in_section_list (&p, install_sections, package);
+  find_in_package_list (&p, upgradeable_packages, package);
+  find_in_package_list (&p, installed_packages, package);
+
+  if (p == NULL)
+    annoy_user ("Not found?");
+  else
+    {
+      package_info *pi = (package_info *)p->data;
+      if (pi->available_version == NULL)
+	annoy_user ("Already latest version.");
+      else
+	install_package (pi);
+    }
+}
+
 static GtkWidget *details_button;
 static void (*details_func) (gpointer);
 static gpointer details_data;
@@ -1963,14 +2067,18 @@ install_from_file_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   if (success)
     {
-      char *str = g_strdup_printf (_("ai_ni_install_successful"),
+      char *str = g_strdup_printf (pi->installed_version
+				   ? _("ai_ni_update_successful")
+				   : _("ai_ni_install_successful"),
 				   pi->name);
       annoy_user (str);
       g_free (str);
     }
   else
     {
-      char *str = g_strdup_printf (_("ai_ni_error_installation_failed"),
+      char *str = g_strdup_printf (pi->installed_version
+				   ? _("ai_ni_error_update_failed")
+				   : _("ai_ni_error_installation_failed"),
 				   pi->name);
       annoy_user_with_log (str);
       g_free (str);
@@ -1986,7 +2094,9 @@ install_from_file_cont4 (bool res, void *data)
 
   if (res)
     {
-      show_progress (_("ai_nw_installing"));
+      show_progress (pi->installed_version
+		     ? _("ai_nw_updating")
+		     : _("ai_nw_installing"));
       apt_worker_install_file (pi->filename,
 			       install_from_file_reply, pi);
     }
@@ -2128,6 +2238,7 @@ static void
 install_from_file_cont (char *uri, void *unused)
 {
   localize_file (uri, install_from_file_cont2, NULL);
+  g_free (uri);
 }
 
 void
@@ -2183,8 +2294,13 @@ mime_open_handler (gpointer raw_data, int argc, char **argv)
 {
   if (argc > 0)
     {
+      const char *filename = argv[0];
+
       present_main_window ();
-      install_from_file_cont (g_strdup (argv[0]), NULL);
+      if (g_str_has_suffix (filename, ".install"))
+	open_install_instructions (filename);
+      else
+	install_from_file_cont (g_strdup (filename), NULL);
     }
 }
 
@@ -2374,7 +2490,7 @@ main (int argc, char **argv)
   //
   g_set_application_name ("");
 
-  add_log ("%s %s\n", PACKAGE, VERSION);
+  add_log ("%s %s, UI version %d\n", PACKAGE, VERSION, ui_version);
 
   if (argc > 1)
     apt_worker_prog = argv[1];

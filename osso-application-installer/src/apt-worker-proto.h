@@ -226,6 +226,7 @@ enum apt_proto_operation {
 enum apt_proto_able_status {
   status_able,
   status_unable,                 // unknown reason
+  status_conflicting,
   status_missing,
   status_needed,
   status_corrupted,

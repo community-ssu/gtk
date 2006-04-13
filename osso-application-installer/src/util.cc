@@ -57,6 +57,7 @@ struct ayn_closure {
   package_info *pi;
   bool installed;
   void (*cont) (bool res, void *data);
+  void (*details) (void *data);
   void *data;
 };
   
@@ -69,6 +70,8 @@ yes_no_response (GtkDialog *dialog, gint response, gpointer clos)
     {
       if (c->pi)
 	show_package_details (c->pi, c->installed, false);
+      else if (c->details)
+	c->details (c->data);
       return;
     }
 
@@ -91,6 +94,7 @@ ask_yes_no (const gchar *question,
   ayn_closure *c = new ayn_closure;
   c->pi = NULL;
   c->cont = cont;
+  c->details = NULL;
   c->data = data;
 
   dialog = hildon_note_new_confirmation (get_main_window (), question);
@@ -113,6 +117,38 @@ ask_yes_no_with_details (const gchar *title,
   pi->ref ();
   c->installed = installed;
   c->cont = cont;
+  c->details = NULL;
+  c->data = data;
+
+  dialog = gtk_dialog_new_with_buttons
+    (title,
+     get_main_window (),
+     GTK_DIALOG_MODAL,
+     _("ai_bd_confirm_ok"),      GTK_RESPONSE_OK,
+     _("ai_bd_confirm_details"), 1,
+     _("ai_bd_confirm_cancel"),  GTK_RESPONSE_CANCEL,
+     NULL);
+
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
+		     gtk_label_new (question));
+
+  g_signal_connect (dialog, "response",
+		    G_CALLBACK (yes_no_response), c);
+  gtk_widget_show_all (dialog);
+}
+
+void
+ask_yes_no_with_arbitrary_details (const gchar *title,
+				   const gchar *question,
+				   void (*cont) (bool res, void *data),
+				   void (*details) (void *data),
+				   void *data)
+{
+  GtkWidget *dialog;
+  ayn_closure *c = new ayn_closure;
+  c->pi = NULL;
+  c->cont = cont;
+  c->details = details;
   c->data = data;
 
   dialog = gtk_dialog_new_with_buttons
@@ -350,7 +386,7 @@ show_progress (const char *title)
       progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
       progress_dialog =
 	hildon_note_new_cancel_with_progress_bar (get_main_window (),
-						  NULL,
+						  _("ai_nw_updating_list"),
 						  progress_bar);
       g_signal_connect (progress_dialog, "response",
 			G_CALLBACK (cancel_response), NULL);
@@ -1253,7 +1289,8 @@ do_copy (const char *source, GnomeVFSURI *source_uri,
   source_uri_list = g_list_append (NULL, (gpointer) source_uri);
   target_uri_list = g_list_append (NULL, (gpointer) target_uri);
 
-  show_progress ("Opening");
+  show_progress (dgettext ("hildon-fm",
+			   "docm_nw_opening_file"));
 
   result = ovu_async_xfer (&handle,
 			   source_uri_list,
@@ -1570,4 +1607,14 @@ pop (GSList *&ptr)
   g_slist_free_1 (ptr);
   ptr = next;
   return data;
+}
+
+const char *
+gettext_alt (const char *id, const char *english)
+{
+  const char *tr = gettext (id);
+  if (tr == id)
+    return english;
+  else
+    return tr;
 }

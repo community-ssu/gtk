@@ -1,7 +1,7 @@
 /*
  * This file is part of osso-application-installer
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005, 2006 Nokia Corporation.
  *
  * Contact: Marius Vollmer <marius.vollmer@nokia.com>
  *
@@ -22,12 +22,9 @@
  *
  */
 
-#ifndef REPO_H
-#define REPO_H
+#ifndef INSTR_H
+#define INSTR_H
 
-void show_repo_dialog ();
+void open_install_instructions (const char *filename);
 
-void maybe_add_repo (const char *name, const char *deb_line, bool for_install,
-		     void (*cont) (bool res, void *data), void *data);
-
-#endif /* !REPO_H */
+#endif /* !INSTR_H */

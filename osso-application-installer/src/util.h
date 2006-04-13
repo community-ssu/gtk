@@ -87,6 +87,12 @@ void ask_yes_no_with_details (const gchar *title,
 			      package_info *pi, bool installed,
 			      void (*cont) (bool res, void *data), void *data);
 
+void ask_yes_no_with_arbitrary_details (const gchar *title,
+					const gchar *question,
+					void (*cont) (bool res, void *data),
+					void (*details) (void *data),
+					void *data);
+
 void annoy_user (const gchar *text);
 void annoy_user_with_details (const gchar *text,
 			      package_info *pi, bool installed);
@@ -326,5 +332,10 @@ char *get_http_proxy ();
  */
 void push (GSList *&ptr, void *data);
 void *pop (GSList *&ptr);
+
+/* If there is a translation available for ID, return it.  Otherwise
+   return ENGLISH.
+*/
+const char *gettext_alt (const char *id, const char *english);
 
 #endif /* !UTIL_H */
