@@ -1,3 +1,18 @@
+2006-04-14  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkwidget.c (gtk_widget_set_focus_handling,
+	gtk_widget_enter_notify_event, gtk_widget_leave_notify_event,
+	gtk_widget_button_release_event, gtk_widget_button_press_event,
+	on_same_widget, mouse_pressed, GtkWidgetPrivate:state_set,
+	gtk_widget_ensure_style): Remove (almost) all traces of two year old
+	'hildon focus handling' kludge; add deprecation note to the rest.
+	* gtk/gtkwindow.c (gtk_window_focus_weak_notify,
+	GtkWindowPrivate:prev_focus_widget): Removed
+	* gtk/gtkwindow.c (gtk_window_get_prev_focus_widget,
+	gtk_window_set_prev_focus_widget): Leave empty stubs for binary
+	compatibility (HildonGrid)
+	N#25803
+
 2006-04-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* configure.in (LIBTOOL_EXPORT_OPTIONS): Stop exporting two extra
