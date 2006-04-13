@@ -847,6 +847,9 @@ annoy_user_with_result_code (int result_code, const char *failure)
     annoy_user (_("ai_ni_error_download_failed"));
   else if (result_code == rescode_packages_not_found)
     annoy_user (_("ai_ni_error_download_missing"));
+  else if (result_code == rescode_out_of_space)
+    annoy_user (dgettext ("hildon-common-strings",
+			  "sfil_ni_not_enough_memory"));
   else
     annoy_user (failure);
 }
