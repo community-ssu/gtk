@@ -264,18 +264,21 @@ int maemo_af_desktop_main(int argc, char* argv[])
                               MAEMO_AF_DESKTOP_GTKRC,
                               NULL);
     
-        g_debug( "CHECKING %s", gtkrc);
     if (gtkrc && g_file_test ((gtkrc), G_FILE_TEST_EXISTS))
     {
-        g_debug( "ADDING GTKRC FILE");
         gtk_rc_add_default_file (gtkrc);
     }
 
     g_free (gtkrc);
 
-    gtk_rc_reparse_all_for_settings (
-            gtk_settings_get_for_screen (gdk_screen_get_default ()),
-            TRUE /* Force even if the files haven't changed */);
+    /* If gtk_init was called already (maemo-launcher is used),
+     * re-parse the gtkrc to include the maemo-af-desktop specific one */
+    if (gdk_screen_get_default ())
+    {
+        gtk_rc_reparse_all_for_settings (
+                gtk_settings_get_for_screen (gdk_screen_get_default ()),
+                TRUE /* Force even if the files haven't changed */);
+    }
 
     gtk_init (&argc, &argv);
 

@@ -1,5 +1,10 @@
 2006-04-13  Johan Bilien <johan.bilien@nokia.com>
 
+	* maemo-af-desktop-main.c: Only reparse the rc files when launched
+	  from maemo-launcher
+
+2006-04-13  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Select applets -dialog height is too short in Home"
 	(Closes N#25607)
 	* hildon-home/home-select-applets-dialog.h:
