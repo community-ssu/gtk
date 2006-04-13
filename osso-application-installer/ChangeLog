@@ -1,5 +1,7 @@
 2006-04-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.14
+	
 	* Makefile.am (deb): New target, for making cleaner source packages.
 	* make-package: New.
 	
