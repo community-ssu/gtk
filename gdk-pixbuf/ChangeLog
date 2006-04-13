@@ -3,6 +3,7 @@
 	* io-jpeg.c (gdk_pixbuf__jpeg_image_stop_load): Make sure the return
 	value matches error status, to ensure the caller can handle 'error'
 	correctly.
+	* io-png.c (png_info_callback): Make sure 'error' is set on error.
 	N#26464
 
 2006-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
