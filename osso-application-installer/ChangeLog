@@ -1,5 +1,8 @@
 2006-04-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* Makefile.am (deb): New target, for making cleaner source packages.
+	* make-package: New.
+	
 	* src/util.cc (size_string_detailed): Corrected 1Gb threshold.
 	Corrected logical id for sizes larger than 1Gb.
 

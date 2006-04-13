@@ -14,3 +14,6 @@ etc_DATA = certified.list
 
 modir = $(datadir)/locale/en_GB/LC_MESSAGES/osso-application-installer/
 noinst_DATA = osso-application-installer.mo
+
+deb:
+	./make-package $(PACKAGE) $(VERSION) .
