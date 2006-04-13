@@ -611,6 +611,12 @@ png_info_callback   (png_structp png_read_ptr,
                 
                 if (w == 0 || h == 0) {
                         lc->fatal_error_occurred = TRUE;
+			if (lc->error && *lc->error == NULL) {
+				g_set_error (lc->error,
+					     GDK_PIXBUF_ERROR,
+					     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+					     _("Transformed PNG has zero width or height."));
+			}
                         return;
                 }
         }
