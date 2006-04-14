@@ -199,7 +199,6 @@ BUGS
 ----
 
 - depcache.Init () is too slow
-- handle broken packages / apt-worker exits?
 - implement promised policy engine
 
 - use doubles for sizes.
