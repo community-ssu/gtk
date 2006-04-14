@@ -40,6 +40,7 @@ struct package_info {
   int ref_count;
 
   char *name;
+  bool broken;
   char *installed_version;
   int installed_size;
   char *installed_section;

@@ -1,3 +1,18 @@
+2006-04-15  Marius Vollmer  <mvo@zagadka.de>
+
+	* src/apt-worker-proto.h (APTCMD_GET_PACKAGE_LIST): Added broken
+	return value.
+	* src/apt-worker.cc (cmd_get_package_list): Provide it.
+	* src/main.h, src/main.cc (package_info): Added broken member.
+	(get_package_list_reply): Set it from the response.
+	(search_packages_reply): Ignore it.
+	* src/util.cc (broken_icon): New.
+	(global_icon_func): Initialize it and use it for installed,
+	broken packages.
+
+	* src/apt-worker.cc (class myDPkgPM): New.
+	(operation): Use it instead of the one created by _system.
+
 2006-04-14  Marius Vollmer  <mvo@zagadka.de>
 
 	* src/apt-worker.cc (cmd_get_package_list): Use
@@ -34,7 +49,7 @@
 	since it is probably the longest one and the dialog is not
 	resizing automatically when changin the title later... yeah, shoot
 	me.
-	(do_copy): Use "Opening..." logical id fomr hildon-fm.
+	(do_copy): Use "Opening..." logical id from hildon-fm.
 
 	* src/apt-worker-proto.h (apt_proto_able_status): Added
 	status_conflicting.

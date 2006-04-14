@@ -617,6 +617,7 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	  package_info *info = new package_info;
 
 	  info->name = dec->decode_string_dup ();
+	  info->broken = dec->decode_int ();
 	  info->installed_version = dec->decode_string_dup ();
 	  info->installed_size = dec->decode_int ();
 	  info->installed_section = dec->decode_string_dup ();
@@ -1892,6 +1893,7 @@ search_packages_reply (int cmd, apt_proto_decoder *dec, void *data)
     {
       const char *name = dec->decode_string_in_place ();
       dec->decode_string_in_place (); // installed_version
+      dec->decode_int ();             // broken
       dec->decode_int ();             // installed_size
       dec->decode_string_in_place (); // installed_section
       dec->decode_string_in_place (); // installed_short_description

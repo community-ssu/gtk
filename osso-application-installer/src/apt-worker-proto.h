@@ -162,6 +162,7 @@ enum apt_proto_operation {
 // the response contains for each interesting package:
 //
 // - name (string) 
+// - broken (int)
 // - installed_version or null (string) 
 // - installed_size (int)
 // - installed_section or null (string)

@@ -518,6 +518,7 @@ static GtkListStore *global_list_store = NULL;
 static bool global_installed;
 
 static GdkPixbuf *default_icon = NULL;
+static GdkPixbuf *broken_icon = NULL;
 
 static void
 global_icon_func (GtkTreeViewColumn *column,
@@ -531,10 +532,6 @@ global_icon_func (GtkTreeViewColumn *column,
   if (!pi)
     return;
 
-  GdkPixbuf *icon = (global_installed
-		     ? pi->installed_icon
-		     : pi->available_icon);
-
   if (default_icon == NULL)
     {
       GtkIconTheme *icon_theme;
@@ -546,6 +543,29 @@ global_icon_func (GtkTreeViewColumn *column,
 					       GtkIconLookupFlags(0),
 					       NULL);
     }
+
+  if (broken_icon == NULL)
+    {
+      GtkIconTheme *icon_theme;
+
+      icon_theme = gtk_icon_theme_get_default ();
+      broken_icon = gtk_icon_theme_load_icon (icon_theme,
+					      "qgn_list_help",
+					      26,
+					      GtkIconLookupFlags(0),
+					      NULL);
+    }
+
+  GdkPixbuf *icon;
+  if (global_installed)
+    {
+        if (pi->broken)
+	  icon = broken_icon;
+	else
+	  icon = pi->installed_icon;
+    }
+  else
+    icon = pi->available_icon;
 
   g_object_set (cell, "pixbuf", icon? icon : default_icon, NULL);
 }

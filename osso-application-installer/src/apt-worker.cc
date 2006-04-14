@@ -76,6 +76,7 @@
 #include <apt-pkg/packagemanager.h>
 #include <apt-pkg/deblistparser.h>
 #include <apt-pkg/debversion.h>
+#include <apt-pkg/dpkgpm.h>
 
 #include <glib/glist.h>
 #include <glib/gstring.h>
@@ -791,6 +792,18 @@ cmd_get_package_list ()
 
       // Name
       response.encode_string (pkg.Name ());
+
+      // Broken.
+      //
+      // This check doesn't catch all kinds of broken packages, only
+      // those that failed to unpack or configure, but not, for
+      // example, those that have been forcfully installed despite
+      // missing dependencies.  This is probably OK for now since only
+      // the former kinds of brokenness should be producable with the
+      // Application installer anyway.
+      //
+      response.encode_int (pkg.State ()
+			   != pkgCache::PkgIterator::NeedsNothing);
 
       // Installed version
       if (!installed.end())
@@ -1572,6 +1585,37 @@ encode_upgrades ()
   response.encode_string (NULL);
 }
 
+/* We modify the pkgDPkgPM package manager slightly so that it never
+   attempts to configure packages that are not otherwise operated on
+   during a package management run.  We do this to so that we only get
+   failure reports for the actual packages being worked on, and not
+   for ones that failed to configure in an earlier run.
+*/
+
+class myDPkgPM : public pkgDPkgPM
+{
+  virtual bool Configure(PkgIterator Pkg);
+  
+public:
+
+  myDPkgPM(pkgDepCache *Cache);
+};
+
+bool
+myDPkgPM::Configure (PkgIterator Pkg)
+{
+  for (int i = 0; i < List.size (); i++)
+    if (List[i].Pkg == Pkg)
+      return pkgDPkgPM::Configure (Pkg);
+  log_stderr ("not configuring unrelated package %s", Pkg.Name ());
+  return true;
+}
+
+myDPkgPM::myDPkgPM (pkgDepCache *Cache)
+  : pkgDPkgPM (Cache)
+{
+}
+
 int
 operation (bool check_only)
 {
@@ -1631,7 +1675,7 @@ operation (bool check_only)
      }
    
    // Create the package manager and prepare to download
-   SPtr<pkgPackageManager> Pm = _system->CreatePM(Cache);
+   SPtr<pkgPackageManager> Pm = new myDPkgPM (Cache);
    if (Pm->GetArchives(&Fetcher,&List,&Recs) == false || 
        _error->PendingError() == true)
      return rescode_failure;
