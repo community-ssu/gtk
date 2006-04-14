@@ -1,5 +1,10 @@
 2006-04-14  Marius Vollmer  <mvo@zagadka.de>
 
+	* src/apt-worker.cc (cmd_get_package_list): Use
+	pkgDepCache::GetCandidateVer instead of walking the list of
+	versions ourselves since not all entries on that list are actually
+	candidates for installing, such as removed-but-not-purged ones.
+
 	* src/util.cc (make_global_package_list): Increase refcount of
 	global_section_list.  Otherwise it becomes invalid when the widget
 	is destroyed.

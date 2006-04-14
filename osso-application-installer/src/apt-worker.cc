@@ -740,11 +740,9 @@ cmd_get_package_list ()
     }
 
   response.encode_int (1);
-  pkgCache &cache = *package_cache;
+  pkgDepCache &cache = *package_cache;
 
-  for (pkgCache::PkgIterator pkg = cache.PkgBegin();
-       pkg != cache.PkgEnd();
-       pkg++)
+  for (pkgCache::PkgIterator pkg = cache.PkgBegin(); !pkg.end (); pkg++)
     {
       pkgCache::VerIterator installed = pkg.CurrentVer ();
 
@@ -761,35 +759,24 @@ cmd_get_package_list ()
 	  && installed.end ())
 	continue;
 
-      bool have_latest = false;
-      pkgCache::VerIterator latest;
-
-      for (pkgCache::VerIterator ver = pkg.VersionList();
-	   ver.end() != true; ver++)
-	{
-	  if (!have_latest || latest.CompareVer (ver) < 0)
-	    {
-	      latest = ver;
-	      have_latest = true;
-	    }
-	}
+      pkgCache::VerIterator candidate = cache.GetCandidateVer (pkg);
 
       // skip non user packages if requested
       //
       if (only_user
-	  && have_latest
-	  && !is_user_package (latest))
+	  && !candidate.end ()
+	  && !is_user_package (candidate))
 	continue;
 
       // skip non-available packages if requested
       //
       if (only_available
-	  && !have_latest)
+	  && candidate.end ())
 	continue;
 
       // skip packages that are not installed and not available
       //
-      if (installed.end () && !have_latest)
+      if (installed.end () && candidate.end ())
 	continue;
 
       // skip packages that don't match the pattern if requested
@@ -798,8 +785,8 @@ cmd_get_package_list ()
 	  && !(name_matches_pattern (pkg, pattern)
 	       || (!installed.end ()
 		   && description_matches_pattern (installed, pattern))
-	       || (have_latest
-		   && description_matches_pattern (latest, pattern))))
+	       || (!candidate.end ()
+		   && description_matches_pattern (candidate, pattern))))
 	continue;
 
       // Name
@@ -813,8 +800,8 @@ cmd_get_package_list ()
 
       // Available version and section
       // XXX - avoid duplicating information
-      if (have_latest && installed.CompareVer (latest) < 0)
-	encode_version_info (latest, false);
+      if (!candidate.end () && installed.CompareVer (candidate) < 0)
+	encode_version_info (candidate, false);
       else
 	encode_empty_version_info (false);
     }
