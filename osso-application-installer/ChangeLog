@@ -1,3 +1,10 @@
+2006-04-14  Marius Vollmer  <mvo@zagadka.de>
+
+	* src/util.cc (make_global_package_list): Increase refcount of
+	global_section_list.  Otherwise it becomes invalid when the widget
+	is destroyed.
+	(clear_global_section_list): Unref it.
+
 2006-04-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.14

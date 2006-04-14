@@ -914,6 +914,7 @@ make_global_section_list (GList *sections, section_activated *act)
 					 hbox);
 
   global_section_list = scroller;
+  g_object_ref (scroller);
 
   return scroller;
 }
@@ -923,6 +924,7 @@ clear_global_section_list ()
 {
   if (global_section_list)
     gtk_widget_destroy (global_section_list);
+  g_object_unref (global_section_list);
   global_section_list = NULL;
 }
 
