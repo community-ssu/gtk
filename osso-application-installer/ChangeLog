@@ -9,6 +9,8 @@
 	* src/util.cc (broken_icon): New.
 	(global_icon_func): Initialize it and use it for installed,
 	broken packages.
+	* src/details.cc (show_with_details): Use package_info broken
+	instead if assuming false.
 
 	* src/apt-worker.cc (class myDPkgPM): New.
 	(operation): Use it instead of the one created by _system.

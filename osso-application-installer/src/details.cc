@@ -280,11 +280,10 @@ show_with_details (package_info *pi, bool installed,
   GtkWidget *table, *common;
 
   gchar *status;
-  bool broken = false;
 
   if (pi->installed_version && pi->available_version)
     {
-      if (broken)
+      if (pi->broken)
 	{
 	  if (pi->info.installable_status == status_able)
 	    status = _("ai_va_details_status_broken_updateable");
@@ -301,7 +300,7 @@ show_with_details (package_info *pi, bool installed,
     }
   else if (pi->installed_version)
     {
-      if (broken)
+      if (pi->broken)
 	status = _("ai_va_details_status_broken");
       else
 	status = _("ai_va_details_status_installed");
