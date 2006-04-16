@@ -202,8 +202,23 @@ documented in the header files.
 BUGS
 ----
 
-- depcache.Init () is too slow
+- figure out the 'max cache size' thingy in pkgcachegen.cc.  12 Megs?
 - implement promised policy engine
+
+  - we have to keep our own Flag::Auto state, bummer.
+
+  - algorithm for remove:
+    mark original package as 'delete'
+    for each broken package:
+      if auto: mark it as delete else fail.
+    do it again when not failed and some package has been marked as
+    'delete' in the last run.
+
+ - algorithm for install:
+   mark original package as 'install'
+   for each package:
+     if it is now marked as 'deleted' mark it as 'keep'.  This reverses
+     the automatic removal of conflicting packages that we don't want.
 
 - use doubles for sizes.
 - get real name of device.
