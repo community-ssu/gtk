@@ -303,6 +303,7 @@ package_info::package_info ()
   maintainer = NULL;
   description = NULL;
   summary = NULL;
+  dependencies = NULL;
 
   model = NULL;
   
@@ -325,6 +326,7 @@ package_info::~package_info ()
   g_free (maintainer);
   g_free (description);
   g_free (summary);
+  g_free (dependencies);
   g_free (filename);
 }
 

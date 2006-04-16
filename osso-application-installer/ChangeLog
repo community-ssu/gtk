@@ -1,3 +1,11 @@
+2006-04-17  Marius Vollmer  <mvo@zagadka.de>
+
+	* src/main.h, src/main.cc (package_info): Added dependencies
+	member.
+	* src/details.cc (show_with_details): Show them in red-pill-mode.
+	(get_package_detaiils_reply): Only throw them away in
+	blue-pill-mode.
+	
 2006-04-16  Marius Vollmer  <mvo@zagadka.de>
 
 	* src/apt-worker.cc (cache_reset): New.

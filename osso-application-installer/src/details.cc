@@ -29,6 +29,7 @@
 
 #include "details.h"
 #include "util.h"
+#include "settings.h"
 #include "apt-worker-client.h"
 #include "apt-worker-proto.h"
 
@@ -399,6 +400,12 @@ show_with_details (package_info *pi, bool installed,
     gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			      make_small_text_view (pi->summary),
 			      gtk_label_new (summary_label));
+  if (pi->dependencies)
+    {
+      gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
+				make_small_text_view (pi->dependencies),
+				gtk_label_new ("Dependencies"));
+    }
 
   pi->unref ();
 
@@ -467,8 +474,14 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   pi->description = dec->decode_string_dup ();
   nicify_description_in_place (pi->description);
 
-  g_free (decode_dependencies (dec));
-
+  pi->dependencies = decode_dependencies (dec);
+  if (!red_pill_mode)
+    {
+      // Too much information can kill you.
+      g_free (pi->dependencies);
+      pi->dependencies = NULL;
+    }
+      
   pi->summary = decode_summary (dec, pi, installed);
 
   pi->have_details = true;

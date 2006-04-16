@@ -58,7 +58,8 @@ struct package_info {
   char *maintainer;
   char *description;
   char *summary;
-  
+  char *dependencies;
+
   GtkTreeModel *model;
   GtkTreeIter iter;
 
