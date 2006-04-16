@@ -175,6 +175,10 @@ documented in the header files.
 
   The "Log" dialog.
 
+- instr.h, instr.cc
+
+  For handling the MIME type application/x-install-instructions.
+
 - util.h, util.cc
 
   A host of general UI and non-UI related utilities such as
@@ -202,3 +206,4 @@ BUGS
 - implement promised policy engine
 
 - use doubles for sizes.
+- get real name of device.
