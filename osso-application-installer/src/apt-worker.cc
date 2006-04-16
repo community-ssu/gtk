@@ -1577,7 +1577,7 @@ encode_upgrades ()
 	   pkg.end() != true;
 	   pkg++)
 	{
-	  if (cache[pkg].Upgrade() /* && !cache[pkg].NewInstall() */)
+	  if (cache[pkg].Upgrade() && !cache[pkg].NewInstall())
 	    {
 	      response.encode_string (pkg.Name());
 	      response.encode_string (cache[pkg].CandVersion);
@@ -1623,7 +1623,6 @@ int
 operation (bool check_only)
 {
    pkgCacheFile &Cache = *package_cache;
-   SPtr<pkgPackageManager> operation_pm;
 
    if (_config->FindB("APT::Get::Purge",false) == true)
    {
