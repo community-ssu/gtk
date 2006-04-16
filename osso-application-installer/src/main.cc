@@ -216,7 +216,7 @@ make_main_view (view *v)
   gtk_table_attach_defaults (GTK_TABLE (table), image,
 			     0, 1, 0, 1);
 
-  label = gtk_label_new ("My Device Nokia 770");
+  label = gtk_label_new ("XXX");
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   gtk_table_attach_defaults (GTK_TABLE (table), label,
 			     1, 2, 0, 1);
@@ -250,6 +250,16 @@ make_main_view (view *v)
 		    &upgrade_applications_view);
   gtk_table_attach_defaults (GTK_TABLE (table), btn,
 			     1, 2, 4, 5);
+
+  if (red_pill_mode)
+    {
+      btn = make_padded_button (_("ai_me_tools_refresh"));
+      g_signal_connect (G_OBJECT (btn), "clicked",
+			G_CALLBACK (refresh_package_cache),
+			NULL);
+      gtk_table_attach_defaults (GTK_TABLE (table), btn,
+				 1, 2, 5, 6);
+    }
 
   // XXX - find the proper way to load this image.
   vbox = gtk_vbox_new (FALSE, 0);
