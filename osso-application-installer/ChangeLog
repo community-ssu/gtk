@@ -10,6 +10,9 @@
 	(cmd_remove_package): Likewise.
 	(update_package_cache): Do not call pkgCacheFile::BuildCaches,
 	cache_init does it indirectly via pkCacheFile::Open.
+	(encode_upgrades): Do not list newly installed packages. (They
+	were listed for debugging and it is harmless to do so, but we
+	shouldn't do it for correctness sake.)
 
 	* src/main.cc (make_main_view): Do not fake device name so that I
 	don't forget to fix this.  Show additional "apt-get update" button
