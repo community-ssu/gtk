@@ -1,3 +1,20 @@
+2006-04-16  Marius Vollmer  <mvo@zagadka.de>
+
+	* src/apt-worker.cc (cache_reset): New.
+	(cmd_get_package_info): Use it instead of pkgDepCache::Init.
+	(encode_install_summary, encode_remove_summary,
+	cmd_get_packages_to_remove): Likewise.
+	(cmd_install_check): Likewise, and don't call cache_init.
+	(cmd_install_package): Do not call pkgDepCache::Init as the cache
+	is now always in a pristine state.
+	(cmd_remove_package): Likewise.
+	(update_package_cache): Do not call pkgCacheFile::BuildCaches,
+	cache_init does it indirectly via pkCacheFile::Open.
+
+	* src/main.cc (make_main_view): Do not fake device name so that I
+	don't forget to fix this.  Show additional "apt-get update" button
+	when in red-pill-mode.
+	
 2006-04-15  Marius Vollmer  <mvo@zagadka.de>
 
 	* src/apt-worker-proto.h (APTCMD_GET_PACKAGE_LIST): Added broken

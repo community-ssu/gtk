@@ -598,6 +598,23 @@ cache_init ()
    }
 }
 
+/* Revert the cache to its initial state.  More concretely, all
+   packages are marked as 'keep'.
+
+   The effect should be the same as calling pkgDebCache::Init, but
+   much faster.
+*/
+void
+cache_reset ()
+{
+  if (package_cache == NULL)
+    return;
+
+  pkgDepCache &cache = *package_cache;
+
+  for (pkgCache::PkgIterator pkg = cache.PkgBegin(); !pkg.end (); pkg++)
+    cache.MarkKeep (pkg);
+}
 
 /* APTCMD_GET_PACKAGE_LIST 
 
@@ -929,8 +946,6 @@ cmd_get_package_info ()
 
 	  // simulate install
 	  
-	  cache.Init(NULL); // XXX - this is very slow
-	  
 	  old_broken_count = cache.BrokenCount();
 	  (*package_cache)->MarkInstall (pkg);
 	  if (cache.BrokenCount() > old_broken_count)
@@ -945,12 +960,11 @@ cmd_get_package_info ()
 	      info.download_size = (int) cache.DebSize ();
 	      info.install_user_size_delta = (int) cache.UsrSize ();
 	    }
-	  
+	  cache_reset ();
+
 	  pkgCache::VerIterator avail (cache, cache[pkg].CandidateVer);
 	  
 	  // simulate remove
-	  
-	  cache.Init(NULL); // XXX - this is very slow
 	  
 	  old_broken_count = cache.BrokenCount();
 	  (*package_cache)->MarkDelete (pkg);
@@ -964,6 +978,7 @@ cmd_get_package_info ()
 	      info.removable_status = status_able;
 	      info.remove_user_size_delta = (int) cache.UsrSize ();
 	    }
+	  cache_reset ();
 	}
     }
 
@@ -1098,8 +1113,6 @@ encode_install_summary (pkgCache::PkgIterator &want)
 {
   pkgDepCache &cache = *package_cache;
 
-  cache.Init(NULL);
-
   if (cache.BrokenCount() > 0)
     fprintf (stderr, "[ Some installed packages are broken! ]\n");
 
@@ -1131,14 +1144,14 @@ encode_install_summary (pkgCache::PkgIterator &want)
     }
 
   response.encode_int (sumtype_end);
+
+  cache_reset ();
 }
 
 void
 encode_remove_summary (pkgCache::PkgIterator &want)
 {
   pkgDepCache &cache = *package_cache;
-
-  cache.Init(NULL);
 
   if (cache.BrokenCount() > 0)
     log_stderr ("[ Some installed packages are broken! ]\n");
@@ -1165,6 +1178,8 @@ encode_remove_summary (pkgCache::PkgIterator &want)
     }
 
   response.encode_int (sumtype_end);
+
+  cache_reset ();
 }
 
 bool
@@ -1282,18 +1297,8 @@ update_package_cache ()
     }
   
   // Prepare the cache.   
-
-  UpdateProgress Prog;
-  if (package_cache)
-    {
-      /* We need to call cache_init even if BuildCaches fails.
-	 Otherwise the cache is corrupted.
-      */
-      if (!package_cache->BuildCaches (Prog))
-	Failed = true;
-    }
-
   cache_init ();
+
   return Failed? rescode_failure : rescode_success;
 }
 
@@ -1389,13 +1394,12 @@ cmd_install_check ()
 
       if (!pkg.end ())
 	{
-	  cache.Init (NULL);
 	  cache.MarkInstall (pkg);
 	  result_code = operation (true);
+	  cache_reset ();
 	}
     }
 
-  cache_init ();
   response.encode_int (result_code == rescode_success);
 }
 
@@ -1419,7 +1423,6 @@ cmd_install_package ()
 
       if (!pkg.end ())
 	{
-	  cache.Init (NULL);
 	  cache.MarkInstall (pkg);
 	  result_code = operation (false);
 	}
@@ -1441,7 +1444,6 @@ cmd_get_packages_to_remove ()
 
       if (!pkg.end ())
 	{
-	  cache.Init (NULL);
 	  cache.MarkDelete (pkg);
 	  
 	  for (pkgCache::PkgIterator pkg = cache.PkgBegin();
@@ -1451,6 +1453,8 @@ cmd_get_packages_to_remove ()
 	      if (cache[pkg].Delete())
 		response.encode_string (pkg.Name());
 	    }
+
+	  cache_reset ();
 	}
     }
 
@@ -1470,7 +1474,6 @@ cmd_remove_package ()
 
       if (!pkg.end ())
 	{
-	  cache.Init (NULL);
 	  cache.MarkDelete (pkg);
 	  result_code = operation (false);
 	}
