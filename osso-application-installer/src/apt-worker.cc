@@ -1593,6 +1593,10 @@ encode_upgrades ()
    during a package management run.  We do this to so that we only get
    failure reports for the actual packages being worked on, and not
    for ones that failed to configure in an earlier run.
+
+   XXX - there might be a way to get the same effect by cleverly
+         manipulating the pkgDepCache, but I would have to look
+         harder...
 */
 
 class myDPkgPM : public pkgDPkgPM
