@@ -1,0 +1,27 @@
+This package contains examples of use Maemo environment libraries. This
+examples are mainly extracted from SDK Tutorial available at
+http://www.maemo.org/platform/docs/tutorials/Maemo_tutorial.html
+
+example_color_selector.c - Example of use HildonColorSelector object
+example_file_chooser.c   - Example of use HildonFileChooser object
+example_file_details.c   - Example of use HildonFileDetails object
+example_findtoolbar.c    - Example of use HildonFileToolbar object
+example_font_selector.c  - Example of use HildonFontSelector object
+example_gconf.c          - Example of use GConf
+example_gtk_print_info.c - Example of use GtkPrintInfo object
+example_hard_keys.c      - Example of mapping Hard Keys events
+example_hildonapp.c      - Example of use HildonApp object
+example_hildonappview.c  - Example of use HildonAppView object
+example_libosso.c        - Example of LibOSSO initialization and IPC
+example_menu.c           - Example of Hildon menu
+example_message.c        - Client LibOSSO IPC test
+example_quickstart.c     - Simple Hello World Application
+example_toolbar.c        - Example of use Toolbar into HildonApp
+
+Build
+-----
+
+Build maemo_examples is easy, just type:
+
+$ make
+

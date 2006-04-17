@@ -1,0 +1,12 @@
+Source: maemo-examples
+Section: doc
+Priority: optional
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
+
+Package: maemo-examples
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Maemo Development Examples
+ Maemo Development Examples.

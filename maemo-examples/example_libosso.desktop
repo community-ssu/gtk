@@ -1,0 +1,8 @@
+[Desktop Entry] 
+Encoding=UTF-8 
+Version=1.0 
+Type=Application 
+Name=Example libOSSO
+Exec=/usr/bin/example_libosso
+X-Osso-Service=org.maemo.example_libosso
+Icon=qgn_list_gene_default_app

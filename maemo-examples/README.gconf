@@ -1,0 +1,20 @@
+Test on GConf workability in scratchbox.
+
+* C API testing:
+  1. Compile 'gconf_example' program:
+	make
+  2. Run 'gconf_example' program:
+	run-standalone.sh ./gconf-example
+  3. Put some text into input entry and hit "Enter"
+  4. Make sure that window title is the text you just typed
+  5. Close the window
+  6. Re-run the program and make sure that window's title is restored from previous time
+
+* gconftool testing:
+  1. Run xterm-reset.sh:
+	sh xterm-reset.sh
+  2. Run xterm
+  3. Make sure that xterm's window has no scrollbar, uses 10px font and strict colors (foreground is white, background is black)
+  4. Run xterm-rollback.sh:
+	sh xterm-rollback.sh
+  5. Make sure that xterm's settings are restored to default
