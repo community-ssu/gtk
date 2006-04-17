@@ -616,6 +616,74 @@ cache_reset ()
     cache.MarkKeep (pkg);
 }
 
+/* Mark a package for installation, using a 'no-surprises' approach
+   suitable for the Application installer.
+
+   Concretely, installing a package will never automatically remove
+   other packages.
+*/
+static void
+mark_for_install (pkgCache::PkgIterator &pkg)
+{
+  pkgDepCache &cache = *package_cache;
+
+  cache.MarkInstall (pkg);
+  for (pkgCache::PkgIterator p = cache.PkgBegin (); !p.end (); p++)
+    {
+      if (cache[p].Delete ())
+	cache.MarkKeep (p);
+    }
+}
+
+/* Determine whether a package was installed automatically to satisfy
+   a dependency.
+*/
+bool
+is_auto_package (pkgCache::PkgIterator &pkg)
+{
+  // XXX - There is pkgCache::Flag::Auto but it doesn't seem to be
+  //       implemented completely... i.e., /var/lib/apt/xstatus is not
+  //       used to store it permanently...
+
+  return false;
+}
+
+/* Mark a package for removal and also remove as many of the packages
+   that it depends on as possible.
+*/
+static void
+mark_for_remove (pkgCache::PkgIterator &pkg)
+{
+  pkgDepCache &cache = *package_cache;
+
+  int n_broken = cache.BrokenCount ();
+
+  cache.MarkDelete (pkg);
+
+  if (!cache[pkg].Delete () || cache.BrokenCount () > n_broken)
+    return;
+
+  fprintf (stderr, "deleting %s\n", pkg.Name ());
+
+  // Now try to remove all dependencies of this package.
+
+  pkgCache::VerIterator cur = pkg.CurrentVer ();
+  if (cur.end ())
+    return;
+
+  for (pkgCache::DepIterator dep = cur.DependsList(); dep.end() == false;
+       dep++)
+    {
+      if (dep->Type == pkgCache::Dep::PreDepends ||
+	  dep->Type == pkgCache::Dep::Depends)
+	{
+	  pkgCache::PkgIterator p = dep.TargetPkg ();
+	  if (!p.end () && is_auto_package (p))
+	    mark_for_remove (p);
+	}
+    }
+}
+
 /* APTCMD_GET_PACKAGE_LIST 
 
    The get_package_list command can do some filtering and we have a
@@ -947,7 +1015,7 @@ cmd_get_package_info ()
 	  // simulate install
 	  
 	  old_broken_count = cache.BrokenCount();
-	  (*package_cache)->MarkInstall (pkg);
+	  mark_for_install (pkg);
 	  if (cache.BrokenCount() > old_broken_count)
 	    {
 	      info.installable_status = installable_status (pkg);
@@ -967,7 +1035,7 @@ cmd_get_package_info ()
 	  // simulate remove
 	  
 	  old_broken_count = cache.BrokenCount();
-	  (*package_cache)->MarkDelete (pkg);
+	  mark_for_remove (pkg);
 	  if (cache.BrokenCount() > old_broken_count)
 	    {
 	      info.removable_status = removable_status (pkg);
@@ -1116,7 +1184,7 @@ encode_install_summary (pkgCache::PkgIterator &want)
   if (cache.BrokenCount() > 0)
     fprintf (stderr, "[ Some installed packages are broken! ]\n");
 
-  (*package_cache)->MarkInstall (want);
+  mark_for_install (want);
 
   for (pkgCache::PkgIterator pkg = cache.PkgBegin();
        pkg.end() != true;
@@ -1156,7 +1224,7 @@ encode_remove_summary (pkgCache::PkgIterator &want)
   if (cache.BrokenCount() > 0)
     log_stderr ("[ Some installed packages are broken! ]\n");
 
-  (*package_cache)->MarkDelete (want);
+  mark_for_remove (want);
 
   for (pkgCache::PkgIterator pkg = cache.PkgBegin();
        pkg.end() != true;
@@ -1394,7 +1462,7 @@ cmd_install_check ()
 
       if (!pkg.end ())
 	{
-	  cache.MarkInstall (pkg);
+	  mark_for_install (pkg);
 	  result_code = operation (true);
 	  cache_reset ();
 	}
@@ -1423,7 +1491,7 @@ cmd_install_package ()
 
       if (!pkg.end ())
 	{
-	  cache.MarkInstall (pkg);
+	  mark_for_install (pkg);
 	  result_code = operation (false);
 	}
     }
@@ -1444,7 +1512,7 @@ cmd_get_packages_to_remove ()
 
       if (!pkg.end ())
 	{
-	  cache.MarkDelete (pkg);
+	  mark_for_remove (pkg);
 	  
 	  for (pkgCache::PkgIterator pkg = cache.PkgBegin();
 	       pkg.end() != true;
@@ -1474,7 +1542,7 @@ cmd_remove_package ()
 
       if (!pkg.end ())
 	{
-	  cache.MarkDelete (pkg);
+	  mark_for_remove (pkg);
 	  result_code = operation (false);
 	}
     }
