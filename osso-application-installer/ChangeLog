@@ -1,5 +1,17 @@
 2006-04-17  Marius Vollmer  <mvo@zagadka.de>
 
+	* src/apt-worker.cc (is_auto_package): New.
+	(mark_for_install, mark_for_remove): New.  Use them thruout
+	instead of pkgDepCache::MarkInstall and pkgDepCache::MarkDelete,
+	respectively.
+
+	* src/main.cc (installed_package_selected): Don't call
+	get_intermediate_package_info, it is not needed.
+	(make_uninstall_applications_view): Don't call
+	get_package_list_info.
+	(make_search_results_view): Likewise, when searching the installed
+	packages.
+	
 	* src/main.h, src/main.cc (package_info): Added dependencies
 	member.
 	* src/details.cc (show_with_details): Show them in red-pill-mode.
