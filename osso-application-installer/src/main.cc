@@ -1404,7 +1404,6 @@ installed_package_selected (package_info *pi)
     {
       set_details_callback (installed_package_details, pi);
       set_operation_callback ((void (*)(void*))uninstall_package, pi);
-      get_intermediate_package_info (pi, NULL, NULL);
     }
   else
     {
@@ -1776,8 +1775,6 @@ make_uninstall_applications_view (view *v)
 				   uninstall_package);
   gtk_widget_show_all (view);
 
-  get_package_list_info (installed_packages);
-  
   enable_search (true);
   set_current_help_topic (AI_TOPIC ("uninstallview"));
 
@@ -1800,6 +1797,7 @@ make_search_results_view (view *v)
 					: _("ai_me_cs_update")),
 				       available_package_selected,
 				       install_package);
+      get_package_list_info (search_result_packages);
     }
   else
     {
@@ -1811,8 +1809,6 @@ make_search_results_view (view *v)
 				       uninstall_package);
     }
   gtk_widget_show_all (view);
-
-  get_package_list_info (search_result_packages);
 
   enable_search (true);
   set_current_help_topic (AI_TOPIC ("searchresultsview"));
