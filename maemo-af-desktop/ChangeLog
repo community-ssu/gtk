@@ -1,3 +1,8 @@
+2006-04-17  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c: Add the complete
+	  path if only the relative path was specified in the .desktop file
+
 2006-04-13  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/application-switcher.c: Home key toggles

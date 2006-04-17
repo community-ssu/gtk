@@ -261,8 +261,17 @@ static void add_user_items( StatusBar *panel )
         }
             
         g_key_file_free( key_file );
+
+        if( path[0] != '/' )
+        {
+            gchar *relative_path = path;
+            
+            path  = g_build_filename( HSB_PLUGIN_PATH, relative_path, NULL );
+
+            g_free( relative_path );
+        }
         
-        if (add_item( panel, path, name ) == NULL)
+        if( add_item( panel, path, name ) == NULL )
         {
             osso_log( LOG_WARNING, "Statusbar item add failed for %s", name );
         }
