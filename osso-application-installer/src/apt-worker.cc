@@ -115,7 +115,7 @@ using namespace std;
 
 /* You know what this means.
  */
-#define DEBUG
+//#define DEBUG
 
 
 /** GENERAL UTILITIES
