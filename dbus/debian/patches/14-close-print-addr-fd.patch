@@ -1,0 +1,11 @@
+diff -ur dbus/bus/bus.c dbus.new/bus/bus.c
+--- dbus/bus/bus.c	2006-03-03 19:23:49.000000000 +0200
++++ dbus.new/bus/bus.c	2006-04-18 14:59:31.160599792 +0300
+@@ -633,7 +633,6 @@
+           goto failed;
+         }
+ 
+-      if (print_addr_fd > 2)
+         _dbus_close (print_addr_fd, NULL);
+ 
+       _dbus_string_free (&addr);
