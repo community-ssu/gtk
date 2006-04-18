@@ -1,7 +1,10 @@
 2006-04-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.h, src/util.cc (device_name): New.
+	* src/main.cc (make_main_view): Use it.
+
 	* src/apt-worker.cc (operation): Do not run fetcher loop.  Call
-	_system->Lock () before returning.
+	_system->Lock() before returning.
 
 	* src/util.h, src/util.cc (show_updating, hide_updating): New.
 	* src/main.cc (get_package_list, get_package_list_reply): Use
