@@ -1,3 +1,11 @@
+osso-af-startup (1.14-1) unstable; urgency=low
+
+  * Modified DBus session bus startup script for static address
+    (N#24573).
+  * Starting media server on background (N#26104).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 18 Apr 2006 15:31:22 +0300
+
 osso-af-startup (1.13-1) unstable; urgency=low
 
   * Fixed problem with get-devlock.sh (N#22474).

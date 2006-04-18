@@ -34,7 +34,7 @@ start)
   source $AF_INIT_DIR/keyboard.sh start
 
   if [ -x $AF_INIT_DIR/osso-media-server.sh ]; then
-    $AF_INIT_DIR/osso-media-server.sh start
+    $AF_INIT_DIR/osso-media-server.sh start &
   fi
 
   source $AF_INIT_DIR/clipboard.sh start
