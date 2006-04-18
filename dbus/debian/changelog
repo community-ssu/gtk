@@ -1,3 +1,10 @@
+dbus (0.61-osso5) experimental; urgency=low
+
+  * Using static bus address again because of dsmetool restarting
+    challenge.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 18 Apr 2006 10:48:11 +0300
+
 dbus (0.61-osso4) experimental; urgency=low
 
   * Using -5 priority again for the system bus.

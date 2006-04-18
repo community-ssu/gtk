@@ -1,0 +1,13 @@
+diff -ur dbus/bus/session.conf.in dbus.new/bus/session.conf.in
+--- dbus/bus/session.conf.in	2006-03-03 19:23:49.000000000 +0200
++++ dbus.new/bus/session.conf.in	2006-04-18 10:45:15.846760008 +0300
+@@ -8,7 +8,7 @@
+   <!-- Our well-known bus type, don't change this -->
+   <type>session</type>
+ 
+-  <listen>unix:tmpdir=@DBUS_SESSION_SOCKET_DIR@</listen>
++  <listen>unix:path=/tmp/session_bus_socket</listen>
+ 
+   <servicedir>@EXPANDED_DATADIR@/dbus-1/services</servicedir>
+ 
+Only in dbus.new/bus: session.conf.in~
