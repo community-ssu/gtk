@@ -245,7 +245,7 @@ hn_wm_watchable_app_died_dialog_show(HNWMWatchableApp *app)
   GtkWidget *dialog;
   gchar *text;
 
-  text = g_strdup_printf(_("memr_ni_application_closed_no_resources"),
+  text = g_strdup_printf(dgettext("ke-recv", "memr_ni_application_closed_no_resources"),
 			 app->app_name ? _(app->app_name) : "");
   dialog = hildon_note_new_information(NULL, text);
   gtk_widget_show_all(dialog);
