@@ -663,8 +663,6 @@ mark_for_remove (pkgCache::PkgIterator &pkg)
   if (!cache[pkg].Delete () || cache.BrokenCount () > n_broken)
     return;
 
-  fprintf (stderr, "deleting %s\n", pkg.Name ());
-
   // Now try to remove all dependencies of this package.
 
   pkgCache::VerIterator cur = pkg.CurrentVer ();
@@ -1787,60 +1785,47 @@ operation (bool check_only)
        }
    }
    
-   // Run it
-   while (1)
-   {
-      bool Transient = false;
-      if (Fetcher.Run() == pkgAcquire::Failed)
-	return rescode_failure;
+   if (Fetcher.Run() == pkgAcquire::Failed)
+     return rescode_failure;
       
-      // Print out errors
-      bool Failed = false;
-      for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin();
-	   I != Fetcher.ItemsEnd(); I++)
-      {
-	 if ((*I)->Status == pkgAcquire::Item::StatDone &&
-	     (*I)->Complete == true)
-	    continue;
-	 
-	 if ((*I)->Status == pkgAcquire::Item::StatIdle)
-	 {
-	    Transient = true;
-	    // Failed = true;
-	    continue;
-	 }
+   // Print out errors
+   bool Failed = false;
+   for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin();
+	I != Fetcher.ItemsEnd(); I++)
+     {
+       if ((*I)->Status == pkgAcquire::Item::StatDone &&
+	   (*I)->Complete == true)
+	 continue;
+       
+       if ((*I)->Status == pkgAcquire::Item::StatIdle)
+	 continue;
 
-	 fprintf (stderr, 
-		  "Failed to fetch %s: %s\n",
-		  (*I)->DescURI().c_str(),
-		  (*I)->ErrorText.c_str());
-	 Failed = true;
-      }
+       fprintf (stderr, 
+		"Failed to fetch %s: %s\n",
+		(*I)->DescURI().c_str(),
+		(*I)->ErrorText.c_str());
+       Failed = true;
+     }
 
-      if (Failed == true)
-	{
-	  _error->Error("Unable to fetch some archives.");
-	  return rescode_download_failed;
-	}
+   if (Failed == true)
+     {
+       _error->Error("Unable to fetch some archives.");
+       return rescode_download_failed;
+     }
       
-      send_status (op_general, -1, 0, 0);
+   send_status (op_general, -1, 0, 0);
       
-      _system->UnLock();
+   _system->UnLock();
+   pkgPackageManager::OrderResult Res = Pm->DoInstall (status_fd);
+   _system->Lock();
 
-      pkgPackageManager::OrderResult Res = Pm->DoInstall (status_fd);
-      if (Res == pkgPackageManager::Failed || _error->PendingError() == true)
-	return rescode_failure;
+   if (Res == pkgPackageManager::Failed || _error->PendingError() == true)
+     return rescode_failure;
 
-      if (Res == pkgPackageManager::Completed)
-	return rescode_success;
-      
-      // Reload the fetcher object and loop again for media swapping
-      Fetcher.Shutdown();
-      if (Pm->GetArchives(&Fetcher,&List,&Recs) == false)
-	return rescode_failure;
-      
-      _system->Lock();
-   }
+   if (Res == pkgPackageManager::Completed)
+     return rescode_success;
+     
+   return rescode_failure;
 }
 
 void
