@@ -348,4 +348,8 @@ void *pop (GSList *&ptr);
 */
 const char *gettext_alt (const char *id, const char *english);
 
+/* Return the device name.
+ */
+const char *device_name ();
+
 #endif /* !UTIL_H */

@@ -216,7 +216,7 @@ make_main_view (view *v)
   gtk_table_attach_defaults (GTK_TABLE (table), image,
 			     0, 1, 0, 1);
 
-  label = gtk_label_new ("XXX");
+  label = gtk_label_new (device_name ());
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   gtk_table_attach_defaults (GTK_TABLE (table), label,
 			     1, 2, 0, 1);

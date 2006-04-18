@@ -1680,3 +1680,38 @@ gettext_alt (const char *id, const char *english)
   else
     return tr;
 }
+
+/* XXX - There must be a better way.  Also, we don't track changes to
+         the device name.
+ */
+
+static const char *btname_result = NULL;
+
+const char *
+device_name ()
+{
+  if (btname_result)
+    return btname_result;
+
+  GError *error = NULL;
+  char *output = NULL;
+  btname_result = "???";
+
+  char *params[] = { "/usr/bin/btname", "-g", NULL };
+
+  if (!g_spawn_sync (NULL, params, NULL, GSpawnFlags(0), NULL, NULL, 
+		     &output, NULL, NULL, &error))
+    {
+      add_log ("can't run btname: %s", error->message);
+      g_error_free (error);
+    }
+  else if (output && output[0] != '\0')
+    {
+      /* Strip the newline.
+       */
+      output[strlen(output)-1] = '\0';
+      btname_result = output;
+    }
+
+  return btname_result;
+}
