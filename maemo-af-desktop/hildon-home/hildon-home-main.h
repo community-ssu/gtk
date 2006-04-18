@@ -100,11 +100,11 @@ G_BEGIN_DECLS
   
 #define HILDON_HOME_FILE_CHOOSER_ACTION_PROP  "action"
 #define HILDON_HOME_FILE_CHOOSER_TITLE_PROP   "title"
-#define HILDON_HOME_FILE_CHOOSER_TITLE        _("ckdg_ti_select_image")
+#define HILDON_HOME_FILE_CHOOSER_TITLE        _("home_ti_select_image")
 #define HILDON_HOME_FILE_CHOOSER_SELECT_PROP  "open-button-text"
-#define HILDON_HOME_FILE_CHOOSER_SELECT       _("sfil_bd_select_object_ok_select")
+#define HILDON_HOME_FILE_CHOOSER_SELECT       _("home_bd_select_image")
 #define HILDON_HOME_FILE_CHOOSER_EMPTY_PROP   "empty-text"
-#define HILDON_HOME_FILE_CHOOSER_EMPTY        _("ckdg_va_select_object_no_images")
+#define HILDON_HOME_FILE_CHOOSER_EMPTY        _("home_li_no_images")
 
 
 #define HILDON_HOME_CONF_USER_FORMAT \
