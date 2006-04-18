@@ -1,3 +1,14 @@
+2006-04-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/apt-worker.cc (operation): Do not run fetcher loop.  Call
+	_system->Lock () before returning.
+
+	* src/util.h, src/util.cc (show_updating, hide_updating): New.
+	* src/main.cc (get_package_list, get_package_list_reply): Use
+	them.
+
+	* src/util.cc (global_icon_func): Use correct icon.
+	
 2006-04-17  Marius Vollmer  <mvo@zagadka.de>
 
 	* src/apt-worker.cc (is_auto_package): New.
