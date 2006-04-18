@@ -609,6 +609,8 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   int count = 0, new_p = 0, upg_p = 0, inst_p = 0;
 
+  hide_updating ();
+
   clear_global_package_list ();
   clear_global_section_list ();
   free_all_packages ();
@@ -722,6 +724,7 @@ get_package_list_with_cont (void (*cont) (void *data), void *data)
   c->cont = cont;
   c->data = data;
 
+  show_updating ();
   apt_worker_get_package_list (!red_pill_mode,
 			       false, 
 			       false, 

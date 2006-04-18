@@ -37,6 +37,7 @@
 #include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
 #include <hildon-widgets/gtk-infoprint.h>
+#include <hildon-widgets/hildon-banner.h>
 #include <osso-ic.h>
 #include <libgnomevfs/gnome-vfs.h>
 
@@ -463,6 +464,43 @@ hide_progress ()
   current_status_operation = op_general;
 }
 
+static GtkWidget *updating_banner = NULL;
+static int updating_level = 0;
+
+static gboolean
+updating_timeout (gpointer unused)
+{
+  if (updating_banner == NULL && updating_level > 0)
+    {
+      updating_banner = 
+	hildon_banner_show_animation (GTK_WIDGET (get_main_window ()),
+				      NULL,
+				      dgettext ("hildon-common-strings",
+						"ckdg_pb_updating"));
+      g_object_ref (updating_banner);
+    }
+  return FALSE;
+}
+
+void
+show_updating ()
+{
+  gtk_timeout_add (2000, updating_timeout, NULL);
+  updating_level++;
+}
+
+void
+hide_updating ()
+{
+  updating_level--;
+  if (updating_banner && updating_level == 0)
+    {
+      gtk_widget_destroy (updating_banner);
+      g_object_unref (updating_banner);
+      updating_banner = NULL;
+    }
+}
+
 static PangoFontDescription *
 get_small_font ()
 {
@@ -550,7 +588,7 @@ global_icon_func (GtkTreeViewColumn *column,
 
       icon_theme = gtk_icon_theme_get_default ();
       broken_icon = gtk_icon_theme_load_icon (icon_theme,
-					      "qgn_list_help",
+					      "qgn_list_app_broken",
 					      26,
 					      GtkIconLookupFlags(0),
 					      NULL);

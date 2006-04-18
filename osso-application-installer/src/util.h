@@ -144,6 +144,16 @@ void set_progress (apt_proto_operation op, int already, int total);
 bool progress_was_cancelled ();
 void hide_progress ();
 
+/* SHOW_UPDATING and HIDE_UPDATING determine whether the "Updating"
+   animation banner should be shown.  They maintain a counter;
+   SHOW_UPDATING increases it and HIDE_UPDATING decreases it.  The
+   banner is shown whenever that counter is positive.  The actual
+   display of the banner is delayed by two seconds so that when the
+   counter is positive for less than two seconds, no banner is shown.
+*/
+void show_updating ();
+void hide_updating ();
+
 /* MAKE_SMALL_TEXT_VIEW constructs a widget that displays TEXT in a
    small font and with scrollbars if necessary.
 
