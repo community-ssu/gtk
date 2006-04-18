@@ -69,6 +69,14 @@
 
 2006-04-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* debian/rules (config.status): Don't depend on configure, just
+	run autogen.sh manually when it doesn't exist.
+	(configure): Deleted target since autogen.sh might not be
+	available.
+	
+	* Makefile.am (EXTRA_DIST): Distribute the various _DATA files.
+	* utils/Makefile.am (EXTRA_DIST): Distribute the bin_SCRIPTS.
+
 	Released 4.14
 	
 	* Makefile.am (deb): New target, for making cleaner source packages.

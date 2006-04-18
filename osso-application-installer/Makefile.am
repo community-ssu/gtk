@@ -15,5 +15,11 @@ etc_DATA = certified.list
 modir = $(datadir)/locale/en_GB/LC_MESSAGES/osso-application-installer/
 noinst_DATA = osso-application-installer.mo
 
+EXTRA_DIST = osso-application-installer.desktop			\
+             com.nokia.osso_application_installer.service	\
+             osso-application-installer.xml			\
+             certified.list					\
+             osso-application-installer.mo
+
 deb:
 	./make-package $(PACKAGE) $(VERSION) .
