@@ -1,3 +1,7 @@
+2006-04-18  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* debian/rules: Missing fr_FR. Fixes N#26654.
+
 2006-04-04  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* locales/es_MX: Converted from string to int (country_num).

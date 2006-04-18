@@ -1,3 +1,9 @@
+posix-locales (2.3.2-13osso33) unstable; urgency=low
+
+  * Bugfixes: N#26654
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Tue, 18 Apr 2006 16:56:43 +0300
+
 posix-locales (2.3.2-13osso30) unstable; urgency=low
 
   * Update rules to install the destination directory first. 
