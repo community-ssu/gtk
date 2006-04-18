@@ -204,5 +204,6 @@ BUGS
 
 - figure out the 'max cache size' thingy in pkgcachegen.cc.  12 Megs?
 - implement is_auto_package.
-- use doubles for sizes.
-- get real name of device.
+
+- use doubles for sizes, maybe
+
