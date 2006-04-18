@@ -1,3 +1,14 @@
+osso-application-installer (4.15) unstable; urgency=low
+
+  * Install/remove policy implemented, but 'Auto' flag is not persistent
+    yet.
+  * Big speedup when cleaning up after a simulated install/remove.
+  * Package info is only collected when needed.
+  * Handle and show broken packages.
+  * New "deb" target in Makefile to make clean Debian source packages.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 18 Apr 2006 14:34:29 +0300
+
 osso-application-installer (4.14) unstable; urgency=low
 
   * Support installing remote files with "Install from file".
