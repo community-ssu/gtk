@@ -1,5 +1,9 @@
 2006-04-18  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm-watched-window.c: Fixed a logical id
+
+2006-04-18  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-watchable-app.c: New application died
 	  dialog's string belongs to ke-recv l10n domain
 
