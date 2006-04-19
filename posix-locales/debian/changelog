@@ -1,3 +1,9 @@
+posix-locales (2.3.2-13osso34) unstable; urgency=low
+
+  * Updated rules 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed, 19 Apr 2006 11:52:36 +0300
+
 posix-locales (2.3.2-13osso33) unstable; urgency=low
 
   * Bugfixes: N#26654

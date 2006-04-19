@@ -27,10 +27,11 @@ install: build
 	dh_clean -k
 	dh_installdirs
 	
-	install -d $(DESTDIR)/usr/lib/locale
 	@for i in $(set_n770); do \
 	  echo "Installing locale $$i (UTF-8)"; \
-	  cp -r build/$$i $(DESTDIR)/usr/lib/locale ; \
+	  mkdir -p $(DESTDIR)/usr/lib/locale/$$i; \
+	  localedef --prefix=$(DESTDIR)/ --add-to-archive build/$$i; \
+	  localedef --prefix=$(DESTDIR)/ --delete-from-archive $$i.utf8; \
 	done
 
 binary-indep:
