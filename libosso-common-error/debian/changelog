@@ -1,3 +1,9 @@
+libosso-common-error (0.1.8-3) unstable; urgency=low
+
+  * Updated dependency. 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Wed, 19 Apr 2006 10:07:05 +0300
+
 libosso-common-error (0.1.8-2) unstable; urgency=low
 
   * New package depending on mr0 L10n packages 
