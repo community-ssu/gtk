@@ -2,8 +2,7 @@ Source: python2.4
 Section: python
 Priority: optional
 Maintainer: Matthias Klose <doko@debian.org>
-Build-Depends: debhelper (>= 4.2), autoconf, libreadline4-dev, libncurses5-dev (>= 5.3), zlib1g-dev, libgmp3-dev, libssl-dev, sharutils, libbz2-dev, libbluetooth1-dev [!hurd-i386], gcc-4.0 (>= 4.0.1-8.0.1) [m68k]
-Build-Depends-Indep: libhtml-tree-perl, tar, gzip, bzip2, sharutils
+Build-Depends: debhelper (>= 4.2), autoconf, libreadline4-dev, libncurses5-dev (>= 5.3), zlib1g-dev, libssl-dev, libbz2-dev, libbluetooth1-dev
 Standards-Version: 3.6.2
 
 Package: python2.4
