@@ -1,3 +1,93 @@
+maemo-af-desktop (2.6.10-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-main.h: Fixed logical id related to
+    to "Select Image" dialog
+
+  * hildon-navigator/hn-wm-watched-window.c: Fixed a logical id
+
+  * hildon-navigator/hn-wm-watchable-app.c: New application died
+    dialog's string belongs to ke-recv l10n domain
+
+  * hildon-status-bar/hildon-status-bar-main.c: Add the complete
+    path if only the relative path was specified in the .desktop file
+
+  * hildon-navigator/application-switcher.c: Home key toggles
+    between showing home and topping the last topped application
+    (Closes N#26294)
+
+  * maemo-af-desktop-main.c: Only reparse the rc files when launched
+    from maemo-launcher
+
+  Applied fix to "Select applets -dialog height is too short in Home"
+  (Closes N#25607)
+  * hildon-home/home-select-applets-dialog.h:
+    - added new defines
+  * hildon-home/home-select-applets-dialog.c
+    - added scrolled window size request handling
+    - also some very minor cleanup
+    - fixed the dialog read only .desktop files
+
+  * hildon-status-bar/hildon-status-bar-{item,main}.[ch]:
+    - hildon_status_bar_item_new() now takes both the name and the
+      path to a status bar plugin
+    - Removed all code to load custom applets inherited from IT-2005
+    - Parse .desktop files to load custom applets.
+    - Various cleanups
+
+  * maemo-af-desktop.sh: Fixed generation of the gtkrc file
+
+  Applied fix to "Context sensitive menus dont come up for applets displayed
+  in home in both normal mode and layout mode." (Closes N#24424)
+  * hildon-home/layout-manager.c:
+    - changed wrong menu logical_id for cancel
+    - added logical_id for tap'n'hold
+    - Cut&paste tap'n'hold defines from gtk/gtkwidget.c
+    - added global struct required fields for tap'n'hold handling
+    - added layout_node struct callback handler
+    - declarations for new functions
+    - layout_mode_begin(): added callback signal for launching tap'n'hold
+      menu to each applet. button release callback added. tap'n'hold
+      creation call.
+    - layout_mode_end(): added removing tap'n'hold handler and menu
+    - _tapnhold_menu_cb(): new function. callback function to launch
+      tap'n'hold menu
+    - _tapnhold_close_applet_cb(): new function. callback function to
+      remove current applet
+    - add_new_applets(): callback function connected to applet
+    - button_click_cb(): when candidate is found set tap'n'hold timeout
+    - button_release_cb(): new function. removes existing tap'n'hold
+      when released
+    - drag_begin(): when drag starts tap'n'hold menu is not to be shown
+    - create_tapnhold_menu(): new function. creates tap'n'hold menu common
+      for all applets. initiates animation
+    - create_tapnhold_remove_timer(): new function. Clears all timer
+      values for tap'n'hold menu
+    - layout_tapnhold_timeout(): new function. Handles tap'n'hold timeout
+      before showing menu
+    - layout_tapnhold_set_timeout(): new function. Sets timeout counting
+      for tap'n'hold menu
+    - layout_tapnhold_timeout_animation(): new function. creates cursor
+      animation
+
+  Applied fix to "Close Application Dialog MEM-DIA001 is lost"
+  (Closes N#24388)
+  * hildon-navigator/hn-wm.c:
+    - Remove attempt to reset the TN items (wasn't working, needs support
+        from elswhere to be done)
+  * hildon-navigator/close-application-dialog.c:
+    - Check for already listed pids, so no duplicates will be in the list
+
+  * hildon-home/hildon-home-main.c: Fixed another crash in disk full
+    situation
+
+  * hildon-home/applet-manager.c: Fixed a potential crash in low
+    disk space situation (Closes N#21571)
+
+  * hildon-navigator/hn-wm.c: Do not specify type='method' in a
+    dbus match rule, this is the default (Closes N#26063)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 19 Apr 2006 10:20:32 +0300
+
 maemo-af-desktop (2.6.9-1) unstable; urgency=low
 
   * maemo-af-desktop.[sh,defs], maemo-af-desktop-main.[ch]: Parse the
