@@ -1,3 +1,12 @@
+Wed Apr 19 18:24:12 2006  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtkcombobox.c gtk_combo_box_grab_focus(): when ::hildonlike
+	is TRUE, use gtk_combo_box_entry_grab_focus() to grab focus for
+	GtkComboBoxEntry widgets. this fixes N#25274.
+	
+	* gtk/gtkcomboboxentry.h:
+	* gtk/gtkcomboboxentry.c: export gtk_combo_box_entry_grab_focus().
+
 Thu Apr 13 16:04:29 2006  Tim Janik  <timj@imendio.com>
 
 	* tests/Makefile.am:
