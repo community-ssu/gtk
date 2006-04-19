@@ -15,8 +15,9 @@
   (c-name "hildon_controlbar_new")
   (is-constructor-of "HildonControlbar")
   (properties
-    '("min")
-    '("max")
+    '("min" (optional))
+    '("max" (optional))
+    '("value" (optional))
   )
   (return-type "GtkWidget*")
 )

@@ -7,20 +7,52 @@ import pango
 import gobject
 import os
 
-class PyGtkDemo(hildon.App):
+class PyGtkDemo(hildon.Program):
     def __init__(self):
-        hildon.App.__init__(self)
-        self.set_title("PyHildonPad")
-        self.connect('destroy', self.onExit)
+        hildon.Program.__init__(self)
+        
+        self.window = hildon.Window()
+        self.add_window(self.window)
+        
+        self.window.set_title("PyHildonPad")
+        self.window.connect('destroy', self.onExit)
+        
+        self.noteTestWindow = HildonNoteTestWindow()
+        self.add_window(self.noteTestWindow)
+        
+        self.noteTestWindow.back_button.connect('clicked', self.onBackNoteWindow)
+        self.noteTestWindow.connect('destroy', self.onExit)
 
-        self.view = hildon.AppView("noname")
-        self.vbox = self.view.get_vbox()
-        self.set_appview(self.view)
+        self.passwordTestWindow = HildonPasswordTestWindow()
+        self.add_window(self.passwordTestWindow)
+        
+        self.passwordTestWindow.back_button.connect('clicked', self.onBackPasswordWindow)
+        self.passwordTestWindow.connect('destroy', self.onExit)
+        
+        self.weekdayPickerWindow = WeekdayPickerWindow()
+        self.add_window(self.weekdayPickerWindow)
+        
+        self.weekdayPickerWindow.back_button.connect('clicked', self.onBackWeekdayPickerWindow)
+        self.weekdayPickerWindow.connect('destroy', self.onExit)
 
         self._createMenu()
         self._createToolbar()
         self._createPanel()
-        self.show_all()
+
+        self.window.show_all()
+        
+    def onBackNoteWindow(self, widget):
+        self.noteTestWindow.hide()
+        self.window.show_all()
+        
+    def onBackPasswordWindow(self, widget):
+        self.passwordTestWindow.hide()
+        self.window.show_all()
+    
+    def onBackWeekdayPickerWindow(self, widget):
+        self.weekdayPickerWindow.hide()
+        self.window.show_all()    
+        
 
     def _createToolbar(self):
         self.toolbar = gtk.Toolbar()
@@ -28,16 +60,28 @@ class PyGtkDemo(hildon.App):
         self.toolbar.set_orientation('horizontal')
         self.toolbar.set_style('both-horiz')
         
-        self.toolQuit = gtk.ToolButton('gtk-quit')
-        self.toolQuit.connect('clicked', self.onExit)
-        self.toolbar.insert(self.toolQuit, -1)
+        obj = gtk.ToolButton(gtk.STOCK_QUIT)
+        obj.connect('clicked', self.onExit)
+        self.toolbar.insert(obj, -1)
+        
+        obj = gtk.ToolButton(gtk.STOCK_FIND)
+        obj.connect('clicked', self.onShowFind)
+        self.toolbar.insert(obj, -1)
 
-        self.vbox.add(self.toolbar)
-
+        self.set_common_toolbar(self.toolbar)
+        
+        self.toolbar.show_all()
+        
+        self.findToolBar = hildon.FindToolbar("Find something...")
+        self.window.add_toolbar(self.findToolBar)
+        
+        self.findToolBar.connect("close", self.onHideFind)
+        self.findToolBar.set_no_show_all(True)
+        
     def _createMenu(self):
-        self.menubar = self.view.get_menu()
+        self.menu = gtk.Menu()
 
-        # Main Menubar
+        # Main Menu
         self.mnuItmFile = gtk.MenuItem("_File")
         self.mnuItmHelp = gtk.MenuItem("_Help")
 
@@ -57,12 +101,27 @@ class PyGtkDemo(hildon.App):
         self.mnuHelp.add(self.mnuItmHelpAbout)
         self.mnuItmHelpAbout.connect_object("activate", self.onAbout, "help.about")
 
-        self.menubar.add(self.mnuItmFile)
-        self.menubar.add(self.mnuItmHelp)
-        self.menubar.show_all()
+        self.menu.add(self.mnuItmFile)
+        self.menu.add(self.mnuItmHelp)
+        
+        self.set_common_menu (self.menu);
 
     def onExit(self, widget):
         gtk.main_quit()
+        
+    def onShowFind(self, widget):
+        self.findToolBar.show()
+        
+        #Terrible hack to force a redraw on self.window
+        self.window.hide()
+        self.window.show()
+        
+    def onHideFind(self, widget):
+        self.findToolBar.hide()
+        
+        #Terrible hack to force a redraw on self.window
+        self.window.hide()
+        self.window.show()
 
     def onAbout(self, widget):
         print "Help->About"
@@ -81,7 +140,7 @@ class PyGtkDemo(hildon.App):
         print test,
 
         if test == "Color Selector":
-            dialog = hildon.ColorSelector(self)
+            dialog = hildon.ColorSelector(self.window)
             print "run: %s" % dialog.run(),
             print "color: %s, %s, %s" % (
                     dialog.get_color().red,
@@ -90,26 +149,21 @@ class PyGtkDemo(hildon.App):
             ),
             dialog.destroy()
         elif test == "Calendar Popup":
-            dialog = hildon.CalendarPopup(self, 2004, 9, 1)
+            dialog = hildon.CalendarPopup(self.window, 2004, 9, 1)
             print "run: %s" % dialog.run(),
             print "date: %s-%s-%s" % dialog.get_date(),
             dialog.destroy()
         elif test == "Add Home":
-            dialog = hildon.AddHomeDialog(self, "foo", "bar")
+            dialog = hildon.AddHomeDialog(self.window, "foo", "bar")
             print "run: %s" % dialog.run(),
             print "name: %s" % dialog.get_name(),
             dialog.destroy()
         elif test == "File Selector":
-            dialog = hildon.FileChooserDialog(self, "open")
+            dialog = hildon.FileChooserDialog(self.window, "open")
             print "run: %s" % dialog.run(),
-            dialog.destroy()
-        elif test == "Set Password":
-            dialog = hildon.SetPasswordDialog(self, True)
-            print "run: %s" % dialog.run(),
-            print "password: %s" % dialog.get_password(),
             dialog.destroy()
         elif test == "Sort":
-            dialog = hildon.SortDialog(self)
+            dialog = hildon.SortDialog(self.window)
             dialog.add_sort_key("foo")
             dialog.add_sort_key("bar")
             dialog.add_sort_key("baz")
@@ -128,41 +182,36 @@ class PyGtkDemo(hildon.App):
             except Exception, e:
                 print "Xerror: %s" % e,
 
-            dialog = hildon.FileDetailsDialog(self, 
+            dialog = hildon.FileDetailsDialog(self.window, 
                     "%s/MyDocs/foobar.txt" % os.environ['HOME'])
             print "run: %s" % dialog.run(),
             dialog.destroy()
         elif test == "Font Selection":
-            dialog = hildon.FontSelectionDialog(self, "Choose font...")
+            dialog = hildon.FontSelectionDialog(self.window, "Choose font...")
             print "run: %s" % dialog.run(),
+            print "size: %d" % dialog.get_property("size")
             # TODO: verify how can i obtain the font selected...
             dialog.destroy()
-        elif test == "Get Password":
-            dialog = hildon.GetPasswordDialog(self, False)
-            print "run: %s" % dialog.run(),
-            print "password: %s" % dialog.get_password(),
-            dialog.destroy()
         elif test == "Insert Object":
-            dialog = hildon.InsertObjectDialog(self)
+            dialog = hildon.InsertObjectDialog(self.window)
             print "run: %s" % dialog.run(),
-            dialog.destroy()
-        elif test == "Name Password":
-            dialog = hildon.NamePasswordDialog(self)
-            print "run: %s" % dialog.run(),
-            print "name: %s" % dialog.get_name(),
-            print "password: %s" % dialog.get_password(),
             dialog.destroy()
         elif test == "Note":
-            dialog = hildon.Note(self, "Note Dialog...")
-            print "run: %s" % dialog.run(),
-            dialog.destroy()
+            self.window.hide()
+            self.noteTestWindow.show_all()
+        elif test == "Password":
+            self.window.hide()
+            self.passwordTestWindow.show_all()
+        elif test == "Weekday Picker":
+            self.window.hide()
+            self.weekdayPickerWindow.show_all()
                
         print "tested."
         return
 
     def _createPanel(self):
-        self.hbox = gtk.HBox()
-        self.view.add(self.hbox)
+        self.hbox = gtk.HBox(True)
+        self.window.add(self.hbox)
 
         # Test Buttons
         self.vboxTests = []
@@ -171,35 +220,73 @@ class PyGtkDemo(hildon.App):
         self.vboxTests.append(gtk.VBox())
         for vbox in self.vboxTests:
             self.hbox.pack_start(vbox, expand=True)
-        self.tests = {
-            "Calendar Popup":   [0, gtk.Button, ("Calendar Popup",), 'clicked', self.onTest],
-            "Color Selector":   [1, gtk.Button, ("Color Selector",), 'clicked', self.onTest],
-            "Color Button":     [0, hildon.ColorButton, None, None, None],
-            "Add Home":         [1, gtk.Button, ("Add Home",), 'clicked', self.onTest],
-            "Control Bar":      [0, hildon.Controlbar, (0, 50), None, None],
-            "Date Editor":      [1, hildon.DateEditor, (2004, 9, 1), None, None],
-            "File Selector":    [0, gtk.Button, ("File Selector",), 'clicked', self.onTest],
-            "Set Password":     [1, gtk.Button, ("Set Password",), 'clicked', self.onTest],
-            "Sort":             [0, gtk.Button, ("Sort",), 'clicked', self.onTest],
-            "File Details":     [1, gtk.Button, ("File Details",), 'clicked', self.onTest],
-            "Font Selection":   [0, gtk.Button, ("Font Selection",), 'clicked', self.onTest],
-            "Get Password":     [1, gtk.Button, ("Get Password",), 'clicked', self.onTest],
-            "HVolume Bar":      [0, hildon.HVolumebar, None, None, None],
-            "VVolume Bar":      [2, hildon.VVolumebar, None, None, None],
-            "Insert Object":    [1, gtk.Button, ("Insert Object",), 'clicked', self.onTest],
-            "Name Password":    [0, gtk.Button, ("Name Password",), 'clicked', self.onTest],
-            "Note":             [1, gtk.Button, ("Note",), 'clicked', self.onTest],
-        }
 
-        for i, test in enumerate(self.tests.keys()):
-            pos, obj, parms, event, handle = self.tests[test]
-            if parms:
-                self.tests[test].append(obj(*parms))
-            else:
-                self.tests[test].append(obj())
-            if event:
-                self.tests[test][-1].connect(event, handle)
-            self.vboxTests[pos].pack_start(self.tests[test][-1], expand=True, fill=True)
+        obj = gtk.Button ("Calendar Popup")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[0].pack_start(obj)
+        
+        obj = gtk.Button ("Weekday Picker")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[0].pack_start(obj)
+        
+        obj = gtk.Button ("Color Selector")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[1].pack_start(obj)
+        
+        self.vboxTests[2].pack_start(hildon.ColorButton())
+        
+        obj = gtk.Button ("Add Home")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[0].pack_start(obj)
+        
+        self.vboxTests[1].pack_start(hildon.Controlbar(0, 50, 25))
+        
+        self.vboxTests[2].pack_start(hildon.DateEditor(2004, 9, 1))
+        
+        obj = gtk.Button ("File Selector")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[0].pack_start(obj)
+        
+        obj = gtk.Button ("Password")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[2].pack_start(obj)
+        
+        obj = gtk.Button ("Sort")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[2].pack_start(obj)
+        
+        obj = gtk.Button ("File Details")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[0].pack_start(obj)
+        
+        obj = gtk.Button ("Font Selection")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[1].pack_start(obj)
+        
+        self.vboxTests[0].pack_start(hildon.HVolumebar())
+        
+        self.vboxTests[1].pack_start(hildon.VVolumebar())
+        
+        obj = gtk.Button ("Insert Object")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[2].pack_start(obj)
+        
+        obj = gtk.Button ("Note")
+        obj.connect("clicked", self.onTest)
+        self.vboxTests[2].pack_start(obj)
+        
+        self.vboxTests[2].pack_start(hildon.NumberEditor(0, 10))
+
+        obj = hildon.RangeEditor()
+        self.vboxTests[2].pack_start(obj)
+        obj.set_range(-5, 12)
+        obj.set_limits(-100, 100)
+        
+        obj = hildon.Seekbar(total_time = 180, fraction = 100)
+        obj.set_position(30)
+        self.vboxTests[0].pack_start(obj)
+        
+        self.vboxTests[2].pack_start(hildon.TelephoneEditor(0))
 
     def _createDocTab(self, widget, label):
         l = gtk.Label('')
@@ -239,10 +326,153 @@ class PyGtkDemo(hildon.App):
         view.set_rules_hint(True)
         view.get_selection().set_mode(gtk.SELECTION_SINGLE)
 
+class HildonPasswordTestWindow(hildon.Window):
+    def __init__(self):
+        hildon.Window.__init__(self)
+
+        self.set_title("PyHildon - Password")
         
+        self.vbox = gtk.VBox(True)
+        self.add(self.vbox)
 
+        obj = gtk.Button ("Name Password")
+        obj.connect ('clicked', self.onNamePassword)
+        self.vbox.pack_start(obj)
+        
+        obj = gtk.Button ("Set Password")
+        obj.connect ('clicked', self.onSetPassword)
+        self.vbox.pack_start(obj)
+        
+        obj = gtk.Button ("Get Password")
+        obj.connect ('clicked', self.onGetPassword)
+        self.vbox.pack_start(obj)
+        
+        obj = gtk.HSeparator ()
+        self.vbox.pack_start(obj)
+        
+        self.back_button = gtk.Button ("Back")
+        self.vbox.pack_start(self.back_button)
+        
+    def onNamePassword(self, widget):
+        dialog = hildon.NamePasswordDialog(self)
+        print "run: %s" % dialog.run(),
+        print "name: %s" % dialog.get_name(),
+        print "password: %s" % dialog.get_password(),
+        dialog.destroy()
+        
+    def onSetPassword(self, widget):
+        dialog = hildon.SetPasswordDialog(self, True)
+        print "run: %s" % dialog.run(),
+        print "password: %s" % dialog.get_password(),
+        dialog.destroy()
+        
+    def onGetPassword(self, widget):
+        dialog = hildon.GetPasswordDialog(self, False)
+        dialog.set_domain("Password domain")
+        dialog.set_caption("This is the caption")
+        print "run: %s" % dialog.run(),
+        print "password: %s" % dialog.get_password(),
+        dialog.destroy()
 
+    
+class HildonNoteTestWindow(hildon.Window):
+    def __init__(self):
+        hildon.Window.__init__(self)
+        
+        self.set_title("PyHildon - Note")
+        
+        self.vbox = gtk.VBox(True)
+        self.add(self.vbox)
 
+        obj = gtk.Button ("Confirmation")
+        obj.connect ('clicked', self.onConfirmation)
+        self.vbox.pack_start(obj)
+        
+        obj = gtk.Button ("Confirmation with Icon Name")
+        obj.connect ('clicked', self.onConfirmationWithIconName)
+        self.vbox.pack_start(obj)
+        
+        obj = gtk.Button ("Information")
+        obj.connect ('clicked', self.onInformation)
+        self.vbox.pack_start(obj)
+        
+        obj = gtk.Button ("Information with Icon Name")
+        obj.connect ('clicked', self.onInformationWithIconName)
+        self.vbox.pack_start(obj)
+        
+        obj = gtk.Button ("Cancel with Progress Bar")
+        obj.connect ('clicked', self.onCancelWithProgressBar)
+        self.vbox.pack_start(obj)
+        
+        obj = gtk.HSeparator ()
+        self.vbox.pack_start(obj)
+        
+        self.back_button = gtk.Button ("Back")
+        self.vbox.pack_start(self.back_button)
+        
+    def onConfirmation(self, widget):
+            dialog = hildon.Note("confirmation", (self, "Confirmation"))
+            dialog.run()
+            dialog.destroy()
+            
+    def onConfirmationWithIconName(self, widget):        
+            dialog = hildon.Note("confirmation_with_icon_name", (self, "Conf. with Icon Name", gtk.STOCK_DIALOG_INFO))
+            dialog.run()
+            dialog.destroy()
+
+    def onInformation(self, widget):
+            dialog = hildon.Note("information", (self, "Information"))
+            dialog.run()
+            dialog.destroy()
+
+    def onInformationWithIconName(self, widget):        
+            dialog = hildon.Note("information_with_icon_name", (self, "Inf. with Icon Name", gtk.STOCK_DIALOG_INFO))
+            dialog.run()
+            dialog.destroy()
+            
+    def onCancelWithProgressBar(self, widget):
+            prog_bar = gtk.ProgressBar()
+            prog_bar.set_fraction (0.35)
+            dialog = hildon.Note("cancel_with_progress_bar", (self, "Cancel with Progress Bar", prog_bar))
+            dialog.run()
+            dialog.destroy()
+            prog_bar.destroy()
+    
+class WeekdayPickerWindow(hildon.Window):
+    def __init__(self):
+        hildon.Window.__init__(self)
+        
+        self.set_title("PyHildon - Weekday Picker")
+        
+        self.vbox = gtk.VBox(True)
+        self.add(self.vbox)
+
+        self.weekdayPicker = hildon.WeekdayPicker() 
+        self.vbox.pack_start(self.weekdayPicker)
+
+        self.change_buttons = gtk.HBox(True)
+        self.vbox.pack_start(self.change_buttons)
+
+        obj = gtk.HSeparator ()
+        self.vbox.pack_start(obj)
+        
+        self.back_button = gtk.Button ("Back")
+        self.vbox.pack_start(self.back_button)
+        
+        obj = gtk.Button ("Set All")
+        obj.connect ('clicked', self.onSetAll)
+        self.change_buttons.pack_start (obj)
+        
+        obj = gtk.Button ("Unset All")
+        obj.connect ('clicked', self.onUnsetAll)
+        self.change_buttons.pack_start (obj)
+        
+    def onSetAll(self, widget):
+        self.weekdayPicker.set_all()
+        
+    def onUnsetAll(self, widget):
+        self.weekdayPicker.unset_all()
+        
 if __name__ == "__main__":
     PyGtkDemo().run()
 

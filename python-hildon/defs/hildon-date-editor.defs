@@ -18,6 +18,8 @@
     '("year" (optional))
     '("month" (optional))
     '("day" (optional))
+    '("min-year" (optional))
+    '("max-year" (optional))
   )
   (return-type "GtkWidget*")
 )

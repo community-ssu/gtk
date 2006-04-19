@@ -3,7 +3,6 @@
 
 
 /* enumerations from "/usr/include/hildon-fm/hildon-widgets/hildon-file-system-model.h" */
-
 GType
 hildon_file_system_model_columns_get_type (void)
 {
@@ -40,9 +39,7 @@ hildon_file_system_model_columns_get_type (void)
   return etype;
 }
 
-
 /* enumerations from "/usr/include/hildon-widgets/hildon-grid-item.h" */
-
 GType
 hildon_grid_position_type_get_type (void)
 {
@@ -57,7 +54,6 @@ hildon_grid_position_type_get_type (void)
   }
   return etype;
 }
-
 GType
 hildon_grid_item_icon_size_type_get_type (void)
 {
@@ -73,9 +69,7 @@ hildon_grid_item_icon_size_type_get_type (void)
   return etype;
 }
 
-
 /* enumerations from "/usr/include/hildon-widgets/hildon-telephone-editor.h" */
-
 GType
 hildon_telephone_editor_format_get_type (void)
 {
@@ -93,9 +87,7 @@ hildon_telephone_editor_format_get_type (void)
   return etype;
 }
 
-
 /* enumerations from "/usr/include/glib-2.0/glib/gdate.h" */
-
 GType
 g_date_dmy_get_type (void)
 {
@@ -111,7 +103,6 @@ g_date_dmy_get_type (void)
   }
   return etype;
 }
-
 GType
 g_date_weekday_get_type (void)
 {
@@ -132,7 +123,6 @@ g_date_weekday_get_type (void)
   }
   return etype;
 }
-
 GType
 g_date_month_get_type (void)
 {
@@ -158,7 +148,6 @@ g_date_month_get_type (void)
   }
   return etype;
 }
-
 
 /* Generated data ends here */
 

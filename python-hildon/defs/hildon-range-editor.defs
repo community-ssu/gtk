@@ -41,3 +41,78 @@
     '("gint" "end")
   )
 )
+
+(define-method set_lower
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_set_lower")
+  (return-type "none")
+  (parameters
+    '("gint" "value")
+  )
+)
+
+(define-method set_higher
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_set_higher")
+  (return-type "none")
+  (parameters
+    '("gint" "value")
+  )
+)
+
+(define-method get_lower
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_get_lower")
+  (return-type "gint")
+)
+
+(define-method get_higher
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_get_higher")
+  (return-type "gint")
+)
+
+(define-method set_min
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_set_min")
+  (return-type "none")
+  (parameters
+    '("gint" "value")
+  )
+)
+
+(define-method set_max
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_set_max")
+  (return-type "none")
+  (parameters
+    '("gint" "value")
+  )
+)
+
+(define-method get_min
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_get_min")
+  (return-type "gint")
+)
+
+(define-method get_max
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_get_max")
+  (return-type "gint")
+)
+
+(define-method set_separator
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_set_separator")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "separator")
+  )
+)
+
+(define-method get_separator
+  (of-object "HildonRangeEditor")
+  (c-name "hildon_range_editor_get_separator")
+  (return-type "const-gchar*")
+)

@@ -1,8 +1,20 @@
+;; -*- scheme -*-
+; object definitions ...
 (define-object TimeEditor
   (in-module "Hildon")
   (parent "GtkContainer")
   (c-name "HildonTimeEditor")
   (gtype-id "HILDON_TYPE_TIME_EDITOR")
+)
+
+;; Enumerations and flags ...
+
+
+;; From /usr/include/hildon-widgets/hildon-time-editor.h
+
+(define-function hildon_time_editor_get_type
+  (c-name "hildon_time_editor_get_type")
+  (return-type "GType")
 )
 
 (define-function hildon_time_editor_new
@@ -33,6 +45,24 @@
   )
 )
 
+(define-method show_seconds
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_show_seconds")
+  (return-type "none")
+  (parameters
+    '("gboolean" "enable")
+  )
+)
+
+(define-method enable_duration_mode
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_enable_duration_mode")
+  (return-type "none")
+  (parameters
+    '("gboolean" "enable")
+  )
+)
+
 (define-method set_duration_range
   (of-object "HildonTimeEditor")
   (c-name "hildon_time_editor_set_duration_range")
@@ -51,6 +81,81 @@
     '("guint*" "min_seconds")
     '("guint*" "max_seconds")
   )
+)
+
+(define-method set_ticks
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_set_ticks")
+  (return-type "none")
+  (parameters
+    '("guint" "ticks")
+  )
+)
+
+(define-method get_ticks
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_get_ticks")
+  (return-type "guint")
+)
+
+(define-method set_show_seconds
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_set_show_seconds")
+  (return-type "none")
+  (parameters
+    '("gboolean" "show_seconds")
+  )
+)
+
+(define-method get_show_seconds
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_get_show_seconds")
+  (return-type "gboolean")
+)
+
+(define-method set_duration_mode
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_set_duration_mode")
+  (return-type "none")
+  (parameters
+    '("gboolean" "duration_mode")
+  )
+)
+
+(define-method get_duration_mode
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_get_duration_mode")
+  (return-type "gboolean")
+)
+
+(define-method set_duration_min
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_set_duration_min")
+  (return-type "none")
+  (parameters
+    '("guint" "duration_min")
+  )
+)
+
+(define-method get_duration_min
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_get_duration_min")
+  (return-type "guint")
+)
+
+(define-method set_duration_max
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_set_duration_max")
+  (return-type "none")
+  (parameters
+    '("guint" "duration_max")
+  )
+)
+
+(define-method get_duration_max
+  (of-object "HildonTimeEditor")
+  (c-name "hildon_time_editor_get_duration_max")
+  (return-type "guint")
 )
 
 

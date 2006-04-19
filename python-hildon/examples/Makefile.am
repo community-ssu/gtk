@@ -4,7 +4,7 @@ dist_noinst_SCRIPTS = \
 	wip/pyhildon-demo.py \
 	wip/appwindow.py \
 	wip/download.py \
-	hildon_test.py \
+	hildon-test.py \
 	hello-hildon.py \
 	maemo-pad.py
 CLEANFILES = *.pyo wip/*.pyo wip/demos/*.pyo

@@ -18,6 +18,7 @@
   (properties
     '("total-time" (argname "total_time") (optional))
     '("position" (optional))
+    '("fraction" (optional))
   )
 )
 

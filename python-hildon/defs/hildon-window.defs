@@ -1,0 +1,75 @@
+;; -*- HildonWindow -*-
+
+; object definitions ...
+(define-object Window
+  (in-module "Hildon")
+  (parent "GtkWindow")
+  (c-name "HildonWindow")
+  (gtype-id "HILDON_TYPE_WINDOW")
+)
+
+;; Enumerations and flags ...
+
+
+;; From /usr/include/hildon-widgets/hildon-window.h
+
+(define-function hildon_window_get_type
+  (c-name "hildon_window_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_window_new
+  (c-name "hildon_window_new")
+  (is-constructor-of "HildonWindow")
+  (return-type "GtkWidget*")
+)
+
+(define-method add_with_scrollbar
+  (of-object "HildonWindow")
+  (c-name "hildon_window_add_with_scrollbar")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "child")
+  )
+)
+
+(define-method get_menu
+  (of-object "HildonWindow")
+  (c-name "hildon_window_get_menu")
+  (return-type "GtkMenu*")
+)
+
+(define-method set_menu
+  (of-object "HildonWindow")
+  (c-name "hildon_window_set_menu")
+  (return-type "none")
+  (parameters
+    '("GtkMenu*" "menu")
+  )
+)
+
+(define-method add_toolbar
+  (of-object "HildonWindow")
+  (c-name "hildon_window_add_toolbar")
+  (return-type "none")
+  (parameters
+    '("GtkToolbar*" "toolbar")
+  )
+)
+
+(define-method remove_toolbar
+  (of-object "HildonWindow")
+  (c-name "hildon_window_remove_toolbar")
+  (return-type "none")
+  (parameters
+    '("GtkToolbar*" "toolbar")
+  )
+)
+
+(define-method get_is_topmost
+  (of-object "HildonWindow")
+  (c-name "hildon_window_get_is_topmost")
+  (return-type "gboolean")
+)
+
+

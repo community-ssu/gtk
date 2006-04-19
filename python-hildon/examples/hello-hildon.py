@@ -3,18 +3,14 @@
 import gtk
 import hildon
 
-app = hildon.App ()
-app.set_title ("Hello maemo!")
-
-main_view = hildon.AppView (None)
+window = hildon.Window ()
+window.set_title ("Hello maemo!")
 
 button = gtk.Button ("Hello")
-main_view.add (button)
+window.add (button)
 
-app.set_appview (main_view)
+window.show_all ()
 
-app.show_all ()
-
-print app.get_default_font ()
+#print app.get_default_font ()
 
 gtk.main ()

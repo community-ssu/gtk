@@ -13,3 +13,12 @@
     '("gchar*" "label")
   )
 )
+
+(define-method highlight_entry
+  (of-object "HildonFindToolbar")
+  (c-name "hildon_find_toolbar_highlight_entry")
+  (return-type "none")
+  (parameters
+    '("gboolean" "get_focus")
+  )
+)

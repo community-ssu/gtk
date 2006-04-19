@@ -6,8 +6,9 @@
   (gtype-id "HILDON_TYPE_NOTE")
 )
 
-(define-function hildon_note_new_confirmation
-  (c-name "hildon_note_new_confirmation")
+; There is no "hildon_note_new" function. That declaration is here just to be overrided.
+(define-function hildon_note_new
+  (c-name "hildon_note_new")
   (is-constructor-of "HildonNote")
   (return-type "GtkWidget*")
   (parameters

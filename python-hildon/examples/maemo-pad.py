@@ -3,14 +3,16 @@
 import gtk
 import hildon
 
-def interface_file_chooser (mainview, action):
-  dialog = hildon.FileChooserDialog (mainview.app, action)
+def interface_file_chooser (window, action):
+  dialog = hildon.FileChooserDialog (window, action)
   dialog.show_all ()
   print dialog.run ()
   dialog.destroy ()
 
-def create_menu (mainview):
-  main_menu   = mainview.get_menu ()
+def create_menu (window):
+  main_menu = gtk.Menu ()
+  window.set_menu (main_menu)
+
   menu_others = gtk.Menu ()
   item_others    = gtk.MenuItem ("Others")
   item_radio1    = gtk.RadioMenuItem (None,        "Radio1")
@@ -39,20 +41,20 @@ def callback_new (w):
 def callback_open (w, data):
   interface_file_chooser (data, 'open')
 
-def create_toolbar (mainview):
+def create_toolbar (window):
   toolbar = gtk.Toolbar ()
   toolbar.set_border_width (3)
   toolbar.set_orientation ('horizontal')
   toolbar.set_style ('both-horiz')
   insert_with_callback (toolbar, 'gtk-new', callback_new)
   insert_with_callback (toolbar, 'gtk-open',
-                        lambda (w): interface_file_chooser (mainview, 'open'))
-  mainview.set_toolbar (toolbar)
+                        lambda (w): interface_file_chooser (window, 'open'))
+  window.add_toolbar (toolbar)
 
 def callback_buffer_modified (textarea):
   print 'modified'  
   
-def create_textarea (mainview):
+def create_textarea (window):
   scrolledwindow = gtk.ScrolledWindow (None, None)
   scrolledwindow.show ()
   scrolledwindow.set_policy ('automatic', 'automatic')
@@ -61,24 +63,24 @@ def create_textarea (mainview):
   textview.set_left_margin (10)
   textview.set_right_margin (10)
   scrolledwindow.add (textview)
-  mainview.add (scrolledwindow)
+  window.add (scrolledwindow)
   buffer = textview.get_buffer ()
   buffer.connect ('modified-changed', callback_buffer_modified)
   buffer.connect ('changed', callback_buffer_modified)
 
-app = hildon.App ()
-app.set_title ("MaemoPad")
-app.set_two_part_title (1)
 
-appview = hildon.AppView ("AppView Title")
-app.set_appview (appview)
-appview.app = app
+program = hildon.Program ()
 
-create_textarea (appview)
-create_menu (appview)
-create_toolbar (appview)
+window = hildon.Window ()
+window.set_title ("MaemoPad")
+window.connect ('destroy', gtk.main_quit)
 
-app.show_all ()
+program.add_window (window)
 
+create_textarea (window)
+create_menu (window)
+create_toolbar (window)
+
+window.show_all ()
 
 gtk.main ()

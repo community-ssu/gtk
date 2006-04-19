@@ -23,48 +23,6 @@ headers
 #define NO_IMPORT_PYGOBJECT
 #include <pygobject.h>
 
-#include <hildon-base-lib/hildon-base-dnotify.h>
-#include <hildon-base-lib/hildon-base-types.h>
-#include <hildon-widgets/hildon-scroll-area.h>
-#include <hildon-widgets/hildon-grid.h>
-#include <hildon-widgets/hildon-get-password-dialog.h>
-#include <hildon-widgets/hildon-vvolumebar.h>
-#include <hildon-widgets/hildon-note.h>
-#include <hildon-widgets/hildon-dialoghelp.h>
-#include <hildon-widgets/hildon-set-password-dialog.h>
-#include <hildon-widgets/hildon-telephone-editor.h>
-#include <hildon-widgets/hildon-file-handling-note.h>
-#include <hildon-widgets/hildon-name-password-dialog.h>
-#include <hildon-widgets/hildon-seekbar.h>
-#include <hildon-widgets/hildon-insert-object-dialog.h>
-#include <hildon-widgets/hildon-range-editor.h>
-#include <hildon-widgets/hildon-number-editor.h>
-#include <hildon-widgets/hildon-file-details-dialog.h>
-#include <hildon-widgets/hildon-file-chooser-dialog.h>
-#include <hildon-widgets/hildon-controlbar.h>
-#include <hildon-widgets/hildon-grid-item.h>
-#include <hildon-widgets/hildon-sort-dialog.h>
-#include <hildon-widgets/hildon-weekday-picker.h>
-#include <hildon-widgets/hildon-time-editor.h>
-#include <hildon-widgets/hildon-font-selection-dialog.h>
-#include <hildon-widgets/hildon-color-button.h>
-#include <hildon-widgets/hildon-volumebar.h>
-#include <hildon-widgets/hildon-wizard-dialog.h>
-#include <hildon-widgets/hildon-add-home-dialog.h>
-#include <hildon-widgets/hildon-color-selector.h>
-#include <hildon-widgets/hildon-date-editor.h>
-#include <hildon-widgets/hildon-calendar-popup.h>
-#include <hildon-widgets/hildon-time-picker.h>
-#include <hildon-widgets/hildon-hvolumebar.h>
-#include <hildon-widgets/hildon-file-system-model.h>
-#include <hildon-widgets/hildon-file-system-common.h>
-#include <hildon-widgets/hildon-find-toolbar.h>
-#ifndef HILDON_DISABLE_DEPRECATED
-#include <hildon-widgets/hildon-search.h>
-#include <hildon-widgets/hildon-find-object-dialog.h>
-#include <hildon-widgets/hildon-find-replace-dialog.h>
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -77,19 +35,22 @@ headers
 %%
 modulename hildon
 %%
+import gobject.GObject as PyGObject_Type
+import gtk.Adjustment as PyGtkAdjustment_Type
+import gtk.Bin as PyGtkBin_Type
+import gtk.Button as PyGtkButton_Type
+import gtk.Container as PyGtkContainer_Type
+import gtk.Dialog as PyGtkDialog_Type
+import pango.FontDescription as PyPangoFontDescription_Type
+import gtk.ListStore as PyGtkListStore_Type
+import gtk.Menu as PyGtkMenu_Type
+import gtk.ProgressBar as PyGtkProgressBar_Type
+import gtk.Scale as PyGtkScale_Type
+import gtk.TextBuffer as PyGtkTextBuffer_Type
+import gtk.Toolbar as PyGtkToolbar_Type
 import gtk.Window as PyGtkWindow_Type
 import gtk.Widget as PyGtkWidget_Type
-import gtk.Adjustment as PyGtkAdjustment_Type
-import gtk.Toolbar as PyGtkToolbar_Type
-import gtk.Dialog as PyGtkDialog_Type
-import gtk.Button as PyGtkButton_Type
-import gtk.Scale as PyGtkScale_Type
-import gtk.Container as PyGtkContainer_Type
-import gtk.TextBuffer as PyGtkTextBuffer_Type
-import gtk.ProgressBar as PyGtkProgressBar_Type
-import gtk.ListStore as PyGtkListStore_Type
-import gtk.Bin as PyGtkBin_Type
-import pango.FontDescription as PyPangoFontDescription_Type
+
 
 %%
 ignore-glob *_get_type
@@ -227,3 +188,169 @@ _wrap_hildon_appview_get_vbox (PyGObject *self)
     return pygobject_new((GObject *)ret);
 }
 
+%%
+override hildon_note_new kwargs
+static int
+_wrap_hildon_note_new (PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    PyObject* py_tuple;
+    const char *note_type;
+    static char *kwlist[] = { "note_type", "note_tuple", NULL };
+    PyObject* py_obj;
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "sO!:HildonNote.__init__", kwlist, &note_type, &PyTuple_Type, &py_tuple))
+        return -1;
+
+    if (strcmp (note_type, "confirmation") == 0) {
+        PyObject* parent;
+        const char* description;
+    
+        if (PyTuple_Size (py_tuple) != 2) {
+            PyErr_SetString(PyExc_RuntimeError, "A \"confirmation\" HildonNote type takes exactly two items in its tuple.");
+            return -1;
+        }
+        
+        parent = PyTuple_GetItem (py_tuple, 0);
+        if (parent == NULL) {
+            return -1;
+        }
+        
+        py_obj = PyTuple_GetItem (py_tuple, 1);
+        description = PyString_AsString (py_obj);
+        if (description == NULL) {
+            return -1;
+        }
+        
+        self->obj = (GObject *)hildon_note_new_confirmation(GTK_WINDOW(pygobject_get(parent)), description);
+        if (!self->obj) {
+            PyErr_SetString(PyExc_RuntimeError, "could not create HildonNote object");
+            return -1;
+        }
+    } else if (strcmp (note_type, "confirmation_with_icon_name") == 0) {
+        PyObject* parent;
+        const char* description;
+        const char* icon_name;
+        
+        if (PyTuple_Size (py_tuple) != 3) {
+            PyErr_SetString(PyExc_RuntimeError, "A \"confirmation_with_icon_name\" HildonNote type takes exactly three items in its tuple.");
+            return -1;
+        }
+        
+        parent = PyTuple_GetItem (py_tuple, 0);
+        if (parent == NULL) {
+            return -1;
+        }
+        
+        py_obj = PyTuple_GetItem (py_tuple, 1);
+        description = PyString_AsString (py_obj);
+        if (description == NULL) {
+            return -1;
+        }
+        
+        py_obj = PyTuple_GetItem (py_tuple, 2);
+        icon_name = PyString_AsString (py_obj);
+        if (icon_name == NULL) {
+            return -1;
+        }
+        
+        self->obj = (GObject *)hildon_note_new_confirmation_with_icon_name (GTK_WINDOW(pygobject_get(parent)), description, icon_name);
+        if (!self->obj) {
+            PyErr_SetString(PyExc_RuntimeError, "could not create HildonNote object");
+            return -1;
+        }
+    } else if (strcmp (note_type, "information") == 0) {
+        PyObject* parent;
+        const char* description;
+    
+        if (PyTuple_Size (py_tuple) != 2) {
+            PyErr_SetString(PyExc_RuntimeError, "A \"information\" HildonNote type takes exactly two items in its tuple.");
+            return -1;
+        }
+        
+        parent = PyTuple_GetItem (py_tuple, 0);
+        if (parent == NULL) {
+            return -1;
+        }
+        
+        py_obj = PyTuple_GetItem (py_tuple, 1);
+        description = PyString_AsString (py_obj);
+        if (description == NULL) {
+            return -1;
+        }
+        
+        self->obj = (GObject *)hildon_note_new_information(GTK_WINDOW(pygobject_get(parent)), description);
+        if (!self->obj) {
+            PyErr_SetString(PyExc_RuntimeError, "could not create HildonNote object");
+            return -1;
+        }
+    } else if (strcmp (note_type, "information_with_icon_name") == 0) {
+        PyObject* parent;
+        const char* description;
+        const char* icon_name;
+        
+        if (PyTuple_Size (py_tuple) != 3) {
+            PyErr_SetString(PyExc_RuntimeError, "A \"information_with_icon_name\" HildonNote type takes exactly three items in its tuple.");
+            return -1;
+        }
+        
+        parent = PyTuple_GetItem (py_tuple, 0);
+        if (parent == NULL) {
+            return -1;
+        }
+        
+        py_obj = PyTuple_GetItem (py_tuple, 1);
+        description = PyString_AsString (py_obj);
+        if (description == NULL) {
+            return -1;
+        }
+        
+        py_obj = PyTuple_GetItem (py_tuple, 2);
+        icon_name = PyString_AsString (py_obj);
+        if (icon_name == NULL) {
+            return -1;
+        }
+        
+        self->obj = (GObject *)hildon_note_new_information_with_icon_name (GTK_WINDOW(pygobject_get(parent)), description, icon_name);
+        if (!self->obj) {
+            PyErr_SetString(PyExc_RuntimeError, "could not create HildonNote object");
+            return -1;
+        }
+    } else if (strcmp (note_type, "cancel_with_progress_bar") == 0) {
+        PyObject* parent;
+        const char* description;
+        PyObject* progress_bar;
+    
+        if (PyTuple_Size (py_tuple) != 3) {
+            PyErr_SetString(PyExc_RuntimeError, "A \"cancel_with_progress_bar\" HildonNote type takes exactly three items in its tuple.");
+            return -1;
+        }
+        
+        parent = PyTuple_GetItem (py_tuple, 0);
+        if (parent == NULL) {
+            return -1;
+        }
+        
+        py_obj = PyTuple_GetItem (py_tuple, 1);
+        description = PyString_AsString (py_obj);
+        if (description == NULL) {
+            return -1;
+        }
+        
+        progress_bar = PyTuple_GetItem (py_tuple, 2);
+        if (progress_bar == NULL) {
+            return -1;
+        }
+        
+        self->obj = (GObject *)hildon_note_new_cancel_with_progress_bar(GTK_WINDOW(pygobject_get(parent)), description, GTK_PROGRESS_BAR(pygobject_get(progress_bar)));
+        if (!self->obj) {
+            PyErr_SetString(PyExc_RuntimeError, "could not create HildonNote object");
+            return -1;
+        }
+    } else {
+        PyErr_SetString(PyExc_RuntimeError, "HildonNote constructor: Unknow note type.");
+        return -1;
+    }
+   
+    pygobject_register_wrapper((PyObject *)self);
+    return 0;
+}
