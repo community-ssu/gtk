@@ -1,3 +1,10 @@
+2006-04-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (iap_callback): Log unexpected event types.
+	(cancel_count): New.
+	(show_progress): Clear it.
+	(cancel_response): Hide progress on the fifth cancel request.
+
 2006-04-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/util.h, src/util.cc (device_name): New.

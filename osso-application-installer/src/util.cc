@@ -335,6 +335,7 @@ static GtkProgressBar *progress_bar;
 static const gchar *general_title;
 static apt_proto_operation current_status_operation = op_general;
 static gint pulse_id = -1;
+static int cancel_count;
 
 static gboolean
 pulse_progress (gpointer unused)
@@ -370,7 +371,13 @@ cancel_response (GtkDialog *dialog, gint response, gpointer data)
       cancel_apt_worker ();
     }
   else
-    irritate_user (_("ai_ib_unable_cancel"));
+    {
+      cancel_count++;
+      if (cancel_count < 5)
+	irritate_user (_("ai_ib_unable_cancel"));
+      else
+	hide_progress ();
+    }
 }
 
 bool
@@ -406,6 +413,7 @@ show_progress (const char *title)
   gtk_widget_show (progress_dialog);
 
   progress_cancelled = false;
+  cancel_count = 0;
 }
 
 void
@@ -1564,6 +1572,13 @@ iap_callback (struct iap_event_t *event, void *arg)
       if (callback)
 	callback (false, data);
       break;
+
+    default:
+      add_log ("IAP Error: unexpected event type %d\n", event->type);
+      if (callback)
+	callback (false, data);
+      break;
+
     }
 }
 
