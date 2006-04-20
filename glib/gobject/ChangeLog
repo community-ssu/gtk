@@ -1,3 +1,8 @@
+Thu Apr 20 12:58:59 2006  Tim Janik  <timj@imendio.com>
+
+	* gobject.h: don't export floating-flag/sink API which is not supported
+	with gtk+-2.6.
+
 2006-04-07  Matthias Clasen  <mclasen@redhat.com>
 	
 	* === Released 2.10.2 ===
