@@ -1,3 +1,16 @@
+Thu Apr 20 13:46:42 2006  Tim Janik  <timj@gtk.org>
+
+	* gtk/gtkclist.h (struct _GtkCList): 
+	* gtk/gtkstatusbar.h (struct _GtkStatusbarClass): stop using GMemChunk 
+	in public header files which is now deprecated.
+	
+	* tests/Makefile.am:
+	* demos/gtk-demo/Makefile.am:
+	* demos/Makefile.am:
+	* modules/engines/pixbuf/Makefile.am: backed out my previous "fix" of
+	defining -DGTK_COMPILATION, which just covered GMemChunk deprecation
+	problems.
+
 Wed Apr 19 18:24:12 2006  Tim Janik  <timj@imendio.com>
 
 	* gtk/gtkcombobox.c gtk_combo_box_grab_focus(): when ::hildonlike
