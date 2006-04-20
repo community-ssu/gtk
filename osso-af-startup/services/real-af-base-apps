@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (C) 2004-2005 Nokia Corporation.
+# Copyright (C) 2004-2006 Nokia Corporation.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -25,7 +25,7 @@ start)
   source $AF_INIT_DIR/maemo-af-desktop.sh start
 
   # boost desktop startup
-  sleep 6
+  sleep 10
 
   if [ -x $CONNECTIVITY_UI_SCRIPT ]; then
     source $CONNECTIVITY_UI_SCRIPT start
