@@ -28,6 +28,11 @@ CPPFLAGS = -DBONOBO_DISABLE_DEPRECATED \
 	   -DGTK_DISABLE_DEPRECATED \
 	   -DLIBGLADE_DISABLE_DEPRECATED
 
+# Use soft-float and thumb mode if it is enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+        CFLAGS += -mthumb
+endif
+
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else

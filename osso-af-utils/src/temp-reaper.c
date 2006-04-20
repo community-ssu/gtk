@@ -1,7 +1,7 @@
 /*
  * Daemon to clean up orphaned temporary files.
  *
- * Copyright (C) 2005 Nokia Corporation
+ * Copyright (C) 2005-2006 Nokia Corporation
  *
  * Guillem Jover <guillem.jover@nokia.com>
  *
@@ -31,7 +31,7 @@
 #include <sys/wait.h>
 
 /* The tempdirs we will cleanup. */
-#define TEMPDIRS "/var/tmp"
+#define TEMPDIRS "/var/tmp", "/var/log"
 
 /* Percentage above which the root partition is considered "almost full". */
 #define ALMOSTFULL 90
