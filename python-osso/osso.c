@@ -27,6 +27,9 @@
 #include <glib.h>
 #include <libosso.h>
 
+#define DBUS_API_SUBJECT_TO_CHANGE
+#include <dbus/dbus.h>
+
 static PyObject *OssoException;
 static PyObject *OssoRPCException;
 static PyObject *OssoInvalidException;
@@ -34,366 +37,56 @@ static PyObject *OssoNameException;
 static PyObject *OssoNoStateException;
 static PyObject *OssoStateSizeException;
 
-typedef struct {
-	PyObject *func;
-	PyObject *user_data;
-} Callback_wrapper;
+static PyObject *set_rpc_callback = NULL;
+static PyObject *rpc_async_callback = NULL;
 
-/*****************************************************************************/
-/* WARNING! You'll see a big hack here...                                    */
-/*                                                                           */
-/* This hack is here because is very difficult to treat with variable        */
-/* argument functions in C. There is no easy, or portable, way to generate   */
-/* a va_list structure from a Python tuple.                                  */
-/*                                                                           */
-/* I'll suggest the functions below to be added in next libosso releases.    */
-/*****************************************************************************/
-
-#define DBUS_API_SUBJECT_TO_CHANGE
-#include <dbus/dbus.h>
-
-#define OSSO_BUS_ROOT	   "com.nokia"
-#define OSSO_BUS_ROOT_PATH  "/com/nokia"
-#define TASK_NAV_SERVICE					"com.nokia.tasknav"
-#define APP_LAUNCH_BANNER_METHOD_INTERFACE  "com.nokia.tasknav.app_launch_banner"
-#define APP_LAUNCH_BANNER_METHOD_PATH	   "/com/nokia/tasknav/app_launch_banner"
-#define APP_LAUNCH_BANNER_METHOD			"app_launch_banner"
-
+/* Default values for .._with_defaults functions */
 #define MAX_IF_LEN 255
 #define MAX_SVC_LEN 255
 #define MAX_OP_LEN 255
+#define OSSO_BUS_ROOT      "com.nokia"
+#define OSSO_BUS_ROOT_PATH "/com/nokia"
 
-typedef struct {
-	osso_rpc_async_f *func;
-	gpointer data;
-	gchar *interface;
-	gchar *method;
-} _osso_rpc_async_t;
-
-static gchar *
-appname_to_valid_path_component(const gchar *application)
+gchar *
+appname_to_valid_path_component(const char *application)
 {
-	gchar* copy = NULL, *p = NULL;
-	g_assert(application != NULL);
-	copy = g_strdup(application);
-	if (copy == NULL) {
-		return NULL;
-	}
-	for (p = g_strrstr(copy, "."); p != NULL; p = g_strrstr(p + 1, ".")) {
-		*p = '/';
-	}
-	return copy;
+    gchar *copy = NULL;
+    gchar *p = NULL;
+
+    g_assert(application != NULL);
+
+    copy = g_strdup(application);
+    if (copy == NULL) return NULL;
+
+    for (p = g_strrstr(copy, "."); p != NULL; p = g_strrstr(p + 1, ".")) {
+        *p = '/';
+    }
+    return copy;
 }
 
-static void
-_get_arg(DBusMessageIter *iter, osso_rpc_t *retval)
-{
-	char *str;
-	retval->type = dbus_message_iter_get_arg_type(iter);
-	switch (retval->type) {
-		case DBUS_TYPE_INT32:
-			retval->value.i = dbus_message_iter_get_int32(iter);
-			break;
-		case DBUS_TYPE_UINT32:
-			retval->value.u = dbus_message_iter_get_uint32(iter);
-			break;
-		case DBUS_TYPE_BOOLEAN:
-			retval->value.b = dbus_message_iter_get_boolean(iter);
-			break;
-		case DBUS_TYPE_DOUBLE:
-			retval->value.d = dbus_message_iter_get_double(iter);
-			break;
-		case DBUS_TYPE_STRING:
-			str = dbus_message_iter_get_string(iter);
-			retval->value.s = g_strdup(str);
-			dbus_free (str);
-			if (retval->value.s == NULL) {
-				retval->type = DBUS_TYPE_INVALID;
-			}
-			break;
-		case DBUS_TYPE_NIL:
-			retval->value.s = NULL;		
-			break;
-		default:
-			retval->type = DBUS_TYPE_INVALID;
-			retval->value.i = 0;		
-			break;	
-	}
-}
-
-osso_return_t
-_osso_rpc_run(osso_context_t *osso,
-		const gchar *service, const gchar *object_path, const gchar *interface, const gchar *method,
-		osso_rpc_t *retval, GArray *rpc_args)
-{
-	DBusMessage *msg;
-	DBusConnection *conn = NULL;
-	gint timeout;
-	int i;
-	osso_rpc_t *rpc_arg;
-
-	/* validate parameters */
-	if ((osso == NULL) || (service == NULL) || (object_path == NULL) ||
-			(interface == NULL) || (method == NULL)) {
-		return OSSO_INVALID;
-	}
-	
-	/* get connection */
-	conn = (DBusConnection *)osso_get_dbus_connection(osso);
-	if (conn == NULL) {
-		return OSSO_INVALID;
-	}
-
-	/* get rpc timeout */
-	if (osso_rpc_get_timeout(osso, &timeout) != OSSO_OK) {
-		return OSSO_INVALID;
-	}
-
-	/* get message object */
-	msg = dbus_message_new_method_call(service, object_path, interface, method);
-	if (msg == NULL) {
-		return OSSO_ERROR;
-	}
-
-	/* add arguments to call if exists */
-	if (rpc_args != NULL) {
-		for (i = 0; i < rpc_args->len; i++) {
-			rpc_arg = g_array_index(rpc_args, osso_rpc_t *, i);
-			dbus_message_append_args(msg, rpc_arg->type, &rpc_arg->value, DBUS_TYPE_INVALID);
-		}
-	}
-
-	dbus_message_set_auto_activation(msg, TRUE);
-	
-	if (retval == NULL) {
-
-		dbus_message_set_no_reply(msg, TRUE);
-		if (dbus_connection_send(conn, msg, NULL)) {
-			dbus_connection_flush(conn);
-			dbus_message_unref(msg);
-	
-			/* Tell TaskNavigator to show "launch banner" */
-			msg = dbus_message_new_method_call(
-					TASK_NAV_SERVICE,
-					APP_LAUNCH_BANNER_METHOD_PATH,
-					APP_LAUNCH_BANNER_METHOD_INTERFACE,
-					APP_LAUNCH_BANNER_METHOD);
-   
-			if (msg != NULL) {
-				dbus_message_append_args(msg, DBUS_TYPE_STRING, service, DBUS_TYPE_INVALID);
-				if (dbus_connection_send(conn, msg, NULL)) {
-					dbus_connection_flush(conn);
-				}
-				dbus_message_unref(msg);
-			}
-			return OSSO_OK;
-		} else {
-			dbus_message_unref(msg);
-			return OSSO_ERROR;
-		}
-
-	} else {
-
-		DBusError err;
-		DBusMessage *ret;
-		dbus_error_init(&err);
-		ret = dbus_connection_send_with_reply_and_block(conn, msg, timeout, &err);
-		dbus_message_unref(msg);
-		if (!ret) {
-			retval->type = DBUS_TYPE_STRING;
-			retval->value.s = g_strdup(err.message);
-			dbus_error_free(&err);
-			return OSSO_RPC_ERROR;
-		} else {
-			DBusMessageIter iter;
-			DBusError err;
-			switch(dbus_message_get_type(ret)) {
-				case DBUS_MESSAGE_TYPE_ERROR:
-					dbus_set_error_from_message(&err, ret);
-					retval->type = DBUS_TYPE_STRING;
-					retval->value.s = g_strdup(err.message);
-					dbus_error_free(&err);
-					return OSSO_RPC_ERROR;
-				case DBUS_MESSAGE_TYPE_METHOD_RETURN:
-					dbus_message_iter_init(ret, &iter);
-					_get_arg(&iter, retval);
-					dbus_message_unref(ret);
-	
-					/* Tell TaskNavigator to show "launch banner" */
-					msg = dbus_message_new_method_call(
-							TASK_NAV_SERVICE,
-							APP_LAUNCH_BANNER_METHOD_PATH,
-							APP_LAUNCH_BANNER_METHOD_INTERFACE,
-							APP_LAUNCH_BANNER_METHOD
-						);
-
-					if (msg != NULL) {
-						dbus_message_append_args(msg, DBUS_TYPE_STRING, service, DBUS_TYPE_INVALID);
-						if (dbus_connection_send(conn, msg, NULL)) {
-							dbus_connection_flush(conn);
-						}
-						dbus_message_unref(msg);
-					}
-					return OSSO_OK;
-				default:
-					retval->type = DBUS_TYPE_STRING;
-					retval->value.s = g_strdup("Invalid return value");
-					return OSSO_RPC_ERROR;
-			}
-		}
-	}
-}
-
-static void
-_async_return_handler(DBusPendingCall *pending, void *data)
-{
-	DBusMessage *msg;
-	_osso_rpc_async_t *rpc;
-	osso_rpc_t retval;
-	int type;
-	
-	rpc = (_osso_rpc_async_t *)data;
-
-	msg = dbus_pending_call_get_reply(pending);
-	if (msg == NULL) {
-		g_free(rpc->interface);
-		g_free(rpc->method);
-		g_free(rpc);
-		return;
-	}
-
-	type = dbus_message_get_type(msg);
-	if (type == DBUS_MESSAGE_TYPE_METHOD_RETURN) {
-		DBusMessageIter iter;
-		dbus_message_iter_init(msg, &iter);
-		_get_arg(&iter, &retval);
-		(rpc->func)(rpc->interface, rpc->method, &retval, rpc->data);
-	} else if (type == DBUS_MESSAGE_TYPE_ERROR) {
-		DBusError err;
-		dbus_error_init(&err);
-		dbus_set_error_from_message(&err, msg);
-		dbus_error_free(&err);
-	}
-
-	dbus_message_unref(msg);
-	g_free(rpc->interface);
-	g_free(rpc->method);
-	g_free(rpc);
-	return;
-}
-
-static osso_return_t 
-_osso_rpc_async_run(osso_context_t *osso,
-		const gchar *service, const gchar *object_path, const gchar *interface, const gchar *method,
-		osso_rpc_async_f *async_cb, gpointer data,
-		osso_rpc_t *retval, GArray *rpc_args)
-{
-	DBusMessage *msg;
-	DBusPendingCall *pending;
-	DBusConnection *conn;
-	dbus_bool_t b;
-	gint timeout;
-	_osso_rpc_async_t *rpc = NULL;
-
-	int i;
-	osso_rpc_t *rpc_arg;
-   
-	if ((osso == NULL) || (service == NULL) || (object_path == NULL) ||
-			(interface == NULL) || (method == NULL)) {
-		return OSSO_INVALID;
-	}
-
-	/* get connection */
-	conn = (DBusConnection *)osso_get_dbus_connection(osso);
-	if (conn == NULL) {
-		return OSSO_INVALID;
-	}
-
-	/* get rpc timeout */
-	if (osso_rpc_get_timeout(osso, &timeout) != OSSO_OK) {
-		return OSSO_INVALID;
-	}
-
-
-	msg = dbus_message_new_method_call(service, object_path, interface, method);
-	if (msg == NULL) {
-		return OSSO_ERROR;
-	}
-
-	dbus_message_set_auto_activation(msg, TRUE);
-	
-	/* add arguments to call if exists */
-	if (rpc_args != NULL) {
-		for (i = 0; i < rpc_args->len; i++) {
-			rpc_arg = g_array_index(rpc_args, osso_rpc_t *, i);
-			dbus_message_append_args(msg, rpc_arg->type, &rpc_arg->value, DBUS_TYPE_INVALID);
-		}
-	}
-
-	if (async_cb == NULL) {
-		dbus_message_set_no_reply(msg, TRUE);
-		b = dbus_connection_send(conn, msg, NULL);
-	} else {
-		rpc = (_osso_rpc_async_t *)calloc(1, sizeof(_osso_rpc_async_t));
-		if (rpc == NULL) {
-			return OSSO_ERROR;
-		} 
-		rpc->func = async_cb;
-		rpc->data = data;
-		rpc->interface = g_strdup(interface);
-		rpc->method = g_strdup(method);
-		b = dbus_connection_send_with_reply(conn, msg, &pending, timeout);
-	}
-
-	if (b) {
-		if (async_cb != NULL) {
-			dbus_pending_call_set_notify(pending, _async_return_handler, rpc, NULL);
-		}
-		dbus_connection_flush(conn);
-		dbus_message_unref(msg);
-
-		/* Tell TaskNavigator to show "launch banner" */
-		msg = dbus_message_new_method_call(
-				TASK_NAV_SERVICE,
-				APP_LAUNCH_BANNER_METHOD_PATH,
-				APP_LAUNCH_BANNER_METHOD_INTERFACE,
-				APP_LAUNCH_BANNER_METHOD
-			);
-
-		if (msg != NULL) {
-			dbus_message_append_args(msg, DBUS_TYPE_STRING, service, DBUS_TYPE_INVALID);
-			b = dbus_connection_send(conn, msg, NULL);
-			if (b) {
-				dbus_connection_flush(conn);
-			}
-			dbus_message_unref(msg);
-		}
-		return OSSO_OK;
-	} else {
-		dbus_message_unref(msg);
-		return OSSO_ERROR;
-	}
-}
-/****************************************************************************/
-/* Ugly hack finished!                                                      */
-/****************************************************************************/
 
 /* helper functions */
 static void
-_set_exception(osso_return_t err)
+_set_exception(osso_return_t err, osso_rpc_t *retval)
 {
+	char *err_msg = NULL;
+	if ((retval != NULL) && (retval->type == DBUS_TYPE_STRING) && (retval->value.s != NULL)) {
+		err_msg = strdupa(retval->value.s);
+	}
+
 	switch (err) {
 		case OSSO_ERROR:
-			PyErr_SetString(OssoException, "OSSO error.");
+			PyErr_SetString(OssoException, ((err_msg != NULL) ? err_msg : "OSSO error."));
 			break;
 		case OSSO_INVALID:
-			PyErr_SetString(OssoInvalidException, "Invalid parameter.");
+			PyErr_SetString(OssoInvalidException, ((err_msg != NULL) ? err_msg : "Invalid parameter."));
 			break;
 		case OSSO_RPC_ERROR:
-			PyErr_SetString(OssoRPCException, "Error in RPC method call.");
+			PyErr_SetString(OssoRPCException, ((err_msg != NULL) ? err_msg : "Error in RPC method call."));
 			break;
 		case OSSO_ERROR_NAME:
-			PyErr_SetString(OssoNameException, "Invalid name.");
+			PyErr_SetString(OssoNameException, ((err_msg != NULL) ? err_msg : "Invalid name."));
+			break;
 			break;
 		case OSSO_ERROR_NO_STATE:
 			PyErr_SetString(OssoNoStateException, "No state file found to read.");
@@ -408,7 +101,7 @@ _set_exception(osso_return_t err)
 }
 
 static PyObject *
-_rpc_t_to_python(const osso_rpc_t *arg)
+_rpc_t_to_python(osso_rpc_t *arg)
 {
 	PyObject *py_arg;
 
@@ -471,35 +164,9 @@ _python_to_rpc_t(PyObject *py_arg, osso_rpc_t *rpc_arg)
 	}
 }
 
-static GArray *
-_rpc_args_py_to_c(PyObject *py_args)
-{
-	int i;
-	int size;
-	GArray *rpc_args;
-	PyObject *py_arg;
-	osso_rpc_t *rpc_arg;
-
-	if (!PyTuple_Check(py_args)) {
-		return NULL;
-	}
-
-	size = PyTuple_Size(py_args);
-	rpc_args = g_array_sized_new(FALSE, FALSE, sizeof(osso_rpc_t *), size);
-
-	for (i = 0; i < size; i++) {
-		rpc_arg = (osso_rpc_t *)g_malloc(sizeof(osso_rpc_t));
-		py_arg = PyTuple_GetItem(py_args, i);
-
-		_python_to_rpc_t(py_arg, rpc_arg);
-
-		g_array_append_val(rpc_args, rpc_arg);
-	}
-	return rpc_args;
-}
-
 static PyObject *
-_rpc_args_c_to_py(GArray *args) {
+_rpc_args_c_to_py(GArray *args)
+{
 	int i;
 	int size;
 	PyObject *ret;
@@ -522,16 +189,22 @@ _rpc_args_c_to_py(GArray *args) {
 	return ret;
 }
 
-static void _release_rpc_args(GArray *rpc_args)
+static void
+_argfill(DBusMessage *msg, void *raw_tuple)
 {
-	int i;
-
-	for (i = 0; i < rpc_args->len; i++) {
-		g_free(g_array_index(rpc_args, osso_rpc_t *, i));
+	osso_rpc_t arg;
+	int count;
+	int size;
+	PyObject *tuple;
+	PyObject *py_arg;
+	
+	tuple = (PyObject *)raw_tuple;
+	size = PyTuple_Size(tuple);
+	for (count = 0; count < size; count++) {
+		py_arg = PyTuple_GetItem(tuple, count);
+		_python_to_rpc_t(py_arg, &arg);
+		dbus_message_append_args(msg, arg.type, &arg.value, DBUS_TYPE_INVALID);
 	}
-	g_array_free(rpc_args, TRUE);
-
-	return;
 }
 
 static char _check_context(osso_context_t *context)
@@ -552,14 +225,6 @@ typedef struct {
 
 
 /* Context method */
-static void
-Context_dealloc(Context *self)
-{
-	osso_deinitialize(self->context);
-	return;
-}
-
-
 static PyObject *
 Context_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
@@ -610,6 +275,7 @@ Context_get_name(Context *self)
 	return Py_BuildValue("s", name);
 }
 
+
 static PyObject *
 Context_get_version(Context *self)
 {
@@ -642,7 +308,7 @@ Context_statusbar_send_event(Context *self, PyObject *args, PyObject *kwds)
 
 	ret = osso_statusbar_send_event(self->context, name, arg1, arg2, arg3, &retval);
 	if (ret != OSSO_OK) {
-		_set_exception(ret);
+		_set_exception(ret, &retval);
 		return NULL;
 	}
 
@@ -658,40 +324,49 @@ Context_rpc_run(Context *self, PyObject *args, PyObject *kwds)
 	char *interface = NULL;
 	char *method = NULL;
 	char wait_reply = FALSE;
+	char use_system_bus = FALSE;
 	PyObject *py_rpc_args = NULL;
-	GArray *rpc_args;
 	osso_rpc_t retval;
 	osso_return_t ret;
 
-	static char *kwlist[] = { "service", "object_path", "interface", "method", "rpc_args", "wait_reply", 0 };
+	static char *kwlist[] = { "service", "object_path", "interface", "method",
+								"rpc_args", "wait_reply", "use_system_bus", 0 };
 
 	if (!_check_context(self->context)) return 0;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "ssss|Ob:Context.rpc_run", kwlist,
-				&service, &object_path, &interface, &method, &py_rpc_args, &wait_reply)) {
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "ssss|Obb:Context.rpc_run",
+				kwlist, &service, &object_path, &interface, &method,
+				&py_rpc_args, &wait_reply, &use_system_bus)) {
 		return NULL;
 	}
 
-	/* rpc_args */
 	if (py_rpc_args != NULL) {
 		if (!PyTuple_Check(py_rpc_args)) {
-			PyErr_SetString(PyExc_TypeError, "RPC arguments must be in a tuple.");
+			PyErr_SetString(PyExc_TypeError,
+								"RPC arguments must be in a tuple.");
 			return NULL;
 		}
 	} else {
 		py_rpc_args = PyTuple_New(0);
 	}
-	rpc_args = _rpc_args_py_to_c(py_rpc_args);
 
-	if (wait_reply) {
-		ret = _osso_rpc_run(self->context, service, object_path, interface, method, &retval, rpc_args);
+	if (use_system_bus) {
+		ret = osso_rpc_run_system_with_argfill(self->context,
+					service,
+					object_path,
+					interface,
+					method,
+					(wait_reply ?  &retval : NULL),
+					_argfill,
+					py_rpc_args);
 	} else {
-		ret = _osso_rpc_run(self->context, service, object_path, interface, method, NULL, rpc_args);
+		ret = osso_rpc_run_with_argfill(self->context, service, object_path,
+				interface, method, (wait_reply ? &retval : NULL), _argfill,
+				py_rpc_args);
 	}
-	_release_rpc_args(rpc_args);
 
 	if (ret != OSSO_OK) {
-		_set_exception(ret);
+		_set_exception(ret, ((wait_reply) ? &retval : NULL));
 		return NULL;
 	}
 
@@ -711,34 +386,34 @@ Context_rpc_run_with_defaults(Context *self, PyObject *args, PyObject *kwds)
 	char object_path[MAX_OP_LEN] = {0};
 	char interface[MAX_IF_LEN] = {0};
 	char wait_reply = FALSE;
+	char use_system_bus = FALSE;
 	char *copy = NULL;
 	PyObject *py_rpc_args = NULL;
-	GArray *rpc_args;
 	osso_rpc_t retval;
 	osso_return_t ret;
 
-	static char *kwlist[] = { "application", "method", "rpc_args", "wait_reply", 0 };
+	static char *kwlist[] = { "application", "method", "rpc_args",
+								"wait_reply", "use_system_bus", 0 };
 
 	if (!_check_context(self->context)) return 0;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "ss|Ob:Context.run_with_defaults", kwlist,
-				&application, &method, &py_rpc_args, &wait_reply)) {
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"ss|Ob:Context.run_with_defaults", kwlist, &application,
+				&method, &py_rpc_args, &wait_reply, &use_system_bus)) {
 		return NULL;
 	}
 
-	/* rpc_args */
 	if (py_rpc_args != NULL) {
 		if (!PyTuple_Check(py_rpc_args)) {
-			PyErr_SetString(PyExc_TypeError, "RPC arguments must be in a tuple.");
+			PyErr_SetString(PyExc_TypeError,
+								"RPC arguments must be in a tuple.");
 			return NULL;
 		}
 	} else {
 		py_rpc_args = PyTuple_New(0);
 	}
-	rpc_args = _rpc_args_py_to_c(py_rpc_args);
 
-	/* make default arguments */
-    g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
+	g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
     copy = appname_to_valid_path_component(application);
     if (copy == NULL) {
 		 PyErr_SetString(OssoException, "Invalid application.");
@@ -749,15 +424,28 @@ Context_rpc_run_with_defaults(Context *self, PyObject *args, PyObject *kwds)
 	copy = NULL;
     g_snprintf(interface, MAX_IF_LEN, "%s", service);
 
-	if (wait_reply) {
-		ret = _osso_rpc_run(self->context, service, object_path, interface, method, &retval, rpc_args);
+	if (use_system_bus) {
+		ret = osso_rpc_run_system_with_argfill(self->context,
+					service,
+					object_path,
+					interface,
+					method,
+					(wait_reply ?  &retval : NULL),
+					_argfill,
+					py_rpc_args);
 	} else {
-		ret = _osso_rpc_run(self->context, service, object_path, interface, method, NULL, rpc_args);
+		ret = osso_rpc_run_with_argfill(self->context,
+					service,
+					object_path,
+					interface,
+					method,
+					(wait_reply ?  &retval : NULL),
+					_argfill,
+					py_rpc_args);
 	}
-	_release_rpc_args(rpc_args);
 
 	if (ret != OSSO_OK) {
-		_set_exception(ret);
+		_set_exception(ret, ((wait_reply) ? &retval : NULL));
 		return NULL;
 	}
 
@@ -768,35 +456,23 @@ Context_rpc_run_with_defaults(Context *self, PyObject *args, PyObject *kwds)
 }
 
 
+/* rpc_async_run */
 static void
 _wrap_rpc_async_handler(const gchar *interface, const gchar *method, osso_rpc_t *retval, gpointer data)
 {
-	PyObject *py_interface;
-	PyObject *py_method;
+	PyObject *py_args;
 	PyObject *py_ret;
-	Callback_wrapper *handler = data;
 	PyGILState_STATE state;
 
 	state = PyGILState_Ensure();
 
-	if (handler->func == NULL) {
+	if (rpc_async_callback == NULL) {
 		return;
 	}
 	
-	py_interface = Py_BuildValue("s", interface);
-	py_method = Py_BuildValue("s", method);
-
-	if (handler->user_data) {
-		py_ret = PyEval_CallFunction(handler->func, "(ssO)", py_interface, py_method, handler->user_data);
-	} else {
-		py_ret = PyEval_CallFunction(handler->func, "(ss)", py_interface, py_method);
-	}
-
-	if (py_ret == NULL || py_ret == Py_None) {
-		PyGILState_Release(state);
-		return;
-	}
-
+	py_args = Py_BuildValue("(ssO)", interface, method, data);
+	py_ret = PyEval_CallObject(rpc_async_callback, py_args);
+	
 	_python_to_rpc_t(py_ret, retval);
 
 	PyGILState_Release(state);
@@ -814,45 +490,50 @@ Context_rpc_async_run(Context *self, PyObject *args, PyObject *kwds)
 	PyObject *py_func;
 	PyObject *py_data;
 	PyObject *py_rpc_args = NULL;
-
-	Callback_wrapper callback;
-	GArray *rpc_args;
-	osso_rpc_t retval;
 	osso_return_t ret;
 
-	static char *kwlist[] = { "service", "object_path", "interface", "method", "callback", "user_data", "rpc_args", 0 };
+	static char *kwlist[] = { "service", "object_path", "interface", "method",
+								"callback", "user_data", "rpc_args", 0 };
 
 	if (!_check_context(self->context)) return 0;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "ssssO|OO:Context.rpc_async_run", kwlist,
-				&service, &object_path, &interface, &method, &py_func, &py_data, &py_rpc_args)) {
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"ssssO|OO:Context.rpc_async_run", kwlist, &service,
+				&object_path, &interface, &method, &py_func, &py_data,
+				&py_rpc_args)) {
 		return NULL;
 	}
-
-	/* py_func / py_data */
-	callback.func = py_func;
-	callback.user_data = py_data;
 
 	/* py_rpc_args */
 	if (py_rpc_args != NULL) {
 		if (!PyTuple_Check(py_rpc_args)) {
-			PyErr_SetString(PyExc_TypeError, "RPC arguments must be in a tuple.");
+			PyErr_SetString(PyExc_TypeError,
+								"RPC arguments must be in a tuple.");
 			return NULL;
 		}
 	} else {
 		py_rpc_args = PyTuple_New(0);
 	}
-	rpc_args = _rpc_args_py_to_c(py_rpc_args);
 
-	ret = _osso_rpc_async_run(self->context, service, object_path, interface, method, _wrap_rpc_async_handler, &callback, &retval, rpc_args);
-	_release_rpc_args(rpc_args);
-
-	if (ret != OSSO_OK) {
-		_set_exception(ret);
+	if (!PyCallable_Check(py_func)) {
+		PyErr_SetString(PyExc_TypeError,
+							"callback parameter must be callable");
 		return NULL;
 	}
+	Py_XINCREF(py_func);
+	Py_XDECREF(rpc_async_callback);
+	rpc_async_callback = py_func;
 
-	return _rpc_t_to_python(&retval);
+	ret = osso_rpc_async_run_with_argfill(self->context, service, object_path,
+										interface, method,
+										_wrap_rpc_async_handler, py_data,
+										_argfill, py_rpc_args);
+
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+	Py_RETURN_NONE;
 }
 
 
@@ -861,43 +542,46 @@ Context_rpc_async_run_with_defaults(Context *self, PyObject *args, PyObject *kwd
 {
 	char *application;
 	char *method;
-	PyObject *py_func;
-	PyObject *py_data;
+	PyObject *py_func = NULL;
+	PyObject *py_data = NULL;
 	PyObject *py_rpc_args = NULL;
 
     char service[MAX_SVC_LEN] = {0};
 	char object_path[MAX_OP_LEN] = {0};
 	char interface[MAX_IF_LEN] = {0};
 	char *copy = NULL;
-	Callback_wrapper callback;
-	GArray *rpc_args;
-	osso_rpc_t retval;
 	osso_return_t ret;
 
-	static char *kwlist[] = { "application", "method", "callback", "user_data", "rpc_args", 0 };
+	static char *kwlist[] = { "application", "method", "callback", "user_data",
+								"rpc_args", 0 };
 
 	if (!_check_context(self->context)) return 0;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "ssO|OO:Context.run_async_with_defaults", kwlist,
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"ssO|OO:Context.rpc_async_run_with_defaults", kwlist,
 				&application, &method, &py_func, &py_data, &py_rpc_args)) {
 		return NULL;
 	}
 
-	/* py_func / py_data */
-	callback.func = py_func;
-	callback.user_data = py_data;
-
 	if (py_rpc_args != NULL) {
 		if (!PyTuple_Check(py_rpc_args)) {
-			PyErr_SetString(PyExc_TypeError, "RPC arguments must be in a tuple.");
+			PyErr_SetString(PyExc_TypeError,
+								"RPC arguments must be in a tuple.");
 			return NULL;
 		}
 	} else {
 		py_rpc_args = PyTuple_New(0);
 	}
-	rpc_args = _rpc_args_py_to_c(py_rpc_args);
 
-	/* make default arguments */
+	if (!PyCallable_Check(py_func)) {
+		PyErr_SetString(PyExc_TypeError,
+							"callback parameter must be callable");
+		return NULL;
+	}
+	Py_XINCREF(py_func);
+	Py_XDECREF(rpc_async_callback);
+	rpc_async_callback = py_func;
+
     g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
     copy = appname_to_valid_path_component(application);
     if (copy == NULL) {
@@ -909,45 +593,36 @@ Context_rpc_async_run_with_defaults(Context *self, PyObject *args, PyObject *kwd
 	copy = NULL;
     g_snprintf(interface, MAX_IF_LEN, "%s", service);
 
-	ret = _osso_rpc_async_run(self->context, service, object_path, interface, method, _wrap_rpc_async_handler, &callback, &retval, rpc_args);
-	_release_rpc_args(rpc_args);
+	ret = osso_rpc_async_run_with_argfill(self->context, service, object_path,
+										interface, method,
+										_wrap_rpc_async_handler, py_data,
+										_argfill, py_rpc_args);
 
 	if (ret != OSSO_OK) {
-		_set_exception(ret);
+		_set_exception(ret, NULL);
 		return NULL;
 	}
-
-	return _rpc_t_to_python(&retval);
+	Py_RETURN_NONE;
 }
+/* /rpc_async_run */
 
 
+/* set_rpc_callback */
 static gint
 _wrap_rpc_callback_handler(const gchar *interface, const gchar *method, GArray *arguments, gpointer data, osso_rpc_t *retval)
 {
-	PyObject *py_interface;
-	PyObject *py_method;
-	PyObject *py_arguments;
-
-	Callback_wrapper *handler = data;
-
+	PyObject *py_args = NULL;
+	PyObject *py_ret = NULL;
 	PyGILState_STATE state;
-	PyObject *py_ret;
 
 	state = PyGILState_Ensure();
 
-	if (handler->func == NULL) {
+	if (set_rpc_callback == NULL) {
 		return OSSO_ERROR;
 	}
 	
-	py_interface = Py_BuildValue("s", interface);
-	py_method = Py_BuildValue("s", method);
-	py_arguments = _rpc_args_c_to_py(arguments);
-
-	if (handler->user_data) {
-		py_ret = PyEval_CallFunction(handler->func, "(ssOO)", py_interface, py_method, py_arguments, handler->user_data);
-	} else {
-		py_ret = PyEval_CallFunction(handler->func, "(ssO)", py_interface, py_method, py_arguments);
-	}
+	py_args = Py_BuildValue("(ssOO)", interface, method, _rpc_args_c_to_py(arguments), data);
+	py_ret = PyEval_CallObject(set_rpc_callback, py_args);
 
 	if (py_ret == NULL) {
 		retval->type = DBUS_TYPE_STRING;
@@ -969,28 +644,102 @@ Context_set_rpc_callback(Context *self, PyObject *args, PyObject *kwds)
 	const gchar *service;
 	const gchar *object_path;
 	const gchar *interface;
-	PyObject *py_func;
-	PyObject *py_data;
+	PyObject *py_func = NULL;
+	PyObject *py_data = NULL;
 
-	Callback_wrapper callback;
 	osso_return_t ret;
 
-	static char *kwlist[] = { "service", "object_path", "interface", "callback", "user_data", 0 };
+	static char *kwlist[] = { "service", "object_path", "interface", "callback",
+								"user_data", 0 };
 
 	if (!_check_context(self->context)) return 0;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "sssO|O:Context.set_rpc_callback", kwlist, &service, &object_path, &interface, &py_func, &py_data)) {
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"sssO|O:Context.set_rpc_callback", kwlist, &service,
+				&object_path, &interface, &py_func, &py_data)) {
 		return NULL;
 	}
 
-	/* py_func / py_data */
-	callback.func = py_func;
-	callback.user_data = py_data;
+	if (!PyCallable_Check(py_func)) {
+		PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
+		return NULL;
+	}
+	Py_XINCREF(py_func);
+	Py_XDECREF(set_rpc_callback);
+	set_rpc_callback = py_func;
 
-	ret = osso_rpc_set_cb_f(self->context, service, object_path, interface, _wrap_rpc_callback_handler, &callback);
+	ret = osso_rpc_set_cb_f(self->context, service, object_path, interface,
+								_wrap_rpc_callback_handler, py_data);
 
 	if (ret != OSSO_OK) {
-		_set_exception(ret);
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+/* /set_rpc_callback */
+
+
+static PyObject *
+Context_get_rpc_timeout(Context *self)
+{
+	osso_return_t ret;
+	int timeout;
+
+	if (!_check_context(self->context)) return 0;
+
+	ret = osso_rpc_get_timeout(self->context, &timeout);
+
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	return Py_BuildValue("i", timeout);
+}
+
+static PyObject *
+Context_set_rpc_timeout(Context *self, PyObject *args)
+{
+	osso_return_t ret;
+	int timeout = 0;
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTuple(args, "i:Context.set_rpc_timeout", &timeout)) {
+		return NULL;
+	}
+
+	ret = osso_rpc_set_timeout(self->context, timeout);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+	Py_RETURN_NONE;
+}
+
+
+static PyObject *
+Context_application_top(Context *self, PyObject *args, PyObject *kwds)
+{
+	osso_return_t ret;
+	char *application = NULL;
+	char *arguments = NULL;
+
+	static char *kwlist[] = { "application", "arguments", 0 };
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|s:Context.application_top",
+				kwlist, &application, &arguments))
+	{
+		return NULL;
+	}
+
+	ret = osso_application_top(self->context, application, arguments);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
 		return NULL;
 	}
 
@@ -999,20 +748,95 @@ Context_set_rpc_callback(Context *self, PyObject *args, PyObject *kwds)
 
 
 static PyObject *
+Context_system_note_dialog(Context *self, PyObject *args, PyObject *kwds)
+{
+	osso_return_t ret;
+	char *message = NULL;
+	char *type_string = NULL;
+	osso_system_note_type_t type = OSSO_GN_NOTICE;
+	osso_rpc_t retval;
+
+	static char *kwlist[] = { "message", "type", 0 };
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|s:Context.system_note_dialog",
+				kwlist, &message, &type_string))
+	{
+		return NULL;
+	}
+
+	if (type_string) {
+		if (!strcasecmp(type_string, "warning")) {
+			type = OSSO_GN_WARNING;
+		} else if (!strcasecmp(type_string, "error")) {
+			type = OSSO_GN_ERROR;
+		} else if (!strcasecmp(type_string, "wait")) {
+			type = OSSO_GN_WAIT;
+		}
+	}
+	
+	ret = osso_system_note_dialog(self->context, message, type, &retval);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, &retval);
+		return NULL;
+	}
+
+	return _rpc_t_to_python(&retval);
+}
+
+
+static PyObject *
+Context_system_note_infoprint(Context *self, PyObject *args, PyObject *kwds)
+{
+	char *message = NULL;
+	osso_return_t ret;
+	osso_rpc_t retval;
+
+	static char *kwlist[] = { "message", 0 };
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:Context.system_note_infoprint",
+				kwlist, &message))
+	{
+		return NULL;
+	}
+
+	ret = osso_system_note_infoprint(self->context, message, &retval);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, &retval);
+		return NULL;
+	}
+
+	return _rpc_t_to_python(&retval);
+}
+
+
+static PyObject *
 Context_close(Context *self)
 {
 	if (!_check_context(self->context)) return 0;
-
-	Context_dealloc(self);
-
+	osso_deinitialize(self->context);
+	self->context = NULL;
 	Py_RETURN_NONE;
 }
+
+
+static void
+Context_dealloc(Context *self)
+{
+	if (!_check_context(self->context)) return;
+	Context_close(self);
+	return;
+}
+
 
 static struct PyMethodDef Context_methods[] = {
 	{"get_name", (PyCFunction)Context_get_name, METH_NOARGS, "c.get_name() -> string\n\nReturn the application name.\n"},
 	{"get_version", (PyCFunction)Context_get_version, METH_NOARGS, "c.get_name() -> string\n\nReturn the application version.\n"},
 	{"rpc_run", (PyCFunction)Context_rpc_run, METH_VARARGS | METH_KEYWORDS, \
-		"c.rpc_run(service, object_path, interface, method[, rpc_args, wait_reply]) -> object\n"
+		"c.rpc_run(service, object_path, interface, method[, rpc_args[, wait_reply[, system_bus]]]) -> object\n"
 		"\n"
 		"Run a RPC method with arguments inside rpc_args tuple.\n"
 		"\n"
@@ -1050,6 +874,28 @@ static struct PyMethodDef Context_methods[] = {
 		"default service of the application. The default service is 'com.nokia.A',\n"
 		"where A is the application's name as given to osso_initialize.\n"},*/
 	{"statusbar_send_event", (PyCFunction)Context_statusbar_send_event, METH_VARARGS | METH_KEYWORDS, "Send an event to statusbar."},
+	{"get_rpc_timeout", (PyCFunction)Context_get_rpc_timeout, METH_NOARGS,
+		"c.get_rpc_timeout() -> int\n\nReturn the timeout value used by RPC functions."},
+	{"set_rpc_timeout", (PyCFunction)Context_set_rpc_timeout, METH_VARARGS,
+		"c.set_rpc_timeout(timeout)\n\nSet the timeout value used by RPC functions."},
+	{"application_top", (PyCFunction)Context_application_top, METH_VARARGS | METH_KEYWORDS,
+		"c.application_top(application, arguments) -> object\n"
+		"\n"
+		"This method tops an application. If the application is not already\n"
+		"running, D-BUS will launch it via the auto-activation mechanism."},
+	{"system_note_dialog", (PyCFunction)Context_system_note_dialog, METH_VARARGS | METH_KEYWORDS,
+		"c.system_note_dialog(message[, type='notice']) -> object\n"
+		"\n"
+		"This method requests that a system note (a window that is modal to the whole system)\n"
+		"is shown. Application that do have a GUI should not use this function but the hildon_note\n"
+		"widget directly. The \"type\" argument should be 'warning', 'error', 'wait' or 'notice'."},
+	{"system_note_infoprint", (PyCFunction)Context_system_note_infoprint, METH_VARARGS | METH_KEYWORDS,
+		"c.system_note_infoprint(message) -> object\n"
+		"\n"
+		"This method requests that the statusbar shows an infoprint (aka information banner).\n"
+		"This allow non-GUI applications to display some information to the user.\n"
+		"Application that do have a GUI should not use this function but the gtk_infoprint\n"
+		"widget directly."},
 	{"close", (PyCFunction)Context_close, METH_NOARGS, "Close context."},
 	{0, 0, 0, 0}
 };
@@ -1096,60 +942,7 @@ static PyTypeObject ContextType = {
 	Context_new,													/* tp_new */
 };
 
-/**
- * XXX: TEST
- */
-
-#include <stdio.h>
-
-PyObject *
-test(PyObject *self, PyObject *args)
-{
-	PyObject *py_test;
-	osso_rpc_t rpc_t;
-	int i;
-	PyObject *tuple_args;
-	osso_rpc_t *rpc_t_p;
-	GArray *rpc_args;
-
-	rpc_t.type = DBUS_TYPE_INT32;
-	rpc_t.value.i = 25;
-	py_test = _rpc_t_to_python(&rpc_t);
-	printf("_rpc_t_to_python: %ld\n", PyInt_AsLong(py_test));
-
-	rpc_t.value.i = -25;
-	py_test = _rpc_t_to_python(&rpc_t);
-	printf("_rpc_t_to_python: %ld\n", PyInt_AsLong(py_test));
-
-	rpc_t.type = DBUS_TYPE_STRING;
-	rpc_t.value.s = "Test 123...";
-	py_test = _rpc_t_to_python(&rpc_t);
-	printf("_rpc_t_to_python: %s\n", PyString_AsString(py_test));
-
-	rpc_t.value.s = NULL;
-	py_test = _rpc_t_to_python(&rpc_t);
-	if (py_test == Py_None) {
-		printf("_rpc_t_to_python: OK. invalid.\n");
-	} else {
-		printf("_rpc_t_to_python: ERROR\n");
-	}
-
-	rpc_args = _rpc_args_py_to_c(args);
-	for (i = 0; i < rpc_args->len; i++) {
-		rpc_t_p = g_array_index(rpc_args, osso_rpc_t *, i);
-		printf("rpc_type: %d\n", rpc_t_p->type);
-	}
-
-	tuple_args = _rpc_args_c_to_py(rpc_args);
-	PyObject_Print(tuple_args, stdout, 0);
-	printf("\n");
-	_release_rpc_args(rpc_args);
-
-	Py_RETURN_NONE;
-}
-
 static struct PyMethodDef osso_methods[] = {
-	{"test", (PyCFunction)test, METH_VARARGS, "Test Module."},
 	{0, 0, 0, 0}
 };
 
@@ -1200,5 +993,5 @@ initosso(void)
 }
 
 
-/* vim:ts=4:noet:sw=4:sws=4:si:ai:showmatch
+/* vim:ts=4:noet:sw=4:sws=4:si:ai:showmatch:foldmethod=indent
  */
