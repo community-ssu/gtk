@@ -115,7 +115,7 @@ using namespace std;
 
 /* You know what this means.
  */
-//#define DEBUG
+#define DEBUG
 
 
 /** GENERAL UTILITIES
@@ -539,6 +539,31 @@ class DownloadStatus : public pkgAcquireStatus
   }
 };
 
+bool
+is_user_section (const char *section, const char *end)
+{
+  if (section == NULL)
+    return false;
+
+#if ENABLE_OLD_MAEMO_SECTION_TEST
+  if (end-section > 6 && !strncmp (section, "maemo/", 6))
+    return true;
+#endif
+  
+  return end-section > 6 && !strncmp (section, "user/", 5);
+}
+
+bool
+is_user_package (const pkgCache::VerIterator &ver)
+{
+  const char *section = ver.Section ();
+
+  if (section == NULL)
+    return false;
+
+  return is_user_section (section, section + strlen (section));
+}
+
 /* We keep a global pointer to a pkgCacheFile instance that is used by
    most of the command handlers.
 
@@ -550,6 +575,99 @@ class DownloadStatus : public pkgAcquireStatus
          pkgCache, a pkgDebCache, etc.
 */
 pkgCacheFile *package_cache = NULL;
+char *auto_flags = NULL;
+unsigned int package_count;
+
+/* Save and restore the 'Auto' flags of the cache.  Libapt-pkg does
+   not seem to save it so we do it.
+*/
+
+void
+save_auto_flags ()
+{
+  // XXX - log errors.
+
+  if (package_cache == NULL)
+    return;
+
+  if (mkdir ("/var/lib/osso-application-installer", 0777) < 0 && errno != EEXIST)
+    {
+      log_stderr ("/var/lib/osso-application-installer: %m");
+      return;
+    }
+
+  memset (auto_flags, 0, package_count);
+
+  FILE *f = fopen ("/var/lib/osso-application-installer/autoinst", "w");
+  if (f)
+    {
+      pkgDepCache &cache = *package_cache;
+
+      for (pkgCache::PkgIterator pkg = cache.PkgBegin(); !pkg.end (); pkg++)
+	if (cache[pkg].Flags & pkgCache::Flag::Auto)
+	  {
+	    auto_flags[pkg->ID] = true;
+	    fprintf (f, "%s\n", pkg.Name ());
+	  }
+      fclose (f);
+    }
+}
+
+void
+restore_auto_flags ()
+{
+  if (package_cache == NULL)
+    return;
+
+  pkgDepCache &cache = *package_cache;
+  
+  for (pkgCache::PkgIterator pkg = cache.PkgBegin(); !pkg.end (); pkg++)
+    {
+      if (auto_flags[pkg->ID])
+	cache[pkg].Flags |= pkgCache::Flag::Auto;
+      else
+	cache[pkg].Flags &= ~pkgCache::Flag::Auto;
+    }
+}
+
+void
+load_auto_flags ()
+{
+  // XXX - log errors.
+
+  if (package_cache == NULL)
+    return;
+
+  memset (auto_flags, 0, package_count);
+
+  FILE *f = fopen ("/var/lib/osso-application-installer/autoinst", "r");
+  if (f)
+    {
+      pkgDepCache &cache = *package_cache;
+
+      char *line = NULL;
+      size_t len = 0;
+      ssize_t n;
+
+      while ((n = getline (&line, &len, f)) != -1)
+	{
+	  if (n > 0 && line[n-1] == '\n')
+	    line[n-1] = '\0';
+
+	  pkgCache::PkgIterator pkg = cache.FindPkg (line);
+	  if (!pkg.end ())
+	    {
+	      DBG ("auto: %s", pkg.Name ());
+	      auto_flags[pkg->ID] = true;
+	    }
+	}
+
+      free (line);
+      fclose (f);
+
+      restore_auto_flags ();
+    }
+}
 
 /* Initialize libapt-pkg if this has not been already and (re-)create
    PACKAGE_CACHE.  If the cache can not be created, PACKAGE_CACHE is
@@ -590,12 +708,39 @@ cache_init ()
 
   DBG ("init.");
   if (!package_cache->Open (progress))
-   {
-     DBG ("failed.");
-     _error->DumpErrors();
-     delete package_cache;
-     package_cache = NULL;
-   }
+    {
+      DBG ("failed.");
+      _error->DumpErrors();
+      delete package_cache;
+      package_cache = NULL;
+    }
+
+  if (auto_flags)
+    {
+      delete[] auto_flags;
+      auto_flags = NULL;
+    }
+
+  if (package_cache)
+    {
+      pkgDepCache &cache = *package_cache;
+      package_count = cache.Head().PackageCount;
+      auto_flags = new char[package_count];
+      memset (auto_flags, 0, package_count);
+    }
+
+  load_auto_flags ();
+}
+
+/* Determine whether a package was installed automatically to satisfy
+   a dependency.
+*/
+bool
+is_auto_package (pkgCache::PkgIterator &pkg)
+{
+  pkgDepCache &cache = *package_cache;
+  
+  return (cache[pkg].Flags & pkgCache::Flag::Auto) != 0;
 }
 
 /* Revert the cache to its initial state.  More concretely, all
@@ -605,6 +750,18 @@ cache_init ()
    much faster.
 */
 void
+cache_reset_package (pkgCache::PkgIterator &pkg)
+{
+  pkgDepCache &cache = *package_cache;
+
+  cache.MarkKeep (pkg);
+  if (auto_flags[pkg->ID])
+    cache[pkg].Flags |= pkgCache::Flag::Auto;
+  else
+    cache[pkg].Flags &= ~pkgCache::Flag::Auto;
+}
+
+void
 cache_reset ()
 {
   if (package_cache == NULL)
@@ -613,14 +770,16 @@ cache_reset ()
   pkgDepCache &cache = *package_cache;
 
   for (pkgCache::PkgIterator pkg = cache.PkgBegin(); !pkg.end (); pkg++)
-    cache.MarkKeep (pkg);
+    cache_reset_package (pkg);
 }
 
 /* Mark a package for installation, using a 'no-surprises' approach
    suitable for the Application installer.
 
    Concretely, installing a package will never automatically remove
-   other packages.
+   other packages.  Thus, we undo the removals scheduled by
+   MarkInstall.  Doing this will break the original package, but that
+   is what we want.
 */
 static void
 mark_for_install (pkgCache::PkgIterator &pkg)
@@ -631,39 +790,33 @@ mark_for_install (pkgCache::PkgIterator &pkg)
   for (pkgCache::PkgIterator p = cache.PkgBegin (); !p.end (); p++)
     {
       if (cache[p].Delete ())
-	cache.MarkKeep (p);
+	cache_reset_package (p);
     }
 }
 
-/* Determine whether a package was installed automatically to satisfy
-   a dependency.
-*/
-bool
-is_auto_package (pkgCache::PkgIterator &pkg)
-{
-  // XXX - There is pkgCache::Flag::Auto but it doesn't seem to be
-  //       implemented completely... i.e., /var/lib/apt/xstatus is not
-  //       used to store it permanently...
-
-  return false;
-}
 
 /* Mark a package for removal and also remove as many of the packages
    that it depends on as possible.
 */
 static void
-mark_for_remove (pkgCache::PkgIterator &pkg)
+mark_for_remove (pkgCache::PkgIterator &pkg, bool only_maybe = false)
 {
   pkgDepCache &cache = *package_cache;
 
   int n_broken = cache.BrokenCount ();
 
   cache.MarkDelete (pkg);
+  cache[pkg].Flags &= ~pkgCache::Flag::Auto;
 
   if (!cache[pkg].Delete () || cache.BrokenCount () > n_broken)
-    return;
+    {
+      if (only_maybe)
+	cache_reset_package (pkg);
+      return;
+    }
 
-  // Now try to remove all dependencies of this package.
+  // Now try to remove all non-user, auto-installed dependencies of
+  // this package.
 
   pkgCache::VerIterator cur = pkg.CurrentVer ();
   if (cur.end ())
@@ -676,8 +829,11 @@ mark_for_remove (pkgCache::PkgIterator &pkg)
 	  dep->Type == pkgCache::Dep::Depends)
 	{
 	  pkgCache::PkgIterator p = dep.TargetPkg ();
-	  if (!p.end () && is_auto_package (p))
-	    mark_for_remove (p);
+	  if (!p.end ()
+	      && is_auto_package (p)
+	      && !p.CurrentVer().end()
+	      && !is_user_package (p.CurrentVer()))
+	    mark_for_remove (p, true);
 	}
     }
 }
@@ -689,31 +845,6 @@ mark_for_remove (pkgCache::PkgIterator &pkg)
    check generally take cache iterators to identify a package or a
    version.
  */
-
-bool
-is_user_section (const char *section, const char *end)
-{
-  if (section == NULL)
-    return false;
-
-#if ENABLE_OLD_MAEMO_SECTION_TEST
-  if (end-section > 6 && !strncmp (section, "maemo/", 6))
-    return true;
-#endif
-  
-  return end-section > 6 && !strncmp (section, "user/", 5);
-}
-
-bool
-is_user_package (pkgCache::VerIterator &ver)
-{
-  const char *section = ver.Section ();
-
-  if (section == NULL)
-    return false;
-
-  return is_user_section (section, section + strlen (section));
-}
 
 bool
 name_matches_pattern (pkgCache::PkgIterator &pkg,
@@ -1818,6 +1949,8 @@ operation (bool check_only)
    _system->UnLock();
    pkgPackageManager::OrderResult Res = Pm->DoInstall (status_fd);
    _system->Lock();
+
+   save_auto_flags ();
 
    if (Res == pkgPackageManager::Failed || _error->PendingError() == true)
      return rescode_failure;

@@ -1,3 +1,30 @@
+2006-04-20  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Completed support for automatically removing non-user packages
+	that have been automatically installed and are no longer needed.
+	
+	* src/apt-worker.cc (auto_flags, package_count, save_auto_flags,
+	load_auto_flags, restore_auto_flags): New, to keep track of which
+	packages have been installed automatically.
+	(cache_init): Maintain package_count and auto_flags.  Call
+	load_auto_flags.
+	(operation): Call save_auto_flags after everything has been done.
+	(is_auto_package): Use the real flag now.
+	(cache_reset, cache_reset_package): 'Refactored' to allow
+	resetting of individual packages now that we need to get the auto
+	flag right as well.
+	(mark_for_install): Use cache_reset_package instead of MarkKeep.
+	(mark_for_remove): Added only_maybe parameter.  Reset package if
+	it can't be removed and only_maybe is true.  Set only_maybe true
+	when recursing.
+
+	* src/settings.cc (load_settings): Try to be smart about selecting
+	the desired UI version when not forced.
+
+	* src/repo.cc (repo_text_func): Only use repository name for UI
+	versions 2 and later.  Showing the name without giving the user a
+	way to edit it is confusing.
+
 2006-04-19  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/util.cc (iap_callback): Log unexpected event types.
