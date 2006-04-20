@@ -127,7 +127,15 @@ load_settings ()
   if (force_ui_version != 0)
     ui_version = force_ui_version;
   else
-    ui_version = 1;
+    {
+      // We select the UI version based on the available
+      // translations...
+
+      if (gettext_alt ("ai_fi_new_repository_name", NULL) != NULL)
+	ui_version = 2;
+      else
+	ui_version = 1;
+    }
 }
 
 void

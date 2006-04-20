@@ -558,7 +558,7 @@ repo_text_func (GtkTreeViewColumn *column,
   gtk_tree_model_get (model, iter, 0, &r, -1);
   if (r)
     {
-      if (r->name)
+      if (ui_version >= 2 && r->name)
 	g_object_set (cell, "text", r->name, NULL);
       else
 	g_object_set (cell, "text", r->deb_line, NULL);
