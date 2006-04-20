@@ -826,8 +826,11 @@ Context_close(Context *self)
 static void
 Context_dealloc(Context *self)
 {
-	if (!_check_context(self->context)) return;
-	Context_close(self);
+	if (self->context == NULL)
+		return;
+
+	osso_deinitialize(self->context);
+	self->context = NULL;
 	return;
 }
 
