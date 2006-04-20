@@ -1,3 +1,9 @@
+posix-locales (2.3.2-13osso36) unstable; urgency=low
+
+  * Updated rules, moved fr_FR to the front. 
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 20 Apr 2006 10:01:48 +0300
+
 posix-locales (2.3.2-13osso34) unstable; urgency=low
 
   * Updated rules 

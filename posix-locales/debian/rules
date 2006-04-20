@@ -2,7 +2,7 @@
 
 DESTDIR=$(CURDIR)/debian/posix-locales
 
-set_n770= pt_BR en_GB en_US fi_FI fr_CA ru_RU es_ES es_MX de_DE nl_NL da_DK el_GR no_NO sv_SE pt_PT it_IT fr_FR 
+set_n770= fr_FR pt_BR en_GB en_US fi_FI fr_CA ru_RU es_ES es_MX de_DE nl_NL da_DK el_GR no_NO sv_SE pt_PT it_IT 
 
 build: build-stamp
 build-stamp:
