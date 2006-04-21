@@ -2,7 +2,6 @@ debian/tmp/var/run/dbus
 debian/tmp/etc/dbus-1
 debian/tmp/usr/bin/dbus-daemon
 debian/tmp/usr/bin/dbus-cleanup-sockets
-debian/tmp/usr/bin/dbus-launch
 debian/tmp/usr/bin/dbus-send
 debian/tmp/usr/share/man/man1/dbus-daemon.1
 debian/tmp/usr/share/man/man1/dbus-cleanup-sockets.1
