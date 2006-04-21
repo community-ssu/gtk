@@ -1,5 +1,7 @@
 2006-04-21  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.15
+
 	* src/log.cc (save_log): Append ".txt" if there is no extension
 	already.  Report errors in the log.
 
