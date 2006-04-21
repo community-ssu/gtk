@@ -1,3 +1,10 @@
+maemo-af-desktop (2.6.10-3) unstable; urgency=low
+
+  * compile in thumb mode if thumb in among the Debian build options
+    (Closes N#26531) 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 21 Apr 2006 17:42:38 +0300
+
 maemo-af-desktop (2.6.10-2) unstable; urgency=low
 
   * build hildon-home-dev and hildon-navigator-dev for all architecture
