@@ -1,3 +1,17 @@
+2006-04-21  Guillem Jover  <guillem.jover@nokia.com>
+
+	Fork when sending the dbus signal as libdbus is unable to cleanup
+	properly, and do not even think about reopening the connexion.
+
+	* launcher/comm_dbus.c (comm_init): Rename to ...
+	(comm_dbus_init): ... this. Fix all callers .Make static.
+	(comm_dbus_finish): New function.
+	(comm_send_app_died): Rename to ...
+	(comm_dbus_send_app_died): ... this. Call comm_dbus_finish before
+	returning.
+	(comm_send_app_died): New function.
+	(main): Do not call comm_init.
+
 2006-04-10  Guillem Jover  <guillem.jover@nokia.com>
 
 	* configure.ac: Version 0.12.

@@ -29,8 +29,8 @@
 
 static DBusConnection *conn = NULL;
 
-void
-comm_init(void)
+static void
+comm_dbus_init(void)
 {
   conn = dbus_bus_get(DBUS_BUS_SESSION, NULL);
   if (conn == NULL)
@@ -39,13 +39,23 @@ comm_init(void)
   }
 }
 
-void
-comm_send_app_died(char *filename, int pid, int status)
+static void
+comm_dbus_finish(void)
+{
+  dbus_connection_close(conn);
+  dbus_connection_unref(conn);
+  conn = NULL;
+
+  dbus_shutdown();
+}
+
+static void
+comm_dbus_send_app_died(char *filename, int pid, int status)
 {
   DBusMessage *msg;
 
   if (!conn)
-    comm_init();
+    comm_dbus_init();
 
   msg = dbus_message_new_signal(MAEMO_LAUNCHER_PATH,
 				MAEMO_LAUNCHER_IFACE,
@@ -64,6 +74,18 @@ comm_send_app_died(char *filename, int pid, int status)
 
   dbus_connection_flush(conn);
   dbus_message_unref(msg);
+
+  comm_dbus_finish();
+}
+
+void
+comm_send_app_died(char *filename, int pid, int status)
+{
+  if (!fork())
+  {
+    comm_dbus_send_app_died(filename, pid, status);
+    _exit(0);
+  }
 }
 
 #ifdef TEST
@@ -73,8 +95,7 @@ main()
 {
   info("testing comm-dbus layer ... ");
 
-  comm_init();
-  comm_send_app_died("/usr/bin/maemo-launcher", 1000, 150);
+  comm_dbus_send_app_died("/usr/bin/maemo-launcher", 1000, 150);
 
   info("done.\n");
 
