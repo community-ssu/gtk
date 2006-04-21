@@ -3,7 +3,7 @@ Section: devel
 Priority: optional
 Maintainer: D-Bus Maintenance Team <debian-dbus@fooishbar.org>
 Uploaders: Daniel Stone <daniels@debian.org>, Sjoerd Simons <sjoerd@debian.org>
-Build-Depends: cdbs (>= 0.4.5.1), debhelper (>= 4.1.46), libglib2.0-dev, libexpat-dev | libexpat1-dev, xlibs-dev
+Build-Depends: cdbs (>= 0.4.5.1), debhelper (>= 4.1.46), libglib2.0-dev, libexpat-dev | libexpat1-dev
 Standards-Version: 3.6.1.0
 
 Package: dbus

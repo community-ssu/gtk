@@ -2,6 +2,7 @@ dbus (0.61-osso6) experimental; urgency=low
 
   * UNRELEASED
   * Lintian fixes.
+  * Removed dbus-launch because of X dependency (N#25295).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 21 Apr 2006 18:18:14 +0300
 
