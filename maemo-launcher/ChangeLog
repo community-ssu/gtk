@@ -1,3 +1,7 @@
+2006-06-21  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.13.
+
 2006-04-21  Guillem Jover  <guillem.jover@nokia.com>
 
 	Fork when sending the dbus signal as libdbus is unable to cleanup
