@@ -1,3 +1,8 @@
+2006-04-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/log.cc (save_log): Append ".txt" if there is no extension
+	already.  Report errors in the log.
+
 2006-04-20  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Completed support for automatically removing non-user packages
