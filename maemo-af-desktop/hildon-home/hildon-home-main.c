@@ -3483,6 +3483,8 @@ GtkMenu * set_menu (GtkMenu * new_menu)
     previous = GTK_MENU(menu_used);
     gtk_menu_popdown(previous);
     menu_used = GTK_WIDGET(new_menu);
+    g_signal_connect(G_OBJECT(menu_used), "deactivate",
+            G_CALLBACK(titlebar_menu_deactivated), NULL);
     return previous;
 } 
 
