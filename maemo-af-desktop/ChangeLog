@@ -1,5 +1,13 @@
 2006-04-21  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "HOME:Undesired response for hardkeys in Layout mode"
+	(Closes N#26112)
+	* hildon-home/layout-manager.c: focus only ok and cancel buttons with
+	  gtk_container_set_focus_chain() and grab
+	  the focus on cancel button when layoutmode begins. 
+
+2006-04-21  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Menu hard key does not work consistently in Home"
 	(Closes N#25388)
 	* hildon-home/hildon-home-main.c: (set_menu())

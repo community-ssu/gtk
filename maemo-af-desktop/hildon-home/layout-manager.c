@@ -277,7 +277,8 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     GtkWidget *anim_banner;
     GTimeVal tv_s, tv_e;
     gint ellapsed;
-
+    GList *focus_list;
+    
     node = NULL;
 
     ULOG_ERR("LAYOUT:Layoutmode begin, GLists are (*) %d and (*) %d\n",
@@ -465,6 +466,13 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     gtk_fixed_put(general_data.area, general_data.ok_button,
 		  x, y);
 
+    /* Restrict focus traversing to the Ok and Cancel buttons */
+    focus_list = NULL;
+    focus_list = g_list_append(focus_list, general_data.ok_button);
+    focus_list = g_list_append(focus_list, general_data.cancel_button);
+
+    gtk_container_set_focus_chain(GTK_CONTAINER(general_data.area), focus_list);
+
     g_signal_connect( G_OBJECT( general_data.ok_button ), "clicked", 
                       G_CALLBACK( _ok_button_click ), NULL ); 
 
@@ -473,7 +481,10 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 
     gtk_widget_show(general_data.ok_button);
     gtk_widget_show(general_data.cancel_button);
-    
+
+    /* Grab focus to the cancel button */
+    gtk_widget_grab_focus(general_data.cancel_button);
+	
     gtk_widget_show_all(general_data.layout_menu);
     general_data.home_menu =
         GTK_WIDGET(set_menu(GTK_MENU(general_data.layout_menu)));
