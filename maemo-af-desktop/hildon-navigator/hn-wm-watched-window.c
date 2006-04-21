@@ -33,7 +33,6 @@
 
 #define PING_TIMEOUT_MESSAGE_STRING       _( "qgn_nc_apkil_notresponding" )
 #define PING_TIMEOUT_RESPONSE_STRING      _( "qgn_ib_apkil_responded" )
-#define PING_TIMEOUT_KILL_SUCCESS_STRING  _( "qgn_ib_apkil_closed" )
 #define PING_TIMEOUT_KILL_FAILURE_STRING  _( "" )
 
 #define PING_TIMEOUT_BUTTON_OK_STRING     _( "qgn_bd_apkil_ok" )
@@ -971,12 +970,7 @@ hn_wm_ping_timeout (HNWMWatchedWindow *win)
   HNWMWatchableApp *app = hn_wm_watched_window_get_app (win);
 		
   gchar *timeout_message 
-    = g_strdup_printf (PING_TIMEOUT_MESSAGE_STRING, 
-                       win->name );
-  
-  gchar *killed_message 
-    = g_strdup_printf (PING_TIMEOUT_KILL_SUCCESS_STRING, 
-                       win->name );
+    = g_strdup_printf (PING_TIMEOUT_MESSAGE_STRING, win->name );
 	
   /* FIXME: Do we need to check if the note already exists? */
   note = hn_wm_watchable_app_get_ping_timeout_note( app );
@@ -1011,16 +1005,11 @@ hn_wm_ping_timeout (HNWMWatchedWindow *win)
                   "failed to kill application '%s'.",
                   win->name );
         } 
-      else 
-        {
-          hildon_banner_show_information( NULL, NULL, killed_message );
-        }
     }
   
  cleanup_and_exit:
   
   g_free( timeout_message );
-  g_free( killed_message );
 }
 
 

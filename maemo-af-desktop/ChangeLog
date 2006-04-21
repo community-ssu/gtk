@@ -1,5 +1,10 @@
 2006-04-21  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm-watched-window.c: Removed deprecated
+	  "Application closed" note (Closes N#26282)
+
+2006-04-21  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/close-application-dialog.c: l10n id should
 	  come from the ke-recv domain (Closes N#27433)
 
