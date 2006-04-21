@@ -1,3 +1,9 @@
+2006-04-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_grab_focus)
+	* gtk/gtkcomboboxentry.h:
+	* gtk/gtkcomboboxentry.c: Revert Tim's patch
+
 Thu Apr 20 13:46:42 2006  Tim Janik  <timj@gtk.org>
 
 	* gtk/gtkclist.h (struct _GtkCList): 

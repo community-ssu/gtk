@@ -57,6 +57,7 @@ static void gtk_combo_box_entry_contents_changed (GtkEntry              *entry,
                                                   gpointer               user_data);
 static gboolean gtk_combo_box_entry_mnemonic_activate (GtkWidget        *entry,
 						       gboolean          group_cycling);
+static void gtk_combo_box_entry_grab_focus       (GtkWidget *widget);
 static void has_frame_changed                    (GtkComboBoxEntry      *entry_box,
 						  GParamSpec            *pspec,
 						  gpointer               data);
@@ -364,7 +365,7 @@ gtk_combo_box_entry_mnemonic_activate (GtkWidget *widget,
   return TRUE;
 }
 
-void
+static void
 gtk_combo_box_entry_grab_focus (GtkWidget *widget)
 {
   GtkComboBoxEntry *entry_box = GTK_COMBO_BOX_ENTRY (widget);
