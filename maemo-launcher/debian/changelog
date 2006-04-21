@@ -1,3 +1,13 @@
+maemo-launcher (0.13-1) unstable; urgency=low
+
+  * New Upstream Release.
+    - Fork when sending the dbus signal, due to libdbus being unable to
+      cleanup and reopen connexions. Which fixes:
+    - Applications not running on first boot. (Closes: #26599@Nokia)
+    - DBus autoactivation after crashed application. (Closes: #27158@Nokia)
+
+ -- Guillem Jover <guillem.jover@nokia.com>  Fri, 21 Apr 2006 22:57:42 +0300
+
 maemo-launcher (0.12-1) unstable; urgency=low
 
   * New Upstream Release.
