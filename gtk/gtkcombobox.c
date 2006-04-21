@@ -5374,6 +5374,14 @@ gtk_combo_box_mnemonic_activate (GtkWidget *widget,
 }
 
 static void
+gtk_combo_box_grab_focus (GtkWidget *widget)
+{
+  GtkComboBox *combo_box = GTK_COMBO_BOX (widget);
+
+  gtk_widget_grab_focus (combo_box->priv->button);
+}
+
+static void
 gtk_combo_box_destroy (GtkObject *object)
 {
   GtkComboBox *combo_box = GTK_COMBO_BOX (object);
@@ -5742,30 +5750,6 @@ gtk_combo_box_get_focus_on_click (GtkComboBox *combo)
   return combo->priv->focus_on_click;
 }
 
-#include "gtkcomboboxentry.h"
-
-/* Hildon addition:
- * This is added, because we need to be able grab focus for our widget.
- * Focus grabbing can happen it two ways: If we are using combobox entry
- * we grab entry widget focus, otherwise togglebutton focus
- */
-static void
-gtk_combo_box_grab_focus (GtkWidget *focus_widget)
-{
-  GtkComboBox *combo_box = GTK_COMBO_BOX (focus_widget);
-  gboolean hildonlike;
-  
-  gtk_widget_style_get (focus_widget, "hildonlike",
-                        &hildonlike, NULL);
-  if (hildonlike &&
-      GTK_IS_COMBO_BOX_ENTRY (combo_box))	/* Are we in entry mode ? */
-    {
-      GtkComboBoxEntry *combo_entry = GTK_COMBO_BOX_ENTRY (combo_box);
-      gtk_combo_box_entry_grab_focus (combo_entry);
-    }
-  else
-    gtk_widget_grab_focus (combo_box->priv->button);
-}
 
 #define __GTK_COMBO_BOX_C__
 #include "gtkaliasdef.c"
