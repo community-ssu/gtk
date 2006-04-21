@@ -7,5 +7,4 @@ debian/tmp/usr/share/man/man1/dbus-daemon.1
 debian/tmp/usr/share/man/man1/dbus-cleanup-sockets.1
 debian/tmp/usr/share/dbus-1/services
 debian/tmp/usr/share/dbus-1/services/*
-debian/tmp/usr/share/man/man1/dbus-launch.1
 debian/tmp/usr/share/man/man1/dbus-send.1
