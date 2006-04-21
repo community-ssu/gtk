@@ -42,13 +42,13 @@ Description: Hildon Status Bar development files
 
 Package: hildon-navigator-dev
 Section: devel
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, pkg-config, hildon-libs-dev
 Description: Hildon Tasknavigator development files
 
 Package: hildon-home-dev
 Section: devel
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, pkg-config, libgtk2.0-dev, hildon-libs-dev
 Conflicts: hildon-base
 Description: Hildon Home development files

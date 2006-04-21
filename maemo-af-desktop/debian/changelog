@@ -1,3 +1,10 @@
+maemo-af-desktop (2.6.10-2) unstable; urgency=low
+
+  * build hildon-home-dev and hildon-navigator-dev for all architecture
+    (Closes N#27027 and N#27171) 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 21 Apr 2006 17:31:39 +0300
+
 maemo-af-desktop (2.6.10-1) unstable; urgency=low
 
   * hildon-home/hildon-home-main.h: Fixed logical id related to
