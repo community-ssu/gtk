@@ -37,12 +37,27 @@
 /* Log macro includes */
 #include <osso-log.h>
 
+
+/* L10n comes from the ke-recv domain */
+#include <libintl.h>
+
+#define _KE(a) dgettext("ke-recv", a)
+#define HN_CAD_TITLE            _KE("memr_ti_close_applications")
+#define HN_CAD_LABEL_OPENING    _KE("memr_ia_close_applications_opening")
+#define HN_CAD_LABEL_SWITCHING  _KE("memr_ia_close_applications_switching")
+#define HN_CAD_LABEL_APP_LIST   _KE("memr_ia_close_applications_application_list")
+#define HN_CAD_OK               _KE("memr_bd_close_applications_ok")
+#define HN_CAD_CANCEL           _KE("memr_bd_close_applications_cancel")
+
 /* Hildon headers */
 #include "hn-wm.h"
 
 
 /* Include our own header */
 #include "close-application-dialog.h"
+
+
+
 
 typedef struct _CADItem CADItem;
 struct _CADItem
@@ -277,13 +292,13 @@ gboolean tn_close_application_dialog(CADAction action)
     }
   
   /* Creating the UI */
-  dialog = gtk_dialog_new_with_buttons (_("memr_ti_close_applications"),
+  dialog = gtk_dialog_new_with_buttons (_("HN_CAD_TITLE"),
                                         NULL,
                                         GTK_DIALOG_MODAL
                                         | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                        _("memr_bd_close_applications_ok"),
+                                        HN_CAD_OK,
                                         GTK_RESPONSE_ACCEPT,
-                                        _("memr_bd_close_applications_cancel"),
+                                        HN_CAD_CANCEL,
                                         GTK_RESPONSE_REJECT,
                                         NULL);                                        
 
@@ -304,7 +319,7 @@ gboolean tn_close_application_dialog(CADAction action)
   vbox = GTK_WIDGET(g_object_new(GTK_TYPE_VBOX,
                                  NULL));
 
-  label = gtk_label_new(_("memr_ia_close_applications_application_list"));
+  label = gtk_label_new(HN_CAD_LABEL_APP_LIST);
 
   /* Align to top-right */
   gtk_misc_set_alignment(GTK_MISC(label), 1, 0);
@@ -368,10 +383,10 @@ gboolean tn_close_application_dialog(CADAction action)
   switch (action)
     {
       case CAD_ACTION_OPENING:
-        label = gtk_label_new(_("memr_ia_close_applications_opening"));
+        label = gtk_label_new(HN_CAD_LABEL_OPENING);
         break;
       case CAD_ACTION_SWITCHING:
-        label = gtk_label_new(_("memr_ia_close_applications_switching"));
+        label = gtk_label_new(HN_CAD_LABEL_SWITCHING);
         break;
       default:
         /* This isn't expected to ever happen */

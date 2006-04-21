@@ -1,5 +1,10 @@
 2006-04-21  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/close-application-dialog.c: l10n id should
+	  come from the ke-recv domain (Closes N#27433)
+
+2006-04-21  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Contacts not able to load from others menu"
 	(Closes N#26808)
 	* hildon-navigator/hn-wm-watchable-app.c: Replaced call to libmb
