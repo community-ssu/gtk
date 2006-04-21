@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 
-SOURCES = $(dbus_cleanup_sockets_SOURCES) $(dbus_launch_SOURCES) $(dbus_monitor_SOURCES) $(dbus_send_SOURCES) $(dbus_viewer_SOURCES)
+SOURCES = $(dbus_cleanup_sockets_SOURCES) $(dbus_monitor_SOURCES) $(dbus_send_SOURCES) $(dbus_viewer_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -38,7 +38,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-bin_PROGRAMS = dbus-send$(EXEEXT) $(am__EXEEXT_1) dbus-launch$(EXEEXT) \
+bin_PROGRAMS = dbus-send$(EXEEXT) $(am__EXEEXT_1) \
 	dbus-cleanup-sockets$(EXEEXT) $(am__EXEEXT_2)
 subdir = tools
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -58,10 +58,6 @@ PROGRAMS = $(bin_PROGRAMS)
 am_dbus_cleanup_sockets_OBJECTS = dbus-cleanup-sockets.$(OBJEXT)
 dbus_cleanup_sockets_OBJECTS = $(am_dbus_cleanup_sockets_OBJECTS)
 dbus_cleanup_sockets_LDADD = $(LDADD)
-am_dbus_launch_OBJECTS = dbus-launch.$(OBJEXT)
-dbus_launch_OBJECTS = $(am_dbus_launch_OBJECTS)
-am__DEPENDENCIES_1 =
-dbus_launch_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_dbus_monitor_OBJECTS = dbus-monitor.$(OBJEXT) \
 	dbus-print-message.$(OBJEXT)
 dbus_monitor_OBJECTS = $(am_dbus_monitor_OBJECTS)
@@ -73,13 +69,13 @@ dbus_send_DEPENDENCIES = $(top_builddir)/dbus/libdbus-1.la
 am_dbus_viewer_OBJECTS = dbus-names-model.$(OBJEXT) \
 	dbus-tree-view.$(OBJEXT) dbus-viewer.$(OBJEXT)
 dbus_viewer_OBJECTS = $(am_dbus_viewer_OBJECTS)
+am__DEPENDENCIES_1 =
 dbus_viewer_DEPENDENCIES = $(top_builddir)/glib/libdbus-gtool.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/dbus-cleanup-sockets.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/dbus-launch.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dbus-monitor.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dbus-names-model.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/dbus-print-message.Po \
@@ -94,12 +90,10 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(dbus_cleanup_sockets_SOURCES) $(dbus_launch_SOURCES) \
-	$(dbus_monitor_SOURCES) $(dbus_send_SOURCES) \
-	$(dbus_viewer_SOURCES)
-DIST_SOURCES = $(dbus_cleanup_sockets_SOURCES) $(dbus_launch_SOURCES) \
-	$(dbus_monitor_SOURCES) $(dbus_send_SOURCES) \
-	$(dbus_viewer_SOURCES)
+SOURCES = $(dbus_cleanup_sockets_SOURCES) $(dbus_monitor_SOURCES) \
+	$(dbus_send_SOURCES) $(dbus_viewer_SOURCES)
+DIST_SOURCES = $(dbus_cleanup_sockets_SOURCES) $(dbus_monitor_SOURCES) \
+	$(dbus_send_SOURCES) $(dbus_viewer_SOURCES)
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man_MANS)
@@ -377,9 +371,6 @@ dbus_monitor_SOURCES = \
 	dbus-print-message.c			\
 	dbus-print-message.h
 
-dbus_launch_SOURCES = \
-	dbus-launch.c
-
 dbus_cleanup_sockets_SOURCES = \
 	dbus-cleanup-sockets.c
 
@@ -392,9 +383,8 @@ dbus_viewer_SOURCES = \
 
 dbus_send_LDADD = $(top_builddir)/dbus/libdbus-1.la
 dbus_monitor_LDADD = $(top_builddir)/glib/libdbus-glib-1.la
-dbus_launch_LDADD = $(DBUS_X_LIBS)
 dbus_viewer_LDADD = $(top_builddir)/glib/libdbus-gtool.la $(DBUS_GTK_THREADS_LIBS) $(DBUS_GLIB_TOOL_LIBS)
-man_MANS = dbus-send.1 dbus-monitor.1 dbus-launch.1 dbus-cleanup-sockets.1
+man_MANS = dbus-send.1 dbus-monitor.1 dbus-cleanup-sockets.1
 EXTRA_DIST = $(man_MANS) run-with-tmp-session-bus.sh
 CLEANFILES = \
 	run-with-tmp-session-bus.conf	\
@@ -465,9 +455,6 @@ clean-binPROGRAMS:
 dbus-cleanup-sockets$(EXEEXT): $(dbus_cleanup_sockets_OBJECTS) $(dbus_cleanup_sockets_DEPENDENCIES) 
 	@rm -f dbus-cleanup-sockets$(EXEEXT)
 	$(LINK) $(dbus_cleanup_sockets_LDFLAGS) $(dbus_cleanup_sockets_OBJECTS) $(dbus_cleanup_sockets_LDADD) $(LIBS)
-dbus-launch$(EXEEXT): $(dbus_launch_OBJECTS) $(dbus_launch_DEPENDENCIES) 
-	@rm -f dbus-launch$(EXEEXT)
-	$(LINK) $(dbus_launch_LDFLAGS) $(dbus_launch_OBJECTS) $(dbus_launch_LDADD) $(LIBS)
 dbus-monitor$(EXEEXT): $(dbus_monitor_OBJECTS) $(dbus_monitor_DEPENDENCIES) 
 	@rm -f dbus-monitor$(EXEEXT)
 	$(LINK) $(dbus_monitor_LDFLAGS) $(dbus_monitor_OBJECTS) $(dbus_monitor_LDADD) $(LIBS)
@@ -485,7 +472,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-cleanup-sockets.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-launch.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-monitor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-names-model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus-print-message.Po@am__quote@
