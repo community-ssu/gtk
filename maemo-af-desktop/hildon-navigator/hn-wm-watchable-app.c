@@ -62,19 +62,35 @@ hn_wm_launch_banner_info_free (HNWMLaunchBannerInfo* info)
 }
 
 HNWMWatchableApp*
-hn_wm_watchable_app_new (MBDotDesktop *desktop)
+hn_wm_watchable_app_new (const char * file)
 {
-  HNWMWatchableApp *app;
+  HNWMWatchableApp *app = NULL;
   gchar            *service, *icon_name, *startup_notify;
   gchar            *startup_wmclass, *exec_name, *app_name;
+  GKeyFile         *key_file;
 
+  g_return_val_if_fail(file &&
+                       (key_file = g_key_file_new()) &&
+                       g_key_file_load_from_file (key_file,
+                                                  file,
+                                                  G_KEY_FILE_NONE,
+                                                  NULL),
+                       NULL);
   
-  app_name = (gchar *) mb_dotdesktop_get(desktop, 
-					 DESKTOP_VISIBLE_FIELD);
-  startup_wmclass = (gchar *) mb_dotdesktop_get(desktop, 
-						DESKTOP_SUP_WMCLASS);
+  app_name = g_key_file_get_value(key_file,
+                                  "Desktop Entry",
+                                  DESKTOP_VISIBLE_FIELD,
+                                  NULL);
 
-  exec_name = (gchar *) mb_dotdesktop_get(desktop, DESKTOP_EXEC_FIELD);
+  startup_wmclass = g_key_file_get_value(key_file,
+                                         "Desktop Entry",
+                                         DESKTOP_SUP_WMCLASS,
+                                         NULL);
+
+  exec_name = g_key_file_get_value(key_file,
+                                   "Desktop Entry",
+                                   DESKTOP_EXEC_FIELD,
+                                   NULL);
   
   if (app_name == NULL || (exec_name == NULL && startup_wmclass == NULL))
     {
@@ -84,19 +100,32 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop)
     }
   
   /* DESKTOP_LAUNCH_FIELD maps to X-Osso-Service */
-  service = (gchar *) mb_dotdesktop_get(desktop, 
-				     DESKTOP_LAUNCH_FIELD);
-  icon_name = (char *) mb_dotdesktop_get(desktop, 
-					 DESKTOP_ICON_FIELD);
-  startup_notify = (char *)mb_dotdesktop_get(desktop,
-					    DESKTOP_STARTUPNOTIFY); 
+  service = g_key_file_get_value(key_file,
+                                 "Desktop Entry",
+                                 DESKTOP_LAUNCH_FIELD,
+                                 NULL);
+
+  icon_name = g_key_file_get_value(key_file,
+                                   "Desktop Entry",
+                                   DESKTOP_ICON_FIELD,
+                                   NULL);
+
+  startup_notify = g_key_file_get_value(key_file,
+                                        "Desktop Entry",
+                                        DESKTOP_STARTUPNOTIFY,
+                                        NULL);
   
   app = g_new0 (HNWMWatchableApp, 1);
 
   if (!app)
     {
-      mb_dotdesktop_free(desktop);
-      return NULL;
+      g_free(app_name);
+      g_free(startup_wmclass);
+      g_free(exec_name);
+      g_free(service);
+      g_free(icon_name);
+      g_free(startup_notify);
+      goto out;
     }
 
   app->icon_name      = g_strdup(icon_name); 
@@ -121,6 +150,8 @@ hn_wm_watchable_app_new (MBDotDesktop *desktop)
 	 "\tservice: %s",
 	 app->exec_name, app->app_name, app->class_name, app->service);
 
+ out:
+  g_key_file_free(key_file);
   return app;
 }
 

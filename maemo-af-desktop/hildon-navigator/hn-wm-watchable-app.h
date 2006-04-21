@@ -41,7 +41,7 @@
  * @return pointer to HNWMWatchableApp instance, NULL if missing fields
  */
 HNWMWatchableApp*
-hn_wm_watchable_app_new (MBDotDesktop *desktop);
+hn_wm_watchable_app_new (const char * file);
 
 /** 
  * Get the X-Osso-Service field set via .desktop file of an 

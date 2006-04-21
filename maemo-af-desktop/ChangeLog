@@ -1,5 +1,12 @@
 2006-04-21  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Contacts not able to load from others menu"
+	(Closes N#26808)
+	* hildon-navigator/hn-wm-watchable-app.c: Replaced call to libmb
+	  with calls to glib's g_key_file_ API
+
+2006-04-21  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "HOME:Undesired response for hardkeys in Layout mode"
 	(Closes N#26112)
 	* hildon-home/layout-manager.c: focus only ok and cancel buttons with

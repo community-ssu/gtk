@@ -1232,12 +1232,14 @@ hn_wm_dbus_signal_handler(DBusConnection *conn, DBusMessage *msg, void *data)
 
 /* Application switcher callback funcs */
 
+/* file is path to the desktop file */
 static void
-hn_wm_dnotify_func(MBDotDesktop *desktop)
+hn_wm_dnotify_func(const char *desktop_file_path)
 {
   HNWMWatchableApp *app;
 
-  app = hn_wm_watchable_app_new (desktop);
+  g_warning("is the argument a path ?");
+  app = hn_wm_watchable_app_new (desktop_file_path);
 
   /* FIXME: what if this update already exists ? */
   if (app)
@@ -1339,22 +1341,13 @@ hn_wm_watchable_apps_init (void)
   while ((entry = readdir(directory)) != NULL)
     {
       gchar        *path;
-      MBDotDesktop *desktop;
 
       if (!g_str_has_suffix(entry->d_name, DESKTOP_SUFFIX))
 	continue;
 
       path = g_build_filename(DESKTOPENTRYDIR, entry->d_name, NULL);
 
-      desktop = mb_dotdesktop_new_from_file(path);
-
-      if (!desktop)
-	{
-	  osso_log(LOG_WARNING, "Could not open [%s]\n", path);
-	  continue;
-	}
-
-      app = hn_wm_watchable_app_new (desktop);
+      app = hn_wm_watchable_app_new (path);
 
       if (app)
 	{
@@ -1363,7 +1356,6 @@ hn_wm_watchable_apps_init (void)
 			       (gpointer)app);
 	}
 
-      mb_dotdesktop_free(desktop);
       g_free(path);
     }
 
