@@ -45,15 +45,23 @@ enum {
 static void
 save_log (char *filename, void *data)
 {
-  // XXX - check some errors.
+  if (strchr (filename, '.') == NULL)
+    {
+      char *filename_txt = g_strdup_printf ("%s.txt", filename);
+      g_free (filename);
+      filename = filename_txt;
+    }
 
   FILE *f = fopen (filename, "w");
   if (f)
     {
       if (log_text)
 	fputs (log_text->str, f);
-      fclose (f);
+      if (fclose (f) == EOF)
+	add_log ("%s: %m", filename);
     }
+  else
+    add_log ("%s: %m", filename);
 
   g_free (filename);
 }
@@ -73,7 +81,7 @@ log_response (GtkDialog *dialog, gint response, gpointer clos)
   if (response == RESPONSE_SAVE)
     show_file_chooser_for_save (_("ai_ti_save_log"),
 				_("ai_li_save_log_default_name"),
-				save_log, NULL);
+ 				save_log, NULL);
 
   if (response == GTK_RESPONSE_CLOSE)
     gtk_widget_destroy (GTK_WIDGET (dialog));
