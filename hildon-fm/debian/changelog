@@ -1,11 +1,10 @@
 hildon-fm (0.20-1) unstable; urgency=low
 
-  * UNRELEASED
-  * Did packaging fixes to appease lintian.
+  * Packaging fixes to appease Lintian.
   * Added thumb instruction support (N#26673).
-  * Added movable vertical separator to file selection (N#24207).
+  * Added movable separator (GtkHPaned) to file selection (N#24207).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 22 Apr 2006 17:38:43 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 22 Apr 2006 17:51:31 +0300
 
 hildon-fm (0.19-1) unstable; urgency=low
 
