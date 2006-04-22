@@ -28,6 +28,12 @@ endif
 
 # CC := gcc-3.0
 # export CC
+CFLAGS ?= -O2
+
+# Use soft-float and thumb mode if it is enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -mthumb
+endif
 
 configure: $(STAMP_DIR)/configure
 $(STAMP_DIR)/configure: $(patched)
@@ -43,7 +49,7 @@ $(STAMP_DIR)/configure: $(patched)
 	-test -r /usr/share/misc/config.guess && \
 	  cp -f /usr/share/misc/config.guess $(BUILD_TREE)/config.guess
 
-	cd $(BUILD_TREE) && ./autogen.sh && ./configure --prefix=/usr \
+	cd $(BUILD_TREE) && ./autogen.sh && CFLAGS="${CFLAGS}" ./configure --prefix=/usr \
                 --mandir=\$${prefix}/share/man \
                 --infodir=\$${prefix}/share/info \
 		--libexecdir=\$${prefix}/lib/gconf2 \
