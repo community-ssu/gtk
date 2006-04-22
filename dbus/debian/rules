@@ -24,11 +24,6 @@ ifeq ($(DEB_BUILD_ARCH),i386)
  MONO_FLAGS=--disable-mono --disable-mono-docs
 endif
  
-# Use soft-float and thumb mode if it is enabled.
-ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -mthumb
-endif
-
 
 DEB_CONFIGURE_SCRIPT_ENV += PYTHON=/usr/bin/python2.4
 DEB_CONFIGURE_EXTRA_FLAGS := --enable-glib --disable-gtk --disable-verbose-mode \

@@ -1,7 +1,6 @@
 dbus (0.61-osso7) experimental; urgency=low
 
   * UNRELEASED
-  * Added thumb instruction support.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 22 Apr 2006 13:28:32 +0300
 
