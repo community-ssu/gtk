@@ -2,8 +2,9 @@ hildon-fm (0.20-1) unstable; urgency=low
 
   * UNRELEASED
   * Did packaging fixes to appease lintian.
+  * Added thumb instruction support (N#26673).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 13 Apr 2006 16:39:56 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 22 Apr 2006 14:06:31 +0300
 
 hildon-fm (0.19-1) unstable; urgency=low
 

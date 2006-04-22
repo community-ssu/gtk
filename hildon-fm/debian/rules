@@ -23,6 +23,10 @@ endif
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
+# Use soft-float and thumb mode if it is enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+        CFLAGS += -mthumb
+endif
 
 # shared library versions, option 1
 version=2.0.5
