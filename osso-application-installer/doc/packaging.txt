@@ -20,7 +20,7 @@ repository.
 
 You can freely alternate between AI 2006 and apt-get, say.  Changes
 done to the system via apt-get or dpkg are picked up by the AI 2006
-without confusing it.
+without confusing it, and vice versa.
 
 Packages made for the Application 2006 should follow a few extra
 rules, tho, if they want to integrate nicely.  These rules are related
@@ -29,7 +29,7 @@ to
   - general stuff
   - sections
   - icons
-  - the policy engine of the AI
+  - the installation/removal policy of the AI
   - limited feedback to the user, no controlling terminal
   - warning about removing running applications
   - utilities to use in your maintainer scripts
@@ -68,28 +68,27 @@ displaying it.
 Sections
 --------
 
-By default, the AI 2006 only shows packages in certain components (or
-"sections" in Debian policy manual lingo) to the user.  This has been
-done to hide the existence of the hundreds of system packages that
-make up the ITOS 2006 itself.  The AI is, at this point, not intended
-to let the user manage the whole system, only a smaller set of third
-party applications.
+By default, the AI 2006 only shows packages in certain sections to the
+user.  This has been done to hide the existence of the hundreds of
+system packages that make up the ITOS 2006 itself.  The AI is, at this
+point, not intended to let the user manage the whole system, only a
+smaller set of third party applications.
 
-The AI only shows packages in the "user" component of a distribution.
-Thus, your "Section:" field in the control file should be of the form
+The AI only shows packages in the "user" section.  Thus, your
+"Section:" field in the control file should be of the form
 
-    Section: user/<CATEGORY>
+    Section: user/<SUBSECTION>
 
-where <CATEGORY> is arbitrary.  <CATEGORY> should be a nice
+where <SUBSECTION> is arbitrary.  <SUBSECTION> should be a nice
 capitalised, English word like "Ringtones".  There is no support for
 localising that word yet, unfortunately.
 
-However, there is also a predefined set of categories.  If your
-package fits into one of these categories, you should put it there.
-This will avoid fragmenting the category names, and the names of these
-categories will be correctly localised.
+However, there is also a predefined set of subsections.  If your
+package fits into one of these subsections, you should put it there.
+This will avoid fragmenting the subsection names, and the names of
+these subsections will be correctly localised.
 
-The [PRELIMINARY!] list of predefined categories and their English
+The [PRELIMINARY!] list of predefined subsections and their English
 names is:
 
     user/office	      Office		   
@@ -107,7 +106,7 @@ names is:
     user/support      Support		   
     user/other        Other                    
 
-Thus, if you want to put your package into the Office category,
+Thus, if you want to put your package into the Office subsection,
 include the field
 
     Section: user/office
@@ -155,24 +154,33 @@ with a "XB-" prefix in your debian/control file, see the Debian Policy
 Manual, section 5.7.
 
 
-Policy engine
--------------
+Installation and removal policy
+-------------------------------
 
-The Application installer has its own policy engine that is tuned to
-give little surprises for simple package management operations, but is
-in turn not useable for complicated things like "apt-get
-dist-upgrade".  When designing the conflicts of your packages, you
-might want to take this into account.
+The Application installer has its own rules for automatically
+installing and removing packages in addition to the ones specified by
+the user.  These rules are tuned to give little surprises for simple
+package management operations, but in turn they are not really useable
+for complicated things like "apt-get dist-upgrade".  When designing
+the conflicts of your packages, you might want to take these rules
+into account.
 
-Specifically, the AI will never automatically uninstall an explicitly
-installed package.
+Specifically, the AI will never automatically remove a user package.
 
-If a conflict can be resolved by upgrading a package, it might do the
-upgrade.  If a conflict can be resolved by uninstalling a implicitly
-installed package, it might do the uninstall.  (A implicitely
-installed package is one that has been installed to satisfy a
-dependency of some other package.  A explicitely installed package is
-one that the user has requested to be installed.)
+If a conflict caused by installing a package could be resolved by
+removing a package, the AI will not do the removal but will refuse the
+installation request instead.
+
+When removing a package, all packages that are a direct or indirect
+dependency of the removed package will be considered for removal.
+They will in fact be removed when they are a non-user package, have
+been automatically installed by the AI to satisfy a dependeny, and are
+no longer needed.
+
+The AI is not very smart in reporting conflicts: when your package
+conflicts with a non-user package, the problem report by the AI will
+blame the conflict on that non-user package instead of on the user
+packages that depend on it.
 
 
 Feedback from maintainer scripts
@@ -204,8 +212,8 @@ installer to cancel the operation.
 The canonical use for this feature is to warn the user when he tries
 to remove or upgrade an application that is currently running.  If
 your application has a .desktop file, you can use the utility
-'check-appliction-for-uninstall' to perform this test and to show
-appropriate messages to the user.  (See below for details.)
+'maemo-application-running' to perform this test.  (See below for
+details.)
 
 When uninstalling or upgrading a package named PACKAGE, the
 Application installer will run the program named
@@ -220,13 +228,11 @@ The arguments given to the *.checkrm program are either
 
     foo.checkrm remove
 
-when the package is going to be removed
+when the package is going to be removed, or
 
     foo.checkrm upgrade <VERSION>
 
 when it is going to be upgraded to version <VERSION>.
-
-[MORE DETAILS TO BE DETERMINED]
 
 
 Utilities to use in your maintainer scripts
@@ -301,6 +307,8 @@ scripts to interact with the user:
   service name in the .desktop file, the utility uses the executable
   file as with the -x option.
 
+  [THE -d OPTION HAS NOT BEEN IMPLEMENTED YET.  SORRY.]
+
   In order to use maemo-application-running in postinst, you should
   Pre-Depend on the "maemo-installer-utils" package.
 
@@ -312,7 +320,7 @@ scripts to interact with the user:
 
   When the user clicks "Ok", this utility exits with code 0; when he
   clicks "Cancel", it exits with code 1; and when an error occurs, it
-  exits with ocde 2.
+  exits with code 2.
 
   If you do in fact show a license agreement in your postinst script,
   it is probably not a good idea to make the postinst script fail when
