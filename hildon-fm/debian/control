@@ -9,7 +9,8 @@ Package: hildon-fm-dev
 Section: devel
 Architecture: any
 Depends: hildon-fm1 (= ${Source-Version}), libgtk2.0-dev (>= 2:2.6.10-1.osso4), osso-thumbnail-dev, osso-gwconnect-dev, hildon-libs-dev (>= 0.12.0)
-Description: LGPL-licensed File Management libraries development files
+Description: Hildon-fm development files.
+ Hildon-fm development files.
 
 Package: hildon-fm1
 Section: libs
@@ -18,7 +19,9 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-fm-l10n-mr | hildon-fm-l10n-
 Conflicts: hildon-libs0 (<< 0.7.3), hildon-lgpl0 (<< 0.8.6)
 Replaces: hildon-libs0 (<< 0.7.3), hildon-lgpl0 (<< 0.8.6)
 Recommends: hildon-libs0 (>= 0.12.0)
-Description: LGPL-licensed File Management libraries
+Description: LGPL-licensed file management libraries.
+ Hildon-fm file management widgets: Hildon file chooser, file selector,
+ File Open/Save dialog, file details dialog.
 
 Package: hildon-fm-test
 Section: libs
@@ -26,12 +29,13 @@ Architecture: any
 Depends: hildon-fm1, outo
 Conflicts: hildon-fm1 (<< 0.8.10)
 Recommends: hildon-libs-dev (>= 0.12.0)
-Description: LGPL-licensed File Management libraries unit tests
+Description: Hildon-fm unit tests.
+ Hildon-fm unit tests.
 
 Package: hildon-fm1-dbg
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: hildon-libs0-dbg
-Description: LGPL-licensed File Management libraries (with debug info)
-
+Description: LGPL-licensed file management libraries (with debug symbols).
+ LGPL-licensed file management libraries (with debug symbols).
