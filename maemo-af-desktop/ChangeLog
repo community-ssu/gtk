@@ -1,5 +1,11 @@
 2006-04-21  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hildon-navigator-main.c: Removed warning
+	  when a configuration file is not found, as this is the expected
+	  behaviour before the user uses the TN CPA (Closes N#24138)
+
+2006-04-21  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-watched-window.c: Removed deprecated
 	  "Application closed" note (Closes N#26282)
 

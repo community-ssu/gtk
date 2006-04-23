@@ -374,10 +374,6 @@ static GList *load_plugins_from_file(Navigator *tasknav,
 
     if (error != NULL)
     {
-        osso_log(LOG_WARNING, 
-                "Config file error %s: %s\ng", 
-                filename, error->message);    
-
         g_key_file_free(keyfile);
         g_error_free(error);
         return NULL;
