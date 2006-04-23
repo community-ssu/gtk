@@ -7,18 +7,36 @@ Repository structure
 The Application installer can deal with any repository that "apt-get"
 can use.  However, the Application installer only shows 'user'
 packages to the user.  A user packages is identified by being in the
-"user" component (or 'section') of a distribution.
-
-More precisely, any package with a "Section" value of the form
-"user/<category>" is a user package.
-
-Thus, you might not be able to freely choose the components of the
-distributions in your repository.
+"user" section; see the "Packaging HOWTO".
 
 (The Application installer is able to automatically satisfy
-dependencies from any configured component of a distribution, the
-"user" component is only used to determine which packages to show to
-the user.)
+dependencies from any package in a repository, the "user" section is
+only used to determine which packages to show to the user.)
+
+
+"Single-click install"
+----------------------
+
+When you want users to be able to browse your repositories using the
+Application installer, you need to provide instructions to the user
+about how to configure your repository.  On a fundamental level, you
+need to tell them what values to put into the "New repository" dialog.
+
+This manual task can be automated by providing a file of MIME type
+"application/x-install-instructions" and have the user open it with
+the Application installer.  Files with the extension ".install" are
+recognized to have the mime type "application/x-install-instructions".
+
+Such a .install file is a text file following the GKeyfile format, as
+defined by glib.  An example would look like this:
+
+   [INSERT ME]
+
+Thus, it can contain information about a repository, and opening the
+file will add the repository to /etc/apt/sources.list if it isn't
+there already.
+
+The .install file can also contain
 
 
 "New repository dialog" defaults
