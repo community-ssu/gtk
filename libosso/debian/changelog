@@ -3,6 +3,7 @@ libosso (1.8-1) unstable; urgency=low
   * Packaging fixes.
   * Removed compilation of logging code.
   * Additional API from Marius for Python bindings (N#26964).
+  * Added support for building with thumb instructions.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 24 Apr 2006 10:12:44 +0300
 
