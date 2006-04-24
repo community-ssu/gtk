@@ -1,3 +1,16 @@
+2006-04-24  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeviewcolumn.c
+	(_gtk_tree_view_column_cell_set_cell_data_with_attributes): new
+	function which only sets the given attributes on the cells.
+
+	* gtk/gtktreeprivate.h: add prototype.
+
+	* gtk/gtktreeselection.c (tree_column_is_sensitive): use the new
+	function to only set the sensitive and visible attributes on the
+	cells.
+	N#22694
+	
 Thu Apr 20 13:46:42 2006  Tim Janik  <timj@gtk.org>
 
 	* gtk/gtkclist.h (struct _GtkCList): 
