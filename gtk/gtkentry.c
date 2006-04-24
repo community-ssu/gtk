@@ -1125,7 +1125,20 @@ gtk_entry_set_property (GObject         *object,
       break;
       
     case PROP_VISIBILITY:
-      gtk_entry_set_visibility (entry, g_value_get_boolean (value));
+      /* converting to hildon input mode first then through 
+       * that mode changing function to reach compatible with
+       * the gtk original visibility changing */
+      mode = hildon_gtk_entry_get_input_mode (entry);
+      
+      if (g_value_get_boolean (value))
+      {
+        mode &= ~HILDON_GTK_INPUT_MODE_INVISIBLE;
+      }
+      else
+      {
+        mode |= HILDON_GTK_INPUT_MODE_INVISIBLE;
+      }
+      hildon_gtk_entry_set_input_mode (entry, mode);
       break;
 
     case PROP_AUTOCAP:
@@ -4576,6 +4589,22 @@ gtk_entry_set_visibility (GtkEntry *entry,
 {
   g_return_if_fail (GTK_IS_ENTRY (entry));
 
+  /* set_prorperty will do a minimal conversion to the 
+   * new hildon input mode system, because conversion
+   * is small, so it stays in the set_property function
+   * therefore, this breaks the usual style by calling
+   * set_property, instead of calling other functions
+   * right away*/
+  g_object_set(G_OBJECT (entry), "visibility", visible,
+               NULL);
+}
+
+static void
+gtk_entry_set_real_visibility (GtkEntry *entry,
+                               gboolean visible)
+{
+  g_return_if_fail (GTK_IS_ENTRY (entry));
+
   entry->visible = visible ? TRUE : FALSE;
   g_object_notify (G_OBJECT (entry), "visibility");
 
@@ -6123,11 +6152,10 @@ hildon_gtk_entry_set_input_mode (GtkEntry *entry, HildonGtkInputMode mode)
 {
   g_return_if_fail (GTK_IS_ENTRY (entry));
 
-  if (!entry->visible)
-    mode |= HILDON_GTK_INPUT_MODE_INVISIBLE;
-
   if (hildon_gtk_entry_get_input_mode (entry) != mode)
   {
+    gtk_entry_set_real_visibility (entry, mode & HILDON_GTK_INPUT_MODE_INVISIBLE
+                                   ? FALSE : TRUE);
     g_object_set (G_OBJECT (entry->im_context), "hildon_input_mode", mode, NULL);
     g_object_notify (G_OBJECT (entry), "input_mode");
     g_object_notify (G_OBJECT (entry), "hildon_input_mode");
