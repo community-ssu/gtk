@@ -1,6 +1,7 @@
 osso-app-killer (1.6-1) unstable; urgency=low
 
-  * Added stopping of the address book server to the CUD script (N#26284).
+  * Added stopping of the address book server to the pre-restore script
+    (N#26284).
   * Now re-creating first boot flags after CUD (N#25856).
   * Lintian fixes.
 

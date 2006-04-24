@@ -24,7 +24,6 @@ source $DIR/af-defines.sh
 # shut down things
 $SUDO /etc/init.d/af-base-apps stop
 $SUDO $DIR/gconf-daemon.sh stop
-[ -x /etc/osso/osso-addressbook-stop.sh ] && /etc/osso/osso-addressbook-stop.sh
 
 if [ "x$OSSO_CUD_DOES_NOT_DESTROY" = "x" ]; then
   # Remove all user data
