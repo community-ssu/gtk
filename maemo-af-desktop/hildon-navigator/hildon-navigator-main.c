@@ -118,6 +118,9 @@ static void tasknav_insensitive_cb( GtkWidget *widget, gpointer data);
 
 static void plugin_configuration_changed( char *path,
                                           gpointer *data );
+static void initialize_plugin_menus(Navigator *tasknav);
+
+
 /* Plugin configuration files */
 
 #define CFG_FNAME      "plugins.conf"
@@ -623,6 +626,8 @@ static void plugin_configuration_changed( char *path,
     plugins = load_navigator_plugin_list(tasknav);
 
     reload_plugins(tasknav, plugins);
+    initialize_plugin_menus(tasknav);
+
 }
 
 static void reload_plugins(Navigator *tasknav, GList *list)
@@ -988,14 +993,11 @@ static const char *load_symbols(Navigator *tasknav, void *dlhandle,
     return NULL;
 }
 
-/* Function to initialize navigator menus */
-static void initialize_navigator_menus(Navigator *tasknav)
+static void initialize_plugin_menus(Navigator *tasknav)
 {
     GList *l;
 
     g_assert (tasknav != NULL);
-
-    /* Initialize plugin menus */
 
     for (l = tasknav->plugins ; l ; l = l->next)
     {
@@ -1010,7 +1012,7 @@ static void initialize_navigator_menus(Navigator *tasknav)
         if (plugin->handle == NULL)
           continue;
         
-        error_str = load_symbols(tasknav, plugin->handle, INITIALIZE_MENU_SYMBOL);
+      error_str = load_symbols(tasknav, plugin->handle, INITIALIZE_MENU_SYMBOL);
             
         if (error_str)
         {
@@ -1025,10 +1027,23 @@ static void initialize_navigator_menus(Navigator *tasknav)
         }
         else
         {
+            start_plugin_action(plugin, "Menu init");
             tasknav->initialize_menu(plugin->data);
+            stop_plugin_action(plugin, "Menu init");
         }
+
     }
 
+}
+
+/* Function to initialize navigator menus */
+static void initialize_navigator_menus(Navigator *tasknav)
+{
+
+    g_assert (tasknav != NULL);
+
+    /* Initialize plugin menus */
+    initialize_plugin_menus(tasknav);
 
     /*Initialize application switcher menu*/
     application_switcher_initialize_menu(tasknav->app_switcher);

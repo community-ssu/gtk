@@ -1,5 +1,16 @@
 2006-04-24  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "TN Plugin (re)loading doesn't initialize menus"
+	(Closes N#27316)
+	* hildon-navigator/hildon-navigator-main.c:
+	  - New function: initialize_plugin_menus():
+	    Move plugin menu init to it's own function
+	  - plugin_configuration_changed(): Init plugin menus after reloading
+	* hildon-navigator/plugins.conf: Change positions to correct ones,
+	  addition of Desktop-file key
+
+2006-04-24  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.6.11
 
 2006-04-21  Johan Bilien <johan.bilien@nokia.com>
