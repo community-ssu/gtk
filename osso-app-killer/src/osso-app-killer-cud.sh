@@ -61,6 +61,13 @@ if [ "x$OSSO_CUD_DOES_NOT_DESTROY" = "x" ]; then
 else
   echo "$0: OSSO_CUD_DOES_NOT_DESTROY defined, no data deleted"
 fi
+# re-create first boot flags
+touch $HOME/.suw_first_run
+touch $HOME/first-boot-flag
+if [ "x$USER" = "xroot" ]; then
+  chown user.users $HOME/.suw_first_run
+  chown user.users $HOME/first-boot-flag
+fi
 # ask MCE to reboot the system
 dbus-send --system --type=method_call \
   --dest="com.nokia.mce" --print-reply \
