@@ -1,7 +1,7 @@
 Source: osso-app-killer
 Section: base
 Priority: optional
-Maintainer: Kimmo H‰m‰l‰inen <kimmo.hamalainen@nokia.com>
+Maintainer: Kimmo H√§m√§l√§inen <kimmo.hamalainen@nokia.com>
 Build-Depends: debhelper (>= 4.0.0)
 Standards-Version: 3.6.0
 
