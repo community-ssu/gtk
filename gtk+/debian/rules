@@ -31,7 +31,8 @@ endif
 
 # Ensure the build aborts when there are still references to undefined
 # symbols.
-LDFLAGS += -Wl,-z,defs
+### Disabled for now as gtk is actually broken currently
+###LDFLAGS += -Wl,-z,defs
 
 # Make the linker work a bit harder so dynamic loading can be done faster
 LDFLAGS += -Wl,-O1
