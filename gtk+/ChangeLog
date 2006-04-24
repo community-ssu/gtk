@@ -1,3 +1,17 @@
+2006-04-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkentry.c (gtk_entry_set_property): setting visibility will
+	manipulate the "hildon-input-mode" HILDON_GTK_INPUT_MODE_INVISIBILITY
+	bit.
+	* gtk/gtkentry.c (hildon_gtk_entry_set_input_mode): turn the visibility
+	on/off according to the HILDON_GTK_INPUT_INVISIBILITY bit, by calling
+	gtk_entry_set_real_visibility
+	* gtk/gtkentry.c (gtk_entry_set_visibility): use set_property to
+	change it visibility property
+	* gtk/gtkentry.c (gtk_entry_set_real_visibility): this is a copy of
+	the old gtk_entry_set_visibility
+	N#23018
+
 2006-04-24  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeviewcolumn.c
