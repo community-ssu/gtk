@@ -1,3 +1,15 @@
+gtk+2.0 (2:2.6.10-1.osso13) unstable; urgency=low
+
+  * Fixes compilation problems with glib 2.10
+  * Bugs fixed:
+    N#22694: Hildon modifications done into gtk_tree_view_row_changed cause
+             lot's of unneeded accesses to model
+    N#23018: Words entered in passwords field are shown in word completion and
+             gets added to dictionary
+    N#25274: Small UI glitch in GTKComboBoxEntry when getting focus
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 24 Apr 2006 10:59:50 +0300
+
 gtk+2.0 (2:2.6.10-1.osso12) unstable; urgency=low
 
   * debian/rules (LINGUAS): disable en_GB locale as well to save footprint
