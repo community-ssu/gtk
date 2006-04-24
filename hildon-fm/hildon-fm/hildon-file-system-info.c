@@ -137,14 +137,14 @@ hildon_file_system_info_new(const gchar *uri, GError **error)
 }
 
 struct _HildonFileSystemInfoHandle {
-    int not_used
+    int not_used;
 };
 
 struct AsyncIdleData {
-    HildonFileSystemInfoCallback cb,
-    gchar *uri,
-    gpointer data,
-    HildonFileSystemInfoHandle *handle
+    HildonFileSystemInfoCallback cb;
+    gchar *uri;
+    gpointer data;
+    HildonFileSystemInfoHandle *handle;
 };
 
 static gboolean async_info_idle(gpointer data)
