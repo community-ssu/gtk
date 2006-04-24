@@ -136,12 +136,66 @@ hildon_file_system_info_new(const gchar *uri, GError **error)
     return result;    
 }
 
+struct _HildonFileSystemInfoHandle {
+    int not_used
+};
+
+struct AsyncIdleData {
+    HildonFileSystemInfoCallback cb,
+    gchar *uri,
+    gpointer data,
+    HildonFileSystemInfoHandle *handle
+};
+
+static gboolean async_info_idle(gpointer data)
+{
+    HildonFileSystemInfo *info = NULL;
+    struct AsyncIdleData *aid = data;
+    GError *error = NULL;
+
+    GDK_THREADS_ENTER();
+
+    info = hildon_file_system_info(aid->uri, &error);
+    *(aid->cb)(aid->handle, info, error, aid->data);
+
+    GDK_THREADS_LEAVE();
+    return FALSE;
+}
+
 /* "Dummy" asyncronous function using the old syncronous API.
  * */
 HildonFileSystemInfoHandle *hildon_file_system_info_async_new(const gchar *uri, 
                     HildonFileSystemInfoCallback callback, gpointer data)
 {
-    return NULL;
+    struct AsyncIdleData *aid;
+    HildonFileSystemInfoHandle *handle;
+
+    aid = malloc(sizeof(struct AsyncIdleData));
+    if (aid == NULL) {
+        ULOG_ERR_F("could not allocate memory");
+        return NULL;
+    }
+    aid->cb = callback;
+    aid->uri = g_strdup(uri);
+    if (aid->uri == NULL) {
+        ULOG_ERR_F("could not allocate memory");
+        free(aid);
+        return NULL;
+    }
+    aid->data = data;
+    aid->handle = handle = malloc(sizeof(HildonFileSystemInfoHandle));
+    if (handle == NULL) {
+        ULOG_ERR_F("could not allocate memory");
+        g_free(aid->uri);
+        free(aid);
+        return NULL;
+    }
+    /* TODO: make a list of callbacks */
+    /*
+    async_idle_id = g_idle_add(async_info_idle, aid);
+    */
+    g_idle_add(async_info_idle, aid);
+    return handle;
 }
 
 /* "Dummy" function, does nothing.
