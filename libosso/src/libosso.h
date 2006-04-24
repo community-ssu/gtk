@@ -29,6 +29,9 @@
 #include <time.h>
 #include <syslog.h>
 
+#define DBUS_API_SUBJECT_TO_CHANGE
+
+#include <dbus/dbus.h>
 #include <dbus/dbus-protocol.h>
 
 G_BEGIN_DECLS
@@ -227,6 +230,38 @@ osso_return_t osso_rpc_run (osso_context_t * osso, const gchar * service,
                             osso_rpc_t * retval, int argument_type, ...);
 
 /**
+ * This is the type of the function used with
+ * #osso_rpc_run_with_argfill, #osso_rpc_run_system_with_argfill, and
+ * #osso_rpc_async_run_with_argfill to append the arguments to the
+ * DBUS message #msg.
+ */
+typedef void osso_rpc_argfill (DBusMessage *msg, void *data);
+
+/**
+ * This function is like #osso_rpc_run but instead of passing the
+ * arguments for the DBUS message as a variable length argument list,
+ * you provide a function in the #argfill parameter that will provide
+ * the arguments.  The #argfill function is called with the
+ * #DBusMessage object that is going to be sent and should append all
+ * arguments to that object with #dbus_message_append_args, or
+ * similar.
+ *
+ * The parameter #argfill_data will be passed to #argfill.
+ *
+ * WARNING: Using this function is not recommended, because it will
+ * make your program more dependent on the DBus API due to the
+ * appending of arguments to a DBusMessage.
+ */
+osso_return_t osso_rpc_run_with_argfill (osso_context_t * osso,
+					 const gchar * service,
+					 const gchar * object_path,
+					 const gchar * interface,
+					 const gchar * method,
+					 osso_rpc_t * retval,
+					 osso_rpc_argfill *argfill,
+					 gpointer argfill_data);
+
+/**
  * See #osso_rpc_run. The RPC call is sent on the system bus instead
  *
  */
@@ -235,6 +270,21 @@ osso_return_t osso_rpc_run_system (osso_context_t * osso, const gchar * service,
                             const gchar * interface, const gchar * method,
                             osso_rpc_t * retval, int argument_type, ...);
 
+/* See #osso_rpc_run_with_argfill.  The RPC call is sent on the system
+ * bus instead.
+ *
+ * WARNING: Using this function is not recommended, because it will
+ * make your program more dependent on the DBus API due to the
+ * appending of arguments to a DBusMessage.
+ */
+osso_return_t osso_rpc_run_system_with_argfill (osso_context_t * osso,
+						const gchar * service,
+						const gchar * object_path,
+						const gchar * interface,
+						const gchar * method,
+						osso_rpc_t *retval,
+						osso_rpc_argfill *argfill,
+						gpointer argfill_data);
 
 /**
  * This function is a wrapper for #osso_rpc_run. It calls an RPC 
@@ -308,6 +358,31 @@ osso_return_t osso_rpc_async_run (osso_context_t * osso,
                                   const gchar * method,
                                   osso_rpc_async_f * async_cb, gpointer data,
                                   int argument_type, ...);
+
+/**
+ * This function is like #osso_rpc_async_run but instead of passing
+ * the arguments for the DBUS message as a variable length argument
+ * list, you provide a function in the #argfill parameter that will
+ * provide the arguments.  The #argfill function is called with the
+ * #DBusMessage object that is going to be sent and should append all
+ * arguments to that object with #dbus_message_append_args, or
+ * similar.
+ *
+ * The parameter #argfill_data will be passed to #argfill.
+ *
+ * WARNING: Using this function is not recommended, because it will
+ * make your program more dependent on the DBus API due to the
+ * appending of arguments to a DBusMessage.
+ */
+osso_return_t osso_rpc_async_run_with_argfill (osso_context_t * osso,
+					       const gchar * service,
+					       const gchar * object_path,
+					       const gchar * interface,
+					       const gchar * method,
+					       osso_rpc_async_f * async_cb,
+					       gpointer data,
+					       osso_rpc_argfill *argfill,
+					       gpointer argfill_data);
 
 /**
  * This function calls an RPC function for the default service

@@ -39,6 +39,15 @@ static void _append_args(DBusMessage *msg, int type, va_list var_args);
 static void _append_arg (DBusMessage * msg, osso_rpc_t * arg);
 static void _get_arg (DBusMessageIter * iter, osso_rpc_t * retval);
 static void _async_return_handler (DBusPendingCall * pending, void *data);
+static osso_return_t _rpc_run_with_argfill (osso_context_t *osso,
+					    DBusConnection *conn,
+					    const gchar *service,
+					    const gchar *object_path,
+					    const gchar *interface,
+					    const gchar *method,
+					    osso_rpc_t *retval, 
+					    osso_rpc_argfill *argfill,
+					    void *argfill_data);
 
 typedef struct {
     osso_rpc_cb_f *func;
@@ -62,6 +71,21 @@ void osso_rpc_free_val (osso_rpc_t *rpc)
 }
 
 /************************************************************************/
+typedef struct {
+  int argument_type;
+  va_list arg_list;
+} fill_from_va_list_data;
+
+static void
+fill_from_va_list (DBusMessage *msg, void *raw)
+{
+  fill_from_va_list_data *data = (fill_from_va_list_data *)raw;
+
+  if (data->argument_type != DBUS_TYPE_INVALID) {
+    _append_args(msg, data->argument_type, data->arg_list);
+  }
+}
+
 osso_return_t osso_rpc_run(osso_context_t *osso, const gchar *service,
 			   const gchar *object_path,
 			   const gchar *interface,
@@ -69,18 +93,42 @@ osso_return_t osso_rpc_run(osso_context_t *osso, const gchar *service,
 			   int argument_type, ...)
 {
     osso_return_t ret;
-    va_list arg_list;
+    fill_from_va_list_data data;
     
     if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
 	(interface == NULL) || (method == NULL))
 	return OSSO_INVALID;
 
-    va_start(arg_list, argument_type);
+    data.argument_type = argument_type;
+    va_start(data.arg_list, argument_type);
     
-    ret = _rpc_run(osso, osso->conn, service, object_path, interface,
-		   method, retval, argument_type, arg_list);
-    va_end(arg_list);
+    ret = _rpc_run_with_argfill (osso, osso->conn,
+				 service, object_path, interface, method,
+				 retval,
+				 fill_from_va_list, &data);
+
+    va_end(data.arg_list);
     return ret;
+}
+
+/************************************************************************/
+osso_return_t osso_rpc_run_with_argfill (osso_context_t *osso,
+					 const gchar *service,
+					 const gchar *object_path,
+					 const gchar *interface,
+					 const gchar *method,
+					 osso_rpc_t *retval,
+					 osso_rpc_argfill *argfill,
+					 void *argfill_data)
+{
+    if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
+	(interface == NULL) || (method == NULL))
+	return OSSO_INVALID;
+
+    return _rpc_run_with_argfill (osso, osso->conn,
+				  service, object_path, interface, method, 
+				  retval,
+				  argfill, argfill_data);
 }
 
 /************************************************************************/
@@ -91,28 +139,52 @@ osso_return_t osso_rpc_run_system(osso_context_t *osso, const gchar *service,
 			   int argument_type, ...)
 {
     osso_return_t ret;
-    va_list arg_list;
+    fill_from_va_list_data data;
     
     if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
 	(interface == NULL) || (method == NULL))
 	return OSSO_INVALID;
 
-    va_start(arg_list, argument_type);
+    data.argument_type = argument_type;
+    va_start(data.arg_list, argument_type);
     
-    ret = _rpc_run(osso, osso->sys_conn, service, object_path, interface,
-		   method, retval, argument_type, arg_list);
-    va_end(arg_list);
+    ret = _rpc_run_with_argfill (osso, osso->sys_conn,
+				 service, object_path, interface, method,
+				 retval,
+				 fill_from_va_list, &data);
+
+    va_end(data.arg_list);
     return ret;
 }
 
+/************************************************************************/
+osso_return_t osso_rpc_run_system_with_argfill (osso_context_t *osso,
+						const gchar *service,
+						const gchar *object_path,
+						const gchar *interface,
+						const gchar *method,
+						osso_rpc_t *retval,
+						osso_rpc_argfill *argfill,
+						void *argfill_data)
+{
+    if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
+	(interface == NULL) || (method == NULL))
+	return OSSO_INVALID;
+
+    return _rpc_run_with_argfill (osso, osso->sys_conn,
+				  service, object_path, interface, method, 
+				  retval,
+				  argfill, argfill_data);
+}
 
 /************************************************************************/
-osso_return_t __attribute__ ((visibility("hidden")))
-_rpc_run(osso_context_t *osso, DBusConnection *conn,
-         const gchar *service, const gchar *object_path,
-         const gchar *interface, const gchar *method,
-         osso_rpc_t *retval, int first_arg_type,
-         va_list var_args)
+static osso_return_t
+_rpc_run_with_argfill (osso_context_t *osso, DBusConnection *conn,
+		       const gchar *service, const gchar *object_path,
+		       const gchar *interface, const gchar *method,
+		       osso_rpc_t *retval, 
+		       osso_rpc_argfill *argfill,
+		       void *argfill_data)
 {
     DBusMessage *msg;
     dbus_bool_t b;
@@ -131,9 +203,7 @@ _rpc_run(osso_context_t *osso, DBusConnection *conn,
 	return OSSO_ERROR;
     }
 
-    if (first_arg_type != DBUS_TYPE_INVALID) {
-	_append_args(msg, first_arg_type, var_args);
-    }
+    argfill (msg, argfill_data);
 
     dbus_message_set_auto_start(msg, TRUE);
     
@@ -248,7 +318,7 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
 {
     char service[MAX_SVC_LEN] = {0}, object_path[MAX_OP_LEN] = {0},
          interface[MAX_IF_LEN] = {0};
-    va_list arg_list;
+    fill_from_va_list_data data;
     osso_return_t ret;
     gchar* copy = NULL;
 
@@ -266,25 +336,29 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
     g_free(copy); copy = NULL;
     g_snprintf(interface, MAX_IF_LEN, "%s", service);
 
-    va_start(arg_list, argument_type);
+    data.argument_type = argument_type;
+    va_start(data.arg_list, argument_type);
 
-    ret = _rpc_run(osso, osso->conn, service, object_path, interface,
-		   method, retval, argument_type, arg_list);
+    ret = _rpc_run_with_argfill (osso, osso->conn,
+				 service, object_path, interface, method,
+				 retval,
+				 fill_from_va_list, &data);
     
-    va_end(arg_list);
+    va_end(data.arg_list);
 
     return ret;
 }
 
 /************************************************************************/
-static osso_return_t _rpc_async_run(osso_context_t *osso,
-			     const gchar *service,
-			     const gchar *object_path,
-			     const gchar *interface,
-			     const gchar *method,
-			     osso_rpc_async_f *async_cb,
-			     gpointer data, int first_arg_type,
-			     va_list var_args)
+static osso_return_t _rpc_async_run_with_argfill (osso_context_t *osso,
+						  const gchar *service,
+						  const gchar *object_path,
+						  const gchar *interface,
+						  const gchar *method,
+						  osso_rpc_async_f *async_cb,
+						  gpointer data,
+						  osso_rpc_argfill *argfill,
+						  void *argfill_data)
 {
     DBusMessage *msg = NULL;
     DBusPendingCall *pending = NULL;
@@ -307,9 +381,7 @@ static osso_return_t _rpc_async_run(osso_context_t *osso,
 
     dbus_message_set_auto_start(msg, TRUE);
     
-    if (first_arg_type != DBUS_TYPE_INVALID) {
-        _append_args(msg, first_arg_type, var_args);
-    }
+    argfill (msg, argfill_data);
 
     if (async_cb == NULL) {
 	dprint("no reply wanted");
@@ -387,7 +459,7 @@ osso_return_t osso_rpc_async_run(osso_context_t *osso,
 				 gpointer data,
 				 int argument_type, ...)
 {
-    va_list arg_list;
+    fill_from_va_list_data argfill_data;
     osso_return_t ret;
    
 	
@@ -395,13 +467,16 @@ osso_return_t osso_rpc_async_run(osso_context_t *osso,
 	(interface == NULL) || (method == NULL))
 	return OSSO_INVALID;
 
-    va_start(arg_list, argument_type);
+    argfill_data.argument_type = argument_type;
+    va_start(argfill_data.arg_list, argument_type);
 
-    ret = _rpc_async_run(osso, service, object_path, interface, method,
-			 async_cb, data, argument_type, arg_list);
-    dprint("_rpc_async_run returned");
+    ret = _rpc_async_run_with_argfill (osso,
+				       service, object_path, interface, method,
+				       async_cb, data,
+				       fill_from_va_list, &argfill_data);
+    dprint("_rpc_async_run_with_argfill returned");
     
-    va_end(arg_list);
+    va_end(argfill_data.arg_list);
     
     return ret;
 }
@@ -414,7 +489,7 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
 					       gpointer data,
 					       int argument_type, ...)
 {
-    va_list arg_list;
+    fill_from_va_list_data argfill_data;
     osso_return_t ret;
     char service[MAX_SVC_LEN] = {0}, object_path[MAX_OP_LEN] = {0},
          interface[MAX_IF_LEN] = {0};
@@ -433,13 +508,16 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
     g_free(copy); copy = NULL;
     g_snprintf(interface, MAX_IF_LEN, "%s", service);
 
-    va_start(arg_list, argument_type);
+    argfill_data.argument_type = argument_type;
+    va_start(argfill_data.arg_list, argument_type);
 
-    ret = _rpc_async_run(osso, service, object_path, interface, method,
-			 async_cb, data, argument_type, arg_list);
-    dprint("_rpc_async_run returned");
+    ret = _rpc_async_run_with_argfill (osso,
+				       service, object_path, interface, method,
+				       async_cb, data,
+				       fill_from_va_list, &argfill_data);
+    dprint("_rpc_async_run_with_argfill returned");
     
-    va_end(arg_list);
+    va_end(argfill_data.arg_list);
 
     return ret;
 }

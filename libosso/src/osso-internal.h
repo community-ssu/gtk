@@ -169,11 +169,6 @@ void _msg_handler_set_ret(osso_context_t *osso, gint serial,
 			  osso_rpc_t *retval);
 void _msg_handler_rm_ret(osso_context_t *osso, gint serial);
 
-osso_return_t _rpc_run (osso_context_t * osso, DBusConnection * conn,
-                        const gchar * service, const gchar * object_path,
-                        const gchar * interface, const gchar * method,
-                        osso_rpc_t * retval, int first_arg_type,
-                        va_list var_args);
 /* this is only needed by some unit testing code */
 osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
                                 const gchar *object_path,

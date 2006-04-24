@@ -1,10 +1,10 @@
 libosso (1.8-1) unstable; urgency=low
 
-  * UNRELEASED
   * Packaging fixes.
   * Removed compilation of logging code.
+  * Additional API from Marius for Python bindings (N#26964).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 13 Apr 2006 16:57:27 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 24 Apr 2006 10:12:44 +0300
 
 libosso (1.7-1) unstable; urgency=low
 

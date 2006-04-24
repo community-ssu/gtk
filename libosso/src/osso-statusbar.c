@@ -26,13 +26,6 @@
 #define STATUSBAR_OBJECT_PATH "/com/nokia/statusbar"
 #define STATUSBAR_INTERFACE "com.nokia.statusbar"
 
-static osso_return_t _rpc_run_wrap(osso_context_t *osso, DBusConnection *conn,
-				   const gchar *service,
-				   const gchar *object_path,
-				   const gchar *interface,
-				   const gchar *method, osso_rpc_t *retval,
-				   int argument_type, ...);
-
 osso_return_t osso_statusbar_send_event(osso_context_t *osso,
 					const gchar *name,
 					gint argument1, gint argument2,
@@ -47,28 +40,15 @@ osso_return_t osso_statusbar_send_event(osso_context_t *osso,
 	return OSSO_INVALID;
     
 
-    r = _rpc_run_wrap(osso, osso->sys_conn, STATUSBAR_SERVICE, 
-		      STATUSBAR_OBJECT_PATH, STATUSBAR_INTERFACE,
-		      "event", retval, DBUS_TYPE_STRING, name, DBUS_TYPE_INT32,
-		      argument1, DBUS_TYPE_INT32, argument2, dbus_type_string,
-		      argument3, DBUS_TYPE_INVALID);
+    r = osso_rpc_run_system (osso,
+			     STATUSBAR_SERVICE, 
+			     STATUSBAR_OBJECT_PATH,
+			     STATUSBAR_INTERFACE,
+			     "event", retval,
+			     DBUS_TYPE_STRING, name,
+			     DBUS_TYPE_INT32, argument1,
+			     DBUS_TYPE_INT32, argument2,
+			     dbus_type_string, argument3,
+			     DBUS_TYPE_INVALID);
     return r;
-}
-
-static osso_return_t _rpc_run_wrap(osso_context_t *osso, DBusConnection *conn,
-				   const gchar *service,
-				   const gchar *object_path,
-				   const gchar *interface,
-				   const gchar *method, osso_rpc_t *retval,
-				   int argument_type, ...)
-{
-    osso_return_t ret;
-    va_list arg_list;
-    
-    va_start(arg_list, argument_type);
-    
-    ret = _rpc_run(osso, conn, service, object_path, interface,
-		   method, retval, argument_type, arg_list);
-    va_end(arg_list);
-    return ret;
 }
