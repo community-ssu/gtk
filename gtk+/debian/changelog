@@ -1,6 +1,7 @@
 gtk+2.0 (2:2.6.10-1.osso13) unstable; urgency=low
 
   * Fixes compilation problems with glib 2.10
+  * debian/rules (CFLAGS, LDFLAGS): Really enable thumb code 
   * Bugs fixed:
     N#22694: Hildon modifications done into gtk_tree_view_row_changed cause
              lot's of unneeded accesses to model
