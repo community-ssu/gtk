@@ -98,9 +98,9 @@ ifeq "$(strip $(LAUNCHER))" "yes"
 	ln -s maemo-invoker debian/build/usr/bin/maemo_af_desktop
 endif
 
-configure: configure.stamp
+configure: configure-stamp
 
-configure.stamp:
+configure-stamp:
 	dh_testdir
 	./autogen.sh
 	touch configure-stamp

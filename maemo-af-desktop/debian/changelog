@@ -1,3 +1,35 @@
+maemo-af-desktop (2.6.11-1) unstable; urgency=low
+
+  * debian/rules: Fixed typo I just introduced
+
+  * hildon-navigator/hildon-navigator-main.c: Removed warning
+    when a configuration file is not found, as this is the expected
+    behaviour before the user uses the TN CPA (Closes N#24138)
+
+  * hildon-navigator/hn-wm-watched-window.c: Removed deprecated
+    "Application closed" note (Closes N#26282)
+
+  * hildon-navigator/close-application-dialog.c: l10n id should
+    come from the ke-recv domain (Closes N#27433)
+
+  Applied fix to "Contacts not able to load from others menu"
+  (Closes N#26808)
+  * hildon-navigator/hn-wm-watchable-app.c: Replaced call to libmb
+    with calls to glib's g_key_file_ API
+
+  Applied fix to "HOME:Undesired response for hardkeys in Layout mode"
+  (Closes N#26112)
+  * hildon-home/layout-manager.c: focus only ok and cancel buttons with
+    gtk_container_set_focus_chain() and grab
+    the focus on cancel button when layoutmode begins. 
+
+  Applied fix to "Menu hard key does not work consistently in Home"
+  (Closes N#25388)
+  * hildon-home/hildon-home-main.c: (set_menu())
+    Connect to deactivation signal to update internal status
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 24 Apr 2006 11:19:40 +0300
+
 maemo-af-desktop (2.6.10-4) unstable; urgency=low
 
   * Run the autofoo when building the package
