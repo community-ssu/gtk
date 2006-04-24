@@ -86,7 +86,7 @@ endif
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k 
+#	dh_clean -k 
 	dh_installdirs
 
 # Add here commands to install the package into debian/build
@@ -97,6 +97,13 @@ ifeq "$(strip $(LAUNCHER))" "yes"
 	mv debian/build/usr/bin/maemo_af_desktop debian/build/usr/bin/maemo_af_desktop.launch
 	ln -s maemo-invoker debian/build/usr/bin/maemo_af_desktop
 endif
+
+configure: configure.stamp
+
+configure.stamp:
+	dh_testdir
+	./autogen.sh
+	touch configure-stamp
 
 # Build architecture-independent files here.
 binary-indep: build install
