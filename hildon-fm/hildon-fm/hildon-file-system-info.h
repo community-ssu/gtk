@@ -1,7 +1,7 @@
 /*
  * This file is part of hildon-fm package
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -37,7 +37,6 @@ G_BEGIN_DECLS
 typedef struct _HildonFileSystemInfoHandle HildonFileSystemInfoHandle;
 typedef struct _HildonFileSystemInfo HildonFileSystemInfo;
 
-HildonFileSystemInfo *hildon_file_system_info_new(const gchar *uri, GError **error);
 typedef void (*HildonFileSystemInfoCallback) (HildonFileSystemInfoHandle *handle,
                                               HildonFileSystemInfo *info,
                                               const GError *error, gpointer data);
