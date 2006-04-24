@@ -1,3 +1,10 @@
+hildon-fm (0.21-1) unstable; urgency=low
+
+  * Backported hildon_file_system_info_async_new() to enable easier
+    moving to new asyncronous API.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 24 Apr 2006 15:25:13 +0300
+
 hildon-fm (0.20-1) unstable; urgency=low
 
   * Packaging fixes to appease Lintian.

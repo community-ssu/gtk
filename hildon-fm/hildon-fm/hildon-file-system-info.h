@@ -34,16 +34,27 @@
 
 G_BEGIN_DECLS
 
+typedef struct _HildonFileSystemInfoHandle HildonFileSystemInfoHandle;
 typedef struct _HildonFileSystemInfo HildonFileSystemInfo;
 
 HildonFileSystemInfo *hildon_file_system_info_new(const gchar *uri, GError **error);
+typedef void (*HildonFileSystemInfoCallback) (HildonFileSystemInfoHandle *handle,
+                                              HildonFileSystemInfo *info,
+                                              const GError *error, gpointer data);
+
+HildonFileSystemInfoHandle *hildon_file_system_info_async_new(const gchar *uri,
+    HildonFileSystemInfoCallback callback, gpointer data);
 const gchar *hildon_file_system_info_get_display_name(HildonFileSystemInfo *info);
 GdkPixbuf *hildon_file_system_info_get_icon(HildonFileSystemInfo *info, GtkWidget *ref_widget);
 GdkPixbuf *hildon_file_system_info_get_icon_at_size(HildonFileSystemInfo *info, 
 						    GtkWidget *ref_widget,
 						    gint size);
+void hildon_file_system_info_async_cancel(HildonFileSystemInfoHandle *handle);
 
+#ifndef HILDON_DISABLE_DEPRECATED
+HildonFileSystemInfo *hildon_file_system_info_new(const gchar *uri, GError **error);
 void hildon_file_system_info_free(HildonFileSystemInfo *info);
+#endif
 
 G_END_DECLS
 
