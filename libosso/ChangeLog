@@ -1,3 +1,29 @@
+2006-04-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Support for language bindings that have trouble calling varargs
+        functions.
+
+	* src/libosso.h, src/osso-rpc.c, src/osso-internal.h
+	(osso_rpc_argfill, osso_rpc_run_with_argfill,
+	osso_rpc_run_system_with_argfill,
+	osso_rpc_async_run_with_argfill): New.
+	(_run_rpc): Renamed to _rpc_run_with_argfill, changed parameters
+        to use the osso_rpc_argfill method.  Call argfill parameter
+        instead of using _append_args.  Made static.
+	(fill_from_va_list_data, fill_from_va_list): New.
+	(osso_rpc_run, osso_rpc_run_system, osso_rpc_run_with_defaults):
+        Use them together with _rpc_run_with_argfill instead of using
+        _rpc_run.
+	(_rpc_async_run): Renamed to _rpc_run_with_argfill, changed
+        parameters to use the osso_rpc_argfill method.  Call argfill
+        parameter instead of using _append_args.
+	(osso_rpc_async_run, osso_rpc_async_run_with_defaults): Use it
+        instead of _rpc_async_run.
+
+	* src/osso-statusbar.c (osso_statusbar_send_event): Use
+        osso_rpc_run_system instead of _rpc_run_wrap.
+	(_rpc_run_wrap): Removed.
+
 2005-11-01  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 0.10.0.
@@ -12,7 +38,7 @@
 	* configure.ac (WFLAGS): Removd -Wunreachable-code since GCC 3.3
 	gives false warnings.
 
-        * src/osso-time.h (_time_to_string): Removed prototype.
+	* src/osso-time.h (_time_to_string): Removed prototype.
 	
 	* src/osso-state.c (_write_state, _read_state): Added prototypes.
 
