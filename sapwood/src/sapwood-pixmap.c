@@ -263,7 +263,8 @@ sapwood_pixmap_free (SapwoodPixmap *self)
 		display = gdk_drawable_get_display (self->pixmap[i][j]);
 
 	      g_object_unref (self->pixmap[i][j]);
-	      g_object_unref (self->pixmask[i][j]);
+	      if (self->pixmask[i][j])
+		g_object_unref (self->pixmask[i][j]);
 
 	      self->pixmap[i][j] = NULL;
 	      self->pixmask[i][j] = NULL;

@@ -1,3 +1,10 @@
+2006-04-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* === Release 2.17 ===
+	
+	* src/sapwood-pixmap.c(sapwood_pixmap_free): Do not unref NULL mask.
+	N#27515
+
 2006-04-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* === Release 2.14.1 ===
