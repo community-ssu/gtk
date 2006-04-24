@@ -3,7 +3,7 @@
         - Updated for the SDK 2.0 API (HildonProgram, HildonWindow).
         - Some code clean up.
         - Improved HildonNote binding.
-        - Expanded hildo-test.py tests.
+        - Expanded hildo-test.py tests
 
 0.6.0 - 20050906
     - Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
