@@ -136,6 +136,19 @@ hildon_file_system_info_new(const gchar *uri, GError **error)
     return result;    
 }
 
+/* "Dummy" asyncronous function using the old syncronous API.
+ * */
+HildonFileSystemInfoHandle *hildon_file_system_info_async_new(const gchar *uri, 
+                    HildonFileSystemInfoCallback callback, gpointer data)
+{
+}
+
+/* "Dummy" function, does nothing.
+ * */
+void hildon_file_system_info_async_cancel(HildonFileSystemInfoHandle *handle)
+{
+}
+
 /**
  * hildon_file_system_info_get_display_name:
  * @info: a #HildonFileSystemInfo pointer.
