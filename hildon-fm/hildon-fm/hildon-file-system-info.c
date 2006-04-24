@@ -155,7 +155,7 @@ static gboolean async_info_idle(gpointer data)
 
     GDK_THREADS_ENTER();
 
-    info = hildon_file_system_info(aid->uri, &error);
+    info = hildon_file_system_info_new(aid->uri, &error);
     *(aid->cb)(aid->handle, info, error, aid->data);
 
     GDK_THREADS_LEAVE();
@@ -170,7 +170,7 @@ HildonFileSystemInfoHandle *hildon_file_system_info_async_new(const gchar *uri,
     struct AsyncIdleData *aid;
     HildonFileSystemInfoHandle *handle;
 
-    aid = malloc(sizeof(struct AsyncIdleData));
+    aid = g_malloc(sizeof(struct AsyncIdleData));
     if (aid == NULL) {
         ULOG_ERR_F("could not allocate memory");
         return NULL;
@@ -179,15 +179,15 @@ HildonFileSystemInfoHandle *hildon_file_system_info_async_new(const gchar *uri,
     aid->uri = g_strdup(uri);
     if (aid->uri == NULL) {
         ULOG_ERR_F("could not allocate memory");
-        free(aid);
+        g_free(aid);
         return NULL;
     }
     aid->data = data;
-    aid->handle = handle = malloc(sizeof(HildonFileSystemInfoHandle));
+    aid->handle = handle = g_malloc(sizeof(HildonFileSystemInfoHandle));
     if (handle == NULL) {
         ULOG_ERR_F("could not allocate memory");
         g_free(aid->uri);
-        free(aid);
+        g_free(aid);
         return NULL;
     }
     /* TODO: make a list of callbacks */
