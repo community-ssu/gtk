@@ -1402,6 +1402,10 @@ _gtk_entry_completion_popup (GtkEntryCompletion *completion)
 			GDK_POINTER_MOTION_MASK,
 			NULL, NULL, GDK_CURRENT_TIME);
     }
+
+  g_signal_connect_data (completion->priv->entry, "size-allocate",
+			 G_CALLBACK (_gtk_entry_completion_popdown),
+			 completion, NULL, G_CONNECT_SWAPPED);
 }
 
 void
@@ -1411,6 +1415,10 @@ _gtk_entry_completion_popdown (GtkEntryCompletion *completion)
     return;
 
   completion->priv->ignore_enter = FALSE;
+
+  g_signal_handlers_disconnect_by_func (completion->priv->entry,
+					_gtk_entry_completion_popdown,
+					completion);
 
   if (! /* FIXME: Hildon grab free style */ 1)
     {

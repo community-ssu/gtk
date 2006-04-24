@@ -1,6 +1,12 @@
 2006-04-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popup,
+	_gtk_entry_completion_popdown): Pop down the completion window if the
+	GtkEntry moves, like what happens when the user hides the IM.
+
+2006-04-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popup,
 	_gtk_entry_completion_popdown): Do not perform any grabs that are
 	intended for closing the completion popup window when tapping outside
 	as they effectively prevent VKB usage. Now we rely on focus-out
