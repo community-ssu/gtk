@@ -1,5 +1,14 @@
 2006-04-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkentrycompletion.c (_gtk_entry_completion_popup,
+	_gtk_entry_completion_popdown): Do not perform any grabs that are
+	intended for closing the completion popup window when tapping outside
+	as they effectively prevent VKB usage. Now we rely on focus-out
+	to pop down the completion window.
+	N#26867
+
+2006-04-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkentry.c (gtk_entry_set_property): setting visibility will
 	manipulate the "hildon-input-mode" HILDON_GTK_INPUT_MODE_INVISIBILITY
 	bit.
