@@ -2565,6 +2565,71 @@ _gtk_tree_view_column_cell_set_cell_data_for_validation (GtkTreeViewColumn *tree
 
 }
 
+void
+_gtk_tree_view_column_cell_set_cell_data_with_attributes (GtkTreeViewColumn *tree_column,
+							  GtkTreeModel      *tree_model,
+							  GtkTreeIter       *iter,
+							  gboolean           is_expander,
+							  gboolean           is_expanded,
+							  gchar       *attribute,
+							  ...)
+{
+  GSList *list;
+  GValue value = { 0, };
+  GList *cell_list;
+  va_list var_args;
+  GSList *attributes = NULL;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW_COLUMN (tree_column));
+
+  if (tree_model == NULL)
+    return;
+
+  /* We need to create a list, since we need to iterate the attributes
+   * for each cell
+   */
+  va_start (var_args, attribute);
+  do
+    attributes = g_slist_append (attributes, attribute);
+  while (attribute = va_arg (var_args, gchar *));
+  va_end (var_args);
+
+  for (cell_list = tree_column->cell_list; cell_list; cell_list = cell_list->next)
+    {
+      GtkTreeViewColumnCellInfo *info = (GtkTreeViewColumnCellInfo *) cell_list->data;
+      GObject *cell = (GObject *) info->cell;
+
+      list = info->attributes;
+
+      g_object_freeze_notify (cell);
+
+      if (info->cell->is_expander != is_expander)
+	g_object_set (cell, "is_expander", is_expander, NULL);
+
+      if (info->cell->is_expanded != is_expanded)
+	g_object_set (cell, "is_expanded", is_expanded, NULL);
+
+      while (list && list->next)
+	{
+	  if (g_slist_find_custom (attributes, list->data, (GCompareFunc)strcmp))
+	    {
+	      gtk_tree_model_get_value (tree_model, iter,
+					GPOINTER_TO_INT (list->next->data),
+					&value);
+	      g_object_set_property (cell, (gchar *) list->data, &value);
+	      g_value_unset (&value);
+	    }
+	  list = list->next->next;
+	}
+
+      if (info->func)
+	(* info->func) (tree_column, info->cell, tree_model, iter, info->func_data);
+      g_object_thaw_notify (G_OBJECT (info->cell));
+    }
+
+  g_slist_free (attributes);
+}
+
 /**
  * gtk_tree_view_column_cell_set_cell_data:
  * @tree_column: A #GtkTreeViewColumn.

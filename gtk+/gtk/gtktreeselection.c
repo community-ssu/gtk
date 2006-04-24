@@ -1327,8 +1327,12 @@ tree_column_is_sensitive (GtkTreeViewColumn *column,
   gboolean sensitive;
   gboolean visible;
 
-  gtk_tree_view_column_cell_set_cell_data (column, model,
-					   iter, FALSE, FALSE);
+  _gtk_tree_view_column_cell_set_cell_data_with_attributes (column, model,
+							    iter,
+							    FALSE, FALSE,
+							    "sensitive",
+							    "visible",
+							    NULL);
 
   cells = gtk_tree_view_column_get_cell_renderers (column);
 

@@ -434,6 +434,13 @@ void              _gtk_tree_view_column_cell_set_cell_data_for_validation (GtkTr
 									   GtkTreeIter       *iter,
 									   gboolean           is_expander,
 									   gboolean           is_expanded);
+void              _gtk_tree_view_column_cell_set_cell_data_with_attributes (GtkTreeViewColumn *tree_column,
+									    GtkTreeModel      *model,
+									    GtkTreeIter       *iter,
+									    gboolean           is_expander,
+									    gboolean           is_expanded,
+									    char              *attribute,
+									    ...);
 
 
 #ifdef __cplusplus
