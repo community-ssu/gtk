@@ -141,6 +141,7 @@ hildon_file_system_info_new(const gchar *uri, GError **error)
 HildonFileSystemInfoHandle *hildon_file_system_info_async_new(const gchar *uri, 
                     HildonFileSystemInfoCallback callback, gpointer data)
 {
+    return NULL;
 }
 
 /* "Dummy" function, does nothing.
