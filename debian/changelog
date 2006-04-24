@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.6.10-1.osso14) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Close the entry completion window when VKB is hidden
+  * Bugs fixed:
+    N#26867: Unable to use input-method on the first attempt when
+             autocompletion list is open
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 24 Apr 2006 17:56:02 +0300
+
 gtk+2.0 (2:2.6.10-1.osso13) unstable; urgency=low
 
   * Fixes compilation problems with glib 2.10
