@@ -29,6 +29,13 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
+# Ensure the build aborts when there are still references to undefined
+# symbols.
+LDFLAGS += -Wl,-z,defs
+
+# Make the linker work a bit harder so dynamic loading can be done faster
+LDFLAGS += -Wl,-O1
+
 # Disable all locales to save footprint
 export LINGUAS = 
 
@@ -63,7 +70,7 @@ $(BUILD_SHARED_DIR)/config.status: $(SOURCE_DIR)/configure
 
 	# Add here commands to configure the package.
 	cd $(BUILD_SHARED_DIR) && \
-	$(SOURCE_DIR)/configure	\
+	env CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" $(SOURCE_DIR)/configure \
 			--host=$(DEB_HOST_GNU_TYPE) \
 			--build=$(DEB_BUILD_GNU_TYPE) \
 			--prefix=/usr \
