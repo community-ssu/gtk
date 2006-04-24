@@ -1,7 +1,7 @@
 /*
  * This file is part of hildon-fm package
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -29,6 +29,7 @@
 
 #include "hildon-file-system-info.h"
 #include "hildon-file-system-private.h"
+#include "hildon-file-common-private.h"
 #include <string.h>
 
 struct _HildonFileSystemInfo
@@ -156,7 +157,7 @@ static gboolean async_info_idle(gpointer data)
     GDK_THREADS_ENTER();
 
     info = hildon_file_system_info_new(aid->uri, &error);
-    *(aid->cb)(aid->handle, info, error, aid->data);
+    (*aid->cb)(aid->handle, info, error, aid->data);
 
     GDK_THREADS_LEAVE();
     return FALSE;
