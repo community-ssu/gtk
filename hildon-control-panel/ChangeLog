@@ -1,3 +1,8 @@
+2006-04-24 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-control-panel-main.[ch], hildon-cp-rfs.c: Added help
+	  topic to the RFS and CUD dialogs (Closes N#27548 and N#27549)
+
 2006-04-10 Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 1.2.4

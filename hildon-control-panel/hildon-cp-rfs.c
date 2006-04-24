@@ -31,7 +31,9 @@
 
 
 static gboolean hildon_cp_rfs_display_warning( const gchar * warning,
-                                               const gchar *title );
+                                               const gchar *title,
+                                               const gchar *help_topic,
+       	                                       osso_context_t *osso );
 static gboolean hildon_cp_rfs_check_lock_code_dialog( osso_context_t * osso );
 static gint hildon_cp_rfs_check_lock_code( const gchar *, osso_context_t * );
 static void hildon_cp_rfs_launch_script( const gchar * );
@@ -40,11 +42,12 @@ static void hildon_cp_rfs_launch_script( const gchar * );
 gboolean hildon_cp_rfs( osso_context_t * osso, 
                         const gchar *warning,
                         const gchar *title,
-                        const gchar * script )
+                        const gchar *script,
+                        const gchar *help_topic )
 {
     if( warning )
     {
-        if( !hildon_cp_rfs_display_warning( warning, title ) )
+        if( !hildon_cp_rfs_display_warning( warning, title, help_topic, osso ) )
         {
             /* User canceled, return */
             return TRUE;
@@ -70,7 +73,9 @@ gboolean hildon_cp_rfs( osso_context_t * osso,
  * Asks the user for confirmation, returns TRUE if confirmed
  */
 static gboolean hildon_cp_rfs_display_warning( const gchar *warning,
-                                               const gchar *title ) 
+                                               const gchar *title,
+                                               const gchar *help_topic,
+       	                                       osso_context_t *osso ) 
 {
     GtkWidget *confirm_dialog;
     GtkWidget *label;
@@ -84,6 +89,10 @@ static gboolean hildon_cp_rfs_display_warning( const gchar *warning,
         RESET_FACTORY_SETTINGS_INFOBANNER_CANCEL, GTK_RESPONSE_CANCEL,
         NULL
         );
+
+    ossohelp_dialog_help_enable( GTK_DIALOG( confirm_dialog ),
+                                 help_topic,
+                                 osso );
 
     gtk_dialog_set_has_separator( GTK_DIALOG( confirm_dialog ), FALSE );
 
@@ -118,6 +127,10 @@ static gboolean hildon_cp_rfs_check_lock_code_dialog( osso_context_t * osso )
     gint password_correct = FALSE;
 
     dialog = hildon_code_dialog_new();
+    
+    ossohelp_dialog_help_enable( GTK_DIALOG( dialog ),
+                                 HILDON_CP_CODE_DIALOG_HELP_TOPIC,
+                                 osso );
 
     gtk_widget_show_all (dialog);
 
