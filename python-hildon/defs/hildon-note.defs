@@ -26,6 +26,16 @@
   )
 )
 
+(define-method set_button_texts
+  (of-object "HildonNote")
+  (c-name "hildon_note_set_button_texts")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "textOk")
+    '("const-gchar*" "textCancel")
+  )
+)
+
 (define-function hildon_note_get_type
   (c-name "hildon_note_get_type")
   (return-type "GType")
