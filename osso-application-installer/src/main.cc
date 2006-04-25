@@ -2444,20 +2444,28 @@ window_state_event (GtkWidget *widget, GdkEventWindowState *event,
 }
 
 static gboolean
-key_press_event (GtkWidget *widget,
-		 GdkEventKey *event,
-		 gpointer data)
+key_event (GtkWidget *widget,
+	   GdkEventKey *event,
+	   gpointer data)
 {
-  if (event->type == GDK_KEY_PRESS)
+  if (event->type == GDK_KEY_PRESS &&
+      event->keyval == HILDON_HARDKEY_FULLSCREEN)
     {
-      switch (event->keyval)
-	{
-	case HILDON_HARDKEY_FULLSCREEN:
-	  toggle_fullscreen ();
-	  return TRUE;
-	default:
-	  return FALSE;
-	}
+      toggle_fullscreen ();
+      return TRUE;
+    }
+
+  if (event->type == GDK_KEY_RELEASE &&
+      event->keyval == HILDON_HARDKEY_ESC)
+    {
+      if (cur_view_struct->parent)
+	show_view (cur_view_struct->parent);
+
+      /* We must return FALSE here since the long-press handling code
+	 in HildonWindow needs to see the key release as well to stop
+	 the timer.
+      */
+      return FALSE;
     }
 
   return FALSE;
@@ -2514,6 +2522,8 @@ main (int argc, char **argv)
   GtkMenu *main_menu;
   char *apt_worker_prog = "/usr/libexec/apt-worker";
 
+  sleep (3);
+
   setlocale (LC_ALL, "");
   bind_textdomain_codeset ("osso-application-installer", "UTF-8");
   textdomain ("osso-application-installer");
@@ -2541,7 +2551,9 @@ main (int argc, char **argv)
   g_signal_connect (window, "window_state_event",
 		    G_CALLBACK (window_state_event), NULL);
   g_signal_connect (window, "key_press_event",
-		    G_CALLBACK (key_press_event), NULL);
+		    G_CALLBACK (key_event), NULL);
+  g_signal_connect (window, "key_release_event",
+		    G_CALLBACK (key_event), NULL);
 
   toolbar = gtk_toolbar_new ();
 
