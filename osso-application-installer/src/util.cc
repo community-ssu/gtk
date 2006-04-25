@@ -1117,6 +1117,7 @@ show_deb_file_chooser (void (*cont) (char *filename, void *data),
   filter = gtk_file_filter_new ();
   gtk_file_filter_add_mime_type (filter, "application/x-deb");
   gtk_file_filter_add_mime_type (filter, "application/x-debian-package");
+  gtk_file_filter_add_mime_type (filter, "application/x-install-instructions");
   gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(fcd), filter);
   // XXX - gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER(fcd), TRUE);
 
@@ -1279,8 +1280,6 @@ static char *copy_tempdir;
 static void
 call_copy_cont (bool success)
 {
-  printf ("copy done %d\n", success);
-
   hide_progress ();
 
   if (!success)

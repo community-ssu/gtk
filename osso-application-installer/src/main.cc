@@ -195,6 +195,8 @@ make_padded_button (const char *label)
   return btn;
 }
 
+static GdkPixbuf *main_image = NULL;
+
 GtkWidget *
 make_main_view (view *v)
 {
@@ -261,10 +263,15 @@ make_main_view (view *v)
 				 1, 2, 5, 6);
     }
 
-  // XXX - find the proper way to load this image.
+  if (main_image == NULL)
+    {
+      // XXX - find a proper way to theme the main view.
+      main_image = gdk_pixbuf_new_from_file ("/usr/share/themes/default/images/qgn_plat_application_installer_image.png", NULL);
+    }
+
   vbox = gtk_vbox_new (FALSE, 0);
   gtk_box_pack_end (GTK_BOX (view), vbox, FALSE, FALSE, 0);
-  image = gtk_image_new_from_file ("/usr/share/themes/default/images/qgn_plat_application_installer_image.png");
+  image = gtk_image_new_from_pixbuf (main_image);
   gtk_box_pack_end (GTK_BOX (vbox), image, FALSE, FALSE, 0);
   
   gtk_widget_show_all (view);
@@ -768,10 +775,13 @@ gpi_reply  (int cmd, apt_proto_decoder *dec, void *clos)
 
 void
 call_with_package_info (package_info *pi,
+			bool only_installable_info,
 			void (*func) (package_info *, void *, bool),
 			void *data)
 {
-  if (pi->have_info)
+  if (pi->have_info
+      && (only_installable_info
+	  || pi->info.removable_status != status_unknown))
     func (pi, data, false);
   else
     {
@@ -780,7 +790,8 @@ call_with_package_info (package_info *pi,
       c->data = data;
       c->pi = pi;
       pi->ref ();
-      apt_worker_get_package_info (pi->name, gpi_reply, c);
+      apt_worker_get_package_info (pi->name, only_installable_info,
+				   gpi_reply, c);
     }
 }
 
@@ -790,6 +801,7 @@ static GList *next_packages_for_info;
 void row_changed (GtkTreeModel *model, GtkTreeIter *iter);
 
 static package_info *intermediate_info;
+static bool intermediate_only_installable;
 static void (*intermediate_callback) (package_info *, void*, bool);
 static void *intermediate_data;
 
@@ -807,7 +819,8 @@ get_next_package_info (package_info *pi, void *unused, bool changed)
     }
 
   if (intermediate_info)
-    call_with_package_info (intermediate_info, get_next_package_info, NULL);
+    call_with_package_info (intermediate_info, intermediate_only_installable,
+			    get_next_package_info, NULL);
   else
     {
       cur_packages_for_info = next_packages_for_info;
@@ -815,7 +828,7 @@ get_next_package_info (package_info *pi, void *unused, bool changed)
 	{
 	  next_packages_for_info = cur_packages_for_info->next;
 	  pi = (package_info *)cur_packages_for_info->data;
-	  call_with_package_info (pi, get_next_package_info, NULL);
+	  call_with_package_info (pi, true, get_next_package_info, NULL);
 	}
     }
 }
@@ -830,12 +843,15 @@ get_package_list_info (GList *packages)
 
 void
 get_intermediate_package_info (package_info *pi,
+			       bool only_installable_info,
 			       void (*callback) (package_info *, void *, bool),
 			       void *data)
 {
   package_info *old_intermediate_info = intermediate_info;
 
-  if (pi->have_info)
+  if (pi->have_info
+      && (only_installable_info
+	  || pi->info.removable_status != status_unknown))
     {
       if (callback)
 	callback (pi, data, false);
@@ -843,6 +859,7 @@ get_intermediate_package_info (package_info *pi,
   else if (intermediate_info == NULL || intermediate_callback == NULL)
     {
       intermediate_info = pi;
+      intermediate_only_installable = only_installable_info;
       intermediate_callback = callback;
       intermediate_data = data;
     }
@@ -1036,8 +1053,8 @@ confirm_install (package_info *pi,
 		   pi->name, pi->available_version, download_buf);
   
   ask_yes_no_with_details ((pi->installed_version
-			    ? _("ai_ti_update")
-			    : _("ai_ti_install")),
+			    ? _("ai_ti_confirm_update")
+			    : _("ai_ti_confirm_install")),
 			   text->str, pi, false, cont, data);
   g_string_free (text, 1);
 }
@@ -1365,7 +1382,7 @@ static void
 install_package (package_info *pi)
 {
   pi->ref ();
-  get_intermediate_package_info (pi, install_package_cont, NULL);
+  get_intermediate_package_info (pi, true, install_package_cont, NULL);
 }
 
 static void
@@ -1382,7 +1399,7 @@ available_package_selected (package_info *pi)
     {
       set_details_callback (available_package_details, pi);
       set_operation_callback ((void (*)(void*))install_package, pi);
-      get_intermediate_package_info (pi, NULL, NULL);
+      get_intermediate_package_info (pi, true, NULL, NULL);
     }
   else
     {
@@ -1759,7 +1776,7 @@ static void
 uninstall_package (package_info *pi)
 {
   pi->ref ();
-  get_intermediate_package_info (pi, uninstall_package_cont, NULL);
+  get_intermediate_package_info (pi, false, uninstall_package_cont, NULL);
 }
 
 GtkWidget *
@@ -2246,8 +2263,16 @@ static void
 install_from_file_cont2 (char *filename, void *unused)
 {
   if (filename)
-    apt_worker_get_file_details (!red_pill_mode, filename,
-				 file_details_reply, filename);
+    {
+      if (g_str_has_suffix (filename, ".install"))
+	{
+	  open_install_instructions (filename);
+	  g_free (filename);
+	}
+      else
+	apt_worker_get_file_details (!red_pill_mode, filename,
+				     file_details_reply, filename);
+    }
 }
 
 static void
@@ -2313,10 +2338,7 @@ mime_open_handler (gpointer raw_data, int argc, char **argv)
       const char *filename = argv[0];
 
       present_main_window ();
-      if (g_str_has_suffix (filename, ".install"))
-	open_install_instructions (filename);
-      else
-	install_from_file_cont (g_strdup (filename), NULL);
+      install_from_file_cont (g_strdup (filename), NULL);
     }
 }
 

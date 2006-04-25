@@ -77,6 +77,7 @@ void apt_worker_set_sources_list (void (*encoder) (apt_proto_encoder *,
 				  apt_worker_callback *callback, void *data);
 
 void apt_worker_get_package_info (const char *package,
+				  bool only_installable_info,
 				  apt_worker_callback *callback,
 				  void *data);
 

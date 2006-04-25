@@ -218,13 +218,15 @@ enum apt_proto_operation {
 //
 // Parameters:
 //
-// - name (string).  Name of the package.
+// - name (string).                Name of the package.
+// - only_installable_info (int).
 //
 // Response:
 //
 // - info (apt_proto_package_info).
 
 enum apt_proto_able_status {
+  status_unknown,
   status_able,
   status_unable,                 // unknown reason
   status_conflicting,

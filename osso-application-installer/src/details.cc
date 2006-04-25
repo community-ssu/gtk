@@ -520,5 +520,5 @@ show_package_details (package_info *pi, bool installed,
   c->installed = installed;
   c->show_problems = show_problems;
   pi->ref ();
-  get_intermediate_package_info (pi, spd_cont, c);
+  get_intermediate_package_info (pi, false, spd_cont, c);
 }

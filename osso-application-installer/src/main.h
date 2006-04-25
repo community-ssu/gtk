@@ -67,6 +67,7 @@ struct package_info {
 };
 
 void get_intermediate_package_info (package_info *pi,
+				    bool only_installable_info,
 				    void (*func) (package_info *, void *,
 						  bool),
 				    void *);

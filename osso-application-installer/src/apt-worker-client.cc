@@ -116,6 +116,9 @@ setup_pmstatus_from_fd (int fd)
 static bool
 must_mkfifo (char *filename, int mode)
 {
+  if (unlink (filename) < 0 && errno != ENOENT)
+    log_perror (filename);
+    
   if (mkfifo (filename, mode) < 0)
     {
       log_perror (filename);
@@ -521,10 +524,12 @@ apt_worker_set_sources_list (void (*encoder) (apt_proto_encoder *, void *),
 
 void
 apt_worker_get_package_info (const char *package,
+			     bool only_installable_info,
 			     apt_worker_callback *callback, void *data)
 {
   request.reset ();
   request.encode_string (package);
+  request.encode_int (only_installable_info);
   call_apt_worker (APTCMD_GET_PACKAGE_INFO,
 		   request.get_buf (), request.get_len (),
 		   callback, data);

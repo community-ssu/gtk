@@ -123,7 +123,7 @@ show_search_dialog ()
   search_dialog_closure *c = new search_dialog_closure;
 
   dialog = gtk_dialog_new_with_buttons (_("ai_ti_search"),
-					NULL,
+					get_main_window (),
 					GTK_DIALOG_MODAL,
 					_("ai_bd_search_ok"),
 					GTK_RESPONSE_OK,

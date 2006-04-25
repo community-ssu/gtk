@@ -115,7 +115,7 @@ using namespace std;
 
 /* You know what this means.
  */
-#define DEBUG
+//#define DEBUG
 
 
 /** GENERAL UTILITIES
@@ -1122,13 +1122,14 @@ void
 cmd_get_package_info ()
 {
   const char *package = request.decode_string_in_place ();
+  bool only_installable_info = request.decode_int ();
 
   apt_proto_package_info info;
 
-  info.installable_status = status_unable;
+  info.installable_status = status_unknown;
   info.download_size = 0;
   info.install_user_size_delta = 0;
-  info.removable_status = status_unable;
+  info.removable_status = status_unknown;
   info.remove_user_size_delta = 0;
 
   if (package_cache)
@@ -1159,23 +1160,24 @@ cmd_get_package_info ()
 	    }
 	  cache_reset ();
 
-	  pkgCache::VerIterator avail (cache, cache[pkg].CandidateVer);
-	  
-	  // simulate remove
-	  
-	  old_broken_count = cache.BrokenCount();
-	  mark_for_remove (pkg);
-	  if (cache.BrokenCount() > old_broken_count)
+	  if (!only_installable_info)
 	    {
-	      info.removable_status = removable_status (pkg);
-	      info.remove_user_size_delta = 0;
+	      // simulate remove
+	  
+	      old_broken_count = cache.BrokenCount();
+	      mark_for_remove (pkg);
+	      if (cache.BrokenCount() > old_broken_count)
+		{
+		  info.removable_status = removable_status (pkg);
+		  info.remove_user_size_delta = 0;
+		}
+	      else
+		{
+		  info.removable_status = status_able;
+		  info.remove_user_size_delta = (int) cache.UsrSize ();
+		}
+	      cache_reset ();
 	    }
-	  else
-	    {
-	      info.removable_status = status_able;
-	      info.remove_user_size_delta = (int) cache.UsrSize ();
-	    }
-	  cache_reset ();
 	}
     }
 

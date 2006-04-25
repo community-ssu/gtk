@@ -273,7 +273,7 @@ show_settings_dialog ()
   settings_closure *c = new settings_closure;
 
   dialog = gtk_dialog_new_with_buttons (_("ai_ti_settings"),
-					NULL,
+					get_main_window (),
 					GTK_DIALOG_MODAL,
 					_("ai_bd_settings_ok"),
 					GTK_RESPONSE_OK,
@@ -329,7 +329,7 @@ show_sort_settings_dialog ()
 {
   GtkWidget *dialog;
 
-  dialog = hildon_sort_dialog_new (NULL);
+  dialog = hildon_sort_dialog_new (get_main_window ());
 
   hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog),
 				   _("ai_va_sort_name"));
