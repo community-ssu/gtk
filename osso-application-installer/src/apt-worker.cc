@@ -369,6 +369,16 @@ void cmd_clean ();
 void cmd_get_file_details ();
 void cmd_install_file ();
 
+static bool init_cache_after_request;
+
+void cache_init ();
+
+void
+need_cache_init ()
+{
+  init_cache_after_request = true;
+}
+
 void
 handle_request ()
 {
@@ -386,6 +396,8 @@ handle_request ()
 
   request.reset (reqbuf, req.len);
   response.reset ();
+
+  init_cache_after_request = false;
 
   switch (req.cmd)
     {
@@ -457,9 +469,11 @@ handle_request ()
 		     response.get_buf (), response.get_len ());
 
   free_buf (reqbuf, stack_reqbuf);
+
+  if (init_cache_after_request)
+    cache_init ();
 }
 
-void cache_init ();
 void read_certified_conf ();
 
 int
@@ -1616,7 +1630,7 @@ cmd_install_package ()
 	}
     }
 
-  cache_init ();
+  need_cache_init ();
   response.encode_int (result_code);
 }
 
@@ -1667,7 +1681,7 @@ cmd_remove_package ()
 	}
     }
 
-  cache_init ();
+  need_cache_init ();
   response.encode_int (result_code == rescode_success);
 }
 
@@ -2320,6 +2334,6 @@ cmd_install_file ()
 
   _system->Lock();
 
-  cache_init ();
+  need_cache_init ();
   response.encode_int (res == 0);
 }

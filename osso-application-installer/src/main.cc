@@ -1217,7 +1217,6 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   if (dec == NULL)
     {
-      hide_progress ();
       c->pi->unref ();
       delete c;
       return;
@@ -1258,16 +1257,12 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
       // here.
 
       if (notcert || notauth)
-	{
-	  hide_progress ();
-	  scare_user_with_legalese (true, install_package_cont5, c);
-	}
+	scare_user_with_legalese (true, install_package_cont5, c);
       else
 	install_package_cont3 (true, c);
     }
   else
     {
-      hide_progress ();
       char *str = g_strdup_printf ((c->pi->installed_version
 				    ? _("ai_ni_error_update_failed")
 				    : _("ai_ni_error_installation_failed")),
@@ -1337,17 +1332,10 @@ install_package_cont2 (bool res, void *data)
 	{
 	  add_log ("-----\n");
 	  if (pi->installed_version)
-	    {
-	      add_log ("Upgrading %s %s to %s\n", pi->name,
-		       pi->installed_version, pi->available_version);
-	      show_progress (_("ai_nw_updating"));	 
-	    }
+	    add_log ("Upgrading %s %s to %s\n", pi->name,
+		     pi->installed_version, pi->available_version);
 	  else
-	    {
-	      add_log ("Installing %s %s\n", pi->name, pi->available_version);
-	      show_progress (_("ai_nw_installing"));
-	    }
-
+	    add_log ("Installing %s %s\n", pi->name, pi->available_version);
 	  
 	  apt_worker_install_check (pi->name, install_check_reply, pi);
 	}
@@ -1373,10 +1361,26 @@ install_package_cont (package_info *pi, void *data, bool changed)
 }
 
 static void
+install_package_with_net (bool res, void *data)
+{
+  package_info *pi = (package_info *)data;
+
+  if (res)
+    get_intermediate_package_info (pi, true, install_package_cont, NULL);
+  else
+    pi->unref ();
+}
+
+static void
 install_package (package_info *pi)
 {
+  // We ask for the network here although we only really need it for
+  // the APTCMD_INSTALL_PACKAGE request.  We do it this early to let
+  // the user cancel the network connection procedure very early.  The
+  // network is requested again when it is actually needed.
+
   pi->ref ();
-  get_intermediate_package_info (pi, true, install_package_cont, NULL);
+  ensure_network (install_package_with_net, pi);
 }
 
 static void
@@ -1649,7 +1653,7 @@ uninstall_package_doit (package_info *pi)
   if (pi->info.removable_status == status_able)
     {
       add_log ("-----\n");
-      add_log ("Uninstalling %s %s", pi->name, pi->installed_version);
+      add_log ("Uninstalling %s %s\n", pi->name, pi->installed_version);
       
       show_progress (_("ai_nw_uninstalling"));
       apt_worker_remove_package (pi->name, uninstall_package_reply, pi);
