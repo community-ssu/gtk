@@ -102,6 +102,12 @@ The packages and the distributions they are in:
      are actually empty and wont trigger any out of memory condition.
      You can use them to test the display of file sizes.
 
+   * *user1 1*, *user2 1*, *system 1* (old, new)
+     <p>
+     The user1 and user2 packages both depend on the system package.
+     User1 and user2 are 'user' packages (shown in the UI), while
+     system is a 'non-user' package (not shown in the UI).
+
 
 ---+++ Sample test cases
 
@@ -225,3 +231,25 @@ repository.
 
    * Try to install the "corrupted" package.
    * Note that this fails because the archive file is corrupted.
+
+---++++ Automatic installation/removal of non-user packages
+
+   * Make sure that =system= is not installed by running =dpkg --status system= in a terminal, for example.
+   * Install =user1=
+   * Verify that both =user1= and =system= are being installed.
+   * Uninstall =user1=
+   * Verify that both =user1= and =system= are being removed.
+
+---++++ Automatic installation/removal of non-user packages (2)
+
+   * Make sure that =system= is not installed by running =dpkg --status system= in a terminal, for example.
+   * Install =user1=
+   * Verify that both =user1= and =system= are being installed.
+   * Install =user2=
+   * Verify that =system= is not being installed
+     (since it is already installed).
+   * Uninstall =user1=
+   * Verify that =system= is not being removed (since it is still
+     needed by =user2=).
+   * Uninstall =user2=
+   * Verify that both =user2= and =system= are being removed.
