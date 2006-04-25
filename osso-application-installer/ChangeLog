@@ -1,5 +1,7 @@
 2006-04-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.16
+	
 	Cleanup progress reporting.
 	
 	* src/main.cc (install_package_cont2): Don't show progress during
@@ -11,6 +13,10 @@
 	(install_package): Call ensure_network and continue with
 	install_package_with_net.
 	(uninstall_package_doit): Add newline to log message.
+	(get_package_list_with_cont): Clear the displayed
+	lists here in order not to show outdated information now that the
+	cach is being rebuilt without progress banner.
+	(get_package_list_reply): Don't clear them here.
 	* src/apt-worker.cc (cmd_get_package_info): Provide useful
 	download_size and user_size_deltas even for non-installable or
 	non-removable packages.
