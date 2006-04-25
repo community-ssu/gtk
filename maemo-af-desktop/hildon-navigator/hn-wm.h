@@ -191,7 +191,7 @@ void hn_wm_top_view(GtkMenuItem *menuitem);
 /**  Send 'top' request for a certain service
  *   @param service_name The name of the service that is to be topped
  */
-void hn_wm_top_service(const gchar *service_name);
+gboolean hn_wm_top_service(const gchar *service_name);
 
 /**
  * Requests the real window manager to top the desktop

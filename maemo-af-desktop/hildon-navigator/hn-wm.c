@@ -72,6 +72,35 @@ HNWM *hn_wm_get_singleton(void)
 static gboolean
 hn_wm_add_watched_window (HNWMWatchedWindow *win);
 
+static void
+hn_wm_push_window_back (HNWMWatchedWindow * win, GtkMenuItem *menuitem)
+{
+  HNWMWatchedWindowView *view = NULL;
+  gboolean               view_found;
+  GList                 *iter;
+
+  iter = hn_wm_watched_window_get_views (win);
+  view_found = FALSE;
+      
+  while (iter != NULL)
+    {
+      view = (HNWMWatchedWindowView *)iter->data;
+	  
+      if(hn_wm_watched_window_view_get_menu(view) ==
+         (GtkWidget*)menuitem)
+        {
+          view_found = TRUE;
+          break;
+        }
+      iter  = g_list_next(iter);
+    }
+          
+  app_switcher_update_item (hnwm->app_switcher,
+                            win,
+                            view_found ? view : NULL,
+                            AS_MENUITEM_TO_LAST_POSITION);
+}
+
 void
 hn_wm_top_view (GtkMenuItem *menuitem)
 {
@@ -87,14 +116,27 @@ hn_wm_top_view (GtkMenuItem *menuitem)
       GList *iter;
 
       app = hn_wm_watched_window_get_app (win);
-
+      
       HN_DBG("Window found with views, is '%s'\n",
 	     hn_wm_watched_window_get_name (win));
 
       if (hn_wm_watched_window_is_hibernating(win))
 	{
-	  HN_DBG("Window hibernating, calling top_service()");
-	  hn_wm_top_service(hn_wm_watchable_app_get_service (app));
+	  HN_DBG("Window hibernating, calling top_service([%s])",
+             hn_wm_watchable_app_get_service (app));
+
+      /* make sure we activate the window user requested */
+      hn_wm_watchable_app_set_active_window(app, win);
+
+	  if(!hn_wm_top_service(hn_wm_watchable_app_get_service (app)))
+        {
+          /*
+             could not launch, by now this window is represented by the top AS
+             button (bug 22638) -- move it to the last position; this will
+             make the previously active app to be represented by button 1.
+           */
+          hn_wm_push_window_back (win, menuitem);
+        }
 	  return;
 	}
       
@@ -158,7 +200,19 @@ hn_wm_top_view (GtkMenuItem *menuitem)
       if (hn_wm_watchable_app_is_hibernating (app))
 	{
 	  HN_DBG("window is hibernating");
-	  hn_wm_top_service(hn_wm_watchable_app_get_service (app));
+
+      /* make sure we activate the window user requested */
+      hn_wm_watchable_app_set_active_window(app, win);
+
+      if(!hn_wm_top_service(hn_wm_watchable_app_get_service (app)))
+        {
+          /*
+             could not launch, by now this window is represented by the top AS
+             button (bug 22638) -- move it to the last position; this will
+             make the previously active app to be represented by button 1.
+           */
+          hn_wm_push_window_back (win, menuitem);
+        }
 	  return;
 	}
 
@@ -181,7 +235,11 @@ hn_wm_top_view (GtkMenuItem *menuitem)
       XSync(GDK_DISPLAY(),FALSE);
       gdk_error_trap_pop();
 
-      hn_wm_watchable_app_set_active_window(app, win);
+      /*
+        do not call hn_wm_watchable_app_set_active_window() from here -- this
+        is only a request; we set the window only when it becomes active in
+        hn_wm_process_mb_current_app_window()
+       */
 
       return;
     }
@@ -189,7 +247,7 @@ hn_wm_top_view (GtkMenuItem *menuitem)
   HN_DBG("### unable to find views ###");
 }
 
-void
+gboolean
 hn_wm_top_service(const gchar *service_name)
 {
   osso_manager_t    *osso_man;
@@ -201,7 +259,7 @@ hn_wm_top_service(const gchar *service_name)
   if (service_name == NULL)
     {
       osso_log(LOG_ERR, "There was no service name!\n");
-      return;
+      return FALSE;
     }
 
   if (hnwm->app_switcher->show_tooltip_timeout_id)
@@ -228,7 +286,7 @@ hn_wm_top_service(const gchar *service_name)
         {
           hildon_banner_show_information(NULL, NULL, 
                          _("ckct_ib_application_lowmem"));
-          return;
+          return FALSE;
         }
     }
 
@@ -262,7 +320,7 @@ hn_wm_top_service(const gchar *service_name)
          {
            hildon_banner_show_information(NULL, NULL, 
                          _("ckct_ib_application_lowmem"));
-           return;
+           return FALSE;
          }
     }
 
@@ -275,7 +333,7 @@ hn_wm_top_service(const gchar *service_name)
       HN_DBG("Thus launcing via osso_manager_launch()");
       osso_man = osso_manager_singleton_get_instance();
       osso_manager_launch(osso_man, service_name, NULL);
-      return;
+      return TRUE;
     }
   else
     {
@@ -284,6 +342,18 @@ hn_wm_top_service(const gchar *service_name)
 
       app = hn_wm_watched_window_get_app (win);
 
+      /* set active view before we attempt to waken up hibernating app */
+      if (hn_wm_watched_window_get_views (win))
+        {
+          view = hn_wm_watched_window_get_active_view(win);
+          
+          if (!view) /* There is no active so just grab the first one */
+            {
+              view = (HNWMWatchedWindowView *)((hn_wm_watched_window_get_views (win))->data);
+              hn_wm_watched_window_set_active_view(win, view);
+            }
+        }
+
       if (hn_wm_watched_window_is_hibernating(win))
 	{
 	  guint interval = LAUNCH_SUCCESS_TIMEOUT * 1000;
@@ -291,7 +361,7 @@ hn_wm_top_service(const gchar *service_name)
 	  HN_DBG("app is hibernating, attempting to reawaken"
 		 "via osso_manager_launch()");
 	  
-	  hn_wm_watched_window_awake (win);
+	  hn_wm_watched_window_awake (hn_wm_watchable_app_get_active_window(app));
 	  
 	  /* FIXME: What does below do ?? */
 	  if (hnwm->bg_kill_situation == TRUE)
@@ -301,18 +371,7 @@ hn_wm_top_service(const gchar *service_name)
 			     hn_wm_relaunch_timeout,
 			     (gpointer) g_strdup(service_name) );
 	    }
-	  return;
-	}
-      
-      if (hn_wm_watched_window_get_views (win))
-	{
-	  view = hn_wm_watched_window_get_active_view(win);
-	  
-	  if (!view) /* There is no active so just grab the first one */
-	    {
-	      view = (HNWMWatchedWindowView *)((hn_wm_watched_window_get_views (win))->data);
-	      hn_wm_watched_window_set_active_view(win, view);
-	    }
+	  return TRUE;
 	}
       
       HN_DBG("sending x message to activate app");
@@ -356,10 +415,16 @@ hn_wm_top_service(const gchar *service_name)
 	  XSync(GDK_DISPLAY(),FALSE);
 	  gdk_error_trap_pop();
 
-      hn_wm_watchable_app_set_active_window(app, win);
+      /*
+        do not call hn_wm_watchable_app_set_active_window() from here -- this
+        is only a request; we set the window only when it becomes active in
+        hn_wm_process_mb_current_app_window()
+       */
 	}
 
     }
+
+  return TRUE;
 }
 
 
@@ -754,6 +819,8 @@ hn_wm_process_mb_current_app_window (void)
       
       if (!app)
 	return;
+
+      hn_wm_watchable_app_set_active_window(app, win);
       
       /* Note: this is whats grouping all views togeather */
       if (hn_wm_watched_window_get_views (win))

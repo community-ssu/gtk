@@ -1,5 +1,12 @@
 2006-04-24  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "icon focus incorrect after 'Not enough memory'"
+	(Closes N#22638)
+	* hildon-navigator/hn-wm.[ch]: Push an app to the bottom of the
+	  stack of topping failed due to low memory
+
+2006-04-24  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "TN Plugin (re)loading doesn't initialize menus"
 	(Closes N#27316)
 	* hildon-navigator/hildon-navigator-main.c:
