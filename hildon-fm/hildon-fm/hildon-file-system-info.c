@@ -137,6 +137,10 @@ hildon_file_system_info_new(const gchar *uri, GError **error)
     return result;    
 }
 
+/***********************************/
+/*** Backported Async API Begins ***/
+/***********************************/
+
 struct _HildonFileSystemInfoHandle {
     int not_used;
 };
@@ -148,7 +152,14 @@ struct AsyncIdleData {
     HildonFileSystemInfoHandle *handle;
 };
 
-static gboolean async_info_idle(gpointer data)
+struct AsyncCb {
+    gpointer data;
+};
+
+static guint execute_callbacks_idle_id = 0;
+static GSList *callbacks = NULL;
+
+static void deliver_async_info(gpointer data)
 {
     HildonFileSystemInfo *info = NULL;
     struct AsyncIdleData *aid = data;
@@ -160,15 +171,42 @@ static gboolean async_info_idle(gpointer data)
     (*aid->cb)(aid->handle, info, error, aid->data);
 
     GDK_THREADS_LEAVE();
+
+    g_free(aid->uri);
+    aid->uri = NULL;
+    g_free(aid->handle);
+    aid->handle = NULL;
+}
+
+static gboolean execute_callbacks_idle(gpointer data)
+{
+    GSList *l;
+
+    /* TODO: should be mutexed? */
+    for (l = callbacks; l != NULL; l = l->next) {
+        struct AsyncCb *acb;
+
+        acb = l->data;
+        if (acb != NULL) {
+            deliver_async_info(acb->data);
+            g_free(l->data);
+            l->data = NULL;
+        }
+    }
+    g_slist_free (callbacks);
+    callbacks = NULL;
+
+    execute_callbacks_idle_id = 0;
+
     return FALSE;
 }
 
-/* "Dummy" asyncronous function using the old syncronous API.
- * */
+/* "Dummy" asyncronous function using the old syncronous API. */
 HildonFileSystemInfoHandle *hildon_file_system_info_async_new(const gchar *uri, 
                     HildonFileSystemInfoCallback callback, gpointer data)
 {
     struct AsyncIdleData *aid;
+    struct AsyncCb *acb;
     HildonFileSystemInfoHandle *handle;
 
     aid = g_malloc(sizeof(struct AsyncIdleData));
@@ -191,19 +229,36 @@ HildonFileSystemInfoHandle *hildon_file_system_info_async_new(const gchar *uri,
         g_free(aid);
         return NULL;
     }
-    /* TODO: make a list of callbacks */
-    /*
-    async_idle_id = g_idle_add(async_info_idle, aid);
-    */
-    g_idle_add(async_info_idle, aid);
+    acb = g_malloc(sizeof(struct AsyncCb));
+    if (acb == NULL) {
+        ULOG_ERR_F("could not allocate memory");
+        g_free(aid->handle);
+        g_free(aid->uri);
+        g_free(aid);
+        return NULL;
+    }
+
+    acb->data = aid;
+
+    /* TODO: should be mutexed? */
+    callbacks = g_slist_append(callbacks, acb);
+
+    if (!execute_callbacks_idle_id) {
+        execute_callbacks_idle_id = g_idle_add(execute_callbacks_idle, NULL);
+    }
+
     return handle;
 }
 
-/* "Dummy" function, does nothing.
- * */
 void hildon_file_system_info_async_cancel(HildonFileSystemInfoHandle *handle)
 {
+        /* TODO */
 }
+
+/*********************************/
+/*** Backported Async API Ends ***/
+/*********************************/
+
 
 /**
  * hildon_file_system_info_get_display_name:
