@@ -618,10 +618,6 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   hide_updating ();
 
-  clear_global_package_list ();
-  clear_global_section_list ();
-  free_all_packages ();
-  
   if (dec == NULL)
     ;
   else if (dec->decode_int () == 0)
@@ -698,9 +694,6 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	all_si->unref ();
     }
 
-  printf ("%d packages, %d new, %d upgradable, %d installed\n",
-	  count, new_p, upg_p, inst_p);
-
   sort_all_packages ();
 
   /* We switch to the parent view if the current one is the search
@@ -731,6 +724,10 @@ get_package_list_with_cont (void (*cont) (void *data), void *data)
   c->cont = cont;
   c->data = data;
 
+  clear_global_package_list ();
+  clear_global_section_list ();
+  free_all_packages ();
+  
   show_updating ();
   apt_worker_get_package_list (!red_pill_mode,
 			       false, 
