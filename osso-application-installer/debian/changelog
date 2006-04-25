@@ -2,6 +2,8 @@ osso-application-installer (4.16) unstable; urgency=low
 
   * Only simulate removal when necessary.
   * Support .install files with "Install from file".
+  * Cleaned up progress reporting.
+  * Fixed bugs N27735, N27743, N27736, N27789, N27762.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 21 Apr 2006 19:54:38 +0300
 
