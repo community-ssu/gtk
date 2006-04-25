@@ -1,5 +1,28 @@
 2006-04-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Cleanup progress reporting.
+	
+	* src/main.cc (install_package_cont2): Don't show progress during
+	checking, it is fast enough now.
+	(install_check_reply): Don't hide progress since it has not been
+	shown.
+	(install_package_with_net): New, does what install_package used to
+	do.
+	(install_package): Call ensure_network and continue with
+	install_package_with_net.
+	(uninstall_package_doit): Add newline to log message.
+	* src/apt-worker.cc (cmd_get_package_info): Provide useful
+	download_size and user_size_deltas even for non-installable or
+	non-removable packages.
+	(init_cache_after_request, need_cache_init): New.
+	(handle_request): Call cache_init after shipping back the response
+	when requested.
+	(install_package, remove_package, install_file): Call
+	need_cache_init instead of cache_init.
+	
+	* src/main.cc (confirm_install): Show download_size also for
+	non-installable packages. (N27743)
+
 	* osso-application-installer.desktop (X-Osso-Service): Don't use
 	the full name.  Using the "com.nokia." prefix will prevent the
 	Task navigator from showing the loading banner.  (N27736)
@@ -20,7 +43,7 @@
 	* src/main.cc (main_image): New.
 	(make_main_view): Only load the AI image once and not every time
 	the main view is constructed.
-	(confirm_install): Use correct logical ids.
+	(confirm_install): Use correct logical ids. (N27742)
 	(install_from_file_cont2): Recognize ".install" files here.
 	(mime_open_handler): Don't recognize them here.
 
