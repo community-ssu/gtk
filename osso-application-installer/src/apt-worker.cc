@@ -1147,17 +1147,11 @@ cmd_get_package_info ()
 	  old_broken_count = cache.BrokenCount();
 	  mark_for_install (pkg);
 	  if (cache.BrokenCount() > old_broken_count)
-	    {
-	      info.installable_status = installable_status (pkg);
-	      info.download_size = 0;
-	      info.install_user_size_delta = 0;
-	    }
+	    info.installable_status = installable_status (pkg);
 	  else
-	    {
-	      info.installable_status = status_able;
-	      info.download_size = (int) cache.DebSize ();
-	      info.install_user_size_delta = (int) cache.UsrSize ();
-	    }
+	    info.installable_status = status_able;
+	  info.download_size = (int) cache.DebSize ();
+	  info.install_user_size_delta = (int) cache.UsrSize ();
 	  cache_reset ();
 
 	  if (!only_installable_info)
@@ -1167,15 +1161,10 @@ cmd_get_package_info ()
 	      old_broken_count = cache.BrokenCount();
 	      mark_for_remove (pkg);
 	      if (cache.BrokenCount() > old_broken_count)
-		{
-		  info.removable_status = removable_status (pkg);
-		  info.remove_user_size_delta = 0;
-		}
+		info.removable_status = removable_status (pkg);
 	      else
-		{
-		  info.removable_status = status_able;
-		  info.remove_user_size_delta = (int) cache.UsrSize ();
-		}
+		info.removable_status = status_able;
+	      info.remove_user_size_delta = (int) cache.UsrSize ();
 	      cache_reset ();
 	    }
 	}

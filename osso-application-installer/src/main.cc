@@ -1038,13 +1038,7 @@ confirm_install (package_info *pi,
   GString *text = g_string_new ("");
   char download_buf[20];
   
-  if (pi->info.installable_status == status_able)
-    {
-      size_string_general (download_buf, 20, pi->info.download_size);
-      g_string_append_printf (text, "\n%s", download_buf);
-    }
-  else
-    strcpy (download_buf, "-");
+  size_string_general (download_buf, 20, pi->info.download_size);
 
   g_string_printf (text,
 		   (pi->installed_version
@@ -2521,8 +2515,6 @@ main (int argc, char **argv)
   GtkWidget *toolbar, *image;
   GtkMenu *main_menu;
   char *apt_worker_prog = "/usr/libexec/apt-worker";
-
-  sleep (3);
 
   setlocale (LC_ALL, "");
   bind_textdomain_codeset ("osso-application-installer", "UTF-8");
