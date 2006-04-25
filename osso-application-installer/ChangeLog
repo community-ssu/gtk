@@ -1,5 +1,14 @@
 2006-04-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* osso-application-installer.desktop (X-Osso-Service): Don't use
+	the full name.  Using the "com.nokia." prefix will prevent the
+	Task navigator from showing the loading banner.  (N27736)
+
+	* src/main.cc (key_press_event, key_event): Renamed former to
+	latter.  Show parent view on ESC release.
+	(main): Connect key_press to both "key_press_event" and
+	"key_release_event". (N27735)
+	
 	* src/util.cc (show_deb_file_chooser): Also filter in
 	application/x-install-instructions mime type.
 

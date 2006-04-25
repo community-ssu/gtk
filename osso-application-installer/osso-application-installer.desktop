@@ -9,5 +9,5 @@ Icon=qgn_list_app_installer
 X-Window-Icon=qgn_list_app_installer
 X-Window-Icon-Dimmed=qgn_list_app_installer
 X-HildonDesk-ShowInToolbar=true
-X-Osso-Service=com.nokia.osso_application_installer
+X-Osso-Service=osso_application_installer
 X-Osso-Type=application/x-executable
