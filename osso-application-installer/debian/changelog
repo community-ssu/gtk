@@ -1,3 +1,10 @@
+osso-application-installer (4.16) unstable; urgency=low
+
+  * Only simulate removal when necessary.
+  * Support .install files with "Install from file".
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 21 Apr 2006 19:54:38 +0300
+
 osso-application-installer (4.15) unstable; urgency=low
 
   * Real install/remove policy implemented.
