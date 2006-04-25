@@ -252,7 +252,27 @@ HildonFileSystemInfoHandle *hildon_file_system_info_async_new(const gchar *uri,
 
 void hildon_file_system_info_async_cancel(HildonFileSystemInfoHandle *handle)
 {
-        /* TODO */
+    GSList *l;
+
+    /* TODO: should be mutexed? */
+    for (l = callbacks; l != NULL; l = l->next) {
+        struct AsyncCb *acb;
+        acb = l->data;
+        if (acb != NULL) {
+            struct AsyncIdleData *aid;
+            aid = acb->data;
+            if (aid->handle == handle) {
+                g_free(aid->uri);
+                aid->uri = NULL;
+                g_free(aid->handle);
+                aid->handle = NULL;
+                g_free(aid);
+                acb->data = NULL;
+                callbacks = g_slist_delete_link(callbacks, l);
+                break;
+            }
+        }
+    }
 }
 
 /*********************************/
