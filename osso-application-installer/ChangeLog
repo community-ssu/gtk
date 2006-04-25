@@ -1,3 +1,39 @@
+2006-04-25  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (show_deb_file_chooser): Also filter in
+	application/x-install-instructions mime type.
+
+	* src/search.cc (show_search_dialog): Make dialog application
+	modal instead of system modal.
+	* src/settings.cc (show_sort_settings_dialog,
+	show_settings_dialog): Likewise.
+
+	* src/main.cc (main_image): New.
+	(make_main_view): Only load the AI image once and not every time
+	the main view is constructed.
+	(confirm_install): Use correct logical ids.
+	(install_from_file_cont2): Recognize ".install" files here.
+	(mime_open_handler): Don't recognize them here.
+
+	Only simulate removal when necessary.
+	
+	* src/apt-worker-proto.h (apt_proto_able_status): Added
+	status_unknown.
+	(APTCMD_GET_PACKAGE_INFO): Document new only_installable
+	parameter.
+	* src/apt-worker-client.h, src/apt-worker-client.cc (must_mkfifo):
+	Unlink fifo before creating it.
+	(apt_worker_get_package_info): Added only_installable parameter.
+	Changed all callers.
+	* src/apt-worker.cc (cmd_get_package_info): Decode
+	only_installable parameter.  Only simulate removal when requested,
+	return status_unknown otherwise.
+	* src/main.h, src/main.c (call_with_package_info): Added
+	only_installable_info parameter.  Changed callers.  If the
+	removable status is wanted, only continue immediately when we
+	actually have it.
+	(get_intermediate_package_info): Likewise.
+	
 2006-04-21  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.15
