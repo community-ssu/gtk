@@ -34,6 +34,9 @@
 
 #include <outo.h>
 
+char* outo_name = "hildon-fm tests";
+
+void init_test(void);
 int test001(void);
 int test002(void);
 int test003(void);
@@ -43,18 +46,24 @@ int test006(void);
 int test007(void);
 int test008(void);
 int test009(void);
+int test010(void);
 
 /*prototypes to keep the compiler happy*/
 testcase *get_tests(void);
-void init_test(void);
 
 /* this has to be like this (not static). outo
    calls for this! */
 testcase *get_tests(void);
-void init_test( void )
+
+void init_test(void)
 {
     int plop = 0;
-    gtk_init (&plop, NULL);
+    g_type_init();
+    if (!gtk_init_check(&plop, NULL)) {
+        fprintf(stderr, "Gtk initialisation failed\n");
+    } else {
+        printf("init succeeded\n");
+    }
 }
 
 int test001(void)
@@ -66,6 +75,7 @@ int test001(void)
   assert(HILDON_IS_FILE_SYSTEM_MODEL(model));
   fs = HILDON_FILE_SELECTION(hildon_file_selection_new_with_model(model));
   assert(HILDON_IS_FILE_SELECTION(fs));
+
   return 1;
 }
 
@@ -158,7 +168,7 @@ int test006(void){
 /*  g_assert(hildon_file_selection_get_selected_paths(fs) != NULL);*/
   hildon_file_selection_unselect_all(fs);
   g_assert(hildon_file_selection_get_selected_paths(fs) == NULL);
-                                                                                                                   
+
   return 1;
 }
 
@@ -172,9 +182,11 @@ int test007(void)
                                                                                                                 
   model = g_object_new(HILDON_TYPE_FILE_SYSTEM_MODEL, NULL);
   local_path = g_strdup_printf("%s/MyDocs", g_get_home_dir());
-  result = hildon_file_system_model_search_local_path(model, local_path, &iter, NULL, TRUE);
+  result = hildon_file_system_model_search_local_path(model, local_path,
+                                                      &iter, NULL, TRUE);
   assert(result);
-  gtk_tree_model_get(GTK_TREE_MODEL(model), &iter, HILDON_FILE_SYSTEM_MODEL_COLUMN_TYPE, &type, -1);
+  gtk_tree_model_get(GTK_TREE_MODEL(model), &iter,
+                     HILDON_FILE_SYSTEM_MODEL_COLUMN_TYPE, &type, -1);
   assert(type >= HILDON_FILE_SYSTEM_MODEL_GATEWAY);
 
   return 1;  
@@ -234,6 +246,45 @@ int test009(void)
   return 1;
 }
 
+static void do_not_call_me_info_callback(HildonFileSystemInfoHandle *handle,
+                          HildonFileSystemInfo *info,
+                          const GError *error, gpointer data)
+{
+  assert(0);
+}
+
+static gboolean timeout_func(gpointer data)
+{
+  g_main_loop_quit(loop);
+  return FALSE;
+}
+
+int test010(void)
+{
+  HildonFileSelection *fs;
+  HildonFileSystemModel *model;
+  const gchar *uri = "file:///";
+
+  model = g_object_new(HILDON_TYPE_FILE_SYSTEM_MODEL, NULL);
+  assert(model != NULL);
+  fs = HILDON_FILE_SELECTION(hildon_file_selection_new_with_model(model));
+  assert(fs != NULL);
+
+  async_handle = hildon_file_system_info_async_new(uri,
+                     do_not_call_me_info_callback, cb_data);
+  assert(async_handle != NULL);
+
+  loop = g_main_loop_new(NULL, TRUE);
+  assert(loop != NULL);
+
+  hildon_file_system_info_async_cancel(async_handle);
+  g_timeout_add(1000, timeout_func, NULL);
+  
+  g_main_loop_run(loop);
+
+  return 1;
+}
+
 /*use EXPECT_ASSERT for the tests that are _meant_ to throw assert so they are 
 *considered passed when they throw assert and failed when they do not
 */
@@ -249,6 +300,7 @@ testcase tcases[] =
   {*test007, "file_system_model: search path", EXPECT_OK},
   {*test008, "file_system_model: autonaming", EXPECT_OK},
   {*test009, "file_system_info: async_new", EXPECT_OK},
+  {*test010, "file_system_info: async_cancel", EXPECT_OK},
   {0} /*REMEMBER THE TERMINATING NULL*/
 };
 

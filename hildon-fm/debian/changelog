@@ -1,11 +1,11 @@
 hildon-fm (0.21-1) unstable; urgency=low
 
-  * UNRELEASED
   * Backported hildon_file_system_info_async_new() and
     hildon_file_system_info_async_cancel() to enable easier moving to
     the new asyncronous API.
+  * Added two unit tests for the asyncronous API.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 24 Apr 2006 15:25:13 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 26 Apr 2006 15:13:55 +0300
 
 hildon-fm (0.20-1) unstable; urgency=low
 
