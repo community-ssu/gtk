@@ -1,3 +1,8 @@
+;; TODO:
+;; python2.4[15654]: GLIB ERROR ** Gtk - file gtkcontainer.c: line 2649 (gtk_container_propagate_expose): assertion failed: (child->parent == GTK_WIDGET (container))
+;; aborting...
+;; /usr/bin/run-standalone.sh: line 11: 15654 Aborted                 (core dumped) $*
+;; Take a look at the solution done for hildon_file_chooser_dialog_new override, it may be the same case.
 ;; -*- scheme -*-
 ; object definitions ...
 (define-object WizardDialog
