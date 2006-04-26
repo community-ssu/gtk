@@ -1,3 +1,9 @@
+libosso (1.9-1) unstable; urgency=low
+
+  * osso_run_async_with_argfill is now visible (N#27828).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 26 Apr 2006 13:42:57 +0300
+
 libosso (1.8-1) unstable; urgency=low
 
   * Packaging fixes.

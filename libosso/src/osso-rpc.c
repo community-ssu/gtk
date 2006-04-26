@@ -350,7 +350,7 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
 }
 
 /************************************************************************/
-static osso_return_t _rpc_async_run_with_argfill (osso_context_t *osso,
+osso_return_t osso_rpc_async_run_with_argfill (osso_context_t *osso,
 						  const gchar *service,
 						  const gchar *object_path,
 						  const gchar *interface,
@@ -470,11 +470,11 @@ osso_return_t osso_rpc_async_run(osso_context_t *osso,
     argfill_data.argument_type = argument_type;
     va_start(argfill_data.arg_list, argument_type);
 
-    ret = _rpc_async_run_with_argfill (osso,
+    ret = osso_rpc_async_run_with_argfill (osso,
 				       service, object_path, interface, method,
 				       async_cb, data,
 				       fill_from_va_list, &argfill_data);
-    dprint("_rpc_async_run_with_argfill returned");
+    dprint("osso_rpc_async_run_with_argfill returned");
     
     va_end(argfill_data.arg_list);
     
@@ -511,11 +511,11 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
     argfill_data.argument_type = argument_type;
     va_start(argfill_data.arg_list, argument_type);
 
-    ret = _rpc_async_run_with_argfill (osso,
+    ret = osso_rpc_async_run_with_argfill (osso,
 				       service, object_path, interface, method,
 				       async_cb, data,
 				       fill_from_va_list, &argfill_data);
-    dprint("_rpc_async_run_with_argfill returned");
+    dprint("osso_rpc_async_run_with_argfill returned");
     
     va_end(argfill_data.arg_list);
 
