@@ -1,0 +1,51 @@
+pybluez (0.6.1-1osso1) unstable; urgency=low
+
+  * Upgrade to 0.6.1
+  * Recompiled against SDK 2.0rc3
+
+ -- Elvis Pfutzenreuter <elvis.pfutzenreuter@indt.org.br>  Wed, 26 Apr 2006 16:15:00 -0300
+
+pybluez (0.2-1indt6) unstable; urgency=low
+
+  * Recompiled agaist SDK 1.1rc8
+
+ -- Ruda Moura <ruda.moura@indt.org.br>  Fri, 02 Dec 2005 16:36:35 -0300
+
+pybluez (0.2-1indt5) unstable; urgency=low
+
+  * Recompiled against rootstrap 1.1-PreFinal
+
+ -- Ruda Moura <ruda.moura@indt.org.br>  Mon, 12 Sep 2005 15:32:23 -0300
+
+pybluez (0.2-1indt4) unstable; urgency=low
+
+  * Recompiled against rootstrap 1.1-Beta3
+
+ -- Ruda Moura <ruda.moura@indt.org.br>  Mon, 12 Sep 2005 15:32:23 -0300
+
+pybluez (0.2-1indt3) unstable; urgency=low
+
+  * Disable build of python-bluez subpackage
+
+ -- Ruda Moura <ruda.moura@indt.org.br>  Mon, 12 Sep 2005 15:32:23 -0300
+
+pybluez (0.2-1indt2) unstable; urgency=low
+
+  * Recompiled against rootstrap 1.1-Beta2
+
+ -- Ruda Moura <ruda.moura@indt.org.br>  Tue, 30 Aug 2005 19:14:12 -0300
+
+pybluez (0.2-1indt1) unstable; urgency=low
+
+  * Adoptep by INdT
+  * Adapted to compiled against Python2.4
+ 
+ -- Ruda Moura <ruda.moura@indt.org.br>  Mon, 15 Aug 2005 14:44:08 -0300
+
+pybluez (0.2-1) unstable; urgency=low
+
+  * Initial Release.
+  * My first debian package.
+
+ -- Albert Huang <albert@csail.mit.edu>  Mon,  4 Apr 2005 01:22:15 -0400
+

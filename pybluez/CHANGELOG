@@ -1,0 +1,60 @@
+PyBluez CHANGELOG file
+
+this file contains a (probably incomplete) list of changes through the
+different versions of PyBluez.
+
+
+changes from 0.6 to 0.6.1 (Feb 24, 2006)
+----------------------------------------
+fixed UUID parsing again (byte swap error)
+added parsing of 32-bit reserved UUIDs
+fixed rfcomm-client and rfcomm-server examples to use the same UUID
+addded service-id to find_service result
+
+
+changes from 0.5 to 0.6 (Feb 18, 2006)
+--------------------------------------
+fixed examples/basic/l2-mtu.py [sock -> client_sock]
+fixed hci_send_req [keywords bug]
+fixed UUID parsing (Cezar S Espinola)
+
+
+changes from 0.4 to 0.5 (Dec 16, 2005)
+--------------------------------------
+added service-classes and profiles keys to find_service result
+added service class list and profile list support to 
+    advertise_service (Elvis Pf zenreuter)
+fixed do_search response_list (Richard Moore)
+BluetoothError now inherits from IOError (Elvis Pfützenreuter)
+added CHANGELOG
+added COPYING
+
+
+changes from 0.3 to 0.4 (Nov 9, 2005)
+-------------------------------------
+fixed DeviceDiscoverer name request parsing (Alastair Tre)
+fixed set_l2cap_mtu bluetooth module error (simo salminen)
+
+
+changes from 0.2 to 0.3 (Sep 20, 2005)
+--------------------------------------
+fixed invalid free() in bt_hci_inquiry (ted wright)
+fixed endian error for RFCOMM sockets (Ted Wright)
+no longer using SDP_RECORD_PERSIST
+
+
+changes from 0.1 to 0.2 (Apr 4, 2005)
+-------------------------------------
+Support for SDP service advertisement and searching added. 
+Support for easy asynchronous device discovery added (DeviceDiscoverer). 
+fixed hci_send_req.  added a bunch of constants for ioctl on hci sockets
+renamed most things from bluez* to bt* or bluetooth*
+changed module name from bluez to _bluetooth
+changed bluezsocket to btsocket
+New API is incompatible with 0.1. 
+
+
+version 0.1 (Dec 16, 2004)
+--------------------------
+Support for HCI, L2CAP, and RFCOMM sockets.
+No support for OBEX or SDP. 

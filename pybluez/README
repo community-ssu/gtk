@@ -1,0 +1,57 @@
+PyBluez
+
+http://org.csail.mit.edu/pybluez
+
+REQUIREMENTS:
+ - python 2.3
+ - python-dev
+ - BlueZ libraries
+
+
+INSTALLATION:
+
+  # python setup.py install
+
+  When building on iPAQs for Familiar Linux, you'll need to munge setup.py and
+  have it link against libsdp.  This is because Familiar uses a super-old
+  version of bluez.
+
+DOCUMENTATION:
+  # doc/gendoc
+
+  API documentation will then be located at doc/bluetooth.html and
+  doc/_bluetooth.html for low-level access
+
+EXAMPLES:
+  # examples/simple/inquiry.py
+  # exmaples/simple/l2capserver.py
+  # exmaples/simple/l2capclient.py
+  # examples/simple/asynchronous-inquiry.py
+  # examples/simple/sdp-browse.py
+  # examples/simple/rfcomm-server.py
+  # examples/simple/rfcomm-client.py
+
+  # examples/bluezchat
+
+  # examples/advanced/inquiry-with-rssi.py
+  # examples/l2-unreliable-server.py
+  # examples/l2-unreliable-client.py
+
+CONTACT:
+  Albert Huang <albert@csail.mit.edu>
+  Calvin On <calvinon@mit.edu>
+
+LICENSE:
+
+  PyBluez is free software; you can redistribute it and/or modify it under the
+  terms of the GNU General Public License as published by the Free Software
+  Foundation; either version 2 of the License, or (at your option) any later
+  version.
+  
+  PyBluez is distributed in the hope that it will be useful, but WITHOUT ANY
+  WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+  A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License along with
+  PyBluez; if not, write to the Free Software Foundation, Inc., 51 Franklin St,
+  Fifth Floor, Boston, MA  02110-1301  USA

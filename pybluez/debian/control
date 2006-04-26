@@ -1,0 +1,40 @@
+Source: pybluez
+Section: python
+Priority: optional
+Maintainer: Albert Huang <albert@csail.mit.edu>
+#Build-Depends: debhelper (>= 4.0.0), python2.4 (>= 2.4-1) python2.4 (>= 2.4-1), python2.4-dev (>= 2.4-1), python2.4-dev (>= 2.4-1), libbluetooth1 (>= 2.11-1), libbluetooth1-dev (>= 2.11-1)
+Build-Depends: debhelper (>= 4.0.0), python2.4 (>= 2.4-1), python2.4-dev (>= 2.4-1), libbluetooth1 (>= 2.11-1), libbluetooth1-dev (>= 2.11-1)
+Standards-Version: 3.6.1
+
+#Package: python-bluez
+#Architecture: all
+#Depends: python2.4-bluez, python (>= 2.4), python (<< 2.4)
+#Description: Python wrappers around BlueZ
+# PyBlueZ is an effort to create python wrappers around bluez to allow python
+# developers to use system bluetooth resources. PyBluez works on machines
+# running the GNU/Linux operating system and the bluez bluetooth stack. 
+# .
+# This package does not contain PyBlueZ itself, but simply depends on
+# pythonX.Y-xmms where X.Y is the current Debian default Python version.  Unless
+# you want to use PyBlueZ with a specific Python version, this is the right
+# package to install
+
+Package: python2.4-bluez
+Architecture: any
+Depends: python2.4, ${shlibs:Depends}, ${misc:Depends}
+Description: Python wrappers around BlueZ
+ PyBlueZ is an effort to create python wrappers around bluez to allow python
+ developers to use system bluetooth resources. PyBluez works on machines
+ running the GNU/Linux operating system and the bluez bluetooth stack. 
+ .
+ This package contains a PyBlueZ build for use with Python 2.4
+#
+#Package: python2.4-bluez
+#Architecture: all
+#Depends: python-2.4, ${shlibs:Depends}, ${misc:Depends}
+#Description: Python wrappers around BlueZ
+# PyBlueZ is an effort to create python wrappers around bluez to allow python
+# developers to use system bluetooth resources. PyBluez works on machines
+# running the GNU/Linux operating system and the bluez bluetooth stack. 
+# .
+# This package contains a PyBlueZ build for use with Python 2.4
