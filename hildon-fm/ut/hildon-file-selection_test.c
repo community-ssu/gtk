@@ -29,7 +29,7 @@
 
 #include <gtk/gtk.h>
 #include <glib.h>
-#include "hildon-file-selection.h"
+#include "../hildon-fm/hildon-file-selection.h"
 
 #include <outo.h>
 
