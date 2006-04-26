@@ -1,12 +1,12 @@
-gtk+2.0 (2:2.6.10-1.osso14) UNRELEASED; urgency=low
+gtk+2.0 (2:2.6.10-1.osso14) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * debian/rules: disable thumb support temporarily
   * Close the entry completion window when VKB is hidden
   * Bugs fixed:
     N#26867: Unable to use input-method on the first attempt when
              autocompletion list is open
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 24 Apr 2006 17:56:02 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 26 Apr 2006 13:19:29 +0300
 
 gtk+2.0 (2:2.6.10-1.osso13) unstable; urgency=low
 
