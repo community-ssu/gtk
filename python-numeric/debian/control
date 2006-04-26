@@ -3,7 +3,7 @@ Section: python
 Priority: optional
 Maintainer: Matthias Klose <doko@debian.org>
 Standards-Version: 3.6.1
-Build-Depends: python2.4-dev, debhelper (>= 4.1.67), g77
+Build-Depends: python2.4-dev, debhelper (>= 4.1.67), g77-3.4
 
 Package: python2.4-numeric
 Architecture: any

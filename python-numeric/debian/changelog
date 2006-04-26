@@ -1,7 +1,7 @@
 python-numeric (23.8-1osso2) unstable; urgency=low
 
   *  First OSSO release for SDK 2.0
-  *  Changed dependency from g77-3.3 to g77
+  *  Changed dependency from g77-3.3 to g77-3.4
  
  -- Elvis Pfutzenreuter <elvis.pfutzenreuterindt.org.br>  Wed, 26 Apr 2006 16:00:00 -0300
 
