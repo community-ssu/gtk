@@ -1,0 +1,4 @@
+  -- SGML catalog for python-xml package --
+
+PUBLIC "+//IDN python.org//DTD XML Bookmark Exchange Language 1.0//EN//XML" "dtd/xbel-1.0.dtd"
+PUBLIC "+//IDN python.org//DTD XML Bookmark Exchange Language 1.1//EN//XML" "dtd/xbel-1.1.dtd"

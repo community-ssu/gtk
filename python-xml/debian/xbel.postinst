@@ -1,0 +1,21 @@
+#!/bin/sh -e
+
+## Install SGML catalog entries
+
+PACKAGE=xbel
+CENTRALCAT=/etc/sgml/$PACKAGE.cat
+ORDCATS="misc/xbel/xbel.cat"
+
+if [ "$1" = configure ]
+then
+    for ordcat in $ORDCATS
+    do
+        update-catalog --quiet --add $CENTRALCAT /usr/share/sgml/$ordcat
+    done
+    update-catalog --quiet --add --super $CENTRALCAT
+fi
+
+#DEBHELPER#
+
+exit 0
+

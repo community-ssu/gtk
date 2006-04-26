@@ -1,0 +1,88 @@
+#!/usr/bin/make -f
+# -*-Makefile-*-
+export DH_COMPAT=4
+
+DEFAULT_PYTHON=python2.4
+
+d = debian/tmp
+d_base = debian/python2.4-xml
+d_dev  = debian/python2.4-xml-dev
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+	$(DEFAULT_PYTHON) setup.py build --without-xslt
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+	rm -rf build dist
+	find . -name "*.py[co]" -exec rm -f {} \;
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	#mkdir -p $(d)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus
+	$(DEFAULT_PYTHON) -OO setup.py install \
+		--without-xslt \
+		--no-compile \
+		--prefix=$(d)/usr
+	tail +2 $(d)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py > \
+		$(d)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py.new
+	mv      $(d)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py.new \
+		$(d)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py
+	$(DEFAULT_PYTHON) -OO -m compileall -f $(d)
+	for i in `find $(d) -type f`; do \
+	      if head -1 $$i | grep "^#! */usr/bin" | grep "python" >/dev/null ; then \
+	        sed 's@^(#! */usr/bin/env +)python[.[:digit:]]*$$@\\1python2.4@;s@^(#! */usr/bin/)python[.[:digit:]]*$$@\\1python2.4@' <$$i >$$i.temp; \
+	        cat <$$i.temp >$$i; \
+	        rm $$i.temp; \
+	      fi ;\
+	done
+
+	# base
+	mkdir -p $(d_base)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus
+	cp -r $(d)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus/* \
+	      $(d_base)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus
+	rm -rf $(d_base)/usr/share/doc/python2.4-xml
+	find $(d_base) -name "*.py" -exec rm -f {} \;
+	find $(d_base) -name "*.pyc" -exec rm -f {} \;
+
+	# dev
+	mkdir -p $(d_dev)/usr/bin
+	mkdir -p $(d_dev)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus
+	mkdir -p $(d_dev)/usr/share/doc/python2.4-xml/examples/{test,demo}
+	cp -r $(d)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus/* \
+	      $(d_dev)/usr/lib/$(DEFAULT_PYTHON)/site-packages/_xmlplus
+	cp -r doc/*  $(d_dev)/usr/share/doc/python2.4-xml
+	cp -r demo/* $(d_dev)/usr/share/doc/python2.4-xml/examples/demo
+	cp -r test/* $(d_dev)/usr/share/doc/python2.4-xml/examples/test
+	mv $(d)/usr/bin/xmlproc_parse $(d_dev)/usr/bin
+	mv $(d)/usr/bin/xmlproc_val   $(d_dev)/usr/bin
+	find $(d_dev) -name "*.pyo" -exec rm -f {} \;
+	find $(d_dev) -name "*.so" -exec rm -f {} \;
+	find $(d_dev) -name "*.mo" -exec rm -f {} \;
+
+binary-indep: build install
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary
+

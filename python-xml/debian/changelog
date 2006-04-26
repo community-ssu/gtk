@@ -1,0 +1,12 @@
+python-xml (0.8.4-1osso1) unstable; urgency=low
+
+  * added to Python for Maemo
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu, 06 Apr 2006 10:20:00 -0300
+
+python-xml (0.8.4-1ubuntu2) unstable; urgency=low
+
+  * Change python version (2.3->2.4) used in xbel-utils.postinst
+  * Update xbel-utils.dirs for the same version change
+
+ -- Andrew Mitchell <ajmitch@ubuntu.com>  Fri, 30 Sep 2005 16:36:15 +1200

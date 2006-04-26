@@ -1,0 +1,36 @@
+#!/bin/sh -e
+#
+# postinst script for Debian python packages.
+# Written 1998 by Gregor Hoffleit <flight@debian.org>.
+#
+
+VERSION=2.4
+PACKAGE=python$VERSION-xml
+DIRLIST="/usr/lib/python$VERSION/site-packages/_xmlplus"
+
+case "$1" in
+    configure|abort-upgrade|abort-remove|abort-deconfigure)
+        for i in $DIRLIST ; do
+            python$VERSION -O /usr/lib/python$VERSION/compileall.py -q $i
+            python$VERSION /usr/lib/python$VERSION/compileall.py -q $i
+        done
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+if [ "$1" = "configure" ]; then
+    # update-alternatives on things that collide
+
+    for i in xmlproc_parse xmlproc_val; do
+	update-alternatives --install /usr/bin/$i $i /usr/bin/$i.python$VERSION-xml 50 \
+	--slave /usr/share/man/man1/$i.1.gz $i.1.gz /usr/share/man/man1/$i.python$VERSION-xml.1.gz 
+    done
+fi
+
+#DEBHELPER#
+
+exit 0

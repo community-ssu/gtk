@@ -1,0 +1,54 @@
+Source: python-xml
+Section: python
+Priority: optional
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Build-Depends: python2.4-dev, debhelper (>= 4.2.5), python2.4
+Standards-Version: 3.6.1
+
+Package: python2.4-xml
+Architecture: any
+Depends: python2.4
+Description: XML tools for Python [dummy package]
+ The Python/XML distribution contains the basic tools required for
+ processing XML data using the Python programming language, assembled
+ into one easy-to-install package.  The distribution includes parsers
+ and standard interfaces such as SAX and DOM, along with various other
+ useful modules.
+ .
+ The package currently contains:
+ .
+  * XML parsers: Pyexpat (Jack Jansen), xmlproc (Lars Marius
+    Garshol), sgmlop (Fredrik Lundh).
+  * SAX interface (Lars Marius Garshol)
+  * minidom DOM implementation (Paul Prescod, others)
+  * 4DOM and 4XPath from Fourthought (Uche Ogbuji, Mike Olson)
+  * Schema implementations: TREX (James Tauber)
+  * Various utility modules and functions (various people)
+  * Documentation and example programs (various people)
+ .
+ This package is an empty dummy package that always depends on
+ a package built for Debian's default Python version.
+
+Package: python2.4-xml-dev
+Architecture: any
+Depends: python2.4, python2.4-xml
+Description: XML tools for Python (2.4.x)
+ The Python/XML distribution contains the basic tools required for
+ processing XML data using the Python programming language, assembled
+ into one easy-to-install package.  The distribution includes parsers
+ and standard interfaces such as SAX and DOM, along with various other
+ useful modules.
+ .
+ The package currently contains:
+ .
+  * XML parsers: Pyexpat (Jack Jansen), xmlproc (Lars Marius
+    Garshol), sgmlop (Fredrik Lundh).
+  * SAX interface (Lars Marius Garshol)
+  * minidom DOM implementation (Paul Prescod, others)
+  * 4DOM and 4XPath from Fourthought (Uche Ogbuji, Mike Olson)
+  * Schema implementations: TREX (James Tauber)
+  * Various utility modules and functions (various people)
+  * Documentation and example programs (various people)
+ .
+ This package is built for Python 2.4.x.
+
