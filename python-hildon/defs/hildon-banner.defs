@@ -1,0 +1,78 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object Banner
+  (in-module "Hildon")
+  (parent "GtkWindow")
+  (c-name "HildonBanner")
+  (gtype-id "HILDON_TYPE_BANNER")
+)
+
+;; Enumerations and flags ...
+
+
+;; From /usr/include/hildon-widgets/hildon-banner.h
+
+(define-function hildon_banner_get_type
+  (c-name "hildon_banner_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_banner_show_information
+  (c-name "hildon_banner_show_information")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("const-gchar*" "icon_name")
+    '("const-gchar*" "text")
+  )
+)
+
+(define-function hildon_banner_show_confirmation
+  (c-name "hildon_banner_show_confirmation")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("const-gchar*" "icon_name")
+    '("const-gchar*" "text")
+  )
+)
+
+(define-function hildon_banner_show_animation
+  (c-name "hildon_banner_show_animation")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("const-gchar*" "animation_name")
+    '("const-gchar*" "text")
+  )
+)
+
+(define-function hildon_banner_show_progress
+  (c-name "hildon_banner_show_progress")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("GtkProgressBar*" "bar")
+    '("const-gchar*" "text")
+  )
+)
+
+(define-method set_text
+  (of-object "HildonBanner")
+  (c-name "hildon_banner_set_text")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "text")
+  )
+)
+
+(define-method set_fraction
+  (of-object "HildonBanner")
+  (c-name "hildon_banner_set_fraction")
+  (return-type "none")
+  (parameters
+    '("gdouble" "fraction")
+  )
+)
+
+

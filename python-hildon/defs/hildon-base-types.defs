@@ -1,0 +1,27 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+(define-enum return_t
+  (in-module "Hildon")
+  (c-name "hildon_return_t")
+  (gtype-id "HILDON_TYPE_HILDON_RETURN_T")
+  (values
+    '("err", "HILDON_ERR")
+    '("err-nomem", "HILDON_ERR_NOMEM") 
+  )
+)
+
+(define-enum boolean
+  (in-module "Hildon")
+  (c-name "hildon_boolean")
+  (gtype-id "HILDON_TYPE_HILDON_BOOLEAN")
+  (values
+    '("false", "HILDON_FALSE")
+    '("true", "HILDON_TRUE")
+  )
+)
+
+;; From /usr/include/hildon-base-lib/hildon-base-types.h
+
+

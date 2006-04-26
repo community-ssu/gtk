@@ -1,0 +1,121 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+
+;; From /usr/include/hildon-widgets/gtk-infoprint.h
+
+(define-function gtk_infoprint
+  (c-name "gtk_infoprint")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "text")
+  )
+)
+
+(define-function gtk_infoprint_with_icon_stock
+  (c-name "gtk_infoprint_with_icon_stock")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "text")
+    '("const-gchar*" "stock_id")
+  )
+)
+
+(define-function gtk_infoprint_with_icon_name
+  (c-name "gtk_infoprint_with_icon_name")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "text")
+    '("const-gchar*" "icon_name")
+  )
+)
+
+;(define-function gtk_infoprintf
+;  (c-name "gtk_infoprintf")
+;  (return-type "none")
+;  (parameters
+;    '("GtkWindow*" "parent")
+;    '("const-gchar*" "format")
+;  )
+;  (varargs #t)
+;)
+
+(define-function gtk_infoprint_temporarily_disable_wrap
+  (c-name "gtk_infoprint_temporarily_disable_wrap")
+  (return-type "none")
+)
+
+(define-function gtk_confirmation_banner_with_icon_name
+  (c-name "gtk_confirmation_banner_with_icon_name")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "text")
+    '("const-gchar*" "icon_name")
+  )
+)
+
+(define-function gtk_confirmation_banner
+  (c-name "gtk_confirmation_banner")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "text")
+    '("const-gchar*" "stock_id")
+  )
+)
+
+(define-function gtk_banner_show_animation
+  (c-name "gtk_banner_show_animation")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "text")
+  )
+)
+
+(define-function gtk_banner_show_bar
+  (c-name "gtk_banner_show_bar")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "text")
+  )
+)
+
+(define-function gtk_banner_set_text
+  (c-name "gtk_banner_set_text")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "text")
+  )
+)
+
+(define-function gtk_banner_set_fraction
+  (c-name "gtk_banner_set_fraction")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("gdouble" "fraction")
+  )
+)
+
+(define-function gtk_banner_close
+  (c-name "gtk_banner_close")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+  )
+)
+
+(define-function gtk_banner_temporarily_disable_wrap
+  (c-name "gtk_banner_temporarily_disable_wrap")
+  (return-type "none")
+)
+
+

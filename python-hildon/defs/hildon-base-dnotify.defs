@@ -1,0 +1,46 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+
+;; From /usr/include/hildon-base-lib/hildon-base-dnotify.h
+
+(define-function hildon_dnotify_handler_init
+  (c-name "hildon_dnotify_handler_init")
+  (return-type "hildon_return_t")
+)
+
+(define-function hildon_dnotify_set_cb
+  (c-name "hildon_dnotify_set_cb")
+  (return-type "hildon_return_t")
+  (parameters
+    '("hildon_dnotify_cb_f*" "func")
+    '("char*" "path")
+    '("gpointer" "data")
+  )
+)
+
+(define-function hildon_dnotify_remove_cb
+  (c-name "hildon_dnotify_remove_cb")
+  (return-type "hildon_return_t")
+  (parameters
+    '("char*" "path")
+  )
+)
+
+(define-function hildon_dnotify_remove_every_cb
+  (c-name "hildon_dnotify_remove_every_cb")
+  (return-type "hildon_return_t")
+)
+
+(define-function hildon_dnotify_handler_clear
+  (c-name "hildon_dnotify_handler_clear")
+  (return-type "hildon_return_t")
+)
+
+(define-function hildon_dnotify_check_run_callbacks
+  (c-name "hildon_dnotify_check_run_callbacks")
+  (return-type "hildon_return_t")
+)
+
+

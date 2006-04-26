@@ -1,3 +1,21 @@
+0.8.1 - 20060426
+    - Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
+      - Added svn:ignore property to "examples" subdirectory.
+      - Added svn:ignore property to python-hildon root directory
+      - The "configure" file is generated from autoconf and shouldn't be under version control (i.e.: in our repository).
+      - Added set_button_texts method to hildon.Note
+      - Some new code gathered from gazpacho-hildon's fork of python-hildon. They do compile but haven't been tested yet.*
+        - New enumeration from the date editor widget
+        - New bindings:
+            - hildon-caption.defs
+            - hildon-banner.defs
+            - hildon-base-types.defs
+            - hildon-defines.defs
+            - gtk-infoprint.defs
+            - hildon-base-dnotify.defs
+      * I'm not sure if all these new bindinds are really useful (i.e.: if they are, or will be, used by gazpacho).
+
+
 0.8.0 - 20060419
     - Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
         - Updated for the SDK 2.0 API (HildonProgram, HildonWindow).

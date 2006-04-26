@@ -149,5 +149,59 @@ g_date_month_get_type (void)
   return etype;
 }
 
+/* enumerations from "/usr/include/hildon-base-lib/hildon-base-types.h" */
+GType
+hildon_return_t_hildon_return_t_get_type (void)
+{
+  static GType etype = 0;
+  if (etype == 0) {
+    static const GEnumValue values[] = {
+      { HILDON_ERR, "HILDON_ERR", "err" },
+      { HILDON_ERR_NOMEM, "HILDON_ERR_NOMEM", "err-nomem" },
+      { 0, NULL, NULL }
+    };
+    etype = g_enum_register_static ("hildon_return_t", values);
+  }
+  return etype;
+}
+GType
+hildon_boolean_hildon_boolean_get_type (void)
+{
+  static GType etype = 0;
+  if (etype == 0) {
+    static const GEnumValue values[] = {
+      { HILDON_FALSE, "HILDON_FALSE", "false" },
+      { HILDON_TRUE, "HILDON_TRUE", "true" },
+      { 0, NULL, NULL }
+    };
+    etype = g_enum_register_static ("hildon_boolean", values);
+  }
+  return etype;
+}
+
+/* enumerations from "/usr/include/hildon-widgets/hildon-date-editor.h" */
+GType
+hildon_date_editor_error_type_get_type (void)
+{
+  static GType etype = 0;
+  if (etype == 0) {
+    static const GEnumValue values[] = {
+      { MAX_DAY, "MAX_DAY", "max-day" },
+      { MAX_MONTH, "MAX_MONTH", "max-month" },
+      { MAX_YEAR, "MAX_YEAR", "max-year" },
+      { MIN_DAY, "MIN_DAY", "min-day" },
+      { MIN_MONTH, "MIN_MONTH", "min-month" },
+      { MIN_YEAR, "MIN_YEAR", "min-year" },
+      { EMPTY_DAY, "EMPTY_DAY", "empty-day" },
+      { EMPTY_MONTH, "EMPTY_MONTH", "empty-month" },
+      { EMPTY_YEAR, "EMPTY_YEAR", "empty-year" },
+      { INVALID_DATE, "INVALID_DATE", "invalid-date" },
+      { 0, NULL, NULL }
+    };
+    etype = g_enum_register_static ("HildonDateEditorErrorType", values);
+  }
+  return etype;
+}
+
 /* Generated data ends here */
 

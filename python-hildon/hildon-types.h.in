@@ -19,6 +19,14 @@ GType g_date_weekday_get_type (void) G_GNUC_CONST;
 #define HILDON_TYPE_DATE_WEEKDAY (g_date_weekday_get_type())
 GType g_date_month_get_type (void) G_GNUC_CONST;
 #define HILDON_TYPE_DATE_MONTH (g_date_month_get_type())
+/* enumerations from "/usr/include/hildon-base-lib/hildon-base-types.h" */
+GType hildon_return_t_hildon_return_t_get_type (void) G_GNUC_CONST;
+#define HILDON_TYPE_HILDON_RETURN_T (hildon_return_t_hildon_return_t_get_type())
+GType hildon_boolean_hildon_boolean_get_type (void) G_GNUC_CONST;
+#define HILDON_TYPE_HILDON_BOOLEAN (hildon_boolean_hildon_boolean_get_type())
+/* enumerations from "/usr/include/hildon-widgets/hildon-date-editor.h" */
+GType hildon_date_editor_error_type_get_type (void) G_GNUC_CONST;
+#define HILDON_TYPE_DATE_EDITOR_ERROR_TYPE (hildon_date_editor_error_type_get_type())
 
 /* Generated data ends here */
 

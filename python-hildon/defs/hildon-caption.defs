@@ -1,0 +1,174 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object Caption
+  (in-module "Hildon")
+  (parent "GtkEventBox")
+  (c-name "HildonCaption")
+  (gtype-id "HILDON_TYPE_CAPTION")
+)
+
+;; Enumerations and flags ...
+
+(define-enum CaptionStatus
+  (in-module "Hildon")
+  (c-name "HildonCaptionStatus")
+  (gtype-id "HILDON_TYPE_CAPTION_STATUS")
+  (values
+    '("optional" "HILDON_CAPTION_OPTIONAL")
+    '("mandatory" "HILDON_CAPTION_MANDATORY")
+  )
+)
+
+
+;; From /usr/include/hildon-widgets/hildon-caption.h
+
+(define-function hildon_caption_status_get_type
+  (c-name "hildon_caption_status_get_type")
+  (return-type "const-GType")
+)
+
+(define-function hildon_caption_get_type
+  (c-name "hildon_caption_get_type")
+  (return-type "const-GType")
+)
+
+(define-function hildon_caption_new
+  (c-name "hildon_caption_new")
+  (is-constructor-of "HildonCaption")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkSizeGroup*" "group")
+    '("const-gchar*" "value")
+    '("GtkWidget*" "control")
+    '("GtkWidget*" "icon")
+    '("HildonCaptionStatus" "flag")
+  )
+)
+
+(define-method get_sizegroup
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_get_sizegroup")
+  (return-type "GtkSizeGroup*")
+)
+
+(define-method set_sizegroup
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_set_sizegroup")
+  (return-type "none")
+  (parameters
+    '("GtkSizeGroup*" "new_group")
+  )
+)
+
+(define-method is_mandatory
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_is_mandatory")
+  (return-type "gboolean")
+)
+
+(define-method set_status
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_set_status")
+  (return-type "none")
+  (parameters
+    '("HildonCaptionStatus" "flag")
+  )
+)
+
+(define-method get_status
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_get_status")
+  (return-type "HildonCaptionStatus")
+)
+
+(define-method set_icon_image
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_set_icon_image")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "icon")
+  )
+)
+
+(define-method get_icon_image
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_get_icon_image")
+  (return-type "GtkWidget*")
+)
+
+(define-method set_label
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_set_label")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "label")
+  )
+)
+
+(define-method get_label
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_get_label")
+  (return-type "gchar*")
+)
+
+(define-method set_separator
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_set_separator")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "separator")
+  )
+)
+
+(define-method get_separator
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_get_separator")
+  (return-type "gchar*")
+)
+
+(define-method set_label_alignment
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_set_label_alignment")
+  (return-type "none")
+  (parameters
+    '("gfloat" "alignment")
+  )
+)
+
+(define-method get_label_alignment
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_get_label_alignment")
+  (return-type "gfloat")
+)
+
+(define-method get_control
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_get_control")
+  (return-type "GtkWidget*")
+)
+
+(define-method set_control
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_set_control")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "control")
+  )
+)
+
+(define-method set_child_expand
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_set_child_expand")
+  (return-type "none")
+  (parameters
+    '("gboolean" "expand")
+  )
+)
+
+(define-method get_child_expand
+  (of-object "HildonCaption")
+  (c-name "hildon_caption_get_child_expand")
+  (return-type "gboolean")
+)
+
+

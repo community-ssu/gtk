@@ -41,16 +41,17 @@ import gtk.Bin as PyGtkBin_Type
 import gtk.Button as PyGtkButton_Type
 import gtk.Container as PyGtkContainer_Type
 import gtk.Dialog as PyGtkDialog_Type
-import pango.FontDescription as PyPangoFontDescription_Type
+import gtk.EventBox as PyGtkEventBox_Type
 import gtk.ListStore as PyGtkListStore_Type
 import gtk.Menu as PyGtkMenu_Type
 import gtk.ProgressBar as PyGtkProgressBar_Type
 import gtk.Scale as PyGtkScale_Type
+import gtk.SizeGroup as PyGtkSizeGroup_Type
 import gtk.TextBuffer as PyGtkTextBuffer_Type
 import gtk.Toolbar as PyGtkToolbar_Type
 import gtk.Window as PyGtkWindow_Type
 import gtk.Widget as PyGtkWidget_Type
-
+import pango.FontDescription as PyPangoFontDescription_Type
 
 %%
 ignore-glob *_get_type

@@ -29,7 +29,9 @@
 #include <hildon-base-lib/hildon-base-types.h>
 #include <hildon-widgets/hildon-add-home-dialog.h>
 #include <hildon-widgets/hildon-app.h>
+#include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-calendar-popup.h>
+#include <hildon-widgets/hildon-caption.h>
 #include <hildon-widgets/hildon-color-button.h>
 #include <hildon-widgets/hildon-color-selector.h>
 #include <hildon-widgets/hildon-controlbar.h>

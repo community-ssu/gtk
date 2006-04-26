@@ -11,4 +11,10 @@
   (return-type "none")
 )
 
+(define-method help_disable
+  (of-object "GtkDialog")
+  (c-name "gtk_dialog_help_disable")
+  (return-type "none")
+)
+
 

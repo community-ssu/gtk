@@ -1,10 +1,34 @@
-;;
+;; -*- scheme -*-
+; object definitions ...
 (define-object DateEditor
   (in-module "Hildon")
   (parent "GtkContainer")
   (c-name "HildonDateEditor")
   (gtype-id "HILDON_TYPE_DATE_EDITOR")
 )
+
+;; Enumerations and flags ...
+
+(define-enum DateEditorErrorType
+  (in-module "Hildon")
+  (c-name "HildonDateEditorErrorType")
+  (gtype-id "HILDON_TYPE_DATE_EDITOR_ERROR_TYPE")
+  (values
+    '("max-day" "MAX_DAY")
+    '("max-month" "MAX_MONTH")
+    '("max-year" "MAX_YEAR")
+    '("min-day" "MIN_DAY")
+    '("min-month" "MIN_MONTH")
+    '("min-year" "MIN_YEAR")
+    '("empty-day" "EMPTY_DAY")
+    '("empty-month" "EMPTY_MONTH")
+    '("empty-year" "EMPTY_YEAR")
+    '("invalid-date" "INVALID_DATE")
+  )
+)
+
+
+;; From /usr/include/hildon-widgets/hildon-date-editor.h
 
 (define-function hildon_date_editor_get_type
   (c-name "hildon_date_editor_get_type")
