@@ -1,0 +1,16 @@
+Architectures: arm i386
+Components: user
+Date: Thu, 20 Apr 2006 13:40:30 UTC
+Origin: Nokia
+Suite: new
+Version: 1.0
+MD5Sum:
+ 3626ca4a5702ce25176f806c898c4822            11294 user/binary-arm/Packages
+ 64f9831a7d6db61a062fd3678632daed             4140 user/binary-arm/Packages.gz
+ 5a2c56f996ea40e14d3554d62812b7b1            11300 user/binary-i386/Packages
+ ee57cda366d267030ed6a36316825d1c             4138 user/binary-i386/Packages.gz
+SHA1:
+ 0827e90dc4b723c1e9b6650ed0ba5c475011ef8a            11294 user/binary-arm/Packages
+ d7370e27261dfdfa9da3be13b680bcc25d42ab03             4140 user/binary-arm/Packages.gz
+ 8712832ef574c8b31bbbf04d9c303156dc3efc98            11300 user/binary-i386/Packages
+ c5bc4c93324bcca02d7038dd5270b4d219627d7c             4138 user/binary-i386/Packages.gz
