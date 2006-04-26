@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 6.0/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="numpy.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<TITLE> 16.	 LinearAlgebra Reference</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1 CLASS="Chapter">
+<A NAME="pgfId-303015"></A>16.	 <A NAME="32826"></A>LinearAlgebra Reference</H1>
+<P CLASS="ChapterDescription">
+<A NAME="pgfId-303016"></A>The LinearAlgebra.py module provides a simple interface to the low-level linear algebra routines provided by either the LAPACK FORTRAN library or the compatible lapack_lite C library.</P>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-303017"></A>Python Interface</H6>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303019"></A><A NAME="marker-303018"></A>solve_linear_equations(a, b)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303020"></A>This function solves a system of linear equations with a square non-singular matrix a and a right-hand-side vector b. Several right-hand-side vectors can be treated simultaneously by making b a two-dimensional array (i.e. a sequence of vectors). The function inverse(a) calculates the inverse of the square non-singular matrix a by calling solve_linear_equations(a, b) with a suitable b. </P>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303021"></A>&nbsp;</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303023"></A><A NAME="marker-303022"></A>inverse(a)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303024"></A>This function returns the inverse of the specified matrix a which must be square and non-singular. To within floating point precision, it should always be true that:</P>
+<P CLASS="Python">
+<A NAME="pgfId-303025"></A>matrixmultiply(a, inverse(a)) == identity(len(a))</P>
+<P CLASS="Body">
+<A NAME="pgfId-303026"></A>To test this claim, one can do e.g.:</P>
+<P CLASS="Python">
+<A NAME="pgfId-303027"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = reshape(arange(25.0), (5,5)) + identity(5)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303028"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303029"></A>[[  1.   1.   2.   3.   4.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303030"></A> [  5.   7.   7.   8.   9.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303031"></A> [ 10.  11.  13.  13.  14.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303032"></A> [ 15.  16.  17.  19.  19.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303033"></A> [ 20.  21.  22.  23.  25.]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303034"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+inv_a = inverse(a)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303035"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print inv_a</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303036"></A>[[ 0.20634921 -0.52380952 -0.25396825  0.01587302  0.28571429]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303037"></A> [-0.5026455   0.63492063 -0.22751323 -0.08994709  0.04761905]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303038"></A> [-0.21164021 -0.20634921  0.7989418  -0.1957672  -0.19047619]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303039"></A> [ 0.07936508 -0.04761905 -0.17460317  0.6984127  -0.42857143]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303040"></A> [ 0.37037037  0.11111111 -0.14814815 -0.40740741  0.33333333]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303041"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+# Verify the inverse by printing the largest absolute element</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303042"></A>... <EM CLASS="CodeInput">
+# of a * a^{-1} - identity(5)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303043"></A>... <EM CLASS="CodeInput">
+print &quot;Inversion error:&quot;, &#92;</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303044"></A>... <EM CLASS="CodeInput">
+maximum.reduce(fabs(ravel(dot(a, inv_a)-identity(5))))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303045"></A>Inversion error: 2.6645352591e-015</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303047"></A><A NAME="marker-303046"></A>eigenvalues(a)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303048"></A>This function returns the eigenvalues of the square matrix a. </P>
+<P CLASS="Python">
+<A NAME="pgfId-303049"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303050"></A>[[ 1.  0.  0.  0.  0.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303051"></A> [ 0.  2.  0.  0.  1.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303052"></A> [ 0.  0.  3.  0.  0.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303053"></A> [ 0.  0.  0.  4.  0.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303054"></A> [ 0.  0.  0.  0.  1.]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303055"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print eigenvalues(a)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303056"></A>[ 1.  2.  3.  4.  1.]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303058"></A><A NAME="marker-303057"></A>eigenvectors(a)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303059"></A>This function returns both the eigenvalues and the eigenvectors, the latter as a two-dimensional array (i.e. a sequence of vectors).</P>
+<P CLASS="Python">
+<A NAME="pgfId-303060"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303061"></A>[[ 1.  0.  0.  0.  0.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303062"></A> [ 0.  2.  0.  0.  1.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303063"></A> [ 0.  0.  3.  0.  0.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303064"></A> [ 0.  0.  0.  4.  0.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303065"></A> [ 0.  0.  0.  0.  1.]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303066"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+evalues, evectors = eigenvectors(a)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303067"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print evalues</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303068"></A>[ 1.  2.  3.  4.  1.]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303069"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print evectors</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303070"></A>[[ 1.          0.          0.          0.          0.        ]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303071"></A> [ 0.          1.          0.          0.          0.        ]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303072"></A> [ 0.          0.          1.          0.          0.        ]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303073"></A> [ 0.          0.          0.          1.          0.        ]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303074"></A> [ 0.         -0.70710678  0.          0.          0.70710678]]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303076"></A><A NAME="marker-303075"></A>singular_value_decomposition(a, full_matrices=0)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303077"></A>This function returns three arrays V, S, and WT whose matrix product is the original matrix a. V and WT are unitary matrices (rank-2 arrays), whereas S is the vector (rank-1 array) of diagonal elements of the singular-value matrix. This function is mainly used to check whether (and in what way) a matrix is ill-conditioned.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303079"></A><A NAME="marker-303078"></A>generalized_inverse(a, rcond=1e-10)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303080"></A>This function returns the generalized inverse (also known as pseudo-inverse or Moore-Penrose-inverse) of the matrix a. It has numerous applications related to linear equations and least-squares problems.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303082"></A><A NAME="marker-303081"></A>determinant(a)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303083"></A>This function returns the determinant of the square matrix a.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303085"></A><A NAME="marker-303084"></A>linear_least_squares(a, b, rcond=e-10)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303086"></A>This function returns the least-squares solution of an overdetermined system of linear equations. An optional third argument indicates the cutoff for the range of singular values (defaults to 10-10). There are four return values: the least-squares solution itself, the sum of the squared residuals (i.e. the quantity minimized by the solution), the rank of the matrix a, and the singular values of a in descending order.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-306308"></A><A NAME="marker-306334"></A>cholesky_decomposition(a)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-306310"></A>This function returns a lower triangular matrix L which, when multiplied by its transpose yields the original matrix a. a must be square, Hermitian and positive definite.  L is often referred to as the Cholesky lower-triangular square-root of a.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-306314"></A><A NAME="marker-306345"></A>Heigenvalues(a)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-306316"></A>returns the (real positive) eigenvalues of the square, Hermitian positive definite matrix a.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-306318"></A><A NAME="marker-306365"></A><A NAME="marker-306366"></A>Heigenvectors(a)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-306320"></A>returns both the (real positive) eigenvalues and the eigenvectors of a square, Hermitian positive definite matrix a. The eigenvectors are returned in an (orthornormal) two-dimensional matrix.</P>
+</DIV>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-303088"></A>Compilation Notes</H6>
+<P CLASS="Body">
+<A NAME="pgfId-303089"></A>On some platforms, precompiled optimized versions of the LAPACK and BLAS libraries are preinstalled on the operating system, and the setup procedure needs to be modified to force the lapackmodule.c file to be linked against those rather than the lapack_lite library.</P>
+<P CLASS="Body">
+<A NAME="pgfId-306367"></A>A frequent request is that somehow the maintainers of Numerical Python invent a procedure which will automatically find and use the &quot;best&quot; available versions of these libraries. This is not going to happen.</P>
+</DIV>
+<P><A HREF="numpy.html">Go to Main</A>      <A HREF="numpy-17.html">Go to Previous</A>       <A HREF="numpy-19.html">Go to Next</A></P>
+</BODY>
+</HTML>

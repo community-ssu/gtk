@@ -1,0 +1,707 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 6.0/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="numpy.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<TITLE> Numerical Python</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<DIV>
+<H1 CLASS="TitleBook">
+<A NAME="pgfId-93934"></A><DIV>
+<IMG SRC="numpy-1.gif" width="379" height="120">
+</DIV>
+Numerical Python</H1>
+<P CLASS="AuthorBook">
+<A NAME="pgfId-80697"></A>David Ascher<BR>
+Paul F. Dubois<BR>
+Konrad Hinsen<BR>
+Jim Hugunin<BR>
+Travis Oliphant</P>
+<P CLASS="PublisherBook">
+<A NAME="pgfId-384901"></A>with contributions from the Numerical Python community.</P>
+<P CLASS="Body">
+<A NAME="pgfId-139553"></A>September 7, 2001</P>
+<P CLASS="PublisherBook">
+<A NAME="pgfId-80713"></A>Lawrence Livermore National Laboratory, Livermore, CA 94566</P>
+<P CLASS="PublisherBook">
+<A NAME="pgfId-80714"></A>UCRL-MA-128569</P>
+<DIV>
+<H4 CLASS="Auspices">
+<A NAME="pgfId-80758"></A><A NAME="18807"></A>Legal Notice</H4>
+<P CLASS="PublisherBook">
+<A NAME="pgfId-157986"></A>&nbsp;</P>
+<P CLASS="AuspicesText">
+<A NAME="pgfId-157987"></A>Please see file Legal.html in the source distribution.</P>
+<P CLASS="AuspicesText">
+<A NAME="pgfId-157994"></A>This open source project has been contributed to by many people, including personnel of the Lawrence Livermore National Laboratory. The following notice covers those contributions including this manual.</P>
+<P CLASS="AuspicesText">
+<A NAME="pgfId-157998"></A>&nbsp;</P>
+<P CLASS="AuspicesText">
+<A NAME="pgfId-80760"></A>Copyright (c) 1999, 2000, 2001. The Regents of the University of California. All rights reserved. </P>
+<P CLASS="AuspicesText">
+<A NAME="pgfId-80761"></A>Permission to use, copy, modify, and distribute this software for any purpose without fee is hereby granted, provided that this entire notice is included in all copies of any software which is or includes a copy or modification of this software and in all copies of the supporting documentation for such software. </P>
+<P CLASS="AuspicesText">
+<A NAME="pgfId-80762"></A>This work was produced at the University of California, Lawrence Livermore National Laboratory under contract no. W-7405-ENG-48 between the U.S. Department of Energy and The Regents of the University of California for the operation of UC LLNL. </P>
+<P CLASS="AuspicesText">
+<A NAME="pgfId-80755"></A>This software was prepared as an account of work sponsored by an agency of the United States Government. Neither the United States Government nor the University of California nor any of their employees, makes any warranty, express or implied, or assumes any liability or responsibility for the accuracy, completeness, or usefulness of any information, apparatus, product, or process disclosed, or represents that its use would not infringe privately-owned rights. Reference herein to any specific commercial products, process, or service by trade name, trademark, manufacturer, or otherwise, does not necessarily constitute or imply its endorsement, recommendation, or favoring by the United States Government or the University of California. The views and opinions of authors expressed herein do not necessarily state or reflect those of the United States Government or the University of California, and shall not be used for advertising or product endorsement purposes.</P>
+<P CLASS="AuspicesText">
+<A NAME="pgfId-90256"></A>&nbsp;</P>
+<P CLASS="AuspicesText">
+<A NAME="pgfId-80754"></A>&nbsp;</P>
+</DIV>
+<DIV>
+<H3 CLASS="TocTitle">
+<A NAME="pgfId-688118"></A>Table Of Contents</H3>
+<DIV>
+<H4 CLASS="ChapterSetTOC">
+<A NAME="pgfId-718363"></A><A HREF="numpy-1.html#pgfId-59427" CLASS="Index">Numerical Python 1</A></H4>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718365"></A><A HREF="numpy-2.html#pgfId-78440" CLASS="Index">Introduction 2</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718367"></A><A HREF="numpy-2.html#pgfId-67465" CLASS="Index">Where to get information and code 3</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718369"></A><A HREF="numpy-2.html#pgfId-67319" CLASS="Index">Acknowledgments 4</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718371"></A><A HREF="numpy-3.html#pgfId-35559" CLASS="Index">Installing NumPy 5</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718373"></A><A HREF="numpy-3.html#pgfId-37275" CLASS="Index">Testing the Python installation 5</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718375"></A><A HREF="numpy-3.html#pgfId-37281" CLASS="Index">Testing the Numeric Python Extension Installation 5</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718377"></A><A HREF="numpy-3.html#pgfId-54827" CLASS="Index">Installing NumPy 5</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718379"></A><A HREF="numpy-3.html#pgfId-84400" CLASS="Index">Installing on Windows 6</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718381"></A><A HREF="numpy-3.html#pgfId-84404" CLASS="Index">Installing on Unix 6</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718383"></A><A HREF="numpy-3.html#pgfId-68233" CLASS="Index">At the SourceForge... 6</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718385"></A><A HREF="numpy-4.html#pgfId-37261" CLASS="Index">The NumTut package 8</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718387"></A><A HREF="numpy-4.html#pgfId-35585" CLASS="Index">Testing the NumTut package 8</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718389"></A><A HREF="numpy-4.html#pgfId-56796" CLASS="Index">Possible reasons for failure 8</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718391"></A><A HREF="numpy-4.html#pgfId-57000" CLASS="Index">Win32 9</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718393"></A><A HREF="numpy-4.html#pgfId-56857" CLASS="Index">Unix 9</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718395"></A><A HREF="numpy-5.html#pgfId-57136" CLASS="Index">High-Level Overview 10</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718397"></A><A HREF="numpy-5.html#pgfId-57154" CLASS="Index">Array Objects 10</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718399"></A><A HREF="numpy-5.html#pgfId-57178" CLASS="Index">Universal Functions 11</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718401"></A><A HREF="numpy-5.html#pgfId-60952" CLASS="Index">Convenience Functions 11</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718403"></A><A HREF="numpy-6.html#pgfId-57315" CLASS="Index">Array Basics 13</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718405"></A><A HREF="numpy-6.html#pgfId-37311" CLASS="Index">Basics 13</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718407"></A><A HREF="numpy-6.html#pgfId-35605" CLASS="Index">Creating arrays from scratch 13</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718409"></A><A HREF="numpy-6.html#pgfId-35606" CLASS="Index">array() and typecodes 13</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718411"></A><A HREF="numpy-6.html#pgfId-35637" CLASS="Index">Multidimensional Arrays 15</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718413"></A><A HREF="numpy-6.html#pgfId-68290" CLASS="Index">resize 17</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718415"></A><A HREF="numpy-6.html#pgfId-60291" CLASS="Index">Creating arrays with values specified `on-the-fly' 18</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718417"></A><A HREF="numpy-6.html#pgfId-60120" CLASS="Index">zeros() and ones() 18</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718419"></A><A HREF="numpy-6.html#pgfId-35764" CLASS="Index">arrayrange() 18</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718421"></A><A HREF="numpy-6.html#pgfId-35809" CLASS="Index">Creating an array from a function: fromfunction() 20</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718423"></A><A HREF="numpy-6.html#pgfId-59602" CLASS="Index">identity() 21</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718425"></A><A HREF="numpy-6.html#pgfId-35852" CLASS="Index">Coercion and Casting 21</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718427"></A><A HREF="numpy-6.html#pgfId-35854" CLASS="Index">Automatic Coercions and Binary Operations 21</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718429"></A><A HREF="numpy-6.html#pgfId-35864" CLASS="Index">Deliberate up-casting: The asarray function 22</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718431"></A><A HREF="numpy-6.html#pgfId-35867" CLASS="Index">The typecode value table 22</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718433"></A><A HREF="numpy-6.html#pgfId-35950" CLASS="Index">Consequences of silent upcasting 23</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718435"></A><A HREF="numpy-6.html#pgfId-68241" CLASS="Index">Saving space 23</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718437"></A><A HREF="numpy-6.html#pgfId-35975" CLASS="Index">Deliberate casts (potentially down): the astype method 23</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718439"></A><A HREF="numpy-6.html#pgfId-35984" CLASS="Index">Operating on Arrays 24</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718441"></A><A HREF="numpy-6.html#pgfId-35985" CLASS="Index">Simple operations 24</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718443"></A><A HREF="numpy-6.html#pgfId-85860" CLASS="Index">In-place operations 25</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718445"></A><A HREF="numpy-6.html#pgfId-36033" CLASS="Index">Getting and Setting array values 25</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718447"></A><A HREF="numpy-6.html#pgfId-36074" CLASS="Index">Slicing Arrays 26</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718449"></A><A HREF="numpy-7.html#pgfId-36126" CLASS="Index">Ufuncs 28</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718451"></A><A HREF="numpy-7.html#pgfId-36127" CLASS="Index">What are Ufuncs? 28</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718453"></A><A HREF="numpy-7.html#pgfId-36229" CLASS="Index">Ufuncs can operate on any Python sequence 29</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718455"></A><A HREF="numpy-7.html#pgfId-36233" CLASS="Index">Ufuncs can take output arguments 29</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718457"></A><A HREF="numpy-7.html#pgfId-36249" CLASS="Index">Ufuncs have special methods 29</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718459"></A><A HREF="numpy-7.html#pgfId-36250" CLASS="Index">The reduce ufunc method 29</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718461"></A><A HREF="numpy-7.html#pgfId-61704" CLASS="Index">The accumulate ufunc method 30</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718463"></A><A HREF="numpy-7.html#pgfId-61715" CLASS="Index">The outer ufunc method 30</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718465"></A><A HREF="numpy-7.html#pgfId-61737" CLASS="Index">The reduceat ufunc method 31</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718467"></A><A HREF="numpy-7.html#pgfId-61739" CLASS="Index">Ufuncs always return new arrays 31</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718469"></A><A HREF="numpy-7.html#pgfId-36300" CLASS="Index">Which are the Ufuncs? 31</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718471"></A><A HREF="numpy-7.html#pgfId-36302" CLASS="Index">Unary Mathematical Ufuncs (take only one argument) 31</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718473"></A><A HREF="numpy-7.html#pgfId-36313" CLASS="Index">Binary Mathematical Ufuncs 31</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718475"></A><A HREF="numpy-7.html#pgfId-36315" CLASS="Index">Logical Ufuncs 31</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718477"></A><A HREF="numpy-7.html#pgfId-86369" CLASS="Index">Comparisons 32</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718479"></A><A HREF="numpy-7.html#pgfId-86430" CLASS="Index">The operators and the comparison functions are not exactly equivalent 32</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718481"></A><A HREF="numpy-7.html#pgfId-36357" CLASS="Index">Ufunc shorthands 33</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718483"></A><A HREF="numpy-8.html#pgfId-36371" CLASS="Index">Pseudo Indices 34</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718485"></A><A HREF="numpy-9.html#pgfId-36422" CLASS="Index">Array Functions 36</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718487"></A><A HREF="numpy-9.html#pgfId-36425" CLASS="Index">take(a, indices, axis=0) 36</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718489"></A><A HREF="numpy-9.html#pgfId-78510" CLASS="Index">put (a, indices, values) 37</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718491"></A><A HREF="numpy-9.html#pgfId-84177" CLASS="Index">putmask (a, mask, values) 38</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718493"></A><A HREF="numpy-9.html#pgfId-36476" CLASS="Index">transpose(a, axes=None) 38</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718495"></A><A HREF="numpy-9.html#pgfId-36494" CLASS="Index">repeat(a, repeats, axis=0) 38</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718497"></A><A HREF="numpy-9.html#pgfId-36498" CLASS="Index">choose(a, (b0, ..., bn)) 38</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718499"></A><A HREF="numpy-9.html#pgfId-36512" CLASS="Index">ravel(a) 39</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718501"></A><A HREF="numpy-9.html#pgfId-58067" CLASS="Index">nonzero(a) 39</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718503"></A><A HREF="numpy-9.html#pgfId-36518" CLASS="Index">where(condition, x, y) 39</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718505"></A><A HREF="numpy-9.html#pgfId-36520" CLASS="Index">compress(condition, a, axis=0) 39</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718507"></A><A HREF="numpy-9.html#pgfId-58163" CLASS="Index">diagonal(a, k=0, axis1=0, axis2 = 1) 39</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718509"></A><A HREF="numpy-9.html#pgfId-36523" CLASS="Index">trace(a, k=0) 40</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718511"></A><A HREF="numpy-9.html#pgfId-36532" CLASS="Index">searchsorted(a, values) 40</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718513"></A><A HREF="numpy-9.html#pgfId-66636" CLASS="Index">sort(a, axis=-1) 40</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718515"></A><A HREF="numpy-9.html#pgfId-65841" CLASS="Index">argsort(a, axis=-1) 41</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718517"></A><A HREF="numpy-9.html#pgfId-66027" CLASS="Index">argmax(a, axis=-1), argmin(a, axis=-1) 41</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718519"></A><A HREF="numpy-9.html#pgfId-36538" CLASS="Index">fromstring(string, typecode) 41</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718521"></A><A HREF="numpy-9.html#pgfId-36540" CLASS="Index">dot(m1, m2) 42</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718523"></A><A HREF="numpy-9.html#pgfId-36542" CLASS="Index">matrixmultiply(m1, m2) 42</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718525"></A><A HREF="numpy-9.html#pgfId-36545" CLASS="Index">clip(m, m_min, m_max) 42</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718527"></A><A HREF="numpy-9.html#pgfId-66267" CLASS="Index">indices(shape, typecode=None) 42</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718529"></A><A HREF="numpy-9.html#pgfId-58407" CLASS="Index">swapaxes(a, axis1, axis2) 43</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718531"></A><A HREF="numpy-9.html#pgfId-58428" CLASS="Index">concatenate((a0, a1, ... , an), axis=0) 43</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718533"></A><A HREF="numpy-9.html#pgfId-58474" CLASS="Index">innerproduct(a, b) 44</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718535"></A><A HREF="numpy-9.html#pgfId-84301" CLASS="Index">outerproduct(a,b) 44</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718537"></A><A HREF="numpy-9.html#pgfId-84308" CLASS="Index">array_repr() 44</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718539"></A><A HREF="numpy-9.html#pgfId-58479" CLASS="Index">array_str() 44</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718541"></A><A HREF="numpy-9.html#pgfId-58481" CLASS="Index">resize(a, new_shape) 44</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718543"></A><A HREF="numpy-9.html#pgfId-58514" CLASS="Index">diagonal(a, offset=0, axis1=0, axis2=1) 44</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718545"></A><A HREF="numpy-9.html#pgfId-58523" CLASS="Index">repeat	 (a, counts, axis=0) 44</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718547"></A><A HREF="numpy-9.html#pgfId-67914" CLASS="Index">convolve (a, v, mode=2) 45</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718549"></A><A HREF="numpy-9.html#pgfId-67917" CLASS="Index">cross_correlate (a, v, mode=0) 45</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718551"></A><A HREF="numpy-9.html#pgfId-67907" CLASS="Index">where (condition, x, y) 45</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718553"></A><A HREF="numpy-9.html#pgfId-58536" CLASS="Index">identity(n) 45</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718555"></A><A HREF="numpy-9.html#pgfId-58544" CLASS="Index">sum(a, index=0) 46</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718557"></A><A HREF="numpy-9.html#pgfId-58556" CLASS="Index">cumsum(a, index=0) 46</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718559"></A><A HREF="numpy-9.html#pgfId-58558" CLASS="Index">product(a, index=0) 46</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718561"></A><A HREF="numpy-9.html#pgfId-58560" CLASS="Index">cumproduct(a, index=0) 46</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718563"></A><A HREF="numpy-9.html#pgfId-58562" CLASS="Index">alltrue(a, index=0) 46</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718565"></A><A HREF="numpy-9.html#pgfId-58564" CLASS="Index">sometrue(a, index=0) 46</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718567"></A><A HREF="numpy-9.html#pgfId-86200" CLASS="Index">allclose (x, y, rtol = 1.e-5, atol = 1.e-8) 46</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718569"></A><A HREF="numpy-10.html#pgfId-36552" CLASS="Index">Array Methods 47</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718571"></A><A HREF="numpy-10.html#pgfId-36554" CLASS="Index">itemsize() 47</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718573"></A><A HREF="numpy-10.html#pgfId-36565" CLASS="Index">iscontiguous() 47</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718575"></A><A HREF="numpy-10.html#pgfId-36568" CLASS="Index">typecode() 47</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718577"></A><A HREF="numpy-10.html#pgfId-36576" CLASS="Index">byteswapped() 47</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718579"></A><A HREF="numpy-10.html#pgfId-36582" CLASS="Index">tostring() 47</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718581"></A><A HREF="numpy-10.html#pgfId-36588" CLASS="Index">tolist() 48</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718583"></A><A HREF="numpy-11.html#pgfId-36604" CLASS="Index">Array Attributes 49</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718585"></A><EM CLASS="Emphasis">
+<A HREF="numpy-11.html#pgfId-36606" CLASS="Index">flat 49</A></EM>
+</P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718587"></A><EM CLASS="Emphasis">
+<A HREF="numpy-11.html#pgfId-36629" CLASS="Index">real</A></EM>
+ and <EM CLASS="Emphasis">
+imaginary 49</EM>
+</P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718589"></A><A HREF="numpy-12.html#pgfId-59071" CLASS="Index">Special Topics 51</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718591"></A><A HREF="numpy-12.html#pgfId-67984" CLASS="Index">Subclassing 51</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718593"></A><A HREF="numpy-12.html#pgfId-67992" CLASS="Index">Code Organization 51</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718595"></A><A HREF="numpy-12.html#pgfId-66725" CLASS="Index">Numeric.py and friends 51</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718597"></A><A HREF="numpy-12.html#pgfId-66711" CLASS="Index">UserArray.py 51</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718599"></A><A HREF="numpy-12.html#pgfId-66719" CLASS="Index">Matrix.py 51</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718601"></A><A HREF="numpy-12.html#pgfId-66783" CLASS="Index">Precision.py 51</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718603"></A><A HREF="numpy-12.html#pgfId-66787" CLASS="Index">ArrayPrinter.py 51</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718605"></A><A HREF="numpy-12.html#pgfId-66808" CLASS="Index">MLab.py 51</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718607"></A><A HREF="numpy-12.html#pgfId-66920" CLASS="Index">bartlett(M) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718609"></A><A HREF="numpy-12.html#pgfId-66922" CLASS="Index">blackman(M) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718611"></A><A HREF="numpy-12.html#pgfId-66924" CLASS="Index">corrcoef(x, y=None) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718613"></A><A HREF="numpy-12.html#pgfId-66926" CLASS="Index">cov(m,y=None) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718615"></A><A HREF="numpy-12.html#pgfId-66928" CLASS="Index">cumprod(m, axis=0) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718617"></A><A HREF="numpy-12.html#pgfId-66930" CLASS="Index">cumsum(m, axis=0) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718619"></A><A HREF="numpy-12.html#pgfId-66932" CLASS="Index">diag(v, k=0) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718621"></A><A HREF="numpy-12.html#pgfId-66934" CLASS="Index">diff(x, n=1) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718623"></A><A HREF="numpy-12.html#pgfId-66936" CLASS="Index">eig(m) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718625"></A><A HREF="numpy-12.html#pgfId-66938" CLASS="Index">eye(N, M=N, k=0, typecode=None) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718627"></A><A HREF="numpy-12.html#pgfId-66940" CLASS="Index">fliplr(m) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718629"></A><A HREF="numpy-12.html#pgfId-66942" CLASS="Index">flipud(m) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718631"></A><A HREF="numpy-12.html#pgfId-66944" CLASS="Index">hamming(M) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718633"></A><A HREF="numpy-12.html#pgfId-66946" CLASS="Index">hanning(M) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718635"></A><A HREF="numpy-12.html#pgfId-66948" CLASS="Index">kaiser(M, beta) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718637"></A><A HREF="numpy-12.html#pgfId-66950" CLASS="Index">max(m, axis=0) 52</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718639"></A><A HREF="numpy-12.html#pgfId-67179" CLASS="Index">mean(m, axis=0) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718641"></A><A HREF="numpy-12.html#pgfId-66954" CLASS="Index">median(m) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718643"></A><A HREF="numpy-12.html#pgfId-66956" CLASS="Index">min(m, axis=0) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718645"></A><A HREF="numpy-12.html#pgfId-66958" CLASS="Index">msort(m) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718647"></A><A HREF="numpy-12.html#pgfId-66960" CLASS="Index">prod(m, axis=0) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718649"></A><A HREF="numpy-12.html#pgfId-66962" CLASS="Index">ptp(m, axis = 0) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718651"></A><A HREF="numpy-12.html#pgfId-66964" CLASS="Index">rand(d1, ..., dn) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718653"></A><A HREF="numpy-12.html#pgfId-67153" CLASS="Index">rot90(m,k=1) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718655"></A><A HREF="numpy-12.html#pgfId-67155" CLASS="Index">sinc(x) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718657"></A><A HREF="numpy-12.html#pgfId-66970" CLASS="Index">squeeze(a) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718659"></A><A HREF="numpy-12.html#pgfId-66972" CLASS="Index">std(m, axis = 0) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718661"></A><A HREF="numpy-12.html#pgfId-66974" CLASS="Index">sum(m, axis=0) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718663"></A><A HREF="numpy-12.html#pgfId-66976" CLASS="Index">svd(m) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718665"></A><A HREF="numpy-12.html#pgfId-66978" CLASS="Index">trapz(y,x=None) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718667"></A><A HREF="numpy-12.html#pgfId-66980" CLASS="Index">tri(N, M=N, k=0, typecode=None) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718669"></A><A HREF="numpy-12.html#pgfId-66982" CLASS="Index">tril(m,k=0) 53</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718671"></A><A HREF="numpy-12.html#pgfId-66984" CLASS="Index">triu(m,k=0) 54</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718673"></A><A HREF="numpy-12.html#pgfId-66811" CLASS="Index">The multiarray object 54</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718675"></A><A HREF="numpy-12.html#pgfId-59085" CLASS="Index">Typecodes 54</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718677"></A><A HREF="numpy-12.html#pgfId-59290" CLASS="Index">Indexing in and out, slicing 55</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718679"></A><A HREF="numpy-12.html#pgfId-59320" CLASS="Index">Ellipses 56</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718681"></A><A HREF="numpy-12.html#pgfId-59324" CLASS="Index">NewAxis 56</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718683"></A><A HREF="numpy-12.html#pgfId-59327" CLASS="Index">Set-indexing and Broadcasting 56</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718685"></A><A HREF="numpy-12.html#pgfId-59331" CLASS="Index">Axis specifications 57</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718687"></A><A HREF="numpy-12.html#pgfId-59333" CLASS="Index">Textual representations of arrays 57</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718689"></A><A HREF="numpy-12.html#pgfId-59418" CLASS="Index">Comparisons 59</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718691"></A><A HREF="numpy-12.html#pgfId-67223" CLASS="Index">Storing arrays on disk 59</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718693"></A><A HREF="numpy-12.html#pgfId-59422" CLASS="Index">Dealing with floating point exceptions 59</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718695"></A><A HREF="numpy-13.html#pgfId-36640" CLASS="Index">Writing a C extension to NumPy 61</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718697"></A><A HREF="numpy-13.html#pgfId-36641" CLASS="Index">Introduction 61</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718699"></A><A HREF="numpy-13.html#pgfId-36646" CLASS="Index">Preparing an extension module for NumPy arrays 61</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718701"></A><A HREF="numpy-13.html#pgfId-36649" CLASS="Index">Accessing NumPy arrays from C 62</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718703"></A><A HREF="numpy-13.html#pgfId-36650" CLASS="Index">Types and Internal Structure 62</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718705"></A><A HREF="numpy-13.html#pgfId-36661" CLASS="Index">Element data types 62</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718707"></A><A HREF="numpy-13.html#pgfId-36717" CLASS="Index">Contiguous arrays 63</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718709"></A><A HREF="numpy-13.html#pgfId-36719" CLASS="Index">Zero-dimensional arrays 63</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718711"></A><A HREF="numpy-13.html#pgfId-36721" CLASS="Index">A simple example 63</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718713"></A><A HREF="numpy-13.html#pgfId-36748" CLASS="Index">Accepting input data from any sequence type 64</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718715"></A><A HREF="numpy-13.html#pgfId-36783" CLASS="Index">Creating NumPy arrays 65</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718717"></A><A HREF="numpy-13.html#pgfId-36796" CLASS="Index">Returning arrays from C functions 65</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718719"></A><A HREF="numpy-13.html#pgfId-36801" CLASS="Index">A less simple example 66</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718721"></A><A HREF="numpy-14.html#pgfId-57398" CLASS="Index">C API Reference 68</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718723"></A><A HREF="numpy-14.html#pgfId-25107" CLASS="Index">ArrayObject C Structure and API 68</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718725"></A><A HREF="numpy-14.html#pgfId-57404" CLASS="Index">Structures 68</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718727"></A><A HREF="numpy-14.html#pgfId-34282" CLASS="Index">The ArrayObject API 69</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718729"></A><A HREF="numpy-14.html#pgfId-586" CLASS="Index">Notes 72</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718731"></A><A HREF="numpy-14.html#pgfId-587" CLASS="Index">UfuncObject C Structure and API 72</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718733"></A><A HREF="numpy-14.html#pgfId-589" CLASS="Index">C Structure 72</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718735"></A><A HREF="numpy-14.html#pgfId-590" CLASS="Index">UfuncObject C API 74</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718737"></A><A HREF="numpy-15.html#pgfId-57323" CLASS="Index">Glossary 77</A></P>
+</DIV>
+<DIV>
+<H4 CLASS="ChapterSetTOC">
+<A NAME="pgfId-718739"></A><A HREF="numpy-16.html#pgfId-304408" CLASS="Index">Optional Packages 79</A></H4>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718741"></A><A HREF="numpy-16.html#pgfId-304744" CLASS="Index">License and disclaimer for packages MA, RNG, Properties 80</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718743"></A><A HREF="numpy-17.html#pgfId-304711" CLASS="Index">FFT Reference 81</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718745"></A><A HREF="numpy-17.html#pgfId-302955" CLASS="Index">Python Interface 81</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718747"></A><A HREF="numpy-17.html#pgfId-302958" CLASS="Index">fft(data, n=None, axis=-1) 81</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718749"></A><A HREF="numpy-17.html#pgfId-302970" CLASS="Index">inverse_fft(data, n=None, axis=-1) 81</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718751"></A><A HREF="numpy-17.html#pgfId-302973" CLASS="Index">real_fft(data, n=None, axis=-1) 81</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718753"></A><A HREF="numpy-17.html#pgfId-302986" CLASS="Index">inverse_real_fft(data, n=None, axis=-1) 82</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718755"></A><A HREF="numpy-17.html#pgfId-302988" CLASS="Index">fft2d(data, s=None, axes=(-2,-1)) 82</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718757"></A><A HREF="numpy-17.html#pgfId-302990" CLASS="Index">real_fft2d(data, s=None, axes=(-2,-1)) 82</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718759"></A><A HREF="numpy-17.html#pgfId-302992" CLASS="Index">C API 82</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718761"></A><A HREF="numpy-17.html#pgfId-303012" CLASS="Index">Compilation Notes 83</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718763"></A><A HREF="numpy-18.html#pgfId-303015" CLASS="Index">LinearAlgebra Reference 84</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718765"></A><A HREF="numpy-18.html#pgfId-303017" CLASS="Index">Python Interface 84</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718767"></A><A HREF="numpy-18.html#pgfId-303019" CLASS="Index">solve_linear_equations(a, b) 84</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718769"></A><A HREF="numpy-18.html#pgfId-303023" CLASS="Index">inverse(a) 84</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718771"></A><A HREF="numpy-18.html#pgfId-303047" CLASS="Index">eigenvalues(a) 84</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718773"></A><A HREF="numpy-18.html#pgfId-303058" CLASS="Index">eigenvectors(a) 85</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718775"></A><A HREF="numpy-18.html#pgfId-303076" CLASS="Index">singular_value_decomposition(a, full_matrices=0) 85</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718777"></A><A HREF="numpy-18.html#pgfId-303079" CLASS="Index">generalized_inverse(a, rcond=1e-10) 85</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718779"></A><A HREF="numpy-18.html#pgfId-303082" CLASS="Index">determinant(a) 85</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718781"></A><A HREF="numpy-18.html#pgfId-303085" CLASS="Index">linear_least_squares(a, b, rcond=e-10) 85</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718783"></A><A HREF="numpy-18.html#pgfId-306308" CLASS="Index">cholesky_decomposition(a) 85</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718785"></A><A HREF="numpy-18.html#pgfId-306314" CLASS="Index">Heigenvalues(a) 85</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718787"></A><A HREF="numpy-18.html#pgfId-306318" CLASS="Index">Heigenvectors(a) 86</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718789"></A><A HREF="numpy-18.html#pgfId-303088" CLASS="Index">Compilation Notes 86</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718791"></A><A HREF="numpy-19.html#pgfId-303091" CLASS="Index">RandomArray Reference 87</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718793"></A><A HREF="numpy-19.html#pgfId-303094" CLASS="Index">Python Interface 87</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718795"></A><A HREF="numpy-19.html#pgfId-303096" CLASS="Index">seed(x=0, y=0) 87</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718797"></A><A HREF="numpy-19.html#pgfId-303099" CLASS="Index">get_seed() 87</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718799"></A><A HREF="numpy-19.html#pgfId-303102" CLASS="Index">random(shape=</A><EM CLASS="Emphasis">
+ReturnFloat</EM>
+) 87</P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718801"></A><A HREF="numpy-19.html#pgfId-303105" CLASS="Index">uniform(minimum, maximum, shape=ReturnFloat) 87</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718803"></A><A HREF="numpy-19.html#pgfId-303108" CLASS="Index">randint(minimum, maximum, shape=ReturnFloat) 87</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718805"></A><A HREF="numpy-19.html#pgfId-303111" CLASS="Index">permutation(n) 87</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718807"></A><A HREF="numpy-19.html#pgfId-305397" CLASS="Index">Floating point random arrays 88</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718809"></A><A HREF="numpy-19.html#pgfId-305398" CLASS="Index">standard_normal (shape=ReturnFloat) 88</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718811"></A><A HREF="numpy-19.html#pgfId-305400" CLASS="Index">normal (mean, stddev, shape=ReturnFloat) 88</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718813"></A><A HREF="numpy-19.html#pgfId-305402" CLASS="Index">multivariate_normal (mean, covariance) or <BR>
+multivariate_normal (mean, covariance, leadingAxesShape) 88</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718815"></A><A HREF="numpy-19.html#pgfId-305407" CLASS="Index">exponential (mean, shape=ReturnFloat) 88</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718817"></A><A HREF="numpy-19.html#pgfId-305409" CLASS="Index">beta (a, b, shape=ReturnFloat) 88</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718819"></A><A HREF="numpy-19.html#pgfId-305411" CLASS="Index">gamma (a, r, shape=ReturnFloat) 89</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718821"></A><A HREF="numpy-19.html#pgfId-305413" CLASS="Index">chi_square (df, shape=ReturnFloat) 89</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718823"></A><A HREF="numpy-19.html#pgfId-305415" CLASS="Index">noncentral_chi_square (df, nonc, shape=ReturnFloat) 89</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718825"></A><A HREF="numpy-19.html#pgfId-305417" CLASS="Index">F (dfn, dfd, shape=ReturnFloat) 89</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718827"></A><A HREF="numpy-19.html#pgfId-305419" CLASS="Index">noncentral_F (dfn, dfd, nconc, shape=ReturnFloat) 89</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718829"></A><A HREF="numpy-19.html#pgfId-305421" CLASS="Index">Integer random arrays 89</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718831"></A><A HREF="numpy-19.html#pgfId-305422" CLASS="Index">binomial (trials, prob, shape=ReturnInt) 89</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718833"></A><A HREF="numpy-19.html#pgfId-305424" CLASS="Index">negative_binomial (trials, prob, shape=ReturnInt) 89</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718835"></A><A HREF="numpy-19.html#pgfId-305426" CLASS="Index">poisson (mean, shape=ReturnInt) 89</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718837"></A><A HREF="numpy-19.html#pgfId-305428" CLASS="Index">multinomial (trials, probs) or multinomial (trials, probs, leadingAxesShape) 89</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718839"></A><A HREF="numpy-19.html#pgfId-305431" CLASS="Index">Examples 90</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718841"></A><A HREF="numpy-20.html#pgfId-290702" CLASS="Index">Independent Random Streams 92</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718843"></A><A HREF="numpy-20.html#pgfId-304780" CLASS="Index">Background 92</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718845"></A><A HREF="numpy-20.html#pgfId-304419" CLASS="Index">Usage 92</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718847"></A><A HREF="numpy-20.html#pgfId-304559" CLASS="Index">Module RNG 92</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718849"></A><A HREF="numpy-20.html#pgfId-304635" CLASS="Index">Generator objects 92</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718851"></A><A HREF="numpy-20.html#pgfId-304493" CLASS="Index">Module ranf 92</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718853"></A><A HREF="numpy-20.html#pgfId-304426" CLASS="Index">Examples 93</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718855"></A><A HREF="numpy-21.html#pgfId-305690" CLASS="Index">Properties Reference 94</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718857"></A><A HREF="numpy-21.html#pgfId-305692" CLASS="Index">Defining a property 94</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718859"></A><A HREF="numpy-21.html#pgfId-305730" CLASS="Index">Evading the mechanism 94</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718861"></A><A HREF="numpy-21.html#pgfId-305737" CLASS="Index">Creating the class 94</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718863"></A><A HREF="numpy-21.html#pgfId-305742" CLASS="Index">Setting a property 95</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718865"></A><A HREF="numpy-21.html#pgfId-305804" CLASS="Index">Example: 95</A></P>
+<P CLASS="ChapterTOC">
+<A NAME="pgfId-718867"></A><A HREF="numpy-22.html#pgfId-303698" CLASS="Index">Masked Arrays 97</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718869"></A><A HREF="numpy-22.html#pgfId-296294" CLASS="Index">Required Packages 97</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718871"></A><A HREF="numpy-22.html#pgfId-320813" CLASS="Index">Properties 97</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718873"></A><A HREF="numpy-22.html#pgfId-320810" CLASS="Index">What is a masked array? 97</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718875"></A><A HREF="numpy-22.html#pgfId-304772" CLASS="Index">Installing and using MA 97</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718877"></A><A HREF="numpy-22.html#pgfId-296950" CLASS="Index">Class MaskedArray 98</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718879"></A><A HREF="numpy-22.html#pgfId-305213" CLASS="Index">Attributes of masked arrays 98</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718881"></A><A HREF="numpy-22.html#pgfId-305217" CLASS="Index">Methods on masked arrays. 99</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718883"></A><A HREF="numpy-22.html#pgfId-320251" CLASS="Index">Constructing masked arrays 101</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718885"></A><A HREF="numpy-22.html#pgfId-320302" CLASS="Index">What are masks? 102</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718887"></A><A HREF="numpy-22.html#pgfId-320312" CLASS="Index">Working with masks 103</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718889"></A><A HREF="numpy-22.html#pgfId-320257" CLASS="Index">Operations 103</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718891"></A><A HREF="numpy-22.html#pgfId-305173" CLASS="Index">Copying or not? 103</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718893"></A><A HREF="numpy-22.html#pgfId-305435" CLASS="Index">Behaviors 104</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718895"></A><A HREF="numpy-22.html#pgfId-304210" CLASS="Index">Indexing and Slicing 104</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718897"></A><A HREF="numpy-22.html#pgfId-320846" CLASS="Index">Indexing in assignments 104</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718899"></A><A HREF="numpy-22.html#pgfId-306592" CLASS="Index">Operations that produce a scalar result 104</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718901"></A><A HREF="numpy-22.html#pgfId-304229" CLASS="Index">Assignment to elements and slices 104</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718903"></A><A HREF="numpy-22.html#pgfId-297249" CLASS="Index">Module MA: Attributes 104</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718905"></A><A HREF="numpy-22.html#pgfId-305706" CLASS="Index">Module MA: Functions 105</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718907"></A><A HREF="numpy-22.html#pgfId-298306" CLASS="Index">Unary functions 105</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718909"></A><A HREF="numpy-22.html#pgfId-298312" CLASS="Index">Binary functions 105</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718911"></A><A HREF="numpy-22.html#pgfId-298340" CLASS="Index">Comparison operators 105</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718913"></A><A HREF="numpy-22.html#pgfId-298353" CLASS="Index">Logical operators 105</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718915"></A><A HREF="numpy-22.html#pgfId-298365" CLASS="Index">Special array operators 105</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718917"></A><A HREF="numpy-22.html#pgfId-305726" CLASS="Index">Controlling the size of the string representations 107</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718919"></A><A HREF="numpy-22.html#pgfId-304172" CLASS="Index">Helper classes 107</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718921"></A><A HREF="numpy-22.html#pgfId-306892" CLASS="Index">MAError 107</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718923"></A><A HREF="numpy-22.html#pgfId-306894" CLASS="Index">The constant masked 107</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718925"></A><A HREF="numpy-22.html#pgfId-320644" CLASS="Index">The constant masked_print_option 108</A></P>
+<P CLASS="FM3HeadingTOC">
+<A NAME="pgfId-718927"></A><A HREF="numpy-22.html#pgfId-306903" CLASS="Index">Example of masked behavior 108</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718929"></A><A HREF="numpy-22.html#pgfId-305737" CLASS="Index">Class masked_unary_function 108</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718931"></A><A HREF="numpy-22.html#pgfId-305759" CLASS="Index">Class masked_binary_function 109</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718933"></A><A HREF="numpy-22.html#pgfId-320776" CLASS="Index">Class domained_binary_function 109</A></P>
+<P CLASS="FM1HeadingTOC">
+<A NAME="pgfId-718935"></A><A HREF="numpy-22.html#pgfId-306123" CLASS="Index">Examples of Using MA 109</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718937"></A><A HREF="numpy-22.html#pgfId-306127" CLASS="Index">Data with a given value representing missing data 109</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718939"></A><A HREF="numpy-22.html#pgfId-306145" CLASS="Index">Filling in the missing data 109</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718941"></A><A HREF="numpy-22.html#pgfId-306378" CLASS="Index">Numerical operations 110</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718943"></A><A HREF="numpy-22.html#pgfId-306406" CLASS="Index">Seeing the mask 110</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718945"></A><A HREF="numpy-22.html#pgfId-306428" CLASS="Index">Filling it your way 110</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718947"></A><A HREF="numpy-22.html#pgfId-320020" CLASS="Index">Ignoring extreme values 110</A></P>
+<P CLASS="FM2HeadingTOC">
+<A NAME="pgfId-718949"></A><A HREF="numpy-22.html#pgfId-320037" CLASS="Index">Averaging an entire multidimensional array 110</A></P>
+<P CLASS="IndexTitleTOC">
+<A NAME="pgfId-718951"></A><A HREF="numpy-23.html#pgfId-862972" CLASS="Index">Index 113</A></P>
+</DIV>
+</DIV>
+<H2 CLASS="ChapterSetTOC">
+<A HREF="numpy-1.html#pgfId-59427" CLASS="Hypertext">Part I: Numerical Python</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-2.html#pgfId-78440" CLASS="Hypertext">1.	 Introduction</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-3.html#pgfId-35559" CLASS="Hypertext">2.	 Installing NumPy</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-4.html#pgfId-37261" CLASS="Hypertext">3.	 The NumTut package</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-5.html#pgfId-57136" CLASS="Hypertext">4.	 High-Level Overview</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-6.html#pgfId-57315" CLASS="Hypertext">5.	 Array Basics</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-7.html#pgfId-36126" CLASS="Hypertext">6.	 Ufuncs </A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-8.html#pgfId-36371" CLASS="Hypertext">7.	 Pseudo Indices</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-9.html#pgfId-36422" CLASS="Hypertext">8.	 Array Functions </A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-10.html#pgfId-36552" CLASS="Hypertext">9.	 Array Methods </A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-11.html#pgfId-36604" CLASS="Hypertext">10.	 Array Attributes </A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-12.html#pgfId-59071" CLASS="Hypertext">11.	 Special Topics</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-13.html#pgfId-36640" CLASS="Hypertext">12.	 Writing a C extension to NumPy</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-14.html#pgfId-57398" CLASS="Hypertext">13.	 C API Reference</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-15.html#pgfId-57323" CLASS="Hypertext">14.	 Glossary</A></H2>
+<H2 CLASS="ChapterSetTOC">
+<A HREF="numpy-16.html#pgfId-304408" CLASS="Hypertext">Part II: Optional Packages</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-17.html#pgfId-304711" CLASS="Hypertext">15.	 FFT Reference</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-18.html#pgfId-303015" CLASS="Hypertext">16.	 LinearAlgebra Reference</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-19.html#pgfId-303091" CLASS="Hypertext">17.	 RandomArray Reference</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-20.html#pgfId-290702" CLASS="Hypertext">18.	 Independent Random Streams</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-21.html#pgfId-305690" CLASS="Hypertext">19.	 Properties Reference</A></H2>
+<H2 CLASS="ChapterTOC">
+<A HREF="numpy-22.html#pgfId-303698" CLASS="Hypertext">20.	 Masked Arrays</A></H2>
+</DIV>
+</BODY>
+</HTML>

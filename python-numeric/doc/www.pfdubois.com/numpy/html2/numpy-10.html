@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 6.0/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="numpy.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<TITLE> 9.	 Array Methods </TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1 CLASS="Chapter">
+<A NAME="pgfId-36552"></A>9.	 <A NAME="marker-59710"></A><A NAME="42194"></A>Array Methods </H1>
+<P CLASS="Body">
+<A NAME="pgfId-36553"></A>As we discussed at the beginning of the last chapter, there are very few array methods for good reasons, and these all depend on the the implementation details. They're worth knowing, though: </P>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36554"></A><A NAME="marker-59704"></A>itemsize() </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36555"></A>The itemsize() method applied to an array returns the number of bytes used by any one of its elements. </P>
+<P CLASS="Python">
+<A NAME="pgfId-36556"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = arange(10)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36557"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a.itemsize()</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36558"></A>4</P>
+<P CLASS="Python">
+<A NAME="pgfId-36559"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = array([1.0])</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36560"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a.itemsize()</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36561"></A>8</P>
+<P CLASS="Python">
+<A NAME="pgfId-36562"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = array([1], Complex)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36563"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a.itemsize()</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36564"></A>16</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36565"></A><A NAME="marker-59705"></A>iscontiguous() </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36566"></A>Calling an array's iscontiguous() method returns true if the memory used by A is contiguous. A non-contiguous array can be converted to a contiguous one by the copy() method. This is useful for interfacing to C routines only, as far as I know. </P>
+<P CLASS="Body">
+<A NAME="pgfId-36567"></A>&gt;&gt;&gt; XXX example </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36568"></A><A NAME="marker-59706"></A>typecode() </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36569"></A>The `typecode()' method returns the typecode of the array it is applied to. While we've been talking about them as Float, Int, etc., they are represented internally as characters, so this is what you'll get: </P>
+<P CLASS="Python">
+<A NAME="pgfId-36570"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = array([1,2,3])</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36571"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a.typecode()</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36572"></A>'l'</P>
+<P CLASS="Python">
+<A NAME="pgfId-36573"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = array([1], Complex)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36574"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a.typecode()</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36575"></A>'D'</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36576"></A><A NAME="marker-59707"></A><A NAME="19367"></A>byteswapped() </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36577"></A>The <EM CLASS="Code">
+byteswapped</EM>
+ method performs a byte swapping operation on all the elements in the array.</P>
+<P CLASS="Python">
+<A NAME="pgfId-36578"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36579"></A>[1 2 3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36580"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a.byteswapped()</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36581"></A>[16777216 33554432 50331648] </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36582"></A><A NAME="marker-59708"></A>tostring() </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36583"></A>The <EM CLASS="Code">
+tostring</EM>
+ method returns a string representation of the data portion of the array it is applied to.  </P>
+<P CLASS="Python">
+<A NAME="pgfId-36584"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = arange(65,100)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36585"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a.tostring()</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36586"></A>A   B   C   D   E   F   G   H   I   J   K   L   M   N   O   P   Q   R   S   T</P>
+<P CLASS="Python">
+<A NAME="pgfId-36587"></A>U   V   W   X   Y   Z   [   &#92;   ]   ^   _   `   a   b   c </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36588"></A><A NAME="marker-59709"></A>tolist() </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36589"></A>Calling an array's tolist() method returns a hierarchical python list version of the same array:</P>
+<P CLASS="Python">
+<A NAME="pgfId-36590"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36591"></A>[[65 66 67 68 69 70 71]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36592"></A> [72 73 74 75 76 77 78]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36593"></A> [79 80 81 82 83 84 85]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36594"></A> [86 87 88 89 90 91 92]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36595"></A> [93 94 95 96 97 98 99]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36596"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a.tolist()</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36597"></A>[[65, 66, 67, 68, 69, 70, 71], [72, 73, 74, 75, 76, 77, 78], [79, 80, 81, 82, 83, 84, 85], [86, 87, 88, 89, 90, 91, 92], [93, 94, 95, 96, 97, 98, 99]] </P>
+</DIV>
+<P><A HREF="numpy.html">Go to Main</A>      <A HREF="numpy-9.html">Go to Previous</A>       <A HREF="numpy-11.html">Go to Next</A></P>
+</BODY>
+</HTML>

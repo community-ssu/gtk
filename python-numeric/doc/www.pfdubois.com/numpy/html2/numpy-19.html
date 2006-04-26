@@ -1,0 +1,486 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 6.0/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="numpy.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<TITLE> 17.	 RandomArray Reference</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1 CLASS="Chapter">
+<A NAME="pgfId-303091"></A>17.	 <A NAME="40886"></A>RandomArray Reference</H1>
+<P CLASS="ChapterDescription">
+<A NAME="pgfId-303093"></A>The <A NAME="marker-303092"></A>RandomArray.py module (in conjunction with the ranlibmodule.c file) provides a high-level interface to the ranlib module, which provides a good quality C implementation of a random-number generator.</P>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-303094"></A>Python Interface</H6>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303096"></A><A NAME="marker-303095"></A>seed(x=0, y=0)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303097"></A>The <EM CLASS="Code">
+seed()</EM>
+ function takes two integers and sets the two seeds of the random number generator to those values. If the default values of 0 are used for both x and y, then a seed is generated from the current time, providing a pseudo-random seed.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303099"></A><A NAME="marker-303098"></A>get_seed()	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303100"></A>The <EM CLASS="Code">
+get_seed()</EM>
+ function returns the two seeds used by the current random-number generator. It is most often used to find out what seeds the seed() function chose at the last iteration. [thread-safety issue?]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303102"></A><A NAME="marker-303101"></A>random(shape=<EM CLASS="Emphasis">
+ReturnFloat</EM>
+)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303103"></A>The <EM CLASS="Code">
+random()</EM>
+ function takes a shape, and returns an array of double-precision floatings point numbers between 0.0 and 1.0. Neither 0.0 nor 1.0 is ever returned by this function. If no argument is specified, the function returns a single floating point number (not an array). The array is filled from the generator following the canonical array organization (see discussion of the <EM CLASS="Code">
+.flat</EM>
+ attribute)</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303105"></A><A NAME="marker-303104"></A>uniform(minimum, maximum, shape=ReturnFloat)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303106"></A>The <EM CLASS="Code">
+uniform()</EM>
+ function returns an array of the specified shape and containing double-precision floating point random numbers strictly between minimum and maximum. If no shape is specified, a single number is returned.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303108"></A><A NAME="marker-303107"></A>randint(minimum, maximum, shape=ReturnFloat)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303109"></A>The <EM CLASS="Code">
+randint()</EM>
+ function returns an array of the specified shape and containing random (standard) integers greater than or equal to <EM CLASS="Code">
+minimum</EM>
+ and strictly less than <EM CLASS="Code">
+maximum</EM>
+. If no shape is specified, a single number is returned.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-303111"></A><A NAME="marker-303110"></A>permutation(n)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-303112"></A>The <EM CLASS="Code">
+permutation()</EM>
+ function returns an array of the integers between <EM CLASS="Code">
+0</EM>
+ and <EM CLASS="Code">
+n-1</EM>
+, in an array of shape <EM CLASS="Code">
+(n,)</EM>
+, and with its elements randomly permuted.</P>
+<P CLASS="Body">
+<A NAME="pgfId-303113"></A>An example use of the RandomArray module (exact output will be different each time!):</P>
+<P CLASS="Python">
+<A NAME="pgfId-303114"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+from RandomArray import *</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303115"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+seed()								</EM>
+# Set seed based on current time</P>
+<P CLASS="Python">
+<A NAME="pgfId-303116"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print get_seed()								</EM>
+# Find out what seeds were used</P>
+<P CLASS="Python">
+<A NAME="pgfId-303117"></A>(897800491, 192000)</P>
+<P CLASS="Python">
+<A NAME="pgfId-303118"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print random()</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303119"></A>0.0528018975065</P>
+<P CLASS="Python">
+<A NAME="pgfId-303120"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print random((5,2))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303121"></A>[[ 0.14833829  0.99031458]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303122"></A> [ 0.7526806   0.09601787]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303123"></A> [ 0.1895229   0.97674777]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303124"></A> [ 0.46134511  0.25420982]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303125"></A> [ 0.66132009  0.24864472]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303126"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print uniform(-1,1,(10,))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303127"></A>[ 0.72168852 -0.75374185 -0.73590945  0.50488248 -0.74462822  0.09293685</P>
+<P CLASS="Python">
+<A NAME="pgfId-303128"></A>      -0.65898308  0.9718067  -0.03252475  0.99611011]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303129"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print randint(0,100, (12,))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303130"></A>[28  5 96 19  1 32 69 40 56 69 53 44]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303131"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print permutation(10)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-303132"></A>[4 2 8 9 1 7 3 6 5 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-303133"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+seed(897800491, 192000)								</EM>
+# resetting the same seeds</P>
+<P CLASS="Python">
+<A NAME="pgfId-303134"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print random()								</EM>
+# yields the same numbers</P>
+<P CLASS="Python">
+<A NAME="pgfId-303135"></A>0.0528018975065</P>
+</DIV>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-305397"></A>Floating point random arrays</H6>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305398"></A>standard_normal (shape=ReturnFloat) </H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-305399"></A>The standard_normal () function returns an array of the specified shape that contains double precision floating point numbers normally (Gaussian) distributed with mean zero and variance and standard deviation one. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305400"></A>normal (mean, stddev, shape=ReturnFloat) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305401"></A>The normal () function returns an array of the specified shape that contains double precision floating point numbers normally distributed with the specified mean and standard deviation. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305402"></A>multivariate_normal (mean, covariance) or <BR>
+multivariate_normal (mean, covariance, leadingAxesShape) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305403"></A>The multivariate_normal () function takes a one dimensional array argument mean and a two dimensional array argument covariance. Suppose the shape of mean is (n,). Then the shape of covariance must be (n,n). The multivariate_normal () function returns a double precision floating point array. The effect of the leadingAxesShape parameter is: </P>
+<UL>
+<LI CLASS="Bullet">
+<A NAME="pgfId-305404"></A>If no leadingAxesShape is specified, then an array with shape (n,) is returned containing a vector of numbers with a multivariate normal distribution with the specified mean and covariance.</LI>
+<LI CLASS="Bullet">
+<A NAME="pgfId-305405"></A>If leadingAxesShape is specified, then an array of such vectors is returned. The shape of the output is leadingAxesShape.append ((n,)). The leading indices into the output array select a multivariate normal from the array. The final index selects one number from within the multivariate normal.</LI>
+</UL>
+<P CLASS="Body">
+<A NAME="pgfId-305406"></A>In either case, the behavior of multivariate_normal () is undefined if covariance is not symmetric and positive definite. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305407"></A>exponential (mean, shape=ReturnFloat) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305408"></A>The exponential () function returns an array of the specified shape that contains double precision floating point numbers exponentially distributed with the specified mean. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305409"></A>beta (a, b, shape=ReturnFloat) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305410"></A>The beta () function returns an array of the specified shape that contains double precision floating point numbers beta distributed with alpha parameter a and beta parameter b. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305411"></A>gamma (a, r, shape=ReturnFloat) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305412"></A>The gamma () function returns an array of the specified shape that contains double precision floating point numbers beta distributed with location parameter a and distribution shape parameter r. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305413"></A>chi_square (df, shape=ReturnFloat) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305414"></A>The chi_square() function returns an array of the specified shape that contains double precision floating point numbers with the chi square distribution with df degrees of freedom. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305415"></A>noncentral_chi_square (df, nonc, shape=ReturnFloat) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305416"></A>The noncentral_chi_square() function returns an array of the specified shape that contains double precision floating point numbers with the chi square distribution with df degrees of freedom and noncentrality parameter nconc. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305417"></A>F (dfn, dfd, shape=ReturnFloat) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305418"></A>The F () function returns an array of the specified shape that contains double precision floating point numbers with the F distribution with dfn degrees of freedom in the numerator and dfd degrees of freedom in the denominator. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305419"></A>noncentral_F (dfn, dfd, nconc, shape=ReturnFloat) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305420"></A>The noncentral_F () function returns an array of the specified shape that contains double precision floating point numbers with the F distribution with dfn degrees of freedom in the numerator, dfd degrees of freedom in the denominator, and noncentrality parameter nconc. If no shape is specified, a single number is returned. </P>
+</DIV>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-305421"></A>Integer random arrays</H6>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305422"></A>binomial (trials, prob, shape=ReturnInt) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305423"></A>The binomial () function returns an array with the specified shape that contains integer numbers with the binomial distribution with trials trials and event probability prob. In other words, each value in the returned array is the number of times an event with probability prob occurred within trials repeated trials. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305424"></A>negative_binomial (trials, prob, shape=ReturnInt)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-305425"></A>The negative_binomial () function returns an array with the specified shape that contains integer numbers with the negative binomial distribution with trials trials and event probability prob. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305426"></A>poisson (mean, shape=ReturnInt) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305427"></A>The poisson () function returns an array with the specified shape that contains integer numbers with the Poisson distribution with the specified mean. If no shape is specified, a single number is returned. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-305428"></A>multinomial (trials, probs) or multinomial (trials, probs, leadingAxesShape) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-305429"></A>The multinomial () function returns an array with that contains integer numbers with the multinomial distribution with trials trials and event probabilities given in probs. probs must be a one dimensional array. There are len(probs)+1 events. probs[i] is the probability of the i-th event for 0&lt;=i&lt;len(probs). The probability of event len(probs) is 1.-Numeric.sum(prob). </P>
+<P CLASS="Body">
+<A NAME="pgfId-305430"></A>The first form returns an integer array of shape (len(probs)+1,) containing one multinomially distributed vector. The second form returns an array of shape (m, n, ..., len(probs)+1) where (m, n, ...) is leadingAxesShape. In this case, each output[i,j,...,:] is an integer array of shape (len(prob)+1,) containing one multinomially distributed vector.. </P>
+</DIV>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-305431"></A>Examples</H6>
+<P CLASS="Body">
+<A NAME="pgfId-305432"></A>Most of the functions in this package take zero or more distribution specific parameters plus an optional shape parameter. The shape parameter gives the shape of the output array: </P>
+<P CLASS="Python">
+<A NAME="pgfId-305433"></A><EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+from RandomArray import *</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+print standard_normal()</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+-0.435568600893</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+print standard_normal(5)</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+[-1.36134553 0.78617644 -0.45038718 0.18508556 0.05941355]</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+print standard_normal((5,2))</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+[[ 1.33448863 -0.10125473]</EM>
+ <BR>
+ <EM CLASS="HTML-Typewriter">
+[ 0.66838062 0.24691346]</EM>
+ <BR>
+ <EM CLASS="HTML-Typewriter">
+[-0.95092064 0.94168913]</EM>
+ <BR>
+ <EM CLASS="HTML-Typewriter">
+[-0.23919107 1.89288616]</EM>
+ <BR>
+ <EM CLASS="HTML-Typewriter">
+[ 0.87651485 0.96400219]]</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+print normal(7., 4., (5,2)) #mean=7, std. dev.=4 <BR>
+</EM>
+<EM CLASS="HTML-Typewriter">
+[[ 2.66997623 11.65832615]</EM>
+ <BR>
+ <EM CLASS="HTML-Typewriter">
+[ 6.73916003 6.58162862]</EM>
+ <BR>
+ <EM CLASS="HTML-Typewriter">
+[ 8.47180378 4.30354905]</EM>
+ <BR>
+ <EM CLASS="HTML-Typewriter">
+[ 1.35531998 -2.80886841]</EM>
+ <BR>
+ <EM CLASS="HTML-Typewriter">
+[ 7.07408469 11.39024973]]</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+print exponential(10., 5) #mean=10 <BR>
+</EM>
+<EM CLASS="HTML-Typewriter">
+[ 18.03347754 7.11702306 9.8587961 32.49231603 28.55408891]</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+print beta(3.1, 9.1, 5) # alpha=3.1, beta=9.1 <BR>
+</EM>
+<EM CLASS="HTML-Typewriter">
+[ 0.1175056 0.17504358 0.3517828 0.06965593 0.43898219]</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+print chi_square(7, 5)</EM>
+<EM CLASS="HTML-Typewriter">
+ </EM>
+<EM CLASS="CodeInput">
+# 7 degrees of freedom (dfs) <BR>
+</EM>
+<EM CLASS="HTML-Typewriter">
+[ 11.99046516 3.00741053 4.72235727 6.17056274 8.50756836]</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+print noncentral_chi_square(7, 3, 5) # 7 dfs, noncentrality 3</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+[ 18.28332138 4.07550335 16.0425396 9.51192093 9.80156231]</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+F(5, 7, 5) # 5 and 7 dfs</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+array([ 0.24693671, 3.76726145, 0.66883826, 0.59169068, 1.90763224])</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+noncentral_F(5, 7, 3., 5) # 5 and 7 dfs, noncentrality 3</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+array([ 1.17992553, 0.7500126 , 0.77389943, 9.26798989, 1.35719634])</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+binomial(32, .5, 5) # 32 trials, prob of an event = .5 <BR>
+</EM>
+<EM CLASS="HTML-Typewriter">
+array([12, 20, 21, 19, 17])</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+negative_binomial(32, .5, 5) # 32 trials: prob of an event = .5</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+array([21, 38, 29, 32, 36])</EM>
+</P>
+<P CLASS="Body">
+<A NAME="pgfId-305434"></A>Two functions that return generate multivariate random numbers (that is, random vectors with some known relationship between the elements of each vector, defined by the distribution). They are multivariate_normal () and multinomial (). For these two functions, the lengths of the leading axes of the output may be specified. The length of the last axis is determined by the length of some other parameter. </P>
+<P CLASS="Python">
+<A NAME="pgfId-305435"></A><EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+multivariate_normal([1,2], [[1,2],[2,1]], [2,3])</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+array([[[ 0.14157988, 1.46232224],</EM>
+ <BR>
+       <EM CLASS="HTML-Typewriter">
+ [-1.11820295, -0.82796288],</EM>
+ <BR>
+       <EM CLASS="HTML-Typewriter">
+ [ 1.35251635, -0.2575901 ]],</EM>
+ <BR>
+      <EM CLASS="HTML-Typewriter">
+ [[-0.61142141, 1.0230465 ],</EM>
+ <BR>
+       <EM CLASS="HTML-Typewriter">
+ [-1.08280948, -0.55567217],</EM>
+ <BR>
+       <EM CLASS="HTML-Typewriter">
+ [ 2.49873002, 3.28136372]]])</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+x = multivariate_normal([10,100], [[1,2],[2,1]], 10000)</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+x_mean = sum(x)/10000</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+print x_mean</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+[ 9.98599893 100.00032416]</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+x_minus_mean = x - x_mean</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+cov = matrixmultiply(transpose(x_minus_mean), x_minus_mean) / 9999.</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+cov</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+array([[ 2.01737122, 1.00474408],</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+[ 1.00474408, 2.0009806 ]])</EM>
+</P>
+<P CLASS="Body">
+<A NAME="pgfId-305436"></A>The a priori probabilities for a multinomial distribution must sum to one. The prior probability argument to multinomial () doesn't give the prior probability of the last event: it is computed to be one minus the sum of the others. </P>
+<P CLASS="Python">
+<A NAME="pgfId-305437"></A><EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+multinomial(16, [.1, .4, .2]) # prior probabilities [.1, .4, .2, .3] <BR>
+</EM>
+<EM CLASS="HTML-Typewriter">
+array([2, 7, 1, 6])</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+&gt;&gt;&gt; </EM>
+<EM CLASS="CodeInput">
+multinomial(16, [.1, .4, .2], [2,3]) # output shape [2,3,4]</EM>
+ <BR>
+<EM CLASS="HTML-Typewriter">
+array([[[ 1, 9, 1, 5],</EM>
+ <BR>
+       <EM CLASS="HTML-Typewriter">
+ [ 0, 10, 3, 3],</EM>
+ <BR>
+       <EM CLASS="HTML-Typewriter">
+ [ 4, 9, 3, 0]],</EM>
+ <BR>
+      <EM CLASS="HTML-Typewriter">
+ [[ 1, 6, 1, 8],</EM>
+ <BR>
+       <EM CLASS="HTML-Typewriter">
+ [ 3, 4, 5, 4],</EM>
+ <BR>
+       <EM CLASS="HTML-Typewriter">
+ [ 1, 5, 2, 8]]])</EM>
+</P>
+</DIV>
+<P><A HREF="numpy.html">Go to Main</A>      <A HREF="numpy-18.html">Go to Previous</A>       <A HREF="numpy-20.html">Go to Next</A></P>
+</BODY>
+</HTML>

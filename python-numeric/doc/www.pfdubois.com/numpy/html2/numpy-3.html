@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 6.0/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="numpy.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<TITLE> 2.	 Installing NumPy</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1 CLASS="Chapter">
+<A NAME="pgfId-35559"></A>2.	 <A NAME="71535"></A>Installing NumPy</H1>
+<P CLASS="ChapterDescription">
+<A NAME="pgfId-37406"></A>This chapter explains how to install and test NumPy, from either the source distribution or from the binary distribution.</P>
+<P CLASS="FirstBody">
+<A NAME="pgfId-37274"></A>Before we start with the actual tutorial, we will describe the steps needed for you to be able to follow along the examples step by step. These steps including installing Python, the NumPy extensions, and some tools and sample files used in the examples of this tutorial.</P>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-37275"></A>Testing the Python installation</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-37276"></A>The first step is to install Python if you haven't already. Python is available from the Python project page at http://sourceforge.net/projects/python. Click on the link corresponding to your platform, and follow the instructions described there.  When installed, starting Python by typing <EM CLASS="Code">
+python</EM>
+ at the shell or double-clicking on the Python interpreter should give a prompt such as:</P>
+<P CLASS="Python">
+<A NAME="pgfId-85793"></A>Python 2.1b2 (#12, Mar 23 2001, 14:01:30) [MSC 32 bit (Intel)] on win32</P>
+<P CLASS="Python">
+<A NAME="pgfId-85794"></A>Type &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.</P>
+<P CLASS="Python">
+<A NAME="pgfId-85795"></A>&gt;&gt;&gt;</P>
+<P CLASS="Body">
+<A NAME="pgfId-37280"></A>If you have problems getting this part to work, consider contacting a local support person or emailing <EM CLASS="URL">
+python-help@python.org</EM>
+ for help. If neither solution works, consider posting on the comp.lang.python newsgroup (details on the newsgroup/mailing list are available at <EM CLASS="URL">
+http://www.python.org/psa/MailingLists.html#clp</EM>
+).</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-37281"></A>Testing the Numeric Python Extension Installation</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-37282"></A>The standard Python distribution does not come as of this writing with the Numeric Python extensions installed, but your system administrator may have installed them already. To find out if your Python interpreter has NumPy installed, type <EM CLASS="Code">
+import</EM>
+ <EM CLASS="Code">
+Numeric</EM>
+ at the Python prompt. You'll see one of two behaviors (throughout this document, <EM CLASS="CodeInput">
+bold</EM>
+ <EM CLASS="CodeInput">
+Courier New</EM>
+ font indicates user input, and <EM CLASS="Code">
+standard</EM>
+ <EM CLASS="Code">
+Courier New</EM>
+ font indicates output):</P>
+<P CLASS="Python">
+<A NAME="pgfId-37283"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+import Numeric</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-37284"></A>Traceback (innermost last):</P>
+<P CLASS="Python">
+<A NAME="pgfId-37285"></A> File &quot;&lt;stdin&gt;&quot;, line 1, in ?</P>
+<P CLASS="Python">
+<A NAME="pgfId-37286"></A>ImportError: No module named Numeric</P>
+<P CLASS="Python">
+<A NAME="pgfId-37287"></A>&gt;&gt;&gt;</P>
+<P CLASS="Body">
+<A NAME="pgfId-37288"></A>indicating that you don't have NumPy installed, or:</P>
+<P CLASS="Python">
+<A NAME="pgfId-37289"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+import Numeric</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-37290"></A>&gt;&gt;&gt; </P>
+<P CLASS="Body">
+<A NAME="pgfId-37291"></A>indicating that you do. If you do, go on to the next step. If you don't, you have to get the NumPy extensions. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-54827"></A><A NAME="marker-59513"></A>Installing NumPy</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-68084"></A>The release facility at SourceForge is accessed through the project page, http://sourceforge.net/projects/numpy. Click on the &quot;numpy&quot; releases and you will be presented with a list of the available files. The files whose names end in &quot;.tar.gz&quot; are source code releases. A .zip file is the source code in Windows format. The other files are binaries for a given platform. </P>
+<P CLASS="Body">
+<A NAME="pgfId-86159"></A>It is possible to get the latest sources directly from our CVS repository using the facilities described at SourceForge. Note that while every effort is made to ensure that the repository is always &quot;good&quot;, direct use of the repository is subject to more errors than using a standard release.</P>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-84400"></A>Installing on Windows</H6>
+<P CLASS="Body">
+<A NAME="pgfId-78642"></A>On Windows, we currently have available for each release an .exe file that should be executed. Doing so will install Numeric Python into your Python distribution. There are also .exe files for each of the optional packages. Note that some of the optional packages require other optional packages.</P>
+<P CLASS="Body">
+<A NAME="pgfId-86170"></A>If you wish to build from source on Windows, the Unix procedure described below can be used, running python in a command-line tool, on the Windows-format sources in the .zip file.</P>
+<P CLASS="Body">
+<A NAME="pgfId-78643"></A>In general, there may not be a prebuilt version of a particular kind available in every minor release. If you need a prebuilt version, choose the most recent version available. </P>
+<P CLASS="Body">
+<A NAME="pgfId-86168"></A>Releases prior to 20 had binary .zip files for Windows; these have been replaced by the .exe files that contain genuine installers.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-84404"></A>Installing on Unix</H6>
+<P CLASS="Body">
+<A NAME="pgfId-59525"></A><A NAME="marker-59524"></A>The source distribution should be uncompressed and unpacked using the the tar program:</P>
+<P CLASS="Python">
+<A NAME="pgfId-57128"></A>csh&gt; tar xfz Numeric-n.m.tar.gz</P>
+<P CLASS="Body">
+<A NAME="pgfId-57132"></A>Follow the instructions in the top-level directory for compilation and installation. Note that there are options you must consider before beginning. Installation is usually as simple as:</P>
+<P CLASS="Python">
+<A NAME="pgfId-68617"></A>python setup_all.py install</P>
+<P CLASS="Body">
+<A NAME="pgfId-68624"></A>However, please (please!) see the README itself for the latest details.</P>
+<DIV>
+<H6 CLASS="NoteTip">
+<A NAME="pgfId-67445"></A><DIV>
+<IMG SRC="numpy-4.gif" width="469" height="12">
+</DIV>
+&nbsp;</H6>
+<P CLASS="Note">
+<A NAME="pgfId-84474"></A><A NAME="from Numeric import * explanation"></A>Just like all Python modules and packages, the Numeric module can be invoked using either the <EM CLASS="Code">
+import Numeric</EM>
+ form, or the <EM CLASS="Code">
+from Numeric import ...</EM>
+ form.  Because most of the functions we'll talk about are in the Numeric module, in this document, all of the code samples will assume that they have been preceded by a statement: <BR>
+<BR>
+from Numeric import *</P>
+<DIV>
+<H6 CLASS="NoteBottom">
+<A NAME="pgfId-84478"></A><DIV>
+<IMG SRC="numpy-4.gif" width="469" height="12">
+</DIV>
+&nbsp;</H6>
+</DIV>
+</DIV>
+</DIV>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-68233"></A>At the SourceForge...</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-68540"></A>The <A NAME="marker-68558"></A>SourceForge project page for Numerical Python is at http://sourceforge.net/projects/numpy. On this project page you will find links to:</P>
+<UL>
+<LI CLASS="Bullet">
+<A NAME="pgfId-68521"></A>The Numeric <A NAME="marker-68556"></A>Discussion List</LI>
+<LI CLASS="BulletedCont">
+<A NAME="pgfId-68237"></A>You can subscribe to a discussion list about Numeric python using the project page at SourceForge. The list is a good place to ask questions and get help. Send mail to numpy-discussion@lists.sourceforge.net.</LI>
+<LI CLASS="Bullet">
+<A NAME="pgfId-85709"></A>The Web Site</LI>
+<LI CLASS="BulletedCont">
+<A NAME="pgfId-85710"></A>Click on &quot;home page&quot; to get to the Numeric Python Home Page, which has links to documentation and other resources, including tools for connecting Numerical Python to Fortran.</LI>
+<LI CLASS="Bullet">
+<A NAME="pgfId-68511"></A><A NAME="marker-68554"></A>Bugs and <A NAME="marker-68555"></A>Patches</LI>
+<LI CLASS="BulletContinuation">
+<A NAME="pgfId-68512"></A>Bug tracking and patch-management facilities is provided on the SourceForge project page.</LI>
+<LI CLASS="Bullet">
+<A NAME="pgfId-68543"></A><A NAME="marker-68553"></A>CVS Repository</LI>
+<LI CLASS="BulletContinuation">
+<A NAME="pgfId-68530"></A>You can get the latest and greatest (albeit less tested and trustworthy) version of Numeric directly from our CVS repository.</LI>
+<LI CLASS="Bullet">
+<A NAME="pgfId-68534"></A><A NAME="marker-68557"></A>FTP Site</LI>
+<LI CLASS="BulletContinuation">
+<A NAME="pgfId-68535"></A>The FTP Site contains this documentation in several formats, plus maybe some other goodies we have lying around.</LI>
+</UL>
+</DIV>
+<P><A HREF="numpy.html">Go to Main</A>      <A HREF="numpy-2.html">Go to Previous</A>       <A HREF="numpy-4.html">Go to Next</A></P>
+</BODY>
+</HTML>

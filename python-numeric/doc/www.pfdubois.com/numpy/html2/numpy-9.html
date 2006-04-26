@@ -1,0 +1,1295 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 6.0/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="numpy.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<TITLE> 8.	 Array Functions </TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1 CLASS="Chapter">
+<A NAME="pgfId-36422"></A>8.	 <A NAME="marker-59632"></A><A NAME="28351"></A>Array Functions </H1>
+<P CLASS="Body">
+<A NAME="pgfId-36423"></A>Most of the useful manipulations on arrays are done with functions. This might be surprising given Python's object-oriented framework, and that many of these functions could have been implemented using methods instead. Choosing functions means that the same procedures can be applied to arbitrary python sequences, not just to arrays. For example, while <EM CLASS="Code">
+transpose([[1,2],[3,4]])</EM>
+ works just fine, <EM CLASS="Code">
+[[1,2],[3,4]].transpose()</EM>
+ can't work. This approach also allows uniformity in interface between functions defined in the Numeric Python system, whether implemented in C or in Python, and functions defined in extension modules. The use of array methods is limited to functionality which depends critically on the implementation details of array objects.  Array methods are discussed in the next chapter. </P>
+<P CLASS="Body">
+<A NAME="pgfId-36424"></A>We've already covered two functions which operate on arrays,  <EM CLASS="Code">
+reshape</EM>
+ and <EM CLASS="Code">
+resize</EM>
+.</P>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36425"></A><A NAME="marker-59633"></A>take(a, indices, axis=0) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36426"></A><EM CLASS="Code">
+take</EM>
+ is in some ways like the slice operations. It selects the elements of the array it gets as first argument based on the indices it gets as a second argument. Unlike slicing, however, the array returned by <EM CLASS="Code">
+take</EM>
+ has the same rank as the input array. This is again much easier to understand with an illustration: </P>
+<P CLASS="Python">
+<A NAME="pgfId-36427"></A>&nbsp;</P>
+<P CLASS="Python">
+<A NAME="pgfId-36428"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36429"></A>[[ 0  1  2  3  4]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36430"></A> [ 5  6  7  8  9]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36431"></A> [10 11 12 13 14]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36432"></A> [15 16 17 18 19]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36433"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print take(a, (0,))</EM>
+	# first row </P>
+<P CLASS="Python">
+<A NAME="pgfId-36434"></A>[ [0 1 2 3 4]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36435"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print take(a, (0,1))</EM>
+	# first and second row</P>
+<P CLASS="Python">
+<A NAME="pgfId-36436"></A>[[0 1 2 3 4]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36437"></A> [5 6 7 8 9]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36438"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print take(a, (0,-1))</EM>
+	# first and last row</P>
+<P CLASS="Python">
+<A NAME="pgfId-36439"></A>[[ 0  1  2  3  4]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36440"></A> [15 16 17 18 19]]</P>
+<P CLASS="Body">
+<A NAME="pgfId-36441"></A>The optional third argument specifies the axis along which the selection occurs, and the default value (as in the examples above) is 0, the first axis. If you want another axis, then you can specify it: </P>
+<P CLASS="Python">
+<A NAME="pgfId-36442"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print take(a, (0,), 1)</EM>
+	# first column</P>
+<P CLASS="Python">
+<A NAME="pgfId-36443"></A>[[ 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36444"></A> [ 5]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36445"></A> [10]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36446"></A> [15]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36447"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print take(a, (0,1), 1)</EM>
+	# first and second column</P>
+<P CLASS="Python">
+<A NAME="pgfId-36448"></A>[[ 0  1]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36449"></A> [ 5  6]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36450"></A> [10 11]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36451"></A> [15 16]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36452"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print take(a, (0,-1), 1)</EM>
+	# first and last column</P>
+<P CLASS="Python">
+<A NAME="pgfId-36453"></A>[[ 0  4]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36454"></A> [ 5  9]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36455"></A> [10 14]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36456"></A> [15 19]]</P>
+<P CLASS="Body">
+<A NAME="pgfId-61744"></A>This is considered to be a ``structural'' operation, because its result does not depend on the content of the arrays or the result of a computation on those contents but uniquely on the structure of the array. Like all such structural operations, the default axis is 0 (the first rank). I mention it here because later in this tutorial, we will see functions which have a default axis of -1. </P>
+<P CLASS="Body">
+<A NAME="pgfId-61745"></A>Take is often used to create multidimensional arrays with the indices from a rank-1 array.  As in the earlier examples, the shape of the array returned by <EM CLASS="Code">
+take()</EM>
+ is a combination of the shape of its first argument and the shape of the array that elements are &quot;taken&quot; from -- when that array is rank-1, the shape of the returned array has the same shape as the index sequence. This, as with many other facets of Numeric, is best understood by experiment.</P>
+<P CLASS="Python">
+<A NAME="pgfId-36459"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x = arange(10) * 100</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36460"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36461"></A>[  0 100 200 300 400 500 600 700 800 900]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36462"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print take(x, [[2,4],[1,2]])</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36463"></A>[[200 400]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36464"></A> [100 200]]</P>
+<P CLASS="Body">
+<A NAME="pgfId-36465"></A>A typical example of using <EM CLASS="Code">
+take()</EM>
+ is to replace the grey values in an image according to a &quot;translation table&quot;.  For example, let's consider a brightening of a greyscale image.  The <EM CLASS="Code">
+view()</EM>
+ function defined in the NumTut package automatically scales the input arrays to use the entire range of grey values, except if the input arrays are of typecode <EM CLASS="Code">
+'b'</EM>
+ unsigned bytes -- thus to test this brightening function, we'll first start by converting the greyscale floating point array to a greyscale byte array:</P>
+<P CLASS="Python">
+<A NAME="pgfId-36466"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+BW = (greeceBW*256).astype('b')</EM>
+	</P>
+<P CLASS="Python">
+<A NAME="pgfId-36467"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+view(BW)</EM>
+	# shows black and white picture</P>
+<P CLASS="Body">
+<A NAME="pgfId-36468"></A>We then create a table mapping the integers 0-255 to integers 0-255 using a &quot;compressive nonlinearity&quot;:</P>
+<P CLASS="Python">
+<A NAME="pgfId-36469"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+table = (255- arange(256)**2 / 256).astype('b')</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36470"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+view(table)</EM>
+	# shows the conversion curve</P>
+<P CLASS="Body">
+<A NAME="pgfId-36471"></A>To do the &quot;taking&quot; into an array of the right kind, we first create a blank image array with the same shape and typecode as the original array:</P>
+<P CLASS="Python">
+<A NAME="pgfId-36472"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+BW2 = zeros(BW.shape, BW.typecode())</EM>
+</P>
+<P CLASS="Body">
+<A NAME="pgfId-36473"></A>and then perform the take() operation</P>
+<P CLASS="Python">
+<A NAME="pgfId-36474"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+BW2.flat[:] = take(table, BW.flat)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36475"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+view(BW2)</EM>
+</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-78510"></A><A NAME="marker-78558"></A><A NAME="marker-78559"></A>put (a, indices, values)</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-78514"></A><EM CLASS="Code">
+put</EM>
+ is the opposite of <EM CLASS="Code">
+take</EM>
+. The values of the array <EM CLASS="Code">
+a</EM>
+ at the locations specified in <EM CLASS="Code">
+indices</EM>
+ are set to the corresponding value of <EM CLASS="Code">
+values</EM>
+. The array <EM CLASS="Code">
+a </EM>
+must be a contiguous array. The argument indices can be any integer sequence object with values suitable for indexing into the flat form of <EM CLASS="Code">
+a</EM>
+. The argument <EM CLASS="Code">
+values</EM>
+ must be any sequence of values that can be converted to the typecode of <EM CLASS="Code">
+a</EM>
+.</P>
+<P CLASS="Python">
+<A NAME="pgfId-78614"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x = arange(6)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-78615"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+put(x, [2,4], [20,40])</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-78616"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-78617"></A>[ 0  1 20  3 40  5]</P>
+<P CLASS="Body">
+<A NAME="pgfId-78623"></A>Note that the target array <EM CLASS="Code">
+a</EM>
+ is not required to be one-dimensional. Since <EM CLASS="Code">
+a</EM>
+ is contiguous and stored in row-major order, the array <EM CLASS="Code">
+indices</EM>
+ can be treated as indexing <EM CLASS="Code">
+a</EM>
+'s elements in storage order. </P>
+<P CLASS="Body">
+<A NAME="pgfId-78545"></A>The routine <EM CLASS="Code">
+put</EM>
+ is thus equivalent to the following (although the loop is in C for speed):</P>
+<P CLASS="Python">
+<A NAME="pgfId-78546"></A>ind = array(indices, copy=0)</P>
+<P CLASS="Python">
+<A NAME="pgfId-78550"></A>v = array(values, copy=0).astype(a.typecode())</P>
+<P CLASS="Python">
+<A NAME="pgfId-78551"></A>for i in len(ind): a.flat[i] = v[i]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-84177"></A>putmask (a, mask, values)</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-84185"></A>putmask sets those elements of <EM CLASS="Code">
+a</EM>
+ for which <EM CLASS="Code">
+mask</EM>
+ is true to the corresponding <EM CLASS="Code">
+value</EM>
+ in values. The array a must be contiguous. The argument <EM CLASS="Code">
+mask</EM>
+ must be an integer sequence of the same size (but not necessarily the same shape) as <EM CLASS="Code">
+a</EM>
+. The argument <EM CLASS="Code">
+values</EM>
+ will be repeated as necessary; in particular it can be a scalar. The array <EM CLASS="Code">
+values</EM>
+ must be convertible to the type of <EM CLASS="Code">
+a</EM>
+.</P>
+</DIV>
+<DIV>
+<H6 CLASS="Code">
+<A NAME="pgfId-84210"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x=arange(5) </EM>
+</H6>
+</DIV>
+<DIV>
+<H6 CLASS="Code">
+<A NAME="pgfId-84211"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+putmask(x, [1,0,1,0,1], [10,20,30,40,50])</EM>
+</H6>
+</DIV>
+<DIV>
+<H6 CLASS="Code">
+<A NAME="pgfId-84212"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</H6>
+</DIV>
+<DIV>
+<H6 CLASS="Code">
+<A NAME="pgfId-84213"></A>[10  1 30  3 50]</H6>
+</DIV>
+<DIV>
+<H6 CLASS="Code">
+<A NAME="pgfId-84214"></A>&gt;&gt;&gt; <EM CLASS="Code">
+putmask(x, [1,0,1,0,1], [-1,-2])</EM>
+</H6>
+</DIV>
+<DIV>
+<H6 CLASS="Code">
+<A NAME="pgfId-84215"></A>&gt;&gt;&gt; print x</H6>
+</DIV>
+<DIV>
+<H6 CLASS="Code">
+<A NAME="pgfId-84216"></A><EM CLASS="CodeInput">
+[-1  1 -1  3 -1]</EM>
+</H6>
+<P CLASS="Body">
+<A NAME="pgfId-84204"></A>Note how in the last example, the third argument was treated as if it was [-1, -2, -1, -2, -1].</P>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36476"></A><A NAME="marker-59634"></A>transpose(a, axes=None) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36477"></A><EM CLASS="Code">
+transpose</EM>
+ takes an array and returns a new array which corresponds to a with the order of axes specified by the second argument. The default corresponds to flipping the order of all the axes (it is equivalent to <EM CLASS="Code">
+a.shape[::-1]</EM>
+ if a is the input array). </P>
+<P CLASS="Python">
+<A NAME="pgfId-36478"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36479"></A>[[ 0  1  2  3  4]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36480"></A> [ 5  6  7  8  9]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36481"></A> [10 11 12 13 14]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36482"></A> [15 16 17 18 19]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36483"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print transpose(a)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36484"></A>[[ 0  5 10 15]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36485"></A> [ 1  6 11 16]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36486"></A> [ 2  7 12 17]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36487"></A> [ 3  8 13 18]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36488"></A> [ 4  9 14 19]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36489"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+greece.shape</EM>
+	# it's a 355x242 RGB picture<BR>
+(355, 242, 3)</P>
+<P CLASS="Python">
+<A NAME="pgfId-36490"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+view(greece)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36491"></A><EM CLASS="Emphasis">
+# picture of greek street is shown</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36492"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+view(transpose(greece, (1,0,2)))</EM>
+	<EM CLASS="Emphasis">
+# swap x and y, not color axis!</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36493"></A><EM CLASS="Emphasis">
+# picture of greek street is shown sideways</EM>
+</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36494"></A><A NAME="marker-59635"></A>repeat(a, repeats, axis=0) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36495"></A><EM CLASS="Code">
+repeat</EM>
+ takes an array and returns an array with each element in the input array repeated as often as indicated by the corresponding elements in the second array. It operates along the specified axis.  So, to stretch an array evenly, one needs the repeats array to contain as many instances of the integer scaling factor as the size of the specified axis:</P>
+<P CLASS="Python">
+<A NAME="pgfId-36496"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+view(repeat(greece, 2*ones(greece.shape[0])))</EM>
+ # double in X</P>
+<P CLASS="Python">
+<A NAME="pgfId-36497"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+view(repeat(greece, 2*ones(greece.shape[1]), 1))</EM>
+ # double in Y</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36498"></A><A NAME="marker-59484"></A>choose(a, (b0, ..., bn)) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36499"></A>a is an array of integers between 0 and n. The resulting array will have the same shape as a, with element selected from b0,...,bn as indicating by the value of the corresponding element in a. </P>
+<P CLASS="Body">
+<A NAME="pgfId-36500"></A>Assume a is an array <EM CLASS="Code">
+a</EM>
+ that you want to ``clip'' so that no values are greater than 100.0. </P>
+<P CLASS="Python">
+<A NAME="pgfId-36501"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+choose(greater(a, 100.0), (a, 100.0))  </EM>
+</P>
+<P CLASS="Body">
+<A NAME="pgfId-36502"></A>Everywhere that greater(a, 100.0) is false (ie. 0) this will ``choose'' the corresponding value in a. Everywhere else it will ``choose'' 100.0. </P>
+<P CLASS="Body">
+<A NAME="pgfId-36503"></A>This works as well with arrays. Try to figure out what the following does: </P>
+<P CLASS="Python">
+<A NAME="pgfId-36504"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+ret = choose(greater_than(a,b), (c,d)) </EM>
+</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36512"></A><A NAME="marker-59485"></A>ravel(a) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36513"></A>returns the argument array <EM CLASS="Code">
+a</EM>
+ as a 1d array. It is equivalent to <EM CLASS="Code">
+reshape(a, (-1,))</EM>
+ or <EM CLASS="Code">
+a.flat</EM>
+. Unlike <EM CLASS="Code">
+a.flat</EM>
+, however, <EM CLASS="Code">
+ravel</EM>
+ works with non-contiguous arrays.</P>
+<P CLASS="Python">
+<A NAME="pgfId-58221"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58222"></A>[[ 0  1  2  3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58223"></A> [ 5  6  7  8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58224"></A> [10 11 12 13]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58225"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x.iscontiguous()</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58226"></A>0</P>
+<P CLASS="Python">
+<A NAME="pgfId-58227"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x.flat</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58228"></A>Traceback (innermost last):</P>
+<P CLASS="Python">
+<A NAME="pgfId-58229"></A>  File &quot;&lt;stdin&gt;&quot;, line 1, in ?</P>
+<P CLASS="Python">
+<A NAME="pgfId-58230"></A>ValueError: flattened indexing only available for contiguous array</P>
+<P CLASS="Python">
+<A NAME="pgfId-58231"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+ravel(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58066"></A>array([ 0,  1,  2,  3,  5,  6,  7,  8, 10, 11, 12, 13])</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58067"></A><A NAME="marker-59636"></A>nonzero(a) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-58068"></A>nonzero() returns an array containing the indices of the elements in a that are nonzero. These indices only make sense for 1d arrays, so the function refuses to act on anything else. As of 1.0a5 this function does not work for complex arrays. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36518"></A><A NAME="marker-59637"></A>where(condition, x, y) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36519"></A>where(condition,x,y) returns an array shaped like condition and has elements of x and y where condition is respectively true or false </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36520"></A><A NAME="marker-59638"></A>compress(condition, a, axis=0) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36521"></A>returns those elements of a corresponding to those elements of condition that are nonzero. condition must be the same size as the given axis of a. </P>
+<P CLASS="Python">
+<A NAME="pgfId-58079"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58080"></A>[0 1 2 3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58085"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print greater(x, 2)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58086"></A>[0 0 0 1]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58087"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print compress(greater(x, 2), x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58077"></A>[3]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58163"></A><A NAME="marker-59639"></A>diagonal(a, k=0, axis1=0, axis2 = 1) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-58164"></A>returns the entries along the k th diagonal of a (k is an offset from the main diagonal). This is designed for 2d arrays. For larger arrays, it will return the diagonal of each 2d sub-array.</P>
+<P CLASS="Python">
+<A NAME="pgfId-58174"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58175"></A>[[ 0  1  2  3  4]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58176"></A> [ 5  6  7  8  9]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58177"></A> [10 11 12 13 14]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58178"></A> [15 16 17 18 19]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58179"></A> [20 21 22 23 24]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58180"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print diagonal(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58181"></A>[ 0  6 12 18 24]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58182"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print diagonal(x, 1)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58183"></A>[ 1  7 13 19]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58184"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print diagonal(x, -1)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58169"></A>[ 5 11 17 23]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36523"></A><A NAME="marker-59640"></A>trace(a, k=0) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36524"></A>returns the sum of the elements in a along the k th diagonal. </P>
+<P CLASS="Python">
+<A NAME="pgfId-58119"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58120"></A>[[ 0  1  2  3  4]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58121"></A> [ 5  6  7  8  9]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58122"></A> [10 11 12 13 14]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58123"></A> [15 16 17 18 19]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58124"></A> [20 21 22 23 24]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58125"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print trace(x)	</EM>
+<EM CLASS="Emphasis">
+# 0 + 6 + 12 + 18 + 24</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58126"></A>60</P>
+<P CLASS="Python">
+<A NAME="pgfId-58127"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print trace(x, -1)	</EM>
+<EM CLASS="Emphasis">
+# 5 + 11 + 17 + 23</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58128"></A>56</P>
+<P CLASS="Python">
+<A NAME="pgfId-58129"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print trace(x, 1)	</EM>
+<EM CLASS="Emphasis">
+# 1 + 7 + 13 + 19</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58117"></A>40</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36532"></A>searchsorted(a, values) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36533"></A>Called with a rank-1 array sorted in ascending order, <EM CLASS="Code">
+searchsorted()</EM>
+ will return the indices of the positions in a where the corresponding values would fit. </P>
+<P CLASS="Python">
+<A NAME="pgfId-65893"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print bin_boundaries</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-65894"></A>[ 0.   0.1  0.2  0.3  0.4  0.5  0.6  0.7  0.8  0.9  1. ]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65895"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print data</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-65896"></A>[ 0.3029573   0.79585496  0.82714031  0.77993884  0.55069605  0.76043182</P>
+<P CLASS="Python">
+<A NAME="pgfId-65897"></A>       0.28511823  0.29987358  0.40286206  0.68617903]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65898"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print searchsorted(bin_boundaries, data)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66633"></A>[4 8 9 8 6 8 3 3 5 7]</P>
+<P CLASS="Body">
+<A NAME="pgfId-66640"></A>This can be used for example to write a simple histogramming function:</P>
+<P CLASS="Python">
+<A NAME="pgfId-66651"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+def histogram(a, bins):</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66641"></A>...  <EM CLASS="CodeInput">
+ n = searchsorted(sort(a), bins)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66642"></A>...   <EM CLASS="CodeInput">
+n = concatenate([n, [len(a)]])</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66643"></A>...   <EM CLASS="CodeInput">
+return n[1:]-n[:-1]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66645"></A>...</P>
+<P CLASS="Python">
+<A NAME="pgfId-66671"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print histogram([0,0,0,0,0,0,0,.33,.33,.33], arange(0,1.0,.1))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66647"></A>[7 0 0 3 0 0 0 0 0 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66689"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print histogram(sin(arange(0,10,.2)), arange(-1.2, 1.2, .1))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66687"></A>[0 0 4 2 2 2 0 2 1 2 1 3 1 3 1 3 2 3 2 3 4 9 0 0]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-66636"></A><A NAME="marker-66635"></A>sort(a, axis=-1) </H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-66206"></A>This function returns an array containing a copy of the data in <EM CLASS="Code">
+a</EM>
+, with the same shape as <EM CLASS="Code">
+a</EM>
+, but with the order of the elements along the specified axis sorted. The shape of the returned array is the same as <EM CLASS="Code">
+a</EM>
+'s. Thus, <EM CLASS="Code">
+sort(a, 3)</EM>
+ will be an array of the same shape as a, where the elements of a have been sorted along the fourth axis. </P>
+<P CLASS="Python">
+<A NAME="pgfId-65924"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print data</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-65925"></A>[[5 0 1 9 8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65926"></A> [2 5 8 3 2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65927"></A> [8 0 3 7 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65928"></A> [9 6 9 5 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65929"></A> [9 0 9 7 7]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65930"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print sort(data)	</EM>
+<EM CLASS="Emphasis">
+# Axis -1 by default</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-65931"></A>[[0 1 5 8 9]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65932"></A> [2 2 3 5 8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65933"></A> [0 0 3 7 8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65934"></A> [0 5 6 9 9]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65935"></A> [0 7 7 9 9]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65936"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print sort(data, 0)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-65937"></A>[[2 0 1 3 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65938"></A> [5 0 3 5 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65939"></A> [8 0 8 7 2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65940"></A> [9 5 9 7 7]</P>
+<P CLASS="Python">
+<A NAME="pgfId-65876"></A> [9 6 9 9 8]] </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-65841"></A><A NAME="marker-65840"></A>argsort(a, axis=-1) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-66005"></A><EM CLASS="Code">
+argsort</EM>
+ will return the indices of the elements of a needed to produce <EM CLASS="Code">
+sort(a)</EM>
+. In other words, for a rank-1 array, <EM CLASS="Code">
+take(a, argsort(a)) == sort(a)</EM>
+. </P>
+<P CLASS="Python">
+<A NAME="pgfId-66031"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print data</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66032"></A>[5 0 1 9 8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66033"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print sort(data)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66034"></A>[0 1 5 8 9]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66035"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print argsort(data)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66036"></A>[1 2 0 4 3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66037"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print take(data, argsort(data))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66024"></A>[0 1 5 8 9]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-66027"></A><A NAME="marker-66025"></A><A NAME="marker-66026"></A>argmax(a, axis=-1), argmin(a, axis=-1) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-65827"></A>The <EM CLASS="Code">
+argmax()</EM>
+ function returns an array with the arguments of the maximum values of its input array a along the given axis. The returned array will have one less dimension than a. <EM CLASS="Code">
+argmin()</EM>
+ is just like <EM CLASS="Code">
+argmax()</EM>
+, except that it returns the indices of the minima along the given axis. </P>
+<P CLASS="Python">
+<A NAME="pgfId-66056"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print data</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66057"></A>[[9 6 1 3 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66058"></A> [0 0 8 9 1]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66059"></A> [7 4 5 4 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66060"></A> [5 2 7 7 1]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66061"></A> [9 9 7 9 7]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66062"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print argmax(data)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66063"></A>[0 3 0 2 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66064"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print argmax(data, 0)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66065"></A>[0 4 1 1 4]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66066"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print argmin(data)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66067"></A>[4 0 4 4 2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66068"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print argmin(data, 0)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36537"></A>[1 1 0 0 0]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36538"></A><A NAME="marker-59645"></A>fromstring(string, typecode) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36539"></A>Will return the array formed by the binary data given in string of the specified typecode. This is mainly used for reading binary data to and from files, it can also be used to exchange binary data with other modules that use python strings as storage (<EM CLASS="Emphasis">
+e.g.</EM>
+ PIL). Note that this representation is dependent on the byte order. To find out the byte ordering used, use the <EM CLASS="Code">
+byteswapped()</EM>
+ method described on <A HREF="numpy-10.html#19367" CLASS="XRef">byteswapped()</A>.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36540"></A>dot(m1, m2) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36541"></A>The <EM CLASS="Code">
+dot()</EM>
+ function returns the dot product of <EM CLASS="Code">
+m1</EM>
+ and <EM CLASS="Code">
+m2</EM>
+. This is equivalent to matrix multiply for rank-2 arrays (without the transpose). Somebody who does more linear algebra really needs to do this function right some day! </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36542"></A><A NAME="marker-59646"></A>matrixmultiply(m1, m2) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-68306"></A>The <EM CLASS="Code">
+matrixmultiply(m1, m2)</EM>
+ multiplies matrices or matrices and vectors as matrices rather than elementwise. Compare:</P>
+<P CLASS="Python">
+<A NAME="pgfId-68371"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-68372"></A>[[0 1 2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-68373"></A> [3 4 5]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-68374"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print b</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-68375"></A>[1 2 3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-68376"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a*b</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-68377"></A>[[ 0  2  6]</P>
+<P CLASS="Python">
+<A NAME="pgfId-68378"></A> [ 3  8 15]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-68379"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print matrixmultiply(a,b)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-68380"></A>[ 8 26]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36545"></A><A NAME="marker-59647"></A>clip(m, m_min, m_max) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-36546"></A>The clip function creates an array with the same shape and typecode as m, but where every entry in m that is less than m_min is replaced by m_min, and every entry greater than m_max is replaced by m_max. Entries within the range [m_min, m_max] are left unchanged. </P>
+<P CLASS="Python">
+<A NAME="pgfId-36547"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = arange(9, Float)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36548"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+clip(a, 1.5, 7.5)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36549"></A>1.5000 1.5000 2.0000 3.0000 4.0000 5.0000 6.0000 7.0000 7.5000 </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-66267"></A><A NAME="marker-66266"></A>indices(shape, typecode=None)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-66268"></A>The indices function returns an array corresponding to the shape given. The array returned is an array of a new shape which is based on the specified shape, but has an added dimension of length the number of dimensions in the specified shape. For example, if the shape specified by the <EM CLASS="Code">
+shape</EM>
+ argument is (3,4), then the shape of the array returned will be (2,3,4) since the length of (3,4) is 2. The contents of the returned arrays are such that the ith subarray (along index 0, the first dimension) contains the indices for that axis of the elements in the array. An example makes things clearer:</P>
+<P CLASS="Python">
+<A NAME="pgfId-66269"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+i = indices((4,3))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66270"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+i.shape</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66271"></A>(2, 4, 3)</P>
+<P CLASS="Python">
+<A NAME="pgfId-66272"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print i[0]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66292"></A>[[0 0 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66293"></A> [1 1 1]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66294"></A> [2 2 2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66276"></A> [3 3 3]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66277"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print i[1]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-66299"></A>[[0 1 2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66300"></A> [0 1 2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66301"></A> [0 1 2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-66281"></A> [0 1 2]]</P>
+<P CLASS="Body">
+<A NAME="pgfId-66282"></A>So, <EM CLASS="Code">
+i[0]</EM>
+ has an array of the specified shape, and each element in that array specifies the index of that position in the subarray for axis 0. Similarly, each element in the subarray in <EM CLASS="Code">
+i[1]</EM>
+ contains the index of that position in the subarray for axis 1. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58407"></A><A NAME="marker-59650"></A>swapaxes(a, axis1, axis2)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58408"></A>Returns a new array which shares the data of <EM CLASS="Code">
+a</EM>
+, but which has the two axes specified by <EM CLASS="Code">
+axis1</EM>
+ and <EM CLASS="Code">
+axis2</EM>
+ swapped. If <EM CLASS="Code">
+a</EM>
+ is of rank 0 or 1, swapaxes simply returns a new reference to <EM CLASS="Code">
+a</EM>
+.</P>
+<P CLASS="Python">
+<A NAME="pgfId-58409"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x = arange(10)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58410"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x.shape = (5,2,1)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58411"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58412"></A>[[[0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58413"></A>  [1]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58414"></A> [[2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58415"></A>  [3]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58416"></A> [[4]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58417"></A>  [5]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58418"></A> [[6]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58419"></A>  [7]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58420"></A> [[8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58421"></A>  [9]]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58422"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+y = swapaxes(x, 0, 2)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58423"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print y.shape</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58424"></A>(1, 2, 5)</P>
+<P CLASS="Python">
+<A NAME="pgfId-58425"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print y</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58426"></A>[ [[0 2 4 6 8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58427"></A>  [1 3 5 7 9]]]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58428"></A><A NAME="marker-59651"></A>concatenate((a0, a1, ... , an), axis=0)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58429"></A>Returns a new array containing copies of the data contained in all arrays <EM CLASS="Code">
+a0 ... an</EM>
+. The arrays ai will be concatenated along the specified axis (0 by default). All arrays ai must have the same shape along every axis except for the one given. To concatenate arrays along a newly created axis, you can use <EM CLASS="Code">
+array((a0, ..., an))</EM>
+ as long as all arrays have the same shape. </P>
+<P CLASS="Python">
+<A NAME="pgfId-58430"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58431"></A>[[ 0  1  2  3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58432"></A> [ 5  6  7  8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58433"></A> [10 11 12 13]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58434"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print concatenate((x,x))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58435"></A>[[ 0  1  2  3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58436"></A> [ 5  6  7  8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58437"></A> [10 11 12 13]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58438"></A> [ 0  1  2  3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58439"></A> [ 5  6  7  8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58440"></A> [10 11 12 13]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58441"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print concatenate((x,x), 1)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58442"></A>[[ 0  1  2  3  0  1  2  3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58443"></A> [ 5  6  7  8  5  6  7  8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58444"></A> [10 11 12 13 10 11 12 13]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58445"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array((x,x)</EM>
+)</P>
+<P CLASS="Python">
+<A NAME="pgfId-58446"></A>[[[ 0  1  2  3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58447"></A>  [ 5  6  7  8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58448"></A>  [10 11 12 13]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58449"></A> [[ 0  1  2  3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58450"></A>  [ 5  6  7  8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58451"></A>  [10 11 12 13]]]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58474"></A><A NAME="marker-59656"></A>innerproduct(a, b)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-68414"></A>innerproduct produces the inner product of arrays a and b. It is equivalent to matrixmultiply(a, transpose(b)).</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-84301"></A><A NAME="marker-84312"></A>outerproduct(a,b)</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-84305"></A>outerproduct(a,b) produces the outer product of vectors a and b, that is result[i, j] = a[i] * b[j]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-84308"></A><A NAME="marker-59658"></A>array_repr()		</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58478"></A>See section on Textual Representations of arrays.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58479"></A><A NAME="marker-59659"></A>array_str()		</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58480"></A>See section on Textual Representations of arrays.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58481"></A><A NAME="marker-59660"></A>resize(a, new_shape)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58482"></A>The <EM CLASS="Code">
+resize</EM>
+ function takes an array and a shape, and returns a new array with the specified shape, and filled with the data in the input array. Unlike the <EM CLASS="Code">
+reshape</EM>
+ function, the new shape does not have to yield the same size as the original array. If the new size of is less than that of the input array, the returned array contains the appropriate data from the &quot;beginning&quot; of the old array. If the new size is greater than that of the input array, the data in the input array is repeated as many times as needed to fill the new array.</P>
+<P CLASS="Python">
+<A NAME="pgfId-58483"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x = arange(10)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58484"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+y = resize(x, (4,2))											</EM>
+# note that 4*2 &lt; 10</P>
+<P CLASS="Python">
+<A NAME="pgfId-58485"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58486"></A>[0 1 2 3 4 5 6 7 8 9]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58487"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print y</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58488"></A>[[0 1]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58489"></A> [2 3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58490"></A> [4 5]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58491"></A> [6 7]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58492"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print resize(array((0,1)), (5,5))											</EM>
+# note that 5*5 &gt; 2</P>
+<P CLASS="Python">
+<A NAME="pgfId-58493"></A>[[0 1 0 1 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58494"></A> [1 0 1 0 1]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58495"></A> [0 1 0 1 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58496"></A> [1 0 1 0 1]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58497"></A> [0 1 0 1 0]]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58514"></A><A NAME="marker-59662"></A>diagonal(a, offset=0, axis1=0, axis2=1)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58515"></A>The diagonal function takes an array a, and returns an array of rank 1 containing all of the elements of a such that the difference between their indices along the specified axes is equal to the specified offset. With the default values, this corresponds to all of the elements of the diagonal of a along the last two axes. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58523"></A><A NAME="marker-59666"></A>repeat	 (a, counts, axis=0)</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-67620"></A>The repeat function uses repeated copies of a to create a result. The axis argument refers to the axis of x which will be replicated. The counts argument tells how many copies of each element to make. The length of counts must be the len(shape(a)[axis]). </P>
+<P CLASS="Body">
+<A NAME="pgfId-67681"></A>In one dimension this is straightforward:</P>
+<P CLASS="Python">
+<A NAME="pgfId-67672"></A>&gt;&gt;&gt; y</P>
+<P CLASS="Python">
+<A NAME="pgfId-67673"></A>array([0, 1, 2, 3, 4, 5])</P>
+<P CLASS="Python">
+<A NAME="pgfId-67666"></A>&gt;&gt;&gt; repeat(y, (1,2,0,2,2,3))</P>
+<P CLASS="Python">
+<A NAME="pgfId-67667"></A>array([0, 1, 1, 3, 3, 4, 4, 5, 5, 5])</P>
+<P CLASS="Python">
+<A NAME="pgfId-67658"></A>&nbsp;</P>
+<P CLASS="Body">
+<A NAME="pgfId-67657"></A>In more than one dimension it sometimes gets harder to understand. Consider for example this array x whose shape is (2,3).</P>
+<P CLASS="Python">
+<A NAME="pgfId-67626"></A>&gt;&gt;&gt; x</P>
+<P CLASS="Python">
+<A NAME="pgfId-67627"></A>array([[0, 1, 2],</P>
+<P CLASS="Python">
+<A NAME="pgfId-67628"></A>       [3, 4, 5]])</P>
+<P CLASS="Python">
+<A NAME="pgfId-67689"></A>&nbsp;</P>
+<P CLASS="Python">
+<A NAME="pgfId-67629"></A>&gt;&gt;&gt; repeat(x, (2,6))</P>
+<P CLASS="Python">
+<A NAME="pgfId-67630"></A>array([[0, 1, 2],</P>
+<P CLASS="Python">
+<A NAME="pgfId-67631"></A>       [0, 1, 2],</P>
+<P CLASS="Python">
+<A NAME="pgfId-67632"></A>       [3, 4, 5],</P>
+<P CLASS="Python">
+<A NAME="pgfId-67633"></A>       [3, 4, 5],</P>
+<P CLASS="Python">
+<A NAME="pgfId-67634"></A>       [3, 4, 5],</P>
+<P CLASS="Python">
+<A NAME="pgfId-67635"></A>       [3, 4, 5],</P>
+<P CLASS="Python">
+<A NAME="pgfId-67636"></A>       [3, 4, 5],</P>
+<P CLASS="Python">
+<A NAME="pgfId-67637"></A>       [3, 4, 5]])</P>
+<P CLASS="Python">
+<A NAME="pgfId-67690"></A>&nbsp;</P>
+<P CLASS="Python">
+<A NAME="pgfId-67642"></A>&gt;&gt;&gt; repeat(x, (6,3), 1)</P>
+<P CLASS="Python">
+<A NAME="pgfId-67643"></A>array([[0, 0, 0, 0, 0, 0, 1, 1, 1],</P>
+<P CLASS="Python">
+<A NAME="pgfId-67903"></A>       [2, 2, 2, 2, 2, 2, 3, 3, 3]])</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-67914"></A><A NAME="marker-67940"></A>convolve (a, v, mode=2)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-67915"></A>The convolve function returns the linear convolution of two rank 1 arrays. The output is a rank 1 array whose length depends on the value of mode which is zero by default. Linear convolution can be used to find the response of a linear system to an arbitrary input. If the input arrays correspond to the coefficients of a polynomial and mode=2, the output of linear convolution corresponds to the coefficients of the product of the polynomials. </P>
+<P CLASS="Body">
+<A NAME="pgfId-67916"></A>The mode parameter requires a bit of explanation. True linear convolution is only defined over infinite sequences. As both input arrays must represent finite sequences, the convolve operation assumes that the infinite sequences represented by the finite inputs are zero outside of their domain of definition. In other words, the sequences are zero-padded. If mode is 2, then the non-zero part of the full linear convolution is returned, so the output has length len (a)+len (v)-1. Call this output f. If mode is 0, then any part of f which was affected by the zero-padding is chopped from the result. In other words, let b be the input with smallest length and let c be the other input. The output when mode is 0 is the middle len (c)-len (b)+1 elements of f. When mode is 1, the output is the same size as c and is equal to the middle len (c) elements of f.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-67917"></A><A NAME="marker-67939"></A>cross_correlate (a, v, mode=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-67918"></A>The cross_correlate function computes the cross_correlation between two rank 1 arrays. The output is a rank 1 array representing the inner product of a with shifted versions of v. This is very similar to convolution. The difference is that convolution reverses the axis of one of the input sequences but cross_correlation does not. In fact it is easy to verify that convolve (a, v, mode) = cross_correlate (a, v [::-1], mode) </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-67907"></A><A NAME="marker-67905"></A><A NAME="marker-67906"></A>where (condition, x, y)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-67600"></A>The where function creates an array whose values are those of x at those indices where condition is true, and those of y otherwise. The shape of the result is the shape of condition. The type of the result is determined by the types of x and y. Either or both of x and y and be a scalar, which is then used for any element of condition which is true.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58536"></A><A NAME="marker-59693"></A>identity(n)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58537"></A>The identity function returns an n by n array where the diagonal elements are 1, and the off-diagonal elements are 0.</P>
+<P CLASS="Python">
+<A NAME="pgfId-58538"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print identity(5)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58539"></A>[[1 0 0 0 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58540"></A> [0 1 0 0 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58541"></A> [0 0 1 0 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58542"></A> [0 0 0 1 0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58543"></A> [0 0 0 0 1]]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58544"></A><A NAME="marker-59694"></A>sum(a, index=0)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58545"></A>The sum function is a synonym for the reduce method of the add ufunc. It returns the sum of all of the elements in the sequence given along the specified axis (first axis by default).</P>
+<P CLASS="Python">
+<A NAME="pgfId-58546"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58547"></A>[[ 0  1  2  3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58548"></A> [ 4  5  6  7]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58549"></A> [ 8  9 10 11]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58550"></A> [12 13 14 15]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58551"></A> [16 17 18 19]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-58552"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print sum(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58553"></A>[40 45 50 55]						# 0+4+8+12+16, 1+5+9+13+17, 2+6+10+14+18, ...</P>
+<P CLASS="Python">
+<A NAME="pgfId-58554"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print sum(x, 1)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-58555"></A>[ 6 22 38 54 70]						# 0+1+2+3, 4+5+6+7, 8+9+10+11, ...</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58556"></A><A NAME="marker-59695"></A>cumsum(a, index=0)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58557"></A>The <EM CLASS="Code">
+cumsum</EM>
+ function is a synonym for the <EM CLASS="Code">
+accumulate</EM>
+ method of the <EM CLASS="Code">
+add</EM>
+ ufunc.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58558"></A><A NAME="marker-59696"></A>product(a, index=0)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58559"></A>The <EM CLASS="Code">
+product</EM>
+ function is a synonym for the <EM CLASS="Code">
+reduce</EM>
+ method of the <EM CLASS="Code">
+multiply</EM>
+ ufunc.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58560"></A><A NAME="marker-59697"></A>cumproduct(a, index=0)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58561"></A>The <EM CLASS="Code">
+cumproduct</EM>
+ function is a synonym for the <EM CLASS="Code">
+accumulate</EM>
+ method of the <EM CLASS="Code">
+multiply</EM>
+ ufunc.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58562"></A><A NAME="marker-59698"></A>alltrue(a, index=0)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58563"></A>The <EM CLASS="Code">
+alltrue</EM>
+ function is a synonym for the <EM CLASS="Code">
+reduce</EM>
+ method of the <EM CLASS="Code">
+logical_and</EM>
+ ufunc.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-58564"></A><A NAME="marker-59699"></A>sometrue(a, index=0)	</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-58565"></A>The <EM CLASS="Code">
+sometrue</EM>
+ function is a synonym for the <EM CLASS="Code">
+reduce</EM>
+ method of the <EM CLASS="Code">
+logical_or</EM>
+ ufunc.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-86200"></A><A NAME="marker-86232"></A>allclose (x, y, rtol = 1.e-5, atol = 1.e-8) </H6>
+<P CLASS="Body">
+<A NAME="pgfId-86209"></A>This function tests whether or not arrays x and y of an integer or real type are equal subject to the given relative and absolute tolerances. The formula used is:</P>
+<P CLASS="Python">
+<A NAME="pgfId-86201"></A>| x - y | &lt; atol + rtol * | y |</P>
+<P CLASS="Body">
+<A NAME="pgfId-86202"></A>This means essentially that both elements are small compared to <EM CLASS="Code">
+atol</EM>
+ or their difference divided by y's value is small compared to <EM CLASS="Code">
+rtol</EM>
+.</P>
+<P CLASS="Body">
+<A NAME="pgfId-86198"></A>&nbsp;</P>
+</DIV>
+</DIV>
+<P><A HREF="numpy.html">Go to Main</A>      <A HREF="numpy-8.html">Go to Previous</A>       <A HREF="numpy-10.html">Go to Next</A></P>
+</BODY>
+</HTML>

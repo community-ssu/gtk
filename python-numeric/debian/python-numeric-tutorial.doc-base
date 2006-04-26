@@ -1,0 +1,17 @@
+Document: python-numeric
+Title: The Numeric Python Extensions
+Author: David Ascher, Paul F. Dubois, Konrad Hinsen, Jim Hugunin, Travis Oliphant
+Abstract: The Numeric Python extensions (NumPy henceforth) is a set of
+ extensions to the Python programming language which allows Python
+ programmers to efficiently manipulate large sets of objects organized in
+ grid-like fashion. These sets of objects are called arrays, and they can
+ have any number of dimensions: one dimensional arrays are similar to
+ standard Python sequences, two-dimensional arrays are similar to matrices
+ from linear algebra. Note that one-dimensional arrays are also different
+ from any other Python sequence, and that two-dimensional matrices are also
+ different from the matrices of linear algebra.
+Section: Apps/Programming
+
+Format: html
+Index: /usr/share/doc/python-numeric/html/numpy.html
+Files: /usr/share/doc/python-numeric/html/numpy.html

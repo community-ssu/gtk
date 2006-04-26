@@ -1,0 +1,473 @@
+python-numeric (23.8-1osso2) unstable; urgency=low
+
+  *  First OSSO release for SDK 2.0
+  *  Changed dependency from g77-3.3 to g77
+ 
+ -- Elvis Pfutzenreuter <elvis.pfutzenreuterindt.org.br>  Wed, 26 Apr 2006 16:00:00 -0300
+
+python-numeric (23.8-1osso1) unstable; urgency=low
+
+  *  First OSSO release for SDK 1.2
+ 
+ -- Ruda Moura <ruda.moura@indt.org.br>  Thu, 09 Feb 2006 11:27:48 -0300
+
+python-numeric (23.8-1indt6) unstable; urgency=low
+  
+  * Recompiled against SDK 1.1rc8
+
+ -- Ruda Moura <ruda.moura@indt.org.br>  Mon, 05 Dec 2005 15:39:06 -0300
+
+python-numeric (23.8-1indt5) unstable; urgency=low
+  
+  * Recompiled against rootstrap 1.1-PreFinal
+
+ -- Ruda Moura <ruda.moura@indt.org.br>  Mon, 26 Sep 2005 17:18:04 -0300
+
+python-numeric (23.8-1indt4) unstable; urgency=low
+  
+  * Recompiled against rootstrap 1.1-Beta3
+
+ -- Ruda Moura <ruda.moura@indt.org.br>  Mon, 19 Sep 2005 15:43:58 -0300
+
+python-numeric (23.8-1indt3) unstable; urgency=low
+
+  * Package Improves
+  * Added python-numeric-tutorial subpackage
+ 
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue,  6 Sep 2005 09:37:00 -0300
+
+python-numeric (23.8-1indt2) unstable; urgency=low
+
+  * Recompiled against new Python (with -O2 CFLAGS)
+ 
+ -- Ruda Moura <ruda.moura@indt.org.br>  Wed, 15 Jun 2005 15:08:48 -0300
+
+python-numeric (23.8-1indt1) unstable; urgency=low
+
+  * Adopted by INdT
+  * Force build on Python 2.4 only
+  * Disable build of pynumeric 2.1, 2.2 and 2.3 and tutorial
+  * Force build with included lapack (for i386)
+ 
+ -- Ruda Moura <ruda.moura@indt.org.br>  Wed, 15 Jun 2005 15:08:48 -0300
+
+python-numeric (23.8-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Mon,  7 Mar 2005 01:26:04 +0100
+
+python-numeric (23.7-2) unstable; urgency=low
+
+  * Fix assignment to shape fails on 64bit arch (at least alpha).
+    Closes: #294246.
+
+ -- Matthias Klose <doko@debian.org>  Tue,  8 Feb 2005 23:02:14 +0100
+
+python-numeric (23.7-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Sat, 22 Jan 2005 22:02:58 +0100
+
+python-numeric (23.6-3) unstable; urgency=low
+
+  * Add python2.4 packages.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 12 Dec 2004 17:58:34 +0100
+
+python-numeric (23.6-2) unstable; urgency=low
+
+  * Don't build using lapack/blas on arm and m68k (closes: #278347).
+
+ -- Matthias Klose <doko@debian.org>  Wed, 27 Oct 2004 00:52:42 +0200
+
+python-numeric (23.6-1) unstable; urgency=low
+
+  * New upstream version.
+  * Fix failure in xplt.pli of an array (closes: #278164).
+
+ -- Matthias Klose <doko@debian.org>  Mon, 25 Oct 2004 17:56:37 +0200
+
+python-numeric (23.5-1) unstable; urgency=medium
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Fri,  1 Oct 2004 07:07:15 +0200
+
+python-numeric (23.3-6) unstable; urgency=low
+
+  * python-numeric-tutorial: Tighten dependency on python-numeric.
+  * Add watch file.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 19 Sep 2004 20:32:31 +0200
+
+python-numeric (23.3-5) unstable; urgency=low
+
+  * Add build dependency on python (needed by dh_python). Closes: #256531).
+
+ -- Matthias Klose <doko@debian.org>  Mon, 28 Jun 2004 06:49:29 +0200
+
+python-numeric (23.3-4) unstable; urgency=low
+
+  * Build-Deps: Move refblas3-dev before lapack3-dev, else atlas3-base
+    is installed by the autobuilders.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 27 Jun 2004 16:12:43 +0200
+
+python-numeric (23.3-3) unstable; urgency=low
+
+  * Use blas3/lapack3 for building, not atlas3 to fix undefined
+    symbols in lapack_lite module (closes: #255626).
+
+ -- Matthias Klose <doko@debian.org>  Sun, 27 Jun 2004 07:23:06 +0200
+
+python-numeric (23.3-2) unstable; urgency=low
+
+  * Fix build failure on arm (don't use lapack).
+
+ -- Matthias Klose <doko@debian.org>  Sat, 19 Jun 2004 16:03:42 +0200
+
+python-numeric (23.3-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Mon, 14 Jun 2004 20:56:31 +0200
+
+python-numeric (23.1-3) unstable; urgency=low
+
+  * Remove build dependency on atlas3-base-dev.
+
+ -- Matthias Klose <doko@debian.org>  Tue, 13 Apr 2004 07:27:49 +0200
+
+python-numeric (23.1-2) unstable; urgency=low
+
+  * python-numeric-doc: Fix pdf-viewer dependency (closes: #238489).
+  * Update build dependencies to lapack3/atlas3.
+
+ -- Matthias Klose <doko@debian.org>  Sat, 27 Mar 2004 10:05:49 +0100
+
+python-numeric (23.1-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Thu,  4 Sep 2003 07:59:28 +0200
+
+python-numeric (23.0-7) unstable; urgency=low
+
+  * Upload for python2.3 as the default python version.
+  * Fix dependency of python-numeric-tutorial (closes: #194609).
+
+ -- Matthias Klose <doko@debian.org>  Fri,  8 Aug 2003 07:59:38 +0200
+
+python-numeric (23.0-6) unstable; urgency=low
+
+  * Tighten dependency of tutorial on python package (closes: #194609).
+
+ -- Matthias Klose <doko@debian.org>  Sat,  5 Jul 2003 12:09:46 +0200
+
+python-numeric (23.0-5) unstable; urgency=low
+
+  * Don't try to install dotblas binary-indep files on arm.
+
+ -- Matthias Klose <doko@debian.org>  Thu, 24 Apr 2003 07:04:34 +0200
+
+python-numeric (23.0-4) unstable; urgency=low
+
+  * Don't try to install dotblas on arm.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 23 Apr 2003 21:28:24 +0200
+
+python-numeric (23.0-3) unstable; urgency=low
+
+  * Don't build dotblas on arm.
+  * Link against lapack and blas, not explicitely against the
+    atlas libraries, which are choosen at runtime. Thanks to
+    Camm Maguire. Closes: #189005.
+
+ -- Matthias Klose <doko@debian.org>  Thu, 17 Apr 2003 20:43:23 +0200
+
+python-numeric (23.0-2) unstable; urgency=low
+
+  * Add missing build dependencies on blas-dev.
+  * Move to python section.
+
+ -- Matthias Klose <doko@debian.org>  Sat, 12 Apr 2003 17:46:01 +0200
+
+python-numeric (23.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * Build-depend on atlas2-base-dev.
+
+ -- Matthias Klose <doko@debian.org>  Sat, 12 Apr 2003 12:31:27 +0200
+
+python-numeric (22.0-3) unstable; urgency=low
+
+  * Build-depend on g77-3.2.
+
+ -- Matthias Klose <doko@debian.org>  Wed,  9 Oct 2002 07:39:44 +0200
+
+python-numeric (22.0-2) unstable; urgency=low
+
+  * Fix location of the NumTut package (closes: #163581, #163740).
+  * Compile with -ffunction-sections on hppa (closes: #163523).
+  * python2.3 packages are provided (closes: #161170).
+  * Don't depend on pdf-view, only recommend it (closes: #157690).
+  * Fix package description (closes: #146659).
+
+ -- Matthias Klose <doko@debian.org>  Tue,  8 Oct 2002 21:31:27 +0200
+
+python-numeric (22.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * Build python2.3 packages.
+
+ -- Matthias Klose <doko@debian.org>  Tue,  1 Oct 2002 07:47:29 +0200
+
+python-numeric (21.3-3) unstable; urgency=low
+
+  * Use python2.2 as default version.
+  * Don't depend on pdf-view, only recommend it (closes: #157690).
+
+ -- Matthias Klose <doko@debian.org>  Sat, 24 Aug 2002 15:03:05 +0200
+
+python-numeric (21.3-2) unstable; urgency=low
+
+  * Fixes for package description (closes: #146659).
+
+ -- Matthias Klose <doko@debian.org>  Mon, 15 Jul 2002 00:38:42 +0200
+
+python-numeric (21.3-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Matthias Klose <doko@debian.org>  Thu,  4 Jul 2002 23:16:02 +0200
+
+python-numeric (21.0-5) unstable; urgency=low
+
+  * Add a build-conflict on atlas2-base-dev, add an explicit build
+    dependency on blas-dev to work around dependency issues in lapack-dev.
+
+ -- Matthias Klose <doko@debian.org>  Sat, 13 Apr 2002 09:22:09 +0200
+
+python-numeric (21.0-4) unstable; urgency=low
+
+  * The _lite modules don't build on hppa. Revert to lapack dependency.
+
+ -- Matthias Klose <doko@debian.org>  Thu, 11 Apr 2002 07:36:48 +0200
+
+python-numeric (21.0-3) unstable; urgency=high
+
+  * Ok, give up and build without lapack, until the lapack package
+    maintainer gets his package working again. This way w'll have
+    a working version for woody.
+
+ -- Matthias Klose <doko@debian.org>  Sun,  7 Apr 2002 01:54:17 +0200
+
+python-numeric (21.0-2) unstable; urgency=low
+
+  * Adjust build dependencies to working lapack package (closes: #138985).
+  * Disable use of blas and lapack on arm (maintainer claims, it's broken
+    on this architecture). Use the included lapack_lite module.
+  * Closing report claiming frequent crashes with v20.2 (closes: #120918).
+
+ -- Matthias Klose <doko@debian.org>  Tue,  2 Apr 2002 11:17:19 +0200
+
+python-numeric (21.0-1) unstable; urgency=medium
+
+  * New upstream version 21.0.
+
+ -- Matthias Klose <doko@debian.org>  Fri, 15 Mar 2002 08:46:26 +0100
+
+python-numeric (20.99b1-1) unstable; urgency=low
+
+  * New upstream version 21.0 beta1.
+    Bugs fixed upstream (closes: #134323).
+
+ -- Matthias Klose <doko@debian.org>  Wed, 20 Feb 2002 01:06:11 +0100
+
+python-numeric (20.3-1) unstable; urgency=low
+
+  * New upstream version.
+  * Build python2.2 packages.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 26 Dec 2001 11:11:41 +0100
+
+python-numeric (20.2.0-3) unstable; urgency=low
+
+  * Build-Depend on python-dev (>= 2.1.1-3) to build with fpectl enabled
+    python version.
+  * Adjust python-imaging and -mxdatetime dependencies.
+  * Depend on renamed packages `python'.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 11 Nov 2001 13:23:01 +0100
+
+python-numeric (20.2.0-2) unstable; urgency=low
+
+  * Rename package. Only support the default Debian python version (which
+    will hopefully be 2.1 in the near future).
+  * Build for python2.1.
+  * Link lapack module with -lg2c-pic.
+
+ -- Matthias Klose <doko@debian.org>  Sat, 20 Oct 2001 17:43:18 +0200
+
+python2-numeric (20.2.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * Fix build error (closes: #115190).
+
+ -- Matthias Klose <doko@debian.org>  Sun, 14 Oct 2001 17:45:47 +0200
+
+python2-numeric (20.1.0-2) unstable; urgency=low
+
+  * Fix postinst (closes: #106258).
+
+ -- Matthias Klose <doko@debian.org>  Mon, 23 Jul 2001 20:49:05 +0200
+
+python2-numeric (20.1.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * python2-numeric-tutorial: Fix doc-base installation (closes: #101496).
+  * Use lapack-lite for all archs again. Using the lapack/blas packages
+    would require a shared libg2c, which doesn't exist (closes: #104623).
+
+ -- Matthias Klose <doko@debian.org>  Sat, 21 Jul 2001 20:38:01 +0200
+
+python2-numeric (20.0.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * Use lapack-lite for m68k until the recent lapack package builds on m68k.
+  * Link lapack-lite module with g2c (closes #96131).
+
+ -- Matthias Klose <doko@debian.org>  Thu, 24 May 2001 11:01:11 +0200
+
+python2-numeric (19.0.0-1) unstable; urgency=low
+
+  * New upstream version (compatible with python2 and up).
+  * Don't compress stylesheet for html docs (#84218).
+
+ -- Matthias Klose <doko@debian.org>  Sun,  1 Apr 2001 16:49:54 +0200
+
+python-numeric (17.1.2-3) unstable; urgency=low
+
+  * Fix building on alpha target (patch by chris@debian.org).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Sun, 17 Dec 2000 10:47:17 +0100
+
+python-numeric (17.1.2-2) unstable; urgency=low
+
+  * Link lapack_lite module with -lg2c (fixes #78876).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Wed,  6 Dec 2000 06:02:37 +0100
+
+python-numeric (17.1.2-1) unstable; urgency=low
+
+  * New upstream version.
+  * Fix build dependencies (#66924).
+  * Strengthen python-imaging-tk dependency (#69230).
+  * Include HTML documentation (somewhat fixes #71002).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Wed, 29 Nov 2000 20:22:16 +0100
+
+python-numeric (15.2-2) unstable; urgency=low
+
+  * Fix Python path include.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Wed, 28 Jun 2000 18:58:28 +0200
+
+python-numeric (15.2-1) unstable; urgency=low
+
+  * New upstream version.
+  * CVS updates until 20000627.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Tue, 27 Jun 2000 20:23:40 +0200
+
+python-llnl (11-11.5) frozen unstable; urgency=low
+
+  * Graphics/Setup: Use headers from build tree (fixes important #59830).
+  * Use provided lapack library again (fixes #59222).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Wed,  1 Mar 2000 20:30:13 +0100
+
+python-llnl (11-11.4) frozen unstable; urgency=low
+
+  * Add dependency python-misc for python-pdb.
+  * debian/control: Update Build-Depends.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Sat, 19 Feb 2000 13:45:19 +0100
+
+python-llnl (11-11.3) unstable; urgency=low
+
+  * Link against system lapack library.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Wed, 27 Oct 1999 12:07:08 +0200
+
+python-llnl (11-11.2) unstable; urgency=low
+
+  * Use -fPIC to build pic object files (needs python-dev (>= 1.5.2-6) for
+    building.
+  * Change dependencies from python-pil to python-imaging (closes: #44640).
+  * /usr/doc -> /sur/share/doc transition.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Tue, 14 Sep 1999 19:28:09 +0200
+
+python-llnl (11-11.1) unstable; urgency=low
+
+  * New upstream release.
+  * Replaced David Ascher's tutorial with the new numeric python tutorial.
+  * Remove /usr/doc/.dhelp left in a buggy previous version.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Sun, 15 Aug 1999 18:36:37 +0200
+
+python-llnl (10-10.2) unstable; urgency=low
+
+  * Recompiled with libc6.1.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Thu, 24 Jun 1999 14:06:01 +0200
+
+python-llnl (10-10.1) unstable; urgency=low
+
+  * New upstream release.
+  * Removed dependency on unhtml package (fixes #31239).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Sun, 28 Mar 1999 14:35:34 +0200
+
+python-llnl (7-7.1) frozen unstable; urgency=low
+
+  * New upstream release. No new features. Bug fixes only.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Wed, 23 Dec 1998 13:46:34 +0100
+
+python-llnl (6-6.2) frozen unstable; urgency=low
+
+  * Make lintian happy.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Thu, 26 Nov 1998 23:42:41 +0200
+
+python-llnl (6-6.1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Thu, 15 Oct 1998 10:50:44 +0200
+
+python-llnl (5-5.2) unstable; urgency=low
+
+  * Determine NumPy version without installed multiarray module (fixes #27326).
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Wed, 14 Oct 1998 21:19:33 +0200
+
+python-llnl (5-5.1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Fri, 28 Aug 1998 16:27:33 +0200
+
+python-llnl (4-1) unstable; urgency=low
+
+  * Initial release. Replaces the source package python-numeric.
+  * Upgraded python-numeric (Fixes #23891).
+  * Does not use the gist part of the yorick package, because the binary
+    yorick package doesn't have a pic gist library (yet).
+  * Do not (yet ?) build the CXX and Narcisse modules.
+
+ -- Matthias Klose <doko@cs.tu-berlin.de>  Wed,  8 Jul 1998 14:29:59 +0200

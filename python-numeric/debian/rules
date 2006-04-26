@@ -1,0 +1,148 @@
+#!/usr/bin/make -f
+# -*- mode: makefile -*-
+# Made with the aid of debmake, by Christoph Lameter,
+# based on the sample debian/rules file for GNU hello by Ian Jackson.
+
+export SHELL	= /bin/bash
+
+PYV24	= 2.4
+PYLIB24	= usr/lib/python$(PYV24)/config
+PYSITE24= usr/lib/python$(PYV24)/site-packages
+
+PYSITE	= $(PYSITE24)
+
+p_num24	= python$(PYV24)-numeric
+p_ext24	= python$(PYV24)-numeric-ext
+p_num	= python-numeric
+p_ext	= python-numeric-ext
+p_tut	= python-numeric-tutorial
+
+d_num24	= debian/$(p_num24)
+d_ext24	= debian/$(p_ext24)
+d_num	= debian/$(p_num)
+d_ext	= debian/$(p_ext)
+
+d_tut	= debian/$(p_tut)
+
+build: stamp-build24
+stamp-build24:
+	dh_testdir
+	python2.4 ./setup.py build
+	touch $@
+
+get-doc:
+	-mkdir doc
+	cd doc && wget -m http://www.pfdubois.com/numpy/html2/numpy.html
+	cd doc && wget http://www.pfdubois.com/numpy/numpy.pdf
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f stamp-*
+	-rm -rf `find -name build -type d`
+	-rm -rf debian/python-numeric
+	-rm -rf debian/python-numeric-ext
+	-rm -rf debian/python-numeric-tutorial
+	-rm -rf debian/python2.4-numeric
+	-rm -rf debian/python2.4-numeric-ext
+	dh_clean
+
+ifeq ($(USE_DOTBLAS),yes)
+    dotblas_module=,_dotblas
+    dotblas_dir=,dotblas
+endif
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	python2.4 setup.py install --prefix=`pwd`/$(d_num24)/usr
+
+	#-find $(d_num24) -name '*.py[co]' | xargs rm -f
+
+	dh_movefiles -p$(p_ext24) --sourcedir=$(d_num24) \
+		$(PYSITE24)/Numeric/{FFT,MA,RNG$(dotblas_dir)} \
+		$(PYSITE24)/Numeric/{LinearAlgebra,MLab,Matrix,RandomArray}.py \
+		$(PYSITE24)/Numeric/{lapack_lite,ranlib$(dotblas_module)}.so \
+		usr/include/python$(PYV24)/Numeric/{f2c.h,ranlib.h}
+
+	for d in `find $(d_num24) -depth -type d -empty 2> /dev/null`; do \
+	  while rmdir $$d 2> /dev/null; do d=`dirname $$d`; done; \
+	done
+
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+
+	dh_installdirs -p$(p_tut) $(PYSITE) usr/share/doc
+	#ln -sf $(p_num) $(d_tut)/usr/share/doc/$(p_tut)
+
+	dh_installdirs -p$(p_ext) usr/share/doc
+	#ln -sf $(p_num) $(d_ext)/usr/share/doc/$(p_ext)
+
+	dh_installdocs -p$(p_num) README
+	dh_installdocs -i -X$(p_num)
+	dh_installchangelogs -i changes.txt
+
+	cp -a Demo/NumTut $(d_tut)/$(PYSITE)/
+	chmod a+x $(d_tut)/$(PYSITE)/NumTut/__init__.py \
+		$(d_tut)/$(PYSITE)/NumTut/view.py
+	dh_link -p$(p_tut) /$(PYSITE)/NumTut /usr/share/doc/$(p_num)/NumTut
+	install -m 644 doc/numpy.pdf $(d_tut)/usr/share/doc/$(p_num)/.
+	cp -a doc/www.pfdubois.com/numpy/html2 \
+		$(d_tut)/usr/share/doc/$(p_num)/html
+
+	: # Replace all '#!' calls to python with python
+	: # and make them executable
+	for i in `find $(d_tut) -type f`; do \
+	  sed '1s,#!.*python[^ ]*\(.*\),#! /usr/bin/python\1,' \
+		$$i > $$i.temp; \
+	  if cmp --quiet $$i $$i.temp; then \
+	    rm -f $$i.temp; \
+	  else \
+	    mv -f $$i.temp $$i; \
+	    chmod 755 $$i; \
+	    echo "fixed interpreter: $$i"; \
+	  fi; \
+	done
+	chmod 644 $(d_tut)/$(PYSITE)/NumTut/view.py
+
+	mkdir -p $(d_num)/usr/share/doc/$(p_num)/examples/Demo
+	cp -a Test $(d_num)/usr/share/doc/$(p_num)/examples/.
+	rm -f $(d_num)/usr/share/doc/$(p_num)/examples/Test/testwin.bat
+	cp -p Demo/*.py $(d_num)/usr/share/doc/$(p_num)/examples/Demo/.
+
+	dh_compress -i -X.py -X.pik -X.pdf -X.css
+	dh_python -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+
+	dh_installdirs -p$(p_ext24) usr/share/doc
+	#ln -sf $(p_num24) $(d_ext24)/usr/share/doc/$(p_ext24)
+
+	dh_installdocs -p$(p_tut) README
+	dh_installdocs -p$(p_tut)
+
+	dh_installchangelogs -a changes.txt
+	dh_strip -a
+	dh_compress -a -X.py
+	dh_python -a
+	dh_fixperms -a
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+binary: binary-arch binary-indep
+
+.PHONY: binary binary-arch binary-indep clean

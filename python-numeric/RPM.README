@@ -1,0 +1,24 @@
+Numerical Python's RPM-making alterations to Distutils were provided by 
+Gerard Vermeulen [gvermeul@polycnrs-gre.fr]. He wrote these comments.
+-------------------------
+WARNING: for amateur binary RPM providers.
+
+All RPM (Redhat Package Management) based distributions have subtle but
+incompatible differences: even subsequent releases of the same distribution
+have incompatibilities.
+Therefore, think twice before providing binary RPMs (the SRPM, made with
+distutils is OK), and never publish a binary RPM without extensive testing.
+
+
+If you want to provide binary RPMs, I suggest that you code the Linux
+distribution+version and python+version in the release number of the RPM.
+
+For instance, for my Mandrake-8.1 with default /usr/bin/python2.1, I do:
+
+	python setup.py bdist_rpm --release="mdk81py21"
+
+and for my Mandrake-8.1 with alternate /usr/bin/python2.2, I do:
+
+	python2.2 setup.py bdist_rpm --release="mdk81py22"
+
+The RPMs are made in the subdirectory 'dist'.

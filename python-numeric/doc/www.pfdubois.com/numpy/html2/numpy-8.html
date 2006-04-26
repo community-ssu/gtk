@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 6.0/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="numpy.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<TITLE> 7.	 Pseudo Indices</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1 CLASS="Chapter">
+<A NAME="pgfId-36371"></A>7.	 <A NAME="marker-59631"></A><A NAME="21398"></A>Pseudo Indices</H1>
+<P CLASS="ChapterDescription">
+<A NAME="pgfId-51714"></A>Tbis chapter discusses pseudo-indices, which allow arrays to have their shapes modified by adding axes, sometimes only for the duration of the evaluation of a Python expression.</P>
+<P CLASS="Body">
+<A NAME="pgfId-36372"></A>Consider multiplication of a rank-1 array by a scalar: </P>
+<P CLASS="Python">
+<A NAME="pgfId-36373"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = array([1,2,3])</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36374"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a * 2</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36375"></A>[2 4 6]</P>
+<P CLASS="Body">
+<A NAME="pgfId-36376"></A>This should be trivial to you by now. We've just multiplied a rank-1 array by a scalar (which is converted to a rank-0 array). In other words, the rank-0 array was broadcast to the next rank. This works for adding some two rank-1 arrays as well: </P>
+<P CLASS="Python">
+<A NAME="pgfId-36377"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36378"></A>[1 2 3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36379"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a + array([4])</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36380"></A>[5 6 7]</P>
+<P CLASS="Body">
+<A NAME="pgfId-36381"></A>but it won't work if either of the two rank-1 arrays have non-matching dimensions which aren't 1 - put another way, broadcast only works for dimensions which are either missing (e.g. a lower-rank array) or for dimensions of 1. </P>
+<P CLASS="Body">
+<A NAME="pgfId-36382"></A>With this in mind, consider a classic task, matrix multiplication. Suppose we want to multiply the row vector [10,20] by the column vector [1,2,3]. </P>
+<P CLASS="Python">
+<A NAME="pgfId-36383"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = array([10,20])</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36384"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+b = array([1,2,3])</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36385"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a * b</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36386"></A>Traceback (innermost last):</P>
+<P CLASS="Python">
+<A NAME="pgfId-36387"></A>  File &quot;&lt;stdin&gt;&quot;, line 1, in ?</P>
+<P CLASS="Python">
+<A NAME="pgfId-36388"></A>ValueError: frames are not aligned example </P>
+<P CLASS="Body">
+<A NAME="pgfId-36389"></A>This makes sense - we're trying to multiply a rank-1 array of shape (2,) with a rank-1 array of shape (3,). This violates the laws of broadcast. What we really want to do is make the second vector a vector of shape (3,1), so that the first vector can be broadcast across the second axis of the second vector. One way to do this is to use the reshape function: </P>
+<P CLASS="Python">
+<A NAME="pgfId-36390"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a.shape</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36391"></A>(2,)</P>
+<P CLASS="Python">
+<A NAME="pgfId-36392"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+b.shape</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36393"></A>(3,)</P>
+<P CLASS="Python">
+<A NAME="pgfId-36394"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+b2 = reshape(b, (3,1))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36395"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print b2</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36396"></A>[[1]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36397"></A> [2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36398"></A> [3]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36399"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+b2.shape</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36400"></A>(3, 1)</P>
+<P CLASS="Python">
+<A NAME="pgfId-36401"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print a * b2</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36402"></A>[[10 20]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36403"></A> [20 40]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36404"></A> [30 60]]</P>
+<P CLASS="Body">
+<A NAME="pgfId-36405"></A>This is such a common operation that a special feature was added (it turns out to be useful in many other places as well) - the <EM CLASS="Code">
+NewAxis</EM>
+<A NAME="marker-59833"></A> ``pseudo-index'', originally developed in the Yorick language.  <EM CLASS="Code">
+NewAxis</EM>
+ is an index, just like integers, so it is used inside of the slice brackets []. It can be thought of as meaning ``add a new axis here,'' in much the same ways as adding a 1 to an array's shape adds an axis. Again, examples help clarify the situation: </P>
+<P CLASS="Python">
+<A NAME="pgfId-36406"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print b</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36407"></A>[1 2 3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36408"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+b.shape</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36409"></A>(3,)</P>
+<P CLASS="Python">
+<A NAME="pgfId-36410"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+c = b[:, NewAxis]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36411"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print c</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36412"></A>[[1]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36413"></A> [2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36414"></A> [3]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-36415"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+c.shape</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-36416"></A>(3,1) </P>
+<P CLASS="Body">
+<A NAME="pgfId-36417"></A>Why use such a pseudo-index over the reshape function or shape assignments? Often one doesn't really want a new array with a new axis, one just wants it for an intermediate computation. Witness the array multiplication mentioned above, without and with pseudo-indices: </P>
+<P CLASS="Python">
+<A NAME="pgfId-36418"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+without = a * reshape(b, (3,1))</EM>
+ </P>
+<P CLASS="Python">
+<A NAME="pgfId-36419"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+with = a * b[:,NewAxis]</EM>
+</P>
+<P CLASS="Body">
+<A NAME="pgfId-36420"></A>The second is much more readable (once you understand how <EM CLASS="Code">
+NewAxis</EM>
+ works), and it's much closer to the intended meaning. Also, it's independent of the dimensions of the array b You might counter that using something like <EM CLASS="Code">
+reshape(b, (-1,1))</EM>
+ is also dimension-independent, but 1) would you argue that it's as readable? 2) how would you deal with rank-3 or rank-N arrays? The <EM CLASS="Code">
+NewAxis</EM>
+-based idiom also works nicely with higher rank arrays, and with the <EM CLASS="Code">
+...</EM>
+ ``rubber index'' mentioned earlier. Adding an axis before the last axis in an array can be done simply with: </P>
+<P CLASS="Python">
+<A NAME="pgfId-36421"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a[...,NewAxis,:]</EM>
+</P>
+<P><A HREF="numpy.html">Go to Main</A>      <A HREF="numpy-7.html">Go to Previous</A>       <A HREF="numpy-9.html">Go to Next</A></P>
+</BODY>
+</HTML>

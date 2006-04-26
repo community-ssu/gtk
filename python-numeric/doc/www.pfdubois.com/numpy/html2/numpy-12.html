@@ -1,0 +1,999 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 6.0/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="numpy.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<TITLE> 11.	 Special Topics</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1 CLASS="Chapter">
+<A NAME="pgfId-59071"></A>11.	 <A NAME="92607"></A>Special Topics</H1>
+<P CLASS="ChapterDescription">
+<A NAME="pgfId-59072"></A>This chapter holds miscellaneous information which did not neatly fit in any of the other chapters.</P>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-67984"></A>Subclassing</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-68417"></A>Subclassing Numeric arrays is not possible due to a limitation of Python. The approach taken in the Masked Array facility (<A HREF="numpy-22.html#48250" CLASS="XRef">Masked Arrays</A>) is one answer. UserArray.py, described below, can be subclassed, but this is often unsatisfactory unless you put in a similar effort to that in MA.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-67992"></A><A NAME="marker-67986"></A>Code Organization</H6>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-66725"></A>Numeric.py and friends</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-66726"></A><EM CLASS="Code">
+Numeric.py</EM>
+ is the most commonly used interface to the Numeric extensions.  It is a Python module which imports all of the exported functions and attributes from the <EM CLASS="Code">
+multiarray</EM>
+ module, and then defines some utility functions.  As some of the functions defined in <EM CLASS="Code">
+Numeric.py</EM>
+ could someday be moved into a supporting C module, the utility functions and the <EM CLASS="Code">
+multiarray</EM>
+ object are documented together, in this section.  The <EM CLASS="Code">
+multiarray</EM>
+ objects are the core of Numeric Python - they are extension types written in C which are designed to provide both space- and time-efficiency when manipulating large arrays of homogeneous data types, with special emphasis to numeric data types.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-66711"></A>UserArray.py</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-66738"></A>In the tradition of <EM CLASS="Code">
+UserList.py</EM>
+ and <EM CLASS="Code">
+UserDict.py</EM>
+, the <EM CLASS="Code">
+UserArray.py</EM>
+ module defines a class whose instances act in many ways like array objects. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-66719"></A>Matrix.py</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-66782"></A>The <EM CLASS="Code">
+Matrix.py</EM>
+ python module defines a class <EM CLASS="Code">
+Matrix</EM>
+ which is a subclass of <EM CLASS="Code">
+UserArray</EM>
+. The only differences between <EM CLASS="Code">
+Matrix</EM>
+ instances and <EM CLASS="Code">
+UserArray</EM>
+ instances is that the <EM CLASS="Code">
+*</EM>
+ operator on <EM CLASS="Code">
+Matrix</EM>
+ performs a matrix multiplication, as opposed to element-wise multiplication, and that the power operator <EM CLASS="Code">
+**</EM>
+ is disallowed for <EM CLASS="Code">
+Matrix</EM>
+ instances.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-66783"></A>Precision.py</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66784"></A>The Precision.py module contains the code which is used to determine the mapping between typecode names and values, by building small arrays and looking at the number of bytes they use per element.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-66787"></A>ArrayPrinter.py</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66788"></A>The ArrayPrinter.py module defines the functions used for default printing of arrays. See the section on Textual Representations of arrays on <A HREF="numpy-12.html#39358" CLASS="XRef">Textual representations of arrays</A>,</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-66808"></A>MLab.py</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66910"></A>The MLab.py module provides some functions which are compatible with the functions of the same name in the MATLAB programming language. We have written these functions so that they will take Python sequences as arguments, such as lists, as well as Numeric arrays. </P>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66920"></A>bartlett(M)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66921"></A>returns the M-point Bartlett window.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66922"></A>blackman(M)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66923"></A>returns the M-point Blackman window.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66924"></A>corrcoef(x, y=None)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66925"></A>The correlation coefficient</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66926"></A>cov(m,y=None)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66927"></A>returns the covariance</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66928"></A>cumprod(m, axis=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66929"></A>returns the cumulative product of the elments along the axis'th dimension of m.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66930"></A>cumsum(m, axis=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66931"></A>returns the cumulative sum of the elements along the axis'th dimension of m.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66932"></A>diag(v, k=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66933"></A>returns the k-th diagonal if v is a matrix or returns a matrix with v as the k-th diagonal if v is a vector.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66934"></A>diff(x, n=1)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66935"></A>calculates the first-order, discrete difference approximation to the derivative.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66936"></A>eig(m)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66937"></A>returns the the eigenvalues of m in x and the corresponding eigenvectors in the rows of v.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66938"></A>eye(N, M=N, k=0, typecode=None)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66939"></A>returns a N-by-M matrix where the k-th diagonal is all ones, and everything else is zeros.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66940"></A>fliplr(m)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66941"></A>returns a 2-D matrix m with the rows preserved and columns flipped in the left/right direction. Only works with 2-D arrays.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66942"></A>flipud(m)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66943"></A>returns a 2-D matrix with the columns preserved and rows flipped in the up/down direction. Only works with 2-D arrays.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66944"></A>hamming(M)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66945"></A>returns the M-point Hamming window.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66946"></A>hanning(M)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66947"></A>returns the M-point Hanning window.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66948"></A>kaiser(M, beta)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66949"></A>returns a Kaiser window of length M with shape parameter beta. It depends on the cephes module for the modified bessel function i0.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66950"></A>max(m, axis=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-67178"></A>returns the maximum along the axis'th dimension of m.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-67179"></A>mean(m, axis=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-67180"></A>returns the mean along the axis'th dimension of m. Note: if m is an integer array, the result will be floating point. This was changed in release 10.1; previously, a meaningless integer divide was used.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66954"></A>median(m)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66955"></A>returns a mean of m along the first dimension of m.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66956"></A>min(m, axis=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66957"></A>returns the minimum along the axis'th dimension of m.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66958"></A>msort(m)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66959"></A>returns a sort along the first dimension of m as in MATLAB.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66960"></A>prod(m, axis=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66961"></A>returns the product of the elements along the axis'th dimension of m.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66962"></A>ptp(m, axis = 0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66963"></A>returns the maximum - minimum along the axis'th dimension of m.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66964"></A>rand(d1, ..., dn)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66965"></A>returns a matrix of the given dimensions which is initialized to random numbers from a uniform distribution in the range [0,1).</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-67153"></A>rot90(m,k=1)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-67154"></A>returns the matrix found by rotating m by k*90 degrees in the counterclockwise direction.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-67155"></A>sinc(x)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66969"></A>returns sin(pi*x)/(pi*x) at all points of array x.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66970"></A>squeeze(a)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66971"></A>removes any ones from the shape of a</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66972"></A>std(m, axis = 0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66973"></A>returns the unbiased estimate of the population standard deviation from a sample along the axis'th dimension of m. (That is, the denominator for the calculation is n-1, not n.)</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66974"></A>sum(m, axis=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66975"></A>returns the sum of the elements along the axis'th dimension of m.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66976"></A>svd(m)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66977"></A>return the singular value decomposition of m [u,x,v]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66978"></A>trapz(y,x=None)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66979"></A>integrates y = f(x) using the trapezoidal rule.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66980"></A>tri(N, M=N, k=0, typecode=None)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66981"></A>returns a N-by-M matrix where all the diagonals starting from lower left corner up to the k-th are all ones.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66982"></A>tril(m,k=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66983"></A>returns the elements on and below the k-th diagonal of m. k=0 is the main diagonal, k &gt; 0 is above and k &lt; 0 is below the main diagonal.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM3Heading">
+<A NAME="pgfId-66984"></A>triu(m,k=0)</H6>
+<P CLASS="Body">
+<A NAME="pgfId-66985"></A>returns the elements on and above the k-th diagonal of m. k=0 is the main diagonal, k &gt; 0 is above and k &lt; 0 is below the main diagonal.</P>
+</DIV>
+</DIV>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-66811"></A>The <A NAME="marker-66810"></A>multiarray object</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-59077"></A>The array objects which Numeric Python manipulates is actually a multiarray object, given this name to distinguish it from the one-dimensional array object defined in the standard array module.  From here on, however, the terms array and multiarray will be used interchangeably to refer to the new object type.  multiarray objects are homogeneous multidimensional sequences.  Starting from the back, they are sequences.  This means that they are container (compound) objects, which contain references to other objects.  They are multidimensional, meaning that unlike standard Python sequences which define only a single dimension along which one can iterate through the contents, multiarray objects can have up to 40 dimensions.<A HREF="#pgfId-59080" CLASS="footnote">1</A>  Finally, they are homogeneous.  This means that every object in a multiarray must be of the same type.  This is done for efficiency reasons -- storing the type of the contained objects once in the array means that the process of finding the type-specific operation to operate on each element in the array needs to be done only once per array, as opposed to once per element.  Furthemore, as the main purpose of these arrays is to process numbers, the numbers can be stored directly, and not as full-fledged Python objects (PyObject *), thus yielding memory savings.  It is however possible to make arrays of Python objects, which relinquish both the space and time efficiencies but allow heterogeneous contents (as we shall see, these arrays are still homogeneous from the Numeric perspective, they are just arrays of Python object references).</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-59085"></A><A NAME="marker-59717"></A>Typecodes</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-59086"></A>The kind of number stored in an array is described by its typecode. This code is stored internally as a single-character Python string, but more descriptive names corresponding to the typecodes are made available to the Python programmer in the Precision.py module. The typecodes are defined as follows:</P>
+<TABLE BORDER="1">
+<CAPTION>
+<H6 CLASS="TableTitle">
+<A NAME="pgfId-59089"></A>Typecode Listing</H6>
+</CAPTION>
+<TR>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+<A NAME="pgfId-59095"></A>Variable defined in<BR>
+<EM CLASS="Code">
+Typecode</EM>
+ module</P>
+</TH>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+<A NAME="pgfId-59097"></A>Typecode<BR>
+character</P>
+</TH>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+<A NAME="pgfId-59099"></A>Description</P>
+</TH>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59101"></A><EM CLASS="Code">
+Char</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59103"></A><EM CLASS="Code">
+'c'</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59105"></A>Single-character strings</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59107"></A><EM CLASS="Code">
+PyObject</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59109"></A><EM CLASS="Code">
+'O'</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59111"></A>Reference to Python object</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59113"></A><EM CLASS="Code">
+UnsignedInt8</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59115"></A><EM CLASS="Code">
+'b'</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59117"></A>Unsigned integer using a single byte.</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59119"></A><EM CLASS="Code">
+Int</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59121"></A><EM CLASS="Code">
+'l'</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59123"></A>Python standard integers (i.e. C long integers)</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59125"></A><EM CLASS="Code">
+Float</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59127"></A><EM CLASS="Code">
+'d'</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59129"></A>Python standard floating point numbers<BR>
+(i.e. C double-precision floats)</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59131"></A>n/a</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59133"></A><EM CLASS="Code">
+'f'</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59135"></A>Single-precision floating point numbers</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59137"></A><EM CLASS="Code">
+Complex</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59139"></A><EM CLASS="Code">
+'D'</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59141"></A>Complex numbers consisting of two double-precision floats</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59143"></A>n/a</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59145"></A><EM CLASS="Code">
+'F'</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59147"></A>Complex numbers consisting of two single-precision floats</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59149"></A><EM CLASS="Code">
+Int0, Int8, Int16, Int32, Int64, Int128</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59151"></A>n/a</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59153"></A>These correspond to machine-dependent typecodes: <EM CLASS="Code">
+Int0</EM>
+ returns the typecode corresponding to the smallest available integer, <EM CLASS="Code">
+Int8</EM>
+ that corresponding to the smallest available integer with at least 8 bits, <EM CLASS="Code">
+Int16</EM>
+ that with at least 16 bits, etc. If a typecode is not available (e.g. <EM CLASS="Code">
+Int64</EM>
+ on a 32-bit machine), the variable is not defined.</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59155"></A><EM CLASS="Code">
+Float0, Float8, Float16, Float32, Float64, Float128</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59157"></A>n/a</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59159"></A>Same as <EM CLASS="Code">
+Int0</EM>
+, <EM CLASS="Code">
+Int8</EM>
+ etc. except for floating point numbers.</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59161"></A><EM CLASS="Code">
+Complex0, Complex8, Complex16, Complex32, Complex64, Complex128</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59163"></A>n/a</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-59165"></A>Same as <EM CLASS="Code">
+Float0</EM>
+, etc., except that the number of bits refers to the precision of each of the two (real and imaginary) parts of the complex number.</P>
+</TD>
+</TR>
+</TABLE>
+<P CLASS="Body">
+<A NAME="pgfId-66448"></A>Note on number fomat: the binary format used by Python is that of the underlying C library. [notes about IEEE formats, etc?]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-59290"></A><A NAME="marker-59724"></A>Indexing in and out, slicing</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-59291"></A>Indexing arrays works like indexing of other Python sequences, but supports some extensions which are as of yet not implemented for other sequence types<A HREF="#pgfId-59294" CLASS="footnote">2</A>. The standard [start:stop] notation is supported, with start defaulting to 0 (the first index position) and stop defaulting to the length of the sequence, as for lists and tuples. In addition, there is an optional stride argument, which specifies the stride size between successive indices in the slice. It is expressed by a integer following a second : immediately after the usual start:stop slice. Thus <EM CLASS="Code">
+[0:11:2]</EM>
+ will slice the array at indices 0, 2, 4, .. 10. The start and stop indices are optional, but the first : must be specified for the stride interpretation to occur. Therefore, <EM CLASS="Code">
+[::2]</EM>
+<A NAME="marker-59857"></A> means slice from beginning to end, with a stride of 2 (i.e. skip an index for each stride). If the start index is omitted and the stride is negative, the indexing starts from the end of the sequence and works towards the beginning of the sequence. If the stop index is omitted and the stride is negative, the indexing stops at the beginning of the sequence.</P>
+<P CLASS="Python">
+<A NAME="pgfId-59295"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59296"></A>[ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59297"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x[10]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59298"></A>10</P>
+<P CLASS="Python">
+<A NAME="pgfId-59299"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x[:10]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59300"></A>[0 1 2 3 4 5 6 7 8 9]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59301"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x[5:15:3]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59302"></A>[ 5  8 11 14]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59303"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x[:10:2]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59304"></A>[0 2 4 6 8]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59305"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x[10::-2]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59306"></A>[10  8  6  4  2  0]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59307"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x[::-1]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59308"></A>[19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0]</P>
+<P CLASS="Body">
+<A NAME="pgfId-59309"></A>It is important to note that the out-of-bounds conditions follow the same rules as standard Python indexing, so that slices out of bounds are trimmed to the sequence boundaries, but element indexing with out-of-bound indices yields an IndexError:</P>
+<P CLASS="Python">
+<A NAME="pgfId-59310"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x[:100]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59311"></A>[ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59312"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x[-200:4]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59313"></A>[0 1 2 3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59314"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x[100]</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59315"></A>Traceback (innermost last):</P>
+<P CLASS="Python">
+<A NAME="pgfId-59316"></A>  File &quot;&lt;stdin&gt;&quot;, line 1, in ?</P>
+<P CLASS="Python">
+<A NAME="pgfId-59317"></A>IndexError: index out of bounds</P>
+<P CLASS="Body">
+<A NAME="pgfId-59318"></A>The second difference between array indexing and other sequences is that arrays provide multidimensional indexing. An array of rank N can be indexed with up to N indices or slices (or combinations thereof. Indices should be integers (with negative integers indicating offsets from the end of the dimension, as for other Python sequences), and slices can have, as explained above, one or two :'s separating integer arguments. These indices and slies must be separated by commas, and correspond to sequential dimensions starting from the leftmost (first) index on. Thus <EM CLASS="Code">
+a[3]</EM>
+ means index 3 along dimension 0. <EM CLASS="Code">
+a[3,:,-4]</EM>
+ means the slice of a along three dimensions: index 3 along the first dimension, the entire range of indices along the second dimension, and the 4th from the end index along the third dimension. If the array being indexed has more dimensions than are specified in the multidimensional slice, those dimensions are assumed to be sliced from beginning to end. Thus, if <EM CLASS="Code">
+a</EM>
+ is a rank 3 array,</P>
+</DIV>
+<DIV>
+<H6 CLASS="CodeDefinition">
+<A NAME="pgfId-59319"></A><EM CLASS="Code">
+a[0] == a[0,:] == a[0,:,:]</EM>
+</H6>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-59320"></A><A NAME="marker-59725"></A>Ellipses</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-59321"></A>A special slice element called Ellipses (and written <EM CLASS="Code">
+...</EM>
+) is used to refer to a variable number of slices from beginning to end along the current dimension. It is a shorthand for a set of such slices, specifically the number of dimensions of the array being indexed minus those which are already specified. Only the first (leftmost) Ellipses in an multidimensional slice is expanded, while the others are single dimensional slices from beginning to end.</P>
+<P CLASS="Body">
+<A NAME="pgfId-59322"></A>Thus, if <EM CLASS="Code">
+a</EM>
+ is a rank-6 array,</P>
+</DIV>
+</DIV>
+<DIV>
+<H6 CLASS="Code">
+<A NAME="pgfId-59323"></A><EM CLASS="Code">
+a[3,:,:,:,-1,:] == a[3,...,-1,:] == a[3,...,-1,...]</EM>
+.</H6>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-59324"></A><A NAME="marker-59726"></A>NewAxis</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-59325"></A>There is another special symbol which can be used inside indexing operations to create new dimensions in the returned array. The reference NewAxis, used as one of the comma-separated slice elements, does not change the selection of the subset of the array being indexed, but changes the shape of the array returned by the indexing operation, so that an additional dimension (of length 1) is created, at the dimension position corresponding to the location of NewAxis within the indexing sequence. Thus, <EM CLASS="Code">
+a[:,3,NewAxis,-3]</EM>
+ will perform the indexing of a corresponding to the slice <EM CLASS="Code">
+[a:,3,-3]</EM>
+, but will also modify the shape of a so that the new shape of <EM CLASS="Code">
+a</EM>
+ is <EM CLASS="Code">
+(a.shape[0], a.shape[1], 1, a.shape[2])</EM>
+. This operation is especially useful in conjunction with the broadcasting feature described next, as it replaces a lengthy but common operation with a simple notation (in the example above, the same effect can be had with</P>
+<P CLASS="Body">
+<A NAME="pgfId-59326"></A><EM CLASS="Code">
+reshape(a[:,3,-1], (a.shape[0], a.shape[1], 1, a.shape[2])).</EM>
+</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-59327"></A>Set-indexing and <A NAME="marker-59727"></A>Broadcasting</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-59328"></A>The indexing rules described so far specify exactly the behavior of get-indexing. For set-indexing, the rules are exactly the same, and describe the slice of the array on the left hand side of the assignment operator which is the target of the assignment. The only point left to mention is the process of assigning from the source (on the right hand side of the assignment) to the target (on the left hand side).</P>
+<P CLASS="Body">
+<A NAME="pgfId-59329"></A>If both source and target have the same shape, then the assignment is done element by element. The typecode of the target specifies the casting which can be applied in the case of a typecode mismatch between source and target. If the typecode of the source is &quot;lower&quot; than that of the target, then an 'up-cast' is performed and no loss in precision results. If the typecode of the source is &quot;higher&quot; than that of the target, then a downcast is performed, which may lose precision (as discussed in the description of the array call, these casts are truncating casts, not rounding casts). Complex numbers cannot be cast to non-complex numbers.</P>
+<P CLASS="Body">
+<A NAME="pgfId-59330"></A>If the source and the target have different shapes, Numeric Python attempts to broadcast the contents of the source over the range of the target. This broadcasting occurs for all dimensions where the source has dimension 1 or 0 (i.e., is absent). If there exists a dimension for which the two arrays have differing lengths, and the length of that dimension in the source is not 1, then the assignment fails and an exception (ValueError) is raised, notifying the user that the arrays are not aligned.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-59331"></A>Axis specifications</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-59332"></A>In many of the functions defined in this document, indices are used to refer to axes. The numbering scheme is the same as that used by indexing in Python: the first (leftmost) axis is axis 0, the second axis is axis 1, etc. Axis -1 refers to the last axis, -2 refers to the next-to-last axis, etc.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-59333"></A><A NAME="marker-59728"></A><A NAME="39358"></A>Textual representations of arrays</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-59334"></A>The algorithm used to display arrays as text strings is defined in the file ArrayPrinter.py, which defines a function array2string (imported into Numeric's namespace) which offers considerable control over how arrays are output. The range of options to the array2string function will be described first, followed by a description of which options are used by default by <EM CLASS="Code">
+str</EM>
+ and <EM CLASS="Code">
+repr</EM>
+.</P>
+<P CLASS="Body">
+<A NAME="pgfId-84285"></A>Note that the optional package MA, if imported, modifies this process so that very long arrays are not printed; rather, a summary of their shape and type are shown. You may wish to import MA even if you do not use it otherwise, to get this effect, because without it accidentally attempting to print a very long array can take a very long time to convert, giving the appearance that the program has hung.</P>
+<P CLASS="Python">
+<A NAME="pgfId-59335"></A><A NAME="marker-59729"></A>array2string(a, max_line_width = None, precision = None,<BR>
+suppress_small = None, separator=' ', array_output=0):</P>
+<P CLASS="Body">
+<A NAME="pgfId-59336"></A>The <EM CLASS="Code">
+array2string</EM>
+ function takes an array and returns a textual representation of it. Each dimension is indicated by a pair of matching square brackets (<EM CLASS="Code">
+[]</EM>
+), within which each subset of the array is output. The orientation of the dimensions is as follows: the last (rightmost) dimension is always horizontal, so that the frequent rank-1 arrays use a minimum of screen real-estate. The next-to-last dimension is displayed vertically if present, and any earlier dimension is displayed with additional bracket divisions. For example:</P>
+<P CLASS="Python">
+<A NAME="pgfId-59337"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a = arange(24)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59338"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(a)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59339"></A>[ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59340"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a.shape = (2,10)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59341"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(a)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59342"></A>[[ 0  1  2  3  4  5  6  7  8  9 10 11]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59343"></A> [12 13 14 15 16 17 18 19 20 21 22 23]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59344"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+a.shape = (2,3,4)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59345"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(a)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59346"></A>[[[ 0  1  2  3]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59347"></A>  [ 4  5  6  7]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59348"></A>  [ 8  9 10 11]]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59349"></A> [[12 13 14 15]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59350"></A>  [16 17 18 19]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59351"></A>  [20 21 22 23]]]</P>
+<P CLASS="Body">
+<A NAME="pgfId-59352"></A>The <EM CLASS="Code">
+max_line_width</EM>
+ argument specifies the maximum number of characters which the array2string routine uses in a single line. If it is set to <EM CLASS="Code">
+None</EM>
+, then the value of the <EM CLASS="Code">
+sys.output_line_width</EM>
+ attribute is looked up. If it exists, it is used. If not, the default of 77 characters is used.</P>
+<P CLASS="Python">
+<A NAME="pgfId-59353"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59354"></A>[ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25</P>
+<P CLASS="Python">
+<A NAME="pgfId-59355"></A>      26 27 28 29]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59356"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+sys.output_line_width = 30</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59357"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59358"></A>[ 0  1  2  3  4  5  6  7  8  9</P>
+<P CLASS="Python">
+<A NAME="pgfId-59359"></A>      10 11 12 13 14 15 16 17</P>
+<P CLASS="Python">
+<A NAME="pgfId-59360"></A>      18 19 20 21 22 23 24 25</P>
+<P CLASS="Python">
+<A NAME="pgfId-59361"></A>      26 27 28 29]</P>
+<P CLASS="Body">
+<A NAME="pgfId-59362"></A>The <EM CLASS="Code">
+precision</EM>
+ argument specifies the number of digits after the decimal point which are used. If a value of <EM CLASS="Code">
+None</EM>
+ is used, the value of the <EM CLASS="Code">
+sys.float_output_precision</EM>
+ is looked up. If it exists, it is used. If not, the default of 8 digits is used.</P>
+<P CLASS="Python">
+<A NAME="pgfId-59363"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x = array((10.11111111111123123111, pi))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59364"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59365"></A>[ 10.11111111   3.14159265]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59366"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x, precision=3)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59367"></A>[ 10.111   3.142]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59368"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+sys.float_output_precision = 2</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59369"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59370"></A>[ 10.11   3.14]</P>
+<P CLASS="Body">
+<A NAME="pgfId-59371"></A>The <EM CLASS="Code">
+suppress_small</EM>
+ argument specifies whether small values should be suppressed (and output as 0). If a value of <EM CLASS="Code">
+None</EM>
+ is used, the value of the <EM CLASS="Code">
+sys.float_output_suppress_small</EM>
+ is looked up. If it exists, it is used (all that matters is whether it evaluates to true or false). If not, the default of 0 (false) is used. This variable also interacts with the precision parameters, as it can be used to suppress the use of exponential notation.</P>
+<P CLASS="Python">
+<A NAME="pgfId-59372"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59373"></A>[ 1.00000000e-005  3.14159265e+000]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59374"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59375"></A>[ 1.00000000e-005  3.14159265e+000]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59376"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x, suppress_small=1)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59377"></A>[ 0.00001     3.14159265]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59378"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x, precision=3)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59379"></A>[ 1.000e-005  3.142e+000]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59380"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x, precision=3, suppress_small=1)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59381"></A>[ 0.     3.142]</P>
+<P CLASS="Body">
+<A NAME="pgfId-59382"></A>The <EM CLASS="Code">
+separator</EM>
+ argument is used to specify what character string should be placed between two numbers which do not straddle a dimension. The default is a single space.</P>
+<P CLASS="Python">
+<A NAME="pgfId-59383"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59384"></A>[   0  100  200  300  400  500  600  700  800  900 100]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59385"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print array2string(x, separator = ', ')</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59386"></A>[   0,  100,  200,  300,  400,  500,  600,  700,  800,  900, 100]</P>
+<P CLASS="Body">
+<A NAME="pgfId-60840"></A>Finally, the last attribute, array_output, specifies whether to prepend the string &quot;array(&quot; and append either the string &quot;)&quot; or &quot;, 'X')&quot; where X is a typecode for non-default typecodes (in other words, the typecode will only be displayed if it is not that corresponding to Float, Complex or Int, which are the standard typecodes associated with floating point numbers, complex numbers and integers respectively). The array() is so that an eval of the returned string will return an array object (provided a comma separator is also used).</P>
+<P CLASS="Python">
+<A NAME="pgfId-59388"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+array2string(arange(3))						</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59389"></A>[0 1 2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59390"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+eval(array2string(arange(3), array_output=1))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59391"></A>Traceback (innermost last):</P>
+<P CLASS="Python">
+<A NAME="pgfId-59392"></A>  File &quot;&lt;stdin&gt;&quot;, line 1, in ?</P>
+<P CLASS="Python">
+<A NAME="pgfId-59393"></A>  File &quot;&lt;string&gt;&quot;, line 1</P>
+<P CLASS="Python">
+<A NAME="pgfId-59394"></A>    array([0 1 2])</P>
+<P CLASS="Python">
+<A NAME="pgfId-59395"></A>             ^</P>
+<P CLASS="Python">
+<A NAME="pgfId-59396"></A>SyntaxError: invalid syntax</P>
+<P CLASS="Python">
+<A NAME="pgfId-59397"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+type(eval(array2string(arange(3), array_output=1, separator=',')))</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59398"></A>&lt;type 'array'&gt;	</P>
+<P CLASS="Python">
+<A NAME="pgfId-59399"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+array2string(arange(3), array_output=1)										</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59400"></A>'array([0, 1, 2])'</P>
+<P CLASS="Python">
+<A NAME="pgfId-59401"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+array2string(zeros((3,), 'i') + arange(3), array_output=1)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59402"></A>&quot;array([0, 1, 2],'i')&quot;</P>
+<P CLASS="Body">
+<A NAME="pgfId-59403"></A>The <EM CLASS="Code">
+str</EM>
+ and <EM CLASS="Code">
+repr</EM>
+ operations on arrays call <EM CLASS="Code">
+array2string</EM>
+ with the <EM CLASS="Code">
+max_line_width</EM>
+, <EM CLASS="Code">
+precision</EM>
+ and <EM CLASS="Code">
+suppress_small</EM>
+ all set to None, meaning that the defaults are used, but that modifying the attributes in the <EM CLASS="Code">
+sys</EM>
+ module will affect array printing. str uses the default separator and does not use the array() text, while repr uses a comma as a separator and does use the array(...) text.</P>
+<P CLASS="Python">
+<A NAME="pgfId-59404"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x = arange(3)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59405"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59406"></A>[0 1 2]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59407"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+str(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59408"></A>'[0 1 2]'</P>
+<P CLASS="Python">
+<A NAME="pgfId-59409"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+repr(x)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59410"></A>'array([0, 1, 2])'								# note the array(...) and ,'s</P>
+<P CLASS="Python">
+<A NAME="pgfId-59411"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+x = arange(0,.01,.001)</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59412"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59413"></A>[ 0.     0.001  0.002  0.003  0.004  0.005  0.006  0.007  0.008  0.009]</P>
+<P CLASS="Python">
+<A NAME="pgfId-59414"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+import sys</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59415"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+sys.float_output_precision = 2</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59416"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+print x</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-59417"></A>[ 0.    0.    0.    0.    0.    0.01  0.01  0.01  0.01  0.01]</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-59418"></A>Comparisons</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-67224"></A>Comparisons of multiarray objects results using the normal <A NAME="marker-86123"></A>comparison operators (such as == or &gt;) result in array results. These comparisons use the routines for comparison describe in <A HREF="numpy-7.html#93991" CLASS="XRef">Logical Ufuncs</A>. Note that the logical operators &quot;and&quot; and &quot;or&quot; cannot operate on arrays. The <A NAME="marker-86122"></A>bit operation ufuncs &amp; and | may be useful. The functions sometrue and alltrue do reduction using <A NAME="marker-86120"></A>logical_or and <A NAME="marker-86121"></A>logical_and.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-67223"></A><A NAME="marker-59730"></A>S<A NAME="marker-59731"></A>toring arrays on disk<A NAME="marker-86292"></A></H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-68425"></A>Storing Numeric (and Masked) arrays to disk can be done using the pickle module. Consult standard Python documentation for details. There are also modules available for a variety of other formats, such as netCDF. See the web site for some helpful links.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-59422"></A>Dealing with <A NAME="marker-59732"></A>floating point exceptions</H6>
+<P CLASS="FirstBody">
+<A NAME="pgfId-59423"></A><A NAME="marker-59733"></A>Attempts to use NaN's as missing values have proven frustrating and not very portable. Consider <A HREF="numpy-22.html#48250" CLASS="XRef">Masked Arrays</A> instead. Python's facilty for floating point error control, fpectl, has not yet been incorporated into Numeric.</P>
+<P CLASS="Body">
+<A NAME="pgfId-57345"></A>&nbsp;</P>
+</DIV>
+</DIV>
+<HR>
+<DIV CLASS="footnotes">
+<DIV CLASS="footnote">
+<P CLASS="Footnote">
+<SPAN CLASS="footnoteNumber">
+1.</SPAN>
+<A NAME="pgfId-59080"></A>This limit is modifiable in the source code if higher dimensionality is needed.</P>
+</DIV>
+<DIV CLASS="footnote">
+<P CLASS="Footnote">
+<SPAN CLASS="footnoteNumber">
+2.</SPAN>
+<A NAME="pgfId-59294"></A>The Python syntax can allow other Python datatypes to use both the stride notation and multidimensional indexing, and it is relatively simple to write Python classes which support these operations. See the Python Reference manual for details.</P>
+</DIV>
+</DIV>
+<P><A HREF="numpy.html">Go to Main</A>      <A HREF="numpy-11.html">Go to Previous</A>       <A HREF="numpy-13.html">Go to Next</A></P>
+</BODY>
+</HTML>

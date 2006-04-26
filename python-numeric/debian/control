@@ -1,0 +1,80 @@
+Source: python-numeric
+Section: python
+Priority: optional
+Maintainer: Matthias Klose <doko@debian.org>
+Standards-Version: 3.6.1
+Build-Depends: python2.4-dev, debhelper (>= 4.1.67), g77
+
+Package: python2.4-numeric
+Architecture: any
+Depends: python2.4, ${shlibs:Depends}
+Suggests: python-numeric-tutorial (>= 20.0)
+Description: Numerical (matrix-oriented) Mathematics for Python
+ The Numeric Extensions to Python (NumPy) add powerful
+ multi-dimensional array objects to the wonderful general purpose
+ programming language Python. These new objects give Python the number
+ crunching power of numeric languages like Matlab and IDL while
+ maintaining all of the advantages of the general-purpose programming
+ language Python.
+ .
+ These extensions add two new object types to Python, and then include
+ a number of extensions that take advantage of these two new objects:
+ .
+  - Multidimensional Array Objects
+    * Efficient arrays of homogeneous machine types (floats, longs,
+      complex doubles)
+    * Arbitrary number of dimensions
+    * Sophisticated structural operations
+  - Universal Function Objects
+    * Support mathematical functions on all Python objects
+    * Very efficient for array objects
+
+Package: python2.4-numeric-ext
+Architecture: any
+Depends: python2.4, python2.4-numeric (= ${Source-Version}), ${shlibs:Depends}
+Description: Extension modules for Numeric Python
+ Simple interfaces to existing numerical libraries:
+   * Linear Algebra (LAPACK)
+   * Fourier Transforms (FFTPACK)
+   * Random Arrays (RANLIB)
+   * Independent Random Streams (RNG, ranf)
+   * Masked Arrays (MA)
+
+Package: python-numeric-tutorial
+Architecture: all
+Depends: ${python:Depends}
+Conflicts: python2-numeric-tutorial
+Replaces: python2-numeric-tutorial
+Description: Numerical (matrix-oriented) Mathematics for Python
+ The Numeric Extensions to Python (NumPy) add powerful
+ multi-dimensional array objects to the wonderful general purpose
+ programming language Python. These new objects give Python the number
+ crunching power of numeric languages like Matlab and IDL while
+ maintaining all of the advantages of the general-purpose programming
+ language Python.
+ .
+ These extensions add two new object types to Python, and then include
+ a number of extensions that take advantage of these two new objects:
+ .
+  - Multidimensional Array Objects
+    * Efficient arrays of homogeneous machine types (floats, longs,
+      complex doubles)
+    * Arbitrary number of dimensions
+    * Sophisticated structural operations
+  - Universal Function Objects
+    * Support mathematical functions on all Python objects
+    * Very efficient for array objects
+
+##Package: python-numeric-ext
+##Architecture: all
+##Depends: ${python:Depends}, python-numeric (= ${Source-Version})
+##Conflicts: python2-numeric-ext
+##Replaces: python2-numeric-ext
+##Description: Extension modules for Numeric Python
+## Simple interfaces to existing numerical libraries:
+##   * Linear Algebra (LAPACK)
+##   * Fourier Transforms (FFTPACK)
+##   * Random Arrays (RANLIB)
+##   * Independent Random Streams (RNG, ranf)
+##   * Masked Arrays (MA)
+##

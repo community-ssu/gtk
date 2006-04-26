@@ -1,0 +1,683 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 6.0/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="numpy.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<TITLE> 12.	 Writing a C extension to NumPy</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1 CLASS="Chapter">
+<A NAME="pgfId-36640"></A>12.	 <A NAME="69650"></A>Writing a C extension to NumPy</H1>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36641"></A>Introduction</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36642"></A>There are two applications that require using the NumPy array type in C extension modules: </P>
+<UL>
+<LI CLASS="Bullet">
+<A NAME="pgfId-36643"></A>Access to numerical libraries: Extension modules can be used to make numerical libraries written in C (or languages linkable to C, such as Fortran) accessible to Python programs. The NumPy array type has the advantage of using the same data layout as arrays in C and Fortran. </LI>
+<LI CLASS="Bullet">
+<A NAME="pgfId-36644"></A>Mixed-language numerical code: In most numerical applications, only a small part of the total code is CPU time intensive. Only this part should thus be written in C, the rest can be written in Python. NumPy arrays are important for the interface between these two parts, because they provide equally simple access to their contents from Python and from C. </LI>
+</UL>
+<P CLASS="Body">
+<A NAME="pgfId-36645"></A>This document is a tutorial for using NumPy arrays in C extensions. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36646"></A>Preparing an extension module for NumPy arrays</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36647"></A>To make NumPy arrays available to an extension module, it must include the header file <EM CLASS="Code">
+arrayobject.h</EM>
+<A NAME="marker-59737"></A>, after the header file Python.h that is obligatory for all extension modules. The file <EM CLASS="Code">
+arrayobject.h</EM>
+ comes with the NumPy distribution; depending on where it was installed on your system you might have to tell your compiler how to find it. The Numeric installation process installed arrayobject.h in a subdirectory Numeric in your Python include path, so you should include it this way:</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-68594"></A>#include &quot;Numeric/arrayobject.h&quot;</P>
+<DIV>
+<H6 CLASS="NoteTip">
+<A NAME="pgfId-68429"></A><DIV>
+<IMG SRC="numpy-7.gif" width="469" height="12">
+</DIV>
+&nbsp;</H6>
+<P CLASS="Note">
+<A NAME="pgfId-68455"></A>Is your C extension using Numeric blowing up? Maybe you didn't call import_array(). If the extension is not in a single file, also define PY_ARRAY_UNIQUE_SYMBOL.</P>
+<DIV>
+<H6 CLASS="NoteBottom">
+<A NAME="pgfId-68451"></A><DIV>
+<IMG SRC="numpy-7.gif" width="469" height="12">
+</DIV>
+&nbsp;</H6>
+<P CLASS="Body">
+<A NAME="pgfId-68428"></A>In addition to including <EM CLASS="Code">
+arrayobject.h</EM>
+, the extension must call <EM CLASS="Code">
+import_array()</EM>
+ in its initialization function, after the call to <EM CLASS="Code">
+Py_InitModule()</EM>
+. This call makes sure that the module which implements the array type has been imported, and initializes a pointer array through which the NumPy functions are called. If you forget this call, your extension module will crash on the first call to a NumPy function.</P>
+<P CLASS="Body">
+<A NAME="pgfId-86175"></A>If your extension does not reside in a single file, there is an additional step that is necessary. Be sure to define the symbol <A NAME="marker-86192"></A>PY_ARRAY_UNIQUE_SYMBOL to some name (the same name in all the files comprising the extension), upstream from the include of arrayobject.h. Typically this would be in some header file that is included before arrayobject.h. The import_array statement goes into the init function for the module as before, and not in any of the other files. Of course, it is ok to define PY_ARRAY_UNIQUE_SYMBOL symbol even if you only use one file for the extension. </P>
+<P CLASS="Body">
+<A NAME="pgfId-86174"></A>If you will be manipulating ufunc objects, you should also include the file <EM CLASS="Code">
+ufuncobject.h</EM>
+<A NAME="marker-59738"></A>, also available as part of the NumPy distribution in the <EM CLASS="Code">
+Include</EM>
+ directory and usually installed in subdirectory Numeric.</P>
+<P CLASS="Body">
+<A NAME="pgfId-36648"></A>All of the rules related to writing extension modules for Python apply.  The reader unfamiliar with these rules is encouraged to read the standard text on the topic, &quot;Extending and Embedding the Python Interpreter,&quot; available as part of the standard Python documentation distribution.</P>
+</DIV>
+</DIV>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36649"></A>Accessing NumPy arrays from C</H6>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-36650"></A>Types and Internal Structure</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36651"></A>NumPy arrays are defined by the structure <EM CLASS="Code">
+PyArrayObject</EM>
+<A NAME="marker-59739"></A>, which is an extension of the structure <EM CLASS="Code">
+PyObject</EM>
+. Pointers to <EM CLASS="Code">
+PyArrayObject</EM>
+ can thus safely be cast to <EM CLASS="Code">
+PyObject</EM>
+ pointers, whereas the inverse is safe only if the object is known to be an array. The type structure corresponding to array objects is <EM CLASS="Code">
+PyArray_Type</EM>
+. The structure <EM CLASS="Code">
+PyArrayObject</EM>
+ has four elements that are needed in order to access the array's data from C code: </P>
+</DIV>
+<DIV>
+<H6 CLASS="CodeBulletLevel2">
+<A NAME="pgfId-36652"></A><EM CLASS="Code">
+int nd</EM>
+</H6>
+<P CLASS="BulletLev2Continuation">
+<A NAME="pgfId-36653"></A>The number of dimensions in the array.</P>
+</DIV>
+<DIV>
+<H6 CLASS="CodeBulletLevel2">
+<A NAME="pgfId-36654"></A><EM CLASS="Code">
+int *dimensions</EM>
+</H6>
+<P CLASS="BulletLev2Continuation">
+<A NAME="pgfId-36655"></A>A pointer to an array of <EM CLASS="Code">
+nd</EM>
+ integers, describing the number of elements along each dimension. The sizes are in the conventional order, so that for any array <EM CLASS="Code">
+a</EM>
+, <BR>
+<EM CLASS="Code">
+a.shape==(dimensions[0], dimensions[1], ..., dimensions[nd-1])</EM>
+.</P>
+</DIV>
+<DIV>
+<H6 CLASS="CodeBulletLevel2">
+<A NAME="pgfId-36656"></A><EM CLASS="Code">
+int *strides</EM>
+</H6>
+<P CLASS="BulletLev2Continuation">
+<A NAME="pgfId-36657"></A>A pointer to an array of <EM CLASS="Code">
+nd</EM>
+ integers, describing the address offset between two successive data elements along each dimension. Note that strides can also be negative!  Each number gives the number of bytes to add to a pointer to get to the next element in that dimension. For example, if <EM CLASS="Code">
+myptr</EM>
+ currently points to element of a rank-5 array at indices <EM CLASS="Code">
+1,0,5,3,2</EM>
+ and you want it to point to element <EM CLASS="Code">
+1,0,5,4,2</EM>
+ then you should add <EM CLASS="Code">
+strides[3]</EM>
+ to the pointer: <EM CLASS="Code">
+myptr += strides[3]</EM>
+. This works even if (and is especially useful when) the array is not contiguous in memory.</P>
+</DIV>
+<DIV>
+<H6 CLASS="CodeBulletLevel2">
+<A NAME="pgfId-36658"></A><EM CLASS="Code">
+char *data</EM>
+</H6>
+<P CLASS="BulletLev2Continuation">
+<A NAME="pgfId-36659"></A>A pointer to the first data element of the array.</P>
+<P CLASS="Body">
+<A NAME="pgfId-36660"></A>The address of a data element can be calculated from its indices and the data and strides pointers. For example, element <EM CLASS="Code">
+[i, j]</EM>
+ of a two-dimensional array has the address <EM CLASS="Code">
+data + i*array-&gt;strides[0] + j*array-&gt;strides[1]</EM>
+. Note that the stride offsets are in bytes, not in storage units of the array elements. Therefore address calculations must be made in bytes as well, starting from the data pointer, which is always a char pointer. To access the element, the result of the address calculation must be cast to a pointer of the required type. The advantage of this arrangement is that purely structural array operations (indexing, extraction of subarrays, etc.) do not have to know the type of the array elements. </P>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-36661"></A>Element data types</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36662"></A>The type of the array elements is indicated by a type number, whose possible values are defined as constants in <EM CLASS="Code">
+arrayobject.h</EM>
+, as given in Table 3.</P>
+<TABLE BORDER="1">
+<CAPTION>
+<H6 CLASS="TableTitle">
+<A NAME="pgfId-36665"></A>C constants corresponding to storage types</H6>
+</CAPTION>
+<TR>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+<A NAME="pgfId-36669"></A>Constant</P>
+</TH>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+<A NAME="pgfId-36671"></A>element data type</P>
+</TH>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36673"></A><EM CLASS="Code">
+PyArray_CHAR</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36675"></A><EM CLASS="Code">
+char</EM>
+</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36677"></A><EM CLASS="Code">
+PyArray_UBYTE</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36679"></A><EM CLASS="Code">
+unsigned char</EM>
+</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36681"></A><EM CLASS="Code">
+PyArray_SBYTE</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36683"></A><EM CLASS="Code">
+signed char</EM>
+</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36685"></A><EM CLASS="Code">
+PyArray_SHORT</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36687"></A><EM CLASS="Code">
+short</EM>
+</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36689"></A><EM CLASS="Code">
+PyArray_INT</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36691"></A><EM CLASS="Code">
+int</EM>
+</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36693"></A><EM CLASS="Code">
+PyArray_LONG</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36695"></A><EM CLASS="Code">
+long</EM>
+</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36697"></A><EM CLASS="Code">
+PyArray_FLOAT</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36699"></A><EM CLASS="Code">
+float</EM>
+</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36701"></A><EM CLASS="Code">
+PyArray_DOUBLE</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36703"></A><EM CLASS="Code">
+double</EM>
+</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36705"></A><EM CLASS="Code">
+PyArray_CFLOAT</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36707"></A><EM CLASS="Code">
+float[2]</EM>
+</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36709"></A><EM CLASS="Code">
+PyArray_CDOUBLE</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36711"></A><EM CLASS="Code">
+double[2]</EM>
+</P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36713"></A><EM CLASS="Code">
+PyArray_OBJECT</EM>
+</P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellBody">
+<A NAME="pgfId-36715"></A><EM CLASS="Code">
+PyObject *</EM>
+</P>
+</TD>
+</TR>
+</TABLE>
+<P CLASS="Body">
+<A NAME="pgfId-36716"></A>The type number is stored in <EM CLASS="Code">
+array-&gt;descr-&gt;type_num</EM>
+. Note that the names of the element type constants refer to the C data types, not the Python data types. A Python <EM CLASS="Code">
+int</EM>
+ is equivalent to a C <EM CLASS="Code">
+long</EM>
+, and a Python <EM CLASS="Code">
+float</EM>
+ corresponds to a C <EM CLASS="Code">
+double</EM>
+. Many of the element types listed above do not have corresponding Python scalar types (e.g. <EM CLASS="Code">
+PyArray_INT</EM>
+). </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-36717"></A><A NAME="marker-59740"></A>Contiguous arrays</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36718"></A>An important special case of a NumPy array is the contiguous array. This is an array whose elements occupy a single contiguous block of memory and have the same order as a standard C array. (Internally, this is decided by examinging the array array-&gt;strides. The value of <EM CLASS="Code">
+array-&gt;strides[i]</EM>
+ is equal to the number of bytes that one must move to get to an element when the i'th index is increased by 1). Arrays that are created from scratch are always contiguous; non-contiguous arrays are the result of indexing and other structural array operations. The main advantage of contiguous arrays is easier handling in C; the pointer <EM CLASS="Code">
+array-&gt;data</EM>
+ is cast to the required type and then used like a C array, without any reference to the stride values. This is particularly important when interfacing to existing libraries in C or Fortran, which typically require this standard data layout. A function that requires input arrays to be contiguous must call the conversion function <EM CLASS="Code">
+PyArray_ContiguousFromObject()</EM>
+, described in the section &quot;Accepting input data from any sequence type&quot;.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-36719"></A><A NAME="marker-59741"></A>Zero-dimensional arrays</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36720"></A>NumPy permits the creation and use of zero-dimensional arrays, which can be useful to treat scalars and higher-dimensional arrays in the same way. However, library routines for general use should not return zero-demensional arrays, because most Python code is not prepared to handle them. Moreover, zero-dimensional arrays can create confusion because they behave like ordinary Python scalars in many circumstances but are of a different type. NumPy provides a conversion function from zero-dimensional arrays to Python scalars, which is described in the section &quot;Returning arrays from C functions&quot;. </P>
+</DIV>
+</DIV>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36721"></A>A simple example</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36722"></A>The following function calculates the sum of the diagonal elements of a two-dimensional array, verifying that the array is in fact two-dimensional and of type <EM CLASS="Code">
+PyArray_DOUBLE</EM>
+. </P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36723"></A>static PyObject *</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36724"></A>trace(PyObject *self, PyObject *args)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36725"></A>{</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36726"></A>  PyArrayObject *array;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36727"></A>  double sum;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36728"></A>  int i, n;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36729"></A>&nbsp;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36730"></A>  if (!PyArg_ParseTuple(args, &quot;O!&quot;,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36731"></A>                        &amp;PyArray_Type, &amp;array))</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36732"></A>    return NULL;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36733"></A>  if (array-&gt;nd != 2 || array-&gt;descr-&gt;type_num != PyArray_DOUBLE) {</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36734"></A>    PyErr_SetString(PyExc_ValueError,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36735"></A>                    &quot;array must be two-dimensional and of type float&quot;);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36736"></A>    return NULL;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36737"></A>  }</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36738"></A>&nbsp;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36739"></A>  n = array-&gt;dimensions[0];</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36740"></A>  if (n &gt; array-&gt;dimensions[1])</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36741"></A>    n = array-&gt;dimensions[1];</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36742"></A>  sum = 0.;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36743"></A>  for (i = 0; i &lt; n; i++)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36744"></A>    sum += *(double *)(array-&gt;data + i*array-&gt;strides[0] + i*array-&gt;strides[1]);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36745"></A>&nbsp;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36746"></A>  return PyFloat_FromDouble(sum);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36747"></A>}</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36748"></A>Accepting input data from any sequence type</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36749"></A>The example in the last section requires its input to be an array of type double. In many circumstances this is sufficient, but often, especially in the case of library routines for general use, it would be preferable to accept input data from any sequence (lists, tuples, etc.) and to convert the element type to double automatically where possible. NumPy provides a function that accepts arbitrary sequence objects as input and returns an equivalent array of specified type (this is in fact exactly what the array constructor <EM CLASS="Code">
+Numeric.array()</EM>
+ does in Python code): </P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36750"></A>PyObject *</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36751"></A>PyArray_ContiguousFromObject(PyObject *object,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36752"></A>                             int type_num,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36753"></A>                             int min_dimensions,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36754"></A>                             int max_dimensions);</P>
+<P CLASS="Body">
+<A NAME="pgfId-36755"></A>The first argument, object, is the sequence object from which the data is taken. The second argument, type_num, specifies the array element type (see the table in the section &quot;Element data types&quot;. If you want the function to the select the ``smallest'' type that is sufficient to store the data, you can pass the special value <EM CLASS="Code">
+PyArray_NOTYPE</EM>
+. The remaining two arguments let you specify the number of dimensions of the resulting array, which is guaranteed to be no smaller than <EM CLASS="Code">
+min_dimensions</EM>
+ and no larger than <EM CLASS="Code">
+max_dimensions</EM>
+, except for the case <EM CLASS="Code">
+max_dimensions == 0</EM>
+, which means that no upper limit is imposed.</P>
+<P CLASS="Body">
+<A NAME="pgfId-36756"></A>If the input data is not compatible with the type or dimension restrictions, an exception is raised. Since the array returned by <EM CLASS="Code">
+PyArray_ContiguousFromObject()</EM>
+ is guaranteed to be contiguous, this function also provides a method of converting a non-contiguous array to a contiguous one. If the input object is already a contiguous array of the specified type, it is passed on directly; there is thus no performance or memory penalty for calling the conversion function when it is not required. Using this function, the example from the last section becomes </P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36757"></A>static PyObject *</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36758"></A>trace(PyObject *self, PyObject *args)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36759"></A>{</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36760"></A>  PyObject *input;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36761"></A>  PyArrayObject *array;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36762"></A>  double sum;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36763"></A>  int i, n;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36764"></A>&nbsp;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36765"></A>  if (!PyArg_ParseTuple(args, &quot;O&quot;, &amp;input))</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36766"></A>    return NULL;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36767"></A>  array = (PyArrayObject *)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36768"></A>          PyArray_ContiguousFromObject(input, PyArray_DOUBLE, 2, 2);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36769"></A>  if (array == NULL)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36770"></A>    return NULL;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36771"></A>&nbsp;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36772"></A>  n = array-&gt;dimensions[0];</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36773"></A>  if (n &gt; array-&gt;dimensions[1])</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36774"></A>    n = array-&gt;dimensions[1];</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36775"></A>  sum = 0.;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36776"></A>  for (i = 0; i &lt; n; i++)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36777"></A>    sum += *(double *)(array-&gt;data + i*array-&gt;strides[0] + i*array-&gt;strides[1]);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36778"></A>  </P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36779"></A>  Py_DECREF(array);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36780"></A>  return PyFloat_FromDouble(sum);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36781"></A>}</P>
+<P CLASS="Body">
+<A NAME="pgfId-36782"></A>Note that no explicit error checking is necessary in this version, and that the array reference that is returned by <EM CLASS="Code">
+PyArray_ContiguousFromObject()</EM>
+ must be destroyed by calling <EM CLASS="Code">
+Py_DECREF()</EM>
+. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36783"></A>Creating NumPy arrays</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36784"></A>NumPy arrays can be created by calling the function </P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36785"></A>PyObject *</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36786"></A>PyArray_FromDims(int n_dimensions,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36787"></A>                 int dimensions[n_dimensions],</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36788"></A>                 int type_num);</P>
+<P CLASS="Body">
+<A NAME="pgfId-36789"></A>The first argument specifies the number of dimensions, the second one the length of each dimension, and the third one the element data type (see the table in the section &quot;Element data types&quot;. The array that is returned is contiguous, but the contents of its data space are undefined. There is a second function which permits the creation of an array object that uses a given memory block for its data space: </P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36790"></A>PyObject *</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36791"></A>PyArray_FromDimsAndData(int n_dimensions,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36792"></A>                        int dimensions[n_dimensions]</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36793"></A>                        int item_type</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36794"></A>                        char *data);</P>
+<P CLASS="Body">
+<A NAME="pgfId-36795"></A>The first three arguments are the same as for <EM CLASS="Code">
+PyArray_FromDims()</EM>
+. The fourth argument is a pointer to the memory block that is to be used as the array's data space. It is the caller's responsibility to ensure that this memory block is not freed before the array object is destroyed. With few exceptions (such as the creation of a temporary array object to which no reference is passed to other functions), this means that the memory block may never be freed, because the lifetime of Python objects are difficult to predict. Nevertheless, this function can be useful in special cases, for example for providing Python access to arrays in Fortran common blocks. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36796"></A>Returning arrays from C functions</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36797"></A>Array objects can of course be passed out of a C function just like any other object. However, as has been mentioned before, care should be taken not to return zero-dimensional arrays unless the receiver is known to be prepared to handle them. An equivalent Python scalar object should be returned instead. To facilitate this step, NumPy provides a special function </P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36798"></A>PyObject *</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36799"></A>PyArray_Return(PyArrayObject *array);</P>
+<P CLASS="Body">
+<A NAME="pgfId-36800"></A>which returns the array unchanged if it has one or more dimensions, or the appropriate Python scalar object in case of a zero-dimensional array. </P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-36801"></A>A less simple example</H6>
+<P CLASS="Body">
+<A NAME="pgfId-36802"></A>The function shown below performs a matrix-vector multiplication by calling the <EM CLASS="Code">
+BLAS</EM>
+ function <EM CLASS="Code">
+DGEMV</EM>
+. It takes three arguments: a scalar prefactor, the matrix (a two-dimensional array), and the vector (a one-dimensional array). The return value is a one-dimensional array. The input values are checked for consistency. In addition to providing an illustration of the functions explained above, this example also demonstrates how a Fortran routine can be integrated into Python. Unfortunately, mixing Fortran and C code involves machine-specific peculiarities. In this example, two assumptions have been made: </P>
+<UL>
+<LI CLASS="Bullet">
+<A NAME="pgfId-36803"></A>The Fortran function <EM CLASS="Code">
+DGEMV</EM>
+ must be called from C as <EM CLASS="Code">
+dgemv_</EM>
+. Many Fortran compilers apply this rule, but the C name could also be <EM CLASS="Code">
+dgemv</EM>
+ or <EM CLASS="Code">
+DGEMV</EM>
+ (or in principle anything else; there is no fixed standard). </LI>
+<LI CLASS="Bullet">
+<A NAME="pgfId-36804"></A>Fortran <EM CLASS="Code">
+integer</EM>
+s are equivalent to C <EM CLASS="Code">
+long</EM>
+s, and Fortran double precision numbers are equivalent      to C doubles. This works for all systems that I have personally used, but again there is no standard.</LI>
+</UL>
+<P CLASS="Body">
+<A NAME="pgfId-36805"></A>Also note that the libraries that this function must be linked to are system-dependent; on my Linux system (using <EM CLASS="Code">
+gcc</EM>
+/<EM CLASS="Code">
+g77</EM>
+), the libraries are <EM CLASS="Code">
+blas</EM>
+ and <EM CLASS="Code">
+f2c</EM>
+. So here is the code: </P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36806"></A>static PyObject *</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36807"></A>matrix_vector(PyObject *self, PyObject *args)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36808"></A>{</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36809"></A>  PyObject *input1, *input2;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36810"></A>  PyArrayObject *matrix, *vector, *result;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36811"></A>  int dimensions[1];</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36812"></A>  double factor[1];</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36813"></A>  double real_zero[1] = {0.};</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36814"></A>  long int_one[1] = {1};</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36815"></A>  long dim0[1], dim1[1];</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36816"></A>&nbsp;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36817"></A>  extern dgemv_(char *trans, long *m, long *n,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36818"></A>                double *alpha, double *a, long  *lda,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36819"></A>                double *x, long *incx,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36820"></A>                double *beta, double *Y, long *incy);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36821"></A>&nbsp;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36822"></A>  if (!PyArg_ParseTuple(args, &quot;dOO&quot;, factor, &amp;input1, &amp;input2))</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36823"></A>    return NULL;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36824"></A>  matrix = (PyArrayObject *)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36825"></A>            PyArray_ContiguousFromObject(input1, PyArray_DOUBLE, 2, 2);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36826"></A>  if (matrix == NULL)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36827"></A>    return NULL;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36828"></A>  vector = (PyArrayObject *)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36829"></A>            PyArray_ContiguousFromObject(input2, PyArray_DOUBLE, 1, 1);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36830"></A>  if (vector == NULL)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36831"></A>    return NULL;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36832"></A>  if (matrix-&gt;dimensions[1] != vector-&gt;dimensions[0]) {</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36833"></A>    PyErr_SetString(PyExc_ValueError,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36834"></A>                    &quot;array dimensions are not compatible&quot;);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36835"></A>    return NULL;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36836"></A>  }</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36837"></A>&nbsp;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36838"></A>  dimensions[0] = matrix-&gt;dimensions[0];</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36839"></A>  result = (PyArrayObject *)PyArray_FromDims(1, dimensions, PyArray_DOUBLE);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36840"></A>  if (result == NULL)</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36841"></A>    return NULL;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36842"></A>&nbsp;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36843"></A>  dim0[0] = (long)matrix-&gt;dimensions[0];</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36844"></A>  dim1[0] = (long)matrix-&gt;dimensions[1];</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36845"></A>  dgemv_(&quot;T&quot;, dim1, dim0, factor, (double *)matrix-&gt;data, dim1,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36846"></A>         (double *)vector-&gt;data, int_one,</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36847"></A>         real_zero, (double *)result-&gt;data, int_one);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36848"></A>&nbsp;</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36849"></A>  return PyArray_Return(result);</P>
+<P CLASS="C-Code">
+<A NAME="pgfId-36850"></A>}</P>
+<P CLASS="Body">
+<A NAME="pgfId-36851"></A>Note that <EM CLASS="Code">
+PyArray_Return()</EM>
+ is not really necessary in this case, since we know that the array being returned is one-dimensional. Nevertheless, it is a good habit to always use this function; its performance cost is practically zero. </P>
+</DIV>
+<P><A HREF="numpy.html">Go to Main</A>      <A HREF="numpy-12.html">Go to Previous</A>       <A HREF="numpy-14.html">Go to Next</A></P>
+</BODY>
+</HTML>

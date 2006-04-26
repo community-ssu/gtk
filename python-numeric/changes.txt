@@ -1,0 +1,232 @@
+Version 23.8  March 2005
+[Cooke]       Fixed more 64-bit issues (patch 117603)
+[unreported]  Changed arrayfnsmodule back to PyArray_INT where the code
+              typecasts to (int *).  Changed CanCastSafely to check
+	      if sizeof(long) == sizeof(int)
+
+Version 23.7  January 2005
+[1075953]     added franf to fix problems on AMD64.
+[1027480]     this should have been fixed before. 
+[scipy]       fixed reshape to convert dimensions to PyArray_LONG to avoid typecasting problem.
+[eric jones]  added empty to generate unitialized array
+[user ]       added support for vecLib on MacOS X in setup.py
+[unreported]  added UfuncType to Numeric to Parallel ArrayType 
+
+Version 23.6 
+[unreported]  fixed argmin to work with Unsigned Array Types
+[unreported]  fixed UINT_to_XXX methods so input is assumed unsigned int
+[unreported]  fixed UINT conversion rules and inappropriate casting to unsigned integers
+                 from signed integers
+[build ]      fixed tarball so same tarball for multiple versions.
+
+
+Version 23.5 Sept 2004
+[unreported]  changed arrayfnsmodule to look for PyArray_LONG on input not PyArray_INT
+[perez     ]  fixed so that matrixmultiply is always dot (even if BLAS optimized)
+
+Version 23.4 Sept 2004
+[unreported]  fixed setup.py file so ATLAS not default
+[unreported]  altered coercion so that LONG is not cast to INT safely
+
+Version 23.3 June 2004
+[unreported]  misspelled UFunc_Type in ufunc API
+[ 843510 ]    ubyte abs giving incorrect results
+[ 919540 ]    added weakreferences to Numeric Object
+[unreported]  fixed segfault due to unchecked NULL in get_type
+[unreported]  added faster array(a) when a is already an array
+[unreported]  a can now be interpreted as a scalar as long as it only 
+               has one element (instead of just zero-dimensions).
+              changed compress keyword from dimension to axis to match
+              everyother function in the library.
+
+Version 23.1 August 2003
+[unreported]  fixed assignment to matrix.
+[unreported]  added check so that non-character array cannot be interpreted 
+                as a character buffer.
+[unreported]  array([m,m,m])  when m is a rank-0 array now works as expected.
+Patches:
+[ 782001 ] Add true and floor divide to MA
+[ 781215 ] true_divide bug
+[ 776991 ] multiplying small UINT values gives random results
+[ 776467 ] remove string exceptions
+
+Version 23 March 2003
+
+Important notice:
+
+   Two packages have been removed from optional ones: PropertiedClasses, kinds.
+MA has been rewritten to use standard property and will not work for 
+ancient Pythons. (Pre 2.1, I think). Use the MA / Propertied Classes 
+from Numeric 22 if you can't use this one.
+
+    The kinds package (subject of PEP-0242) will be released as a separate 
+package shortly. PEP-0242 was withdrawn because this facility did not seem
+to be worth putting in the standard library, but kinds is correct as is.
+
+[ 695200 ] Richard Everson (R.M.Everson@exeter.ac.uk) has donated a dotblas 
+          Package that gets Numeric to use optimized BLAS libraries for dot
+	  innerproduct, and vdot --- a conjugate vector dot product he introduced.
+	  setup.py must be altered by the user in a manner similar to the alterations
+	  to use optimized BLAS for LinearAlgebra
+
+[675777]  new-style classes as objects in a sequence were not being detected
+          correctly by array_objecttype.  Corrected array_objecttype to handle
+	  them.  (Oliphant)
+
+[contribution] Fernando Perez has donated a revised version of the tutorial
+    file view.py that seems to be less likely to hang the interpreter.
+
+[68392923]  dimensions+scalar -> crash (jneb)
+    Found divergent value of MAX_DIMS in ufuncobject.c; 
+    The value was 20 there and 40 in two other places. But 40 is ludicrous,
+    we would never have that much memory available. Changed
+    them all to 30.
+
+[ unreported ] Changed PY_VERSION_HEX check for version 2.2 
+                  to 0x0202000 as it should have been
+	       so that true_division numeric ops can be supported
+
+[ 614808 ] Inconsistent use of tabs and spaces
+           Fixed as suggested by Jimmy Retzlaff
+               LinearAlgebra.py 
+               Matrix.py 
+               RNG/__init__.py 
+               RNG/Statistics.py 
+
+[ 621032 ] needless work in multiarraymodule.c 
+           Fixes suggested by Greg Smith applied.
+           Also recoded OBJECT_DotProduct to eliminate a warning error.
+
+[ 630584 ] generalized_inverse of complex array 
+           Fix suggested by Greg Smith applied.
+
+[ 652061 ] PyArray_As2D doesn't check pointer.
+           Fix suggested by Andrea Riciputi applied.
+
+[ 655512 ] inverse_real_fft incorrect many sizes
+           Fix given by mbriest applied.
+
+[unreported]  a.real increased reference count of a and raised error when
+               a is not complex.
+               Fixed to apparent intended behavior of returning an array
+	       with the same data. (Oliphant)
+
+Patch for 64-bit machines applied. Appears to work ok on 32 bit but don't
+have the machine to test the patch.(Dubois)
+
+[ 627771 ] matrixmultiply broken for non-contig (fixed, test case added)
+           (Greg Smith)
+
+[unreported] Fixed ArrayPrinter when NaN's show up in Float32
+                 precision.
+
+[ 545336 ] Bug in RandomArray.randint
+Changed the function ranf to type double (Chuck Harris)
+Harris is probably right that all floats should be double in this module
+but it may be this has performance or storage consequences that would 
+bite somebody.  I support RNG, not this one. -- Dubois
+
+Version 22.0 August , 2002
+    a. Changed multiarraymodule functions to accept keywords where documentation implies
+         it through the use of optional variables.
+         Specifically in multiarray: zeros, take, transpose, repeat, 
+                                    set_string_function, cross_correlate.
+                      in ufuncobject: reduce and accumulate now take keyword arguments
+                                      for the optional axis argument. 
+    b. Added support for unsigned shorts 'w' and unsigned ints 'u' 
+         -- Travis Oliphant with help from Darren Hart and F. Oliver Gathmann.
+    Increased max permissible iterations in SVD for supplied lapack. -- Dubois
+    Recoded RandomArray.randint to try to see if we can work around bug 
+         on some platforms. -- Dubois
+
+Version 21.3 June 8, 2002
+Fixed bugs:
+    [ #557927 ] fixed matrix slice assignment
+    [ #552922 ] added check for correct datatype in .astype() method.
+                  Created new API PyArray_ValidType to handle this check
+                  here as well as in multiarraymodule.c  
+    [ #551808 ] fixed segfault with unicode array (Travis O.)
+    [ #559511 ] MLab.std now works for axis != 0 (Travis O.)
+    [ #542979 ] sum returns exception tuple
+
+    [ #528328 ] true division operators used to return single precision on division of
+                   integers and longs --- now defaults to double precision (but only on int and 
+                       long division --- still single-precision for ubyte, short, and byte division.
+    [ none   ] arange(start, end, step) slightly different near end points than 
+                   start + arange(0, N)*step where N is the length.
+    [ none   ] a = zeros(2,'D');  a[0] = array(0.0+0.6j) would not work. (Assigning a 
+                   rank-0 array did not work for CFLOAT_setitem or CDOUBLE_setitem.
+        [ 530688 ] Python crash when transposing array (Walter Moreira)
+
+Version 21.0 March 13, 2002
+Fixed bugs:
+    [ #482603 ] Memory leak in MA/Numeric/Python
+                Reported by Reggie Dugard. Turned out to be 
+                *two* memory leaks in one case in a routine in Numeric, 
+                array_objectype. (Dubois)
+    [ none    ] if vals was a null-array array([]) putmask and put would
+                   crash.  Fixed with check.
+    [ #469951 ] n = n1[0] gives array which shares dimension of n1 array. 
+                  This causes bugs if shape of n1 is changed (n didn't used
+                  to have it's own dimensions array  (Travis Oliphant)
+    [ #514588 ] MLab.cov(x,x) != MLab.cov(x) (Travis Oliphant)
+    [ #518702 ] segfault when invalid typecode for asarray (Travis Oliphant)
+    [ #497530 ] MA __getitem__ prevents 0 len arrays (Reggie Duggard)
+    [ #508363 ] outerproduct of noncontiguous arrays (Martin Wiechert)
+    [ #513010 ] memory leak in comparisons (Byran Nollett)
+    [ #512223 ] Character typecode not defined (Jochen Kupper)
+    [ #500784 ] MLab.py diff error (anonymous, fixed by Dubois)
+    [ #503741 ] accuracy of MLab.std(x) (Katsunori Waragai)
+    [ #507568 ] overlapping copy a[2:5] = a[3:6]
+                Change uses of memcpy to memmove which allows overlaps.
+    [ numpy-Patches-499722 ] size of buffer created from array is bad (Michel Sanner).
+    [ #502186 ] a BUG in RandomArray.normal (introduced by last bug fix in 20.3)      
+               (Katsunori Waragai).
+      
+Fixed errors for Mac (Jack Jensen).
+
+Make rpm's properly, better Windows installers. (Gerard Vermeulen)
+    Added files setup.cfg; setup calculates rpm_install.sh to use current Python.
+    New setup.py, eliminate setup_all.py. Use os.path.join everywhere. Revision in b6
+    added file README.RPM, further improvements.
+
+Implement true division operations for Python 2.2. (Bruce Sherwood)
+    Note: true division of all integer types results in an array of floats, 
+    not doubles. This decision is arbitrary and there are arguments either way,
+    so users of this new feature should be aware that the decision may 
+    change in the future. 
+
+New functions in Numeric; they work on any sequence a that can be converted to a
+Numeric array. Similar change to average in MA. (Dubois)
+
+    def rank (a):
+        "Get the rank of a (the number of dimensions, not a matrix rank)"
+
+    def shape (a):
+        "Get the shape of a"
+
+    def size (a, axis=None):
+        "Get the number of elements in a, or along a certain axis."
+                            
+    def average (a, axis=0, weights=None, returned = 0):
+        """average(a, axis=0, weights=None)
+           Computes average along indicated axis. 
+           If axis is None, average over the entire array.
+           Inputs can be integer or floating types; result is type Float.
+       
+           If weights are given, result is:
+               sum(a*weights)/(sum(weights))
+           weights must have a's shape or be the 1-d with length the size
+           of a in the given axis. Integer weights are converted to Float.
+
+           Not supplying weights is equivalent to supply weights that are
+           all 1.
+    
+           If returned, return a tuple: the result and the sum of the weights 
+           or count of values. The shape of these two results will be the same.
+    
+           raises ZeroDivisionError if appropriate when result is scalar.
+           (The version in MA does not -- it returns masked values).
+        """
+
+

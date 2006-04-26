@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"><HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META NAME="GENERATOR" CONTENT="Adobe FrameMaker 6.0/HTML Export Filter">
+<LINK REL="STYLESHEET" HREF="numpy.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<TITLE> 3.	 The NumTut package</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<H1 CLASS="Chapter">
+<A NAME="pgfId-37261"></A>3.	 <A NAME="35986"></A>The <A NAME="marker-59530"></A>NumTut package</H1>
+<P CLASS="ChapterDescription">
+<A NAME="pgfId-67256"></A>This chapter leads the user through the installation and testing of the NumTut package, which should have been distributed with this document.</P>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-35585"></A>Testing the NumTut package</H6>
+<P CLASS="Body">
+<A NAME="pgfId-67257"></A>This tutorial assumes that the NumTut package has been installed. If it hasn't, see below, <A HREF="numpy-4.html#89754" CLASS="XRef">Possible reasons for failure</A>). This package contains a few sample images and utility functions for displaying arrays and the like. To find out if NumTut has been installed, do:</P>
+<P CLASS="Python">
+<A NAME="pgfId-35586"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+from NumTut import *</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-35587"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+view(greece)</EM>
+<A NAME="marker-59535"></A><A NAME="marker-59531"></A></P>
+<P CLASS="Python">
+<A NAME="pgfId-56844"></A>&nbsp;</P>
+<DIV>
+<IMG SRC="numpy-5.gif" width="280" height="195">
+</DIV>
+<P CLASS="Body">
+<A NAME="pgfId-35588"></A>If a picture of a greek street shows up on your screen, you're all set, and you can go to the next chapter.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM1Heading">
+<A NAME="pgfId-56796"></A><A NAME="89754"></A>Possible reasons for failure</H6>
+<P CLASS="Python">
+<A NAME="pgfId-56961"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+import NumTut</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-56970"></A>Traceback (innermost last):</P>
+<P CLASS="Python">
+<A NAME="pgfId-56971"></A>  File &quot;&lt;stdin&gt;&quot;, line 1, in ?</P>
+<P CLASS="Python">
+<A NAME="pgfId-56967"></A>ImportError: No module named NumTut</P>
+<P CLASS="Body">
+<A NAME="pgfId-56966"></A>This message indicates that you do not have the NumTut package installed in your PythonPath. NumTut is distributed along with the Numeric source distribution in the <EM CLASS="Code">
+Demo</EM>
+ subdirectory. It also is available at SourceForge as a separate download. Copy the <EM CLASS="Code">
+NumTut</EM>
+ subdirectory somewhere into your Python path, or just execute python from the Demo directory. </P>
+<P CLASS="Body">
+<A NAME="pgfId-85791"></A>If you have installed Numeric from a binary distribution, NumTut may not be included. Get the source distribution for the tutorial.</P>
+<P CLASS="Body">
+<A NAME="pgfId-68566"></A>On Win32, the NumTut directory can be placed in the main directory of your Python installation. On Unix, it can be placed in the site-packages directory of your installation.</P>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-57000"></A>Win32</H6>
+<P CLASS="Python">
+<A NAME="pgfId-57005"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+import NumTut</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-57006"></A>Traceback (innermost last):</P>
+<P CLASS="Python">
+<A NAME="pgfId-57007"></A>[...]</P>
+<P CLASS="Python">
+<A NAME="pgfId-57008"></A>ConfigurationError: view needs Tkinter on Win32, and either threads or the IDLE editor&quot;</P>
+<P CLASS="Body">
+<A NAME="pgfId-57019"></A>or:</P>
+<P CLASS="Python">
+<A NAME="pgfId-57028"></A>ConfigurationError: view needs either threads or the IDLE editor to be enabled.</P>
+<P CLASS="Body">
+<A NAME="pgfId-56880"></A>On Win32 (Windows 95, 98, NT), the <A NAME="marker-59532"></A>Tk toolkit is needed to view the images. Additionally, either the Python interpreter needs to be compiled with <A NAME="marker-59533"></A>thread support (which is true in the standard win32 distribution) or you need to call the NumTut program from the <A NAME="marker-59534"></A>IDLE interactive development environment.</P>
+<P CLASS="Body">
+<A NAME="pgfId-57100"></A>If you do not wish to modify your Python installation to match these requirements, you can simply ignore the references to the demonstrations which use the <EM CLASS="Code">
+view()</EM>
+ command later in this document. Using NumPy does not require image display tools, they just make some array operations easier to understand.</P>
+</DIV>
+<DIV>
+<H6 CLASS="FM2Heading">
+<A NAME="pgfId-56857"></A>Unix</H6>
+<P CLASS="Body">
+<A NAME="pgfId-56884"></A>On Unix machines, NumTut will work best with a Python interpreter with Tk support (not true in the default configuration), with the Tkinter GUI framework available and optionally with the tkImaging add-on (part of the Python Imaging Library). If this is not the case, it will try to use an external viewer which is able to read PPM files. The default viewer is 'xv', a common image viewer available from <EM CLASS="URL">
+ftp://ftp.cis.upenn.edu/pub/xv. </EM>
+If xv is not installed, you will get an error message similar to:</P>
+<P CLASS="Python">
+<A NAME="pgfId-57062"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+import NumTut</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-57063"></A>Traceback (innermost last):</P>
+<P CLASS="Python">
+<A NAME="pgfId-57064"></A>[...]</P>
+<P CLASS="Python">
+<A NAME="pgfId-57065"></A>ConfigurationError: PPM image viewer 'xv' not found</P>
+<P CLASS="Body">
+<A NAME="pgfId-57057"></A>You can configure NumTut to use a different image viewer, by typing e.g.:</P>
+<P CLASS="Python">
+<A NAME="pgfId-56923"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+import NumTut</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-56927"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+NumTut.view.PPMVIEWER = 'ppmviewer'</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-56943"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+from NumTut import *</EM>
+</P>
+<P CLASS="Python">
+<A NAME="pgfId-56947"></A>&gt;&gt;&gt; <EM CLASS="CodeInput">
+view(greece)</EM>
+</P>
+<P CLASS="Body">
+<A NAME="pgfId-57089"></A>If you do not have a PPM image viewer, you can simply ignore the references to the demonstrations which use the <EM CLASS="Code">
+view()</EM>
+ command later in this document. Using NumPy does not require image display tools, they just make some array operations easier to understand.</P>
+</DIV>
+</DIV>
+<P><A HREF="numpy.html">Go to Main</A>      <A HREF="numpy-3.html">Go to Previous</A>       <A HREF="numpy-5.html">Go to Next</A></P>
+</BODY>
+</HTML>

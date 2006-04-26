@@ -1,0 +1,68 @@
+                     Numerical Python
+
+    Versions after 20.0 require Python 2.0 or later. To take advantage of 
+    the "rich comparisons" (i.e., to be able to compare arrays and get
+    back a boolean result) you need Python 2.1.
+
+Web site: http://numpy.sourceforge.net
+Project page: http://sourceforge.net/projects/numpy
+Discussion group: numpy-discussion@lists.sourceforge.net
+
+===> Silicon Graphics bug:
+    Due to a bug in the SGI compiler's handling of complex
+    variables, you must build your *python* without optimization
+    on a certain file. Consult the Python installation instructions
+    for the details.
+
+INSTALLING BINARY DISTRIBUTIONS ON WINDOWS
+    Get the .exe installers and simply run them. Python must already be installed.
+
+BUILDING AND INSTALLING NUMERIC PTYHON FROM SOURCE
+    For Windows get the .zip sources. For other platforms use the .tar.gz sources.
+    After unpacking change to the top-level directory.
+
+    Using the python into which you wish to install Numeric Python, execute:
+
+    python setup.py install  
+
+    To clean up completely after an install, on Unix you can do:
+    sh makeclean.sh
+
+    See the Distutils documentation for many command-line options as to 
+    installation locations, etc.
+
+    By default Numeric builds itself with a small version of the LAPACK and
+    BLAS libraries. See setup.py. To use your own BLAS and LAPACK you will 
+    need to edit the settings in setup.py.
+
+OPTIONAL PACKAGES 
+    Subdirectory Packages contains optional packages. By default, setup.py installs
+    all of them; if you do not want all of them, simply remove the corresponding
+    lines from setup.py.
+
+    Each package has its own setup.py file for separate installation.
+
+    Package Properties is required for package kinds and package MA.
+
+CVS Repository, Bug Tracking, Documentation, Patches, Mailing Lists
+
+   Access to the source via CVS, a bug tracking facility, a patch submission
+   facility, and the numpy-discussion mailing list are all on the 
+   Numerical Python Project page:  http://sourceforge.net/projects/numpy
+
+   The Numerical Python Web Site is http://numpy.sourceforge.net. It contains
+   links to the project page and the documentation. It also has a few links 
+   to related sites.
+
+History
+
+This software was originally written by Jim Hugunin when he was at MIT, later
+at CNRI.
+
+Then Paul Dubois of LLNL became the "keeper". LLNL has released any 
+contributions to it by LLNL personnel for free redistribution. 
+However, many people have contributed to Numpy.  It is a classic open source effort 
+that nobody "owns".  So, Numerical Python is placed in the SourceForge under 
+the Python license. The LLNL license is in Legal.htm.
+
+ -- Paul F. Dubois, Jan. 13, 2000.

@@ -1,0 +1,213 @@
+Version 12
+    Version 12.1
+        [Patch 782001] Added support for true_divide and floor_divide
+
+    Version 12.0
+        Reimplemented average, masked_equal, masked_inside, masked_outside to improve
+        efficiency and memory usage. Added tests. Bugfix to inline divide.
+
+    Removed dependence on PropertiedClasses, uses property instead.
+        
+Version 11
+        Version 11.2.1 
+                     Improved documentation of masked functions.
+            [496536] Additional args to unary functions in MA (R. Dugard)
+                     Allows passing keyword arguments to instances of 
+                     masked_unary_operation and masked_binary_operation in MA,
+                     such as an axis to sometrue and add.reduce, 
+                     or decimals to around.
+
+	Version 11.1
+	   Fixed bug in reduce to make sure you get a scalar on reducing 1-D as Numeric does.
+	   Upgraded average to accept one-dimensional axial weights.
+	   Get count, size, rank from Numeric.
+	   Fix savespace option.
+	   Make binary ops work if operation is shape-shifting and one operand only
+	   has the mask is the wrong shape.
+
+	Version 11.0
+	   Recoded __array__ to be slightly more efficient.
+	   Fixed logic for reduction on shape () arrays.
+	   sum and product made into aliases for add.reduce and multiply.reduce.
+	       Note that this change is incompatible iff you had a call such as sum(a, axis, f)
+	       where you gave f and it was not 0, or if you relied on the result having no 
+	       missing elements. We apologize if this breaks your code but having sum and
+	       add.reduce differ was just too surprising.
+
+Version 10
+   Version 10.0 (alpha)
+       Performance optimization to take suggested by Tim Churches.
+
+       The division family (divide, remainder, fmod) had an error if the second argument
+       was not the same shape as the first and had a mask. To fix this, these operators
+       were made separate instances of a new class, domained_binary_operator. This should
+       slightly speed up all the other binary operators by getting this logic out of them.
+       The domained_binary_operator class has no methods reduce, accumulate, or outer.
+
+       Fixed strange typo in setitem; that revealed a bug for string type. Rewrote it
+       and setslice.
+
+       Incompatible change to the masked element
+           Changed the special element masked to actually be a shape () masked array of type int.
+           masked can now be used in arithmetic in the same ways any other masked array can be.
+           When used in operations with numeric scalars, the result is masked. When used in
+           operations with Numeric or masked arrays, the result is an array with all elements
+           masked. filled(masked, value) is a shape () array whose value is value.
+
+           The print control mechanism for masked arrays is now in an object masked_print_option. 
+           This change is not backward compatible for scripts that called masked.enable(), etc.
+           masked.set_display(). Such scripts are believed rare.
+
+           The default fill for a character or object array is the string '?'.
+
+           This change may cause scripts that used to halt with an error to continue running. This
+           is not necessarily a good thing. Large arrays with no valid elements may be computed
+           at great expense. On the positive side, the logic of many computations can be
+           simplified.
+
+       MLab.py
+           Added coding to allow these functions to work on sequences where possible, rather than
+           requiring conversion to array apriori.
+
+           Changed mean to return a floating point, mathematically correct answer in the case of
+           integer inputs.
+
+           Fixed bug in std that caused it to fail for axis > 0 by using the equivalent formula
+           sqrt((sum(x**2)-sum(x)**2/n)/(n-1.))
+
+Version 9
+   Version 9.0.1 (was not in any Numeric release)
+       Changed diag to 4 argument form in Numeric.
+       Changed fill used by minimum.reduce and maxium.reduce for integer
+       arrays to use sys.maxint, -sys.maxint resp.
+   Version 9.0
+       Changed to use PropertiedClasses.
+
+       Added assignment behavior for x.flat = value, x.real = value,
+       x.imag = value. Forbid deletion of these attributes.
+
+       Fixed bug in where, when one or more arguments is the value masked.
+
+       compress now requires condition to have no masked values, but
+       the result can have masked values.
+
+
+       __array__ accepts a typecode, and fails if any values are masked
+       by throwing an MAError.
+
+       make_mask_none and create_mask were redundant, so the latter was 
+       removed and reincarnated as an alias.
+
+       new method 'unmask()' changes the mask to None if possible.
+
+       add ceil; evidently forgotten on original build or got lost.
+       add fromstring, fromfunction, diagonal
+       add operators %, ^, &, |
+
+       Reimplemented minimum and maximum to add reduce, outer attributes.
+       minimum and maximum of two scalars returns a scalar.
+
+       Added outer attribute to masked_binary_function class.
+
+       Added new test suite which shadows the Numeric one; uses PyUnit
+
+   
+Version 8
+   Version 8.9
+       Fix where to handle scalars ok.
+       Fixed where to handle masked as an argument again.
+       Fix maximum and minimum to return scalar if scalar args.
+   Version 8.8
+       Fixed bug in flat that did not flatten the mask.
+   Version 8.7
+       Fixed bug in setitem for type object by fixing filled if argument 
+       is a string.
+
+   Versions 8.0-8.6:
+   Add option returned=0 to average. If given, return is a tuple, the 
+   requested result and the corresponding sum of the weights or counts.
+
+   Fix sort for multiple dimensions. Solution has consequences for masked data
+   that has the fill value at a non-masked site. Please study documentation.
+
+   Removed copy= option from the function filled (method filled never had it)
+   This allows the implementation to be much more efficient and the 
+   functionality is not really necessary.
+
+   Added a copy argument to masked_where, masked_equal, etc.
+
+   Reimplemented choose to allow a fully general analog to Numeric.choose but
+   masked may be given in the tuple list and will result in masked elements.
+
+   Reimplemented where. where now masks only those locations that are
+   masked in the condition or masked in the particular element chosen. 
+   If no masked
+   elements are chosen by the condition the resultants mask is None.
+
+   masked_inside(x, v1, v2, copy=1) and 
+   masked_outside(x, v1, v2, copy=1) return
+   x with a mask. For masked_inside, the mask is on all values in [v1,v2]. For
+   masked_outside, it is on all values outside that interval. v1 and v2 can be
+   given in either order.
+
+   Implementation of in-place arithmetic revised.
+   Differs from Numeric semantics in being more generous about converting the
+   rhs to the required type: any kind or lesser type accepted via an astype
+   conversion. Operates in place when target is not masked. 
+   
+   Fixed bug in indexing; was returning a zero-length array in some cases
+   instead of raising an Index error.
+
+   Added methods itemsize, tostring, tolist.
+
+   Fixed bug in count. Masks have the spavespace attribute so don't count
+   by them. Added count method.
+
+Version 7.0
+   Fix bug in setting shape for non-contiguous data.
+
+   Added create_mask(shape) to make a mask from a shape.
+
+   If the data argument to array is a MaskedArray, and mask is not given,
+   data.mask() is used as mask.
+
+   Tightened up the case of creation with copy=0; in particular,
+   array(d, copy=0) uses d's raw_data() and mask() if d is a MaskedArray,
+   and d as raw data if d is a Numeric array.
+
+   Fixed bug in case of count with an axis but no mask;
+   it was returning the correct count but as a scalar instead of properly 
+   shaped.
+
+   Fixed bug so that resize contains a mask.
+
+   Added repeat.
+
+   Fixed allclose so that it works if an argument is an integer
+   array with the spacesaver flag set. 
+
+   Change test is masked_values(d,v) to abs(d-v)<=atol + rtol * abs(v)
+   This makes the limit as atol and rtol -> 0 correct, and makes the
+   interpretation on rtol as a percent of v. Similar change to allclose
+   for consistency.
+
+Version 6.0
+   Inheritance and redefine an active attribute would not work right.
+   Moved back to a per-instance jump table.
+
+Version 5.0
+   Changed class name to MaskedArray from MA. Added isMaskedArray, 
+   but left isMA as an alias. I was seeing too many errors from mixing 
+   import MA and from MA import * with resulting confused error messages.
+
+Version 4.2
+   Fixed bug in maximum and minimum for >1 dimension and no mask caused 
+   by deficiency in max and min.
+
+   Fixed bug in count when no axis given, no mask, >1 d.
+
+   Changed format of timing printout in the test routine.
+
+   Added methods dot and outer to array class.
+
+   
