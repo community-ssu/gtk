@@ -416,7 +416,7 @@ class HildonNoteTestWindow(hildon.Window):
             dialog.destroy()
             
     def onConfirmationWithIconName(self, widget):        
-            dialog = hildon.Note("confirmation_with_icon_name", (self, "Conf. with Icon Name", gtk.STOCK_DIALOG_INFO))
+            dialog = hildon.Note("confirmation", (self, "Conf. with Icon Name", gtk.STOCK_DIALOG_INFO))
             dialog.run()
             dialog.destroy()
 
@@ -426,7 +426,7 @@ class HildonNoteTestWindow(hildon.Window):
             dialog.destroy()
 
     def onInformationWithIconName(self, widget):        
-            dialog = hildon.Note("information_with_icon_name", (self, "Inf. with Icon Name", gtk.STOCK_DIALOG_INFO))
+            dialog = hildon.Note("information", (self, "Inf. with Icon Name", gtk.STOCK_DIALOG_INFO))
             dialog.run()
             dialog.destroy()
             

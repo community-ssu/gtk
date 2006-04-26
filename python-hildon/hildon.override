@@ -206,35 +206,10 @@ _wrap_hildon_note_new (PyGObject *self, PyObject *args, PyObject *kwargs)
     if (strcmp (note_type, "confirmation") == 0) {
         PyObject* parent;
         const char* description;
-    
-        if (PyTuple_Size (py_tuple) != 2) {
-            PyErr_SetString(PyExc_RuntimeError, "A \"confirmation\" HildonNote type takes exactly two items in its tuple.");
-            return -1;
-        }
-        
-        parent = PyTuple_GetItem (py_tuple, 0);
-        if (parent == NULL) {
-            return -1;
-        }
-        
-        py_obj = PyTuple_GetItem (py_tuple, 1);
-        description = PyString_AsString (py_obj);
-        if (description == NULL) {
-            return -1;
-        }
-        
-        self->obj = (GObject *)hildon_note_new_confirmation(GTK_WINDOW(pygobject_get(parent)), description);
-        if (!self->obj) {
-            PyErr_SetString(PyExc_RuntimeError, "could not create HildonNote object");
-            return -1;
-        }
-    } else if (strcmp (note_type, "confirmation_with_icon_name") == 0) {
-        PyObject* parent;
-        const char* description;
         const char* icon_name;
         
-        if (PyTuple_Size (py_tuple) != 3) {
-            PyErr_SetString(PyExc_RuntimeError, "A \"confirmation_with_icon_name\" HildonNote type takes exactly three items in its tuple.");
+        if (PyTuple_Size (py_tuple) != 3 && PyTuple_Size (py_tuple) != 2) {
+            PyErr_SetString(PyExc_RuntimeError, "A \"confirmation\" HildonNote type takes three or two items in its tuple.");
             return -1;
         }
         
@@ -248,14 +223,19 @@ _wrap_hildon_note_new (PyGObject *self, PyObject *args, PyObject *kwargs)
         if (description == NULL) {
             return -1;
         }
-        
-        py_obj = PyTuple_GetItem (py_tuple, 2);
-        icon_name = PyString_AsString (py_obj);
-        if (icon_name == NULL) {
-            return -1;
+
+        if (PyTuple_Size (py_tuple) == 3) {
+            py_obj = PyTuple_GetItem (py_tuple, 2);
+            icon_name = PyString_AsString (py_obj);
+            if (icon_name == NULL) {
+                return -1;
+            }
+            self->obj = (GObject *)hildon_note_new_confirmation_with_icon_name (GTK_WINDOW(pygobject_get(parent)), description, icon_name);
+        } else {
+            /* Use the default icon. */
+            self->obj = (GObject *)hildon_note_new_confirmation (GTK_WINDOW(pygobject_get(parent)), description);
         }
         
-        self->obj = (GObject *)hildon_note_new_confirmation_with_icon_name (GTK_WINDOW(pygobject_get(parent)), description, icon_name);
         if (!self->obj) {
             PyErr_SetString(PyExc_RuntimeError, "could not create HildonNote object");
             return -1;
@@ -263,35 +243,10 @@ _wrap_hildon_note_new (PyGObject *self, PyObject *args, PyObject *kwargs)
     } else if (strcmp (note_type, "information") == 0) {
         PyObject* parent;
         const char* description;
-    
-        if (PyTuple_Size (py_tuple) != 2) {
-            PyErr_SetString(PyExc_RuntimeError, "A \"information\" HildonNote type takes exactly two items in its tuple.");
-            return -1;
-        }
-        
-        parent = PyTuple_GetItem (py_tuple, 0);
-        if (parent == NULL) {
-            return -1;
-        }
-        
-        py_obj = PyTuple_GetItem (py_tuple, 1);
-        description = PyString_AsString (py_obj);
-        if (description == NULL) {
-            return -1;
-        }
-        
-        self->obj = (GObject *)hildon_note_new_information(GTK_WINDOW(pygobject_get(parent)), description);
-        if (!self->obj) {
-            PyErr_SetString(PyExc_RuntimeError, "could not create HildonNote object");
-            return -1;
-        }
-    } else if (strcmp (note_type, "information_with_icon_name") == 0) {
-        PyObject* parent;
-        const char* description;
         const char* icon_name;
         
-        if (PyTuple_Size (py_tuple) != 3) {
-            PyErr_SetString(PyExc_RuntimeError, "A \"information_with_icon_name\" HildonNote type takes exactly three items in its tuple.");
+        if (PyTuple_Size (py_tuple) != 3 && PyTuple_Size (py_tuple) != 2) {
+            PyErr_SetString(PyExc_RuntimeError, "A \"information\" HildonNote type takes three or two items in its tuple.");
             return -1;
         }
         
@@ -306,13 +261,19 @@ _wrap_hildon_note_new (PyGObject *self, PyObject *args, PyObject *kwargs)
             return -1;
         }
         
-        py_obj = PyTuple_GetItem (py_tuple, 2);
-        icon_name = PyString_AsString (py_obj);
-        if (icon_name == NULL) {
-            return -1;
+        if (PyTuple_Size (py_tuple) == 3) {
+            py_obj = PyTuple_GetItem (py_tuple, 2);
+            icon_name = PyString_AsString (py_obj);
+            if (icon_name == NULL) {
+                return -1;
+            }
+            
+            self->obj = (GObject *)hildon_note_new_information_with_icon_name (GTK_WINDOW(pygobject_get(parent)), description, icon_name);
+        } else {
+            /* Use the default icon. */
+            self->obj = (GObject *)hildon_note_new_information (GTK_WINDOW(pygobject_get(parent)), description);
         }
         
-        self->obj = (GObject *)hildon_note_new_information_with_icon_name (GTK_WINDOW(pygobject_get(parent)), description, icon_name);
         if (!self->obj) {
             PyErr_SetString(PyExc_RuntimeError, "could not create HildonNote object");
             return -1;
