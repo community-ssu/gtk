@@ -1,5 +1,10 @@
 2006-04-24  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/close-application-dialog.c: Fixed localisation
+	  of the title, for real (Closes N#27433)
+
+2006-04-24  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "icon focus incorrect after 'Not enough memory'"
 	(Closes N#22638)
 	* hildon-navigator/hn-wm.[ch]: Push an app to the bottom of the

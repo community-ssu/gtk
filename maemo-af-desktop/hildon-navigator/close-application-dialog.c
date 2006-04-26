@@ -292,7 +292,7 @@ gboolean tn_close_application_dialog(CADAction action)
     }
   
   /* Creating the UI */
-  dialog = gtk_dialog_new_with_buttons (_("HN_CAD_TITLE"),
+  dialog = gtk_dialog_new_with_buttons (HN_CAD_TITLE,
                                         NULL,
                                         GTK_DIALOG_MODAL
                                         | GTK_DIALOG_DESTROY_WITH_PARENT,
