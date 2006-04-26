@@ -42,6 +42,7 @@ int test005(void);
 int test006(void);
 int test007(void);
 int test008(void);
+int test009(void);
 
 /*prototypes to keep the compiler happy*/
 testcase *get_tests(void);
@@ -224,7 +225,7 @@ int test009(void)
 
   async_handle = hildon_file_system_info_async_new(uri, info_callback,
                                                    cb_data);
-  assert(handle != NULL);
+  assert(async_handle != NULL);
 
   loop = g_main_loop_new(NULL, TRUE);
   assert(loop != NULL);
