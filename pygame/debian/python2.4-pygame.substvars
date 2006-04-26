@@ -1,0 +1,1 @@
+shlibs:Depends=libc6 (>= 2.3.2.ds1-4), libgcc1 (>= 1:3.3.3-1), libsdl-image1.2 (>= 1.2.3), libsdl-mixer1.2, libsdl-ttf2.0-0, libsdl1.2, libsmpeg0 (>= 0.4.4-7)

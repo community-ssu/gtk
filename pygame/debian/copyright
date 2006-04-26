@@ -1,0 +1,17 @@
+This package was debianized by Francis Irving <francis@flourish.org> on
+Fri,  5 Jan 2001 00:22:42 +0000.
+
+It was adopted by Ed Boraas <ed@debian.org> on
+Tue, 26 Jun 2001 18:39:37 -0600.
+
+It was downloaded from http://www.pygame.org/ftp
+
+Upstream Author: Pete Shinners <pete@shinners.org>
+
+Copyright:
+
+This software is covered by the GNU Library General Public Licence
+(version 2, or if you choose, a later version).
+
+On Debian GNU/Linux systems, the complete text of the GNU Library General
+Public License can be found in /usr/share/common-licenses/LGPL

@@ -1,0 +1,174 @@
+<html><head><!--
+Install Information
+--><title>Pygame Installation</title></head><body>
+<h2 align=center>Pygame Installation</h2>
+
+<p>
+Python can be built from source, but the easiest way is to
+get a binary package for your type of system and version of python.
+This document will give you information on either type of installation.
+</p>
+
+<big><b><u>Windows Binary Installer</u></b></big><blockquote><p>
+This is probably the most popular method of installation. If you are
+running on windows, it is highly recommended you use this form
+of installing. The installers come with with nearly everything
+you need, and have an easy point and click installers.
+</p><p>
+The first thing you will need is an installation of Python. Python
+binary installers make it easy to get this done. Pygame binaries
+usually come for the latest 2 releases of python, so you'll want to be fairly
+up to date.
+<p></p>
+Once that is in place, you want to download the appropriate
+windows binary. From the pygame downloads page you can find the .EXE
+file you need. This will automatically install all of pygame and all the SDL
+dependencies. The windows binaries have filenames like this; "pygame-1.3.win32-py2.1.exe".
+This would be the installer for pygame version 1.3, for python version 2.1. You
+shouldn't have trouble finding the correct binary from the "Windows" section
+of the download page.
+<a href=http://www.pygame.org/download.shtml>http://www.pygame.org/download.shtml</a>.
+</p><p>
+You will also probably want to install the windows documentation and
+installation package. This will add easy links to the different documentation
+and games that come with pygame. The installer for this is found
+next to the other windows binary downloads. The filename looks like this;
+"pygame-docs-1.6.exe". And this would install the documentation and
+examples for pygame-1.6.
+</p><p>
+One other thing the windows binaries are missing is the Numeric Python
+package. You can easily install this separately and it will allow you to use
+the pygame "surfarray" module. This module is optional, so there is no need
+to do this. There are binary installers from the Numeric download page.
+<a href=http://sourceforge.net/project/showfiles.php?group_id=1369>http://sourceforge.net/project/showfiles.php?group_id=1369</a>.
+</p></blockquote><br>
+
+<big><b><u>Unix Binary Packages</u></b></big><blockquote><p>
+For many unix systems, the easiest way to install pygame is
+from source. Still, there are binary packages available for
+different distributions.
+<p></p>
+There are several binary RPM packages for linux machines. These are
+actually a little bit of work to install, since you will also need several
+RPM packages for the dependencies. There is a good chance
+your linux distribution came with the needed dependencies (like Python
+and SDL). There are binary RPMs available from the website for each dependency.
+</p><p>
+For debian systems, pygame is actively maintained in the debian
+archives.  Visit the debian pygame page for more information.
+<a href=http://packages.qa.debian.org/p/pygame.html>http://packages.qa.debian.org/p/pygame.html</a>
+</p><p>
+FreeBSD also has an active pygame package. While techinicaly it
+isn't binary, it is automatically built and installed by the
+ports manager. See the FreeBSD package page for more information.
+<a href=http://www.freebsd.org/cgi/ports.cgi?query=py-game&stype=name>http://www.freebsd.org/cgi/ports.cgi?query=py-game&stype=name</a>
+</p><p>
+Gentoo has a builtin package for pygame. This is compiled for
+your system as it installs, similar to BSD,
+<a href=http://www.gentoo.org/dyn/pkgs/dev-python/pygame.xml>http://www.gentoo.org/dyn/pkgs/dev-python/pygame.xml</a>
+</p></blockquote><br>
+
+<big><b><u>Macintosh Binaries</u></b></big><blockquote><p>
+For OSX 10.2 and aboce, binary packages are availaboe from Bob Ippolito's
+Package Manager repository. This package requires python 2.3, and does
+not work with the 'Fink' version of Python. The package and instructions
+are at <a href="http://undefined.org/python/pimp/">http://undefined.org/python/pimp/</a> and will automatically
+install dependencies.  Instructions for making application bundles
+for OS X that use pygame are forthcoming, but read up on
+bundlebuilder in the meantime.
+</p><p>
+For MacOS 9.x, binaries are available on the pygame downloads page.
+<a href=http://www.pygame.org/download.shtml>http://www.pygame.org/download.shtml</a>.
+Unfortunately the binaries are stuck at pygame version-1.1. This also only works with
+an old copy of <tt>MacPython 2.1</tt>.
+</p></blockquote><br>
+
+<hr><br>
+
+<big><b><u>Installing From Source</u></b></big><blockquote><p>
+Compiling and installing pygame is handled by Python's distutils.
+Pygame also comes with some scripts to automatically configure
+the flags needed to build pygame. Use the "setup.py" script to
+start the installation.
+<p></p>
+The first time you run the setup script, it will call the
+"<tt>config.py</tt>" script. This will build a "<tt>Setup</tt>" file which
+stores all the information needed to compile. The "config.py"
+will do a good job of detecting what dependencies are available
+and where they are located. If it isn't perfect, it is easy to
+build your own, or edit the created "<tt>Setup</tt>" text file. This
+"<tt>Setup</tt>" file is a simple Makefile-like text file. It defines
+variables needed to use each dependency, and then enables
+all the pygame modules with found dependencies. If you have
+trouble compiling, you should be able to easily fix any problems
+inside the "<tt>Setup</tt>" file.
+<p></p>
+Running the "<tt>setup.py</tt>" script will call distutils to build and
+install the pygame package. Distutils actually supports a wide
+variety of compile and install options. running "<tt>python setup.py help</tt>"
+will start to show you the different options available. You can
+change many things like install locations, compiler to use, and more.
+Calling the "setup.py" script with no arguments and it will just
+ask you if you want the default flags needed to compile and install.
+</p></blockquote><br>
+
+<big><b><u>Windows Compiling Info</u></b></big><blockquote><p>
+Compiling all the dependencies on windows is a real challenge.
+Fortunately there is zip file with all the libraries and headers
+you need to compile. You should definitely unzip this into your
+pygame source folder, and all the files go into a "prebuilt"
+subdirectory. The autoconfigure "config.py" script will find
+this prebuilt directory and make use of it for you.
+<a href=http://www.pygame.org/ftp/win32-dependencies.zip>http://www.pygame.org/ftp/win32-dependencies.zip</a>.
+If you don't use the prebuilt binaries directory, the autoconfig
+script will scan the neighboring directory trees to find the
+dependencies.
+<p></p>
+When installing on windows, the "setup.py" script will also copy
+all the used .DLL files into the pygame directory.
+<p></p>
+If compiling with VisualC, these instructions are all you'll need
+to do. If you are using Borland's free compiler or cygwin, you will
+need an extra step. You need to convert the VisualC style .LIB files
+into the format used by your compiler. Both Borland and Cygwin include
+a command to do this. To convert the python library the command looks
+like this with Borland: <tt>COFF2OMF python22.lib python22_bcpp.lib</tt>.
+For Cygwin, this is the command you need: <tt>DLLTOOL --dllname python15.dll --def python15.def --output-lib
+libpython15.a</tt>. You will also need to do this conversion on all the
+LIB files that come with the prebuilt dependencies (in the <tt>prebuilt/lib</tt> directory).
+Note that with cygwin you should replace the <tt>--def</tt> flag and argument
+with <tt>--export-all-symbols</tt> since they do not come with .def files.
+</p><p>
+Mingw is well supported by SDL, but a little rougher for python extensions.
+Here is a link with more information to compiling with non-ms compilers.
+<a
+href=http://www.python.org/doc/current/inst/non-ms-compilers.html>http://www.python.org/doc/current/inst/non-ms-compilers.html</a>
+</p></blockquote><br>
+
+<big><b><u>Unix Compiling Info</u></b></big><blockquote><p>
+Compiling from linux shouldn't give you any problems. One thing
+you must keep in mind is that most linux RPM packages separate the
+actual library from the "<tt>dev</tt>" files needed to compile. To build you
+will need to make sure the packages like "<tt>SDL-dev</tt>" are
+installed.
+<p></p>
+You can check to see if SDL is ready to be built from by running
+the command <tt>sdl-config</tt> and seeing if it is found. If the
+<tt>sdl-config</tt> script is not on the path (or you have more than
+one?) Set the environment variable <tt>SDL_CONFIG</tt> to its location.
+</p>
+<p>Sometimes you will have the SDL libraries installed in once
+location, and the other SDL libraries in another. This tricks the
+pygame config scripts, but you can help it out by setting the
+environment <tt>LOCALBASE</tt> to a path prefix where the other libraries
+are. The common case for this is SDL installed in /usr and other
+SDL libs installed in /usr/local. The command for this situation
+is "<tt>LOCALBASE=/usr/local python setup.py install</tt>".
+</blockquote><br>
+
+<big><b><u>OS X Compiling Info</u></b></big><blockquote><p>
+Make sure to have Numeric, PyObjC, PIL, and the SDL development frameworks
+installed.  Compilation should work just same as the unix compiling
+instructions. Python 2.3 and OSX 10.2 are required.
+</p></blockquote><br>
+
