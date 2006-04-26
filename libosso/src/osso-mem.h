@@ -1,7 +1,7 @@
 /* ========================================================================= *
  * File: osso-mem.h
  *
- * Copyright (C) 2005 Nokia. All rights reserved.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Andrei Laperie <andrei.laperie@nokia.com>
  *
