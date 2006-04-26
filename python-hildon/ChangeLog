@@ -2,7 +2,7 @@
     - Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
       - Added svn:ignore property to "examples" subdirectory.
       - Added svn:ignore property to python-hildon root directory
-      - The "configure" file is generated from autoconf and shouldn't be under version control (i.e.: in our repository).
+      - "configure", "aclocal.m4" and "Makefile.in" are generated from autoconf and shouldn't be under version control (i.e.: in our repository).
       - Added set_button_texts method to hildon.Note
       - Some new code gathered from gazpacho-hildon's fork of python-hildon. They do compile but haven't been tested yet.*
         - New enumeration from the date editor widget
@@ -13,6 +13,7 @@
             - hildon-defines.defs
             - gtk-infoprint.defs
             - hildon-base-dnotify.defs
+            - hildon-wizard-dialog.defs
       * I'm not sure if all these new bindinds are really useful (i.e.: if they are, or will be, used by gazpacho).
 
 

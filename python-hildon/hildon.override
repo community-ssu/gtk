@@ -44,6 +44,7 @@ import gtk.Dialog as PyGtkDialog_Type
 import gtk.EventBox as PyGtkEventBox_Type
 import gtk.ListStore as PyGtkListStore_Type
 import gtk.Menu as PyGtkMenu_Type
+import gtk.Notebook as PyGtkNotebook_Type
 import gtk.ProgressBar as PyGtkProgressBar_Type
 import gtk.Scale as PyGtkScale_Type
 import gtk.SizeGroup as PyGtkSizeGroup_Type

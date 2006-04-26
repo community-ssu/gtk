@@ -37,3 +37,4 @@
 (include "defs/hildon-vvolumebar.defs")
 (include "defs/hildon-weekday-picker.defs")
 (include "defs/hildon-window.defs")
+(include "defs/hildon-wizard-dialog.defs")
