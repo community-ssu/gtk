@@ -27,16 +27,6 @@
   )
 )
 
-(define-function hildon_banner_show_confirmation
-  (c-name "hildon_banner_show_confirmation")
-  (return-type "none")
-  (parameters
-    '("GtkWidget*" "widget")
-    '("const-gchar*" "icon_name")
-    '("const-gchar*" "text")
-  )
-)
-
 (define-function hildon_banner_show_animation
   (c-name "hildon_banner_show_animation")
   (return-type "GtkWidget*")
