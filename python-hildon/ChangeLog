@@ -4,6 +4,7 @@
       - Added svn:ignore property to python-hildon root directory
       - "configure", "aclocal.m4" and "Makefile.in" are generated from autoconf and shouldn't be under version control (i.e.: in our repository).
       - Added set_button_texts method to hildon.Note
+      - Improved hildon.Note constructor
       - Some new code gathered from gazpacho-hildon's fork of python-hildon. They do compile but haven't been tested yet.*
         - New enumeration from the date editor widget
         - New bindings:
