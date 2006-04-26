@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <malloc.h>
 #include <errno.h>
-#include <pthread.h> 
+#include <pthread.h>
 #include <string.h>
 
 #include "osso-mem.h"
@@ -47,255 +47,267 @@
 /* Correct division of 2 unsigned values */
 #define DIVIDE(a,b)  (((a) + ((b) >> 1)) / (b))
 
-/*Defining the labels we could read from the /proc/meminfo */
-/*Done in a little tricky way to have strlen's calculated @ compile time*/
-#define MEMINFO_STRINGS    \
-        IV_PAIR(ENU_MU_MEMTOTAL,    "MemTotal:"    )\
-        IV_PAIR(ENU_MU_SWAPTOTAL,    "SwapTotal:")\
-        IV_PAIR(ENU_MU_MEMFREE,     "MemFree:"     )\
-        IV_PAIR(ENU_MU_BUFFERS,     "Buffers:"    )\
-        IV_PAIR(ENU_MU_CACHED,         "Cached:"    )\
-        IV_PAIR(ENU_MU_SWAPFREE,    "SwapFree:"    )
-/*        IV_PAIR(ENU_MU_SLAB,         "Slab:"     )*/ /* If we try to read 
-slab, then we break compatibility with 2.4 kernels on x86 and since slab
-isn't needed anyway, let's leave it commented out */
+#define NSIZE        ((size_t)(-1))
 
-/*a. local strings*/
+typedef void* (*malloc_hook_t)(size_t, const void*);
+
+
+/* ========================================================================= *
+ * Meminfo related strings.
+ * WARNING: be careful, micro-optimizations here made code a bit fuzzy.
+ * ========================================================================= */
+
+/* Defining the labels we could read from the /proc/meminfo               */
+/* Done in a little tricky way to have strlen's calculated @ compile time */
+#define MEMINFO_LABELS    \
+            IV_PAIR(ID_MEMTOTAL,    "MemTotal:" ) \
+            IV_PAIR(ID_SWAPTOTAL,   "SwapTotal:") \
+            IV_PAIR(ID_MEMFREE,     "MemFree:"  ) \
+            IV_PAIR(ID_BUFFERS,     "Buffers:"  ) \
+            IV_PAIR(ID_CACHED,      "Cached:"   ) \
+            IV_PAIR(ID_SWAPFREE,    "SwapFree:" )
+
+/* Definition of specially labeled string */
+/* WARNING: re-defined below !!!          */
 #define IV_PAIR(ID,STRING) \
-    static const char _localstring_##ID[]=STRING;
-    
-    MEMINFO_STRINGS
-    
-/*b. label-strlen pair*/
+            static const char _localstring_##ID[]=STRING;
+
+/* Introduce labeled strings */
+MEMINFO_LABELS
+
+/* Re-defining pair as a <string, size> */
 #undef IV_PAIR
 #define IV_PAIR(ID,STRING) \
-    { _localstring_##ID,CAPACITY(_localstring_##ID) -1 },
+            { _localstring_##ID, CAPACITY(_localstring_##ID) -1 },
 
-    static const struct { 
-        const char *name; 
-        size_t len; 
-    } mu_labels[] = {
-        MEMINFO_STRINGS
-    };
+/* Introduce array of strings and sizes */
+static const struct
+{
+   const char* name;
+   unsigned    length;
+} meminfo_labels[] =
+{
+   MEMINFO_LABELS
+};
+
+/* Re-defining one more time to have IDs for conveinience */
 #undef IV_PAIR
-/*c. Enum, for conveinience*/
-#define IV_PAIR(ID,STRING) \
-    ID,
+#define IV_PAIR(ID,STRING)    ID,
+
 enum
 {
-    MEMINFO_STRINGS
-    MAX_MEMINFO_STRINGS
+    MEMINFO_LABELS
+    MAX_MEMINFO_LABELS
 };
 
 #undef IV_PAIR
-/*d. Initializer for values array (mu_load)*/
+
+/* Initializer for values array (load_meminfo)*/
 #define IV_PAIR(ID,STRING)    0,
-#define MU_ZERO_INITIALIZER        MEMINFO_STRINGS
-
-
+#define MEMINFO_INIT          MEMINFO_LABELS
 
 
 /* ========================================================================= *
  * Local data.
  * ========================================================================= */
 
-/*For lowmem_ functions */
-/*System limits*/
-static size_t sys_avail_ram = 0;
-static size_t sys_deny_limit =  0;
-static size_t sys_lowmem_limit = 0;
-static size_t sys_pagesize = 0;
+/* For lowmem_ functions system limits */
+static size_t sys_avail_memory = NSIZE;
+static size_t sys_deny_limit   = NSIZE;
+static size_t sys_lowmem_limit = NSIZE;
 
-/*---------------------------------------------------------------------------*/
-/*Local data*/
-
-/*SAW-related*/
-
+/* SAW-related */
 static pthread_mutex_t saw_lock = PTHREAD_MUTEX_INITIALIZER;
 
-#define THREAD_LOCK()	pthread_mutex_lock(&saw_lock)
-#define THREAD_UNLOCK() pthread_mutex_unlock(&saw_lock)
+#define THREAD_LOCK()      pthread_mutex_lock(&saw_lock)
+#define THREAD_UNLOCK()    pthread_mutex_unlock(&saw_lock)
 
+/* Parameters of the latest SAW setup call */
+static size_t saw_max_block_size;      /* If allocation is greater - make a test       */
+static size_t saw_max_heap_size;       /* If heap is greater that specified - call OOM */
 
-/*Enable/disable flash*/
-static int osso_mem_saw_enabled = 0;
+/* This function shall be called when OOM occurs or close */
+static osso_mem_saw_oom_func_t saw_user_oom_func = NULL;
+static void*  saw_user_context;        /* Extra data for user OOM function */
 
-/*Blocksize*/
-static size_t osso_mem_saw_blocksz;
-
-/*Maximum heapsize*/
-static size_t osso_mem_saw_max_heapsz;
-
-/*OOM notification*/
-static osso_mem_saw_oom_func_t osso_mem_saw_oom_func=0;
-
-/*User context*/
-static void *osso_mem_saw_usr_ctx;
-
-/*original malloc hook*/
-static void *(*saw_old_malloc_hook)(size_t,const void *);
-
-
+/* Original malloc hook which may be NULL */
+static malloc_hook_t saw_old_malloc_hook = NULL;
 
 
 /* ========================================================================= *
  * Local methods.
  * ========================================================================= */
 
-/*Reading /proc/sys/vm/lowmem* */
-static void lm_read_proc(void);
+/* ------------------------------------------------------------------------- *
+ * get_file_value - gets the value (size or %) from specified /proc file.
+ * Returns NSIZE if file is not available or value is invalid.
+ * ------------------------------------------------------------------------- */
 
-/*Reading /proc/meminfo*/
-static unsigned mu_load(const char* path, size_t* vals, unsigned size);
+static size_t get_file_value(const char* filename)
+{
+   FILE* fp = fopen(filename, "rt");
 
-/*Malloc hook*/
-static void *saw_malloc_hook(size_t sz, const void *caller);
+   if (fp)
+   {
+      /* File opened successfuly, trying to load value */
+      char  buffer[32];
+
+      /* Get the value as a string */
+      if (NULL == fgets(buffer, CAPACITY(buffer) - 1, fp))
+         *buffer = 0;
+      fclose(fp);
+
+      /* Convert it, much faster than fscanf */
+      if ( *buffer )
+      {
+         const long value = strtol(buffer, NULL, 0);
+
+         if (value > 0)
+            return (size_t)value;
+      }
+   }
+
+   /* Any kind of error */
+   return NSIZE;
+} /* get_file_value */
 
 /* ------------------------------------------------------------------------- *
- * mu_load -- open meminfo file and load values.
+ * load_meminfo -- open meminfo file and load values.
  * parameters:
- *    path - path to file to handle.
  *    vals - array of values to be handled.
  *    size - size of vals array.
  * returns: number of sucessfully loaded values.
  * ------------------------------------------------------------------------- */
-static unsigned 
-mu_load(const char* path, size_t *vals, unsigned size)
+static unsigned load_meminfo(size_t *vals, unsigned size)
 {
-   FILE*    meminfo = fopen(path, "rt");
+   FILE* meminfo = fopen("/proc/meminfo", "rt");
 
    if ( meminfo )
    {
-	  unsigned idx,counter = 0;
+      unsigned counter = 0;
       char line[256];
 
-      /* Load all lines in file */
-      while ( fgets(line, CAPACITY(line),meminfo) )
+      /* Load all lines in file until we need setup values */
+      while (counter < size && fgets(line, CAPACITY(line), meminfo))
       {
+         unsigned idx;
+
          for (idx = 0; idx < size; idx++)
-             if(       ( !vals[idx]  ) /*If not set already*/
-                && ( line == strstr(line, mu_labels[idx].name) )
-              )
          {
-                /* Parameter has a format SomeName:\tValue*/
-                vals[idx] = (unsigned)strtoul(line + mu_labels[idx].len + 1, NULL, 0);
-               counter++;
-               break;
-            }
-         }
+            /* Skip all indicies that already set */
+            if ( vals[idx] )
+               continue;
+
+            /* Skip values that have different labels */
+            if ( strncmp(line, meminfo_labels[idx].name, meminfo_labels[idx].length) )
+               continue;
+
+            /* Match, save the value */
+            vals[idx] = (size_t)strtoul(line + meminfo_labels[idx].length + 1, NULL, 0);
+            counter++;
+
+            /* Exit from scanning loop */
+            break;
+         } /* for */
+      } /* for all values and meminfo lines */
 
       fclose(meminfo);
-	  return counter;
-   }
-   else
-   {
-       ULOG_CRIT("Cannot open %s",path);
+      return counter;
    }
 
    return 0;
-} /* mu_load */
-/*---------------------------------------------------------------------------*/
-/*Returns a single unsigned integer read from the file or negative
- if error
-*/
-static int 
-lm_get_file_int(const char *filename) 
+} /* load_meminfo */
+
+/* ------------------------------------------------------------------------- *
+ * setup_sys_values - loads the values from /proc files or obtain its from
+ * system andand setup sys_XXX variables.
+ * WARNING: we expect than sys_XXX variables are not changed during runtime.
+ * ------------------------------------------------------------------------- */
+static void setup_sys_values(void)
 {
-    FILE *f;
-    int u;
+   /* Setup the page size */
+   const size_t pagesize = sysconf(_SC_PAGESIZE);
+   /* Load amount of allowed pages */
+   const size_t allowed_pages = get_file_value("/proc/sys/vm/lowmem_allowed_pages");
 
-    f = fopen (filename, "r");
-	if(f)
-	{
-	    if(fscanf(f, "%u", (unsigned *)&u) < 1) 
-		{
-            u = 0;
-		}
+   /* Check the availability of values */
+   if (NSIZE == allowed_pages)
+   {
+      /* Unfortunately, lowmem_ is not available yet (scratchbox?) */
+      size_t    total   = 0;    /* ID_MEMTOTAL goes first */
+      const int counter = load_meminfo(&total, 1);
 
-		fclose(f);
-    }
-	else
-        u=0;
+      /* Setup available amount of RAM, if no meminfo available set 64MB */
+      sys_avail_memory = (counter && total ? total : (64 << 10));
+   }
+   else
+   {
+      sys_avail_memory = (allowed_pages * pagesize >> 10);
+      sys_deny_limit   = get_file_value("/proc/sys/vm/lowmem_deny_watermark");
+      sys_lowmem_limit = get_file_value("/proc/sys/vm/lowmem_notify_high");
+   }
 
-    return u < 0 ? 0 : u;
-}
-/*---------------------------------------------------------------------------*/
-/*Reads contents of certain /proc/sys/vm/lowmem entries into static vars*/
-static void 
-lm_read_proc(void)
+   /* Normalize the sys_deny_limit and sys_lowmem_limit according to loaded values */
+   if (NSIZE == sys_deny_limit)
+      sys_deny_limit = sys_avail_memory - (sys_avail_memory >> 5);
+   else
+      sys_deny_limit = DIVIDE(sys_avail_memory * sys_deny_limit, 100);
+
+   if (NSIZE == sys_lowmem_limit)
+      sys_lowmem_limit = sys_deny_limit;
+   else
+      sys_lowmem_limit = DIVIDE(sys_avail_memory * sys_lowmem_limit, 100);
+
+   /* Moving from KB to bytes */
+   sys_avail_memory <<= 10;
+   sys_deny_limit   <<= 10;
+   sys_lowmem_limit <<= 10;
+} /* setup_sys_values */
+
+
+/* ------------------------------------------------------------------------- *
+ * saw_malloc_hook - Malloc hook. Executed when osso_mem_saw_active is in
+ * place. Thread-safe (= slow in some cases).
+ * ------------------------------------------------------------------------- */
+static void* saw_malloc_hook(size_t size, const void* caller)
 {
-        /*Reading
-         *  /proc/sys/vm/lowmwm_available_pages
-         *  /proc/sys/vm/lowmem_deny_threshold
-         *  /proc/sys/vm/lowmem_notify_high
-         * */
-    unsigned percent_to_size;
-    sys_pagesize = sysconf(_SC_PAGESIZE);
-    sys_avail_ram = lm_get_file_int("/proc/sys/vm/lowmem_allowed_pages") * sys_pagesize;
-    percent_to_size = sys_avail_ram / 100;
+   void* ptr;  /* Allocated pointer, NULL means OOM situation happened */
 
-    sys_deny_limit = lm_get_file_int("/proc/sys/vm/lowmem_deny_watermark")
-                     * percent_to_size;
+   THREAD_LOCK();
 
-    sys_lowmem_limit = lm_get_file_int("/proc/sys/vm/lowmem_notify_high")
-                     * percent_to_size;
+   /* Restore the real malloc hook */
+   __malloc_hook = saw_old_malloc_hook;
 
-}
-/*---------------------------------------------------------------------------*/
-/* Malloc hook. Executed when osso_mem_saw_active is in place. Note, has a doubtful
-   thread-safety
-*/
-static void 
-*saw_malloc_hook(size_t sz, const void *caller)
-{
-    int oom = 0;
-    void *p;
+   /* Check for OOM-potential situation */
+   if (size >= saw_max_block_size)
+   {
+      /* We must test amount of memory to predict future */
+      const struct mallinfo mi = mallinfo();
+      ptr = (mi.arena + mi.hblkhd + size >= saw_max_heap_size ? NULL : malloc(size));
+   }
+   else
+   {
+      ptr = malloc(size);
+   }
 
-	THREAD_LOCK();
+   /* Restore malloc hook to self */
+   __malloc_hook = saw_malloc_hook;
 
-    __malloc_hook = saw_old_malloc_hook;
+   /* Test allocation, call OOM function if necessary  */
+   /* Note: SAW may be removed but that is safe for us */
+   if (!ptr && saw_user_oom_func)
+      saw_user_oom_func(saw_max_heap_size + size, saw_max_heap_size, saw_user_context);
 
-    if(sz >= osso_mem_saw_blocksz)
-    {
-        struct mallinfo mi = mallinfo();
-        mi.arena += (mi.hblkhd + sz);
+   THREAD_UNLOCK();
 
-        if( mi.arena  >=  osso_mem_saw_max_heapsz)
-        /*And we're oom*/
-        {
-            /*Notify*/
-            if(osso_mem_saw_oom_func)
-            {
-                ULOG_DEBUG("SAW:OOM! sz=%u (%u >= %u)\n",sz, mi.arena,osso_mem_saw_max_heapsz);
-                
-				THREAD_UNLOCK();
+#ifdef DEBUG
+   /* Printing from the critical section is a bad idea, try to do it now */
+   if ( !ptr )
+      ULOG_INFO("SAW: OOM for %u allocation\n", size);
+#endif
 
-				(*osso_mem_saw_oom_func)(mi.arena,osso_mem_saw_max_heapsz,osso_mem_saw_usr_ctx);
-
-				THREAD_LOCK();
-            }
-            oom = 1;
-        }
-
-    }
-
-
-    if(!oom)
-    {
-	  /*Please note as malloc inside is thread-safe there's a chance of deadlock(?)*/
-      p=malloc(sz);
-    }
-    else
-    {
-      p=0;
-    }
-
-    __malloc_hook = saw_malloc_hook;
-	
-	THREAD_UNLOCK();
-    
-	return p;
-}
+   return ptr;
+} /* saw_malloc_hook */
 
 
 /* ========================================================================= *
@@ -303,216 +315,200 @@ static void
  * ========================================================================= */
 
 /* ------------------------------------------------------------------------- *
- * osso_mem_get_usage -- returns memory usage for current system in osso_mem_usage_t structure.
+ * osso_mem_get_usage -- returns memory usage for current system in
+ * osso_mem_usage_t structure.
  * parameters:
  *    usage - parameters to be updated.
  * returns:
  *    0 if values loaded successfuly OR negative error code.
  * ------------------------------------------------------------------------- */
-int 
-osso_mem_get_usage(osso_mem_usage_t* usage)
+int osso_mem_get_usage(osso_mem_usage_t* usage)
 {
-   size_t available_ram;
+   /* Local variables */
+   size_t vals[MAX_MEMINFO_LABELS];
+
    /* Check the pointer validity first */
-   if ( usage )
+   if ( !usage )
+      return -1;
+
+   /* Load values from /proc/meminfo file */
+   memset(usage, 0, sizeof(*usage));
+   memset(vals,  0, sizeof(vals));
+   if ( !load_meminfo(vals, CAPACITY(vals)) )
+      return -1;
+
+   /* Initialize values for /proc/sys/vm/lowmem_* */
+   if (NSIZE == sys_avail_memory)
+      setup_sys_values();
+
+
+   /* Discover memory information using loaded numbers */
+   usage->total = vals[ID_MEMTOTAL] + vals[ID_SWAPTOTAL];
+
+   usage->free  = vals[ID_MEMFREE] + vals[ID_BUFFERS] +
+                  vals[ID_CACHED] +  vals[ID_SWAPFREE];
+
+   usage->used = usage->total - usage->free;
+   usage->util = DIVIDE(100 * usage->used, usage->total);
+
+   /* Translate everything from kilobytes to bytes */
+   usage->total <<= 10;
+   usage->free  <<= 10;
+   usage->used  <<= 10;
+
+   usage->deny = sys_deny_limit;
+   usage->low  = sys_lowmem_limit;
+
+   /*
+    * From the usage->free we deduct the delta based on deny limit
+    * or 87.5% if deny limit is disabled
+    */
+   usage->usable = (usage->deny ? sys_avail_memory - usage->deny : (sys_avail_memory >> 3));
+   usage->usable = (usage->usable < usage->free ? usage->free - usage->usable : 0);
+
+   /* We have succeed */
+   return 0;
+} /* osso_mem_get_usage */
+
+/* ------------------------------------------------------------------------- *
+ * Returns the total allocated RAM in system according to
+ * /proc/sys/vm/lowmem_* files.
+ *
+ * WARNING: Assumes 97% of memory can be allocated if no limits set (kernel)
+ * hardcoded threshold.
+ * ------------------------------------------------------------------------- */
+size_t osso_mem_get_avail_ram(void)
+{
+   if(NSIZE == sys_avail_memory)
+      setup_sys_values();
+   return sys_avail_memory;
+} /* osso_mem_get_avail_ram */
+
+/* ------------------------------------------------------------------------- *
+ * Returns deny limit (in bytes, the total allocated RAM in system)
+ * according to /proc/sys/vm/lowmem_* settings.
+ *
+ * WARNING: Assumes 97% of memory can be allocated if no limits set (kernel)
+ * hardcoded threshold.
+ * ------------------------------------------------------------------------- */
+size_t osso_mem_get_deny_limit(void)
+{
+   if(NSIZE == sys_deny_limit)
+      setup_sys_values();
+   return sys_deny_limit;
+} /* osso_mem_get_deny_limit */
+
+/* ------------------------------------------------------------------------- *
+ * Returns low memory (lowmem_high_limit, the total allocated RAM in system)
+ * according to /proc/sys/vm/lowmem_* settings.
+ *
+ * WARNING: Assumes 97% of memory can be allocated if no limits set (kernel)
+ * hardcoded threshold.
+ * ------------------------------------------------------------------------- */
+size_t osso_mem_get_lowmem_limit(void)
+{
+   if(NSIZE == sys_lowmem_limit)
+      setup_sys_values();
+   return sys_lowmem_limit;
+} /* osso_mem_get_lowmem_limit */
+
+/* ------------------------------------------------------------------------- *
+ * osso_mem_saw_enable - enables Simple Allocation Watchdog.
+ * 1. Calculates the possible growth of process' heap based on the
+ *    current heap stats, adjusted to the threshold
+ * 2. sets up the hook on malloc function; if the particular allocatuion
+ *    whose size is bigger than watchblock could violate the limit,
+ *    oom_func with user-specified context is called and malloc returns 0
+ *
+ * Parameters:
+ * - threshold - amount of memory that shall be free in system.
+ *   If you pass 0 than maximum available should be set (according to lowmem_high_limit)
+ * - watchblock - if allocation size more than specified the amount of
+ *   available memory must be tested. If 0 passed this parameter should be
+ *   set to page size.
+ * - oom_func - this function shall be called if we reach high memory
+ *   consumption (OOM level), specified by threshold or NULL malloc occurs.
+ *   May be NULL.
+ * - context - additional parameter that shall be passed into oom_func.
+ *
+ * Returns: 0 on success, negative on error
+ *
+ * Note: can be safely called several times.
+ *
+ * WARNING: if SAW can not be installed the old one will be active.
+ * ------------------------------------------------------------------------- */
+int osso_mem_saw_enable(size_t threshold,
+                  size_t watchblock,
+                  osso_mem_saw_oom_func_t oom_func,
+                  void* context
+            )
+{
+   osso_mem_usage_t current;
+
+   /* Validate passed parameters. */
+   if ( !watchblock )
+      watchblock = sysconf(_SC_PAGESIZE);
+
+   /* Load the values about memory usage */
+   if( osso_mem_get_usage(&current) )
    {
-      size_t vals[MAX_MEMINFO_STRINGS] = { MU_ZERO_INITIALIZER };
-      
-      int n = mu_load("/proc/meminfo", vals, MAX_MEMINFO_STRINGS);
-	  
-      /* Load values from the meminfo file */
-      /*AL: depending on the host kernel version, the results in 
-       * scratchbox might be different, so, we'll loose the */
-      if ( /* CAPACITY(vals) == */ n  )
-      {
-         /* Discover memory information using loaded numbers */
-         usage->total =    vals[ENU_MU_MEMTOTAL] 
-                         + vals[ENU_MU_SWAPTOTAL];
-         
-         usage->free  = vals[ENU_MU_MEMFREE] 
-                         + vals[ENU_MU_BUFFERS] 
-                         + vals[ENU_MU_CACHED] 
-                         + vals[ENU_MU_SWAPFREE] 
-                         /*+ vals[ENU_MSLAB]*/;
-         
-         usage->used  = usage->total - usage->free;
-         usage->util  = DIVIDE(100 * usage->used, usage->total);
-
-         /* Translate everything from kilobytes to bytes */
-         usage->total <<= 10;
-         usage->free  <<= 10;
-         usage->used  <<= 10;
-         
-/*Getting /proc/sys/vm/lowmem* stuff*/
-		 if(!sys_lowmem_limit) lm_read_proc();
-		 usage->deny = osso_mem_get_deny_limit();
-		 usage->low  = osso_mem_get_lowmem_limit();
-	 
-		 if(usage->deny >  usage->total) usage->deny = 0;
-		 if(usage->low > usage->total) usage->low = 0;
-
-		 /*From the usage->free we deduct the delta
-		  * based on deny limit 
-		  * or 87.5% if deny limit is disabled */
-		 available_ram = osso_mem_get_avail_ram();
-		 if (available_ram <= 0)
-		 {
-		    available_ram = vals[ENU_MU_MEMTOTAL];
-		    available_ram <<= 10;
-		 }
-		 usage->usable = usage->deny 
-						  	 ? (available_ram - usage->deny)  
-							 : (available_ram >> 3) ;
-		 usage->usable = usage->usable  > usage->free 
-				 			? 0 
-							: usage->free - usage->usable;
-						 
-         /* We have succeed */
-         return 0;
-      }
-      else
-      {
-         /* Clean-up values */
-         memset(usage, 0, sizeof(usage));
-      }
+      ULOG_CRIT("Error:osso_mem_get_usage failed\n");
+      return -EINVAL;
    }
 
-   /* Something wrong, shows as error */
-   return -1;
-} /* memusage */
+   /* If we're below the threshold, don't make things worse */
+   if(current.usable > threshold)
+   {
+      const struct mallinfo mi = mallinfo();
+
+      THREAD_LOCK();
+
+      saw_user_oom_func  = oom_func;
+      saw_max_heap_size  = mi.arena + mi.hblkhd + current.usable - threshold;
+      saw_max_block_size = watchblock;
+      saw_user_context   = context;
+
+      if(saw_malloc_hook != __malloc_hook)
+      {
+         /* SAW hook is not set */
+         saw_old_malloc_hook = __malloc_hook;
+         __malloc_hook = saw_malloc_hook;
+      }
+
+      THREAD_UNLOCK();
+
+      ULOG_INFO(
+            "SAW hook installed: block size %u, maxheap %u (threshold %u)\n",
+            saw_max_block_size, saw_max_heap_size, threshold
+         );
+
+      return 0;
+   }
+   else
+   {
+      ULOG_WARN("SAW: OOM:current.usable(%u) <= threshold(%u)\n", current.usable, threshold);
+
+      if ( oom_func )
+         oom_func(current.total - current.usable, current.total - threshold, context);
+      return -EINVAL;
+   }
+} /* osso_mem_saw_enable */
 
 /* ------------------------------------------------------------------------- *
- * osso_mem_get_avail_ram -- returns available ram
+ * osso_mem_saw_disable - disables Simple Allocation Watchdog and restore
+ * default malloc hook.
+ *
+ * Note: can be safely called several times.
  * ------------------------------------------------------------------------- */
-/*Deny limit, bytes*/
-size_t 
-osso_mem_get_avail_ram(void) 
+void osso_mem_saw_disable(void)
 {
-	if(!sys_avail_ram) lm_read_proc();
-	return sys_avail_ram;
-}
+   THREAD_LOCK();
+   if(saw_malloc_hook == __malloc_hook)
+      __malloc_hook = saw_old_malloc_hook;
+   THREAD_UNLOCK();
 
-/* ------------------------------------------------------------------------- *
- * osso_mem_get_deny_limit -- returns deny limit
- * ------------------------------------------------------------------------- */
-/*Deny limit, bytes*/
-size_t 
-osso_mem_get_deny_limit(void) 
-{
-	if(!sys_deny_limit) lm_read_proc();
-	return sys_deny_limit;
-}
-
-/* ------------------------------------------------------------------------- *
- * osso_mem_get_lowmem_limit -- returns lowmem notification limit
- * ------------------------------------------------------------------------- */
-size_t 
-osso_mem_get_lowmem_limit(void) 
-{
-	if(!sys_lowmem_limit) lm_read_proc();
-	return sys_lowmem_limit;
-}
-
-/* ------------------------------------------------------------------------- *
- * osso_mem_saw_enable -- Enables Simple Allocation Watchdog. 
- * 		1. Calculates the possible growth of process' heap based on the
- *		current heap stats, adjusted to the threshold
- *		2. sets up the hook on malloc function; if the particular allocatuion 
- *		   whose size is bigger than watchblock_sz could violate the limit, 
- *		   oom_func with user-specified context is called and malloc returns 0
- *	Returns: 0 on success, negative on error
- * ------------------------------------------------------------------------- */
-int
-osso_mem_saw_enable(size_t threshold,
-					size_t watchblock_sz,
-					osso_mem_saw_oom_func_t oom_func,
-					void *context)
-{
-	osso_mem_usage_t current;
-
-	if( 0!=osso_mem_get_usage(&current) )
-    {
-            ULOG_CRIT("Error:osso_mem_get_usage failed\n");
-			return -EINVAL;
-    }
-	
-	osso_mem_saw_disable();
-
-    ULOG_INFO("Setting hooks\n");
-
-	THREAD_LOCK();
-
-    osso_mem_saw_oom_func = oom_func;
-    osso_mem_saw_blocksz   = watchblock_sz;
-    osso_mem_saw_usr_ctx = context;
-  
-	/*If we're below the threshold, don't make things worse*/
-   	if(current.usable > threshold)
-	{
-		struct mallinfo mi=mallinfo();
-		/*How much heap could grow*/
-		osso_mem_saw_max_heapsz =  mi.arena + mi.hblkhd 
-					    + current.usable
-						- threshold;
-	}
-	else
-	{	
-        ULOG_WARN("SAW: OOM:current.usable(%d) <= threshold(%d)\n",current.usable,threshold);
-		osso_mem_saw_max_heapsz = 0;
-	}
-    
-    /*Accounting for deductions we calculated*/
-    if(!osso_mem_saw_max_heapsz)
-    {
-		THREAD_UNLOCK();
-        if(osso_mem_saw_oom_func)
-        {
-           (*osso_mem_saw_oom_func)(0,osso_mem_saw_max_heapsz,osso_mem_saw_usr_ctx);
-        }
-        else
-        {
-            ULOG_CRIT("OOM detected at start but no hook provided\n");
-            return -EINVAL;
-        }
-    }
-
-
-
-    /* setting malloc hook and saving an old one*/
-    saw_old_malloc_hook = __malloc_hook;
-    __malloc_hook = saw_malloc_hook;
-    osso_mem_saw_enabled = 1;
-	
-	THREAD_UNLOCK();
-
-    ULOG_INFO("SAW set: bs>%u, maxheap %u(threshold %u)\n",
-                    osso_mem_saw_blocksz, osso_mem_saw_max_heapsz, threshold);
-
-    return 0;
-}
-
-/* ------------------------------------------------------------------------- *
- * osso_mem_saw_disable -- disabled watchdog previously enabled with osso_mem_saw_enable
- *    if no watchdog enabled, does nothing
- * ------------------------------------------------------------------------- */
-void
-osso_mem_saw_disable(void)
-{
-    if(!osso_mem_saw_enabled)
-        return;
-	
-	THREAD_LOCK();
-    
-	osso_mem_saw_enabled = 0;
-
-    /*Restoring hooks*/
-    if(__malloc_hook == saw_malloc_hook)
-        __malloc_hook = saw_old_malloc_hook;
-
-	THREAD_UNLOCK();
-
-    ULOG_DEBUG("Removing hooks!\n");
-}
+   ULOG_INFO("SAW hook removed!\n");
+} /* osso_mem_saw_disable */
 
 
 
@@ -521,48 +517,67 @@ osso_mem_saw_disable(void)
  * ========================================================================= */
 #ifdef UNIT_TEST
 
-int 
-main(const int argc, const char* argv[])
+static void test_oom_func(size_t current_sz, size_t max_sz, void* context)
+{
+   printf("%s(%u, %u, 0x%08x) called\n", __FUNCTION__, current_sz, max_sz, (unsigned)context);
+} /* test_oom_func */
+
+
+int main(const int argc, const char* argv[])
 {
    osso_mem_usage_t usage;
+   const size_t insane = 60 << 20;
+   void* ptr;
+
    printf("\n1. UNIT_TEST MEMUSAGE \n");
 
    /* Load all values from meminfo file */
    if (0 == osso_mem_get_usage(&usage))
    {
-       printf ("%u\t%u\t%u\t%u\t%u\t%u\n", usage.total, usage.free, usage.used, usage.util, usage.deny, usage.low);
+      printf ("%u\t%u\t%u\t%u\t%u\t%u\n", usage.total, usage.free, usage.used, usage.util, usage.deny, usage.low);
    }
    else
    {
-         printf ("unable to load values from /proc/meminfo file\n");
-         return -1;
+      printf ("unable to load values from /proc/meminfo file\n");
+      return -1;
    }
 
-   
    printf("\n2. Testing lowmem\n");
 
    printf("Lowmem limits: LOW=%u bytes, DENY=%u bytes\n",
-				  osso_mem_get_lowmem_limit(),
-				  osso_mem_get_deny_limit()
-				  );
+            osso_mem_get_lowmem_limit(),
+            osso_mem_get_deny_limit()
+         );
 
    printf("\n3. Testing SAW\n");
-   
+   ptr = malloc( insane );
+   printf("Without SAW, allocating %u bytes: %s\n",insane, ptr ? "Succeeded": "Failed" );
+
+   if(ptr)
+      free(ptr);
+
+   if ( osso_mem_saw_enable(0, 0, NULL, NULL) )
    {
-  	   void *ptr;
-	   size_t insane = 60 << 20;
-	   ptr = malloc( insane );
-	   printf("Without SAW, allocating %u bytes: %s\n",insane, ptr ? "Succeeded": "Failed" );
-	   if(ptr) free(ptr);
-	   if (0!=osso_mem_saw_enable(3<<20,32767,NULL,NULL))
-	   {
-			printf("Cannot activate saw. Kaput"); 
-			return -1;
-	   }
-       ptr = malloc( insane );
-       if(ptr) free(ptr);
-       printf("With SAW, allocating %u bytes: %s\n",insane, ptr ? "Succeeded" : "Failed");
-	}
+      printf("Cannot activate saw. Kaput");
+      return -1;
+   }
+
+   ptr = malloc( insane );
+   printf("With SAW, allocating %u bytes: %s\n", insane, ptr ? "Succeeded" : "Failed");
+   if(ptr)
+      free(ptr);
+
+   if ( osso_mem_saw_enable(0, 0, test_oom_func, NULL) )
+   {
+      printf("Cannot activate saw with oom function. Kaput");
+      return -1;
+   }
+
+   ptr = malloc( insane );
+   printf("With SAW, allocating %u bytes: %s\n", insane, ptr ? "Succeeded" : "Failed");
+   if(ptr)
+      free(ptr);
+
    /* That is all */
    return 0;
 } /* main */
