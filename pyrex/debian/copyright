@@ -1,0 +1,18 @@
+This package was first debianized by Peter Harris <scav@blueyonder.co.uk> on
+Tue, 26 Nov 2002 11:08:39 +0000.
+
+It is now maintained by Paul Brossier <piem@debian.org>
+
+This version was downloaded from
+  http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/
+
+Upstream Author: Greg Ewing <greg@cosc.canterbury.ac.nz>
+
+Copyright:
+
+ Pyrex is free of restrictions. You can use, redistribute or modify it however
+ you want.
+
+ Greg Ewing, Computer Science Dept,
+ University of Canterbury,
+ Christchurch, New Zealand
