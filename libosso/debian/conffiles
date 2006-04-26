@@ -1,0 +1,2 @@
+/etc/dbus-1/system.d/libosso.conf
+/etc/libosso/sessionbus-libosso.conf
