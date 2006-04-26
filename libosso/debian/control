@@ -32,7 +32,7 @@ Section: base
 Priority: optional
 Conflicts: libosso0 (<< 0.8.6-1)
 Replaces: libosso0 (<< 0.8.6-1)
-Architecture: any
+Architecture: all
 Description: Libosso D-BUS configuration settings
 
 Package: libosso1-dbg
