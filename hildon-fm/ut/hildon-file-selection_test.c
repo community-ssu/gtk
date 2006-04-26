@@ -1,7 +1,7 @@
 /*
  * This file is part of hildon-fm package
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
@@ -194,6 +194,44 @@ int test008(void)
   return 1;
 }
 
+static gpointer cb_data;
+static GMainLoop *loop;
+static HildonFileSystemInfoHandle *async_handle;
+
+static void info_callback(HildonFileSystemInfoHandle *handle,
+                          HildonFileSystemInfo *info,
+                          const GError *error, gpointer data)
+{
+  assert(handle == async_handle);
+  assert(info != NULL);
+  assert(error == NULL);
+  assert(data == cb_data);
+
+  g_main_loop_quit(loop);
+}
+
+int test009(void)
+{
+  HildonFileSelection *fs;
+  HildonFileSystemModel *model;
+  const gchar *uri = "file:///";
+
+  model = g_object_new(HILDON_TYPE_FILE_SYSTEM_MODEL, NULL);
+  assert(model != NULL);
+  fs = HILDON_FILE_SELECTION(hildon_file_selection_new_with_model(model));
+  assert(fs != NULL);
+
+  async_handle = hildon_file_system_info_async_new(uri, info_callback,
+                                                   cb_data);
+  assert(handle != NULL);
+
+  loop = g_main_loop_new(NULL, TRUE);
+  assert(loop != NULL);
+  g_main_loop_run(loop);
+
+  return 1;
+}
+
 /*use EXPECT_ASSERT for the tests that are _meant_ to throw assert so they are 
 *considered passed when they throw assert and failed when they do not
 */
@@ -208,6 +246,7 @@ testcase tcases[] =
   {*test006, "file_selection: selections", EXPECT_OK},
   {*test007, "file_system_model: search path", EXPECT_OK},
   {*test008, "file_system_model: autonaming", EXPECT_OK},
+  {*test009, "file_system_info: async_new", EXPECT_OK},
   {0} /*REMEMBER THE TERMINATING NULL*/
 };
 
