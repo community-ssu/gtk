@@ -1,7 +1,21 @@
 from distutils.core import setup, Extension
 
 osso = Extension('osso',
-            sources = ['osso.c'],
+            sources = [
+                'osso.c',
+                'osso-rpc.c',
+                'osso-autosave.c',
+                'osso-time-notification.c',
+                'osso-mime.c',
+                'osso-device-state.c',
+                'osso-misc.c',
+                'osso-helper.c',
+                'osso-application.c',
+                'osso-statusbar.c',
+                'osso-system-note.c',
+                'osso-state.c',
+                'osso-plugin.c',
+                ],
             libraries = [
                 'osso',
                 'dbus-1',
@@ -33,14 +47,22 @@ osso = Extension('osso',
             ],
             extra_compile_args=[
                 '-Os',
-                '-rdynamic',
-                '-g',
+                '-ansi',
                 '-DXTHREADS',
                 '-DXUSE_MTSAFE_API',
 #                '-pedantic',
-#                '-ansi',
 #                '-Wno-long-long',
+#                '-g',
+#                '-rdynamic',
             ],
         )
 
-setup(name = 'osso', ext_modules = [osso])
+setup(
+        name = 'osso',
+        version = '0.1',
+        description = 'Python bindings for libosso components.',
+        author = 'Osvaldo Santana Neto',
+        author_email = 'osvaldo.santana@indt.org.br',
+        url = 'http://www.maemo.org',
+        ext_modules = [osso]
+)
