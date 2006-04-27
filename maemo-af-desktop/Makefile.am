@@ -24,7 +24,6 @@ INCLUDES = \
 	$(GCONF_CFLAGS) $(MB_CFLAGS) $(HILDON_FM_CFLAGS) $(COMMON_ERROR_CFLAGS) \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
-	-DOTHERS_MENU_CONF_DIR=\"$(sysconfdir)/others-menu\" \
 	-DPREFIX=\"$(prefix)\"
 
 pkgconfigdir = $(libdir)/pkgconfig

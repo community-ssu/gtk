@@ -1,5 +1,12 @@
 2006-04-27  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/Makefile.am: Remove any mention to /etc/others-menu
+	* hildon-navigator/hildon-navigator-restore-plugins.sh: Added script
+	  to remove plugin configurations which may have been restored from
+	  an older version of the software
+
+2006-04-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-restore-background.sh: Only restore the
 	  background when necessary
 

@@ -9,7 +9,6 @@ INCLUDES = \
 	$(HILDON_CFLAGS) -g $(MB_CFLAGS) $(OSSO_CFLAGS) $(MB_CFLAGS) $(LIBXML_CFLAGS)\
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
-	-DOTHERS_MENU_CONF_DIR=\"$(sysconfdir)/others-menu\" \
 	-DPREFIX=\"$(prefix)\" \
 	-DDATADIR=\"$(datadir)\" \
 	-DPLUGINDIR=\"$(plugindir)\" \
@@ -71,19 +70,9 @@ libhildonnavigator_la_LIBADD = \
     $(LIBXML2_LIBS) \
     ../libhildonmenu/libhildonmenu.la
 
-hildon_othersmenudir = $(sysconfdir)/others-menu
-hildon_othersmenu_DATA = .empty
-
 libhildonnavigatorincludeinstdir=$(includedir)/hildon-navigator-dev
 libhildonnavigatorincludeinst_DATA = \
 	hildon-navigator-interface.h \
 	hildon-navigator-lib.h
 
-install-data-hook:
-	mkdir -p $(DESTDIR)/$(hildon_othersmenudir); \
-	cd $(DESTDIR)/$(hildon_othersmenudir); \
-	ln -sf .empty 1000_separator; \
-	ln -sf .empty 2000_separator; \
-	mkdir -p $(DESTDIR)/$(hildon_othersmenudir)/1400_tana_fi_utilities; \
-	mkdir -p $(DESTDIR)/$(hildon_othersmenudir)/2100_tana_fi_games;
 
