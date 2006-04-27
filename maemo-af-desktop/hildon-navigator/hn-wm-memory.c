@@ -199,13 +199,7 @@ hn_wm_memory_lowmem_func(gboolean is_on)
 	    {
 	      tm_wm_memory_show_pavlov_dialog();
 	    }
-
-	  else
 	  */
-	    {
-          hildon_banner_show_information(NULL, NULL, 
-                  _("memr_ni_application_memory_low"));
-	    }
 	}
     }
 }
