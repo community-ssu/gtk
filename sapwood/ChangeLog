@@ -1,4 +1,4 @@
-2006-04-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+2006-04-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* src/sapwood-draw.c (draw_focus): Use state parameter when matching
 	images for focus to allow more flexible, state-dependent focus
