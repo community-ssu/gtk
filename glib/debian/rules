@@ -190,12 +190,14 @@ binary-arch: build install
 	dh_strip -a --dbg-package=libglib$(apiver)-$(soname)
 	dh_compress -a
 	dh_fixperms -a
-	dh_makeshlibs -a -Nlibglib$(apiver)-$(soname)-dbg
-	dh_makeshlibs	-plibglib$(apiver)-$(soname) \
-			-V "libglib${apiver}-${soname} (>= ${shver})"
+
+# shlibs
+	dh_makeshlibs -a -Nlibglib$(apiver)-dbg
+	dh_makeshlibs -n -X usr/lib/glib-$(apiver) -plibglib$(apiver)-$(soname)$(suffix) -V "libglib${apiver}-${soname}${suffix} (>= 2.10.2)"
 	dh_installdeb -a
 	dh_shlibdeps -l$(libpath) -a
 	cat debian/*/DEBIAN/shlibs > debian/shlibs.local
+
 	dh_gencontrol -a
 	dh_md5sums -a
 	dh_builddeb -a
