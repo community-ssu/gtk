@@ -1,3 +1,10 @@
+hildon-fm (0.22-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Made rendering optimisation allowed by fixed bug 22807.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 27 Apr 2006 13:30:59 +0300
+
 hildon-fm (0.21-1) unstable; urgency=low
 
   * Backported hildon_file_system_info_async_new() and

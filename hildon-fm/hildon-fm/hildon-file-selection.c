@@ -2166,7 +2166,8 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
    /*      gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
         gtk_tree_view_column_set_fixed_width(col, 26);*/
     renderer = gtk_cell_renderer_pixbuf_new();
-    gtk_cell_renderer_set_fixed_size(renderer, -1, LIST_CELL_HEIGHT);
+    gtk_cell_renderer_set_fixed_size(renderer, LIST_CELL_HEIGHT,
+                                     LIST_CELL_HEIGHT);
     gtk_tree_view_append_column(tree, col);
     gtk_tree_view_column_pack_start(col, renderer, TRUE);
     gtk_tree_view_column_add_attribute
@@ -2272,7 +2273,8 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
     col = gtk_tree_view_column_new();
     gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     renderer = gtk_cell_renderer_pixbuf_new();
-    gtk_cell_renderer_set_fixed_size(renderer, -1, TREE_CELL_HEIGHT);
+    gtk_cell_renderer_set_fixed_size(renderer, TREE_CELL_HEIGHT,
+                                     TREE_CELL_HEIGHT);
     gtk_tree_view_append_column(GTK_TREE_VIEW(self->priv->dir_tree), col);
     gtk_tree_view_column_pack_start(col, renderer, FALSE);
 
