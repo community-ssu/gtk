@@ -78,7 +78,7 @@ binary-common:
 	# default version link for binary and manpage
 	unset DH_OPTIONS; \
 	for file in $(files); do \
-		dh_link -ppython-pyrex \
+		dh_link -ppython$(defversion)-pyrex \
 			usr/bin/python$(defversion)-$$file \
 			usr/bin/$$file \
 			usr/share/man/man1/python$(defversion)-$$file.1.gz \
