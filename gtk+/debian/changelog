@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.6.10-1.osso15) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Bugs fixed:
+    N#25311: GtkTreeView paints far too much when new items are inserted
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 27 Apr 2006 16:01:33 +0300
+
 gtk+2.0 (2:2.6.10-1.osso14) unstable; urgency=low
 
   * debian/rules: disable thumb support temporarily
