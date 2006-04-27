@@ -891,7 +891,7 @@ draw_extension (GtkStyle       *style,
 static void
 draw_focus (GtkStyle     *style,
 	    GdkWindow    *window,
-	    GtkStateType  state_type,
+	    GtkStateType  state,
 	    GdkRectangle *area,
 	    GtkWidget    *widget,
 	    const gchar  *detail,
@@ -912,7 +912,7 @@ draw_focus (GtkStyle     *style,
   
   if (!draw_simple_image (style, window, area, widget, &match_data, TRUE, FALSE,
 			  x, y, width, height))
-    parent_class->draw_focus (style, window, state_type, area, widget, detail,
+    parent_class->draw_focus (style, window, state, area, widget, detail,
 			      x, y, width, height);
 }
 
