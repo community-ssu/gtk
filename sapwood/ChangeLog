@@ -1,5 +1,13 @@
 2006-04-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* src/sapwood-rc-style.c (theme_parse_image): Use g_new0 rather than
+	g_malloc to make sure fields are initialized.
+	* src/sapwood-pixmap.c (sapwood_pixmap_get_for_file): Initialize the
+	buffer to silence valgrind.
+	N#27967
+
+2006-04-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-draw.c (draw_focus): Use state parameter when matching
 	images for focus to allow more flexible, state-dependent focus
 	theming. N#23070

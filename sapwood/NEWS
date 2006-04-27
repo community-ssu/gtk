@@ -4,6 +4,7 @@ sapwood 2.18 - WIP
 Bugs fixed
 ----------
 N#23070 - View button pressed state looks same as focused state
+N#27967 - Valgrind reported errors from libsapwood
 
 
 sapwood 2.17 - 2006-04-24

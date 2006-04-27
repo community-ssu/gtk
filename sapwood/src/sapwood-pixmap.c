@@ -150,7 +150,7 @@ sapwood_pixmap_get_for_file (const char *filename,
 			    GError **err)
 {
   SapwoodPixmap     *self;
-  char               buf[ sizeof(PixbufOpenRequest) + PATH_MAX + 1 ];
+  char               buf[ sizeof(PixbufOpenRequest) + PATH_MAX + 1 ] = {0};
   PixbufOpenRequest *req = (PixbufOpenRequest *) buf;
   PixbufOpenResponse rep;
   int                i, j;

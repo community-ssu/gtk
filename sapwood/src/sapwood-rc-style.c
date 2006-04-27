@@ -573,19 +573,8 @@ theme_parse_image(GtkSettings  *settings,
   if (token != G_TOKEN_LEFT_CURLY)
     return G_TOKEN_LEFT_CURLY;
 
-  data = g_malloc(sizeof(ThemeImage));
-
+  data = g_new0 (ThemeImage, 1);
   data->refcount = 1;
-
-  data->background = NULL;
-  data->overlay = NULL;
-  data->gap_start = NULL;
-  data->gap = NULL;
-  data->gap_end = NULL;
-
-  data->match_data.function = 0;
-  data->match_data.detail = NULL;
-  data->match_data.flags = 0;
 
   token = g_scanner_peek_next_token(scanner);
   while (token != G_TOKEN_RIGHT_CURLY)
