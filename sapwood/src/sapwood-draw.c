@@ -907,7 +907,8 @@ draw_focus (GtkStyle     *style,
 
   match_data.function = TOKEN_D_FOCUS;
   match_data.detail = (gchar *)detail;
-  match_data.flags = 0;
+  match_data.flags = THEME_MATCH_STATE;
+  match_data.state = state;
   
   if (!draw_simple_image (style, window, area, widget, &match_data, TRUE, FALSE,
 			  x, y, width, height))

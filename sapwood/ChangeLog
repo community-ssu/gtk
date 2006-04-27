@@ -1,5 +1,11 @@
 2006-04-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* src/sapwood-draw.c (draw_focus): Use state parameter when matching
+	images for focus to allow more flexible, state-dependent focus
+	theming. N#23070
+
+2006-04-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* === Release 2.17 ===
 	
 	* src/sapwood-pixmap.c(sapwood_pixmap_free): Do not unref NULL mask.
