@@ -23,9 +23,10 @@
  */
 
 #include <Python.h>
+#include <marshal.h>
 #include <time.h>
-#include <glib.h>
 #include <libosso.h>
+#include <pygtk/pygtk.h>
 
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
@@ -39,6 +40,11 @@ static PyObject *OssoStateSizeException;
 
 static PyObject *set_rpc_callback = NULL;
 static PyObject *rpc_async_callback = NULL;
+static PyObject *autosave_callback = NULL;
+static PyObject *time_notification_callback = NULL;
+static PyObject *device_state_callback = NULL;
+static PyObject *mime_callback = NULL;
+static PyObject *exit_callback = NULL;
 
 /* Default values for .._with_defaults functions */
 #define MAX_IF_LEN 255
@@ -47,16 +53,23 @@ static PyObject *rpc_async_callback = NULL;
 #define OSSO_BUS_ROOT      "com.nokia"
 #define OSSO_BUS_ROOT_PATH "/com/nokia"
 
-gchar *
-appname_to_valid_path_component(const char *application)
-{
-    gchar *copy = NULL;
-    gchar *p = NULL;
+/* ----------------------------------------------- */
+/* Helper functions                                */
+/* ----------------------------------------------- */
 
-    g_assert(application != NULL);
+char *
+appname_to_valid_path_component(char *application)
+{
+    char *copy = NULL;
+    char *p = NULL;
+
+    if (application == NULL)
+		return NULL;
 
     copy = g_strdup(application);
-    if (copy == NULL) return NULL;
+
+    if (copy == NULL)
+		return NULL;
 
     for (p = g_strrstr(copy, "."); p != NULL; p = g_strrstr(p + 1, ".")) {
         *p = '/';
@@ -64,8 +77,6 @@ appname_to_valid_path_component(const char *application)
     return copy;
 }
 
-
-/* helper functions */
 static void
 _set_exception(osso_return_t err, osso_rpc_t *retval)
 {
@@ -215,16 +226,21 @@ static char _check_context(osso_context_t *context)
 	}
 	return TRUE;
 }
-/* / helper functions */
 
-/* Type: Context */
+
+/* ----------------------------------------------- */
+/* Context                                         */
+/* ----------------------------------------------- */
+
 typedef struct {
 	PyObject_HEAD
 	osso_context_t *context;
 } Context;
 
+/* ----------------------------------------------- */
+/* Context type default methods                    */
+/* ----------------------------------------------- */
 
-/* Context method */
 static PyObject *
 Context_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
@@ -265,56 +281,30 @@ Context_init(Context *self, PyObject *args, PyObject *kwds)
 
 
 static PyObject *
-Context_get_name(Context *self)
+Context_close(Context *self)
 {
-	const char *name;
-
 	if (!_check_context(self->context)) return 0;
-
-	name = osso_application_name_get(self->context);
-	return Py_BuildValue("s", name);
+	osso_deinitialize(self->context);
+	self->context = NULL;
+	Py_RETURN_NONE;
 }
 
 
-static PyObject *
-Context_get_version(Context *self)
+static void
+Context_dealloc(Context *self)
 {
-	const char *version;
+	if (self->context == NULL)
+		return;
 
-	if (!_check_context(self->context)) return 0;
-
-	version = osso_application_version_get(self->context);
-	return Py_BuildValue("s", version);
+	osso_deinitialize(self->context);
+	self->context = NULL;
+	return;
 }
 
 
-static PyObject *
-Context_statusbar_send_event(Context *self, PyObject *args, PyObject *kwds)
-{
-	const gchar *name;
-	gint arg1;
-	gint arg2;
-	const gchar *arg3;
-	osso_return_t ret;
-	osso_rpc_t retval;
-
-	static char *kwlist[] = {"name", "arg1", "arg2", "arg3", 0};
-
-	if (!_check_context(self->context)) return 0;
-
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "siis:Context.statusbar_send_event", kwlist, &name, &arg1, &arg2, &arg3)) {
-		return NULL;
-	}
-
-	ret = osso_statusbar_send_event(self->context, name, arg1, arg2, arg3, &retval);
-	if (ret != OSSO_OK) {
-		_set_exception(ret, &retval);
-		return NULL;
-	}
-
-	return _rpc_t_to_python(&retval);
-}
-
+/* ----------------------------------------------- */
+/* RPC (done)                                      */
+/* ----------------------------------------------- */
 
 static PyObject *
 Context_rpc_run(Context *self, PyObject *args, PyObject *kwds)
@@ -416,7 +406,7 @@ Context_rpc_run_with_defaults(Context *self, PyObject *args, PyObject *kwds)
 	g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
     copy = appname_to_valid_path_component(application);
     if (copy == NULL) {
-		 PyErr_SetString(OssoException, "Invalid application.");
+		 PyErr_SetString(OssoException, "Invalid application name.");
 		 return NULL;
     }
     g_snprintf(object_path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", copy);
@@ -456,7 +446,6 @@ Context_rpc_run_with_defaults(Context *self, PyObject *args, PyObject *kwds)
 }
 
 
-/* rpc_async_run */
 static void
 _wrap_rpc_async_handler(const gchar *interface, const gchar *method, osso_rpc_t *retval, gpointer data)
 {
@@ -515,14 +504,23 @@ Context_rpc_async_run(Context *self, PyObject *args, PyObject *kwds)
 		py_rpc_args = PyTuple_New(0);
 	}
 
-	if (!PyCallable_Check(py_func)) {
-		PyErr_SetString(PyExc_TypeError,
-							"callback parameter must be callable");
+	if (py_func != Py_None) {
+		if (!PyCallable_Check(py_func)) {
+			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
+			return NULL;
+		}
+		Py_XINCREF(py_func);
+		Py_XDECREF(rpc_async_callback);
+		rpc_async_callback = py_func;
+	} else {
+		Py_XDECREF(rpc_async_callback);
+		rpc_async_callback = NULL;
+	}
+
+	if (rpc_async_callback == NULL) {
+		PyErr_SetString(PyExc_TypeError, "Callback cannot be None.");
 		return NULL;
 	}
-	Py_XINCREF(py_func);
-	Py_XDECREF(rpc_async_callback);
-	rpc_async_callback = py_func;
 
 	ret = osso_rpc_async_run_with_argfill(self->context, service, object_path,
 										interface, method,
@@ -585,7 +583,7 @@ Context_rpc_async_run_with_defaults(Context *self, PyObject *args, PyObject *kwd
     g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
     copy = appname_to_valid_path_component(application);
     if (copy == NULL) {
-		 PyErr_SetString(OssoException, "Invalid application.");
+		 PyErr_SetString(OssoException, "Invalid application name.");
 		 return NULL;
     }
     g_snprintf(object_path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", copy);
@@ -604,10 +602,8 @@ Context_rpc_async_run_with_defaults(Context *self, PyObject *args, PyObject *kwd
 	}
 	Py_RETURN_NONE;
 }
-/* /rpc_async_run */
 
 
-/* set_rpc_callback */
 static gint
 _wrap_rpc_callback_handler(const gchar *interface, const gchar *method, GArray *arguments, gpointer data, osso_rpc_t *retval)
 {
@@ -641,9 +637,9 @@ _wrap_rpc_callback_handler(const gchar *interface, const gchar *method, GArray *
 static PyObject *
 Context_set_rpc_callback(Context *self, PyObject *args, PyObject *kwds)
 {
-	const gchar *service;
-	const gchar *object_path;
-	const gchar *interface;
+	const char *service;
+	const char *object_path;
+	const char *interface;
 	PyObject *py_func = NULL;
 	PyObject *py_data = NULL;
 
@@ -660,16 +656,36 @@ Context_set_rpc_callback(Context *self, PyObject *args, PyObject *kwds)
 		return NULL;
 	}
 
-	if (!PyCallable_Check(py_func)) {
-		PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
-		return NULL;
+	if (py_func != Py_None) {
+		if (!PyCallable_Check(py_func)) {
+			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
+			return NULL;
+		}
+		Py_XINCREF(py_func);
+		Py_XDECREF(set_rpc_callback);
+		set_rpc_callback = py_func;
+	} else {
+		Py_XDECREF(set_rpc_callback);
+		set_rpc_callback = NULL;
 	}
-	Py_XINCREF(py_func);
-	Py_XDECREF(set_rpc_callback);
-	set_rpc_callback = py_func;
 
-	ret = osso_rpc_set_cb_f(self->context, service, object_path, interface,
-								_wrap_rpc_callback_handler, py_data);
+	if (py_func != Py_None) {
+		if (!PyCallable_Check(py_func)) {
+			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
+			return NULL;
+		}
+		Py_XINCREF(py_func);
+		Py_XDECREF(set_rpc_callback);
+		set_rpc_callback = py_func;
+
+		ret = osso_rpc_set_cb_f(self->context, service, object_path, interface,
+									_wrap_rpc_callback_handler, py_data);
+	} else {
+		ret = osso_rpc_unset_cb_f(self->context, service, object_path, interface,
+									_wrap_rpc_callback_handler, py_data);
+		Py_XDECREF(set_rpc_callback);
+		set_rpc_callback = NULL;
+	}
 
 	if (ret != OSSO_OK) {
 		_set_exception(ret, NULL);
@@ -678,7 +694,52 @@ Context_set_rpc_callback(Context *self, PyObject *args, PyObject *kwds)
 
 	Py_RETURN_NONE;
 }
-/* /set_rpc_callback */
+
+
+static PyObject *
+Context_set_rpc_default_callback(Context *self, PyObject *args, PyObject *kwds)
+{
+	PyObject *py_func = NULL;
+	PyObject *py_data = NULL;
+	osso_return_t ret;
+
+	static char *kwlist[] = { "callback", "user_data", 0 };
+
+	if (!_check_context(self->context)) return 0;
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"O|O:Context.set_rpc_default_callback", kwlist, &py_func,
+				&py_data)) {
+		return NULL;
+	}
+
+	if (py_func != Py_None) {
+		if (!PyCallable_Check(py_func)) {
+			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
+			return NULL;
+		}
+		Py_XINCREF(py_func);
+		Py_XDECREF(set_rpc_callback);
+		set_rpc_callback = py_func;
+	} else {
+		Py_XDECREF(set_rpc_callback);
+		set_rpc_callback = NULL;
+	}
+
+	if (set_rpc_callback != NULL) {
+		ret = osso_rpc_set_default_cb_f(self->context,
+				_wrap_rpc_callback_handler, py_data);
+	} else {
+		ret = osso_rpc_unset_default_cb_f(self->context,
+				_wrap_rpc_callback_handler, py_data);
+	}
+
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
 
 
 static PyObject *
@@ -698,6 +759,7 @@ Context_get_rpc_timeout(Context *self)
 
 	return Py_BuildValue("i", timeout);
 }
+
 
 static PyObject *
 Context_set_rpc_timeout(Context *self, PyObject *args)
@@ -719,6 +781,10 @@ Context_set_rpc_timeout(Context *self, PyObject *args)
 	Py_RETURN_NONE;
 }
 
+
+/* ----------------------------------------------- */
+/* Applications (done)                             */
+/* ----------------------------------------------- */
 
 static PyObject *
 Context_application_top(Context *self, PyObject *args, PyObject *kwds)
@@ -746,6 +812,271 @@ Context_application_top(Context *self, PyObject *args, PyObject *kwds)
 	Py_RETURN_NONE;
 }
 
+
+/* ----------------------------------------------- */
+/* Autosaving (done)                               */
+/* ----------------------------------------------- */
+
+static void
+_wrap_autosave_callback_handler(gpointer data)
+{
+	PyObject *py_args = NULL;
+	PyGILState_STATE state;
+
+	state = PyGILState_Ensure();
+
+	if (autosave_callback == NULL) {
+		return;
+	}
+	
+	py_args = Py_BuildValue("(O)", data);
+	PyEval_CallObject(autosave_callback, py_args);
+
+	PyGILState_Release(state);
+	return;
+}
+
+
+static PyObject *
+Context_set_autosave_callback(Context *self, PyObject *args, PyObject *kwds)
+{
+	PyObject *py_func = NULL;
+	PyObject *py_data = NULL;
+	osso_return_t ret;
+
+	static char *kwlist[] = { "callback", "user_data", 0 };
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"O|O:Context.set_autosave_callback", kwlist, &py_func,
+				&py_data)) {
+		return NULL;
+	}
+
+	if (py_func != Py_None) {
+		if (!PyCallable_Check(py_func)) {
+			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
+			return NULL;
+		}
+		Py_XINCREF(py_func);
+		Py_XDECREF(autosave_callback);
+		autosave_callback = py_func;
+	} else {
+		Py_XDECREF(autosave_callback);
+		autosave_callback = NULL;
+	}
+
+	if (autosave_callback != NULL) {
+		ret = osso_application_set_autosave_cb(self->context,
+				_wrap_autosave_callback_handler, py_data);
+	} else {
+		ret = osso_application_unset_autosave_cb(self->context,
+				_wrap_autosave_callback_handler, py_data);
+	}
+
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
+static PyObject *
+Context_userdata_changed(Context *self)
+{
+	osso_return_t ret;
+
+	if (!_check_context(self->context)) return 0;
+
+	ret = osso_application_userdata_changed(self->context);
+
+	Py_RETURN_NONE;
+}
+
+
+static PyObject *
+Context_force_autosave(Context *self)
+{
+	osso_return_t ret;
+
+	if (!_check_context(self->context)) return 0;
+
+	ret = osso_application_autosave_force(self->context);
+
+	Py_RETURN_NONE;
+}
+
+
+static PyObject *
+Context_get_name(Context *self)
+{
+	const char *name;
+
+	if (!_check_context(self->context)) return 0;
+
+	name = osso_application_name_get(self->context);
+	return Py_BuildValue("s", name);
+}
+
+
+static PyObject *
+Context_get_version(Context *self)
+{
+	const char *version;
+
+	if (!_check_context(self->context)) return 0;
+
+	version = osso_application_version_get(self->context);
+	return Py_BuildValue("s", version);
+}
+
+/* ----------------------------------------------- */
+/* Statusbar (done)                                */
+/* ----------------------------------------------- */
+
+static PyObject *
+Context_statusbar_send_event(Context *self, PyObject *args, PyObject *kwds)
+{
+	const char *name;
+	gint arg1;
+	gint arg2;
+	const char *arg3;
+	osso_return_t ret;
+	osso_rpc_t retval;
+
+	static char *kwlist[] = {"name", "arg1", "arg2", "arg3", 0};
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "siis:Context.statusbar_send_event", kwlist, &name, &arg1, &arg2, &arg3)) {
+		return NULL;
+	}
+
+	ret = osso_statusbar_send_event(self->context, name, arg1, arg2, arg3, &retval);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, &retval);
+		return NULL;
+	}
+
+	return _rpc_t_to_python(&retval);
+}
+
+
+/* ----------------------------------------------- */
+/* Time (done)                                     */
+/* ----------------------------------------------- */
+
+static void
+_wrap_time_notification_callback_handler(gpointer data)
+{
+	PyObject *py_args = NULL;
+	PyGILState_STATE state;
+
+	state = PyGILState_Ensure();
+
+	if (time_notification_callback == NULL) {
+		return;
+	}
+	
+	py_args = Py_BuildValue("(O)", data);
+	PyEval_CallObject(time_notification_callback, py_args);
+
+	PyGILState_Release(state);
+	return;
+}
+
+
+static PyObject *
+Context_set_time_notification_callback(Context *self, PyObject *args, PyObject *kwds)
+{
+	PyObject *py_func = NULL;
+	PyObject *py_data = NULL;
+	osso_return_t ret = OSSO_OK;
+
+	static char *kwlist[] = { "callback", "user_data", 0 };
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"O|O:Context.set_time_notification_callback", kwlist, &py_func,
+				&py_data)) {
+		return NULL;
+	}
+
+	if (py_func != Py_None) {
+		if (!PyCallable_Check(py_func)) {
+			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
+			return NULL;
+		}
+		Py_XINCREF(py_func);
+		Py_XDECREF(time_notification_callback);
+		time_notification_callback = py_func;
+	} else {
+		Py_XDECREF(time_notification_callback);
+		time_notification_callback = NULL;
+	}
+
+	if (time_notification_callback != NULL) {
+		ret = osso_time_set_notification_cb(self->context,
+				_wrap_time_notification_callback_handler, py_data);
+	} else {
+		/* FIXME: Where is osso_time_unset_notification_cb function? Is this the
+		 * correct way to unset this handler? */
+		ret = osso_time_set_notification_cb(self->context, NULL, py_data);
+	}
+
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
+static PyObject *
+Context_set_time(Context *self, PyObject *args)
+{
+	time_t epoch;
+	struct tm time;
+	osso_return_t ret;
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTuple(args,
+				"(iiiiiiiii):Context.set_time",
+					&time.tm_year, &time.tm_mon, &time.tm_mday,
+					&time.tm_hour, &time.tm_min, &time.tm_sec,
+					&time.tm_wday, &time.tm_yday, &time.tm_isdst)) {
+		return NULL;
+	}
+
+	/* remove python adjusts */
+	time.tm_year = time.tm_year - 1900;
+	time.tm_mon--;
+
+	epoch = mktime(&time);
+	if (epoch == -1) {
+		PyErr_SetString(PyExc_TypeError, "Invalid date/time.");
+		return NULL;
+	}
+	
+	ret = osso_time_set(self->context, epoch);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+	
+	Py_RETURN_NONE;
+}
+
+
+/* ----------------------------------------------- */
+/* System notification (done)                      */
+/* ----------------------------------------------- */
 
 static PyObject *
 Context_system_note_dialog(Context *self, PyObject *args, PyObject *kwds)
@@ -812,93 +1143,722 @@ Context_system_note_infoprint(Context *self, PyObject *args, PyObject *kwds)
 	return _rpc_t_to_python(&retval);
 }
 
+/* ----------------------------------------------- */
+/* State saving                                    */
+/* ----------------------------------------------- */
 
 static PyObject *
-Context_close(Context *self)
+Context_state_write(Context *self, PyObject *args, PyObject *kwds)
 {
+	osso_state_t osso_state;
+	osso_return_t ret = OSSO_OK;
+	PyObject *state = NULL;
+	PyObject *py_marshal_state = NULL;
+	char *marshal_state = NULL;
+
+	static char *kwlist[] = { "state", 0 };
+
 	if (!_check_context(self->context)) return 0;
-	osso_deinitialize(self->context);
-	self->context = NULL;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Context.state_write",
+				kwlist, &state))
+	{
+		return NULL;
+	}
+
+	py_marshal_state = PyMarshal_WriteObjectToString(state, Py_MARSHAL_VERSION);
+	PyString_AsStringAndSize(py_marshal_state, &marshal_state, &osso_state.state_size);
+	osso_state.state_data = (void *) marshal_state;
+
+	ret = osso_state_write(self->context, &osso_state);
+
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
+static PyObject *
+Context_state_read(Context *self)
+{
+	osso_state_t osso_state;
+	osso_return_t ret = OSSO_OK;
+	PyObject *py_marshal_state = NULL;
+
+	if (!_check_context(self->context)) return 0;
+
+	osso_state.state_size = 0;
+	osso_state.state_data = NULL;
+
+	ret = osso_state_read(self->context, &osso_state);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	py_marshal_state = PyMarshal_ReadObjectFromString((char *)osso_state.state_data, osso_state.state_size);
+	if (py_marshal_state == NULL) {
+		return NULL;
+	}
+
+	return py_marshal_state;
+}
+
+
+/* ----------------------------------------------- */
+/* Plugins (done)                                  */
+/* ----------------------------------------------- */
+
+PyObject *
+Context_plugin_execute(Context *self, PyObject *args, PyObject *kwds)
+{
+	osso_return_t ret = OSSO_OK;
+	const char *filename = NULL;
+	char user_activated = 0;
+	PyObject *user_data = NULL;
+
+	void *data = NULL;
+	GObject *obj = NULL;
+
+	static char *kwlist[] = { "filename", "user_activated", "user_data", 0 };
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "sb|O:Context.plugin_execute",
+				kwlist, &filename, &user_activated, &user_data))
+	{
+		return NULL;
+	}
+
+	if (user_data != NULL) {
+		if (PyObject_HasAttrString(user_data, "__gtype__")) {
+			obj = pygobject_get(user_data);
+			if (GTK_IS_WINDOW(obj)) {
+				data = (void *)obj;
+			}
+		}
+	}
+
+	ret = osso_cp_plugin_execute(self->context, filename, data, user_activated);
+
+	/* FIXME: Why some plugins return -1?
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+	*/
+
+	Py_RETURN_NONE;
+}
+
+
+PyObject *
+Context_plugin_save_state(Context *self, PyObject *args, PyObject *kwds)
+{
+	osso_return_t ret = OSSO_OK;
+	const char *filename = NULL;
+	PyObject *user_data = NULL;
+
+	static char *kwlist[] = { "filename", "user_data", 0 };
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|O:Context.plugin_save_state",
+				kwlist, &filename, &user_data))
+	{
+		return NULL;
+	}
+
+	ret = osso_cp_plugin_save_state(self->context, filename, user_data);
+
+	/* FIXME: Why some plugins return -1?
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+	*/
+
+	Py_RETURN_NONE;
+}
+
+
+/* ----------------------------------------------- */
+/* Device State (done)                             */
+/* ----------------------------------------------- */
+
+static PyObject *
+Context_display_state_on(Context *self)
+{
+	osso_return_t ret = OSSO_OK;
+
+	if (!_check_context(self->context)) return 0;
+
+	ret = osso_display_state_on(self->context);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
+static PyObject *
+Context_display_blanking_pause(Context *self)
+{
+	osso_return_t ret = OSSO_OK;
+
+	if (!_check_context(self->context)) return 0;
+
+	ret = osso_display_blanking_pause(self->context);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
 	Py_RETURN_NONE;
 }
 
 
 static void
-Context_dealloc(Context *self)
+_wrap_device_state_callback_handler(osso_hw_state_t *hw_state, void *data)
 {
-	if (self->context == NULL)
-		return;
+	PyObject *py_args = NULL;
+	PyGILState_STATE state;
+	char *hw_state_str;
 
-	osso_deinitialize(self->context);
-	self->context = NULL;
+	state = PyGILState_Ensure();
+
+	if (device_state_callback == NULL) {
+		return;
+	}
+
+	switch (hw_state->sig_device_mode_ind) {
+		case OSSO_DEVMODE_NORMAL:
+			hw_state_str = "normal";
+			break;
+		case OSSO_DEVMODE_FLIGHT:
+			hw_state_str = "flight";
+			break;
+		case OSSO_DEVMODE_OFFLINE:
+			hw_state_str = "offline";
+			break;
+		case OSSO_DEVMODE_INVALID:
+			hw_state_str = "invalid";
+			break;
+		default:
+			hw_state_str = "";
+	}
+
+	py_args = Py_BuildValue("(bbbbsO)", 
+			hw_state->shutdown_ind,
+			hw_state->save_unsaved_data_ind,
+			hw_state->memory_low_ind,
+			hw_state->system_inactivity_ind,
+			hw_state_str,
+			data);
+
+	PyEval_CallObject(device_state_callback, py_args);
+
+	PyGILState_Release(state);
 	return;
 }
 
 
+static PyObject *
+Context_set_device_state_callback(Context *self, PyObject *args, PyObject *kwds)
+{
+	PyObject *py_func = NULL;
+	PyObject *py_data = NULL;
+	char shutdown = 0;
+	char save_data = 0;
+	char memory_low = 0;
+	char system_inactivity = 0;
+	char *mode = NULL;
+	osso_hw_state_t hw_state;
+	osso_return_t ret;
+
+	static char *kwlist[] = { "callback", "user_data", "shutdown", "save_data",
+		"memory_low", "system_inactivity", "mode", 0 };
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"O|bbbbsO:Context.set_device_state_callback", kwlist,
+				&py_func, &shutdown, &save_data, &memory_low,
+				&system_inactivity, &mode, &py_data)) {
+		return NULL;
+	}
+
+	if (py_func != Py_None) {
+		if (!PyCallable_Check(py_func)) {
+			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
+			return NULL;
+		}
+		Py_XINCREF(py_func);
+		Py_XDECREF(device_state_callback);
+		device_state_callback = py_func;
+	} else {
+		Py_XDECREF(device_state_callback);
+		device_state_callback = NULL;
+	}
+	
+	hw_state.shutdown_ind = shutdown;
+	hw_state.save_unsaved_data_ind = save_data;
+	hw_state.memory_low_ind = memory_low;
+	hw_state.system_inactivity_ind = system_inactivity;
+	
+	if (!strcasecmp(mode, "normal")) {
+		hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
+	} else if (!strcasecmp(mode, "flight")) {
+		hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
+	} else if (!strcasecmp(mode, "offline")) {
+		hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
+	} else if (!strcasecmp(mode, "invalid")) {
+		hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
+	} else {
+		PyErr_SetString(OssoException, "Invalid device mode. Use 'normal',"
+				"'flight', 'offline' or 'invalid' instead.");
+		return NULL;
+	}
+
+	if (autosave_callback != NULL) {
+		ret = osso_hw_set_event_cb(self->context, &hw_state,
+				_wrap_device_state_callback_handler, py_data);
+	} else {
+		ret = osso_hw_unset_event_cb(self->context, &hw_state);
+	}
+
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
+/* ----------------------------------------------- */
+/* MIME types                                      */
+/* ----------------------------------------------- */
+
+static void
+_wrap_mime_callback_handler(void *data, int argc, char **argv)
+{
+	int i;
+	PyObject *py_args = NULL;
+	PyObject *uris = NULL;
+	PyGILState_STATE state;
+
+	state = PyGILState_Ensure();
+
+	if (mime_callback == NULL) {
+		return;
+	}
+
+	uris = PyTuple_New(argc);
+	if (uris == NULL) {
+		return;
+	}
+	for (i = 0; i < argc; i++) {
+		PyTuple_SetItem(uris, i, Py_BuildValue("s", argv[i]));
+	}
+
+	py_args = Py_BuildValue("(OO)", uris, data);
+	PyEval_CallObject(mime_callback, py_args);
+
+	PyGILState_Release(state);
+	return;
+}
+
+
+static PyObject *
+Context_set_mime_callback(Context *self, PyObject *args, PyObject *kwds)
+{
+	PyObject *py_func = NULL;
+	PyObject *py_data = NULL;
+	osso_return_t ret;
+
+	static char *kwlist[] = { "callback", "user_data", 0 };
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"O|O:Context.set_mime_callback", kwlist, &py_func,
+				&py_data)) {
+		return NULL;
+	}
+
+	if (py_func != Py_None) {
+		if (!PyCallable_Check(py_func)) {
+			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
+			return NULL;
+		}
+		Py_XINCREF(py_func);
+		Py_XDECREF(mime_callback);
+		mime_callback = py_func;
+	} else {
+		Py_XDECREF(mime_callback);
+		mime_callback = NULL;
+	}
+
+	if (mime_callback != NULL) {
+		ret = osso_mime_set_cb(self->context,
+				_wrap_mime_callback_handler, py_data);
+	} else {
+		ret = osso_mime_unset_cb(self->context);
+	}
+
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
+/* ----------------------------------------------- */
+/* Others                                          */
+/* ----------------------------------------------- */
+
+static PyObject *
+Context_tasknav_mail_add(Context *self, PyObject *args, PyObject *kwds)
+{
+	guint id = 0;
+	const char *subject = NULL;
+	const char *sender = NULL;
+	const char *date = NULL;
+	gboolean has_attachment = 0;
+
+	osso_return_t ret;
+
+	static char *kwlist[] = {"id", "subject", "sender", "has_attachment", "date", 0};
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"issbs:Context.tasknav_mail_add", kwlist, &id, &subject,
+				&sender, &has_attachment, &date)) {
+		return NULL;
+	}
+
+	ret = osso_tasknav_mail_add(self->context, id, subject, sender, has_attachment, date);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
+static PyObject *
+Context_tasknav_mail_del(Context *self, PyObject *args, PyObject *kwds)
+{
+	guint id = 0;
+
+	osso_return_t ret;
+
+	static char *kwlist[] = {"id", 0};
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"i:Context.tasknav_mail_del", kwlist, &id)) {
+		return NULL;
+	}
+
+	ret = osso_tasknav_mail_del(self->context, id);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
+static PyObject *
+Context_tasknav_mail_set_outbox_count(Context *self, PyObject *args, PyObject *kwds)
+{
+	guint count = 0;
+
+	osso_return_t ret;
+
+	static char *kwlist[] = {"count", 0};
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"i:Context.tasknav_mail_set_outbox_count", kwlist, &count)) {
+		return NULL;
+	}
+
+	ret = osso_tasknav_mail_set_outbox_count(self->context, count);
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
+static void
+_wrap_exit_callback_handler(gboolean die_now, gpointer data)
+{
+	PyObject *py_args = NULL;
+	PyGILState_STATE state;
+
+	state = PyGILState_Ensure();
+
+	if (exit_callback == NULL) {
+		return;
+	}
+
+	py_args = Py_BuildValue("(O)", data);
+	PyEval_CallObject(exit_callback, py_args);
+
+	PyGILState_Release(state);
+	return;
+}
+
+
+static PyObject *
+Context_set_exit_callback(Context *self, PyObject *args, PyObject *kwds)
+{
+	PyObject *py_func = NULL;
+	PyObject *py_data = NULL;
+	osso_return_t ret;
+
+	static char *kwlist[] = { "callback", "user_data", 0 };
+
+	if (!_check_context(self->context)) return 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds,
+				"O|O:Context.set_exit_callback", kwlist, &py_func,
+				&py_data)) {
+		return NULL;
+	}
+
+	if (py_func != Py_None) {
+		if (!PyCallable_Check(py_func)) {
+			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
+			return NULL;
+		}
+		Py_XINCREF(py_func);
+		Py_XDECREF(exit_callback);
+		exit_callback = py_func;
+	} else {
+		Py_XDECREF(exit_callback);
+		exit_callback = NULL;
+	}
+
+	if (exit_callback != NULL) {
+		ret = osso_application_set_exit_cb(self->context,
+					_wrap_exit_callback_handler, py_data);
+	} else {
+		/* FIXME: Where is osso_time_unset_notification_cb function? Is this the
+		 * correct way to unset this handler? */
+		ret = osso_application_set_exit_cb(self->context, NULL, py_data);
+	}
+
+	if (ret != OSSO_OK) {
+		_set_exception(ret, NULL);
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+
+/* =============================================== */
+/* Module: osso                                    */
+/* =============================================== */
+
 static struct PyMethodDef Context_methods[] = {
-	{"get_name", (PyCFunction)Context_get_name, METH_NOARGS, "c.get_name() -> string\n\nReturn the application name.\n"},
-	{"get_version", (PyCFunction)Context_get_version, METH_NOARGS, "c.get_name() -> string\n\nReturn the application version.\n"},
-	{"rpc_run", (PyCFunction)Context_rpc_run, METH_VARARGS | METH_KEYWORDS, \
-		"c.rpc_run(service, object_path, interface, method[, rpc_args[, wait_reply[, system_bus]]]) -> object\n"
-		"\n"
-		"Run a RPC method with arguments inside rpc_args tuple.\n"
-		"\n"
+	/* RPC */
+	{"rpc_run", (PyCFunction)Context_rpc_run, METH_VARARGS | METH_KEYWORDS,
+		"c.rpc_run(service, object_path, interface, method[, rpc_args[, wait_reply[, system_bus]]]) -> object\n\n"
+		"Run a RPC method with arguments inside rpc_args tuple.\n\n"
 		"Usage example:\n\n"
 		"\tc.rpc_run('com.nokia.backup', '/com/nokia/backup', 'com.nokia.backup', 'backup_finish', True)\n"},
-	{"rpc_run_with_defaults", (PyCFunction)Context_rpc_run_with_defaults, METH_VARARGS | METH_KEYWORDS, \
+	{"rpc_run_with_defaults", (PyCFunction)Context_rpc_run_with_defaults, METH_VARARGS | METH_KEYWORDS,
 		"c.rpc_run_with_defaults(application, method[, rpc_args, wait_reply]) -> object\n"
 		"\n"
 		"Run a RPC method using default parameters.\n"
 		"\n"
 		"Usage example:\n\n"
 		"\tc.rpc_run_with_defaults('tn_mail', 'send_recv_button_focus', (status,)) # status is a int var\n"},
-	{"rpc_async_run", (PyCFunction)Context_rpc_async_run, METH_VARARGS | METH_KEYWORDS, \
-		"c.rpc_async_run(service, object_path, interface, method, callback, user_data, rpc_args)\n"
-		"\n"
-		"Run a RPC method and call 'callback' after finished.\n"
-		"\n"
+	{"rpc_async_run", (PyCFunction)Context_rpc_async_run, METH_VARARGS | METH_KEYWORDS,
+		"c.rpc_async_run(service, object_path, interface, method, callback[, user_data[, rpc_args]])\n\n"
+		"Run a RPC method and call 'callback' after finished.\n\n"
 		"Usage example:\n\n"
 		"\tdef my_func(interface, method, user_data=None):\n"
 		"\t\tpass\n\n"
 		"\tc.rpc_async_run('com.nokia.backup', '/com/nokia/backup', 'com.nokia.backup', 'backup_finish', my_func, 'hello!', (True,))\n"},
-	{"rpc_async_run_with_defaults", (PyCFunction)Context_rpc_async_run_with_defaults, METH_VARARGS | METH_KEYWORDS, \
-		"c.rpc_async_run_with_defaults(application, method, callback, user_data, rpc_args)\n"
-		"\n"
-		"Run a RPC method using default parameters and call 'callback' after finished.\n"
-		"\n"
+	{"rpc_async_run_with_defaults", (PyCFunction)Context_rpc_async_run_with_defaults, METH_VARARGS | METH_KEYWORDS,
+		"c.rpc_async_run_with_defaults(application, method, callback[, user_data[, rpc_args]])\n\n"
+		"Run a RPC method using default parameters and call 'callback' after finished.\n\n"
 		"Usage example:\n\n"
 		"\tdef my_func(interface, method, user_data=None):\n"
 		"\t\tpass\n\n"
 		"\tc.rpc_async_run_with_defaults('tn_mail', 'send_recv_button_focus', my_func, 'hello!', (True,))\n"},
 	{"set_rpc_callback", (PyCFunction)Context_set_rpc_callback, METH_VARARGS | METH_KEYWORDS,
-		"This function registers a callback function for handling RPC calls to a given object of a service.\n"},
-/*	{"set_rpc_default_callback", (PyCFunction)Context_set_rpc_default_callback, METH_VARARGS | METH_KEYWORDS,
-		"This function registers a callback function for handling RPC calls to the\n"
-		"default service of the application. The default service is 'com.nokia.A',\n"
-		"where A is the application's name as given to osso_initialize.\n"},*/
-	{"statusbar_send_event", (PyCFunction)Context_statusbar_send_event, METH_VARARGS | METH_KEYWORDS, "Send an event to statusbar."},
+		"c.set_rpc_callback(service, object_path, interface, callback[, user_data])\n\n"
+		"This method registers a callback function for handling RPC calls to a\n"
+		"given object of a service. Use None in callback parameter to unset this\n"
+		"callback. The callback will receive the parameters: interface, method,\n"
+		"arguments, user_data.\n"},
+	{"set_rpc_default_callback", (PyCFunction)Context_set_rpc_default_callback, METH_VARARGS | METH_KEYWORDS,
+		"c.set_rpc_default_callback(callback[, user_data])\n\n"
+		"This method registers a callback function for handling RPC calls to\n"
+		"the default service of the application. The default service is\n"
+		"'"OSSO_BUS_ROOT".A' where A is the application's name of the context.\n"
+		"Use None in callback parameter to unset this callback. The callback\n"
+		"will receive the parameters: interface, method, arguments,\n"
+		"user_data.\n"},
 	{"get_rpc_timeout", (PyCFunction)Context_get_rpc_timeout, METH_NOARGS,
-		"c.get_rpc_timeout() -> int\n\nReturn the timeout value used by RPC functions."},
+		"c.get_rpc_timeout() -> int\n\nReturn the timeout value used by RPC methods."},
 	{"set_rpc_timeout", (PyCFunction)Context_set_rpc_timeout, METH_VARARGS,
-		"c.set_rpc_timeout(timeout)\n\nSet the timeout value used by RPC functions."},
+		"c.set_rpc_timeout(timeout)\n\nSet the timeout value used by RPC methods."},
+	/* Applications */
 	{"application_top", (PyCFunction)Context_application_top, METH_VARARGS | METH_KEYWORDS,
 		"c.application_top(application, arguments) -> object\n"
 		"\n"
 		"This method tops an application. If the application is not already\n"
 		"running, D-BUS will launch it via the auto-activation mechanism."},
+	/* Autosaving */
+	{"set_autosave_callback", (PyCFunction)Context_set_autosave_callback, METH_VARARGS | METH_KEYWORDS,
+		"c.set_autosave_callback(callback[, user_data])\n\n"
+		"This method registers an autosave callback function. Use None in\n"
+		"callback parameter to unset this callback. The callback will receive a\n"
+		"parameter with user_data.\n"},
+	{"userdata_changed", (PyCFunction)Context_userdata_changed, METH_NOARGS,
+		"c.userdata_changed()\n\n"
+		"This method is called by the application when the user data has been\n"
+		"changed, so that Libosso knows that a call to the autosave callback is\n"
+		"needed in the future to save the user data. The dirty state will be\n"
+		"cleared every time the application's autosave callback function is\n"
+		"called."},
+	{"force_autosave", (PyCFunction)Context_force_autosave, METH_NOARGS,
+		"c.force_autosave()\n\n"
+		"This method forces a call to the application's autosave function, and\n"
+		"resets the autosave timeout. The application should call this method\n"
+		"whenever it is switched to background (untopped)."},
+	{"get_name", (PyCFunction)Context_get_name, METH_NOARGS, "c.get_name() -> string\n\nReturn the application name.\n"},
+	{"get_version", (PyCFunction)Context_get_version, METH_NOARGS, "c.get_version() -> string\n\nReturn the application version.\n"},
+	/* Statusbar */
+	{"statusbar_send_event", (PyCFunction)Context_statusbar_send_event, METH_VARARGS | METH_KEYWORDS,
+		"c.statusbar_send_event(name, int_arg1, int_arg2, string_arg3)\n\n"
+		"Send an event to statusbar with int_arg1, int_arg2 and string_arg3\n"
+		"parameters."},
+	/* Time */
+	{"set_time_notification_callback", (PyCFunction)Context_set_time_notification_callback, METH_VARARGS | METH_KEYWORDS,
+		"c.set_time_notification_callback(callback[, user_data])\n\n"
+		"This method registers an callback function that is called when the\n"
+		"system time is changed. The callback will receive a parameter with\n"
+		"user_data.\n"},
+	{"set_time", (PyCFunction)Context_set_time, METH_VARARGS,
+		"c.set_time(time_sequence)\n\n"
+		"This method sets the system and hardware time, and notifies about the\n"
+		"changing of time over the D-BUS system bus. Notice: does not currently\n"
+		"change the time. The time_sequence parameter is a sequence with 9\n"
+		"elements (like sequences returned by time standard Python module). These\n"
+		"elements are (year, mon, month_day, hour, min, sec, week_day, year_day,\n"
+		"is_daylight_saving)."},
+	/* System Notification */
 	{"system_note_dialog", (PyCFunction)Context_system_note_dialog, METH_VARARGS | METH_KEYWORDS,
 		"c.system_note_dialog(message[, type='notice']) -> object\n"
 		"\n"
 		"This method requests that a system note (a window that is modal to the whole system)\n"
-		"is shown. Application that do have a GUI should not use this function but the hildon_note\n"
+		"is shown. Application that do have a GUI should not use this method but the hildon_note\n"
 		"widget directly. The \"type\" argument should be 'warning', 'error', 'wait' or 'notice'."},
 	{"system_note_infoprint", (PyCFunction)Context_system_note_infoprint, METH_VARARGS | METH_KEYWORDS,
 		"c.system_note_infoprint(message) -> object\n"
 		"\n"
 		"This method requests that the statusbar shows an infoprint (aka information banner).\n"
 		"This allow non-GUI applications to display some information to the user.\n"
-		"Application that do have a GUI should not use this function but the gtk_infoprint\n"
+		"Application that do have a GUI should not use this method but the gtk_infoprint\n"
 		"widget directly."},
+	/* State saving */
+	{"state_write", (PyCFunction)Context_state_write, METH_VARARGS | METH_KEYWORDS,
+		"c.state_write(object)\n\n"
+		"This method write a state object to disk. Any existing files will be\n"
+		"overwritten."},
+	{"state_read", (PyCFunction)Context_state_read, METH_VARARGS | METH_KEYWORDS,
+		"c.state_read() -> object\n\n"
+		"This method read a state object from disk.\n"},
+	/* Plugins */
+	{"plugin_execute", (PyCFunction)Context_plugin_execute, METH_VARARGS | METH_KEYWORDS,
+		"c.plugin_execute(filename, user_activated[, user_data])\n\n"
+		"Calls the execute() function of a plugin. The filename parameter is\n"
+		"shared object (.so) file of the plugin. It should include the '.so'\n"
+		"sufix, but not a path. The user_activated is True if the plugin was\n"
+		"activated by a user (as opposed to activated by restoring software\n"
+		"state) and the user_data parameteris the GTK top-level widget.\n"
+		"It is needed so that the widgets created by plugin can be made a child\n"
+		"of the main application that utilizes the plugin."},
+	{"plugin_save_state", (PyCFunction)Context_plugin_save_state, METH_VARARGS | METH_KEYWORDS,
+		"c.plugin_save_state(filename, user_activated[, user_data])\n\n"
+		"This method is used to tell a plugin to save its state."},
+	/* Device state */
+	{"display_state_on", (PyCFunction)Context_display_state_on, METH_VARARGS | METH_KEYWORDS,
+		"c.display_state_on()\n\n"
+		"Request to turn on the display as if the user had pressed a key or the\n"
+		"touch screen. This can be used after completing a long operation such as\n"
+		"downloading a large file or after retrieving e-mails."},
+	{"display_blanking_pause", (PyCFunction)Context_display_blanking_pause, METH_VARARGS | METH_KEYWORDS,
+		"c.display_blanking_pause()\n\n"
+		"Request not to blank the display. This method must be called again\n"
+		"within 60 seconds to renew the request. The method is used, for\n"
+		"example, by the video player during video playback. Alson prevents\n"
+		"suspending the device."},
+	{"set_device_state_callback", (PyCFunction)Context_set_device_state_callback, METH_VARARGS | METH_KEYWORDS,
+		"c.set_device_callback(callback[, user_data[, shutdown[, save_data\n"
+		"    [, memory_low[, system_inactivity[, mode]]]]]]\n"
+		"  )\n\n"
+		"This method registers a callback function that is called whenever the\n"
+		"state device changes. The first call to this method will also check\n"
+		"the current state of the device, and if the state is available, the\n"
+		"corresponding callback function will be called immediately. Callback\n"
+		"function will receive the shutdown, save_data, memory_low,\n"
+		"system_inactivity, mode and user_data parameters with state device. If\n"
+		"you specify shutdown, save_data, memory_low, system_inactivity\n"
+		"(booleans) or mode ('normal', 'flight', 'invalid', 'offline') the\n"
+		"callback function will be called only when this state changes. Use\n"
+		"None in callback parameter to unset this callback."},
+	/* MIME */
+	{"set_mime_callback", (PyCFunction)Context_set_mime_callback, METH_VARARGS | METH_KEYWORDS,
+		"c.set_mime_callback(callback[, user_data])\n\n"
+		"This method registers a MIME callback function that Libosso calls\n"
+		"when the user wants the application to open file(s) of a MIME type\n"
+		"handled by the application.Use in callback parameter to unset this\n"
+		"callback. The callback will receive a parameter with a list of URIs and\n"
+		"user_data.\n"},
+	/* Others */
+	{"tasknav_mail_add", (PyCFunction)Context_tasknav_mail_add, METH_VARARGS | METH_KEYWORDS,
+		"c.tasknav_mail_add(id, subject, sender, has_attachment, date)\n\n"
+		"This method adds a mail to be displayed in the mail popup of the\n"
+		"tasknavigator."},
+	{"tasknav_mail_del", (PyCFunction)Context_tasknav_mail_del, METH_VARARGS | METH_KEYWORDS,
+		"c.tasknav_mail_add(id)\n\n"
+		"This method removes an email from mail popup of the tasknavigator."},
+	{"tasknav_mail_set_outbox_count", (PyCFunction)Context_tasknav_mail_set_outbox_count, METH_VARARGS | METH_KEYWORDS,
+		"c.tasknav_mail_set_outbox_count(count)\n\n"
+		"This method updates the outbox message count in the task navigator mail\n"
+		"window."},
+  	{"set_exit_callback", (PyCFunction)Context_set_exit_callback, METH_VARARGS | METH_KEYWORDS,
+		"c.set_exit_callback(callback[, user_data])\n\n"
+		"This method registers the application's exit callback function. when\n"
+		"Libosso calls the application's exit callback function, the application\n"
+		"should save its GUI state and unsaved user data and exit as soon as\n"
+		"possible. The callback will receive user_data."},
+	/* Default */
 	{"close", (PyCFunction)Context_close, METH_NOARGS, "Close context."},
 	{0, 0, 0, 0}
 };
@@ -961,7 +1921,8 @@ initosso(void)
 	}
 
 	/* initialize module */
-	module = Py_InitModule3("osso", osso_methods, NULL);
+	module = Py_InitModule3("osso", osso_methods,
+			"FIXME: put documentation about RPC, Application, Autosave, Statusbar, etc.");
 
 	/* add exceptions */
 	OssoException = PyErr_NewException("osso.OssoException", 0, 0);
