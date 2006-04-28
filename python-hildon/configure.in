@@ -3,7 +3,7 @@ AC_PREREQ(2.52)
 
 m4_define(pyhil_major_version, 0)
 m4_define(pyhil_minor_version, 8)
-m4_define(pyhil_micro_version, 1)
+m4_define(pyhil_micro_version, 2)
 m4_define(pyhil_version, pyhil_major_version.pyhil_minor_version.pyhil_micro_version)
 
 AC_INIT(python-hildon, pyhil_version)
