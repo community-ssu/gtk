@@ -59,6 +59,9 @@ save_log (char *filename, void *data)
 	fputs (log_text->str, f);
       if (fclose (f) == EOF)
 	add_log ("%s: %m", filename);
+      else
+	irritate_user (dgettext ("hildon-common-strings",
+				 "sfil_ib_saved"));
     }
   else
     add_log ("%s: %m", filename);
