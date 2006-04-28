@@ -1,5 +1,11 @@
 2006-04-27  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Others menu organization--dialog implementation problems"
+	(Closes N#25777)
+	* libhildonmenu/libhildonmenu.c: recurse when writing menus.
+
+2006-04-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-memory.c: Removed deprecated memory low
 	  banner
 

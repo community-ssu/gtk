@@ -24,8 +24,12 @@ G_BEGIN_DECLS
 #define ICON_DEFAULT_APP "qgn_list_gene_default_app"
 #define ICON_SIZE        26
 
+#define EMBLEM_EXPANDER_OPEN   "qgn_list_gene_fldr_exp"
+#define EMBLEM_EXPANDER_CLOSED "qgn_list_gene_fldr_clp"
+
 /* This string is only displayed in the task navigator applet */
-#define FAVOURITES_NAME  dgettext("osso-applet-tasknavigator", "tncpa_li_of_favourites")
+#define FAVOURITES_LOGICAL_STRING "tncpa_li_of_favourites"
+#define FAVOURITES_NAME  dgettext("osso-applet-tasknavigator", FAVOURITES_LOGICAL_STRING)
 
 /* Default systemwide menu */
 #define SYSTEMWIDE_MENU_FILE "/etc/xdg/menus/applications.menu"
@@ -38,17 +42,12 @@ G_BEGIN_DECLS
 enum {
 	TREE_MODEL_NAME = 0,
 	TREE_MODEL_ICON,
+	TREE_MODEL_EMBLEM_EXPANDER_OPEN,
+	TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
 	TREE_MODEL_EXEC,
 	TREE_MODEL_SERVICE,
 	TREE_MODEL_DESKTOP_ID,
 	TREE_MODEL_COLUMNS
-};
-
-/* Cell columns */
-enum {
-	CELL_NAME_COLUMN = 0, /* Name cell in TreeView. */
-	CELL_ICON_COLUMN,     /* Icon cell in TreeView */
-	CELL_COLUMNS          /* Number of items in this enum */
 };
 
 /* Menu types */
