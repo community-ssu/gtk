@@ -501,6 +501,8 @@ static GList *load_navigator_plugin_list(Navigator *tasknav)
             plugins = insert_navigator_plugin(tasknav, plugins, plugin);
         }
     }
+    
+    g_list_free (l);
 
     /* User plugins */
     fname = g_strdup_printf("%s/%s", home_dir, NAVIGATOR_USER_PLUGINS);
@@ -513,6 +515,8 @@ static GList *load_navigator_plugin_list(Navigator *tasknav)
             plugins = insert_navigator_plugin(tasknav, plugins, plugin);
         }
     }
+    
+    g_list_free (l);
 
     g_free (fname);
     

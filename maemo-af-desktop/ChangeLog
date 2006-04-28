@@ -1,5 +1,10 @@
 2006-04-28  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hildon-navigator-main.c: Free the list of plugins
+	  after having used it
+
+2006-04-28  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/plugins.conf: made the bookmark plugin non-mandatory
 
 2006-04-28  Johan Bilien <johan.bilien@nokia.com>
