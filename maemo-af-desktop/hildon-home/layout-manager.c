@@ -642,6 +642,11 @@ void layout_mode_end ( gboolean rollback )
 	ULOG_ERR("Free applet_identifier\n");
 	g_free(node->applet_identifier);
 	ULOG_ERR("Free node\n");
+    if(node->drag_icon)
+    {
+        g_object_unref(node->drag_icon);
+        node->drag_icon = NULL;
+    }
 	g_free(node);
     }
     gtk_event_box_set_above_child(GTK_EVENT_BOX

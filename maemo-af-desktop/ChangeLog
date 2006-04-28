@@ -1,4 +1,11 @@
-2006-04-27  Johan Bilien <johan.bilien@nokia.com>
+2006-04-28  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/{layout-manager.c: Free the drag icon when exiting
+	  layout mode
+	* hildon-home/home-applet-handler.c: Free the library path
+	  (Closes N#27832)
+
+2006-04-28  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Others menu organization--dialog implementation problems"
 	(Closes N#25777)

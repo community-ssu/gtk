@@ -315,12 +315,12 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     }
 
     priv->dlhandle = dlopen(librarypath, RTLD_NOW);
+    g_free(librarypath);
     
     if (!priv->dlhandle)
     {   
         ULOG_WARN("Unable to open Home Applet %s\n", librarypath);
 
-        g_free(librarypath);
         return NULL;
     }
     else
@@ -335,7 +335,6 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
                       libraryfile, error_str);
 
             dlclose(priv->dlhandle);
-            g_free(librarypath);
             return NULL;
         }
         

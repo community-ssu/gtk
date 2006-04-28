@@ -424,8 +424,8 @@ void applet_manager_configure_load_all(applet_manager_t *man)
     i = 0;
     while (groups[i] != NULL)
     {
-        gchar *libraryfile;
-        gchar *desktopfile;
+        gchar *libraryfile = NULL;
+        gchar *desktopfile = NULL;
         gint applet_x;
         gint applet_y;
 
@@ -439,6 +439,7 @@ void applet_manager_configure_load_all(applet_manager_t *man)
             g_error_free(error);
             error = NULL;
             i++;
+            g_free(libraryfile);
             continue;
         }
 
@@ -452,6 +453,8 @@ void applet_manager_configure_load_all(applet_manager_t *man)
             g_error_free(error);
             error = NULL;
             i++;
+            g_free(libraryfile);
+            g_free(desktopfile);
             continue;
         }
         
@@ -466,6 +469,8 @@ void applet_manager_configure_load_all(applet_manager_t *man)
             g_error_free(error);
             error = NULL;
             i++;
+            g_free(libraryfile);
+            g_free(desktopfile);
             continue;
         }
 
@@ -480,6 +485,8 @@ void applet_manager_configure_load_all(applet_manager_t *man)
             g_error_free(error);
             error = NULL;
             i++;
+            g_free(libraryfile);
+            g_free(desktopfile);
             continue;
         }
 
@@ -493,6 +500,8 @@ void applet_manager_configure_load_all(applet_manager_t *man)
                                            applet_x, applet_y);
         }
 
+        g_free(libraryfile);
+        g_free(desktopfile);
         conf_identifier_list = g_list_append(conf_identifier_list, desktopfile);
         i++;
     }
