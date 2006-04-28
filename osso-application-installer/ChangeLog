@@ -1,5 +1,11 @@
 2006-04-28  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/utils.h, src/util.cc (show_file_chooser_for_save): Set
+	default folder to "Documents".
+	(ask_custom): New.
+	* src/log.cc (save_log): Use it to get the correct button labels.
+	(log_response): Put version information into log after clearing it.
+
 	* src/util.h, src/util.cc (annoy_user_with_errno): New.
 	* src/log.cc (save_log, save_log_cont): Detect existing files and
 	ask for permission to continue.  Use annoy_user_with_errno to
