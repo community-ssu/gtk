@@ -33,6 +33,7 @@
 #include "log.h"
 #include "util.h"
 #include "main.h"
+#include "settings.h"
 
 #define _(x) gettext (x)
 
@@ -80,7 +81,9 @@ save_log (char *filename, void *data)
 
   struct stat buf;
   if (stat (filename, &buf) != -1)
-    ask_yes_no (dgettext ("hildon-fm", "docm_nc_replace_file"),
+    ask_custom (dgettext ("hildon-fm", "docm_nc_replace_file"),
+		dgettext ("hildon-fm", "docm_bd_replace_file_ok"),
+		dgettext ("hildon-fm", "docm_bd_replace_file_cancel"),
 		save_log_cont, filename);
   else
     save_log_cont (true, filename);
@@ -93,9 +96,11 @@ log_response (GtkDialog *dialog, gint response, gpointer clos)
 
   if (response == RESPONSE_CLEAR)
     {
-      set_small_text_view_text (text_view, "");
       if (log_text)
 	g_string_truncate (log_text, 0);
+      add_log ("%s %s, UI version %d\n", PACKAGE, VERSION, ui_version);
+      if (log_text)
+	set_small_text_view_text (text_view, log_text->str);
     }
 
   if (response == RESPONSE_SAVE)

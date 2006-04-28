@@ -40,9 +40,12 @@
 
   The dialogs are application modal.
 
-  ASK_YES_NO shows QUESTION in a confirmatio note".  The result RES
+  ASK_YES_NO shows QUESTION in a confirmation note.  The result RES
   passed to the continuation CONT is true when the user clicks "Ok",
   of course, and false otherwise.
+
+  ASK_CUSTOM is like ask_yes_no but allows the texts in the buttons to
+  be specified.
 
   ASK_YES_NO_WITH_DETAILS is like ask_yes_no but it constructs a real
   dialog with title TITLE and adds a third button, "Details".
@@ -84,6 +87,10 @@
 */
 
 void ask_yes_no (const gchar *question,
+		 void (*cont) (bool res, void *data), void *data);
+
+void ask_custom (const gchar *question,
+		 const gchar *ok_label, const gchar *cancel_label,
 		 void (*cont) (bool res, void *data), void *data);
 
 void ask_yes_no_with_details (const gchar *title,

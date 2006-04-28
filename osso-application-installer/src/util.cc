@@ -107,6 +107,31 @@ ask_yes_no (const gchar *question,
 }
 
 void
+ask_custom (const gchar *question,
+	    const gchar *ok_label, const gchar *cancel_label,
+	    void (*cont) (bool res, void *data),
+	    void *data)
+{
+  GtkWidget *dialog;
+  ayn_closure *c = new ayn_closure;
+  c->pi = NULL;
+  c->cont = cont;
+  c->details = NULL;
+  c->data = data;
+
+  dialog = hildon_note_new_confirmation_add_buttons 
+    (get_main_window (),
+     question,
+     ok_label, GTK_RESPONSE_OK,
+     cancel_label, GTK_RESPONSE_CANCEL,
+     NULL);
+
+  g_signal_connect (dialog, "response",
+		    G_CALLBACK (yes_no_response), c);
+  gtk_widget_show_all (dialog);
+}
+
+void
 ask_yes_no_with_details (const gchar *title,
 			 const gchar *question,
 			 package_info *pi, bool installed,
@@ -1169,6 +1194,13 @@ show_file_chooser_for_save (const char *title,
   gtk_window_set_modal (GTK_WINDOW (fcd), TRUE);
 
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (fcd), default_filename);
+  const char *home = getenv ("HOME");
+  if (home)
+    {
+      char *folder = g_strdup_printf ("%s/MyDocs/.documents", home);
+      gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (fcd), folder);
+      g_free (folder);
+    }
 
   g_signal_connect (fcd, "response",
 		    G_CALLBACK (fcd_response), c);
