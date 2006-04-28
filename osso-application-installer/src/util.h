@@ -63,6 +63,10 @@
   annoy_user_with_log in preference to annoy_user when showing an
   error message where the log is expected to contain more details.
 
+  ANNOY_USER_WITH_ERRNO shows a notification that is appropriate for
+  the given errno value ERR.  The DETAIL string will be put into the
+  Log together with a detailed error message.
+
   If a 'annoy_user' dialog is already active when any of the
   annoy_user function is called, no new dialog is displayed.
 
@@ -97,6 +101,7 @@ void annoy_user (const gchar *text);
 void annoy_user_with_details (const gchar *text,
 			      package_info *pi, bool installed);
 void annoy_user_with_log (const gchar *text);
+void annoy_user_with_errno (int err, const gchar *detail);
 
 void irritate_user (const gchar *text);
 

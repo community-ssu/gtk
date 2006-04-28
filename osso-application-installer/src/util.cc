@@ -31,6 +31,7 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include <gtk/gtk.h>
 #include <gconf/gconf-client.h>
@@ -287,6 +288,27 @@ annoy_user_with_log (const gchar *text)
 		    G_CALLBACK (annoy_user_with_log_response), NULL);
   gtk_widget_show_all (dialog);
   currently_annoying_user = true;
+}
+
+void
+annoy_user_with_errno (int err, const gchar *detail)
+{
+  add_log ("%s: %s\n", detail, strerror (err));
+
+  if (err == ENAMETOOLONG)
+    annoy_user (dgettext ("hildon-common-strings",
+			  "file_ib_name_too_long"));
+  else if (err == EPERM || err == EACCES)
+    annoy_user (dgettext ("hildon-fm",
+			  "sfil_ib_saving_not_allowed"));
+  else if (err == ENOENT)
+    annoy_user (dgettext ("hildon-common-strings",
+			  "sfil_ni_cannot_continue_target_folder_deleted"));
+  else if (err == ENOSPC)
+    annoy_user (dgettext ("hildon-common-strings",
+			  "sfil_ni_not_enough_memory"));
+  else
+    annoy_user (_("ai_ni_operation_failed"));
 }
 
 void

@@ -26,6 +26,7 @@
 #include <string.h>
 #include <errno.h>
 #include <libintl.h>
+#include <sys/stat.h>
 
 #include <gtk/gtk.h>
 
@@ -43,6 +44,31 @@ enum {
 };
 
 static void
+save_log_cont (bool res, void *data)
+{
+  char *filename = (char *)data;
+
+  if (res)
+    {
+      FILE *f = fopen (filename, "w");
+      if (f)
+	{
+	  if (log_text)
+	    fputs (log_text->str, f);
+	  if (fclose (f) == EOF)
+	    annoy_user_with_errno (errno, filename);
+	  else
+	    irritate_user (dgettext ("hildon-common-strings",
+				     "sfil_ib_saved"));
+	}
+      else
+	annoy_user_with_errno (errno, filename);
+    }
+
+  g_free (filename);
+}
+
+static void
 save_log (char *filename, void *data)
 {
   if (strchr (filename, '.') == NULL)
@@ -52,21 +78,12 @@ save_log (char *filename, void *data)
       filename = filename_txt;
     }
 
-  FILE *f = fopen (filename, "w");
-  if (f)
-    {
-      if (log_text)
-	fputs (log_text->str, f);
-      if (fclose (f) == EOF)
-	add_log ("%s: %m", filename);
-      else
-	irritate_user (dgettext ("hildon-common-strings",
-				 "sfil_ib_saved"));
-    }
+  struct stat buf;
+  if (stat (filename, &buf) != -1)
+    ask_yes_no (dgettext ("hildon-fm", "docm_nc_replace_file"),
+		save_log_cont, filename);
   else
-    add_log ("%s: %m", filename);
-
-  g_free (filename);
+    save_log_cont (true, filename);
 }
 
 static void
