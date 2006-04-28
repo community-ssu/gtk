@@ -1,5 +1,9 @@
 2006-04-28  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/plugins.conf: made the bookmark plugin non-mandatory
+
+2006-04-28  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/{layout-manager.c: Free the drag icon when exiting
 	  layout mode
 	* hildon-home/home-applet-handler.c: Free the library path
