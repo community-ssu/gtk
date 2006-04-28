@@ -6,8 +6,6 @@ defs_DATA = hildon.defs defs/*defs
 EXTRA_DIST = $(defs_DATA) \
              gen-enum-h \
              gen-enum-c \
-             hildon-types.h.in \
-             hildon-types.c.in \
 			 defs/*.defs \
 			 hildon.defs \
 			 debian/changelog \
@@ -60,11 +58,18 @@ EXTRA_DIST += hildon.override
 ## Generate enum/flags run-time information
 
 HILDON_TYPE_FILES = $(includedir)/hildon-fm/hildon-widgets/hildon-file-system-model.h \
+                    $(includedir)/hildon-widgets/hildon-date-editor.h \
                     $(includedir)/hildon-widgets/hildon-font-selection-dialog.h \
                     $(includedir)/hildon-widgets/hildon-time-editor.h \
                     $(includedir)/hildon-widgets/hildon-grid-item.h \
                     $(includedir)/hildon-widgets/hildon-telephone-editor.h \
-					$(includedir)/glib-2.0/glib/gdate.h
+                    $(includedir)/hildon-base-lib/hildon-base-types.h \
+                    $(includedir)/glib-2.0/glib/gdate.h
+
+hildon-extra.c: hildon-extra.h
+hildon-extra.h: hildon-types.h
+hildon-types.h: hildon-types.h.in
+hildon-types.c: hildon-types.h hildon-types.c.in
 
 hildon-types.h.in: $(HILDON_TYPE_FILES)
 	./gen-enum-h $(HILDON_TYPE_FILES) >$@.tmp && mv $@.tmp $@
