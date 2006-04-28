@@ -1,3 +1,11 @@
+2006-04-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/log.cc (save_log): Put up information banner when saved
+	succeeded. (N27888)
+
+	* src/apt-worker.cc (operation): Return rescode_packages_not_found
+	when all downloads failed with result code 404.
+
 2006-04-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.16
