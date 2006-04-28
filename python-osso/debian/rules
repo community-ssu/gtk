@@ -1,0 +1,65 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+PYVER=2.4
+PYGTKVER=2.0
+
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+d=debian/tmp
+d_base=debian/python$(PYVER)-osso
+d_dev=debian/python$(PYVER)-osso-dev
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+	python$(PYVER) setup.py build
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp 
+	python$(PYVER) setup.py clean
+	dh_clean 
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+
+	mkdir -p $(d)/usr
+	python$(PYVER) setup.py install --prefix=$(d)/usr
+
+	# base
+	mkdir -p $(d_base)/usr
+	mv $(d)/usr/lib $(d_base)/usr
+
+	# dev
+	mkdir -p $(d_dev)/usr/include/python-osso
+	cp osso.h $(d_dev)/usr/include/python-osso
+	mkdir -p $(d_dev)/usr/share/doc/python-osso
+	cp test_*.{py,desktop,service} $(d_dev)/usr/share/doc/python-osso
+	cp install_dev_env.sh $(d_dev)/usr/share/doc/python-osso
+
+	# finish
+	find $(d_base) $(d_dev) -name ".svn" | xargs rm -rf
+
+binary-indep: build install
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installman
+	dh_link
+	dh_strip
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_md5sums
+	dh_gencontrol
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install 
