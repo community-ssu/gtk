@@ -1,3 +1,10 @@
+pygame (1.6-2osso2) unstable; urgency=low
+
+  * Recompiled agains SDK 2.0 RC3
+  * Removed requirement for SMPEG
+ 
+ -- Elvis Pfutzenreuter <elvis.pfutzenreuter@indt.org.br>  Fri, 28 Apr 2006 09:15:00 -0300
+
 pygame (1.6-2osso1) unstable; urgency=low
 
   * First OSSO release for SDK 1.2
