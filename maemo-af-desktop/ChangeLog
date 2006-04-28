@@ -1,5 +1,13 @@
 2006-04-28  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "TN should not create plugin then destroy them if they
+	are not going to be used" (Closes N#28153)
+	* hildon-navigato/hildon-navigator-main.c: Move plugin API calls
+	  from create/destroy to the reload function to avoid creating plugin
+	  data when the plugin is not going to be shown.
+
+2006-04-28  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hildon-navigator-main.c: Free the list of plugins
 	  after having used it
 

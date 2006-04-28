@@ -570,45 +570,15 @@ static GList *load_navigator_plugin_list(Navigator *tasknav)
 
 static void destroy_plugin(Navigator *tasknav, NavigatorPlugin *plugin)
 {
-    const char *error_str = NULL;
-
     g_assert (tasknav != NULL);
 
     if (plugin == NULL)
         return;
 
-    start_plugin_action(plugin, "Destroy");
-    
-    if (plugin->handle != NULL)
+    if (plugin->button != NULL)
     {
-        error_str = load_symbols(tasknav, plugin->handle,
-                                 DESTROY_SYMBOL);
-          
-        if (error_str)
-        {
-            osso_log(LOG_WARNING, 
-                     "Unable to load symbols from TN Plugin %s: %s\n", 
-                     plugin->name, error_str);
-            
-            if (plugin->handle)
-            {
-                dlclose(plugin->handle);
-            }
-        }
-        else
-        {
-            tasknav->destroy(plugin->data);
-        }
-
-        if (plugin->button != NULL)
-        {
-            gtk_container_remove(GTK_CONTAINER(tasknav->box), plugin->button);
-        }
-        
-        dlclose(plugin->handle);
+        gtk_container_remove(GTK_CONTAINER(tasknav->box), plugin->button);
     }
-
-    stop_plugin_action(plugin, "Destroy");
         
     g_free(plugin->name);
     g_free(plugin->library);
@@ -643,12 +613,41 @@ static void reload_plugins(Navigator *tasknav, GList *list)
     for (l = tasknav->plugins;
          l ; l = l->next)
     {
+        const char *error_str = NULL;
         NavigatorPlugin *plugin;
         
         plugin = (NavigatorPlugin *)l->data;
         
         if (plugin == NULL)
           continue;
+        
+        start_plugin_action(plugin, "Destroy");
+        
+        if (plugin->handle != NULL)
+        {
+            error_str = load_symbols(tasknav, plugin->handle,
+                                     DESTROY_SYMBOL);
+              
+            if (error_str)
+            {
+                osso_log(LOG_WARNING, 
+                         "Unable to load symbols from TN Plugin %s: %s\n", 
+                         plugin->name, error_str);
+                
+                if (plugin->handle)
+                {
+                    dlclose(plugin->handle);
+                }
+            }
+            else
+            {
+                tasknav->destroy(plugin->data);
+            }
+
+            dlclose(plugin->handle);
+        }
+
+        stop_plugin_action(plugin, "Destroy");
         
         destroy_plugin(tasknav, plugin);
     }
@@ -666,6 +665,26 @@ static void reload_plugins(Navigator *tasknav, GList *list)
         
         if (plugin == NULL)
           continue;
+
+        start_plugin_action(plugin, "Load create");
+        error_str = load_symbols(tasknav, plugin->handle, CREATE_SYMBOL);
+        stop_plugin_action(plugin, "Load create");
+    
+        if (error_str)
+        {
+            osso_log(LOG_WARNING, 
+                    "Unable to load symbols from TN Plugin %s: %s\n", 
+                    plugin->name, error_str);
+            
+            dlclose(plugin->handle);
+            plugin->handle = NULL;
+
+            continue;
+        }
+        
+        start_plugin_action(plugin, "Run create");
+        plugin->data = tasknav->create();
+        stop_plugin_action(plugin, "Run create");
 
         start_plugin_action(plugin, "Load navigator_button");
         error_str = load_symbols(tasknav, plugin->handle, GET_BUTTON_SYMBOL);
@@ -898,33 +917,6 @@ static gpointer create_new_plugin(Navigator *tasknav,
         return NULL;
     }
 
-    else
-    {
-        const char *error_str = NULL;
-        
-        start_plugin_action(plugin, "Load create");
-        error_str = load_symbols(tasknav, plugin->handle, CREATE_SYMBOL);
-        stop_plugin_action(plugin, "Load create");
-    
-        if (error_str)
-        {
-            osso_log(LOG_WARNING, 
-                    "Unable to load symbols from TN Plugin %s: %s\n", 
-                    plugin_name, error_str);
-            
-            dlclose(plugin->handle);
-            plugin->handle = NULL;
-            g_free(plugin->name);
-            g_free(plugin->library);
-            g_free(plugin);
-
-            return NULL;
-        }
-        
-        start_plugin_action(plugin, "Run create");
-        plugin->data = tasknav->create();
-        stop_plugin_action(plugin, "Run create");
-    }
     return (gpointer) plugin;
 }
 
