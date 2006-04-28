@@ -449,6 +449,9 @@ class WeekdayPickerWindow(hildon.Window):
 
         self.weekdayPicker = hildon.WeekdayPicker() 
         self.vbox.pack_start(self.weekdayPicker)
+        
+        change_day_box = gtk.HBox (False)
+        self.vbox.pack_start (change_day_box)
 
         self.change_buttons = gtk.HBox(True)
         self.vbox.pack_start(self.change_buttons)
@@ -467,11 +470,36 @@ class WeekdayPickerWindow(hildon.Window):
         obj.connect ('clicked', self.onUnsetAll)
         self.change_buttons.pack_start (obj)
         
+        self.day_entry = gtk.Entry()
+
+        obj = gtk.Button ("Set")
+        obj.connect ('clicked', self.onSetDay)
+        change_day_box.pack_start (obj)
+        
+        obj = gtk.Button ("Unset")
+        obj.connect ('clicked', self.onUnsetDay)
+        change_day_box.pack_start (obj)
+        
+        obj = gtk.Button ("Toggle")
+        obj.connect ('clicked', self.onToggleDay)
+        change_day_box.pack_start (obj)
+        
+        change_day_box.pack_start (self.day_entry)
+        
     def onSetAll(self, widget):
         self.weekdayPicker.set_all()
         
     def onUnsetAll(self, widget):
         self.weekdayPicker.unset_all()
+        
+    def onSetDay(self, widget):
+        self.weekdayPicker.set_day(self.day_entry.get_text())
+        
+    def onUnsetDay(self, widget):
+        self.weekdayPicker.unset_day(self.day_entry.get_text())
+        
+    def onToggleDay(self, widget):
+        self.weekdayPicker.toggle_day(self.day_entry.get_text())
         
 if __name__ == "__main__":
     PyGtkDemo().run()

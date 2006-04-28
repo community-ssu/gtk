@@ -1,3 +1,8 @@
+0.8.3 - 20060428
+    - Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
+      - Fixed bindings for: hildon_weekday_picker_unset_day, hildon_weekday_picker_toggle_day and hildon_weekday_picker_isset_day.
+      - Improved test for hildon.WeekdayPicker in ./examples/hildon-test.py
+
 0.8.2 - 20060428
     - Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
       - Removed binding for deprecated methods in HildonTimeEditor.

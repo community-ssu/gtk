@@ -356,3 +356,58 @@ _wrap_hildon_weekday_picker_set_day(PyGObject *self, PyObject *args, PyObject *k
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+%%
+override hildon_weekday_picker_unset_day kwargs
+static PyObject *
+_wrap_hildon_weekday_picker_unset_day(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "day", NULL };
+    PyObject *py_day = NULL;
+    GDateWeekday day;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:HildonWeekdayPicker.unset_day", kwlist, &py_day))
+        return NULL;
+    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)&day))
+        return NULL;
+    hildon_weekday_picker_unset_day(HILDON_WEEKDAY_PICKER(self->obj), day);
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+%%
+override hildon_weekday_picker_toggle_day kwargs
+static PyObject *
+_wrap_hildon_weekday_picker_toggle_day(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "day", NULL };
+    PyObject *py_day = NULL;
+    GDateWeekday day;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:HildonWeekdayPicker.toggle_day", kwlist, &py_day))
+        return NULL;
+    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)&day))
+        return NULL;
+    hildon_weekday_picker_toggle_day(HILDON_WEEKDAY_PICKER(self->obj), day);
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+%%
+override hildon_weekday_picker_isset_day kwargs
+static PyObject *
+_wrap_hildon_weekday_picker_isset_day(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "day", NULL };
+    PyObject *py_day = NULL;
+    int ret;
+    GDateWeekday day;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:HildonWeekdayPicker.isset_day", kwlist, &py_day))
+        return NULL;
+    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)&day))
+        return NULL;
+    ret = hildon_weekday_picker_isset_day(HILDON_WEEKDAY_PICKER(self->obj), day);
+    return PyBool_FromLong(ret);
+
+}
