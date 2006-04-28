@@ -2,11 +2,12 @@
 
 ---+++ About the test repository
 
-The test repository contains three distributions: =cert=, =old= and
-=new=.  The =cert= distribution is intended to be configured as a
+The test repository contains four distributions: =cert=, =old=, =new=,
+and =demo=.  The =cert= distribution is intended to be configured as a
 certified source.  The two distributions =old= and =new= contain
 mostly the same packages, but =new= might contain newer versions of
-some of the packages in =old=, for example.
+some of the packages in =old=, for example.  The =demo= distribution
+is used with the `Single-Click-Install' feature.
 
 When configured by installing =testrepo-conf-mmc= (see previous
 section), the =cert= distribution is configured as 'certified' and
@@ -108,6 +109,31 @@ The packages and the distributions they are in:
      User1 and user2 are 'user' packages (shown in the UI), while
      system is a 'non-user' package (not shown in the UI).
 
+   * *notfound 1* (old, new)
+     <p>
+     This package is listed in the indices but the actual archive file
+     has been deleted from the repository.
+
+The server with the test repository also contains =.install= files.
+These files contain instructions for the Application installer to add
+repositories and/or install a package.  The files can be found in this
+location:
+
+    http://repository.maemo.org/testrepo/
+
+You can open them directly with the browser or copy them to your
+device and open them with the File manager or via "Package / Install
+from file."
+
+These =.install= files are available:
+
+   * *osso-xterm.install*
+   <p>
+   Installs the =osso-xterm= package from the =demo= distribution.
+
+   * *demo-catalogue.install*
+   <p>
+   Adds the =demo= distribution to the list of configured sources.
 
 ---+++ Sample test cases
 
@@ -253,3 +279,48 @@ repository.
      needed by =user2=).
    * Uninstall =user2=
    * Verify that both =user2= and =system= are being removed.
+
+---++++ Basic single-click-install
+
+   * Make sure that the =demo= distribution is not listed in the
+     Application Cataloque.  If it is there, remove it; disabling is
+     not enough.
+   * Make sure that osso-xterm is not installed.
+   * Open =osso-xterm.install= with "Package / Install from file"
+   * Notice that a new cataloque is getting added, that the list of
+     packages is being refreshed and that osso-xterm is getting
+     installed successfully
+   
+---++++ Single-click-install with existing repository
+
+   * Make sure that the =demo= distribution is listed in the
+     Application Cataloque and enabled.
+   * Make sure that osso-xterm is not installed.
+   * Open =osso-xterm.install= with "Package / Install from file"
+   * Verify that osso-xterm is getting installed successfully.
+   
+---++++ Single-click-install with existing repository and package
+
+   * Make sure that the =demo= distribution is listed in the
+     Application Cataloque and enabled.
+   * Make sure that osso-xterm is installed.
+   * Open =osso-xterm.install= with "Package / Install from file"
+   * Verify that osso-xterm is not getting installed with the
+     information "Already latest version" (or similar).
+   
+---++++ Basic single-click-configure of new repository
+
+   * Make sure that the =demo= distribution is not listed in the
+     Application Cataloque.  If it is there, remove it; disabling is
+     not enough.
+   * Open =demo-cataloque.install= with "Package / Install from file"
+   * Verify that a new cataloque is getting added and that the
+     list of packages is being refreshed.
+
+---++++ Single-click-configure of existing repository
+
+   * Make sure that the =demo= distribution is listed in the
+     Application Cataloque.
+   * Open =demo-cataloque.install= with "Package / Install from file"
+   * Verify that no new cataloque is getting added with the
+     information "Already configured" (or similar).
