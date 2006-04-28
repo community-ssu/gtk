@@ -1925,7 +1925,7 @@ operation (bool check_only)
      return rescode_failure;
       
    // Print out errors
-   bool Failed = false;
+   bool Failed = false, not_found = true;
    for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin();
 	I != Fetcher.ItemsEnd(); I++)
      {
@@ -1940,13 +1940,27 @@ operation (bool check_only)
 		"Failed to fetch %s: %s\n",
 		(*I)->DescURI().c_str(),
 		(*I)->ErrorText.c_str());
+
+       /* The http method puts the result code of the request at the
+	  start of the error text.  We rely on this to detect the
+	  "Package not found" error.
+       */
+
+       int result = atoi ((*I)->ErrorText.c_str());
+
+       /* We report a "Package not found" error when all downloads
+	  failed with result code 404.
+       */
+       if (result != 404)
+	 not_found = false;
+
        Failed = true;
      }
 
    if (Failed == true)
      {
        _error->Error("Unable to fetch some archives.");
-       return rescode_download_failed;
+       return not_found? rescode_packages_not_found : rescode_download_failed;
      }
       
    send_status (op_general, -1, 0, 0);
