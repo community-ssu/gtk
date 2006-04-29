@@ -33,7 +33,6 @@
 #include "home-applet-handler.h"
 #include "hildon-home-plugin-interface.h"
 #include "hildon-home-interface.h"
-#include "libmb/mbdotdesktop.h"
 
 /* Systems includes */
 #include <string.h>  /* for strcmp */
@@ -246,73 +245,78 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     gint applet_y = APPLET_INVALID_COORDINATE;
     gchar *librarypath = NULL;
 
-    if (desktoppath == NULL)
-    {
-        ULOG_ERR("Identifier is required to be able create applet\n");
-        return NULL;
-    }
+    g_return_val_if_fail (desktoppath, NULL);
 
     handler = g_object_new(HOME_TYPE_APPLET_HANDLER,
                                               NULL);
-    if(handler == NULL)
-    {
-        ULOG_ERR("home_applet_handler_new() returns NULL");
-        return NULL;
-    }
-    g_assert(handler);
+    g_return_val_if_fail (desktoppath, NULL);
 
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
 
-    if (libraryfile == NULL)
+    if (!libraryfile)
     {
-        MBDotDesktop *file_contents;
+        GKeyFile* kfile;
+        GError *error = NULL;
 
-        file_contents = mb_dotdesktop_new_from_file(desktoppath);
-        if (file_contents != NULL) 
+        kfile = g_key_file_new();
+
+        if (!g_key_file_load_from_file (kfile,
+                                       desktoppath,
+                                       G_KEY_FILE_NONE,
+                                       &error))
         {
-            gchar *desktop_field;
-
-            desktop_field = 
-                mb_dotdesktop_get(file_contents, 
-                                  APPLET_KEY_LIBRARY);
-            if(desktop_field != NULL)
-            {
-                librarypath = 
-                    g_strconcat(HOME_APPLET_HANDLER_LIBRARY_DIR,
-                                desktop_field, NULL);
-                libraryfile = g_strdup(desktop_field);
-            } else
-            {
-                ULOG_WARN("Unable find library path from desktop file %s\n",
-                          desktoppath);
-                return NULL;
-            }
-
-            desktop_field = mb_dotdesktop_get(file_contents,
-                                              APPLET_KEY_X);
-                                              
-            if (desktop_field != NULL && g_ascii_isdigit(*desktop_field))
-            {
-                applet_x = (gint)atoi(desktop_field);
-            }
-
-            desktop_field = mb_dotdesktop_get(file_contents,
-                                              APPLET_KEY_Y);
-                                              
-            if (desktop_field != NULL && g_ascii_isdigit(*desktop_field)) 
-            {
-                applet_y = (gint)atoi(desktop_field);
-            }
-            mb_dotdesktop_free(file_contents);
-        } else
-        {
+            g_key_file_free (kfile);
+            if (error)
+                g_error_free (error);
             return NULL;
         }
-    } else
-    {
-        librarypath =
+
+        libraryfile = g_key_file_get_string (kfile, 
+                                             APPLET_GROUP,
+                                             APPLET_KEY_LIBRARY,
+                                             &error);
+
+        if (!libraryfile || error)
+        {
+            ULOG_WARN ("Unable find library path from desktop file %s\n",
+                    desktoppath);
+            g_key_file_free (kfile);
+            
+            if (error)
+                g_error_free (error);
+            
+            return NULL;
+        }
+
+        applet_x = g_key_file_get_integer (kfile,
+                                           APPLET_GROUP,
+                                           APPLET_KEY_X,
+                                           &error);
+
+        if (error)
+        {
+            applet_x = APPLET_INVALID_COORDINATE;
+            g_error_free (error);
+            error = NULL;
+        }
+        
+        applet_y = g_key_file_get_integer (kfile,
+                                           APPLET_GROUP,
+                                           APPLET_KEY_Y,
+                                           &error);
+        
+        if (error)
+        {
+            applet_y = APPLET_INVALID_COORDINATE;
+            g_error_free (error);
+            error = NULL;
+        }
+
+        g_key_file_free (kfile);
+    } 
+        
+    librarypath =
             g_strconcat(HOME_APPLET_HANDLER_LIBRARY_DIR, libraryfile, NULL);
-    }
 
     priv->dlhandle = dlopen(librarypath, RTLD_NOW);
     g_free(librarypath);
@@ -337,7 +341,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
             dlclose(priv->dlhandle);
             return NULL;
         }
-        
+    
         priv->applet_data = priv->initialize(state_data, state_size, &applet);
         handler->eventbox = GTK_EVENT_BOX(gtk_event_box_new());
         gtk_container_add(GTK_CONTAINER(handler->eventbox), applet);

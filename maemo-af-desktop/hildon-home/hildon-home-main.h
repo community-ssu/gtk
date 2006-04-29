@@ -69,6 +69,7 @@ G_BEGIN_DECLS
 #define HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR  "/usr/share/backgrounds"
   	 
 /* background image related definitions */ 	 
+#define BG_DESKTOP_GROUP           "Desktop Entry"
 #define BG_DESKTOP_IMAGE_NAME      "Name"
 #define BG_DESKTOP_IMAGE_FILENAME  "File"
 #define BG_DESKTOP_IMAGE_PRIORITY  "X-Order"

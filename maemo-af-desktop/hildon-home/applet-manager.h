@@ -91,15 +91,6 @@ void applet_manager_initialize(applet_manager_t *man,
 void applet_manager_initialize_new(applet_manager_t *man,
                                    gchar *desktoppath);
 
-/** applet_manager_initialize_all
- *
- *  Reads configure file and initializes all applets required
- *   
- *  @param man Applet manager as returned by 
- *             applet_manager_singleton_get_instance
- *   
- **/
-void applet_manager_initialize_all(applet_manager_t *man);
 
 /** applet_manager_deinitialize_handler
  *

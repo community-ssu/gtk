@@ -6,7 +6,7 @@ EXTRA_DIST = .empty hildon-navigator.pc empty_exec.sh
 plugindir = $(libdir)/hildon-navigator
 
 INCLUDES = \
-	$(HILDON_CFLAGS) -g $(MB_CFLAGS) $(OSSO_CFLAGS) $(MB_CFLAGS) $(LIBXML_CFLAGS)\
+	$(HILDON_CFLAGS) -g $(OSSO_CFLAGS) $(LIBXML_CFLAGS)\
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
 	-DPREFIX=\"$(prefix)\" \
@@ -65,7 +65,6 @@ libhildonnavigator_la_SOURCES = \
 libhildonnavigator_la_LIBADD = \
 	$(HILDON_LIBS) \
 	$(HILDONBASELIB_LIBS) \
-	$(MB_LIBS) \
 	$(OSSO_LIBS) \
     $(LIBXML2_LIBS) \
     ../libhildonmenu/libhildonmenu.la

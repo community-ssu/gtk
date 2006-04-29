@@ -59,7 +59,6 @@
 #include <glib.h>
 #include <libgnomevfs/gnome-vfs.h>
 
-#include "libmb/mbdotdesktop.h"
 #include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
@@ -126,9 +125,6 @@ static GtkWidget *loading_image_note = NULL;
 static gboolean loading_image_process_active = FALSE;
 static GPid image_loader_pid = -1;
 
-static MBDotDesktop *personalization;
-static MBDotDesktop *screen_calibration;
-
 static void create_startup_lock(void);
 static gboolean startup_lock_exists(void);
 
@@ -163,13 +159,10 @@ static gboolean layout_mode_selected(GtkWidget *widget,
                      GdkEvent *event,
                      gpointer data);
 
-static gboolean personalisation_selected(GtkWidget *widget,
+static gboolean hildon_home_execute_cp_applet(GtkWidget *widget,
                                          GdkEvent *event,
                                          gpointer data);
 
-static gboolean screen_calibration_selected(GtkWidget *widget,
-                                            GdkEvent *event,
-                                            gpointer data);
 static gboolean help_selected(GtkWidget *widget,
                               GdkEvent *event,
                               gpointer data);
@@ -234,7 +227,6 @@ static void hildon_home_get_enviroment_variables(void);
 static void hildon_home_construct_user_system_dir(void);
 static void hildon_home_create_configure(void);
 static void hildon_home_save_configure(void);
-static void hildon_home_cp_read_desktop_entries(void);
 
 static gint hildon_home_key_press_listener(GtkWidget *widget,
                                            GdkEventKey *keyevent,
@@ -477,21 +469,17 @@ void construct_titlebar_menu()
         gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_SUB_PERSONALISATION);
     gtk_widget_show(personalisation_item);
     gtk_menu_append(GTK_MENU(titlebar_submenu), personalisation_item);
-    if(personalization != NULL)
-    {
-        g_signal_connect(G_OBJECT(personalisation_item), "activate",
-                         G_CALLBACK(personalisation_selected), NULL);
-    }
+    g_signal_connect(G_OBJECT(personalisation_item), "activate",
+            G_CALLBACK(hildon_home_execute_cp_applet),
+            HILDON_CP_PLUGIN_PERSONALISATION);
 
     calibration_item =
         gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_SUB_CALIBRATION);
     gtk_widget_show(calibration_item);
     gtk_menu_append(GTK_MENU(titlebar_submenu), calibration_item);
-    if(screen_calibration != NULL)
-    {
-        g_signal_connect(G_OBJECT(calibration_item), "activate",
-                         G_CALLBACK(screen_calibration_selected), NULL);
-    }
+    g_signal_connect(G_OBJECT(calibration_item), "activate",
+            G_CALLBACK(hildon_home_execute_cp_applet),
+            HILDON_CP_PLUGIN_CALIBRATION);
 
     help_item =
         gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_SUB_HELP);
@@ -604,15 +592,33 @@ gint get_priority_from_treemodel(GtkTreeModel *tree, GtkTreeIter *iter)
  * Calls activation of personalisation applet
  **/
 static 
-gboolean personalisation_selected(GtkWidget *widget, 
+gboolean hildon_home_execute_cp_applet(GtkWidget *widget, 
                                   GdkEvent *event,
                                   gpointer data)
 { 
+    GKeyFile *kfile;
+    GError *error = NULL;
+    gchar *applet_path = NULL;;
     int ret;
+
+    kfile = g_key_file_new();
+   
+    if (!g_key_file_load_from_file (kfile,
+                                   (gchar *)data,
+                                   G_KEY_FILE_NONE,
+                                   &error))
+        goto cleanup;
+
+    applet_path = g_key_file_get_string (kfile,
+                                         BG_DESKTOP_GROUP,
+                                         "X-control-panel-plugin",
+                                         &error);
+
+    if (!applet_path || error)
+        goto cleanup;
+
     ret = osso_cp_plugin_execute(osso_home,
-                                 (char *)mb_dotdesktop_get(
-                                     personalization, 
-                                     "X-control-panel-plugin"),
+                                 applet_path,
                                  NULL,
                                  TRUE);
 
@@ -634,51 +640,18 @@ gboolean personalisation_selected(GtkWidget *widget,
         break;
     }
 
-    return TRUE;
-}
-
-/**
- * @screen_calibration_selected
- *
- * @param widget The parent widget
- * @param event The event that caused this callback
- * @param data Pointer to the data (not actually used by this function)
- * 
- * @return TRUE (keeps cb alive)
- * 
- * Calls activation of screen calibration applet
- **/
-static 
-gboolean screen_calibration_selected(GtkWidget *widget, 
-                                     GdkEvent *event,
-                                     gpointer data)
-{ 
-    int ret;
-
-    ret = osso_cp_plugin_execute(osso_home,
-                                 (char *)mb_dotdesktop_get(
-                                     screen_calibration, 
-                                     "X-control-panel-plugin"),
-                                 NULL,
-                                 TRUE);
-
-    switch(ret) 
+cleanup:
+    g_free (applet_path);
+    g_key_file_free(kfile);
+    if (error)
     {
-    case OSSO_OK:
-        break;
-    case OSSO_ERROR:
-        ULOG_ERR("OSSO_ERROR (No help for such topic ID)\n");
-        break;
-    case OSSO_RPC_ERROR:
-        ULOG_ERR("OSSO_RPC_ERROR (RPC failed for Screen calibration)\n");
-        break;
-    case OSSO_INVALID:
-        ULOG_ERR("OSSO_INVALID (invalid argument)\n");
-        break;
-    default:
-        ULOG_ERR("Unknown error!\n");
-        break;
+        ULOG_ERR("Could not start controlpanel applet %s: %s\n",
+                 (gchar *) data,
+                 error->message);
+
+        g_error_free (error);
     }
+
 
     return TRUE;
 }
@@ -1138,7 +1111,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
     GtkTreeModel *combobox_contents;
     GtkTreeIter iterator;
     GDir *bg_image_desc_base_dir;
-    MBDotDesktop *file_contents;
     GError *error = NULL;
     GtkTreeModel * model;
     /* Local strings */
@@ -1181,96 +1153,112 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
 		     BG_IMAGE_PRIORITY, 0, -1);
 			 
     load_original_bg_image_uri();
-
-    if (bg_image_desc_base_dir == NULL) 
-    {
-        ULOG_ERR("Failed to open path: %s", error->message);
-        if(error != NULL)
-        {
-            g_error_free(error);
-        }
-        image_desc_file = NULL;
-    } else 
-    {
-        image_desc_file = g_dir_read_name(bg_image_desc_base_dir);        
-    }
         
-    while (image_desc_file != NULL) 
+    while ( bg_image_desc_base_dir && 
+            (image_desc_file = g_dir_read_name(bg_image_desc_base_dir)) )
     {
         if (g_str_has_suffix(image_desc_file, 
                              BG_IMG_INFO_FILE_TYPE)) 
         {
             gchar *filename;
+            GKeyFile *kfile;
+
             filename = g_build_filename(
                 HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
                 image_desc_file, NULL);
-            file_contents = mb_dotdesktop_new_from_file(filename);
-            g_free(filename);
             
-            if (file_contents == NULL) 
+            kfile = g_key_file_new ();
+
+            if (!g_key_file_load_from_file (kfile,
+                                           filename,
+                                           G_KEY_FILE_NONE,
+                                           &error))
             {
                 ULOG_ERR("Failed to read file: %s\n", 
                          image_desc_file);
-            } else 
-            {
-                gchar *maybe_int;
-                image_name = g_strdup(mb_dotdesktop_get(
-                                          file_contents,
-                                          BG_DESKTOP_IMAGE_NAME));
-                
-                image_path = g_strdup(mb_dotdesktop_get(
-                                          file_contents,
-                                          BG_DESKTOP_IMAGE_FILENAME));
-                
-                maybe_int = mb_dotdesktop_get(file_contents,
-                                              BG_DESKTOP_IMAGE_PRIORITY);
-                
-                if (maybe_int != NULL && g_ascii_isdigit(*maybe_int)) 
-                {
-                    image_order = (gint)atoi(maybe_int);
-                } else 
-                {
-                    image_order = HOME_BG_IMG_DEFAULT_PRIORITY;
-                }
-                                
-                if (image_name != NULL && image_path != NULL) 
-                {
-                    active_count++;
-                    
-                    if (image_path != NULL && 
-                        home_bg_image_uri != NULL &&
-                        g_str_equal(image_path, home_bg_image_uri)) 
-                    {
-                        bg_image_is_default = TRUE;
-                    }   
-                    
-                    gtk_list_store_append(GTK_LIST_STORE
-                                         (combobox_contents),
-                                         &iterator);
-                   
-                    gtk_list_store_set(GTK_LIST_STORE(combobox_contents),
-                                      &iterator,
-                                      BG_IMAGE_NAME, _(image_name),
-                                      BG_IMAGE_FILENAME, image_path,
-                                      BG_IMAGE_PRIORITY, image_order, -1);
-		    
-               } else 
-               {
-                   ULOG_ERR("Desktop file malformed: %s", 
-                            image_desc_file);
-               }
 
-               mb_dotdesktop_free(file_contents);
-               
-               g_free(image_name);
-               g_free(image_path);
-            }            
-        } else /* suffix test */ 
+                if (error)
+                    g_error_free (error);
+
+                g_key_file_free (kfile);
+                g_free(filename);
+
+                continue;
+            }
+            
+            g_free(filename);
+
+            image_name = g_key_file_get_string (kfile,
+                                                BG_DESKTOP_GROUP,
+                                                BG_DESKTOP_IMAGE_NAME,
+                                                &error);
+            
+            if (!image_name || error)
+            {
+                if (error)
+                    g_error_free (error);
+
+                g_key_file_free (kfile);
+                g_free(filename);
+
+                continue;
+            }
+
+            image_path = g_key_file_get_string (kfile,
+                                                BG_DESKTOP_GROUP,
+                                                BG_DESKTOP_IMAGE_FILENAME,
+                                                &error);
+            
+            if (!image_path || error)
+            {
+                if (error)
+                    g_error_free (error);
+
+                g_key_file_free (kfile);
+                g_free(image_name);
+                g_free(filename);
+
+                continue;
+            }
+
+            image_order = g_key_file_get_integer (kfile,
+                                                  BG_DESKTOP_GROUP,
+                                                  BG_DESKTOP_IMAGE_PRIORITY,
+                                                  &error);
+            
+            if (error)
+            {
+                g_error_free (error);
+                image_order = HOME_BG_IMG_DEFAULT_PRIORITY;
+            }
+                                
+            active_count++;
+
+            if (image_path != NULL && 
+                    home_bg_image_uri != NULL &&
+                    g_str_equal(image_path, home_bg_image_uri)) 
+            {
+                bg_image_is_default = TRUE;
+            }   
+
+            gtk_list_store_append(GTK_LIST_STORE
+                    (combobox_contents),
+                    &iterator);
+
+            gtk_list_store_set(GTK_LIST_STORE(combobox_contents),
+                    &iterator,
+                    BG_IMAGE_NAME, _(image_name),
+                    BG_IMAGE_FILENAME, image_path,
+                    BG_IMAGE_PRIORITY, image_order, -1);
+            
+            g_key_file_free(kfile);
+            g_free(image_name);
+            g_free(image_path);
+        } 
+        else /* suffix test */ 
         {
             ULOG_ERR( "Skipping non-.desktop file: %s ",image_desc_file);
         }
-        
-        image_desc_file = g_dir_read_name(bg_image_desc_base_dir);
 
     } /* while */
 
@@ -2182,7 +2170,6 @@ void set_default_background_image()
     GError *error = NULL;
     const gchar *image_desc_file;
     GtkTreeModel *combobox_contents;
-    MBDotDesktop *file_contents;
 
     gchar *image_path = NULL;
     gint priority = -1; 
@@ -2192,19 +2179,6 @@ void set_default_background_image()
     
     bg_image_desc_base_dir = g_dir_open(
          HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR, 0, &error);
-
-    if (bg_image_desc_base_dir == NULL) 
-    {
-        ULOG_ERR( "Failed to open path: %s", error->message);
-        if(error != NULL)
-        {
-            g_error_free(error);
-        }
-        return;
-    } else 
-    {
-        image_desc_file = g_dir_read_name(bg_image_desc_base_dir);        
-    }
     
     combobox_contents = 
         GTK_TREE_MODEL (
@@ -2216,44 +2190,74 @@ void set_default_background_image()
                 )
             );
     
-    while (image_desc_file != NULL) 
+    while ( bg_image_desc_base_dir && 
+            (image_desc_file = g_dir_read_name(bg_image_desc_base_dir)) )
     {
         if (g_str_has_suffix(image_desc_file, BG_IMG_INFO_FILE_TYPE))
         {
             gchar *filename;
+            gint image_order;
+            GKeyFile *kfile;
+
             filename = g_build_filename(
                 HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
                 image_desc_file, NULL);
-            file_contents = mb_dotdesktop_new_from_file(filename);
-            g_free(filename);
-	    
-            /* scan files for one having a lowest priority */ 
-            if (file_contents != NULL) 
+            
+            kfile = g_key_file_new ();
+
+            if (!g_key_file_load_from_file (kfile,
+                                           filename,
+                                           G_KEY_FILE_NONE,
+                                           &error))
             {
-                gchar *priority_temp;
-                priority_temp = 
-                    mb_dotdesktop_get(file_contents,
-                                      BG_DESKTOP_IMAGE_PRIORITY);
-              
-                if( priority_temp != NULL && g_ascii_isdigit(*priority_temp) &&
-                    (priority == -1 || (gint)atoi(priority_temp) < priority) )
+                if (error)
+                    g_error_free (error);
+
+                g_key_file_free (kfile);
+                g_free(filename);
+
+                continue;
+            }
+            
+            g_free(filename);
+
+
+            image_order = g_key_file_get_integer (kfile,
+                                                  BG_DESKTOP_GROUP,
+                                                  BG_DESKTOP_IMAGE_PRIORITY,
+                                                  &error);
+            if (error)
+            {
+                g_error_free (error);
+                g_key_file_free (kfile);
+                continue;
+            }
+
+            if (!image_order < priority)
+            {
+                image_path = g_key_file_get_string (kfile,
+                        BG_DESKTOP_GROUP,
+                        BG_DESKTOP_IMAGE_FILENAME,
+                        &error);
+
+                if (!image_path || error)
                 {
-                    priority = (gint)atoi(priority_temp);
-	            g_free(image_path);	    
-                    image_path = g_strdup(
-                        mb_dotdesktop_get(file_contents,
-                                          BG_DESKTOP_IMAGE_FILENAME));
-                } else 
-                {
-                    ULOG_ERR("Desktop file malformed: %s", 
-                             image_desc_file);
+                    if (error)
+                        g_error_free (error);
+
+                    g_key_file_free (kfile);
+
+                    continue;
                 }
                 
-                mb_dotdesktop_free(file_contents);
-            }            
-        }
+                priority = image_order;
+            }
+                
+            
+            g_key_file_free(kfile);
+            g_free(image_path);
+        } 
         
-        image_desc_file = g_dir_read_name(bg_image_desc_base_dir);
     } /* while */
 
     if (bg_image_desc_base_dir != NULL) 
@@ -2852,7 +2856,6 @@ void hildon_home_initiliaze()
     g_free(configure_file);
 
     load_original_bg_image_uri();
-    hildon_home_cp_read_desktop_entries();
 }
 
 /**
@@ -3090,80 +3093,6 @@ void hildon_home_save_configure()
 
     g_free(configure_file);
     
-}
-
-/**
- * hildon_home_cp_read_desktop_entry:
- * @dir_path: path to directory where dotdesktop files are
- *
- * Reads desktop entries
- *
- **/
-static void hildon_home_cp_read_desktop_entries(void)
-{
-    GDir *dir;
-    GError * error = NULL;
-    gchar *dir_path = CONTROLPANEL_ENTRY_DIR;
-    gchar *path=NULL;
-   
-    
-    g_return_if_fail(dir_path);
-    dir = g_dir_open(dir_path, 0, &error);
-    if(!dir)
-    {
-        ULOG_ERR(error->message);
-        if(error != NULL)
-        {
-            g_error_free(error);
-        }
-        personalization = NULL;
-        screen_calibration = NULL;
-        
-        return;
-    }
-    if(error != NULL)
-    {
-        g_error_free(error);
-    }
-    /* personalization plugin */
-    path = g_strconcat(dir_path, G_DIR_SEPARATOR_S, 
-                       HILDON_CP_PLUGIN_PERSONALISATION, NULL);
-
-    if (path != NULL)
-    {
-        personalization = mb_dotdesktop_new_from_file(path);
-        if(!personalization)
-        {
-            ULOG_WARN("Error reading entry file %s for personalisation applet",
-                      path );
-            personalization = NULL;
-        }       
-        g_free(path);
-    } else 
-    {
-        personalization = NULL;
-    }
-
-    /* screen calibration plugin */
-    path = g_strconcat(dir_path, G_DIR_SEPARATOR_S, 
-                       HILDON_CP_PLUGIN_CALIBRATION, NULL);
-
-    if (path != NULL)
-    {
-        screen_calibration = mb_dotdesktop_new_from_file(path);
-        if(!screen_calibration)
-        {
-            ULOG_WARN("Error reading entry file %s for screen"
-                      "calibration applet", path );
-            screen_calibration = NULL;
-        }       
-        g_free(path);
-    } else 
-    {
-        screen_calibration = NULL;
-    }
-
-    g_dir_close(dir);
 }
 
 /**

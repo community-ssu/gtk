@@ -1,5 +1,19 @@
 2006-04-29  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c:
+	  - replaced call to libmb with calls to g_key_file_
+	  - factorized code to call cp applets
+	* hildon-home/home-applet-handler.c:
+	  - replaced call to libmb with calls to g_key_file_
+	* hildon-home/applet-manager.c:
+	  - replaced call to libmb with calls to g_key_file_
+	  - removed applet_manager_initialize_all which, surprise surprise,
+	    was never used ...
+	* configure.ac, Makefile.am, */Makefile.am: don't link to libmb
+	  anymore
+
+2006-04-29  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.6.12
 
 2006-04-28  Johan Bilien <johan.bilien@nokia.com>

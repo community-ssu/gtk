@@ -1695,9 +1695,6 @@ gpointer data)
     {
 	fprintf(stderr, "Drag ICON NULL! ");
     }
-
-    fprintf(stderr, "offset x: %d, offset y: %d\n", 
-	    general_data.offset_x, general_data.offset_y);
     
     gtk_drag_set_icon_pixbuf(context, general_data.active->drag_icon, 
 			     general_data.offset_x, general_data.offset_y/**/);

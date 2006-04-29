@@ -102,6 +102,7 @@ void applet_manager_initialize(applet_manager_t *man,
 
     handler = home_applet_handler_new(desktoppath, librarypath, 
                                       state_data, &state_size);
+
     if(handler == NULL)
     {
         ULOG_ERR( "Couldn't retrieve Handler for %s\n", desktoppath);
@@ -136,118 +137,6 @@ void applet_manager_initialize_new(applet_manager_t *man,
 }
 
 
-void applet_manager_initialize_all(applet_manager_t *man)
-{
-    gint i;
-    gchar **groups;
-    GKeyFile *keyfile;
-    GError *error;
-    gchar *configure_file = get_user_configure_file();
-    struct stat buf;
-
-    /* If no configure file found, try factory configure file
-     * If its also empty, no applets should be  
-     */
-    if(configure_file == NULL || stat(configure_file, &buf) == -1)
-    {
-        g_free(configure_file);
-        configure_file = get_factory_configure_file();
-        if(configure_file == NULL || stat(configure_file, &buf) == -1)
-        {
-            g_free(configure_file);
-            return; 
-        }
-    }
-
-    keyfile = g_key_file_new();
-
-    error = NULL;
-    g_key_file_load_from_file(keyfile, configure_file,
-                              G_KEY_FILE_NONE, &error);
-    if (error != NULL)
-    {
-        ULOG_WARN("Config file error %s: %s\n", 
-                  configure_file, error->message);    
-
-        g_key_file_free(keyfile);
-        g_error_free(error);
-        g_free(configure_file);
-        return;
-    }
-    g_free(configure_file);
-    
-    /* Groups are a list of applets in this context */
-    groups = g_key_file_get_groups(keyfile, NULL);
-    i = 0;
-    while (groups[i] != NULL)
-    {
-        gchar *libraryfile;
-        gchar *desktopfile;
-        gint applet_x;
-        gint applet_y;
-
-        libraryfile = g_key_file_get_string(keyfile, groups[i],
-                                            APPLET_KEY_LIBRARY, &error);
-        if (error != NULL)
-        {
-            ULOG_WARN("Invalid applet specification for %s: %s\n", 
-                      groups[i], error->message);
-
-            g_error_free(error);
-            error = NULL;
-            i++;
-            continue;
-        }
-
-        desktopfile = g_key_file_get_string(keyfile, groups[i],
-                                            APPLET_KEY_DESKTOP, &error);
-        if (error != NULL)
-        {
-            ULOG_WARN( 
-                    "Invalid applet specification for %s: %s\n", 
-                    groups[i], error->message);
-
-            g_error_free(error);
-            error = NULL;
-            i++;
-            continue;
-        }
-
-        applet_x = g_key_file_get_integer(keyfile, groups[i],
-                                          APPLET_KEY_X, &error);
-        if (error != NULL || applet_x == APPLET_INVALID_COORDINATE)
-        {
-            ULOG_WARN("Invalid applet specification or invalid coordinate '%d'"
-                      "for %s: %s\n", 
-                      applet_x, groups[i], error->message);
-            applet_x = APPLET_INVALID_COORDINATE;
-            g_error_free(error);
-            error = NULL;
-            i++;
-            continue;
-        }
-
-        applet_y = g_key_file_get_integer(keyfile, groups[i],
-                                          APPLET_KEY_Y, &error);
-        if (error != NULL || applet_y == APPLET_INVALID_COORDINATE)
-        {
-            ULOG_WARN("Invalid applet specification or invalid coordinate '%d'"
-                      "for %s: %s\n", 
-                      applet_y, groups[i], error->message);
-            applet_y = APPLET_INVALID_COORDINATE;
-            g_error_free(error);
-            error = NULL;
-            i++;
-            continue;
-        }
-
-        applet_manager_initialize(man, libraryfile, desktopfile, applet_x, applet_y);
-        i++;
-    }
-
-    g_strfreev(groups);
-    g_key_file_free(keyfile);
-}
 
 void applet_manager_deinitialize_handler(applet_manager_t *man,
                                          HomeAppletHandler *handler)
@@ -500,12 +389,11 @@ void applet_manager_configure_load_all(applet_manager_t *man)
                                            applet_x, applet_y);
         }
 
-        g_free(libraryfile);
-        g_free(desktopfile);
         conf_identifier_list = g_list_append(conf_identifier_list, desktopfile);
+        g_free(libraryfile);
         i++;
     }
-
+            
     for(handler_listitem = man->applet_list; handler_listitem != NULL; 
         handler_listitem = handler_listitem->next)
     {

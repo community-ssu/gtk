@@ -20,8 +20,8 @@ EXTRA_DIST = debian/changelog debian/control debian/copyright debian/rules \
 	debian/hildon-navigator-dev.install
 
 INCLUDES = \
-	$(HILDON_CFLAGS) -g $(MB_CFLAGS) $(OSSO_CFLAGS) $(GNOME_VFS_CFLAGS) \
-	$(GCONF_CFLAGS) $(MB_CFLAGS) $(HILDON_FM_CFLAGS) $(COMMON_ERROR_CFLAGS) \
+	$(HILDON_CFLAGS) -g $(OSSO_CFLAGS) $(GNOME_VFS_CFLAGS) \
+	$(GCONF_CFLAGS) $(HILDON_FM_CFLAGS) $(COMMON_ERROR_CFLAGS) \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
 	-DPREFIX=\"$(prefix)\"
@@ -48,7 +48,6 @@ maemo_af_desktop_LDADD = \
 	libhildonmenu/libhildonmenu.la \
 	$(HILDON_LIBS) \
 	$(HILDONBASELIB_LIBS) \
-	$(MB_LIBS) \
 	$(OSSO_LIBS) \
 	$(COMMON_ERROR_LIBS) \
     $(HILDON_FM_LIBS) \

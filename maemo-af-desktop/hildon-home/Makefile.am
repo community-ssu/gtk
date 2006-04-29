@@ -4,7 +4,7 @@
 
 INCLUDES = \
 	$(HILDON_CFLAGS) $(HILDON_FM_CFLAGS) $(OSSO_HELP_CFLAGS)\
-	$(MB_CFLAGS) $(OSSO_CFLAGS) $(GNOME_VFS_CFLAGS) $(GCONF_CFLAGS) \
+	$(OSSO_CFLAGS) $(GNOME_VFS_CFLAGS) $(GCONF_CFLAGS) \
 	-DSN_API_NOT_YET_FROZEN \
 	-DHILDON_SAVE_STATE \
 	-DLOCALEDIR=\"$(localedir)\" \
@@ -41,7 +41,7 @@ libhildonhome_la_SOURCES = \
 	home-select-applets-dialog.h \
 	home-select-applets-dialog.c
 
-libhildonhome_la_LIBADD = $(HILDON_LIBS) $(MB_LIBS) $(OSSO_LIBS) $(COMMON_ERROR_LIBS) $(HILDON_FM_LIBS)
+libhildonhome_la_LIBADD = $(HILDON_LIBS) $(OSSO_LIBS) $(COMMON_ERROR_LIBS) $(HILDON_FM_LIBS)
 
 home_image_loader_SOURCES = \
 	hildon-home-image-loader.c \
