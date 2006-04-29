@@ -3,6 +3,10 @@ dbus (0.61-osso7) experimental; urgency=low
   * UNRELEASED
   * Added patch for prioritising g_sources high. This is mainly because
     low-memory signals should be propagated as quickly as possible.
+  * Added patch to fix leaking of pointer arrays in glib binding (N#28223)
+    from Rob McQueen.
+  * Added patch to fix leak in glib bindings signature generation (N#28222)
+    from Rob McQueen.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 29 Apr 2006 13:09:41 +0300
 
