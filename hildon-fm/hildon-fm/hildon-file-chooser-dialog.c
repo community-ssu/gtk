@@ -1086,7 +1086,7 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                     {
                         g_signal_stop_emission_by_name(widget, "response");
                         hildon_file_chooser_dialog_select_text(priv);
-                        gtk_infoprintf(window, _("file_ib_name_too_long"), 
+                        gtk_infoprintf(window, HCS("file_ib_name_too_long"), 
                             path_length - self->priv->max_filename_length);
                     }
                     g_free(uri);
