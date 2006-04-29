@@ -1,0 +1,19 @@
+diff -ur dbus/glib/dbus-gmain.c dbus.new/glib/dbus-gmain.c
+--- dbus/glib/dbus-gmain.c	2006-03-03 19:26:22.000000000 +0200
++++ dbus.new/glib/dbus-gmain.c	2006-04-29 13:06:44.386354560 +0300
+@@ -165,6 +165,7 @@
+                                                sizeof (DBusGMessageQueue));
+       ((DBusGMessageQueue*)cs->message_queue_source)->connection = connection;
+       g_source_attach (cs->message_queue_source, cs->context);
++      g_source_set_priority (cs->message_queue_source, G_PRIORITY_HIGH);
+     }
+   
+   return cs;
+@@ -282,6 +283,7 @@
+   g_source_set_callback (handler->source, (GSourceFunc) io_handler_dispatch, handler,
+                          io_handler_source_finalized);
+   g_source_attach (handler->source, cs->context);
++  g_source_set_priority (handler->source, G_PRIORITY_HIGH);
+ 
+   cs->ios = g_slist_prepend (cs->ios, handler);
+   

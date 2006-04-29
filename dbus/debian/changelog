@@ -1,8 +1,10 @@
 dbus (0.61-osso7) experimental; urgency=low
 
   * UNRELEASED
+  * Added patch for prioritising g_sources high. This is mainly because
+    low-memory signals should be propagated as quickly as possible.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 22 Apr 2006 13:28:32 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 29 Apr 2006 13:09:41 +0300
 
 dbus (0.61-osso6) experimental; urgency=low
 
