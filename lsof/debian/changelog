@@ -1,3 +1,9 @@
+lsof (4.70-1osso1) unstable; urgency=medium
+
+  * Added patch from Leonid to support thumb instructions (N#28036).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 29 Apr 2006 16:48:21 +0300
+
 lsof (4.70-1osso) unstable; urgency=medium
 
   * Removed 10 legally problematic files.
