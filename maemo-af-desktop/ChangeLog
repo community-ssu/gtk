@@ -1,3 +1,7 @@
+2006-04-29  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.6.12
+
 2006-04-28  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "TN should not create plugin then destroy them if they

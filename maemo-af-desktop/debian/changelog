@@ -1,3 +1,55 @@
+maemo-af-desktop (2.6.12-1) unstable; urgency=low
+
+  Applied fix to "TN should not create plugin then destroy them if they
+  are not going to be used" (Closes N#28153)
+  * hildon-navigato/hildon-navigator-main.c: Move plugin API calls
+    from create/destroy to the reload function to avoid creating plugin
+    data when the plugin is not going to be shown.
+
+  * hildon-navigator/hildon-navigator-main.c: Free the list of plugins
+    after having used it
+
+  * hildon-navigator/plugins.conf: made the bookmark plugin non-mandatory
+
+  * hildon-home/{layout-manager.c: Free the drag icon when exiting
+    layout mode
+  * hildon-home/home-applet-handler.c: Free the library path
+    (Closes N#27832)
+
+  Applied fix to "Others menu organization--dialog implementation problems"
+  (Closes N#25777)
+  * libhildonmenu/libhildonmenu.c: recurse when writing menus.
+
+  * hildon-navigator/hn-wm-memory.c: Removed deprecated memory low
+    banner
+
+  * hildon-navigator/Makefile.am: Remove any mention to /etc/others-menu
+  * hildon-navigator/hildon-navigator-restore-plugins.sh: Added script
+    to remove plugin configurations which may have been restored from
+    an older version of the software
+
+  * hildon-home/hildon-home-restore-background.sh: Only restore the
+    background when necessary
+
+  * hildon-navigator/close-application-dialog.c: Fixed localisation
+    of the title, for real (Closes N#27433)
+
+  Applied fix to "icon focus incorrect after 'Not enough memory'"
+  (Closes N#22638)
+  * hildon-navigator/hn-wm.[ch]: Push an app to the bottom of the
+    stack of topping failed due to low memory
+
+  Applied fix to "TN Plugin (re)loading doesn't initialize menus"
+  (Closes N#27316)
+  * hildon-navigator/hildon-navigator-main.c:
+    - New function: initialize_plugin_menus():
+      Move plugin menu init to it's own function
+    - plugin_configuration_changed(): Init plugin menus after reloading
+  * hildon-navigator/plugins.conf: Change positions to correct ones,
+    addition of Desktop-file key
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 28 Apr 2006 16:14:37 +0300
+
 maemo-af-desktop (2.6.11-1) unstable; urgency=low
 
   * debian/rules: Fixed typo I just introduced
