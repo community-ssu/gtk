@@ -1,3 +1,9 @@
+python-gtk2 (2.6.1-2osso3) unstable; urgency=low
+
+  * Recompiled under SDK2.0RC4
+ 
+ -- Elvis Pfutzenreuter <elvis.pfutzenreuter@indt.org.br>  Mon, 01 May 2006 11:45:00 -0300
+
 python-gtk2 (2.6.1-2osso2) unstable; urgency=low
 
   * changes to reduce footprint
