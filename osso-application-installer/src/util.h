@@ -364,4 +364,9 @@ const char *gettext_alt (const char *id, const char *english);
  */
 const char *device_name ();
 
+/* Set up a handler that emits the given RESPONSE for DIALOG when
+   the user hits Escape.
+*/
+void respond_on_escape (GtkDialog *dialog, int response);
+
 #endif /* !UTIL_H */

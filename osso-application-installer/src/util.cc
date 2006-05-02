@@ -39,6 +39,8 @@
 #include <hildon-widgets/hildon-file-chooser-dialog.h>
 #include <hildon-widgets/gtk-infoprint.h>
 #include <hildon-widgets/hildon-banner.h>
+#include <gdk/gdkkeysyms.h>
+#include <hildon-widgets/hildon-defines.h>
 #include <osso-ic.h>
 #include <libgnomevfs/gnome-vfs.h>
 
@@ -1782,4 +1784,30 @@ device_name ()
     }
 
   return btname_result;
+}
+
+static gboolean
+escape_key_release_event (GtkWidget *widget,
+			  GdkEventKey *event,
+			  gpointer data)
+{
+  GtkDialog *dialog = GTK_DIALOG (widget);
+  int response = (int)data;
+
+  if (event->type == GDK_KEY_RELEASE &&
+      event->keyval == HILDON_HARDKEY_ESC)
+    {
+      gtk_dialog_response (dialog, response);
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+void
+respond_on_escape (GtkDialog *dialog, int response)
+{
+  g_signal_connect (dialog, "key_release_event",
+		    G_CALLBACK (escape_key_release_event),
+		    (gpointer)response);
 }
