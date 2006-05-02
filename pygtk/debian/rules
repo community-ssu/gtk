@@ -7,6 +7,9 @@
 #			--host=$(DEB_HOST_GNU_TYPE) 	\
 #			--build=$(DEB_BUILD_GNU_TYPE) 		\
 
+CC = gcc
+OPTSETTINGS = OPT="-Os"
+
 # Install directories
 p_base=python2.4-gtk2
 p_dev=$(p_base)-dev
@@ -19,7 +22,9 @@ build-2.4/config.status: configure
 	dh_testdir
 	mkdir -p build-2.4
 	autoconf
-	cd build-2.4 && PYTHON=`which python2.4` \
+	cd build-2.4 && \
+	  CC="$(CC)" $(OPTSETTINGS) \
+	  PYTHON=`which python2.4` \
 		../configure \
 			--prefix=/usr \
 			--enable-thread \
