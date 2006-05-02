@@ -7,7 +7,6 @@ export SHELL = /bin/bash
 export DH_VERBOSE=1
 
 DEB_BUILD_ARCH		?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
-DEB_BUILD_ARCH_OS	?= $(shell dpkg-architecture -qDEB_BUILD_ARCH_OS)
 
 export VER=2.4
 export PVER=python2.4
@@ -15,7 +14,13 @@ export PVER=python2.4
 PY_INTERPRETER = /usr/bin/python$(VER)
 
 CC = gcc
-OPTSETTINGS = OPT="-g -O0 -Wall -Wstrict-prototypes"
+
+ifeq ($(DEB_BUILD_ARCH),arm)
+	#OPTSETTINGS = OPT="-Os -mfloat-abi=softfp -Wall -Wstrict-prototypes"
+	OPTSETTINGS = OPT="-Wall -Wstrict-prototypes"
+else
+	OPTSETTINGS = OPT="-Os -Wall -Wstrict-prototypes"
+endif
 
 PWD		:= $(shell pwd)
 buildd_shared	:= $(PWD)/build-shared
