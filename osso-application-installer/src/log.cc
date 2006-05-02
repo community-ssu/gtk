@@ -128,6 +128,7 @@ show_log ()
 					_("ai_bd_log_close"),
 					GTK_RESPONSE_CLOSE,
 					NULL);
+  respond_on_escape (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
 
   set_dialog_help (dialog, AI_TOPIC ("log"));
 

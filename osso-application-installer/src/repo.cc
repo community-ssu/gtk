@@ -792,7 +792,7 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
     }
   else
     {
-      GtkWidget *dialog= gtk_dialog_new ();
+      GtkWidget *dialog = gtk_dialog_new ();
 
       gtk_window_set_title (GTK_WINDOW (dialog), _("ai_ti_repository"));
       gtk_window_set_transient_for (GTK_WINDOW (dialog), get_main_window ());
@@ -808,6 +808,7 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 			       _("ai_bd_repository_delete"), REPO_RESPONSE_REMOVE);
       gtk_dialog_add_button (GTK_DIALOG (dialog), 
 			     _("ai_bd_repository_close"), GTK_RESPONSE_CLOSE);
+      respond_on_escape (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
       
       g_signal_connect (c->edit_button, "insensitive_press",
 			G_CALLBACK (insensitive_press),

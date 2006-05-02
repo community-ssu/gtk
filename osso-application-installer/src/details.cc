@@ -386,6 +386,7 @@ show_with_details (package_info *pi, bool installed,
 					NULL);
 
   set_dialog_help (dialog, AI_TOPIC ("packagedetailsview"));
+  respond_on_escape (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
   notebook = gtk_notebook_new ();
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
