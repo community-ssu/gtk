@@ -1239,7 +1239,6 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 	break;
 
       char *version = dec->decode_string_dup ();
-      fprintf (stderr, "upgrade %s %s\n", name, version);
 
       push (c->upgrade_names, name);
       push (c->upgrade_versions, version);
@@ -1249,11 +1248,9 @@ install_check_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   if (success)
     {
-      // A non-authenticated package can never be certified.
-      // Apt-worker does not implement that rule, tho, so we do it
-      // here.
-
-      if (notcert || notauth)
+      if (notauth)
+	scare_user_with_legalese (false, install_package_cont5, c);
+      else if (notcert)
 	scare_user_with_legalese (true, install_package_cont5, c);
       else
 	install_package_cont3 (true, c);
@@ -2443,7 +2440,7 @@ key_event (GtkWidget *widget,
 	   GdkEventKey *event,
 	   gpointer data)
 {
-  if (event->type == GDK_KEY_PRESS &&
+  if (event->type == GDK_KEY_RELEASE &&
       event->keyval == HILDON_HARDKEY_FULLSCREEN)
     {
       toggle_fullscreen ();
@@ -2500,7 +2497,7 @@ void
 show_help ()
 {
   if (osso_ctxt && current_topic)
-    ossohelp_show (osso_ctxt, current_topic, OSSO_HELP_SHOW_DIALOG);
+    ossohelp_show (osso_ctxt, current_topic, 0);
 }
 
 static void
@@ -2566,6 +2563,10 @@ main (int argc, char **argv)
 		      GTK_TOOL_ITEM (toolbar_operation_item),
 		      -1);
 
+  gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
+		      GTK_TOOL_ITEM (gtk_separator_tool_item_new ()),
+		      -1);
+
   image = gtk_image_new_from_icon_name ("qgn_toolb_gene_detailsbutton",
 					HILDON_ICON_SIZE_26);
   details_button = GTK_WIDGET (gtk_tool_button_new (image, NULL));
@@ -2578,6 +2579,10 @@ main (int argc, char **argv)
 		    G_CALLBACK (insensitive_press), NULL);
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 		      GTK_TOOL_ITEM (details_button),
+		      -1);
+
+  gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
+		      GTK_TOOL_ITEM (gtk_separator_tool_item_new ()),
 		      -1);
 
   image = gtk_image_new_from_icon_name ("qgn_toolb_gene_findbutton",
