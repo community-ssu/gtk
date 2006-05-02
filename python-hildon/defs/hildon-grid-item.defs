@@ -26,12 +26,13 @@
   )
 )
 
-(define-function hildon_grid_item_new
-  (c-name "hildon_grid_item_new")
+(define-function hildon_grid_item_new_with_label
+  (c-name "hildon_grid_item_new_with_label")
   (is-constructor-of "HildonGridItem")
   (return-type "GtkWidget*")
   (parameters
     '("const-gchar*" "icon_basename")
+    '("const-gchar*" "label")
   )
 )
 
