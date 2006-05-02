@@ -1315,6 +1315,10 @@ encode_install_summary (pkgCache::PkgIterator &want)
 {
   pkgDepCache &cache = *package_cache;
 
+  // XXX - the summary is not really correct when there are broken
+  //       packages in the device.  The problems of those packages
+  //       might be included in the report.
+
   if (cache.BrokenCount() > 0)
     fprintf (stderr, "[ Some installed packages are broken! ]\n");
 
@@ -1842,13 +1846,6 @@ operation (bool check_only)
    
    bool Fail = false;
    
-   // Sanity check
-   if (Cache->BrokenCount() != 0)
-   {
-     _error->Error("Internal error, install_packages was called with broken packages!");
-     return rescode_failure;
-   }
-
    if (Cache->DelCount() == 0 && Cache->InstCount() == 0 &&
        Cache->BadCount() == 0)
       return rescode_success;
@@ -2271,9 +2268,9 @@ cmd_get_file_details ()
   if (record == NULL || !section.Scan (record, strlen (record)))
     {
       response.encode_string (basename (filename));
-      response.encode_string (NULL);      // installed_version
+      response.encode_string ("");        // installed_version
       response.encode_int (0);            // installed_size
-      response.encode_string (NULL);      // version
+      response.encode_string ("");        // version
       response.encode_string ("");        // maintainer
       response.encode_string ("");        // section
       response.encode_int (status_corrupted);
