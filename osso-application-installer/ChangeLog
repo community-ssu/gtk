@@ -1,7 +1,31 @@
+2006-05-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.h, src/util.cc (respond_on_escape,
+	escape_key_release_event): New.
+	* src/repo.cc (sources_list_reply): Use respond_on_escape to close
+	the dialog on ESC.
+	* src/details.cc (show_with_details): Likewise. (N28387)
+	* src/log.cc (show_log): Likewise. (N28382)
+
+	* src/main.cc (install_check_reply): Show the unsure variant of
+	the legal disclaimer when authentication fails.
+	(main): Add separators between toolbar buttons. (N27902)
+	(key_event): Rect to fullscreen key when it is released, avoiding
+	key repeating. (N27946)
+
+	* src/apt-worker.cc (cmd_get_file_details): Use empty string ""
+	instead of NULL for versions when the file is corrupted.
+
+	* src/main.cc (show_help): Don't ask for a help dialog, ask for
+	the full help application. (N25774)
+
+	* src/apt-worker.cc (operation): Don't do the sanity check;
+	proceed also when packages are broken.
+
 2006-04-28  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/utils.h, src/util.cc (show_file_chooser_for_save): Set
-	default folder to "Documents".
+	default folder to "Documents". (N27900)
 	(ask_custom): New.
 	* src/log.cc (save_log): Use it to get the correct button labels.
 	(log_response): Put version information into log after clearing it.
