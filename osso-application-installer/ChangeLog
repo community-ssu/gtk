@@ -1,5 +1,7 @@
 2006-05-03  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.17
+	
 	* src/settings.h, src/settings.cc (break_locks): New.
 	(load_settings, save_settings): Load and save it.
 
