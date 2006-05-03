@@ -1,3 +1,9 @@
+2006-05-02  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/applet_manager.c:
+      - a list was being changed while being iterated
+	  - reverted partially fix to N#27832 which caused a crash
+
 2006-04-29  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-main.c:

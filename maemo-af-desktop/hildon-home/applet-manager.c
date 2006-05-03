@@ -171,8 +171,11 @@ void applet_manager_deinitialize_all(applet_manager_t *man)
 
     for(handler = man->applet_list; handler != NULL; handler = handler->next)
     {
-        applet_manager_deinitialize_handler(man, (HomeAppletHandler *)handler->data);
+        if(handler->data)
+            home_applet_handler_deinitialize((HomeAppletHandler *)handler->data);
     }
+
+    g_list_free (man->applet_list);
 }
 
 void applet_manager_configure_save_all(applet_manager_t *man)
@@ -390,7 +393,6 @@ void applet_manager_configure_load_all(applet_manager_t *man)
         }
 
         conf_identifier_list = g_list_append(conf_identifier_list, desktopfile);
-        g_free(libraryfile);
         i++;
     }
             
