@@ -47,20 +47,21 @@
   )
 )
 
-(define-method get_sizegroup
-  (of-object "HildonCaption")
-  (c-name "hildon_caption_get_sizegroup")
-  (return-type "GtkSizeGroup*")
-)
-
-(define-method set_sizegroup
-  (of-object "HildonCaption")
-  (c-name "hildon_caption_set_sizegroup")
-  (return-type "none")
-  (parameters
-    '("GtkSizeGroup*" "new_group")
-  )
-)
+; Deprecated
+;(define-method get_sizegroup
+;  (of-object "HildonCaption")
+;  (c-name "hildon_caption_get_sizegroup")
+;  (return-type "GtkSizeGroup*")
+;)
+;
+;(define-method set_sizegroup
+;  (of-object "HildonCaption")
+;  (c-name "hildon_caption_set_sizegroup")
+;  (return-type "none")
+;  (parameters
+;    '("GtkSizeGroup*" "new_group")
+;  )
+;)
 
 (define-method is_mandatory
   (of-object "HildonCaption")
@@ -143,20 +144,21 @@
   (return-type "gfloat")
 )
 
-(define-method get_control
-  (of-object "HildonCaption")
-  (c-name "hildon_caption_get_control")
-  (return-type "GtkWidget*")
-)
-
-(define-method set_control
-  (of-object "HildonCaption")
-  (c-name "hildon_caption_set_control")
-  (return-type "none")
-  (parameters
-    '("GtkWidget*" "control")
-  )
-)
+; Deprecated
+;(define-method get_control
+;  (of-object "HildonCaption")
+;  (c-name "hildon_caption_get_control")
+;  (return-type "GtkWidget*")
+;)
+;
+;(define-method set_control
+;  (of-object "HildonCaption")
+;  (c-name "hildon_caption_set_control")
+;  (return-type "none")
+;  (parameters
+;    '("GtkWidget*" "control")
+;  )
+;)
 
 (define-method set_child_expand
   (of-object "HildonCaption")

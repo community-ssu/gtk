@@ -7,12 +7,12 @@ Standards-Version: 3.6.1
 Package: python2.4-hildon
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: python2.4, python2.4-gtk2
 Description: Python bindings for Hildon library
 
 Package: python2.4-hildon-dev
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: python2.4-hildon
 Description: Examples for Python bindings for Hildon library
 

@@ -13,7 +13,7 @@
 (include "defs/hildon-defines.defs")
 (include "defs/hildon-dialoghelp.defs")
 (include "defs/hildon-file-chooser-dialog.defs")
-(include "defs/hildon-file-details-dialog.defs")
+;;(include "defs/hildon-file-details-dialog.defs") *depends on HildonFileSystemModel stuff*
 (include "defs/hildon-file-system-model.defs")
 (include "defs/hildon-find-toolbar.defs")
 (include "defs/hildon-font-selection-dialog.defs")

@@ -21,12 +21,12 @@ EXTRA_DIST = $(defs_DATA) \
 common_ldflags = -module -avoid-version
 
 pyexec_LTLIBRARIES = hildon.la
-hildon_la_CFLAGS = $(PYTHON_INCLUDES) `pkg-config --cflags pygtk-2.0 hildon-libs hildon-fm hildon-lgpl gtk+-2.0` \
+hildon_la_CFLAGS = $(PYTHON_INCLUDES) `pkg-config --cflags pygtk-2.0 hildon-libs hildon-fm gtk+-2.0` \
 					-I$(includedir)/gnome-vfs-2.0 \
 					-I$(includedir)/gnome-vfs-module-2.0 \
 					-fno-strict-aliasing -DHILDON_DISABLE_DEPRECATED
 
-hildon_la_LDFLAGS = $(common_ldflags) `pkg-config --libs hildon-base-lib hildon-libs hildon-fm hildon-lgpl gtk+-2.0` \
+hildon_la_LDFLAGS = $(common_ldflags) `pkg-config --libs pygtk-2.0 hildon-base-lib hildon-libs hildon-fm gtk+-2.0` \
 					-export-symbols-regex inithildon
 
 hildon_la_LIBADD = 
