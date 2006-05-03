@@ -1,3 +1,10 @@
+python-hildon (0.8.4-1osso1) unstable; urgency=low
+
+  * Updated to 0.8.4 release
+  * Recompiled on SDK 2.0rc4
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu, 02 May 2006 18:42:00 -0300
+
 python-hildon (0.7.0-1osso3) unstable; urgency=low
 
   * Strip some unused files to reduce footprint

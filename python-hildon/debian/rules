@@ -13,22 +13,15 @@ d=debian/tmp
 d_base=debian/python$(PYVER)-hildon
 d_dev=debian/python$(PYVER)-hildon-dev
 
-CFLAGS=-Wall -g
+CFLAGS=-Wall -g -Os
 
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -O0
-else
-	CFLAGS += -O2
-endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
-endif
+configure:
+	automake
+	autoconf
 
 config.status: configure
 	dh_testdir
-	automake
-	autoconf
-	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
+	CFLAGS="$(CFLAGS)" ./configure --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
 
 build: build-stamp
 build-stamp:  config.status
@@ -40,6 +33,9 @@ clean: config.status
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
+	automake
+	autoconf
+	CFLAGS="$(CFLAGS)" ./configure --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
 	-$(MAKE) distclean
 	dh_clean 
 
