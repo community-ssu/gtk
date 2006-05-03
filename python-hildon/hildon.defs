@@ -1,5 +1,5 @@
-(include "defs/gtk-infoprint.defs")
-(include "defs/hildon-add-home-dialog.defs")
+;;(include "defs/gtk-infoprint.defs") *deprecated*
+;;(include "defs/hildon-add-home-dialog.defs") *deprecated*
 (include "defs/hildon-app.defs")
 (include "defs/hildon-banner.defs")
 (include "defs/hildon-base-dnotify.defs")
@@ -21,7 +21,7 @@
 (include "defs/hildon-grid-item.defs")
 (include "defs/hildon-grid.defs")
 (include "defs/hildon-hvolumebar.defs")
-(include "defs/hildon-insert-object-dialog.defs")
+;;(include "defs/hildon-insert-object-dialog.defs") *deprecated*
 (include "defs/hildon-name-password-dialog.defs")
 (include "defs/hildon-note.defs")
 (include "defs/hildon-number-editor.defs")
@@ -30,7 +30,7 @@
 (include "defs/hildon-seekbar.defs")
 (include "defs/hildon-set-password-dialog.defs")
 (include "defs/hildon-sort-dialog.defs")
-(include "defs/hildon-telephone-editor.defs")
+;;(include "defs/hildon-telephone-editor.defs") *deprecated*
 (include "defs/hildon-time-editor.defs")
 (include "defs/hildon-time-picker.defs")
 (include "defs/hildon-volumebar.defs")
