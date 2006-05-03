@@ -1,3 +1,22 @@
+maemo-af-desktop (2.6.14-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-main.c: Fixed launching of calibration and
+    personalisation CPA I broke this week end
+
+  Applied fix to "HOME: Buttons in layout mode are not shown completely"
+  (Closes N#27706)
+  * layout-manager.c:
+    - modified icon placements to conform with specifications 6.1
+    - swapped ok and cancel buttons to conform to specifications 6.1
+  Applied fix to "HOME: Loading image -cancel note has animation
+  instead of progress bar" (Closes N#27722)
+  * hildon-home-main.c:
+    - added indefinite progress bar (Home UI spec 6.1)
+    - removed icon code
+    - added progress bar update function
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  3 May 2006 16:08:57 +0300
+
 maemo-af-desktop (2.6.13-1) unstable; urgency=low
 
   * removed build-dep on libmb-dev

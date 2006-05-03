@@ -1,5 +1,11 @@
 2006-05-03  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Fixed launching of calibration and
+	  personalisation CPA I broke this week end
+	* configure.ac: 2.6.14
+
+2006-05-03  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "HOME: Buttons in layout mode are not shown completely"
 	(Closes N#27706)
 	* layout-manager.c:

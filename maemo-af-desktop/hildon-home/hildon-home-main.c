@@ -160,7 +160,6 @@ static gboolean layout_mode_selected(GtkWidget *widget,
                      gpointer data);
 
 static gboolean hildon_home_execute_cp_applet(GtkWidget *widget,
-                                         GdkEvent *event,
                                          gpointer data);
 
 static gboolean help_selected(GtkWidget *widget,
@@ -594,18 +593,20 @@ gint get_priority_from_treemodel(GtkTreeModel *tree, GtkTreeIter *iter)
  **/
 static 
 gboolean hildon_home_execute_cp_applet(GtkWidget *widget, 
-                                  GdkEvent *event,
-                                  gpointer data)
+                                       gpointer data)
 { 
     GKeyFile *kfile;
     GError *error = NULL;
     gchar *applet_path = NULL;;
+    gchar *desktop_path = NULL;
     int ret;
 
     kfile = g_key_file_new();
-   
+
+    desktop_path = g_build_filename (CONTROLPANEL_ENTRY_DIR, (gchar *)data, NULL);
+    
     if (!g_key_file_load_from_file (kfile,
-                                   (gchar *)data,
+                                   (gchar *)desktop_path,
                                    G_KEY_FILE_NONE,
                                    &error))
         goto cleanup;
@@ -643,6 +644,7 @@ gboolean hildon_home_execute_cp_applet(GtkWidget *widget,
 
 cleanup:
     g_free (applet_path);
+    g_free (desktop_path);
     g_key_file_free(kfile);
     if (error)
     {
