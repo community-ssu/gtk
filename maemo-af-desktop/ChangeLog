@@ -1,4 +1,8 @@
-2006-05-02  Johan Bilien <johan.bilien@nokia.com>
+2006-05-03  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.6.13
+
+2006-05-03  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/applet_manager.c:
       - a list was being changed while being iterated
