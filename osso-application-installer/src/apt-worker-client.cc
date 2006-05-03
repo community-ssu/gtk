@@ -38,6 +38,7 @@
 
 #include "log.h"
 #include "util.h"
+#include "settings.h"
 #include "apt-worker-client.h"
 #include "apt-worker-proto.h"
 
@@ -172,11 +173,17 @@ start_apt_worker (gchar *prog)
   else
     sudo = "/usr/bin/fakeroot";
 
+  gchar *options = "";
+
+  if (break_locks)
+    options = "B";
+
   gchar *args[] = {
     sudo,
     prog,
     "/tmp/apt-worker.to", "/tmp/apt-worker.from",
     "/tmp/apt-worker.status", "/tmp/apt-worker.cancel",
+    options,
     NULL
   };
 
