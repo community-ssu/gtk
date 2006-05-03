@@ -2,6 +2,9 @@
 
 	Released 4.17
 	
+	* src/log.cc (save_log): Check for extension only in basename of
+	filename, not entire pathname.
+	
 	* src/settings.h, src/settings.cc (break_locks): New.
 	(load_settings, save_settings): Load and save it.
 

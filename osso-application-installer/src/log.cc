@@ -72,7 +72,8 @@ save_log_cont (bool res, void *data)
 static void
 save_log (char *filename, void *data)
 {
-  if (strchr (filename, '.') == NULL)
+  char *b = basename (filename);
+  if (b && strchr (b, '.') == NULL)
     {
       char *filename_txt = g_strdup_printf ("%s.txt", filename);
       g_free (filename);
