@@ -80,9 +80,9 @@
 #define LAYOUT_MODE_MENU_LABEL_NAME _("home_ti_layout_mode")
 #define LAYOUT_MODE_MENU_STYLE_NAME "menu_force_with_corners"
 
-#define LAYOUT_OK_BUTTON_RIGHT_OFFSET       80
-#define LAYOUT_CANCEL_BUTTON_RIGHT_OFFSET   30
-#define LAYOUT_BUTTONS_Y         6 
+#define LAYOUT_OK_BUTTON_RIGHT_OFFSET       40
+#define LAYOUT_CANCEL_BUTTON_RIGHT_OFFSET   80
+#define LAYOUT_BUTTONS_Y         15 
 
 #define LAYOUT_MENU_ITEM_SELECT_APPLETS _("home_me_layout_select_applets")
 #define LAYOUT_MENU_ITEM_ACCEPT_LAYOUT _("home_me_layout_accept_layout")

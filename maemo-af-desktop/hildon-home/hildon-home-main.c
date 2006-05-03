@@ -192,6 +192,7 @@ static void image_loader_callback(GPid pid,
                                   gint child_exit_status,
                                   gpointer preview_data);
 static void show_loading_image_note(void);
+static gboolean loading_image_note_update_prog_bar(GtkWidget *prog_bar);
 static gboolean loading_image_note_handler(GtkWidget *loading_image_note,
                                            GdkEvent *event,
                                            gpointer user_data);
@@ -1822,10 +1823,7 @@ static
 void show_loading_image_note()
 {
     GtkWidget *label;
-    GtkIconTheme *theme;
-    GtkIconInfo *info;
-    GtkWidget *animation = NULL;
-
+    GtkWidget *prog_bar = NULL;
     
     if(loading_image_note != NULL && GTK_IS_WIDGET(loading_image_note))
     {
@@ -1850,21 +1848,16 @@ void show_loading_image_note()
     
     gtk_container_add(GTK_CONTAINER(GTK_DIALOG(loading_image_note)->vbox),
                       label);
+   
+    prog_bar = gtk_progress_bar_new();
+    gtk_progress_bar_set_pulse_step(GTK_PROGRESS_BAR(prog_bar), 0.2);
+    gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(prog_bar), 0.2);
+    gtk_container_add(GTK_CONTAINER(GTK_DIALOG(loading_image_note)->vbox),
+                      prog_bar);
+
+    g_timeout_add(500, (GSourceFunc)loading_image_note_update_prog_bar,
+                  prog_bar);
     
-    theme = gtk_icon_theme_get_default();
-    info = gtk_icon_theme_lookup_icon(theme, HILDON_HOME_LOADING_IMAGE_ANI,
-                                      HILDON_ICON_SIZE_NOTE, 0);
-    if (info)
-    {
-        const gchar *filename = gtk_icon_info_get_filename(info);
-        animation = gtk_image_new_from_file(filename);
-        gtk_icon_info_free(info);
-    }
-    if(animation)
-    {
-        gtk_container_add(GTK_CONTAINER(GTK_DIALOG(loading_image_note)->vbox),
-                          animation);
-    }
     gtk_dialog_set_has_separator(GTK_DIALOG(loading_image_note), FALSE);
     gtk_window_set_modal(GTK_WINDOW(loading_image_note), TRUE);
     
@@ -1878,6 +1871,24 @@ void show_loading_image_note()
     gtk_widget_show_all (GTK_WIDGET (loading_image_note));
 }
 
+/**
+ * @loading_image_note_update_prog_bar
+ *
+ * @param prog_bar
+ * 
+ * Update cancel notes progress bar
+ */
+static
+gboolean loading_image_note_update_prog_bar(GtkWidget *prog_bar)
+{
+    if(loading_image_process_active == TRUE)
+    {
+        gtk_progress_bar_pulse(GTK_PROGRESS_BAR(prog_bar));
+        return TRUE;
+    }
+
+    return FALSE;
+}
 
 /**
  * @loading_image_note_handler
