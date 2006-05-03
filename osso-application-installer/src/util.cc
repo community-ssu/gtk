@@ -412,6 +412,12 @@ stop_pulsing ()
 }
 
 static void
+really_cancel_response (bool res, void *unused)
+{
+  exit (1);
+}
+
+static void
 cancel_response (GtkDialog *dialog, gint response, gpointer data)
 {
   if (current_status_operation == op_downloading)
@@ -422,10 +428,13 @@ cancel_response (GtkDialog *dialog, gint response, gpointer data)
   else
     {
       cancel_count++;
-      if (cancel_count < 5)
+      if (cancel_count < 10)
 	irritate_user (_("ai_ib_unable_cancel"));
       else
-	hide_progress ();
+	ask_custom ("Cancelling now may harm your device.\n"
+		    "The Application manager will be closed.",
+		    "Cancel anyway", "Don't cancel",
+		    really_cancel_response, NULL);
     }
 }
 
