@@ -38,6 +38,7 @@ extern int    package_sort_sign;
 //
 extern bool clean_after_install;
 extern bool assume_connection;
+extern bool break_locks;
 extern bool red_pill_mode;
 
 #define UPDATE_INTERVAL_SESSION 0

@@ -54,6 +54,7 @@ int  package_sort_sign = 1;
 
 bool clean_after_install = true;
 bool assume_connection = false;
+bool break_locks = true;
 bool red_pill_mode = false;
 
 int  last_update = 0;
@@ -104,6 +105,8 @@ load_settings ()
 	    package_sort_sign = val;
 	  else if (sscanf (line, "last-update %d", &val) == 1)
 	    last_update = val;
+	  else if (sscanf (line, "break-locks %d", &val) == 1)
+	    break_locks = val;
 	  else if (sscanf (line, "red-pill-mode %d", &val) == 1)
 	    red_pill_mode = val;
 	  else if (sscanf (line, "assume-connection %d", &val) == 1)
@@ -149,6 +152,7 @@ save_settings ()
       fprintf (f, "package-sort-key %d\n", package_sort_key);
       fprintf (f, "package-sort-sign %d\n", package_sort_sign);
       fprintf (f, "last-update %d\n", last_update);
+      fprintf (f, "break-locks %d\n", break_locks);
       fprintf (f, "red-pill-mode %d\n", red_pill_mode);
       fprintf (f, "assume-connection %d\n", assume_connection);
       fprintf (f, "fullscreen-toolbar %d\n", fullscreen_toolbar);
