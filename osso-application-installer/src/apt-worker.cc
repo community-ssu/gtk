@@ -61,6 +61,7 @@
 #include <sys/fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <dirent.h>
 
 #include <apt-pkg/init.h>
 #include <apt-pkg/error.h>
@@ -77,6 +78,7 @@
 #include <apt-pkg/deblistparser.h>
 #include <apt-pkg/debversion.h>
 #include <apt-pkg/dpkgpm.h>
+#include <apt-pkg/debsystem.h>
 
 #include <glib/glist.h>
 #include <glib/gstring.h>
@@ -91,6 +93,8 @@ using namespace std;
  
    COMPILE-TIME CONFIGURATION
    
+   RUN-TIME CONFIGURATION
+
    GENERAL UTILITIES
 
    COMMUNICATING WITH THE FRONTEND
@@ -118,8 +122,28 @@ using namespace std;
 //#define DEBUG
 
 
+/** RUN-TIME CONFIGURATION
+ */
+
+/* Setting this to true will break the lock of the dpkg status
+   database if necessary.
+*/
+bool flag_break_locks = false;
+
+
 /** GENERAL UTILITIES
  */
+
+void
+log_stderr (const char *fmt, ...)
+{
+  va_list args;
+  va_start (args, fmt);
+  fprintf (stderr, "apt-worker: ");
+  vfprintf (stderr, fmt, args);
+  va_end (args);
+  fprintf (stderr, "\n");
+}
 
 /* ALLOC_BUF and FREE_BUF can be used to manage a temporary buffer of
    arbitrary size without having to allocate memory from the heap when
@@ -205,6 +229,33 @@ drain_fd (int fd)
     ;
 }
 
+/* Get a lock as with GetLock, breaking it if needed and allowed
+   by flag_break_locks.
+
+   We do this so that the users can not lock themselves out.  We break
+   locks instead of not locking since noisily breaking a lock is
+   better than silently corrupting stuff.
+ */
+int
+ForceLock (string File, bool Errors = true)
+{
+  int lock_fd = GetLock (File, false);
+  if (lock_fd >= 0)
+    return lock_fd;
+
+  if (flag_break_locks)
+    {
+      int res = unlink (File.c_str ());
+      if (res < 0 && errno != ENOENT)
+	log_stderr ("Can't remove %s: %m", File.c_str ());
+      else if (res == 0)
+	log_stderr ("Forced %s", File.c_str ());
+    }
+
+  return GetLock (File, Errors);
+}
+
+
 /** COMMUNICATING WITH THE FRONTEND.
  
    The communication with the frontend happens over four
@@ -235,17 +286,6 @@ drain_fd (int fd)
 */
 
 int input_fd, output_fd, status_fd, cancel_fd;
-
-void
-log_stderr (const char *fmt, ...)
-{
-  va_list args;
-  va_start (args, fmt);
-  fprintf (stderr, "apt-worker: ");
-  vfprintf (stderr, fmt, args);
-  va_end (args);
-  fprintf (stderr, "\n");
-}
 
 #ifdef DEBUG
 #define DBG log_stderr
@@ -479,7 +519,9 @@ void read_certified_conf ();
 int
 main (int argc, char **argv)
 {
-  if (argc != 5)
+  const char *options;
+
+  if (argc != 6)
     {
       log_stderr ("wrong invocation");
       exit (1);
@@ -494,8 +536,13 @@ main (int argc, char **argv)
   status_fd = must_open (argv[3], O_WRONLY);
   cancel_fd = must_open (argv[4], O_RDONLY);
 
-  DBG ("starting with pid %d, in %d, out %d, stat %d, cancel %d",
-       getpid (), input_fd, output_fd, status_fd, cancel_fd);
+  options = argv[5];
+
+  DBG ("starting with pid %d, in %d, out %d, stat %d, cancel %d, options %s",
+       getpid (), input_fd, output_fd, status_fd, cancel_fd, options);
+
+  if (strchr (options, 'B'))
+    flag_break_locks = true;
 
   /* Don't let our heavy lifting starve the UI.
    */
@@ -682,6 +729,135 @@ load_auto_flags ()
       restore_auto_flags ();
     }
 }
+
+/* Our own version of debSystem.  We override the Lock member function
+   to be able to break locks and clear the updates journal of dpkg.
+*/
+
+class mydebSystem : public debSystem
+{
+  // For locking support
+  int LockFD;
+  unsigned LockCount;
+  void ClearUpdates ();
+
+public:
+
+  virtual signed Score (Configuration const &Cnf);
+  virtual bool Lock ();
+  virtual bool UnLock (bool NoErrors);
+  
+  mydebSystem ();
+};
+
+mydebSystem::mydebSystem ()
+  : debSystem ()
+{
+   Label = "handsfree Debian dpkg interface";
+}
+
+signed
+mydebSystem::Score (Configuration const &Cnf)
+{
+  return debSystem::Score (Cnf) + 10;  // Pick me, pick me, pick me!
+}
+
+void
+mydebSystem::ClearUpdates()
+{
+  string File = flNotFile(_config->Find("Dir::State::status")) + "updates/";
+  DIR *DirP = opendir(File.c_str());
+  if (DirP == 0)
+    return;
+   
+  /* We ignore any files that are not all digits, this skips .,.. and 
+     some tmp files dpkg will leave behind.. */
+
+  for (struct dirent *Ent = readdir(DirP); Ent != 0; Ent = readdir(DirP))
+    {
+      bool ignore = false;
+
+      for (unsigned int I = 0; Ent->d_name[I] != 0; I++)
+	{
+	  // Check if its not a digit..
+	  if (isdigit(Ent->d_name[I]) == 0)
+	    {
+	      ignore = true;
+	      break;
+	    }
+	}
+
+      if (!ignore)
+	{
+	  string name = File + Ent->d_name;
+	  log_stderr ("Cleaning %s", name.c_str ());
+	  if (unlink (name.c_str()) < 0 && errno != ENOENT)
+	    log_stderr ("%s: %m", name.c_str ());
+	}
+    }
+
+   closedir(DirP);
+}
+
+bool
+mydebSystem::Lock ()
+{
+  /* This is a modified copy of debSystem::Lock, which in turn is a
+     copy of the behavior of dpkg.
+  */
+
+  bool tried_to_rescue_already = false;
+
+  // Disable file locking
+  if (_config->FindB("Debug::NoLocking",false) == true || LockCount > 1)
+    {
+      LockCount++;
+      return true;
+    }
+
+  // Create the lockfile, breaking the lock if requested.
+  string AdminDir = flNotFile(_config->Find("Dir::State::status"));
+  LockFD = ForceLock(AdminDir + "lock");
+  if (LockFD == -1)
+    {
+      if (errno == EACCES || errno == EAGAIN)
+	return _error->Error("Unable to lock the administration directory (%s), "
+			     "is another process using it?",AdminDir.c_str());
+      else
+	return _error->Error("Unable to lock the administration directory (%s), "
+			     "are you root?",AdminDir.c_str());
+    }
+
+  /* Clear out the dpkg journal.
+   */
+
+  ClearUpdates();
+
+  LockCount++;
+      
+  return true;
+}
+
+// System::UnLock - Drop a lock						/*{{{*/
+// ---------------------------------------------------------------------
+/* */
+bool mydebSystem::UnLock(bool NoErrors)
+{
+   if (LockCount == 0 && NoErrors == true)
+      return false;
+   
+   if (LockCount < 1)
+      return _error->Error("Not locked");
+   if (--LockCount == 0)
+   {
+      close(LockFD);
+      LockCount = 0;
+   }
+   
+   return true;
+}
+									/*}}}*/
+mydebSystem mydebsystem;
 
 /* Initialize libapt-pkg if this has not been already and (re-)create
    PACKAGE_CACHE.  If the cache can not be created, PACKAGE_CACHE is
@@ -1461,7 +1637,7 @@ update_package_cache ()
   FileFd Lock;
   if (_config->FindB("Debug::NoLocking",false) == false)
     {
-      Lock.Fd (GetLock (_config->FindDir("Dir::State::Lists") + "lock"));
+      Lock.Fd (ForceLock (_config->FindDir("Dir::State::Lists") + "lock"));
       if (_error->PendingError () == true)
 	{
 	  _error->Error ("Unable to lock the list directory");
@@ -1859,7 +2035,7 @@ operation (bool check_only)
    FileFd Lock;
    if (_config->FindB("Debug::NoLocking",false) == false)
    {
-      Lock.Fd(GetLock(_config->FindDir("Dir::Cache::Archives") + "lock"));
+      Lock.Fd(ForceLock(_config->FindDir("Dir::Cache::Archives") + "lock"));
       if (_error->PendingError() == true)
 	{
 	  _error->Error("Unable to lock the download directory");
@@ -1986,7 +2162,7 @@ cmd_clean ()
   FileFd Lock;
   if (_config->FindB("Debug::NoLocking",false) == false)
     {
-      Lock.Fd(GetLock(_config->FindDir("Dir::Cache::Archives") + "lock"));
+      Lock.Fd(ForceLock(_config->FindDir("Dir::Cache::Archives") + "lock"));
       if (_error->PendingError() == true)
 	success = _error->Error("Unable to lock the download directory");
     }
