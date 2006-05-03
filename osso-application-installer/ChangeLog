@@ -1,3 +1,22 @@
+2006-05-03  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/settings.h, src/settings.cc (break_locks): New.
+	(load_settings, save_settings): Load and save it.
+
+	* src/apt-worker-client.cc (start_apt_worker): Pass "B" option to
+	apt-worker when break_locks is true.
+
+	* src/util.cc (really_cancel_response): New.
+	(cancel_response): Ask whether to exit on the tenth cancel
+	attempt.
+
+	* apt-worker.cc (flag_break_locks): New.
+	(main): Set it when passed the "B" option.
+	(ForceLock): New, for breaking locks when allowed to.  Use it
+	instead of GetLock everywhere.
+	(mydebSystem, mydebsystem): New, to be able to use ForceLock
+	instead of GetLock, and to clear the dpkg updates journal.
+	
 2006-05-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/util.h, src/util.cc (respond_on_escape,
@@ -12,15 +31,13 @@
 	(main): Add separators between toolbar buttons. (N27902)
 	(key_event): Rect to fullscreen key when it is released, avoiding
 	key repeating. (N27946)
-
-	* src/apt-worker.cc (cmd_get_file_details): Use empty string ""
-	instead of NULL for versions when the file is corrupted.
-
 	* src/main.cc (show_help): Don't ask for a help dialog, ask for
 	the full help application. (N25774)
 
 	* src/apt-worker.cc (operation): Don't do the sanity check;
 	proceed also when packages are broken.
+	(cmd_get_file_details): Use empty string ""
+	instead of NULL for versions when the file is corrupted.
 
 2006-04-28  Marius Vollmer  <marius.vollmer@nokia.com>
 
