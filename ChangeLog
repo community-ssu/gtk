@@ -1,3 +1,10 @@
+2006-05-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_row_deleted): Do not schedule an
+	idle callback when unmapped, 'map' will do it anyway. Someone could be
+	causing rows to be deleted during destruction which would cause the
+	callback be called with the object already destroyed. N#28279
+
 2006-05-04  Johan Bilien  <johan.bilien@nokia.com>
 
 	* gtk/gtkcombobox.c (gtk_combo_box_size_allocate): Apply 'arrow-width'
