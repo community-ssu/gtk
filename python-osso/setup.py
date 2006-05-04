@@ -47,7 +47,7 @@ osso = Extension('osso',
             ],
             extra_compile_args=[
                 '-Os',
-                '-ansi',
+#                '-ansi',
                 '-DXTHREADS',
                 '-DXUSE_MTSAFE_API',
 #                '-pedantic',
