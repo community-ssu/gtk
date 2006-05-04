@@ -43,7 +43,7 @@ The packages and the distributions they are in:
      install package-A version 2 and package-B at the same time,
      however.
 
-   * *package-C 1* (old, new)
+   * *package-C 1* (old), *package-C 2.cr* (new)
      <p>
      Depends on package-B, any version.  You can use it to test
      dependencies between packages, and indirect conflicts.
@@ -56,12 +56,8 @@ The packages and the distributions they are in:
      is not installed), installing package-C should not be possible,
      listing package-A as the reason.
      <p>
-     When uninstalling package-C, package-B should be automatically
-     uninstalled as well, but only when package-B has been
-     automatically installed in the first place.  When package-B has
-     been installed explicitely (e.g. by selecting it from the list and
-     clicking "Install"), it should not be automatically uninstalled
-     when uninstalling package-C.
+     The file for package-C version 2.cr is corrupted and
+     can not be installed.
 
    * *package-D 1* (old, new)
      <p>
@@ -324,3 +320,11 @@ repository.
    * Open =demo-cataloque.install= with "Package / Install from file"
    * Verify that no new cataloque is getting added with the
      information "Already configured" (or similar).
+
+---++++ Updating to a corrupted package
+
+   * Make sure that package-C version 1 is installed.
+   * Configure the =new= distribution.
+   * Try to update package-C to version 2.cr.
+   * Notice that the update fails because the package
+     is corrupted.
