@@ -1,5 +1,11 @@
 2006-05-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkentry.c (gtk_entry_clipboard_operation_cb):
+	* gtk/gtktextview.c (gtk_text_view_clipboard_operation_handler):
+	Do not remove selection when invoking Copy from the IM. N#22469
+
+2006-05-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_row_deleted): Do not schedule an
 	idle callback when unmapped, 'map' will do it anyway. Someone could be
 	causing rows to be deleted during destruction which would cause the

@@ -3230,10 +3230,6 @@ gtk_entry_clipboard_operation_cb(GtkIMContext *context,
     {
     case GTK_IM_CONTEXT_CLIPBOARD_OP_COPY:
       g_signal_emit_by_name (entry, "copy_clipboard");
-
-      /* copying removes selection */
-      pos = gtk_editable_get_position (GTK_EDITABLE (entry));
-      gtk_editable_select_region (GTK_EDITABLE (entry), pos, pos);
       break;
     case GTK_IM_CONTEXT_CLIPBOARD_OP_CUT:
       g_signal_emit_by_name (entry, "cut_clipboard");

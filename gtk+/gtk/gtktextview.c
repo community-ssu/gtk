@@ -6945,12 +6945,6 @@ gtk_text_view_clipboard_operation_handler(GtkIMContext *context,
     {
     case GTK_IM_CONTEXT_CLIPBOARD_OP_COPY:
       g_signal_emit_by_name (text_view, "copy_clipboard");
-
-      /* copying removes selection */
-      buffer = gtk_text_view_get_buffer (text_view);
-      gtk_text_buffer_get_iter_at_mark (buffer, &iter,
-                                        gtk_text_buffer_get_insert (buffer));
-      gtk_text_buffer_move_mark_by_name (buffer, "selection_bound", &iter);
       break;
     case GTK_IM_CONTEXT_CLIPBOARD_OP_CUT:
       g_signal_emit_by_name (text_view, "cut_clipboard");
