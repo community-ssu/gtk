@@ -1,3 +1,9 @@
+python-numeric (23.8-1osso3) unstable; urgency=low
+
+  *  some Debian package cleanups
+ 
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 3 May 2006 19:45:00 -0300
+
 python-numeric (23.8-1osso2) unstable; urgency=low
 
   *  First OSSO release for SDK 2.0
