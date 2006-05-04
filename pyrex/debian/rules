@@ -27,7 +27,7 @@ clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
-	#rm -rf $(d_pyrex)
+	rm -rf $(d_pyrex)
 	$(PYTHON) setup.py clean --all
 	find . -name "*.py[co]" -exec rm -rf {} \;
 	dh_clean
