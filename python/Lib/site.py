@@ -92,16 +92,6 @@ def removeduppaths():
     sys.path[:] = L
     return known_paths
 
-# XXX This should not be part of site.py, since it is needed even when
-# using the -S option for Python.  See http://www.python.org/sf/586680
-def addbuilddir():
-    """Append ./build/lib.<platform> in case we're running in the build dir
-    (especially for Guido :-)"""
-    from distutils.util import get_platform
-    s = "build/lib.%s-%.3s" % (get_platform(), sys.version)
-    s = os.path.join(os.path.dirname(sys.path[-1]), s)
-    sys.path.append(s)
-
 def _init_pathinfo():
     """Return a set containing all existing directory entries from sys.path"""
     d = set()
@@ -170,76 +160,14 @@ def addsitedir(sitedir, known_paths=None):
 
 def addsitepackages(known_paths):
     """Add site-packages (and possibly site-python) to sys.path"""
-    prefixes = [sys.prefix]
-
-    # XXX INDT
-    #prefixes = [os.path.join(sys.prefix, "local"), sys.prefix]
-    #if sys.exec_prefix != sys.prefix:
-    #    prefixes.append(os.path.join(sys.exec_prefix, "local"))
-    # / XXX INDT
-
-    for prefix in prefixes:
-        if prefix:
-            # XXX INDT
-            #if sys.platform in ('os2emx', 'riscos'):
-            #    sitedirs = [os.path.join(prefix, "Lib", "site-packages")]
-            #elif os.sep == '/':
-            #    sitedirs = [os.path.join(prefix,
-            #                             "lib",
-            #                             "python" + sys.version[:3],
-            #                             "site-packages"),
-            #                os.path.join(prefix, "lib", "site-python")]
-            #    try:
-            #        # sys.getobjects only available in --with-pydebug build
-            #        sys.getobjects
-            #        sitedirs.insert(0, os.path.join(sitedirs[0], 'debug'))
-            #    except AttributeError:
-            #        pass
-            #else:
-            #    sitedirs = [prefix, os.path.join(prefix, "lib", "site-packages")]
-            sitedirs = [os.path.join(prefix,
-                                     "lib",
-                                     "python" + sys.version[:3],
-                                     "site-packages"),
-                        os.path.join(prefix, "lib", "site-python")]
-            # / XXX INDT
-
-            # XXX INDT
-            #if sys.platform == 'darwin':
-            #    # for framework builds *only* we add the standard Apple
-            #    # locations. Currently only per-user, but /Library and
-            #    # /Network/Library could be added too
-            #    if 'Python.framework' in prefix:
-            #        home = os.environ.get('HOME')
-            #        if home:
-            #            sitedirs.append(
-            #                os.path.join(home,
-            #                             'Library',
-            #                             'Python',
-            #                             sys.version[:3],
-            #                             'site-packages'))
-            for sitedir in sitedirs:
-                if os.path.isdir(sitedir):
-                    addsitedir(sitedir, known_paths)
+    sitedirs = [
+        os.path.join(sys.prefix, "lib", "python" + sys.version[:3], "site-packages"),
+        os.path.join(sys.prefix, "lib", "site-python"),
+    ]
+    for sitedir in sitedirs:
+        if os.path.isdir(sitedir):
+            addsitedir(sitedir, known_paths)
     return None
-
-
-def setBEGINLIBPATH():
-    """The OS/2 EMX port has optional extension modules that do double duty
-    as DLLs (and must use the .DLL file extension) for other extensions.
-    The library search path needs to be amended so these will be found
-    during module import.  Use BEGINLIBPATH so that these are at the start
-    of the library search path.
-
-    """
-    dllpath = os.path.join(sys.prefix, "Lib", "lib-dynload")
-    libpath = os.environ['BEGINLIBPATH'].split(';')
-    if libpath[-1]:
-        libpath.append(dllpath)
-    else:
-        libpath[-1] = dllpath
-    os.environ['BEGINLIBPATH'] = ';'.join(libpath)
-
 
 def setquit():
     """Define new built-ins 'quit' and 'exit'.
@@ -333,58 +261,6 @@ def setcopyright():
         ["LICENSE.txt", "LICENSE"],
         [os.path.join(here, os.pardir), here, os.curdir])
 
-
-class _Helper(object):
-    """Define the built-in 'help'.
-    This is a wrapper around pydoc.help (with a twist).
-
-    """
-
-    def __repr__(self):
-        return "Type help() for interactive help, " \
-               "or help(object) for help about object."
-    def __call__(self, *args, **kwds):
-        import pydoc
-        return pydoc.help(*args, **kwds)
-
-def sethelper():
-    __builtin__.help = _Helper()
-
-def aliasmbcs():
-    """On Windows, some default encodings are not provided by Python,
-    while they are always available as "mbcs" in each locale. Make
-    them usable by aliasing to "mbcs" in such a case."""
-    if sys.platform == 'win32':
-        import locale, codecs
-        enc = locale.getdefaultlocale()[1]
-        if enc.startswith('cp'):            # "cp***" ?
-            try:
-                codecs.lookup(enc)
-            except LookupError:
-                import encodings
-                encodings._cache[enc] = encodings._unknown
-                encodings.aliases.aliases[enc] = 'mbcs'
-
-def setencoding():
-    """Set the string encoding used by the Unicode implementation.  The
-    default is 'ascii', but if you're willing to experiment, you can
-    change this."""
-    encoding = "ascii" # Default value set by _PyUnicode_Init()
-    if 0:
-        # Enable to support locale aware default string encodings.
-        import locale
-        loc = locale.getdefaultlocale()
-        if loc[1]:
-            encoding = loc[1]
-    if 0:
-        # Enable to switch off string to Unicode coercion and implicit
-        # Unicode to string conversion.
-        encoding = "undefined"
-    if encoding != "ascii":
-        # On Non-Unicode builds this will raise an AttributeError...
-        sys.setdefaultencoding(encoding) # Needs Python Unicode build !
-
-
 def execsitecustomize():
     """Run custom site specific code, if available."""
     try:
@@ -396,29 +272,9 @@ def execsitecustomize():
 def main():
     abs__file__()
     paths_in_sys = removeduppaths()
-
-    # XXX INDT
-    #if (os.name == "posix" and sys.path and
-    #    os.path.basename(sys.path[-1]) == "Modules"):
-    #    addbuilddir()
-    # / XXX INDT
-
     paths_in_sys = addsitepackages(paths_in_sys)
-
-    # XXX INDT
-    #if sys.platform == 'os2emx':
-    #    setBEGINLIBPATH()
-    # / XXX INDT
-
     setquit()
     setcopyright()
-
-    # XXX INDT
-    #sethelper()
-    #aliasmbcs()
-    #setencoding()
-    # / XXX INDT
-
     execsitecustomize()
     # Remove sys.setdefaultencoding() so that users cannot change the
     # encoding after initialization.  The test for presence is needed when
@@ -427,12 +283,3 @@ def main():
         del sys.setdefaultencoding
 
 main()
-
-def _test():
-    print "sys.path = ["
-    for dir in sys.path:
-        print "    %r," % (dir,)
-    print "]"
-
-if __name__ == '__main__':
-    _test()

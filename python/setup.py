@@ -238,11 +238,6 @@ class PyBuildExt(build_ext):
         return sys.platform
 
     def detect_modules(self):
-        # Ensure that /usr/local is always used
-        # On Debian /usr/local is always used, so we don't include it twice
-        #add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
-        #add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
-
         # Add paths to popular package managers on OS X/darwin
         if sys.platform == "darwin":
             # Fink installs into /sw by default

@@ -127,24 +127,6 @@
           </ul>
           </td>
         </tr>
-        <tr>
-          <td valign="baseline" class="left-column">
-          &nbsp;
-          <ul>
-            <li> <a href="../../python/FAQ.html" class="title"
-                >FAQ (local copy)</a>
-              <br>(python package must be installed)
-          </ul>
-          </td>
-          <td valign="baseline" class="right-column">
-          &nbsp;
-          <ul>
-            <li> <a href="http://www.python.org/cgi-bin/faqw.py" class="title"
-                >FAQ (online wizard)</a>
-              <br>(maybe more recent)
-          </ul>
-          </td>
-        </tr>
       </tbody>
     </table>
     <p>
