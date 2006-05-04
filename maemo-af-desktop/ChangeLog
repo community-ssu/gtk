@@ -1,5 +1,9 @@
 2006-05-03  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/*.c: Removed deprecated low memory notifications
+
+2006-05-03  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.c: Fixed launching of calibration and
 	  personalisation CPA I broke this week end
 	* configure.ac: 2.6.14

@@ -1624,7 +1624,6 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
 	     hn_wm_watchable_app_get_icon_name(app), 
 	     item);
   
-  hn_wm_memory_connect_lowmem_explain (item);
   gtk_widget_show(item);
   
   /* Show application switcher menu button */

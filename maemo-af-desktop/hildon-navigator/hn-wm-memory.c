@@ -210,58 +210,13 @@ hn_wm_memory_lowmem_func(gboolean is_on)
 extern Navigator tasknav;
 
  void 
-hn_wm_memory_explain_lowmem (void)
-{
-    /* We are called for every press when the button is insensitive.
-       Buttons are sometimes insensitive for other reasons than lowmem,
-       so we have to check here. */
-    if (hnwm->lowmem_situation)
-    {
-      hildon_banner_show_information(NULL, NULL, 
-                  _("ckct_ib_application_lowmem"));
-    }
-}
-
-
-void 
-hn_wm_memory_connect_lowmem_explain(GtkWidget *widget)
-{
-    g_signal_connect(G_OBJECT(widget), "insensitive-press",
-		     G_CALLBACK(hn_wm_memory_explain_lowmem), NULL);
-}
-
-
- void 
 hn_wm_memory_update_lowmem_ui (gboolean lowmem)
 {
-    /* Update the state of the UI according to LOWMEM. This is done by
-       just enabling/disabling all relevant widgets. Also, on the first
-       time around, we connect some handlers that put up explanations
-       when the widget is pressed anyway. */
-
-  static gboolean first_time = TRUE;
 
   /* If dimming is disabled, we don't do anything here. Also see
      APPLICATION_SWITCHER_UPDATE_LOWMEM_SITUATION. */
   if (!config_lowmem_dim)
     return;
-
-  if (first_time)
-    {
-      ApplicationSwitcher_t *as = tasknav.app_switcher;
-      
-      first_time = FALSE;
-      hn_wm_memory_connect_lowmem_explain(others_menu_get_button(tasknav.others_menu));
-      /*
-       * We will need to go through the list of TN plugins now -- Johan
-      hn_wm_memory_connect_lowmem_explain(tasknav.bookmark_button);
-      hn_wm_memory_connect_lowmem_explain(tasknav.mail_button);
-      */
-      hn_wm_memory_connect_lowmem_explain(as->toggle_button1);
-      hn_wm_memory_connect_lowmem_explain(as->toggle_button2);
-      hn_wm_memory_connect_lowmem_explain(as->toggle_button3);
-      hn_wm_memory_connect_lowmem_explain(as->toggle_button4);
-    }
 
   gtk_widget_set_sensitive(others_menu_get_button(tasknav.others_menu),
 			   !lowmem);

@@ -377,12 +377,6 @@ hn_wm_watchable_app_launch_banner_timeout (gpointer data)
       /* Close the banner */
       hn_wm_watchable_app_launch_banner_close( NULL, info );
       
-      if (time_left >= APP_LAUNCH_BANNER_TIMEOUT 
-	  && hnwm->lowmem_situation == TRUE)
-	{
-	  hildon_banner_show_information(NULL, NULL, _("ckct_ib_application_lowmem"));
-	}
-      
       return FALSE;
     }
   

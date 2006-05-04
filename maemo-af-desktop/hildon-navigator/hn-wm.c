@@ -284,8 +284,6 @@ hn_wm_top_service(const gchar *service_name)
       
       if (!killed)
         {
-          hildon_banner_show_information(NULL, NULL, 
-                         _("ckct_ib_application_lowmem"));
           return FALSE;
         }
     }
@@ -318,8 +316,6 @@ hn_wm_top_service(const gchar *service_name)
 
        if (!killed)
          {
-           hildon_banner_show_information(NULL, NULL, 
-                         _("ckct_ib_application_lowmem"));
            return FALSE;
          }
     }
@@ -1374,12 +1370,6 @@ hn_wm_relaunch_timeout(gpointer data)
   HNWMWatchedWindow *win = NULL;
 
   win = hn_wm_lookup_watched_window_via_service (service_name);
-
-  if (!win && hnwm->lowmem_situation)
-    {
-      hildon_banner_show_information(NULL, NULL, 
-              _("ckct_ib_application_lowmem"));
-    }
 
   g_free(service_name);
 
