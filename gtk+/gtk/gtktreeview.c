@@ -8397,7 +8397,8 @@ gtk_tree_view_row_deleted (GtkTreeModel *model,
   /* FIXME whacky hack to work around the treeview not being in a clean state
    * when in a tree a row has been removed, but has_child_toggled not been
    * called yet */
-  if (tree_view->priv->check_if_can_focus_idle_id == 0)
+  if (GTK_WIDGET_MAPPED (tree_view) &&
+      tree_view->priv->check_if_can_focus_idle_id == 0)
     tree_view->priv->check_if_can_focus_idle_id =
       g_idle_add ((GSourceFunc) check_if_can_focus_idle, tree_view);
 }
