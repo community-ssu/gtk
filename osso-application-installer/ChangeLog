@@ -1,3 +1,11 @@
+2006-05-04  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/repo.cc (sources_list_reply): Emit correct irritation when
+	trying to remove an essential repository.
+
+	* src/menu.cc (add_item): Show "Not available" when the item
+	pressed insensitively.
+
 2006-05-03  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.17
