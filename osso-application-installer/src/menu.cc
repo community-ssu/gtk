@@ -37,6 +37,12 @@
 
 #define _(x) gettext (x)
 
+static void
+insensitive_press (GtkButton *button, gpointer data)
+{
+  irritate_user ((const gchar *)data);
+}
+
 static GtkWidget *
 add_item (GtkMenu *menu, const gchar *label, void (*func)())
 {
@@ -44,6 +50,11 @@ add_item (GtkMenu *menu, const gchar *label, void (*func)())
   gtk_menu_append (menu, item);
   if (func)
     g_signal_connect (item, "activate", G_CALLBACK (func), NULL);
+
+  g_signal_connect (item, "insensitive_press",
+		    G_CALLBACK (insensitive_press),
+		    _("ai_ib_not_available"));
+
   return item;
 }
 
