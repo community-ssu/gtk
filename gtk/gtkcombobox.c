@@ -2428,6 +2428,11 @@ gtk_combo_box_size_allocate (GtkWidget     *widget,
       child.height = allocation->height;
       child.width = MAX (1, child.width);
       child.height = MAX (1, child.height);
+
+      /* HILDON quick fix */
+      if (hildonlike)
+	child.width = arrow_width;
+      
       gtk_widget_size_allocate (combo_box->priv->button, &child);
 
       /* frame */

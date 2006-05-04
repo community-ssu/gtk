@@ -1,3 +1,8 @@
+2006-05-04  Johan Bilien  <johan.bilien@nokia.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_size_allocate): Apply 'arrow-width'
+	style property also in list mode. N#28529
+
 2006-04-28  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtktextbufferserialize.c (gtk_text_buffer_deserialize_rich_text): 
