@@ -1,7 +1,9 @@
 This package was first debianized by Peter Harris <scav@blueyonder.co.uk> on
 Tue, 26 Nov 2002 11:08:39 +0000.
 
-It is now maintained by Paul Brossier <piem@debian.org>
+Maintened by Paul Brossier <piem@debian.org> until May, 4 2006
+
+It is now maintained by Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
 
 This version was downloaded from
   http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/
