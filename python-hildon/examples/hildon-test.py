@@ -286,8 +286,6 @@ class PyGtkDemo(hildon.Program):
         obj.set_position(30)
         self.vboxTests[0].pack_start(obj)
         
-        self.vboxTests[2].pack_start(hildon.TelephoneEditor(0))
-
     def _createDocTab(self, widget, label):
         l = gtk.Label('')
         l.set_text_with_mnemonic(label)
