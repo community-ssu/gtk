@@ -1,5 +1,11 @@
 2006-05-05  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_row_inserted): Set tmpnode to the
+	return value of the _gtk_rbtree_insert* functions, since that is the
+	node we really want to check for visibility.
+	
+2006-05-05  Kristian Rietveld  <kris@imendio.com>
+
 	* gtk/gtktreeview.c (scroll_sync_handler): force dy to be zero when
 	the tree view fits on a single page. N#25460
 
