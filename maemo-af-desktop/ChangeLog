@@ -1,5 +1,10 @@
 2006-05-05  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/others-menu.c: Only allow one dnotify-triggered
+	  update at a time
+
+2006-05-05  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/others-menu.c: Dnotify signal handlers now only
 	  creates a timeout of 1s, after which the menu is updated
 	  (Closes N#28658)

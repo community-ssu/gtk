@@ -98,6 +98,8 @@ static gboolean others_menu_button_button_press(GtkToggleButton * togglebutton,
 static gboolean others_menu_changed_cb( gpointer data );
 static void dnotify_handler( char *path, _om_changed_cb_data_t *data );
 
+static guint dnotify_update_timeout = 0;
+
 
 OthersMenu_t *others_menu_init(void)
 {
@@ -468,8 +470,11 @@ void others_menu_deinit(OthersMenu_t * om)
 
 static void dnotify_handler( char *path, _om_changed_cb_data_t *data )
 {
-    g_timeout_add( 1000, others_menu_changed_cb, data );
-
+    if( !dnotify_update_timeout )
+    {
+        dnotify_update_timeout =
+            g_timeout_add( 1000, others_menu_changed_cb, data );
+    }
 }
 
 
@@ -480,6 +485,8 @@ static gboolean others_menu_changed_cb( gpointer _data )
     
     if( !data )
         return FALSE;
+
+    dnotify_update_timeout = 0;
 
 	/* Remove callbacks */
  	hildon_dnotify_remove_every_cb();
