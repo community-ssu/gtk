@@ -1,3 +1,3 @@
 [D-BUS Service]
 Name=org.freedesktop.DBus.TestSuiteGLibService
-Exec=/home/kihamala/stage-svn/dbus/test/glib/test-service-glib
+Exec=/usr/src/johnp/dbus/test/glib/test-service-glib
