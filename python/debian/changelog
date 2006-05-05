@@ -1,3 +1,10 @@
+python2.4 (2.4.2-1osso7) unstable; urgency=low
+  
+  * more package cleanups
+  * bump release to recompile in 2.0rc7
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 05 May 2006 16:08:00 -0300
+
 python2.4 (2.4.2-1osso6) unstable; urgency=low
   
   * removing unneeded patches
