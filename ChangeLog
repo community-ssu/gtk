@@ -1,3 +1,8 @@
+2006-05-05  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (scroll_sync_handler): force dy to be zero when
+	the tree view fits on a single page. N#25460
+
 2006-05-05  Tomas Junnonen  <tomas.junnonen@nokia.com>
 
 	* gtk/gtkcombobox.c (gtk_combo_box_set_popup_widget): Name the

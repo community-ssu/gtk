@@ -6169,7 +6169,9 @@ scroll_sync_handler (GtkTreeView *tree_view)
 
   GDK_THREADS_ENTER ();
 
-  if (gtk_tree_row_reference_valid (tree_view->priv->top_row))
+  if (tree_view->priv->height <= tree_view->priv->vadjustment->page_size)
+    gtk_adjustment_set_value (GTK_ADJUSTMENT (tree_view->priv->vadjustment), 0);
+  else if (gtk_tree_row_reference_valid (tree_view->priv->top_row))
     gtk_tree_view_top_row_to_dy (tree_view);
   else
     gtk_tree_view_dy_to_top_row (tree_view);
