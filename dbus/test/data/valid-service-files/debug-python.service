@@ -1,3 +1,3 @@
 [D-BUS Service]
 Name=org.freedesktop.DBus.TestSuitePythonService
-Exec=/usr/src/johnp/dbus/test/python/test-service.py
+Exec=/home/kihamala/stage-svn/dbus/test/python/test-service.py
