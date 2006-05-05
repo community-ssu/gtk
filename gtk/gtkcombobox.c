@@ -75,6 +75,9 @@
   a style property */
 #define MENU_SCROLL_ARROW_HEIGHT 20 
 
+/* Hildon: identify the window of the combobox */
+#define HILDON_COMBO_BOX_POPUP "hildon-combobox-window"
+
 /* WELCOME, to THE house of evil code */
 
 typedef struct _ComboCellInfo ComboCellInfo;
@@ -1360,6 +1363,7 @@ gtk_combo_box_set_popup_widget (GtkComboBox *combo_box,
 	  GtkWidget *toplevel;
 	  
           combo_box->priv->popup_window = gtk_window_new (GTK_WINDOW_POPUP);
+          gtk_widget_set_name (combo_box->priv->popup_window, HILDON_COMBO_BOX_POPUP); 
 
 	  toplevel = gtk_widget_get_toplevel (GTK_WIDGET (combo_box));
 	  if (GTK_IS_WINDOW (toplevel))
