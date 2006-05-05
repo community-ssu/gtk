@@ -95,7 +95,8 @@ static gboolean others_menu_button_button_press(GtkToggleButton * togglebutton,
                                                 GdkEventButton * event,
                                                 gpointer data);
 
-static void others_menu_changed_cb( char *path, _om_changed_cb_data_t *data );
+static gboolean others_menu_changed_cb( gpointer data );
+static void dnotify_handler( char *path, _om_changed_cb_data_t *data );
 
 
 OthersMenu_t *others_menu_init(void)
@@ -405,7 +406,7 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 
     /* Watch systemwide menu conf */
     if ( hildon_dnotify_set_cb(
-			    (hildon_dnotify_cb_f *)others_menu_changed_cb,
+			    (hildon_dnotify_cb_f *)dnotify_handler,
 			    g_path_get_dirname( SYSTEMWIDE_MENU_FILE ),
 			    cb_data ) != HILDON_OK) {
 	    ULOG_ERR( "others_menu_initialize_menu: "
@@ -431,7 +432,7 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
     }
 
     if ( hildon_dnotify_set_cb(
-			    (hildon_dnotify_cb_f *)others_menu_changed_cb,
+			    (hildon_dnotify_cb_f *)dnotify_handler,
 			    user_menu_dir,
 			    cb_data ) != HILDON_OK) {
 	    ULOG_ERR( "others_menu_initialize_menu: "
@@ -443,7 +444,7 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
      * when a new application is installed */
     
     if ( hildon_dnotify_set_cb(
-			    (hildon_dnotify_cb_f *)others_menu_changed_cb,
+			    (hildon_dnotify_cb_f *)dnotify_handler,
 			    DESKTOPENTRYDIR,
 			    cb_data ) != HILDON_OK) {
 	    ULOG_ERR( "others_menu_initialize_menu: "
@@ -465,10 +466,20 @@ void others_menu_deinit(OthersMenu_t * om)
     g_free(om);
 }
 
-
-static void others_menu_changed_cb( char *path, _om_changed_cb_data_t *data )
+static void dnotify_handler( char *path, _om_changed_cb_data_t *data )
 {
+    g_timeout_add( 1000, others_menu_changed_cb, data );
+
+}
+
+
+static gboolean others_menu_changed_cb( gpointer _data )
+{
+    _om_changed_cb_data_t *data = (_om_changed_cb_data_t *)_data;
 	ULOG_DEBUG( "others_menu_changed_cb()" );
+    
+    if( !data )
+        return FALSE;
 
 	/* Remove callbacks */
  	hildon_dnotify_remove_every_cb();
@@ -481,6 +492,9 @@ static void others_menu_changed_cb( char *path, _om_changed_cb_data_t *data )
     
 	/* Cleanup */
 	g_free( data );
+    data = NULL;
+
+    return FALSE;
 }
 
 
