@@ -1,3 +1,9 @@
+2006-05-05  Tomas Junnonen  <tomas.junnonen@nokia.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_set_popup_widget): Name the
+	combobox window so it can be identified as a focus target that does
+	not close the input method. N#28612
+
 2006-05-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkentry.c (gtk_entry_clipboard_operation_cb):
