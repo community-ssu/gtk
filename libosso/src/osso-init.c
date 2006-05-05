@@ -2,7 +2,7 @@
  * @file osso-init.c
  * This file implements all initialisation and shutdown of the library.
  * 
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -227,8 +227,13 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     dbus_connection_setup_with_g_main(conn, context);
     
     dprint("connection to the D-BUS daemon was a success");
-    
-    g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", osso->application);
+   
+    if (g_strrstr(osso->application, ".") != NULL) {
+        g_snprintf(service, MAX_SVC_LEN, "%s", osso->application);
+    } else {
+        g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s",
+                   osso->application);
+    }
     dprint("service='%s'",service);
 
     i = dbus_bus_request_name(conn, service,
@@ -246,8 +251,12 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
         if (copy == NULL) {
             goto dbus_conn_error1;
         }
-        g_snprintf(&osso->object_path[0], MAX_OP_LEN,
-                   OSSO_BUS_ROOT_PATH "/%s", copy);
+        if (g_strrstr(osso->application, ".") != NULL) {
+            g_snprintf(&osso->object_path[0], MAX_OP_LEN, "/%s", copy);
+        } else {
+            g_snprintf(&osso->object_path[0], MAX_OP_LEN,
+                       OSSO_BUS_ROOT_PATH "/%s", copy);
+        }
         g_free(copy);
     }
     dprint("osso->object_path='%s'", osso->object_path);
