@@ -224,6 +224,8 @@ gint load_image_from_uri(GdkPixbuf **pixbuf, const gchar *uri,
     gdk_pixbuf_loader_close(loader, NULL);
     *pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
     gnome_vfs_close(handle);
+    if (!*pixbuf)
+        return HILDON_HOME_IMAGE_LOADER_ERROR_FILE_CORRUPT;
     return HILDON_HOME_IMAGE_LOADER_OK;
 }
 

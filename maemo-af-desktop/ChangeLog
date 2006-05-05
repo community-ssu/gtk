@@ -1,5 +1,10 @@
 2006-05-05  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-image-loader.c: Interpret a NULL pixmap
+	  returned by the pixmap loader as a corrupted file (Closes N#24700)
+
+2006-05-05  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/others-menu.c: Only allow one dnotify-triggered
 	  update at a time
 
