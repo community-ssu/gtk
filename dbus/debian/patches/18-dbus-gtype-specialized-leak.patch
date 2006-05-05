@@ -1,0 +1,13 @@
+diff -ur dbus/glib/dbus-gtype-specialized.c dbus.new/glib/dbus-gtype-specialized.c
+--- dbus/glib/dbus-gtype-specialized.c	2006-03-03 19:26:22.000000000 +0200
++++ dbus.new/glib/dbus-gtype-specialized.c	2006-05-05 18:45:23.634724072 +0300
+@@ -357,8 +357,7 @@
+ 					   num_types,
+ 					   types);
+     }
+-  else
+-    g_free (name);
++  g_free (name);
+   return ret;
+ }
+ 
