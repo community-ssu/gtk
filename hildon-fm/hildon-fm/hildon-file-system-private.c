@@ -60,10 +60,10 @@ static LocationType locations[] = {
   { "qgn_list_filesys_doc_fldr", N_("sfil_li_folder_documents"), NULL },
   { "qgn_list_filesys_games_fldr", N_("sfil_li_folder_games"), NULL },
   { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL },
+  { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL },
  /* This is used, if GConf for some reason don't contain name */
   { "qgn_list_filesys_divc_gw", N_("sfil_li_gateway_root"), NULL },
-  { "qgn_list_filesys_divc_cls", N_("sfil_li_folder_root"), NULL },
-  { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL }
+  { "qgn_list_filesys_divc_cls", N_("sfil_li_folder_root"), NULL }
 };
 
 /* Paths for system folders and devices */
@@ -367,7 +367,8 @@ _hildon_file_system_create_file_name(GtkFileSystem *fs,
   gchar *str;
 
   if (type == HILDON_FILE_SYSTEM_MODEL_GATEWAY ||
-      type == HILDON_FILE_SYSTEM_MODEL_MMC)
+      type == HILDON_FILE_SYSTEM_MODEL_MMC ||
+      type == HILDON_FILE_SYSTEM_MODEL_MMC2)
   {
     GtkFileSystemVolume *vol;
 
