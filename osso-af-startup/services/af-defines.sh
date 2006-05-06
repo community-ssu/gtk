@@ -78,11 +78,13 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
   echo `uname -m` | grep "armv6l" > /dev/null
   if [ $? = 0 ]; then
     export INTERNAL_MMC_MOUNTPOINT='/media/mmc2'
+    export INTERNAL_MMC_SWAP_LOCATION=$INTERNAL_MMC_MOUNTPOINT
   fi
   export ILLEGAL_FAT_CHARS=\\\/\:\*\?\<\>\| MAX_FILENAME_LENGTH=255
 
   # MMC swap file location (directory)
   export OSSO_SWAP=$MMC_MOUNTPOINT
+  export MMC_SWAP_LOCATION=$MMC_MOUNTPOINT
 
   # this is for Control Panel
   export User_Applets_Dir='/var/lib/install/usr/share/applications/hildon-control-panel/'
