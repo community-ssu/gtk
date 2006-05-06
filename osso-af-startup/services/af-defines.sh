@@ -74,14 +74,18 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
   export MYDOCSDIR=$HOME/MyDocs
 
   # Mount point of the MMC
-  export MMC_MOUNTPOINT=/media/mmc1 MMC_DEVICE_FILE=/dev/mmcblk0p1
+  export MMC_MOUNTPOINT='/media/mmc1' MMC_DEVICE_FILE='/dev/mmcblk0p1'
+  echo `uname -m` | grep "armv6l" > /dev/null
+  if [ $? = 0 ]; then
+    export INTERNAL_MMC_MOUNTPOINT='/media/mmc2'
+  fi
   export ILLEGAL_FAT_CHARS=\\\/\:\*\?\<\>\| MAX_FILENAME_LENGTH=255
 
   # MMC swap file location (directory)
   export OSSO_SWAP=$MMC_MOUNTPOINT
 
   # this is for Control Panel
-  export User_Applets_Dir=/var/lib/install/usr/share/applications/hildon-control-panel/
+  export User_Applets_Dir='/var/lib/install/usr/share/applications/hildon-control-panel/'
 
   source_if_is()
   {

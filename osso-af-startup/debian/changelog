@@ -1,3 +1,10 @@
+osso-af-startup (1.15-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added support for another memory card.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 06 May 2006 20:15:39 +0300
+
 osso-af-startup (1.14-1) unstable; urgency=low
 
   * Modified DBus session bus startup script for static address (N#24573).
