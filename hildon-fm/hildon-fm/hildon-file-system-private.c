@@ -60,10 +60,10 @@ static LocationType locations[] = {
   { "qgn_list_filesys_doc_fldr", N_("sfil_li_folder_documents"), NULL },
   { "qgn_list_filesys_games_fldr", N_("sfil_li_folder_games"), NULL },
   { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL },
-  { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL },
  /* This is used, if GConf for some reason don't contain name */
   { "qgn_list_filesys_divc_gw", N_("sfil_li_gateway_root"), NULL },
-  { "qgn_list_filesys_divc_cls", N_("sfil_li_folder_root"), NULL }
+  { "qgn_list_filesys_divc_cls", N_("sfil_li_folder_root"), NULL },
+  { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL }
 };
 
 /* Paths for system folders and devices */
@@ -74,9 +74,10 @@ static const char *SOUNDS_SAFE = ".sounds";
 static const char *DOCUMENTS_SAFE = ".documents";
 static const char *GAMES_SAFE = ".games";
 
-/* Let's make sure that we survise with folder names both ending and not ending to slash */
-gboolean 
-_hildon_file_system_compare_ignore_last_separator(const char *a, const char *b)
+/* Let's make sure that we survise with folder names both ending and
+ * not ending to slash */
+gboolean _hildon_file_system_compare_ignore_last_separator(const char *a,
+                                                           const char *b)
 {        
     gint len_a, len_b;
 
@@ -84,9 +85,9 @@ _hildon_file_system_compare_ignore_last_separator(const char *a, const char *b)
     len_b = strlen(b);
 
     if (len_a > 1 && a[len_a - 1] == G_DIR_SEPARATOR)
-        len_a--;
+      len_a--;
     if (len_b > 1 && b[len_b - 1] == G_DIR_SEPARATOR)
-        len_b--;
+      len_b--;
 
     if (len_a != len_b)
       return FALSE;
@@ -114,7 +115,8 @@ void _hildon_file_system_ensure_locations(void)
     if (env && env[0])
       root = g_build_path(G_DIR_SEPARATOR_S, env, LOCAL_DEVICE_ROOT, NULL);
     else
-      root = g_build_path(G_DIR_SEPARATOR_S, g_get_home_dir(), LOCAL_DEVICE_ROOT, NULL);
+      root = g_build_path(G_DIR_SEPARATOR_S, g_get_home_dir(),
+                          LOCAL_DEVICE_ROOT, NULL);
   }
 
   locations[HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE].path = root;
@@ -140,8 +142,8 @@ void _hildon_file_system_ensure_locations(void)
     locations[HILDON_FILE_SYSTEM_MODEL_MMC2].path = g_strdup(env);
 }
 
-gint 
-_hildon_file_system_get_special_location(GtkFileSystem *fs, const GtkFilePath *path)
+gint _hildon_file_system_get_special_location(GtkFileSystem *fs,
+                                              const GtkFilePath *path)
 {
   gchar *local_path;
   gint i, result = HILDON_FILE_SYSTEM_MODEL_UNKNOWN;
@@ -151,7 +153,8 @@ _hildon_file_system_get_special_location(GtkFileSystem *fs, const GtkFilePath *p
   {
     for (i = 3; i < G_N_ELEMENTS(locations); i++)
       if (locations[i].path && 
-          _hildon_file_system_compare_ignore_last_separator(local_path, locations[i].path))
+          _hildon_file_system_compare_ignore_last_separator(local_path,
+                                                      locations[i].path))
       {
         result = i;
         break;

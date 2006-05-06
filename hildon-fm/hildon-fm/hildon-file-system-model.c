@@ -103,6 +103,7 @@ struct _HildonFileSystemModelPrivate {
     GtkFileSystem *filesystem;
     GtkIconTheme *icon_theme;
     removable_type mmc;
+    removable_type mmc2;
 
     GtkFilePath *gateway_path;
   	
@@ -1484,29 +1485,42 @@ hildon_file_system_model_kick_node(GNode *node, gpointer data)
   return node;
 }
 
-static void set_mmc_state(GtkTreeModel * model, GtkFilePath *mount_path)
+static void set_mmc_state(GtkTreeModel *model, GtkFilePath *mount_path,
+                          gboolean internal_mmc)
 {
     HildonFileSystemModelNode *model_node;
     HildonFileSystemModelPrivate *priv;
-  	GNode *node;
-  	GError *error = NULL;
+    GNode *node;
+    GError *error = NULL;
     gboolean new_state;
 
     priv = CAST_GET_PRIVATE(model);
-    node = priv->mmc.base_node;
     new_state = mount_path != NULL;
 
-    ULOG_INFO("%s: new state = %d, old state = %d", 
-      __FUNCTION__, new_state, priv->mmc.mounted);
+    if (internal_mmc) {
+      node = priv->mmc2.base_node;
 
-    /* MMC device not in the tree or same state as previously */
-    if (node == NULL || new_state == priv->mmc.mounted)
-      return;
+      ULOG_INFO_F("new state = %d, old state = %d", new_state,
+                  priv->mmc2.mounted);
+
+      /* MMC device not in the tree or same state as previously */
+      if (node == NULL || new_state == priv->mmc2.mounted)
+        return;
+    } else {
+      node = priv->mmc.base_node;
+
+      ULOG_INFO_F("new state = %d, old state = %d", new_state,
+                  priv->mmc.mounted);
+
+      /* MMC device not in the tree or same state as previously */
+      if (node == NULL || new_state == priv->mmc.mounted)
+        return;
+    }
 
     model_node = node->data;
 
     if (new_state) {
-        ULOG_INFO("MMC mounted");
+        ULOG_INFO_L("MMC %d mounted", internal_mmc);
 
         if (!link_file_folder(node, mount_path, &error))
         {
@@ -1515,7 +1529,7 @@ static void set_mmc_state(GtkTreeModel * model, GtkFilePath *mount_path)
           new_state = FALSE;
         }
     } else {
-        ULOG_INFO("MMC unmounted");
+        ULOG_INFO_L("MMC %d unmounted", internal_mmc);
         
         gtk_file_path_free(model_node->path);
         send_device_disconnected(node);        
@@ -1524,18 +1538,21 @@ static void set_mmc_state(GtkTreeModel * model, GtkFilePath *mount_path)
     }
 
     clear_model_node_caches(model_node);
-    priv->mmc.mounted = new_state;
+    if (internal_mmc) {
+        priv->mmc2.mounted = new_state;
+    } else {
+        priv->mmc.mounted = new_state;
+    }
     emit_node_changed(node);
 }
 
-/* We use this function to track mmc state changes only */
 static gboolean real_volumes_changed(gpointer data)
 {
     GtkFileSystemVolume *vol;
     GtkFilePath *path = NULL;
     GtkFileSystem *fs = CAST_GET_PRIVATE(data)->filesystem;
 
-    ULOG_DEBUG(__FUNCTION__);
+    ULOG_DEBUG_F("entered");
 
     vol = _hildon_file_system_get_volume_for_location(fs, 
                HILDON_FILE_SYSTEM_MODEL_MMC, NULL);
@@ -1547,8 +1564,27 @@ static gboolean real_volumes_changed(gpointer data)
       gtk_file_system_volume_free(fs, vol);
     }
 
-    set_mmc_state(GTK_TREE_MODEL(data), path);
+    set_mmc_state(GTK_TREE_MODEL(data), path, FALSE);
     gtk_file_path_free(path);
+
+    /* second memory card */
+
+    if (g_getenv("INTERNAL_MMC_MOUNTPOINT") != NULL)
+    {
+      path = NULL;
+      vol = _hildon_file_system_get_volume_for_location(fs, 
+               HILDON_FILE_SYSTEM_MODEL_MMC2, NULL);
+      if (vol)
+      {
+        if (gtk_file_system_volume_get_is_mounted(fs, vol))
+          path = gtk_file_system_volume_get_base_path(fs, vol);
+
+        gtk_file_system_volume_free(fs, vol);
+      }
+
+      set_mmc_state(GTK_TREE_MODEL(data), path, TRUE);
+      gtk_file_path_free(path);
+    }
 
     return FALSE;
 }
@@ -2169,7 +2205,8 @@ gateway_changed(GObject *settings, GParamSpec *param, gpointer data)
   gchar *bluetooth_address;
   HildonFileSystemModelPrivate *priv = HILDON_FILE_SYSTEM_MODEL(data)->priv;
   	 
-  /* If we had old contents => kick them off. This is OK for both pairing/unpairing */
+  /* If we had old contents => kick them off. This is OK for both
+     pairing and unpairing */
   if (priv->gateway_node)
   {
     hildon_file_system_model_kick_node(priv->gateway_node, data);
@@ -2195,14 +2232,16 @@ gateway_changed(GObject *settings, GParamSpec *param, gpointer data)
     if (priv->gateway_path)
     {	 
       ULOG_INFO("Gateway \"%s\" paired", buffer);
-      priv->gateway_node =
-        hildon_file_system_model_add_node
-              (GTK_TREE_MODEL(data), priv->roots, NULL, priv->gateway_path,
-               HILDON_FILE_SYSTEM_MODEL_GATEWAY);
+      priv->gateway_node = hildon_file_system_model_add_node(
+                             GTK_TREE_MODEL(data), priv->roots, NULL,
+                             priv->gateway_path,
+                             HILDON_FILE_SYSTEM_MODEL_GATEWAY);
       g_assert(priv->gateway_node != NULL);
     }
     else
+    {
       ULOG_ERR("Tried \"%s\", but failed", buffer);
+    }
   }
 
   g_free(bluetooth_address);
@@ -2268,16 +2307,15 @@ hildon_file_system_model_constructor(GType type,
     GtkFilePath *file_path;
     GtkFilePath *local_device_path;
 
-    obj =
-        G_OBJECT_CLASS(hildon_file_system_model_parent_class)->
-        constructor(type, n_construct_properties, construct_properties);
+    obj = G_OBJECT_CLASS(hildon_file_system_model_parent_class)->
+            constructor(type, n_construct_properties, construct_properties);
     priv = CAST_GET_PRIVATE(obj);
     model = GTK_TREE_MODEL(obj);
     _hildon_file_system_ensure_locations();
 
     if (!priv->filesystem)
-      priv->filesystem = 
-        hildon_file_system_create_backend(priv->backend_name, TRUE);
+      priv->filesystem = hildon_file_system_create_backend(
+                           priv->backend_name, TRUE);
 
     priv->roots = g_node_new(NULL);     /* This is a fake root that
                                            contains real ones */
@@ -2286,46 +2324,61 @@ hildon_file_system_model_constructor(GType type,
     {
       HildonFileSystemSettings *fs_settings;
 
-      local_device_path = 
-	_hildon_file_system_path_for_location(priv->filesystem, 
-              HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE);
+      local_device_path = _hildon_file_system_path_for_location(
+                            priv->filesystem, 
+                            HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE);
 
-    priv->local_device_node = hildon_file_system_model_add_node
-            (model, priv->roots, NULL, local_device_path,
-             HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE);
-    gtk_file_path_free (local_device_path);
+      priv->local_device_node = hildon_file_system_model_add_node(model,
+                                  priv->roots, NULL, local_device_path,
+                                  HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE);
+      gtk_file_path_free(local_device_path);
 
-    g_assert(priv->local_device_node);
+      g_assert(priv->local_device_node);
 
-    priv->mmc.base_node = hildon_file_system_model_add_node
-                (model, priv->local_device_node, NULL, NULL, 
-                 HILDON_FILE_SYSTEM_MODEL_MMC);
-    g_assert(priv->mmc.base_node);
+      priv->mmc.base_node = hildon_file_system_model_add_node(model,
+                              priv->local_device_node, NULL, NULL,
+                              HILDON_FILE_SYSTEM_MODEL_MMC);
+      g_assert(priv->mmc.base_node);
 
-    real_volumes_changed(obj);
+      if (g_getenv("INTERNAL_MMC_MOUNTPOINT") != NULL)
+      {
+        priv->mmc2.base_node = hildon_file_system_model_add_node(model,
+                                 priv->local_device_node, NULL, NULL,
+                                 HILDON_FILE_SYSTEM_MODEL_MMC2);
+      }
+      else
+      {
+        priv->mmc2.base_node = NULL;
+      }
 
-    fs_settings = _hildon_file_system_settings_get_instance();
+      real_volumes_changed(obj);
 
-    priv->signal_handler_id[0] = g_signal_connect_object(fs_settings,
-        "notify::flight-mode", G_CALLBACK(flightmode_changed), obj, 0);
-    priv->signal_handler_id[1] = g_signal_connect_object(fs_settings, 
-        "notify::btname", G_CALLBACK(btname_changed), obj, 0);
-    priv->signal_handler_id[2] = g_signal_connect_object(fs_settings,
-        "notify::gateway", G_CALLBACK(gateway_changed), obj, 0);
+      fs_settings = _hildon_file_system_settings_get_instance();
 
-    gateway_changed((GObject *) fs_settings, NULL, obj);
-    flightmode_changed((GObject *) fs_settings, NULL, obj);
+      priv->signal_handler_id[0] = g_signal_connect_object(fs_settings,
+                                     "notify::flight-mode",
+                                     G_CALLBACK(flightmode_changed), obj, 0);
+      priv->signal_handler_id[1] = g_signal_connect_object(fs_settings, 
+                                     "notify::btname",
+                                     G_CALLBACK(btname_changed), obj, 0);
+      priv->signal_handler_id[2] = g_signal_connect_object(fs_settings,
+                                     "notify::gateway",
+                                     G_CALLBACK(gateway_changed), obj, 0);
 
-    priv->signal_handler_id[3] = g_signal_connect_object(priv->filesystem,
-         "volumes-changed", G_CALLBACK(real_volumes_changed),
-                     obj, G_CONNECT_SWAPPED);
+      gateway_changed((GObject *) fs_settings, NULL, obj);
+      flightmode_changed((GObject *) fs_settings, NULL, obj);
+
+      priv->signal_handler_id[3] = g_signal_connect_object(priv->filesystem,
+                                     "volumes-changed",
+                                     G_CALLBACK(real_volumes_changed),
+                                     obj, G_CONNECT_SWAPPED);
     }
     else
     {
-      ULOG_INFO("Alternative root = \"%s\"", priv->alternative_root_dir);
+      ULOG_INFO_F("Alternative root = '%s'", priv->alternative_root_dir);
 
-      file_path =
-        gtk_file_system_filename_to_path(priv->filesystem, priv->alternative_root_dir);
+      file_path = gtk_file_system_filename_to_path(priv->filesystem,
+                    priv->alternative_root_dir);
 
       if (priv->multiroot)
       {
@@ -2344,19 +2397,22 @@ hildon_file_system_model_constructor(GType type,
 
         if (error)
         {
-          ULOG_ERR(error->message);
+          ULOG_ERR_F(error->message);
           g_error_free(error);
         }
         else
         {
-          hildon_file_system_model_delayed_add_children(HILDON_FILE_SYSTEM_MODEL(obj), priv->roots, TRUE);
+          hildon_file_system_model_delayed_add_children(
+            HILDON_FILE_SYSTEM_MODEL(obj), priv->roots, TRUE);
           wait_node_load(priv, priv->roots);          
         }
       }
       else
-        hildon_file_system_model_add_node
-            (model, priv->roots, NULL, file_path,
-             HILDON_FILE_SYSTEM_MODEL_FOLDER);
+      {
+        hildon_file_system_model_add_node(model, priv->roots, NULL,
+                                          file_path,
+                                          HILDON_FILE_SYSTEM_MODEL_FOLDER);
+      }
 
       gtk_file_path_free(file_path); 
     }
