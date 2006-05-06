@@ -3,8 +3,9 @@ hildon-fm (0.22-1) unstable; urgency=low
   * UNRELEASED
   * Made rendering optimisation allowed by fixed bug 22807.
   * Fixed domain for file_ib_name_too_long.
+  * Added support for another memory card.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 27 Apr 2006 13:30:59 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 01 May 2006 23:46:24 +0300
 
 hildon-fm (0.21-1) unstable; urgency=low
 

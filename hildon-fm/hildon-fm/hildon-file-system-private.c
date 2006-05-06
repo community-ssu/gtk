@@ -49,7 +49,7 @@ typedef struct
 } LocationType; 
 
 /* Keep this table in sync with public enumeration found in
-    hildon-file-selection.h */
+    hildon-file-system-common.h */
 static LocationType locations[] = {
   { NULL, NULL, NULL }, 
   { "qgn_list_gene_unknown_file", NULL, NULL }, 
@@ -59,6 +59,7 @@ static LocationType locations[] = {
   { "qgn_list_filesys_audio_fldr", N_("sfil_li_folder_sound_clips"), NULL },
   { "qgn_list_filesys_doc_fldr", N_("sfil_li_folder_documents"), NULL },
   { "qgn_list_filesys_games_fldr", N_("sfil_li_folder_games"), NULL },
+  { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL },
   { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL },
  /* This is used, if GConf for some reason don't contain name */
   { "qgn_list_filesys_divc_gw", N_("sfil_li_gateway_root"), NULL },
@@ -133,6 +134,10 @@ void _hildon_file_system_ensure_locations(void)
     env = "/media/mmc1";    /* Fallback location */
 
   locations[HILDON_FILE_SYSTEM_MODEL_MMC].path = g_strdup(env);
+
+  env = g_getenv("INTERNAL_MMC_MOUNTPOINT");
+  if (env != NULL)
+    locations[HILDON_FILE_SYSTEM_MODEL_MMC2].path = g_strdup(env);
 }
 
 gint 
