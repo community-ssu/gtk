@@ -703,8 +703,8 @@ static gint sort_function(GtkTreeModel * model, GtkTreeIter * a,
                                        &order);
 
     /* Local device comes before gateway device */
-    if (type_a > HILDON_FILE_SYSTEM_MODEL_MMC
-        || type_b > HILDON_FILE_SYSTEM_MODEL_MMC)
+    if (type_a > HILDON_FILE_SYSTEM_MODEL_MMC2
+        || type_b > HILDON_FILE_SYSTEM_MODEL_MMC2)
     {
          gint diff = type_a - type_b;
          return order ==
@@ -721,8 +721,10 @@ static gint sort_function(GtkTreeModel * model, GtkTreeIter * a,
             GTK_SORT_ASCENDING ? (dir_a ? -1 : 1) : (dir_a ? 1 : -1);
 
     /* Ok, now both are either files or directories (or MMC:s) */
-    mmc_a = (type_a == HILDON_FILE_SYSTEM_MODEL_MMC);
-    mmc_b = (type_b == HILDON_FILE_SYSTEM_MODEL_MMC);
+    mmc_a = (type_a == HILDON_FILE_SYSTEM_MODEL_MMC) ||
+            (type_a == HILDON_FILE_SYSTEM_MODEL_MMC2);
+    mmc_b = (type_b == HILDON_FILE_SYSTEM_MODEL_MMC) ||
+            (type_b == HILDON_FILE_SYSTEM_MODEL_MMC2);
 
     /* MMC:s always go after directories (currently even when sorted to
        reverse order) */
