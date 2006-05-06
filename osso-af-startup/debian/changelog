@@ -1,11 +1,10 @@
 osso-af-startup (1.15-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added support for another memory card.
   * Added MMC_SWAP_FILE_LOCATION and INTERNAL_MMC_SWAP_FILE_LOCATION
     variables.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 06 May 2006 20:15:39 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 06 May 2006 22:17:08 +0300
 
 osso-af-startup (1.14-1) unstable; urgency=low
 
