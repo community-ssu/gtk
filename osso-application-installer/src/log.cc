@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 
 #include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include "log.h"
 #include "util.h"
@@ -47,47 +48,86 @@ enum {
 static void
 save_log_cont (bool res, void *data)
 {
-  char *filename = (char *)data;
+  char *uri = (char *)data;
 
   if (res)
     {
-      FILE *f = fopen (filename, "w");
-      if (f)
+      GnomeVFSHandle *handle = NULL;
+      GnomeVFSResult result;
+
+      result = gnome_vfs_create (&handle, uri,
+				 GNOME_VFS_OPEN_WRITE,
+				 FALSE,
+				 0644);
+
+      if (result != GNOME_VFS_OK)
+	annoy_user_with_gnome_vfs_result (result, uri);
+      else
 	{
+	  bool success = true;
+
 	  if (log_text)
-	    fputs (log_text->str, f);
-	  if (fclose (f) == EOF)
-	    annoy_user_with_errno (errno, filename);
-	  else
+	    {
+	      result = gnome_vfs_write (handle,
+					log_text->str, log_text->len,
+					NULL);
+	      if (result != GNOME_VFS_OK)
+		{
+		  annoy_user_with_gnome_vfs_result (result, uri);
+		  success = false;
+		}
+	    }
+
+	  result = gnome_vfs_close (handle);
+	  if (result != GNOME_VFS_OK)
+	    {
+	      annoy_user_with_gnome_vfs_result (result, uri);
+	      success = false;
+	    }
+
+	  if (success)
 	    irritate_user (dgettext ("hildon-common-strings",
 				     "sfil_ib_saved"));
 	}
-      else
-	annoy_user_with_errno (errno, filename);
     }
-
-  g_free (filename);
+  
+  g_free (uri);
 }
 
 static void
-save_log (char *filename, void *data)
+save_log (char *uri, void *data)
 {
-  char *b = basename (filename);
+  GnomeVFSFileInfo info;
+  GnomeVFSResult result;
+
+  char *b = basename (uri);
   if (b && strchr (b, '.') == NULL)
     {
-      char *filename_txt = g_strdup_printf ("%s.txt", filename);
-      g_free (filename);
-      filename = filename_txt;
+      char *uri_txt = g_strdup_printf ("%s.txt", uri);
+      g_free (uri);
+      uri = uri_txt;
     }
 
-  struct stat buf;
-  if (stat (filename, &buf) != -1)
-    ask_custom (dgettext ("hildon-fm", "docm_nc_replace_file"),
-		dgettext ("hildon-fm", "docm_bd_replace_file_ok"),
-		dgettext ("hildon-fm", "docm_bd_replace_file_cancel"),
-		save_log_cont, filename);
+  /* XXX - Using gnome_vfs_create with exclusive == true to check for
+           file existence doesn't work with obex.  Why am I not
+           surprised?
+   */
+
+  result = gnome_vfs_get_file_info (uri, &info, GNOME_VFS_FILE_INFO_DEFAULT);
+  if (result == GNOME_VFS_OK)
+    {
+      ask_custom (dgettext ("hildon-fm", "docm_nc_replace_file"),
+		  dgettext ("hildon-fm", "docm_bd_replace_file_ok"),
+		  dgettext ("hildon-fm", "docm_bd_replace_file_cancel"),
+		  save_log_cont, uri);
+    }
+  else if (result != GNOME_VFS_ERROR_NOT_FOUND)
+    {
+      annoy_user_with_gnome_vfs_result (result, uri);
+      g_free (uri);
+    }
   else
-    save_log_cont (true, filename);
+    save_log_cont (true, uri);
 }
 
 static void

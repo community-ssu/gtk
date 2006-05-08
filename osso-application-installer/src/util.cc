@@ -339,6 +339,28 @@ annoy_user_with_errno (int err, const gchar *detail)
 }
 
 void
+annoy_user_with_gnome_vfs_result (GnomeVFSResult result, const gchar *detail)
+{
+  add_log ("%s: %s\n", detail, gnome_vfs_result_to_string (result));
+
+  if (result == GNOME_VFS_ERROR_NAME_TOO_LONG)
+    annoy_user (dgettext ("hildon-common-strings",
+			  "file_ib_name_too_long"));
+  else if (result == GNOME_VFS_ERROR_ACCESS_DENIED
+	   || result == GNOME_VFS_ERROR_NOT_PERMITTED)
+    annoy_user (dgettext ("hildon-fm",
+			  "sfil_ib_saving_not_allowed"));
+  else if (result == GNOME_VFS_ERROR_NOT_FOUND)
+    annoy_user (dgettext ("hildon-common-strings",
+			  "sfil_ni_cannot_continue_target_folder_deleted"));
+  else if (result == GNOME_VFS_ERROR_NO_SPACE)
+    annoy_user (dgettext ("hildon-common-strings",
+			  "sfil_ni_not_enough_memory"));
+  else
+    annoy_user (_("ai_ni_operation_failed"));
+}
+
+void
 irritate_user (const gchar *text)
 {
   gtk_infoprintf (NULL, "%s", text);
@@ -1130,7 +1152,7 @@ size_string_detailed (char *buf, size_t n, int bytes)
 }
 
 struct fcd_closure {
-  void (*cont) (char *filename, void *data);
+  void (*cont) (char *uri, void *data);
   void *data;
 };
 
@@ -1138,22 +1160,22 @@ static void
 fcd_response (GtkDialog *dialog, gint response, gpointer clos)
 {
   fcd_closure *c = (fcd_closure *)clos;
-  void (*cont) (char *filename, void *data) = c->cont; 
+  void (*cont) (char *uri, void *data) = c->cont; 
   void *data = c->data;
   delete c;
 
-  char *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+  char *uri = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
 
   gtk_widget_destroy (GTK_WIDGET (dialog));
 
   if (response == GTK_RESPONSE_OK)
-    cont (filename, data);
+    cont (uri, data);
   else
-    g_free (filename);
+    g_free (uri);
 }
 
 void
-show_deb_file_chooser (void (*cont) (char *filename, void *data),
+show_deb_file_chooser (void (*cont) (char *uri, void *data),
 		       void *data)
 {
   fcd_closure *c = new fcd_closure;
@@ -1188,7 +1210,7 @@ show_deb_file_chooser (void (*cont) (char *filename, void *data),
 void
 show_file_chooser_for_save (const char *title,
 			    const char *default_filename,
-			    void (*cont) (char *filename, void *data),
+			    void (*cont) (char *uri, void *data),
 			    void *data)
 {
   fcd_closure *c = new fcd_closure;
@@ -1603,26 +1625,34 @@ struct en_closure {
   void *data;
 };
 
+/* XXX - we can not rely on the osso_iap functions to deliver our user
+         data to the callback.  Instead we store the continuation
+         callback in a global variable and make that it is called
+         exactly once.
+*/
+
+static void (*en_callback) (bool success, void *data) = NULL;
+static void *en_data;
+
+static void
+ensure_network_cont (bool success)
+{
+  if (en_callback)
+    en_callback (success, en_data);
+  en_callback = NULL;
+  en_data = NULL;
+}
+  
 static void
 iap_callback (struct iap_event_t *event, void *arg)
 {
-  void (*callback) (bool success, void *data) = NULL;
-  void *data;
-
-  if (arg)
-    {
-      en_closure *c = (en_closure *)arg;
-      callback = c->callback;
-      data = c->data;
-      delete c;
-    }
+  bool success = false;
 
   switch (event->type)
     {
     case OSSO_IAP_CONNECTED:
       add_log ("OSSO_IAP_CONNECTED: %s\n", event->iap_name);
-      if (callback)
-	callback (true, data);
+      success = true;
       break;
 
     case OSSO_IAP_DISCONNECTED:
@@ -1633,22 +1663,25 @@ iap_callback (struct iap_event_t *event, void *arg)
 
     case OSSO_IAP_ERROR:
       add_log ("IAP Error: %x %s.\n", -event->u.error_code, event->iap_name);
-      if (callback)
-	callback (false, data);
+      annoy_user (_("ai_ni_operation_failed"));
       break;
 
     default:
       add_log ("IAP Error: unexpected event type %d\n", event->type);
-      if (callback)
-	callback (false, data);
+      annoy_user (_("ai_ni_operation_failed"));
       break;
-
     }
+
+  ensure_network_cont (success);
 }
 
 void
 ensure_network (void (*callback) (bool success, void *data), void *data)
 {
+  /* Silently cancel a pending request, if any.
+   */
+  ensure_network_cont (false);
+
   if (assume_connection)
     {
       callback (true, data);
@@ -1657,19 +1690,16 @@ ensure_network (void (*callback) (bool success, void *data), void *data)
   
   if (osso_iap_cb (iap_callback) == OSSO_OK)
     {
-      en_closure *c = new en_closure;
-      c->callback = callback;
-      c->data = data;
+      en_callback = callback;
+      en_data = data;
       
-      if (osso_iap_connect (OSSO_IAP_ANY, OSSO_IAP_REQUESTED_CONNECT, c)
+      if (osso_iap_connect (OSSO_IAP_ANY, OSSO_IAP_REQUESTED_CONNECT, NULL)
 	  == OSSO_OK)
 	return;
-
-      delete c;
     }
 
-  // annoy_user (_("ai_ni_error_download_failed"));
-  callback (false, data);
+  annoy_user (_("ai_ni_operation_failed"));
+  ensure_network_cont (false);
 }
 
 char *

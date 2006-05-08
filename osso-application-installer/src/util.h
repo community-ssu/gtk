@@ -26,6 +26,7 @@
 #define UTIL_H
 
 #include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include "main.h"
 
@@ -109,6 +110,8 @@ void annoy_user_with_details (const gchar *text,
 			      package_info *pi, bool installed);
 void annoy_user_with_log (const gchar *text);
 void annoy_user_with_errno (int err, const gchar *detail);
+void annoy_user_with_gnome_vfs_result (GnomeVFSResult result,
+				       const gchar *detail);
 
 void irritate_user (const gchar *text);
 
@@ -264,23 +267,23 @@ void size_string_general (char *buf, size_t n, int bytes);
 void size_string_detailed (char *buf, size_t n, int bytes);
 
 /* SHOW_DEB_FILE_CHOOSER shows a file chooser dialog for choosing a
-   .deb file.  CONT is called with the selected filename, or NULL when
+   .deb file.  CONT is called with the selected URI, or NULL when
    the dialog has been cancelled.
 
    FILENAME must be freed by CONT with g_free.
 */
-void show_deb_file_chooser (void (*cont) (char *filename, void *data),
+void show_deb_file_chooser (void (*cont) (char *uri, void *data),
 			    void *data);
 
 /* SHOW_FILE_CHOOSER_FOR_SAVE shows a file chooser for saving a text
    file, using the given TITLE and DEFAULT_FILENAME.
 
-   CONT is called with the selected filename, or NULL when the dialog
-   has been cancelled.  FILENAME must be freed by CONT with g_free.
+   CONT is called with the selected URI, or NULL when the dialog has
+   been cancelled.  FILENAME must be freed by CONT with g_free.
 */
 void show_file_chooser_for_save (const char *title,
 				 const char *default_filename,
-				 void (*cont) (char *filename, void *data),
+				 void (*cont) (char *uri, void *data),
 				 void *data);
 
 /* PIXBUF_FROM_BASE64 takes a base64 encoded binary blob and loads it
