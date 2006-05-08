@@ -115,7 +115,7 @@ static gboolean home_bg_image_previewed = FALSE;
 static GtkWidget *home_bg_color_button = NULL;     /* default to black */
 
 static GdkColor *home_bg_image_preview_color = NULL;
-static const gchar *home_bg_image_preview_uri = NULL;
+static gchar *home_bg_image_preview_uri = NULL;
 static gint home_bg_image_preview_mode = -1;
 
 static const gchar *titlebar_original_image_savefile;
@@ -978,7 +978,7 @@ void set_background_response_handler(GtkWidget *dialog,
                                      gint arg, gpointer data)
 {
     GtkComboBox *box = GTK_COMBO_BOX(data);
-    gchar *image_name;
+    /*gchar *image_name;*/
     gint active_index = -1;
     
     switch (arg) 
@@ -988,15 +988,16 @@ void set_background_response_handler(GtkWidget *dialog,
 	
         if (set_background_select_file_dialog(box))
         {
+/* FIXME What was this for? */
+#if 0
             active_index = gtk_combo_box_get_active(box);
             image_name = get_filename_from_treemodel(box, active_index);
-            /* FIXME is this idea here?
             if (home_bg_image_uri) 
             {
                 g_free(home_bg_image_uri);
             }
             home_bg_image_uri = image_name;
-            */
+#endif
         }
         break;
     case HILDON_HOME_SET_BG_RESPONSE_PREVIEW:
@@ -1009,7 +1010,8 @@ void set_background_response_handler(GtkWidget *dialog,
 
         if(active_index == 0)
         {
-            home_bg_image_preview_uri = HILDON_HOME_IMAGE_LOADER_NO_IMAGE;
+            g_free(home_bg_image_preview_uri);
+            home_bg_image_preview_uri = g_strdup(HILDON_HOME_IMAGE_LOADER_NO_IMAGE);
             construct_background_image_with_uri(
                             HILDON_HOME_IMAGE_LOADER_NO_IMAGE,
                             TRUE,
@@ -1018,6 +1020,7 @@ void set_background_response_handler(GtkWidget *dialog,
                             TRUE);
         } else 
         {
+            g_free(home_bg_image_preview_uri);
             home_bg_image_preview_uri = 
                 get_filename_from_treemodel(box, active_index);
 
