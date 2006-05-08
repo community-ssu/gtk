@@ -114,7 +114,8 @@ hn_wm_top_view (GtkMenuItem *menuitem)
   if (win && hn_wm_watched_window_get_app (win))
     {
       GList *iter;
-
+      gboolean single_view = FALSE;
+      
       app = hn_wm_watched_window_get_app (win);
       
       HN_DBG("Window found with views, is '%s'\n",
@@ -142,6 +143,7 @@ hn_wm_top_view (GtkMenuItem *menuitem)
       
       iter = hn_wm_watched_window_get_views (win);
       view_found = FALSE;
+      single_view = (iter && g_list_length (iter) == 1);
       
       HN_DBG("Window has views finding out which needs activating");
 
@@ -176,26 +178,31 @@ hn_wm_top_view (GtkMenuItem *menuitem)
 	  
 	  HN_DBG("... and topping service");
 	  hn_wm_top_service(hn_wm_watchable_app_get_service (app));
+
+      if(!single_view)
+        return;
 	}
-      
-      return;
     }
   
-  /* View wasn't found, maybe the widget is for a top level window
-   * with no views
+  /* If we got this far, we either did not find matching view, or the
+   * corresponding window has only single view; in both cases we
+   * top the window (for the single-view case, see bug 28650 -- we cannot
+   * do this for multiview apps, because due to the assynchronous nature of
+   * the process, we cannot guarantee that the request to top window would
+   * not be processed before the request to top the view.
    */
-  HN_DBG("### unable to find win via views ###");
 
-  win = hn_wm_lookup_watched_window_via_menu_widget (GTK_WIDGET(menuitem));
-
-  /* window doesn't have views - non hildon app maybe so top that via WM */
+  if(!win)
+    {
+      HN_DBG("### unable to find win via views ###");
+      win = hn_wm_lookup_watched_window_via_menu_widget (GTK_WIDGET(menuitem));
+    }
+  
   if (win && hn_wm_watched_window_get_app (win))
     {
       XEvent ev;
 
       app = hn_wm_watched_window_get_app (win);
-
-      HN_DBG("window is viewless");
 
       if (hn_wm_watchable_app_is_hibernating (app))
 	{
