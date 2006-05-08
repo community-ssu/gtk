@@ -64,6 +64,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
+#include <linux/types.h>
 
 #if __BYTE_ORDER == __BIG_ENDIAN
 

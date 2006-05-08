@@ -1,3 +1,9 @@
+dosfstools (2.8-1osso2) unstable; urgency=low
+
+  * Fixed compilation problem because of kernel header change (N#28584).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 08 May 2006 18:27:54 +0300
+
 dosfstools (2.8-1osso1) unstable; urgency=low
 
   * Added some stderr output to mkdosfs for progress indication.
