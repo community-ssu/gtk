@@ -2208,6 +2208,7 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
   pi->info.remove_user_size_delta = 0;
   pi->info.download_size = 0;
   pi->description = dec->decode_string_dup ();
+  nicify_description_in_place (pi->description);
   pi->available_short_description = first_line_of (pi->description);
   pi->available_icon = pixbuf_from_base64 (dec->decode_string_in_place ());
 

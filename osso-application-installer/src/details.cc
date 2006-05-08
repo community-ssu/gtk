@@ -421,7 +421,7 @@ show_with_details (package_info *pi, bool installed,
 				   problems_page);
 }
 
-static void
+void
 nicify_description_in_place (char *desc)
 {
   /* The nicifications are this:
