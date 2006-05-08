@@ -1,5 +1,11 @@
 2006-05-08  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/others-menu.c: Remove dnotify handler before
+	  allowing new update of the others-menu to be happening (should
+	  fix a potential race condition)
+
+2006-05-08  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "No application-killer dialog when trying to top frozen
 	application that uses HildonViews" (Closes N#28650)
 	* hildon-navigator/hn-wm.c: Treat single-view HildonApps as a

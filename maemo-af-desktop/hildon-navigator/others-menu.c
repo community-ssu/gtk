@@ -486,10 +486,10 @@ static gboolean others_menu_changed_cb( gpointer _data )
     if( !data )
         return FALSE;
 
-    dnotify_update_timeout = 0;
-
 	/* Remove callbacks */
  	hildon_dnotify_remove_every_cb();
+    
+    dnotify_update_timeout = 0;
 
 	/* Destroy the menu */
 	gtk_widget_destroy( data->widget );
