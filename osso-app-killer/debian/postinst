@@ -34,6 +34,9 @@ case "$1" in
       if [ ! -e /etc/osso-cud-scripts ]; then
         mkdir /etc/osso-cud-scripts
       fi
+      if [ ! -e /etc/osso-rfs-scripts ]; then
+        mkdir /etc/osso-rfs-scripts
+      fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
