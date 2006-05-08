@@ -1365,11 +1365,11 @@ static char *copy_target;
 static char *copy_tempdir;
 
 static void
-call_copy_cont (bool success)
+call_copy_cont (bool success, bool show_error = true)
 {
   hide_progress ();
 
-  if (!success)
+  if (!success && show_error)
     annoy_user (_("ai_ni_operation_failed"));
     
   if (copy_cont)
@@ -1403,7 +1403,7 @@ copy_progress (GnomeVFSAsyncHandle *handle,
 
   if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED)
     {
-      call_copy_cont (true);
+      call_copy_cont (!progress_was_cancelled (), false);
       gnome_vfs_async_cancel (handle);
     }
 
