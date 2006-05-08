@@ -20,7 +20,7 @@ if [ "x$OSSO_RFS_DOES_NOT_DESTROY" = "x" ]; then
   rm -rf /home/user/.osso/*
 
   OLDDIR=`pwd`
-  cd /etc/osso-cud-scripts
+  cd /etc/osso-rfs-scripts
   for f in `ls *.sh`; do
     ./$f
     RC=$?
