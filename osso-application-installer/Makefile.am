@@ -12,6 +12,9 @@ mime_DATA = osso-application-installer.xml
 etcdir = $(sysconfdir)/osso-application-installer/
 etc_DATA = certified.list
 
+aptdir = $(sysconfdir)/apt/
+apt_DATA = sources.list
+
 modir = $(datadir)/locale/en_GB/LC_MESSAGES/osso-application-installer/
 noinst_DATA = osso-application-installer.mo
 
@@ -19,7 +22,8 @@ EXTRA_DIST = osso-application-installer.desktop			\
              com.nokia.osso_application_installer.service	\
              osso-application-installer.xml			\
              certified.list					\
-             osso-application-installer.mo
+             osso-application-installer.mo			\
+             sources.list
 
 deb:
 	./make-package $(PACKAGE) $(VERSION) .
