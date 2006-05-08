@@ -18,6 +18,18 @@ sudo $DIR/gconf-daemon.sh stop
 if [ "x$OSSO_RFS_DOES_NOT_DESTROY" = "x" ]; then
   sudo /usr/sbin/gconf-clean.sh 
   rm -rf /home/user/.osso/*
+
+  OLDDIR=`pwd`
+  cd /etc/osso-cud-scripts
+  for f in `ls *.sh`; do
+    ./$f
+    RC=$?
+    if [ $RC != 0 ]; then
+      echo "$0: Warning, '$f' returned non-zero return code $RC"
+    fi
+  done
+  cd $OLDDIR
+
 else
   echo "$0: OSSO_RFS_DOES_NOT_DESTROY defined, no data deleted"
 fi

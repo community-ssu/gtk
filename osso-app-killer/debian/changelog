@@ -1,3 +1,10 @@
+osso-app-killer (1.7-1) unstable; urgency=low
+
+  * Added support for /etc/osso-rfs-scripts directory, so that programs
+    can install their own restore factory settings scripts.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 08 May 2006 16:19:27 +0300
+
 osso-app-killer (1.6-1) unstable; urgency=low
 
   * Added stopping of the address book server to the pre-restore script
