@@ -1,10 +1,21 @@
+2006-05-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* Makefile.am (aptdir, apt_DATA): New.  Installs sources.list.
+	(EXTRA_DIST): Distribute it.
+
+	* src/util.h, src/util.cc (annoy_user_with_gnome_vfs_result): New.
+	(fcd_response): Get URI from file chooser, not filename.  Changed
+	all parameter names from "filename" to "uri" to reflect this.
+
+	* src/log.cc (save_log_cont, save_log): Rewritten to use GnomeVFS.
+
 2006-05-04  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/repo.cc (sources_list_reply): Emit correct irritation when
-	trying to remove an essential repository.
+	trying to remove an essential repository. (N28620)
 
-	* src/menu.cc (add_item): Show "Not available" when the item
-	pressed insensitively.
+	* src/menu.cc (add_item): Show "Not available" when any item is
+	pressed insensitively. (N28618)
 
 2006-05-03  Marius Vollmer  <marius.vollmer@nokia.com>
 
