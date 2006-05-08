@@ -1,5 +1,13 @@
 2006-05-08  Johan Bilien <johan.bilien@nokia.com>
 
+	 Applied fix to "HOME: Buttons in layout mode are not shown completely"
+	 (Closes N#27706 and N#28669)
+	  * hildon-home/layout-manager.c:
+	    - Position offset values changed and added size request for buttons
+	    - layout_mode_begin(): sizerequest for buttons added
+
+2006-05-08  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.6.15
 
 2006-05-08  Johan Bilien <johan.bilien@nokia.com>

@@ -80,9 +80,10 @@
 #define LAYOUT_MODE_MENU_LABEL_NAME _("home_ti_layout_mode")
 #define LAYOUT_MODE_MENU_STYLE_NAME "menu_force_with_corners"
 
-#define LAYOUT_OK_BUTTON_RIGHT_OFFSET       40
-#define LAYOUT_CANCEL_BUTTON_RIGHT_OFFSET   80
-#define LAYOUT_BUTTONS_Y         15 
+#define LAYOUT_BUTTON_SIZE_REQUEST        32
+#define LAYOUT_OK_BUTTON_RIGHT_OFFSET     75
+#define LAYOUT_CANCEL_BUTTON_RIGHT_OFFSET 35
+#define LAYOUT_BUTTONS_Y         15
 
 #define LAYOUT_MENU_ITEM_SELECT_APPLETS _("home_me_layout_select_applets")
 #define LAYOUT_MENU_ITEM_ACCEPT_LAYOUT _("home_me_layout_accept_layout")
@@ -479,6 +480,10 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     g_signal_connect( G_OBJECT( general_data.cancel_button ), "clicked", 
                       G_CALLBACK( _cancel_button_click ), NULL );     
 
+    gtk_widget_set_size_request(general_data.ok_button, 
+                                LAYOUT_BUTTON_SIZE_REQUEST, LAYOUT_BUTTON_SIZE_REQUEST);
+    gtk_widget_set_size_request(general_data.cancel_button, 
+                                LAYOUT_BUTTON_SIZE_REQUEST, LAYOUT_BUTTON_SIZE_REQUEST);
     gtk_widget_show(general_data.ok_button);
     gtk_widget_show(general_data.cancel_button);
 
