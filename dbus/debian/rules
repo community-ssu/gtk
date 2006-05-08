@@ -73,3 +73,5 @@ build/dbus-1-doc::
 clean::
 	rm -rf doc/api
 	rm -rf $(MONO_SHARED_DIR)/.wapi
+	rm -f config.guess.cdbs-orig
+	rm -f config.sub.cdbs-orig
