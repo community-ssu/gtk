@@ -1,3 +1,31 @@
+maemo-af-desktop (2.6.15-1) unstable; urgency=low
+
+  * hildon-navigator/others-menu.c: Remove dnotify handler before
+    allowing new update of the others-menu to be happening (should
+    fix a potential race condition)
+
+  Applied fix to "No application-killer dialog when trying to top frozen
+  application that uses HildonViews" (Closes N#28650)
+  * hildon-navigator/hn-wm.c: Treat single-view HildonApps as a
+    normal top-level window.
+
+  * hildon-home/hildon-home-main.c: Fixed a memory leak in the 
+    "Set background image" function (Closes N#28797)
+
+  * hildon-home/hildon-home-image-loader.c: Interpret a NULL pixmap
+    returned by the pixmap loader as a corrupted file (Closes N#24700)
+
+  * hildon-navigator/others-menu.c: Only allow one dnotify-triggered
+    update at a time
+
+  * hildon-navigator/others-menu.c: Dnotify signal handlers now only
+    creates a timeout of 1s, after which the menu is updated
+    (Closes N#28658)
+
+  * hildon-navigator/*.c: Removed deprecated low memory notifications
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  8 May 2006 11:43:38 +0300
+
 maemo-af-desktop (2.6.14-1) unstable; urgency=low
 
   * hildon-home/hildon-home-main.c: Fixed launching of calibration and

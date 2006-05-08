@@ -1,5 +1,9 @@
 2006-05-08  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.6.15
+
+2006-05-08  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/others-menu.c: Remove dnotify handler before
 	  allowing new update of the others-menu to be happening (should
 	  fix a potential race condition)
