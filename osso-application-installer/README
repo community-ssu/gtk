@@ -205,9 +205,5 @@ BUGS
 - "Cataloque needs to be enabled".
 - "Catalogue already present".
 
-
-- Run "dpkg --configure -a" automatically when appropriate.
-- Do something clever when /var/lib/dpkg is already locked.
-
 - figure out the 'max cache size' thingy in pkgcachegen.cc.  12 Megs?
 - use doubles for sizes, maybe
