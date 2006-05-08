@@ -2195,6 +2195,7 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
   package_info *pi = new package_info;
 
   pi->name = dec->decode_string_dup ();
+  pi->broken = false;
   pi->filename = filename;
   pi->installed_version = dec->decode_string_dup ();
   pi->installed_size = dec->decode_int ();;
