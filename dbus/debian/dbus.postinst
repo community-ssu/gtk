@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 # -*- coding: utf-8 -*-
 # Post-installation script for D-BUS
 # Copyright © 2003 Colin Walters <walters@debian.org>
