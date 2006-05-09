@@ -49,9 +49,18 @@ start)
   fi
 
   if [ -e $HOME/first-boot-flag ]; then
+    # Give Backup a chance to restore settings automatically
+    if [ -x $AF_INIT_DIR/osso-backup-startup.sh ]; then
+      $AF_INIT_DIR/osso-backup-startup.sh
+    fi
+
     CONNECTIVITY_UI_SCRIPT=/usr/bin/osso-connectivity-ui.sh
+    CONNECTIVITY_UI_SCRIPT2=$AF_INIT_DIR/osso-connectivity-ui.sh
     if [ -x $CONNECTIVITY_UI_SCRIPT ]; then
       source $CONNECTIVITY_UI_SCRIPT start
+    fi
+    if [ -x $CONNECTIVITY_UI_SCRIPT2 ]; then
+      source $CONNECTIVITY_UI_SCRIPT2 start
     fi
     if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then
       source $AF_INIT_DIR/startup-wizard.sh start
