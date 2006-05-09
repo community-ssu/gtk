@@ -937,11 +937,11 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
   g_return_if_fail(HILDON_IS_FILE_CHOOSER_DIALOG(self));
 
   /* Prevent race condition that can cause multiple
-      subdialogs to be popped up (in a case mainloop
-      is run before subdialog blocks additional clicks. */
+     subdialogs to be popped up (in a case mainloop
+     is run before subdialog blocks additional clicks. */
   if (self->priv->popup_protect)
   {
-    ULOG_INFO("Blocked multiple subdialogs");
+    ULOG_INFO_F("Blocked multiple subdialogs");
     return;
   }
 
@@ -950,18 +950,19 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
   if (self->priv->edited)
   {
     self->priv->edited = FALSE;
-    hildon_file_chooser_dialog_set_current_name(
-      GTK_FILE_CHOOSER(self),
+    hildon_file_chooser_dialog_set_current_name(GTK_FILE_CHOOSER(self),
       gtk_entry_get_text(GTK_ENTRY(self->priv->entry_name)));
   }
 
   backend = _hildon_file_system_model_get_file_system(self->priv->model);
 
-  if (self->priv->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER) {
-    dialog = hildon_file_chooser_dialog_create_sub_dialog
-      (self, GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER);
+  if (self->priv->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER)
+  {
+    dialog = hildon_file_chooser_dialog_create_sub_dialog(self,
+               GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER);
 
-    while (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
+    while (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK)
+    {
       GtkFilePath *file_path;
       gboolean success;
       GError *error = NULL;
@@ -969,16 +970,15 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
       gchar *uri;
 
       uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(dialog));
-      ULOG_INFO("About to create folder %s", uri);
+      ULOG_INFO_F("About to create folder %s", uri);
 
       file_path = gtk_file_system_uri_to_path(backend, uri);
-      success =
-        gtk_file_system_create_folder(backend, file_path, &error);
+      success = gtk_file_system_create_folder(backend, file_path, &error);
       gtk_file_path_free(file_path);
 
       if (success) 
       {
-        (void) gtk_file_chooser_set_current_folder_uri(GTK_FILE_CHOOSER(self), uri);
+        gtk_file_chooser_set_current_folder_uri(GTK_FILE_CHOOSER(self), uri);
         g_free(uri);
         break;
       }
@@ -986,31 +986,32 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
       g_free(uri);
       g_assert(error != NULL);
       
-      /* GtkFileSystemModelGnomeVFS returns ERROR_FAILED and GtkFileSystemUnix returns
-          ERROR_NONEXISTENT (!!!) if we try to create a folder that already exists. We report
-          other errors normally.
-          GnomeVFS has been changed to return ALREADY EXISTS accordingly. 
-          We now support this only. */
+      /* GtkFileSystemModelGnomeVFS returns ERROR_FAILED and
+       * GtkFileSystemUnix returns ERROR_NONEXISTENT (!!!) if we try to
+       * create a folder that already exists. We report other errors
+       * normally. GnomeVFS has been changed to return ALREADY EXISTS
+       * accordingly. We now support this only. */
+
       if (g_error_matches(error, GTK_FILE_SYSTEM_ERROR,  
-              GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS))
+                          GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS))
         message = HCS("ckdg_ib_folder_already_exists");
       else
-        message = _("sfil_ni_operation_failed");
+        message = HCS("sfil_ni_operation_failed");
 
-      ULOG_ERR(error->message);
+      ULOG_ERR_F(error->message);
       gtk_infoprint(GTK_WINDOW(dialog), message);
       g_error_free(error);
 
       hildon_file_chooser_dialog_select_text(self->priv);
     }
-  } else {
-    dialog =
-        hildon_file_chooser_dialog_create_sub_dialog
-            (self, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+  }
+  else
+  {
+    dialog = hildon_file_chooser_dialog_create_sub_dialog(self,
+               GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
 
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK)
-        sync_current_folders(HILDON_FILE_CHOOSER_DIALOG(dialog),
-                             self);
+      sync_current_folders(HILDON_FILE_CHOOSER_DIALOG(dialog), self);
   }
 
   gtk_banner_close(GTK_WINDOW(dialog));

@@ -1,3 +1,11 @@
+hildon-fm (0.23-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Corrected locale domain of sfil_ni_operation_failed (N#29064).
+  * Some white space & indentation fixes.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 09 May 2006 17:03:26 +0300
+
 hildon-fm (0.22-1) unstable; urgency=low
 
   * Made rendering optimisation allowed by fixed bug 22807.
