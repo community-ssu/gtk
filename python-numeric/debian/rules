@@ -90,7 +90,6 @@ binary: build install
 
 	find $(d_num) $(d_dev) -name '.svn' | xargs rm -rf
 
-	dh_python
 	dh_fixperms
 	dh_installdeb
 	dh_shlibdeps
