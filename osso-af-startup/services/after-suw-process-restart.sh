@@ -18,12 +18,8 @@
 
 DIR=$AF_INIT_DIR
 
-# media-server was only started if we went directly to ACTDEAD
-DSME_STATE=`/usr/sbin/bootstate 2> /dev/null`
-if [ "x$DSME_STATE" = "xACTDEAD" ]; then
-  if [ -x $DIR/osso-media-server.sh ]; then
-    $DIR/osso-media-server.sh stop
-  fi
+if [ -x $DIR/osso-media-server.sh ]; then
+  $DIR/osso-media-server.sh stop
 fi
 # this is first boot, so Connectivity UI is running
 if [ -x /usr/bin/osso-connectivity-ui.sh ]; then
@@ -37,13 +33,9 @@ source $DIR/keyboard.sh stop
 source $DIR/dbus-sessionbus.sh stop
 sudo /etc/init.d/ke-recv stop
 
-# wait for the D-BUS session bus to die FIXME
+# wait for the D-BUS session bus to die
 sleep 1
-#TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
-#while [ $TMP = 1 ]; do
-#  sleep 1
-#  TMP=`ps x | grep -- --session | grep -v "grep -- --session" | wc -l | tr -d ' \t'`
-#done
+
 if [ -f $DIR/osso-application-installer.defs ]; then
   source $DIR/osso-application-installer.defs
 fi
@@ -59,10 +51,8 @@ if [ -x /etc/init.d/maemo-launcher ]; then
 fi
 sudo /etc/init.d/ke-recv start
 sudo /etc/init.d/osso-systemui restart
-if [ "x$DSME_STATE" = "xACTDEAD" ]; then
-  if [ -x $DIR/osso-media-server.sh ]; then
-    $DIR/osso-media-server.sh start
-  fi
+if [ -x $DIR/osso-media-server.sh ]; then
+  $DIR/osso-media-server.sh start &
 fi
 if [ -x /usr/bin/osso-connectivity-ui.sh ]; then
   source /usr/bin/osso-connectivity-ui.sh start

@@ -1,3 +1,11 @@
+osso-af-startup (1.16-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Media server is now also restarted in USER state in the first boot
+    (N#28935).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 09 May 2006 17:49:16 +0300
+
 osso-af-startup (1.15-1) unstable; urgency=low
 
   * Added support for another memory card.
