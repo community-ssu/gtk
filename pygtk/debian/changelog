@@ -1,3 +1,10 @@
+python-gtk2 (2.6.1-2osso4) unstable; urgency=low
+
+  * some package cleanups
+  * Recompiled under SDK2.0RC7
+ 
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri, 5 May 2006 17:08:00 -0300
+
 python-gtk2 (2.6.1-2osso3) unstable; urgency=low
 
   * Recompiled under SDK2.0RC4

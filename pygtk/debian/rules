@@ -85,9 +85,9 @@ install: build
 	find $(d_dev) -name "*.pth" -exec rm -f {} \;
 
 binary: build install
-	dh_testdir -a -i
-	dh_testroot -a -i
-	dh_installexamples -a -i
+	dh_testdir
+	dh_testroot
+	dh_installexamples
 
 	# Replace all '#!' calls to python with python2.4
         # and make them executable
@@ -103,15 +103,14 @@ binary: build install
 	  fi; \
 	done
 
-	dh_strip -a -i
-	dh_link -a -i
-	dh_compress -a -i
-	dh_fixperms -a -i
-	dh_python -a -i
-	dh_installdeb -a -i
-	dh_shlibdeps -a -i
-	dh_gencontrol -a -i
-	dh_md5sums -a -i
-	dh_builddeb -a -i
+	dh_strip
+	dh_link
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
 
 .PHONY: build clean binary install 
