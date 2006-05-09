@@ -6,79 +6,60 @@
 # dh-make output file, you may use that output file without restriction.
 # This special exception was added by Craig Small in version 0.37 of dh-make.
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+PYVER=2.4
+PYTHON=python$(PYVER)
+p_base=$(PYTHON)-bluez
+p_dev =$(PYTHON)-bluez-dev
 
+d_base=debian/$(p_base)
+d_dev=debian/$(p_dev)
 
-p   := python-bluez
-p24 := python2.4-bluez
-d24 := debian/$(p24)
-
-#pd  := python-bluez-doc
-#dd  := debian/$(pd)
-
-
-CFLAGS = -Wall -g
-
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -O0
-else
-	CFLAGS += -O2
-endif
-
-PY_BUILD_FLAGS += --debug
+CFLAGS=-Wall -Os
 
 build: build24-stamp 
-
 build24-stamp:
 	dh_testdir 
-	python2.4 ./setup.py build $(PY_BUILD_FLAGS)
+	CFLAGS="$(CFLAGS)" $(PYTHON) setup.py build
 	touch build24-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
 	-rm -f build24-stamp
-
-	rm -rf build
-	rm -f doc/{,_}bluetooth.html
+	-rm -rf build
+	-rm -f doc/{,_}bluetooth.html
+	-rm -rf $(d_base) $(d_dev)
 	dh_clean 
 
-# Build architecture-independent files here.
-binary-indep: build install
-# We have nothing to do by default.
-
-# Build architecture-dependent files here.
-binary-arch: build install
+binary:
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs 
-	dh_installdocs
-	dh_installexamples
-#	dh_install
-#	dh_installmenu
-#	dh_installdebconf	
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
-	dh_installman
 
-	python2.4 ./setup.py install --prefix="$$PWD/$(d24)/usr" --no-compile
+	mkdir -p $(d_base) $(d_dev)
+	$(PYTHON) setup.py install --root=$(d_base) --no-compile
+	$(PYTHON) -OO -m compileall -f $(d_base)
+	(cd doc && ./gendoc)
+	cp -a $(d_base)/usr $(d_dev)
 
+	# base
+	find $(d_base) -name "*.py" | xargs rm -f 
+
+	# dev
+	find $(d_dev)/usr/lib/$(PYTHON) -not -name "*.py" -type f | xargs rm -f 
+	dh_installexamples -p$(p_dev) examples/*
+	dh_installdocs -p$(p_dev) doc/*.html
+	
+	find $(d_dev) -name ".svn" | xargs rm -rf
+
+	dh_installchangelogs -p$(p_dev)
+	dh_installman -p$(p_dev)
 	dh_strip
-	dh_compress
+	dh_compress -Xexamples
 	dh_fixperms
-#	dh_python
-#	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install configure
+.PHONY: build clean binary configure

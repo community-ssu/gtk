@@ -1,3 +1,9 @@
+pybluez (0.6.1-1osso2) unstable; urgency=low
+
+  * cleanup debian package
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri, 5 May 2006 14:16:00 -0300
+
 pybluez (0.6.1-1osso1) unstable; urgency=low
 
   * Upgrade to 0.6.1
