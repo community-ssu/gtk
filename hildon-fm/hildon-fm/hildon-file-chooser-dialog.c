@@ -996,7 +996,7 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
                           GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS))
         message = HCS("ckdg_ib_folder_already_exists");
       else
-        message = HCS("sfil_ni_operation_failed");
+        message = _("sfil_ib_create_folder_not_allowed");
 
       ULOG_ERR_F(error->message);
       gtk_infoprint(GTK_WINDOW(dialog), message);
