@@ -13,6 +13,6 @@ Description: Python bindings for Libosso library
 Package: python2.4-osso-dev
 Section: libs
 Architecture: any
-Depends: python2.4-gtk2-dev, python2.4-dev, libdbus-glib-1-dev, libosso-dev, libgtk2.0-dev, libpango1.0-dev, libglib2.0-dev
+Depends: python2.4-osso
 Description: Examples and header files for Python bindings for Libosso library
 

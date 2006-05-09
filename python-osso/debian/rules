@@ -2,7 +2,6 @@
 # -*- makefile -*-
 
 PYVER=2.4
-PYGTKVER=2.0
 
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
@@ -22,6 +21,8 @@ clean:
 	dh_testroot
 	rm -f build-stamp 
 	python$(PYVER) setup.py clean
+	-rm -rf $(d_base) $(d_dev)
+	-rm -rf build
 	dh_clean 
 
 install: build
