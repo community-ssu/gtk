@@ -1,3 +1,8 @@
+2006-05-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_size_allocate): Proper fix for
+	N#28529 (I broke the previous patch)
+
 2006-05-05  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_row_inserted): Set tmpnode to the
