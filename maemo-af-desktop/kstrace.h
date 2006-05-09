@@ -28,7 +28,7 @@
 *
 * @author Karoliina Salminen karoliina@karoliinasalminen.com
 *
-* Copyright (c) 2005 Karoliina Salminen
+* Copyright (c) 2005 Nokia Corporation
 *
 * This file is licensed under LGPL
 *
