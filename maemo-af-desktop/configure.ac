@@ -30,12 +30,6 @@ AC_SUBST(X_CFLAGS)
 
 AC_HEADER_STDC
 
-if test foobar${hildon_use_debug} = foobaryes 
-then
-    CFLAGS="$CFLAGS -ggdb -O0 -DDEBUG"
-else
-    CFLAGS="$CFLAGS -O3"
-fi
 
 if test foobar${hildon_use_timestamping} = foobaryes
 then

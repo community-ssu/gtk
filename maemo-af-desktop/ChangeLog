@@ -1,3 +1,7 @@
+2006-05-10  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: Removed -O3 compilation flag
+
 2006-05-08  Johan Bilien <johan.bilien@nokia.com>
 
 	 Applied fix to "HOME: Buttons in layout mode are not shown completely"
