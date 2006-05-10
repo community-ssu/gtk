@@ -30,6 +30,17 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
+ifneq (,$(findstring parallel,$(DEB_BUILD_OPTIONS)))
+    PARALLEL_JOBS := $(shell echo $(DEB_BUILD_OPTIONS) | \
+        sed -e 's/.*parallel=\([0-9]\+\).*/\1/')
+    ifeq ($(DEB_BUILD_OPTIONS),$(PARALLEL_JOBS))
+        PARALLEL_JOBS := $(shell if [ -f /proc/cpuinfo ]; \
+            then echo `cat /proc/cpuinfo | grep 'processor' | wc -l`; \
+            else echo 1; fi)
+    endif
+    NJOBS := -j$(PARALLEL_JOBS)
+endif
+
 # Ensure the build aborts when there are still references to undefined
 # symbols.
 ### Disabled for now as gtk is actually broken currently
@@ -102,7 +113,7 @@ $(BUILD_SHARED_DIR)/build-stamp:
 	-rm -f $(SOURCE_DIR)/install-test-stamp
 
 	# Add here commands to compile the package.
-	$(MAKE) -C $(BUILD_SHARED_DIR) \
+	$(MAKE) $(NJOBS) -C $(BUILD_SHARED_DIR) \
 		LD_LIBRARY_PATH=$(libpath):$(LD_LIBRARY_PATH)
 
 	# The FAQ and tutorial are normally built only during 'make dist'
