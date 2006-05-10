@@ -372,4 +372,9 @@ const char *device_name ();
 */
 void respond_on_escape (GtkDialog *dialog, int response);
 
+/* Make it so that WIDGET grabs the focus when it is put on the
+   screen.
+*/
+void grab_focus_on_map (GtkWidget *widget);
+
 #endif /* !UTIL_H */

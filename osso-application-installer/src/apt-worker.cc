@@ -2005,6 +2005,17 @@ myDPkgPM::myDPkgPM (pkgDepCache *Cache)
 {
 }
 
+static int
+combine_rescodes (int all, int one)
+{
+  if (all == rescode_success)
+    return one;
+  else if (all == one)
+    return all;
+  else
+    return rescode_failure;
+}
+
 int
 operation (bool check_only)
 {
@@ -2097,8 +2108,10 @@ operation (bool check_only)
    if (Fetcher.Run() == pkgAcquire::Failed)
      return rescode_failure;
       
-   // Print out errors
-   bool Failed = false, not_found = true;
+   /* Print out errors and distill the failure reasons into a
+      apt_proto_rescode.
+   */
+   int result = rescode_success;
    for (pkgAcquire::ItemIterator I = Fetcher.ItemsBegin();
 	I != Fetcher.ItemsEnd(); I++)
      {
@@ -2114,27 +2127,22 @@ operation (bool check_only)
 		(*I)->DescURI().c_str(),
 		(*I)->ErrorText.c_str());
 
-       /* The http method puts the result code of the request at the
-	  start of the error text.  We rely on this to detect the
-	  "Package not found" error.
-       */
+       int this_result;
 
-       int result = atoi ((*I)->ErrorText.c_str());
+       if (g_str_has_prefix ((*I)->ErrorText.c_str(), "404"))
+	 this_result = rescode_packages_not_found;
+       else if (g_str_has_prefix ((*I)->ErrorText.c_str(), "Size mismatch"))
+	 this_result = rescode_package_corrupted;
+       else if (g_str_has_prefix ((*I)->ErrorText.c_str(), "MD5Sum mismatch"))
+       	 this_result = rescode_package_corrupted;
+       else
+       	 this_result = rescode_failure;
 
-       /* We report a "Package not found" error when all downloads
-	  failed with result code 404.
-       */
-       if (result != 404)
-	 not_found = false;
-
-       Failed = true;
+       result = combine_rescodes (result, this_result);
      }
 
-   if (Failed == true)
-     {
-       _error->Error("Unable to fetch some archives.");
-       return not_found? rescode_packages_not_found : rescode_download_failed;
-     }
+   if (result != rescode_success)
+     return (result == rescode_failure)? rescode_download_failed : result;
       
    send_status (op_general, -1, 0, 0);
       

@@ -71,6 +71,7 @@ enum apt_proto_result_code {
   rescode_success,              // (success)
   rescode_failure,              // Operation failed
   rescode_download_failed,      // Download failed
+  rescode_package_corrupted,    // Package corrupted
   rescode_packages_not_found,   // Unable to download.  The
                                 // package was not found.
   rescode_out_of_space          // Not enough memory in target location

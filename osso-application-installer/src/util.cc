@@ -602,6 +602,13 @@ get_small_font ()
   return small_font;
 }
 
+static gboolean
+no_button_events (GtkWidget *widget, GdkEventButton *event, gpointer data)
+{
+  g_signal_stop_emission_by_name (widget, "button-press-event");
+  return FALSE;
+}
+
 GtkWidget *
 make_small_text_view (const char *text)
 {
@@ -615,6 +622,8 @@ make_small_text_view (const char *text)
   gtk_text_buffer_set_text (buffer, text, -1);
   gtk_text_view_set_editable (GTK_TEXT_VIEW (view), 0);
   gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (view), 0);
+  g_signal_connect (view, "button-press-event",
+		    G_CALLBACK (no_button_events), NULL);
   gtk_container_add (GTK_CONTAINER (scroll), view);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll),
 				  GTK_POLICY_AUTOMATIC,
@@ -962,6 +971,8 @@ make_global_package_list (GList *packages,
 
   set_global_package_list (packages, installed, selected, activated);
 
+  grab_focus_on_map (tree);
+
   return scroller;
 }
 
@@ -1040,6 +1051,8 @@ make_global_section_list (GList *sections, section_activated *act)
 
   gtk_box_pack_start (GTK_BOX (hbox), vbox, FALSE, FALSE, 10);
 
+  bool first_button = true;
+
   for (GList *s = sections; s; s = s ->next)
     {
       section_info *si = (section_info *)s->data;
@@ -1050,6 +1063,9 @@ make_global_section_list (GList *sections, section_activated *act)
       gtk_box_pack_start (GTK_BOX (vbox), btn, FALSE, FALSE, 0);
       g_signal_connect (btn, "clicked",
 			G_CALLBACK (section_clicked), si);
+      if (first_button)
+	grab_focus_on_map (btn);
+      first_button = false;
     }
 
   scroller = gtk_scrolled_window_new (NULL, NULL);
@@ -1849,4 +1865,16 @@ respond_on_escape (GtkDialog *dialog, int response)
   g_signal_connect (dialog, "key_release_event",
 		    G_CALLBACK (escape_key_release_event),
 		    (gpointer)response);
+}
+
+static void
+grab_focus (GtkWidget *widget, gpointer data)
+{
+  gtk_widget_grab_focus (widget);
+}
+
+void
+grab_focus_on_map (GtkWidget *widget)
+{
+  g_signal_connect (widget, "map", G_CALLBACK (grab_focus), NULL);
 }

@@ -229,6 +229,7 @@ make_main_view (view *v)
 		    &uninstall_applications_view);
   gtk_table_attach_defaults (GTK_TABLE (table), btn,
 			     1, 2, 1, 2);
+  grab_focus_on_map (btn);
 
   image = gtk_image_new_from_icon_name ("qgn_list_browser",
 					HILDON_ICON_SIZE_26);
@@ -872,7 +873,8 @@ get_intermediate_package_info (package_info *pi,
 }
 
 static void
-annoy_user_with_result_code (int result_code, const char *failure)
+annoy_user_with_result_code (int result_code, const char *failure,
+			     bool upgrading)
 {
   if (result_code == rescode_success)
     return;
@@ -881,6 +883,13 @@ annoy_user_with_result_code (int result_code, const char *failure)
     annoy_user (_("ai_ni_error_download_failed"));
   else if (result_code == rescode_packages_not_found)
     annoy_user (_("ai_ni_error_download_missing"));
+  else if (result_code == rescode_package_corrupted)
+    {
+      if (upgrading)
+	annoy_user (_("ai_ni_error_update_corrupted"));
+      else
+	annoy_user (_("ai_ni_error_install_corrupted"));
+    }
   else if (result_code == rescode_out_of_space)
     annoy_user (dgettext ("hildon-common-strings",
 			  "sfil_ni_not_enough_memory"));
@@ -1105,7 +1114,7 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
 			      ? _("ai_ni_error_updating_failed")
 			      : _("ai_ni_error_installation_failed")),
 			     pi->name);
-	  annoy_user_with_result_code (result_code, str);
+	  annoy_user_with_result_code (result_code, str, upgrading);
 	  g_free (str);
 	}
     }
