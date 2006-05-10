@@ -2,6 +2,7 @@ dbus (0.61-osso9) experimental; urgency=low
 
   * UNRELEASED
   * Fixed a leak in dbus_g_object_register_marshaller_array (N#28791).
+  * Fixed a leak in DBusGProxyManager (N#28794).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 10 May 2006 14:52:17 +0300
 

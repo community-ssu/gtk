@@ -1,0 +1,20 @@
+Index: glib/dbus-gproxy.c
+===================================================================
+RCS file: /cvs/dbus/dbus/glib/dbus-gproxy.c,v
+retrieving revision 1.46
+diff -u -B -p -r1.46 dbus-gproxy.c
+--- glib/dbus-gproxy.c	28 Apr 2006 21:11:28 -0000	1.46
++++ glib/dbus-gproxy.c	9 May 2006 12:04:03 -0000
+@@ -745,6 +746,12 @@ dbus_g_proxy_manager_replace_name_owner 
+ 	  g_slist_free (data.destroyed);
+ 
+ 	  LOCK_MANAGER (manager);
++	  
++	  if (info)
++	    {
++	      g_free (info->name);
++	      g_free (info);
++	    }
+ 	}
+       else
+ 	{
