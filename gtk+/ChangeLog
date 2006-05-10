@@ -1,3 +1,8 @@
+2006-05-10  Alexander Kanevskiy  <alexander.kanevskiy@nokia.com>
+
+	* gtk/Makefile.am (maemo_gtk_im_switch_DEPENDENCIES): Added to fix
+	issues with multi-threaded builds.
+
 2006-05-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcombobox.c (BONUS_PADDING): Add magical 2px for list mode
