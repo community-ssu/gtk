@@ -729,6 +729,7 @@ gtk_update_icon_cache_LDADD = $(LDADDS)
 gtk_update_icon_cache_SOURCES = updateiconcache.c
 
 
+maemo_gtk_im_switch_DEPENDENCIES = $(DEPS) 
 maemo_gtk_im_switch_LDADD = $(LDADDS)
 
 maemo_gtk_im_switch_SOURCES = maemo-gtk-im-switch.c
