@@ -1,5 +1,11 @@
 python-xml (0.8.4-1osso4) unstable; urgency=low
 
+  * remove .svn directories in development package (documentation and example) :/
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 10 May 2006 10:38:00 -0300
+
+python-xml (0.8.4-1osso4) unstable; urgency=low
+
   * remove unused files from debian/
   * remove compileall in post-install script
   * replace python2.4 to macro in debian/rules

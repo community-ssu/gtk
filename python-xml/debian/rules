@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 # -*-Makefile-*-
 export DH_COMPAT=4
+export DH_VERBOSE=1
 
 PYVER=2.4
 PYTHON=python$(PYVER)
@@ -71,6 +72,9 @@ install: build
 	find $(d_dev) -name "*.pyo" -exec rm -f {} \;
 	find $(d_dev) -name "*.so" -exec rm -f {} \;
 	find $(d_dev) -name "*.mo" -exec rm -f {} \;
+
+	# cleanup
+	find $(d_base) $(d_dev) -name ".svn" | xargs rm -rf
 
 binary-indep: build install
 binary-arch: build install
