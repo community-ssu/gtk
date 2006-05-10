@@ -121,7 +121,7 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
 	    argv[idx++] = arg;
 	    dbus_message_iter_next(&iter);
 	}
-        g_assert(idx == argc + 1);
+        g_assert(idx == argc);
         argv[idx] = NULL;
 	
 	(osso->mime.func)(osso->mime.data, argc, argv);
