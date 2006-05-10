@@ -429,10 +429,10 @@ canonicalize_section_name (const char *name)
   if (name == NULL || red_pill_mode)
     return name;
 
-  if (!strncmp (name, "maemo/", 6))
+  if (g_str_has_prefix (name, "maemo/"))
     return name + 6;
 
-  if (!strncmp (name, "user/", 5))
+  if (g_str_has_prefix (name, "user/"))
     return name += 5;
 
   return name;
@@ -445,6 +445,10 @@ nicify_section_name (const char *name)
     return name;
 
   name = canonicalize_section_name (name);
+
+  if (*name == '\0')
+    return "-";
+
   char *logical_id = g_strdup_printf ("ai_category_%s", name);
   const char *translated_name = gettext (logical_id);
   if (translated_name != logical_id)
