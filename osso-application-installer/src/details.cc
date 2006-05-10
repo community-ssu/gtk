@@ -413,7 +413,7 @@ show_with_details (package_info *pi, bool installed,
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (details_response), NULL);
 
-  gtk_widget_set_usize (dialog, 600, 300);
+  gtk_widget_set_usize (dialog, 600, 320);
   gtk_widget_show_all (dialog);
 
   if (show_problems)
