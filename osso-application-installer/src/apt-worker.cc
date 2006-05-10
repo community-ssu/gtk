@@ -2369,13 +2369,13 @@ get_field_int (pkgTagSection *section, const char *field, int def)
 
 static void
 encode_field (pkgTagSection *section, const char *field,
-	      const char *default = "")
+	      const char *def = "")
 {
   const char *start, *end;
   if (get_field (section, field, start, end))
     response.encode_stringn (start, end-start);
   else
-    response.encode_string (default);
+    response.encode_string (def);
 }
 
 static bool
