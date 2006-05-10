@@ -231,7 +231,7 @@ enum {
 static GtkBinClass *parent_class = NULL;
 static guint combo_box_signals[LAST_SIGNAL] = {0,};
 
-#define BONUS_PADDING 4
+#define BONUS_PADDING 6
 #define SCROLL_TIME  100
 #define HILDON_PADDING 25
 
@@ -296,8 +296,6 @@ static void     gtk_combo_box_menu_position        (GtkMenu          *menu,
                                                     gint             *push_in,
                                                     gpointer          user_data);
 
-static gint     gtk_combo_box_calc_requested_width (GtkComboBox      *combo_box,
-                                                    GtkTreePath      *path);
 static void     gtk_combo_box_remeasure            (GtkComboBox      *combo_box);
 
 static void     gtk_combo_box_unset_model          (GtkComboBox      *combo_box);
@@ -2083,47 +2081,11 @@ gtk_combo_box_popdown (GtkComboBox *combo_box)
                                 FALSE);
 }
 
-static gint
-gtk_combo_box_calc_requested_width (GtkComboBox *combo_box,
-                                    GtkTreePath *path)
-{
-  gint padding;
-  GtkRequisition req;
-  gboolean hildonlike;
-
-  if (combo_box->priv->cell_view)
-    gtk_widget_style_get (combo_box->priv->cell_view,
-                          "focus-line-width", &padding,
-                          NULL);
-  else
-    padding = 0;
-  
-   gtk_widget_style_get (GTK_WIDGET (combo_box), "hildonlike", &hildonlike,
-			 NULL);
-
-  /* add some pixels for good measure */
-  /* Hildon: we need more padding because our theming
-   * Not elegent way to do it anyway ... */
-  if (hildonlike)
-    padding += HILDON_PADDING;
-  else
-    padding += BONUS_PADDING;
-
-  if (combo_box->priv->cell_view)
-    gtk_cell_view_get_size_of_row (GTK_CELL_VIEW (combo_box->priv->cell_view),
-                                   path, &req);
-  else
-    req.width = 0;
-
-  return req.width + padding;
-}
-
 static void
 gtk_combo_box_remeasure (GtkComboBox *combo_box)
 {
   GtkTreeIter iter;
   GtkTreePath *path;
-  gboolean hildonlike;
 
   if (!combo_box->priv->model ||
       !gtk_tree_model_get_iter_first (combo_box->priv->model, &iter))
@@ -2131,23 +2093,19 @@ gtk_combo_box_remeasure (GtkComboBox *combo_box)
 
   combo_box->priv->width = 0;
 
+  if (!combo_box->priv->cell_view)
+    return;
+
   path = gtk_tree_path_new_from_indices (0, -1);
-  gtk_widget_style_get (GTK_WIDGET (combo_box), "hildonlike", &hildonlike, NULL);
 
   do
     {
       GtkRequisition req;
 
-      if (combo_box->priv->cell_view)
-	gtk_cell_view_get_size_of_row (GTK_CELL_VIEW (combo_box->priv->cell_view), 
-                                       path, &req);
-      else
-        req.width = 0;
-  /* Hildon: we need more padding because our theming
-   * Not elegent way to do it anyway ... */
+      gtk_cell_view_get_size_of_row (GTK_CELL_VIEW (combo_box->priv->cell_view), 
+				     path, &req);
 
-      combo_box->priv->width = MAX (combo_box->priv->width,
-                                    req.width + (hildonlike == 1) ? HILDON_PADDING : 0 );
+      combo_box->priv->width = MAX (combo_box->priv->width, req.width);
 
       gtk_tree_path_next (path);
     }
@@ -2203,7 +2161,10 @@ gtk_combo_box_size_request (GtkWidget      *widget,
           xthickness = combo_box->priv->button->style->xthickness;
           ythickness = combo_box->priv->button->style->ythickness;
 
-          bin_req.width = MAX (bin_req.width, combo_box->priv->width);
+	  if (hildonlike)
+	    bin_req.width = MAX (bin_req.width, combo_box->priv->width + HILDON_PADDING);
+	  else
+	    bin_req.width = MAX (bin_req.width, combo_box->priv->width);
 
           gtk_widget_size_request (combo_box->priv->separator, &sep_req);
           gtk_widget_size_request (combo_box->priv->arrow, &arrow_req);
@@ -2238,7 +2199,14 @@ gtk_combo_box_size_request (GtkWidget      *widget,
       *requisition = bin_req;
 
       requisition->width += 2 * focus_width;
-      
+
+      /* Add some pixels for good measure so that the strings in the popup do
+       * not get needlessly truncated
+       * FIXME: this should be calculated based on the popup/combobox style
+       * parameters rather than hardcoding
+       */
+      requisition->width += BONUS_PADDING;
+
       if (combo_box->priv->cell_view_frame)
         {
 	  gtk_widget_size_request (combo_box->priv->cell_view_frame, &frame_req);
@@ -2475,8 +2443,8 @@ gtk_combo_box_size_allocate (GtkWidget     *widget,
 
       gtk_widget_size_request(GTK_BIN(widget)->child, &child_req);
 
+      child.height = MIN (child.height, child_req.height);
       child.y += (child.height - child_req.height) / 2;
-      child.height = child_req.height;
       
       child.width = MAX (1, child.width);
       child.height = MAX (1, child.height);
@@ -3634,7 +3602,6 @@ gtk_combo_box_menu_row_changed (GtkTreeModel *model,
 {
   GtkComboBox *combo_box = GTK_COMBO_BOX (user_data);
   GtkWidget *item;
-  gint width;
   gboolean is_separator;
 
   if (!combo_box->priv->popup_widget)
@@ -3680,17 +3647,8 @@ gtk_combo_box_menu_row_changed (GtkTreeModel *model,
       gtk_combo_box_relayout_item (combo_box, item, iter, pitem);
     }
 
-  width = gtk_combo_box_calc_requested_width (combo_box, path);
-
-  if (width > combo_box->priv->width)
-    {
-      if (combo_box->priv->cell_view)
-	{
-	  gtk_widget_set_size_request (combo_box->priv->cell_view, width, -1);
-	  gtk_widget_queue_resize (combo_box->priv->cell_view);
-	}
-      combo_box->priv->width = width;
-    }
+  if (combo_box->priv->cell_view)
+    gtk_widget_queue_resize (combo_box->priv->cell_view);
 }
 
 /*
@@ -4250,19 +4208,9 @@ gtk_combo_box_list_row_changed (GtkTreeModel *model,
                                 gpointer      data)
 {
   GtkComboBox *combo_box = GTK_COMBO_BOX (data);
-  gint width;
 
-  width = gtk_combo_box_calc_requested_width (combo_box, path);
-
-  if (width > combo_box->priv->width)
-    {
-      if (combo_box->priv->cell_view) 
-	{
-	  gtk_widget_set_size_request (combo_box->priv->cell_view, width, -1);
-	  gtk_widget_queue_resize (combo_box->priv->cell_view);
-	}
-      combo_box->priv->width = width;
-    }
+  if (combo_box->priv->cell_view)
+    gtk_widget_queue_resize (combo_box->priv->cell_view);
 }
 
 /*
