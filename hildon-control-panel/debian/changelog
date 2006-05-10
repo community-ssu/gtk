@@ -1,3 +1,15 @@
+hildon-control-panel (1.2.5-1) unstable; urgency=low
+
+  * Added build-dep on hildon-fm-dev
+
+  * configure.ac, Makefile.am: Link against hildonfm to make some
+    applets happier (Closes N#27086)
+
+  * hildon-control-panel-main.[ch], hildon-cp-rfs.c: Added help
+    topic to the RFS and CUD dialogs (Closes N#27548 and N#27549)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 10 May 2006 11:57:28 +0300
+
 hildon-control-panel (1.2.4-1) unstable; urgency=low
 
   * hildon-control-panel-main.[ch], hildon-cp-rfs.c: The warning dialog
