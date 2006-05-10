@@ -664,7 +664,7 @@ PyImport_ExecCodeModuleEx(char *name, PyObject *co, char *pathname)
    Doesn't set an exception. */
 
 static char *
-make_compiled_pathname(char *pathname, char *buf, size_t buflen)
+make_compiled_pathname(char *pathname, char *buf, size_t buflen, char optimized)
 {
 	size_t len = strlen(pathname);
 	if (len+2 > buflen)
@@ -677,7 +677,7 @@ make_compiled_pathname(char *pathname, char *buf, size_t buflen)
 		--len;	/* pretend 'w' isn't there */
 #endif
 	memcpy(buf, pathname, len);
-	buf[len] = Py_OptimizeFlag ? 'o' : 'c';
+	buf[len] = optimized ? 'o' : 'c';
 	buf[len+1] = '\0';
 
 	return buf;
@@ -868,9 +868,9 @@ static PyObject *
 load_source_module(char *name, char *pathname, FILE *fp)
 {
 	time_t mtime;
-	FILE *fpc;
+	FILE *fpc = NULL;
 	char buf[MAXPATHLEN+1];
-	char *cpathname;
+	char *cpathname = NULL;
 	PyCodeObject *co;
 	PyObject *m;
 
@@ -889,9 +889,15 @@ load_source_module(char *name, char *pathname, FILE *fp)
 	}
 #endif
 	cpathname = make_compiled_pathname(pathname, buf,
-					   (size_t)MAXPATHLEN + 1);
-	if (cpathname != NULL &&
-	    (fpc = check_compiled_module(pathname, mtime, cpathname))) {
+					   (size_t)MAXPATHLEN + 1, Py_OptimizeFlag);
+
+	if (!(fpc = check_compiled_module(pathname, mtime, cpathname))) {
+		cpathname = make_compiled_pathname(pathname, buf,
+						(size_t)MAXPATHLEN + 1, !Py_OptimizeFlag);
+		fpc = check_compiled_module(pathname, mtime, cpathname);
+	}
+
+	if (fpc != NULL) {
 		co = read_compiled_module(cpathname, fpc);
 		fclose(fpc);
 		if (co == NULL)

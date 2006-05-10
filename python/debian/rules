@@ -69,7 +69,6 @@ clean:
 	rm -f stamp-*
 	rm -f patch-stamp* pxxx
 	rm -f debian/test_results
-
 	-$(MAKE) -f Makefile.pre.in srcdir=. distclean
 	rm -rf Lib/test/db_home
 	rm -rf $(buildd_shared)
@@ -152,6 +151,7 @@ stamp-install: stamp-build
 		$(d)/$(scriptdir)/bsddb \
 		$(d)/$(scriptdir)/test \
 		$(d)/$(scriptdir)/email/test \
+		$(d)/$(scriptdir)/xml/{dom,parsers,sax} \
 		$(d)/$(scriptdir)/aifc.* \
 		$(d)/$(scriptdir)/audiodev.* \
 		$(d)/$(scriptdir)/SimpleHTTPServer.* \
@@ -188,7 +188,6 @@ stamp-install: stamp-build
 		$(d)/$(scriptdir)/tabnanny.* \
 		$(d)/$(scriptdir)/telnetlib.* \
 		$(d)/$(scriptdir)/this.* \
-		$(d)/$(scriptdir)/xmllib.* \
 		$(d)/$(scriptdir)/timeit.* \
 		$(d)/$(scriptdir)/toaiff.* \
 		$(d)/$(scriptdir)/trace.* \

@@ -1,3 +1,12 @@
+python2.4 (2.4.2-1osso8) unstable; urgency=low
+  
+  * modify import.c to not create a new compiled ".pyc/.pyo"
+  * remove xml from python package. Python for maemo will use python-xml
+    package instead.
+  * put xmllib module (used to compile libxml2 bindings and dbus-bindings)
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 10 May 2006 15:20:00 -0300
+
 python2.4 (2.4.2-1osso7) unstable; urgency=low
   
   * more package cleanups
