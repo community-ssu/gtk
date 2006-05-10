@@ -54,12 +54,12 @@ install: build
 	cp $(d)/usr/lib/python$(PYVER)/site-packages/hildon.so $(d_base)/usr/lib/python$(PYVER)/site-packages
 
 	# dev
-	mkdir -p $(d_dev)/usr/share/doc/python-hildon/examples/wip/demos
+	mkdir -p $(d_dev)/usr/share/doc/$(p_dev)/examples/wip/demos
 	mkdir -p $(d_dev)/usr/share/python-hildon/defs
 	mkdir -p $(d_dev)/usr/lib/python$(PYVER)/site-packages/
-	cp examples/*py           $(d_dev)/usr/share/doc/python-hildon/examples
-	cp examples/wip/*py       $(d_dev)/usr/share/doc/python-hildon/examples/wip
-	cp examples/wip/demos/*py $(d_dev)/usr/share/doc/python-hildon/examples/wip/demos
+	cp examples/*py           $(d_dev)/usr/share/doc/$(p_dev)/examples
+	cp examples/wip/*py       $(d_dev)/usr/share/doc/$(p_dev)/examples/wip
+	cp examples/wip/demos/*py $(d_dev)/usr/share/doc/$(p_dev)/examples/wip/demos
 	cp hildonglade.py         $(d_dev)/usr/lib/python$(PYVER)/site-packages
 	cp hildon.defs $(d_dev)/usr/share/python-hildon
 	cp defs/*.defs $(d_dev)/usr/share/python-hildon/defs
