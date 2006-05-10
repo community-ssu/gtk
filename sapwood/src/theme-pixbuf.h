@@ -180,7 +180,7 @@ void         theme_pixbuf_set_border   (ThemePixbuf  *theme_pb,
 					gint          bottom);
 void         theme_pixbuf_set_stretch  (ThemePixbuf  *theme_pb,
 					gboolean      stretch);
-void         theme_pixbuf_render       (ThemePixbuf  *theme_pb,
+gboolean     theme_pixbuf_render       (ThemePixbuf  *theme_pb,
 					GdkWindow    *window,
 					GdkBitmap    *mask,
 					GdkRectangle *clip_rect,

@@ -146,20 +146,22 @@ draw_simple_image(GtkStyle       *style,
 	{
 	  GdkWindow *maskwin;
 	  GdkBitmap *mask = NULL;
+	  gboolean valid;
 
 	  maskwin = get_window_for_shape (image, window, widget);
 	  if (maskwin)
 	    mask = gdk_pixmap_new (maskwin, width, height, 1);
 
-	  theme_pixbuf_render (image->background,
-			       window, mask, area,
-			       draw_center ? COMPONENT_ALL : COMPONENT_ALL | COMPONENT_CENTER,
-			       FALSE,
-			       x, y, width, height);
+	  valid = theme_pixbuf_render (image->background,
+				       window, mask, area,
+				       draw_center ? COMPONENT_ALL : COMPONENT_ALL | COMPONENT_CENTER,
+				       FALSE,
+				       x, y, width, height);
 
 	  if (mask)
 	    {
-	      gdk_window_shape_combine_mask (maskwin, mask, 0, 0);
+	      if (valid)
+		gdk_window_shape_combine_mask (maskwin, mask, 0, 0);
 	      g_object_unref (mask);
 	    }
 	}

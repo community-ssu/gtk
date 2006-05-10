@@ -1,5 +1,17 @@
 2006-05-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* src/theme-pixbuf.h (theme_pixbuf_render): Return FALSE when
+	rendering fails for any reason
+	* src/sapwood-draw.c (draw_simple_image): If rendering fails, do not
+	apply window shape mask as it's most likely garbage
+	* src/sapwood-render.c (pixmap_cache_value_new,
+	theme_pixbuf_get_pixmap, theme_pixbuf_render): Do not exit, only warn
+	and return error code, if pixmaps can not be loaded (someone removed
+	the theme in use?)
+	N#26863
+
+2006-05-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* === Release 2.18 ===
 
 2006-04-27  Tommi Komulainen  <tommi.komulainen@nokia.com>

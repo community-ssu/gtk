@@ -190,9 +190,8 @@ pixmap_cache_value_new (ThemePixbuf *theme_pb)
 						     &err);
   if (!result)
     {
-      g_error ("sapwood-theme: Failed to load pixmap file %s: %s\n",
-	       filename, err->message);
-      /* not reached */
+      g_warning ("sapwood-theme: Failed to load pixmap file %s: %s\n",
+		 filename, err->message);
       g_error_free (err);
     }
 
@@ -215,10 +214,7 @@ theme_pixbuf_get_pixmap (ThemePixbuf *theme_pb)
 
       theme_pb->pixmap = g_cache_insert (pixmap_cache, theme_pb);
       if (!theme_pb->pixmap)
-	{
-	  g_warning ("data == NULL");
-	  g_cache_remove (pixmap_cache, NULL);
-	}
+	g_cache_remove (pixmap_cache, NULL);
     }
   return theme_pb->pixmap;
 }
@@ -239,7 +235,7 @@ theme_pixbuf_get_geometry (ThemePixbuf *theme_pb,
  * onto the rectangle (dest_x, dest_y, dest_width, dest_height)
  * of the destination, clip by clip_rect and render
  */
-void
+gboolean
 theme_pixbuf_render (ThemePixbuf  *theme_pb,
 		     GdkWindow    *window,
 		     GdkBitmap    *mask,
@@ -261,10 +257,10 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
   gboolean   mask_required;
 
   if (width <= 0 || height <= 0)
-    return;
+    return FALSE;
 
   if (!theme_pixbuf_get_geometry (theme_pb, &pixbuf_width, &pixbuf_height))
-    return;
+    return FALSE;
 
   if (theme_pb->stretch)
     {
@@ -352,6 +348,8 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
     }
   else /* tile? */
     {
-      g_assert_not_reached ();
+      return FALSE;
     }
+
+  return TRUE;
 }
