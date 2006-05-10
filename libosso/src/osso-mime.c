@@ -105,13 +105,13 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
             return DBUS_HANDLER_RESULT_HANDLED;
         }
         
-        argv = (gchar*)calloc(argc + 1, sizeof(gchar*));
+        argv = (gchar**)calloc(argc + 1, sizeof(gchar*));
         if (argv == NULL) {
             ULOG_ERR_F("Not enough memory");
             return DBUS_HANDLER_RESULT_HANDLED;
         }
 	
-        if (!dbus_message_iter_init(m, &iter)) {
+        if (!dbus_message_iter_init(msg, &iter)) {
             ULOG_ERR_F("No arguments - should not happen since"
                        " it was already checked");
             free(argv);
@@ -121,7 +121,7 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
 	    argv[idx++] = arg;
 	    dbus_message_iter_next(&iter);
 	}
-        assert(idx == argc + 1);
+        g_assert(idx == argc + 1);
         argv[idx] = NULL;
 	
 	(osso->mime.func)(osso->mime.data, argc, argv);
