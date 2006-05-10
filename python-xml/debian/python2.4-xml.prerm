@@ -7,13 +7,8 @@
 VERSION=2.4
 PACKAGE=python$VERSION-xml
 
-dpkg --listfiles $PACKAGE |
-	awk '$0~/\.py$/ {print $0"c\n" $0"o"}' |
-	xargs rm -f >&2
-
 if [ $1 != "upgrade" ]; then
     # Remove alternatives
-
     for i in xmlproc_parse xmlproc_val; do
 	update-alternatives --remove $i /usr/bin/$i.python$VERSION-xml
     done
