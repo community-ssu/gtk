@@ -34,7 +34,7 @@ The packages and the distributions they are in:
      to =new=.  Package-A version 2 should be listed in the "Check for
      updates" view.
 
-   * *package-B 1* (old, new)
+   * *package-B 1* (old), *package-B 2* (new)
      <p>
      Conflicts with package-A 1 (but no other version of package-A).
      You can use it together with package-A to test the behavior when
@@ -42,6 +42,9 @@ The packages and the distributions they are in:
      package-A version 1 and package B at the same time.  You can
      install package-A version 2 and package-B at the same time,
      however.
+     <p>
+     Version 2 of package-B also depends on the "missing" package,
+     which is not available.
 
    * *package-C 1* (old), *package-C 2.cr* (new)
      <p>
@@ -105,10 +108,57 @@ The packages and the distributions they are in:
      User1 and user2 are 'user' packages (shown in the UI), while
      system is a 'non-user' package (not shown in the UI).
 
+   * *stuck 1* (old, new)
+     <p>
+     This package takes one minute int its postinst script.
+
    * *notfound 1* (old, new)
      <p>
      This package is listed in the indices but the actual archive file
      has been deleted from the repository.
+
+   * *docs 1* (old, new)
+     <p>
+     This package contains files in /usr/share/{doc,man,info} and can
+     be used to test docpurge.
+
+---+++ Standalone packages
+
+The server with the test repository also contains a number of =.deb=
+files that can be used to test the "Install from file" feature.
+The files can be found in this location:
+
+    http://repository.maemo.org/testrepo/
+
+You can open them directly with the browser or copy them to your
+device and open them with the File manager or via "Package / Install
+from file."
+
+These standalone =.deb= files are available:
+
+   * *incompatible-arch_1_powerpc.deb*
+   <p>
+   This package is incompatible because it is for the "poerpc"
+   architecture.
+
+   * *incompatible-current_1_all.deb*
+   <p>
+   This package is incompatible because it depends on "maemo", which
+   is a sign for packages that have been made for IT-2005.
+
+   * *incompatible-system_1_all.deb*
+   <p>
+   This package is incompatible because it is not a user package.
+
+   * *uncategorized_1_all.deb*
+   <p>
+   This packages has no "Section:" field.
+
+In addition you can use any other =.deb= file you find in the
+=testrepo/= directory hierarchy.
+
+
+---+++ Files for the "Single-Click-Install" feature
 
 The server with the test repository also contains =.install= files.
 These files contain instructions for the Application installer to add
@@ -328,3 +378,11 @@ repository.
    * Try to update package-C to version 2.cr.
    * Notice that the update fails because the package
      is corrupted.
+
+---++++ Updating with a missing dependency
+
+   * Make sure that package-B version 1 is installed.
+   * Configure the =new= distribution.
+   * Try to update package-B to version 2.
+   * Notice that the update fails because the package "missing" is
+     missing.
