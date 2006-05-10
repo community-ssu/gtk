@@ -2368,13 +2368,14 @@ get_field_int (pkgTagSection *section, const char *field, int def)
 }
 
 static void
-encode_field (pkgTagSection *section, const char *field)
+encode_field (pkgTagSection *section, const char *field,
+	      const char *default = "")
 {
   const char *start, *end;
   if (get_field (section, field, start, end))
     response.encode_stringn (start, end-start);
   else
-    response.encode_string (NULL);
+    response.encode_string (default);
 }
 
 static bool
@@ -2487,7 +2488,7 @@ cmd_get_file_details ()
   response.encode_int (1024 * get_field_int (&section, "Installed-Size", 0)
 		       - installed_size);
   encode_field (&section, "Description");
-  encode_field (&section, "Maemo-Icon-26");
+  encode_field (&section, "Maemo-Icon-26", NULL);
 
   if (installable_status != status_able)
     encode_missing_dependencies (section);
