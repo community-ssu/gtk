@@ -60,14 +60,14 @@ binary: build install
 	dh_testdir
 	dh_testroot
 
-	dh_installdirs -p$(p_dev) $(PYSITE)/NumTut usr/share/doc/$(p_num)
+	dh_installdirs -p$(p_dev) $(PYSITE)/NumTut usr/share/doc/$(p_dev)
 
 	cp -a Demo/NumTut $(d_dev)/$(PYSITE)
 	chmod a+x $(d_dev)/$(PYSITE)/NumTut/__init__.py $(d_dev)/$(PYSITE)/NumTut/view.py
 
-	dh_link -p$(p_dev) /$(PYSITE)/NumTut /usr/share/doc/$(p_num)/NumTut
-	install -m 644 doc/numpy.pdf $(d_dev)/usr/share/doc/$(p_num)
-	cp -a doc/www.pfdubois.com/numpy/html2 $(d_dev)/usr/share/doc/$(p_num)/html
+	dh_link -p$(p_dev) /$(PYSITE)/NumTut /usr/share/doc/$(p_dev)/NumTut
+	install -m 644 doc/numpy.pdf $(d_dev)/usr/share/doc/$(p_dev)
+	cp -a doc/www.pfdubois.com/numpy/html2 $(d_dev)/usr/share/doc/$(p_dev)/html
 
 	: # Replace all '#!' calls to python with python
 	: # and make them executable
@@ -83,10 +83,10 @@ binary: build install
 	  fi; \
 	done
 
-	mkdir -p $(d_dev)/usr/share/doc/$(p_num)/examples/Demo
-	cp -a Test $(d_dev)/usr/share/doc/$(p_num)/examples
-	cp -p Demo/*.py $(d_dev)/usr/share/doc/$(p_num)/examples/Demo
-	rm -f $(d_dev)/usr/share/doc/$(p_num)/examples/Test/testwin.bat
+	mkdir -p $(d_dev)/usr/share/doc/$(p_dev)/examples/Demo
+	cp -a Test $(d_dev)/usr/share/doc/$(p_dev)/examples
+	cp -p Demo/*.py $(d_dev)/usr/share/doc/$(p_dev)/examples/Demo
+	rm -f $(d_dev)/usr/share/doc/$(p_dev)/examples/Test/testwin.bat
 
 	find $(d_num) $(d_dev) -name '.svn' | xargs rm -rf
 
