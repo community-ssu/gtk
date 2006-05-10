@@ -1,3 +1,7 @@
+2006-05-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* === Release 2.18 ===
+
 2006-04-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* src/sapwood-rc-style.c (theme_parse_image): Use g_new0 rather than
