@@ -14,6 +14,7 @@ localbase = os.environ.get('LOCALBASE', '') #do we still need this?
 
 def confirm(message):
     "ask a yes/no question, return result"
+    return 1
     reply = raw_input('\n' + message + ' [Y/n]:')
     if reply and string.lower(reply[0]) == 'n':
         return 0

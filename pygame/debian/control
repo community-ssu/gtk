@@ -7,7 +7,7 @@ Standards-Version: 3.6.1
 
 Package: python2.4-pygame
 Architecture: any
-Depends: python2.4, python2.4-numeric, python2.4-numeric-ext, ${shlibs:Depends}
+Depends: python2.4, python2.4-numeric, libsdl1.2, libsdl-image1.2, libsdl-mixer1.2, libsdl-ttf2.0-0
 Description: SDL bindings for games development in Python 2.4
  A multimedia development kit for Python. Pygame provides modules for you
  to access the video display, play sounds, track time, read the mouse and
@@ -15,13 +15,7 @@ Description: SDL bindings for games development in Python 2.4
  this using mainly the cross-platform SDL library, a lightweight wrapper
  to OS-specific APIs.
 
-##Package: python-pygame
-##Architecture: all
-##Depends: python2.4
-##Suggests: python2.4-pygame
-##Description: SDL bindings for games development in Python
-## A multimedia development kit for Python. Pygame provides modules for you
-## to access the video display, play sounds, track time, read the mouse and
-## joystick, control the CD player, render true type fonts and more. It does
-## this using mainly the cross-platform SDL library, a lightweight wrapper
-## to OS-specific APIs.
+Package: python2.4-pygame-dev
+Architecture: any
+Depends: python2.4-pygame
+Description: Pygame development files.

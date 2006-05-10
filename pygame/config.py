@@ -37,6 +37,7 @@ else:
 
 def confirm(message):
     "ask a yes/no question, return result"
+    return 1
     reply = raw_input('\n' + message + ' [y/N]:')
     if reply and string.lower(reply[0]) == 'y':
         return 1
