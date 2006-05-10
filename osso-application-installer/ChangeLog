@@ -1,5 +1,7 @@
 2006-05-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.18
+	
 	* src/util.h, src/util.cc (no_button_events): New.
 	(make_small_text_view): Use it to suppress button events so that
 	no text can be selected. (N28855)
