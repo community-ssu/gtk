@@ -1,3 +1,16 @@
+2006-05-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcombobox.c (BONUS_PADDING): Add magical 2px for list mode
+	(gtk_combo_box_calc_requested_width, gtk_combo_box_menu_row_changed,
+	gtk_combo_box_list_row_changed): Removed the optimization that was out
+	of sync with other size calculations, always queue a resize that will
+	handle things consistently.
+	(gtk_combo_box_remeasure, gtk_combo_box_size_request): Handle extra
+	padding in size_request
+	(gtk_combo_box_size_allocate): Do not allocate more space than is
+	available to the child widget.
+	N#28149
+
 2006-05-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcombobox.c (gtk_combo_box_size_allocate): Proper fix for
