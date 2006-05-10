@@ -1,0 +1,16 @@
+diff -ur dbus/bus/main.c dbus.new/bus/main.c
+--- dbus/bus/main.c	2006-05-05 18:59:25.394757096 +0300
++++ dbus.new/bus/main.c	2006-05-10 15:21:13.682695384 +0300
+@@ -215,6 +215,12 @@
+   if (!_dbus_string_init (&pid_fd))
+     return 1;
+ 
++  if (signal(SIGBUS, SIG_IGN) == SIG_ERR)
++    {
++      _dbus_warn ("Could not ignore SIGBUS");
++      return 1;
++    }
++
+   print_address = FALSE;
+   print_pid = FALSE;
+   force_fork = FORK_FOLLOW_CONFIG_FILE;
