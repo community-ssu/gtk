@@ -36,6 +36,10 @@ fi
 CFLAGS="$CFLAGS -Wall -ansi -Wmissing-prototypes -Wmissing-declarations -Werror -lcrypt" 
 AC_SUBST(CFLAGS)
 
+PKG_CHECK_MODULES(HILDONFM, hildon-fm)
+AC_SUBST(HILDONFM_LIBS)
+AC_SUBST(HILDONFM_CFLAGS)
+
 PKG_CHECK_MODULES(OSSO,libosso >= 0.10.0)
 AC_SUBST(OSSO_LIBS)
 AC_SUBST(OSSO_CFLAGS)

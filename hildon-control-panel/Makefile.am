@@ -2,7 +2,7 @@
 SUBDIRS = 
 
 INCLUDES = \
-	$(HILDON_CFLAGS) $(HILDONBASELIB_CFLAGS) \
+	$(HILDON_CFLAGS) $(HILDONBASELIB_CFLAGS) $(HILDONFM_CFLAGS)\
 	$(MAEMO_LAUNCHER_CFLAGS) \
 	$(MB_CFLAGS) $(OSSO_CFLAGS)\
 	$(LIBOSSOHELP_CFLAGS) \
@@ -41,7 +41,7 @@ hildondesktopentry_DATA = hildon-control-panel.desktop
 
 controlpanel_LDADD = \
 	$(HILDON_LIBS) $(HILDONBASELIB_LIBS) $(MB_LIBS) $(OSSO_LIBS)\
-	$(LIBOSSOHELP_LIBS)  $(HTML_LIBS)
+	$(LIBOSSOHELP_LIBS)  $(HTML_LIBS) $(HILDONFM_LIBS)
 
 hildon_cp_pluginincludeinstdir=$(includedir)/hildon-cp-plugin
 hildon_cp_pluginincludeinst_DATA = hildon-cp-plugin-interface.h
