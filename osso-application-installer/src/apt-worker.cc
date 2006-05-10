@@ -611,7 +611,7 @@ is_user_section (const char *section, const char *end)
     return true;
 #endif
   
-  return end-section > 6 && !strncmp (section, "user/", 5);
+  return end-section > 5 && !strncmp (section, "user/", 5);
 }
 
 bool
@@ -2395,8 +2395,8 @@ check_installable (pkgTagSection &section, bool only_user)
     installable_status = status_incompatible;
     
   if (only_user
-      && get_field (&section, "Section", start, end)
-      && !is_user_section (start, end))
+      && (!get_field (&section, "Section", start, end)
+	  || !is_user_section (start, end)))
     {
       /* Put more information for developers into the log.  They will
 	 likely be confused by the "incompatible" error message when
