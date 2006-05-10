@@ -19,13 +19,16 @@ testhelper_la_SOURCES = \
 	test-unknown.c 
 
 tests =  \
-	test_subprocess.py \
-	conversion.py \
-	enum.py \
-	gtype.py \
+	test_conversion.py \
 	test_dialog.py \
+	test_enum.py \
+	test_gtype.py \
+	test_mainloop.py \
+	test_radiobutton.py \
 	test_signal.py \
+	test_subprocess.py \
 	test_subtype.py \
+	test_gdkevent.py \
 	test_unknown.py
 
 # This is a hack to make sure a shared library is built

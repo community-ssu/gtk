@@ -76,7 +76,7 @@ for file in string.split(files):
 print" || exit $?
 
 # this will fail for python < 1.5, but that doesn't matter ...
-$PYTHON -OO -c "
+$PYTHON -O -c "
 import sys, os, string, py_compile
 
 files = '''$*'''

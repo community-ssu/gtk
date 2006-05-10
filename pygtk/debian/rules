@@ -1,49 +1,44 @@
 #!/usr/bin/make -f
 
-# These are used for cross-compiling and for saving the configure script
-# from having to guess our platform (since we know it already)
-#DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-#DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-#			--host=$(DEB_HOST_GNU_TYPE) 	\
-#			--build=$(DEB_BUILD_GNU_TYPE) 		\
-
 CC = gcc
 OPTSETTINGS = OPT="-Os"
 
-# Install directories
-p_base=python2.4-gtk2
-p_dev=$(p_base)-dev
+PYVER=2.4
+PYTHON=python$(PYVER)
 
-d=debian/tmp
+p_base=$(PYTHON)-gtk2
+p_dev=$(PYTHON)-gtk2-dev
+
+d=$(CURDIR)/debian/tmp
 d_base=debian/$(p_base)
 d_dev=debian/$(p_dev)
 
-build-2.4/config.status: configure
+build/config.status: configure
 	dh_testdir
-	mkdir -p build-2.4
+	mkdir -p build
 	autoconf
-	cd build-2.4 && \
+	cd build && \
 	  CC="$(CC)" $(OPTSETTINGS) \
-	  PYTHON=`which python2.4` \
+	  PYTHON=`which $(PYTHON)` \
 		../configure \
 			--prefix=/usr \
 			--enable-thread \
 			--disable-numpy
 
-build:  build-2.4/config.status build-stamp
+build:  build/config.status build-stamp
 build-stamp: 
 	dh_testdir
-	$(MAKE) -C build-2.4
+	$(MAKE) -C build
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp
+	rm -f *-stamp
 	rm -Rf debian/tmp-*
-	-rm -rf debian/python2.4-gtk2
-	-rm -rf debian/python2.4-gtk2-dev
-	-rm -rf build-2.4
+	-rm -rf $(d_base) $(d_dev)
+	-rm -rf debian/$(PYTHON)-gtk2-dev
+	-rm -rf build
 	find -name "*.pyc" -exec rm -f {} \;
 	find -name "*.pyo" -exec rm -f {} \;
 	dh_clean codegen/*.pyc
@@ -53,14 +48,14 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	$(MAKE) -C build-2.4 install DESTDIR=$(CURDIR)/debian/tmp
+	$(MAKE) -C build install DESTDIR=$(d)
 
 	rm -rf $(d_base) && mkdir -p $(d_base)
 	rm -rf $(d_dev) && mkdir -p $(d_dev)
 
 	# Base
 	mkdir -p $(d_base)/usr/lib
-	cp -a $(d)/usr/lib/python2.4		$(d_base)/usr/lib
+	cp -a $(d)/usr/lib/$(PYTHON)		$(d_base)/usr/lib
 	find $(d_base) -name "*.py" -exec rm -f {} \;
 	find $(d_base) -name "*.pyc" -exec rm -f {} \;
 	find $(d_base) -name "*.la" -exec rm -f {} \;
@@ -72,7 +67,7 @@ install: build
 	mkdir -p $(d_dev)/usr/include
 	mv $(d)/usr/bin/pygtk-demo 		$(d_dev)/usr/bin
 	mv $(d)/usr/lib/pkgconfig		$(d_dev)/usr/lib
-	mv $(d)/usr/lib/python2.4		$(d_dev)/usr/lib
+	mv $(d)/usr/lib/$(PYTHON)		$(d_dev)/usr/lib
 	mv $(d)/usr/lib/pygtk/2.0/pygtk-demo.py	$(d_dev)/usr/lib/pygtk/2.0
 	mv $(d)/usr/lib/pygtk/2.0/demos		$(d_dev)/usr/lib/pygtk/2.0
 	mv $(d)/usr/bin/pygtk-codegen-2.0	$(d_dev)/usr/bin
@@ -89,10 +84,10 @@ binary: build install
 	dh_testroot
 	dh_installexamples
 
-	# Replace all '#!' calls to python with python2.4
+	# Replace all '#!' calls to python with $(PYTHON)
         # and make them executable
 	for i in `find debian/python2.4* -type f`; do \
-	  sed '1s,#!.*python[^ ]*\(.*\),#!/usr/bin/python2.4,' \
+	  sed "1s,#!.*python[^ ]*\(.*\),#!/usr/bin/$(PYTHON)," \
 		$$i > $$i.temp; \
 	  if cmp --quiet $$i $$i.temp; then \
 	    rm -f $$i.temp; \

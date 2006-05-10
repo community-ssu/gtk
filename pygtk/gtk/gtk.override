@@ -1440,26 +1440,6 @@ _wrap_gtk_radio_button_get_group(PyGObject *self) {
     return py_list;
 }
 %%
-override gtk_radio_button_set_group kwargs
-static PyObject *
-_wrap_gtk_radio_button_set_group(PyGObject *self, PyObject *args,
-				 PyObject *kwargs) {
-    static char *kwlist[] = { "group", NULL };
-    PyObject *py_group;
-    GSList *list;
-    GtkRadioButton *group;
-
-    if (!PyArg_ParseTupleAndKeywords(args,kwargs,"O!:GtkRadioButton.set_group",
-                                     kwlist, &PyGtkRadioButton_Type,
-				     &py_group))
-        return NULL;
-    group = GTK_RADIO_BUTTON(pygobject_get(py_group));
-    list = gtk_radio_button_get_group(group);
-    gtk_radio_button_set_group(GTK_RADIO_BUTTON(self->obj), list);
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-%%
 override gtk_list_item_new kwargs
 static int
 _wrap_gtk_list_item_new(PyGObject *self, PyObject *args, PyObject *kwargs)
@@ -3542,17 +3522,26 @@ _wrap_gtk_radio_button_set_group(PyGObject *self, PyObject *args,
     GSList *list;
     GtkRadioButton *group;
 
-    if (!PyArg_ParseTupleAndKeywords(args,kwargs,"O!:GtkRadioButton.set_group",
-                                     kwlist, &PyGtkRadioButton_Type,
-				     &py_group))
+    if (!PyArg_ParseTupleAndKeywords(args,kwargs,"O:GtkRadioButton.set_group",
+                                     kwlist, &py_group))
         return NULL;
-    group = GTK_RADIO_BUTTON(pygobject_get(py_group));
-    list = gtk_radio_button_get_group(group);
-    if (list == gtk_radio_button_get_group(GTK_RADIO_BUTTON(self->obj))) {
-        PyErr_SetString(PyExc_ValueError, "radio button already in group");
-        return NULL;
+
+    if (pygobject_check(py_group, &PyGtkRadioButton_Type)) {
+	group = GTK_RADIO_BUTTON(pygobject_get(py_group));
+	list = gtk_radio_button_get_group(group);
+	if (list == gtk_radio_button_get_group(GTK_RADIO_BUTTON(self->obj))) {
+	    PyErr_SetString(PyExc_ValueError, "radio button already in group");
+	    return NULL;
+	}
+    } else if (py_group == Py_None) {
+	list = NULL;
+    } else {
+	PyErr_SetString(PyExc_TypeError, "group must be a RadioGroup or None");
+	return NULL;
     }
+
     gtk_radio_button_set_group(GTK_RADIO_BUTTON(self->obj), list);
+    
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -3591,17 +3580,26 @@ _wrap_gtk_radio_menu_item_set_group(PyGObject *self, PyObject *args,
     GtkRadioMenuItem *group;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-				     "O!:GtkRadioMenuItem.set_group",
-                                     kwlist, &PyGtkRadioMenuItem_Type,
-				     &py_group))
+				     "O:GtkRadioMenuItem.set_group",
+                                     kwlist, &py_group))
         return NULL;
-    group = GTK_RADIO_MENU_ITEM(pygobject_get(py_group));
-    list = gtk_radio_menu_item_get_group(group);
-    if (list == gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(self->obj))) {
-        PyErr_SetString(PyExc_ValueError, "radio menu item already in group");
-        return NULL;
+    
+    if (pygobject_check(py_group, &PyGtkRadioMenuItem_Type)) {
+	group = GTK_RADIO_MENU_ITEM(pygobject_get(py_group));
+	list = gtk_radio_menu_item_get_group(group);
+	if (list == gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(self->obj))) {
+	    PyErr_SetString(PyExc_ValueError, "radio menu item already in group");
+	    return NULL;
+	}
+    } else if (py_group == Py_None) {
+	list = NULL;
+    } else {
+	PyErr_SetString(PyExc_TypeError, "group must be a RadioMenuItem or None");
+	return NULL;
     }
+
     gtk_radio_menu_item_set_group(GTK_RADIO_MENU_ITEM(self->obj), list);
+    
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -5305,13 +5303,26 @@ _wrap_gtk_radio_action_set_group(PyGObject *self, PyObject *args,
     PyObject *py_group;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-				     "O!:GtkRadioAction.set_group", kwlist,
-				     &PyGtkRadioAction_Type, &py_group))
+				     "O:GtkRadioAction.set_group",
+				     kwlist, &py_group))
         return NULL;
 
-    group = GTK_RADIO_ACTION(pygobject_get(py_group));
-    list = gtk_radio_action_get_group(group);
+    if (pygobject_check(py_group, &PyGtkRadioAction_Type)) {
+	group = GTK_RADIO_ACTION(pygobject_get(py_group));
+	list = gtk_radio_action_get_group(group);
+	if (list == gtk_radio_action_get_group(GTK_RADIO_ACTION(self->obj))) {
+	    PyErr_SetString(PyExc_ValueError, "radio action already in group");
+	    return NULL;
+	}
+    } else if (py_group == Py_None) {
+	list = NULL;
+    } else {
+	PyErr_SetString(PyExc_TypeError, "group must be a RadioAction or None");
+	return NULL;
+    }
+
     gtk_radio_action_set_group(GTK_RADIO_ACTION(self->obj), list);
+    
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -5400,13 +5411,26 @@ _wrap_gtk_radio_tool_button_set_group(PyGObject *self, PyObject *args,
     PyObject *py_group;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-				     "O!:GtkRadioToolButton.set_group", kwlist,
-				     &PyGtkRadioToolButton_Type, &py_group))
+				     "O:GtkRadioToolButton.set_group",
+				     kwlist, &py_group))
         return NULL;
 
-    group = GTK_RADIO_TOOL_BUTTON(pygobject_get(py_group));
-    list = gtk_radio_tool_button_get_group(group);
+    if (pygobject_check(py_group, &PyGtkRadioToolButton_Type)) {
+	group = GTK_RADIO_TOOL_BUTTON(pygobject_get(py_group));
+	list = gtk_radio_tool_button_get_group(group);
+	if (list == gtk_radio_tool_button_get_group(GTK_RADIO_TOOL_BUTTON(self->obj))) {
+	    PyErr_SetString(PyExc_ValueError, "radio tool button already in group");
+	    return NULL;
+	}
+    } else if (py_group == Py_None) {
+	list = NULL;
+    } else {
+	PyErr_SetString(PyExc_TypeError, "group must be a RadioToolButton or None");
+	return NULL;
+    }
+
     gtk_radio_tool_button_set_group(GTK_RADIO_TOOL_BUTTON(self->obj), list);
+    
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -7014,4 +7038,46 @@ _wrap_GtkCellLayout__proxy_do_set_cell_data_func (
 	PyErr_Print();
     pyg_gil_state_release(state);
 }
+%%
+override gtk_dialog_set_alternative_button_order kwargs
+static PyObject *
+_wrap_gtk_dialog_set_alternative_button_order(PyGObject *self, PyObject *args,
+                                              PyObject *kwargs)
+{
+    static char *kwlist[] = { "new_order", NULL };
+    gint *new_order, n_params;
+    PyObject *py_new_order;
+    int i;
 
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+                                     "O:GtkDialog.set_alternative_button_order",
+                                     kwlist, &py_new_order))
+        return NULL;
+
+    n_params = PySequence_Size(py_new_order);
+    if (!PySequence_Check(py_new_order) || n_params < 1) {
+        PyErr_SetString(PyExc_TypeError,
+                        "new_order must be a sequence with"
+                        "at least one response id int");
+        return NULL;
+    }
+    new_order = (gint *)g_new0(gint, n_params);
+    for (i = 0; i < n_params; i++) {
+        PyObject *item = PySequence_GetItem(py_new_order, i);
+
+        if (!PyInt_Check(item)) {
+            PyErr_SetString(PyExc_TypeError,
+                            "each new_order item must be an integer");
+            g_free(new_order);
+            Py_XDECREF(item);
+            return NULL;
+        }
+        new_order[i] = PyInt_AsLong(item);
+        Py_DECREF(item);
+    }
+    gtk_dialog_set_alternative_button_order_from_array(GTK_DIALOG(self->obj),
+                                                       n_params, new_order);
+    g_free(new_order);
+    Py_INCREF(Py_None);
+    return Py_None;
+}

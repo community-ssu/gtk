@@ -4,13 +4,13 @@ AC_PREREQ(2.52)
 dnl the pygtk version number
 m4_define(pygtk_major_version, 2)
 m4_define(pygtk_minor_version, 6)
-m4_define(pygtk_micro_version, 1)
+m4_define(pygtk_micro_version, 3)
 m4_define(pygtk_version, pygtk_major_version.pygtk_minor_version.pygtk_micro_version)
 
 dnl versions of packages we require ...
 m4_define(glib_required_version,     2.6.0)
 m4_define(pango_required_version,    1.8.0)
-m4_define(atk_required_version,      1.6.1)
+m4_define(atk_required_version,      1.8.0)
 m4_define(gtk_required_version,      2.6.0)
 m4_define(libglade_required_version, 2.4.0)
 
@@ -64,7 +64,7 @@ AC_DISABLE_STATIC
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
-AM_PATH_PYTHON(2.4)
+AM_PATH_PYTHON(2.3)
 
 AM_CHECK_PYTHON_HEADERS(,[AC_MSG_ERROR(could not find Python headers)])
 
