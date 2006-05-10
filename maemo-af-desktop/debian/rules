@@ -26,7 +26,7 @@ endif
 
 # Use soft-float and thumb mode if it enabled.
 ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -mthumb
+	CFLAGS += -mthumb -fPIC
 endif
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
