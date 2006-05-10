@@ -739,7 +739,8 @@ static gboolean is_node_loaded(HildonFileSystemModelPrivate *priv,
   if (!model_node->folder)  /* If there is no folder then think this as loaded */
     return TRUE;
 
-  return gtk_file_folder_is_finished_loading(model_node->folder) &&
+  return g_queue_find(priv->reload_list, node) == NULL &&
+     gtk_file_folder_is_finished_loading(model_node->folder) &&
      g_queue_find_custom(priv->delayed_lists, node, queue_finder) == NULL; 
 }
 
