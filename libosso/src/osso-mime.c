@@ -23,7 +23,6 @@
  */
 
 #include "osso-internal.h"
-#define MAX_MIME_ARGS 30
 
 static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       DBusMessage *msg,
@@ -71,6 +70,20 @@ osso_return_t osso_mime_unset_cb(osso_context_t *osso)
     return OSSO_OK;
 }
 
+static int get_message_arg_count(DBusMessage *m)
+{
+    DBusMessageIter iter;
+    int count;
+
+    if (!dbus_message_iter_init(m, &iter)) {
+        return 0;
+    }
+    for (count = 1; dbus_message_iter_next(&iter); ) {
+        ++count;
+    }
+    return count;
+}
+
 static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       DBusMessage *msg,
 				       gpointer data)
@@ -80,28 +93,39 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
     g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
                osso->application);
 
-    if(dbus_message_is_method_call(msg, interface, OSSO_BUS_MIMEOPEN)) {
-	int argc = 0;
-        gchar *argv[MAX_MIME_ARGS];
+    if (dbus_message_is_method_call(msg, interface, OSSO_BUS_MIMEOPEN)) {
+	int argc, idx = 0;
+        gchar **argv = NULL;
         gchar *arg = NULL;
 	DBusMessageIter iter;
-	
-	if(!dbus_message_iter_init(msg, &iter)) {
-            ULOG_DEBUG_F("No arguments in message");
+
+        argc = get_message_arg_count(msg);
+        if (argc == 0) {
+            ULOG_ERR_F("No arguments in message");
             return DBUS_HANDLER_RESULT_HANDLED;
         }
-	while((arg = _get_arg(&iter)) != NULL) {
-            if(argc >= MAX_MIME_ARGS) {
-                ULOG_ERR_F("Message had more than %d arguments!",
-                           MAX_MIME_ARGS);
-                return DBUS_HANDLER_RESULT_HANDLED;
-            }
-	    argv[argc++] = arg;
+        
+        argv = (gchar*)calloc(argc + 1, sizeof(gchar*));
+        if (argv == NULL) {
+            ULOG_ERR_F("Not enough memory");
+            return DBUS_HANDLER_RESULT_HANDLED;
+        }
+	
+        if (!dbus_message_iter_init(m, &iter)) {
+            ULOG_ERR_F("No arguments - should not happen since"
+                       " it was already checked");
+            free(argv);
+            return DBUS_HANDLER_RESULT_HANDLED;
+        }
+	while ((arg = _get_arg(&iter)) != NULL) {
+	    argv[idx++] = arg;
 	    dbus_message_iter_next(&iter);
 	}
-        argv[argc] = NULL;
+        assert(idx == argc + 1);
+        argv[idx] = NULL;
 	
 	(osso->mime.func)(osso->mime.data, argc, argv);
+        free(argv);
 
 	return DBUS_HANDLER_RESULT_HANDLED;
     }

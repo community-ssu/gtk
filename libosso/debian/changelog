@@ -1,3 +1,9 @@
+libosso (1.11-1) unstable; urgency=low
+
+  * Removed the fixed number of mime arguments limitation (N#25395).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 10 May 2006 10:29:20 +0300
+
 libosso (1.10-1) unstable; urgency=low
 
   * Applied patch from Jari Tenhunen for allowing services not beginning
