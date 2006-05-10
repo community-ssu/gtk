@@ -1270,6 +1270,7 @@ hn_wm_dbus_signal_handler(DBusConnection *conn, DBusMessage *msg, void *data)
     int status;
     HNWMWatchableApp *app;
 
+
     dbus_error_init(&err);
 
     dbus_message_get_args(msg, &err,
@@ -1295,6 +1296,13 @@ hn_wm_dbus_signal_handler(DBusConnection *conn, DBusMessage *msg, void *data)
        HN_DBG("Showing app died dialog ...");
        hn_wm_watchable_app_died_dialog_show(app);
     }
+  }
+  
+  if (dbus_message_is_signal(msg, APPKILLER_SIGNAL_INTERFACE,
+				  APPKILLER_SIGNAL_NAME))
+  {
+    hn_wm_memory_kill_all_watched(FALSE);
+    return DBUS_HANDLER_RESULT_HANDLED;
   }
 
   return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -1560,6 +1568,16 @@ hn_wm_init (ApplicationSwitcher_t *as)
       dbus_bus_add_match( connection, match_rule, NULL );
 
       g_free (match_rule);
+
+      /* Application killer "exit" signal */
+      match_rule = g_strdup_printf(
+                              "type='signal', interface='%s'",
+                               APPKILLER_SIGNAL_INTERFACE);
+      
+      dbus_bus_add_match( connection, match_rule, NULL );
+      dbus_connection_add_filter(connection, hn_wm_dbus_signal_handler,
+				 NULL, NULL);
+      g_free(match_rule);
 
       match_rule = g_strdup_printf("interface='%s'",
 				   TASKNAV_INSENSITIVE_INTERFACE );

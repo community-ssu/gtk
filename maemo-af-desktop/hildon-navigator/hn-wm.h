@@ -110,6 +110,12 @@
 #define MAEMO_LAUNCHER_SIGNAL_PATH "/org/maemo/launcher"
 #define APP_DIED_SIGNAL_NAME "ApplicationDied"
 
+/* Application killer DBus interface
+ */
+#define APPKILLER_SIGNAL_INTERFACE "com.nokia.osso_app_killer"
+#define APPKILLER_SIGNAL_PATH      "/com/nokia/osso_app_killer"
+#define APPKILLER_SIGNAL_NAME      "exit"
+
 /* Low memory settings
  */
 #define LAUNCH_SUCCESS_TIMEOUT 20

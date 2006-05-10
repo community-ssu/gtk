@@ -1,5 +1,10 @@
 2006-05-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm.[ch]: Bring the exit signal handler
+	  back from the ashes (Closes N#29144)
+
+2006-05-10  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: Removed -O3 compilation flag
 
 2006-05-08  Johan Bilien <johan.bilien@nokia.com>
