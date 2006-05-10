@@ -218,7 +218,8 @@ stamp-install: stamp-build
 	rm -rf $(d_base)/$(scriptdir)/BaseHTTPServer.*
 	rm -rf $(d_base)/$(scriptdir)/compile*
 	rm -rf $(d_base)/$(scriptdir)/encodings/{cp*,mac_*}
-	rm -rf $(d_base)/$(scriptdir)/doctest* unittest*
+	rm -rf $(d_base)/$(scriptdir)/doctest*
+	rm -rf $(d_base)/$(scriptdir)/unittest*
 	rm -rf $(d_base)/$(scriptdir)/hotshot
 	find $(d_base)/$(scriptdir) -name "*.py" -type f -exec rm -f {} \;
 	find $(d_base)/$(scriptdir) -name "*.pyc" -type f -exec rm -f {} \;
@@ -258,7 +259,20 @@ stamp-install: stamp-build
 	rm -rf $(d_dev)/$(scriptdir)/lib-dynload
 	rm -rf $(d_dev)/$(scriptdir)/plat-linux2
 	rm -rf $(d_dev)/$(scriptdir)/distutils/*wininst*
-	find $(d_dev)/$(scriptdir) -name "*.pyo" -type f -exec rm -f {} \;
+
+	: # protect
+	mkdir -p $(d_dev)/tmp
+	mv $(d_dev)/$(scriptdir)/distutils $(d_dev)/tmp
+	mv $(d_dev)/$(scriptdir)/pdb.* $(d_dev)/tmp
+	mv $(d_dev)/$(scriptdir)/pydoc.* $(d_dev)/tmp
+	mv $(d_dev)/$(scriptdir)/BaseHTTPServer.* $(d_dev)/tmp
+	mv $(d_dev)/$(scriptdir)/compile* $(d_dev)/tmp
+	mv $(d_dev)/$(scriptdir)/encodings/{cp*,mac_*} $(d_dev)/tmp
+	mv $(d_dev)/$(scriptdir)/doctest* $(d_dev)/tmp
+	mv $(d_dev)/$(scriptdir)/unittest* $(d_dev)/tmp
+	mv $(d_dev)/$(scriptdir)/hotshot $(d_dev)/tmp
+	find $(d_dev)/$(scriptdir) -name "*.pyo" -type f | xargs rm -f
+	mv $(d_dev)/tmp/* $(d_dev)/$(scriptdir)
 
 	: # remove some things
 	-find debian -name CVS | xargs rm -rf
