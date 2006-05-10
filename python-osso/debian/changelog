@@ -1,3 +1,9 @@
+python-osso (0.1-1osso3) unstable; urgency=low
+
+  * renamed documentation directory in development package
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 10 May 2006 17:49:00 -0300
+
 python-osso (0.1-1osso2) unstable; urgency=low
 
   * Some packages adjustments
