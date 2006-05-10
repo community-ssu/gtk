@@ -1,6 +1,6 @@
 # configure.ac for osso-application-installer
 
-AC_INIT(osso-application-installer, 4.17)
+AC_INIT(osso-application-installer, 4.18)
 AC_CONFIG_SRCDIR([src/main.cc])
 AM_INIT_AUTOMAKE
 

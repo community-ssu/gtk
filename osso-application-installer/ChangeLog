@@ -1,14 +1,65 @@
+2006-05-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.h, src/util.cc (no_button_events): New.
+	(make_small_text_view): Use it to suppress button events so that
+	no text can be selected. (N28855)
+	(grab_focus_on_map): New.
+	(make_global_package_list, make_global_section_list): Use
+	it. (N27936, N27934)
+	* src/main.cc (make_main_view): Likewise. (N27908)
+
+	* src/apt-worker-proto.h (apt_proto_result_code): Added
+	rescode_package_corrupted.
+	* src/main.cc (annoy_user_with_result_code): Handle
+	rescode_package_corrupted.  Added 'upgrade' parameter.  Changed
+	all callers.
+	* src/apt-worker.cc (combine_rescodes): New.
+	(operation): Figure out more precise results for each item, and
+	combine them with combine_rescodes. (N28904)
+	
+2006-05-10  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/main.cc (nicify_section_name): Empty section names are
+	turned into "-". (N25433)
+
+	* src/details.cc (show_with_details): Make dialog slightly taller
+	so that everything fits always.
+
+	* src/apt-worker.cc (is_user_section): Require section name to be
+	longer than 5 characters, not 6.
+	(check_installable): Treat packages without a "Section" field as
+	non-user packages.
+	(encode_field): New default parameter, with "" as default default.
+	(cmd_get_file_details): Use NULL as default for Maemo-Icon-26.
+
+	* src/main.cc (is_user_section): Removed.  It was unused.
+
 2006-05-08  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/details.h, src/details.cc (nicify_description_in_place):
+	Made non-static.
+	* src/main.cc (file_details_reply): Use it.
+	(search_packages): Show "Search complete" banner (N28574).
+	(search_packages_reply): Likewise.
+	
+	* src/main.cc (file_details_reply): Initialize "broken".
+
+	* src/util.cc (call_copy_cont): Added optional 'show_error'
+	parameter.
+	(copy_progress): Use it to suppress error message when copy has
+	been cancelled.  Indicate failure when copy has been cancelled.
+	
 	* Makefile.am (aptdir, apt_DATA): New.  Installs sources.list.
 	(EXTRA_DIST): Distribute it.
 
 	* src/util.h, src/util.cc (annoy_user_with_gnome_vfs_result): New.
 	(fcd_response): Get URI from file chooser, not filename.  Changed
 	all parameter names from "filename" to "uri" to reflect this.
-
+	(N28625)
+	
 	* src/log.cc (save_log_cont, save_log): Rewritten to use GnomeVFS.
-
+        (N28524, N28531)
+	
 2006-05-04  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/repo.cc (sources_list_reply): Emit correct irritation when
