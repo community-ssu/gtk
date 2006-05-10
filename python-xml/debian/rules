@@ -53,19 +53,19 @@ install: build
 	mkdir -p $(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus
 	cp -r $(d)/usr/lib/$(PYTHON)/site-packages/_xmlplus/* \
 	      $(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus
-	rm -rf $(d_base)/usr/share/doc/$(p_base)
+	rm -rf $(d_base)/usr/share/doc/$(p_dev)
 	find $(d_base) -name "*.py" -exec rm -f {} \;
 	find $(d_base) -name "*.pyc" -exec rm -f {} \;
 
 	# dev
 	mkdir -p $(d_dev)/usr/bin
 	mkdir -p $(d_dev)/usr/lib/$(PYTHON)/site-packages/_xmlplus
-	mkdir -p $(d_dev)/usr/share/doc/$(p_base)/examples/{test,demo}
+	mkdir -p $(d_dev)/usr/share/doc/$(p_dev)/examples/{test,demo}
 	cp -r $(d)/usr/lib/$(PYTHON)/site-packages/_xmlplus/* \
 	      $(d_dev)/usr/lib/$(PYTHON)/site-packages/_xmlplus
-	cp -r doc/*  $(d_dev)/usr/share/doc/$(p_base)
-	cp -r demo/* $(d_dev)/usr/share/doc/$(p_base)/examples/demo
-	cp -r test/* $(d_dev)/usr/share/doc/$(p_base)/examples/test
+	cp -r doc/*  $(d_dev)/usr/share/doc/$(p_dev)
+	cp -r demo/* $(d_dev)/usr/share/doc/$(p_dev)/examples/demo
+	cp -r test/* $(d_dev)/usr/share/doc/$(p_dev)/examples/test
 	mv $(d)/usr/bin/xmlproc_parse $(d_dev)/usr/bin
 	mv $(d)/usr/bin/xmlproc_val   $(d_dev)/usr/bin
 	find $(d_dev) -name "*.pyo" -exec rm -f {} \;
