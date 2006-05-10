@@ -2160,19 +2160,6 @@ install_from_file_fail (bool res, void *data)
   pi->unref ();
 }
 
-static bool
-is_user_section (const char *section)
-{
-  if (section == NULL)
-    return false;
-
-  // XXX
-  if (!strncmp (section, "maemo/", 6))
-    return true;
-
-  return !strncmp (section, "user/", 5);
-}
-
 static char *
 first_line_of (const char *text)
 {
