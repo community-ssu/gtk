@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Hello, World!
+Comment=Example Home plugin
+Type=HildonHomeApplet
+X-home-applet=libhelloworld-home.so

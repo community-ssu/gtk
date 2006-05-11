@@ -1,0 +1,4 @@
+[Desktop Entry]
+Name=helloworld_sb
+Category=permanent
+X-status-bar-plugin=libhelloworld_sb.so
