@@ -575,7 +575,7 @@ gtk_im_context_xim_finalize (GObject *obj)
 					  NULL, NULL, NULL,
 					  xim_instantiate_callback,
 					  (XPointer)context_xim->im_info);
-      else
+      else if (context_xim->im_info->im)
 	{
 	  XIMCallback im_destroy_callback;
 
