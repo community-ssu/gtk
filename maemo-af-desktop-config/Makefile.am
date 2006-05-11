@@ -3,3 +3,6 @@ applications_menu_DATA = applications.menu
 
 hildon_home_applet_configurationdir = $(sysconfdir)/hildon-home/
 hildon_home_applet_configuration_DATA = applet_manager.conf
+
+hildon_status_bar_plugin_configurationdir = $(sysconfdir)/hildon-status-bar/
+hildon_status_bar_plugin_configuration_DATA = plugins.conf

@@ -1,3 +1,9 @@
+maemo-af-desktop-config (0.0.4-1) unstable; urgency=low
+
+  * Added default configuration for status bar plugins
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 11 May 2006 15:04:33 +0300
+
 maemo-af-desktop-config (0.0.3-1) unstable; urgency=low
 
   * Changed default applet positions according to new layout guide

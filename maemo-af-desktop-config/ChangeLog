@@ -1,3 +1,7 @@
+2006-05-11  Johan Bilien <johan.bilien@nokia.com>
+
+	* Added default configuration for status bar plugins
+
 2006-05-10  Johan Bilien <johan.bilien@nokia.com>
 
 	* Changed default applet positions according to new layout guide
