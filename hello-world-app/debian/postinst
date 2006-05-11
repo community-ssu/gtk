@@ -1,3 +1,6 @@
 #! /bin/sh
 maemo-select-menu-location hello-world.desktop
+
+#DEBHELPER#
+
 exit 0
