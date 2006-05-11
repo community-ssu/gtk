@@ -52,6 +52,7 @@ maemo_af_desktop_LDADD = \
 	$(COMMON_ERROR_LIBS) \
     $(HILDON_FM_LIBS) \
 	$(OSSO_HELP_LIBS) \
+	$(ESD_LIBS) \
 	$(LAUNCHER_LDFLAGS)
 
 initexecdir=$(sysconfdir)/osso-af-init/init.d

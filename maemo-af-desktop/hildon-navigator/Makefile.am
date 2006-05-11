@@ -6,7 +6,7 @@ EXTRA_DIST = .empty hildon-navigator.pc empty_exec.sh
 plugindir = $(libdir)/hildon-navigator
 
 INCLUDES = \
-	$(HILDON_CFLAGS) -g $(OSSO_CFLAGS) $(LIBXML_CFLAGS)\
+	$(HILDON_CFLAGS) -g $(OSSO_CFLAGS) $(LIBXML_CFLAGS) $(ESD_CFLAGS)\
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
 	-DPREFIX=\"$(prefix)\" \
@@ -53,6 +53,8 @@ libhildonnavigator_la_SOURCES = \
 	hn-wm-watched-window-view.h \
 	hn-wm-watchable-app.c \
 	hn-wm-watchable-app.h \
+	hn-as-sound.c \
+	hn-as-sound.h \
 	hildon-pixbuf-anim-blinker.c \
 	hildon-pixbuf-anim-blinker.h \
 	application-switcher.c \

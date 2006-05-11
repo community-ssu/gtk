@@ -196,6 +196,11 @@ struct ApplicationSwitcher {
 
     gboolean prev_sig_was_long_press;
 	gboolean system_inactivity;
+
+    /* Sound samples */
+    gint esd_socket;
+    gint start_sample;
+    gint end_sample;
 };
 
 /* Information of the item */

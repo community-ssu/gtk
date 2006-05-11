@@ -34,6 +34,7 @@
 /* Hildon includes */
 #include "application-switcher.h"
 #include "hn-wm.h"
+#include "hn-as-sound.h"
 #include <hildon-widgets/hildon-system-sound.h>
 
 /* GLib include */
@@ -242,6 +243,8 @@ ApplicationSwitcher_t *application_switcher_init(void)
 
     ret->as_button_icon =  gtk_image_new_from_pixbuf (pixbuf);
 
+    g_object_unref(G_OBJECT(pixbuf));
+
     /* Create alignments. Needed for pixel perfecting things */
     topmost_align = gtk_alignment_new(0,0,0,0);
     
@@ -277,6 +280,15 @@ ApplicationSwitcher_t *application_switcher_init(void)
                        lowest_align, TRUE, TRUE, 0);                        
     
     gtk_widget_show_all(ret->vbox);
+
+    /* Sound samples */
+    ret->esd_socket = hn_as_sound_init ();
+    ret->start_sample = hn_as_sound_register_sample (
+            ret->esd_socket,
+            HILDON_NAVIGATOR_WINDOW_OPEN_SOUND);
+    ret->end_sample = hn_as_sound_register_sample (
+            ret->esd_socket,
+            HILDON_NAVIGATOR_WINDOW_CLOSE_SOUND);
     
     return ret;
 }
@@ -463,6 +475,11 @@ GtkWidget *application_switcher_get_killable_item(
 void application_switcher_deinit(ApplicationSwitcher_t *as)
 {    
     osso_deinitialize(as->osso);
+
+    hn_as_sound_deregister_sample (as->esd_socket, as->start_sample);
+    hn_as_sound_deregister_sample (as->esd_socket, as->end_sample);
+
+    hn_as_sound_deinit (as->esd_socket);
 
     g_free(as);
 }
@@ -1325,6 +1342,7 @@ app_switcher_get_icon_from_window (ApplicationSwitcher_t *as,
 				   HNWMWatchedWindow     *window,
 				   gboolean               disable_anims)
 {
+  GtkWidget        *image;
   GdkPixbuf        *pixbuf;
   HNWMWatchableApp *app;
 
@@ -1350,10 +1368,19 @@ app_switcher_get_icon_from_window (ApplicationSwitcher_t *as,
 								-1,
 								10));
 
-      return gtk_image_new_from_animation (pixbuf_anim);
+      
+      image = gtk_image_new_from_animation (pixbuf_anim);
+      g_object_unref(G_OBJECT(pixbuf));
+      g_object_unref(G_OBJECT(pixbuf_anim));
+
+      return image;
     }
 
-  return gtk_image_new_from_pixbuf(pixbuf);
+  image = gtk_image_new_from_pixbuf(pixbuf);
+
+  g_object_unref(G_OBJECT(pixbuf));
+
+  return image;
 }
 
 
@@ -1365,7 +1392,10 @@ app_switcher_get_icon_from_theme (const char *icon_name)
   GtkWidget    *icon = NULL;
 
   if ((pixbuf = app_switcher_get_pixbuf_icon_from_theme (icon_name)) != NULL)
+  {
     icon = gtk_image_new_from_pixbuf(pixbuf);
+    g_object_unref(G_OBJECT(pixbuf));
+  }
 
   return icon;
 }
@@ -1655,7 +1685,7 @@ app_switcher_add_new_item (ApplicationSwitcher_t *as,
     app_switcher_menu_button_anim_start (as);
 
   /* Play a sound */
-  hildon_play_system_sound(HILDON_NAVIGATOR_WINDOW_OPEN_SOUND);
+  hn_as_sound_play_sample (as->esd_socket, as->start_sample);
 
   /* return menu item */
   return item;
@@ -1708,7 +1738,7 @@ app_switcher_remove_item (ApplicationSwitcher_t *as,
     gtk_menu_reposition(as->menu);
 
   /* Play a sound */
-  hildon_play_system_sound(HILDON_NAVIGATOR_WINDOW_CLOSE_SOUND);
+  hn_as_sound_play_sample (as->esd_socket, as->end_sample);
 
 }
 
