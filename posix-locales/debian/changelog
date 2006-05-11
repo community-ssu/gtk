@@ -1,3 +1,9 @@
+posix-locales (2.3.2-13osso37) unstable; urgency=low
+
+  * Bugfixes: N#25452, N#28391, N#15472
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Thu, 11 May 2006 11:57:09 +0300
+
 posix-locales (2.3.2-13osso36) unstable; urgency=low
 
   * Updated rules, moved fr_FR to the front. 

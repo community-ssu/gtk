@@ -1,3 +1,9 @@
+2006-05-11  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* locales/fr_CA: Shortened lang_name.
+	* locales/{da_DK, de_DE, el_GR, en_GB, en_US, es_ES, es_MX, fi_FI,
+fr_CA, fr_FR, it_IT, nl_NL, no_NO, pt_BR, pt_PT, ru_RU, sv_SE}: Removed invalid line breaks.  
+
 2006-04-18  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* debian/rules: Missing fr_FR. Fixes N#26654.
