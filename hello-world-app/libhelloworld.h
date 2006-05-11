@@ -5,7 +5,7 @@
 
 GtkWindow *hello_world_new (void);
 GtkDialog *hello_world_dialog_new (void);
-GtkWidget *hello_world_button_new (void);
+GtkWidget *hello_world_button_new (int padding);
 
 void hello_world_dialog_show (void);
 

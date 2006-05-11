@@ -71,7 +71,7 @@ hello_world_dialog_show ()
 }
 
 GtkWidget *
-hello_world_button_new ()
+hello_world_button_new (int padding)
 {
   GtkIconTheme *icon_theme;
   GdkPixbuf *icon;
@@ -79,7 +79,7 @@ hello_world_button_new ()
 
   icon_theme = gtk_icon_theme_get_default ();
   icon = gtk_icon_theme_load_icon (icon_theme,
-				   "pkg_hello-world-app",
+				   "hello-world",
 				   40,
 				   0,
 				   NULL);
@@ -90,8 +90,8 @@ hello_world_button_new ()
 				     0,
 				     NULL);
     
-  fprintf (stderr, "icon %p\n", icon);
   icon_image = gtk_image_new_from_pixbuf (icon);
+  gtk_misc_set_padding (GTK_MISC (icon_image), padding, padding);
   g_object_unref (G_OBJECT (icon));
   button = gtk_button_new ();
   gtk_container_add (GTK_CONTAINER (button), icon_image);

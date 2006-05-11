@@ -1,5 +1,5 @@
 [Desktop Entry]
 Name=Hello World
 Type=HildonControlPanelPlugin
-Icon=pkg_hello-world-app
+Icon=hello-world
 X-control-panel-plugin=libhelloworld-cp.so

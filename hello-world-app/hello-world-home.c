@@ -7,6 +7,8 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 
+#include <hildon-home-plugin/hildon-home-plugin-interface.h>
+
 #include "libhelloworld.h"
 
 void *
@@ -19,7 +21,7 @@ hildon_home_applet_lib_initialize (void *state_data,
   fprintf (stderr, "hello-world initialize %p %d\n",
 	   state_data, *state_size);
 
-  button = hello_world_button_new ();
+  button = hello_world_button_new (10);
   g_signal_connect (button, "clicked",
 		    G_CALLBACK (hello_world_dialog_show),
 		    NULL);
@@ -27,14 +29,6 @@ hildon_home_applet_lib_initialize (void *state_data,
   *applet_return = button;
 
   return NULL;
-}
-
-int
-hildon_home_applet_lib_get_requested_width (void *raw_data)
-{
-  fprintf (stderr, "hello-world get width\n");
-
-  return 40;
 }
 
 int
@@ -62,13 +56,15 @@ hildon_home_applet_lib_foreground (void *raw_data)
 }
 
 void
-hildon_home_applet_lib_properties (void *raw_data, GtkWidget *parent)
-{
-  fprintf (stderr, "hello-world properties\n");
-}
-
-void
 hildon_home_applet_lib_deinitialize (void *raw_data)
 {
   fprintf (stderr, "hello-world deinitialize\n");
+}
+
+GtkWidget *
+hildon_home_applet_lib_settings (void *applet_data,
+				 GtkWindow *parent)
+{
+  fprintf (stderr, "hello-world settings\n");
+  return NULL;
 }

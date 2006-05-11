@@ -33,7 +33,7 @@ initialize (HildonStatusBarItem *item, GtkWidget **button)
   info = g_new0 (PluginInfo, 1);
 
   info->item = item;
-  info->button = hello_world_button_new ();
+  info->button = hello_world_button_new (0);
   g_signal_connect (G_OBJECT (info->button), "clicked",
 		    G_CALLBACK (hello_world_dialog_show),
 		    NULL);
