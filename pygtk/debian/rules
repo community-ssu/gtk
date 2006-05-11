@@ -75,7 +75,7 @@ install: build
 	mv $(d)/usr/share/pygtk/2.0/defs	$(d_dev)/usr/share/pygtk/2.0
 	mv $(d)/usr/include/pygtk-2.0		$(d_dev)/usr/include
 	find $(d_dev) -name "*.pyc" -exec rm -f {} \;
-	find $(d_dev) -name "*.pyo" -exec rm -f {} \;
+	find $(d_dev)/usr/lib -name "*.pyo" -exec rm -f {} \;
 	find $(d_dev) -name "*.so" -exec rm -f {} \;
 	find $(d_dev) -name "*.pth" -exec rm -f {} \;
 
