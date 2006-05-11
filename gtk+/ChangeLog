@@ -1,3 +1,9 @@
+2006-05-11  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkentrycompletion.c (_gtk_entry_completion_resize_popup): Take
+	the 'vertical-separator' height into account to avoid scrollbars.
+	N#29115
+
 2006-05-10  Alexander Kanevskiy  <alexander.kanevskiy@nokia.com>
 
 	* gtk/Makefile.am (maemo_gtk_im_switch_DEPENDENCIES): Added to fix
