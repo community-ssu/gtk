@@ -19,6 +19,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+# cancel 'set -e' because grep may return non-zero
+set +e
+
 export AF_INIT_DIR=/etc/osso-af-init
 # user name is appended for multi-user Scratchbox
 USER=`whoami`
