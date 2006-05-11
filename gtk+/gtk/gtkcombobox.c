@@ -3663,6 +3663,10 @@ gtk_combo_box_list_setup (GtkComboBox *combo_box)
   combo_box->priv->button = gtk_toggle_button_new ();
   gtk_widget_set_parent (combo_box->priv->button,
                          GTK_BIN (combo_box)->child->parent);
+  g_signal_connect_swapped (combo_box->priv->button, "focus_in_event",
+			    G_CALLBACK (gtk_combo_box_child_focus_in), combo_box);
+  g_signal_connect_swapped (combo_box->priv->button, "focus_out_event",
+			    G_CALLBACK (gtk_combo_box_child_focus_out), combo_box);
   g_signal_connect (combo_box->priv->button, "button_press_event",
                     G_CALLBACK (gtk_combo_box_list_button_pressed), combo_box);
   g_signal_connect (combo_box->priv->button, "toggled",
