@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.6.10-1.osso15-1) unstable; urgency=low
+
+  * Increase of the revision 
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Thu,  11 May 2006 7:48:00 +0300
+
 gtk+2.0 (2:2.6.10-1.osso15) unstable; urgency=low
 
   * Bugs fixed:
