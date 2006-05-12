@@ -1,3 +1,14 @@
+2006-05-12  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_ref_node): bring in
+	sync with gtk_tree_model_sort_real_unref_node(),
+	(gtk_tree_model_sort_free_level): first free the child levels, so
+	they get a change to decrease the zero ref count of the parents,
+	then fixup this level's zero ref count, and we also have to
+	decrease the zero ref count for all children in this level which
+	have ref count == 0.
+	N#26600.
+
 2006-05-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcombobox.c (gtk_combo_box_list_position): When in toolbar,
