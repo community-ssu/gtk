@@ -1,6 +1,6 @@
 AC_INIT([src/sapwood-server.c])
 AC_CONFIG_HEADERS([config.h])
-AM_INIT_AUTOMAKE(sapwood, 2.18)
+AM_INIT_AUTOMAKE(sapwood, 2.19)
 
 dnl Initialize maintainer mode
 AM_MAINTAINER_MODE
