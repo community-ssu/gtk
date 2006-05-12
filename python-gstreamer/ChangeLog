@@ -1,0 +1,3800 @@
+=== release 0.10.4 ===
+
+2006-04-28  Thomas Vander Stichele <thomas at apestaart dot org>
+
+	* configure.ac:
+	  releasing 0.10.4, "Alegre"
+
+2006-04-19  Andy Wingo  <wingo@pobox.com>
+
+	* gst/arg-types.py (GstCapsArg.write_const_param) 
+	(GstCapsArg.write_param): If there is a default value, initialize
+	the py_caps variable to NULL. PyArgs_Parse* doesn't touch c
+	variables if the optional arg isn't there. Fixes #339010.
+
+2006-04-19  Andy Wingo  <wingo@pobox.com>
+
+	* examples/remuxer.py (GstPlayer.seek): Don't do accurate seeks,
+	because the output won't be readable without a keyframe anyway.
+
+2006-04-19  Andy Wingo  <wingo@pobox.com>
+
+	* examples/remuxer.py: Another code dump. I know it breaks the
+	freeze but it's just a wee example :)
+
+2006-04-10  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gsttaglist.override: (tag_foreach_func_list): 
+	Return tag value if present more than once (instead of exactly once).
+	Fixes #337876
+
+2006-04-10  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/argtypes.py:
+	Update from upstream codegen for UInt argtype.
+	* gst/gst-types.defs:
+	Added GstIndexEntry boxed type.
+	* gst/gstbase.override:
+	Wrapped gst.BaseSrc::get_times() and gst.PushSrc::create() virtual
+	methods.
+	gst.BaseSrc and gst.PushSrc virtual methods are now completely wrapped.
+
+2006-04-08  Stefan Kost  <ensonic@users.sf.net>
+
+	* testsuite/test-object.h:
+	Fix broken GObject macros
+
+2006-04-07  Andy Wingo  <wingo@pobox.com>
+
+	* examples/remuxer.py: Code dump, work in progress...
+
+2006-04-07  Edward Hervey  <edward@fluendo.com>
+
+	* testsuite/test_ghostpad.py:
+	more assertions to figure out an speed issue.
+
+2006-04-07  Andy Wingo  <wingo@pobox.com>
+
+	* gst/arg-types.py (GstCapsArg.beforenull): py_caps can be NULL if
+	it is an optional argument. Translate this python non-value to the
+	C NULL.
+
+	* gst/gst.defs (get_compatible_pad): Filter caps is optional and
+	can be None. It defaults to None.
+
+2006-04-07  Edward Hervey  <edward@fluendo.com>
+
+	* Makefile.am:
+	make check-valgrind calls make valgrind in the testsuite directory.
+	* testsuite/Makefile.am:
+	prepend $(top_srcdir) to PYTHONPATH for all tests so it uses the built
+	library and not the installed one.
+	* testsuite/python.supp:
+	Added suppressions discovered on x86/gentoo.
+
+2006-04-07  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gstelement.override (_wrap_gst_element_link): Allow errors
+	parsing the optional filter caps to propagate up.
+
+	* gst/gst.defs (element_make_from_uri): Element name is optional
+	and can be None. It defaults to None.
+
+2006-04-05  Edward Hervey  <edward@fluendo.com>
+
+	* testsuite/test_message.py:
+	GstBus is flushing in NULL, so we need to set the pipeline to READY in
+	order to receive the messages in the bus watch.
+
+2006-04-05  Andy Wingo  <wingo@pobox.com>
+
+	* configure.ac (PYGST_MICRO_VERSION): Doc fix.
+	(PYGST_NANO_VERSION): New define.
+
+	* gst/__init__.py (version): Add as an alias for get_gst_version.
+	Should use the deprecation infrastructure here.
+
+	* gst/gst.defs: Add defs for the new wrapped functions.
+
+	* gst/gst.override (_wrap_gst_get_pygst_version) 
+	(_wrap_gst_get_gst_version): New overrides, functions to access
+	the gstreamer and pygst versions. The first used to be called
+	gst_version(); we ignore gst_version now.
+	API: gst.get_gst_version()
+	API: gst.get_pygst_version()
+
+	* gst/gstpad.override (_wrap_gst_pad_set_blocked_async):
+	PyObject_IsTrue, not PyBool_Check. Grr.
+
+2006-04-04  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	gst_element_post_message: Adding keep-refcount tag to the message since
+	the function will unref it.
+
+2006-04-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	  use AS_VERSION and AS_NANO
+
+2006-03-31  Andy Wingo  <wingo@pobox.com>
+
+	* examples/remuxer.py: Example GUI for a remuxer, unfinished --
+	dropping it here while I hack on it. Based on player.py.
+
+	* examples/Makefile.am (examples_DATA): Add remuxer.py, reorder
+	list.
+
+2006-03-29  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* configure.ac:
+	Better empty string test fix for "Fixes to how we figure out what API
+	to ignore"
+
+2006-03-24  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac:
+	Fixes in how we figure out what API to ignore
+	* gst/Makefile.am:
+	* gst/gst-0.10.5.ignore:
+	* gst/gstversion.override.in:
+	Added file for handling API additions for gstreamer 0.10.5
+	* gst/base.defs:
+	* gst/gst.defs:
+	New API
+	* gst/gstpad.override:
+	Overrides for gst.Pad.query_peer_*()
+
+=== release 0.10.3 ===
+
+2006-03-21  Jan Schmidt <thaytan@mad.scientist.com>
+
+	* configure.ac:
+	  releasing 0.10.3, "Maybe not today. Maybe not tomorrow, but soon..."
+
+2006-03-21  Jan Schmidt  <thaytan@mad.scientist.com>
+
+	* testsuite/test_ghostpad.py:
+	* testsuite/test_pad.py:
+	Another attempt at making the tests deterministic on the buildbots
+
+2006-03-20  Jan Schmidt <thaytan@mad.scientist.com>
+
+	* configure.ac:
+	  pre-release 0.10.2.2
+
+2006-03-20  Jan Schmidt  <thaytan@mad.scientist.com>
+
+	* testsuite/test_ghostpad.py:
+	Add while loop in teardown to wait for the pipeline state
+	to hit NULL. Hopefully this will ensure the refcount has always hit 1.
+
+2006-03-14  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac:
+	Only require GStreamer core >= 0.10.2
+	Detect version of core the bindings are being compiled against and
+	write gst/gstversion.override file with eventual API additions that
+	should be ignored.
+	* gst/Makefile.am:
+	* gst/base.defs:
+	Added gst_base_sync_[set|get]_[sync|max_lateness]() and
+	gst_type_find_helper_get_range() definitions
+	* gst/gst-0.10.3.ignore:
+	API added in gstreamer core 0.10.3
+	* gst/gst-0.10.4.ignore:
+	API added in gstreamer core 0.10.4
+	* gst/gst.override:
+	Include gstversion.override.
+	* gst/gstversion.override.in:
+	Magic file for API additions to ignore.
+
+2006-03-14  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/codegen.py:
+	* codegen/override.py:
+	New --extendpath option for codegenerator so we can add
+	extra path to search for included override files.
+
+2006-03-13  Edward Hervey  <edward@fluendo.com>
+
+	* gst/Makefile.am:
+	* gst/gst.override:
+	* gst/gstbase.override:
+	Added base elements override file.
+	* gst/gstpad.override:
+	Added override for gst_pad_alloc_buffer_and_set_caps
+
+2006-03-10  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	Commited a bit too much :)
+
+2006-03-10  Edward Hervey  <edward@fluendo.com>
+
+	* gst/base.defs:
+	typo fix for gst_type_find_helper()
+	Added new API : gst_type_find_helper_for_buffer()
+	* gst/gst.override:
+	override for gst.type_find_helper_for_buffer()
+
+2006-03-10  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	Added new API:
+	gst_pipeline_[get|set]_auto_flush_bus()
+	gst_uri_has_protocol()
+	GST_RESOURCE_ERROR_NO_SPACE_LEFT
+
+2006-03-07  Edward Hervey  <edward@fluendo.com>
+
+	* gst/arg-types.py:
+	Add ReturnType and Parameter for GstCaps.
+	This allows the codegenerator to wrap properly more virtual proxies.
+
+2006-03-07  Edward Hervey  <edward@fluendo.com>
+
+	* gst/base.defs:
+	Update for new check_get_range virtual method in GstBaseSrc
+
+2006-03-06  Michael Smith  <msmith@fluendo.com>
+
+	* gst/gststructure.override:
+	* gst/gsttaglist.override:
+	  Don't leak PyObjects wrapping GValues when indexing into a
+	  GStStructure. Also fix a copy/paste identical bug in taglists.
+
+2006-03-02  Edward Hervey  <edward@fluendo.com>
+
+	* gst/pygstminiobject.h:
+	Some crack distributions do weirdo stuff with PYGIL_API_IS_BUGGY.
+	Let's keep our own detection.
+	Closes #333055
+
+2006-02-28  Jan Schmidt  <thaytan@mad.scientist.com>
+
+	* pygst.py.in:
+	Fix a silly logic inversion typo
+
+2006-02-27  Edward Hervey  <edward@fluendo.com>
+
+	* pygst.py.in:
+	use 'raise StandardError' instead of 'assert' so that compiled code
+	raise a noticeable exception.
+	Closes #332586
+
+2006-02-22  Joe Wreschnig  <piman@sacredchao.net>
+
+	reviewed by: Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmodule.c: (init_gst):
+	gst.gst_version uses the result of gst_version() rather than use
+	the GST_VERSION_* hardcoded values.
+	Closes #331616
+	
+2006-02-20  Edward Hervey  <edward@fluendo.com>
+
+	* examples/vumeter.py:
+	In fact it wasn't an application message, but an element message :)
+
+2006-02-20  Zaheer Abbas Merali  <zaheerabbas at merali dot org>
+
+	* examples/vumeter.py:
+	Fix vumeter example
+
+2006-02-17  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	* gst/gstquery.override:
+	Updated and properly wrapped new GstQuery formats API.
+
+2006-02-10  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gst.defs (disable_sync_message_emission) 
+	(enable_sync_message_emission): Wrap new functions from GStreamer
+	CVS.
+
+	* configure.ac (GST_REQ): Require GStreamer 0.10.3.1.
+
+	* examples/play.py: A bit of refactoring. Make use of the
+	sync-message signals. Reacts to events on the bus. Keeps aspect
+	ratio. Better scrubbing, play/pause button instead of
+	play+pause+stop. Not a bad player now, although the code still
+	lacks cleanliness.
+
+	* examples/play.py (GstPlayer.query_position) 
+	(PlayerWindow.update_scale_cb): Only return position, duration
+	from query_position -- fixes a bugaboo.
+	(main): Add some input validation.
+
+	* examples/pipeline-tester (data): Add a pipeline to test software
+	scaling.
+
+2006-02-07  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	* gst/gstmodule.c: (python_do_pending_calls):
+	Remove deprecated code dating back from 0.8 era.
+
+2006-02-06  Andy Wingo  <wingo@pobox.com>
+
+	* codegen/argtypes.py (UInt64Arg.write_param): Parse long
+	arguments using ParseTuple and friends; allows ints to passed for
+	longs as a side benefit.
+
+2006-02-02  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	(gst.TIME_ARGS) return "CLOCK_TIME_NONE" for invalid times instead of
+	outputing gibberish value.
+
+2006-02-02  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	Update for current GStreamer core API
+
+2006-02-01  Edward Hervey  <edward@fluendo.com>
+
+	* testsuite/test_event.py:
+	Properly use tempfile
+
+2006-02-01  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	When using gst.Element.send_event() and gst.Pad.send_event() we keep
+	a refcount on the sent event.
+	* testsuite/test_event.py:
+	Uncomment test to prove above fix
+
+2006-02-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_event.py:
+	  add a test case for autoplugging behaviour:
+	  create a source, connect probes, store new-segment event,
+	  add element in buffer probe callback, and forward event
+	  Currently fails due to refcounting on the stored new-segment
+	  event
+
+2006-02-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_element.py:
+	  add another link test
+
+2006-01-30  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac:
+	* gst/Makefile.am:
+	Link against Gst Data protocol libraries.
+	* gst/__init__.py:
+	Restore dlopenflags after importing gst.
+	Closes #329110
+
+=== release 0.10.2 ===
+
+2006-01-16  Thomas Vander Stichele <thomas at apestaart dot org>
+
+	* configure.ac:
+	  releasing 0.10.2, "And if the devil is six"
+
+2006-01-13  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstlibs.override:
+	GstController : don't use values that are now in non-public API.
+
+2006-01-09  Edward Hervey  <edward@fluendo.com>
+
+	* gst/base.defs:
+	Revert guint8* to gchar* modifications for the adapter
+	* gst/gst.defs:
+	Cleanups and API additions
+
+2006-01-08  Martin Soto  <martinsoto@users.sourceforge.net>
+
+	* gst/gststructure.override: (_wrap_gst_structure_set_value):
+	Properly check for gstvalue data types. This makes it possible to
+	set fields with fractions.
+	* testsuite/test_caps.py:
+	* testsuite/test_struct.py:
+	Test for above modifications
+
+2006-01-05  Edward Hervey  <edward@fluendo.com>
+
+	* gst/base.defs:
+	Use gchar* instead of guint8* for GstAdapter
+	Added virtual methods definitions for base classes.
+	Still have to override some functions, and figure
+	out how to properly add reverse wrappers to the codegenerator.
+
+2006-01-01  Edward Hervey  <edward@fluendo.com>
+
+	First step at wrapping base elements in gst-python
+	
+	* configure.ac:
+	Commenting out weird debugging statement dating from gst-python's
+	and which causes problems with gstbasesrc.h anonymous union.
+	* gst/Makefile.am:
+	Added base.defs
+	* gst/base.defs:
+	New base elements definition files
+	* gst/gst.defs:
+	* gst/gst.override:
+	Add base elements
+
+=== release 0.10.1 ===
+
+2005-12-23  Thomas Vander Stichele <thomas at apestaart dot org>
+
+	* configure.ac:
+	  releasing 0.10.1, "Krisimas Yakanaka"
+
+2005-12-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	* gst/Makefile.am:
+	* gst/extend/Makefile.am:
+	  install in pyexecdir as well
+
+2005-12-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* pygst.py.in: give the correct error when not finding the version
+
+2005-12-20  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	Added GstStaticCaps and GstStaticPadTemplate, using the new GType.
+	* gst/gst.defs:
+	Doesn't return a const anymore.
+	* gst/gstelementfactory.override:
+	Wrapped gst_element_factory_get_static_pad_templates()
+
+2005-12-19  Martin Soto  <martinsoto@users.sourceforge.net>
+
+	* gst/gstbus.override (_wrap_gst_bus_add_watch): This function
+	incorrectly returned self, which was causing the message bus to
+	get prematurely destroyed by the Python interpreter. Now returns
+	Py_None.
+
+2005-12-19  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	ignore gst_object_sink
+
+2005-12-19  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstlibs.override:
+	* gst/libs.defs:
+	Properly wrap the gst_dp_* functions (cast gchar* to guint8*).
+
+2005-12-18  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	ignore gst_plugin_get_module, GModule aren't wrapped in
+	pygtk anyway.
+	wrap gst_clock_get_calibration
+	* gst/gstbus.override:
+	Ignore the following:
+	gst_bus_create_watch, since GSource aren't wrapped in pygtk
+	gst_bus_sync_signal_handler and gst_bus_async_signal_func since
+	these functions are used by the default bus handler anyway.
+	* gst/gstevent.override:
+	wrapped gst_event_parse_buffer_size
+	* gst/libs.defs:
+	Replace all guint8* for gst_dp_ functions by gchar * since they
+	are the same, but at least get generated properly by the code
+	generator.
+
+2005-12-18  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	gst_object_sink is a method of GstObject
+	const of enums is a stupidity (_element_make_from_uri)
+	* gst/gst.override:
+	Ignore more functions that have no place in bindings or have better
+	python equivalents (list filtering for example)
+	Wrapped gst_version() and gst_type_find_factory_get_list()
+	* gst/gststructure.override:
+	More ignores
+	* gst/gsttaglist.override:
+	ignore gst_is_tag_list.
+	* gst/interfaces.override:
+	wrap gst_mixer_options_get_values()
+
+2005-12-16  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gstpad.override (handle_event_function_exception) 
+	(handle_chain_function_exception): GCC told me I needed braces
+	here.
+
+2005-12-14  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* Makefile.am:
+	* configure.ac:
+	  Follow pygtk's lead in installing pygst.py and .pth in pyexecdir -
+	  this will do the right thing on multilib 64 bit
+
+2005-12-12  Edward Hervey  <edward@fluendo.com>
+
+	* examples/gstfile.py:
+	Moved the Discoverer class to gst.extend
+	Now works asynchronous... bl**dy fast :)
+	* gst/extend/Makefile.am:
+	* gst/extend/discoverer.py:
+	Discoverer has landed in extend and is now asynchronous.
+	It emits a 'discovered' signal when it has finished.
+
+2005-12-09  Edward Hervey  <edward@fluendo.com>
+
+	* gst/arg-types.py:
+	This covers for the codegenerator not being able to handle
+	(unsigned) int64 as parameters and return values.
+
+2005-12-09  Edward Hervey  <edward@fluendo.com>
+
+	* gst/arg-types.py:
+	Added (reverse_)wrapper for GBoxed and GstMiniObject
+	* gst/gst.defs:
+	push_event() and chain() takes the reference on the
+	MiniObject.
+
+2005-12-07  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmessage.override:
+	Fix for memleak
+
+=== release 0.10.0 ===
+
+2005-12-05   <thomas (at) apestaart (dot) org>
+
+	* configure.ac:
+	  releasing 0.10.0, "Reblochon"
+
+2005-12-05  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs: (alloc_buffer_and_set_caps): 
+	Wrapped last pre-0.10 API update (I hope...)
+
+	* examples/gstfile.py: (Discoverer._new_decoded_pad_cb): 
+	Fix for fractional framerates.
+
+2005-12-05  Andy Wingo  <wingo@pobox.com>
+
+	* testsuite/test_registry.py (RegistryTest.testPluginList): Look
+	for staticelements, not gstcoreelements.
+
+=== release 0.9.7 ===
+
+2005-12-01   <thomas (at) apestaart (dot) org>
+
+	* configure.ac:
+	  releasing 0.9.7, "Mon Chien N'a Pas De Nez"
+
+2005-12-01  Andy Wingo  <wingo@pobox.com>
+
+	* configure.ac (GST_PLUGINS_BASE_LIBS): Check for
+	gstreamer-plugins-base.pc, the one that has the interfaces etc.
+
+	* gst/Makefile.am (interfaces_la_CFLAGS, interfaces_la_LDFLAGS):
+	PLUGINS_BASE, not BASE.
+
+2005-11-30  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac:
+	* gst/Makefile.am:
+	gst-interfaces-0.9.pc is no more, update to new use
+	* testsuite/test_element.py:
+	Fix for queue modification
+
+2005-11-30  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	* gst/gst.override:
+	Queue is now a plugin, remove static references
+
+2005-11-29  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	Update for API changes
+	* gst/gstquery.override:
+	wrapper for query_parse_seeking()
+
+2005-11-24  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	Ignore all *_full functions/methods
+	* gst/gstbus.override:
+	Wrapper for gst_bus_add_signal_watch that now takes an optional
+	priority argument
+
+2005-11-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac: back to HEAD
+
+=== release 0.9.6 ===
+
+2005-11-23  Thomas Vander Stichele <thomas at apestaart dot org>
+
+	* configure.ac:
+	  releasing 0.9.6, "We'll always have Paris. We got it back last night."
+
+2005-11-23  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	And more API updated, pom po do pom pom pom....
+
+2005-11-23  Edward Hervey  <edward@fluendo.com>
+
+	* gst/interfaces.defs:
+	Update for Interfaces API changes
+
+2005-11-22  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	API updates
+
+2005-11-22  Edward Hervey  <edward@fluendo.com>
+
+	* gst/pygstvalue.c: (pygst_value_as_pyobject),
+	(pygst_value_init_for_pyobject), (pygst_value_from_pyobject),
+	(pygst_value_init):
+	* gst/__init__.py:
+	Added FractionRange type
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	* gst/gst.override:
+	API updates
+
+2005-11-22  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gst.defs:
+	* gst/gstevent.override: Run update-funcnames.
+
+2005-11-22  Edward Hervey  <edward@fluendo.com>
+
+	* gst/xoverlay.defs:
+	Update for API changes in XOverlay interface
+
+2005-11-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/cutter.py:
+	  Add an example for the cutter element
+
+2005-11-21  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	GstSegment is properly wrapped
+	* gst/gst.defs:
+	Add GstBin::handle_message virtual method
+
+2005-11-21  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override: (_wrap_GST_TIME_ARGS): 
+	Take either int or longs and return unsigned long long
+
+2005-11-21  Edward Hervey  <edward@fluendo.com>
+
+	* examples/gstfile.py:
+	Cleanup
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	API update.
+	More fixes to follow.
+	
+2005-11-21  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gst.defs (net_client_clock_new): Add some defaults.
+
+2005-11-21  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	API updates
+	* gst/pygstvalue.c: (pygst_value_as_pyobject),
+	(pygst_value_from_pyobject):
+	Fixes for gst_value_array and GST_FOURCC_FORMAT
+
+2005-11-21  Jan Schmidt  <thaytan@mad.scientist.com>
+
+	* gst/gst.defs:
+	  Rename gst_caps_structure_fixate_* to gst_structure_fixate_*
+	  (#322027)
+
+2005-11-21  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	Update for latest API changes
+	Still have to make GstSegment properly wrappable (GBoxed?)
+
+2005-11-18  Andy Wingo  <wingo@pobox.com>
+
+	* gst/Makefile.am: Add GST_NET libs.
+
+	* gst/gst.defs (gst_net_time_provider_new) 
+	(gst_net_client_clock_new): Add constructors
+
+	* configure.ac: Check for gstreamer-net as well.
+
+	* gst/gst.override: Include gst/net/gstnet.h.
+
+	* gst/gst-types.defs (NetTimeProvider, NetClientClock): Added new
+	types.
+
+2005-11-15  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	Keep refcount for the message of gst_bus_post()
+	* gst/gststructure.override:
+	Don't free a structure on dealloc (the parent does that)
+	* testsuite/test_message.py:
+	Proper testing of bus functionnality with a mainloop
+
+2005-11-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac: back to HEAD
+
+=== release 0.9.5 ===
+
+2005-11-11  Thomas Vander Stichele <thomas at apestaart dot org>
+
+	* configure.ac:
+	  releasing 0.9.5, "96-bit Audio"
+
+2005-11-10  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gsttaglist.override:
+	put the gst.TagList.keys() method back.
+
+2005-11-10  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmodule.c: (init_gst):
+	Added GST_TAG_* string constants
+	* gst/gstpad.override:
+	Make probe handler return TRUE if the Python callback doesn't return
+	anything.
+	* gst/gsttaglist.override:
+	Cleaned up gst.TagList, works as a dictionary.
+
+2005-11-08  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	* gst/gst.override:
+	Added new function gst.TIME_ARGS which returns the string
+	representation of a GstClockTime
+
+2005-11-04  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstelement.override:
+	So apparently 0 != O :)
+
+2005-11-04  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstpad.override:
+	works better now we set the item to the proper position...
+
+2005-11-04  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstpad.override:
+	Use proper GValue <-> MiniObject conversion function
+	* examples/Makefile.am:
+	* examples/sinkelement.py:
+	New example showing how to create a sink element in python.
+
+2005-11-04  Edward Hervey  <edward@fluendo.com>
+
+	* examples/play.py:
+	Fixed the play example to work with 0.9.4 API
+
+2005-11-01  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstelement.override:
+	added wrapper for gst_element_query_duration()
+	* gst/gstpad.override:
+	added wrapper for gst_pad_query_duration()
+
+	Also converted some functions using fixed size PyList to use 
+	PyList_SetItem instead of PyList_Append
+
+	Closes bug #320357
+
+2005-11-01  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	Updated modification from API
+	* gst/gstquery.override:
+	Added gst_query_parse_duration override
+	* examples/gstfile.py:
+	Now use duration query
+	Cleanups
+
+2005-10-27  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	Added 'caller-owns-return' to all gst_[message|event|query]_new_*()
+	wrappers
+
+2005-10-27  Thomas Vander Stichele  <thomas (at) apestaart (dot) org>
+
+	* gst/gstelement.override:
+	* gst/pygstexception.c:
+	* gst/pygstexception.h:
+	* testsuite/test_element.py:
+	  add gst.QueryError and use it
+	* testsuite/test_pad.py:
+	  add some tests that show comparison between two different
+	  Python objects wrapping the same MiniObject
+
+2005-10-27  Thomas Vander Stichele  <thomas (at) apestaart (dot) org>
+
+	* gst/gst.override:
+	* gst/pygstminiobject.c:
+	  remove the hash table for miniobjects - since we can't get notified
+	  when they get destroyed, we shouldn't be caching pointer mappings
+	* testsuite/test_pad.py:
+	  update refcount tests because mini objects now have a ref for
+	  each time an object is made for it
+
+2005-10-26  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_bus.py:
+	  fix race condition because of state thread
+
+2005-10-26  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_event.py:
+	  fix race condition because of state thread
+
+2005-10-26  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_bin.py:
+	  fix race condition because of state thread
+
+2005-10-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	  back to HEAD
+
+=== release 0.9.4 ===
+
+2005-10-24  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	  Releasing 0.9.4, "Stegosaurus"
+
+2005-10-22  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	Cleaned-up symbols which still had the gst_ prefix
+	* gst/gst.override:
+	add gst_deinit to the ignore list
+
+2005-10-20  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gstbin.override (_wrap_gst_bin_get_by_name): Dude, like
+	totally don't unref NULL objects.
+
+2005-10-19  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	Update (hopefully) final API modifications
+	
+	* gst/gstelement.override:
+	* gst/gstpad.override:
+	* gst/gstquery.override:
+	Updated position querying/parsing
+	Removed useless debug line
+	
+	* testsuite/test_element.py:
+	Updated test for new API
+
+2005-10-19  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmessage.override:
+	Added wrappers for parsing CLOCK_PROVIDE, CLOCK_LOST, NEW_CLOCK and
+	DURATION messages
+	Fixed a few Tuple constructors
+	Last commit from me unless huge breakage, got better things to do now
+	(and it doesn't involve 'my little pony' comics) !
+
+2005-10-19  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	* gst/gst-types.defs:
+	Updated API
+	
+	* gst/gstelement.override:
+	_wrap_gst_element_get_state: made wrapper behave more like codegen-ed
+	functions. 
+	It now only takes an int or long as optional timeout argument, and if
+	there's no argument it will use GST_CLOCK_TIME_NONE
+	
+	* testsuite/test_bin.py:
+	* testsuite/test_event.py:
+	* testsuite/test_ghostpad.py:
+	* testsuite/test_pipeline.py:
+	Updated testsuites for element.get_state() modifications
+	Added event parsing checks
+	Commented out test_ghostpad.PipeTest.testProbedLink til I find out why
+	"while self._handoffs < 10: pass" doesn't exit although it reaches
+	values way over 10
+
+2005-10-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gstmessage.override:
+	  update for latest API changes
+	* gst/gstelement.override:
+	  use GstClockTime for get_state
+	* testsuite/test_pad.py:
+	  add logging
+
+2005-10-18  Andy Wingo  <wingo@pobox.com>
+
+	* examples/pipeline-tester: Fix for state change changes.
+
+	* gst/gstmessage.override (_wrap_gst_message_tp_repr): Add a repr
+	for messages.
+	(_wrap_gst_message_tp_repr): Is your message repr t00 sma11?
+
+2005-10-14  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	Updated to new API
+
+2005-10-14  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	Added GstDate boxed type
+	* gst/gst.override:
+	Added setters and getters for GstDate's day/month/year
+	Added tp_repr for GstDate
+
+2005-10-14  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	Update for new API
+	* gst/gst.override:
+	Added unreffing for gst.Registry.get_plugin_list and .get_feature_list
+	* testsuite/common.py:
+	removed crude hack for gst.Registry and gst.Plugin
+	
+	* testsuite/test_interface.py:
+	* testsuite/test_caps.py:
+	* testsuite/test_struct.py:
+	* testsuite/test_xml.py:
+	converted to using common's TestCase class
+
+	* testsuite/test_event.py:
+	Enabled/fixed previously non working test
+	* testsuite/test_registry.py:
+	Now uses common's TestCase class,
+	added special case setUp()
+
+2005-10-13  Edward Hervey  <edward@fluendo.com>
+
+	* gst/Makefile.am: (noinst_HEADERS): 
+	Added pygstexception.h
+
+2005-10-13  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	Updated to new API
+	* gst/gstbus.override:
+	bus.add_watch() now uses gst_bus_add_watch_full() using 
+	pyg_destroy_notify as the DestroyNotify function, thus enabling
+	proper python garbage collection.
+	* testsuite/common.py:
+	Let's check refcounting of ALL gst.Object
+	* testsuite/test_bin.py:
+	Added debug
+	* testsuite/test_bus.py:
+	Added "message" signal version of test
+
+2005-10-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gstelement.override:
+	* testsuite/test_event.py:
+	  fix up test a little
+
+2005-10-13  Alessandro Decina  <alessandro@nnva.org>
+
+	Reviewed by Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	* gst/gstevent.override:
+	* gst/gstpad.override:
+	* gst/gstquery.override:
+	Use PyList_SetItem() instead of PyList_Append() for faster list creation
+	and proper python refcounting.
+	Closes bug #318684
+
+2005-10-13  Alessandro Decina  <alessandro@nnva.org>
+
+	Reviewed by Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstobject.override: (_wrap_gst_object_tp_traverse):
+	Py_VISIT() might make code cleaner... but it doesn't work with
+	python < 2.4
+	Closes bug #318692
+
+2005-10-13  Edward Hervey  <edward@fluendo.com>
+
+	* examples/gstfile.py:
+	misc fixes
+	* gst/Makefile.am:
+	* gst/pygstexception.c:
+	* gst/pygstexception.h:
+	* gst/gstelementfactory.override:
+	* gst/gst.override:
+	* gst/gstpad.override:
+	* gst/gstmodule.c: (init_gst):
+	Added exceptions system by Alessandro Decina <alessandro@nnva.org>
+	Closes bug #315433
+	
+	* gst/gstbus.override:
+	* gst/gstelement.override:
+	Fix for _wrap_gst_element_get_state()
+	* gst/gstobject.override:
+	More debug
+
+2005-10-12  Andy Wingo  <wingo@pobox.com>
+
+	* autogen.sh (CONFIGURE_DEF_OPT): Check for automake 1.9 and 1.8,
+	but not for 1.5.
+
+	* gst/gst-types.defs: Fix flags wrongly declared as enums.
+
+	* gst/gst-extrafuncs.defs (flags, set_flag, unset_flag): Fix for
+	core updates.
+
+	* gst/gstmodule.c (init_gst): Give a better error message.
+
+	* gst/gst.defs (gst_registry_scan_paths)
+	(gst_element_abort_preroll, gst_plugin_check_file)
+	(gst_element_finish_preroll): Removed undefined symbols.
+
+	* gst/gstelement.override (_wrap_gst_element_get_state): Fix for
+	GstClockTime api change.
+
+2005-10-12  Julien MOUTTE  <julien@moutte.net>
+
+	* gst/gst-argtypes.c:
+	* gst/pygstminiobject.c:
+	* testsuite/testhelpermodule.c: Reordering header inclusion order to
+	fix build on my machine.
+
+2005-10-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gstevent.override:
+	  update for new API
+
+2005-10-11  Edward Hervey  <edward@fluendo.com>
+
+	* gst/common.h:
+	cleanup
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	Updated defs file to current gstreamer core
+	* gst/gst.override:
+	Added useless function (at least from python bindings) and little
+	correction on _wrap_gst_xml_get_topelements()
+	* gst/gstbin.override:
+	* gst/gstbuffer.override:
+	Fix memleak in gst.Buffer.set_caps()
+	* gst/gstevent.override:
+	Added wrapper for remaining gst_event_parse_*()
+	* gst/gstlibs.override:
+	Wrapped more gst.Controller methods
+	* gst/gstmodule.c: (init_gst):
+	new gst_init()
+	Added atexit(gst_deinit)
+	* gst/gstpad.override:
+	Fix memleak in gst.Pad.set_caps()
+	* gst/gstquery.override:
+	add gst.Query.parse_segment()
+	* gst/libs.defs:
+	Updated to current gst-libs
+	* gst/pygstminiobject.c: (pygstminiobject_register_wrapper),
+	(pygstminiobject_new), (pygstminiobject_dealloc):
+	Added debug
+	
+	* testsuite/Makefile.am:
+	* testsuite/common.py:
+	* testsuite/gstpython.supp:
+	* testsuite/python.supp:
+	* testsuite/test_bin.py:
+	* testsuite/test_buffer.py:
+	* testsuite/test_element.py:
+	* testsuite/test_event.py:
+	* testsuite/test_ghostpad.py:
+	* testsuite/test_iterator.py:
+	* testsuite/test_message.py:
+	* testsuite/test_pipeline.py:
+	Proper valgrind testing,
+	Updated tests to new API
+
+2005-10-09  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/play.py:
+	  update to current API and state of seek example
+
+2005-10-09  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gstelement.override:
+	* testsuite/test_event.py:
+	  now we can send events to elements again
+
+2005-10-09  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gstmessage.override:
+	  fix for pending state being added to state message
+	* testsuite/test_buffer.py:
+	* testsuite/test_pipeline.py:
+	  update
+
+2005-10-07  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gstelement.override (_wrap_gst_element_get_state): Drop the
+	python lock while in get_state.
+
+	* gst/__init__.py: Check the right module (i.e., the same check as
+	pygtk does).
+
+2005-10-07  Edward Hervey  <edward@fluendo.com>
+
+	* gst/pygstiterator.c:
+	Unref the return value, since the iterator refs them.
+	
+	* testsuite/test_iterator.py:
+	Added more test cases, re-enabled gcverify now the bug is fixed
+
+	* gst/pygstminiobject.c: (pygstminiobject_register_wrapper),
+	(pygstminiobject_new), (pygstminiobject_dealloc):
+	Comments to better track the creation/destruction of PyGstMiniObject
+	Fixed naming (gst.GstMiniObject => gst.MiniObject)
+	* testsuite/python.supp:
+	Updated python specific valgrind suppressions to latest version and
+	added x86_64 cases
+	* testsuite/gstpython.supp:
+	Series of suppressions for errors/leaks not solvable within gst-python
+	* testsuite/Makefile.am:
+	Added gstpython.supp
+
+2005-10-07  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	* testsuite/Makefile.am:
+	* testsuite/python.supp:
+	  add valgrind checking to the testsuite
+
+2005-10-06  Johan Dahlin  <johan@gnome.org>
+
+	* gst/common.h:
+	* gst/gstmodule.c: (init_gst):
+	* gst/pygstiterator.c: (pygst_iterator_iter_next),
+	(pygst_iterator_next), (pygst_iterator_push),
+	(pygst_iterator_resync):
+	Even more bored tonight: Implement next/resync/push. 
+	Register type so we can call methods and so.
+	
+2005-10-06  Johan Dahlin  <johan@gnome.org>
+
+	* codegen/argtypes.py:
+	* gst/Makefile.am:
+	* gst/common.h:
+	* gst/gst.defs:
+	* gst/gstbin.override:
+	* gst/gstelement.override:
+	* gst/pygstiterator.c: (pygst_iterator_dealloc),
+	(pygst_iterator_iter_next), (pygst_iterator_new):
+	* testsuite/test_iterator.py:
+	Add GstIterator wrapping and tests.
+
+2005-10-06  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstpad.override:
+	* gst/gststructure.override:
+	* testsuite/testhelpermodule.c: (_wrap_emit_event):
+	memleak fixes. Thanks valgrind :)
+
+2005-10-06  Edward Hervey  <edward@fluendo.com>
+
+	* gst-python.spec.in:
+	Wow, that file hasn't been updated in a long long time.
+
+	* gst/gstcaps.override: (_wrap_gst_caps_new_empty): 
+	new caps should be freed on dealloc...
+
+2005-10-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gstcaps.override:
+	  some more debugging
+	* gst/gstevent.override:
+	  represent using the string for the type
+
+2005-10-06  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstbuffer.override: (_wrap_gst_buffer__get_caps): 
+	Proper wrapping of the GstBuffer.caps attribute
+
+	* gst/gstmodule.c: (init_gst):
+	* gst/pygstminiobject.c: (pygstminiobject_register_class):
+	gst-debug initialisation should happen before anything else if we
+	want the debugging functions to work.
+
+2005-10-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	  need at least 2.6.3, because that contains the code that
+	  converts signal closure arguments to the correct Gst
+	  types
+	* gst/gstpad.override:
+	  log name of probe handlers we call
+	* testsuite/test_pad.py:
+	  fix up tests; use TestCase base class methods
+
+2005-10-06  Edward Hervey  <edward@fluendo.com>
+
+	* gst/pygstminiobject.c: 
+	Dooh, PyGstMiniObject doesn't need cyclic garbage collection !
+	Bye, bye Python refcounting (and refcounting bugs).
+
+2005-10-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_ghostpad.py:
+	  add handoff to count received buffers
+
+2005-10-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.override:
+	  accurate line numbers for logging
+	* testsuite/common.py:
+	  log when TestCase.setUp() and .tearDown() get called
+	* testsuite/test_ghostpad.py:
+	  rework
+
+2005-10-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/Makefile.am:
+	* testsuite/test_ghostpad.py:
+	  add new testsuite for ghost pad behaviour
+
+2005-10-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	  gst.Bin constructor can take no arguments
+	* testsuite/test_bin.py:
+	  add constructor tests
+	* testsuite/test_element.py:
+	  add same link test with no pads
+
+2005-10-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst-types.defs:
+	* gst/gstcaps.override:
+	* testsuite/test_caps.py:
+	  add gst.Caps.__refcount__
+
+2005-10-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_pad.py:
+	  add a test that shows we can link a pad in a buffer probe
+	  callback.  yay !
+
+2005-10-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gstobject.override:
+	  don't try and unref objects that are already finalizing
+	* gst/gstpad.override:
+	  fix up the set_chainfunc method
+	* testsuite/common.py:
+	* testsuite/test_pad.py:
+	  add linked/unlinked tests with no/true/false bufferprobes
+
+2005-10-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* codegen/argtypes.py:
+	  act on the mini object properly, not on the py object
+
+2005-10-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gstbuffer.override:
+	  a buffer is not a boxed
+	* gst/gstobject.override:
+	  use Py_VISIT for cleaner and more pythonic code
+	  do not visit GstObjects that still have a parent
+
+2005-10-05  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/argtypes.py:
+	* codegen/codegen.py:
+	* codegen/definitions.py:
+	* gst/arg-types.py:
+	Added 'keeprefcount' argument for function/method parameters in order to
+	cope with functions/methods that decrement the refcount of the given
+	parameter
+	* gst/gst.defs:
+	Added 'keeprefcount' for buffer argument of gst_pad_push() wrapper.
+
+2005-10-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/__init__.py:
+	  only pygtk.require if pygtk wasn't imported yet
+
+2005-10-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/__init__.py:
+	  don't import gobject
+	  revert ltihooks change from Johan - if it throws an exception
+	  there is a bug and I want to fix it
+
+2005-10-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	* gst/Makefile.am:
+	* gst/extend/Makefile.am:
+	* gst/extend/__init__.py:
+	* gst/extend/pygobject.py:
+	* gst/extend/utils.py:
+	  move over some of the extend stuff that I want to use right now
+
+2005-10-04  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/codegen.py:
+	Added pyg_[begin|end]_allow_threads before and after call of C methods 
+	in python methods wrappers.
+	This should get rid of more threading issues...
+	Should we also do that for function calls ?
+
+2005-10-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	  back to development
+
+=== release 0.9.3 ===
+
+2005-10-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	  Releasing 0.9.3, "For the Virgin"
+
+2005-10-02  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gst.defs: Remove gst_element_*_preroll functions.
+
+2005-09-30  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstpad.override:
+	Removed overriding of gst_caps_get_negotiated_caps, the codegenerator
+	handles it much better (hint:don't copy)
+
+2005-09-30  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gst.override:
+	* gst/gstbin.override:
+	  deprecate add_many/remove_many, fold into add/remove
+	* gst/gstmodule.c: (init_gst):
+	  add AddError and RemoveError
+	* testsuite/Makefile.am:
+	  remove fatal warnings, until we can wrap log handlers
+	  and catch our expected add/remove errors
+	* testsuite/test_bin.py:
+	  add tests for new add/remove semantics
+	* testsuite/test_pad.py:
+	* testsuite/test_pipeline.py:
+	  fix up
+
+2005-09-29  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gstelement.override (_wrap_gst_element_get_state): return an
+	enum instead of an int.
+
+2005-09-29  Andy Wingo  <wingo@pobox.com>
+
+	* gst/__init__.py: Don't pygtk.require() if pygtk is already loaded.
+
+	* examples/pipeline-tester (Window.play): 
+	* examples/vumeter.py (Window.run): Updates for bus API.
+
+2005-09-29  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	Definitions update
+
+2005-09-29  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	* gst/gstlibs.override:
+	Proper wrapping of GstController
+	* examples/Makefile.am:
+	* examples/audio-controller.py:
+	Example to show how to use gst.Controller
+
+2005-09-29  Edward Hervey  <edward@fluendo.com>
+
+	* examples/gstfile.py:
+	Update gstfile example so that... it works :)
+
+2005-09-29  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	* gst/gstbus.override:
+	* testsuite/test_bus.py:
+	* testsuite/test_pipeline.py:
+	Updated definitions, wrapper and testsuite for changes in GstBus API
+	
+2005-09-29  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	Updated definitions
+	* gst/gst.override:
+	ignoring _init, gst_param_spec* and gst_iterator_new_list functions
+	* gst/gststructure.override:
+	ignore gst_structure_get_enum
+	* testsuite/test_struct.py:
+	Updated test for boolean
+
+2005-09-28  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gstelement.override (_wrap_gst_element_get_state): Set the
+	timeout to 0 as default
+
+2005-09-28  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	* gst/libs.defs:
+	Updated definitions
+	* gst/gst.override:
+	* gst/gststructure.override:
+	Added functions not to be used from python, or that have better
+	existing equivalents, to the ignore list.
+	
+2005-09-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/common.py:
+	  provide a default setUp/tearDown
+	* testsuite/test_bin.py:
+	* testsuite/test_bus.py:
+	* testsuite/test_element.py:
+	* testsuite/test_pipeline.py:
+	  adding/updating tests and gc tracking
+
+2005-09-28  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	* gst/gstbin.override:
+	* gst/gstbuffer.override:
+	* gst/gstevent.override:
+	Remove dead code
+
+	* gst/gstelement.override:
+	Remove dead code and re-enable link with filtering and _send_event()
+
+2005-09-28  Edward Hervey  <edward@fluendo.com>
+
+	* gst/Makefile.am:
+	* gst/gst.override:
+	* gst/gsttaglist.override:
+	* gst/gstobject.override:
+	Let's split up gst.override,
+	Added gsttaglist.override and gstobject.override
+	
+	* gst/arg-types.py:
+	* gst/gst-argtypes.c:
+	Cleanup, removed deprecated GstData related functions
+	* gst/gst-extrafuncs.defs:
+	* gst/gst.defs:
+	Moved debug functions to gst-extrafuncs.defs
+
+2005-09-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	  parse_launch also owns the return ref
+	* gst/gstbin.override:
+	  fix a leak in get_by_name()
+	* testsuite/common.py:
+	  loop when garbage collecting; necessary when deleting, say,
+	  a pipeline, that contains elements, to ensure the elements
+	  also get collected
+	* testsuite/test_element.py:
+	* testsuite/test_pipeline.py:
+	  test for garbage collection
+
+2005-09-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/common.py:
+	  add a common.TestCase class that has methods to track and verify
+	  garbage collection of GstObject
+	* testsuite/test_pad.py:
+	  use it
+
+2005-09-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/Makefile.am:
+	* gst/common.h:
+	* gst/pygstobject.c: (pygstobject_sink), (pygstobject_new),
+	(pygst_object_unref):
+	* gst/pygstobject.h:
+	* gst/gstmodule.c: (init_gst):
+	  add/move some code to handle wrapping/refcounting of possible
+	  GstObject
+	* codegen/argtypes.py:
+	* gst/gstbin.override:
+	* gst/gstbus.override:
+	* gst/gstelement.override:
+	* gst/gstpad.override:
+	* gst/interfaces.override:
+	  use this reffing code
+	* gst/gst-types.defs:
+	* gst/gst.override:
+	  add a __gstrefcount__ field to GstObject types
+	  add tp_traverse, tp_dealloc and tp_clear, so we handle refcounting
+	  properly related to garbage collection
+	* testsuite/test_element.py:
+	* testsuite/test_pad.py:
+	  add more tests, add some refcount checks
+
+2005-09-28  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/argtypes.py:
+	Proper handling of 'caller-owns-return' for miniobjects
+	
+	* gst/gst-types.defs:
+	Updating parenting of classes,
+	added/removed/updated flags&enums
+	
+	* gst/gst.defs:
+	Updated to current core cvs,
+	Added 'caller-owns-return' properties for functions/methods that require
+	it
+	* gst/gst.override:
+	Don't make *_[un]ref() accessible
+
+	* gst/gstbuffer.override:
+	* gst/gstevent.override:
+	* gst/gstmessage.override:
+	* gst/gstquery.override:
+	Removed hack-ish wrappers since codegenerator handles
+	'caller-owns-return' methods/functions
+	* gst/gstmodule.c: (sink_gstobject), (init_gst):
+	Re-enabled sink function
+	* gst/libs.defs:
+	Updated to current core cvs
+	Removed Adapter
+	
+	* gst/pygstminiobject.c:
+	* gst/pygstminiobject.h:
+	removed _new_noref() hack
+
+2005-09-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gstpad.override:
+	  don't leak the parent when repr'ing pads
+
+2005-09-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/__init__.py:
+	  require pygtk 2.0 when importing gst
+	  it only works with 2.0, and it sets up the path correctly
+	  when running against a pygtk compiled into a different prefix
+
+2005-09-26  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gstquery.override:
+	* gst/libs.defs:
+	  update for API removals and changes
+
+2005-09-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/fvumeter.py:
+	  condense code by using table and loop
+	* examples/vumeter.py:
+	  fix up example for new API for both bus and level element
+
+2005-09-23  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gst.override:
+	  add another registry method
+	* testsuite/Makefile.am:
+	  add check-verbose
+	* testsuite/runtests.py:
+	  check for VERBOSE env var
+	* testsuite/test_pad.py:
+	  refactor a test and add one more for probes
+
+2005-09-22  Jan Schmidt  <thaytan@mad.scientist.com>
+
+	* gst/gstbuffer.override:
+	Revert Buffer.caps change, since wingo fixed it upstream
+
+2005-09-22  Jan Schmidt  <thaytan@mad.scientist.com>
+
+	* gst/gstbuffer.override:
+	Increment the refcount when fetching GST_BUFFER_CAPS. 
+	Python gurus, please fix if there's a better way this should be done.
+
+2005-09-21  Andy Wingo  <wingo@pobox.com>
+
+	* testsuite/test_pad.py (PadProbeTest.testRemovingProbe): Add
+	probe removal test. Passes, but some other test sporadically fails
+	-- will check that later.
+
+	* gst/gst.defs: Update for probe removal api
+
+	* gst/gstpad.override (_wrap_gst_pad_remove_data_probe) 
+	(_wrap_gst_pad_remove_event_probe) 
+	(_wrap_gst_pad_remove_buffer_probe): Removed, upstream does the
+	right thing now.
+	(_wrap_gst_pad_add_data_probe, _wrap_gst_pad_add_event_probe) 
+	(_wrap_gst_pad_add_buffer_probe): Indent.
+
+2005-09-20  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gststructure.override:
+	* testsuite/test_struct.py:
+	  add a .keys() method to gst.Structure, plus test
+
+2005-09-19  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gstbus.override:
+	* testsuite/test_pipeline.py:
+	* testsuite/test_bus.py:
+	  fix up for new bus API
+
+2005-09-18  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	* gst/gst.defs:
+	* gst/gst.override:
+	* gst/gstmodule.c: (init_gst):
+	* testsuite/test_registry.py:
+	  update for new plugin API
+
+2005-09-18  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst-types.defs:
+	* gst/gst.override:
+	* testsuite/test_registry.py:
+	  commit intermediate wrapper updates
+
+2005-09-16  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gst.defs (registry_get_default): Renamed from
+	gst_registry_get_default.
+
+2005-09-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	  remove a function that went away
+
+2005-09-15  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gst-types.defs: 
+	* gst/gst.defs: Update for registry/plugin/pluginfeature API changes.
+
+2005-09-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gstbus.override:
+	  fix wrong decrefs
+
+2005-09-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* testsuite/test_pipeline.py:
+	  wrap state_change_async and show that it works
+
+2005-09-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/vumeter.py:
+	  update for property name change
+	* gst/gst.override:
+	* testsuite/test_element.py:
+	  actually log on objects, yay
+
+2005-09-12  Andy Wingo  <wingo@pobox.com>
+
+	* testsuite/test_element.py (ElementName.testElementStateGetName):
+	s/NONE/VOID/.
+
+2005-09-09  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.override:
+	  fix for header changes
+
+2005-09-08  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_element.py:
+	* testsuite/test_pipeline.py:
+	  fix other tests as well
+
+2005-09-08  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gstelement.override:
+	* testsuite/test_bin.py:
+	  wrap gst.Element.get_state, returning a tuple
+	  add tests for it
+
+2005-09-08  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gst.override:
+	* testsuite/test_element.py:
+	  add debug methods to gst.Object
+
+2005-09-08  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	  add gst.ghost_pad_new_notarget
+	* gst/gstpad.override:
+	  change wrap_gst_pad_new a little and add logging
+	* testsuite/test_pad.py:
+	  add tests for constructors of gst.Pad
+
+2005-09-05  Andy Wingo  <wingo@pobox.com>
+
+	* examples/pipeline-tester: Update pipelines. The fixed-rate v4l
+	one doesn't work here, but the rest of them do.
+
+2005-09-05  Edward Hervey  <edward@fluendo.com>
+
+	* examples/pipeline-tester: (Window.play): 
+	New API: STATE_SUCCESS -> STATE_CHANGE_SUCCESS
+
+2005-09-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	  wrap gst.Plugin.get_source()
+
+2005-09-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.override:
+	  don't mangle plugin.get_version() to a tuple of int; it segfaults
+	  when the version contains non-ints like '-'
+
+2005-09-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_bin.py:
+	  fix state change test
+
+2005-09-02  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gstmessage.override: 
+	* gst/gst-types.defs (State, StateChangeReturn, StateChange):
+	* gst/gst.defs (change_state): Update for core changes.
+
+2005-09-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	  make gst.event_new_* available
+
+2005-09-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/Makefile.am:
+	* testsuite/test_bin.py:
+	  add an example of a bin that overrides the change_state vmethod
+
+2005-09-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/Makefile.am:
+	* testsuite/test_caps.py:
+	* testsuite/test_element.py:
+	* testsuite/test_event.py:
+	* testsuite/test_pad.py:
+	* testsuite/test_pipeline.py:
+	* testsuite/test_struct.py:
+	  updated/bits commented out
+	* testsuite/test_probe.py:
+	  removed
+
+2005-09-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst-types.defs:
+	* gst/gstbuffer.override:
+	* gst/pygstminiobject.c: (pygstminiobject_new_noref):
+	* testsuite/test_buffer.py:
+	  add a .data to buffers; it feels more natural to me than doing
+	  str(buffer) compared to the other properties.
+	  make sub_buffer test for data
+
+2005-09-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.override:
+	* gst/gstmodule.c: (init_gst):
+	  add a pygst debug category for bindings themselves to use
+	* gst/gstbuffer.override:
+	  add a repr method; add some assertions
+	* gst/pygstminiobject.c: (pygst_miniobject_init),
+	(pygstminiobject_register_wrapper), (pygstminiobject_new),
+	(pygstminiobject_new_noref), (pygstminiobject_dealloc),
+	(pygstminiobject_clear):
+	  make the miniobjs hash private with an underscore
+	  add debugging for inserting/removal in hash
+	  fix pygstminiobject_clear - it also needs to remove
+	  from the global hash.  Fixes a nasty race problem in
+	  test_buffer
+	* testsuite/test_buffer.py:
+	  expand on the subbuffer test
+
+2005-09-01  Andy Wingo  <wingo@pobox.com>
+
+	* examples/Makefile.am (examples_DATA): Dist fixer.
+
+	* examples/debugslider.py: Renamed from debug-slider.py so it can
+	be imported.
+
+	* examples/pipeline-tester: Add a debugslider.
+
+	* pygst.py.in (require): If pygst.require() is called multiple
+	times, don't pollute sys.path with unneeded path entries.
+
+2005-08-31  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/__init__.py:
+	  del ltihooks properly; fixes loading of testhelper in testsuite
+	* gst/gst.defs:
+	  wrap link_filtered
+
+2005-08-26  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	  require base and controller as well since we wrap them
+	* gst/__init__.py:
+	  if using ltihooks, import interfaces and then uninstall our
+	  module importer so we don't crap all over someone else's
+
+2005-08-19  Andy Wingo  <wingo@pobox.com>
+
+	* gst/interfaces.defs (MixerTrack): MixerTrack is a GObject. How
+	did this ever work before?
+
+	* gst/interfaces.override (_wrap_gst_tuner_list_channels) 
+	(_wrap_gst_tuner_list_norms, _wrap_gst_mixer_list_tracks) 
+	(_wrap_gst_color_balance_list_channels): Catch programming errors
+	without segfaults, as glib would do.
+
+2005-08-18  Andy Wingo  <wingo@pobox.com>
+
+	* examples/debug-slider.py: New file.
+
+	* examples/Makefile.am (examples_DATA): Dist it, foolios.
+
+2005-08-17  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gst.defs (watch_for_state_change): Added wrapper from CVS.
+
+2005-08-16  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gst.defs (get_pad_template): Change to operate on elements
+	and not their classes so it can be wrapped in pygtk 2.6.
+
+	* gst/gstelement.override (_wrap_gst_element_get_pad_template):
+	New override.
+
+2005-08-11  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override: (pygst_debug_log):
+	Only display the filename and not the full path
+
+2005-08-10  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmodule.c: (init_gst): 
+	changed debug category name from 'gst-python' to 'python'
+
+	* gst/gst.override: (pygst_debug_log): 
+	gchar is way smaller than an int... resulting in negative line numbers
+	in debug.
+
+2005-08-10  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override: (pygst_debug_log): 
+	printf("urlencoded%20space") != printf("%s", "urlencoded%20space")
+	Funny how a lot of problems have gone since that's fixed :)
+
+2005-08-09  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstpad.override: (_wrap_gst_pad_query_position): 
+	Long != LongLong ....
+
+2005-08-08  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/codegen.py:
+	* codegen/argtypes.py:
+	Updates from pygtk's codegen and typo fix
+
+2005-08-04  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	* gst/gst.override:
+	* gst/gstmodule.c:
+	We now have debugging in gst-python ;)
+	gst.[log|debug|info|warning|error]()
+
+2005-08-03  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac:
+	* gst/Makefile.am:
+	* gst/gstlibs.override:
+	* gst/gst.defs:
+	* gst/libs.defs:
+	* gst/gst.override:
+	* gst/gstlibs.override:
+	bindings now wrap the gstreamer extra libs (adapter, controller,...)
+
+2005-08-03  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gstmessage.override (_wrap_gst_message_parse_error): Always
+	return a tuple of length 2.
+
+	* examples/pipeline-tester: Commit some updates I had.
+
+	* configure.ac (PYGST_CFLAGS): pygst.py generation is handled by
+	the makefile.
+
+2005-08-01  Edward Hervey  <edward@fluendo.com>
+
+	* README-docs:
+	* configure.ac:
+	* Makefile.am:
+	Remove old documentation system
+
+	* gst/gst.defs:
+	* gst/gst-types.defs:
+	Updating defs files
+
+	* gst/gst.override:
+	Wrapped gst_flow_get_name() for const-gchar *
+
+	* gst/gstelement.override:
+	I really should test everything on 32 AND 64 bits systems...
+
+	* gst/gstevent.override:
+	Updated gst_event_new_seek() wrapper
+	Added gst_event_get_structure() wrapper
+
+	* gst/gstmodule.c:
+	Changed definition of gst.CLOCK_TIME_NONE to wrap GST_CLOCK_TIME_NONE
+
+	* testsuite/testhelpermodule.c:
+	gst_event_new --> gst_event_new_custom
+
+2005-07-25  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs: (GhostPad):
+	Added GhostPad type
+	* gst/interfaces.defs:
+	Added MixerTrackFlags, TunerChannelFlags and MixerOptions
+
+	Want the rest of the poem ? ;)
+
+2005-07-23  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac:
+	* gst/Makefile.am:
+	* gst/interfaces.defs:
+	* gst/interfaces.override:
+	* gst/xoverlay.override:
+	It seems that, somewhere along the way, I forgot to make sure interfaces
+	were binded too :)
+
+2005-07-21  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmessage.override:
+	wrapped gst_message_parse_segment_start() and 
+	gst_message_parse_segment_done()
+
+	* gst/gst.defs:
+	I'm bored with writing "Updating defs file", so I'll just write a poem
+	by Charles Baudelaire, "L'invitation au voyage" :
+	
+	  Mon enfant, ma soeur,
+	  Songe à la douceur
+	  D'aller là-bas vivre ensemble !
+	  Aimer à loisir,
+	  Aimer et mourir
+	  Au pays qui te ressemble !
+	  Les soleils mouillés
+	  De ces ciels brouillés
+	  Pour mon esprit ont les charmes
+	  Si mystérieux
+	  De tes traîtres yeux,
+	  Brillant à travers leurs larmes.
+
+	The rest at the next defs update :)
+
+2005-07-20  Edward Hervey  <edward@fluendo.com>
+
+	* gst/pygstvalue.c:
+	FixedList -> Array
+	* gst/gst.defs:
+	Updating defs file.
+
+2005-07-18  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstpad.override: misc fixes for change in gst_pad_get_parent()
+
+	* gst/gst-types.defs:
+	* gst/gst.defs: Updating defs file even more :)
+
+2005-07-18  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs: Updating defs file
+
+2005-07-13  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs: (MessageType):
+	updating to current core for 2 new GstMessageType's
+
+	* gst/gstbus.override: (bus_sync_handler),(bus_handler): 
+	properly unref the message python wrapper...
+
+2005-07-13  Andy Wingo  <wingo@pobox.com>
+
+	* examples/pipeline-tester (Window.on_message): Handle errors.
+	(Window.play): Drain messages from bus before setting pipe to
+	NULL.
+
+2005-07-13  Edward Hervey  <edward@fluendo.com>
+
+	* Makefile.am: (install-data-local): 
+	PYGSTDIR typo fix
+
+	* examples/bps.py: 
+	* examples/f2f.py:
+	* examples/gstfile.py:
+	Updated some examples to 0.9
+
+2005-07-13  Andy Wingo  <wingo@pobox.com>
+
+	* examples/vumeter.py: New file, a VU meter application that reads
+	from alsasrc.
+
+	* examples/fvumeter.py: New file, imported from Flumotion and
+	relicensed under the LGPL. Implements a simple VU meter widget.
+
+2005-07-13  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstbus.override: (bus_handler) (bus_sync_handler): 
+	Raise an exception if the callback doesn't return anything
+
+	* gst/pygstminiobject.c:
+	removed the 'ref' and 'unref' methods
+
+2005-07-13  Andy Wingo  <wingo@pobox.com>
+
+	* examples/pipeline-tester: Tweaks, show messages.
+
+2005-07-12  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	removed deprecated wrappers (gst_event_new_any*)
+
+	* gst/gstbuffer.override:
+	* gst/gstquery.override:
+	* gst/gstmessage.override:
+	* gst/gstevent.override:
+	* gst/pygstminiobject.c:
+	* gst/pygstminiobject.h:
+	Correct wrapping of functions 'creating' mini-objects
+
+	* gst/gstelement.override: (_wrap_gst_element_get_state):
+	More meaningful exception message
+
+	* gst/gstpad.override:
+	wrapped gst_pad_alloc_buffer(), gst_pad_pull_range(),
+	gst_pad_get_range(), gst_pad_get_internal_links(),
+	gst_pad_get_internal_links_default(), gst_pad_get_query_types(),
+	gst_pad_get_query_types_default()
+	
+
+2005-07-12  Andy Wingo  <wingo@pobox.com>
+
+	* examples/pipeline-tester: New file, tests out gstreamer
+	pipelines. The pipelines are a bit broken right now tho.
+
+	* env: New script, munges PYTHONPATH for uninstalled usage, and
+	also $PACKAGES which is useful if you add `print-packages` to your
+	$PS1 and drop http://wingolog.org/pub/print-packages into your
+	$PATH.
+
+	* configure.ac (AC_CONFIG_FILES): The makefile handles pygst.py
+	now.
+	
+	* Makefile.am (install-data-local): Actually install pygst.pth to
+	the pythondir, not pyexecdir. Also install a properly sedded
+	pygst.py.
+	(pygst.py): Sed the builddir into pygst.py, and set not writable
+	(to avoid any confusion about which file to edit).
+
+	* pygst.py.in (_pygst_dir): Set _pygst_dir from one variable,
+	@PYGSTDIR@, which is manually sedded in from the Makefile, so that
+	it works both installed and uninstalled.
+
+	* configure.ac (AC_CONFIG_FILES):
+	* examples/: Moved all examples up from examples/gst/ into
+	examples/.
+
+	* examples/gstplay: Removed examples for old gstplay.
+
+2005-07-12  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmessage.override: 
+	fixes in .parse_state_changed() and parse_tag()
+
+2005-07-12  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	Added GError wrapping,
+	Removed data field from Buffer,
+	Added virtual methods to object
+	Updated to latest API
+
+	* gst/gst.override:
+	wrapped gst_plugin_get_feature_list(), gst_uri_handler_get_protocols(),
+	gst_registry_pool_list()
+
+	* gst/gstbuffer.override:
+	gst.Buffer() works
+	get/setters fixed
+	wrapped gst_buffer_stamp()
+
+	* gst/gstbus.override:
+	wrapped gst_bus_set_sync_handler() and gst_bus_add_watch()
+
+	* gst/gstelement.override:
+	wrapped gst_element_send_event(), gst_element_factory_get_pad_templates()
+	gst_element_query_convert(), gst_element_get_query_types()
+
+	* gst/gstevent.override:
+	wrapped gst_event_discont_get_value()
+
+	* gst/gstmessage.override:
+	wrapped gst_message_parse_state_changed(), gst_message_parse_error(),
+	gst_message_parse_warning(), gst_message_parse_tag()
+
+	* gst/gstmodule.c:
+	Added registration of new fundamental type with pygtk
+
+	* gst/gstpad.override:
+	wrapped gst_pad_query(), gst_pad_[add|remove]_[data|event|buffer]_probe(),
+	gst_pad_query_position(), gst_pad_query_convert()
+
+	* gst/gstquery.override:
+	wrapped gst_query_parse_position(), gst_query_parse_convert(),
+	gst_query_parse_seeking_query(), gst_query_parse_seeking_reponse()
+
+	* gst/pygstminiobject.c:
+	fixes
+
+	* gst/Makefile.am:
+	added gstbus.override, gstmessage.override, gstquery.override
+
+	* testsuite/test_buffer.py:
+	* testsuite/test_element.py:
+	* testsuite/test_event.py:
+	* testsuite/test_pipeline.py:
+	Updating testsuites
+
+2005-07-05  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmodule.c:
+	* gst/pygstminiobject.c:
+	Proper registration of PyGstMiniObject classes in order to be able to
+	create Event, Messages, Buffers from python.
+	More corrections on miniobject's refcounting
+
+	* gst/gstevent.override:
+	* gst/gstbuffer.override:
+	Removed overloaded overrides
+
+	* gst/gst.defs:
+	updated
+
+2005-07-01  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac:
+	* Makefile.am:
+	* gst/Makefile.am:
+	* examples/Makefile.am:
+	* testsuite/common.py:
+	gst.play is gone in 0.9...
+	
+2005-07-01  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	* gst/gst.override:
+	Probes are gone...
+
+	* Makefile.am:
+	* configure.ac:
+	* gst/Makefile.am:
+	* pygst.py.in:
+	Modifications to have parallel-installable gst-python
+	Works more or less in the same way as pygtk:
+	import pygst
+	pygst.require('0.9')
+	import gst
+
+2005-06-28  Edward Hervey  <edward@fluendo.com>
+
+	* gst/pygstminiobject.c:
+	thread safe handling of mini-objects
+
+	* codegen/codegen.py: (GstMiniObjectWrapper.constructor_tmpl):
+	let's not forget to wrap the MiniObject :)
+
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	Always keep up to date with the core
+
+	* gst/gstelement.override:
+	override for gst_element_query_position
+
+	* gst/pygstminiobject.c:
+	* gst/pygstminiobject.h:
+	* gst/gst.override:
+	PyGstMiniObject now properly wrap GstMiniObject and are referenced in a
+	global hash table
+
+2005-06-26  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/argtypes.py:
+	* codegen/codegen.py:
+	* codegen/definitions.py:
+	* codegen/defsparser.py:
+	* codegen/h2def.py:
+	* codegen/mergedefs.py:
+	* codegen/reversewrapper.py:
+	Backport pygtk 2.6.2 codegen
+
+	* gst/gst-types.defs:
+	Added fields for Buffer, Event, Message and Query
+	Added pre-roll for enum ElementStateReturn
+
+	* gst/gst.defs:
+	Added (define-method for gst_structure_nth_field_name()
+
+	* gst/gstelement.override:
+	Added override for gst_element_get_state
+
+	* gst/gstcaps.override:
+	re-enabled structure functions
+	
+2005-06-26  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/argtypes.py:
+	* codegen/codegen.py:
+	* codegen/definitions.py:
+	* codegen/defsparser.py:
+	* codegen/defsconvert.py:
+	* codegen/docgen.py:
+	Updated codegen to support miniobject
+
+	* gst/Makefile.am:
+	Use the included (and modified) codegen for code generation.
+
+	* gst/pygstminiobject.c:
+	* gst/pygstminiobject.h:
+	* gst/pygstminiobject-private.h:
+	New GstMiniObject inspired from pygobject.[ch] code
+
+	* gst/common.h:
+	* gst/gst-types.defs:
+	* gst/gst.override:
+	* gst/gstbuffer.override:
+	* gst/gstcaps.override:
+	* gst/gstmodule.c:
+	* gst/gstpad.override:
+	Modifications to support MiniObject
+
+	* gst/gst.defs:
+	Allow null second parameter for ElementFactory.create()
+	and gst.element_factory_make()
+
+2005-06-20  Edward Hervey  <edward@fluendo.com>
+
+	* gst/arg-types.py: 
+	* gst/common.h:
+	* gst/gst-argtypes.c:
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	* gst/gst.override:
+	* gst/gstcaps.override:
+	* gst/gstelement.override:
+	* gst/gstmodule.c:
+	* gst/gstpad.override:
+	* gst/gststructure.override:
+	commented-out deprecated code,
+	compiles at last, and works for pipeline creation and state change
+
+	* configure.ac:
+	updated requirement of GStream (0.9.0), pygtk (2.6.1)
+	bumped version number (0.9.0.1)
+
+2005-06-17  Edward Hervey  <bilboed@bilboed.com>
+
+	* Backport of bugfixes/new features from 0.8 branch to HEAD
+
+	* gst/gst.defs:
+	* gst/gst-types.defs:
+	  New defs files generated from 0.9 GStreamer
+
+	  PORTING-TODO will follow
+
+2005-06-17  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gstcaps.override (_wrap_gst_caps_tp_richcompare): Increment
+	the refcount of the return value in all cases, even for Py_True
+	and Py_False. Lines of code per day hovering around 1.3.
+
+2005-06-14  Edward Hervey  <bilboed@bilboed.com>
+
+	* gst/gstcaps.override: (_wrap_gst_caps_tp_str): 
+	reverting previous fix, was incorrect
+
+	* configure.ac:
+	0.8.1.2 pre-release
+
+	* gst/gst.override: (probe_handler_marshal):
+	bye bye probe memleak
+	
+2005-06-14  Edward Hervey  <bilboed@bilboed.com>
+
+	* gst/Makefile.am: (defs_DATA) (GST_OVERRIDES): 
+	* gst/gst.defs:
+	* gst/gst.override:
+	* gst/gst-extrafuncs.defs:
+	* gst/gstbuffer.override:
+	* gst/gstevent.override:
+	* gst/gst-types.defs: (Buffer) (Event): 
+	Added support for element flags (list, set, unset)
+	Added gst.Buffer duration field
+	Added gst.Event fields
+
+2005-06-14  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gstcaps.override (_wrap_gst_caps_tp_richcompare): Fixes for
+	== and != when the second arg is not a caps.
+
+	* testsuite/test_caps.py (CapsTest.testComparisons): Fix name.
+
+2005-06-14  Edward Hervey  <bilboed@bilboed.com>
+
+	* gst/gstcaps.override: (_wrap_gst_caps_tp_str): 
+	proper repr of GstCaps : <GstCaps at <adress> : '<caps.to_string>'>
+
+2005-06-09  Edward Hervey  <bilboed@bilboed.com>
+
+	* examples/gst/gstfile.py: (Discoverer.discover): 
+	whoops, pipeline was being run twice :)
+
+2005-06-09  Zaheer Abbas Merali  <zaheerabbas at merali dot org>
+
+	* examples/gst/gstfile.py: fix typo
+
+2005-06-08  Edward Hervey  <bilboed@bilboed.com>
+
+	* examples/gst/Makefile.am:
+	* examples/gst/gstfile.py:
+	renamed gst-file.py to gstfile.py and made the Discoverer class useable
+	in other applications/scripts
+
+	* examples/gst/audioconcat.py:
+	Example application that uses the Discoverer and the gnonlin elements to
+	concatenate several audio files to one single one
+
+2005-06-07  Edward Hervey  <bilboed@bilboed.com>
+
+	* examples/gst/Makefile.am:
+	* examples/gst/gst-file.py: 
+	New example that shows how to use gst-python in an object-oriented way,
+	and how to override existing methods
+
+2005-06-02  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstbuffer.override (_wrap_gst_buffer_set_data): 
+	gcc 4.x bugfixes
+
+2005-05-04  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* gst/gst.defs:
+	  factory.create doesn't need a name
+	* gst/gst.override:
+	  implement tp_str and tp_repr gst.Object and gst.PluginFeature
+	* gst/gstelement.override:
+	  implement factory.get_pad_templates and make element.link_pads
+	  take NULL, pads or strings as the pad argument
+	* gst/gstpad.override:
+	  implement tp_getattr for GstPadTemplate
+
+2005-05-03  Zaheer Abbas Merali  <zaheerabbas at merali dot org>
+
+	* gst/pygstvalue.c: (pygst_value_from_pyobject):
+	stupid, stupid, stupid
+
+2005-05-03  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* gst/gstcaps.override:
+	  fix uninitialized warning and refactor function
+
+2005-05-03  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* gst/pygstvalue.c:
+	* gst/gst-argtypes.c:
+	* gst/gst.override:
+	  define NO_IMPORT_PYGOBJECT to have a correct extern declaration
+	  reenable _pygst_element_init and ifdef it correctly
+	* gst/arg-types.py:
+	  check errors
+	* gst/gstcaps.override:
+	  - remove list append functionality. Sets don't support the +
+	    operator
+	  - implement richcompare and coerce, nonzero, or, xor and subtract
+	    number functions
+	* testsuite/test_caps.py:
+	  add tests for the new stuff
+
+2005-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/Makefile.am:
+	* testsuite/common.py:
+	  rework common so that it behaves a bit more sanely
+	  make the inner workings more clear
+
+2005-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	  add Wall and Werror just like other modules
+	* gst/gst.override:
+	* gst/gstelement.override:
+	  fix compile problems for Wall Werror
+	* testsuite/common.py:
+	* Makefile.am:
+	* gst/Makefile.am:
+	* gst/ltihooks.py:
+	* ltihooks.py:
+	  move ltihooks to root; having it in gst was a bad hack and
+	  breaks distcheck
+
+2005-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/common.py: ltihooks only needed for uninstalled (?)
+
+2005-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/runtests.py: a much nicer way of getting all the tests
+
+2005-05-03  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* testsuite/Makefile.am:
+	  run tests with GST_DEBUG=*:0 so they don't produce any debugging
+	  output
+	* testsuite/test_element.py:
+	  don't disable stderr
+	* gst/gstbuffer.override:
+	  initialize size correctly
+
+2005-05-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/runtests.py: also return exit code 1 in case of errors
+
+2005-05-02  Edward Hervey  <bilboed@bilboed.com>
+
+	* testsuite/common.py: Added case for 64bit-system that don't have
+	the dl module
+
+2005-05-02  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* gst/Makefile.am:
+	  running the code generator depends on the files it uses
+	* gst/arg-types.py:
+	  add GstCaps parsing
+	* gst/gstelement.override:
+	  make element.link take an optional caps parameter, deprecate
+	  element.link_filtered
+	* testsuite/test_caps.py:
+	  replace caps.get_strcuture(i) calls with caps[i], the deprecation
+	  warnings are annoying
+
+2005-05-01  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_interface.py:
+	  do not do stuff in a testsuite that isn't guaranteed to be there.
+	  could do with some way of detecting and skipping.
+
+2005-05-01  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* gst/gst-types.c:
+	  remove, it's called gst-argtypes.c these days
+	* gst/common.h:
+	* gst/gst-argtypes.c: (pygst_caps_from_pyobject):
+	  add function to transform a PyObject to a GstCaps*
+	* gst/gstcaps.override:
+	  implement more sequence functions, deprecate caps.get_structure() in
+	  favour of caps[i] and make the structure-by-reference stuff work
+	* gst/gststructure.override:
+	  make structures from caps work by reference but don't die a horrible
+	  death if the caps get removed before the structure is
+	* testsuite/Makefile.am:
+	  run with G_DEBUG=fatal_warnings so we crash on g_warnings in C code
+	* testsuite/test_caps.py:
+	  add some checks
+
+2005-04-30  Benjamin Otte  <otte@gnome.org>
+
+	* gst/gst.override:
+	  pyg_register_class_init is new API, so only use it when available.
+	  If not available gst.element_register won't work either, but I just
+	  won't care about that right now.
+
+2005-04-30  Benjamin Otte  <otte@gnome.org>
+
+	* gst/arg-types.py:
+	  ref the GstData we get in conversions as pygst_data_from_pyobject
+	  doesn't do that
+	* gst/gst-types.c: (pygst_data_from_pyobject),
+	(pygst_data_to_pyobject), (PyGstData_from_value),
+	(PyGstData_to_value):
+	  make GstData <=> GValue conversions use the correct G_VALUE_TYPE and
+	  don't copy the values, but just ref them. Avoids mad buffer copying
+	* gst/common.h:
+	  include GstData <=> PyObject conversion funcs
+	* gst/gst.override:
+	  - wrap gst.element_register
+	  - add _pygst_get_plugin to query the plugin used by Python.
+	    Necessary preparation for a Python plugin loader. Returns NULL if
+	    no plugin, in that case gst.element_register registers the element
+	    as part of the running app.
+	  - add a class initializer for gst.Element subtypes, that checks the
+	    variables __gsttemplates__ and __gstdetails__ and makes the correct
+	    gst_element_class_set_element_details and
+	    gst_element_class_add_pad_templates calls from them. Note: This
+	    has issues when virtual methods are enabled.
+	  - add _pygst_element_check_error. This functions checks if Python
+	    code raised an exception and if so calls gst_element_error on the
+	    element and clears the error. Very useful in
+	    loop/chain/get-functions
+	* gst/gstbuffer.override:
+	  - implement buffer.copy_on_write()
+	  - implement sq_(ass_)[item|slice] functions for GstBuffer
+	  - fix PyBufferProcs to allow writing when buffer is writable
+	* gst/gstpad.override:
+	  - wrap gst.Pad to call gst_pad_new or gst_pad_new_from_template
+	    automatically based on arguments
+	  - don't attach private pad data to the element private, use
+	    g_object_set_data instead
+	  - make attaching functions to pads use closures. Allows garbage
+	    collecting pads where handlers have been set
+	  - fix _repr function to only print parent element's name if parent
+	    exists
+	* gst/gstmodule.c: (init_gst):
+	  register GstData <=> GValue conversion
+
+2005-04-28  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* gst/gstbuffer.override:
+	  Let's unref the buffer we created - prevents gst.Buffer from leaking
+
+2005-04-27  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* gst/gstbuffer.override:
+	  throw TypeError if bufsize < data size. Fixes testsuite
+
+2005-04-26  Johan Dahlin  <jdahlin@async.com.br>
+
+	* testsuite/runtests.py: Return exit code 1 if we have any failures
+
+2005-04-26  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* gst/gstbuffer.override:
+	  make Buffer() not use memory it doesn't own
+	* testsuite/test_buffer.py:
+	  check that it doesn't
+
+2005-04-19  Edward Hervey  <bilboed@bilboed.com>
+
+	* gst/gststructure.override: (_wrap_gst_structure_get_double):
+	Forgot to convert the returned value to a PyFloat...
+
+2005-04-19  Edward Hervey  <bilboed@bilboed.com>
+
+	* gst/gststructure.override: (_wrap_gst_structure_get_double):
+	Added overriding function for getting double values from a gst.Structure
+
+2005-04-16  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac: bumped back required version of pygtk; we can backport
+	  or copy over the code generator for what we need
+
+2005-04-16  Jan Schmidt  <thaytan@mad.scientist.com>
+
+	* configure.ac:
+	  Bump GStreamer core requirement to 0.8.9 for
+	  gst_pad_set_active_recursive.
+
+	* gst/gst.defs:
+	  Wrap gst_pad_set_active_recursive
+
+2005-04-14  Edward Hervey  <bilboed@bilboed.com>
+
+	* gst/gst.defs: 
+	Added definitions for methods of GstObject, GstElement, GstBin and Clock
+	so you can create derived classes with more functionnalities.
+
+	* configure.ac: (ACLOCAL):
+	bumped required version of PYGTK to 2.6.0
+
+2005-04-14  Andy Wingo  <wingo@pobox.com>
+
+	* gst/__init__.py (Value, Fourcc, IntRange, DoubleRange)
+	(Fraction): New classes.
+
+	* gst/gst.override (_wrap_gst_tag_list_get)
+	(_wrap_gst_tag_list_get_value_index)
+	(tag_foreach_func_dict)
+	(_wrap_gst_tag_list_subscript): Use gstvalue procs.
+	(init): Initialize the pygstvalue stuff (which involves accessing
+	definitions from gst/__init__.py).
+
+	* gst/gststructure.override (_wrap_gst_structure_ass_subscript):
+	Just use the pygstvalue functions to do conversion. As it is right
+	now, it's an incompatible change with the previous behavior,
+	because it doesn't try to parse field values like "(fourcc)XVID".
+	We can restore that previous behaviour if there is a need for it.
+	(_wrap_gst_structure_subscript): Use gstvalue functions to do the
+	conversion.
+
+	* gst/Makefile.am: Add in pygstvalue.[ch].
+
+	* gst/pygstvalue.h:
+	* gst/pygstvalue.c: New files.
+	(pygst_value_as_pyobject): Wraps pyg_value_as_pyobject, handling
+	gstvalues as well.
+	(pygst_value_init_for_pyobject): Sniffs a pyobject for a type and
+	initializes a GValue appropriately.
+	(pygst_value_from_pyobject): Wraps pyg_value_from_pyobject,
+	handling gvalues as well.
+
+	* testsuite/test_struct.py (StructureTest.testStructureChange) 
+	(StructureTest.testGstValue): Add some tests for GstValue wrapping.
+
+2005-04-25  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* gst/gstbuffer.override:
+	  handle the data correctly
+
+2005-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gst.override:
+	  wrap gst_plugin_get_version so it returns a tuple
+
+2005-04-12  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/test_probe.py:
+	  add test for probes
+
+2005-03-15  Richard Hult <richard@imendio.com>
+
+	* gst/gst.defs (element_factory_make): Caller owns return, fixes leak
+	(get_caps): Ditto
+
+	* gst/gst.override (_wrap_gst_tag_list_get): Leak fix
+	(_wrap_gst_tag_list_subscript): Ditto
+
+        Reviewed by: Johan Dahlin <johan@gnome.org>
+
+2005-01-10  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	* gst/arg-types.py:
+	* gst/gst-types.defs:
+	* gst/gst.override:
+	* testsuite/test_probe.py:
+	  first pass at wrapping GstProbe
+
+2005-01-01  Johan Dahlin  <johan@gnome.org>
+
+	* gst/Makefile.am:
+	* gst/gst.override:
+	* gst/gstcaps.override:
+	* gst/gstelement.override:
+	* gst/gstpad-handlers.override:
+	* gst/gstpad.override:
+	* gst/gststructure.override:
+
+	Split out gst.override to a few more files.
+	Rename gstpad-handlers.override to gstpad.override
+	Include more information for some LinkError exceptions
+	
+2004-12-14  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gst-types.defs:
+	* gst/gstbuffer.override:
+	* testsuite/test_buffer.py:
+
+	Improve support GstBuffer attributes, r/w support for timestamp.
+
+2004-11-29  Johan Dahlin  <johan@gnome.org>
+
+	* configure.ac: Post release version bump
+
+=== release 0.8.1 ===
+
+2004-11-29  Johan Dahlin  <johan@gnome.org>
+
+	* configure.ac: Bump version
+
+	* gst/interfaces.defs: 
+	* gst/interfaces.override (_wrap_gst_color_balance_list_channels): 
+	Apply patch from Zaheer Abbas Merali to implement this method. Not
+	that it's not .list_channels() due to conflict with a method of
+	the same name in the GstTuner interface
+
+	* gst/gstmodule.c: 
+	* gst/gst.override: Apply patch from Brian Warner to throw a link
+	error when element and pad linking fails.
+
+2004-11-27  Martin Soto  <martinsoto@users.sourceforge.net>
+
+	* gst/gst.override (_wrap_gst_event_new_any)
+	(_wrap_gst_event_new_discontinuous) 
+	(_wrap_gst_event_any_get_structure)
+	(_wrap_gst_registry_pool_plugin_list):
+	* gst/gst.defs (get_data, event_new_any, any_get_structure):
+	Added basic support for "ANY" (navigation) events.
+	Added basic support for discont events (only one value for now,
+	we are limited by the GStreamer API).
+	Now it is possible to access data in a GstBuffer as a string
+	Added a definition for method get_data of GstBuffer.
+
+	* gst/gst.override (_wrap_gst_structure_set_value): Add an
+	optional parameter to allow selection of the right G_TYPE. If no
+	type is specified, make an educated guess.
+
+2004-11-25  Johan Dahlin  <johan@gnome.org>
+
+	* gst/interfaces.override:
+	* gst/xoverlay.override:
+
+	redefine broken implement casting macros to something saner
+	
+2004-11-23  Johan Dahlin  <johan@gnome.org>
+
+	* testsuite/*: Put test_ prefix on all test filenames
+
+2004-11-23  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gstmodule.c: sink GstObject, much like GtkObject
+
+2004-11-23  Johan Dahlin  <johan@gnome.org>
+
+	* examples/gst/play.py:
+	* gst/gst-types.defs:
+	* gst/gst.override:
+	* testsuite/Makefile.am:
+	* testsuite/common.py:
+	* testsuite/event.py:
+	* testsuite/test_event.py:
+
+	Use gst.element_factory_make in play example
+
+	Use boxed instead of pointer for gst.Event, it was such an ugly
+	hack.
+
+	Ref the event when sending using gst.element_send_event.
+
+	Add a bunch of testcases (and a C module), renamed event to
+	test_event.py 
+	
+=== release 0.8.0 ===
+
+2004-11-15  Johan Dahlin  <johan@gnome.org>
+
+	* configure.ac: bump
+
+	* gst/gst.override (_wrap_gst_tag_setter_get_list): Override, to
+	avoid compiler warning.
+
+	* gst/gstmodule.c (init_gst): Reset LC_NUMERIC, since it might
+	change in gst_init_check. Fixes 100% CPU usage in flumotion
+	when using a non C locale.
+
+2004-11-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* pkgconfig/gst-python-uninstalled.pc.in:
+	  set pyexecdir for uninstalled as well
+
+=== release 0.7.94 ===
+
+2004-11-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* .cvsignore:
+	* examples/Makefile.am:
+	  remove gstplay
+
+2004-11-04  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gst.override (tag_foreach_func_list): Disable lists instead
+	of raising an exception.
+
+	* gst/gst-types.defs (ImplementsInterface, TagSetter): Define
+	these here.
+
+	* gst/interfaces.override (_wrap_gst_mixer_list_tracks): Impl.
+	(_wrap_gst_tuner_list_norms, _wrap_gst_tuner_list_channels): Plug 
+	leaks.
+
+=== release 0.7.93 ===
+
+2004-10-11  Johan Dahlin  <johan@gnome.org>
+
+	* configure.ac: Bump version number
+
+2004-10-11  Zaheer Abbas Merali  <zaheerabbas at merali dot org>
+
+	* gst/gst.defs:
+	* gst/gst.override:
+	Fixes element_unlink_many and adds a set_buffer_data method to GstBuffer
+	Fixes bug #154451 and #154692
+
+2004-10-11  Johan Dahlin  <johan@gnome.org>
+
+	* gst/arg-types.py:
+	* gst/gst.defs:
+	* gst/gst.override:
+	
+	GstXML support, based on patch by poelzi.
+
+2004-10-10  Zaheer Abbas Merali  <zaheerabbas at merali dot org>
+
+	* gst/gstmodule.c: (init_gst):
+	Make gst-python not hang on import when embedded.
+	Fixes bug #155041
+
+2004-10-04  Johan Dahlin  <johan@gnome.org>
+
+	* gst/interfaces.defs: Add proper fiels to GstTunerNorm. Also
+	remove parent property from all interfaces.
+	Revert, since we have code which depends on this "feature"
+
+2004-09-29  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gstmodule.c (python_do_pending_calls): Use
+	PyOS_InterruptOccurred and only hold the GIL during
+	PyErr_SetNone. Use _pygst_main_quit to avoid errors/aborts. Also
+	use the pygtk provided gil macros instead of the python ones.
+
+2004-09-22  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gst.override: use new threading API
+
+2004-09-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/__init__.py:
+	* gst/gstreamer.py:
+	* gst/arg-types.py:
+	  fix headers
+	* gst/gst.override:
+	  change GstPad repr
+	* gst/ltihooks.py:
+	  fix distcheck for uninstalled by only adding .libs when needed
+
+2004-08-30  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gst.override (_wrap_gst_structure_ass_subscript): Some more
+	fixes, doesn't quite work as it should yet though.x
+	(_wrap_gst_caps_tp_str): Plug leak
+
+	* gst/interfaces.defs (Mixer, MixerTrack): Add mixer fields here.
+
+	* testsuite/element.py (QueueTest.testConstruct): Some basic test,
+	one disabled for the moment
+
+2004-08-12  Johan Dahlin  <johan@gnome.org>
+
+	* gst/interfaces.defs (TunerNorm, TunerChannel): Add fields.
+
+	* gst/interfaces.override (_wrap_gst_tuner_list_norms) 
+	(_wrap_gst_tuner_list_channels): Impl.
+
+2004-08-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.override:
+	* testsuite/caps.py:
+	  one item list with structure is valid too
+
+2004-08-06  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	* gst/gst.override:
+	* testsuite/caps.py:
+	  add a constructor for caps that wraps _new_empty, _from_string
+	  and an alternative to _new_full.
+	  add tests for them.
+
+2004-08-06  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gst.override (_wrap_gst_structure_from_string): Impl.
+	(_wrap_gst_tag_list_has_key): Impl.
+	(_wrap_gst_caps_get_structure): Don't copy or free me
+
+	* testsuite/struct.py (StructureTest.testStructureChange): Enable
+	some tests.
+	Improve tests
+
+	* gst/gst.override (_wrap_gst_structure_ass_subscript): Impl
+
+2004-08-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/struct.py:
+	  add a testsuite for structs, not yet active
+
+2004-08-03  Johan Dahlin  <johan@gnome.org>
+
+	* configure.ac: Require python 2.3
+
+	* gst/gstmodule.c (python_do_pending_calls): Use PyGILState and
+	friends here.
+
+	* gst/gst.override (_pygst_main_quit, _pygst_main): Use these two
+	instead of gst_main/gst_main_quit so we can check if we're in a
+	mainloop or not.
+
+2004-08-02  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gst.defs:
+	  allow no name for thread and pipeline as well
+
+2004-07-16  Johan Dahlin  <johan@gnome.org>
+
+	* pkgconfig/gst-python.pc.in (pyexecdir): Add and remove comments
+	for all other variables.
+
+2004-07-15  Johan Dahlin  <johan@gnome.org>
+
+	* testsuite/registry.py: Add some basic tests 
+
+	* gst/gst.override: Don't ignore all gst_registry_* symbols
+	(_wrap_gst_registry_pool_plugin_list): Impl.
+	(_wrap_gst_registry_pool_feature_list): Impl.
+
+	* gst/gst-types.defs (Plugin): Add as a boxed
+
+	* gst/__init__.py: Use DLFCN instead of dl to help python
+	installations without the dl module (gentoo for instance)
+
+2004-07-13  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gst.override (_wrap_gst_pad_query, _wrap_gst_element_query) 
+	(_wrap_gst_pad_convert): Remove exceptions, return Long values
+	(and convert from LongLongs) and clean up a little)
+
+	* testsuite/element.py (QueryTest.testQuery): Another small test
+
+	* gst/gst.override (_wrap_gst_element_query): Ditto
+	(_wrap_gst_pad_convert): Ditto
+
+	* testsuite/event.py (EventFileSrcTest.setUp): Start the pipeline,
+	so we don't get warnings when sending events
+	(EventTest.setUp): Ditto.
+
+	* testsuite/pad.py: New test, only testing simple pad queries so far.
+
+	* testsuite/Makefile.am (tests): Add missing tests
+
+	* gst/gst.override (_wrap_gst_pad_query): Raise RuntimeError if 
+	the return value is False and only return the queried value.
+
+2004-07-02  David Schleef  <ds@schleef.org>
+
+	* configure.ac:  Correctly check for XML tools.  Correctly set
+	BUILD_DOCS variable depending on tools.
+	* docs/Makefile.am:  Use XML variables.
+
+2004-06-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac: back to cvs
+
+=== release 0.7.92 ===
+
+2004-06-21  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* testsuite/Makefile.am:
+	* testsuite/common.py:
+	  passed make distcheck, ready to go
+
+2004-06-21  Johan Dahlin  <johan@gnome.org>
+
+	* gst/Makefile.am (EXTRA_DIST): Add ltihooks.py
+
+2004-06-18  Johan Dahlin  <johan@gnome.org>
+
+	* testsuite/runtests.py (dir): Change to srcdir before running the
+	test, should make it pass distcheck
+
+2004-06-10  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/__init__.py:
+	* testsuite/Makefile.am:
+	* testsuite/caps.py:
+	  adding a caps test
+
+2004-06-09  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gstbuffer.override (_wrap_gst_buffer_flag_is_set) 
+	(_wrap_gst_buffer_flag_set, _wrap_gst_buffer_flag_unset): Impl.
+
+	* testsuite/buffer.py (BufferTest.testBufferFlagIsSet): New test
+
+2004-05-24  Johan Dahlin  <johan@gnome.org>
+
+	* testsuite/interface.py (Availability.testXOverlay): Extend to
+	test method calling on interfaces
+
+	* testsuite/common.py: call pygtk.require first
+
+	* gst/gstbin.override (_wrap_gst_bin_get_by_name): Add a 
+	keyword argument recurse and remove
+	_wrap_gst_bin_get_by_name_recurse_up. 
+
+	* gst/gst.override (_wrap_gst_element_get_pad_list): Split out bin
+	functions to ...
+
+	* gst/gstbin.override: .. this file
+
+	* gst/gst.defs (bin_new): allow NULL for first argument.
+	(child_state_change): Remove, it's private.
+
+2004-05-04  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gst-types.defs (Buffer): Add some fields
+
+	* gst/gstbuffer.override: Move out from gst.override, add
+	tp_as_sequence support and reorganize the code
+
+	* testsuite/buffer.py (BufferTest): Add new tests
+
+2004-05-03  Johan Dahlin  <johan@gnome.org>
+
+	* gst/__init__.py: Remove pygtk import and import gobject
+	directly. It's up the app to call pygtk.require and no the
+	library. 
+
+	* testsuite/event.py, testsuite/buffer.py: New tests.
+
+	* testsuite/common.py (run_silent): New function to enable stderr
+	even if an exception is raised.
+
+	* testsuite/element.py (FakeSinkTest.checkError): Better
+	state-error checking.
+
+	* gst/common.h: Add some parenthesises
+
+	* gst/play.override: Include common.h
+
+	* configure.ac: Use different prefix for the new check of PyGtk so
+	we're not overwriting the good PYGTK_CFLAGS
+
+	* gst/Makefile.am (INCLUDES): Move PYGTK_CFLAGS to common_cflags
+	instead of INCLUDES
+
+	* configure.ac: define HAVE_OLD_PYGTK if we're on pygtk 2.3.91 or
+	earlier and disable editor checks
+
+	* gst/common.h: Add backwards compatible typedef for python < 2.3
+	and pygtk < 2.3.92
+
+	* codegen/codegen.py: Resync (add support for tp_as_buffer)
+
+	* gst/gst.override: Support buffer interface for GstBuffer. Move
+	stuff into common.h, fix wrapping for
+	gst_pad_template_get_caps_by_name
+
+2004-05-01  Johan Dahlin  <johan@gnome.org>
+
+	* testsuite/runtests.py (gettestnames): Cleanup
+
+	* testsuite/element.py (FakeSinkTest): Enable again and disable
+	stderr while changing state to ready
+	(ElementName.testElementStateGetName): New function to test
+	gst.element_state_get_name.
+
+	* testsuite/common.py (path): Don't import ltihooks and proper
+	check for gst module. Add --gst-debug-no-color as a global option
+	(disable_stderr, enable_stderr): New functions to disable stdout
+	called from non python
+
+2004-04-30  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gst.defs (element_state_get_name): Add.
+
+2004-04-21  Johan Dahlin  <johan@gnome.org>
+
+	* testsuite/runtests.py (tests): Run all tests in one TestSuite
+	instead of several.
+
+	* testsuite/element.py (FakeSinkTest.setUp): Disable StateError
+	tests until there is a way to disable element error output.
+
+2004-04-16  Johan Dahlin  <johan@gnome.org>
+
+	* configure.ac (PYGTK_CODEGEN): Use built in code generator again
+	and don't require 2.3.91, 2.0.0 should do fine (FC1 ok, RH9 isn't)
+
+	* TODO: Update
+
+	* gst/interfaces.override, gst/play.override: Add typedef for
+	python < 2.3
+
+	* codegen/codegen.py: Readd :/
+
+	* testsuite/pipeline.py (PipelineConstructor.testGoodConstructor)
+	(PipelineConstructor.testBadConstruct)
+	(ThreadConstructor.testCreate): New tests
+
+	* testsuite/element.py (ElementTest.testGoodConstructor): Add
+	isinstance(element, gst.Element) test
+
+	* testsuite/common.py: Clean up, use ltihooks
+
+	* gst/gst.override (_wrap_gst_element_tp_new): New, just pointing
+	to _wrap_gst_element_factory_make
+	(_wrap_gst_element_tp_new): Stub, return 1  so tp_new can be used.
+	(init) Assign tp_new for pipeline and thread to PyType_GenericNew
+	for now.
+	
+	* gst/gst.defs (element_factory_make): Remove is-constructor-of
+	GstElement.
+
+	* codegen/: Remove and use the codegen from pygtk instead
+
+	* configure.ac (ACLOCAL): Require 2.3.91 of PyGTK
+
+2004-04-06  Johan Dahlin  <johan@gnome.org>
+
+	* examples/gstplay/videoplayer.py: New example, simple video
+	player embedded in a gtk+ widget.
+
+=== release 0.7.91 ===
+
+2004-03-31  Johan Dahlin  <johan@gnome.org>
+
+	* configure.ac (ACLOCAL): Bump version
+
+	* gst/Makefile.am (EXTRA_DIST): And make sure we have all defs here.
+
+	* gst/ltihooks.py: New file
+
+	* gst/__init__.py: try to import ltihooks.py
+
+	* gst/Makefile.am: Only install gst-types.defs
+
+	* Makefile.am (EXTRA_DIST): Add codegen/* Can't believe distcheck passed
+
+=== release 0.7.90 ===
+
+2004-03-30  Johan Dahlin  <johan@gnome.org>
+
+	* docs/NEWS.xml: Update
+
+2004-03-29  Johan Dahlin  <johan@gnome.org>
+
+	* examples/gst/wavenc.py: New example
+
+	* Makefile.am (EXTRA_DIST): Add wavenc.py
+
+2004-03-24  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gstmodule.c (init_gst): Add constants for GST_*SECOND.
+	(python_do_pending_calls): New idler handler, similar to pygtk, so
+	python events (eg KeyboardInterrupt) can be raised during mainloop
+	
+	* gst/gst.override (_wrap_gst_bin_get_list): 
+	(_wrap_gst_pad_tp_repr, caps_length, caps_item) 
+	(structure_length, structure_subscript) 
+	(_wrap_gst_structure_tp_repr): Impl.
+	(_wrap_gst_main): Override with threading blocking.
+
+	* gst/gst-types.defs (Object): add flags field.
+	(Structure): Add copy/release funcs
+
+	* gst/__init__.py (devloc): Don't initialize threads
+
+	* gst/Makefile.am: clean up
+
+	* examples/gst/player.py: Prettify and simplify. Uses GstThread now.
+
+	* examples/gstplay/player.py: Update to new api and make it work.
+
+2004-03-18  Johan Dahlin  <johan@gnome.org>
+
+	* configure.ac: s/GST_*_INCLUDES/GST_*_LIBS/
+
+2004-03-18  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/Makefile.am: fix automake don'ts
+
+2004-03-18  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* examples/gst/player.py:
+          update for new API.  Use Enter to pause pipeline.
+	* examples/gst/vorbisplay.py:
+          update for new API
+
+2004-03-18  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+          subst GST_MAJORMINOR
+	* docs/Makefile.am:
+          disable docs checks until they satisfy make distcheck
+
+2004-03-17  Johan Dahlin  <johan@gnome.org>
+
+	* testsuite/Makefile.am (check-local): distcheck fixes
+
+	* testsuite/common.py: Put in a couple of hacks to make distcheck
+	pass make check
+
+	* testsuite/interface.py: New test
+
+	* gst/gst.defs: Remove unused functions.
+
+	* gst/gst.override: Ditto
+
+	* gst/__init__.py (devloc): delete dl
+
+	* Makefile.am (DIST_SUBDIRS): Remove PLAYDIR
+
+2004-03-16  Johan Dahlin  <johan@gnome.org>
+
+	* configure.ac: Support build without gstplay and gstinterfaces
+
+	* gst/Makefile.am: Move the gstplay bindings over here
+
+	* Makefile.am, configure.ac: Remove examples/ and put them in
+	EXTRA_DIST here
+
+	* gst/gst.defs (element_make_from_uri): Remove const from enum
+	here, should be fixed upstream too.
+
+	* gst/gst.override (_wrap_gst_bin_remove_many) 
+	(_wrap_gst_element_unlink_many): Impl.
+	(_wrap_gst_element_get_pad_list): Impl.
+	: Add a number of new ignores for functions/methods we won't wrap anyway
+
+2004-03-15  Johan Dahlin  <johan@gnome.org>
+
+	* gst/*: Move interfaces over here, make it build, remove gstreamer.py
+
+2004-03-12  Johan Dahlin  <johan@gnome.org>
+
+	* configure.ac: PyGtk 1.99.14 should be okay (Shipped with RH9),
+	AC_SUBST GStreamer and PyGTK flags
+
+	* Makefile.am (PLAYDIR): Disable for now
+
+	* configure.ac: Build against 0.8
+
+	* gstinterfaces/Makefile.am: clean up a little bit
+
+	* gstinterfaces/__init__.py (devloc): s/gstreamer/gst/
+
+	* codegen: Resync and appy my interface constructor patch
+
+2004-03-09  Johan Dahlin  <johan@gnome.org>
+
+	* gst/gst.override (_wrap_gst_g_error_tp_str) 
+	(_wrap_gst_g_error_tp_str): Impl.
+
+	* gst/gst-types.defs (GError): Add
+
+	* gst/Makefile.am (defs_DATA): Install defs
+
+	* codegen/*: Resync
+
+2004-03-05  Johan Dahlin  <johan@gnome.org>
+
+	* testsuite/element.py: Update to new api
+
+	* codegen/*: Copy PyGTK code generator here, to avoid depending on
+	latest version.
+
+	* configure.ac: Add versioning, ala pygtk, and use the internal
+	code generator instead of the installed one
+
+2004-03-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	* examples/Makefile.am:
+	* gst/Makefile.am:
+	* gstinterfaces/Makefile.am:
+	* gstplay/Makefile.am:
+	* testsuite/Makefile.am:
+          fix make distcheck
+          move examples/gstreamer to examples/gst
+
+2004-03-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* Makefile.am:
+	* autogen.sh:
+	* configure.ac:
+	* gst/__init__.py:
+	* gst/gstmodule.c: (init_gst):
+          move gstreamer/ to gst/ by cvs surgery so we can work uninstalled
+          more changes to be able to run uninstalled
+
+2004-02-27  Johan Dahlin  <johan@gnome.org>
+
+	* gstreamer/: All over the place, more rename work (gstreamer -> gst)
+
+	* examples/gstreamer/filesrc.py,player.py: New examples
+	
+	* gstreamer/gstreamer.override: Add a dict like interface to GstTagList
+
+	* gstreamer/gstpad-handlers.override: New file, split out from gstreamer.override
+
+	* gstreamer/gst-types.defs: Don't use
+	gst_buffer_free/gst_data_free, use gst_data_unref instead.
+
+	* gstreamer/gst-types.c (PyGstData_to_value): Don't send address here.
+
+	* gstreamer/arg-types.py (GstDataPtrArg.write_param): Send the
+	address to stuff, since we really want to avoid segfaults :)
+
+	* gstreamer/0.6.[c,defs,h,override]: Remove, we're focusing on 0.7
+	
+	* gstreamer/0.7.[c,defs,h,override]: Remove, merge with
+	gstreamer.*
+	
+	* gstreamer/Makefile.am: Clean up, remove versioning support.
+
+2004-02-25  Johan Dahlin  <johan@gnome.org>
+
+	* gstreamer/gstreamer.override: 
+	* gstreamer/gstreamermodule.c: Rename some more things to gst
+
+	* gstreamer/arg-types.py: Clean up and add GstData handling
+
+	* gstreamer/gstreamer.defs: 
+	* gstreamer/gst-types.defs: Split out types to a separate defs
+
+	* gstreamer/gst-types.c: New file to handle custom GstData conversions.
+
+2004-02-24  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* gstreamer/0.7.override:
+	* gstreamer/common.h:
+	GstStructure and GstTagList foreach() support.
+	* examples/gstplay/player.py:
+	Use TagList.foreach() to print tags.
+
+2004-02-24  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* gstreamer/common.override:
+	Attempt to handle GstBuffer vs GstData better.
+
+2004-02-24  Johan Dahlin  <johan@gnome.org>
+
+	* gstreamer/gstreamer.defs: rename all functions, remove
+	gst_ suffix.
+	* gstreamer/examples/gstreamer/*.py: Update to new API.
+
+2004-02-23  Johan Dahlin  <johan@gnome.org>
+
+	* gstreamer/gstreamer.defs (element_link_many): This is function
+	and not a method, despite popular belief
+	(gst_element_factory_make): Make it the constructor of GstElement,
+	so we can avoid dirty hacks.
+
+	* gstreamer/gstreamer.override (_wrap_gst_element_link_many): Wrap
+	(_wrap_gst_element_link_many): Wrap
+
+	* gstreamer/common.defs: 
+	* gstreamer/common.override: 	
+	* gstreamer/Makefile.am: Beginning of reorganization, to include
+	gstreamer.defs and override (eg, not auto generate them)
+
+	* examples/gstreamer/cp.py: Prettify and pythonify. Will do the
+	other examples later
+	
+	* gstreamer/gstreamer.py: Backwards compatibility module
+
+	* gstreamer/gstreamermodule.c:
+	* gstreamer/Makefile.am: Rename the module to gst
+
+2004-02-18  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* gstreamer/0.7.defs:
+	Wrap GstTagList.
+
+2004-02-18  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* gstinterfaces/0.7.c:
+	* gstinterfaces/0.7.h:
+	* gstinterfaces/0.7.override:
+	* gstinterfaces/__init__.py:
+	* gstinterfaces/arg-types.py:
+	* gstinterfaces/common.c:
+	* gstinterfaces/common.h:
+	* gstinterfaces/common.override:
+	* gstinterfaces/gstinterfacesmodule.c:
+	* gstplay/0.7.c:
+	* gstplay/0.7.h:
+	* gstplay/0.7.override:
+	* gstplay/__init__.py:
+	* gstplay/arg-types.py:
+	* gstplay/common.c:
+	* gstplay/common.h:
+	* gstplay/common.override:
+	Adjust date to 2004.
+
+2004-02-11  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* acinclude.m4:
+          fix underquotedness
+
+2004-02-03  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* gstinterfaces/.cvsignore:
+	* gstinterfaces/0.7.defs:
+	* gstinterfaces/Makefile.am:
+	* gstinterfaces/common.defs:
+	* gstinterfaces/common.override:
+	* gstinterfaces/gstinterfacesmodule.c: (init_gstinterfaces):
+	* gstplay/.cvsignore:
+	* gstplay/0.7.c:
+	* gstplay/0.7.defs:
+	* gstplay/0.7.h:
+	* gstplay/0.7.override:
+	* gstplay/Makefile.am:
+	* gstplay/__init__.py:
+	* gstplay/arg-types.py:
+	* gstplay/common.c:
+	* gstplay/common.h:
+	* gstplay/common.override:
+	* gstplay/gstplaymodule.c: (init_gstplay):
+	* gstreamer/Makefile.am:
+	* gstreamer/__init__.py:
+	* gstreamer/common.override:
+	Support GstPlay, bug fixes, updates.
+	* examples/gstplay/player.py:
+	GstPlay example.
+	* Makefile.am:
+	Support GstPlay build.
+	* configure.ac:
+	Support GstPlay build, remove AC_SUBST() calls that
+	PKG_CHECK_MODULES does automagically.
+
+2004-01-27  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* Makefile.am: add gstinterfaces dir
+	* configure.ac: get interfaces include dirs
+	* gstreamer/.cvsignore: add .py[co]
+	* gstreamer/0.6.defs:
+	* gstreamer/0.6.override:
+	* gstreamer/0.7.defs:
+	* gstreamer/0.7.override:
+	* gstreamer/common.defs:
+	* gstreamer/common.override: rearrange code for both 0.6 and 0.7
+	support
+	* gstreamer/Makefile.am: add -fno-strict-aliasing due to python
+	issues
+	* gstinterfaces/.cvsignore:
+	* gstinterfaces/0.7.c:
+	* gstinterfaces/0.7.defs:
+	* gstinterfaces/0.7.h:
+	* gstinterfaces/0.7.override:
+	* gstinterfaces/Makefile.am:
+	* gstinterfaces/__init__.py:
+	* gstinterfaces/arg-types.py:
+	* gstinterfaces/common.c:
+	* gstinterfaces/common.defs:
+	* gstinterfaces/common.h:
+	* gstinterfaces/common.override:
+	* gstinterfaces/gstinterfacesmodule.c: messy start of interfaces
+	handling
+
+2003-12-07  Gustavo J. A. M. Carneiro  <gustavo@users.sourceforge.net>
+
+	* gstreamer/common.override
+	(_wrap_gst_element_factory_make_element): Make name argument
+	optional.
+
+2003-10-10  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* configure.ac, gstreamer/Makefile.am, gstreamer/*: Mass change to
+	support compiling for both 0.6 and 0.7.  Common support is now in
+	common.{defs,override,c,h}.  Specific version support is in
+	{0.6,0.7}.{defs,override,c,h}.  The common and version specific files
+	are merged and/or used as needed.
+
+	* gstreamer/common.override: add gst_version
+
+	* examples/gstreamer/ilat.py: add annoying version check for 0.6 API
+
+2003-10-09  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* configure.ac: require autoconf 2.57 and pygtk 2.0.0.
+
+	*  gstreamer/Makefile.am: fix libtool 1.5 build by fixing export
+	symbol typo s/initgstreamer/init_gstreamer/
+
+	* gstreamer/examples/ilat.py: 4 space indents
+
+2003-10-05  Thomas Vander Stichele <thomas at apestaart dot org>
+
+        * examples/gstreamer/*.py: use Element over gst_element_factory_make
+
+2003-10-05  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gstreamer/gstreamermodule.c: (init_gstreamer):
+          use gst_init_check () with argc and argv (see pygtk)
+
+2003-10-04  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* Makefile.am: add testsuite dir
+	* configure.ac: bump to cvs version nano, add testsuite Makefile
+	* testsuite/Makefile.am: testsuite
+	* testsuite/element.py: test for Element class
+	* gstreamer/gstreamer.overrides: add a wrapper for Element ()
+	* gstreamer/gstreamer-extra.defs: add a constructor for Element
+
+2003-09-27  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gstreamer/gstrearem.override: fix Py_BuildValue for 64 bit ints
+
+2003-07-10  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* AUTHORS, NEWS, README, TODO, README-docs, Makefile.am, configure.ac,
+	docs/Makefile.am, docs/NEWS.xml, docs/README.xml, docs/RELNOTES.xml,
+	docs/gst-python.ent.in, docs/notes/release: distcheck and final
+	release prep fixes
+
+2003-07-09  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* configure.ac: check for xmlcatalog for docs build (probably not
+	strictly needed for general use but fixes non-srcdir builds)
+
+	* Makefile.am: conditionally build docs
+
+	* README.docs, Makefile.am: info on where doc sources are located
+
+	* docs/gst-python.xml: removed (split into partial files)
+
+	* README, AUTHORS, NEWS, TODO: removed (generated from docs/*)
+
+	* .cvsignore, docs/.cvsignore: add generated files
+
+	* docs/{AUTHORS.xml, NEWS.xml, README.xml, RELNOTES.xml, TODO.xml,
+	gst-python.ent.in, common.xsl, full.xsl, part.xsl, Makefile.am}: redo
+	autobuilt docs system with fancy XInclude features
+
+	* README.docs, README-docs: rename
+
+	* docs/notes/release: add release checklist
+
+	* docs/gst-python.ent.in: update pubdate
+
+2003-06-26  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* configure.ac, AUTHORS, NEWS, README, TODO, docs/Makefile.am,
+	docs/HEAD.in docs/docutils.conf, docs/gst-python.css:
+	kill docutils based docs (easy come, easy go)
+
+	* AUTHORS, NEWS, README, TODO, docs/Makefile.am, docs/gst-python.xml,
+	docs/common.xsl, docs/html.xsl, docs/pdf.xsl, docs/gst-python.css:
+	docbook based docs
+
+2003-06-25  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* gstreamer/Makefile.am: fix up line continuations
+
+	* configure.ac, Makefile.am, pkgconfig/*: add pkgconfig support
+
+	* configure.ac, Makefile.am, AUTHORS, NEWS, README, TODO,
+	docs/HEAD.in, docs/Makefile.am, docs/docutils.conf,
+	docs/gst-python.css: docutils based docs
+
+2003-06-11  Thomas Vander Stichele <thomas at apestaart dot org>
+
+	* gst-python.spec.in: fix
+
+	* Makefile.am, autogen.sh, configure.ac: convert to same style as
+	other GStreamer modules
+
+2003-02-10  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* TODO: add TODO list
+
+2003-02-08  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* gstreamer/Makefile.am: make distcheck fixification
+
+2003-02-06  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* gstreamer/gstreamer-extra.defs, gstreamer/gstreamer.override: add
+	wrapper for gst_props_entry_gst_list() and method gst_list() to
+	GstProps to access properties list
+
+	* gstreamer/gstreamer-extra.defs, gstreamer/gstreamer-fixes.[ch]: add
+	alias for gst_props_entry_get_type as _get_props_type() since
+	_get_type() is recognized as a GObject type function
+
+	* examples/gstreamer/oggplay.py: rename to vorbisplay.py
+
+	* examples/gstreamer/vorbisplay.py: print out meta/stream info
+
+	* gstreamer/Makefile.am: add gstreamer.defs to CLEANFILES
+
+2003-02-05  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* configure.ac: require GStreamer core 0.6.0
+
+	* examples/gstreamer/bps.py: added buffers-per-second test
+
+	* gstreamer/gstreamer-fixes.[ch]: add functions for optimized bin
+	iteration (may move or rename):
+	  - id add_iterate_bin(bin)
+	  - remove_iterate_bin(id)
+	  - iterate_bin_all(bin)
+
+2003-01-22  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* configure.ac: require GStreamer core 0.5.2
+
+2003-01-09  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* examples/gstreamer/*, gstreamer/gstreamer.override: update to new
+	GstPad/GstElement link API and remove old hacks to call GObject
+	connect method
+
+	* gstreamer/Makefile.am: ignore gstcompat.h
+
+	* configure.ac: require GStreamer core 0.5.1.1
+
+2003-01-04  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* gstreamer/gstreamer.override, gstreamer/gstreamer-extra.defs: add
+	GstPropsEntry and wrappers for most of get_* methods
+
+	* gstreamer/gstreamer-arg-types.py: add GstClockID as a pointer arg
+	type (not too useful, really need to make it a boxed type)
+
+2003-01-02  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* gstreamer/__init__.py: add threads_init() function
+
+	* gstreamer/gstreamer.override: add pad and element query and convert
+	methods
+
+2002-12-31  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* configure.ac: require PyGTK 1.99.14
+
+	* pygtk.diff: integrated upstream, remove patch
+
+	* gstreamer/Makefile.am: filter out gstatomic_impl.h from includes
+	used to create defs
+
+	* examples/gstreamer/oggplay.py: s/vorbisdec/vorbisfile/ (Thanks to
+	Kenichi Sato <ksato@users.sourceforge.net>)
+
+2002-12-22  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* configure.ac: fix include dir check and fail if not found
+
+2002-12-21  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* gstreamer/gstreamer.override (call_connect_function,
+	call_chain_function): block/unblock threads before entering Python
+	interpreter
+
+	* gstreamer/gstreamer.override: indent
+
+2002-12-17  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* gstreamer/gstreamer.override: add wrapper for gst_element_set_state
+	to release GIT lock
+
+2002-12-14  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* configure.ac: bump gstreamer version to 0.5.0
+
+	* *: update to use sourceforge email address
+
+2002-11-07  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* configure.ac: bump gstreamer version to 0.4.2, bump pygtk version to
+	1.99.13
+
+	* gstreamer/__init__.py: add "import pygtk; pygtk.require('2.0')"
+
+	* examples/gstreamer/dvdplay.py: updated to maybe work with threads
+
+	* pygtk.diff: add work-in-progress PyGTK threading improvements diff 
+
+2002-10-23  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* gstreamer/gstreamer.override: override gst_bin_iterate() to unblock
+	threads since this call can cause exacution to re-enter the
+	interpreter.
+
+2002-10-04  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* gstreamer/gstreamer.override, gstreamer/gstreamer-fixes.h: add
+	temporary hack to fix 0.4.1 s/gst/get/ typo in GST_TYPE_CAPS/PROPS()
+
+2002-10-04  David I. Lehn <dlehn@users.sourceforge.net>
+
+	* README: basic info.
+
+	* COPYING: remove the literal "^L" strings.
+
+	* configure.ac: require GStreamer core 0.4.1.
+
+	* gstreamer/gstreamer-extra.defs: add boxed type defs, convert buffer
+	get/set_data to methods vs functions.
+
+	* gstreamer/gstreamer.overrides: remove boxed type generated code,
+	adapt rest to boxed types.
+
+	* examples/gstreamer/*: set interpreter to "python" vs "python2.2",
+	adapt to newer generated code (Pipeline vs gst_pipeline_new()), adapt
+	to newer api.
+
+2002-05-09  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* examples/gstreamer/dvdplay.py: adjust state changes,
+	use sdlvideosink (videosink segfaulting for me right now)
+
+	* gstreamer/gstreamer.defs: remove
+
+	* gstreamer/gstreamer-base.defs,
+	gstreamer/gstreamer-xtra.defs,
+	Makefile.am:
+	create gstreamer.defs from h2defs.py output and local hacks
+
+2002-04-15  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* examples/gstreamer/*.py: use new element connect api
+
+	* gstreamer/__init__.py: use dl module flags
+	in particular, RTLD_GLOBAL flags is required
+
+2002-04-14  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* configure.ac: depend on gstreamer 0.3.4
+
+	* examples/gstreamer/*.py: s/elementfactory/element_factory/
+
+	* gstreamer/gstreamer-fixes.h, gstreamer/gstreamer-fixes.c:
+	remove defs no longer needed due to upstream changes
+
+	* gstreamer/gstreamer.defs: regen for 0.3.4
+
+2002-03-24  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* examples/gstreamer/: add cp.py oggplay.py f2f.py dvdplay.py
+
+	* gstreamer/gstreamermodule.c: strip GST_ prefix
+
+	* gstreamer/__init__.py: find libtool lib hack
+
+2002-03-23  David I. Lehn  <dlehn@users.sourceforge.net>
+
+	* stole binding framework from gnome-python && gconf
+
+	* adapted to gstreamer

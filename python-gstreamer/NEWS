@@ -1,0 +1,89 @@
+This is GStreamer Python Bindings 0.10.4, "Alegre"
+
+Changes since 0.10.3:
+
+      * Conditional compile of core API additions
+      * wrapped gst.BaseSrc and gst.PushSrc
+
+Bugs fixed since 0.10.3:
+    
+      * 339010 : segfault/undefined behavior with optional GstCaps args
+      * 337876 : TagList does not retreive tags by key if 2 or more tags w...
+
+API added since 0.10.3:
+     
+      * gst.get_gst_version()
+      * gst.get_pygst_version()
+
+Changes since 0.10.2:
+
+      * Backwards compatibility with older GStreamer installations
+      * Wrapping of new API in GStreamer
+      * Bug-fixes and enhancements
+
+Bugs fixed since 0.10.2:
+
+      * 329110 : gst-python sets RTLD_GLOBAL when importing, but doesn't s...
+      * 332586 : pygst.require should raise an error based on StandardErro...
+      * 333055 : PYGIL_API_IS_BUGGY is already defined in pygobect.h
+      * 331616 : gst.version and gst.gst_version differ
+  
+Changes since 0.10.1:
+    
+      * Parallel installability with 0.8.x series
+      * Threadsafe design and API
+      * allow fractions in structures
+      * added vmethods for base classes
+
+Bugs fixed since 0.10.1:
+    
+      * 325459 : Fractions cannot be used as values for gst.Structure fileds
+
+Changes since 0.10.0:
+
+      * added discoverer
+      * updated for core API additions
+
+API changed since 0.10.0:
+     
+      * gst.extend.discoverer
+      * wrapped gst_version()
+      * wrapped gst_type_find_factory_get_list()
+      * wrapped gst_mixer_options_get_values()
+      * wrapped gst_dp_*()
+      * wrapped gst_element_factory_get_static_pad_templates()
+
+Changes since 0.9.6:
+    
+      * Updates for API changes
+
+Bugs fixed since 0.9.6:
+    
+      * 322250 : Remove *_full wrappers
+
+Changes since 0.9.5:
+    
+      * added FractionRange
+      * updated for API changes
+
+Bugs fixed since 0.9.5:
+    
+      * 318793 : check whether new date/tag API needs wrapping
+      * 321839 : pipeline hangs in get_state after changing trival pipeline
+
+Changes since 0.9.4:
+    
+      * Remove mini-object caching, fixes crashes
+      * added gst.TagList
+      * added gst.TIME_ARGS
+
+Bugs fixed since 0.9.4:
+    
+      * 306817 : No way to set tags in gst-python
+      * 320357 : element_query_duration not wrapped
+
+Bugs fixed since 0.9.3:
+
+      * 315433 : gst.element_factory_make and some other functions should ...
+      * 318684 : [PATCH] reference leaks when using PyList_Append to popul...
+      * 318692 : gst-python fails to build with python 2.3

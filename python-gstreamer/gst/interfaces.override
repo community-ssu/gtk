@@ -1,0 +1,162 @@
+/* -*- Mode: C; c-basic-offset: 4 -*- */
+/* gst-python
+ * Copyright (C) 2004 David I. Lehn
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ * 
+ * Author: David I. Lehn <dlehn@users.sourceforge.net>
+ */
+%%
+headers
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
+#include "common.h"
+
+#include <gst/gst.h>
+
+#include <gst/interfaces/colorbalance.h>
+#include <gst/interfaces/navigation.h>
+#include <gst/interfaces/propertyprobe.h>
+#include <gst/interfaces/tuner.h>
+#include <gst/interfaces/mixer.h>
+
+%%
+modulename gst.interfaces
+%%
+import gobject.GObject as PyGObject_Type
+import gst.Object as PyGstObject_Type
+import gst.Structure as PyGstStructure_Type
+import gst.Element as PyGstElement_Type
+%%
+include
+  xoverlay.override
+%%
+ignore-glob
+ _*
+ gstinterfaces_*init
+ *_get_type
+%%
+override gst_tuner_list_channels noargs
+static PyObject *
+_wrap_gst_tuner_list_channels(PyGObject *self)
+{
+    const GList *l, *list;
+    PyObject *py_list;
+	
+    g_return_val_if_fail (GST_IS_TUNER (self->obj), PyList_New(0));
+
+    list = gst_tuner_list_channels(GST_TUNER(self->obj));
+    
+    py_list = PyList_New(0);
+    for (l = list; l; l = l->next) {
+	GstTunerChannel *channel = (GstTunerChannel*)l->data;
+	PyObject *py_channel = pygstobject_new(G_OBJECT(channel));
+	PyList_Append(py_list, py_channel);
+	Py_DECREF(py_channel);
+    }
+		
+    return py_list;
+}
+%%
+override gst_tuner_list_norms noargs
+static PyObject *
+_wrap_gst_tuner_list_norms(PyGObject *self)
+{
+    const GList *l, *list;
+    PyObject *py_list;
+	
+    g_return_val_if_fail (GST_IS_TUNER (self->obj), PyList_New(0));
+
+    list = gst_tuner_list_norms(GST_TUNER(self->obj));
+    
+    py_list = PyList_New(0);
+    for (l = list; l; l = l->next) {
+	GstTunerNorm *norm = (GstTunerNorm*)l->data;
+	PyObject *py_norm = pygstobject_new(G_OBJECT(norm));
+	PyList_Append(py_list, py_norm);
+	Py_DECREF(py_norm);
+    }
+		
+    return py_list;
+}
+%%
+override gst_mixer_list_tracks noargs
+static PyObject *
+_wrap_gst_mixer_list_tracks(PyGObject *self)
+{
+    const GList *l, *list;
+    PyObject *py_list;
+	
+    g_return_val_if_fail (GST_IS_MIXER (self->obj), PyList_New(0));
+
+    list = gst_mixer_list_tracks(GST_MIXER(self->obj));
+    
+    py_list = PyList_New(0);
+    for (l = list; l; l = l->next) {
+	GstMixerTrack *track = (GstMixerTrack*)l->data;
+	PyObject *py_track = pygstobject_new(G_OBJECT(track));
+	PyList_Append(py_list, py_track);
+	Py_DECREF(py_track);
+    }
+		
+    return py_list;
+}
+%%
+override gst_color_balance_list_channels noargs
+static PyObject *
+_wrap_gst_color_balance_list_channels(PyGObject *self)
+{
+    const GList *l, *list;
+    PyObject *py_list;
+
+    g_return_val_if_fail (GST_IS_COLOR_BALANCE (self->obj), PyList_New(0));
+
+    list = gst_color_balance_list_channels(GST_COLOR_BALANCE(self->obj));
+
+    py_list = PyList_New(0);
+    for (l = list; l; l = l->next) {
+        GstColorBalanceChannel *channel = (GstColorBalanceChannel*)l->data;
+        PyObject *py_channel = pygstobject_new(G_OBJECT(channel));
+        PyList_Append(py_list, py_channel);
+        Py_DECREF(py_channel);
+    }
+
+    return py_list;
+}
+%%
+override gst_mixer_options_get_values noargs
+static PyObject *
+_wrap_gst_mixer_options_get_values (PyGObject *self)
+{
+    GList	*l, *list;
+    PyObject	*py_list;
+
+    g_return_val_if_fail (GST_IS_MIXER_OPTIONS (self->obj), PyList_New(0));
+
+    list = gst_mixer_options_get_values (GST_MIXER_OPTIONS (self->obj));
+
+    py_list = PyList_New(0);
+    for (l = list; l; l = l->next) {
+	gchar *value = (gchar *) l->data;
+	PyObject *py_string = PyString_FromString(g_strdup(value));
+	PyList_Append(py_list, py_string);
+	Py_DECREF (py_string);
+    }
+
+    return py_list;
+}

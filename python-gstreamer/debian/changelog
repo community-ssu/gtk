@@ -1,0 +1,17 @@
+python-gstreamer (0.10.4-0osso1) unstable; urgency=low
+
+  * First package for Maemo
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu, 11 May 2006 11:40:00 -0300
+
+gstreamer0.10-python (0.10.4-0ubuntu1) dapper; urgency=low
+
+  * New upstream version:
+    Changes since 0.10.3:
+    - Conditional compile of core API additions
+    - wrapped gst.BaseSrc and gst.PushSrc
+    Bugs fixed since 0.10.3:
+    - segfault/undefined behavior with optional GstCaps args
+    - TagList does not retreive tags by key if 2 or more tags w...
+
+ -- Sebastien Bacher <seb128@canonical.com>  Sat, 29 Apr 2006 00:25:40 +0200

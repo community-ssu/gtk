@@ -1,0 +1,22 @@
+Source:  python-gstreamer
+Section: python
+Priority: optional
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libglib2.0-dev, libgtk2.0-dev, libgstreamer0.10-dev, libgstreamer-plugins-base0.10-dev, python2.4-dev, python2.4-gtk2-dev, libx11-dev
+Standards-Version: 3.6.2
+
+Package: python2.4-gstreamer
+Architecture: any
+Depends: python2.4, python2.4-gtk2
+Description: generic media-playing framework (Python bindings)
+ GStreamer is a media processing framework with support for a wide variety
+ of data sources, sinks, and formats through the use of dynamically loaded
+ plugins.
+ .
+ This package contains bindings to access GStreamer from within the
+ Python programming language.
+
+Package: python2.4-gstreamer-dev
+Architecture: any
+Depends: python2.4-gstreamer
+Description: Development files for GStreamer 0.10 Python bindings.

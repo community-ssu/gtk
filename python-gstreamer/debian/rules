@@ -1,0 +1,79 @@
+#!/usr/bin/make -f
+export DH_VERBOSE=1
+export DH_COMPAT=4
+
+CFLAGS = -Wall -g -Os
+
+PYVER=2.4
+PYTHON=python$(PYVER)
+
+p_base=$(PYTHON)-gstreamer
+p_dev=$(PYTHON)-gstreamer-dev
+d_base=$(CURDIR)/debian/$(p_base)
+d_dev=$(CURDIR)/debian/$(p_dev)
+
+config.status: configure
+	dh_testdir
+	CFLAGS="$(CFLAGS)" PYTHON="$(PYTHON)" ./configure \
+		   --prefix=/usr \
+		   --mandir=\$${prefix}/share/man \
+		   --infodir=\$${prefix}/share/info
+
+build: build-stamp
+build-stamp:  config.status
+	dh_testdir
+	$(MAKE)
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp 
+	-$(MAKE) distclean
+	rm -rf $(d_base) $(d_dev)
+	find . -name "*.pyo" | xargs rm -f
+	find . -name "*.pyc" | xargs rm -f
+	dh_clean 
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+	$(MAKE) install DESTDIR=$(d_base)
+	$(PYTHON) -m compileall -f $(d_base)/usr/lib/$(PYTHON)
+	$(PYTHON) -OO -m compileall -f $(d_base)/usr/lib/$(PYTHON)
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installdocs -p$(p_dev)
+	dh_installchangelogs -p$(p_dev) ChangeLog
+
+	mkdir -p $(d_dev)
+	cp -a $(d_base)/usr $(d_dev)
+
+	# base
+	find $(d_base) -name "*.py" | xargs rm -f
+	find $(d_base) -name "*.pyc" | xargs rm -f
+	find $(d_base) -name "*.la" | xargs rm -f
+	rm -rf $(d_base)/usr/share $(d_base)/usr/lib/pkgconfig
+
+	# dev
+	find $(d_dev) -name "*.pyo" -or -name "*.so" | xargs rm -f
+	rm $(d_dev)/usr/lib/$(PYTHON)/site-packages/pygst.pth
+	mv $(d_dev)/usr/share/gst-python/0.10/examples $(d_dev)/usr/share/doc/$(p_dev)
+
+	dh_link
+	dh_strip
+	dh_compress -Xexample
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install 

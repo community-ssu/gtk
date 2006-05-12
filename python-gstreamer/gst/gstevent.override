@@ -1,0 +1,186 @@
+/* -*- Mode: C; ; c-file-style: "k&r"; c-basic-offset: 4 -*- */
+/* gst-python
+ * Copyright (C) 2005 Edward Hervey
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ * 
+ * Author: Johan Dahlin <johan@gnome.org>
+ */
+%%
+override gst_event_get_structure noargs
+static PyObject *
+_wrap_gst_event_get_structure(PyGstMiniObject *self)
+{
+     GstStructure *ret;
+
+     ret = (GstStructure *) gst_event_get_structure(GST_EVENT(self->obj));
+     /* pyg_boxed_new handles NULL checking */
+     return pyg_boxed_new(GST_TYPE_STRUCTURE, ret, TRUE, TRUE);
+}
+
+%%
+override-slot GstEvent.tp_repr
+static PyObject *
+_wrap_gst_event_tp_repr (PyGObject *self)
+{
+     char *buf;
+     PyObject *retval;
+     GstEvent *event;
+
+     event = GST_EVENT(self->obj);
+
+     buf = g_strdup_printf ("<GstEvent (%s) at %lx>",
+			    gst_event_type_get_name (event->type), (long) self->obj);
+
+     retval = PyString_FromString(buf);
+     g_free(buf);
+     return retval;
+}
+%%
+override gst_event_parse_new_segment noargs
+static PyObject *
+_wrap_gst_event_parse_new_segment (PyGstMiniObject *self)
+{
+     PyObject	*ret;
+     gboolean   update;
+     gdouble	rate;
+     GstFormat	format;
+     gint64	start_value, stop_value, base;
+
+     if (GST_EVENT_TYPE(self->obj) != GST_EVENT_NEWSEGMENT) {
+	  PyErr_SetString(PyExc_TypeError, "Even is not a 'NewSegment' event");
+	  return NULL;
+     }
+     
+     gst_event_parse_new_segment (GST_EVENT(self->obj), &update, &rate, &format,
+				 &start_value, &stop_value, &base);
+     
+     ret = PyList_New (6);
+     PyList_SetItem (ret, 0, PyBool_FromLong(update));
+     PyList_SetItem (ret, 1, PyFloat_FromDouble(rate));
+     PyList_SetItem (ret, 2, pyg_enum_from_gtype (GST_TYPE_FORMAT, format));
+     PyList_SetItem (ret, 3, PyLong_FromUnsignedLongLong(start_value));
+     PyList_SetItem (ret, 4, PyLong_FromUnsignedLongLong(stop_value));
+     PyList_SetItem (ret, 5, PyLong_FromUnsignedLongLong(base));
+
+     return ret;
+}
+%%
+override gst_event_parse_tag noargs
+static PyObject *
+_wrap_gst_event_parse_tag (PyGstMiniObject *self)
+{
+	PyObject	*ret;
+	GstTagList	*taglist;
+	
+	if (GST_EVENT_TYPE(self->obj) != GST_EVENT_TAG) {
+		PyErr_SetString(PyExc_TypeError, "Event is not an 'Tag' event");
+		return NULL;
+	}
+
+	gst_event_parse_tag (GST_EVENT(self->obj), &taglist);
+
+	ret = pyg_boxed_new (GST_TYPE_TAG_LIST, taglist, TRUE, TRUE);
+
+	return ret;
+}
+%%
+override gst_event_parse_qos noargs
+static PyObject *
+_wrap_gst_event_parse_qos (PyGstMiniObject *self)
+{
+	PyObject	*ret;
+	gdouble		proportion;
+	GstClockTimeDiff	diff;
+	GstClockTime	timestamp;
+	
+	if (GST_EVENT_TYPE(self->obj) != GST_EVENT_QOS) {
+		PyErr_SetString(PyExc_TypeError, "Event is not an 'Qos' event");
+		return NULL;
+	}
+
+	gst_event_parse_qos (GST_EVENT(self->obj), &proportion,
+			     &diff, &timestamp);
+	
+	ret = PyList_New (3);
+	PyList_SetItem (ret, 0, PyFloat_FromDouble(proportion));
+	PyList_SetItem (ret, 1, PyLong_FromLongLong(diff));
+	PyList_SetItem (ret, 2, PyLong_FromUnsignedLongLong(timestamp));
+
+	return ret;
+}
+%%
+override gst_event_parse_seek noargs
+static PyObject *
+_wrap_gst_event_parse_seek (PyGstMiniObject *self)
+{
+	PyObject	*ret;
+	gdouble	        rate;
+	GstFormat	format;
+	GstSeekFlags	flags;
+	GstSeekType	cur_type;
+	gint64		cur;
+	GstSeekType	stop_type;
+	gint64		stop;
+	
+	if (GST_EVENT_TYPE(self->obj) != GST_EVENT_SEEK) {
+		PyErr_SetString(PyExc_TypeError, "Event is not an 'Seek' event");
+		return NULL;
+	}
+
+	gst_event_parse_seek (GST_EVENT(self->obj), &rate, &format, &flags,
+			      &cur_type, &cur, &stop_type, &stop);
+	
+	ret = PyList_New (7);
+	PyList_SetItem (ret, 0, PyFloat_FromDouble(rate));
+	PyList_SetItem (ret, 1, pyg_enum_from_gtype (GST_TYPE_FORMAT, format));
+	PyList_SetItem (ret, 2, pyg_flags_from_gtype (GST_TYPE_SEEK_FLAGS, flags));
+	PyList_SetItem (ret, 3, pyg_enum_from_gtype (GST_TYPE_SEEK_TYPE, cur_type));
+	PyList_SetItem (ret, 4, PyLong_FromUnsignedLongLong (cur));
+	PyList_SetItem (ret, 5,
+            pyg_enum_from_gtype (GST_TYPE_SEEK_TYPE, stop_type));
+	PyList_SetItem (ret, 6, PyLong_FromUnsignedLongLong (stop));
+	
+	return ret;
+}
+%%
+override gst_event_parse_buffer_size noargs
+static PyObject *
+_wrap_gst_event_parse_buffer_size (PyGstMiniObject *self)
+{
+     PyObject		*ret;
+     GstFormat		format;
+     gint64		minsize;
+     gint64		maxsize;
+     gboolean		async;
+
+     if (GST_EVENT_TYPE (self->obj) != GST_EVENT_BUFFERSIZE) {
+	  PyErr_SetString(PyExc_TypeError, "Event is not an 'BufferSize' event");
+	  return NULL;
+     }
+     
+     gst_event_parse_buffer_size (GST_EVENT (self->obj),
+				  &format, &minsize,
+				  &maxsize, &async);
+
+     ret = PyList_New (4);
+     PyList_SetItem (ret, 0, pyg_enum_from_gtype (GST_TYPE_FORMAT, format));
+     PyList_SetItem (ret, 1, PyLong_FromLongLong (minsize));
+     PyList_SetItem (ret, 2, PyLong_FromLongLong (maxsize));
+     PyList_SetItem (ret, 3, PyBool_FromLong (async));
+
+     return ret;
+}

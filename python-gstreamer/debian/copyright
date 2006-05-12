@@ -1,0 +1,17 @@
+This package was debianized by Joe Wreschnig <piman@debian.org> on
+Wed,  6 Oct 2004 21:54:18 -0500.
+
+It was downloaded from http://gstreamer.freedesktop.org/src/gst-python/
+
+Upstream Author:
+	David I. Lehn <dlehn@users.sourceforge.net>
+
+Copyright (C) 2002, 2004 David I. Lehn
+Copyright (C) 2004 Johan Dahlin
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Library General Public
+License as published by the Free Software Foundation; either
+version 2 of the License, or (at your option) any later version.
+
+On Debian systems, you can find a copy of the GNU LGPL in
+/usr/share/common-licenses/LGPL.

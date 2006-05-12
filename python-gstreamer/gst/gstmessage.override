@@ -1,0 +1,268 @@
+/* -*- Mode: C; ; c-file-style: "python" -*- */
+/* gst-python
+ * Copyright (C) 2005 Edward Hervey
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ * 
+ * Author: Johan Dahlin <johan@gnome.org>
+ */
+
+%%
+override-slot GstMessage.tp_repr
+static PyObject *
+_wrap_gst_message_tp_repr (PyGstMiniObject *self)
+{
+    GstMessage *msg;
+    gchar *repr, *structure_str, *src_str;
+    PyObject *ret;
+
+    g_assert (self);
+    msg = GST_MESSAGE (self->obj);
+    g_assert (msg);
+
+    structure_str = msg->structure ? gst_structure_to_string (msg->structure)
+        : g_strdup ("(none)");
+    src_str = msg->src ? gst_object_get_name (msg->src) : g_strdup ("(no src)");
+
+    repr = g_strdup_printf ("<gst.Message %s from %s at %p>",
+        structure_str, src_str, msg);
+    g_free (src_str);
+    g_free (structure_str);
+
+    ret = PyString_FromStringAndSize(repr, strlen (repr));
+    g_free (repr);
+
+    return ret;
+}
+
+%%
+override gst_message_parse_state_changed noargs
+static PyObject *
+_wrap_gst_message_parse_state_changed (PyGstMiniObject *self)
+{
+  GstState	old;
+  GstState	new;
+  GstState	pen;
+  PyObject      *ret;
+
+  /* Should raise an exception if it's not a state-changed message */
+  if (GST_MESSAGE(self->obj)->type != GST_MESSAGE_STATE_CHANGED) {
+	  PyErr_SetString(PyExc_TypeError, "Message is not a state-changed message");
+	  return NULL;
+  }
+  gst_message_parse_state_changed (GST_MESSAGE(self->obj), &old, &new, &pen);
+  /* Return this as a tuple */
+  ret = PyList_New(3);
+  PyList_SET_ITEM(ret, 0, pyg_enum_from_gtype(GST_TYPE_STATE, old));
+  PyList_SET_ITEM(ret, 1, pyg_enum_from_gtype(GST_TYPE_STATE, new));
+  PyList_SET_ITEM(ret, 2, pyg_enum_from_gtype(GST_TYPE_STATE, pen));
+  return ret;
+}
+%%
+override gst_message_parse_segment_start noargs
+static PyObject *
+_wrap_gst_message_parse_segment_start (PyGstMiniObject *self)
+{
+  gint64		position;
+  GstFormat             format;
+  PyObject		*ret;
+
+  /* Should raise an exception if it's not a segment start message */
+  if (GST_MESSAGE(self->obj)->type != GST_MESSAGE_SEGMENT_START) {
+	  PyErr_SetString(PyExc_TypeError, "Message is not a segment start message");
+	  return NULL;
+  }
+  gst_message_parse_segment_start (GST_MESSAGE(self->obj), &format, &position);
+
+  /* Return this as a tuple */
+  ret = PyList_New(2);
+  PyList_SET_ITEM(ret, 0, pyg_enum_from_gtype(GST_TYPE_FORMAT, format));
+  PyList_SET_ITEM(ret, 1, PyLong_FromLongLong(position));
+
+  return ret;
+}
+
+%%
+override gst_message_parse_segment_done noargs
+static PyObject *
+_wrap_gst_message_parse_segment_done (PyGstMiniObject *self)
+{
+  gint64		position;
+  GstFormat             format;
+  PyObject		*ret;
+
+  /* Should raise an exception if it's not a segment done message */
+  if (GST_MESSAGE(self->obj)->type != GST_MESSAGE_SEGMENT_DONE) {
+	  PyErr_SetString(PyExc_TypeError, "Message is not a segment done message");
+	  return NULL;
+  }
+  gst_message_parse_segment_done (GST_MESSAGE(self->obj), &format, &position);
+
+  /* Return this as a tuple */
+  ret = PyList_New(2);
+  PyList_SET_ITEM(ret, 0, pyg_enum_from_gtype(GST_TYPE_FORMAT, format));
+  PyList_SET_ITEM(ret, 1, PyLong_FromLongLong(position));
+
+  return ret;
+}
+
+%%
+override gst_message_parse_error noargs
+static PyObject *
+_wrap_gst_message_parse_error (PyGstMiniObject *self)
+{
+	PyObject	*ret;
+	GError	*error = NULL;
+	gchar	*debug;
+	
+	if (GST_MESSAGE_TYPE(self->obj) != GST_MESSAGE_ERROR) {
+		PyErr_SetString(PyExc_TypeError, "Message is not an error message");
+		return NULL;
+	}
+
+	gst_message_parse_error (GST_MESSAGE(self->obj), &error, &debug);
+
+	ret = PyList_New(2);
+	PyList_SetItem(ret, 0, pyg_boxed_new (GST_TYPE_G_ERROR, error, TRUE, TRUE));
+	if (error)
+		g_error_free (error);
+	if (debug != NULL) {
+		PyList_SetItem(ret, 1, PyString_FromString(debug));
+	} else {
+		Py_INCREF (Py_None);
+		PyList_SetItem(ret, 1, Py_None);
+	}
+	g_free(debug);
+	return ret;
+}
+%%
+override gst_message_parse_warning noargs
+static PyObject *
+_wrap_gst_message_parse_warning (PyGstMiniObject *self)
+{
+	PyObject	*ret;
+	GError		*warning;
+	gchar	*debug;
+	
+	if (GST_MESSAGE_TYPE(self->obj) != GST_MESSAGE_WARNING) {
+		PyErr_SetString(PyExc_TypeError, "Message is not an warning message");
+		return NULL;
+	}
+
+	gst_message_parse_warning (GST_MESSAGE(self->obj), &warning, &debug);
+
+	ret = PyList_New(1);
+	PyList_SetItem(ret, 0, pyg_boxed_new (GST_TYPE_G_ERROR, warning, TRUE, TRUE));
+	if (debug != NULL)
+		PyList_Append(ret, PyString_FromString(debug));
+
+	return ret;
+}
+%%
+override gst_message_parse_tag noargs
+static PyObject *
+_wrap_gst_message_parse_tag (PyGstMiniObject *self)
+{
+	PyObject	*ret;
+	GstTagList	*taglist;
+	
+	if (GST_MESSAGE_TYPE(self->obj) != GST_MESSAGE_TAG) {
+		PyErr_SetString(PyExc_TypeError, "Message is not an Tag message");
+		return NULL;
+	}
+
+	gst_message_parse_tag (GST_MESSAGE(self->obj), &taglist);
+
+	ret = pyg_boxed_new (GST_TYPE_TAG_LIST, taglist, TRUE, TRUE);
+	gst_tag_list_free (taglist);
+	return ret;
+}
+%%
+override gst_message_parse_clock_provide noargs
+static PyObject *
+_wrap_gst_message_parse_clock_provide (PyGstMiniObject *self)
+{
+  GstClock	*clock;
+  gboolean	ready;
+  PyObject	*ret;
+
+  if (GST_MESSAGE(self->obj)->type != GST_MESSAGE_CLOCK_PROVIDE) {
+	  PyErr_SetString(PyExc_TypeError, "Message is not a 'clock provide' message");
+	  return NULL;
+  }
+
+  gst_message_parse_clock_provide (GST_MESSAGE(self->obj), &clock, &ready);
+
+  ret = PyList_New(2);
+  PyList_SET_ITEM(ret, 0, pygstobject_new(G_OBJECT (clock)));
+  PyList_SET_ITEM(ret, 1, PyBool_FromLong(ready));
+
+  return ret;
+}
+%%
+override gst_message_parse_clock_lost noargs
+static PyObject *
+_wrap_gst_message_parse_clock_lost (PyGstMiniObject *self)
+{
+  GstClock	*clock;
+
+  if (GST_MESSAGE(self->obj)->type != GST_MESSAGE_CLOCK_LOST) {
+	  PyErr_SetString(PyExc_TypeError, "Message is not a 'clock lost' message");
+	  return NULL;
+  }
+
+  gst_message_parse_clock_lost (GST_MESSAGE(self->obj), &clock);
+
+  return pygstobject_new(G_OBJECT(clock));
+}
+%%
+override gst_message_parse_new_clock noargs
+static PyObject *
+_wrap_gst_message_parse_new_clock (PyGstMiniObject *self)
+{
+  GstClock	*clock;
+
+  if (GST_MESSAGE(self->obj)->type != GST_MESSAGE_NEW_CLOCK) {
+	  PyErr_SetString(PyExc_TypeError, "Message is not a 'new clock' message");
+	  return NULL;
+  }
+
+  gst_message_parse_new_clock (GST_MESSAGE(self->obj), &clock);
+
+  return pygstobject_new(G_OBJECT(clock));
+}
+%%
+override gst_message_parse_duration noargs
+static PyObject *
+_wrap_gst_message_parse_duration (PyGstMiniObject *self)
+{
+  GstFormat	format;
+  gint64	duration;
+  PyObject	*ret;
+
+  if (GST_MESSAGE(self->obj)->type != GST_MESSAGE_DURATION) {
+	  PyErr_SetString(PyExc_TypeError, "Message is not a 'duration' message");
+	  return NULL;
+  }
+
+  gst_message_parse_duration (GST_MESSAGE(self->obj), &format, &duration);
+
+  ret = PyList_New(2);
+  PyList_SET_ITEM(ret, 0, pyg_enum_from_gtype (GST_TYPE_FORMAT, format));
+  PyList_SET_ITEM(ret, 1, PyLong_FromLongLong(duration));
+
+  return ret;
+}
