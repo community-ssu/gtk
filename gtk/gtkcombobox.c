@@ -1753,6 +1753,7 @@ gtk_combo_box_list_position (GtkComboBox *combo_box,
   GtkRequisition popup_req;
   GtkPolicyType hpolicy, vpolicy;
   gboolean hildonlike;
+  gboolean in_toolbar;
 
   gtk_widget_style_get (GTK_WIDGET (combo_box), "hildonlike", &hildonlike, NULL);
   
@@ -1802,8 +1803,19 @@ gtk_combo_box_list_position (GtkComboBox *combo_box,
     *x = monitor.x;
   else if (*x + *width > monitor.x + monitor.width)
     *x = monitor.x + monitor.width - *width;
-  
-  if (*y + sample->allocation.height + *height <= monitor.y + monitor.height)
+
+  in_toolbar = gtk_widget_get_ancestor (GTK_WIDGET(combo_box), GTK_TYPE_TOOLBAR) != NULL;
+
+  /* Pop-up direction priorities:
+   * 1. above, if in toolbar (hildon preference)
+   * 2. below, if it fits on screen (gtk+, doesn't take hildon IM into account)
+   * 3. above, if it fits on screen (gtk+)
+   * 4. below, if there's more space than below (gtk+)
+   * 5. above, otherwise (gtk+)
+   */
+  if (in_toolbar)
+    *y -= *height;
+  else if (*y + sample->allocation.height + *height <= monitor.y + monitor.height)
     *y += sample->allocation.height;
   else if (*y - *height >= monitor.y)
     *y -= *height;
