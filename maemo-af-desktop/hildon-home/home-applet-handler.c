@@ -168,13 +168,12 @@ static void home_applet_handler_finalize(GObject * obj_self)
 {
     HomeAppletHandler *self;
     HomeAppletHandlerPrivate *priv;
-    
     g_assert(HOME_APPLET_HANDLER(obj_self));
     
     self = HOME_APPLET_HANDLER(obj_self);
     
     g_assert(self);
-
+    
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(self);
     
     /*allow the lib to clean up itself*/
@@ -346,7 +345,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
         handler->eventbox = GTK_EVENT_BOX(gtk_event_box_new());
         gtk_container_add(GTK_CONTAINER(handler->eventbox), applet);
         handler->libraryfile = (gchar *)libraryfile;
-        handler->desktoppath = g_strdup((gchar *)desktoppath);
+        handler->desktoppath = (gchar *)desktoppath;
         handler->x = applet_x;
         handler->y = applet_y;
     }
@@ -425,6 +424,12 @@ void home_applet_handler_deinitialize(HomeAppletHandler *handler)
     HomeAppletHandlerPrivate *priv;
 
     g_assert(handler);
+    
+    g_free (handler->libraryfile);
+    handler->libraryfile = NULL;
+    g_free (handler->desktoppath);
+    handler->desktoppath = NULL;
+
 
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
     

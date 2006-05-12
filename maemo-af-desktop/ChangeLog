@@ -1,3 +1,26 @@
+2006-05-12  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/layout-manager.c: Applied refactoring of the
+	  overlap indication, now based on screenshots of the applets
+	  (Closes N#24727 and N#28928)
+	* hildon-home/layout-manager.c, hildon-home/home-applet-handler.c,
+	  hildon-home/applet-manager.c: (Closes N#27832)
+	  - make the home-applet-handler responsible for freeing the
+	    applet's desktop filename and library filename
+	  - fixed a possible crash in applet_manager_load_all, where
+	    a list was being modified while being iterated
+	  - added some check before disconnecting signals from the eventbox,
+	    as they sometimes have already been destroyed
+	* hildon-navigator/hildon-navigator-main.c: Fixed the leak
+	  of a GList and a GDir
+
+2006-05-11  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-as-sound.[ch]: Added abstraction to play sound
+	  samples cached in esd
+	* hildon-navigator/application-switcher.c: Use this abstraction instead
+	  hildon_system_sound_ API which does not make use of ESD caching
+
 2006-05-10  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-wm.[ch]: Bring the exit signal handler

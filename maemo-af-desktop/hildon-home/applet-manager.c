@@ -278,6 +278,7 @@ void applet_manager_configure_load_all(applet_manager_t *man)
     GError *error;
     gchar *configure_file = get_user_configure_file();
     struct stat buf;
+    GList *applet_list_copy;
 
     /* If no configure file found, try factory configure file
      * If its also empty, applets should not exist
@@ -382,6 +383,9 @@ void applet_manager_configure_load_all(applet_manager_t *man)
             continue;
         }
 
+        conf_identifier_list = g_list_append(conf_identifier_list,
+                                             g_strdup(desktopfile));
+
         if(applet_manager_identifier_exists(man, desktopfile) == FALSE)
         {
             applet_manager_initialize(man, libraryfile, desktopfile, 
@@ -390,13 +394,15 @@ void applet_manager_configure_load_all(applet_manager_t *man)
         {
             applet_manager_set_coordinates(man, desktopfile, 
                                            applet_x, applet_y);
+            g_free (libraryfile);
+            g_free (desktopfile);
         }
-
-        conf_identifier_list = g_list_append(conf_identifier_list, desktopfile);
         i++;
     }
+
+    applet_list_copy = g_list_copy (man->applet_list);
             
-    for(handler_listitem = man->applet_list; handler_listitem != NULL; 
+    for(handler_listitem = applet_list_copy; handler_listitem != NULL; 
         handler_listitem = handler_listitem->next)
     {
         gboolean identifier_exists = FALSE;
@@ -406,14 +412,15 @@ void applet_manager_configure_load_all(applet_manager_t *man)
         
         for(conf_identifier_list_iter = conf_identifier_list; 
             conf_identifier_list_iter != NULL; 
-            conf_identifier_list_iter = conf_identifier_list_iter ->next)
+            conf_identifier_list_iter = conf_identifier_list_iter->next)
         {
             
             if(identifier != NULL && conf_identifier_list_iter->data != NULL &&
                g_str_equal(identifier, (gchar *)conf_identifier_list_iter->data))
             {
                 identifier_exists = TRUE;
-                break;
+                g_free(conf_identifier_list_iter->data);
+                conf_identifier_list_iter->data = NULL;
             }
         }
         if (identifier_exists == FALSE)
@@ -423,6 +430,8 @@ void applet_manager_configure_load_all(applet_manager_t *man)
         }
     }
 
+    g_list_free (conf_identifier_list);
+    g_list_free (applet_list_copy);
     g_strfreev(groups);
     g_key_file_free(keyfile);
 }

@@ -484,16 +484,18 @@ static GList *load_plugins_from_file(Navigator *tasknav,
 static GList *load_navigator_plugin_list(Navigator *tasknav)
 {
     gchar *fname;
-    GList *l;
+    GList *l = NULL; 
+    GList *list = NULL;
     GList *plugins;
     
     g_assert (tasknav != NULL);
     
     plugins = NULL;
 
+    list = load_plugins_from_file(tasknav, NAVIGATOR_FACTORY_PLUGINS, TRUE);
+
     /* Factory plugins */
-    for (l = load_plugins_from_file(tasknav, NAVIGATOR_FACTORY_PLUGINS, TRUE);
-         l; l = l->next)
+    for (l = list; l; l = l->next)
     {
         NavigatorPlugin *plugin = (NavigatorPlugin *)l->data;
         if (plugin != NULL)
@@ -502,12 +504,13 @@ static GList *load_navigator_plugin_list(Navigator *tasknav)
         }
     }
     
-    g_list_free (l);
+    g_list_free (list);
+
 
     /* User plugins */
     fname = g_strdup_printf("%s/%s", home_dir, NAVIGATOR_USER_PLUGINS);
-    for (l = load_plugins_from_file(tasknav, fname, FALSE);
-         l; l = l->next)
+    list = load_plugins_from_file(tasknav, fname, FALSE);
+    for (l = list; l; l = l->next)
     {
         NavigatorPlugin *plugin = (NavigatorPlugin *)l->data;
         if (plugin != NULL)
@@ -516,7 +519,7 @@ static GList *load_navigator_plugin_list(Navigator *tasknav)
         }
     }
     
-    g_list_free (l);
+    g_list_free (list);
 
     g_free (fname);
     
@@ -1115,6 +1118,8 @@ int task_navigator_deinitialize(Navigator *tasknav){
       }
     
     g_free(watch_dir);
+
+    g_dir_close(dir);
 
     return 0;
 }

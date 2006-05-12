@@ -34,6 +34,8 @@ libhildonhome_la_SOURCES = \
 	applet-manager.c \
 	layout-manager.h \
 	layout-manager.c \
+	screenshot.h \
+	screenshot.c \
 	home-applet-handler.h \
 	home-applet-handler.c \
 	hildon-home-plugin-interface.h \
