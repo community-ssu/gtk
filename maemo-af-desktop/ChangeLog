@@ -1,5 +1,9 @@
 2006-05-12  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.6.16
+
+2006-05-12  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/layout-manager.c: Applied refactoring of the
 	  overlap indication, now based on screenshots of the applets
 	  (Closes N#24727 and N#28928)
