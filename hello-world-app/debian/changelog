@@ -1,6 +1,6 @@
 hello-world-app (0.4) unstable; urgency=low
 
-  * Added postinst.
+  * Added postinst with lost of trickery to get icons recognized.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 11 May 2006 19:03:18 +0300
 

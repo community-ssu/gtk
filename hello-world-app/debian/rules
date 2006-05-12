@@ -55,6 +55,10 @@ install: build
 	# Add here commands to install the package
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/hello-world-app
 
+        # See postinst for why we do this.
+	( cd $(CURDIR)/debian/hello-world-app/usr/share/applications/hildon \
+          && mv hello-world.desktop hello-world.inactive                    \
+        )
 
 # Build architecture-independent files here.
 binary-indep: build install

@@ -12,3 +12,17 @@ Depends: ${shlibs:Depends}
 Description: An example package for the application installer
  It contains an application, a control panel plugin, a home plugin, a
  statusbar plugin, a shared library, and a GNU icon.
+XB-Maemo-Icon-26:
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=

@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hello-world-app, 0.3)
+AM_INIT_AUTOMAKE(hello-world-app, 0.4)
 
 AC_PROG_CPP
 AC_PROG_INSTALL
