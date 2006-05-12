@@ -1,3 +1,9 @@
+hello-world-app (0.4) unstable; urgency=low
+
+  * Added postinst.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 11 May 2006 19:03:18 +0300
+
 hello-world-app (0.3) unstable; urgency=low
 
   * Ported to IT-2006
