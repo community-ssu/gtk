@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
+<abiword template="false" styles="unlocked" version="0.99.2" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" fileformat="1.0" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" props="dom-dir:ltr; document-footnote-restart-section:0; document-endnote-type:numeric; document-endnote-place-enddoc:1; document-endnote-initial:1; lang:en-US; document-endnote-restart-section:0; document-footnote-restart-page:0; document-footnote-type:numeric; document-footnote-initial:1; document-endnote-place-endsection:0">
+<!-- ======================================================================== -->
+<!-- This file is an AbiWord document.                                        -->
+<!-- AbiWord is a free, Open Source word processor.                           -->
+<!-- More information about AbiWord is available at http://www.abisource.com/ -->
+<!-- You should not edit this file by hand.                                   -->
+<!-- ======================================================================== -->
+
+<metadata>
+<m key="dc.format">application/x-abiword</m>
+<m key="abiword.generator">AbiWord</m>
+</metadata>
+<history version="24" edit-time="7996" last-saved="1128071675" uid="d1a72220-317d-11da-8f75-9a09c60ac75d">
+<version id="23" started="1128063041" uid="edbd7376-318f-11da-8f75-9a09c60ac75d" auto="0"/>
+<version id="24" started="1128071675" uid="9e53d7fa-3192-11da-9e3a-e0604951013f" auto="0"/>
+</history>
+<styles>
+<s followedby="Normal" name="Heading 1" basedon="Normal" type="P" props="font-size:17pt; margin-top:0.3056in; font-weight:bold; margin-bottom:0.0417in; font-family:Arial; keep-with-next:1"/>
+<s type="P" name="Normal" followedby="Current Settings" props="text-indent:0in; margin-top:0pt; margin-left:0pt; font-stretch:normal; line-height:1.0; text-align:left; font-variant:normal; lang:en-US; dom-dir:ltr; margin-bottom:0pt; text-decoration:none; font-weight:normal; bgcolor:transparent; color:000000; text-position:normal; font-size:12pt; margin-right:0pt; font-style:normal; widows:2; font-family:Times New Roman"/>
+<s followedby="Normal" name="Heading 2" basedon="Normal" type="P" props="font-size:14pt; margin-top:0.3056in; font-weight:bold; margin-bottom:0.0417in; font-family:Arial; keep-with-next:1"/>
+<s followedby="Normal" name="Heading 3" basedon="Normal" type="P" props="font-size:12pt; margin-top:0.3056in; font-weight:bold; margin-bottom:0.0417in; font-family:Arial; keep-with-next:1"/>
+<s followedby="Normal" name="Contents 1" basedon="Normal" type="P" props="list-delim:%L.; list-decimal:.; list-style:Numbered List; start-value:1; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:NULL"/>
+<s followedby="Normal" name="Contents 2" basedon="Normal" type="P" props="list-delim:%L.; list-decimal:.; list-style:Numbered List; start-value:1; field-color:transparent; margin-left:1.0000in; text-indent:-0.2938in; field-font:NULL"/>
+<s followedby="Normal" name="Contents 3" basedon="Normal" type="P" props="list-delim:%L.; list-decimal:.; list-style:Numbered List; start-value:1; field-color:transparent; margin-left:1.5000in; text-indent:-0.2938in; field-font:NULL"/>
+<s followedby="Normal" name="Contents 4" basedon="Normal" type="P" props="list-delim:%L.; list-decimal:.; list-style:Numbered List; start-value:1; field-color:transparent; margin-left:2.0000in; text-indent:-0.2938in; field-font:NULL"/>
+<s followedby="Normal" name="Numbered Heading 1" basedon="Heading 1" type="P" props="list-delim:%L.; list-style:Numbered List; start-value:1; field-color:transparent; tabstops:0.299306in/L0; margin-left:0.0in; text-indent:0.0in; field-font:Arial"/>
+<s followedby="Normal" name="Numbered Heading 2" basedon="Heading 2" type="P" props="list-delim:%L.; list-style:Numbered List; start-value:1; field-color:transparent; tabstops:0.299306in/L0; margin-left:0.0in; text-indent:0.0in; field-font:Arial"/>
+<s type="P" name="Square List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Square List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:Dingbats"/>
+<s type="P" name="Lower Roman List" basedon="Normal" followedby="Current Settings" props="list-delim:%L; list-decimal:.; list-style:Lower Roman List; start-value:1; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:NULL"/>
+<s type="P" name="Diamond List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Diamond List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:Dingbats"/>
+<s type="P" name="Numbered List" followedby="Current Settings" props="list-delim:%L.; list-decimal:.; list-style:Numbered List; start-value:1; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:NULL"/>
+<s type="P" name="Triangle List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Triangle List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:Dingbats"/>
+<s followedby="Normal" name="Numbered Heading 3" basedon="Heading 3" type="P" props="list-delim:%L.; list-style:Numbered List; start-value:1; field-color:transparent; tabstops:0.299306in/L0; margin-left:0.0in; text-indent:0.0in; field-font:Arial"/>
+<s type="P" name="Dashed List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Dashed List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:NULL"/>
+<s type="P" name="Upper Roman List" basedon="Numbered List" followedby="Current Settings" props="list-delim:%L; list-decimal:.; list-style:Upper Roman List; start-value:1; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:NULL"/>
+<s followedby="Normal" name="Heading 4" basedon="Normal" type="P" props="font-size:12pt; margin-top:0.3056in; font-weight:bold; margin-bottom:0.0417in; font-family:Arial; keep-with-next:1"/>
+<s type="P" name="Heart List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Heart List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:Dingbats"/>
+<s followedby="Normal" name="Contents Header" basedon="Normal" type="P" props="margin-top:0.1667in; font-size:16pt; margin-bottom:0.0813in; font-weight:bold; text-align:center; keep-with-next:1; font-family:Arial"/>
+<s type="P" name="Upper Case List" basedon="Numbered List" followedby="Current Settings" props="list-delim:%L); list-decimal:.; list-style:Upper Case List; start-value:1; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:NULL"/>
+<s type="P" name="Bullet List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Bullet List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:Symbol"/>
+<s type="P" name="Hand List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Hand List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:Dingbats"/>
+<s type="P" name="Tick List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Tick List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:Dingbats"/>
+<s type="P" name="Lower Case List" basedon="Numbered List" followedby="Current Settings" props="list-delim:%L); list-decimal:.; list-style:Lower Case List; start-value:1; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:NULL"/>
+<s type="P" name="Block Text" basedon="Normal" followedby="Current Settings" props="margin-bottom:0.0813in; margin-right:1.0000in; margin-left:1.0000in"/>
+<s followedby="Normal" name="Section Heading" basedon="Numbered Heading 1" type="P" props="list-delim:Section %L.; list-style:Numbered List; start-value:1; field-color:transparent; tabstops:1.100000in/L0; margin-left:0.0in; text-indent:0.0in; field-font:Arial"/>
+<s type="P" name="Implies List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Implies List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:Symbol"/>
+<s type="P" name="Box List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Box List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:Dingbats"/>
+<s type="P" name="Star List" followedby="Current Settings" props="list-delim:%L; list-decimal:NULL; list-style:Star List; start-value:0; field-color:transparent; margin-left:0.5000in; text-indent:-0.2938in; field-font:Dingbats"/>
+<s followedby="Normal" name="Chapter Heading" basedon="Numbered Heading 1" type="P" props="list-delim:Chapter %L.; list-style:Numbered List; start-value:1; field-color:transparent; tabstops:1.100000in/L0; margin-left:0.0in; text-indent:0.0in; field-font:Arial"/>
+</styles>
+<pagesize pagetype="A4" orientation="portrait" width="210.000000" height="297.000000" units="mm" page-scale="1.000000"/>
+<section footer="1" header="0" footer-first="3" header-first="2" props="page-margin-footer:1.27cm; page-margin-header:1.27cm; page-margin-right:2.54cm; page-margin-left:2.54cm; page-margin-top:3.67cm; page-margin-bottom:2.54cm">
+<p style="Heading 1" props="text-align:center"></p>
+<p style="Heading 1" props="text-align:center"></p>
+<p style="Heading 1" props="text-align:center; line-height:1.5"></p>
+<p style="Heading 1" props="text-align:center; line-height:1.5"><c props="font-size:48pt">The Gazpacho Startup Guide</c></p>
+<p style="Heading 2"><pbr/>The Gazpacho Startup Guide</p>
+<p style="Normal"></p>
+<p style="Normal">This document describes how to set up and start using the Gazpacho with the setup at NRC. Connection details such as passwords will be provided by the support personnel.</p>
+<p style="Heading 3">The Setup</p>
+<p style="Normal"></p>
+<p style="Normal">The setup is centralized, so that one machine (later referenced as "the server") is actually running the Gazpacho's and the users connect to the server with VNC clients. <c props="font-family:Times New Roman; text-decoration:none; color:000000; font-size:12pt; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">The VNC client can be (almost) any VNC client available, but this document assumes the free RealVNC client for clarity. The steps may vary (a little) with other clients.</c></p>
+<p style="Normal"></p>
+<p style="Normal">The VNC clients connect to displays (a virtual desktop of sorts) on the server, and will show up as normal windows on the Windows desktop. The user will have two displays allocated to him/her, one which shows the Gazpacho UI and one that shows the Maemo environment for previewing with the viewer application. The Maemo display is fixed sized (for obvious reasons), but the Gazpacho display can be configured according to the users wishes (unfortunately just by editing a certain startup file for now, request from the support).</p>
+<p style="Normal"></p>
+<p style="Normal">The displays are identified with numbers, each user will thus have two numbers for them, one for the Maemo display and one for the Gazpacho display. The display number is appended to the server's name (address) when connecting, separated with a ':' (for example 'localhost:1').</p>
+<p style="Heading 3">Connecting</p>
+<p style="Normal"></p>
+<p style="Normal">Because there are two displays, the user needs to open two separate connections to the server with VNC to see them both. To open a connection, start the "VNC viewer" from start menu, enter the server's name to the appropriate place (appending the display number) and click "open". You will be prompted for a password and after entering it, the display window will open. Opening another connection goes like the first one, except that the display number should be changed. If you don't intend preview anything, you don't necessarily need to open the Maemo display.</p>
+<p style="Normal"></p>
+<p style="Normal">There are some inconvenient issues related to the use of VNC, mostly with keyboard shortcuts not working properly or similar problems. Some of these can be addressed by different configurations, some are just facts of life when working with VNC. It can be annoying to manage windows inside a window, but technical issues prevent a more flexible way of remote application usage. Fortunately, you mostly work with only two windows at a time in the display.</p>
+<p style="Normal"></p>
+<p style="Normal">As the Gazpacho is physically run in the server machine, there is no reason to close it. You can just close the VNC windows and when you connect to them, the windows inside the display will be just as you left them. <c props="font-weight:bold; color:ff0000">This does not mean you don't need to save</c>, the server can suffer from hardware failure or power loss so do save your work often.</p>
+<p style="Normal"></p>
+<p style="Normal"></p>
+<p style="Heading 1">Gazpacho &amp; XP</p>
+<p style="Normal"></p>
+<p style="Normal">Due to security policies and lack of action to relax them by the appropriate instance, using Gazpacho on XP requires something called "ssh port forwarding".</p>
+<p style="Normal"></p>
+<p style="Normal">The technical details are not important, but what is important is that this will require an extra step from the user. Unfortunate, but necessary for the reasons mentioned above.</p>
+<p style="Normal"></p>
+<p style="Normal">To achieve the port forwarding, a program called PuTTY is used. The setup is predefined, so nothing complex is required from the user.</p>
+<p style="Normal"></p>
+<p style="Normal">To be able to open the VNC connections, the user must first run the PuTTY program, select the "gazpacho" profile from the list and click "open" to initiate a ssh connection to the server. The user is then prompted for a password, which is same that is used for the VNC connections.</p>
+<p style="Normal"></p>
+<p style="Normal" props="text-align:left">After the PuTTY has made the connection, the user can continue with the connection directions given above in the "normal" case, <c props="font-weight:bold">with one exception</c>. The server name(address) will <c props="font-weight:bold; font-style:italic">always</c> be 'localhost' instead of what it is with normal (direct) connections.</p>
+<p style="Normal" props="text-align:left"></p>
+<p style="Normal" props="text-align:left">The PuTTY window should not be closed while the VNC connections are active. It's not fatal if you do however, it will most likely just freeze or close the VNC windows and you can resume the session without data loss.</p>
+<p style="Normal"></p>
+</section>
+<section id="3" listid="0" parentid="0" type="footer-first">
+<p props="margin-top:0.0000in; margin-left:0.0000in; text-indent:0.0000in; dom-dir:ltr; margin-bottom:0.0000in; line-height:1.000000; text-align:center; margin-right:0.0000in"></p>
+<p props="font-family:Times New Roman; font-size:12pt; lang:en-US; font-weight:normal; text-position:normal; text-align:left; font-style:normal; text-decoration:none"></p>
+</section>
+<section id="2" listid="0" parentid="0" type="header-first">
+<p props="margin-top:0.0000in; margin-left:0.0000in; text-indent:0.0000in; dom-dir:ltr; margin-bottom:0.0000in; line-height:1.000000; text-align:left; margin-right:0.0000in"></p>
+</section>
+<section id="1" listid="0" parentid="0" type="footer">
+<p props="text-align:center"><field type="page_number"></field></p>
+</section>
+<section id="0" listid="0" parentid="0" type="header">
+<p props="text-align:left"><c props="font-family:Times New Roman; text-decoration:none; color:000000; font-size:12pt; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">		The Gazpacho Startup Guide</c></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; text-decoration:none; color:000000; font-size:12pt; text-position:normal; font-weight:normal; font-style:normal; lang:en-US">		30 September, 2005</c></p>
+</section>
+</abiword>

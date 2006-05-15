@@ -1,0 +1,145 @@
+#! /usr/bin/make -f
+# -*- makefile -*-
+# Build rules for gazpacho
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This is the debhelper compatibility version to use.
+export DH_COMPAT=4
+
+build:
+clean:
+	dh_clean
+
+install: 
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+# Build architecture-dependent files here.
+binary-arch: install
+	dh_testdir
+	dh_testroot
+
+	# Install files to their package directories
+	dh_installdocs
+	dh_installchangelogs
+
+	# Get everything built first
+	python2.4 setup.py build
+
+	# Copy the preconfigured __installed__.py in place
+	cp debian/__installed__.py build/lib/gazpacho/
+
+	# Now we have everything in the build dir to copy
+	mkdir -p debian/gazpacho-loader/usr/lib/python2.4/site-packages/gazpacho/loader
+	cp -d build/lib/gazpacho/loader/*.py \
+	      debian/gazpacho-loader/usr/lib/python2.4/site-packages/gazpacho/loader/
+
+	cp -d build/lib/gazpacho/__init__.py \
+	      build/lib/gazpacho/__installed__.py \
+	      build/lib/gazpacho/__uninstalled__.py \
+	      build/lib/gazpacho/catalog.py \
+	      build/lib/gazpacho/choice.py \
+	      build/lib/gazpacho/constants.py \
+	      build/lib/gazpacho/dialogs.py \
+	      build/lib/gazpacho/util.py \
+	      build/lib/gazpacho/properties.py \
+	      build/lib/gazpacho/interfaces.py \
+	      build/lib/gazpacho/gdkannotator.py \
+	      build/lib/gazpacho/environ.py \
+	      build/lib/gazpacho/library.py \
+	      build/lib/gazpacho/pomanager.py \
+	      build/lib/gazpacho/widgetadaptor.py \
+	      build/lib/gazpacho/kiwiutils.py \
+	      build/lib/gazpacho/cursor.py \
+	      build/lib/gazpacho/widget.py \
+	      build/lib/gazpacho/popup.py \
+	      build/lib/gazpacho/placeholder.py \
+	      build/lib/gazpacho/widgetregistry.py \
+	      build/lib/gazpacho/uieditor.py \
+		  build/lib/gazpacho/modelplop.py \
+	      debian/gazpacho-loader/usr/lib/python2.4/site-packages/gazpacho/
+	
+	mkdir -p debian/gazpacho/usr/lib/python2.4/site-packages/gazpacho
+	cp -d build/lib/gazpacho/actioneditor.py \
+	      build/lib/gazpacho/annotator.py \
+	      build/lib/gazpacho/application.py \
+	      build/lib/gazpacho/bugreportdialog.py \
+	      build/lib/gazpacho/cairoannotator.py \
+	      build/lib/gazpacho/clipboard.py \
+	      build/lib/gazpacho/command.py \
+	      build/lib/gazpacho/config.py \
+	      build/lib/gazpacho/context.py \
+	      build/lib/gazpacho/debugwindow.py \
+	      build/lib/gazpacho/dndhandlers.py \
+	      build/lib/gazpacho/editor.py \
+	      build/lib/gazpacho/filewriter.py \
+	      build/lib/gazpacho/gaction.py \
+	      build/lib/gazpacho/main.py \
+	      build/lib/gazpacho/palette.py \
+	      build/lib/gazpacho/project.py \
+	      build/lib/gazpacho/signaleditor.py \
+	      build/lib/gazpacho/uim.py \
+	      build/lib/gazpacho/widgetview.py \
+	      build/lib/gazpacho/treemodeleditor.py \
+	      build/lib/gazpacho/treemodelregistry.py \
+		  build/lib/gazpacho/celllayouteditor.py \
+	      debian/gazpacho/usr/lib/python2.4/site-packages/gazpacho/
+
+	mkdir -p debian/gazpacho/usr/bin
+	cp build/scripts-2.4/gazpacho debian/gazpacho/usr/bin
+	chmod 755 debian/gazpacho/usr/bin/gazpacho
+
+	for PO in `ls po`; \
+	do \
+	   LANG=`echo $$PO|cut -d\. -f1`; \
+	   LOCALE_DIR="debian/gazpacho/usr/share/locale/$$LANG/LC_MESSAGES/"; \
+	   mkdir -p $$LOCALE_DIR; \
+	   msgfmt -o $$LOCALE_DIR/gazpacho.mo po/$$PO; \
+	done
+
+	mkdir -p debian/gazpacho-loader/usr/share/gazpacho/catalogs
+	cp -d catalogs/base.xml debian/gazpacho-loader/usr/share/gazpacho/catalogs/
+
+	mkdir -p debian/gazpacho-loader/usr/share/gazpacho/pixmaps
+	cp -d pixmaps/*.png debian/gazpacho-loader/usr/share/gazpacho/pixmaps/
+
+	mkdir -p debian/gazpacho/usr/share/doc/gazpacho
+	cp -d AUTHORS ChangeLog CONTRIBUTORS COPYING README NEWS \
+    	   debian/gazpacho/usr/share/doc/gazpacho/
+	
+	mkdir -p debian/gazpacho/usr/share/doc/gazpacho/examples
+	cp -d examples/* debian/gazpacho/usr/share/doc/gazpacho/examples/
+    
+	mkdir -p debian/gazpacho-loader/usr/share/gazpacho/resources/base
+	cp -d resources/base/*.png \
+	      debian/gazpacho-loader/usr/share/gazpacho/resources/base/
+
+	mkdir -p debian/gazpacho/usr/share/gazpacho/glade
+	cp -d glade/*.glade debian/gazpacho/usr/share/gazpacho/glade/
+
+	mkdir -p debian/gazpacho-loader/usr/lib/python2.4/site-packages/gazpacho/widgets/
+	cp -d -r gazpacho/widgets/base \
+	      debian/gazpacho-loader/usr/lib/python2.4/site-packages/gazpacho/widgets/
+	cp gazpacho/widgets/__init__.py \
+	      debian/gazpacho-loader/usr/lib/python2.4/site-packages/gazpacho/widgets/
+	mkdir -p debian/gazpacho/usr/share/applications
+	cp -d gazpacho.desktop debian/gazpacho/usr/share/applications/
+	
+	dh_compress
+	dh_fixperms
+
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_link
+	dh_makeshlibs -V
+
+	# Build the packages
+	dh_builddeb
+
+binary: binary-arch
+.PHONY: build clean binary-indep binary-arch binary install
+

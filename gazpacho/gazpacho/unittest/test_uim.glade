@@ -1,0 +1,77 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://gazpacho.sicem.biz/gazpacho-0.1.dtd">
+<object class="GtkUIManager" id="uimanager">
+    <child>
+        <object class="GtkActionGroup" id="DefaultActions">
+            <child>
+                <object class="GtkAction" id="Copy">
+                    <property name="name">Copy</property>
+                    <property name="tooltip">Copy selected object into the clipboard</property>
+                    <property name="stock_id">gtk-copy</property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkAction" id="Cut">
+                    <property name="name">Cut</property>
+                    <property name="tooltip">Cut selected object into the clipboard</property>
+                    <property name="stock_id">gtk-cut</property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkAction" id="EditMenu">
+                    <property name="name">EditMenu</property>
+                    <property name="label" translatable="yes">_Edit</property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkAction" id="FileMenu">
+                    <property name="name">FileMenu</property>
+                    <property name="label" translatable="yes">_File</property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkAction" id="New">
+                    <property name="name">New</property>
+                    <property name="tooltip">Create a new file</property>
+                    <property name="stock_id">gtk-new</property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkAction" id="Open">
+                    <property name="name">Open</property>
+                    <property name="tooltip">Open a file</property>
+                    <property name="stock_id">gtk-open</property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkAction" id="Paste">
+                    <property name="name">Paste</property>
+                    <property name="tooltip">Paste object from the Clipboard</property>
+                    <property name="stock_id">gtk-paste</property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkAction" id="Quit">
+                    <property name="name">Quit</property>
+                    <property name="tooltip">Quit the program</property>
+                    <property name="stock_id">gtk-quit</property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkAction" id="Save">
+                    <property name="name">Save</property>
+                    <property name="tooltip">Save a file</property>
+                    <property name="stock_id">gtk-save</property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkAction" id="SaveAs">
+                    <property name="name">SaveAs</property>
+                    <property name="tooltip">Save with a different name</property>
+                    <property name="stock_id">gtk-save-as</property>
+                </object>
+            </child>
+        </object>
+    </child>
+    <ui id="initial-state"><![CDATA[<ui><menubar action="menubar1" name="menubar1"/><toolbar action="toolbar1" name="toolbar1"/></ui>]]></ui>
+</object>

@@ -1,0 +1,37 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://gazpacho.sicem.biz/gazpacho-0.1.dtd">
+<glade-interface>
+    <widget class="GtkWindow" id="window1">
+        <property name="default_height">250</property>
+        <property name="default_width">440</property>
+        <child>
+            <widget class="GtkVBox" id="vbox1">
+                <child>
+                    <widget class="GtkRadioButton" id="radiobutton1">
+                        <property name="label" context="yes" translatable="yes">One</property>
+                    </widget>
+                </child>
+                <child>
+                    <widget class="GtkRadioButton" id="radiobutton2">
+                        <property name="active">False</property>
+                        <property name="group">radiobutton1</property>
+                        <property name="label" context="yes" translatable="yes">Two</property>
+                    </widget>
+                    <packing>
+                        <property name="position">1</property>
+                    </packing>
+                </child>
+                <child>
+                    <widget class="GtkRadioButton" id="radiobutton3">
+                        <property name="active">False</property>
+                        <property name="group">radiobutton1</property>
+                        <property name="label" context="yes" translatable="yes">Three</property>
+                    </widget>
+                    <packing>
+                        <property name="position">2</property>
+                    </packing>
+                </child>
+            </widget>
+        </child>
+    </widget>
+</glade-interface>

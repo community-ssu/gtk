@@ -1,0 +1,916 @@
+# Russian translation for Gazpacho UI builder
+# Copyright (C) 2005 Lorenzo Gil Sanchez <lgs@sicem.biz>
+# This file is distributed under the same license as the gazpacho package.
+# Nickolay V. Shmyrev <nshmyrev@yandex.ru> 2005
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gazpacho 0.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-05-31 21:26+0400\n"
+"PO-Revision-Date: 2005-05-31 14:25+0400\n"
+"Last-Translator: Nickolay V. Shmyrev <nshmyrev@yandex.ru>\n"
+"Language-Team: Russian <gnome-cyr@gnome.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: gazpacho/widgetclass.py:39
+#, python-format
+msgid "The widget class %s has at least two different definitions"
+msgstr "Класс виджетов %s имеет по крайней мере два различных определения"
+
+#: gazpacho/widgetclass.py:266
+#, python-format
+msgid "Failed to update %s property of %s from xml"
+msgstr "Не удалось обновить свойство %s объекта %s из описания xml"
+
+#: gazpacho/widgetclass.py:356
+#, python-format
+msgid "Dumping ParamSpec for %s"
+msgstr "Вывод спецификаций для %s"
+
+#: gazpacho/widgetclass.py:358
+msgid "Writable"
+msgstr "Записываемое"
+
+#: gazpacho/widgetclass.py:359
+msgid "ReadOnly"
+msgstr "Только для чтения"
+
+#: gazpacho/widgetclass.py:365
+msgid "Disabled"
+msgstr "Отключено"
+
+#: gazpacho/widgetclass.py:368
+msgid "Tooltip"
+msgstr "Всплывающая подсказка"
+
+#: gazpacho/widgetclass.py:370
+msgid "Default"
+msgstr "По умолчанию"
+
+#: gazpacho/widgetclass.py:371
+msgid "Optional"
+msgstr "По желанию"
+
+#: gazpacho/widgetclass.py:372
+msgid "Optional Default"
+msgstr "Значение по умолчанию"
+
+#: gazpacho/widgetclass.py:374
+msgid "VisibilityFunction"
+msgstr "ФункцияВидимости"
+
+#: gazpacho/widgetclass.py:377
+msgid "Child"
+msgstr "Потомок"
+
+#: gazpacho/widgetclass.py:380 gazpacho/editor.py:745
+msgid "Common"
+msgstr "Общие"
+
+#: gazpacho/widgetclass.py:381 gazpacho/editor.py:744
+msgid "Packing"
+msgstr "Упаковка"
+
+#: gazpacho/widgetclass.py:382
+msgid "Modified"
+msgstr "Изменен"
+
+#: gazpacho/widgetclass.py:384
+msgid "Setter"
+msgstr "Установка"
+
+#: gazpacho/widgetclass.py:386
+msgid "Getter"
+msgstr "Получатель"
+
+#: gazpacho/popup.py:87
+msgid "Select"
+msgstr "Выбрать"
+
+#: gazpacho/popup.py:104
+msgid "Insert before"
+msgstr "Вставить перед"
+
+#: gazpacho/popup.py:107 gazpacho/command.py:110
+msgid "Insert after"
+msgstr "Вставить после?"
+
+#: gazpacho/project.py:56
+#, python-format
+msgid "Untitled %d"
+msgstr "Безымянный %s"
+
+#: gazpacho/widgettreeview.py:178
+msgid "Could not get the glade widget from the model"
+msgstr "Не удалось получить виджет glade из модели"
+
+#: gazpacho/propertyclass.py:248
+#, python-format
+msgid "Could not find the property spec for enum type %s"
+msgstr "Невозможно найти спецификации свойства для перечисляемого типа %s"
+
+#: gazpacho/propertyclass.py:346
+msgid "Error"
+msgstr "Ошибка"
+
+#: gazpacho/propertyclass.py:388
+#, python-format
+msgid "Could not find sub property %s"
+msgstr "Невозможно найти под-свойство %s"
+
+#: gazpacho/util.py:422 gazpacho/property.py:120
+#, python-format
+msgid "Error: the property %s should not be of type None"
+msgstr "Ошибка: свойство %s не может иметь пустой тип"
+
+#: gazpacho/command.py:66
+#, python-format
+msgid "Delete %s"
+msgstr "Удалить %s"
+
+#: gazpacho/command.py:88
+#, python-format
+msgid "Create %s"
+msgstr "Создать %s"
+
+#: gazpacho/command.py:103
+msgid "Delete placeholder"
+msgstr "Удалить ящик"
+
+#: gazpacho/command.py:118 gazpacho/command.py:127
+#, python-format
+msgid "Setting %s of %s"
+msgstr "Установить %s из %s"
+
+#: gazpacho/command.py:137
+#, python-format
+msgid "Add signal handler %s"
+msgstr "Добавить обработчик сигнала %s"
+
+#: gazpacho/command.py:144
+#, python-format
+msgid "Remove signal handler %s"
+msgstr "Удалить обработчик сигнала %s"
+
+#: gazpacho/command.py:159
+#, python-format
+msgid "Cut widget %s into the clipboard"
+msgstr "Вырезать виджет %s в буфер"
+
+#: gazpacho/command.py:175
+#, python-format
+msgid "Paste widget %s from the clipboard"
+msgstr "Вставить виджет %s из буфера"
+
+#: gazpacho/command.py:185
+#, python-format
+msgid "Add action %s"
+msgstr "Добавить действие %s"
+
+#: gazpacho/command.py:191
+#, python-format
+msgid "Remove action %s"
+msgstr "Удалить действие %s"
+
+#: gazpacho/command.py:197
+#, python-format
+msgid "Edit action %s"
+msgstr "Правка действия %s"
+
+#: gazpacho/command.py:205
+#, python-format
+msgid "Add action group %s"
+msgstr "Добавить группу действий %s"
+
+#: gazpacho/command.py:212
+#, python-format
+msgid "Remove action group %s"
+msgstr "Удалить группу действий %s"
+
+#: gazpacho/command.py:219
+#, python-format
+msgid "Edit action group %s"
+msgstr "Правка группы действий %s"
+
+#: gazpacho/command.py:228
+#, python-format
+msgid "Setting button %s contents"
+msgstr "Установить содержимое кнопки %s"
+
+#: gazpacho/gladegtk.py:262
+msgid "..."
+msgstr "..."
+
+#: gazpacho/gladegtk.py:738
+msgid "Create a table"
+msgstr "Создать таблицу"
+
+#: gazpacho/gladegtk.py:745
+msgid "Number of rows"
+msgstr "Число строк"
+
+#: gazpacho/gladegtk.py:747
+msgid "Number of columns"
+msgstr "Число столбцов"
+
+#: gazpacho/gladegtk.py:799
+msgid "Edit..."
+msgstr "Правка..."
+
+#: gazpacho/gladegtk.py:903 gazpacho/uim.py:177
+msgid "FileMenu"
+msgstr "МенюФайлов"
+
+#: gazpacho/gladegtk.py:903 gazpacho/gladegtk.py:932 gazpacho/uim.py:178
+msgid "New"
+msgstr "Создать"
+
+#: gazpacho/gladegtk.py:903 gazpacho/gladegtk.py:932 gazpacho/uim.py:179
+msgid "Open"
+msgstr "Открыть"
+
+#: gazpacho/gladegtk.py:903 gazpacho/gladegtk.py:932 gazpacho/uim.py:180
+#: gazpacho/application.py:649
+msgid "Save"
+msgstr "Сохранить"
+
+#: gazpacho/gladegtk.py:904 gazpacho/uim.py:181
+msgid "SaveAs"
+msgstr "Сохранить как"
+
+#: gazpacho/gladegtk.py:904 gazpacho/uim.py:182 gazpacho/application.py:214
+msgid "Quit"
+msgstr "Выйти"
+
+#: gazpacho/gladegtk.py:904 gazpacho/uim.py:183
+msgid "EditMenu"
+msgstr "МенюПравки"
+
+#: gazpacho/gladegtk.py:904 gazpacho/gladegtk.py:933 gazpacho/uim.py:184
+#: gazpacho/application.py:219
+msgid "Copy"
+msgstr "Копировать"
+
+#: gazpacho/gladegtk.py:904 gazpacho/gladegtk.py:933 gazpacho/uim.py:185
+#: gazpacho/application.py:217
+msgid "Cut"
+msgstr "Вырезать"
+
+#: gazpacho/gladegtk.py:905 gazpacho/gladegtk.py:933 gazpacho/uim.py:186
+#: gazpacho/application.py:221
+msgid "Paste"
+msgstr "Вставить"
+
+#: gazpacho/gladegtk.py:1132
+msgid "Label:"
+msgstr "Метка:"
+
+#: gazpacho/gladegtk.py:1141
+msgid "Image:"
+msgstr "Рисунок:"
+
+#: gazpacho/gladegtk.py:1156
+msgid "Left"
+msgstr "Лево"
+
+#: gazpacho/gladegtk.py:1157
+msgid "Right"
+msgstr "Право"
+
+#: gazpacho/gladegtk.py:1158
+msgid "Top"
+msgstr "Верх"
+
+#: gazpacho/gladegtk.py:1159
+msgid "Bottom"
+msgstr "Низ"
+
+#: gazpacho/gladegtk.py:1179
+msgid "No text"
+msgstr "Без текста"
+
+#: gazpacho/gladegtk.py:1211
+msgid "Use custom button:"
+msgstr "Использовать пользовательскую кнопку:"
+
+#: gazpacho/gladegtk.py:1219
+msgid "Use stock button:"
+msgstr "Использовать образец:"
+
+#: gazpacho/gladegtk.py:1297
+msgid "Open image ..."
+msgstr "Открыть значок ..."
+
+#: gazpacho/widget.py:58
+#, python-format
+msgid "Warning: could not get the class from widget: %s"
+msgstr "Предупреждение: не удалось получить класс для виджета: %s"
+
+#: gazpacho/widget.py:210
+#, python-format
+msgid ""
+"Could not replace a placeholder because a replace function has not been "
+"implemented for '%s'"
+msgstr ""
+"Невозможно подменить ящик, потому что не задана функция подмены для '%s'"
+
+#: gazpacho/widget.py:377 gazpacho/widget.py:383
+#, python-format
+msgid "Unknown property %s"
+msgstr "Неизвестное свойство %s"
+
+#: gazpacho/widget.py:704
+#, python-format
+msgid "Could not get property %s for widget %s"
+msgstr "Невозможно получить свойство %s для виджета %s"
+
+#: gazpacho/uieditor.py:40
+#, python-format
+msgid "Editing menubar %s"
+msgstr "Правка меню %s"
+
+#: gazpacho/uieditor.py:43
+#, python-format
+msgid "Editing toolbar %s"
+msgstr "Правка панели инструментов %s"
+
+#: gazpacho/uieditor.py:46
+msgid "UIEditor is only for toolbars and menubars"
+msgstr "Можно редактировать только панель инструментов или меню"
+
+#: gazpacho/uieditor.py:110
+msgid "Press Escape to unselected an item"
+msgstr "Нажмите Escape для отмены выделения"
+
+#: gazpacho/uieditor.py:300
+msgid "Choose an action"
+msgstr "Выберите действие"
+
+#: gazpacho/uieditor.py:338
+msgid "Adding a menu"
+msgstr "Добавление меню"
+
+#: gazpacho/uieditor.py:355
+msgid "Action"
+msgstr "Действие"
+
+#: gazpacho/uieditor.py:356
+msgid "Separator"
+msgstr "Разделитель"
+
+#: gazpacho/uieditor.py:364
+msgid "Adding a toolitem"
+msgstr "Добавление инструмента"
+
+#: gazpacho/uieditor.py:376
+msgid "Adding a menuitem"
+msgstr "Добавление пункта меню"
+
+#: gazpacho/gaction.py:363
+msgid "Add Action"
+msgstr "Добавить действие"
+
+#: gazpacho/gaction.py:366 gazpacho/application.py:230
+msgid "Edit Action"
+msgstr "Правка действия"
+
+#: gazpacho/gaction.py:398
+msgid "_Label"
+msgstr "_Метка"
+
+#: gazpacho/gaction.py:407
+msgid "_Stock"
+msgstr "_Образец"
+
+#: gazpacho/gaction.py:439
+msgid "_Accelerator"
+msgstr "_Ускоритель"
+
+#: gazpacho/gaction.py:452
+msgid "_Tooltip"
+msgstr "_Всплывающая подсказка"
+
+#: gazpacho/gaction.py:461
+msgid "Call_back"
+msgstr "_Функция"
+
+#: gazpacho/gaction.py:581
+msgid "Add Action Group"
+msgstr "Добавить группу действий"
+
+#: gazpacho/gaction.py:584
+msgid "Edit Action Group"
+msgstr "Правка группы действий"
+
+#: gazpacho/gaction.py:595
+msgid "_Id"
+msgstr "_Идентификатор"
+
+#: gazpacho/main.py:65
+#, python-format
+msgid "Could not open file %s Permission denied."
+msgstr "Невозможно открыть файл %s. Прав пользователя недостаточно."
+
+#: gazpacho/main.py:78
+msgid "This will remove Gazpacho and all its files from your hard drive"
+msgstr "Удалить программу Gazpacho и все используемые ей файлы"
+
+#: gazpacho/main.py:79
+#, python-format
+msgid "Are you sure do you want to continue? [%s|No] "
+msgstr "Вы уверены, что хотите продолжить? [%s|Нет] "
+
+#: gazpacho/main.py:80 gazpacho/main.py:82
+msgid "yes"
+msgstr "Да"
+
+#: gazpacho/main.py:85
+msgid "Uninstalling Gazpacho"
+msgstr "Удаление Gazpacho"
+
+#: gazpacho/main.py:93
+#, python-format
+msgid "I do not know how to remove %s"
+msgstr "Нет способа удалить %s"
+
+#: gazpacho/main.py:100
+msgid "Dump widget param specs"
+msgstr "Вывести спецификации параметров виджета"
+
+#: gazpacho/main.py:104
+msgid "Turn on pdb debugging support"
+msgstr "Включать поддержку отладки python"
+
+#: gazpacho/main.py:108
+msgid "Dump widget properties"
+msgstr "Вывести свойства виджета"
+
+#: gazpacho/main.py:112
+msgid "Uninstall Gazpacho from your hard drive"
+msgstr "Удалить Gazpacho из системы"
+
+#: gazpacho/editor.py:272
+msgid "Invalid Text Widget type"
+msgstr "Некорректный тип текстового виджета"
+
+#: gazpacho/editor.py:300
+msgid "Edit Text Property"
+msgstr "Правка текстового свойства"
+
+#: gazpacho/editor.py:315
+msgid "_Text:"
+msgstr "_Текст:"
+
+#: gazpacho/editor.py:346
+msgid "T_ranslatable"
+msgstr "_Переводить"
+
+#: gazpacho/editor.py:351
+msgid "_Has context prefix"
+msgstr "_Имеет префикс контекста"
+
+#: gazpacho/editor.py:358
+msgid "Co_mments for translators:"
+msgstr "_Комментарии к разработчикам:"
+
+#: gazpacho/editor.py:515
+msgid "No"
+msgstr "Нет"
+
+#: gazpacho/editor.py:559
+#, python-format
+msgid "EditorPropertySpecial without create function: %s"
+msgstr "EditorPropertySpecial без функции создания: %s"
+
+#: gazpacho/editor.py:562
+#, python-format
+msgid "EditorPropertySpecial without update function: %s"
+msgstr "EditorPropertySpecial без функции обновления: %s"
+
+#: gazpacho/editor.py:697
+msgid "Class"
+msgstr "Класс"
+
+#: gazpacho/editor.py:743
+msgid "Widget"
+msgstr "Виджет"
+
+#: gazpacho/editor.py:746
+msgid "Signals"
+msgstr "Сигналы"
+
+#: gazpacho/editor.py:776
+msgid "Select a widget to edit its properties"
+msgstr "Выберите виджет для редактирования его свойств"
+
+#: gazpacho/uim.py:177 gazpacho/application.py:202
+msgid "_File"
+msgstr "_Файл"
+
+#: gazpacho/uim.py:178 gazpacho/application.py:203
+msgid "_New"
+msgstr "_Создать"
+
+#: gazpacho/uim.py:178
+msgid "Create a new file"
+msgstr "Создать новй файл"
+
+#: gazpacho/uim.py:179 gazpacho/application.py:205
+msgid "_Open"
+msgstr "_Открыть"
+
+#: gazpacho/uim.py:179
+msgid "Open a file"
+msgstr "Открыть файл"
+
+#: gazpacho/uim.py:180 gazpacho/application.py:207
+msgid "_Save"
+msgstr "_Сохранить"
+
+#: gazpacho/uim.py:180
+msgid "Save a file"
+msgstr "Сохранить файл"
+
+#: gazpacho/uim.py:181
+msgid "Save _As..."
+msgstr "Сохранить _как"
+
+#: gazpacho/uim.py:181
+msgid "Save with a differente name"
+msgstr "Сохранить под другим именем"
+
+#: gazpacho/uim.py:182 gazpacho/application.py:214
+msgid "_Quit"
+msgstr "_Выйти"
+
+#: gazpacho/uim.py:182
+msgid "Quit the program"
+msgstr "Выйти из программы"
+
+#: gazpacho/uim.py:183 gazpacho/application.py:216
+msgid "_Edit"
+msgstr "_Правка"
+
+#: gazpacho/uim.py:184 gazpacho/application.py:219
+msgid "_Copy"
+msgstr "_Копировать"
+
+#: gazpacho/uim.py:184
+msgid "Copy selected object into the clipboard"
+msgstr "Скопировать выделенный объект в буфер обмена"
+
+#: gazpacho/uim.py:185 gazpacho/application.py:217
+msgid "C_ut"
+msgstr "_Вырезать"
+
+#: gazpacho/uim.py:185
+msgid "Cut selected object into the clipboard"
+msgstr "Вырезать выбранный объект в буфер обмена"
+
+#: gazpacho/uim.py:186 gazpacho/application.py:221
+msgid "_Paste"
+msgstr "Вст_авить"
+
+#: gazpacho/uim.py:186
+msgid "Paste object from the Clipboard"
+msgstr "Вставить объект из буфера обмена"
+
+#: gazpacho/application.py:132
+msgid "Widgets"
+msgstr "Виджеты"
+
+#: gazpacho/application.py:133
+msgid "Actions"
+msgstr "Действия"
+
+#: gazpacho/application.py:204
+msgid "New Project"
+msgstr "Новый проект"
+
+#: gazpacho/application.py:206
+msgid "Open Project"
+msgstr "Открыть проект"
+
+#: gazpacho/application.py:208
+msgid "Save Project"
+msgstr "Сохранить проект"
+
+#: gazpacho/application.py:209
+msgid "_Save As..."
+msgstr "Сохранить _как..."
+
+#: gazpacho/application.py:210
+msgid "Save project with different name"
+msgstr "Сохранить проект под другим именем"
+
+#: gazpacho/application.py:212
+msgid "_Close"
+msgstr "_Закрыть"
+
+#: gazpacho/application.py:213
+msgid "Close Project"
+msgstr "Закрыть проект"
+
+#: gazpacho/application.py:223
+msgid "_Delete"
+msgstr "_Удалить"
+
+#: gazpacho/application.py:224
+msgid "Delete"
+msgstr "Удалить"
+
+#: gazpacho/application.py:225
+msgid "_Actions"
+msgstr "_Действия"
+
+#: gazpacho/application.py:226
+msgid "_Add action"
+msgstr "_Добавить действие"
+
+#: gazpacho/application.py:227
+msgid "Add an action"
+msgstr "Добавить в действия"
+
+#: gazpacho/application.py:228
+msgid "_Remove action"
+msgstr "_Удалить действие"
+
+#: gazpacho/application.py:229
+msgid "Remove action"
+msgstr "Удалить действие"
+
+#: gazpacho/application.py:230
+msgid "_Edit action"
+msgstr "_Правка действия"
+
+#: gazpacho/application.py:232
+msgid "_Project"
+msgstr "_Проект"
+
+#: gazpacho/application.py:233
+msgid "_Debug"
+msgstr "_Отладка"
+
+#: gazpacho/application.py:234
+msgid "_Help"
+msgstr "_Справка"
+
+#: gazpacho/application.py:235
+msgid "_About"
+msgstr "_О программе"
+
+#: gazpacho/application.py:235
+msgid "About"
+msgstr "О программе"
+
+#: gazpacho/application.py:236
+msgid "Dump data"
+msgstr "Вывести данные"
+
+#: gazpacho/application.py:237
+msgid "Dump debug data"
+msgstr "Вывести отладочные данные"
+
+#: gazpacho/application.py:241
+msgid "Show _command stack"
+msgstr "Показать _стек команд"
+
+#: gazpacho/application.py:242
+msgid "Show the command stack"
+msgstr "Показать стек команд"
+
+#: gazpacho/application.py:243
+msgid "Show _clipboard"
+msgstr "Показать _буфер"
+
+#: gazpacho/application.py:244
+msgid "Show the clipboard"
+msgstr "Показать буфер"
+
+#: gazpacho/application.py:248
+msgid "_Undo"
+msgstr "_Отменить"
+
+#: gazpacho/application.py:249
+msgid "Undo last action"
+msgstr "Отменить последнее действие"
+
+#: gazpacho/application.py:253
+msgid "_Redo"
+msgstr "_Возвратить"
+
+#: gazpacho/application.py:254
+msgid "Redo last action"
+msgstr "Вернуть последнее действие"
+
+#: gazpacho/application.py:377
+#, python-format
+msgid "_Undo: %s"
+msgstr "_Отменить: %s"
+
+#: gazpacho/application.py:380
+msgid "_Undo: Nothing"
+msgstr "_Отменить"
+
+#: gazpacho/application.py:388
+#, python-format
+msgid "_Redo: %s"
+msgstr "_Возвратить: %s"
+
+#: gazpacho/application.py:391
+msgid "_Redo: Nothing"
+msgstr "_Возвратить"
+
+#: gazpacho/application.py:416
+#, python-format
+msgid "The project \"%s\" is already loaded."
+msgstr "Проект \"%s\" уже загружен."
+
+#: gazpacho/application.py:418
+msgid "Do you wish to revert your changes and reload the original glade file?"
+msgstr "Отбростить изменения и перезагрузить первоначальный файл glade?"
+
+#: gazpacho/application.py:419
+msgid "Your changes will be permanently lost if you choose to revert."
+msgstr "Изменения будут потеряны навсегда, если Вы выберите отбросить."
+
+#: gazpacho/application.py:465
+msgid "The project could not be loaded"
+msgstr "Не удалось загрузить проект"
+
+#: gazpacho/application.py:466
+#, python-format
+msgid "An error occurred while parsing the file \"%s\"."
+msgstr "Во время разбора файла \"%s\" произошла ошибка"
+
+#: gazpacho/application.py:534
+msgid "Could not set project because it could not be found in the list"
+msgstr "Невозможно установить проект потому что он не был найден в списке"
+
+#: gazpacho/application.py:576
+msgid "Open ..."
+msgstr "Открыть ..."
+
+#: gazpacho/application.py:592
+#, python-format
+msgid "Could not open file \"%s\""
+msgstr "Невозможно открыть файл \"%s\""
+
+#: gazpacho/application.py:593
+#, python-format
+msgid "The file \"%s\" could not be opened. Permission denied."
+msgstr "Невозможно открыть файл \"%s\". Недостаточно прав пользователя."
+
+#: gazpacho/application.py:618
+#, python-format
+msgid ""
+"Could not save to file \"%s\"\n"
+"Permission denied."
+msgstr ""
+"Невозможно сохранить в файл \"%s\".\n"
+"Недостаточно прав пользователя."
+
+#: gazpacho/application.py:651 gazpacho/application.py:729
+msgid "Save as"
+msgstr "Сохранить как"
+
+#: gazpacho/application.py:671
+msgid ""
+"There is a file with that name already.\n"
+"Would you like to overwrite it?"
+msgstr ""
+"Уже существует файл с таким именем.\n"
+"Перезаписать его?"
+
+#: gazpacho/application.py:821
+msgid "There is nothing in the clipboard to paste"
+msgstr "Буфер обмена пуст"
+
+#: gazpacho/application.py:825
+msgid "No project has been specified. Cannot paste the widget"
+msgstr "Проект не был задан, невозможно вставить виджет"
+
+#: gazpacho/application.py:835
+msgid "Please, select a placeholder to paste the widget on"
+msgstr "Пожалуйста, укажите место для вставки виджета"
+
+#: gazpacho/application.py:845
+msgid "About Gazpacho"
+msgstr "О Gazpacho"
+
+#: gazpacho/application.py:856
+msgid ""
+"Gazpacho is a User Interface Builder for GTK+.\n"
+"\n"
+msgstr ""
+"Gazpacho это программа создания пользовательского интерфейса в GTK+\n"
+"\n"
+
+#: gazpacho/application.py:914
+msgid "Command Stack"
+msgstr "Стэк команд"
+
+#: gazpacho/application.py:1168
+msgid "Error saving project"
+msgstr "При сохранении проекта возникла ошибка"
+
+#: gazpacho/application.py:1180
+msgid "There is a widget with an empty name"
+msgstr "В этом проекте есть виджет с пустым именем"
+
+#: gazpacho/application.py:1188
+#, python-format
+msgid "The name \"%s\" is used in more than one widget"
+msgstr "Имя \"%s\" используется в нескольких виджетах"
+
+#: gazpacho/application.py:1207
+msgid "Close _without Saving"
+msgstr "Сохранить _без записи"
+
+#: gazpacho/application.py:1237
+#, python-format
+msgid "Save changes to project \"%s\" before closing?"
+msgstr "Сохранить изменения в проект \"%s\" перед закрытием?"
+
+#: gazpacho/application.py:1239 gazpacho/application.py:1270
+msgid "Your changes will be lost if you don't save them."
+msgstr "Ваши изменения будут потеряны если вы их не сохраните"
+
+#: gazpacho/application.py:1279
+msgid "S_elect the projects you want to save:"
+msgstr "_Выбрать проект которые Вы хотите сохранить:"
+
+#: gazpacho/palette.py:120 gazpacho/palette.py:142
+msgid "Selector"
+msgstr "Выбор"
+
+#: gazpacho/clipboard.py:157
+msgid "Clipboard Contents"
+msgstr "Содержимое буфера"
+
+#: gazpacho/catalog.py:42
+msgid "<b>There were errors while loading Gazpacho</b>"
+msgstr "<b>Во время загрузки Gazpacho произошла ошибка</b>"
+
+#: gazpacho/catalog.py:72
+#, python-format
+msgid "The catalog directory %s does not exist"
+msgstr "Каталог с данными о виджетах %s не существует"
+
+#: gazpacho/catalog.py:75
+#, python-format
+msgid "You do not have read permissions in the catalog directory %s"
+msgstr "У вас нет прав на чтение каталога с данными о виджетах %s"
+
+#: gazpacho/parameter.py:70
+#, python-format
+msgid "Invalid boolean parameter *%s* (%s/%s)"
+msgstr "Неверный логический параметр *%s* (%s/%s)"
+
+#: gazpacho/signaleditor.py:28
+msgid "<Type the signal's handler here>"
+msgstr "<Введите обработчик>"
+
+#: gazpacho/signaleditor.py:64
+msgid "Signal"
+msgstr "Сигнал"
+
+#: gazpacho/signaleditor.py:73
+msgid "Handler"
+msgstr "Обрабочик"
+
+#: gazpacho/signaleditor.py:83
+msgid "After"
+msgstr "После"
+
+#: gazpacho/loader/compat.py:184
+msgid "Deprecated widgets found"
+msgstr "Найдены устаревшие виджеты"
+
+#: gazpacho/loader/compat.py:194
+msgid "Gazpacho found the following deprecated widgets:"
+msgstr "Gazpacho нашел следующие устаревшие виджеты:"
+
+#: gazpacho/loader/compat.py:203
+msgid ""
+"They were converted to the equivalent newest widgets but please note that "
+"if\n"
+"you save the file in Gazpacho it will not be compatible with Glade-2 anymore"
+msgstr ""
+"Они были преобразованы к равносильным более новым виджетам. Но будьте "
+"осторожныесли\n"
+"Вы сохраните фаил в Gazpacho он больше не будет совместим с Glade-2."
+
+#: gazpacho/loader/proxy.py:17
+msgid "You must specify either a glade file or a glade stream"
+msgstr "Нужно задать или файл glade или поток glade"
+
+#: gazpacho/loader/proxy.py:61
+#, python-format
+msgid ""
+"Warning: the widget %s is not on my widget tree neither in the action list"
+msgstr "Предупреждение: виджет %s не входит ни в дерево не в список действий"
+

@@ -1,0 +1,317 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://gazpacho.sicem.biz/gazpacho-0.1.dtd">
+<glade-interface>
+    <widget class="GtkWindow" id="l10n_param_window">
+        <property name="default_height">250</property>
+        <property name="default_width">440</property>
+        <signal handler="_on_l10n_param_close" name="delete-event" after="True"/>
+        <child>
+            <widget class="GtkVBox" id="vbox2">
+                <property name="visible">True</property>
+                <child>
+                    <widget class="GtkNotebook" id="l10n_param_notebook">
+                        <property name="visible">True</property>
+                        <child>
+                            <widget class="GtkVBox" id="vbox1">
+                                <property name="visible">True</property>
+                                <child>
+                                    <widget class="GtkVBox" id="vbox">
+                                        <property name="border_width">6</property>
+                                        <property name="spacing">6</property>
+                                        <property name="visible">True</property>
+                                        <child>
+                                            <widget class="GtkHBox" id="hbox">
+                                                <property name="homogeneous">True</property>
+                                                <property name="visible">True</property>
+                                                <child>
+                                                    <widget class="GtkButton" id="add_singular_button">
+                                                        <property name="label">Add singular</property>
+                                                        <property name="visible">True</property>
+                                                        <property name="width_request">92</property>
+                                                        <signal handler="_on_extrastr_add_singular" name="clicked" after="True"/>
+                                                    </widget>
+                                                </child>
+                                                <child>
+                                                    <widget class="GtkButton" id="add_plural_button">
+                                                        <property name="label">Add plural</property>
+                                                        <property name="visible">True</property>
+                                                        <property name="width_request">92</property>
+                                                        <signal handler="_on_extrastr_add_plural" name="clicked" after="True"/>
+                                                    </widget>
+                                                    <packing>
+                                                        <property name="position">1</property>
+                                                    </packing>
+                                                </child>
+                                            </widget>
+                                            <packing>
+                                                <property name="expand">False</property>
+                                                <property name="padding">6</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkHSeparator" id="hseparator">
+                                                <property name="visible">True</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="expand">False</property>
+                                                <property name="position">1</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkScrolledWindow" id="scrolledwindow">
+                                                <property name="hscrollbar_policy">never</property>
+                                                <property name="visible">True</property>
+                                                <child>
+                                                    <widget class="GtkViewport" id="viewport2">
+                                                        <property name="visible">True</property>
+                                                        <child>
+                                                            <widget class="GtkVBox" id="grid_vbox">
+                                                                <property name="spacing">20</property>
+                                                                <property name="visible">True</property>
+                                                                <child>
+                                                                    <placeholder/>
+                                                                    <packing>
+                                                                        <property name="expand">False</property>
+                                                                    </packing>
+                                                                </child>
+                                                            </widget>
+                                                        </child>
+                                                    </widget>
+                                                </child>
+                                            </widget>
+                                            <packing>
+                                                <property name="position">2</property>
+                                            </packing>
+                                        </child>
+                                    </widget>
+                                </child>
+                            </widget>
+                            <packing>
+                                <property name="tab_label" context="yes" translatable="yes">Extra Strings</property>
+                            </packing>
+                        </child>
+                        <child>
+                            <widget class="GtkVBox" id="vbox3">
+                                <property name="visible">True</property>
+                                <child>
+                                    <widget class="GtkTable" id="table4">
+                                        <property name="visible">True</property>
+                                        <child>
+                                            <widget class="GtkLabel" id="project_name_label">
+                                                <property engineering_english="Project Name:" name="label" context="yes" translatable="yes">Project ID Name</property>
+                                                <property name="visible">True</property>
+                                            </widget>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkLabel" id="project_version_label">
+                                                <property engineering_english="Project Version:" name="label" context="yes" translatable="yes">Project ID Version</property>
+                                                <property name="visible">True</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="bottom_attach">2</property>
+                                                <property name="top_attach">1</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkLabel" id="last_translator_label">
+                                                <property engineering_english="Last Translator:" name="label" context="yes" translatable="yes">Last Translator:</property>
+                                                <property name="visible">True</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="bottom_attach">3</property>
+                                                <property name="top_attach">2</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkLabel" id="language_team_label">
+                                                <property engineering_english="Language Team:" name="label" context="yes" translatable="yes">Language Team:</property>
+                                                <property name="visible">True</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="bottom_attach">4</property>
+                                                <property name="top_attach">3</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkEntry" id="project_name_entry">
+                                                <property name="visible">True</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="left_attach">1</property>
+                                                <property name="right_attach">2</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkEntry" id="project_version_entry">
+                                                <property name="visible">True</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="bottom_attach">2</property>
+                                                <property name="left_attach">1</property>
+                                                <property name="right_attach">2</property>
+                                                <property name="top_attach">1</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkEntry" id="last_translator_entry">
+                                                <property name="visible">True</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="bottom_attach">3</property>
+                                                <property name="left_attach">1</property>
+                                                <property name="right_attach">2</property>
+                                                <property name="top_attach">2</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkEntry" id="language_team_entry">
+                                                <property name="visible">True</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="bottom_attach">4</property>
+                                                <property name="left_attach">1</property>
+                                                <property name="right_attach">2</property>
+                                                <property name="top_attach">3</property>
+                                            </packing>
+                                        </child>
+                                    </widget>
+                                    <packing>
+                                        <property name="expand">False</property>
+                                    </packing>
+                                </child>
+                                <child>
+                                    <widget class="GtkExpander" id="expander1">
+                                        <property engineering_english="More fields" name="label" context="yes" translatable="yes">More</property>
+                                        <property name="visible">True</property>
+                                        <child>
+                                            <widget class="GtkVBox" id="vbox4">
+                                                <child>
+                                                    <widget class="GtkTable" id="table1">
+                                                        <property name="visible">True</property>
+                                                        <child>
+                                                            <widget class="GtkLabel" id="bugee_label">
+                                                                <property engineering_english="Report Bugs To:" name="label" context="yes" translatable="yes">Report Bugs To:</property>
+                                                                <property name="visible">True</property>
+                                                            </widget>
+                                                        </child>
+                                                        <child>
+                                                            <widget class="GtkLabel" id="mime_version_label">
+                                                                <property engineering_english="MIME Version:" name="label" context="yes" translatable="yes">MIME Version:</property>
+                                                                <property name="visible">True</property>
+                                                            </widget>
+                                                            <packing>
+                                                                <property name="bottom_attach">2</property>
+                                                                <property name="top_attach">1</property>
+                                                            </packing>
+                                                        </child>
+                                                        <child>
+                                                            <widget class="GtkLabel" id="content_type_label">
+                                                                <property engineering_english="Content Type:" name="label" context="yes" translatable="yes">Content Type:</property>
+                                                                <property name="visible">True</property>
+                                                            </widget>
+                                                            <packing>
+                                                                <property name="bottom_attach">3</property>
+                                                                <property name="top_attach">2</property>
+                                                            </packing>
+                                                        </child>
+                                                        <child>
+                                                            <widget class="GtkLabel" id="content_encoding_label">
+                                                                <property engineering_english="Content Encoding:" name="label" context="yes" translatable="yes">Content Encoding:</property>
+                                                                <property name="visible">True</property>
+                                                            </widget>
+                                                            <packing>
+                                                                <property name="bottom_attach">4</property>
+                                                                <property name="top_attach">3</property>
+                                                            </packing>
+                                                        </child>
+                                                        <child>
+                                                            <widget class="GtkEntry" id="bugee_entry">
+                                                                <property name="visible">True</property>
+                                                            </widget>
+                                                            <packing>
+                                                                <property name="left_attach">1</property>
+                                                                <property name="right_attach">2</property>
+                                                            </packing>
+                                                        </child>
+                                                        <child>
+                                                            <widget class="GtkEntry" id="mime_version_entry">
+                                                                <property name="visible">True</property>
+                                                            </widget>
+                                                            <packing>
+                                                                <property name="bottom_attach">2</property>
+                                                                <property name="left_attach">1</property>
+                                                                <property name="right_attach">2</property>
+                                                                <property name="top_attach">1</property>
+                                                            </packing>
+                                                        </child>
+                                                        <child>
+                                                            <widget class="GtkEntry" id="content_type_entry">
+                                                                <property name="visible">True</property>
+                                                            </widget>
+                                                            <packing>
+                                                                <property name="bottom_attach">3</property>
+                                                                <property name="left_attach">1</property>
+                                                                <property name="right_attach">2</property>
+                                                                <property name="top_attach">2</property>
+                                                            </packing>
+                                                        </child>
+                                                        <child>
+                                                            <widget class="GtkEntry" id="content_encoding_entry">
+                                                                <property name="visible">True</property>
+                                                            </widget>
+                                                            <packing>
+                                                                <property name="bottom_attach">4</property>
+                                                                <property name="left_attach">1</property>
+                                                                <property name="right_attach">2</property>
+                                                                <property name="top_attach">3</property>
+                                                            </packing>
+                                                        </child>
+                                                    </widget>
+                                                    <packing>
+                                                        <property name="expand">False</property>
+                                                    </packing>
+                                                </child>
+                                            </widget>
+                                        </child>
+                                    </widget>
+                                    <packing>
+                                        <property name="position">1</property>
+                                    </packing>
+                                </child>
+                            </widget>
+                            <packing>
+                                <property name="position">1</property>
+                                <property name="tab_label" context="yes" translatable="yes">L10N Headers</property>
+                            </packing>
+                        </child>
+                        <child>
+                            <placeholder/>
+                            <packing>
+                                <property name="position">2</property>
+                            </packing>
+                        </child>
+                    </widget>
+                </child>
+                <child>
+                    <widget class="GtkHButtonBox" id="hbuttonbox">
+                        <property name="border_width">6</property>
+                        <property name="layout_style">end</property>
+                        <property name="visible">True</property>
+                        <child>
+                            <widget class="GtkButton" id="close_button">
+                                <property name="label">gtk-close</property>
+                                <property name="use_stock">True</property>
+                                <property name="visible">True</property>
+                                <signal handler="_on_l10n_param_close" name="clicked" after="False"/>
+                            </widget>
+                        </child>
+                    </widget>
+                    <packing>
+                        <property name="expand">False</property>
+                        <property name="position">1</property>
+                    </packing>
+                </child>
+            </widget>
+        </child>
+    </widget>
+</glade-interface>

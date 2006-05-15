@@ -1,0 +1,8 @@
+NOTES ABOUT MAEMO INTEGRATION
+=============================
+
+To build a debian package, the debian/__installed__.py must be included in the
+build dir. Unfortunately, the installation tool included does not create this
+by itself unless it is actually installed. So, to allow builds without
+installing, a '/usr' prefixed __install__.py is provided, which will work for
+the Maemo environment.

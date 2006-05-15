@@ -1,0 +1,94 @@
+gazpacho (0.6.2-9) unstable; urgency=low
+
+  * Fix few localization bugs
+  * Fix for bug #317896 in the GNOME bugzilla (recent menu items)
+  * Add a pre-configured __installed__.py to allow easier building
+
+ -- Erik Karlsson <erik.b.karlsson@nokia.com>  Tue,  13 Dec 2005 12:12:38 +0200
+
+gazpacho (0.6.2-8) unstable; urgency=low
+
+  * Fix packaging
+
+ --   Thu,  21 Oct 2005 10:06:10 +0300 
+
+gazpacho (0.6.2-7) unstable; urgency=low
+
+  * l10n feature additions
+
+ --   Thu,  18 Oct 2005 10:14:10 +0300 
+
+gazpacho (0.6.2-6) unstable; urgency=low
+
+  * Bugfixes missing properties, images
+
+ --   Thu,  29 Sep 2005 17:05:10 +0300 
+
+gazpacho (0.6.2-5) unstable; urgency=low
+
+  * Bugfixes on various areas
+  * Improved GazUIServer support
+
+ --   Thu,  15 Sep 2005 15:28:49 +0300
+
+gazpacho (0.6.2-4) unstable; urgency=low
+
+  * Bugfixes on various areas
+
+ --   Thu,  13 Sep 2005 15:08:00 +0300
+
+gazpacho (0.6.2-3) unstable; urgency=low
+
+  * Bugfixes
+
+ --   Mon,  12 Sep 2005 12:28:49 +0300
+
+gazpacho (0.6.2-2) unstable; urgency=low
+
+  * Packaging fixes
+
+ --   Thu,  09 Sep 2005 14:18:49 +0300
+
+gazpacho (0.6.2-1) unstable; urgency=low
+
+  * New upstream version
+
+ --   Thu,  08 Sep 2005 15:28:49 +0300
+
+gazpacho (0.6.1-6) unstable; urgency=low
+
+  * Support for non-'get_children' internal childs
+  * Minor bugfixes
+
+ --   Thu,  06 Sep 2005 17:28:49 +0300
+
+gazpacho (0.6.1-5) unstable; urgency=low
+
+  * Action editing improvements
+  * Minor bugfixes
+
+ --   Mon,  05 Sep 2005 15:28:49 +0300
+
+gazpacho (0.6.1-4) unstable; urgency=low
+
+  * Menu editing now working ;)
+
+ --   Fri,  02 Sep 2005 09:28:49 +0300
+
+gazpacho (0.6.1-3) unstable; urgency=low
+
+  * Menu editing now generic
+
+ --   Thu,  01 Sep 2005 09:28:49 +0300
+
+gazpacho (0.6.1-2) unstable; urgency=low
+
+  * Updates
+
+ --   Mon,  15 Aug 2005 11:58:49 +0300
+
+gazpacho (0.6.1-1) unstable; urgency=low
+
+  * Automatically generated package.
+
+ -- Mon,  15 Aug 2005 11:58:49 +0300

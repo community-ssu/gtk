@@ -1,0 +1,193 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://gazpacho.sicem.biz/gazpacho-0.1.dtd">
+<glade-interface>
+    <widget class="GtkWindow" id="renderer_editor_window">
+        <property name="default_height">250</property>
+        <property name="default_width">440</property>
+        <property name="title" context="yes" translatable="yes">Select renderer</property>
+        <property name="visible">True</property>
+        <child>
+            <widget class="GtkVBox" id="renderer_editor">
+                <property name="spacing">6</property>
+                <property name="visible">True</property>
+                <child>
+                    <widget class="GtkFrame" id="layout_frame">
+                        <property name="label" context="yes" translatable="yes">Layout</property>
+                        <property name="visible">True</property>
+                        <child>
+                            <widget class="GtkVBox" id="vbox1">
+                                <property name="border_width">8</property>
+                                <property name="spacing">6</property>
+                                <property name="visible">True</property>
+                                <child>
+                                    <widget class="GtkHBox" id="title_box">
+                                        <property name="spacing">12</property>
+                                        <property name="visible">True</property>
+                                        <child>
+                                            <widget class="GtkLabel" id="label2">
+                                                <property name="justify">right</property>
+                                                <property name="label" context="yes" translatable="yes">Title:</property>
+                                                <property name="visible">True</property>
+                                                <property name="xalign">1.0</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="expand">False</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkEntry" id="title_entry">
+                                                <property name="visible">True</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="position">1</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkCheckButton" id="expand_checkbutton">
+                                                <property name="active">True</property>
+                                                <property name="label" context="yes" translatable="yes">Expand</property>
+                                                <property name="visible">True</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">False</property>
+                                                <property name="position">2</property>
+                                            </packing>
+                                        </child>
+                                    </widget>
+                                    <packing>
+                                        <property name="expand">False</property>
+                                    </packing>
+                                </child>
+                                <child>
+                                    <widget class="GtkVBox" id="vbox4">
+                                        <property name="visible">True</property>
+                                        <child>
+                                            <widget class="GtkLabel" id="label4">
+                                                <property name="label" context="yes" translatable="yes">Available Elements:</property>
+                                                <property name="visible">True</property>
+                                                <property name="xalign">0.0</property>
+                                            </widget>
+                                            <packing>
+                                                <property name="expand">False</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkScrolledWindow" id="scrolledwindow1">
+                                                <property name="border_width">6</property>
+                                                <property name="hscrollbar_policy">never</property>
+                                                <property name="shadow_type">etched-in</property>
+                                                <property name="visible">True</property>
+                                                <child>
+                                                    <widget class="GtkTreeView" id="renderer_treeview">
+                                                        <property name="search_column">0</property>
+                                                        <property name="visible">True</property>
+                                                        <child>
+                                                            <widget id="Column 1" class="GtkTreeViewColumn">
+                                                                <property name="title">Column 1</property>
+                                                                <property name="expand">False</property>
+                                                            </widget>
+                                                        </child>
+                                                    </widget>
+                                                </child>
+                                            </widget>
+                                            <packing>
+                                                <property name="expand">False</property>
+                                                <property name="position">1</property>
+                                            </packing>
+                                        </child>
+                                    </widget>
+                                    <packing>
+                                        <property name="expand">False</property>
+                                        <property name="position">1</property>
+                                    </packing>
+                                </child>
+                                <child>
+                                    <widget class="GtkVBox" id="vbox3">
+                                        <property name="visible">True</property>
+                                        <child>
+                                            <widget class="GtkHBox" id="hbox1">
+                                                <property name="visible">True</property>
+                                                <child>
+                                                    <widget class="GtkLabel" id="label3">
+                                                        <property name="label" context="yes" translatable="yes">Current Elements:</property>
+                                                        <property name="visible">True</property>
+                                                        <property name="xalign">0.0</property>
+                                                    </widget>
+                                                </child>
+                                                <child>
+                                                    <widget class="GtkButton" id="properties_button">
+                                                        <property name="label" context="yes" translatable="yes">Attributes</property>
+                                                        <property name="visible">True</property>
+                                                    </widget>
+                                                    <packing>
+                                                        <property name="expand">False</property>
+                                                        <property name="position">1</property>
+                                                    </packing>
+                                                </child>
+                                            </widget>
+                                            <packing>
+                                                <property name="expand">False</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <widget class="GtkScrolledWindow" id="scrolledwindow2">
+                                                <property name="border_width">6</property>
+                                                <property name="hscrollbar_policy">never</property>
+                                                <property name="shadow_type">etched-in</property>
+                                                <property name="visible">True</property>
+                                                <child>
+                                                    <widget class="GtkTreeView" id="selected_treeview">
+                                                        <property name="reorderable">True</property>
+                                                        <property name="search_column">0</property>
+                                                        <property name="visible">True</property>
+                                                        <child>
+                                                            <widget id="" class="GtkTreeViewColumn">
+                                                                <property name="title"></property>
+                                                                <property name="expand">False</property>
+                                                            </widget>
+                                                        </child>
+                                                    </widget>
+                                                </child>
+                                            </widget>
+                                            <packing>
+                                                <property name="position">1</property>
+                                            </packing>
+                                        </child>
+                                    </widget>
+                                    <packing>
+                                        <property name="position">2</property>
+                                    </packing>
+                                </child>
+                            </widget>
+                        </child>
+                    </widget>
+                </child>
+            </widget>
+        </child>
+    </widget>
+    <widget class="GtkWindow" id="renderer_attributes_dialog">
+        <property name="default_height">250</property>
+        <property name="default_width">440</property>
+        <child>
+            <widget class="GtkVBox" id="attributes_vbox">
+                <child>
+                    <widget class="GtkHButtonBox" id="hbuttonbox1">
+                        <property name="border_width">6</property>
+                        <property name="layout_style">end</property>
+                        <child>
+                            <widget class="GtkButton" id="attributes_close_button">
+                                <property name="label">gtk-close</property>
+                                <property name="use_stock">True</property>
+                            </widget>
+                        </child>
+                    </widget>
+                    <packing>
+                        <property name="expand">False</property>
+                        <property name="pack_type">end</property>
+                    </packing>
+                </child>
+            </widget>
+        </child>
+    </widget>
+</glade-interface>

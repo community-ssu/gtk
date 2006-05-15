@@ -1,0 +1,258 @@
+diff -Nur gazpacho/bin/gazpacho gazpacho-sicem/bin/gazpacho
+--- gazpacho/bin/gazpacho	2005-10-26 17:00:55.000000000 +0300
++++ gazpacho-sicem/bin/gazpacho	2006-04-14 11:13:08.000000000 +0300
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python2.4
+ #
+ # Copyright (C) 2005 by Async Open Source 
+ #
+diff -Nur gazpacho/gazpacho/application.py gazpacho-sicem/gazpacho/application.py
+--- gazpacho/gazpacho/application.py	2006-01-30 23:02:12.000000000 +0200
++++ gazpacho-sicem/gazpacho/application.py	2006-04-14 11:12:56.000000000 +0300
+@@ -19,7 +19,6 @@
+ import sys
+ import urllib
+ import urlparse
+-import cStringIO
+ 
+ import gtk
+ import gobject
+@@ -44,16 +43,16 @@
+ from gazpacho.loader.loader import ObjectBuilder
+ 
+ try:
+-  from gazpacho.gazuiserver import GazUIServer
+-  use_server = True
++   from gazpacho.gazuiserver import GazUIServer
++   use_server = True
+ except ImportError:
+-  use_server = False
++   use_server = False
+ 
+ try:
+-  from gazui.gazpachoglue import gazui_publish
+-  have_gazui = True
++   from gazui.gazpachoglue import gazui_publish
++   have_gazui = True
+ except ImportError:
+-  have_gazui = False
++   have_gazui = False
+ 
+ _ = gettext.gettext
+ __all__ = ['Application', '__version__']
+diff -Nur gazpacho/gazpacho/celllayouteditor.py gazpacho-sicem/gazpacho/celllayouteditor.py
+--- gazpacho/gazpacho/celllayouteditor.py	2006-04-06 08:30:16.000000000 +0300
++++ gazpacho-sicem/gazpacho/celllayouteditor.py	2006-04-14 11:12:56.000000000 +0300
+@@ -1,18 +1,3 @@
+-# Copyright (C) 2005, 2006 Nokia Corporation.
+-#
+-# This program is free software; you can redistribute it and/or
+-# modify it under the terms of the GNU Lesser General Public License
+-# as published by the Free Software Foundation; either version 2
+-# of the License, or (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU Lesser General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ 
+ import gobject
+ import gtk
+diff -Nur gazpacho/gazpacho/dndhandlers.py gazpacho-sicem/gazpacho/dndhandlers.py
+--- gazpacho/gazpacho/dndhandlers.py	2006-04-06 08:30:16.000000000 +0300
++++ gazpacho-sicem/gazpacho/dndhandlers.py	2006-04-14 11:12:56.000000000 +0300
+@@ -1,20 +1,3 @@
+-# Copyright (C) 2005, 2006 Nokia Corporation.
+-#
+-# This program is free software; you can redistribute it and/or
+-# modify it under the terms of the GNU Lesser General Public License
+-# as published by the Free Software Foundation; either version 2
+-# of the License, or (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU Lesser General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+-
+-
+ import gtk
+ 
+ from gazpacho import util
+diff -Nur gazpacho/gazpacho/filewriter.py gazpacho-sicem/gazpacho/filewriter.py
+--- gazpacho/gazpacho/filewriter.py	2006-01-30 23:02:12.000000000 +0200
++++ gazpacho-sicem/gazpacho/filewriter.py	2006-04-14 11:12:58.000000000 +0300
+@@ -29,6 +29,7 @@
+ from gazpacho.properties import prop_registry
+ from gazpacho.widget import Widget
+ from gazpacho.modelplop import model_to_xml
++from gazpacho.util import get_all_children
+ 
+ interesting_properties = ['title', 'expand']
+ 
+@@ -252,7 +253,10 @@
+         if widget.constructor:
+             return node
+ 
+-        children = gtk_widget.get_children()
++        # gtk_widget.get_children() is not enought since some internal children
++        # are not returned with that method
++        children = get_all_children(gtk_widget)
++
+         if isinstance(gtk_widget, gtk.Table):
+             table = gtk_widget
+             def table_sort(a, b):
+@@ -264,12 +268,12 @@
+                 return res
+             children.sort(table_sort)
+         # Boxes doesn't need to be sorted, they're already in the right order
+-            
++
+         for child_widget in children:
+             child = self._write_child(child_widget)
+             if child:
+                 node.appendChild(child)
+-            
++
+ 
+         # save internal children that do not show in .get_children()
+         for child_widget in widget.internal_children:
+@@ -278,7 +282,7 @@
+                 node.appendChild(child)
+ 
+         widget.maintain_gtk_properties = False
+-                    
++
+         return node
+ 
+     def _write_basic_information(self, widget):
+@@ -291,13 +295,13 @@
+             type_name = widget.adaptor.name
+         else:
+             type_name = widget.adaptor.type_name
+-            
++
+         node.setAttribute(tags.XML_TAG_CLASS, type_name)
+         node.setAttribute(tags.XML_TAG_ID, widget.name)
+         if widget.constructor:
+             node.setAttribute('constructor', widget.constructor)
+         return node
+-        
++
+     def _write_properties(self, widget, widget_node, child):
+         # Sort them properties, to have a stable order
+         gtk_widget = widget.gtk_widget
+diff -Nur gazpacho/gazpacho/__init__.py gazpacho-sicem/gazpacho/__init__.py
+--- gazpacho/gazpacho/__init__.py	2006-04-06 08:30:16.000000000 +0300
++++ gazpacho-sicem/gazpacho/__init__.py	2006-04-14 11:12:56.000000000 +0300
+@@ -1,4 +1,3 @@
+-# Copyright (C) 2005 Nokia Corporation
+ #
+ # This program is free software; you can redistribute it and/or
+ # modify it under the terms of the GNU Lesser General Public License
+diff -Nur gazpacho/gazpacho/main.py gazpacho-sicem/gazpacho/main.py
+--- gazpacho/gazpacho/main.py	2005-10-26 17:00:55.000000000 +0300
++++ gazpacho-sicem/gazpacho/main.py	2006-04-14 11:12:56.000000000 +0300
+@@ -103,7 +103,7 @@
+ def launch(options, filenames=[]):
+     # Do this before importing application, which imports gtk
+     check_gtk(debug=options.debug)
+-    
++
+     # Delay imports, so command line parsing is not slowed down
+     from gazpacho.application import Application
+     from gazpacho.debugwindow import DebugWindow, show
+diff -Nur gazpacho/gazpacho/project.py gazpacho-sicem/gazpacho/project.py
+--- gazpacho/gazpacho/project.py	2006-01-30 23:02:12.000000000 +0200
++++ gazpacho-sicem/gazpacho/project.py	2006-04-14 11:12:56.000000000 +0300
+@@ -221,9 +221,6 @@
+         gwidget.connect('notify::project', self._on_widget_notify_project)
+         self.widgets.append(gtk_widget)
+ 
+-        for child in gwidget.internal_children:
+-            self.add_widget(child)
+-
+         self.emit('add_widget', gwidget)
+ 
+     def remove_widget(self, gtk_widget):
+diff -Nur gazpacho/gazpacho/treemodeleditor.py gazpacho-sicem/gazpacho/treemodeleditor.py
+--- gazpacho/gazpacho/treemodeleditor.py	2006-04-06 08:30:16.000000000 +0300
++++ gazpacho-sicem/gazpacho/treemodeleditor.py	2006-04-14 11:12:56.000000000 +0300
+@@ -1,20 +1,3 @@
+-# Copyright (C) 2005, 2006 Nokia Corporation.
+-#
+-# This program is free software; you can redistribute it and/or
+-# modify it under the terms of the GNU Lesser General Public License
+-# as published by the Free Software Foundation; either version 2
+-# of the License, or (at your option) any later version.
+-#
+-# This program is distributed in the hope that it will be useful,
+-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-# GNU General Public License for more details.
+-#
+-# You should have received a copy of the GNU Lesser General Public License
+-# along with this program; if not, write to the Free Software
+-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+-
+-
+ import gettext
+ 
+ import gtk
+diff -Nur gazpacho/gazpacho/util.py gazpacho-sicem/gazpacho/util.py
+--- gazpacho/gazpacho/util.py	2005-10-26 17:00:55.000000000 +0300
++++ gazpacho-sicem/gazpacho/util.py	2006-04-14 11:12:56.000000000 +0300
+@@ -368,8 +368,9 @@
+ def select_iter(treeview, item_iter):
+     model = treeview.get_model()
+     path = model.get_path(item_iter)
+-    treeview.expand_to_path(path)
+-    treeview.scroll_to_cell(path)
++    if treeview.flags() & gtk.REALIZED:
++        treeview.expand_to_path(path)
++        treeview.scroll_to_cell(path)
+     treeview.get_selection().select_path(path)
+ 
+ def get_button_state(button):
+@@ -435,3 +436,10 @@
+             notext = True
+ 
+     return (stock_id, notext, label, image_path, position)
++
++def get_all_children(container):
++    children = []
++    def fetch_child(child, bag):
++        bag.append(child)
++    container.forall(fetch_child, children)
++    return children
+diff -Nur gazpacho/gazpacho/widgetview.py gazpacho-sicem/gazpacho/widgetview.py
+--- gazpacho/gazpacho/widgetview.py	2005-10-26 17:00:55.000000000 +0300
++++ gazpacho-sicem/gazpacho/widgetview.py	2006-04-14 11:12:56.000000000 +0300
+@@ -19,7 +19,7 @@
+ 
+ from gazpacho.popup import Popup
+ from gazpacho.widget import Widget
+-from gazpacho.util import select_iter
++from gazpacho.util import select_iter, get_all_children
+ 
+ (WIDGET_COLUMN,
+  N_COLUMNS) = range(2)
+@@ -124,9 +124,7 @@
+             if gw:
+                 iter = self._model.append(parent_iter, (gw,))
+             if add_children and isinstance(w, gtk.Container):
+-                children = w.get_children()
+-                if gw is not None:
+-                    children += gw.internal_children
++                children = get_all_children(w)
+                 self._populate_model_real(children, iter, True)
+                 
+     def _add_columns(self):

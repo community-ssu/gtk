@@ -1,0 +1,975 @@
+# Finnish translation of PACKAGE.
+# Copyright (C) 2005 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Kalle Vahlman <zuh@iki.fi>, 2005.
+# , fuzzy
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-06-15 22:30+0300\n"
+"PO-Revision-Date: 2005-06-16 00:16+0300\n"
+"Last-Translator: Kalle Vahlman <zuh@iki.fi>\n"
+"Language-Team: Finnish <fi@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit"
+
+#: gazpacho/property.py:117 gazpacho/util.py:418
+#: build/lib/gazpacho/property.py:117 build/lib/gazpacho/util.py:422
+#, python-format
+msgid "Error: the property %s should not be of type None"
+msgstr "Virhe: ominaisuus ei voi olla tyyppiä \"None\" (ei mikään)"
+
+#: gazpacho/uieditor.py:40 build/lib/gazpacho/uieditor.py:40
+#, python-format
+msgid "Editing menubar %s"
+msgstr "Muokataan valikkopalkkia %s"
+
+#: gazpacho/uieditor.py:43 build/lib/gazpacho/uieditor.py:43
+#, python-format
+msgid "Editing toolbar %s"
+msgstr "Muokataan työkalupalkkia %s"
+
+#: gazpacho/uieditor.py:46 build/lib/gazpacho/uieditor.py:46
+msgid "UIEditor is only for toolbars and menubars"
+msgstr "UIEditori on vain työkalupalkeille ja valikkopalkeille"
+
+#: gazpacho/uieditor.py:110 build/lib/gazpacho/uieditor.py:110
+msgid "Press Escape to unselected an item"
+msgstr "Paina Escape-näppäintä poistaaksesi valinnan"
+
+#: gazpacho/uieditor.py:300 build/lib/gazpacho/uieditor.py:300
+msgid "Choose an action"
+msgstr "Valitse toiminto"
+
+#: gazpacho/uieditor.py:338 build/lib/gazpacho/uieditor.py:338
+msgid "Adding a menu"
+msgstr "Valikon lisäys"
+
+#: gazpacho/uieditor.py:355 build/lib/gazpacho/uieditor.py:355
+msgid "Action"
+msgstr "Toiminne"
+
+#: gazpacho/uieditor.py:356 build/lib/gazpacho/uieditor.py:356
+msgid "Separator"
+msgstr "Eroitin"
+
+#: gazpacho/uieditor.py:364 build/lib/gazpacho/uieditor.py:364
+msgid "Adding a toolitem"
+msgstr "Työkalun lisäys"
+
+#: gazpacho/uieditor.py:376 build/lib/gazpacho/uieditor.py:376
+msgid "Adding a menuitem"
+msgstr "Valikkokohdan lisäys"
+
+#: gazpacho/parameter.py:95 build/lib/gazpacho/parameter.py:70
+#, python-format
+msgid "Invalid boolean parameter *%s* (%s/%s)"
+msgstr "Virheellinen totuusarvoparametri *%s* (%s/%s)"
+
+#: gazpacho/editor.py:272 build/lib/gazpacho/editor.py:272
+msgid "Invalid Text Widget type"
+msgstr "Virheellinen tekstisäätimen tyyppi"
+
+#: gazpacho/editor.py:300 build/lib/gazpacho/editor.py:300
+msgid "Edit Text Property"
+msgstr "Muokkaa Tekstiä"
+
+#: gazpacho/editor.py:315 build/lib/gazpacho/editor.py:315
+msgid "_Text:"
+msgstr "_Teksti:"
+
+#: gazpacho/editor.py:346 build/lib/gazpacho/editor.py:346
+msgid "T_ranslatable"
+msgstr "_Käännettävissä"
+
+#: gazpacho/editor.py:351 build/lib/gazpacho/editor.py:351
+msgid "_Has context prefix"
+msgstr "_Sisältää kontekstietuliitteen"
+
+#: gazpacho/editor.py:358 build/lib/gazpacho/editor.py:358
+msgid "Co_mments for translators:"
+msgstr "Ko_mmentit kääntäjille:"
+
+#: gazpacho/editor.py:515 build/lib/gazpacho/editor.py:515
+msgid "No"
+msgstr "Ei"
+
+#: gazpacho/editor.py:559 build/lib/gazpacho/editor.py:559
+#, python-format
+msgid "EditorPropertySpecial without create function: %s"
+msgstr "EditorPropertySpecial ilman luontifunktiota: %s"
+
+#: gazpacho/editor.py:562 build/lib/gazpacho/editor.py:562
+#, python-format
+msgid "EditorPropertySpecial without update function: %s"
+msgstr "EditorPropertySpecial ilman päivitysfunktiota: %s"
+
+#: gazpacho/editor.py:755 build/lib/gazpacho/editor.py:755
+msgid "Class"
+msgstr "Luokka"
+
+#: gazpacho/editor.py:797 build/lib/gazpacho/editor.py:797
+msgid "Widget"
+msgstr "Säädin"
+
+#: gazpacho/editor.py:798 gazpacho/widgetclass.py:278
+#: build/lib/gazpacho/editor.py:798 build/lib/gazpacho/widgetclass.py:379
+msgid "Packing"
+msgstr "Pakkaus"
+
+#: gazpacho/editor.py:799 gazpacho/widgetclass.py:277
+#: build/lib/gazpacho/editor.py:799 build/lib/gazpacho/widgetclass.py:378
+msgid "Common"
+msgstr "Yleiset"
+
+#: gazpacho/editor.py:800 build/lib/gazpacho/editor.py:800
+msgid "Signals"
+msgstr "Signaalit"
+
+#: gazpacho/editor.py:830 build/lib/gazpacho/editor.py:830
+msgid "Select a widget to edit its properties"
+msgstr "Valitse säädin muokataksesi sen ominaisuuksia"
+
+#: gazpacho/main.py:67 build/lib/gazpacho/main.py:67
+#, python-format
+msgid "Could not open file %s Permission denied."
+msgstr "Tiedostoa %s ei voitu avata: Ei tarvittavia käyttöoikeuksia"
+
+#: gazpacho/main.py:80 build/lib/gazpacho/main.py:80
+msgid "This will remove Gazpacho and all its files from your hard drive"
+msgstr "Gazpacho ja kaikki sen tiedostot poistetaan levyasemalta"
+
+#: gazpacho/main.py:81 build/lib/gazpacho/main.py:81
+#, python-format
+msgid "Are you sure do you want to continue? [%s|No] "
+msgstr "Oletko varma että haluat jatkaa? [%s|No]"
+
+#: gazpacho/main.py:82 gazpacho/main.py:84 build/lib/gazpacho/main.py:82
+#: build/lib/gazpacho/main.py:84
+msgid "yes"
+msgstr "kyllä"
+
+#: gazpacho/main.py:87 build/lib/gazpacho/main.py:87
+msgid "Uninstalling Gazpacho"
+msgstr "Gazpachon poistaminen"
+
+#: gazpacho/main.py:95 build/lib/gazpacho/main.py:95
+#, python-format
+msgid "I do not know how to remove %s"
+msgstr "En tiedä kuinka %s poistetaan"
+
+#: gazpacho/main.py:102 build/lib/gazpacho/main.py:102
+msgid "Dump widget param specs"
+msgstr "Vedosta säätimien parametrimääritykset"
+
+#: gazpacho/main.py:106 build/lib/gazpacho/main.py:106
+msgid "Turn on pdb debugging support"
+msgstr "Aseta pdb-debuggauksen tuki päälle"
+
+#: gazpacho/main.py:110 build/lib/gazpacho/main.py:110
+msgid "Dump widget properties"
+msgstr "Vedosta säätimien ominaisuudet"
+
+#: gazpacho/main.py:114 build/lib/gazpacho/main.py:114
+msgid "Uninstall Gazpacho from your hard drive"
+msgstr "Poista Gazpachon asennus levyasemaltasi"
+
+#: gazpacho/clipboard.py:157 build/lib/gazpacho/clipboard.py:157
+msgid "Clipboard Contents"
+msgstr "Leikepöydän sisältö"
+
+#: gazpacho/popup.py:87 build/lib/gazpacho/popup.py:87
+msgid "Select"
+msgstr "Valitse"
+
+#: gazpacho/popup.py:104 build/lib/gazpacho/popup.py:104
+msgid "Insert before"
+msgstr "Lisää eteen"
+
+#: gazpacho/popup.py:107 gazpacho/command.py:110
+#: build/lib/gazpacho/popup.py:107 build/lib/gazpacho/command.py:110
+msgid "Insert after"
+msgstr "Lisää jälkeen"
+
+#: gazpacho/bugreportdialog.py:31 build/lib/gazpacho/bugreportdialog.py:31
+msgid "What were you doing before the error occured?"
+msgstr "Mitä teit ennen virhetilannetta?"
+
+#: gazpacho/bugreportdialog.py:41 build/lib/gazpacho/bugreportdialog.py:41
+msgid "Personal information (optional)"
+msgstr "Henkilökohtaiset tiedot (valinnainen)"
+
+#: gazpacho/bugreportdialog.py:47 build/lib/gazpacho/bugreportdialog.py:47
+msgid "Name"
+msgstr "Nimi"
+
+#: gazpacho/bugreportdialog.py:49 build/lib/gazpacho/bugreportdialog.py:49
+msgid "E-Mail"
+msgstr "Sähköpostiosoite"
+
+#: gazpacho/dialogs.py:39 build/lib/gazpacho/dialogs.py:31
+msgid "Click here for details"
+msgstr "Saat tästä lisätietoja"
+
+#: gazpacho/dialogs.py:67 gazpacho/uim.py:179 gazpacho/gladegtk.py:906
+#: gazpacho/gladegtk.py:935 build/lib/gazpacho/dialogs.py:60
+#: build/lib/gazpacho/uim.py:179 build/lib/gazpacho/gladegtk.py:908
+#: build/lib/gazpacho/gladegtk.py:937
+msgid "Open"
+msgstr "Avaa"
+
+#: gazpacho/dialogs.py:92 build/lib/gazpacho/dialogs.py:85
+#, python-format
+msgid "Could not open file \"%s\""
+msgstr "Tiedoston \"%s\" avaaminen ei onnistunut"
+
+#: gazpacho/dialogs.py:93 build/lib/gazpacho/dialogs.py:86
+#, python-format
+msgid "The file \"%s\" could not be opened. Permission denied."
+msgstr "Tiedostoa \"%s\" ei voitu avata. Ei tarvittavia käyttöoikeuksia."
+
+#: gazpacho/dialogs.py:101 gazpacho/uim.py:180 gazpacho/gladegtk.py:906
+#: gazpacho/gladegtk.py:935 gazpacho/application.py:604
+#: build/lib/gazpacho/dialogs.py:94 build/lib/gazpacho/uim.py:180
+#: build/lib/gazpacho/gladegtk.py:908 build/lib/gazpacho/gladegtk.py:937
+#: build/lib/gazpacho/application.py:604
+msgid "Save"
+msgstr "Tallenna"
+
+#: gazpacho/dialogs.py:121 build/lib/gazpacho/dialogs.py:114
+msgid ""
+"There is a file with that name already.\n"
+"Would you like to overwrite it?"
+msgstr "Sillä nimellä on jo tiedosto.\n"
+"Haluatko korvata sen uudella?"
+
+#: gazpacho/catalog.py:150 build/lib/gazpacho/widgetclass.py:52
+#, python-format
+msgid "The widget class %s has at least two different definitions"
+msgstr "Säädinluokalla %s on ainakin kaksi erilaista määritystä"
+
+#: gazpacho/catalog.py:232 build/lib/gazpacho/widgetclass.py:283
+#, python-format
+msgid "Failed to update %s property of %s from xml"
+msgstr "Säätimen %s ominaisuuden %s päivitys xml-tiedostosta epäonnistui"
+
+#: gazpacho/catalog.py:322 build/lib/gazpacho/propertyclass.py:272
+#, python-format
+msgid "Could not find the property spec for enum type %s"
+msgstr "Enumeraatiotyypille %s ei löytynyt ominaisuusmääritystä"
+
+#: gazpacho/catalog.py:395 build/lib/gazpacho/propertyclass.py:412
+#, python-format
+msgid "Could not find sub property %s"
+msgstr "Aliominaisuutta %s ei löytynyt"
+
+#: gazpacho/catalog.py:476 build/lib/gazpacho/catalog.py:53
+#, python-format
+msgid "The catalog directory %s does not exist"
+msgstr "Katalogihakemistoa %s ei ole"
+
+#: gazpacho/catalog.py:479 build/lib/gazpacho/catalog.py:56
+#, python-format
+msgid "You do not have read permissions in the catalog directory %s"
+msgstr "Sinulla ei ole lukuoikeuksia katalogihakemistoon %s"
+
+#: gazpacho/catalog.py:488 build/lib/gazpacho/catalog.py:65
+msgid "<b>There were errors while loading Gazpacho</b>"
+msgstr "<b>Gazpachon lataamisessa tapahtui virheitä</b>"
+
+#: gazpacho/widgetclass.py:253 build/lib/gazpacho/widgetclass.py:354
+#, python-format
+msgid "Dumping ParamSpec for %s"
+msgstr "Vedostetaan Parametrimääritystä: %s"
+
+#: gazpacho/widgetclass.py:255 build/lib/gazpacho/widgetclass.py:356
+msgid "Writable"
+msgstr "Voi kirjoittaa"
+
+#: gazpacho/widgetclass.py:256 build/lib/gazpacho/widgetclass.py:357
+msgid "ReadOnly"
+msgstr "Vain luku"
+
+#: gazpacho/widgetclass.py:262 build/lib/gazpacho/widgetclass.py:363
+msgid "Disabled"
+msgstr "Pois käytöstä"
+
+#: gazpacho/widgetclass.py:265 build/lib/gazpacho/widgetclass.py:366
+msgid "Tooltip"
+msgstr "Vinkki"
+
+#: gazpacho/widgetclass.py:267 build/lib/gazpacho/widgetclass.py:368
+msgid "Default"
+msgstr "Oletus"
+
+#: gazpacho/widgetclass.py:268 build/lib/gazpacho/widgetclass.py:369
+msgid "Optional"
+msgstr "Valinnainen"
+
+#: gazpacho/widgetclass.py:269 build/lib/gazpacho/widgetclass.py:370
+msgid "Optional Default"
+msgstr "Valinnainen Oletus"
+
+#: gazpacho/widgetclass.py:271 build/lib/gazpacho/widgetclass.py:372
+msgid "VisibilityFunction"
+msgstr "Näkyväisyysfunktio"
+
+#: gazpacho/widgetclass.py:274 build/lib/gazpacho/widgetclass.py:375
+msgid "Child"
+msgstr "Lapsi"
+
+#: gazpacho/widgetclass.py:279 build/lib/gazpacho/widgetclass.py:380
+msgid "Modified"
+msgstr "Muokattu"
+
+#: gazpacho/widgetclass.py:281 build/lib/gazpacho/widgetclass.py:382
+msgid "Setter"
+msgstr "Asettaja"
+
+#: gazpacho/widgetclass.py:283 build/lib/gazpacho/widgetclass.py:384
+msgid "Getter"
+msgstr "Hakija"
+
+#: gazpacho/palette.py:120 gazpacho/palette.py:142
+#: build/lib/gazpacho/palette.py:120 build/lib/gazpacho/palette.py:142
+msgid "Selector"
+msgstr "Valitsin"
+
+#: gazpacho/widgettreeview.py:178 build/lib/gazpacho/widgettreeview.py:178
+msgid "Could not get the glade widget from the model"
+msgstr "Ei voitu hakea glade-säädintä mallista"
+
+#: gazpacho/widget.py:59 build/lib/gazpacho/widget.py:58
+#, python-format
+msgid "Warning: could not get the class from widget: %s"
+msgstr "Varoitus: ei voitu hakea luokkaa säätimelle %s"
+
+#: gazpacho/widget.py:211 build/lib/gazpacho/widget.py:210
+#, python-format
+msgid ""
+"Could not replace a placeholder because a replace function has not been "
+"implemented for '%s'"
+msgstr "Paikanpitäjää ei voitu korvata koska korvausfunktiota ei ole tehty säätimelle %s"
+
+#: gazpacho/widget.py:374 gazpacho/widget.py:380
+#: build/lib/gazpacho/widget.py:373 build/lib/gazpacho/widget.py:379
+#, python-format
+msgid "Unknown property %s"
+msgstr "Tuntematon ominaisuus %s"
+
+#: gazpacho/widget.py:686 build/lib/gazpacho/widget.py:685
+#, python-format
+msgid "Could not get property %s for widget %s"
+msgstr "Ominaisuuden %s haku säätimelle %s epäonnistui"
+
+#: gazpacho/project.py:51 build/lib/gazpacho/project.py:56
+#, python-format
+msgid "Untitled %d"
+msgstr "Tallentamaton projekti %d"
+
+#: gazpacho/uim.py:177 gazpacho/gladegtk.py:906 build/lib/gazpacho/uim.py:177
+#: build/lib/gazpacho/gladegtk.py:908
+msgid "FileMenu"
+msgstr "TiedostoValikko"
+
+#: gazpacho/uim.py:177 gazpacho/application.py:204
+#: build/lib/gazpacho/uim.py:177 build/lib/gazpacho/application.py:204
+msgid "_File"
+msgstr "_Tiedosto"
+
+#: gazpacho/uim.py:178 gazpacho/gladegtk.py:906 gazpacho/gladegtk.py:935
+#: build/lib/gazpacho/uim.py:178 build/lib/gazpacho/gladegtk.py:908
+#: build/lib/gazpacho/gladegtk.py:937
+msgid "New"
+msgstr "Uusi"
+
+#: gazpacho/uim.py:178 gazpacho/application.py:205
+#: build/lib/gazpacho/uim.py:178 build/lib/gazpacho/application.py:205
+msgid "_New"
+msgstr "_Uusi"
+
+#: gazpacho/uim.py:178 build/lib/gazpacho/uim.py:178
+msgid "Create a new file"
+msgstr "Luo uusi tiedosto"
+
+#: gazpacho/uim.py:179 gazpacho/application.py:207
+#: build/lib/gazpacho/uim.py:179 build/lib/gazpacho/application.py:207
+msgid "_Open"
+msgstr "_Avaa"
+
+#: gazpacho/uim.py:179 build/lib/gazpacho/uim.py:179
+msgid "Open a file"
+msgstr "Avaa tiedosto"
+
+#: gazpacho/uim.py:180 gazpacho/application.py:209
+#: build/lib/gazpacho/uim.py:180 build/lib/gazpacho/application.py:209
+msgid "_Save"
+msgstr "_Tallenna"
+
+#: gazpacho/uim.py:180 build/lib/gazpacho/uim.py:180
+msgid "Save a file"
+msgstr "Tallenna tiedosto"
+
+#: gazpacho/uim.py:181 gazpacho/gladegtk.py:907 build/lib/gazpacho/uim.py:181
+#: build/lib/gazpacho/gladegtk.py:909
+msgid "SaveAs"
+msgstr "TallennaNimellä"
+
+#: gazpacho/uim.py:181 build/lib/gazpacho/uim.py:181
+msgid "Save _As..."
+msgstr "Ta_llenna nimellä"
+
+#: gazpacho/uim.py:181 build/lib/gazpacho/uim.py:181
+msgid "Save with a differente name"
+msgstr "Tallenna eri nimelle"
+
+#: gazpacho/uim.py:182 gazpacho/gladegtk.py:907 gazpacho/application.py:216
+#: build/lib/gazpacho/uim.py:182 build/lib/gazpacho/gladegtk.py:909
+#: build/lib/gazpacho/application.py:216
+msgid "Quit"
+msgstr "Lopeta"
+
+#: gazpacho/uim.py:182 gazpacho/application.py:216
+#: build/lib/gazpacho/uim.py:182 build/lib/gazpacho/application.py:216
+msgid "_Quit"
+msgstr "_Lopeta"
+
+#: gazpacho/uim.py:182 build/lib/gazpacho/uim.py:182
+msgid "Quit the program"
+msgstr "Lopeta ohjelma"
+
+#: gazpacho/uim.py:183 gazpacho/gladegtk.py:907 build/lib/gazpacho/uim.py:183
+#: build/lib/gazpacho/gladegtk.py:909
+msgid "EditMenu"
+msgstr "MuokkausValikko"
+
+#: gazpacho/uim.py:183 gazpacho/application.py:218
+#: build/lib/gazpacho/uim.py:183 build/lib/gazpacho/application.py:218
+msgid "_Edit"
+msgstr "_Muokkaa"
+
+#: gazpacho/uim.py:184 gazpacho/gladegtk.py:907 gazpacho/gladegtk.py:936
+#: gazpacho/application.py:221 build/lib/gazpacho/uim.py:184
+#: build/lib/gazpacho/gladegtk.py:909 build/lib/gazpacho/gladegtk.py:938
+#: build/lib/gazpacho/application.py:221
+msgid "Copy"
+msgstr "Kopioi"
+
+#: gazpacho/uim.py:184 gazpacho/application.py:221
+#: build/lib/gazpacho/uim.py:184 build/lib/gazpacho/application.py:221
+msgid "_Copy"
+msgstr "_Kopioi"
+
+#: gazpacho/uim.py:184 build/lib/gazpacho/uim.py:184
+msgid "Copy selected object into the clipboard"
+msgstr "Kopioi valittu objekti leikepöydälle"
+
+#: gazpacho/uim.py:185 gazpacho/gladegtk.py:907 gazpacho/gladegtk.py:936
+#: gazpacho/application.py:219 build/lib/gazpacho/uim.py:185
+#: build/lib/gazpacho/gladegtk.py:909 build/lib/gazpacho/gladegtk.py:938
+#: build/lib/gazpacho/application.py:219
+msgid "Cut"
+msgstr "Leikkaa"
+
+#: gazpacho/uim.py:185 gazpacho/application.py:219
+#: build/lib/gazpacho/uim.py:185 build/lib/gazpacho/application.py:219
+msgid "C_ut"
+msgstr "_Leikkaa"
+
+#: gazpacho/uim.py:185 build/lib/gazpacho/uim.py:185
+msgid "Cut selected object into the clipboard"
+msgstr "Leikkaa valittu objekti leikepöydälle"
+
+#: gazpacho/uim.py:186 gazpacho/gladegtk.py:908 gazpacho/gladegtk.py:936
+#: gazpacho/application.py:223 build/lib/gazpacho/uim.py:186
+#: build/lib/gazpacho/gladegtk.py:910 build/lib/gazpacho/gladegtk.py:938
+#: build/lib/gazpacho/application.py:223
+msgid "Paste"
+msgstr "Liitä"
+
+#: gazpacho/uim.py:186 gazpacho/application.py:223
+#: build/lib/gazpacho/uim.py:186 build/lib/gazpacho/application.py:223
+msgid "_Paste"
+msgstr "L_iitä"
+
+#: gazpacho/uim.py:186 build/lib/gazpacho/uim.py:186
+msgid "Paste object from the Clipboard"
+msgstr "Liitä objekti leikepöydältä"
+
+#: gazpacho/gladegtk.py:260 build/lib/gazpacho/gladegtk.py:262
+msgid "..."
+msgstr "..."
+
+#: gazpacho/gladegtk.py:736 build/lib/gazpacho/gladegtk.py:738
+msgid "Create a table"
+msgstr "Luo taulu"
+
+#: gazpacho/gladegtk.py:743 build/lib/gazpacho/gladegtk.py:745
+msgid "Number of rows"
+msgstr "Rivien lukumäärä"
+
+#: gazpacho/gladegtk.py:745 build/lib/gazpacho/gladegtk.py:747
+msgid "Number of columns"
+msgstr "Sarakkeiden lukumäärä"
+
+#: gazpacho/gladegtk.py:797 build/lib/gazpacho/gladegtk.py:799
+msgid "Edit..."
+msgstr "Muokkaa..."
+
+#: gazpacho/gladegtk.py:1135 build/lib/gazpacho/gladegtk.py:1137
+msgid "Label:"
+msgstr "Nimiö:"
+
+#: gazpacho/gladegtk.py:1144 build/lib/gazpacho/gladegtk.py:1146
+msgid "Image:"
+msgstr "Kuva:"
+
+#: gazpacho/gladegtk.py:1159 build/lib/gazpacho/gladegtk.py:1161
+msgid "Left"
+msgstr "Vasen"
+
+#: gazpacho/gladegtk.py:1160 build/lib/gazpacho/gladegtk.py:1162
+msgid "Right"
+msgstr "Oikea"
+
+#: gazpacho/gladegtk.py:1161 build/lib/gazpacho/gladegtk.py:1163
+msgid "Top"
+msgstr "Ylös"
+
+#: gazpacho/gladegtk.py:1162 build/lib/gazpacho/gladegtk.py:1164
+msgid "Bottom"
+msgstr "Alas"
+
+#: gazpacho/gladegtk.py:1182 build/lib/gazpacho/gladegtk.py:1184
+msgid "No text"
+msgstr "Ei tekstiä"
+
+#: gazpacho/gladegtk.py:1214 build/lib/gazpacho/gladegtk.py:1216
+msgid "Use custom button:"
+msgstr "Käytä muokattua painiketta:"
+
+#: gazpacho/gladegtk.py:1222 build/lib/gazpacho/gladegtk.py:1224
+msgid "Use stock button:"
+msgstr "Käytä vakiopainiketta:"
+
+#: gazpacho/gladegtk.py:1300 build/lib/gazpacho/gladegtk.py:1302
+msgid "Open image ..."
+msgstr "Avaa kuva..."
+
+#: gazpacho/command.py:66 build/lib/gazpacho/command.py:66
+#, python-format
+msgid "Delete %s"
+msgstr "Poista %s"
+
+#: gazpacho/command.py:88 build/lib/gazpacho/command.py:88
+#, python-format
+msgid "Create %s"
+msgstr "Luo %s"
+
+#: gazpacho/command.py:103 build/lib/gazpacho/command.py:103
+msgid "Delete placeholder"
+msgstr "Poista paikanvaraaja"
+
+#: gazpacho/command.py:118 gazpacho/command.py:127
+#: build/lib/gazpacho/command.py:118 build/lib/gazpacho/command.py:127
+#, python-format
+msgid "Setting %s of %s"
+msgstr "%s:n asetus %s"
+
+#: gazpacho/command.py:137 build/lib/gazpacho/command.py:137
+#, python-format
+msgid "Add signal handler %s"
+msgstr "Lisää signaalin käsittelijä %s"
+
+#: gazpacho/command.py:144 build/lib/gazpacho/command.py:144
+#, python-format
+msgid "Remove signal handler %s"
+msgstr "Poista signaalin käsittelijä %s"
+
+#: gazpacho/command.py:159 build/lib/gazpacho/command.py:159
+#, python-format
+msgid "Cut widget %s into the clipboard"
+msgstr "Leikkaa säädin %s leikepöydälle"
+
+#: gazpacho/command.py:175 build/lib/gazpacho/command.py:175
+#, python-format
+msgid "Paste widget %s from the clipboard"
+msgstr "Liitä säädin %s leikepöydältä"
+
+#: gazpacho/command.py:185 build/lib/gazpacho/command.py:185
+#, python-format
+msgid "Add action %s"
+msgstr "Lisää toiminne %s"
+
+#: gazpacho/command.py:191 build/lib/gazpacho/command.py:191
+#, python-format
+msgid "Remove action %s"
+msgstr "Poista toiminne %s"
+
+#: gazpacho/command.py:197 build/lib/gazpacho/command.py:197
+#, python-format
+msgid "Edit action %s"
+msgstr "Muokkaa toiminnetta %s"
+
+#: gazpacho/command.py:205 build/lib/gazpacho/command.py:205
+#, python-format
+msgid "Add action group %s"
+msgstr "Lisää toiminneryhmä %s"
+
+#: gazpacho/command.py:212 build/lib/gazpacho/command.py:212
+#, python-format
+msgid "Remove action group %s"
+msgstr "Poista toiminneryhmä %s"
+
+#: gazpacho/command.py:219 build/lib/gazpacho/command.py:219
+#, python-format
+msgid "Edit action group %s"
+msgstr "Muokkaa toiminneryhmää %s"
+
+#: gazpacho/command.py:228 build/lib/gazpacho/command.py:228
+#, python-format
+msgid "Setting button %s contents"
+msgstr "Asetetaan painikkeen %s sisältöä"
+
+#: gazpacho/debugwindow.py:34 build/lib/gazpacho/debugwindow.py:34
+msgid "Send _bugreport ..."
+msgstr "Lähetä _virheiraportti"
+
+#: gazpacho/debugwindow.py:38 build/lib/gazpacho/debugwindow.py:38
+msgid "_Save project"
+msgstr "_Tallenna projekti"
+
+#: gazpacho/debugwindow.py:43 build/lib/gazpacho/debugwindow.py:43
+msgid "_Quit Gazpacho"
+msgstr "_Lopeta Gazpacho"
+
+#: gazpacho/signaleditor.py:28 build/lib/gazpacho/signaleditor.py:28
+msgid "<Type the signal's handler here>"
+msgstr "<Kijroita signaalin käsittelijä tähän>"
+
+#: gazpacho/signaleditor.py:64 build/lib/gazpacho/signaleditor.py:64
+msgid "Signal"
+msgstr "Signaali"
+
+#: gazpacho/signaleditor.py:73 build/lib/gazpacho/signaleditor.py:73
+msgid "Handler"
+msgstr "Käsittelijä"
+
+#: gazpacho/signaleditor.py:83 build/lib/gazpacho/signaleditor.py:83
+msgid "After"
+msgstr "Jälkeen"
+
+#: gazpacho/propertyclass.py:211 build/lib/gazpacho/propertyclass.py:370
+msgid "Error"
+msgstr "Virhe"
+
+#: gazpacho/application.py:134 build/lib/gazpacho/application.py:134
+msgid "Widgets"
+msgstr "Säätimet"
+
+#: gazpacho/application.py:135 build/lib/gazpacho/application.py:135
+msgid "Actions"
+msgstr "Toiminteet"
+
+#: gazpacho/application.py:206 build/lib/gazpacho/application.py:206
+msgid "New Project"
+msgstr "Uusi Projekti"
+
+#: gazpacho/application.py:208 build/lib/gazpacho/application.py:208
+msgid "Open Project"
+msgstr "Avaa Projekti"
+
+#: gazpacho/application.py:210 build/lib/gazpacho/application.py:210
+msgid "Save Project"
+msgstr "Tallenna Projekti"
+
+#: gazpacho/application.py:211 build/lib/gazpacho/application.py:211
+msgid "_Save As..."
+msgstr "_Tallenna nimellä"
+
+#: gazpacho/application.py:212 build/lib/gazpacho/application.py:212
+msgid "Save project with different name"
+msgstr "Tallenna projekti eri nimelle"
+
+#: gazpacho/application.py:214 build/lib/gazpacho/application.py:214
+msgid "_Close"
+msgstr "_Sulje"
+
+#: gazpacho/application.py:215 build/lib/gazpacho/application.py:215
+msgid "Close Project"
+msgstr "Sulje projekti"
+
+#: gazpacho/application.py:225 build/lib/gazpacho/application.py:225
+msgid "_Delete"
+msgstr "_Poista"
+
+#: gazpacho/application.py:226 build/lib/gazpacho/application.py:226
+msgid "Delete"
+msgstr "Poista"
+
+#: gazpacho/application.py:227 build/lib/gazpacho/application.py:227
+msgid "_Actions"
+msgstr "_Toiminteet"
+
+#: gazpacho/application.py:228 build/lib/gazpacho/application.py:228
+msgid "_Add action"
+msgstr "_Lisää toiminne"
+
+#: gazpacho/application.py:229 build/lib/gazpacho/application.py:229
+msgid "Add an action"
+msgstr "Lisää toiminne"
+
+#: gazpacho/application.py:230 build/lib/gazpacho/application.py:230
+msgid "_Remove action"
+msgstr "_Poista toiminne"
+
+#: gazpacho/application.py:231 build/lib/gazpacho/application.py:231
+msgid "Remove action"
+msgstr "Poistaa toiminteen"
+
+#: gazpacho/application.py:232 build/lib/gazpacho/application.py:232
+msgid "_Edit action"
+msgstr "_Muokkaa toiminnetta"
+
+#: gazpacho/application.py:232 gazpacho/gaction.py:366
+#: build/lib/gazpacho/application.py:232 build/lib/gazpacho/gaction.py:366
+msgid "Edit Action"
+msgstr "Muokkaa toiminnetta"
+
+#: gazpacho/application.py:234 build/lib/gazpacho/application.py:234
+msgid "_Project"
+msgstr "_Projekti"
+
+#: gazpacho/application.py:235 build/lib/gazpacho/application.py:235
+msgid "_Debug"
+msgstr "_Debuggaus"
+
+#: gazpacho/application.py:236 build/lib/gazpacho/application.py:236
+msgid "_Help"
+msgstr "_Ohje"
+
+#: gazpacho/application.py:237 build/lib/gazpacho/application.py:237
+msgid "_About"
+msgstr "_Lisätietoja"
+
+#: gazpacho/application.py:237 build/lib/gazpacho/application.py:237
+msgid "About"
+msgstr "Lisätietoja"
+
+#: gazpacho/application.py:238 build/lib/gazpacho/application.py:238
+msgid "Dump data"
+msgstr "Vedosta dataa"
+
+#: gazpacho/application.py:239 build/lib/gazpacho/application.py:239
+msgid "Dump debug data"
+msgstr "Vedosta debug-dataa"
+
+#: gazpacho/application.py:243 build/lib/gazpacho/application.py:243
+msgid "Show _command stack"
+msgstr "Näytä _komentohistoria"
+
+#: gazpacho/application.py:244 build/lib/gazpacho/application.py:244
+msgid "Show the command stack"
+msgstr "Näyttää komentohistorian"
+
+#: gazpacho/application.py:245 build/lib/gazpacho/application.py:245
+msgid "Show _clipboard"
+msgstr "Näytä _Leikepöytä"
+
+#: gazpacho/application.py:246 build/lib/gazpacho/application.py:246
+msgid "Show the clipboard"
+msgstr "Näyttää leikepöydän"
+
+#: gazpacho/application.py:250 build/lib/gazpacho/application.py:250
+msgid "_Undo"
+msgstr "P_eru"
+
+#: gazpacho/application.py:251 build/lib/gazpacho/application.py:251
+msgid "Undo last action"
+msgstr "Peru viimeisin toiminto"
+
+#: gazpacho/application.py:255 build/lib/gazpacho/application.py:255
+msgid "_Redo"
+msgstr "Tee _uudelleen"
+
+#: gazpacho/application.py:256 build/lib/gazpacho/application.py:256
+msgid "Redo last action"
+msgstr "Tee viimeisin toiminto uudelleen"
+
+#: gazpacho/application.py:379 build/lib/gazpacho/application.py:379
+#, python-format
+msgid "_Undo: %s"
+msgstr "_Peru: %s"
+
+#: gazpacho/application.py:382 build/lib/gazpacho/application.py:382
+msgid "_Undo: Nothing"
+msgstr "_Peru: Ei mitään"
+
+#: gazpacho/application.py:390 build/lib/gazpacho/application.py:390
+#, python-format
+msgid "_Redo: %s"
+msgstr "Tee _uudelleen: %s"
+
+#: gazpacho/application.py:393 build/lib/gazpacho/application.py:393
+msgid "_Redo: Nothing"
+msgstr "Tee _uudelleen: Ei mitään"
+
+#: gazpacho/application.py:418 build/lib/gazpacho/application.py:418
+#, python-format
+msgid "The project \"%s\" is already loaded."
+msgstr "Projekti \"%s\" on jo ladattu"
+
+#: gazpacho/application.py:420 build/lib/gazpacho/application.py:420
+msgid "Do you wish to revert your changes and reload the original glade file?"
+msgstr "Haluatko palata alkuperäiseen tiedostoon, menettäen muutoksesi?"
+
+#: gazpacho/application.py:421 build/lib/gazpacho/application.py:421
+msgid "Your changes will be permanently lost if you choose to revert."
+msgstr "Muutoksesi katoavat pysyvästi jos palaat alkuperäiseen."
+
+#: gazpacho/application.py:467 build/lib/gazpacho/application.py:467
+msgid "The project could not be loaded"
+msgstr "Projektia ei voitu ladata"
+
+#: gazpacho/application.py:468 build/lib/gazpacho/application.py:468
+#, python-format
+msgid "An error occurred while parsing the file \"%s\"."
+msgstr "Tiedoston \"%s\" tulkinnassa tapahtui virhe"
+
+#: gazpacho/application.py:527 build/lib/gazpacho/application.py:527
+msgid "Could not set project because it could not be found in the list"
+msgstr "Ei voitu asettaa projektia koska sitä ei löytynyt listasta"
+
+#: gazpacho/application.py:581 build/lib/gazpacho/application.py:581
+#, python-format
+msgid ""
+"Could not save to file \"%s\"\n"
+"Permission denied."
+msgstr "Ei voitu tallentaa tiedostoon \"%s\"\n"
+"Ei tarvittavia oikeuksia"
+
+#: gazpacho/application.py:606 gazpacho/application.py:648
+#: build/lib/gazpacho/application.py:606 build/lib/gazpacho/application.py:648
+msgid "Save as"
+msgstr "Tallenna nimellä"
+
+#: gazpacho/application.py:743 build/lib/gazpacho/application.py:740
+msgid "There is nothing in the clipboard to paste"
+msgstr "Leikepöytä on tyhjä"
+
+#: gazpacho/application.py:747 build/lib/gazpacho/application.py:744
+msgid "No project has been specified. Cannot paste the widget"
+msgstr "Mitään projektia ei ole valittuna. Säädintä ei voida liittää."
+
+#: gazpacho/application.py:757 build/lib/gazpacho/application.py:754
+msgid "Please, select a placeholder to paste the widget on"
+msgstr "Valitse paikanvaraaja liittääksesi säätimen sen paikalle"
+
+#: gazpacho/application.py:767 build/lib/gazpacho/application.py:764
+msgid "About Gazpacho"
+msgstr "Tietoja Gazpachosta"
+
+#: gazpacho/application.py:778 build/lib/gazpacho/application.py:775
+msgid ""
+"Gazpacho is a User Interface Builder for GTK+.\n"
+"\n"
+msgstr "Gazpacho on käyttöliittymien suunnittelutyökalu GTK+ ympäristöön.\n"
+"\n"
+
+#: gazpacho/application.py:836 build/lib/gazpacho/application.py:833
+msgid "Command Stack"
+msgstr "Komentohistoria"
+
+#: gazpacho/application.py:1096 build/lib/gazpacho/application.py:1093
+msgid "There is a widget with an empty name"
+msgstr "Jollain säätimellä ei ole nimeä"
+
+#: gazpacho/application.py:1104 build/lib/gazpacho/application.py:1101
+#, python-format
+msgid "The name \"%s\" is used in more than one widget"
+msgstr "Nimeä \"%s\" on käytetty useammalle kuin yhdelle säätimelle"
+
+#: gazpacho/application.py:1155 build/lib/gazpacho/application.py:1152
+msgid "Close _without Saving"
+msgstr "S_ulje tallentamatta"
+
+#: gazpacho/application.py:1185 build/lib/gazpacho/application.py:1182
+#, python-format
+msgid "Save changes to project \"%s\" before closing?"
+msgstr "Tallenna muutokset projektiin \"%s\" ennen sulkemista?"
+
+#: gazpacho/application.py:1187 gazpacho/application.py:1218
+#: build/lib/gazpacho/application.py:1184
+#: build/lib/gazpacho/application.py:1215
+msgid "Your changes will be lost if you don't save them."
+msgstr "Menetät muutoksesi jos et tallenna niitä."
+
+#: gazpacho/application.py:1227 build/lib/gazpacho/application.py:1224
+msgid "S_elect the projects you want to save:"
+msgstr "_Valitse projektit jotka haluat tallentaa:"
+
+#: gazpacho/gaction.py:363 build/lib/gazpacho/gaction.py:363
+msgid "Add Action"
+msgstr "Lisää Toiminne"
+
+#: gazpacho/gaction.py:398 build/lib/gazpacho/gaction.py:398
+msgid "_Label"
+msgstr "_Nimiö"
+
+#: gazpacho/gaction.py:407 build/lib/gazpacho/gaction.py:407
+msgid "_Stock"
+msgstr "_Vakio"
+
+#: gazpacho/gaction.py:439 build/lib/gazpacho/gaction.py:439
+msgid "_Accelerator"
+msgstr "_Oikotie"
+
+#: gazpacho/gaction.py:452 build/lib/gazpacho/gaction.py:452
+msgid "_Tooltip"
+msgstr "_Vihje"
+
+#: gazpacho/gaction.py:461 build/lib/gazpacho/gaction.py:461
+msgid "Call_back"
+msgstr "_Käsittelijä"
+
+#: gazpacho/gaction.py:581 build/lib/gazpacho/gaction.py:581
+msgid "Add Action Group"
+msgstr "Lisätään Toiminneryhmä"
+
+#: gazpacho/gaction.py:584 build/lib/gazpacho/gaction.py:584
+msgid "Edit Action Group"
+msgstr "Muokataan Toiminneryhmää"
+
+#: gazpacho/gaction.py:595 build/lib/gazpacho/gaction.py:595
+msgid "_Id"
+msgstr "_Tunnus"
+
+#: gazpacho/loader/compat.py:184 build/lib/gazpacho/loader/compat.py:184
+msgid "Deprecated widgets found"
+msgstr "Löytyi käytöstä poistettuja säätimiä"
+
+#: gazpacho/loader/compat.py:194 build/lib/gazpacho/loader/compat.py:194
+msgid "Gazpacho found the following deprecated widgets:"
+msgstr "Gazpacho löysi seuraavat käytöstä poistetut säätimet:"
+
+#: gazpacho/loader/compat.py:203 build/lib/gazpacho/loader/compat.py:203
+msgid ""
+"They were converted to the equivalent newest widgets but please note that "
+"if\n"
+"you save the file in Gazpacho it will not be compatible with Glade-2 anymore"
+msgstr "Ne muutettiin vastaaviksi uudemmiksi säätimiksi, mutta huomaa että jos tallennat tiedoston Gazpachossa se ei enää ole yhteensopiva Glade-2:n kanssa"
+
+#: gazpacho/loader/proxy.py:17 build/lib/gazpacho/loader/proxy.py:17
+msgid "You must specify either a glade file or a glade stream"
+msgstr "Valitse joko glade-tiedosto tai glade-vuo (stream)"
+
+#: gazpacho/loader/proxy.py:61 build/lib/gazpacho/loader/proxy.py:61
+#, python-format
+msgid ""
+"Warning: the widget %s is not on my widget tree neither in the action list"
+msgstr "Varoitus: säädin %s ei ole säädinpuussa eikä toiminnelistalla"
+

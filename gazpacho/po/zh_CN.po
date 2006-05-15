@@ -1,0 +1,902 @@
+# Gazpacho Simplified Chinese message translation file.
+# Copyright (C) 2005 THE Gazpacho'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gazpacho package.
+# 请随便更新，修正翻译内容。
+# Feel free to update the translations as you see fit.
+# hashao <hashao2@yahoo.com>, 2005
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: Gazpacho 0.5.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-04-19 23:20+0800\n"
+"PO-Revision-Date: 2005-04-20 00:07+0800\n"
+"Last-Translator: hashao <hashao2@yahoo.com>\n"
+"Language-Team: Chinese <zh@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;"
+
+#: gazpacho/application.py:132
+msgid "Widgets"
+msgstr "构件"
+
+#: gazpacho/application.py:133
+msgid "Actions"
+msgstr "动作"
+
+#: gazpacho/application.py:202 gazpacho/uim.py:177
+msgid "_File"
+msgstr "文件(_F)"
+
+#: gazpacho/application.py:203 gazpacho/uim.py:178
+msgid "_New"
+msgstr "新建(_N)"
+
+#: gazpacho/application.py:204
+msgid "New Project"
+msgstr "新建项目"
+
+#: gazpacho/application.py:205 gazpacho/uim.py:179
+msgid "_Open"
+msgstr "打开(_O)"
+
+#: gazpacho/application.py:206
+msgid "Open Project"
+msgstr "打开项目"
+
+#: gazpacho/application.py:207 gazpacho/uim.py:180
+msgid "_Save"
+msgstr "保存(_S)"
+
+#: gazpacho/application.py:208
+msgid "Save Project"
+msgstr "保存项目"
+
+#: gazpacho/application.py:209
+msgid "_Save As..."
+msgstr "另存为(_S)..."
+
+#: gazpacho/application.py:210
+msgid "Save project with different name"
+msgstr "用另一个名字保存项目"
+
+#: gazpacho/application.py:212
+msgid "_Close"
+msgstr "关闭(_C)"
+
+#: gazpacho/application.py:213
+msgid "Close Project"
+msgstr "关闭项目"
+
+#: gazpacho/application.py:214 gazpacho/uim.py:182
+msgid "_Quit"
+msgstr "退出(_Q)"
+
+#: gazpacho/application.py:214 gazpacho/gladegtk.py:907 gazpacho/uim.py:182
+msgid "Quit"
+msgstr "退出"
+
+#: gazpacho/application.py:216 gazpacho/uim.py:183
+msgid "_Edit"
+msgstr "编辑(_E)"
+
+#: gazpacho/application.py:217 gazpacho/uim.py:185
+msgid "C_ut"
+msgstr "剪切(_U)"
+
+#: gazpacho/application.py:217 gazpacho/gladegtk.py:907
+#: gazpacho/gladegtk.py:936 gazpacho/uim.py:185
+msgid "Cut"
+msgstr "剪切"
+
+#: gazpacho/application.py:219 gazpacho/uim.py:184
+msgid "_Copy"
+msgstr "复制(_C)"
+
+#: gazpacho/application.py:219 gazpacho/gladegtk.py:907
+#: gazpacho/gladegtk.py:936 gazpacho/uim.py:184
+msgid "Copy"
+msgstr "复制"
+
+#: gazpacho/application.py:221 gazpacho/uim.py:186
+msgid "_Paste"
+msgstr "粘贴(_P)"
+
+#: gazpacho/application.py:221 gazpacho/gladegtk.py:908
+#: gazpacho/gladegtk.py:936 gazpacho/uim.py:186
+msgid "Paste"
+msgstr "粘贴"
+
+#: gazpacho/application.py:223
+msgid "_Delete"
+msgstr "删除(_D)"
+
+#: gazpacho/application.py:224
+msgid "Delete"
+msgstr "删除"
+
+#: gazpacho/application.py:225
+msgid "_Actions"
+msgstr "动作(_A)"
+
+#: gazpacho/application.py:226
+msgid "_Add action"
+msgstr "增添动作(_A)"
+
+#: gazpacho/application.py:227
+msgid "Add an action"
+msgstr "增添动作"
+
+#: gazpacho/application.py:228
+msgid "_Remove action"
+msgstr "移除动作(_R)"
+
+#: gazpacho/application.py:229
+msgid "Remove action"
+msgstr "移除动作"
+
+#: gazpacho/application.py:230
+msgid "_Edit action"
+msgstr "编辑动作(_E)"
+
+#: gazpacho/application.py:230 gazpacho/gaction.py:366
+msgid "Edit Action"
+msgstr "编辑动作"
+
+#: gazpacho/application.py:232
+msgid "_Project"
+msgstr "项目(_P)"
+
+#: gazpacho/application.py:233
+msgid "_Debug"
+msgstr "除错(_D)"
+
+#: gazpacho/application.py:234
+msgid "_Help"
+msgstr "帮助(_H)"
+
+#: gazpacho/application.py:235
+msgid "_About"
+msgstr "关于(_A)"
+
+#: gazpacho/application.py:235
+msgid "About"
+msgstr "关于"
+
+#: gazpacho/application.py:236
+msgid "Dump data"
+msgstr "倾列数据"
+
+#: gazpacho/application.py:237
+msgid "Dump debug data"
+msgstr "倾列除错数据"
+
+#: gazpacho/application.py:241
+msgid "Show _command stack"
+msgstr "显示命令堆栈(_C)"
+
+#: gazpacho/application.py:242
+msgid "Show the command stack"
+msgstr "显示命令堆栈"
+
+#: gazpacho/application.py:243
+msgid "Show _clipboard"
+msgstr "显示剪贴板(_C)"
+
+#: gazpacho/application.py:244
+msgid "Show the clipboard"
+msgstr "显示剪贴板"
+
+#: gazpacho/application.py:248
+msgid "_Undo"
+msgstr "撤消(_U)"
+
+#: gazpacho/application.py:249
+msgid "Undo last action"
+msgstr "撤消上一个动作"
+
+#: gazpacho/application.py:253
+msgid "_Redo"
+msgstr "重做(_R)"
+
+#: gazpacho/application.py:254
+msgid "Redo last action"
+msgstr "重做上一个动作"
+
+#: gazpacho/application.py:377
+#, python-format
+msgid "_Undo: %s"
+msgstr "撤消(_U): %s"
+
+#: gazpacho/application.py:380
+msgid "_Undo: Nothing"
+msgstr "撤消(_U): 空"
+
+#: gazpacho/application.py:388
+#, python-format
+msgid "_Redo: %s"
+msgstr "重做(_R) %s"
+
+#: gazpacho/application.py:391
+msgid "_Redo: Nothing"
+msgstr "重做(_R): 空"
+
+#: gazpacho/application.py:416
+#, python-format
+msgid "The project \"%s\" is already loaded."
+msgstr "项目“%s”已经载入了"
+
+#: gazpacho/application.py:418
+msgid "Do you wish to revert your changes and reload the original glade file?"
+msgstr "你希望还原你的修改并且重新载入原始的 glade 文件吗？"
+
+#: gazpacho/application.py:419
+msgid "Your changes will be permanently lost if you choose to revert."
+msgstr "如果选择还原，你的修改将会永久丢失。"
+
+#: gazpacho/application.py:465
+msgid "The project could not be loaded"
+msgstr "这个项目无法载入"
+
+#: gazpacho/application.py:466
+#, python-format
+msgid "An error occurred while parsing the file \"%s\"."
+msgstr "在分析文件“%s”时发生错误。"
+
+#: gazpacho/application.py:534
+msgid "Could not set project because it could not be found in the list"
+msgstr "不能设定项目，因为在列表中无法找到它"
+
+#: gazpacho/application.py:576
+msgid "Open ..."
+msgstr "打开..."
+
+#: gazpacho/application.py:592
+#, python-format
+msgid "Could not open file \"%s\""
+msgstr "无法打开文件 %s"
+
+#: gazpacho/application.py:593
+#, python-format
+msgid "The file \"%s\" could not be opened. Permission denied."
+msgstr "无法打开文件“%s”。要求被拒绝。"
+
+#: gazpacho/application.py:618
+#, python-format
+msgid ""
+"Could not save to file \"%s\"\n"
+"Permission denied."
+msgstr "无法保存到文件“%s”\n"
+"要求被拒绝。"
+
+#: gazpacho/application.py:644 gazpacho/gladegtk.py:906
+#: gazpacho/gladegtk.py:935 gazpacho/uim.py:180
+msgid "Save"
+msgstr "保存"
+
+#: gazpacho/application.py:646 gazpacho/application.py:724
+msgid "Save as"
+msgstr "另存为"
+
+#: gazpacho/application.py:666
+msgid ""
+"There is a file with that name already.\n"
+"Would you like to overwrite it?"
+msgstr ""
+"已有一个同名文件。\n"
+"你要覆盖它吗？"
+
+#: gazpacho/application.py:816
+msgid "There is nothing in the clipboard to paste"
+msgstr "剪贴板上没有东西可以粘贴"
+
+#: gazpacho/application.py:820
+msgid "No project has been specified. Cannot paste the widget"
+msgstr "没有指定目标项目，无法粘贴构件。"
+
+#: gazpacho/application.py:830
+msgid "Please, select a placeholder to paste the widget on"
+msgstr "请选择一个占位符进行构件粘贴"
+
+#: gazpacho/application.py:840
+msgid "About Gazpacho"
+msgstr "关于 Gazpacho"
+
+#: gazpacho/application.py:851
+msgid ""
+"Gazpacho is a User Interface Builder for GTK+.\n"
+"\n"
+msgstr ""
+"Gazpacho 是一个 GTK+ 的用户界面建造工具。\n"
+"\n"
+
+#: gazpacho/application.py:909
+msgid "Command Stack"
+msgstr "命令堆栈"
+
+#: gazpacho/application.py:1162
+msgid "Close _without Saving"
+msgstr "不保存并关闭(_W)"
+
+#: gazpacho/application.py:1192
+#, python-format
+msgid "Save changes to project \"%s\" before closing?"
+msgstr "关闭之前保存项目“%s”的修改吗？"
+
+#: gazpacho/application.py:1194 gazpacho/application.py:1225
+msgid "Your changes will be lost if you don't save them."
+msgstr "如果不保存，你的修改将会丢失。"
+
+#: gazpacho/application.py:1234
+msgid "S_elect the projects you want to save:"
+msgstr "选择你想要保存的项目(_S)："
+
+#: gazpacho/catalog.py:42
+msgid "<b>There were errors while loading Gazpacho</b>"
+msgstr "<b>载入 Gazpacho 时出现错误</b>"
+
+#: gazpacho/catalog.py:72
+#, python-format
+msgid "The catalog directory %s does not exist"
+msgstr "分类目录“%s”不存在"
+
+#: gazpacho/catalog.py:75
+#, python-format
+msgid "You do not have read permissions in the catalog directory %s"
+msgstr "你没有分类目录 %s 的读入许可"
+
+#: gazpacho/clipboard.py:157
+msgid "Clipboard Contents"
+msgstr "剪贴板内容"
+
+#: gazpacho/command.py:66
+#, python-format
+msgid "Delete %s"
+msgstr "删除 %s"
+
+#: gazpacho/command.py:88
+#, python-format
+msgid "Create %s"
+msgstr "建立 %s"
+
+#: gazpacho/command.py:103
+msgid "Delete placeholder"
+msgstr "删除占位符"
+
+#: gazpacho/command.py:110 gazpacho/popup.py:107
+msgid "Insert after"
+msgstr "在之后插入"
+
+#: gazpacho/command.py:118 gazpacho/command.py:127
+#, python-format
+msgid "Setting %s of %s"
+msgstr "设定 %s ， %s"
+
+#: gazpacho/command.py:137
+#, python-format
+msgid "Add signal handler %s"
+msgstr "加入信号句柄 %s"
+
+#: gazpacho/command.py:144
+#, python-format
+msgid "Remove signal handler %s"
+msgstr "删去信号句柄 %s"
+
+#: gazpacho/command.py:159
+#, python-format
+msgid "Cut widget %s into the clipboard"
+msgstr "把构件 %s 剪切到剪贴板上"
+
+#: gazpacho/command.py:175
+#, python-format
+msgid "Paste widget %s from the clipboard"
+msgstr "从剪贴板粘贴构件 %s"
+
+#: gazpacho/command.py:185
+#, python-format
+msgid "Add action %s"
+msgstr "增添动作 %s"
+
+#: gazpacho/command.py:191
+#, python-format
+msgid "Remove action %s"
+msgstr "删去动作 %s"
+
+#: gazpacho/command.py:197
+#, python-format
+msgid "Edit action %s"
+msgstr "编辑动作 %s"
+
+#: gazpacho/command.py:205
+#, python-format
+msgid "Add action group %s"
+msgstr "增添动作群 %s"
+
+#: gazpacho/command.py:212
+#, python-format
+msgid "Remove action group %s"
+msgstr "删去动作群 %s"
+
+#: gazpacho/command.py:219
+#, python-format
+msgid "Edit action group %s"
+msgstr "编辑动作群 %s"
+
+#: gazpacho/command.py:488
+#, python-format
+msgid "There is another widget with the name \"%s\" in this project"
+msgstr "这个项目里已经有另一个叫“%s”的构件了"
+
+#: gazpacho/command.py:496
+msgid "The name can not be empty"
+msgstr "名字不能是空白"
+
+#: gazpacho/editor.py:261
+msgid "Invalid Text Widget type"
+msgstr "错误的文本构件类型"
+
+#: gazpacho/editor.py:289
+msgid "Edit Text Property"
+msgstr "编辑文本特性"
+
+#: gazpacho/editor.py:304
+msgid "_Text:"
+msgstr "文本(_T):"
+
+#: gazpacho/editor.py:335
+msgid "T_ranslatable"
+msgstr "可翻译的(_R)"
+
+#: gazpacho/editor.py:340
+msgid "_Has context prefix"
+msgstr "有背景前缀(_H)"
+
+#: gazpacho/editor.py:347
+msgid "Co_mments for translators:"
+msgstr "给翻译者的注释(_M):"
+
+#: gazpacho/editor.py:475
+msgid "Set Flags"
+msgstr "设定旗标"
+
+#: gazpacho/editor.py:540
+msgid "No"
+msgstr "否"
+
+#: gazpacho/editor.py:584
+#, python-format
+msgid "EditorPropertySpecial without create function: %s"
+msgstr "EditorPropertySpecial 没有创建函数: %s"
+
+#: gazpacho/editor.py:587
+#, python-format
+msgid "EditorPropertySpecial without update function: %s"
+msgstr "EditorPropertySpecial 没有更新函数: %s"
+
+#: gazpacho/editor.py:731
+msgid "Class"
+msgstr "类"
+
+#: gazpacho/editor.py:777
+msgid "Widget"
+msgstr "构件"
+
+#: gazpacho/editor.py:778 gazpacho/widgetclass.py:381
+msgid "Packing"
+msgstr "包裹"
+
+#: gazpacho/editor.py:779 gazpacho/widgetclass.py:380
+msgid "Common"
+msgstr "通用"
+
+#: gazpacho/editor.py:780
+msgid "Signals"
+msgstr "信号"
+
+#: gazpacho/editor.py:810
+msgid "Select a widget to edit its properties"
+msgstr "选择一个构件，并编辑它的特性"
+
+#: gazpacho/gaction.py:363
+msgid "Add Action"
+msgstr "增添动作"
+
+#: gazpacho/gaction.py:398
+msgid "_Label"
+msgstr "标签(_L)"
+
+#: gazpacho/gaction.py:407
+msgid "_Stock"
+msgstr "库存(_S)"
+
+#: gazpacho/gaction.py:439
+msgid "_Accelerator"
+msgstr "加速键(_A)"
+
+#: gazpacho/gaction.py:452
+msgid "_Tooltip"
+msgstr "工具提示(_T)"
+
+#: gazpacho/gaction.py:461
+msgid "Call_back"
+msgstr "回调函数(Call_back)"
+
+#: gazpacho/gaction.py:581
+msgid "Add Action Group"
+msgstr "增添动作群"
+
+#: gazpacho/gaction.py:584
+msgid "Edit Action Group"
+msgstr "编辑动作群"
+
+#: gazpacho/gaction.py:595
+msgid "_Id"
+msgstr "身份(_Id)"
+
+#: gazpacho/gladegtk.py:265
+msgid "..."
+msgstr "..."
+
+#: gazpacho/gladegtk.py:741
+msgid "Create a table"
+msgstr "建立一个表格"
+
+#: gazpacho/gladegtk.py:748
+msgid "Number of rows"
+msgstr "行数"
+
+#: gazpacho/gladegtk.py:750
+msgid "Number of columns"
+msgstr "列数"
+
+#: gazpacho/gladegtk.py:802 gazpacho/gladegtk.py:1356
+msgid "Edit..."
+msgstr "编辑..."
+
+#: gazpacho/gladegtk.py:906 gazpacho/uim.py:177
+msgid "FileMenu"
+msgstr "文件菜单"
+
+#: gazpacho/gladegtk.py:906 gazpacho/gladegtk.py:935 gazpacho/uim.py:178
+msgid "New"
+msgstr "新建"
+
+#: gazpacho/gladegtk.py:906 gazpacho/gladegtk.py:935 gazpacho/uim.py:179
+msgid "Open"
+msgstr "打开"
+
+#: gazpacho/gladegtk.py:907 gazpacho/uim.py:181
+msgid "SaveAs"
+msgstr "另存为"
+
+#: gazpacho/gladegtk.py:907 gazpacho/uim.py:183
+msgid "EditMenu"
+msgstr "编辑菜单"
+
+#: gazpacho/gladegtk.py:1074
+msgid "Use a builtin icon"
+msgstr "使用内建图标"
+
+#: gazpacho/gladegtk.py:1112
+msgid "Use a custom image"
+msgstr "使用自定图像"
+
+#: gazpacho/gladegtk.py:1123
+msgid "Choose a file..."
+msgstr "选择一个文件..."
+
+#: gazpacho/gladegtk.py:1131
+msgid "Do not use an image"
+msgstr "不使用图像"
+
+#: gazpacho/gladegtk.py:1213
+msgid "Open image ..."
+msgstr "打开图像..."
+
+#: gazpacho/gladegtk.py:1324
+#, python-format
+msgid "Editing the image of button %s"
+msgstr "编辑按钮 %s 的图像"
+
+#: gazpacho/main.py:65
+#, python-format
+msgid "Could not open file %s Permission denied."
+msgstr "无法打开文件 %s ，要求被拒绝"
+
+#: gazpacho/main.py:78
+msgid "This will remove Gazpacho and all its files from your hard drive"
+msgstr "这将把 Gazpacho 和它所有的文件从你的硬碟上删除"
+
+#: gazpacho/main.py:79
+#, python-format
+msgid "Are you sure do you want to continue? [%s|No] "
+msgstr "你肯定要继续操作？[%s|否]"
+
+#: gazpacho/main.py:80 gazpacho/main.py:82
+msgid "yes"
+msgstr "是"
+
+#: gazpacho/main.py:85
+msgid "Uninstalling Gazpacho"
+msgstr "正在卸载 Gazpacho"
+
+#: gazpacho/main.py:93
+#, python-format
+msgid "I do not know how to remove %s"
+msgstr "我不知道怎么删除 %s"
+
+#: gazpacho/main.py:100
+msgid "Dump widget param specs"
+msgstr "倾列构件参数规格"
+
+#: gazpacho/main.py:104
+msgid "Turn on pdb debugging support"
+msgstr "打开 pdb 除错支持"
+
+#: gazpacho/main.py:108
+msgid "Dump widget properties"
+msgstr "倾列构件特性"
+
+#: gazpacho/main.py:112
+msgid "Uninstall Gazpacho from your hard drive"
+msgstr "从你的硬碟上卸载 Gazpacho"
+
+#: gazpacho/palette.py:120 gazpacho/palette.py:142
+msgid "Selector"
+msgstr "选择器"
+
+#: gazpacho/parameter.py:70
+#, python-format
+msgid "Invalid boolean parameter *%s* (%s/%s)"
+msgstr "错误的布尔参数 *%s* (%s/%s)"
+
+#: gazpacho/popup.py:87
+msgid "Select"
+msgstr "选择"
+
+#: gazpacho/popup.py:104
+msgid "Insert before"
+msgstr "在之前插入"
+
+#: gazpacho/project.py:56
+#, python-format
+msgid "Untitled %d"
+msgstr "未命名 %d"
+
+#: gazpacho/property.py:117 gazpacho/util.py:422
+#, python-format
+msgid "Error: the property %s should not be of type None"
+msgstr "错误: 特性 %s 的类型不应为 None 。"
+
+#: gazpacho/propertyclass.py:267
+#, python-format
+msgid "Could not find the property spec for enum type %s"
+msgstr "无法找到枚举(enum)类型 %s 的特性规格"
+
+#: gazpacho/propertyclass.py:363
+msgid "Error"
+msgstr "错误"
+
+#: gazpacho/propertyclass.py:405
+#, python-format
+msgid "Could not find sub property %s"
+msgstr "无法找到次要特性 %s"
+
+#: gazpacho/signaleditor.py:60
+msgid "Signal"
+msgstr "信号"
+
+#: gazpacho/signaleditor.py:69
+msgid "Handler"
+msgstr "句柄"
+
+#: gazpacho/signaleditor.py:79
+msgid "After"
+msgstr "之后"
+
+#: gazpacho/signaleditor.py:111 gazpacho/signaleditor.py:141
+#: gazpacho/signaleditor.py:208
+msgid "<Type the signal's handler here>"
+msgstr "<在这里输入信号句柄>"
+
+#: gazpacho/signaleditor.py:176
+msgid "<Type the signal's hanlder here>"
+msgstr "<在这里输入信号句柄>"
+
+#: gazpacho/uieditor.py:41
+#, python-format
+msgid "Editing menubar %s"
+msgstr "正在编辑菜单栏 %s"
+
+#: gazpacho/uieditor.py:44
+#, python-format
+msgid "Editing toolbar %s"
+msgstr "正在编辑工具栏 %s"
+
+#: gazpacho/uieditor.py:47
+msgid "UIEditor is only for toolbars and menubars"
+msgstr "用户介面编辑器只适用于菜单栏和工具栏"
+
+#: gazpacho/uieditor.py:109
+msgid "Press Escape to unselected an item"
+msgstr "按逃脱键 (Esc) 取消选择一个项目"
+
+#: gazpacho/uieditor.py:295
+msgid "Choose an action"
+msgstr "选择一个动作"
+
+#: gazpacho/uieditor.py:333
+msgid "Adding a menu"
+msgstr "增添菜单"
+
+#: gazpacho/uieditor.py:350
+msgid "Action"
+msgstr "动作"
+
+#: gazpacho/uieditor.py:351
+msgid "Separator"
+msgstr "分隔线"
+
+#: gazpacho/uieditor.py:359
+msgid "Addind a toolitem"
+msgstr "增添工具项"
+
+#: gazpacho/uieditor.py:371
+msgid "Adding a menuitem"
+msgstr "增添菜单项"
+
+#: gazpacho/uim.py:178
+msgid "Create a new file"
+msgstr "建立一个新文件"
+
+#: gazpacho/uim.py:179
+msgid "Open a file"
+msgstr "打开一个文件"
+
+#: gazpacho/uim.py:180
+msgid "Save a file"
+msgstr "保存一个文件"
+
+#: gazpacho/uim.py:181
+msgid "Save _As..."
+msgstr "另存为(_a)"
+
+#: gazpacho/uim.py:181
+msgid "Save with a differente name"
+msgstr "用另一个名字保存文件"
+
+#: gazpacho/uim.py:182
+msgid "Quit the program"
+msgstr "退出程序"
+
+#: gazpacho/uim.py:184
+msgid "Copy selected object into the clipboard"
+msgstr "把选择的对象复制到剪贴板上"
+
+#: gazpacho/uim.py:185
+msgid "Cut selected object into the clipboard"
+msgstr "把选择的对象剪切到剪贴板上"
+
+#: gazpacho/uim.py:186
+msgid "Paste object from the Clipboard"
+msgstr "从剪贴板粘贴对象"
+
+#: gazpacho/widget.py:58
+#, python-format
+msgid "Warning: could not get the class from widget: %s"
+msgstr "警告: 无法从构件得到类: %s"
+
+#: gazpacho/widget.py:210
+#, python-format
+msgid ""
+"Could not replace a placeholder because a replace function has not been "
+"implemented for '%s'"
+msgstr "无法替换一个占位符，因为还没有实现 “%s” 的替换函数。"
+
+#: gazpacho/widget.py:373 gazpacho/widget.py:379
+#, python-format
+msgid "Unknown property %s"
+msgstr "未知特性 %s"
+
+#: gazpacho/widget.py:680
+#, python-format
+msgid "Could not get property %s for widget %s"
+msgstr "无法取得特性 %s ，构件 %s"
+
+#: gazpacho/widgetclass.py:39
+#, python-format
+msgid "The widget class %s has at least two different definitions"
+msgstr "构件类 %s 有至少两个不同的定义"
+
+#: gazpacho/widgetclass.py:266
+#, python-format
+msgid "Failed to update %s property of %s from xml"
+msgstr "从 xml 更新 %s 特性 %s 失败"
+
+#: gazpacho/widgetclass.py:356
+#, python-format
+msgid "Dumping ParamSpec for %s"
+msgstr "倾列 %s 的参数规格"
+
+#: gazpacho/widgetclass.py:358
+msgid "Writable"
+msgstr "可写"
+
+#: gazpacho/widgetclass.py:359
+msgid "ReadOnly"
+msgstr "只读"
+
+#: gazpacho/widgetclass.py:365
+msgid "Disabled"
+msgstr "无效"
+
+#: gazpacho/widgetclass.py:368
+msgid "Tooltip"
+msgstr "工具提示"
+
+#: gazpacho/widgetclass.py:370
+msgid "Default"
+msgstr "默认"
+
+#: gazpacho/widgetclass.py:371
+msgid "Optional"
+msgstr "可选的"
+
+#: gazpacho/widgetclass.py:372
+msgid "Optional Default"
+msgstr "可选的默认"
+
+#: gazpacho/widgetclass.py:374
+msgid "VisibilityFunction"
+msgstr "可见性函数"
+
+#: gazpacho/widgetclass.py:377
+msgid "Child"
+msgstr "子"
+
+#: gazpacho/widgetclass.py:382
+msgid "Modified"
+msgstr "修改过"
+
+#: gazpacho/widgetclass.py:384
+msgid "Setter"
+msgstr "Setter"
+
+#: gazpacho/widgetclass.py:386
+msgid "Getter"
+msgstr "Getter"
+
+#: gazpacho/widgettreeview.py:178
+msgid "Could not get the glade widget from the model"
+msgstr "无法从这个模型得到 glade 构件"
+
+#: gazpacho/loader/compat.py:184
+msgid "Deprecated widgets found"
+msgstr "发现被废止的构件"
+
+#: gazpacho/loader/compat.py:194
+msgid "Gazpacho found the following deprecated widgets:"
+msgstr "Gazpacho 发现以下被废止的构件:"
+
+#: gazpacho/loader/compat.py:203
+msgid ""
+"They were converted to the equivalent newest widgets but please note that "
+"if\n"
+"you save the file in Gazpacho it will not be compatible with Glade-2 anymore"
+msgstr ""
+"它们被转换成相应的最新的构件。但是请注意，\n"
+"如果你在 Gazpacho 里保存这个文件，它将不再和 Glade-2 兼容。"
+
+#: gazpacho/loader/proxy.py:17
+msgid "You must specify either a glade file or a glade stream"
+msgstr "必须指定一个 glade 文件或者 glade 流"
+
+#: gazpacho/loader/proxy.py:61
+#, python-format
+msgid ""
+"Warning: the widget %s is not on my widget tree neither in the action list"
+msgstr "警告: 构件 %s 既不在我的构件树里也不在动作列表里"
+

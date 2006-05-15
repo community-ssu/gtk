@@ -1,0 +1,90 @@
+This file explains the needed steps to make a release:
+
+1. Ensure it is a good release 
+ 
+   1.1 Run all the tests and make sure they all work
+   
+   1.2 Install gazpacho using --prefix, ensure it works properly:
+
+       python setup.py install --prefix /tmp/gazpacho
+
+       /tmp/gazpacho/bin/gazpacho
+
+   1.3 Install on windows, ensure it works
+
+2. Change version number in gazpacho/application.py
+
+3. Write a Changelog entry so we know there was a release here.  Write an 
+   entry in the NEWS file, Add === gazpacho X.Y.Z === in top of the 
+   ChangeLog
+
+4. Commit these changes
+
+5. Remove the dist and build directories.
+
+6. Tag svn:
+
+  svn copy http://svn.sicem.biz/gazpacho/trunk \
+           http://svn.sicem.biz/gazpacho/tags/X.Y.Z
+
+7. Prepare the Linux files:
+
+	7.1. python setup.py bdist_rpm
+
+	7.2  python setup.py sdist --formats zip,bztar
+
+	7.3  Upload Gazpacho-X.X.X-1.noarch.rpm, Gazpacho-X.X.X.tar.gz and
+	Gazpacho-X.X.X.zip into the website
+
+	7.4  Update the website (object is 'descargas')
+
+8. Prepare the Windows files:
+	
+	8.1  Get the Gazpacho-X.X.X.zip file and decompress to a directory
+
+	8.2  python setup.py bdist_wininst
+
+	8.3  Upload Gazpacho-X.X.X.win32.exe into the website
+
+9. Upload ftp.gnome.org with the files. Then, install-module on them
+
+10. Send an email to gazpacho@sicem.biz, pygtk@daa.com.au,
+    gnome-announce-list@gnome.org
+
+11. Update some webistes: gnome files, pygtk.org and gazpacho.sicem.biz
+
+Template for the mail:
+
+Subject: ANNOUNCE: Gazpacho X.Y.Z
+
+Hi everybody,
+
+I'm happy to announce the X.Y.Z version of Gazpacho. In this release
+some parts of the core have been rewritten and many many bugs have been
+fixed.
+
+...
+
+Description
+===========
+Gazpacho is a pygtk application that let you design the Graphical User
+Interface of your GTK+ programms.
+
+Enhancements and fixes
+======================
+...
+
+Links
+=====
+
+home   http://gazpacho.sicem.biz
+files  http://ftp.gnome.org/pub/GNOME/sources/gazpacho/
+list   http://www.sicem.biz/mailman/listinfo/gazpacho
+source http://www.sicem.biz/viewsvn/gazpacho/
+bugs   http://bugzilla.gnome.org
+
+index  http://www.gnomefiles.org/app.php?soft_id=646
+
+-- 
+Lorenzo Gil Sanchez <lgs@sicem.biz>
+

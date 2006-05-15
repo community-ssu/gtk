@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://gazpacho.sicem.biz/gazpacho-0.1.dtd">
+<glade-interface>
+    <widget class="GtkWindow" id="window1">
+        <property name="default_height">400</property>
+        <property name="default_width">500</property>
+        <child>
+            <widget class="Custom" id="custom1">
+                <property name="creation_function">func</property>
+                <property name="int1">1</property>
+                <property name="int2">2</property>
+                <property name="last_modification_time">Wed, 18 Aug 2004 21:18:54 GMT</property>
+                <property name="string1">foobie</property>
+                <property name="string2">baaaaz</property>
+            </widget>
+        </child>
+    </widget>
+</glade-interface>

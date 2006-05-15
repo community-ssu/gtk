@@ -1,0 +1,191 @@
+Gazpacho-0.6.2 7-September-2005
+- Bug fixes: 313469, 313548, 313573, 313435, 313439, 313686, 314219, 314527,
+  314609, 312809, 314621, 314581, 315357
+  (Johan, Mattias, Harry Wright, Ali Afshar, Zeeshan Ali)
+- Code cleanups (Johan)
+- Refactor adaptors code and split it in several files under the base package
+  (Johan)
+- Move most of the bug reporting code from the proxy to gazpacho (Lorenzo)
+- Added lots of unittests (Johan)
+- Drag and Drop improvements (Mattias)
+- Make gazpacho a little bit more embedable-friendly (Ali Afshar, Johan)
+- Edition of custom widgets (Johan)
+- Fix BoxSizeProp (Danirl Borgmann)
+- Fix containers not showing placeholders inside them (Mattias)
+- Fix/improve several random properties (Johan)
+- HIG fixes (Johan, Mattias)
+
+Gazpacho-0.6.1 13-August-2005
+- Build fixes (Johan)
+- Translation fixes (Johan)
+
+Gazpacho-0.6.0 13-August-2005
+
+- New About dialog (Lorenzo Gil Sanchez)
+- Infrastructure for localization of glade files (Johan Dahlin)
+- Complete properties rewrite (Johan)
+- Replace WidgetClass by WidgetAdaptor (Lorenzo)
+- Use stock text for stock items in Gazpacho's menu (Johan, Christopher	Aillon,
+	 Lorenzo)
+- Drag and Drop between palette and the containers (John -J5- Palmieri)
+- Show structure of containers with border colors (Owen Taylor)
+- Load GtkAction::activate signals from the glade file (Henrique Romano)
+- Cleanup catalog files (Johan, Lorenzo)
+- Support for GtkFixed and GtkIconView (Lorenzo)
+- Lots of improvements in the Action Editor dialog (Mattias Karlsson)
+- Many new tests (Johan, Lorenzo)
+- Improved debug mode and a few useful command line options (Johan)
+- New (rock-solid) loader (Johan)
+- Only save those properties that changed, in a reliable way (Johan, Lorenzo)
+- Support for GtkArrow, GtkFontSelectionDialog and GtkColorSelectionDialog
+	(Johan)
+- Replace path.py for the much nicer environ.py (Johan)
+- More flexible loading mechanism (Johan)
+- Add reload debug menu item (Johan)
+- Add configuration file and remember last opened/saved directory and recently
+	opened projects (Johan)
+- Load files optimizations (Johan)
+- Put the xml parsing in the same place (Johan)
+- Automatic bug reporting (Lorenzo)
+- Cursor with the icon of the widget class the user is adding (Tim Evans)
+- Support for editing GObject properties (Johan)
+- Improved button edition (Lorenzo)
+- Bug fixes:
+	- #172279 Undo delete action group (Christopher)
+	- #313173 Stock icon for About item (Dan Williams)
+	- Workaround for gtk.accelerator_valid (Christopher)
+	- #313169 Undo/redo stack emits a changed signal for collapsable
+		commands (Mattias)
+	- Fix drawing selection nodes bug (Owen)
+	- #312825 Handle None values for the action attribute (Daniel Borgman)
+	- #311377 (Daniel Borgman)
+	- #310059 Placeholders inside ObjectBuilder (Mattias)
+	- #172154 Selecting entries in multiples entries (Kalle Vahlman)
+	- #309471 Add missing icon stock icon (Kalle)
+	- #309623 (Mattias)
+	- #310753 Updates for new loader API (Zeeshan Ali)
+	- #172439 Default values for label-xalign (Mattias)
+	- #308836 Added root argument to proxy (Johan)
+	- #309626 Stock list for button contents adaptor (Kalle)
+	- #308336 Undoable signal changes (Mattias)
+	- #309622 Clipboard items (Johan)
+	- Fix po files metadata (Rafael Villar Burke)
+	- Implement ObjectBuilder.signal_autoconnect (Alex Verstraeten)
+	- #308692 Default value for read_i18n_data is False not None (Johan)
+	- #308682 WidgetTreeView.remove_item return value (Johan)
+	- #302172 Mark project as changed when the signals are updated
+		(Mattias)
+	- #169592 Use tooltips for the palette (Mattias)
+	- #300767 Improve Close/Save dialogs
+	- #300772 Use get_widget instead of getattr (Travis Watkins)
+	- #169868 Update the projec ttitle (Mattias)
+	- #172172 Redo use Shift-Ctrl-Z (Mattias)
+	- #302305 Replace _ with - in signals loaded from glade file (Johan)
+	- #302305 Default lower to 0 for unsigned types (Johan)
+	- #166952 Allow deleting signal handlers (Mattias)
+	- Saving dialogs (Richard Hult)
+	- #304529 Remove draconian widget name restrictions (Lorenzo)
+	- #304654 Label sensitive in button editor (Mikael Hallendal)
+- Translations:
+	- Finnish (Kalle Vahlman)
+	- Italian (Vittorio Palmisano)
+	- Chinesse (Hashao)
+
+Gazpacho-0.5.3 9-April-2005
+	- Debug dialog for showing exceptions (Johan Dahlin)
+	- Improved translations (Rafael)
+	- More unittest and integration tests (Mattias, Lorenzo and Rafael
+	Villar Burke)
+	- New clipboard code. Now copying and pasting toolbars wors (Lorenzo)
+	- Support for C widgets (Anders Carlsson)
+	- Lots of refactoring to clean the core (Lorenzo and Anders Carlsson)
+	- Tons of usability fixes (Mattias Karlsson)
+
+Gazpacho-0.5.2 21-February-2005
+	- Minor UI bug fixes (Lorenzo, Johan)
+	- Speed optimizations (Lorenzo)
+	- Loader refactoring to allow custom widget and properties loaders
+	(Lorenzo)
+	- Big Widget refactoring to make a much saner class (Lorenzo)
+	- Better serialization for Flag/Enum properties (Lorenzo)
+	- One more test (Rafael)
+	- Fixed bugs about selecting widgets inside a Notebook (Lorenzo)
+	- Improved widgets support (Lorenzo)
+
+Gazpacho-0.5.1 13-February-2005
+	- Minor HIG improvements (Ross Burton)
+	- New translation: Catalonian (Marc Sabat)
+	- Remove the prefix attribute in the .glade file so libglade doesn't
+	complain (Lorenzo Gil)
+	- Some more widgets supported: GtkAlignment, GtkComboBoxEntry (Lorenzo)
+	- Convert MenuBars and Toolbars from Glade-2 generated .glade files
+	to the new Gazpacho files (using GtkUIManager) (Lorenzo)
+	- Many bug fixes (Lorenzo)
+	- Migration of bugtracker from Mantis to Bugzilla at bugzilla.gnome.org
+	(Lorenzo)
+
+Gazpacho-0.5.0 4-February-2005
+	- New menu/toolbar support much cleaner than the previous UIManager
+	Editor (Lorenzo Gil Sanchez)
+	- New vertical (experimental) layout (Lorenzo)
+	- Action pool, Action and ActionGroup editors (Lorenzo)
+	- A lot of code clean up that means some speed ups (Lorenzo)
+	- Better serialization and loading code: Support for <object> tags in
+	the glade file (Lorenzo)
+	- Allow to save the UI of the UIManager in the glade file or in
+	a separate file (Lorenzo)
+	- Fix a crash bug (#128) (Lorenzo)
+	- Toplevels are much easier to work with (Richard Hult)
+	- Add context menus for Boxes so you can placeholders (Richard)
+	- Allow deletion of placeholders (Richard)
+	- GtkNoteBook bug fixes (Richard)
+	- Don't ask the box size on creation (Richard)
+	- Documentation about how to add your widgets (Richard)
+	- Editor refactorization and sane support for special property
+	editors (Mikael Hallendal)
+	- Fixed .desktop file (Rafael Villar Burke)
+	- Updated translations (Rafael)
+
+Gazpacho-0.4.0 28-January-2005
+	- Better support for win32 (Lorenzo)
+	- Fix a bug about not allowing to press cancel in save
+	dialogs (Gustavo Noronha)
+	- Better support for multiple projects (Gustavo)
+	- Fixed bug in popup menu and widget tree view (Johan Dahlin)
+	- Fixed bug with path strings in win32 (Miguel Hernandez)
+	- Improved documentation in many places (Lorenzo)
+	- Clean up a lot of code and redesign some important classes (Lorenzo
+	and Johan)
+	- Fixed bug about selection code (Lorenzo)
+	- Make application gettextable (Lorenzo)
+	- Uninstall script for Linux (Lorenzo)
+	- Use a command manager and make commands more Object
+	Oriented for API sanity (Lorenzo)
+	- Debug windows: Command Stack View and Clipboard View (Lorenzo)
+	- Added a script to handle i10n: langadmin.py (Lorenzo)
+	- Fixed bugs in Undo/Redo system (Lorenzo and Richard Hult)
+	- Ask before closing a project (Gustavo Carneiro)
+	- Select Placeholders when clicking on them and also allow to select
+	their parents when Shift is pressed (Lorenzo and Richard)
+	- Copy/Cut/Paste (Lorenzo)
+	- Better window management support (Lorenzo and Richard)
+	- New Catalog approach (Mikael Hallendal)
+	- New widget registry (Johan)
+	- Better synchronization betweend properties and views (Mikael)
+	- Better support for properties and added a packing-defaults prop
+	for the widgets (Mikael)
+
+	- First translations: Spanish, Gallego, French (Rafael Villar Burke)
+	Brazilian Portuguese (Henrique Romano)
+
+Gazpacho-0.3.2 17-January-2005
+	- Lots of code cleanups. Gazpacho is PEP-8 compliant now and pychecker
+	also likes us more (Johan Dahlin)
+	- Improve Project View selection (Johan)
+	- Rearrange some widgets in the palette (Johan)
+	- Fix bug in placeholder drawing (John Ehresman)
+	- Make it more compatible with libglade (Lorenzo)
+	- Fix bugs about XML serialization (Lorenzo)
+	- Much better initialization code (Johan)
+	- Better localmode and use of FileChooser instead of
+	FileSel (Jonathan Blandford)
