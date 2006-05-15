@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<!DOCTYPE glade-catalog SYSTEM "glade-catalog.dtd">
+<glade-catalog name="hildonwidgets">
+  <glade-widget-classes>
+
+    <!-- 
+    Note that HildonApp and HildonAppView are deprecated 
+    -->	  
+    <glade-widget-class name="HildonApp"
+                        generic-name="app"
+                        title="Application"
+                        adaptor-class="lgpl.AppAdaptor"/>
+	    
+    <glade-widget-class name="HildonAppView"
+                        generic-name="appview"
+                        title="Application View"
+                        adaptor-class="lgpl.AppViewAdaptor"/>
+		<!-- dep -->
+    <glade-widget-class name="HildonWindow"
+	    		generic-name="window"
+			title="Window"
+			adaptor-class="libs.WindowAdaptor"/>
+		
+    <glade-widget-class name="HildonCaption"
+                        generic-name="caption"
+                        title="Caption"
+                        adaptor-class="lgpl.CaptionAdaptor"/>
+
+    <glade-widget-class name="HildonGrid"
+                        generic-name="grid"
+                        title="Grid"
+                        adaptor-class="libs.GridAdaptor"/>
+                        
+    <glade-widget-class name="HildonColorButton"
+                        generic-name="colorbutton"
+                        title="Color Button"
+                        adaptor-class="libs.ColorButtonAdaptor"/>
+
+    <glade-widget-class name="HildonColorSelector"
+                        generic-name="colorselector"
+                        title="Color Selector"/>
+
+    <glade-widget-class name="HildonDateEditor"
+                        generic-name="dateeditor"
+                        title="Date Editor"/>
+    <glade-widget-class name="HildonTimeEditor"
+                        generic-name="timeeditor"
+                        title="Time Editor"/>
+    <glade-widget-class name="HildonRangeEditor"
+                        generic-name="rangeeditor"
+                        title="Range Editor"/>
+    <glade-widget-class name="HildonNumberEditor"
+                        generic-name="numbereditor"
+                        title="Number Editor"/>
+    <!--glade-widget-class name="HildonTelephoneEditor"
+                        generic-name="telephoneeditor"
+                        title="Telephone Editor"/-->
+    <glade-widget-class name="HildonTimePicker"
+                        generic-name="timepicker"
+                        title="Time Picker"/>
+    <glade-widget-class name="HildonWeekdayPicker"
+                        generic-name="weekdaypicker"
+                        title="Weekday Picker"/>
+                        
+    <glade-widget-class name="HildonHVolumebar" 
+                        generic-name="hvolumebar"
+                        title="Horizontal Volumebar"/>
+    <glade-widget-class name="HildonVVolumebar"
+                        generic-name="vvolumebar"
+                        title="Vertical Volumebar"/>
+    <glade-widget-class name="HildonControlbar"
+                        generic-name="controlbar"
+                        title="Controlbar"/>
+    <glade-widget-class name="HildonSeekbar"
+                        generic-name="seekbar"
+                        title="Seekbar"/>
+    <glade-widget-class name="HildonFindToolbar"
+                        generic-name="findtoolbar"
+                        title="Find toolbar"/>
+    <glade-widget-class name="HildonGridItem"
+                        generic-name="griditem"/>
+                        
+    <glade-widget-class name="HildonNote"
+                        generic-name="note"
+                        title="Note"
+                        adaptor-class="libs.NoteAdaptor"/>
+<!-- DEPRECATED
+    <glade-widget-class name="HildonFileHandlingNote"
+                        generic-name="filehandlingnote"
+                        title="File Handling Note"
+                        adaptor-class="ModalDialogAdaptor"/>
+-->
+    <glade-widget-class name="HildonWizardDialog"
+                        generic-name="wizarddialog"
+                        title="Wizard Dialog"
+                        adaptor-class="libs.WizardAdaptor"/>
+    <glade-widget-class name="HildonFileChooserDialog"
+                        generic-name="filechooserdialog"
+                        title="File Chooser Dialog"/>
+    <!--glade-widget-class name="HildonFileDetailsDialog"
+                        generic-name="filedetailsdialog"
+                        title="File Details Dialog"/-->
+    <glade-widget-class name="HildonFontSelectionDialog"
+                        generic-name="fontselectiondialog"
+                        title="Font Selection Dialog"/>
+    <glade-widget-class name="HildonGetPasswordDialog"
+                        generic-name="getpassworddialog"
+                        title="Get Password Dialog"
+                        adaptor-class="libs.ModalDialogAdaptor"/>
+    <!--glade-widget-class name="HildonInsertObjectDialog"
+                        generic-name="insertobjectdialog"
+                        title="Insert Object Dialog"/-->
+    <glade-widget-class name="HildonNamePasswordDialog"
+                        generic-name="namepassworddialog"
+                        title="Name Password Dialog"/>
+    <glade-widget-class name="HildonSetPasswordDialog"
+                        generic-name="setpassworddialog"
+                        title="SetPasswordDialog"
+                        adaptor-class="libs.ModalDialogAdaptor"/>
+
+    <glade-widget-class name="HildonSortDialog"
+                        generic-name="sortdialog"
+                        title="Sort Dialog"
+                        adaptor-class="libs.ModalDialogAdaptor"/>
+
+    <glade-widget-class name="HildonCalendarPopup"
+                        generic-name="calendarpopup"
+                        title="Calendar Popup"/>
+                        
+  </glade-widget-classes>
+
+  <glade-widget-group name="hildon" title="Hildon Widgets">
+    <glade-widget-class-ref name="HildonColorButton"/>
+    
+    <glade-widget-class-ref name="HildonDateEditor"/>
+    <glade-widget-class-ref name="HildonWeekdayPicker"/>
+    <glade-widget-class-ref name="HildonTimeEditor"/>
+    <glade-widget-class-ref name="HildonNumberEditor"/>
+    <glade-widget-class-ref name="HildonRangeEditor"/>
+    <!-- DEPRECATED
+    <glade-widget-class-ref name="HildonTelephoneEditor"/>
+-->
+    
+    <glade-widget-class-ref name="HildonHVolumebar"/>
+    <glade-widget-class-ref name="HildonVVolumebar"/>
+    <glade-widget-class-ref name="HildonControlbar"/>
+    <glade-widget-class-ref name="HildonSeekbar"/>
+    
+    <glade-widget-class-ref name="HildonFindToolbar"/>
+  </glade-widget-group>
+
+  <glade-widget-group name="hildon-containers" title="Hildon Popups">
+    <glade-widget-class-ref name="HildonCalendarPopup"/>
+    <glade-widget-class-ref name="HildonColorSelector"/>
+    <glade-widget-class-ref name="HildonTimePicker"/>
+  </glade-widget-group>
+  
+  <glade-widget-group name="hildon-containers" title="Hildon Containers">
+
+	<glade-widget-class-ref name="HildonAppView"/>
+    	<glade-widget-class-ref name="HildonCaption"/> 
+    	<glade-widget-class-ref name="HildonGrid"/>
+  </glade-widget-group>
+
+  <glade-widget-group name="hildon-toplevels" title="Hildon Toplevels">
+  	<glade-widget-class-ref name="HildonWindow"/>
+    <glade-widget-class-ref name="HildonApp"/>
+    <glade-widget-class-ref name="HildonNote"/>
+<!-- DEPRECATED
+    <glade-widget-class-ref name="HildonFileHandlingNote"/>
+-->
+    <glade-widget-class-ref name="HildonFileChooserDialog"/>
+    <!--glade-widget-class-ref name="HildonFileDetailsDialog"/-->
+    <glade-widget-class-ref name="HildonFontSelectionDialog"/>
+    <glade-widget-class-ref name="HildonGetPasswordDialog"/>
+<!--DEPRECATED
+    <glade-widget-class-ref name="HildonInsertObjectDialog"/>
+-->
+    <glade-widget-class-ref name="HildonNamePasswordDialog"/>
+    <glade-widget-class-ref name="HildonSetPasswordDialog"/>
+    <glade-widget-class-ref name="HildonSortDialog"/>
+    <glade-widget-class-ref name="HildonWizardDialog"/>
+  </glade-widget-group>
+</glade-catalog>
+

@@ -1,0 +1,50 @@
+gazpacho-hildon (0.1.3) unstable; urgency=low
+
+  * Checked that all files contains the license comment 
+
+ -- Erik Karlsson <erikarls@localhost.localdomain>  Thu,  4 May 2006 11:28:23 +0300
+
+gazpacho-hildon (0.1.2-5) unstable; urgency=low
+
+  * Fix saving of UI string (use CDATA instead of escaping)
+  * Create the default actions for AppView too
+
+ -- Erik Karlsson (Nokia-M/Helsinki) <erik.b.karlsson@nokia.com>  Mon, 05 Sep 2005 15:00:00 +0300
+
+gazpacho-hildon (0.1.2-4) unstable; urgency=low
+
+  * Small bug fixes
+
+ --   Mon, 05 Sep 2005 15:00:00 +0300
+
+gazpacho-hildon (0.1.2-3) unstable; urgency=low
+
+  * Small bug fixes
+
+ --   Mon, 05 Sep 2005 15:00:00 +0300
+
+gazpacho-hildon (0.1.2-2) unstable; urgency=low
+
+  * Packaging fixes
+  * Small bug fixes
+
+ --   Thu, 25 Aug 2005 15:00:00 +0300
+
+gazpacho-hildon (0.1.2-1) unstable; urgency=low
+
+  * Upgrade to new structure required by Gazpacho 0.6.2
+
+ --   Mon, 05 Aug 2005 15:00:00 +0300
+
+gazpacho-hildon (0.1.1-1) unstable; urgency=low
+
+  * Big improvements
+
+ --   Tue, 16 Aug 2005 17:00:00 +0300
+
+gazpacho-hildon (0.1.0-1) unstable; urgency=low
+
+  * Initial release of Hildon support for Gazpacho
+
+ --   Tue, 16 Aug 2005 17:00:00 +0300
+

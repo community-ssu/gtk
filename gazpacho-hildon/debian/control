@@ -1,0 +1,11 @@
+Source: gazpacho-hildon
+Priority: optional
+Maintainer: Erik Karlsson <erik.b.karlsson@nokia.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.1
+
+Package: gazpacho-hildon
+Section: libs
+Architecture: all
+Depends: gazpacho-loader (>= 0.6.2), python2.4-hildon (>= 0.5.2)
+Description: Hildon support for Gazpacho

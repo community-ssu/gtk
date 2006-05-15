@@ -1,0 +1,3 @@
+usr/lib/python2.4/site-packages/gazpacho/widgets/*.py
+usr/share/gazpacho/catalogs/*.xml
+usr/share/gazpacho/resources/hildon-widgets/*.png
