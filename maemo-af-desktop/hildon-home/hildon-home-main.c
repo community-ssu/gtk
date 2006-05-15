@@ -179,6 +179,8 @@ static
 void set_background_response_handler(GtkWidget *dialog,
                                      gint arg, gpointer data);
 static
+void create_background_preview(GtkComboBox *combobox_image_select, gboolean save);
+static
 gboolean set_background_dialog_selected(GtkWidget *widget,
                                         GdkEvent *event,
                                         gpointer data);
@@ -979,7 +981,6 @@ void set_background_response_handler(GtkWidget *dialog,
 {
     GtkComboBox *box = GTK_COMBO_BOX(data);
     /*gchar *image_name;*/
-    gint active_index = -1;
     
     switch (arg) 
     {
@@ -1002,38 +1003,53 @@ void set_background_response_handler(GtkWidget *dialog,
         break;
     case HILDON_HOME_SET_BG_RESPONSE_PREVIEW:
         g_signal_stop_emission_by_name(dialog, "response");
-        active_index = gtk_combo_box_get_active(box);
-        
-        home_bg_image_preview_color = hildon_color_button_get_color
-                    (HILDON_COLOR_BUTTON(home_bg_color_button));
-        home_bg_image_preview_mode = home_bg_scale_combobox_active_item;
-
-        if(active_index == 0)
-        {
-            g_free(home_bg_image_preview_uri);
-            home_bg_image_preview_uri = g_strdup(HILDON_HOME_IMAGE_LOADER_NO_IMAGE);
-            construct_background_image_with_uri(
-                            HILDON_HOME_IMAGE_LOADER_NO_IMAGE,
-                            TRUE,
-                            TRUE,
-                            home_bg_image_preview_color,
-                            TRUE);
-        } else 
-        {
-            g_free(home_bg_image_preview_uri);
-            home_bg_image_preview_uri = 
-                get_filename_from_treemodel(box, active_index);
-
-            construct_background_image_with_uri(
-                            home_bg_image_preview_uri,
-			    TRUE,
-			    home_bg_scale_combobox_active_item,
-			    home_bg_image_preview_color,
-                            TRUE);
-        }
+        create_background_preview(box, TRUE);
         break;
     default:
         break;
+    }
+}
+
+/**
+ * @create_background_preview
+ *
+ * @param box Image selection combobox 
+ * @param preview Preview(TRUE) or final construct
+ * 
+ * Create background preview from selected image and save preview as
+ * background if no preview is needed
+ **/
+static
+void create_background_preview(GtkComboBox *box, gboolean preview)
+{
+    gint active_index = -1;
+    
+    active_index = gtk_combo_box_get_active(box);
+        
+    home_bg_image_preview_color = hildon_color_button_get_color
+                    (HILDON_COLOR_BUTTON(home_bg_color_button));
+    home_bg_image_preview_mode = home_bg_scale_combobox_active_item;
+
+    if(active_index == 0)
+    {
+        g_free(home_bg_image_preview_uri);
+        home_bg_image_preview_uri = g_strdup(HILDON_HOME_IMAGE_LOADER_NO_IMAGE);
+        construct_background_image_with_uri(HILDON_HOME_IMAGE_LOADER_NO_IMAGE,
+                                            TRUE,
+                                            TRUE,
+                                            home_bg_image_preview_color,
+                                            preview);
+    } else 
+    {
+        g_free(home_bg_image_preview_uri);
+        home_bg_image_preview_uri = 
+            get_filename_from_treemodel(box, active_index);
+
+        construct_background_image_with_uri(home_bg_image_preview_uri,
+                                            TRUE,
+                                            home_bg_scale_combobox_active_item,
+                                            home_bg_image_preview_color,
+                                            preview);
     }
 }
 
@@ -1473,36 +1489,18 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
         home_bg_image_current_color = gdk_color_copy(color_selected);
         hildon_home_save_configure();
 
-        if(home_bg_image_previewed == TRUE &&
-           gdk_color_equal(home_bg_image_preview_color, color_selected) &&
-           home_bg_image_preview_uri != NULL &&
-           home_bg_image_uri != NULL &&
-           g_str_equal(home_bg_image_preview_uri,home_bg_image_uri) == TRUE &&
-           home_bg_image_preview_mode == home_bg_scale_combobox_active_item)
+        if(home_bg_image_previewed == FALSE ||
+           !gdk_color_equal(home_bg_image_preview_color, color_selected) ||
+           home_bg_image_preview_uri == NULL ||
+           home_bg_image_uri == NULL || 
+           g_str_equal(home_bg_image_preview_uri,home_bg_image_uri) == FALSE ||
+           home_bg_image_preview_mode != home_bg_scale_combobox_active_item)
+        {
+            create_background_preview(GTK_COMBO_BOX(combobox_image_select), FALSE);
+        }
+        else
         {
             save_background_preview();
-            break;
-        }
-
-        clear_background_preview();
-
-        combobox_active = 
-            gtk_combo_box_get_active(GTK_COMBO_BOX(combobox_image_select));
-
-        if(combobox_active == 0)
-        {
-            g_free(home_bg_image_uri);
-            home_bg_image_uri = g_strdup(HILDON_HOME_IMAGE_LOADER_NO_IMAGE);
-        }
-        if(combobox_active != -1 || home_bg_image_uri != NULL) 
-        {   
-            construct_background_image_with_uri(
-				home_bg_image_uri, 
-                                TRUE, 
-				home_bg_scale_combobox_active_item,
-                                color_selected,
-                                FALSE
-				);        	
         }
         break;
       case GTK_RESPONSE_CANCEL:
@@ -1689,7 +1687,7 @@ void construct_background_image(char *argument_list[],
     guint image_loader_callback_id;
 
     loading_image_process_active = TRUE;
-
+    
     if(image_loader_pid != -1)
     {
         g_spawn_close_pid(image_loader_pid);
@@ -1768,26 +1766,30 @@ void image_loader_callback(GPid pid, gint child_exit_status,
     /* image loader process is done and succesful operation cannot be
        canceled */
     loading_image_process_active = FALSE;
-
+    
     if(loading_image_note != NULL && GTK_IS_WIDGET(loading_image_note))
     {
         gtk_widget_destroy(loading_image_note);
     }
-
-    loading_image_note = NULL;
 
     child_exit_status = child_exit_status >> 8;
     switch(child_exit_status)
     {
     case HILDON_HOME_IMAGE_LOADER_OK:
         home_bg_image_symlinked = FALSE;
-        if(preview == TRUE)
+        if(loading_image_note != NULL)
         {
-            refresh_background_image_preview();
-        } else
-        {
+            if(preview == TRUE)
+            {
+                refresh_background_image_preview();
+                break;
+            }
+            save_background_preview();
             refresh_background_image();
         }
+        if(preview == FALSE)
+            refresh_background_image();
+            
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_MEMORY:
         show_no_memory_note();
@@ -1815,6 +1817,8 @@ void image_loader_callback(GPid pid, gint child_exit_status,
                  child_exit_status);
         break;
     }
+
+    loading_image_note = NULL;
     image_loader_pid = -1;
 }
 
@@ -1829,6 +1833,8 @@ void show_loading_image_note()
 {
     GtkWidget *label;
     GtkWidget *prog_bar = NULL;
+    
+    home_bg_image_previewed = FALSE;
     
     if(loading_image_note != NULL && GTK_IS_WIDGET(loading_image_note))
     {
@@ -1975,23 +1981,21 @@ void construct_background_image_with_uri(const gchar *uri,
 	HILDON_HOME_SIDEBAR_LEFT_X,
 	HILDON_HOME_SIDEBAR_TOP_Y, 
 	install, 
-	NULL}; 
-    if(preview)
-    {
-        argument_list[4] = 
-            (char *)g_strdup_printf("%s%s", 
-                                    user_original_bg_image,
-                                    HILDON_HOME_TEMPORARY_FILENAME_EXT);
-        argument_list[5] = (char *)home_current_bg_image_preview;
-        argument_list[12] = 
-            (char *)g_strdup_printf("%s%s", 
-                                    titlebar_original_image_savefile,
-                                    HILDON_HOME_TEMPORARY_FILENAME_EXT);
-        argument_list[16] = 
-            (char *)g_strdup_printf("%s%s", 
-                                    sidebar_original_image_savefile,
-                                    HILDON_HOME_TEMPORARY_FILENAME_EXT);
-    }
+	NULL};
+    
+    argument_list[4] = 
+        (char *)g_strdup_printf("%s%s", 
+                                user_original_bg_image,
+                                HILDON_HOME_TEMPORARY_FILENAME_EXT);
+    argument_list[5] = (char *)home_current_bg_image_preview;
+    argument_list[12] = 
+        (char *)g_strdup_printf("%s%s", 
+                                titlebar_original_image_savefile,
+                                HILDON_HOME_TEMPORARY_FILENAME_EXT);
+    argument_list[16] = 
+        (char *)g_strdup_printf("%s%s", 
+                                sidebar_original_image_savefile,
+                                HILDON_HOME_TEMPORARY_FILENAME_EXT);
 
     construct_background_image(argument_list, loading_image_note_allowed, 
                                preview);
@@ -2005,13 +2009,9 @@ void construct_background_image_with_uri(const gchar *uri,
     g_free(color_green);
     g_free(color_blue);
     g_free(install);
-
-    if(preview)
-    {
-        g_free(argument_list[4]);
-        g_free(argument_list[12]);
-        g_free(argument_list[16]);
-    }
+    g_free(argument_list[4]);
+    g_free(argument_list[12]);
+    g_free(argument_list[16]);
 }
 
 /**
@@ -2561,7 +2561,7 @@ static
 void save_background_preview(void)
 {
     gchar *filename;
-    struct stat buf;     
+    struct stat buf;
 
     home_bg_image_previewed = FALSE;
     filename = g_strdup_printf("%s%s", user_original_bg_image,

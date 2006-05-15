@@ -1,3 +1,17 @@
+2006-05-15  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "AF-BAT: Cancelled background image visible beneath the
+	current background" (Closes N#27444)
+	* hildon-home/hildon-home-main.c:
+	  - create_background_preview(): Added new function to create background
+	    preview and save it as a background if no preview is needed
+	  - set_background_response_handler(): Update to use new function
+	  - set_background_dialog_selected(): Update to use new function
+	  - show_loading_image_note(): Update preview flag
+	  - image_loader_callback(): Update to save preview if saving
+	    picture as background and no cancel button is pressed
+	  - construct_background_image_with_uri(): Changed to always
+
 2006-05-12  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.6.16
