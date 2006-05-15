@@ -60,7 +60,6 @@ static LocationType locations[] = {
   { "qgn_list_filesys_doc_fldr", N_("sfil_li_folder_documents"), NULL },
   { "qgn_list_filesys_games_fldr", N_("sfil_li_folder_games"), NULL },
   { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL },
-  { "qgn_list_filesys_mmc_root", N_("sfil_li_mmc_localdevice"), NULL },
  /* This is used, if GConf for some reason don't contain name */
   { "qgn_list_filesys_divc_gw", N_("sfil_li_gateway_root"), NULL },
   { "qgn_list_filesys_divc_cls", N_("sfil_li_folder_root"), NULL }
@@ -73,6 +72,8 @@ static const char *VIDEOS_SAFE = ".videos";
 static const char *SOUNDS_SAFE = ".sounds";
 static const char *DOCUMENTS_SAFE = ".documents";
 static const char *GAMES_SAFE = ".games";
+
+static const char *mmc2_path = NULL;
 
 /* Let's make sure that we survise with folder names both ending and
  * not ending to slash */
@@ -139,7 +140,11 @@ void _hildon_file_system_ensure_locations(void)
 
   env = g_getenv("INTERNAL_MMC_MOUNTPOINT");
   if (env != NULL)
-    locations[HILDON_FILE_SYSTEM_MODEL_MMC2].path = g_strdup(env);
+  {
+    locations[HILDON_FILE_SYSTEM_MODEL_MMC].display_name =
+      N_("sfil_li_memorycard_internal");
+    mmc2_path = g_strdup(env);
+  }
 }
 
 gint _hildon_file_system_get_special_location(GtkFileSystem *fs,
@@ -151,6 +156,12 @@ gint _hildon_file_system_get_special_location(GtkFileSystem *fs,
   local_path = gtk_file_system_path_to_filename(fs, path);
   if (local_path)
   {
+    if (mmc2_path != NULL && strcmp(local_path, mmc2_path) == 0)
+    {
+      g_free(local_path);  
+      return -1;
+    }
+
     for (i = 3; i < G_N_ELEMENTS(locations); i++)
       if (locations[i].path && 
           _hildon_file_system_compare_ignore_last_separator(local_path,
@@ -303,7 +314,7 @@ GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
 GdkPixbuf *
 _hildon_file_system_create_image(GtkFileSystem *fs, 
       GtkWidget *ref_widget, GtkFilePath *path, 
-      HildonFileSystemModelItemType type, gint size)
+      HildonFileSystemModelItemType type, gint size, gboolean mmc2)
 {
     GdkPixbuf *pixbuf = NULL;
 
@@ -321,7 +332,7 @@ _hildon_file_system_create_image(GtkFileSystem *fs,
         g_assert(path != NULL);
 
         vol = _hildon_file_system_get_volume_for_location(fs, 
-            HILDON_FILE_SYSTEM_MODEL_GATEWAY, path);
+            HILDON_FILE_SYSTEM_MODEL_GATEWAY, path, mmc2);
 
         if (vol)
         {
@@ -331,8 +342,17 @@ _hildon_file_system_create_image(GtkFileSystem *fs,
       }  
 
       if (!pixbuf)
-          pixbuf = _hildon_file_system_load_icon_cached(gtk_icon_theme_get_default(), 
-                        locations[type].icon_name, size);
+      {
+        if (!mmc2)
+          pixbuf = _hildon_file_system_load_icon_cached(
+                     gtk_icon_theme_get_default(), 
+                     locations[type].icon_name, size);
+        else
+          pixbuf = _hildon_file_system_load_icon_cached(
+                     gtk_icon_theme_get_default(),     
+                     locations[HILDON_FILE_SYSTEM_MODEL_MMC].icon_name, size);
+
+      }
     }
 
     return pixbuf;
@@ -362,17 +382,16 @@ static const gchar *get_custom_root_name(const GtkFilePath *path)
 gchar *
 _hildon_file_system_create_file_name(GtkFileSystem *fs,
   const GtkFilePath *path, HildonFileSystemModelItemType type,
-  GtkFileInfo *info)
+  GtkFileInfo *info, gboolean mmc2)
 {
   gchar *str;
 
   if (type == HILDON_FILE_SYSTEM_MODEL_GATEWAY ||
-      type == HILDON_FILE_SYSTEM_MODEL_MMC ||
-      type == HILDON_FILE_SYSTEM_MODEL_MMC2)
+      type == HILDON_FILE_SYSTEM_MODEL_MMC || mmc2)
   {
     GtkFileSystemVolume *vol;
 
-    vol = _hildon_file_system_get_volume_for_location(fs, type, path);
+    vol = _hildon_file_system_get_volume_for_location(fs, type, path, mmc2);
 
     if (vol)
     {
@@ -406,6 +425,15 @@ _hildon_file_system_create_file_name(GtkFileSystem *fs,
     }
   }
 
+  if (mmc2)
+  {
+    const gchar *name;
+    name = _("sfil_li_memorycard_removable");
+    g_return_val_if_fail(name, NULL);
+
+    return g_strdup(name);
+  }
+
   if (type > HILDON_FILE_SYSTEM_MODEL_FOLDER)
   {
     const gchar *name;
@@ -432,12 +460,12 @@ _hildon_file_system_create_file_name(GtkFileSystem *fs,
 gchar *
 _hildon_file_system_create_display_name(GtkFileSystem *fs, 
   const GtkFilePath *path, HildonFileSystemModelItemType type, 
-  GtkFileInfo *info)
+  GtkFileInfo *info, gboolean mmc2)
 {
   gchar *str, *dot;
   const gchar *mime_type = NULL;
 
-  str = _hildon_file_system_create_file_name(fs, path, type, info);   
+  str = _hildon_file_system_create_file_name(fs, path, type, info, mmc2);   
 
   if (info)
     mime_type = gtk_file_info_get_mime_type(info);
@@ -452,17 +480,20 @@ _hildon_file_system_create_display_name(GtkFileSystem *fs,
 }
 
 GtkFilePath *_hildon_file_system_path_for_location(GtkFileSystem *fs, 
-  HildonFileSystemModelItemType type)
+  HildonFileSystemModelItemType type, gboolean mmc2)
 {
   g_assert(0 <= type && type < G_N_ELEMENTS(locations));
-  return gtk_file_system_filename_to_path(fs, locations[type].path);
+  if (!mmc2)
+    return gtk_file_system_filename_to_path(fs, locations[type].path);
+  else
+    return gtk_file_system_filename_to_path(fs, mmc2_path);
 }
 
 /* You can omit either type or base */
 GtkFileSystemVolume *
 _hildon_file_system_get_volume_for_location(GtkFileSystem *fs, 
   HildonFileSystemModelItemType type,
-  const GtkFilePath *base)
+  const GtkFilePath *base, gboolean mmc2)
 {
     GSList *volumes, *iter;
     GtkFilePath *mount_path, *path;
@@ -474,7 +505,8 @@ _hildon_file_system_get_volume_for_location(GtkFileSystem *fs,
     volumes = gtk_file_system_list_volumes(fs);
 
     mount_path = base ? gtk_file_path_copy(base) : 
-        _hildon_file_system_path_for_location(fs, type);
+                 _hildon_file_system_path_for_location(fs, type, mmc2);
+
     if (mount_path == NULL) return NULL;
 
     path_a = gtk_file_path_get_string(mount_path);

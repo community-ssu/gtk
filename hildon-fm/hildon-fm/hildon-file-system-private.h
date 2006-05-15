@@ -49,24 +49,24 @@ gint _hildon_file_system_get_special_location(GtkFileSystem *fs, const GtkFilePa
 
 GdkPixbuf *_hildon_file_system_create_image(GtkFileSystem *fs, 
       GtkWidget *ref_widget, GtkFilePath *path, 
-      HildonFileSystemModelItemType type, gint size);
+      HildonFileSystemModelItemType type, gint size, gboolean mmc2);
 
 gchar *_hildon_file_system_create_file_name(GtkFileSystem *fs, 
   const GtkFilePath *path, HildonFileSystemModelItemType type,  
-  GtkFileInfo *info);
+  GtkFileInfo *info, gboolean mmc2);
 
 gchar *_hildon_file_system_create_display_name(GtkFileSystem *fs, 
   const GtkFilePath *path, HildonFileSystemModelItemType type,  
-  GtkFileInfo *info);
+  GtkFileInfo *info, gboolean mmc2);
 
 GtkFilePath *_hildon_file_system_path_for_location(GtkFileSystem *fs, 
-  HildonFileSystemModelItemType type);
+  HildonFileSystemModelItemType type, gboolean mmc2);
 
 /* You can omit either type or base */
 GtkFileSystemVolume *
 _hildon_file_system_get_volume_for_location(GtkFileSystem *fs, 
   HildonFileSystemModelItemType type,
-  const GtkFilePath *base);
+  const GtkFilePath *base, gboolean mmc2);
 
 gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime);
 long _hildon_file_system_parse_autonumber(const char *start);

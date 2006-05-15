@@ -42,6 +42,7 @@ struct _HildonFileSystemInfo
   gchar *name_cache;
   GdkPixbuf *icon_cache;
   gint size;
+  gboolean mmc2;
 };
 
 /**
@@ -64,6 +65,7 @@ hildon_file_system_info_new(const gchar *uri, GError **error)
     HildonFileSystemModelItemType type;
     GtkFileInfo *info = NULL;
     GtkFileFolder *folder;
+    gboolean mmc2 = FALSE;
 
     g_return_val_if_fail(uri != NULL, NULL);
 
@@ -104,6 +106,12 @@ hildon_file_system_info_new(const gchar *uri, GError **error)
     {
       type = _hildon_file_system_get_special_location(fs, path);
 
+      if (type == -1)
+      {
+        mmc2 = TRUE;
+        type = HILDON_FILE_SYSTEM_MODEL_MMC;
+      }
+
       if (!type)
       {
         folder = gtk_file_system_get_folder(fs, parent_path, GTK_FILE_INFO_ALL, error);
@@ -133,6 +141,7 @@ hildon_file_system_info_new(const gchar *uri, GError **error)
     result->path = path;
     result->info = info;
     result->type = type;
+    result->mmc2 = mmc2;
 
     return result;    
 }
@@ -297,7 +306,7 @@ hildon_file_system_info_get_display_name(HildonFileSystemInfo *info)
 
   if (info->name_cache == NULL)
     info->name_cache = _hildon_file_system_create_display_name(info->fs, 
-        info->path, info->type, info->info);
+        info->path, info->type, info->info, info->mmc2);
 
   return info->name_cache;
 }
@@ -349,7 +358,7 @@ hildon_file_system_info_get_icon_at_size(HildonFileSystemInfo *info,
   if (info->icon_cache == NULL)
     info->icon_cache = _hildon_file_system_create_image(info->fs,  
                   ref_widget, info->path, 
-                  info->type, size);
+                  info->type, size, info->mmc2);
 
   info->size = size;
 

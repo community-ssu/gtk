@@ -86,6 +86,7 @@ typedef struct {
     gboolean available; /* Set by code */
     GError *error;      /* Set if cannot get children */
     gchar *thumb_title, *thumb_author;
+    gboolean mmc2;
 } HildonFileSystemModelNode;
 
 typedef struct {
@@ -686,7 +687,7 @@ inline static GdkPixbuf
 {
     return _hildon_file_system_create_image(priv->filesystem, 
         priv->ref_widget, model_node->path, 
-        model_node->type, size);
+        model_node->type, size, model_node->mmc2 ? TRUE : FALSE);
 }
 
 /* Creates a new pixbuf conatining normal image and given emblem */
@@ -893,13 +894,15 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         /* Gtk+'s display name contains also extension */
         if (model_node->name_cache == NULL)
           model_node->name_cache = _hildon_file_system_create_file_name(fs, 
-              path, model_node->type, model_node->info);
+              path, model_node->type, model_node->info,
+              model_node->mmc2 ? TRUE : FALSE);
         g_value_set_string(value, model_node->name_cache);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_DISPLAY_NAME:
         if (!model_node->title_cache)
           model_node->title_cache = _hildon_file_system_create_display_name(fs, 
-              path, model_node->type, model_node->info);
+              path, model_node->type, model_node->info,
+              model_node->mmc2 ? TRUE : FALSE);
         g_value_set_string(value, model_node->title_cache);
 
         /* We try to reload children, if we are actually showing something */
@@ -921,7 +924,8 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
           gchar *name, *casefold;
 
           name = _hildon_file_system_create_file_name(fs, path, 
-                            model_node->type, model_node->info);
+                            model_node->type, model_node->info,
+                            model_node->mmc2 ? TRUE : FALSE);
           casefold = g_utf8_casefold(name, -1);
           model_node->key_cache = g_utf8_collate_key(casefold, -1);
           g_free(casefold);
@@ -1556,7 +1560,7 @@ static gboolean real_volumes_changed(gpointer data)
     ULOG_DEBUG_F("entered");
 
     vol = _hildon_file_system_get_volume_for_location(fs, 
-               HILDON_FILE_SYSTEM_MODEL_MMC, NULL);
+               HILDON_FILE_SYSTEM_MODEL_MMC, NULL, FALSE);
     if (vol)
     {
       if (gtk_file_system_volume_get_is_mounted(fs, vol))
@@ -1574,7 +1578,7 @@ static gboolean real_volumes_changed(gpointer data)
     {
       path = NULL;
       vol = _hildon_file_system_get_volume_for_location(fs, 
-               HILDON_FILE_SYSTEM_MODEL_MMC2, NULL);
+               HILDON_FILE_SYSTEM_MODEL_MMC, NULL, TRUE);
       if (vol)
       {
         if (gtk_file_system_volume_get_is_mounted(fs, vol))
@@ -1672,6 +1676,7 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
     model_node->model = HILDON_FILE_SYSTEM_MODEL(model);
     model_node->present_flag = TRUE;
     model_node->available = TRUE;
+    model_node->mmc2 = FALSE;
 
     if (path)
       model_node->path = gtk_file_path_copy(path);    
@@ -1696,7 +1701,12 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         }
 
         special_type = _hildon_file_system_get_special_location(priv->filesystem, path);
-        if (special_type != HILDON_FILE_SYSTEM_MODEL_UNKNOWN)
+        if (special_type == -1)
+        {
+          type = HILDON_FILE_SYSTEM_MODEL_MMC;
+          model_node->mmc2 = TRUE;
+        }
+        else if (special_type != HILDON_FILE_SYSTEM_MODEL_UNKNOWN)
           type = special_type;
     }
 
@@ -2327,7 +2337,7 @@ hildon_file_system_model_constructor(GType type,
 
       local_device_path = _hildon_file_system_path_for_location(
                             priv->filesystem, 
-                            HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE);
+                            HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE, FALSE);
 
       priv->local_device_node = hildon_file_system_model_add_node(model,
                                   priv->roots, NULL, local_device_path,
@@ -2345,7 +2355,7 @@ hildon_file_system_model_constructor(GType type,
       {
         priv->mmc2.base_node = hildon_file_system_model_add_node(model,
                                  priv->local_device_node, NULL, NULL,
-                                 HILDON_FILE_SYSTEM_MODEL_MMC2);
+                                 HILDON_FILE_SYSTEM_MODEL_MMC);
       }
       else
       {
@@ -2779,7 +2789,9 @@ gchar *hildon_file_system_model_new_item(HildonFileSystemModel * model,
 
         if (type) /* Ok, we are trying to autoname a special folder. Let's use user visible name */
         {
-          allocated = _hildon_file_system_create_file_name(fs, path, type, NULL);
+          allocated = _hildon_file_system_create_file_name(fs, path,
+                          type == -1 ? HILDON_FILE_SYSTEM_MODEL_MMC : type,
+                          NULL, type == -1 ? TRUE : FALSE);
           stub_name = allocated;
         } 
 

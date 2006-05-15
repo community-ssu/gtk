@@ -1838,7 +1838,8 @@ gchar *hildon_file_chooser_dialog_get_safe_folder(
   fs = _hildon_file_system_model_get_file_system(self->priv->model);
   g_object_get(self->priv->model, "safe-folder", &path, NULL);
   if (path == NULL)
-    path = _hildon_file_system_path_for_location(fs, HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE);
+    path = _hildon_file_system_path_for_location(fs,
+             HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE, FALSE);
 
   result = gtk_file_system_path_to_filename(fs, path);
   gtk_file_path_free(path);
@@ -1866,7 +1867,8 @@ gchar *hildon_file_chooser_dialog_get_safe_folder_uri(
   fs = _hildon_file_system_model_get_file_system(self->priv->model);
   g_object_get(self->priv->model, "safe-folder", &path, NULL);
   if (path == NULL)
-    path = _hildon_file_system_path_for_location(fs, HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE);
+    path = _hildon_file_system_path_for_location(fs,
+             HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE, FALSE);
 
   result = gtk_file_system_path_to_uri(fs, path);
   gtk_file_path_free(path);
