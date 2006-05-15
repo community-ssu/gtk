@@ -822,7 +822,7 @@ void _help_cb(GtkWidget * widget, gpointer data)
     osso_return_t help_ret;
     
     help_ret = ossohelp_show(general_data.osso, 
-			     HILDON_HOME_LAYOUT_HELP_TOPIC, 0);
+			     HILDON_HOME_LAYOUT_HELP_TOPIC, OSSO_HELP_SHOW_DIALOG);
 
     switch (help_ret)
     {
