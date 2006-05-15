@@ -626,8 +626,9 @@ void layout_mode_end ( gboolean rollback )
 	
     if (node->ebox)
     {
-	g_signal_handler_disconnect(node->ebox, node->event_handler);
-	g_signal_handler_disconnect(node->ebox, node->tapnhold_handler);
+        g_signal_handler_disconnect(node->ebox, node->event_handler);
+        g_signal_handler_disconnect(node->ebox, node->tapnhold_handler);
+        gtk_event_box_set_visible_window(GTK_EVENT_BOX(node->ebox), FALSE);
     }
     
 	if (rollback)

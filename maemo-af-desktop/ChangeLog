@@ -1,5 +1,12 @@
 2006-05-15  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "home applet corners are not shown round as they should"
+	(Closes N#28838)
+	* hildon-home/layout-manager.c: Hide the applet eventbox windows
+	  when not in layout mode to make shape masks work again
+
+2006-05-15  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "AF-BAT: Cancelled background image visible beneath the
 	current background" (Closes N#27444)
 	* hildon-home/hildon-home-main.c:

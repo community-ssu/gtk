@@ -343,6 +343,11 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     
         priv->applet_data = priv->initialize(state_data, state_size, &applet);
         handler->eventbox = GTK_EVENT_BOX(gtk_event_box_new());
+    	/* The eventbox window should be invisible in normal mode so that the
+    	 * shape mask for the applets will work
+    	 */
+        gtk_event_box_set_visible_window(GTK_EVENT_BOX(handler->eventbox),
+                                         FALSE);
         gtk_container_add(GTK_CONTAINER(handler->eventbox), applet);
         handler->libraryfile = (gchar *)libraryfile;
         handler->desktoppath = (gchar *)desktoppath;
