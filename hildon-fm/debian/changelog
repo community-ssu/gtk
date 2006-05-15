@@ -1,6 +1,5 @@
 hildon-fm (0.23-1) unstable; urgency=low
 
-  * UNRELEASED
   * Corrected sfil_ni_operation_failed to sfil_ib_create_folder_not_allowed
     (N#29064).
   * Some white space & indentation fixes.
