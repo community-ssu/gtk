@@ -1,21 +1,42 @@
 About Repositories for the Application Installer 2006
 =====================================================
 
-Repository structure
---------------------
+Basic repository setup
+----------------------
 
 The Application installer can deal with any repository that "apt-get"
-can use.  However, the Application installer only shows 'user'
+can understand.  However, the Application installer only shows 'user'
 packages to the user.  A user packages is identified by being in the
 "user" section; see the "Packaging HOWTO".
 
-(The Application installer is able to automatically satisfy
-dependencies from any package in a repository, the "user" section is
-only used to determine which packages to show to the user.)
+Also, when adding a new repository manually, the Application installer
+provides default values for certain parts of a sources.list line.  You
+might want to take this into account when laying out your repository
+so that users have it easy when configuring it.
+
+The distribution will default to the symbolic name of the distribution
+that is installed on the device.  This symbolic name is referred to as
+${dist} in the sequel.  For maemo 2.0, this is "mistral".  The
+component list defaults to just "user".
+
+Thus, unless you have a specific reason to use something else, it is
+probably a good idea to have repositories that can be specified as
+
+    deb URL ${dist} user
+
+so that the user only has to enter URL into the "New Catalogue"
+dialog.
+
+How to actually setup a repository is explained in the "Debian
+Repository HOWTO".
+
+    http://www.debian.org/doc/manuals/repository-howto/repository-howto
 
 
 "Single-click install"
 ----------------------
+
+THIS FEATURE IS NOT SUPPORTED IN THE IT 2006 RELEASE.
 
 When you want users to be able to browse your repositories using the
 Application installer, you need to provide instructions to the user
@@ -30,25 +51,91 @@ recognized to have the mime type "application/x-install-instructions".
 Such a .install file is a text file following the GKeyfile format, as
 defined by glib.  An example would look like this:
 
-   [INSERT ME]
-
+    [install]
+    repo_name = Foo Catalogue
+    repo_deb  = deb http://foo.com/maemo ${dist} user
+ 
 Thus, it can contain information about a repository, and opening the
 file will add the repository to /etc/apt/sources.list if it isn't
-there already.
+there already.  The existence check is based on a simple string
+comparison without any intelligence: if you put two spaces in the
+"deb" line instead of one, the strings are considered different.  This
+test might get smarter in the future.
 
-The .install file can also contain
+The repo_deb string can contain variables of the form "${VAR}".  They
+are replaced with values provided by the Application installer.  The
+following variables can be used:
+
+ ${dist}: The name of the maemo distribution corresponding to the
+          software installed on the device.  For maemo 2.0, this is
+          "mistral", for example.  You would use this variable in the
+          'dist' part of a 'deb' line, of course, like so:
+
+             repo_deb  = deb http://foo.com/maemo ${dist} user
+
+
+The .install file can also contain the name of a package, like so:
+
+    [install]
+    package = foo-app
+
+Opening this file will attempt to install the package named
+"osso-xterm", using the currently configured repositories.
+
+Of course, you can combine both variants:
+
+    [install]
+    repo_name = Foo Catalogue
+    repo_deb  = deb http://foo.com/maemo ${dist} user
+    package   = foo-app
+
+This will first add the repository, and then attempt the installation.
 
 
 "New repository dialog" defaults
 --------------------------------
 
-When adding a new repository from the UI, the Application installer
-provides default values for distribution and components.
 
-The distribution will default to the distribution that contains the
-Application installer itself.  For maemo 2.0, this will be "mistral".
+Disabling repositories
+----------------------
 
-The component list defaults to just "user".
+The Application installer lets the user edit parts of the contents of
+/etc/apt/sources.list.  It recognizes lines marked with "deb", "#deb"
+and a few special comments (see below) and preserves everything else.
+A "deb" line is the usual specification for a source of binary
+packages.  A "#deb" line is the same, but disabled.  When
+enabling/disabling a repository, the Application installer switches
+between the "deb" and "#deb" marker.
+
+There must be no space between "#" and "deb" in the "#deb" marker for
+it to be recognized by the Application installer.
+
+
+Repository names
+----------------
+
+THIS FEATURE IS NOT SUPPORTED IN THE IT 2006 RELEASE.
+
+A repository can have a name for easier identification.  Names are
+stored in /etc/apt/sources.list as a comment line of the form
+
+    #maemo:name NAME
+
+This declaration applies to the next following 'deb' or '#deb' line.
+
+
+Marking a repository as essential
+---------------------------------
+
+A "deb" or "#deb" line in /etc/apt/sources.list can be marked as
+'essential'.  The Application installer will refuse to change or
+remove such a line.
+
+The way to mark a line as essential is to put a line of the form
+"#maemo:essential" before the line.  The "#maemo:essential" marker
+must be on a line of its own, with no whitespace between "#" and
+"maemo:essential".  The marker does not have to immediately precede
+the "deb" or "#deb" line.
 
 
 Setting up a repository with certified packages
@@ -96,29 +183,3 @@ done, etc).  Everything after and including the first '#' in a line is
 ignored.  Blank lines are allowed, of course.
 
 
-Disabling repositories
-----------------------
-
-The Application installer lets the user edit parts of the contents of
-/etc/apt/sources.list.  It recognizes lines marked with "deb" and
-"#deb" and preserves everything else.  A "deb" line is the usual
-specification for a source of binary packages.  A "#deb" line is the
-same, but disabled.  When enabling/disabling a repository, the
-Application installer switches between the "deb" and "#deb" marker.
-
-There must be no space between "#" and "deb" in the "#deb" marker for
-it to be recognized by the Application installer.
-
-
-Marking a repository as essential
----------------------------------
-
-A "deb" or "#deb" line in /etc/apt/sources.list can be marked as
-'essential'.  The Application installer will refuse to change or
-remove such a line.
-
-The way to mark a line as essential is to put a line of the form
-"#maemo:essential" before the line.  The "#maemo:essential" marker
-must be on a line of its own, with no whitespace between "#" and
-"maemo:essential".  The marker does not have to immediately precede
-the "deb" or "#deb" line.

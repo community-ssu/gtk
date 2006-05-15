@@ -88,23 +88,18 @@ package fits into one of these subsections, you should put it there.
 This will avoid fragmenting the subsection names, and the names of
 these subsections will be correctly localised.
 
-The [PRELIMINARY!] list of predefined subsections and their English
-names is:
+The list of predefined subsections and their English names is:
 
-    user/office	      Office		   
-    user/internet     Internet		   
-    user/multimedia   Multimedia		   
-    user/travel	      Travel		   
-    user/games	      Games			   
-    user/system-tools System Tools 		   
-    user/utilities    Utilities		   
-    user/programming  Programming		   
-    user/education    Education		   
-    user/accessories  Accessories		   
-    user/themes	      Themes		   
-    user/graphics     Graphics		   
-    user/support      Support		   
-    user/other        Other                    
+    user/accessories    Accessories		   
+    user/communication  Communication
+    user/games	        Games			   
+    user/multimedia     Multimedia		   
+    user/office	        Office		   
+    user/other          Other                    
+    user/programming    Programming		   
+    user/support        Support		   
+    user/themes	        Themes		   
+    user/tools          Tools 		   
 
 Thus, if you want to put your package into the Office subsection,
 include the field
@@ -240,8 +235,6 @@ Utilities to use in your maintainer scripts
 
 There are some utilities available that you can use in your maintainer
 scripts to interact with the user:
-
-[PRELIMINARY!]
 
 - maemo-select-menu-location <app>.desktop [default-folder]
 
