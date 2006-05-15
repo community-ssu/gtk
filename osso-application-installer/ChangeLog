@@ -1,3 +1,10 @@
+2006-05-15  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 4.18.1
+
+	No code changes, but sources.list was missing from subversion
+	which breaks our build system.
+
 2006-05-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.18
