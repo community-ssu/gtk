@@ -1,3 +1,13 @@
+2006-05-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (make_global_package_list): Use proper logical id
+	and not hardcoded strings for the column title. (N29195)
+
+	* src/main.cc (main): Only put first separator into
+	tooolbar. (N27902)
+	(window_state_event): Set border of main window when
+	fullscreening. (N27905)
+
 2006-05-15  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.18.1
