@@ -2431,9 +2431,15 @@ window_state_event (GtkWidget *widget, GdkEventWindowState *event,
       is_fullscreen = f;
       set_fullscreen_menu_check (f);
       if (is_fullscreen)
-	set_current_toolbar_visibility (fullscreen_toolbar);
+	{
+	  gtk_container_set_border_width (GTK_CONTAINER (widget), 15);
+	  set_current_toolbar_visibility (fullscreen_toolbar);
+	}
       else
-	set_current_toolbar_visibility (normal_toolbar);
+	{
+	  gtk_container_set_border_width (GTK_CONTAINER (widget), 0);
+	  set_current_toolbar_visibility (normal_toolbar);
+	}
     }
 
   return FALSE;
@@ -2585,9 +2591,11 @@ main (int argc, char **argv)
 		      GTK_TOOL_ITEM (details_button),
 		      -1);
 
+#if 0
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 		      GTK_TOOL_ITEM (gtk_separator_tool_item_new ()),
 		      -1);
+#endif
 
   image = gtk_image_new_from_icon_name ("qgn_toolb_gene_findbutton",
 					HILDON_ICON_SIZE_26);
