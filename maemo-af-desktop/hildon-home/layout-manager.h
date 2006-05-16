@@ -29,18 +29,21 @@
 #ifndef LAYOUT_MANAGER_H
 #define LAYOUT_MANAGER_H
 
-/** layout_mode_begin
+/**
+ * @layout_mode_begin
  *
- * Enters layout mode. 
+ * @param GtkEventBox *home_event_box the home applet area eventbox
+ * @param GtkFixed * the home (fixed) container
+ * @param GList * added_applets The list of added applet, or NULL
+ * @param GList * removed_applets The list of applets scheduled for removal 
+ * or NULL
+ * @param GtkWidget * titlebar_label the titlebar label
  *
- * @param home_event_box the home main eventbox
+ * @return void
  *
- * @param home_fixed the home container for applet placement
- *
- * @param added_applets the list of new applets to be added.
- *
- * @param removed_applets the list of on-screen applets to be removed.
- */
+ * Initializes the applets in layoutmode Nodes, connects to signal
+ * handlers, dims statusbar and tasknav.
+ **/
 
 void layout_mode_begin (GtkEventBox * home_event_box,
 			GtkFixed * home_fixed,
@@ -48,13 +51,21 @@ void layout_mode_begin (GtkEventBox * home_event_box,
 			GList * removed_applets,
                         GtkWidget * titlebar_label); 
 
-/** layout_mode_end
+
+/**
+ * @layout_mode_end
  *
- * Quits layout mode. 
+ * @param gboolean rollback should the layout mode changes be annulled
  *
- * @param rollback TRUE if the applets must be moved back to their
- * original places.
- */
+ * @return void
+ *
+ * Deinitializes everything. Always the last function called despite how
+ * layout mode ends.
+ * If rollback is specified, everything done
+ * during layout mode (and the changes indicated when layout mode
+ * begin is called (removing added applets and restoring old ones)
+ * are reversed.
+ **/
 
 void layout_mode_end (gboolean rollback);
 
