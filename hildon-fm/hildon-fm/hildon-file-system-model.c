@@ -44,6 +44,7 @@
 #include <errno.h>
 
 #include "hildon-file-common-private.h"
+#include <osso-mime.h>
 
 /*  Reload contents of removable devices after this amount of seconds */
 #define RELOAD_THRESHOLD 30  
@@ -1009,10 +1010,22 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
             else if (model_node->thumbnail_handle)
               osso_thumbnail_factory_move_front(model_node->thumbnail_handle);
 
-            if (!model_node->thumbnail_cache)
+            if (info && !model_node->thumbnail_cache)
+            {
+              OssoMimeCategory cat;
+              cat = osso_mime_get_category_for_mime_type(
+                        gtk_file_info_get_mime_type(info));
+              if (cat == OSSO_MIME_CATEGORY_IMAGES)
                 model_node->thumbnail_cache =
-                    hildon_file_system_model_create_image(priv, model_node,
-                                                          THUMBNAIL_ICON);
+                    _hildon_file_system_load_icon_cached(
+                        gtk_icon_theme_get_default(),
+                        "qgn_list_gene_image_file_wait", THUMBNAIL_ICON);
+            }
+
+            if (!model_node->thumbnail_cache)
+              model_node->thumbnail_cache =
+                 hildon_file_system_model_create_image(priv, model_node,
+                                                       THUMBNAIL_ICON);
         }
         g_value_set_object(value, model_node->thumbnail_cache);
         update_cache_queue(priv, node);
