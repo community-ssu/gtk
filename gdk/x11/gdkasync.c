@@ -639,6 +639,7 @@ _gdk_x11_get_window_child_info (GdkDisplay       *display,
     {
       if (win_has_wm_state)
 	*win_has_wm_state = TRUE;
+      g_free (state.children);
       return TRUE;
     }
   else
