@@ -1,0 +1,56 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+PYVER=2.4
+PYTHON=python$(PYVER)
+p_base=$(PYTHON)-dbus
+p_dev =$(PYTHON)-dbus-dev
+
+d_base=debian/$(p_base)
+d_dev=debian/$(p_dev)
+
+CFLAGS=-Wall -Os
+
+build: build24-stamp 
+build24-stamp:
+	dh_testdir 
+	CFLAGS="$(CFLAGS)" $(PYTHON) setup.py build
+	touch build24-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	$(PYTHON) setup.py clean --all
+	-rm -f build24-stamp
+	-rm -rf $(d_base) $(d_dev)
+	dh_clean 
+
+binary:
+	dh_testdir
+	dh_testroot
+
+	mkdir -p $(d_base) $(d_dev)
+	$(PYTHON) setup.py install --root=$(d_base) --no-compile
+	$(PYTHON) -OO -m compileall -f $(d_base)
+	cp -a $(d_base)/usr $(d_dev)
+
+	# base
+	find $(d_base) -name "*.py" | xargs rm -f 
+
+	# dev
+	find $(d_dev)/usr/lib/$(PYTHON) -not -name "*.py" -type f | xargs rm -f 
+	dh_installexamples -p$(p_dev) examples/*
+	find $(d_dev) -name ".svn" | xargs rm -rf
+
+	dh_installchangelogs -p$(p_dev)
+	dh_installman -p$(p_dev)
+	dh_strip
+	dh_compress -Xexamples
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+.PHONY: build clean binary configure
