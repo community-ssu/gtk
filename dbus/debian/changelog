@@ -1,3 +1,10 @@
+dbus (0.61-osso10) experimental; urgency=low
+
+  * UNRELEASED
+  * Added support for compiling with thumb instructions (N#28905).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 16 May 2006 11:59:00 +0300
+
 dbus (0.61-osso9) experimental; urgency=low
 
   * Fixed a leak in dbus_g_object_register_marshaller_array (N#28791).
