@@ -3025,11 +3025,8 @@ _gdk_drag_get_protocol_for_display (GdkDisplay      *display,
 	  GDK_NOTE (DND, g_message ("Entering local Xdnd window %#x\n", xid));
 	  return xid;
 	}
-      else
-	return None;
     }
-  
-  if ((retval = xdnd_check_dest (display, xid, version)))
+  else if ((retval = xdnd_check_dest (display, xid, version)))
     {
       *protocol = GDK_DRAG_PROTO_XDND;
       xdnd_precache_atoms (display);

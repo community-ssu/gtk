@@ -1,5 +1,10 @@
 2006-05-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gdk/x11/gdkdnd-x11.c (_gdk_drag_get_protocol_for_display): Fall
+	through the if branches so that *protocol always gets initialized.
+
+2006-05-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gdk/x11/gdkasync.c (_gdk_x11_get_window_child_info): Don't leak
 	state.children when short-circuiting the return. N#29142
 
