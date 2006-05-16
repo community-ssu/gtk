@@ -5,13 +5,12 @@
 
 gendocdir=`dirname $0`
 cwd=`pwd`
-for d in $gendocdir/../build/lib*/ 
-do
+(
+    cd $gendocdir/../build/lib*/ 
     pydoc2.4 -w bluetooth >> /dev/null
     pydoc2.4 -w _bluetooth >> /dev/null
     mv -f bluetooth.html ../../doc/bluetooth.html
     mv -f _bluetooth.html ../../doc/_bluetooth.html
-    break
-done
+)
 
 echo "documentation written to $gendocdir/bluetooth.html"
