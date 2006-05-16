@@ -96,6 +96,10 @@ hn_wm_watchable_app_new (const char * file)
     {
       osso_log(LOG_ERR,
 	       "HN: Desktop file has invalid fields");
+
+      g_free(app_name);
+      g_free(exec_name);
+      g_free(startup_wmclass);
       return NULL;
     }
   
@@ -128,17 +132,20 @@ hn_wm_watchable_app_new (const char * file)
       goto out;
     }
 
-  app->icon_name      = g_strdup(icon_name); 
-  app->service        = g_strdup(service);    
-  app->app_name       = g_strdup(app_name); 
-  app->exec_name      = g_strdup(exec_name);
+  app->icon_name      = icon_name; 
+  app->service        = service;    
+  app->app_name       = app_name; 
+  app->exec_name      = exec_name;
   app->startup_notify = TRUE;                /* Default */
 
   if (startup_notify)
-    app->startup_notify = (g_ascii_strcasecmp(startup_notify, "false"));
-
+    {
+      app->startup_notify = (g_ascii_strcasecmp(startup_notify, "false"));
+      g_free(startup_notify);
+    }
+  
   if (startup_wmclass != NULL)
-    app->class_name = g_strdup(startup_wmclass);
+    app->class_name = startup_wmclass;
   else
     app->class_name = g_path_get_basename(exec_name);
 

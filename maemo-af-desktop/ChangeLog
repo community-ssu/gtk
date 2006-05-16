@@ -1,3 +1,10 @@
+2006-05-16  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Memory leaks in hn_wm_watchable_app_new()" (Closes
+	N#29530)
+	* hildon-navigator/hn-wm-watchable-app.c: do not duplicate strings
+	  contained in the watchable app structure.
+
 2006-05-15  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/layout-manager.c: Open the help in a dialog (Closes N#29447)
