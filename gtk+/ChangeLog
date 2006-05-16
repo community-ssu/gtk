@@ -1,3 +1,8 @@
+2006-05-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gdk/x11/gdkasync.c (_gdk_x11_get_window_child_info): Don't leak
+	state.children when short-circuiting the return. N#29142
+
 2006-05-12  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_ref_node): bring in
