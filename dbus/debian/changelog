@@ -1,9 +1,8 @@
 dbus (0.61-osso10) experimental; urgency=low
 
-  * UNRELEASED
   * Added support for compiling with thumb instructions (N#28905).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 16 May 2006 11:59:00 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 16 May 2006 17:31:38 +0300
 
 dbus (0.61-osso9) experimental; urgency=low
 
