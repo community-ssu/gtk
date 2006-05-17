@@ -1,5 +1,9 @@
 2006-05-17  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/comm_dbus.c: Include <unistd.h>.
+
+2006-05-17  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (env_init): New function.
 	(main): Call env_init.
 

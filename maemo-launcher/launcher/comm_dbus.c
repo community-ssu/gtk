@@ -23,6 +23,7 @@
 
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
+#include <unistd.h>
 
 #include "comm_dbus.h"
 #include "report.h"
