@@ -975,7 +975,7 @@ gtk_real_menu_item_select (GtkItem *item)
             gdk_event_free (event);
         }
       else
-        _gtk_menu_item_popup_submenu (menu_item);
+        _gtk_menu_item_popup_submenu (GTK_WIDGET (menu_item));
     }
 
   gtk_widget_set_state (GTK_WIDGET (menu_item), GTK_STATE_PRELIGHT);
@@ -1020,7 +1020,6 @@ static void
 gtk_real_menu_item_activate_item (GtkMenuItem *menu_item)
 {
   GtkWidget *widget;
-  GtkMenuShell *submenu; 
 
   g_return_if_fail (GTK_IS_MENU_ITEM (menu_item));
 

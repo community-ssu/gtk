@@ -810,6 +810,8 @@ void gtk_widget_tap_and_hold_menu_position_top (GtkWidget *menu,
 void gtk_widget_tap_and_hold_setup (GtkWidget *widget, GtkWidget *menu,
                         GtkCallback func, GtkWidgetTapAndHoldFlags flags);
 
+void gtk_widget_insensitive_press ( GtkWidget *widget );
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

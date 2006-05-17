@@ -457,7 +457,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 static void osso_gtk_hbutton_child_showhide_handler (GtkWidget *widget,
 						     gpointer user_data)
 {
-  osso_gtk_hbutton_box_find_button_detail (widget, GTK_WIDGET (user_data), NULL);
+  osso_gtk_hbutton_box_find_button_detail (GTK_HBUTTON_BOX (widget), GTK_WIDGET (user_data), NULL);
 }
   
 /* Function to remove "show"&"hide" signal handlers

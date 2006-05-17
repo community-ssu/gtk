@@ -2591,7 +2591,7 @@ _gtk_tree_view_column_cell_set_cell_data_with_attributes (GtkTreeViewColumn *tre
   va_start (var_args, attribute);
   do
     attributes = g_slist_append (attributes, attribute);
-  while (attribute = va_arg (var_args, gchar *));
+  while ((attribute = va_arg (var_args, gchar *)) != NULL);
   va_end (var_args);
 
   for (cell_list = tree_column->cell_list; cell_list; cell_list = cell_list->next)

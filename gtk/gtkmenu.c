@@ -3357,8 +3357,6 @@ gtk_menu_enter_notify (GtkWidget        *widget,
   menu_item = gtk_get_event_widget ((GdkEvent*) event);
   if (widget && GTK_IS_MENU (widget))
     {
-      GtkMenuShell *menu_shell = GTK_MENU_SHELL (widget);
-
       if (gtk_menu_handle_scrolling (GTK_MENU (widget), event->x_root, event->y_root, TRUE, TRUE))
         return FALSE;
     }

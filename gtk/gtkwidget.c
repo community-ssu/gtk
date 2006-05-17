@@ -58,6 +58,7 @@
 #include "gtkmenu.h"
 #include "gtkmenuitem.h"
 #include "gtkicontheme.h"
+#include "gtkdnd.h"
 #include "gtkalias.h"
 
 #define WIDGET_CLASS(w)	 GTK_WIDGET_GET_CLASS (w)
