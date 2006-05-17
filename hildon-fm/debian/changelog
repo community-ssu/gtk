@@ -6,6 +6,7 @@ hildon-fm (0.24-1) unstable; urgency=low
   * Added hildon_file_chooser_dialog_focus_to_input for special selection
     needs (N#28539).
   * Fixed unparenting problem in file selection finalisation (N#28074).
+  * Magnificent column headers by Kuisma Salonen! (N#25258).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 17 May 2006 15:56:48 +0300
 
