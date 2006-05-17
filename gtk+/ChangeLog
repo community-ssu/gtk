@@ -1,4 +1,9 @@
 2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkwidget.c (init_tap_and_hold_animation): Always start the
+	tap'n'hold animation from the beginning.
+
+2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_timeout): Use
 	gtk_drag_check_threshold() instead of custom test with hardcoded pixel
