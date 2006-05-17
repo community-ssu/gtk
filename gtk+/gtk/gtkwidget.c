@@ -68,11 +68,6 @@
 #define GTK_TAP_AND_HOLD_TIMER_COUNTER 11
 #define GTK_TAP_AND_HOLD_TIMER_INTERVAL 100
 
-typedef struct _GtkWidgetPrivate GtkWidgetPrivate;
-
-#define GTK_WIDGET_GET_PRIVATE(obj) ( G_TYPE_INSTANCE_GET_PRIVATE ((obj),\
-                                      GTK_TYPE_WIDGET, GtkWidgetPrivate) )
-
 #define TAP_AND_HOLD_ANIMATION 1
                                       
 #ifdef TAP_AND_HOLD_ANIMATION
@@ -181,7 +176,7 @@ struct _GtkStateData
   guint		use_forall : 1;
 };
 
-struct _GtkWidgetPrivate
+typedef struct
 {
   GtkWidget *menu;
   guint timer_id;
@@ -197,14 +192,14 @@ struct _GtkWidgetPrivate
   GdkPixbufAnimation *anim;
   GdkPixbufAnimationIter *iter;
 #endif
-};
+} TahData;
 
 /* --- Tap And Hold --- */
 static gboolean gtk_widget_tap_and_hold_timeout( GtkWidget *widget );
 static gboolean gtk_widget_tap_and_hold_button_press( GtkWidget *widget,
-                                     GdkEvent *event, GtkWidgetPrivate *priv );
+                                     GdkEvent *event, TahData *td );
 static gboolean gtk_widget_tap_and_hold_event_stop( GtkWidget *widget,
-                                     gpointer unused, GtkWidgetPrivate *priv );
+                                     gpointer unused, TahData *td );
 static void gtk_widget_tap_and_hold_setup_real( GtkWidget *widget,
             GtkWidget *menu, GtkCallback func, GtkWidgetTapAndHoldFlags flags );
 static void gtk_widget_real_tap_and_hold(GtkWidget *widget);
@@ -461,8 +456,6 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   klass->get_accessible = gtk_widget_real_get_accessible;
 
   klass->no_expose_event = NULL;
-
-  g_type_class_add_private( klass, sizeof(GtkWidgetPrivate) );
 
   /** 
    * GtkWidget:tap-and-hold-state:
@@ -1828,13 +1821,36 @@ gtk_widget_get_property (GObject         *object,
     }
 }
 
+static TahData*
+gtk_widget_peek_tah_data (GtkWidget *widget)
+{
+  TahData *td = g_object_get_data (G_OBJECT (widget), "MaemoGtkWidget-tap-and-hold");
+  return td;
+}
+
+static void
+gtk_widget_set_tah_data (GtkWidget *widget, TahData *td)
+{
+  g_object_set_data (G_OBJECT (widget), "MaemoGtkWidget-tap-and-hold", td);
+}
+
+static TahData*
+gtk_widget_get_tah_data (GtkWidget *widget)
+{
+  TahData *td = gtk_widget_peek_tah_data (widget);
+  if (!td)
+    {  
+      td = g_new0 (TahData, 1);
+      td->interval = GTK_TAP_AND_HOLD_TIMER_INTERVAL;
+      gtk_widget_set_tah_data (widget, td);
+    }
+  return td;
+}
+
 static void
 gtk_widget_init (GtkWidget *widget)
 {
-  GtkWidgetPrivate *priv;
   GTK_PRIVATE_FLAGS (widget) = PRIVATE_GTK_CHILD_VISIBLE;
-
-  priv = GTK_WIDGET_GET_PRIVATE(widget);
 
   widget->state = GTK_STATE_NORMAL;
   widget->saved_state = GTK_STATE_NORMAL;
@@ -1848,15 +1864,6 @@ gtk_widget_init (GtkWidget *widget)
   widget->window = NULL;
   widget->parent = NULL;
 
-  priv->timer_id = 0;
-  priv->menu = NULL;
-  priv->signals_connected = FALSE;
-  priv->x = priv->y = 0;
-  priv->func = NULL;
-  priv->timer_counter = 0;
-  priv->interval = GTK_TAP_AND_HOLD_TIMER_INTERVAL;
-  priv->tah_on_window = NULL;
-  
   GTK_WIDGET_SET_FLAGS (widget,
 			GTK_SENSITIVE |
 			GTK_PARENT_SENSITIVE |
@@ -6715,7 +6722,7 @@ gtk_widget_real_destroy (GtkObject *object)
   /* gtk_object_destroy() will already hold a refcount on object */
   GtkWidget *widget = GTK_WIDGET (object);
 #ifdef TAP_AND_HOLD_ANIMATION
-  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE(widget);
+  TahData *td;
 #endif
 
   /* wipe accelerator closures (keep order) */
@@ -6732,16 +6739,17 @@ gtk_widget_real_destroy (GtkObject *object)
   g_object_ref (widget->style);
 
 #ifdef TAP_AND_HOLD_ANIMATION
-  if( priv->anim )
-  {
-    g_object_unref(priv->anim);
-    priv->anim = NULL;
-  }
-  if( priv->iter )
-  {
-    g_object_unref(priv->iter);
-    priv->iter = NULL;
-  }
+  td = gtk_widget_peek_tah_data (widget);
+  if (td && td->anim)
+    {
+      g_object_unref (td->anim);
+      td->anim = NULL;
+    }
+  if (td && td->iter)
+    {
+      g_object_unref (td->iter);
+      td->iter = NULL;
+    }
 #endif
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
@@ -6751,23 +6759,17 @@ static void
 gtk_widget_finalize (GObject *object)
 {
   GtkWidget *widget = GTK_WIDGET (object);
-  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE(object);
   GtkWidgetAuxInfo *aux_info;
   gint *events;
   GdkExtensionMode *mode;
   GtkAccessible *accessible;
+  TahData *td;
   
   gtk_grab_remove (widget);
 
   g_object_unref (widget->style);
   widget->style = NULL;
 
-  if (priv->timer_id)
-    {
-      g_source_remove (priv->timer_id);
-      priv->timer_id = 0;
-    }
-  
   if (widget->name)
     g_free (widget->name);
   
@@ -6787,8 +6789,17 @@ gtk_widget_finalize (GObject *object)
   if (accessible)
     g_object_unref (accessible);
 
-  if  (GTK_IS_MENU(priv->menu))
-    gtk_widget_destroy (priv->menu);
+  td = gtk_widget_peek_tah_data (widget);
+  if (td)
+    {
+      if (td->timer_id)
+	g_source_remove (td->timer_id);
+      td->timer_id = 0;
+      if (GTK_IS_MENU (td->menu))
+	gtk_widget_destroy (td->menu);
+      gtk_widget_set_tah_data (widget, NULL);
+      g_free (td);
+    }
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -7862,60 +7873,63 @@ gtk_widget_insensitive_press ( GtkWidget *widget )
 static void
 stop_tap_and_hold_animation (GtkWidget *widget)
 {
-  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE (widget);
-  if (!GDK_IS_WINDOW (priv->tah_on_window))
+  TahData *td = gtk_widget_peek_tah_data (widget);
+  if (!td || !GDK_IS_WINDOW (td->tah_on_window))
     return;
 
-  if (priv->anim)
-    gdk_window_set_cursor (priv->tah_on_window, NULL);
-  priv->tah_on_window = NULL;
+  if (td->anim)
+    gdk_window_set_cursor (td->tah_on_window, NULL);
+  td->tah_on_window = NULL;
 }
 #endif
 
 static void
 tap_and_hold_remove_timer (GtkWidget *widget)
 {
-  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE (widget);
-  if (priv->timer_id)
+  TahData *td = gtk_widget_peek_tah_data (widget);
+  if (td)
     {
-      g_source_remove (priv->timer_id);
-      priv->timer_id = 0;
-    }
+      if (td->timer_id)
+	{
+	  g_source_remove (td->timer_id);
+	  td->timer_id = 0;
+	}
 
-  priv->x = priv->y = priv->timer_counter = 0;
+      td->x = td->y = td->timer_counter = 0;
 #ifdef TAP_AND_HOLD_ANIMATION
-  stop_tap_and_hold_animation (widget);
+      stop_tap_and_hold_animation (widget);
 #endif
+    }
 }
 
 #ifdef TAP_AND_HOLD_ANIMATION
 static void
-init_tap_and_hold_animation (GtkWidgetPrivate *priv)
+init_tap_and_hold_animation (TahData *td)
 {
   GTimeVal time;
-  if (priv->anim)
+  if (td->anim)
     {
       g_get_current_time (&time);
       
-      if (!priv->iter)
-          priv->iter = gdk_pixbuf_animation_get_iter (priv->anim, &time);
+      if (!td->iter)
+          td->iter = gdk_pixbuf_animation_get_iter (td->anim, &time);
       
-      priv->interval = gdk_pixbuf_animation_iter_get_delay_time (priv->iter);
+      td->interval = gdk_pixbuf_animation_iter_get_delay_time (td->iter);
     }
 }
 
 static gboolean
 timeout_tap_and_hold_animation (GtkWidget *widget)
 {
-  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE (widget);
+  TahData *td = gtk_widget_peek_tah_data (widget);
 
-  if (!GDK_IS_WINDOW (priv->tah_on_window))
+  if (!td || !GDK_IS_WINDOW (td->tah_on_window))
     {
       tap_and_hold_remove_timer (widget);
       return FALSE;
     }
 
-  if (priv->anim)
+  if (td->anim)
     {
       guint new_interval = 0;
       GTimeVal time;
@@ -7927,7 +7941,7 @@ timeout_tap_and_hold_animation (GtkWidget *widget)
 
       g_get_current_time (&time);
       screen = gdk_screen_get_default ();
-      pic = gdk_pixbuf_animation_iter_get_pixbuf (priv->iter);
+      pic = gdk_pixbuf_animation_iter_get_pixbuf (td->iter);
       
       pic = gdk_pixbuf_copy (pic);
       
@@ -7946,18 +7960,18 @@ timeout_tap_and_hold_animation (GtkWidget *widget)
       if (!cursor)
       	return TRUE;
 
-      gdk_window_set_cursor (priv->tah_on_window, cursor);
+      gdk_window_set_cursor (td->tah_on_window, cursor);
       gdk_cursor_unref (cursor);
 
-      gdk_pixbuf_animation_iter_advance (priv->iter, &time);
+      gdk_pixbuf_animation_iter_advance (td->iter, &time);
 
-      new_interval = gdk_pixbuf_animation_iter_get_delay_time (priv->iter);
+      new_interval = gdk_pixbuf_animation_iter_get_delay_time (td->iter);
 
-      if (new_interval != priv->interval && priv->timer_counter)
+      if (new_interval != td->interval && td->timer_counter)
 	{
-	  priv->interval = new_interval;
-	  priv->timer_id = g_timeout_add (priv->interval,
-					  (GSourceFunc)gtk_widget_tap_and_hold_timeout, widget);
+	  td->interval = new_interval;
+	  td->timer_id = g_timeout_add (td->interval,
+					(GSourceFunc)gtk_widget_tap_and_hold_timeout, widget);
 	  return FALSE;
 	}
     }
@@ -8005,37 +8019,38 @@ static void gtk_widget_tap_and_hold_setup_real (GtkWidget *widget,
   const gchar *filename = NULL;
   GdkWindow *window = NULL;
 #endif
+  TahData *td;
 
-  GtkWidgetPrivate *priv;
   g_return_if_fail (GTK_IS_WIDGET (widget));
   g_return_if_fail (menu == NULL || GTK_IS_MENU (menu));
-  priv = GTK_WIDGET_GET_PRIVATE (widget);
-  if (priv->signals_connected)
+
+  td = gtk_widget_get_tah_data (widget);
+  if (td->signals_connected)
     return;
 
   if (menu != NULL)
     _gtk_menu_enable_context_menu_behavior (GTK_MENU (menu));
 
-  priv->menu = menu;
-  priv->func = (GtkMenuPositionFunc)func;
-  priv->signals_connected = TRUE;
-  priv->timer_counter = 0;
+  td->menu = menu;
+  td->func = (GtkMenuPositionFunc)func;
+  td->signals_connected = TRUE;
+  td->timer_counter = 0;
 
   g_signal_connect (widget, "button-press-event",
-		    G_CALLBACK (gtk_widget_tap_and_hold_button_press), priv);
+		    G_CALLBACK (gtk_widget_tap_and_hold_button_press), td);
   g_signal_connect (widget, "button-release-event",
-		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), priv);
+		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), td);
   g_signal_connect (widget, "leave-notify-event",
-		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), priv);
+		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), td);
   g_signal_connect (widget, "drag-begin",
-		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), priv);
+		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), td);
 
 #ifdef TAP_AND_HOLD_ANIMATION
   window = gdk_get_default_root_window ();
-  priv->iter = NULL;
-  priv->anim = g_object_get_data (G_OBJECT (window),
-				  "gtk-tap-and-hold-animation");
-  if (!GDK_IS_PIXBUF_ANIMATION (priv->anim))
+  td->iter = NULL;
+  td->anim = g_object_get_data (G_OBJECT (window),
+				"gtk-tap-and-hold-animation");
+  if (!GDK_IS_PIXBUF_ANIMATION (td->anim))
     {
       theme = gtk_icon_theme_get_default ();
       if (!theme)
@@ -8059,13 +8074,12 @@ static void gtk_widget_tap_and_hold_setup_real (GtkWidget *widget,
 	  g_warning ("Unable to find tap and hold icon filename");
 	  return;
 	}
-
-      priv->anim = gdk_pixbuf_animation_new_from_file (filename, &error);
+      td->anim = gdk_pixbuf_animation_new_from_file (filename, &error);
 
       if (error)
 	{
 	  g_warning ("Unable to create tap and hold animation: %s", error->message);
-	  priv->anim = NULL;
+	  td->anim = NULL;
 	  g_error_free (error);
 	  gtk_icon_info_free (info);
 	  return;
@@ -8074,30 +8088,30 @@ static void gtk_widget_tap_and_hold_setup_real (GtkWidget *widget,
       gtk_icon_info_free (info);
 
       g_object_set_data (G_OBJECT (window),
-			 "gtk-tap-and-hold-animation", priv->anim);
+			 "gtk-tap-and-hold-animation", td->anim);
     }
-  g_object_ref (priv->anim);
+  g_object_ref (td->anim);
 #endif
 }
 
 static void gtk_widget_real_tap_and_hold (GtkWidget *widget)
 {
-  GtkWidgetPrivate *priv = GTK_WIDGET_GET_PRIVATE (widget);
-  if (GTK_IS_MENU (priv->menu))
-    gtk_menu_popup (GTK_MENU (priv->menu), NULL, NULL,
-		    (GtkMenuPositionFunc)priv->func,
+  TahData *td = gtk_widget_peek_tah_data (widget);
+  if (td && GTK_IS_MENU (td->menu))
+    gtk_menu_popup (GTK_MENU (td->menu), NULL, NULL,
+		    (GtkMenuPositionFunc)td->func,
 		    widget, 1, gdk_x11_get_server_time (widget->window));
 }
 
 static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
 {
-  GtkWidgetPrivate *priv= GTK_WIDGET_GET_PRIVATE (widget);
+  TahData *td = gtk_widget_peek_tah_data (widget);
   gboolean result = TRUE;
   gint x = 0, y = 0;
 
   GDK_THREADS_ENTER ();
 
-  if (!GDK_IS_WINDOW (priv->tah_on_window))
+  if (!td || !GDK_IS_WINDOW (td->tah_on_window))
     {
       tap_and_hold_remove_timer (widget);
 
@@ -8105,9 +8119,9 @@ static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
       return FALSE;
     }
   /* A small timeout before starting the tap and hold */
-  if (priv->timer_counter == GTK_TAP_AND_HOLD_TIMER_COUNTER)
+  if (td->timer_counter == GTK_TAP_AND_HOLD_TIMER_COUNTER)
     {
-      priv->timer_counter--;
+      td->timer_counter--;
 
       GDK_THREADS_LEAVE ();
       return TRUE;
@@ -8117,19 +8131,19 @@ static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
   result = timeout_tap_and_hold_animation (widget);
 #endif
 
-  if (priv->timer_counter)
-    priv->timer_counter--;
+  if (td->timer_counter)
+    td->timer_counter--;
   else
-    priv->timer_id = 0;
+    td->timer_id = 0;
 
   gdk_display_get_pointer (gdk_x11_lookup_xdisplay (
 			   GDK_WINDOW_XDISPLAY (
-			   priv->tah_on_window)),
+			   td->tah_on_window)),
 			   NULL, &x, &y, NULL);
 
   /* Did we dragged too far from the start point */
-  if ((abs (x - priv->x) > GTK_TAP_THRESHOLD) ||
-      (abs (y - priv->y) > GTK_TAP_THRESHOLD))
+  if ((abs (x - td->x) > GTK_TAP_THRESHOLD) ||
+      (abs (y - td->y) > GTK_TAP_THRESHOLD))
     {
       tap_and_hold_remove_timer (widget);
 
@@ -8138,7 +8152,7 @@ static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
     }
 
   /* Was that the last cycle -> tah starts */
-  if (!priv->timer_id)
+  if (!td->timer_id)
     {
       tap_and_hold_remove_timer (widget);
       _gtk_widget_grab_notify (widget, FALSE);
@@ -8167,35 +8181,35 @@ static gboolean gtk_widget_tap_and_hold_query (GtkWidget *widget, GdkEvent *even
 
 static gboolean gtk_widget_tap_and_hold_button_press (GtkWidget *widget,
 						      GdkEvent *event,
-						      GtkWidgetPrivate *priv)
+						      TahData *td)
 {
   if (event->button.type == GDK_2BUTTON_PRESS)
     return FALSE;
 
-  if (!gtk_widget_tap_and_hold_query (widget, event) && !priv->timer_id)
+  if (!gtk_widget_tap_and_hold_query (widget, event) && !td->timer_id)
     {
       gdk_display_get_pointer (gdk_x11_lookup_xdisplay (
                                GDK_WINDOW_XDISPLAY (widget->window)),
-			       NULL, &priv->x, &priv->y, NULL);
+			       NULL, &td->x, &td->y, NULL);
 
-      priv->timer_counter = GTK_TAP_AND_HOLD_TIMER_COUNTER;
-      priv->tah_on_window = widget->window;
+      td->timer_counter = GTK_TAP_AND_HOLD_TIMER_COUNTER;
+      td->tah_on_window = widget->window;
 
 #ifdef TAP_AND_HOLD_ANIMATION
-      init_tap_and_hold_animation (priv);
+      init_tap_and_hold_animation (td);
 #endif
-      priv->timer_id = g_timeout_add (priv->interval,
-				      (GSourceFunc)
-				      gtk_widget_tap_and_hold_timeout, widget);
+      td->timer_id = g_timeout_add (td->interval,
+				    (GSourceFunc)
+				    gtk_widget_tap_and_hold_timeout, widget);
     }
   return FALSE;
 }
 
 static gboolean gtk_widget_tap_and_hold_event_stop (GtkWidget *widget,
 						    gpointer unused,
-						    GtkWidgetPrivate *priv)
+						    TahData *td)
 {
-  if (priv->timer_id)
+  if (td->timer_id)
     tap_and_hold_remove_timer (widget);
   return FALSE;
 }
