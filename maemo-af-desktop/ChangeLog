@@ -1,5 +1,10 @@
 2006-05-17  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hildon-navigator-main.c: create the user configuration
+	  directory if not present, so we can monitor it (Closes N#24138)
+
+2006-05-17  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm.c, hildon-navigator/hn-wm-session.[ch]:
 	  removed deprecated session management code. (Closes N#25701)
 

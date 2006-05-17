@@ -38,6 +38,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
+#include <glib/gstdio.h>
 
 /* dlfcn include */
 #include <dlfcn.h>
@@ -813,10 +814,17 @@ static void create_navigator(Navigator *tasknav)
 
     plugin_dir = g_strdup_printf("%s/%s", home_dir, NAVIGATOR_USER_DIR);
 
-    if ( hildon_dnotify_set_cb(
-			    (hildon_dnotify_cb_f *)plugin_configuration_changed,
-			    plugin_dir, tasknav ) != HILDON_OK) {
-	    osso_log( LOG_ERR, "Error setting dir notify callback!\n" );
+    /* Create the directory if it does not exist, as we need to monitor
+     * it for the TN applet to write its configuration */
+    if(!g_file_test(plugin_dir, G_FILE_TEST_IS_DIR))
+    {
+        g_mkdir(plugin_dir, 0755);
+    }
+
+    if (hildon_dnotify_set_cb(
+                (hildon_dnotify_cb_f *)plugin_configuration_changed,
+                plugin_dir, tasknav ) != HILDON_OK) {
+        osso_log( LOG_ERR, "Error setting dir notify callback!\n" );
     }
 
     g_free(plugin_dir);
