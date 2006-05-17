@@ -1,3 +1,10 @@
+2006-05-17  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtkwidget.c: reworked GtkWidgetPrivate structure into a custom
+	data structure that is attached to widgets on demand. this saves a
+	lot of memory since most widget's won't need GtkWidgetPrivate.
+	N#24051
+
 2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkbutton.c (gtk_button_size_allocate): Do not include the
