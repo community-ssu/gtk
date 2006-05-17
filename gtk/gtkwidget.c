@@ -7905,13 +7905,11 @@ tap_and_hold_remove_timer (GtkWidget *widget)
 static void
 init_tap_and_hold_animation (TahData *td)
 {
-  GTimeVal time;
   if (td->anim)
     {
-      g_get_current_time (&time);
-      
-      if (!td->iter)
-          td->iter = gdk_pixbuf_animation_get_iter (td->anim, &time);
+      if (td->iter)
+	g_object_unref (td->iter);
+      td->iter = gdk_pixbuf_animation_get_iter (td->anim, NULL);
       
       td->interval = gdk_pixbuf_animation_iter_get_delay_time (td->iter);
     }
