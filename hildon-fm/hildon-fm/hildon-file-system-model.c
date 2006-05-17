@@ -1013,7 +1013,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
             if (info && !model_node->thumbnail_cache)
             {
               OssoMimeCategory cat;
-              gchar *mime_type;
+              const gchar *mime_type;
               
               mime_type = gtk_file_info_get_mime_type(info);
               /* FIXME: hack to workaround problem with Sketch files */
