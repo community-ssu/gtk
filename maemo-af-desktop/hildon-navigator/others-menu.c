@@ -74,6 +74,7 @@ struct OthersMenu {
     gboolean on_border;
     gboolean on_button;
     _as_update_callback *as_menu_cb;
+    guint collapse_id;
 };
 
 struct _om_changed_cb_data_st {
@@ -359,6 +360,28 @@ static void others_menu_show(OthersMenu_t * om)
 		   gtk_get_current_event_time());
     gtk_menu_shell_select_first(GTK_MENU_SHELL(om->menu), TRUE);
 }
+
+/* Since we'll get hundred press events when thumbing the button, we'll need to * wait for a moment until reacting */
+static gboolean press_collapser(gpointer data)
+{
+    OthersMenu_t *om = (OthersMenu_t *) data;
+
+    g_assert(om != NULL);
+
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(om->toggle_button)))
+    {
+        gtk_menu_shell_deactivate(GTK_MENU_SHELL(om->menu));
+        om->collapse_id = 0;
+        return FALSE;
+    }
+
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(om->toggle_button), TRUE);
+
+    others_menu_show(om);
+    om->collapse_id = 0;
+    return FALSE;
+}
+
 static gboolean others_menu_button_button_press(GtkToggleButton * togglebutton,
                                                 GdkEventButton * event,
                                                 gpointer data)
@@ -367,12 +390,23 @@ static gboolean others_menu_button_button_press(GtkToggleButton * togglebutton,
 
     g_return_val_if_fail(om, FALSE);
 
-    gtk_toggle_button_set_active(togglebutton, TRUE);
-    others_menu_show(om);
+    if (om->collapse_id <= 0)
+    {
+        om->collapse_id = g_timeout_add (OM_BUTTON_PRESS_EVENT_COLLAPSE_TIMEOUT, 
+                                         press_collapser,
+                                         om);
+    }
 
     return TRUE;
 }
 
+static gboolean others_menu_button_button_release(GtkWidget *widget,
+                                                GdkEventButton * event,
+                                                gpointer data)
+{
+    /* Eat all release events to stabilize the behaviour */
+    return TRUE;
+}
 
 void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 {
@@ -397,6 +431,8 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 		     G_CALLBACK(others_menu_key_press), om);
     g_signal_connect(G_OBJECT(om->toggle_button), "button-press-event",
  		     G_CALLBACK(others_menu_button_button_press), om);
+    g_signal_connect(G_OBJECT(om->toggle_button), "button-release-event",
+ 		     G_CALLBACK(others_menu_button_button_release), om);
   
     /* Populate the menu with items */
     others_menu_get_items(GTK_WIDGET(om->menu), om, NULL, NULL);

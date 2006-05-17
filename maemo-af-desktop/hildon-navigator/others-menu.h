@@ -53,6 +53,8 @@
 #define MENU_Y_POS 180
 #define MENU_MAX_WIDTH 360
 
+#define OM_BUTTON_PRESS_EVENT_COLLAPSE_TIMEOUT 100
+
 #define WORKAREA_ATOM "_NET_WORKAREA"
 #define NAVIGATOR_BUTTON_THREE "hildon-navigator-button-three"
 

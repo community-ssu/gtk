@@ -1,3 +1,9 @@
+2006-05-17  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/others-menu.c: Backported event collapsing,
+	  to circumvent several button-press events when using the thumb
+	  (Closing N#29406)
+
 2006-05-16  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Memory leaks in hn_wm_watchable_app_new()" (Closes
