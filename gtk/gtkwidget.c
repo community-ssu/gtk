@@ -63,7 +63,6 @@
 #define WIDGET_CLASS(w)	 GTK_WIDGET_GET_CLASS (w)
 #define	INIT_PATH_SIZE	(512)
 
-#define GTK_TAP_THRESHOLD 30
 #define GTK_TAP_MENU_THRESHOLD 20
 #define GTK_TAP_AND_HOLD_TIMER_COUNTER 11
 #define GTK_TAP_AND_HOLD_TIMER_INTERVAL 100
@@ -8142,8 +8141,7 @@ static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
 			   NULL, &x, &y, NULL);
 
   /* Did we dragged too far from the start point */
-  if ((abs (x - td->x) > GTK_TAP_THRESHOLD) ||
-      (abs (y - td->y) > GTK_TAP_THRESHOLD))
+  if (gtk_drag_check_threshold (widget, td->x, td->y, x, y))
     {
       tap_and_hold_remove_timer (widget);
 
