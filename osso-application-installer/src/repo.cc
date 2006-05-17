@@ -815,7 +815,7 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 			_("ai_ib_unable_edit"));
       g_signal_connect (c->delete_button, "insensitive_press",
 			G_CALLBACK (insensitive_press),
-			_("ai_ib_unable_remove_repository"));
+			_("ai_ni_unable_remove_repository"));
       
       set_dialog_help (dialog, AI_TOPIC ("repository"));
       
