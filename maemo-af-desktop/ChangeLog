@@ -1,5 +1,12 @@
 2006-05-17  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Desktop doesn't restore background killed applications
+	when application above is closed" (Closes N#29824)
+	* hildon-navigator/application-switcher.c: explicitely top
+	  the application in the top-most button
+
+2006-05-17  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/others-menu.c: Backported event collapsing,
 	  to circumvent several button-press events when using the thumb
 	  (Closing N#29406)

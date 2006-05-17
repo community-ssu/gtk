@@ -1697,7 +1697,8 @@ app_switcher_remove_item (ApplicationSwitcher_t *as,
 			  GtkWidget             *menuitem)
 {
   gint n;    
-    
+  HNWMWatchableApp * app;
+  
   g_return_if_fail(as);
 
   /* Find the removed item */
@@ -1737,6 +1738,21 @@ app_switcher_remove_item (ApplicationSwitcher_t *as,
   if (GTK_WIDGET_VISIBLE(as->menu))
     gtk_menu_reposition(as->menu);
 
+  /*
+   * if the application at position 1 is hibernating, we have to
+   * top explicitely top it
+   */
+  app = hn_wm_lookup_watchable_app_via_menu (g_list_nth_data(
+                                   GTK_MENU_SHELL(as->menu)->children,
+                                   ITEM_1_LIST_POS));
+
+  if (app && hn_wm_watchable_app_is_hibernating (app))
+    {
+      hn_wm_top_view(GTK_MENU_ITEM(g_list_nth_data(
+                                   GTK_MENU_SHELL(as->menu)->children,
+                                   ITEM_1_LIST_POS)));
+    }
+  
   /* Play a sound */
   hn_as_sound_play_sample (as->esd_socket, as->end_sample);
 
