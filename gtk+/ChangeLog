@@ -1,6 +1,6 @@
 2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
-	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_): Use
+	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_timeout): Use
 	gtk_drag_check_threshold() instead of custom test with hardcoded pixel
 	values. N#21875
 
