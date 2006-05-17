@@ -1191,12 +1191,14 @@ gtk_button_size_allocate (GtkWidget     *widget,
   gint focus_width;
   gint focus_pad;
   gint child_spacing;
+  gint separator_height;
 
   gtk_button_get_props (button, &default_border, NULL, NULL);
   gtk_widget_style_get (GTK_WIDGET (widget),
 			"focus-line-width", &focus_width,
 			"focus-padding", &focus_pad,
 			"child-spacing", &child_spacing,
+			"separator-height", &separator_height,
 			NULL);
 
   widget->allocation = *allocation;
@@ -1215,7 +1217,7 @@ gtk_button_size_allocate (GtkWidget     *widget,
       
       child_allocation.width = MAX (1, widget->allocation.width - (child_spacing + xthickness) * 2 -
 				    border_width * 2);
-      child_allocation.height = MAX (1, widget->allocation.height - (child_spacing + ythickness) * 2 -
+      child_allocation.height = MAX (1, widget->allocation.height - separator_height - (child_spacing + ythickness) * 2 -
 				     border_width * 2);
 
 #ifdef OSSO_FONT_HACK

@@ -1,4 +1,10 @@
 2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkbutton.c (gtk_button_size_allocate): Do not include the
+	'separator-height' area for child widget allocation as it is meant for
+	extra skinning only.
+
+2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Adapted from GNOME CVS.
 	
