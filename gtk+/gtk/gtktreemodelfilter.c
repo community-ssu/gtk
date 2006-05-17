@@ -1649,8 +1649,8 @@ gtk_tree_model_filter_row_deleted (GtkTreeModel *c_model,
   GtkTreeModelFilter *filter = GTK_TREE_MODEL_FILTER (data);
   GtkTreePath *path;
   GtkTreeIter iter;
-  FilterElt *elt, *parent;
-  FilterLevel *level, *parent_level;
+  FilterElt *elt, *parent = NULL;
+  FilterLevel *level, *parent_level = NULL;
   gboolean emit_child_toggled = FALSE;
   gint offset;
   gint i;

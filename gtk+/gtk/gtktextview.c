@@ -4263,6 +4263,7 @@ static gint
 gtk_text_view_focus_out_event (GtkWidget *widget, GdkEventFocus *event)
 {
   GtkTextView *text_view = GTK_TEXT_VIEW (widget);
+#if 0
   GtkTextViewPrivate *priv = GTK_TEXT_VIEW_GET_PRIVATE(text_view);
   /*{
     GtkTextIter start;
@@ -4271,6 +4272,7 @@ gtk_text_view_focus_out_event (GtkWidget *widget, GdkEventFocus *event)
     gtk_text_buffer_get_bounds(text_view->buffer, &start, &end);
     gtk_text_buffer_select_range(text_view->buffer, &start, &start);
   }*//*FIXME need a hack here to take away the focus*/
+#endif
 
   gtk_widget_queue_draw (widget);
 
@@ -4286,11 +4288,13 @@ gtk_text_view_focus_out_event (GtkWidget *widget, GdkEventFocus *event)
 					keymap_direction_changed,
 					text_view);
 
+#if 0
   /* This is commented out to disable unselect feature.
      When the decition of this has been made, we can either remove this patch
      or to leave it.
   if( priv->release_selection )
     gtk_text_view_unselect( text_view );*/
+#endif
 
   return FALSE;
 }
@@ -6935,9 +6939,6 @@ gtk_text_view_clipboard_operation_handler(GtkIMContext *context,
                                           GtkIMContextClipboardOperation op,
                                           GtkTextView *text_view)
 {
-  GtkTextBuffer *buffer;
-  GtkTextIter iter;
-
   /* Similar to gtk_editable_*_clipboard(), handle these by sending signals
    * instead of directly calling our internal functions. That way the
    * application can hook into them if needed. */

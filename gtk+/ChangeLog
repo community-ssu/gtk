@@ -1,5 +1,23 @@
 2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
+	Silence compiler warnings
+
+	* gtk/gtkwidget.c
+	* gtk/gtktreemodelfilter.c
+	* gtk/gtkwidget.h
+	* gtk/gtktextview.c
+	* gtk/gtkentry.c
+	* gtk/gtktreeviewcolumn.c
+	* gtk/gtkhbbox.c
+	* gtk/gtkmenuitem.c
+	* gtk/gtkmenu.c
+	* gtk/gtkcontainer.c
+	* gtk/gtkcombobox.c: Add missing includes, initialize variables,
+	comment out unused code, remove unused variables, add parenthesis and
+	typecasts.
+
+2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
 	* gtk/*: Add some long lost API documentation bits. N#10197
 
 2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>

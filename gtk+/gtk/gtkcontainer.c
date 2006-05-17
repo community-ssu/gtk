@@ -2095,7 +2095,7 @@ gtk_container_focus_move (GtkContainer     *container,
        * container in the dialog window. is_toplevel indicates that we
        * are in the topmost container, but also that we're in a dialog.
        */
-      if (container == GTK_DIALOG(dialog)->vbox)
+      if (GTK_WIDGET (container) == GTK_DIALOG(dialog)->vbox)
           is_toplevel = TRUE;
   }
   

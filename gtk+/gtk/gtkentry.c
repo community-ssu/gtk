@@ -164,7 +164,9 @@ static void   gtk_entry_size_request         (GtkWidget        *widget,
 					      GtkRequisition   *requisition);
 static void   gtk_entry_size_allocate        (GtkWidget        *widget,
 					      GtkAllocation    *allocation);
+#if 0
 static void   gtk_entry_draw_frame           (GtkWidget        *widget);
+#endif
 static gint   gtk_entry_expose               (GtkWidget        *widget,
 					      GdkEventExpose   *event);
 static gint   gtk_entry_button_press         (GtkWidget        *widget,
@@ -354,6 +356,7 @@ static void         get_widget_window_size             (GtkEntry       *entry,
 							gint           *width,
 							gint           *height);
 
+#if 0
 /*Change for Hildon
  *returns an iterator to the character at position x,y of the
  *layout
@@ -361,6 +364,7 @@ static void         get_widget_window_size             (GtkEntry       *entry,
  *Caller must call pango_layout_free_iter on the returned iterator
  */
 static PangoLayoutIter *get_char_at_pos( PangoLayout *layout, gint x, gint y );
+#endif
 
 static gboolean hildon_remove_visible_character( gpointer data );
 
@@ -1670,6 +1674,7 @@ gtk_entry_size_allocate (GtkWidget     *widget,
     }
 }
 
+#if 0
 static void
 gtk_entry_draw_frame (GtkWidget *widget)
 {
@@ -1710,6 +1715,7 @@ gtk_entry_draw_frame (GtkWidget *widget)
 		       0, 0, width, height);
     }
 }
+#endif
 
 static gint
 gtk_entry_expose (GtkWidget      *widget,
@@ -1722,10 +1728,14 @@ gtk_entry_expose (GtkWidget      *widget,
 
   if (widget->window == event->window)
     {
+#if 0
+      gtk_entry_draw_frame (widget);
+#else
       gtk_paint_box (widget->style, widget->window,
                      GTK_WIDGET_STATE (widget), GTK_SHADOW_NONE,
                      NULL, widget, "entry_frame",
                      0, 0, area_width, area_height);
+#endif
     }
   else if (entry->text_area == event->window)
     {
@@ -3235,8 +3245,6 @@ gtk_entry_clipboard_operation_cb(GtkIMContext *context,
                                  GtkIMContextClipboardOperation op,
                                  GtkEntry *entry)
 {
-  gint pos;
-
   /* Similar to gtk_editable_*_clipboard(), handle these by sending signals
    * instead of directly calling our internal functions. That way the
    * application can hook into them if needed. */
@@ -3702,6 +3710,7 @@ gtk_entry_draw_text (GtkEntry *entry)
       gdk_drawable_get_size (entry->text_area, &clip_rect.width, &clip_rect.height);
       clip_rect.width -= border_x * 2;
 
+#if 0
       /*changes for Hildon
        *Reduce the size of the clip rect, so that only full characters are displayed
       */
@@ -3747,6 +3756,7 @@ the indexes are in random
 
          }
 			*/
+#endif
        /******************************************************************/
 
       gdk_gc_set_clip_rectangle (widget->style->text_gc [widget->state], &clip_rect);
@@ -6125,6 +6135,7 @@ gtk_entry_get_completion (GtkEntry *entry)
   return completion;
 }
 
+#if 0
 static PangoLayoutIter *get_char_at_pos( PangoLayout *layout, gint x, gint y )
 {
      gint index = 0; /*the index of the first character */
@@ -6147,6 +6158,7 @@ static PangoLayoutIter *get_char_at_pos( PangoLayout *layout, gint x, gint y )
 
      return iter;
 }
+#endif
 
 /**
  * hildon_gtk_entry_set_input_mode:

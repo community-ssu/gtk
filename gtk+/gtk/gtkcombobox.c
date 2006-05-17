@@ -276,11 +276,13 @@ static gboolean gtk_combo_box_menu_size_request    (GtkWidget        *menu,
 
 static void     gtk_combo_box_set_popup_widget     (GtkComboBox      *combo_box,
                                                     GtkWidget        *popup);
+#if 0
 static void     gtk_combo_box_menu_position_below  (GtkMenu          *menu,
                                                     gint             *x,
                                                     gint             *y,
                                                     gint             *push_in,
                                                     gpointer          user_data);
+#endif
 static void     gtk_combo_box_menu_position_over   (GtkMenu          *menu,
                                                     gint             *x,
                                                     gint             *y,
@@ -1417,6 +1419,7 @@ gtk_combo_box_set_popup_widget (GtkComboBox *combo_box,
     }
 }
 
+#if 0
 static void
 gtk_combo_box_menu_position_below (GtkMenu  *menu,
 				   gint     *x,
@@ -1472,6 +1475,7 @@ gtk_combo_box_menu_position_below (GtkMenu  *menu,
 
    *push_in = FALSE;
 }
+#endif
 
 static void
 gtk_combo_box_menu_position_over (GtkMenu  *menu,
@@ -5747,7 +5751,7 @@ gtk_combo_box_grab_focus (GtkWidget *focus_widget)
       GTK_IS_COMBO_BOX_ENTRY (combo_box))	/* Are we in entry mode ? */
     {
       GtkComboBoxEntry *combo_entry = GTK_COMBO_BOX_ENTRY (combo_box);
-      _gtk_combo_box_entry_grab_focus (combo_entry);
+      _gtk_combo_box_entry_grab_focus (GTK_WIDGET (combo_entry));
     }
   else
     gtk_widget_grab_focus (combo_box->priv->button);
