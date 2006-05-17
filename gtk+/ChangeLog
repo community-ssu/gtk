@@ -1,3 +1,8 @@
+2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkimage.c (icon_theme_changed): Unref pixbuf only when we're in
+	icon-name mode, otherwise we'll unref random data. N#25347
+
 2006-05-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gdk/x11/gdkdnd-x11.c (_gdk_drag_get_protocol_for_display): Fall
