@@ -19,9 +19,9 @@ tmpdir=debian/tmp
 docdir=$(tmpdir)/usr/share/doc/dosfstools
 mandir=$(tmpdir)/usr/share/man
 oldmandir=$(tmpdir)/usr/man
-ARCH = $(shell dpkg --print-gnu-build-architecture)
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 
-ifeq ($(ARCH),alpha)
+ifeq ($(DEB_HOST_ARCH),alpha)
 OPTFLAGS="-fomit-frame-pointer -fno-strict-aliasing"
 else
 OPTFLAGS="-O2 -fomit-frame-pointer"
