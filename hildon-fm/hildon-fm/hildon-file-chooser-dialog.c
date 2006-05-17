@@ -1875,3 +1875,16 @@ gchar *hildon_file_chooser_dialog_get_safe_folder_uri(
   
   return result;
 }
+
+/**
+ * hildon_file_chooser_dialog_select_text:
+ * @d: the dialog.
+ *
+ * Selects the text in input box and transfers focus there.
+ */
+void hildon_file_chooser_dialog_focus_to_input(HildonFileChooserDialog *d)
+{
+  g_return_if_fail(HILDON_IS_FILE_CHOOSER_DIALOG(d));
+  hildon_file_chooser_dialog_select_text(d->priv);
+}
+
