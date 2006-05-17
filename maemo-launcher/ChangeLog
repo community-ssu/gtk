@@ -1,3 +1,8 @@
+2006-05-17  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (env_init): New function.
+	(main): Call env_init.
+
 2006-04-21  Guillem Jover  <guillem.jover@nokia.com>
 
 	* configure.ac: Version 0.13.

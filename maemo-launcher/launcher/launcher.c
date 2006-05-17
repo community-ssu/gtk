@@ -549,6 +549,12 @@ sigs_restore(void)
 }
 
 static void
+env_init(void)
+{
+  unsetenv("LD_BIND_NOW");
+}
+
+static void
 create_pidfile(void)
 {
   FILE *pidfile = fopen(pidfilename, "w");
@@ -663,6 +669,7 @@ main(int argc, char *argv[])
   state = ui_daemon_init(&argc, &argv);
 
   sigs_init();
+  env_init();
 
   /* Setup child tracking. */
   childs = alloc_childs(initial_child_slots);
