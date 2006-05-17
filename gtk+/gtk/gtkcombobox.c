@@ -71,10 +71,6 @@
 #define HILDON_MENU_COMBO_MAX_HEIGHT 305
 #define HILDON_MENU_COMBO_MIN_HEIGHT 70
 
-/* this is also defined in gtkmenu.c and should be replaced with
-  a style property */
-#define MENU_SCROLL_ARROW_HEIGHT 20 
-
 /* Hildon: identify the window of the combobox */
 #define HILDON_COMBO_BOX_POPUP "hildon-combobox-window"
 
@@ -1481,6 +1477,7 @@ gtk_combo_box_menu_position_over (GtkMenu  *menu,
   gint menu_ypad;
   gint full_menu_height;
   gint total_y_padding;
+  guint scroll_arrow_height;
 
   g_return_if_fail (GTK_IS_COMBO_BOX (user_data));
 
@@ -1515,6 +1512,7 @@ gtk_combo_box_menu_position_over (GtkMenu  *menu,
   /* Substract borders */
   gtk_widget_style_get (GTK_WIDGET (menu),
                         "vertical-padding", &menu_ypad,
+                        "scroll-arrow-vlength", &scroll_arrow_height,
                         NULL);
 
   total_y_padding = menu_ypad + GTK_CONTAINER (menu)->border_width +
@@ -1527,7 +1525,7 @@ gtk_combo_box_menu_position_over (GtkMenu  *menu,
       GList *child;
       int pos;
 
-      total_y_padding += MENU_SCROLL_ARROW_HEIGHT;
+      total_y_padding += scroll_arrow_height;
 
       child = GTK_MENU_SHELL (menu)->children;
       pos = 0;

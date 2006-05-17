@@ -41,8 +41,6 @@
 
 #define TAB_OVERLAP    2
 #define TAB_CURVATURE  1
-#define ARROW_WIDTH    20
-#define ARROW_HEIGHT   27
 #define ARROW_SPACING  0
 #define LABEL_PADDING  0
 
@@ -618,34 +616,8 @@ gtk_notebook_class_init (GtkNotebookClass *class)
                                                              0,
                                                              GTK_PARAM_READABLE));
 
-  /* Hildon: previously hardcoded constants ARROW_WIDTH, ARROW_HEIGHT,
-     ARROW_SPACING, TAB_OVERLAP and TAB_CURVATURE are now style properties */
-  /**
-   * GtkNotebook:arrow-width:
-   *
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("arrow-width",
-                                                             _("Arrow width"),
-                                                             _("Scroll arrow width"),
-                                                             0,
-                                                             G_MAXINT,
-                                                             ARROW_WIDTH,
-                                                             GTK_PARAM_READABLE));
-  /**
-   * GtkNotebook:arrow-height:
-   *
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("arrow-height",
-                                                             _("Arrow height"),
-                                                             _("Scroll arrow height"),
-                                                             0,
-                                                             G_MAXINT,
-                                                             ARROW_HEIGHT,
-                                                             GTK_PARAM_READABLE));
+  /* Hildon: previously hardcoded constants ARROW_SPACING, TAB_OVERLAP and
+   * TAB_CURVATURE are now style properties */
   /**
    * GtkNotebook:arrow-spacing:
    *
@@ -1311,8 +1283,8 @@ gtk_notebook_size_request (GtkWidget      *widget,
 
   gtk_widget_style_get (widget,
                         "focus-line-width", &focus_width,
-                        "arrow-width", &arrow_width,
-                        "arrow-height", &arrow_height,
+                        "scroll-arrow-hlength", &arrow_width,
+                        "scroll-arrow-vlength", &arrow_height,
                         "arrow-spacing", &arrow_spacing,
                         "tab-overlap", &tab_overlap,
                         "tab-curvature", &tab_curvature,
@@ -1745,8 +1717,8 @@ gtk_notebook_get_arrow_rect (GtkNotebook     *notebook,
   gint arrow_width, arrow_height, arrow_spacing;
 
   gtk_widget_style_get (GTK_WIDGET(notebook),
-                        "arrow-width", &arrow_width,
-                        "arrow-height", &arrow_height,
+                        "scroll-arrow-hlength", &arrow_width,
+                        "scroll-arrow-vlength", &arrow_height,
                         "arrow-spacing", &arrow_spacing,
                         NULL);
 
@@ -3323,8 +3295,8 @@ gtk_notebook_draw_arrow (GtkNotebook      *notebook,
 
   widget = GTK_WIDGET (notebook);
   gtk_widget_style_get (widget,
-                        "arrow-width", &arrow_width,
-                        "arrow-height", &arrow_height,
+                        "scroll-arrow-hlength", &arrow_width,
+                        "scroll-arrow-vlength", &arrow_height,
                         NULL);
 
   is_rtl = gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL;
@@ -3404,8 +3376,8 @@ gtk_notebook_pages_allocate (GtkNotebook   *notebook)
     return;
 
   gtk_widget_style_get (widget,
-                        "arrow-width", &arrow_width,
-                        "arrow-height", &arrow_height,
+                        "scroll-arrow-hlength", &arrow_width,
+                        "scroll-arrow-vlength", &arrow_height,
                         "arrow-spacing", &arrow_spacing,
                         "tab-overlap", &tab_overlap,
                         NULL);
