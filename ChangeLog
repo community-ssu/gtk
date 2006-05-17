@@ -1,4 +1,16 @@
 2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Adapted from GNOME CVS.
+	
+	* gtk/gtkwidget.c: Add 'scroll-arrow-hlength' and
+	'scroll-arrow-vlength' style properties
+	* gtk/gtkmenu.c
+	* gtk/gtkcombobox.c: Replace hardcoded (MENU_SCROLL_ARROW_HEIGHT)
+	scroll arrow heights with 'scroll-arrow-vlength' style property
+	* gtk/gtknotebook.c: Replace 'arrow-width' and 'arrow-height' style
+	properties with 'scroll-arrow-hlength' and 'scroll-arrow-vlength'
+
+2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkimage.c (icon_theme_changed): Unref pixbuf only when we're in
 	icon-name mode, otherwise we'll unref random data. N#25347

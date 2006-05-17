@@ -1625,6 +1625,18 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 							       P_("Aspect ratio with which to draw insertion cursor"),
 							       0.0, 1.0, 0.04,
 							       GTK_PARAM_READABLE));
+  gtk_widget_class_install_style_property (klass,
+                                           g_param_spec_int ("scroll-arrow-hlength",
+                                                             P_("Horizontal Scroll Arrow Length"),
+                                                             P_("The length of horizontal scroll arrows"),
+                                                             1, G_MAXINT, 16,
+                                                             GTK_PARAM_READABLE));
+  gtk_widget_class_install_style_property (klass,
+                                           g_param_spec_int ("scroll-arrow-vlength",
+                                                             P_("Vertical Scroll Arrow Length"),
+                                                             P_("The length of vertical scroll arrows"),
+                                                             1, G_MAXINT, 16,
+                                                             GTK_PARAM_READABLE));
 }
 
 static void
