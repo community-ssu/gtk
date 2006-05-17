@@ -1013,13 +1013,19 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
             if (info && !model_node->thumbnail_cache)
             {
               OssoMimeCategory cat;
-              cat = osso_mime_get_category_for_mime_type(
-                        gtk_file_info_get_mime_type(info));
-              if (cat == OSSO_MIME_CATEGORY_IMAGES)
-                model_node->thumbnail_cache =
+              gchar *mime_type;
+              
+              mime_type = gtk_file_info_get_mime_type(info);
+              /* FIXME: hack to workaround problem with Sketch files */
+              if (strcmp(mime_type, "sketch/png") != 0)
+              {
+                cat = osso_mime_get_category_for_mime_type(mime_type);
+                if (cat == OSSO_MIME_CATEGORY_IMAGES)
+                  model_node->thumbnail_cache =
                     _hildon_file_system_load_icon_cached(
                         gtk_icon_theme_get_default(),
                         "qgn_list_gene_image_file_wait", THUMBNAIL_ICON);
+              }
             }
 
             if (!model_node->thumbnail_cache)
