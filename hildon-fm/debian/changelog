@@ -1,13 +1,12 @@
 hildon-fm (0.24-1) unstable; urgency=low
 
-  * UNRELEASED
   * Now showing correct icon while generating thumbnail for images (N#29799).
     (This introduced libossomime dependency.)
   * Added hildon_file_chooser_dialog_focus_to_input for special selection
     needs (N#28539).
   * Fixed unparenting problem in file selection finalisation (N#28074).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 17 May 2006 15:56:48 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 17 May 2006 18:36:41 +0300
 
 hildon-fm (0.23-1) unstable; urgency=low
 
