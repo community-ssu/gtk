@@ -45,8 +45,6 @@ libhildonnavigator_la_SOURCES = \
 	hn-wm-util.h \
 	hn-wm-memory.c \
 	hn-wm-memory.h \
-	hn-wm-session.c \
-	hn-wm-session.h \
 	hn-wm-watched-window.c \
 	hn-wm-watched-window.h \
 	hn-wm-watched-window-view.c \

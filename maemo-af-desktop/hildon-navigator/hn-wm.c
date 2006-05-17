@@ -1603,16 +1603,7 @@ hn_wm_init (ApplicationSwitcher_t *as)
       add_method_cb(osso_man, KILL_APPS_METHOD,
 		    &hn_wm_osso_kill_method, osso_man);
 
-      add_method_cb(osso_man, SAVE_METHOD,
-		    &hn_wm_session_save, osso_man);
-
     }
-
-  /* We need to postpone the restoration of applications until
-     maemo-af-desktop initialization is done, as it will
-     behave erratically under unified desktop otherwise... */
-  /* FIXME: Check whats happening here */
-  g_timeout_add(5000, hn_wm_session_restore_via_timeout, (gpointer)osso_man);
 
   return TRUE;
 }

@@ -1,5 +1,10 @@
 2006-05-17  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm.c, hildon-navigator/hn-wm-session.[ch]:
+	  removed deprecated session management code. (Closes N#25701)
+
+2006-05-17  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/others-menu.c
 	  - removed useless structure to hold dnotify callbacks data
 	  - Only remove the currently triggered dnotify callback, not all of them
