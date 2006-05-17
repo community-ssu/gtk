@@ -1,5 +1,9 @@
 2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
+	* gtk/*: Add some long lost API documentation bits. N#10197
+
+2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
 	* gtk/gtkwidget.c (init_tap_and_hold_animation): Always start the
 	tap'n'hold animation from the beginning.
 

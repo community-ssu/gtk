@@ -751,7 +751,10 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
 
   /**
    * GtkComboBox:propagate-lr-keys:
-   *
+   * 
+   * Whether to propagate key-press events from left and right arrow keys 
+   * further.
+   * 
    * Since: maemo 1.0
    */
   g_object_class_install_property (object_class,
@@ -771,13 +774,16 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
 
   /**
    * GtkComboBox:hildonlike:
-   *
+   * 
+   * Changes the appearance and behaviour of GtkComboBox to be consistent with
+   * Hildon library.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
                                   g_param_spec_boolean ("hildonlike",
-                                  _("Size request"),
-				  _("Size allocate"),
+                                  P_("Size request"),
+				  P_("Size allocate"),
                                   FALSE,
                                   GTK_PARAM_READABLE));
 
@@ -798,6 +804,8 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
   /**
    * GtkComboBox:arrow-height:
    *
+   * Sets the height of the arrow.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -812,6 +820,8 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
   /**
    * GtkComboBox:arrow-width:
    *
+   * Sets the width of the arrow.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -826,6 +836,8 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
   /**
    * GtkComboBox:separator-width:
    *
+   * Number of pixels between the button and entry field.
+   *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -839,16 +851,18 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
 
   /**
    * GtkComboBox:autodimmed-button:
-   *
+   * 
+   * When TRUE, automatically dims the button if the list is empty.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (
-    widget_class,
-    g_param_spec_boolean ("autodimmed-button",
-    _("Autodimmed button"),
-    _("Automatically dims the button if the list is empty"),
-    FALSE,
-    GTK_PARAM_READABLE));
+                  widget_class,
+                  g_param_spec_boolean ("autodimmed-button",
+                      P_("Autodimmed button"),
+                      P_("Automatically dims the button if the list is empty"),
+                      FALSE,
+                      GTK_PARAM_READABLE));
 
   g_type_class_add_private (object_class, sizeof (GtkComboBoxPrivate));
 }

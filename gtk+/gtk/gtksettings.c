@@ -438,6 +438,8 @@ gtk_settings_class_init (GtkSettingsClass *class)
   /**
    * GtkSettings:gtk-initial-timeout:
    *
+   * Starting value for timeouts, when button is pressed.
+   * 
    * Since: maemo 1.0
    */
   result = settings_install_property_parser (class,
@@ -453,6 +455,8 @@ gtk_settings_class_init (GtkSettingsClass *class)
   /**
    * GtkSettings:gtk-update-timeout:
    *
+   * Repeat value for timeouts, when button is pressed.
+   * 
    * Since: maemo 1.0
    */
   result = settings_install_property_parser (class,
@@ -468,6 +472,8 @@ gtk_settings_class_init (GtkSettingsClass *class)
   /**
    * GtkSettings:hildon-keyboard-navigation:
    *
+   * This property can be used to enable keyboard navigation.
+   * 
    * Since: maemo 1.0
    */
   result = settings_install_property_parser (class,

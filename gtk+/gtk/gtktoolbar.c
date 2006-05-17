@@ -573,6 +573,8 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
   /**
    * GtkToolbar:max-child-expand:
    *
+   * Maximum space between the toolbar items.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -623,6 +625,8 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
 
   /**
    * GtkSettings:gtk-toolbar-animation:
+   *
+   * Enable toolbar animation.
    *
    * Since: maemo 1.0
    */

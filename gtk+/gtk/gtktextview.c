@@ -8632,7 +8632,7 @@ gtk_text_view_move_visually (GtkTextView *text_view,
 /**
  * hildon_gtk_text_view_set_input_mode:
  * @text_view: a #GtkTextView
- * @mode: input mode
+ * @mode: a #HildonGtkInputMode
  *
  * Sets input mode of the widget.
  *
@@ -8657,7 +8657,7 @@ hildon_gtk_text_view_set_input_mode (GtkTextView *text_view, HildonGtkInputMode 
  *
  * Gets input mode of the widget.
  *
- * Return value: input mode
+ * Return value: the input mode of the widget.
  *
  * Since: maemo 2.0
  */

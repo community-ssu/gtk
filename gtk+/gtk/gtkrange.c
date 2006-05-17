@@ -372,6 +372,8 @@ gtk_range_class_init (GtkRangeClass *class)
   /**
    * GtkRange:stream-indicator:
    *
+   * Whether to display a stream indicator graphics on trough.
+   * 
    * Since: maemo 1.0
    */
   g_object_class_install_property (gobject_class,
@@ -385,6 +387,8 @@ gtk_range_class_init (GtkRangeClass *class)
   /**
    * GtkRange:minimum-visible-bars:
    *
+   * The minimum number of visible bars (or blocks) in a #HildonControlBar
+   * 
    * Since: maemo 1.0
    */
   g_object_class_install_property (gobject_class,
@@ -400,6 +404,8 @@ gtk_range_class_init (GtkRangeClass *class)
   /**
    * GtkRange:stream-position:
    *
+   * The position of the streaming.
+   * 
    * Since: maemo 1.0
    */
   g_object_class_install_property (gobject_class,
@@ -464,30 +470,37 @@ gtk_range_class_init (GtkRangeClass *class)
   /**
    * GtkRange:hildonlike:
    *
+   * Change focus-out behaviour. If TRUE, scrolling stops if widget loses focus.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("hildonlike",
-                                                                 _("hildonlike"),
-                                                                 _("Change focus out behaviour, 1/0"),
+                                                                 P_("hildonlike"),
+                                                                 P_("Change focus out behaviour, 1/0"),
                                                                  FALSE,
                                                                  GTK_PARAM_READABLE));
 
   /**
    * GtkRange:two-part-trough:
    *
+   * Allow different trough graphics on different sides of the slider.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("two-part-trough",
-                                                                 _("Two-part trough"),
-                                                                 _("Allow different trough graphics on different sides of the slider, 1/0"),
+                                                                 P_("Two-part trough"),
+                                                                 P_("Allow different trough graphics on different sides of the slider, 1/0"),
                                                                  FALSE,
                                                                  GTK_PARAM_READABLE));
 
   /**
    * GtkRange:stream-indicator-padding:
    *
+   * The distance (in pixels), the stream indicator is drawn from both ends of 
+   * the trough.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -502,36 +515,44 @@ gtk_range_class_init (GtkRangeClass *class)
   /**
    * GtkRange:autodimmed-steppers:
    *
+   * Automatically dim steppers when maximum or minimum values have been 
+   * reached.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("autodimmed-steppers",
-                                                                 _("Autodimmed steppers"),
-                                                                 _("Automatically dim steppers when maximum or minimum value has been reached"),
+                                                                 P_("Autodimmed steppers"),
+                                                                 P_("Automatically dim steppers when maximum or minimum value has been reached"),
                                                                  FALSE,
                                                                  GTK_PARAM_READABLE));
 
   /**
    * GtkRange:arrow-paint-box-layout:
    *
+   * Allows to use images instead of normal arrows.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("arrow-paint-box-layout",
-                                                                 _("Arrow paint box layout"),
-                                                                 _("Allows to use images instead of normal arrows."),
+                                                                 P_("Arrow paint box layout"),
+                                                                 P_("Allows to use images instead of normal arrows."),
                                                                  FALSE,
                                                                  GTK_PARAM_READABLE));
 
   /**
    * GtkRange:draw-trough-under-steppers:
    *
+   * Whether to draw trough for full length of range or exclude the 
+   * steppers and spacing.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("draw-trough-under-steppers",
-                                                                 _("Draw trough under steppers"),
-                                                                 _("Whether to draw trought for full length of range or exclude the steppers and spacing"),
+                                                                 P_("Draw trough under steppers"),
+                                                                 P_("Whether to draw trought for full length of range or exclude the steppers and spacing"),
                                                                  TRUE,
                                                                  GTK_PARAM_READABLE));
    

@@ -37,6 +37,7 @@
 #include "gtkhbbox.h"
 /* Hildon : We need this to deal with buttons graphics. */
 #include "gtkbutton.h"
+#include "gtkintl.h"
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
@@ -100,13 +101,15 @@ gtk_hbutton_box_class_init (GtkHButtonBoxClass *class)
   /**
    * GtkHButtonBox:hildonlike:
    *
+   * Currently this style property does not have any effect.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_boolean 
 					   ( "hildonlike",
-					     "hildonlike looks",
-					     "Name buttons, 1/0",
+					     P_("hildonlike looks"),
+					     P_("Name buttons, 1/0"),
 					     FALSE,
 					     GTK_PARAM_READABLE) );
 }

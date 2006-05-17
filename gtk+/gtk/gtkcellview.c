@@ -582,6 +582,9 @@ gtk_cell_view_get_cell_info (GtkCellView     *cellview,
 
 /**
  * gtk_cell_view_set_cell_data:
+ * @cell_view: a #GtkCellView
+ *
+ * Sets the cell data, if available.
  *
  * Since: maemo 1.0
  */
@@ -591,6 +594,10 @@ gtk_cell_view_set_cell_data (GtkCellView *cell_view)
   GList *i;
   GtkTreeIter iter;
   GtkTreePath *path;
+  
+  /* This function should probably be private. It is private in  
+   * stock GTK and was made public in maemo GTK without any explanation 
+   * nor changelog entry.*/
 
   g_return_if_fail (cell_view->priv->displayed_row != NULL);
 

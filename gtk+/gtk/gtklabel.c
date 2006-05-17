@@ -527,6 +527,8 @@ gtk_label_class_init (GtkLabelClass *class)
   /**
    * GtkLabel:hildonlike:
    *
+   * Changes wrapping and the maximum width a label can take.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,

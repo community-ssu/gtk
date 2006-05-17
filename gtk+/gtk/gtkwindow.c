@@ -7609,6 +7609,8 @@ gtk_window_set_default_icon_from_file (const gchar *filename,
  *
  * This function is deprecated; it does nothing.
  *
+ * Return value: The previous focused widget in the %window.
+ *
  * Since: maemo 1.0
  */
 GtkWidget *
@@ -7624,6 +7626,8 @@ gtk_window_get_prev_focus_widget (GtkWindow *window)
  * @widget: a #GtkWidget
  *
  * This function is deprecated; it does nothing.
+ *
+ * Set the previous focused widget for #window.
  *
  * Since: maemo 1.0
  */

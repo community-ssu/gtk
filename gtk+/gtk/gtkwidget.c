@@ -459,6 +459,12 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   /** 
    * GtkWidget:tap-and-hold-state:
    *
+   * Sets the state (#GtkStateType) to be used to the tap and hold 
+   * functionality. The default is GTK_STATE_NORMAL. 
+   *
+   * Warning: Functionality for setting and getting this propery is not 
+   * implemented.
+   *
    * Since: maemo 1.0
    */
   g_object_class_install_property (gobject_class,
@@ -1503,6 +1509,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * but this is optional.  Setup can be run and some other functionality	
    * may be connected to it as well.  Usually this signal is not used,	
    * instead the virtual function is over written.	
+   * 
    * Signal is deprecated and should not be used.
    *
    * @Deprecated
@@ -1570,6 +1577,8 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   /**
    * GtkWidget:hildon-focus-handling:
    *
+   * Whether the widget is using the hildon like focus handling or not.
+   *
    * This style property is deprecated; it does nothing.
    *
    * Since: maemo 1.0
@@ -1579,7 +1588,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
  							 P_("Hildon focus handling"),
  							 P_("Whether the widget is using the hildon like focus handling or not"),
  							 FALSE,
-								 GTK_PARAM_READABLE));
+							 GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (klass,
 					   g_param_spec_int ("focus-line-width",
 							     P_("Focus linewidth"),
@@ -7856,6 +7865,8 @@ gtk_widget_set_no_show_all (GtkWidget *widget,
  * gtk_widget_insensitive_press:
  * @widget: a #GtkWidget
  *
+ * Emits the "insensitive-press" signal.
+ * 
  * Since: maemo 1.0
  */
 void
@@ -7979,17 +7990,16 @@ timeout_tap_and_hold_animation (GtkWidget *widget)
 
 /**
  * gtk_widget_tap_and_hold_setup:
- *
- * @widget : A @GtkWidget
- * @menu : A @GtkWidget
- * @func : A @GtkCallback
- * @flags : A @GtkWidgetTapAndHoldFlags
+ * @widget : a @GtkWidget
+ * @menu : a @GtkWidget
+ * @func : a @GtkCallback
+ * @flags : a @GtkWidgetTapAndHoldFlags
  *
  * Setups the tap and hold functionality to the @widget.
  * The @menu is shown when the functionality is activated.
  * If the @menu is wanted to be positioned in a different way than the
  * gtk+ default, the menuposition @func can be passed as a third parameter.
- * Fourth parameter, @flags is debricated and has no effect.
+ * Fourth parameter, @flags is deprecated and has no effect.
  *
  * Since: maemo 1.0
  */

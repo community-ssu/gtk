@@ -38,6 +38,7 @@
 #include "gtkmenubar.h"
 #include "gtkmenuitem.h"
 #include "gtkseparatormenuitem.h"
+#include "gtkintl.h"
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
@@ -253,12 +254,14 @@ gtk_menu_item_class_init (GtkMenuItemClass *klass)
   /**
    * GtkMenuItem:separator-height:
    *
+   * The height of the separator in pixels.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
                                           g_param_spec_int ("separator-height",
-                                                            "Separator height",
-                                                            "Draw a separator graphics with height of x pixels.",
+                                                            P_("Separator height"),
+                                                            P_("Draw a separator graphics with height of x pixels."),
                                                             0,
 							    G_MAXINT,
 							    5,

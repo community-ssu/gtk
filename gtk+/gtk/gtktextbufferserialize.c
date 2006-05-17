@@ -592,9 +592,9 @@ serialize_pixbufs (SerializationContext *context,
 /**
  * gtk_text_buffer_serialize_rich_text:
  * @buffer: a #GtkTextBuffer
- * @start:
- * @end:
- * @len:
+ * @start: a #GtkTextIter marking the start of the text to be serialized
+ * @end: a #GtkTextIter marking the end of the text to be serialized
+ * @len: location to store the length of the serialized text
  *
  * Return value: Contents of the %buffer serialized as a string, or %NULL
  *
@@ -1833,11 +1833,11 @@ deserialize_text (GtkTextBuffer *buffer,
 /**
  * gtk_text_buffer_deserialize_rich_text:
  * @buffer: a #GtkTextBuffer
- * @iter:
- * @text:
- * @len:
- * @create_tags:
- * @error
+ * @iter: a #GtkTextIter marking the start of the deserialized text
+ * @text: text to deserialize
+ * @len: length of %text
+ * @create_tags: whether to create tags
+ * @error: location to store error or %NULL
  *
  * Return value: %TRUE if deserializing rich text data succeeded
  *
