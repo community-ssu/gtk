@@ -190,12 +190,6 @@ void hildon_file_selection_set_select_multiple(HildonFileSelection * self,
 gboolean hildon_file_selection_get_select_multiple(HildonFileSelection *
                                                    self);
 
-void hildon_file_selection_set_column_headers_visible(HildonFileSelection *
-                                                      self, gboolean
-                                                      visible);
-gboolean hildon_file_selection_get_column_headers_visible(HildonFileSelection
-                                                          *self);
-
 void hildon_file_selection_set_filter(HildonFileSelection * self,
                                       GtkFileFilter * filter);
 GtkFileFilter *hildon_file_selection_get_filter(HildonFileSelection *
