@@ -77,11 +77,6 @@ struct OthersMenu {
     guint collapse_id;
 };
 
-struct _om_changed_cb_data_st {
-	GtkWidget *widget;
-	OthersMenu_t *om;
-};
-
 static void others_menu_size_request(GtkWidget * menu,
 				     GtkRequisition * req, gpointer data);
 static gboolean others_menu_deactivate(GtkWidget * widget,
@@ -97,7 +92,7 @@ static gboolean others_menu_button_button_press(GtkToggleButton * togglebutton,
                                                 gpointer data);
 
 static gboolean others_menu_changed_cb( gpointer data );
-static void dnotify_handler( char *path, _om_changed_cb_data_t *data );
+static void dnotify_handler( char *path, gpointer data );
 
 static guint dnotify_update_timeout = 0;
 
@@ -412,7 +407,6 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 {
     gchar *user_home_dir = NULL;
     gchar *user_menu_conf_file = NULL;
-    _om_changed_cb_data_t *cb_data;
 
     g_return_if_fail(om);
     om->menu = GTK_MENU(gtk_menu_new());
@@ -437,16 +431,11 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
     /* Populate the menu with items */
     others_menu_get_items(GTK_WIDGET(om->menu), om, NULL, NULL);
 
-    /* Monitor changes to the directory */
-    cb_data = g_malloc0(sizeof(_om_changed_cb_data_t));
-    cb_data->widget = GTK_WIDGET(om->menu);
-    cb_data->om = om;
-
     /* Watch systemwide menu conf */
     if ( hildon_dnotify_set_cb(
 			    (hildon_dnotify_cb_f *)dnotify_handler,
 			    g_path_get_dirname( SYSTEMWIDE_MENU_FILE ),
-			    cb_data ) != HILDON_OK) {
+			    om ) != HILDON_OK) {
 	    ULOG_ERR( "others_menu_initialize_menu: "
 			    "failed setting dnotify callback "
 			    "for systemwide menu conf." );
@@ -472,7 +461,7 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
     if ( hildon_dnotify_set_cb(
 			    (hildon_dnotify_cb_f *)dnotify_handler,
 			    user_menu_dir,
-			    cb_data ) != HILDON_OK) {
+			    om ) != HILDON_OK) {
 	    ULOG_ERR( "others_menu_initialize_menu: "
 			    "failed setting dnotify callback "
 			    "for user spesific menu conf." );
@@ -484,7 +473,7 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
     if ( hildon_dnotify_set_cb(
 			    (hildon_dnotify_cb_f *)dnotify_handler,
 			    DESKTOPENTRYDIR,
-			    cb_data ) != HILDON_OK) {
+			    om ) != HILDON_OK) {
 	    ULOG_ERR( "others_menu_initialize_menu: "
 			    "failed setting dnotify callback "
 			    "for .desktop directory." );
@@ -504,38 +493,30 @@ void others_menu_deinit(OthersMenu_t * om)
     g_free(om);
 }
 
-static void dnotify_handler( char *path, _om_changed_cb_data_t *data )
+static void dnotify_handler( char *path, gpointer data )
 {
     if( !dnotify_update_timeout )
     {
         dnotify_update_timeout =
             g_timeout_add( 1000, others_menu_changed_cb, data );
     }
+    
+    hildon_dnotify_remove_cb( path );
 }
 
 
 static gboolean others_menu_changed_cb( gpointer _data )
 {
-    _om_changed_cb_data_t *data = (_om_changed_cb_data_t *)_data;
+    OthersMenu_t *om = (OthersMenu_t *)_data;
 	ULOG_DEBUG( "others_menu_changed_cb()" );
-    
-    if( !data )
-        return FALSE;
-
-	/* Remove callbacks */
- 	hildon_dnotify_remove_every_cb();
     
     dnotify_update_timeout = 0;
 
 	/* Destroy the menu */
-	gtk_widget_destroy( data->widget );
+	gtk_widget_destroy( GTK_WIDGET( om->menu ) );
 
 	/* Re-initialize menu */	
-	others_menu_initialize_menu( data->om, NULL);
-    
-	/* Cleanup */
-	g_free( data );
-    data = NULL;
+	others_menu_initialize_menu( om, NULL);
 
     return FALSE;
 }
