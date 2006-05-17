@@ -256,12 +256,14 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
   /**
    * GtkProgressBar:text-spacing:
    *
+   * The amount of pixels between the trough and text.
+   *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("text-spacing",
-							     "Text Spacing",
-							     "The amount of pixels between the trough and text.",
+							     P_("Text Spacing"),
+							     P_("The amount of pixels between the trough and text."),
 							     G_MININT,
 							     G_MAXINT,
 							     DEFAULT_TEXT_SPACING,
@@ -270,12 +272,14 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
   /**
    * GtkProgressBar:width-increment:
    *
+   * The amount of pixels to add to the width of size request.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("width-increment",
-							     "width Increment",
-							     "The amount of pixels to add to the width size request.",
+							     P_("width Increment"),
+							     P_("The amount of pixels to add to the width size request."),
 							     G_MININT,
 							     G_MAXINT,
 							     DEFAULT_WIDTH_INCREMENT,
@@ -283,13 +287,15 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
 
   /**
    * GtkProgressBar:height-increment:
-   *
+   * 
+   * The amount of pixels to add to the height size request.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("height-increment",
-							     "Height Increment",
-							     "The amount of pixels to add to the height size request.",
+							     P_("Height Increment"),
+							     P_("The amount of pixels to add to the height size request."),
 							     G_MININT,
 							     G_MAXINT,
 							     DEFAULT_WIDTH_INCREMENT,
@@ -298,12 +304,14 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
   /**
    * GtkProgressBar:text-xnudge:
    *
+   * Amount of pixels to move the text position on X axis.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("text-xnudge",
-							     "Text XNudge",
-							     "Amount of pixels to move the text x position.",
+							     P_("Text XNudge"),
+							     P_("Amount of pixels to move the text x position."),
 							     G_MININT,
 							     G_MAXINT,
 							     DEFAULT_TEXT_XNUDGE,
@@ -312,12 +320,14 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
   /**
    * GtkProgressBar:text-ynudge:
    *
+   * Amount of pixels to move the text position on Y axis.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("text-ynudge",
-							     "Text YNudge",
-							     "Amount of pixels to move the text y position.",
+							     P_("Text YNudge"),
+							     P_("Amount of pixels to move the text y position."),
 							     G_MININT,
 							     G_MAXINT,
 							     DEFAULT_TEXT_YNUDGE,

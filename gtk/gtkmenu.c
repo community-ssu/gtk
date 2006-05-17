@@ -757,6 +757,8 @@ gtk_menu_class_init (GtkMenuClass *class)
   /**
    * GtkMenu:horizontal-padding:
    *
+   * Extra space added at the left and right edges of the menu.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -771,6 +773,8 @@ gtk_menu_class_init (GtkMenuClass *class)
   /**
    * GtkMenu:double-arrows:
    *
+   * Always show both arrows when scrolling.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,

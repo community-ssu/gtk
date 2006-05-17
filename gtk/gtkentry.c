@@ -688,6 +688,8 @@ gtk_entry_class_init (GtkEntryClass *class)
   /**
    * GtkEntry:horizontal-border:
    *
+   * Set the horizontal (left/right) innner borders.  
+   * 
    * Since: maemo 1.0
    */
  gtk_widget_class_install_style_property (widget_class,
@@ -702,6 +704,8 @@ gtk_entry_class_init (GtkEntryClass *class)
   /**
    * GtkEntry:vertical-border:
    *
+   * Set the vertical (top/bottom) inner borders.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -716,6 +720,8 @@ gtk_entry_class_init (GtkEntryClass *class)
   /**
    * GtkEntry:icon-width:
    *
+   * Size of the purpose icon.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -730,6 +736,10 @@ gtk_entry_class_init (GtkEntryClass *class)
   /**
    * GtkEntry:show-last-char:
    *
+   * When the entry is in invisible (or "password") mode, last entered 
+   * character is shown for a shot time before being rendered to the 
+   * invisible character (asterisk by default).
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -841,7 +851,11 @@ gtk_entry_class_init (GtkEntryClass *class)
 
   /**
    * GtkEntry::invalid-input:
-   *
+   * 
+   * Emitted when the users enters a character that does not belong to the 
+   * #HildonGtkInputMode of the entry, or the maximum number of characters 
+   * has been reached.
+   * 
    * Since: maemo 1.0
    */
   signals[INVALID_INPUT] =
@@ -6137,7 +6151,7 @@ static PangoLayoutIter *get_char_at_pos( PangoLayout *layout, gint x, gint y )
 /**
  * hildon_gtk_entry_set_input_mode:
  * @entry: a #GtkEntry
- * @mode: input mode
+ * @mode: a #HildonGtkInputMode.
  *
  * Sets input mode of the widget.
  *
@@ -6164,7 +6178,7 @@ hildon_gtk_entry_set_input_mode (GtkEntry *entry, HildonGtkInputMode mode)
  *
  * Gets input mode of the widget.
  *
- * Return value: input mode
+ * Return value: a #HildonGtkInputMode.
  *
  * Since: maemo 2.0
  */

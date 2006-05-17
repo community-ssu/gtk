@@ -71,6 +71,8 @@ gtk_separator_class_init (GtkSeparatorClass *class)
   /**
    * GtkSeparator:hildonlike-drawing:
    *
+   * If TRUE, the separator is drawn with paint_box instead of paint_(vh)line.
+   * 
    * Since: maemo 1.0
    */
   pspec = g_param_spec_boolean("hildonlike-drawing",

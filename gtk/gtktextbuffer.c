@@ -206,6 +206,8 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
   /**
    * GtkTextBuffer:can-paste-rich-text:
    *
+   * Whether it should be possible to paste rich text to the buffer.
+   * 
    * Since: maemo 1.0
    */
   g_object_class_install_property (object_class,
@@ -217,6 +219,8 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
   /**
    * GtkTextBuffer:rich-text-format:
    *
+   * Name of a collection of tags that the text view supports
+   * 
    * Since: maemo 1.0
    */
   g_object_class_install_property (object_class,
@@ -3856,8 +3860,10 @@ gtk_text_buffer_get_can_paste_rich_text (GtkTextBuffer *buffer)
 /**
  * gtk_text_buffer_set_rich_text_format:
  * @buffer: a #GtkTextBuffer
- * @format:
+ * @format: name of a collection of tags that the text view supports
  *
+ * Sets a new rich text format for the widget.
+ * 
  * Since: maemo 1.0
  */
 void
@@ -3882,7 +3888,7 @@ gtk_text_buffer_set_rich_text_format (GtkTextBuffer *buffer,
  * gtk_text_buffer_get_rich_text_format:
  * @buffer: a #GtkTextBuffer
  *
- * Return value:
+ * Return value: the widget's current rich text format.
  *
  * Since: maemo 1.0
  */

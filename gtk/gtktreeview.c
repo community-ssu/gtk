@@ -785,6 +785,8 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
   /**
    * GtkTreeView:expander-indent:
    *
+   * How much (in pixels) the expaned items are shifted. 
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -844,6 +846,8 @@ GTK_PARAM_READABLE));
 
   /**
    * GtkTreeView:passive-focus:
+   *
+   * Enables drawing of passive focus in treeview.
    *
    * Since: maemo 1.0
    */
@@ -1019,6 +1023,10 @@ GTK_PARAM_READABLE));
 
   /**
    * GtkTreeView::row-insensitive:
+   * @tree_view: the object which received the signal.
+   * @path: the path where the cursor is tried to be moved.
+   *
+   * Emitted when the user tries to move cursor to an insesitive row.
    *
    * Since: maemo 1.0
    */

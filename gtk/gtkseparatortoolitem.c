@@ -142,6 +142,8 @@ gtk_separator_tool_item_class_init (GtkSeparatorToolItemClass *class)
   /**
    * GtkSeparatorToolItem:separator-size:
    *
+   * The thickness of the separator. -1 for default behaviour.
+   *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property(widget_class,
@@ -151,6 +153,8 @@ gtk_separator_tool_item_class_init (GtkSeparatorToolItemClass *class)
 
   /**
    * GtkSeparatorToolItem:is-image:
+   *
+   * Whether the separator is drawn as an image, or just as a line.
    *
    * Since: maemo 1.0
    */

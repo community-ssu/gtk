@@ -308,6 +308,9 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
   /**
    * GtkMenuShell::close:
    *
+   * This signal is binded to GDK_Escape. The defalut handler closes the 
+   * topmost menu.
+   * 
    * Since: maemo 1.0
    */
   menu_shell_signals[CLOSE] =

@@ -176,6 +176,9 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
   /**
    * GtkCellRendererToggle:checkbox-mode:
    *
+   * Activates the checkbox mode of drawing selection. Currently there are no 
+   * major differences in how the drawing is done.
+   * 
    * Since: maemo 1.0
    */
   g_object_class_install_property (object_class,

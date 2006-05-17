@@ -615,38 +615,45 @@ gtk_calendar_class_init (GtkCalendarClass *class)
   /**
    * GtkCalendar:min-year:
    *
+   * Minimum valid year (0 if no limit).
+   * 
    * Since: maemo 1.0
    */
   g_object_class_install_property (gobject_class,
                                    PROP_MIN_YEAR,
                                    g_param_spec_int ("min-year",
-                                                     "Minimum valid year",
-                                                     "Minimum valid year (0 if no limit)",
+                                                     P_("Minimum valid year"),
+                                                     P_("Minimum valid year (0 if no limit)"),
                                                      0, 2100, 0,
                                                      GTK_PARAM_READWRITE));
 
   /**
    * GtkCalendar:max-year:
    *
+   * Maximum valid year (0 if no limit).
+   * 
    * Since: maemo 1.0
    */
   g_object_class_install_property (gobject_class,
                                    PROP_MAX_YEAR,
                                    g_param_spec_int ("max-year",
-                                                     "Maximum valid year",
-                                                     "Maximum valid year (0 if no limit)",
+                                                     P_("Maximum valid year"),
+                                                     P_("Maximum valid year (0 if no limit)"),
                                                      0, 2100, 0,
                                                      GTK_PARAM_READWRITE));
 
   /**
    * GtkCalendar:hildonlike:
    *
+   * Changes the appearance and behaviour of GtkCalendar to be consistent with
+   * Hildon library.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
                                   g_param_spec_boolean ("hildonlike",
-                                  _("Size request"),
-                                  _("Size allocate"),
+                                  P_("Size request"),
+                                  P_("Size allocate"),
                                   FALSE,
                                   GTK_PARAM_READABLE));
 
@@ -709,6 +716,9 @@ gtk_calendar_class_init (GtkCalendarClass *class)
   /**
    * GtkCalendar::erroneous-date:
    *
+   * Emitted when the user tries to set a date which is outside the boundaries 
+   * set by min-year and max-year properties.
+   * 
    * Since: maemo 1.0
    */
   gtk_calendar_signals[ERRONEOUS_DATE_SIGNAL] =
@@ -722,6 +732,8 @@ gtk_calendar_class_init (GtkCalendarClass *class)
   /**
    * GtkCalendar::selected-date:
    *
+   * Emitted on button-release when the user has selected a date.
+   * 
    * Since: maemo 1.0
    */
   gtk_calendar_signals[SELECTED_DATE_SIGNAL] =

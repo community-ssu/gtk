@@ -194,6 +194,8 @@ gtk_dialog_class_init (GtkDialogClass *class)
   /**
    * GtkDialog:content-area-spacing:
    *
+   * Spacing between elements of the main dialog area.
+   *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -225,12 +227,14 @@ gtk_dialog_class_init (GtkDialogClass *class)
   /**
    * GtkDialog:extended-left-border:
    *
+   * Width of extra left border around the main dialog area.
+   *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("extended-left-border",
-                                                             _("Content area extra left border"),
-                                                             _("Width of extra left border around the main dialog area"),
+                                                             P_("Content area extra left border"),
+                                                             P_("Width of extra left border around the main dialog area"),
                                                              0,
                                                              G_MAXINT,
                                                              0,
@@ -238,12 +242,14 @@ gtk_dialog_class_init (GtkDialogClass *class)
   /**
    * GtkDialog:extended-right-border:
    *
+   * Width of extra right border around the main dialog area.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("extended-right-border",
-                                                             _("Content area extra right border"),
-                                                             _("Width of extra right border around the main dialog area"),
+                                                             P_("Content area extra right border"),
+                                                             P_("Width of extra right border around the main dialog area"),
                                                              0,
                                                              G_MAXINT,
                                                              0,

@@ -456,18 +456,22 @@ gtk_button_class_init (GtkButtonClass *klass)
   /**
    * GtkButton:child-spacing:
    *
+   * Spacing between the button edges and its child.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("child-spacing",
-							     _("Child spacing"),
-							     _("Spacing between button edges and child."),
+							     P_("Child spacing"),
+							     P_("Spacing between button edges and child."),
 							     0,
 							     G_MAXINT,
 							     CHILD_SPACING,
 							     GTK_PARAM_READABLE));
   /**
    * GtkButton:detail:
+   *
+   * The detail the button is drawn with.
    *
    * Since: maemo 1.0
    */
@@ -480,8 +484,11 @@ gtk_button_class_init (GtkButtonClass *klass)
 							GTK_PARAM_READWRITE));
 
   /**
-   * GtkButton:automatic_detail:
+   * GtkButton:automatic-detail:
    *
+   * Whether setting the drawing detail is automatic, based on 
+   * GtkTable/GtkHButtonBox.
+   * 
    * Since: maemo 1.0
    */
   g_object_class_install_property (gobject_class,
@@ -496,12 +503,14 @@ gtk_button_class_init (GtkButtonClass *klass)
   /**
    * GtkButton:child-offset-y:
    *
+   * How many pixels to add/take away from GtkButton's child size allocation.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("child-offset-y",
-							     _("Child Y Offset"),
-							     _("Enable hack how many pixels to add/take away from GtkButton's child size allocation."),
+							     P_("Child Y Offset"),
+							     P_("How many pixels to add/take away from GtkButton's child size allocation."),
 							     G_MININT,
 							     G_MAXINT,
 							     0,
@@ -510,7 +519,8 @@ gtk_button_class_init (GtkButtonClass *klass)
   /**
    * GtkButton:listboxheader:
    *
-   * Used to find out whether button is a GtkTreeView column Listbox header.
+   * Whether the button is a GtkTreeView column Listbox header. If TRUE, the 
+   * button will be drawn differently.
    *
    * Since: maemo 1.0
    */
@@ -540,6 +550,9 @@ gtk_button_class_init (GtkButtonClass *klass)
   /**
    * GtkButton:padding:
    *
+   * Paddings around the child of the button. gtkrc usage: GtkButton::padding  
+   * = { left, right, top, bottom }
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -552,6 +565,8 @@ gtk_button_class_init (GtkButtonClass *klass)
   /**
    * GtkButton:minimum-width:
    *
+   * The minimum width that the button will request.
+   * 
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
@@ -1900,9 +1915,15 @@ _gtk_button_set_depressed (GtkButton *button,
 
 /**
  * hildon_gtk_button_set_depressed:
+ * @button: a #GtkButton
+ * @depressed: whether the button is depressed
  *
  * Exactly the same as private _gtk_button_set_depressed() but exported for
- * hildon.
+ * hildon. Basically a Hildon wrapper for _gtk_button_set_depressed.
+ *
+ * Sets whether the button is currently drawn as down or not. This is
+ * purely a visual setting, and is meant only for use by derived widgets
+ * such as #GtkToggleButton.
  *
  * Since: maemo 2.0
  */
@@ -2079,7 +2100,10 @@ gtk_button_get_image (GtkButton *button)
 /**
  * osso_gtk_button_set_detail_from_attach_flags:
  * @button: a #GtkButton
- * @flags: 
+ * @flags: #OssoGtkButtonAttachFlags
+ *
+ * This function sets "automatic-detail" to %FALSE and uses the %flags to set 
+ * the detail.
  *
  * Since: maemo 1.0
  */

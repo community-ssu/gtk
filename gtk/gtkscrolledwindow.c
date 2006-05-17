@@ -293,6 +293,9 @@ gtk_scrolled_window_class_init (GtkScrolledWindowClass *class)
   /**
    * GtkScrolledWindow:scrollbar-dislocation:
    *
+   * Flag for having scrollbar at the outer border or container padding 
+   * instead of at the inner border.
+   *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,

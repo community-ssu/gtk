@@ -182,12 +182,14 @@ gtk_frame_class_init (GtkFrameClass *class)
   /**
    * GtkFrame:hildonlike:
    *
+   * Changes the appearance GtkFrame to be consistent with Hildon library.
+   *
    * Since: maemo 1.0
    */
   gtk_widget_class_install_style_property (widget_class,
  					   g_param_spec_boolean ("hildonlike",
-								 _("hildonlike looks"),
-								 _("Draw frame, 1/0"),
+								 P_("hildonlike looks"),
+								 P_("Draw frame, 1/0"),
 								 FALSE,
 								 GTK_PARAM_READABLE));
   
