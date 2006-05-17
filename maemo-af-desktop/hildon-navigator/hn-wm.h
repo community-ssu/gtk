@@ -251,7 +251,6 @@ typedef struct
 
 #include "hn-wm-util.h"
 #include "hn-wm-memory.h"
-#include "hn-wm-session.h"
 #include "hn-wm-watchable-app.h"
 #include "hn-wm-watched-window.h"
 #include "hn-wm-watched-window-view.h"
