@@ -1,0 +1,198 @@
+Source: haf-marketing-release
+Section: misc
+Priority: optional
+Maintainer: L10n team <l10n@ok.research.nokia.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.2
+
+Package: hildon-control-panel-l10n-mr0
+Architecture: all
+Provides: hildon-control-panel-l10n-mr
+Conflicts: hildon-control-panel-l10n-mr
+Depends: hildon-control-panel-l10n-dede, hildon-control-panel-l10n-engb, hildon-control-panel-l10n-enus, hildon-control-panel-l10n-eses, hildon-control-panel-l10n-esmx, hildon-control-panel-l10n-frfr, hildon-control-panel-l10n-itit, hildon-control-panel-l10n-frca, hildon-control-panel-l10n-ptbr, 
+Description: hildon-control-panel marketing release 0 locales
+ This is a metapackage for hildon-control-panel depending on the 
+ locales needed on marketing release 0. Application
+ developers of hildon-control-panel should depend on:
+  "hildon-control-panel-l10n-mr0 | hildon-control-panel-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: hildon-input-method-l10n-mr0
+Architecture: all
+Provides: hildon-input-method-l10n-mr
+Conflicts: hildon-input-method-l10n-mr
+Depends: hildon-input-method-l10n-dede, hildon-input-method-l10n-engb, hildon-input-method-l10n-enus, hildon-input-method-l10n-eses, hildon-input-method-l10n-esmx, hildon-input-method-l10n-frfr, hildon-input-method-l10n-itit, hildon-input-method-l10n-frca, hildon-input-method-l10n-ptbr, 
+Description: hildon-input-method marketing release 0 locales
+ This is a metapackage for hildon-input-method depending on the 
+ locales needed on marketing release 0. Application
+ developers of hildon-input-method should depend on:
+  "hildon-input-method-l10n-mr0 | hildon-input-method-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: hildon-common-strings-l10n-mr0
+Architecture: all
+Provides: hildon-common-strings-l10n-mr
+Conflicts: hildon-common-strings-l10n-mr
+Depends: hildon-common-strings-l10n-dede, hildon-common-strings-l10n-engb, hildon-common-strings-l10n-enus, hildon-common-strings-l10n-eses, hildon-common-strings-l10n-esmx, hildon-common-strings-l10n-frfr, hildon-common-strings-l10n-itit, hildon-common-strings-l10n-frca, hildon-common-strings-l10n-ptbr, 
+Description: hildon-common-strings marketing release 0 locales
+ This is a metapackage for hildon-common-strings depending on the 
+ locales needed on marketing release 0. Application
+ developers of hildon-common-strings should depend on:
+  "hildon-common-strings-l10n-mr0 | hildon-common-strings-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: hildon-fm-l10n-mr0
+Architecture: all
+Provides: hildon-fm-l10n-mr
+Conflicts: hildon-fm-l10n-mr
+Depends: hildon-fm-l10n-dede, hildon-fm-l10n-engb, hildon-fm-l10n-enus, hildon-fm-l10n-eses, hildon-fm-l10n-esmx, hildon-fm-l10n-frfr, hildon-fm-l10n-itit, hildon-fm-l10n-frca, hildon-fm-l10n-ptbr, 
+Description: hildon-fm marketing release 0 locales
+ This is a metapackage for hildon-fm depending on the 
+ locales needed on marketing release 0. Application
+ developers of hildon-fm should depend on:
+  "hildon-fm-l10n-mr0 | hildon-fm-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: osso-application-installer-l10n-mr0
+Architecture: all
+Provides: osso-application-installer-l10n-mr
+Conflicts: osso-application-installer-l10n-mr
+Depends: osso-application-installer-l10n-dede, osso-application-installer-l10n-engb, osso-application-installer-l10n-enus, osso-application-installer-l10n-eses, osso-application-installer-l10n-esmx, osso-application-installer-l10n-frfr, osso-application-installer-l10n-itit, osso-application-installer-l10n-frca, osso-application-installer-l10n-ptbr, 
+Description: osso-application-installer marketing release 0 locales
+ This is a metapackage for osso-application-installer depending on the 
+ locales needed on marketing release 0. Application
+ developers of osso-application-installer should depend on:
+  "osso-application-installer-l10n-mr0 | osso-application-installer-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: libosso-common-error-l10n-mr0
+Architecture: all
+Provides: libosso-common-error-l10n-mr
+Conflicts: libosso-common-error-l10n-mr
+Depends: libosso-common-error-l10n-dede, libosso-common-error-l10n-engb, libosso-common-error-l10n-enus, libosso-common-error-l10n-eses, libosso-common-error-l10n-esmx, libosso-common-error-l10n-frfr, libosso-common-error-l10n-itit, libosso-common-error-l10n-frca, libosso-common-error-l10n-ptbr, 
+Description: libosso-common-error marketing release 0 locales
+ This is a metapackage for libosso-common-error depending on the 
+ locales needed on marketing release 0. Application
+ developers of libosso-common-error should depend on:
+  "libosso-common-error-l10n-mr0 | libosso-common-error-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: maemo-af-desktop-l10n-mr0
+Architecture: all
+Provides: maemo-af-desktop-l10n-mr
+Conflicts: maemo-af-desktop-l10n-mr
+Depends: maemo-af-desktop-l10n-dede, maemo-af-desktop-l10n-engb, maemo-af-desktop-l10n-enus, maemo-af-desktop-l10n-eses, maemo-af-desktop-l10n-esmx, maemo-af-desktop-l10n-frfr, maemo-af-desktop-l10n-itit, maemo-af-desktop-l10n-frca, maemo-af-desktop-l10n-ptbr, 
+Description: maemo-af-desktop marketing release 0 locales
+ This is a metapackage for maemo-af-desktop depending on the 
+ locales needed on marketing release 0. Application
+ developers of maemo-af-desktop should depend on:
+  "maemo-af-desktop-l10n-mr0 | maemo-af-desktop-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: hildon-libs-l10n-mr0
+Architecture: all
+Provides: hildon-libs-l10n-mr
+Conflicts: hildon-libs-l10n-mr
+Depends: hildon-libs-l10n-dede, hildon-libs-l10n-engb, hildon-libs-l10n-enus, hildon-libs-l10n-eses, hildon-libs-l10n-esmx, hildon-libs-l10n-frfr, hildon-libs-l10n-itit, hildon-libs-l10n-frca, hildon-libs-l10n-ptbr, 
+Description: hildon-libs marketing release 0 locales
+ This is a metapackage for hildon-libs depending on the 
+ locales needed on marketing release 0. Application
+ developers of hildon-libs should depend on:
+  "hildon-libs-l10n-mr0 | hildon-libs-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: hildon-control-panel-l10n-mr1
+Architecture: all
+Provides: hildon-control-panel-l10n-mr
+Conflicts: hildon-control-panel-l10n-mr
+Depends: hildon-control-panel-l10n-engb, 
+Description: hildon-control-panel marketing release 0 locales
+ This is a metapackage for hildon-control-panel depending on the 
+ locales needed on marketing release 1. Application
+ developers of hildon-control-panel should depend on:
+  "hildon-control-panel-l10n-mr0 | hildon-control-panel-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: hildon-input-method-l10n-mr1
+Architecture: all
+Provides: hildon-input-method-l10n-mr
+Conflicts: hildon-input-method-l10n-mr
+Depends: hildon-input-method-l10n-engb, 
+Description: hildon-input-method marketing release 0 locales
+ This is a metapackage for hildon-input-method depending on the 
+ locales needed on marketing release 1. Application
+ developers of hildon-input-method should depend on:
+  "hildon-input-method-l10n-mr0 | hildon-input-method-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: hildon-common-strings-l10n-mr1
+Architecture: all
+Provides: hildon-common-strings-l10n-mr
+Conflicts: hildon-common-strings-l10n-mr
+Depends: hildon-common-strings-l10n-engb, 
+Description: hildon-common-strings marketing release 0 locales
+ This is a metapackage for hildon-common-strings depending on the 
+ locales needed on marketing release 1. Application
+ developers of hildon-common-strings should depend on:
+  "hildon-common-strings-l10n-mr0 | hildon-common-strings-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: hildon-fm-l10n-mr1
+Architecture: all
+Provides: hildon-fm-l10n-mr
+Conflicts: hildon-fm-l10n-mr
+Depends: hildon-fm-l10n-engb, 
+Description: hildon-fm marketing release 0 locales
+ This is a metapackage for hildon-fm depending on the 
+ locales needed on marketing release 1. Application
+ developers of hildon-fm should depend on:
+  "hildon-fm-l10n-mr0 | hildon-fm-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: osso-application-installer-l10n-mr1
+Architecture: all
+Provides: osso-application-installer-l10n-mr
+Conflicts: osso-application-installer-l10n-mr
+Depends: osso-application-installer-l10n-engb, 
+Description: osso-application-installer marketing release 0 locales
+ This is a metapackage for osso-application-installer depending on the 
+ locales needed on marketing release 1. Application
+ developers of osso-application-installer should depend on:
+  "osso-application-installer-l10n-mr0 | osso-application-installer-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: libosso-common-error-l10n-mr1
+Architecture: all
+Provides: libosso-common-error-l10n-mr
+Conflicts: libosso-common-error-l10n-mr
+Depends: libosso-common-error-l10n-engb, 
+Description: libosso-common-error marketing release 0 locales
+ This is a metapackage for libosso-common-error depending on the 
+ locales needed on marketing release 1. Application
+ developers of libosso-common-error should depend on:
+  "libosso-common-error-l10n-mr0 | libosso-common-error-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: maemo-af-desktop-l10n-mr1
+Architecture: all
+Provides: maemo-af-desktop-l10n-mr
+Conflicts: maemo-af-desktop-l10n-mr
+Depends: maemo-af-desktop-l10n-engb, 
+Description: maemo-af-desktop marketing release 0 locales
+ This is a metapackage for maemo-af-desktop depending on the 
+ locales needed on marketing release 1. Application
+ developers of maemo-af-desktop should depend on:
+  "maemo-af-desktop-l10n-mr0 | maemo-af-desktop-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: hildon-libs-l10n-mr1
+Architecture: all
+Provides: hildon-libs-l10n-mr
+Conflicts: hildon-libs-l10n-mr
+Depends: hildon-libs-l10n-engb, 
+Description: hildon-libs marketing release 0 locales
+ This is a metapackage for hildon-libs depending on the 
+ locales needed on marketing release 1. Application
+ developers of hildon-libs should depend on:
+  "hildon-libs-l10n-mr0 | hildon-libs-l10n-mr" 
+ to ensure correct locales are getting installed.

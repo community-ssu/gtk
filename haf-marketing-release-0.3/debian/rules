@@ -1,0 +1,46 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# GNU copyright 1997 to 1999 by Joey Hess.
+# Copyright 2004-2006 Nokia
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+TEXT_DOMAIN=$(shell sed -n 's/^Source: \(.*\)-l10n-src$$/\1/; t e; b; :e; p; q' debian/control)
+LANGS=$(shell echo po/*.po|sed -e 's,.*/,,' -e 's/.po//' -e 's/\*//')
+
+#FMTPARAMS=--verbose -c
+FMTPARAMS=--statistics
+
+build: build-stamp
+
+build-stamp:
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp 
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_clean -k
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep
+.PHONY: clean binary-indep binary install 
