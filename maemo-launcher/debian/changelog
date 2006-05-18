@@ -2,6 +2,8 @@ maemo-launcher (0.14-1) UNRELEASED; urgency=low
 
   * Force all relocations to be resolved at startup time, but not for the
     childs. (Closes: #28055@Nokia)
+  * Protect the childs that have negative priority from the OOM killer by
+    setting the adjust value to -17. (Closes: #29529@Nokia)
   * Bump Standards-Version to 3.7.2 (no changes needed).
 
  -- Guillem Jover <guillem.jover@nokia.com>  Mon, 24 Apr 2006 16:45:49 +0300

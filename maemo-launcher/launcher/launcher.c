@@ -57,6 +57,7 @@ typedef struct
   char **argv;
   char *filename;
   char *name;
+  int prio;
 } prog_t;
 
 typedef struct
@@ -84,13 +85,40 @@ extern char **environ;
 
 typedef int (*entry_t)(int, char **);
 
+static bool
+rise_oom_defense(int pid)
+{
+  int defender_pid;
+  int status;
+
+  defender_pid = fork();
+  if (defender_pid)
+    waitpid(defender_pid, &status, 0);
+  else
+  {
+    char pidstr[20];
+
+    snprintf(pidstr, sizeof(pidstr), "%d", pid);
+    execl(MAEMO_DEFENDER, MAEMO_DEFENDER, pidstr, NULL);
+    _exit(1);
+  }
+
+  if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+    return true;
+  else
+  {
+    error("rising the oom shield for pid=%d status=%d\n", pid, status);
+    return false;
+  }
+}
+
 static void
 launch_process(prog_t *prog, ui_state state)
 {
   void *module;
   entry_t entry;
   char *error_s;
-  int prio;
+  int cur_prio;
 
   /* Load the launched application. */
   module = dlopen(prog->filename, RTLD_LAZY | RTLD_GLOBAL);
@@ -116,9 +144,13 @@ launch_process(prog_t *prog, ui_state state)
 
   /* Possibly restore process priority. */
   errno = 0;
-  prio = getpriority(PRIO_PROCESS, 0);
-  if (!errno && prio < 0)
-    setpriority(PRIO_PROCESS, 0, 0);
+  cur_prio = getpriority(PRIO_PROCESS, 0);
+  if (!errno && cur_prio < prog->prio)
+    setpriority(PRIO_PROCESS, 0, prog->prio);
+
+  /* Protect our special childs from the oom monster. */
+  if (prog->prio < 0)
+    rise_oom_defense(getpid());
 
 #ifdef DEBUG
   {
@@ -281,6 +313,19 @@ invoked_get_args(int fd, prog_t *prog)
 }
 
 static bool
+invoked_get_prio(int fd, prog_t *prog)
+{
+  uint32_t msg;
+
+  invoke_recv_msg(fd, &msg);
+  prog->prio = msg;
+
+  invoke_send_msg(fd, INVOKER_MSG_ACK);
+
+  return true;
+}
+
+static bool
 invoked_send_pid(int fd, int pid)
 {
   invoke_send_msg(fd, INVOKER_MSG_PID);
@@ -306,6 +351,9 @@ invoked_get_actions(int fd, prog_t *prog)
       break;
     case INVOKER_MSG_ARGS:
       invoked_get_args(fd, prog);
+      break;
+    case INVOKER_MSG_PRIO:
+      invoked_get_prio(fd, prog);
       break;
     case INVOKER_MSG_END:
       invoke_send_msg(fd, INVOKER_MSG_ACK);
@@ -585,6 +633,9 @@ daemonize(void)
     _exit(0);
 
   chdir("/");
+
+  /* Protect us from the oom monster. */
+  rise_oom_defense(getpid());
 }
 
 static void

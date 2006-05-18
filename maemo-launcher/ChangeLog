@@ -1,3 +1,25 @@
+2006-05-18  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/Makefile.am (helperdir): New variable.
+	(helper_PROGRAMS): Likewise.
+	(maemo_defender_SOURCES): Likewise.
+	(maemo_defender_CPPFLAGS): Likewise.
+	(maemo_launcher_CPPFLAGS): Pass MAEMO_DEFENDER macro.
+	* launcher/defender.c: New file.
+	* launcher/launcher.c (prog_t): New prio member.
+	(rise_oom_defense): New function.
+	(launch_process): Change child priority if it is samller than the
+	current process priority. Call rise_oom_defense if the program
+	priority is negative.
+	(invoked_get_prio): New function.
+	(invoked_get_actions): Handle INVOKER_MSG_PRIO messages.
+	(daemonize): Call rise_oom_defense.
+	* launcher/invokelib.h (INVOKER_MSG_MAGIC_VERSION): Bump version to 3.
+	(INVOKER_MSG_PRIO): New macro.
+	* launcher/invoker.c: Include <errno.h> and <sys/resource.h>.
+	(invoker_send_prio): New function.
+	(main): Get current process priority and send it via invoker_send_prio.
+
 2006-05-17  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/comm_dbus.c: Include <unistd.h>.

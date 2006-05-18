@@ -31,7 +31,9 @@
 #include <signal.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <sys/resource.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "config.h"
 #include "report.h"
@@ -159,6 +161,18 @@ invoker_send_args(int fd, int argc, char **argv)
   invoke_send_msg(fd, argc);
   for (i = 0; i < argc; i++)
     invoke_send_str(fd, argv[i]);
+
+  invoke_recv_ack(fd);
+
+  return true;
+}
+
+static bool
+invoker_send_prio(int fd, int prio)
+{
+  /* Send action. */
+  invoke_send_msg(fd, INVOKER_MSG_PRIO);
+  invoke_send_msg(fd, prio);
 
   invoke_recv_ack(fd);
 
@@ -310,6 +324,7 @@ main(int argc, char *argv[])
   int prog_argc = 0;
   char **prog_argv = NULL;
   char *prog_name = NULL;
+  int prog_prio = 0;
   int prog_ret = 0;
   char *launch = NULL;
   char *delay_str = NULL;
@@ -358,6 +373,11 @@ main(int argc, char *argv[])
     usage(0);
   }
 
+  errno = 0;
+  prog_prio = getpriority(PRIO_PROCESS, 0);
+  if (errno && prog_prio < 0)
+    prog_prio = 0;
+
   debug("invoking execution: '%s'\n", prog_name);
 
   delay = get_delay(delay_str);
@@ -366,6 +386,7 @@ main(int argc, char *argv[])
   invoker_send_name(fd, prog_argv[0]);
   invoker_send_exec(fd, prog_name);
   invoker_send_args(fd, prog_argc, prog_argv);
+  invoker_send_prio(fd, prog_prio);
   invoker_send_end(fd);
 
   if (launch)
