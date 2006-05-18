@@ -30,9 +30,6 @@
 #define DESKTOP_FILE_SUFFIX ".desktop"
 #define DESKTOP_ENTRY_GROUP "Desktop Entry"
 
-/* This comes from Task Navigator */
-#define EXTRAS_MENU_STRING "tana_fi_extras"
-
 typedef struct {
 	gchar *name;
 	gchar *icon;
@@ -44,6 +41,9 @@ typedef struct {
 
 /* Iterator to extras */
 static GtkTreeIter *extras_iter = NULL;
+
+/* Function for composing an icon with the given emblem */
+static GdkPixbuf *add_emblem_to_icon( GdkPixbuf *icon, GdkPixbuf *emblem );
 
 /* Function for getting a list of all available files */
 GList *get_desktop_files(gchar *directory, GList *desktop_files);
@@ -74,6 +74,32 @@ static void destroy_desktop_item(gpointer data, gpointer null)
 
     g_free(de);
 }
+
+static GdkPixbuf *add_emblem_to_icon( GdkPixbuf *icon, GdkPixbuf *emblem )
+{
+	if ( icon == NULL ) {
+		ULOG_ERR( "add_emblem_to_icon: icon is NULL." );
+		return NULL;
+	} else if ( emblem == NULL ) {
+		ULOG_ERR( "add_emblem_to_icon: emblem is NULL." );
+		return NULL;
+	}
+
+	GdkPixbuf *result = gdk_pixbuf_copy( icon );
+
+	if ( result == NULL ) {
+		ULOG_ERR( "add_emblem_to_icon: failed to copy icon.");
+		return NULL;
+	}
+
+	gdk_pixbuf_composite(emblem, result, 0, 0,
+			MIN(gdk_pixbuf_get_width(emblem), gdk_pixbuf_get_width(result)),
+			MIN(gdk_pixbuf_get_height(emblem), gdk_pixbuf_get_height(result)),
+			0, 0, 1, 1, GDK_INTERP_NEAREST, 255);
+
+	return result;
+}
+
 
 GdkPixbuf *get_icon(const char *icon_name, int icon_size)
 {
@@ -171,7 +197,8 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
 				
 				g_error_free(error);
 				error = NULL;
-                g_free(current_path);
+				
+	                	g_free(current_path);
 				
 				continue;
 			}
@@ -186,12 +213,12 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
 			/* We're only interested in apps */
 			if ( !type || strcmp(type, "Application") != 0 ) {
 				g_key_file_free(key_file);
-                g_free(current_path);
-                g_free(type);
+				g_free(current_path);
+				g_free(type);
 				continue;
 			}
 
-            g_free(type);
+			g_free(type);
 
 			item = (desktop_entry_t *)
 				g_malloc0(sizeof(desktop_entry_t));
@@ -280,24 +307,42 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 {
 	gint level = 0;
 	gboolean doc_created = FALSE;
-	GdkPixbuf *icon = NULL;
-	static GdkPixbuf *folder_icon = NULL;
-	static GdkPixbuf *emblem_expander_open = NULL;
+
+	GdkPixbuf *app_icon                      = NULL;
+
+	GdkPixbuf *favourite_icon                = NULL;
+	GdkPixbuf *favourite_open_icon           = NULL;
+	GdkPixbuf *favourite_closed_icon         = NULL;
+	
+	static GdkPixbuf *folder_icon            = NULL;
+	static GdkPixbuf *folder_open_icon       = NULL;
+	static GdkPixbuf *folder_closed_icon     = NULL;
+	
+	static GdkPixbuf *emblem_expander_open   = NULL;
 	static GdkPixbuf *emblem_expander_closed = NULL;
 
-	if ( !folder_icon ) {
-		/* Use the same pixbuf for all the instances of the folder icon */
-		folder_icon = get_icon(ICON_FOLDER, ICON_SIZE);
-	}
-
-	/* FIXME: emblems should be added to original icons */
-
+	/* Get emblems */
 	if ( !emblem_expander_open ) {
-		emblem_expander_open = get_icon( EMBLEM_EXPANDER_OPEN ,ICON_SIZE );
+		emblem_expander_open = get_icon( EMBLEM_EXPANDER_OPEN, ICON_SIZE );
 	}
 
 	if ( !emblem_expander_closed ) {
-		emblem_expander_closed = get_icon( EMBLEM_EXPANDER_OPEN, ICON_SIZE );
+		emblem_expander_closed = get_icon( EMBLEM_EXPANDER_CLOSED, ICON_SIZE );
+	}
+
+	/* Get the folder icons */
+	if ( !folder_icon ) {
+		folder_icon = get_icon(ICON_FOLDER, ICON_SIZE);
+	}
+
+	if ( !folder_open_icon ) {
+		folder_open_icon = add_emblem_to_icon(
+				folder_icon, emblem_expander_open );
+	}
+
+	if ( !folder_closed_icon ) {
+		folder_closed_icon = add_emblem_to_icon(
+				folder_icon, emblem_expander_closed );
 	}
 
 	/* Make sure we have a valid iterator */
@@ -311,17 +356,22 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 	/* Always add the "Favourites" */
 	if (level == 0) {
-		icon = get_icon(ICON_FAVOURITES, ICON_SIZE);
+		favourite_icon = get_icon(ICON_FAVOURITES, ICON_SIZE);
+		favourite_open_icon = add_emblem_to_icon(
+				favourite_icon, emblem_expander_open );
+		favourite_closed_icon = add_emblem_to_icon(
+				favourite_icon, emblem_expander_closed );
+		
 		gtk_tree_store_set(menu_tree,
 				iterator,
 				TREE_MODEL_NAME,
 				FAVOURITES_NAME,
 				TREE_MODEL_ICON,
-				icon,
+				favourite_icon,
 				TREE_MODEL_EMBLEM_EXPANDER_OPEN,
-				emblem_expander_open,
+				favourite_open_icon,
 				TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
-				emblem_expander_closed,
+				favourite_closed_icon,
 				TREE_MODEL_EXEC,
 				"",
 				TREE_MODEL_SERVICE,
@@ -329,8 +379,21 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 				TREE_MODEL_DESKTOP_ID,
 				"",
 				-1);
-        if ( icon )
-            g_object_unref (G_OBJECT(icon));
+		
+		if ( favourite_icon ) {
+			g_object_unref( G_OBJECT( favourite_icon ) );
+			favourite_icon = NULL;
+		}
+		
+		if ( favourite_open_icon ) {
+			g_object_unref( G_OBJECT( favourite_open_icon ) );
+			favourite_open_icon = NULL;
+		}
+		
+		if ( favourite_closed_icon ) {
+			g_object_unref( G_OBJECT( favourite_closed_icon ) );
+			favourite_closed_icon = NULL;
+		}
 
 	}
 
@@ -403,9 +466,9 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					TREE_MODEL_ICON,
 					folder_icon,
 					TREE_MODEL_EMBLEM_EXPANDER_OPEN,
-					emblem_expander_open,
+					folder_open_icon,
 					TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
-					emblem_expander_closed,
+					folder_closed_icon,
 					TREE_MODEL_EXEC,
 					"",
 					TREE_MODEL_SERVICE,
@@ -475,11 +538,11 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 							&child_iter, iterator);
 
 					/* Check that we have the app icon.. */
-					icon = get_icon( item->icon, ICON_SIZE );
+					app_icon = get_icon( item->icon, ICON_SIZE );
 					
-					if ( !icon ) {
+					if ( !app_icon ) {
 						/* .. or use the default */
-						icon = get_icon( ICON_DEFAULT_APP,
+						app_icon = get_icon( ICON_DEFAULT_APP,
 								ICON_SIZE );
 					}
 					
@@ -488,7 +551,11 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 							TREE_MODEL_NAME,
 							item->name,
 							TREE_MODEL_ICON,
-							icon,
+							app_icon,
+							TREE_MODEL_EMBLEM_EXPANDER_OPEN,
+							NULL,
+							TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
+							NULL,
 							TREE_MODEL_EXEC,
 							item->exec,
 							TREE_MODEL_SERVICE,
@@ -497,9 +564,10 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 							item->desktop_id,
 							-1);
 
-                    if ( icon ){
-                        g_object_unref(G_OBJECT(icon));
-                    }
+					if ( app_icon ){
+						g_object_unref( G_OBJECT( app_icon ) );
+						app_icon = NULL;
+					}
 
 					/* Mark the item allocated */
 					item->allocated = TRUE;
@@ -522,6 +590,10 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					TREE_MODEL_NAME,
 					SEPARATOR_STRING,
 					TREE_MODEL_ICON,
+					NULL,
+					TREE_MODEL_EMBLEM_EXPANDER_OPEN,
+					NULL,
+					TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
 					NULL,
 					TREE_MODEL_EXEC,
 					SEPARATOR_STRING,
@@ -548,56 +620,91 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		GList *loop = g_list_first( desktop_files );
 		desktop_entry_t *item;
 
+		/* Create the extras menu if it does not exist */
+		if ( !extras_iter || !gtk_tree_store_iter_is_valid(
+					menu_tree, extras_iter ) ) {
+
+			ULOG_DEBUG( "Menu '%s' does not exist.",
+					EXTRAS_MENU_STRING );
+
+			GtkTreeIter iter;
+
+			gtk_tree_model_get_iter_first(
+					GTK_TREE_MODEL( menu_tree ), &iter );
+
+			extras_iter = g_malloc0( sizeof( GtkTreeIter ) );
+
+			GtkTreePath *first_folder;
+			GtkTreePath *last_folder;
+
+			find_first_and_last_root_level_folders(
+					GTK_TREE_MODEL( menu_tree ),
+					&first_folder, &last_folder );
+
+			GtkTreeIter sibling;
+
+			if ( last_folder ) {	
+				gtk_tree_model_get_iter(
+						GTK_TREE_MODEL( menu_tree ),
+						&sibling, last_folder );
+
+				gtk_tree_store_insert_after(
+						menu_tree, extras_iter,
+						NULL, &sibling );
+
+			} else if ( first_folder ) {
+				gtk_tree_model_get_iter(
+						GTK_TREE_MODEL( menu_tree ),
+						&sibling, first_folder );
+
+				gtk_tree_store_insert_after(
+						menu_tree, extras_iter,
+						NULL, &sibling );
+
+			} else {
+				gtk_tree_store_append( menu_tree,
+						extras_iter, &iter );
+			}
+
+
+			if ( !gtk_tree_store_iter_is_valid(
+						menu_tree, extras_iter ) ) {
+				ULOG_ERR( "read_menu_conf: "
+						"failed to create "
+						"'%s' -menu.",
+						EXTRAS_MENU_STRING );
+				return;
+			}
+
+			gtk_tree_store_set(menu_tree,
+					extras_iter,
+					TREE_MODEL_NAME,
+					EXTRAS_MENU_STRING,
+					TREE_MODEL_ICON,
+					folder_icon,
+					TREE_MODEL_EMBLEM_EXPANDER_OPEN,
+					folder_open_icon,
+					TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
+					folder_closed_icon,
+					TREE_MODEL_EXEC,
+					"",
+					TREE_MODEL_SERVICE,
+					"",
+					TREE_MODEL_DESKTOP_ID,
+					"",
+					-1 );
+
+			ULOG_DEBUG( "Menu '%s' created.", EXTRAS_MENU_STRING );
+		} else {
+			ULOG_DEBUG( "Menu '%s' exists.", EXTRAS_MENU_STRING );
+		}
+
+
 		while ( loop ) {
 
 			item = loop->data;
+			
 			if ( item->allocated == FALSE ) {
-
-				/* Create the extras menu if it does not exist */
-				if ( !extras_iter || !gtk_tree_store_iter_is_valid(
-							menu_tree, extras_iter ) ) {
-
-					ULOG_DEBUG( "Menu '%s' does not exist.",
-							EXTRAS_MENU_STRING );
-
-					GtkTreeIter iter;
-
-					gtk_tree_model_get_iter_first(
-							GTK_TREE_MODEL( menu_tree ), &iter );
-
-					extras_iter = g_malloc0( sizeof( GtkTreeIter ) );
-
-					gtk_tree_store_append( menu_tree, extras_iter, &iter );
-
-
-
-					if ( !gtk_tree_store_iter_is_valid(
-								menu_tree, extras_iter ) ) {
-						ULOG_ERR( "read_menu_conf: "
-								"failed to create "
-								"'%s' -menu.",
-								EXTRAS_MENU_STRING );
-						return;
-					}
-
-					gtk_tree_store_set(menu_tree,
-							extras_iter,
-							TREE_MODEL_NAME,
-							EXTRAS_MENU_STRING,
-							TREE_MODEL_ICON,
-							folder_icon,
-							TREE_MODEL_EXEC,
-							"",
-							TREE_MODEL_SERVICE,
-							"",
-							TREE_MODEL_DESKTOP_ID,
-							"",
-							-1 );
-
-					ULOG_DEBUG( "Menu '%s' created.", EXTRAS_MENU_STRING );
-				} else {
-					ULOG_DEBUG( "Menu '%s' exists.", EXTRAS_MENU_STRING );
-				}
 
 				ULOG_DEBUG( "read_menu_conf: "
 						"unallocated item: '%s'",
@@ -608,14 +715,18 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 				gtk_tree_store_append( menu_tree,
 						&item_iter, extras_iter );
 
-				icon = get_icon( item->icon, ICON_SIZE );
+				app_icon = get_icon( item->icon, ICON_SIZE );
 
 				gtk_tree_store_set(menu_tree,
 						&item_iter,
 						TREE_MODEL_NAME,
 						item->name,
 						TREE_MODEL_ICON,
-						icon,
+						app_icon,
+						TREE_MODEL_EMBLEM_EXPANDER_OPEN,
+						NULL,
+						TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
+						NULL,
 						TREE_MODEL_EXEC,
 						item->exec,
 						TREE_MODEL_SERVICE,
@@ -624,8 +735,10 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						item->desktop_id,
 						-1 );
 
-				if ( icon )
-					g_object_unref( G_OBJECT ( icon ) );
+				if ( app_icon ) {
+					g_object_unref( G_OBJECT ( app_icon ) );
+					app_icon = NULL;
+				}
 
 				item->allocated = TRUE;
 			}
@@ -637,6 +750,16 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		if ( folder_icon ) {
 			g_object_unref( G_OBJECT( folder_icon ) );
 			folder_icon = NULL;
+		}
+
+		if ( folder_open_icon ) {
+			g_object_unref( G_OBJECT( folder_open_icon ) );
+			folder_open_icon = NULL;
+		}
+
+		if ( folder_closed_icon ) {
+			g_object_unref( G_OBJECT( folder_closed_icon ) );
+			folder_closed_icon = NULL;
 		}
 
 		ULOG_DEBUG( "read_menu_conf: DONE!" );
@@ -669,7 +792,7 @@ GtkTreeModel *get_menu_contents(void)
 			G_TYPE_STRING	   /* Desktop ID */
 			);
 		
-    gtk_tree_store_append(contents, &content_iter, NULL);
+	gtk_tree_store_append(contents, &content_iter, NULL);
 
 	/* Get $HOME */
 	user_home_dir = getenv( "HOME" );
@@ -874,6 +997,340 @@ gboolean write_menu_conf( xmlTextWriterPtr writer,
 	}
 
 	return return_value;
+}
+
+
+void find_first_and_last_root_level_folders( GtkTreeModel *model,
+		GtkTreePath **first_folder, GtkTreePath **last_folder )
+{
+	g_assert( GTK_IS_TREE_MODEL( model ) );
+
+	if ( first_folder == NULL && last_folder == NULL ) {
+		ULOG_DEBUG( "find_first_and_last_root_level_folders: "
+				"first_folder and last_folder are both "
+				"NULL. Doing nothing." );
+		return;
+	}
+
+	GtkTreeIter top_iter;
+	GtkTreeIter child_iter;
+
+	if ( !gtk_tree_model_get_iter_first( model, &top_iter ) ) {
+		ULOG_ERR( "find_first_and_last_root_level_folders: model is empty." );
+		return;
+	}
+
+	if ( !gtk_tree_model_iter_children( model, &child_iter, &top_iter ) ) {
+		ULOG_ERR( "find_first_and_last_root_level_folders: tree is empty." );
+		return;
+	}
+
+	gchar *name = NULL;
+	gchar *desktop_id = NULL;
+
+	/* "Reset" the paths */
+	if ( first_folder != NULL ) {
+		*first_folder = NULL;
+	}
+
+	if ( last_folder != NULL ) {
+		*last_folder = NULL;
+	}
+
+	/* Loop through the children of root level and get the
+	 * paths of first and last folders.
+	 *
+	 * NOTE:
+	 *
+	 * if user gave NULL for **first_folder or **last_folder then
+	 * it will be ignored.
+	 * 
+	 * If there are no folders *first_folder and *last_folder
+	 * will be NULL after the loop finishes.
+	 *
+	 * if there's only one folder *last_folder will be  NULL 
+	 * after the loop finishes. */
+	do {
+		gtk_tree_model_get( model, &child_iter,
+				TREE_MODEL_NAME,
+				&name,
+				TREE_MODEL_DESKTOP_ID,
+				&desktop_id,
+				-1 );
+
+		/* If it's a folder.. */
+		if ( !desktop_id || strlen( desktop_id ) == 0 ) {
+			/* Get the first folder path */
+			if ( first_folder != NULL && *first_folder == NULL ) {
+				*first_folder = gtk_tree_model_get_path(
+						model, &child_iter );
+			} else if ( last_folder != NULL ) {
+				/* Free up the previous path of last folder */
+				if ( *last_folder != NULL ) {
+					gtk_tree_path_free( *last_folder );
+				}
+				/* Update the path of last folder */
+				*last_folder = gtk_tree_model_get_path(
+						model, &child_iter );
+			}
+		}
+	} while ( gtk_tree_model_iter_next( model, &child_iter ) );
+}
+
+
+gboolean set_separators( GtkTreeModel *model )
+{
+	g_assert( GTK_IS_TREE_MODEL( model ) );
+
+	GtkTreeIter top_iter;
+	GtkTreeIter child_iter;
+
+	if ( !gtk_tree_model_get_iter_first( model, &top_iter ) ) {
+		ULOG_ERR( "set_separators: model is empty." );
+		return FALSE;
+	}
+
+	if ( !gtk_tree_model_iter_children( model, &child_iter, &top_iter ) ) {
+		ULOG_ERR( "set_separators: tree is empty." );
+		return FALSE;
+	}
+
+	gchar *name = NULL;
+	gchar *desktop_id = NULL;
+
+
+	/* Value 0 = not set yet
+	 * Value 1 = Application
+	 * Value 2 = Folder
+	 */
+	guint first_item = 0;
+	guint last_item  = 0;
+
+	GtkTreeRowReference *first_separator = NULL;
+	GtkTreeRowReference *last_separator = NULL;
+
+	GtkTreeRowReference *first_folder = NULL;
+	GtkTreeRowReference *last_folder = NULL;
+
+	GtkTreeRowReference *empty_extras_folder = NULL;
+
+	GtkTreePath *path;
+
+	/* Loop through the items on depth 1 (where the separators should be)
+	 * and get GtkTreeRowReferences for separators and first and last 
+	 * folders and also for Extras folder in case it is empty.
+	 *
+	 * After the loop we will add the new separators as necessary 
+	 * and remove the old ones and the empty Extras folder.
+	 *
+	 * We could also just move the separators, but that would require 
+	 * additional checking for the existence of the separators. If a 
+	 * separator is needed and does not exist already we would have to 
+	 * create it anyway.
+	 */
+	do {
+		path = gtk_tree_model_get_path(
+				model, &child_iter );
+
+		gtk_tree_model_get( model, &child_iter,
+				TREE_MODEL_NAME,
+				&name,
+				TREE_MODEL_DESKTOP_ID,
+				&desktop_id,
+				-1 );
+
+		if ( strcmp( name, SEPARATOR_STRING ) == 0 &&
+				strcmp( desktop_id, SEPARATOR_STRING ) == 0 ) {
+
+			if ( first_separator == NULL ) {
+				first_separator = gtk_tree_row_reference_new(
+						model, path );
+				ULOG_DEBUG( "set_separators: found first separator." );
+			} else if ( last_separator == NULL ) {
+				last_separator = gtk_tree_row_reference_new(
+						model, path );
+				ULOG_DEBUG( "set_separators: found last separator." );
+			} else {
+				ULOG_ERR( "set_separators: more than two separators." );
+			}
+		} else {
+			if ( !desktop_id || strlen( desktop_id ) == 0 ) {
+				ULOG_DEBUG( "set_separators: "
+						"item is a folder '%s'", name );
+
+				/* Empty Extras -folder is ignored */
+				if ( name && strcmp( name,
+							EXTRAS_MENU_STRING ) == 0 ) {
+					if ( !gtk_tree_model_iter_has_child(
+								model, &child_iter ) ) {
+						empty_extras_folder =
+							gtk_tree_row_reference_new(
+								model, path );
+						ULOG_DEBUG( "set_separators: "
+						            "found empty Extras -folder." );
+						continue;
+					}
+				}
+
+				/* It's a folder */
+				if ( first_item == 0 ) {
+					first_item = 2;
+				}
+
+				/* Get the reference */
+				if ( first_folder == NULL ) {
+					first_folder = gtk_tree_row_reference_new(
+							model, path );
+				}
+
+				/* So far the last item is a folder */
+				last_item = 2;
+
+				/* Update the reference */
+				if ( last_folder != NULL ) {
+					gtk_tree_row_reference_free( last_folder );
+				}
+
+				last_folder = gtk_tree_row_reference_new(
+						model, path );
+			} else {
+				ULOG_DEBUG( "set_separators: "
+						"item is an application '%s'", name );
+
+				/* It's an application */
+				if ( first_item == 0 ) {
+					first_item = 1;
+				}
+
+				/* So far the last item is nn application */
+				last_item = 1;
+			}
+		}
+		if ( name ) {
+			g_free( name );
+			name = NULL;
+		}
+
+		if ( desktop_id ) {
+			g_free( desktop_id );
+			desktop_id = NULL;
+		}
+
+		gtk_tree_path_free( path );
+
+	} while ( gtk_tree_model_iter_next( model, &child_iter ) );
+
+	/* Add the top separator if needed */
+	if ( first_item == 2 ) {
+		ULOG_DEBUG( "set_separators: first item is a folder, no top separator." );
+	} else if ( first_item == 1 ) {
+
+		/* Get the iterators */
+		GtkTreeIter iter;
+		GtkTreeIter sibling;
+
+		GtkTreePath *tmp_path = gtk_tree_row_reference_get_path( first_folder );
+		gtk_tree_model_get_iter( model, &sibling, tmp_path );
+		gtk_tree_path_free( tmp_path );
+
+		/* Add the separator */
+		gtk_tree_store_insert_before( GTK_TREE_STORE( model ),
+				&iter, NULL, &sibling );
+
+		gtk_tree_store_set( GTK_TREE_STORE( model ), &iter,
+				TREE_MODEL_NAME,
+				SEPARATOR_STRING,
+				TREE_MODEL_ICON,
+				NULL,
+				TREE_MODEL_EMBLEM_EXPANDER_OPEN,
+				NULL,
+				TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
+				NULL,
+				TREE_MODEL_EXEC,
+				SEPARATOR_STRING,
+				TREE_MODEL_SERVICE,
+				SEPARATOR_STRING,
+				TREE_MODEL_DESKTOP_ID,
+				SEPARATOR_STRING, -1 );
+
+		ULOG_DEBUG( "set_separators: first item is an app, top separator added." );
+	} else {
+		ULOG_DEBUG( "set_separators: menu is empty?" );
+	}
+
+	/* Add the nottom separator if needed */
+	if ( last_item == 2 ) {
+		ULOG_DEBUG( "set_separators: last item is a folder, no bottom separator." );
+	} else if ( last_item == 1 ) {
+		/* Get the iterators */
+		GtkTreeIter iter;
+		GtkTreeIter sibling;
+
+		GtkTreePath *tmp_path = gtk_tree_row_reference_get_path( last_folder );
+		gtk_tree_model_get_iter( model, &sibling, tmp_path );
+		gtk_tree_path_free( tmp_path );
+
+		/* Add the separator */
+		gtk_tree_store_insert_after( GTK_TREE_STORE( model ),
+				&iter, NULL, &sibling );
+
+		gtk_tree_store_set( GTK_TREE_STORE( model ), &iter,
+				TREE_MODEL_NAME,
+				SEPARATOR_STRING,
+				TREE_MODEL_ICON,
+				NULL,
+				TREE_MODEL_EMBLEM_EXPANDER_OPEN,
+				NULL,
+				TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
+				NULL,
+				TREE_MODEL_EXEC,
+				SEPARATOR_STRING,
+				TREE_MODEL_SERVICE,
+				SEPARATOR_STRING,
+				TREE_MODEL_DESKTOP_ID,
+				SEPARATOR_STRING, -1 );
+
+		ULOG_DEBUG( "set_separators: last item is an app, bottom separator added." );
+	} else {
+		ULOG_DEBUG( "set_separators: menu is empty?" );
+	}
+
+	/* Remove the original separators */
+	if ( first_separator != NULL ) {
+		GtkTreePath *tmp_path =
+			gtk_tree_row_reference_get_path( first_separator );
+		GtkTreeIter tmp_iter;
+		gtk_tree_model_get_iter( model, &tmp_iter, tmp_path );
+		gtk_tree_store_remove( GTK_TREE_STORE( model ), &tmp_iter );
+		gtk_tree_path_free( tmp_path );
+	}
+
+	if ( last_separator != NULL ) {
+		GtkTreePath *tmp_path =
+			gtk_tree_row_reference_get_path( last_separator );
+		GtkTreeIter tmp_iter;
+		gtk_tree_model_get_iter( model, &tmp_iter, tmp_path );
+		gtk_tree_store_remove( GTK_TREE_STORE( model ), &tmp_iter );
+		gtk_tree_path_free( tmp_path );
+	}
+
+	/* Remove empty Extras folder */
+	if ( empty_extras_folder != NULL ) {
+		GtkTreePath *tmp_path =
+			gtk_tree_row_reference_get_path( empty_extras_folder );
+		GtkTreeIter tmp_iter;
+		gtk_tree_model_get_iter( model, &tmp_iter, tmp_path );
+		gtk_tree_store_remove( GTK_TREE_STORE( model ), &tmp_iter );
+		gtk_tree_path_free( tmp_path );
+	}
+	
+	gtk_tree_row_reference_free( first_separator );
+	gtk_tree_row_reference_free( last_separator );
+	gtk_tree_row_reference_free( first_folder );
+	gtk_tree_row_reference_free( last_folder );
+	gtk_tree_row_reference_free( empty_extras_folder );
+
+	return TRUE;
 }
 
 

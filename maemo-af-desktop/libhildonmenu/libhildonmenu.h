@@ -14,11 +14,11 @@ G_BEGIN_DECLS
 #define DESKTOP_ENTRY_EXEC_FIELD     "Exec"
 #define DESKTOP_ENTRY_SERVICE_FIELD  "X-Osso-Service"
 
-#define SEPARATOR_STRING "SEPARATOR"
+#define SEPARATOR_STRING   "SEPARATOR"
+#define EXTRAS_MENU_STRING "tana_fi_extras"
 
 /* Default directory for .desktop files */
 #define DEFAULT_APPS_DIR "/usr/share/applications/"
-
 #define ICON_FAVOURITES  "qgn_list_gene_favor"
 #define ICON_FOLDER      "qgn_list_gene_fldr_cls"
 #define ICON_DEFAULT_APP "qgn_list_gene_default_app"
@@ -64,6 +64,24 @@ GdkPixbuf *get_icon(const char *icon_name, int icon_size);
 
 /* Function for getting the menu contents */
 GtkTreeModel *get_menu_contents(void);
+
+/* Function for finding the first and last folders on root level
+ * i.e. under Favourites.
+ *
+ * model        - The tree model which to search for the folders
+ * first_folder - GtkTreePath to be set to point to the first folder
+ * last_folder  - GtkTreePath to be set to point to the last folder
+ */
+void find_first_and_last_root_level_folders( GtkTreeModel *model,
+		GtkTreePath **first_folder, GtkTreePath **last_folder );
+
+/* Function for setting the separators to correct positions 
+ *
+ * model - The tree model of the menu in which we want to set the separators.
+ *
+ * Returns TRUE on success, FALSE on failure.
+ */
+gboolean set_separators( GtkTreeModel *model );
 
 /* Function for setting the menu contents, i.e. writing it to the file */
 gboolean set_menu_contents( GtkTreeModel *model );

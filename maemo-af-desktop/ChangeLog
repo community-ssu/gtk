@@ -1,3 +1,12 @@
+2006-05-18  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied further fixes to "Others menu organization-dialog implementation
+	problem"
+	* libhildonmenu/libhildonmenu.c:
+	  - Changes in the way Extras is handled
+	  - Load of fixes for Extras folder handling and empty folders in
+	    Others menu
+
 2006-05-17  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "HOME: Unexpected behaviour in Layout mode."
