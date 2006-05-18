@@ -1,5 +1,9 @@
 2006-05-18  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac: Version 0.14.
+
+2006-05-18  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/Makefile.am (MAEMO_LAUNCHER): New macro.
 	(maemo_defender_CPPFLAGS): Pass MAEMO_LAUNCHER as a macro.
 	* launcher/defender.c: Include <stdbool.h>, <sys/types.h>,
