@@ -1,3 +1,17 @@
+gtk+2.0 (2:2.6.10-1.osso17) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Bugs fixed:
+    NB#10197: API documentation is missing for the modified GTK.
+    NB#21875: tap'n'hold drag threshold calculated wrong
+    NB#24051: GtkWidgetPrivate and signal connections in gtkwidget.c
+    NB#25347: Glib CRITICAL error when changing theme while showing an
+              animation
+    NB#29142: Leak in gdk_drag_find_window_for_screen() when using Desktop
+              layout mode
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 18 May 2006 11:28:14 +0300
+
 gtk+2.0 (2:2.6.10-1.osso16) unstable; urgency=low
 
   * debian/rules:
