@@ -1,0 +1,23 @@
+Source: hildon-fm-l10n
+Section: misc
+Priority: optional
+Maintainer: L10n Team <l10n@maemo.org>
+Build-Depends-Indep: debhelper (>= 4.0.0), gettext
+Standards-Version: 3.6.2
+
+Package: hildon-fm-l10n-english
+Architecture: all
+Conflicts: hildon-fm-l10n-engb
+Description: hildon-fm Engineering English
+ Engineering English locale for hildon-fm
+ .
+ Please note that the .mo file from this package is installed as
+ en_GB.mo
+
+Package: hildon-fm-l10n-engb
+Architecture: all
+Provides: 
+Conflicts: 
+Description: hildon-fm engb locale
+ engb locale for hildon-fm.
+

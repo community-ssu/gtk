@@ -1,0 +1,731 @@
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the hildon-fm package
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: hildon-fm 6.1\n"
+"Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
+"POT-Creation-Date: 2006.05.15 16:36+0300\n"
+"PO-Revision-Date: 2006.05.15 16:36+0300\n"
+"Last-Translator:\n"
+"Language-Team: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n!=1;\n"
+
+# Device’s MMC name when card has no name or is not present.
+msgid "sfil_li_mmc_localdevice"
+msgstr "Memory card"
+
+# Gateway name shown when real Bluetooth name is not available
+msgid "sfil_li_gateway_root"
+msgstr "Phone"
+
+# Device name shown when real Bluetooth name is not available
+msgid "sfil_li_folder_root"
+msgstr "Nokia 770"
+
+# Folder for images
+msgid "sfil_li_folder_images"
+msgstr "Images"
+
+# Folder for video files 
+msgid "sfil_li_folder_video_clips"
+msgstr "Video clips"
+
+# Folder for audio files
+msgid "sfil_li_folder_sound_clips"
+msgstr "Audio clips"
+
+# Folder for miscellenous documents 
+msgid "sfil_li_folder_documents"
+msgstr "Documents"
+
+# Folder for saved games
+msgid "sfil_li_folder_games"
+msgstr "Games"
+
+# Label text shown for empty list in content pane.
+msgid "hfil_li_no_files_folders_to_show"
+msgstr "(no files/folders)"
+
+# Size format in list view when a file size is 1kB, Always display 1 kB.
+msgid "sfil_li_size_kb"
+msgstr "%d kB"
+
+# Size format in list view when a file size is from 1kB to 99kBs, rounded to full kBs.
+msgid "sfil_li_size_1kb_99kb"
+msgstr "%d kB"
+
+# Size format in list view when a file size is from 100kB to 1MB.
+msgid "sfil_li_size_100kb_1mb"
+msgstr "%.1f MB"
+
+# Size format in list view when a file size is from 1MB to 10MB.
+msgid "sfil_li_size_1mb_10mb"
+msgstr "%.1f MB"
+
+# Size format in list view when a file size is from 10MB to 1GB.
+msgid "sfil_li_size_10mb_1gb"
+msgstr "%d MB"
+
+# Size format in list view when a file size is 1GB or bigger.
+msgid "sfil_li_size_1gb_or_greater"
+msgstr "%.1f GB"
+
+# Date format in list view when a file was modified today (HH:MM)
+msgid "sfil_li_date_today"
+msgstr "%X"
+
+# Date format in list view when a file was modified within this year (DD month)
+msgid "sfil_li_date_this_year"
+msgstr "%x"
+
+# Date format in list view when a file was modified earlier or later than within the current year (DD.MM.YY)
+msgid "sfil_li_date_other"
+msgstr "%x"
+
+# List header for Name column
+msgid "sfil_li_header_name"
+msgstr "Name"
+
+# List header for Size column
+msgid "sfil_li_header_size"
+msgstr "Size"
+
+# List header for Date colulmn
+msgid "sfil_li_header_date"
+msgstr "Date"
+
+# Free space in MMC, shown in megabytes, when MMC item is shown in Thumbnail Listbox widget
+msgid "sfil_li_mmc_free_mb"
+msgstr "%d MB available"
+
+# Free space in MMC, shown in kilobytes, when MMC item is shown in Thumbnail Listbox widget
+msgid "sfil_li_mmc_free_kb"
+msgstr "%d kB available "
+
+# Format string for date and time value in Thumbnail Listbox widget for a file that has been modified 'today'
+msgid "sfil_li_modified_today"
+msgstr "Today %X"
+
+# Format string for date and time value in Thumbnail Listbox widget for a file that has been modified within last year
+msgid "sfil_li_modified_thisyear"
+msgstr "%x %X"
+
+# Format string for date and time value in Thumbnail Listbox widget for a file that has been modified earlier than within last year
+msgid "sfil_li_modified_earlier"
+msgstr "%x %X"
+
+#  Format string for number of items (files and folders) inside a folder shown in Thumbnail Listbox widget, when contents consist of one item.
+msgid "sfil_li_folder_contents_item"
+msgid_plural "sfil_li_folder_contents_items"
+msgstr[0] "%d item"
+msgstr[1] "%d items"
+
+# Title of "Change folder" dialog
+msgid "ckdg_ti_change_folder"
+msgstr "Change folder"
+
+# OK button of "Change folder" dialog
+msgid "ckdg_bd_change_folder_ok"
+msgstr "OK"
+
+# Cancel button of "Change folder" dialog
+msgid "ckdg_bd_change_folder_cancel"
+msgstr "Cancel"
+
+# New folder button of "Change folder" dialog
+msgid "ckdg_bd_change_folder_new_folder"
+msgstr "New"
+
+# Title text in Move to Folder Dialog
+msgid "ckdg_ti_move_to_folder"
+msgstr "Move to folder"
+
+# OK button in Move to Folder Dialog
+msgid "ckdg_bd_move_to_folder_ok"
+msgstr "OK"
+
+# "New folder" button in Move to Folder Dialog 
+msgid "ckdg_bd_move_to_folder_new_folder"
+msgstr "New "
+
+# Cancel button in Move to Folder Dialog
+msgid "ckdg_bd_move_to_folder_cancel"
+msgstr "Cancel"
+
+# Title - Select <object> dialog
+msgid "ckdg_ti_open_file"
+msgstr "Open file"
+
+#  OK button in the "select <object>" dialog
+msgid "ckdg_bd_select_object_ok_open"
+msgstr "Select"
+
+#  Cancel button in the "select <object>" dialog
+msgid "ckdg_bd_select_object_cancel"
+msgstr "Cancel"
+
+# Contextual menu item, option sort by type
+msgid "sfil_me_sort_type"
+msgstr "Sort by type"
+
+# Contextual menu item, option sort by name
+msgid "sfil_me_sort_name"
+msgstr "Sort by name"
+
+# Contextual menu item, option sort by date
+msgid "sfil_me_sort_date"
+msgstr "Sort by date"
+
+# Contextual menu item, option sort by size
+msgid "sfil_me_sort_size"
+msgstr "Sort by size"
+
+# Contextual menu item, option view list
+msgid "sfil_me_view_list"
+msgstr "List"
+
+# Contextual menu item, option view thumbnails
+msgid "sfil_me_view_thumbnails"
+msgstr "Thumbnails"
+
+# Title - Save <Object> Dialog
+msgid "sfil_ti_save_file"
+msgstr "Save file"
+
+# Save <Object> Dialog OK button.
+msgid "ckdg_bd_save_object_dialog_ok"
+msgstr "OK"
+
+# Save <Object> Dialog Change folder button.
+msgid "sfil_bd_save_object_dialog_change_folder"
+msgstr "Change folder"
+
+# Save <Object> Dialog cancel button.
+msgid "ckdg_bd_save_object_dialog_cancel"
+msgstr "Cancel"
+
+# Name Field label in Save <Object> Dialog
+msgid "ckdg_fi_save_object_name"
+msgstr "Name:"
+
+# Name stub for default new file name in Save <Object> Dialog
+msgid "ckdg_va_save_object_name_stub_default"
+msgstr "File"
+
+# Title - "save <objects>" dialog
+msgid "sfil_ti_save_objects_files"
+msgstr "Save files"
+
+# "save <objects>" dialog OK button.
+msgid "sfil_bd_save_objects_dialog_ok"
+msgstr "OK"
+
+# "save <objects>" dialog Change folder button.
+msgid "sfil_bd_save_objects_dialog_change_folder"
+msgstr "Change folder"
+
+# "save <objects>" dialog cancel button.
+msgid "sfil_bd_save_objects_dialog_cancel"
+msgstr "Cancel"
+
+# Items field label in Save <Objects> Dialog
+msgid "sfil_fi_save_objects_items"
+msgstr "Items:"
+
+# Location field label in Save <Objects> Dialog
+msgid "sfil_fi_save_objects_location"
+msgstr "Location:"
+
+# Items field value in "save <objects>" dialog when all items are documents.
+msgid "sfil_va_number_of_objects_documents"
+msgstr "%d documents"
+
+# Items field value in "save <objects>" dialog when all items are HTML documents.
+msgid "sfil_va_number_of_objects_html_documents"
+msgstr "%d HTML documents"
+
+# Items field value in "save <objects>" dialog when all items are XML documents.
+msgid "sfil_va_number_of_objects_xml_documents"
+msgstr "%d XML documents"
+
+# Items field value in "save <objects>" dialog when all items are messages.
+msgid "sfil_va_number_of_objects_messages"
+msgstr "%d messages"
+
+# Items field value in "save <objects>" dialog when all items are images.
+msgid "sfil_va_number_of_objects_images"
+msgstr "%d images"
+
+# Items field value in "save <objects>" dialog when all items are applications.
+msgid "sfil_va_number_of_objects_applications"
+msgstr "%d applications"
+
+# Items field value in "save <objects>" dialog when all items are shortcuts.
+msgid "sfil_va_number_of_objects_shortcuts"
+msgstr "%d shortcuts"
+
+# Items field value in "save <objects>" dialog when all items are presentations.
+msgid "sfil_va_number_of_objects_presentations"
+msgstr "%d presentations"
+
+# Items field value in "save <objects>" dialog when all items are bookmarks.
+msgid "sfil_va_number_of_objects_bookmarks"
+msgstr "%d bookmarks"
+
+# Items field value in "save <objects>" dialog when all items are certificates.
+msgid "sfil_va_number_of_objects_certificates"
+msgstr "%d certificates"
+
+# Items field value in "save <objects>" dialog when all items are video clips.
+msgid "sfil_va_number_of_objects_videoclips"
+msgstr "%d video clips"
+
+# Items field value in "save <objects>" dialog when all items are audio clips.
+msgid "sfil_va_number_of_objects_soundclips"
+msgstr "%d audio clips"
+
+# Items field value in "save <objects>" dialog when all items are workbooks.
+msgid "sfil_va_number_of_objects_workbooks"
+msgstr "%d workbooks"
+
+# Items field value in "save <objects>" dialog when items are of different types.
+msgid "sfil_va_number_of_objects_files"
+msgstr "%d files"
+
+# Items field value in "save <objects>" dialog when items are attachments.
+msgid "sfil_va_number_of_objects_attachments"
+msgstr "%d attachments"
+
+# Items field value in "save <objects>" dialog when all items are games.
+msgid "sfil_va_number_of_objects_games"
+msgstr "%d games"
+
+# Items field value in "save <objects>" dialog when all items are notes.
+msgid "sfil_va_number_of_objects_notes"
+msgstr "%d notes"
+
+# Items field value in "save <objects>" dialog when all items are sketches.
+msgid "sfil_va_number_of_objects_sketches"
+msgstr "%d sketches"
+
+# Title for new folder dialog
+msgid "ckdg_ti_new_folder"
+msgstr "New folder"
+
+# New folder dialog OK button.
+msgid "ckdg_bd_new_folder_dialog_ok"
+msgstr "OK"
+
+# New folder dialog cancel button.
+msgid "ckdg_bd_new_folder_dialog_cancel"
+msgstr "Cancel"
+
+# Name field label for new folder dialog
+msgid "ckdg_fi_new_folder_name"
+msgstr "Name:"
+
+# Location field label for new folder dialog
+msgid "ckdg_fi_new_folder_location"
+msgstr "Location:"
+
+# Name field default value stub for new folder dialog
+msgid "ckdg_va_new_folder_name_stub"
+msgstr "Folder"
+
+# Title for <Filetype> Details Dialog 
+msgid "sfil_ti_file_details"
+msgstr "Details"
+
+# Title for ‘Common’ Note Book in <Filetype> Details Dialog
+msgid "sfil_ti_notebook_common"
+msgstr "Common"
+
+# Title for ‘<filetype>’ Note Book in <Filetype> Details Dialog for other files
+msgid "sfil_ti_notebook_file"
+msgstr "File"
+
+# <Filetype> Details Dialog OK button.
+msgid "sfil_bd_filetype_details_dialog_ok"
+msgstr "OK"
+
+# <Filetype> Details Dialog Cancel button.
+msgid "sfil_bd_filetype_details_dialog_cancel"
+msgstr "Cancel"
+
+# Informative text for <filetype> view in <Filetype> Details Dialog when there are no filetype specific details.
+msgid "sfil_ia_filetype_no_details"
+msgstr "(no details)"
+
+# Label for checkbox in properties dialog
+msgid "ckdg_fi_properties_read_only"
+msgstr "Read-only:"
+
+# Label text for Name property in properties dialog
+msgid "ckdg_fi_properties_name_prompt"
+msgstr "Name:"
+
+# Label text for Location property in <filetype> Details dialog
+msgid "sfil_fi_properties_location_prompt"
+msgstr "Location:"
+
+# Label text for Device property in <filetype> Details dialog
+msgid "sfil_fi_properties_device_prompt"
+msgstr "Device:"
+
+# Label text for Type property in <filetype> Details dialog
+msgid "ckdg_fi_properties_type_prompt"
+msgstr "Type:"
+
+# Label text for Size property in <filetype> Details dialog
+msgid "ckdg_fi_properties_size_prompt"
+msgstr "Size:"
+
+# Format string for Size value in kB in <filetype> Details dialog. This is used when size is smaller than 1kB. 1 kB is displayed always.
+msgid "ckdg_va_properties_size_kb"
+msgstr "%d kB"
+
+# Format string for Size items when size is from 1kB to 99kB.
+msgid "ckdg_va_properties_size_1kb_99kb"
+msgstr "%d kB"
+
+# Format string for Size items when size is from 100kB to 1MB rounded to full kBs.
+msgid "ckdg_va_properties_size_100kb_1mb"
+msgstr "%d kB"
+
+# Format string for Size items when size is from 1MB to 10MB, MBs with two decimals.
+msgid "ckdg_va_properties_size_1mb_10mb"
+msgstr "%.2f MB"
+
+# Format string for Size items when size is from 10MB to 1GB, MBs with one decimal.
+msgid "ckdg_va_properties_size_10mb_1gb"
+msgstr "%.1f MB"
+
+# Format string for Size items when size is from 1GB or greater, GBs with two decimals.
+msgid "ckdg_va_properties_size_1gb_or_greater"
+msgstr "%.2f GB"
+
+# Label text for Date property in <filetype> Details dialog
+msgid "ckdg_fi_properties_date_prompt"
+msgstr "Date:"
+
+# Label text for Date property in <filetype> Details dialog
+msgid "ckdg_fi_properties_time_prompt"
+msgstr "Time:"
+
+# Value text for property in <filetype> Details dialog, when value is unknown
+msgid "ckdg_va_property_unknown"
+msgstr "Unknown"
+
+# Title for Shorten names dialog when there are only one name to be shorten.
+msgid "hfil_ti_shorten_name"
+msgstr "Shorten name"
+
+# Title for Shorten names dialog when there are multiple names to be shorten
+msgid "hfil_ti_shorten_names"
+msgstr "Shorten names"
+
+# Pressing this button accepts changes and close the dialog
+msgid "hfil_bd_shorten_names_ok"
+msgstr "OK"
+
+# Pressing this button cancel changes and close the dialog
+msgid "hfil_bd_shorten_names_cancel"
+msgstr "Cancel"
+
+# Pressing this button opens Rename <object> sub-dialog
+msgid "hfil_bd_shorten_names_rename"
+msgstr "Rename"
+
+# Label text for cut remaining names option in Shorten names dialog
+msgid "hfil_fi_shorten_names_readonly"
+msgstr "Shorten remaining names automatically"
+
+# Informative annotation for Shorten names dialog done with label
+msgid "hfil_ia_shorten_names"
+msgstr "Names are too long for target location and must be shortened"
+
+# Confirmation text for Delete Current File Confirmation Note (WID – NOT173) when user is about to delete the active/open file in the application.
+msgid "sfil_nc_delete_open_file"
+msgstr "Delete file?"
+
+# OK button for Delete Current File Confirmation Note (WID – NOT173)
+msgid "sfil_bd_delete_open_file_ok"
+msgstr "Delete"
+
+# Cancel button Delete Current File Confirmation Note (WID – NOT173)
+msgid "docm_bd_delete_open_file_cancel"
+msgstr "Cancel"
+
+# Confirmation text for Recover File Confirmation Note (WID – NOT176) when user has opened application and the is a recovered file available.
+msgid "sfil_nc_recover_file"
+msgstr ""
+"File was saved automatically when application was closed. Do you want to "
+"keep it?"
+
+# OK button for Recover File Confirmation Note (WID – NOT176).
+msgid "sfil_bd_recover_file_ok"
+msgstr "OK"
+
+# Cancel button Recover File Confirmation Note (WID – NOT176)
+msgid "docm_bd_recover_file_cancel"
+msgstr "Cancel"
+
+# Presented when a file already exists in the target folder that is of the same type and has the same name as a file that is being copied/moved.
+msgid "docm_nc_replace_file"
+msgstr "Replace existing file of same name?"
+
+# Tapping the 'Replace' button deletes the existing file and replaces it with the file being copied/moved. 
+msgid "docm_bd_replace_file_ok"
+msgstr "OK"
+
+# Tapping the 'Cancel' button cancels the entire copy/move operation. 
+msgid "docm_bd_replace_file_cancel"
+msgstr "Cancel"
+
+# This Confirmation Note is presented when multiple files/folders, in any combination, exist in the target folder that has the same names as files/folders that are being copied/moved.
+msgid "docm_nc_replace_multiple"
+msgstr "Replace existing folder contents of same name?"
+
+# Tapping the 'Replace' button deletes the existing files/folders, including contents, and replaces them with the files/folders being copied/moved.
+msgid "docm_bd_replace_multiple_ok"
+msgstr "OK"
+
+# Tapping the 'Cancel' button cancels the entire copy/move operation. 
+msgid "docm_bd_replace_multiple_cancel"
+msgstr "Cancel"
+
+# Confirmation text for Save before closing confirmation note when file type is image.
+msgid "docm_nc_save_before_closing_image"
+msgstr "Save image before closing?"
+
+# Confirmation text for Save before closing confirmation note when file type is audio file.
+msgid "docm_nc_save_before_closing_audio"
+msgstr "Save audio clip before closing?"
+
+# Confirmation text for Save before closing confirmation note when file type is video file.
+msgid "docm_nc_save_before_closing_video"
+msgstr "Save video clip before closing?"
+
+# Confirmation text for Save before closing confirmation note when file type is note file.
+msgid "docm_nc_save_before_closing_note"
+msgstr "Save note before closing?"
+
+# Confirmation text for Save before closing confirmation note when file type is a document.
+msgid "docm_nc_save_before_closing_document"
+msgstr "Save document before closing?"
+
+# Confirmation text for Save before closing confirmation note when file type is other file type.
+msgid "docm_nc_save_before_closing_file"
+msgstr "Save file before closing?"
+
+# Confirmation text for Save before closing confirmation note when file type is a game.
+msgid "sfil_nc_save_before_closing_game"
+msgstr "Save game before closing?"
+
+# Tapping the 'Yes' button saves file and closes it.
+msgid "docm_bd_save_before_closing_yes"
+msgstr "Yes"
+
+# Tapping the 'No button closes file without saving it.
+msgid "docm_bd_save_before_closing_no"
+msgstr "No"
+
+# Tapping the 'Cancel' button cancels the entire note.
+msgid "docm_bd_save_before_closing_cancel"
+msgstr "Cancel"
+
+# Confirmation text for Unable to save to selected location Save to device memory confirmation note [WID-NOT255].
+msgid "sfil_nc_not_available_save_local"
+msgstr ""
+"Unable to save to selected location.\n"
+"Save to device memory?"
+
+# Button text for Unable to save to selected location Save to device memory confirmation note [WID-NOT255]. Tapping the 'Yes' button opens Save <Object> Dialog for saving the file.
+msgid "sfil_bd_not_available_save_local_yes"
+msgstr "OK"
+
+# Button text for Unable to save to selected location Save to device memory confirmation note [WID-NOT255]. Tapping the 'No button closes notification without closing file.
+msgid "sfil_bd_not_available_save_local_no"
+msgstr "Cancel"
+
+# Moving file/folder(s) notification [WID-NOT253] text when single file is being moved.
+msgid "sfil_nw_moving_file"
+msgstr "Moving"
+
+# Moving file/folder(s) notification [WID-NOT253] text when multiple files are being moved.
+msgid "docm_nw_moving_files"
+msgstr "Moving %d/%d"
+
+# Cancel button for Moving file/folder(s) notification [WID-NOT253] when single file is being moved.
+msgid "sfil_bd_moving_file"
+msgstr "Cancel"
+
+# Cancel button for Moving file/folder(s) notification [WID-NOT253] when multiple files are being moved.
+msgid "docm_bd_moving_files"
+msgstr "Stop"
+
+# Deleting files/folder(s) notification [WID-NOT254] text when single file is being deleted.
+msgid "docm_nw_deleting_file"
+msgstr "Deleting"
+
+# Deleting files/folder(s) notification [WID-NOT254] text when multiple files are being deleted.
+msgid "docm_nw_deleting_files"
+msgstr "Deleting %d/%d"
+
+# Cancel button for Deleting files/folder(s) notification [WID-NOT254] when single file is being deleted.
+msgid "docm_bd_deleting_file"
+msgstr "Cancel"
+
+# Stop button for Deleting files/folder(s) notification [WID-NOT254] when multiple files are being deleted.
+msgid "docm_bd_deleting_files"
+msgstr "Stop"
+
+# Cancel notification while opening single file.
+msgid "docm_nw_opening_file"
+msgstr "Opening"
+
+# Cancel notification while opening multiple files 
+msgid "docm_nw_opening_files"
+msgstr "Opening %d/%d"
+
+# Cancels DOCM_NW_OPENING_FILES operation
+msgid "docm_bd_opening_file"
+msgstr "Cancel"
+
+# Cancels DOCM_NW_OPENING_FILES operation
+msgid "docm_bd_opening_files"
+msgstr "Stop"
+
+# Cancel notification while saving file.
+msgid "docm_nw_saving_file"
+msgstr "Saving"
+
+# Cancel notification while saving files 
+msgid "docm_nw_saving_files"
+msgstr "Saving %d/%d"
+
+# Stop button for DOCM_NW_SAVING_FILE operation
+msgid "docm_bd_saving_file"
+msgstr "Cancel"
+
+# Cancel button for DOCM_NW_SAVING_FILES operation
+msgid "docm_bd_saving_files"
+msgstr "Stop"
+
+# Stopping (WID – NOT175) Progress banner while stopping operation
+msgid "docm_pb_stopping"
+msgstr "Stopping"
+
+# Shown after user has tried to access files on remote device and connection does not succeed.
+msgid "sfil_ib_cannot_connect_device"
+msgstr ""
+"Unable to connect to phone\n"
+"%s"
+
+# Shown after user has tried to access files on remote device and connection does not succeed because remote device does not support file transfer.
+msgid "sfil_ib_no_connection_support"
+msgstr "Connection not supported by phone"
+
+# Shown after user has tried to access files on remote device and local device is in flight mode.
+msgid "sfil_ib_no_connections_flightmode"
+msgstr ""
+"Offline mode.\n"
+"Connection not allowed."
+
+# Shown after user has tried to select MMC, which is not inserted.
+msgid "hfil_ib_mmc_not_present"
+msgstr "No memory card inserted"
+
+# Shown if the user tries to open unreadable file or folder.
+msgid "sfil_ib_opening_not_allowed"
+msgstr "Unable to open"
+
+# Shown if the user tries to cut and when the selection includes items that cannot be moved (e.g. safe folder).
+msgid "sfil_ib_cannot_cut_some_items"
+msgstr "Unable to cut some items"
+
+# Shown if the source/target folder or drive is read-only.
+msgid "sfil_ib_readonly_location"
+msgstr "Selected location is read-only"
+
+# Shown if the user tries to open MMC when USB cable is connected.
+msgid "sfil_ib_mmc_usb_connected"
+msgstr ""
+"Memory card not available.\n"
+" USB cable connected."
+
+# Shown if the user tries to copy items that he does not have enough access rights.
+msgid "sfil_ib_copying_not_allowed"
+msgstr "Unable to copy"
+
+# Shown if the user tries to rename file/folder and the Gateway does not support renaming.
+msgid "sfil_ib_renaming_not_supported"
+msgstr "Renaming not supported"
+
+# Shown if the user tries to accept the Shorten Names Dialog (WID – DIA273) and some names need shortening.
+msgid "sfil_ib_some_names_too_long"
+msgstr "Some names too long"
+
+# Shown if the user tries to rename an unreadable file/folder.
+msgid "sfil_ib_renaming_not_allowed"
+msgstr "Unable to rename"
+
+# Shown if the user tries to create a folder to a location where he does not have enough access rights.
+msgid "sfil_ib_create_folder_not_allowed"
+msgstr "Not allowed"
+
+# Shown if the user tries to delete a file in Gateway which he does not have enough access rights.
+msgid "sfil_ib_cannot_delete_file"
+msgstr "Unable to delete this file"
+
+# Shown if the user tries to move a file which he does not have enough access rights.
+msgid "sfil_ib_cannot_move_file"
+msgstr "Unable to move this file"
+
+# Shown if the user tries to select the ‘Select‘ menu header that is dimmed, because all items in current folder are dimmed/unreadable.
+msgid "sfil_ib_cannot_select_items"
+msgstr "Unable to select items in current folder"
+
+# Shown if the user tries to select the ‘Mark all‘ menu command when an item in current folder is dimmed/unreadable.
+msgid "sfil_ib_cannot_mark_item"
+msgstr "Unable to mark 1 item"
+
+# Shown if the user tries to select the ‘Mark all‘ menu command when multiple items in current folder are dimmed/unreadable.
+msgid "sfil_ib_cannot_mark_some_items"
+msgstr "Unable to mark some items"
+
+# Shown if the user tries to save a file and it is found that there is not enough rights to do the operation.
+msgid "sfil_ib_saving_not_allowed"
+msgstr "Not allowed"
+
+# Shown if the user tries to save a saved file over itself.
+msgid "sfil_ib_file_already_saved"
+msgstr "File already saved in this location"
+
+# Shown if the user tries to accept file open dialog without selecting a file.
+msgid "sfil_ib_select_file"
+msgstr "Select file first"
+
+# Shown if the user tries to use menu command that requires that file must be saved.
+msgid "sfil_ib_save_file_first"
+msgstr "Save file first"
+
+# Shown after user has tried to operation to file that does not exist in the location any more
+msgid "sfil_ib_file_not_found"
+msgstr "File not found"
+
+# Shown after user has tried to operation to folder that does not exist in the location any more
+msgid "sfil_ib_folder_not_found"
+msgstr "Folder not found"
+
+# Shown after user has tried to operation to multiple items that do not exist in the location any more
+msgid "sfil_ib_items_not_found"
+msgstr "Items not found"
+
+# Shown if the user tries to accept file open dialog and the multiple selection does not contain any files
+msgid "sfil_ib_no_files_selected"
+msgstr "No files selected"
