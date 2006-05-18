@@ -1,5 +1,13 @@
 2006-05-17  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "HOME: Unexpected behaviour in Layout mode."
+	(Closes N#28928 and N#29913)
+	* hildon-home/layout-manager.c:
+	  - drag_begin(): Set drag icon as a empty 1x1 pixbuf because there
+	    doesn't seem to be easy way to cancel dnd.
+
+2006-05-17  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hildon-navigator-main.c: create the user configuration
 	  directory if not present, so we can monitor it (Closes N#24138)
 

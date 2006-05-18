@@ -1963,6 +1963,12 @@ static void drag_begin(GtkWidget *widget, GdkDragContext *context,
 
     if (general_data.active == NULL)
     {
+
+        /* Get rid of default icon because there is no easy way to
+         * cancel drag */
+        gtk_drag_set_icon_pixbuf(context,
+                gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 1, 1),
+                0, 0);
         return;
     }
 
