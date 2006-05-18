@@ -22,6 +22,10 @@
  */
 
 #include <stdio.h>
+#include <stdbool.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "report.h"
 
@@ -46,6 +50,33 @@ set_oom_adj(char *pid)
   fclose(file);
 }
 
+static bool
+is_same_file(char *filea, char *fileb)
+{
+  struct stat a, b;
+
+  if (stat(filea, &a) < 0)
+    die(30, "stating file a: '%s'\n", filea);
+  if (stat(fileb, &b) < 0)
+    die(31, "stating file b: '%s'\n", fileb);
+
+  return (a.st_dev == b.st_dev && a.st_ino == b.st_ino);
+}
+
+static bool
+have_valid_parent(void)
+{
+  pid_t ppid;
+  char filename[128];
+
+  ppid = getppid();
+
+  if (snprintf(filename, sizeof(filename), "/proc/%d/exe", ppid) < 0)
+    die(30, "generating filename string: '%s'\n", filename);
+
+  return is_same_file(filename, MAEMO_LAUNCHER);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -53,6 +84,9 @@ main(int argc, char **argv)
 
   if (argc < 2)
     die(10, "not enough arguments\n");
+
+  if (!have_valid_parent())
+    die(11, "my parent is not who he claims to be\n");
 
   pid = argv[1];
 

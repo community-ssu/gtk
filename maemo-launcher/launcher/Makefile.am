@@ -7,10 +7,12 @@ helperdir = $(libdir)/maemo-launcher
 helper_PROGRAMS = maemo-defender
 
 MAEMO_DEFENDER = "\"$(helperdir)/maemo-defender\""
+MAEMO_LAUNCHER = "\"$(bindir)/maemo-launcher\""
 
 maemo_defender_SOURCES = defender.c report.c report.h
 maemo_defender_CPPFLAGS = \
 	-DPROG_NAME="\"maemo-defender\"" \
+	-DMAEMO_LAUNCHER=$(MAEMO_LAUNCHER) \
 	-DMAEMO_DEFENDER=$(MAEMO_DEFENDER)
 
 bin_PROGRAMS = maemo-launcher maemo-invoker

@@ -1,5 +1,15 @@
 2006-05-18  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/Makefile.am (MAEMO_LAUNCHER): New macro.
+	(maemo_defender_CPPFLAGS): Pass MAEMO_LAUNCHER as a macro.
+	* launcher/defender.c: Include <stdbool.h>, <sys/types.h>,
+	<sys/stat.h> and <unistd.h>.
+	(is_same_file): New function.
+	(have_valid_parent): Likewise.
+	(main): Call have_valid_parent and die if not true.
+
+2006-05-18  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/Makefile.am (helperdir): New variable.
 	(helper_PROGRAMS): Likewise.
 	(maemo_defender_SOURCES): Likewise.
