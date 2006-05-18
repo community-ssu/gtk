@@ -1,5 +1,14 @@
 2006-05-18  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "HOME: Separator space is needed in 'Set background image'
+	dialog" (Closes N#30079)
+	* hildon-home/hildon-home-main.c:
+	  - set_background_dialog_selected(): Set dialogs vbox spacing to 10
+	    according to specifications in Sputnik-PLUS-OSSOHomeLayoutGuide
+	    and SputnikOSSO_Home_UI_Specification
+
+2006-05-18  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied further fixes to "Others menu organization-dialog implementation
 	problem"
 	* libhildonmenu/libhildonmenu.c:
