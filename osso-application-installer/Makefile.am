@@ -15,6 +15,9 @@ etc_DATA = certified.list
 aptdir = $(sysconfdir)/apt/
 apt_DATA = sources.list
 
+aptconfdir = $(sysconfdir)/apt/apt.conf.d/
+aptconf_DATA = 00-smallcache
+
 modir = $(datadir)/locale/en_GB/LC_MESSAGES/osso-application-installer/
 noinst_DATA = osso-application-installer.mo
 
@@ -23,7 +26,8 @@ EXTRA_DIST = osso-application-installer.desktop			\
              osso-application-installer.xml			\
              certified.list					\
              osso-application-installer.mo			\
-             sources.list
+             sources.list					\
+             00-smallcache
 
 deb:
 	./make-package $(PACKAGE) $(VERSION) .
