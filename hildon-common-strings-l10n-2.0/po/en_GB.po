@@ -1,0 +1,1078 @@
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the hildon-common-strings package
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: hildon-common-strings 6.0\n"
+"Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
+"POT-Creation-Date: 2006.05.15 16:36+0300\n"
+"PO-Revision-Date: 2006.05.15 16:36+0300\n"
+"Last-Translator:\n"
+"Language-Team: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n!=1;\n"
+
+#  Displayed if the user tries to accept a dialog while a field that requires to be filled is missing. The focus is moved to the empty field.
+msgid "ckct_ib_enter_a_value"
+msgstr "Enter value first"
+
+#  Displayed if the user tries to accept a dialog while a field that requires some text is empty. The focus is moved to the empty field. 
+# 
+# NOTE: Fields that require text are generally not empty by default, but are pre-seeded with suitable text. This notification is displayed where the user deletes this default text and does not supply an alternative. Text is required since the platform does not support saving unnamed entries.
+msgid "ckct_ib_enter_some_text"
+msgstr "Enter text first"
+
+# Displayed if the user tries move focus away from a number editor field or tries to accept a dialog immediately after deleting contents of a number editor.
+msgid "ckct_ib_set_a_value_within_range"
+msgstr "Set a value between %d and %d"
+
+# Displayed if the user tries to enter too large a value to a number-based field, such as Integer Field or Date Field.
+msgid "ckct_ib_maximum_value"
+msgstr "Maximum value is %d"
+
+# Displayed if the user tries to enter too small a value to a number-based field, such as Integer Field or Date Field.
+msgid "ckct_ib_minimum_value"
+msgstr "Minimum value is %d"
+
+#  Text in 'Maximum characters reached' information banner - various dialogs
+msgid "ckdg_ib_maximum_characters_reached"
+msgstr "Max. number of characters reached"
+
+#  Displayed if the user tries to enter characters to a field that accepts only numbers. Used only in cases where the field functionality is not evident, e.g. a password field. Focus is returned to the field and characters in the field are highlighted.
+msgid "ckct_ib_numbers_only"
+msgstr "Only numbers allowed in this field"
+
+#  Displayed if the user tries to enter numbers to a field that accepts only letters, not numbers. Used only in cases where the field functionality is not evident, e.g. a password field. Focus is returned to the field and characters in the field are highlighted.
+msgid "ckct_ib_letters_only"
+msgstr "Only letters allowed in this field"
+
+#  Displayed when the user tries to enter a character that is not valid to a field. E.g. password cannot contain special characters such as question mark. Focus is returned to the field and characters in the field are highlighted.
+msgid "ckct_ib_illegal_character"
+msgstr "Invalid character"
+
+#  Displayed where two date fields are used to specify a date range, and the start date defined by the user is later than the end date. Focus is returned to the field and characters in the field are highlighted.
+msgid "ckct_ib_set_start_before_end_date"
+msgstr " Start date must be earlier than end date "
+
+#  Displayed where two time fields are used to specify a time range, and the start time defined by the user is later than the end time. Focus is returned to the field and characters in the field are highlighted.
+msgid "ckct_ib_set_start_before_end_time"
+msgstr "Start time must be earlier than end time"
+
+# Displayed when the user enters a date where the values of the fields of the Date Field are all within their value range, but the combination does not exist as a date, e.g. 31.02.2002. Focus is returned to the first date ‘fieldlet’ (i.e. day number in UK date format) and characters in the field are highlighted. Field contents are reset to the nearest valid value to what the user input.
+msgid "ckct_ib_date_does_not_exist"
+msgstr "Invalid date"
+
+#  Displayed if the user selects a copy command and the copying is done successfully.
+msgid "ecoc_ib_edwin_copied"
+msgstr "Copied"
+
+#  Displayed if the user tries to select a cut command while the focus is not on an item, e.g. a list is empty. If the focus is on an item but it cannot be cut, "Unable to  cut" is used instead.
+msgid "ecoc_ib_edwin_nothing_to_cut"
+msgstr "Nothing to cut"
+
+#  Displayed if the user tries to select a cut command while the focus is not on an item, e.g. a list is empty. If the focus is on an item but it cannot be copied, "Unable to copy" is used instead.
+msgid "ecoc_ib_edwin_nothing_to_copy"
+msgstr "Nothing to copy"
+
+#  Displayed if the user selects a paste command while the clipboard is empty.
+msgid "ecoc_ib_edwin_nothing_to_paste"
+msgstr "Nothing to paste"
+
+#  Displayed if the user selects a cut command on an item that cannot be cut for other reasons than the file being read-only. If the file is read-only, "This item is read-only" (WID-Inf049) is displayed instead.
+msgid "ckct_ib_unable_to_cut"
+msgstr "Unable to cut"
+
+#  Displayed if the user selects a copy command on an item that cannot be copied, e.g. clipboard functionality is not available for the item.
+msgid "ckct_ib_unable_to_copy"
+msgstr "Unable to copy"
+
+#  displayed if the user tries to paste clipboard contents to a location where it is impossible to paste
+msgid "ckct_ib_unable_to_paste_here"
+msgstr "Unable to paste here"
+
+#  Displayed if the user selects a delete command, but the focus is not on an item, e.g. a list is empty. If the focus is on an item that cannot be deleted, a more descriptive information banner should be used.
+msgid "ckct_ib_nothing_to_delete"
+msgstr "Nothing to delete"
+
+#  Displayed if the user tries to use the select all command while there is nothing to select, e.g. a list is empty.
+msgid "ckct_ib_nothing_to_select"
+msgstr "Nothing to select"
+
+#  Displayed if the user tries to select a delete command while the focus is on an item that cannot be deleted for other reasons than the file being read-only.
+msgid "ckct_ib_unable_to_delete"
+msgstr "Unable to delete"
+
+#  Displayed if the user tries to select an Undo menu item where there is no last recorded action to undo (e.g. when an application is opened for the first time etc.)
+msgid "ecoc_ib_nothing_to_undo"
+msgstr "Nothing to undo"
+
+#  Displayed if the user selects a copy command on an item that cannot be copied, e.g. clipboard functionality is not available for the item.
+msgid "ckct_ib_nothing_to_undo"
+msgstr "Nothing to undo"
+
+#  Displayed if the user tries to select an Undo menu item when an undo operation cannot be performed, e.g. the user has already selected to undo once.
+msgid "ckct_ib_unable_to_undo"
+msgstr "Unable to undo"
+
+#  Displayed if the user tries to perform an operation that can be done only for one item at a time and multiple items are selected.
+msgid "ckct_ib_select_single_item"
+msgstr "Select 1 item only"
+
+#  displayed if the user selects zoom in command while the maximum zoom level is already in use
+msgid "ckct_ib_max_zoom_level_reached"
+msgstr "Maximum zoom level reached"
+
+#  displayed if the user selects zoom out command while the minimum zoom level is already in use
+msgid "ckct_ib_min_zoom_level_reached"
+msgstr "Minimum zoom level reached"
+
+#  displayed if the user selects zoom in or zoom out command in a location that cannot be zoomed
+msgid "ckct_ib_cannot_zoom_here"
+msgstr "Unable to zoom"
+
+#  this Information banner is shown when the user tries to change the contents of a read-only Single Line Editor
+msgid "ecoc_ib_edwin_file_read_only"
+msgstr "Document is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_html_read_only"
+msgstr "HTML document is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_xml_read_only"
+msgstr "XML document is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_message_read_only"
+msgstr "Message is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_image_read_only"
+msgstr "Image is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_application_read_only"
+msgstr "Application is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_link_read_only"
+msgstr "Shortcut is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_bookmark_read_only"
+msgstr "Bookmark is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_certificate_read_only"
+msgstr "Certificate is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_video_clip_read_only"
+msgstr "Video clip is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_sound_clip_read_only"
+msgstr "Audio clip is read-only"
+
+#  Displayed if the user tries to rename, delete or modify somehow a file that is read-only.
+msgid "ckdg_ib_file_read_only"
+msgstr "File is read-only"
+
+#  Displayed if the user tries to create or rename a document with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_document_exists"
+msgstr "Document name already in use"
+
+#  Displayed if the user tries to create or rename a HTML document with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_html_exists"
+msgstr "HTML document name already in use"
+
+#  Displayed if the user tries to create or rename a XML document with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_xml_exists"
+msgstr "XML document name already in use"
+
+#  Displayed if the user tries to create or rename a message with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_message_exists"
+msgstr "Message name already in use"
+
+#  Displayed if the user tries to create or rename an image with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_image_exists"
+msgstr "Image name already in use"
+
+#  Displayed if the user tries to create or rename an application with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_application_exists"
+msgstr "Application name already in use"
+
+#  Displayed if the user tries to create or rename a shortcut with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_link_exists"
+msgstr "Shortcut name already in use"
+
+#  Displayed if the user tries to create or rename a bookmark with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_bookmark_exists"
+msgstr "Bookmark name already in use"
+
+#  Displayed if the user tries to create or rename a certificate with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_certificate_exists"
+msgstr "Certificate name already in use"
+
+#  Displayed if the user tries to create or rename a video with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_video_exists"
+msgstr "Video clip name already in use"
+
+#  Displayed if the user tries to create or rename a sound clip with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_sound_exists"
+msgstr "Audio clip name already in use"
+
+#  Displayed if the user tries to create or rename a file with a name that already exists in the current folder. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_file_exists"
+msgstr "File name already in use"
+
+#  Displayed if the user tries to save a file name that has illegal characters. Focus is returned to the field and characters in the field are highlighted.
+msgid "ckdg_ib_illegal_characters_entered"
+msgstr "Field cannot contain the characters %s"
+
+#  Displayed if the user tries to move a file while there is no file selected.
+msgid "ckct_ib_nothing_to_move"
+msgstr "Nothing to move"
+
+#  Displayed if the user tries to open a file that is already open in another application.
+msgid "ckct_ib_document_already_open"
+msgstr "Document already in use by another application"
+
+#  Displayed if the user tries to open a file that is already open in another application.
+msgid "ckct_ib_html_document_already_open"
+msgstr "HTML document already in use by another application"
+
+#  Displayed if the user tries to open a file that is already open in another application.
+msgid "ckct_ib_xml_document_already_open"
+msgstr "XML document already in use by another application"
+
+#  Displayed if the user tries to open a file that is already open in another application.
+msgid "ckct_ib_message_already_open"
+msgstr "Message already in use by another application"
+
+#  Displayed if the user tries to open a file that is already open in another application.
+msgid "ckct_ib_image_already_open"
+msgstr "Image already in use by another application"
+
+#  Displayed if the user tries to open a file that is already open in another application.
+msgid "ckct_ib_video_clip_already_open"
+msgstr "Video clip already in use by another application"
+
+#  Displayed if the user tries to open a file that is already open in another application.
+msgid "ckct_ib_sound_clip_already_open"
+msgstr "Audio clip already in use by another application"
+
+#  Displayed if the user tries to open a file that is already open in another application.
+msgid "ckct_ib_file_already_open"
+msgstr "File already in use by another application"
+
+#  Displayed if the user tries to open a file (e.g. in File Manager or attached to an email message) that cannot be opened with any application.
+msgid "ckct_ib_unknown_file_type"
+msgstr "Unknown file type"
+
+#  Displayed if the user tries to create or rename a folder with a name that already exists within the current location. Focus is returned to the name field and characters in the field are highlighted.
+msgid "ckdg_ib_folder_already_exists"
+msgstr "Folder name already in use"
+
+#  Displayed if the user tries to accept a dialog while a name field that requires text is empty. The focus is moved to the empty field and default text is restored and highlighted  NOTE: The platform does not support saving unnamed entries.
+msgid "ckdg_ib_enter_name"
+msgstr "Enter name first"
+
+#  In Edwin; find/replace dialog
+msgid "ecoc_ib_edwin_cannot_find"
+msgstr "No matches found"
+
+# Information banner in the "Set Password" dialog; raised when the user presses the ok button and a password field is empty
+msgid "ecdg_ib_password_is_empty"
+msgstr "Enter password first"
+
+#  Information banner in the "Set Password" dialog; raised when the user presses the ok button and the passwords do not match
+msgid "ecdg_ib_passwords_do_not_match"
+msgstr "Passwords do not match"
+
+#  Info Message in Set Password- dialog
+msgid "ecdg_ib_set_password_incorrect"
+msgstr "Incorrect password"
+
+#  Displayed if the user tries to select a rename command while the focus is on an item that cannot be renamed for other reasons than the file being read-only. If the file is read-only, "This item is read-only" is displayed instead.
+msgid "ckdg_ib_unable_to_rename"
+msgstr "Unable to rename"
+
+#  Displayed if the user attempts to accept a dialog or view containing a mandatory field without having input appropriately to the field. Focus is returned to the mandatory field.
+msgid "ckct_ib_mandatory_field"
+msgstr "Value must be defined"
+
+#  Info Message in Find and Replace  -dialogs
+msgid "ecdg_ib_find_rep_enter_text"
+msgstr "Enter the text to be found"
+
+# Displayed where it is known that an operation will take more than half a second to perform, or performing the operation in a known set of circumstances will take more than half a second.
+msgid "ckdg_pb_updating"
+msgstr "Updating"
+
+# Displayed, if the name of the file copied from other systems (e.g. from PC through USB) is too long for the Sputnik+/OSSO file system.
+msgid "file_ib_name_too_long"
+msgstr "Name too long"
+
+# This Information banner is shown by WID - DIA272 if the user presses OK whilst a user name field is blank.
+msgid "ckdg_ib_dialog_g_user_name_empty_usr"
+msgstr "Enter user name first"
+
+# This Information banner is shown by WID - DIA272 if the user name entered was incorrect.
+msgid "ckdg_ib_dialog_g_user_name_incorrect_usr"
+msgstr "Incorrect user name"
+
+# This information banner is shown if the user tries to remove a game that is marked read-only.
+msgid "ckdg_ib_game_is_read_only"
+msgstr "Game is read-only"
+
+# This information banner is shown when the user tries to copy or move a subfolder within the original folder
+msgid "ckdg_ib_unable_to_copy_or_move_subfolder_within_original_folder"
+msgstr "Unable to copy or move a subfolder within the original folder"
+
+# This information banner is shown when the user tries to copy a folder into itself.
+msgid "ckdg_ib_unable_to_copy_folder_into_itself"
+msgstr "Unable to copy folder into itself"
+
+# This information banner is shown when the user tries to replace a folder with a folder it already contains
+msgid "ckdg_ib_unable_to_replace_folder_with_folder_it_contains"
+msgstr "Unable to replace a folder with a folder it contains"
+
+# This information banner is shown when the user tries to move a folder into current location.
+msgid "ckdg_ib_unable_to_move_to_current_location"
+msgstr "Unable to move to current location"
+
+# Displayed if the user selects the Rename command when the view is empty (no item is selected).
+msgid "ckdg_ib_nothing_to_rename"
+msgstr "Nothing to rename"
+
+# Displayed if the user selects the Sort command when the view is empty (no item is selected).
+msgid "ckdg_ib_nothing_to_sort"
+msgstr "Nothing to sort"
+
+# Displayed  if the user attempts to paste a file or files in the clipboard to the location from which they were cut.
+msgid "ckdg_ib_unable_to_paste_to_same_location"
+msgstr "Unable to paste in original location"
+
+# Displayed if the user attempts to enter a duration that is smaller than the minimum value of a Date Editor widget.
+msgid "ckct_ib_min_allowed_duration_hts"
+msgstr "Minimum allowed duration is %02d:%02d:%02d"
+
+# Displayed if the user attempts to enter a duration that is larger than the maximum value of a Date Editor widget.
+msgid "ckct_ib_max_allowed_duration_hts"
+msgstr "Maximum allowed duration is %02d:%02d:%02d "
+
+# Displayed if the user attempts to enter a duration that is smaller than the minimum value of a Date Editor widget.
+msgid "ckct_ib_min_allowed_duration_ddd"
+msgstr "Minimum allowed duration is %02d:%02d:%02d"
+
+# Displayed if the user attempts to enter a duration that is larger than the maximum value of a Date Editor widget.
+msgid "ckct_ib_max_allowed_duration_ddd"
+msgstr "Maximum allowed duration is %02d:%02d:%02d"
+
+# Displayed if the user attempts to enter a duration that is smaller than the minimum value of a Date Editor widget.
+msgid "ckct_ib_min_allowed_duration_d"
+msgstr "Minimum allowed duration is %d"
+
+# Displayed if the user attempts to enter a duration that is larger than the maximum value of a Date Editor widget.
+msgid "ckct_ib_max_allowed_duration_d"
+msgstr "Maximum allowed duration is %d"
+
+# Displayed if the user selects the Clear all Marks command when no item already marked.
+msgid "ckdg_ib_no_marks_to_clear"
+msgstr "Nothing to unmark"
+
+# Displayed if the user selects the Mark command when all items in the view are already marked.
+msgid "cdkg_ib_all_items_marked"
+msgstr "All items already marked"
+
+# This information banner is shown if the user tries to mark an item that is unmarkable.
+msgid "ckdg_ib_unable_to_mark"
+msgstr "Unable to mark this item"
+
+# This information banner is shown if the user tries to unmark an item that can not be unmarked.
+msgid "ckdg_ib_unable_to_unmark"
+msgstr "Unable to unmark this item"
+
+# This information banner is shown if the user tries to move a folder into itself.
+msgid "ckdg_ib_unable_to_move_folder_into_itself"
+msgstr "Unable to move folder into itself"
+
+# Displayed when the user attempts to select a ‘Send’ command when nothing has been selected to send, e.g. there are no files in a list view and consequently nothing is in focus to send.
+msgid "ckdg_ib_nothing_to_send"
+msgstr "Nothing to send"
+
+# Displayed when the user tries to cut items that can not be cut.
+msgid "sfil_ib_unable_to_cut_selected_items"
+msgstr "Unable to cut selected items"
+
+# Displayed when the user tries to cut a folder that can not be cut.
+msgid "sfil_ib_unable_to_cut_selected_folder"
+msgstr "Unable to cut selected folder"
+
+# Displayed when the user tries to delete items that can not be deleted.
+msgid "sfil_ib_unable_to_delete_selected_items"
+msgstr "Unable to delete selected items"
+
+# Displayed when the user tries to delete a folder that can not be deleted.
+msgid "sfil_ib_unable_to_delete_selected_folder"
+msgstr "Unable to delete selected folder"
+
+# Displayed when the user tries to move items that can not be moved.
+msgid "sfil_ib_unable_to_move_selected_items"
+msgstr "Unable to move selected items"
+
+# Displayed when the user tries to move a folder that can not be moved.
+msgid "sfil_ib_unable_to_move_selected_folder"
+msgstr "Unable to move selected folder"
+
+# Displayed when the user tries to rename a folder that can not be renamed.
+msgid "sfil_ib_unable_to_rename_selected_folder"
+msgstr "Unable to rename selected folder"
+
+# Displayed when the user tries to send folders that can not be sent.
+msgid "sfil_ib_unable_to_send_folders"
+msgstr "Unable to send folders"
+
+# Displayed when the user tries to copy or move a subfolder within the original folder.
+msgid "sfil_ib_unable_to_copy_or_move_a_subfolder_within_original_folder"
+msgstr "Unable to copy or move a subfolder within the original folder"
+
+# Presented when a folder that is being  opened does not exist in the specified location.
+msgid "sfil_ib_unable_to_open_folder_not_found"
+msgstr ""
+"Unable to open.\n"
+"Folder not found."
+
+# Presented when trying to open Details dialog and there is no item selected.
+# 
+msgid "sfil_ib_nothing_to_view"
+msgstr "Nothing to view"
+
+#  this is a cancel note displayed if a pasting operation will take a significant amount of time
+msgid "ckct_nw_pasting"
+msgstr "Pasting"
+
+#  Cancel button for "pasting" cancel note.
+msgid "ckct_bd_pasting_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one document
+msgid "ckct_nc_delete_document"
+msgstr ""
+"Delete document?\n"
+"%s"
+
+#  Delete button for confirmation note when the user wants to delete one document
+msgid "ckct_bd_delete_document_delete"
+msgstr "Delete"
+
+#  Cancel button for confirmation note when the user wants to delete one document
+msgid "ckct_bd_delete_document_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one HTML document
+msgid "ckct_nc_delete_html"
+msgstr ""
+"Delete HTML document?\n"
+"%s"
+
+#  Delete button for confirmation note when the user wants to delete one HTML document
+msgid "ckct_bd_delete_html_delete"
+msgstr "Delete"
+
+#  Cancel button for confirmation note when the user wants to delete one HTML document
+msgid "ckct_bd_delete_html_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one XML document
+msgid "ckct_nc_delete_xml"
+msgstr ""
+"Delete XML document?\n"
+"%s"
+
+#  Delete button of confirmation note when the user wants to delete one XML document
+msgid "ckct_bd_delete_xml_delete"
+msgstr "Delete"
+
+#  Cancel button of confirmation note when the user wants to delete one XML document
+msgid "ckct_bd_delete_xml_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one note
+msgid "ckct_nc_delete_note"
+msgstr ""
+"Delete note?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one note
+msgid "ckct_bd_delete_note_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one note
+msgid "ckct_bd_delete_note_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one message
+msgid "ckct_nc_delete_message"
+msgstr ""
+"Delete message?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one message
+msgid "ckct_bd_delete_message_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one message
+msgid "ckct_bd_delete_message_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one image
+msgid "ckct_nc_delete_image"
+msgstr ""
+"Delete image?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one image
+msgid "ckct_bd_delete_image_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one image
+msgid "ckct_bd_delete_image_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one application
+msgid "ckct_nc_delete_application"
+msgstr ""
+"Delete application?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one application
+msgid "ckct_bd_delete_application_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one application
+msgid "ckct_bd_delete_application_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one shortcut
+msgid "ckct_nc_delete_link"
+msgstr ""
+"Delete shortcut?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one shortcut
+msgid "ckct_bd_delete_link_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one shortcut
+msgid "ckct_bd_delete_link_cancel"
+msgstr "Cancel"
+
+#  delete button of confirmation note when the user wants to delete one presentation
+msgid "ckct_bd_delete_presentation_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one presentation
+msgid "ckct_bd_delete_presentation_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one bookmark
+msgid "ckct_nc_delete_bookmark"
+msgstr ""
+"Delete bookmark?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one bookmark
+msgid "ckct_bd_delete_bookmark_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one bookmark
+msgid "ckct_bd_delete_bookmark_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one certificate
+msgid "ckct_nc_delete_certificate"
+msgstr ""
+"Delete certificate?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one certificate
+msgid "ckct_bd_delete_certificate_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one certificate
+msgid "ckct_bd_delete_certificate_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one video clip
+msgid "ckct_nc_delete_video_clip"
+msgstr ""
+"Delete video clip?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one video clip
+msgid "ckct_bd_delete_video_clip_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one video clip
+msgid "ckct_bd_delete_video_clip_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one sound clip
+msgid "ckct_nc_delete_sound_clip"
+msgstr ""
+"Delete audio clip?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one sound clip
+msgid "ckct_bd_delete_sound_clip_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one sound clip
+msgid "ckct_bd_delete_sound_clip_cancel"
+msgstr "Cancel"
+
+#  delete button of confirmation note when the user wants to delete one workbook
+msgid "ckct_bd_delete_workbook_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one workbook
+msgid "ckct_bd_delete_workbook_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one file
+msgid "ckct_nc_delete_file"
+msgstr ""
+"Delete file?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one file
+msgid "ckct_bd_delete_file_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one file
+msgid "ckct_bd_delete_file_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one object
+msgid "ckct_nc_delete_object"
+msgstr ""
+"Delete object?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one object
+msgid "ckct_bd_delete_object_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one object
+msgid "ckct_bd_delete_object_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one folder
+msgid "ckct_nc_delete_folder"
+msgstr "Delete folder and all of its contents?"
+
+#  delete button of confirmation note when the user wants to delete one folder
+msgid "ckct_bd_delete_folder_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one folder
+msgid "ckct_bd_delete_folder_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple documents
+msgid "ckct_nc_delete_selected_documents"
+msgstr "Delete selected documents?"
+
+#  delete button of confirmation note when the user wants to delete multiple documents
+msgid "ckct_bd_delete_selected_documents_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple documents
+msgid "ckct_bd_delete_selected_documents_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple HTML documents
+msgid "ckct_nc_delete_selected_html"
+msgstr "Delete selected HTML documents?"
+
+#  delete button of confirmation note when the user wants to delete multiple HTML documents
+msgid "ckct_bd_delete_selected_html_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple HTML documents
+msgid "ckct_bd_delete_selected_html_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple XML documents
+msgid "ckct_nc_delete_selected_xml"
+msgstr "Delete selected XML documents?"
+
+#  delete button of confirmation note when the user wants to delete multiple XML documents
+msgid "ckct_bd_delete_selected_xml_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple XML documents
+msgid "ckct_bd_delete_selected_xml_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple messages
+msgid "ckct_nc_delete_selected_messages"
+msgstr "Delete selected messages?"
+
+#  delete button of confirmation note when the user wants to delete multiple messages
+msgid "ckct_bd_delete_selected_messages_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple messages
+msgid "ckct_bd_delete_selected_messages_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple images
+msgid "ckct_nc_delete_selected_images"
+msgstr "Delete selected images?"
+
+#  delete button of confirmation note when the user wants to delete multiple images
+msgid "ckct_bd_delete_selected_images_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple images
+msgid "ckct_bd_delete_selected_images_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple applications
+msgid "ckct_nc_delete_selected_applications"
+msgstr "Delete selected applications?"
+
+#  delete button of confirmation note when the user wants to delete multiple applications
+msgid "ckct_bd_delete_selected_applications_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple applications
+msgid "ckct_bd_delete_selected_applications_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple shortcuts
+msgid "ckct_nc_delete_selected_links"
+msgstr "Delete selected shortcuts?"
+
+#  delete button of confirmation note when the user wants to delete multiple shortcuts
+msgid "ckct_bd_delete_selected_links_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple shortcuts
+msgid "ckct_bd_delete_selected_links_cancel"
+msgstr "Cancel"
+
+#  delete button of confirmation note when the user wants to delete multiple presentations
+msgid "ckct_bd_delete_selected_presentations_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple presentations
+msgid "ckct_bd_delete_selected_presentations_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple bookmarks
+msgid "ckct_nc_delete_selected_bookmarks"
+msgstr "Delete selected bookmarks?"
+
+#  delete button of confirmation note when the user wants to delete multiple bookmarks
+msgid "ckct_bd_delete_selected_bookmarks_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple bookmarks
+msgid "ckct_bd_delete_selected_bookmarks_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple certificates
+msgid "ckct_nc_delete_selected_certificates"
+msgstr "Delete selected certificates?"
+
+#  delete button of confirmation note when the user wants to delete multiple certificates
+msgid "ckct_bd_delete_selected_certificates_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple certificates
+msgid "ckct_bd_delete_selected_certificates_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple video clips
+msgid "ckct_nc_delete_selected_video_clips"
+msgstr "Delete selected video clips?"
+
+#  delete button of confirmation note when the user wants to delete multiple video clips
+msgid "ckct_bd_delete_selected_video_clips_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple video clips
+msgid "ckct_bd_delete_selected_video_clips_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple sound clips
+msgid "ckct_nc_delete_selected_sound_clips"
+msgstr "Delete selected sound clips?"
+
+#  delete button of confirmation note when the user wants to delete multiple sound clips
+msgid "ckct_bd_delete_selected_sound_clips_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple sound clips
+msgid "ckct_bd_delete_selected_sound_clips_cancel"
+msgstr "Cancel"
+
+#  delete button of confirmation note when the user wants to delete multiple workbooks
+msgid "ckct_bd_delete_selected_workbooks_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple workbooks
+msgid "ckct_bd_delete_selected_workbooks_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple files
+msgid "ckct_nc_delete_selected_files"
+msgstr "Delete selected files?"
+
+#  delete button of confirmation note when the user wants to delete multiple files
+msgid "ckct_bd_delete_selected_files_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple files
+msgid "ckct_bd_delete_selected_files_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple folders
+msgid "ckct_nc_delete_selected_folders"
+msgstr "Delete selected folders and all of their contents?"
+
+#  delete button of confirmation note when the user wants to delete multiple folders
+msgid "ckct_bd_delete_selected_folders_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple folders
+msgid "ckct_bd_delete_selected_folders_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete a single folder and a single file
+msgid "ckct_nc_delete_folder_and_file"
+msgstr "Delete folder and selected file?"
+
+#  delete button of confirmation note when the user wants to delete a single folder and a single file
+msgid "ckct_bd_delete_folder_and_file_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete a single folder and a single file
+msgid "ckct_bd_delete_folder_and_file_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete multiple folders and a single file
+msgid "ckct_nc_delete_folders_and_file"
+msgstr "Delete selected folders and selected file?"
+
+#  delete button of confirmation note when the user wants to delete multiple folders and a single file
+msgid "ckct_bd_delete_folders_and_file_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple folders and a single file
+msgid "ckct_bd_delete_folders_and_file_cancel"
+msgstr "Cancel"
+
+#  delete button of confirmation note when the user wants to delete multiple folders and multiple files
+msgid "ckct_bd_delete_folders_and_files_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete multiple folders and multiple files
+msgid "ckct_bd_delete_folders_and_files_cancel"
+msgstr "Cancel"
+
+#  Shown in Confirmation Note from Change Password - dialog (WID-Dia016)
+msgid "ckdg_nc_dialog_c_passwd_remove_pwd"
+msgstr "Remove password protection?"
+
+#  Shown in Confirmation Note from Change Password - dialog
+msgid "ckdg_bd_dialog_c_passwd_remove_button"
+msgstr "Remove"
+
+#  Cancel - button in Confirmation Note from Change Password - dialog
+msgid "ckdg_bd_dialog_c_passwd_cancel_button"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one contact
+msgid "ckct_nc_delete_contact"
+msgstr ""
+"Delete contact?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one contact
+msgid "ckct_bd_delete_contact_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one contact
+msgid "ckct_bd_delete_contact_cancel"
+msgstr "Cancel"
+
+#  confirmation note when the user wants to delete one entry
+msgid "ckct_nc_delete_entry"
+msgstr ""
+"Delete entry?\n"
+"%s"
+
+#  delete button of confirmation note when the user wants to delete one entry
+msgid "ckct_bd_delete_entry_delete"
+msgstr "Delete"
+
+#  cancel button of confirmation note when the user wants to delete one entry
+msgid "ckct_bd_delete_entry_cancel"
+msgstr "Cancel"
+
+# Confirmation note shown if the user tries to delete a game.
+msgid "ckct_bd_delete_game"
+msgstr "Delete game?"
+
+# Confirmation button fot confirmation note shown if the user tries to delete a game.
+msgid "ckct_bd_delete_game_ok"
+msgstr "OK"
+
+# Cancel button for confirmation note shown if the user tries to delete a game.
+msgid "ckct_bd_delete_game_cancel"
+msgstr "Cancel"
+
+# Shown in Information note displayed if the user opens the memory card cover before the saving operation has completed
+msgid "ckct_ni_cannot_save_mmc_cover_open"
+msgstr ""
+"Saving interrupted.\n"
+"Memory card cover open."
+
+# Confirmation button for Information note displayed if the user opens the memory card cover before the saving operation has completed
+msgid "ckct_bd_cannot_save_mmc_cover_open_ok"
+msgstr "OK"
+
+# Information note displayed if the file the user is attempting to open is corrupted.
+msgid "ckct_ni_unable_to_open_file_corrupted"
+msgstr ""
+"Unable to open.\n"
+"File corrupted."
+
+# Confirmation button for Information note displayed if the file the user is attempting to open is corrupted.
+msgid "ckct_ni_unable_to_open_file_corrupted_ok"
+msgstr "OK"
+
+# Displayed when the selected file cannot be opened because its file format is not supported by the platform. This information note uses an ‘OK button, NOT a ‘Continue’ button.
+msgid "ckct_ni_unable_to_open_unsupported_file_format"
+msgstr ""
+"Unable to open.\n"
+"File format not supported."
+
+# Information note presented when there is not enough memory to do the operation
+msgid "sfil_ni_not_enough_memory"
+msgstr "Not enough memory in target location"
+
+# Confirmation button for Information note presented when there is not enough memory to do the operation
+msgid "sfil_ni_not_enough_memory_ok"
+msgstr "OK"
+
+# Information note presented when the connection breaks in the middle of file open operation.
+msgid "sfil_ni_cannot_open_no_connection"
+msgstr ""
+"Opening interrupted.\n"
+"No connection."
+
+# Confirmation button for Information note presented when the connection breaks in the middle of file open operation.
+msgid "sfil_ni_cannot_open_no_connection_ok"
+msgstr "OK"
+
+# Information note presented when target folder has been deleted in the middle of operation.
+msgid "sfil_ni_cannot_continue_target_folder_deleted"
+msgstr ""
+"Unable to continue.\n"
+"Folder not found."
+
+# Confirmation button for Information note presented when target folder has been deleted in the middle of operation.
+msgid "sfil_ni_cannot_continue_target_folder_deleted_ok"
+msgstr "OK"
+
+# Information note presented when a file was being opened from mmc and mmc cover was opened in the middle of open operation.
+msgid "sfil_ni_cannot_open_mmc_cover_open"
+msgstr ""
+"Opening interrupted.\n"
+"Memory card cover open."
+
+# Confirmation button for Information note presented when a file was being opened from mmc and mmc cover was opened in the middle of open operation.
+msgid "sfil_ni_cannot_open_mmc_cover_open_ok"
+msgstr "OK"
+
+# Information note presented when file that is tired to be opened does not exist in the specified location.
+msgid "sfil_ni_unable_to_open_file_not_found"
+msgstr ""
+"Unable to open.\n"
+"File not found."
+
+# Confirmation button for Information note presented when file that is tired to be opened does not exist in the specified location.
+msgid "sfil_ni_unable_to_open_file_not_found_ok"
+msgstr "OK"
+
+# An Information Note presented when a file was being renamed does not exist in the specified location.
+msgid "sfil_ni_unable_to_rename_file_not_found"
+msgstr ""
+"Unable to rename.\n"
+"File not found."
+
+# Confirmation button for An Information Note presented when a file was being renamed does not exist in the specified location.
+msgid "sfil_ni_unable_to_rename_file_not_found_ok"
+msgstr "OK"
+
+# Confirmation Note presented when the user tries to close an application without saving the open file.
+msgid "sfil_nc_save_before_closing"
+msgstr "Save file before closing?"
+
+# Confirmation button for Confirmation Note presented when the user tries to close an application without saving the open file.
+msgid "sfil_nc_save_before_closing_yes"
+msgstr "Yes"
+
+# No button for Confirmation Note presented when the user tries to close an application without saving the open file.
+msgid "sfil_nc_save_before_closing_no"
+msgstr "No"
+
+# Cancel button for Confirmation Note presented when the user tries to close an application without saving the open file.
+msgid "sfil_nc_save_before_closing_cancel"
+msgstr "Cancel"
+
+# An Information note presented in Save <Object> Dialog when a target folder does not exist in the specified location.
+msgid "sfil_ni_folder_not_found_switched_to_another_folder"
+msgstr ""
+"Folder not found.\n"
+"Device switched to another folder."
+
+# Confirmation button for An Information note presented in Save <Object> Dialog when a target folder does not exist in the specified location.
+msgid "sfil_ni_folder_not_found_switched_to_another_folder_ok"
+msgstr "OK"
+
+# Information note Presented when an user initiated operation fails.
+msgid "sfil_ni_operation_failed"
+msgstr "Operation failed"
+
+# Confirmation button for information note presented when an user initiated operation fails.
+msgid "sfil_ni_operation_failed_ok"
+msgstr "OK"
+
+# Progress Banner
+# Displayed where it is expected that a save operation initiated by the user will take more than half a second to perform, and no other indication is provided.
+msgid "sfil_ib_saving"
+msgstr "Saving"
+
+# Information banner
+# Displayed when a save operation initiated by the user completes, and where no other feedback (such as showing the file appear in a folder) is provided to the user.
+msgid "sfil_ib_saved"
+msgstr "Saved"
+
+# Information note displayed when the user tries to open a file that is too large to handle for the application.
+msgid "sfil_ni_unable_to_open_too_large"
+msgstr ""
+"Unable to open.\n"
+"File too large."
+
+# Confirmation button for Information note displayed when the user tries to open a file that is too large to handle for the application.
+msgid "sfil_ni_unable_to_open_too_large_ok"
+msgstr "OK"
