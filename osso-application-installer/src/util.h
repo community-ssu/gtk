@@ -155,6 +155,7 @@ void scare_user_with_legalese (bool sure,
  */
 
 void show_progress (const char *title);
+void set_general_progress_title (const char *title);
 void set_progress (apt_proto_operation op, int already, int total);
 bool progress_was_cancelled ();
 void hide_progress ();

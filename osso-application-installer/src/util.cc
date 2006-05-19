@@ -400,7 +400,6 @@ scare_user_with_legalese (bool sure,
 }
 
 static GtkWidget *progress_dialog = NULL;
-static GtkWidget *progress_cancel_button;
 static bool progress_cancelled;
 static GtkProgressBar *progress_bar;
 static const gchar *general_title;
@@ -466,31 +465,46 @@ progress_was_cancelled ()
   return progress_cancelled;
 }
 
-void
-show_progress (const char *title)
+static void
+create_progress (bool with_cancel)
 {
-  if (progress_dialog == NULL)
+  if (progress_dialog)
+    gtk_widget_destroy (progress_dialog);
+
+  progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
+  progress_dialog =
+    hildon_note_new_cancel_with_progress_bar (get_main_window (),
+					      _("ai_nw_updating_list"),
+					      progress_bar);
+  if (!with_cancel)
     {
-      progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
-      progress_dialog =
-	hildon_note_new_cancel_with_progress_bar (get_main_window (),
-						  _("ai_nw_updating_list"),
-						  progress_bar);
-      g_signal_connect (progress_dialog, "response",
-			G_CALLBACK (cancel_response), NULL);
       GtkWidget *box = GTK_DIALOG (progress_dialog)->action_area;
       GList *kids = gtk_container_get_children (GTK_CONTAINER (box));
       if (kids)
-	progress_cancel_button = GTK_WIDGET (kids->data);
-      else
-	progress_cancel_button = NULL;
+	gtk_container_remove (GTK_CONTAINER (box), GTK_WIDGET (kids->data));
       g_list_free (kids);
     }
-
-  general_title = title;
-  set_progress (op_general, -1, 0);
+  else
+    g_signal_connect (progress_dialog, "response",
+		      G_CALLBACK (cancel_response), NULL);
 
   gtk_widget_show (progress_dialog);
+}
+
+void
+set_general_progress_title (const char *title)
+{
+  general_title = title;
+}
+
+void
+show_progress (const char *title)
+{
+  create_progress (FALSE);
+
+  set_general_progress_title (title);
+  current_status_operation = op_general;
+  set_progress (op_general, -1, 0);
 
   progress_cancelled = false;
   cancel_count = 0;
@@ -500,6 +514,13 @@ void
 set_progress (apt_proto_operation op, int already, int total)
 {
   const char *title;
+
+  if (op != current_status_operation
+      && (progress_dialog || op != op_updating_cache))
+    {
+      hide_progress ();
+      create_progress (op == op_downloading);
+    }
 
   if (op == op_downloading)
     {
@@ -522,11 +543,6 @@ set_progress (apt_proto_operation op, int already, int total)
 
   current_status_operation = op;
 
-#if 0
-  if (progress_cancel_button)
-    gtk_widget_set_sensitive (progress_cancel_button, op == op_downloading);
-#endif
-
   // printf ("STATUS: %s -- %f\n", title, fraction);
 
   if (progress_dialog)
@@ -548,7 +564,11 @@ void
 hide_progress ()
 {
   if (progress_dialog)
-    gtk_widget_hide (progress_dialog);
+    {
+      stop_pulsing ();
+      gtk_widget_destroy (progress_dialog);
+      progress_dialog = NULL;
+    }
   current_status_operation = op_general;
 }
 
@@ -1654,7 +1674,10 @@ static void
 ensure_network_cont (bool success)
 {
   if (en_callback)
-    en_callback (success, en_data);
+    {
+      hide_progress ();
+      en_callback (success, en_data);
+    }
   en_callback = NULL;
   en_data = NULL;
 }
@@ -1711,7 +1734,11 @@ ensure_network (void (*callback) (bool success, void *data), void *data)
       
       if (osso_iap_connect (OSSO_IAP_ANY, OSSO_IAP_REQUESTED_CONNECT, NULL)
 	  == OSSO_OK)
-	return;
+	{
+	  show_progress (dgettext ("osso-browser-ui",
+				   "weba_pb_clearing_connecting"));
+	  return;
+	}
     }
 
   annoy_user (_("ai_ni_operation_failed"));
