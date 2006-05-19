@@ -1,5 +1,11 @@
 2006-05-19  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/layout-manager.c: Reverted fix to N#30022 (which introduces
+	  a crash)
+	* configure.ac: 2.6.18
+
+2006-05-19  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/home-select-applets-dialog.c: Apply hard-coded
 	  dialog width to reduce the risk of the title label being truncated
 	  (Closes N#27539)
