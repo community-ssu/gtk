@@ -627,8 +627,8 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 
 	    } else if ( !item_desktop_id || strlen( item_desktop_id ) == 0 ) {
 		    
-		   /* Empty submenu. Skip "Extras" */
-		   if ( strcmp( item_name, "tana_fi_extras" ) != 0 ) {
+		   /* Empty submenu. Skip "Extras" (from libhildonmenu.h) */
+		   if ( strcmp( item_name, EXTRAS_MENU_STRING ) != 0 ) {
 
 			    submenu = GTK_MENU(gtk_menu_new());
     
@@ -652,6 +652,16 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 
 			    gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item),
 					    GTK_WIDGET(submenu));
+
+			    /* Create a menu item and add it to the menu. */
+			    GtkWidget *submenu_item = gtk_image_menu_item_new_with_label(
+					    MENU_ITEM_EMPTY_SUBMENU_STRING );
+
+			    gtk_widget_set_sensitive( submenu_item, FALSE );
+
+			    gtk_menu_shell_append(GTK_MENU_SHELL(submenu),
+					    GTK_WIDGET(submenu_item));
+
 		   }
  
 	    } else if ( strcmp( item_desktop_id, SEPARATOR_STRING ) == 0 ) {

@@ -46,6 +46,8 @@
 #define MENU_ITEM_DEFAULT_APP_ICON    "qgn_list_gene_default_app"
 #define MENU_ITEM_ICON_SIZE           26
 
+#define MENU_ITEM_EMPTY_SUBMENU_STRING _( "tana_li_of_noapps" )
+
 #define BORDER_WIDTH 7
 #define BUTTON_HEIGHT 90
 
