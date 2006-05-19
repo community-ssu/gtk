@@ -1,3 +1,10 @@
+dbus (0.61-osso11) experimental; urgency=low
+
+  * UNRELEASED
+  * Added messagebus user to the dialout group (N#29419).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 19 May 2006 14:18:24 +0300
+
 dbus (0.61-osso10) experimental; urgency=low
 
   * Added support for compiling with thumb instructions (N#28905).
