@@ -38,7 +38,8 @@ binary:
 	dh_clean -k 
 	dh_installdirs
 
-	$(PYTHON) setup.py install --root=$(d_pyrex) --no-compile
+	$(PYTHON) setup.py install --root=$(d_pyrex)
+	$(PYTHON) -OO -m compileall -f $(d_pyrex)
 
 	sed -i "s|#!/usr/bin/python.*|#!/usr/bin/python2.4|" $(d_pyrex)/usr/bin/$(filename)
 	mv $(d_pyrex)/usr/bin/$(filename) $(d_pyrex)/usr/bin/$(fullfilename)

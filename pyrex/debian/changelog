@@ -1,3 +1,9 @@
+pyrex (0.9.3-1osso4) unstable; urgency=low
+
+  * added byte-compiled files to package
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri, 19 May 2006 13:58:00 -0300
+
 pyrex (0.9.3-1osso3) unstable; urgency=low
 
   * some package cleanups
