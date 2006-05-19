@@ -8,7 +8,8 @@ MESSAGEHOME=/var/run/dbus
 
 chgrp "$MESSAGEUSER" "$MESSAGEHOME" 2>/dev/null || groupadd  "$MESSAGEUSER"
 chown "$MESSAGEUSER"."$MESSAGEUSER" "$MESSAGEHOME" 2>/dev/null || \
-useradd -d "$MESSAGEHOME" -g $MESSAGEUSER -G dialout $MESSAGEUSER
+useradd -d "$MESSAGEHOME" -g $MESSAGEUSER $MESSAGEUSER
+usermod -G dialout $MESSAGEUSER
 
 # Do not restart dbus on upgrades, only on fresh installations
 if [ "$1" = "configure" ]; then
