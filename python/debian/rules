@@ -51,7 +51,8 @@ common_configure_args = \
 		--with-fpectl \
 		--enable-ipv6 \
 		--enable-unicode=ucs2 \
-		--without-cxx
+		--without-cxx \
+		--srcdir=..
 
 stamp-configure-shared:
 	mkdir -p $(buildd_shared)
@@ -99,14 +100,6 @@ stamp-install: stamp-build
 		$(d)/usr/share/man/man1/python$(VER).1
 	ln -sf $(d)/usr/share/man/man1/python$(VER).1 $(d)/usr/man/man1/python.1
 
-	: # Symlinks to /usr/bin for some tools
-	mkdir -p $(d_dev)/usr/lib/python$(VER)
-	mkdir -p $(d_dev)/usr/bin
-	mv $(d)/usr/lib/python$(VER)/pdb.py $(d_dev)/usr/lib/python$(VER)/pdb.py
-	ln -sf $(d_dev)/usr/lib/python$(VER)/pdb.py $(d_dev)/usr/bin/pdb$(VER)
-	mv $(d)/usr/bin/pydoc $(d_dev)/usr/bin/pydoc$(VER)
-	cp -p Tools/i18n/pygettext.py $(d_dev)/usr/bin/pygettext$(VER)
-
 	: # install the shared library
 	cp -p $(buildd_shared)/libpython$(VER).so.1.0 $(d)/usr/lib/
 	ln -sf libpython$(VER).so.1.0 $(d)/usr/lib/libpython$(VER).so.1
@@ -118,17 +111,20 @@ stamp-install: stamp-build
 	    -e 's,^RUNSHARED *=.*,RUNSHARED=,' \
 		build-shared/Makefile > $(d)/$(scriptdir)/config/Makefile
 
-	: # Move the binary and the minimal libraries into $(p_min).
+	: # manpage
+	dh_installdirs -p$(p_dev) \
+		usr/share/man/man1
+	dh_movefiles -p$(p_dev) --sourcedir=$(d) \
+		usr/share/man/man1/python$(VER).1 \
+
+	: # scripts and binaries
 	dh_installdirs -p$(p_base) \
 		usr/bin \
-		usr/share/man/man1 \
 		$(scriptdir)
 	dh_movefiles -p$(p_base) --sourcedir=$(d) \
 		usr/bin/python$(VER) \
-		usr/share/man/man1/python$(VER).1 \
 		$(foreach i,$(MIN_EXTS),$(scriptdir)/lib-dynload/$(i).so) \
 		$(foreach i,$(MIN_MODS),$(scriptdir)/$(i).py)
-
 
 	: # Move the library and the header files into $(p_dev).
 	dh_installdirs -p$(p_dev) \
@@ -279,8 +275,14 @@ stamp-install: stamp-build
 	-find debian -name .cvsignore | xargs rm -f
 
 	#DEFAULT PYTHON
-	(cd $(d_dev)/usr/bin && ln -sf pdb$(VER) pdb && ln -sf pydoc$(VER) pydoc && ln -sf pygettext$(VER) pygettext)
 	(cd $(d_base)/usr/bin && ln -sf python$(VER) python)
+	mkdir -p $(d_dev)/usr/bin
+	ln -sf /usr/lib/python$(VER)/pdb.py $(d_dev)/usr/bin/pdb$(VER)
+	ln -sf pdb$(VER) $(d_dev)/usr/bin/pdb
+	ln -sf /usr/lib/python$(VER)/pydoc.py $(d_dev)/usr/bin/pydoc$(VER)
+	ln -sf pydoc$(VER) $(d_dev)/usr/bin/pydoc
+	cp -p Tools/i18n/pygettext.py $(d_dev)/usr/bin/pygettext$(VER)
+	ln -sf pygettext$(VER) $(d_dev)/usr/bin/pygettext
 
 	: # Replace all '#!' calls to python with $(PY_INTERPRETER)
 	: # and make them executable
