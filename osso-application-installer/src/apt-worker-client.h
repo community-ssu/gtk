@@ -92,6 +92,7 @@ void apt_worker_install_check (const char *package,
 			       void *data);
 
 void apt_worker_install_package (const char *package,
+				 bool updating,
 				 apt_worker_callback *callback,
 				 void *data);
 

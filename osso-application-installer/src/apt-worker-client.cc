@@ -489,6 +489,7 @@ apt_worker_update_cache_cont (bool success, void *clos)
       request.reset ();
       request.encode_string (http_proxy);
       g_free (http_proxy);
+      show_progress (_("ai_nw_updating_list"));
       call_apt_worker (APTCMD_UPDATE_PACKAGE_CACHE,
 		       request.get_buf (), request.get_len (),
 		       callback, data);
@@ -571,6 +572,7 @@ apt_worker_install_check (const char *package,
 
 struct awip_closure {
   char *package;
+  bool updating;
   apt_worker_callback *callback;
   void *data;
 };
@@ -582,6 +584,7 @@ apt_worker_install_package_cont (bool success, void *clos)
   char *package = c->package;
   apt_worker_callback *callback = c->callback;
   void *data = c->data;
+  bool updating = c->updating;
   delete c;
 
   if (success)
@@ -591,6 +594,11 @@ apt_worker_install_package_cont (bool success, void *clos)
       request.encode_string (package);
       request.encode_string (http_proxy);
       g_free (http_proxy);
+
+      set_general_progress_title (updating 
+				  ? _("ai_nw_updating")
+				  : _("ai_nw_installing"));
+
       call_apt_worker (APTCMD_INSTALL_PACKAGE,
 		       request.get_buf (), request.get_len (),
 		       callback, data);
@@ -602,13 +610,14 @@ apt_worker_install_package_cont (bool success, void *clos)
 }
   
 void
-apt_worker_install_package (const char *package,
+apt_worker_install_package (const char *package, bool updating,
 			    apt_worker_callback *callback, void *data)
 {
   awip_closure *c = new awip_closure;
   c->package = g_strdup (package);
   c->callback = callback;
   c->data = data;
+  c->updating = updating;
 
   ensure_network (apt_worker_install_package_cont, c);
 }
