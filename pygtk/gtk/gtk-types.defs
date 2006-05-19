@@ -1268,6 +1268,22 @@
   )
 )
 
+(define-flags InputMode
+  (in-module "Gtk")
+  (c-name "HildonGtkInputMode")
+  (gtype-id "GTK_TYPE_GTK_INPUT_MODE")
+  (values
+    '("alpha"     "HILDON_GTK_INPUT_MODE_ALPHA")
+    '("numeric"   "HILDON_GTK_INPUT_MODE_NUMERIC")
+    '("special"   "HILDON_GTK_INPUT_MODE_SPECIAL")
+    '("hexa"      "HILDON_GTK_INPUT_MODE_HEXA")
+    '("tele"      "HILDON_GTK_INPUT_MODE_TELE")
+    '("full"      "HILDON_GTK_INPUT_MODE_FULL")
+    '("invisible" "HILDON_GTK_INPUT_MODE_INVISIBLE")
+    '("autocap"   "HILDON_GTK_INPUT_MODE_AUTOCAP")
+  )
+)
+
 ;; Interfaces ...
 
 (define-interface CellEditable
