@@ -7,6 +7,7 @@ plugindir = $(libdir)/hildon-navigator
 
 INCLUDES = \
 	$(HILDON_CFLAGS) -g $(OSSO_CFLAGS) $(LIBXML_CFLAGS) $(ESD_CFLAGS)\
+	$(GCONF_CFLAGS) \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
 	-DPREFIX=\"$(prefix)\" \

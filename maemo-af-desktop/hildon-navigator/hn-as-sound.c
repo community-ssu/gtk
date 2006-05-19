@@ -24,10 +24,15 @@
 
 #include <unistd.h> /* close() */
 #include <glib/gtypes.h>
+#include <gconf/gconf-client.h>
 #include <esd.h>
 #include "hn-as-sound.h"
 
-#define PROGRAM_NAME "MaemoApplicationSwitcher"
+#define PROGRAM_NAME        "MaemoApplicationSwitcher"
+#define ALARM_GCONF_PATH    "/apps/osso/sound/system_alert_volume"
+
+static gint
+hn_as_sound_get_volume_scale (void);
 
 gint
 hn_as_sound_init()
@@ -60,6 +65,9 @@ hn_as_sound_deregister_sample (gint esd_socket, gint sample_id)
 void
 hn_as_sound_play_sample (gint esd_socket, gint sample_id)
 {
+    gint scale = hn_as_sound_get_volume_scale ();
+
+    esd_set_default_sample_pan (esd_socket, sample_id, scale, scale);
     esd_sample_play (esd_socket, sample_id);
 }
 
@@ -68,4 +76,38 @@ void
 hn_as_sound_deinit (gint socket)
 {
     close(socket);
+}
+
+static gint
+hn_as_sound_get_volume_scale ()
+{
+    GConfClient *client = NULL;
+    GError *error = NULL;
+    gint volume;
+
+    client = gconf_client_get_default();
+
+    if (!client)
+        return 0;
+
+    volume = gconf_client_get_int (client, ALARM_GCONF_PATH, &error);
+
+    g_object_unref (G_OBJECT (client));
+
+    if (error)
+    {
+        g_error_free (error);
+        return 0;
+    }
+
+
+    switch (volume)
+    {
+        case 1:
+            return 0x80;
+        case 2:
+            return 0xff;
+    }
+
+    return 0;
 }
