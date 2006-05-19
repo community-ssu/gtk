@@ -1,3 +1,10 @@
+python-numeric (23.8-1osso5) unstable; urgency=low
+
+  * fixed reference to COPYING file. This file was missing and license terms
+    is in README file instead.
+ 
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri, 19 May 2006 13:41:00 -0300
+
 python-numeric (23.8-1osso4) unstable; urgency=low
 
   * renamed documentation directory in development package

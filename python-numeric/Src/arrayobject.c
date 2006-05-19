@@ -4,7 +4,7 @@
   object type in python.
     
   Copyright (c) 1995, 1996, 1997 Jim Hugunin, hugunin@mit.edu
-  See file COPYING for details.
+  See file README for details.
 
 
   These arrays are primarily designed for supporting multidimensional,

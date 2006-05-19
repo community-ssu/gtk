@@ -2,7 +2,7 @@
   Python Universal Functions Object -- Math for all types, plus fast arrays math
 
   Copyright (c) 1995, 1996, 1997 Jim Hugunin, hugunin@mit.edu
-  See file COPYING for details.
+  See file README for details.
  
   Full description
   
