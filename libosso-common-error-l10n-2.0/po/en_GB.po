@@ -1,0 +1,289 @@
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the libosso-common-error package
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libosso-common-error 0.0\n"
+"Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
+"POT-Creation-Date: 2006.02.13 10:50+0000\n"
+"PO-Revision-Date: 2006.02.13 10:50+0000\n"
+"Last-Translator:\n"
+"Language-Team: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n!=1;\n"
+
+#: ../osso-common-error.h:71
+msgid "cerm_insuf_res"
+msgstr "Not enough memory"
+
+#: ../osso-common-error.h:73
+msgid "cerm_can_not_get_file_info"
+msgstr "Unable to display file details"
+
+#: ../osso-common-error.h:75
+msgid "cerm_can_not_cut_ronly_location"
+msgstr "Selected location is read-only"
+
+#: ../osso-common-error.h:77
+msgid "cerm_can_not_cut_sfolder"
+msgstr "Unable to cut some items"
+
+#: ../osso-common-error.h:79
+msgid "cerm_can_not_cut_selected_items"
+msgstr "Unable to cut selected items"
+
+#: ../osso-common-error.h:81
+msgid "cerm_can_not_cutice"
+msgstr "Unable to cut device"
+
+#: ../osso-common-error.h:83
+msgid "cerm_can_not_cut_mmc"
+msgstr "Unable to cut memory card"
+
+#: ../osso-common-error.h:85
+msgid "cerm_can_not_cut_ronly_mmc"
+msgstr "Memory card is read-only"
+
+#: ../osso-common-error.h:87
+msgid "cerm_can_not_copyice"
+msgstr "Unable to copy device"
+
+#: ../osso-common-error.h:89
+msgid "cerm_can_not_copy_mmc"
+msgstr "Unable to copy memory card"
+
+#: ../osso-common-error.h:91
+msgid "cerm_can_not_paste_no_items_selected"
+msgstr "Nothing to paste"
+
+#: ../osso-common-error.h:93
+msgid "cerm_can_not_paste_ronly_location"
+msgstr "Selected location is read-only"
+
+#: ../osso-common-error.h:95
+msgid "cerm_can_not_paste_ronly_mmc"
+msgstr "Memory card is read-only"
+
+#: ../osso-common-error.h:97
+msgid "cerm_can_not_mv_folder_into_itself"
+msgstr "Unable to move folder into itself"
+
+#: ../osso-common-error.h:99
+msgid "cerm_no_copy_folder_into_itself"
+msgstr "Unable to copy folder into itself"
+
+#: ../osso-common-error.h:101
+msgid "cerm_source_and_target_path_same"
+msgstr "Unable to paste in original location"
+
+#: ../osso-common-error.h:103
+msgid "cerm_can_not_paste_orig_location"
+msgstr "Unable to paste in original location"
+
+#: ../osso-common-error.h:105
+msgid "cerm_no_replace_folder_present"
+msgstr "Unable to copy or move a subfolder within the original folder"
+
+#: ../osso-common-error.h:107
+msgid "cerm_can_not_move_selected_items"
+msgstr "Unable to move selected items"
+
+#: ../osso-common-error.h:109
+msgid "cerm_can_not_move_sfolder"
+msgstr "Unable to move selected folder"
+
+#: ../osso-common-error.h:111
+msgid "cerm_can_not_moveice"
+msgstr "Unable to move device"
+
+#: ../osso-common-error.h:113
+msgid "cerm_can_not_move_mmc"
+msgstr "Unable to move memory card"
+
+#: ../osso-common-error.h:115
+msgid "cerm_can_not_move_ronly_mmc"
+msgstr "Memory card is read-only"
+
+#: ../osso-common-error.h:117
+msgid "cerm_can_not_dup_file"
+msgstr "Unable to duplicate this file"
+
+#: ../osso-common-error.h:119
+msgid "cerm_can_not_dup_folder"
+msgstr "Unable to duplicate this folder"
+
+#: ../osso-common-error.h:121
+msgid "cerm_select_one_item_only"
+msgstr "Select 1 item only"
+
+#: ../osso-common-error.h:123
+msgid "cerm_can_not_dupice"
+msgstr "Unable to duplicate device"
+
+#: ../osso-common-error.h:125
+msgid "cerm_can_not_dup_mmc"
+msgstr "Unable to duplicate memory card"
+
+#: ../osso-common-error.h:127
+msgid "cerm_can_not_dup_ronly_mmc"
+msgstr "Memory card is read-only"
+
+#: ../osso-common-error.h:129
+msgid "cerm_unable_to_move_selected_items"
+msgstr "Unable to move selected items"
+
+#: ../osso-common-error.h:131
+msgid "cerm_can_not_move_into_itself"
+msgstr "Unable to move folder into itself"
+
+#: ../osso-common-error.h:133
+msgid "cerm_can_not_move_orig_location"
+msgstr "Unable to move to current location"
+
+#: ../osso-common-error.h:135
+msgid "cerm_can_not_del_selected_items"
+msgstr "Unable to delete selected items"
+
+#: ../osso-common-error.h:137
+msgid "cerm_can_not_del_sfolder"
+msgstr "Unable to delete selected items"
+
+#: ../osso-common-error.h:139
+msgid "cerm_can_not_delice"
+msgstr "Unable to delete device"
+
+#: ../osso-common-error.h:141
+msgid "cerm_can_not_del_mmc"
+msgstr "Unable to delete memory card"
+
+#: ../osso-common-error.h:143
+msgid "cerm_can_not_del_mmc_ronly"
+msgstr "Memory card is read-only"
+
+#: ../osso-common-error.h:145
+msgid "cerm_folder_name_exist"
+msgstr "Folder name already in use"
+
+#: ../osso-common-error.h:147
+msgid "cerm_would_you_like_to_replace"
+msgstr "Replace?"
+
+#: ../osso-common-error.h:149
+msgid "cerm_file_name_exist"
+msgstr "File name already in use"
+
+#: ../osso-common-error.h:151
+msgid "cerm_path_ronly"
+msgstr "Selected location is read-only"
+
+#: ../osso-common-error.h:153
+msgid "cerm_mmc_card_ronly"
+msgstr "Memory card is read-only"
+
+#: ../osso-common-error.h:155
+msgid "cerm_newfolder_not_allowed"
+msgstr "Not allowed"
+
+#: ../osso-common-error.h:157
+msgid "cerm_can_not_open_insuf_res"
+msgstr ""
+"Unable to open. \n"
+"Not enough memory."
+
+#: ../osso-common-error.h:159
+msgid "cerm_can_not_open_no_file_info"
+msgstr ""
+"Unable to open.\n"
+"File corrupted."
+
+#: ../osso-common-error.h:161
+msgid "cerm_unable_to_open"
+msgstr "Selected location is read-only"
+
+#: ../osso-common-error.h:163
+msgid "cerm_can_not_rename_ronly_mmc"
+msgstr "Memory card is read-only"
+
+#: ../osso-common-error.h:165
+msgid "cerm_can_not_rename_folder"
+msgstr "Unable to rename selected folder"
+
+#: ../osso-common-error.h:167
+msgid "cerm_can_not_rename_ronly_location"
+msgstr "Unable to rename"
+
+#: ../osso-common-error.h:169
+msgid "cerm_file_already_exist"
+msgstr "File name already in use"
+
+#: ../osso-common-error.h:171
+msgid "cerm_folder_already_exist"
+msgstr "Folder name already in use"
+
+#: ../osso-common-error.h:173
+msgid "cerm_path_already_exist"
+msgstr "Folder name already in use"
+
+#: ../osso-common-error.h:175
+msgid "cerm_error_sending_mail"
+msgstr "Unable to send"
+
+#: ../osso-common-error.h:177
+msgid "cerm_unable_to_send_memory_card"
+msgstr "Unable to send memory card"
+
+#: ../osso-common-error.h:179
+msgid "cerm_unable_to_send_folders"
+msgstr "Unable to send folders"
+
+msgid "cerm_no_matching_application_found"
+msgstr "Unknown file type"
+
+msgid "cerm_error_opening_application"
+msgstr "Unable to open"
+
+msgid "cerm_rename_file_not_found"
+msgstr ""
+"Unable to rename.\n"
+"File not found."
+
+msgid "cerm_rename_folder_not_found"
+msgstr ""
+"Unable to rename.\n"
+"Folder not found."
+
+msgid "cerm_saving_not_allowed"
+msgstr "Not allowed"
+
+msgid "cerm_file_already_saved"
+msgstr "File already saved in this location"
+
+msgid "cerm_save_file_first"
+msgstr "Save file first"
+
+msgid "cerm_file_not_found"
+msgstr "File not found"
+
+msgid "cerm_folder_not_found"
+msgstr "Folder not found"
+
+msgid "cerm_items_not_found"
+msgstr "Items not found"
+
+#
+# 13.2.2006, Hiep: added 3 new IDs, mailed by mohamad.anwari@nokia.com
+#
+msgid "cerm_thumb_keyboard_not_supported"
+msgstr "Thumb keyboard not supported"
+
+msgid "cerm_device_memory_full"
+msgstr ""
+"Device memory full.\n"
+"Remove data to free memory."
+
+msgid "cerm_memory_card_full"
+msgstr ""
+"Memory card full.\n"
+"Remove data to free memory."

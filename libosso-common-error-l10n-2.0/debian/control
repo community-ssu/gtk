@@ -1,0 +1,23 @@
+Source: libosso-common-error-l10n
+Section: misc
+Priority: optional
+Maintainer: L10n Team <l10n@maemo.org>
+Build-Depends-Indep: debhelper (>= 4.0.0), gettext
+Standards-Version: 3.6.2
+
+Package: libosso-common-error-l10n-english
+Architecture: all
+Conflicts: libosso-common-error-l10n-engb
+Description: libosso-common-error Engineering English
+ Engineering English locale for libosso-common-error
+ .
+ Please note that the .mo file from this package is installed as
+ en_GB.mo
+
+Package: libosso-common-error-l10n-engb
+Architecture: all
+Provides: 
+Conflicts: 
+Description: libosso-common-error engb locale
+ engb locale for libosso-common-error.
+
