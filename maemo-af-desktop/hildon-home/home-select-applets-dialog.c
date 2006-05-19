@@ -44,6 +44,8 @@
 
 #include <osso-helplib.h>
 
+#define DIALOG_WIDTH    300
+
 
 extern osso_context_t *osso_home;
 
@@ -161,6 +163,8 @@ void show_select_applets_dialog(GList *applets,
 		                         GTK_DIALOG_MODAL | 
 					 GTK_DIALOG_DESTROY_WITH_PARENT |
 					 GTK_DIALOG_NO_SEPARATOR, NULL);
+
+    gtk_widget_set_size_request (dialog, DIALOG_WIDTH, -1);
 
     /* Add help button to the dialog */
     ossohelp_dialog_help_enable(GTK_DIALOG(dialog),

@@ -1,5 +1,11 @@
 2006-05-19  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/home-select-applets-dialog.c: Apply hard-coded
+	  dialog width to reduce the risk of the title label being truncated
+	  (Closes N#27539)
+
+2006-05-19  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-as-sound.c: Fetch and apply the alarm sound
 	  value from gconf before playing a sample
 
