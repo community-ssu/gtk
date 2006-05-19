@@ -1,3 +1,9 @@
+python-dbus (0.61-1osso2) unstable; urgency=low
+
+  * remove extract.pyc file in debian/rules clean target
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 19 May 2006 13:48:00 -0300
+
 python-dbus (0.61-1osso1) unstable; urgency=low
 
   * first version

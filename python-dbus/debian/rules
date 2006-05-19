@@ -23,6 +23,7 @@ clean:
 	$(PYTHON) setup.py clean --all
 	-rm -f build24-stamp
 	-rm -rf $(d_base) $(d_dev)
+	-rm -f extrace.py[co]
 	dh_clean 
 
 binary:
