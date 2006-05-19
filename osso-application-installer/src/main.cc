@@ -975,10 +975,7 @@ refresh_package_cache_cont (bool res, void *data)
   rpc_clos *c = (rpc_clos *)data;
 
   if (res)
-    {
-      show_progress (_("ai_nw_updating_list"));
-      apt_worker_update_cache (refresh_package_cache_reply, c);
-    }
+    apt_worker_update_cache (refresh_package_cache_reply, c);
   else
     {
       if (c->cont)
@@ -1161,10 +1158,8 @@ install_package_cont3 (bool res, void *data)
     {
       if (res)
 	{
-	  show_progress (c->pi->installed_version
-			 ? _("ai_nw_updating")
-			 : _("ai_nw_installing"));
 	  apt_worker_install_package (c->pi->name,
+				      c->pi->installed_version != NULL,
 				      install_package_reply, c->pi);
 	}
       else
@@ -1329,7 +1324,7 @@ annoy_user_with_installable_status_details (package_info *pi)
 }
 
 static void
-install_package_cont2 (bool res, void *data)
+install_package_with_net (bool res, void *data)
 {
   package_info *pi = (package_info *)data;
 
@@ -1353,11 +1348,30 @@ install_package_cont2 (bool res, void *data)
 	}
     }
   else
+    pi->unref ();
+}
+
+static void
+install_package_cont2 (bool res, void *data)
+{
+  package_info *pi = (package_info *)data;
+
+  if (res)
+    {
+      // We ask for the network here although we only really need it for
+      // the APTCMD_INSTALL_PACKAGE request.  We do it this early to let
+      // the user cancel the network connection procedure very early.  The
+      // network is requested again when it is actually needed.
+
+      ensure_network (install_package_with_net, pi);
+    }
+  else
     {
       if (pi->installed_version)
 	annoy_user (_("ai_ni_update_cancelled"));
       else
 	annoy_user (_("ai_ni_install_cancelled"));
+      pi->unref ();
     }
 }
 
@@ -1368,26 +1382,10 @@ install_package_cont (package_info *pi, void *data, bool changed)
 }
 
 static void
-install_package_with_net (bool res, void *data)
-{
-  package_info *pi = (package_info *)data;
-
-  if (res)
-    get_intermediate_package_info (pi, true, install_package_cont, NULL);
-  else
-    pi->unref ();
-}
-
-static void
 install_package (package_info *pi)
 {
-  // We ask for the network here although we only really need it for
-  // the APTCMD_INSTALL_PACKAGE request.  We do it this early to let
-  // the user cancel the network connection procedure very early.  The
-  // network is requested again when it is actually needed.
-
   pi->ref ();
-  ensure_network (install_package_with_net, pi);
+  get_intermediate_package_info (pi, true, install_package_cont, NULL);
 }
 
 static void
