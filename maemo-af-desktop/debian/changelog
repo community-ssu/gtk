@@ -1,3 +1,75 @@
+maemo-af-desktop (2.6.17-1) unstable; urgency=low
+
+  Applied fix to "Applet are hidden if a new drag is started before another
+  one is ended" (Closes N#30022)
+  * hildon-home/layout-manager.c: Keep track of the last legal position,
+    and move back there if the dropped in an illegal position
+
+  Applied fix to "HOME: Separator space is needed in 'Set background image'
+  dialog" (Closes N#30079)
+  * hildon-home/hildon-home-main.c:
+    - set_background_dialog_selected(): Set dialogs vbox spacing to 10
+      according to specifications in Sputnik-PLUS-OSSOHomeLayoutGuide
+      and SputnikOSSO_Home_UI_Specification
+
+  Applied further fixes to "Others menu organization-dialog implementation
+  problem"
+  * libhildonmenu/libhildonmenu.c:
+    - Changes in the way Extras is handled
+    - Load of fixes for Extras folder handling and empty folders in
+      Others menu
+
+  Applied fix to "HOME: Unexpected behaviour in Layout mode."
+  (Closes N#28928 and N#29913)
+  * hildon-home/layout-manager.c:
+    - drag_begin(): Set drag icon as a empty 1x1 pixbuf because there
+      doesn't seem to be easy way to cancel dnd.
+
+  * hildon-navigator/hildon-navigator-main.c: create the user configuration
+    directory if not present, so we can monitor it (Closes N#24138)
+
+  * hildon-navigator/hn-wm.c, hildon-navigator/hn-wm-session.[ch]:
+    removed deprecated session management code. (Closes N#25701)
+
+  * hildon-navigator/others-menu.c
+    - removed useless structure to hold dnotify callbacks data
+    - Only remove the currently triggered dnotify callback, not all of them
+
+  Applied fix to "Desktop doesn't restore background killed applications
+  when application above is closed" (Closes N#29824)
+  * hildon-navigator/application-switcher.c: explicitely top
+    the application in the top-most button
+
+  * hildon-navigator/others-menu.c: Backported event collapsing,
+    to circumvent several button-press events when using the thumb
+    (Closing N#29406)
+
+  Applied fix to "Memory leaks in hn_wm_watchable_app_new()" (Closes
+  N#29530)
+  * hildon-navigator/hn-wm-watchable-app.c: do not duplicate strings
+    contained in the watchable app structure.
+
+  * hildon-home/layout-manager.c: Open the help in a dialog (Closes N#29447)
+
+  Applied fix to "home applet corners are not shown round as they should"
+  (Closes N#28838)
+  * hildon-home/layout-manager.c: Hide the applet eventbox windows
+    when not in layout mode to make shape masks work again
+
+  Applied fix to "AF-BAT: Cancelled background image visible beneath the
+  current background" (Closes N#27444)
+  * hildon-home/hildon-home-main.c:
+    - create_background_preview(): Added new function to create background
+      preview and save it as a background if no preview is needed
+    - set_background_response_handler(): Update to use new function
+    - set_background_dialog_selected(): Update to use new function
+    - show_loading_image_note(): Update preview flag
+    - image_loader_callback(): Update to save preview if saving
+      picture as background and no cancel button is pressed
+    - construct_background_image_with_uri(): Changed to always
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 19 May 2006 10:46:35 +0300
+
 maemo-af-desktop (2.6.16-1) unstable; urgency=low
 
   * hildon-home/layout-manager.c: Applied refactoring of the

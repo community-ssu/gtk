@@ -1,3 +1,14 @@
+2006-05-19  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.6.17
+
+2006-05-19  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Applet are hidden if a new drag is started before another
+	one is ended" (Closes N#30022)
+	* hildon-home/layout-manager.c: Keep track of the last legal position,
+	  and move back there if the dropped in an illegal position
+
 2006-05-18  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "HOME: Separator space is needed in 'Set background image'
