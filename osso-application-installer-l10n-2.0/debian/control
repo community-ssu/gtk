@@ -1,0 +1,23 @@
+Source: osso-application-installer-l10n
+Section: misc
+Priority: optional
+Maintainer: L10n Team <l10n@maemo.org>
+Build-Depends-Indep: debhelper (>= 4.0.0), gettext
+Standards-Version: 3.6.2
+
+Package: osso-application-installer-l10n-english
+Architecture: all
+Conflicts: osso-application-installer-l10n-engb
+Description: osso-application-installer Engineering English
+ Engineering English locale for osso-application-installer
+ .
+ Please note that the .mo file from this package is installed as
+ en_GB.mo
+
+Package: osso-application-installer-l10n-engb
+Architecture: all
+Provides: 
+Conflicts: 
+Description: osso-application-installer engb locale
+ engb locale for osso-application-installer.
+
