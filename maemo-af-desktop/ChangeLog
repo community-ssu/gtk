@@ -1,5 +1,11 @@
 2006-05-21  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Removed set_width
+	  on the comboboxes in the "Select Background Image" dialog
+	  (Closes N#30192)
+
+2006-05-21  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hildon-navigator-main.c, maemo-af-desktop-main.c:
 	  call initialize_navigator_menus in an idle loop to make
 	  startup time faster (Partially Closes N#29260)

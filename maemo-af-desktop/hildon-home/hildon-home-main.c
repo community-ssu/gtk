@@ -1151,7 +1151,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
     gboolean bg_image_is_default = FALSE;
     gint combobox_active = -1;
     gint active_count = 0;
-    gint width;
     GdkColor *color_selected = NULL;
    
     bg_image_desc_base_dir = g_dir_open(
@@ -1443,10 +1442,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
 			   combobox_mode_select,
 			   NULL,
 			   HILDON_CAPTION_OPTIONAL);
-     
-    gtk_window_get_size(GTK_WINDOW(dialog), &width, NULL);
-    gtk_widget_set_size_request(combobox_image_select, width, -1);
-    gtk_widget_set_size_request(combobox_mode_select, width, -1);
      
     gtk_box_pack_start(GTK_BOX(hbox_color),
 		       color_caption,
