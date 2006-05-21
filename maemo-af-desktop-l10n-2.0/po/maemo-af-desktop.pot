@@ -1,0 +1,381 @@
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the maemo-af-desktop package
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: maemo-af-desktop 6.0\n"
+"Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
+"POT-Creation-Date: 2006.05.15 16:36+0300\n"
+"PO-Revision-Date: 2006.05.15 16:36+0300\n"
+"Last-Translator:\n"
+"Language-Team: Engineering English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n == 1 ? 0 : 1;\n"
+
+# Launching new application progress banner 
+msgid "ckct_ib_application_loading"
+msgstr "%s - loading"
+
+# Resuming background killed application progress banner
+msgid "ckct_ib_application_resuming"
+msgstr "%s - resuming"
+
+# Error note displayed if the application startup fails
+msgid "ckct_ib_application_loading_failed"
+msgstr "Unable to load"
+
+# Folder
+msgid "tana_fi_utilities"
+msgstr "Utilities"
+
+# Folder
+msgid "tana_fi_games"
+msgstr "Games"
+
+# Folder
+msgid "tana_fi_extras"
+msgstr "Extras"
+
+# Folder
+msgid "tana_fi_web"
+msgstr "Web"
+
+# Folder
+msgid "tana_fi_contact"
+msgstr "Contact"
+
+# Folder
+msgid "tana_fi_tools"
+msgstr "Tools"
+
+# Application
+msgid "mcen_ap_name"
+msgstr "E-mail"
+
+# Application
+msgid "weba_ap_web_browser"
+msgstr "Web"
+
+# Application
+msgid "weba_ap_bookmarks_manager"
+msgstr "Bookmarks"
+
+# Application
+msgid "vide_ap_video_player_name"
+msgstr "Video player"
+
+# Application
+msgid "audi_ap_audio_player_name"
+msgstr "Audio player"
+
+# Application
+msgid "imag_ap_image_viewer_name"
+msgstr "Images"
+
+# Application
+msgid "sfil_ap_file_manager"
+msgstr "File manager"
+
+# Application
+msgid "note_ap_notes_name"
+msgstr "Notes"
+
+# Application
+msgid "sket_ap_sketch_title"
+msgstr "Sketch"
+
+# Application
+msgid "calc_ap_calculator"
+msgstr "Calculator"
+
+# Application
+msgid "cloc_ap_application_title"
+msgstr "Clock"
+
+# Application
+msgid "game_ap_chess_name"
+msgstr "Chess"
+
+# Application
+msgid "game_ap_lmarbles_name"
+msgstr "Marbles"
+
+# Application
+msgid "game_ap_mahjong_name"
+msgstr "Mahjong"
+
+# Application
+msgid "pdvi_ap_application_title"
+msgstr "PDF reader"
+
+# Application
+msgid "rss_ap_news_reader"
+msgstr "News reader"
+
+# Application
+msgid "addr_ap_address_book"
+msgstr "Address book"
+
+# Application
+msgid "chat_ap_chat"
+msgstr "Chat"
+
+# Application
+msgid "voip_ap_feature_name"
+msgstr "Call"
+
+# Application
+msgid "ai_ap_application_installer"
+msgstr "Application installer"
+
+# Application
+msgid "copa_ap_cp_name"
+msgstr "Control panel"
+
+# Application
+msgid "conn_ap_connmanager"
+msgstr "Connection manager"
+
+# Application
+msgid "inpu_ap_hwr_training_title"
+msgstr "Teach handwriting"
+
+# Application
+msgid "help_ap_help_application"
+msgstr "Help"
+
+# Application
+msgid "srch_ap_search"
+msgstr "Search"
+
+# Empty folder
+msgid "tana_li_of_noapps"
+msgstr "(no applications)"
+
+# Menu item
+msgid "tana_fi_home"
+msgstr "Home"
+
+# Confirmation note text
+msgid "qgn_nc_apkil_notresponding"
+msgstr "%s is not responding. Do you want to close the application"
+
+# Confirmation note confirmation button
+msgid "qgn_bd_apkil_ok"
+msgstr "OK"
+
+# Confirmation note cancellation button
+msgid "qgn_bd_apkil_cancel"
+msgstr "Cancel"
+
+# Banner displayed if application that user tried to close, could not be closed (and the application killing dialog was opened), suddenly responds and is closed, and therefore the application killing dialog is closed. 
+# 
+# Banner is also displayed if application that user tried to switch to, could not be topped (and the application killing dialog was opened), suddenly responds and is topped, and therefore the application killing dialog is closed.
+msgid "qgn_ib_apkil_responded"
+msgstr "%s responded"
+
+# Application name
+msgid "tana_ap_tasknav_name"
+msgstr "Task navigator"
+
+# Name of Home shown as application title
+msgid "home_ap_home_view"
+msgstr "Home"
+
+# Clock applet name
+msgid "uiframework_home_clockapplet"
+msgstr "Clock"
+
+# Web shortcut applet name
+msgid "ws_ap_web_shortcut"
+msgstr "Web shortcut"
+
+# Internet radio applet name
+msgid "iradio_ia_label"
+msgstr "Internet radio"
+
+# Speed contacts applet name
+msgid "addr_me_home_dial"
+msgstr "Speed contacts"
+
+# Internet search applet name
+msgid "srch_ti_applet_internet_search"
+msgstr "Internet search"
+
+# Home Layout mode title
+msgid "home_ti_layout_mode"
+msgstr "Home – Layout mode"
+
+# Home menu item
+msgid "home_me_select_applets"
+msgstr "Select applets…"
+
+# Home menu item
+msgid "home_me_applet_settings"
+msgstr "Applet settings"
+
+# Home menu item
+msgid "home_me_edit_layout"
+msgstr "Edit layout"
+
+# Home menu item
+msgid "home_me_tools"
+msgstr "Tools"
+
+# Home menu item
+msgid "home_me_tools_set_background"
+msgstr "Set background image…"
+
+# Home menu item
+msgid "home_me_tools_personalisation"
+msgstr "Personalisation…"
+
+# Home menu item
+msgid "home_me_tools_screen_calibration"
+msgstr "Screen calibration"
+
+# Home menu item
+msgid "home_me_tools_help"
+msgstr "Help"
+
+# Home menu item
+msgid "home_me_layout_select_applets"
+msgstr "Select applets…"
+
+# Home menu item
+msgid "home_me_layout_accept_layout"
+msgstr "Accept layout"
+
+# Home menu item
+msgid "home_me_layout_cancel"
+msgstr "Cancel layout"
+
+# Home menu item
+msgid "home_me_layout_help"
+msgstr "Help"
+
+# Close-item in CSM 
+msgid "home_me_csm_close"
+msgstr "Close"
+
+# Title of the Select applets –dialog
+msgid "home_ti_select_applets"
+msgstr "Select applets"
+
+# OK-button in Select applets –dialog
+msgid "home_bd_select_applets_ok"
+msgstr "OK"
+
+# OK-button in Select applets –dialog
+msgid "home_bd_select_applets_cancel"
+msgstr "Cancel"
+
+# Title of Set background image –dialog
+msgid "home_ti_set_backgr"
+msgstr "Set backround image"
+
+# Field label (with Caption control) in Set background image –dialog
+msgid "home_fi_set_backgr_color"
+msgstr "Background color"
+
+# Field label (with Caption control) in Set background image –dialog
+msgid "home_fi_set_backgr_image"
+msgstr "Image"
+
+# Value in Set background image –dialog
+msgid "home_va_set_backgr_none"
+msgstr "(none)"
+
+# Value in Set background image -dialog
+msgid "home_va_set_backgr_wallpaper1"
+msgstr "Wallpaper 1"
+
+# Value in Select background image -dialog
+msgid "home_va_set_backgr_wallpaper2"
+msgstr "Wallpaper 2"
+
+# Value in Select background image -dialog
+msgid "home_va_set_backgr_wallpaper3"
+msgstr "Wallpaper 3"
+
+# Value in Set background image –dialog
+msgid "home_va_set_backgr_wallpaper4"
+msgstr "Wallpaper 4"
+
+# Field label (with Caption control) in Set background image –dialog
+msgid "home_fi_set_backgr_mode"
+msgstr "Mode"
+
+# Value in Set background image –dialog
+msgid "home_va_set_backgr_centered"
+msgstr "Centered"
+
+# Value in Set background image –dialog
+msgid "home_va_set_backgr_scaled"
+msgstr "Scaled"
+
+# Value in Set background image –dialog
+msgid "home_va_set_backgr_stretched"
+msgstr "Stretched"
+
+# Value in Set background image –dialog
+msgid "home_va_set_backgr_tiled"
+msgstr "Tiled"
+
+# Button in Set background image –dialog
+msgid "home_bd_set_backgr_ok"
+msgstr "OK"
+
+# Button in Set background image –dialog
+msgid "home_bd_set_backgr_preview"
+msgstr "Preview"
+
+# Button in Set background image –dialog
+msgid "home_bd_set_backgr_image"
+msgstr "Image"
+
+# Button in Set background image –dialog
+msgid "home_bd_set_backgr_cancel"
+msgstr "Cancel"
+
+# Title of Select image -dialog
+msgid "home_ti_select_image"
+msgstr "Select image"
+
+# OK-button in Select image –dialog
+msgid "home_bd_select_image"
+msgstr "Select"
+
+# List item in Select image –dialog if the folder is empty
+msgid "home_li_no_images"
+msgstr "(no images)"
+
+# Progress banner (with animation) shown to user when the view is changed to layout mode. The banner will be shown for at least 2.5 seconds or if the operation takes longer, then as long as the operation takes. 
+msgid "home_ib_layout_mode"
+msgstr "Opening layout mode"
+
+# Information note shown to user when some of the applets are overlapping and accepting layout is not possible
+msgid "home_ni_overlapping_applets"
+msgstr "Some of the applets are overlapping. Try closing or moving them."
+
+# Confirmation note shown to user when s/he has tapped cancel in layout mode
+msgid "home_nc_cancel_layout"
+msgstr "Do you want to cancel the layout you have created?"
+
+# Yes-button in Cancel-layout note
+msgid "home_bd_cancel_layout_yes"
+msgstr "Yes"
+
+# No-button in Cancel-layout note
+msgid "home_bd_cancel_layout_no"
+msgstr "No"
+
+# Cancel note shown to the user when the background image is loaded
+msgid "home_nw_loading_image"
+msgstr "Loading image"
+
+# Information banner shown to the user when the user tries to select a menu item that is dimmed
+msgid "home_ib_not_available"
+msgstr "Not available"
