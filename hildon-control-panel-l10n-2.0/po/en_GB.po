@@ -1,0 +1,164 @@
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the hildon-control-panel package
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: hildon-control-panel 6.0\n"
+"Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
+"POT-Creation-Date: 2006.05.15 16:35+0300\n"
+"PO-Revision-Date: 2006.05.15 16:35+0300\n"
+"Last-Translator:\n"
+"Language-Team: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n!=1;\n"
+
+# Application name of Control panel
+msgid "copa_ap_cp_name"
+msgstr "Control panel"
+
+# Main title of application menu: Open 
+msgid "copa_me_open"
+msgstr "Open"
+
+# Main title of application menu: View
+msgid "copa_me_view"
+msgstr "View"
+
+# Main title of application menu: Tools
+msgid "copa_me_tools"
+msgstr "Tools"
+
+# Main title of application menu: Close
+msgid "copa_me_close"
+msgstr "Close"
+
+# Title of application menu item (view sub-category): Small icon size
+msgid "copa_me_view_small"
+msgstr "Small icons"
+
+# Title of application menu item (view sub-category): Large icon size
+msgid "copa_me_view_large"
+msgstr "Large icons"
+
+# Title of application menu item (tools sub-category): Setup wizard
+msgid "copa_me_tools_setup_wizard"
+msgstr "Mobile operator setup wizard…"
+
+# Title of application menu item: Restore factory settings
+msgid "copa_me_tools_rfs"
+msgstr "Restore original settings…"
+
+# Title of application menu item: Clear user data
+msgid "copa_me_tools_cud"
+msgstr "Clear user data…"
+
+# Title of application menu item: Help
+msgid "copa_me_tools_help"
+msgstr "Help"
+
+# Accounts
+msgid "accounts_ap_accounts"
+msgstr "Accounts"
+
+# Backup/restore
+msgid "back_ti_dia001_title"
+msgstr "Backup/Restore"
+
+# Certificate manager
+msgid "cema_ap_application_title"
+msgstr "Certificate manager"
+
+# Connectivity settings
+msgid "conn_set_ti_conn_set"
+msgstr "Connectivity"
+
+# Date & time
+msgid "dati_ap_application_title"
+msgstr "Date and time"
+
+# Device
+msgid "devi_ap_application_title"
+msgstr "Device"
+
+# Display
+msgid "disp_ti_display"
+msgstr "Display"
+
+# Language and Regional settings
+msgid "capl_ti_language_and_regional_title"
+msgstr "Language & region"
+
+# Memory
+msgid "memo_ti_memory"
+msgstr "Memory"
+
+# Personalisation
+msgid "pers_ti_personalization"
+msgstr "Personalisation"
+
+# Screen calibration
+msgid "ctrp_ti_screen_calibration"
+msgstr "Screen calibration"
+
+# Device lock
+msgid "secu_security_dialog_title"
+msgstr "Device lock"
+
+# Sounds
+msgid "snds_ti_sound_settings"
+msgstr "Sounds"
+
+# Text input settings 
+msgid "tein_ti_text_input_title"
+msgstr "Text input settings"
+
+# Phone
+msgid "conn_ti_my_devices"
+msgstr "Phone"
+
+# Presence
+msgid "pres_ap_feature_name"
+msgstr "Presence"
+
+# Task navigator
+msgid "tncpa_ap_task_navigator"
+msgstr "Task navigator"
+
+# Title in the Restore original settings -dialog
+msgid "rfs_ti_restore"
+msgstr "Restore original settings"
+
+# Informative text in the Restore original settings -dialog
+msgid "refs_ia_text"
+msgstr ""
+"Original settings will be restored. User-created content will not be "
+"affected.\n"
+"All applications will be closed and the device will restart."
+
+# OK-button
+msgid "rfs_bd_ok"
+msgstr "OK"
+
+# Cancel-button
+msgid "rfs_bd_cancel"
+msgstr "Cancel"
+
+# Title in the Clear user data -dialog
+msgid "cud_ti_clear"
+msgstr "Clear user data"
+
+# Informative text in the Clear user data -dialog
+msgid "cud_ia_text"
+msgstr ""
+"All settings and user-created content will be deleted.\n"
+"All applications will be closed and the device will restart. "
+
+# OK-button
+msgid "cud_bd_ok"
+msgstr "OK"
+
+# Cancel-button
+msgid "cud_bd_cancel"
+msgstr "Cancel"

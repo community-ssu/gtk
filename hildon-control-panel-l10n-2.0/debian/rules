@@ -1,0 +1,60 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# GNU copyright 1997 to 1999 by Joey Hess.
+# Copyright 2004-2006 Nokia
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+TEXT_DOMAIN=$(shell sed -n 's/^Source: \(.*\)-l10n$$/\1/; t e; b; :e; p; q' debian/control)
+LANGS=$(shell echo po/*.po|sed -e 's,po/,,g' -e 's/.po//g')
+
+#FMTPARAMS=--verbose -c
+FMTPARAMS=--statistics
+
+build: build-stamp
+	sh -c 'a=0; for lang in $(LANGS); do msgfmt -o /dev/null -c po/$$lang.po || a=1; done; if [ $$a = 1 ]; then exit 1; fi'
+	msgfmt -o /dev/null -c po/$(TEXT_DOMAIN).pot
+
+build-stamp:
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp 
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_clean -k
+
+	@for lang in $(LANGS) ; do \
+		targetdir="$(CURDIR)/debian/$(TEXT_DOMAIN)-l10n-`echo $$lang|tr [A-Z] [a-z]|tr -d _`/usr/share/locale/$$lang/LC_MESSAGES" ;\
+		[ -d "$$targetdir" ] || mkdir -p $$targetdir ; \
+		echo -n "$$lang.po: "; \
+		msgfmt -v $(FMTPARAMS) po/$$lang.po -o $$targetdir/$(TEXT_DOMAIN).mo || exit 1; \
+	done
+
+	@targetdir="$(CURDIR)/debian/$(TEXT_DOMAIN)-l10n-english/usr/share/locale/en_GB/LC_MESSAGES" ;\
+		[ -d "$$targetdir" ] || mkdir -p $$targetdir ; \
+		echo -n "$(TEXT_DOMAIN).pot: "; \
+		msgfmt -v -a $(FMTPARAMS) po/$(TEXT_DOMAIN).pot -o $$targetdir/$(TEXT_DOMAIN).mo ;
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep
+.PHONY: clean binary-indep binary install 
