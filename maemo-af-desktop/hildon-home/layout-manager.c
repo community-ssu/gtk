@@ -1001,7 +1001,7 @@ static void add_new_applets(GtkWidget *widget, gpointer data)
     node->removed = FALSE;
     node->added = TRUE;
     node->queued = TRUE;
-    node->applet_identifier = new_applet_identifier;
+    node->applet_identifier = g_strdup(new_applet_identifier);
     node->height = general_data.max_height;    
     general_data.max_height++;
     

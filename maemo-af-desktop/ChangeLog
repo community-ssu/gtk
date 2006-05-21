@@ -1,5 +1,10 @@
 2006-05-21  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/layout-mode.c: Fixed a potential crash
+	  when the applet identifier is freed twice
+
+2006-05-21  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.c: Removed set_width
 	  on the comboboxes in the "Select Background Image" dialog
 	  (Closes N#30192)
