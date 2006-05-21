@@ -92,7 +92,7 @@ gboolean config_lowmem_pavlov_dialog;
 gboolean tn_is_sensitive=TRUE;
 
 /* Callbacks */
-static void initialize_navigator_menus(Navigator *tasknav);
+/* static void initialize_navigator_menus(Navigator *tasknav); */
 
 static const char *load_symbols(Navigator *tasknav, void *dlhandle, 
                                   gint symbol_id);
@@ -133,8 +133,8 @@ static void initialize_plugin_menus(Navigator *tasknav);
 #define NAVIGATOR_WATCH_SUFFIX          ".watch"
 
 
-Navigator *task_nav;
-gchar *home_dir;
+static Navigator *task_nav;
+static gchar *home_dir;
 
 static gboolean getenv_yesno(const char *env, gboolean def)
 {
@@ -861,7 +861,6 @@ static void create_navigator(Navigator *tasknav)
 
     /* Initialize navigator menus, then display GUI */
     
-    initialize_navigator_menus(tasknav);
     gtk_widget_show_all(tasknav->main_window);
     application_switcher_add_menubutton(tasknav->app_switcher);
     
@@ -1044,7 +1043,7 @@ static void initialize_plugin_menus(Navigator *tasknav)
 }
 
 /* Function to initialize navigator menus */
-static void initialize_navigator_menus(Navigator *tasknav)
+void initialize_navigator_menus(Navigator *tasknav)
 {
 
     g_assert (tasknav != NULL);

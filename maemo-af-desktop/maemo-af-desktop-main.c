@@ -244,6 +244,12 @@ gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
     return (TRUE);		/* keep the event source */
 }
 
+static gboolean initialize_navigator_menus_wrapper(gpointer data);
+
+static gboolean initialize_navigator_menus_wrapper(gpointer data) {
+    initialize_navigator_menus((Navigator *)data);
+    return FALSE;
+}
 
 int maemo_af_desktop_main(int argc, char* argv[])
 {
@@ -345,6 +351,10 @@ int maemo_af_desktop_main(int argc, char* argv[])
 
     /* register the reading end with the event loop */
     g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, NULL);
+
+    /* set idle function to initialize navigator menus */
+    g_idle_add(&initialize_navigator_menus_wrapper, &tasknav);
+
     gtk_main();
     home_deinitialize(keysnooper_id);
     status_bar_deinitialize(osso,&panel);

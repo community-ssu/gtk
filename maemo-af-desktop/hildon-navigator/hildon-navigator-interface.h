@@ -36,6 +36,7 @@
 #include "hildon-navigator-main.h"
 
 int task_navigator_main(Navigator *tasknav);
+void initialize_navigator_menus(Navigator *tasknav);
 
 int task_navigator_deinitialize(Navigator *tasknav);
 

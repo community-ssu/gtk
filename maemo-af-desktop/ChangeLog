@@ -1,3 +1,9 @@
+2006-05-21  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hildon-navigator-main.c, maemo-af-desktop-main.c:
+	  call initialize_navigator_menus in an idle loop to make
+	  startup time faster (Partially Closes N#29260)
+
 2006-05-19  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/layout-manager.c: Reverted fix to N#30022 (which introduces
