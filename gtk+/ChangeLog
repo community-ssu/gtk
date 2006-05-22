@@ -1,3 +1,10 @@
+2006-05-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtktreeview.c (gtk_tree_view_motion_bin_window): Avoid empty
+	selection in single selection mode. Do not unselect all, as selecting
+	another row will unselect the old one anyway. 'Reverse drag' also
+	makes no sense when the (single-)selection follows stylus.
+
 2006-05-21  Kristian Rietveld  <kris@imendio.com>
 
 	Add support for creating discontinuous selections with the

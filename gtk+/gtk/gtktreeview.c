@@ -3902,7 +3902,8 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
       gint direction;
 
       /* Clear the current selection, if it contains a single item */
-      if (!tree_view->priv->pen_drag_direction
+      if (gtk_tree_selection_get_mode (tree_view->priv->selection) == GTK_SELECTION_MULTIPLE
+	  && !tree_view->priv->pen_drag_direction
 	  && gtk_tree_selection_count_selected_rows (tree_view->priv->selection) == 1)
 	gtk_tree_selection_unselect_all (tree_view->priv->selection);
 
@@ -3931,7 +3932,8 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
 	      tree_view->priv->queued_select_row = NULL;
 	    }
 
-	  if (!tree_view->priv->pen_drag_direction)
+	  if (!tree_view->priv->pen_drag_direction ||
+	      gtk_tree_selection_get_mode (tree_view->priv->selection) != GTK_SELECTION_MULTIPLE)
 	    {
 	      tree_view->priv->pen_drag_direction = direction;
 	      tree_view->priv->pen_drag_reverse = FALSE;
