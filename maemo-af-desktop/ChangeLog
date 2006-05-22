@@ -1,7 +1,15 @@
 2006-05-21  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Glib CRITICAL errors when Application killer dialog goes
+	away" (Closes N#25832)
+	* hildon-navigator/hn-wm-watched-window.c: When a window is destroyed,
+	  check if it doesn't have a ping failed note attached to it. If so
+	  destroy it.
+
+2006-05-21  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/layout-mode.c: Fixed a potential crash
-	  when the applet identifier is freed twice
+	  when the applet identifier is freed twice (Closes N#30263)
 
 2006-05-21  Johan Bilien <johan.bilien@nokia.com>
 

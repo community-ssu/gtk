@@ -874,7 +874,15 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
     {
 	  hn_wm_watchable_app_set_active_window(win->app_parent, NULL);
     }
-  
+
+  /* If ping timeout note is displayed.. */
+  GtkWidget *note = hn_wm_watchable_app_get_ping_timeout_note( win->app_parent );
+
+  if ( note ) {
+	  /* .. destroy it */
+	  gtk_widget_destroy( note );
+  }
+
   g_free(win);
 }
 
@@ -993,7 +1001,9 @@ hn_wm_ping_timeout (HNWMWatchedWindow *win)
 
   return_value = gtk_dialog_run (GTK_DIALOG(note));
 
-  gtk_widget_destroy (GTK_WIDGET(note));
+  if ( note && GTK_IS_WIDGET( note ) ) {
+  	gtk_widget_destroy (GTK_WIDGET(note));
+  }
 	
 
   if ( return_value == GTK_RESPONSE_OK ) 
@@ -1023,8 +1033,10 @@ hn_wm_ping_timeout_cancel (HNWMWatchedWindow *win)
   gchar *response_message 
     = g_strdup_printf (PING_TIMEOUT_RESPONSE_STRING, 
                        win->name );
-  
-  gtk_widget_destroy( note );
+ 
+  if ( note && GTK_IS_WIDGET( note ) ) {
+  	gtk_widget_destroy( note );
+  }
   
   /* Show the infoprint */
   hildon_banner_show_information (NULL, NULL, response_message );
