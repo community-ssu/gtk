@@ -1,8 +1,9 @@
 osso-application-installer (4.19) unstable; urgency=low
 
-  * Fixed bugs ...
-
- -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 16 May 2006 21:19:51 +0300
+   * Fixed bugs N29642, N29195, N29232, N27902, N27905, N28068, N28184,
+     N29384, N29531, N27762, N28620, N29522, N30282, N29382.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 22 May 2006 21:28:47 +0300
 
 osso-application-installer (4.18.1) unstable; urgency=low
 
