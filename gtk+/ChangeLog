@@ -1,3 +1,20 @@
+2006-05-21  Kristian Rietveld  <kris@imendio.com>
+
+	Add support for creating discontinuous selections with the
+	stylus.
+
+	* gtk/gtktreeprivate.h: add pen_drag_direction and
+	pen_drag_old_selection fields to GtkTreeviewPrivate.
+
+	* gtk/gtktreeview.c (gtk_tree_view_init), (gtk_tree_view_destroy),
+	(gtk_tree_view_button_release), (gtk_tree_view_set_model),
+	(gtk_tree_view_grab_notify): also free/clear the newly added
+	fields of GtkTreeViewPrivate,
+	(pen_drag_convert_path_to_row_ref), (pen_drag_was_in_old_selection):
+	new helper functions,
+	(gtk_tree_view_button_press), (gtk_tree_view_motion_bin_window):
+	rework to support discontinuous selections.
+
 2006-05-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	Silence compiler warnings

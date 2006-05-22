@@ -1273,6 +1273,8 @@ gtk_tree_view_init (GtkTreeView *tree_view)
   tree_view->priv->pen_down = FALSE;
   tree_view->priv->pen_drag_active = FALSE;
   tree_view->priv->pen_drag_reverse = FALSE;
+  tree_view->priv->pen_drag_old_selection = NULL;
+  tree_view->priv->pen_drag_direction = 0;
   tree_view->priv->first_drag_row = NULL;
   tree_view->priv->last_drag_row = NULL;
   tree_view->priv->queued_expand_row = NULL;
@@ -1549,6 +1551,13 @@ gtk_tree_view_destroy (GtkObject *object)
     {
       gtk_tree_row_reference_free (tree_view->priv->last_drag_row);
       tree_view->priv->last_drag_row = NULL;
+    }
+  if (tree_view->priv->pen_drag_old_selection)
+    {
+      g_list_foreach (tree_view->priv->pen_drag_old_selection,
+		      (GFunc)gtk_tree_row_reference_free, NULL);
+      g_list_free (tree_view->priv->pen_drag_old_selection);
+      tree_view->priv->pen_drag_old_selection = NULL;
     }
   if (tree_view->priv->queued_expand_row)
     {
@@ -2484,9 +2493,18 @@ gtk_tree_view_button_press (GtkWidget      *widget,
           gtk_tree_row_reference_free (tree_view->priv->last_drag_row);
           tree_view->priv->last_drag_row = NULL;
         }
+      if (tree_view->priv->pen_drag_old_selection)
+        {
+	  g_list_foreach (tree_view->priv->pen_drag_old_selection,
+			  (GFunc)gtk_tree_row_reference_free, NULL);
+	  g_list_free (tree_view->priv->pen_drag_old_selection);
+	  tree_view->priv->pen_drag_old_selection = NULL;
+	}
+
       tree_view->priv->first_drag_row =
         gtk_tree_row_reference_new (tree_view->priv->model, path);
       tree_view->priv->last_drag_row = gtk_tree_row_reference_copy (tree_view->priv->first_drag_row);
+      tree_view->priv->pen_drag_direction = 0;
 
       /* force_list_kludge allows pen dragging even if
          GTK_TREE_MODEL_LIST_ONLY is not set (to fix file tree) */
@@ -2736,13 +2754,15 @@ gtk_tree_view_button_press (GtkWidget      *widget,
                 }
 
               if (queue_row &&
-                  (gtk_tree_selection_get_mode (tree_view->priv->selection) == GTK_SELECTION_MULTIPLE) &&
-                   gtk_tree_selection_path_is_selected (tree_view->priv->selection, path))
+                  gtk_tree_selection_get_mode (tree_view->priv->selection) == GTK_SELECTION_MULTIPLE)
                 {
                   GtkTreePath *old_cursor_path = NULL;
 
-                  /* we don't know if the user is selecting an item or performing
-                     multiple item drag and drop until we know where button is released */
+                  /* we don't know if the user is selecting an item, performing
+                     multiple item drag and drop or attempting to make a
+		     discontinuous selection until we know where button is
+		     released */
+
                   if (tree_view->priv->queued_select_row)
                     gtk_tree_row_reference_free (tree_view->priv->queued_select_row);
                   tree_view->priv->queued_select_row =
@@ -3036,10 +3056,18 @@ gtk_tree_view_button_release (GtkWidget      *widget,
     gtk_tree_row_reference_free (tree_view->priv->first_drag_row);
   if (tree_view->priv->last_drag_row)
     gtk_tree_row_reference_free (tree_view->priv->last_drag_row);
+  if (tree_view->priv->pen_drag_old_selection)
+    {
+      g_list_foreach (tree_view->priv->pen_drag_old_selection,
+		      (GFunc)gtk_tree_row_reference_free, NULL);
+      g_list_free (tree_view->priv->pen_drag_old_selection);
+    }
   tree_view->priv->first_drag_row = NULL;
   tree_view->priv->last_drag_row = NULL;
+  tree_view->priv->pen_drag_old_selection = NULL;
   tree_view->priv->pen_down = FALSE;
   tree_view->priv->pen_drag_active = FALSE;
+  tree_view->priv->pen_drag_direction = 0;
   remove_scroll_timeout (tree_view);
 
   if (GTK_TREE_VIEW_FLAG_SET (tree_view, GTK_TREE_VIEW_IN_COLUMN_DRAG))
@@ -3801,6 +3829,46 @@ gtk_tree_view_motion_drag_column (GtkWidget      *widget,
   return TRUE;
 }
 
+static void
+pen_drag_convert_path_to_row_ref (gpointer data,
+				  gpointer user_data)
+{
+  GList *link;
+  GtkTreePath *path = data;
+  GtkTreeView *tree_view = user_data;
+  GtkTreeRowReference *row_ref;
+
+  link = g_list_find (tree_view->priv->pen_drag_old_selection, data);
+
+  row_ref = gtk_tree_row_reference_new (tree_view->priv->model, path);
+  gtk_tree_path_free (link->data);
+  link->data = row_ref;
+}
+
+static gboolean
+pen_drag_was_in_old_selection (gpointer data,
+			       gpointer user_data)
+{
+  GList *list;
+  GtkTreeView *tree_view = GTK_TREE_VIEW (data);
+  GtkTreePath *path = user_data;
+
+  for (list = tree_view->priv->pen_drag_old_selection; list; list = list->next)
+    {
+      gint cmp;
+      GtkTreePath *tmppath;
+
+      tmppath = gtk_tree_row_reference_get_path (list->data);
+      cmp = gtk_tree_path_compare (path, tmppath);
+      gtk_tree_path_free (tmppath);
+
+      if (!cmp)
+	return TRUE;
+    }
+
+  return FALSE;
+}
+
 static gboolean
 gtk_tree_view_motion_bin_window (GtkWidget      *widget,
 				 GdkEventMotion *event)
@@ -3829,10 +3897,14 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
 
   /* Hildon: pen dragging */
   if (tree_view->priv->pen_down && node != NULL &&
-      tree_view->priv->queued_select_row == NULL &&
       gtk_tree_row_reference_valid (tree_view->priv->last_drag_row))
     {
       gint direction;
+
+      /* Clear the current selection, if it contains a single item */
+      if (!tree_view->priv->pen_drag_direction
+	  && gtk_tree_selection_count_selected_rows (tree_view->priv->selection) == 1)
+	gtk_tree_selection_unselect_all (tree_view->priv->selection);
 
       last_drag_path = gtk_tree_row_reference_get_path (tree_view->priv->last_drag_row);
       path = _gtk_tree_view_find_path (tree_view, tree, node);
@@ -3840,6 +3912,57 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
 
       if (direction != 0)
         {
+	  if (tree_view->priv->queued_select_row)
+	    {
+	      GtkTreePath *tmppath;
+
+	      /* We started a discontinous drag, save the current selection */
+	      tree_view->priv->pen_drag_old_selection =
+		gtk_tree_selection_get_selected_rows (tree_view->priv->selection, NULL);
+	      if (tree_view->priv->pen_drag_old_selection)
+		g_list_foreach (tree_view->priv->pen_drag_old_selection,
+				pen_drag_convert_path_to_row_ref, tree_view);
+
+	      /* And select the row where the drag was initiated */
+	      tmppath = gtk_tree_row_reference_get_path (tree_view->priv->queued_select_row);
+	      gtk_tree_selection_select_path (tree_view->priv->selection, tmppath);
+	      gtk_tree_path_free (tmppath);
+	      gtk_tree_row_reference_free (tree_view->priv->queued_select_row);
+	      tree_view->priv->queued_select_row = NULL;
+	    }
+
+	  if (!tree_view->priv->pen_drag_direction)
+	    {
+	      tree_view->priv->pen_drag_direction = direction;
+	      tree_view->priv->pen_drag_reverse = FALSE;
+	    }
+	  else
+	    {
+	      gint tmp_direction;
+	      GtkTreePath *first_drag_path;
+
+	      first_drag_path = gtk_tree_row_reference_get_path (tree_view->priv->first_drag_row);
+	      tmp_direction = gtk_tree_path_compare (first_drag_path, path);
+	      gtk_tree_path_free (first_drag_path);
+
+	      if (tmp_direction > 0)
+	        {
+		  if (direction > 0)
+		    tree_view->priv->pen_drag_reverse = TRUE;
+		  else
+		    tree_view->priv->pen_drag_reverse = FALSE;
+	        }
+	      else if (tmp_direction < 0)
+	        {
+		  if (direction > 0)
+		    tree_view->priv->pen_drag_reverse = FALSE;
+		  else
+		    tree_view->priv->pen_drag_reverse = TRUE;
+		}
+	      else
+		tree_view->priv->pen_drag_reverse = TRUE;
+	    }
+
           current_path = gtk_tree_path_copy (last_drag_path);
 
           /* we must ensure that no row is skipped because stylus
@@ -3857,7 +3980,7 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
               }
             else if (!gtk_tree_path_prev (current_path))
               break;
-      
+
             /* set cursor, and start scrolling */
             gtk_tree_view_real_set_cursor (tree_view, current_path, FALSE, FALSE);
             add_scroll_timeout (tree_view);
@@ -3874,8 +3997,7 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
               }
             else
               {
-                if (gtk_tree_selection_path_is_selected (tree_view->priv->selection,
-                                                         current_path))
+		if (tree_view->priv->pen_drag_reverse)
                   {
                     /* apparently we have reversed the pen drag direction */
                     GtkTreePath *reverse_path;
@@ -3884,29 +4006,31 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
                     reverse_direction = gtk_tree_path_compare (current_path,
                                                                last_drag_path);
                     reverse_path = gtk_tree_path_copy (last_drag_path);
-                    do {
-                      gtk_tree_selection_unselect_path (tree_view->priv->selection,
-                                                        reverse_path);
-                      tree_view->priv->pen_drag_reverse = TRUE;
-                      if (reverse_direction > 0)
-                        {
-                          GtkTreeIter iter;
-                          gtk_tree_model_get_iter (tree_view->priv->model, &iter, reverse_path);
-                          if (!gtk_tree_model_iter_next (tree_view->priv->model, &iter))
-                            break;
+                    do
+		      {
+			if (!pen_drag_was_in_old_selection (tree_view, reverse_path))
+			  gtk_tree_selection_unselect_path (tree_view->priv->selection,
+							    reverse_path);
 
-                          gtk_tree_path_next (reverse_path);
-                        }
-                      else if (!gtk_tree_path_prev (reverse_path))
-                        break;
-                    } while (gtk_tree_path_compare (reverse_path, current_path) != 0);
+			if (reverse_direction > 0)
+			  {
+			    GtkTreeIter iter;
+			    gtk_tree_model_get_iter (tree_view->priv->model, &iter, reverse_path);
+			    if (!gtk_tree_model_iter_next (tree_view->priv->model, &iter))
+			      break;
+
+			    gtk_tree_path_next (reverse_path);
+			  }
+			else if (!gtk_tree_path_prev (reverse_path))
+			  break;
+		      }
+		    while (gtk_tree_path_compare (reverse_path, current_path) != 0);
                     gtk_tree_path_free (reverse_path);
                   }
                 else
                   {
                     gtk_tree_selection_select_path (tree_view->priv->selection,
                                                     current_path);
-                    tree_view->priv->pen_drag_reverse = FALSE;
                   }
               }
           } while (gtk_tree_path_compare(current_path, path) != 0);
@@ -10502,6 +10626,14 @@ gtk_tree_view_set_model (GtkTreeView  *tree_view,
       if (tree_view->priv->tree)
 	gtk_tree_view_free_rbtree (tree_view);
 
+      if (tree_view->priv->pen_drag_old_selection)
+        {
+	  g_list_foreach (tree_view->priv->pen_drag_old_selection,
+			  (GFunc)gtk_tree_row_reference_free, NULL);
+	  g_list_free (tree_view->priv->pen_drag_old_selection);
+	  tree_view->priv->pen_drag_old_selection = NULL;
+	}
+
       gtk_tree_row_reference_free (tree_view->priv->drag_dest_row);
       tree_view->priv->drag_dest_row = NULL;
       gtk_tree_row_reference_free (tree_view->priv->cursor);
@@ -14370,8 +14502,15 @@ gtk_tree_view_grab_notify (GtkWidget *widget,
         gtk_tree_row_reference_free (tree_view->priv->first_drag_row);
       if (tree_view->priv->last_drag_row)
         gtk_tree_row_reference_free (tree_view->priv->last_drag_row);
+      if (tree_view->priv->pen_drag_old_selection)
+        {
+	  g_list_foreach (tree_view->priv->pen_drag_old_selection,
+			  (GFunc)gtk_tree_row_reference_free, NULL);
+	  g_list_free (tree_view->priv->pen_drag_old_selection);
+	}
       tree_view->priv->first_drag_row = NULL;
       tree_view->priv->last_drag_row = NULL;
+      tree_view->priv->pen_drag_old_selection = NULL;
       tree_view->priv->pen_down = FALSE;
       tree_view->priv->pen_drag_active = FALSE;
       remove_scroll_timeout (tree_view);
