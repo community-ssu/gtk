@@ -1,7 +1,76 @@
+2006-05-22  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (annoy_user_with_gnome_vfs_result): Show info
+	banners for "name too long" and "not allowed" instead of info
+	notes. (N30282)
+
+	* src/main.cc (maybe_refresh_package_cache): Never ask more than
+	once per session.
+	(refresh_package_cache_reply): Set last_update only on success.
+	(refresh_package_cache_cont): Don't set it here. (N29384)
+	(make_main_view): Prevent device name from growing the table
+	column. (N29382)
+
+	* src/util.cc (annoy_user_with_details_response): Do not close
+	dialog when displaying details. (N29531)
+	(device_name): Default to "Nokia 770", not "???".
+	
+2006-05-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (escape_key_press_event): Renamed from
+	escape_key_release_event.  Don't check event type.
+	(respond_on_escape): Connect to "key_press_event". (N29522)
+
+	* src/main.cc (key_event): Toggle fullscreen on key press, not key
+	release. (N28068)
+	
+	* 00-smallcache: New.
+	* Makefile.am (aptconfdir, aptconf_DATA): Install it. (N29642)
+	(EXTRA_DIST): Distribute it.
+
+	* src/apt-worker-client.h, src/apt-worker-client.cc
+	(apt_worker_install_package): New "updating" paramater, for
+	getting the progess title right.  Changed all callers.
+	(apt_worker_install_package_cont): Set appropriate title for the
+	progress bar that is shown after the "Downloading" one.
+	(apt_worker_update_cache_cont): Show progress indicator here, not
+	before calling ensure_network.
+		
+	* src/util.h, src/util.cc (set_general_progress_title): New.
+	(progress_cancel_button): Removed.
+	(create_progress): New, for creating a fresh progress dialog each
+	time the operation changes.
+	(show_progress): Use it.
+	(hide_progress): Destroy progress dialog, don't just hide it.
+	(set_progress): Create a new dialog, if current operation changes,
+	but not when the new operation is "Refreshing" and we are not
+	currently showing any progress dialog.
+	(ensure_network): Show "Connectin" progress when we are going to
+	wait for the callback.
+	(ensure_network_cont): Hide it.
+
+	* src/main.cc (refresh_package_cache_cont): Don't show progress,
+	apt_worker_update_cache does it now.
+	(install_package_cont3): Likewise for apt_worker_install_package.
+	(install_packahe_cont2, install_package_with_net,
+	install_package): Request network after the confirmation dialog,
+	not before it. (N27762)
+
+2006-05-17  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/repo.cc (sources_list_reply): Use correct logical id for
+	"Unable to delete cataloque".  Didn't I test this?
+	Embarassing. (N28620)
+
 2006-05-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/search.cc (set_search_area_default): New.
+	(show_search_dialog): Use it as a kluge for getting the dialog
+	size right. (N28184)
+
 	* src/util.cc (make_global_package_list): Use proper logical id
-	and not hardcoded strings for the column title. (N29195)
+	and not hardcoded strings for the column title. (N29195, N29232,
+	N29235, N29236, N29237)
 
 	* src/main.cc (main): Only put first separator into
 	tooolbar. (N27902)
