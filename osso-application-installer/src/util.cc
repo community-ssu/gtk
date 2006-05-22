@@ -1849,7 +1849,7 @@ device_name ()
 
   GError *error = NULL;
   char *output = NULL;
-  btname_result = "???";
+  btname_result = "Nokia 770";
 
   char *params[] = { "/usr/bin/btname", "-g", NULL };
 
