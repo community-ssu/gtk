@@ -346,11 +346,11 @@ annoy_user_with_gnome_vfs_result (GnomeVFSResult result, const gchar *detail)
   add_log ("%s: %s\n", detail, gnome_vfs_result_to_string (result));
 
   if (result == GNOME_VFS_ERROR_NAME_TOO_LONG)
-    annoy_user (dgettext ("hildon-common-strings",
-			  "file_ib_name_too_long"));
+    irritate_user (dgettext ("hildon-common-strings",
+			     "file_ib_name_too_long"));
   else if (result == GNOME_VFS_ERROR_ACCESS_DENIED
 	   || result == GNOME_VFS_ERROR_NOT_PERMITTED)
-    annoy_user (dgettext ("hildon-fm",
+    irritate_user (dgettext ("hildon-fm",
 			  "sfil_ib_saving_not_allowed"));
   else if (result == GNOME_VFS_ERROR_NOT_FOUND)
     annoy_user (dgettext ("hildon-common-strings",
