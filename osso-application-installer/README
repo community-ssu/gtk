@@ -205,6 +205,5 @@ BUGS
 - "Cataloque needs to be enabled".
 - "Catalogue already present".
 
-- figure out the 'max cache size' thingy in pkgcachegen.cc.  12 Megs?
 - use doubles for sizes, maybe
 - "No catalogue in use."
