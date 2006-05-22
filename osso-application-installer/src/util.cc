@@ -231,16 +231,18 @@ annoy_user_with_details_response (GtkDialog *dialog, gint response,
 				  gpointer data)
 {
   auwd_closure *c = (auwd_closure *)data;
-  package_info *pi = c->pi;
-  bool installed = c->installed;
-  delete c;
-
-  gtk_widget_destroy (GTK_WIDGET (dialog));
-  currently_annoying_user = false;
 
   if (response == 1)
-    show_package_details (pi, installed, true);
-  pi->unref ();
+    {
+      show_package_details (c->pi, c->installed, true);
+    }
+  else
+    {
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+      currently_annoying_user = false;
+      c->pi->unref ();
+      delete c;
+    }
 }
 
 void
@@ -1869,15 +1871,14 @@ device_name ()
 }
 
 static gboolean
-escape_key_release_event (GtkWidget *widget,
+escape_key_press_event (GtkWidget *widget,
 			  GdkEventKey *event,
 			  gpointer data)
 {
   GtkDialog *dialog = GTK_DIALOG (widget);
   int response = (int)data;
 
-  if (event->type == GDK_KEY_RELEASE &&
-      event->keyval == HILDON_HARDKEY_ESC)
+  if (event->keyval == HILDON_HARDKEY_ESC)
     {
       gtk_dialog_response (dialog, response);
       return TRUE;
@@ -1889,8 +1890,8 @@ escape_key_release_event (GtkWidget *widget,
 void
 respond_on_escape (GtkDialog *dialog, int response)
 {
-  g_signal_connect (dialog, "key_release_event",
-		    G_CALLBACK (escape_key_release_event),
+  g_signal_connect (dialog, "key_press_event",
+		    G_CALLBACK (escape_key_press_event),
 		    (gpointer)response);
 }
 
