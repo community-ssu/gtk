@@ -1,3 +1,9 @@
+osso-application-installer (4.19) unstable; urgency=low
+
+  * Fixed bugs ...
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 16 May 2006 21:19:51 +0300
+
 osso-application-installer (4.18.1) unstable; urgency=low
 
   * Released 4.18 again with sources.list commited to svn.
