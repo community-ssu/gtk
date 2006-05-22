@@ -960,6 +960,12 @@ refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *data)
 
   c->res = success;
 
+  if (success)
+    {
+      last_update = time (NULL);
+      save_settings ();
+    }
+
   // We get a new list of available packages even when the refresh
   // failed because it might have partially succeeded and changed
   // anyway.  So we need to resynchronize.
@@ -989,8 +995,6 @@ refresh_package_cache_with_cont (void (*cont) (bool res, void *data),
 				 void *data)
 {
   refreshed_this_session = true;
-  last_update = time (NULL);
-  save_settings ();
 
   rpc_clos *c = new rpc_clos;
   c->cont = cont;
@@ -1020,11 +1024,12 @@ days_elapsed_since (time_t past)
 void
 maybe_refresh_package_cache ()
 {
-  if (update_interval_index == UPDATE_INTERVAL_NEVER)
+  /* Never ask more than once per session.
+   */
+  if (refreshed_this_session)
     return;
 
-  if (update_interval_index == UPDATE_INTERVAL_SESSION
-      && refreshed_this_session)
+  if (update_interval_index == UPDATE_INTERVAL_NEVER)
     return;
 
   if (update_interval_index == UPDATE_INTERVAL_WEEK
@@ -2448,21 +2453,32 @@ key_event (GtkWidget *widget,
 	   GdkEventKey *event,
 	   gpointer data)
 {
-  if (event->type == GDK_KEY_RELEASE &&
-      event->keyval == HILDON_HARDKEY_FULLSCREEN)
+  static bool fullscreen_key_repeating = false;
+
+  if (event->type == GDK_KEY_PRESS &&
+      event->keyval == HILDON_HARDKEY_FULLSCREEN &&
+      !fullscreen_key_repeating)
     {
       toggle_fullscreen ();
+      fullscreen_key_repeating = true;
       return TRUE;
     }
 
   if (event->type == GDK_KEY_RELEASE &&
+      event->keyval == HILDON_HARDKEY_FULLSCREEN)
+    {
+      fullscreen_key_repeating = false;
+      return TRUE;
+    }
+      
+  if (event->type == GDK_KEY_PRESS &&
       event->keyval == HILDON_HARDKEY_ESC)
     {
       if (cur_view_struct->parent)
 	show_view (cur_view_struct->parent);
 
       /* We must return FALSE here since the long-press handling code
-	 in HildonWindow needs to see the key release as well to stop
+	 in HildonWindow needs to see the key press as well to start
 	 the timer.
       */
       return FALSE;
