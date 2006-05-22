@@ -240,6 +240,8 @@ struct _GtkTreeViewPrivate
   guint pen_down : 1;
   guint pen_drag_active : 1;
   guint pen_drag_motion_counter;
+  gint pen_drag_direction;
+  GList *pen_drag_old_selection;
   guint pen_drag_reverse : 1;
   gboolean pen_scroll_timer;
   gdouble old_y;
