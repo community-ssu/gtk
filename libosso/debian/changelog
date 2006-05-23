@@ -1,3 +1,10 @@
+libosso (1.12-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Fixed memory leak in osso->cp_plugins (N#26473).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 23 May 2006 20:12:18 +0300
+
 libosso (1.11-1) unstable; urgency=low
 
   * Removed the fixed number of mime arguments limitation (N#25395).

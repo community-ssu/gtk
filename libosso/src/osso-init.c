@@ -195,6 +195,9 @@ static void _deinit(osso_context_t *osso)
         }
         g_array_free(osso->ifs, TRUE);
     }
+    if (osso->cp_plugins != NULL) {
+        g_array_free(osso->cp_plugins, TRUE);
+    }
     
 #ifdef LIBOSSO_DEBUG
     g_log_remove_handler(NULL, osso->log_handler);
