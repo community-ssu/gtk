@@ -384,8 +384,9 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 	      sumwidth += (child_xpad*2);
 	    }
 	}
-      x = secondary_x = allocation->x + 
+      x = allocation->x + 
        ( (allocation->width - sumwidth - (spacing * (nvis_children - 1)))/2 );
+      /* secondary property will be ignored below */
       break; 
     }
   default:
@@ -433,7 +434,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 	    }
 	  
 	  /* calculate the horizontal location */
-	  if (child->is_secondary)
+	  if (child->is_secondary && layout != GTK_BUTTONBOX_HETEROGENOUS)
 	    {
 	      child_allocation.x = secondary_x;
 	      secondary_x += childspace;
