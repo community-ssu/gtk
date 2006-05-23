@@ -1,5 +1,9 @@
 2006-05-23  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.6.19
+
+2006-05-23  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Using full service name in .desktop file chokes the
 	launch banner" (Closes N#27830)
 	* hildon-navigator/hn-wm-watchable-app.c: Add com.nokia. prefix

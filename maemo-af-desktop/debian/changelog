@@ -1,3 +1,29 @@
+maemo-af-desktop (2.6.19-1) unstable; urgency=low
+
+  Applied fix to "Using full service name in .desktop file chokes the
+  launch banner" (Closes N#27830)
+  * hildon-navigator/hn-wm-watchable-app.c: Add com.nokia. prefix
+    to the services which don't have a .  which don't have it.
+
+  Applied fix to "Glib CRITICAL errors when Application killer dialog goes
+  away" (Closes N#25832)
+  * hildon-navigator/hn-wm-watched-window.c: When a window is destroyed,
+    check if it doesn't have a ping failed note attached to it. If so
+    destroy it.
+
+  * hildon-home/layout-mode.c: Fixed a potential crash
+    when the applet identifier is freed twice (Closes N#30263)
+
+  * hildon-home/hildon-home-main.c: Removed set_width
+    on the comboboxes in the "Select Background Image" dialog
+    (Closes N#30192)
+
+  * hildon-navigator/hildon-navigator-main.c, maemo-af-desktop-main.c:
+    call initialize_navigator_menus in an idle loop to make
+    startup time faster (Partially Closes N#29260)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 23 May 2006 15:06:59 +0300
+
 maemo-af-desktop (2.6.18-1) unstable; urgency=low
 
   * hildon-home/layout-manager.c: Reverted fix to N#30022 (which introduces
