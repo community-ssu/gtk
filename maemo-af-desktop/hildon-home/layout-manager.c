@@ -141,8 +141,6 @@ struct _layout_mode_internal_t {
     gint offset_y;
     gint drop_x;
     gint drop_y;
-    gint last_legal_x;
-    gint last_legal_y;
     gint drag_item_width;
     gint drag_item_height;
     gint max_height;
@@ -1261,7 +1259,7 @@ static void mark_hilight_status(GdkRectangle *active_applet_area)
 
         if(general_data.active != NULL && lnode->ebox != general_data.active->ebox)
         {
-          overlap_indicate(lnode, lnode->highlighted);
+            overlap_indicate(lnode, lnode->highlighted);
         }
 
         position = g_list_next(position);
@@ -1702,8 +1700,6 @@ static gboolean button_click_cb(GtkWidget *widget,
     ULOG_ERR("LAYOUT:After loop\n");	    
     if (candidate && general_data.active != NULL)
     {
-      	general_data.last_legal_x = general_data.active->ebox->allocation.x;
-      	general_data.last_legal_y = general_data.active->ebox->allocation.y;
         layout_tapnhold_set_timeout(general_data.active->ebox);
         raise_applet(general_data.active);
 	return TRUE;
@@ -1731,58 +1727,13 @@ static gboolean button_release_cb(GtkWidget *widget,
                                   GdkEventButton *event, gpointer unused)
 {
     ULOG_DEBUG(__FUNCTION__);
-    
     gtk_event_box_set_above_child(general_data.home_area_eventbox, FALSE);  
-
-    if (general_data.context_source != NULL && general_data.active != NULL)
-    {
-        GdkPixbuf *empty_drag_icon;
-
-        empty_drag_icon = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
-                          TRUE, 8, 1, 1);
-        gdk_pixbuf_fill(empty_drag_icon, 0);
-
-        gtk_drag_set_icon_pixbuf (general_data.context_source, empty_drag_icon, 0, 0);
-    }
-    
     if (general_data.tapnhold_timeout_id)
     {
         layout_tapnhold_remove_timer();
-    }
+    }    
 
     mark_hilight_status(NULL);
-
-    if (general_data.active != NULL)
-    {
-
-        general_data.last_legal_x = MAX(LAYOUT_AREA_LEFT_BORDER_PADDING, general_data.last_legal_x);
-        general_data.last_legal_y = MAX(LAYOUT_AREA_TITLEBAR_HEIGHT, general_data.last_legal_y);
-        
-        general_data.last_legal_x = MIN(GTK_WIDGET(general_data.home_area_eventbox)->allocation.width
-                                        - LAYOUT_AREA_RIGHT_BORDER_PADDING
-                                        - general_data.active->ebox->allocation.width,
-                                        general_data.last_legal_x);
-        general_data.last_legal_y = MIN(GTK_WIDGET(general_data.home_area_eventbox)->allocation.height
-                                        - LAYOUT_AREA_BOTTOM_BORDER_PADDING
-                                        - general_data.active->ebox->allocation.height,
-                                        general_data.last_legal_y);
-
-        ULOG_DEBUG ("Moving to legal position: %i,%i\n", general_data.last_legal_x,
-                                                      general_data.last_legal_y);
-
-        gtk_widget_ref(general_data.active->ebox);
-
-        gtk_container_remove(GTK_CONTAINER(general_data.area), 
-                             general_data.active->ebox);
-
-        gtk_fixed_put(general_data.area, general_data.active->ebox, 
-                      general_data.last_legal_x, general_data.last_legal_y);
-    
-        gtk_widget_unref(general_data.active->ebox);
-        
-        gtk_widget_show(general_data.active->ebox);
-    }
-
     gtk_event_box_set_above_child(general_data.home_area_eventbox, TRUE);  
 
     return FALSE;
@@ -1882,8 +1833,6 @@ static gboolean handle_drag_motion(GtkWidget *widget,
     {
 	return FALSE;
     }
-    /* Band-aid to make sure the applet is not visible during drags */
-    gtk_widget_hide(general_data.active->ebox);
     
     gtk_widget_translate_coordinates (
 	widget,
@@ -1898,13 +1847,10 @@ static gboolean handle_drag_motion(GtkWidget *widget,
     rect.width = general_data.drag_item_width;
     rect.height = general_data.drag_item_height;
 
-
     mark_hilight_status(&rect);
     if (within_eventbox_applet_area(tr_x-general_data.offset_x, 
 				    tr_y-general_data.offset_y))
     {
-	general_data.last_legal_x = rect.x;
-	general_data.last_legal_y = rect.y;
 	gdk_drag_status(context, GDK_ACTION_COPY, time);
         overlap_indicate (general_data.active, general_data.active->highlighted);
 	return TRUE;
