@@ -42,77 +42,78 @@
 
     <glade-widget-class name="HildonDateEditor"
                         generic-name="dateeditor"
-                        title="Date Editor"/>
+			title="Date Editor"/>
+		
     <glade-widget-class name="HildonTimeEditor"
                         generic-name="timeeditor"
-                        title="Time Editor"/>
+			title="Time Editor"/>
+		
     <glade-widget-class name="HildonRangeEditor"
                         generic-name="rangeeditor"
-                        title="Range Editor"/>
+			title="Range Editor"/>
+		
     <glade-widget-class name="HildonNumberEditor"
                         generic-name="numbereditor"
-                        title="Number Editor"/>
-    <!--glade-widget-class name="HildonTelephoneEditor"
-                        generic-name="telephoneeditor"
-                        title="Telephone Editor"/-->
+			title="Number Editor"/>
+		
     <glade-widget-class name="HildonTimePicker"
                         generic-name="timepicker"
-                        title="Time Picker"/>
+			title="Time Picker"/>
+		
     <glade-widget-class name="HildonWeekdayPicker"
                         generic-name="weekdaypicker"
                         title="Weekday Picker"/>
                         
     <glade-widget-class name="HildonHVolumebar" 
                         generic-name="hvolumebar"
-                        title="Horizontal Volumebar"/>
+			title="Horizontal Volumebar"/>
+		
     <glade-widget-class name="HildonVVolumebar"
                         generic-name="vvolumebar"
-                        title="Vertical Volumebar"/>
+			title="Vertical Volumebar"/>
+		
     <glade-widget-class name="HildonControlbar"
                         generic-name="controlbar"
-                        title="Controlbar"/>
+			title="Controlbar"/>
+		
     <glade-widget-class name="HildonSeekbar"
                         generic-name="seekbar"
-                        title="Seekbar"/>
+			title="Seekbar"/>
+		
     <glade-widget-class name="HildonFindToolbar"
                         generic-name="findtoolbar"
-                        title="Find toolbar"/>
+			title="Find toolbar"/>
+		
     <glade-widget-class name="HildonGridItem"
                         generic-name="griditem"/>
                         
     <glade-widget-class name="HildonNote"
                         generic-name="note"
                         title="Note"
-                        adaptor-class="libs.NoteAdaptor"/>
-<!-- DEPRECATED
-    <glade-widget-class name="HildonFileHandlingNote"
-                        generic-name="filehandlingnote"
-                        title="File Handling Note"
-                        adaptor-class="ModalDialogAdaptor"/>
--->
+			adaptor-class="libs.NoteAdaptor"/>
+		
     <glade-widget-class name="HildonWizardDialog"
                         generic-name="wizarddialog"
                         title="Wizard Dialog"
-                        adaptor-class="libs.WizardAdaptor"/>
+			adaptor-class="libs.WizardAdaptor"/>
+		
     <glade-widget-class name="HildonFileChooserDialog"
                         generic-name="filechooserdialog"
-                        title="File Chooser Dialog"/>
-    <!--glade-widget-class name="HildonFileDetailsDialog"
-                        generic-name="filedetailsdialog"
-                        title="File Details Dialog"/-->
+			title="File Chooser Dialog"/>
+		
     <glade-widget-class name="HildonFontSelectionDialog"
                         generic-name="fontselectiondialog"
-                        title="Font Selection Dialog"/>
+			title="Font Selection Dialog"/>
+		
     <glade-widget-class name="HildonGetPasswordDialog"
                         generic-name="getpassworddialog"
                         title="Get Password Dialog"
-                        adaptor-class="libs.ModalDialogAdaptor"/>
-    <!--glade-widget-class name="HildonInsertObjectDialog"
-                        generic-name="insertobjectdialog"
-                        title="Insert Object Dialog"/-->
+			adaptor-class="libs.ModalDialogAdaptor"/>
+		
     <glade-widget-class name="HildonNamePasswordDialog"
                         generic-name="namepassworddialog"
-                        title="Name Password Dialog"/>
+			title="Name Password Dialog"/>
+		
     <glade-widget-class name="HildonSetPasswordDialog"
                         generic-name="setpassworddialog"
                         title="SetPasswordDialog"
@@ -137,9 +138,6 @@
     <glade-widget-class-ref name="HildonTimeEditor"/>
     <glade-widget-class-ref name="HildonNumberEditor"/>
     <glade-widget-class-ref name="HildonRangeEditor"/>
-    <!-- DEPRECATED
-    <glade-widget-class-ref name="HildonTelephoneEditor"/>
--->
     
     <glade-widget-class-ref name="HildonHVolumebar"/>
     <glade-widget-class-ref name="HildonVVolumebar"/>
@@ -166,16 +164,9 @@
   	<glade-widget-class-ref name="HildonWindow"/>
     <glade-widget-class-ref name="HildonApp"/>
     <glade-widget-class-ref name="HildonNote"/>
-<!-- DEPRECATED
-    <glade-widget-class-ref name="HildonFileHandlingNote"/>
--->
     <glade-widget-class-ref name="HildonFileChooserDialog"/>
-    <!--glade-widget-class-ref name="HildonFileDetailsDialog"/-->
     <glade-widget-class-ref name="HildonFontSelectionDialog"/>
     <glade-widget-class-ref name="HildonGetPasswordDialog"/>
-<!--DEPRECATED
-    <glade-widget-class-ref name="HildonInsertObjectDialog"/>
--->
     <glade-widget-class-ref name="HildonNamePasswordDialog"/>
     <glade-widget-class-ref name="HildonSetPasswordDialog"/>
     <glade-widget-class-ref name="HildonSortDialog"/>

@@ -1,3 +1,9 @@
+gazpacho-hildon (0.1.4) unstable; urgency=low
+
+  * Initial support for HildonWindow 
+
+ -- Erik Karlsson <erikarls@localhost.localdomain>  Tue, 23 May 2006 17:38:42 +0300
+
 gazpacho-hildon (0.1.3) unstable; urgency=low
 
   * Checked that all files contains the license comment 

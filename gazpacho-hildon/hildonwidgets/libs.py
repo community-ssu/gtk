@@ -15,9 +15,8 @@
 #
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-
-
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA  02110-1301  USA
 
 import gettext
 
@@ -29,9 +28,21 @@ from gazpacho.widget import Widget
 from gazpacho.widgetadaptor import WidgetAdaptor
 from gazpacho.properties import prop_registry, TransparentProperty, StringType, CustomProperty
 from gazpacho.loader.custom import adapter_registry
+from gazpacho.widgets.base.base import ContainerAdaptor
+
 
 _ = gettext.gettext
 
+
+
+# HildonWindow
+class WindowAdaptor(ContainerAdaptor):
+    def post_create (self, context, window, interactive=True):
+        window.set_size_request (672, 396)
+
+    def fill_empty (self, context, widget):
+        widget.add (context.create_placeholder ())
+    
 
 # Dialogs
 
@@ -71,18 +82,8 @@ class WizardAdaptor(WidgetAdaptor):
           notebook.remove(current)
           notebook.add(new)
 
+
 # Widgets
-
-class WindowAdaptor(WidgetAdaptor):
-    def post_create (self, context, window, interactive=True):
-        window.set_size_request (672, 396)
-
-    def fill_empty (self, context, widget):
-        widget.add (context.create_placeholder ())
-    
-    def replace_child (self, context, current, new, container):
-        container.add (new)
-
 
 class GridAdaptor(WidgetAdaptor):
     def post_create (self, context, grid, interactive=True):
