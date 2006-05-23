@@ -2,7 +2,7 @@
 
 	* gtk/gtkhbbox.c (gtk_hbutton_box_size_allocate): Ignore the secondary
 	property for hererogenous layout. Secondary buttons are treated as
-	normal buttons. N#21558
+	normal buttons. N#30557
 
 2006-05-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
