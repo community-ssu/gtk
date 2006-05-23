@@ -1,4 +1,11 @@
-2006-05-21  Johan Bilien <johan.bilien@nokia.com>
+2006-05-23  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Using full service name in .desktop file chokes the
+	launch banner" (Closes N#27830)
+	* hildon-navigator/hn-wm-watchable-app.c: Add com.nokia. prefix
+	  to the services which don't have a .  which don't have it.
+
+2006-05-22  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Glib CRITICAL errors when Application killer dialog goes
 	away" (Closes N#25832)

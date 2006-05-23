@@ -1188,7 +1188,6 @@ hn_wm_dbus_method_call_handler (DBusConnection *connection,
     {
       DBusError         error;
       gchar            *service_name = NULL;
-      gchar            *service = NULL;
       HNWMWatchableApp *app;
       
       dbus_error_init (&error);
@@ -1200,41 +1199,33 @@ hn_wm_dbus_method_call_handler (DBusConnection *connection,
 			     DBUS_TYPE_INVALID );
 
       if (dbus_error_is_set (&error))
-	{
-	  osso_log(LOG_WARNING, "Error getting message args: %s\n",
-		   error.message);
-	  return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
+        {
+          osso_log(LOG_WARNING, "Error getting message args: %s\n",
+                   error.message);
+          return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+        }
 
-
-      if (!g_str_has_prefix(service_name, SERVICE_PREFIX))
-	{
-            return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-	}
-
-      service = g_strdup (service_name + strlen(SERVICE_PREFIX));
-
-
-      HN_DBG("Checking if service: '%s' is watchable", service);
+      g_return_val_if_fail (service_name, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
+      
+      HN_DBG("Checking if service: '%s' is watchable", service_name);
 
       /* Is this 'service' watchable ? */
-      if ((app = hn_wm_lookup_watchable_app_via_service (service)) != NULL)
-	{
-	  if (hn_wm_watchable_app_has_startup_notify (app)
-	      && hnwm->lowmem_banner_timeout > 0
-	      /* FIXME: is_hibernating() should just work here rather
-	       *        than hash lookup - must avoid showing banner
+      if ((app = hn_wm_lookup_watchable_app_via_service (service_name)) != NULL)
+        {
+          if (hn_wm_watchable_app_has_startup_notify (app)
+              && hnwm->lowmem_banner_timeout > 0
+              /* FIXME: is_hibernating() should just work here rather
+               *        than hash lookup - must avoid showing banner
                *        for re launched apps.
-	       */
-	      && !g_hash_table_lookup(hnwm->watched_windows_hibernating,
-				      hn_wm_watchable_app_get_class_name (app))
-	      && !hn_wm_watchable_app_has_windows (app))
-	    {
-	      HN_DBG("Showing Launchbanner...");
-	      hn_wm_watchable_app_launch_banner_show ( NULL, app );
-	    }
-	}
-      g_free (service);
+               */
+              && !g_hash_table_lookup(hnwm->watched_windows_hibernating,
+                                      hn_wm_watchable_app_get_class_name (app))
+              && !hn_wm_watchable_app_has_windows (app))
+            {
+              HN_DBG("Showing Launchbanner...");
+              hn_wm_watchable_app_launch_banner_show ( NULL, app );
+            }
+        }
     }
 
   path = dbus_message_get_path(message);

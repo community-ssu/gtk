@@ -109,6 +109,14 @@ hn_wm_watchable_app_new (const char * file)
                                  DESKTOP_LAUNCH_FIELD,
                                  NULL);
 
+  if (service && !strchr (service, '.'))
+    {
+      /* unqualified service name; prefix com.nokia. */
+      gchar * s = g_strconcat (SERVICE_PREFIX, service, NULL);
+      g_free (service);
+      service = s;
+    }
+  
   icon_name = g_key_file_get_value(key_file,
                                    "Desktop Entry",
                                    DESKTOP_ICON_FIELD,
