@@ -128,7 +128,7 @@ The server with the test repository also contains a number of =.deb=
 files that can be used to test the "Install from file" feature.
 The files can be found in this location:
 
-    http://repository.maemo.org/testrepo/
+    http://stage.maemo.org/testrepo/
 
 You can open them directly with the browser or copy them to your
 device and open them with the File manager or via "Package / Install
@@ -154,6 +154,10 @@ These standalone =.deb= files are available:
    <p>
    This packages has no "Section:" field.
 
+   * *package-a_2_powerpc.deb*
+   <p>
+   Test package A, version two, for powerpc.
+
 In addition you can use any other =.deb= file you find in the
 =testrepo/= directory hierarchy.
 
@@ -165,7 +169,7 @@ These files contain instructions for the Application installer to add
 repositories and/or install a package.  The files can be found in this
 location:
 
-    http://repository.maemo.org/testrepo/
+    http://stage.maemo.org/testrepo/
 
 You can open them directly with the browser or copy them to your
 device and open them with the File manager or via "Package / Install
@@ -386,3 +390,9 @@ repository.
    * Try to update package-B to version 2.
    * Notice that the update fails because the package "missing" is
      missing.
+
+---++++ Updating using a incompatible package
+
+   * Make sure that package-A version 1 is installed
+   * Install =package-a_2_powerpc.deb= using "Install from file ..."
+   * Notice that the update fails because the packahe is incompatible
