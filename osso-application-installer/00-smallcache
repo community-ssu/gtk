@@ -2,5 +2,9 @@
 // repository.  The average space per package in a normal setup 
 // is 250 bytes or so, so 1.6 MB is good for about 6400 packages, give
 // or take, which should be enough for everyone.
+//
+// XXX - Except that some repositories are maintained in such way that
+//       need more than 700 bytes per package in the cache.  So we use
+//       3 MB, arbitrarily.
 
-APT { Cache-Limit 1600000 };
+APT { Cache-Limit 3000000 };

@@ -1,5 +1,12 @@
+2006-05-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* 00-smallcache: Raise limit to 3 MB, to cope with bloated
+	repositories that unfortunately do exist.
+
 2006-05-22  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.19
+	
 	* src/util.cc (annoy_user_with_gnome_vfs_result): Show info
 	banners for "name too long" and "not allowed" instead of info
 	notes. (N30282)
