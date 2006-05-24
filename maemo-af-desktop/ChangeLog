@@ -1,5 +1,12 @@
 2006-05-23  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Glib CRITICAL errors when setting favicon"
+	(Closes N#30560)
+	* hildon-navigator/application-switcher.c: Removed illegal unref
+	  of GdkPixmaps 
+
+2006-05-23  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.h: Fixed a few l10n domains
 	  (Closes N#29481)
 

@@ -1575,10 +1575,7 @@ store_item (ApplicationSwitcher_t *as,
     {
       pixbuf =  gtk_image_get_pixbuf(GTK_IMAGE(icon_image));
       cont.icon = gtk_image_new_from_pixbuf(pixbuf);
-      
     }
-  
-  g_object_unref(pixbuf); 
   
   /* We need to add a reference, otherwise the icon might be free'd
      when it's removed from the button container. */
@@ -1794,7 +1791,7 @@ app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
 
   if (gtk_image_get_storage_type(GTK_IMAGE(menu_item_icon)) == GTK_IMAGE_ANIMATION)
     {
-
+      /* NB: we do not own reference to the returned pixbuf !!! */
       pixbuf = gdk_pixbuf_animation_get_static_image (gtk_image_get_animation (GTK_IMAGE(menu_item_icon)));
 
       pixbuf_anim 
@@ -1831,15 +1828,13 @@ app_switcher_item_icon_sync (ApplicationSwitcher_t *as,
         {
           g_array_index(as->items,container,n).is_blinking = FALSE;
         }
-      
-      pixbuf =  gtk_image_get_pixbuf(GTK_IMAGE(menu_item_icon));
+
+      pixbuf = gtk_image_get_pixbuf(GTK_IMAGE(menu_item_icon));
       
       gtk_image_set_from_pixbuf (
                           GTK_IMAGE(g_array_index(as->items,container,n).icon),
                           pixbuf);
     }
-  g_object_unref(pixbuf); 
-
     
   HN_DBG("Checking if menu button needs anim");
 
@@ -2127,8 +2122,6 @@ app_switcher_system_inactivity_change(ApplicationSwitcher_t *as)
                                                                  n).icon),
                                          pixbuf);
 
-              g_object_unref(pixbuf);
-
               /* we do not reset is_blinking so we can restore the state */
             }
         }
@@ -2196,8 +2189,6 @@ app_switcher_system_inactivity_change(ApplicationSwitcher_t *as)
               
               gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menuitem),
                                             menu_icon);
-
-              g_object_unref(pixbuf);
             }
         }
 
