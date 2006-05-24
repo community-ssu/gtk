@@ -1,4 +1,15 @@
-2006-05-23  Johan Bilien <johan.bilien@nokia.com>
+2006-05-24  Johan Bilien <johan.bilien@nokia.com>
+
+	Reapplied fix to "Applet are hidden if a new drag is started before another
+	one is ended" (Closes N#30022)
+	* hildon-home/layout-manager.c: 
+      - Keep track of the last legal position,
+	    and move back there if the dropped in an illegal position
+	  - Unref the empty drag cursor pixbuf on layoutmode end
+	  - Prevent drag context confusion on funny event ordering (was crashing)
+	  - Make highlighting work properly (again?)
+
+2006-05-24  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Glib CRITICAL errors when setting favicon"
 	(Closes N#30560)

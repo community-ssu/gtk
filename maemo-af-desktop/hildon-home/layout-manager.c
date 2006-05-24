@@ -141,6 +141,8 @@ struct _layout_mode_internal_t {
     gint offset_y;
     gint drop_x;
     gint drop_y;
+    gint last_legal_x;
+    gint last_legal_y;
     gint drag_item_width;
     gint drag_item_height;
     gint max_height;
@@ -160,6 +162,7 @@ struct _layout_mode_internal_t {
     guint tapnhold_interval;
     gulong keylistener_id;
     GdkDragContext *context_source;
+    GdkPixbuf *empty_drag_icon;
 };
 
 struct _layout_node_t {
@@ -364,10 +367,10 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
         gtk_widget_show(node->ebox);
 
     /* FIXME: We really should get rid of these with a better solution */
-        while (gtk_events_pending ())
-        {
-            gtk_main_iteration ();
-        }
+      while (gtk_events_pending ())
+      {
+          gtk_main_iteration ();
+      }
 
 	node->drag_icon = NULL;
 	node->queued = FALSE;
@@ -576,6 +579,8 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     mark_hilight_status(NULL);
     ULOG_ERR("LAYOUT:Layout mode start ends here\n");
     fp_mlist();
+
+    general_data.empty_drag_icon = NULL;
     
     /* FIXME: EXIT AND SAVE ICONS. CHECK LEGALITY IF SHOULD START GREYED. */
 }
@@ -671,6 +676,13 @@ void layout_mode_end ( gboolean rollback )
     }
 	g_free(node);
     }
+
+    if (general_data.empty_drag_icon != NULL)
+    {
+       g_object_unref (general_data.empty_drag_icon);
+       general_data.empty_drag_icon = NULL;
+    }
+
     gtk_event_box_set_above_child(GTK_EVENT_BOX
 				  (general_data.home_area_eventbox), FALSE);
    
@@ -1257,6 +1269,9 @@ static void mark_hilight_status(GdkRectangle *active_applet_area)
     {
         lnode = (LayoutNode*)position->data;
 
+        /* Active/cursor red border status can't be yet determined due
+           it can be in out of applet area. */
+
         if(general_data.active != NULL && lnode->ebox != general_data.active->ebox)
         {
             overlap_indicate(lnode, lnode->highlighted);
@@ -1346,7 +1361,6 @@ static gboolean layout_mode_status_check(void)
 			    NULL)
 			)
 		    {
-        ULOG_DEBUG("%s calling overlap_indicate",__FUNCTION__);
 			overlap_indicate((LayoutNode*)iter->data, 
 					 TRUE);
 			overlap_indicate((LayoutNode*)position->data,
@@ -1542,47 +1556,31 @@ static void draw_cursor (void)
 
 static void overlap_indicate (LayoutNode * modme, gboolean overlap)
 {
-    ULOG_DEBUG("%s:called for %s (%i) with %i\n", __FUNCTION__,
-              modme->applet_identifier, modme->old_highlight_status, overlap);
-
     /* Only act if there is reason to change */
     if (overlap == modme->old_highlight_status)
     {
       return;
     }
+    ULOG_DEBUG(__FUNCTION__);
 
     modme->old_highlight_status = overlap;
 
     modme->highlighted = overlap;
 
-    if (overlap) 
+    if(   general_data.context_source != NULL 
+            && general_data.active != NULL 
+            && modme->ebox == general_data.active->ebox)
     {
-        if(   general_data.context_source != NULL 
-           && general_data.active != NULL 
-           && modme->ebox == general_data.active->ebox)
-        {
+            general_data.active->queued = TRUE;
             draw_cursor();
-        } else
-        {
-            gtk_widget_queue_draw(modme->ebox);
-        }
-
+    } else
+    {
 	/* Performance improvement: invalidate only the border areas? 
 	 * If so, do the same to the gtk_widget_queue_draw below in this
          * same function */
-    }
-    else
-    {
-        if(   general_data.context_source != NULL 
-           && general_data.active != NULL
-           && modme->ebox == general_data.active->ebox)
-        {
-            draw_cursor();
-        } else
-        {
             gtk_widget_queue_draw(modme->ebox);
-        }
     }
+
 }
 
 static gboolean event_within_widget(GdkEventButton *event, GtkWidget * widget)
@@ -1626,6 +1624,8 @@ static gboolean button_click_cb(GtkWidget *widget,
     general_data.active = NULL;
 
     ULOG_DEBUG(__FUNCTION__);
+
+    general_data.context_source = NULL;
 
     if (event->y < LAYOUT_AREA_TITLEBAR_HEIGHT)
     {
@@ -1700,6 +1700,8 @@ static gboolean button_click_cb(GtkWidget *widget,
     ULOG_ERR("LAYOUT:After loop\n");	    
     if (candidate && general_data.active != NULL)
     {
+      	general_data.last_legal_x = general_data.active->ebox->allocation.x;
+      	general_data.last_legal_y = general_data.active->ebox->allocation.y;
         layout_tapnhold_set_timeout(general_data.active->ebox);
         raise_applet(general_data.active);
 	return TRUE;
@@ -1727,13 +1729,79 @@ static gboolean button_release_cb(GtkWidget *widget,
                                   GdkEventButton *event, gpointer unused)
 {
     ULOG_DEBUG(__FUNCTION__);
+    
     gtk_event_box_set_above_child(general_data.home_area_eventbox, FALSE);  
+
+    if (general_data.context_source != NULL && general_data.active != NULL)
+    {
+        if (general_data.empty_drag_icon == NULL)
+          {
+            general_data.empty_drag_icon = gdk_pixbuf_new(GDK_COLORSPACE_RGB,
+                                                          TRUE, 8, 1, 1);
+            gdk_pixbuf_fill(general_data.empty_drag_icon, 0);
+          }
+
+        gtk_drag_set_icon_pixbuf (general_data.context_source,
+                                  general_data.empty_drag_icon, 0, 0);
+   }
+    
+    if(general_data.context_source)
+    {
+        general_data.context_source = NULL;
+    }
+
     if (general_data.tapnhold_timeout_id)
     {
         layout_tapnhold_remove_timer();
-    }    
+    }
+
+
+    if (general_data.active != NULL)
+    {
+        /* For hilight status need set allocation size by hand since
+           it is possible that before calculus allocation is not yet
+           updated */
+        
+        gint active_allocation_width, active_allocation_height;
+
+        active_allocation_width = general_data.active->ebox->allocation.width;
+        active_allocation_height = general_data.active->ebox->allocation.height;
+
+        general_data.last_legal_x = MAX(LAYOUT_AREA_LEFT_BORDER_PADDING, general_data.last_legal_x);
+        general_data.last_legal_y = MAX(LAYOUT_AREA_TITLEBAR_HEIGHT, general_data.last_legal_y);
+        
+        general_data.last_legal_x = MIN(GTK_WIDGET(general_data.home_area_eventbox)->allocation.width
+                                        - LAYOUT_AREA_RIGHT_BORDER_PADDING
+                                        - general_data.active->ebox->allocation.width,
+                                        general_data.last_legal_x);
+        general_data.last_legal_y = MIN(GTK_WIDGET(general_data.home_area_eventbox)->allocation.height
+                                        - LAYOUT_AREA_BOTTOM_BORDER_PADDING
+                                        - general_data.active->ebox->allocation.height,
+                                        general_data.last_legal_y);
+
+        ULOG_DEBUG ("Moving to legal position: %i,%i\n", general_data.last_legal_x,
+                                                      general_data.last_legal_y);
+
+        gtk_widget_ref(general_data.active->ebox);
+
+        gtk_container_remove(GTK_CONTAINER(general_data.area), 
+                             general_data.active->ebox);
+
+        gtk_fixed_put(general_data.area, general_data.active->ebox, 
+                      general_data.last_legal_x, general_data.last_legal_y);
+    
+        gtk_widget_unref(general_data.active->ebox);
+        
+        gtk_widget_show(general_data.active->ebox);
+        
+        general_data.active->ebox->allocation.width = active_allocation_width;
+        general_data.active->ebox->allocation.height = active_allocation_height;
+        general_data.active->ebox->allocation.x = general_data.last_legal_x;
+        general_data.active->ebox->allocation.y = general_data.last_legal_y;
+    }
 
     mark_hilight_status(NULL);
+
     gtk_event_box_set_above_child(general_data.home_area_eventbox, TRUE);  
 
     return FALSE;
@@ -1779,7 +1847,14 @@ static gboolean handle_drag_end(GtkWidget *widget,
 
         gtk_fixed_put(general_data.area, general_data.active->ebox, 
                       general_data.drop_x, general_data.drop_y);
-    
+        /* For hilight status need set allocation size by hand since
+           it is possible that before calculus allocation is not yet
+           updated */
+        general_data.active->ebox->allocation.width = active_area.width;
+        general_data.active->ebox->allocation.height = active_area.height;
+        general_data.active->ebox->allocation.x = general_data.drop_x;
+        general_data.active->ebox->allocation.y = general_data.drop_y;
+
         active_area.x = general_data.drop_x;
         active_area.y = general_data.drop_y;
 
@@ -1802,7 +1877,7 @@ static gboolean handle_drag_end(GtkWidget *widget,
     
     gtk_widget_show(general_data.active->ebox);
 
-    mark_hilight_status(&active_area);
+    mark_hilight_status(NULL);
     gtk_event_box_set_above_child(general_data.home_area_eventbox, TRUE);  
 
     l = general_data.main_applet_list;
@@ -1833,6 +1908,8 @@ static gboolean handle_drag_motion(GtkWidget *widget,
     {
 	return FALSE;
     }
+    /* Band-aid to make sure the applet is not visible during drags */
+    gtk_widget_hide(general_data.active->ebox);
     
     gtk_widget_translate_coordinates (
 	widget,
@@ -1847,10 +1924,13 @@ static gboolean handle_drag_motion(GtkWidget *widget,
     rect.width = general_data.drag_item_width;
     rect.height = general_data.drag_item_height;
 
+
     mark_hilight_status(&rect);
     if (within_eventbox_applet_area(tr_x-general_data.offset_x, 
 				    tr_y-general_data.offset_y))
     {
+	general_data.last_legal_x = rect.x;
+	general_data.last_legal_y = rect.y;
 	gdk_drag_status(context, GDK_ACTION_COPY, time);
         overlap_indicate (general_data.active, general_data.active->highlighted);
 	return TRUE;
@@ -1866,7 +1946,6 @@ static gboolean handle_drag_motion(GtkWidget *widget,
         {
             general_data.active->queued = TRUE;
         }
-        general_data.active->highlighted = TRUE;
 
         overlap_indicate (general_data.active, TRUE);
 	ULOG_ERR("LAYOUT:returning FALSE (not fully) ");
@@ -1933,6 +2012,15 @@ static void raise_applet(LayoutNode *node)
 {
     gint candidate_x, candidate_y;
     ULOG_DEBUG(__FUNCTION__);
+
+    /* For hilight status need set allocation size by hand since
+       it is possible that before calculus allocation is not yet
+       updated */
+    gint node_allocation_width, node_allocation_height;
+    
+    node_allocation_width = node->ebox->allocation.width;
+    node_allocation_height = node->ebox->allocation.height;
+
     candidate_x = node->ebox->allocation.x;
     candidate_y = node->ebox->allocation.y;
 
@@ -1942,6 +2030,11 @@ static void raise_applet(LayoutNode *node)
     gtk_fixed_put(general_data.area, node->ebox,
                   candidate_x, candidate_y);
     gtk_widget_show(GTK_WIDGET(node->ebox));
+
+    node->ebox->allocation.width = node_allocation_width;
+    node->ebox->allocation.height = node_allocation_height;
+    node->ebox->allocation.x = candidate_x;
+    node->ebox->allocation.y = candidate_y;
 
     gtk_event_box_set_above_child(GTK_EVENT_BOX
                                   (general_data.home_area_eventbox), TRUE);
@@ -1953,7 +2046,7 @@ static void raise_applet(LayoutNode *node)
     {
         gtk_main_iteration ();
     }
-
+    
 }
 
 static void drag_begin(GtkWidget *widget, GdkDragContext *context,
@@ -1993,6 +2086,7 @@ static void drag_begin(GtkWidget *widget, GdkDragContext *context,
     general_data.context_source = context;
     gtk_widget_hide(general_data.active->ebox);
     general_data.active->queued = TRUE;
+
     draw_cursor();
 
 }
