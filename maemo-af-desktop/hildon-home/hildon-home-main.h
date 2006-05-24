@@ -37,6 +37,7 @@ G_BEGIN_DECLS
 /* generic and not home specific values */
 #define _(a) gettext(a)
 #define COMMON_STRING(a) dgettext("hildon-common-strings", a)
+#define FM(a) dgettext("hildon-fm", a)
 
 #define HILDON_MENU_KEY                 GDK_F4
 
@@ -221,13 +222,13 @@ G_BEGIN_DECLS
 #define HILDON_NOTE_INFORMATION_ICON      "qgn_note_info"
 
 /* WID-NOT201*/
-#define HILDON_HOME_NO_MEMORY_TEXT       _("")
+#define HILDON_HOME_NO_MEMORY_TEXT       COMMON_STRING("sfil_ni_not_enough_memory")
 
 /* WID-NOT202 */
-#define HILDON_HOME_CONNECTIVITY_TEXT    _("")
+#define HILDON_HOME_CONNECTIVITY_TEXT    COMMON_STRING("sfil_ni_cannot_open_no_connection")
 
 /* FIL-INF010 */
-#define HILDON_HOME_FILE_UNREADABLE_TEXT _("sfil_ib_opening_not_allowed")
+#define HILDON_HOME_FILE_UNREADABLE_TEXT FM("sfil_ib_opening_not_allowed")
 
 
 #define TRANSIENCY_MAXITER 50

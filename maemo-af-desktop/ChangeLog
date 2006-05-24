@@ -1,5 +1,10 @@
 2006-05-23  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.h: Fixed a few l10n domains
+	  (Closes N#29481)
+
+2006-05-23  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.6.19
 
 2006-05-23  Johan Bilien <johan.bilien@nokia.com>
