@@ -1,3 +1,9 @@
+osso-application-installer (4.20) unstable; urgency=low
+
+  * Raise cachelimit to 3 MB.
+
+ --
+
 osso-application-installer (4.19) unstable; urgency=low
 
    * Fixed bugs N29642, N29195, N29232, N27902, N27905, N28068, N28184,
