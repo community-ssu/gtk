@@ -1,5 +1,9 @@
 2006-05-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
+        * certified.list, sources.list: Remove comment that they are
+	empty.  This is less confusing when other packages add to these
+	files.
+
 	* 00-smallcache: Raise limit to 3 MB, to cope with bloated
 	repositories that unfortunately do exist.
 
