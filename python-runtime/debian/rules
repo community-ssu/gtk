@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE=10
+
+PYVER=2.4
+PYTHON=python$(PYVER)
+d=debian/$(PYTHON)-runtime
+
+clean:
+	dh_testdir
+	dh_clean
+	
+build:
+
+binary:
+	dh_clean -k
+	dh_testdir
+	dh_md5sums
+	dh_gencontrol
+	dh_builddeb
+	touch binary-stamp
+
+.PHONY: build clean binary

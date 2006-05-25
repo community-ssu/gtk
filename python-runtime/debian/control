@@ -1,0 +1,25 @@
+Source: python-runtime
+Priority: optional
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Section: user/system-tools
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.5.8
+XB-Maemo-Icon-26:
+  iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABmJLR0QA/wD/AP+gvaeTAAAA
+  CXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1gUMFRIHdvjhsQAAAeVJREFUSMe1lrFL60Ac
+  xz+JtToo780ZHVQsWRzE6QWSVUURo6Cb0k3/ACnokLmCbuWNClKHx8PRWIiTOKhQFHVw7Fyd
+  tIpxuUApuUtT4ne5XO5+9737/e57v5+GAnbRGwMOAAvIS6a1gADYrFVKj7K1NAXJb+BOdC+B
+  WaBfsa8GUKhVSs24QV1huAQYwGKtUloEyqhhCBvSEhmiLdhFrx8YJRlGL0SRW/8Cr8BCF0TS
+  UOQURg/Af8lis6pFpUQi8EsxR7+ReGFGRlSvWivAWNsFOTHdoJmzi944cK7yb0osA/Nt/d16
+  1XJ0YD9DEtkF2deFGLPChyTulq5QfGpoWngFTMQM5fUMT3O05/i/gJG01zvCNXAr3BKHd+Ci
+  7PgtDQ570dFrnxaulR0/D/wBBiTzhoBtYDJRRxKJr5cdfxlYzcKvshg97zn+S1YkEVEr5v+9
+  poVTGV6Uli6SVic+E3JPWgQ6sCXepJ9CA9jK1SqlB7voFToe1UdgXGL4BXii7YbkxHSDpvSp
+  r1etXWAnZigETkXbiWPTDY57FWxcPppr678Bg+L7tpcMG3ZB+g8YBjaSbPQE/ybhyXSDz7Zq
+  qZE6x9erVlRuGQlp4RSYjgoZ0w3SlVvCwAbOJKJGaG1GbMiWkQB8A+PrdkmoDOKGAAAAAElF
+  TkSuQmCC
+
+Package: python2.4-runtime
+Section: user/system-tools
+Architecture: any
+Depends: python2.4-bluez, python2.4-gtk2, python2.4-numeric, python2.4-dbus, python2.4-osso, python2.4-xml, python2.4-gstreamer, python2.4-pygame, python2.4, python2.4-runtime, python2.4-hildon
+Description: Python runtime environment.
