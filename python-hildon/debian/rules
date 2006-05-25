@@ -1,8 +1,6 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-#export DH_VERBOSE=1
-
 PYVER=2.4
 PYGTKVER=2.0
 
