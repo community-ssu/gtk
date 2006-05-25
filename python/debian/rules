@@ -3,9 +3,6 @@
 
 export SHELL = /bin/bash
 
-# Uncomment this to turn on verbose mode.
-export DH_VERBOSE=1
-
 DEB_BUILD_ARCH		?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 
 export VER=2.4
