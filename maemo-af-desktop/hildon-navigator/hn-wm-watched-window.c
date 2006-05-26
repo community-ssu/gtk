@@ -760,6 +760,7 @@ gboolean
 hn_wm_watched_window_attempt_signal_kill (HNWMWatchedWindow *win, int sig)
 {
   guchar *pid_result = NULL;
+  pid_t pid;
 
   pid_result = hn_wm_util_get_win_prop_data_and_validate (win->xwin,
 							  hnwm->atoms[HN_ATOM_NET_WM_PID],
@@ -771,10 +772,14 @@ hn_wm_watched_window_attempt_signal_kill (HNWMWatchedWindow *win, int sig)
   if (pid_result == NULL)
     return FALSE;
 
-  if(kill(pid_result[0]+256*pid_result[1], sig /*SIGTERM*/) != 0)
+  pid = (pid_t)(pid_result[0]+256*pid_result[1]);
+
+  if(!pid)
+      return FALSE;
+
+  if(kill(pid, sig /*SIGTERM*/) != 0)
     {
-      osso_log(LOG_ERR, "Failed to kill pid %d with SIGTERM",
-	       pid_result[0]+256*pid_result[1]);
+      osso_log(LOG_ERR, "Failed to kill pid %d with SIGTERM", pid);
 
       XFree(pid_result);
       return FALSE;
