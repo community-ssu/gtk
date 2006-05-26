@@ -1,0 +1,65 @@
+missing header for unified diff at line 4 of patch
+can't find file to patch at input line 4
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff -Nur libart-lgpl-2.3.17.orig/aclocal.m4 libart-lgpl-2.3.17/aclocal.m4
+|--- libart-lgpl-2.3.17.orig/aclocal.m4	2005-01-21 10:11:11.000000000 +0100
+|+++ libart-lgpl-2.3.17/aclocal.m4	2005-01-25 23:53:15.122258304 +0100
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+10 out of 10 hunks ignored
+missing header for unified diff at line 138 of patch
+can't find file to patch at input line 138
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff -Nur libart-lgpl-2.3.17.orig/config.guess libart-lgpl-2.3.17/config.guess
+|--- libart-lgpl-2.3.17.orig/config.guess	2004-07-06 05:30:16.000000000 +0200
+|+++ libart-lgpl-2.3.17/config.guess	2005-01-25 23:53:10.269995960 +0100
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+23 out of 23 hunks ignored
+missing header for unified diff at line 477 of patch
+can't find file to patch at input line 477
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff -Nur libart-lgpl-2.3.17.orig/config.sub libart-lgpl-2.3.17/config.sub
+|--- libart-lgpl-2.3.17.orig/config.sub	2004-07-06 05:30:16.000000000 +0200
+|+++ libart-lgpl-2.3.17/config.sub	2005-01-25 23:53:10.271995656 +0100
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+30 out of 30 hunks ignored
+missing header for unified diff at line 878 of patch
+can't find file to patch at input line 878
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff -Nur libart-lgpl-2.3.17.orig/configure libart-lgpl-2.3.17/configure
+|--- libart-lgpl-2.3.17.orig/configure	2005-01-21 10:11:18.000000000 +0100
+|+++ libart-lgpl-2.3.17/configure	2005-01-25 23:53:19.385610176 +0100
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+93 out of 93 hunks ignored
+missing header for unified diff at line 1972 of patch
+can't find file to patch at input line 1972
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff -Nur libart-lgpl-2.3.17.orig/ltmain.sh libart-lgpl-2.3.17/ltmain.sh
+|--- libart-lgpl-2.3.17.orig/ltmain.sh	2004-07-06 05:30:16.000000000 +0200
+|+++ libart-lgpl-2.3.17/ltmain.sh	2005-01-25 23:53:10.275995048 +0100
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+8 out of 8 hunks ignored

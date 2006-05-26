@@ -1,0 +1,4 @@
+version=2
+ftp://ftp.gnome.org/pub/GNOME/sources/libart_lgpl/2.3/ \
+        libart_lgpl-(.*)\.tar\.gz \
+        debian uupdate
