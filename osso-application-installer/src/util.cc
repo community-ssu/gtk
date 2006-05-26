@@ -310,7 +310,7 @@ annoy_user_with_log (const gchar *text)
 
   dialog = hildon_note_new_information (get_main_window (), text);
 #if 0
-  gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_log"), 1);
+  gtk_dialog_add_button (GTK_DIALOG (dialog), "Log", 1);
 #endif
 
   g_signal_connect (dialog, "response", 
