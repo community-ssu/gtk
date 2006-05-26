@@ -224,7 +224,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
 			    pi->name, pi->available_version,
 			    sum[sumtype_installing]);
       format_string_list_1 (str,
-			    _("ai_details_fi_packages_update"),
+			    _("ai_fi_details_packages_update"),
 			    pi->name, pi->available_version,
 			    sum[sumtype_upgrading]);
       format_string_list_1 (str,
