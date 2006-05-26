@@ -37,17 +37,6 @@
 
 #define _(x) gettext (x)
 
-/* Defining this to non-zero will add the "Temporary files" tab to the
-   settings dialog.  It is currently disabled since files in the cache
-   are not visible to the user, and he/she might get confused what is
-   taking all the memory.
-
-   Only the UI is affected.  The setting itself is always implemented
-   and a power-user could change it be editing .osso/appinstaller
-   directly.
-*/
-#define SHOW_CLEANING_SETTINGS 0
-
 int  update_interval_index = UPDATE_INTERVAL_WEEK;
 int  package_sort_key = SORT_BY_NAME;
 int  package_sort_sign = 1;
@@ -167,62 +156,6 @@ struct settings_closure {
   GtkWidget *update_combo;
 };
 
-#if SHOW_CLEANING_SETTINGS
-
-static void 
-clean_reply (int cmd, apt_proto_decoder *dec, void *data)
-{
-  hide_progress ();
-
-  if (dec == NULL)
-    return;
-
-  bool success = dec->decode_int ();
-
-  if (success)
-    irritate_user (_("ai_ib_files_deleted"));
-  else
-    annoy_user_with_log ("Unable to delete files");
-}
-
-static void
-clean_callback (GtkWidget *button, gpointer data)
-{
-  show_progress (_("ai_nw_deleting"));
-  apt_worker_clean (clean_reply, NULL);
-}
-
-static GtkWidget *
-make_temp_files_tab (settings_closure *c)
-{
-  GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
-  GtkWidget *radio, *btn;
-
-  radio = gtk_radio_button_new_with_label (NULL, _("ai_li_settings_leave"));
-  gtk_box_pack_start (GTK_BOX (vbox), radio, FALSE, FALSE, 5);
-  if (!clean_after_install)
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio),
-				  TRUE);
-
-  GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
-  btn = gtk_button_new_with_label (_("ai_bd_settings_delete"));
-  g_signal_connect (btn, "clicked",
-		    G_CALLBACK (clean_callback), NULL);
-  gtk_box_pack_end (GTK_BOX (hbox), btn, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 5);
-
-  radio = gtk_radio_button_new_with_label_from_widget
-    (GTK_RADIO_BUTTON (radio), _("ai_li_settings_delete_after"));
-  gtk_box_pack_start (GTK_BOX (vbox), radio, FALSE, FALSE, 5);
-  if (clean_after_install)
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio),
-				  TRUE);
-
-  c->clean_radio = radio;
-
-  return vbox;
-}
-#endif /* SHOW_CLEANING_SETTINGS */
 
 static GtkWidget *
 make_updates_tab (settings_closure *c)
@@ -255,10 +188,6 @@ settings_dialog_response (GtkDialog *dialog, gint response, gpointer clos)
 
   if (response == GTK_RESPONSE_OK)
     {
-#if SHOW_CLEANING_SETTINGS
-      clean_after_install =
-	gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (c->clean_radio));
-#endif
       update_interval_index =
 	gtk_combo_box_get_active (GTK_COMBO_BOX (c->update_combo));
 
@@ -286,22 +215,9 @@ show_settings_dialog ()
 					NULL);
   set_dialog_help (dialog, AI_TOPIC ("settings"));
 
-#if SHOW_CLEANING_SETTINGS
-  {
-    GtkWidget *notebook = gtk_notebook_new ();
-    gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), notebook);
-    gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			      make_temp_files_tab (c),
-			      gtk_label_new (_("ai_ti_settings_temp_files")));
-    gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			      make_updates_tab (c),
-			      gtk_label_new (_("ai_ti_settings_updates")));
-  }
-#else
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG(dialog)->vbox),
 		      make_updates_tab (c),
 		      FALSE, FALSE, 20);
-#endif
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (settings_dialog_response),
