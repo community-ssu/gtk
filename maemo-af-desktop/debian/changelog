@@ -1,3 +1,41 @@
+maemo-af-desktop (2.6.20-1) unstable; urgency=low
+
+  Applied fix to "Newly seelected applet does not update the overlap
+  indication" (Closes N#30911)
+  * hildon-home/layout-manager.c: Grab a screenshot of an applet when
+    adding it just in case it is
+    conflicting when the first drag begins to avoid red borders in it
+
+  * hildon-navigator/hn-wm-watched-window.c: Added check that the
+    pid value read from the XWindow property is not 0 (Closes N#30602)
+
+  * hildon-navigator/hildon-navigator-backup.conf: Added osso-backup
+    configuration not to restore the TN plugins watch files
+    (Closes N#26404)
+
+  * hildon-navigator/application-switcher.c: Added additional
+    check on the source id before removing the tooltip timeouts
+    (Closes N#30532)
+
+  Reapplied fix to "Applet are hidden if a new drag is started before another
+  one is ended" (Closes N#30022)
+  * hildon-home/layout-manager.c: 
+      - Keep track of the last legal position,
+      and move back there if the dropped in an illegal position
+    - Unref the empty drag cursor pixbuf on layoutmode end
+    - Prevent drag context confusion on funny event ordering (was crashing)
+    - Make highlighting work properly (again?)
+
+  Applied fix to "Glib CRITICAL errors when setting favicon"
+  (Closes N#30560)
+  * hildon-navigator/application-switcher.c: Removed illegal unref
+    of GdkPixmaps 
+
+  * hildon-home/hildon-home-main.h: Fixed a few l10n domains
+    (Closes N#29481)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 26 May 2006 17:49:14 +0300
+
 maemo-af-desktop (2.6.19-3) unstable; urgency=low
 
   * get the default background filename from the .desktop file
