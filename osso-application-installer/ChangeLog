@@ -1,3 +1,18 @@
+2006-05-26  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (annoy_user_with_log): Don't use logical ID in
+	disabled code.
+
+	* src/main.cc (install_package_reply): Use correct logical ID
+	"ai_ni_error_update_failed".
+
+	* src/details.cc (decode_summary): Use correct logical ID
+	"ai_fi_details_packages_update".
+
+	* src/settings.cc: Removed code for SHOW_CLEANING_SETTINGS, which
+	was disabled for a long time now but confuses the automatic l10n
+	code review.
+
 2006-05-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
         * certified.list, sources.list: Remove comment that they are
