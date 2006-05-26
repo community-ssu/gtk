@@ -1117,7 +1117,7 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
 	{
 	  char *str =
 	    g_strdup_printf ((upgrading
-			      ? _("ai_ni_error_updating_failed")
+			      ? _("ai_ni_error_update_failed")
 			      : _("ai_ni_error_installation_failed")),
 			     pi->name);
 	  annoy_user_with_result_code (result_code, str, upgrading);
