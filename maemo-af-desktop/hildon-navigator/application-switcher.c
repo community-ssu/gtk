@@ -672,9 +672,10 @@ static void set_first_button_pressed_and_grab_tooltip(gpointer data)
     }
     
     /* Stop timeout if there is no tooltip visible */
-    if (as->tooltip_visible == FALSE)
+    if (as->tooltip_visible == FALSE && as->show_tooltip_timeout_id)
     {
         g_source_remove(as->show_tooltip_timeout_id);
+        as->show_tooltip_timeout_id = 0;
     }
 
     /* Set timeout 1.5s for tooltip window. */
@@ -777,7 +778,11 @@ static gboolean tooltip_button_release(GtkWidget *widget,
         else
         { 
             /*stop a timeout*/
-            g_source_remove(as->show_tooltip_timeout_id);
+            if(as->show_tooltip_timeout_id)
+            {
+                g_source_remove(as->show_tooltip_timeout_id);
+                as->show_tooltip_timeout_id = 0;
+            }
         }
         
         /* Set the button to be normal state */
@@ -1139,7 +1144,11 @@ static void button_toggled(GtkToggleButton *togglebutton,
     if (as->tooltip_visible)
     { 
         /*stop a timeout*/
-        g_source_remove(as->hide_tooltip_timeout_id);
+        if(as->hide_tooltip_timeout_id)
+        {
+            g_source_remove(as->hide_tooltip_timeout_id);
+            as->hide_tooltip_timeout_id = 0;
+        }
 
         /* hide the window */
         gtk_widget_hide(as->tooltip_menu);
