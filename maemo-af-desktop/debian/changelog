@@ -1,3 +1,9 @@
+maemo-af-desktop (2.6.19-3) unstable; urgency=low
+
+  * get the default background filename from the .desktop file
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 26 May 2006 17:48:10 +0300
+
 maemo-af-desktop (2.6.19-2) unstable; urgency=low
 
   * use the new desktop background filename in the postinstallation
