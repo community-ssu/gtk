@@ -1065,7 +1065,7 @@ static void add_new_applets(GtkWidget *widget, gpointer data)
         gtk_main_iteration ();
     }
 
-    node->drag_icon = NULL;
+    node->drag_icon = screenshot_grab_from_gdk_window(node->ebox->window);;
 
 
 

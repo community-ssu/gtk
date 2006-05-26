@@ -1,5 +1,13 @@
 2006-05-26  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Newly seelected applet does not update the overlap
+	indication" (Closes N#30911)
+	* hildon-home/layout-manager.c: Grab a screenshot of an applet when
+	  adding it just in case it is
+	  conflicting when the first drag begins to avoid red borders in it
+
+2006-05-26  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-watched-window.c: Added check that the
 	  pid value read from the XWindow property is not 0 (Closes N#30602)
 
