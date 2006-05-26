@@ -1,0 +1,17 @@
+2006-05-11 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* debian/rules: applying patches in certain order
+	* upstream/patches/gtkhtml_text_selection.diff: new patch to allow text selections
+	Fixes N#29173
+
+2006-05-09 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* debian/rules; thumb compilation and dh_makeshlibs 
+
+2005-01-20 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* First release
+	* Removed dependencies on GNOME and its libraries
+	* Added a patch for the panning support
+	* Added a ChangeLog
+

@@ -1,0 +1,86 @@
+# Improved text selection patch
+#
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the gtkhtml package
+#
+diff -Nru gtkhtml-3.9.1/src/gtkhtml.c gtkhtml-3.9.1-dblclk/src/gtkhtml.c
+--- gtkhtml-3.9.1/src/gtkhtml.c	2006-05-10 12:05:16.000000000 +0300
++++ gtkhtml-3.9.1-dblclk/src/gtkhtml.c	2006-05-10 12:19:48.000000000 +0300
+@@ -193,6 +193,9 @@
+ /* Interval for scrolling during selection.  */
+ #define SCROLL_TIMEOUT_INTERVAL 10
+ 
++/* Mouse move threshold for doubleclick check */
++#define MOUSE_DBLCLK_THRESHOLD 10
++
+ 
+ GtkHTMLParagraphStyle
+ clueflow_style_to_paragraph_style (HTMLClueFlowStyle style, HTMLListType item_type)
+@@ -1604,6 +1607,18 @@
+ 
+ 	gdk_window_get_pointer (GTK_LAYOUT (widget)->bin_window, &x, &y, NULL);
+ 
++	/* If there is only a small motion from the origin and simple 
++	   doubleclick is active, abort the motion, otherwise clear simple_dblclick flag */
++	if (GTK_HTML (widget)->simple_dblclick) {
++	    GtkHTML *html = GTK_HTML (widget);
++	    
++	    if (abs(x - html->selection_x1) <= MOUSE_DBLCLK_THRESHOLD && 
++		abs(y - html->selection_y1) <= MOUSE_DBLCLK_THRESHOLD)
++		return TRUE;
++		
++	    html->simple_dblclick = FALSE;
++	}
++	
+ 	if (!mouse_change_pos (widget, window, x, y, event->state))
+ 		return FALSE;
+ 
+@@ -1828,6 +1843,10 @@
+ 			html->in_selection_drag = TRUE;
+ 			html->panning = FALSE;
+ 			html->in_selection = TRUE;
++			/* Check for simple double click, for selecting a word */
++			html->simple_dblclick = TRUE;
++        		html->selection_x1 = x;
++			html->selection_y1 = y;
+ 		}
+ 		else if (event->type == GDK_3BUTTON_PRESS) {
+ 			/*html->in_selection_drag = FALSE;
+@@ -1866,7 +1885,8 @@
+ 
+ 	engine =  html->engine;
+ 
+-	if (html->in_selection) {
++	/* If it is a simple doubleclick don't allow the selection */
++	if (html->in_selection && !html->simple_dblclick) {
+ 		html_engine_update_selection_active_state (html->engine, html->priv->event_time);
+ 		if (html->in_selection_drag)
+ 			html_engine_select_region (engine, html->selection_x1, html->selection_y1,
+@@ -1892,6 +1912,12 @@
+ 				html_text_set_link_visited (HTML_TEXT(focus_object), focus_object_offset, html->engine, TRUE);
+ 			}   
+ 		}
++		
++		/* If it was a simple doubleclick select a word */
++		if (html->simple_dblclick) {
++		    html->simple_dblclick = FALSE;
++		    gtk_html_select_word(html);
++		}
+ 	}
+ 
+ 	html->in_selection = FALSE;
+diff -Nru gtkhtml-3.9.1/src/gtkhtml.h gtkhtml-3.9.1-dblclk/src/gtkhtml.h
+--- gtkhtml-3.9.1/src/gtkhtml.h	2006-05-10 12:05:17.000000000 +0300
++++ gtkhtml-3.9.1-dblclk/src/gtkhtml.h	2006-05-10 10:29:06.000000000 +0300
+@@ -72,6 +72,10 @@
+ 
+ 	guint debug : 1;
+ 	guint allow_selection : 1;
++	
++	/* Dbl-clk variables */
++	
++	guint simple_dblclick : 1;
+ 
+ 	guint hadj_connection;
+ 	guint vadj_connection;
+

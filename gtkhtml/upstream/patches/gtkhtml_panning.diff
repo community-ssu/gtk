@@ -1,0 +1,128 @@
+# Panning instead of text selection patch
+#
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the gtkhtml package
+#
+diff -Nru gtkhtml-3.9.1/src/gtkhtml.c gtkhtml-3.9.1-fixed/src/gtkhtml.c
+--- gtkhtml-3.9.1/src/gtkhtml.c	2006-01-02 12:04:04.000000000 +0200
++++ gtkhtml-3.9.1-fixed/src/gtkhtml.c	2006-01-02 13:26:08.000000000 +0200
+@@ -1610,6 +1610,35 @@
+ 	engine = GTK_HTML (widget)->engine;
+ 	if (GTK_HTML (widget)->in_selection_drag && html_engine_get_editable (engine))
+ 		html_engine_jump_at (engine, x, y);
++
++	/* (TL 18-Nov-05) Added panning feature */
++	if (GTK_HTML (widget)->panning) {
++		GtkAdjustment *adj;
++		gint dx, dy;
++		gdouble value;
++
++		dx = x - GTK_HTML (widget)->lastx;
++		dy = y - GTK_HTML (widget)->lasty;
++
++		/* Vertical panning */
++		adj = gtk_layout_get_vadjustment(GTK_LAYOUT(widget));
++		value = adj->value - (gdouble) dy;
++		if (value < adj->lower)
++			value = adj->lower;
++		else if (value > (adj->upper - adj->page_size))
++			value = adj->upper - adj->page_size;
++		gtk_adjustment_set_value(adj, value);
++
++		/* Horizontal panning */
++		adj = gtk_layout_get_hadjustment(GTK_LAYOUT(widget));
++		value = adj->value - (gdouble) dx;
++		if (value < adj->lower)
++			value = adj->lower;
++		else if (value > (adj->upper - adj->page_size))
++			value = adj->upper - adj->page_size;
++		gtk_adjustment_set_value(adj, value);
++	}
++
+ 	return TRUE;
+ }
+ 
+@@ -1723,7 +1752,13 @@
+ 			}
+ 			break;
+ 		case 1:
+-			html->in_selection_drag = TRUE;
++			/*html->in_selection_drag = TRUE;*/
++			/* (TL 18-Nov-05) First click starts panning, not selection */
++			html->in_selection_drag = FALSE;
++			html->panning = TRUE;
++			html->lastx = x;
++			html->lasty = y;
++
+ 			if (html_engine_get_editable (engine)) {
+ 				HTMLObject *obj;
+ 
+@@ -1787,13 +1822,19 @@
+ 		}
+ 	} else if (event->button == 1 && html->allow_selection) {
+ 		if (event->type == GDK_2BUTTON_PRESS) {
+-			html->in_selection_drag = FALSE;
+-			gtk_html_select_word (html);
++			/*html->in_selection_drag = FALSE;
++			gtk_html_select_word (html);*/
++			/* (TL 18-Nov-05) Second click starts selection and stops panning */
++			html->in_selection_drag = TRUE;
++			html->panning = FALSE;
+ 			html->in_selection = TRUE;
+ 		}
+ 		else if (event->type == GDK_3BUTTON_PRESS) {
+-			html->in_selection_drag = FALSE;
+-			gtk_html_select_line (html);
++			/*html->in_selection_drag = FALSE;
++			gtk_html_select_line (html);*/
++			/* (TL 18-Nov-05) Third click starts selection and stops panning */
++			html->in_selection_drag = TRUE;
++			html->panning = FALSE;
+ 			html->in_selection = TRUE;
+ 		}
+ 	}
+@@ -1840,6 +1881,8 @@
+ 			html_engine_jump_at (engine, x, y); 
+ 
+ 		html->in_selection_drag = FALSE;
++		/* (TL 18-Nov-05) Stop panning on button release */
++		html->panning = FALSE;
+ 
+ 		if (!html->priv->dnd_in_progress
+ 		    && html->pointer_url != NULL && ! html->in_selection) {
+@@ -1882,7 +1925,7 @@
+ 	}
+ 
+ 	html->priv->need_im_reset = TRUE;
+-	gtk_im_context_focus_in (html->priv->im_context);
++	//gtk_im_context_focus_in (html->priv->im_context); // (TL 20-Oct-05) Kludge to focus issues
+ 
+ 	gtk_html_keymap_direction_changed (gdk_keymap_get_for_display (gtk_widget_get_display (widget)),
+ 					   html);
+@@ -3367,6 +3410,11 @@
+ 	html->selection_x1 = 0;
+ 	html->selection_y1 = 0;
+ 
++	/* (TL 18-Nov-05) For panning */
++	html->panning = FALSE;
++	html->lastx = 0;
++	html->lasty = 0;
++
+ 	html->in_selection = FALSE;
+ 	html->in_selection_drag = FALSE;
+ 
+diff -Nru gtkhtml-3.9.1/src/gtkhtml.h gtkhtml-3.9.1-fixed/src/gtkhtml.h
+--- gtkhtml-3.9.1/src/gtkhtml.h	2006-01-02 12:04:04.000000000 +0200
++++ gtkhtml-3.9.1-fixed/src/gtkhtml.h	2006-01-02 13:26:08.000000000 +0200
+@@ -62,6 +62,11 @@
+ 
+ 	gint selection_x1, selection_y1;
+ 
++	/* (TL 18-Nov-05) Panning variables */
++	gboolean panning;
++	gint lastx;
++	gint lasty;
++
+ 	guint in_selection : 1;
+ 	guint in_selection_drag : 1;
+ 
