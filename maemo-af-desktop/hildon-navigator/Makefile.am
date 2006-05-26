@@ -18,6 +18,9 @@ INCLUDES = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = hildon-navigator.pc
 
+backupconfdir = $(sysconfdir)/osso-backup/applications
+backupconf_DATA = hildon-navigator-backup.conf
+
 
 lib_LTLIBRARIES = libhildonnavigator.la
 

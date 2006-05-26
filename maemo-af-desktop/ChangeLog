@@ -1,5 +1,11 @@
 2006-05-26  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hildon-navigator-backup.conf: Added osso-backup
+	  configuration not to restore the TN plugins watch files
+	  (Closes N#26404)
+
+2006-05-26  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/application-switcher.c: Added additional
 	  check on the source id before removing the tooltip timeouts
 	  (Closes N#30532)
