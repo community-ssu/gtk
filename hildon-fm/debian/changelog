@@ -1,3 +1,9 @@
+hildon-fm (0.26-1) unstable; urgency=low
+
+  * Fixed reporting of file size in the details dialog (N#30373, N#30380).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 26 May 2006 15:29:40 +0300
+
 hildon-fm (0.25-1) unstable; urgency=low
 
   * Fixed linking to libossomime library (N#30315).
