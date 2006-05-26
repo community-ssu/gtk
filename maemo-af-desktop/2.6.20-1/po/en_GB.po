@@ -1,0 +1,257 @@
+# SOME DESCRIPTIVE TITLE.
+# This file is put in the public domain.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: meamo-af-desktop 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-02-01 13:36+0200\n"
+"PO-Revision-Date: 2005-03-13 12:00+0200\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../application-switcher.h:23
+msgid "tana_fi_home"
+msgstr "Home"
+
+#: ../application-switcher.h:24
+msgid "tana_ib_please_close_dialog"
+msgstr "%s has %s dialog open, please close it before switching to other window"
+
+#: ../windowmanager.c
+msgid "ckct_ib_application_loading"
+msgstr "loading"
+
+msgid "ckct_ib_application_loading_failed"
+msgstr "Unable to load"
+
+msgid "cerm_can_not_open_insuf_res"
+msgstr "Unable to open. \n" "Not enough memory."
+
+#: ../others-menu.c:
+msgid "tana_fi_utilities"
+msgstr "Utilities"
+
+msgid "tana_fi_games"
+msgstr "Games"
+
+msgid "tana_fi_extras"
+msgstr "Extras"
+
+msgid "tana_ap_tasknav_name"
+msgstr "Task navigator"
+
+msgid "mcen_ap_name"
+msgstr "E-mail"
+
+msgid "weba_ap_web_browser"
+msgstr "Web"
+
+msgid "weba_ap_bookmarks_manager"
+msgstr "Bookmarks"
+
+msgid "vide_ap_video_player_name"
+msgstr "Video player"
+
+msgid "audi_ap_audio_player_name"
+msgstr "Audio player"
+
+msgid "imag_ap_image_viewer_name"
+msgstr "Images"
+
+msgid "sfil_ap_file_manager"
+msgstr "File manager"
+
+msgid "note_ap_notes_name"
+msgstr "Notes"
+
+msgid "sket_ap_sketch_title"
+msgstr "Sketch"
+
+msgid "calc_ap_calculator"
+msgstr "Calculator"
+
+msgid "cloc_ap_application_title"
+msgstr "Clock"
+
+msgid "game_ap_chess_name"
+msgstr "Chess"
+
+msgid "game_ap_lmarbles_name"
+msgstr "Marbles"
+
+msgid "game_ap_mahjong_name"
+msgstr "Mahjong"
+
+msgid "pdvi_ap_application_title"
+msgstr "PDF reader"
+
+msgid "rss_ap_news_reader"
+msgstr "News reader"
+
+msgid "conn_set_ti_conn_set"
+msgstr "Connectivity settings"
+
+msgid "conn_ap_connmanager"
+msgstr "Connection manager"
+
+msgid "pusd_ap_application_title"
+msgstr "Switch on/off"
+
+msgid "srch_ap_search"
+msgstr "Search"
+
+msgid "lock_ap_application_title"
+msgstr "Device lock"
+
+msgid "refs_ti_restore_original_settings"
+msgstr "Restore original settings"
+
+msgid "back_ti_dia001_title"
+msgstr "Backup/Restore"
+
+msgid "help_ap_Help_application"
+msgstr "Help"
+
+msgid "copa_ap_cp_name"
+msgstr "Control panel"
+
+msgid "disp_ti_display"
+msgstr "Display"
+
+msgid "snds_ti_sound_settings"
+msgstr "Sounds"
+
+msgid "memo_ti_memory"
+msgstr "Memory"
+
+msgid "tein_ti_text_input_title"
+msgstr "Text input settings"
+
+msgid "dati_ti_time_and_date_title"
+msgstr "Date & time"
+
+msgid "ctrp_ti_screen_calibration"
+msgstr "Screen calibration"
+
+msgid "cert_ti_main_dialog"
+msgstr "Certificate manager"
+
+msgid "cpal_ti_language_and_regional_title"
+msgstr "Language and regional settings"
+
+msgid "ai_ap_application_title"
+msgstr "Application installer"
+
+msgid "pers_ti_personalisation"
+msgstr "Personalisation"
+
+#: ../hildon-home-main.c:204
+msgid "home_ap_home_name"
+msgstr "Home"
+
+#: ../hildon-home-main.c:246
+msgid "home_me_internet_radio"
+msgstr "Internet radio"
+
+#: ../hildon-home-main.c:247
+msgid "home_me_clock"
+msgstr "Clock"
+
+#: ../hildon-home-main.c:248
+msgid "home_me_news"
+msgstr "News"
+
+#: ../hildon-home-main.c:249
+msgid "home_me_web_shrt"
+msgstr "Web shortcut"
+
+#: ../hildon-home-main.c:251
+msgid "home_me_set_home_background"
+msgstr "Set background image"
+
+#: ../hildon-home-main.c:355 ../hildon-home-main.c:428
+msgid "home_fi_set_backgr_image"
+msgstr "Image:"
+
+#: ../hildon-home-main.c:409
+msgid "home_ti_set_backgr_title"
+msgstr "Set background image"
+
+#: ../hildon-home-main.c:413
+msgid "home_bd_set_backgr_ok"
+msgstr "OK"
+
+#: ../hildon-home-main.c:415
+msgid "home_bd_set_backgr_browse"
+msgstr "Browse..."
+
+#:
+msgid "home_bd_set_backgr_apply"
+msgstr "Apply"
+
+#: ../hildon-home-main.c:417
+msgid "home_bd_set_backgr_cancel"
+msgstr "Cancel"
+
+#:
+msgid "home_ib_mem_cov_open_not_text"
+msgstr "Open image interrupted.Memory card cover open"
+
+#:
+msgid "home_bd_mem_cov_open_not_close"
+msgstr "Close"
+
+#:
+msgid "docm_nw_opening_file"
+msgstr "Opening"
+
+#:
+msgid "docm_bd_opening_file"
+msgstr "Cancel"
+
+#:
+msgid "sfil_ib_opening_not_allowed"
+msgstr "Unable to open file"
+
+#:
+msgid "home_im_set_backr_im_01"
+msgstr "Wallpaper_01"
+
+#:
+msgid "home_im_set_backr_im_02"
+msgstr "Wallpaper_02" 
+
+#:
+msgid "home_im_set_backr_im_03"
+msgstr "Wallpaper_03"
+
+#:
+msgid "home_im_set_backr_im_04"
+msgstr "Wallpaper_04"
+
+#:
+msgid "ckdg_ti_select_image"
+msgstr "Select image"
+
+#:
+msgid "sfil_bd_select_object_ok_select"
+msgstr "Select"
+
+#:
+msgid "ckdg_va_select_object_no_images"
+msgstr "(no images)"
+
+#: This really is capitalised
+msgid "Home_me_screen"
+msgstr "Screen"
+
+#:
+msgid "inpu_ap_hwr_training_title"
+msgstr "Teach handwriting"
+
