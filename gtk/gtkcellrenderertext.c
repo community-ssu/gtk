@@ -1561,9 +1561,12 @@ gtk_cell_renderer_text_render (GtkCellRenderer      *cell,
       g_object_unref (gc);
     }
 
-  /* Dirty Hildon hack to force ellipsation */
+  /* Hildon: Dirty hack to force ellipsation
+   * FIXME sanity check MIN() use and initial painting
+   */
   pango_layout_get_extents (layout, NULL, &logical_rect);
-  if (PANGO_PIXELS (logical_rect.width) > MIN (background_area->width, expose_area->width))
+  if (!priv->ellipsize_set && 
+      PANGO_PIXELS (logical_rect.width) > MIN (background_area->width, expose_area->width))
     {
       priv->ellipsize = PANGO_ELLIPSIZE_END;
       priv->ellipsize_set = TRUE;
