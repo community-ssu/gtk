@@ -72,6 +72,8 @@ GtkWidget *hildon_file_chooser_dialog_new_with_properties(GtkWindow *
                                                           first_property,
                                                           ...);
 
+void hildon_file_chooser_dialog_focus_to_input(HildonFileChooserDialog *d);
+
 /* These are not properties, because similar functions in
     for current folders are functions only in GtkFileChooser */
 void hildon_file_chooser_dialog_set_safe_folder(

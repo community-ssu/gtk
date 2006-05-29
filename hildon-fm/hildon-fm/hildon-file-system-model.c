@@ -42,6 +42,7 @@
 #include <sys/vfs.h>
 #include <unistd.h>
 #include <errno.h>
+#include <osso-mime.h>
 
 #include "hildon-file-common-private.h"
 #include "hildon-file-system-special-location.h"
@@ -990,10 +991,35 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
             else if (model_node->thumbnail_handle)
               osso_thumbnail_factory_move_front(model_node->thumbnail_handle);
 
+            /* the following if clause handles the hourglass icon */
+            if (path && info && !model_node->thumbnail_cache)
+            {
+              OssoMimeCategory cat;
+              const gchar *mime_type;
+              gchar *uri = gtk_file_system_path_to_uri(priv->filesystem,
+                                                       path);
+              
+              mime_type = gtk_file_info_get_mime_type(info);
+              /* FIXME: hack to workaround problem with Sketch files.
+               * Second check is because we cannot make thumbnails for
+               * images on the Gateway. */
+              if (strcmp(mime_type, "sketch/png") != 0 &&
+                  (uri && !g_str_has_prefix(uri, "obex://")))
+              {
+                cat = osso_mime_get_category_for_mime_type(mime_type);
+                if (cat == OSSO_MIME_CATEGORY_IMAGES)
+                  model_node->thumbnail_cache =
+                    _hildon_file_system_load_icon_cached(
+                        gtk_icon_theme_get_default(),
+                        "qgn_list_gene_image_file_wait", THUMBNAIL_ICON);
+              }
+              g_free(uri);
+            }
+
             if (!model_node->thumbnail_cache)
-                model_node->thumbnail_cache =
-                    hildon_file_system_model_create_image(priv, model_node,
-                                                          THUMBNAIL_ICON);
+              model_node->thumbnail_cache =
+                 hildon_file_system_model_create_image(priv, model_node,
+                                                       THUMBNAIL_ICON);
         }
         g_value_set_object(value, model_node->thumbnail_cache);
         update_cache_queue(priv, node);

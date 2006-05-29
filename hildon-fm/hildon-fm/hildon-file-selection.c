@@ -547,12 +547,12 @@ static void hildon_file_selection_finalize(GObject * obj)
 
     hildon_file_selection_cancel_delayed_select(priv);
     g_source_remove_by_user_data(self); /* Banner checking timeout */
-    gtk_widget_unparent(priv->scroll_dir);
 #ifndef HILDON_FM_HPANED
+    gtk_widget_unparent(priv->scroll_dir);
     gtk_widget_unparent(priv->separator);
-#endif
 
     gtk_widget_unparent(GTK_WIDGET(priv->view_selector));
+#endif
     /* This gives warnings to console about unref_tree_helpers */
     /* This have homething to do with content pane filter model */
 #ifdef HILDON_FM_HPANED
