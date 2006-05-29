@@ -1,0 +1,45 @@
+#include <glib.h>
+
+#include "hildon-file-system-dynamic-device.h"
+#include "hildon-file-system-settings.h"
+
+static void
+hildon_file_system_dynamic_device_class_init (HildonFileSystemDynamicDeviceClass *klass);
+static void
+hildon_file_system_dynamic_device_finalize (GObject *obj);
+static void
+hildon_file_system_dynamic_device_init (HildonFileSystemDynamicDevice *device);
+static gboolean
+hildon_file_system_model_dynamic_device_failed_access (HildonFileSystemSpecialLocation *location);
+
+G_DEFINE_TYPE (HildonFileSystemDynamicDevice,
+               hildon_file_system_dynamic_device,
+               HILDON_TYPE_FILE_SYSTEM_REMOTE_DEVICE);
+
+static void
+hildon_file_system_dynamic_device_class_init (HildonFileSystemDynamicDeviceClass *klass)
+{
+    GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+    HildonFileSystemSpecialLocationClass *location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_CLASS (klass);
+    
+    gobject_class->finalize = hildon_file_system_dynamic_device_finalize;
+    location->failed_access = hildon_file_system_model_dynamic_device_failed_access;
+}
+
+static void
+hildon_file_system_dynamic_device_init (HildonFileSystemDynamicDevice *device)
+{
+}
+
+static void
+hildon_file_system_dynamic_device_finalize (GObject *obj)
+{
+    G_OBJECT_CLASS (hildon_file_system_dynamic_device_parent_class)->
+                                                            finalize (obj);
+}
+
+static gboolean
+hildon_file_system_model_dynamic_device_failed_access (HildonFileSystemSpecialLocation *location)
+{
+    return TRUE;
+}
