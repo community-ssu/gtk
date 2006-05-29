@@ -1,5 +1,5 @@
 Source: maemo-af-desktop-config
-Section: unknown
+Section: x11
 Priority: optional
 Maintainer: Johan Bilien <johan.bilien@nokia.com>
 Build-Depends: debhelper (>= 4.0.0)

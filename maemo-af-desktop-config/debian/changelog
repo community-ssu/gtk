@@ -1,3 +1,9 @@
+maemo-af-desktop-config (0.0.4-2) unstable; urgency=low
+
+  * Changed section to x11 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 29 May 2006 10:08:03 +0300
+
 maemo-af-desktop-config (0.0.4-1) unstable; urgency=low
 
   * Added default configuration for status bar plugins
