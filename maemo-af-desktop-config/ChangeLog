@@ -1,5 +1,9 @@
 2006-05-29  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.5
+
+2006-05-29  Johan Bilien <johan.bilien@nokia.com>
+
 	* applications.menu: updated for new UI specifications (Cloese N#30429)
 
 2006-05-29  Johan Bilien <johan.bilien@nokia.com>
