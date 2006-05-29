@@ -1,0 +1,27 @@
+# Dependency removal patch
+#
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the gtkhtml package
+#
+diff -Naur gtkhtml-3.9.1/src/htmlengine.c gtkhtml-3.9.1-memleak-fix/src/htmlengine.c
+--- gtkhtml-3.9.1/src/htmlengine.c	2005-09-11 07:05:25.000000000 +0300
++++ gtkhtml-3.9.1-memleak-fix/src/htmlengine.c	2006-05-29 15:29:27.000000000 +0300
+@@ -1551,6 +1551,7 @@
+ 	g_free (data);
+ 	g_free (classid);
+ 	g_free (name);
++	html_element_free(element);
+ }	
+ 
+ 
+diff -Naur gtkhtml-3.9.1/src/htmlsearch.c gtkhtml-3.9.1-memleak-fix/src/htmlsearch.c
+--- gtkhtml-3.9.1/src/htmlsearch.c	2005-05-19 12:22:25.000000000 +0300
++++ gtkhtml-3.9.1-memleak-fix/src/htmlsearch.c	2006-05-29 15:28:58.000000000 +0300
+@@ -129,6 +129,7 @@
+ 		g_slist_free (search->stack);
+ 	if (search->reb) {
+ 		/* FIXME why this segfault for me? regfree (search->reb); */
++		regfree(search->reb);
+ 		g_free (search->reb);
+ 	}
+ 	g_free (search->trans);

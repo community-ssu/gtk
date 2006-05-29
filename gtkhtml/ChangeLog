@@ -1,3 +1,8 @@
+2006-05-29 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* memory leak fix patch (gtkhtml_memleak_fix.diff)
+	Fixes N#28849
+
 2006-05-11 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* debian/rules: applying patches in certain order

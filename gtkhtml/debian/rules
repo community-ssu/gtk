@@ -56,6 +56,7 @@ $(SOURCE_DIR)/configure:
 	patch -p0 < upstream/patches/gtkhtml_dependency_removal_cleaning.diff
 	patch -p0 < upstream/patches/gtkhtml_panning.diff
 	patch -p0 < upstream/patches/gtkhtml_text_selection.diff
+	patch -p0 < upstream/patches/gtkhtml_memleak_fix.diff
 	cd $(SOURCE_DIR) && ./autogen.sh
 
 
