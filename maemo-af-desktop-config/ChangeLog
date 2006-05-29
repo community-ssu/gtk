@@ -1,6 +1,10 @@
 2006-05-29  Johan Bilien <johan.bilien@nokia.com>
 
-	* Corrected information about battery plugin (Closes N#30889)
+	* applications.menu: updated for new UI specifications (Cloese N#30429)
+
+2006-05-29  Johan Bilien <johan.bilien@nokia.com>
+
+	* plugins.conf Corrected information about battery plugin (Closes N#30889)
 
 2006-05-11  Johan Bilien <johan.bilien@nokia.com>
 

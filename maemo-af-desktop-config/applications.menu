@@ -12,9 +12,9 @@
   
   <!-- Favourites -->
   <Include>
-    <Filename>osso-music-player.desktop</Filename>
-    <Filename>video-player.desktop</Filename>
+    <Filename>mp_ui.desktop</Filename>
     <Filename>osso_rss_feed_reader.desktop</Filename>
+    <Filename>image-viewer.desktop</Filename>
     <Filename>filemanager.desktop</Filename>
   </Include>
 
@@ -57,7 +57,6 @@
     <Include>
       <Filename>osso_calculator.desktop</Filename>
       <Filename>osso_worldclock.desktop</Filename>
-      <Filename>image-viewer.desktop</Filename>
       <Filename>osso_notes.desktop</Filename>
       <Filename>osso_pdfviewer.desktop</Filename>
       <Filename>osso_sketch.desktop</Filename>
