@@ -18,6 +18,14 @@ some repository and make it accessible to apt.  See the "Repository
 Maintainers Guide" for more information on how to setup such a
 repository.
 
+This HOWTO assumes that you are familiar with making .deb packages.  A
+good place to start is the "Debian New Maintainers' Guide"
+
+    http://www.debian.org/doc/maint-guide/
+
+There is also the example "hello-world-app" package that you can use
+to get started.
+
 You can freely alternate between AI 2006 and apt-get, say.  Changes
 done to the system via apt-get or dpkg are picked up by the AI 2006
 without confusing it, and vice versa.
