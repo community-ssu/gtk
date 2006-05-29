@@ -1,3 +1,8 @@
+2006-05-29  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/application-switcher.c: Fix a crash when a system
+	  activity event is received before the AS was completely initialized
+
 2006-05-26  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.6.20

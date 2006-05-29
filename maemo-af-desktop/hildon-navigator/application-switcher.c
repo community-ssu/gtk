@@ -2083,6 +2083,7 @@ app_switcher_system_inactivity_change(ApplicationSwitcher_t *as)
   GdkPixbufAnimation * pixbuf_anim;
   
   g_return_if_fail(as);
+  g_return_if_fail(as->items);
 
   as->system_inactivity = !as->system_inactivity;
   
