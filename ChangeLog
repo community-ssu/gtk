@@ -1,3 +1,9 @@
+2006-05-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcellrenderertext.c (gtk_cell_renderer_text_render):
+	Do not force ellipsis at end if ellipsis mode already set.
+	N#30359
+
 2006-05-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkhbbox.c (gtk_hbutton_box_size_allocate): Ignore the secondary
