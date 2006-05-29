@@ -671,8 +671,25 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
   g_object_set(self->priv->file_name, "label", name, NULL);
   g_object_set(self->priv->file_type, "label", _(mime), NULL);
 
-  g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_kb"),
-             size < 1024 ? 1 : (gint) size / 1024);
+  if (size < 1024)
+    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_kb"), 1);
+  else if (size < 100 * 1024)
+    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_1kb_99kb"),
+               size / 1024);
+  else if (size < 1024 * 1024)
+    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_100kb_1mb"),
+               size / (1024.0f * 1024.0f));
+  else if (size < 10 * 1024 * 1024)
+    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_1mb_10mb"),
+               size / (1024.0f * 1024.0f));
+  else if (size < 1024 * 1024 * 1024)
+    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_10mb_1gb"),
+               size / (1024 * 1024));
+  else
+    /* Following calculation doesn't fit into 32 bits if the
+     * filesize is larger than 2^62 ;) */
+    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_1gb_or_greater"),
+               size / (1024.0f * 1024.0f * 1024.0f));
 
   g_object_set(self->priv->file_size, "label", buffer, NULL);
 
