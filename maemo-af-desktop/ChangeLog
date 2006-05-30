@@ -1,3 +1,7 @@
+2006-05-30  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hildon-navigator-backup.conf: Fixed typo
+
 2006-05-29  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/application-switcher.c: Fix a crash when a system
