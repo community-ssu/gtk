@@ -43,7 +43,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// will be changed later to bits
+// TODO: will be changed later to bits
 #define TEXCEPTION 1
 #define TWARNING 2
 #define TDEBUG 3
