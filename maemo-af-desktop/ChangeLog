@@ -1,5 +1,12 @@
 2006-05-30  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Cannot select or unselect applets by using scroll key's
+	midlle button." (Closes N#30420)
+	* hildon-home/home-select-applets-dialog.c: Added key-press handler
+	  to select/unselect when Enter is pressed
+
+2006-05-30  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Weid application switcher behaviour after Home's Layout
 	mode" (Closs N#29905)
 	* hildon-navigator/hildon-navigator-main.c: do not apply

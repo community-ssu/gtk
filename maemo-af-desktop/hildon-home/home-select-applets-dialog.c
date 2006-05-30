@@ -30,6 +30,10 @@
 #include <libintl.h> 
 #include <string.h>
 
+#include <gdk/gdkkeysyms.h>
+
+#include <gtk/gtk.h>
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -56,6 +60,10 @@ static GtkWidget *home_applets_scrollwin;
 
 
 /* Private function declarations */
+static
+gboolean select_applets_key_pressed_cb(GtkWidget *widget, 
+		                       GdkEventKey *event, 
+				       gpointer unused_data);
 static 
 void select_applets_toggled_cb(GtkCellRendererToggle *cell_renderer, 
 		               gchar *path, 
@@ -120,7 +128,8 @@ void show_select_applets_dialog(GList *applets,
     /*    :toggle cell renderer */
     cell_renderer = gtk_cell_renderer_toggle_new();
     g_signal_connect(G_OBJECT(cell_renderer), "toggled", 
-		    G_CALLBACK(select_applets_toggled_cb), data_t.model_data); 
+		    G_CALLBACK(select_applets_toggled_cb), 
+		    data_t.model_data); 
     gtk_tree_view_insert_column_with_attributes(treeview, -1, NULL,
 		    cell_renderer, "active", CHECKBOX_COL, NULL);
     g_object_set(cell_renderer, "activatable", TRUE, NULL);
@@ -129,6 +138,10 @@ void show_select_applets_dialog(GList *applets,
     gtk_tree_view_insert_column_with_attributes(treeview, -1, NULL,
 		    gtk_cell_renderer_text_new(), "text", 
 		    APPLET_NAME_COL, NULL);
+
+    g_signal_connect(G_OBJECT(treeview), "key-press-event",
+		     G_CALLBACK(select_applets_key_pressed_cb), 
+		     data_t.model_data);
     
     /* Initialize the dnotify callback for .desktop directory */
     if( hildon_dnotify_set_cb
@@ -330,6 +343,62 @@ void select_applets_selected(GtkEventBox *home_event_box,
    
    return;
 }
+
+
+/**
+ * @select_applets_key_pressed_cb
+ *
+ * @param GtkWidget* : The parent, GtkTreeView widget
+ * @param GdkEventKey* : Key event 
+ * @param gpointer : not used user data 
+ *
+ * Calls item (de)activation if Enter key was pressed
+ **/
+static 
+gboolean select_applets_key_pressed_cb(GtkWidget *widget, 
+		                       GdkEventKey *event, 
+				       gpointer unused_data)
+{
+    GtkTreeModel *model;
+    GtkTreeSelection *selection;
+    GtkTreeIter iter;
+    gboolean active;
+	    
+    if ( !widget ) return FALSE; 
+
+    
+    switch( event->keyval ) {
+	    
+    case GDK_Return:
+    case GDK_KP_Enter:
+
+        /* Get selected list item */
+	if ( !(model = gtk_tree_view_get_model(GTK_TREE_VIEW(widget))) ) {
+	    ULOG_WARN("Could not get the Home applets dialog plugin list.");
+	    return FALSE;
+	}
+	if ( !(selection = gtk_tree_view_get_selection
+				(GTK_TREE_VIEW(widget))) ) {
+	    ULOG_WARN("Could not get selected Home applets dialog applet.");
+	    return FALSE;
+	}
+	if ( !(gtk_tree_selection_get_selected(selection, &model, &iter)) ) {
+	    /* No item selected, return */ return FALSE;
+	}
+	
+	/* Get boolean value */
+	gtk_tree_model_get(model, &iter, CHECKBOX_COL, &active, -1);
+	/* Toggle item selected value on the TreeModel */
+	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 
+			   CHECKBOX_COL, !active, -1);    	
+        return TRUE;
+    default:
+	return FALSE;
+    }
+	
+    return FALSE;
+}
+	    
 
 /**
  * 
