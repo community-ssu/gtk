@@ -1,3 +1,9 @@
+gtkhtml (3.9.1-1osso7) unstable; urgency=low
+
+  * Update (removing .la from -dev package)
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue, 30 May 2006 13:26:15 +0300
+
 gtkhtml (3.9.1-1osso6) unstable; urgency=low
 
   * Bugfix
