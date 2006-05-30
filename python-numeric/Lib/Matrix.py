@@ -61,7 +61,7 @@ def _binary(num):
     while bin[ind] == '0':
         ind += 1
     return bin[ind:]
-        
+
 
 class Matrix(UserArray):
     def __init__(self, data, typecode=None, copy=1, savespace=0):
@@ -72,7 +72,7 @@ class Matrix(UserArray):
             self.array.shape = (1,self.array.shape[0])
         self.shape = self.array.shape
 
-    def __getitem__(self, index):        
+    def __getitem__(self, index):
         out = self._rc(self.array[index])
         try:
             n = len(index)
@@ -125,7 +125,7 @@ class Matrix(UserArray):
                 return result
             # binary decomposition to reduce the number of Matrix
             #  Multiplies for other > 3.
-            beta = _binary(other)            
+            beta = _binary(other)
             t = len(beta)
             Z,q = x.copy(),0
             while beta[t-q-1] == '0':
@@ -138,20 +138,20 @@ class Matrix(UserArray):
                     result *= Z
             return result
         else:
-            raise TypeError, "exponent must be an integer"        
+            raise TypeError, "exponent must be an integer"
 
     def __rpow__(self, other):
         raise TypeError, "x**y not implemented for matrices y"
 
     def __invert__(self):
         return Matrix(Numeric.conjugate(self.array))
-    
+
     def __setattr__(self,attr,value):
         if attr=='shape':
             if len(value) == 0:
                 value = (1,1)
             if len(value) == 1:
-                value = (1,) + value 
+                value = (1,) + value
             if len(value) != 2:
                 raise ValueError, "Can only reshape a Matrix as a 2-d array."
             self.array.shape=value
@@ -184,10 +184,10 @@ class Matrix(UserArray):
 
     def __float__(self):
         return float(squeeze(self.array))
-    
+
     def m(self,b):
         return Matrix(self.array * asarray(b))
-    
+
     def asarray(self,t=None):
         if t is None:
             return self.array
@@ -195,18 +195,15 @@ class Matrix(UserArray):
             return asarray(self.array,t)
 
 if __name__ == '__main__':
-        from Numeric import *
-        m = Matrix( [[1,2,3],[11,12,13],[21,22,23]])
-        print m*m
-        print m.array*m.array
-        print transpose(m)
-        print m**-1
-        m = Matrix([[1,1],[1,0]])
-        print "Fibonacci numbers:",
-        for i in range(10):
-            mm=m**i
-            print mm[0][0],
-        print
-        
-            
-            
+    from Numeric import *
+    m = Matrix( [[1,2,3],[11,12,13],[21,22,23]])
+    print m*m
+    print m.array*m.array
+    print transpose(m)
+    print m**-1
+    m = Matrix([[1,1],[1,0]])
+    print "Fibonacci numbers:",
+    for i in range(10):
+        mm=m**i
+        print mm[0][0],
+    print

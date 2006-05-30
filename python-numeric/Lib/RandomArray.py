@@ -14,7 +14,7 @@ class ArgumentError(Exception):
     pass
 
 def seed(x=0,y=0):
-    """seed(x, y), set the seed using the integers x, y; 
+    """seed(x, y), set the seed using the integers x, y;
     Set a random one from clock if  y == 0
     """
     if type (x) != IntType or type (y) != IntType :
@@ -39,7 +39,7 @@ def _build_random_array(fun, args, shape=[]):
 # the arguments in args, creating an array with
 # the specified shape.
 # Allows an integer shape n as a shorthand for (n,).
-    if isinstance(shape, IntType): 
+    if isinstance(shape, IntType):
         shape = [shape]
     if len(shape) != 0:
         n = Numeric.multiply.reduce(shape)
@@ -56,7 +56,7 @@ def random(shape=[]):
     return _build_random_array(ranlib.sample, (), shape)
 
 def uniform(minimum, maximum, shape=[]):
-    """uniform(minimum, maximum, shape=[]) returns array of given shape of random reals 
+    """uniform(minimum, maximum, shape=[]) returns array of given shape of random reals
     in given range"""
     return minimum + (maximum-minimum)*random(shape)
 
@@ -75,11 +75,11 @@ def randint(minimum, maximum=None, shape=[]):
         return minimum + a.astype(Numeric.Int)
     else:
         return minimum + int(a)
-     
+
 def random_integers(maximum, minimum=1, shape=[]):
     """random_integers(max, min=1, shape=[]) = random integers in range min-max inclusive"""
-    return randint(minimum, maximum+1, shape) 
-     
+    return randint(minimum, maximum+1, shape)
+
 def permutation(n):
     "permutation(n) = a permutation of indices range(n)"
     return Numeric.argsort(random(n))
@@ -200,7 +200,7 @@ def multinomial(trials, probs, shape=[]):
            array of multinomial distributed integer vectors.
 
            trials is the number of trials in each multinomial distribution.
-           probs is a one dimensional array. There are len(prob)+1 events. 
+           probs is a one dimensional array. There are len(prob)+1 events.
            prob[i] is the probability of the i-th event, 0<=i<len(prob).
            The probability of event len(prob) is 1.-Numeric.sum(prob).
 
@@ -225,7 +225,7 @@ def multinomial(trials, probs, shape=[]):
 
 def poisson(mean, shape=[]):
     """poisson(mean) or poisson(mean, [n, m, ...]) returns array of poisson
-           distributed random integers with specifed mean."""
+           distributed random integers with specified mean."""
     return _build_random_array(ranlib.poisson, (mean,), shape)
 
 
@@ -308,5 +308,5 @@ def test():
     print x
     print "Mean = ", Numeric.sum(x)/8.
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
     test()

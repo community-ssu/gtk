@@ -443,7 +443,7 @@ C   double random number such that 0.0< d <1.0
 C
 C**End
  */
-double PM_RANF ()
+double PM_RANF (void)
 {
    double t1_48, t2_48, t1_24[2], t2_24;
    double d;

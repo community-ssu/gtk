@@ -1,0 +1,51 @@
+int do_sliced_copy(char *dest, int *dest_strides, int *dest_dimensions,
+		   int dest_nd, char *src, int *src_strides, 
+		   int *src_dimensions, int src_nd, int elsize, 
+		   int copies) {
+	int i, j;
+	
+	if (src_nd == 0 && dest_nd == 0) {
+		for(j=0; j<copies; j++) {
+			memcpy(dest, src, elsize);
+			dest += elsize;
+		}
+		return 0;
+	}
+	
+	if (dest_nd > src_nd) {
+		for(i=0; i<*dest_dimensions; i++, dest += *dest_strides) {
+			if (do_sliced_copy(dest, dest_strides+1, 
+					   dest_dimensions+1, dest_nd-1,
+					   src, src_strides, 
+					   src_dimensions, src_nd, 
+					   elsize, copies) == -1) 
+			  return -1;
+		}
+		return 0;
+	}
+	
+	if (dest_nd == 1) {
+		if (*dest_dimensions != *src_dimensions) {
+			PyErr_SetString(PyExc_ValueError, 
+			  "matrices are not aligned for copy");
+			return -1;
+		}
+		for(i=0; i<*dest_dimensions; i++, src += *src_strides) {
+			for(j=0; j<copies; j++) {
+				memcpy(dest, src, elsize);
+				dest += *dest_strides;
+			}
+		}
+	} else {
+		for(i=0; i<*dest_dimensions; i++, dest += *dest_strides, 
+		      src += *src_strides) {
+			if (do_sliced_copy(dest, dest_strides+1, 
+					   dest_dimensions+1, dest_nd-1, 
+					   src, src_strides+1, 
+					   src_dimensions+1, src_nd-1, 
+					   elsize, copies) == -1) 
+			  return -1;
+		}
+	}
+	return 0;
+}

@@ -1,4 +1,3 @@
-
 #ifndef Py_ARRAYOBJECT_H
 #define Py_ARRAYOBJECT_H
 #ifdef __cplusplus
@@ -11,10 +10,10 @@ extern "C" {
 #define PyArray_UNSIGNED_TYPES
 
 enum PyArray_TYPES {    PyArray_CHAR, PyArray_UBYTE, PyArray_SBYTE,
-		        PyArray_SHORT, PyArray_USHORT, 
-		        PyArray_INT, PyArray_UINT, 
+		        PyArray_SHORT, PyArray_USHORT,
+		        PyArray_INT, PyArray_UINT,
 			PyArray_LONG,
-			PyArray_FLOAT, PyArray_DOUBLE, 
+			PyArray_FLOAT, PyArray_DOUBLE,
 			PyArray_CFLOAT, PyArray_CDOUBLE,
 			PyArray_OBJECT,
 			PyArray_NTYPES, PyArray_NOTYPE};
@@ -44,7 +43,7 @@ typedef struct {
 #define SAVESPACE 16
 
 /* type bit */
-#define SAVESPACEBIT 128 
+#define SAVESPACEBIT 128
 
 typedef struct {
   PyObject_HEAD
@@ -56,6 +55,23 @@ typedef struct {
   int flags;
   PyObject *weakreflist;
 } PyArrayObject;
+
+/* Array Interface flags */
+#define FORTRAN       0x002
+#define ALIGNED       0x100
+#define NOTSWAPPED    0x200
+#define WRITEABLE     0x400
+
+typedef struct {
+  int version;
+  int nd;
+  char typekind;
+  int itemsize;
+  int flags;
+  Py_intptr_t *shape;
+  Py_intptr_t *strides;
+  void *data;
+} PyArrayInterface;
 
 
 /*
@@ -223,8 +239,17 @@ typedef struct {
 #define PyArray_ValidType_PROTO (int type)
 #define PyArray_ValidType_NUM 29
 
+/* Convert a Python object to a C int, if possible. Checks for
+   potential overflow, which is important on machines where
+   sizeof(int) != sizeof(long) (note that a Python int is a C long).
+   Handles Python ints, Python longs, and any ArrayObject that
+   works in int(). */
+#define PyArray_IntegerAsInt_RET int
+#define PyArray_IntegerAsInt_PROTO (PyObject *o)
+#define PyArray_IntegerAsInt_NUM 30
+
 /* Total number of C API pointers */
-#define PyArray_API_pointers 30
+#define PyArray_API_pointers 31
 
 
 #ifdef _ARRAY_MODULE
@@ -270,6 +295,7 @@ extern PyArray_Put_RET PyArray_Put PyArray_Put_PROTO;
 extern PyArray_PutMask_RET PyArray_PutMask PyArray_PutMask_PROTO;
 extern PyArray_CopyArray_RET PyArray_CopyArray PyArray_CopyArray_PROTO;
 extern PyArray_ValidType_RET PyArray_ValidType PyArray_ValidType_PROTO;
+extern PyArray_IntegerAsInt_RET PyArray_IntegerAsInt PyArray_IntegerAsInt_PROTO;
 
 #else
 
@@ -277,7 +303,7 @@ extern PyArray_ValidType_RET PyArray_ValidType PyArray_ValidType_PROTO;
 #define PyArray_API PY_ARRAY_UNIQUE_SYMBOL
 #endif
 
-/* C API address pointer */ 
+/* C API address pointer */
 #if defined(NO_IMPORT) || defined(NO_IMPORT_ARRAY)
 extern void **PyArray_API;
 #else
@@ -379,6 +405,9 @@ static void **PyArray_API;
 #define PyArray_ValidType \
   (*(PyArray_ValidType_RET (*)PyArray_ValidType_PROTO) \
    PyArray_API[PyArray_ValidType_NUM])
+#define PyArray_IntegerAsInt \
+  (*(PyArray_IntegerAsInt_RET (*)PyArray_IntegerAsInt_PROTO) \
+   PyArray_API[PyArray_IntegerAsInt_NUM])
 
 #define import_array() \
 { \

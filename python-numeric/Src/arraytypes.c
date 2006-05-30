@@ -1,4 +1,3 @@
-
 #include "Python.h"
 #include "Numeric/arrayobject.h"
 
@@ -59,19 +58,19 @@ static int CHAR_setitem(PyObject *op, char *ov) {*((char *)ov)=(char)PyInt_AsLon
 
 static PyArray_Descr CHAR_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)CHAR_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_INT, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_UINT, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_LONG, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)CHAR_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)CHAR_to_CHAR,
+    (PyArray_VectorUnaryFunc*)CHAR_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)CHAR_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)CHAR_to_SHORT,
+    (PyArray_VectorUnaryFunc*)CHAR_to_USHORT,
+    (PyArray_VectorUnaryFunc*)CHAR_to_INT,
+    (PyArray_VectorUnaryFunc*)CHAR_to_UINT,
+    (PyArray_VectorUnaryFunc*)CHAR_to_LONG,
+    (PyArray_VectorUnaryFunc*)CHAR_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)CHAR_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)CHAR_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)CHAR_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)CHAR_to_OBJECT,
 },
 				    CHAR_getitem, CHAR_setitem,
 				    PyArray_CHAR, sizeof(char), NULL, NULL, 'c'};
@@ -122,19 +121,19 @@ static int UBYTE_setitem(PyObject *op, char *ov) {*((unsigned char *)ov)=(unsign
 
 static PyArray_Descr UBYTE_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_INT, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_UINT, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_LONG, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)UBYTE_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)UBYTE_to_CHAR,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_SHORT,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_USHORT,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_INT,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_UINT,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_LONG,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)UBYTE_to_OBJECT,
 },
 				     UBYTE_getitem, UBYTE_setitem,
 				     PyArray_UBYTE, sizeof(unsigned char), NULL, NULL, 'b'};
@@ -185,19 +184,19 @@ static int SBYTE_setitem(PyObject *op, char *ov) {*((signed char *)ov)=(signed c
 
 static PyArray_Descr SBYTE_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_INT, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_UINT, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_LONG, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)SBYTE_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)SBYTE_to_CHAR,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_SHORT,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_USHORT,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_INT,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_UINT,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_LONG,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)SBYTE_to_OBJECT,
 },
 				     SBYTE_getitem, SBYTE_setitem,
 				     PyArray_SBYTE, sizeof(signed char), NULL, NULL, '1'};
@@ -248,19 +247,19 @@ static int USHORT_setitem(PyObject *op, char *ov) {*((unsigned short *)ov)=(unsi
 
 static PyArray_Descr USHORT_Descr = { {
 
-	(PyArray_VectorUnaryFunc*)USHORT_to_CHAR, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_UBYTE, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_SBYTE, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_SHORT, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_USHORT, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_INT, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_UINT, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_LONG, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_FLOAT, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_DOUBLE, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_CFLOAT, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_CDOUBLE, 
-	(PyArray_VectorUnaryFunc*)USHORT_to_OBJECT, 
+	(PyArray_VectorUnaryFunc*)USHORT_to_CHAR,
+	(PyArray_VectorUnaryFunc*)USHORT_to_UBYTE,
+	(PyArray_VectorUnaryFunc*)USHORT_to_SBYTE,
+	(PyArray_VectorUnaryFunc*)USHORT_to_SHORT,
+	(PyArray_VectorUnaryFunc*)USHORT_to_USHORT,
+	(PyArray_VectorUnaryFunc*)USHORT_to_INT,
+	(PyArray_VectorUnaryFunc*)USHORT_to_UINT,
+	(PyArray_VectorUnaryFunc*)USHORT_to_LONG,
+	(PyArray_VectorUnaryFunc*)USHORT_to_FLOAT,
+	(PyArray_VectorUnaryFunc*)USHORT_to_DOUBLE,
+	(PyArray_VectorUnaryFunc*)USHORT_to_CFLOAT,
+	(PyArray_VectorUnaryFunc*)USHORT_to_CDOUBLE,
+	(PyArray_VectorUnaryFunc*)USHORT_to_OBJECT,
 },
 	USHORT_getitem, USHORT_setitem,
 	PyArray_USHORT, sizeof(unsigned short), NULL, NULL, 'w'};
@@ -311,19 +310,19 @@ static int SHORT_setitem(PyObject *op, char *ov) {*((short *)ov)=(short)PyInt_As
 
 static PyArray_Descr SHORT_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)SHORT_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_INT, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_UINT, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_LONG, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)SHORT_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)SHORT_to_CHAR,
+    (PyArray_VectorUnaryFunc*)SHORT_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)SHORT_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)SHORT_to_SHORT,
+    (PyArray_VectorUnaryFunc*)SHORT_to_USHORT,
+    (PyArray_VectorUnaryFunc*)SHORT_to_INT,
+    (PyArray_VectorUnaryFunc*)SHORT_to_UINT,
+    (PyArray_VectorUnaryFunc*)SHORT_to_LONG,
+    (PyArray_VectorUnaryFunc*)SHORT_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)SHORT_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)SHORT_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)SHORT_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)SHORT_to_OBJECT,
 },
 				     SHORT_getitem, SHORT_setitem,
 				     PyArray_SHORT, sizeof(short), NULL, NULL, 's'};
@@ -374,19 +373,19 @@ static int INT_setitem(PyObject *op, char *ov) {*((int *)ov)=PyInt_AsLong(op);re
 
 static PyArray_Descr INT_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)INT_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)INT_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)INT_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)INT_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)INT_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)INT_to_INT, 
-    (PyArray_VectorUnaryFunc*)INT_to_UINT, 
-    (PyArray_VectorUnaryFunc*)INT_to_LONG, 
-    (PyArray_VectorUnaryFunc*)INT_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)INT_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)INT_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)INT_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)INT_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)INT_to_CHAR,
+    (PyArray_VectorUnaryFunc*)INT_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)INT_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)INT_to_SHORT,
+    (PyArray_VectorUnaryFunc*)INT_to_USHORT,
+    (PyArray_VectorUnaryFunc*)INT_to_INT,
+    (PyArray_VectorUnaryFunc*)INT_to_UINT,
+    (PyArray_VectorUnaryFunc*)INT_to_LONG,
+    (PyArray_VectorUnaryFunc*)INT_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)INT_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)INT_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)INT_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)INT_to_OBJECT,
 },
 				   INT_getitem, INT_setitem,
 				   PyArray_INT, sizeof(int), NULL, NULL, 'i'};
@@ -449,19 +448,19 @@ static int UINT_setitem(PyObject *op, char *ov) {
 
 static PyArray_Descr UINT_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)UINT_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)UINT_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)UINT_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)UINT_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)UINT_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)UINT_to_INT, 
-    (PyArray_VectorUnaryFunc*)UINT_to_UINT, 
-    (PyArray_VectorUnaryFunc*)UINT_to_LONG, 
-    (PyArray_VectorUnaryFunc*)UINT_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)UINT_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)UINT_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)UINT_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)UINT_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)UINT_to_CHAR,
+    (PyArray_VectorUnaryFunc*)UINT_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)UINT_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)UINT_to_SHORT,
+    (PyArray_VectorUnaryFunc*)UINT_to_USHORT,
+    (PyArray_VectorUnaryFunc*)UINT_to_INT,
+    (PyArray_VectorUnaryFunc*)UINT_to_UINT,
+    (PyArray_VectorUnaryFunc*)UINT_to_LONG,
+    (PyArray_VectorUnaryFunc*)UINT_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)UINT_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)UINT_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)UINT_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)UINT_to_OBJECT,
 },
 				   UINT_getitem, UINT_setitem,
 				   PyArray_UINT, sizeof(unsigned int), NULL, NULL, 'u'};
@@ -512,19 +511,19 @@ static int LONG_setitem(PyObject *op, char *ov) {*((long *)ov)=PyInt_AsLong(op);
 
 static PyArray_Descr LONG_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)LONG_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)LONG_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)LONG_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)LONG_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)LONG_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)LONG_to_INT, 
-    (PyArray_VectorUnaryFunc*)LONG_to_UINT, 
-    (PyArray_VectorUnaryFunc*)LONG_to_LONG, 
-    (PyArray_VectorUnaryFunc*)LONG_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)LONG_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)LONG_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)LONG_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)LONG_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)LONG_to_CHAR,
+    (PyArray_VectorUnaryFunc*)LONG_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)LONG_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)LONG_to_SHORT,
+    (PyArray_VectorUnaryFunc*)LONG_to_USHORT,
+    (PyArray_VectorUnaryFunc*)LONG_to_INT,
+    (PyArray_VectorUnaryFunc*)LONG_to_UINT,
+    (PyArray_VectorUnaryFunc*)LONG_to_LONG,
+    (PyArray_VectorUnaryFunc*)LONG_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)LONG_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)LONG_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)LONG_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)LONG_to_OBJECT,
 },
 				    LONG_getitem, LONG_setitem,
 				    PyArray_LONG, sizeof(long), NULL, NULL, 'l'};
@@ -575,19 +574,19 @@ static int FLOAT_setitem(PyObject *op, char *ov) {*((float *)ov)=(float)PyFloat_
 
 static PyArray_Descr FLOAT_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_INT, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_UINT, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_LONG, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)FLOAT_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)FLOAT_to_CHAR,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_SHORT,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_USHORT,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_INT,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_UINT,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_LONG,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)FLOAT_to_OBJECT,
 },
 				     FLOAT_getitem, FLOAT_setitem,
 				     PyArray_FLOAT, sizeof(float), NULL, NULL, 'f'};
@@ -638,19 +637,19 @@ static int DOUBLE_setitem(PyObject *op, char *ov) {*((double *)ov)=PyFloat_AsDou
 
 static PyArray_Descr DOUBLE_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_INT, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_UINT, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_LONG, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)DOUBLE_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_CHAR,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_SHORT,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_USHORT,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_INT,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_UINT,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_LONG,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)DOUBLE_to_OBJECT,
 },
 				      DOUBLE_getitem, DOUBLE_setitem,
 				      PyArray_DOUBLE, sizeof(double), NULL, NULL, 'd'};
@@ -697,7 +696,7 @@ static void CFLOAT_to_OBJECT(float *ip, int ipstep, PyObject  **op, int opstep, 
 
 static PyObject * CFLOAT_getitem(char *ip) {return PyComplex_FromDoubles((double)((float *)ip)[0], (double)((float *)ip)[1]);}
 
-static int CFLOAT_setitem(PyObject *op, char *ov) 
+static int CFLOAT_setitem(PyObject *op, char *ov)
 {
     Py_complex oop;
     PyObject *op2;
@@ -713,19 +712,19 @@ static int CFLOAT_setitem(PyObject *op, char *ov)
 
 static PyArray_Descr CFLOAT_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_INT, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_UINT, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_LONG, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)CFLOAT_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_CHAR,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_SHORT,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_USHORT,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_INT,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_UINT,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_LONG,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)CFLOAT_to_OBJECT,
 },
 				      CFLOAT_getitem, CFLOAT_setitem,
 				      PyArray_CFLOAT, 2*sizeof(float), NULL, NULL, 'F'};
@@ -787,19 +786,19 @@ static int CDOUBLE_setitem(PyObject *op, char *ov) {
 
 static PyArray_Descr CDOUBLE_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_CHAR, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_UBYTE, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_SBYTE, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_SHORT, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_USHORT, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_INT, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_UINT, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_LONG, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_FLOAT, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_DOUBLE, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_CFLOAT, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_CDOUBLE, 
-    (PyArray_VectorUnaryFunc*)CDOUBLE_to_OBJECT, 
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_CHAR,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_UBYTE,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_SBYTE,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_SHORT,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_USHORT,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_INT,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_UINT,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_LONG,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_FLOAT,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_DOUBLE,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_CFLOAT,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_CDOUBLE,
+    (PyArray_VectorUnaryFunc*)CDOUBLE_to_OBJECT,
 },
 				       CDOUBLE_getitem, CDOUBLE_setitem,
 				       PyArray_CDOUBLE, 2*sizeof(double), NULL, NULL, 'D'};
@@ -811,37 +810,37 @@ static int OBJECT_setitem(PyObject *op, char *ov) {if (*(PyObject **)ov != NULL)
 
 static PyArray_Descr OBJECT_Descr = { {
 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
-    (PyArray_VectorUnaryFunc*)NULL, 
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
+    (PyArray_VectorUnaryFunc*)NULL,
 },
 				      OBJECT_getitem, OBJECT_setitem,
 				      PyArray_OBJECT, sizeof(PyObject*), NULL, NULL, 'O'};
 
 
 static PyArray_Descr *descrs[] = {
-    &CHAR_Descr, 
-    &UBYTE_Descr, 
-    &SBYTE_Descr, 
-    &SHORT_Descr, 
-    &USHORT_Descr, 
-    &INT_Descr, 
-    &UINT_Descr, 
-    &LONG_Descr, 
-    &FLOAT_Descr, 
-    &DOUBLE_Descr, 
-    &CFLOAT_Descr, 
-    &CDOUBLE_Descr, 
-    &OBJECT_Descr, 
+    &CHAR_Descr,
+    &UBYTE_Descr,
+    &SBYTE_Descr,
+    &SHORT_Descr,
+    &USHORT_Descr,
+    &INT_Descr,
+    &UINT_Descr,
+    &LONG_Descr,
+    &FLOAT_Descr,
+    &DOUBLE_Descr,
+    &CFLOAT_Descr,
+    &CDOUBLE_Descr,
+    &OBJECT_Descr,
 };
 
 PyArray_Descr *PyArray_DescrFromType(int type) {
@@ -862,12 +861,10 @@ PyArray_Descr *PyArray_DescrFromType(int type) {
 		case 'F': return descrs[PyArray_CFLOAT];
 		case 'D': return descrs[PyArray_CDOUBLE];
 		case 'O': return descrs[PyArray_OBJECT];
-			
+
 		default:
-			PyErr_SetString(PyExc_ValueError, "Invalid type for array");	
+			PyErr_SetString(PyExc_ValueError, "Invalid type for array");
 			return NULL;
 		}
 	}
 }
-
-

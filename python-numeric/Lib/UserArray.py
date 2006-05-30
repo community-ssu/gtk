@@ -24,10 +24,10 @@ class UserArray:
     # Array as sequence
     def __len__(self): return len(self.array)
 
-    def __getitem__(self, index): 
+    def __getitem__(self, index):
         return self._rc(self.array[index])
 
-    def __getslice__(self, i, j): 
+    def __getslice__(self, i, j):
         return self._rc(self.array[i:j])
 
 
@@ -42,37 +42,37 @@ class UserArray:
     def __abs__(self): return self._rc(absolute(self.array))
     def __neg__(self): return self._rc(-self.array)
 
-    def __add__(self, other): 
+    def __add__(self, other):
         return self._rc(self.array+asarray(other))
     __radd__ = __add__
 
     def __iadd__(self, other):
         add(self.array, other, self.array)
         return self
-        
-    def __sub__(self, other): 
+
+    def __sub__(self, other):
         return self._rc(self.array-asarray(other))
-    def __rsub__(self, other): 
+    def __rsub__(self, other):
         return self._rc(asarray(other)-self.array)
     def __isub__(self, other):
         subtract(self.array, other, self.array)
         return self
 
-    def __mul__(self, other): 
+    def __mul__(self, other):
         return self._rc(multiply(self.array,asarray(other)))
     __rmul__ = __mul__
     def __imul__(self, other):
         multiply(self.array, other, self.array)
         return self
 
-    def __div__(self, other): 
+    def __div__(self, other):
         return self._rc(divide(self.array,asarray(other)))
-    def __rdiv__(self, other): 
+    def __rdiv__(self, other):
         return self._rc(divide(asarray(other),self.array))
     def __idiv__(self, other):
         divide(self.array, other, self.array)
         return self
-    
+
     def __mod__(self, other):
         return self._rc(remainder(self.array, other))
     def __rmod__(self, other):
@@ -80,7 +80,7 @@ class UserArray:
     def __imod__(self, other):
         remainder(self.array, other, self.array)
         return self
-    
+
     def __divmod__(self, other):
         return (self._rc(divide(self.array,other)),
                 self._rc(remainder(self.array, other)))
@@ -88,14 +88,14 @@ class UserArray:
         return (self._rc(divide(other, self.array)),
                 self._rc(remainder(other, self.array)))
 
-    def __pow__(self,other): 
+    def __pow__(self,other):
         return self._rc(power(self.array,asarray(other)))
-    def __rpow__(self,other): 
+    def __rpow__(self,other):
         return self._rc(power(asarray(other),self.array))
     def __ipow__(self,other):
         power(self.array, other, self.array)
         return self
-            
+
     def __lshift__(self,other):
         return self._rc(left_shift(self.array, other))
     def __rshift__(self,other):
@@ -134,7 +134,7 @@ class UserArray:
     def __ior__(self, other):
         bitwise_or(self.array, other, self.array)
         return self
-            
+
     def __neg__(self):
         return self._rc(-self.array)
     def __pos__(self):
@@ -149,7 +149,7 @@ class UserArray:
             return func(a[0])
         else:
             raise TypeError, "only rank-0 arrays can be converted to Python scalars."
-        
+
     def __complex__(self): return self._scalarfunc(complex)
     def __float__(self): return self._scalarfunc(float)
     def __int__(self): return self._scalarfunc(int)
@@ -163,7 +163,7 @@ class UserArray:
     def __ne__(self,other): return self._rc(not_equal(self.array,other))
     def __gt__(self,other): return self._rc(greater(self.array,other))
     def __ge__(self,other): return self._rc(greater_equal(self.array,other))
-        
+
     def copy(self): return self._rc(self.array.copy())
 
     def tostring(self): return self.array.tostring()
@@ -171,7 +171,7 @@ class UserArray:
     def byteswapped(self): return self._rc(self.array.byteswapped())
 
     def astype(self, typecode): return self._rc(self.array.astype(typecode))
-   
+
     def typecode(self): return self._typecode
 
     def itemsize(self): return self.array.itemsize()
@@ -196,7 +196,7 @@ class UserArray:
         elif attr == 'flat':
             return self._rc(self.array.flat)
         return getattr(self.array, attr)
-            
+
 #############################################################
 # Test of class UserArray
 #############################################################
@@ -212,7 +212,7 @@ if __name__ == '__main__':
 
     ua_small=ua[:3,:5]
     print ua_small
-    ua_small[0,0]=10  # this did not change ua[0,0], wich is not normal behavior
+    ua_small[0,0]=10  # this did not change ua[0,0], which is not normal behavior
     print ua_small[0,0],ua[0,0]
     print sin(ua_small)/3.*6.+sqrt(ua_small**2)
     print less(ua_small,103),type(less(ua_small,103))

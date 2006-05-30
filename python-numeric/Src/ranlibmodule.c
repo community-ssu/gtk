@@ -3,13 +3,6 @@
 #include "Numeric/ranlib.h"
 #include "stdio.h"
 
-static PyObject *ErrorObject;
-
-
-static float franf() {
-  return (float) ranf();
-}
-
 /* ----------------------------------------------------- */
 
 static PyObject*
@@ -50,7 +43,7 @@ get_continuous_random(int num_dist_params, PyObject* self, PyObject* args, void*
   for(i=0; i<n; i++) {
     switch(num_dist_params) {
     case 0:
-      *out_ptr = (double) ((float (*)()) fun)();
+      *out_ptr = (double) ((float (*)(void)) fun)();
       break;
     case 1:
       *out_ptr = (double) ((float (*)(float)) fun)(a);
@@ -92,13 +85,13 @@ get_discrete_scalar_random(int num_integer_args, PyObject* self, PyObject* args,
   if( n==-1 ) {
     n = 1;
   }
-  
+
   /* Create a 1 dimensional array of length n of type long */
   op = (PyArrayObject*) PyArray_FromDims(1, &n, PyArray_LONG);
   if( op == NULL ) {
     return NULL;
   }
-  
+
   out_ptr = (long*) op->data;
   for(i=0; i<n; i++) {
     switch( num_integer_args ) {
@@ -120,7 +113,28 @@ static char random_sample__doc__[] ="";
 
 static PyObject *
 random_sample(PyObject *self, PyObject *args) {
-  return get_continuous_random(0, self, args, franf);
+  PyArrayObject *op;
+  double *out_ptr;
+  int i, n=1;
+
+  if (!PyArg_ParseTuple(args, "|i", &n)) {
+      return NULL;
+  }
+
+  /* Create a 1 dimensional array of length n of type double */
+  op = (PyArrayObject*) PyArray_FromDims(1, &n, PyArray_DOUBLE);
+  if (op == NULL) {
+    return NULL;
+  }
+
+
+  out_ptr = (double *) op->data;
+  for (i=0; i<n; i++) {
+      *out_ptr = ranf();
+      out_ptr++;
+  }
+
+  return PyArray_Return(op);
 }
 
 
@@ -144,7 +158,7 @@ static char gamma__doc__[] ="";
 
 static PyObject *
 /* there is a function named `gamma' in some libm's */
-_gamma(PyObject *self, PyObject *args) { 
+_gamma(PyObject *self, PyObject *args) {
   return get_continuous_random(2, self, args, gengam);
 }
 
@@ -227,7 +241,7 @@ multinomial(PyObject* self, PyObject* args) {
   if( n==-1 ) {
     n = 1;
   }
-  
+
   /* Create an n by num_categories array of long */
   out_dimensions[0] = n;
   out_dimensions[1] = num_categories;
@@ -235,7 +249,7 @@ multinomial(PyObject* self, PyObject* args) {
   if( op == NULL ) {
     return NULL;
   }
-  
+
   out_ptr = op->data;
   for(i=0; i<n; i++) {
     genmul(num_trials, (float*)(priors_array->data), num_categories, (long*) out_ptr);
@@ -275,7 +289,7 @@ random_get_seeds(PyObject *self, PyObject *args)
 
 
 /* Missing interfaces to */
-/* exponential (genexp), multivariate normal (genmn), 
+/* exponential (genexp), multivariate normal (genmn),
    normal (gennor), permutation (genprm), uniform (genunf),
    standard exponential (sexpo), standard gamma (sgamma) */
 
@@ -304,14 +318,14 @@ static struct PyMethodDef random_methods[] = {
 
 /* Initialization function for the module (*must* be called initranlib) */
 
-static char random_module_documentation[] = 
+static char random_module_documentation[] =
 ""
 ;
 
 DL_EXPORT(void)
-initranlib()
+initranlib(void)
 {
-	PyObject *m, *d;
+	PyObject *m;
 
 	/* Create the module and add the functions */
 	m = Py_InitModule4("ranlib", random_methods,
@@ -321,13 +335,8 @@ initranlib()
 	/* Import the array object */
 	import_array();
 
-	/* Add some symbolic constants to the module */
-	d = PyModule_GetDict(m);
-	ErrorObject = PyString_FromString("ranlib.error");
-	PyDict_SetItemString(d, "error", ErrorObject);
-
 	/* XXXX Add constants here */
-	
+
 	/* Check for errors */
 	if (PyErr_Occurred())
 		Py_FatalError("can't initialize module ranlib");

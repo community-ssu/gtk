@@ -1,9 +1,9 @@
 """Matlab(tm) compatibility functions.
 
 This will hopefully become a complete set of the basic functions available in
-matlab.  The syntax is kept as close to the matlab syntax as possible.  One 
-fundamental change is that the first index in matlab varies the fastest (as in 
-FORTRAN).  That means that it will usually perform reductions over columns, 
+matlab.  The syntax is kept as close to the matlab syntax as possible.  One
+fundamental change is that the first index in matlab varies the fastest (as in
+FORTRAN).  That means that it will usually perform reductions over columns,
 whereas with this object the most natural reductions are over rows.  It's perfectly
 possible to make this work the way it does in matlab if that's desired.
 """
@@ -31,14 +31,14 @@ def randn(*args):
     x1 = RandomArray.random(args)
     x2 = RandomArray.random(args)
     return sqrt(-2*log(x1))*cos(2*pi*x2)
- 
+
 
 def eye(N, M=None, k=0, typecode=None):
-    """eye(N, M=N, k=0, typecode=None) returns a N-by-M matrix where the 
+    """eye(N, M=N, k=0, typecode=None) returns a N-by-M matrix where the
     k-th diagonal is all ones, and everything else is zeros.
     """
     if M is None: M = N
-    if type(M) == type('d'): 
+    if type(M) == type('d'):
         typecode = M
         M = N
     m = equal(subtract.outer(arange(N), arange(M)),-k)
@@ -50,12 +50,12 @@ def tri(N, M=None, k=0, typecode=None):
     the diagonals starting from lower left corner up to the k-th are all ones.
     """
     if M is None: M = N
-    if type(M) == type('d'): 
+    if type(M) == type('d'):
         typecode = M
         M = N
     m = greater_equal(subtract.outer(arange(N), arange(M)),-k)
     return m.astype(typecode)
-    
+
 # Matrix manipulation
 
 def diag(v, k=0):
@@ -78,7 +78,7 @@ def diag(v, k=0):
         else: return v
     else:
             raise ValueError, "Input must be 1- or 2-D."
-    
+
 
 def fliplr(m):
     """fliplr(m) returns a 2-D matrix m with the rows preserved and
@@ -98,7 +98,7 @@ def flipud(m):
     if len(m.shape) != 2:
         raise ValueError, "Input must be 2-D."
     return m[::-1]
-    
+
 # reshape(x, m, n) is not used, instead use reshape(x, (m, n))
 
 def rot90(m, k=1):
@@ -185,7 +185,7 @@ def median(m):
         return (sorted[index-1]+sorted[index])/2.0
 
 def std(m,axis=0):
-    """std(m,axis=0) returns the standard deviation along the given 
+    """std(m,axis=0) returns the standard deviation along the given
     dimension of m.  The result is unbiased with division by N-1.
     If m is of integer type returns a floating point answer.
     """
@@ -213,7 +213,7 @@ def prod(m,axis=0):
     return multiply.reduce(m,axis)
 
 def cumprod(m,axis=0):
-    """cumprod(m) returns the cumulative product of the elments along the
+    """cumprod(m) returns the cumulative product of the elements along the
     given dimension of m.
     """
     m = asarray(m)
@@ -244,10 +244,10 @@ def diff(x, n=1,axis=-1):
     x = asarray(x)
     nd = len(x.shape)
     if nd == 0:
-        nd = 1    
+        nd = 1
     if n < 0:
         raise ValueError, 'MLab.diff, order argument negative.'
-    elif n == 0: 
+    elif n == 0:
         return x
     elif n == 1:
         slice1 = [slice(None)]*nd
@@ -287,14 +287,14 @@ def cov(m,y=None, rowvar=0, bias=0):
         y = transpose(y)
     N = m.shape[0]
     if (y.shape[0] != N):
-        raise ValueError, "x and y must have the same number of observations."    
+        raise ValueError, "x and y must have the same number of observations."
     m = m - mean(m,axis=0)
     y = y - mean(y,axis=0)
     if bias:
         fact = N*1.0
     else:
         fact = N-1.0
-    # 
+    #
     val = squeeze(dot(transpose(m),conjugate(y)) / fact)
     return val
 
@@ -352,8 +352,8 @@ def hamming(M):
 def sinc(x):
     """sinc(x) returns sin(pi*x)/(pi*x) at all points of array x.
     """
-    y = pi* where(x == 0, 1.0e-20, x) 
-    return sin(y)/y 
+    y = pi* where(x == 0, 1.0e-20, x)
+    return sin(y)/y
 
 def eig(v):
     """[x,v] = eig(m) returns the eigenvalues of m in x and the corresponding
@@ -418,4 +418,3 @@ def roots(p):
         (root.typecode() == 'D' and allclose(root.imag, 0, rtol=1e-14))):
         root = root.real
     return root
-

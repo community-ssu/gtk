@@ -59,7 +59,7 @@ def array2string(a, max_line_width = None, precision = None,
                           _formatComplex(x, f1, f2)
     elif type == 'c':
         item_length = 1
-        format_function = lambda x: x
+        format_function = lambda x: str(x)
     elif type == 'O':
         item_length = max(map(lambda x: len(str(x)), data))
         format_function = _formatGeneral

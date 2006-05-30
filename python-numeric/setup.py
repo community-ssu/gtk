@@ -4,77 +4,182 @@
 # or:
 #       python setup.py bdist_rpm (you'll end up with RPMs in dist)
 #
-import os, sys, string, re
-from glob import glob
+# Optionally, you can run
+#       python setup.py config
+# first. This fixes a bug in LinearAlgebra on Cygwin (and possibly
+# other platforms).
+#
+import os, sys
+
 if not hasattr(sys, 'version_info') or sys.version_info < (2,0,0,'alpha',0):
     raise SystemExit, "Python 2.0 or later required to build Numeric."
-import distutils
-from distutils.core import setup, Extension
+
+from glob import glob
+try:
+    from setuptools import setup
+    have_setuptools = 1
+except ImportError:
+    from distutils.core import setup
+    have_setuptools = 0
+from distutils.core import Extension
+from distutils.command.config import config
+from distutils.sysconfig import get_config_var, customize_compiler
+from distutils.cygwinccompiler import CygwinCCompiler, Mingw32CCompiler
+from distutils.bcppcompiler import BCPPCompiler
+from distutils.msvccompiler import MSVCCompiler
+try:
+    from distutils.command.config import log
+except:
+    pass
+
+# Run the configuration
+class config_numpy(config):
+    def run (self):
+        # Get a compiler
+        self._check_compiler()
+        try: log.set_verbosity(0)
+        except: pass
+        self.dump_source = 0
+        # Switch off optimization
+        if isinstance(self.compiler, BCPPCompiler):
+            self.compiler.compile_options.remove('/O2')
+        elif isinstance(self.compiler, MSVCCompiler):
+            self.compiler.compile_options.remove('/Ox')
+            self.compiler.compile_options.remove('/GX')
+        else:
+            if isinstance(self.compiler, CygwinCCompiler):
+                cc = 'gcc'
+            elif isinstance(self.compiler, Mingw32CCompiler):
+                cc = 'gcc -mno-cygwin'
+            else: # UnixCCompiler
+                cc = get_config_var('CC')
+            if os.environ.has_key('CC'):
+                cc = os.environ['CC']
+            self.compiler.set_executable('compiler_so',cc)
+        testcode = """\
+#include "%s"
+""" % os.path.join("Src","config.c")
+        if self.try_run(testcode):
+            print "Wrote config.h"
+            if os.path.isfile(os.path.join("Src","config.h")):
+                os.remove(os.path.join("Src","config.h"))
+            os.rename("config.h",os.path.join("Src","config.h"))
+        else:
+            print "Configuration failed, using default compilation"
+            if os.path.isfile(os.path.join("Src","config.h")):
+                os.remove(os.path.join("Src","config.h"))
+
+        # Restore usual compiler flags
+        if isinstance(self.compiler, BCPPCompiler):
+            self.compiler.compile_options.append('/O2')
+        elif isinstance(self.compiler, MSVCCompiler):
+            self.compiler.compile_options.append('/Ox')
+            self.compiler.compile_options.append('/GX')
+        else:
+            customize_compiler(self.compiler)
+
+def path(name):
+    "Convert a /-separated pathname to one using the OS's path separator."
+    splitted = name.split('/')
+    return os.path.join(*splitted)
+
+# Set up the default customizations, and then read customize.py for the
+# user's customizations.
+class customize:
+    extra_compile_args = []
+    extra_link_args = []
+    include_dirs = []
+    use_system_lapack = 0
+    use_system_blas = 0
+    lapack_library_dirs = []
+    lapack_libraries = []
+    lapack_extra_link_args = []
+    use_dotblas = 0
+    dotblas_include_dirs = []
+    dotblas_cblas_header = '<cblas.h>'
+    dotblas_library_dirs = []
+    dotblas_extra_link_args = []
+execfile('customize.py', customize.__dict__)
 
 # Get all version numbers
-execfile(os.path.join('Lib','numeric_version.py'))
+execfile(path('Lib/numeric_version.py'))
 numeric_version = version
 
-execfile(os.path.join('Packages', 'MA', 'Lib', 'MA_version.py'))
+execfile(path('Packages/MA/Lib/MA_version.py'))
 MA_version = version
 
-headers = glob (os.path.join ("Include","Numeric","*.h"))
-extra_compile_args = []  # You could put "-O4" etc. here.
+extra_compile_args = customize.extra_compile_args
+extra_link_args = customize.extra_link_args
+include_dirs = customize.include_dirs[:]
+define_macros = []
+undef_macros = []
+
+umath_define_macros = [('HAVE_INVERSE_HYPERBOLIC','1')]
 mathlibs = ['m']
-define_macros = [('HAVE_INVERSE_HYPERBOLIC',None)]
 undef_macros = []
 # You might need to add a case here for your system
 if sys.platform in ['win32']:
     mathlibs = []
-    define_macros = []
-    undef_macros = ['HAVE_INVERSE_HYPERBOLIC']
+    umath_define_macros = [('HAVE_INVERSE_HYPERBOLIC', '0')]
 elif sys.platform in ['mac', 'beos5']:
     mathlibs = []
 
-# delete all but the first one in this list if using your own LAPACK/BLAS
-sourcelist = [os.path.join('Src', 'lapack_litemodule.c'),
-              os.path.join('Src', 'blas_lite.c'), 
-              os.path.join('Src', 'f2c_lite.c'), 
-              os.path.join('Src', 'zlapack_lite.c'),
-              os.path.join('Src', 'dlapack_lite.c')
-             ]
-# set these to use your own BLAS;
-sourcelist = [os.path.join('Src', 'lapack_litemodule.c')]
+# Find out if the config.h file is available
+if os.path.isfile(os.path.join("Src","config.h")):
+    extra_compile_args.append('-DHAVE_CONFIG')
 
-library_dirs_list = []
-libraries_list = []
-
-if os.environ.has_key('USE_LAPACK'):
-    print "use system LAPACK/BLAS libraries"
-    sourcelist = [os.path.join('Src', 'lapack_litemodule.c')]
-    #libraries_list = ['lapack_atlas', 'cblas', 'f77blas', 'atlas', 'g2c']
-    libraries_list = ['lapack', 'blas', 'g2c']
-else:
-    sourcelist.append(os.path.join('Src', 'blas_lite.c'))
-    sourcelist.append(os.path.join('Src', 'f2c_lite.c'))
-    sourcelist.append(os.path.join('Src', 'zlapack_lite.c'))
-    sourcelist.append(os.path.join('Src', 'dlapack_lite.c'))
-
-if os.environ.has_key('FLAG_FUNCTION_SECTIONS'):
-    print "compile with -ffunction-sections"
-    extra_compile_args.append('-ffunction-sections')
-
-# set to true (1), if you also want BLAS optimized matrixmultiply/dot/innerproduct
-use_dotblas = 0
-if os.environ.has_key('USE_DOTBLAS'):
-    use_dotblas = 1
-else:
-    use_dotblas = 0
-include_dirs = []#'/usr/include/atlas']  
-                   # You may need to set this to find cblas.h
-                   #  e.g. on UNIX using ATLAS this should be ['/usr/include/atlas']
-extra_link_args = []
-
-# for MacOS X to link against vecLib if present
+# For Mac OS X >= 10.2, an optimized BLAS and most of LAPACK (all the
+# routines we need, at least) should already be installed
 VECLIB_PATH = '/System/Library/Frameworks/vecLib.framework'
-if os.path.exists(VECLIB_PATH):
-    extra_link_args = ['-framework', 'vecLib']
-    include_dirs = [os.path.join(VECLIB_PATH, 'Headers')]
+have_veclib = os.path.exists(VECLIB_PATH)
+
+def extension(name, sources, **kw):
+    def prepend(name, value, kw=kw):
+        kw[name] = value + kw.get(name, [])
+    prepend('extra_compile_args', extra_compile_args)
+    prepend('extra_link_args', extra_link_args)
+    prepend('define_macros', define_macros)
+    prepend('undef_macros', undef_macros)
+    return Extension(name, sources, **kw)
+
+lapack_source = [path('Src/lapack_litemodule.c')]
+lapack_link_args = customize.lapack_extra_link_args
+if customize.use_system_lapack:
+    pass
+elif have_veclib:
+    lapack_link_args.extend(['-framework', 'vecLib'])
+else:
+    lapack_source.extend([path('Src/f2c_lite.c'),
+                          path('Src/zlapack_lite.c'),
+                          path('Src/dlapack_lite.c'),
+                          path('Src/dlamch.c'),
+                         ])
+    if not customize.use_system_blas:
+        lapack_source.append(path('Src/blas_lite.c'))
+
+lapack_ext = extension('lapack_lite', lapack_source,
+                       library_dirs=customize.lapack_library_dirs,
+                       libraries=customize.lapack_libraries,
+                       extra_link_args=lapack_link_args)
+
+dotblas_source = [path('Packages/dotblas/dotblas/_dotblas.c')]
+if customize.use_dotblas:
+    dotblas_ext = extension('_dotblas', dotblas_source,
+                            include_dirs=customize.dotblas_include_dirs,
+                            library_dirs=customize.dotblas_library_dirs,
+                            libraries=customize.dotblas_libraries,
+                            define_macros=[('CBLAS_HEADER',
+                                            customize.dotblas_cblas_header)],
+                            extra_link_args=customize.dotblas_extra_link_args,
+                           )
+elif have_veclib:
+    dotblas_ext = extension('_dotblas', dotblas_source,
+                            include_dirs=[os.path.join(VECLIB_PATH, 'Headers')],
+                            define_macros=[('CBLAS_HEADER', '<cblas.h>')],
+                            extra_link_args=['-framework', 'vecLib'],
+                           )
+else:
+    dotblas_ext = None
 
 # The packages are split in this way to allow future optional inclusion
 # Numeric package
@@ -82,69 +187,71 @@ packages = ['']
 package_dir = {'': 'Lib'}
 include_dirs.append('Include')
 ext_modules = [
-    Extension('_numpy',
-              [os.path.join('Src', '_numpymodule.c'),
-               os.path.join('Src', 'arrayobject.c'),
-               os.path.join('Src', 'ufuncobject.c')],
-              extra_compile_args = extra_compile_args),
-    Extension('multiarray',
-              [os.path.join('Src', 'multiarraymodule.c')],
-              extra_compile_args = extra_compile_args),
-    Extension('umath',
-              [os.path.join('Src', 'umathmodule.c')],
+    extension('_numpy',
+              [path('Src/_numpymodule.c'),
+               path('Src/arrayobject.c'),
+               path('Src/ufuncobject.c')],
+             ),
+    extension('multiarray',
+              [path('Src/multiarraymodule.c')],
+             ),
+    extension('umath',
+              [path('Src/umathmodule.c')],
               libraries = mathlibs,
-              define_macros = define_macros,
-              undef_macros = undef_macros,
-              extra_compile_args = extra_compile_args),
-    Extension('arrayfns',
-              [os.path.join('Src', 'arrayfnsmodule.c')],
-              extra_compile_args = extra_compile_args),
-    Extension('ranlib',
-              [os.path.join('Src', 'ranlibmodule.c'),
-               os.path.join('Src', 'ranlib.c'),
-               os.path.join('Src', 'com.c'),
-               os.path.join('Src', 'linpack.c')],
-              extra_compile_args = extra_compile_args),
-    Extension('lapack_lite', sourcelist,
-              library_dirs = library_dirs_list,
-              libraries = libraries_list,
-              extra_link_args = extra_link_args,
-              extra_compile_args = extra_compile_args) 
+              define_macros = umath_define_macros,
+             ),
+    extension('arrayfns',
+              [path('Src/arrayfnsmodule.c')],
+             ),
+    extension('ranlib',
+              [path('Src/ranlibmodule.c'),
+               path('Src/ranlib.c'),
+               path('Src/com.c'),
+               path('Src/linpack.c')],
+             ),
+    lapack_ext,
     ]
 
 # add FFT package (optional)
 packages.append('FFT')
-package_dir['FFT'] = os.path.join('Packages','FFT','Lib')
-include_dirs.append(os.path.join('Packages','FFT','Include'))
-ext_modules.append(Extension('FFT.fftpack',
-                             [os.path.join('Packages','FFT','Src', 'fftpackmodule.c'),
-                              os.path.join('Packages', 'FFT', 'Src', 'fftpack.c')],
-                             extra_compile_args = extra_compile_args))
+package_dir['FFT'] = path('Packages/FFT/Lib')
+include_dirs.append(path('Packages/FFT/Include'))
+ext_modules.append(extension('FFT.fftpack',
+                             [path('Packages/FFT/Src/fftpackmodule.c'),
+                              path('Packages/FFT/Src/fftpack.c')]))
 
-# add MA package (optional) 
+# add MA package (optional)
 packages.append('MA')
-package_dir['MA'] = os.path.join('Packages', 'MA', 'Lib')
+package_dir['MA'] = path('Packages/MA/Lib')
 
 # add RNG package (optional)
 packages.append('RNG')
-package_dir['RNG'] = os.path.join('Packages', 'RNG', 'Lib')
-include_dirs.append(os.path.join('Packages', 'RNG', 'Include'))
-ext_modules.append(Extension('RNG.RNG',
-                             [os.path.join('Packages', 'RNG', 'Src', 'RNGmodule.c'),
-                              os.path.join('Packages', 'RNG', 'Src', 'ranf.c'),
-                              os.path.join('Packages', 'RNG', 'Src', 'pmath_rng.c')],
-                             extra_compile_args = extra_compile_args))
-# add dotblas package (optional)
-if use_dotblas:
+package_dir['RNG'] = path('Packages/RNG/Lib')
+include_dirs.append(path('Packages/RNG/Include'))
+ext_modules.append(extension('RNG.RNG',
+                             [path('Packages/RNG/Src/RNGmodule.c'),
+                              path('Packages/RNG/Src/ranf.c'),
+                              path('Packages/RNG/Src/pmath_rng.c')]))
+if dotblas_ext:
     packages.append('dotblas')
-    package_dir['dotblas'] = os.path.join('Packages', 'dotblas', 'dotblas')
-    ext_modules.append(Extension('_dotblas',
-                                 [os.path.join('Packages', 'dotblas', 'dotblas', '_dotblas.c')],
-                                 library_dirs = library_dirs_list,
-                                 libraries = libraries_list,
-                                 extra_compile_args=extra_compile_args))
+    package_dir['dotblas'] = path('Packages/dotblas/dotblas')
+    ext_modules.append(dotblas_ext)
 
+headers = glob(path('Include/Numeric/*.h'))
+packages.append('Numeric_headers')
+package_dir['Numeric_headers'] = path('Include')
 
+cmdclass = {'config': config_numpy}
+setuptools = {}
+if have_setuptools:
+    setuptools['zip_safe'] = 0
+    setuptools['package_data'] = {
+        'Numeric_headers' : ['Numeric/*.h'],
+    }
+    # By default, we don't want to install as an egg -- that would
+    # screw backwards compatibility.
+    from distutils.command.install import install
+    cmdclass['install'] = install
 
 
 long_description = """
@@ -174,20 +281,22 @@ RNG-3.1
 
 # Oops, another bug in Distutils!?
 # Write rpm_build.sh pointing to this python
-rpm_build_text="""env CFLAGS="$RPM_OPT_FLAGS" %s setup.py build\n""" % sys.executable
+rpm_build_text = \
+    'env CFLAGS="$RPM_OPT_FLAGS" %s setup.py build\n' % sys.executable
 rpm_script = open("rpm_build.sh", "w")
 rpm_script.write(rpm_build_text)
 rpm_script.close()
 
 # Write rpm_install.sh pointing to this python
-rpm_install_text=sys.executable +""" setup.py install --root=$RPM_BUILD_ROOT
+rpm_install_text = sys.executable + """ \
+setup.py install --root=$RPM_BUILD_ROOT
 
 cat >INSTALLED_FILES <<EOF
 %doc Demo
 EOF
 find $RPM_BUILD_ROOT -type f | sed -e "s|$RPM_BUILD_ROOT||g" >>INSTALLED_FILES
 
-""" 
+"""
 rpm_script = open("rpm_install.sh", "w")
 rpm_script.write(rpm_install_text)
 rpm_script.close()
@@ -206,7 +315,9 @@ setup (name = "Numeric",
        package_dir = package_dir,
        headers = headers,
        include_dirs = include_dirs,
-       ext_modules = ext_modules
+       ext_modules = ext_modules,
+       cmdclass = cmdclass,
+       **setuptools
        )
 
 print 'MA Version', MA_version

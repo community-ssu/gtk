@@ -1,5 +1,5 @@
 # This module is a lite version of LinAlg.py module which contains
-# high-level Python interface to the LAPACK library.  The lite versioho
+# high-level Python interface to the LAPACK library.  The lite version
 # only accesses the following LAPACK functions: dgesv, zgesv, dgeev,
 # zgeev, dgesdd, zgesdd, dgelsd, zgelsd, dsyevd, zheevd, dgetrf, dpotrf.
 
@@ -71,10 +71,10 @@ def _assertSquareness(*arrays):
     for a in arrays:
         if max(a.shape) != min(a.shape):
             raise LinAlgError, 'Array must be square'
-    
+
 
 # Linear equations
-        
+
 def solve_linear_equations(a, b):
     one_eq = len(b.shape) == 1
     if one_eq:
@@ -176,7 +176,7 @@ def Heigenvalues(a, UPLO='L'):
     real_t = _array_type[0][_array_precision[t]]
     a = _castCopyAndTranspose(t, a)
     n = a.shape[0]
-    liwork = 5*n+3 
+    liwork = 5*n+3
     iwork = Numeric.zeros((liwork,),'i')
     if _array_kind[t] == 1: # Complex routines take different arguments
         lapack_routine = lapack_lite.zheevd
@@ -208,7 +208,7 @@ def Heigenvalues(a, UPLO='L'):
 
 def eigenvectors(a):
     """eigenvectors(a) returns u,v  where u is the eigenvalues and
-v is a matrix of eigenvectors with vector v[i] corresponds to 
+v is a matrix of eigenvectors with vector v[i] corresponds to
 eigenvalue u[i].  Satisfies the equation dot(a, v[i]) = u[i]*v[i]
 """
     _assertRank2(a)
@@ -298,7 +298,7 @@ def Heigenvectors(a, UPLO='L'):
         raise LinAlgError, 'Eigenvalues did not converge'
     return (w,a)
 
-   
+
 # Singular value decomposition
 
 def singular_value_decomposition(a, full_matrices = 0):
@@ -382,18 +382,18 @@ def determinant(a):
                                                 Numeric.arrayrange(1, n+1))) % 2
     return (1.-2.*sign)*Numeric.multiply.reduce(Numeric.diagonal(a))
 
-# Linear Least Squares 
-        
+# Linear Least Squares
+
 def linear_least_squares(a, b, rcond=1.e-10):
-    """solveLinearLeastSquares(a,b) returns x,resids,rank,s 
-where x minimizes 2-norm(|b - Ax|) 
+    """solveLinearLeastSquares(a,b) returns x,resids,rank,s
+where x minimizes 2-norm(|b - Ax|)
       resids is the sum square residuals
       rank is the rank of A
-      s is an rank of the singual values of A in desending order
+      s is the rank of the singular values of A in descending order
 
 If b is a matrix then x is also a matrix with corresponding columns.
 If the rank of A is less than the number of columns of A or greater than
-the numer of rows, then residuals will be returned as an empty array
+the number of rows, then residuals will be returned as an empty array
 otherwise resids = sum((b-dot(A,x)**2).
 Singular values less than s[0]*rcond are treated as zero.
 """
@@ -454,62 +454,61 @@ Singular values less than s[0]*rcond are treated as zero.
         x = copy.copy(Numeric.transpose(bstar)[:n,:])
         if (results['rank']==n) and (m>n):
             resids = copy.copy(Numeric.sum((Numeric.transpose(bstar)[n:,:])**2))
-    return x,resids,results['rank'],copy.copy(s[:min(n,m)]) 
+    return x,resids,results['rank'],copy.copy(s[:min(n,m)])
 
 
 if __name__ == '__main__':
-        from Numeric import *
+    from Numeric import *
 
-        def test(a, b):
+    def test(a, b):
 
-                print "All numbers printed should be (almost) zero:"
+        print "All numbers printed should be (almost) zero:"
 
-                x = solve_linear_equations(a, b)
-                check = b - matrixmultiply(a, x)
-                print check
-
-
-                a_inv = inverse(a)
-                check = matrixmultiply(a, a_inv)-identity(a.shape[0])
-                print check
+        x = solve_linear_equations(a, b)
+        check = b - matrixmultiply(a, x)
+        print check
 
 
-                ev = eigenvalues(a)
-
-                evalues, evectors = eigenvectors(a)
-                check = ev-evalues
-                print check
-
-                evectors = transpose(evectors)
-                check = matrixmultiply(a, evectors)-evectors*evalues
-                print check
+        a_inv = inverse(a)
+        check = matrixmultiply(a, a_inv)-identity(a.shape[0])
+        print check
 
 
-                u, s, vt = singular_value_decomposition(a)
-                check = a - Numeric.matrixmultiply(u*s, vt)
-                print check
+        ev = eigenvalues(a)
+
+        evalues, evectors = eigenvectors(a)
+        check = ev-evalues
+        print check
+
+        evectors = transpose(evectors)
+        check = matrixmultiply(a, evectors)-evectors*evalues
+        print check
 
 
-                a_ginv = generalized_inverse(a)
-                check = matrixmultiply(a, a_ginv)-identity(a.shape[0])
-                print check
+        u, s, vt = singular_value_decomposition(a)
+        check = a - Numeric.matrixmultiply(u*s, vt)
+        print check
 
 
-                det = determinant(a)
-                check = det-multiply.reduce(evalues)
-                print check
+        a_ginv = generalized_inverse(a)
+        check = matrixmultiply(a, a_ginv)-identity(a.shape[0])
+        print check
 
-                x, residuals, rank, sv = linear_least_squares(a, b)
-                check = b - matrixmultiply(a, x)
-                print check
-                print rank-a.shape[0]
-                print sv-s
 
-        a = array([[1.,2.], [3.,4.]])
-        b = array([2., 1.])
-        test(a, b)
+        det = determinant(a)
+        check = det-multiply.reduce(evalues)
+        print check
 
-        a = a+0j
-        b = b+0j
-        test(a, b)
+        x, residuals, rank, sv = linear_least_squares(a, b)
+        check = b - matrixmultiply(a, x)
+        print check
+        print rank-a.shape[0]
+        print sv-s
 
+    a = array([[1.,2.], [3.,4.]])
+    b = array([2., 1.])
+    test(a, b)
+
+    a = a+0j
+    b = b+0j
+    test(a, b)

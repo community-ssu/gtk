@@ -7,13 +7,13 @@ BLAS routines exist only for 32 & 64 bit float and complex types; if BLAS
 routines cannot be used the dot defined here defers to the standard
 `Numeric.dot`.
 
-To seamlessly replace the Numeric dot and matrixmultiply replace occurences
+To seamlessly replace the Numeric dot and matrixmultiply replace occurrences
 like::
- 
+
   from Numeric import *
 
 with::
- 
+
   from Numeric import *
   from dotblas import *
 
@@ -30,7 +30,7 @@ to globally use the optimized `dot` function::
 """
 
 __author__ = "Richard Everson (R.M.Everson@exeter.ac.uk)"
-__revision__ = "$Revision: 1.1 $"
+__revision__ = "$Revision: 1.3 $"
 __version__  = "1.0"
 
 import Numeric
@@ -47,7 +47,7 @@ def dot(a, b):
     This version uses the BLAS optimized routines where possible.
     """
     try:
-        return _dotblas.matrixproduct(a, b) 
+        return _dotblas.matrixproduct(a, b)
     except:
         try:
             return multiarray.matrixproduct(a, b)
@@ -62,11 +62,11 @@ def innerproduct(a, b):
     The product-sum is over the last dimension of a and b.
 
     NB: No conjugation of complex arguments is performed.
-    
+
     This version uses the BLAS optimized routines where possible.
     """
     try:
-        return _dotblas.innerproduct(a, b) 
+        return _dotblas.innerproduct(a, b)
     except TypeError:
         try:
             return multiarray.innerproduct(a, b)
@@ -87,10 +87,10 @@ def vdot(a, b):
        a vector). NB: this is not the same as `dot`, as it takes the conjugate
        of its first argument if complex and always returns a scalar."""
     try:
-	return _dotblas.vdot(Numeric.ravel(a), Numeric.ravel(b))
+        return _dotblas.vdot(Numeric.ravel(a), Numeric.ravel(b))
     # in case we get an integer Value
     except TypeError:
         return multiarray.matrixproduct(multiarray.array(a).flat,
                                         multiarray.array(b).flat)
-	
+
 __all__ = 'dot innerproduct vdot'.split()

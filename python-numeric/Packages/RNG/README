@@ -1,0 +1,48 @@
+Random Number Generators
+Contact: Paul Dubois, dubois1@llnl.gov
+
+Revision History
+
+May 27, 1998. (Rob Managan) Ported to Mac. Added a log normal distribution. Added the
+density function to the method list for distributions. It seems there was no way to call
+the density functions that were in the code.
+
+April, 1998. (Konrad Hinsen) The module RNG is an enhanced version of the URNG module
+by Paul Dubois. The URNG module provided any number of independent random number
+generators with a uniform distribution. The RNG module extends the random number
+generators to non-uniform distributions. Currently implemented are exponential and normal
+distributions, but adding others is not difficult. Contributions of code for other
+distributions are welcome! 
+
+Usage
+
+Module RNG defines the function 
+
+CreateGenerator(s) 
+
+ -- creates a new random number generator with a uniform [0, 1) distribution that is
+independent of other ones created earlier or later. Its first argument, an integer,
+determines the initial state: 
+
+   0   ; Use the default initial seed value. 
+   <0: ; Set a random value for the seed from the system clock. 
+   >0  ; Set seed directly (32 bits only). 
+
+Other distributions are obtained by supplying a second argument which must be a
+distribution. Currently RNG defines the following distribution types: 
+
+  UniformDistribution(a, b) -- a uniform distribution of numbers in the interval [a, b) 
+  NormalDistribution(mu, sigma) -- a normal distribution with mean mu and standard
+    deviation sigma 
+  ExponentialDistribution(l) -- an exponential distribution of positive numbers with decay
+    constant l. 
+  LogNormalDistribution(mean, std) -- a log normal distribution with given mean and
+    standard deviation.
+
+Examples
+
+The test routine Test/RNGtest1.py illustrates some common usage of both RNG and Numeric.
+
+The test routine RNGtest2.py combines RNG with Konrad Hinsen's Statistics package to do
+a test of the log normal distribution.
+

@@ -49,12 +49,14 @@ static long qsame;
 
     qsame = olda == aa && oldb == bb;
     if(qsame) goto S20;
-    if(!(aa <= 0.0 || bb <= 0.0)) goto S10;
-    fputs(" AA or BB <= 0 in GENBET - Abort!\n",stderr);
-    fprintf(stderr," AA: %16.6E BB %16.6E\n",aa,bb);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
-    return 0.0;
-S10:
+    if ((aa <= 0.0) || (bb <= 0.0)) {
+        char as[50], bs[50];
+        snprintf(as, 50, "%16.6E", aa);
+        snprintf(bs, 50, "%16.6E", bb);
+        PyErr_Format(PyExc_ValueError, "AA (%s) or BB (%s) <= 0 in GENBET",
+                     as, bs);
+        return 0.0;
+    }
     olda = aa;
     oldb = bb;
 S20:
@@ -201,12 +203,12 @@ float genchi(float df)
 {
 static float genchi;
 
-    if(!(df <= 0.0)) goto S10;
-    fputs("DF <= 0 in GENCHI - ABORT\n",stderr);
-    fprintf(stderr,"Value of DF: %16.6E\n",df);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
-    return 0.0;
-S10:
+    if (df <= 0.0) {
+        char dfs[50];
+        snprintf(dfs, 50, "%16.6E", df);
+        PyErr_Format(PyExc_ValueError, "DF (%s) <= 0 in GENCHI", dfs);
+        return 0.0;
+    }
     genchi = 2.0*gengam(1.0,df/2.0);
     return genchi;
 }
@@ -258,21 +260,26 @@ float genf(float dfn,float dfd)
 {
 static float genf,xden,xnum;
 
-    if(!(dfn <= 0.0 || dfd <= 0.0)) goto S10;
-    fputs("Degrees of freedom nonpositive in GENF - abort!\n",stderr);
-    fprintf(stderr,"DFN value: %16.6EDFD value: %16.6E\n",dfn,dfd);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
-    return 0.0;
-S10:
+    if((dfn <= 0.0 || dfd <= 0.0)) {
+        char dfns[50], dfds[50];
+        snprintf(dfns, 50, "%16.6E", dfn);
+        snprintf(dfds, 50, "%16.6E", dfd);
+        PyErr_Format(PyExc_ValueError,
+                     "Degrees of freedom nonpositive in GENF: DFN=%s DFD=%s",
+                     dfns,dfds);
+        return 0.0;
+    }
     xnum = genchi(dfn)/dfn;
 /*
       GENF = ( GENCHI( DFN ) / DFN ) / ( GENCHI( DFD ) / DFD )
 */
     xden = genchi(dfd)/dfd;
     if(!(xden <= 9.999999999998E-39*xnum)) goto S20;
+    /*
     fputs(" GENF - generated numbers would cause overflow",stderr);
     fprintf(stderr," Numerator %16.6E Denominator %16.6E\n",xnum,xden);
     fputs(" GENF returning 1.0E38",stderr);
+    */
     genf = 1.0E38;
     goto S30;
 S20:
@@ -452,12 +459,14 @@ float gennch(float df,float xnonc)
 {
 static float gennch;
 
-    if(!(df <= 1.0 || xnonc < 0.0)) goto S10;
-    fputs("DF <= 1 or XNONC < 0 in GENNCH - ABORT\n",stderr);
-    fprintf(stderr,"Value of DF: %16.6E Value of XNONC%16.6E\n",df,xnonc);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
-    return 0.0;
-S10:
+    if((df <= 1.0 || xnonc < 0.0)) {
+        char dfs[50], xnoncs[50];
+        snprintf(dfs, 50, "%16.6E", df);
+        snprintf(xnoncs, 50, "%16.6E", xnonc);
+        PyErr_Format(PyExc_ValueError,
+                     "DF (%s) <= 1 or XNONC (%s) < 0 in GENNCH", dfs, xnoncs);
+        return 0.0;
+    }
     gennch = genchi(df-1.0)+pow(gennor(sqrt(xnonc),1.0),2.0);
     return gennch;
 }
@@ -488,25 +497,27 @@ static float gennf,xden,xnum;
 static long qcond;
 
     qcond = dfn <= 1.0 || dfd <= 0.0 || xnonc < 0.0;
-    if(!qcond) goto S10;
-    fputs("In GENNF - Either (1) Numerator DF <= 1.0 or\n",stderr);
-    fputs("(2) Denominator DF < 0.0 or \n",stderr);
-    fputs("(3) Noncentrality parameter < 0.0\n",stderr);
-    fprintf(stderr,
-      "DFN value: %16.6EDFD value: %16.6EXNONC value: \n%16.6E\n",dfn,dfd,
-      xnonc);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
-    return 0.0;
-S10:
+    if (qcond) {
+        char dfns[50], dfds[50], xnoncs[50];
+        snprintf(dfns, 50, "%16.6E", dfn);
+        snprintf(dfds, 50, "%16.6E", dfd);
+        snprintf(xnoncs, 50, "%16.16E", xnonc);
+        PyErr_Format(PyExc_ValueError,
+                     "either numerator (%s) <= 1.0 or denominator (%s) < 0.0 or noncentrality parameter (%s) < 0.0",
+                     dfns, dfds, xnoncs);
+        return 0.0;
+    }
     xnum = gennch(dfn,xnonc)/dfn;
 /*
       GENNF = ( GENNCH( DFN, XNONC ) / DFN ) / ( GENCHI( DFD ) / DFD )
 */
     xden = genchi(dfd)/dfd;
     if(!(xden <= 9.999999999998E-39*xnum)) goto S20;
+    /*
     fputs(" GENNF - generated numbers would cause overflow",stderr);
     fprintf(stderr," Numerator %16.6E Denominator %16.6E\n",xnum,xden);
     fputs(" GENNF returning 1.0E38",stderr);
+    */
     gennf = 1.0E38;
     goto S30;
 S20:
@@ -577,12 +588,14 @@ float genunf(float low,float high)
 {
 static float genunf;
 
-    if(!(low > high)) goto S10;
-    fprintf(stderr,"LOW > HIGH in GENUNF: LOW %16.6E HIGH: %16.6E\n",low,high);
-    fputs("Abort\n",stderr);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
-    return 0.0;
-S10:
+    if((low > high)) {
+        char lows[50], highs[50];
+        snprintf(lows, 50, "%16.6E", low);
+        snprintf(highs, 50, "%16.6E", high);
+        PyErr_Format(PyExc_ValueError, "LOW (%s) > HIGH (%s) in GENUNF",
+                     lows, highs);
+        return 0.0;
+    }
     genunf = low+(high-low)*ranf();
     return genunf;
 }
@@ -604,8 +617,8 @@ static long curntg = 1;
     if(getset == 0) *g = curntg;
     else  {
         if(*g < 0 || *g > numg) {
-            fputs(" Generator number out of range in GSCGN\n",stderr);
-            PyErr_SetString (PyExc_ValueError, "Described above.");
+            PyErr_SetString(PyExc_ValueError,
+                            "Generator number out of range in GSCGN");
             return;
         }
         curntg = *g;
@@ -1000,24 +1013,26 @@ long ignpoi(float mu)
      SEPARATION OF CASES A AND B
 */
 {
-extern float fsign( float num, float sign );
-static float a0 = -0.5;
-static float a1 = 0.3333333;
-static float a2 = -0.2500068;
-static float a3 = 0.2000118;
-static float a4 = -0.1661269;
-static float a5 = 0.1421878;
-static float a6 = -0.1384794;
-static float a7 = 0.125006;
-static float muold = 0.0;
-static float muprev = 0.0;
-static float fact[10] = {
-    1.0,1.0,2.0,6.0,24.0,120.0,720.0,5040.0,40320.0,362880.0
-};
-static long ignpoi,j,k,kflag,l,m;
-static float b1,b2,c,c0,c1,c2,c3,d,del,difmuk,e,fk,fx,fy,g,omega,p,p0,px,py,q,s,
-    t,u,v,x,xx,pp[35];
+    extern float fsign( float num, float sign );
+    const float a0 = -0.5;
+    const float a1 = 0.3333333;
+    const float a2 = -0.2500068;
+    const float a3 = 0.2000118;
+    const float a4 = -0.1661269;
+    const float a5 = 0.1421878;
+    const float a6 = -0.1384794;
+    const float a7 = 0.125006;
+    static float muold = 0.0;
+    static float muprev = 0.0;
+    const float fact[10] = {
+        1.0,1.0,2.0,6.0,24.0,120.0,720.0,5040.0,40320.0,362880.0
+    };
+    static long ignpoi=0,j=0,k=0,kflag=0,l=0,m=0;
+    static float b1,b2,c=0.0,c0=0.0,c1=0.0,c2=0.0,c3=0.0,d=0.0,del,difmuk=0.0,
+          e=0.0,fk=0.0,fx,fy,g,omega=0.0,p=0.0,p0=0.0,px,py,q=0.0,s=0.0,
+          t,u=0.0,v,x,xx,pp[35];
 
+    if (mu <= 0.0) return 0;
     if(mu == muprev) goto S10;
     if(mu < 10.0) goto S120;
 /*
@@ -1210,15 +1225,13 @@ long ignuin(long low,long high)
 static long ignuin,ign,maxnow,range,ranp1;
 
     if(!(low > high)) goto S10;
-    fputs(" low > high in ignuin - ABORT\n",stderr);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
+    PyErr_SetString(PyExc_ValueError, "low > high in ignuin");
     return 0;
 
 S10:
     range = high-low;
     if(!(range > maxnum)) goto S20;
-    fputs(" high - low too large in ignuin - ABORT\n",stderr);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
+    PyErr_SetString(PyExc_ValueError, "high - low too large in ignuin");
     return 0;
 
 S20:
@@ -1278,13 +1291,16 @@ static long mltmod,a0,a1,k,p,q,qh,rh;
      H = 2**((b-2)/2) where b = 32 because we are using a 32 bit
       machine. On a different machine recompute H
 */
-    if(!(a <= 0 || a >= m || s <= 0 || s >= m)) goto S10;
-    fputs(" a, m, s out of order in mltmod - ABORT!\n",stderr);
-    fprintf(stderr," a = %12ld s = %12ld m = %12ld\n",a,s,m);
-    fputs(" mltmod requires: 0 < a < m; 0 < s < m\n",stderr);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
-    return 0;
-S10:
+    if ((a <= 0 || a >= m || s <= 0 || s >= m)) {
+        char as[50], ms[50], ss[50];
+        snprintf(as, 50, "%12ld", a);
+        snprintf(ms, 50, "%12ld", m);
+        snprintf(ss, 50, "%12ld", s);
+        PyErr_Format(PyExc_ValueError,
+                     "mltmod requires 0 < a (%s) < m (%s) and 0 < s (%s) < m",
+                     as, ms, ss);
+        return 0;
+    }
     if(!(a < h)) goto S20;
     a0 = a;
     p = 0;
@@ -1429,12 +1445,12 @@ double ranf(void)
 **********************************************************************
 */
 {
-static double ranf_;
+    double ranf_;
 /*
      4.656613057E-10 is 1/M1  M1 is set in a data statement in IGNLGI
       and is currently 2147483563. If M1 changes, change this also.
 */
-    ranf_ = ignlgi()*4.656613057E-10;
+    ranf_ = ignlgi()*4.6566130573917691e-10;
     return ranf_;
 }
 void setgmn(float *meanv,float *covm,long p,float *parm)
@@ -1468,12 +1484,12 @@ static long i,icount,info,j,D2,D3,D4,D5;
 /*
      TEST THE INPUT
 */
-    if(!(p <= 0)) goto S10;
-    fputs("P nonpositive in SETGMN\n",stderr);
-    fprintf(stderr,"Value of P: %12ld\n",p);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
-    return;
-S10:
+    if((p <= 0)) {
+        char ps[50];
+        snprintf(ps, 50, "%12ld", p);
+        PyErr_Format(PyExc_ValueError, "P=%s nonpositive in SETGMN", ps);
+        return;
+    }
     *parm = p;
 /*
      PUT P AND MEANV INTO PARM
@@ -1483,11 +1499,10 @@ S10:
       Cholesky decomposition to find A s.t. trans(A)*(A) = COVM
 */
     spofa(covm,p,p,&info);
-    if(!(info != 0)) goto S30;
-    fputs(" COVM not positive definite in SETGMN\n",stderr);
-    PyErr_SetString (PyExc_ValueError, "Described above.");
-    return;
-S30:
+    if (info != 0) {
+        PyErr_SetString(PyExc_ValueError, "COVM not positive definite in SETGMN");
+        return;
+    }
     icount = p+1;
 /*
      PUT UPPER HALF OF A, WHICH IS NOW THE CHOLESKY FACTOR, INTO PARM
@@ -1918,7 +1933,9 @@ Prints msg to standard error and then exits
 void ftnstop(char* msg)
 /* msg - error message */
 {
-  if (msg != NULL) fprintf(stderr,"%s\n",msg);
-  PyErr_SetString (PyExc_RuntimeError, "Described above.");
-  return;
+    if (msg == NULL) {
+        msg = "";
+    }
+    PyErr_SetString(PyExc_RuntimeError, msg);
+    return;
 }

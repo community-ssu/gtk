@@ -150,7 +150,7 @@ void Mixranf(int *s,u32 s48[2])
 	struct timeval tv;
 	struct timezone tz;
 #if !defined(__sgi)
-	int gettimeofday();
+	int gettimeofday(struct timeval *, struct timezone *);
 #endif
 
 	(void)gettimeofday(&tv,&tz);
@@ -362,7 +362,7 @@ fprintf(stderr,"Leaving Setmult\n");
  *   PMATH generator has the Cray default starting values built in,
  *   no initialization is needed.
  */
-f64 Ranf()
+f64 Ranf(void)
 {
     return(PM_RANF());
 }

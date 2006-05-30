@@ -1,0 +1,48 @@
+Developer Guidelines
+
+The set of developers for Numerical Python is called the Nummies. 
+The chairperson of this group is called the NummieHead. 
+
+A well-behaved Nummie will:
+
+   Fix bugs at will, without prior consultation.
+
+  Add new features only after consultation with other Nummies by using the 
+  developer mailing list. You can make a branch in CVS if needed for 
+  development. When successful, integrate changes to the main line.
+
+  Not leave the repository in a state where it won't build, ever.  
+
+The NummieHead has a veto on adding features. This provision is intended to
+encourage discussion of the "big picture" and the needs of the diverse
+customer base.
+
+The Nummies control their own membership, and these rules.
+
+Protocol:
+
+When first met at a International Python Conference, the NummieHead should
+be greeted with a salute using more than one finger and the cry,
+"Ni-Ni-Numpy"; the reply is "Num-Num-Ni".
+
+The historic roster of NummieHeads is:
+
+Paul F. Dubois, January 2000- April 2003 (self-appointed)
+Todd Miller, May 2003-
+
+The history roster of Nummies is:
+
+Jim Hugunin wrote the original implementation.
+Paul F. Dubois was the first Head, took the software to Sorce Forge, 
+   and managed the Numeric releases up through 23.0.
+David Ascher wrote the original document and tutorial.
+Travis Oliphant has fixed and improved many parts.
+Charles G. Waldman 
+J. Todd Miller is lead developer on Numarray, and the second Head.
+Konrad Hinsen did a lot of work on the original design.
+Jack Jansen kept Numeric working on the Mac.
+Paul Barrett
+Jochen Kupper
+Perry Greenfield is working on Numarray.
+
+

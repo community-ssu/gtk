@@ -14,7 +14,7 @@ static PyMethodDef numpy_methods[] = {
 /* Module initialization */
 
 DL_EXPORT(void)
-init_numpy()
+init_numpy(void)
 {
     PyObject *m, *d;
     PyObject *c_api;
@@ -64,6 +64,7 @@ init_numpy()
     PyArray_API[PyArray_As2D_NUM] = (void *)&PyArray_As2D;
     PyArray_API[PyArray_Free_NUM] = (void *)&PyArray_Free;
     PyArray_API[PyArray_ValidType_NUM] = (void *)&PyArray_ValidType;
+    PyArray_API[PyArray_IntegerAsInt_NUM] = (void *)&PyArray_IntegerAsInt;
     c_api = PyCObject_FromVoidPtr((void *)PyArray_API, NULL);
     if (PyErr_Occurred()) goto err;
     PyDict_SetItemString(d, "_ARRAY_API", c_api);

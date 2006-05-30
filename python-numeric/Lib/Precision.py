@@ -2,14 +2,14 @@
 specification of typecodes.
 
 TODO:
-    The code_table should proably be cached somehow
+    The code_table should probably be cached somehow
     Float/Complex needs to have precision and range specifiers
 """
 
 from multiarray import zeros
 import string
 
-# dvhart - added the character 'u' for the UnisgnedInteger 'list of codes' ?
+# dvhart - added the character 'u' for the UnsignedInteger 'list of codes' ?
 typecodes = {'Character':'c', 'Integer':'1sil', 'UnsignedInteger':'bwu', 'Float':'fd', 'Complex':'FD'}
 
 def _get_precisions(typecodes):

@@ -5,10 +5,21 @@
 #include "Numeric/f2c.h"
 
 
-extern void s_wsfe() {;}
-extern void e_wsfe() {;}
-extern void do_fio() {;}
+extern void s_wsfe(cilist *f) {;}
+extern void e_wsfe(void) {;}
+extern void do_fio(integer *c, char *s, ftnlen l) {;}
 
+/* You'll want this if you redo the *_lite.c files with the -C option
+ * to f2c for checking array subscripts. (It's not suggested you do that
+ * for production use, of course.) */
+extern int
+s_rnge(char *var, int index, char *routine, int lineno)
+{
+    fprintf(stderr, "array index out-of-bounds for %s[%d] in routine %s:%d\n",
+            var, index, routine, lineno);
+    fflush(stderr);
+    abort();
+}
 
 
 #ifdef KR_headers

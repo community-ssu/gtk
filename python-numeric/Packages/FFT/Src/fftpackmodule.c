@@ -239,7 +239,7 @@ static char fftpack_module_documentation[] =
 ;
 
 DL_EXPORT(void)
-initfftpack()
+initfftpack(void)
 {
 	PyObject *m, *d;
 
@@ -253,7 +253,7 @@ initfftpack()
 
 	/* Add some symbolic constants to the module */
 	d = PyModule_GetDict(m);
-	ErrorObject = PyString_FromString("fftpack.error");
+	ErrorObject = PyErr_NewException("fftpack.error", NULL, NULL);
 	PyDict_SetItemString(d, "error", ErrorObject);
 
 	/* XXXX Add constants here */
@@ -262,7 +262,3 @@ initfftpack()
 	if (PyErr_Occurred())
 		Py_FatalError("can't initialize module fftpack");
 }
-
-
-
-

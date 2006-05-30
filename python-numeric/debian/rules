@@ -30,6 +30,7 @@ clean:
 	rm -f stamp-*
 	-rm -rf `find -name build -type d`
 	-rm -rf $(d_num) $(d_dev) $(d)
+	-rm -rf doc/www.pfdubois.com
 	dh_clean
 
 install: build
@@ -67,7 +68,6 @@ binary: build install
 
 	dh_link -p$(p_dev) /$(PYSITE)/NumTut /usr/share/doc/$(p_dev)/NumTut
 	install -m 644 doc/numpy.pdf $(d_dev)/usr/share/doc/$(p_dev)
-	cp -a doc/www.pfdubois.com/numpy/html2 $(d_dev)/usr/share/doc/$(p_dev)/html
 
 	: # Replace all '#!' calls to python with python
 	: # and make them executable

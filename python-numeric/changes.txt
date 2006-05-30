@@ -1,18 +1,95 @@
+Version 24.2
+              Support array interface in objecttype function.
+              Handle case where __array__ does not return a Numeric array.
+              Fix __array_struct__ for 64-bit.
+[cookedm]     Add ability to build Python eggs with python setup.py bdist_egg.
+              - setuptools is *not* required; if not found, the old way is
+                still used.
+              - default for setup.py install is to still install the old way.
+              - headers are included in the Numeric_headers package, which
+                has a function get_numeric_include() to return the appropiate
+                directory for the header files.
+
+Version 24.1  Nov 2005
+[unreported]  Object array problem with put and putmask
+              Updates to the array protocol
+              Added __array_struct__ compatibility
+
+Version 24.0  Aug 2005
+[unreported]  Altered __array_data__ to return Tuple to data and RO flag
+[unreported]  Fix diagonal (and trace) for higher then 2 dimensional arrays.
+[unreported]  Add a cross_product function
+[unreported]  make equality tests in test suite stricter in checking shapes
+              of array
+[1246169]     NewAxis by itself creates errors.
+[1215505]     slicing with large negative indexes. Now works the same way as
+              lists.
+[545336]      Bug in RandomArray.randint (numbers being generated outside of
+              of the passed range)
+[1198131]     character arrays do not print
+[1187896]     array slices inconsistent in certain special cases
+              Use same logic as for lists for [-2:-2:-1], for instance
+[1192758]     fix creation of rpm_install.sh script for bdist_rpm target
+[888572]      Replace string exceptions with exception objects
+[a.schmolck@gmx.net]
+              Fix various problems with object arrays built from instances.
+ 	      Raise error for reductions attempted with incompatible types.
+              Don't allow floats for shape description.
+[464980, 503733, 545259, 930735]
+              Update lapack_lite with new f2c'd versions using the LAPACK
+              sources from the Debian lapack3 package (version
+              3.0.20000531a-6). This should fix several bugs with regards to
+              the LinearAlgebra module. Also add scripts to regenerate the
+              appropiate files in Misc/lapack_lite.
+[unreported]  Rename (the new API function) PyArray_PyIntAsInt() to
+              PyArray_IntegerAsInt() to reflect that now does arrays also,
+              and not just Python ints.
+              Also fix it to only work with rank-0 and rank-1 arrays with
+              dimension 1 (those that int(an_array) will return a
+              value for).
+[763456]      Removed unnecessary and costly check_array
+[869839]      Object arrays with zero-sized dimensions caused segfaults.
+[635104]      Object array pickling was pickling pointers which was bad...
+[857622]      Fixed PyArray_CopyArray to check dimensions.
+[unreported]  Brand-new, user-friendly, setup.py. Don't edit it now; edit
+              customize.py instead (it's got nice comments and everything).
+[unreported]  changed PyArray_PyIntAsInt() to accept array arguments.
+[unreported]  changed PyArray_Return so PyArray_INT also returns a Python
+	      integer when sizeof(long)==sizeof(int)
+[unreported]  lapack_lite.LapackError is now a real Exception object, instead
+              of a string.
+[unreported]  Clear up more of int vs. long when referencing dimensions.
+              Calls to PyInt_AsLong() and PyLong_AsLong() have been replaced by
+              a new API function, PyArray_PyIntAsInt(), which returns a C int,
+              or raises an error if the (Python) integer is too big to fit in
+              one (which is possible when sizeof(int) != sizeof(long)).
+[unreported]  Don't allow a.resize(-1)
+[p1175802]    Correct spelling errors
+[p996268]     Use Apple's vecLib for BLAS and LAPACK on OS X
+[Greenfield]  Changed so a[0,0] and a[0][0] returns same type when a is 2-d of Int16
+[unreported]  Added array interface
+[unreported]  Allow Long Integers to be used in slices
+[1123145]     Handle mu==0.0 appropiately in ranlib/ignpoi.
+[unreported]  Return error info in ranlib instead of printing it to stderr
+[1151892]     dot() would quit python with zero-sized arrays when using
+              dotblas. The BLAS routines *gemv and *gemm need LDA >= 1.
+[unreported]  Fixed empty for Object arrays
+
 Version 23.8  March 2005
 [Cooke]       Fixed more 64-bit issues (patch 117603)
 [unreported]  Changed arrayfnsmodule back to PyArray_INT where the code
               typecasts to (int *).  Changed CanCastSafely to check
-	      if sizeof(long) == sizeof(int)
+              if sizeof(long) == sizeof(int)
 
 Version 23.7  January 2005
 [1075953]     added franf to fix problems on AMD64.
-[1027480]     this should have been fixed before. 
+[1027480]     this should have been fixed before.
 [scipy]       fixed reshape to convert dimensions to PyArray_LONG to avoid typecasting problem.
 [eric jones]  added empty to generate unitialized array
 [user ]       added support for vecLib on MacOS X in setup.py
-[unreported]  added UfuncType to Numeric to Parallel ArrayType 
+[unreported]  added UfuncType to Numeric to Parallel ArrayType
 
-Version 23.6 
+Version 23.6
 [unreported]  fixed argmin to work with Unsigned Array Types
 [unreported]  fixed UINT_to_XXX methods so input is assumed unsigned int
 [unreported]  fixed UINT conversion rules and inappropriate casting to unsigned integers

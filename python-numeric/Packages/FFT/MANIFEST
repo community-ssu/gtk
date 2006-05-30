@@ -1,0 +1,6 @@
+setup.py
+Lib/FFT.py
+Lib/__init__.py
+Src/fftpack.c
+Src/fftpackmodule.c
+Include/fftpack.h

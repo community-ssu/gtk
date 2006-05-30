@@ -614,7 +614,7 @@ static char RNG_module_documentation[] =
 ;
 
 DL_EXPORT(void)
-initRNG()
+initRNG(void)
 {
 	PyObject *m, *d;
     distributiontype.ob_type = &PyType_Type;
@@ -632,7 +632,7 @@ initRNG()
 
 	/* Add some symbolic constants to the module */
 	d = PyModule_GetDict(m);
-	ErrorObject = PyString_FromString("RNG.error");
+	ErrorObject = PyErr_NewException("RNG.error", NULL, NULL);
 	PyDict_SetItemString(d, "error", ErrorObject);
 	default_distribution = create_default_distribution();
 	PyDict_SetItemString(d, "default_distribution", default_distribution);

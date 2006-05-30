@@ -14,7 +14,7 @@ static PyObject *ErrorObject;
    Py_Try(BOOLEAN)
    If BOOLEAN is FALSE, assume the error object has
    been set and return NULL
-	   
+
    Py_Assert(BOOLEAN,ERROBJ,MESS)
    If BOOLEAN is FALSE set the error object to
    ERROBJ, and the message to MESS
@@ -149,7 +149,7 @@ arr_array_set(PyObject *self, PyObject *args)
      * called for by the subscript array. (It can also be a scalar,
      * in which case its value will be broadcast.) The result is that
      * elements of the third array are assigned in order to elements
-     * of the first whose subscripts are elements of the second. 
+     * of the first whose subscripts are elements of the second.
      *   arr_array_set (vals1, indices, vals2)
      * is equivalent to the Yorick assignment vals1 (indices) = vals2.
      * I have generalized this so that the source and target arrays
@@ -158,17 +158,17 @@ arr_array_set(PyObject *self, PyObject *args)
      * subscript only of the target. The target had better be contiguous. */
     /* self is not used */
     PyObject * tararg, * subsarg, *srcarg;
-    PyArrayObject * tararr, * subsarr, * srcarr;
-    double * dtar, * dsrc, ds;
-    float * ftar, * fsrc, fs;
-    char * ctar, * csrc, cs;
-    unsigned char * utar, * usrc, us;
+    PyArrayObject * tararr, * subsarr, * srcarr = NULL;
+    double * dtar, * dsrc, ds=0.0;
+    float * ftar, * fsrc, fs=0.0;
+    char * ctar, * csrc, cs='\0';
+    unsigned char * utar, * usrc, us=0;
     int * itar, * isrc, * isubs;
     long * ltar, * lsrc;
-    long is;
+    long is=0;
     int i, j, len, mn, mx;
     int scalar_source = 0;
-    char scalar_type;
+    char scalar_type = 'x';
     int nd, d1; /* number of dimensions and value of second dim. */
 
     Py_Try(PyArg_ParseTuple(args, "OOO", &tararg, &subsarg, &srcarg));
@@ -204,7 +204,7 @@ arr_array_set(PyObject *self, PyObject *args)
     isubs = (int *)A_DATA(subsarr);
     len = A_SIZE(subsarr);
     mn = mnx (isubs, len);
-    if (isubs [mn] < 0) 
+    if (isubs [mn] < 0)
 	{SETERR ("array_set: negative subscript specified.");
 	Py_DECREF (subsarr);
 	return NULL;}
@@ -452,10 +452,9 @@ arr_array_set(PyObject *self, PyObject *args)
 	return NULL;
     }
 
-    Py_DECREF (subsarr);
-    Py_DECREF (tararr);
-    if (! scalar_source)
-	Py_DECREF (srcarr);
+    Py_DECREF(subsarr);
+    Py_DECREF(tararr);
+    Py_XDECREF(srcarr);
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -530,16 +529,12 @@ arr_index_sort(PyObject *self, PyObject *args)
 	    itmp = isubs [i] ;
 	    isubs [i] = isubs [0] ;
 	    isubs [0] = itmp ;
-	    adjust (data, isubs, 0, i) ; 
+	    adjust (data, isubs, 0, i) ;
 	}
 
     Py_DECREF(alist);
     return (PyObject *) ilist ;
 }
-
-static char arr_binary_search__doc__[] =
-""
-;
 
 static int
 binary_search(double dval, double dlist [], int len)
@@ -793,7 +788,7 @@ arr_zmin_zmax(PyObject *self, PyObject *args)
        entry says that this cell is excluded from the mesh. */
     PyObject * zobj, * iregobj;
     PyArrayObject * zarr, * iregarr;
-    double * z, zmin, zmax;
+    double * z, zmin=0.0, zmax=0.0;
     int * ireg;
     int have_min_max = 0;
     int i, j, k, n, m;
@@ -858,10 +853,10 @@ arr_digitize(PyObject *self, PyObject *args)
        as appropriate.                                                      */
     /* self is not used */
     PyObject * ox, * obins ;
-    PyArrayObject * ax, * abins , * aret ;
-    double x, bins ;              /* if either or both is a scalar */
-    double * dx, * dbins ;        /* if either or both is a vector */
-    int lbins, lx ;               /* lengths, if vectors */
+    PyArrayObject *ax=NULL, *abins=NULL, *aret ;
+    double x=0.0, bins=0.0;       /* if either or both is a scalar */
+    double *dx=NULL, *dbins=NULL; /* if either or both is a vector */
+    int lbins=0, lx ;             /* lengths, if vectors */
     long * iret ;
     int m, i ;
     int x_is_scalar, bins_is_scalar ;
@@ -895,8 +890,7 @@ arr_digitize(PyObject *self, PyObject *args)
 	    if (A_NDIM (abins) > 1) {
 		SETERR ("digitize: second argument has too many dimensions.") ;
 		Py_DECREF (abins) ;
-		if (! x_is_scalar)
-		    Py_DECREF (ax) ;
+                Py_XDECREF(ax);
 		return NULL ; }
 	    lbins = A_SIZE (abins) ;
 	    dbins = (double *) A_DATA (abins) ;
@@ -918,7 +912,7 @@ arr_digitize(PyObject *self, PyObject *args)
 		return PyInt_FromLong (0) ;
 	    else
 		return PyInt_FromLong (1) ;
-	else 
+	else
 	    {
 		aret = (PyArrayObject *) PyArray_FromDims (1, &lx, PyArray_LONG) ;
 		iret = (long *) A_DATA (aret) ;
@@ -950,18 +944,14 @@ arr_digitize(PyObject *self, PyObject *args)
 	    else
 		{
 		    SETERR ("digitize: Second argument must be monotonic.") ;
-		    if (! x_is_scalar)
-			Py_DECREF (ax) ;
-		    if (! bins_is_scalar)
-			Py_DECREF (abins) ;
+		    Py_XDECREF(ax);
+		    Py_XDECREF(abins);
 		    return NULL ;
 		}
 	}
 
-    if (! x_is_scalar)
-	Py_DECREF (ax) ;
-    if (! bins_is_scalar)
-	Py_DECREF (abins) ;
+    Py_XDECREF(ax);
+    Py_XDECREF(abins);
     return PyArray_Return (aret) ;
 }
 
@@ -1067,7 +1057,7 @@ arr_nz (PyObject *self, PyObject *args)
 {
     /* nz_ (x): x is an array of unsigned bytes. If x
        ends with a bunch of zeros, this returns with the index of
-       the first zero element after the last nonzero element. 
+       the first zero element after the last nonzero element.
        It returns the length of the array if its last element
        is nonzero. This is essentially the "effective length"
        of the array. */
@@ -1213,7 +1203,7 @@ int lens8 [] = {4, 4, 4, 4, 4, 4} ;
 static int * lens [] = {lens4, lens5, lens6, lens8} ;
 
 static int no_edges [4] = {6, 8, 9, 12} ;
-static int no_verts [4] = {4, 5, 6, 8} ;
+/* static int no_verts [4] = {4, 5, 6, 8} ; */
 static int powers [4] = {14, 30, 62, 254} ;
 
 /* FILE * dbg; */
@@ -1224,7 +1214,7 @@ static void walk3 ( int * permute, int * mask, int itype, int pt )
         splits [12] ,
         list [12] ,
         nlist ,
-        edge ,
+        edge = 0,
         face ,
         i ,
         j ,
@@ -1268,7 +1258,7 @@ static void walk3 ( int * permute, int * mask, int itype, int pt )
 		 if ( ! mask [edge])
 		     {
 			 split ++ ;
-			 for (edge = 0 ; edge < no_edges [itype] ; edge++) 
+			 for (edge = 0 ; edge < no_edges [itype] ; edge++)
 			     {
 				 if ( mask [edge] != 0 )
 				     {
@@ -1344,7 +1334,7 @@ arr_construct3 (PyObject * self, PyObject * args)
     return PyArray_Return (permutea) ;
 }
 
-static char arr_to_corners__doc__ [] = 
+static char arr_to_corners__doc__ [] =
 "" ;
 
 static PyObject *
@@ -1414,19 +1404,19 @@ static struct PyMethodDef arr_methods[] = {
     {"find_mask",arr_find_mask,  1,      arr_find_mask__doc__},
     {"construct3",        arr_construct3, 1,     arr_construct3__doc__},
     {"to_corners",   arr_to_corners,     1,      arr_to_corners__doc__},
-   
+
     {NULL, NULL}		/* sentinel */
 };
 
 
 /* Initialization function for the module (*must* be called initarrayfns) */
 
-static char arrayfns_module_documentation[] = 
+static char arrayfns_module_documentation[] =
 ""
 ;
 
 DL_EXPORT(void)
-initarrayfns()
+initarrayfns(void)
 {
     PyObject *m, *d;
 
@@ -1438,11 +1428,11 @@ initarrayfns()
 
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);
-    ErrorObject = PyString_FromString("arrayfns.error");
+    ErrorObject = PyErr_NewException("arrayfns.error", NULL, NULL);
     PyDict_SetItemString(d, "error", ErrorObject);
 
     /* XXXX Add constants here */
-	
+
     /* Check for errors */
     if (PyErr_Occurred()) {
 	Py_FatalError("can't initialize module arrayfns");
@@ -1451,6 +1441,4 @@ initarrayfns()
 #ifdef import_array
     import_array();
 #endif
-
-   
 }

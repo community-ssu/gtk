@@ -42,10 +42,10 @@ extern double ldexp (double, int);
 extern double modf (double, double *);
 #endif
 #ifndef M_PI
-#define M_PI 3.14159265359
+# define M_PI 3.141592653589793238462643383279502884197
 #endif
 
-#if !defined(HAVE_INVERSE_HYPERBOLIC)
+#if !HAVE_INVERSE_HYPERBOLIC
 static double acosh(double x)
 {
     return log(x + sqrt((x-1.0)*(x+1.0)));
@@ -73,7 +73,7 @@ static double atanh(double x)
 #endif
 
 
-#if defined(HAVE_HYPOT) 
+#if defined(HAVE_HYPOT)
 #if !defined(NeXT) && !defined(_MSC_VER)
 extern double hypot(double, double);
 #endif
@@ -118,8 +118,6 @@ static Py_complex c_1 = {1., 0.};
 static Py_complex c_half = {0.5, 0.};
 static Py_complex c_i = {0., 1.};
 static Py_complex c_i2 = {0., 0.5};
-static Py_complex c_mi = {0., -1.};
-static Py_complex c_pi2 = {M_PI/2., 0.};
 static Py_complex c_sqrt(Py_complex x)
 {
     Py_complex r;
@@ -2430,7 +2428,8 @@ static char ceil_signatures[] = { PyArray_FLOAT,  PyArray_FLOAT,  PyArray_DOUBLE
 static char arctan2_signatures[] = { PyArray_FLOAT,  PyArray_FLOAT,  PyArray_FLOAT,  PyArray_DOUBLE,  PyArray_DOUBLE,  PyArray_DOUBLE,  PyArray_OBJECT,  PyArray_OBJECT,  };
 
 
-static void InitOperators(PyObject *dictionary) {
+static void InitOperators(PyObject *dictionary)
+{
     PyObject *f;
 
     add_data[11] =(void *)PyNumber_Add;
@@ -2783,7 +2782,7 @@ static struct PyMethodDef methods[] = {
     {NULL,		NULL, 0}		/* sentinel */
 };
 
-DL_EXPORT(void) initumath() {
+DL_EXPORT(void) initumath(void) {
     PyObject *m, *d, *s;
   
     /* Create the module and add the functions */
@@ -2803,7 +2802,7 @@ DL_EXPORT(void) initumath() {
     /* Load the ufunc operators into the array module's namespace */
     InitOperators(d); 
 
-    PyDict_SetItemString(d, "pi", s = PyFloat_FromDouble(atan(1.0) * 4.0));
+    PyDict_SetItemString(d, "pi", s = PyFloat_FromDouble(M_PI));
     Py_DECREF(s);
     PyDict_SetItemString(d, "e", s = PyFloat_FromDouble(exp(1.0)));
     Py_DECREF(s);

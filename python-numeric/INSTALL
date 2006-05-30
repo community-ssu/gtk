@@ -1,0 +1,60 @@
+Installing Numeric
+==================
+
+As of Numeric 24.0, customizing the installation of Numeric is actually easy.
+You'll need
+
+* Python (supposedly 2.0 or greater; only tested for 2.2 or greater).
+
+  If you've installed Python using a package on a Linux system, check that
+  you have the appropiate development package (python-devel on rpm-based
+  systems such as Mandrake or Red Hat, python-dev on Debian).
+
+* a C compiler. Preferably the same one used to compile Python.
+
+For better performance with linear algebra, you should have optimized
+LAPACK libraries, such as ATLAS_. In addition, for faster matrix
+multiplication, you'll want a CBLAS library (ATLAS provides one, and
+the Gnu Scientific Library can be compiled with an interface to a Fortran
+BLAS).
+
+Edit ``customize.py`` to set the appropiate options.
+
+Once you're happy, do::
+
+    $ python setup.py build
+    $ python setup.py install
+
+Since Numeric uses the standard Python distutils, you can change where it's
+installed by adding ``--prefix=/other/directory`` to the install line.
+Alternatively, see `Making a Python Egg`_ below.
+
+Installing on Mac OS X
+----------------------
+
+No customizations should be needed. If the ``vecLib`` framework is found
+(which it should be for 10.2 and above), it will be used for BLAS and LAPACK.
+
+Installing on Windows
+---------------------
+
+If you're using cygwin with the mingw compiler, it is suggested that you
+run::
+
+    $ python setup.py config
+
+first. This may fix a bug in LinearAlgebra, where certain routines in
+the lapack_lite would be compiled incorrectly.
+
+Making a Python Egg
+-------------------
+
+With Numeric 24.2, you can make a `Python egg`_ easily. Simply:
+
+    $ python setup.py bdist_egg
+
+You can then find the egg in the ``dist/`` directory. This can then
+be installed using ``easy_install``. Note that ``python setup.py install`` will _not_ install Numeric as an egg.
+
+.. _ATLAS: http://math-atlas.sourceforge.net/
+.. _`Python egg`: http://peak.telecommunity.com/DevCenter/PythonEggs
