@@ -2,5 +2,4 @@ usr/include
 usr/lib/pkgconfig
 usr/bin/libart2-config
 usr/lib/libart_lgpl_2.a
-usr/lib/libart_lgpl_2.la
 usr/lib/libart_lgpl_2.so

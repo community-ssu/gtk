@@ -1,3 +1,9 @@
+libart-lgpl (2.3.17-1osso2) unstable; urgency=low
+
+  * Bugfix (removing .la from -dev package)
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue, 30 May 2006 13:29:59 +0300
+
 libart-lgpl (2.3.17-1osso1) unstable; urgency=low
 
   * 
