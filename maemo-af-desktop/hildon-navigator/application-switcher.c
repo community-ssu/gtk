@@ -1993,12 +1993,18 @@ static DBusHandlerResult mce_handler( DBusConnection *conn,
     {
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
+
+    /* During layout mode no action is allowed */
     if (g_str_equal(HOME_LONG_PRESS, member) == TRUE)
     {
-        as->prev_sig_was_long_press = TRUE;
-        show_application_switcher_menu(as);
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON( 
-                                         as->toggle_button_as), TRUE);
+      /* Action only when sensitive, Home Layout Mode requires this */
+      if(GTK_WIDGET_IS_SENSITIVE(as->toggle_button_as))
+        {
+          as->prev_sig_was_long_press = TRUE;
+          show_application_switcher_menu(as);
+          gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON( 
+                                       as->toggle_button_as), TRUE);
+        }
         
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
@@ -2011,26 +2017,31 @@ static DBusHandlerResult mce_handler( DBusConnection *conn,
         }
 
         as->prev_sig_was_long_press = FALSE;
-        /*
-           HOME key toggles between desktop and the top application
-         */
-        if(as->switched_to_desktop)
-          {
-            /* top the item associated with the first menu item */
-            GtkWidget *item;
 
-            item = g_list_nth_data(GTK_MENU_SHELL(as->menu)->children,
-                           ITEM_1_LIST_POS);
-
-            if(item)
-              hn_wm_top_view(GTK_MENU_ITEM(item));                        
-          }
-        else
+        /* Action only when sensitive, Home Layout Mode requires this */
+        if(GTK_WIDGET_IS_SENSITIVE(as->toggle_button_as))
           {
-            hn_wm_top_desktop();
+            /*
+              HOME key toggles between desktop and the top application
+            */
+            if(as->switched_to_desktop)
+              {
+                /* top the item associated with the first menu item */
+                GtkWidget *item;
+                
+                item = g_list_nth_data(GTK_MENU_SHELL(as->menu)->children,
+                                       ITEM_1_LIST_POS);
+                
+                if(item)
+                  hn_wm_top_view(GTK_MENU_ITEM(item));                        
+              }
+            else
+              {
+                hn_wm_top_desktop();
+              }
           }
-        
-        
+
+
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
 

@@ -1,5 +1,13 @@
 2006-05-30  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "HOME: In Layout mode, pressing Home hardkey gives
+	undesired response." (Closes N#30818)
+	* hildon-navigator/application-switcher.c:
+	  - mce_handler(): sensitive check added for as button to block Home
+	    key handling
+
+2006-05-30  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hildon-navigator-backup.conf: Fixed typo
 
 2006-05-29  Johan Bilien <johan.bilien@nokia.com>
