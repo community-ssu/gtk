@@ -43,7 +43,8 @@ fi
 case "$1" in
   start)
     # Make the launcher resolve all relocations
-    export LD_BIND_NOW=1
+    # FIXME: Disable now as this is breaking the browser *sigh*...
+    #export LD_BIND_NOW=1
 
     echo -n "Starting $DESC: $NAME"
     start-stop-daemon --start --quiet --pidfile $PIDFILE $CHUID $NICE \

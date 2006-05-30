@@ -1,3 +1,10 @@
+maemo-launcher (0.14-2) unstable; urgency=low
+
+  * Disable for now LD_BIND_NOW=1 in the init script due to it "breaking"
+    the browser plugins...
+
+ -- Guillem Jover <guillem.jover@nokia.com>  Tue, 23 May 2006 17:26:44 +0300
+
 maemo-launcher (0.14-1) unstable; urgency=low
 
   * New Upstream Release.
