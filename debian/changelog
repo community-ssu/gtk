@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.6.10-2.osso3) unstable; urgency=low
+
+  * debian/libgtk2.0-dev.files: Kill .la files
+  * Bugs fixed:
+    NB#31174: /usr/lib/libgdk_pixbuf-2.0.la and
+              /usr/lib/libgdk_pixbuf_xlib-2.0.la should be removed from
+              library libgtk2.0-dev
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 30 May 2006 11:23:07 +0300
+
 gtk+2.0 (2:2.6.10-2.osso2) unstable; urgency=low
 
   * Bugs fixed:
