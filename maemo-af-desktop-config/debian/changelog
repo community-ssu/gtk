@@ -1,3 +1,9 @@
+maemo-af-desktop-config (0.0.6-1) unstable; urgency=low
+
+  * applications.menu: Added osso-backup (Closes N#30090)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 30 May 2006 11:30:36 +0300
+
 maemo-af-desktop-config (0.0.5-1) unstable; urgency=low
 
   * applications.menu: updated for new UI specifications (Cloese N#30429)
