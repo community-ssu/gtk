@@ -730,42 +730,21 @@ void navigator_set_sensitive(gboolean sensitivity)
     tn_is_sensitive=sensitivity;
     if (sensitivity)
     {
-	gtk_container_foreach(GTK_CONTAINER(task_nav->box), 
-			      (GtkCallback)(tasknav_sensitive_cb),
-			      NULL);
-
+	tasknav_sensitive_cb (GTK_WIDGET (task_nav->box), NULL);
     }
     else 
     {
-	gtk_container_foreach(GTK_CONTAINER(task_nav->box), 
-			      (GtkCallback)(tasknav_insensitive_cb),
-			      NULL);
-	
+	tasknav_insensitive_cb (GTK_WIDGET (task_nav->box), NULL);
     }
 }
 
 static void tasknav_insensitive_cb( GtkWidget *widget, gpointer data)
 {
-    
     gtk_widget_set_sensitive(widget, FALSE);
-
-    if (GTK_IS_CONTAINER(widget))
-    {
-	gtk_container_foreach(GTK_CONTAINER(widget), 
-			      (GtkCallback)(tasknav_insensitive_cb),
-			      NULL);	
-    }
 }
 static void tasknav_sensitive_cb( GtkWidget *widget, gpointer data)
 {
     gtk_widget_set_sensitive(widget, TRUE);
-
-    if (GTK_IS_CONTAINER(widget))
-    {
-	gtk_container_foreach(GTK_CONTAINER(widget), 
-			      (GtkCallback)(tasknav_sensitive_cb),
-			      NULL);	
-    }
 }
 
 
