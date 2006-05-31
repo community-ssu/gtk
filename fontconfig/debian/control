@@ -2,13 +2,14 @@ Source: fontconfig
 Section: devel
 Priority: optional
 Maintainer:  Jakub Pavelek <jakub.pavelek@nokia.com>
+Build-Depends: zlib1g-dev, libfreetype6-dev, libexpat1-dev, tar (>= 0.1), gzip (>=0.1)
 Standards-Version: 3.5.9
-Build-Depends: zlib1g-dev, libfreetype6-dev, libexpat1-dev, tar, gzip
+
 
 Package: fontconfig
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, libfreetype6 (>= 2.1.9-1osso), libfontconfig1 (>= 2.2.96-1osso), gconf2
+Depends: ${shlibs:Depends}
 Description: generic font configuration library
  Fontconfig is a font configuration and customization library, which
  does not depend on the X Window System.  It is designed to locate
@@ -26,7 +27,7 @@ Description: generic font configuration library
 Package: libfontconfig1
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, libfreetype6 (>= 2.1.9-1osso)
+Depends: ${shlibs:Depends}
 Description: generic font configuration library (shared library)
  Fontconfig is a font configuration and customization library, which
  does not depend on the X Window System.  It is designed to locate
@@ -36,14 +37,13 @@ Description: generic font configuration library (shared library)
 Package: libfontconfig1-dev
 Section: libs
 Architecture: any
-Depends: libfontconfig1 (>= 2.2.96-1osso), libfreetype6-dev (>= 2.1.9-1osso), libexpat1-dev
-Conflicts: libfontconfig-dev, fontconfig (<< 2.1-5)
+Depends: libfontconfig1 (= ${Source-Version}), libfreetype6-dev (>= 2.1.9-1osso), libexpat1-dev
 Description: Development package for Fontconfig.
  Headers and documentation.
 
 Package: libfontconfig1-dbg
 Section: libs
 Architecture: any
-Depends: libfreetype6 (>= 2.1.9-1osso), libfontconfig1
-Description: Debugging symbols for the Xft.
+Depends: ${shlibs:Depends}, libfontconfig1 (= ${Source-Version})
+Description: Debugging symbols for libfontconfig1.
  This one goes to /usr/lib/debug and shadows the /usr/lib/ shared libraries.
