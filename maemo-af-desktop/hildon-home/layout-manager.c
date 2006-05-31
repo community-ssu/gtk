@@ -363,7 +363,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 	node->added = FALSE;
 	node->removed = FALSE;
 	node->highlighted = FALSE;
-    node->old_highlight_status = FALSE;
+        node->old_highlight_status = FALSE;
         gtk_widget_show(node->ebox);
 
     /* FIXME: We really should get rid of these with a better solution */
@@ -966,6 +966,9 @@ static void add_new_applets(GtkWidget *widget, gpointer data)
             new_applet_identifier &&
             g_str_equal(node->applet_identifier, new_applet_identifier))
 	{
+            node->removed = FALSE;
+            gtk_widget_show(node->ebox);
+
 	    if (addable_list->next)
 	    {
 		add_new_applets(widget, g_list_next(addable_list));
