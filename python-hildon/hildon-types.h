@@ -47,7 +47,6 @@
 #include <hildon-widgets/hildon-grid.h>
 #include <hildon-widgets/hildon-grid-item.h>
 #include <hildon-widgets/hildon-hvolumebar.h>
-#include <hildon-widgets/hildon-insert-object-dialog.h>
 #include <hildon-widgets/hildon-name-password-dialog.h>
 #include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-number-editor.h>

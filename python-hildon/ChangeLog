@@ -1,3 +1,7 @@
+0.8.5 - 20060531
+    - Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
+      - Wiping out hildon-insert-object-dialog binding, as it was removed from hildon-libs.
+
 0.8.4 - 20060502
     - Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
       - Improved hildon.GridItem constructor.

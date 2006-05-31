@@ -21,7 +21,6 @@
 (include "defs/hildon-grid-item.defs")
 (include "defs/hildon-grid.defs")
 (include "defs/hildon-hvolumebar.defs")
-;;(include "defs/hildon-insert-object-dialog.defs") *deprecated*
 (include "defs/hildon-name-password-dialog.defs")
 (include "defs/hildon-note.defs")
 (include "defs/hildon-number-editor.defs")
