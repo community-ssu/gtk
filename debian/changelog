@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.6.10-1.osso19) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Bugs fixed:
+    NB#31444: Ellipsizing column headers ellipsize too eagerly
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 31 May 2006 16:52:12 +0300
+
 gtk+2.0 (2:2.6.10-1.osso18) unstable; urgency=low
 
   * Bugs fixed:
