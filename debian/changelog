@@ -2,9 +2,12 @@ gtk+2.0 (2:2.6.10-1.osso19) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
   * Bugs fixed:
+    NB#31043: GtkTreeView: Icon in same column after ellipsizing text not
+              visible
     NB#31444: Ellipsizing column headers ellipsize too eagerly
+    NB#31495: GtkCellRendererText: Automatic ellipsizing truncated initially
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 31 May 2006 16:52:12 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 31 May 2006 18:57:10 +0300
 
 gtk+2.0 (2:2.6.10-1.osso18) unstable; urgency=low
 
