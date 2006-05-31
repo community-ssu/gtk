@@ -1,3 +1,14 @@
+gtk+2.0 (2:2.6.10-2.osso4) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Bugs fixed:
+    NB#31455: Ellipsizing column headers ellipsize too eagerly
+    NB#31471: GtkTreeView: Icon in same column after ellipsizing text not
+              visible
+    NB#31497: GtkCellRendererText: Automatic ellipsizing truncated initially
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 31 May 2006 18:58:32 +0300
+
 gtk+2.0 (2:2.6.10-2.osso3) unstable; urgency=low
 
   * debian/libgtk2.0-dev.files: Kill .la files
