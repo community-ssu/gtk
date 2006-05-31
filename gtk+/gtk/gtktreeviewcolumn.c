@@ -850,7 +850,7 @@ gtk_tree_view_column_create_button (GtkTreeViewColumn *tree_column)
 		    G_CALLBACK (gtk_tree_view_column_button_clicked),
 		    tree_column);
 
-  tree_column->alignment = gtk_alignment_new (tree_column->xalign, 0.5, 0.0, 0.0);
+  tree_column->alignment = gtk_alignment_new (tree_column->xalign, 0.5, 1.0, 1.0);
 
   hbox = gtk_hbox_new (FALSE, 2);
   tree_column->arrow = gtk_arrow_new (GTK_ARROW_DOWN, GTK_SHADOW_IN);
@@ -907,7 +907,7 @@ gtk_tree_view_column_update_button (GtkTreeViewColumn *tree_column)
 
   /* Set up the actual button */
   gtk_alignment_set (GTK_ALIGNMENT (alignment), tree_column->xalign,
-		     0.5, 0.0, 0.0);
+		     0.5, 1.0, 1.0);
       
   if (tree_column->child)
     {
@@ -917,6 +917,7 @@ gtk_tree_view_column_update_button (GtkTreeViewColumn *tree_column)
 				current_child);
 	  gtk_container_add (GTK_CONTAINER (alignment),
 			     tree_column->child);
+	  current_child = tree_column->child;
 	}
     }
   else 
@@ -937,6 +938,13 @@ gtk_tree_view_column_update_button (GtkTreeViewColumn *tree_column)
       else
 	gtk_label_set_text_with_mnemonic (GTK_LABEL (current_child),
 					  "");
+    }
+
+  if (GTK_IS_MISC (current_child))
+    {
+      gfloat yalign;
+      gtk_misc_get_alignment (GTK_MISC (current_child), NULL, &yalign);
+      gtk_misc_set_alignment (GTK_MISC (current_child), tree_column->xalign, yalign);
     }
 
   switch (tree_column->sort_order)
