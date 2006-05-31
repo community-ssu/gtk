@@ -1,3 +1,11 @@
+2006-05-31  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeviewcolumn.c (gtk_tree_view_column_create_button)
+	(gtk_tree_view_column_update_button): Make the alignment expand its
+	child to fill the whole allocation and if the child widget isa GtkMisc
+	pass on the column xalignment. This lets ellipsizing labels as column
+	headers expand and align correctly. #342113, N#31455
+
 2006-05-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcellrenderertext.c (gtk_cell_renderer_text_render):
