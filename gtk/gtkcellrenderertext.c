@@ -1566,7 +1566,7 @@ gtk_cell_renderer_text_render (GtkCellRenderer      *cell,
     }
 
   /* Hildon: Dirty hack to force ellipsation
-   * FIXME sanity check MIN() use and initial painting
+   * FIXME sanity check MIN() use
    */
   pango_layout_get_extents (layout, NULL, &logical_rect);
   if (!priv->ellipsize_set && 
@@ -1574,6 +1574,8 @@ gtk_cell_renderer_text_render (GtkCellRenderer      *cell,
     {
       priv->ellipsize = PANGO_ELLIPSIZE_END;
       priv->auto_ellipsize_set = TRUE;
+
+      pango_layout_set_ellipsize (layout, priv->ellipsize);
     }
 
   if (priv->ellipsize)

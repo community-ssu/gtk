@@ -1,3 +1,9 @@
+2006-05-31  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcellrenderertext.c (gtk_cell_renderer_text_render): When
+	switching on the auto-ellipsation make sure the initial rendering is
+	also ellipsized. N#31495
+
 2006-05-31  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkcellrenderertext.c: add an internal "auto_ellipsize_set"
