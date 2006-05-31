@@ -1,3 +1,10 @@
+2006-05-31  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkcellrenderertext.c: add an internal "auto_ellipsize_set"
+	flag for auto-ellipsation, and never touch "ellipsize_set", so
+	setting ellipsation explicitely makes the cell renderer behave
+	like upstream. Fixes N#31043.
+
 2006-05-31  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktreeviewcolumn.c (gtk_tree_view_column_create_button)
