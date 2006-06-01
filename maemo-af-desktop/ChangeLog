@@ -1,5 +1,9 @@
 2006-06-01  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.6.21
+
+2006-06-01  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm.h: Turn off TN debug messages
 
 2006-06-01  Johan Bilien <johan.bilien@nokia.com>

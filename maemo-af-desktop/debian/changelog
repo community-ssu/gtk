@@ -1,3 +1,41 @@
+maemo-af-desktop (2.6.21-1) unstable; urgency=low
+
+  * hildon-navigator/hn-wm.h: Turn off TN debug messages
+
+  * hn-wm-watchable-app.h, hn-wm-watchable-app.c, hn-wm.c:
+    - New functions to update the .desktop file registry
+  * others-menu.c: Register a dnotify callback for TN
+
+  Applied fix to "Home applets not starting in some situation"
+  (Closes N#31224)
+  * hildon-home/layout-manager.c:
+    - add_new_applets(): Updating node value and show applet, when applet
+      exists but was previously removed during layout mode
+
+  Applied fix to "Cannot select or unselect applets by using scroll key's
+  midlle button." (Closes N#30420)
+  * hildon-home/home-select-applets-dialog.c: Added key-press handler
+    to select/unselect when Enter is pressed
+
+  Applied fix to "Weid application switcher behaviour after Home's Layout
+  mode" (Closs N#29905)
+  * hildon-navigator/hildon-navigator-main.c: do not apply
+    dimming/undimming recursively
+
+  Applied fix to "HOME: In Layout mode, pressing Home hardkey gives
+  undesired response." (Closes N#30818)
+  * hildon-navigator/application-switcher.c:
+    - mce_handler(): sensitive check added for as button to block Home
+      key handling
+
+  * hildon-navigator/hildon-navigator-backup.conf: Fixed typo
+
+  * hildon-navigator/application-switcher.c: Fix a crash when a system
+    activity event is received before the AS was completely initialized
+
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  1 Jun 2006 15:36:35 +0300
+
 maemo-af-desktop (2.6.20-1) unstable; urgency=low
 
   Applied fix to "Newly seelected applet does not update the overlap
