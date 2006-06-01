@@ -433,3 +433,82 @@ hn_wm_watchable_app_set_active_window (HNWMWatchableApp *app, HNWMWatchedWindow 
 {
   app->active_window = win;
 }
+
+gboolean
+hn_wm_watchable_app_update (HNWMWatchableApp *app, HNWMWatchableApp *update)
+{
+  gboolean retval = FALSE;
+  
+  /* can only update if the two represent the same application */
+  g_return_val_if_fail(app && update &&
+                       app->class_name && update->class_name &&
+                       !strcmp(app->class_name, update->class_name),
+                       FALSE);
+
+  /*
+   * we only update fields that make sense to update -- update should not be
+   * running application, so we do not update flags, etc
+   */
+  if((!update->icon_name && app->icon_name) ||
+     (update->icon_name && !app->icon_name) ||
+     (update->icon_name && app->icon_name && strcmp(update->icon_name,
+                                                    app->icon_name)))
+    {
+      HN_DBG("changing %s -> %s", app->icon_name, update->icon_name);
+      
+      if(app->icon_name)
+        g_free(app->icon_name);
+  
+      app->icon_name  = g_strdup(update->icon_name);
+      retval = TRUE;
+    }
+  
+  if((!update->service && app->service) ||
+     (update->service && !app->service) ||
+     (update->service && app->service && strcmp(update->service,
+                                                app->service)))
+    {
+      HN_DBG("changing %s -> %s", app->service, update->service);
+      if(app->service)
+        g_free(app->service);
+  
+      app->service    = g_strdup(update->service);
+      retval = TRUE;
+    }
+
+  if((!update->app_name && app->app_name) ||
+     (update->app_name && !app->app_name) ||
+     (update->app_name && app->app_name && strcmp(update->app_name,
+                                                  app->app_name)))
+    {
+      HN_DBG("changing %s -> %s", app->app_name, update->app_name);
+      if(app->app_name)
+        g_free(app->app_name);
+  
+      app->app_name   = g_strdup(update->app_name);
+      retval = TRUE;
+    }
+
+  if((!update->exec_name && app->exec_name) ||
+     (update->exec_name && !app->exec_name) ||
+     (update->exec_name && app->exec_name && strcmp(update->exec_name,
+                                                    app->exec_name)))
+    {
+      HN_DBG("changing %s -> %s", app->exec_name, update->exec_name);
+      if(app->exec_name)
+        g_free(app->exec_name);
+  
+      app->exec_name  = g_strdup(update->exec_name);
+      retval = TRUE;
+    }
+
+  return retval;
+}
+
+gboolean
+hn_wm_watchable_app_has_hibernating_windows (HNWMWatchableApp *app)
+{
+  return (g_hash_table_find (hnwm->watched_windows_hibernating,
+			     hn_wm_watchable_app_has_windows_find_func,
+			     (gpointer)app) != NULL);
+}

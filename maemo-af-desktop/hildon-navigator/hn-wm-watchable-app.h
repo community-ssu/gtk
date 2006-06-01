@@ -56,6 +56,18 @@ const gchar*
 hn_wm_watchable_app_get_service (HNWMWatchableApp *app);
 
 /**
+ * Updates fields of the application represented by app to those represented
+ * by update.
+ *
+ * NB: this function is intended for use by the hn_wm_dnotify_cb() handler
+ *     and should be used only with great caution anywhere else.
+ *
+ * @return TRUE if app was modified, FALSE otherwise
+ */
+gboolean
+hn_wm_watchable_app_update (HNWMWatchableApp *app, HNWMWatchableApp *update);
+
+/**
  * Get the Exec field set via .desktop file of an HNWMWatchableApp instance.
  * You should not free the result.
  *
@@ -139,6 +151,17 @@ hn_wm_watchable_app_set_minimised (HNWMWatchableApp *app,
  */
 gboolean
 hn_wm_watchable_app_has_windows (HNWMWatchableApp *app);
+
+/** 
+ * Check if hibernating windows exist referencing this app instance
+ * 
+ * @param app HNWMWatchableApp instance
+ * 
+ * @return TRUE if windows exist for this app instance, FALSE if not
+ */
+gboolean
+hn_wm_watchable_app_has_hibernating_windows (HNWMWatchableApp *app);
+
 
 /** 
  * Check if application is in hibernation state - i.e not actually

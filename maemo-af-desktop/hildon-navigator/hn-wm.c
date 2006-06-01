@@ -1301,22 +1301,131 @@ hn_wm_dbus_signal_handler(DBusConnection *conn, DBusMessage *msg, void *data)
 
 /* Application switcher callback funcs */
 
+struct _cb_steal_data
+{
+  GHashTable *apps;
+  gboolean    update;
+};
+
+/* iterates over the new hash and carries out updates on the old hash */
+static gboolean
+dnotify_hash_table_foreach_steal_func (gpointer key,
+                                       gpointer value,
+                                       gpointer user_data)
+{
+  struct _cb_steal_data* old_apps = (struct _cb_steal_data*)user_data;
+  HNWMWatchableApp *old_app, * new_app = (HNWMWatchableApp *)value;
+  
+  old_app = g_hash_table_lookup(old_apps->apps, key);
+
+  if(!old_app)
+    {
+      /*
+       * we need to insert new_app into the old apps hash
+       */
+      HN_DBG("Inserting a new application");
+      g_hash_table_insert(old_apps->apps,
+                         g_strdup(hn_wm_watchable_app_get_class_name(old_app)),
+                         old_app);
+
+      /* indicate that the app should be removed from the new apps hash */
+      return TRUE;
+    }
+  else
+    {
+      /*
+       * we already have this app in the old_app hash, so we need to update
+       * it (we cannot just remove and replace it, as the pointer might be
+       * referenced by opened windows
+       */
+      HN_DBG("Updating existing application");
+      old_apps->update |= hn_wm_watchable_app_update(old_app, new_app);
+
+      /* the original should be left in the in new apps hash */
+      return FALSE;
+    }
+}
+
+/* iterates over the old app hash and removes any apps that disappeared */
+static gboolean
+dnotify_hash_table_foreach_remove_func (gpointer key,
+                                        gpointer value,
+                                        gpointer user_data)
+{
+  GHashTable *new_apps = (GHashTable*)user_data;
+  HNWMWatchableApp *new_app, * old_app = (HNWMWatchableApp *)value;
+  
+  new_app = g_hash_table_lookup(new_apps, key);
+
+  if(!new_app)
+    {
+      /* this app is gone, but we can only remove if it is not running */
+      if(!hn_wm_watchable_app_has_windows(old_app) &&
+         !hn_wm_watchable_app_has_hibernating_windows(old_app))
+        {
+          return TRUE;
+        }
+      else
+        {
+          g_warning("it looks like someone uninstalled a running application");
+        }
+    }
+
+  return FALSE;
+}
+
 /* file is path to the desktop file */
 static void
 hn_wm_dnotify_func(const char *desktop_file_path)
 {
-  HNWMWatchableApp *app;
+  GHashTable * new_apps;
+  struct _cb_steal_data std;
+  
+  HN_DBG("called with path [%s]", desktop_file_path);
 
-  g_warning("is the argument a path ?");
-  app = hn_wm_watchable_app_new (desktop_file_path);
+  /* reread all .desktop files and compare each agains existing apps; add any
+   * new ones, update existing ones
+   *
+   * This is quite involved, so we will take a shortcut if we can
+   */
 
-  /* FIXME: what if this update already exists ? */
-  if (app)
+  if(!g_hash_table_size(hnwm->watched_windows) &&
+     !g_hash_table_size(hnwm->watched_windows_hibernating))
     {
-      g_hash_table_insert (hnwm->watched_apps,
-			   g_strdup(hn_wm_watchable_app_get_class_name (app)),
-			   (gpointer)app);
-    }
+      /*
+       * we have no watched windows, i.e., no references to the apps, so we can
+       * just replace the old apps with the new ones
+       */
+      HN_DBG("Have no watched windows -- reinitialising watched apps");
+      g_hash_table_destroy(hnwm->watched_apps);
+      hnwm->watched_apps = hn_wm_watchable_apps_init();
+      return;
+  }
+
+  HN_DBG("Some watched windows -- doing it the hard way");
+  
+  new_apps = hn_wm_watchable_apps_init();
+  
+  /*
+   * first we iterate the old hash, looking for any apps that no longer
+   * exist in the new one
+   */
+  g_hash_table_foreach_remove(hnwm->watched_apps,
+                              dnotify_hash_table_foreach_remove_func,
+                              new_apps);
+
+  /*
+   * then we do updates on what is left in the old hash
+   */
+  std.apps = hnwm->watched_apps;
+  std.update = FALSE;
+  
+  g_hash_table_foreach_steal(new_apps,
+                             dnotify_hash_table_foreach_steal_func,
+                             &std);
+
+  /* whatever is left in the new_apps hash, we are not interested in */
+  g_hash_table_destroy(new_apps);
 }
 
 static int

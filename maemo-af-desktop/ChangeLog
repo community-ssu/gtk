@@ -1,3 +1,9 @@
+2006-06-01  Johan Bilien <johan.bilien@nokia.com>
+
+	* hn-wm-watchable-app.h, hn-wm-watchable-app.c, hn-wm.c:
+	  - New functions to update the .desktop file registry
+	* others-menu.c: Register a dnotify callback for TN
+
 2006-05-31  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Home applets not starting in some situation"

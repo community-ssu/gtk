@@ -1,3 +1,4 @@
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This file is part of maemo-af-desktop
  *
@@ -90,10 +91,8 @@ static void others_menu_show(OthersMenu_t * om);
 static gboolean others_menu_button_button_press(GtkToggleButton * togglebutton,
                                                 GdkEventButton * event,
                                                 gpointer data);
-
 static gboolean others_menu_changed_cb( gpointer data );
 static void dnotify_handler( char *path, gpointer data );
-
 static guint dnotify_update_timeout = 0;
 
 
@@ -407,7 +406,6 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 {
     gchar *user_home_dir = NULL;
     gchar *user_menu_conf_file = NULL;
-
     g_return_if_fail(om);
     om->menu = GTK_MENU(gtk_menu_new());
 
@@ -427,7 +425,30 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
  		     G_CALLBACK(others_menu_button_button_press), om);
     g_signal_connect(G_OBJECT(om->toggle_button), "button-release-event",
  		     G_CALLBACK(others_menu_button_button_release), om);
-  
+
+    /* this *MUST* be registered *before* the dnotify_handler CB which is badly
+     * broken and removes all dnotify callbacks
+     */
+    if ( om->as_menu_cb )
+      {
+        HN_DBG("registering AS dnotify callback 0x%x for directory [%s]",
+               (gint)om->as_menu_cb,
+               DESKTOPENTRYDIR);
+        
+		if (hildon_dnotify_set_cb((hildon_dnotify_cb_f *)om->as_menu_cb,
+                                  DESKTOPENTRYDIR,
+                                  om ) != HILDON_OK)
+          {
+            ULOG_ERR( "others_menu_initialize_menu: "
+                      "failed setting AS dnotify callback" );
+            HN_DBG("failed to register AS dnotify callback");
+          }
+      }
+    else
+      {
+        HN_DBG("No AS dnotify callback given");
+      }
+    
     /* Populate the menu with items */
     others_menu_get_items(GTK_WIDGET(om->menu), om, NULL, NULL);
 
@@ -478,7 +499,6 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 			    "failed setting dnotify callback "
 			    "for .desktop directory." );
     }
-
     /* Cleanup */
     g_free( user_menu_conf_file );
     g_free( user_menu_dir );
@@ -493,6 +513,9 @@ void others_menu_deinit(OthersMenu_t * om)
     g_free(om);
 }
 
+/* FIXME: this is badly broken -- you cannot just remove all callbacks
+ * registered for given path, since they might not be yours !!!
+ */
 static void dnotify_handler( char *path, gpointer data )
 {
     if( !dnotify_update_timeout )
@@ -503,7 +526,6 @@ static void dnotify_handler( char *path, gpointer data )
     
     hildon_dnotify_remove_cb( path );
 }
-
 
 static gboolean others_menu_changed_cb( gpointer _data )
 {

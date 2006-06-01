@@ -72,7 +72,7 @@
 /* Header file */
 #include "hildon-navigator-main.h"
 #include "hildon-navigator-interface.h" 
-
+#include "hn-wm.h" /* for HN_DBG */
 
 #define PLUGIN_KEY_LIB                  "Library"
 #define PLUGIN_KEY_POSITION             "Position"
@@ -1035,6 +1035,8 @@ void initialize_navigator_menus(Navigator *tasknav)
     tasknav->app_switcher_dnotify_cb =
         application_switcher_get_dnotify_handler(tasknav->app_switcher);
 
+	HN_DBG("set AS dnotify callback to 0x%x", (gint)tasknav->app_switcher_dnotify_cb);
+	
     /* Initialize others menu */
     others_menu_initialize_menu(tasknav->others_menu,
                                 tasknav->app_switcher_dnotify_cb);
