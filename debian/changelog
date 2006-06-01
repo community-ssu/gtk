@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.6.10-1.osso18.1) unstable; urgency=low
+
+  * Testing fixes for bugs:
+    NB#28032: Wrong folder is opened when double clicking a folder in MMC file
+              list view
+    NB#29366: Drag doesn't start if stylus leaves the widget before crossing
+              dnd threshold
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  1 Jun 2006 11:30:19 +0300
+
 gtk+2.0 (2:2.6.10-1.osso18) unstable; urgency=low
 
   * Bugs fixed:
