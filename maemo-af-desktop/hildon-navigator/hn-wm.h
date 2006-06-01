@@ -69,7 +69,7 @@
 #include "others-menu.h"
 #include "hildon-navigator-interface.h"
 
-#define HN_WANT_DEBUG 1 /* Set to 1 for more verbose hn */
+#define HN_WANT_DEBUG 0 /* Set to 1 for more verbose hn */
 
 #if (HN_WANT_DEBUG)
 #define HN_DBG(x, a...) \
