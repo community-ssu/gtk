@@ -1,0 +1,7 @@
+
+This folder has the following subdirectories:
+
+  helplib	Help core, has XML->HTML translation and other such tasks
+
+  helptest  A command line application, for test & sample purposes
+            Not part of the distribution, only debug.

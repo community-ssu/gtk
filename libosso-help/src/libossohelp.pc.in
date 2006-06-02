@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libossohelp
+Description: OSSO Help Library
+Version: @VERSION@
+Libs: -L${libdir} -lossohelp -lglib-2.0 -losso
+Cflags: -I${includedir}

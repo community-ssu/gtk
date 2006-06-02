@@ -1,0 +1,3 @@
+usr/lib/*.so.*
+usr/share/osso-browser-opera/opera_dir/styles/*
+

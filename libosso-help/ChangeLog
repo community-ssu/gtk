@@ -1,0 +1,58 @@
+2006-05-30 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.10
+	* debian/control: Added libxml2-dev to dependency of libosso-help-dev
+		as required by integration
+	* debian/control: Added libxml2-dev to build dependency of source
+		package
+
+2006-05-30 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* debian/control: Adding dependency for libpng12-dev, libjpeg62-dev
+	* configure.ac, src/Makefile.am: Added checking for jpeg library
+	* src/filter.c, src/graphic.c, src/osso-helplib-private.h:
+		Added support for jpeg images in help
+	Fixes N#30890 N#30895
+
+2006-05-24 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.9
+	* src/*.{c,h}: added license notice to all source and headers
+	* COPYING: added the text of GNU LGPL v 2.1
+	* debian/control: removed extra dependencies
+
+2006-05-23 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.8
+	* src/osso-helplib.c: Fixed ossohelp_getpath() when called with
+		non NULL parameter.
+	Fixes N#30388
+
+2006-05-11 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.7
+	* src/browser.c: Applied patch for hardkey interaction in help topic
+		view. Now you can scroll with the hardkeys.
+	Fixes N#27708
+
+2006-05-09 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/browser.c: browser_zoom() Fixed zoom levels so that arbitary zoom
+		levels works.
+
+2006-05-08 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.6
+	* src/contents.c: fixing the size of buffer to prevent truncation
+	Fixes N#27078, N#26822, N#26825, N#27072, N#27349, N#27468
+
+2006-04-05 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.5
+	* src/osso-helplib.c: 4KB per application would be saved if help library would allocate the help path dynamically inosso-helplib.c::ossohelp_getpath()
+	Fixes N#22968
+
+2006-04-05 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/osso-helplib.c: bring window to front
+	Fixes N#22841
