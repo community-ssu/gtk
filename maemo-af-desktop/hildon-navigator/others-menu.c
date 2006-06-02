@@ -194,37 +194,42 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
         
 	exec_field =
            g_object_get_data(G_OBJECT(item), DESKTOP_ENTRY_EXEC_FIELD);
-        if(exec_field != NULL) {
-            /* Argument list. [0] is binary we wish to execute */
-            gchar *arg_list[] = { exec_field, NULL };
-            GPid child_pid;
+        if(exec_field != NULL)
+          {
+            gint     argc;
+            gchar ** argv;
+            GPid   child_pid;
 
-            g_spawn_async(
-                          /* child's current working directory,
-                           * or NULL to inherit parent's */
-                          NULL,
-                          /* child's argument vector. [0] is the path of the
-                           * program to execute */
-                          arg_list,
-                          /* child's environment, or NULL to inherit
-                           * parent's */
-                          NULL,
-                          /* flags from GSpawnFlags */
-                          0,
-                          /* function to run in the child just before
-                           * exec() */
-                          NULL,
-                          /* user data for child_setup */
-                          NULL,
-                          /* return location for child process ID or NULL */
-                          &child_pid,
-                          /* return location for error */
-                          &error);
+            if (g_shell_parse_argv (exec_field, &argc, &argv, &error))
+              {
+                g_spawn_async(
+                              /* child's current working directory,
+                               * or NULL to inherit parent's */
+                              NULL,
+                              /* child's argument vector.  */
+                              argv,
+                              /* child's environment, or NULL to inherit
+                               * parent's */
+                              NULL,
+                              /* flags from GSpawnFlags */
+                              0,
+                              /* function to run in the child just before
+                               * exec() */
+                              NULL,
+                              /* user data for child_setup */
+                              NULL,
+                              /* return location for child process ID or NULL */
+                              &child_pid,
+                              /* return location for error */
+                              &error);
+
+                g_strfreev (argv);
+              }
             
             if (error) {
                 ULOG_ERR( "others_menu_activate_item: "
 				"failed to execute %s: %s.",
-                          arg_list[0], error->message);
+                          exec_field, error->message);
                 g_clear_error(&error);
             } else {
                 int priority;
@@ -615,6 +620,18 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 			    TREE_MODEL_DESKTOP_ID,
 			    &item_desktop_id,
 			    -1);
+
+        /* do not add anything if no name, or not at least an exec or
+         * service */
+        if ( !item_name || ! ( item_exec || item_service ) ) {
+            g_free(item_name);
+            g_free(item_exec);
+            g_free(item_service);
+            g_free(item_desktop_id);
+            if(item_icon)
+                g_object_unref(G_OBJECT(item_icon));
+            continue;
+        }
             
 
 	    /* If the item has children.. */

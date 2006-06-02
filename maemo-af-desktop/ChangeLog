@@ -1,3 +1,16 @@
+2006-06-02  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/others-menu.c: Added checks on possible
+	  empty fields in .desktop file, before starting building the
+	  corresponding menu entry (Closes N#31669)
+
+2006-06-02  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Desktop doesn't exec an application with options NOR
+	output/log why its startup failed"
+	* hildon-navigator/others-menu.c: properly parse the Exec field
+	  before spawning an application
+
 2006-06-01  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.6.21
