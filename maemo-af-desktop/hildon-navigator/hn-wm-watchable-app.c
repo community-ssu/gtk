@@ -100,6 +100,7 @@ hn_wm_watchable_app_new (const char * file)
       g_free(app_name);
       g_free(exec_name);
       g_free(startup_wmclass);
+      g_key_file_free(key_file);
       return NULL;
     }
   
@@ -282,7 +283,24 @@ hn_wm_watchable_app_set_minimised (HNWMWatchableApp *app,
 void
 hn_wm_watchable_app_destroy (HNWMWatchableApp *app)
 {
-  ; /* Never currently happens */
+  g_return_if_fail(app);
+  
+  if(app->icon_name)
+    g_free(app->icon_name);
+  
+  if(app->service)
+    g_free(app->service);
+
+  if(app->app_name)
+    g_free(app->app_name);
+  
+  if(app->exec_name)
+   	g_free(app->exec_name);
+
+  if(app->class_name)
+    g_free(app->class_name);
+
+  g_free(app);
 }
 
 void

@@ -1,5 +1,10 @@
 2006-06-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm-watchable-app.c: Fixed leak of the
+	  app structure when a .desktop is removed
+
+2006-06-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.c: Fix rare memory leak (Closes N#30712)
 
 2006-06-02  Johan Bilien <johan.bilien@nokia.com>
