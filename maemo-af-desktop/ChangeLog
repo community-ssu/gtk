@@ -1,5 +1,10 @@
 2006-06-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Expand the comboboxes used for
+	  image name and mode (Closes N#31605)
+
+2006-06-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/others-menu.c: Never remove the dnotify callbacks,
 	  as the API only allows to remove all callbacks connected to a given
 	  path

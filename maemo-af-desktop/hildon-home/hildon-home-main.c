@@ -1448,15 +1448,18 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
 		       FALSE, FALSE, 0); 
     gtk_box_pack_start(GTK_BOX(hbox_image), 
                        image_caption,
-                       FALSE, FALSE, 0);
+                       TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(hbox_mode),
 		       mode_caption,
-		       FALSE, FALSE, 0);
+		       TRUE, TRUE, 0);
 
     gtk_box_set_spacing(GTK_BOX(GTK_DIALOG(dialog)->vbox), 10);
     gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), hbox_color);
     gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), hbox_image);
     gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), hbox_mode);
+
+    hildon_caption_set_child_expand(HILDON_CAPTION(image_caption), TRUE);
+    hildon_caption_set_child_expand(HILDON_CAPTION(mode_caption), TRUE);
 
     gtk_widget_show_all(dialog);
 
