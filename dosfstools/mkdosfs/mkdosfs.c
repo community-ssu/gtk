@@ -97,7 +97,7 @@
 /* Use the _llseek system call directly, because there (once?) was a bug in
  * the glibc implementation of it. */
 #include <linux/unistd.h>
-#if defined(__alpha) || defined(__ia64__)
+#if defined(__alpha) || defined(__ia64__) || defined(__arm__)
 /* On alpha, the syscall is simply lseek, because it's a 64 bit system. */
 static loff_t llseek( int fd, loff_t offset, int whence )
 {
