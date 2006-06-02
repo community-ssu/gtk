@@ -223,16 +223,24 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
 			item = (desktop_entry_t *)
 				g_malloc0(sizeof(desktop_entry_t));
 
-			item->icon = g_key_file_get_string(
-					key_file,
-					DESKTOP_ENTRY_GROUP,
-					DESKTOP_ENTRY_ICON_FIELD,
-					NULL);
-
 			item->name = g_key_file_get_string(
 					key_file,
 					DESKTOP_ENTRY_GROUP,
 					DESKTOP_ENTRY_NAME_FIELD,
+					NULL);
+
+                        /* We don't allow empty names */
+                        if ( item->name == NULL) {
+                            g_free (item);
+                            g_key_file_free(key_file);
+                            g_free(current_path);
+                            continue;
+                        }
+
+			item->icon = g_key_file_get_string(
+					key_file,
+					DESKTOP_ENTRY_GROUP,
+					DESKTOP_ENTRY_ICON_FIELD,
 					NULL);
 
 			item->exec = g_key_file_get_string(
