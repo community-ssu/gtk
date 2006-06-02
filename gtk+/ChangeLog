@@ -1,3 +1,11 @@
+2006-06-01  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreemodelfilter.c
+	(gtk_tree_model_filter_convert_child_path_to_path): need to use
+	gtk_tree_model_filter_get_iter_full() since the path returned
+	by gtk_real_tree_model_filter_convert_child_path_to_path() includes
+	invisible nodes. N#31695
+
 2006-05-31  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcellrenderertext.c (gtk_cell_renderer_text_render): When
