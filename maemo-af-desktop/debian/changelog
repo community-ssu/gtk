@@ -1,3 +1,37 @@
+maemo-af-desktop (2.6.22-1) unstable; urgency=low
+
+  * hildon-navigator/hn-wm-watchable-app.c: Fixed leak of the
+    app structure when a .desktop is removed
+
+  * hildon-home/hildon-home-main.c: Fix rare memory leak (Closes N#30712)
+
+  * hildon-home/hildon-home-main.c: call
+    gtk_window_set_position(dialog,GTK_WIN_POS_NONE) on the Select
+      background dialog, to let MB handle the positioning
+
+  * libhildonmenu/libhildonmenu.c: Fixed the leak of an iterator
+
+  * hildon-home/hildon-home-main.c: Expand the comboboxes used for
+    image name and mode (Closes N#31605)
+
+  * hildon-navigator/others-menu.c: Never remove the dnotify callbacks,
+    as the API only allows to remove all callbacks connected to a given
+    path
+
+  * libhildonmenu/libhildonmenu.c: Do not store .desktop item information
+    if Name= is empty
+
+  * hildon-navigator/others-menu.c: Added checks on possible
+    empty fields in .desktop file, before starting building the
+    corresponding menu entry (Closes N#31669)
+
+  Applied fix to "Desktop doesn't exec an application with options NOR
+  output/log why its startup failed"
+  * hildon-navigator/others-menu.c: properly parse the Exec field
+    before spawning an application
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri,  2 Jun 2006 17:46:41 +0300
+
 maemo-af-desktop (2.6.21-1) unstable; urgency=low
 
   * hildon-navigator/hn-wm.h: Turn off TN debug messages

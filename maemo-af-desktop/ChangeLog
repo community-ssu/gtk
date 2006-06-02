@@ -1,5 +1,9 @@
 2006-06-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.6.22-1
+
+2006-06-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-watchable-app.c: Fixed leak of the
 	  app structure when a .desktop is removed
 
