@@ -1,0 +1,16 @@
+Source: libglade-hildon
+Section: devel
+Priority: optional
+Maintainer: Erik Karlsson <erik.b.karlsson@nokia.com> 
+Build-Depends-Indep: debhelper (>= 4.2.5), libglade2-dev, hildon-lgpl-dev, hildon-libs-dev
+Standards-Version: 3.6.1
+
+Package: libglade-hildon
+Architecture: any
+Section: devel
+Priority: optional
+Provides: libglade-hildon-${Source-Version}
+Depends: libglade2-0, hildon-lgpl0, hildon-libs0
+Description: Hildon Widgets support for libglade
+ The package contains the library needed by libglade for Hildon widget support.
+

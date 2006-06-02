@@ -1,0 +1,12 @@
+libglade-hildon (0.2) unstable; urgency=low
+
+  * Added autogen.sh and removed deprecated widgets. Added also Hildon Window. 
+
+ -- Erik Karlsson <erik.b.karlsson@nokia.com>  Tue, 23 May 2006 17:55:49 +0300
+
+libglade-hildon (0.1) unstable; urgency=low
+
+  * First time packaging
+
+ -- Erik Karlsson <erik.b.karlsson@nokia.com>  Tue,  11 Oct 2005 16:07:31 +0300 
+

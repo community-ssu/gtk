@@ -1,0 +1,52 @@
+#! /usr/bin/make -f
+# -*- makefile -*-
+# Build rules for gazpacho
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This is the debhelper compatibility version to use.
+export DH_COMPAT=4
+
+build:
+clean:
+	dh_clean
+
+install: 
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+# Build architecture-dependent files here.
+binary-arch: install
+	dh_testdir
+	dh_testroot
+
+	# Install files to their package directories
+	dh_installdocs
+	dh_installchangelogs
+
+	# Get everything built first
+	./configure
+	make
+
+	# Now we have everything in the build dir to copy
+	mkdir -p debian/libglade-hildon/usr/lib/
+	cp -d .libs/libglade-hildon.so \
+	      debian/libglade-hildon/usr/lib/
+
+	dh_compress
+	dh_fixperms
+
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_link
+	dh_makeshlibs -V
+
+	# Build the packages
+	dh_builddeb
+
+binary: binary-arch
+.PHONY: build clean binary-indep binary-arch binary install
+
