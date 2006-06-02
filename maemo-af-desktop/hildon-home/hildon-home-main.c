@@ -3334,6 +3334,8 @@ GdkFilterReturn hildon_home_event_filter (GdkXEvent *xevent,
                format == 32 && n == 1 && win.win != NULL &&
                error_trap == 0))
         {
+            if(win.win)
+                XFree(win.win);
             return GDK_FILTER_CONTINUE;
         }
 

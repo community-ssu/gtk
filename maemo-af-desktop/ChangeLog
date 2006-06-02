@@ -1,5 +1,9 @@
 2006-06-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Fix rare memory leak (Closes N#30712)
+
+2006-06-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.c: call
 	  gtk_window_set_position(dialog,GTK_WIN_POS_NONE) on the Select
       background dialog, to let MB handle the positioning
