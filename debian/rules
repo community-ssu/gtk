@@ -146,7 +146,7 @@ $(SOURCE_DIR)/install-test-stamp:
 install-shared: build-shared install-test
 	# Add here commands to install the package into debian/tmp
 	$(MAKE) -C $(BUILD_SHARED_DIR) install \
-		DESTDIR=$(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix)
+		DESTDIR=$(CURDIR)/debian/tmp
 
 install: install-shared
 	# generating debian files from .in
@@ -166,11 +166,12 @@ install: install-shared
 	cp $(BUILD_SHARED_DIR)/docs/*.txt debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc
 
 	# for -dbg
-	-rm -rf $(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix)/usr/lib/debug
-	mkdir -p $(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix)/usr/lib/debug
-	for l in `find $(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix)/usr/lib -name 'lib*.so*'`; do \
+	-rm -rf $(CURDIR)/debian/tmp/usr/lib/debug
+	mkdir -p $(CURDIR)/debian/tmp/usr/lib/debug
+
+	for l in `find $(CURDIR)/debian/tmp/usr/lib -name 'lib*.so*'`; do \
 		cp -vdf $$l \
-			$(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix)/usr/lib/debug; \
+			$(CURDIR)/debian/tmp/usr/lib/debug; \
 	done
 
 	# examples (without .svn)
@@ -187,17 +188,14 @@ install: install-shared
 		       $(CURDIR)/debian/libgtk$(apiver)-bin/usr/sbin/
 
 	# don't need executable attribute
-	for f in `find $(CURDIR)/debian/libgtk$(apiver)-$(soname)$(suffix)/usr/share/themes -type f`; do \
+	for f in `find $(CURDIR)/debian/tmp/usr/share/themes -type f`; do \
 		chmod a-x $$f; \
 	done
 
 	# clean the unnecessary files up
-	rm -rf debian/libgtk$(apiver)-$(soname)$(suffix)/usr/share/gtk-doc
+	rm -rf debian/tmp/usr/share/gtk-doc
 
-	# remove extra input modules (leave X im for development use and OSSO im for real use)
-	rm -rf debian/libgtk$(apiver)-$(soname)$(suffix)/usr/lib/gtk-2.0/2.4.0/immodules/{im-am-et,im-cedilla,im-cyrillic-translit,im-inuktitut,im-ipa,im-thai-broken,im-ti-er,im-ti-et,im-viqr}*        
-
-	dh_movefiles --sourcedir=debian/libgtk$(apiver)-$(soname)$(suffix)
+	dh_movefiles --sourcedir=debian/tmp
 	-find $(CURDIR)/debian/ -type d -empty | xargs rmdir -p > /dev/null 2>&1
 
 	# don't delete /etc/gtk-2.0

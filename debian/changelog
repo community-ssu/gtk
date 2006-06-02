@@ -9,6 +9,18 @@ gtk+2.0 (2:2.6.10-2.osso4) UNRELEASED; urgency=low
 
  -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 31 May 2006 18:58:32 +0300
 
+gtk+2.0 (2:2.6.10-2.osso3.1) unstable; urgency=low
+
+  * debian/rules:
+    - do make install to debian/tmp first and then move only listed files to
+      right packages instead of putting everything to libgtk2.0-0, unless
+      otherwise mentioned, 
+  * debian/libgtk2.0-0.files:
+    - list the files we want
+  * Really fixes NB#31174
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  1 Jun 2006 08:53:15 +0300
+
 gtk+2.0 (2:2.6.10-2.osso3) unstable; urgency=low
 
   * debian/libgtk2.0-dev.files: Kill .la files
