@@ -1,3 +1,9 @@
+python-hildon (0.8.4-1osso4) unstable; urgency=low
+
+  * remove reference to hildon-insert-object-dialog.h
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu, 1 Jun 2006 23:32:00 -0300
+
 python-hildon (0.8.4-1osso3) unstable; urgency=low
 
   * renamed documentation directory in development package
