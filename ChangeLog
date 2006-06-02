@@ -1,4 +1,9 @@
 2006-06-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkwindow.c (gtk_window_key_release_event): Chain up to
+	key_release_event, not key_press_event (#343677)
+
+2006-06-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkviewport.c (viewport_set_adjustment): Really fix M#352
 
