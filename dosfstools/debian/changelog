@@ -1,6 +1,5 @@
 dosfstools (2.8-1osso4) unstable; urgency=low
 
-  * UNRELEASED
   * Fix for llseek() for bug N#31636.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 02 Jun 2006 16:10:56 +0300
