@@ -1,3 +1,7 @@
+2006-06-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkviewport.c (viewport_set_adjustment): Really fix M#352
+
 2006-06-01  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_leave_notify): Do not reset
