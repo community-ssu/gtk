@@ -1,5 +1,11 @@
 2006-06-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/others-menu.c: Never remove the dnotify callbacks,
+	  as the API only allows to remove all callbacks connected to a given
+	  path
+
+2006-06-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.c: Do not store .desktop item information
 	  if Name= is empty
 

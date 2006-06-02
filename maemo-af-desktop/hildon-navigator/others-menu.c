@@ -407,18 +407,11 @@ static gboolean others_menu_button_button_release(GtkWidget *widget,
     return TRUE;
 }
 
-void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
+static void create_empty_menu(OthersMenu_t *om)
 {
-    gchar *user_home_dir = NULL;
-    gchar *user_menu_conf_file = NULL;
-    g_return_if_fail(om);
     om->menu = GTK_MENU(gtk_menu_new());
-
+    
     gtk_widget_set_name(GTK_WIDGET(om->menu), HILDON_NAVIGATOR_MENU_NAME);
-
-    if (om->as_menu_cb == NULL) {
-	    om->as_menu_cb = as_menu_cb;
-    }
     
     g_signal_connect(G_OBJECT(om->menu), "size-request",
 		     G_CALLBACK(others_menu_size_request), om);
@@ -426,14 +419,28 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 		     G_CALLBACK(others_menu_deactivate), om);
     g_signal_connect(G_OBJECT(om->menu), "key-press-event",
 		     G_CALLBACK(others_menu_key_press), om);
+
+}
+
+
+void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
+{
+    gchar *user_home_dir = NULL;
+    gchar *user_menu_conf_file = NULL;
+    g_return_if_fail(om);
+
+    if (om->as_menu_cb == NULL) {
+	    om->as_menu_cb = as_menu_cb;
+    }
+
+    create_empty_menu(om);
+    
     g_signal_connect(G_OBJECT(om->toggle_button), "button-press-event",
  		     G_CALLBACK(others_menu_button_button_press), om);
     g_signal_connect(G_OBJECT(om->toggle_button), "button-release-event",
  		     G_CALLBACK(others_menu_button_button_release), om);
 
-    /* this *MUST* be registered *before* the dnotify_handler CB which is badly
-     * broken and removes all dnotify callbacks
-     */
+    /* register callback to update the TN .desktop registry */
     if ( om->as_menu_cb )
       {
         HN_DBG("registering AS dnotify callback 0x%x for directory [%s]",
@@ -518,9 +525,6 @@ void others_menu_deinit(OthersMenu_t * om)
     g_free(om);
 }
 
-/* FIXME: this is badly broken -- you cannot just remove all callbacks
- * registered for given path, since they might not be yours !!!
- */
 static void dnotify_handler( char *path, gpointer data )
 {
     if( !dnotify_update_timeout )
@@ -528,8 +532,6 @@ static void dnotify_handler( char *path, gpointer data )
         dnotify_update_timeout =
             g_timeout_add( 1000, others_menu_changed_cb, data );
     }
-    
-    hildon_dnotify_remove_cb( path );
 }
 
 static gboolean others_menu_changed_cb( gpointer _data )
@@ -543,7 +545,9 @@ static gboolean others_menu_changed_cb( gpointer _data )
 	gtk_widget_destroy( GTK_WIDGET( om->menu ) );
 
 	/* Re-initialize menu */	
-	others_menu_initialize_menu( om, NULL);
+    create_empty_menu(om);
+    others_menu_get_items(GTK_WIDGET(om->menu), om, NULL, NULL);
+    gtk_widget_show_all(GTK_WIDGET(om->menu));
 
     return FALSE;
 }
