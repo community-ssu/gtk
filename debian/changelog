@@ -1,13 +1,16 @@
-gtk+2.0 (2:2.6.10-1.osso19) UNRELEASED; urgency=low
+gtk+2.0 (2:2.6.10-1.osso19) unstable; urgency=low
 
-  * NOT RELEASED YET
   * Bugs fixed:
+    NB#28032: Wrong folder is opened when double clicking a folder in MMC file
+              list view
+    NB#29366: Drag doesn't start if stylus leaves the widget before crossing
+              dnd threshold
     NB#31043: GtkTreeView: Icon in same column after ellipsizing text not
               visible
     NB#31444: Ellipsizing column headers ellipsize too eagerly
     NB#31495: GtkCellRendererText: Automatic ellipsizing truncated initially
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 31 May 2006 18:57:10 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  2 Jun 2006 16:47:18 +0300
 
 gtk+2.0 (2:2.6.10-1.osso18) unstable; urgency=low
 
