@@ -1461,6 +1461,8 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
     hildon_caption_set_child_expand(HILDON_CAPTION(image_caption), TRUE);
     hildon_caption_set_child_expand(HILDON_CAPTION(mode_caption), TRUE);
 
+    /* Let matchbox take care of the positioning */
+    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_NONE);
     gtk_widget_show_all(dialog);
 
     g_signal_connect(G_OBJECT(combobox_image_select), "changed", 
