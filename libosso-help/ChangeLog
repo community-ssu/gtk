@@ -1,5 +1,13 @@
 2006-05-30 Jakub Pavelek <jakub.pavelek@nokia.com>
 
+	* Version 2.0.0
+	* debian/libosso-help-dev.install: removed installing of la files
+	* debian/control: Removed dependency for gtkhtml-dev in libosso-help-dev
+	Fixes N#31127
+
+
+2006-05-30 Jakub Pavelek <jakub.pavelek@nokia.com>
+
 	* Version 1.5.10
 	* debian/control: Added libxml2-dev to dependency of libosso-help-dev
 		as required by integration

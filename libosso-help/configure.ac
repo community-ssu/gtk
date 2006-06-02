@@ -7,7 +7,7 @@
 
 # Mandatory, initializes autoconf.
 #
-AC_INIT(libosso-help, 1.5.10)
+AC_INIT(libosso-help, 2.0.0)
 
 # Tests that source dir exists
 AC_CONFIG_SRCDIR( [src/osso-helplib.c] )

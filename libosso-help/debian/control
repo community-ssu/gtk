@@ -8,7 +8,7 @@ Standards-Version: 3.6.1
 Package: libosso-help-dev
 Section: libdevel
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, libosso-help0 (= ${Source-Version}), hildon-libs-dev, hildon-base-lib-dev, libart-2.0-dev, gtkhtml-dev, libxml2-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}, libosso-help0 (= ${Source-Version}), hildon-libs-dev, hildon-base-lib-dev, libart-2.0-dev, gtkhtml-dev
 Description: OSSO HelpLib for application developers
  Development files for HelpLib; access and controlling
  OSSO Help from other applications.
