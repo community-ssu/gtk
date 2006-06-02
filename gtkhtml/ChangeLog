@@ -1,6 +1,6 @@
 2006-05-30 Jakub Pavelek <jakub.pavelek@nokia.com>
 
-	* debian/gtkhtml-dev.install: removed the .la from -dev package
+
 
 2006-05-29 Jakub Pavelek <jakub.pavelek@nokia.com>
 
