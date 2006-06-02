@@ -770,6 +770,9 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 			folder_closed_icon = NULL;
 		}
 
+        g_free( extras_iter );
+        extras_iter = NULL;
+
 		ULOG_DEBUG( "read_menu_conf: DONE!" );
 	}
 

@@ -1,5 +1,9 @@
 2006-06-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* libhildonmenu/libhildonmenu.c: Fixed the leak of an iterator
+
+2006-06-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.c: Expand the comboboxes used for
 	  image name and mode (Closes N#31605)
 
