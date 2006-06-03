@@ -14,19 +14,7 @@ IMGDIR=/usr/share/icons/hicolor/scalable/hildon
 LOGO=qgn_indi_startup_nokia_logo.png
 BAR=qgn_indi_progressbar.png
 
-# Device lock affects the length of the bar
-dbus-send --system --type=method_call \
- --dest="com.nokia.mce" --print-reply \
- "/com/nokia/mce/request" \
- com.nokia.mce.request.get_devicelock_mode | \
- grep unlocked > /dev/null
-if [ $? = 0 ]; then
-  # unlocked
-  SECS=18
-else
-  # locked
-  SECS=8
-fi
+SECS=18
 
 case "$1" in
 start)	
