@@ -80,7 +80,7 @@ start)
       fi
       rm -f $TMPDIR/launch-operator-wizard.tmp
     fi
-    rm $HOME/first-boot-flag
+    rm -f $HOME/first-boot-flag
     rm -f /tmp/suw-user-cancelled.tmp
   else
     if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then

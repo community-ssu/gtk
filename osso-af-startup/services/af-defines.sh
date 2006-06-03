@@ -82,11 +82,13 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
   if [ $? = 0 ]; then
     export INTERNAL_MMC_MOUNTPOINT='/media/mmc2'
     export INTERNAL_MMC_SWAP_LOCATION=$INTERNAL_MMC_MOUNTPOINT
+    export OSSO_SWAP=$INTERNAL_MMC_MOUNTPOINT
+  else
+    export OSSO_SWAP=$MMC_MOUNTPOINT
   fi
   export ILLEGAL_FAT_CHARS=\\\/\:\*\?\<\>\| MAX_FILENAME_LENGTH=255
 
   # MMC swap file location (directory)
-  export OSSO_SWAP=$MMC_MOUNTPOINT
   export MMC_SWAP_LOCATION=$MMC_MOUNTPOINT
 
   # this is for Control Panel

@@ -26,7 +26,7 @@ start)
   source $AF_INIT_DIR/maemo-af-desktop.sh start
 
   # boost desktop startup
-  sleep 10
+  sleep 7
 
   if [ -x $CONNECTIVITY_UI_SCRIPT ]; then
     source $CONNECTIVITY_UI_SCRIPT start
