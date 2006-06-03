@@ -1,6 +1,5 @@
 osso-af-utils (1.4-1) unstable; urgency=low
 
-  * UNRELEASED
   * Corrected length of the bootup progress bar (N#22474).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Sat, 03 Jun 2006 15:24:40 +0300
