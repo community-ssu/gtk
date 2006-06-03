@@ -7,6 +7,6 @@ Standards-Version: 3.6.0
 
 Package: osso-af-utils
 Architecture: any
-Depends: ${shlibs:Depends}, osso-icons, lsof
+Depends: ${shlibs:Depends}, osso-icons, lsof, dbus
 Description: Assortment of small programs for the application framework.
  Including waitdbus, waitx, fb-progress, xset770, temp-reaper.

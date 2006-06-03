@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (C) 2004-2005 Nokia Corporation.
+# Copyright (C) 2004-2006 Nokia Corporation.
 
 AF_PIDDIR=/tmp/af-piddir
 if [ ! -d $AF_PIDDIR ]; then
@@ -14,11 +14,18 @@ IMGDIR=/usr/share/icons/hicolor/scalable/hildon
 LOGO=qgn_indi_startup_nokia_logo.png
 BAR=qgn_indi_progressbar.png
 
-# is link/init file name of the format 'fb-progress-<secs>'?
-SECS=${0#*fb-progress-}
-if [ "$SECS" = "$0" ]; then
-	# no match, use the default progress timeout
-	SECS=20
+# Device lock affects the length of the bar
+dbus-send --system --type=method_call \
+ --dest="com.nokia.mce" --print-reply \
+ "/com/nokia/mce/request" \
+ com.nokia.mce.request.get_devicelock_mode | \
+ grep unlocked > /dev/null
+if [ $? = 0 ]; then
+  # unlocked
+  SECS=18
+else
+  # locked
+  SECS=8
 fi
 
 case "$1" in
