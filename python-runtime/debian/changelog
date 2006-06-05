@@ -1,3 +1,10 @@
+python-runtime (0.2) unstable; urgency=low
+
+  * changed architecture from 'any' to 'all'
+  * changed package versioning
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Mon, 5 Jun 2006 15:28:00 -0300
+
 python-runtime (0.1-1osso3) unstable; urgency=low
 
   * remove 'touch binary-stamp' from debian/rules

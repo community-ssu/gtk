@@ -20,6 +20,6 @@ XB-Maemo-Icon-26:
 
 Package: python2.4-runtime
 Section: user/system-tools
-Architecture: any
+Architecture: all
 Depends: python2.4-bluez, python2.4-gtk2, python2.4-numeric, python2.4-dbus, python2.4-osso, python2.4-xml, python2.4-gstreamer, python2.4-pygame, python2.4, python2.4-runtime, python2.4-hildon
 Description: Python runtime environment.
