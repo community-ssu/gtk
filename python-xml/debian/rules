@@ -12,6 +12,13 @@ d = debian/tmp
 d_base = debian/$(p_base)
 d_dev  = debian/$(p_dev)
 
+ifeq ($(DEB_BUILD_ARCH),armel)
+	OPTSETTINGS = "-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes"
+else
+	OPTSETTINGS = "-Os -Wall -Wstrict-prototypes"
+endif
+
+
 build: build-stamp
 build-stamp:
 	dh_testdir
@@ -32,7 +39,8 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	$(PYTHON) -OO setup.py install \
+	CFLAGS=$(OPTSETTINGS) \
+	    $(PYTHON) -OO setup.py install \
 		--without-xslt \
 		--no-compile \
 		--prefix=$(d)/usr
@@ -41,13 +49,6 @@ install: build
 	mv      $(d)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py.new \
 		$(d)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py
 	$(PYTHON) -OO -m compileall -f $(d)
-	for i in `find $(d) -type f`; do \
-	      if head -1 $$i | grep "^#! */usr/bin" | grep "python" >/dev/null ; then \
-	        sed "s@^(#! */usr/bin/env +)python[.[:digit:]]*$$@\\1python$(PYVER)@;s@^(#! */usr/bin/)python[.[:digit:]]*$$@\\1python$(PYVER)@" <$$i >$$i.temp; \
-	        cat <$$i.temp >$$i; \
-	        rm $$i.temp; \
-	      fi ;\
-	done
 
 	# base
 	mkdir -p $(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus
@@ -74,6 +75,12 @@ install: build
 
 	# cleanup
 	find $(d_base) $(d_dev) -name ".svn" | xargs rm -rf
+
+	for i in `find $(d_base) $(d_dev) -type f`; do \
+	    sed "1s,#\!.*python[^ ]*\(.*\),#\!/usr/bin/env $(PYTHON) \1," $$i > $$i.temp; \
+	    cat $$i.temp > $$i; \
+	    rm $$i.temp; \
+	done
 
 binary-indep: build install
 binary-arch: build install

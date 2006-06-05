@@ -7,7 +7,7 @@ Standards-Version: 3.6.1
 
 Package: python2.4-xml
 Architecture: any
-Depends: python2.4
+Depends: python2.4, ${shlibs:Depends}
 Description: XML tools for Python
  The Python/XML distribution contains the basic tools required for
  processing XML data using the Python programming language, assembled
@@ -30,6 +30,6 @@ Description: XML tools for Python
  a package built for Debian's default Python version.
 
 Package: python2.4-xml-dev
-Architecture: any
-Depends: python2.4-xml
+Architecture: all
+Depends: python2.4-xml (= ${Source-Version})
 Description: Development files for XML tools for Python (2.4.x)
