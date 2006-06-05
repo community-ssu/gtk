@@ -1,3 +1,20 @@
+maemo-af-desktop (2.6.23-1) unstable; urgency=low
+
+  * hildon-navigator/hn-wm.c:
+    - Fixed a crash when registering new .desktop file
+  * hildon-navigator/hn-wm-watchable-app.c:
+    - Added sanity check on all the accessors
+
+  Applied fix to "New applet placement not reset." (Closes N#31754)
+  * hildon-home/layout-manager.c: added the code to reset applet placement
+    after showing the dialog.
+
+  * libhildonmenu/libhildonmenu.c: Add com.nokia. to invalid services.
+    This fixes the topping of applications by selecting them in the
+    others-menu
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  5 Jun 2006 14:11:01 +0300
+
 maemo-af-desktop (2.6.22-1) unstable; urgency=low
 
   * hildon-navigator/hn-wm-watchable-app.c: Fixed leak of the
