@@ -29,6 +29,7 @@
 
 #define DESKTOP_FILE_SUFFIX ".desktop"
 #define DESKTOP_ENTRY_GROUP "Desktop Entry"
+#define SERVICE_PREFIX "com.nokia."
 
 typedef struct {
 	gchar *name;
@@ -254,6 +255,13 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
 					DESKTOP_ENTRY_GROUP,
 					DESKTOP_ENTRY_SERVICE_FIELD,
 					NULL);
+
+            if (item->service && !strchr(item->service, '.')) {
+                /* Unqualified domain, add the default com.nokia. */
+                gchar * s = g_strconcat (SERVICE_PREFIX, item->service, NULL);
+                g_free(item->service);
+                item->service = s;
+            }
 
 			item->desktop_id = g_strdup( dir_entry->d_name );
 

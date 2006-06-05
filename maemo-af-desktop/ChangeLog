@@ -1,3 +1,9 @@
+2006-06-05  Johan Bilien <johan.bilien@nokia.com>
+
+	* libhildonmenu/libhildonmenu.c: Add com.nokia. to invalid services.
+	  This fixes the topping of applications by selecting them in the
+	  others-menu
+
 2006-06-02  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.6.22-1
