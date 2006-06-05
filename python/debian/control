@@ -7,8 +7,7 @@ Standards-Version: 3.6.2
 
 Package: python2.4
 Architecture: any
-Priority: optional
-Conflicts: python2.4-dev (<< 2.3.95-2)
+Depends: ${shlibs:Depends}
 Description: An interactive high-level object-oriented language (version 2.4)
  Version 2.4 of the high-level, interactive object oriented language,
  includes an extensive class library with lots of goodies for
@@ -17,11 +16,9 @@ Description: An interactive high-level object-oriented language (version 2.4)
 Package: python2.4-dev
 Architecture: any
 Depends: python2.4 (= ${Source-Version})
-Suggests: libc6-dev | libc-dev
 Description: Header files and a static library for Python (v2.4)
  Header files, a static library and development tools for building
  Python (v2.4) modules, extending the Python interpreter or embedding
  Python (v2.4) in applications.
  .
  Maintainers of Python packages should read README.maintainers.
-

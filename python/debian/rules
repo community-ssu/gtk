@@ -1,9 +1,8 @@
 #!/usr/bin/make -f
-# Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.
 
-export SHELL = /bin/bash
+export SHELL=/bin/bash
 
-DEB_BUILD_ARCH		?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+DEB_BUILD_ARCH ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 
 export VER=2.4
 export PVER=python2.4
@@ -12,9 +11,8 @@ PY_INTERPRETER = /usr/bin/python$(VER)
 
 CC = gcc
 
-ifeq ($(DEB_BUILD_ARCH),arm)
-	#OPTSETTINGS = OPT="-Os -mfloat-abi=softfp -Wall -Wstrict-prototypes"
-	OPTSETTINGS = OPT="-Wall -Wstrict-prototypes"
+ifeq ($(DEB_BUILD_ARCH),armel)
+	OPTSETTINGS = OPT="-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes"
 else
 	OPTSETTINGS = OPT="-Os -Wall -Wstrict-prototypes"
 endif
@@ -270,6 +268,8 @@ stamp-install: stamp-build
 	: # remove some things
 	-find debian -name CVS | xargs rm -rf
 	-find debian -name .cvsignore | xargs rm -f
+	-rm -rf $(d_dev)/usr/lib/python$(VER)/distutils/command/*.exe
+	-rm -rf $(d_dev)/tmp
 
 	#DEFAULT PYTHON
 	(cd $(d_base)/usr/bin && ln -sf python$(VER) python)
@@ -373,7 +373,7 @@ binary-arch: build install
 
 binary: binary-arch
 
-.PHONY: control-file configure build clean binary-indep binary-arch binary install
+.PHONY: configure build clean binary-indep binary-arch binary install
 
 # Local Variables:
 # mode: makefile
