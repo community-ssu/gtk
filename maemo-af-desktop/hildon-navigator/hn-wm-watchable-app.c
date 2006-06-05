@@ -203,6 +203,7 @@ hn_wm_watchable_app_has_windows (HNWMWatchableApp *app)
 gboolean
 hn_wm_watchable_app_is_hibernating (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, FALSE);
   return app->hibernating;
 }
 
@@ -211,6 +212,7 @@ hn_wm_watchable_app_set_hibernate (HNWMWatchableApp *app,
 				   gboolean          hibernate)
 {
   HN_MARK();
+  g_return_if_fail (app);
   app->hibernating = hibernate;
 }
 
@@ -218,6 +220,7 @@ hn_wm_watchable_app_set_hibernate (HNWMWatchableApp *app,
 gboolean
 hn_wm_watchable_app_is_able_to_hibernate (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, FALSE);
   return app->able_to_hibernate;
 }
 
@@ -225,6 +228,7 @@ void
 hn_wm_watchable_app_set_able_to_hibernate (HNWMWatchableApp *app,
 					   gboolean          hibernate)
 {
+  g_return_if_fail (app);
   app->able_to_hibernate = hibernate;
 }
 
@@ -232,30 +236,35 @@ hn_wm_watchable_app_set_able_to_hibernate (HNWMWatchableApp *app,
 const gchar*
 hn_wm_watchable_app_get_service (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, NULL);
   return app->service;
 }
 
 const gchar*
 hn_wm_watchable_app_get_exec (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, NULL);
   return app->exec_name;
 }
 
 const gchar*
 hn_wm_watchable_app_get_name (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, NULL);
   return app->app_name;
 }
 
 const gchar*
 hn_wm_watchable_app_get_icon_name (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, NULL);
   return app->icon_name;
 }
 
 const gchar*
 hn_wm_watchable_app_get_class_name (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, NULL);
   return app->class_name;
 }
 
@@ -263,12 +272,14 @@ hn_wm_watchable_app_get_class_name (HNWMWatchableApp *app)
 gboolean
 hn_wm_watchable_app_is_minimised (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, FALSE);
   return app->is_minimised;
 }
 
 gboolean
 hn_wm_watchable_app_has_startup_notify (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, FALSE);
   return app->startup_notify;
 }
 
@@ -277,6 +288,7 @@ void
 hn_wm_watchable_app_set_minimised (HNWMWatchableApp *app,
 				   gboolean          minimised)
 {
+  g_return_if_fail (app);
   app->is_minimised = minimised;
 }
 
@@ -309,6 +321,8 @@ hn_wm_watchable_app_died_dialog_show(HNWMWatchableApp *app)
   GtkWidget *dialog;
   gchar *text;
 
+  g_return_if_fail (app);
+  
   text = g_strdup_printf(dgettext("ke-recv", "memr_ni_application_closed_no_resources"),
 			 app->app_name ? _(app->app_name) : "");
   dialog = hildon_note_new_information(NULL, text);
@@ -328,6 +342,8 @@ hn_wm_watchable_app_launch_banner_show (GtkWidget        *parent,
   HNWMLaunchBannerInfo *info;
   guint                 interval;
 
+  g_return_if_fail (app);
+  
   interval = APP_LAUNCH_BANNER_CHECK_INTERVAL * 1000;
 
   info = g_new0(HNWMLaunchBannerInfo, 1);
@@ -420,7 +436,7 @@ hn_wm_watchable_app_launch_banner_timeout (gpointer data)
 void
 hn_wm_watchable_app_hibernate (HNWMWatchableApp *app)
 {
-  g_return_if_fail(app);
+  g_return_if_fail (app);
   g_hash_table_foreach_steal(hnwm->watched_windows,
                              hn_wm_watched_window_hibernate_func,
                              app);
@@ -431,24 +447,28 @@ hn_wm_watchable_app_hibernate (HNWMWatchableApp *app)
 void
 hn_wm_watchable_app_set_ping_timeout_note(HNWMWatchableApp *app, GtkWidget *note)
 {
-	app->ping_timeout_note = note;
+  g_return_if_fail (app);
+  app->ping_timeout_note = note;
 }
 
 GtkWidget*
 hn_wm_watchable_app_get_ping_timeout_note(HNWMWatchableApp *app)
 {
-	return app->ping_timeout_note;
+  g_return_val_if_fail (app, NULL);
+  return app->ping_timeout_note;
 }
 
 HNWMWatchedWindow *
 hn_wm_watchable_app_get_active_window (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, NULL);
   return app->active_window;
 }
 
 void
 hn_wm_watchable_app_set_active_window (HNWMWatchableApp *app, HNWMWatchedWindow * win)
 {
+  g_return_if_fail (app);
   app->active_window = win;
 }
 
@@ -526,6 +546,8 @@ hn_wm_watchable_app_update (HNWMWatchableApp *app, HNWMWatchableApp *update)
 gboolean
 hn_wm_watchable_app_has_hibernating_windows (HNWMWatchableApp *app)
 {
+  g_return_val_if_fail (app, FALSE);
+  
   return (g_hash_table_find (hnwm->watched_windows_hibernating,
 			     hn_wm_watchable_app_has_windows_find_func,
 			     (gpointer)app) != NULL);

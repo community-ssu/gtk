@@ -1325,8 +1325,8 @@ dnotify_hash_table_foreach_steal_func (gpointer key,
        */
       HN_DBG("Inserting a new application");
       g_hash_table_insert(old_apps->apps,
-                         g_strdup(hn_wm_watchable_app_get_class_name(old_app)),
-                         old_app);
+                         g_strdup(hn_wm_watchable_app_get_class_name(new_app)),
+                         new_app);
 
       /* indicate that the app should be removed from the new apps hash */
       return TRUE;
