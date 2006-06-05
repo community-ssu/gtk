@@ -1,3 +1,9 @@
+python-runtime (0.1-1osso3) unstable; urgency=low
+
+  * remove 'touch binary-stamp' from debian/rules
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu, 1 Jun 2006 23:52:00 -0300
+
 python-runtime (0.1-1osso2) unstable; urgency=low
 
   * Now, python-runtime is a meta package

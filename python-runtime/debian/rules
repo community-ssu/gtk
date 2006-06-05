@@ -18,6 +18,5 @@ binary:
 	dh_md5sums
 	dh_gencontrol
 	dh_builddeb
-	touch binary-stamp
 
 .PHONY: build clean binary
