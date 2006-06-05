@@ -1,3 +1,9 @@
+python-dbus (0.61-1osso3) unstable; urgency=low
+
+  * added python2.4-pyrex in Build-Depends
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 1 Jun 2006 23:51:00 -0300
+
 python-dbus (0.61-1osso2) unstable; urgency=low
 
   * remove extract.pyc file in debian/rules clean target
