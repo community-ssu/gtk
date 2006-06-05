@@ -1,5 +1,11 @@
 2006-06-05  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "New applet placement not reset." (Closes N#31754)
+	* hildon-home/layout-manager.c: added the code to reset applet placement
+	  after showing the dialog.
+
+2006-06-05  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.c: Add com.nokia. to invalid services.
 	  This fixes the topping of applications by selecting them in the
 	  others-menu

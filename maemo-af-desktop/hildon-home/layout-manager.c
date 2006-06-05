@@ -776,6 +776,9 @@ void _select_applets_cb(GtkWidget * widget, gpointer data)
     ULOG_ERR("LAYOUT:trying to show applet selection dialog\n");
     show_select_applets_dialog(current_applets, &addable, &removable);
 
+    general_data.newapplet_x = APPLET_ADD_X_MIN;
+    general_data.newapplet_y = APPLET_ADD_Y_MIN;
+
     if (addable)
     {
 	addable = g_list_first(addable);
