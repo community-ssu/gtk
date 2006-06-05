@@ -1,3 +1,9 @@
+libosso-help (2.0.1-0) unstable; urgency=low
+
+  * Bugfixes
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon,  5 Jun 2006 12:28:18 +0300
+
 libosso-help (2.0.0-1) unstable; urgency=low
 
   * Moving trunk up for next OS

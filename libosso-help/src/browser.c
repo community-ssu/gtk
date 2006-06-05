@@ -166,9 +166,6 @@ gboolean browser_show( GtkWidget *browser,
   gtk_html_set_allow_frameset(html, TRUE);
   gtk_html_load_empty(html);
 
-  /* Focus to the HTML page of help instead of search bar */
-  gtk_widget_grab_focus(child);
-
   html_stream_handle = gtk_html_begin_content(html, "text/html; charset=utf-8");
   gtk_html_set_images_blocking(html, FALSE);
   /*Input parameter validation*/
@@ -193,6 +190,9 @@ gboolean browser_show( GtkWidget *browser,
   } else {
     gtk_html_end (html, html_stream_handle, GTK_HTML_STREAM_OK);
   }
+
+  /* Focus to the HTML page of help instead of search bar */
+  gtk_widget_grab_focus(child);
 
   return TRUE;
 }
