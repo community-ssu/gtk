@@ -1,3 +1,10 @@
+python-osso (0.1-1osso4) unstable; urgency=low
+
+  * added shlib dependencies
+  * enable "-mthumb" and "-msoft-abi=softfp" flags on gcc
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 6 Jun 2006 19:36:00 -0300
+
 python-osso (0.1-1osso3) unstable; urgency=low
 
   * renamed documentation directory in development package

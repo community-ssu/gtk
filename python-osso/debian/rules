@@ -1,5 +1,4 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
 
 PYVER=2.4
 
@@ -10,10 +9,16 @@ d=debian/tmp
 d_base=debian/python$(PYVER)-osso
 d_dev=debian/python$(PYVER)-osso-dev
 
+ifeq ($(DEB_BUILD_ARCH),armel)
+    CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
+else
+    CFLAGS=-Os -Wall -Wstrict-prototypes
+endif
+
 build: build-stamp
 build-stamp:
 	dh_testdir
-	python$(PYVER) setup.py build
+	CFLAGS="$(CFLAGS)" python$(PYVER) setup.py build
 	touch build-stamp
 
 clean:
@@ -56,6 +61,7 @@ binary-arch: build install
 	dh_link
 	dh_strip
 	dh_fixperms
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_md5sums

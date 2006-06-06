@@ -1,18 +1,17 @@
 Source: python-osso
 Priority: optional
+Section: python
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
 Build-Depends: debhelper (>= 4.0.0), python2.4-gtk2-dev, python2.4-dev, libdbus-glib-1-dev, libosso-dev, libgtk2.0-dev, libpango1.0-dev, libglib2.0-dev
 Standards-Version: 3.6.1
 
 Package: python2.4-osso
-Section: libs
 Architecture: any
-Depends: python2.4-gtk2, python2.4, libdbus-glib-1-2, libosso1, libgtk2.0-0, libpango1.0-0, libglib2.0-0
+Depends: python2.4-gtk2, python2.4, libdbus-glib-1-2, libosso1, libgtk2.0-0, libpango1.0-0, libglib2.0-0, ${shlibs:Depends}
 Description: Python bindings for Libosso library
 
 Package: python2.4-osso-dev
-Section: libs
-Architecture: any
-Depends: python2.4-osso
+Architecture: all
+Depends: python2.4-osso (= ${Source-Version})
 Description: Examples and header files for Python bindings for Libosso library
 
