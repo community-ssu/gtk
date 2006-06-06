@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.6.10-1.osso20) unstable; urgency=low
+
+  * Reopen NB#31043, it triggers bugs elsewhere
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue,  6 Jun 2006 16:18:59 +0300
+
 gtk+2.0 (2:2.6.10-1.osso19) unstable; urgency=low
 
   * Bugs fixed:
