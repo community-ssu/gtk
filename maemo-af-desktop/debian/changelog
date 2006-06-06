@@ -1,3 +1,19 @@
+maemo-af-desktop (2.6.24-1) unstable; urgency=low
+
+  * hildon-navigator/hn-wm-watchable-app.c: Make a special case
+    when displaying the banner for the certificate manager, which
+    whose name was not included in the desktop UI specification and
+    thus is not present in our l10n domain (Closes N#31647 partially)
+
+  * maemo-af-desktop/maemo-af-desktop-main.c: Attempt a clean
+    shutdown on SIGTERM
+  * hildon-navigator/hildon-navigator-main.c: Moved the removal
+    of .watch files from the shutdown to the end of the initialization,
+    because we do not reliably reach the end of the shutdown in current
+    device shutdown (receive abort or SIGKILL before) (Closes N#31943)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  6 Jun 2006 18:43:05 +0300
+
 maemo-af-desktop (2.6.23-1) unstable; urgency=low
 
   * hildon-navigator/hn-wm.c:

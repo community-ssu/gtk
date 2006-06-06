@@ -1,5 +1,11 @@
 2006-06-06  Johan Bilien <johan.bilien@nokia.com>
 
+	* maemo-af-desktop/maemo-af-desktop-main.c: Reverted "Attempt a clean
+	  shutdown on SIGTERM" as it brought N#21976 back.
+	* configure.ac: 2.6.24-1
+
+2006-06-06  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-watchable-app.c: Make a special case
 	  when displaying the banner for the certificate manager, which
 	  whose name was not included in the desktop UI specification and
