@@ -1,3 +1,8 @@
+2006-06-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcellrenderertext.c: Revert last commit, it triggers issues
+	in too many places. Reopen N#31043
+
 2006-06-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkwindow.c (gtk_window_key_release_event): Chain up to

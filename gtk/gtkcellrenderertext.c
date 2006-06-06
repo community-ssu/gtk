@@ -131,9 +131,6 @@ struct _GtkCellRendererTextPrivate
   guint language_set : 1;
   guint markup_set : 1;
   guint ellipsize_set : 1;
-
-  /* hildon */
-  guint auto_ellipsize_set : 1;
   
   gulong focus_out_id;
   PangoLanguage *language;
@@ -1352,7 +1349,7 @@ get_layout (GtkCellRendererText *celltext,
   if (celltext->rise_set)
     add_attr (attr_list, pango_attr_rise_new (celltext->rise));
 
-  if (priv->ellipsize_set || priv->auto_ellipsize_set)
+  if (priv->ellipsize_set)
     pango_layout_set_ellipsize (layout, priv->ellipsize);
   else
     pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_NONE);
@@ -1433,8 +1430,7 @@ get_size (GtkCellRenderer *cell,
   /* The minimum size for ellipsized labels is ~ 3 chars */
   if (width)
     {
-      if (!priv->auto_ellipsize_set &&
-          (priv->ellipsize || priv->width_chars > 0))
+      /*if (priv->ellipsize || priv->width_chars > 0)
 	{
 	  PangoContext *context;
 	  PangoFontMetrics *metrics;
@@ -1449,9 +1445,9 @@ get_size (GtkCellRenderer *cell,
 	  *width += (PANGO_PIXELS (char_width) * MAX (priv->width_chars, 3));
 	}
       else
-	{
+	{*/
 	  *width = GTK_CELL_RENDERER (celltext)->xpad * 2 + rect.width;
-	}
+	/*}	  */
     }
 
   if (cell_area)
@@ -1573,7 +1569,7 @@ gtk_cell_renderer_text_render (GtkCellRenderer      *cell,
       PANGO_PIXELS (logical_rect.width) > MIN (background_area->width, expose_area->width))
     {
       priv->ellipsize = PANGO_ELLIPSIZE_END;
-      priv->auto_ellipsize_set = TRUE;
+      priv->ellipsize_set = TRUE;
 
       pango_layout_set_ellipsize (layout, priv->ellipsize);
     }
