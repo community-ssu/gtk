@@ -1,5 +1,13 @@
 python-gstreamer (0.10.4-0osso1) unstable; urgency=low
 
+  * added shlib dependencies
+  * enable "-mthumb" and "-msoft-abi=softfp" flags on gcc
+  * changed platform to 'all' in devevelopment package
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu, 11 May 2006 11:40:00 -0300
+
+python-gstreamer (0.10.4-0osso1) unstable; urgency=low
+
   * First package for Maemo
 
  -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu, 11 May 2006 11:40:00 -0300

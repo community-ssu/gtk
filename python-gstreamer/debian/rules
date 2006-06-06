@@ -1,7 +1,4 @@
 #!/usr/bin/make -f
-export DH_COMPAT=4
-
-CFLAGS = -Wall -g -Os
 
 PYVER=2.4
 PYTHON=python$(PYVER)
@@ -10,6 +7,13 @@ p_base=$(PYTHON)-gstreamer
 p_dev=$(PYTHON)-gstreamer-dev
 d_base=$(CURDIR)/debian/$(p_base)
 d_dev=$(CURDIR)/debian/$(p_dev)
+
+ifeq ($(DEB_BUILD_ARCH),armel)
+    CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
+else
+    CFLAGS=-Os -Wall -Wstrict-prototypes
+endif
+
 
 config.status: configure
 	dh_testdir
@@ -43,7 +47,7 @@ install: build
 	$(PYTHON) -m compileall -f $(d_base)/usr/lib/$(PYTHON)
 	$(PYTHON) -OO -m compileall -f $(d_base)/usr/lib/$(PYTHON)
 
-# Build architecture-dependent files here.
+binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
@@ -68,6 +72,7 @@ binary-arch: build install
 	dh_strip
 	dh_compress -Xexample
 	dh_fixperms
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol

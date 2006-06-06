@@ -7,7 +7,7 @@ Standards-Version: 3.6.2
 
 Package: python2.4-gstreamer
 Architecture: any
-Depends: python2.4, python2.4-gtk2
+Depends: python2.4, python2.4-gtk2, ${shlibs:Depends}
 Description: generic media-playing framework (Python bindings)
  GStreamer is a media processing framework with support for a wide variety
  of data sources, sinks, and formats through the use of dynamically loaded
@@ -17,6 +17,6 @@ Description: generic media-playing framework (Python bindings)
  Python programming language.
 
 Package: python2.4-gstreamer-dev
-Architecture: any
-Depends: python2.4-gstreamer
+Architecture: all
+Depends: python2.4-gstreamer (= ${Source-Version})
 Description: Development files for GStreamer 0.10 Python bindings.
