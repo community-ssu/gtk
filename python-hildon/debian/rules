@@ -1,5 +1,4 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
 
 PYVER=2.4
 PYGTKVER=2.0
