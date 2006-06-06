@@ -1,11 +1,9 @@
 #!/usr/bin/make -f
 
-export SHELL=/bin/bash
-
 DEB_BUILD_ARCH ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 
-export VER=2.4
-export PVER=python2.4
+VER=2.4
+PVER=python2.4
 
 PY_INTERPRETER = /usr/bin/python$(VER)
 
@@ -374,7 +372,3 @@ binary-arch: build install
 binary: binary-arch
 
 .PHONY: configure build clean binary-indep binary-arch binary install
-
-# Local Variables:
-# mode: makefile
-# end:
