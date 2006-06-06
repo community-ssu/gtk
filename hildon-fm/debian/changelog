@@ -1,3 +1,11 @@
+hildon-fm (1.1-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Applied column headers patch (after some hand editing) from Kuisma Salonen
+    (N#25258).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 06 Jun 2006 14:42:11 +0300
+
 hildon-fm (1.0-2) unstable; urgency=low
 
   * Not installing *.la files anymore (N#31154).
