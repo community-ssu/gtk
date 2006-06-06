@@ -1,3 +1,7 @@
+0.8.6 - 20060606
+    - Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+      - Added hildon-base-lib dependencies to build this package
+
 0.8.5 - 20060531
     - Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
       - Fixed build system. It now correctly checks for hildon-libs, hildon-fm and pygtk.

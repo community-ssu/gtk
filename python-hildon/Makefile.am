@@ -15,18 +15,17 @@ EXTRA_DIST = $(defs_DATA) \
 			 debian/files \
 			 debian/python2.4-hildon.substvars \
 			 debian/rules \
-			 hildonglade.py \
-			 hildon-libs-types.patch
+			 hildonglade.py
 
 common_ldflags = -module -avoid-version
 
 pyexec_LTLIBRARIES = hildon.la
-hildon_la_CFLAGS = $(PYTHON_INCLUDES) $(HILDONLIBS_CFLAGS) $(HILDONFM_CFLAGS) $(PYGTK_CFLAGS) \
+hildon_la_CFLAGS = $(PYTHON_INCLUDES) $(HILDONLIBS_CFLAGS) $(HILDONFM_CFLAGS) $(HILDONBASE_CFLAGS) $(PYGTK_CFLAGS) \
 					-I$(includedir)/gnome-vfs-2.0 \
 					-I$(includedir)/gnome-vfs-module-2.0 \
 					-fno-strict-aliasing -DHILDON_DISABLE_DEPRECATED
 
-hildon_la_LDFLAGS = $(common_ldflags) $(HILDONLIBS_LIBS) $(HILDONFM_LIBS) $(PYGTK_LIBS) \
+hildon_la_LDFLAGS = $(common_ldflags) $(HILDONLIBS_LIBS) $(HILDONFM_LIBS) $(HILDONBASE_LIBS) $(PYGTK_LIBS) \
 					-export-symbols-regex inithildon
 
 hildon_la_LIBADD = 

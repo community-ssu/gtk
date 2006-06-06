@@ -11,7 +11,11 @@ d=debian/tmp
 d_base=debian/python$(PYVER)-hildon
 d_dev=debian/python$(PYVER)-hildon-dev
 
-CFLAGS=-Wall -g -Os
+ifeq ($(DEB_BUILD_ARCH),armel)
+   CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
+else
+   CFLAGS=-Os -Wall -Wstrict-prototypes
+endif
 
 configure:
 	automake
@@ -31,9 +35,15 @@ clean: config.status
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
+
 	automake
 	autoconf
-	CFLAGS="$(CFLAGS)" ./configure --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
+	CFLAGS="$(CFLAGS)" \
+	   ./configure \
+	      --prefix=/usr \
+	      --mandir=\$${prefix}/share/man \
+	      --infodir=\$${prefix}/share/info
+
 	-$(MAKE) distclean
 	dh_clean 
 
@@ -75,6 +85,7 @@ binary-arch: build install
 	dh_link
 	dh_strip
 	dh_fixperms
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol

@@ -1,3 +1,13 @@
+python-hildon (0.8.6-1osso1) unstable; urgency=low
+
+  * fixed depends on shlibs
+  * enable "-mthumb" and "-msoft-abi=softfp" flags on gcc
+  * changed section to python on debian/control
+  * changed platform to 'all' in python2.4-hildon-dev package
+  * added hildon-base-lib dependencies to build this package
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Mon, 6 Jun 2006 10:38:00 -0300
+
 python-hildon (0.8.4-1osso4) unstable; urgency=low
 
   * remove reference to hildon-insert-object-dialog.h
