@@ -1,8 +1,5 @@
 #!/usr/bin/make -f
 
-CC = gcc
-OPTSETTINGS = OPT="-Os"
-
 PYVER=2.4
 PYTHON=python$(PYVER)
 
@@ -13,12 +10,19 @@ d=$(CURDIR)/debian/tmp
 d_base=debian/$(p_base)
 d_dev=debian/$(p_dev)
 
+ifeq ($(DEB_BUILD_ARCH),armel)
+    CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
+else
+    CFLAGS=-Os -Wall -Wstrict-prototypes
+endif
+
+
 build/config.status: configure
 	dh_testdir
 	mkdir -p build
 	autoconf
 	cd build && \
-	  CC="$(CC)" $(OPTSETTINGS) \
+	  CFLAGS="$(CFLAGS)" \
 	  PYTHON=`which $(PYTHON)` \
 		../configure \
 			--prefix=/usr \
@@ -80,12 +84,13 @@ install: build
 	find $(d_dev) -name "*.pth" -exec rm -f {} \;
 
 binary: build install
+binary-indep: build install
+binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installexamples
 
 	# Replace all '#!' calls to python with $(PYTHON)
-        # and make them executable
 	for i in `find debian/python2.4* -type f`; do \
 	  sed "1s,#!.*python[^ ]*\(.*\),#!/usr/bin/$(PYTHON)," \
 		$$i > $$i.temp; \
@@ -102,6 +107,7 @@ binary: build install
 	dh_link
 	dh_compress
 	dh_fixperms
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
