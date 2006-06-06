@@ -1,5 +1,4 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
 
 PYVER=2.4
 PYTHON=python$(PYVER)
@@ -9,7 +8,11 @@ p_dev =$(PYTHON)-dbus-dev
 d_base=debian/$(p_base)
 d_dev=debian/$(p_dev)
 
-CFLAGS=-Wall -Os
+ifeq ($(DEB_BUILD_ARCH),armel)
+    CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
+else
+    CFLAGS=-Os -Wall -Wstrict-prototypes
+endif
 
 build: build24-stamp 
 build24-stamp:
@@ -27,6 +30,8 @@ clean:
 	dh_clean 
 
 binary:
+binary-indep:
+binary-arch:
 	dh_testdir
 	dh_testroot
 

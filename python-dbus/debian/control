@@ -7,10 +7,10 @@ Standards-Version: 3.6.1
 
 Package: python2.4-dbus
 Architecture: any
-Depends: python2.4, libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61)
+Depends: python2.4, libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), ${shlibs:Depends}
 Description: Python wrappers around D-Bus.
 
 Package: python2.4-dbus-dev
-Architecture: any
-Depends: python2.4-dbus (>= 0.61)
+Architecture: all
+Depends: python2.4-dbus (= ${Source-Version})
 Description: Development files for Python wrappers around D-Bus.

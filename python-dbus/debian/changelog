@@ -1,3 +1,10 @@
+python-dbus (0.61-1osso4) unstable; urgency=low
+
+  * added shlibs dependencies
+  * enable "-mthumb" and "-msoft-abi=softfp" flags on gcc
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 6 Jun 2006 19:25:00 -0300
+
 python-dbus (0.61-1osso3) unstable; urgency=low
 
   * added python2.4-pyrex in Build-Depends
