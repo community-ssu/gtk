@@ -1,3 +1,12 @@
+2006-06-06  Johan Bilien <johan.bilien@nokia.com>
+
+	* maemo-af-desktop/maemo-af-desktop-main.c: Attempt a clean
+	  shutdown on SIGTERM
+	* hildon-navigator/hildon-navigator-main.c: Moved the removal
+	  of .watch files from the shutdown to the end of the initialization,
+	  because we do not reliably reach the end of the shutdown in current
+	  device shutdown (receive abort or SIGKILL before) (Closes N#31943)
+
 2006-06-05  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.6.23-1

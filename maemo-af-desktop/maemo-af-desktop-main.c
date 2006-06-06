@@ -221,6 +221,8 @@ gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
             case SIGTERM:
                 /* Kill all the applications we where handling in TN */
                 hildon_navigator_killall();
+                gtk_main_quit();
+                break;
             default:
                 exit(0);
         }

@@ -1024,6 +1024,10 @@ static void initialize_plugin_menus(Navigator *tasknav)
 /* Function to initialize navigator menus */
 void initialize_navigator_menus(Navigator *tasknav)
 {
+    GDir *dir;
+    GError *error;
+    gchar *watch_dir;
+    const gchar *filename;
 
     g_assert (tasknav != NULL);
 
@@ -1041,41 +1045,10 @@ void initialize_navigator_menus(Navigator *tasknav)
     others_menu_initialize_menu(tasknav->others_menu,
                                 tasknav->app_switcher_dnotify_cb);
 
-}
-
-/* 
- *
- *  This will be called from af-desktop-main
- *  
- */
-
-#ifdef USE_AF_DESKTOP_MAIN__
-int task_navigator_main(Navigator *tasknav){
- 
-  
+    /* Clean possible .watch file left, to give a chance to the user
+     * to recover her (possibly shipped) faulty TN plugins */
     
-    create_navigator(tasknav);
-
-    return 0;
-
-}
-
-int task_navigator_deinitialize(Navigator *tasknav){
-
-    gchar *watch_dir;
-    const gchar *filename;
-    GDir *dir;
-    GError *error;
-
-    destroy_navigator(tasknav);
-    
-    /* Everybody deserves a second chance:
-     * Clear the plugin watchfiles after a succesfull lifecycle
-     */
-
     watch_dir = g_strdup_printf("%s/%s", home_dir, NAVIGATOR_WATCH_DIR);
-    hildon_dnotify_remove_cb(NAVIGATOR_WATCH_DIR);
-    
     error = NULL;
     dir = g_dir_open (watch_dir, 0, &error);
     
@@ -1084,7 +1057,7 @@ int task_navigator_deinitialize(Navigator *tasknav){
         ULOG_WARN("Cannot open watch dir %s: %s", watch_dir, error->message);
         g_error_free(error);
         g_free(watch_dir);
-        return 0;
+        return;
       }
 
     filename = g_dir_read_name(dir);
@@ -1108,6 +1081,35 @@ int task_navigator_deinitialize(Navigator *tasknav){
     g_free(watch_dir);
 
     g_dir_close(dir);
+
+}
+
+/* 
+ *
+ *  This will be called from af-desktop-main
+ *  
+ */
+
+#ifdef USE_AF_DESKTOP_MAIN__
+int task_navigator_main(Navigator *tasknav){
+ 
+  
+    
+    create_navigator(tasknav);
+
+    return 0;
+
+}
+
+int task_navigator_deinitialize(Navigator *tasknav){
+
+    gchar *watch_dir;
+
+    destroy_navigator(tasknav);
+
+    watch_dir = g_strdup_printf("%s/%s", home_dir, NAVIGATOR_WATCH_DIR);
+    hildon_dnotify_remove_cb(NAVIGATOR_WATCH_DIR);
+    
 
     return 0;
 }
