@@ -1,10 +1,4 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
 
 PYVER=2.4
 PYTHON=python$(PYVER)
@@ -14,7 +8,11 @@ p_dev =$(PYTHON)-bluez-dev
 d_base=debian/$(p_base)
 d_dev=debian/$(p_dev)
 
-CFLAGS=-Wall -Os
+ifeq ($(DEB_BUILD_ARCH),armel)
+        CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
+else
+        CFLAGS=-Os -Wall -Wstrict-prototypes
+endif
 
 build: build24-stamp 
 build24-stamp:
@@ -32,6 +30,8 @@ clean:
 	dh_clean 
 
 binary:
+binary-indep:
+binary-arch:
 	dh_testdir
 	dh_testroot
 
@@ -56,6 +56,7 @@ binary:
 	dh_strip
 	dh_compress -Xexamples
 	dh_fixperms
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol

@@ -1,3 +1,10 @@
+pybluez (0.6.1-1osso4) unstable; urgency=low
+
+  * added shlibs dependencies
+  * enable -mthumb and -mfloat-abi=softfp flags for armel architecture
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 6 Jun 2006 16:28:00 -0300
+
 pybluez (0.6.1-1osso3) unstable; urgency=low
 
   * fix the 'gendoc' script to generate the documentation from pristine source

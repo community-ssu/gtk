@@ -7,7 +7,7 @@ Standards-Version: 3.6.1
 
 Package: python2.4-bluez
 Architecture: any
-Depends: python2.4
+Depends: python2.4, ${shlibs:Depends}
 Description: Python wrappers around BlueZ
  PyBlueZ is an effort to create python wrappers around bluez to allow python
  developers to use system bluetooth resources. PyBluez works on machines
@@ -16,6 +16,6 @@ Description: Python wrappers around BlueZ
  This package contains a PyBlueZ build for use with Python 2.4
 
 Package: python2.4-bluez-dev
-Architecture: any
-Depends: python2.4-bluez
-Description: Development files for Python wrappers around BlueZ.
+Architecture: all
+Depends: python2.4-bluez (= ${Source-Version})
+Description: Development files for Python BlueZ.
