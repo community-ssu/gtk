@@ -1,3 +1,9 @@
+pyrex (0.9.3-1osso5) unstable; urgency=low
+
+  * changed architecture from 'any' to 'all'
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 6 Jun 2006 18:06:00 -0300
+
 pyrex (0.9.3-1osso4) unstable; urgency=low
 
   * added byte-compiled files to package

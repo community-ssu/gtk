@@ -6,7 +6,7 @@ Build-Depends-Indep: debhelper (>> 4.1.52), python2.4, python2.4-dev
 Standards-Version: 3.6.2
 
 Package: python2.4-pyrex
-Architecture: any
+Architecture: all
 Depends: python2.4
 Recommends: python2.4-dev
 Description: compile native-code modules for python from python-like syntax

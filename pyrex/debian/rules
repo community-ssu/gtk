@@ -33,6 +33,8 @@ clean:
 	dh_clean
 
 binary:
+binary-indep:
+binary-arch:
 	dh_testdir
 	dh_testroot
 	dh_clean -k 
