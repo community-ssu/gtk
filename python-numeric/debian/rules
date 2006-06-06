@@ -1,9 +1,4 @@
 #!/usr/bin/make -f
-# -*- mode: makefile -*-
-# Made with the aid of debmake, by Christoph Lameter,
-# based on the sample debian/rules file for GNU hello by Ian Jackson.
-
-export SHELL	= /bin/bash
 
 PYV=2.4
 PYTHON=python$(PYV)
@@ -18,10 +13,16 @@ d_dev   = debian/$(p_dev)
 
 d = debian/tmp
 
+ifeq ($(DEB_BUILD_ARCH),armel)
+    CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
+else
+    CFLAGS=-Os -Wall -Wstrict-prototypes
+endif
+
 build: stamp-build
 stamp-build:
 	dh_testdir
-	CFLAGS="-Os" $(PYTHON) setup.py build
+	CFLAGS="$(CFLAGS)" $(PYTHON) setup.py build
 	touch $@
 
 clean:
@@ -33,7 +34,9 @@ clean:
 	-rm -rf doc/www.pfdubois.com
 	dh_clean
 
-install: build
+binary: build
+binary-indep: build
+binary-arch: build
 	dh_testdir
 	dh_testroot
 	dh_clean -k
@@ -56,10 +59,6 @@ install: build
 	find $(d_dev) -type f -name "*.so" | xargs rm -f
 	find $(d_dev) -type f -name "*.py[co]" | xargs rm -f
 	rm -f $(d_dev)/$(PYSITE)/Numeric.pth
-
-binary: build install
-	dh_testdir
-	dh_testroot
 
 	dh_installdirs -p$(p_dev) $(PYSITE)/NumTut usr/share/doc/$(p_dev)
 
