@@ -1,5 +1,12 @@
 2006-06-06  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm-watchable-app.c: Make a special case
+	  when displaying the banner for the certificate manager, which
+	  whose name was not included in the desktop UI specification and
+	  thus is not present in our l10n domain (Closes N#31647 partially)
+
+2006-06-06  Johan Bilien <johan.bilien@nokia.com>
+
 	* maemo-af-desktop/maemo-af-desktop-main.c: Attempt a clean
 	  shutdown on SIGTERM
 	* hildon-navigator/hildon-navigator-main.c: Moved the removal
