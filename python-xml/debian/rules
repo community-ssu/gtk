@@ -19,7 +19,7 @@ endif
 build: build-stamp
 build-stamp:
 	dh_testdir
-	$(PYTHON) setup.py build --without-xslt
+	CFLAGS="$(CFLAGS)" $(PYTHON) setup.py build --without-xslt
 	touch build-stamp
 
 clean:
@@ -103,5 +103,5 @@ binary-arch: install
 	dh_md5sums
 	dh_builddeb
 
-.PHONY: build clean binary-indep binary-arch binary
+.PHONY: build build-stamp clean install binary-indep binary-arch binary
 
