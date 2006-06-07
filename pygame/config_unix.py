@@ -148,7 +148,10 @@ def main():
         raise SystemExit
 		
     if debian:
-        incdirs = ['/usr/include/SDL', '/usr/include/smpeg']
+        incdirs = [
+		'/usr/include/SDL',
+		'/usr/include/smpeg',
+	]
         libdirs = ['/usr/lib']
         print '[Using Debian defaults]'
     elif localbase: #unneeded?

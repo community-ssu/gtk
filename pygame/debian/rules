@@ -1,66 +1,89 @@
 #!/usr/bin/make -f
-# Sample debian/rules that uses debhelper.
-# GNU copyright 1997 to 1999 by Joey Hess.
 
 PYVER=2.4
 PYTHON=python$(PYVER)
 
-p_pygame=python2.4-pygame
-p_pygamedev=python2.4-pygame-dev
+p_base=$(PYTHON)-pygame
+p_dev=$(p_base)-dev
 
-d_pygame=debian/$(p_pygame)
-d_pygamedev=debian/$(p_pygamedev)
+d_base=debian/$(p_base)
+d_dev=debian/$(p_dev)
 
 doclist=$(filter-out docs/util docs/fullinstall.txt docs/LGPL,$(wildcard docs/*))
 
-build: build-stamp4
-build-stamp4:
+ifeq ($(DEB_BUILD_ARCH),armel)
+    CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
+else
+    CFLAGS=-Os -Wall -Wstrict-prototypes
+endif
+
+build: build-stamp
+build-stamp:
 	dh_testdir
-	$(PYTHON) setup.py build
-	touch build-stamp4
+	CFLAGS="$(CFLAGS)" $(PYTHON) setup.py build
+	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	-rm -f build-stamp4
+	-rm -f build-stamp
+	-rm -rf build dist
+	-rm -rf $(d_base) $(d_dev)
 	-$(PYTHON) setup.py clean
 	-rm -f *.pyc *.pyo
 	-rm -f Setup
-	-rm -rf build
-	-rm -rf $(d_pygame) $(d_pygamedev)
 	dh_clean
 
-
-binary: build
+install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
 
-	mkdir -p $(d_pygame)
-	$(PYTHON) setup.py install --no-compile --root=$(d_pygame)
-	$(PYTHON) -OO -m compileall -f $(d_pygame)
-	cp -a $(d_pygame)/usr $(d_pygamedev)
+	$(PYTHON) setup.py install --no-compile --root=$(d_base)
+	$(PYTHON) -OO -m compileall -f $(d_base)
+	cp -a $(d_base)/* $(d_dev)
 
 	# base
-	find $(d_pygame) -name "*.py" | xargs rm -f
-	rm -rf $(d_pygame)/usr/include
+	find $(d_base) -name "*.py" | xargs rm -f
+	rm -rf $(d_base)/usr/include
 
 	# dev
-	dh_installexamples   -p$(p_pygamedev) examples/*
-	dh_installdocs       -p$(p_pygamedev) $(doclist)
-	dh_installchangelogs -p$(p_pygamedev) WHATSNEW
-	find $(d_pygamedev)/usr/lib/$(PYTHON)/site-packages/pygame -not -name "*.py" -type f | xargs rm -f
-	find $(d_pygamedev) -name ".svn" | xargs rm -rf
+	dh_installexamples -i -p$(p_dev) examples/*
+	dh_installdocs     -i -p$(p_dev) $(doclist)
+	dh_installchangelogs -i -p$(p_dev) WHATSNEW
+	find $(d_dev)/usr/lib/$(PYTHON)/site-packages/pygame -not -name "*.py" -type f | xargs rm -f
+	find $(d_dev) -name ".svn" | xargs rm -rf
 
-	dh_link
+binary: binary-indep binary-arch
+binary-indep: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_installchangelogs -p$(p_dev)
+	dh_installdocs -p$(p_dev)
 	dh_strip
-	dh_compress -Xexamples
+	dh_compress -p$(p_dev) -X.py -Xexamples
 	dh_fixperms
+	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_strip
+	dh_fixperms
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps 
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 
-.PHONY: build clean binary
+.PHONY: build build-stamp clean install binary-indep binary-arch binary
+

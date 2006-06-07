@@ -1,3 +1,12 @@
+pygame (1.6-2osso5) unstable; urgency=low
+
+  * total refactoring in debian/rules
+  * added shlibs dependencies
+  * added -mthumb flags
+  * changed architecture from 'any' to 'all'
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed,  7 Jun 2006 19:13:00 -0300
+
 pygame (1.6-2osso4) unstable; urgency=low
 
   * Added python2.4-numeric-dev package in Build-Depends
