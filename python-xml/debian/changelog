@@ -1,3 +1,10 @@
+python-xml (0.8.4-1osso7) unstable; urgency=low
+
+  * full refactoring on debian/rules
+  * make package compatible with debhelp 4
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed,  7 Jun 2006 16:42:22 -0300
+
 python-xml (0.8.4-1osso6) unstable; urgency=low
 
   * added changelog and copyright info in -dev package

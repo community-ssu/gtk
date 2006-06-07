@@ -6,14 +6,13 @@ PYTHON=python$(PYVER)
 p_base=$(PYTHON)-xml
 p_dev=$(PYTHON)-xml-dev
 
-d = debian/tmp
 d_base = debian/$(p_base)
 d_dev  = debian/$(p_dev)
 
 ifeq ($(DEB_BUILD_ARCH),armel)
-	OPTSETTINGS = "-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes"
+	CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
 else
-	OPTSETTINGS = "-Os -Wall -Wstrict-prototypes"
+	CFLAGS=-Os -Wall -Wstrict-prototypes
 endif
 
 
@@ -26,9 +25,10 @@ build-stamp:
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp
-	rm -rf build dist
-	find . -name "*.py[co]" -exec rm -f {} \;
+	-rm -f build-stamp
+	-rm -rf build dist
+	-rm -rf $(d_dev) $(d_base)
+	find . -name "*.py[co]" | xargs rm -f
 	dh_clean
 
 install: build
@@ -37,36 +37,29 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	CFLAGS=$(OPTSETTINGS) \
+	CFLAGS="$(CFLAGS)" \
 	    $(PYTHON) -OO setup.py install \
 		--without-xslt \
 		--no-compile \
-		--prefix=$(d)/usr
-	tail +2 $(d)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py > \
-		$(d)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py.new
-	mv      $(d)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py.new \
-		$(d)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py
-	$(PYTHON) -OO -m compileall -f $(d)
+		--prefix=$(d_base)/usr
+	sed '/^#!.*python/d' $(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py > \
+		$(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py.new
+	mv      $(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py.new \
+		$(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py
+	$(PYTHON) -OO -m compileall -f $(d_base)
+	cp -va $(d_base)/* $(d_dev)
 
 	# base
-	mkdir -p $(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus
-	cp -r $(d)/usr/lib/$(PYTHON)/site-packages/_xmlplus/* \
-	      $(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus
 	rm -rf $(d_base)/usr/share/doc/$(p_dev)
+	rm -rf $(d_base)/usr/bin
 	find $(d_base) -name "*.py" -exec rm -f {} \;
 	find $(d_base) -name "*.pyc" -exec rm -f {} \;
 
 	# dev
-	mkdir -p $(d_dev)/usr/bin
-	mkdir -p $(d_dev)/usr/lib/$(PYTHON)/site-packages/_xmlplus
 	mkdir -p $(d_dev)/usr/share/doc/$(p_dev)/examples/{test,demo}
-	cp -r $(d)/usr/lib/$(PYTHON)/site-packages/_xmlplus/* \
-	      $(d_dev)/usr/lib/$(PYTHON)/site-packages/_xmlplus
 	cp -r doc/*  $(d_dev)/usr/share/doc/$(p_dev)
 	cp -r demo/* $(d_dev)/usr/share/doc/$(p_dev)/examples/demo
 	cp -r test/* $(d_dev)/usr/share/doc/$(p_dev)/examples/test
-	mv $(d)/usr/bin/xmlproc_parse $(d_dev)/usr/bin
-	mv $(d)/usr/bin/xmlproc_val   $(d_dev)/usr/bin
 	find $(d_dev) -name "*.pyo" -exec rm -f {} \;
 	find $(d_dev) -name "*.so" -exec rm -f {} \;
 	find $(d_dev) -name "*.mo" -exec rm -f {} \;
@@ -80,15 +73,15 @@ install: build
 	    rm $$i.temp; \
 	done
 
-binary-indep: build install
-binary-arch: build install
+binary: binary-indep binary-arch
+binary-indep: install
 	dh_testdir
 	dh_testroot
 	dh_installdirs
 	dh_installchangelogs -p$(p_dev)
 	dh_installdocs -p$(p_dev)
 	dh_strip
-	dh_compress -X.py
+	dh_compress -p$(p_dev) -X.py -Xexamples
 	dh_fixperms
 	dh_makeshlibs
 	dh_installdeb
@@ -97,7 +90,18 @@ binary-arch: build install
 	dh_md5sums
 	dh_builddeb
 
-binary: binary-indep binary-arch
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_strip
+	dh_fixperms
+	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
 
 .PHONY: build clean binary-indep binary-arch binary
 
