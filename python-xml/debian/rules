@@ -1,6 +1,4 @@
 #!/usr/bin/make -f
-# -*-Makefile-*-
-export DH_COMPAT=4
 
 PYVER=2.4
 PYTHON=python$(PYVER)
@@ -87,9 +85,12 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installdirs
+	dh_installchangelogs -p$(p_dev)
+	dh_installdocs -p$(p_dev)
 	dh_strip
-	dh_compress
+	dh_compress -X.py
 	dh_fixperms
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
@@ -97,5 +98,6 @@ binary-arch: build install
 	dh_builddeb
 
 binary: binary-indep binary-arch
+
 .PHONY: build clean binary-indep binary-arch binary
 

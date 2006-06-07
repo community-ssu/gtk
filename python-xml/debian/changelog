@@ -1,3 +1,10 @@
+python-xml (0.8.4-1osso6) unstable; urgency=low
+
+  * added changelog and copyright info in -dev package
+  * minor cleanups in debian/rules
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed,  7 Jun 2006 00:58:26 -0300
+
 python-xml (0.8.4-1osso5) unstable; urgency=low
 
   * fixed depends on shlibs
