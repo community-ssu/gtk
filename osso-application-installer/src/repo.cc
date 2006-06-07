@@ -605,6 +605,11 @@ repo_selection_changed (GtkTreeSelection *selection, gpointer data)
       gtk_widget_set_sensitive (c->edit_button, !r->essential);
       gtk_widget_set_sensitive (c->delete_button, !r->essential);
     }
+  else
+    {
+      gtk_widget_set_sensitive (c->edit_button, FALSE);
+      gtk_widget_set_sensitive (c->delete_button, FALSE);
+    }
 }
 
 static void
