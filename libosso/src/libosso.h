@@ -829,7 +829,8 @@ osso_return_t osso_time_set_notification_cb(osso_context_t *osso,
 /**
  * This function sets the system and hardware time, and notifies about the
  * changing of time over the D-BUS system bus.
- * Notice: does not currently change the time.
+ * NOTICE: this function does not currently change the time or do anything
+ * else useful.
  * @param osso The library context as returned by #osso_initialize.
  * @param new_time The new time in epoch format.
  * @return #OSSO_OK if all goes well, #OSSO_ERROR if an error occurred, or
