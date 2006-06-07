@@ -935,9 +935,15 @@ make_global_package_list (GList *packages,
 					      tree,
 					      NULL);
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 1);
+
+  // Setting the sizing of this columne to FIXED but not specifying
+  // the widh is a workaround for some bug in GtkTreeView.  If we
+  // don't do this, the name will not get ellipsized and the size
+  // and/or version columns might disappear completely.  With this
+  // workaround, the name gets properly elipsized.
+  //
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_expand (column, TRUE);
-  gtk_tree_view_column_set_fixed_width (column, 400);
 
   renderer = gtk_cell_renderer_text_new ();
   g_object_set (renderer, "yalign", 0.0, NULL);
@@ -951,25 +957,28 @@ make_global_package_list (GList *packages,
 					      NULL);
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 2);
   gtk_tree_view_column_set_alignment (column, 1.0);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_expand (column, FALSE);
-  gtk_tree_view_column_set_fixed_width (column, 140);
 
-  renderer = gtk_cell_renderer_text_new ();
-  g_object_set (renderer, "yalign", 0.0, NULL);
-  g_object_set (renderer, "xalign", 1.0, NULL);
-  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
-					      -1,
-					      _("ai_li_size"),
-					      renderer,
-					      global_size_func,
-					      tree,
-					      NULL);
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 3);
-  gtk_tree_view_column_set_alignment (column, 1.0);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_expand (column, FALSE);
-  gtk_tree_view_column_set_fixed_width (column, 80);
+  {
+    column = gtk_tree_view_column_new ();
+    gtk_tree_view_column_set_alignment (column, 1.0);
+    gtk_tree_view_column_set_expand (column, FALSE);
+    g_object_set (column, "spacing", 14, NULL);
+    gtk_tree_view_column_set_title (column, _("ai_li_size"));
+
+    renderer = gtk_cell_renderer_text_new ();
+    g_object_set (renderer, "yalign", 0.0, NULL);
+    g_object_set (renderer, "xalign", 1.0, NULL);
+    gtk_tree_view_column_pack_end (column, renderer, TRUE);
+    gtk_tree_view_column_set_cell_data_func (column, renderer, 
+					     global_size_func, tree,
+					     NULL);
+  
+    renderer = gtk_cell_renderer_text_new ();
+    gtk_tree_view_column_pack_end (column, renderer, FALSE);
+
+    gtk_tree_view_insert_column (GTK_TREE_VIEW (tree), column, -1);
+  }
 
   scroller = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroller),
