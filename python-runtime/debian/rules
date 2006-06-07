@@ -1,7 +1,5 @@
 #!/usr/bin/make -f
 
-export DH_VERBOSE=10
-
 PYVER=2.4
 PYTHON=python$(PYVER)
 d=debian/$(PYTHON)-runtime

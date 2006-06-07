@@ -1,7 +1,8 @@
-python-runtime (0.2) unstable; urgency=low
+python-runtime (0.2-1) unstable; urgency=low
 
   * changed architecture from 'any' to 'all'
   * changed package versioning
+  * remove verbose option in debian/rules
 
  -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Mon, 5 Jun 2006 15:28:00 -0300
 
