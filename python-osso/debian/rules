@@ -5,9 +5,12 @@ PYVER=2.4
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
+p_base=python$(PYVER)-osso
+p_dev=python$(PYVER)-osso-dev
+
 d=debian/tmp
-d_base=debian/python$(PYVER)-osso
-d_dev=debian/python$(PYVER)-osso-dev
+d_base=debian/$(p_base)
+d_dev=debian/$(p_dev)
 
 ifeq ($(DEB_BUILD_ARCH),armel)
     CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
