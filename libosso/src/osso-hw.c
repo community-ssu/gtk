@@ -2,12 +2,12 @@
  * @file osso-hw.c
  * This file implements the device signal handler functions.
  * 
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * License as published by the Free Software Foundation;
+ * version 2.1 of the License.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,6 +52,24 @@
 #define MAX_CACHE_FILE_NAME 100
 static char cache_file_name[MAX_CACHE_FILE_NAME];
 static gboolean first_hw_set_cb_call = TRUE;
+
+
+static gboolean _read_lowmem_hw_state()
+{
+  FILE *file;
+  int state = 0;
+
+  file = fopen("/sys/kernel/high_watermark", "r");
+  if(file) {
+    fscanf(file, "%d", &state);
+    fclose(file);
+  } else {
+    return FALSE;
+  }
+
+  return state ? TRUE : FALSE;
+}
+
 
 osso_return_t osso_display_state_on(osso_context_t *osso)
 {
@@ -168,9 +186,10 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
             _msg_handler_set_cb_f(osso, USER_LOWMEM_ON_SIGNAL_IF,
                                   lowmem_signal_handler, NULL, FALSE);
         }
-        /* FIXME? callback cannot be called now because we
-         * don't know the state */
         osso->hw_cbs.memory_low_ind.set = TRUE;
+
+        osso->hw_state.memory_low_ind = _read_lowmem_hw_state();
+        call_cb = TRUE;
     }
     if (state->save_unsaved_data_ind) {
         osso->hw_cbs.save_unsaved_data_ind.cb = cb;

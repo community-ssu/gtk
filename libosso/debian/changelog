@@ -1,3 +1,12 @@
+libosso (1.13-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Removed the 'or later' part from licenses.
+  * Now calling the low-memory callback also when it is registered (N#32044).
+  * Noticed that osso_time_set() is completely broken and put a comment there.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 07 Jun 2006 19:28:55 +0300
+
 libosso (1.12-1) unstable; urgency=low
 
   * Fixed memory leak in osso->cp_plugins (N#26473).

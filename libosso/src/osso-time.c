@@ -70,8 +70,9 @@ osso_return_t osso_time_set_notification_cb(osso_context_t *osso, osso_time_cb_f
 
 /************************************************************************/
 
-/* TODO: The real format and number of the arguments the external
-         command will take; the current list is just an example    */
+/* TODO: This function should just send the notification about time
+ *       change, not try to set any time (that would need root privileges
+ *       or some DBus service) */
 
 osso_return_t osso_time_set(osso_context_t *osso, time_t new_time)
 {
