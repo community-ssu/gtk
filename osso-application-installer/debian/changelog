@@ -1,8 +1,14 @@
 osso-application-installer (4.20) unstable; urgency=low
 
-  * Raise cachelimit to 3 MB.
+  * Pass https_proxy to apt-worker.
+  * Set proper operation label in search results view.
+  * Don't show each package twice in search results.
+  * Disable "Edit" and "Delete" buttons in Catalogue dialog when nothing
+    is selected.
+  * Corrected two logical ID bugs.
+  * Fixed bugs N32056, N32066.
 
- --
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  7 Jun 2006 20:56:45 +0300
 
 osso-application-installer (4.19) unstable; urgency=low
 

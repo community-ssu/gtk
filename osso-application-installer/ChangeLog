@@ -1,3 +1,42 @@
+2006-06-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 4.20
+	
+	* src/main.cc (search_packages): Only search the first section,
+	not all to avoid hitting a package in both the "All" section and
+	in its real section.
+
+	* src/util.cc (make_global_package_list): Fix column resizing
+	parameters so that the Version and Size columns expand as needed
+	to avoid truncation of the column headers. (N32066)
+
+	* src/main.cc (make_search_results_view): Call set_operation_label
+	appropriately.
+
+	Pass https proxy to apt-worker.
+	
+	* src/util.h, src/util.cc (get_https_proxy): New.
+	* src/apt-worker-proto.h (APTCMD_UPDATE_PACKAGE_CACHE,
+	APTCMD_INSTALL_PACKAGE): Added https_proxy parameter.
+	* src/apt-worker-client.cc (apt_worker_update_cache_cont) 
+	(apt_worker_install_package_cont): Get and pass https proxy.
+	* src/apt-worker.cc (cmd_update_cache, cmd_install_package): Set
+	https_proxy envvar when requested.
+
+	* 00-smallcache: Reduce limit again to 1.6 MiB.  We don't cater to
+	bloated repositories.
+
+2006-06-05  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (create_progress): Reset progress_cancelled and
+	cancel_count here...
+	(show_progress): ... instead of here. (N32056)
+
+2006-05-29  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/repo.cc (repo_selection_changed): Disable "Edit" and
+	"Delete" buttons when nothing is selected.
+
 2006-05-26  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/util.cc (annoy_user_with_log): Don't use logical ID in
