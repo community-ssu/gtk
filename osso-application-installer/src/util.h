@@ -353,6 +353,16 @@ void ensure_network (void (*cont) (bool success, void *data),
 */
 char *get_http_proxy ();
 
+/* Return the current https proxy in a form suitable for the
+   "https_proxy" environment variable, or NULL if no proxy has
+   currently been configured.  You must free the return value with
+   g_free.
+
+   The current proxy is taken either from gconf or from the
+   https_proxy environment variable.
+*/
+char *get_https_proxy ();
+
 /* PUSH and POP treat the GSList starting at PTR as a stack,
    allocating and freeng as list nodes as needed.
  */

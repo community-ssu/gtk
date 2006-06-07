@@ -491,6 +491,9 @@ create_progress (bool with_cancel)
 		      G_CALLBACK (cancel_response), NULL);
 
   gtk_widget_show (progress_dialog);
+
+  progress_cancelled = false;
+  cancel_count = 0;
 }
 
 void
@@ -507,9 +510,6 @@ show_progress (const char *title)
   set_general_progress_title (title);
   current_status_operation = op_general;
   set_progress (op_general, -1, 0);
-
-  progress_cancelled = false;
-  cancel_count = 0;
 }
 
 void
@@ -1803,6 +1803,33 @@ get_http_proxy ()
            transcribing it to no_proxy is hard... mandatory,
            non-transparent proxies are evil anyway.
    */
+
+  g_object_unref (conf);
+
+  return proxy;
+}
+
+char *
+get_https_proxy ()
+{
+  char *proxy;
+
+  GConfClient *conf = gconf_client_get_default ();
+
+  /* We clear the cache here in order to force a fresh fetch of the
+     values.  Otherwise, there is a race condition with the
+     iap_callback: the OSSO_IAP_CONNECTED message might come before
+     the GConf cache has picked up the new proxy settings.
+
+     At least, that's the theory.
+  */
+  gconf_client_clear_cache (conf);
+
+  const char *host =
+    gconf_client_get_string (conf, "/system/proxy/secure_host", NULL);
+  int port = gconf_client_get_int (conf, "/system/proxy/secure_port", NULL);
+
+  proxy = g_strdup_printf ("http://%s:%d", host, port);
 
   g_object_unref (conf);
 

@@ -182,7 +182,8 @@ enum apt_proto_operation {
 //
 // Parameters:
 //
-// - http_proxy (string).   The value of the http_proxy envvar to use.
+// - http_proxy (string).    The value of the http_proxy envvar to use.
+// - https_proxy (string).   The value of the https_proxy envvar to use.
 //
 // Response contains:
 //
@@ -312,6 +313,7 @@ enum apt_proto_preptype {
 //
 // - name (string).         The package to be installed.
 // - http_proxy (string).   The value of the http_proxy envvar to use.
+// - https_proxy (string).  The value of the https_proxy envvar to use.
 //
 // Response:
 //

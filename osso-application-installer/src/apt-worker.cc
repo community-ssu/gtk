@@ -1688,6 +1688,7 @@ void
 cmd_update_package_cache ()
 {
   const char *http_proxy = request.decode_string_in_place ();
+  const char *https_proxy = request.decode_string_in_place ();
 
   if (http_proxy)
     {
@@ -1695,6 +1696,12 @@ cmd_update_package_cache ()
       DBG ("http_proxy: %s", http_proxy);
     }
   
+  if (https_proxy)
+    {
+      setenv ("https_proxy", https_proxy, 1);
+      DBG ("https_proxy: %s", https_proxy);
+    }
+
   int result_code = update_package_cache ();
 
   response.encode_int (result_code);
@@ -1790,12 +1797,19 @@ cmd_install_package ()
 {
   const char *package = request.decode_string_in_place ();
   const char *http_proxy = request.decode_string_in_place ();
+  const char *https_proxy = request.decode_string_in_place ();
   int result_code = rescode_failure;
 
   if (http_proxy)
     {
       setenv ("http_proxy", http_proxy, 1);
       DBG ("http_proxy: %s", http_proxy);
+    }
+
+  if (https_proxy)
+    {
+      setenv ("https_proxy", https_proxy, 1);
+      DBG ("https_proxy: %s", https_proxy);
     }
 
   if (package_cache)

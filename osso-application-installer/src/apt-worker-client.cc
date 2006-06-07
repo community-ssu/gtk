@@ -485,10 +485,17 @@ apt_worker_update_cache_cont (bool success, void *clos)
 
   if (success)
     {
-      char *http_proxy = get_http_proxy ();
+
       request.reset ();
+
+      char *http_proxy = get_http_proxy ();
       request.encode_string (http_proxy);
       g_free (http_proxy);
+
+      char *https_proxy = get_https_proxy ();
+      request.encode_string (https_proxy);
+      g_free (https_proxy);
+
       show_progress (_("ai_nw_updating_list"));
       call_apt_worker (APTCMD_UPDATE_PACKAGE_CACHE,
 		       request.get_buf (), request.get_len (),
@@ -589,11 +596,16 @@ apt_worker_install_package_cont (bool success, void *clos)
 
   if (success)
     {
-      char *http_proxy = get_http_proxy ();
       request.reset ();
       request.encode_string (package);
+
+      char *http_proxy = get_http_proxy ();
       request.encode_string (http_proxy);
       g_free (http_proxy);
+
+      char *https_proxy = get_https_proxy ();
+      request.encode_string (http_proxy);
+      g_free (https_proxy);
 
       set_general_progress_title (updating 
 				  ? _("ai_nw_updating")
