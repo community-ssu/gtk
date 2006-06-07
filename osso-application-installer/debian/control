@@ -10,4 +10,5 @@ Architecture: any
 Depends: ${shlibs:Depends}, maemo-launcher, osso-application-installer-l10n-mr0 | osso-application-installer-l10n-mr
 Provides: maemo-installer-utils
 Description: A program for managing user installed applications.
- It's not done yet.
+ The Application manager is a frontend for dpkg and apt.  It allows
+ you to manage a subset of the installed and available packages.
