@@ -1821,6 +1821,10 @@ make_search_results_view (view *v)
   if (v->parent == &install_applications_view
       || v->parent == &upgrade_applications_view)
     {
+      set_operation_label (v->parent == &install_applications_view
+			   ? _("ai_me_package_install")
+			   : _("ai_me_package_update"));
+
       view = make_global_package_list (search_result_packages,
 				       false,
 				       NULL,
@@ -1833,6 +1837,8 @@ make_search_results_view (view *v)
     }
   else
     {
+      set_operation_label (_("ai_me_package_uninstall"));
+
       view = make_global_package_list (search_result_packages,
 				       true,
 				       NULL,
@@ -1987,8 +1993,19 @@ search_packages (const char *pattern, bool in_descriptions)
       GList *result = NULL;
 
       if (parent == &install_applications_view)
-	search_section_list (&result,
-			     install_sections, pattern);
+	{
+	  // We only search the first section in INSTALL_SECTIONS.
+	  // The first section in the list is either the special "All"
+	  // section that contains all packages, or there is only one
+	  // section.  In both cases, it is correct to only search the
+	  // first section.
+
+	  if (install_sections)
+	    {
+	      section_info *si = (section_info *)install_sections->data;
+	      search_package_list (&result, si->packages, pattern);
+	    }
+	}
       else if (parent == &upgrade_applications_view)
 	search_package_list (&result,
 			     upgradeable_packages, pattern);
