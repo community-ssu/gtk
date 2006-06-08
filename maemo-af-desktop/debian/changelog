@@ -1,3 +1,13 @@
+maemo-af-desktop (2.6.25-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-main.c: Close the VKB when tapping
+    on an empty area of home (Closes N#28867)
+
+  * hildon-navigator/application-switcher.c: Make sure the tooltip is
+    hidden when an application is removed (Closes N#31888)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  8 Jun 2006 11:20:00 +0300
+
 maemo-af-desktop (2.6.24-1) unstable; urgency=low
 
   * hildon-navigator/hn-wm-watchable-app.c: Make a special case

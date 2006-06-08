@@ -1,3 +1,17 @@
+2006-06-08  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.6.25
+
+2006-06-08  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-main.c: Close the VKB when tapping
+	  on an empty area of home (Closes N#28867)
+
+2006-06-08  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/application-switcher.c: Make sure the tooltip is
+	  hidden when an application is removed (Closes N#31888)
+
 2006-06-06  Johan Bilien <johan.bilien@nokia.com>
 
 	* maemo-af-desktop/maemo-af-desktop-main.c: Reverted "Attempt a clean

@@ -1101,6 +1101,42 @@ gboolean layout_mode_selected(GtkWidget *widget,
 }
 
 /**
+ * @home_area_button_press
+ *
+ * @param widget The home area event box
+ * @param event The button press event
+ * @param data standard cb data pointer, unused (null) 
+ * 
+ * @return FALSe
+ * 
+ * Used to close the VKB when the user taps on an empty area
+ * of home
+ **/
+static gboolean
+home_area_button_press (GtkWidget *widget, 
+                        GdkEventButton *event,
+                        gpointer null)
+{
+    GtkWidget *toplevel;
+
+    toplevel = gtk_widget_get_toplevel(widget);
+
+    if (GTK_WIDGET_TOPLEVEL (toplevel) && GTK_IS_WINDOW(toplevel))
+    {
+        GtkWidget *focus_widget;
+        focus_widget = gtk_window_get_focus(GTK_WINDOW(toplevel));
+
+        if (focus_widget &&
+                GTK_IS_ENTRY(focus_widget) &&
+                GTK_WIDGET_HAS_FOCUS(focus_widget))
+        {
+            hildon_gtk_im_context_hide(GTK_ENTRY(focus_widget)->im_context);
+        }
+    }
+
+    return FALSE;
+}
+/**
  * @set_background_dialog_selected
  *
  * @param widget The parent widget
@@ -2741,6 +2777,10 @@ void construct_home_area()
 
     gtk_event_box_set_visible_window(GTK_EVENT_BOX(home_area_eventbox),
                                      FALSE);
+
+    /* Tapping on an empty spot of the desktop should close the VKB */
+    g_signal_connect( G_OBJECT( home_area_eventbox), "button-press-event",
+                      G_CALLBACK( home_area_button_press ), NULL );
 
     gtk_fixed_put( GTK_FIXED( home_fixed ),
                    GTK_WIDGET( home_area_eventbox ),

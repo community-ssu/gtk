@@ -1722,6 +1722,22 @@ app_switcher_remove_item (ApplicationSwitcher_t *as,
   g_array_remove_index(as->items,n);
   
   gtk_container_remove(GTK_CONTAINER(as->menu),menuitem);
+
+  /* Remove tooltip if displayed */
+  if (as->tooltip_visible)
+    { 
+      /*stop a timeout*/
+      if(as->hide_tooltip_timeout_id)
+        {
+          g_source_remove(as->hide_tooltip_timeout_id);
+          as->hide_tooltip_timeout_id = 0;
+        }
+
+      /* hide the window */
+      gtk_widget_hide(as->tooltip_menu);
+
+      as->tooltip_visible = FALSE;
+    }
   
   /* Update small icons of the buttons */
   add_item_to_button(as);
