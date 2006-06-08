@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2005-2006 Nokia Corporation.
  *
- * Contact: Andrei Laperie <andrei.laperie@nokia.com>
+ * Contact: Leonid Moiseichuk <leonid.moiseichuk@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,7 @@
 #include <errno.h>
 #include <pthread.h>
 #include <string.h>
+#include <syslog.h>
 
 #include "osso-mem.h"
 
@@ -242,7 +243,7 @@ static void setup_sys_values(void)
    }
    else
    {
-      sys_avail_memory = (allowed_pages * pagesize >> 10);
+      sys_avail_memory = allowed_pages * (pagesize >> 10);
       sys_deny_limit   = get_file_value("/proc/sys/vm/lowmem_deny_watermark");
       sys_lowmem_limit = get_file_value("/proc/sys/vm/lowmem_notify_high");
    }
@@ -361,9 +362,9 @@ int osso_mem_get_usage(osso_mem_usage_t* usage)
 
    /*
     * From the usage->free we deduct the delta based on deny limit
-    * or 87.5% if deny limit is disabled
+    * or 87.5% if low limit is disabled
     */
-   usage->usable = (usage->deny ? sys_avail_memory - usage->deny : (sys_avail_memory >> 3));
+   usage->usable = (usage->low ? sys_avail_memory - usage->low : (sys_avail_memory >> 3));
    usage->usable = (usage->usable < usage->free ? usage->free - usage->usable : 0);
 
    /* We have succeed */
@@ -411,6 +412,17 @@ size_t osso_mem_get_lowmem_limit(void)
       setup_sys_values();
    return sys_lowmem_limit;
 } /* osso_mem_get_lowmem_limit */
+
+/* ------------------------------------------------------------------------- *
+ * Returns flag about low memory conditions is reached according to
+ * /sys/kernel/high_watermark is set to 1.
+ *
+ * WARNING: under scratchbox always return 0.
+ * ------------------------------------------------------------------------- */
+int osso_mem_in_lowmem_state(void)
+{
+   return (1 == get_file_value("/sys/kernel/high_watermark"));
+} /* osso_mem_in_lowmem_state */
 
 /* ------------------------------------------------------------------------- *
  * osso_mem_saw_enable - enables Simple Allocation Watchdog.
@@ -467,6 +479,8 @@ int osso_mem_saw_enable(size_t threshold,
       saw_max_heap_size  = mi.arena + mi.hblkhd + current.usable - threshold;
       saw_max_block_size = watchblock;
       saw_user_context   = context;
+      /* Always dumping memory information (workaround for thumbnailer) */
+      syslog(LOG_CRIT, "osso_mem %u = %u + %u + %u - %u", saw_max_heap_size, mi.arena, mi.hblkhd, current.usable, threshold);
 
       if(saw_malloc_hook != __malloc_hook)
       {
@@ -487,9 +501,6 @@ int osso_mem_saw_enable(size_t threshold,
    else
    {
       ULOG_WARN("SAW: OOM:current.usable(%u) <= threshold(%u)\n", current.usable, threshold);
-
-      if ( oom_func )
-         oom_func(current.total - current.usable, current.total - threshold, context);
       return -EINVAL;
    }
 } /* osso_mem_saw_enable */
@@ -558,8 +569,7 @@ int main(const int argc, const char* argv[])
 
    if ( osso_mem_saw_enable(0, 0, NULL, NULL) )
    {
-      printf("Cannot activate saw. Kaput");
-      return -1;
+      printf("Cannot activate saw\n");
    }
 
    ptr = malloc( insane );
@@ -568,13 +578,16 @@ int main(const int argc, const char* argv[])
       free(ptr);
 
    if ( osso_mem_saw_enable(0, 0, test_oom_func, NULL) )
-   {
-      printf("Cannot activate saw with oom function. Kaput");
-      return -1;
-   }
+      printf("Cannot activate saw with oom function\n");
 
    ptr = malloc( insane );
    printf("With SAW, allocating %u bytes: %s\n", insane, ptr ? "Succeeded" : "Failed");
+
+   if ( osso_mem_in_lowmem_state() )
+      printf("\n4. Low memory situation is reached\n");
+   else
+      printf("\n4. Low memory situation is not reached\n");
+
    if(ptr)
       free(ptr);
 

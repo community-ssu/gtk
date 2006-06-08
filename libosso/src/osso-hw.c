@@ -22,6 +22,7 @@
 
 #include "osso-internal.h"
 #include "osso-hw.h"
+#include "osso-mem.h"
 
 #define MCE_SERVICE			"com.nokia.mce"
 #define MCE_REQUEST_PATH		"/com/nokia/mce/request"
@@ -52,24 +53,6 @@
 #define MAX_CACHE_FILE_NAME 100
 static char cache_file_name[MAX_CACHE_FILE_NAME];
 static gboolean first_hw_set_cb_call = TRUE;
-
-
-static gboolean _read_lowmem_hw_state()
-{
-  FILE *file;
-  int state = 0;
-
-  file = fopen("/sys/kernel/high_watermark", "r");
-  if(file) {
-    fscanf(file, "%d", &state);
-    fclose(file);
-  } else {
-    return FALSE;
-  }
-
-  return state ? TRUE : FALSE;
-}
-
 
 osso_return_t osso_display_state_on(osso_context_t *osso)
 {
@@ -188,7 +171,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         }
         osso->hw_cbs.memory_low_ind.set = TRUE;
 
-        osso->hw_state.memory_low_ind = _read_lowmem_hw_state();
+        osso->hw_state.memory_low_ind = osso_mem_in_lowmem_state();
         call_cb = TRUE;
     }
     if (state->save_unsaved_data_ind) {

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2005-2006 Nokia Corporation.
  *
- * Contact: Andrei Laperie <andrei.laperie@nokia.com>
+ * Contact: Leonid Moiseichuk <leonid.moiseichuk@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -98,6 +98,13 @@ size_t osso_mem_get_deny_limit(void);
  * hardcoded threshold.
  * ------------------------------------------------------------------------- */
 size_t osso_mem_get_lowmem_limit(void);
+
+/* ------------------------------------------------------------------------- *
+ * Returns 1 if the device is in the low-memory state.
+ *
+ * WARNING: under Scratchbox always returns 0.
+ * ------------------------------------------------------------------------- */
+int osso_mem_in_lowmem_state(void);
 
 /* ------------------------------------------------------------------------- *
  * osso_mem_saw_enable - enables Simple Allocation Watchdog.
