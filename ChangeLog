@@ -1,3 +1,9 @@
+2006-06-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_list_position): When in toolbar
+	also make sure the popup list doesn't grow outside the screen.
+	N#31881
+
 2006-06-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcellrenderertext.c: Revert last commit, it triggers issues
