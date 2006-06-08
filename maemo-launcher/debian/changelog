@@ -3,6 +3,7 @@ maemo-launcher (0.15~-1) UNRELEASED; urgency=low
   * New Upstream Release.
     - Relicense to GPL version 2 only.
     - Change copyright holder to "Nokia Corporation".
+  * Enable yet again LD_BIND_NOW=1 on startup. (Closes: #28055@Nokia)
 
  -- Guillem Jover <guillem.jover@nokia.com>  Thu,  8 Jun 2006 15:21:06 +0300
 
