@@ -301,10 +301,10 @@ static void* saw_malloc_hook(size_t size, const void* caller)
 
    THREAD_UNLOCK();
 
-#ifdef DEBUG
+#ifdef LIBOSSO_DEBUG
    /* Printing from the critical section is a bad idea, try to do it now */
    if ( !ptr )
-      ULOG_INFO("SAW: OOM for %u allocation\n", size);
+      ULOG_INFO_F("SAW: OOM for %u allocation", size);
 #endif
 
    return ptr;
@@ -464,7 +464,7 @@ int osso_mem_saw_enable(size_t threshold,
    /* Load the values about memory usage */
    if( osso_mem_get_usage(&current) )
    {
-      ULOG_CRIT("Error:osso_mem_get_usage failed\n");
+      ULOG_CRIT_F("Error:osso_mem_get_usage failed");
       return -EINVAL;
    }
 
@@ -480,7 +480,8 @@ int osso_mem_saw_enable(size_t threshold,
       saw_max_block_size = watchblock;
       saw_user_context   = context;
       /* Always dumping memory information (workaround for thumbnailer) */
-      syslog(LOG_CRIT, "osso_mem %u = %u + %u + %u - %u", saw_max_heap_size, mi.arena, mi.hblkhd, current.usable, threshold);
+      syslog(LOG_CRIT, "osso_mem %u = %u + %u + %u - %u", saw_max_heap_size,
+             mi.arena, mi.hblkhd, current.usable, threshold);
 
       if(saw_malloc_hook != __malloc_hook)
       {
@@ -491,16 +492,15 @@ int osso_mem_saw_enable(size_t threshold,
 
       THREAD_UNLOCK();
 
-      ULOG_INFO(
-            "SAW hook installed: block size %u, maxheap %u (threshold %u)\n",
-            saw_max_block_size, saw_max_heap_size, threshold
-         );
+      ULOG_INFO_F("SAW hook installed: block size %u, maxheap %u (threshold %u)",
+                  saw_max_block_size, saw_max_heap_size, threshold);
 
       return 0;
    }
    else
    {
-      ULOG_WARN("SAW: OOM:current.usable(%u) <= threshold(%u)\n", current.usable, threshold);
+      ULOG_WARN_F("SAW: OOM:current.usable(%u) <= threshold(%u)",
+                  current.usable, threshold);
       return -EINVAL;
    }
 } /* osso_mem_saw_enable */
@@ -518,7 +518,7 @@ void osso_mem_saw_disable(void)
       __malloc_hook = saw_old_malloc_hook;
    THREAD_UNLOCK();
 
-   ULOG_INFO("SAW hook removed!\n");
+   ULOG_INFO_F("SAW hook removed!");
 } /* osso_mem_saw_disable */
 
 
