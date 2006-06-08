@@ -1,5 +1,22 @@
 2006-06-08  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/comm_dbus.c: Relicense to GPL version 2 only. Change
+	copyright holder to "Nokia Corporation".
+	* launcher/comm_dbus.h: Likewise.
+	* launcher/defender.c: Likewise.
+	* launcher/invoker.c: Likewise.
+	* launcher/invokelib.c: Likewise.
+	* launcher/invokelib.h: Likewise.
+	* launcher/launcher.c: Likewise.
+	* launcher/report.c: Likewise.
+	* launcher/report.h: Likewise.
+	* launcher/ui.h: Likewise.
+	* launcher/ui_gtk.c: Likewise.
+	* launcher/ui_gtk.h: Likewise.
+	* client/client.c: Likewise.
+
+2006-06-08  Guillem Jover  <guillem.jover@nokia.com>
+
 	* configure.ac: Bump version to 0.15~.
 
 2006-05-18  Guillem Jover  <guillem.jover@nokia.com>
