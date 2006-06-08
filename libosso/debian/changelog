@@ -1,11 +1,10 @@
 libosso (1.14-1) unstable; urgency=low
 
-  * UNRELEASED
   * Fixed osso_mem_saw to use the high watermark instead of the deny watermark
     (N#32122).
   * New function osso_mem_in_lowmem_state().
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 08 Jun 2006 11:55:35 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 08 Jun 2006 15:27:32 +0300
 
 libosso (1.13-1) unstable; urgency=low
 
