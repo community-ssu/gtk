@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.6.10-1.osso21) unstable; urgency=low
+
+  * Bugs fixed:
+    NB#31881: [regression] no scroll bar when opening history of entered URL's
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  8 Jun 2006 13:43:04 +0300
+
 gtk+2.0 (2:2.6.10-1.osso20) unstable; urgency=low
 
   * Reopen NB#31043, it triggers bugs elsewhere
