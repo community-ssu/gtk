@@ -1,3 +1,7 @@
+2006-06-08  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Bump version to 0.15~.
+
 2006-05-18  Guillem Jover  <guillem.jover@nokia.com>
 
 	* configure.ac: Version 0.14.

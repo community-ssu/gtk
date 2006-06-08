@@ -1,3 +1,9 @@
+maemo-launcher (0.15~-1) UNRELEASED; urgency=low
+
+  * 
+
+ -- Guillem Jover <guillem.jover@nokia.com>  Thu,  8 Jun 2006 15:21:06 +0300
+
 maemo-launcher (0.14-2) unstable; urgency=low
 
   * Disable for now LD_BIND_NOW=1 in the init script due to it "breaking"
