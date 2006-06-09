@@ -1,73 +1,70 @@
 #!/usr/bin/make -f
 
+PYVER=2.4
+PYTHON=python$(PYVER)
 
-PYVERSION=2.4
-PYTHON=python$(PYVERSION)
-
-p_pyrex = python2.4-pyrex
-d_pyrex = debian/$(p_pyrex)
+p_base = python2.4-pyrex
+d_base = debian/$(p_base)
 
 filename=pyrexc
 fullfilename=$(PYTHON)-$(filename)
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	# nothing to do
-	touch configure-stamp
-
 build: build-stamp
-build-stamp: configure-stamp 
+build-stamp:
 	find . -name .DS_Store -exec rm -rf {} \;
 	find [DPTCs]* -type f -exec chmod -x {} \;
 	dh_testdir
+	$(PYTHON) setup.py build
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp configure-stamp
-	rm -rf $(d_pyrex)
+	rm -f build-stamp
+	rm -rf $(d_base)
 	$(PYTHON) setup.py clean --all
 	find . -name "*.py[co]" -exec rm -rf {} \;
 	dh_clean
 
-binary:
-binary-indep:
-binary-arch:
+install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k 
 	dh_installdirs
 
-	$(PYTHON) setup.py install --root=$(d_pyrex)
-	$(PYTHON) -OO -m compileall -f $(d_pyrex)
+	$(PYTHON) setup.py install --root=$(d_base)
+	$(PYTHON) -OO -m compileall -f $(d_base)
 
-	sed -i "s|#!/usr/bin/python.*|#!/usr/bin/python2.4|" $(d_pyrex)/usr/bin/$(filename)
-	mv $(d_pyrex)/usr/bin/$(filename) $(d_pyrex)/usr/bin/$(fullfilename)
-	install -d $(d_pyrex)/usr/share/man/man1/
-	install -p -m644 debian/$(fullfilename).1  $(d_pyrex)/usr/share/man/man1/$(fullfilename).1
+	sed -i "s|#!/usr/bin/python.*|#!/usr/bin/python2.4|" $(d_base)/usr/bin/$(filename)
+	mv $(d_base)/usr/bin/$(filename) $(d_base)/usr/bin/$(fullfilename)
+	install -d $(d_base)/usr/share/man/man1
+	install -p -m644 debian/$(fullfilename).1 $(d_base)/usr/share/man/man1/$(fullfilename).1
 
-	mkdir -p $(d_pyrex)/usr/share/$(p_pyrex)
-	cp Doc/* $(d_pyrex)/usr/share/$(p_pyrex)
-	cp -a Demos $(d_pyrex)/usr/share/$(p_pyrex)
-	cp -a Tools $(d_pyrex)/usr/share/$(p_pyrex)
-	find $(d_pyrex)/usr/share/$(p_pyrex) -name ".svn" | xargs rm -rf
+	mkdir -p $(d_base)/usr/share/$(p_base)
+	cp Doc/* $(d_base)/usr/share/$(p_base)
+	cp -a Demos $(d_base)/usr/share/$(p_base)
+	cp -a Tools $(d_base)/usr/share/$(p_base)
 
-	dh_link -p$(p_pyrex) usr/bin/$(fullfilename) usr/bin/$(filename)
-	dh_link -p$(p_pyrex) usr/share/man/man1/$(fullfilename).1.gz usr/share/man/man1/$(filename).1.gz
+	dh_link -p$(p_base) usr/bin/$(fullfilename) usr/bin/$(filename)
+	dh_link -p$(p_base) usr/share/man/man1/$(fullfilename).1.gz usr/share/man/man1/$(filename).1.gz
 
-	dh_installdebconf	
+	# cleanup
+	find $(d_base) -name ".svn" | xargs rm -rf
+
+
+binary: binary-indep binary-arch
+binary-indep: install
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
 	dh_installchangelogs CHANGES.txt
 	dh_installdocs
 	dh_installexamples
-	dh_strip
 	dh_compress
 	dh_fixperms
 	dh_installdeb
-	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 
-.PHONY: build clean binary install configure
+.PHONY: build clean binary binary-arch binary-indep install configure

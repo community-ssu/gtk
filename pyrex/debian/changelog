@@ -1,3 +1,9 @@
+pyrex (0.9.3-1osso6) unstable; urgency=low
+
+  * debian/rules refactored
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri,  9 Jun 2006 16:36:29 -0300
+
 pyrex (0.9.3-1osso5) unstable; urgency=low
 
   * changed architecture from 'any' to 'all'
