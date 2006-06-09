@@ -1,3 +1,7 @@
+2006-06-09  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac: Version 0.15.
+
 2006-06-08  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/comm_dbus.c: Relicense to GPL version 2 only. Change
