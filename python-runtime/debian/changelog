@@ -1,3 +1,9 @@
+python-runtime (0.2-2) unstable; urgency=low
+
+  * minor cleanup in debian/rules
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri,  9 Jun 2006 16:26:53 -0300
+
 python-runtime (0.2-1) unstable; urgency=low
 
   * changed architecture from 'any' to 'all'

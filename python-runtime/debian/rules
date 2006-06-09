@@ -11,10 +11,12 @@ clean:
 build:
 
 binary:
+binary-indep:
+binary-arch:
 	dh_clean -k
 	dh_testdir
 	dh_md5sums
 	dh_gencontrol
 	dh_builddeb
 
-.PHONY: build clean binary
+.PHONY: build clean binary binary-indep binary-arch
