@@ -1,17 +1,15 @@
 #!/usr/bin/make -f
 
-PYV=2.4
-PYTHON=python$(PYV)
-PYLIB=usr/lib/python$(PYV)/config
-PYSITE=usr/lib/python$(PYV)/site-packages
+PYVER=2.4
+PYTHON=python$(PYVER)
 
-p_num	= python$(PYV)-numeric
-p_dev   = python$(PYV)-numeric-dev
+p_base	= python$(PYVER)-numeric
+p_dev   = python$(PYVER)-numeric-dev
 
-d_num	= debian/$(p_num)
+d_base	= debian/$(p_base)
 d_dev   = debian/$(p_dev)
 
-d = debian/tmp
+pysite=usr/lib/python$(PYVER)/site-packages
 
 ifeq ($(DEB_BUILD_ARCH),armel)
     CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
@@ -23,54 +21,55 @@ build: stamp-build
 stamp-build:
 	dh_testdir
 	CFLAGS="$(CFLAGS)" $(PYTHON) setup.py build
-	touch $@
+	touch stamp-build
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f stamp-*
+	-rm -f stamp-build
 	-rm -rf `find -name build -type d`
-	-rm -rf $(d_num) $(d_dev) $(d)
+	-rm -rf $(d_base) $(d_dev)
 	-rm -rf doc/www.pfdubois.com
 	dh_clean
 
-binary: build
-binary-indep: build
-binary-arch: build
+install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
 
-	mkdir -p $(d)/usr
-
-	$(PYTHON) setup.py install --prefix=$(d)/usr
-	$(PYTHON) -OO -m compileall -f $(d)/usr
-
-	cp -a $(d)/usr $(d_num)
-	cp -a $(d)/usr $(d_dev)
+	CFLAGS="$(CFLAGS)" $(PYTHON) setup.py install --prefix=$(d_base)/usr
+	CFLAGS="$(CFLAGS)" $(PYTHON) -OO -m compileall -f $(d_base)/usr
+	cp -a $(d_base)/* $(d_dev)
 
 	# base
-	find $(d_num) -type f -name "*.py" | xargs rm -f
-	find $(d_num) -type f -name "*.pyc" | xargs rm -f
-	rm -rf $(d_num)/usr/include
+	find $(d_base) -type f -name "*.py" | xargs rm -f
+	find $(d_base) -type f -name "*.pyc" | xargs rm -f
+	rm -rf $(d_base)/usr/include
 
 	# dev
 	find $(d_dev) -type f -name "*.so" | xargs rm -f
 	find $(d_dev) -type f -name "*.py[co]" | xargs rm -f
-	rm -f $(d_dev)/$(PYSITE)/Numeric.pth
+	rm -f $(d_dev)/$(pysite)/Numeric.pth
 
-	dh_installdirs -p$(p_dev) $(PYSITE)/NumTut usr/share/doc/$(p_dev)
+	dh_installdirs -p$(p_dev) $(pysite)/NumTut usr/share/doc/$(p_dev)
 
-	cp -a Demo/NumTut $(d_dev)/$(PYSITE)
-	chmod a+x $(d_dev)/$(PYSITE)/NumTut/__init__.py $(d_dev)/$(PYSITE)/NumTut/view.py
+	cp -a Demo/NumTut $(d_dev)/$(pysite)
+	chmod a+x $(d_dev)/$(pysite)/NumTut/__init__.py $(d_dev)/$(pysite)/NumTut/view.py
 
-	dh_link -p$(p_dev) /$(PYSITE)/NumTut /usr/share/doc/$(p_dev)/NumTut
+	dh_link -p$(p_dev) /$(pysite)/NumTut /usr/share/doc/$(p_dev)/NumTut
 	install -m 644 doc/numpy.pdf $(d_dev)/usr/share/doc/$(p_dev)
 
-	: # Replace all '#!' calls to python with python
-	: # and make them executable
-	for i in `find $(d_dev) -type f`; do \
+	mkdir -p $(d_dev)/usr/share/doc/$(p_dev)/examples/Demo
+	cp -a Test $(d_dev)/usr/share/doc/$(p_dev)/examples
+	cp -p Demo/*.py $(d_dev)/usr/share/doc/$(p_dev)/examples/Demo
+	rm -f $(d_dev)/usr/share/doc/$(p_dev)/examples/Test/testwin.bat
+
+	# cleanup
+	find $(d_base) $(d_dev) -name '.svn' | xargs rm -rf
+	
+	# fix interpreter
+	for i in `find $(d_dev) $(d_base) -type f`; do \
 	  sed '1s,#!.*python[^ ]*\(.*\),#!/usr/bin/python2.4\1,' \
 		$$i > $$i.temp; \
 	  if cmp --quiet $$i $$i.temp; then \
@@ -82,20 +81,32 @@ binary-arch: build
 	  fi; \
 	done
 
-	mkdir -p $(d_dev)/usr/share/doc/$(p_dev)/examples/Demo
-	cp -a Test $(d_dev)/usr/share/doc/$(p_dev)/examples
-	cp -p Demo/*.py $(d_dev)/usr/share/doc/$(p_dev)/examples/Demo
-	rm -f $(d_dev)/usr/share/doc/$(p_dev)/examples/Test/testwin.bat
-
-	find $(d_num) $(d_dev) -name '.svn' | xargs rm -rf
-
+binary: binary-indep binary-arch
+binary-indep: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_installchangelogs -p$(p_dev)
+	dh_installdocs -p$(p_dev)
+	dh_compress -p$(p_dev) -X.py -Xexamples
 	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_strip
+	dh_fixperms
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
-	dh_strip
-	dh_compress
 	dh_builddeb
 
-.PHONY: binary binary-arch binary-indep clean
+.PHONY: build clean install binary-indep binary-arch binary
+

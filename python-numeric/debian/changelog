@@ -1,3 +1,9 @@
+python-numeric (24.2-1osso3) unstable; urgency=low
+
+  * refactored all debian/rules
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu,  8 Jun 2006 01:01:47 -0300
+
 python-numeric (24.2-1osso2) unstable; urgency=low
 
   * added shlibs dependencies

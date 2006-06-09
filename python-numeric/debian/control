@@ -35,6 +35,6 @@ Description: Numerical (matrix-oriented) Mathematics for Python
     * Masked Arrays (MA)
 
 Package: python2.4-numeric-dev
-Architecture: any
+Architecture: all
 Depends: python2.4-numeric (= ${Source-Version})
 Description: Development files for Numeric Python
