@@ -3,7 +3,7 @@
 PYVER=2.4
 PYTHON=python$(PYVER)
 p_base=$(PYTHON)-bluez
-p_dev =$(PYTHON)-bluez-dev
+p_dev =$(p_base)-dev
 
 d_base=debian/$(p_base)
 d_dev=debian/$(p_dev)
@@ -14,28 +14,26 @@ else
         CFLAGS=-Os -Wall -Wstrict-prototypes
 endif
 
-build: build24-stamp 
-build24-stamp:
+build: build-stamp 
+build-stamp:
 	dh_testdir 
 	CFLAGS="$(CFLAGS)" $(PYTHON) setup.py build
-	touch build24-stamp
+	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	-rm -f build24-stamp
+	-rm -f build-stamp
 	-rm -rf build
 	-rm -f doc/{,_}bluetooth.html
 	-rm -rf $(d_base) $(d_dev)
 	dh_clean 
 
-binary:
-binary-indep:
-binary-arch:
+install: build
 	dh_testdir
 	dh_testroot
+	dh_installdirs
 
-	mkdir -p $(d_base) $(d_dev)
 	$(PYTHON) setup.py install --root=$(d_base) --no-compile
 	$(PYTHON) -OO -m compileall -f $(d_base)
 	(cd doc && ./gendoc)
@@ -47,14 +45,30 @@ binary-arch:
 	# dev
 	find $(d_dev)/usr/lib/$(PYTHON) -not -name "*.py" -type f | xargs rm -f 
 	dh_installexamples -p$(p_dev) examples/*
-	dh_installdocs -p$(p_dev) doc/*.html
 	
-	find $(d_dev) -name ".svn" | xargs rm -rf
+	# cleanup
+	find $(d_base) $(d_dev) -name ".svn" | xargs rm -rf
 
+binary: binary-indep binary-arch
+binary-indep: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
 	dh_installchangelogs -p$(p_dev)
+	dh_installdocs -p$(p_dev) doc/*.html
 	dh_installman -p$(p_dev)
+	dh_compress -p$(p_dev) -X.py -Xexamples
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+	
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
 	dh_strip
-	dh_compress -Xexamples
 	dh_fixperms
 	dh_makeshlibs
 	dh_installdeb
@@ -63,4 +77,4 @@ binary-arch:
 	dh_md5sums
 	dh_builddeb
 
-.PHONY: build clean binary configure
+.PHONY: build clean install binary-indep binary-arch binary

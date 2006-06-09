@@ -1,3 +1,9 @@
+pybluez (0.6.1-1osso5) unstable; urgency=low
+
+  * debian/rules refactored
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Thu,  8 Jun 2006 10:07:27 -0300
+
 pybluez (0.6.1-1osso4) unstable; urgency=low
 
   * added shlibs dependencies
