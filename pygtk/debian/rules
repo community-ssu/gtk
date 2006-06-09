@@ -4,9 +4,8 @@ PYVER=2.4
 PYTHON=python$(PYVER)
 
 p_base=$(PYTHON)-gtk2
-p_dev=$(PYTHON)-gtk2-dev
+p_dev=$(p_base)-dev
 
-d=$(CURDIR)/debian/tmp
 d_base=debian/$(p_base)
 d_dev=debian/$(p_dev)
 
@@ -16,33 +15,26 @@ else
     CFLAGS=-Os -Wall -Wstrict-prototypes
 endif
 
-
-build/config.status: configure
+build: build-stamp
+build-stamp:
 	dh_testdir
-	mkdir -p build
+
 	autoconf
-	cd build && \
-	  CFLAGS="$(CFLAGS)" \
-	  PYTHON=`which $(PYTHON)` \
-		../configure \
+	CFLAGS="$(CFLAGS)" \
+	PYTHON=`which $(PYTHON)` \
+		./configure \
 			--prefix=/usr \
 			--enable-thread \
 			--disable-numpy
-
-build:  build/config.status build-stamp
-build-stamp: 
-	dh_testdir
-	$(MAKE) -C build
+	$(MAKE)
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f *-stamp
-	rm -Rf debian/tmp-*
+	rm -f build-stamp
 	-rm -rf $(d_base) $(d_dev)
-	-rm -rf debian/$(PYTHON)-gtk2-dev
-	-rm -rf build
+	-$(MAKE) distclean
 	find -name "*.pyc" -exec rm -f {} \;
 	find -name "*.pyo" -exec rm -f {} \;
 	dh_clean codegen/*.pyc
@@ -52,46 +44,31 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	$(MAKE) -C build install DESTDIR=$(d)
 
-	rm -rf $(d_base) && mkdir -p $(d_base)
-	rm -rf $(d_dev) && mkdir -p $(d_dev)
+	$(MAKE) install DESTDIR=$(CURDIR)/$(d_base)
+	$(PYTHON) -OO -m compileall -f $(d_base)
+	cp -a $(d_base)/* $(d_dev)
 
-	# Base
-	mkdir -p $(d_base)/usr/lib
-	cp -a $(d)/usr/lib/$(PYTHON)		$(d_base)/usr/lib
+	# base
+	rm -rf $(d_base)/usr/lib/pygtk
+	rm -rf $(d_base)/usr/lib/pkgconfig
+	rm -rf $(d_base)/usr/bin
+	rm -rf $(d_base)/usr/share
+	rm -rf $(d_base)/usr/include
 	find $(d_base) -name "*.py" -exec rm -f {} \;
 	find $(d_base) -name "*.pyc" -exec rm -f {} \;
 	find $(d_base) -name "*.la" -exec rm -f {} \;
 
-	# Dev
-	mkdir -p $(d_dev)/usr/bin
-	mkdir -p $(d_dev)/usr/lib/pygtk/2.0
-	mkdir -p $(d_dev)/usr/share/pygtk/2.0
-	mkdir -p $(d_dev)/usr/include
-	mv $(d)/usr/bin/pygtk-demo 		$(d_dev)/usr/bin
-	mv $(d)/usr/lib/pkgconfig		$(d_dev)/usr/lib
-	mv $(d)/usr/lib/$(PYTHON)		$(d_dev)/usr/lib
-	mv $(d)/usr/lib/pygtk/2.0/pygtk-demo.py	$(d_dev)/usr/lib/pygtk/2.0
-	mv $(d)/usr/lib/pygtk/2.0/demos		$(d_dev)/usr/lib/pygtk/2.0
-	mv $(d)/usr/bin/pygtk-codegen-2.0	$(d_dev)/usr/bin
-	mv $(d)/usr/share/pygtk/2.0/codegen	$(d_dev)/usr/share/pygtk/2.0
-	mv $(d)/usr/share/pygtk/2.0/defs	$(d_dev)/usr/share/pygtk/2.0
-	mv $(d)/usr/include/pygtk-2.0		$(d_dev)/usr/include
-	find $(d_dev) -name "*.pyc" -exec rm -f {} \;
-	find $(d_dev)/usr/lib -name "*.pyo" -exec rm -f {} \;
+	# dev
+	find $(d_dev) -name "*.pyo" | grep -v codegen | xargs rm -f
 	find $(d_dev) -name "*.so" -exec rm -f {} \;
 	find $(d_dev) -name "*.pth" -exec rm -f {} \;
 
-binary: build install
-binary-indep: build install
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installexamples
+	# cleanup
+	find $(d_base) $(d_dev) -name ".svn" | xargs rm -rf
 
 	# Replace all '#!' calls to python with $(PYTHON)
-	for i in `find debian/python2.4* -type f`; do \
+	for i in `find $(d_base) $(d_dev) -type f`; do \
 	  sed "1s,#!.*python[^ ]*\(.*\),#!/usr/bin/$(PYTHON)," \
 		$$i > $$i.temp; \
 	  if cmp --quiet $$i $$i.temp; then \
@@ -103,9 +80,15 @@ binary-arch: build install
 	  fi; \
 	done
 
+binary: binary-indep binary-arch
+binary-indep: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_installchangelogs -p$(p_dev)
+	dh_installdocs -p$(p_dev)
 	dh_strip
-	dh_link
-	dh_compress
+	dh_compress -p$(p_dev) -Xexamples -X.py
 	dh_fixperms
 	dh_makeshlibs
 	dh_installdeb
@@ -114,4 +97,18 @@ binary-arch: build install
 	dh_md5sums
 	dh_builddeb
 
-.PHONY: build clean binary install 
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_strip
+	dh_fixperms
+	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+.PHONY: build clean install binary-indep binary-arch binary
+

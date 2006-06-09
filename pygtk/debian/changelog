@@ -1,3 +1,9 @@
+python-gtk2 (2.6.3-1osso5) unstable; urgency=low
+
+  * debian/rules refactored
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri,  9 Jun 2006 18:08:08 -0300
+
 python-gtk2 (2.6.3-1osso4) unstable; urgency=low
 
   * added shlib dependencies
