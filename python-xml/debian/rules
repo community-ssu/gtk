@@ -4,7 +4,7 @@ PYVER=2.4
 PYTHON=python$(PYVER)
 
 p_base=$(PYTHON)-xml
-p_dev=$(PYTHON)-xml-dev
+p_dev=$(p_base)-dev
 
 d_base = debian/$(p_base)
 d_dev  = debian/$(p_dev)
@@ -47,7 +47,7 @@ install: build
 	mv      $(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py.new \
 		$(d_base)/usr/lib/$(PYTHON)/site-packages/_xmlplus/dom/ext/c14n.py
 	$(PYTHON) -OO -m compileall -f $(d_base)
-	cp -va $(d_base)/* $(d_dev)
+	cp -a $(d_base)/* $(d_dev)
 
 	# base
 	rm -rf $(d_base)/usr/share/doc/$(p_dev)
@@ -80,12 +80,9 @@ binary-indep: install
 	dh_installdirs
 	dh_installchangelogs -p$(p_dev)
 	dh_installdocs -p$(p_dev)
-	dh_strip
 	dh_compress -p$(p_dev) -X.py -Xexamples
 	dh_fixperms
-	dh_makeshlibs
 	dh_installdeb
-	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
@@ -103,5 +100,5 @@ binary-arch: install
 	dh_md5sums
 	dh_builddeb
 
-.PHONY: build build-stamp clean install binary-indep binary-arch binary
+.PHONY: build clean install binary-indep binary-arch binary
 
