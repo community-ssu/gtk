@@ -2,8 +2,9 @@
 
 PYVER=2.4
 PYTHON=python$(PYVER)
+
 p_base=$(PYTHON)-dbus
-p_dev =$(PYTHON)-dbus-dev
+p_dev =$(p_base)-dev
 
 d_base=debian/$(p_base)
 d_dev=debian/$(p_dev)
@@ -14,49 +15,58 @@ else
     CFLAGS=-Os -Wall -Wstrict-prototypes
 endif
 
-build: build24-stamp 
-build24-stamp:
+build: build-stamp 
+build-stamp:
 	dh_testdir 
 	CFLAGS="$(CFLAGS)" $(PYTHON) setup.py build
-	touch build24-stamp
+	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
 	$(PYTHON) setup.py clean --all
-	-rm -f build24-stamp
+	-rm -f build-stamp
 	-rm -rf $(d_base) $(d_dev)
 	-rm -f extrace.py[co]
 	dh_clean 
 
-binary:
-binary-indep:
-binary-arch:
+install: build
 	dh_testdir
 	dh_testroot
+	dh_installdirs
 
-	mkdir -p $(d_base) $(d_dev)
 	$(PYTHON) setup.py install --root=$(d_base) --no-compile
 	$(PYTHON) -OO -m compileall -f $(d_base)
-	cp -a $(d_base)/usr $(d_dev)
+	cp -a $(d_base)/* $(d_dev)
 
 	# base
-	find $(d_base) -name "*.py" | xargs rm -f 
+	find $(d_base) -name "*.py" -type f | xargs rm -f 
 
 	# dev
 	find $(d_dev)/usr/lib/$(PYTHON) -not -name "*.py" -type f | xargs rm -f 
 	dh_installexamples -p$(p_dev) examples/*
-	find $(d_dev) -name ".svn" | xargs rm -rf
 
+	# cleanup
+	find $(d_base) $(d_dev) -name ".svn" | xargs rm -rf
+
+
+binary: binary-indep binary-arch
+binary-indep: install
+binary-arch: install
+	dh_testdir
+	dh_testroot
 	dh_installchangelogs -p$(p_dev)
+	dh_installdocs -p$(p_dev)
 	dh_installman -p$(p_dev)
 	dh_strip
-	dh_compress -Xexamples
+	dh_compress -p$(p_dev) -Xexamples -X.py
 	dh_fixperms
+	dh_makeshlibs
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 
-.PHONY: build clean binary configure
+.PHONY: build install clean binary binary-indep binary-arch
+

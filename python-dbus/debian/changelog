@@ -1,3 +1,9 @@
+python-dbus (0.61-1osso5) unstable; urgency=low
+
+  * minor cleanups in debian/rules
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri,  9 Jun 2006 16:30:57 -0300
+
 python-dbus (0.61-1osso4) unstable; urgency=low
 
   * added shlibs dependencies
