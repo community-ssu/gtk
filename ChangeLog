@@ -1,5 +1,21 @@
 2006-06-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtklabel.c (gtk_label_class_init): install
+	'hildon-keyboard-shortcuts' to GtkSettings
+	(keyboard_shortcuts_change_notify) (traverse_container)
+	(hildon_label_setting_changed) (gtk_label_screen_changed): Monitor
+	changes in GtkSettings and update all labels and accel labels in all
+	toplevel windows.
+	(gtk_label_set_pattern_internal): Underline mnemonics only if
+	'hildon-keyboard-shortcuts' GtkSetting is enabled
+	* gtk/gtkaccellabel.c (gtk_accel_label_refetch): Display shortcuts only
+	if 'hildon-keyboard-shortcuts' GtkSetting is enabled
+	* tests/Makefile.am:
+	* tests/testshortcuts.c: Testing showing and hiding shortcuts
+	(#72375, OSSO129887, OSSO129888)
+
+2006-06-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkcombobox.c (gtk_combo_box_new_text)
 	* gtk/gtkcomboboxentry.c (gtk_combo_box_entry_init): Remove explicit
 	ellipsizing from the created cell renderer as it disables the

@@ -599,8 +599,13 @@ gboolean
 gtk_accel_label_refetch (GtkAccelLabel *accel_label)
 {
   GtkAccelLabelClass *class;
+  gboolean keyboard_shortcuts;
 
   g_return_val_if_fail (GTK_IS_ACCEL_LABEL (accel_label), FALSE);
+
+  g_object_get (gtk_widget_get_settings (GTK_WIDGET (accel_label)),
+		"hildon-keyboard-shortcuts", &keyboard_shortcuts,
+		NULL);
 
   class = GTK_ACCEL_LABEL_GET_CLASS (accel_label);
 
@@ -610,7 +615,7 @@ gtk_accel_label_refetch (GtkAccelLabel *accel_label)
       accel_label->accel_string = NULL;
     }
 
-  if (accel_label->accel_closure)
+  if (keyboard_shortcuts && accel_label->accel_closure)
     {
       GtkAccelKey *key = gtk_accel_group_find (accel_label->accel_group, find_accel, accel_label->accel_closure);
 

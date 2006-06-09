@@ -46,6 +46,7 @@ noinst_PROGRAMS =			\
 	testmultiscreen			\
 	testrgb				\
 	testselection			\
+	testshortcuts			\
 	$(testsocket_programs)		\
 	testspinbutton			\
 	testtext			\
@@ -88,6 +89,7 @@ testmultidisplay_DEPENDENCIES = $(TEST_DEPS)
 testmultiscreen_DEPENDENCIES = $(TEST_DEPS)
 testrgb_DEPENDENCIES = $(TEST_DEPS)
 testselection_DEPENDENCIES = $(TEST_DEPS)
+testshortcuts_DEPENDENCIES = $(TEST_DEPS)
 testsocket_DEPENDENCIES = $(DEPS)
 testsocket_child_DEPENDENCIES = $(DEPS)
 testspinbutton_DEPENDENCIES = $(TEST_DEPS)
@@ -124,6 +126,7 @@ testmultidisplay_LDADD = $(LDADDS)
 testmultiscreen_LDADD = $(LDADDS)
 testrgb_LDADD = $(LDADDS)
 testselection_LDADD = $(LDADDS)
+testshortcuts_LDADD = $(LDADDS)
 testsocket_LDADD = $(LDADDS)
 testsocket_child_LDADD = $(LDADDS)
 testspinbutton_LDADD = $(LDADDS)
