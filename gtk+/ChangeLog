@@ -1,5 +1,12 @@
 2006-06-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkcalendar.c (gtk_calendar_init) (gtk_calendar_class_init)
+	(locales_init): Move month / weekday name initialization to separate
+	function and call it from class init, not instance init.  Probably
+	fixes a minor memory leak.
+
+2006-06-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtklabel.c (gtk_label_class_init): install
 	'hildon-keyboard-shortcuts' to GtkSettings
 	(keyboard_shortcuts_change_notify) (traverse_container)
