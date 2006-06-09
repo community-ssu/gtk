@@ -1,13 +1,18 @@
-gtk+2.0 (2:2.6.10-2.osso4) UNRELEASED; urgency=low
+gtk+2.0 (2:2.6.10-2.osso4) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * Feature: Dynamically showing and hiding keyboard shortcuts.
+    (OSSO129887, OSSO129888)
   * Bugs fixed:
     NB#31455: Ellipsizing column headers ellipsize too eagerly
     NB#31471: GtkTreeView: Icon in same column after ellipsizing text not
               visible
     NB#31497: GtkCellRendererText: Automatic ellipsizing truncated initially
+    NB#31695: Wrong folder is opened when double clicking a folder in MMC file
+              list view
+    NB#31696: Drag doesn't start if stylus leaves the widget before crossing
+              dnd threshold
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 31 May 2006 18:58:32 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  9 Jun 2006 10:55:37 +0300
 
 gtk+2.0 (2:2.6.10-2.osso3.1) unstable; urgency=low
 
