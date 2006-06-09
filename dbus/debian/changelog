@@ -1,6 +1,5 @@
 dbus (0.61-osso12) experimental; urgency=low
 
-  * UNRELEASED
   * Added patch for a freedom-hating memory leak (N#32120).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 09 Jun 2006 11:20:48 +0300
