@@ -467,6 +467,50 @@ gtk_calendar_get_type (void)
 }
 
 static void
+locales_init (void)
+{
+  default_abbreviated_dayname[0] = g_locale_to_utf8(nl_langinfo(ABDAY_1),
+                                                    -1, NULL, NULL, NULL);
+  default_abbreviated_dayname[1] = g_locale_to_utf8(nl_langinfo(ABDAY_2),
+                                                    -1, NULL, NULL, NULL);
+  default_abbreviated_dayname[2] = g_locale_to_utf8(nl_langinfo(ABDAY_3),
+                                                    -1, NULL, NULL, NULL);
+  default_abbreviated_dayname[3] = g_locale_to_utf8(nl_langinfo(ABDAY_4),
+                                                    -1, NULL, NULL, NULL);
+  default_abbreviated_dayname[4] = g_locale_to_utf8(nl_langinfo(ABDAY_5),
+                                                    -1, NULL, NULL, NULL);
+  default_abbreviated_dayname[5] = g_locale_to_utf8(nl_langinfo(ABDAY_6),
+                                                    -1, NULL, NULL, NULL);
+  default_abbreviated_dayname[6] = g_locale_to_utf8(nl_langinfo(ABDAY_7),
+                                                    -1, NULL, NULL, NULL);
+  default_monthname[0] = g_locale_to_utf8(nl_langinfo(MON_1),
+                                          -1, NULL, NULL, NULL);
+  default_monthname[1] = g_locale_to_utf8(nl_langinfo(MON_2),
+                                          -1, NULL, NULL, NULL);
+  default_monthname[2] = g_locale_to_utf8(nl_langinfo(MON_3),
+                                          -1, NULL, NULL, NULL);
+  default_monthname[3] = g_locale_to_utf8(nl_langinfo(MON_4),
+                                          -1, NULL, NULL, NULL);
+  default_monthname[4] = g_locale_to_utf8(nl_langinfo(MON_5),
+                                          -1, NULL, NULL, NULL);
+  default_monthname[5] = g_locale_to_utf8(nl_langinfo(MON_6),
+                                          -1, NULL, NULL, NULL);
+  default_monthname[6] = g_locale_to_utf8(nl_langinfo(MON_7),
+                                          -1, NULL, NULL, NULL);
+  default_monthname[7] = g_locale_to_utf8(nl_langinfo(MON_8),
+                                          -1, NULL, NULL, NULL);
+  default_monthname[8] = g_locale_to_utf8(nl_langinfo(MON_9),
+                                          -1, NULL, NULL, NULL);
+  default_monthname[9] = g_locale_to_utf8(nl_langinfo(MON_10),
+                                          -1, NULL, NULL, NULL);
+  default_monthname[10] = g_locale_to_utf8(nl_langinfo(MON_11),
+                                           -1, NULL, NULL, NULL);
+  default_monthname[11] = g_locale_to_utf8(nl_langinfo(MON_12),
+                                           -1, NULL, NULL, NULL);
+
+}
+
+static void
 gtk_calendar_class_init (GtkCalendarClass *class)
 {
   GObjectClass   *gobject_class;
@@ -744,6 +788,8 @@ gtk_calendar_class_init (GtkCalendarClass *class)
                    NULL, NULL,
                    _gtk_marshal_VOID__VOID,
                    G_TYPE_NONE, 0);
+
+  locales_init ();
 }
 
 static void
@@ -832,45 +878,6 @@ gtk_calendar_init (GtkCalendar *calendar)
 
   gtk_drag_dest_set (widget, 0, NULL, 0, GDK_ACTION_COPY);
   gtk_drag_dest_add_text_targets (widget);
-
-  default_abbreviated_dayname[0] = g_locale_to_utf8(nl_langinfo(ABDAY_1),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[1] = g_locale_to_utf8(nl_langinfo(ABDAY_2),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[2] = g_locale_to_utf8(nl_langinfo(ABDAY_3),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[3] = g_locale_to_utf8(nl_langinfo(ABDAY_4),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[4] = g_locale_to_utf8(nl_langinfo(ABDAY_5),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[5] = g_locale_to_utf8(nl_langinfo(ABDAY_6),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[6] = g_locale_to_utf8(nl_langinfo(ABDAY_7),
-                                                    -1, NULL, NULL, NULL);
-  default_monthname[0] = g_locale_to_utf8(nl_langinfo(MON_1),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[1] = g_locale_to_utf8(nl_langinfo(MON_2),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[2] = g_locale_to_utf8(nl_langinfo(MON_3),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[3] = g_locale_to_utf8(nl_langinfo(MON_4),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[4] = g_locale_to_utf8(nl_langinfo(MON_5),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[5] = g_locale_to_utf8(nl_langinfo(MON_6),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[6] = g_locale_to_utf8(nl_langinfo(MON_7),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[7] = g_locale_to_utf8(nl_langinfo(MON_8),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[8] = g_locale_to_utf8(nl_langinfo(MON_9),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[9] = g_locale_to_utf8(nl_langinfo(MON_10),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[10] = g_locale_to_utf8(nl_langinfo(MON_11),
-                                           -1, NULL, NULL, NULL);
-  default_monthname[11] = g_locale_to_utf8(nl_langinfo(MON_12),
-                                           -1, NULL, NULL, NULL);
 
 #if 0
   private_data->year_before = 0;
