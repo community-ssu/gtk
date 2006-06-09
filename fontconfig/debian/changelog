@@ -1,6 +1,6 @@
 fontconfig (2.3.2-1osso11) unstable; urgency=low
 
-  * Fixed the packageing (missing .install files)
+  * Fixed the packaging (missing .install files)
 
  -- Jakub Pavelek <jakub.pavelek@nokia.com>  Fri,  9 Jun 2006 12:56:16 +0300
 
