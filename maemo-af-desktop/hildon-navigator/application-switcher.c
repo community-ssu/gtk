@@ -86,9 +86,6 @@ static gboolean as_deactivate(GtkWidget *widget,
                               gpointer data);
                                      
 static gboolean timeout_callback(gpointer data);
-                                     
-static void move_item_to_first_position_in_list(gint item_position,
-                                                 gpointer data);
 
 static void set_first_button_pressed_and_grab_tooltip(gpointer data);
 
@@ -590,24 +587,6 @@ static gboolean timeout_callback(gpointer data)
     return FALSE;
 }
 
-/* Move the selected item of the small icon button to 
-   first position in list */
-static void move_item_to_first_position_in_list(gint item_position,
-                                                 gpointer data)
-{
-    ApplicationSwitcher_t *as = (ApplicationSwitcher_t *) data;
-    GtkWidget *item;
-
-    item = g_list_nth_data(GTK_MENU_SHELL(as->menu)->children,
-                           item_position);
-    gtk_container_remove(GTK_CONTAINER(as->menu), item);
-    
-    gtk_menu_shell_insert(GTK_MENU_SHELL(as->menu), item, 
-                          ITEM_1_LIST_POS); 
-    
-    /* Also call the top view callback to open window of an item*/
-    hn_wm_top_view(GTK_MENU_ITEM(item));                        
-}
 
 static void set_first_button_pressed_and_grab_tooltip(gpointer data)
 {        
@@ -628,15 +607,19 @@ static void set_first_button_pressed_and_grab_tooltip(gpointer data)
             break;
             
         case AS_BUTTON_2:
-            move_item_to_first_position_in_list(ITEM_2_LIST_POS,as);
+            hn_wm_top_view(GTK_MENU_ITEM(g_list_nth_data(
+							 GTK_MENU_SHELL(as->menu)->children,
+							 ITEM_2_LIST_POS)));
             as->start_y_position = get_tooltip_y_position(menu_height,
                                                      BUTTON_1_Y_POS,
                                                      as->toggle_button1);
             break;
             
         case AS_BUTTON_3:
+            hn_wm_top_view(GTK_MENU_ITEM(g_list_nth_data(
+							 GTK_MENU_SHELL(as->menu)->children,
+							 ITEM_3_LIST_POS)));
 
-            move_item_to_first_position_in_list(ITEM_3_LIST_POS,as);
 
             as->start_y_position = get_tooltip_y_position(menu_height,
                                                     BUTTON_1_Y_POS,
@@ -644,7 +627,9 @@ static void set_first_button_pressed_and_grab_tooltip(gpointer data)
             break;
             
         case AS_BUTTON_4:
-            move_item_to_first_position_in_list(ITEM_4_LIST_POS,as);
+            hn_wm_top_view(GTK_MENU_ITEM(g_list_nth_data(
+							 GTK_MENU_SHELL(as->menu)->children,
+							 ITEM_4_LIST_POS)));
             as->start_y_position = get_tooltip_y_position(menu_height,
                                                     BUTTON_1_Y_POS,
                                                     as->toggle_button1);

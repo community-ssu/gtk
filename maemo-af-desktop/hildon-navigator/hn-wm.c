@@ -72,35 +72,6 @@ HNWM *hn_wm_get_singleton(void)
 static gboolean
 hn_wm_add_watched_window (HNWMWatchedWindow *win);
 
-static void
-hn_wm_push_window_back (HNWMWatchedWindow * win, GtkMenuItem *menuitem)
-{
-  HNWMWatchedWindowView *view = NULL;
-  gboolean               view_found;
-  GList                 *iter;
-
-  iter = hn_wm_watched_window_get_views (win);
-  view_found = FALSE;
-      
-  while (iter != NULL)
-    {
-      view = (HNWMWatchedWindowView *)iter->data;
-	  
-      if(hn_wm_watched_window_view_get_menu(view) ==
-         (GtkWidget*)menuitem)
-        {
-          view_found = TRUE;
-          break;
-        }
-      iter  = g_list_next(iter);
-    }
-          
-  app_switcher_update_item (hnwm->app_switcher,
-                            win,
-                            view_found ? view : NULL,
-                            AS_MENUITEM_TO_LAST_POSITION);
-}
-
 void
 hn_wm_top_view (GtkMenuItem *menuitem)
 {
@@ -126,18 +97,8 @@ hn_wm_top_view (GtkMenuItem *menuitem)
 	  HN_DBG("Window hibernating, calling top_service([%s])",
              hn_wm_watchable_app_get_service (app));
 
-      /* make sure we activate the window user requested */
-      hn_wm_watchable_app_set_active_window(app, win);
+	  hn_wm_top_service(hn_wm_watchable_app_get_service (app));
 
-	  if(!hn_wm_top_service(hn_wm_watchable_app_get_service (app)))
-        {
-          /*
-             could not launch, by now this window is represented by the top AS
-             button (bug 22638) -- move it to the last position; this will
-             make the previously active app to be represented by button 1.
-           */
-          hn_wm_push_window_back (win, menuitem);
-        }
 	  return;
 	}
       
@@ -208,18 +169,8 @@ hn_wm_top_view (GtkMenuItem *menuitem)
 	{
 	  HN_DBG("window is hibernating");
 
-      /* make sure we activate the window user requested */
-      hn_wm_watchable_app_set_active_window(app, win);
+      hn_wm_top_service(hn_wm_watchable_app_get_service (app));
 
-      if(!hn_wm_top_service(hn_wm_watchable_app_get_service (app)))
-        {
-          /*
-             could not launch, by now this window is represented by the top AS
-             button (bug 22638) -- move it to the last position; this will
-             make the previously active app to be represented by button 1.
-           */
-          hn_wm_push_window_back (win, menuitem);
-        }
 	  return;
 	}
 
@@ -345,18 +296,6 @@ hn_wm_top_service(const gchar *service_name)
 
       app = hn_wm_watched_window_get_app (win);
 
-      /* set active view before we attempt to waken up hibernating app */
-      if (hn_wm_watched_window_get_views (win))
-        {
-          view = hn_wm_watched_window_get_active_view(win);
-          
-          if (!view) /* There is no active so just grab the first one */
-            {
-              view = (HNWMWatchedWindowView *)((hn_wm_watched_window_get_views (win))->data);
-              hn_wm_watched_window_set_active_view(win, view);
-            }
-        }
-
       if (hn_wm_watched_window_is_hibernating(win))
 	{
 	  guint interval = LAUNCH_SUCCESS_TIMEOUT * 1000;
@@ -364,7 +303,7 @@ hn_wm_top_service(const gchar *service_name)
 	  HN_DBG("app is hibernating, attempting to reawaken"
 		 "via osso_manager_launch()");
 	  
-	  hn_wm_watched_window_awake (hn_wm_watchable_app_get_active_window(app));
+	  hn_wm_watched_window_awake (win);
 	  
 	  /* FIXME: What does below do ?? */
 	  if (hnwm->bg_kill_situation == TRUE)
@@ -393,8 +332,6 @@ hn_wm_top_service(const gchar *service_name)
 				     0,
 				     0);
 
-	  app_switcher_update_item (hnwm->app_switcher, win, view,
-				    AS_MENUITEM_TO_FIRST_POSITION);
 	}
       else
 	{
