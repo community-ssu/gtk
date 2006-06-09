@@ -32,6 +32,7 @@
 #include <math.h>
 #include <string.h>
 #include "gtklabel.h"
+#include "gtkaccellabel.h"
 #include "gtkdnd.h"
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
@@ -615,6 +616,12 @@ gtk_label_class_init (GtkLabelClass *class)
 				"copy_clipboard", 0);
 				
   g_type_class_add_private (class, sizeof (GtkLabelPrivate));
+
+  gtk_settings_install_property (g_param_spec_boolean ("hildon-keyboard-shortcuts",
+						       P_("Visual keyboard shortcut cues"),
+						       P_("Whether menus should have visible accelerators and mnemonics"),
+						       TRUE,
+						       GTK_PARAM_READWRITE));
 }
 
 static void 
@@ -952,11 +959,67 @@ gtk_label_hierarchy_changed (GtkWidget *widget,
 }
 
 static void
+keyboard_shortcuts_change_notify (GtkLabel *label)
+{
+  gtk_label_recalculate (label);
+  if (GTK_IS_ACCEL_LABEL (label))
+    gtk_accel_label_refetch (GTK_ACCEL_LABEL (label));
+}
+
+static void
+traverse_container (GtkWidget *widget,
+		    gpointer   data)
+{
+  if (GTK_IS_LABEL (widget))
+    keyboard_shortcuts_change_notify (GTK_LABEL (widget));
+  else if (GTK_IS_CONTAINER (widget))
+    gtk_container_forall (GTK_CONTAINER (widget), traverse_container, data);
+}
+
+static void
+hildon_label_setting_changed (GtkSettings *settings)
+{
+  GList *list, *l;
+
+  list = gtk_window_list_toplevels ();
+
+  for (l = list; l ; l = l->next)
+    gtk_container_forall (GTK_CONTAINER (l->data),
+			  traverse_container, NULL);
+
+  g_list_free (list);
+}
+
+static void
 gtk_label_screen_changed (GtkWidget *widget,
 			  GdkScreen *old_screen)
 {
-  gtk_label_clear_layout (GTK_LABEL (widget));
+  GtkSettings *settings;
+  guint keyboard_shortcuts_connection;
+
+  if (!gtk_widget_has_screen (widget))
+    return;
+
+  settings = gtk_widget_get_settings (widget);
+
+  keyboard_shortcuts_connection = 
+    GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (settings),
+					 "hildon-label-connection"));
+
+  if (keyboard_shortcuts_connection)
+    return;
+
+  keyboard_shortcuts_connection =
+    g_signal_connect (settings, "notify::hildon-keyboard-shortcuts",
+		      G_CALLBACK (hildon_label_setting_changed), NULL);
+
+  g_object_set_data (G_OBJECT (settings),
+		     "hildon-label-connection",
+		     GUINT_TO_POINTER (keyboard_shortcuts_connection));
+
+  keyboard_shortcuts_change_notify (GTK_LABEL (widget));
 }
+
 
 static void
 label_mnemonic_widget_weak_notify (gpointer      data,
@@ -1434,9 +1497,15 @@ gtk_label_set_pattern_internal (GtkLabel    *label,
                                 const gchar *pattern)
 {
   PangoAttrList *attrs;
+  gboolean keyboard_shortcuts;
+
   g_return_if_fail (GTK_IS_LABEL (label));
+
+  g_object_get (gtk_widget_get_settings (GTK_WIDGET (label)),
+		"hildon-keyboard-shortcuts", &keyboard_shortcuts,
+		NULL);
   
-  if (pattern)
+  if (keyboard_shortcuts && pattern)
     attrs = gtk_label_pattern_to_attrs (label, pattern);
   else
     attrs = NULL;
