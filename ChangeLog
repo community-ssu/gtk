@@ -1,3 +1,10 @@
+2006-06-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_new_text)
+	* gtk/gtkcomboboxentry.c (gtk_combo_box_entry_init): Remove explicit
+	ellipsizing from the created cell renderer as it disables the
+	autoellipsizing our applications expect. N#31471
+
 2006-06-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkwindow.c (gtk_window_key_release_event): Chain up to

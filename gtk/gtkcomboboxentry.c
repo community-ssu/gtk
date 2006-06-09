@@ -144,9 +144,6 @@ gtk_combo_box_entry_init (GtkComboBoxEntry *entry_box)
 
   entry_box->priv->text_renderer = gtk_cell_renderer_text_new ();
 
-  g_object_set (entry_box->priv->text_renderer,
-                "ellipsize", PANGO_ELLIPSIZE_END, NULL);
-
   gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (entry_box),
                               entry_box->priv->text_renderer, TRUE);
 
