@@ -36,7 +36,7 @@ Description: generic font configuration library (shared library)
 
 Package: libfontconfig1-dev
 Section: libs
-Architecture: any
+Architecture: all
 Depends: libfontconfig1 (= ${Source-Version}), libfreetype6-dev (>= 2.1.9-1osso), libexpat1-dev
 Description: Development package for Fontconfig.
  Headers and documentation.
