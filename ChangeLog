@@ -34,7 +34,7 @@
 
 	* gtk/gtktreeview.c (gtk_tree_view_leave_notify): Do not reset
 	pressed_button so that a drag can start even if the pointer leaves the
-	widget before crossing the drag threshold. N#29366
+	widget before crossing the drag threshold. N#31696
 	
 2006-06-01  Kristian Rietveld  <kris@imendio.com>
 
