@@ -1,43 +1,33 @@
 #!/usr/bin/make -f
 
-DEB_BUILD_ARCH ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+PYVER=2.4
+PYTHON=python$(PYVER)
 
-VER=2.4
-PVER=python2.4
+p_base=$(PYTHON)
+p_dev=$(PYTHON)-dev
 
-PY_INTERPRETER = /usr/bin/python$(VER)
+d_base=debian/$(p_base)
+d_dev=debian/$(p_dev)
 
-CC = gcc
+scriptdir=usr/lib/$(PYTHON)
 
-ifeq ($(DEB_BUILD_ARCH),armel)
-	OPTSETTINGS = OPT="-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes"
-else
-	OPTSETTINGS = OPT="-Os -Wall -Wstrict-prototypes"
-endif
+#ifeq ($(DEB_BUILD_ARCH),armel)
+#	CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
+#else
+#	CFLAGS=-Os -Wall -Wstrict-prototypes
+#endif
 
-PWD		:= $(shell pwd)
-buildd_shared	:= $(PWD)/build-shared
-
-d		:= debian/tmp
-scriptdir	=  usr/lib/python$(VER)
-
-# package names and directories
-p_base		:= $(PVER)
-p_dev		:= $(PVER)-dev
-
-d_base		:= debian/$(p_base)
-d_dev		:= debian/$(p_dev)
-
-build: stamp-build
-stamp-build: stamp-build-shared
-	touch stamp-build
-
-stamp-build-shared: stamp-configure-shared
+clean:
 	dh_testdir
-	$(MAKE) -C $(buildd_shared)
-	: # build the shared library
-	$(MAKE) -C $(buildd_shared) libpython$(VER).so
-	touch stamp-build-shared
+	dh_testroot
+	rm -f stamp-*
+	-$(MAKE) clean
+	rm -rf Lib/test/db_home
+	rm -rf build
+	rm -rf locales
+	-find -name '*.py[co]' | xargs -n 50 rm -f
+	dh_clean
+
 
 common_configure_args = \
 		--prefix=/usr \
@@ -45,162 +35,114 @@ common_configure_args = \
 		--enable-ipv6 \
 		--enable-unicode=ucs2 \
 		--without-cxx \
+		--enable-shared \
 		--srcdir=..
 
-stamp-configure-shared:
-	mkdir -p $(buildd_shared)
-	cd $(buildd_shared) && \
-	  CC="$(CC)" $(OPTSETTINGS) \
-	    ../configure \
-		--enable-shared \
-		$(common_configure_args)
+stamp-configure:
+	mkdir -p build
+	cd build && \
+	  CFLAGS="$(CFLAGS)" \
+	  ../configure $(common_configure_args)
+	touch stamp-configure
 
-	touch stamp-configure-shared
-
-clean:
+build: stamp-build
+stamp-build: stamp-configure
 	dh_testdir
-	dh_testroot
-	rm -f stamp-*
-	rm -f patch-stamp* pxxx
-	rm -f debian/test_results
-	-$(MAKE) -f Makefile.pre.in srcdir=. distclean
-	rm -rf Lib/test/db_home
-	rm -rf $(buildd_shared)
-	-find -name '*.py[co]' | xargs -n 50 rm -f
-	rm -rf locales
-	dh_clean
+
+	OPT="$(CFLAGS) -DNDEBUG" $(MAKE) -C build
+	OPT="$(CFLAGS) -DNDEBUG" $(MAKE) -C build lib$(PYTHON).so
+	touch stamp-build
 
 install: build stamp-install
-
 stamp-install: stamp-build
 	dh_testdir
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
 
-	: # make install into tmp and subsequently move the files into
-	: # their packages' directories.
-	install -d $(d)/usr
-	$(MAKE) -C $(buildd_shared) install \
-		prefix=$(PWD)/$(d)/usr
+	$(MAKE) -C build install DESTDIR=$(CURDIR)/$(d_base)
 
-	: # remove files, which are not packaged
-	rm -f $(d)/usr/bin/smtpd.py
+	# remove files that won't be packaged
+	# ===================================
+	#
+	rm -rf	$(d_base)/usr/bin/smtpd.py \
+		$(d_base)/usr/bin/idle \
+		$(d_base)/$(scriptdir)/idlelib \
+		$(d_base)/$(scriptdir)/lib-tk \
+		$(d_base)/$(scriptdir)/lib-old \
+		$(d_base)/$(scriptdir)/bsddb \
+		$(d_base)/$(scriptdir)/test \
+		$(d_base)/$(scriptdir)/email/test \
+		$(d_base)/$(scriptdir)/xml/{dom,parsers,sax} \
+		$(d_base)/$(scriptdir)/aifc.* \
+		$(d_base)/$(scriptdir)/audiodev.* \
+		$(d_base)/$(scriptdir)/SimpleHTTPServer.* \
+		$(d_base)/$(scriptdir)/SimpleXMLRPCServer.* \
+		$(d_base)/$(scriptdir)/CGIHTTPServer.* \
+		$(d_base)/$(scriptdir)/cgi.* \
+		$(d_base)/$(scriptdir)/cgitb.* \
+		$(d_base)/$(scriptdir)/dbhash.* \
+		$(d_base)/$(scriptdir)/curses \
+		$(d_base)/$(scriptdir)/tzparse.* \
+		$(d_base)/$(scriptdir)/posixfile.* \
+		$(d_base)/$(scriptdir)/DocXMLRPCServer.* \
+		$(d_base)/$(scriptdir)/getpass.* \
+		$(d_base)/$(scriptdir)/macpath.* \
+		$(d_base)/$(scriptdir)/macurl2path.* \
+		$(d_base)/$(scriptdir)/mutex.* \
+		$(d_base)/$(scriptdir)/netrc.* \
+		$(d_base)/$(scriptdir)/nturl2path.* \
+		$(d_base)/$(scriptdir)/os2emxpath.* \
+		$(d_base)/$(scriptdir)/pty.* \
+		$(d_base)/$(scriptdir)/pyclbr.* \
+		$(d_base)/$(scriptdir)/regsub.* \
+		$(d_base)/$(scriptdir)/rexec.* \
+		$(d_base)/$(scriptdir)/rlcompleter.* \
+		$(d_base)/$(scriptdir)/robotparser.* \
+		$(d_base)/$(scriptdir)/smtpd.* \
+		$(d_base)/$(scriptdir)/statcache.* \
+		$(d_base)/$(scriptdir)/statvfs.* \
+		$(d_base)/$(scriptdir)/stringold.* \
+		$(d_base)/$(scriptdir)/subprocess.* \
+		$(d_base)/$(scriptdir)/sunaudio.* \
+		$(d_base)/$(scriptdir)/sunau.* \
+		$(d_base)/$(scriptdir)/symtable.* \
+		$(d_base)/$(scriptdir)/tabnanny.* \
+		$(d_base)/$(scriptdir)/telnetlib.* \
+		$(d_base)/$(scriptdir)/this.* \
+		$(d_base)/$(scriptdir)/timeit.* \
+		$(d_base)/$(scriptdir)/toaiff.* \
+		$(d_base)/$(scriptdir)/trace.* \
+		$(d_base)/$(scriptdir)/tty.* \
+		$(d_base)/$(scriptdir)/user.* \
+		$(d_base)/$(scriptdir)/whrandom.* \
+		$(d_base)/$(scriptdir)/xdrlib.* \
+		$(d_base)/$(scriptdir)/LICENSE.txt \
+		$(d_base)/$(scriptdir)/lib-dynload/rgbimage.so \
+		$(d_base)/$(scriptdir)/lib-dynload/rgbimg.so \
+		$(d_base)/$(scriptdir)/lib-dynload/audioop.so \
+		$(d_base)/$(scriptdir)/lib-dynload/crypt.so \
+		$(d_base)/$(scriptdir)/lib-dynload/linuxaudiodev.so \
+		$(d_base)/$(scriptdir)/lib-dynload/nis.so \
+		$(d_base)/$(scriptdir)/lib-dynload/mmap.so \
+		$(d_base)/$(scriptdir)/lib-dynload/readline.so \
+		$(d_base)/$(scriptdir)/lib-dynload/ossaudiodev.so \
+		$(d_base)/$(scriptdir)/lib-dynload/syslog.so \
+		$(d_base)/$(scriptdir)/lib-dynload/termios.so 
 
-	: # move manpages to new names
-	mkdir -p $(d)/usr/share/man/man1
-	mv $(d)/usr/man/man1/python.1 \
-		$(d)/usr/share/man/man1/python$(VER).1
-	ln -sf $(d)/usr/share/man/man1/python$(VER).1 $(d)/usr/man/man1/python.1
+	mkdir -p $(d_dev)/$(scriptdir)
+	cp -a $(d_base)/$(scriptdir)/* $(d_dev)/$(scriptdir)
 
-	: # install the shared library
-	cp -p $(buildd_shared)/libpython$(VER).so.1.0 $(d)/usr/lib/
-	ln -sf libpython$(VER).so.1.0 $(d)/usr/lib/libpython$(VER).so.1
-	ln -sf libpython$(VER).so.1 $(d)/usr/lib/libpython$(VER).so
-	ln -sf ../../libpython$(VER).so $(d)/usr/lib/python$(VER)/config/libpython$(VER).so
+	# base
+	# ====
+	#
 
-	: # install the Makefile of the shared python build
-	sed -e 's,^CXX *=,CXX=		g++ -pthread,' \
-	    -e 's,^RUNSHARED *=.*,RUNSHARED=,' \
-		build-shared/Makefile > $(d)/$(scriptdir)/config/Makefile
+	# shared library
+	cp -p build/lib$(PYTHON).so.1.0 $(d_base)/usr/lib
+	ln -sf lib$(PYTHON).so.1.0 $(d_base)/usr/lib/lib$(PYTHON).so.1
+	rm -rf $(d_base)/usr/lib/lib$(PYTHON).so
 
-	: # manpage
-	dh_installdirs -p$(p_dev) \
-		usr/share/man/man1
-	dh_movefiles -p$(p_dev) --sourcedir=$(d) \
-		usr/share/man/man1/python$(VER).1 \
-
-	: # scripts and binaries
-	dh_installdirs -p$(p_base) \
-		usr/bin \
-		$(scriptdir)
-	dh_movefiles -p$(p_base) --sourcedir=$(d) \
-		usr/bin/python$(VER) \
-		$(foreach i,$(MIN_EXTS),$(scriptdir)/lib-dynload/$(i).so) \
-		$(foreach i,$(MIN_MODS),$(scriptdir)/$(i).py)
-
-	: # Move the library and the header files into $(p_dev).
-	dh_installdirs -p$(p_dev) \
-		$(scriptdir) \
-		$(scriptdir)/doc/html \
-		usr/include \
-		usr/lib
-	dh_movefiles -p$(p_dev) --sourcedir=$(d) \
-		usr/lib/python$(VER)/config \
-		usr/include/python$(VER) \
-		usr/lib/libpython$(VER).so
-
-	: # INDT CHANGES
-	: # Remove unneeded modules	
-	rm -rf \
-		$(d)/$(scriptdir)/idlelib \
-		$(d)/$(scriptdir)/lib-tk \
-		$(d)/$(scriptdir)/lib-old \
-		$(d)/$(scriptdir)/config \
-		$(d)/$(scriptdir)/bsddb \
-		$(d)/$(scriptdir)/test \
-		$(d)/$(scriptdir)/email/test \
-		$(d)/$(scriptdir)/xml/{dom,parsers,sax} \
-		$(d)/$(scriptdir)/aifc.* \
-		$(d)/$(scriptdir)/audiodev.* \
-		$(d)/$(scriptdir)/SimpleHTTPServer.* \
-		$(d)/$(scriptdir)/SimpleXMLRPCServer.* \
-		$(d)/$(scriptdir)/CGIHTTPServer.* \
-		$(d)/$(scriptdir)/cgi.* \
-		$(d)/$(scriptdir)/cgitb.* \
-		$(d)/$(scriptdir)/dbhash.* \
-		$(d)/$(scriptdir)/curses \
-		$(d)/$(scriptdir)/tzparse.* \
-		$(d)/$(scriptdir)/posixfile.* \
-		$(d)/$(scriptdir)/DocXMLRPCServer.* \
-		$(d)/$(scriptdir)/getpass.* \
-		$(d)/$(scriptdir)/macpath.* \
-		$(d)/$(scriptdir)/macurl2path.* \
-		$(d)/$(scriptdir)/mutex.* \
-		$(d)/$(scriptdir)/netrc.* \
-		$(d)/$(scriptdir)/nturl2path.* \
-		$(d)/$(scriptdir)/os2emxpath.* \
-		$(d)/$(scriptdir)/pty.* \
-		$(d)/$(scriptdir)/pyclbr.* \
-		$(d)/$(scriptdir)/regsub.* \
-		$(d)/$(scriptdir)/rexec.* \
-		$(d)/$(scriptdir)/rlcompleter.* \
-		$(d)/$(scriptdir)/robotparser.* \
-		$(d)/$(scriptdir)/smtpd.* \
-		$(d)/$(scriptdir)/statcache.* \
-		$(d)/$(scriptdir)/statvfs.* \
-		$(d)/$(scriptdir)/stringold.* \
-		$(d)/$(scriptdir)/subprocess.* \
-		$(d)/$(scriptdir)/sunaudio.* \
-		$(d)/$(scriptdir)/sunau.* \
-		$(d)/$(scriptdir)/symtable.* \
-		$(d)/$(scriptdir)/tabnanny.* \
-		$(d)/$(scriptdir)/telnetlib.* \
-		$(d)/$(scriptdir)/this.* \
-		$(d)/$(scriptdir)/timeit.* \
-		$(d)/$(scriptdir)/toaiff.* \
-		$(d)/$(scriptdir)/trace.* \
-		$(d)/$(scriptdir)/tty.* \
-		$(d)/$(scriptdir)/user.* \
-		$(d)/$(scriptdir)/whrandom.* \
-		$(d)/$(scriptdir)/xdrlib.* \
-		$(d)/$(scriptdir)/LICENSE.txt \
-		$(d)/$(scriptdir)/lib-dynload/rgbimage.so \
-		$(d)/$(scriptdir)/lib-dynload/rgbimg.so \
-		$(d)/$(scriptdir)/lib-dynload/audioop.so \
-		$(d)/$(scriptdir)/lib-dynload/crypt.so \
-		$(d)/$(scriptdir)/lib-dynload/linuxaudiodev.so \
-		$(d)/$(scriptdir)/lib-dynload/nis.so \
-		$(d)/$(scriptdir)/lib-dynload/mmap.so \
-		$(d)/$(scriptdir)/lib-dynload/readline.so \
-		$(d)/$(scriptdir)/lib-dynload/ossaudiodev.so \
-		$(d)/$(scriptdir)/lib-dynload/syslog.so \
-		$(d)/$(scriptdir)/lib-dynload/termios.so 
-
-	: # base
-	mkdir -p $(d_base)/$(scriptdir)
-	mv $(d)/usr/lib/libpython$(VER).so.* $(d_base)/usr/lib
-	cp -a $(d)/$(scriptdir) $(d_base)/usr/lib
+	# removing development modules from base package
 	rm -rf $(d_base)/$(scriptdir)/distutils
 	rm -rf $(d_base)/$(scriptdir)/pdb.*
 	rm -rf $(d_base)/$(scriptdir)/pydoc.*
@@ -210,15 +152,17 @@ stamp-install: stamp-build
 	rm -rf $(d_base)/$(scriptdir)/doctest*
 	rm -rf $(d_base)/$(scriptdir)/unittest*
 	rm -rf $(d_base)/$(scriptdir)/hotshot
+	rm -rf $(d_base)/$(scriptdir)/config
+	
+	# removing source modules
 	find $(d_base)/$(scriptdir) -name "*.py" -type f -exec rm -f {} \;
 	find $(d_base)/$(scriptdir) -name "*.pyc" -type f -exec rm -f {} \;
 
-	: # modules and dirs outside zip
+	# creating python24.zip
 	mkdir -p $(d_base)/usr/lib/tmp
 	mv $(d_base)/$(scriptdir)/site-packages $(d_base)/usr/lib/tmp
 	mv $(d_base)/$(scriptdir)/lib-dynload   $(d_base)/usr/lib/tmp
 	mv $(d_base)/$(scriptdir)/plat-linux2   $(d_base)/usr/lib/tmp
-
 	mv $(d_base)/$(scriptdir)/site.pyo      $(d_base)/usr/lib/tmp
 	mv $(d_base)/$(scriptdir)/os.pyo        $(d_base)/usr/lib/tmp
 	mv $(d_base)/$(scriptdir)/posixpath.pyo $(d_base)/usr/lib/tmp
@@ -232,143 +176,119 @@ stamp-install: stamp-build
 	mv $(d_base)/$(scriptdir)/sre_compile.pyo $(d_base)/usr/lib/tmp
 	mv $(d_base)/$(scriptdir)/sre_constants.pyo $(d_base)/usr/lib/tmp
 	mv $(d_base)/$(scriptdir)/sre_parse.pyo $(d_base)/usr/lib/tmp
-
-	: # zipping
 	(cd $(d_base)/$(scriptdir) && zip -0qr ../python24.zip *)
 	find $(d_base)/$(scriptdir) -name "*.pyo" -type f -exec rm -f {} \;
-
-	: # recover saved files
 	mv $(d_base)/usr/lib/tmp/* $(d_base)/$(scriptdir)
 	rmdir $(d_base)/usr/lib/tmp
 
-	: # dev
-	mkdir -p $(d_dev)/$(scriptdir)
-	cp -a $(d)/$(scriptdir) $(d_dev)/usr/lib
+	# dev
+	# ===
+	#
+
+	# scripts
+	mkdir -p $(d_dev)/usr/bin
+	mv $(d_base)/usr/bin/pydoc $(d_dev)/usr/bin/pydoc$(PYVER)
+
+	# manpage
+	mkdir -p $(d_dev)/usr/share
+	mv $(d_base)/usr/man $(d_dev)/usr/share
+	mv $(d_dev)/usr/share/man/man1/python.1 $(d_dev)/usr/share/man/man1/$(PYTHON).1
+	ln -sf $(PYTHON).1 $(d_dev)/usr/share/man/man1/python.1
+
+	# shared library
+	ln -sf lib$(PYTHON).so.1 $(d_dev)/usr/lib/lib$(PYTHON).so
+	ln -sf ../../lib$(PYTHON).so $(d_dev)/$(scriptdir)/config
+
+	# header files
+	mv $(d_base)/usr/include $(d_dev)/usr
+
+	# install the Makefile inside development package
+	sed -e 's,^CXX *=,CXX=		g++ -pthread,' \
+	    -e 's,^RUNSHARED *=.*,RUNSHARED=,' build/Makefile > $(d_dev)/$(scriptdir)/config/Makefile
+
+	# remove modules from development package
 	rm -rf $(d_dev)/$(scriptdir)/site-packages
 	rm -rf $(d_dev)/$(scriptdir)/lib-dynload
 	rm -rf $(d_dev)/$(scriptdir)/plat-linux2
-	rm -rf $(d_dev)/$(scriptdir)/distutils/*wininst*
+	rm -rf $(d_dev)/$(scriptdir)/config/libpython2.4.a
+	rm -rf $(d_dev)/$(scriptdir)/config/python.o
 
-	: # protect
-	mkdir -p $(d_dev)/tmp
-	mv $(d_dev)/$(scriptdir)/distutils $(d_dev)/tmp
-	mv $(d_dev)/$(scriptdir)/pdb.* $(d_dev)/tmp
-	mv $(d_dev)/$(scriptdir)/pydoc.* $(d_dev)/tmp
-	mv $(d_dev)/$(scriptdir)/BaseHTTPServer.* $(d_dev)/tmp
-	mv $(d_dev)/$(scriptdir)/compile* $(d_dev)/tmp
-	mv $(d_dev)/$(scriptdir)/encodings/{cp*,mac_*} $(d_dev)/tmp
-	mv $(d_dev)/$(scriptdir)/doctest* $(d_dev)/tmp
-	mv $(d_dev)/$(scriptdir)/unittest* $(d_dev)/tmp
-	mv $(d_dev)/$(scriptdir)/hotshot $(d_dev)/tmp
-	find $(d_dev)/$(scriptdir) -name "*.pyo" -type f | xargs rm -f
-	mv $(d_dev)/tmp/* $(d_dev)/$(scriptdir)
+	# removing optimized modules
+	rm $(d_dev)/$(scriptdir)/site.pyo
+	rm $(d_dev)/$(scriptdir)/os.pyo
+	rm $(d_dev)/$(scriptdir)/posixpath.pyo
+	rm $(d_dev)/$(scriptdir)/stat.pyo
+	rm $(d_dev)/$(scriptdir)/UserDict.pyo
+	rm $(d_dev)/$(scriptdir)/copy_reg.pyo
+	rm $(d_dev)/$(scriptdir)/types.pyo
+	rm $(d_dev)/$(scriptdir)/glob.pyo
+	rm $(d_dev)/$(scriptdir)/fnmatch.pyo
+	rm $(d_dev)/$(scriptdir)/{re,sre}.pyo
+	rm $(d_dev)/$(scriptdir)/sre_compile.pyo
+	rm $(d_dev)/$(scriptdir)/sre_constants.pyo
+	rm $(d_dev)/$(scriptdir)/sre_parse.pyo
 
-	: # remove some things
-	-find debian -name CVS | xargs rm -rf
-	-find debian -name .cvsignore | xargs rm -f
-	-rm -rf $(d_dev)/usr/lib/python$(VER)/distutils/command/*.exe
-	-rm -rf $(d_dev)/tmp
 
-	#DEFAULT PYTHON
-	(cd $(d_base)/usr/bin && ln -sf python$(VER) python)
+	# cleanups
+	# ========
+	#
+
+	find $(d_base) $(d_dev) -name CVS | xargs rm -rf
+	find $(d_base) $(d_dev) -name .cvsignore | xargs rm -f
+	find $(d_base) $(d_dev) -name "*.exe" | xargs rm -f
+
+	# default python
+	# ============== 
+	#
+
+	(cd $(d_base)/usr/bin && ln -sf python$(PYVER) python)
 	mkdir -p $(d_dev)/usr/bin
-	ln -sf /usr/lib/python$(VER)/pdb.py $(d_dev)/usr/bin/pdb$(VER)
-	ln -sf pdb$(VER) $(d_dev)/usr/bin/pdb
-	ln -sf /usr/lib/python$(VER)/pydoc.py $(d_dev)/usr/bin/pydoc$(VER)
-	ln -sf pydoc$(VER) $(d_dev)/usr/bin/pydoc
-	cp -p Tools/i18n/pygettext.py $(d_dev)/usr/bin/pygettext$(VER)
-	ln -sf pygettext$(VER) $(d_dev)/usr/bin/pygettext
+	ln -sf /usr/lib/python$(PYVER)/pdb.py $(d_dev)/usr/bin/pdb$(PYVER)
+	ln -sf pdb$(PYVER) $(d_dev)/usr/bin/pdb
+	ln -sf /usr/lib/python$(PYVER)/pydoc.py $(d_dev)/usr/bin/pydoc$(PYVER)
+	ln -sf pydoc$(PYVER) $(d_dev)/usr/bin/pydoc
+	cp -p Tools/i18n/pygettext.py $(d_dev)/usr/bin/pygettext$(PYVER)
+	ln -sf pygettext$(PYVER) $(d_dev)/usr/bin/pygettext
 
-	: # Replace all '#!' calls to python with $(PY_INTERPRETER)
-	: # and make them executable
-	for i in `find debian/python2.4 debian/python2.4-dev -type f`; do \
-	  sed '1s,#!.*python[^ ]*\(.*\),#! $(PY_INTERPRETER)\1,' \
-		$$i > $$i.temp; \
+	for i in `find $(d_base) $(d_dev) -type f`; do \
+	  sed '1s,#!.*python[^ ]*\(.*\),#!/usr/bin/env $(PYTHON)\1,' $$i > $$i.temp; \
 	  if cmp --quiet $$i $$i.temp; then \
 	    rm -f $$i.temp; \
 	  else \
 	    mv -f $$i.temp $$i; \
 	    chmod 755 $$i; \
-	    echo "fixed interpreter: $$i"; \
 	  fi; \
 	done
 
 	touch stamp-install
 
+binary: binary-indep binary-arch
+binary-indep: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_installexamples
+	dh_link
+	dh_compress -p$(p_dev) -X.py -X.cls -X.css -X.txt -Xgdbinit
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
 
-# Build architecture-independent files here.
-binary-indep: build install
-	dh_testdir -i
-	dh_testroot -i
-
-	: # $(p_doc) package
-	dh_installdirs -p$(p_doc) \
-		usr/share/doc/$(p_base)/html \
-		usr/share/doc/$(p_doc) \
-		usr/share/info
-	cat Doc/html*.tar \
-		| (cd $(d_doc)/usr/share/doc/$(p_base)/html; tar xf -)
-	-find $(d_doc)/usr/share/doc/$(p_base)/html ! -type d ! -perm 644
-	-find $(d_doc)/usr/share/doc/$(p_base)/html ! -type d ! -perm 644 \
-		| xargs chmod 644
-	mv $(d_doc)/usr/share/doc/$(p_base)/html/Python-Docs*/* \
-		$(d_doc)/usr/share/doc/$(p_base)/html/.
-	rmdir $(d_doc)/usr/share/doc/$(p_base)/html/Python-Docs*
-
-	dh_link -p$(p_doc) \
-		/usr/share/doc/$(p_base)/html /usr/share/doc/$(p_doc)/html
-
-	dh_installdebconf -i
-	dh_installexamples -i
-	dh_installmenu -i
-	dh_link -i
-	dh_compress -i -X.py -X.cls -X.css -X.txt -Xgdbinit
-	dh_fixperms -i
-
-	: # make python scripts starting with '#!' executable
-	for i in \
-	  `find debian/python2.4 debian/python2.4-dev -mindepth 2 -type f ! -perm 755 ! -name 'sample.*'`; \
-	do \
-	  if head -1 $$i | grep -q '^#!'; then \
-	    chmod 755 $$i; \
-	    echo "make executable: $$i"; \
-	  fi; \
-	done
-	-find $(d_doc) -name '*.txt' -perm 755 -exec chmod 644 {} \;
-
-	dh_installdeb -i
-	dh_gencontrol -i
-	dh_md5sums -i
-	dh_builddeb -i
-
-# Build architecture-dependent files here.
-binary-arch: build install
-	dh_testdir -a
-	dh_testroot -a
-	dh_installexamples -a
-	dh_installmenu -a
-	dh_strip -a
-	dh_link -a
-	dh_compress -a -X.py
-	dh_fixperms -a
-
-	: # make python scripts starting with '#!' executable
-	for i in \
-	  `find debian/python2.4 debian/python2.4-dev -mindepth 2 -type f ! -perm 755 ! -name 'sample.*'`; \
-	do \
-	  if head -1 $$i | grep -q '^#!'; then \
-	    chmod 755 $$i; \
-	    echo "make executable: $$i"; \
-	  fi; \
-	done
-
-	dh_makeshlibs -a
-	dh_installdeb -a
-	dh_shlibdeps -a
-	dh_gencontrol -a
-	dh_md5sums -a
-	dh_builddeb -a
-
-binary: binary-arch
+binary-arch: install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	dh_strip
+	dh_link
+	dh_compress -p$(p_dev) -X.py -X.cls -X.css -X.txt -Xgdbinit
+	dh_fixperms
+	dh_makeshlibs
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
 
 .PHONY: configure build clean binary-indep binary-arch binary install

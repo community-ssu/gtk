@@ -1,3 +1,9 @@
+python2.4 (2.4.2-1osso12) unstable; urgency=low
+
+  * debian/rules totally refactored
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri,  9 Jun 2006 15:21:36 -0300
+
 python2.4 (2.4.2-1osso11) unstable; urgency=low
   
   * fixed depends on shlibs

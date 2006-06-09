@@ -14,7 +14,7 @@ Description: An interactive high-level object-oriented language (version 2.4)
  network programming, system administration, sounds and graphics.
 
 Package: python2.4-dev
-Architecture: any
+Architecture: all
 Depends: python2.4 (= ${Source-Version})
 Description: Header files and a static library for Python (v2.4)
  Header files, a static library and development tools for building
