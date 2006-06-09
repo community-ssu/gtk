@@ -1,3 +1,14 @@
+maemo-af-desktop (2.6.26-1) unstable; urgency=low
+
+  * hildon-navigator/hn-wm.c:
+    - Reverted faulty fix to N#22638 (Closes N#32199)
+    - Do not alter AS positions after topping a service, wait for the TN
+      to react to window map
+  * hildon-navigator/application-switcher.c: Do not alter AS positions
+    when topping an app, let TN handles it. (Closes N#22638)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri,  9 Jun 2006 18:17:36 +0300
+
 maemo-af-desktop (2.6.25-1) unstable; urgency=low
 
   * hildon-home/hildon-home-main.c: Close the VKB when tapping

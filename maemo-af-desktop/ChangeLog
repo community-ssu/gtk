@@ -1,5 +1,9 @@
 2006-06-09  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.6.26
+
+2006-06-09  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm.c:
 	  - Reverted faulty fix to N#22638 (Closes N#32199)
 	  - Do not alter AS positions after topping a service, wait for the TN
