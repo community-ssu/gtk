@@ -354,19 +354,8 @@ hn_wm_watchable_app_launch_banner_show (GtkWidget        *parent,
 
   gdk_error_trap_push(); 	/* Needed ? */
         
-  /* HACK fix logical string ID screw up */
-  if (!strcmp(app->app_name, "cema_ap_application_title"))
-    {
-
-      info->msg = g_strdup_printf(_( APP_LAUNCH_BANNER_MSG_LOADING ),
-                app->app_name ? dgettext("hildon-control-panel",
-                                app->app_name) : "" );
-    }
-  else
-    {
-      info->msg = g_strdup_printf(_( APP_LAUNCH_BANNER_MSG_LOADING ),
-			     app->app_name ? _(app->app_name) : "" );
-    }
+  info->msg = g_strdup_printf(_( APP_LAUNCH_BANNER_MSG_LOADING ),
+                              app->app_name ? _(app->app_name) : "" );
         
   info->banner = GTK_WIDGET(hildon_banner_show_animation(NULL, NULL, info->msg));
         

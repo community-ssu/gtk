@@ -495,7 +495,22 @@ hn_wm_x_window_is_watchable (Window xid)
 						 NULL);
   if (!wm_type_atom)
     {
-      app = NULL;
+      Window trans_win;
+      Status result;
+
+      /* Assume anything not setting there type is a TYPE_NORMAL. 
+       * This is to support non EWMH 1980 style wins created by 
+       * SDL, alegro etc.
+      */
+      gdk_error_trap_push();
+
+      result = XGetTransientForHint(GDK_DISPLAY(), xid, &trans_win);
+
+      /* If its transient for something, assume dialog and ignore.
+       * This should really never happen.
+      */
+      if (gdk_error_trap_pop() || (result && trans_win != None))
+        app = NULL; 
       goto out;
     }
 

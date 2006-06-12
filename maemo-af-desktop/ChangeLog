@@ -1,3 +1,11 @@
+2006-06-12  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "AF desktop doesn't show icon for execed (SDL) program"
+	(Closes N#31559)
+	* hildon-navigator/hn-wm.c: if NET_WM_WINDOW_TYPE is not set,
+	  check if a transiency is set, and if so assume dialog, otherwise
+	  assume normal window.
+
 2006-06-09  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.6.26
