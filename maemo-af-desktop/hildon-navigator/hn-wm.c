@@ -1174,8 +1174,12 @@ hn_wm_dbus_method_call_handler (DBusConnection *connection,
                                       hn_wm_watchable_app_get_class_name (app))
               && !hn_wm_watchable_app_has_windows (app))
             {
+              HNWM * hnwm = hn_wm_get_singleton();
               HN_DBG("Showing Launchbanner...");
-              hn_wm_watchable_app_launch_banner_show ( NULL, app );
+              /* Giving the AS vbox widget as a parent for the
+               * banners */
+              hn_wm_watchable_app_launch_banner_show (hnwm->app_switcher->vbox,
+                                                      app);
             }
         }
     }

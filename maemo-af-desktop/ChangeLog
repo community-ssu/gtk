@@ -1,5 +1,12 @@
 2006-06-12  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm.c: Give the AS vbox as owner of the launch
+	  banners
+	* hildon-navigator/hn-wm-watchable-app.c: Use the parent argument
+	  when calling hildon_banner_show_animation (Closes N#32476)
+
+2006-06-12  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.6.27
 
 2006-06-12  Johan Bilien <johan.bilien@nokia.com>

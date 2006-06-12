@@ -336,7 +336,6 @@ hn_wm_watchable_app_died_dialog_show(HNWMWatchableApp *app)
 /* FIXME: rename namespace to watched app */
   void 
 hn_wm_watchable_app_launch_banner_show (GtkWidget        *parent, 
-					/* FIXME: Unused ? */
 					HNWMWatchableApp *app) 
 {
   HNWMLaunchBannerInfo *info;
@@ -357,11 +356,22 @@ hn_wm_watchable_app_launch_banner_show (GtkWidget        *parent,
   info->msg = g_strdup_printf(_( APP_LAUNCH_BANNER_MSG_LOADING ),
                               app->app_name ? _(app->app_name) : "" );
         
-  info->banner = GTK_WIDGET(hildon_banner_show_animation(NULL, NULL, info->msg));
-        
+  info->banner = GTK_WIDGET(hildon_banner_show_animation(parent, 
+                                                         NULL, /*default icon*/
+                                                         info->msg));
+  /*
+   * Keep a reference on the banner, as adviced in the
+   * hildon_banner_show_animation, as GtkWindows may be destroyed at any
+   * time (or by the some not well behaved applet)
+   */
+
+  g_object_ref(G_OBJECT(info->banner));
+  
+  info->parent = parent;
+ 
   gdk_error_trap_pop();
 
-  g_timeout_add(interval, hn_wm_watchable_app_launch_banner_timeout, info);
+  g_timeout_add (interval, hn_wm_watchable_app_launch_banner_timeout, info);
 
 }
 
@@ -372,8 +382,10 @@ hn_wm_watchable_app_launch_banner_close (GtkWidget            *parent,
   if (!(info && info->msg))
     return;
 
-  if(info->banner)
+  if(GTK_IS_WIDGET(info->banner))
     gtk_widget_destroy(info->banner);
+  
+  g_object_unref(G_OBJECT(info->banner));
   
   hn_wm_launch_banner_info_free(info);
 }
