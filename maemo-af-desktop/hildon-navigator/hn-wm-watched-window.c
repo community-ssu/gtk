@@ -829,6 +829,7 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
 {
   GList                 *iter, *next_iter;
   HNWMWatchedWindowView *view;
+  GtkWidget             *note;
 
   HN_DBG("Removing '%s'", win->name);
 
@@ -881,12 +882,14 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
     }
 
   /* If ping timeout note is displayed.. */
-  GtkWidget *note = hn_wm_watchable_app_get_ping_timeout_note( win->app_parent );
+  note = hn_wm_watchable_app_get_ping_timeout_note (win->app_parent);
 
-  if ( note ) {
+  if (note)
+    {
 	  /* .. destroy it */
-	  gtk_widget_destroy( note );
-  }
+	  gtk_widget_destroy (note);
+      hn_wm_watchable_app_set_ping_timeout_note (win->app_parent, NULL);
+    }
 
   g_free(win);
 }
@@ -974,11 +977,33 @@ gboolean hn_wm_watched_window_hibernate_func(gpointer key,
 }
 
 
+static void
+hn_wm_ping_timeout_dialog_response (GtkDialog *note, gint ret, gpointer data)
+{
+  HNWMWatchedWindow *win = (HNWMWatchedWindow *)data;
+  HNWMWatchableApp *app = hn_wm_watched_window_get_app (win);
+  
+  gtk_widget_destroy (GTK_WIDGET(note));
+  hn_wm_watchable_app_set_ping_timeout_note (app, NULL);
+  
+  if (ret == GTK_RESPONSE_OK) 
+    {
+      /* Kill the app */
+      if (!hn_wm_watched_window_attempt_signal_kill (win, SIGKILL)) 
+        {
+          HN_DBG ("hn_wm_ping_timeout: "
+                  "failed to kill application '%s'.",
+                  win->name);
+        } 
+    }
+
+}
+
+
 void 
 hn_wm_ping_timeout (HNWMWatchedWindow *win)
 {
   GtkWidget *note;
-  gint       return_value;
 
   HNWMWatchableApp *app = hn_wm_watched_window_get_app (win);
 		
@@ -996,7 +1021,7 @@ hn_wm_ping_timeout (HNWMWatchedWindow *win)
       goto cleanup_and_exit;
     }
 	
-  note = hildon_note_new_confirmation (NULL, timeout_message );
+  note = hildon_note_new_confirmation (NULL, timeout_message);
 
   hn_wm_watchable_app_set_ping_timeout_note (app, note);
 	
@@ -1004,25 +1029,14 @@ hn_wm_ping_timeout (HNWMWatchedWindow *win)
                                 PING_TIMEOUT_BUTTON_OK_STRING,
                                 PING_TIMEOUT_BUTTON_CANCEL_STRING);
 
-  return_value = gtk_dialog_run (GTK_DIALOG(note));
+  g_signal_connect (G_OBJECT (note),
+                    "response",
+                    G_CALLBACK (hn_wm_ping_timeout_dialog_response),
+                    win);
 
-  if ( note && GTK_IS_WIDGET( note ) ) {
-  	gtk_widget_destroy (GTK_WIDGET(note));
-  }
-	
-
-  if ( return_value == GTK_RESPONSE_OK ) 
-    {
-      /* Kill the app */
-      if ( !hn_wm_watched_window_attempt_signal_kill( win, SIGKILL ) ) 
-        {
-          HN_DBG( "hn_wm_ping_timeout: "
-                  "failed to kill application '%s'.",
-                  win->name );
-        } 
-    }
+  gtk_widget_show_all (note);  
   
- cleanup_and_exit:
+cleanup_and_exit:
   
   g_free( timeout_message );
 }
@@ -1039,8 +1053,8 @@ hn_wm_ping_timeout_cancel (HNWMWatchedWindow *win)
     = g_strdup_printf (PING_TIMEOUT_RESPONSE_STRING, 
                        win->name );
  
-  if ( note && GTK_IS_WIDGET( note ) ) {
-  	gtk_widget_destroy( note );
+  if (note && GTK_IS_WIDGET (note)) {
+    gtk_dialog_response (GTK_DIALOG(note), GTK_RESPONSE_CANCEL);
   }
   
   /* Show the infoprint */
