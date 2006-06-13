@@ -1830,7 +1830,16 @@ gtk_combo_box_list_position (GtkComboBox *combo_box,
    * 5. above, otherwise (gtk+)
    */
   if (in_toolbar)
-    *y -= *height;
+    {
+      /* make sure we don't grow outside the screen */
+      if (*y - *height >= monitor.y)
+	*y -= *height;
+      else
+	{
+	  *height = *y - monitor.y;
+	  *y = monitor.y;
+	}
+    }
   else if (*y + sample->allocation.height + *height <= monitor.y + monitor.height)
     *y += sample->allocation.height;
   else if (*y - *height >= monitor.y)

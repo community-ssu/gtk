@@ -1,5 +1,11 @@
 2006-06-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkcombobox.c (gtk_combo_box_list_position): When in toolbar
+	also make sure the popup list doesn't grow outside the screen.
+	N#32573
+
+2006-06-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkcombobox.c (gtk_combo_box_key_press): Skip unselectable rows
 	when using cursor keys. N#32566
 
