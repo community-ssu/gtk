@@ -1,3 +1,9 @@
+dbus (0.61-osso14) experimental; urgency=low
+
+  * Enabled compilation of _dbus_assert()s. Fixes: NB#32584.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 13 Jun 2006 19:04:06 +0300
+
 dbus (0.61-osso13) experimental; urgency=low
 
   * Another GArray leak plugged in dbus-gproxy.c (N#32479).
