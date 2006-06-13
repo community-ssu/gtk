@@ -1097,6 +1097,15 @@ make_global_section_list (GList *sections, section_activated *act)
       if (first_button)
 	grab_focus_on_map (btn);
       first_button = false;
+
+      int f = OSSO_GTK_BUTTON_ATTACH_EAST | OSSO_GTK_BUTTON_ATTACH_WEST;
+      if (s == sections)
+	f |= OSSO_GTK_BUTTON_ATTACH_NORTH;
+      if (s->next == NULL)
+	f |= OSSO_GTK_BUTTON_ATTACH_SOUTH;
+
+      osso_gtk_button_set_detail_from_attach_flags
+	(GTK_BUTTON (btn), OssoGtkButtonAttachFlags (f));
     }
 
   scroller = gtk_scrolled_window_new (NULL, NULL);
@@ -1674,7 +1683,7 @@ struct en_closure {
 
 /* XXX - we can not rely on the osso_iap functions to deliver our user
          data to the callback.  Instead we store the continuation
-         callback in a global variable and make that it is called
+         callback in a global variable and make sure that it is called
          exactly once.
 */
 
@@ -1684,15 +1693,19 @@ static void *en_data;
 static void
 ensure_network_cont (bool success)
 {
-  if (en_callback)
-    {
-      hide_progress ();
-      en_callback (success, en_data);
-    }
+  void (*callback) (bool success, void *data) = en_callback;
+  void *data = en_data;
+  
   en_callback = NULL;
   en_data = NULL;
+
+  if (callback)
+    {
+      hide_progress ();
+      callback (success, data);
+    }
 }
-  
+
 static void
 iap_callback (struct iap_event_t *event, void *arg)
 {
@@ -1732,17 +1745,17 @@ ensure_network (void (*callback) (bool success, void *data), void *data)
    */
   ensure_network_cont (false);
 
+  en_callback = callback;
+  en_data = data;
+
   if (assume_connection)
     {
-      callback (true, data);
+      ensure_network_cont (true);
       return;
     }
   
   if (osso_iap_cb (iap_callback) == OSSO_OK)
     {
-      en_callback = callback;
-      en_data = data;
-      
       if (osso_iap_connect (OSSO_IAP_ANY, OSSO_IAP_REQUESTED_CONNECT, NULL)
 	  == OSSO_OK)
 	{
@@ -1821,7 +1834,7 @@ get_http_proxy ()
 char *
 get_https_proxy ()
 {
-  char *proxy;
+  char *proxy = NULL;
 
   GConfClient *conf = gconf_client_get_default ();
 
@@ -1838,7 +1851,8 @@ get_https_proxy ()
     gconf_client_get_string (conf, "/system/proxy/secure_host", NULL);
   int port = gconf_client_get_int (conf, "/system/proxy/secure_port", NULL);
 
-  proxy = g_strdup_printf ("http://%s:%d", host, port);
+  if (host && host[0])
+    proxy = g_strdup_printf ("http://%s:%d", host, port);
 
   g_object_unref (conf);
 
