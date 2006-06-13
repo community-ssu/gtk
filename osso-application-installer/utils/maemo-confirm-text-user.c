@@ -82,6 +82,13 @@ fill_text_buffer_from_file (GtkTextBuffer *text, const char *file)
   close (fd);
 }
 
+static gboolean
+no_button_events (GtkWidget *widget, GdkEventButton *event, gpointer data)
+{
+  g_signal_stop_emission_by_name (widget, "button-press-event");
+  return FALSE;
+}
+
 GtkWidget *
 make_small_text_view (const char *file)
 {
@@ -100,6 +107,9 @@ make_small_text_view (const char *file)
 				  GTK_POLICY_AUTOMATIC,
 				  GTK_POLICY_AUTOMATIC);
   gtk_widget_modify_font (view, get_small_font ());
+
+  g_signal_connect (view, "button-press-event",
+		    G_CALLBACK (no_button_events), NULL);
 
   return scroll;
 }
