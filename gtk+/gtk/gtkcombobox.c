@@ -4000,18 +4000,13 @@ gtk_combo_box_key_press (GtkWidget   *widget,
 {
   GtkComboBox *combo_box = GTK_COMBO_BOX (data);
   guint state = event->state & gtk_accelerator_get_default_mod_mask ();
-  gboolean found;
+  gboolean found = FALSE;
   GtkTreeIter iter;
   GtkTreeIter new_iter;
   gboolean hildonlike;
-  gint index = gtk_combo_box_get_active (combo_box);
-  gint new_index;
-  gint items = 0;
 
   if (combo_box->priv->model == NULL)
     return FALSE;
-
-  items = gtk_tree_model_iter_n_children (combo_box->priv->model, NULL);
 
   gtk_widget_style_get (GTK_WIDGET (combo_box), "hildonlike",
 			&hildonlike, NULL);
@@ -4019,26 +4014,39 @@ gtk_combo_box_key_press (GtkWidget   *widget,
   /* Hildon select key */
   if (hildonlike)
     {
-      if (event->keyval == GDK_KP_Enter || event->keyval == GDK_Return)
-        {
+      switch (event->keyval)
+	{
+	case GDK_Return:
+	case GDK_KP_Enter:
           gtk_combo_box_popup (combo_box);
           return TRUE;
-        }
-      else if (event->keyval == GDK_Left && items != 0)
-        {
-          new_index = (index == 0) ? items - 1 : index - 1;
-          gtk_combo_box_set_active (combo_box, new_index);
-          return !combo_box->priv->propagate_lr_keys;
-        }
-      else if (event->keyval == GDK_Right && items != 0)
-        {
-          new_index = (index == items - 1) ? 0 : index + 1;
-          gtk_combo_box_set_active (combo_box, new_index);
-          return !combo_box->priv->propagate_lr_keys;
-        }
-      else if ((event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
-                || (event->keyval == GDK_Up || event->keyval == GDK_KP_Up))
-        {
+
+	case GDK_Left:
+	  if (gtk_combo_box_get_active_iter (combo_box, &iter))
+	    found = tree_prev (combo_box, combo_box->priv->model,
+			       &iter, &new_iter, FALSE);
+	  if (!found) /* wrap around */
+	    found = tree_last (combo_box, combo_box->priv->model,
+			       &new_iter, FALSE);
+	  if (found)
+	    gtk_combo_box_set_active_iter (combo_box, &new_iter);
+	  return !combo_box->priv->propagate_lr_keys;
+
+	case GDK_Right:
+	  if (gtk_combo_box_get_active_iter (combo_box, &iter))
+	    found = tree_next (combo_box, combo_box->priv->model,
+			       &iter, &new_iter, FALSE);
+	  if (!found) /* wrap around */
+	    found = tree_first (combo_box, combo_box->priv->model,
+				&new_iter, FALSE);
+	  if (found)
+	    gtk_combo_box_set_active_iter (combo_box, &new_iter);
+	  return !combo_box->priv->propagate_lr_keys;
+
+	case GDK_Down:
+	case GDK_KP_Down:
+	case GDK_Up:
+	case GDK_KP_Up:
           return FALSE;
         }
     }
