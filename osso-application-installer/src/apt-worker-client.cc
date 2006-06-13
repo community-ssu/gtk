@@ -604,7 +604,7 @@ apt_worker_install_package_cont (bool success, void *clos)
       g_free (http_proxy);
 
       char *https_proxy = get_https_proxy ();
-      request.encode_string (http_proxy);
+      request.encode_string (https_proxy);
       g_free (https_proxy);
 
       set_general_progress_title (updating 
