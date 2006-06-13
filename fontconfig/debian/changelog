@@ -1,3 +1,9 @@
+fontconfig (2.3.2-2osso1) unstable; urgency=low
+
+  * Bumping up for next OS version
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue, 13 Jun 2006 17:33:30 +0300
+
 fontconfig (2.3.2-1osso11) unstable; urgency=low
 
   * Fixed the packaging (missing .install files)
