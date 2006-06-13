@@ -186,12 +186,15 @@ show_parent_view ()
 }
 
 static GtkWidget *
-make_padded_button (const char *label)
+make_padded_button (const char *label,
+		    OssoGtkButtonAttachFlags attach_flags)
 {
   GtkWidget *l = gtk_label_new (label);
   gtk_misc_set_padding (GTK_MISC (l), 15, 15);
   GtkWidget *btn = gtk_button_new ();
   gtk_container_add (GTK_CONTAINER (btn), l);
+  osso_gtk_button_set_detail_from_attach_flags (GTK_BUTTON (btn),
+						attach_flags);
   return btn;
 }
 
@@ -203,7 +206,7 @@ make_main_view (view *v)
   GtkWidget *view;
   GtkWidget *table, *vbox;
   GtkWidget *btn, *label, *image;
-  
+
   view = gtk_hbox_new (FALSE, 0);
   vbox = gtk_vbox_new (FALSE, 0);
   table = gtk_table_new (5, 2, FALSE);
@@ -218,7 +221,7 @@ make_main_view (view *v)
   gtk_table_attach_defaults (GTK_TABLE (table), image,
 			     0, 1, 0, 1);
 
-  // XXX - The usize request below prevents the label from epxanding
+  // XXX - The usize request below prevents the label from expanding
   //       the table column if the device is too long.
 
   label = gtk_label_new (device_name ());
@@ -227,7 +230,12 @@ make_main_view (view *v)
   gtk_table_attach_defaults (GTK_TABLE (table), label,
 			     1, 2, 0, 1);
   
-  btn = make_padded_button (_("ai_li_uninstall"));
+  btn = make_padded_button (_("ai_li_uninstall"),
+			    OssoGtkButtonAttachFlags
+			    (OSSO_GTK_BUTTON_ATTACH_NORTH |
+			     OSSO_GTK_BUTTON_ATTACH_EAST |
+			     OSSO_GTK_BUTTON_ATTACH_SOUTH |
+			     OSSO_GTK_BUTTON_ATTACH_WEST));
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &uninstall_applications_view);
@@ -244,14 +252,22 @@ make_main_view (view *v)
   gtk_table_attach_defaults (GTK_TABLE (table), label,
 			     1, 2, 2, 3);
 
-  btn = make_padded_button (_("ai_li_install"));
+  btn = make_padded_button (_("ai_li_install"),
+			    OssoGtkButtonAttachFlags
+			    (OSSO_GTK_BUTTON_ATTACH_NORTH |
+			     OSSO_GTK_BUTTON_ATTACH_EAST |
+			     OSSO_GTK_BUTTON_ATTACH_WEST));
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &install_applications_view);
   gtk_table_attach_defaults (GTK_TABLE (table), btn,
 			     1, 2, 3, 4);
   
-  btn = make_padded_button (_("ai_li_update"));
+  btn = make_padded_button (_("ai_li_update"),
+			    OssoGtkButtonAttachFlags
+			    (OSSO_GTK_BUTTON_ATTACH_EAST |
+			     OSSO_GTK_BUTTON_ATTACH_SOUTH |
+			     OSSO_GTK_BUTTON_ATTACH_WEST));
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &upgrade_applications_view);
@@ -260,7 +276,12 @@ make_main_view (view *v)
 
   if (red_pill_mode)
     {
-      btn = make_padded_button (_("ai_me_tools_refresh"));
+      btn = make_padded_button (_("ai_me_tools_refresh"),
+				OssoGtkButtonAttachFlags
+				(OSSO_GTK_BUTTON_ATTACH_NORTH |
+				 OSSO_GTK_BUTTON_ATTACH_EAST |
+				 OSSO_GTK_BUTTON_ATTACH_SOUTH |
+				 OSSO_GTK_BUTTON_ATTACH_WEST));
       g_signal_connect (G_OBJECT (btn), "clicked",
 			G_CALLBACK (refresh_package_cache),
 			NULL);
@@ -414,7 +435,7 @@ free_all_packages ()
       free_packages (upgradeable_packages);
       upgradeable_packages = NULL;
     }
-    
+
   if (installed_packages)
     {
       free_packages (installed_packages);
@@ -667,6 +688,7 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	  count++;
 	  if (info->installed_version && info->available_version)
 	    {
+	      info->ref ();
 	      upgradeable_packages = g_list_prepend (upgradeable_packages,
 						     info);
 	      upg_p++;
@@ -676,6 +698,7 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	      section_info *sec = find_section_info (&install_sections,
 						     info->available_section,
 						     true, false);
+	      info->ref ();
 	      sec->packages = g_list_prepend (sec->packages, info);
 
 	      info->ref ();
@@ -686,10 +709,13 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	  
 	  if (info->installed_version)
 	    {
+	      info->ref ();
 	      installed_packages = g_list_prepend (installed_packages,
 						   info);
 	      inst_p++;
 	    }
+
+	  info->unref ();
 	}
 
       if (g_list_length (all_si->packages) <= MAX_PACKAGES_NO_CATEGORIES)
@@ -736,7 +762,7 @@ get_package_list_with_cont (void (*cont) (void *data), void *data)
   clear_global_package_list ();
   clear_global_section_list ();
   free_all_packages ();
-  
+
   show_updating ();
   apt_worker_get_package_list (!red_pill_mode,
 			       false, 
@@ -2246,6 +2272,8 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
     pi->summary = g_strdup (_("ai_ni_error_install_incompatible"));
   else if (pi->info.installable_status == status_incompatible_current)
     pi->summary = g_strdup (_("ai_ni_error_n770package_incompatible"));
+  else if (pi->info.installable_status == status_corrupted)
+    pi->summary = g_strdup (_("ai_ni_error_install_corrupted"));
   else
     pi->summary = decode_summary (dec, pi, false);
 
