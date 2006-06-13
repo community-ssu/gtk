@@ -1,0 +1,3 @@
+[install]
+repo_name = Demo Catalogue
+repo_deb  = deb http://stage.maemo.org/testrepo demo user

@@ -1,0 +1,21 @@
+Architectures: armel i386
+Components: user
+Date: Thu, 08 Jun 2006 15:16:05 UTC
+Origin: Nokia
+Suite: demo
+Version: 1.0
+MD5Sum:
+ d41d8cd98f00b204e9800998ecf8427e                0 user/binary-armel/Packages
+ 997c743faab7b194a07f451281a2bcce               29 user/binary-armel/Packages.gz
+ d41d8cd98f00b204e9800998ecf8427e                0 user/binary-i386/Packages
+ 997c743faab7b194a07f451281a2bcce               29 user/binary-i386/Packages.gz
+SHA1:
+ da39a3ee5e6b4b0d3255bfef95601890afd80709                0 user/binary-armel/Packages
+ 53140205b3cbe04044e91503921ac52df81b8bd8               29 user/binary-armel/Packages.gz
+ da39a3ee5e6b4b0d3255bfef95601890afd80709                0 user/binary-i386/Packages
+ 53140205b3cbe04044e91503921ac52df81b8bd8               29 user/binary-i386/Packages.gz
+SHA256:
+ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855                0 user/binary-armel/Packages
+ c34af924d1aaee145683fc116194b3cd14aaa84d1ba373ccd7830cda79f19bf1               29 user/binary-armel/Packages.gz
+ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855                0 user/binary-i386/Packages
+ c34af924d1aaee145683fc116194b3cd14aaa84d1ba373ccd7830cda79f19bf1               29 user/binary-i386/Packages.gz

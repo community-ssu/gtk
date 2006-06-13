@@ -1,0 +1,1848 @@
+Package: osso-xterm
+Priority: optional
+Section: maemo/Applications
+Installed-Size: 252
+Maintainer: Johan Hedberg <johan.hedberg@nokia.com>
+Architecture: armel
+Version: 0.13
+Provides: x-terminal-emulator
+Depends: hildon-libs0 (>= 0.12.17-1), libatk1.0-0 (>= 1.9.0), libaudiofile0 (>= 0.2.3-4), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libexpat1 (>= 1.95.8), libfontconfig1 (>= 2.3.2-1osso7), libfreetype6 (>= 2.1.10-1osso1), libgconf2-6 (>= 2.6.4.14), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libmatchbox1 (>= 1.7-1), libncurses5 (>= 5.4-1), libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1), libpng12-0 (>= 1.2.8rel), libvte4 (>= 1:0.11.11), libx11-6 | xlibs (>> 4.1.0), libxau0, libxext6 | xlibs (>> 4.1.0), libxft2 (>= 2.1.6-1osso10), libxrender1, osso-esd, zlib1g (>= 1:1.2.1)
+Conflicts: xterminal
+Filename: dists/old/user/binary-armel/osso-xterm_0.13_armel.deb
+Size: 33916
+MD5sum: b3a7781ed420ce2469d9edcf04e612ae
+SHA1: 5bc5589c312c562b27faeef9ed4c355d175b12a6
+SHA256: a48d5a1b0bda505411282b7cb12b03513014948bca9e6e4641311b59efaaf898
+Description: X Terminal Emulator for OSSO
+ This package contains an X Terminal Emulator which is based on xterminal
+ (http://www.os-cillation.com/article.php?sid=40) by Benedikt Meurer
+ <benny@xfce.org> and Francois Le Clainche <fleclainche@wanadoo.fr>
+
+Package: libvte4
+Priority: optional
+Section: libs
+Installed-Size: 1420
+Maintainer: Arnaud Patard <arnaud.patard@rtp-net.org>
+Architecture: armel
+Source: vte
+Version: 1:0.11.13-3osso1
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libfontconfig1 (>= 2.3.2-1osso7), libfreetype6 (>= 2.1.10-1osso1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libncurses5 (>= 5.4-1), libpango1.0-0 (>= 1.8.1), libx11-6 | xlibs (>> 4.1.0), libxau0, libxft2 (>= 2.1.6-1osso10), libxrender1, zlib1g (>= 1:1.2.1), libvte-common (= 1:0.11.13-3osso1)
+Filename: dists/old/user/binary-armel/libvte4_1:0.11.13-3osso1_armel.deb
+Size: 679066
+MD5sum: 86d72d0fba59bdfbd4662eafcc002f6d
+SHA1: c4417e78d30ffcb5f4e6d99891e7358c51f5fd98
+SHA256: 0153d47c08c064eeaca817dad0cbf105fca9e86d516f08524690cc74f3d30186
+Description: Terminal emulator widget for GTK+ 2.0 - runtime files
+ The VTE library inserts terminal capability strings into a trie, and then
+ uses it to determine if data received from a pseudo-terminal is a control
+ sequence or just random data. The sample program "interpret" illustrates
+ more or less what the widget sees after it filters incoming data.
+
+Package: libncurses5
+Priority: required
+Section: base
+Installed-Size: 516
+Maintainer: Daniel Jacobowitz <ncurses-maint@debian.org>
+Architecture: armel
+Source: ncurses
+Version: 5.4-3
+Depends: libc6 (>= 2.3.5-1)
+Filename: dists/old/user/binary-armel/libncurses5_5.4-3_armel.deb
+Size: 274132
+MD5sum: b19a90ebb98bb7f7e61267301a3bb35f
+SHA1: f4346666ec2e5ce7eec3df347a0545a5a6d03e72
+SHA256: 87623f0722a60b77c502e557781c21b114526167ddf410d9795e6ea6e4b37f7a
+Description: Shared libraries for terminal handling
+ This package contains the shared libraries necessary to run programs
+ compiled with ncurses.
+
+Package: hello-world-app
+Priority: optional
+Section: user/other
+Installed-Size: 200
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Version: 0.4
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1)
+Pre-Depends: maemo-select-menu-location
+Filename: dists/old/user/binary-armel/hello-world-app_0.4_armel.deb
+Size: 16624
+MD5sum: 6fad0e51230db194ad875b990321ecc3
+SHA1: 123cded8d61ce33cd30c6f8fe76aa192c4b54e96
+SHA256: cee3fc5090eff4825a5374fedd19e5a8cf501c55912747c2eb2c81b2917c5bf0
+Description: An example package for the application installer
+ It contains an application, a control panel plugin, a home plugin, a
+ statusbar plugin, a shared library, and a GNU icon.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: package-1
+Priority: optional
+Section: user/Test
+Installed-Size: 40
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: osso-application-installer-test-packages
+Version: 2
+Depends: hildon-libs0 (>= 0.12.17-1), libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1)
+Pre-Depends: maemo-select-menu-location
+Filename: dists/old/user/binary-armel/package-1_2_armel.deb
+Size: 2956
+MD5sum: a679de951d234342e502c9b0d9d1b70b
+SHA1: cdf910fb44432685e5f1d1d4aae881a5d1fe3c4b
+SHA256: 2c4f0e078ac89ac96fef11067beac1a2f859a262d79eeb6ecf702d469eb76c67
+Description: Test application one, with icon.
+ When installing this package, you get to choose the location for its
+ menu entry.
+
+Package: package-2
+Priority: optional
+Section: user/Test
+Installed-Size: 64
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: osso-application-installer-test-packages
+Version: 2
+Depends: hildon-libs0 (>= 0.12.17-1), libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1)
+Pre-Depends: maemo-select-menu-location
+Filename: dists/old/user/binary-armel/package-2_2_armel.deb
+Size: 3542
+MD5sum: c4428a432e1588942c3a14cc641fdcf1
+SHA1: 5df01af9c3c05859aea9769b00f4ce9c95bed9df
+SHA256: c236082810b1f3ebb25d179608ef1bbfd3a546f5a814369e12d256249cd85236
+Description: Test application two.
+ When installing this package, you get to choose the location for its
+ menu entry.  When uninstalling this application while it is running,
+ you should be informed about this.
+
+Package: python2.4-runtime
+Priority: optional
+Section: user/system-tools
+Installed-Size: 8
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Source: python-runtime
+Version: 0.1-1osso3
+Depends: python2.4-bluez, python2.4-gtk2, python2.4-numeric, python2.4-dbus, python2.4-osso, python2.4-xml, python2.4-gstreamer, python2.4-pygame, python2.4, python2.4-runtime, python2.4-hildon
+Filename: dists/old/user/binary-armel/python2.4-runtime_0.1-1osso3_armel.deb
+Size: 1358
+MD5sum: 91f12fb8cabdc4ae1321f19be3e9145d
+SHA1: 9301554d30150743ed8393e0fe970f23b066e7de
+SHA256: c5a4c99cad8126c77086bac81f2916c01d86c76f1bfea662632e2d998593d60f
+Description: Python runtime environment.
+Maemo-Icon-26: 
+  iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABmJLR0QA/wD/AP+gvaeTAAAA
+  CXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1gUMFRIHdvjhsQAAAeVJREFUSMe1lrFL60Ac
+  xz+JtToo780ZHVQsWRzE6QWSVUURo6Cb0k3/ACnokLmCbuWNClKHx8PRWIiTOKhQFHVw7Fyd
+  tIpxuUApuUtT4ne5XO5+9737/e57v5+GAnbRGwMOAAvIS6a1gADYrFVKj7K1NAXJb+BOdC+B
+  WaBfsa8GUKhVSs24QV1huAQYwGKtUloEyqhhCBvSEhmiLdhFrx8YJRlGL0SRW/8Cr8BCF0TS
+  UOQURg/Af8lis6pFpUQi8EsxR7+ReGFGRlSvWivAWNsFOTHdoJmzi944cK7yb0osA/Nt/d16
+  1XJ0YD9DEtkF2deFGLPChyTulq5QfGpoWngFTMQM5fUMT3O05/i/gJG01zvCNXAr3BKHd+Ci
+  7PgtDQ570dFrnxaulR0/D/wBBiTzhoBtYDJRRxKJr5cdfxlYzcKvshg97zn+S1YkEVEr5v+9
+  poVTGV6Uli6SVic+E3JPWgQ6sCXepJ9CA9jK1SqlB7voFToe1UdgXGL4BXii7YbkxHSDpvSp
+  r1etXWAnZigETkXbiWPTDY57FWxcPppr678Bg+L7tpcMG3ZB+g8YBjaSbPQE/ybhyXSDz7Zq
+  qZE6x9erVlRuGQlp4RSYjgoZ0w3SlVvCwAbOJKJGaG1GbMiWkQB8A+PrdkmoDOKGAAAAAElF
+  TkSuQmCC
+
+Package: python2.4
+Priority: optional
+Section: python
+Installed-Size: 5484
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Version: 2.4.2-1osso10
+Conflicts: python2.4-dev (<< 2.3.95-2)
+Filename: dists/old/user/binary-armel/python2.4_2.4.2-1osso10_armel.deb
+Size: 2055540
+MD5sum: bf9c68a0b2c624a71e0a3551a2e85a67
+SHA1: 1e1af7f618caa5ddbf788248bc9172d07b7be4e0
+SHA256: 732f5792424d3a764ed2e294b42828cc721a7db2405cb8a170e15f859a44f841
+Description: An interactive high-level object-oriented language (version 2.4)
+ Version 2.4 of the high-level, interactive object oriented language,
+ includes an extensive class library with lots of goodies for
+ network programming, system administration, sounds and graphics.
+
+Package: python2.4-gtk2
+Priority: optional
+Section: python
+Installed-Size: 1804
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Source: python-gtk2
+Version: 2.6.3-1osso3
+Depends: python2.4, libgtk2.0-0
+Filename: dists/old/user/binary-armel/python2.4-gtk2_2.6.3-1osso3_armel.deb
+Size: 515978
+MD5sum: 721a13919beb58fdab9cc3c22d4980ef
+SHA1: c76d3ffaa93593f0d01edd357200b8f98c176fe1
+SHA256: 44c95a38b7442f01cf0cd9895353b7fbbbc6715feae07420147d570ce4172ab7
+Description: Python bindings for the GTK+ widget set
+ This archive contains modules that allow you to use GTK+ in Python
+ programs. This package contains the bindings for the new version 2.0
+ of that toolkit.
+
+Package: python2.4-hildon
+Priority: optional
+Section: libs
+Installed-Size: 128
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Source: python-hildon
+Version: 0.8.4-1osso4
+Depends: hildon-base-lib0 (>= 0.9.3), hildon-fm1 (>= 0.25-2), hildon-libs0 (>= 0.12.17-1), libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libpango1.0-0 (>= 1.8.1), python2.4, python2.4-gtk2
+Filename: dists/old/user/binary-armel/python2.4-hildon_0.8.4-1osso4_armel.deb
+Size: 30134
+MD5sum: 8338a430a1d02e89a17eb62befa02c8e
+SHA1: c9e68dda3fb873ec3f3f950101d4bb2f503e76d5
+SHA256: 6fefd68d8b5761822e23a670411f96d0088e912915a0905db0e033ec4e8ece1c
+Description: Python bindings for Hildon library
+
+Package: python2.4-osso
+Priority: optional
+Section: libs
+Installed-Size: 64
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Source: python-osso
+Version: 0.1-1osso3
+Depends: python2.4-gtk2, python2.4, libdbus-glib-1-2, libosso1, libgtk2.0-0, libpango1.0-0, libglib2.0-0
+Filename: dists/old/user/binary-armel/python2.4-osso_0.1-1osso3_armel.deb
+Size: 13818
+MD5sum: 39a3fe4431b962c46321e19049170cf8
+SHA1: fe96707f8086faf2ab573c45c2048f8bc09ef570
+SHA256: 48515bec8c3e1cb845afe17f172b51f82124ef4bab6532ec35329e747b8e310d
+Description: Python bindings for Libosso library
+
+Package: python2.4-bluez
+Priority: optional
+Section: python
+Installed-Size: 104
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Source: pybluez
+Version: 0.6.1-1osso3
+Depends: python2.4
+Filename: dists/old/user/binary-armel/python2.4-bluez_0.6.1-1osso3_armel.deb
+Size: 32884
+MD5sum: 33e18c9811a0ab2ac6ccbd298b2ecc83
+SHA1: a16a0d8381f0dc01e54b2cd70285fd435aa0c3a9
+SHA256: a42ca40f1128b364daa19c10cd5d1fefade9def100cc958cbc64f53f8a5eaebd
+Description: Python wrappers around BlueZ
+ PyBlueZ is an effort to create python wrappers around bluez to allow python
+ developers to use system bluetooth resources. PyBluez works on machines
+ running the GNU/Linux operating system and the bluez bluetooth stack.
+ .
+ This package contains a PyBlueZ build for use with Python 2.4
+
+Package: python2.4-numeric
+Priority: optional
+Section: python
+Installed-Size: 1804
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Source: python-numeric
+Version: 24.2-1osso1
+Depends: python2.4
+Filename: dists/old/user/binary-armel/python2.4-numeric_24.2-1osso1_armel.deb
+Size: 611752
+MD5sum: 3c444196cf945a3aa6f8db06dc29327b
+SHA1: bbcc9345689f0f78c0632a0e53409217703f713b
+SHA256: 6b998a25ed483312e31539d01e79b5cb1f8cfd7581ce2ae37ab97e4612136013
+Description: Numerical (matrix-oriented) Mathematics for Python
+ The Numeric Extensions to Python (NumPy) add powerful
+ multi-dimensional array objects to the wonderful general purpose
+ programming language Python. These new objects give Python the number
+ crunching power of numeric languages like Matlab and IDL while
+ maintaining all of the advantages of the general-purpose programming
+ language Python.
+ .
+ These extensions add two new object types to Python, and then include
+ a number of extensions that take advantage of these two new objects:
+ .
+  - Multidimensional Array Objects
+    * Efficient arrays of homogeneous machine types (floats, longs,
+      complex doubles)
+    * Arbitrary number of dimensions
+    * Sophisticated structural operations
+  - Universal Function Objects
+    * Support mathematical functions on all Python objects
+    * Very efficient for array objects
+  - Simple interfaces to existing numerical libraries:
+    * Linear Algebra (LAPACK)
+    * Fourier Transforms (FFTPACK)
+    * Random Arrays (RANLIB)
+    * Independent Random Streams (RNG, ranf)
+    * Masked Arrays (MA)
+
+Package: python2.4-pyrex
+Priority: optional
+Section: python
+Installed-Size: 2100
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Source: pyrex
+Version: 0.9.3-1osso4
+Depends: python2.4
+Recommends: python2.4-dev
+Filename: dists/old/user/binary-armel/python2.4-pyrex_0.9.3-1osso4_armel.deb
+Size: 439838
+MD5sum: 4a5559f302d3031f460818cb5198e5e8
+SHA1: 5cbe0e147825f27ffd28c6e60ae90c86a6f02dd5
+SHA256: e6b0b3c7a52cdc183eeaf6c58257bf9368191c4be728075e55c22ad740e9554e
+Description: compile native-code modules for python from python-like syntax
+ Pyrex lets you write code that mixes Python and C data types any way you want,
+ and compiles it into a C extension for Python.
+ You can get very large speedups for tasks that don't need all the dynamic
+ features of python, with very small differences in syntax and much less
+ hassle than writing your modules from scratch in C.
+ Pyrex was developed by Greg Ewing at the University of Canterbury, NZ
+ .
+ This package is built for Python 2.4.x
+
+Package: python2.4-dbus
+Priority: optional
+Section: python
+Installed-Size: 404
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Source: python-dbus
+Version: 0.61-1osso3
+Depends: python2.4, libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61)
+Filename: dists/old/user/binary-armel/python2.4-dbus_0.61-1osso3_armel.deb
+Size: 102224
+MD5sum: 24b8b22f5e177d6b8a1db38222d999bd
+SHA1: 25a7ef8c91495bfadf8452fb7f9db27611f6a55a
+SHA256: 164b2db9c4d2a131c8bca735368a5bc5cfc46eb9a2f4880acfa3de38de9e0ef6
+Description: Python wrappers around D-Bus.
+
+Package: python2.4-pygame
+Priority: optional
+Section: interpreters
+Installed-Size: 824
+Maintainer: Ed Boraas <ed@debian.org>
+Architecture: armel
+Source: pygame
+Version: 1.6-2osso4
+Depends: python2.4, python2.4-numeric, libsdl1.2, libsdl-image1.2, libsdl-mixer1.2, libsdl-ttf2.0-0
+Filename: dists/old/user/binary-armel/python2.4-pygame_1.6-2osso4_armel.deb
+Size: 300618
+MD5sum: 3a6402b305227e7517791eac8dd12a43
+SHA1: 78591a4ac34d99db49386a0edf444650bcb19f0f
+SHA256: 1ac6947140317276f7cd0fb7122dbc7ff4011f12649ac85727b3c77b62c46919
+Description: SDL bindings for games development in Python 2.4
+ A multimedia development kit for Python. Pygame provides modules for you
+ to access the video display, play sounds, track time, read the mouse and
+ joystick, control the CD player, render true type fonts and more. It does
+ this using mainly the cross-platform SDL library, a lightweight wrapper
+ to OS-specific APIs.
+
+Package: libsdl-ttf2.0-0
+Priority: optional
+Section: libs
+Installed-Size: 76
+Maintainer: Jerome Marant <jerome@debian.org>
+Architecture: armel
+Source: sdl-ttf2.0
+Version: 2.0.6-5osso1
+Depends: libc6 (>= 2.3.5-1), libfreetype6 (>= 2.1.10-1osso1), libsdl1.2, zlib1g (>= 1:1.2.1)
+Filename: dists/old/user/binary-armel/libsdl-ttf2.0-0_2.0.6-5osso1_armel.deb
+Size: 14240
+MD5sum: 712ff180d50fe98dd0b03ec43773d604
+SHA1: aec3d616f431dbafc37a2e1fb137299a775a7cb4
+SHA256: 3a0c59f472c439b03d45167daf200508332061fc8a6f0abf2feb37a7cea0601e
+Description: ttf library for Simple DirectMedia Layer with FreeType 2 support
+ SDL_ttf is a sample TrueType font library. It allows you to use
+ TrueType fonts in SDL applications.
+
+Package: python2.4-xml
+Priority: optional
+Section: python
+Installed-Size: 1940
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Source: python-xml
+Version: 0.8.4-1osso4
+Depends: python2.4
+Filename: dists/old/user/binary-armel/python2.4-xml_0.8.4-1osso4_armel.deb
+Size: 421514
+MD5sum: 4ba63cb318f63a4506026bdc0561c730
+SHA1: 29e1045a3dc99af9008f0684385674ea9d6e2454
+SHA256: ca422b4b75172f364ed2a9b1249381d1856738f8a9cc851584e4fc935be1c9c9
+Description: XML tools for Python
+ The Python/XML distribution contains the basic tools required for
+ processing XML data using the Python programming language, assembled
+ into one easy-to-install package.  The distribution includes parsers
+ and standard interfaces such as SAX and DOM, along with various other
+ useful modules.
+ .
+ The package currently contains:
+ .
+  * XML parsers: Pyexpat (Jack Jansen), xmlproc (Lars Marius
+    Garshol), sgmlop (Fredrik Lundh).
+  * SAX interface (Lars Marius Garshol)
+  * minidom DOM implementation (Paul Prescod, others)
+  * 4DOM and 4XPath from Fourthought (Uche Ogbuji, Mike Olson)
+  * Schema implementations: TREX (James Tauber)
+  * Various utility modules and functions (various people)
+  * Documentation and example programs (various people)
+ .
+ This package is an empty dummy package that always depends on
+ a package built for Debian's default Python version.
+
+Package: python2.4-gstreamer
+Priority: optional
+Section: python
+Installed-Size: 432
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Architecture: armel
+Source: python-gstreamer
+Version: 0.10.4-0osso1
+Depends: python2.4, python2.4-gtk2
+Filename: dists/old/user/binary-armel/python2.4-gstreamer_0.10.4-0osso1_armel.deb
+Size: 119432
+MD5sum: f35171555a09d6c96dc67c8fbcabd9e0
+SHA1: a349ff7b19280fb48727cdc9629e2cdd7a6c93d7
+SHA256: 7ba88d5b63f7d94adfcd7628ec51f5af12f78042e8af45750d54e7a81349e98e
+Description: generic media-playing framework (Python bindings)
+ GStreamer is a media processing framework with support for a wide variety
+ of data sources, sinks, and formats through the use of dynamically loaded
+ plugins.
+ .
+ This package contains bindings to access GStreamer from within the
+ Python programming language.
+
+Package: hello-world-control-panel-applet-withoutdesktop
+Priority: optional
+Section: user/other
+Installed-Size: 88
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-control-panel-applet-withoutdesktop_0.5_armel.deb
+Size: 13980
+MD5sum: 2696343fda7c9488da2e163db2b07e36
+SHA1: dd2d1a5845359c6c12a5504e4987634a405f6165
+SHA256: 4db64aae0d3d25903c1c9f605990b15038d4fac03d928b7351ac8e881fcb70c3
+Description: Control Panel applet example package without the .desktop file
+ It contains a control panel applet without the hello-world-cp.desktop
+ and a GNU icon.
+ It doesn't work properly because, without the .desktop file it doesn't
+ show its launch button in the Control Panel.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-control-panel-applet-withoutpluginfield
+Priority: optional
+Section: user/other
+Installed-Size: 108
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-control-panel-applet-withoutpluginfield_0.5_armel.deb
+Size: 14460
+MD5sum: 26ea26075a54a2059a3b6675090489a4
+SHA1: ead3a40cb0c8e7e316e3c7cca3da47a02a7a0c31
+SHA256: 3748e27d605bd126973ad4038ba9f2026155948d68fba942da007c0caeba9950
+Description: Control Panel applet example package without the X-control-panel-plugin field in the .desktop file
+ It contains a control panel applet without the hello-world-cp.desktop
+ and a GNU icon.
+ It doesn't work properly because, without the X-control-panel-plugin
+ field in the .desktop file so it's shown in the control panel but it
+ cant't be launched.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-control-panel-applet
+Priority: optional
+Section: user/other
+Installed-Size: 108
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-control-panel-applet_0.5_armel.deb
+Size: 14410
+MD5sum: 83e9e48ab04bc6ba646078e0a7a40496
+SHA1: 1f8a3c247bfbccc4820f2976cd3262f0243e04d1
+SHA256: 134f82fe198e1442240bb11873e9c7ed825cb3419202b8be039d55816ab27b25
+Description: Control Panel applet example package which installs and works correctly
+ Example package for a Control Panel applet installable with the
+ Application Installer that contains a shared library a .desktop file and
+ a GNU icon.
+ Just the minimum desirable needed.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-home-applet-withoutdesktop
+Priority: optional
+Section: user/other
+Installed-Size: 40
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-home-applet-withoutdesktop_0.5_armel.deb
+Size: 4120
+MD5sum: ccdf45dec9202f07d5b7d4b882fee77a
+SHA1: e2c9a55f33b89a8ae334bbc52e7a578b4194d3f6
+SHA256: c91d4d7eb2dab3d8cabdc377b419e18008bf8665531cc5d48c9d019cbdeb0b2a
+Description: Home applet example package without the .desktop file
+ It contains a home applet without the hello-world-home.desktop.
+ It doesn't work properly because, without the .desktop file it doesn't
+ appear to be selectable in the Home menu.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-home-applet-withoutfieldname
+Priority: optional
+Section: user/other
+Installed-Size: 56
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-home-applet-withoutfieldname_0.5_armel.deb
+Size: 4404
+MD5sum: da1196b734457362c1c31a3c04fb08f5
+SHA1: 0ccee29cb437f242d5341e208c3634985cdc7401
+SHA256: 678a6ad47c44afe89f53616fb1984fa2fe134929b97d0f03d605387b36b3465a
+Description: Home applet example package without the Name field in the .desktop file
+ It contains a home applet without the Name field in the
+ hello-world-home.desktop.
+ It doesn't work properly because, without this it doesn't appear to be
+ selectable in the Home menu.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-home-applet-withoutfieldtype
+Priority: optional
+Section: user/other
+Installed-Size: 56
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-home-applet-withoutfieldtype_0.5_armel.deb
+Size: 4392
+MD5sum: 6a01d851a0581ec56e366d25653a30ac
+SHA1: de1fecfb816ab067a6c35e7745765e406a406d5b
+SHA256: a4b465a59e9215a1d93aebc21e6fa725788d4b2152d763a032a0c84b8f9f8a0d
+Description: Home applet example package without the Type field in the .desktop file
+ It contains a home applet without the Type field in the
+ hello-world-home.desktop.
+ It works properly because the Type field is desirable but not mandatory.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-home-applet-withoutfieldxhomeapplet
+Priority: optional
+Section: user/other
+Installed-Size: 56
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-home-applet-withoutfieldxhomeapplet_0.5_armel.deb
+Size: 4410
+MD5sum: f0e164b0b65a44c6fb7caa9e35ae2147
+SHA1: 2bf27c2118610ded3ff010b4b5affc083b875d64
+SHA256: d8e841969912161081cfd3974938fd9b9184346329b85020991fc094e2e0cad1
+Description: Home applet example package without the X-home-applet field in the .desktop file
+ It contains a home applet without the X-home-applet field in the
+ hello-world-home.desktop.
+ It doesn't work properly because, even being selectable, it doesn't load
+ the applet.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-home-applet-withoutlib
+Priority: optional
+Section: user/other
+Installed-Size: 32
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Filename: dists/old/user/binary-armel/hello-world-home-applet-withoutlib_0.5_armel.deb
+Size: 2188
+MD5sum: 39091eeabdf38bf6a6c672f21b0f46e5
+SHA1: 85960e4ccd4bf05671176693178c6abfc0c13c1f
+SHA256: 34962b891ebf6881a798132acd030e924c3e2346eb4598c879c9b31e7800808e
+Description: Home applet example package without the shared lib
+ It contains just the hello-world-home.desktop file.
+ It doesn't work properly because, even being selectable, it doesn't load
+ the applet.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-home-applet
+Priority: optional
+Section: user/other
+Installed-Size: 56
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-home-applet_0.5_armel.deb
+Size: 4390
+MD5sum: 5a6204a7e316635ccc82988e6040f123
+SHA1: d6373f1a5550f5a43fe0ad91e2616f8f19dae292
+SHA256: 8fe80bc2ba369510005c28160abe3caf5ec29a290544c4ad7ecccc8b78de364b
+Description: Home applet example package which installs and works correctly
+ Example package for a Home applet installable with the  Application
+ Installer that contains a shared library and a .desktop file.
+ Just the minimum desirable needed.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-mime-type
+Priority: optional
+Section: user/other
+Installed-Size: 112
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Replaces: hello-world-others-menu-app
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-mime-type_0.5_armel.deb
+Size: 16662
+MD5sum: fdb16407ee157e8af94bacc2eb69f7ab
+SHA1: 77176eb7587ce3b50a577659a33355f67cad671e
+SHA256: 221b7ca1a729a99791147ac10e88684c94b251ba5d9825e218390751a92fed88
+Description: Others Menu app example package registered as zip and png mime types handler
+ Example package for an Others Menu application installable with the
+ Application Installer that contains a shared library a .desktop file,
+ a .service file and a GNU icon which is registered as the zip and png
+ mime types handler.
+ Just the minimum desirable needed.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-others-menu-app
+Priority: optional
+Section: user/other
+Installed-Size: 112
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-others-menu-app_0.5_armel.deb
+Size: 16576
+MD5sum: da75cbb8b7c8a82c49a449302fd41190
+SHA1: c7b3cbee6ef1166972b544970aa50a93d225aea0
+SHA256: 23ad2ea7c8e72fc27dcc08ee98e3546e09e6c6fe76027d276e9afba35909dfe6
+Description: Others Menu app example package which installs and works correctly
+ Example package for an Others Menu application installable with the
+ Application Installer that contains a shared library a .desktop file,
+ a .service file and a GNU icon.
+ Just the minimum desirable needed.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-others-menu-dup
+Priority: optional
+Section: user/other
+Installed-Size: 104
+Maintainer: Andrés Gómez <agomez@igalia.com>
+Architecture: armel
+Source: hello-world-dup
+Version: 0.1
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-others-menu-dup_0.1_armel.deb
+Size: 9812
+MD5sum: e4b247edbb224af2d262f117ac886936
+SHA1: 8785a8ee87ca34752fc18be6a6c4ffb3a1be764d
+SHA256: 054a41a11e81492c7b4ee315f3c257e121cab0f439a0b6698c88030b82339ff6
+Description: An example package (duplicated from hello world) for the A.I.
+ It contains an application and a GNU icon and a .desktop file with
+ the same name as hello-world-others-menu-app has.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-others-menu-withoutdesktop-app
+Priority: optional
+Section: user/other
+Installed-Size: 92
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-others-menu-withoutdesktop-app_0.5_armel.deb
+Size: 15874
+MD5sum: 90c248f7f32621d0989a8ddba4db44e3
+SHA1: d041d06e8a2c0badb5057eba14d7edb17da53896
+SHA256: 80455872d0313175663e5d2a55f53357bc36e7853e0d1f44434bc7d039d42486
+Description: Others Menu app example package without .desktop file
+ It contains an application without hello-world.desktop, a .service file
+ and a GNU icon.
+ It doesn't work properly because, without the .desktop file it doesn't
+ show its launch button in the Others Menu.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-others-menu-withoutexec-app
+Priority: optional
+Section: user/other
+Installed-Size: 112
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-others-menu-withoutexec-app_0.5_armel.deb
+Size: 16554
+MD5sum: fc49cc7a3edab13a32ba00169e1e6ec2
+SHA1: 2f1cf4e1c5162282b378d3e8c4c25c8cbff0c3dc
+SHA256: e8cf443ac89084cd7de959aebe7f64ec439b5a56cda7b6a6bc554db973533b5e
+Description: Others Menu app example package without the Exec field in .desktop file
+ It contains a GNU icon, a .service file and an application without the
+ Exec field in the hello-world.desktop file which is desirable but not
+ mandatory so it works.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-others-menu-withoutossoservice-app
+Priority: optional
+Section: user/other
+Installed-Size: 100
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-others-menu-withoutossoservice-app_0.5_armel.deb
+Size: 16396
+MD5sum: 26f75ba05fd308ce8a22bd1e43ce3f1d
+SHA1: 98536d86b4e0c3ea952011a1f182545650b0d1b4
+SHA256: 492a214338899e0ebad0b27c1a0a1b25ef60454a0a31f816abbdf5fc8b512f6b
+Description: Others Menu app example package without the .service file
+ It contains a GNU icon, a proper.desktop file and an application without
+ the .service file which is desirable but not mandatory so it works.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-others-menu-withoutservice-app
+Priority: optional
+Section: user/other
+Installed-Size: 112
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libosso1 (>= 1.11-1), libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-others-menu-withoutservice-app_0.5_armel.deb
+Size: 16546
+MD5sum: edca150ef7134f8afd417e70a5b75bd1
+SHA1: dfbf9c03f1497e7cbb2444cf0dc39c336c69023b
+SHA256: fb3c5c0b1de0cb3f43e712aad6b896716fe7f1daf8155aa7d04c255293a9a045
+Description: Others Menu app example package without the X-Osso-Service field in .desktop file
+ It contains a GNU icon, a .service file and an application without the
+ X-Osso-Service field in the hello-world.desktop file which is desirable
+ but not mandatory so it works.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-status-bar-plugin-withoutname
+Priority: optional
+Section: user/other
+Installed-Size: 52
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-status-bar-plugin-withoutname_0.5_armel.deb
+Size: 4654
+MD5sum: ba163b74faa38e64cc243c3c40495289
+SHA1: e2de04cbbb982de379cb2be2b7da42dc4577967e
+SHA256: 3f7d4ab2a080be007c9f98075f3d2aeb08234ed7ddeba69dc61489527fc23efc
+Description: Status Bar plugin example package without the Name field in the .desktop file
+ It contains a status bar plugin without the Name field in the
+ hello-world-sb.desktop file which causes the plugin not to work.
+ It can be loaded using a dmes-send command but it's not loaded
+ automatically on boot.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-status-bar-plugin-withoutpluginname
+Priority: optional
+Section: user/other
+Installed-Size: 52
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-status-bar-plugin-withoutpluginname_0.5_armel.deb
+Size: 4656
+MD5sum: 3263bab1b50ca3be855f6c54afff3249
+SHA1: 2ddd7b8b840312ca6630fda83b6ad46ec83b6528
+SHA256: 48e62a1f7c4e08cd502665758158e1473bed4c5ca05b6b3b24c6e1a78997ed68
+Description: Status Bar plugin example package without the X-status-bar-plugin field in the .desktop file
+ It contains a status bar plugin without the X-status-bar-plugin field in
+ the hello-world-sb.desktop file which causes the plugin not to work.
+ It can be loaded using a dmes-send command but it's not loaded
+ automatically on boot.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: hello-world-status-bar-plugin
+Priority: optional
+Section: user/other
+Installed-Size: 52
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/hello-world-status-bar-plugin_0.5_armel.deb
+Size: 4624
+MD5sum: ce056de6d935bf6c75bfcb95b0a9238d
+SHA1: 2422a5375d6cfe5fd634058f39b95f2c3e1dc4e4
+SHA256: f703487543be0c26e389feec4c21ed7e7a9c3d2726740ba48e9960b22ba74640
+Description: Status Bar plugin example package which installs and works correctly
+ Example package for a Status Bar plugin installable with the Application
+ Installer that contains a shared library and a .desktop file
+ Just the minimum desirable needed.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: libhello-world-as-invalid-ha
+Priority: optional
+Section: user/other
+Installed-Size: 44
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/libhello-world-as-invalid-ha_0.5_armel.deb
+Size: 4458
+MD5sum: dc32573dd4ac0a8ed73e4b454ff13974
+SHA1: f2ba6867de8857198e56d7e7aad9bfacc7214246
+SHA256: 08e37fd7c205b20236f1a470198582289a18d8a828e27cf0ffc32f829a328292
+Description: Home applet example package with an invalid shared lib
+ It contains the hello-world-home.desktop file and an invalid shared lib.
+ It doesn't work properly because, even being selectable, it doesn't load
+ the applet because the shared lib doesn't implement the needed
+ interfaces.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: libhello-world-as-invalid-sb
+Priority: optional
+Section: user/other
+Installed-Size: 44
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libhello-world, libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/libhello-world-as-invalid-sb_0.5_armel.deb
+Size: 4410
+MD5sum: dfd0801cae1cbe9213dd607dd59d38de
+SHA1: 70a87f32cf8b9560d36d04f59cbd9c3b2d15462e
+SHA256: 4a52edc41b26944b1deb05cc7b11d1066f8826b0ed1b34c4290f95d5d305e827
+Description: Status Bar plugin example package with a non working library
+ It contains a .desktop file and a status bar plugin which doesn't
+ implement the needed interfaces which causes the plugin not to work.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: libhello-world-dev
+Priority: optional
+Section: user/other
+Installed-Size: 28
+Maintainer: Andrés Gómez <agomez@igalia.com>
+Architecture: armel
+Source: hello-world-dup
+Version: 0.1
+Filename: dists/old/user/binary-armel/libhello-world-dev_0.1_armel.deb
+Size: 2318
+MD5sum: e1d7661f0721869d1e2870ae4e05500c
+SHA1: bc5e06709706e292bc8618067e418f5b453f544b
+SHA256: 0e5fcb24e1aa3947774f6f6b052ba2e6525d4c0d64daa507a6f828774436c25b
+Description: An example package for the application installer
+ It contains a static library for development.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: libhello-world-dev
+Priority: optional
+Section: user/other
+Installed-Size: 28
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Filename: dists/old/user/binary-armel/libhello-world-dev_0.5_armel.deb
+Size: 2346
+MD5sum: 8319a97b4bf1066cf0c455d7e0505b84
+SHA1: 961c05e3860bb341952761fef8c7c1a07d85fd2f
+SHA256: f599d98874b7fffa71917b21e3202b56b7661633aefd6421f2ab0c87929ce4e2
+Description: Development example package for creating new test packages
+ It contains a static library for development of new test packages based
+ on the hello-world example.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: libhello-world
+Priority: optional
+Section: user/other
+Installed-Size: 36
+Maintainer: Andrés Gómez <agomez@igalia.com>
+Architecture: armel
+Source: hello-world-dup
+Version: 0.1
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/libhello-world_0.1_armel.deb
+Size: 4382
+MD5sum: cba7a405099b112314464d6230746494
+SHA1: fe603d44e368bf588aabe890eca7e749f2d62bb3
+SHA256: 6c024136d78a3f4c4d85a5a8cb5158e3c77d3504239944979a1d198ab227b1d8
+Description: An example package for the application installer
+ It contains a shared library.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: libhello-world
+Priority: optional
+Section: user/other
+Installed-Size: 84
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: armel
+Source: hello-world-app
+Version: 0.5
+Depends: libatk1.0-0 (>= 1.9.0), libc6 (>= 2.3.5-1), libglib2.0-0 (>= 2.8.6-1osso1), libgtk2.0-0 (>= 2:2.6.10-1.osso8), libpango1.0-0 (>= 1.8.1)
+Filename: dists/old/user/binary-armel/libhello-world_0.5_armel.deb
+Size: 9508
+MD5sum: 633200bda6b9ded5a382cd95b35ff45a
+SHA1: baa2a3eedfdb1d16f0bc7a37fdde7f8ceead0ecb
+SHA256: 6eb031904156852a8373a7a52ddbf0df3d9334f88fdd2449d430008062fe72da
+Description: An example package for the application installer
+ It contains a shared library and a GNU icon needed by the Others Menu
+ application, Control Panel applet, Status Bar plugin and Home applet
+ test packages which works properly.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: zip-mime-type-incomplete
+Priority: optional
+Section: user/other
+Installed-Size: 52
+Maintainer: Xavier Castanho Garcia <xcastanho@igalia.com>
+Architecture: armel
+Source: zip-mime-type
+Version: 0.0.2-1
+Filename: dists/old/user/binary-armel/zip-mime-type-incomplete_0.0.2-1_armel.deb
+Size: 2906
+MD5sum: 6d7bd66aacdc1c67fd33307d5229eb1e
+SHA1: b9faa4a9910f432d6cca8e2335d35f50637b0332
+SHA256: 9ff050fc92721bb003d869306b7d900c00ceb7e2b06b37f7f02e0491cccf1e49
+Description: Example of incomplete mime type declaration to ZIP type.
+ This package tries to test MIME type extensibility
+ point. Source package is part of extensibility project
+ developed by Igalia.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: zip-mime-type-incorrect
+Priority: optional
+Section: user/other
+Installed-Size: 52
+Maintainer: Xavier Castanho Garcia <xcastanho@igalia.com>
+Architecture: armel
+Source: zip-mime-type
+Version: 0.0.2-1
+Filename: dists/old/user/binary-armel/zip-mime-type-incorrect_0.0.2-1_armel.deb
+Size: 2956
+MD5sum: 66ce0c119761603402b343595d50006a
+SHA1: 1fce41f232797ceb104925aaf09337fac7ec090f
+SHA256: 658cc36c70523d19b6b0b481ce18525db74ed72a53fe772f213da90b0d3417e5
+Description: Example of incorrect mime type declaration to ZIP type.
+ This package tries to test MIME type extensibility
+ point with incorrect XML. Source package is part of extensibility project
+ developed by Igalia.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: zip-mime-type-malformed
+Priority: optional
+Section: user/other
+Installed-Size: 52
+Maintainer: Xavier Castanho Garcia <xcastanho@igalia.com>
+Architecture: armel
+Source: zip-mime-type
+Version: 0.0.2-1
+Filename: dists/old/user/binary-armel/zip-mime-type-malformed_0.0.2-1_armel.deb
+Size: 2960
+MD5sum: 530d36b825832a1ab2b617610a43ec5b
+SHA1: f2b60debe5133c5be30060c80a6fb94cd8fa6e2f
+SHA256: ebc023a3a0ca779f6f9444565371b7c2aa7580ce92cce530073e6d62d28c7cf1
+Description: Example of incomplete mime type declaration to ZIP type.
+ This package tries to test MIME type extensibility
+ point. Source package is part of extensibility project
+ developed by Igalia.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: zip-mime-type
+Priority: optional
+Section: user/other
+Installed-Size: 56
+Maintainer: Xavier Castanho Garcia <xcastanho@igalia.com>
+Architecture: armel
+Version: 0.0.2-1
+Filename: dists/old/user/binary-armel/zip-mime-type_0.0.2-1_armel.deb
+Size: 3096
+MD5sum: 4948515f1d95c8e6a75100eba5b75eea
+SHA1: 71a281d37567a086c87b23b7ce58159dbb24dc10
+SHA256: 52b6f2b049a8090558bf9b90bf79dc93476a6f9f13f91de0394ac371e8076dd8
+Description: Example mime type declaration to ZIP type.
+ This package tries to test MIME type extensibility
+ point. Source package is part of extensibility project
+ developed by Igalia.
+Maemo-Icon-26: 
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAAAAAAKtWG8AAAACXBIWXMAAAAnAAAAJwEqCZFP
+ AAAAB3RJTUUH1QkMEgEBuF+MPAAAACF0RVh0Q29tbWVudABKUEVHOmdudS1oZWFkLmpwZyAy
+ NzZ4MjYxjzmxCgAAAi9JREFUKM9dkd9LU2Ecxp/37HU/nFub02Zty9K0lc5FYWJBUCBeRD+o
+ y6j/IoIuoj8hgi6DgqAroSAk+gWSIuZVTU1nuDM3tzl1O3PNc3a29/12cSyoy+/zfD+fm4cR
+ QJWdPXgiCgMAECNVF72t4ICZmEmxmn9ooN8FAEV1gnmr/VeCHDKd9USHlIAecAIAfPJmM5l5
+ br/NkdS16KAHtFdccndTLuAcBaKmVslxMkoIeUAFdT4hr00IfvUGR8fxjU2dw1VK3AG0z4/V
+ qjI59j05R7cUHHLYHVyW01GC+fFhPayFR/p6JlefHLyI5fnrLVzhzfxi+MW7B+N29Wx2mr9f
+ y73O19+E3G1MzmZeenxLr7rW3sYHybbz6XLft6ep0PDwOdujtt3Dxer9ASbj+pTdF04mzwRT
+ sfOdo5zDf5L7XBcA+BfVES/8P0zn+NbRkA0govzSHBElhDR0SXJ6VYpsk4gYAagXurH9q8sJ
+ kXKFChm30XTEAQ4AxUhjVcQkseV68Eu8UzutAAAjwFgo1S+VI6i0VtX0GHnyXre1AVFj29gS
+ X4nkuiYqZTH1QRIRkQKABxyK0l4mFt5gXl+hEbOG4wAAGDi2IjpYx2xEW8mdsjIQERGtCVrf
+ kCTMjCnTlo8U6yFUQLi+1RA/n92dYZYPjCy2xPy1vcIJRdUHbPu+fYq110w3p6JN7hL+rcC6
+ WhiOqMmFXuP/Ci0KuMuZLd2b/5OwvzwAamrlWs+B/es340gXFARK7DMAAAAASUVORK5CYII=
+
+Package: package-A
+Section: user/games
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/package-a_1_all.deb
+Size: 2380
+MD5sum: 528e598159a97ca00d0e93d21a5f90b8
+SHA1: 76243f96ba418a482933f9299ae001a7dc592684
+SHA256: 20a9366d0012e937948c2fe7ab012115959f3eb29a3fcd449b5a1294cefbe7db
+Description: Test package number one.
+ Package number one, only for testing.
+ It also has a very long description to
+ see some bugs with the way these descriptions
+ are displayed by the Application installer.
+ You know, long as in longer than anyone would
+ want to read.
+Maemo-Icon-26:
+ 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
+
+Package: package-B
+Section: user/games
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Conflicts: package-A (= 1)
+Filename: dists/old/user/binary-all/package-b_1_all.deb
+Size: 718
+MD5sum: 720fb333483b6714a902caf78a51ac0e
+SHA1: 9fc0708ef1cc63e38aaed11a80957693ea07be05
+SHA256: aa004a2525bf237108936d1ccd10a0909929674cd83769a48e447afb12e28707
+Description: Test package B, version 1.
+ Package number one, only for testing.
+ It also has a very long description to
+ see some bugs with the way these descriptions
+ are displayed by the Application installer.
+ You know, long as in longer than anyone would
+ want to read.
+
+Package: package-C
+Section: user/aaa
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Depends: package-B
+Filename: dists/old/user/binary-all/package-c_1_all.deb
+Size: 1518
+MD5sum: 3f2e18d6f4283e23ff37e2672bfa7230
+SHA1: a14f329cd50876bac29a8eb0aa0eb7d495bac9cd
+SHA256: d864f0feec42ecb0901bb2d96803b9616d22e4566b581f7d90c3fbe2cf7854ef
+Description: Test package C, version 1.
+Maemo-Icon-26:
+ iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABGdBTUEAAK/INwWK6QAAABl0
+ RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAALxSURBVHja3FZNTBNREP669J/S
+ XYxtKRWl1JOSFBIPhkitCQeNiaKBmzdj9Ggk0ZOBxHDWixcTjV6MF+WiIB40YEyMBMGYEqQK
+ tLS2lG7pdre0pF3WtxslgJRuD2J0kpfdTN7O976Z782sRpIk7IZR2C2TGW1cv8xaY5WuXLy8
+ iW5XV5fk8/kkr9e7ya/T6SSNRiOViikvbbmDDD590SusZBGYDiDwJbDud7vdvYIgIJfLYXV1
+ tSwhrQrSfRX6/26N/j+gkjW6ce06HE4HGEctGuj9oEwUzFYz5ubmEA6HQVEUisUi8vn8b4rd
+ zjRbNxCZrr+3t7XTzjrnvMfdxMi7xj6OIRaPIbWcQjabVdRWKBTkrX4SZ2SjvCtKXf+tkxxD
+ M5MetwfHj/lwwueHy+WCVqvdehdHKq7R6JvbpfNMAGiGhs1mg9ls3sS+4hodbDqCwef9mA9P
+ 7vhhVVWV3BGUOomiaCSufEWMxNwimlweMFYbpoMfyp70J6t8xanLZgWs8Ak07N0Hau0P3qOs
+ wIHnl5FJx2E1WlUFuXrzIS713KusRplMCoLAgl2O4N34ODQ4VRaot6cbUzMRNNQ/w/uJWXWM
+ eH5JARkYHsLQMIe1NZEpB7Sn1uKFhkL3maO4cL5NHVAo+hkPnrzEq2HqQIf/3ICzvr7FXmeH
+ 3qBXlslkgtFoVBS3YfbcKRRFfJpagE6vUwd0//FbjI7mkcvnGoNfg51ORx3sNju+hWYxMxsk
+ jHlF2jJgdXU1DAaDrDx/kQAVRREJlldXo8kJoPlQ8wHSevosFgs5MmE5H0IingDP8eAzPAQC
+ tkJakDz05Hsks+poPzwg6+Luo9chVb2O3Hilv7V6W5nO02cVX3wxjsj3CMKRBUSjUcQWY0iy
+ SQVoi6XJaiQxubKpI02yj2xk6BoaBr0BqXRKCZpYSiCZlIXCguM4pWtvY0ypyUtt87PSIj/t
+ pJ/JICzLKiBLySTYVArpdFrp3DuMhRZVqfvnJ+wPAQYA1hdr5EDqltYAAAAASUVORK5CYII=
+
+Package: package-D
+Section: user/games
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Depends: missing
+Filename: dists/old/user/binary-all/package-d_1_all.deb
+Size: 2284
+MD5sum: a6211aa45634402661343a3ea5a75f42
+SHA1: 37073e09b3b0e38f2af6e729016f98f7e2f212a3
+SHA256: 6878e5ddd392e9aa148dd96398bce833066ba8b4595d1c90ff8b82563a7fd2e7
+Description: Test package D.
+ This package depends on "missing", which is not available.
+Maemo-Icon-26:
+ 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
+
+Package: borken
+Section: user/tools
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/borken_1_all.deb
+Size: 648
+MD5sum: b1ea793275f02f14eca974bf1989afab
+SHA1: d24c0aee9290b82dba93af92888a14a2082ae2eb
+SHA256: 8f6ff71226ef6d85598b36c05e94bf6c277f1edc56002ca50222f547042626c2
+Description: A broken package
+ The postinst script of this package will always fail.
+
+Package: corrupted
+Section: user/games
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/corrupted_1_all.deb
+Size: 556
+MD5sum: 0bd4fd5f51b9389e82838de6584f086c
+SHA1: 7edb5ae75a0442bd1ca890404b01355e1e8b3238
+SHA256: d076c233415c91c8b9e361067ea44e00c45579228e92f129f19ae55bd587f83d
+Description: A corrupted package
+
+Package: system
+Section: base
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/system_1_all.deb
+Size: 568
+MD5sum: 704e4950adec244f08d8e7d41c65bf5b
+SHA1: cb7f376908beb07110bafe560af00242730acec5
+SHA256: 23ce8deef230ef85be04ce922882ea6958ddae9d490b18ee45ad4cfd2e2bed66
+Description: A system package.  You should never see it.
+
+Package: system-then-user
+Section: base
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/system-then-user_1_all.deb
+Size: 614
+MD5sum: ea11c56aa726e11979390539d991ad99
+SHA1: 04cc0b81ece49f160549b999e6ef802678e66d77
+SHA256: 8a63ed7bf074d15bf21c435e8dddef6235029051e5ce5bbc9ecc63e1669ab22b
+Description: A system package in version 1, a user package in version 2.
+
+Package: user1
+Section: user/Test
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Depends: system
+Filename: dists/old/user/binary-all/user1_1_all.deb
+Size: 584
+MD5sum: d61884fbf70d826e170e26cd08b395f1
+SHA1: 83aa12cd89e333cba06d1fcc5a32f0eb5ecda595
+SHA256: e4e2ffa24a9f8ea315b0db36553ca34baf08a16b531982e8295cb33b42d530c7
+Description: A user package.  It depends on the invisible system package.
+
+Package: user2
+Section: user/Test
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Depends: system
+Filename: dists/old/user/binary-all/user2_1_all.deb
+Size: 584
+MD5sum: 9717a95d8684418a4e447a9c86ba779f
+SHA1: d5c7d51a7a185bd19063c87581c1fe7d2048918e
+SHA256: e49a33a2dd8d5e537e16332856255b7964d656586aef534477d4ece8977757d5
+Description: A user package.  It depends on the invisible system package.
+
+Package: notfound
+Section: user/games
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/notfound_1_all.deb
+Size: 610
+MD5sum: bf7d4c921e72a0cb5769c84c66dc6081
+SHA1: ec8a25c63396bf427757bf8f2d47c35aefcd5520
+SHA256: 44c1011c17d71f4a612af4a932013b2a7e5b50bbc13fe9f9ac27c152d8fd1e84
+Description: This package does not exist
+ Trying to install this package should result in a
+ "Package not found" error message.
+
+Package: stuck
+Section: user/Test
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/stuck_1_all.deb
+Size: 642
+MD5sum: 573a840d2cf53d562a34b78e198daf28
+SHA1: 0f137015fad6edc04d86c5fa6f3b649f291e1013
+SHA256: 095d2b60cd42f643dd0aa65d25187c733992fa9693801095551060ba36a55d95
+Description: A package that always gets stuck
+ The postinst script of this package takes one minute to finish.
+
+Package: docs
+Section: user/Test
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/docs_1_all.deb
+Size: 818
+MD5sum: 3f498e967e449f96b849679fc0496a1b
+SHA1: aacebe0de89ef3318ed0b1961084f28352ab1251
+SHA256: 0571784058fe2ba0c639a2ed183db36ae821e71d2892516771e695f5b2f519ac
+Description: A package with documentation
+ This package contains files in /usr/share/{doc,man,info} and can be
+ used to test "docpurge."
+
+Package: confidential
+Section: user/Test
+Installed-Size: 1
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/confidential_1_all.deb
+Size: 602
+MD5sum: b55a300cb93683f5559286a9ec87b200
+SHA1: e7d5683db274261846b694168e129552f735d22b
+SHA256: 526a0b06f907acc438818b2d934186c73ea884733163b58c48cef76fed43425e
+Description: A confidential package
+ This package is used to test the dpkg-legal-cleaner.
+confidential: yes
+
+Package: sized-5k
+Section: user/games
+Installed-Size: 5
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/sized-5k_1_all.deb
+Size: 570
+MD5sum: 06a0647bf57ed0ec8e264b2b61f1938e
+SHA1: ba8ef340efe2e4e5337e539509460a45c083cd9f
+SHA256: b91484fd1567a2528fafd4c795e70f5f9c00f2c7d06c87b373210b074f03efe2
+Description: A package with installed size of 5 kb
+
+Package: sized-50k
+Section: user/games
+Installed-Size: 48
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/sized-50k_1_all.deb
+Size: 574
+MD5sum: c15dcc233c6bccb327ef795010c2e644
+SHA1: 58a31e6ec9bce0b11fe8a48a64a24078826ac678
+SHA256: 1a96f4aecc8181b1bf6395ee105cadf326aeb2af2f378db8c5e73b5ea882adf3
+Description: A package with installed size of 50 kb
+
+Package: sized-500k
+Section: user/games
+Installed-Size: 488
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/sized-500k_1_all.deb
+Size: 576
+MD5sum: 2fa1175f51c52f8518268bfe11e15c49
+SHA1: 95dd55e716814ec94697e9b3a127c0260da64b64
+SHA256: 46520ef0241b151d2ed39ae3f4df6b3ada3384761c323329dbc87542ff6092a5
+Description: A package with installed size of 500 kb
+
+Package: sized-5M
+Section: user/games
+Installed-Size: 4882
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/sized-5m_1_all.deb
+Size: 574
+MD5sum: 35ec4598368e297f6a92287b4a9ce7bf
+SHA1: 80947acb04538fced949669fa3ba2c8aac140b1b
+SHA256: c1f2890a54dd7a1b0a12807ceec23158286d80fa19f5c8cc3d484790360e611a
+Description: A package with installed size of 5 Mb
+
+Package: sized-50M
+Section: user/games
+Installed-Size: 48828
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/sized-50m_1_all.deb
+Size: 576
+MD5sum: 8d70f43879a925d8343f98a1f28b5cb8
+SHA1: 754f6aa4f7af180e26977d940c90ef992cc047b8
+SHA256: ff774e18912b7f557cd873bdf3bc5586394797d5ad9421140c4483b60bd65834
+Description: A package with installed size of 50 Mb
+
+Package: sized-500M
+Section: user/games
+Installed-Size: 488280
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/sized-500m_1_all.deb
+Size: 576
+MD5sum: af3abb1064b16d25ef6be3cb8cbf2fcf
+SHA1: da940163bd648fd641167cb4871e6bec2f951117
+SHA256: 97ad19d5bb8bcf883374e4dc0476e288aa431d44b94733f4639d5593ab869184
+Description: A package with installed size of 500 Mb
+
+Package: sized-1500M
+Section: user/games
+Installed-Size: 1464840
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/sized-1500m_1_all.deb
+Size: 580
+MD5sum: f88c62c6aa26a637bc766aa04684f1b6
+SHA1: 3fc8368a1288e78a897259de6acdd3b93f0f71a4
+SHA256: 2c839c235748ca3d23898ac788522d91d0c8c99e79e15ee5de0a74de3349badd
+Description: A package with installed size of 1.5 Gb
+
+Package: sized-3G
+Section: user/games
+Installed-Size: 2929680
+Maintainer: <marius.vollmer@nokia.com>
+Architecture: all
+Version: 1
+Filename: dists/old/user/binary-all/sized-3g_1_all.deb
+Size: 578
+MD5sum: 43cf88c9f9219f281031917f6a697028
+SHA1: ffd8919032179b7de918ca13b9ed21197236cc41
+SHA256: dc19de1ced2dd2ca857bb73f7473c8531ca5ae2b84d5e5a06f68af02978f2143
+Description: A package with installed size of 3 Gb
+
+Package: licensed
+Priority: optional
+Section: user/Test
+Installed-Size: 48
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: all
+Source: osso-application-installer-test-packages
+Version: 2
+Pre-Depends: maemo-installer-utils
+Filename: dists/old/user/binary-all/licensed_2_all.deb
+Size: 1752
+MD5sum: 1e473e4f50efd2ed2827b24f451cbc5a
+SHA1: 27a38574230bfb4aee4d653fe3fffc5656e9e73c
+SHA256: bcdaadd166cf21c06f7afefcafcd78ee280020e0802a03acd54459680f81da98
+Description: A licensed application
+ When installing this package, you have to agree to a license.
+
+Package: big
+Priority: optional
+Section: user/Test
+Installed-Size: 5152
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Architecture: all
+Source: osso-application-installer-test-packages
+Version: 2
+Filename: dists/old/user/binary-all/big_2_all.deb
+Size: 5231750
+MD5sum: 5da1fb40332a0855d0eef5e774fe40ff
+SHA1: b0092549459d2ae8c1e43a42a01c74b886660178
+SHA256: dda03e3e1bdc31db274c684bf63a66dd4c2085e330c356493d406f3e25719ad9
+Description: A big package
+ This package is big.  Downloading, etc should take considerable time.
+
+Package: libvte-common
+Priority: optional
+Section: libs
+Installed-Size: 960
+Maintainer: Arnaud Patard <arnaud.patard@rtp-net.org>
+Architecture: all
+Source: vte
+Version: 1:0.11.13-3osso1
+Replaces: libvte2 (<= 0.5.1-2)
+Filename: dists/old/user/binary-all/libvte-common_1:0.11.13-3osso1_all.deb
+Size: 110502
+MD5sum: ce2aff523f70979a47cf33938bd18daa
+SHA1: a7a4de7515dab548cab27ebb2e1a3beec2386add
+SHA256: 9c3b65fba2bc003a7ae4b0feae219adc06916a891050da01cbe34089a57ed531
+Description: Terminal emulator widget for GTK+ 2.0 - common files
+ The VTE library inserts terminal capability strings into a trie, and then
+ uses it to determine if data received from a pseudo-terminal is a control
+ sequence or just random data. The sample program "interpret" illustrates
+ more or less what the widget sees after it filters incoming data.
+ .
+ This package contains internationalization files for the VTE library.
+
+Package: ttf-bitstream-vera
+Priority: optional
+Section: user/Fonts
+Installed-Size: 732
+Maintainer: Daniel Baumann <daniel.baumann@panthera-systems.net>
+Architecture: all
+Version: 1.10-5
+Depends: defoma
+Recommends: x-ttcidfont-conf | fontconfig
+Filename: dists/old/user/binary-all/ttf-bitstream-vera_1.10-5_all.deb
+Size: 353718
+MD5sum: 66f9ecff10e76b89a4cf947f70385470
+SHA1: 4694ad127ed3351f0f7ad843cb4bace4c89f6b89
+SHA256: 9f2342d21247950927778db6e95ac1656ffaa5a6adc24994b5f83cad5ecf18be
+Description: The Bitstream Vera family of free TrueType fonts
+ This is a set of high-quality TrueType fonts created by Bitstream, Inc. and
+ released under a DFSG-free license. They are intended to remedy the lack of
+ free high-quality fonts for the free desktop environments.
+ .
+ They fully cover Western European languages (ISO-8859-1, ISO-8859-15) and
+ Turkish (ISO-8859-9). They also include a selection of mathematical and other
+ symbols and some limited support for Eastern European languages (parts of
+ ISO-8859-2). Non-latin scripts are not supported.
+

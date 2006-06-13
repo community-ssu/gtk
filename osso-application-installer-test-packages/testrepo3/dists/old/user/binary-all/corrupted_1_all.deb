@@ -1,0 +1,214 @@
+## This is all very ad-hoc...
+
+tarversion = 6
+
+comp = user
+
+repodir = testrepo
+distsdir = $(repodir)/dists
+certdir = $(distsdir)/cert
+olddir = $(distsdir)/old
+newdir = $(distsdir)/new
+demodir = $(distsdir)/demo
+certpkgdir = $(certdir)/$(comp)/binary-all
+oldpkgdir = $(olddir)/$(comp)/binary-all
+newpkgdir = $(newdir)/$(comp)/binary-all
+
+binindeps = ../licensed_2			\
+	    ../licensed_2			\
+	    ../big_2				\
+            libvte-common_1:0.11.13-3osso1	\
+            ttf-bitstream-vera_1.10-5
+
+bindeps =   osso-xterm_0.13						\
+	    libvte4_1:0.11.13-3osso1					\
+	    libncurses5_5.4-3						\
+	    hello-world-app_0.4						\
+            ../package-1_2						\
+            ../package-2_2						\
+	    ../python2.4-runtime_0.1-1osso3				\
+	    ../python2.4_2.4.2-1osso10					\
+	    ../python2.4-gtk2_2.6.3-1osso3				\
+	    ../python2.4-hildon_0.8.4-1osso4				\
+	    ../python2.4-osso_0.1-1osso3				\
+	    ../python2.4-bluez_0.6.1-1osso3				\
+	    ../python2.4-numeric_24.2-1osso1				\
+            ../python2.4-pyrex_0.9.3-1osso4				\
+            ../python2.4-dbus_0.61-1osso3				\
+            ../python2.4-pygame_1.6-2osso4				\
+            ../libsdl-ttf2.0-0_2.0.6-5osso1				\
+            ../python2.4-xml_0.8.4-1osso4				\
+            ../python2.4-gstreamer_0.10.4-0osso1			\
+	    hello-world-control-panel-applet-withoutdesktop_0.5		\
+	    hello-world-control-panel-applet-withoutpluginfield_0.5	\
+	    hello-world-control-panel-applet_0.5			\
+	    hello-world-home-applet-withoutdesktop_0.5			\
+	    hello-world-home-applet-withoutfieldname_0.5		\
+	    hello-world-home-applet-withoutfieldtype_0.5		\
+	    hello-world-home-applet-withoutfieldxhomeapplet_0.5		\
+	    hello-world-home-applet-withoutlib_0.5			\
+	    hello-world-home-applet_0.5					\
+	    hello-world-mime-type_0.5					\
+	    hello-world-others-menu-app_0.5				\
+	    hello-world-others-menu-dup_0.1				\
+	    hello-world-others-menu-withoutdesktop-app_0.5		\
+	    hello-world-others-menu-withoutexec-app_0.5			\
+	    hello-world-others-menu-withoutossoservice-app_0.5		\
+	    hello-world-others-menu-withoutservice-app_0.5		\
+	    hello-world-status-bar-plugin-withoutname_0.5		\
+	    hello-world-status-bar-plugin-withoutpluginname_0.5		\
+	    hello-world-status-bar-plugin_0.5				\
+	    libhello-world-as-invalid-ha_0.5				\
+	    libhello-world-as-invalid-sb_0.5				\
+	    libhello-world-dev_0.1					\
+	    libhello-world-dev_0.5					\
+	    libhello-world_0.1						\
+	    libhello-world_0.5						\
+	    zip-mime-type-incomplete_0.0.2-1				\
+	    zip-mime-type-incorrect_0.0.2-1				\
+	    zip-mime-type-malformed_0.0.2-1				\
+	    zip-mime-type_0.0.2-1
+
+all:
+
+repodirs:
+	mkdir -p $(certpkgdir)
+	mkdir -p $(oldpkgdir)
+	mkdir -p $(newpkgdir)
+	mkdir -p $(demodir)/$(comp)/binary-all/
+	mkdir -p $(certdir)/$(comp)/binary-armel/
+	mkdir -p $(olddir)/$(comp)/binary-armel/
+	mkdir -p $(newdir)/$(comp)/binary-armel/
+	mkdir -p $(demodir)/$(comp)/binary-armel/
+	mkdir -p $(certdir)/$(comp)/binary-i386/
+	mkdir -p $(olddir)/$(comp)/binary-i386/
+	mkdir -p $(newdir)/$(comp)/binary-i386/
+	mkdir -p $(demodir)/$(comp)/binary-i386/
+
+binary-all-packages: repodirs
+	./make-deb certified $(certpkgdir)
+	./make-deb package-a1 $(oldpkgdir)
+	./make-deb package-a2 $(newpkgdir)
+	./make-deb package-b1 $(oldpkgdir)
+	./make-deb package-b2 $(newpkgdir)
+	./make-deb package-c1 $(oldpkgdir)
+	./make-deb package-c2cr $(newpkgdir)
+	./make-deb package-d1 $(oldpkgdir)
+	./make-deb package-d1 $(newpkgdir)
+	./make-deb borken $(oldpkgdir)
+	./make-deb borken $(newpkgdir)
+	./make-deb corrupted-1 $(oldpkgdir)
+	./make-deb corrupted-1 $(newpkgdir)
+	./make-deb system $(oldpkgdir)
+	./make-deb system2 $(newpkgdir)
+	./make-deb system-then-user $(oldpkgdir)
+	./make-deb system-then-user2 $(newpkgdir)
+	./make-deb user1 $(oldpkgdir)
+	./make-deb user1-2 $(newpkgdir)
+	./make-deb user2 $(oldpkgdir)
+	./make-deb user2 $(newpkgdir)
+	./make-deb notfound $(oldpkgdir)
+	./make-deb notfound $(newpkgdir)
+	./make-deb stuck $(oldpkgdir)
+	./make-deb stuck $(newpkgdir)
+	./make-deb docs $(oldpkgdir)
+	./make-deb docs $(newpkgdir)
+	./make-deb confidential $(oldpkgdir)
+	./make-deb confidential $(newpkgdir)
+	./make-deb sized-5k $(oldpkgdir)
+	./make-deb sized-50k $(oldpkgdir)
+	./make-deb sized-500k $(oldpkgdir)
+	./make-deb sized-5M $(oldpkgdir)
+	./make-deb sized-50M $(oldpkgdir)
+	./make-deb sized-500M $(oldpkgdir)
+	./make-deb sized-1500M $(oldpkgdir)
+	./make-deb sized-3G $(oldpkgdir)
+	for p in $(binindeps); do			\
+	  cp $${p}_all.deb $(olddir)/$(comp)/binary-all/;	\
+	  cp $${p}_all.deb $(newdir)/$(comp)/binary-all/;	\
+	done
+
+binary-armel-packages:
+	for p in $(bindeps); do					\
+	  cp $${p}_armel.deb $(olddir)/$(comp)/binary-armel/;	\
+	  cp $${p}_armel.deb $(newdir)/$(comp)/binary-armel/;	\
+	done
+
+
+binary-i386-packages:
+	for p in $(bindeps); do						\
+	  cp $${p}_i386.deb $(olddir)/$(comp)/binary-i386/ || true;	\
+	  cp $${p}_i386.deb $(newdir)/$(comp)/binary-i386/ || true;	\
+	done
+
+binary-packages: binary-all-packages binary-armel-packages binary-i386-packages
+
+conf-packages:
+	./make-deb testrepo-conf-mmc $(repodir)
+	./make-deb testrepo-conf-maemo $(repodir)
+	./make-deb testrepo-conf-drpepper $(repodir)
+	./make-deb testrepo-conf-https $(repodir)
+	cp osso-xterm.install $(repodir)
+	cp osso-xterm-drpepper.install $(repodir)
+	cp demo-catalogue.install $(repodir)
+	cp demo-catalogue-drpepper.install $(repodir)
+	./make-deb incompatible-current $(repodir)
+	./make-deb incompatible-arch $(repodir)
+	./make-deb incompatible-system $(repodir)
+	./make-deb uncategorized $(repodir)
+	./make-deb package-a3 $(repodir)
+
+update-repo:
+	./update-dist testrepo cert $(comp)
+	./update-dist testrepo old $(comp)
+	./update-dist testrepo new $(comp)
+	./update-dist testrepo demo $(comp)
+	cp Makefile.repo $(oldpkgdir)/corrupted_1_all.deb
+	cp Makefile.repo $(newpkgdir)/corrupted_1_all.deb
+	cp Makefile.repo $(newpkgdir)/package-c_2.cr_all.deb
+	rm $(oldpkgdir)/notfound_1_all.deb
+	rm $(newpkgdir)/notfound_1_all.deb
+
+tar: clean-repo
+	tar czf $(repodir)-$(tarversion).tar.gz $(repodir)
+
+clean:
+	rm -rf $(repodir)
+
+clean-repo:
+	$(MAKE) -f Makefile.repo clean
+	$(MAKE) -f Makefile.repo binary-packages
+	$(MAKE) -f Makefile.repo conf-packages
+	$(MAKE) -f Makefile.repo update-repo
+
+sync-mylly:
+	# mylly doesn't have rsync, there should be a law against that...
+	ssh mylly rm -rf /home/mvo/public-html/testrepo/
+	scp -r testrepo mylly:/home/mvo/public-html/
+
+sync-maemo:
+	rsync -v --delete -essh -a testrepo guest@drpepper.research.nokia.com:
+	rsync -v --delete -essh -a testrepo guest@drpepper.research.nokia.com:public_html/
+
+demorepo:
+	rm -rf files.demorepo
+	mkdir -p files.demorepo/demorepo/dists
+	cp -a $(repodir)/dists/demo files.demorepo/demorepo/dists/
+	./update-dist-nosign files.demorepo/demorepo demo $(comp)
+	./make-deb demorepo .
+
+nokiarepo:
+	rm -rf nokiarepo
+	mkdir -p nokiarepo/dists/mistral/user/binary-all
+	mkdir -p nokiarepo/dists/mistral/user/binary-arm
+	mkdir -p nokiarepo/dists/mistral/user/binary-armel
+	mkdir -p nokiarepo/dists/mistral/user/binary-i386
+	mkdir -p nokiarepo/pool
+	mkdir -p nokiarepo/certified
+	./update-dist-nokia nokiarepo mistral user
+
+sync-nokia:
+	rsync -v --delete -essh -a nokiarepo guest@drpepper.research.nokia.com:public_html/
+
+
+PHONY: demorepo nokiarepo

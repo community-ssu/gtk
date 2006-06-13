@@ -1,0 +1,4 @@
+[install]
+repo_name = Demo Catalogue
+repo_deb  = deb http://drpepper.research.nokia.com/~guest/testrepo/ demo user
+package   = osso-xterm

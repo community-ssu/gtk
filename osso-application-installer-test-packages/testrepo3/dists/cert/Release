@@ -1,0 +1,21 @@
+Architectures: armel i386
+Components: user
+Date: Thu, 08 Jun 2006 15:16:02 UTC
+Origin: Nokia
+Suite: cert
+Version: 1.0
+MD5Sum:
+ 18b6641d6fdc3d670423de7d8b9f5ab1             2645 user/binary-armel/Packages
+ a1136c360f34592ceb0ae18fbed08a5d             2046 user/binary-armel/Packages.gz
+ 18b6641d6fdc3d670423de7d8b9f5ab1             2645 user/binary-i386/Packages
+ a1136c360f34592ceb0ae18fbed08a5d             2046 user/binary-i386/Packages.gz
+SHA1:
+ 43cc199daa300f53f85c08498e0931e4c79b9c78             2645 user/binary-armel/Packages
+ 3e5311b0653ef517569c97276a27b8c57b8608f0             2046 user/binary-armel/Packages.gz
+ 43cc199daa300f53f85c08498e0931e4c79b9c78             2645 user/binary-i386/Packages
+ 3e5311b0653ef517569c97276a27b8c57b8608f0             2046 user/binary-i386/Packages.gz
+SHA256:
+ ed61849996035828fea93c3f07100216a26ecdf45d220afa34ab1a762a6d3d22             2645 user/binary-armel/Packages
+ 45784df0cd04321506544b1450715aa75344ef00de20b0e11e7d14e7b0ef8b95             2046 user/binary-armel/Packages.gz
+ ed61849996035828fea93c3f07100216a26ecdf45d220afa34ab1a762a6d3d22             2645 user/binary-i386/Packages
+ 45784df0cd04321506544b1450715aa75344ef00de20b0e11e7d14e7b0ef8b95             2046 user/binary-i386/Packages.gz
