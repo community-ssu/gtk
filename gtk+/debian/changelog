@@ -1,10 +1,13 @@
-gtk+2.0 (2:2.6.10-2.osso5) UNRELEASED; urgency=low
+gtk+2.0 (2:2.6.10-2.osso5) unstable; urgency=low
 
-  * NOT RELEASED YET
   * debian/rules:
     - CFLAGS += -g
+  * Fixes: NB#21938 Valgrind warning on opening Calendar widget
+  * Fixes: NB#32491 calendar labels language
+  * Fixes: NB#32566 GtkComboBox: insensitive rows are selectable using L&R
+    keys
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  9 Jun 2006 16:30:00 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 13 Jun 2006 15:59:11 +0300
 
 gtk+2.0 (2:2.6.10-2.osso4) unstable; urgency=low
 
