@@ -1214,7 +1214,6 @@ install_package_cont3 (bool res, void *data)
 	    g_strdup_printf ("/var/lib/osso-application-installer/info/%s.checkrm",
 			     name);
       
-	  add_log ("Checking %s\n", cmd);
 	  char *argv[] = { cmd, "upgrade", version, NULL };
 	  run_cmd (argv, install_package_cont4, c);
 	  g_free (cmd);
@@ -1743,7 +1742,6 @@ check_uninstall_scripts2 (int status, void *data)
 	g_strdup_printf ("/var/lib/osso-application-installer/info/%s.checkrm",
 			 name);
       
-      add_log ("Checking %s\n", cmd);
       char *argv[] = { cmd, "remove", NULL };
       run_cmd (argv, check_uninstall_scripts2, c);
       g_free (cmd);
