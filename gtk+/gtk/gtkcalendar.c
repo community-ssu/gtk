@@ -31,6 +31,8 @@
 
 #include <config.h>
 
+#define _GNU_SOURCE /* needed for GNU nl_langinfo_l */
+
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -469,45 +471,53 @@ gtk_calendar_get_type (void)
 static void
 locales_init (void)
 {
-  default_abbreviated_dayname[0] = g_locale_to_utf8(nl_langinfo(ABDAY_1),
+  /* Hildon: This is not exactly portable, see
+   * http://bugzilla.gnome.org/show_bug.cgi?id=343415
+   */
+  locale_t l;
+
+  l = newlocale (LC_TIME_MASK, setlocale (LC_MESSAGES, NULL), NULL);
+
+  default_abbreviated_dayname[0] = g_locale_to_utf8(nl_langinfo_l(ABDAY_1, l),
                                                     -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[1] = g_locale_to_utf8(nl_langinfo(ABDAY_2),
+  default_abbreviated_dayname[1] = g_locale_to_utf8(nl_langinfo_l(ABDAY_2, l),
                                                     -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[2] = g_locale_to_utf8(nl_langinfo(ABDAY_3),
+  default_abbreviated_dayname[2] = g_locale_to_utf8(nl_langinfo_l(ABDAY_3, l),
                                                     -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[3] = g_locale_to_utf8(nl_langinfo(ABDAY_4),
+  default_abbreviated_dayname[3] = g_locale_to_utf8(nl_langinfo_l(ABDAY_4, l),
                                                     -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[4] = g_locale_to_utf8(nl_langinfo(ABDAY_5),
+  default_abbreviated_dayname[4] = g_locale_to_utf8(nl_langinfo_l(ABDAY_5, l),
                                                     -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[5] = g_locale_to_utf8(nl_langinfo(ABDAY_6),
+  default_abbreviated_dayname[5] = g_locale_to_utf8(nl_langinfo_l(ABDAY_6, l),
                                                     -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[6] = g_locale_to_utf8(nl_langinfo(ABDAY_7),
+  default_abbreviated_dayname[6] = g_locale_to_utf8(nl_langinfo_l(ABDAY_7, l),
                                                     -1, NULL, NULL, NULL);
-  default_monthname[0] = g_locale_to_utf8(nl_langinfo(MON_1),
+  default_monthname[0] = g_locale_to_utf8(nl_langinfo_l(MON_1, l),
                                           -1, NULL, NULL, NULL);
-  default_monthname[1] = g_locale_to_utf8(nl_langinfo(MON_2),
+  default_monthname[1] = g_locale_to_utf8(nl_langinfo_l(MON_2, l),
                                           -1, NULL, NULL, NULL);
-  default_monthname[2] = g_locale_to_utf8(nl_langinfo(MON_3),
+  default_monthname[2] = g_locale_to_utf8(nl_langinfo_l(MON_3, l),
                                           -1, NULL, NULL, NULL);
-  default_monthname[3] = g_locale_to_utf8(nl_langinfo(MON_4),
+  default_monthname[3] = g_locale_to_utf8(nl_langinfo_l(MON_4, l),
                                           -1, NULL, NULL, NULL);
-  default_monthname[4] = g_locale_to_utf8(nl_langinfo(MON_5),
+  default_monthname[4] = g_locale_to_utf8(nl_langinfo_l(MON_5, l),
                                           -1, NULL, NULL, NULL);
-  default_monthname[5] = g_locale_to_utf8(nl_langinfo(MON_6),
+  default_monthname[5] = g_locale_to_utf8(nl_langinfo_l(MON_6, l),
                                           -1, NULL, NULL, NULL);
-  default_monthname[6] = g_locale_to_utf8(nl_langinfo(MON_7),
+  default_monthname[6] = g_locale_to_utf8(nl_langinfo_l(MON_7, l),
                                           -1, NULL, NULL, NULL);
-  default_monthname[7] = g_locale_to_utf8(nl_langinfo(MON_8),
+  default_monthname[7] = g_locale_to_utf8(nl_langinfo_l(MON_8, l),
                                           -1, NULL, NULL, NULL);
-  default_monthname[8] = g_locale_to_utf8(nl_langinfo(MON_9),
+  default_monthname[8] = g_locale_to_utf8(nl_langinfo_l(MON_9, l),
                                           -1, NULL, NULL, NULL);
-  default_monthname[9] = g_locale_to_utf8(nl_langinfo(MON_10),
+  default_monthname[9] = g_locale_to_utf8(nl_langinfo_l(MON_10, l),
                                           -1, NULL, NULL, NULL);
-  default_monthname[10] = g_locale_to_utf8(nl_langinfo(MON_11),
+  default_monthname[10] = g_locale_to_utf8(nl_langinfo_l(MON_11, l),
                                            -1, NULL, NULL, NULL);
-  default_monthname[11] = g_locale_to_utf8(nl_langinfo(MON_12),
+  default_monthname[11] = g_locale_to_utf8(nl_langinfo_l(MON_12, l),
                                            -1, NULL, NULL, NULL);
 
+  freelocale (l);
 }
 
 static void
