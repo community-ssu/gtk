@@ -2467,7 +2467,7 @@ cmd_get_file_details ()
   if (record == NULL || !section.Scan (record, strlen (record)))
     {
       response.encode_string (basename (filename));
-      response.encode_string ("");        // installed_version
+      response.encode_string (NULL);      // installed_version
       response.encode_int (0);            // installed_size
       response.encode_string ("");        // version
       response.encode_string ("");        // maintainer
