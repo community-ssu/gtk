@@ -1,5 +1,7 @@
 2006-06-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.21
+	
 	* src/util.cc (annoy_user): Use correct parent for dialog so that
 	it isn't system modal.
 
