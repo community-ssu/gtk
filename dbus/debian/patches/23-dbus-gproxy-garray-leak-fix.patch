@@ -1,0 +1,29 @@
+Index: glib/dbus-gproxy.c
+===================================================================
+--- glib/dbus-gproxy.c	(revision 4935)
++++ glib/dbus-gproxy.c	(working copy)
+@@ -1609,6 +1609,7 @@
+   char *name;
+   GQuark q;
+   DBusGProxyPrivate *priv = DBUS_G_PROXY_GET_PRIVATE(proxy);
++  GArray *msg_gsignature = NULL;
+ 
+   g_return_if_fail (!DBUS_G_PROXY_DESTROYED (proxy));
+ 
+@@ -1629,7 +1630,6 @@
+   if (q != 0)
+     {
+       GArray *gsignature;
+-      GArray *msg_gsignature;
+       guint i;
+       
+       gsignature = g_datalist_id_get_data (&priv->signal_signatures, q);
+@@ -1656,6 +1656,8 @@
+ 
+  out:
+   g_free (name);
++  if (msg_gsignature)
++    g_array_free (msg_gsignature, TRUE);
+   return;
+  mismatch:
+ #if 0

@@ -1,3 +1,10 @@
+dbus (0.61-osso13) experimental; urgency=low
+
+  * UNRELEASED
+  * Another GArray leak plugged in dbus-gproxy.c (N#32479).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 13 Jun 2006 11:36:10 +0300
+
 dbus (0.61-osso12) experimental; urgency=low
 
   * Added patch for a freedom-hating memory leak (N#32120).
