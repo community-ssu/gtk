@@ -1,3 +1,41 @@
+2006-06-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/apt-worker.cc (cmd_get_file_details): Pass back NULL for the
+	installed version when the archive file can not be parsed. (N32315)
+	* src/main.cc (file_details_reply): Give correct summary for
+	status_corrupted.
+
+	* utils/maemo-confirm-text-user.c (no_button_events): New.
+	(make_small_text_view): Connect it to "button-press-event" to
+	suppress all interaction with the text. (N30939)
+
+	* src/util.cc (make_global_section_list): Set attach detail so
+	that buttons form a group.
+
+2006-06-12  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (get_https_proxy): Return NULL when secure_host is
+	not set or the empty string.
+	(ensure_network_cont): Reset en_callback and en_data before
+	invoking callback.
+	(ensure_network): Always set en_callback and en_data and always
+	use ensure_network_cont to invoke the callback.  Previously, the
+	callback was not called when osso_iap_cb returned failure.
+	
+	* src/main.cc (make_padded_button): Added attach_flags argument to
+	get the style 'detail' right.
+	(make_main_view): Updated all callers of make_padded_button to
+	pass the correct flags.
+	(get_package_list_reply): Make sure that that the reference of the
+	created package_info structures is correct by reffing them
+	explicitely before every insertion into a list, and unreffing once
+	at the end.  Specifically, updateable packages are in two lists,
+	but were only referenced once. (N31849)
+
+	* src/apt-worker-client.cc (apt_worker_install_package_cont): Bug
+	fix: don't use already freed http_proxy for the https_proxy
+	argument.
+
 2006-06-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.20
