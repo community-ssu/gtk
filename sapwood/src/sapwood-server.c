@@ -263,6 +263,9 @@ pixbuf_open_response_destroy (PixbufOpenResponse *rep)
   GdkPixmap *pixmap;
   int        i, j;
 
+  if (!rep)
+    return;
+
   for (i = 0; i < 3; i++)
     for (j = 0; j < 3; j++)
       {
@@ -350,27 +353,28 @@ process_buffer (int fd, char *buf, ssize_t buflen, gpointer user_data)
       LOG ("filename: '%s'", req->filename);
 
       rep = g_cache_insert (pixmap_cache, req);
-      if (!rep)
+      if (rep)
+	{
+	  g_hash_table_insert (cleanup, GUINT_TO_POINTER(rep->id), rep);
+
+	  /* write reply */
+	  n = write (fd, rep, sizeof (*rep));
+	  if (n < 0)
+	    {
+	      g_warning ("write: %s", strerror (errno));
+	    }
+	  else if (n < sizeof (*rep))
+	    {
+	      g_warning ("short write, wrote only %d of %d bytes", n, sizeof (*rep)); 
+	    }
+	}
+      else
 	{
 	  char buf[1] = { '-' };
 
 	  write (fd, buf, 1);
 
 	  g_cache_remove (pixmap_cache, rep);
-	  return -1;
-	}
-
-      g_hash_table_insert (cleanup, GUINT_TO_POINTER(rep->id), rep);
-
-      /* write reply */
-      n = write (fd, rep, sizeof (*rep));
-      if (n < 0)
-	{
-	  g_warning ("write: %s", strerror (errno));
-	}
-      else if (n < sizeof (*rep))
-	{
-	  g_warning ("short write, wrote only %d of %d bytes", n, sizeof (*rep)); 
 	}
     }
   else if (base->op == PIXBUF_OP_CLOSE)

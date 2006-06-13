@@ -1,3 +1,13 @@
+2006-06-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* === Release 2.24 ===
+
+	* src/sapwood-server.c (pixbuf_open_response_destroy): Don't crash on
+	NULL, it's a valid parameter when image loading fails.
+	(process_buffer): Failure to load an image is not a client error, do
+	not disconnect the client.
+	N#32525
+
 2006-05-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* === Release 2.19 ===

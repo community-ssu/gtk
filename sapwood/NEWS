@@ -1,3 +1,11 @@
+sapwood 2.24 - 2006-06-13
+=========================
+
+Bugs fixed
+----------
+N#32525 - Failure to read image crashes sapwood-server
+
+
 sapwood 2.19 - 2006-05-12
 =========================
 
