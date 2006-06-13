@@ -1,4 +1,10 @@
 2006-06-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcalendar.c (locales_init): Use nl_langinfo_l to get month /
+	weekday names from locale defined by LC_MESSAGES rather than LC_TIME.
+	N#32491, #343415
+
+2006-06-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkcalendar.c (gtk_calendar_size_request): Silence harmless
 	valgrind warning. N#21938
