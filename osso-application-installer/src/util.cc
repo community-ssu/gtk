@@ -214,7 +214,7 @@ annoy_user (const gchar *text)
 
   GtkWidget *dialog;
 
-  dialog = hildon_note_new_information (NULL, text);
+  dialog = hildon_note_new_information (get_main_window (), text);
   g_signal_connect (dialog, "response", 
 		    G_CALLBACK (annoy_user_response), NULL);
   gtk_widget_show_all (dialog);
@@ -1652,7 +1652,9 @@ run_cmd (char **argv,
 				 &stderr_fd,
 				 &error))
     {
-      add_log ("Can't run %s: %s\n", argv[0], error->message);
+      if (error->domain != G_SPAWN_ERROR 
+	  || error->code != G_SPAWN_ERROR_NOENT)
+	add_log ("Can't run %s: %s\n", argv[0], error->message);
       g_error_free (error);
       cont (-1, data);
       return;
