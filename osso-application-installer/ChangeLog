@@ -1,5 +1,16 @@
 2006-06-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.cc (annoy_user): Use correct parent for dialog so that
+	it isn't system modal.
+
+	* src/settings.cc (open_settings_file): Don't log ENOENT error
+	message.
+
+	* src/main.cc (install_package_cont3): Don't log the check command.
+	(check_uninstall_scripts2): Likewise.
+
+	* src/util.cc (run_cmd): Don't log ENOENT errors.
+
 	* src/apt-worker.cc (cmd_get_file_details): Pass back NULL for the
 	installed version when the archive file can not be parsed. (N32315)
 	* src/main.cc (file_details_reply): Give correct summary for
