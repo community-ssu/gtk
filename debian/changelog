@@ -6,8 +6,10 @@ gtk+2.0 (2:2.6.10-2.osso5) unstable; urgency=low
   * Fixes: NB#32491 calendar labels language
   * Fixes: NB#32566 GtkComboBox: insensitive rows are selectable using L&R
     keys
+  * Fixes: NB#32573 [regression] no scroll bar when opening history of entered
+    URL's
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 13 Jun 2006 15:59:11 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 13 Jun 2006 16:16:58 +0300
 
 gtk+2.0 (2:2.6.10-2.osso4) unstable; urgency=low
 
