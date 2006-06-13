@@ -1753,9 +1753,9 @@ gtk_calendar_size_request (GtkWidget      *widget,
                    ? private_data->max_week_char_width * 2 + (focus_padding + focus_width) * 2 + CALENDAR_XSEP * 2
                    : 0));
 
-  requisition->width = MAX (header_width, main_width + INNER_BORDER * 2) + widget->style->xthickness * 2;
-
-  /* FIXME: header_width is broken, when Calendar is themed ! 
+  /* requisition->width = MAX (header_width, main_width + INNER_BORDER * 2) + widget->style->xthickness * 2;
+   *
+   * FIXME: header_width is broken, when Calendar is themed ! 
    *  Next line is workaround for this bug
    */
   requisition->width = (main_width + INNER_BORDER * 2) + widget->style->xthickness * 2 + HILDON_WEEKS_EXTRA_WIDTH + HILDON_DAYS_EXTRA_WIDTH;
