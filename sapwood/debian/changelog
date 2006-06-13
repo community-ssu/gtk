@@ -1,3 +1,11 @@
+sapwood (2.24-1) unstable; urgency=low
+
+  * debian/rules:
+    - CFLAGS += -g
+  * Fixes: NB#32525 Failure to read image crashes sapwood-server
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 13 Jun 2006 15:06:13 +0300
+
 sapwood (2.19-1) unstable; urgency=low
 
   * Fixes:
