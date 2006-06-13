@@ -1,3 +1,10 @@
+posix-locales (2.3.2-13osso39) unstable; urgency=low
+
+  * Added build-dependency to locales package.
+  * Fixes: NB#32549
+
+ -- Mohammad Anwari <Mohammad.Anwari@nokia.com>  Tue, 13 Jun 2006 14:44:26 +0300
+
 posix-locales (2.3.2-13osso38) unstable; urgency=low
 
   * Bugfixes: N#25452, N#28391, N#15472

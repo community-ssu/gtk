@@ -3,13 +3,10 @@ Section: base
 Priority: standard
 Maintainer: Mohammad Anwari <Mohammad.Anwari@nokia.com> 
 Standards-Version: 3.6.2
-Build-Depends: libc6 (>> 2.3.2), debhelper (>>4.0.0)
+Build-Depends: libc6 (>> 2.3.2), debhelper (>>4.0.0), locales (>= 2.3.5cs2005q3.2-4.osso3)
 
 Package: posix-locales
 Architecture: all
-Provides: i18ndata
-Conflicts: i18ndata 
-Replaces: i18ndata 
 Depends: libc6 (>> 2.3.2)
 Description: POSIX locales for all Nokia 770 marketing areas
  Package provides locales for the languages supported on Nokia 770.
