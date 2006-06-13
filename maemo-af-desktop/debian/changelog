@@ -1,3 +1,17 @@
+maemo-af-desktop (2.6.28-1) unstable; urgency=low
+
+  * hildon-navigator/hn-wm-watched-window.c:
+    - replaced gtk_dialog_run with a response signal handler
+    - do not destroy the note in ping_cancel but send a CANCEL signal
+    (Closes N#32482)
+
+  * hildon-navigator/hn-wm.c: Give the AS vbox as owner of the launch
+    banners
+  * hildon-navigator/hn-wm-watchable-app.c: Use the parent argument
+    when calling hildon_banner_show_animation (Closes N#32476)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 13 Jun 2006 11:14:49 +0300
+
 maemo-af-desktop (2.6.27-2) unstable; urgency=low
 
   * Added build-dependency on libxml2-dev 
