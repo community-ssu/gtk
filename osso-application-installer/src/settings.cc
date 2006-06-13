@@ -59,7 +59,7 @@ open_settings_file (const char *mode)
 {
   gchar *name = g_strdup_printf ("%s/%s", getenv ("HOME"), SETTINGS_FILE);
   FILE *f = fopen (name, mode);
-  if (f == NULL)
+  if (f == NULL && errno != ENOENT)
     add_log ("%s: %s\n", name, strerror (errno));
   g_free (name);
   return f;
