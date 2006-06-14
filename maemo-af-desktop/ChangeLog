@@ -1,3 +1,9 @@
+2006-06-14  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/application-switcher.c: gtk_widget_destroy
+	  the AS menu item instead of removing it from its container,
+	  to circumvent a bug in GTK (Closes N#31864)
+
 2006-06-12  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.6.28

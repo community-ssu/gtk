@@ -1706,7 +1706,7 @@ app_switcher_remove_item (ApplicationSwitcher_t *as,
   /* Remove item from array */
   g_array_remove_index(as->items,n);
   
-  gtk_container_remove(GTK_CONTAINER(as->menu),menuitem);
+  gtk_widget_destroy(menuitem);
 
   /* Remove tooltip if displayed */
   if (as->tooltip_visible)
