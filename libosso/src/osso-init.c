@@ -306,7 +306,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     dbus_conn_error1:
         
     /* no explicit disconnection, because the connections are shared */
-    dbus_connection_unref(conn);
+    /* no unref either, because it makes assert() fail in DBus */
 
     return NULL;
 }
@@ -329,7 +329,7 @@ static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
 #endif
     dbus_connection_unregister_object_path(conn, osso->object_path);
     /* no explicit disconnection, because the connections are shared */
-    dbus_connection_unref(conn);
+    /* no unref either, because it makes assert() fail in DBus */
     return;
 }
 

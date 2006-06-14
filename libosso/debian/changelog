@@ -1,3 +1,11 @@
+libosso (1.15-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Removed dbus_connection_unref()s, because they make DBus asserts fail
+    Fixes: NB#32642.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 14 Jun 2006 14:39:33 +0300
+
 libosso (1.14-1) unstable; urgency=low
 
   * Fixed osso_mem_saw to use the high watermark instead of the deny watermark
