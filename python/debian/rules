@@ -11,11 +11,11 @@ d_dev=debian/$(p_dev)
 
 scriptdir=usr/lib/$(PYTHON)
 
-#ifeq ($(DEB_BUILD_ARCH),armel)
-#	CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
-#else
-#	CFLAGS=-Os -Wall -Wstrict-prototypes
-#endif
+ifeq ($(DEB_BUILD_ARCH),armel)
+	CFLAGS=-Os -mthumb -mfloat-abi=softfp -Wall -Wstrict-prototypes
+else
+	CFLAGS=-Os -Wall -Wstrict-prototypes
+endif
 
 clean:
 	dh_testdir
@@ -42,6 +42,7 @@ stamp-configure:
 	mkdir -p build
 	cd build && \
 	  CFLAGS="$(CFLAGS)" \
+	  OPT="$(CFLAGS) -DNDEBUG" \
 	  ../configure $(common_configure_args)
 	touch stamp-configure
 

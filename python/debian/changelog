@@ -1,3 +1,9 @@
+python2.4 (2.4.2-1osso13) unstable; urgency=low
+
+  * Passing $OPT with CFLAGS contents to ./configure so it honors the flags
+
+ -- Elvis Pfutzenreuter <elvis.pfutzenreuter@indt.org.br>  Wed, 14 Jun 2006 15:10:00 -0300
+
 python2.4 (2.4.2-1osso12) unstable; urgency=low
 
   * debian/rules totally refactored
