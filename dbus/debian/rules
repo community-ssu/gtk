@@ -7,7 +7,7 @@ binary/libdbus-qt-1-1c2:: binary/libdbus-1-2
 binary/dbus-1-utils:: binary/libdbus-glib-1-2
 binary/python2.4-dbus::
 	rm debian/python2.4-dbus/usr/lib/python2.4/site-packages/dbus/dbus_bindings.*a
-	dh_python -ppython2.4-dbus
+#	dh_python -ppython2.4-dbus
 
 include /usr/share/cdbs/1/rules/simple-patchsys.mk
 include /usr/share/cdbs/1/rules/utils.mk
@@ -28,8 +28,6 @@ endif
 ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
  CFLAGS += -mthumb
 endif
-
-CFLAGS += -fno-omit-frame-pointer -rdynamic
 
 DEB_CONFIGURE_SCRIPT_ENV += PYTHON=/usr/bin/python2.4
 DEB_CONFIGURE_EXTRA_FLAGS := CFLAGS="$(CFLAGS)" --enable-glib --disable-gtk \
