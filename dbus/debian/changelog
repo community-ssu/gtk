@@ -1,9 +1,8 @@
 dbus (0.61-osso15) experimental; urgency=low
 
-  * UNRELEASED
   * Added packages for debug symbols, Fixes: NB#32668
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 14 Jun 2006 19:16:05 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 14 Jun 2006 19:53:05 +0300
 
 dbus (0.61-osso14) experimental; urgency=low
 
