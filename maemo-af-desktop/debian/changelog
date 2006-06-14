@@ -1,3 +1,11 @@
+maemo-af-desktop (2.6.29-1) unstable; urgency=low
+
+  * hildon-navigator/application-switcher.c: gtk_widget_destroy
+    the AS menu item instead of removing it from its container,
+    to circumvent a bug in GTK (Closes N#31864)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 14 Jun 2006 14:03:20 +0300
+
 maemo-af-desktop (2.6.28-1) unstable; urgency=low
 
   * hildon-navigator/hn-wm-watched-window.c:
