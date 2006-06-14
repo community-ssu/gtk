@@ -1,6 +1,5 @@
 libosso (1.15-1) unstable; urgency=low
 
-  * UNRELEASED
   * Removed dbus_connection_unref()s, because they make DBus asserts fail
     Fixes: NB#32642.
 
