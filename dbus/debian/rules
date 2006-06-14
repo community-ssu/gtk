@@ -46,6 +46,9 @@ DEB_SHLIBDEPS_INCLUDE_libdbus-qt-1-1c2 := debian/libdbus-1-2/usr/lib/
 DEB_SHLIBDEPS_INCLUDE_libdbus-qt4-1-1 := debian/libdbus-1-2/usr/lib/
 DEB_SHLIBDEPS_INCLUDE_python2.4-dbus := debian/libdbus-1-2/usr/lib/
 
+DEB_DH_STRIP_ARGS := --dbg-package=dbus --dbg-package=libdbus-1-2 \
+                     --dbg-package=libdbus-glib-1-2
+
 # Strict library versioning
 DEB_DH_MAKESHLIBS_ARGS_ALL := -V
 

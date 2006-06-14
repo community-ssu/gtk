@@ -30,6 +30,14 @@ Description: simple interprocess messaging system
  be found in the libdbus-1-2 package, as it is no longer contained in
  this package.
 
+Package: dbus-dbg
+Section: devel
+Priority: extra
+Architecture: any
+Depends: dbus (= ${Source-Version})
+Description: Debug symbols for the DBus daemon
+ Debug symbols for the DBus daemon.
+
 Package: libdbus-1-2
 Architecture: any
 Depends: ${shlibs:Depends}
@@ -51,6 +59,15 @@ Description: simple interprocess messaging system
  .
  The daemon can be found in the dbus package.
 
+Package: libdbus-1-2-dbg
+Section: devel
+Priority: extra
+Architecture: any
+Depends: libdbus-1-2 (= ${Source-Version})
+Conflicts: dbus (<< 0.60)
+Description: libdbus-1-2 debug symbols
+ libdbus-1-2 debug symbols
+
 Package: dbus-1-utils
 Architecture: any
 Section: utils
@@ -66,7 +83,7 @@ Description: simple interprocess messaging system (utilities)
  See the dbus description for more information about D-BUS in general.
 
 Package: libdbus-1-dev
-Section: libdevel
+Section: devel
 Architecture: any
 Depends: libdbus-1-2 (= ${Source-Version}), pkg-config
 Conflicts: dbus-1-dev
@@ -79,7 +96,7 @@ Description: simple interprocess messaging system (development headers)
  See the dbus description for more information about D-BUS in general.
 
 Package: libdbus-glib-1-dev
-Section: libdevel
+Section: devel
 Architecture: any
 Depends: libdbus-glib-1-2 (= ${Source-Version}), libdbus-1-dev (= ${Source-Version}), libglib2.0-dev, libexpat1
 Conflicts: libdbus-glib-dev, dbus-glib-1-dev, dbus-1-utils (<< 0.50-2)
@@ -106,4 +123,12 @@ Description: simple interprocess messaging system (GLib-based shared library)
  GLib interface to D-BUS.
  .
  See the dbus description for more information about D-BUS in general.
+
+Package: libdbus-glib-1-2-dbg
+Section: devel
+Priority: extra
+Architecture: any
+Depends: libdbus-glib-1-2 (= ${Source-Version})
+Description: libdbus-glib-1-2 debug symbols
+ libdbus-glib-1-2 debug symbols
 
