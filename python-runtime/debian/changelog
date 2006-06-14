@@ -1,3 +1,9 @@
+python-runtime (0.3-2) unstable; urgency=low
+
+  * fixed the target 'binary' in debian/rules
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 14 Jun 2006 16:34:40 -0300
+
 python-runtime (0.2-2) unstable; urgency=low
 
   * minor cleanup in debian/rules

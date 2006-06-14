@@ -3,7 +3,7 @@ Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
 Section: user/system-tools
 Build-Depends: debhelper (>= 4.0.0)
-Standards-Version: 3.5.8
+Standards-Version: 3.6.1
 XB-Maemo-Icon-26:
   iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAABmJLR0QA/wD/AP+gvaeTAAAA
   CXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1gUMFRIHdvjhsQAAAeVJREFUSMe1lrFL60Ac
