@@ -1,0 +1,31 @@
+# List of source files containing translatable strings.
+# Please keep this file sorted alphabetically.
+daemon/gnome-vfs-daemon.c
+libgnomevfs/gnome-vfs-cdrom.c
+libgnomevfs/gnome-vfs-configuration.c
+libgnomevfs/gnome-vfs-file-info.c
+libgnomevfs/gnome-vfs-filesystem-type.c
+[encoding: UTF-8]libgnomevfs/gnome-vfs-hal-mounts.c
+libgnomevfs/gnome-vfs-init.c
+libgnomevfs/gnome-vfs-job.c
+libgnomevfs/gnome-vfs-mime-handlers.c
+libgnomevfs/gnome-vfs-mime-info.c
+libgnomevfs/gnome-vfs-parse-ls.c
+libgnomevfs/gnome-vfs-result.c
+libgnomevfs/gnome-vfs-utils.c
+libgnomevfs/gnome-vfs-volume-monitor-daemon.c
+libgnomevfs/gnome-vfs-volume-ops.c
+modules/computer-method.c
+modules/file-method.c
+modules/ftp-method.c
+modules/http-method.c
+modules/network-method.c
+modules/sftp-method.c
+modules/test-method.c
+monikers/GNOME_VFS_Moniker_std.server.in.in
+schemas/desktop_default_applications.schemas.in
+schemas/desktop_gnome_url_handlers.schemas.in
+schemas/system_dns_sd.schemas.in
+schemas/system_http_proxy.schemas.in
+schemas/system_smb.schemas.in
+schemas/system_storage.schemas.in

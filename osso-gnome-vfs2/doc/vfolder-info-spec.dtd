@@ -1,0 +1,56 @@
+<!-- This is an initial spec for the vfolder-info format. -->
+<!-- It doesn't really have much use right now 		  -->
+
+
+<!-- This is the root element -->
+<!ELEMENT	VFolderInfo	(MergeDir*, ItemDir?, UserItemDir?, DesktopDir, UserDesktopDir?, Folder, ReadOnly) >
+
+<!-- Optional directories of .desktop files -->
+<!ELEMENT	MergeDir	(#PCDATA) >
+
+<!-- Used to override the default location of .desktop files -->
+<!-- with /usr/share/applications being the default          -->
+<!ELEMENT	ItemDir		(#PCDATA) >
+
+<!-- Used to override the default user location of .desktop files -->
+<!-- with $(HOME)/.gnome2/vfolders being the default               -->
+<!ELEMENT	UserItemDir	(#PCDATA) >
+
+<!-- Specifies the location of the .directory files -->
+<!ELEMENT	DesktopDir	(#PCDATA) >
+
+<!-- Specifies the location of the user .directory files -->
+<!ELEMENT	UserDesktopDir	(#PCDATA) >
+
+<!ELEMENT	Folder		(Name, Desktop, Include*, Exclude*, Query, OnlyUnallocated?, DontShowIfEmpty?, ReadOnly, Folder*) >
+
+<!-- Name of the menu item -->
+<!ELEMENT	Name		(#PCDATA) >
+
+<!-- Name of the .directory file -->
+<!ELEMENT	Desktop		(#PCDATA) >
+
+<!-- Include specific .desktop files -->
+<!ELEMENT	Include		(#PCDATA) >
+
+<!-- Exclude specific .desktop fiels -->
+<!ELEMENT	Exclude		(#PCDATA) >
+
+<!-- Not entirely sure -->
+<!ELEMENT	OnlyUnallocated EMPTY >
+
+<!-- Don't show menu item if there is no sub-entries -->
+<!ELEMENT	DontShowifEmpty EMPTY >
+
+<!-- Query monkey magic -->
+<!ELEMENT	Query		(And | Or | Not) >
+
+<!-- Logical operators -->
+<!ELEMENT	And		((Keyword | And | Or | Not)+) >
+<!ELEMENT	Or		((Keyword | And | Or | Not)+) >
+<!ELEMENT	Not		(Keyword | And | Or | Not) >
+
+<!-- This must correspond to the Categories field in the .desktop file -->
+<!ELEMENT	Keyword		(#PCDATA) >
+
+<!ELEMENT	ReadOnly	EMPTY >

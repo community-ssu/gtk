@@ -1,0 +1,224 @@
+2004-08-01  Gustavo J. A. M. Carneiro  <gustavo@users.sourceforge.net>
+
+	* bonobo-stream-vfs.c
+	(bonobo_stream_vfs_storageinfo_from_file_info): Don't crash if
+	fi->name is NULL.
+
+2003-04-17  Michael Meeks  <michael@ximian.com>
+
+	* GNOME_VFS_Moniker_std.server.in.in: remove .so suffix.
+
+2003-02-04  Gustavo J. A. M. Carneiro  <gustavo@users.sourceforge.net>
+
+	* bonobo-storage-vfs.c (vfs_open_stream): Duplicate the
+	CORBA_Object reference being returned, otherwise the same
+	CORBA_Object is released twice when the client calls
+	bonobo_object_release_unref. This happens when client == server,
+	which is always the case currently.
+	(vfs_open_storage): Fix the same problem as in vfs_open_stream.
+	(vfs_open_storage): Set exception when gnome_vfs_make_directory fails.
+
+2003-02-03  Gustavo J. A. M. Carneiro  <gustavo@users.sourceforge.net>
+
+	* bonobo-storage-vfs.c (bonobo_storage_vfs_open): Raise exception
+	if the URI is *not* a directory, as opposed to raising one if it
+	is a directory.
+
+	* bonobo-stream-vfs.c (bonobo_stream_vfs_storageinfo_from_file_info):
+	Look into fi->valid_fields instead of fi->flags to see if a field
+	is defined.
+
+2002-11-27  Jody Goldberg <jody@gnome.org>
+
+	* Release 2.1.3.1
+
+2002-04-22  Jody Goldberg <jody@gnome.org>
+
+	* Release 1.9.12
+
+2002-02-12  Peter Williams  <peterw@ximian.com>
+
+	* Makefile.am (libmoniker_gnome_vfs_std_la_LIBADD): Fix
+	compile when $(srcdir) != $(builddir).
+
+2002-02-11  Johan Dahlin  <jdahlin@telia.com>
+
+	* Makefile.am: link libmoniker_gnome_vfs.so against
+	libgnome-vfs-2.so. Fixes #71018
+
+2002-02-06  Michael Meeks  <michael@ximian.com>
+
+	* bonobo-storage-fs.c
+	(bonobo_storage_fs_finalize): chain to parent.
+
+	* bonobo-storage-vfs.c
+	(bonobo_storage_vfs_finalize): ditto.
+
+2002-01-17  Darin Adler  <darin@bentspoon.com>
+
+	* bonobo-storage-fs.c: Added an include of <string.h>, needed because
+	now gnome-vfs-mime.h doesn't include it.
+
+2002-01-02  Dave Camp  <dave@ximian.com>
+
+	* bonobo-storage-vfs.c (bonobo_storage_vfs_open): Removed the ununsed
+	mode parameter, changed the flags parameter to take a 
+	Bonobo_Storage_OpenMode, and changed the name of the flags parameter 
+	to mode.
+
+	* bonobo-stream-vfs.c (bonobo_stream_vfs_open): Removed the unused
+	flags parameter, and changed the mode parameter to take a 
+	Bonobo_Storage_OpenMode.
+
+	* bonobo-moniker-vfs.c (bonobo_moniker_vfs_resolve): Reflect changes
+	in bonobo_{storage/stream}_vfs_open().
+
+2001-10-17  Michael Meeks  <michael@ximian.com>
+
+	* bonobo-storage-fs.c: use the correct type constructor
+	to implement a CORBA interface.
+
+	* bonobo-storage-vfs.c: ditto.
+
+2001-10-05  jacob berkman  <jacob@ximian.com>
+
+	* Makefile.am: set LDFLAGS to -module -avoid-version
+
+2001-10-02  Darin Adler  <darin@bentspoon.com>
+
+	* Makefile.am: Change from xml-i18n-tools to intltool.
+
+2001-09-25  David Kaelbling <drk@sgi.com>
+
+	* bonobo-storage-fs.c (fs_erase): don't do an
+	assignment instead of a comparison; sigh.
+	check for EEXIST as well as ENOTEMPTY.
+
+2001-08-22  Peter Williams  <peterw@ximian.com>
+
+	* Makefile.am (INCLUDES): Typo fix.
+
+2001-08-14  Michael Meeks  <michael@ximian.com>
+
+	* Makefile.am: s/oaf/server/, install in
+	$(libdir)/bonobo/servers
+
+2001-08-03  Darin Adler  <darin@bentspoon.com>
+
+	reviewed by: <delete if not using a buddy>
+
+	* ChangeLog:
+	* Makefile.am:
+	* bonobo-storage-vfs.c:
+	* bonobo-stream-vfs.c:
+	* bonobo-stream-vfs.h:
+
+2001-08-03  Darin Adler  <darin@bentspoon.com>
+
+	reviewed by: <delete if not using a buddy>
+
+	* Makefile.am:
+	* bonobo-storage-vfs.c:
+	* bonobo-stream-vfs.c:
+	* bonobo-stream-vfs.h:
+
+2001-08-03  Darin Adler  <darin@bentspoon.com>
+
+	* Makefile.am: Use CFLAGS from gnome-vfs instead of hard-coding
+	things like -Wno-unused which are gcc-specific.
+
+2001-08-01  Darin Adler  <darin@bentspoon.com>
+
+	* .cvsignore: Add this.
+
+2001-08-02  Michael Meeks  <michael@ximian.com>
+
+	* bonobo-storage-vfs.c (concat_dir_and_file): impl.
+	(vfs_open_stream, vfs_list_contents, vfs_open_storage),
+	(vfs_erase): use it.
+
+	* bonobo-storage-fs.c (concat_dir_and_file): impl.
+	(fs_get_info, fs_open_stream, fs_open_storage),
+	(fs_rename, fs_list_contents, fs_erase): use it.
+
+2001-07-30  Michael Meeks  <michael@ximian.com>
+
+	* GNOME_VFS_Moniker_std.oaf.in.in: in library gnome_vfs not
+	vfs_gnome, doh.
+
+2001-07-29  Seth Nickell  <snickell@stanford.edu>
+
+	* bonobo-storage-fs.c:
+	* bonobo-storage-vfs.c:
+	* bonobo-stream-fs.c:
+	* bonobo-stream-vfs.c:
+
+	Make it actually compile ;-) Still had includes to parts
+	of libgnome.
+	
+2001-07-29  Michael Meeks  <michael@ximian.com>
+
+	* Makefile.am: re-write.
+
+2001-07-27  Michael Meeks  <michael@ximian.com>
+
+	* Move into gnome-vfs.
+
+	Reviewed by: Seth <snickell@stanford.edu>
+
+2001-07-27  Michael Meeks  <michael@ximian.com>
+	
+	* gnome-moniker-std.c: fix the factory name so it is what it
+	says it is.
+
+	* GNOME_Moniker_std.oaf.in.in: fix the shlib factory path.
+
+	* Makefile.am (clean-local): actualy install the monikers.
+	use xml-i18n-tools.
+
+2001-07-11  Martin Baulig  <baulig@suse.de>
+
+	* bonobo-storage-fs.c, bonobo-moniker-extender-file: Use
+	gnome_vfs_mime_type_from_name(), not gnome_mime_type_from_file().
+
+2001-07-10  Michael Meeks  <michael@ximian.com>
+
+	* bonobo-moniker-vfs.c: add.
+
+	* bonobo-stream-vfs.c: port to GObject / BonoboObject.
+
+	* bonobo-storage-vfs.c: ditto.
+
+	* GNOME_Moniker_std.oaf.in.in: register the vfs moniker.
+
+2001-07-10  Michael Meeks  <michael@ximian.com>
+
+	* bonobo-storage-fs.c (fs_open_storage),
+	(fs_open_stream): CORBA_Object_duplicate the return
+	values.
+
+2001-07-10  Michael Meeks  <michael@ximian.com>
+
+	* bonobo-moniker-file.c (bonobo_moniker_file_resolve):
+	upd. to use it.
+
+	* bonobo-storage-fs.c: port to BonoboObject / GObject.
+
+2001-07-10  Michael Meeks  <michael@ximian.com>
+
+	* bonobo-moniker-file.c (bonobo_moniker_file_resolve):
+	use bonobo-stream-fs directly, not via the storage plugin
+	architecture.
+
+	* bonobo-stream-fs.c (bonobo_mode_to_fs): port to
+	BonoboObject / GObject.
+
+2001-07-09  Michael Meeks  <michael@ximian.com>
+
+	* gnome-moniker-std.[ch]: add.
+
+	* bonobo-moniker-extender-file.c: add.
+
+	* bonobo-moniker-file.c: add.
+
+	* Makefile.am (INCLUDES): re-vamp, add file monikers.

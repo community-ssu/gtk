@@ -1,0 +1,60 @@
+diff -ur ../osso-gnome-vfs2/modules/Makefile.am osso-gnome-vfs2/modules/Makefile.am
+--- ../osso-gnome-vfs2/modules/Makefile.am	2005-11-17 17:54:07.000000000 +0200
++++ osso-gnome-vfs2/modules/Makefile.am	2006-05-24 12:53:16.973100424 +0300
+@@ -61,7 +61,6 @@
+ 	libcomputer.la				\
+ 	libfile.la				\
+ 	libvfs-test.la				\
+-	libbzip2.la				\
+ 	libgzip.la				\
+ 	$(SMB_LTLIBS)	                        \
+ 	libtar.la				\
+@@ -70,6 +69,7 @@
+ 
+ # Not currently supported
+ #	libnfs.la
++#	libbzip2.la
+ 
+ modulesconfdir=$(sysconfdir)/gnome-vfs-2.0/modules
+ if HAVE_CDDA
+@@ -150,9 +150,9 @@
+ 
+ ### `bzip2' method
+ 
+-libbzip2_la_SOURCES = bzip2-method.c
+-libbzip2_la_LDFLAGS = $(module_flags)
+-libbzip2_la_LIBADD = $(MODULES_LIBS) $(BZ2_LIBS) ../libgnomevfs/libgnomevfs-2.la
++#libbzip2_la_SOURCES = bzip2-method.c
++#libbzip2_la_LDFLAGS = $(module_flags)
++#libbzip2_la_LIBADD = $(MODULES_LIBS) $(BZ2_LIBS) ../libgnomevfs/libgnomevfs-2.la
+ 
+ ### `ftp' method
+ 
+diff -ur ../osso-gnome-vfs2/modules/default-modules.conf osso-gnome-vfs2/modules/default-modules.conf
+--- ../osso-gnome-vfs2/modules/default-modules.conf	2005-11-17 17:54:07.000000000 +0200
++++ osso-gnome-vfs2/modules/default-modules.conf	2006-05-24 12:51:31.135190232 +0300
+@@ -6,7 +6,7 @@
+ # <method 1> <method 2> ... <method N> : <module>
+ #
+ 
+-bzip2: bzip2
++#bzip2: bzip2
+ 
+ cdda: cdda
+ 
+--- osso-gnome-vfs2/configure.in.orig	2006-05-24 16:10:47.000000000 +0200
++++ osso-gnome-vfs2/configure.in	2006-05-24 16:10:34.000000000 +0200
+@@ -381,13 +381,6 @@
+ 
+ AC_CHECK_FUNCS(inet_ntop)	   
+ 
+-AC_CHECK_LIB(bz2, bzCompressInit, AC_DEFINE(HAVE_OLDER_BZIP2, 1, [Define to 1 if older bzip2 version is used]))
+-AC_CHECK_HEADERS(bzlib.h,
+-	BZ2_LIBS="$BZ2_LIBS -lbz2",
+-	AC_MSG_ERROR([Gnome-vfs requires libbz2 to compile.])
+-	)
+-AC_SUBST(BZ2_LIBS)
+-
+ if test $have_socket = yes; then
+     AC_STRUCT_LINGER
+ fi

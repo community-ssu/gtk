@@ -1,0 +1,26 @@
+Index: libgnomevfs/gnome-vfs-thread-pool.c
+===================================================================
+--- libgnomevfs/gnome-vfs-thread-pool.c	(revision 12624)
++++ libgnomevfs/gnome-vfs-thread-pool.c	(working copy)
+@@ -51,7 +51,7 @@ typedef struct {
+ 
+ static GStaticMutex thread_list_lock = G_STATIC_MUTEX_INIT;
+ 
+-static const int MAX_AVAILABLE_THREADS = 20; 
++static const int MAX_AVAILABLE_THREADS = 3; 
+ static GList *available_threads;
+ static int thread_count;
+ 
+Index: libgnomevfs/gnome-vfs-job-queue.c
+===================================================================
+--- libgnomevfs/gnome-vfs-job-queue.c	(revision 12624)
++++ libgnomevfs/gnome-vfs-job-queue.c	(working copy)
+@@ -40,7 +40,7 @@
+ /* See the comment at job_can_start () for 
+    an explanation of the following macros */
+ #ifndef DEFAULT_THREAD_COUNT_LIMIT
+-#define DEFAULT_THREAD_COUNT_LIMIT 10
++#define DEFAULT_THREAD_COUNT_LIMIT 3
+ #endif
+ 
+ #define LIMIT_FUNCTION_LOWER_BOUND 2 /* must NOT be more than DEFAULT_THREAD_COUNT_LIMIT */

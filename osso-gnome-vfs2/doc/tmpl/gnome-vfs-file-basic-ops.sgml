@@ -1,0 +1,168 @@
+<!-- ##### SECTION Title ##### -->
+Basic File Operations
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM GnomeVFSOpenMode ##### -->
+<para>
+
+</para>
+
+@GNOME_VFS_OPEN_NONE: 
+@GNOME_VFS_OPEN_READ: 
+@GNOME_VFS_OPEN_WRITE: 
+@GNOME_VFS_OPEN_RANDOM: 
+@GNOME_VFS_OPEN_TRUNCATE: 
+
+<!-- ##### FUNCTION gnome_vfs_create ##### -->
+<para>
+
+</para>
+
+@handle: 
+@text_uri: 
+@open_mode: 
+@exclusive: 
+@perm: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_create_uri ##### -->
+<para>
+
+</para>
+
+@handle: 
+@uri: 
+@open_mode: 
+@exclusive: 
+@perm: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_open ##### -->
+<para>
+
+</para>
+
+@handle: 
+@text_uri: 
+@open_mode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_open_uri ##### -->
+<para>
+
+</para>
+
+@handle: 
+@uri: 
+@open_mode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_close ##### -->
+<para>
+
+</para>
+
+@handle: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_unlink ##### -->
+<para>
+
+</para>
+
+@text_uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_unlink_from_uri ##### -->
+<para>
+
+</para>
+
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_move_uri ##### -->
+<para>
+
+</para>
+
+@old_uri: 
+@new_uri: 
+@force_replace: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_move ##### -->
+<para>
+
+</para>
+
+@old_text_uri: 
+@new_text_uri: 
+@force_replace: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_check_same_fs_uris ##### -->
+<para>
+
+</para>
+
+@source_uri: 
+@target_uri: 
+@same_fs_return: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_check_same_fs ##### -->
+<para>
+
+</para>
+
+@source: 
+@target: 
+@same_fs_return: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_uri_exists ##### -->
+<para>
+
+</para>
+
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_create_symbolic_link ##### -->
+<para>
+
+</para>
+
+@uri: 
+@target_reference: 
+@Returns: 
+
+

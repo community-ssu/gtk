@@ -1,0 +1,182 @@
+<chapter id="about">
+  <title>Introduction to GnomeVFS</title>
+
+  <sect1>
+    <title>Uses and Purpose</title>
+    <para>
+      GnomeVFS is a filesystem abstraction library allowing applications
+      plugable transparent access to a variety of "real" filesystems, from
+      WebDAV to digital cameras, to the local filesystem. It also contains
+      a number of other convenient file utilities such as a comphrehensive
+      MIME database / Application registry, and a copy engine. Use of GnomeVFS
+      ensures that an application or component will be usable by Nautilus
+      or other GnomeVFS applications for handling the display of data from
+      various URIs, as well 
+    </para>
+    <sect2>
+      <title>User's Perspective</title>
+      <para>
+	From a user's perspective GnomeVFS enabled applications provide consistent
+	access to their data, whether it be stored on remote servers or on their
+	local harddisk, or even a peripheral device such as a Rio or a digital
+	camera. Rather than having to work around the distinction between storage
+	you can work off of and storage you can only "download" from or "upload" to,
+	GnomeVFS allows users to store their documents and data wherever it is
+	most convenient.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Developer's Perspective</title>
+      <para>
+	Besides providing transparent access to data methods that you might
+	otherwise have to implement, GnomeVFS provides a number of convenience
+	libraries for processing URIs, detecting the MIME type of files, and
+	even figuring out which applications or components to launch to view
+	a file or what icon to use. Writing a GnomeVFS module may also be an
+	appropriate solution to some data access problems as it allows the
+	developer to implement a relatively small number of functions to gain
+	general filesystem semantics (and of course, writing a GnomeVFS module
+	benefits other applications too!).
+      </para>
+    </sect2>
+  </sect1>
+
+  <sect1 id="gnome-vfs-first-steps">
+    <title>A Gentle Programming Primer</title>
+    <para>
+      Using GnomeVFS in an existing application, or writing a new application
+      with it, is actually very simple since GnomeVFS tries to mimic POSIX
+      file access syntax and semantics. That means that most "standard unix calls" 
+      have a GnomeVFS equivalent that operates in a fairly similar manner. There are
+      a few differences to keep in mind. 
+
+      <itemizedlist>
+	
+	<listitem>
+	  <para>
+	    The most obvious is probably that all I/O operations return a <type>GnomeVFSResult</type>
+	    indicating the success or failure of the operation. More on this later.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    The types may be slightly different (but still parallel), for example rather than using an 
+	    <type>int</type> for a file-descriptor, GnomeVFS uses <type>GnomeVFSHandle</type>, a handle
+	    to a particular URI.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Most operations come in Handle (think file descriptor) and URI form. The URI form may be
+	    more convenient if you do not want to track handles, etc, but just be aware that both are
+	    at your disposal and may be used interchangably. For example <function>gnome_vfs_open</function>
+	    and <function>gnome_vfs_open_uri</function>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      By way of example, consider the basic read command:
+      <programlisting>
+	ssize_t read (int fd, void *buf, size_t count);
+      </programlisting>
+    </para>
+    <para>
+      The GnomeVFS equivalent is very similar, but you will notice slightly different data types. The
+      consistent returning of a GnomeVFSResult also necessitated moving the return value of read into
+      a pass-back-value pointer <parameter>bytes_read</parameter>:
+      <programlisting>
+	GnomeVFSResult gnome_vfs_read (GnomeVFSHandle *handle,
+	                               gpointer buffer,
+                                       GnomeVFSFileSize bytes,
+                                       GnomeVFSFileSize *bytes_read);
+      </programlisting>
+    </para>
+    <para>
+      So <function>gnome_vfs_read</function> takes a <type>GnomeVFSHandle</type>, which functions
+      like a file descriptor, and attempts to read <parameter>bytes</parameter> bytes out of
+      <parameter>handle</parameter> into <parameter>buffer</parameter>. The number of bytes succesfully
+      read into <parameter>buffer</parameter> is returned in the pointer <parameter>bytes_read</parameter>.
+      The return value of the function, a <type>GnomeVFSResult</type> indicates the success of the
+      operation or any errors that might have occurred (for example, permission denied).
+      <type>GnomeVFSResult</type> is just an enumeration.
+    </para>
+    <sect2>
+      <title>Simple Sample Program</title>
+      <para>
+	Now lets write a simple program to copy a fixed number of bytes from one file and append
+	it to another file.
+      </para>
+      <para>
+	<programlisting>
+<![CDATA[
+#include <libgnomevfs/gnome-vfs.h>
+#include <gnome.h>
+
+#define BYTES_TO_PROCESS 256
+
+int print_error (GnomeVFSResult result, const char *uri_string);
+
+int
+main (int argc, char **argv)
+{
+  GnomeVFSHandle *read_handle, *write_handle;
+  const char *input_uri_string = argv[1];
+  const char *output_uri_string = argv[2];
+  GnomeVFSFileSize bytes_read, bytes_written;
+  guint buffer[BYTES_TO_PROCESS];
+  GnomeVFSResult result;
+
+  /* remember to initialize GnomeVFS! */
+  if (!gnome_vfs_init ()) {
+    printf ("Could not initialize GnomeVFS\n");
+    return 1;
+  }
+
+  /* open the input file for read access */
+  result = gnome_vfs_open (&read_handle, input_uri_string, GNOME_VFS_OPEN_READ);
+  /* if the operation was not successful, print the error and abort */
+  if (result != GNOME_VFS_OK) return print_error (result, input_uri_string);
+
+  /* we use create instead of open, because open will not create the file if it does
+     not already exist. The last argument is the permissions to use if the file is created,
+     the second to last tells GnomeVFS that its ok if the file already exists, and just open it */
+  result = gnome_vfs_create (&write_handle, output_uri_string, GNOME_VFS_OPEN_WRITE, FALSE, 0777);
+  if (result != GNOME_VFS_OK) return print_error (result, output_uri_string);
+
+  /* read data from the input uri */
+  result = gnome_vfs_read (read_handle, buffer, BYTES_TO_PROCESS, &bytes_read);
+  if (result != GNOME_VFS_OK) return print_error (result, input_uri_string);
+
+  /* seek to the end of the output uri so we will append rather than overwrite */
+  /* therefore, we seek 0 bytes relative to the end of the file */
+  result = gnome_vfs_seek (write_handle, GNOME_VFS_SEEK_END, 0);
+
+  /* now write the data we read out to the output uri */
+  result = gnome_vfs_write (write_handle, buffer, bytes_read, &bytes_written);
+  if (result != GNOME_VFS_OK) return print_error (result, output_uri_string);
+
+  return 0;
+}
+
+int
+print_error (GnomeVFSResult result, const char *uri_string)
+{
+  const char *error_string;
+  /* get the string corresponding to this GnomeVFSResult value */
+  error_string = gnome_vfs_result_to_string (result);
+  printf ("Error %s occured opening location %s\n", error_string, uri_string);
+  return 1;
+}
+
+]]>
+	</programlisting>
+</para>
+    </sect2>
+    <sect2>
+	<title>Conversion of a Sample Code Block</title>
+	<para>
+	</para>
+      </sect2>
+  </sect1>
+</chapter>

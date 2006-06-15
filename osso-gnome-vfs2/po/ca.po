@@ -1,0 +1,2657 @@
+# gnome-vfs translation to Catalan.
+# Copyright (C) 2000, 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
+# Softcatalà <info@softcatala.org>, 2000, 2001.
+# Jordi Mallach <jordi@sindominio.net>, 2002, 2003, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-vfs 2.11.92\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-08-24 22:27+0200\n"
+"PO-Revision-Date: 2005-08-24 22:38+0200\n"
+"Last-Translator: Jordi Mallach <jordi@sindominio.net>\n"
+"Language-Team: Catalan <tradgnome@softcatala.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n!=1;\n"
+
+#: ../daemon/gnome-vfs-daemon.c:596
+msgid "Could not initialize Bonobo"
+msgstr "No s'ha pogut inicialitzar Bonobo"
+
+#: ../daemon/gnome-vfs-daemon.c:603
+msgid "Could not initialize gnome vfs"
+msgstr "No s'ha pogut inicialitzar gnome vfs"
+
+#: ../libgnomevfs/gnome-vfs-cdrom.c:237
+msgid "ISO 9660 Volume"
+msgstr "Volum ISO 9660"
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:221
+#, c-format
+msgid "%s:%d contains NUL characters."
+msgstr "%s:%d conté caràcters NULS."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:238
+#, c-format
+msgid "%s:%d contains no method name."
+msgstr "%s:%d no conté cap nom de mètode."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:278
+#, c-format
+msgid "%s:%d has no options endmarker."
+msgstr "%s:%d no té un marcador final d'opcions."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:289
+#, c-format
+msgid "%s:%d has unknown options %s."
+msgstr "%s:%d té opcions desconegudes %s."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:308
+#, c-format
+msgid "%s:%d contains no module name."
+msgstr "%s:%d no conté cap nom de mòdul."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:362
+#, c-format
+msgid "Configuration file `%s' was not found: %s"
+msgstr "El fitxer de configuració `%s' no ha estat trobat: %s"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:37
+msgid "AFFS Volume"
+msgstr "Volum AFFS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:38
+msgid "AFS Network Volume"
+msgstr "Volum de xarxa AFS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:39
+msgid "Auto-detected Volume"
+msgstr "Volum autodetectat"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:40
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:42
+msgid "CD-ROM Drive"
+msgstr "Unitat de CD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:41
+msgid "CD Digital Audio"
+msgstr "Àudio digital de CD"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:43
+msgid "Hardware Device Volume"
+msgstr "Volum de dispositiu de maquinari"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:44
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:45
+msgid "Ext2 Linux Volume"
+msgstr "Volum d'Ext2 Linux"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:46
+msgid "Ext3 Linux Volume"
+msgstr "Volum d'Ext3 Linux"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:47
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:57
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:58
+msgid "MSDOS Volume"
+msgstr "Volum d'MSDOS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:48
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:49
+msgid "MacOS Volume"
+msgstr "Volum del MacOS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:50
+msgid "CDROM Volume"
+msgstr "Volum de CD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:51
+msgid "Hsfs CDROM Volume"
+msgstr "Volum de CD-ROM Hsfs"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:52
+msgid "JFS Volume"
+msgstr "Volum de JFS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:53
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:60
+msgid "Windows NT Volume"
+msgstr "Volum de Windows NT"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:54
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:62
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:63
+msgid "System Volume"
+msgstr "Volum del sistema"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:55
+msgid "Memory Volume"
+msgstr "Volum de memòria"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:56
+msgid "Minix Volume"
+msgstr "Volum de Minix"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:59
+msgid "NFS Network Volume"
+msgstr "Volum de xarxa NFS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:61
+msgid "Netware Volume"
+msgstr "Volum de Netware"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:64
+msgid "Reiser4 Linux Volume"
+msgstr "Volum de Linux Reiser4"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:65
+msgid "ReiserFS Linux Volume"
+msgstr "Volum de Linux ReiserFS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:66
+msgid "Windows Shared Volume"
+msgstr "Volum compartit de Windows"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:67
+msgid "SuperMount Volume"
+msgstr "Volum de Supermount"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:68
+msgid "DVD Volume"
+msgstr "Volum de DVD"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:69
+msgid "Solaris/BSD Volume"
+msgstr "Volum de Solaris/BSD"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:70
+msgid "Udfs Solaris Volume"
+msgstr "Volum Udfs de Solaris"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:71
+msgid "Pcfs Solaris Volume"
+msgstr "Volum Pcfs de Solaris"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:72
+msgid "Sun SAM-QFS Volume"
+msgstr "Volum SAM-QFS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:73
+msgid "Enhanced DOS Volume"
+msgstr "Volum millorat de DOS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:74
+msgid "Windows VFAT Volume"
+msgstr "Volum VFAT de Windows"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:75
+msgid "Xenix Volume"
+msgstr "Volum de Xenix"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:76
+msgid "XFS Linux Volume"
+msgstr "Volum XFS de Linux"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:77
+msgid "XIAFS Volume"
+msgstr "Volum de XIAFS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:78
+msgid "CIFS Volume"
+msgstr "Volum de CIFS"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:106
+msgid "Unknown"
+msgstr "Desconegut"
+
+#: ../libgnomevfs/gnome-vfs-job.c:734
+#, c-format
+msgid "Unknown operation type %u"
+msgstr "Tipus d'operació %u desconeguda"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1025 ../libgnomevfs/gnome-vfs-job.c:1176
+#, c-format
+msgid "Cannot create pipe for open GIOChannel: %s"
+msgstr "No es pot crear la connexió per obrir GIOChannel: %s"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1699
+#, c-format
+msgid "Unknown job kind %u"
+msgstr "Tipus de feina %u desconegut"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1732
+msgid "Operation stopped"
+msgstr "Operació aturada"
+
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:108
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:275
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:326
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:622
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:643
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:663
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:684
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:705
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:856
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:880
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:901
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:922
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:979
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:998
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1017
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1037
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1057
+#: ../libgnomevfs/gnome-vfs-mime-info.c:622
+#: ../libgnomevfs/gnome-vfs-mime-info.c:629
+#: ../libgnomevfs/gnome-vfs-mime-info.c:637
+#: ../libgnomevfs/gnome-vfs-mime-info.c:644
+#: ../libgnomevfs/gnome-vfs-mime-info.c:652
+#: ../libgnomevfs/gnome-vfs-mime-info.c:669
+#: ../libgnomevfs/gnome-vfs-mime-info.c:676
+#: ../libgnomevfs/gnome-vfs-mime-info.c:683
+#: ../libgnomevfs/gnome-vfs-mime-info.c:690
+#: ../libgnomevfs/gnome-vfs-mime-info.c:698
+#: ../libgnomevfs/gnome-vfs-mime-info.c:705
+msgid ""
+"Deprecated function.  User modifications to the MIME database are no longer "
+"supported."
+msgstr ""
+"La funció està desaconsellada. Ja no es suporten les modificacions d'usuari "
+"a la base de dades MIME."
+
+#: ../libgnomevfs/gnome-vfs-parse-ls.c:666
+#, c-format
+msgid "Could not parse: %s"
+msgstr "No s'ha pogut analitzar: %s"
+
+#: ../libgnomevfs/gnome-vfs-parse-ls.c:668
+msgid "More parsing errors will be ignored."
+msgstr "Els següents errors d'anàlisi seran ignorats"
+
+#. GNOME_VFS_OK
+#: ../libgnomevfs/gnome-vfs-result.c:42
+msgid "No error"
+msgstr "Cap error"
+
+#. GNOME_VFS_ERROR_NOT_FOUND
+#: ../libgnomevfs/gnome-vfs-result.c:43
+msgid "File not found"
+msgstr "Fitxer no trobat"
+
+#. GNOME_VFS_ERROR_GENERIC
+#: ../libgnomevfs/gnome-vfs-result.c:44
+msgid "Generic error"
+msgstr "Error genèric"
+
+#. GNOME_VFS_ERROR_INTERNAL
+#: ../libgnomevfs/gnome-vfs-result.c:45
+msgid "Internal error"
+msgstr "Error intern"
+
+#. GNOME_VFS_ERROR_BAD_PARAMETERS
+#: ../libgnomevfs/gnome-vfs-result.c:46
+msgid "Invalid parameters"
+msgstr "Paràmetres no vàlids"
+
+#. GNOME_VFS_ERROR_NOT_SUPPORTED
+#: ../libgnomevfs/gnome-vfs-result.c:47
+msgid "Unsupported operation"
+msgstr "Operació no suportada"
+
+#. GNOME_VFS_ERROR_IO
+#: ../libgnomevfs/gnome-vfs-result.c:48
+msgid "I/O error"
+msgstr "Error E/S"
+
+#. GNOME_VFS_ERROR_CORRUPTED_DATA
+#: ../libgnomevfs/gnome-vfs-result.c:49
+msgid "Data corrupted"
+msgstr "Dades corruptes"
+
+#. GNOME_VFS_ERROR_WRONG_FORMAT
+#: ../libgnomevfs/gnome-vfs-result.c:50
+msgid "Format not valid"
+msgstr "Format no vàlid"
+
+#. GNOME_VFS_ERROR_BAD_FILE
+#: ../libgnomevfs/gnome-vfs-result.c:51
+msgid "Bad file handle"
+msgstr "Fitxer associat incorrecte"
+
+#. GNOME_VFS_ERROR_TOO_BIG
+#: ../libgnomevfs/gnome-vfs-result.c:52
+msgid "File too big"
+msgstr "Fitxer massa gran"
+
+#. GNOME_VFS_ERROR_NO_SPACE
+#: ../libgnomevfs/gnome-vfs-result.c:53
+msgid "No space left on device"
+msgstr "No hi ha prou espai en el dispositiu"
+
+#. GNOME_VFS_ERROR_READ_ONLY
+#: ../libgnomevfs/gnome-vfs-result.c:54
+msgid "Read-only file system"
+msgstr "Sistema de fitxers de només lectura"
+
+#. GNOME_VFS_ERROR_INVALID_URI
+#: ../libgnomevfs/gnome-vfs-result.c:55
+msgid "Invalid URI"
+msgstr "URI no vàlid"
+
+#. GNOME_VFS_ERROR_NOT_OPEN
+#: ../libgnomevfs/gnome-vfs-result.c:56
+msgid "File not open"
+msgstr "Fitxer no obert"
+
+#. GNOME_VFS_ERROR_INVALID_OPEN_MODE
+#: ../libgnomevfs/gnome-vfs-result.c:57
+msgid "Open mode not valid"
+msgstr "Mode d'obertura no vàlid"
+
+#. GNOME_VFS_ERROR_ACCESS_DENIED
+#: ../libgnomevfs/gnome-vfs-result.c:58
+msgid "Access denied"
+msgstr "Accés denegat"
+
+#. GNOME_VFS_ERROR_TOO_MANY_OPEN_FILES
+#: ../libgnomevfs/gnome-vfs-result.c:59
+msgid "Too many open files"
+msgstr "Massa fitxers oberts"
+
+#. GNOME_VFS_ERROR_EOF
+#: ../libgnomevfs/gnome-vfs-result.c:60
+msgid "End of file"
+msgstr "Fi del fitxer"
+
+#. GNOME_VFS_ERROR_NOT_A_DIRECTORY
+#: ../libgnomevfs/gnome-vfs-result.c:61
+msgid "Not a directory"
+msgstr "No és un directori"
+
+#. GNOME_VFS_ERROR_IN_PROGRESS
+#: ../libgnomevfs/gnome-vfs-result.c:62
+msgid "Operation in progress"
+msgstr "Operació en progrés"
+
+#. GNOME_VFS_ERROR_INTERRUPTED
+#: ../libgnomevfs/gnome-vfs-result.c:63
+msgid "Operation interrupted"
+msgstr "Operació interrompuda"
+
+#. GNOME_VFS_ERROR_FILE_EXISTS
+#: ../libgnomevfs/gnome-vfs-result.c:64
+msgid "File exists"
+msgstr "Fitxer ja existent"
+
+#. GNOME_VFS_ERROR_LOOP
+#: ../libgnomevfs/gnome-vfs-result.c:65
+msgid "Looping links encountered"
+msgstr "Enllaços amb bucles trobats"
+
+#. GNOME_VFS_ERROR_NOT_PERMITTED
+#: ../libgnomevfs/gnome-vfs-result.c:66
+msgid "Operation not permitted"
+msgstr "Operació no permesa"
+
+#. GNOME_VFS_ERROR_IS_DIRECTORY
+#: ../libgnomevfs/gnome-vfs-result.c:67
+msgid "Is a directory"
+msgstr "És un directori"
+
+#. GNOME_VFS_ERROR_NO_MEMORY
+#: ../libgnomevfs/gnome-vfs-result.c:68
+msgid "Not enough memory"
+msgstr "No hi ha prou memòria"
+
+#. GNOME_VFS_ERROR_HOST_NOT_FOUND
+#: ../libgnomevfs/gnome-vfs-result.c:69
+msgid "Host not found"
+msgstr "Servidor no trobat"
+
+#. GNOME_VFS_ERROR_INVALID_HOST_NAME
+#: ../libgnomevfs/gnome-vfs-result.c:70
+msgid "Host name not valid"
+msgstr "Nom de servidor no vàlid"
+
+#. GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS
+#: ../libgnomevfs/gnome-vfs-result.c:71
+msgid "Host has no address"
+msgstr "Servidor sense adreça"
+
+#. GNOME_VFS_ERROR_LOGIN_FAILED
+#: ../libgnomevfs/gnome-vfs-result.c:72
+msgid "Login failed"
+msgstr "Entrada fallida"
+
+#. GNOME_VFS_ERROR_CANCELLED
+#: ../libgnomevfs/gnome-vfs-result.c:73
+msgid "Operation cancelled"
+msgstr "Operació cancel·lada"
+
+#. GNOME_VFS_ERROR_DIRECTORY_BUSY
+#: ../libgnomevfs/gnome-vfs-result.c:74
+msgid "Directory busy"
+msgstr "Directori ocupat"
+
+#. GNOME_VFS_ERROR_DIRECTORY_NOT_EMPTY
+#: ../libgnomevfs/gnome-vfs-result.c:75
+msgid "Directory not empty"
+msgstr "Directori no buit"
+
+#. GNOME_VFS_ERROR_TOO_MANY_LINKS
+#: ../libgnomevfs/gnome-vfs-result.c:76
+msgid "Too many links"
+msgstr "Massa enllaços"
+
+#. GNOME_VFS_ERROR_READ_ONLY_FILE_SYSTEM
+#: ../libgnomevfs/gnome-vfs-result.c:77
+msgid "Read only file system"
+msgstr "Sistema de fitxers de només lectura"
+
+#. GNOME_VFS_ERROR_NOT_SAME_FILE_SYSTEM
+#: ../libgnomevfs/gnome-vfs-result.c:78
+msgid "Not on the same file system"
+msgstr "No és del mateix sistema de fitxers"
+
+#. GNOME_VFS_ERROR_NAME_TOO_LONG
+#: ../libgnomevfs/gnome-vfs-result.c:79
+msgid "Name too long"
+msgstr "Nom massa llarg"
+
+#. GNOME_VFS_ERROR_SERVICE_NOT_AVAILABLE
+#: ../libgnomevfs/gnome-vfs-result.c:80
+msgid "Service not available"
+msgstr "El servei no està disponible"
+
+#. GNOME_VFS_ERROR_SERVICE_OBSOLETE
+#: ../libgnomevfs/gnome-vfs-result.c:81
+msgid "Request obsoletes service's data"
+msgstr "Sol·licita les dades de serveis obsolets"
+
+#. GNOME_VFS_ERROR_PROTOCOL_ERROR
+#: ../libgnomevfs/gnome-vfs-result.c:82
+msgid "Protocol error"
+msgstr "Error de protocol"
+
+#. GNOME_VFS_ERROR_NO_MASTER_BROWSER
+#: ../libgnomevfs/gnome-vfs-result.c:83
+msgid "Could not find master browser"
+msgstr "No s'ha trobat el navegador mestre"
+
+#. GNOME_VFS_ERROR_NO_DEFAULT
+#: ../libgnomevfs/gnome-vfs-result.c:84
+msgid "No default action associated"
+msgstr "No hi ha cap acció per defecte associada"
+
+#. GNOME_VFS_ERROR_NO_HANDLER
+#: ../libgnomevfs/gnome-vfs-result.c:85
+msgid "No handler for URL scheme"
+msgstr "No hi ha cap gestor per l'esquema d'URL"
+
+#. GNOME_VFS_ERROR_PARSE
+#: ../libgnomevfs/gnome-vfs-result.c:86
+msgid "Error parsing command line"
+msgstr "S'ha produït un error en analitzar la línia d'ordres"
+
+#. GNOME_VFS_ERROR_LAUNCH
+#: ../libgnomevfs/gnome-vfs-result.c:87
+msgid "Error launching command"
+msgstr "S'ha produït un error en executar l'ordre"
+
+#. GNOME_VFS_ERROR_TIMEOUT
+#: ../libgnomevfs/gnome-vfs-result.c:88 ../libgnomevfs/gnome-vfs-result.c:90
+msgid "Timeout reached"
+msgstr "S'ha esgotat el temps d'espera"
+
+#. GNOME_VFS_ERROR_NAMESERVER
+#: ../libgnomevfs/gnome-vfs-result.c:89
+msgid "Nameserver error"
+msgstr "Error del servidor de noms"
+
+#. GNOME_VFS_ERROR_LOCKED
+#: ../libgnomevfs/gnome-vfs-result.c:91
+msgid "The resource is locked"
+msgstr "El recurs és blocat"
+
+#. GNOME_VFS_ERROR_DEPRECATED_FUNCTION
+#: ../libgnomevfs/gnome-vfs-result.c:92
+msgid "Function call deprecated"
+msgstr "La crida a la funció està desaconsellada"
+
+#: ../libgnomevfs/gnome-vfs-result.c:217
+msgid "Unknown error"
+msgstr "Error desconegut"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:78
+#, c-format
+msgid "%u byte"
+msgid_plural "%u bytes"
+msgstr[0] "%u octet"
+msgstr[1] "%u octets"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:84
+#, c-format
+msgid "%.1f KB"
+msgstr "%.1f KB"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:88
+#, c-format
+msgid "%.1f MB"
+msgstr "%.1f MB"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:92
+#, c-format
+msgid "%.1f GB"
+msgstr "%.1f GB"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:1096
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:381
+msgid " (invalid Unicode)"
+msgstr " (Unicode invàlid)"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:563
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:619
+msgid "Floppy"
+msgstr "Disquet"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:564
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:622
+msgid "CD-ROM"
+msgstr "CD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:566
+msgid "CD-R"
+msgstr "CD-R"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:567
+msgid "CD-RW"
+msgstr "CD-RW"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:568
+msgid "DVD-ROM"
+msgstr "DVD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:569
+msgid "DVD-RAM"
+msgstr "DVD-RAM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:570
+msgid "DVD-R"
+msgstr "DVD-R"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:571
+msgid "DVD-RW"
+msgstr "DVD-RW"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:572
+msgid "CD-ROM/DVD-ROM"
+msgstr "CD-ROM/DVD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:573
+msgid "CD-ROM/DVD-RAM"
+msgstr "CD-ROM/DVD-RAM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:574
+msgid "CD-ROM/DVD-R"
+msgstr "CD-ROM/DVD-R"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:575
+msgid "CD-ROM/DVD-RW"
+msgstr "CD-ROM/DVD-RW"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:576
+msgid "CD-R/DVD-ROM"
+msgstr "CD-ROM/DVD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:577
+msgid "CD-R/DVD-RAM"
+msgstr "CD-R/DVD-RAM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:578
+msgid "CD-R/DVD-R"
+msgstr "CD-R/DVD-R"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:579
+msgid "CD-R/DVD-RW"
+msgstr "CD-R/DVD-RW"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:580
+msgid "CD-RW/DVD-ROM"
+msgstr "CD-RW/DVD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:581
+msgid "CD-RW/DVD-RAM"
+msgstr "CD-RW/DVD-RAM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:582
+msgid "CD-RW/DVD-R"
+msgstr "CD-RW/DVD-R"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:583
+msgid "CD-RW/DVD-RW"
+msgstr "CD-RW/DVD-RW"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:585
+msgid "Disk"
+msgstr "Disc"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:586
+msgid "USB Drive"
+msgstr "Unitat USB"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:587
+msgid "IEEE1394 Drive"
+msgstr "Unitat IEEE1394"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:588
+msgid "CF"
+msgstr "CF"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:589
+msgid "SD/MMC"
+msgstr "SD/MMC"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:590
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:594
+msgid "Memory Stick"
+msgstr "Memòria portàtil"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:591
+msgid "Smart Media"
+msgstr "Smart Media"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:593
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:625
+msgid "Zip Drive"
+msgstr "Unitat Zip"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:595
+msgid "Camera"
+msgstr "Càmera"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:596
+msgid "DVD"
+msgstr "DVD"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:836
+msgid "Root Volume"
+msgstr "Volum arrel"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:917
+msgid "Audio CD"
+msgstr "CD d'àudio"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:950
+msgid "Unknown volume"
+msgstr "Volum desconegut"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:1155
+msgid "Network server"
+msgstr "Servidor de xarxa"
+
+#. Handle floppy case
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:125
+msgid ""
+"Unable to mount the floppy drive. There is probably no floppy in the drive."
+msgstr ""
+"No s'ha pogut muntar la disquetera. Segurament no hi ha cap disquet a la "
+"unitat."
+
+#. All others
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:129
+msgid "Unable to mount the volume. There is probably no media in the device."
+msgstr ""
+"No s'ha pogut muntar el volum. Segurament no hi ha cap medi al dispositiu."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:135
+msgid ""
+"Unable to mount the floppy drive. The floppy is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"No s'ha pogut muntar la disquetera. El disquet probablement és en un format "
+"que no es pot muntar."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:138
+msgid ""
+"Unable to mount the selected volume. The volume is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"No s'ha pogut muntar el volum seleccionat. El volum probablement és en un "
+"format que no es pot muntar."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:143
+msgid "Unable to mount the selected floppy drive."
+msgstr "No s'ha pogut muntar la disquetera seleccionada."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:145
+msgid "Unable to mount the selected volume."
+msgstr "No s'ha pogut muntar el volum seleccionat."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:157
+msgid "Unable to unmount the selected volume."
+msgstr "No s'ha pogut desmuntar el volum seleccionat."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:290
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:357
+msgid "Failed to start command"
+msgstr "No s'ha pogut iniciar l'ordre"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:345
+msgid "Unable to eject media"
+msgstr "No s'ha pogut ejectar el medi"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:573
+msgid "Unable to unmount connected server"
+msgstr "No s'ha pogut desmuntar el servidor connectat."
+
+#: ../modules/computer-method.c:546
+msgid "Network"
+msgstr "Xarxa"
+
+#: ../modules/computer-method.c:564
+msgid "Home"
+msgstr "Inici"
+
+#: ../modules/computer-method.c:582
+msgid "Filesystem"
+msgstr "Sistemes de fitxers"
+
+#: ../modules/file-method.c:536
+#, c-format
+msgid "Unknown GnomeVFSSeekPosition %d"
+msgstr "Desconeguda GnomeVFSSeekPosition %d"
+
+#: ../modules/network-method.c:1399
+msgid "Windows Network"
+msgstr "Xarxa de Windows"
+
+#: ../modules/sftp-method.c:1314
+#, c-format
+msgid "The identity of the remote computer (%s) is unknown."
+msgstr "La identitat de l'ordinador remot (%s) és desconeguda."
+
+#: ../modules/sftp-method.c:1315
+#, c-format
+msgid ""
+"This happens when you log in to a computer the first time.\n"
+"\n"
+"The identity sent by the remote computer is %s. If you want to be absolutely "
+"sure it is safe to continue, contact the system administrator."
+msgstr ""
+"Això passa quan entreu en un ordinador per primera vegada.\n"
+"\n"
+"La identitat enviada per l'ordinador remot és %s. Si voleu estar "
+"completament segur que és prudent continuar, contacteu amb l'administrador "
+"del sistema."
+
+#: ../modules/sftp-method.c:1323
+msgid "Log In Anyway"
+msgstr "Entra igualment"
+
+#: ../modules/sftp-method.c:1324
+msgid "Cancel Login"
+msgstr "Cancel·la l'entrada"
+
+#. FIXME: we probably shouldn't use printf to output the message
+#: ../modules/test-method.c:587
+#, c-format
+msgid "Didn't find a valid settings file at %s\n"
+msgstr "No s'ha trobat un fitxer de configuració vàlid en %s\n"
+
+#: ../modules/test-method.c:589
+#, c-format
+msgid "Use the %s environment variable to specify a different location.\n"
+msgstr ""
+"Utilitzeu la variable d'entorn %s per a especificar una localització "
+"diferent.\n"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:1
+msgid "Standard Moniker factory"
+msgstr "Factoria de Moniker estàndard"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:2
+msgid "file MonikerExtender"
+msgstr "fitxer MonikerExtender"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:3
+msgid "generic Gnome VFS moniker"
+msgstr "Moniker de Gnome VGS genèric"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:4
+msgid "generic file moniker"
+msgstr "Moniker de fitxer genèric"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:1
+msgid "Default component viewer application"
+msgstr "Aplicació de visualització de components predeterminada"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:2
+msgid "Default terminal application"
+msgstr "Aplicació de terminal predeterminada"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:3
+msgid "Exec argument for default terminal"
+msgstr "Argument d'execució per al terminal predeterminat"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:5
+#, no-c-format
+msgid ""
+"The application to use for viewing files that require a component to view "
+"them. The parameter %s will be replaced by the file's URIs, the parameter %c "
+"will be replaced by the component IID."
+msgstr ""
+"L'aplicació a usar per a visualitzar fitxers que requereixen un compoment "
+"per ser visualitzats. Es reemplaçarà el paràmetre %s amb l'URI del fitxer, i "
+"es reemplaçarà el paràmetre %c amb l'IID del component."
+
+#: ../schemas/desktop_default_applications.schemas.in.h:6
+msgid ""
+"The default terminal application to use for applications that require a "
+"terminal."
+msgstr ""
+"L'aplicació de terminal a usar per defecte per a aplicacions que requereixen "
+"un terminal."
+
+#: ../schemas/desktop_default_applications.schemas.in.h:7
+msgid "The exec argument to use for the default terminal application."
+msgstr ""
+"L'argument d'execució a usar per a l'aplicació de terminal predeterminada."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:1
+msgid "Run the command in a terminal"
+msgstr "Executa l'ordre en un terminal"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:2
+msgid "The command used to handle \"aim\" URLs, if enabled."
+msgstr "L'ordre utilitzada per a gestionar URL «aim», si estan habilitades."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:3
+msgid "The command used to handle \"callto\" URLs, if enabled."
+msgstr "L'ordre utilitzada per a gestionar URL «callto», si estan habilitades."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:4
+msgid "The command used to handle \"ghelp\" URLs, if enabled."
+msgstr "L'ordre utilitzada per a gestionar URL «ghelp», si estan habilitades."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:5
+msgid "The command used to handle \"h323\" URLs, if enabled."
+msgstr "L'ordre utilitzada per a gestionar URL «h323», si estan habilitades."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:6
+msgid "The command used to handle \"http\" URLs, if enabled."
+msgstr "L'ordre utilitzada per a gestionar URL «http», si estan habilitades."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:7
+msgid "The command used to handle \"https\" URLs, if enabled."
+msgstr "L'ordre utilitzada per a gestionar URL «https», si estan habilitades."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:8
+msgid "The command used to handle \"info\" URLs, if enabled."
+msgstr "L'ordre utilitzada per a gestionar URL «info», si estan habilitades"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:9
+msgid "The command used to handle \"mailto\" URLs, if enabled."
+msgstr "L'ordre utilitzada per a gestionar URL «mailto», si estan habilitades."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:10
+msgid "The command used to handle \"man\" URLs, if enabled."
+msgstr "L'ordre utilitzada per a gestionar URL «man», si estan habilitades."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:11
+msgid "The command used to handle \"trash\" URLs, if enabled."
+msgstr "L'ordre utilitzada per a gestionar URL «trash», si estan habilitades."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:12
+msgid "The handler for \"aim\" URLs"
+msgstr "El gestor per a les URL «aim»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:13
+msgid "The handler for \"callto\" URLs"
+msgstr "El gestor per a les URL «callto»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:14
+msgid "The handler for \"ghelp\" URLs"
+msgstr "El gestor per a les URL «ghelp»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:15
+msgid "The handler for \"h323\" URLs"
+msgstr "El gestor per a les URL «h323»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:16
+msgid "The handler for \"http\" URLs"
+msgstr "El gestor per a les URL «http»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:17
+msgid "The handler for \"https\" URLs"
+msgstr "El gestor per a les URL «https»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:18
+msgid "The handler for \"info\" URLs"
+msgstr "El gestor per a les URL «info»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:19
+msgid "The handler for \"mailto\" URLs"
+msgstr "El gestor per a les URL «mailto»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:20
+msgid "The handler for \"man\" URLs"
+msgstr "El gestor per a les URL «man»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:21
+msgid "The handler for \"trash\" URLs"
+msgstr "El gestor per a les URL «trash»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:22
+msgid ""
+"True if the command specified in the \"command\" key should handle \"aim\" "
+"URLs."
+msgstr ""
+"Vertader si el programa especificat en la clau «command» hauria de gestionar "
+"les URL «aim»."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:23
+msgid ""
+"True if the command specified in the \"command\" key should handle \"callto"
+"\" URLs."
+msgstr ""
+"Vertader si el programa especificat en la clau «command» hauria de gestionar "
+"les URL «callto»."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:24
+msgid ""
+"True if the command specified in the \"command\" key should handle \"ghelp\" "
+"URLs."
+msgstr ""
+"Vertader si el programa especificat en la clau «command» hauria de gestionar "
+"les URL «ghelp»."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:25
+msgid ""
+"True if the command specified in the \"command\" key should handle \"h323\" "
+"URLs."
+msgstr ""
+"Vertader si el programa especificat en la clau «command» hauria de gestionar "
+"les URL «h323»."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:26
+msgid ""
+"True if the command specified in the \"command\" key should handle \"http\" "
+"URLs."
+msgstr ""
+"Vertader si el programa especificat en la clau «command» hauria de gestionar "
+"les URL «http»."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:27
+msgid ""
+"True if the command specified in the \"command\" key should handle \"https\" "
+"URLs."
+msgstr ""
+"Vertader si el programa especificat en la clau «command» hauria de gestionar "
+"les URL «https»."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:28
+msgid ""
+"True if the command specified in the \"command\" key should handle \"info\" "
+"URLs."
+msgstr ""
+"Vertader si el programa especificat en la clau «command» hauria de gestionar "
+"les URL «info»."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:29
+msgid ""
+"True if the command specified in the \"command\" key should handle \"mailto"
+"\" URLs."
+msgstr ""
+"Vertader si el programa especificat en la clau «command» hauria de gestionar "
+"les URL «mailto»."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:30
+msgid ""
+"True if the command specified in the \"command\" key should handle \"man\" "
+"URLs."
+msgstr ""
+"Vertader si el programa especificat en la clau «command» hauria de gestionar "
+"les URL «man»."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:31
+msgid ""
+"True if the command specified in the \"command\" key should handle \"trash\" "
+"URLs."
+msgstr ""
+"Vertader si el programa especificat en la clau «command» hauria de gestionar "
+"les URL «trash»."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:32
+msgid ""
+"True if the command used to handle this type of URL should be run in a "
+"terminal."
+msgstr ""
+"Vertader si el programa per a gestionar aquest URL hauria d'executar-se en "
+"un terminal."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:33
+msgid "Whether the specified command should handle \"aim\" URLs"
+msgstr "Si l'ordre especificada hauria de gestionar les URL «aim»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:34
+msgid "Whether the specified command should handle \"callto\" URLs"
+msgstr "Si l'ordre especificada hauria de gestionar les URL «callto»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:35
+msgid "Whether the specified command should handle \"ghelp\" URLs"
+msgstr "Si l'ordre especificada hauria de gestionar les URL «ghelp»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:36
+msgid "Whether the specified command should handle \"h323\" URLs"
+msgstr "Si l'ordre especificada hauria de gestionar les URL «h323»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:37
+msgid "Whether the specified command should handle \"http\" URLs"
+msgstr "Si l'ordre especificada hauria de gestionar les URL «http»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:38
+msgid "Whether the specified command should handle \"https\" URLs"
+msgstr "Si l'ordre especificada hauria de gestionar les URL «https»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:39
+msgid "Whether the specified command should handle \"info\" URLs"
+msgstr "Si l'ordre especificada hauria de gestionar les URL «info»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:40
+msgid "Whether the specified command should handle \"mailto\" URLs"
+msgstr "Si l'ordre especificada hauria de gestionar les URL «mailto»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:41
+msgid "Whether the specified command should handle \"man\" URLs"
+msgstr "Si l'ordre especificada hauria de gestionar les URL «man»"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:42
+msgid "Whether the specified command should handle \"trash\" URLs"
+msgstr "Si l'ordre especificada hauria de gestionar les URL «trash»"
+
+#: ../schemas/system_dns_sd.schemas.in.h:1
+msgid ""
+"Comma separated list of DNS-SD domains that should be visible in the "
+"\"network:///\" location."
+msgstr "Llista separada per comes de dominis DNS-SD que haurien de ser visibles a la ubicació «network:///»."
+
+#: ../schemas/system_dns_sd.schemas.in.h:2
+msgid "Extra domains to look for DNS-SD services in"
+msgstr "Dominis extra dins dels quals cercar serveis DNS-SD"
+
+#: ../schemas/system_dns_sd.schemas.in.h:3
+msgid "How to display local DNS-SD service"
+msgstr "Com mostrar serveis DNS-SD locals"
+
+#: ../schemas/system_dns_sd.schemas.in.h:4
+msgid "Possible values are \"merged\", \"separate\" and \"disabled\"."
+msgstr "Els valors possibles són «merged», «separate» i «disabled»."
+
+#: ../schemas/system_http_proxy.schemas.in.h:1
+msgid "Authenticate proxy server connections"
+msgstr "Auntentica les connexions al servidor intermediari"
+
+#: ../schemas/system_http_proxy.schemas.in.h:2
+msgid "Automatic proxy configuration URL"
+msgstr "URL de configuració automàtica del servidor intermediari"
+
+#: ../schemas/system_http_proxy.schemas.in.h:3
+msgid "Enables the proxy settings when accessing HTTP over the Internet."
+msgstr ""
+"Habilita els paràmetres del servidor intermediari quan s'accedeix a HTTP per "
+"Internet."
+
+#: ../schemas/system_http_proxy.schemas.in.h:4
+msgid "FTP proxy host name"
+msgstr "Nom del servidor intermediari d'FTP"
+
+#: ../schemas/system_http_proxy.schemas.in.h:5
+msgid "FTP proxy port"
+msgstr "Port del servidor intermediari d'FTP"
+
+#: ../schemas/system_http_proxy.schemas.in.h:6
+msgid "HTTP proxy host name"
+msgstr "Nom del servidor intermediari d'HTTP"
+
+#: ../schemas/system_http_proxy.schemas.in.h:7
+msgid "HTTP proxy password"
+msgstr "Contrasenya del servidor intermediari d'HTTP"
+
+#: ../schemas/system_http_proxy.schemas.in.h:8
+msgid "HTTP proxy port"
+msgstr "Port del servidor intermediari d'HTTP"
+
+#: ../schemas/system_http_proxy.schemas.in.h:9
+msgid "HTTP proxy username"
+msgstr "Nom d'usuari del servidor intermediari d'HTTP"
+
+#: ../schemas/system_http_proxy.schemas.in.h:10
+msgid ""
+"If true, then connections to the proxy server require authentication. The "
+"username/password combo is defined by \"/system/http_proxy/"
+"authentication_user\" and \"/system/http_proxy/authentication_password\"."
+msgstr ""
+"Si és vertader, les connexions al servidor intermediari requereixen "
+"autenticació. La combinació usuari/contrasenya és definida per «/system/"
+"http_proxy/authentication_user» i «/system/http_proxy/"
+"authentication_password»."
+
+#: ../schemas/system_http_proxy.schemas.in.h:11
+msgid "Non-proxy hosts"
+msgstr "Ordinadors sense servidor intermediari"
+
+#: ../schemas/system_http_proxy.schemas.in.h:12
+msgid "Password to pass as authentication when doing HTTP proxying."
+msgstr ""
+"Contrasenya a passar com autenticació quan es fa servir el servidor "
+"intermediari d'HTTP."
+
+#: ../schemas/system_http_proxy.schemas.in.h:13
+msgid "Proxy configuration mode"
+msgstr "Mode de configuració del servidor intermediari"
+
+#: ../schemas/system_http_proxy.schemas.in.h:14
+msgid "SOCKS proxy host name"
+msgstr "Nom del servidor intermediari de SOCKS"
+
+#: ../schemas/system_http_proxy.schemas.in.h:15
+msgid "SOCKS proxy port"
+msgstr "Port del servidor intemediari de SOCKS"
+
+#: ../schemas/system_http_proxy.schemas.in.h:16
+msgid "Secure HTTP proxy host name"
+msgstr "Port del servidor intermediari d'HTTP segur"
+
+#: ../schemas/system_http_proxy.schemas.in.h:17
+msgid "Secure HTTP proxy port"
+msgstr "Port del servidor intermediari d'HTTP segur"
+
+#: ../schemas/system_http_proxy.schemas.in.h:18
+msgid ""
+"Select the proxy configuration mode. Supported values are \"none\", \"manual"
+"\", \"auto\"."
+msgstr ""
+"Selecciona el mode de configuració del servidor intermediari. Els valors "
+"suportats són «none», «manual», «auto»."
+
+#: ../schemas/system_http_proxy.schemas.in.h:19
+msgid "The machine name to proxy FTP through."
+msgstr "El nom del servidor que fa de servidor intermediari d'FTP."
+
+#: ../schemas/system_http_proxy.schemas.in.h:20
+msgid "The machine name to proxy HTTP through."
+msgstr "El nom del servidor que fa de servidor intemediari d'HTTP."
+
+#: ../schemas/system_http_proxy.schemas.in.h:21
+msgid "The machine name to proxy secure HTTP through."
+msgstr "El nom del servidor que fa de servidor intermediari d'HTTP segur."
+
+#: ../schemas/system_http_proxy.schemas.in.h:22
+msgid "The machine name to proxy socks through."
+msgstr "El nom del servidor que fa de servidor intermediari de socks."
+
+#: ../schemas/system_http_proxy.schemas.in.h:23
+msgid ""
+"The port on the machine defined by \"/system/http_proxy/host\" that you "
+"proxy through."
+msgstr ""
+"El port a l'ordinador definit per «/system/http_proxy/host» pel que escolta "
+"el servidor intermediari."
+
+#: ../schemas/system_http_proxy.schemas.in.h:24
+msgid ""
+"The port on the machine defined by \"/system/proxy/ftp_host\" that you proxy "
+"through."
+msgstr ""
+"El port a l'ordinador definit per «/system/proxy/ftp_host» pel que escolta "
+"el servidor intermediari."
+
+#: ../schemas/system_http_proxy.schemas.in.h:25
+msgid ""
+"The port on the machine defined by \"/system/proxy/secure_host\" that you "
+"proxy through."
+msgstr ""
+"El port a l'ordinador definit per «/system/proxy/secure_host» pel que "
+"escolta el servidor intermediari."
+
+#: ../schemas/system_http_proxy.schemas.in.h:26
+msgid ""
+"The port on the machine defined by \"/system/proxy/socks_host\" that you "
+"proxy through."
+msgstr ""
+"El port a l'ordinador definit per «/system/proxy/socks_host» pel que escolta "
+"el servidor intermediari."
+
+#: ../schemas/system_http_proxy.schemas.in.h:27
+msgid ""
+"This key contains a list of hosts which are connected to directly, rather "
+"than via the proxy (if it is active). The values can be hostnames, domains "
+"(using an initial wildcard like *.foo.com), IP host addresses (both IPv4 and "
+"IPv6) and network addresses with a netmask (something like 192.168.0.0/24)."
+msgstr ""
+"Aquesta clau conté una llista d'ordinadors als que s'està connectat "
+"directament, i no a través d'un servidor intermediari (si és actiu). Els "
+"valors poden ser noms d'ordinador, dominis (usant un comodí inicial, com *."
+"foo.com), adreces IP d'ordinadors (tant IPv4 com IPv6) i adreces de xarxa "
+"amb una màscara de xarxa (alguna cosa com 192.168.0.0/24)."
+
+#: ../schemas/system_http_proxy.schemas.in.h:28
+msgid "URL that provides proxy configuration values."
+msgstr "URL que proveeix valors de configuració del servidor intermediari."
+
+#: ../schemas/system_http_proxy.schemas.in.h:29
+msgid "Use HTTP proxy"
+msgstr "Utilitza un servidor intermediari d'HTTP"
+
+#: ../schemas/system_http_proxy.schemas.in.h:30
+msgid "User name to pass as authentication when doing HTTP proxying."
+msgstr ""
+"Nom d'usuari a passar com autenticació quan es fa servir el servidor "
+"intermediari d'HTTP."
+
+#: ../schemas/system_smb.schemas.in.h:1
+msgid "SMB workgroup"
+msgstr "Grup de treball d'SMB"
+
+#: ../schemas/system_smb.schemas.in.h:2
+msgid ""
+"The Windows networking workgroup or domain that the user is part of. In "
+"order for a new workgroup to fully take effect the user may need to log out "
+"and log back in."
+msgstr "El grup de treball o domini de la xarxa de Windows al qual pertany l'usuari. Per a que un grup de treball nou tingui efecte, és possible que l'usuari necessite sortir i tornar a entrar."
+
+#: ../schemas/system_storage.schemas.in.h:1
+msgid "Display SCSI drives"
+msgstr "Mostra les unitats SCSI"
+
+#: ../schemas/system_storage.schemas.in.h:2
+msgid "Display SCSI optical drives"
+msgstr "Mostra les unitats òptiques SCSI"
+
+#: ../schemas/system_storage.schemas.in.h:3
+msgid "Display drives with removable media"
+msgstr "Mostra les unitats amb medis extraïbles"
+
+#: ../schemas/system_storage.schemas.in.h:4
+msgid "Display external drives"
+msgstr "Mostra les unitats externes"
+
+#: ../schemas/system_storage.schemas.in.h:5
+msgid "Display internal hard drives"
+msgstr "Mostra els discs durs interns"
+
+#: ../schemas/system_storage.schemas.in.h:6
+msgid ""
+"Whether to display SCSI optical drives even if /system/storage/"
+"display_scsi_drives is set to FALSE."
+msgstr "Si s'hauria de mostrar les unitats òptiques SCSI encara que /system/storage/display_scsi_drives siga FALS."
+
+#: ../schemas/system_storage.schemas.in.h:7
+msgid "Whether to display drives and mountable volumes from SCSI drives."
+msgstr "Si s'hauria de mostrar les unitats i volums muntables de les unitats SCSI."
+
+#: ../schemas/system_storage.schemas.in.h:8
+msgid ""
+"Whether to display drives and mountable volumes from drives with removable "
+"media (e.g. drives where media can be inserted and removed)."
+msgstr "Si s'hauria de mostrar unitats i volums muntables de les unitats amb medis extraïbles (p. ex. unitats on els medis es poden inserir i extraure)."
+
+#: ../schemas/system_storage.schemas.in.h:9
+msgid ""
+"Whether to display drives and mountable volumes from external drives (e.g. "
+"drives that are hotpluggable; e.g. drives that can be attached and detached "
+"while the system is running)."
+msgstr "Si s'hauria de mostrar les unitats i els volums muntables de unitats externes (p. ex. unitats «hotplug», és a dir, unitats que es poden afegir i extreure mentres s'executa el sistema)."
+
+#: ../schemas/system_storage.schemas.in.h:10
+msgid ""
+"Whether to display drives and mountable volumes from internal hard drives "
+"(non-SCSI optical drives are always shown)."
+msgstr "Si s'hauria de mostrar les unitats i volums muntables de discs durs interns (les unitats òptiques no SCSI sempre es mostren)."
+
+#~ msgid "The window workgroup the user is part of"
+#~ msgstr "El grup de treball de Windows del qual és part l'usuari"
+
+#~ msgid "CD-ROM Disc"
+#~ msgstr "Disc CD-ROM"
+
+#~ msgid "Blank CD-R Disc"
+#~ msgstr "Disc CD-R en blanc"
+
+#~ msgid "CD-R Disc"
+#~ msgstr "Disc CD-R"
+
+#~ msgid "Blank CD-RW Disc"
+#~ msgstr "Disc CD-RW en blanc"
+
+#~ msgid "CD-RW Disc"
+#~ msgstr "Disc CD-RW"
+
+#~ msgid "DVD-ROM Disc"
+#~ msgstr "Disc DVD-ROM"
+
+#~ msgid "Blank DVD-R Disc"
+#~ msgstr "Disc DVD-R en blanc"
+
+#~ msgid "DVD-R Disc"
+#~ msgstr "Disc DVD-R"
+
+#~ msgid "Blank DVD-RAM Disc"
+#~ msgstr "Disc DVD-RAM en blanc"
+
+#~ msgid "DVD-RAM Disc"
+#~ msgstr "Disc DVD-RAM"
+
+#~ msgid "Blank DVD-RW Disc"
+#~ msgstr "Disc DVD-RW en blanc"
+
+#~ msgid "DVD-RW Disc"
+#~ msgstr "Disc DVD-RW"
+
+#~ msgid "Blank DVD+RW Disc"
+#~ msgstr "Disc DVD+RW en blanc"
+
+#~ msgid "DVD+RW Disc"
+#~ msgstr "Disc DVD+RW"
+
+#~ msgid "Blank DVD+R Disc"
+#~ msgstr "Disc DVD+R en blanc"
+
+#~ msgid "DVD+R Disc"
+#~ msgstr "Disc DVD+R"
+
+#~ msgid "Optical Disc"
+#~ msgstr "Disc òptic"
+
+#~ msgid "Audio Disc"
+#~ msgstr "Disc d'àudio"
+
+#~ msgid "Compact Flash Media"
+#~ msgstr "Medi Compact Flash"
+
+#~ msgid "Memory Stick Media"
+#~ msgstr "Medi de llàpis de memòria"
+
+#~ msgid "Smart Media Media"
+#~ msgstr "Medi Smart Media"
+
+#~ msgid "SD/MMC Media"
+#~ msgstr "Medi SD/MMC"
+
+#~ msgid "Floppy Disk"
+#~ msgstr "Disquet"
+
+#~ msgid "Mac OS disk"
+#~ msgstr "Disc de Mac OS"
+
+#~ msgid "Mac OS X disk"
+#~ msgstr "Disc de Mac OS X"
+
+#~ msgid "Windows Disk"
+#~ msgstr "Disc de Windows"
+
+#~ msgid "Linux Disk"
+#~ msgstr "Disc de Linux"
+
+#~ msgid "File could not be opened: %s"
+#~ msgstr "No s'ha pogut obrir el fitxer: %s"
+
+#~ msgid "Failed to open file '%s': %s"
+#~ msgstr "No s'ha pogut obrir el fitxer «%s»: %s"
+
+#~ msgid "File is empty"
+#~ msgstr "El fitxer és buit"
+
+#~ msgid "Failed to read from file '%s': %s"
+#~ msgstr "No s'ha pogut llegir des del fitxer «%s»: %s"
+
+#~ msgid ""
+#~ "desktop entries contain line '%s' which is not an entry, group, or comment"
+#~ msgstr ""
+#~ "les entrades desktop contenen la línia «%s» que no és una entrada, grup o "
+#~ "comentari"
+
+#~ msgid "desktop entries file does not start with legal start group"
+#~ msgstr "el fitxer d'entrades desktop no comença amb un grup d'inici legal"
+
+#~ msgid "desktop entries contain line '%s' which is not UTF-8"
+#~ msgstr "les entrades desktop contenen la línia «%s» que no és UTF-8"
+
+#~ msgid "desktop entries contain unknown encoding '%s'"
+#~ msgstr "les entrades desktop contenen la codificació desconeguda «%s»"
+
+#~ msgid "desktop entries do not have group '%s'"
+#~ msgstr "les entrades desktop no tenen grup «%s»"
+
+#~ msgid "desktop entries do not have key '%s'"
+#~ msgstr "les entrades desktop no tenen la clau «%s»"
+
+#~ msgid ""
+#~ "desktop entries contain key '%s' which has value that cannot be "
+#~ "interpreted."
+#~ msgstr ""
+#~ "les entrades desktop contenen la clau «%s» amb un valor que no es pot "
+#~ "interpretar."
+
+#~ msgid ""
+#~ "desktop entries contain no translated value for key '%s' with locale '%s'."
+#~ msgstr ""
+#~ "les entrades desktop no contenen cap valor traduir per a la clau «%s» per "
+#~ "al locale «%s»."
+
+#~ msgid "desktop entries contain invalid escape sequence '%s'"
+#~ msgstr "les entrades desktop contenen la seqüència d'escapada «%s» invàlida"
+
+#~ msgid "desktop entries contain escape character at end of line"
+#~ msgstr ""
+#~ "les entrades desktop contenen caràcters d'escapada al final de la línia"
+
+#~ msgid "Value '%s' cannot be interpreted as a number."
+#~ msgstr "El valor «%s» no es pot interpretar com un nombre."
+
+#~ msgid "Value '%s' cannot be interpreted as a boolean."
+#~ msgstr "El valor «%s» no es pot interpretar com un booleà."
+
+#~ msgid "Applications"
+#~ msgstr "Aplicacions"
+
+#~ msgid "Cards"
+#~ msgstr "Targetes"
+
+#~ msgid "Files"
+#~ msgstr "Fitxers"
+
+#~ msgid "Folders"
+#~ msgstr "Carpetes"
+
+#~ msgid "Help"
+#~ msgstr "Ajuda"
+
+#~ msgid "Hosts"
+#~ msgstr "Ordinadors"
+
+#~ msgid "Links"
+#~ msgstr "Enllaços"
+
+#~ msgid "Mail"
+#~ msgstr "Correu"
+
+#~ msgid "Tools"
+#~ msgstr "Eines"
+
+#~ msgid "Windows"
+#~ msgstr "Finestres"
+
+#~ msgid "H323 URL handler"
+#~ msgstr "Gestor d'URL H323"
+
+#~ msgid "HTTP URL handler"
+#~ msgstr "Gestor d'URL HTTP"
+
+#~ msgid "HTTPS URL handler"
+#~ msgstr "Gestor d'URL HTTPS"
+
+#~ msgid "callto URL handler"
+#~ msgstr "Gestor d'URL callto"
+
+#~ msgid "ghelp URL handler"
+#~ msgstr "Gestor d'URL ghelp"
+
+#~ msgid "info URL handler"
+#~ msgstr "Gestor d'URL info"
+
+#~ msgid "mailto URL handler"
+#~ msgstr "Gestor d'URL mailto"
+
+#~ msgid "man URL handler"
+#~ msgstr "Gestor d'URL man"
+
+#~ msgid "trash URL handler"
+#~ msgstr "Gestor d'URL trash"
+
+#~ msgid "3D Studio image"
+#~ msgstr "imatge 3D Studio"
+
+#~ msgid "AIFC audio"
+#~ msgstr "àudio AIFC"
+
+#~ msgid "AIFF audio"
+#~ msgstr "àudio AIFF"
+
+#~ msgid "ANIM animation"
+#~ msgstr "animació ANIM"
+
+#~ msgid "AVI video"
+#~ msgstr "vídeo AVI"
+
+#~ msgid "AbiWord document"
+#~ msgstr "document AbiWord"
+
+#~ msgid "Adobe FrameMaker font"
+#~ msgstr "font Adobe FrameMaker"
+
+#~ msgid "Adobe font metrics"
+#~ msgstr "mètrica de font Adobe"
+
+#~ msgid "Andrew Toolkit inset"
+#~ msgstr "sagnia Andrew Toolkit"
+
+#~ msgid "ApplixWare Graphics image"
+#~ msgstr "imatge ApplixWare Graphics"
+
+#~ msgid "Applixware Words document"
+#~ msgstr "document Applixware Words"
+
+#~ msgid "Applixware spreadsheet"
+#~ msgstr "full de càlcul Applixware"
+
+#~ msgid "AutoCAD image"
+#~ msgstr "imatge AutoCAD"
+
+#~ msgid "BCPIO document"
+#~ msgstr "document BCPIO"
+
+#~ msgid "BDF font"
+#~ msgstr "font BDF"
+
+#~ msgid "C shell script"
+#~ msgstr "seqüència d'intèrpret d'ordres C"
+
+#~ msgid "C source code"
+#~ msgstr "codi font C"
+
+#~ msgid "C source code header"
+#~ msgstr "capçalera de codi font C"
+
+#~ msgid "C++ source code"
+#~ msgstr "codi font C++"
+
+#~ msgid "CGI program"
+#~ msgstr "programa CGI"
+
+#~ msgid "CGM image"
+#~ msgstr "imatge CGM"
+
+#~ msgid "CMU raster image"
+#~ msgstr "imatge CMU raster"
+
+#~ msgid "CPIO archive"
+#~ msgstr "arxiu CPIO"
+
+#~ msgid "CPIO archive (gzip-compressed)"
+#~ msgstr "arxiu CPIO (comprimit amb gzip)"
+
+#~ msgid "DCL script"
+#~ msgstr "Seqüència DCL"
+
+#~ msgid "DOS font"
+#~ msgstr "font DOS"
+
+#~ msgid "DOS/Windows program"
+#~ msgstr "programa DOS/Windows"
+
+#~ msgid "DSSSL document"
+#~ msgstr "document DSSSL"
+
+#~ msgid "DXF vector graphic"
+#~ msgstr "gràfic vectorial DXF"
+
+#~ msgid "Debian package"
+#~ msgstr "paquet Debian"
+
+#~ msgid "Dia diagram"
+#~ msgstr "diagrama Dia"
+
+#~ msgid "Emacs Lisp source code"
+#~ msgstr "codi font Emacs Lisp"
+
+#~ msgid "Enlightenment theme"
+#~ msgstr "tema Enlightenment"
+
+#~ msgid "FLC animation"
+#~ msgstr "animació FLC"
+
+#~ msgid "FLI animation"
+#~ msgstr "animació FLI"
+
+#~ msgid "FastTracker II audio"
+#~ msgstr "àudio FastTracker II"
+
+#~ msgid "Fortran source code"
+#~ msgstr "codi font Fortran"
+
+#~ msgid "FrameMaker interchange document"
+#~ msgstr "document d'intercanvi FrameMaker"
+
+#~ msgid "G3 fax image"
+#~ msgstr "imatge fax G3"
+
+#~ msgid "GIF image"
+#~ msgstr "imatge GIF"
+
+#~ msgid "GIMP document"
+#~ msgstr "document GIMP"
+
+#~ msgid "GMC link"
+#~ msgstr "enllaç GMC"
+
+#~ msgid "GNOME application details"
+#~ msgstr "Detalls de l'aplicació GNOME"
+
+#~ msgid "GNU Oleo Spreadsheet"
+#~ msgstr "full de càlcul GNU Oleo"
+
+#~ msgid "GNU mail message"
+#~ msgstr "missatge de correu GNU"
+
+#~ msgid "Glade project"
+#~ msgstr "projecte Glade"
+
+#~ msgid "GnuCash Workbook"
+#~ msgstr "llibre de treball GnuCash"
+
+#~ msgid "Gnumeric spreadsheet"
+#~ msgstr "full de càlcul Gnumeric"
+
+#~ msgid "HDF document"
+#~ msgstr "document HDF"
+
+#~ msgid "HTML page"
+#~ msgstr "pàgina HTML"
+
+#~ msgid "IDL document"
+#~ msgstr "document IDL"
+
+#~ msgid "IEF image"
+#~ msgstr "imatge IEF"
+
+#~ msgid "IFF image"
+#~ msgstr "imatge IFF"
+
+#~ msgid "ILBM image"
+#~ msgstr "imatge ILBM"
+
+#~ msgid "ISI video"
+#~ msgstr "vídeo ISI"
+
+#~ msgid "Impulse Tracker audio"
+#~ msgstr "àudio Impulse Tracker"
+
+#~ msgid "JBuilder Project"
+#~ msgstr "projecte JBuilder"
+
+#~ msgid "JPEG image"
+#~ msgstr "imatge JPEG"
+
+#~ msgid "Java byte code"
+#~ msgstr "codi de bytes Java"
+
+#~ msgid "Java source code"
+#~ msgstr "codi font Java"
+
+#~ msgid "KDE application details"
+#~ msgstr "Detalls de l'aplicació KDE"
+
+#~ msgid "KIllustrator document"
+#~ msgstr "document KIllustrator"
+
+#~ msgid "KPresenter presentation"
+#~ msgstr "presentació KPresenter"
+
+#~ msgid "KSpread spreadsheet"
+#~ msgstr "full de càlcul KSpread"
+
+#~ msgid "KWord document"
+#~ msgstr "document KWord"
+
+#~ msgid "Korn shell script"
+#~ msgstr "seqüència d'intèrpret d'ordres Korn"
+
+#~ msgid "LHA archive"
+#~ msgstr "arxiu LHA"
+
+#~ msgid "LHARC archive"
+#~ msgstr "arxiu LHARC"
+
+#~ msgid "LIBGRX font"
+#~ msgstr "font LIBGRX"
+
+#~ msgid "LightWave object"
+#~ msgstr "objecte LightWave"
+
+#~ msgid "LightWave scene"
+#~ msgstr "escena LightWave"
+
+#~ msgid "Linux PSF console font"
+#~ msgstr "font de consola Linux PSF"
+
+#~ msgid "Lotus 1-2-3 spreadsheet"
+#~ msgstr "full de càlcul Lotus 1-2-3"
+
+#~ msgid "M3 audio URL"
+#~ msgstr "URL d'àudio M3"
+
+#~ msgid "MIDI audio"
+#~ msgstr "àudio MIDI"
+
+#~ msgid "MOD audio"
+#~ msgstr "àudio MOD"
+
+#~ msgid "MP3 audio"
+#~ msgstr "àudio MP3"
+
+#~ msgid "MP3 audio playlist"
+#~ msgstr "selecció de peces d'àudio MP3"
+
+#~ msgid "MPEG video"
+#~ msgstr "vídeo MPEG"
+
+#~ msgid "MS ASF video"
+#~ msgstr "vídeo MS ASF"
+
+#~ msgid "MS video"
+#~ msgstr "vídeo MS"
+
+#~ msgid "Macintosh AppleDouble-encoded file"
+#~ msgstr "fitxer codificat Macintosh AppleDouble"
+
+#~ msgid "Macintosh BinHex-encoded file"
+#~ msgstr "fitxer codificat Macintosh BinHex"
+
+#~ msgid "Macintosh StuffIt archive"
+#~ msgstr "arxiu Macintosh StuffIt"
+
+#~ msgid "Macromedia Flash file"
+#~ msgstr "fitxer Macromedia Flash"
+
+#~ msgid "MathML document"
+#~ msgstr "document MathML"
+
+#~ msgid "Microsoft Excel spreadsheet"
+#~ msgstr "full de càlcul Microsoft Excel"
+
+#~ msgid "Microsoft PowerPoint document"
+#~ msgstr "document Microsoft PowerPoint"
+
+#~ msgid "Microsoft Word document"
+#~ msgstr "document Microsoft Word"
+
+#~ msgid "Microsoft video"
+#~ msgstr "vídeo Microsoft"
+
+#~ msgid "Nautilus link"
+#~ msgstr "enllaç Nautilus"
+
+#~ msgid "ODA document"
+#~ msgstr "document ODA"
+
+#~ msgid "PBM image"
+#~ msgstr "imatge PBM"
+
+#~ msgid "PCF font"
+#~ msgstr "font PCF"
+
+#~ msgid "PDF document"
+#~ msgstr "document PDF"
+
+#~ msgid "PEF program"
+#~ msgstr "programa PEF"
+
+#~ msgid "PGM image"
+#~ msgstr "imatge PGM"
+
+#~ msgid "PGN chess game"
+#~ msgstr "joc d'escacs PGN"
+
+#~ msgid "PGP keys"
+#~ msgstr "claus PGP"
+
+#~ msgid "PGP message"
+#~ msgstr "missatge PGP"
+
+#~ msgid "PGP signature"
+#~ msgstr "signatura PGP"
+
+#~ msgid "PGP-encrypted file"
+#~ msgstr "fitxer codificat PGP"
+
+#~ msgid "PHP script"
+#~ msgstr "seqüència PHP"
+
+#~ msgid "PN RealAudio document"
+#~ msgstr "document PN RealAudio"
+
+#~ msgid "PNG image"
+#~ msgstr "imatge PNG"
+
+#~ msgid "PNM image"
+#~ msgstr "imatge PNM"
+
+#~ msgid "PPM image"
+#~ msgstr "imatge PPM"
+
+#~ msgid "Palm OS database"
+#~ msgstr "base de dades Palm OS"
+
+#~ msgid "Perl script"
+#~ msgstr "Seqüència Perl"
+
+#~ msgid "Photoshop document"
+#~ msgstr "document Photoshop"
+
+#~ msgid "PostScript Type 1 font"
+#~ msgstr "font PostScript Tipus 1"
+
+#~ msgid "PostScript document"
+#~ msgstr "document PostScript"
+
+#~ msgid "Python source code"
+#~ msgstr "codi font Python"
+
+#~ msgid "QuickTime movie"
+#~ msgstr "pel·lícula QuickTime"
+
+#~ msgid "Quicken document"
+#~ msgstr "document Quicken"
+
+#~ msgid "Quicken for Windows document"
+#~ msgstr "Quicken per a document Windows"
+
+#~ msgid "RAR archive"
+#~ msgstr "arxiu RAR"
+
+#~ msgid "README document"
+#~ msgstr "document README"
+
+#~ msgid "RGB image"
+#~ msgstr "imatge RGB"
+
+#~ msgid "RIFF audio"
+#~ msgstr "àudio RIFF"
+
+#~ msgid "RPM package"
+#~ msgstr "paquet RPM"
+
+#~ msgid "RealAudio/Video document"
+#~ msgstr "document RealAudio/Video"
+
+#~ msgid "RealVideo video"
+#~ msgstr "vídeo RealVideo"
+
+#~ msgid "S/MIME file"
+#~ msgstr "Fitxer S/MIME"
+
+#~ msgid "S/MIME signature"
+#~ msgstr "signatura S/MIME"
+
+#~ msgid "SGI video"
+#~ msgstr "vídeo SGI"
+
+#~ msgid "SGML document"
+#~ msgstr "document SGML"
+
+#~ msgid "SMIL script"
+#~ msgstr "seqüència SMIL"
+
+#~ msgid "SQL code"
+#~ msgstr "codi SQL"
+
+#~ msgid "SV4 CPIO archive"
+#~ msgstr "arxiu SV4 CPIO"
+
+#~ msgid "SV4 CPIP archive (with CRC)"
+#~ msgstr "arxiu SV4 CPIP (amb CRC)"
+
+#~ msgid "SVG art"
+#~ msgstr "art SVG"
+
+#~ msgid "Scream Tracker 3 audio"
+#~ msgstr "àudio Scream Tracker 3"
+
+#~ msgid "Scream Tracker audio"
+#~ msgstr "àudio Scream Tracker"
+
+#~ msgid "Scream Tracker instrument"
+#~ msgstr "instrument Scream Tracker"
+
+#~ msgid "Setext document"
+#~ msgstr "document Setext"
+
+#~ msgid "Speech document"
+#~ msgstr "document Speech"
+
+#~ msgid "Speedo font"
+#~ msgstr "font Speedo"
+
+#~ msgid "Spreadsheet Interchange document"
+#~ msgstr "document SpreadSheet Interchange"
+
+#~ msgid "Stampede package"
+#~ msgstr "paquet Stampede"
+
+#~ msgid "StarOffice Writer document"
+#~ msgstr "document StarOffice Writer"
+
+#~ msgid "StarOffice presentation"
+#~ msgstr "presentació StarOffice"
+
+#~ msgid "StarOffice spreadsheet"
+#~ msgstr "full de càlcul StarOffice"
+
+#~ msgid "Sun mu-law audio"
+#~ msgstr "àudio Sun µ-law"
+
+#~ msgid "SunOS News font"
+#~ msgstr "font SunOS News"
+
+#~ msgid "TIFF image"
+#~ msgstr "imatge TIFF"
+
+#~ msgid "TarGA image"
+#~ msgstr "imatge TarGA"
+
+#~ msgid "Tcl script"
+#~ msgstr "seqüència Tcl"
+
+#~ msgid "TeX document"
+#~ msgstr "document TeX"
+
+#~ msgid "TeX dvi document"
+#~ msgstr "document TeX dvi"
+
+#~ msgid "TeX font"
+#~ msgstr "font TeX"
+
+#~ msgid "TeX font metrics"
+#~ msgstr "mètrica de font TeX"
+
+#~ msgid "TeXInfo document"
+#~ msgstr "document TeXInfo"
+
+#~ msgid "ToutDoux document"
+#~ msgstr "document ToutDoux"
+
+#~ msgid "TrueType font"
+#~ msgstr "font TrueType"
+
+#~ msgid "USENET news message"
+#~ msgstr "missatge USENET"
+
+#~ msgid "Unidata netCDF document"
+#~ msgstr "document netCDF Unidata"
+
+#~ msgid "V font"
+#~ msgstr "font V"
+
+#~ msgid "VOC audio"
+#~ msgstr "àudio VOC"
+
+#~ msgid "VRML document"
+#~ msgstr "document VRML"
+
+#~ msgid "Vivo video"
+#~ msgstr "vídeo Vivo"
+
+#~ msgid "WAIS source code"
+#~ msgstr "codi font WAIS"
+
+#~ msgid "Wavelet video"
+#~ msgstr "vídeo Wavelet"
+
+#~ msgid "Windows bitmap image"
+#~ msgstr "imatge de mapa de bits Windows"
+
+#~ msgid "Windows metafile graphics"
+#~ msgstr "gràfics de metafitxer Windows"
+
+#~ msgid "WordPerfect document"
+#~ msgstr "document WordPerfect"
+
+#~ msgid "X bitmap image"
+#~ msgstr "imatge de mapa de bits X"
+
+#~ msgid "X window image"
+#~ msgstr "imatge X Window"
+
+#~ msgid "XML document"
+#~ msgstr "document XML"
+
+#~ msgid "XPM image"
+#~ msgstr "imatge XPM"
+
+#~ msgid "Xbase database"
+#~ msgstr "base de dades Xbase"
+
+#~ msgid "active server page"
+#~ msgstr "pàgina del servidor actiu"
+
+#~ msgid "address card"
+#~ msgstr "targeta d'adreces"
+
+#~ msgid "ar archive"
+#~ msgstr "arxiu ar"
+
+#~ msgid "arj archive"
+#~ msgstr "arxiu arj"
+
+#~ msgid "authors list"
+#~ msgstr "llistat d'autors"
+
+#~ msgid "backup file"
+#~ msgstr "còpia de seguretat"
+
+#~ msgid "basic audio"
+#~ msgstr "àudio bàsic"
+
+#~ msgid "bibliography record"
+#~ msgstr "registre bibliogràfic"
+
+#~ msgid "binary program"
+#~ msgstr "programa binari"
+
+#~ msgid "block device"
+#~ msgstr "dispositiu de bloqueig"
+
+#~ msgid "bzip-compressed file"
+#~ msgstr "fitxer comprimit amb bzip"
+
+#~ msgid "calendar file"
+#~ msgstr "fitxer calendari"
+
+#~ msgid "calendar or event document"
+#~ msgstr "document calendari o esdeveniment"
+
+#~ msgid "character device"
+#~ msgstr "dispositiu de caràcters"
+
+#~ msgid "comma-separated text document"
+#~ msgstr "document separat per comes"
+
+#~ msgid "compound document"
+#~ msgstr "document compost"
+
+#~ msgid "compress-compressed file"
+#~ msgstr "fitxer comprimit amb compress"
+
+#~ msgid "compressed GIMP document"
+#~ msgstr "document comprimit amb GIMP"
+
+#~ msgid "directory information file"
+#~ msgstr "fitxer d'informació del directori"
+
+#~ msgid "document type definition"
+#~ msgstr "definició del tipus de document"
+
+#~ msgid "email message"
+#~ msgstr "missatge de correu electrònic"
+
+#~ msgid "encrypted message"
+#~ msgstr "missatge encriptat"
+
+#~ msgid "enriched text document"
+#~ msgstr "document de text enriquit"
+
+#~ msgid "gtar archive"
+#~ msgstr "arxiu gtar"
+
+#~ msgid "gzip-compressed file"
+#~ msgstr "fitxer comprimit amb gzip"
+
+#~ msgid "help page"
+#~ msgstr "pàgina d'ajuda"
+
+#~ msgid "mail delivery report"
+#~ msgstr "informe del lliurament del correu"
+
+#~ msgid "mail disposition report"
+#~ msgstr "informe de la clasificació del correu"
+
+#~ msgid "mail system report"
+#~ msgstr "informe de sistema de correu"
+
+#~ msgid "makefile"
+#~ msgstr "makefile"
+
+#~ msgid "manual page"
+#~ msgstr "pàgina manual"
+
+#~ msgid "manual page (compressed)"
+#~ msgstr "pàgina manual (comprimida)"
+
+#~ msgid "message digest"
+#~ msgstr "resum del missatge"
+
+#~ msgid "message in several formats"
+#~ msgstr "missatge en diferents formats"
+
+#~ msgid "multi-part message"
+#~ msgstr "missatge multipart"
+
+#~ msgid "named pipe"
+#~ msgstr "conducte designat"
+
+#~ msgid "object code"
+#~ msgstr "codi objecte"
+
+#~ msgid "ogg audio"
+#~ msgstr "àudio ogg"
+
+#~ msgid "partial email message"
+#~ msgstr "missatge de correu parcial"
+
+#~ msgid "plain text document"
+#~ msgstr "document de text"
+
+#~ msgid "profiler results"
+#~ msgstr "resultats del perfilador"
+
+#~ msgid "reference to remote file"
+#~ msgstr "refèrencia al fitxer remot"
+
+#~ msgid "rejected patch file"
+#~ msgstr "fitxer pedaç rebutjat"
+
+#~ msgid "rich text document"
+#~ msgstr "document de text enriquit"
+
+#~ msgid "search results"
+#~ msgstr "resultats de la cerca"
+
+#~ msgid "shared library"
+#~ msgstr "biblioteca compartida"
+
+#~ msgid "shell archive"
+#~ msgstr "arxiu d'intèrpret d'ordres"
+
+#~ msgid "shell script"
+#~ msgstr "Seqüència de l''intèrpret d'ordres"
+
+#~ msgid "signed message"
+#~ msgstr "missatge signat"
+
+#~ msgid "socket"
+#~ msgstr "sòcol"
+
+#~ msgid "software author credits"
+#~ msgstr "crèdits d'autoria del programari"
+
+#~ msgid "software installation instructions"
+#~ msgstr "instruccions d'instal·lació del programari"
+
+#~ msgid "software license terms"
+#~ msgstr "condicions de la llicència del programari"
+
+#~ msgid "source code patch"
+#~ msgstr "pedaç de codi font"
+
+#~ msgid "style sheet"
+#~ msgstr "full d'estil"
+
+#~ msgid "symbolic link"
+#~ msgstr "enllaç simbòlic"
+
+#~ msgid "tab-separated text document"
+#~ msgstr "document de text separat per tabulació"
+
+#~ msgid "tar archive"
+#~ msgstr "arxiu tar"
+
+#~ msgid "tar archive (bzip2-compressed)"
+#~ msgstr "arxiu tar (comprimit amb bzip2)"
+
+#~ msgid "tar archive (gzip-compressed)"
+#~ msgstr "arxiu tar (comprimit amb gzip)"
+
+#~ msgid "theme"
+#~ msgstr "tema"
+
+#~ msgid "troff document"
+#~ msgstr "document troff"
+
+#~ msgid "troff me input document"
+#~ msgstr "document d'entrada troff me"
+
+#~ msgid "troff mm input document"
+#~ msgstr "document d'entrada troff mm"
+
+#~ msgid "troff ms input document"
+#~ msgstr "document d'entrada troff ms"
+
+#~ msgid "unknown type"
+#~ msgstr "tipus desconegut"
+
+#~ msgid "ustar archive"
+#~ msgstr "arxiu ustar"
+
+#~ msgid "wave audio"
+#~ msgstr "àudio wave"
+
+#~ msgid "web folder"
+#~ msgstr "carpeta web"
+
+#~ msgid "xfig vector graphic"
+#~ msgstr "gràfic vectorial xfig"
+
+#~ msgid "zoo archive"
+#~ msgstr "arxiu zoo"
+
+#~ msgid "GNOME VFS already initialized."
+#~ msgstr "GNOME VFS ja està inicialitzat."
+
+#~ msgid "%s to retrieve"
+#~ msgstr "%s per recuperar"
+
+#~ msgid "Closing connection to %s"
+#~ msgstr "S'està tancant la connexió a %s"
+
+#~ msgid "%s of %s read"
+#~ msgstr "%s de %s llegit"
+
+#~ msgid "%s read"
+#~ msgstr "%s llegit"
+
+#~ msgid "Dying."
+#~ msgstr "S'està morint."
+
+#~ msgid "Error reading: %s"
+#~ msgstr "Error en llegir: %s"
+
+#~ msgid "Error writing: %s"
+#~ msgstr "Error en escriure: %s"
+
+#~ msgid "Cannot write: %s"
+#~ msgstr "No es pot escriure: %s"
+
+#~ msgid "Cannot create temporary file name `%s'"
+#~ msgstr "No es pot crear el fitxer temporal de nom `%s'"
+
+#~ msgid "Cannot create socket: %s"
+#~ msgstr "No es pot crear l'enllaç: %s"
+
+#~ msgid "Cannot bind `%s': %s"
+#~ msgstr "No es pot vincular `%s': %s"
+
+#~ msgid "Cannot listen on `%s': %s"
+#~ msgstr "No es pot atendre a `%s': %s"
+
+#~ msgid "Cannot accept connections on `%s': %s"
+#~ msgstr "No es poden acceptar connexions en `%s': %s"
+
+#~ msgid "Cannot resolve initial reference to RootPOA."
+#~ msgstr "No es pot resoldre la referència inicial al RootPOA."
+
+#~ msgid "Cannot activate POA manager."
+#~ msgstr "No es pot activar el gestor POA."
+
+#~ msgid "Usage: %s <ior> [<ior_fd>]\n"
+#~ msgstr "Utilització: %s <ior> [<ior_fd>]\n"
+
+#~ msgid "Cannot open file descriptor %d."
+#~ msgstr "No es pot obrir el descriptor de fitxers %d."
+
+#~ msgid "Notify interface for `%s' not found."
+#~ msgstr "No s'ha trobat la interfície de notificació per a `%s'."
+
+#~ msgid "Cannot setup Request object."
+#~ msgstr "No es pot configurar l'objecte demanat."
+
+#~ msgid "Cannot extract IOR."
+#~ msgstr "No es pot extreure l'IOR."
+
+#~ msgid "Got weird string from the slave process: `%s'"
+#~ msgstr "S'ha obtingut una cadena estranya del procés esclau: `%s' "
+
+#~ msgid "Cannot get object for `%s'"
+#~ msgstr "No es pot obtenir l'objecte per a `%s'"
+
+#~ msgid "Cannot kill GNOME::VFS::Slave::Notify -- exception %s"
+#~ msgstr "No es pot matar GNOME::VFS::Esclau::Notifica -- excepció %s"
+
+#~ msgid "Cannot connect socket `%s': %s"
+#~ msgstr "No es pot connectar l'enllaç `%s': %s"
+
+#~ msgid "Cannot initialize GNOME::VFS:Slave::Notify"
+#~ msgstr "No es pot inicialitzar GNOME::VFS:Esclau::Notifica"
+
+#~ msgid "Cannot reset GNOME::VFS::Slave %s -- exception %s"
+#~ msgstr "No es pot reinicialitzar GNOME::VFS::Esclau %s -- excepció %s"
+
+#~ msgid "Cannot reset GNOME::VFS::Slave (IOR unknown) -- exception %s"
+#~ msgstr ""
+#~ "No es pot reinicialitzar GNOME::VFS::Esclau (IOR unknown) -- excepció %s"
+
+#~ msgid "Cannot kill GNOME::VFS::Slave %s -- exception %s"
+#~ msgstr "No es pot matar GNOME::VFS::Esclau %s -- excepció %s"
+
+#~ msgid "Cannot kill GNOME::VFS::Slave (IOR unknown) -- exception %s"
+#~ msgstr "No es pot matar GNOME::VFS::Esclau (IOR unknown) -- excepció %s"
+
+#~ msgid "Back"
+#~ msgstr "Enrere"
+
+#~ msgid "Go to the previously visited directory"
+#~ msgstr "Vés al directori visitat anteriorment"
+
+#~ msgid "Up"
+#~ msgstr "Amunt"
+
+#~ msgid "Go to the parent directory"
+#~ msgstr "Vés al directori pare"
+
+#~ msgid "Forward"
+#~ msgstr "Endavant"
+
+#~ msgid "Go to the next visited directory"
+#~ msgstr "Vés al directori visitat següent"
+
+#~ msgid "Rescan"
+#~ msgstr "Torna a explorar"
+
+#~ msgid "Rescan the current directory"
+#~ msgstr "Torna a explorar el directori actual"
+
+#~ msgid "Go to the home directory"
+#~ msgstr "Vés al directori arrel"
+
+#~ msgid "Size"
+#~ msgstr "Mida"
+
+#~ msgid "Date"
+#~ msgstr "Data"
+
+#~ msgid "Enter name:"
+#~ msgstr "Introduïu el nom:"
+
+#~ msgid "Show:"
+#~ msgstr "Mostra:"
+
+#~ msgid "Show dotfiles"
+#~ msgstr "Mostra els fiters de plantilla"
+
+#~ msgid "Edit Applications List"
+#~ msgstr "Edita la llista d'aplicacions"
+
+#~ msgid "Select applications to appear in menu for MIME type \"%s\""
+#~ msgstr ""
+#~ "Seleccioneu les aplicacions que han d'aparèixer al menú per al tipus de "
+#~ "MIME \"%s\""
+
+#~ msgid "Add Application..."
+#~ msgstr "Afegeix una aplicació..."
+
+#~ msgid "Edit Application..."
+#~ msgstr "Edita una aplicació..."
+
+#~ msgid "Edit Components List"
+#~ msgstr "Edita la llista de components"
+
+#~ msgid "Select views to appear in menu for MIME type \"%s\""
+#~ msgstr ""
+#~ "Seleccioneu les vistes que han d'aparèixer al menú per al tipus de MIME "
+#~ "\"%s\""
+
+#~ msgid ""
+#~ "The MIME type entered contained upper case characters. Upper case "
+#~ "characters were changed to lower case for you."
+#~ msgstr ""
+#~ "El tipus de MIME introduït contenia caràcters en majúscules; aquests "
+#~ "caràcters s'han canviat a minúscules per a la vostra comoditat."
+
+#~ msgid "Add New MIME Type"
+#~ msgstr "Afegeix un tipus nou de MIME"
+
+#~ msgid "Add MIME Type"
+#~ msgstr "Afegeix un tipus de MIME"
+
+#~ msgid "New MIME type (e.g. image/x-thumper):"
+#~ msgstr "Tipus nou de MIME (p.ex. image/x-thumper):"
+
+#~ msgid "Description (e.g. Thumper image):"
+#~ msgstr "Descripció (p.ex. imatge Thumper):"
+
+#~ msgid "File Extensions "
+#~ msgstr "Extensions de fitxer "
+
+#~ msgid "Add..."
+#~ msgstr "Afegeix..."
+
+#~ msgid "    Remove    "
+#~ msgstr "    Elimina    "
+
+#~ msgid "Add New Extension"
+#~ msgstr "Afegeix una nova extensió"
+
+#~ msgid ""
+#~ "Type in the extensions for this mime-type (without dot).\n"
+#~ "You can enter several extensions seperated by a space,\n"
+#~ "for example: html htm"
+#~ msgstr ""
+#~ "Escriviu les extensions per a aquest tipus de MIME (sense el punt).\n"
+#~ "Podeu introduir diverses extensions separant-les amb un espai,\n"
+#~ "per exemple: html htm"
+
+#~ msgid "Extension:"
+#~ msgstr "Extensió:"
+
+#~ msgid "You must enter a name."
+#~ msgstr "Heu d'introduir un nom."
+
+#~ msgid "You must enter a command."
+#~ msgstr "Heu d'introduir una ordre."
+
+#~ msgid ""
+#~ "\"%s\" does not exist or is not executable.\n"
+#~ "Check your spelling and make sure you have\n"
+#~ "the right permissions to execute this file."
+#~ msgstr ""
+#~ "\"%s\" no existeix o no és un executable.\n"
+#~ "Comproveu que ho heu escrit correctament i que teniu\n"
+#~ "els permisos necessaris per executar aquest fitxer."
+
+#~ msgid ""
+#~ "The command \"%s\" cannot be found.\n"
+#~ "You must use a command that can work from any command line."
+#~ msgstr ""
+#~ "No es pot trobar l'ordre \"%s\".\n"
+#~ "Heu d'utilitzar una ordre que funcioni des de qualsevol línia d'ordres."
+
+#~ msgid "Bad Application Name"
+#~ msgstr "Nom incorrecte de l'aplicació"
+
+#~ msgid "Bad Application Command"
+#~ msgstr "Ordre incorrecta de l'aplicació"
+
+#~ msgid "Edit Application"
+#~ msgstr "Edita una aplicació"
+
+#~ msgid "Application Name:"
+#~ msgstr "Nom de l'aplicació:"
+
+#~ msgid "Application Command:"
+#~ msgstr "Ordre de l'aplicació:"
+
+#~ msgid "Open Behavior"
+#~ msgstr "Obre el comportament"
+
+#~ msgid "Can open multiple files"
+#~ msgstr "Es poden obrir diversos fitxers"
+
+#~ msgid "Can open from URI"
+#~ msgstr "Es pot obrir des de l'URI"
+
+#~ msgid "MIME Type"
+#~ msgstr "Tipus de MIME"
+
+#~ msgid "Change File Extensions"
+#~ msgstr "Canvia les extensions de fitxer"
+
+#~ msgid "Default Action:"
+#~ msgstr "Acció per defecte:"
+
+#~ msgid "Use Viewer"
+#~ msgstr "Utilitza el visualitzador"
+
+#~ msgid "Open With Application"
+#~ msgstr "Obre amb l'aplicació"
+
+#~ msgid "Edit List"
+#~ msgstr "Edita la llista"
+
+#~ msgid "Add New MIME Type..."
+#~ msgstr "Afegeix un nou tipus de MIME..."
+
+#~ msgid "Delete This MIME Type"
+#~ msgstr "Suprimeix aquest tipus de MIME"
+
+#~ msgid "Revert to System Defaults"
+#~ msgstr "Torna als valors per defecte del sistema"
+
+#~ msgid "None"
+#~ msgstr "Cap"
+
+#~ msgid ""
+#~ "Reverting to system settings will lose any changes\n"
+#~ "you have ever made to File Types and Programs.\n"
+#~ "Revert anyway?"
+#~ msgstr ""
+#~ "Si torneu als paràmetres del sistema perdreu qualsevol canvi\n"
+#~ "que mai hagueu fet als tipus de fitxer i als programes.\n"
+#~ "Voleu tornar-hi igualment?"
+
+#~ msgid "none"
+#~ msgstr "cap"
+
+#~ msgid "View as %s"
+#~ msgstr "Visualitza com a %s"
+
+#~ msgid "Description"
+#~ msgstr "Descripció"
+
+#~ msgid "Extension"
+#~ msgstr "Extensió"
+
+#~ msgid "Default Action"
+#~ msgstr "Acció per defecte"
+
+#~ msgid "Can't find an hbox, using a normal file selection"
+#~ msgstr ""
+#~ "No es pot trobar cap hbox, s'està utilitzant una selecció de fitxer normal"
+
+#~ msgid "Preview"
+#~ msgstr "Previsualitza"
+
+#~ msgid "Select an icon"
+#~ msgstr "Seleccioneu una icona"
+
+#~ msgid "Unknown sort rule %d"
+#~ msgstr "Regla d'ordenació desconeguda %d"
+
+#~ msgid "Error writing to the wakeup GnomeVFSJob channel."
+#~ msgstr "Error en escriure en el canal d'avís GnomeVFSJob"
+
+#~ msgid ""
+#~ "Add a new Mime Type\n"
+#~ "For example:  image/tiff; text/x-scheme"
+#~ msgstr ""
+#~ "Afegiu un nou tipus de MIME\n"
+#~ "Per exemple:  image/tiff; text/x-scheme"
+
+#~ msgid "Mime Type:"
+#~ msgstr "Tipus de MIME:"
+
+#~ msgid "Type in a description for this mime-type."
+#~ msgstr "Escriviu una desripció per a aquest tipus de MIME."
+
+#~ msgid "Description:"
+#~ msgstr "Descripció:"
+
+#~ msgid "New Application"
+#~ msgstr "Nova aplicació"
+
+#~ msgid "Action"
+#~ msgstr "Acció"
+
+#~ msgid "HTTP server returned an invalid PROPFIND response"
+#~ msgstr "El servidor HTTP ha retornat una resposta PROPFIND no vàlida"
+
+#~ msgid "ftpfs: Invalid host name."
+#~ msgstr "ftpfs: Nom de servidor no vàlid."
+
+#~ msgid "ftpfs: Invalid host address."
+#~ msgstr "ftpfs: Adreça de servidor no vàlida."
+
+#~ msgid "ftpfs: making connection to %s"
+#~ msgstr "ftpfs: connectant-se a %s"
+
+#~ msgid "ftpfs: connection interrupted by user"
+#~ msgstr "ftpfs: connexió interrompuda per l'usuari"
+
+#~ msgid "ftpfs: connection to server failed: %s"
+#~ msgstr "ftpfs: connexió al servidor fallida: %s"
+
+#~ msgid "Waiting to retry... %d (Control-C to cancel)"
+#~ msgstr ""
+#~ "S'està esperant per reintentar-ho... %d (Control-C per cancel·lar-ho)"
+
+#~ msgid " FTP: Password required for "
+#~ msgstr " FTP: Contrasenya requerida per "
+
+#~ msgid "ftpfs: sending login name"
+#~ msgstr "ftpfs: s'està enviant el nom d'entrada"
+
+#~ msgid "ftpfs: sending user password"
+#~ msgstr "ftpfs: s'està enviant la contrasenya de l'usuari"
+
+#~ msgid "ftpfs: logged in"
+#~ msgstr "ftpfs: connectat"
+
+#~ msgid "ftpfs: Login incorrect for user %s "
+#~ msgstr "ftpfs: Entrada incorrecta per a l'usuari %s "
+
+#~ msgid "ftpfs: aborting transfer."
+#~ msgstr "ftpfs: s'està avortant la transferència."
+
+#~ msgid "ftpfs: abort error: %s"
+#~ msgstr "ftpfs: error en avortar: %s"
+
+#~ msgid "ftpfs: abort failed"
+#~ msgstr "ftpfs: avortament fallit"
+
+#~ msgid "ftpfs: could not setup passive mode"
+#~ msgstr "ftpfs: no s'ha pogut configurar el mode passiu"
+
+#~ msgid "ftpfs: storing file %d (%d)"
+#~ msgstr "ftpfs: s'està emmagatzemant el fitxer %d (%d)"
+
+#~ msgid "ftpfs: CWD failed."
+#~ msgstr "ftpfs: CWD fallit."
+
+#~ msgid "ftpfs: couldn't resolve symlink"
+#~ msgstr "ftpfs: No s'ha pogut resoldre l'enllaç simbòlic"
+
+#~ msgid "Resolving symlink..."
+#~ msgstr "S'està resolent l'enllaç simbòlic..."
+
+#~ msgid "ftpfs: Reading FTP directory %s... (don't use UNIX ls options)"
+#~ msgstr ""
+#~ "ftpfs: S'està llegint el directori FTP %s... (no utilitzeu les opcions ls "
+#~ "de UNIX)"
+
+#~ msgid "ftpfs: Reading FTP directory %s..."
+#~ msgstr "ftpfs: S'està llegint el directori FTP %s..."
+
+#~ msgid "ftpfs: reading FTP directory interrupted by user"
+#~ msgstr "ftpfs: lectura del directori FTP interrompuda per l'usuari"
+
+#~ msgid "ftpfs: got listing"
+#~ msgstr "ftpfs: llistat rebut"
+
+#~ msgid "ftpfs: failed; nowhere to fallback to"
+#~ msgstr "ftpfs: fallit; enlloc per anar"
+
+#~ msgid "Starting linear transfer..."
+#~ msgstr "S'està iniciant transferència lineal..."
+
+#~ msgid "Preparing reget..."
+#~ msgstr "S'està preparant la recuperació..."

@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# Build zipfiles for gnome-vfs on Win32. Separate runtime and
+# developer ones.  After running make install, run this.
+
+ZIP=/tmp/gnome-vfs-@VERSION@.zip
+DEVZIP=/tmp/gnome-vfs-dev-@VERSION@.zip
+
+cd @prefix@
+rm $ZIP
+
+current_minus_age=`expr @LIBGNOMEVFS_CURRENT@ - @LIBGNOMEVFS_AGE@`
+
+zip $ZIP -@ <<EOF
+bin/libgnomevfs-2-$current_minus_age.dll
+etc/gconf/schemas/system_http_proxy.schemas
+etc/gnome-vfs-2.0/modules/default-modules.conf
+EOF
+
+zip $ZIP lib/gnome-vfs-2.0/modules/*.dll
+
+zip $ZIP lib/locale/*/LC_MESSAGES/gnome-vfs-2.0.mo
+
+rm $DEVZIP
+zip -r $DEVZIP -@ <<EOF
+bin/gnomevfs-cat.exe
+bin/gnomevfs-copy.exe
+bin/gnomevfs-info.exe
+bin/gnomevfs-ls.exe
+bin/gnomevfs-mkdir.exe
+bin/gnomevfs-monitor.exe
+bin/gnomevfs-mv.exe
+lib/bonobo/monikers/libmoniker_gnome_vfs_std.dll
+lib/bonobo/servers/GNOME_VFS_Moniker_std.server
+lib/libgnomevfs-2.dll.a
+lib/pkgconfig/gnome-vfs-2.0.pc
+lib/pkgconfig/gnome-vfs-module-2.0.pc
+include/gnome-vfs-2.0
+include/gnome-vfs-module-2.0
+share/gtk-doc/html/gnome-vfs-2.0
+EOF

@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+gnome-vfs-module
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION vfs_module_init ##### -->
+<para>
+
+</para>
+
+@method_name: 
+@args: 
+@Returns: 
+
+
+<!-- ##### FUNCTION vfs_module_transform ##### -->
+<para>
+
+</para>
+
+@method_name: 
+@args: 
+@Returns: 
+
+
+<!-- ##### FUNCTION vfs_module_shutdown ##### -->
+<para>
+
+</para>
+
+@method: 
+
+

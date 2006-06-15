@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY version SYSTEM "version.xml">
+<!ENTITY gnome-vfs-writing-modules SYSTEM "writing-modules.sgml">
+<!ENTITY gnome-vfs-about SYSTEM "about.sgml">
+<!ENTITY gnome-vfs-mime-monitor SYSTEM "xml/gnome-vfs-mime-monitor.xml">
+<!ENTITY gnome-vfs-file-size SYSTEM "xml/gnome-vfs-file-size.xml">
+<!ENTITY gnome-vfs-utils SYSTEM "xml/gnome-vfs-utils.xml">
+<!ENTITY gnome-vfs-application-registry SYSTEM "xml/gnome-vfs-application-registry.xml">
+<!ENTITY gnome-vfs-transform SYSTEM "xml/gnome-vfs-transform.xml">
+<!ENTITY gnome-vfs-ops SYSTEM "xml/gnome-vfs-ops.xml">
+<!ENTITY gnome-vfs-ssl SYSTEM "xml/gnome-vfs-ssl.xml">
+<!ENTITY gnome-vfs-uri SYSTEM "xml/gnome-vfs-uri.xml">
+<!ENTITY gnome-vfs-standard-callbacks SYSTEM "xml/gnome-vfs-standard-callbacks.xml">
+<!ENTITY gnome-vfs-inet-connection SYSTEM "xml/gnome-vfs-inet-connection.xml">
+<!ENTITY gnome-vfs-socket SYSTEM "xml/gnome-vfs-socket.xml">
+<!ENTITY gnome-vfs-parse-ls SYSTEM "xml/gnome-vfs-parse-ls.xml">
+<!ENTITY gnome-vfs-module-callback SYSTEM "xml/gnome-vfs-module-callback.xml">
+<!ENTITY gnome-vfs-context SYSTEM "xml/gnome-vfs-context.xml">
+<!ENTITY gnome-vfs-file-info SYSTEM "xml/gnome-vfs-file-info.xml">
+<!ENTITY gnome-vfs-method SYSTEM "xml/gnome-vfs-method.xml">
+<!ENTITY gnome-vfs-directory SYSTEM "xml/gnome-vfs-directory.xml">
+<!ENTITY gnome-vfs-directory-basic-ops SYSTEM "xml/gnome-vfs-directory-basic-ops.xml">
+<!ENTITY gnome-vfs-directory-list-ops SYSTEM "xml/gnome-vfs-directory-list-ops.xml">
+<!ENTITY gnome-vfs-directory-find-ops SYSTEM "xml/gnome-vfs-directory-find-ops.xml">
+<!ENTITY gnome-vfs-file-basic-ops SYSTEM "xml/gnome-vfs-file-basic-ops.xml">
+<!ENTITY gnome-vfs-file-rw-ops SYSTEM "xml/gnome-vfs-file-rw-ops.xml">
+<!ENTITY gnome-vfs-file-trunc-ops SYSTEM "xml/gnome-vfs-file-trunc-ops.xml">
+<!ENTITY gnome-vfs-file-info-ops SYSTEM "xml/gnome-vfs-file-info-ops.xml">
+<!ENTITY gnome-vfs-file-advanced-ops SYSTEM "xml/gnome-vfs-file-advanced-ops.xml">
+<!ENTITY gnome-vfs-file-async-ops SYSTEM "xml/gnome-vfs-async-ops.xml">
+<!ENTITY gnome-vfs-result SYSTEM "xml/gnome-vfs-result.xml">
+<!ENTITY gnome-vfs-mime-database SYSTEM "xml/gnome-vfs-mime-database.xml">
+<!ENTITY gnome-vfs-mime-database-deprecated SYSTEM "xml/gnome-vfs-mime-database-deprecated.xml">
+<!ENTITY gnome-vfs-module SYSTEM "xml/gnome-vfs-module.xml">
+<!ENTITY gnome-vfs-module-shared SYSTEM "xml/gnome-vfs-module-shared.xml">
+<!ENTITY gnome-vfs-module-callback-module-api SYSTEM "xml/gnome-vfs-module-callback-module-api.xml">
+<!ENTITY gnome-vfs-init SYSTEM "xml/gnome-vfs-init.xml">
+<!ENTITY gnome-vfs-mime SYSTEM "xml/gnome-vfs-mime.xml">
+<!ENTITY gnome-vfs-cancellation SYSTEM "xml/gnome-vfs-cancellation.xml">
+<!ENTITY gnome-vfs-xfer SYSTEM "xml/gnome-vfs-xfer.xml">
+<!ENTITY gnome-vfs-socket-buffer SYSTEM "xml/gnome-vfs-socket-buffer.xml">
+<!ENTITY gnome-vfs-monitor SYSTEM "xml/gnome-vfs-monitor.xml">
+<!ENTITY gnome-vfs-volume SYSTEM "xml/gnome-vfs-volume.xml">
+<!ENTITY gnome-vfs-drive SYSTEM "xml/gnome-vfs-drive.xml">
+<!ENTITY gnome-vfs-volume-monitor SYSTEM "xml/gnome-vfs-volume-monitor.xml">
+<!ENTITY gnome-vfs-dns-sd SYSTEM "xml/gnome-vfs-dns-sd.xml">
+<!ENTITY gnome-vfs-resolve SYSTEM "xml/gnome-vfs-resolve.xml">
+]>
+
+<book id="index">
+  <bookinfo>
+    <title>GnomeVFS - Filesystem Abstraction library</title>
+    <releaseinfo>for GnomeVFS &version;</releaseinfo>
+    <authorgroup>
+      <author>
+	<firstname>Seth</firstname>
+	<surname>Nickell</surname>
+	<affiliation>
+	  <address>
+	    <email>snickell@Stanford.edu</email>
+	  </address>
+	</affiliation>
+      </author>
+      <author>
+	<firstname>Christophe</firstname>
+	<surname>Fergeau</surname>
+	<affiliation>
+	  <address>
+	    <email>teuf@gnome.org</email>
+	  </address>
+	</affiliation>
+      </author>
+    </authorgroup>
+
+    <legalnotice>
+    <para>
+      Permission is granted to copy, distribute and/or modify this document
+      under the terms of the GNU Free Documentation License, Version 1.1
+      or any later version published by the Free Software Foundation;
+      A copy of the license is included in the section entitled "GNU
+      Free Documentation License".
+    </para>
+    </legalnotice>
+
+    <copyright>
+      <year>2001</year>
+      <holder>The Free Software Foundation</holder>
+    </copyright>
+    <copyright>
+      <year>2004</year>
+      <holder>Christophe Fergeau</holder>
+    </copyright>
+
+  </bookinfo>
+
+  &gnome-vfs-about;
+  &gnome-vfs-init;
+  
+  <chapter id="data-types">
+    <title>Basic Data Types</title>
+    &gnome-vfs-result;
+    &gnome-vfs-uri;
+    &gnome-vfs-utils;
+    &gnome-vfs-file-info;
+    &gnome-vfs-file-size;
+  </chapter>
+
+  <chapter id="gnome-vfs-file-and-dirs-ops">
+    <title>Files and Directories Manipulation</title>
+
+    <sect1 id="gnome-vfs-file-operations">
+      <title>File Handling</title>
+      <para>
+	GnomeVFS file operations are, for the most part, patterned after
+	their POSIX equivalents, with the systematic difference that they
+	accept URIs rather than paths on the local filesystem. This makes
+	them easy to learn as if you are already familiar with basic commands
+	such as open(), seek(), write(), etc you will feel right at home
+	with GnomeVFS after learning a little about URIs.
+      </para>
+      
+      <para>
+	GnomeVFS also provides asynchronous versions of these basic operations 
+	for allowing application developers to provide non-blocking file I/O 
+	without the use of threads.
+      </para>
+      
+      &gnome-vfs-file-basic-ops;
+      &gnome-vfs-file-rw-ops;
+      &gnome-vfs-file-info-ops;
+      &gnome-vfs-xfer;
+      &gnome-vfs-file-trunc-ops;
+      &gnome-vfs-file-advanced-ops;
+      &gnome-vfs-file-async-ops;
+    </sect1>
+
+    <sect1 id="gnome-vfs-directory-operations">
+      <title>Directory Handling</title>
+      <para>
+	Functions for creating, removing, and listing directories.
+      </para>
+
+      &gnome-vfs-directory-basic-ops;
+      &gnome-vfs-directory-list-ops;
+      &gnome-vfs-directory-find-ops;
+    </sect1>
+
+
+    <sect1 id="advanced-operations">
+      <title>Advanced Operations</title>
+      &gnome-vfs-monitor;
+      &gnome-vfs-cancellation;
+    </sect1>
+  </chapter>
+
+  <chapter id="volumes">
+    <title>Volumes and Drives Handling</title>
+    &gnome-vfs-volume;
+    &gnome-vfs-drive;
+    &gnome-vfs-volume-monitor;
+  </chapter>
+
+  <chapter id="networking">
+    <title>Networking</title>
+    &gnome-vfs-dns-sd;
+    &gnome-vfs-resolve;
+    &gnome-vfs-ssl;
+    &gnome-vfs-socket;
+    &gnome-vfs-socket-buffer;
+    &gnome-vfs-inet-connection;    
+  </chapter>
+
+
+  <chapter id="mime-registry">
+    <title>MIME Registry</title>
+    <para>
+      MIME types provide a standardized for denoting the content of files or
+      file streams. GnomeVFS exposes simple methods for both identifying the
+      MIME type of a particular file, and deciding how to act on it.	The MIME 
+      and application registries provide a mapping between files of a particular 
+      mime type and applications / bonobo components which can view or edit 
+      those files. Applications such as Nautilus use this database to generate 
+      appropriate actions when files are activated. 
+    </para>
+
+    &gnome-vfs-mime-database;
+    &gnome-vfs-mime-monitor;
+    &gnome-vfs-mime-database-deprecated; 
+    &gnome-vfs-application-registry;
+  </chapter>
+
+  <chapter id="modules">
+    <title>Filesystem Modules</title>
+    <para>
+      Modules are the mechanism by which GnomeVFS accesses different filesystems,
+      from http, to the local disk, to smb. Module authors must implement a simple
+      set of filesystem operations and can provide varying degrees of service (read-only,
+      read-write, seeking, etc). Modules are dynamically loaded based upon the URI
+      scheme passed into the high-level GnomeVFS APIs.
+    </para>
+
+    &gnome-vfs-writing-modules;
+    &gnome-vfs-mime;
+    &gnome-vfs-method;
+    &gnome-vfs-module;
+    &gnome-vfs-module-shared;
+    &gnome-vfs-module-callback-module-api;
+    &gnome-vfs-context;
+    &gnome-vfs-transform;
+    &gnome-vfs-parse-ls;
+    &gnome-vfs-standard-callbacks;
+    &gnome-vfs-module-callback;
+  </chapter>
+
+</book>

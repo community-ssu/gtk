@@ -1,0 +1,52 @@
+Source: osso-gnome-vfs2
+Section: libs
+Priority: optional
+Maintainer: Richard Hult <richard@imendio.com>
+Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev, cdbs, libgconf2-dev (>= 2.6.4), libxml2-dev, gettext, debhelper (>> 4.1.0), zlib1g-dev, intltool, gnome-common, gnome-pkg-tools, libdbus-glib-1-dev (>= 0.60), osso-gwconnect-dev (>= 0.62), gtk-doc-tools
+Standards-Version: 3.6.1.0
+
+Package: libosso-gnomevfs2-common
+Section: devel
+Architecture: any
+Depends: ${shlibs:Depends}, shared-mime-info, gconf2 (>= 2.6.0)
+Conflicts: gnome-vfs-extras2, gnome-vfs-sftp, libgnomevfs2-common
+Replaces: libgnomevfs2-dev (<< 2.6.0), libgnome2-common (<< 2.6.0), gnome-vfs-extras2, gnome-vfs-sftp, libgnomevfs2-common
+Provides: libgnomevfs2-common
+Description: The GNOME virtual file-system library common files (for GNOME2)
+ GNOME VFS is the GNOME virtual file system. It is the foundation of the
+ Nautilus file manager. It provides a modular architecture and ships with
+ several modules that implement support for file systems, http, ftp and others.
+ It provides a URI-based API, a backend supporting asynchronous file
+ operations, a MIME type manipulation library and other features.
+ .
+ This package is a patched version of gnome-vfs in GNOME2.
+
+Package: libosso-gnomevfs2-0
+Architecture: any
+Depends: ${shlibs:Depends}, libosso-gnomevfs2-common (>= ${Source-Version})
+Replaces: libgnomevfs2-0
+Conflicts: libgnomevfs2-0
+Provides: libgnomevfs2-0
+Description: The GNOME virtual file-system libraries (for GNOME2)
+ GNOME VFS is the GNOME virtual file system. It is the foundation of the
+ Nautilus file manager. It provides a modular architecture and ships with
+ several modules that implement support for file systems, http, ftp and others.
+ It provides a URI-based API, a backend supporting asynchronous file
+ operations, a MIME type manipulation library and other features.
+ .
+ This package is a patched version of gnome-vfs in GNOME2.
+
+Package: libosso-gnomevfs2-dev
+Section: libdevel
+Architecture: any
+Section: libdevel
+Depends: libosso-gnomevfs2-common, libosso-gnomevfs2-0 (= ${Source-Version}), libc6-dev, libgconf2-dev (>= 2.6.0), libxml2-dev
+Replaces: libgnomevfs2-common (<< 2.2.5-1), libgnomevfs2-dev
+Conflicts: libgnomevfs2-common (<< 2.2.5-1), libgnomevfs2-dev
+Provides: libgnomevfs2-dev
+Description: The GNOME virtual file-system development files (for GNOME2)
+ This package provides the necessary development libraries for writing
+ GNOME VFS modules and applications that use the GNOME VFS APIs.
+ .
+ This package is a patched version of gnome-vfs in GNOME2.
+

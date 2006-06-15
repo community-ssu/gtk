@@ -1,0 +1,16 @@
+This package was debianized by Takuo KITAME <kitame@northeye.org> and
+patched by Richard Hult <richard@imendio.com>
+Mon, 16 Oct 2000 09:47:42 +0900.
+
+It was downloaded from cvs.gnome.org
+
+Upstream Authors:
+  see AUTHORS file.
+
+Copyright:
+
+  gnome-vfs is distributed under the terms of the GNU LGPL:
+
+  /usr/share/common-licenses/LGPL.
+
+  See individual source files for more information.

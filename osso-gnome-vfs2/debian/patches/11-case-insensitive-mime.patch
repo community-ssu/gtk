@@ -1,0 +1,30 @@
+Index: libgnomevfs/gnome-vfs-mime.c
+===================================================================
+--- libgnomevfs/gnome-vfs-mime.c	(revision 374)
++++ libgnomevfs/gnome-vfs-mime.c	(arbetskopia)
+@@ -99,6 +99,7 @@
+ {
+ 	const char *mime_type;
+ 	const char *separator;
++	char       *lower;
+ 
+ 	if (filename == NULL) {
+ 		return defaultv;
+@@ -121,10 +122,16 @@
+ 		separator = filename;
+ 	}
+ 
++ 	lower = g_utf8_strdown (separator, -1);
++
+ 	G_LOCK (gnome_vfs_mime_mutex);
+-	mime_type = xdg_mime_get_mime_type_from_file_name (separator);
++	mime_type = xdg_mime_get_mime_type_from_file_name (lower);
++	if (!mime_type)
++		mime_type = xdg_mime_get_mime_type_from_file_name (separator);
+ 	G_UNLOCK (gnome_vfs_mime_mutex);
+ 
++ 	g_free (lower);
++
+ 	if (mime_type)
+ 		return mime_type;
+ 	else

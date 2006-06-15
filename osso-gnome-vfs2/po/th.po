@@ -1,0 +1,1403 @@
+# Thai translation for gnome-vfs.
+# Copyright (C) 2004 Free Software Foundation, Inc.
+# This file is distributed under the same license as the gnome-vfs package.
+#
+# Sittichai Makekhuntod <hae_ha@thaimail.com>, 2003.
+# Paisa Seeluangsawat <paisa@users.sf.net>, 2004.
+# Theppitak Karoonboonyanan <thep@linux.thai.net>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-vfs\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-07-22 16:10+0700\n"
+"PO-Revision-Date: 2005-07-22 16:28+0700\n"
+"Last-Translator: Theppitak Karoonboonyanan <thep@linux.thai.net>\n"
+"Language-Team: Thai <L10n@opentle.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;"
+
+#: daemon/gnome-vfs-daemon.c:596
+msgid "Could not initialize Bonobo"
+msgstr "เริ่มใช้ Bonobo ไม่สำเร็จ"
+
+#: daemon/gnome-vfs-daemon.c:603
+msgid "Could not initialize gnome vfs"
+msgstr "เริ่มใช้ gnome vfs ไม่สำเร็จ"
+
+#: libgnomevfs/gnome-vfs-cdrom.c:237
+msgid "ISO 9660 Volume"
+msgstr "โวลุม ISO 9660"
+
+#: libgnomevfs/gnome-vfs-configuration.c:221
+#, c-format
+msgid "%s:%d contains NUL characters."
+msgstr "%s:%d มีตัวอักษร NUL"
+
+#: libgnomevfs/gnome-vfs-configuration.c:238
+#, c-format
+msgid "%s:%d contains no method name."
+msgstr "%s:%d ไม่มีชื่อวิธี"
+
+#: libgnomevfs/gnome-vfs-configuration.c:278
+#, c-format
+msgid "%s:%d has no options endmarker."
+msgstr "%s:%d ไม่มีตัวปิดท้ายตัวเลือก"
+
+#: libgnomevfs/gnome-vfs-configuration.c:289
+#, c-format
+msgid "%s:%d has unknown options %s."
+msgstr "%s:%d มีตัวเลือกที่ไม่รู้จัก %s"
+
+#: libgnomevfs/gnome-vfs-configuration.c:308
+#, c-format
+msgid "%s:%d contains no module name."
+msgstr "%s:%d ไม่มีชื่อโมดูล"
+
+#: libgnomevfs/gnome-vfs-configuration.c:362
+#, c-format
+msgid "Configuration file `%s' was not found: %s"
+msgstr "ไม่เจอแฟ้มปรับแต่ง `%s': %s"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:37
+msgid "AFFS Volume"
+msgstr "โวลุม AFFS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:38
+msgid "AFS Network Volume"
+msgstr "โวลุมเครือข่าย AFFS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:39
+msgid "Auto-detected Volume"
+msgstr "โวลุมที่ค้นพบโดยอัตโนมัติ"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:40
+#: libgnomevfs/gnome-vfs-filesystem-type.c:42
+msgid "CD-ROM Drive"
+msgstr "ไดรฟ์ซีดี"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:41
+msgid "CD Digital Audio"
+msgstr "เสียงดิจิทัลจากซีดี"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:43
+msgid "Hardware Device Volume"
+msgstr "โวลุมอุปกรณ์ฮาร์ดแวร์"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:44
+#: libgnomevfs/gnome-vfs-filesystem-type.c:45
+msgid "Ext2 Linux Volume"
+msgstr "โวลุม Ext2 ของลินุกซ์"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:46
+msgid "Ext3 Linux Volume"
+msgstr "โวลุม Ext3 ของลินุกซ์"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:47
+#: libgnomevfs/gnome-vfs-filesystem-type.c:57
+#: libgnomevfs/gnome-vfs-filesystem-type.c:58
+msgid "MSDOS Volume"
+msgstr "โวลุม MSDOS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:48
+#: libgnomevfs/gnome-vfs-filesystem-type.c:49
+msgid "MacOS Volume"
+msgstr "โวลุม MacOS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:50
+msgid "CDROM Volume"
+msgstr "โวลุมซีดี"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:51
+msgid "Hsfs CDROM Volume"
+msgstr "โวลุม Hsfs บนซีดี"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:52
+msgid "JFS Volume"
+msgstr "โวลุม JFS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:53
+#: libgnomevfs/gnome-vfs-filesystem-type.c:60
+msgid "Windows NT Volume"
+msgstr "โวลุมวินโดวส์ NT"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:54
+#: libgnomevfs/gnome-vfs-filesystem-type.c:62
+#: libgnomevfs/gnome-vfs-filesystem-type.c:63
+msgid "System Volume"
+msgstr "โวลุมระบบ"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:55
+msgid "Memory Volume"
+msgstr "โวลุมหน่วยความจำ"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:56
+msgid "Minix Volume"
+msgstr "โวลุม Minix"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:59
+msgid "NFS Network Volume"
+msgstr "โวลุมเครือข่าย NFS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:61
+msgid "Netware Volume"
+msgstr "โวลุม Netware"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:64
+msgid "Reiser4 Linux Volume"
+msgstr "โวลุม Reiser4 ของลินุกซ์"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:65
+msgid "ReiserFS Linux Volume"
+msgstr "โวลุม ReiserFS ของลินุกซ์"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:66
+msgid "Windows Shared Volume"
+msgstr "โวลุมใช้ร่วมของวินโดวส์"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:67
+msgid "SuperMount Volume"
+msgstr "โวลุม SuperMount"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:68
+msgid "DVD Volume"
+msgstr "โวลุม DVD"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:69
+msgid "Solaris/BSD Volume"
+msgstr "โวลุม Solaris/BSD"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:70
+msgid "Udfs Solaris Volume"
+msgstr "โวลุม Udfs ของ Solaris"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:71
+msgid "Pcfs Solaris Volume"
+msgstr "โวลุม Pcfs ของ Solaris"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:72
+msgid "Sun SAM-QFS Volume"
+msgstr "โวลุม SAM-QFS ของซัน"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:73
+msgid "Enhanced DOS Volume"
+msgstr "โวลุม DOS แบบปรับปรุง"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:74
+msgid "Windows VFAT Volume"
+msgstr "โวลุม VFAT ของวินโดวส์"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:75
+msgid "Xenix Volume"
+msgstr "โวลุม Xenix"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:76
+msgid "XFS Linux Volume"
+msgstr "โวลุม XFS ของลินุกซ์"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:77
+msgid "XIAFS Volume"
+msgstr "โวลุม XIAFS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:78
+msgid "CIFS Volume"
+msgstr "โวลุม CIFS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:106
+msgid "Unknown"
+msgstr "ไม่รู้จัก"
+
+#: libgnomevfs/gnome-vfs-job.c:734
+#, c-format
+msgid "Unknown operation type %u"
+msgstr "ไม่รู้จักปฏิบัติการชนิด %u"
+
+#: libgnomevfs/gnome-vfs-job.c:1025 libgnomevfs/gnome-vfs-job.c:1176
+#, c-format
+msgid "Cannot create pipe for open GIOChannel: %s"
+msgstr "ไม่สามารถสร้างไปป์สำหรับเปิด GIOChannel: %s"
+
+#: libgnomevfs/gnome-vfs-job.c:1699
+#, c-format
+msgid "Unknown job kind %u"
+msgstr "ไม่รู้จักงานชนิด %u"
+
+#: libgnomevfs/gnome-vfs-job.c:1732
+msgid "Operation stopped"
+msgstr "หยุดปฏิบัติแล้ว"
+
+#: libgnomevfs/gnome-vfs-mime-handlers.c:108
+#: libgnomevfs/gnome-vfs-mime-handlers.c:275
+#: libgnomevfs/gnome-vfs-mime-handlers.c:326
+#: libgnomevfs/gnome-vfs-mime-handlers.c:622
+#: libgnomevfs/gnome-vfs-mime-handlers.c:643
+#: libgnomevfs/gnome-vfs-mime-handlers.c:663
+#: libgnomevfs/gnome-vfs-mime-handlers.c:684
+#: libgnomevfs/gnome-vfs-mime-handlers.c:705
+#: libgnomevfs/gnome-vfs-mime-handlers.c:856
+#: libgnomevfs/gnome-vfs-mime-handlers.c:880
+#: libgnomevfs/gnome-vfs-mime-handlers.c:901
+#: libgnomevfs/gnome-vfs-mime-handlers.c:922
+#: libgnomevfs/gnome-vfs-mime-handlers.c:979
+#: libgnomevfs/gnome-vfs-mime-handlers.c:998
+#: libgnomevfs/gnome-vfs-mime-handlers.c:1017
+#: libgnomevfs/gnome-vfs-mime-handlers.c:1037
+#: libgnomevfs/gnome-vfs-mime-handlers.c:1057
+#: libgnomevfs/gnome-vfs-mime-info.c:646
+#: libgnomevfs/gnome-vfs-mime-info.c:653
+#: libgnomevfs/gnome-vfs-mime-info.c:661
+#: libgnomevfs/gnome-vfs-mime-info.c:668
+#: libgnomevfs/gnome-vfs-mime-info.c:676
+#: libgnomevfs/gnome-vfs-mime-info.c:693
+#: libgnomevfs/gnome-vfs-mime-info.c:700
+#: libgnomevfs/gnome-vfs-mime-info.c:707
+#: libgnomevfs/gnome-vfs-mime-info.c:714
+#: libgnomevfs/gnome-vfs-mime-info.c:722
+#: libgnomevfs/gnome-vfs-mime-info.c:729
+msgid ""
+"Deprecated function.  User modifications to the MIME database are no longer "
+"supported."
+msgstr "ฟังก์ชันเลิกใช้แล้ว  ไม่รองรับการแก้ไขฐานข้อมูล MIME อีกต่อไป"
+
+#: libgnomevfs/gnome-vfs-parse-ls.c:666
+#, c-format
+msgid "Could not parse: %s"
+msgstr "ไม่สามารถแบ่งคำ: %s"
+
+#: libgnomevfs/gnome-vfs-parse-ls.c:668
+msgid "More parsing errors will be ignored."
+msgstr "จะไม่สนใจข้อผิดพลาดในการแบ่งคำที่เหลือ"
+
+#. GNOME_VFS_OK
+#: libgnomevfs/gnome-vfs-result.c:42
+msgid "No error"
+msgstr "ไม่มีข้อผิดพลาด"
+
+#. GNOME_VFS_ERROR_NOT_FOUND
+#: libgnomevfs/gnome-vfs-result.c:43
+msgid "File not found"
+msgstr "ไม่พบแฟ้ม"
+
+#. GNOME_VFS_ERROR_GENERIC
+#: libgnomevfs/gnome-vfs-result.c:44
+msgid "Generic error"
+msgstr "เกิดข้อผิดพลาดทั่วไป"
+
+#. GNOME_VFS_ERROR_INTERNAL
+#: libgnomevfs/gnome-vfs-result.c:45
+msgid "Internal error"
+msgstr "เกิดข้อผิดพลาดภายใน"
+
+#. GNOME_VFS_ERROR_BAD_PARAMETERS
+#: libgnomevfs/gnome-vfs-result.c:46
+msgid "Invalid parameters"
+msgstr "พารามิเตอร์ใช้ไม่ได้"
+
+#. GNOME_VFS_ERROR_NOT_SUPPORTED
+#: libgnomevfs/gnome-vfs-result.c:47
+msgid "Unsupported operation"
+msgstr "ไม่รองรับปฏิบัติการนี้"
+
+#. GNOME_VFS_ERROR_IO
+#: libgnomevfs/gnome-vfs-result.c:48
+msgid "I/O error"
+msgstr "ผิดพลาดเกี่ยวกับ I/O"
+
+#. GNOME_VFS_ERROR_CORRUPTED_DATA
+#: libgnomevfs/gnome-vfs-result.c:49
+msgid "Data corrupted"
+msgstr "ข้อมูลเสีย"
+
+#. GNOME_VFS_ERROR_WRONG_FORMAT
+#: libgnomevfs/gnome-vfs-result.c:50
+msgid "Format not valid"
+msgstr "รูปแบบใช้ไม่ได้"
+
+#. GNOME_VFS_ERROR_BAD_FILE
+#: libgnomevfs/gnome-vfs-result.c:51
+msgid "Bad file handle"
+msgstr "ไฟล์แฮนเดิลเสีย"
+
+#. GNOME_VFS_ERROR_TOO_BIG
+#: libgnomevfs/gnome-vfs-result.c:52
+msgid "File too big"
+msgstr "แฟ้มใหญ่เกินไป"
+
+#. GNOME_VFS_ERROR_NO_SPACE
+#: libgnomevfs/gnome-vfs-result.c:53
+msgid "No space left on device"
+msgstr "ไม่เหลือที่ว่างบนอุปกรณ์"
+
+#. GNOME_VFS_ERROR_READ_ONLY
+#: libgnomevfs/gnome-vfs-result.c:54
+msgid "Read-only file system"
+msgstr "ระบบแฟ้มอ่านได้เท่านั้น"
+
+#. GNOME_VFS_ERROR_INVALID_URI
+#: libgnomevfs/gnome-vfs-result.c:55
+msgid "Invalid URI"
+msgstr "URI ใช้ไม่ได้"
+
+#. GNOME_VFS_ERROR_NOT_OPEN
+#: libgnomevfs/gnome-vfs-result.c:56
+msgid "File not open"
+msgstr "แฟ้มไม่ได้เปิดอยู่"
+
+#. GNOME_VFS_ERROR_INVALID_OPEN_MODE
+#: libgnomevfs/gnome-vfs-result.c:57
+msgid "Open mode not valid"
+msgstr "โหมดการเปิดใช้ไม่ได้"
+
+#. GNOME_VFS_ERROR_ACCESS_DENIED
+#: libgnomevfs/gnome-vfs-result.c:58
+msgid "Access denied"
+msgstr "ถูกปฏิเสธการเข้าใช้"
+
+#. GNOME_VFS_ERROR_TOO_MANY_OPEN_FILES
+#: libgnomevfs/gnome-vfs-result.c:59
+msgid "Too many open files"
+msgstr "มีแฟ้มเปิดอยู่มากเกินไป"
+
+#. GNOME_VFS_ERROR_EOF
+#: libgnomevfs/gnome-vfs-result.c:60
+msgid "End of file"
+msgstr "จบแฟ้ม"
+
+#. GNOME_VFS_ERROR_NOT_A_DIRECTORY
+#: libgnomevfs/gnome-vfs-result.c:61
+msgid "Not a directory"
+msgstr "ไม่ใช่โฟลเดอร์"
+
+#. GNOME_VFS_ERROR_IN_PROGRESS
+#: libgnomevfs/gnome-vfs-result.c:62
+msgid "Operation in progress"
+msgstr "กำลังดำเนินการ"
+
+#. GNOME_VFS_ERROR_INTERRUPTED
+#: libgnomevfs/gnome-vfs-result.c:63
+msgid "Operation interrupted"
+msgstr "ปฏิบัติการถูกขัดจังหวะ"
+
+#. GNOME_VFS_ERROR_FILE_EXISTS
+#: libgnomevfs/gnome-vfs-result.c:64
+msgid "File exists"
+msgstr "แฟ้มมีอยู่แล้ว"
+
+#. GNOME_VFS_ERROR_LOOP
+#: libgnomevfs/gnome-vfs-result.c:65
+msgid "Looping links encountered"
+msgstr "จุดเชื่อมวนรอบกลับมาหาตัวเอง"
+
+#. GNOME_VFS_ERROR_NOT_PERMITTED
+#: libgnomevfs/gnome-vfs-result.c:66
+msgid "Operation not permitted"
+msgstr "ปฏิบัติการนี้ไม่อนุญาต"
+
+#. GNOME_VFS_ERROR_IS_DIRECTORY
+#: libgnomevfs/gnome-vfs-result.c:67
+msgid "Is a directory"
+msgstr "เป็นโฟลเดอร์"
+
+#. GNOME_VFS_ERROR_NO_MEMORY
+#: libgnomevfs/gnome-vfs-result.c:68
+msgid "Not enough memory"
+msgstr "หน่วยความจำไม่พอ"
+
+#. GNOME_VFS_ERROR_HOST_NOT_FOUND
+#: libgnomevfs/gnome-vfs-result.c:69
+msgid "Host not found"
+msgstr "ไม่พบโฮสต์"
+
+#. GNOME_VFS_ERROR_INVALID_HOST_NAME
+#: libgnomevfs/gnome-vfs-result.c:70
+msgid "Host name not valid"
+msgstr "ชื่อโฮสต์ไม่ถูกต้อง"
+
+#. GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS
+#: libgnomevfs/gnome-vfs-result.c:71
+msgid "Host has no address"
+msgstr "โฮสต์นี้ไม่มีที่อยู่"
+
+#. GNOME_VFS_ERROR_LOGIN_FAILED
+#: libgnomevfs/gnome-vfs-result.c:72
+msgid "Login failed"
+msgstr "เข้าระบบไม่สำเร็จ"
+
+#. GNOME_VFS_ERROR_CANCELLED
+#: libgnomevfs/gnome-vfs-result.c:73
+msgid "Operation cancelled"
+msgstr "ปฏิบัติการถูกยกเลิก"
+
+#. GNOME_VFS_ERROR_DIRECTORY_BUSY
+#: libgnomevfs/gnome-vfs-result.c:74
+msgid "Directory busy"
+msgstr "โฟลเดอร์ยุ่งอยู่"
+
+#. GNOME_VFS_ERROR_DIRECTORY_NOT_EMPTY
+#: libgnomevfs/gnome-vfs-result.c:75
+msgid "Directory not empty"
+msgstr "โฟลเดอร์ไม่ว่าง"
+
+# See docs for EMLINK -- This file has too many hard links.
+#. GNOME_VFS_ERROR_TOO_MANY_LINKS
+#: libgnomevfs/gnome-vfs-result.c:76
+msgid "Too many links"
+msgstr "แฟ้มนี้มีฮาร์ดลิงก์มากเกินไป"
+
+#. GNOME_VFS_ERROR_READ_ONLY_FILE_SYSTEM
+#: libgnomevfs/gnome-vfs-result.c:77
+msgid "Read only file system"
+msgstr "ระบบแฟ้มอ่านได้เท่านั้น"
+
+#. GNOME_VFS_ERROR_NOT_SAME_FILE_SYSTEM
+#: libgnomevfs/gnome-vfs-result.c:78
+msgid "Not on the same file system"
+msgstr "ไม่ได้อยู่ระบบแฟ้มเดียวกัน"
+
+#. GNOME_VFS_ERROR_NAME_TOO_LONG
+#: libgnomevfs/gnome-vfs-result.c:79
+msgid "Name too long"
+msgstr "ชื่อยาวไป"
+
+#. GNOME_VFS_ERROR_SERVICE_NOT_AVAILABLE
+#: libgnomevfs/gnome-vfs-result.c:80
+msgid "Service not available"
+msgstr "บริการไม่มีให้ใช้"
+
+#. GNOME_VFS_ERROR_SERVICE_OBSOLETE
+#: libgnomevfs/gnome-vfs-result.c:81
+msgid "Request obsoletes service's data"
+msgstr "ร้องขอข้อมูลของบริการที่ล้าสมัย"
+
+#. GNOME_VFS_ERROR_PROTOCOL_ERROR
+#: libgnomevfs/gnome-vfs-result.c:82
+msgid "Protocol error"
+msgstr "โพรโตคอลผิดพลาด"
+
+#. GNOME_VFS_ERROR_NO_MASTER_BROWSER
+#: libgnomevfs/gnome-vfs-result.c:83
+msgid "Could not find master browser"
+msgstr "ไม่พบตัวเรียกดูหลัก"
+
+#. GNOME_VFS_ERROR_NO_DEFAULT
+#: libgnomevfs/gnome-vfs-result.c:84
+msgid "No default action associated"
+msgstr "ไม่มีปฏิบัติการกำหนดไว้ใช้"
+
+#. GNOME_VFS_ERROR_NO_HANDLER
+#: libgnomevfs/gnome-vfs-result.c:85
+msgid "No handler for URL scheme"
+msgstr "ไม่มีตัวจัดการ URL ชนิดนี้"
+
+#. GNOME_VFS_ERROR_PARSE
+#: libgnomevfs/gnome-vfs-result.c:86
+msgid "Error parsing command line"
+msgstr "แบ่งคำในคำสั่งไม่สำเร็จ"
+
+#. GNOME_VFS_ERROR_LAUNCH
+#: libgnomevfs/gnome-vfs-result.c:87
+msgid "Error launching command"
+msgstr "เรียกใช้คำสั่งไม่สำเร็จ"
+
+#. GNOME_VFS_ERROR_TIMEOUT
+#: libgnomevfs/gnome-vfs-result.c:88 libgnomevfs/gnome-vfs-result.c:90
+msgid "Timeout reached"
+msgstr "หมดเวลาคอย"
+
+#. GNOME_VFS_ERROR_NAMESERVER
+#: libgnomevfs/gnome-vfs-result.c:89
+msgid "Nameserver error"
+msgstr "เกิดข้อผิดพลาดกับ name server"
+
+#. GNOME_VFS_ERROR_LOCKED
+#: libgnomevfs/gnome-vfs-result.c:91
+msgid "The resource is locked"
+msgstr "ทรัพยากรถูกล็อคอยู่"
+
+#. GNOME_VFS_ERROR_DEPRECATED_FUNCTION
+#: libgnomevfs/gnome-vfs-result.c:92
+msgid "Function call deprecated"
+msgstr "ฟังก์ชันเลิกใช้แล้ว"
+
+#: libgnomevfs/gnome-vfs-result.c:217
+msgid "Unknown error"
+msgstr "ข้อผิดพลาดที่ไม่รู้จัก"
+
+#: libgnomevfs/gnome-vfs-utils.c:78
+#, c-format
+msgid "%u byte"
+msgid_plural "%u bytes"
+msgstr[0] "%u ไบต์"
+msgstr[1] "%u ไบต์"
+
+#: libgnomevfs/gnome-vfs-utils.c:84
+#, c-format
+msgid "%.1f KB"
+msgstr "%.1f KB"
+
+#: libgnomevfs/gnome-vfs-utils.c:88
+#, c-format
+msgid "%.1f MB"
+msgstr "%.1f MB"
+
+#: libgnomevfs/gnome-vfs-utils.c:92
+#, c-format
+msgid "%.1f GB"
+msgstr "%.1f GB"
+
+#: libgnomevfs/gnome-vfs-utils.c:1096
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:381
+msgid " (invalid Unicode)"
+msgstr " (ยูนิโค้ดที่ใช้ไม่ได้)"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:563
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:619
+msgid "Floppy"
+msgstr "ฟลอปปี้"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:564
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:622
+msgid "CD-ROM"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:566
+msgid "CD-R"
+msgstr "CD-R"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:567
+msgid "CD-RW"
+msgstr "CD-RW"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:568
+msgid "DVD-ROM"
+msgstr "DVD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:569
+msgid "DVD-RAM"
+msgstr "DVD-RAM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:570
+msgid "DVD-R"
+msgstr "DVD-R"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:571
+msgid "DVD-RW"
+msgstr "DVD-RW"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:572
+msgid "CD-ROM/DVD-ROM"
+msgstr "CD-ROM/DVD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:573
+msgid "CD-ROM/DVD-RAM"
+msgstr "CD-ROM/DVD-RAM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:574
+msgid "CD-ROM/DVD-R"
+msgstr "CD-ROM/DVD-R"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:575
+msgid "CD-ROM/DVD-RW"
+msgstr "CD-ROM/DVD-RW"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:576
+msgid "CD-R/DVD-ROM"
+msgstr "CD-R/DVD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:577
+msgid "CD-R/DVD-RAM"
+msgstr "CD-R/DVD-RAM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:578
+msgid "CD-R/DVD-R"
+msgstr "CD-R/DVD-R"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:579
+msgid "CD-R/DVD-RW"
+msgstr "CD-R/DVD-RW"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:580
+msgid "CD-RW/DVD-ROM"
+msgstr "CD-RW/DVD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:581
+msgid "CD-RW/DVD-RAM"
+msgstr "CD-RW/DVD-RAM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:582
+msgid "CD-RW/DVD-R"
+msgstr "CD-RW/DVD-R"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:583
+msgid "CD-RW/DVD-RW"
+msgstr "CD-RW/DVD-RW"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:585
+msgid "Disk"
+msgstr "ดิสก์"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:586
+msgid "USB Drive"
+msgstr "ไดรฟ์ USB"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:587
+msgid "IEEE1394 Drive"
+msgstr "ไดรฟ์ IEEE 1394"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:588
+msgid "CF"
+msgstr "CF"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:589
+msgid "SD/MMC"
+msgstr "SD/MMC"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:590
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:594
+msgid "Memory Stick"
+msgstr "Memory Stick"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:591
+msgid "Smart Media"
+msgstr "Smart Media"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:593
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:625
+msgid "Zip Drive"
+msgstr "ไดรฟ์ Zip"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:595
+msgid "Camera"
+msgstr "กล้อง"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:596
+msgid "DVD"
+msgstr "DVD"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:836
+msgid "Root Volume"
+msgstr "โวลุม root"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:917
+msgid "Audio CD"
+msgstr "ซีดีเพลง"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:950
+msgid "Unknown volume"
+msgstr "โวลุมไม่รู้จัก"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:1155
+msgid "Network server"
+msgstr "เซิร์ฟเวอร์เครือข่าย"
+
+#. Handle floppy case
+#: libgnomevfs/gnome-vfs-volume-ops.c:125
+msgid ""
+"Unable to mount the floppy drive. There is probably no floppy in the drive."
+msgstr "เมานท์ฟลอปปี้ไม่สำเร็จ อาจจะไม่มีแผ่นอยู่ไม่ตัวอ่าน"
+
+#. All others
+#: libgnomevfs/gnome-vfs-volume-ops.c:129
+msgid "Unable to mount the volume. There is probably no media in the device."
+msgstr "เมานท์โวลุมนี้ไม่สำเร็จ อาจจะไม่มีแผ่นอยู่ไม่ตัวอ่าน"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:135
+msgid ""
+"Unable to mount the floppy drive. The floppy is probably in a format that "
+"cannot be mounted."
+msgstr "เมานท์ฟลอปปี้ไม่สำเร็จ แผ่นอาจจะใช้รูปแบบจัดเก็บที่ไม่รู้จัก"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:138
+msgid ""
+"Unable to mount the selected volume. The volume is probably in a format that "
+"cannot be mounted."
+msgstr "เมานท์โวลุมนี้ไม่สำเร็จ แผ่นอาจจะใช้รูปแบบจัดเก็บที่ไม่รู้จัก"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:143
+msgid "Unable to mount the selected floppy drive."
+msgstr "เมานท์ไดรฟ์ฟลอปปี้ที่เลือกไม่สำเร็จ"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:145
+msgid "Unable to mount the selected volume."
+msgstr "เมานท์โวลุมที่เลือกไม่สำเร็จ"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:157
+msgid "Unable to unmount the selected volume."
+msgstr "เลิกเมานท์โวลุมที่เลือกไม่สำเร็จ"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:290
+#: libgnomevfs/gnome-vfs-volume-ops.c:357
+msgid "Failed to start command"
+msgstr "เรียกใช้คำสั่งไม่สำเร็จ"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:345
+msgid "Unable to eject media"
+msgstr "ดันแผ่นออกไม่สำเร็จ"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:573
+msgid "Unable to unmount connected server"
+msgstr "เลิกเมานท์เซิร์ฟเวอร์ที่ต่ออยู่ไม่สำเร็จ"
+
+#: modules/computer-method.c:546
+msgid "Network"
+msgstr "เครือข่าย"
+
+#: modules/computer-method.c:564
+msgid "Home"
+msgstr "บ้าน"
+
+#: modules/computer-method.c:582
+msgid "Filesystem"
+msgstr "ระบบแฟ้ม"
+
+#: modules/file-method.c:536
+#, c-format
+msgid "Unknown GnomeVFSSeekPosition %d"
+msgstr "ไม่รู้จัก GnomeVFSSeekPosition %d"
+
+#: modules/network-method.c:1399
+msgid "Windows Network"
+msgstr "เครือข่ายวินโดวส์"
+
+#: modules/sftp-method.c:1314
+#, c-format
+msgid "The identity of the remote computer (%s) is unknown."
+msgstr "ไม่สามารถจำแนกเอกลักษณ์ของเครื่องฝั่งโน้น (%s) ได้"
+
+#: modules/sftp-method.c:1315
+#, c-format
+msgid ""
+"This happens when you log in to a computer the first time.\n"
+"\n"
+"The identity sent by the remote computer is %s. If you want to be absolutely "
+"sure it is safe to continue, contact the system administrator."
+msgstr ""
+"เหตุการณ์นี้จะเกิดเมื่อคุณเข้าระบบไปยังคอมพิวเตอร์ฝั่งโน้นเป็นครั้งแรก\n"
+"\n"
+"ข้อความบอกเอกลักษณ์ที่เครื่องฝั่งโน้นส่งมาคือ \"%s\"  "
+"ถ้าคุณต้องการมั่นใจว่าปลอดภัยที่จะดำเนินการต่อ กรุณาติดต่อผู้ดูแลระบบ"
+
+#: modules/sftp-method.c:1323
+msgid "Log In Anyway"
+msgstr "เข้าระบบต่อไป"
+
+#: modules/sftp-method.c:1324
+msgid "Cancel Login"
+msgstr "ยกเลิกการเข้าระบบ"
+
+#. FIXME: we probably shouldn't use printf to output the message
+#: modules/test-method.c:587
+#, c-format
+msgid "Didn't find a valid settings file at %s\n"
+msgstr "ไม่พบแฟ้มปรับแต่งที่ใช้ได้ใน %s\n"
+
+#: modules/test-method.c:589
+#, c-format
+msgid "Use the %s environment variable to specify a different location.\n"
+msgstr "ใช้ตัวแปรแวดล้อม %s ถ้าต้องการกำหนดเป็นตำแหน่งอื่น\n"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:1
+msgid "Standard Moniker factory"
+msgstr "โรงงาน Moniker มาตรฐาน"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:2
+msgid "file MonikerExtender"
+msgstr ""
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:3
+msgid "generic Gnome VFS moniker"
+msgstr ""
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:4
+msgid "generic file moniker"
+msgstr ""
+
+#: schemas/desktop_default_applications.schemas.in.h:1
+msgid "Default component viewer application"
+msgstr "โปรแกรมตัวแสดงปริยาย"
+
+#: schemas/desktop_default_applications.schemas.in.h:2
+msgid "Default terminal application"
+msgstr "โปรแกรมเทอร์มินัลปริยาย"
+
+#: schemas/desktop_default_applications.schemas.in.h:3
+msgid "Exec argument for default terminal"
+msgstr "อาร์กิวเมนต์ exec สำหรับเทอร์มินัลปริยาย"
+
+#: schemas/desktop_default_applications.schemas.in.h:5
+#, no-c-format
+msgid ""
+"The application to use for viewing files that require a component to view "
+"them. The parameter %s will be replaced by the file's URIs, the parameter %c "
+"will be replaced by the component IID."
+msgstr ""
+"โปรแกรมแสดง แฟ้มที่ต้องใช้คอมโพเนนต์แสดง %s จะถูกแทนที่ด้วย URI ของแฟ้ม และ %c "
+"จะถูกแทนที่ด้วย IID ของคอมโพเนนต์"
+
+#: schemas/desktop_default_applications.schemas.in.h:6
+msgid ""
+"The default terminal application to use for applications that require a "
+"terminal."
+msgstr "โปรแกรมเทอร์มินัลปริยาย ไว้ใช้สำหรับ โปรแกรมที่ต้องใช้เทอร์มินัล"
+
+#: schemas/desktop_default_applications.schemas.in.h:7
+msgid "The exec argument to use for the default terminal application."
+msgstr "อาร์กิวเมนต์สำหรับโปรแกรมเทอร์มินัลปริยาย"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:1
+msgid "Run the command in a terminal"
+msgstr "เรียกใช้โปรแกรมในเทอร์มินัล"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:2
+msgid "The command used to handle \"aim\" URLs, if enabled."
+msgstr "คำสั่งสำหรับจัดการ URL ชนิด aim (ถ้าเปิดใช้)"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:3
+msgid "The command used to handle \"callto\" URLs, if enabled."
+msgstr "คำสั่งสำหรับจัดการ URL ชนิด callto (ถ้าเปิดใช้)"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:4
+msgid "The command used to handle \"ghelp\" URLs, if enabled."
+msgstr "คำสั่งสำหรับจัดการ URL ชนิด ghelp (ถ้าเปิดใช้)"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:5
+msgid "The command used to handle \"h323\" URLs, if enabled."
+msgstr "คำสั่งสำหรับจัดการ URL ชนิด h323 (ถ้าเปิดใช้)"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:6
+msgid "The command used to handle \"http\" URLs, if enabled."
+msgstr "คำสั่งสำหรับจัดการ URL ชนิด http (ถ้าเปิดใช้)"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:7
+msgid "The command used to handle \"https\" URLs, if enabled."
+msgstr "คำสั่งสำหรับจัดการ URL ชนิด https (ถ้าเปิดใช้)"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:8
+msgid "The command used to handle \"info\" URLs, if enabled."
+msgstr "คำสั่งสำหรับจัดการ URL ชนิด info (ถ้าเปิดใช้)"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:9
+msgid "The command used to handle \"mailto\" URLs, if enabled."
+msgstr "คำสั่งสำหรับจัดการ URL ชนิด mailto (ถ้าเปิดใช้)"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:10
+msgid "The command used to handle \"man\" URLs, if enabled."
+msgstr "คำสั่งสำหรับจัดการ URL ชนิด man (ถ้าเปิดใช้)"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:11
+msgid "The command used to handle \"trash\" URLs, if enabled."
+msgstr "คำสั่งสำหรับจัดการ URL ชนิด trash (ถ้าเปิดใช้)"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:12
+msgid "The handler for \"aim\" URLs"
+msgstr "คำสั่งจัดการ URL ชนิด aim"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:13
+msgid "The handler for \"callto\" URLs"
+msgstr "คำสั่งจัดการ URL ชนิด callto"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:14
+msgid "The handler for \"ghelp\" URLs"
+msgstr "คำสั่งจัดการ URL ชนิด ghelp"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:15
+msgid "The handler for \"h323\" URLs"
+msgstr "คำสั่งจัดการ URL ชนิด h323"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:16
+msgid "The handler for \"http\" URLs"
+msgstr "คำสั่งจัดการ URL ชนิด http"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:17
+msgid "The handler for \"https\" URLs"
+msgstr "คำสั่งจัดการ URL ชนิด https"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:18
+msgid "The handler for \"info\" URLs"
+msgstr "คำสั่งจัดการ URL ชนิด info"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:19
+msgid "The handler for \"mailto\" URLs"
+msgstr "คำสั่งจัดการ URL ชนิด mailto"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:20
+msgid "The handler for \"man\" URLs"
+msgstr "คำสั่งจัดการ URL ชนิด man"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:21
+msgid "The handler for \"trash\" URLs"
+msgstr "คำสั่งจัดการ URL ชนิด trash"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:22
+msgid ""
+"True if the command specified in the \"command\" key should handle \"aim\" "
+"URLs."
+msgstr "ตั้งเป็นค่าจริงถ้าต้องการให้โปรแกรมในคีย์ \"command\" จัดการ URL ชนิด aim"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:23
+msgid ""
+"True if the command specified in the \"command\" key should handle \"callto"
+"\" URLs."
+msgstr "ตั้งเป็นค่าจริงถ้าต้องการให้โปรแกรมในคีย์ \"command\" จัดการ URL ชนิด callto"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:24
+msgid ""
+"True if the command specified in the \"command\" key should handle \"ghelp\" "
+"URLs."
+msgstr "ตั้งเป็นค่าจริงถ้าต้องการให้โปรแกรมในคีย์ \"command\" จัดการ URL ชนิด ghelp"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:25
+msgid ""
+"True if the command specified in the \"command\" key should handle \"h323\" "
+"URLs."
+msgstr "ตั้งเป็นค่าจริงถ้าต้องการให้โปรแกรมในคีย์ \"command\" จัดการ URL ชนิด h323"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:26
+msgid ""
+"True if the command specified in the \"command\" key should handle \"http\" "
+"URLs."
+msgstr "ตั้งเป็นค่าจริงถ้าต้องการให้โปรแกรมในคีย์ \"command\" จัดการ URL ชนิด http"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:27
+msgid ""
+"True if the command specified in the \"command\" key should handle \"https\" "
+"URLs."
+msgstr "ตั้งเป็นค่าจริงถ้าต้องการให้โปรแกรมในคีย์ \"command\" จัดการ URL ชนิด https"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:28
+msgid ""
+"True if the command specified in the \"command\" key should handle \"info\" "
+"URLs."
+msgstr "ตั้งเป็นค่าจริงถ้าต้องการให้โปรแกรมใน \"command\" จัดการ URL ชนิด info"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:29
+msgid ""
+"True if the command specified in the \"command\" key should handle \"mailto"
+"\" URLs."
+msgstr "ตั้งเป็นค่าจริงถ้าต้องการให้โปรแกรมในคีย์ \"command\" จัดการ URL ชนิด mailto"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:30
+msgid ""
+"True if the command specified in the \"command\" key should handle \"man\" "
+"URLs."
+msgstr "ตั้งเป็นค่าจริงถ้าต้องการให้โปรแกรมในคีย์ \"command\" จัดการ URL ชนิด man"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:31
+msgid ""
+"True if the command specified in the \"command\" key should handle \"trash\" "
+"URLs."
+msgstr "ตั้งเป็นค่าจริงถ้าต้องการให้โปรแกรมในคีย์ \"command\" จัดการ URL ชนิด trash"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:32
+msgid ""
+"True if the command used to handle this type of URL should be run in a "
+"terminal."
+msgstr "ตั้งเป็นค่าจริงถ้าโปรแกรมที่จัดการ URL นี้ควรถูกเรียกใช้ในเทอร์มินัล"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:33
+msgid "Whether the specified command should handle \"aim\" URLs"
+msgstr "กำหนดให้คำสั่งนี้จัดการ URL ชนิด aim"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:34
+msgid "Whether the specified command should handle \"callto\" URLs"
+msgstr "กำหนดให้คำสั่งนี้จัดการ URL ชนิด callto"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:35
+msgid "Whether the specified command should handle \"ghelp\" URLs"
+msgstr "กำหนดให้คำสั่งนี้จัดการ URL ชนิด ghelp"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:36
+msgid "Whether the specified command should handle \"h323\" URLs"
+msgstr "กำหนดให้คำสั่งนี้จัดการ URL ชนิด h323"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:37
+msgid "Whether the specified command should handle \"http\" URLs"
+msgstr "กำหนดให้คำสั่งนี้จัดการ URL ชนิด http"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:38
+msgid "Whether the specified command should handle \"https\" URLs"
+msgstr "กำหนดให้คำสั่งนี้จัดการ URL ชนิด https"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:39
+msgid "Whether the specified command should handle \"info\" URLs"
+msgstr "กำหนดให้คำสั่งนี้จัดการ URL ชนิด info"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:40
+msgid "Whether the specified command should handle \"mailto\" URLs"
+msgstr "กำหนดให้คำสั่งนี้จัดการ URL ชนิด mailto"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:41
+msgid "Whether the specified command should handle \"man\" URLs"
+msgstr "กำหนดให้คำสั่งนี้จัดการ URL ชนิด man"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:42
+msgid "Whether the specified command should handle \"trash\" URLs"
+msgstr "กำหนดให้คำสั่งนี้จัดการ URL ชนิด trash"
+
+#: schemas/system_dns_sd.schemas.in.h:1
+msgid ""
+"Comma separated list of DNS-SD domains that should be visible in the "
+"\"network:///\" location."
+msgstr "รายการโดเมน DNS-SD (คั่นด้วยจุลภาค) ที่น่าจะมองเห็นได้ในตำแหน่ง \"network:///\""
+
+#: schemas/system_dns_sd.schemas.in.h:2
+msgid "Extra domains to look for DNS-SD services in"
+msgstr "โดเมนเพิ่มเติมที่จะมองหาบริการ DNS-SD"
+
+#: schemas/system_dns_sd.schemas.in.h:3
+msgid "How to display local DNS-SD service"
+msgstr "วิธีแสดงผลบริการ DNS-SD ในเครือข่ายท้องถิ่น"
+
+#: schemas/system_dns_sd.schemas.in.h:4
+msgid "Possible values are \"merged\", \"separate\" and \"disabled\"."
+msgstr "ค่าที่เป็นไปได้คือ \"merged\", \"separate\" และ \"disabled\""
+
+#: schemas/system_http_proxy.schemas.in.h:1
+msgid "Authenticate proxy server connections"
+msgstr "ตรวจสอบสิทธิ์ก่อนใช้พร็อกซี"
+
+#: schemas/system_http_proxy.schemas.in.h:2
+msgid "Automatic proxy configuration URL"
+msgstr "URL สำหรับตั้งค่าพร็อกซีโดยอัตโนมัติ"
+
+#: schemas/system_http_proxy.schemas.in.h:3
+msgid "Enables the proxy settings when accessing HTTP over the Internet."
+msgstr "ใช้ค่าพร็อกซีที่ตั้งไว้เวลาใช้ HTTP บนอินเทอร์เน็ต"
+
+#: schemas/system_http_proxy.schemas.in.h:4
+msgid "FTP proxy host name"
+msgstr "ชื่อโฮสต์พร็อกซี FTP"
+
+#: schemas/system_http_proxy.schemas.in.h:5
+msgid "FTP proxy port"
+msgstr "พอร์ตพร็อกซี FTP"
+
+#: schemas/system_http_proxy.schemas.in.h:6
+msgid "HTTP proxy host name"
+msgstr "ชื่อโฮสต์พร็อกซี HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:7
+msgid "HTTP proxy password"
+msgstr "รหัสผ่านพร็อกซี HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:8
+msgid "HTTP proxy port"
+msgstr "พอร์ตพร็อกซี HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:9
+msgid "HTTP proxy username"
+msgstr "ชื่อบัญชีผู้ใช้พร็อกซี HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:10
+msgid ""
+"If true, then connections to the proxy server require authentication. The "
+"username/password combo is defined by \"/system/http_proxy/"
+"authentication_user\" and \"/system/http_proxy/authentication_password\"."
+msgstr ""
+"ถ้าตั้งเป็นค่าจริง การเชื่อมต่อผ่านพร็อกซีจะต้องผ่านการตรวจสอบสิทธิ์ก่อน "
+"ชื่อผู้ใช้และรหัสผ่านเอามาจาก \"/system/http_proxy/authentication_user\" และ \"/"
+"system/http_proxy/authentication_password\""
+
+#: schemas/system_http_proxy.schemas.in.h:11
+msgid "Non-proxy hosts"
+msgstr "โอสต์ที่ไม่ติดต่อผ่านพร็อกซี"
+
+#: schemas/system_http_proxy.schemas.in.h:12
+msgid "Password to pass as authentication when doing HTTP proxying."
+msgstr "รหัสผ่านสำหรับการตรวจสอบสิทธิ์ใช้พร็อกซี HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:13
+msgid "Proxy configuration mode"
+msgstr "โหมดการตั้งค่าพร็อกซี"
+
+#: schemas/system_http_proxy.schemas.in.h:14
+msgid "SOCKS proxy host name"
+msgstr "ชื่อโฮสต์พร็อกซี SOCKS"
+
+#: schemas/system_http_proxy.schemas.in.h:15
+msgid "SOCKS proxy port"
+msgstr "พอร์ตพร็อกซี SOCKS"
+
+#: schemas/system_http_proxy.schemas.in.h:16
+msgid "Secure HTTP proxy host name"
+msgstr "ชื่อโฮสต์พร็อกซี Secure HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:17
+msgid "Secure HTTP proxy port"
+msgstr "พอร์ตพร็อกซี Secure HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:18
+msgid ""
+"Select the proxy configuration mode. Supported values are \"none\", \"manual"
+"\", \"auto\"."
+msgstr "เลือกโหมดการตั้งค่าพร็อกซี สามารถตั้งเป็น \"none\", \"manual\", \"auto\""
+
+#: schemas/system_http_proxy.schemas.in.h:19
+msgid "The machine name to proxy FTP through."
+msgstr "ชื่อเครื่องที่จะติดต่อ FTP ผ่าน"
+
+#: schemas/system_http_proxy.schemas.in.h:20
+msgid "The machine name to proxy HTTP through."
+msgstr "ชื่อเครื่องที่จะติดต่อ HTTP ผ่าน"
+
+#: schemas/system_http_proxy.schemas.in.h:21
+msgid "The machine name to proxy secure HTTP through."
+msgstr "ชื่อเครื่องที่จะติดต่อ Secure HTTP ผ่าน"
+
+#: schemas/system_http_proxy.schemas.in.h:22
+msgid "The machine name to proxy socks through."
+msgstr "ชื่อเครื่องที่จะติดต่อ socks ผ่าน"
+
+#: schemas/system_http_proxy.schemas.in.h:23
+msgid ""
+"The port on the machine defined by \"/system/http_proxy/host\" that you "
+"proxy through."
+msgstr "พอร์ตบนเครื่องที่ตั้งไว้ใน \"/system/http_proxy/host\" ที่จะใช้ติดต่อผ่าน"
+
+#: schemas/system_http_proxy.schemas.in.h:24
+msgid ""
+"The port on the machine defined by \"/system/proxy/ftp_host\" that you proxy "
+"through."
+msgstr "พอร์ตบนเครื่องที่ตั้งไว้ใน \"/system/proxy/ftp_host\" ที่จะใช้ติดต่อผ่าน"
+
+#: schemas/system_http_proxy.schemas.in.h:25
+msgid ""
+"The port on the machine defined by \"/system/proxy/secure_host\" that you "
+"proxy through."
+msgstr "พอร์ตบนเครื่องที่ตั้งไว้ใน \"/system/proxy/secure_host\" ที่จะใช้ติดต่อผ่าน"
+
+#: schemas/system_http_proxy.schemas.in.h:26
+msgid ""
+"The port on the machine defined by \"/system/proxy/socks_host\" that you "
+"proxy through."
+msgstr "พอร์ตบนเครื่องที่ตั้งไว้ใน \"/system/proxy/socks_host\" ที่จะใช้ติดต่อผ่าน"
+
+#: schemas/system_http_proxy.schemas.in.h:27
+msgid ""
+"This key contains a list of hosts which are connected to directly, rather "
+"than via the proxy (if it is active). The values can be hostnames, domains "
+"(using an initial wildcard like *.foo.com), IP host addresses (both IPv4 and "
+"IPv6) and network addresses with a netmask (something like 192.168.0.0/24)."
+msgstr ""
+"คีย์นี้เก็บรายชื่อโฮสต์ที่ให้ติดต่อโดยตรง แทนที่จะผ่านพร็อกซี (ถ้าเปิดทำงานอยู่)  สามารถตั้งเป็น "
+"ชื่อโฮสต์ โดเมน (ใช้ wildcard ข้างหน้าเช่น *.foo.com), ที่อยู่ IP (ทั้ง IPv4 และ IPv6) "
+"หรือที่อยู่บนเครือข่ายพร้อมกับ netmask (เช่น 192.168.0.0/24)"
+
+#: schemas/system_http_proxy.schemas.in.h:28
+msgid "URL that provides proxy configuration values."
+msgstr "URL ที่จัดส่งค่าตั้งพร็อกซี"
+
+#: schemas/system_http_proxy.schemas.in.h:29
+msgid "Use HTTP proxy"
+msgstr "ใช้พร็อกซี HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:30
+msgid "User name to pass as authentication when doing HTTP proxying."
+msgstr "ชื่อบัญชีผู้ใช้สำหรับตรวจสอบสิทธิ์กับพร็อกซี HTTP"
+
+#: schemas/system_smb.schemas.in.h:1
+msgid "SMB workgroup"
+msgstr "SMB workgroup"
+
+#: schemas/system_smb.schemas.in.h:2
+msgid ""
+"The Windows networking workgroup or domain that the user is part of. In "
+"order for a new workgroup to fully take effect the user may need to log out "
+"and log back in."
+msgstr ""
+"เวิร์กกรุปหรือโดเมนของเครือข่ายวินโดวส์ที่ผู้ใช้อาศัยอยู่ "
+"ผู้ใช้อาจต้องออกจากระบบแล้วเข้าใหม่เพื่อจะเริ่มใช้เวิร์กกรุปใหม่ได้"
+
+#: schemas/system_storage.schemas.in.h:1
+msgid "Display SCSI drives"
+msgstr "แสดงไดรฟ์ SCSI"
+
+#: schemas/system_storage.schemas.in.h:2
+msgid "Display SCSI optical drives"
+msgstr "แสดงไดรฟ์ซีดี/ดีวีดี SCSI"
+
+#: schemas/system_storage.schemas.in.h:3
+msgid "Display drives with removable media"
+msgstr "แสดงไดรฟ์ถอดเสียบ"
+
+#: schemas/system_storage.schemas.in.h:4
+msgid "Display external drives"
+msgstr "แสดงไดรฟ์ภายนอก"
+
+#: schemas/system_storage.schemas.in.h:5
+msgid "Display internal hard drives"
+msgstr "แสดงฮาร์ดดิสก์ภายใน"
+
+#: schemas/system_storage.schemas.in.h:6
+msgid ""
+"Whether to display SCSI optical drives even if /system/storage/"
+"display_scsi_drives is set to FALSE."
+msgstr ""
+"กำหนดว่าจะแสดงไดรฟ์ซีดี/ดีวีดี SCSI แม้ว่าจะกำหนด "
+"/system/storage/display_scsi_drives เป็น FALSE หรือไม่"
+
+#: schemas/system_storage.schemas.in.h:7
+msgid "Whether to display drives and mountable volumes from SCSI drives."
+msgstr "กำหนดว่าจะแสดงไดรฟ์และโวลุมที่เมานท์ได้ผ่านไดรฟ์ SCSI หรือไม่"
+
+#: schemas/system_storage.schemas.in.h:8
+msgid ""
+"Whether to display drives and mountable volumes from drives with removable "
+"media (e.g. drives where media can be inserted and removed)."
+msgstr ""
+"กำหนดว่าจะแสดงไดรฟ์และโวลุมที่เมานท์ได้ผ่านไดรฟ์ถอดเสียบ "
+"(เช่น ไดรฟ์ที่สามารถเปลี่ยนแผ่นได้) หรือไม่"
+
+#: schemas/system_storage.schemas.in.h:9
+msgid ""
+"Whether to display drives and mountable volumes from external drives (e.g. "
+"drives that are hotpluggable; e.g. drives that can be attached and detached "
+"while the system is running)."
+msgstr ""
+"กำหนดว่าจะแสดงไดรฟ์และโวลุมที่เมานท์ผ่านไดรฟ์ภายนอก (เช่น ไดรฟ์ที่ "
+"hotplug ได้ หรือสามารถถอดหรือเพิ่มในระหว่างที่ระบบทำงานอยู่ได้) หรือไม่"
+
+#: schemas/system_storage.schemas.in.h:10
+msgid ""
+"Whether to display drives and mountable volumes from internal hard drives "
+"(non-SCSI optical drives are always shown)."
+msgstr ""
+"กำหนดว่าจะแสดงไดรฟ์และโวลุมที่เมานท์ได้ผ่านฮาร์ดไดรฟ์ภายในหรือไม่ "
+"(ไดรฟ์ซีดี/ดีวีดีที่ไม่ใช่ SCSI จะแสดงเสมอ)"
+
+#~ msgid "The window workgroup the user is part of"
+#~ msgstr "workgroup บนวินโดวส์ที่ผู้ใช้อยู่"
+
+#, fuzzy
+#~ msgid "CD-ROM Disc"
+#~ msgstr "ไดรฟ์ซีดี"
+
+#, fuzzy
+#~ msgid "CD-R Disc"
+#~ msgstr "ไดรฟ์ซีดี"
+
+#, fuzzy
+#~ msgid "CD-RW Disc"
+#~ msgstr "ไดรฟ์ซีดี"
+
+#, fuzzy
+#~ msgid "DVD-ROM Disc"
+#~ msgstr "ไดรฟ์ซีดี"
+
+#, fuzzy
+#~ msgid "Audio Disc"
+#~ msgstr "ซีดีเพลง"
+
+#, fuzzy
+#~ msgid "Memory Stick Media"
+#~ msgstr "Memory Stick"
+
+#, fuzzy
+#~ msgid "Floppy Disk"
+#~ msgstr "ฟลอปปี้"
+
+#, fuzzy
+#~ msgid "Windows Disk"
+#~ msgstr "หน้าต่าง"
+
+#, fuzzy
+#~ msgid "File could not be opened: %s"
+#~ msgstr "ไม่สามารถแบ่งคำ: %s"
+
+#, fuzzy
+#~ msgid "File is empty"
+#~ msgstr "แฟ้มมีอยู่แล้ว"
+
+#~ msgid "Applications"
+#~ msgstr "โปรแกรม"
+
+#~ msgid "Cards"
+#~ msgstr "บัตร"
+
+#~ msgid "Files"
+#~ msgstr "แฟ้ม"
+
+#~ msgid "Folders"
+#~ msgstr "โฟลเดอร์"
+
+#~ msgid "Help"
+#~ msgstr "วิธีใช้"
+
+#~ msgid "Hosts"
+#~ msgstr "โฮสต์"
+
+#~ msgid "Links"
+#~ msgstr "ลิงก์"
+
+#~ msgid "Mail"
+#~ msgstr "เมล"
+
+#~ msgid "Tools"
+#~ msgstr "เครื่องมือ"
+
+#~ msgid "Windows"
+#~ msgstr "หน้าต่าง"
+
+#, fuzzy
+#~ msgid "The handler for HTTP URLs"
+#~ msgstr "จัดการ URL ชนิด HTTP"
+
+#, fuzzy
+#~ msgid "The handler for HTTPS URLs"
+#~ msgstr "จัดการ URL ชนิด HTTPS"
+
+#, fuzzy
+#~ msgid ""
+#~ "True if the command specified in the \"command\" key should handle HTTP "
+#~ "URLs."
+#~ msgstr "ตั้งเป็น true ถ้าต้องการให้โปรแกรมใน \"command\" จัดการ URL ชนิด HTTP"
+
+#, fuzzy
+#~ msgid ""
+#~ "True if the command specified in the \"command\" key should handle HTTPS "
+#~ "URLs."
+#~ msgstr "ตั้งเป็น true ถ้าต้องการให้โปรแกรมใน \"command\" จัดการ URL ชนิด HTTPS"
+
+#, fuzzy
+#~ msgid "Whether the specified command should handle HTTP URLs"
+#~ msgstr "ตั้งเป็น true ถ้าต้องการให้โปรแกรมใน \"command\" จัดการ URL ชนิด HTTP"
+
+#, fuzzy
+#~ msgid "Whether the specified command should handle HTTPS URLs"
+#~ msgstr "ตั้งเป็น true ถ้าต้องการให้โปรแกรมใน \"command\" จัดการ URL ชนิด HTTPS"
+
+#~ msgid "H323 URL handler"
+#~ msgstr "ตัวจัดการ H323 URL"
+
+#~ msgid "HTTP URL handler"
+#~ msgstr "ตัวจัดการ HTTP URL"
+
+#~ msgid "HTTPS URL handler"
+#~ msgstr "ตัวจัดการ HTTPS URL"
+
+#, fuzzy
+#~ msgid "aim URL handler"
+#~ msgstr "ตัวจัดการ man URL"
+
+#~ msgid "callto URL handler"
+#~ msgstr "ตัวจัดการ callto URL"
+
+#~ msgid "ghelp URL handler"
+#~ msgstr "ตัวจัดการ ghelp URL"
+
+#~ msgid "info URL handler"
+#~ msgstr "ตัวจัดการ info URL"
+
+#~ msgid "mailto URL handler"
+#~ msgstr "ตัวจัดการ mailto URL"
+
+#~ msgid "man URL handler"
+#~ msgstr "ตัวจัดการ man URL"
+
+#~ msgid "trash URL handler"
+#~ msgstr "ตัวจัดการ trash URL"
+
+#~ msgid "1 byte"
+#~ msgstr "1 ไบต์"

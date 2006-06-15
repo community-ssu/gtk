@@ -1,0 +1,41 @@
+<!-- ##### SECTION Title ##### -->
+MIME Database Monitor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+monitor the MIME database for changes (primarily for file browsers)
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO GNOME_VFS_MIME_MONITOR_TYPE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT GnomeVFSMIMEMonitorPrivate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_monitor_get ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

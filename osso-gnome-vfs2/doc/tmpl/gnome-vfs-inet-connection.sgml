@@ -1,0 +1,114 @@
+<!-- ##### SECTION Title ##### -->
+Internet connection
+
+<!-- ##### SECTION Short_Description ##### -->
+Simple TCP/IP connection functions.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+A #GnomeVFSInetConnection represents a TCP/IP connection. You can either use
+#gnome_vfs_inet_connection_create which will use the #gnome_vfs_resolve DNS
+resolution functions internally or you can do the name resolution yourself
+and use #gnome_vfs_inet_connection_create_from_address to connect to a specific
+address.
+
+After a connection has been established all I/O is done through a GnomeVFSSocket
+or a GnomeVFSSocketBuffer.
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gnome_vfs_inet_connection_create ##### -->
+<para>
+
+</para>
+
+@connection_return: 
+@host_name: 
+@host_port: 
+@cancellation: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_inet_connection_destroy ##### -->
+<para>
+
+</para>
+
+@connection: 
+@cancellation: 
+
+
+<!-- ##### FUNCTION gnome_vfs_inet_connection_free ##### -->
+<para>
+
+</para>
+
+@connection: 
+@cancellation: 
+
+
+<!-- ##### FUNCTION gnome_vfs_inet_connection_to_socket ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_inet_connection_to_socket_buffer ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_inet_connection_get_fd ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_inet_connection_create_from_address ##### -->
+<para>
+
+</para>
+
+@connection_return: 
+@address: 
+@host_port: 
+@cancellation: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_inet_connection_get_address ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_inet_connection_get_ip ##### -->
+<para>
+
+</para>
+
+@connection: 
+@Returns: 
+
+

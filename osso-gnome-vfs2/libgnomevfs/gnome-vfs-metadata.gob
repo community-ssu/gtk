@@ -1,0 +1,229 @@
+requires 1.90.0
+
+%{
+#include <glib.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xmlmemory.h>
+#include "gnome-vfs-utils.h"
+#include "gnome-vfs-uri.h"
+#include "gnome-vfs-metadata.h"
+#include "gnome-vfs-metadata-private.h"
+%}
+
+class Gnome:Vfs:Metadata from G:Object {
+  /**
+   * get_string:
+   * @self: Metadata object to get the property of
+   * @key: key to retrieve
+   *
+   * Gets the piece of string metadata associated with @key.
+   *
+   * Return value: the string associated with @key
+   **/
+  virtual public char *get_string (self, const char *key) {
+    const char *value;
+    if (!self->_priv->keys_loaded) self_load_keys (self);
+
+    value = g_hash_table_lookup (self->_priv->strings, key);
+
+    if (value != NULL) {
+      return g_strdup (value);
+    } else {
+      return NULL;
+    }
+  }
+  
+  virtual public void set_string (self, const char *key, const char *value) {
+    if (!self->_priv->keys_loaded) self_load_keys (self);
+
+    g_hash_table_insert (self->_priv->strings, g_strdup (key), g_strdup (value));
+
+    self_save_keys (self);
+  }
+
+  /**
+   * get_int:
+   * @self: Metadata object to get the property of
+   * @key: key to retrieve
+   *
+   * Gets the piece of integer metadata associated with @key.
+   *
+   * Return value: the integer associated with @key
+   **/
+  virtual public int get_int (self, const char *key) {
+    gpointer value;
+    if (!self->_priv->keys_loaded) self_load_keys (self);
+
+    value = g_hash_table_lookup (self->_priv->integers, key);
+
+    return GPOINTER_TO_INT (value);
+  }
+  
+  virtual public void set_int (self, const char *key, gpointer value) {
+    if (!self->_priv->keys_loaded) self_load_keys (self);
+
+    g_hash_table_insert (self->_priv->strings, g_strdup (key), GINT_TO_POINTER (value));
+
+    self_save_keys (self);
+  }
+
+  public GObject *
+  new (const char *uri) {
+    Self *object;
+
+    object = GET_NEW;
+
+    self_set_uri (object, uri);
+
+    return (GObject *)object;
+  }
+
+  private void set_uri (self, const char *uri)
+  {
+    char *key_file_uri, *metadata_dir_uri;
+    GnomeVFSURI *parent_dir, *file_uri, *keys_uri;
+    char *file_name, *value_file_name;
+    
+    file_uri   = gnome_vfs_uri_new (uri);
+    parent_dir = gnome_vfs_uri_get_parent (file_uri);
+    file_name  = gnome_vfs_uri_extract_short_path_name (file_uri);
+    
+    value_file_name = g_build_filename (".metadata", file_name, "keys.xml", NULL);
+    keys_uri = gnome_vfs_uri_append_path (parent_dir, value_file_name);
+    key_file_uri = gnome_vfs_uri_to_string (keys_uri, GNOME_VFS_URI_HIDE_NONE);
+    g_free (value_file_name);
+    gnome_vfs_uri_unref (keys_uri);
+    
+    value_file_name = g_build_filename (".metadata", file_name, NULL);
+    keys_uri = gnome_vfs_uri_append_path (parent_dir, value_file_name);
+    metadata_dir_uri = gnome_vfs_uri_to_string (keys_uri, GNOME_VFS_URI_HIDE_NONE);
+    g_free (value_file_name);
+    gnome_vfs_uri_unref (keys_uri);
+    
+    g_free (file_name);
+    gnome_vfs_uri_unref (file_uri);
+    gnome_vfs_uri_unref (parent_dir);
+
+    printf ("Key file URI is %s\n", key_file_uri);
+
+    self->key_file_uri = key_file_uri;
+    self->metadata_dir_uri = metadata_dir_uri;
+  }
+
+  private void load_keys (self)
+  {
+    xmlDocPtr doc;
+    xmlNodePtr node;
+    xmlChar *key, *value, *type;
+    char *file_buffer;
+    int file_size;
+    GnomeVFSResult result;
+
+    if (self->_priv->strings != NULL) {
+      g_hash_table_destroy (self->_priv->strings);
+    }
+    if (self->_priv->integers != NULL) {
+      g_hash_table_destroy (self->_priv->integers);
+    }
+
+    self->_priv->strings  = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+    self->_priv->integers = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+
+    /* FIXME: must allow for loading out of URIs */
+    printf ("Key file uri is %s, local is %s\n", self->key_file_uri, gnome_vfs_get_local_path_from_uri (self->key_file_uri));
+
+    result = gnome_vfs_read_entire_file (self->key_file_uri, &file_size, &file_buffer);
+    if (result != GNOME_VFS_OK) return;
+
+    doc = xmlParseMemory (file_buffer, file_size);
+
+    g_free (file_buffer);
+
+    if (doc == NULL
+	|| doc->xmlRootNode == NULL
+	|| doc->xmlRootNode->name == NULL
+	|| g_ascii_strcasecmp (doc->xmlRootNode->name, "metadata") != 0) {
+    } else {
+      for (node = doc->xmlRootNode->xmlChildrenNode; node != NULL; node = node->next) {
+	key   = xmlGetProp (node, "key");
+	value = xmlGetProp (node, "value");
+	type  = xmlGetProp (node, "type");
+	
+	if (key != NULL && value != NULL && type != NULL) {
+	  if (strcmp (type, "string") == 0) {
+	    g_hash_table_insert (self->_priv->strings, g_strdup (key), g_strdup (value));
+	  } else if (strcmp (type, "integer") == 0) {
+	    g_hash_table_insert (self->_priv->integers, g_strdup (key), GINT_TO_POINTER (atoi (value)));
+	    g_free (value);
+	  }
+	}
+	
+	xmlFree (key);
+	xmlFree (value);
+	xmlFree (type);
+      }
+    }
+
+    xmlFreeDoc (doc);
+
+    self->_priv->keys_loaded = TRUE;
+  }
+
+  private void save_keys (self)
+  {
+    xmlDocPtr doc;
+    /*char *document_contents;
+    int document_length;*/
+
+    xmlIndentTreeOutput = TRUE;
+    doc = xmlNewDoc ("1.0");
+    doc->children = xmlNewDocNode (doc, NULL, "Metadata", NULL);
+
+    g_hash_table_foreach (self->_priv->strings,
+			  (GHFunc) self_save_string_property, doc->children);        
+    g_hash_table_foreach (self->_priv->integers,
+			  (GHFunc) self_save_int_property, doc->children); 
+
+    /* FIXME: save to the proper file */
+    xmlSaveFormatFile ("/tmp/test.xml", doc, 1);
+    /*xmlDocDumpFormatMemory (doc, &document_contents, &document_length, 1);*/
+
+    xmlFreeDoc (doc);
+  }
+
+  private void save_string_property (const char *key, const char *value, xmlNodePtr parent)
+  {
+    xmlNodePtr xml_node;
+    xml_node = xmlNewChild (parent, NULL, "entry", NULL);
+    xmlSetProp (xml_node, "name", key);
+    xmlSetProp (xml_node, "value", value);	
+    xmlSetProp (xml_node, "type", "string");
+  }
+
+  private void save_int_property (const char *key, gpointer pvalue, xmlNodePtr parent)
+  {
+    char *string_value;
+    int value = GPOINTER_TO_INT (pvalue);
+    xmlNodePtr xml_node;
+
+    xml_node = xmlNewChild (parent, NULL, "entry", NULL);
+    
+    string_value = g_strdup_printf ("%d", value);
+
+    xmlSetProp (xml_node, "name", key);
+    xmlSetProp (xml_node, "value", string_value);
+    xmlSetProp (xml_node, "type", "integer");
+    
+    g_free (string_value);
+  }
+
+  public char *key_file_uri = {NULL} destroywith g_free;
+  public char *metadata_dir_uri = {NULL} destroywith g_free;
+
+  private GHashTable *strings  = {NULL} destroywith g_hash_table_destroy;
+  private GHashTable *integers = {NULL} destroywith g_hash_table_destroy;
+  /*private GHashTable *booleans = {NULL} destroywith g_hash_table_destroy;*/
+
+  private gboolean keys_loaded = FALSE;
+}

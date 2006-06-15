@@ -1,0 +1,2391 @@
+# Slovenian translation for gnome-vfs.
+# Copyright (C) 2000 Free Software Foundation, Inc.
+# Andraz Tori <andraz.tori1@guest.arnes.si>, 2000.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-vfs 0.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-02-10 12:25+0100\n"
+"PO-Revision-Date: 2000-07-07 02:53+0200\n"
+"Last-Translator: Andraz Tori <andraz.tori1@guest.arnes.si>\n"
+"Language-Team: Slovenian <sl@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: daemon/gnome-vfs-daemon.c:596
+#, fuzzy
+msgid "Could not initialize Bonobo"
+msgstr "Ne morem inicializirati CORBA-e."
+
+#: daemon/gnome-vfs-daemon.c:603
+msgid "Could not initialize gnome vfs"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-cdrom.c:235
+msgid "ISO 9660 Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-configuration.c:227
+#, c-format
+msgid "%s:%d contains NUL characters."
+msgstr "%s:%d vsebuje NIČELNE znake."
+
+#: libgnomevfs/gnome-vfs-configuration.c:244
+#, c-format
+msgid "%s:%d contains no method name."
+msgstr "%s:%d ne vsebuje imena metode."
+
+#: libgnomevfs/gnome-vfs-configuration.c:284
+#, fuzzy, c-format
+msgid "%s:%d has no options endmarker."
+msgstr "%s:%d ne vsebuje imena metode."
+
+#: libgnomevfs/gnome-vfs-configuration.c:295
+#, c-format
+msgid "%s:%d has unknown options %s."
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-configuration.c:314
+#, c-format
+msgid "%s:%d contains no module name."
+msgstr "%s:%d ne vsebuje imea modula."
+
+#: libgnomevfs/gnome-vfs-configuration.c:368
+#, c-format
+msgid "Configuration file `%s' was not found: %s"
+msgstr "Nastavitvena datoteka `%s' ni bila najdena: %s"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:37
+msgid "AFFS Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:38
+msgid "AFS Network Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:39
+msgid "Auto-detected Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:40
+#: libgnomevfs/gnome-vfs-filesystem-type.c:42
+msgid "CD-ROM Drive"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:41
+#, fuzzy
+msgid "CD Digital Audio"
+msgstr "audio Dolby Digital"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:43
+msgid "Hardware Device Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:44
+#: libgnomevfs/gnome-vfs-filesystem-type.c:45
+msgid "Ext2 Linux Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:46
+msgid "Ext3 Linux Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:47
+#: libgnomevfs/gnome-vfs-filesystem-type.c:57
+#: libgnomevfs/gnome-vfs-filesystem-type.c:58
+msgid "MSDOS Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:48
+#: libgnomevfs/gnome-vfs-filesystem-type.c:49
+msgid "MacOS Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:50
+msgid "CDROM Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:51
+msgid "Hsfs CDROM Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:52
+msgid "JFS Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:53
+#: libgnomevfs/gnome-vfs-filesystem-type.c:60
+#, fuzzy
+msgid "Windows NT Volume"
+msgstr "ikona za Okna"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:54
+#: libgnomevfs/gnome-vfs-filesystem-type.c:62
+#: libgnomevfs/gnome-vfs-filesystem-type.c:63
+msgid "System Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:55
+#, fuzzy
+msgid "Memory Volume"
+msgstr "izpis pomnilnika"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:56
+msgid "Minix Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:59
+msgid "NFS Network Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:61
+msgid "Netware Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:64
+msgid "ReiserFS Linux Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:65
+msgid "Windows Shared Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:66
+msgid "SuperMount Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:67
+msgid "DVD Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:68
+msgid "Solaris/BSD Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:69
+msgid "Udfs Solaris Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:70
+msgid "Pcfs Solaris Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:71
+msgid "Sun SAM-QFS Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:72
+msgid "Enhanced DOS Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:73
+msgid "Windows VFAT Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:74
+msgid "Xenix Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:75
+msgid "XFS Linux Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:76
+msgid "XIAFS Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:104
+#, fuzzy
+msgid "Unknown"
+msgstr "Neznana napaka"
+
+#: libgnomevfs/gnome-vfs-job.c:734
+#, fuzzy, c-format
+msgid "Unknown operation type %u"
+msgstr "Neznana vrsta operacije %u"
+
+#: libgnomevfs/gnome-vfs-job.c:1024 libgnomevfs/gnome-vfs-job.c:1169
+#, c-format
+msgid "Cannot create pipe for open GIOChannel: %s"
+msgstr "Ne morem ustvariti cevi GIOChannel: %s"
+
+#: libgnomevfs/gnome-vfs-job.c:1687
+#, c-format
+msgid "Unknown job kind %u"
+msgstr "Neznana vrsta posla %u"
+
+#: libgnomevfs/gnome-vfs-job.c:1720
+msgid "Operation stopped"
+msgstr "Operacija ustavljena"
+
+#: libgnomevfs/gnome-vfs-mime-handlers.c:101
+#: libgnomevfs/gnome-vfs-mime-handlers.c:255
+#: libgnomevfs/gnome-vfs-mime-handlers.c:306
+#: libgnomevfs/gnome-vfs-mime-handlers.c:600
+#: libgnomevfs/gnome-vfs-mime-handlers.c:619
+#: libgnomevfs/gnome-vfs-mime-handlers.c:637
+#: libgnomevfs/gnome-vfs-mime-handlers.c:656
+#: libgnomevfs/gnome-vfs-mime-handlers.c:675
+#: libgnomevfs/gnome-vfs-mime-handlers.c:816
+#: libgnomevfs/gnome-vfs-mime-handlers.c:838
+#: libgnomevfs/gnome-vfs-mime-handlers.c:857
+#: libgnomevfs/gnome-vfs-mime-handlers.c:876
+#: libgnomevfs/gnome-vfs-mime-handlers.c:929
+#: libgnomevfs/gnome-vfs-mime-handlers.c:946
+#: libgnomevfs/gnome-vfs-mime-handlers.c:963
+#: libgnomevfs/gnome-vfs-mime-handlers.c:981
+#: libgnomevfs/gnome-vfs-mime-handlers.c:999
+#: libgnomevfs/gnome-vfs-mime-info.c:643 libgnomevfs/gnome-vfs-mime-info.c:650
+#: libgnomevfs/gnome-vfs-mime-info.c:658 libgnomevfs/gnome-vfs-mime-info.c:665
+#: libgnomevfs/gnome-vfs-mime-info.c:673 libgnomevfs/gnome-vfs-mime-info.c:690
+#: libgnomevfs/gnome-vfs-mime-info.c:697 libgnomevfs/gnome-vfs-mime-info.c:704
+#: libgnomevfs/gnome-vfs-mime-info.c:711 libgnomevfs/gnome-vfs-mime-info.c:719
+#: libgnomevfs/gnome-vfs-mime-info.c:726
+msgid ""
+"Deprecated function.  User modifications to the MIME database are no longer "
+"supported."
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-parse-ls.c:666
+#, c-format
+msgid "Could not parse: %s"
+msgstr "Ne morem razčleniti: %s"
+
+#: libgnomevfs/gnome-vfs-parse-ls.c:668
+msgid "More parsing errors will be ignored."
+msgstr "Nadalnje napake pri razčlenitvi bodo ignorirane."
+
+#. GNOME_VFS_OK
+#: libgnomevfs/gnome-vfs-result.c:38
+msgid "No error"
+msgstr "Brez napak"
+
+#. GNOME_VFS_ERROR_NOT_FOUND
+#: libgnomevfs/gnome-vfs-result.c:39
+msgid "File not found"
+msgstr "Datoteke ni mogoče najti"
+
+#. GNOME_VFS_ERROR_GENERIC
+#: libgnomevfs/gnome-vfs-result.c:40
+msgid "Generic error"
+msgstr "Generična napaka"
+
+#. GNOME_VFS_ERROR_INTERNAL
+#: libgnomevfs/gnome-vfs-result.c:41
+msgid "Internal error"
+msgstr "Interna napaka"
+
+#. GNOME_VFS_ERROR_BAD_PARAMETERS
+#: libgnomevfs/gnome-vfs-result.c:42
+msgid "Invalid parameters"
+msgstr "Neveljavni parametri"
+
+#. GNOME_VFS_ERROR_NOT_SUPPORTED
+#: libgnomevfs/gnome-vfs-result.c:43
+msgid "Unsupported operation"
+msgstr "Nepodprta operacija"
+
+#. GNOME_VFS_ERROR_IO
+#: libgnomevfs/gnome-vfs-result.c:44
+msgid "I/O error"
+msgstr "V/I napaka"
+
+#. GNOME_VFS_ERROR_CORRUPTED_DATA
+#: libgnomevfs/gnome-vfs-result.c:45
+msgid "Data corrupted"
+msgstr "Podatki so pokvarjeni"
+
+#. GNOME_VFS_ERROR_WRONG_FORMAT
+#: libgnomevfs/gnome-vfs-result.c:46
+msgid "Format not valid"
+msgstr "Format ni veljaven"
+
+#. GNOME_VFS_ERROR_BAD_FILE
+#: libgnomevfs/gnome-vfs-result.c:47
+msgid "Bad file handle"
+msgstr "Neveljavna datotečna ročica"
+
+#. GNOME_VFS_ERROR_TOO_BIG
+#: libgnomevfs/gnome-vfs-result.c:48
+msgid "File too big"
+msgstr "Datoteka je prevelika"
+
+#. GNOME_VFS_ERROR_NO_SPACE
+#: libgnomevfs/gnome-vfs-result.c:49
+msgid "No space left on device"
+msgstr "Na napravi ni več prostora"
+
+#. GNOME_VFS_ERROR_READ_ONLY
+#: libgnomevfs/gnome-vfs-result.c:50
+msgid "Read-only file system"
+msgstr "Datotečni sistem je le berljiv"
+
+#. GNOME_VFS_ERROR_INVALID_URI
+#: libgnomevfs/gnome-vfs-result.c:51
+msgid "Invalid URI"
+msgstr "Neveljaven URI"
+
+#. GNOME_VFS_ERROR_NOT_OPEN
+#: libgnomevfs/gnome-vfs-result.c:52
+msgid "File not open"
+msgstr "Datoteka ni odprta"
+
+#. GNOME_VFS_ERROR_INVALID_OPEN_MODE
+#: libgnomevfs/gnome-vfs-result.c:53
+msgid "Open mode not valid"
+msgstr "Neveljaven način odpiranja"
+
+#. GNOME_VFS_ERROR_ACCESS_DENIED
+#: libgnomevfs/gnome-vfs-result.c:54
+msgid "Access denied"
+msgstr "Dostop zavrnjen"
+
+#. GNOME_VFS_ERROR_TOO_MANY_OPEN_FILES
+#: libgnomevfs/gnome-vfs-result.c:55
+msgid "Too many open files"
+msgstr "Preveč odprtih datotek"
+
+#. GNOME_VFS_ERROR_EOF
+#: libgnomevfs/gnome-vfs-result.c:56
+msgid "End of file"
+msgstr "Konec datoteke"
+
+#. GNOME_VFS_ERROR_NOT_A_DIRECTORY
+#: libgnomevfs/gnome-vfs-result.c:57
+msgid "Not a directory"
+msgstr "Ni imenik"
+
+#. GNOME_VFS_ERROR_IN_PROGRESS
+#: libgnomevfs/gnome-vfs-result.c:58
+msgid "Operation in progress"
+msgstr "Operacija poteka"
+
+#. GNOME_VFS_ERROR_INTERRUPTED
+#: libgnomevfs/gnome-vfs-result.c:59
+msgid "Operation interrupted"
+msgstr "Operacija je bila prekinjena"
+
+#. GNOME_VFS_ERROR_FILE_EXISTS
+#: libgnomevfs/gnome-vfs-result.c:60
+msgid "File exists"
+msgstr "Datoteka obstaja"
+
+#. GNOME_VFS_ERROR_LOOP
+#: libgnomevfs/gnome-vfs-result.c:61
+msgid "Looping links encountered"
+msgstr "Najdene so bile krožne povezave"
+
+#. GNOME_VFS_ERROR_NOT_PERMITTED
+#: libgnomevfs/gnome-vfs-result.c:62
+msgid "Operation not permitted"
+msgstr "Nedovoljena operacija"
+
+#. GNOME_VFS_ERROR_IS_DIRECTORY
+#: libgnomevfs/gnome-vfs-result.c:63
+msgid "Is a directory"
+msgstr "Je imenik"
+
+#. GNOME_VFS_ERROR_NO_MEMORY
+#: libgnomevfs/gnome-vfs-result.c:64
+msgid "Not enough memory"
+msgstr "Ni dovolj pomnilnika"
+
+#. GNOME_VFS_ERROR_HOST_NOT_FOUND
+#: libgnomevfs/gnome-vfs-result.c:65
+msgid "Host not found"
+msgstr "Gostitelj ni bil najden"
+
+#. GNOME_VFS_ERROR_INVALID_HOST_NAME
+#: libgnomevfs/gnome-vfs-result.c:66
+msgid "Host name not valid"
+msgstr "Gostitlejevo ime ni veljavno"
+
+#. GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS
+#: libgnomevfs/gnome-vfs-result.c:67
+msgid "Host has no address"
+msgstr "Gostitelj nima naslova"
+
+#. GNOME_VFS_ERROR_LOGIN_FAILED
+#: libgnomevfs/gnome-vfs-result.c:68
+msgid "Login failed"
+msgstr "Prijava ni uspela"
+
+#. GNOME_VFS_ERROR_CANCELLED
+#: libgnomevfs/gnome-vfs-result.c:69
+msgid "Operation cancelled"
+msgstr "Operacija preklicana"
+
+#. GNOME_VFS_ERROR_DIRECTORY_BUSY
+#: libgnomevfs/gnome-vfs-result.c:70
+msgid "Directory busy"
+msgstr "Imenik je zaseden"
+
+#. GNOME_VFS_ERROR_DIRECTORY_NOT_EMPTY
+#: libgnomevfs/gnome-vfs-result.c:71
+msgid "Directory not empty"
+msgstr "Imenik ni prazen"
+
+#. GNOME_VFS_ERROR_TOO_MANY_LINKS
+#: libgnomevfs/gnome-vfs-result.c:72
+msgid "Too many links"
+msgstr "Preveč povezav"
+
+#. GNOME_VFS_ERROR_READ_ONLY_FILE_SYSTEM
+#: libgnomevfs/gnome-vfs-result.c:73
+msgid "Read only file system"
+msgstr "Datotečni sistem je le berljiv"
+
+#. GNOME_VFS_ERROR_NOT_SAME_FILE_SYSTEM
+#: libgnomevfs/gnome-vfs-result.c:74
+msgid "Not on the same file system"
+msgstr "Ni na istem datotečnem sistemu"
+
+#. GNOME_VFS_ERROR_NAME_TOO_LONG
+#: libgnomevfs/gnome-vfs-result.c:75
+msgid "Name too long"
+msgstr "Ime je predolgo"
+
+#. GNOME_VFS_ERROR_SERVICE_NOT_AVAILABLE
+#: libgnomevfs/gnome-vfs-result.c:76
+msgid "Service not available"
+msgstr "Storitev ni na voljo"
+
+#. GNOME_VFS_ERROR_SERVICE_OBSOLETE
+#: libgnomevfs/gnome-vfs-result.c:77
+msgid "Request obsoletes service's data"
+msgstr "Zahtevek zastara podatke storitve"
+
+#. GNOME_VFS_ERROR_PROTOCOL_ERROR
+#: libgnomevfs/gnome-vfs-result.c:78
+msgid "Protocol error"
+msgstr "Napaka v protokolu"
+
+#. GNOME_VFS_ERROR_NO_MASTER_BROWSER
+#: libgnomevfs/gnome-vfs-result.c:79
+msgid "Could not find master browser"
+msgstr "Ne morem najti glavnega brskalnika"
+
+#. GNOME_VFS_ERROR_NO_DEFAULT
+#: libgnomevfs/gnome-vfs-result.c:80
+msgid "No default action associated"
+msgstr "S tem ni povezan nobeno privzeto dejanje"
+
+#. GNOME_VFS_ERROR_NO_HANDLER
+#: libgnomevfs/gnome-vfs-result.c:81
+msgid "No handler for URL scheme"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#. GNOME_VFS_ERROR_PARSE
+#: libgnomevfs/gnome-vfs-result.c:82
+msgid "Error parsing command line"
+msgstr "Napaka ob razčlenjevanju ukazne vrstice"
+
+#. GNOME_VFS_ERROR_LAUNCH
+#: libgnomevfs/gnome-vfs-result.c:83
+msgid "Error launching command"
+msgstr "Napaka ob zaganjanju ukaza"
+
+#. GNOME_VFS_ERROR_TIMEOUT
+#: libgnomevfs/gnome-vfs-result.c:84 libgnomevfs/gnome-vfs-result.c:86
+msgid "Timeout reached"
+msgstr ""
+
+#. GNOME_VFS_ERROR_NAMESERVER
+#: libgnomevfs/gnome-vfs-result.c:85
+#, fuzzy
+msgid "Nameserver error"
+msgstr "Generična napaka"
+
+#. GNOME_VFS_ERROR_LOCKED
+#: libgnomevfs/gnome-vfs-result.c:87
+#, fuzzy
+msgid "The resource is locked"
+msgstr "izvorna koda Scheme"
+
+#. GNOME_VFS_ERROR_DEPRECATED_FUNCTION
+#: libgnomevfs/gnome-vfs-result.c:88
+msgid "Function call deprecated"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-result.c:203
+msgid "Unknown error"
+msgstr "Neznana napaka"
+
+#: libgnomevfs/gnome-vfs-utils.c:85
+#, fuzzy, c-format
+msgid "%u byte"
+msgid_plural "%u bytes"
+msgstr[0] "%u bajtov"
+msgstr[1] "%u bajtov"
+
+#: libgnomevfs/gnome-vfs-utils.c:91
+#, fuzzy, c-format
+msgid "%.1f KB"
+msgstr "%.1f K"
+
+#: libgnomevfs/gnome-vfs-utils.c:95
+#, c-format
+msgid "%.1f MB"
+msgstr "%.1f MB"
+
+#: libgnomevfs/gnome-vfs-utils.c:99
+#, c-format
+msgid "%.1f GB"
+msgstr "%.1f GB"
+
+#: libgnomevfs/gnome-vfs-utils.c:1131
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:369
+msgid " (invalid Unicode)"
+msgstr " (neveljaven Unicode)"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:551
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:607
+msgid "Floppy"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:552
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:610
+msgid "CD-ROM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:554
+msgid "CD-R"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:555
+msgid "CD-RW"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:556
+msgid "DVD-ROM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:557
+msgid "DVD-RAM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:558
+msgid "DVD-R"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:559
+msgid "DVD-RW"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:560
+msgid "CD-ROM/DVD-ROM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:561
+msgid "CD-ROM/DVD-RAM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:562
+msgid "CD-ROM/DVD-R"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:563
+msgid "CD-ROM/DVD-RW"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:564
+msgid "CD-R/DVD-ROM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:565
+msgid "CD-R/DVD-RAM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:566
+msgid "CD-R/DVD-R"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:567
+msgid "CD-R/DVD-RW"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:568
+msgid "CD-RW/DVD-ROM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:569
+msgid "CD-RW/DVD-RAM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:570
+msgid "CD-RW/DVD-R"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:571
+msgid "CD-RW/DVD-RW"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:573
+msgid "Disk"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:574
+#, fuzzy
+msgid "USB Drive"
+msgstr "arhiv zip"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:575
+msgid "IEEE1394 Drive"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:576
+msgid "CF"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:577
+msgid "SD/MMC"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:578
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:582
+msgid "Memory Stick"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:579
+msgid "Smart Media"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:581
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:613
+#, fuzzy
+msgid "Zip Drive"
+msgstr "arhiv zip"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:583
+#, fuzzy
+msgid "Camera"
+msgstr "Ime"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:584
+msgid "DVD"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:807
+msgid "Root Volume"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:888
+msgid "Audio CD"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:921
+#, fuzzy
+msgid "Unknown volume"
+msgstr "Neznana napaka"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:1109
+msgid "Network server"
+msgstr ""
+
+#. Handle floppy case
+#: libgnomevfs/gnome-vfs-volume-ops.c:113
+msgid ""
+"Unable to mount the floppy drive. There is probably no floppy in the drive."
+msgstr ""
+
+#. All others
+#: libgnomevfs/gnome-vfs-volume-ops.c:117
+msgid "Unable to mount the volume. There is probably no media in the device."
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:123
+msgid ""
+"Unable to mount the floppy drive. The floppy is probably in a format that "
+"cannot be mounted."
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:126
+msgid ""
+"Unable to mount the selected volume. The volume is probably in a format that "
+"cannot be mounted."
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:131
+msgid "Unable to mount the selected floppy drive."
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:133
+msgid "Unable to mount the selected volume."
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:145
+msgid "Unable to unmount the selected volume."
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:257
+#: libgnomevfs/gnome-vfs-volume-ops.c:313
+msgid "Failed to start command"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:301
+msgid "Unable to eject media"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:499
+msgid "Unable to unmount connected server"
+msgstr ""
+
+#: modules/computer-method.c:545
+msgid "Network"
+msgstr ""
+
+#: modules/computer-method.c:563
+msgid "Home"
+msgstr "Dom"
+
+#: modules/computer-method.c:581
+#, fuzzy
+msgid "Filesystem"
+msgstr "Datoteke"
+
+#: modules/file-method.c:413
+#, c-format
+msgid "Unknown GnomeVFSSeekPosition %d"
+msgstr "Neznan GnomeVFSSeekPosition %d"
+
+#: modules/network-method.c:1396
+#, fuzzy
+msgid "Windows Network"
+msgstr "Okna"
+
+#: modules/sftp-method.c:1338
+#, c-format
+msgid "The identity of the remote computer (%s) is unknown."
+msgstr ""
+
+#: modules/sftp-method.c:1339
+#, c-format
+msgid ""
+"This happens when you log in to a computer the first time.\n"
+"\n"
+"The identity sent by the remote computer is %s. If you want to be absolutely "
+"sure it is safe to continue, contact the system administrator."
+msgstr ""
+
+#: modules/sftp-method.c:1347
+msgid "Log In Anyway"
+msgstr ""
+
+#: modules/sftp-method.c:1348
+#, fuzzy
+msgid "Cancel Login"
+msgstr "Spremeni ikono"
+
+#. FIXME: we probably shouldn't use printf to output the message
+#: modules/test-method.c:590
+#, c-format
+msgid "Didn't find a valid settings file at %s\n"
+msgstr "Nisem našel veljavnih nastavitev v datoteki %s\n"
+
+#: modules/test-method.c:592
+#, c-format
+msgid "Use the %s environment variable to specify a different location.\n"
+msgstr "Uporabite okolijsko spremenljivko %s za navedbo drugačne lokacije.\n"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:1
+msgid "Standard Moniker factory"
+msgstr "Standardna tovarna vzdevkov"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:2
+msgid "file MonikerExtender"
+msgstr "datoteka MonikerExtender"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:3
+msgid "generic Gnome VFS moniker"
+msgstr "generični vzdevčnik VFS Gnome"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:4
+msgid "generic file moniker"
+msgstr "generični vzdevčnik datotek"
+
+#: schemas/desktop_default_applications.schemas.in.h:1
+#, fuzzy
+msgid "Default component viewer application"
+msgstr "Privzet Program:"
+
+#: schemas/desktop_default_applications.schemas.in.h:2
+#, fuzzy
+msgid "Default terminal application"
+msgstr "Privzet Program:"
+
+#: schemas/desktop_default_applications.schemas.in.h:3
+msgid "Exec argument for default terminal"
+msgstr ""
+
+#: schemas/desktop_default_applications.schemas.in.h:5
+#, no-c-format
+msgid ""
+"The application to use for viewing files that require a component to view "
+"them. The parameter %s will be replaced by the file's URIs, the parameter %c "
+"will be replaced by the component IID."
+msgstr ""
+
+#: schemas/desktop_default_applications.schemas.in.h:6
+msgid ""
+"The default terminal application to use for applications that require a "
+"terminal."
+msgstr ""
+
+#: schemas/desktop_default_applications.schemas.in.h:7
+msgid "The exec argument to use for the default terminal application."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:1
+msgid "Run the command in a terminal"
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:2
+msgid "The command used to handle \"aim\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:3
+msgid "The command used to handle \"callto\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:4
+msgid "The command used to handle \"ghelp\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:5
+msgid "The command used to handle \"h323\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:6
+msgid "The command used to handle \"http\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:7
+msgid "The command used to handle \"https\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:8
+msgid "The command used to handle \"info\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:9
+msgid "The command used to handle \"mailto\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:10
+msgid "The command used to handle \"man\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:11
+msgid "The command used to handle \"trash\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:12
+#, fuzzy
+msgid "The handler for \"aim\" URLs"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:13
+#, fuzzy
+msgid "The handler for \"callto\" URLs"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:14
+#, fuzzy
+msgid "The handler for \"ghelp\" URLs"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:15
+#, fuzzy
+msgid "The handler for \"h323\" URLs"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:16
+#, fuzzy
+msgid "The handler for \"http\" URLs"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:17
+#, fuzzy
+msgid "The handler for \"https\" URLs"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:18
+#, fuzzy
+msgid "The handler for \"info\" URLs"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:19
+#, fuzzy
+msgid "The handler for \"mailto\" URLs"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:20
+#, fuzzy
+msgid "The handler for \"man\" URLs"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:21
+#, fuzzy
+msgid "The handler for \"trash\" URLs"
+msgstr "Ni obravnavalnika te sheme URLja"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:22
+msgid ""
+"True if the command specified in the \"command\" key should handle \"aim\" "
+"URLs."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:23
+msgid ""
+"True if the command specified in the \"command\" key should handle \"callto"
+"\" URLs."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:24
+msgid ""
+"True if the command specified in the \"command\" key should handle \"ghelp\" "
+"URLs."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:25
+msgid ""
+"True if the command specified in the \"command\" key should handle \"h323\" "
+"URLs."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:26
+msgid ""
+"True if the command specified in the \"command\" key should handle \"http\" "
+"URLs."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:27
+msgid ""
+"True if the command specified in the \"command\" key should handle \"https\" "
+"URLs."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:28
+msgid ""
+"True if the command specified in the \"command\" key should handle \"info\" "
+"URLs."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:29
+msgid ""
+"True if the command specified in the \"command\" key should handle \"mailto"
+"\" URLs."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:30
+msgid ""
+"True if the command specified in the \"command\" key should handle \"man\" "
+"URLs."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:31
+msgid ""
+"True if the command specified in the \"command\" key should handle \"trash\" "
+"URLs."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:32
+msgid ""
+"True if the command used to handle this type of URL should be run in a "
+"terminal."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:33
+msgid "Whether the specified command should handle \"aim\" URLs"
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:34
+msgid "Whether the specified command should handle \"callto\" URLs"
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:35
+msgid "Whether the specified command should handle \"ghelp\" URLs"
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:36
+msgid "Whether the specified command should handle \"h323\" URLs"
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:37
+msgid "Whether the specified command should handle \"http\" URLs"
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:38
+msgid "Whether the specified command should handle \"https\" URLs"
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:39
+msgid "Whether the specified command should handle \"info\" URLs"
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:40
+msgid "Whether the specified command should handle \"mailto\" URLs"
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:41
+msgid "Whether the specified command should handle \"man\" URLs"
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:42
+msgid "Whether the specified command should handle \"trash\" URLs"
+msgstr ""
+
+#: schemas/system_dns_sd.schemas.in.h:1
+msgid ""
+"Comma separated list of dns-sd domains that should be visible in the network "
+"location."
+msgstr ""
+
+#: schemas/system_dns_sd.schemas.in.h:2
+msgid "Extra domains to look for dns-sd services in"
+msgstr ""
+
+#: schemas/system_dns_sd.schemas.in.h:3
+msgid "How to display local DNS-SD service"
+msgstr ""
+
+#: schemas/system_dns_sd.schemas.in.h:4
+msgid "Possible values are \"merged\", \"separate\" and \"disabled\"."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:1
+msgid "Authenticate proxy server connections"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:2
+msgid "Automatic proxy configuration URL"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:3
+msgid "Enables the proxy settings when accessing HTTP over the Internet."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:4
+msgid "FTP proxy host name"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:5
+msgid "FTP proxy port"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:6
+msgid "HTTP proxy host name"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:7
+msgid "HTTP proxy password"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:8
+msgid "HTTP proxy port"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:9
+msgid "HTTP proxy username"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:10
+msgid ""
+"If true, then connections to the proxy server require authentication. The "
+"username/password combo is defined by \"/system/http_proxy/"
+"authentication_user\" and \"/system/http_proxy/authentication_password\"."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:11
+msgid "Non-proxy hosts"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:12
+msgid "Password to pass as authentication when doing HTTP proxying."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:13
+#, fuzzy
+msgid "Proxy configuration mode"
+msgstr "nastavitev GTK"
+
+#: schemas/system_http_proxy.schemas.in.h:14
+msgid "SOCKS proxy host name"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:15
+msgid "SOCKS proxy port"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:16
+msgid "Secure HTTP proxy host name"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:17
+msgid "Secure HTTP proxy port"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:18
+msgid ""
+"Select the proxy configuration mode. Supported values are \"none\", \"manual"
+"\", \"auto\"."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:19
+msgid "The machine name to proxy FTP through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:20
+msgid "The machine name to proxy HTTP through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:21
+msgid "The machine name to proxy secure HTTP through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:22
+msgid "The machine name to proxy socks through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:23
+msgid ""
+"The port on the machine defined by \"/system/http_proxy/host\" that you "
+"proxy through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:24
+msgid ""
+"The port on the machine defined by \"/system/proxy/ftp_host\" that you proxy "
+"through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:25
+msgid ""
+"The port on the machine defined by \"/system/proxy/secure_host\" that you "
+"proxy through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:26
+msgid ""
+"The port on the machine defined by \"/system/proxy/socks_host\" that you "
+"proxy through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:27
+msgid ""
+"This key contains a list of hosts which are connected to directly, rather "
+"than via the proxy (if it is active). The values can be hostnames, domains "
+"(using an initial wildcard like *.foo.com), IP host addresses (both IPv4 and "
+"IPv6) and network addresses with a netmask (something like 192.168.0.0/24)."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:28
+msgid "URL that provides proxy configuration values."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:29
+msgid "Use HTTP proxy"
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:30
+msgid "User name to pass as authentication when doing HTTP proxying."
+msgstr ""
+
+#: schemas/system_smb.schemas.in.h:1
+msgid "SMB workgroup"
+msgstr ""
+
+#: schemas/system_smb.schemas.in.h:2
+msgid "The window workgroup the user is part of"
+msgstr ""
+
+#, fuzzy
+#~ msgid "Windows Disk"
+#~ msgstr "Okna"
+
+#, fuzzy
+#~ msgid "File could not be opened: %s"
+#~ msgstr "Ne morem razčleniti: %s"
+
+#, fuzzy
+#~ msgid "File is empty"
+#~ msgstr "Datoteka obstaja"
+
+#~ msgid "Applications"
+#~ msgstr "Programi"
+
+#~ msgid "Cards"
+#~ msgstr "Karte"
+
+#~ msgid "Files"
+#~ msgstr "Datoteke"
+
+#~ msgid "Folders"
+#~ msgstr "Mape"
+
+#~ msgid "Help"
+#~ msgstr "Pomoč"
+
+#~ msgid "Hosts"
+#~ msgstr "Gostitelji"
+
+#~ msgid "Links"
+#~ msgstr "Povezave"
+
+#~ msgid "Mail"
+#~ msgstr "Pošta"
+
+#~ msgid "Tools"
+#~ msgstr "Orodja"
+
+#~ msgid "Windows"
+#~ msgstr "Okna"
+
+#, fuzzy
+#~ msgid "The handler for HTTP URLs"
+#~ msgstr "Ni obravnavalnika te sheme URLja"
+
+#, fuzzy
+#~ msgid "The handler for HTTPS URLs"
+#~ msgstr "Ni obravnavalnika te sheme URLja"
+
+#, fuzzy
+#~ msgid "aim URL handler"
+#~ msgstr "Neveljavna datotečna ročica"
+
+#, fuzzy
+#~ msgid "mailto URL handler"
+#~ msgstr "glave e-pošte"
+
+#, fuzzy
+#~ msgid "man URL handler"
+#~ msgstr "Neveljavna datotečna ročica"
+
+#~ msgid "1 byte"
+#~ msgstr "1 bajt"
+
+#~ msgid "3D Studio image"
+#~ msgstr "Slika 3D Studia"
+
+#~ msgid "AIFC audio"
+#~ msgstr "zvok AIFC"
+
+#~ msgid "AIFF audio"
+#~ msgstr "zvok AIFF"
+
+#~ msgid "ANIM animation"
+#~ msgstr "animacija ANIM"
+
+#~ msgid "AVI video"
+#~ msgstr "video AVI"
+
+#~ msgid "AbiWord document"
+#~ msgstr "dokument AbiWord-a"
+
+#~ msgid "Adobe FrameMaker font"
+#~ msgstr "pisava Adobe FrameMaker"
+
+#~ msgid "Adobe font metrics"
+#~ msgstr "metrika za pisavo Adobe"
+
+#~ msgid "Andrew Toolkit inset"
+#~ msgstr "seznam Andrew Toolkit-a"
+
+#~ msgid "ApplixWare Graphics image"
+#~ msgstr "slika Applixware Graphics"
+
+#~ msgid "Applixware Words document"
+#~ msgstr "dokument Applixware Words"
+
+#~ msgid "Applixware spreadsheet"
+#~ msgstr "preglednica Applixware-a"
+
+#~ msgid "AutoCAD image"
+#~ msgstr "slika AutoCAD-a"
+
+#~ msgid "BCPIO document"
+#~ msgstr "dokument BCPIO"
+
+#~ msgid "BDF font"
+#~ msgstr "pisava BDF"
+
+#~ msgid "C shell script"
+#~ msgstr "skripta za lupino C"
+
+#~ msgid "C source code"
+#~ msgstr "izvorna koda C"
+
+#~ msgid "C++ source code"
+#~ msgstr "izvorna koda C++"
+
+#~ msgid "CGI program"
+#~ msgstr "program CGI"
+
+#~ msgid "CGM image"
+#~ msgstr "slika CGM"
+
+#~ msgid "CMU raster image"
+#~ msgstr "rastrska slika CMU"
+
+#~ msgid "CPIO archive"
+#~ msgstr "arhiv CPIO"
+
+#~ msgid "CPIO archive (gzip-compressed)"
+#~ msgstr "arhiv CPIO (komprimirana z gzip)"
+
+#~ msgid "DCL script"
+#~ msgstr "skripta DCL"
+
+#~ msgid "DOS font"
+#~ msgstr "pisava DOS"
+
+#~ msgid "DOS/Windows program"
+#~ msgstr "program za DOS/Okena"
+
+#~ msgid "DSSSL document"
+#~ msgstr "dokument DSSSL"
+
+#~ msgid "DXF vector graphic"
+#~ msgstr "vektorska grafika DXF"
+
+#~ msgid "Debian package"
+#~ msgstr "paket Debian"
+
+#~ msgid "Dia diagram"
+#~ msgstr "diagram Dia"
+
+#~ msgid "Emacs Lisp source code"
+#~ msgstr "izvorna koda Emacs Lisp"
+
+#~ msgid "Enlightenment theme"
+#~ msgstr "tema Enlightment"
+
+#~ msgid "FLC animation"
+#~ msgstr "animacija FLC"
+
+#~ msgid "FLI animation"
+#~ msgstr "animacija FLI"
+
+#~ msgid "FastTracker II audio"
+#~ msgstr "zvok FastTracker II"
+
+#~ msgid "Fortran source code"
+#~ msgstr "izvorna koda Fortran"
+
+#~ msgid "FrameMaker interchange document"
+#~ msgstr "izmenjalni dokument FrameMaker"
+
+#~ msgid "G3 fax image"
+#~ msgstr "fax slika G3"
+
+#~ msgid "GIF image"
+#~ msgstr "slika GIF"
+
+#~ msgid "GIMP document"
+#~ msgstr "dokument GIMP"
+
+#~ msgid "GMC link"
+#~ msgstr "povezava GMC"
+
+#~ msgid "GNOME application details"
+#~ msgstr "podrobnosti GNOME programa"
+
+#~ msgid "GNU Oleo Spreadsheet"
+#~ msgstr "preglednica GNU Oleo"
+
+#~ msgid "GNU mail message"
+#~ msgstr "sporočilo GNU mail"
+
+#~ msgid "Glade project"
+#~ msgstr "projekt Gladea"
+
+#~ msgid "GnuCash Workbook"
+#~ msgstr "delovna knjiga GnuCash"
+
+#~ msgid "Gnumeric spreadsheet"
+#~ msgstr "preglednica Gnumeric"
+
+#~ msgid "HDF document"
+#~ msgstr "dokument HDF"
+
+#~ msgid "HTML page"
+#~ msgstr "stran HTML"
+
+#~ msgid "IDL document"
+#~ msgstr "dokument IDL"
+
+#~ msgid "IEF image"
+#~ msgstr "slika IEF"
+
+#~ msgid "IFF image"
+#~ msgstr "slika IFF"
+
+#~ msgid "ILBM image"
+#~ msgstr "slika ILBM"
+
+#~ msgid "ISI video"
+#~ msgstr "video ISI"
+
+#~ msgid "Impulse Tracker audio"
+#~ msgstr "zvok Impulse trackerja"
+
+#~ msgid "JBuilder Project"
+#~ msgstr "projekt JBuilderja"
+
+#~ msgid "JPEG image"
+#~ msgstr "slika JPEG"
+
+#~ msgid "Java byte code"
+#~ msgstr "bajtna koda Java"
+
+#~ msgid "Java source code"
+#~ msgstr "java izvorna koda"
+
+#~ msgid "KDE application details"
+#~ msgstr "podrobnosti KDE programa"
+
+#~ msgid "KIllustrator document"
+#~ msgstr "dokument KIllustratoja"
+
+#~ msgid "KPresenter presentation"
+#~ msgstr "predstavitev KPresenterja"
+
+#~ msgid "KSpread spreadsheet"
+#~ msgstr "preglednica KSpreada"
+
+#~ msgid "KWord document"
+#~ msgstr "dokument KWorda"
+
+#~ msgid "Korn shell script"
+#~ msgstr "lupinska školjka Korn"
+
+#~ msgid "LHA archive"
+#~ msgstr "arhiv LHA"
+
+#~ msgid "LHARC archive"
+#~ msgstr "arhiv LHARC"
+
+#~ msgid "LIBGRX font"
+#~ msgstr "pisava LIBGRX"
+
+#~ msgid "LightWave object"
+#~ msgstr "predmet LightWavea"
+
+#~ msgid "LightWave scene"
+#~ msgstr "scena LighteWavea"
+
+#~ msgid "Linux PSF console font"
+#~ msgstr "konzolska pisava Linux PSF"
+
+#~ msgid "Lotus 1-2-3 spreadsheet"
+#~ msgstr "preglednica Lotus-1-2-3"
+
+#~ msgid "M3 audio URL"
+#~ msgstr "URL zvoka oblike M3"
+
+#~ msgid "MIDI audio"
+#~ msgstr "zvok MIDI"
+
+#~ msgid "MOD audio"
+#~ msgstr "zvok MOD"
+
+#~ msgid "MP3 audio"
+#~ msgstr "zvok MP3"
+
+#~ msgid "MP3 audio playlist"
+#~ msgstr "seznam predvajanja MP3 zvoka"
+
+#~ msgid "MPEG video"
+#~ msgstr "video MPEG"
+
+#~ msgid "MS ASF video"
+#~ msgstr "video MS ASF"
+
+#~ msgid "MS video"
+#~ msgstr "MS video"
+
+#~ msgid "Macintosh AppleDouble-encoded file"
+#~ msgstr "datoteka kodirana z Macintosh AppleDouble"
+
+#~ msgid "Macintosh BinHex-encoded file"
+#~ msgstr "datoteka kodirana z Macintosh BinHex"
+
+#~ msgid "Macintosh StuffIt archive"
+#~ msgstr "arhiv Macintosh StuffIt"
+
+#~ msgid "Macromedia Flash file"
+#~ msgstr "datoteka Macromedia Flash"
+
+#~ msgid "MathML document"
+#~ msgstr "dokument MathML"
+
+#~ msgid "Microsoft Excel spreadsheet"
+#~ msgstr "preglednica Microsoft Excel"
+
+#~ msgid "Microsoft PowerPoint document"
+#~ msgstr "dokument Microsoft PowerPoint"
+
+#~ msgid "Microsoft Word document"
+#~ msgstr "dokument Micrsofot Word"
+
+#~ msgid "Microsoft video"
+#~ msgstr "video Microsoft"
+
+#~ msgid "Nautilus link"
+#~ msgstr "povezava Nautilusa"
+
+#~ msgid "ODA document"
+#~ msgstr "dokument ODA"
+
+#~ msgid "PBM image"
+#~ msgstr "slika PBM"
+
+#~ msgid "PCF font"
+#~ msgstr "pisava PCF"
+
+#~ msgid "PDF document"
+#~ msgstr "dokument PDF"
+
+#~ msgid "PEF program"
+#~ msgstr "program PEF"
+
+#~ msgid "PGM image"
+#~ msgstr "slika PGM"
+
+#~ msgid "PGN chess game"
+#~ msgstr "igra šaha PGN"
+
+#~ msgid "PGP keys"
+#~ msgstr "ključi PGP"
+
+#~ msgid "PGP message"
+#~ msgstr "sporočilo PGP"
+
+#~ msgid "PGP signature"
+#~ msgstr "podpis PGP"
+
+#~ msgid "PGP-encrypted file"
+#~ msgstr "datoteka zašifrirana s PGP"
+
+#~ msgid "PHP script"
+#~ msgstr "skripta PHP"
+
+#~ msgid "PN RealAudio document"
+#~ msgstr "dokument PN RealAudio"
+
+#~ msgid "PNG image"
+#~ msgstr "slika PNG"
+
+#~ msgid "PNM image"
+#~ msgstr "slika PNM"
+
+#~ msgid "PPM image"
+#~ msgstr "slika PPM"
+
+#~ msgid "Palm OS database"
+#~ msgstr "zbirka podatkov Palm OS"
+
+#~ msgid "Perl script"
+#~ msgstr "skripta perl"
+
+#~ msgid "Photoshop document"
+#~ msgstr "dokument Photoshopa"
+
+#~ msgid "PostScript Type 1 font"
+#~ msgstr "pisava PostScript Type 1"
+
+#~ msgid "PostScript document"
+#~ msgstr "dokument PostScript"
+
+#~ msgid "Python source code"
+#~ msgstr "izvorna koda Python"
+
+#~ msgid "QuickTime movie"
+#~ msgstr "film QuickTime"
+
+#~ msgid "Quicken document"
+#~ msgstr "dokument Quicken"
+
+#~ msgid "Quicken for Windows document"
+#~ msgstr "dokument Quicken za Okna"
+
+#~ msgid "RAR archive"
+#~ msgstr "arhiv RAR"
+
+#~ msgid "README document"
+#~ msgstr "dokument README"
+
+#~ msgid "RGB image"
+#~ msgstr "slika RGB"
+
+#~ msgid "RIFF audio"
+#~ msgstr "zvok RIFF"
+
+#~ msgid "RPM package"
+#~ msgstr "paket RPM"
+
+#~ msgid "RealAudio/Video document"
+#~ msgstr "dokument RealAudio/Video"
+
+#~ msgid "RealVideo video"
+#~ msgstr "video RealVideo"
+
+#~ msgid "S/MIME file"
+#~ msgstr "datoteka S/MIME"
+
+#~ msgid "S/MIME signature"
+#~ msgstr "podpis S/MIME"
+
+#~ msgid "SGI video"
+#~ msgstr "video SGI"
+
+#~ msgid "SGML document"
+#~ msgstr "dokument SGML"
+
+#~ msgid "SMIL script"
+#~ msgstr "skripta SMIL"
+
+#~ msgid "SQL code"
+#~ msgstr "koda SQL"
+
+#~ msgid "SV4 CPIO archive"
+#~ msgstr "arhiv SV4 CPIO"
+
+#~ msgid "SV4 CPIP archive (with CRC)"
+#~ msgstr "arhiv SV4 CPIP (s CRCjem)"
+
+#~ msgid "SVG art"
+#~ msgstr "delo SVG"
+
+#~ msgid "Scream Tracker 3 audio"
+#~ msgstr "zvok Scream tracker 3"
+
+#~ msgid "Scream Tracker audio"
+#~ msgstr "zvok Scream tracker"
+
+#~ msgid "Scream Tracker instrument"
+#~ msgstr "inštrument Scream tracker"
+
+#~ msgid "Setext document"
+#~ msgstr "dokument Setext"
+
+#~ msgid "Speech document"
+#~ msgstr "dokument Speech"
+
+#~ msgid "Speedo font"
+#~ msgstr "pisava Speedo"
+
+#~ msgid "Spreadsheet Interchange document"
+#~ msgstr "izmenjalna preglednica Interexchange"
+
+#~ msgid "Stampede package"
+#~ msgstr "paket Stampede"
+
+#~ msgid "StarOffice Writer document"
+#~ msgstr "dokument StarOffice Writer-ja"
+
+#~ msgid "StarOffice presentation"
+#~ msgstr "predstavitev StarOffice"
+
+#~ msgid "StarOffice spreadsheet"
+#~ msgstr "preglednica StarOffice"
+
+#~ msgid "Sun mu-law audio"
+#~ msgstr "zvok v obliki Sun mu-law"
+
+#~ msgid "SunOS News font"
+#~ msgstr "pisava SunOS News"
+
+#~ msgid "TIFF image"
+#~ msgstr "slika TIFF"
+
+#~ msgid "TarGA image"
+#~ msgstr "slika TarGA"
+
+#~ msgid "Tcl script"
+#~ msgstr "skripta TCL"
+
+#~ msgid "TeX document"
+#~ msgstr "dokument TeX"
+
+#~ msgid "TeX dvi document"
+#~ msgstr "dokument TeX dvi"
+
+#~ msgid "TeX font"
+#~ msgstr "pisava TeX"
+
+#~ msgid "TeX font metrics"
+#~ msgstr "metrika za pisavo TeX"
+
+#~ msgid "TeXInfo document"
+#~ msgstr "dokument TeXInfo"
+
+#~ msgid "ToutDoux document"
+#~ msgstr "dokument ToutDoux"
+
+#~ msgid "TrueType font"
+#~ msgstr "pisava TrueType"
+
+#~ msgid "USENET news message"
+#~ msgstr "sporočilo novičarskih skupin USENET"
+
+#~ msgid "Unidata netCDF document"
+#~ msgstr "dokument Unidata netCDF"
+
+#~ msgid "V font"
+#~ msgstr "pisava oblike V"
+
+#~ msgid "VOC audio"
+#~ msgstr "zvok VOC"
+
+#~ msgid "VRML document"
+#~ msgstr "dokument VRML"
+
+#~ msgid "Vivo video"
+#~ msgstr "video Vivo"
+
+#~ msgid "WAIS source code"
+#~ msgstr "izvorna koda WAIS"
+
+#~ msgid "Wavelet video"
+#~ msgstr "video Wavelet"
+
+#~ msgid "Windows bitmap image"
+#~ msgstr "bitna okenska slika"
+
+#~ msgid "Windows metafile graphics"
+#~ msgstr "metadatoteka okenske grafike"
+
+#~ msgid "WordPerfect document"
+#~ msgstr "dokument WordPerfect"
+
+#~ msgid "X bitmap image"
+#~ msgstr "bitna slika X"
+
+#~ msgid "X window image"
+#~ msgstr "slika okna X"
+
+#~ msgid "XML document"
+#~ msgstr "dokument XML"
+
+#~ msgid "XPM image"
+#~ msgstr "slika XPM"
+
+#~ msgid "Xbase database"
+#~ msgstr "zbirka podatkov Xbase"
+
+#~ msgid "active server page"
+#~ msgstr "aktivna strežniška stran"
+
+#~ msgid "address card"
+#~ msgstr "vizitka"
+
+#~ msgid "ar archive"
+#~ msgstr "arhiv ar"
+
+#~ msgid "arj archive"
+#~ msgstr "arhiv arj"
+
+#~ msgid "authors list"
+#~ msgstr "seznam avtorjev"
+
+#~ msgid "backup file"
+#~ msgstr "varnostna kopija"
+
+#~ msgid "basic audio"
+#~ msgstr "osnovni zvok"
+
+#~ msgid "bibliography record"
+#~ msgstr "bibliografski zapis"
+
+#~ msgid "binary program"
+#~ msgstr "binarni program"
+
+#~ msgid "block device"
+#~ msgstr "blokovna naprava"
+
+#~ msgid "bzip-compressed file"
+#~ msgstr "datoteka komprimirana z bzip"
+
+#~ msgid "calendar file"
+#~ msgstr "datoteka koledarja"
+
+#~ msgid "calendar or event document"
+#~ msgstr "dokument koledarja ali dogodka"
+
+#~ msgid "character device"
+#~ msgstr "znakovna naprava"
+
+#~ msgid "comma-separated text document"
+#~ msgstr "dokument besedila ločenega z vejicami"
+
+#~ msgid "compound document"
+#~ msgstr "združen dokument"
+
+#~ msgid "compress-compressed file"
+#~ msgstr "datoteka komprimirana s compress"
+
+#~ msgid "compressed GIMP document"
+#~ msgstr "komprimiran dokument GIMP"
+
+#~ msgid "directory information file"
+#~ msgstr "datoteka s podatki o imeniku"
+
+#~ msgid "document type definition"
+#~ msgstr "določitev vrste dokumenta"
+
+#~ msgid "email message"
+#~ msgstr "sporočilo e-pošte"
+
+#~ msgid "encrypted message"
+#~ msgstr "šifrirano sporočilo"
+
+#~ msgid "enriched text document"
+#~ msgstr "dokument z obogatenim besedilom"
+
+#~ msgid "gtar archive"
+#~ msgstr "arhiv gtar"
+
+#~ msgid "gzip-compressed file"
+#~ msgstr "daoteka komprimirana z gzip"
+
+#~ msgid "help page"
+#~ msgstr "stran pomoči"
+
+#~ msgid "mail delivery report"
+#~ msgstr "poročilo o dostavi pošte"
+
+#~ msgid "mail disposition report"
+#~ msgstr "poročilo o stanju pošte"
+
+#~ msgid "mail system report"
+#~ msgstr "poročilo o poštnem sistemu"
+
+#~ msgid "makefile"
+#~ msgstr "makefile"
+
+#~ msgid "manual page"
+#~ msgstr "stran priročnika"
+
+#~ msgid "manual page (compressed)"
+#~ msgstr "stran priročnika (komprimirana)"
+
+#~ msgid "message digest"
+#~ msgstr "arhiv sporočil"
+
+#~ msgid "message in several formats"
+#~ msgstr "sporočilo v več oblikah zapisa"
+
+#~ msgid "multi-part message"
+#~ msgstr "več delno sporočilo"
+
+#~ msgid "named pipe"
+#~ msgstr "poimenovana cev"
+
+#~ msgid "object code"
+#~ msgstr "koda predmeta"
+
+#~ msgid "ogg audio"
+#~ msgstr "zvok ogg"
+
+#~ msgid "partial email message"
+#~ msgstr "del e-poštnega sporočila"
+
+#~ msgid "plain text document"
+#~ msgstr "dokument čistega besedila"
+
+#~ msgid "profiler results"
+#~ msgstr "rezultati profiliranja"
+
+#~ msgid "reference to remote file"
+#~ msgstr "navezava na oddaljeno datoteko"
+
+#~ msgid "rejected patch file"
+#~ msgstr "datoteka z zavrnjenim popravkom"
+
+#~ msgid "rich text document"
+#~ msgstr "dokument bogatega besedila"
+
+#~ msgid "search results"
+#~ msgstr "zadetki iskanja"
+
+#~ msgid "shared library"
+#~ msgstr "deljena knižnjica"
+
+#~ msgid "shell archive"
+#~ msgstr "arhiv lupine"
+
+#~ msgid "shell script"
+#~ msgstr "skripta lupine"
+
+#~ msgid "signed message"
+#~ msgstr "podpisano sporočilo"
+
+#~ msgid "socket"
+#~ msgstr "vtič"
+
+#~ msgid "software author credits"
+#~ msgstr "zahvle avtorjem programja"
+
+#~ msgid "software installation instructions"
+#~ msgstr "navodila za namestitev programja"
+
+#~ msgid "software license terms"
+#~ msgstr "pogoji licence programja"
+
+#~ msgid "source code patch"
+#~ msgstr "popravek izvorne kode"
+
+#~ msgid "style sheet"
+#~ msgstr "slogovne predloge"
+
+#~ msgid "symbolic link"
+#~ msgstr "simbolična povezava"
+
+#~ msgid "tab-separated text document"
+#~ msgstr "datoteka z besedilom ločenim s tabulatorji"
+
+#~ msgid "tar archive"
+#~ msgstr "arhiv tar"
+
+#~ msgid "tar archive (bzip2-compressed)"
+#~ msgstr "arhiv tar (komprimiran z bzip2)"
+
+#~ msgid "tar archive (gzip-compressed)"
+#~ msgstr "arhiv tar (komprimiran z gzip)"
+
+#~ msgid "theme"
+#~ msgstr "tema"
+
+#~ msgid "troff document"
+#~ msgstr "dokument troff"
+
+#~ msgid "troff me input document"
+#~ msgstr "vhodni dokument troff me"
+
+#~ msgid "troff mm input document"
+#~ msgstr "vhodni dokument troff mm"
+
+#~ msgid "troff ms input document"
+#~ msgstr "vhodni dokument troff ms"
+
+#~ msgid "unknown type"
+#~ msgstr "neznana vrsta"
+
+#~ msgid "ustar archive"
+#~ msgstr "arhiv ustar"
+
+#~ msgid "wave audio"
+#~ msgstr "zvok wave"
+
+#~ msgid "web folder"
+#~ msgstr "spletna mapa"
+
+#~ msgid "xfig vector graphic"
+#~ msgstr "vektorska grafika xfig"
+
+#~ msgid "zoo archive"
+#~ msgstr "arhiv zoo"
+
+#~ msgid "GNOME VFS already initialized."
+#~ msgstr "GNOME VFS je že inicializiran."
+
+#~ msgid "%s to retrieve"
+#~ msgstr "%s za prenos sem"
+
+#~ msgid "Closing connection to %s"
+#~ msgstr "Zapiram povezavo z %s"
+
+#~ msgid "%s of %s read"
+#~ msgstr "%s od %s prebranih"
+
+#~ msgid "%s read"
+#~ msgstr "%s prebran"
+
+#~ msgid "Dying."
+#~ msgstr "Umira."
+
+#~ msgid "Error reading: %s"
+#~ msgstr "Napaka pri branju: %s"
+
+#~ msgid "Error writing: %s"
+#~ msgstr "Napaka pri pisanju v: %s"
+
+#~ msgid "Cannot write: %s"
+#~ msgstr "Ne morem zapisati v: %s"
+
+#~ msgid "Cannot create temporary file name `%s'"
+#~ msgstr "Ne morem ustvariti začasne datoteke `%s'"
+
+#~ msgid "Cannot create socket: %s"
+#~ msgstr "Ne morem ustvariti vtiča %s"
+
+#~ msgid "Cannot bind `%s': %s"
+#~ msgstr "Ne morem povezati `%s': %s"
+
+#~ msgid "Cannot listen on `%s': %s"
+#~ msgstr "Ne morem poslušati na `%s': %s"
+
+#~ msgid "Cannot accept connections on `%s': %s"
+#~ msgstr "Ne morem sprejeti povezav na `%s': %s"
+
+#~ msgid "Cannot resolve initial reference to RootPOA."
+#~ msgstr "Ne morem razvozlati začetne reference na RootPOA."
+
+#~ msgid "Cannot activate POA manager."
+#~ msgstr "Ne morem aktivirat upravljalca POA."
+
+#~ msgid "Usage: %s <ior> [<ior_fd>]\n"
+#~ msgstr "Uporaba: %s <ior> [<ior_fd>]\n"
+
+#~ msgid "Cannot open file descriptor %d."
+#~ msgstr "Ne morem odpreti datotečnega deskriptorja %d."
+
+#~ msgid "Notify interface for `%s' not found."
+#~ msgstr "Vmesnik za obvestila za `%s' ni bil najden."
+
+#~ msgid "Cannot setup Request object."
+#~ msgstr "Ne morem nastaviti predmeta za zahtevek."
+
+#~ msgid "Cannot extract IOR."
+#~ msgstr "Ne morem izluščiti IORa."
+
+#~ msgid "Got weird string from the slave process: `%s'"
+#~ msgstr "Dobil sem čudno sporočilo od suženjskega procesa: `%s'"
+
+#~ msgid "Cannot get object for `%s'"
+#~ msgstr "Ne morem dobiti predmeta za `%s'"
+
+#~ msgid "Cannot kill GNOME::VFS::Slave::Notify -- exception %s"
+#~ msgstr "Ne morem ubiti GNOME::VFS::Slave::Notify -- izjema %s"
+
+#~ msgid "Cannot connect socket `%s': %s"
+#~ msgstr "Ne morem povezati vtiča `%s': %s"
+
+#~ msgid "Cannot initialize GNOME::VFS:Slave::Notify"
+#~ msgstr "Ne morem inicializirati GNOME::VFS:Slave::Notify"
+
+#~ msgid "Cannot reset GNOME::VFS::Slave %s -- exception %s"
+#~ msgstr "Ne morem ponastaviti GNOME::VFS::Slave %s -- izjema %s"
+
+#~ msgid "Cannot reset GNOME::VFS::Slave (IOR unknown) -- exception %s"
+#~ msgstr "Ne morem ponastaviti GNOME::VFS::Slave (IOR neznan) -- izjema %s"
+
+#~ msgid "Cannot kill GNOME::VFS::Slave %s -- exception %s"
+#~ msgstr "Ne morem ubiti GNOME::VFS::Slave %s -- izjema %s"
+
+#~ msgid "Cannot kill GNOME::VFS::Slave (IOR unknown) -- exception %s"
+#~ msgstr "Ne morem ubiti GNOME::VFS::Slave (neznan IOR) -- izjema %s"
+
+#~ msgid "Back"
+#~ msgstr "Nazaj"
+
+#~ msgid "Go to the previously visited directory"
+#~ msgstr "Pojdi na prej obiskan imenik"
+
+#~ msgid "Up"
+#~ msgstr "Gor"
+
+#~ msgid "Go to the parent directory"
+#~ msgstr "Pojdi v starševski imenik"
+
+#~ msgid "Forward"
+#~ msgstr "Naprej"
+
+#~ msgid "Go to the next visited directory"
+#~ msgstr "Pojdi na naslednji obiskan imenik"
+
+#~ msgid "Rescan"
+#~ msgstr "Osveži"
+
+#~ msgid "Rescan the current directory"
+#~ msgstr "Osveži trenutni imenik"
+
+#~ msgid "Go to the home directory"
+#~ msgstr "Pojdi v domači imenik"
+
+#~ msgid "Size"
+#~ msgstr "Velikost"
+
+#~ msgid "Date"
+#~ msgstr "Datum"
+
+#~ msgid "Enter name:"
+#~ msgstr "Vpišite ime:"
+
+#~ msgid "Show:"
+#~ msgstr "Kaži:"
+
+#~ msgid "Show dotfiles"
+#~ msgstr "Kaži nastavitevene datoteke"
+
+#~ msgid "Edit Applications List"
+#~ msgstr "Uredi seznam programov"
+
+#~ msgid "Select applications to appear in menu for mime type \"%s\""
+#~ msgstr "Izberi programe, ki naj se kažejo v menuju tipov mime \"%s\""
+
+#~ msgid "Add Application..."
+#~ msgstr "Dodaj program..."
+
+#~ msgid "Edit Application..."
+#~ msgstr "Uredi program..."
+
+#~ msgid "Delete Application"
+#~ msgstr "Zbriši program"
+
+#~ msgid "Edit Components List"
+#~ msgstr "Uredi seznam komponent"
+
+#~ msgid "Select views to appear in menu for mime type \"%s\""
+#~ msgstr "Izberi poglede, ki naj se kažejo v menuju tipov mime \"%s\""
+
+#~ msgid ""
+#~ "The MIME type entered contained upper case characters. Upper case "
+#~ "characters were changed to lower case for you."
+#~ msgstr ""
+#~ "Vpisan tip MIME je vseboval velike črke. Samodejno so bile spremenjene v "
+#~ "male."
+
+#~ msgid "Add New MIME Type"
+#~ msgstr "Dodaj nov tip MIME"
+
+#~ msgid "Add Mime Type"
+#~ msgstr "Dodaj tip Mime"
+
+#~ msgid ""
+#~ "Add a new Mime Type\n"
+#~ "For example:  image/tiff; text/x-scheme"
+#~ msgstr ""
+#~ "Dodaj nov tip Mime\n"
+#~ "Na primer:  image/tiff; text/x-scheme"
+
+#~ msgid "Mime Type:"
+#~ msgstr "Tip mime:"
+
+#~ msgid "Type in a description for this mime-type."
+#~ msgstr "Vnesite opis tega tipa mime."
+
+#~ msgid "Description:"
+#~ msgstr "Opis:"
+
+#~ msgid "File Extensions "
+#~ msgstr "Pripone datotek "
+
+#~ msgid "Add..."
+#~ msgstr "Dodaj..."
+
+#~ msgid "    Remove    "
+#~ msgstr "    Odstrani  "
+
+#~ msgid "Add New Extension"
+#~ msgstr "Dodaj novo pripono"
+
+#~ msgid ""
+#~ "Type in the extensions for this mime-type.\n"
+#~ "For example:  .html, .htm"
+#~ msgstr ""
+#~ "Vnesite novo pripono za ta tip mime.\n"
+#~ "Na primer:  .html, .htm"
+
+#~ msgid "Extension:"
+#~ msgstr "Pripona:"
+
+#~ msgid "New Application"
+#~ msgstr "Nov program"
+
+#~ msgid "Application Name:"
+#~ msgstr "Ime programa:"
+
+#~ msgid "Application Command:"
+#~ msgstr "Ukaz programa:"
+
+#~ msgid "Open Behavior"
+#~ msgstr "Odpri obnašanje"
+
+#~ msgid "Can open multiple files"
+#~ msgstr "Lahko odpre več datotek"
+
+#~ msgid "Expects URIs as arguments"
+#~ msgstr "Kot argumente pričakuje URIje"
+
+#~ msgid "Edit Application"
+#~ msgstr "Uredi program"
+
+#~ msgid "Can open from URI"
+#~ msgstr "Lahko odpre iz URI-a"
+
+#~ msgid "Mime Type"
+#~ msgstr "Tip Mime"
+
+#~ msgid "Change File Extensions"
+#~ msgstr "Spremeni pripone datotek"
+
+#~ msgid "Default Action:"
+#~ msgstr "Privzeto dejanje:"
+
+#~ msgid "Use Viewer"
+#~ msgstr "Uporabi pregledovalnik"
+
+#~ msgid "Open With Application"
+#~ msgstr "Odpri s programom"
+
+#~ msgid "Edit List"
+#~ msgstr "Uredi seznam"
+
+#~ msgid "Add new Mime type..."
+#~ msgstr "Dodaj nov tip Mime..."
+
+#~ msgid "Delete this Mime type..."
+#~ msgstr "Zbriši ta tip Mime..."
+
+#~ msgid "Revert to System Defaults"
+#~ msgstr "Vrni na privzete sistemske nastavitve"
+
+#~ msgid "No Description"
+#~ msgstr "Ni opisa"
+
+#~ msgid "None"
+#~ msgstr "Brez"
+
+#~ msgid ""
+#~ "Reverting to system settings\n"
+#~ "will lose all your personal \n"
+#~ "Mime configuration.\n"
+#~ "Revert to System Settings ?\n"
+#~ msgstr ""
+#~ "Vrnitev na privzete sistemske\n"
+#~ "nastavitve bo povzročila izgubo vseh\n"
+#~ "osebnih Mime nastavitev.\n"
+#~ "Vrni na sistemske nastavitve ?\n"
+
+#~ msgid "none"
+#~ msgstr "brez"
+
+#~ msgid "View as %s"
+#~ msgstr "Poglej kot %s"
+
+#~ msgid "Description"
+#~ msgstr "Opis"
+
+#~ msgid "Extension"
+#~ msgstr "Pripona"
+
+#~ msgid "Default Action"
+#~ msgstr "Privzeto Dejanje"
+
+#~ msgid "Can't find an hbox, using a normal file selection"
+#~ msgstr "Ne najdem hbox, uporabljam običajno izbiranje datotek"
+
+#~ msgid "Preview"
+#~ msgstr "Predogled"
+
+#~ msgid "Unknown sort rule %d"
+#~ msgstr "Neznano pravilo urejanja %d"
+
+#~ msgid "Error writing to the wakeup GnomeVFSJob channel."
+#~ msgstr "Napaka pri bujenju kanala GnomeVFSJob."
+
+#~ msgid "Add"
+#~ msgstr "Dodaj"
+
+#~ msgid "Action"
+#~ msgstr "Dejanje"
+
+#~ msgid "HTTP server returned an invalid PROPFIND response"
+#~ msgstr "HTTP strežnik je vrnil napačen PROPFIND odgovor"
+
+#~ msgid "Application ID:"
+#~ msgstr "ID programa:"
+
+#~ msgid "Default Viewer:"
+#~ msgstr "Privzet Prikazovalnik:"
+
+#~ msgid "Select an icon..."
+#~ msgstr "Izberi ikono..."
+
+#~ msgid "No Default"
+#~ msgstr "Ni Privzeto"
+
+#~ msgid "Use None"
+#~ msgstr "Brez"
+
+#~ msgid "ftpfs: Invalid host name."
+#~ msgstr "ftpfs: Neveljavno ime gostitelja."
+
+#~ msgid "ftpfs: Invalid host address."
+#~ msgstr "ftpfs: Neveljaven naslov gostitelja."
+
+#~ msgid "ftpfs: making connection to %s"
+#~ msgstr "ftpfs: ustvarjam povezavo z %s"
+
+#~ msgid "ftpfs: connection interrupted by user"
+#~ msgstr "ftpfs: uporabnik je prekinil povezavo"
+
+#~ msgid "ftpfs: connection to server failed: %s"
+#~ msgstr "ftpfs: povezava do strežnika ni bila uspešna: %s"
+
+#~ msgid "Waiting to retry... %d (Control-C to cancel)"
+#~ msgstr "Čakam na nov poizkus... %d (Control-C za preklic)"
+
+#~ msgid " FTP: Password required for "
+#~ msgstr " FTP: Potrebno je geslo za "
+
+#~ msgid "ftpfs: sending login name"
+#~ msgstr "ftpfs: pošiljam ime za prijavo"
+
+#~ msgid "ftpfs: sending user password"
+#~ msgstr "ftpfs: pošiljam uporabnikovo geslo"
+
+#~ msgid "ftpfs: logged in"
+#~ msgstr "ftpfs: prijavljen sem"
+
+#~ msgid "ftpfs: Login incorrect for user %s "
+#~ msgstr "ftpfs: Napačna prijava za uporabnika %s "
+
+#~ msgid "ftpfs: aborting transfer."
+#~ msgstr "ftpfs: prekinjam prenos."
+
+#~ msgid "ftpfs: abort error: %s"
+#~ msgstr "ftpfs: prekinitvena napaka: %s"
+
+#~ msgid "ftpfs: abort failed"
+#~ msgstr "ftpfs: prekinitev ni uspela"
+
+#~ msgid "ftpfs: could not setup passive mode"
+#~ msgstr "ftpfs: ne morem nastaviti pasivnega načina"
+
+#~ msgid "ftpfs: storing file %d (%d)"
+#~ msgstr "ftpfs: shranjujem datoteko (%d) %D"
+
+#~ msgid "ftpfs: CWD failed."
+#~ msgstr "ftpfs: CWD (sprememba delovnega direktorija) ni uspela."
+
+#~ msgid "ftpfs: couldn't resolve symlink"
+#~ msgstr "ftpfs: ne morem razvozlati simbolične povezave"
+
+#~ msgid "Resolving symlink..."
+#~ msgstr "Razvozljujem simbolno povezavo..."
+
+#~ msgid "ftpfs: Reading FTP directory %s... (don't use UNIX ls options)"
+#~ msgstr "ftpfs: Berem FTP imenik %s... (ne uporabljam UNIX ls opcij)"
+
+#~ msgid "ftpfs: Reading FTP directory %s..."
+#~ msgstr "ftpfs: Berem FTP imenik %s..."
+
+#~ msgid "ftpfs: reading FTP directory interrupt by user"
+#~ msgstr "ftpfs: branje FTP imenika je prekinil uporabnik"
+
+#~ msgid "ftpfs: got listing"
+#~ msgstr "ftpfs: seznam dobljen"
+
+#~ msgid "ftpfs: failed; nowhere to fallback to"
+#~ msgstr "ftpfs: spodletel; ni več možnih rešitev"
+
+#~ msgid "Starting linear transfer..."
+#~ msgstr "Začenjam linearen prenos..."
+
+#~ msgid "Preparing reget..."
+#~ msgstr "Pripraljam ponvni prenos..."

@@ -1,0 +1,121 @@
+<!-- ##### SECTION Title ##### -->
+gnome-vfs-standard-callbacks
+
+<!-- ##### SECTION Short_Description ##### -->
+standard callbacks for use by gnome-vfs module writers
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_AUTHENTICATION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_HTTP_PROXY_AUTHENTICATION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackAuthenticationOut ##### -->
+<para>
+
+</para>
+
+@username: 
+@password: 
+@reserved1: 
+@reserved2: 
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_HTTP_SEND_ADDITIONAL_HEADERS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackAdditionalHeadersIn ##### -->
+<para>
+
+</para>
+
+@uri: 
+@reserved1: 
+@reserved2: 
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackAdditionalHeadersOut ##### -->
+<para>
+
+</para>
+
+@headers: 
+@reserved1: 
+@reserved2: 
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_HTTP_RECEIVED_HEADERS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackReceivedHeadersIn ##### -->
+<para>
+
+</para>
+
+@uri: 
+@headers: 
+@reserved1: 
+@reserved2: 
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackReceivedHeadersOut ##### -->
+<para>
+
+</para>
+
+@dummy: 
+@reserved1: 
+@reserved2: 
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_STATUS_MESSAGE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackStatusMessageIn ##### -->
+<para>
+
+</para>
+
+@uri: 
+@message: 
+@percentage: 
+@reserved1: 
+@reserved2: 
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackStatusMessageOut ##### -->
+<para>
+
+</para>
+
+@dummy: 
+@reserved1: 
+@reserved2: 
+

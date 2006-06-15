@@ -1,0 +1,74 @@
+<!-- ##### SECTION Title ##### -->
+Monitoring
+
+<!-- ##### SECTION Short_Description ##### -->
+
+watch files for changes, and get called back if they do
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gnome_vfs_monitor_add ##### -->
+<para>
+
+</para>
+
+@handle: 
+@text_uri: 
+@monitor_type: 
+@callback: 
+@user_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_monitor_cancel ##### -->
+<para>
+
+</para>
+
+@handle: 
+@Returns: 
+
+
+<!-- ##### ENUM GnomeVFSMonitorType ##### -->
+<para>
+
+</para>
+
+@GNOME_VFS_MONITOR_FILE: 
+@GNOME_VFS_MONITOR_DIRECTORY: 
+
+<!-- ##### ENUM GnomeVFSMonitorEventType ##### -->
+<para>
+
+</para>
+
+@GNOME_VFS_MONITOR_EVENT_CHANGED: 
+@GNOME_VFS_MONITOR_EVENT_DELETED: 
+@GNOME_VFS_MONITOR_EVENT_STARTEXECUTING: 
+@GNOME_VFS_MONITOR_EVENT_STOPEXECUTING: 
+@GNOME_VFS_MONITOR_EVENT_CREATED: 
+@GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED: 
+
+<!-- ##### USER_FUNCTION GnomeVFSMonitorCallback ##### -->
+<para>
+
+</para>
+
+@handle: 
+@monitor_uri: 
+@info_uri: 
+@event_type: 
+@user_data: 
+
+

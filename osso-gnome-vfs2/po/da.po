@@ -1,0 +1,1509 @@
+# Danish translation of gnome-vfs.
+# Copyright (C) 1999, 2000, 01, 02, 03, 04 Free Software Foundation, Inc.
+# This file is distributed under the same license as the gnome-vfs package.
+# Kenneth Christiansen <kenneth@ripen.dk>, 1999.
+# Birger Langkjer <birger.langkjer@image.dk>, 2000.
+# Keld Simonsen <keld@dkuug.dk>, 2000-2001.
+# Ole Laursen <olau@hardworking.dk>, 2001, 02, 03, 04.
+# Martin Willemoes Hansen <mwh@sysrq.dk>, 2004, 05.
+#
+# Konventioner:
+#
+#   script -> program (såfremt det er muligt, hvad det hidtil har været)
+#   video -> film
+#   disc -> skive
+#   disk -> drev
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-vfs CVS\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-06-08 14:08+0200\n"
+"PO-Revision-Date: 2005-06-08 14:08+0200\n"
+"Last-Translator: Martin Willemoes Hansen <mwh@sysrq.dk>\n"
+"Language-Team: Danish <dansk@klid.dk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../daemon/gnome-vfs-daemon.c:596
+msgid "Could not initialize Bonobo"
+msgstr "Kunne ikke klargøre Bonobo"
+
+#: ../daemon/gnome-vfs-daemon.c:603
+msgid "Could not initialize gnome vfs"
+msgstr "Kunne ikke klargøre Gnome-VFS"
+
+#: ../libgnomevfs/gnome-vfs-cdrom.c:237
+msgid "ISO 9660 Volume"
+msgstr "ISO 9660-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:221
+#, c-format
+msgid "%s:%d contains NUL characters."
+msgstr "%s:%d indeholder NUL-tegn."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:238
+#, c-format
+msgid "%s:%d contains no method name."
+msgstr "%s:%d indeholder intet metodenavn."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:278
+#, c-format
+msgid "%s:%d has no options endmarker."
+msgstr "%s:%d har ikke nogen slutmarkør for indstillinger."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:289
+#, c-format
+msgid "%s:%d has unknown options %s."
+msgstr "%s:%d har ukendte indstillinger %s."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:308
+#, c-format
+msgid "%s:%d contains no module name."
+msgstr "%s:%d indeholder intet modulnavn."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:362
+#, c-format
+msgid "Configuration file `%s' was not found: %s"
+msgstr "Konfigurationsfilen '%s' kunne ikke findes: %s"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:37
+msgid "AFFS Volume"
+msgstr "AFFS-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:38
+msgid "AFS Network Volume"
+msgstr "AFS-netværksarkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:39
+msgid "Auto-detected Volume"
+msgstr "Auto-fundet arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:40
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:42
+msgid "CD-ROM Drive"
+msgstr "Cd-rom-drev"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:41
+msgid "CD Digital Audio"
+msgstr "Cd-digital lyd"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:43
+msgid "Hardware Device Volume"
+msgstr "Enhedsarkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:44
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:45
+msgid "Ext2 Linux Volume"
+msgstr "Ext2-Linux-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:46
+msgid "Ext3 Linux Volume"
+msgstr "Ext3-Linux-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:47
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:57
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:58
+msgid "MSDOS Volume"
+msgstr "MSDOS-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:48
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:49
+msgid "MacOS Volume"
+msgstr "MacOS-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:50
+msgid "CDROM Volume"
+msgstr "Cdrom-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:51
+msgid "Hsfs CDROM Volume"
+msgstr "Hsfs cdrom-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:52
+msgid "JFS Volume"
+msgstr "JFS-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:53
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:60
+msgid "Windows NT Volume"
+msgstr "Windows NT-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:54
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:62
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:63
+msgid "System Volume"
+msgstr "Systemarkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:55
+msgid "Memory Volume"
+msgstr "Hukommelsesarkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:56
+msgid "Minix Volume"
+msgstr "Minix-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:59
+msgid "NFS Network Volume"
+msgstr "NFS-netværksarkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:61
+msgid "Netware Volume"
+msgstr "Netware-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:64
+msgid "ReiserFS Linux Volume"
+msgstr "ReiserFS Linux-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:65
+msgid "Windows Shared Volume"
+msgstr "Windows delingsarkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:66
+msgid "SuperMount Volume"
+msgstr "SuperMount-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:67
+msgid "DVD Volume"
+msgstr "DVD-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:68
+msgid "Solaris/BSD Volume"
+msgstr "Solaris/BSD-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:69
+msgid "Udfs Solaris Volume"
+msgstr "Udfs Solaris-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:70
+msgid "Pcfs Solaris Volume"
+msgstr "Pcfs Solaris-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:71
+msgid "Sun SAM-QFS Volume"
+msgstr "Sun SAM-QFS-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:72
+msgid "Enhanced DOS Volume"
+msgstr "Enhanced DOS-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:73
+msgid "Windows VFAT Volume"
+msgstr "Windows VFAT-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:74
+msgid "Xenix Volume"
+msgstr "Xenix-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:75
+msgid "XFS Linux Volume"
+msgstr "XFS Linux-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:76
+msgid "XIAFS Volume"
+msgstr "XIAFS-arkiv"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:104
+msgid "Unknown"
+msgstr "Ukendt"
+
+#: ../libgnomevfs/gnome-vfs-job.c:734
+#, c-format
+msgid "Unknown operation type %u"
+msgstr "Ukendt operationstype %u"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1025 ../libgnomevfs/gnome-vfs-job.c:1176
+#, c-format
+msgid "Cannot create pipe for open GIOChannel: %s"
+msgstr "Kan ikke oprette datakanal til åben GIOChannel: %s"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1699
+#, c-format
+msgid "Unknown job kind %u"
+msgstr "Ukendt jobtype %u"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1732
+msgid "Operation stopped"
+msgstr "Operation stoppet"
+
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:108
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:275
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:326
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:622
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:643
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:663
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:684
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:705
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:856
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:880
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:901
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:922
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:979
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:998
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1017
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1037
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1057
+#: ../libgnomevfs/gnome-vfs-mime-info.c:646
+#: ../libgnomevfs/gnome-vfs-mime-info.c:653
+#: ../libgnomevfs/gnome-vfs-mime-info.c:661
+#: ../libgnomevfs/gnome-vfs-mime-info.c:668
+#: ../libgnomevfs/gnome-vfs-mime-info.c:676
+#: ../libgnomevfs/gnome-vfs-mime-info.c:693
+#: ../libgnomevfs/gnome-vfs-mime-info.c:700
+#: ../libgnomevfs/gnome-vfs-mime-info.c:707
+#: ../libgnomevfs/gnome-vfs-mime-info.c:714
+#: ../libgnomevfs/gnome-vfs-mime-info.c:722
+#: ../libgnomevfs/gnome-vfs-mime-info.c:729
+msgid ""
+"Deprecated function.  User modifications to the MIME database are no longer "
+"supported."
+msgstr ""
+"Forældet funktion. Brugermodificeringer af MIME-databasen er ikke længere "
+"understøttet."
+
+#: ../libgnomevfs/gnome-vfs-parse-ls.c:666
+#, c-format
+msgid "Could not parse: %s"
+msgstr "Kan ikke fortolke: %s"
+
+#: ../libgnomevfs/gnome-vfs-parse-ls.c:668
+msgid "More parsing errors will be ignored."
+msgstr "Yderligere tolkningsfejl bliver ignoreret."
+
+#. GNOME_VFS_OK
+#: ../libgnomevfs/gnome-vfs-result.c:42
+msgid "No error"
+msgstr "Ingen fejl"
+
+#. GNOME_VFS_ERROR_NOT_FOUND
+#: ../libgnomevfs/gnome-vfs-result.c:43
+msgid "File not found"
+msgstr "Filen ikke fundet"
+
+#. GNOME_VFS_ERROR_GENERIC
+#: ../libgnomevfs/gnome-vfs-result.c:44
+msgid "Generic error"
+msgstr "Generel fejl"
+
+#. GNOME_VFS_ERROR_INTERNAL
+#: ../libgnomevfs/gnome-vfs-result.c:45
+msgid "Internal error"
+msgstr "Intern fejl"
+
+#. GNOME_VFS_ERROR_BAD_PARAMETERS
+#: ../libgnomevfs/gnome-vfs-result.c:46
+msgid "Invalid parameters"
+msgstr "Ugyldige parametre"
+
+#. GNOME_VFS_ERROR_NOT_SUPPORTED
+#: ../libgnomevfs/gnome-vfs-result.c:47
+msgid "Unsupported operation"
+msgstr "Ikke-understøttet operation"
+
+#. GNOME_VFS_ERROR_IO
+#: ../libgnomevfs/gnome-vfs-result.c:48
+msgid "I/O error"
+msgstr "I/O-fejl"
+
+#. GNOME_VFS_ERROR_CORRUPTED_DATA
+#: ../libgnomevfs/gnome-vfs-result.c:49
+msgid "Data corrupted"
+msgstr "Ødelagte data"
+
+#. GNOME_VFS_ERROR_WRONG_FORMAT
+#: ../libgnomevfs/gnome-vfs-result.c:50
+msgid "Format not valid"
+msgstr "Ugyldigt format"
+
+#. GNOME_VFS_ERROR_BAD_FILE
+#: ../libgnomevfs/gnome-vfs-result.c:51
+msgid "Bad file handle"
+msgstr "Ugyldigt filhåndtag"
+
+#. GNOME_VFS_ERROR_TOO_BIG
+#: ../libgnomevfs/gnome-vfs-result.c:52
+msgid "File too big"
+msgstr "For stor fil"
+
+#. GNOME_VFS_ERROR_NO_SPACE
+#: ../libgnomevfs/gnome-vfs-result.c:53
+msgid "No space left on device"
+msgstr "Ikke mere plads på enhed"
+
+#. GNOME_VFS_ERROR_READ_ONLY
+#: ../libgnomevfs/gnome-vfs-result.c:54
+msgid "Read-only file system"
+msgstr "Skrivebeskyttet filsystem"
+
+#. GNOME_VFS_ERROR_INVALID_URI
+#: ../libgnomevfs/gnome-vfs-result.c:55
+msgid "Invalid URI"
+msgstr "Ugyldig URI"
+
+#. GNOME_VFS_ERROR_NOT_OPEN
+#: ../libgnomevfs/gnome-vfs-result.c:56
+msgid "File not open"
+msgstr "Uåbnet fil"
+
+#. GNOME_VFS_ERROR_INVALID_OPEN_MODE
+#: ../libgnomevfs/gnome-vfs-result.c:57
+msgid "Open mode not valid"
+msgstr "Ugyldig åbningstilstand"
+
+#. GNOME_VFS_ERROR_ACCESS_DENIED
+#: ../libgnomevfs/gnome-vfs-result.c:58
+msgid "Access denied"
+msgstr "Adgang forbudt"
+
+#. GNOME_VFS_ERROR_TOO_MANY_OPEN_FILES
+#: ../libgnomevfs/gnome-vfs-result.c:59
+msgid "Too many open files"
+msgstr "For mange åbne filer"
+
+#. GNOME_VFS_ERROR_EOF
+#: ../libgnomevfs/gnome-vfs-result.c:60
+msgid "End of file"
+msgstr "Slutning på fil"
+
+#. GNOME_VFS_ERROR_NOT_A_DIRECTORY
+#: ../libgnomevfs/gnome-vfs-result.c:61
+msgid "Not a directory"
+msgstr "Ikke en mappe"
+
+#. GNOME_VFS_ERROR_IN_PROGRESS
+#: ../libgnomevfs/gnome-vfs-result.c:62
+msgid "Operation in progress"
+msgstr "Operation er i gang"
+
+#. GNOME_VFS_ERROR_INTERRUPTED
+#: ../libgnomevfs/gnome-vfs-result.c:63
+msgid "Operation interrupted"
+msgstr "Operation afbrudt"
+
+#. GNOME_VFS_ERROR_FILE_EXISTS
+#: ../libgnomevfs/gnome-vfs-result.c:64
+msgid "File exists"
+msgstr "Filen eksisterer"
+
+#. GNOME_VFS_ERROR_LOOP
+#: ../libgnomevfs/gnome-vfs-result.c:65
+msgid "Looping links encountered"
+msgstr "Fandt henvisninger der peger i ring"
+
+#. GNOME_VFS_ERROR_NOT_PERMITTED
+#: ../libgnomevfs/gnome-vfs-result.c:66
+msgid "Operation not permitted"
+msgstr "Operation ikke tilladt"
+
+#. GNOME_VFS_ERROR_IS_DIRECTORY
+#: ../libgnomevfs/gnome-vfs-result.c:67
+msgid "Is a directory"
+msgstr "Er en mappe"
+
+#. GNOME_VFS_ERROR_NO_MEMORY
+#: ../libgnomevfs/gnome-vfs-result.c:68
+msgid "Not enough memory"
+msgstr "Ikke tilstrækkelig hukommelse"
+
+#. GNOME_VFS_ERROR_HOST_NOT_FOUND
+#: ../libgnomevfs/gnome-vfs-result.c:69
+msgid "Host not found"
+msgstr "Vært ikke fundet"
+
+#. GNOME_VFS_ERROR_INVALID_HOST_NAME
+#: ../libgnomevfs/gnome-vfs-result.c:70
+msgid "Host name not valid"
+msgstr "Ugyldigt værtsnavn"
+
+#. GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS
+#: ../libgnomevfs/gnome-vfs-result.c:71
+msgid "Host has no address"
+msgstr "Vært har ingen adresse"
+
+#. GNOME_VFS_ERROR_LOGIN_FAILED
+#: ../libgnomevfs/gnome-vfs-result.c:72
+msgid "Login failed"
+msgstr "Logind mislykkedes"
+
+#. GNOME_VFS_ERROR_CANCELLED
+#: ../libgnomevfs/gnome-vfs-result.c:73
+msgid "Operation cancelled"
+msgstr "Operation annulleret"
+
+#. GNOME_VFS_ERROR_DIRECTORY_BUSY
+#: ../libgnomevfs/gnome-vfs-result.c:74
+msgid "Directory busy"
+msgstr "Mappen er optaget"
+
+#. GNOME_VFS_ERROR_DIRECTORY_NOT_EMPTY
+#: ../libgnomevfs/gnome-vfs-result.c:75
+msgid "Directory not empty"
+msgstr "Mappen er ikke tomt"
+
+#. GNOME_VFS_ERROR_TOO_MANY_LINKS
+#: ../libgnomevfs/gnome-vfs-result.c:76
+msgid "Too many links"
+msgstr "For mange henvisninger"
+
+#. GNOME_VFS_ERROR_READ_ONLY_FILE_SYSTEM
+#: ../libgnomevfs/gnome-vfs-result.c:77
+msgid "Read only file system"
+msgstr "Skrivebeskyttet filsystem"
+
+#. GNOME_VFS_ERROR_NOT_SAME_FILE_SYSTEM
+#: ../libgnomevfs/gnome-vfs-result.c:78
+msgid "Not on the same file system"
+msgstr "Ikke på det samme filsystem"
+
+#. GNOME_VFS_ERROR_NAME_TOO_LONG
+#: ../libgnomevfs/gnome-vfs-result.c:79
+msgid "Name too long"
+msgstr "Navnet er for langt"
+
+#. GNOME_VFS_ERROR_SERVICE_NOT_AVAILABLE
+#: ../libgnomevfs/gnome-vfs-result.c:80
+msgid "Service not available"
+msgstr "Tjeneste ikke tilgængelig"
+
+#. GNOME_VFS_ERROR_SERVICE_OBSOLETE
+#: ../libgnomevfs/gnome-vfs-result.c:81
+msgid "Request obsoletes service's data"
+msgstr "Forespørgsel overflødiggør tjenestens data"
+
+#. GNOME_VFS_ERROR_PROTOCOL_ERROR
+#: ../libgnomevfs/gnome-vfs-result.c:82
+msgid "Protocol error"
+msgstr "Protokolfejl"
+
+#. GNOME_VFS_ERROR_NO_MASTER_BROWSER
+#: ../libgnomevfs/gnome-vfs-result.c:83
+msgid "Could not find master browser"
+msgstr "Kunne ikke finde hovedbrowser"
+
+#. GNOME_VFS_ERROR_NO_DEFAULT
+#: ../libgnomevfs/gnome-vfs-result.c:84
+msgid "No default action associated"
+msgstr "Ingen forvalgt handling associeret"
+
+#. GNOME_VFS_ERROR_NO_HANDLER
+#: ../libgnomevfs/gnome-vfs-result.c:85
+msgid "No handler for URL scheme"
+msgstr "Ingen håndtering til URL-skema"
+
+#. GNOME_VFS_ERROR_PARSE
+#: ../libgnomevfs/gnome-vfs-result.c:86
+msgid "Error parsing command line"
+msgstr "Fejl ved fortolkning af kommandolinjen"
+
+#. GNOME_VFS_ERROR_LAUNCH
+#: ../libgnomevfs/gnome-vfs-result.c:87
+msgid "Error launching command"
+msgstr "Fejl ved kørsel af kommando"
+
+#. GNOME_VFS_ERROR_TIMEOUT
+#: ../libgnomevfs/gnome-vfs-result.c:88 ../libgnomevfs/gnome-vfs-result.c:90
+msgid "Timeout reached"
+msgstr "Tidsgrænse nået"
+
+#. GNOME_VFS_ERROR_NAMESERVER
+#: ../libgnomevfs/gnome-vfs-result.c:89
+msgid "Nameserver error"
+msgstr "Navneserver-fejl"
+
+#. GNOME_VFS_ERROR_LOCKED
+#: ../libgnomevfs/gnome-vfs-result.c:91
+msgid "The resource is locked"
+msgstr "Ressourcen er låst"
+
+#. GNOME_VFS_ERROR_DEPRECATED_FUNCTION
+#: ../libgnomevfs/gnome-vfs-result.c:92
+msgid "Function call deprecated"
+msgstr "Funktionskaldet er forældet"
+
+#: ../libgnomevfs/gnome-vfs-result.c:217
+msgid "Unknown error"
+msgstr "Ukendt fejl"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:78
+#, c-format
+msgid "%u byte"
+msgid_plural "%u bytes"
+msgstr[0] "%u byte"
+msgstr[1] "%u byte"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:84
+#, c-format
+msgid "%.1f KB"
+msgstr "%.1f kb"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:88
+#, c-format
+msgid "%.1f MB"
+msgstr "%.1f Mb"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:92
+#, c-format
+msgid "%.1f GB"
+msgstr "%.1f Gb"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:1096
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:369
+msgid " (invalid Unicode)"
+msgstr " (ugyldig Unicode)"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:551
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:607
+msgid "Floppy"
+msgstr "Diskette"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:552
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:610
+msgid "CD-ROM"
+msgstr "Cd-rom"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:554
+msgid "CD-R"
+msgstr "Cd-r"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:555
+msgid "CD-RW"
+msgstr "Cd-rw"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:556
+msgid "DVD-ROM"
+msgstr "Dvd-rom"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:557
+msgid "DVD-RAM"
+msgstr "Dvd-ram"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:558
+msgid "DVD-R"
+msgstr "Dvd-r"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:559
+msgid "DVD-RW"
+msgstr "Dvd-rw"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:560
+msgid "CD-ROM/DVD-ROM"
+msgstr "Cd-rom/dvd-rom"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:561
+msgid "CD-ROM/DVD-RAM"
+msgstr "Cd-rom/dvd-ram"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:562
+msgid "CD-ROM/DVD-R"
+msgstr "Cd-rom/dvd-r"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:563
+msgid "CD-ROM/DVD-RW"
+msgstr "Cd-rom/dvd-rw"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:564
+msgid "CD-R/DVD-ROM"
+msgstr "Cd-r/dvd-rom"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:565
+msgid "CD-R/DVD-RAM"
+msgstr "Cd-r/dvd-ram"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:566
+msgid "CD-R/DVD-R"
+msgstr "Cd-r/dvd-r"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:567
+msgid "CD-R/DVD-RW"
+msgstr "Cd-r/dvd-rw"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:568
+msgid "CD-RW/DVD-ROM"
+msgstr "Cd-rw/dvd-rom"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:569
+msgid "CD-RW/DVD-RAM"
+msgstr "Cd-rw/dvd-ram"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:570
+msgid "CD-RW/DVD-R"
+msgstr "Cd-rw/dvd-r"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:571
+msgid "CD-RW/DVD-RW"
+msgstr "Cd-rw/dvd-rw"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:573
+msgid "Disk"
+msgstr "Disk"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:574
+msgid "USB Drive"
+msgstr "USB-drev"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:575
+msgid "IEEE1394 Drive"
+msgstr "IEEE1394-drev"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:576
+msgid "CF"
+msgstr "CF"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:577
+msgid "SD/MMC"
+msgstr "SD/MMC"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:578
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:582
+msgid "Memory Stick"
+msgstr "Hukommelsesstang"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:579
+msgid "Smart Media"
+msgstr "Smart Media"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:581
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:613
+msgid "Zip Drive"
+msgstr "Zip-drev"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:583
+msgid "Camera"
+msgstr "Kamera"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:584
+msgid "DVD"
+msgstr "Dvd"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:807
+msgid "Root Volume"
+msgstr "Rodarkiv"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:888
+msgid "Audio CD"
+msgstr "Lyd-cd"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:921
+msgid "Unknown volume"
+msgstr "Ukendt arkiv"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:1109
+msgid "Network server"
+msgstr "Netværksserver"
+
+#. Handle floppy case
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:120
+msgid ""
+"Unable to mount the floppy drive. There is probably no floppy in the drive."
+msgstr ""
+"Kan ikke montere diskettedrevet. Der er sandsynligvis ingen diskette i "
+"drevet."
+
+#. All others
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:124
+msgid "Unable to mount the volume. There is probably no media in the device."
+msgstr "Kan ikke montere arkivet. Der er sandsynligvis intet medium i enheden."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:130
+msgid ""
+"Unable to mount the floppy drive. The floppy is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"Kan ikke montere diskettedrevet. Disketten er sandsynligvis i et format der "
+"ikke kan monteres."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:133
+msgid ""
+"Unable to mount the selected volume. The volume is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"Kan ikke montere det valgte arkiv. Arkivet er sandsynligvis i et format der "
+"ikke kan monteres."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:138
+msgid "Unable to mount the selected floppy drive."
+msgstr "Kan ikke montere det valgte diskettedrev."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:140
+msgid "Unable to mount the selected volume."
+msgstr "Kan ikke montere det valgte arkiv."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:152
+msgid "Unable to unmount the selected volume."
+msgstr "Kan ikke afmontere det valgte arkiv."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:264
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:320
+msgid "Failed to start command"
+msgstr "Det mislykkedes at starte kommando"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:308
+msgid "Unable to eject media"
+msgstr "Kan ikke skubbe medium ud"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:511
+msgid "Unable to unmount connected server"
+msgstr "Kan ikke afmontere tilsluttet server"
+
+#: ../modules/computer-method.c:546
+msgid "Network"
+msgstr "Netværk"
+
+#: ../modules/computer-method.c:564
+msgid "Home"
+msgstr "Hjem"
+
+#: ../modules/computer-method.c:582
+msgid "Filesystem"
+msgstr "Filsystem"
+
+#: ../modules/file-method.c:536
+#, c-format
+msgid "Unknown GnomeVFSSeekPosition %d"
+msgstr "Ukendt GnomeVFSSeekPosition %d"
+
+#: ../modules/network-method.c:1399
+msgid "Windows Network"
+msgstr "Windows-netværk"
+
+#: ../modules/sftp-method.c:1314
+#, c-format
+msgid "The identity of the remote computer (%s) is unknown."
+msgstr "Identitet på den fjerne maskine (%s) er ukendt."
+
+#: ../modules/sftp-method.c:1315
+#, c-format
+msgid ""
+"This happens when you log in to a computer the first time.\n"
+"\n"
+"The identity sent by the remote computer is %s. If you want to be absolutely "
+"sure it is safe to continue, contact the system administrator."
+msgstr ""
+"Dette forekommer når du logger på en maskine for første gang.\n"
+"\n"
+"Identiteten sendt fra den fjerne maskine er %s. Hvis du vil være absolut "
+"sikker på at det er sikkert at fortsætte, kan du kontakte "
+"systemadministratoren."
+
+#: ../modules/sftp-method.c:1323
+msgid "Log In Anyway"
+msgstr "Log på alligevel"
+
+#: ../modules/sftp-method.c:1324
+msgid "Cancel Login"
+msgstr "Annullér log ind"
+
+#. FIXME: we probably shouldn't use printf to output the message
+#: ../modules/test-method.c:587
+#, c-format
+msgid "Didn't find a valid settings file at %s\n"
+msgstr "Fandt ikke en gyldig opsætningsfil ved %s\n"
+
+#: ../modules/test-method.c:589
+#, c-format
+msgid "Use the %s environment variable to specify a different location.\n"
+msgstr "Brug miljøvariablen %s til at angive en anden placering.\n"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:1
+msgid "Standard Moniker factory"
+msgstr "Fabrik for standardprotokolhåndtering"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:2
+msgid "file MonikerExtender"
+msgstr "fil-MonikerExtender"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:3
+msgid "generic Gnome VFS moniker"
+msgstr "generel Gnome VFS-protokolhåndtering"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:4
+msgid "generic file moniker"
+msgstr "generel filprotokolhåndtering"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:1
+msgid "Default component viewer application"
+msgstr "Forvalgt komponentfremviser"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:2
+msgid "Default terminal application"
+msgstr "Forvalgt terminalprogram"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:3
+msgid "Exec argument for default terminal"
+msgstr "Kørselsparameter for forvalgt terminal"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:5
+#, no-c-format
+msgid ""
+"The application to use for viewing files that require a component to view "
+"them. The parameter %s will be replaced by the file's URIs, the parameter %c "
+"will be replaced by the component IID."
+msgstr ""
+"Det program der skal bruges til at vise filer der kræver en komponent for at "
+"vise dem. Parameteren %s vil blive erstattet af filens adresser, parameteren "
+"%c vil blive erstattet med komponentens IID."
+
+#: ../schemas/desktop_default_applications.schemas.in.h:6
+msgid ""
+"The default terminal application to use for applications that require a "
+"terminal."
+msgstr "Det forvalgte terminalprogram til programmer der kræver en terminal."
+
+#: ../schemas/desktop_default_applications.schemas.in.h:7
+msgid "The exec argument to use for the default terminal application."
+msgstr "Kørselsparameter der skal bruges til det forvalgte terminalprogram."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:1
+msgid "Run the command in a terminal"
+msgstr "Kør kommandoen i en terminal"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:2
+msgid "The command used to handle \"aim\" URLs, if enabled."
+msgstr ""
+"Kommandoen der bruges til at håndtere \"aim\"-adresser, hvis aktiveret."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:3
+msgid "The command used to handle \"callto\" URLs, if enabled."
+msgstr ""
+"Kommandoen der bruges til at håndtere \"callto\"-adresser, hvis aktiveret."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:4
+msgid "The command used to handle \"ghelp\" URLs, if enabled."
+msgstr ""
+"Kommandoen der bruges til at håndtere \"ghelp\"-adresser, hvis aktiveret."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:5
+msgid "The command used to handle \"h323\" URLs, if enabled."
+msgstr ""
+"Kommandoen der bruges til at håndtere \"h323\"-adresser, hvis aktiveret."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:6
+msgid "The command used to handle \"http\" URLs, if enabled."
+msgstr ""
+"Kommandoen der bruges til at håndtere \"http\"-adresser, hvis aktiveret."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:7
+msgid "The command used to handle \"https\" URLs, if enabled."
+msgstr ""
+"Kommandoen der bruges til at håndtere \"https\"-adresser, hvis aktiveret."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:8
+msgid "The command used to handle \"info\" URLs, if enabled."
+msgstr ""
+"Kommandoen der bruges til at håndtere \"info\"-adresser, hvis aktiveret."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:9
+msgid "The command used to handle \"mailto\" URLs, if enabled."
+msgstr ""
+"Kommandoen der bruges til at håndtere \"mailto\"-adresser, hvis aktiveret."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:10
+msgid "The command used to handle \"man\" URLs, if enabled."
+msgstr ""
+"Kommandoen der bruges til at håndtere \"man\"-adresser, hvis aktiveret."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:11
+msgid "The command used to handle \"trash\" URLs, if enabled."
+msgstr ""
+"Kommandoen der bruges til at håndtere \"trash\"-adresser, hvis aktiveret."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:12
+msgid "The handler for \"aim\" URLs"
+msgstr "Håndtering af \"aim\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:13
+msgid "The handler for \"callto\" URLs"
+msgstr "Håndtering af \"callto\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:14
+msgid "The handler for \"ghelp\" URLs"
+msgstr "Håndtering af \"ghelp\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:15
+msgid "The handler for \"h323\" URLs"
+msgstr "Håndtering af \"h323\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:16
+msgid "The handler for \"http\" URLs"
+msgstr "Håndtering af \"http\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:17
+msgid "The handler for \"https\" URLs"
+msgstr "Håndtering af \"https\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:18
+msgid "The handler for \"info\" URLs"
+msgstr "Håndtering af \"info\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:19
+msgid "The handler for \"mailto\" URLs"
+msgstr "Håndtering af \"mailto\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:20
+msgid "The handler for \"man\" URLs"
+msgstr "Håndtering af \"man\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:21
+msgid "The handler for \"trash\" URLs"
+msgstr "Håndtering af \"trash\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:22
+msgid ""
+"True if the command specified in the \"command\" key should handle \"aim\" "
+"URLs."
+msgstr ""
+"Sand hvis kommandoen angivet i \"command\"-nøglen, håndtere \"aim\"-adresser."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:23
+msgid ""
+"True if the command specified in the \"command\" key should handle \"callto"
+"\" URLs."
+msgstr ""
+"Sand hvis kommandoen angivet i \"command\"-nøglen, håndtere \"callto\"-"
+"adresser."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:24
+msgid ""
+"True if the command specified in the \"command\" key should handle \"ghelp\" "
+"URLs."
+msgstr ""
+"Sand hvis kommandoen angivet i \"command\"-nøglen håndtere \"ghelp\"-"
+"adresser."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:25
+msgid ""
+"True if the command specified in the \"command\" key should handle \"h323\" "
+"URLs."
+msgstr ""
+"Sand hvis kommandoen angivet i \"command\"-nøglen håndtere \"h323\"-adresser."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:26
+msgid ""
+"True if the command specified in the \"command\" key should handle \"http\" "
+"URLs."
+msgstr ""
+"Sand hvis kommandoen angivet i \"command\"-nøglen håndtere \"http\"-adresser."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:27
+msgid ""
+"True if the command specified in the \"command\" key should handle \"https\" "
+"URLs."
+msgstr ""
+"Sand hvis kommandoen angivet i \"command\"-nøglen håndtere \"https\"-"
+"adresser."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:28
+msgid ""
+"True if the command specified in the \"command\" key should handle \"info\" "
+"URLs."
+msgstr ""
+"Sand hvis kommandoen angivet i \"command\"-nøglen håndtere \"info\"-adresser."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:29
+msgid ""
+"True if the command specified in the \"command\" key should handle \"mailto"
+"\" URLs."
+msgstr ""
+"Sand hvis kommandoen angivet i \"command\"-nøglen håndtere \"mailto\"-"
+"adresser."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:30
+msgid ""
+"True if the command specified in the \"command\" key should handle \"man\" "
+"URLs."
+msgstr ""
+"Sand hvis kommandoen angivet i \"command\"-nøglen håndtere \"man\"-adresser."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:31
+msgid ""
+"True if the command specified in the \"command\" key should handle \"trash\" "
+"URLs."
+msgstr ""
+"Sand hvis kommandoen angivet i \"command\"-nøglen håndtere \"trash\"-"
+"adresser."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:32
+msgid ""
+"True if the command used to handle this type of URL should be run in a "
+"terminal."
+msgstr ""
+"Sand hvis kommandoen til at håndtere denne adresse skal køres i en terminal."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:33
+msgid "Whether the specified command should handle \"aim\" URLs"
+msgstr "Om den specificerede kommando skal håndtere \"aim\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:34
+msgid "Whether the specified command should handle \"callto\" URLs"
+msgstr "Om den specificerede kommando skal håndtere \"callto\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:35
+msgid "Whether the specified command should handle \"ghelp\" URLs"
+msgstr "Om den specificerede kommando skal håndtere \"ghelp\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:36
+msgid "Whether the specified command should handle \"h323\" URLs"
+msgstr "Om den specificerede kommando skal håndtere \"h323\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:37
+msgid "Whether the specified command should handle \"http\" URLs"
+msgstr "Om den specificerede kommando skal håndtere \"http\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:38
+msgid "Whether the specified command should handle \"https\" URLs"
+msgstr "Om den specificerede kommando skal håndtere \"https\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:39
+msgid "Whether the specified command should handle \"info\" URLs"
+msgstr "Om det specificerde program skal håndtere \"info\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:40
+msgid "Whether the specified command should handle \"mailto\" URLs"
+msgstr "Om den specificerede kommando skal håndtere \"mailto\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:41
+msgid "Whether the specified command should handle \"man\" URLs"
+msgstr "Om den specificerede kommando skal håndtere \"man\"-adresser"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:42
+msgid "Whether the specified command should handle \"trash\" URLs"
+msgstr "Om den specificerede kommando skal håndtere \"trash\"-adresser"
+
+#: ../schemas/system_dns_sd.schemas.in.h:1
+msgid ""
+"Comma separated list of DNS-SD domains that should be visible in the "
+"\"network:///\" location."
+msgstr ""
+"Komma-adskilt liste af DNS-SD-domæner som skal være synlige i \"network:///"
+"\"-stedet."
+
+#: ../schemas/system_dns_sd.schemas.in.h:2
+msgid "Extra domains to look for DNS-SD services in"
+msgstr "Ekstra domæner til at kigge efter DNS-SD-tjenester i"
+
+#: ../schemas/system_dns_sd.schemas.in.h:3
+msgid "How to display local DNS-SD service"
+msgstr "Hvordan en lokal DNS-SD-tjeneste skal vises"
+
+#: ../schemas/system_dns_sd.schemas.in.h:4
+msgid "Possible values are \"merged\", \"separate\" and \"disabled\"."
+msgstr "Mulige værdier er \"merged\", \"separate\" og \"disabled\"."
+
+#: ../schemas/system_http_proxy.schemas.in.h:1
+msgid "Authenticate proxy server connections"
+msgstr "Brugergodkendelse ved mellemværtstilslutninger"
+
+#: ../schemas/system_http_proxy.schemas.in.h:2
+msgid "Automatic proxy configuration URL"
+msgstr "Automatisk mellemværtskonfigurationsadresse"
+
+#: ../schemas/system_http_proxy.schemas.in.h:3
+msgid "Enables the proxy settings when accessing HTTP over the Internet."
+msgstr "Aktivér mellemværtsindstillingerne ved HTTP over internettet."
+
+#: ../schemas/system_http_proxy.schemas.in.h:4
+msgid "FTP proxy host name"
+msgstr "FTP-mellemværtsnavn"
+
+#: ../schemas/system_http_proxy.schemas.in.h:5
+msgid "FTP proxy port"
+msgstr "FTP-mellemværtsport"
+
+#: ../schemas/system_http_proxy.schemas.in.h:6
+msgid "HTTP proxy host name"
+msgstr "HTTP-mellemværtsnavn"
+
+#: ../schemas/system_http_proxy.schemas.in.h:7
+msgid "HTTP proxy password"
+msgstr "HTTP-mellemværtsadgangskode"
+
+#: ../schemas/system_http_proxy.schemas.in.h:8
+msgid "HTTP proxy port"
+msgstr "HTTP-mellemværtsport"
+
+#: ../schemas/system_http_proxy.schemas.in.h:9
+msgid "HTTP proxy username"
+msgstr "HTTP-mellemværtsbrugernavn"
+
+#: ../schemas/system_http_proxy.schemas.in.h:10
+msgid ""
+"If true, then connections to the proxy server require authentication. The "
+"username/password combo is defined by \"/system/http_proxy/"
+"authentication_user\" and \"/system/http_proxy/authentication_password\"."
+msgstr ""
+"Hvis sand, kræver tilslutningerne til mellemværten brugergodkendelse. "
+"Brugernavn-/adgangskodekombinationen er defineret i \"/system/http_proxy/"
+"authentication_user\" og \"/system/http_proxy/authentication_password\"."
+
+#: ../schemas/system_http_proxy.schemas.in.h:11
+msgid "Non-proxy hosts"
+msgstr "Værter uden mellemvært"
+
+#: ../schemas/system_http_proxy.schemas.in.h:12
+msgid "Password to pass as authentication when doing HTTP proxying."
+msgstr "Adgangskode der skal gives som brugergodkendelse for HTTP-mellemvært."
+
+#: ../schemas/system_http_proxy.schemas.in.h:13
+msgid "Proxy configuration mode"
+msgstr "Mellemværtstilstand"
+
+#: ../schemas/system_http_proxy.schemas.in.h:14
+msgid "SOCKS proxy host name"
+msgstr "SOCKS-mellemværtsnavn"
+
+#: ../schemas/system_http_proxy.schemas.in.h:15
+msgid "SOCKS proxy port"
+msgstr "SOCKS-mellemværtsport"
+
+#: ../schemas/system_http_proxy.schemas.in.h:16
+msgid "Secure HTTP proxy host name"
+msgstr "Sikker HTTP-mellemværtsnavn"
+
+#: ../schemas/system_http_proxy.schemas.in.h:17
+msgid "Secure HTTP proxy port"
+msgstr "Sikker HTTP-mellemværtsport"
+
+#: ../schemas/system_http_proxy.schemas.in.h:18
+msgid ""
+"Select the proxy configuration mode. Supported values are \"none\", \"manual"
+"\", \"auto\"."
+msgstr ""
+"Vælg mellemværtkonfigurationen. Mulige værdier er \"none\", \"manual\", "
+"\"auto\"."
+
+#: ../schemas/system_http_proxy.schemas.in.h:19
+msgid "The machine name to proxy FTP through."
+msgstr "Maskinnavn som FTP-trafik skal gå gennem."
+
+#: ../schemas/system_http_proxy.schemas.in.h:20
+msgid "The machine name to proxy HTTP through."
+msgstr "Maskinnavn som HTTP-trafik skal gå gennem."
+
+#: ../schemas/system_http_proxy.schemas.in.h:21
+msgid "The machine name to proxy secure HTTP through."
+msgstr "Maskinnavn som sikker HTTP-trafik skal gå gennem."
+
+#: ../schemas/system_http_proxy.schemas.in.h:22
+msgid "The machine name to proxy socks through."
+msgstr "Maskinnavn som SOCKS-trafik skal gå gennem."
+
+#: ../schemas/system_http_proxy.schemas.in.h:23
+msgid ""
+"The port on the machine defined by \"/system/http_proxy/host\" that you "
+"proxy through."
+msgstr ""
+"Porten på den maskine defineret af \"/system/http_proxy/host\" som trafikken "
+"skal gå gennem."
+
+#: ../schemas/system_http_proxy.schemas.in.h:24
+msgid ""
+"The port on the machine defined by \"/system/proxy/ftp_host\" that you proxy "
+"through."
+msgstr ""
+"Porten på den maskine defineret af \"/system/proxy/ftp_host\" som trafikken "
+"skal gå gennem."
+
+#: ../schemas/system_http_proxy.schemas.in.h:25
+msgid ""
+"The port on the machine defined by \"/system/proxy/secure_host\" that you "
+"proxy through."
+msgstr ""
+"Porten på den maskine defineret af \"/system/proxy/secure_host\" som "
+"trafikken skal gå gennem."
+
+#: ../schemas/system_http_proxy.schemas.in.h:26
+msgid ""
+"The port on the machine defined by \"/system/proxy/socks_host\" that you "
+"proxy through."
+msgstr ""
+"Porten på den maskine defineret af \"/system/proxy/socks_host\" som "
+"trafikken skal gå gennem."
+
+#: ../schemas/system_http_proxy.schemas.in.h:27
+msgid ""
+"This key contains a list of hosts which are connected to directly, rather "
+"than via the proxy (if it is active). The values can be hostnames, domains "
+"(using an initial wildcard like *.foo.com), IP host addresses (both IPv4 and "
+"IPv6) and network addresses with a netmask (something like 192.168.0.0/24)."
+msgstr ""
+"Denne nøgle indeholder en liste af værter som der skal tilsluttes til "
+"direkte i stedet for gennem mellemværten (hvis den er aktiv). Værdierne kan "
+"være værtsnavne, domæner (med et indledende jokertegn som f.eks. *.foo.dk), "
+"IP-værtsadresser (både IPv4 og IPv6) og netværksadresser med et netmaske "
+"(som f.eks. 192.168.0.0/24)."
+
+#: ../schemas/system_http_proxy.schemas.in.h:28
+msgid "URL that provides proxy configuration values."
+msgstr "Adresse som tilbyder konfigurationsværdier for mellemvært."
+
+#: ../schemas/system_http_proxy.schemas.in.h:29
+msgid "Use HTTP proxy"
+msgstr "Benyt HTTP-mellemvært"
+
+#: ../schemas/system_http_proxy.schemas.in.h:30
+msgid "User name to pass as authentication when doing HTTP proxying."
+msgstr ""
+"Brugernavn der skal videregives til brugergodkendelse til HTTP-mellemvært."
+
+#: ../schemas/system_smb.schemas.in.h:1
+msgid "SMB workgroup"
+msgstr "SMB-arbejdsgruppe"
+
+#: ../schemas/system_smb.schemas.in.h:2
+msgid ""
+"The Windows networking workgroup or domain that the user is part of. In "
+"order for a new workgroup to fully take effect the user may need to log out "
+"and log back in."
+msgstr ""
+"Windows netværks-arbejdsgruppen eller domænet som brugeren er en del af. For "
+"at en ny arbejdsgruppe er komplet aktiveret skal brugeren muligvis logge ud "
+"og logge ind igen."
+
+#~ msgid "The window workgroup the user is part of"
+#~ msgstr "Den Windows-arbejdsgruppe som brugeren er en del af"
+
+#~ msgid "CD-ROM Disc"
+#~ msgstr "Cd-rom-skive"
+
+#~ msgid "Blank CD-R Disc"
+#~ msgstr "Blank cd-r-skive"
+
+#~ msgid "CD-R Disc"
+#~ msgstr "Cd-r-skive"
+
+#~ msgid "Blank CD-RW Disc"
+#~ msgstr "Blank cd-rw-skive"
+
+#~ msgid "CD-RW Disc"
+#~ msgstr "Cd-rw-skive"
+
+#~ msgid "DVD-ROM Disc"
+#~ msgstr "Dvd-rom-skive"
+
+#~ msgid "Blank DVD-R Disc"
+#~ msgstr "Blank dvd-r-skive"
+
+#~ msgid "DVD-R Disc"
+#~ msgstr "Dvd-r-skive"
+
+#~ msgid "Blank DVD-RAM Disc"
+#~ msgstr "Blank dvd-ram-skive"
+
+#~ msgid "DVD-RAM Disc"
+#~ msgstr "Dvd-ram-skive"
+
+#~ msgid "Blank DVD-RW Disc"
+#~ msgstr "Blank dvd-rw-skive"
+
+#~ msgid "DVD-RW Disc"
+#~ msgstr "Dvd-rw-skive"
+
+#~ msgid "Blank DVD+RW Disc"
+#~ msgstr "Blank dvd+rw-skive"
+
+#~ msgid "DVD+RW Disc"
+#~ msgstr "Dvd+rw-skive"
+
+#~ msgid "Blank DVD+R Disc"
+#~ msgstr "Blank dvd+r-skive"
+
+#~ msgid "DVD+R Disc"
+#~ msgstr "Dvd+r-skive"
+
+#~ msgid "Optical Disc"
+#~ msgstr "Optisk-skive"
+
+#~ msgid "Audio Disc"
+#~ msgstr "Lyd-skive"
+
+#~ msgid "Compact Flash Media"
+#~ msgstr "Compact Flash-medie"
+
+#~ msgid "Memory Stick Media"
+#~ msgstr "Memory Stick-medie"
+
+#~ msgid "Smart Media Media"
+#~ msgstr "Smart Media-medie"
+
+#~ msgid "SD/MMC Media"
+#~ msgstr "SD/MMC-medie"
+
+#~ msgid "Floppy Disk"
+#~ msgstr "Diskette"
+
+#~ msgid "Mac OS disk"
+#~ msgstr "Mac OS-drev"
+
+#~ msgid "Mac OS X disk"
+#~ msgstr "Mac OS X-drev"
+
+#~ msgid "Windows Disk"
+#~ msgstr "Windows-drev"
+
+#~ msgid "Linux Disk"
+#~ msgstr "Linux-drev"
+
+#~ msgid "File could not be opened: %s"
+#~ msgstr "Filen kunne ikke åbnes: %s"
+
+#~ msgid "Failed to open file '%s': %s"
+#~ msgstr "Kunne ikke åbne fil '%s': %s"
+
+#~ msgid "File is empty"
+#~ msgstr "Filen er tom"
+
+#~ msgid "Failed to read from file '%s': %s"
+#~ msgstr "Kunne ikke læse fra fil '%s': %s"
+
+#~ msgid ""
+#~ "desktop entries contain line '%s' which is not an entry, group, or comment"
+#~ msgstr ""
+#~ "skrivebordselementer indeholder linjen '%s' hvilket ikke er et element, "
+#~ "en gruppe eller en kommentar"
+
+#~ msgid "desktop entries file does not start with legal start group"
+#~ msgstr "skrivebordselementer-filen starter ikke med en gyldig start-gruppe"
+
+#~ msgid "desktop entries contain line '%s' which is not UTF-8"
+#~ msgstr "skrivebordselementer indeholder linjen '%s' hvilket ikke er UTF-8"
+
+#~ msgid "desktop entries contain unknown encoding '%s'"
+#~ msgstr "skrivebordselementer indeholder ukendt indkodning '%s'"
+
+#~ msgid "desktop entries do not have group '%s'"
+#~ msgstr "skrivebordselementer har ikke gruppen '%s'"
+
+#~ msgid "desktop entries do not have key '%s'"
+#~ msgstr "skrivebordselementer har ikke nøgle '%s'"
+
+#~ msgid ""
+#~ "desktop entries contain key '%s' which has value that cannot be "
+#~ "interpreted."
+#~ msgstr ""
+#~ "skrivebordselementer indeholder nøgle '%s' med en værdi der ikke kan "
+#~ "fortolkes."
+
+#~ msgid ""
+#~ "desktop entries contain no translated value for key '%s' with locale '%s'."
+#~ msgstr ""
+#~ "skrivebordselementer indeholder ingen oversat værdi for nøgle '%s' med "
+#~ "regionaldata '%s'."
+
+#~ msgid "desktop entries contain invalid escape sequence '%s'"
+#~ msgstr "skrivebordselementer indeholder ugyldig undvigesekvens '%s'"
+
+#~ msgid "desktop entries contain escape character at end of line"
+#~ msgstr "skrivebordselementer indeholder undvige-tegn for enden af linjen"
+
+#~ msgid "Value '%s' cannot be interpreted as a number."
+#~ msgstr "Værdi '%s' kan ikke fortolkes som et nummer."
+
+#~ msgid "Value '%s' cannot be interpreted as a boolean."
+#~ msgstr "Værdi '%s' kan ikke fortolkes som en sandhedsværdi."
+
+#~ msgid "Applications"
+#~ msgstr "Programmer"
+
+#~ msgid "Cards"
+#~ msgstr "Kort"
+
+#~ msgid "Files"
+#~ msgstr "Filer"
+
+#~ msgid "Folders"
+#~ msgstr "Mapper"
+
+#~ msgid "Help"
+#~ msgstr "Hjælp"
+
+#~ msgid "Hosts"
+#~ msgstr "Værter"
+
+#~ msgid "Links"
+#~ msgstr "Henvisninger"
+
+#~ msgid "Mail"
+#~ msgstr "Post"
+
+#~ msgid "Tools"
+#~ msgstr "Værktøjer"
+
+#~ msgid "Windows"
+#~ msgstr "Vinduer"
+
+#~ msgid "CD Disc"
+#~ msgstr "Cd-skive"
+
+#~ msgid "The command used to handle HTTP URLs, if enabled."
+#~ msgstr ""
+#~ "Kommandoen der bruges til at håndtere HTTP-adresser, hvis aktiveret."
+
+#~ msgid "The command used to handle HTTPS URLs, if enabled."
+#~ msgstr ""
+#~ "Kommandoen der bruges til at håndtere HTTPS-adresser, hvis aktiveret."
+
+#~ msgid "The handler for HTTP URLs"
+#~ msgstr "Håndtering af HTTP-adresser"
+
+#~ msgid "The handler for HTTPS URLs"
+#~ msgstr "Håndtering af HTTPS-adresser"
+
+#~ msgid ""
+#~ "True if the command specified in the \"command\" key should handle HTTP "
+#~ "URLs."
+#~ msgstr ""
+#~ "Sand hvis kommandoen angivet i \"command\"-nøglen til at håndtere HTTP-"
+#~ "adresser."
+
+#~ msgid ""
+#~ "True if the command specified in the \"command\" key should handle HTTPS "
+#~ "URLs."
+#~ msgstr ""
+#~ "Sand hvis kommandoen angivet i \"command\"-nøglen håndtere HTTPS-adresser."
+
+#~ msgid "Whether the specified command should handle HTTP URLs"
+#~ msgstr "Om den specificerede kommando skal håndtere HTTP-adresser"
+
+#~ msgid "Whether the specified command should handle HTTPS URLs"
+#~ msgstr "Om den specificerede kommando skal håntere HTTPS-adresser"
+
+#~ msgid "H323 URL handler"
+#~ msgstr "H323 URL-håndtering"
+
+#~ msgid "HTTP URL handler"
+#~ msgstr "HTTP URL-håndtering"
+
+#~ msgid "HTTPS URL handler"
+#~ msgstr "HTTPS URL-håndtering"
+
+#~ msgid "aim URL handler"
+#~ msgstr "aim URL-håndtering"
+
+#~ msgid "callto URL handler"
+#~ msgstr "callto URL-håndtering"
+
+#~ msgid "ghelp URL handler"
+#~ msgstr "ghelp URL-håndtering"
+
+#~ msgid "info URL handler"
+#~ msgstr "info URL-håndtering"
+
+#~ msgid "mailto URL handler"
+#~ msgstr "mailto URL-håndtering"
+
+#~ msgid "man URL handler"
+#~ msgstr "man URL-håndtering"
+
+#~ msgid "trash URL handler"
+#~ msgstr "trash URL-håndtering"
+
+#~ msgid "Could not get information for file '%s': %s"
+#~ msgstr "Kunne ikke skaffe oplysninger om filen '%s': %s"
+
+#~ msgid ""
+#~ "Failed to load image '%s': reason not known, probably a corrupt image file"
+#~ msgstr ""
+#~ "Kunne ikke indlæse billede '%s': begrundelse ikke kendt, formodentlig en "
+#~ "ødelagt billedfil"

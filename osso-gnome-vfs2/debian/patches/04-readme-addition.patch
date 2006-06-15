@@ -1,0 +1,11 @@
+Index: README.dbus
+===================================================================
+--- README.dbus	(revision 284)
++++ README.dbus	(arbetskopia)
+@@ -9,3 +9,6 @@
+ For more information see:
+ 
+  http://developer.imendio.com/wiki/GnomeVFS_D-BUS
++
++NOTE: This version is patched with some Nokia-specific additions such as
++adding volume monitoring for OBEX devices.

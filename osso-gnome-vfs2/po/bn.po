@@ -1,0 +1,1424 @@
+# Bengali Translation of GNOME-vfs
+# Copyright (C) 1999, 2000, 01, 02 Free Software Foundation, Inc.
+# This file is distributed under the same license as the GNOME-vfs package.
+# Sayamindu Dasgupta <unmadindu@Softhome.net>, 2003.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GNOME-vfs\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-02-10 12:25+0100\n"
+"PO-Revision-Date: 2003-02-12 10:19+0530\n"
+"Last-Translator: Sayamindu Dasgupta <unmadindu@Softhome.net>\n"
+"Language-Team: Bengali (bn) <gnome-translation@bengalinux.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: daemon/gnome-vfs-daemon.c:596
+msgid "Could not initialize Bonobo"
+msgstr "বোনোবো চালু করা গেল না"
+
+#: daemon/gnome-vfs-daemon.c:603
+msgid "Could not initialize gnome vfs"
+msgstr "গ্নোম ভি-এফ-এস চালু করা গেল না"
+
+#: libgnomevfs/gnome-vfs-cdrom.c:235
+msgid "ISO 9660 Volume"
+msgstr "আই-এস-ও ৯৬৬০ ভলিউম"
+
+#: libgnomevfs/gnome-vfs-configuration.c:227
+#, c-format
+msgid "%s:%d contains NUL characters."
+msgstr "%s:%dতে নঞ-অক্ষর আছে"
+
+# msgstr "%s:%dতে নঞ-অক্ষর আছে"
+#: libgnomevfs/gnome-vfs-configuration.c:244
+#, c-format
+msgid "%s:%d contains no method name."
+msgstr "%s:%d-তে কোন প্রক্রিয়ার নাম নেই"
+
+# msgstr "%s:%dতে নঞ-অক্ষর আছে"
+#: libgnomevfs/gnome-vfs-configuration.c:284
+#, c-format
+msgid "%s:%d has no options endmarker."
+msgstr "%s:%d-তে কোন অপশন এন্ডমার্কার নেই"
+
+#: libgnomevfs/gnome-vfs-configuration.c:295
+#, c-format
+msgid "%s:%d has unknown options %s."
+msgstr "%s:%d-তে %s অপশন সমূহ অজানা"
+
+#: libgnomevfs/gnome-vfs-configuration.c:314
+#, c-format
+msgid "%s:%d contains no module name."
+msgstr "%s:%dতে কোন মডিউলের নাম নেই"
+
+#: libgnomevfs/gnome-vfs-configuration.c:368
+#, c-format
+msgid "Configuration file `%s' was not found: %s"
+msgstr "কনফিগারেশন ফাইল `%s পাওয়া গেল না: %s'"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:37
+msgid "AFFS Volume"
+msgstr "এ-এফ-এফ-এস ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:38
+msgid "AFS Network Volume"
+msgstr "এ-এফ-এস নেটওয়ার্ক ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:39
+msgid "Auto-detected Volume"
+msgstr "স্বয়ংক্রীয় ভাবে খুঁজে পাওয়া ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:40
+#: libgnomevfs/gnome-vfs-filesystem-type.c:42
+msgid "CD-ROM Drive"
+msgstr "সিডি রম ড্রাইভ"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:41
+msgid "CD Digital Audio"
+msgstr "সিডি ডিজিটাল অডিও"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:43
+msgid "Hardware Device Volume"
+msgstr "হার্ডওয়্যার ডিভাইস ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:44
+#: libgnomevfs/gnome-vfs-filesystem-type.c:45
+msgid "Ext2 Linux Volume"
+msgstr "Ext2 লিনাক্স ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:46
+msgid "Ext3 Linux Volume"
+msgstr "Ext3 লিনাক্স ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:47
+#: libgnomevfs/gnome-vfs-filesystem-type.c:57
+#: libgnomevfs/gnome-vfs-filesystem-type.c:58
+msgid "MSDOS Volume"
+msgstr "MSDOS ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:48
+#: libgnomevfs/gnome-vfs-filesystem-type.c:49
+msgid "MacOS Volume"
+msgstr "MacOS ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:50
+msgid "CDROM Volume"
+msgstr "সিডিরম ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:51
+msgid "Hsfs CDROM Volume"
+msgstr "Hsfs সিডিরম ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:52
+msgid "JFS Volume"
+msgstr "JFS ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:53
+#: libgnomevfs/gnome-vfs-filesystem-type.c:60
+msgid "Windows NT Volume"
+msgstr "উইন্ডোজ এন-টি ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:54
+#: libgnomevfs/gnome-vfs-filesystem-type.c:62
+#: libgnomevfs/gnome-vfs-filesystem-type.c:63
+msgid "System Volume"
+msgstr "সিস্টেম ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:55
+msgid "Memory Volume"
+msgstr "মেমরি ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:56
+msgid "Minix Volume"
+msgstr "মিনিক্স ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:59
+msgid "NFS Network Volume"
+msgstr "এন-এফ-এস নেটওয়ার্ক ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:61
+msgid "Netware Volume"
+msgstr "নেটওয়্যার ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:64
+msgid "ReiserFS Linux Volume"
+msgstr "রেইসার এফ এস লিনাক্স ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:65
+msgid "Windows Shared Volume"
+msgstr "উইন্ডোজ শেয়ার করা ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:66
+msgid "SuperMount Volume"
+msgstr "সুপার মাউন্ট ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:67
+msgid "DVD Volume"
+msgstr "ডিভিডি ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:68
+msgid "Solaris/BSD Volume"
+msgstr "সোলারিস/বি-এস-ডি ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:69
+msgid "Udfs Solaris Volume"
+msgstr "Udfs সোলারিস ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:70
+msgid "Pcfs Solaris Volume"
+msgstr "Pcfs সোলারিস ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:71
+#, fuzzy
+msgid "Sun SAM-QFS Volume"
+msgstr "এ-এফ-এফ-এস ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:72
+msgid "Enhanced DOS Volume"
+msgstr "এনহান্সকৃত ডস ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:73
+msgid "Windows VFAT Volume"
+msgstr "উইন্ডোজ ভিফ্যাট ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:74
+msgid "Xenix Volume"
+msgstr "জেনিক্স ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:75
+msgid "XFS Linux Volume"
+msgstr "এক্স-এফ-এস লিনাক্স ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:76
+msgid "XIAFS Volume"
+msgstr "XIAFS ভলিউম"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:104
+msgid "Unknown"
+msgstr "অজানা"
+
+#: libgnomevfs/gnome-vfs-job.c:734
+#, fuzzy, c-format
+msgid "Unknown operation type %u"
+msgstr "অজানা ধরনের অপপ্ %u"
+
+#: libgnomevfs/gnome-vfs-job.c:1024 libgnomevfs/gnome-vfs-job.c:1169
+#, c-format
+msgid "Cannot create pipe for open GIOChannel: %s"
+msgstr "খোলা জি-আই-ও-চ্যানেল: %sএর জন্য কোন পাইপ তৈরি করা গেল না  "
+
+#: libgnomevfs/gnome-vfs-job.c:1687
+#, c-format
+msgid "Unknown job kind %u"
+msgstr "অজানা ধরনের কাজ %u"
+
+#: libgnomevfs/gnome-vfs-job.c:1720
+msgid "Operation stopped"
+msgstr "কাজ বন্ধ"
+
+#: libgnomevfs/gnome-vfs-mime-handlers.c:101
+#: libgnomevfs/gnome-vfs-mime-handlers.c:255
+#: libgnomevfs/gnome-vfs-mime-handlers.c:306
+#: libgnomevfs/gnome-vfs-mime-handlers.c:600
+#: libgnomevfs/gnome-vfs-mime-handlers.c:619
+#: libgnomevfs/gnome-vfs-mime-handlers.c:637
+#: libgnomevfs/gnome-vfs-mime-handlers.c:656
+#: libgnomevfs/gnome-vfs-mime-handlers.c:675
+#: libgnomevfs/gnome-vfs-mime-handlers.c:816
+#: libgnomevfs/gnome-vfs-mime-handlers.c:838
+#: libgnomevfs/gnome-vfs-mime-handlers.c:857
+#: libgnomevfs/gnome-vfs-mime-handlers.c:876
+#: libgnomevfs/gnome-vfs-mime-handlers.c:929
+#: libgnomevfs/gnome-vfs-mime-handlers.c:946
+#: libgnomevfs/gnome-vfs-mime-handlers.c:963
+#: libgnomevfs/gnome-vfs-mime-handlers.c:981
+#: libgnomevfs/gnome-vfs-mime-handlers.c:999
+#: libgnomevfs/gnome-vfs-mime-info.c:643 libgnomevfs/gnome-vfs-mime-info.c:650
+#: libgnomevfs/gnome-vfs-mime-info.c:658 libgnomevfs/gnome-vfs-mime-info.c:665
+#: libgnomevfs/gnome-vfs-mime-info.c:673 libgnomevfs/gnome-vfs-mime-info.c:690
+#: libgnomevfs/gnome-vfs-mime-info.c:697 libgnomevfs/gnome-vfs-mime-info.c:704
+#: libgnomevfs/gnome-vfs-mime-info.c:711 libgnomevfs/gnome-vfs-mime-info.c:719
+#: libgnomevfs/gnome-vfs-mime-info.c:726
+msgid ""
+"Deprecated function.  User modifications to the MIME database are no longer "
+"supported."
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-parse-ls.c:666
+#, c-format
+msgid "Could not parse: %s"
+msgstr "%s-কে পড়ে কিছু বোঝা গেল না"
+
+#: libgnomevfs/gnome-vfs-parse-ls.c:668
+msgid "More parsing errors will be ignored."
+msgstr "এরপরের পড়ে বোঝার ভুলগুলোকে আমল দেবো না"
+
+#. GNOME_VFS_OK
+#: libgnomevfs/gnome-vfs-result.c:38
+msgid "No error"
+msgstr "কোন ভুল নেই"
+
+#. GNOME_VFS_ERROR_NOT_FOUND
+#: libgnomevfs/gnome-vfs-result.c:39
+msgid "File not found"
+msgstr "ফাইল পাওয়া গেল না"
+
+#. GNOME_VFS_ERROR_GENERIC
+#: libgnomevfs/gnome-vfs-result.c:40
+msgid "Generic error"
+msgstr "সাধারন ভুল"
+
+#. GNOME_VFS_ERROR_INTERNAL
+#: libgnomevfs/gnome-vfs-result.c:41
+msgid "Internal error"
+msgstr "অভ্যন্তরীন ভুল"
+
+#. GNOME_VFS_ERROR_BAD_PARAMETERS
+#: libgnomevfs/gnome-vfs-result.c:42
+msgid "Invalid parameters"
+msgstr "বেঠিক প্যারামিটার"
+
+#. GNOME_VFS_ERROR_NOT_SUPPORTED
+#: libgnomevfs/gnome-vfs-result.c:43
+msgid "Unsupported operation"
+msgstr "অসমর্থিত কাজ"
+
+#. GNOME_VFS_ERROR_IO
+#: libgnomevfs/gnome-vfs-result.c:44
+msgid "I/O error"
+msgstr "আই-ও ভুল"
+
+#. GNOME_VFS_ERROR_CORRUPTED_DATA
+#: libgnomevfs/gnome-vfs-result.c:45
+msgid "Data corrupted"
+msgstr "তথ্য  নষ্ট হয়ে গেছে"
+
+#. GNOME_VFS_ERROR_WRONG_FORMAT
+#: libgnomevfs/gnome-vfs-result.c:46
+msgid "Format not valid"
+msgstr "বৈধ বিন্যাসের অভাব"
+
+#. GNOME_VFS_ERROR_BAD_FILE
+#: libgnomevfs/gnome-vfs-result.c:47
+msgid "Bad file handle"
+msgstr "ত্রুটিপূর্ণ/সমস্যাযুক্ত ফাইল-হ্যান্ডল"
+
+#. GNOME_VFS_ERROR_TOO_BIG
+#: libgnomevfs/gnome-vfs-result.c:48
+msgid "File too big"
+msgstr "ফাইলটা বড্ড বেশি বড়"
+
+#. GNOME_VFS_ERROR_NO_SPACE
+#: libgnomevfs/gnome-vfs-result.c:49
+msgid "No space left on device"
+msgstr "ডিভাইসে আর জায়গা বাকি নেই"
+
+#. GNOME_VFS_ERROR_READ_ONLY
+#: libgnomevfs/gnome-vfs-result.c:50
+msgid "Read-only file system"
+msgstr "ফাইল-সিস্টেমে লেখা যাবে না"
+
+#. GNOME_VFS_ERROR_INVALID_URI
+#: libgnomevfs/gnome-vfs-result.c:51
+msgid "Invalid URI"
+msgstr "বেঠিক ইউ-আর-আই"
+
+#. GNOME_VFS_ERROR_NOT_OPEN
+#: libgnomevfs/gnome-vfs-result.c:52
+msgid "File not open"
+msgstr "ফাইল খোলা নেই"
+
+#. GNOME_VFS_ERROR_INVALID_OPEN_MODE
+#: libgnomevfs/gnome-vfs-result.c:53
+msgid "Open mode not valid"
+msgstr "খোলা অবস্থা বেঠিক"
+
+#. GNOME_VFS_ERROR_ACCESS_DENIED
+#: libgnomevfs/gnome-vfs-result.c:54
+msgid "Access denied"
+msgstr "ঢুকতে দেওয়া হল না"
+
+#. GNOME_VFS_ERROR_TOO_MANY_OPEN_FILES
+#: libgnomevfs/gnome-vfs-result.c:55
+msgid "Too many open files"
+msgstr "অনেক বেশি ফাইল খোলা আছে"
+
+#. GNOME_VFS_ERROR_EOF
+#: libgnomevfs/gnome-vfs-result.c:56
+msgid "End of file"
+msgstr "ফাইলের শেষ"
+
+#. GNOME_VFS_ERROR_NOT_A_DIRECTORY
+#: libgnomevfs/gnome-vfs-result.c:57
+msgid "Not a directory"
+msgstr "ডিরেক্টরি নয়"
+
+#. GNOME_VFS_ERROR_IN_PROGRESS
+#: libgnomevfs/gnome-vfs-result.c:58
+msgid "Operation in progress"
+msgstr "কাজ চলছে"
+
+#. GNOME_VFS_ERROR_INTERRUPTED
+#: libgnomevfs/gnome-vfs-result.c:59
+msgid "Operation interrupted"
+msgstr "কাজে বাধা দেওয়া হয়েছে"
+
+#. GNOME_VFS_ERROR_FILE_EXISTS
+#: libgnomevfs/gnome-vfs-result.c:60
+msgid "File exists"
+msgstr "ফাইলটা আগে থেকেই আছে"
+
+#. GNOME_VFS_ERROR_LOOP
+#: libgnomevfs/gnome-vfs-result.c:61
+msgid "Looping links encountered"
+msgstr "আবর্তনকারি  সংযোজক পাওয়া গেছে"
+
+#. GNOME_VFS_ERROR_NOT_PERMITTED
+#: libgnomevfs/gnome-vfs-result.c:62
+msgid "Operation not permitted"
+msgstr "কাজের জন্য  অনুমতি নেই"
+
+#. GNOME_VFS_ERROR_IS_DIRECTORY
+#: libgnomevfs/gnome-vfs-result.c:63
+msgid "Is a directory"
+msgstr "একটা ডিরেক্টরি"
+
+#. GNOME_VFS_ERROR_NO_MEMORY
+#: libgnomevfs/gnome-vfs-result.c:64
+msgid "Not enough memory"
+msgstr "যথেষ্ট মেমরী নেই"
+
+#. GNOME_VFS_ERROR_HOST_NOT_FOUND
+#: libgnomevfs/gnome-vfs-result.c:65
+msgid "Host not found"
+msgstr "হোস্ট পাওয়া গেল না"
+
+#. GNOME_VFS_ERROR_INVALID_HOST_NAME
+#: libgnomevfs/gnome-vfs-result.c:66
+msgid "Host name not valid"
+msgstr "হোস্ট নাম বেঠিক"
+
+#. GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS
+#: libgnomevfs/gnome-vfs-result.c:67
+msgid "Host has no address"
+msgstr "হোস্টের কোন ঠিকানা নেই"
+
+#. GNOME_VFS_ERROR_LOGIN_FAILED
+#: libgnomevfs/gnome-vfs-result.c:68
+msgid "Login failed"
+msgstr "লগ-ইন করা গেল না"
+
+#. GNOME_VFS_ERROR_CANCELLED
+#: libgnomevfs/gnome-vfs-result.c:69
+msgid "Operation cancelled"
+msgstr "কাজ বাতিল হয়ে গেছে"
+
+#. GNOME_VFS_ERROR_DIRECTORY_BUSY
+#: libgnomevfs/gnome-vfs-result.c:70
+msgid "Directory busy"
+msgstr "ডিরেক্টরি ব্যস্ত"
+
+#. GNOME_VFS_ERROR_DIRECTORY_NOT_EMPTY
+#: libgnomevfs/gnome-vfs-result.c:71
+msgid "Directory not empty"
+msgstr "ডিরেক্টরি ফাঁকা নয়"
+
+#. GNOME_VFS_ERROR_TOO_MANY_LINKS
+#: libgnomevfs/gnome-vfs-result.c:72
+msgid "Too many links"
+msgstr "অনেক বেশি সংযোজক"
+
+#. GNOME_VFS_ERROR_READ_ONLY_FILE_SYSTEM
+#: libgnomevfs/gnome-vfs-result.c:73
+msgid "Read only file system"
+msgstr "ফাইল-সিস্টেমে লেখা যাবে না"
+
+#. GNOME_VFS_ERROR_NOT_SAME_FILE_SYSTEM
+#: libgnomevfs/gnome-vfs-result.c:74
+msgid "Not on the same file system"
+msgstr "একই ফাইল-সিস্টেমে নেই"
+
+#. GNOME_VFS_ERROR_NAME_TOO_LONG
+#: libgnomevfs/gnome-vfs-result.c:75
+msgid "Name too long"
+msgstr "বড্ড বড় নাম"
+
+#. GNOME_VFS_ERROR_SERVICE_NOT_AVAILABLE
+#: libgnomevfs/gnome-vfs-result.c:76
+msgid "Service not available"
+msgstr "সেবা পাওয়া যাবে না"
+
+#. GNOME_VFS_ERROR_SERVICE_OBSOLETE
+#: libgnomevfs/gnome-vfs-result.c:77
+msgid "Request obsoletes service's data"
+msgstr "আবেদন সেবার তথ্য বাতিল করবে"
+
+#. GNOME_VFS_ERROR_PROTOCOL_ERROR
+#: libgnomevfs/gnome-vfs-result.c:78
+msgid "Protocol error"
+msgstr "প্রটোকলে ভুল"
+
+#. GNOME_VFS_ERROR_NO_MASTER_BROWSER
+#: libgnomevfs/gnome-vfs-result.c:79
+msgid "Could not find master browser"
+msgstr "মূল ব্রাওসার খঁুজে পাওয়া গেল না"
+
+#. GNOME_VFS_ERROR_NO_DEFAULT
+#: libgnomevfs/gnome-vfs-result.c:80
+msgid "No default action associated"
+msgstr "কোন ডিফল্ট কার্য ঠিক করা নেই"
+
+#. GNOME_VFS_ERROR_NO_HANDLER
+#: libgnomevfs/gnome-vfs-result.c:81
+msgid "No handler for URL scheme"
+msgstr "ইউ-আর-এল স্কীমের জন্য  কোন হ্যানড্লার নেই"
+
+#. GNOME_VFS_ERROR_PARSE
+#: libgnomevfs/gnome-vfs-result.c:82
+msgid "Error parsing command line"
+msgstr "কমান্ড লাইন বোঝা গেল না"
+
+#. GNOME_VFS_ERROR_LAUNCH
+#: libgnomevfs/gnome-vfs-result.c:83
+msgid "Error launching command"
+msgstr "কমান্ড চালানো গেল না"
+
+#. GNOME_VFS_ERROR_TIMEOUT
+#: libgnomevfs/gnome-vfs-result.c:84 libgnomevfs/gnome-vfs-result.c:86
+msgid "Timeout reached"
+msgstr ""
+
+#. GNOME_VFS_ERROR_NAMESERVER
+#: libgnomevfs/gnome-vfs-result.c:85
+#, fuzzy
+msgid "Nameserver error"
+msgstr "সাধারন ভুল"
+
+#. GNOME_VFS_ERROR_LOCKED
+#: libgnomevfs/gnome-vfs-result.c:87
+msgid "The resource is locked"
+msgstr ""
+
+#. GNOME_VFS_ERROR_DEPRECATED_FUNCTION
+#: libgnomevfs/gnome-vfs-result.c:88
+msgid "Function call deprecated"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-result.c:203
+msgid "Unknown error"
+msgstr "অজানা ভুল"
+
+#: libgnomevfs/gnome-vfs-utils.c:85
+#, c-format
+msgid "%u byte"
+msgid_plural "%u bytes"
+msgstr[0] "%u বাইট"
+msgstr[1] "%u বাইট"
+
+#: libgnomevfs/gnome-vfs-utils.c:91
+#, c-format
+msgid "%.1f KB"
+msgstr "%.1f কে-বি"
+
+#: libgnomevfs/gnome-vfs-utils.c:95
+#, c-format
+msgid "%.1f MB"
+msgstr "%.1f এম-বি"
+
+#: libgnomevfs/gnome-vfs-utils.c:99
+#, c-format
+msgid "%.1f GB"
+msgstr "%.1f জি-বি"
+
+#: libgnomevfs/gnome-vfs-utils.c:1131
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:369
+msgid " (invalid Unicode)"
+msgstr "বেঠিক ইউনিকোড"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:551
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:607
+msgid "Floppy"
+msgstr "ফ্লপি"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:552
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:610
+msgid "CD-ROM"
+msgstr "সিডি-রম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:554
+#, fuzzy
+msgid "CD-R"
+msgstr "সিডি-রম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:555
+#, fuzzy
+msgid "CD-RW"
+msgstr "সিডি-রম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:556
+#, fuzzy
+msgid "DVD-ROM"
+msgstr "সিডি-রম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:557
+#, fuzzy
+msgid "DVD-RAM"
+msgstr "সিডি রম ড্রাইভ"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:558
+msgid "DVD-R"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:559
+msgid "DVD-RW"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:560
+#, fuzzy
+msgid "CD-ROM/DVD-ROM"
+msgstr "সিডি-রম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:561
+#, fuzzy
+msgid "CD-ROM/DVD-RAM"
+msgstr "সিডি-রম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:562
+#, fuzzy
+msgid "CD-ROM/DVD-R"
+msgstr "সিডি-রম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:563
+#, fuzzy
+msgid "CD-ROM/DVD-RW"
+msgstr "সিডি-রম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:564
+#, fuzzy
+msgid "CD-R/DVD-ROM"
+msgstr "সিডি-রম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:565
+msgid "CD-R/DVD-RAM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:566
+msgid "CD-R/DVD-R"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:567
+msgid "CD-R/DVD-RW"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:568
+#, fuzzy
+msgid "CD-RW/DVD-ROM"
+msgstr "সিডি-রম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:569
+msgid "CD-RW/DVD-RAM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:570
+msgid "CD-RW/DVD-R"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:571
+msgid "CD-RW/DVD-RW"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:573
+msgid "Disk"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:574
+#, fuzzy
+msgid "USB Drive"
+msgstr "জিপ ড্রাইভ"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:575
+msgid "IEEE1394 Drive"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:576
+msgid "CF"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:577
+msgid "SD/MMC"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:578
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:582
+msgid "Memory Stick"
+msgstr "মেমরি স্টিক্‌"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:579
+#, fuzzy
+msgid "Smart Media"
+msgstr "মেমরি স্টিক্‌"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:581
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:613
+msgid "Zip Drive"
+msgstr "জিপ ড্রাইভ"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:583
+msgid "Camera"
+msgstr "ক্যামেরা"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:584
+msgid "DVD"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:807
+msgid "Root Volume"
+msgstr "রুট ভলিউম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:888
+msgid "Audio CD"
+msgstr "অডিও সিডি"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:921
+msgid "Unknown volume"
+msgstr "অজানা ভলিউম"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:1109
+msgid "Network server"
+msgstr "নেটওয়ার্ক সার্ভার"
+
+#. Handle floppy case
+#: libgnomevfs/gnome-vfs-volume-ops.c:113
+msgid ""
+"Unable to mount the floppy drive. There is probably no floppy in the drive."
+msgstr "ফ্লপি ড্রাইভ মাউন্ট করা গেল না । সম্ভবত ড্রাইভে কোন ডিস্ক নেই।"
+
+#. All others
+#: libgnomevfs/gnome-vfs-volume-ops.c:117
+msgid "Unable to mount the volume. There is probably no media in the device."
+msgstr "ভলিউম মাউন্ট করা গেল না । সম্ভবত ডিভাইসে কোন মিডিয়া নেই।"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:123
+msgid ""
+"Unable to mount the floppy drive. The floppy is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"ফ্লপি ড্রাইভ মাউন্ট করা গেল না । সম্ভবত ফ্লপির ফরম্যাট এমন যে সেটিকে মাউন্ট করা "
+"যাবে না। "
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:126
+msgid ""
+"Unable to mount the selected volume. The volume is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"নির্বাচিত ভলিউম মাউন্ট করা গেল না । সম্ভবত ভলিউম ফরম্যাট এমন যে সেটিকে মাউন্ট করা "
+"যাবে না। "
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:131
+msgid "Unable to mount the selected floppy drive."
+msgstr "নির্বাচিত ফ্লপি ড্রাইভকে মাউন্ট করা গেল না ।"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:133
+msgid "Unable to mount the selected volume."
+msgstr "নির্বাচিত ভলিউমকে মাউন্ট করা গেল না ।"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:145
+msgid "Unable to unmount the selected volume."
+msgstr "নির্বাচিত ভলিউমকে আনমাউন্ট করা গেল না ।"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:257
+#: libgnomevfs/gnome-vfs-volume-ops.c:313
+msgid "Failed to start command"
+msgstr "কমান্ড চালু করা গেল না"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:301
+msgid "Unable to eject media"
+msgstr "মিডিয়াকে বের করে দেওয়া গেল না"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:499
+msgid "Unable to unmount connected server"
+msgstr "সার্ভারের সঙ্গে সংযোগ বিচ্ছিন্ন করা গেল না"
+
+#: modules/computer-method.c:545
+msgid "Network"
+msgstr "নেটওয়ার্ক"
+
+#: modules/computer-method.c:563
+msgid "Home"
+msgstr "ব্যক্তিগত ফোল্ডার (হোম)"
+
+#: modules/computer-method.c:581
+msgid "Filesystem"
+msgstr "ফাইলসিস্টেম"
+
+#: modules/file-method.c:413
+#, c-format
+msgid "Unknown GnomeVFSSeekPosition %d"
+msgstr "অজানা GnomeVFSSeekPosition %d"
+
+#: modules/network-method.c:1396
+msgid "Windows Network"
+msgstr "উইন্ডোজ নেটওয়ার্ক"
+
+#: modules/sftp-method.c:1338
+#, c-format
+msgid "The identity of the remote computer (%s) is unknown."
+msgstr ""
+
+#: modules/sftp-method.c:1339
+#, c-format
+msgid ""
+"This happens when you log in to a computer the first time.\n"
+"\n"
+"The identity sent by the remote computer is %s. If you want to be absolutely "
+"sure it is safe to continue, contact the system administrator."
+msgstr ""
+
+#: modules/sftp-method.c:1347
+msgid "Log In Anyway"
+msgstr ""
+
+#: modules/sftp-method.c:1348
+msgid "Cancel Login"
+msgstr ""
+
+#. FIXME: we probably shouldn't use printf to output the message
+#: modules/test-method.c:590
+#, c-format
+msgid "Didn't find a valid settings file at %s\n"
+msgstr "%s-এ কোন সঠিক বিন্যাস ফাইল খুঁজে পাওয়া গেল না\n"
+
+#: modules/test-method.c:592
+#, c-format
+msgid "Use the %s environment variable to specify a different location.\n"
+msgstr ""
+"%s এনভায়রনমেন্ট ভ্যারিএবেল (Environment Variable) ব্যবহার করে অন্য একটা জায়গাকে "
+"নির্দেশ করুন।\n"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:1
+msgid "Standard Moniker factory"
+msgstr "সাধারন ফাইল মনিকার কারখানা"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:2
+msgid "file MonikerExtender"
+msgstr "ফাইল মনিকার প্রসায্য"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:3
+msgid "generic Gnome VFS moniker"
+msgstr "সাধারন গ্নোম-ভি-এফ-এসস্ মনিকার"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:4
+msgid "generic file moniker"
+msgstr "সাধারন ফাইল মনিকার"
+
+#: schemas/desktop_default_applications.schemas.in.h:1
+msgid "Default component viewer application"
+msgstr "ডিফল্ট কম্পোনেন্ট প্রদর্শক অ্যাপ্লিকেশন"
+
+#: schemas/desktop_default_applications.schemas.in.h:2
+msgid "Default terminal application"
+msgstr "ডিফল্ট টার্মিনাল অ্যাপ্লিকেশন"
+
+#: schemas/desktop_default_applications.schemas.in.h:3
+msgid "Exec argument for default terminal"
+msgstr "ডিফল্ট টার্মিনাল-এর জন্য Exec আর্গুমেন্ট"
+
+#: schemas/desktop_default_applications.schemas.in.h:5
+#, no-c-format
+msgid ""
+"The application to use for viewing files that require a component to view "
+"them. The parameter %s will be replaced by the file's URIs, the parameter %c "
+"will be replaced by the component IID."
+msgstr ""
+
+#: schemas/desktop_default_applications.schemas.in.h:6
+msgid ""
+"The default terminal application to use for applications that require a "
+"terminal."
+msgstr ""
+
+#: schemas/desktop_default_applications.schemas.in.h:7
+msgid "The exec argument to use for the default terminal application."
+msgstr "ডিফল্ট টার্মিনাল-এর জন্য যে Exec আর্গুমেন্ট ব্যবহৃত হবে"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:1
+#, fuzzy
+msgid "Run the command in a terminal"
+msgstr "টার্মিনালে প্রোগ্রাম চালাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:2
+msgid "The command used to handle \"aim\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:3
+msgid "The command used to handle \"callto\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:4
+msgid "The command used to handle \"ghelp\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:5
+#, fuzzy
+msgid "The command used to handle \"h323\" URLs, if enabled."
+msgstr ""
+"এই ইউ-আর-এল সামলানোর প্রোগ্রামটিকে টার্মিনালে চালাতে চাইলে সত্য হিসাবে নির্ধারণ "
+"করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:6
+#, fuzzy
+msgid "The command used to handle \"http\" URLs, if enabled."
+msgstr ""
+"এই ইউ-আর-এল সামলানোর প্রোগ্রামটিকে টার্মিনালে চালাতে চাইলে সত্য হিসাবে নির্ধারণ "
+"করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:7
+#, fuzzy
+msgid "The command used to handle \"https\" URLs, if enabled."
+msgstr ""
+"এই ইউ-আর-এল সামলানোর প্রোগ্রামটিকে টার্মিনালে চালাতে চাইলে সত্য হিসাবে নির্ধারণ "
+"করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:8
+msgid "The command used to handle \"info\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:9
+msgid "The command used to handle \"mailto\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:10
+msgid "The command used to handle \"man\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:11
+msgid "The command used to handle \"trash\" URLs, if enabled."
+msgstr ""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:12
+#, fuzzy
+msgid "The handler for \"aim\" URLs"
+msgstr "man ইউ-আর-এল সামলাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:13
+#, fuzzy
+msgid "The handler for \"callto\" URLs"
+msgstr "callto ইউ-আর-এল সামলাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:14
+#, fuzzy
+msgid "The handler for \"ghelp\" URLs"
+msgstr "ghelp ইউ-আর-এল সামলাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:15
+#, fuzzy
+msgid "The handler for \"h323\" URLs"
+msgstr "H323 ইউ-আর-এল সামলাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:16
+#, fuzzy
+msgid "The handler for \"http\" URLs"
+msgstr "ghelp ইউ-আর-এল সামলাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:17
+#, fuzzy
+msgid "The handler for \"https\" URLs"
+msgstr "ghelp ইউ-আর-এল সামলাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:18
+#, fuzzy
+msgid "The handler for \"info\" URLs"
+msgstr "info ইউ-আর-এল সামলাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:19
+#, fuzzy
+msgid "The handler for \"mailto\" URLs"
+msgstr "mailto ইউ-আর-এল সামলাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:20
+#, fuzzy
+msgid "The handler for \"man\" URLs"
+msgstr "man ইউ-আর-এল সামলাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:21
+#, fuzzy
+msgid "The handler for \"trash\" URLs"
+msgstr "trash ইউ-আর-এল সামলাও"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:22
+#, fuzzy
+msgid ""
+"True if the command specified in the \"command\" key should handle \"aim\" "
+"URLs."
+msgstr ""
+"man ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:23
+#, fuzzy
+msgid ""
+"True if the command specified in the \"command\" key should handle \"callto"
+"\" URLs."
+msgstr ""
+"callto ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য "
+"সত্য হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:24
+#, fuzzy
+msgid ""
+"True if the command specified in the \"command\" key should handle \"ghelp\" "
+"URLs."
+msgstr ""
+"ghelp ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:25
+#, fuzzy
+msgid ""
+"True if the command specified in the \"command\" key should handle \"h323\" "
+"URLs."
+msgstr ""
+"H323 ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:26
+#, fuzzy
+msgid ""
+"True if the command specified in the \"command\" key should handle \"http\" "
+"URLs."
+msgstr ""
+"ghelp ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:27
+#, fuzzy
+msgid ""
+"True if the command specified in the \"command\" key should handle \"https\" "
+"URLs."
+msgstr ""
+"ghelp ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:28
+#, fuzzy
+msgid ""
+"True if the command specified in the \"command\" key should handle \"info\" "
+"URLs."
+msgstr ""
+"info ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:29
+#, fuzzy
+msgid ""
+"True if the command specified in the \"command\" key should handle \"mailto"
+"\" URLs."
+msgstr ""
+"mailto ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য "
+"সত্য হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:30
+#, fuzzy
+msgid ""
+"True if the command specified in the \"command\" key should handle \"man\" "
+"URLs."
+msgstr ""
+"man ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:31
+#, fuzzy
+msgid ""
+"True if the command specified in the \"command\" key should handle \"trash\" "
+"URLs."
+msgstr ""
+"trash ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:32
+#, fuzzy
+msgid ""
+"True if the command used to handle this type of URL should be run in a "
+"terminal."
+msgstr ""
+"এই ইউ-আর-এল সামলানোর প্রোগ্রামটিকে টার্মিনালে চালাতে চাইলে সত্য হিসাবে নির্ধারণ "
+"করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:33
+#, fuzzy
+msgid "Whether the specified command should handle \"aim\" URLs"
+msgstr ""
+"man ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:34
+#, fuzzy
+msgid "Whether the specified command should handle \"callto\" URLs"
+msgstr ""
+"callto ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য "
+"সত্য হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:35
+#, fuzzy
+msgid "Whether the specified command should handle \"ghelp\" URLs"
+msgstr ""
+"ghelp ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:36
+#, fuzzy
+msgid "Whether the specified command should handle \"h323\" URLs"
+msgstr ""
+"H323 ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:37
+#, fuzzy
+msgid "Whether the specified command should handle \"http\" URLs"
+msgstr ""
+"ghelp ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:38
+#, fuzzy
+msgid "Whether the specified command should handle \"https\" URLs"
+msgstr ""
+"trash ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:39
+#, fuzzy
+msgid "Whether the specified command should handle \"info\" URLs"
+msgstr ""
+"info ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:40
+#, fuzzy
+msgid "Whether the specified command should handle \"mailto\" URLs"
+msgstr ""
+"mailto ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য "
+"সত্য হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:41
+#, fuzzy
+msgid "Whether the specified command should handle \"man\" URLs"
+msgstr ""
+"man ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:42
+#, fuzzy
+msgid "Whether the specified command should handle \"trash\" URLs"
+msgstr ""
+"trash ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য সত্য "
+"হিসাবে নির্ধারণ করুন"
+
+#: schemas/system_dns_sd.schemas.in.h:1
+msgid ""
+"Comma separated list of dns-sd domains that should be visible in the network "
+"location."
+msgstr ""
+
+#: schemas/system_dns_sd.schemas.in.h:2
+msgid "Extra domains to look for dns-sd services in"
+msgstr ""
+
+#: schemas/system_dns_sd.schemas.in.h:3
+msgid "How to display local DNS-SD service"
+msgstr ""
+
+#: schemas/system_dns_sd.schemas.in.h:4
+msgid "Possible values are \"merged\", \"separate\" and \"disabled\"."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:1
+msgid "Authenticate proxy server connections"
+msgstr "প্রক্সি সার্ভার কানেকশন অথেন্টিকেট কোরো"
+
+#: schemas/system_http_proxy.schemas.in.h:2
+msgid "Automatic proxy configuration URL"
+msgstr "স্বয়ংক্রীয় প্রক্সি কনফিগারেশন ইউ-আর-এল"
+
+#: schemas/system_http_proxy.schemas.in.h:3
+msgid "Enables the proxy settings when accessing HTTP over the Internet."
+msgstr ""
+"ইন্টারনেটের মধ্য দিয়ে এইচ-টি-টি-পি যোগাযোগ স্থাপন করার সময় প্রক্সি সেটিং সক্রীয় করে"
+
+#: schemas/system_http_proxy.schemas.in.h:4
+msgid "FTP proxy host name"
+msgstr "এইচ-টি-টি-পি  প্রক্সি হোস্ট নাম"
+
+#: schemas/system_http_proxy.schemas.in.h:5
+msgid "FTP proxy port"
+msgstr "এফ-টি-পি  প্রক্সি পোর্ট"
+
+#: schemas/system_http_proxy.schemas.in.h:6
+msgid "HTTP proxy host name"
+msgstr "এইচ-টি-টি-পি  প্রক্সি হোস্ট নাম"
+
+#: schemas/system_http_proxy.schemas.in.h:7
+msgid "HTTP proxy password"
+msgstr "এইচ-টি-টি-পি  প্রক্সি পাসওয়ার্ড"
+
+#: schemas/system_http_proxy.schemas.in.h:8
+msgid "HTTP proxy port"
+msgstr "এইচ-টি-টি-পি  প্রক্সি পোর্ট"
+
+#: schemas/system_http_proxy.schemas.in.h:9
+msgid "HTTP proxy username"
+msgstr "এইচ-টি-টি-পি  প্রক্সি ব্যবহারকারী নাম"
+
+#: schemas/system_http_proxy.schemas.in.h:10
+msgid ""
+"If true, then connections to the proxy server require authentication. The "
+"username/password combo is defined by \"/system/http_proxy/"
+"authentication_user\" and \"/system/http_proxy/authentication_password\"."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:11
+msgid "Non-proxy hosts"
+msgstr "যে হোস্টের জন্য প্রক্সি ব্যবহৃত হবে না"
+
+# C
+#: schemas/system_http_proxy.schemas.in.h:12
+msgid "Password to pass as authentication when doing HTTP proxying."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:13
+msgid "Proxy configuration mode"
+msgstr "প্রক্সি কনফিগারেশন মোড"
+
+#: schemas/system_http_proxy.schemas.in.h:14
+msgid "SOCKS proxy host name"
+msgstr "SOCKS প্রক্সি হোস্ট নাম"
+
+#: schemas/system_http_proxy.schemas.in.h:15
+msgid "SOCKS proxy port"
+msgstr "SOCKS প্রক্সি পোর্ট"
+
+#: schemas/system_http_proxy.schemas.in.h:16
+msgid "Secure HTTP proxy host name"
+msgstr "নিরাপদ এইচ-টি-টি-পি প্রক্সি হোস্ট নাম"
+
+#: schemas/system_http_proxy.schemas.in.h:17
+msgid "Secure HTTP proxy port"
+msgstr "নিরাপদ এইচ-টি-টি-পি প্রক্সি পোর্ট"
+
+#: schemas/system_http_proxy.schemas.in.h:18
+msgid ""
+"Select the proxy configuration mode. Supported values are \"none\", \"manual"
+"\", \"auto\"."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:19
+msgid "The machine name to proxy FTP through."
+msgstr "যে মেশিনের মধ্য দিয়ে এফ-টি-পি প্রক্সি করা হবে"
+
+#: schemas/system_http_proxy.schemas.in.h:20
+msgid "The machine name to proxy HTTP through."
+msgstr "যে মেশিনের মধ্য দিয়ে এইচ-টি-টি-পি প্রক্সি করা হবে"
+
+#: schemas/system_http_proxy.schemas.in.h:21
+msgid "The machine name to proxy secure HTTP through."
+msgstr "যে মেশিনের মধ্য দিয়ে নিরাপদ এইচ-টি-টি-পি প্রক্সি করা হবে"
+
+#: schemas/system_http_proxy.schemas.in.h:22
+msgid "The machine name to proxy socks through."
+msgstr "যে মেশিনের মধ্য দিয়ে সক্স প্রক্সি করা হবে"
+
+#: schemas/system_http_proxy.schemas.in.h:23
+msgid ""
+"The port on the machine defined by \"/system/http_proxy/host\" that you "
+"proxy through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:24
+msgid ""
+"The port on the machine defined by \"/system/proxy/ftp_host\" that you proxy "
+"through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:25
+msgid ""
+"The port on the machine defined by \"/system/proxy/secure_host\" that you "
+"proxy through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:26
+msgid ""
+"The port on the machine defined by \"/system/proxy/socks_host\" that you "
+"proxy through."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:27
+msgid ""
+"This key contains a list of hosts which are connected to directly, rather "
+"than via the proxy (if it is active). The values can be hostnames, domains "
+"(using an initial wildcard like *.foo.com), IP host addresses (both IPv4 and "
+"IPv6) and network addresses with a netmask (something like 192.168.0.0/24)."
+msgstr ""
+
+#: schemas/system_http_proxy.schemas.in.h:28
+msgid "URL that provides proxy configuration values."
+msgstr "যে ইউ-আর-এল এইচ-টি-টি-পি প্রক্সি সম্বন্ধীয় মান সমূহ যোগান দেয়"
+
+#: schemas/system_http_proxy.schemas.in.h:29
+msgid "Use HTTP proxy"
+msgstr "এইচ-টি-টি-পি প্রক্সি ব্যবহার করো"
+
+#: schemas/system_http_proxy.schemas.in.h:30
+msgid "User name to pass as authentication when doing HTTP proxying."
+msgstr "এইচ-টি-টি-পি প্রক্সি ব্যবহার করার সময় যে ব্যবহারকারী নাম ব্যবহৃত হবে"
+
+#: schemas/system_smb.schemas.in.h:1
+msgid "SMB workgroup"
+msgstr "এস-এম-বি ওয়ার্কগ্রুপ"
+
+#: schemas/system_smb.schemas.in.h:2
+msgid "The window workgroup the user is part of"
+msgstr "ব্যবহারকারী যে ওয়ার্কগ্রুপ-এর সদস্য"
+
+#, fuzzy
+#~ msgid "CD-ROM Disc"
+#~ msgstr "সিডি রম ড্রাইভ"
+
+#, fuzzy
+#~ msgid "CD-R Disc"
+#~ msgstr "সিডি রম ড্রাইভ"
+
+#, fuzzy
+#~ msgid "CD-RW Disc"
+#~ msgstr "সিডি রম ড্রাইভ"
+
+#, fuzzy
+#~ msgid "DVD-ROM Disc"
+#~ msgstr "সিডি রম ড্রাইভ"
+
+#, fuzzy
+#~ msgid "Audio Disc"
+#~ msgstr "অডিও সিডি"
+
+#, fuzzy
+#~ msgid "Memory Stick Media"
+#~ msgstr "মেমরি স্টিক্‌"
+
+#, fuzzy
+#~ msgid "Floppy Disk"
+#~ msgstr "ফ্লপি"
+
+#, fuzzy
+#~ msgid "Windows Disk"
+#~ msgstr "উইন্ডোজ"
+
+#, fuzzy
+#~ msgid "File could not be opened: %s"
+#~ msgstr "%s-কে পড়ে কিছু বোঝা গেল না"
+
+#, fuzzy
+#~ msgid "File is empty"
+#~ msgstr "ফাইলটা আগে থেকেই আছে"
+
+#~ msgid "Applications"
+#~ msgstr "অ্যাপ্লিকেশন"
+
+#~ msgid "Cards"
+#~ msgstr "কার্ড"
+
+#~ msgid "Files"
+#~ msgstr "ফাইল সমূহ"
+
+#~ msgid "Folders"
+#~ msgstr "ফোল্ডার সমূহ"
+
+#~ msgid "Help"
+#~ msgstr "সহায়তা"
+
+#~ msgid "Hosts"
+#~ msgstr "হোস্ট সমূহ"
+
+#~ msgid "Links"
+#~ msgstr "লিংক সমূহ"
+
+#~ msgid "Mail"
+#~ msgstr "মেইল"
+
+#~ msgid "Tools"
+#~ msgstr "যন্তপাতি"
+
+#~ msgid "Windows"
+#~ msgstr "উইন্ডোজ"
+
+#, fuzzy
+#~ msgid "The handler for HTTP URLs"
+#~ msgstr "HTTP ইউ-আর-এল সামলাও"
+
+#, fuzzy
+#~ msgid "The handler for HTTPS URLs"
+#~ msgstr "HTTPS ইউ-আর-এল সামলাও"
+
+#, fuzzy
+#~ msgid ""
+#~ "True if the command specified in the \"command\" key should handle HTTP "
+#~ "URLs."
+#~ msgstr ""
+#~ "HTTP ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য "
+#~ "সত্য হিসাবে নির্ধারণ করুন"
+
+#, fuzzy
+#~ msgid ""
+#~ "True if the command specified in the \"command\" key should handle HTTPS "
+#~ "URLs."
+#~ msgstr ""
+#~ "HTTPS ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য "
+#~ "সত্য হিসাবে নির্ধারণ করুন"
+
+#, fuzzy
+#~ msgid "Whether the specified command should handle HTTP URLs"
+#~ msgstr ""
+#~ "HTTP ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য "
+#~ "সত্য হিসাবে নির্ধারণ করুন"
+
+#, fuzzy
+#~ msgid "Whether the specified command should handle HTTPS URLs"
+#~ msgstr ""
+#~ "HTTPS ইউ-আর-এল সামলানোর জন্য \"কম্যান্ড\"-এ নির্দিষ্ট প্রোগ্রাম ব্যবহার করার জন্য "
+#~ "সত্য হিসাবে নির্ধারণ করুন"
+
+#~ msgid "H323 URL handler"
+#~ msgstr "H323 ইউ-আর-এল হ্যান্ডলার"
+
+#~ msgid "HTTP URL handler"
+#~ msgstr "HTTP ইউ-আর-এল হ্যান্ডলার"
+
+#~ msgid "HTTPS URL handler"
+#~ msgstr "HTTPS ইউ-আর-এল হ্যান্ডলার"
+
+#, fuzzy
+#~ msgid "aim URL handler"
+#~ msgstr "man ইউ-আর-এল হ্যান্ডলার "
+
+#~ msgid "callto URL handler"
+#~ msgstr "callto ইউ-আর-এল হ্যান্ডলার"
+
+#~ msgid "ghelp URL handler"
+#~ msgstr "ghelp ইউ-আর-এল হ্যান্ডলার"
+
+#~ msgid "info URL handler"
+#~ msgstr "info ইউ-আর-এল হ্যান্ডলার"
+
+#~ msgid "mailto URL handler"
+#~ msgstr "mailto ইউ-আর-এল হ্যান্ডলার"
+
+#~ msgid "man URL handler"
+#~ msgstr "man ইউ-আর-এল হ্যান্ডলার "
+
+#~ msgid "trash URL handler"
+#~ msgstr "trash ইউ-আর-এল হ্যান্ডলার"
+
+#~ msgid "1 byte"
+#~ msgstr "১ বাইট"

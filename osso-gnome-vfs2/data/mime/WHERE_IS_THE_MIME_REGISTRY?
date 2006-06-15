@@ -1,0 +1,10 @@
+It has been migrated into a seperate module so GnomeVFS2 and GnomeVFS1
+can share the same data.
+
+see the module "gnome-mime-data"
+
+GNOME 2.6.x introduced a new and improved MIME system which
+lives in the shared-mime-info module in freedesktop.org CVS.
+
+Translations for this module is managed through the Translation
+Project at http://www.iro.umontreal.ca/translation/

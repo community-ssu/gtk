@@ -1,0 +1,6 @@
+<VFolderInfo>
+  <Folder>
+    <Name>System Settings</Name>
+    <ParentLink>@sysconfdir@/X11/sysconfig</ParentLink>
+  </Folder>
+</VFolderInfo>

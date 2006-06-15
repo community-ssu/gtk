@@ -1,0 +1,323 @@
+#include <Bonobo_Unknown.idl>
+
+module GNOME {
+	module VFS {
+		typedef long Result;
+		typedef long long FileOffset;
+		typedef unsigned long long FileSize;
+		typedef unsigned long Time;
+		typedef sequence<octet> buffer;
+		
+		struct FileInfo {
+			string name;
+			long valid_fields;
+			unsigned long type;
+			unsigned long permissions;
+			unsigned long flags;
+			unsigned long device;
+			FileSize inode;
+			unsigned long link_count;
+			unsigned long uid;
+			unsigned long gid;
+			FileSize size;
+			FileSize block_count;
+			unsigned long io_block_size;
+			
+			Time atime;
+			Time mtime;
+			Time ctime;
+
+			string symlink_name;
+			string mime_type;
+		};
+		
+		typedef sequence<FileInfo> FileInfoList;
+
+		struct Volume {
+			long id;
+			long volume_type;
+			long device_type;
+			long drive;
+			string activation_uri;
+			string filesystem_type;
+			string display_name;
+			string icon;
+			boolean is_user_visible;
+			boolean is_read_only;
+			boolean is_mounted;
+			string device_path;
+			long unix_device;
+			string gconf_id;
+		        string hal_udi;
+		};
+		typedef sequence<Volume> VolumeList;
+
+		struct Drive {
+			long id;
+			long device_type;
+			sequence<long> volumes;
+			string device_path;
+			string activation_uri;
+			string display_name;
+			string icon;
+			boolean is_user_visible;
+			boolean is_connected;
+		        string hal_udi;
+			boolean must_eject_at_unmount;
+		};
+		
+		typedef sequence<Drive> DriveList;
+		
+		/* Standard module callbacks: */
+		
+		struct ModuleCallbackQuestionIn {
+			string primary_message;
+			string secondary_message;
+			sequence<string> choices;
+		};
+		struct ModuleCallbackQuestionOut {
+			short answer;
+		};
+		struct ModuleCallbackAuthenticationIn {
+			string uri;
+			string realm;
+			boolean previous_attempt_failed;
+			unsigned short auth_type;
+		};
+		struct ModuleCallbackAuthenticationOut {
+			string username;
+			boolean no_username;
+			string password;
+		};
+
+		struct ModuleCallbackFullAuthenticationIn {
+			long flags;
+			string uri;
+			string protocol;
+			string server;
+			string object;
+			long port;
+			string authtype;
+			string username;
+			string domain;
+			string default_user;     
+			string default_domain;
+		};
+
+		struct ModuleCallbackFullAuthenticationOut {
+			boolean abort_auth;
+			string username;
+			string domain;
+			string password;
+
+			boolean save_password;
+			string keyring;
+		};
+
+		struct ModuleCallbackFillAuthenticationIn {
+			string uri;
+			string protocol;
+			string server;
+			string object;
+			long port;
+			string authtype;
+			string username;
+			string domain;
+		};
+
+		struct ModuleCallbackFillAuthenticationOut {
+			boolean valid;
+			string username;
+			string domain;
+			string password;
+		};
+		
+		struct ModuleCallbackSaveAuthenticationIn {
+			string keyring;
+			string uri;
+			string protocol;
+			string server;
+			string object;
+			long port;
+			string authtype;
+			string username;
+			string domain;
+			string password;
+		};
+
+		struct ModuleCallbackSaveAuthenticationOut {
+			long empty;
+		};
+
+		/* Reference to a file/directory monitor object in
+		   the server. When this monitor triggers the
+		   Client::MonitoCallback callback will be called.
+		*/
+		interface DaemonMonitor : Bonobo::Unknown {
+			Result Cancel ();
+		};
+		
+		/* Client objects */
+
+		/* This interface is implemented once per client of the
+		 * daemon. It is used to reference the client and all
+		 * open handles is slaved to its connection
+		 */
+		interface Client : Bonobo::Unknown {
+			oneway void MonitorCallback (in DaemonMonitor monitor,
+						     in string monitor_uri,
+						     in string info_uri,
+						     in long event_type);
+
+			/* For volume monitoring: */
+			oneway void VolumeMounted (in Volume volume);
+			oneway void VolumePreUnmount (in long id);
+			oneway void VolumeUnmounted (in long id);
+			oneway void DriveConnected (in Drive drive);
+			oneway void DriveDisconnected (in long id);
+		};
+		
+		/* Each call to the client passes one of these, which is
+		 * used by the daemon as a unique reference to the call,
+		 * for the sake of cancellation. It is also used as a
+		 * callback object for e.g. auth callbacks.
+		 * The client allocates one of these for each thread.
+		 * Then client-side cancellation objects have a list
+		 * of all outstanding daemon calls to cancel.
+		 */
+		interface ClientCall : Bonobo::Unknown {
+			boolean ModuleCallbackInvoke (in string name,
+						      in any module_in,
+						      out any module_out);
+		};
+
+
+		/* Daemon objects */
+		interface DaemonHandle : Bonobo::Unknown {
+			Result Close (in ClientCall client_call,
+				      in Client client);
+			Result Read (out buffer buf,
+				     in FileSize num_bytes,
+				     in ClientCall client_call,
+				     in Client client);
+			Result Write (in buffer buf,
+				      out FileSize bytes_written_return,
+				      in ClientCall client_call,
+				      in Client client);
+			Result Seek (in long whence,
+				     in FileOffset offset,
+				     in ClientCall client_call,
+				     in Client client);
+			Result Tell (out FileOffset offset,
+				     in ClientCall client_call,
+				     in Client client);
+			Result GetFileInfo (out FileInfo file_info,
+					    in long options,
+					    in ClientCall client_call,
+					    in Client client);
+			Result Truncate (in FileSize length,
+					 in ClientCall client_call,
+					 in Client client);
+		};
+		
+		interface DaemonDirHandle : Bonobo::Unknown {
+			Result Close (in ClientCall client_call,
+				      in Client client);
+			Result Read (out FileInfoList file_info_list,
+				     in ClientCall client_call,
+				     in Client client);
+		};
+		
+
+		interface Daemon : Bonobo::Unknown {
+			/* Lifecycle slaved to 'client' lifecycle */
+			void registerClient   (in Client client);
+			void deRegisterClient (in Client client);
+
+			void registerVolumeMonitor (in Client client);
+			void deRegisterVolumeMonitor (in Client client);
+			VolumeList getVolumes (in Client client);
+			DriveList getDrives (in Client client);
+			void emitPreUnmountVolume (in Client client,
+						   in long volume_id);
+		  	/* Forces a recheck of mounts and tells all clients of changes
+			   before returning */
+			void forceProbe (in Client client);
+		};
+
+		interface AsyncDaemon : Bonobo::Unknown {
+		        void Cancel (in ClientCall client_call);
+			Result Open (out DaemonHandle handle_return,
+				     in string uri,
+				     in long open_mode,
+				     in ClientCall client_call,
+				     in Client client);
+			Result Create (out DaemonHandle handle_return,
+				       in string uri,
+				       in long open_mode,
+				       in boolean exclusive,
+				       in long perm,
+				       in ClientCall client_call,
+				       in Client client);
+			Result OpenDirectory (out DaemonDirHandle handle_return,
+					      in string uri,
+					      in long options,
+					      in ClientCall client_call,
+					      in Client client);
+			Result GetFileInfo (in string uri,
+					    out FileInfo file_info,
+					    in long options,
+					    in ClientCall client_call,
+					    in Client client);
+			Result Truncate (in string uri,
+					 in FileSize length,
+					 in ClientCall client_call,
+					 in Client client);
+			boolean IsLocal (in string uri,
+					in ClientCall client_call,
+					in Client client);
+			Result FindDirectory (in string find_near_uri,
+					      in long kind,
+					      out string result_uri,
+					      in boolean create_if_needed,
+					      in boolean find_if_needed,
+					      in unsigned long perm,
+					      in ClientCall client_call,
+					      in Client client);
+			Result MakeDirectory (in string uri,
+					      in unsigned long perm,
+					      in ClientCall client_call,
+					      in Client client);
+			Result RemoveDirectory (in string uri,
+						in ClientCall client_call,
+						in Client client);
+			Result Move (in string old_uri,
+				     in string new_uri,
+				     in boolean force_replace,
+				     in ClientCall client_call,
+				     in Client client);
+			Result Unlink (in string uri,
+				       in ClientCall client_call,
+				       in Client client);
+			Result CheckSameFS (in string uri_a,
+					    in string uri_b,
+					    out boolean same_fs,
+					    in ClientCall client_call,
+					    in Client client);
+			Result SetFileInfo (in string uri,
+					    in FileInfo info,
+					    in long mask,
+					    in ClientCall client_call,
+					    in Client client);
+			Result CreateSymbolicLink (in string uri,
+						   in string target_reference,
+						   in ClientCall client_call,
+						   in Client client);
+			Result MonitorAdd (in string uri,
+					   in long monitor_type,
+					   out DaemonMonitor monitor,
+					   in ClientCall client_call,
+					   in Client client);
+		};
+	};
+};

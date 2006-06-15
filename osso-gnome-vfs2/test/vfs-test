@@ -1,0 +1,70 @@
+#!/bin/sh
+
+# ./test-remote
+# Not tested
+
+
+TESTS="./test-callback ./test-async ./test-async-cancel ./test-async-directory ./test-channel ./test-find-directory ./test-mime-handlers ./test-mime-handlers-set ./test-performance ./test-seek ./test-shell ./test-symlinks ./test-ssl ./test-sync ./test-sync-create ./test-sync-write ./test-unlink ./test-uri ./test-xfer"
+
+CURDIR=file://`pwd`/
+
+rm -f vfs-test.out
+
+header () {
+	echo ================================================================================ >> vfs-test.out
+}
+
+header
+echo testing ./test-mime-info >> vfs-test.out
+./test-mime-info 1>> vfs-test.out 2>/dev/null \
+	|| (echo ./test-mime-info failed ; exit 1)
+
+header
+echo testing ./test-monitor >> vfs-test.out
+./test-monitor 1>> vfs-test.out 2>/dev/null \
+	|| (echo ./test-monitor failed ; exit 1)
+
+header
+echo testing ./test-module-selftest >> vfs-test.out
+./test-module-selftest 1>> vfs-test.out 2>/dev/null \
+        || (echo ./test-module-selftest failed ; exit 1)
+
+header
+echo testing ./test-queue >> vfs-test.out
+./test-queue 1>> vfs-test.out 2>/dev/null \
+        || (echo ./test-queue failed ; exit 1)
+
+header
+echo testing ./test-directory >> vfs-test.out
+./test-directory $CURDIR 1>> vfs-test.out 2>/dev/null \
+	|| (echo ./test-directory $CURDIR failed ; exit 1)
+
+header
+echo testing ./test-directory-visit >> vfs-test.out
+./test-directory-visit $CURDIR 1>> vfs-test.out 2>/dev/null \
+	|| (echo ./test-directory-visit $CURDIR failed ; exit 1)
+
+
+header
+echo testing ./test-dirop >> vfs-test.out
+./test-dirop make $CURDIR/dir-test 1>> vfs-test.out 2>/dev/null \
+	|| (echo ./test-dirop make $CURDIR/dir-test failed ; exit 1)
+./test-dirop remove $CURDIR/dir-test 1>> vfs-test.out 2>/dev/null \
+	|| (echo ./test-dirop remove $CURDIR/dir-test failed ; exit 1)
+
+header
+echo testing ./test-escape >> vfs-test.out
+./test-escape 1>> vfs-test.out 2>/dev/null \
+	|| (echo ./test-escape failed ; exit 1)
+
+header
+echo testing ./test-info >> vfs-test.out
+./test-info $CURDIR/test-info.c 1>> vfs-test.out 2>/dev/null \
+	|| (echo ./test-info $CURDIR/test-info.c failed ; exit 1)
+
+header
+echo testing ./test-mime >> vfs-test.out
+./test-mime $CURDIR/test-mime.c 1>> vfs-test.out 2>/dev/null \
+	|| (echo ./test-mime $CURDIR/test-mime.c failed ; exit 1)
+
+

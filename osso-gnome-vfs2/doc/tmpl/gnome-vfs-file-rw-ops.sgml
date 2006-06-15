@@ -1,0 +1,74 @@
+<!-- ##### SECTION Title ##### -->
+Reading and Writing
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+  Reading and writing operations are explained, also @gnome_vfs_seek, which
+  is used to move the file pointer inside the file.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM GnomeVFSSeekPosition ##### -->
+<para>
+
+</para>
+
+@GNOME_VFS_SEEK_START: 
+@GNOME_VFS_SEEK_CURRENT: 
+@GNOME_VFS_SEEK_END: 
+
+<!-- ##### FUNCTION gnome_vfs_read ##### -->
+<para>
+
+</para>
+
+@handle: 
+@buffer: 
+@bytes: 
+@bytes_read: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_write ##### -->
+<para>
+
+</para>
+
+@handle: 
+@buffer: 
+@bytes: 
+@bytes_written: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_seek ##### -->
+<para>
+
+</para>
+
+@handle: 
+@whence: 
+@offset: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_tell ##### -->
+<para>
+
+</para>
+
+@handle: 
+@offset_return: 
+@Returns: 
+
+

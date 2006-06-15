@@ -1,0 +1,169 @@
+<!-- ##### SECTION Title ##### -->
+Zeroconf networking support
+
+<!-- ##### SECTION Short_Description ##### -->
+Gets information about available Zeroconf (aka <trademark>RendezVous</trademark>) services on a local network.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### USER_FUNCTION GnomeVFSDNSSDResolveCallback ##### -->
+<para>
+
+</para>
+
+@handle: 
+@result: 
+@service: 
+@host: 
+@port: 
+@text: 
+@text_raw_len: 
+@text_raw: 
+@callback_data: 
+
+
+<!-- ##### ENUM GnomeVFSDNSSDServiceStatus ##### -->
+<para>
+
+</para>
+
+@GNOME_VFS_DNS_SD_SERVICE_ADDED: 
+@GNOME_VFS_DNS_SD_SERVICE_REMOVED: 
+
+<!-- ##### STRUCT GnomeVFSDNSSDService ##### -->
+<para>
+
+</para>
+
+@name: 
+@type: 
+@domain: 
+
+<!-- ##### USER_FUNCTION GnomeVFSDNSSDBrowseCallback ##### -->
+<para>
+
+</para>
+
+@handle: 
+@status: 
+@service: 
+@callback_data: 
+
+
+<!-- ##### FUNCTION gnome_vfs_dns_sd_browse ##### -->
+<para>
+
+</para>
+
+@handle: 
+@domain: 
+@type: 
+@callback: 
+@callback_data: 
+@callback_data_destroy_func: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_dns_sd_stop_browse ##### -->
+<para>
+
+</para>
+
+@handle: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_dns_sd_resolve ##### -->
+<para>
+
+</para>
+
+@handle: 
+@name: 
+@type: 
+@domain: 
+@timeout: 
+@callback: 
+@callback_data: 
+@callback_data_destroy_func: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_dns_sd_cancel_resolve ##### -->
+<para>
+
+</para>
+
+@handle: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_dns_sd_browse_sync ##### -->
+<para>
+
+</para>
+
+@domain: 
+@type: 
+@timeout_msec: 
+@n_services: 
+@services: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_dns_sd_resolve_sync ##### -->
+<para>
+
+</para>
+
+@name: 
+@type: 
+@domain: 
+@timeout_msec: 
+@host: 
+@port: 
+@text: 
+@text_raw_len: 
+@text_raw: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_dns_sd_service_list_free ##### -->
+<para>
+
+</para>
+
+@services: 
+@n_services: 
+
+
+<!-- ##### FUNCTION gnome_vfs_dns_sd_list_browse_domains_sync ##### -->
+<para>
+
+</para>
+
+@domain: 
+@timeout_msec: 
+@domains: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_get_default_browse_domains ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+

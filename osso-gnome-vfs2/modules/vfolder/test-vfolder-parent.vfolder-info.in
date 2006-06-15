@@ -1,0 +1,14 @@
+<VFolderInfo>
+  <Folder>
+    <Name>Top Folder</Name>
+
+    <Folder>
+      <Name>EmptyFolder</Name>
+    </Folder>
+
+    <Folder>
+      <Name>EmptyHiddenFolder</Name>
+      <DontShowIfEmpty/>
+    </Folder>
+  </Folder>
+</VFolderInfo>

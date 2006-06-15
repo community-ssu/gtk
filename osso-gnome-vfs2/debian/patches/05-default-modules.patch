@@ -1,0 +1,13 @@
+Index: modules/default-modules.conf
+===================================================================
+--- modules/default-modules.conf	(revision 398)
++++ modules/default-modules.conf	(arbetskopia)
+@@ -14,7 +14,7 @@
+ 
+ dns-sd: dns-sd
+ 
+-file: file
++file-orig: file
+ file-daemon: [daemon] file
+ 
+ test: vfs-test

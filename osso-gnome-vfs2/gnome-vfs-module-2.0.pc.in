@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+
+Name: gnome-vfs-module
+Description: The GNOME virtual file-system module include info
+Version: @VERSION@
+Requires: @PC_REQUIRES@
+Libs: -L${libdir} -lgnomevfs-2
+Cflags: -I${includedir}/gnome-vfs-2.0 -I${includedir}/gnome-vfs-module-2.0 -I${libdir}/gnome-vfs-2.0/include

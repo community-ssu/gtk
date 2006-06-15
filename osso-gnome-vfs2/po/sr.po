@@ -1,0 +1,1664 @@
+# Serbian translation of gnome-vfs
+# Courtesy of Prevod.org team (http://prevod.org/) -- 2003, 2004, 2005.
+#
+# This file is distributed under the same license as the gnome-vfs package.
+#
+# Maintainer: Душан Живојнов <calvin@verat.net>
+# Reviewed on 2004-02-03 by: Данило Шеган <dsegan@gmx.net>
+# Reviewed on 2005-07-08 by: Данило Шеган <dsegan@gmx.net>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-vfs\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-09-03 21:03+0200\n"
+"PO-Revision-Date: 2005-09-03 21:03+0200\n"
+"Last-Translator: Данило Шеган <danilo@prevod.org>\n"
+"Language-Team: Serbian (sr) <gnom@prevod.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3;    plural=n%10==1 && n%100!=11 ? 0 :    n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: ../daemon/gnome-vfs-daemon.c:596
+msgid "Could not initialize Bonobo"
+msgstr "Не могу да покренем Бонобо"
+
+# Гномов Виртуелни Систем Датотека — ВСД? Или Гномово „опонашање система датотека“ — ОСД?
+#: ../daemon/gnome-vfs-daemon.c:603
+msgid "Could not initialize gnome vfs"
+msgstr "Не могу да покренем Гномов ВСД"
+
+#: ../libgnomevfs/gnome-vfs-cdrom.c:237
+msgid "ISO 9660 Volume"
+msgstr "ИСО 9660 диск"
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:221
+#, c-format
+msgid "%s:%d contains NUL characters."
+msgstr "%s:%d садржи NUL знакове."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:238
+#, c-format
+msgid "%s:%d contains no method name."
+msgstr "%s:%d не садржи име метода."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:278
+#, c-format
+msgid "%s:%d has no options endmarker."
+msgstr "%s:%d не садржи ознаку краја опција."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:289
+#, c-format
+msgid "%s:%d has unknown options %s."
+msgstr "%s:%d користи непознате опције %s."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:308
+#, c-format
+msgid "%s:%d contains no module name."
+msgstr "%s:%d не садржи име модула."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:362
+#, c-format
+msgid "Configuration file `%s' was not found: %s"
+msgstr "Датотека са подешавањима „%s“ није нађена: %s"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:37
+msgid "AFFS Volume"
+msgstr "AFFS диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:38
+msgid "AFS Network Volume"
+msgstr "Мрежни AFS диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:39
+msgid "Auto-detected Volume"
+msgstr "Самопрепознати диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:40
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:42
+msgid "CD-ROM Drive"
+msgstr "ЦД уређај"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:41
+msgid "CD Digital Audio"
+msgstr "Дигитални звучни ЦД"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:43
+msgid "Hardware Device Volume"
+msgstr "Диск на хардверском уређају"
+
+# bug: does it differentiate between Hurd Ext2 and Linux Ext2?
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:44
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:45
+msgid "Ext2 Linux Volume"
+msgstr "Линукс Ext2 диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:46
+msgid "Ext3 Linux Volume"
+msgstr "Линукс Ext3 диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:47
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:57
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:58
+msgid "MSDOS Volume"
+msgstr "МСДОС диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:48
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:49
+msgid "MacOS Volume"
+msgstr "МекОС диск"
+
+# ЦеДе диск, а не „Компактни диск диск“
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:50
+msgid "CDROM Volume"
+msgstr "ЦД диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:51
+msgid "Hsfs CDROM Volume"
+msgstr "Hsfs ЦД диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:52
+msgid "JFS Volume"
+msgstr "ЈФС диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:53
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:60
+msgid "Windows NT Volume"
+msgstr "Windows NT диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:54
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:62
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:63
+msgid "System Volume"
+msgstr "Системски диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:55
+msgid "Memory Volume"
+msgstr "Меморијски диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:56
+msgid "Minix Volume"
+msgstr "Миникс диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:59
+msgid "NFS Network Volume"
+msgstr "Мрежни НФС диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:61
+msgid "Netware Volume"
+msgstr "Netware диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:64
+msgid "Reiser4 Linux Volume"
+msgstr "Линукс Рајзер4 диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:65
+msgid "ReiserFS Linux Volume"
+msgstr "Линукс РајзерФС диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:66
+msgid "Windows Shared Volume"
+msgstr "Дељени Windows диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:67
+msgid "SuperMount Volume"
+msgstr "SuperMount диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:68
+msgid "DVD Volume"
+msgstr "ДВД диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:69
+msgid "Solaris/BSD Volume"
+msgstr "Соларис/БСД диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:70
+msgid "Udfs Solaris Volume"
+msgstr "Соларис Udfs диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:71
+msgid "Pcfs Solaris Volume"
+msgstr "Соларис Pcfs диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:72
+msgid "Sun SAM-QFS Volume"
+msgstr "Sun SAM-QFS диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:73
+msgid "Enhanced DOS Volume"
+msgstr "Унапређени DOS диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:74
+msgid "Windows VFAT Volume"
+msgstr "Windows VFAT диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:75
+msgid "Xenix Volume"
+msgstr "Xenix диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:76
+msgid "XFS Linux Volume"
+msgstr "Линукс XFS диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:77
+msgid "XIAFS Volume"
+msgstr "XIAFS диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:78
+msgid "CIFS Volume"
+msgstr "CIFS диск"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:106
+msgid "Unknown"
+msgstr "Непознат"
+
+#: ../libgnomevfs/gnome-vfs-job.c:734
+#, c-format
+msgid "Unknown operation type %u"
+msgstr "Непознат тип операције %u"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1025 ../libgnomevfs/gnome-vfs-job.c:1176
+#, c-format
+msgid "Cannot create pipe for open GIOChannel: %s"
+msgstr "Не могу направити цевку за отворени GIOChannel: %s"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1699
+#, c-format
+msgid "Unknown job kind %u"
+msgstr "Непозната врста посла %u"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1732
+msgid "Operation stopped"
+msgstr "Операција заустављена"
+
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:108
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:275
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:326
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:622
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:643
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:663
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:684
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:705
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:856
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:880
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:901
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:922
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:979
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:998
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1017
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1037
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1057
+#: ../libgnomevfs/gnome-vfs-mime-info.c:626
+#: ../libgnomevfs/gnome-vfs-mime-info.c:633
+#: ../libgnomevfs/gnome-vfs-mime-info.c:641
+#: ../libgnomevfs/gnome-vfs-mime-info.c:648
+#: ../libgnomevfs/gnome-vfs-mime-info.c:656
+#: ../libgnomevfs/gnome-vfs-mime-info.c:673
+#: ../libgnomevfs/gnome-vfs-mime-info.c:680
+#: ../libgnomevfs/gnome-vfs-mime-info.c:687
+#: ../libgnomevfs/gnome-vfs-mime-info.c:694
+#: ../libgnomevfs/gnome-vfs-mime-info.c:702
+#: ../libgnomevfs/gnome-vfs-mime-info.c:709
+msgid ""
+"Deprecated function.  User modifications to the MIME database are no longer "
+"supported."
+msgstr ""
+"Превазиђена функција.  Измене корисника у МИМЕ бази више нису подржане."
+
+#: ../libgnomevfs/gnome-vfs-parse-ls.c:666
+#, c-format
+msgid "Could not parse: %s"
+msgstr "Не могу рашчланити: %s"
+
+#: ../libgnomevfs/gnome-vfs-parse-ls.c:668
+msgid "More parsing errors will be ignored."
+msgstr "Остале грешке у обради ће бити занемарене."
+
+#. GNOME_VFS_OK
+#: ../libgnomevfs/gnome-vfs-result.c:42
+msgid "No error"
+msgstr "Нема грешке"
+
+#. GNOME_VFS_ERROR_NOT_FOUND
+#: ../libgnomevfs/gnome-vfs-result.c:43
+msgid "File not found"
+msgstr "Датотека није нађена"
+
+#. GNOME_VFS_ERROR_GENERIC
+#: ../libgnomevfs/gnome-vfs-result.c:44
+msgid "Generic error"
+msgstr "Општа грешка"
+
+#. GNOME_VFS_ERROR_INTERNAL
+#: ../libgnomevfs/gnome-vfs-result.c:45
+msgid "Internal error"
+msgstr "Унутрашња грешка"
+
+#. GNOME_VFS_ERROR_BAD_PARAMETERS
+#: ../libgnomevfs/gnome-vfs-result.c:46
+msgid "Invalid parameters"
+msgstr "Неисправни параметри"
+
+#. GNOME_VFS_ERROR_NOT_SUPPORTED
+#: ../libgnomevfs/gnome-vfs-result.c:47
+msgid "Unsupported operation"
+msgstr "Операција није подржана"
+
+#. GNOME_VFS_ERROR_IO
+#: ../libgnomevfs/gnome-vfs-result.c:48
+msgid "I/O error"
+msgstr "У/И грешка"
+
+#. GNOME_VFS_ERROR_CORRUPTED_DATA
+#: ../libgnomevfs/gnome-vfs-result.c:49
+msgid "Data corrupted"
+msgstr "Подаци оштећени"
+
+#. GNOME_VFS_ERROR_WRONG_FORMAT
+#: ../libgnomevfs/gnome-vfs-result.c:50
+msgid "Format not valid"
+msgstr "Облик није исправан"
+
+# bug: is file handle the same as file descriptor?
+#. GNOME_VFS_ERROR_BAD_FILE
+#: ../libgnomevfs/gnome-vfs-result.c:51
+msgid "Bad file handle"
+msgstr "Лоша ручка датотеке"
+
+#. GNOME_VFS_ERROR_TOO_BIG
+#: ../libgnomevfs/gnome-vfs-result.c:52
+msgid "File too big"
+msgstr "Датотека је превелика"
+
+#. GNOME_VFS_ERROR_NO_SPACE
+#: ../libgnomevfs/gnome-vfs-result.c:53
+msgid "No space left on device"
+msgstr "Нема више простора на уређају"
+
+#. GNOME_VFS_ERROR_READ_ONLY
+#: ../libgnomevfs/gnome-vfs-result.c:54
+msgid "Read-only file system"
+msgstr "Систем датотека само за читање"
+
+#. GNOME_VFS_ERROR_INVALID_URI
+#: ../libgnomevfs/gnome-vfs-result.c:55
+msgid "Invalid URI"
+msgstr "Неисправна адреса"
+
+#. GNOME_VFS_ERROR_NOT_OPEN
+#: ../libgnomevfs/gnome-vfs-result.c:56
+msgid "File not open"
+msgstr "Датотека није отворена"
+
+#. GNOME_VFS_ERROR_INVALID_OPEN_MODE
+#: ../libgnomevfs/gnome-vfs-result.c:57
+msgid "Open mode not valid"
+msgstr "Начин отварања није исправан"
+
+#. GNOME_VFS_ERROR_ACCESS_DENIED
+#: ../libgnomevfs/gnome-vfs-result.c:58
+msgid "Access denied"
+msgstr "Пристип одбијен"
+
+#. GNOME_VFS_ERROR_TOO_MANY_OPEN_FILES
+#: ../libgnomevfs/gnome-vfs-result.c:59
+msgid "Too many open files"
+msgstr "Превише отворених датотека"
+
+#. GNOME_VFS_ERROR_EOF
+#: ../libgnomevfs/gnome-vfs-result.c:60
+msgid "End of file"
+msgstr "Крај датотеке"
+
+#. GNOME_VFS_ERROR_NOT_A_DIRECTORY
+#: ../libgnomevfs/gnome-vfs-result.c:61
+msgid "Not a directory"
+msgstr "Није директоријум"
+
+#. GNOME_VFS_ERROR_IN_PROGRESS
+#: ../libgnomevfs/gnome-vfs-result.c:62
+msgid "Operation in progress"
+msgstr "Операција у току"
+
+#. GNOME_VFS_ERROR_INTERRUPTED
+#: ../libgnomevfs/gnome-vfs-result.c:63
+msgid "Operation interrupted"
+msgstr "Операција прекинута"
+
+#. GNOME_VFS_ERROR_FILE_EXISTS
+#: ../libgnomevfs/gnome-vfs-result.c:64
+msgid "File exists"
+msgstr "Датотека постоји"
+
+#. GNOME_VFS_ERROR_LOOP
+#: ../libgnomevfs/gnome-vfs-result.c:65
+msgid "Looping links encountered"
+msgstr "Пронађене кружне везе"
+
+#. GNOME_VFS_ERROR_NOT_PERMITTED
+#: ../libgnomevfs/gnome-vfs-result.c:66
+msgid "Operation not permitted"
+msgstr "Операција није дозвољена"
+
+#. GNOME_VFS_ERROR_IS_DIRECTORY
+#: ../libgnomevfs/gnome-vfs-result.c:67
+msgid "Is a directory"
+msgstr "Јесте директоријум"
+
+#. GNOME_VFS_ERROR_NO_MEMORY
+#: ../libgnomevfs/gnome-vfs-result.c:68
+msgid "Not enough memory"
+msgstr "Нема довољно меморије"
+
+#. GNOME_VFS_ERROR_HOST_NOT_FOUND
+#: ../libgnomevfs/gnome-vfs-result.c:69
+msgid "Host not found"
+msgstr "Домаћин није нађен"
+
+#. GNOME_VFS_ERROR_INVALID_HOST_NAME
+#: ../libgnomevfs/gnome-vfs-result.c:70
+msgid "Host name not valid"
+msgstr "Име домаћина није исправно"
+
+#. GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS
+#: ../libgnomevfs/gnome-vfs-result.c:71
+msgid "Host has no address"
+msgstr "Домаћин нема адресу"
+
+#. GNOME_VFS_ERROR_LOGIN_FAILED
+#: ../libgnomevfs/gnome-vfs-result.c:72
+msgid "Login failed"
+msgstr "Неуспешна пријава"
+
+#. GNOME_VFS_ERROR_CANCELLED
+#: ../libgnomevfs/gnome-vfs-result.c:73
+msgid "Operation cancelled"
+msgstr "Операција обустављена"
+
+#. GNOME_VFS_ERROR_DIRECTORY_BUSY
+#: ../libgnomevfs/gnome-vfs-result.c:74
+msgid "Directory busy"
+msgstr "Заузет директоријум"
+
+#. GNOME_VFS_ERROR_DIRECTORY_NOT_EMPTY
+#: ../libgnomevfs/gnome-vfs-result.c:75
+msgid "Directory not empty"
+msgstr "Директоријум није празан"
+
+#. GNOME_VFS_ERROR_TOO_MANY_LINKS
+#: ../libgnomevfs/gnome-vfs-result.c:76
+msgid "Too many links"
+msgstr "Превише веза"
+
+#. GNOME_VFS_ERROR_READ_ONLY_FILE_SYSTEM
+#: ../libgnomevfs/gnome-vfs-result.c:77
+msgid "Read only file system"
+msgstr "Неуписив систем датотека"
+
+#. GNOME_VFS_ERROR_NOT_SAME_FILE_SYSTEM
+#: ../libgnomevfs/gnome-vfs-result.c:78
+msgid "Not on the same file system"
+msgstr "Није на истом систему датотека"
+
+#. GNOME_VFS_ERROR_NAME_TOO_LONG
+#: ../libgnomevfs/gnome-vfs-result.c:79
+msgid "Name too long"
+msgstr "Име је предугачко"
+
+#. GNOME_VFS_ERROR_SERVICE_NOT_AVAILABLE
+#: ../libgnomevfs/gnome-vfs-result.c:80
+msgid "Service not available"
+msgstr "Услуга није доступна"
+
+#. GNOME_VFS_ERROR_SERVICE_OBSOLETE
+#: ../libgnomevfs/gnome-vfs-result.c:81
+msgid "Request obsoletes service's data"
+msgstr "Захтев застарева податке услуге"
+
+#. GNOME_VFS_ERROR_PROTOCOL_ERROR
+#: ../libgnomevfs/gnome-vfs-result.c:82
+msgid "Protocol error"
+msgstr "Грешка у протоколу"
+
+#. GNOME_VFS_ERROR_NO_MASTER_BROWSER
+#: ../libgnomevfs/gnome-vfs-result.c:83
+msgid "Could not find master browser"
+msgstr "Не могу пронаћи главни разгледач"
+
+#. GNOME_VFS_ERROR_NO_DEFAULT
+#: ../libgnomevfs/gnome-vfs-result.c:84
+msgid "No default action associated"
+msgstr "Није додељено уобичајено дејство"
+
+#. GNOME_VFS_ERROR_NO_HANDLER
+#: ../libgnomevfs/gnome-vfs-result.c:85
+msgid "No handler for URL scheme"
+msgstr "Нема руковаоца за врсту адресе (URL-а)"
+
+#. GNOME_VFS_ERROR_PARSE
+#: ../libgnomevfs/gnome-vfs-result.c:86
+msgid "Error parsing command line"
+msgstr "Грешка при читању наредбе"
+
+#. GNOME_VFS_ERROR_LAUNCH
+#: ../libgnomevfs/gnome-vfs-result.c:87
+msgid "Error launching command"
+msgstr "Грешка при покретању наредбе"
+
+#. GNOME_VFS_ERROR_TIMEOUT
+#: ../libgnomevfs/gnome-vfs-result.c:88 ../libgnomevfs/gnome-vfs-result.c:90
+msgid "Timeout reached"
+msgstr "Достигнут рок"
+
+#. GNOME_VFS_ERROR_NAMESERVER
+#: ../libgnomevfs/gnome-vfs-result.c:89
+msgid "Nameserver error"
+msgstr "Грешка са сервером назива"
+
+#. GNOME_VFS_ERROR_LOCKED
+#: ../libgnomevfs/gnome-vfs-result.c:91
+msgid "The resource is locked"
+msgstr "Ресурс је закључан"
+
+#. GNOME_VFS_ERROR_DEPRECATED_FUNCTION
+#: ../libgnomevfs/gnome-vfs-result.c:92
+msgid "Function call deprecated"
+msgstr "Позив функције је превазиђен"
+
+#: ../libgnomevfs/gnome-vfs-result.c:217
+msgid "Unknown error"
+msgstr "Непозната грешка"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:78
+#, c-format
+msgid "%u byte"
+msgid_plural "%u bytes"
+msgstr[0] "%u бајт"
+msgstr[1] "%u бајта"
+msgstr[2] "%u бајтова"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:84
+#, c-format
+msgid "%.1f KB"
+msgstr "%.1f КБ"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:88
+#, c-format
+msgid "%.1f MB"
+msgstr "%.1f МБ"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:92
+#, c-format
+msgid "%.1f GB"
+msgstr "%.1f ГБ"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:1096
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:381
+msgid " (invalid Unicode)"
+msgstr " (неисправан Уникод)"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:563
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:619
+msgid "Floppy"
+msgstr "Дискета"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:564
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:622
+msgid "CD-ROM"
+msgstr "ЦД"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:566
+msgid "CD-R"
+msgstr "ЦД-Р"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:567
+msgid "CD-RW"
+msgstr "ЦД-РВ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:568
+msgid "DVD-ROM"
+msgstr "ДВД-РОМ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:569
+msgid "DVD-RAM"
+msgstr "ДВД-РАМ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:570
+msgid "DVD-R"
+msgstr "ДВД-Р"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:571
+msgid "DVD-RW"
+msgstr "ДВД-РВ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:572
+msgid "CD-ROM/DVD-ROM"
+msgstr "ЦД-РОМ/ДВД-РОМ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:573
+msgid "CD-ROM/DVD-RAM"
+msgstr "ЦД-РОМ/ДВД-РАМ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:574
+msgid "CD-ROM/DVD-R"
+msgstr "ЦД-РОМ/ДВД-Р"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:575
+msgid "CD-ROM/DVD-RW"
+msgstr "ЦД-РОМ/ДВД-РВ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:576
+msgid "CD-R/DVD-ROM"
+msgstr "ЦД-Р/ДВД-РОМ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:577
+msgid "CD-R/DVD-RAM"
+msgstr "ЦД-Р/ДВД-РАМ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:578
+msgid "CD-R/DVD-R"
+msgstr "ЦД-Р/ДВД-Р"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:579
+msgid "CD-R/DVD-RW"
+msgstr "ЦД-Р/ДВД-РВ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:580
+msgid "CD-RW/DVD-ROM"
+msgstr "ЦД-РВ/ДВД-РОМ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:581
+msgid "CD-RW/DVD-RAM"
+msgstr "ЦД-РВ/ДВД-РАМ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:582
+msgid "CD-RW/DVD-R"
+msgstr "ЦД-РВ/ДВД-Р"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:583
+msgid "CD-RW/DVD-RW"
+msgstr "ЦД-РВ/ДВД-РВ"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:585
+msgid "Disk"
+msgstr "Диск"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:586
+msgid "USB Drive"
+msgstr "УСБ диск"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:587
+msgid "IEEE1394 Drive"
+msgstr "ИЕЕЕ1394 диск"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:588
+msgid "CF"
+msgstr "CF"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:589
+msgid "SD/MMC"
+msgstr "SD/MMC"
+
+# Чаробни штапић? :)
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:590
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:594
+msgid "Memory Stick"
+msgstr "Меморијски штапић"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:591
+msgid "Smart Media"
+msgstr "Мудри носач (SM)"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:593
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:625
+msgid "Zip Drive"
+msgstr "Зип диск"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:595
+msgid "Camera"
+msgstr "Фотоапарат"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:596
+msgid "DVD"
+msgstr "ДВД"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:836
+msgid "Root Volume"
+msgstr "Основни диск"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:917
+msgid "Audio CD"
+msgstr "Звучни ЦД"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:950
+msgid "Unknown volume"
+msgstr "Непознати диск"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:1155
+msgid "Network server"
+msgstr "Мрежни сервер"
+
+#. Handle floppy case
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:125
+msgid ""
+"Unable to mount the floppy drive. There is probably no floppy in the drive."
+msgstr "Не могу да прикључим дискету. Вероватно дискета није у уређају. "
+
+#. All others
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:129
+msgid "Unable to mount the volume. There is probably no media in the device."
+msgstr "Не могу да прикључим диск. Вероватно нема носача у уређају. "
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:135
+msgid ""
+"Unable to mount the floppy drive. The floppy is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"Не могу да прикључим дискету. Вероватно је дискета у запису који се не може "
+"читати."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:138
+msgid ""
+"Unable to mount the selected volume. The volume is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"Не могу да прикључим изабрани диск. Вероватно је диск у запису који се не "
+"може читати."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:143
+msgid "Unable to mount the selected floppy drive."
+msgstr "Не могу да прикључим изабрану дискету."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:145
+msgid "Unable to mount the selected volume."
+msgstr "Не могу да прикључим изабрани диск."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:157
+msgid "Unable to unmount the selected volume."
+msgstr "Не могу да искључим изабрани диск."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:290
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:357
+msgid "Failed to start command"
+msgstr "Неуспешно покретање наредбе"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:345
+msgid "Unable to eject media"
+msgstr "Не могу да избацим носач"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:573
+msgid "Unable to unmount connected server"
+msgstr "Не могу да искључим везу са сервером"
+
+#: ../modules/computer-method.c:546
+msgid "Network"
+msgstr "Мрежа"
+
+#: ../modules/computer-method.c:564
+msgid "Home"
+msgstr "Лични"
+
+#: ../modules/computer-method.c:582
+msgid "Filesystem"
+msgstr "Систем датотека"
+
+#: ../modules/file-method.c:536
+#, c-format
+msgid "Unknown GnomeVFSSeekPosition %d"
+msgstr "Непознато GnomeVFSSeekPosition %d"
+
+#: ../modules/network-method.c:1399
+msgid "Windows Network"
+msgstr "Windows мрежа"
+
+#: ../modules/sftp-method.c:1314
+#, c-format
+msgid "The identity of the remote computer (%s) is unknown."
+msgstr "Идентитет удаљеног рачунара (%s) није познат."
+
+#: ../modules/sftp-method.c:1315
+#, c-format
+msgid ""
+"This happens when you log in to a computer the first time.\n"
+"\n"
+"The identity sent by the remote computer is %s. If you want to be absolutely "
+"sure it is safe to continue, contact the system administrator."
+msgstr ""
+"Ово се догађа када се по први пут пријавите на рачунар.\n"
+"\n"
+"Идентитет који је послао удаљени рачунар је %s. Уколико желите да будете "
+"потпуно сигурни да је безбедно да наставите, ступите у везу са "
+"администратором система."
+
+#: ../modules/sftp-method.c:1323
+msgid "Log In Anyway"
+msgstr "Ипак се пријави"
+
+#: ../modules/sftp-method.c:1324
+msgid "Cancel Login"
+msgstr "Откажи пријаву"
+
+#. FIXME: we probably shouldn't use printf to output the message
+#: ../modules/test-method.c:587
+#, c-format
+msgid "Didn't find a valid settings file at %s\n"
+msgstr "Нисам нашао исправну датотеку са подешавањима у %s\n"
+
+#: ../modules/test-method.c:589
+#, c-format
+msgid "Use the %s environment variable to specify a different location.\n"
+msgstr "Користите променљиву окружења %s да назначите другу путању.\n"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:1
+msgid "Standard Moniker factory"
+msgstr "Производња обичног надимка"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:2
+msgid "file MonikerExtender"
+msgstr "датотека MonikerExtender"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:3
+msgid "generic Gnome VFS moniker"
+msgstr "основни Гном ВСД надимак"
+
+#: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:4
+msgid "generic file moniker"
+msgstr "основни надимак датотеке"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:1
+msgid "Default component viewer application"
+msgstr "Подразумевани програм за преглед делова"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:2
+msgid "Default terminal application"
+msgstr "Подразумевани терминалски програм"
+
+# bug: no slang, s/exec/execut.../?
+#: ../schemas/desktop_default_applications.schemas.in.h:3
+msgid "Exec argument for default terminal"
+msgstr "Аргумент извршавања за подразумевани терминал"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:5
+#, no-c-format
+msgid ""
+"The application to use for viewing files that require a component to view "
+"them. The parameter %s will be replaced by the file's URIs, the parameter %c "
+"will be replaced by the component IID."
+msgstr ""
+"Програм који се користи за прегледање датотека које захтевају компоненту за "
+"преглед. Параметар %s ће бити замењен адресом датотеке, а параметар %c ће "
+"бити замењен IID-ом компоненте."
+
+#: ../schemas/desktop_default_applications.schemas.in.h:6
+msgid ""
+"The default terminal application to use for applications that require a "
+"terminal."
+msgstr ""
+"Подразумевани терминалски програм који се користи за програме којима је "
+"неопходан терминал."
+
+# bug: no slang, s/exec/execute.../?
+#: ../schemas/desktop_default_applications.schemas.in.h:7
+msgid "The exec argument to use for the default terminal application."
+msgstr "Аргумент извршавања за подразумевани терминалски програм."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:1
+msgid "Run the command in a terminal"
+msgstr "Покрени наредбу у терминалу"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:2
+msgid "The command used to handle \"aim\" URLs, if enabled."
+msgstr "Наредба коришћена за баратање „aim“ адресама, ако је укључено."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:3
+msgid "The command used to handle \"callto\" URLs, if enabled."
+msgstr "Наредба коришћена за баратање „callto“ адресама, ако је укључено."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:4
+msgid "The command used to handle \"ghelp\" URLs, if enabled."
+msgstr "Наредба коришћена за баратање „ghelp“ адресама, ако је укључено."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:5
+msgid "The command used to handle \"h323\" URLs, if enabled."
+msgstr "Наредба коришћена за баратање „h323“ адресама, ако је укључено."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:6
+msgid "The command used to handle \"http\" URLs, if enabled."
+msgstr "Наредба коришћена за баратање „http“ адресама, ако је укључено."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:7
+msgid "The command used to handle \"https\" URLs, if enabled."
+msgstr "Наредба коришћена за баратање „https“ адресама, ако је укључено."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:8
+msgid "The command used to handle \"info\" URLs, if enabled."
+msgstr "Наредба коришћена за баратање „info“ адресама, ако је укључено."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:9
+msgid "The command used to handle \"mailto\" URLs, if enabled."
+msgstr "Наредба коришћена за баратање „mailto“ адресама, ако је укључено."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:10
+msgid "The command used to handle \"man\" URLs, if enabled."
+msgstr "Наредба коришћена за баратање „man“ адресама, ако је укључено."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:11
+msgid "The command used to handle \"trash\" URLs, if enabled."
+msgstr "Наредба коришћена за баратање „trash“ адресама, ако је укључено."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:12
+msgid "The handler for \"aim\" URLs"
+msgstr "Руковаоц „aim“ адресама"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:13
+msgid "The handler for \"callto\" URLs"
+msgstr "Руковаоц „callto“ адресама"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:14
+msgid "The handler for \"ghelp\" URLs"
+msgstr "Руковаоц „ghelp“ адресама"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:15
+msgid "The handler for \"h323\" URLs"
+msgstr "Руковаоц „h323“ адресама"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:16
+msgid "The handler for \"http\" URLs"
+msgstr "Руковаоц „http“ адресама"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:17
+msgid "The handler for \"https\" URLs"
+msgstr "Руковаоц „https“ адресама"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:18
+msgid "The handler for \"info\" URLs"
+msgstr "Руковаоц „info“ адресама"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:19
+msgid "The handler for \"mailto\" URLs"
+msgstr "Руковаоц „mailto“ адресама"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:20
+msgid "The handler for \"man\" URLs"
+msgstr "Руковаоц „man“ адресама"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:21
+msgid "The handler for \"trash\" URLs"
+msgstr "Руковаоц „trash“ адресама"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:22
+msgid ""
+"True if the command specified in the \"command\" key should handle \"aim\" "
+"URLs."
+msgstr ""
+"Укључено ако наредба наведена у кључу „command“ треба да се користи за „aim“ "
+"адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:23
+msgid ""
+"True if the command specified in the \"command\" key should handle \"callto"
+"\" URLs."
+msgstr ""
+"Укључено ако наредба наведена у кључу „command“ треба да се користи за "
+"„callto“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:24
+msgid ""
+"True if the command specified in the \"command\" key should handle \"ghelp\" "
+"URLs."
+msgstr ""
+"Укључено ако наредба наведена у кључу „command“ треба да се користи за "
+"„ghelp“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:25
+msgid ""
+"True if the command specified in the \"command\" key should handle \"h323\" "
+"URLs."
+msgstr ""
+"Укључено ако наредба наведена у кључу „command“ треба да се користи за "
+"„h323“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:26
+msgid ""
+"True if the command specified in the \"command\" key should handle \"http\" "
+"URLs."
+msgstr ""
+"Укључено ако наредба наведена у кључу „command“ треба да се користи за "
+"„http“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:27
+msgid ""
+"True if the command specified in the \"command\" key should handle \"https\" "
+"URLs."
+msgstr ""
+"Укључено ако наредба наведена у кључу „command“ треба да се користи за "
+"„https“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:28
+msgid ""
+"True if the command specified in the \"command\" key should handle \"info\" "
+"URLs."
+msgstr ""
+"Укључено ако наредба наведена у кључу „command“ треба да се користи за "
+"„info“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:29
+msgid ""
+"True if the command specified in the \"command\" key should handle \"mailto"
+"\" URLs."
+msgstr ""
+"Укључено ако наредба наведена у кључу „command“ треба да се користи за "
+"„mailto“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:30
+msgid ""
+"True if the command specified in the \"command\" key should handle \"man\" "
+"URLs."
+msgstr ""
+"Укључено ако наредба наведена у кључу „command“ треба да се користи за „man“ "
+"адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:31
+msgid ""
+"True if the command specified in the \"command\" key should handle \"trash\" "
+"URLs."
+msgstr ""
+"Укључено ако наредба наведена у кључу „command“ треба да се користи за "
+"„trash“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:32
+msgid ""
+"True if the command used to handle this type of URL should be run in a "
+"terminal."
+msgstr ""
+"Укључено ако наредба која се користи за ове адресе треба да се покреће у "
+"терминалу."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:33
+msgid "Whether the specified command should handle \"aim\" URLs"
+msgstr "Да ли наведена наредба треба да се користи за „aim“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:34
+msgid "Whether the specified command should handle \"callto\" URLs"
+msgstr "Да ли наведена наредба треба да се користи за „callto“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:35
+msgid "Whether the specified command should handle \"ghelp\" URLs"
+msgstr "Да ли наведена наредба треба да се користи за „ghelp“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:36
+msgid "Whether the specified command should handle \"h323\" URLs"
+msgstr "Да ли наведена наредба треба да се користи за „h323“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:37
+msgid "Whether the specified command should handle \"http\" URLs"
+msgstr "Да ли наведена наредба треба да се користи за „http“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:38
+msgid "Whether the specified command should handle \"https\" URLs"
+msgstr "Да ли наведена наредба треба да се користи за „https“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:39
+msgid "Whether the specified command should handle \"info\" URLs"
+msgstr "Да ли наведена наредба треба да се користи за „info“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:40
+msgid "Whether the specified command should handle \"mailto\" URLs"
+msgstr "Да ли наведена наредба треба да се користи за „mailto“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:41
+msgid "Whether the specified command should handle \"man\" URLs"
+msgstr "Да ли наведена наредба треба да се користи за „man“ адресе."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:42
+msgid "Whether the specified command should handle \"trash\" URLs"
+msgstr "Да ли наведена наредба треба да се користи за „trash“ адресе."
+
+#: ../schemas/system_dns_sd.schemas.in.h:1
+msgid ""
+"Comma separated list of DNS-SD domains that should be visible in the "
+"\"network:///\" location."
+msgstr ""
+"Запетом раздвојен списак DNS-SD домена који су доступни на путањи "
+"„network:///."
+
+#: ../schemas/system_dns_sd.schemas.in.h:2
+msgid "Extra domains to look for DNS-SD services in"
+msgstr "Допунски домени на којима да тражи DNS-SD услуге"
+
+#: ../schemas/system_dns_sd.schemas.in.h:3
+msgid "How to display local DNS-SD service"
+msgstr "Како да приказује локалну DNS-SD услугу"
+
+#: ../schemas/system_dns_sd.schemas.in.h:4
+msgid "Possible values are \"merged\", \"separate\" and \"disabled\"."
+msgstr ""
+"Допуштене вредности су „merged“ (спојено), „separate“ (раздвојено) и "
+"„disabled“ (искључено)."
+
+#: ../schemas/system_http_proxy.schemas.in.h:1
+msgid "Authenticate proxy server connections"
+msgstr "Идентификуј везе са посредничким сервером"
+
+#: ../schemas/system_http_proxy.schemas.in.h:2
+msgid "Automatic proxy configuration URL"
+msgstr "Адреса за самоподешавање посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:3
+msgid "Enables the proxy settings when accessing HTTP over the Internet."
+msgstr "Укључује подешавања посредника при приступу вебу преко Интернета."
+
+#: ../schemas/system_http_proxy.schemas.in.h:4
+msgid "FTP proxy host name"
+msgstr "Име FTP посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:5
+msgid "FTP proxy port"
+msgstr "Порт FTP посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:6
+msgid "HTTP proxy host name"
+msgstr "Име HTTP посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:7
+msgid "HTTP proxy password"
+msgstr "Лозинка HTTP посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:8
+msgid "HTTP proxy port"
+msgstr "Порт HTTP посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:9
+msgid "HTTP proxy username"
+msgstr "Корисник HTTP посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:10
+msgid ""
+"If true, then connections to the proxy server require authentication. The "
+"username/password combo is defined by \"/system/http_proxy/"
+"authentication_user\" and \"/system/http_proxy/authentication_password\"."
+msgstr ""
+"Уколико је постављено, везе са посредничким сервером се идентификују. Пар "
+"корисник/лозинка се узима из „/system/http_proxy/authentication_user“ и „/"
+"system/http_proxy/authentication_password“."
+
+#: ../schemas/system_http_proxy.schemas.in.h:11
+msgid "Non-proxy hosts"
+msgstr "Беспосредничке адресе"
+
+#: ../schemas/system_http_proxy.schemas.in.h:12
+msgid "Password to pass as authentication when doing HTTP proxying."
+msgstr "Лозинка која се користи за идентификацију код веб посредника."
+
+#: ../schemas/system_http_proxy.schemas.in.h:13
+msgid "Proxy configuration mode"
+msgstr "Начин подешавања посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:14
+msgid "SOCKS proxy host name"
+msgstr "Име SOCKS посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:15
+msgid "SOCKS proxy port"
+msgstr "Порт SOCKS посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:16
+msgid "Secure HTTP proxy host name"
+msgstr "Име безбедног HTTP посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:17
+msgid "Secure HTTP proxy port"
+msgstr "Порт безбедног HTTP посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:18
+msgid ""
+"Select the proxy configuration mode. Supported values are \"none\", \"manual"
+"\", \"auto\"."
+msgstr ""
+"Изаберите режим подешавања посредника. Допуштене вредности су „none“, "
+"„manual“ и „auto“."
+
+#: ../schemas/system_http_proxy.schemas.in.h:19
+msgid "The machine name to proxy FTP through."
+msgstr "Име рачунара за FTP посредовање."
+
+#: ../schemas/system_http_proxy.schemas.in.h:20
+msgid "The machine name to proxy HTTP through."
+msgstr "Име рачунара за веб (HTTP) посредовање."
+
+#: ../schemas/system_http_proxy.schemas.in.h:21
+msgid "The machine name to proxy secure HTTP through."
+msgstr "Име рачунара за безбедно веб (HTTPS) посредовање."
+
+# bug: s/socks/SOCKS/
+#: ../schemas/system_http_proxy.schemas.in.h:22
+msgid "The machine name to proxy socks through."
+msgstr "Име рачунара за SOCKS посредовање."
+
+#: ../schemas/system_http_proxy.schemas.in.h:23
+msgid ""
+"The port on the machine defined by \"/system/http_proxy/host\" that you "
+"proxy through."
+msgstr "Порт рачунара датог у „/system/http_proxy/host“ кроз који посредује."
+
+#: ../schemas/system_http_proxy.schemas.in.h:24
+msgid ""
+"The port on the machine defined by \"/system/proxy/ftp_host\" that you proxy "
+"through."
+msgstr "Порт рачунара датог у „/system/proxy/ftp_proxy“ кроз који посредује."
+
+#: ../schemas/system_http_proxy.schemas.in.h:25
+msgid ""
+"The port on the machine defined by \"/system/proxy/secure_host\" that you "
+"proxy through."
+msgstr ""
+"Порт рачунара датог у „/system/proxy/secure_proxy“ кроз који посредује."
+
+#: ../schemas/system_http_proxy.schemas.in.h:26
+msgid ""
+"The port on the machine defined by \"/system/proxy/socks_host\" that you "
+"proxy through."
+msgstr ""
+"Порт машине одређене помоћу „/system/proxy/socks_proxy“ која је посредник."
+
+#: ../schemas/system_http_proxy.schemas.in.h:27
+msgid ""
+"This key contains a list of hosts which are connected to directly, rather "
+"than via the proxy (if it is active). The values can be hostnames, domains "
+"(using an initial wildcard like *.foo.com), IP host addresses (both IPv4 and "
+"IPv6) and network addresses with a netmask (something like 192.168.0.0/24)."
+msgstr ""
+"Овај кључ садржи списак рачунара који су непосредно повезани, уместо путем "
+"посредника (уколико је у дејству). Ове вредности могу бити имена рачунара, "
+"домени (помоћу почетних навода као што је *.нешто.ију), ИП адресе рачунара "
+"(било ИП4 било ИП6) и адресе мрежа уз мрежну маску (нешто као што је "
+"192.168.0.0/24)."
+
+#: ../schemas/system_http_proxy.schemas.in.h:28
+msgid "URL that provides proxy configuration values."
+msgstr "Адреса која обезбеђује вредности за подешавање посредника."
+
+#: ../schemas/system_http_proxy.schemas.in.h:29
+msgid "Use HTTP proxy"
+msgstr "Користи веб посредника"
+
+#: ../schemas/system_http_proxy.schemas.in.h:30
+msgid "User name to pass as authentication when doing HTTP proxying."
+msgstr "Корисничко име које се шаље при идентификацији код веб посредника."
+
+#: ../schemas/system_smb.schemas.in.h:1
+msgid "SMB workgroup"
+msgstr "СМБ радна група"
+
+#: ../schemas/system_smb.schemas.in.h:2
+msgid ""
+"The Windows networking workgroup or domain that the user is part of. In "
+"order for a new workgroup to fully take effect the user may need to log out "
+"and log back in."
+msgstr ""
+"Радна група или домен Windows мреже чији је корисник члан. Да би нова радна "
+"група узела маха корисник ће можда морати да се одјави и поново пријави."
+
+#: ../schemas/system_storage.schemas.in.h:1
+msgid "Display SCSI drives"
+msgstr "Прикажи SCSI уређаје"
+
+#: ../schemas/system_storage.schemas.in.h:2
+msgid "Display SCSI optical drives"
+msgstr "Прикажи оптичке SCSI уређаје"
+
+#: ../schemas/system_storage.schemas.in.h:3
+msgid "Display drives with removable media"
+msgstr "Прикажи уређаје са уклоњивим носачима"
+
+#: ../schemas/system_storage.schemas.in.h:4
+msgid "Display external drives"
+msgstr "Прикажи спољашње уређаје"
+
+#: ../schemas/system_storage.schemas.in.h:5
+msgid "Display internal hard drives"
+msgstr "Прикажи унутрашње тврде дискове"
+
+#: ../schemas/system_storage.schemas.in.h:6
+msgid ""
+"Whether to display SCSI optical drives even if /system/storage/"
+"display_scsi_drives is set to FALSE."
+msgstr ""
+"Да ли да приказује оптичке SCSI уређаје чак и ако је /system/storage/"
+"display_scsi_drives искључен."
+
+#: ../schemas/system_storage.schemas.in.h:7
+msgid "Whether to display drives and mountable volumes from SCSI drives."
+msgstr "Да ли да приказује уређаје и прикључиве дискове са SCSI уређаја."
+
+#: ../schemas/system_storage.schemas.in.h:8
+msgid ""
+"Whether to display drives and mountable volumes from drives with removable "
+"media (e.g. drives where media can be inserted and removed)."
+msgstr ""
+"Да ли да приказује уређаје и прикључиве дискове са уређаја са уклоњивим "
+"носачима (нпр. уређаји где се носач може убацити и избацити)."
+
+# bug: hotpluggable is technobabble, second part of "eg." should be enough
+#: ../schemas/system_storage.schemas.in.h:9
+msgid ""
+"Whether to display drives and mountable volumes from external drives (e.g. "
+"drives that are hotpluggable; e.g. drives that can be attached and detached "
+"while the system is running)."
+msgstr ""
+"Да ли да приказује уређаје и прикључиве дискове са спољашњих уређаја (нпр. "
+"уређаји који се могу прикључити у току рада)."
+
+#: ../schemas/system_storage.schemas.in.h:10
+msgid ""
+"Whether to display drives and mountable volumes from internal hard drives "
+"(non-SCSI optical drives are always shown)."
+msgstr ""
+"Да ли да приказује уређаје и прикључиве дискове са унутрашњих тврдих дискова "
+"(отпички не-SCSI дискови се увек приказују)."
+
+#~ msgid "The window workgroup the user is part of"
+#~ msgstr "Виндоуз радна група које је корисник члан"
+
+#~ msgid "CD-ROM Disc"
+#~ msgstr "ЦД-РОМ диск"
+
+#~ msgid "Blank CD-R Disc"
+#~ msgstr "Празан ЦД-Р диск"
+
+#~ msgid "CD-R Disc"
+#~ msgstr "ЦД-Р диск"
+
+#~ msgid "Blank CD-RW Disc"
+#~ msgstr "Празан ЦД-РВ диск"
+
+#~ msgid "CD-RW Disc"
+#~ msgstr "ЦД-РВ диск"
+
+#~ msgid "DVD-ROM Disc"
+#~ msgstr "ДВД-РОМ диск"
+
+#~ msgid "Blank DVD-R Disc"
+#~ msgstr "Празан ДВД-Р диск"
+
+#~ msgid "DVD-R Disc"
+#~ msgstr "ДВД-Р диск"
+
+#~ msgid "Blank DVD-RAM Disc"
+#~ msgstr "Празан ДВД-РАМ диск"
+
+#~ msgid "DVD-RAM Disc"
+#~ msgstr "ДВД-РАМ диск"
+
+#~ msgid "Blank DVD-RW Disc"
+#~ msgstr "Празан ДВД-РВ диск"
+
+#~ msgid "DVD-RW Disc"
+#~ msgstr "ДВД-РВ диск"
+
+#~ msgid "Blank DVD+RW Disc"
+#~ msgstr "Празан ДВД+РВ диск"
+
+#~ msgid "DVD+RW Disc"
+#~ msgstr "ДВД+РВ диск"
+
+#~ msgid "Blank DVD+R Disc"
+#~ msgstr "Празан ДВД+Р диск"
+
+#~ msgid "DVD+R Disc"
+#~ msgstr "ДВД+Р диск"
+
+#~ msgid "Optical Disc"
+#~ msgstr "Оптички диск"
+
+#~ msgid "Audio Disc"
+#~ msgstr "Звучни диск"
+
+#~ msgid "Compact Flash Media"
+#~ msgstr "Компактни-флеш (CF)"
+
+# Чаробни штапић? :)
+#~ msgid "Memory Stick Media"
+#~ msgstr "Меморијски штапић (MS)"
+
+#~ msgid "Smart Media Media"
+#~ msgstr "Мудри носач (SM)"
+
+#~ msgid "SD/MMC Media"
+#~ msgstr "SD/MMC носач"
+
+#~ msgid "Floppy Disk"
+#~ msgstr "Дискета"
+
+#~ msgid "Mac OS disk"
+#~ msgstr "Мекинтош диск"
+
+#~ msgid "Mac OS X disk"
+#~ msgstr "Мекинтош ОС-Икс диск"
+
+# Транскрипција на нивоу ;-)
+#~ msgid "Windows Disk"
+#~ msgstr "Виндуз диск"
+
+#~ msgid "Linux Disk"
+#~ msgstr "Линукс диск"
+
+#~ msgid "File could not be opened: %s"
+#~ msgstr "Датотека се не може отворити: %s"
+
+# bug: inconsistent wording with above "Bookmark saving failed" [eg. "Failed to save a bookmark" would be one way to solve it]
+#~ msgid "Failed to open file '%s': %s"
+#~ msgstr "Неуспешно отварање датотеке „%s“: %s"
+
+#~ msgid "File is empty"
+#~ msgstr "Датотека је празна"
+
+# bug: inconsistent wording with above "Bookmark saving failed" [eg. "Failed to save a bookmark" would be one way to solve it]
+#~ msgid "Failed to read from file '%s': %s"
+#~ msgstr "Неуспешно читање датотеке „%s“: %s"
+
+# bug: "desktop entries" sucks pretty much (it could be "entries in .desktop file")
+#~ msgid ""
+#~ "desktop entries contain line '%s' which is not an entry, group, or comment"
+#~ msgstr ""
+#~ "„.desktop“ датотека садржи ред „%s“ који није унос, група ни примедба"
+
+# bug: "desktop entries" sucks pretty much (it could be "entries in .desktop file")
+#~ msgid "desktop entries file does not start with legal start group"
+#~ msgstr "„.desktop“ датотека не почиње са исправном почетном групом"
+
+# bug: "desktop entries" sucks pretty much (it could be "entries in .desktop file")
+#~ msgid "desktop entries contain line '%s' which is not UTF-8"
+#~ msgstr "„.desktop“ датотека садржи ред „%s“ који није УТФ-8"
+
+# bug: "desktop entries" sucks pretty much (it could be "entries in .desktop file")
+#~ msgid "desktop entries contain unknown encoding '%s'"
+#~ msgstr "„.desktop“ датотека користи непознато кодирање „%s“"
+
+# bug: "desktop entries" sucks pretty much (it could be "entries in .desktop file")
+#~ msgid "desktop entries do not have group '%s'"
+#~ msgstr "„.desktop“ датотека нема групу „%s“"
+
+# bug: "desktop entries" sucks pretty much (it could be "entries in .desktop file")
+#~ msgid "desktop entries do not have key '%s'"
+#~ msgstr "„.desktop“ датотека нема кључ „%s“"
+
+# bug: "desktop entries" sucks pretty much (it could be "entries in .desktop file")
+#~ msgid ""
+#~ "desktop entries contain key '%s' which has value that cannot be "
+#~ "interpreted."
+#~ msgstr ""
+#~ "„.desktop“ датотека садржи кључ „%s“ који има вредност која се не може "
+#~ "разумети."
+
+# bug: "desktop entries" sucks pretty much (it could be "entries in .desktop file")
+#~ msgid ""
+#~ "desktop entries contain no translated value for key '%s' with locale '%s'."
+#~ msgstr ""
+#~ "„.desktop“ датотека не садржи превод вредности кључа „%s“ у локалитету „%"
+#~ "s“."
+
+# bug: "desktop entries" sucks pretty much (it could be "entries in .desktop file")
+#~ msgid "desktop entries contain invalid escape sequence '%s'"
+#~ msgstr "„.desktop“ датотека садржи неисправан знак за истицање „%s“"
+
+# bug: "desktop entries" sucks pretty much (it could be "entries in .desktop file")
+#~ msgid "desktop entries contain escape character at end of line"
+#~ msgstr ""
+#~ "„.desktop“ датотека садржи неисправан знак за истицање на крају реда"
+
+#~ msgid "Value '%s' cannot be interpreted as a number."
+#~ msgstr "Вредност „%s“ се не може посматрати као број."
+
+#~ msgid "Value '%s' cannot be interpreted as a boolean."
+#~ msgstr "Вредност „%s“ се не може посматрати као истинитосна вредност."
+
+#~ msgid "Applications"
+#~ msgstr "Програми"
+
+#~ msgid "Cards"
+#~ msgstr "Карте"
+
+#~ msgid "Files"
+#~ msgstr "Датотеке"
+
+#~ msgid "Folders"
+#~ msgstr "Фасцикле"
+
+#~ msgid "Help"
+#~ msgstr "Помоћ"
+
+#~ msgid "Hosts"
+#~ msgstr "Рачунари"
+
+#~ msgid "Links"
+#~ msgstr "Везе"
+
+#~ msgid "Mail"
+#~ msgstr "Пошта"
+
+#~ msgid "Tools"
+#~ msgstr "Алати"
+
+#~ msgid "Windows"
+#~ msgstr "Прозори"
+
+# bug: Compact Disk Disk?
+#~ msgid "CD Disc"
+#~ msgstr "ЦД диск"
+
+# bug: inconsistent with other strings which use "...to handle \"h323\" URLs..."
+#~ msgid "The command used to handle HTTP URLs, if enabled."
+#~ msgstr "Наредба коришћена за баратање „http“ адресама, ако је укључено."
+
+# bug: inconsistent with other strings which use "...to handle \"h323\" URLs..."
+#~ msgid "The command used to handle HTTPS URLs, if enabled."
+#~ msgstr "Наредба коришћена за баратање „https“ адресама, ако је укључено."
+
+# bug: inconsistent with other strings; should be "The handler for \"http\" URLs"
+#~ msgid "The handler for HTTP URLs"
+#~ msgstr "Руковаоц „http“ адресама"
+
+# bug: inconsistent with other strings; should be "The handler for \"https\" URLs"
+#~ msgid "The handler for HTTPS URLs"
+#~ msgstr "Руковаоц „https“ адресама"
+
+# bug: inconsistent; should be "...should handle \"http\" URLs."
+#~ msgid ""
+#~ "True if the command specified in the \"command\" key should handle HTTP "
+#~ "URLs."
+#~ msgstr ""
+#~ "Укључено ако наредба наведена у кључу „command“ треба да се користи за "
+#~ "„http“ адресе."
+
+# bug: inconsistent; should be "...should handle \"https\" URLs."
+#~ msgid ""
+#~ "True if the command specified in the \"command\" key should handle HTTPS "
+#~ "URLs."
+#~ msgstr ""
+#~ "Укључено ако наредба наведена у кључу „command“ треба да се користи за "
+#~ "„https“ адресе."
+
+# bug: inconsistent; should be "...should handle \"http\" URLs".
+#~ msgid "Whether the specified command should handle HTTP URLs"
+#~ msgstr "Да ли наведена наредба треба да се користи за „http“ адресе."
+
+# bug: inconsistent; should be "...should handle \"https\" URLs".
+#~ msgid "Whether the specified command should handle HTTPS URLs"
+#~ msgstr "Да ли наведена наредба треба да се користи за „https“ адресе."
+
+#~ msgid "H323 URL handler"
+#~ msgstr "Руковалац H323 адресама"
+
+#~ msgid "HTTP URL handler"
+#~ msgstr "Руковалац HTTP адресама"
+
+#~ msgid "HTTPS URL handler"
+#~ msgstr "Руковалац HTTPS адресама"
+
+#~ msgid "Handle callto URLs"
+#~ msgstr "Баратај callto адресама"
+
+#~ msgid "Handle ghelp URLs"
+#~ msgstr "Баратај ghelp адресама"
+
+#~ msgid "Handle info URLs"
+#~ msgstr "Баратај info адресама"
+
+#~ msgid "Handle mailto URLs"
+#~ msgstr "Баратај mailto адресама"
+
+#~ msgid "Handle man URLs"
+#~ msgstr "Баратај man адресама"
+
+#~ msgid "Handle trash URLs"
+#~ msgstr "Баратај trash адресама"
+
+#~ msgid "callto URL handler"
+#~ msgstr "Руковалац callto адресама"
+
+#~ msgid "ghelp URL handler"
+#~ msgstr "Руковалац ghelp адресама"
+
+#~ msgid "info URL handler"
+#~ msgstr "Руковалац info адресама"
+
+#~ msgid "mailto URL handler"
+#~ msgstr "Руковалац mailto адресама"
+
+#~ msgid "man URL handler"
+#~ msgstr "Руковалац man адресама"
+
+#~ msgid "trash URL handler"
+#~ msgstr "Руковалац trash адресама"
+
+#~ msgid "Bookmark saving failed (%s)"
+#~ msgstr "Неуспешно чување обележивача (%s)"
+
+#~ msgid "Could not get information for file '%s': %s"
+#~ msgstr "Не могу да сазнам податке о датотеци „%s“: %s"
+
+# bug: as above [inconsistent wording]
+#~ msgid ""
+#~ "Failed to load image '%s': reason not known, probably a corrupt image file"
+#~ msgstr ""
+#~ "Неуспешно учитавање слике „%s“: разлог непознат, вероватно оштећена "
+#~ "датотека слике"
+
+#~ msgid "How to handle http URLs"
+#~ msgstr "Како баратати http адресама"
+
+#~ msgid "How to handle https URLs"
+#~ msgstr "Како баратати https адресама"
+
+#~ msgid "Set to true to have a program specified in command handle https URLs"
+#~ msgstr ""
+#~ "Укључите ако желите да програм наведен у наредби барата https адресама"
+
+#~ msgid ""
+#~ "Set to true to have a program specified in programs/ghelp handle ghelp "
+#~ "URLs"
+#~ msgstr ""
+#~ "Укључите ако желите да програм наведен у programs/ghelp барата ghelp "
+#~ "адресама"
+
+#~ msgid ""
+#~ "Set to true to have a program specified in programs/info handle info URLs"
+#~ msgstr ""
+#~ "Укључите ако желите да програм наведен у programs/info барата info "
+#~ "адресама"
+
+#~ msgid ""
+#~ "Set to true to have a program specified in programs/man handle man URLs"
+#~ msgstr ""
+#~ "Укључите ако желите да програм наведен у programs/man барата man адресама"
+
+#~ msgid "URL handler for h323 uris"
+#~ msgstr "Руковаоц h323 адресама"
+
+#~ msgid "URL handler for http uris"
+#~ msgstr "Руковаоц http адресама"
+
+#~ msgid "URL handler for https uris"
+#~ msgstr "Руковаоц https адресама"
+
+#~ msgid "Hosts are not contacted via the proxy"
+#~ msgstr "Рачунарима се не приступа преко посредника"
+
+#~ msgid "The machine name to proxy http through."
+#~ msgstr "Име рачунара HTTP посредника."
+
+#~ msgid "Use proxy settings when accessing http"
+#~ msgstr "Користи подешавања посредника при приступу вебу"
+
+#~ msgid "http proxy password"
+#~ msgstr "Лозинка HTTP посредника"
+
+#~ msgid "http proxy username"
+#~ msgstr "Корисничко име HTTP посредника"
+
+# bug: plural-forms
+#~ msgid "1 byte"
+#~ msgstr "1 бајт"

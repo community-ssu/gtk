@@ -1,0 +1,452 @@
+<!-- ##### SECTION Title ##### -->
+gnome-vfs-mime-database-deprecated
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM GnomeVFSMimeActionType ##### -->
+<para>
+
+</para>
+
+@GNOME_VFS_MIME_ACTION_TYPE_NONE: 
+@GNOME_VFS_MIME_ACTION_TYPE_APPLICATION: 
+@GNOME_VFS_MIME_ACTION_TYPE_COMPONENT: 
+
+<!-- ##### ENUM GnomeVFSMimeApplicationArgumentType ##### -->
+<para>
+
+</para>
+
+@GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS: 
+@GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_PATHS: 
+@GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS_FOR_NON_FILES: 
+
+<!-- ##### STRUCT GnomeVFSMimeAction ##### -->
+<para>
+
+</para>
+
+@action_type: 
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_default_action_type ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_default_action ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_short_list_applications ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_short_list_components ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_set_default_action_type ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@action_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_set_icon ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@filename: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_set_description ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@description: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_set_can_be_executable ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@new_value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_set_short_list_applications ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@application_ids: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_set_short_list_components ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@component_iids: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_add_application_to_short_list ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@application_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_remove_application_from_short_list ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@application_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_add_component_to_short_list ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@iid: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_remove_component_from_short_list ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@iid: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_add_extension ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@extension: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_remove_extension ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@extension: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_extend_all_applications ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@application_ids: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_remove_from_all_applications ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@application_ids: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_new_from_id ##### -->
+<para>
+
+</para>
+
+@id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_action_free ##### -->
+<para>
+
+</para>
+
+@action: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_id_in_application_list ##### -->
+<para>
+
+</para>
+
+@id: 
+@applications: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_id_in_component_list ##### -->
+<para>
+
+</para>
+
+@iid: 
+@components: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_remove_application_from_list ##### -->
+<para>
+
+</para>
+
+@applications: 
+@application_id: 
+@did_remove: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_remove_component_from_list ##### -->
+<para>
+
+</para>
+
+@components: 
+@iid: 
+@did_remove: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_id_list_from_component_list ##### -->
+<para>
+
+</para>
+
+@components: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_id_list_from_application_list ##### -->
+<para>
+
+</para>
+
+@applications: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_freeze ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_thaw ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_info_reload ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_type_is_known ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_value ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@key: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_set_value ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@key: 
+@value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_key_list ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_keys_list_free ##### -->
+<para>
+
+</para>
+
+@mime_type_list: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_extensions_list ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_extensions_list_free ##### -->
+<para>
+
+</para>
+
+@list: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_extensions_string ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_extensions_pretty_string ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_get_registered_mime_types ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_registered_mime_type_list_free ##### -->
+<para>
+
+</para>
+
+@list: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_set_registered_type_key ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@key: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_set_extensions_list ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@extensions_list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_registered_mime_type_delete ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_reset ##### -->
+<para>
+
+</para>
+
+
+

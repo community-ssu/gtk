@@ -1,0 +1,107 @@
+
+VFolder Architecture
+====================
+
+The vfolder vfs method allows for the listing of GNOME menu items through a
+virtual folder layout defined in an XML file with a name ending in
+.vfolder-info.  
+
+The content for folders are derived either from a global pool of files, or from
+a "parent" URI.
+
+The global pool is populated by adding top-level <ItemDir> or <MergeDir>
+elements to the .vfolder-info XML file.  Itemdirs load all files in the
+directory and any subdirectories directly into the global file pool.  Mergedirs
+load files into the pool after adding logical keywords based on the child
+directory the files are in.
+
+Folders contain <Query> elements which allow further filerting of files within
+that folder using criteria and boolean logic.  The criteria for matching a
+folder query can be either the filename or keywords contained in the file, with
+the <Filename> or <Keyword> elements within a query.  Boolean logic is expressed
+using <And>, <Or>, and <Not> elements within the query.  
+
+Folders can force file inclusion or exclusion using <Include> and <Exclude>
+elements containing a filename.  These elements circumvent the folder's query.
+
+If a folder has a parent URI, the URI is resolved as a directory using
+gnome-vfs, and the child entries returned are added as children of the folder
+(after matching the folder's <Query> if one exists, and are not explicitly
+excluded).
+
+Folders can also be marked <ReadOnly/> in which case write operations are not
+allowed on the folder's children, <OnlyUnallocated/> which adds all pool files
+not otherwise displayed in another folder, and <DontShowIfEmpty/> whicke hides
+the folder if the supplied <Query> criteria does not match any pool files, and
+there is no <Parent/> URI, and no files are explicitly included.
+
+Load Order
+==========
+
+Directory contents are populated in a specific order.  First, at .vfolder-info
+read time, the entries in the WriteDir are loaded if it exists.  Next MergeDirs
+and ItemDirs are loaded in the order they appear in the .vfolder-info file.
+Only one entry exists in the pool for a given filename, so duplicate entries are
+ignored.  Finally, when a folder's contents are requested each folder loads the
+entries in its <Parent> directory, if it exists.  The precedence for filename
+inclusion is:
+
+	1) WriteDir entries, if they are explicitly Included using the full URI,
+	   including the unique timestamp.
+	2) Parent entries, if they are not explicitly Excluded by filename or
+	   full URI, or match the (optional) query.
+	3) ItemDir/MergeDir entries, if they match the folder's (mandatory)
+	   query, or are explicitly Included using either the filename or the
+	   full URI.
+
+User-Privateness
+================
+
+A directory is considered user-private if it is described in the .vfolder-info
+file for the URI scheme requested.  Otherwise folders exist only in the
+directory a URI extends using the <Parent> tag.
+
+When a chenge is made to a folder that is not user-private, a new folder entry
+is added to the .vfolder-info file for the changed folder, making it
+user-private.  The entry is created with a <Parent> element continaing the URI
+of the original non-user-private folder. If the newly privatized folder is a
+child of a folder which itself is not user-private, that folder becomes
+user-private as well (this is performed recursively).
+
+When a change to a file is made, the original file is copied to the directory in
+the .vfolder-info's <WriteDir> element if one exists.  When copied to the write
+directory, the filename is uniqueified using a unique postfix (a timestamp) to
+avoid conflicting with other files of the same name which may exist in another
+vfolder directory.  This timestamp is stripped before listing files in a vfolder
+directory.  If there is no <WriteDir> element, changes are attempted on the
+original file.
+
+Only-Unallocated Folders
+========================
+
+Folder elements in the .vfolder-info file can contain an <OnlyUnallocated/>
+element tag.  This tag specifies that the folder should only contain pool
+entries which do not match any other folder's query.  Entries which are
+excplicitly Include'd or Exclude'd by another folder are also not shown.
+
+In order to construct this unallocated list properly, a new folder must read
+through the global entry pool on (or near) creation.
+
+Filenames & URIs
+================
+
+All places in a .vfolder-info file where a file name or path is expected also
+supports arbitrary gnome-vfs URIs.  The difference is usually that a relative
+filename represents all files/directories no matter their source (either from
+the ItemDir/MergeDir pool of entries, or from the children of the Parent uri)
+whereas a URI represents only the file/directory with the URI referred to.
+
+For instance an <Exclude> element with a filename like "gaim.desktop" will
+ensure a file named "gaim.desktop" will never appear in the folder containing
+the element, whereas if the filename was
+"file:///usr/share/gnome/apps/Internet/gaim.desktop", only the indicated file
+will be excluded, and not other gaim.desktop files.
+
+
+Alex Graveley
+alex@ximian.com

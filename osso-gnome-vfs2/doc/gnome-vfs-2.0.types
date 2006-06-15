@@ -1,0 +1,7 @@
+#include <libgnomevfs/gnome-vfs-volume.h>
+#include <libgnomevfs/gnome-vfs-drive.h>
+#include <libgnomevfs/gnome-vfs-volume-monitor.h>
+
+gnome_vfs_drive_get_type
+gnome_vfs_volume_get_type
+gnome_vfs_volume_monitor_get_type

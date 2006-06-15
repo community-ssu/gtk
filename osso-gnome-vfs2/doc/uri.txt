@@ -1,0 +1,24 @@
+URI specification.
+
+    This information was extracted from libgnomevfs/gnome-vfs-uri.c which is the
+authoratitive oracle for queries.
+
+    A gnome-vfs URI can be assembled using the following method:
+
+<method> :\ / <path> \ / End of URI
+           X          X                  / <blank> - starts in root directory
+ <blank>  / \ <path> / \ '#' <method> ':'            or just pipes through
+                      ^                  \ <'/' path> -+- finish.
+                      |                                |
+                      +--------------------------------+
+
+Examples:
+
+	file:/home/michael/foo.txt  -  these open
+	     /home/michael/foo.txt  -  the same file.
+	
+	ftp://ftp.gnome.org/pub/baa.txt.gz       -  this opens the raw gzip data
+	ftp://ftp.gnome.org/pub/baa.txt.gz#gzip: -  this opens the unzipped data
+ 
+	file:/home/rajit/efs.file#efs:/file
+

@@ -1,0 +1,1418 @@
+# gnome-vfs. Sistem Fail Maya GNOME
+# Copyright (C) 2001-2004 Free Software Foundation, Inc.
+# 1. Mohamad Afifi Omar (App) <mr_mohd_afifi@yahoo.com>
+# 2. Hasbullah Bin Pit (sebol) <sebol@my-penguin.org> 
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-vfs HEAD\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-02-10 12:25+0100\n"
+"PO-Revision-Date: 2004-08-26 06:40+0730\n"
+"Last-Translator: Hasbullah Bin Pit <sebol@my-penguin.org>\n"
+"Language-Team: Bahasa Melayu <gabai-penyumbang@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: daemon/gnome-vfs-daemon.c:596
+msgid "Could not initialize Bonobo"
+msgstr "Tak dapat menginitialisasikan Bonobo"
+
+#: daemon/gnome-vfs-daemon.c:603
+msgid "Could not initialize gnome vfs"
+msgstr "Tak dapat  menginitialisasikan gnome vfs"
+
+#: libgnomevfs/gnome-vfs-cdrom.c:235
+msgid "ISO 9660 Volume"
+msgstr "Volum ISO 9660"
+
+#: libgnomevfs/gnome-vfs-configuration.c:227
+#, c-format
+msgid "%s:%d contains NUL characters."
+msgstr "%s:%d mengandungi aksara NUL."
+
+#: libgnomevfs/gnome-vfs-configuration.c:244
+#, c-format
+msgid "%s:%d contains no method name."
+msgstr "%s:%d tidak mengandungi nama method."
+
+#: libgnomevfs/gnome-vfs-configuration.c:284
+#, c-format
+msgid "%s:%d has no options endmarker."
+msgstr "%s:%d tak mempunyai opsyen endmarker."
+
+#: libgnomevfs/gnome-vfs-configuration.c:295
+#, c-format
+msgid "%s:%d has unknown options %s."
+msgstr "%s:%d mempunyai opsyen yg tak diketahui %s."
+
+#: libgnomevfs/gnome-vfs-configuration.c:314
+#, c-format
+msgid "%s:%d contains no module name."
+msgstr "%s:%d tidak mengandungi nama modul."
+
+#: libgnomevfs/gnome-vfs-configuration.c:368
+#, c-format
+msgid "Configuration file `%s' was not found: %s"
+msgstr "Fail konfigurasi `%s' tidak dijumpai: %s"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:37
+msgid "AFFS Volume"
+msgstr "Volum AFFS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:38
+msgid "AFS Network Volume"
+msgstr "Volum AFS Network"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:39
+msgid "Auto-detected Volume"
+msgstr "Volum diauto-kesan"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:40
+#: libgnomevfs/gnome-vfs-filesystem-type.c:42
+msgid "CD-ROM Drive"
+msgstr "Pemacu CD-ROM"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:41
+msgid "CD Digital Audio"
+msgstr "Audio Digital CD"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:43
+msgid "Hardware Device Volume"
+msgstr "Volum Peranti Perkakasan"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:44
+#: libgnomevfs/gnome-vfs-filesystem-type.c:45
+msgid "Ext2 Linux Volume"
+msgstr "Volum Etx2 Linux"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:46
+msgid "Ext3 Linux Volume"
+msgstr "Volum Ext3 Linux"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:47
+#: libgnomevfs/gnome-vfs-filesystem-type.c:57
+#: libgnomevfs/gnome-vfs-filesystem-type.c:58
+msgid "MSDOS Volume"
+msgstr "Volum MSDOS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:48
+#: libgnomevfs/gnome-vfs-filesystem-type.c:49
+msgid "MacOS Volume"
+msgstr "Volum MacOS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:50
+msgid "CDROM Volume"
+msgstr "Volum CDROM"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:51
+msgid "Hsfs CDROM Volume"
+msgstr "Volum CDROM Hsfs"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:52
+msgid "JFS Volume"
+msgstr "Volum JFS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:53
+#: libgnomevfs/gnome-vfs-filesystem-type.c:60
+msgid "Windows NT Volume"
+msgstr "Volum Windows NT"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:54
+#: libgnomevfs/gnome-vfs-filesystem-type.c:62
+#: libgnomevfs/gnome-vfs-filesystem-type.c:63
+msgid "System Volume"
+msgstr "Volum Sistem"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:55
+msgid "Memory Volume"
+msgstr "Volum Memori"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:56
+msgid "Minix Volume"
+msgstr "Volum Minix"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:59
+msgid "NFS Network Volume"
+msgstr "Volum Rangkaian NFS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:61
+msgid "Netware Volume"
+msgstr "Volum Netware"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:64
+msgid "ReiserFS Linux Volume"
+msgstr "Volum ReiserFS Linux"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:65
+msgid "Windows Shared Volume"
+msgstr "Volum Perkongsian Windows"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:66
+msgid "SuperMount Volume"
+msgstr "Volum SuperMount"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:67
+msgid "DVD Volume"
+msgstr "Volum DVD"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:68
+msgid "Solaris/BSD Volume"
+msgstr "Volum Solaris/BSD"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:69
+msgid "Udfs Solaris Volume"
+msgstr "Volum Solaris Udfs"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:70
+msgid "Pcfs Solaris Volume"
+msgstr "Volum Solaris Pcfs"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:71
+msgid "Sun SAM-QFS Volume"
+msgstr "Volum SAM-QFS Sun"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:72
+msgid "Enhanced DOS Volume"
+msgstr "Volum DOS diperkaya"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:73
+msgid "Windows VFAT Volume"
+msgstr "Volum FAT Windows"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:74
+msgid "Xenix Volume"
+msgstr "Volum Xenix"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:75
+msgid "XFS Linux Volume"
+msgstr "Volum XFS Linux"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:76
+msgid "XIAFS Volume"
+msgstr "Volum XIAFS"
+
+#: libgnomevfs/gnome-vfs-filesystem-type.c:104
+msgid "Unknown"
+msgstr "Entah"
+
+#: libgnomevfs/gnome-vfs-job.c:734
+#, c-format
+msgid "Unknown operation type %u"
+msgstr "Jenis operasi tidak diketahui %u"
+
+#: libgnomevfs/gnome-vfs-job.c:1024 libgnomevfs/gnome-vfs-job.c:1169
+#, c-format
+msgid "Cannot create pipe for open GIOChannel: %s"
+msgstr "Tidak dapat mencipta paip untuk GIOChannel yang dibuka: %s"
+
+#: libgnomevfs/gnome-vfs-job.c:1687
+#, c-format
+msgid "Unknown job kind %u"
+msgstr "Jenis kerja tidak diketahui %u"
+
+#: libgnomevfs/gnome-vfs-job.c:1720
+msgid "Operation stopped"
+msgstr "Operasi dihentikan"
+
+#: libgnomevfs/gnome-vfs-mime-handlers.c:101
+#: libgnomevfs/gnome-vfs-mime-handlers.c:255
+#: libgnomevfs/gnome-vfs-mime-handlers.c:306
+#: libgnomevfs/gnome-vfs-mime-handlers.c:600
+#: libgnomevfs/gnome-vfs-mime-handlers.c:619
+#: libgnomevfs/gnome-vfs-mime-handlers.c:637
+#: libgnomevfs/gnome-vfs-mime-handlers.c:656
+#: libgnomevfs/gnome-vfs-mime-handlers.c:675
+#: libgnomevfs/gnome-vfs-mime-handlers.c:816
+#: libgnomevfs/gnome-vfs-mime-handlers.c:838
+#: libgnomevfs/gnome-vfs-mime-handlers.c:857
+#: libgnomevfs/gnome-vfs-mime-handlers.c:876
+#: libgnomevfs/gnome-vfs-mime-handlers.c:929
+#: libgnomevfs/gnome-vfs-mime-handlers.c:946
+#: libgnomevfs/gnome-vfs-mime-handlers.c:963
+#: libgnomevfs/gnome-vfs-mime-handlers.c:981
+#: libgnomevfs/gnome-vfs-mime-handlers.c:999
+#: libgnomevfs/gnome-vfs-mime-info.c:643 libgnomevfs/gnome-vfs-mime-info.c:650
+#: libgnomevfs/gnome-vfs-mime-info.c:658 libgnomevfs/gnome-vfs-mime-info.c:665
+#: libgnomevfs/gnome-vfs-mime-info.c:673 libgnomevfs/gnome-vfs-mime-info.c:690
+#: libgnomevfs/gnome-vfs-mime-info.c:697 libgnomevfs/gnome-vfs-mime-info.c:704
+#: libgnomevfs/gnome-vfs-mime-info.c:711 libgnomevfs/gnome-vfs-mime-info.c:719
+#: libgnomevfs/gnome-vfs-mime-info.c:726
+msgid ""
+"Deprecated function.  User modifications to the MIME database are no longer "
+"supported."
+msgstr ""
+"Fungsi telah tiada. Pengubahsuaian pengguna terhadap pangkalan data MIME tak "
+"lagi disokong."
+
+#: libgnomevfs/gnome-vfs-parse-ls.c:666
+#, c-format
+msgid "Could not parse: %s"
+msgstr "Harap maaf tuan, gagal hantar: %s"
+
+#: libgnomevfs/gnome-vfs-parse-ls.c:668
+msgid "More parsing errors will be ignored."
+msgstr "Ralat penghantaran seterusnya akan diabaikan."
+
+#. GNOME_VFS_OK
+#: libgnomevfs/gnome-vfs-result.c:38
+msgid "No error"
+msgstr "Tiada ralat"
+
+#. GNOME_VFS_ERROR_NOT_FOUND
+#: libgnomevfs/gnome-vfs-result.c:39
+msgid "File not found"
+msgstr "Fail tidak dijumpai"
+
+#. GNOME_VFS_ERROR_GENERIC
+#: libgnomevfs/gnome-vfs-result.c:40
+msgid "Generic error"
+msgstr "Ralat generik"
+
+#. GNOME_VFS_ERROR_INTERNAL
+#: libgnomevfs/gnome-vfs-result.c:41
+msgid "Internal error"
+msgstr "Ralat dalaman"
+
+#. GNOME_VFS_ERROR_BAD_PARAMETERS
+#: libgnomevfs/gnome-vfs-result.c:42
+msgid "Invalid parameters"
+msgstr "Parameter yang tidak sah"
+
+#. GNOME_VFS_ERROR_NOT_SUPPORTED
+#: libgnomevfs/gnome-vfs-result.c:43
+msgid "Unsupported operation"
+msgstr "Operasi yang tidak disokong"
+
+#. GNOME_VFS_ERROR_IO
+#: libgnomevfs/gnome-vfs-result.c:44
+msgid "I/O error"
+msgstr "Ralat I/O"
+
+#. GNOME_VFS_ERROR_CORRUPTED_DATA
+#: libgnomevfs/gnome-vfs-result.c:45
+msgid "Data corrupted"
+msgstr "Data telah rosak"
+
+#. GNOME_VFS_ERROR_WRONG_FORMAT
+#: libgnomevfs/gnome-vfs-result.c:46
+msgid "Format not valid"
+msgstr "Format tidak sah"
+
+#. GNOME_VFS_ERROR_BAD_FILE
+#: libgnomevfs/gnome-vfs-result.c:47
+msgid "Bad file handle"
+msgstr "Kendalian fail rosak"
+
+#. GNOME_VFS_ERROR_TOO_BIG
+#: libgnomevfs/gnome-vfs-result.c:48
+msgid "File too big"
+msgstr "Fail terlalu besar"
+
+#. GNOME_VFS_ERROR_NO_SPACE
+#: libgnomevfs/gnome-vfs-result.c:49
+msgid "No space left on device"
+msgstr "Tiada lagi ruang simpanan"
+
+#. GNOME_VFS_ERROR_READ_ONLY
+#: libgnomevfs/gnome-vfs-result.c:50
+msgid "Read-only file system"
+msgstr "Sistem fail baca sahaja"
+
+#. GNOME_VFS_ERROR_INVALID_URI
+#: libgnomevfs/gnome-vfs-result.c:51
+msgid "Invalid URI"
+msgstr "URI yang tidak sah"
+
+#. GNOME_VFS_ERROR_NOT_OPEN
+#: libgnomevfs/gnome-vfs-result.c:52
+msgid "File not open"
+msgstr "Fail tidak dibuka"
+
+#. GNOME_VFS_ERROR_INVALID_OPEN_MODE
+#: libgnomevfs/gnome-vfs-result.c:53
+msgid "Open mode not valid"
+msgstr "Mod buka tidak sah"
+
+#. GNOME_VFS_ERROR_ACCESS_DENIED
+#: libgnomevfs/gnome-vfs-result.c:54
+msgid "Access denied"
+msgstr "Akses dinafikan"
+
+#. GNOME_VFS_ERROR_TOO_MANY_OPEN_FILES
+#: libgnomevfs/gnome-vfs-result.c:55
+msgid "Too many open files"
+msgstr "Terlalu banyak fail dibuka"
+
+#. GNOME_VFS_ERROR_EOF
+#: libgnomevfs/gnome-vfs-result.c:56
+msgid "End of file"
+msgstr "Penghujung fail"
+
+#. GNOME_VFS_ERROR_NOT_A_DIRECTORY
+#: libgnomevfs/gnome-vfs-result.c:57
+msgid "Not a directory"
+msgstr "Bukanlah satu direktori"
+
+#. GNOME_VFS_ERROR_IN_PROGRESS
+#: libgnomevfs/gnome-vfs-result.c:58
+msgid "Operation in progress"
+msgstr "Operasi sedang dilaksanakan"
+
+#. GNOME_VFS_ERROR_INTERRUPTED
+#: libgnomevfs/gnome-vfs-result.c:59
+msgid "Operation interrupted"
+msgstr "Operasi terganggu"
+
+#. GNOME_VFS_ERROR_FILE_EXISTS
+#: libgnomevfs/gnome-vfs-result.c:60
+msgid "File exists"
+msgstr "Fail telah wujud"
+
+#. GNOME_VFS_ERROR_LOOP
+#: libgnomevfs/gnome-vfs-result.c:61
+msgid "Looping links encountered"
+msgstr "Pautan berulang dijumpai"
+
+#. GNOME_VFS_ERROR_NOT_PERMITTED
+#: libgnomevfs/gnome-vfs-result.c:62
+msgid "Operation not permitted"
+msgstr "Operasi tidak dibenarkan"
+
+#. GNOME_VFS_ERROR_IS_DIRECTORY
+#: libgnomevfs/gnome-vfs-result.c:63
+msgid "Is a directory"
+msgstr "Ialah satu direktori"
+
+#. GNOME_VFS_ERROR_NO_MEMORY
+#: libgnomevfs/gnome-vfs-result.c:64
+msgid "Not enough memory"
+msgstr "Memori tidak mencukupi"
+
+#. GNOME_VFS_ERROR_HOST_NOT_FOUND
+#: libgnomevfs/gnome-vfs-result.c:65
+msgid "Host not found"
+msgstr "Hos tidak dijumpai"
+
+#. GNOME_VFS_ERROR_INVALID_HOST_NAME
+#: libgnomevfs/gnome-vfs-result.c:66
+msgid "Host name not valid"
+msgstr "Nama hos tidak sah"
+
+#. GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS
+#: libgnomevfs/gnome-vfs-result.c:67
+msgid "Host has no address"
+msgstr "Hos tidak mempunyai alamat"
+
+#. GNOME_VFS_ERROR_LOGIN_FAILED
+#: libgnomevfs/gnome-vfs-result.c:68
+msgid "Login failed"
+msgstr "Logmasuk gagal"
+
+#. GNOME_VFS_ERROR_CANCELLED
+#: libgnomevfs/gnome-vfs-result.c:69
+msgid "Operation cancelled"
+msgstr "Operasi dibatalkan"
+
+#. GNOME_VFS_ERROR_DIRECTORY_BUSY
+#: libgnomevfs/gnome-vfs-result.c:70
+msgid "Directory busy"
+msgstr "Direktori sibuk"
+
+#. GNOME_VFS_ERROR_DIRECTORY_NOT_EMPTY
+#: libgnomevfs/gnome-vfs-result.c:71
+msgid "Directory not empty"
+msgstr "Direktori tidak kosong"
+
+#. GNOME_VFS_ERROR_TOO_MANY_LINKS
+#: libgnomevfs/gnome-vfs-result.c:72
+msgid "Too many links"
+msgstr "Terlalu banyak pautan"
+
+#. GNOME_VFS_ERROR_READ_ONLY_FILE_SYSTEM
+#: libgnomevfs/gnome-vfs-result.c:73
+msgid "Read only file system"
+msgstr "Fail sistem baca sahaja"
+
+#. GNOME_VFS_ERROR_NOT_SAME_FILE_SYSTEM
+#: libgnomevfs/gnome-vfs-result.c:74
+msgid "Not on the same file system"
+msgstr "Bukan pada sistem fail yang sama"
+
+#. GNOME_VFS_ERROR_NAME_TOO_LONG
+#: libgnomevfs/gnome-vfs-result.c:75
+msgid "Name too long"
+msgstr "Nama terlalu panjang"
+
+#. GNOME_VFS_ERROR_SERVICE_NOT_AVAILABLE
+#: libgnomevfs/gnome-vfs-result.c:76
+msgid "Service not available"
+msgstr "Tiada servis"
+
+#. GNOME_VFS_ERROR_SERVICE_OBSOLETE
+#: libgnomevfs/gnome-vfs-result.c:77
+msgid "Request obsoletes service's data"
+msgstr "Meminta data servis yang ketinggalan zaman"
+
+#. GNOME_VFS_ERROR_PROTOCOL_ERROR
+#: libgnomevfs/gnome-vfs-result.c:78
+msgid "Protocol error"
+msgstr "Ralat protokol"
+
+#. GNOME_VFS_ERROR_NO_MASTER_BROWSER
+#: libgnomevfs/gnome-vfs-result.c:79
+msgid "Could not find master browser"
+msgstr "Tak menjumpai pelungsur induk"
+
+#. GNOME_VFS_ERROR_NO_DEFAULT
+#: libgnomevfs/gnome-vfs-result.c:80
+msgid "No default action associated"
+msgstr "Tiada aksi default dikaitkan"
+
+#. GNOME_VFS_ERROR_NO_HANDLER
+#: libgnomevfs/gnome-vfs-result.c:81
+msgid "No handler for URL scheme"
+msgstr "Tiada pengendali bagi skema URL"
+
+#. GNOME_VFS_ERROR_PARSE
+#: libgnomevfs/gnome-vfs-result.c:82
+msgid "Error parsing command line"
+msgstr "Ralat menghuraikan baris arahan"
+
+#. GNOME_VFS_ERROR_LAUNCH
+#: libgnomevfs/gnome-vfs-result.c:83
+msgid "Error launching command"
+msgstr "Ralat melancarkan arahan"
+
+#. GNOME_VFS_ERROR_TIMEOUT
+#: libgnomevfs/gnome-vfs-result.c:84 libgnomevfs/gnome-vfs-result.c:86
+msgid "Timeout reached"
+msgstr "Had masa dijangkau"
+
+#. GNOME_VFS_ERROR_NAMESERVER
+#: libgnomevfs/gnome-vfs-result.c:85
+msgid "Nameserver error"
+msgstr "Ralat pelayan nama"
+
+#. GNOME_VFS_ERROR_LOCKED
+#: libgnomevfs/gnome-vfs-result.c:87
+msgid "The resource is locked"
+msgstr "Sumber dikunci"
+
+#. GNOME_VFS_ERROR_DEPRECATED_FUNCTION
+#: libgnomevfs/gnome-vfs-result.c:88
+msgid "Function call deprecated"
+msgstr "Panggilan fungsi telah tiada"
+
+#: libgnomevfs/gnome-vfs-result.c:203
+msgid "Unknown error"
+msgstr "Ralat yang tidak diketahui"
+
+#: libgnomevfs/gnome-vfs-utils.c:85
+#, c-format
+msgid "%u byte"
+msgid_plural "%u bytes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: libgnomevfs/gnome-vfs-utils.c:91
+#, c-format
+msgid "%.1f KB"
+msgstr "%.1f KB"
+
+#: libgnomevfs/gnome-vfs-utils.c:95
+#, c-format
+msgid "%.1f MB"
+msgstr "%.1f MB"
+
+#: libgnomevfs/gnome-vfs-utils.c:99
+#, c-format
+msgid "%.1f GB"
+msgstr "%.1f GB"
+
+#: libgnomevfs/gnome-vfs-utils.c:1131
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:369
+msgid " (invalid Unicode)"
+msgstr " (Unicode tidak sah)"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:551
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:607
+msgid "Floppy"
+msgstr "Liut"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:552
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:610
+msgid "CD-ROM"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:554
+#, fuzzy
+msgid "CD-R"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:555
+#, fuzzy
+msgid "CD-RW"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:556
+#, fuzzy
+msgid "DVD-ROM"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:557
+#, fuzzy
+msgid "DVD-RAM"
+msgstr "Cakera DVD-RAM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:558
+#, fuzzy
+msgid "DVD-R"
+msgstr "DVD"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:559
+#, fuzzy
+msgid "DVD-RW"
+msgstr "Cakera DVD-RW"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:560
+#, fuzzy
+msgid "CD-ROM/DVD-ROM"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:561
+#, fuzzy
+msgid "CD-ROM/DVD-RAM"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:562
+#, fuzzy
+msgid "CD-ROM/DVD-R"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:563
+#, fuzzy
+msgid "CD-ROM/DVD-RW"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:564
+#, fuzzy
+msgid "CD-R/DVD-ROM"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:565
+msgid "CD-R/DVD-RAM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:566
+msgid "CD-R/DVD-R"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:567
+msgid "CD-R/DVD-RW"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:568
+#, fuzzy
+msgid "CD-RW/DVD-ROM"
+msgstr "CD-ROM"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:569
+msgid "CD-RW/DVD-RAM"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:570
+msgid "CD-RW/DVD-R"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:571
+msgid "CD-RW/DVD-RW"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:573
+msgid "Disk"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:574
+#, fuzzy
+msgid "USB Drive"
+msgstr "Pemacu Zip"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:575
+msgid "IEEE1394 Drive"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:576
+msgid "CF"
+msgstr ""
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:577
+#, fuzzy
+msgid "SD/MMC"
+msgstr "Media SD/MMC"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:578
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:582
+msgid "Memory Stick"
+msgstr "Stik Memori"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:579
+#, fuzzy
+msgid "Smart Media"
+msgstr "Media Bestari"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:581
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:613
+msgid "Zip Drive"
+msgstr "Pemacu Zip"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:583
+msgid "Camera"
+msgstr "Kamera"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:584
+msgid "DVD"
+msgstr "DVD"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:807
+msgid "Root Volume"
+msgstr "Volum Root"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:888
+msgid "Audio CD"
+msgstr "CD Audio"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:921
+msgid "Unknown volume"
+msgstr "Volum yang tidak diketahui"
+
+#: libgnomevfs/gnome-vfs-volume-monitor-daemon.c:1109
+msgid "Network server"
+msgstr "Pelayan rangkaian"
+
+#. Handle floppy case
+#: libgnomevfs/gnome-vfs-volume-ops.c:113
+msgid ""
+"Unable to mount the floppy drive. There is probably no floppy in the drive."
+msgstr "Tak dapat melekap pemacu liut. Mungkin tiada liut pada pemacu."
+
+#. All others
+#: libgnomevfs/gnome-vfs-volume-ops.c:117
+msgid "Unable to mount the volume. There is probably no media in the device."
+msgstr "Tak dapat melekap pemacu volum. Mungkin tiada media pada peranti."
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:123
+msgid ""
+"Unable to mount the floppy drive. The floppy is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"Tak dapat melekap pemacu liut. Liut mungkin dalam format yang tidak boleh "
+"dilekapkan."
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:126
+msgid ""
+"Unable to mount the selected volume. The volume is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"Tak dapat melekap volum dipilih. Volum mungkin dalam format yang tak boleh "
+"dilekapkan."
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:131
+msgid "Unable to mount the selected floppy drive."
+msgstr "Tak dapat melekap pemacu liut dipilih."
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:133
+msgid "Unable to mount the selected volume."
+msgstr "Tak dapat melekap volum dipilih."
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:145
+msgid "Unable to unmount the selected volume."
+msgstr "Tak dapat nyahlekap volum dipilih."
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:257
+#: libgnomevfs/gnome-vfs-volume-ops.c:313
+msgid "Failed to start command"
+msgstr "Gagal memulakan arahan"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:301
+msgid "Unable to eject media"
+msgstr "Tak dapat melentingkan media"
+
+#: libgnomevfs/gnome-vfs-volume-ops.c:499
+msgid "Unable to unmount connected server"
+msgstr "Tak dapat mengenyahlekapkan pelayan yg disambung"
+
+#: modules/computer-method.c:545
+msgid "Network"
+msgstr "Rangkaian"
+
+#: modules/computer-method.c:563
+msgid "Home"
+msgstr "Rumah"
+
+#: modules/computer-method.c:581
+msgid "Filesystem"
+msgstr "Sistem fail"
+
+#: modules/file-method.c:413
+#, c-format
+msgid "Unknown GnomeVFSSeekPosition %d"
+msgstr "GnomeVFSSeekPosition yang tidak diketahui %d"
+
+#: modules/network-method.c:1396
+msgid "Windows Network"
+msgstr "Rangkaian Windows"
+
+#: modules/sftp-method.c:1338
+#, c-format
+msgid "The identity of the remote computer (%s) is unknown."
+msgstr "Identiti bagi komputer jauh (%s) tak diketahui."
+
+#: modules/sftp-method.c:1339
+#, c-format
+msgid ""
+"This happens when you log in to a computer the first time.\n"
+"\n"
+"The identity sent by the remote computer is %s. If you want to be absolutely "
+"sure it is safe to continue, contact the system administrator."
+msgstr ""
+"Ini terjadi bila anda logmasuk ke satu komputer buat pertama kali.\n"
+"\n"
+"Identiti dihantar oleh komputer jauh adalah %s. Jika anda memang pasti ia "
+"selamat untuk diteruskan, hubungi pentadbir sistem."
+
+#: modules/sftp-method.c:1347
+msgid "Log In Anyway"
+msgstr "Log Masuk Juga"
+
+#: modules/sftp-method.c:1348
+msgid "Cancel Login"
+msgstr "Batal Logmasuk"
+
+#. FIXME: we probably shouldn't use printf to output the message
+#: modules/test-method.c:590
+#, c-format
+msgid "Didn't find a valid settings file at %s\n"
+msgstr "Tak menjumpai fail tetapan yang sah pada %s\n"
+
+#: modules/test-method.c:592
+#, c-format
+msgid "Use the %s environment variable to specify a different location.\n"
+msgstr "Guna pembolehubah oersekitaran %s untuk menyatakan lokasi lain.\n"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:1
+msgid "Standard Moniker factory"
+msgstr "KIlang Moniker Piawai"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:2
+msgid "file MonikerExtender"
+msgstr "MonikerExtender fail"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:3
+msgid "generic Gnome VFS moniker"
+msgstr "Moniker Gnome VFS generik"
+
+#: monikers/GNOME_VFS_Moniker_std.server.in.in.h:4
+msgid "generic file moniker"
+msgstr "Moniker fail  generik"
+
+#: schemas/desktop_default_applications.schemas.in.h:1
+msgid "Default component viewer application"
+msgstr "Aplikasi pelihat komponen default"
+
+#: schemas/desktop_default_applications.schemas.in.h:2
+msgid "Default terminal application"
+msgstr "Aplikasi terminal default"
+
+#: schemas/desktop_default_applications.schemas.in.h:3
+msgid "Exec argument for default terminal"
+msgstr "Hujah exec bagi terminal default"
+
+#: schemas/desktop_default_applications.schemas.in.h:5
+#, no-c-format
+msgid ""
+"The application to use for viewing files that require a component to view "
+"them. The parameter %s will be replaced by the file's URIs, the parameter %c "
+"will be replaced by the component IID."
+msgstr ""
+"Aplikasi digunakan untuk melihat fail yang memerlukan komponen untuk "
+"melihatnya. Parameter %s akan digantikan dengan URI fail, parameter %c akan "
+"digantikan dengan IID komponen."
+
+#: schemas/desktop_default_applications.schemas.in.h:6
+msgid ""
+"The default terminal application to use for applications that require a "
+"terminal."
+msgstr ""
+"Aplikasi terminal default untuk digunakan bagi aplikasi yg memerlukan "
+"terminal."
+
+#: schemas/desktop_default_applications.schemas.in.h:7
+msgid "The exec argument to use for the default terminal application."
+msgstr "Hujah exec digunakan bagi palikasi terminal default."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:1
+msgid "Run the command in a terminal"
+msgstr "Laksana program pada terminal"
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:2
+msgid "The command used to handle \"aim\" URLs, if enabled."
+msgstr "Arahan untuk mengendali  URL \"aim\" URLs, jika dihidupkan."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:3
+msgid "The command used to handle \"callto\" URLs, if enabled."
+msgstr "Arahan untuk mengendali  URL \"callto\" URLs, jika dihidupkan."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:4
+msgid "The command used to handle \"ghelp\" URLs, if enabled."
+msgstr "Arahan untuk mengendali  URL \"ghelp\" URLs, jika dihidupkan."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:5
+msgid "The command used to handle \"h323\" URLs, if enabled."
+msgstr "Arahan untuk mengendali  URL \"h323\" URLs, jika dihidupkan."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:6
+msgid "The command used to handle \"http\" URLs, if enabled."
+msgstr "Arahan untuk mengendali  URL \"http\" URLs, jika dihidupkan."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:7
+msgid "The command used to handle \"https\" URLs, if enabled."
+msgstr "Arahan untuk mengendali  URL \"https\" URLs, jika dihidupkan."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:8
+msgid "The command used to handle \"info\" URLs, if enabled."
+msgstr "Arahan untuk mengendali  URL \"info\" URLs, jika dihidupkan."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:9
+msgid "The command used to handle \"mailto\" URLs, if enabled."
+msgstr "Arahan untuk mengendali  URL \"mailto\" URLs, jika dihidupkan."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:10
+msgid "The command used to handle \"man\" URLs, if enabled."
+msgstr "Arahan untuk mengendali  URL \"man\" URLs, jika dihidupkan."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:11
+msgid "The command used to handle \"trash\" URLs, if enabled."
+msgstr "Arahan untuk mengendali  URL \"trash\" URLs, jika dihidupkan."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:12
+msgid "The handler for \"aim\" URLs"
+msgstr "Pengendali bagi URL \"aim\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:13
+msgid "The handler for \"callto\" URLs"
+msgstr "Pengendali bagi URL \"callto\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:14
+msgid "The handler for \"ghelp\" URLs"
+msgstr "Pengendali bagi URL \"ghelp\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:15
+msgid "The handler for \"h323\" URLs"
+msgstr "Pengendali bagi URL \"h323\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:16
+msgid "The handler for \"http\" URLs"
+msgstr "Pengendali bagi URL \"http\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:17
+msgid "The handler for \"https\" URLs"
+msgstr "Pengendali bagi URL \"https\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:18
+msgid "The handler for \"info\" URLs"
+msgstr "Pengendali bagi URL \"info\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:19
+msgid "The handler for \"mailto\" URLs"
+msgstr "Pengendali bagi URL \"mailto\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:20
+msgid "The handler for \"man\" URLs"
+msgstr "Pengendali bagi URL \"man\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:21
+msgid "The handler for \"trash\" URLs"
+msgstr "Pengendali bagi URL \"man\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:22
+msgid ""
+"True if the command specified in the \"command\" key should handle \"aim\" "
+"URLs."
+msgstr ""
+"Benar jika arahan dinyatakan pada kekunci \"command\" mengendali URL \"aim\"."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:23
+msgid ""
+"True if the command specified in the \"command\" key should handle \"callto"
+"\" URLs."
+msgstr ""
+"Benar jika arahan dinyatakan pada kekunci \"command\" mengendali URL \"callto"
+"\"."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:24
+msgid ""
+"True if the command specified in the \"command\" key should handle \"ghelp\" "
+"URLs."
+msgstr ""
+"Benar jika arahan dinyatakan pada kekunci \"command\" mengendali URL \"ghelp"
+"\"."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:25
+msgid ""
+"True if the command specified in the \"command\" key should handle \"h323\" "
+"URLs."
+msgstr ""
+"Benar jika arahan dinyatakan pada kekunci \"command\" mengendali URL \"h323"
+"\"."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:26
+msgid ""
+"True if the command specified in the \"command\" key should handle \"http\" "
+"URLs."
+msgstr ""
+"Benar jika arahan dinyatakan pada kekunci \"command\" mengendali URL \"http"
+"\"."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:27
+msgid ""
+"True if the command specified in the \"command\" key should handle \"https\" "
+"URLs."
+msgstr ""
+"Benar jika arahan dinyatakan pada kekunci \"command\" mengendali URL \"https"
+"\"."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:28
+msgid ""
+"True if the command specified in the \"command\" key should handle \"info\" "
+"URLs."
+msgstr ""
+"Benar jika arahan dinyatakan pada kekunci \"command\" mengendali URL \"info"
+"\"."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:29
+msgid ""
+"True if the command specified in the \"command\" key should handle \"mailto"
+"\" URLs."
+msgstr ""
+"Benar jika arahan dinyatakan pada kekunci \"command\" mengendali URL \"mailto"
+"\"."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:30
+msgid ""
+"True if the command specified in the \"command\" key should handle \"man\" "
+"URLs."
+msgstr ""
+"Benar jika arahan dinyatakan pada kekunci \"command\" mengendali URL \"man\"."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:31
+msgid ""
+"True if the command specified in the \"command\" key should handle \"trash\" "
+"URLs."
+msgstr ""
+"Benar jika arahan dinyatakan pada kekunci \"command\" mengendali URL \"trash"
+"\"."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:32
+msgid ""
+"True if the command used to handle this type of URL should be run in a "
+"terminal."
+msgstr ""
+"Benar jika arahan digunakan untuk mengendali URL ini patut dilaksanakan pada "
+"terminal."
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:33
+msgid "Whether the specified command should handle \"aim\" URLs"
+msgstr "Samada arahan dinyatakan patut mengendali mengendali URL \"aim\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:34
+msgid "Whether the specified command should handle \"callto\" URLs"
+msgstr "Samada arahan dinyatakan patut mengendali mengendali URL \"callto\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:35
+msgid "Whether the specified command should handle \"ghelp\" URLs"
+msgstr "Samada arahan dinyatakan patut mengendali mengendali URL \"ghelp\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:36
+msgid "Whether the specified command should handle \"h323\" URLs"
+msgstr "Samada arahan dinyatakan patut mengendali mengendali URL \"h323\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:37
+msgid "Whether the specified command should handle \"http\" URLs"
+msgstr "Samada arahan dinyatakan patut mengendali mengendali URL \"http\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:38
+msgid "Whether the specified command should handle \"https\" URLs"
+msgstr "Samada arahan dinyatakan patut mengendali mengendali URL \"https\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:39
+msgid "Whether the specified command should handle \"info\" URLs"
+msgstr "Samada arahan dinyatakan patut mengendali mengendali URL \"info\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:40
+msgid "Whether the specified command should handle \"mailto\" URLs"
+msgstr "Samada arahan dinyatakan patut mengendali mengendali URL \"mailto\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:41
+msgid "Whether the specified command should handle \"man\" URLs"
+msgstr "Samada arahan dinyatakan patut mengendali mengendali URL \"man\""
+
+#: schemas/desktop_gnome_url_handlers.schemas.in.h:42
+msgid "Whether the specified command should handle \"trash\" URLs"
+msgstr "Samada arahan dinyatakan patut mengendali mengendali URL \"trash\""
+
+#: schemas/system_dns_sd.schemas.in.h:1
+msgid ""
+"Comma separated list of dns-sd domains that should be visible in the network "
+"location."
+msgstr ""
+"Senarai dipisahkan koma bagi domain dns-sd yang patut kelihatan pada lokasi "
+"rangkaian."
+
+#: schemas/system_dns_sd.schemas.in.h:2
+msgid "Extra domains to look for dns-sd services in"
+msgstr "Domain tambahan untuk dicari bagi servis dns-sd pada"
+
+#: schemas/system_dns_sd.schemas.in.h:3
+msgid "How to display local DNS-SD service"
+msgstr "Bagaimana memapar servis DNS-SD setempat"
+
+#: schemas/system_dns_sd.schemas.in.h:4
+msgid "Possible values are \"merged\", \"separate\" and \"disabled\"."
+msgstr "Nilai yang boleh adalah \"merged\", \"separate\" dan \"disabled\"."
+
+#: schemas/system_http_proxy.schemas.in.h:1
+msgid "Authenticate proxy server connections"
+msgstr "Authentikasi sambungan ke pelayan proksi"
+
+#: schemas/system_http_proxy.schemas.in.h:2
+msgid "Automatic proxy configuration URL"
+msgstr "URL konfigurasi proksi automatik"
+
+#: schemas/system_http_proxy.schemas.in.h:3
+msgid "Enables the proxy settings when accessing HTTP over the Internet."
+msgstr "Hidupkan tetapan proksi bila mengakses HTTP di internet."
+
+#: schemas/system_http_proxy.schemas.in.h:4
+msgid "FTP proxy host name"
+msgstr "Nama hos proksi FTP"
+
+#: schemas/system_http_proxy.schemas.in.h:5
+msgid "FTP proxy port"
+msgstr "Liang proksi FTP"
+
+#: schemas/system_http_proxy.schemas.in.h:6
+msgid "HTTP proxy host name"
+msgstr "Nama hos proksi HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:7
+msgid "HTTP proxy password"
+msgstr "Katalaluan proksi HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:8
+msgid "HTTP proxy port"
+msgstr "Liang proksi HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:9
+msgid "HTTP proxy username"
+msgstr "Namapengguna proksi HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:10
+#, fuzzy
+msgid ""
+"If true, then connections to the proxy server require authentication. The "
+"username/password combo is defined by \"/system/http_proxy/"
+"authentication_user\" and \"/system/http_proxy/authentication_password\"."
+msgstr ""
+"Jika benar, sambungan ke pelayan proksi memerlukan autentikasi. Kombinasi "
+"namapengguna/katalaluan ditakrifkan oleh \"/system/http_proxy/"
+"authentication_user\" dan \"/system/http_proxy/authentication_password\"."
+
+#: schemas/system_http_proxy.schemas.in.h:11
+msgid "Non-proxy hosts"
+msgstr "Hos pbukan-proksi"
+
+#: schemas/system_http_proxy.schemas.in.h:12
+msgid "Password to pass as authentication when doing HTTP proxying."
+msgstr ""
+"Katalaluan untuk dihantar sebagai autentikasi bila melakukan pemproksian HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:13
+msgid "Proxy configuration mode"
+msgstr "Mod konfigurasi proksi"
+
+#: schemas/system_http_proxy.schemas.in.h:14
+msgid "SOCKS proxy host name"
+msgstr "Nama hos proksi SOCKS"
+
+#: schemas/system_http_proxy.schemas.in.h:15
+msgid "SOCKS proxy port"
+msgstr "Liang proksi SOCKS"
+
+#: schemas/system_http_proxy.schemas.in.h:16
+msgid "Secure HTTP proxy host name"
+msgstr "Nama hos proksi HTTP selamat"
+
+#: schemas/system_http_proxy.schemas.in.h:17
+msgid "Secure HTTP proxy port"
+msgstr "Liang proksi HTTP selamat"
+
+#: schemas/system_http_proxy.schemas.in.h:18
+msgid ""
+"Select the proxy configuration mode. Supported values are \"none\", \"manual"
+"\", \"auto\"."
+msgstr ""
+"Pilih mod konfigurasi proksi. Nilai disokong adalah \"none\", \"manual\", "
+"\"auto\"."
+
+#: schemas/system_http_proxy.schemas.in.h:19
+msgid "The machine name to proxy FTP through."
+msgstr "Nama mesin supaya proksi FTP melaluinya.."
+
+#: schemas/system_http_proxy.schemas.in.h:20
+msgid "The machine name to proxy HTTP through."
+msgstr "Nama mesin supaya proksi HTTP melaluinya.."
+
+#: schemas/system_http_proxy.schemas.in.h:21
+msgid "The machine name to proxy secure HTTP through."
+msgstr "Nama mesin supaya proksi HTTP selamat melaluinya."
+
+#: schemas/system_http_proxy.schemas.in.h:22
+msgid "The machine name to proxy socks through."
+msgstr "Nama mesin supaya proksi socks melaluinya."
+
+#: schemas/system_http_proxy.schemas.in.h:23
+msgid ""
+"The port on the machine defined by \"/system/http_proxy/host\" that you "
+"proxy through."
+msgstr ""
+"Liang pada mesin ditakrifkan oleh \"/system/http_proxy/host\" yang anda "
+"lalui."
+
+#: schemas/system_http_proxy.schemas.in.h:24
+msgid ""
+"The port on the machine defined by \"/system/proxy/ftp_host\" that you proxy "
+"through."
+msgstr ""
+"Liang pada mesin ditakrifkan oleh \"/system/proxy/ftp_host\" yang anda lalui."
+
+#: schemas/system_http_proxy.schemas.in.h:25
+msgid ""
+"The port on the machine defined by \"/system/proxy/secure_host\" that you "
+"proxy through."
+msgstr ""
+"Liang pada mesin ditakrifkan oleh \"/system/proxy/secure_host\" yang anda "
+"lalui."
+
+#: schemas/system_http_proxy.schemas.in.h:26
+msgid ""
+"The port on the machine defined by \"/system/proxy/socks_host\" that you "
+"proxy through."
+msgstr ""
+"Liang pada mesin ditakrifkan oleh \"/system/proxy/socks_host\" yang anda "
+"lalui."
+
+#: schemas/system_http_proxy.schemas.in.h:27
+msgid ""
+"This key contains a list of hosts which are connected to directly, rather "
+"than via the proxy (if it is active). The values can be hostnames, domains "
+"(using an initial wildcard like *.foo.com), IP host addresses (both IPv4 and "
+"IPv6) and network addresses with a netmask (something like 192.168.0.0/24)."
+msgstr ""
+"Kekunci ini mengandungi senarai hos yang disambung secara terus, bukannya "
+"melalui proksi (jika ia aktif). Nilai boleh jadi namahos, domain "
+"(menggunakan wildcard awalan seperti *.sebol.com), Alamat hos IP (kedua-dua "
+"IPv4 dan IPv6) dan alamat rangkaian dengan netmask (seperti 192.168.0.0/24)."
+
+#: schemas/system_http_proxy.schemas.in.h:28
+msgid "URL that provides proxy configuration values."
+msgstr "URL yg membekalkan nilai konfigurasi proksi."
+
+#: schemas/system_http_proxy.schemas.in.h:29
+msgid "Use HTTP proxy"
+msgstr "Guna proksi HTTP"
+
+#: schemas/system_http_proxy.schemas.in.h:30
+msgid "User name to pass as authentication when doing HTTP proxying."
+msgstr ""
+"Nama pengguna untuk dihantar sebagai autentikasi bila melakukan pemproksian "
+"HTTP."
+
+#: schemas/system_smb.schemas.in.h:1
+msgid "SMB workgroup"
+msgstr "Kumpulankerja SMB"
+
+#: schemas/system_smb.schemas.in.h:2
+msgid "The window workgroup the user is part of"
+msgstr "Kumpulan kerja Windows yang pengguna anggotai"
+
+#~ msgid "CD-ROM Disc"
+#~ msgstr "Cakera CD-ROM"
+
+#~ msgid "Blank CD-R Disc"
+#~ msgstr "Cakera CD-R Kosong"
+
+#~ msgid "CD-R Disc"
+#~ msgstr "Cakera CD-R"
+
+#~ msgid "Blank CD-RW Disc"
+#~ msgstr "Cakera CD-RW Kosong"
+
+#~ msgid "CD-RW Disc"
+#~ msgstr "Cakera CD-RW"
+
+#~ msgid "DVD-ROM Disc"
+#~ msgstr "Cakera DVD-ROM"
+
+#~ msgid "Blank DVD-R Disc"
+#~ msgstr "Cakera DVD-R Kosong"
+
+#~ msgid "DVD-R Disc"
+#~ msgstr "Cakera DVD-R"
+
+#~ msgid "Blank DVD-RAM Disc"
+#~ msgstr "Cakera DVD-RAM Kosong"
+
+#~ msgid "DVD-RAM Disc"
+#~ msgstr "Cakera DVD-RAM"
+
+#~ msgid "Blank DVD-RW Disc"
+#~ msgstr "Cakera DVD-RW Kosong"
+
+#~ msgid "DVD-RW Disc"
+#~ msgstr "Cakera DVD-RW"
+
+#~ msgid "Blank DVD+RW Disc"
+#~ msgstr "Cakera DVD+RW Kosong"
+
+#~ msgid "DVD+RW Disc"
+#~ msgstr "Cakera DVD+RW"
+
+#~ msgid "Blank DVD+R Disc"
+#~ msgstr "Cakera DVD+R Kosong"
+
+#~ msgid "DVD+R Disc"
+#~ msgstr "Cakera DVD+R"
+
+#~ msgid "Optical Disc"
+#~ msgstr "Cakera Optikal"
+
+#~ msgid "Audio Disc"
+#~ msgstr "Cakera Audio"
+
+#~ msgid "Compact Flash Media"
+#~ msgstr "Media Flash Padat"
+
+#~ msgid "Memory Stick Media"
+#~ msgstr "Media Stik Memori"
+
+#~ msgid "Smart Media Media"
+#~ msgstr "Media Bestari"
+
+#~ msgid "SD/MMC Media"
+#~ msgstr "Media SD/MMC"
+
+#~ msgid "Floppy Disk"
+#~ msgstr "Cakera Liut"
+
+#~ msgid "Mac OS disk"
+#~ msgstr "Cakera Mac OS"
+
+#~ msgid "Mac OS X disk"
+#~ msgstr "Cakera Mac OS X"
+
+#~ msgid "Windows Disk"
+#~ msgstr "Cakera Windows"
+
+#~ msgid "Linux Disk"
+#~ msgstr "Cakera Linux"
+
+#~ msgid "File could not be opened: %s"
+#~ msgstr "Fail tidak boleh dibuka: %s"
+
+#~ msgid "Failed to open file '%s': %s"
+#~ msgstr "Gagal membuka fail '%s': %s"
+
+#~ msgid "File is empty"
+#~ msgstr "Fail adalah kosong"
+
+#~ msgid "Failed to read from file '%s': %s"
+#~ msgstr "Gagal membaca fail  '%s': %s"
+
+#~ msgid ""
+#~ "desktop entries contain line '%s' which is not an entry, group, or comment"
+#~ msgstr ""
+#~ "kemasukan desktop mengandungi baris '%s' dimana ia bukan kemasukan, "
+#~ "kumpulan atau komen"
+
+#~ msgid "desktop entries file does not start with legal start group"
+#~ msgstr ""
+#~ "fail kemasukan desktop tak bermula dengan kumpulan perlumaan yang sah"
+
+#~ msgid "desktop entries contain line '%s' which is not UTF-8"
+#~ msgstr "kemasukan desktop mengandungi baris '%s' dimana ia bukan UTF-8"
+
+#~ msgid "desktop entries contain unknown encoding '%s'"
+#~ msgstr "kemasukan desktop mengendungi pengenkodan tak diketahui '%s'"
+
+#~ msgid "desktop entries do not have group '%s'"
+#~ msgstr "kemasukan desktop tak mempunyai kumpulan '%s'"
+
+#~ msgid "desktop entries do not have key '%s'"
+#~ msgstr "kemasukan desktop tak mempunyai kekunci '%s'"
+
+#~ msgid ""
+#~ "desktop entries contain key '%s' which has value that cannot be "
+#~ "interpreted."
+#~ msgstr ""
+#~ "kemasukan desktop mengandungi kekunci '%s' dimana ia mempunyia nilai yang "
+#~ "tak dapat ditafsir."
+
+#~ msgid ""
+#~ "desktop entries contain no translated value for key '%s' with locale '%s'."
+#~ msgstr ""
+#~ "kemasukan desktop tak mengendungi nilai diterjemah bagi kekunci '%s' "
+#~ "untuk lokaliti '%s'."
+
+#~ msgid "desktop entries contain invalid escape sequence '%s'"
+#~ msgstr "kemasukan desktop mengandungi jujukan escape '%s' yang tak sah"
+
+#~ msgid "desktop entries contain escape character at end of line"
+#~ msgstr "kemasukan desktop mengandungi aksara escape pada akhir baris"
+
+#~ msgid "Value '%s' cannot be interpreted as a number."
+#~ msgstr "Nilai '%s' tak boleh ditafsirkan sebagai nombor."
+
+#~ msgid "Value '%s' cannot be interpreted as a boolean."
+#~ msgstr "Nilai '%s' tak boleh ditafsirkan sebagai boolean."
+
+#~ msgid "Applications"
+#~ msgstr "Aplikasi"
+
+#~ msgid "Cards"
+#~ msgstr "Kad"
+
+#~ msgid "Files"
+#~ msgstr "Fail"
+
+#~ msgid "Folders"
+#~ msgstr "Folder"
+
+#~ msgid "Help"
+#~ msgstr "Bantuan"
+
+#~ msgid "Hosts"
+#~ msgstr "Hos"
+
+#~ msgid "Links"
+#~ msgstr "Pautan"
+
+#~ msgid "Mail"
+#~ msgstr "Mel"
+
+#~ msgid "Tools"
+#~ msgstr "Alatan"
+
+#~ msgid "Windows"
+#~ msgstr "Tetingkap"

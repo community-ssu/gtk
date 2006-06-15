@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+ <TestModule method="file">
+  <function name="find_directory" delay="1000"/>
+  <function name="get_file_info" delay="0"/>
+ </TestModule>

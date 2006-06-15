@@ -1,0 +1,101 @@
+documentation for tar format
+Rachel Hestilow, Sunday May 12 2002
+
+I documented this by:
+	* downloading GNU tar sources onto my laptop
+	* printing tar.h
+	* taking the printout to a desktop machine
+	* translating header printout to plain english
+
+a tar stream is composed of series of data blocks of size 512 bytes.
+there are several different formats the blocks may be in:
+
+the five defined block structures are:
+POSIX, GNU, old GNU, sparse, and raw data buffer.
+
+the first definied block structure is POSIX.
+it consists of:
+	100 bytes for name
+	8 bytes each for mode, uid, gid
+	12 bytes each for size and mtime
+	8 bytes for a checksum
+	a single byte for a typeflag
+	100 bytes for a link name
+	6 magic bytes
+	2 bytes for version
+	32 bytes each for username and groupname
+	8 bytes each for device major and minor numbers
+	155 bytes for extended data
+
+the only magic value defined in GNU tar is "ustar"
+GNU tar sets the version field to "00" - note this is not null-terminated.
+
+the typeflag byte can have the following values under POSIX:
+	'0', '\0': regular
+	'1': link
+	'2': symbolic link
+	'3': character device
+	'4': block device
+	'5': directory
+	'6': FIFO
+	'7': contiguous
+GNU tar defines the following additional values:
+	'D': a "dumpdir"
+	'K': a long link name 
+	'L': a long filename
+	'M': multivolume file continuation
+	'N': block used for storing a long name
+	'S': "sparse" file
+	'V': tape/volume header
+
+the following bit masks are defined for use within the mode field (in octal):
+	04000: setuid
+	02000: setgid
+	01000: (reserved)
+	00400: read by owner
+	00200: write by owner
+	00100: execute by owner
+	00040: read by group
+	00020: write by group
+	00010: execute by group
+	00004: read by other
+	00002: write by other
+	00001: execute by other
+
+the GNU extension structure occurs only after a regular POSIX header block.
+it consists of:
+	12 bytes each for atime and ctime
+	12 bytes for "offset"
+	12 bytes for the "real" size
+	4 bytes for a field called "longnames"
+	68 bytes of padding
+	16 "sparse file" structures.
+	a byte to indicate extendedness
+
+the "sparse file" structure used by the extension header consists of: 
+	12 bytes of padding
+	12 bytes to indicate the number of bytes
+
+the old GNU extensions structure uses the extended data area specified by the
+POSIX header. the format of a block with old GNU extensions consists of:
+	345 bytes of padding (used for POSIX)
+	12 bytes each for atime and ctime, and "offset"
+	4 bytes for "longnames"
+	a single byte of padding
+	4 "sparse file" structures
+	a byte to indicate extendedness
+	12 bytes for "real" size
+
+old GNU extensions headers use both the magic and version fields to contain
+the magic string, which is "ustar  ", null-terminated.
+
+the sparse header structure (not to be confused with the sparse file
+structure) consists of:
+	21 "sparse file" structures
+	a byte to indicate extendedness
+
+the raw data buffer is simply a 512-byte data block.
+
+for utility, the tar header provides a generic union which consists
+of all 5 structures.
+

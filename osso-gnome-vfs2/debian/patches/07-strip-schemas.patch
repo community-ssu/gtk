@@ -1,0 +1,27 @@
+Index: po/POTFILES.in
+===================================================================
+--- po/POTFILES.in	(revision 374)
++++ po/POTFILES.in	(arbetskopia)
+@@ -23,9 +23,3 @@
+ modules/sftp-method.c
+ modules/test-method.c
+ monikers/GNOME_VFS_Moniker_std.server.in.in
+-schemas/desktop_default_applications.schemas.in
+-schemas/desktop_gnome_url_handlers.schemas.in
+-schemas/system_dns_sd.schemas.in
+-schemas/system_http_proxy.schemas.in
+-schemas/system_smb.schemas.in
+-schemas/system_storage.schemas.in
+Index: schemas/Makefile.am
+===================================================================
+--- schemas/Makefile.am	(revision 374)
++++ schemas/Makefile.am	(arbetskopia)
+@@ -9,8 +9,6 @@
+ 
+ schema_DATA = $(schema_in_files:.schemas.in=.schemas)
+ 
+-@INTLTOOL_SCHEMAS_RULE@
+-
+ # don't do this if we are building in eg. rpm
+ if GCONF_SCHEMAS_INSTALL
+ if OS_WIN32

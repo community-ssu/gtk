@@ -1,0 +1,89 @@
+<!-- ##### SECTION Title ##### -->
+Getting and Setting File Information
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+    Applications can use the #gnome_vfs_get_file_info family of operations to
+    retrieve file information, as this operation can be quite costly in
+    terms of time (specilly when sniffing the MIME type) applications can 
+    specify which information need at any time, reducing the performance 
+    impact.
+</para>
+<para>
+    All of these operations use a #GnomeVFSFileInfo data structure that holds 
+    the file information, there are several methods that can be used to 
+    manipulate this information. See #GnomeVFSFileInfo for more information.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+<variablelist>
+<varlistentry>
+<term>#GnomeVFSFileInfo</term>
+</varlistentry>
+</variablelist>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gnome_vfs_get_file_info ##### -->
+<para>
+
+</para>
+
+@text_uri: 
+@info: 
+@options: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_get_file_info_uri ##### -->
+<para>
+
+</para>
+
+@uri: 
+@info: 
+@options: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_get_file_info_from_handle ##### -->
+<para>
+
+</para>
+
+@handle: 
+@info: 
+@options: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_set_file_info_uri ##### -->
+<para>
+
+</para>
+
+@uri: 
+@info: 
+@mask: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_set_file_info ##### -->
+<para>
+
+</para>
+
+@text_uri: 
+@info: 
+@mask: 
+@Returns: 
+
+

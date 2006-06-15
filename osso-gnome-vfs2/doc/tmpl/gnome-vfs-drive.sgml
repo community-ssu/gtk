@@ -1,0 +1,305 @@
+<!-- ##### SECTION Title ##### -->
+GnomeVFSDrive
+
+<!-- ##### SECTION Short_Description ##### -->
+Container for GnomeVFSVolume (floppy drive, CD reader, ...)
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM GnomeVFSDeviceType ##### -->
+<para>
+
+</para>
+
+@GNOME_VFS_DEVICE_TYPE_UNKNOWN: 
+@GNOME_VFS_DEVICE_TYPE_AUDIO_CD: 
+@GNOME_VFS_DEVICE_TYPE_VIDEO_DVD: 
+@GNOME_VFS_DEVICE_TYPE_HARDDRIVE: 
+@GNOME_VFS_DEVICE_TYPE_CDROM: 
+@GNOME_VFS_DEVICE_TYPE_FLOPPY: 
+@GNOME_VFS_DEVICE_TYPE_ZIP: 
+@GNOME_VFS_DEVICE_TYPE_JAZ: 
+@GNOME_VFS_DEVICE_TYPE_NFS: 
+@GNOME_VFS_DEVICE_TYPE_AUTOFS: 
+@GNOME_VFS_DEVICE_TYPE_CAMERA: 
+@GNOME_VFS_DEVICE_TYPE_MEMORY_STICK: 
+@GNOME_VFS_DEVICE_TYPE_SMB: 
+@GNOME_VFS_DEVICE_TYPE_APPLE: 
+@GNOME_VFS_DEVICE_TYPE_MUSIC_PLAYER: 
+@GNOME_VFS_DEVICE_TYPE_WINDOWS: 
+@GNOME_VFS_DEVICE_TYPE_LOOPBACK: 
+@GNOME_VFS_DEVICE_TYPE_NETWORK: 
+
+<!-- ##### STRUCT GnomeVFSDrive ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SIGNAL GnomeVFSDrive::volume-mounted ##### -->
+<para>
+
+</para>
+
+@vfsdrive: the object which received the signal.
+@arg1: 
+
+<!-- ##### SIGNAL GnomeVFSDrive::volume-pre-unmount ##### -->
+<para>
+
+</para>
+
+@vfsdrive: the object which received the signal.
+@arg1: 
+
+<!-- ##### SIGNAL GnomeVFSDrive::volume-unmounted ##### -->
+<para>
+
+</para>
+
+@vfsdrive: the object which received the signal.
+@arg1: 
+
+<!-- ##### STRUCT GnomeVFSDriveClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+@volume_mounted: 
+@volume_pre_unmount: 
+@volume_unmounted: 
+
+<!-- ##### MACRO GNOME_IS_VFS_DRIVE ##### -->
+<para>
+
+</para>
+
+@o: 
+
+
+<!-- ##### MACRO GNOME_IS_VFS_DRIVE_CLASS ##### -->
+<para>
+
+</para>
+
+@k: 
+
+
+<!-- ##### MACRO GNOME_VFS_TYPE_DRIVE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GNOME_VFS_DRIVE ##### -->
+<para>
+
+</para>
+
+@o: 
+
+
+<!-- ##### MACRO GNOME_VFS_DRIVE_CLASS ##### -->
+<para>
+
+</para>
+
+@k: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_compare ##### -->
+<para>
+
+</para>
+
+@a: 
+@b: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_eject ##### -->
+<para>
+
+</para>
+
+@drive: 
+@callback: 
+@user_data: 
+<!-- # Unused Parameters # -->
+@volume: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_get_activation_uri ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_get_device_path ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_get_device_type ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_get_display_name ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_get_hal_udi ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_get_icon ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_get_id ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_get_mounted_volume ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_get_mounted_volumes ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_volume_list_free ##### -->
+<para>
+
+</para>
+
+@volumes: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_get_type ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_is_connected ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_is_mounted ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_is_user_visible ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_mount ##### -->
+<para>
+
+</para>
+
+@drive: 
+@callback: 
+@user_data: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_ref ##### -->
+<para>
+
+</para>
+
+@drive: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_unmount ##### -->
+<para>
+
+</para>
+
+@drive: 
+@callback: 
+@user_data: 
+
+
+<!-- ##### FUNCTION gnome_vfs_drive_unref ##### -->
+<para>
+
+</para>
+
+@drive: 
+
+

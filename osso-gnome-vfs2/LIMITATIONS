@@ -1,0 +1,11 @@
+GnomeVFS has a few limitations:
+
+* It may not work correctly across forks. For a bit more information see:
+  http://bugzilla.gnome.org/show_bug.cgi?id=81076
+
+* The current ssh module won't work if you don't have an ssh-agent set up to
+  allow you to log in without supplying a password.
+
+* The current ssh module won't work correctly if your shell on the remote
+  system is not bash. A real bourne shell or zsh may also work but have not
+  been tested. Tcsh is known to not work.

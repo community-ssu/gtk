@@ -1,0 +1,11 @@
+I've implemented an SSL abstraction layer in libgnomevfs/gnome-vfs-ssl.c.
+This currently uses OpenSSL but I'm planning to allow it to use NSS through
+a configure-time option. To turn it on pass --with-openssl-libs=/path/to/libs
+to configure or autogen.sh. However,
+
+THERE ARE LICENSE ISSUES
+
+There currently exists no SSL implementation thats compatible with the LGPL.
+They all place extra restrictions on distribution. So for the time being I
+recommend that no distributions distribute a gnome-vfs thats been built with
+SSL support.

@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<gconfschemafile>
+  <schemalist>
+
+    <schema>
+      <key>/schemas/system/storage/display_internal_hard_drives</key>
+      <applyto>/system/storage/display_internal_hard_drives</applyto>
+      <owner>gnome-vfs</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Display internal hard drives</short>
+        <long>Whether to display drives and mountable volumes from internal hard drives (non-SCSI optical drives are always shown).</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/system/storage/display_external_drives</key>
+      <applyto>/system/storage/display_external_drives</applyto>
+      <owner>gnome-vfs</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Display external drives</short>
+        <long>Whether to display drives and mountable volumes from external drives (e.g. drives that are hotpluggable; e.g. drives that can be attached and detached while the system is running).</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/system/storage/display_drives_with_removable_media</key>
+      <applyto>/system/storage/display_drives_with_removable_media</applyto>
+      <owner>gnome-vfs</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Display drives with removable media</short>
+        <long>Whether to display drives and mountable volumes from drives with removable media (e.g. drives where media can be inserted and removed).</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/system/storage/display_scsi_drives</key>
+      <applyto>/system/storage/display_scsi_drives</applyto>
+      <owner>gnome-vfs</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Display SCSI drives</short>
+        <long>Whether to display drives and mountable volumes from SCSI drives.</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/system/storage/display_scsi_optical_drives</key>
+      <applyto>/system/storage/display_scsi_optical_drives</applyto>
+      <owner>gnome-vfs</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Display SCSI optical drives</short>
+        <long>Whether to display SCSI optical drives even if /system/storage/display_scsi_drives is set to FALSE.</long>
+      </locale>
+    </schema>
+
+  </schemalist>
+</gconfschemafile>

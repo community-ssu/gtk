@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -e
+
+UNNEEDED="applications.vfolder-info preferences.vfolder-info"
+
+case "$1" in
+    install|upgrade)
+        for f in $UNNEEDED; do
+            if [ -f /etc/gnome-vfs-2.0/vfolders/$f ]; then
+                rm -rf /etc/gnome-vfs-2.0/vfolders/$f
+            fi
+        done
+    ;;
+esac
+
+#DEBHELPER#

@@ -1,0 +1,113 @@
+<!-- ##### SECTION Title ##### -->
+gnome-vfs-module-callback
+
+<!-- ##### SECTION Short_Description ##### -->
+functions used by apps if they want to answer to callback invocations by gnome-vfs modules
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### USER_FUNCTION GnomeVFSModuleCallback ##### -->
+<para>
+
+</para>
+
+@in: 
+@in_size: 
+@out: 
+@out_size: 
+@callback_data: 
+
+
+<!-- ##### USER_FUNCTION GnomeVFSModuleCallbackResponse ##### -->
+<para>
+
+</para>
+
+@response_data: 
+
+
+<!-- ##### USER_FUNCTION GnomeVFSAsyncModuleCallback ##### -->
+<para>
+
+</para>
+
+@in: 
+@in_size: 
+@out: 
+@out_size: 
+@callback_data: 
+@response: 
+@response_data: 
+
+
+<!-- ##### FUNCTION gnome_vfs_module_callback_set_default ##### -->
+<para>
+
+</para>
+
+@callback_name: 
+@callback: 
+@callback_data: 
+@destroy_notify: 
+
+
+<!-- ##### FUNCTION gnome_vfs_module_callback_push ##### -->
+<para>
+
+</para>
+
+@callback_name: 
+@callback: 
+@callback_data: 
+@destroy_notify: 
+
+
+<!-- ##### FUNCTION gnome_vfs_module_callback_pop ##### -->
+<para>
+
+</para>
+
+@callback_name: 
+
+
+<!-- ##### FUNCTION gnome_vfs_async_module_callback_set_default ##### -->
+<para>
+
+</para>
+
+@callback_name: 
+@callback: 
+@callback_data: 
+@destroy_notify: 
+
+
+<!-- ##### FUNCTION gnome_vfs_async_module_callback_push ##### -->
+<para>
+
+</para>
+
+@callback_name: 
+@callback: 
+@callback_data: 
+@destroy_notify: 
+
+
+<!-- ##### FUNCTION gnome_vfs_async_module_callback_pop ##### -->
+<para>
+
+</para>
+
+@callback_name: 
+
+

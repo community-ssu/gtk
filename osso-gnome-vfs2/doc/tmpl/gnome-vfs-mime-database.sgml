@@ -1,0 +1,301 @@
+<!-- ##### SECTION Title ##### -->
+File Types
+
+<!-- ##### SECTION Short_Description ##### -->
+
+functions for getting information about files based on their MIME type
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GnomeVFSMimeApplication ##### -->
+<para>
+
+</para>
+
+@id: 
+@name: 
+@can_open_multiple_files: 
+@expects_uris: 
+@supported_uri_schemes: 
+@_can_open_multiple_files: 
+@_expects_uris: 
+@_supported_uri_schemes: 
+@reserved1: 
+@priv: 
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_default_application ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_default_application_for_uri ##### -->
+<para>
+
+</para>
+
+@uri: 
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_all_applications ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_default_component ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_all_components ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_icon ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_description ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_can_be_executable ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_new_from_desktop_id ##### -->
+<para>
+
+</para>
+
+@id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_launch ##### -->
+<para>
+
+</para>
+
+@app: 
+@uris: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_launch_with_env ##### -->
+<para>
+
+</para>
+
+@app: 
+@uris: 
+@envp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_get_desktop_id ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_get_desktop_file_path ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_get_name ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_get_generic_name ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_get_icon ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_get_exec ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_requires_terminal ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_get_startup_wm_class ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_supports_startup_notification ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_get_binary_name ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_supports_uris ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_copy ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+<!-- # Unused Parameters # -->
+@application: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_free ##### -->
+<para>
+
+</para>
+
+@app: 
+<!-- # Unused Parameters # -->
+@application: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_list_free ##### -->
+<para>
+
+</para>
+
+@list: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_component_list_free ##### -->
+<para>
+
+</para>
+
+@list: 
+
+
+<!-- ##### MACRO GNOME_VFS_MIME_TYPE_UNKNOWN ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gnome_vfs_get_mime_type_for_data ##### -->
+<para>
+
+</para>
+
+@data: 
+@data_size: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_get_mime_type ##### -->
+<para>
+
+</para>
+
+@text_uri: 
+@Returns: 
+
+

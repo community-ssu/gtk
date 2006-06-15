@@ -1,0 +1,31 @@
+
+STUFF TO DO
+===========
+
+X keywords aren't being pulled from itemdir files.  bug in
+  entry_quick_read_keys?
+
+X all pool files are read on startup.  should load when get_keywords is called.
+
+X filename uniqueness mess... need use a unique name when writing user-private
+  files, but need to present the non-unique name to apps.  use a special vfolder
+  postfix filename probably.
+
+X all-applications doesn't work.  probably need to use the pool files from
+.vfolder-info, and add an all-applications-all-users (ick) method.
+
+X ensure ~/.gnome2/vfolders exists before writing config file
+
+X ensure ~/.gnome2/vfolders/<scheme>/ dir exists before writing user-private
+  changes
+
+X <OnlyUnallocated> dir files list duplicates of regularly listed entries,
+  because the alloc count is not correct for folders that are not yet loaded.
+
+Directory VFolderMonitors relying on stat() (and not FAM) will not pick up new
+files.
+
+Add GConf keys for getting .vfolder-info file to use for a given 
+scheme (puntable).
+
+Support set/get_file_info of read-only permissions on folders?

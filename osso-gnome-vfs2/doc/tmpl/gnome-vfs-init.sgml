@@ -1,0 +1,71 @@
+<!-- ##### SECTION Title ##### -->
+Initialization/Shutdown
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+Starting GnomeVFS up and shutting it down. Usually when using the whole
+GNOME framework this library is initialized and shutdown automatically 
+when calling gnome_init.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gnome_vfs_init ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_initialized ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_shutdown ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION gnome_vfs_loadinit ##### -->
+<para>
+
+</para>
+
+@app: 
+@modinfo: 
+
+
+<!-- ##### FUNCTION gnome_vfs_preinit ##### -->
+<para>
+
+</para>
+
+@app: 
+@modinfo: 
+
+
+<!-- ##### FUNCTION gnome_vfs_postinit ##### -->
+<para>
+
+</para>
+
+@app: 
+@modinfo: 
+
+

@@ -1,0 +1,11 @@
+This version of GnomeVFS is based on upstream GnomeVFS 2.8.x with added
+support for using DBUS for communicating with the daemon.
+
+See doc/dbus-protocol.txt for a description of the protocol used.
+
+The port is a straight forward port of the CORBA based version to keep
+the patch as small as possible.
+
+For more information see:
+
+ http://developer.imendio.com/wiki/GnomeVFS_D-BUS

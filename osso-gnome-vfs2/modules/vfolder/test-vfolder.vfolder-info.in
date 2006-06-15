@@ -1,0 +1,32 @@
+<VFolderInfo>
+  <!--<WriteDir>@top_builddir@/modules/vfolder/test-vfolder-tmp</WriteDir>-->
+
+  <Folder>
+    <Name>Top Folder</Name>
+    <Parent>test-vfolder-parent:///</Parent>
+
+    <Folder>
+      <Name>EmptyFolder</Name>
+    </Folder>
+
+    <Folder>
+      <Name>EmptyHiddenFolder</Name>
+      <DontShowIfEmpty/>
+    </Folder>
+
+    <Folder>
+      <Name>EmptyParentedFolder</Name>
+      <Parent>test-vfolder-parent:///EmptyFolder</Parent>
+    </Folder>
+
+    <Folder>
+      <Name>EmptyHiddenParentedFolder</Name>
+      <Parent>test-vfolder-parent:///EmptyHiddenFolder</Parent>
+    </Folder>
+
+    <Folder>
+      <Name>BadlyParentedFolder</Name>
+      <Parent>test-vfolder-parent:///FolderThatDoesntExist</Parent>
+    </Folder>
+  </Folder>
+</VFolderInfo>

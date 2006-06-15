@@ -1,0 +1,6 @@
+debian/tmp/etc/gconf
+debian/tmp/etc/gnome-vfs-2.0/modules
+debian/tmp/usr/lib/gnome-vfs-2.0/modules/*.so
+debian/tmp/usr/share/dbus-1/services
+debian/tmp/usr/bin
+debian/tmp/usr/libexec

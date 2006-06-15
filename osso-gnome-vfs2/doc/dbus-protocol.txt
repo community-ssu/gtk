@@ -1,0 +1,266 @@
+All functions return a GnomeVFSResult (as an int32) as the first reply
+message argument. If the result is GNOME_VFS_OK the other arguments are 
+appended to the reply message.
+
+
+Open:
+-----
+uri:              string
+mode:             int32
+cancellation_id:  int32
+
+Returns:
+result            int32
+handle_id:        int32
+
+Create:
+-------
+uri:              string
+mode:             int32
+exclusive:        bool
+perm:             int32
+cancellation_id:  int32
+
+Returns:
+result            int32
+handle_id:        int32
+
+
+Close:
+------
+handle_id:        int32
+cancellation_id   int32
+
+Returns:
+result            int32
+
+Read:
+-----
+handle_id:        int32
+num_bytes:        uint64
+cancellation_id:  int32
+
+Returns:
+result            int32
+data:             array of bytes
+
+
+Write:
+------
+handle_id:        int32
+data:             array of bytes
+cancellation_id:  int32
+
+Returns:
+result            int32
+bytes_written:    uint64
+
+
+
+Seek:
+-----
+handle_id:        int32
+whence:           int32
+offset:           int64
+cancellation_id:  int32
+
+Returns:
+result            int32
+
+
+Tell:
+-----
+handle_id:        int32
+
+Returns:
+result            int32
+offset:           int64
+
+
+TruncateHandle:
+---------------
+handle_id:        int32
+where:            uint64   
+cancellation_id:  int32
+
+Returns:
+result            int32
+
+
+OpenDirectory:
+-------------- 
+uri:              string
+options:          int32
+cancellation_id:  int32
+
+Returns:
+result            int32
+handle_id:        int32
+
+
+CloseDirectory:
+---------------
+handle_id:        int32
+cancellation_id:  int32
+
+Returns:
+result            int32
+
+
+ReadDirectory:
+--------------
+handle_id:        int32
+cancellation_id:  int32
+
+Returns:
+result            int32
+Array of file_info_dict
+
+
+GetFileInfo:
+------------
+uri:              string
+options:          int32
+cancellation_id:  int32
+
+Returns:
+result            int32
+file_info:        file_info_dict
+
+
+GetFileInfoFromHandle:
+----------------------
+handle_id:        int32
+options:          int32
+cancellation_id:  int32
+
+Returns:
+result            int32
+file_info:        file_info_dict
+
+
+IsLocal:
+--------
+uri:              string
+
+Returns:
+result            int32
+is_local:         bool
+
+
+MakeDirectory:
+--------------
+uri:              string
+perm:             int32
+cancellation_id:  int32
+
+Returns:
+result            int32
+
+
+RemoveDirectory:
+----------------
+uri:              string
+cancellation_id:  int32
+
+Returns:
+result            int32
+
+Move:
+-----
+old_uri:          string
+new_uri:          string
+force_replace:    bool
+cancellation_id:  int32
+
+Returns:
+result            int32
+
+
+Unlink:
+-------
+uri:              string
+cancellation_id:  int32
+
+Returns:
+result            int32
+
+
+CheckSameFs:
+------------
+uri_a:            string
+uri_b:            string
+cancellation_id:  int32
+
+Returns:
+result            int32
+same_fs:          bool
+
+
+SetFileInfo:
+------------
+uri:              string
+file_info:        file_info_dict
+mask:             int32
+cancellation_id:  int32
+
+Returns:
+result            int32
+
+Truncate:
+---------
+uri:              string
+where:            uint64
+cancellation_id:  int32
+
+Returns:
+result            int32
+
+
+FindDirectory:
+--------------
+near_uri:         string
+kind:             int32
+create_if_needed: bool
+find_if_needed:   bool
+perm:             int32
+cancellation_id:  int32
+
+Returns:
+result            int32
+result_uri:       string
+
+
+CreateSymbolicLink:
+-------------------
+uri:              string
+target:           string
+cancellation_id:  int32
+
+Returns:
+result            int32
+
+
+MonitorAdd:
+-----------
+uri:              string
+event_type:       int32
+
+Returns:
+result            int32
+handle_id:        int32
+
+
+MonitorCancel:
+--------------
+handle_id:        int32
+
+Returns:
+result            int32
+
+
+MonitorSignal:
+--------------
+handle_id:        int32
+info_uri:	  string
+event_type:	  int32

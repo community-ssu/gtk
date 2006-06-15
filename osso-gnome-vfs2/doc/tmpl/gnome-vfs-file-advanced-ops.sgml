@@ -1,0 +1,41 @@
+<!-- ##### SECTION Title ##### -->
+Advanced File Operations
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+   
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### FUNCTION gnome_vfs_file_control ##### -->
+<para>
+
+</para>
+
+@handle: 
+@operation: 
+@operation_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_forget_cache ##### -->
+<para>
+
+</para>
+
+@handle: 
+@offset: 
+@size: 
+@Returns: 
+
+

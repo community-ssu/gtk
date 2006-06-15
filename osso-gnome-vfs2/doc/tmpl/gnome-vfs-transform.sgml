@@ -1,0 +1,41 @@
+<!-- ##### SECTION Title ##### -->
+gnome-vfs-transform
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### USER_FUNCTION GnomeVFSTransformInitFunc ##### -->
+<para>
+
+</para>
+
+@method_name: 
+@config_args: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION GnomeVFSTransformFunc ##### -->
+<para>
+
+</para>
+
+@transform: 
+@old_uri: 
+@new_uri: 
+@context: 
+@Returns: 
+
+

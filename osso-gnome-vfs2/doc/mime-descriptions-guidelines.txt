@@ -1,0 +1,82 @@
+gnome-vfs.keys file format:
+
+	MIME types are listed in alphabetical order.
+
+	although undesirable, it's unavoidable to sometimes use a duplicate
+	description for separate MIME types.
+	
+
+general description format:
+
+	if we know anything about the file, its english MIME description
+	generally follows this form:
+
+		[platform] [ [vendor] program name] <type> [($scheme-compressed)]
+		e.g.: "Microsoft Word document", "tar archive (gzip-compressed)"
+
+	if nothing is known beyond its compression, encryption, or encoding:
+
+		[platform] <$scheme-$action> file
+		e.g.: "Macintosh BinHex-encoded file", "PGP-encrypted file"
+
+	extended description of components:
+
+		platform:
+
+			the platform name is included only if the file is
+			intended to be used only on that system ("Macintosh
+			BinHex-encoded file").
+
+		program name:
+
+			program names are included when the file format
+			belongs specifically to that program, even if it can
+			be read by other programs ("Microsoft Word
+			document").
+
+		type:
+
+			the type is a lowercase word or short phrase
+			("font", "source code"); we prefer the most specific
+			accurate type.  when no appropriate type exists,
+			"document" is a blanket term for files created by
+			the user.  "file" is the least specific type.
+
+			an "archive" is a file whose format may encapsulate
+			other files.
+
+			"image" and "video" are for formats suitable for
+			photo-quality content; "art" and "animation" are
+			those that are not.
+
+			computer program code is called "<language> source
+			code", unless there is another standard usage for a
+			given language (e.g., "Perl script").
+
+
+style issues:
+
+	acronyms are capitalized and almost never expanded ("JPEG image").
+
+	program and platform names are capitalized per conventional usage
+	("FrameMaker", "gnumeric", "DOS").
+
+	human language is preferable to acronyms;
+
+	but short descriptions are necessary (so acronyms are often used
+	anyway).
+
+	the only whitespace allowable is single spaces between words.	
+
+
+additional information:
+
+	types which we used in the past and have been superceded include the
+	following. the changes were made to near-synonyms to increase
+	consistency.
+
+		information	=>	data
+		movie		=>	video
+		graphic		=>	image
+
+	"QuickTime movie" is a special case owing to common usage.

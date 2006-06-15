@@ -1,0 +1,22 @@
+--- modules/http-neon-method.c	2005-11-30 16:35:24.000000000 +0100
++++ modules/http-neon-method.c	2005-11-30 16:35:29.000000000 +0100
+@@ -1923,9 +1923,19 @@
+ 	
+ 	if (result == GNOME_VFS_OK) {
+ 		const char *name;
++		char       *tail;
+ 		
+ 		name = gnome_vfs_uri_get_path (context->uri);
+ 		
++		/* Strip out any fragments or query strings. */
++		tail = g_utf8_strchr (name, -1, '?');
++		if (!tail) {
++			tail = g_utf8_strchr (name, -1, '#');
++		}
++		if (tail) {
++			*tail = '\0';
++		}
++
+ 		info->name  = g_path_get_basename (name);
+ 		info->type  = GNOME_VFS_FILE_TYPE_REGULAR;
+ 		info->flags = GNOME_VFS_FILE_FLAGS_NONE;

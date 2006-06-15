@@ -1,0 +1,85 @@
+#!/bin/sh
+
+# test-dav uri filesize
+if [ -z $2 ]
+then
+	echo Usage: $0 '<remote_uri> <kilobytes>'
+	exit
+fi
+
+#REMOTE_URI=http://localhost/upload
+REMOTE_URI=$1
+TEST_IDENTIFIER=`basename $0`-$$
+RESULT=0
+#FILESIZE=1024
+FILESIZE=$2
+
+LOCAL_TEMP=/tmp/$TEST_IDENTIFIER-local
+echo Making local temp directory $LOCAL_TEMP
+mkdir $LOCAL_TEMP || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+REMOTE_TEMP=$REMOTE_URI/$TEST_IDENTIFIER
+echo Making remote temp directory $REMOTE_TEMP
+./test-dirop make $REMOTE_TEMP || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+echo Checking remote temp directory info
+(./test-info $REMOTE_TEMP > $LOCAL_TEMP/info.out) || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+echo Checking remote temp directory file type
+FILETYPE=`grep '^Type.*: Directory' $LOCAL_TEMP/info.out` 
+test -n "$FILETYPE" || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+
+LARGE_FILE=$LOCAL_TEMP/largefile
+RANDOM_DEVICE=/dev/urandom # faster than /dev/random under Linux
+echo Making large random file $LARGE_FILE - $FILESIZE kilobytes
+dd if=/dev/urandom of=$LARGE_FILE bs=1024 count=$FILESIZE || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+REMOTE_LARGE_FILE=$REMOTE_TEMP/largefile
+echo Uploading $LARGE_FILE to $REMOTE_LARGE_FILE
+#./test-sync-create $REMOTE_LARGE_FILE < $LARGE_FILE || RESULT=1
+./test-xfer $LARGE_FILE $REMOTE_LARGE_FILE || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+echo Checking remote large file info
+(./test-info $REMOTE_LARGE_FILE > $LOCAL_TEMP/info.out) || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+echo Checking remote large file type
+FILETYPE=`grep '^Type.*: Regular' $LOCAL_TEMP/info.out` 
+test -n "$FILETYPE" || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+
+LARGE_FILE_COPY=$LARGE_FILE-copy
+echo Downloading $REMOTE_LARGE_FILE to $LARGE_FILE_COPY
+#./test-sync $REMOTE_LARGE_FILE > $LARGE_FILE_COPY || RESULT=1
+./test-xfer $REMOTE_LARGE_FILE $LARGE_FILE_COPY || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+echo Comparing $LARGE_FILE_COPY to $LARGE_FILE
+diff $LARGE_FILE_COPY $LARGE_FILE || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+echo Removing $REMOTE_LARGE_FILE
+./test-unlink $REMOTE_LARGE_FILE || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+
+
+echo Removing remote temp directory $REMOTE_TEMP
+./test-dirop remove $REMOTE_TEMP || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+echo Removing local temp directory $LOCAL_TEMP
+rm -rf $LOCAL_TEMP || RESULT=1
+if [ $RESULT -eq 1 ]; then echo failed; exit; fi
+
+echo
+echo
+echo All tests succeeded for $REMOTE_URI

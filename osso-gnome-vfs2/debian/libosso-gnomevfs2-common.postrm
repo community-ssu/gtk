@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ "$1" = "purge" -a -d /etc/gnome-vfs-2.0 ]; then
+    find /etc/gnome-vfs-2.0 -type d | xargs rmdir -p --ignore-fail-on-non-empty
+fi
+
+#DEBHELPER#
