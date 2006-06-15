@@ -1,11 +1,10 @@
 hildon-fm (1.1-1) unstable; urgency=low
 
-  * UNRELEASED
   * Applied column headers patch (after some hand editing) from Kuisma Salonen
     (N#25258).
   * Added libossomime-dev as dependency to hildon-fm-dev.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 06 Jun 2006 14:42:11 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 15 Jun 2006 12:26:06 +0300
 
 hildon-fm (1.0-2) unstable; urgency=low
 
