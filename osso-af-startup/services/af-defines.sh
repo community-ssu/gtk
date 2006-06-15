@@ -83,6 +83,9 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
     export INTERNAL_MMC_MOUNTPOINT='/media/mmc2'
     export INTERNAL_MMC_SWAP_LOCATION=$INTERNAL_MMC_MOUNTPOINT
     export OSSO_SWAP=$INTERNAL_MMC_MOUNTPOINT
+
+    # enable UPnP/AV support
+    export UPNP_ROOT='upnpav://'
   else
     export OSSO_SWAP=$MMC_MOUNTPOINT
   fi
