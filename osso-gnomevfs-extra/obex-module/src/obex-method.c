@@ -393,6 +393,9 @@ om_get_connection (const GnomeVFSURI *uri, GnomeVFSResult *result)
 		g_mutex_unlock (conn_hash_mutex);
 
 		g_mutex_lock (conn->mutex);
+
+		g_free (dev);
+		
 		if (conn->disconnected) {
 			/* Trying to reset the connection */
 			sleep (1);

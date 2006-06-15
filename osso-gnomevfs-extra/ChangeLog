@@ -1,5 +1,8 @@
 2006-06-15  Richard Hult  <richard@imendio.com>
 
+	* obex-module/src/obex-method.c (om_get_connection): Free the dev
+	string.
+
 	* obex-module/src/om-fl-parser.c: (om_fl_parser_parse): Free the
 	parser on failure.
 

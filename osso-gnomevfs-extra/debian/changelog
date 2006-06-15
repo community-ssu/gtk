@@ -2,7 +2,8 @@ osso-gnomevfs-extra (1.5.0-1) unstable; urgency=low
 
   * UNRELEASED
   * Remove "or later" wording in debian/copyright LGPL text
-  * Fixes NB#32769, file listing parser is leaked on failure
+  * Fixes: NB#32769, file listing parser is leaked on failure
+  * Fixes: NB#32771, obex method leaks
 
  -- Richard Hult <richard@imendio.com>  Fri,  2 Jun 2006 17:12:34 +0200
 
