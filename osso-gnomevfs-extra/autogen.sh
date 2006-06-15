@@ -60,7 +60,7 @@ autoconf
 
 if test x$NOCONFIGURE = x; then
   echo Running $srcdir/configure "$@" ...
-  ./configure "$@" \
+  ./configure "$@" --enable-maintainer-mode \
   && echo Now type \`make\' to compile $PROJECT  || exit 1
 else
   echo Skipping configure process.

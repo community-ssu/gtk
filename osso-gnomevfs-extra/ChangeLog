@@ -1,3 +1,9 @@
+2006-06-15  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump to 1.5.0.
+
+	* autogen.sh: Enable maintainer mode.
+
 2006-05-29  Richard Hult  <richard@imendio.com>
 
 	* configure.in: Bump version.
