@@ -1,5 +1,10 @@
 2006-06-15  Richard Hult  <richard@imendio.com>
 
+	* obex-module/src/om-fl-parser.c: (om_fl_parser_parse): Free the
+	parser on failure.
+
+2006-06-15  Richard Hult  <richard@imendio.com>
+
 	* configure.in: Bump to 1.5.0.
 
 	* autogen.sh: Enable maintainer mode.

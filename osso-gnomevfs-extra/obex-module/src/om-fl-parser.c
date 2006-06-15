@@ -324,7 +324,9 @@ om_fl_parser_parse (const gchar *buf, gint len, GList **elements,
 	}
 
 	if (XML_Parse (parser, buf, len, TRUE) == 0) {
+		XML_ParserFree (parser);
 		fl_parser_free_parser_data (data, TRUE);
+
 		if (*error == NULL) {
 			g_set_error (error,
 				     G_MARKUP_ERROR,
