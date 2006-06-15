@@ -569,6 +569,9 @@ sigs_init(void)
   memset(&sig, 0, sizeof(sig));
   sig.sa_flags = SA_RESTART;
 
+  sig.sa_handler = SIG_IGN;
+  sigaction(SIGPIPE, &sig, NULL);
+
   sig.sa_handler = clean_daemon;
   sigaction(SIGINT, &sig, NULL);
   sigaction(SIGTERM, &sig, NULL);
@@ -589,6 +592,7 @@ sigs_restore(void)
   sig.sa_handler = SIG_DFL;
   sig.sa_flags = SA_RESTART;
 
+  sigaction(SIGPIPE, &sig, NULL);
   sigaction(SIGINT, &sig, NULL);
   sigaction(SIGTERM, &sig, NULL);
   sigaction(SIGCHLD, &sig, NULL);
