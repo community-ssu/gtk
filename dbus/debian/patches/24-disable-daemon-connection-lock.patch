@@ -1,0 +1,67 @@
+diff -ur dbus/bus/main.c dbus.new/bus/main.c
+--- dbus/bus/main.c	2006-05-05 18:59:25.000000000 +0300
++++ dbus.new/bus/main.c	2006-06-15 13:37:33.206333536 +0300
+@@ -206,6 +206,8 @@
+   dbus_bool_t print_pid;
+   int force_fork;
+ 
++  _dbus_set_i_am_daemon (TRUE);
++
+   if (!_dbus_string_init (&config_file))
+     return 1;
+ 
+diff -ur dbus/dbus/dbus-connection.c dbus.new/dbus/dbus-connection.c
+--- dbus/dbus/dbus-connection.c	2006-05-05 18:59:22.000000000 +0300
++++ dbus.new/dbus/dbus-connection.c	2006-06-15 13:35:06.849583144 +0300
+@@ -60,13 +60,13 @@
+ #define TRACE_LOCKS 1
+ 
+ #define CONNECTION_LOCK(connection)   do {                                      \
+-    if (TRACE_LOCKS) { _dbus_verbose ("  LOCK: %s\n", _DBUS_FUNCTION_NAME); }   \
++    if (!_dbus_get_i_am_daemon() && TRACE_LOCKS) { _dbus_verbose ("  LOCK: %s\n", _DBUS_FUNCTION_NAME); }   \
+     _dbus_mutex_lock ((connection)->mutex);                                      \
+     TOOK_LOCK_CHECK (connection);                                               \
+   } while (0)
+ 
+ #define CONNECTION_UNLOCK(connection) do {                                              \
+-    if (TRACE_LOCKS) { _dbus_verbose ("  UNLOCK: %s\n", _DBUS_FUNCTION_NAME);  }        \
++    if (!_dbus_get_i_am_daemon() && TRACE_LOCKS) { _dbus_verbose ("  UNLOCK: %s\n", _DBUS_FUNCTION_NAME);  }        \
+     RELEASING_LOCK_CHECK (connection);                                                  \
+     _dbus_mutex_unlock ((connection)->mutex);                                            \
+   } while (0)
+diff -ur dbus/dbus/dbus-internals.c dbus.new/dbus/dbus-internals.c
+--- dbus/dbus/dbus-internals.c	2006-05-05 18:59:23.000000000 +0300
++++ dbus.new/dbus/dbus-internals.c	2006-06-15 13:36:26.433484552 +0300
+@@ -32,6 +32,19 @@
+ #include <fcntl.h>
+ #include <stdlib.h>
+ 
++static dbus_bool_t dbus_i_am_daemon = FALSE;
++
++dbus_bool_t _dbus_get_i_am_daemon (void)
++{
++          return dbus_i_am_daemon;
++}
++
++void _dbus_set_i_am_daemon (dbus_bool_t value)
++{
++          dbus_i_am_daemon = value;
++}
++
++
+ /**
+  * @defgroup DBusInternals D-BUS internal implementation details
+  * @brief Documentation useful when developing or debugging D-BUS itself.
+diff -ur dbus/dbus/dbus-internals.h dbus.new/dbus/dbus-internals.h
+--- dbus/dbus/dbus-internals.h	2006-05-05 18:59:23.000000000 +0300
++++ dbus.new/dbus/dbus-internals.h	2006-06-15 13:35:42.360184712 +0300
+@@ -287,6 +287,9 @@
+ 
+ dbus_bool_t   _dbus_address_append_escaped (DBusString       *escaped,
+                                             const DBusString *unescaped);
++dbus_bool_t _dbus_get_i_am_daemon (void);
++void _dbus_set_i_am_daemon (dbus_bool_t value);
++
+ 
+ DBUS_END_DECLS
+ 
