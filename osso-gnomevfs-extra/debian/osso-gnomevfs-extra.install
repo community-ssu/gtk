@@ -1,0 +1,4 @@
+etc/gnome-vfs-2.0/modules/*.conf
+usr/lib/libobex-vfs-utils.so
+usr/lib/gnome-vfs-2.0/modules/*.so
+usr/lib/gtk-2.0/2.4.0/filesystems/*.so

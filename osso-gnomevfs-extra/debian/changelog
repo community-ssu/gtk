@@ -1,0 +1,434 @@
+osso-gnomevfs-extra (1.4.18-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Remove "or later" wording in debian/copyright LGPL text (see NB #30286)
+
+ -- Richard Hult <richard@imendio.com>  Fri,  2 Jun 2006 17:12:34 +0200
+
+osso-gnomevfs-extra (1.4.17-1) unstable; urgency=low
+
+  * NB #30286 specify version 2 for LGPL
+  * NB #29798 don't block other operations while keeping an obex handle
+  * Remove commented out unsed code that is in the way when debugging
+
+ -- Richard Hult <richard@imendio.com>  Wed, 24 May 2006 17:12:34 +0200
+
+osso-gnomevfs-extra (1.4.16-1) unstable; urgency=low
+
+  * NB #29412 only emit a final event if the handle was written to
+  * NB #29097 only check for locking if changing the name
+
+ -- Richard Hult <richard@imendio.com>  Fri, 19 May 2006 18:49:27 +0200
+
+osso-gnomevfs-extra (1.4.15-1) unstable; urgency=low
+
+  * Add default actions for osso-uri
+  * Run autogen.sh even when configure exists to pick up changes
+  * NB #24731 problem with updating folder contents on gateway filesystem
+
+ -- Richard Hult <richard@imendio.com>  Fri, 5 May 2006 16:32:03 +0200
+
+osso-gnomevfs-extra (1.4.14-1) unstable; urgency=low
+
+  * NB #24731 emit changed event when writing
+
+ -- Richard Hult <richard@imendio.com>  Fri, 28 Apr 2006 15:53:07 +0200
+
+osso-gnomevfs-extra (1.4.13-1) unstable; urgency=low
+
+  * Clear the "open file" cache when opening or closing a file
+
+ -- Richard Hult <richard@imendio.com>  Tue, 25 Apr 2006 08:35:54 +0200
+
+osso-gnomevfs-extra (1.4.12-1) unstable; urgency=low
+
+  * Improve debugging output in the obex module
+  * Lower the cache lifetime for the file module locking to 2 seconds
+
+ -- Richard Hult <richard@imendio.com>  Fri, 21 Apr 2006 18:37:48 +0200
+
+osso-gnomevfs-extra (1.4.11-1) unstable; urgency=low
+
+  * NB #24594, only disconnect when busy the first time we try to use a device
+  * Disable the OBEX_PROGRESS code path for the progress cancelling as well
+  * Enable debugging output in the obex dbus code for now
+
+ -- Richard Hult <richard@imendio.com>  Tue, 18 Apr 2006 13:52:54 +0200
+
+osso-gnomevfs-extra (1.4.10-1) unstable; urgency=low
+
+  * NB #24731, fix notification when creating files on gateway
+  * NB #25872, add build dep on 2.8 for glib
+  * Change the way URI handlers are activated (don't use string array)
+
+ -- Richard Hult <richard@imendio.com>  Fri, 7 Apr 2006 17:06:37 +0200
+
+osso-gnomevfs-extra (1.4.9-2) unstable; urgency=low
+
+  * Fix an off-by-one error in the previous fix to make it really work
+
+ -- Richard Hult <richard@imendio.com>  Tue, 4 Apr 2006 20:38:11 +0200
+
+osso-gnomevfs-extra (1.4.9-1) unstable; urgency=low
+
+  * Don't blindly convert all "-" characters to "/" characters with desktop files
+
+ -- Martyn Russell <martyn@imendio.com>  Tue, 4 Apr 2006 17:15:42 +0000
+
+osso-gnomevfs-extra (1.4.8-1) unstable; urgency=low
+
+  * Updated the documentation for osso_uri_set_default_action().
+  * Get information in ALL defaults.list files in $XDG_DATA_HOME and $XDG_DATA_DIRS.
+  * Set defaults.list in $XDG_DATA_HOME only.
+  * Change name of openobex package and bump requirement on gnomevfs
+  * Fix assertion in the event throttle code
+
+ -- Richard Hult <richard@imendio.com>  Tue, 28 Mar 2006 11:14:58 +0200
+
+osso-gnomevfs-extra (1.4.7-1) unstable; urgency=low
+
+  * NOKVEX-93/NB #21041: DBus signal throttler skipping last emission.  
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 24 Mar 2006 16:34:42 +0100
+
+osso-gnomevfs-extra (1.4.6-1) unstable; urgency=low
+
+  * NOKVEX-106: Wrong function referred to in docs blurb
+  * NOKVEX-107: Use the first available action is no default is setup
+  * NOKVEX-104/NB #23996: valgrind error
+
+ -- Richard Hult <richard@imendio.com>  Fri, 17 Mar 2006 17:34:42 +0100
+
+osso-gnomevfs-extra (1.4.5-2) unstable; urgency=low
+
+  * NOKVEX-103/NB # 24044 Install all header files
+
+ -- Richard Hult <richard@imendio.com>  Fri, 10 Mar 2006 13:44:15 +0100
+
+osso-gnomevfs-extra (1.4.5-1) unstable; urgency=low
+
+  * NOKVEX-101 URI Action support
+
+ -- Richard Hult <richard@imendio.com>  Fri, 03 Mar 2006 18:02:50 +0100
+
+osso-gnomevfs-extra (1.4.4-1) unstable; urgency=low
+
+  * NOKVEX-96 Add mapping from obex busy to gnome-vfs error  
+  * Make use of improvements in dbus API between 0.50 and 0.60
+  * NOKVEX-99/NB #23166: is_local returns FALSE for local files
+  * NOKVEX-100: Disable doxygen to work with new toolchain
+
+ -- Richard Hult <richard@imendio.com>  Fri, 24 Feb 2006 15:58:36 +0100
+
+osso-gnomevfs-extra (1.4.3-1) unstable; urgency=low
+
+  * Update build dependency for gnome-vfs.
+  * Update build dependency for openobex to 1.1.0
+  * Added support for using the streaming API in gw-obex.
+  * NOKVEX-83: Detection of open files on deletion & moving
+
+ -- Mikael Hallendal <micke@imendio.com>  Wed, 15 Feb 2006 20:51:34 +0100
+
+osso-gnomevfs-extra (1.4.2-1) unstable; urgency=low
+
+  * NOKVEX-85, add API to osso_mime_open_*
+  * Add mime/dbus mapping document
+
+ -- Richard Hult <richard@imendio.com>  Wed, 15 Feb 2006 14:31:56 +0100
+
+osso-gnomevfs-extra (1.4.1-1) unstable; urgency=low
+
+  * Updated package for new dbus 0.60
+
+ -- Richard Hult <richard@imendio.com>  Tue, 03 Jan 2006 14:00:03 +0100
+
+osso-gnomevfs-extra (1.4.0-1) unstable; urgency=low
+
+  * Initial package with support for dbus 0.50+.
+
+ -- Richard Hult <richard@imendio.com>  Mon,  2 Nov 2005 10:30:16 +0100
+
+osso-gnomevfs-extra (1.2.27-1) unstable; urgency=low
+
+  * NOKVEX-68/NB #18926 memory access error in gnome-vfs dbusfile library
+
+ -- Richard Hult <richard@imendio.com>  Mon, 12 Sep 2005 11:14:25 +0200
+
+osso-gnomevfs-extra (1.2.26-1) unstable; urgency=low
+
+  * NOKVEX-64/NB #9113 Aborting multiple files when transfering from phone...
+
+ -- Richard Hult <richard@imendio.com>  Mon, 12 Sep 2005 11:14:25 +0200
+
+osso-gnomevfs-extra (1.2.25-1) unstable; urgency=low
+
+  * NOKVEX-62/NB #18545 The following folder-listing XML is failing...
+  * NOKVEX-61/NB #7679, 12736 File selection widget hangs when bluetooth...
+  * NOKVEX-63 	Once an transfer has been aborted all consequtive transfers..
+  * NOKVEX-50/NB #16205 Valgrind reports several bugs and minor memory... 
+
+ -- Richard Hult <richard@imendio.com>  Mon,  5 Sep 2005 11:26:06 +0200
+
+osso-gnomevfs-extra (1.2.24-1) unstable; urgency=low
+
+  * NOKVEX-55/NB #16117 BT connection not always disconnected
+  * NOKVEX-56 	osso-gwobex -> libgwobex0, osso-gwobex-dev -> libgwobex-dev
+
+ -- Richard Hult <richard@imendio.com>  Mon, 22 Aug 2005 11:55:15 +0200
+
+osso-gnomevfs-extra (1.2.23-1) unstable; urgency=low
+
+  * Make libossomime.pc file depend on D-BUS and GnomeVFS
+  * NOKVEX-51 Usr /var/tmp instead of /tmp
+  * NOKVEX-45 Return error on non-existent gateway when checking /.
+
+ -- Mikael Hallendal <micke@imendio.com>  Mon, 15 Aug 2005 12:27:43 +0200
+
+osso-gnomevfs-extra (1.2.22-2) unstable; urgency=low
+
+  * Midrelease package scratchbox.
+
+ -- Mikael Hallendal <micke@imendio.com>  Wed, 10 Aug 2005 15:52:43 +0200
+
+osso-gnomevfs-extra (1.2.22-1) unstable; urgency=low
+
+  * NOVEX-45 Fix special casing of getting root folder on phone.
+
+ -- Mikael Hallendal <micke@imendio.com>  Tue,  9 Aug 2005 16:18:56 +0200
+
+osso-gnomevfs-extra (1.2.21-1) unstable; urgency=low
+
+  * Improvements to test-xfer program.
+  * NOKVEX-48 Thread fixes to OBEX progress code.
+  * NOKVEX-42 Increased the timeout for idle OBEX connections.
+
+ -- Mikael Hallendal <micke@imendio.com>  Mon,  8 Aug 2005 10:52:08 +0200
+
+osso-gnomevfs-extra (1.2.20-1) unstable; urgency=low
+
+  * NOKVEX-47 send message to task navigator when opening with mime-open.
+  * NOKVEX-49 URIs containing % doesn't work with get_file_info_from_uri.
+
+ -- Mikael Hallendal <micke@imendio.com>  Mon, 18 Jul 2005 13:01:34 +0200
+
+osso-gnomevfs-extra (1.2.19-1) unstable; urgency=low
+
+  * NOKVEX-44 osso_mime_open () fails for RTSP URIs
+  * NOKVEX-40 GnomeVFSProgressInfo structure having wrong file_index
+
+ -- Richard Hult <richard@imendio.com>  Fri,  8 Jul 2005 18:49:10 +0200
+
+osso-gnomevfs-extra (1.2.18-1) unstable; urgency=low
+
+  * The VFS daemon has been moved to the gnome-vfs package.
+  * Improve fix for NOKVFS-36/NB #12696 Calling hildon_file_chooser_dialog_new
+
+ -- Richard Hult <richard@imendio.com>  Sun, 12 Jun 2005 18:55:31 +0200
+
+osso-gnomevfs-extra (1.2.17-1) unstable; urgency=low
+
+  * NOKVEX-35           Monitors and escaped paths
+  * NOKVEX-39/NB #10312 GtkFileSystemGnomeVFS, no errors with no access rights
+
+ -- Richard Hult <richard@imendio.com>  Mon, 24 May 2005 10:33:04 +0200
+
+osso-gnomevfs-extra (1.2.16-1) unstable; urgency=low
+
+  * NOKVEX-37/NB #9113 GnomeVFSCancelation does not work with OBEX module
+  * NOKVEX-38          Make progress from OBEX module available
+  * Require GnomeVFS 2.8.4.6.
+
+ -- Richard Hult <richard@imendio.com>  Mon, 17 May 2005 16:47:12 +0200
+
+osso-gnomevfs-extra (1.2.15-1) unstable; urgency=low
+
+  * NOKVEX-34 Make osso_mime_open take already escaped URIs
+  * NOKVEX-32/NB #10104 obex module connects to both "FTP" and "NFTP"
+
+ -- Richard Hult <richard@imendio.com>  Mon, 02 May 2005 09:12:36 +0200
+
+osso-gnomevfs-extra (1.2.14-1) unstable; urgency=low
+
+  * NOKVEX-31 Only escape the path part of the uri in osso_mime_open
+  * NOKVEX-29 The documentation for libossomime needs updating
+  * NOKVEX-30 Write a separate document for the MIME/category mapping
+	
+ -- Richard Hult <richard@imendio.com>  Mon, 18 Apr 2005 09:20:21 +0200
+
+osso-gnomevfs-extra (1.2.13-1) unstable; urgency=low
+
+  * NOKVEX-27/NB #9140 osso_mime_open_file_list not opening all file types
+  * NOKVEX-28/NB #9134 gnome_vfs_async_xfer not working
+	
+ -- Richard Hult <richard@imendio.com>  Thu, 04 Apr 2005 15:03:23 +0200
+
+osso-gnomevfs-extra (1.2.12-1) unstable; urgency=low
+
+  * Require osso-gwobex 0.26 and osso-gwconnect 0.64.
+  * NOKVEX-23/NB #8543, GtkFileSystemGnomeVFS never returns
+    GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS
+  * NOKVEX-24, serious problems with dbus-vfs-daemon in 1.2.11
+	
+ -- Richard Hult <richard@imendio.com>  Thu, 04 Apr 2005 15:03:23 +0200
+
+osso-gnomevfs-extra (1.2.11-1) unstable; urgency=low
+
+  * Require osso-gwobex 0.25 and osso-gwconnect 0.62.
+  * Bump requirement on GnomeVFS to 2.8.4.4.
+  * Install READMEs etc in the Debian package. 
+  * NOKVEX-21, change the URI format to obex://[aa:bb:...]/
+  * NOKVEX-20, update to latest gwconnect API.
+  * NOKVEX-22, validate the format of passed in URI:s.
+	
+ -- Richard Hult <richard@imendio.com>  Thu, 24 Mar 2005 09:35:12 +0100
+
+osso-gnomevfs-extra (1.2.10-1) unstable; urgency=low
+
+  * NOKVEX-11, support for GW_OBEX_ERROR_INVALID_DATA
+  * NOKVEX-18/NB: 2610, file monitors are not received from gateway
+  * NOKVEX-1/NB: 2155, 2156, case insensitivity problems
+  * NOKVEX-14, OBEX VFS module should be able to handle non-UTF-8 XML
+  * NOKVEX-19, OBEX, empty directory is treated as error
+  * NOKVEX-17, use our own dbus connection in dbus-method.c 
+	
+ -- Richard Hult <richard@imendio.com>  Mon, 21 Mar 2005 11:57:32 +0100
+
+osso-gnomevfs-extra (1.2.9-1) unstable; urgency=low
+
+  * Mark more mime types with categories
+  * Fixed NOKVEX-13, Make libossomime0 depend on osso-update-category-database.
+  * Fixed NOKVEX-12, license headers in osso-* files.
+
+ -- Mikael Hallendal <micke@imendio.com>  Thu, 10 Mar 2005 16:30:13 +0100
+
+osso-gnomevfs-extra (1.2.8-1) unstable; urgency=low
+
+  * Fixed NOKVEX-5/NB: 6188, osso_mime_open improvements  
+  * Fixed NOKVEX-9/NB: 6251, segmentation fault with paths longer than 256 ch. 
+  
+ -- Mikael Hallendal <micke@imendio.com>  Sun, 27 Feb 2005 19:49:21 +0100
+
+osso-gnomevfs-extra (1.2.7-1) unstable; urgency=low
+
+  * Add mime/category mapping framework.
+  * libossomime: Use full service name if there is a '.' in it.
+  * Add small convenience API for icon names.
+	
+ -- Richard Hult <richard@imendio.com>  Mon, 14 Feb 2005 12:53:30 +0100
+	
+osso-gnomevfs-extra (1.2.6-1) unstable; urgency=low
+
+  * Fixed NOKVEX-1/NB: 2155, 2156, getting file info on case insensitive file.
+  * Fixed NOKVEX-2/NB: 3718, transfers timed out on big files.
+
+ -- Mikael Hallendal <micke@imendio.com>  Tue, 01 Feb 2005 00:21:24 +0100
+ 
+osso-gnomevfs-extra (1.2.5-1) unstable; urgency=low
+
+  * Don't crash on unknown mime type in libossomime, bug #121/NB: 4193.
+  * Don't use private gnome-vfs id for getting a dbus service name,
+    use the X-Osso-Service field in the desktop file.
+  * Fix leaks and accessing unallocated memory in libossomime.
+
+ -- Richard Hult <richard@imendio.com>  Tue, 20 Jan 2005 15:14:03 +0100
+
+osso-gnomevfs-extra (1.2.4-1) unstable; urgency=low
+
+  * Fix leaks in case-insensitivity code, #74/NB: 1698.
+  * Added build dep on libgtk2.0-dev, #127/NB: 4479.
+  * Fix #75/NB: 2090, case insensitive do_move.
+  * Add version info to libossomime, fixes #146/NB: 4714.
+
+ -- Richard Hult <richard@imendio.com>  Tue, 18 Jan 2005 14:53:40 +0100
+	
+osso-gnomevfs-extra (1.2.3-1) unstable; urgency=low
+
+  * Fixed a couple of memory leaks in the case insensitivity patch.
+  * Added Replaces/Conflicts and Provides to control file.
+  * Change the package name from libossomime to libossomime0.
+
+osso-gnomevfs-extra (1.2.2-1) unstable; urgency=low
+
+  * Change libname in the pc file for libossomime to match the actual
+    library name.
+
+ -- Richard Hult <richard@imendio.com>  Mon, 01 Dec 2004 01:13:42 +0100
+
+osso-gnomevfs-extra (1.2.1-1) unstable; urgency=low
+
+  * Always return FALSE in check_same_fs() for the obex module.
+
+ -- Richard Hult <richard@imendio.com>  Mon, 01 Dec 2004 01:13:42 +0100
+
+osso-gnomevfs-extra (1.2.0-2) unstable; urgency=low
+
+  * Split out libosso packages.
+  * Bump req on gwobex/gwconnect.
+  * Don't create dirs for the dev package in the non-dev package.
+
+ -- Richard Hult <richard@imendio.com>  Mon, 29 Nov 2004 16:47:23 +0100
+
+osso-gnomevfs-extra (1.2.0-1) unstable; urgency=low
+
+  * Bumped version
+
+ -- Mikael Hallendal <micke@imendio.com>  Fri, 26 Nov 2004 10:40:11 +0100
+
+osso-gnomevfs-extra (1.0.7-1) unstable; urgency=low
+
+  * Add file-chooser backend from libgnomeui.
+  * Added libossomime.
+  * Updated to work with latest gw-connect and gw-obex.
+  * Added case library to file module and fixed a bunch of bugs in it.
+  * Added a -dev package
+
+ -- Mikael Hallendal <micke@imendio.com>  Thu, 25 Nov 2004 18:49:12 +0100
+
+osso-gnomevfs-extra (1.0.6-1) unstable; urgency=low
+
+  * Update dep on osso-gnomevfs 2.8.3-2.
+  * Add copyright file.
+  * Add osso-gwconnect-dev 0.42 as build dependency.
+
+ -- Richard Hult <richard@imendio.com>  Mon, 15 Nov 2004 18:03:28 +0100
+
+osso-gnomevfs-extra (1.0.5-1) unstable; urgency=low
+
+  * Fix bug with file monitoring.
+
+ -- Richard Hult <richard@imendio.com>  Mon, 20 Oct 2004 21:27:34 +0200
+
+osso-gnomevfs-extra (1.0.4-1) unstable; urgency=low
+
+  * Update for osso-gnomevfs 2.8.0.
+  * Depend on osso gnomevfs packages instead of stock gnomevfs.
+  * Update requirements on gwobex.
+
+ -- Richard Hult <richard@imendio.com>  Mon, 20 Sep 2004 19:43:14 +0200
+
+osso-gnomevfs-extra (1.0.3-1) unstable; urgency=low
+
+  * Add support for volume monitoring to the dvs vfs daemon.
+  * Make the system bus address environment variable a requirement again.
+  * Update the fileinfo list test to follow the protocol.
+
+ -- Richard Hult <richard@imendio.com>  Fri, 27 Aug 2004 16:25:21 +0200
+
+osso-gnomevfs-extra (1.0.2-1) unstable; urgency=low
+
+  * Unlink directories checks if it is empty
+  * Check if parent directory exists when creating a file rather than when closing a created file.
+
+ -- Mikael Hallendal <micke@imendio.com>  Tue, 17 Aug 2004 15:20:00 +0200
+
+osso-gnomevfs-extra (1.0.1-1) unstable; urgency=low
+
+  * Don't require system bus environment variable to bet set. Fix parser test.
+
+ -- Richard Hult <richard@imendio.com>  Fri, 30 Jul 2004 14:27:00 +0200
+
+osso-gnomevfs-extra (1.0-1) unstable; urgency=low
+
+  * Initital release
+
+ -- Mikael Hallendal <micke@imendio.com>  Fri, 11 Jun 2004 16:58:00 +0200

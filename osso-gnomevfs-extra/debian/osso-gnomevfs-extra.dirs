@@ -1,0 +1,4 @@
+usr/lib
+usr/lib/gnome-vfs-2.0/modules
+etc/gnome-vfs-2.0/modules
+usr/lib/gtk-2.0/2.4.0/filesystems

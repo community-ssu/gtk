@@ -1,0 +1,376 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_PREREQ(2.52)
+ 
+AC_INIT(osso-gnomevfs-extra, 1.4.18)
+AC_CONFIG_SRCDIR(obex-module/src/obex-method.c)
+AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+
+dnl Versioning for libossomime
+
+dnl Increase when changing the API (adding, removing, changing)
+LIBOSSOMIME_CURRENT=1
+
+dnl Increase when changing implementation of current API,
+dnl reset to 0 when changing CURRENT. This is the revision of current
+dnl API version.
+LIBOSSOMIME_REVISION=3
+
+dnl Change this only if CURRENT has been changed. Increase if API
+dnl change is ABI compatible, otherwise reset to 0
+LIBOSSOMIME_AGE=1
+
+LIBOSSOMIME_VERSION_INFO="$LIBOSSOMIME_CURRENT:$LIBOSSOMIME_REVISION:$LIBOSSOMIME_AGE"
+AC_SUBST(LIBOSSOMIME_VERSION_INFO)
+
+dnl Globally define_GNU_SOURCE and therefore enable the GNU extensions
+AC_DEFINE(_GNU_SOURCE, 1, [Enable GNU Extensions])
+
+AM_MAINTAINER_MODE
+AM_CONFIG_HEADER(config.h)
+
+AM_DISABLE_STATIC
+AM_PROG_LIBTOOL
+
+AC_ISC_POSIX
+AC_PROG_CC
+AM_PROG_CC_STDC
+AC_HEADER_STDC
+
+AC_HEADER_SYS_WAIT
+AC_HEADER_TIME
+AC_CHECK_HEADERS([stdlib.h string.h])
+
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_FUNC_STRERROR_R
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS([memset mkdir strdup strncasecmp opendir closedir readdir_r])
+
+AC_CHECK_FUNCS(open64 lseek64 statfs statvfs posix_fadvise)
+AC_CHECK_HEADERS(sys/mount.h sys/vfs.h sys/statvfs.h sys/vmount.h)
+AC_CHECK_FUNCS(dirname, [AC_CHECK_HEADERS(libgen.h)] ,[
+  AC_SEARCH_LIBS(dirname, [gen])])
+
+# Needed to build the obex and file modules outside of gnome-vfs.
+AC_CACHE_CHECK([for off64_t],
+	ac_cv_have_off64_t,
+	AC_TRY_COMPILE([
+#		define _LARGEFILE64_SOURCE
+#		include <sys/types.h>],
+		[off64_t testoffset],
+	ac_cv_have_off64_t=yes,
+	ac_cv_have_off64_t=no))
+if test x"$ac_cv_have_off64_t" = "xyes" ; then
+	AC_DEFINE(HAVE_OFF64_T, 1, [Whether off64_t type is available])
+fi
+
+AC_CHECK_HEADERS(sys/param.h sys/resource.h sys/statfs.h sys/param.h)
+
+dnl
+dnl file system type member in statfs struct
+dnl
+AC_CHECK_MEMBERS([struct statfs.f_type], ,[
+  AC_CHECK_MEMBERS([struct statfs.f_fstyp], , , [#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+#ifdef HAVE_SYS_VFS_H
+#include <sys/vfs.h>
+#endif
+#ifdef HAVE_SYS_MOUNT_H
+#include <sys/mount.h>
+#endif
+#ifdef HAVE_SYS_STATFS_H
+#include <sys/statfs.h>
+#endif])], [#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+#ifdef HAVE_SYS_VFS_H
+#include <sys/vfs.h>
+#endif
+#ifdef HAVE_SYS_MOUNT_H
+#include <sys/mount.h>
+#endif
+#ifdef HAVE_SYS_STATFS_H
+#include <sys/statfs.h>
+#endif])
+ 
+dnl
+dnl if statfs() takes 2 arguments or 4 (Solaris)
+dnl
+if test "$ac_cv_func_statfs" = yes ; then
+  AC_MSG_CHECKING([number of arguments to statfs()])
+  AC_TRY_COMPILE([#include <unistd.h>
+  #ifdef HAVE_SYS_PARAM_H
+  #include <sys/param.h>
+  #endif
+  #ifdef HAVE_SYS_VFS_H
+  #include <sys/vfs.h>
+  #endif
+  #ifdef HAVE_SYS_MOUNT_H
+  #include <sys/mount.h>
+  #endif
+  #ifdef HAVE_SYS_STATFS_H
+  #include <sys/statfs.h>
+  #endif], [struct statfs st;
+  statfs(NULL, &st);],[
+    AC_MSG_RESULT([2])
+    AC_DEFINE(STATFS_ARGS, 2, [Number of arguments to statfs()])],[
+    AC_TRY_COMPILE([#include <unistd.h>
+  #ifdef HAVE_SYS_PARAM_H
+  #include <sys/param.h>
+  #endif
+  #ifdef HAVE_SYS_VFS_H
+  #include <sys/vfs.h>
+  #endif
+  #ifdef HAVE_SYS_MOUNT_H
+  #include <sys/mount.h>
+  #endif
+  #ifdef HAVE_SYS_STATFS_H
+  #include <sys/statfs.h>
+  #endif], [struct statfs st;
+  statfs(NULL, &st, sizeof (st), 0);],[
+      AC_MSG_RESULT([4])
+      AC_DEFINE(STATFS_ARGS, 4, [Number of arguments to statfs()])],[
+      AC_MSG_RESULT(unknown)
+      AC_MSG_ERROR([unable to determine number of arguments to statfs()])])])
+fi dnl test "$ac_cv_func_statfs" = yes
+
+AC_MSG_CHECKING(how to get filesystem type)
+fstype=no
+# The order of these tests is important.
+AC_TRY_CPP([#include <sys/statvfs.h>
+#include <sys/fstyp.h>], AC_DEFINE(FSTYPE_STATVFS, [],
+							[Define to use SVR4 statvfs to get filesystem type]) fstype=SVR4)
+if test $fstype = no; then
+AC_TRY_CPP([#include <sys/statfs.h>
+#include <sys/fstyp.h>], AC_DEFINE(FSTYPE_USG_STATFS, [],
+							[Define to use SVR3.2 statfs to get filesystem type]) fstype=SVR3)
+fi
+if test $fstype = no; then
+AC_TRY_CPP([#include <sys/statfs.h>
+#include <sys/vmount.h>], AC_DEFINE(FSTYPE_AIX_STATFS, [],
+							 [Define to use AIX3 statfs to get filesystem type]) fstype=AIX)
+fi
+if test $fstype = no; then  
+AC_TRY_CPP([#include <mntent.h>], AC_DEFINE(FSTYPE_MNTENT, [],
+						    [Define to use 4.3BSD getmntent to get filesystem typ]) fstype=4.3BSD)
+fi
+if test $fstype = no; then  
+AC_EGREP_HEADER(f_type;, sys/mount.h, AC_DEFINE(FSTYPE_STATFS, [],
+							   [Define to use 4.4BSD and OSF1 statfs to get filesystem typ]) fstype=4.4BSD/OSF1)
+fi
+if test $fstype = no; then  
+AC_TRY_CPP([#include <sys/mount.h>
+#include <sys/fs_types.h>], AC_DEFINE(FSTYPE_GETMNT, [],
+							   [Define to use Ultrix getmnt to get filesystem typ]) fstype=Ultrix)
+fi
+AC_MSG_RESULT($fstype)
+
+
+dnl Defined in acinclude.m4
+IMENDIO_COMPILE_WARNINGS
+IMENDIO_CHECK_TIMEZONE
+
+dnl This refers to osso-gnome-vfs.
+GNOME_VFS_REQUIRED=2.12.0.1
+
+DBUS_REQUIRED=0.60
+GLIB_REQUIRED=2.6.0
+LIBXML_REQUIRED=2.4
+GTK_REQUIRED=2.6.0
+
+GWOBEX_REQUIRED=0.45.1
+GWCONNECT_REQUIRED=0.93.2
+
+dnl =======================================
+dnl File Chooser Backend
+dnl =======================================
+PKG_CHECK_MODULES(FILE_SYSTEM, [
+        gtk+-2.0 >= $GTK_REQUIRED
+        gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
+])
+
+GTK_BINARY_VERSION=`$PKG_CONFIG --variable=gtk_binary_version gtk+-2.0`
+AC_SUBST(FILE_SYSTEM_CFLAGS)
+AC_SUBST(FILE_SYSTEM_LIBS)
+AC_SUBST(GTK_BINARY_VERSION)
+GTK_VERSION=`$PKG_CONFIG --modversion gtk+-2.0`
+AC_SUBST(GTK_VERSION)
+
+dnl =======================================
+dnl File Module
+dnl =======================================
+PKG_CHECK_MODULES(FILE_MODULE, [
+        glib-2.0 >= $GLIB_REQUIRED
+        dbus-glib-1 >= $DBUS_REQUIRED
+        gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
+        gnome-vfs-module-2.0 >= $GNOME_VFS_REQUIRED
+])
+
+AC_SUBST(FILE_MODULE_CFLAGS)
+AC_SUBST(FILE_MODULE_LIBS)
+
+dnl =======================================
+dnl libossomime
+dnl =======================================
+PKG_CHECK_MODULES(LIBOSSOMIME, [
+        glib-2.0 >= $GLIB_REQUIRED
+        gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
+        gnome-vfs-module-2.0 >= $GNOME_VFS_REQUIRED
+        dbus-glib-1 >= $DBUS_REQUIRED
+])
+
+#        outo >= 0.1.1
+
+AC_SUBST(LIBOSSOMIME_CFLAGS)
+AC_SUBST(LIBOSSOMIME_LIBS)
+
+dnl =======================================
+dnl update-category-database 
+dnl =======================================
+PKG_CHECK_MODULES(UPDATE_CATEGORY, [
+        glib-2.0 >= $GLIB_REQUIRED
+        libxml-2.0 >= $LIBXML_REQUIRED
+])
+AC_SUBST(UPDATE_CATEGORY_CFLAGS)
+AC_SUBST(UPDATE_CATEGORY_LIBS)
+
+AC_ARG_ENABLE(update-categorydb,
+   AC_HELP_STRING([--disable-update-categoryb],
+                   [disable the update-category-database after install [default=no]]),,
+    enable_update_categorydb=yes)
+AM_CONDITIONAL(ENABLE_UPDATE_CATEGORYDB, test x$enable_update_categorydb = xyes)
+
+
+# Docs
+AC_ARG_WITH(doc-dir, [AC_HELP_STRING([--with-doc-dir=PATH],
+                     [Path to installed docs (default=$datadir/doc)])])
+if test "x$with_doc_dir" = "x" ; then
+  eval "docdir=${datadir}/doc"
+else
+  docdir=$with_doc_dir
+fi
+
+eval "HTML_DIR=${docdir}/html"
+eval "API_DIR=${docdir}/libossomime/API"
+eval "localedir=${datadir}/locale"
+eval "outomoduledir=${prefix}/lib/outo"
+whoami=`whoami`
+
+AC_SUBST(docdir)
+AC_SUBST(localedir)
+AC_SUBST(outomoduledir)
+AC_SUBST(HTML_DIR)
+AC_SUBST(API_DIR)
+AC_SUBST(whoami)
+
+dnl AC_PATH_PROG(DOXYGEN, doxygen, [echo])
+dnl AC_SUBST(DOXYGEN)
+
+dnl =======================================
+dnl OBEX Module 
+dnl =======================================
+
+PKG_CHECK_MODULES(OBEX_MODULE, [
+	glib-2.0 >= $GLIB_REQUIRED
+	dbus-glib-1 >= $DBUS_REQUIRED
+	gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
+	gnome-vfs-module-2.0 >= $GNOME_VFS_REQUIRED
+	libgwobex >= $GWOBEX_REQUIRED
+	gwconnect >= $GWCONNECT_REQUIRED
+])
+
+AC_SUBST(OBEX_MODULE_CFLAGS)
+AC_SUBST(OBEX_MODULE_LIBS)
+
+
+dnl =======================================
+dnl OBEX Utils
+dnl =======================================
+PKG_CHECK_MODULES(OBEX_UTILS, [
+        glib-2.0 >= $GLIB_REQUIRED
+        dbus-glib-1 >= $DBUS_REQUIRED
+        gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
+])
+
+PKG_CHECK_MODULES(OBEX_UTILS_TEST, [
+        glib-2.0 >= $GLIB_REQUIRED
+        dbus-glib-1 >= $DBUS_REQUIRED
+        gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
+        gtk+-2.0 >= $GTK_REQUIRED
+])
+
+dnl =======================================
+dnl VFS Daemon 
+dnl =======================================
+PKG_CHECK_MODULES(VFS_DAEMON, [
+        glib-2.0 >= $GLIB_REQUIRED
+        dbus-glib-1 >= $DBUS_REQUIRED
+        gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
+        gnome-vfs-module-2.0 >= $GNOME_VFS_REQUIRED
+	gconf-2.0
+])
+
+AC_SUBST(VFS_DAEMON_CFLAGS)
+AC_SUBST(VFS_DAEMON_LIBS)
+
+DBUS_SERVICE_DIR=$libdir/dbus-1.0/services
+AC_SUBST(DBUS_SERVICE_DIR)
+
+
+dnl =======================================
+dnl Nautilus workaround in the OBEX module
+dnl =======================================
+AC_ARG_ENABLE(nautilus-workaround, [  --enable-nautilus-workaround   enables workaround in the OBEX module for Nautilus],,enable_nautilus_around=no)
+
+if test "x$enable_nautilus_workaround" = "xyes"; then
+	AC_DEFINE(ENABLE_NAUTILUS_WORKAROUND, 1, [whether to add Nautilus workaround])
+fi
+
+dnl Make sure we have expat
+AC_CHECK_LIB(expat, XML_ParserCreate_MM,
+             [ AC_CHECK_HEADERS(expat.h, have_expat=true, have_expat=false) ],
+             have_expat=false)
+
+if ! $have_expat ; then
+	AC_MSG_ERROR([Expat is required to build the OBEX module])
+fi
+
+XML_CFLAGS=""
+XML_LIBS="-lexpat"
+
+AC_SUBST(XML_CFLAGS)
+AC_SUBST(XML_LIBS)
+
+dnl This will cause the automake generated makefiles to pass the
+dnl correct flags to aclocal.
+ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
+AC_SUBST(ACLOCAL_AMFLAGS)
+
+AC_OUTPUT([
+	Makefile 
+	debian/Makefile
+	file-chooser/Makefile
+	file-chooser/src/Makefile
+	file-chooser/tests/Makefile
+	file-module/Makefile
+	file-module/src/Makefile
+	file-module/tests/Makefile
+        libossomime/Makefile
+        libossomime/libossomime.pc
+        libossomime/data/Makefile
+        libossomime/src/Makefile
+	obex-module/Makefile
+	obex-module/docs/Makefile
+	obex-module/src/Makefile
+	obex-module/tests/Makefile
+	obex-module/tests/files/Makefile
+	obex-utils/Makefile
+	obex-utils/obex-vfs-utils/Makefile
+	obex-utils/tests/Makefile
+	obex-utils/tests/invalid-files/Makefile
+	obex-utils/obex-vfs-utils.pc
+])
+
+#	libossomime/Doxyfile

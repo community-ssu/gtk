@@ -1,0 +1,53 @@
+Source: osso-gnomevfs-extra 
+Section: libs
+Priority: optional
+Maintainer: Richard Hult <richard@imendio.com>
+Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev (>= 2.8), libopenobex1-dev, libgwobex-dev (>= 0.47), libosso-gnomevfs2-dev (>= 2.12.0.6), libdbus-glib-1-dev, osso-gwconnect-dev (>=0.93.2), libgtk2.0-dev, libexpat1-dev
+Standards-Version: 3.6.1.0
+
+Package: osso-gnomevfs-extra
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Replaces: osso-gnomevfs-backend
+Conflicts: osso-gnomevfs-backend
+Provides: osso-gnomevfs-backend
+Description: OSSO GnomeVFS Extra
+ This package contains extra parts to GnomeVFS developed for Nokia. 
+  * A GnomeVFS daemon using D-BUS instead of ORBit
+  * An OBEX GnomeVFS module
+  * Modified filemodule that uses D-BUS to emit monitor events
+  * Small library to retrieve the capabilities object from a remote devices.
+  * The GnomeVFS file backend for the GTK+ file chooser.
+  * Libossomime, small library for starting applications through D-BUS based 
+    on mime type.
+
+Package: osso-gnomevfs-extra-dev
+Section: devel
+Architecture: any
+Depends: osso-gnomevfs-extra (= ${Source-Version}), libosso-gnomevfs2-dev (>= 2.8.4.7), libglib2.0-dev
+Description: OSSO GnomeVFS Extra Development files
+ Development files for the osso-gnome-vfs-extra package.
+
+Package: libossomime0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, osso-update-category-database (= ${Source-Version})
+Description: Library for activating an application to handle a certain mime type
+ This package contains a library for activating an application to handle
+ a certain mime type.
+
+Package: libossomime-dev
+Section: devel
+Architecture: any
+Depends: libossomime0 (= ${Source-Version}), libosso-gnomevfs2-dev (>= 2.8.4.7), libdbus-glib-1-dev
+Description: libossomime development files
+ Development files for the libossomime package.
+
+Package: osso-update-category-database
+Section: misc
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Tool for managing the mime/category database
+ This package contains a tool that manages the mime/category mapping
+ database.

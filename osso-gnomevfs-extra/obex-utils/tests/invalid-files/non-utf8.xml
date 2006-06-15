@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<!DOCTYPE Capability SYSTEM "obex-capability.dtd">
+<Capability version="1.0">
+  <General>
+    <Manufacturer>Nokia</Manufacturer>
+    <Model>RH-12</Model>
+    <SN>352953002828261</SN>
+    <SW Version="V 03.15     " Date="20040317T120000"/>
+    <HW Version="0600"/>
+    <Language>sv</Language>
+
+    <Memory>
+      <MemType>Åהצ</MemType>
+      <!-- DEV memory -->
+      <Free>5482496</Free>
+      <Used>2107392</Used>
+      <CaseSenN/>
+    </Memory>
+
+  </General>
+
+  <Inbox>
+    <Object>
+      <Type>üןההה/aaa</Type>
+      <Name-Ext>vcf</Name-Ext>
+    </Object>
+    <Object>
+      <Type>text/x-vCalendar</Type>
+      <Name-Ext>vcs</Name-Ext>
+    </Object>
+  </Inbox>
+
+</Capability>

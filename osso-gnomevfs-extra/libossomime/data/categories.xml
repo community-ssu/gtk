@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mime-info [
+  <!ELEMENT mime-info (mime-type)+>
+  <!ATTLIST mime-info xmlns CDATA #FIXED "http://www.freedesktop.org/standards/shared-mime-info">
+
+  <!ELEMENT mime-type (comment|glob|magic|root-XML|alias|sub-class-of)*>
+  <!ATTLIST mime-type type CDATA #REQUIRED>
+
+  <!ELEMENT comment (#PCDATA)>
+  <!ATTLIST comment xml:lang CDATA #IMPLIED>
+
+  <!ELEMENT glob EMPTY>
+  <!ATTLIST glob pattern CDATA #REQUIRED>
+
+  <!ELEMENT magic (match)+>
+  <!ATTLIST magic priority CDATA #IMPLIED>
+
+  <!ELEMENT match (match)*>
+  <!ATTLIST match offset CDATA #REQUIRED>
+  <!ATTLIST match type (string|big16|big32|little16|little32|host16|host32|byte) #REQUIRED>
+  <!ATTLIST match value CDATA #REQUIRED>
+  <!ATTLIST match mask CDATA #IMPLIED>
+
+  <!ELEMENT root-XML EMPTY>
+  <!ATTLIST root-XML
+  	namespaceURI CDATA #REQUIRED
+	localName CDATA #REQUIRED>
+
+  <!ELEMENT alias EMPTY>
+  <!ATTLIST alias
+  	type CDATA #REQUIRED>
+
+  <!ELEMENT sub-class-of EMPTY>
+  <!ATTLIST sub-class-of
+  	type CDATA #REQUIRED>
+]>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info" 
+           xmlns:osso="http://nokia.com/osso/mime-categories">
+
+  <mime-type type="application/pdf">
+    <osso:category name="documents"/>
+  </mime-type>
+  <mime-type type="text/plain">
+    <osso:category name="documents"/>
+  </mime-type>
+  <mime-type type="text/html">
+    <osso:category name="documents"/>
+  </mime-type>
+  <mime-type type="text/css">
+    <osso:category name="documents"/>
+  </mime-type>
+  <mime-type type="text/richtext">
+    <osso:category name="documents"/>
+  </mime-type>
+  <mime-type type="text/rdf">
+    <osso:category name="documents"/>
+  </mime-type>
+  <mime-type type="application/vnd.ms-excel">
+    <osso:category name="documents"/>
+  </mime-type>
+  <mime-type type="application/vnd.ms-word">
+    <osso:category name="documents"/>
+  </mime-type>
+  <mime-type type="application/vnd.ms-powerpoint">
+    <osso:category name="documents"/>
+  </mime-type>
+
+  <mime-type type="image/jpeg">
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/png">
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/gif">
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/tiff">
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/bmp">
+    <osso:category name="images"/>
+  </mime-type>
+
+  <mime-type type="audio/mpeg">
+    <osso:category name="audio"/>
+  </mime-type>
+  <mime-type type="audio/x-mpegurl">
+    <osso:category name="audio"/>
+  </mime-type>
+  <mime-type type="audio/x-mp3">
+    <osso:category name="audio"/>
+  </mime-type>
+  <mime-type type="application/ogg">
+    <osso:category name="audio"/>
+  </mime-type>
+  <mime-type type="audio/x-wav">
+    <osso:category name="audio"/>
+  </mime-type>
+  <mime-type type="audio/x-pn-realaudio">
+    <osso:category name="audio"/>
+  </mime-type>
+  <mime-type type="audio/vnd.rn-realaudio">
+    <osso:category name="audio"/>
+  </mime-type>
+  <mime-type type="audio/midi">
+    <osso:category name="audio"/>
+  </mime-type>
+
+  <mime-type type="video/mpeg">
+    <osso:category name="video"/>
+  </mime-type>
+  <mime-type type="video/quicktime">
+    <osso:category name="video"/>
+  </mime-type>
+  <mime-type type="video/x-msvideo">
+    <osso:category name="video"/>
+  </mime-type>
+  <mime-type type="video/x-ms-wmv">
+    <osso:category name="video"/>
+  </mime-type>
+  <mime-type type="application/vnd.rn-realmedia">
+    <osso:category name="video"/>
+  </mime-type>
+  <mime-type type="video/x-avi">
+    <osso:category name="video"/>
+  </mime-type>
+
+</mime-info>

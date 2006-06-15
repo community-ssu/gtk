@@ -1,0 +1,6 @@
+#! /bin/sh
+set -e
+
+if [ "$1" = "configure" ]; then
+        /usr/bin/osso-update-category-database /usr/share/mime
+fi

@@ -1,0 +1,42 @@
+Mapping between GnomeVFS API and gwobex calls
+---------------------------------------------
+
+This is a brief description on which OBEX calls a GnomeVFS call will
+result in, to make it easier to figure out which type of errors should
+be expected. It is also mentioned when local files are accessed, and
+therefore local file errors can be expected.
+
+
+All methods in the GnomeVFS OBEX method potentially call gw_obex_setup,
+if the connection is not setup yet.
+
+gnome_vfs_read, gnome_vfs_write, gnome_vfs_seek, gnome_vfs_tell: These
+only work on local temporary files, so they will return any error codes
+that the local file module can do.
+
+gnome_vfs_directory_close, gnome_vfs_directory_read: These don't perform
+any OBEX or local file actions.
+
+All the following methods also potentially call gw_obex_chdir, unless
+the current directory is already the correct one.
+
+gnome_vfs_open: Calls gw_obex_get_fd. It can also return errors
+from opening or creating a local temporary file.
+
+gnome_vfs_create: Creates a local file.
+
+gnome_vfs_close: Calls gw_obex_put_file.
+
+gnome_vfs_directory_open: Calls gw_obex_read_dir.
+
+gnome_vfs_get_file_info: Calls gw_obex_read_dir.
+
+gnome_vfs_make_directory: Calls gw_obex_mkdir.
+
+gnome_vfs_remove_directory: Calls gw_obex_read_dir and gw_obex_delete
+
+gnome_vfs_unlink: Calls gw_obex_delete
+
+gnome_vfs_move: Calls gw_obex_move
+
+gnome_vfs_set_file_info: Calls gw_obex_move

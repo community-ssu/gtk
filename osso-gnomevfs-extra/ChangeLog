@@ -1,0 +1,1852 @@
+2006-05-29  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+2006-05-24  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.17.
+
+	* obex-module/src/obex-method.c: (do_close), (do_read): Close the
+	obex xfer if we get EOF, makes it possible to keep a handle
+	without blocking other phone operations, NB #29798.
+
+2006-05-24  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/obex-method.c: Remove commented out, unused (the
+	old obex progress signalling that was used before we add streaming
+	support), code that gets in the way when debugging this code.
+
+2006-05-23  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+	* All the source files copyrighted by Nokia: specify that the
+	license is specifically version 2 of LGPL.
+
+2006-05-19  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.16.
+
+2006-05-17  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/dbus-file-method.c (do_close, do_write)
+	(do_truncate_handle): Only emit a final forced event if the handle
+	has been actually written to, and only do it non-locally (since
+	local events are never throttled). Fixes NB #29412.
+
+	* configure.in: Bump version.
+
+	* file-module/src/dbus-file-method.c (do_set_file_info): Only
+	check if the file is open when changing the name, since that would
+	result in moving the file, NB #29097.
+
+2006-05-05  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.15.
+
+	* obex-module/src/obex-method.c (event_to_string)
+	(om_notify_monitor): Add debugging output for events.
+	(do_create, do_close): Don't emit CREATED in create, do it in
+	close, if the file was opened in write mode. The reason for this
+	is that the phone doesn't think the file exists until it's been
+	completely written, fixes NB #24731.
+	(do_write): Don't emit CHANGED, since the file doesn't exist yet
+	at this stage, according to the phone.
+
+2006-05-04  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+	* autogen.sh: Add NOCONFIGURE check so we can run just autogen.sh.
+
+	* libossomime/data/uri-action-defaults.list: Add default actions.
+
+2006-04-28  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.14.
+
+2006-04-27  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+	* obex-module/src/obex-method.c (do_write): Also emit changed
+	event when writing (was missed when porting to streaming OBEX).
+
+	* Add release marker for 1.4.13 that was missed.
+
+2006-04-25  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/dfm-file-open.c: Include config.h. Make the
+	cache global so that we can use it from other functions, add
+	dfo_clear_cache(), and rename dfm_ to dfo_.
+
+	* file-module/src/dbus-file-method.c (do_create, do_open,
+	do_close): Clear the cache when closing a file.
+
+2006-04-21  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.12.
+
+2006-04-21  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+	* obex-module/src/om-dbus.c (_om_dbus_init_cancel_monitor)
+	(get_gwcond_connection): Change g_warning to g_printerr.
+
+	* obex-module/src/obex-method.c: Remove obsolete define for a temp
+	dir that's not used now with streaming OBEX.
+	Update the comment on which methods are not supported.
+
+	* obex-module/src/om-dbus.c: Add some more debugging messages.
+
+	* obex-module/src/obex-method.c: Change debug output to use
+	stderr, add a special macro for really verbose messages so that we
+	can enable debug output for now to help debugging.
+
+2006-04-18  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.11
+
+2006-04-18  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+	* obex-module/src/obex-method.c: (cancel_monitor_callback),
+	(vfs_module_init):
+	* obex-module/src/om-dbus.c: (notify_message_filter), 
+	(_om_dbus_init_cancel_monitor),
+	(om_dbus_init_cancel_monitor):
+	* obex-module/src/om-dbus.h: Put the progress cancel handling in
+	#ifdef OBEX_PROGRESS guards, since it's not used now and we don't
+	need to setup the extra dbus connection.
+
+	* obex-module/src/om-dbus.c: (send_disconnect), (get_dev),
+	(om_dbus_get_dev), (om_dbus_disconnect_dev): Keep a hashtable with
+	used devices and only try to disconnect if it hasn't been used
+	before. The original code (that alwasys disconnects if the device
+	is busy) was added to workaround the fact that connections
+	sometimes were kept open. As far as I can see, the only reason
+	this should happen is when the daemon is restarted before it has
+	managed to disconnect. This solution will disconnect when doing
+	the first connection for a device after the daemon has been
+	started.
+
+2006-04-11  Richard Hult  <richard@imendio.com>
+
+	* libossomime/ut/Makefile.am:
+	* libossomime/ut/test-ossomime.c: Change two more copyright
+	notices.
+
+2006-04-11  Richard Hult  <richard@imendio.com>
+
+	* All source files: Change formatting of the copyright notices.
+
+2006-04-07  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.10.
+
+2006-04-07  Martyn Russell  <martyn@imendio.com>
+
+	* file-module/tests/test-copy-permissions.c: Update the test to
+	accurately reproduce the NOKVEX-83 issue - it seems this isn't a
+	GnomeVFS issue.
+	
+	* libossomime/src/osso-uri.c: Don't error when trying to open a
+	URI with NO actions for the scheme.
+
+2006-04-07  Martyn Russell  <martyn@imendio.com>
+
+	* file-module/tests/Makefile.am:
+	* file-module/tests/test-copy-permissions.c: Added to test bug
+	NOKVFS-83, it looks like it isn't GnomeVFS that is causing the
+	problems. 
+	
+	* libossomime/src/osso-uri.c: Append strings when opening
+	URIs over DBus instead of an array of strings. 
+	
+	* libossomime/src/test-service.c: Updated to explain what and how
+	this program is used and to be inline with the osso-uri.c changes.
+	
+	* libossomime/src/test-uri.c: Reworked the code here to use
+	GOption so features can be tested more easily. Also improved to be
+	able to take multiple URIs.
+
+2006-04-06  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/obex-method.c (do_create): Add back the missing
+	created event that disappeared when changing into OBEX streaming.
+
+2006-04-04  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/test-service.c: Update the test a bit.
+
+	* libossomime/src/osso-uri.c (uri_get_desktop_file_that_exists):
+	Fix off-by-one error to make sure that we really iterate over all
+	the possible variations of dashes and slashes.
+
+2006-04-04  Martyn Russell  <martyn@imendio.com>
+
+	* Release 1.4.9.
+	
+2006-04-04  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-uri.c: Don't blindly convert all "-"
+	characters to "/" characters with desktop files, this was failing
+	to find files with names like "hildon-some-file.desktop".
+
+2006-03-30  Martyn Russell  <martyn@imendio.com>
+
+	* Release 1.4.8.
+
+2006-03-29  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-uri.c: Don't try to find the first defaults
+	file when setting a default action, always use the $home location.
+	
+	* libossomime/src/osso-uri.h: Updated the documentation for
+	set_default_action() to point out that only the $home/.local file
+	wil be set not the system default action.
+
+2006-03-28  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-uri.c: Make sure we get the defaults.list
+	and schemeinfo.cache files from $home and from $prefix.
+
+2006-03-28  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/dfm-dbus.c (dfm_dbus_emit_notify): Check that
+	the throttle hash exists.
+
+2006-03-27  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/Makefile.am:
+	* libossomime/src/test-mime-default-app.c: Added to get default
+	mime defails for a given mime type.
+
+2006-03-24  Martyn Russell  <martyn@imendio.com>
+
+	* Release 1.4.7.
+
+2006-03-22  Martyn Russell  <martyn@imendio.com>
+
+	* file-module/src/dbus-file-method.c:
+	* file-module/src/dfm-dbus.[ch]: Added a "force" property when
+	signaling the CHANGED event. This is set to TRUE in do_close to
+	make sure that the last signal is not ignored for a file and it is
+	emitted. This fixes NOKVEX-93.
+
+2006-03-20  Martyn Russell  <martyn@imendio.com>
+
+	* file-module/tests/Makefile.am:
+	* file-module/tests/test-lock.c: Added a test case to make sure
+	the locked/open FD code we wrote actually works.
+
+2006-03-17  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.6.
+
+	* configure.in: Bump version.
+
+	* libossomime/src/osso-uri.h: Correct the docs, blurb was
+	referring to the wrong function name, NOKVEX-106.
+
+2006-03-17  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-uri.[ch]: Added OSSO_URI_NO_ACTIONS error
+	enumeration, fixed a memory leak and made sure that if the default
+	action is NULL we fall back to the first action available. Fixes
+	NOKVEX-107.
+
+	* libossomime/src/test-uri.c: Updated to be able to test with no
+	default action.
+
+2006-03-13  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Add back check for readdir_r, got mistakenly
+	removed when other checks were added. Fixes NOKVEX-104.
+
+2006-03-03  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.5.
+
+	* configure.in: Bump version.
+
+2006-03-03  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/test-uri.c: Make sure we set error = NULL before
+	using it, fixes a crasher.
+
+2006-03-03  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/osso-uri.c: (uri_launch_add_uris),
+	(osso_uri_get_actions), (osso_uri_get_scheme_from_uri),
+	(osso_uri_get_default_action), (osso_uri_set_default_action),
+	(osso_uri_open):
+	* libossomime/src/osso-uri.h: Use g_set_error.
+
+2006-03-03  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/Makefile.am: Fixed to make sure include
+	osso-uri.h in HEADERS otherwise apps error when including
+	osso-mime.h. 
+
+2006-03-02  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-uri.[ch]: Fixed various issues from using
+	the proper method in the desktop file when using dbus to not using
+	i18n and making sure you can have a NULL default scheme.
+
+	* libossomime/src/test-service.c: Print the method that was used
+	in the dbus message.
+
+2006-03-02  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/Makefile.am: Added test-service.c which acts
+	like a dbus service and waits for test-uri.c to connect to it with
+	an array of URIs then prints them out.
+
+2006-02-28  Martyn Russell  <martyn@imendio.com>
+
+	* Merged the openuri branch: Now that we have an API that works
+	and you can now open applications using a URI, we have merged this
+	back on to trunk.
+
+2006-02-28  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-uri.[ch]: Implement the osso_uri_open() API
+	so it will now call DBus and launch the application associated
+	with a scheme (e.g http, callto, etc).
+	
+	* libossomime/src/test-uri.c: Updated with some fixes.
+
+2006-02-27  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-uri.[ch]: 
+	* libossomime/src/test-uri.c: Make sure the get/set defaults file
+	works and update the test harness accordingly.
+
+2006-02-24  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-uri.[ch]: Updated the API so you can now
+	call a function to convert URIs to schemes and added an
+	enumeration for invalid schemes. 
+	
+	* libossomime/src/test-uri.c: Updated to work with the new API.
+
+2006-02-24  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-uri.[ch]: Added debugging, created the
+	get_scheme_from_uri() function since we might need that public
+	later on and it will be commonly called.  Added
+	OSSO_URI_OPEN_FAILED and _get_default_action_for_scheme().
+
+2006-02-23  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Release 1.4.4.
+
+2006-02-23  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-uri.[ch]: 
+	* libossomime/src/test-uri.c: More work and API/Documentation
+	improvements to get a fully working solution to the proposal.
+
+2006-02-22  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/Makefile.am:
+	* libossomime/src/osso-mime.h: 
+	* libossomime/src/osso-mime-uri.c:
+	* libossomime/src/osso-uri.[ch]: 
+	* libossomime/src/test-uri.c: Updated mime-uri to just uri name
+	space. Also added documentation and updated the API slightly.
+
+2006-02-22  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Add checks for how to get the fstype, fixes
+	NOKVEX-99.
+
+2006-02-22  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/dfm-dbus.c:	
+	* obex-module/src/om-dbus.c: (get_gwcond_connection), (get_dev),
+	(om_dbus_disconnect_dev), (_om_dbus_init_cancel_monitor): Update
+	copyright, clarify comment and fix indentation.
+
+2006-02-20  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/Makefile.am:
+	* libossomime/src/osso-mime-uri.c:
+	* libossomime/src/osso-mime.h:
+	* libossomime/src/test-mime-uri.c:
+	- Added new API and test case for URI to action proposal.
+
+2006-02-17  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+2006-02-16  Richard Hult  <richard@imendio.com>
+
+	* obex-module/docs/used-errors.txt (GW_OBEX_ERROR_BUSY): Add the
+	new error mapping here.
+
+	* obex-module/src/om-dbus.c: (get_dev): Use the defines for dbus
+	errors and also check for unknown service to catch more errors
+	when btcond isn't running.
+
+	* obex-module/src/om-utils.c: (om_utils_obex_error_to_vfs_result):
+	Map GW_OBEX_ERROR_BUSY to GNOME_VFS_ERROR_IN_PROGRESS.
+
+2006-02-16  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/obex-method.c (om_connection_free): Check if the
+	context has been created before unreffing.
+
+2006-02-16  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/dfm-dbus.c: (get_monitor_connection):
+	* obex-module/src/om-dbus.c: (get_gwcond_connection),
+	(_om_dbus_init_cancel_monitor):
+	* obex-utils/obex-vfs-utils/ovu-cap-client.c:
+	(cap_dbus_get_connection):
+	* obex-utils/obex-vfs-utils/ovu-cap-server.c: Use the new API
+	dbus_bus_get_private() introduced in dbus 0.60 instead of using
+	dbus_connection_open which no longer returns a private connection.
+
+2006-02-15  Mikael Hallendal  <micke@imendio.com>
+
+	* Release 1.4.3.
+
+	* configure.in:
+	* debian/changelog:
+	- Bumped to 1.4.3
+	* obex-module/src/obex-method.c: (do_open), (do_close), (do_read):
+	- Cleaned out some debug comments/outputs.
+	* obex-utils/obex-vfs-utils/ovu-xfer.c:
+	- Undef the progress work-around, ovu_async_xfer now just calls
+	  gnome_vfs_async_xfer.
+
+2006-02-15  Mikael Hallendal  <micke@imendio.com>
+	
+	* Merged the streaming branch:
+	- This changelog entry contains combined changelog entries from that
+	  branch.
+
+	* obex-module/src/obex-method.c:
+	(om_connection_free), (do_close), (do_read):
+	- Put debug outputs in macro.
+	- Bumped the requirements of osso-gwobex to 0.45.1.
+
+	* configure.in:
+	* debian/changelog:
+	* debian/control:
+	- Updated dependencies.
+
+	* obex-module/src/obex-method.c: 
+	(om_file_handle_free), (do_close), (do_read), (do_write):
+	- Updated to work with gw-obex 0.44.
+	- Open/Create/Read/Write/Close seems to work now but require more
+	  testing.
+
+	* obex-module/src/obex-method.c: 
+	- do_read, do_write, do_close now uses the new API.
+	- There seems to be some race gw-obex or openobex making it hang
+	  on gw_obex_xfer_close at the moment.
+	- Removed obsoleted functions (do_seek, do_tell).
+	- Undefined the old obex progress work around, not tested at this
+	  point since it requires the hang issue to be solved first.
+
+	* configure.in: Bumped requirement of GwObex to 0.41
+	* obex-module/src/obex-method.c: (om_put_file), (do_open):
+	- Updated to work with GwObex 0.41.
+
+2006-02-15  Martyn Russell  <martyn@imendio.com>
+
+	* file-module/src/Makefile.am:
+	* file-module/src/dbus-file-method.c: 
+	* file-module/src/dfm-file-open.[ch]:
+	- Added a check in /proc/*/fd/* for open files before trying to
+	unlink, move or set file info.  We no return
+	GNOME_VFS_ERROR_LOCKED so there is indication that the file is
+	busy.
+	- Fixes NOKVEX-83.
+
+2006-02-15  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.2.
+
+2006-02-15  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/osso-mime-open.c: (mime_launch): Free the
+	interface string, and add better error handling to make it easier
+	to track what happens.
+
+2006-01-31  Richard Hult  <richard@imendio.com>
+
+	* libossomime/Makefile.am:
+	* libossomime/README.eggdesktopentries:
+	* libossomime/mime-dbus-mapping.txt: Remove obsolete document, add
+	the new one to EXTRA_DIST.
+
+2006-01-31  Richard Hult  <richard@imendio.com>
+
+	* libossomime/mime-category-mapping.txt: Fix typo.
+	* libossomime/mime-dbus-mapping.txt: Remove some details internal
+	to the code and remove the update-mime-database part since that is
+	covered elsewhere.
+
+2006-01-30  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/mime-dbus-mapping.txt: 
+	- Added to explain how the osso_mime_open_() API works.
+
+2006-01-27  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-mime-open.c:
+	* libossomime/src/osso-mime.h:
+	- Added osso_mime_open_file_with_mime_type(), fixes NOKVEX-85.
+	- Removed osso_mime_open().
+	- Fixed crash that occurs when using static strings through DBus,
+	so now we allocate strings with glib (in mime_launch).
+	- Removed old unused code (extract_short_path_name) and cleaned up
+	in a few places.
+	
+	* libossomime/src/test-open.c:
+	- Updated test case for API changes.
+
+2006-01-03  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.1.
+
+	* configure.in: Bump version and require latest gnome-vfs.
+
+	* libossomime/src/osso-mime-application.c 
+	(osso_mime_application_get_mime_types): Free the empty strings
+	that are not used.
+
+2005-12-22  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump requirement on dbus.
+
+2005-12-08  Richard Hult  <richard@imendio.com>
+
+	* Makefile.am:
+	* configure.in:
+	* obex-module/src/obex-method.c: (om_progress_cb):
+	* obex-module/src/om-dbus.c: (send_disconnect): Enable the obex
+	module again now that we have osso-gwconnect ported.
+
+2005-12-01  Richard Hult  <richard@imendio.com>
+
+	Merge from stable:
+
+	* file-module/src/dfm-dbus.c (dfm_dbus_emit_notify)
+	(throttle_check_uri, throttle_remove_oldest, find_oldest_func):
+	Improve the event throttling by caching the 20 latest URIs and
+	their timestamps.
+
+2005-11-24  Richard Hult  <richard@imendio.com>
+
+	Merge from stable: fix NOKVEX-52, monitors in the obex root.
+
+2005-11-10  Richard Hult  <richard@imendio.com>
+
+	Merge from stable:
+	
+	* file-module/src/dfm-dbus.c (dfm_dbus_emit_notify): Throttle
+	events sent out, improves the situation when clients are running
+	without a main loop, so that events aren't queued up.
+
+2005-11-10  Richard Hult  <richard@imendio.com>
+
+	Merge from stable: NOKVEX-77:
+	
+	* obex-module/src/om-dbus.c (send_disconnect): Break out so we can
+	use it from om_dbus_get_dev() as well.
+	(om_dbus_disconnect_dev): Update here.
+	(om_dbus_get_dev): Disconnect if the connection is busy and try
+	again.
+	(get_dev): Check especially for a busy connection. Add commented
+	out extra parameters for the gwcond dbus method that are needed
+	for some reason on the desktop, helps debugging.
+
+	* obex-module/src/obex-method.c (do_open): Don't try to create the
+	file if we were disconnected or timed out, return an error
+	immediately.
+
+2005-11-07  Richard Hult  <richard@imendio.com>
+
+	* Merge fallback icon patch from stable branch.
+
+2005-11-03  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/osso-mime-open.c
+	(desktop_file_get_service_name): 
+	* libossomime/src/osso-mime-application.c
+	(desktop_file_get_mime_types): 
+	- Make use of g_key_file_load_from_data_dirs () instead of
+	g_key_file_load_from_file ().
+	- Fixed memory leak.
+
+2005-11-03  Richard Hult  <richard@imendio.com>
+
+	* Release 1.4.0, first test release for dbus 0.50+.
+
+2005-11-03  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/Makefile.am: Use AM_CPPFLAGS for the cflags.
+
+2005-11-03  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/src/eggdesktopentries.[ch]:
+	* libossomime/src/eggdirfuncs.[ch]:
+	- Removed in favour of the g_key_file_ API in glib 2.6.
+
+	* libossomime/src/Makefile.am: 
+	* libossomime/src/osso-mime-open.c
+	(desktop_file_get_service_name): 
+	* libossomime/src/osso-mime-application.c
+	(desktop_file_get_mime_types): 
+	- Made use of WARN_CFLAGS when compiling to avoid xml signedness.
+	- Updated to use g_key_file_ API.
+	
+	* libossomime/src/update-category-database.c
+	(process_freedesktop_node): 
+	- Updated to include "acronym" and "expanded-acronym" xml nodes
+	which now appear in the shared-mime-info package.
+
+2005-11-03  Richard Hult  <richard@imendio.com>
+
+	* file-chooser/src/gnome-icon-lookup.c: Use fallbacks from the
+        icon theme on the platform.
+
+2005-11-01  Richard Hult  <richard@imendio.com>
+
+	* acinclude.m4: Don't warn for signed pointers, makes gcc 4 less
+	picky.
+
+2005-10-26  Richard Hult  <richard@imendio.com>
+
+	* obex-utils/obex-vfs-utils/ovu-cap-server.c:
+	(ovu_cap_server_init), (cap_server_message_func): Update for new
+	dbus.
+
+2005-10-26  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/osso-mime-open.c: Update for new dbus.
+
+	* configure.in: Bump dbus requirement to 0.50. Comment out obex
+	module until gw* has been ported.
+
+	* Makefile.am: Comment out the parts that depend on other things
+	being ported.
+	
+	* file-module/src/dbus-file-method.c: (vfs_module_init):
+	* file-module/src/dfm-dbus.c: (notify_message_filter),
+	(emit_notify_idle_cb): Update for new dbus.
+
+2005-10-14  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/osso-mime-categories.c (read_categories): Fix
+	signedness warning.
+
+	* libossomime/src/Makefile.am: Set CFLAGS individually for the
+	targets, and remove warning flags from the update-category since
+	it's copied from upstream and we can't fix the warnings easily
+	here.
+
+2005-10-13  Richard Hult  <richard@imendio.com>
+
+	Merge from stable branch:
+
+	* obex-module/src/om-dbus.c: (connection_free), (get_dev): Cancel
+	the connection if we get a timeout from btcond.
+
+2005-10-06  Richard Hult  <richard@imendio.com>
+
+	Merge from stable branch:
+	
+	* obex-module/src/obex-method.c: (om_set_cancel_context),
+	(om_get_folder_listing), (om_chdir_to_uri), (om_put_file),
+	(do_open), (do_make_directory), (do_unlink), (do_set_file_info),
+	(get_caps_cb): Set disconnected to true when we get a timeout or
+	disconnect result from gw_obex_*, NOKVEX-72.
+
+	* file-chooser/src/gtkfilesystemgnomevfs.c (disconnect_if_connected) 
+	(gtk_file_system_gnome_vfs_finalize): Re-do the fix below for
+	NOKVEX-71 the real way.
+
+2005-10-05  Richard Hult  <richard@imendio.com>
+
+	Merge from stable branch:
+	
+	* file-chooser/src/gtkfilesystemgnomevfs.c
+	(gtk_file_system_gnome_vfs_finalize): Disconnect signals to get
+	the closures freed, working around glib bug. Fixes NOKVEX-71.
+
+	* libossomime/src/update-category-database.c (main): Set umask to
+	022, NOKVEX-69.
+
+	* libossomime/src/osso-mime-open.c: (osso_mime_open),
+	(osso_mime_open_file), (osso_mime_open_file_list): Append to the
+	list instead of prepend, to opening the files in the same order
+	they were passed in. Fixes NOKVEX-70.
+
+2005-10-03  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/dbus-file-method.c: Remove the i18n includes
+	since we don't have any translations.
+
+	* obex-utils/obex-vfs-utils/ovu-cap-parser.c
+	(cap_parser_start_node_cb): Remove C++ comment.
+
+	* file-module/src/Makefile.am (INCLUDES):
+	* obex-module/src/Makefile.am (INCLUDES): Add flags from gnome-vfs
+	modules build.
+
+	* file-module/src/fstype.c: 
+	* file-module/src/dbus-file-method.c: Merge changes from upstream
+	gnome-vfs 2.12.0.
+
+	* configure.in: Define _GNU_SOURCE for posix_fadvise. Add checks
+	for open64, lseek64, statfs, statvfs, mount, vfs, vmount, libgen.
+	- Update version checks.
+
+2005-09-30  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Check for POSIX_FADVISE for the file module.
+
+2005-09-27  Mikael Hallendal  <micke@imendio.com>
+
+	* file-module/src/dbus-file-method.c: (do_monitor_add):
+	* obex-module/src/obex-method.c:
+	- Change do_tell.
+
+2005-09-19  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.27.
+
+2005-09-13  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Check for readdir_r, fixes NOKVEX-68.
+
+2005-09-12  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.26.
+
+2005-09-06  Richard Hult  <richard@imendio.com>
+
+	* Merge in Imendio's version (rev 2561). Remove generated files
+	and add those that were missing from the tarball currently
+	imported.
+
+2005-09-05  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-utils/obex-vfs-utils/ovu-xfer.c: 
+	(update_callback_wrapper), (sync_callback_wrapper):
+	- Use OPENSOURCE and OPENTARGET instead to figure out when a new
+	  file is being transfered.
+	- Fixes (together with patch for gnomevfs) NOKVEX-64.
+	* obex-utils/tests/test-xfer.c: (update_callback), (main):
+	- Updated test case to printout some more information about what's
+	  going on.
+
+2005-09-05  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Release 1.2.25.
+
+2005-09-02  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-module/src/obex-method.c: (om_set_cancel_context):
+	- Applying patch from Johan that fixes NOKVEX-63.
+
+2005-09-02  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-module/src/om-fl-parser.c: (om_fl_parser_parse):
+	* obex-module/tests/leading-whitespace.xml:
+	* obex-module/tests/test-parser.c: (parse_file):
+	- Reverted last fix, the problem was a double NULL at the end of the 
+	  feed.
+
+2005-09-02  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-module/src/om-fl-parser.c: (om_fl_parser_parse):
+	- Add hack for broken OBEX implementations sending invalid XML with
+	  leading whitespaces.
+	- Fixes NOKVEX-62 (NB #18545).
+	* obex-module/tests/leading-whitespace.xml: Added test file.
+	* obex-module/tests/test-parser.c:
+	- Added test for file containing leading white spaces.
+
+2005-09-02  Mikael Hallendal,,,  <micke@imendio.com>
+
+	* file-chooser/src/gtkfilesystemgnomevfs.c: (set_vfs_error):
+	- Added GNOME_VFS_ERROR_SERVICE_NOT_AVAILABLE to map against TIMEOUT
+	  error.
+
+2005-09-02  Mikael Hallendal  <micke@imendio.com>
+
+	* file-chooser/src/gtkfilesystemgnomevfs.c(directory_load_callback): 
+	- Fixed leaking URI string.
+
+2005-09-02  Mikael Hallendal  <micke@imendio.com>
+
+	* file-chooser/src/gtkfilesystemgnomevfs.c:
+	(gtk_file_system_gnome_vfs_get_folder), (set_vfs_error):
+	- Use the new GTK_FILE_SYSTEM_ERROR_TIMEOUT.
+	- Set GNOME_VFS_ERROR_IO to match the timeout error since it's used
+	  for OBEX timeouts in the OBEX module.
+	- Fixes NOKVFS-43.
+
+2005-08-29  Mikael Hallendal  <micke@imendio.com>
+
+	* Reviewed by Richard Hult.
+
+	* libossomime/src/osso-mime-categories.c: (read_categories),
+	(osso_mime_get_mime_types_for_category):
+	- Plugged a few leakes.
+	- Fixes NOKVEX-50.
+
+2005-08-22  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.24.
+	
+	* configure.in: Bump version to 1.2.24.
+
+2005-08-19  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-utils/obex-vfs-utils/ovu-cap-server.c:
+	(ovu_cap_server_init): Don't set thread to be joinable.
+
+2005-08-15  Mikael Hallendal  <micke@imendio.com>
+
+	* Release 1.2.23
+
+2005-08-10  Mikael Hallendal  <micke@imendio.com>
+
+	* file-module/src/dbus-file-method.c: (do_move):
+	- Don't use the result of dfm_fetch_and_free_old_path to check if 
+	  the new file exists or not. Fixes NOKVEX-45.
+
+2005-08-10  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-module/src/obex-method.c: 
+	(create_file), (do_open), (om_notify_monitor): 
+	- Use /var/tmp instead of /tmp, fixes NOKVEX-51.
+
+2005-08-10  Mikael Hallendal  <micke@imendio.com>
+
+	* libossomime/libossomime.pc.in: Depend on d-bus and gnome-vfs.
+
+2005-08-08  Mikael Hallendal  <micke@imendio.com>
+
+	* Release 1.2.22
+
+2005-08-08  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-module/src/obex-method.c:
+	(om_get_folder_listing),
+	(do_get_file_info):
+	- Get root folder listing to check that device is present before 
+	  special casing root get_file_info in OBEX.
+	- Fixes NOKVEX-45.
+
+2005-08-08  Mikael Hallendal  <micke@imendio.com>
+
+	* Release 1.2.21
+
+2005-08-05  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/obex-method.c (om_connection_unref): Raise the
+	timeout for an idle obex connection from 10 to 20 seconds. Fixes
+	NOKVEX-42.
+
+2005-08-03  Richard Hult  <richard@imendio.com>
+
+	Further thread fixes to get OBEX progress working, NOKVEX-48.
+	
+	* obex-module/src/om-dbus.c:
+	(_om_dbus_init_cancel_monitor): Setup the dbus connection
+	properly, in an idle to get rid of yet another thread issue.
+
+	* obex-utils/obex-vfs-utils/ovu-xfer.c:
+	(xfer_wrapper_free), (filter_func),
+	(update_callback_wrapper), (ovu_async_xfer): Make sure we don't
+	try to remove the filter more than once, gets rid of a warning and
+	a crash if dbus is built without checks.
+
+2005-08-03  Richard Hult  <richard@imendio.com>
+
+	* obex-utils/tests/test-xfer.c (signal_handler): Handle Ctrl-C and
+	cancel nicely.
+
+2005-07-18  Mikael Hallendal  <micke@imendio.com>
+
+	* Release 1.2.20.
+
+2005-07-18  Mikael Hallendal  <micke@imendio.com>
+
+	* file-module/src/dbus-file-method.c (do_open):
+	- Escape path to make it a valid URI string before passing into 
+	  gnome_vfs_uri_new.
+	- Fixes NOKVEX-49.
+
+2005-07-12  Mikael Hallendal  <micke@imendio.com>
+
+	* libossomime/src/osso-mime-open.c (_launch):
+	- Send a message to the task navigator that the service is being
+	  launched.
+	- Fixes NOKVEX-47.
+
+2005-07-08  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.19.
+
+2005-07-05  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/osso-mime-open.c: (get_default_service_name),
+	(extract_short_path_name), (get_service_name_for_path),
+	(osso_mime_open), (osso_mime_open_file),
+	(osso_mime_open_file_list), (_launch), (_add_arg):
+	* libossomime/src/test-open.c: (main): Fix NOKVEX-44, disregard
+	the protocol so that things like rtsp://... works. Also plug a
+	leak and refactor so the same code is used to get the service name
+	instead of duplicating it in three places.
+
+2005-06-23  Richard Hult  <richard@imendio.com>
+
+	* obex-utils/obex-vfs-utils/ovu-xfer.c (ovu_async_xfer): Add note
+	about cancelling.
+
+2005-06-13  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.18.
+
+2005-06-12  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version and require GnomeVFS 2.8.4.7.
+	
+	* Makefile.am (SUBDIRS): Remove the daemon dir.
+
+	* obex-module/src/om-dbus.c (om_dbus_init_cancel_monitor): Use our
+	own connection here as well.
+
+2005-06-11  Richard Hult  <richard@imendio.com>
+
+	* autogen.sh: Use automake 1.8 since that's what's available in
+	scratchbox.
+
+2005-06-07  Richard Hult  <richard@imendio.com>
+
+	* obex-utils/obex-vfs-utils/ovu-xfer.c
+	(xfer_get_own_dbus_connection): Add, and use to get a bus
+	connection that we can touch from our async thread.
+	(xfer_wrapper_free): Free the connection here as well.
+
+	* obex-module/src/obex-method.c (om_progress_idle_cb): Emit the
+	progress info signal in an idle callback so we emit it from the
+	main thread.
+
+2005-05-24  Anders Carlsson  <andersca@imendio.com>
+
+	* file-chooser/src/gtkfilesystemgnomevfs.c:
+	(gtk_file_folder_gnome_vfs_list_children):
+	Don't call get_file_info for obex URLs since that's
+	done sync.
+	
+	* file-chooser/tests/testfilechooser.c: (main):
+	Set local-only to false so we can test Bluetooth.
+
+2005-05-24  Anders Carlsson  <andersca@imendio.com>
+
+	* autogen.sh:
+	Use automake 1.9
+	
+	* obex-utils/tests/test-xfer.c: (update_callback),
+	(create_transfer_dialog):
+	Add a file counter to test.
+	
+2005-05-24  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.17.
+
+	* configure.in: Bump version.
+
+2005-05-23  Anders Carlsson  <andersca@imendio.com>
+
+	* file-module/src/dfm-vfs-utils.c:
+	(dfm_vfs_utils_create_unescaped_uri), (string_match),
+	(compare_elements):
+	* file-module/src/dfm-vfs-utils.h:
+	Add a new function for creating escaped uris.
+	
+	* file-module/src/dbus-file-method.c:
+	(dfm_notify_monitor_local_only), (do_monitor_add):
+	Make sure that monitors are added and event handlers fired
+	based on the escaped uri.	
+	
+	* file-module/tests/test-monitor.c: (monitor_dir_cb),
+	(create_file), (rename_file), (add_dir_monitor), (cancel_monitor),
+	(main):
+	Add tests for escaped uris.
+	
+2005-05-23  Anders Carlsson  <andersca@imendio.com>
+
+	* file-chooser/src/gtkfilesystemgnomevfs.c 
+	(gtk_file_folder_gnome_vfs_list_children): 
+	Check access rights on folder before trying to list its children.
+
+2005-05-17  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Require GnomeVFS 2.8.4.6, bump version.
+
+	* obex-utils/obex-vfs-utils/ovu-xfer.c: Use a define for the match rule.
+
+	* configure.in:
+	* obex-utils/tests/Makefile.am: Link the xfer test program with
+	GTK+.
+
+	* obex-utils/tests/test-xfer.c: (update_callback),
+	(create_transfer_dialog), (create_uri_lists), (main): Break some
+	lines.
+
+2005-05-17  Anders Carlsson  <andersca@imendio.com>
+
+	* obex-module/src/obex-method.c: (om_connection_unref),
+	(om_connection_free), (om_connection_reset), (om_get_connection),
+	(om_disconnect_cb), (om_progress_cb), (om_cancel_cb),
+	(om_special_cancel_cb), (om_set_cancel_context),
+	(om_close_file_helper), (om_directory_handle_free),
+	(om_file_handle_new), (om_file_handle_free),
+	(om_get_folder_listing), (om_chdir_to_uri), (om_put_file),
+	(create_file), (do_open), (do_create), (remove_write_file_handle),
+	(do_close), (do_get_file_info), (do_get_file_info_from_handle),
+	(do_is_local), (do_make_directory), (do_move), (do_unlink),
+	(do_remove_directory), (do_check_same_fs), (do_set_file_info),
+	(do_monitor_cancel), (get_caps_cb), (cancel_monitor_callback),
+	(vfs_module_init):
+	* obex-module/src/om-dbus.c: (om_dbus_disconnect_dev):
+	* obex-module/src/om-dbus.h:
+	Add progress notification using D-BUS when transferring files
+	over obex. Also add a Cancel signal that can cancel the transfer
+	using the obex cancellation callback.
+	
+2005-05-17  Anders Carlsson  <andersca@imendio.com>:
+
+        * obex-utils/tests/test-xfer.c:
+        * obex-utils/tests/Makefile.am
+        * obex-utils/obex-vfs-utils/ovu-xfer.h
+        * obex-utils/obex-vfs-utils/Makefile.am
+	* obex-utils/obex-vfs-utils/ovu-xfer.c
+	Add an ovu_async_xfer wrapper that gives feedback
+	when transferring files to and from obex devices.
+
+2005-05-02  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.15.
+
+	* configure.in: Bump version.
+
+2005-04-29  Richard Hult  <richard@imendio.com>
+
+	Fixes NOKVEX-34:
+	
+	* libossomime/src/osso-mime.h: Update the API docs.
+
+	* libossomime/src/osso-mime-open.c (osso_mime_open_file_list): Fix
+	build when debug is enabled.
+
+2005-04-21  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/om-dbus.c (om_dbus_get_dev, get_dev): Only try
+	FTP if NFTP resulted in an invalid service error reply.
+
+	* obex-module/src/obex-method.c (om_connection_reset): Disconnect
+	from the dev via btcond always, not just when we have a gwobex
+	connection.
+	(om_connection_free): Likewise.
+
+	* obex-module/src/om-dbus.c (get_dev): Don't check for
+	BTCOND_ERROR_DISCONNECTED, it's not in the list of errors that the
+	method can return. Add CONNECT_FAILED and CONNECTED to the list of
+	handled errors.
+
+2005-04-18  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.14.
+
+2005-04-15  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version in preparation for release.
+
+	* libossomime/mime-category-mapping.txt: Add more extensive
+	documentation on adding a mapping.
+
+2005-04-14  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/test-open.c (main): Don't try to add cwd to the
+	path since the input should be a URI.
+
+	* libossomime/src/osso-mime-open.c (_add_arg): Don't escape the
+	scheme part of the URI. Fixes NOKVEX-31.
+
+2005-04-13  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/osso-mime.h: Update docs, fixes NOKVEX-29.
+
+2005-04-11  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.13.
+
+	* configure.in: Bump version and so number.
+
+2005-04-08  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/osso-mime-open.c (_add_arg): Escape the paths
+	appended, fixes the relevant part of NOKVEX-27.
+
+	* libossomime/src/osso-mime.h: Update doc strings.
+
+	Fixes NOKVFS-28:
+	
+	* file-module/src/osso_case_in.c: (get_cased_path): Don't append a
+	slash twice for the root.
+
+	* file-module/src/dbus-file-method.c (do_check_same_fs): Check for
+	invalid URI and return with error if not.
+	(remove_file_or_dir): Get the error code with errno, not the stat
+	return value.
+	(do_move): Don't treat file not found as error when removing
+	existing file/dir here, it might not exist.
+	
+2005-04-04  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.12.
+
+	* configure.in: Bump version to 1.2.12.
+	Require newer osso-gwobex/connect.
+
+2005-04-01  Richard Hult  <richard@imendio.com>
+
+	* file-chooser/src/gtkfilesystemgnomevfs.c
+	(gtk_file_system_gnome_vfs_render_icon): Handle the info being
+	NULL, prevents a crash in case of errors.
+
+2005-03-31  Richard Hult  <richard@imendio.com>
+
+	* file-chooser/src/gtkfilesystemgnomevfs.c
+	(gtk_file_system_gnome_vfs_render_icon): Free file info.
+	(gtk_file_system_gnome_vfs_list_volumes): Remove the temporary
+	hack for non-user-visible drives.
+	(set_vfs_error): Map GNOME_VFS_ERROR_FILE_EXISTS to
+	GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS. Fixes NOKVEX-23.
+
+	* README: Update with bus address fallback info.
+
+	* obex-module/src/om-dbus.c (om_dbus_get_dev): Handle the system
+	bus not being available without crashing.
+	(om_dbus_disconnect_dev): Likewise. Fixes NOKVEX-24.
+
+2005-03-30  Mikael Hallendal  <micke@imendio.com>
+
+	* libossomime/libossomime.pc.in:
+	- Removed the requirement of libosso.
+
+2005-03-24  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.11.
+
+	* configure.in: Bump version.
+
+2005-03-23  Richard Hult  <richard@imendio.com>
+
+	* obex-module/docs/used-errors.txt: Remove GW_OBEX_ERROR_NO_FTP,
+	it's been removed from gwobex, and add GW_OBEX_ERROR_NO_SERVICE.
+
+	Fixes NOKVEX-22 and NOKVEX-21:
+	
+	* obex-module/src/obex-method.c: (om_connection_reset),
+	(om_get_connection): Use GnomeVFSResult instead of gwobex error
+	code integer so we don't lose information. Update comments for the
+	new URI format.
+	(do_open), (do_create),
+	(do_close), (do_open_directory), (do_get_file_info),
+	(do_make_directory), (do_unlink), (do_remove_directory),
+	(do_set_file_info): Use GnomeVFSResult instead of error code
+	integer.
+
+	* obex-module/src/om-dbus.c: (check_bda): Validate the BDA.
+	(get_dev): Use GnomeVFSResult instead of an integer with a gwobex
+	error code. Check the BDA and change it to the new format
+	([00:00:...]). Fix the debug code that prints error messages. Add
+	NoReply dbus error message to the known errors.
+	(om_get_dev): Use GnomeVFSResult instead of int.
+
+	* obex-module/src/om-utils.c: (utils_get_path_and_dev_from_uri):
+	Update comment for the new URI format. Check the host for
+	correctness.
+	(om_utils_check_same_fs): Remove obsolete comment.
+
+2005-03-22  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Update requirements on osso-gw*.
+
+	* obex-module/src/Makefile.am: Add localstatedir definition.
+
+	Fix NOKVEX-20:
+	
+	* obex-module/src/obex-method.c: (om_connection_free),
+	(om_connection_reset): Free the connected device string and ask
+	gw_connect to disconnect if we're connected. Keep the name of the
+	connected device so we can disconnect later.
+
+	* obex-module/src/om-dbus.c: (get_gwcond_connection): Fallback to
+	$(localstatedir)/<...> instead of hardcoded path.
+	(get_dev): Use new API in gwconnect.
+	(om_dbus_disconnect_dev): Add, use new API in gwconnect.
+
+	* obex-module/src/om-utils.c: (om_utils_obex_error_to_vfs_result):
+	Add optional debug output to help debugging.
+
+2005-03-21  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.10.
+
+	* configure.in: Bump to 1.2.10.
+
+2005-03-18  Richard Hult  <richard@imendio.com>
+
+	* obex-module/tests/test-utils.c (write_file_contents): Add check
+	for close.
+	(test_make_directory): Add more info to the error case output.
+
+	* obex-module/src/obex-method.c (do_open): Change the test for
+	GNOME_VFS_ERROR_FILE_NOT_FOUND to != GNOME_VFS_OK since apparently
+	OBEX implementations aren't consistant with the error codes here.
+
+	* obex-module/src/om-fl-parser.c (om_fl_parser_parse): Always
+	return FALSE if there's an error and don't access freed memory on
+	success.
+
+2005-03-18  Anders Carlsson  <andersca@imendio.com>
+
+	* obex-module/src/obex-method.c: (om_connection_reset),
+	(om_get_folder_listing):
+	* obex-module/src/om-fl-parser.c: (fl_parser_free_parser_data),
+	(om_fl_parser_parse):
+	* obex-module/src/om-fl-parser.h:
+	* obex-module/tests/test-parser.c: (parse_file):
+	Make om_fl_parser_parse return a boolean depending on if the
+	data could be parse. elements being NULL now means that the data
+	didn't contain any elements. Fixes NOKVEX-19.
+	
+2005-03-18  Richard Hult  <richard@imendio.com>
+
+	* vfs-daemon/src/daemon-connection.c
+	(connection_handle_monitor_add): Unescape the uri, fixes
+	NOKVEX-18.
+
+2005-03-17  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/osso_case_in.c: Remove some debug output.
+
+2005-03-16  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/Makefile.am: Add missing backslash so we link to
+	the right libraries.
+
+2005-03-16  Richard Hult  <richard@imendio.com>
+
+	* libossomime/data/categories.xml: Add pdf with category
+	documents.
+
+2005-03-16  Mikael Hallendal  <micke@imendio.com>
+
+	* vfs-daemon/src/dbus-method.c: 
+	- Use own bus connection.
+	- Fixes NOKVEX-17.
+
+2005-03-15  Mikael Hallendal  <micke@imendio.com>
+
+	* configure.in:
+	* debian/control:
+	- Updated dependencies on gwobex and gwconnect.
+
+2005-03-15  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-module/src/obex-method.c: (om_get_folder_listing):
+	* obex-module/src/om-fl-parser.[ch]: (fl_parser_start_node_cb),
+	* obex-module/tests/test-parser.c: (parse_file):
+	- Added back the GError for error reporting.
+
+2005-03-15  Mikael Hallendal  <micke@imendio.com>
+
+	* configure.in:
+	- Require expat
+	* obex-module/src/om-fl-parser.[ch]:
+	- Replace GMarkup parser with libexpat parser
+	* obex-utils/obex-vfs-utils/ovu-cap-parser.c:
+	- Replace GMarkup parser with libexpat parser
+	- Fixes NOKVEX-14.
+	* debian/control:
+	- Require libexpat1-dev for building.
+
+2005-03-15  Mikael Hallendal  <micke@imendio.com>
+
+	* file-module/src/dbus-file-method.c:
+	* file-module/src/osso_case_in.[ch]: (get_cased_path):
+	- Return a new string instead of modifying that old one (that is
+	  possibly to short to hold the new string).
+	- Fixed NOKVEX-1/NB: #2155, #2156.
+
+2005-03-15  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-module/src/om-utils.c: (om_utils_obex_error_to_vfs_result):
+	- Add support for GW_OBEX_ERROR_INVALID_DATA
+	- Fixed NOKVEX-11
+	* obex-module/docs/used-errors.txt: Added info about the new error.
+
+2005-03-10  Mikael Hallendal  <micke@imendio.com>
+
+	* Release 1.2.9
+
+	* debian/changelog: updated for 1.2.9
+
+2005-03-10  Mikael Hallendal  <micke@imendio.com>
+
+	* libossomime/src/osso-mime-application.c:
+	* libossomime/src/osso-mime-icon.c:
+	* libossomime/src/osso-mime-open.c:
+	* libossomime/src/osso-mime.h:
+	- Added LGPL header and described the changes in osso-mime-open.c
+	- Fixes NOKVEX-12.
+
+2005-03-10  Richard Hult  <richard@imendio.com>
+
+	* libossomime/data/categories.xml: Mark more mime types with
+	categories.
+
+2005-03-08  Mikael Hallendal  <micke@imendio.com>
+
+	* debian/control: 
+	- libossomime0 to depend on osso-update-category-database.
+	- Fixes NOKVEX-13/NOKOGS-29/NB #7368.
+
+2005-02-27  Mikael Hallendal  <micke@imendio.com>
+
+	* Release 1.2.8
+	
+2005-02-27  Mikael Hallendal  <micke@imendio.com>
+
+	* file-module/src/osso_case_in.c:
+	* file-module/src/osso_case_in.h:
+	- Rewrote from scratch to once and for all clean out all memory leaks,
+	  invalid writes, invalid reads etc.
+	- Fixes NOKVEX-9/NB: #6252. 
+
+2005-02-27  Mikael Hallendal  <micke@imendio.com>
+
+	* file-module/src/dbus-file-method.c:
+	* file-module/src/osso_case_in.c:
+	* file-module/src/osso_case_in.h:
+	- Cleaning up case insensitivity parts to be able to get an overview...
+
+2005-02-24  Mikael Hallendal  <micke@imendio.com>
+
+	* libossomime/src/osso-mime-categories.c:
+	(osso_mime_get_mime_types_for_category):
+	- Added check for OTHER category.
+	- Fixes NOKVEX-3.
+
+2005-02-24  Mikael Hallendal  <micke@imendio.com>
+
+	* libossomime/src/osso-mime-open.c:
+	* libossomime/src/osso-mime.h:
+	- Added osso_mime_open_file and osso_mime_open_file_list
+	- Fixes NOKVEX-5/NB: #6188
+
+2005-02-17  Anders Carlsson  <andersca@imendio.com>
+
+	* file-module/src/dbus-file-method.c (do_open_directory): Escape
+	the path string since that's what directory_handle_new expects.
+
+2005-02-16  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/dbus-file-method.c (do_get_file_info): Remove
+	debug output.
+
+2005-02-15  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/osso-mime-categories.c
+	(osso_mime_get_mime_types_for_category): Remove debug output.
+
+	* Release 1.2.7.
+
+2005-02-14  Richard Hult  <richard@imendio.com>
+
+	* libossomime/data/categories.xml: Add more types.
+
+	* libossomime/src/test-mime-category.c: Add small test.
+
+	* vfs-daemon/tests/test-daemon.c (daemon_message_filter): Update
+	ServiceDelete use to ServiceOwnerChanged (this code isn't built
+	though, just left as debugging help).
+
+	* libossomime/src/osso-mime-icon.c: 
+	* libossomime/src/osso-mime.h: Add and document icon API.
+
+	* file-chooser/src/gnome-icon-lookup.c (gnome_icon_lookup): Remove
+	comments.
+
+	* libossomime/src/osso-mime-application.c
+	(osso_mime_application_mime_types_list_free): Rename.
+
+	* libossomime/src/osso-mime.h: Add docs to the category API.
+
+	* libossomime/src/osso-mime-application.c
+	(osso_mime_application_get_mime_types): Check the returned mime
+	types.
+
+2005-02-13  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/osso-mime-application.c: Add API to get
+	supported mime types for an application.
+
+	* libossomime/src/osso-mime.h: Add info in the doc comment about
+	how the service is looked up.
+
+	* libossomime/src/osso-mime-open.c (_launch): Use full service
+	name if there is a '.' in it, otherwise add nokia.com.
+
+	* libossomime/src/osso-mime-open.c:
+	* libossomime/src/osso-mime-categories.c: Include config.c.
+
+	* libossomime/data/categories.xml: Add some more mime types.
+
+2005-02-11  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version to 1.2.7 in preparation for release.
+	Bump so version properly.
+
+	* debian: Update debian package.
+
+2005-02-11  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/update-category-database.c:
+	* libossomime/data/categories.xml: Change namespace.
+
+2005-02-11  Anders Carlsson   <andersca@imendio.com>
+
+	* libossomime/data/categories.xml:
+	* libossomime/src/Makefile.am:
+	* libossomime/src/osso-mime-categories.c:
+	(osso_mime_get_category_name), (osso_mime_get_category_from_name),
+	(osso_mime_get_mime_types_for_category):
+	* libossomime/src/osso-mime.h:
+	* libossomime/src/update-category-database.c: (category_is_valid),
+	(save_xml_file), (write_out_glob), (write_out_type), (write16),
+	(magic_new), (write_magic_children), (write_magic),
+	(delete_old_types), (write_aliases), (main):
+	Update valid categories and only make u-c-d write out the categories.
+	
+2005-02-10  Anders Carlsson   <andersca@imendio.com>
+
+	* libossomime/src/osso-mime-categories.c:
+	(osso_mime_get_category_from_name),
+	(osso_mime_get_category_for_mime_type):
+	* libossomime/src/osso-mime.h:
+	Make categories a bit-field.
+	
+2005-02-10  Richard Hult  <richard@imendio.com>
+
+	* configure.in:
+	* libossomime/src/Makefile.am:
+	* libossomime/src/update-category-database.c: Add patched
+	update-mime-database from Anders that manages the category files.
+
+2005-02-03  Anders Carlsson   <andersca@imendio.com>
+
+	* libossomime/src/Makefile.am (libossomime_la_SOURCES): 
+	Add new file
+
+	* libossomime/src/osso-mime.h: 
+	Add functions for categories
+
+	* libossomime/src/osso-mime-categories.c 
+	New file with category support
+
+2005-02-01  Mikael Hallendal  <micke@imendio.com>
+
+	* Release 1.2.6
+	
+	* configure.in: Bumpbed to 1.2.6
+	* debian/changelog: Updated for 1.2.6
+	* file-module/src/dbus-file-method.c: (do_get_file_info):
+	- Fixed Imendio NOKVEX-1/NB: 2155, 2156
+	- Set the file info name to be the name of the actual file on the 
+	  file system, not the name passed in.
+	* vfs-daemon/src/dbus-method.c:
+	- Bumped timeout to D-BUS maximum of 5 hours.
+
+2005-01-26  Mikael Hallendal  <micke@imendio.com>
+
+	* vfs-daemon/src/dbus-method.c: Bumped the timeout to 20 minutes.
+
+2005-01-26  Mikael Hallendal  <micke@imendio.com>
+
+	* vfs-daemon/src/dbus-method.c:
+	- Set a five minutes timeout on open and close operation to prevent
+	  D-BUS to timeout. Since all of the data is sent in open and close
+	  when using the OBEX module this will make these calls potentially 
+	  take a long time.
+	- Fixes Imendio #89/NB: 3718
+
+2005-01-20  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.5.
+
+2005-01-20  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Increase revision for libossomime, since the
+	implementation has been changed.
+
+	* libossomime/README.eggdesktopentries: Add some info.
+
+	* libossomime/src/eggdesktopentries.[ch]:
+	* libossomime/src/eggdirfuncs.[ch]: Add desktop file parsing.
+
+	* libossomime/src/osso-mime-open.c: Use it here to get the DBUS
+	service name to activate, instead of using the application id
+	which is an internal implementation detail of gnome-vfs (currently
+	it consists of the desktop file filename).
+
+2005-01-19  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version to 1.2.5.
+
+2005-01-18  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/osso-mime-open.c (osso_mime_open): Don't try to
+	access a NULL mime application. Only return success if we found at
+	least one application. Don't use the list head pointer as a hash
+	table element, the list head can change. Use a struct with the
+	list in it instead, this fixes a crash. Plug a leak by destroying
+	the hash table. Also free the varargs data.
+
+2005-01-18  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.4.
+
+2005-01-18  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version to 1.2.4.
+
+	* libossomime/src/Makefile.am (libossomime_la_LDFLAGS): Add
+	version info for libossomime, fixes #146/NB: 4714.
+
+	* file-module/src/dbus-file-method.c (do_move): Clarify comments.
+
+	* debian/control: Add build dependency on libgtk2.0-dev, #127/NB:
+	4479.
+
+2005-01-17  Mikael Hallendal  <micke@imendio.com>
+
+	* file-module/src/dbus-file-method.c: (get_path_from_uri), (do_create):
+	- Fixed to different leaks, *sigh*
+	* file-module/src/osso_case_in.c: (osso_get_existing_file):
+	- Fixed a leak and an invalid write. 
+	- Fixes Imendio issue #74/NB: 1698
+
+2004-12-13  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/dbus-file-method.c (do_move): Reimplement to fix
+	bugs.
+
+	* file-module/src/osso_case_in.c (get_substring): Don't read and
+	write outside of bounds.
+
+	* file-module/src/osso_case_in.c (osso_get_existing_path_offset):
+	Plug leak.
+
+2004-12-04  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump to 1.2.3 (just adding changelog afterwards so
+	we can see where the release was).
+
+2004-12-04  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump to 1.2.2.
+
+2004-12-04  Richard Hult  <richard@imendio.com>
+
+	* libossomime/libossomime.pc.in: Fix libname.
+
+2004-12-01  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version to 1.2.1.
+
+2004-11-30  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/obex-method.c (do_check_same_fs): Always return
+	FALSE. We do this so that the gnome_vfs_xfer API will do the right
+	thing and use copy/remove instead of move. This is necessary,
+	unfortunately, since not a lot of devices support move.
+
+2004-11-29  Richard Hult  <richard@imendio.com>
+
+	* Release 1.2.0.
+	
+2004-11-25  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Disable outo.
+	
+	* libossomime/Makefile.am: Disable ut for now. Fix bug in doxygen
+	installation.
+
+	* debian/control: Fix typo in depends.
+
+	* debian/rules: Build docs in correct dir.
+
+	* debian/osso-gnomevfs-extra.install,
+	debian/osso-gnomevfs-extra-dev.install: Move around files to their
+	right package.
+	
+2004-11-21  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/Makefile.am: Add case insensitivity code.
+
+	* configure.in: Bump to 1.0.7.
+
+2004-11-20  Richard Hult  <richard@imendio.com>
+
+	* file-chooser/: Add gnomevfs gtkfilesystem from libgnomeui.
+	
+2004-11-16  Richard Hult  <richard@imendio.com>
+
+	* debian/Makefile.am (EXTRA_DIST): Ship the compat file so
+	building from the disted tarball works, use .install instead of
+	.files. Install the README. Update deps and version.
+
+	* configure.in: Bump version to 1.0.6 and bump req on gnome-vfs.
+
+	* README: Add some information here.
+
+	* file-module/src/dfm-dbus.h: Fix typo, Montor -> Monitor.
+
+	* vfs-daemon/src/vfs-daemon.c (daemon_get_connection): Make the
+	error output more descriptive if the service can't be
+	acquired. Use the prohibit replacement flag, it's not used in dbus
+	right now, but when it is, it will be the right flag.
+
+2004-11-02  Richard Hult  <richard@imendio.com>
+
+	* obex-utils/obex-vfs-utils/Makefile.am
+	(libobex_vfs_utils_la_LDFLAGS): Add -avoid-version to make lintian
+	happy.
+
+2004-10-20  Richard Hult  <richard@imendio.com>
+
+	Release 1.0.5.
+
+2004-10-20  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/dbus-file-method.c (dfm_notify_monitor)
+	(dfm_notify_monitor_local_only): Correctly emit changed signal for
+	a directory if a file is created/deleted in it and its parent is
+	being monitored.
+
+	* obex-module/src/obex-method.c (om_notify_monitor): Likewise.
+
+2004-09-21  Richard Hult  <richard@imendio.com>
+
+	* vfs-daemon/src/vfs-daemon.c (main): Update API for new
+	gnome-vfs.
+
+	* vfs-daemon/tests/test-cancel.c (main): Use "dbus-test:" instead
+	of "test:".
+
+	* vfs-daemon/src/dbus-module.conf (dbus-test): Change the test uri
+	to dbus-test since test is used for the tests in gnome-vfs.
+
+	* configure.in (FILE_MODULE_LIBS): Bump requirement on gwobex
+	(0.19) and gwconnect (0.34), gnome-vfs (2.8.0). Bump version to
+	1.0.4.
+
+	* vfs-daemon/src/vfs-daemon.c (main): Add comment about loading
+	the obex module.
+
+	* obex-module/src/om-dbus.c (get_dev): Terminate the string
+	properly.
+
+2004-09-18  Mikael Hallendal  <micke@imendio.com>
+
+	* configure.in: Depend on gwconnect
+	* obex-module/src/om-dbus.c: (get_dev):
+	- Updated to use osso-gwconnect 0.32
+	* obex-module/src/om-dbus.h:
+	- Don't define the osso-gwconnect defines here
+
+2004-09-06  Richard Hult  <richard@imendio.com>
+
+	Fix a deadlock when creating a file in do_open:
+
+	* obex-module/src/obex-method.c (do_create): Setup connection here
+	and pass to create_file.
+	(do_open): Pass in connection to create_file.
+	(create_file): Take a connection from the caller instead.
+
+	* obex-module/tests/test-sync.c (main): 
+	* obex-module/tests/test-utils.c: Add test case for is_local.
+
+2004-09-02  Richard Hult  <richard@imendio.com>
+
+	* vfs-daemon/src/dbus-method.c (message_handler): Return
+	NOT_HANDLED from the filter func. Although it doesn't really
+	matter in this case since nobody listens to the signal.
+
+	* obex-module/src/obex-method.c (om_notify_monitor): 
+	* file-module/src/dbus-file-method.c
+	(dfm_notify_monitor_local_only): Emit notify on directories for
+	straight matches too, not just for files in directories.
+
+	* vfs-daemon/tests/volumes-example.c (main): Fix a compile
+	warning.
+
+2004-08-27  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version to 1.0.3.
+
+	* vfs-daemon/src/vfs-daemon.c: Clean up, fix an include.
+
+	* vfs-daemon/tests/volumes-example.c: Add example that uses the
+	volume monitor API.
+
+	* vfs-daemon/tests/test-cancel.c (main): Remove the extra
+	g_main_loop_run that makes this test never end.
+
+	* vfs-daemon/tests/Makefile.am: Comment out test-client, since
+	it's not a real test, but a tool for developing on the daemon.
+
+	* vfs-daemon/src/dbus-utils.c
+	(dbus_utils_message_get_file_info_list): Fix loop logic.
+
+	* obex-module/src/om-dbus.c (get_gwcond_connection): Revert the
+	change to use dbus_bus_get, since we need to get our own private
+	dbus connection here to avoid threading problems with other
+	libraries or applications that use this module and dbus (the vfs
+	daemon in particular).
+
+2004-08-25  Richard Hult  <richard@imendio.com>
+
+	* vfs-daemon/src/vfs-daemon.c (daemon_get_connection): Exit if we
+	can't acquire the service.
+
+2004-08-25  Mikael Hallendal  <micke@imendio.com>
+
+	* file-module/src/Makefile.am:
+	- Added dbus-vfs-utils.[ch]
+	* file-module/src/dbus-file-method.c: (vfs_module_init):
+	- Use the string case insensitive equal/hash functions.
+	* file-module/src/dfm-vfs-utils.[ch]:
+	- Added
+	- Code copied and modified from GnomeVFS.
+	* obex-module/src/Makefile.am:
+	- Added om-vfs-utils.[ch]
+	* obex-module/src/obex-method.c: (vfs_module_init):
+	- Use case insensitive equal/hash functions.
+	* obex-module/src/om-vfs-utils.[ch]:
+	- Added
+	- Code copied and modified from GnomeVFS.
+	- (Same as dfm-vfs-utils.[ch] for now)
+
+2004-08-25  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/om-dbus.c (om_dbus_get_dev, get_dev): Pass the
+	BDA to gwcond, improve the error handling.
+	(get_dev): Transform URI BDA format to 00:00:... format.
+
+	* obex-module/src/om-utils.c (utils_get_path_and_dev_from_uri):
+	Change URI format to use the BDA instead of "gw".
+
+2004-08-24  Richard Hult  <richard@imendio.com>
+
+	* vfs-daemon/src/vfs-daemon.c: Clean up and implement the last two
+	methods.
+
+2004-08-23  Richard Hult  <richard@imendio.com>
+
+	* vfs-daemon/src/dbus-utils.c
+	(dbus_utils_message_append_volume_list)
+	(dbus_utils_message_append_drive_list)
+	(dbus_utils_message_append_volume)
+	(dbus_utils_message_append_drive): Implement DBUS utility
+	functions for handling volumes and drives.
+
+	* vfs-daemon/src/vfs-daemon.c (daemon_get_connection): Reset
+	connection pointer in case of failure.
+
+	* vfs-daemon/src/vfs-daemon.c (daemon_handle_get_volumes,
+	daemon_handle_get_drives)
+	(daemon_handle_force_probe)
+	(daemon_handle_emit_pre_unmount_volume, daemon_message_func):
+	Handle daemon methods.
+	
+	* vfs-daemon/src/vfs-daemon.c (monitor_volume_mounted_cb,
+	monitor_volume_unmounted_cb)
+	(monitor_volume_pre_unmount_cb, monitor_drive_connected_cb)
+	(monitor_drive_disconnected_cb, main): Connect to the volume
+	monitor signals and handle them.
+
+	* configure.in: Bump DBUS requirement to 0.22.
+	Fix dbus includes and object path registration to work with the
+	latest DBUS API.
+	
+2004-08-16  Richard Hult  <richard@imendio.com>
+
+	* vfs-daemon/src/vfs-daemon.c (main): Fix a small leak.
+	(generate_address): Fix comment.
+
+2004-08-17  Mikael Hallendal  <micke@imendio.com>
+
+	* configure.in: Bumped version to 1.0.2
+	* obex-module/Makefile.am: Include README.unsupported in dist.
+
+2004-08-17  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-module/README.unsupported: 
+	- Added with non-supported and limited functions.
+	* obex-module/src/obex-method.c (do_move):
+	- If moving between the same directory (rename) call set_file_info to
+	  do a rename.
+
+2004-08-17  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-module/src/obex-method.c (create_file):
+	- Try to move into the directory to see that it exists. This makes
+	  sure we are signalled in the do_create call rather than in the
+	  do_close call if a directory doesn't exist.
+
+2004-08-16  Mikael Hallendal  <micke@imendio.com>
+
+	* obex-module/src/obex-method.c: 
+	(om_set_cancel_context): If enable-nautilus-workaround, always return.
+	(do_remove_directory): Don't remove if directory is not empty.
+	* vfs-daemon/src/Makefile.am: Regenerate service script after configure.
+
+2004-08-16  Mikael Hallendal  <micke@imendio.com>
+
+	* configure.in: Added --enable-nautilus-workaround
+	* obex-module/src/obex-method.c: (om_set_cancel_context):
+	- Only include nautilus workaround if specified to configure.
+
+2004-07-30  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version to 1.0.1.
+
+	* obex-module/src/om-dbus.c (get_gwcond_connection): User
+	dbus_bus_get instead of relying on the environment variable being
+	set. Remove debug code.
+
+	* obex-module/tests/test-parser.c (parse_valid_file): Don't
+	compare the mime type since it depends on the system setup.
+
+	* obex-module/tests/Makefile.am: Set correct path for test data file.
