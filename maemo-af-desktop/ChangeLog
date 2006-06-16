@@ -1,3 +1,7 @@
+2006-06-16  Karoliina Salminen <karoliina.t.salminen@nokia.com>
+	* configure.ac: 2.6.30
+	* Fix proposals committed.
+
 2006-06-14  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.6.29

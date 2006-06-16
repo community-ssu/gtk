@@ -1,3 +1,10 @@
+maemo-af-desktop (2.6.30-1) unstable; urgency=low
+
+  * New mid-development commit. Contains fix proposals that are pending
+    testing
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri, 16 Jun 2006 18:05:20 +0300
+
 maemo-af-desktop (2.6.29-1) unstable; urgency=low
 
   * hildon-navigator/application-switcher.c: gtk_widget_destroy
