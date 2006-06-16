@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2004 Nokia Corporation.
+ * Copyright (C) 2004-2006 Nokia Corporation.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -21,15 +21,18 @@
 /* Contact: Andrey Kochanov <andrey.kochanov@nokia.com> */
 
 #ifndef LIBMIMEOPEN_H_
-# define LIBMIMEOPEN_H_
+#define LIBMIMEOPEN_H_
 
-# include <glib.h>
-# include <libgnomevfs/gnome-vfs.h>
-# include <libgnomevfs/gnome-vfs-mime-handlers.h> 
+#include <glib.h>
+#include <libgnomevfs/gnome-vfs.h>
+#include <libgnomevfs/gnome-vfs-mime-handlers.h> 
+#ifndef DBUS_API_SUBJECT_TO_CHANGE
 #define DBUS_API_SUBJECT_TO_CHANGE
-# include <dbus/dbus.h>
+#endif
+#include <dbus/dbus.h>
 
-# include "osso-uri.h"
+#include <osso-uri.h>
+#include <osso-mime-patterns.h>
 
 G_BEGIN_DECLS
 
@@ -214,8 +217,8 @@ GList *          osso_mime_application_get_mime_types       (const gchar       *
 void             osso_mime_application_mime_types_list_free (GList             *mime_types);
 
 
-
 /*@}*/
+
 
 /**
  * \defgroup MIMEICON MIME icon
@@ -244,7 +247,6 @@ void             osso_mime_application_mime_types_list_free (GList             *
  */
 gchar **         osso_mime_get_icon_names                   (const gchar       *mime_type,
 							     GnomeVFSFileInfo  *file_info);
-
 
 /*@}*/
 

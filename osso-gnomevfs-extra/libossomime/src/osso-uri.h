@@ -21,12 +21,11 @@
 /* Contact: Andrey Kochanov <andrey.kochanov@nokia.com> */
 
 #ifndef OSSO_URI_H_
-# define OSSO_URI_H_
+#define OSSO_URI_H_
+
+#include <glib.h>
 
 G_BEGIN_DECLS
-
-#define DBUS_API_SUBJECT_TO_CHANGE
-# include <dbus/dbus.h>
 
 #define OSSO_URI_ERROR osso_uri_error_quark()
 

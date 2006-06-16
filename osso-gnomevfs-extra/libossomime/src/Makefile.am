@@ -1,7 +1,8 @@
 INCLUDES = 				\
 	-I$(top_srcdir)/libossomime	\
 	-I$(top_srcdir)/libossomime/src	\
-	-DPREFIX=\"${prefix}\"
+	-DPREFIX=\"${prefix}\"		\
+	-DGLOBS_FILE_PATH=\"$(datadir)/mime/globs\"
 
 AM_CPPFLAGS = $(WARN_CFLAGS)
 
@@ -9,12 +10,13 @@ lib_LTLIBRARIES = libossomime.la
 
 libossomime_la_LDFLAGS = -version-info $(LIBOSSOMIME_VERSION_INFO)
 libossomime_la_CFLAGS = $(LIBOSSOMIME_CFLAGS)
-libossomime_la_LIBADD = -ldl -lc $(LIBOSSOMIME_LIBS)
+libossomime_la_LIBADD = $(LIBOSSOMIME_LIBS)
 
 ossomimeincludedir=$(includedir)
 ossomimeinclude_HEADERS = 	\
 	osso-mime.h		\
-	osso-uri.h		
+	osso-uri.h		\
+	osso-mime-patterns.h
 
 libossomime_la_SOURCES = 	\
 	osso-mime-categories.c	\
@@ -23,7 +25,7 @@ libossomime_la_SOURCES = 	\
 	osso-mime-icon.c	\
 	osso-mime.h		\
 	osso-uri.c 		\
-	osso-uri.h
+	osso-mime-patterns.c
 
 bin_PROGRAMS = osso-update-category-database
 osso_update_category_database_SOURCES = update-category-database.c
@@ -32,12 +34,13 @@ osso_update_category_database_LDADD = $(UPDATE_CATEGORY_LIBS)
 
 noinst_PROGRAMS = 		\
 	test-open 		\
-	test-mime-types		\
+	test-mime-types         \
 	test-mime-icon 		\
 	test-mime-category	\
 	test-mime-default-app	\
 	test-uri		\
-	test-service
+	test-service            \
+	test-mime-patterns
 
 test_open_SOURCES = test-open.c
 test_open_CFLAGS = $(LIBOSSOMIME_CFLAGS)
@@ -66,3 +69,8 @@ test_uri_LDADD = $(LIBOSSOMIME_LIBS) $(top_builddir)/libossomime/src/libossomime
 test_service_SOURCES = test-service.c
 test_service_CFLAGS = $(LIBOSSOMIME_CFLAGS)
 test_service_LDADD = $(LIBOSSOMIME_LIBS) $(top_builddir)/libossomime/src/libossomime.la
+
+test_mime_patterns_SOURCES = test-mime-patterns.c
+test_mime_patterns_CFLAGS = $(LIBOSSOMIME_CFLAGS)
+test_mime_patterns_LDADD = $(LIBOSSOMIME_LIBS) $(top_builddir)/libossomime/src/libossomime.la
+

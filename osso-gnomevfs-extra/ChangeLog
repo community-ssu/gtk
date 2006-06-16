@@ -1,3 +1,13 @@
+2006-06-16  Richard Hult  <richard@imendio.com>
+
+	* libossomime/src/Makefile.am:
+	* libossomime/src/osso-mime-patterns.[ch]:
+	* libossomime/src/osso-mime.h:
+	* libossomime/src/osso-uri.h:
+	* libossomime/src/test-mime-patterns.c: Based on patch from Erik
+	Karlsson. Adds a small API to retrieve the glob patterns for a
+	specific MIME type.
+
 2006-06-15  Richard Hult  <richard@imendio.com>
 
 	* obex-module/src/obex-method.c (om_get_connection): Free the dev
