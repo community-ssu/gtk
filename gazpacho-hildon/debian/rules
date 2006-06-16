@@ -84,8 +84,15 @@ install: build
 	mkdir -p $(CURDIR)/$(d)/$(GRESOURCE_DIR)/hildonwidgets
 	cp resources/* $(CURDIR)/$(d)/$(GRESOURCE_DIR)/hildonwidgets
 	chmod 0755 $(CURDIR)/$(d)/$(GRESOURCE_DIR)/hildonwidgets
+
+	# The gazenv-init.sh script
+	mkdir -p $(CURDIR)/$(d)/usr/bin/
+	cp debian/gazenv-init.sh $(CURDIR)/$(d)/usr/bin/
+	chmod 0755 $(CURDIR)/$(d)/usr/bin/gazenv-init.sh
+
 	mkdir -p $(CURDIR)/$(d_base)
 	mv $(d)/* $(d_base)
+
 
 # Build architecture-independent files here.
 binary-indep: build install
