@@ -461,9 +461,9 @@ hn_wm_x_window_is_watchable (Window xid)
 
   gdk_error_trap_push();
 
-  status == XGetClassHint(GDK_DISPLAY(), xid, &class_hint);
+  status = XGetClassHint(GDK_DISPLAY(), xid, &class_hint);
   
-  if (gdk_error_trap_pop() || status != Success || class_hint.res_name == NULL)
+  if (gdk_error_trap_pop() || status == 0 || class_hint.res_name == NULL)
     goto out;
   
   /* Does this window class belong to a 'watched' application ? */
