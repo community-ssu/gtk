@@ -154,6 +154,18 @@ gchar *        osso_uri_get_scheme_from_uri           (const gchar    *uri,
 
 
 /**
+ * osso_uri_action_is_default_action:
+ * @action: A @OssoURIAction pointer. 
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL. 
+ *
+ * Return: The %TRUE if it is the default action or %FALSE.
+ **/
+gboolean       osso_uri_is_default_action             (OssoURIAction  *action,
+						       GError        **error);
+
+
+/**
  * osso_uri_action_get_default_action:
  * @scheme: A string which represents a scheme. 
  * @error: The address of a pointer to a @GError structure. This is

@@ -45,9 +45,8 @@
 #define APP_LAUNCH_BANNER_METHOD_PATH       "/com/nokia/tasknav/app_launch_banner"
 #define APP_LAUNCH_BANNER_METHOD            "app_launch_banner"
 
-
 #define DEBUG_MSG(x)  
-/* #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");  */
+/*#define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");*/
 
 struct _OssoURIAction {
 	guint     ref_count;
@@ -73,8 +72,8 @@ static gchar *        uri_get_desktop_file_that_exists  (const gchar     *str);
 static GSList *       uri_get_desktop_files_by_filename (const gchar     *filename,
 							 const gchar     *scheme);
 static GSList *       uri_get_desktop_files             (const gchar     *scheme);
-static OssoURIAction *uri_get_desktop_file_info         (const gchar     *scheme,
-							 const gchar     *desktop_file);
+static OssoURIAction *uri_get_desktop_file_info         (const gchar     *desktop_file,
+							 const gchar     *scheme);
 static gchar *        uri_get_defaults_file_by_filename (const gchar     *filename,
 							 const gchar     *scheme);
 static gchar *        uri_get_defaults_file             (const gchar     *scheme);
@@ -621,7 +620,8 @@ uri_launch (DBusConnection *connection,
 		interface = g_strdup (service);
 	}
 	
-	DEBUG_MSG (("URI: Activating service: %s", service))
+	DEBUG_MSG (("URI: Activating service:'%s', object path:'%s', interface:'%s', method:'%s'", 
+		    service, object_path, interface, method));
 
 	msg = dbus_message_new_method_call (service, object_path,
 					    interface, method);
@@ -638,6 +638,7 @@ uri_launch (DBusConnection *connection,
 		
 		/* From osso-rpc.c */
 		/* Inform the task navigator that we are launching the service */
+		DEBUG_MSG (("URI: Informing Task Navigator...")); 
 		msg = dbus_message_new_method_call (TASK_NAV_SERVICE,
 						    APP_LAUNCH_BANNER_METHOD_PATH,
 						    APP_LAUNCH_BANNER_METHOD_INTERFACE,
@@ -777,6 +778,51 @@ osso_uri_get_scheme_from_uri (const gchar  *uri,
 		     error_str);
 
 	return NULL;
+}
+
+gboolean
+osso_uri_is_default_action (OssoURIAction  *action,
+			    GError        **error)
+{
+	OssoURIAction *default_action;
+	gboolean       equal = FALSE;
+
+	g_return_val_if_fail (action != NULL, FALSE);
+	g_return_val_if_fail (action->scheme != NULL, FALSE);
+
+	default_action = osso_uri_get_default_action (action->scheme, error);
+	if (default_action && 
+	    default_action->desktop_file && 
+	    action->desktop_file) {
+		gchar *desktop_file1;
+		gchar *desktop_file2;
+
+		/* Change all "/" to "-" since there may be some differences here */
+		desktop_file1 = g_strdup (default_action->desktop_file);
+		g_strdelimit (desktop_file1, G_DIR_SEPARATOR_S, '-');
+		desktop_file2 = g_strdup (action->desktop_file);
+		g_strdelimit (desktop_file2, G_DIR_SEPARATOR_S, '-');
+
+		/* Compare desktop files to know if this is the same
+		 * action as the default action.
+		 * 
+		 * We compare the desktop file and the method since
+		 * these two are what the dbus service will use to
+		 * identify what is done with the action. 
+		 */
+		if (default_action->name && action->name &&
+		    default_action->method && action->method &&
+		    strcmp (desktop_file1, desktop_file2) == 0 && 
+		    strcmp (default_action->name, action->name) == 0 && 
+		    strcmp (default_action->method, action->method) == 0) {
+			equal = TRUE;
+		}
+		
+		g_free (desktop_file1);
+		g_free (desktop_file2);
+	}
+
+	return equal;
 }
 
 OssoURIAction *  

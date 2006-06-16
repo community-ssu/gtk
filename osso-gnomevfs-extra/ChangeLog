@@ -1,5 +1,11 @@
 2006-06-16  Richard Hult  <richard@imendio.com>
 
+	* libossomime/src/osso-uri.[ch]:
+	* libossomime/src/test-uri.c: (main): Patch from Martyn to add a
+	way to check if an action is the default. Add a test as well.
+
+2006-06-16  Richard Hult  <richard@imendio.com>
+
 	* libossomime/src/Makefile.am:
 	* libossomime/src/osso-mime-patterns.[ch]:
 	* libossomime/src/osso-mime.h:

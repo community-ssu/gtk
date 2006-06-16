@@ -5,8 +5,9 @@ osso-gnomevfs-extra (1.5.0-1) unstable; urgency=low
   * Fixes: NB#32769, file listing parser is leaked on failure
   * Fixes: NB#32771, obex method leaks
   * Add API to retrieve the glob patterns for a MIME type
+  * Add API to check if an action is the default
 
- -- Richard Hult <richard@imendio.com>  Fri,  2 Jun 2006 17:12:34 +0200
+ -- Richard Hult <richard@imendio.com>  Fri, 16 Jun 2006 17:12:34 +0200
 
 osso-gnomevfs-extra (1.4.17-1) unstable; urgency=low
 

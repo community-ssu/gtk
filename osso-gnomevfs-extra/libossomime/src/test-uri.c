@@ -1,10 +1,12 @@
 #include <config.h>
 #include <stdlib.h>
+#include <string.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <osso-mime.h>
 
 static gboolean   use_default = FALSE;
 static gchar     *get_actions = NULL;
+static gchar     *is_default = NULL;
 static gchar     *get_default = NULL;
 static gchar     *set_default = NULL;
 static gchar     *set_default_to_nothing = NULL;
@@ -22,6 +24,11 @@ static GOptionEntry entries[] =
 	  0, G_OPTION_ARG_STRING, 
 	  &get_actions, 
 	  "Get a list of actions for a scheme like \"http\"",
+	  NULL },
+	{ "is-default", 'i', 
+	  0, G_OPTION_ARG_STRING, 
+	  &is_default, 
+	  "Return TRUE or FALSE for an action name (this is used WITH --get-actions)", 
 	  NULL },
 	{ "get-default", 'g', 
 	  0, G_OPTION_ARG_STRING, 
@@ -60,17 +67,17 @@ main (int argc, char **argv)
 	context = g_option_context_new ("- test the osso-uri API.");
 	g_option_context_add_main_entries (context, entries, NULL);
 	g_option_context_parse (context, &argc, &argv, NULL);
-	
 	g_option_context_free (context);
 
 	if ((!use_default && !get_actions && !get_default && 
 	     !set_default && !set_default_to_nothing && 
 	     !get_scheme && !open_uris) ||
-	    (set_default && !get_default)) {
-		g_printerr ("Usage: %s --help\n", argv[0]);
+	    (set_default && !get_default) || 
+	    (is_default && !get_actions)) {
+ 		g_printerr ("Usage: %s --help\n", argv[0]); 
 		return EXIT_FAILURE;
 	}
-
+	
 	gnome_vfs_init ();
 
 	if (set_default_to_nothing) {
@@ -113,6 +120,50 @@ main (int argc, char **argv)
 
 		g_print ("Default for:'%s' set for '%s' too.\n", 
 			 get_default, set_default);
+	}
+
+	if (get_actions && is_default) {
+		GSList *actions;
+		GSList *l;
+
+		actions = osso_uri_get_actions (get_actions, &error);
+		if (error != NULL) {
+			g_printerr ("Could not get actions for scheme:'%s', error:%d->'%s'\n", 
+				    get_actions, error->code, error->message);
+			
+			g_clear_error (&error); 
+			return EXIT_FAILURE;
+		}
+
+		if (actions) {
+			OssoURIAction *action;
+			const gchar   *name = NULL;
+			gboolean       found = FALSE;
+
+			for (l = actions; l && !found; l = l->next) {
+				action = l->data;
+				name = osso_uri_action_get_name (action);
+
+				if (name && strcmp (name, is_default) == 0) {
+					found = TRUE;
+				}
+			}
+
+			if (found) {
+				gboolean is_default_action;
+
+				is_default_action = osso_uri_is_default_action (action, NULL);
+
+				g_print ("Action:'%s' %s the default action\n", 
+					 is_default, is_default_action ? "is" : "is NOT");
+			} else {
+				g_print ("Action:'%s' was not found\n", is_default);
+			}
+			
+			osso_uri_free_actions (actions);
+		} else {
+			g_print ("No actions for scheme:'%s'\n", get_actions);
+		}
 	}
 
 	if (get_default) {
