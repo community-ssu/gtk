@@ -39,8 +39,8 @@
 	get the style 'detail' right.
 	(make_main_view): Updated all callers of make_padded_button to
 	pass the correct flags.
-	(get_package_list_reply): Make sure that that the reference of the
-	created package_info structures is correct by reffing them
+	(get_package_list_reply): Make sure that the reference count of
+	the created package_info structures is correct by reffing them
 	explicitely before every insertion into a list, and unreffing once
 	at the end.  Specifically, updateable packages are in two lists,
 	but were only referenced once. (N31849)
