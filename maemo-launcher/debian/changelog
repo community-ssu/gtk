@@ -1,3 +1,12 @@
+maemo-launcher (0.17-1) unstable; urgency=low
+
+  * New Upstream Release.
+    - Do not send the application died signal by default, because some
+      people believe that by not showing applications crashing, that
+      will fix their bugs... (Closes: #32915@Nokia)
+
+ -- Guillem Jover <guillem.jover@nokia.com>  Mon, 19 Jun 2006 12:29:20 +0300
+
 maemo-launcher (0.16-1) unstable; urgency=low
 
   * New Upstream Release.

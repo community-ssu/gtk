@@ -77,6 +77,7 @@ static char *pidfilename = LAUNCHER_PIDFILE;
 static pid_t is_parent = 1;
 static volatile bool sigchild_catched = false;
 static volatile bool sighup_catched = false;
+static bool send_app_died = false;
 
 #ifdef DEBUG
 extern char **environ;
@@ -507,7 +508,7 @@ release_child_slot(kindergarten_t *childs, pid_t pid, int status)
   {
     child_t *child = &childs->list[id];
 
-    if (child_died_painfully(status))
+    if (send_app_died && child_died_painfully(status))
       comm_send_app_died(child->name, pid, status);
 
     invoked_send_exit(child->sock, status);
@@ -672,6 +673,7 @@ usage(int status)
 	 "Options:\n"
 	 "  --daemon            Fork and go into the background.\n"
 	 "  --pidfile FILE      Specify a different pid file (default %s).\n"
+	 "  --send-app-died     Send application died signal.\n"
 	 "  --quiet             Do not print anything.\n"
 	 "  --version           Print program version.\n"
 	 "  --help              Print this help message.\n"
@@ -709,6 +711,8 @@ main(int argc, char *argv[])
       if (argv[++i])
 	pidfilename = argv[i];
     }
+    else if (strcmp(argv[i], "--send-app-died") == 0)
+      send_app_died = true;
     else if (strcmp(argv[i], "--version") == 0)
       version();
     else if (strcmp(argv[i], "--help") == 0)
