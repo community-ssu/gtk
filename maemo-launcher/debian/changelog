@@ -1,10 +1,10 @@
-maemo-launcher (0.16~-1) UNRELEASED; urgency=low
+maemo-launcher (0.16-1) unstable; urgency=low
 
   * New Upstream Release.
     - Ignore SIGPIPE in the launcher, so that it does not die miserably.
       (Closes: #32718@Nokia)
 
- -- Guillem Jover <guillem.jover@nokia.com>  Thu, 15 Jun 2006 16:42:12 +0300
+ -- Guillem Jover <guillem.jover@nokia.com>  Thu, 15 Jun 2006 17:18:42 +0300
 
 maemo-launcher (0.15-1) unstable; urgency=low
 

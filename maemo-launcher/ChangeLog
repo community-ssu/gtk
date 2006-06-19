@@ -1,5 +1,9 @@
 2006-06-15  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac: Version 0.16.
+
+2006-06-15  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (sigs_init): Ignore SIGPIPE.
 	(sig_restore): Set SIGPIPE to the default handler.
 
