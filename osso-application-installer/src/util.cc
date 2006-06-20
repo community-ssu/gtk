@@ -1716,12 +1716,12 @@ iap_callback (struct iap_event_t *event, void *arg)
   switch (event->type)
     {
     case OSSO_IAP_CONNECTED:
-      add_log ("OSSO_IAP_CONNECTED: %s\n", event->iap_name);
+      // add_log ("OSSO_IAP_CONNECTED: %s\n", event->iap_name);
       success = true;
       break;
 
     case OSSO_IAP_DISCONNECTED:
-      add_log ("OSSO_IAP_DISCONNECTED: %s\n", event->iap_name);
+      // add_log ("OSSO_IAP_DISCONNECTED: %s\n", event->iap_name);
       if (current_status_operation == op_downloading)
 	cancel_apt_worker ();
       break;
