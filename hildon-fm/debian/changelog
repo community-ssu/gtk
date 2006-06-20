@@ -2,6 +2,7 @@ hildon-fm (1.2-1) unstable; urgency=low
 
   * UNRELEASED
   * Added support for multiple Bluetooth devices.
+  * Fixed some UPnP strings to localised ones.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 20 Jun 2006 15:17:37 +0300
 

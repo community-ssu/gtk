@@ -44,7 +44,6 @@ G_DEFINE_TYPE (HildonFileSystemBT,
                HILDON_TYPE_FILE_SYSTEM_REMOTE_DEVICE);
 
 static const gchar *root_failed_message = "Unable to connect to BT devices";
-static const gchar *child_failed_message = "Unable to connect to BT device";
 
 static void
 hildon_file_system_bt_class_init (HildonFileSystemBTClass *klass)
@@ -66,7 +65,7 @@ hildon_file_system_bt_init (HildonFileSystemBT *device)
     location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (device);
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_GATEWAY;
     location->fixed_icon = g_strdup ("qgn_list_filesys_divc_cls");
-    location->fixed_title = g_strdup ("BT servers");
+    location->fixed_title = g_strdup (_("sfil_li_bluetooth"));
     location->failed_access_message = root_failed_message;
 }
 
@@ -99,7 +98,7 @@ hildon_file_system_bt_create_child_location (HildonFileSystemSpecialLocation
           HILDON_FILE_SYSTEM_REMOTE_DEVICE (location)->accessible;
       hildon_file_system_special_location_set_icon (child,
                                                    "qgn_list_btno_phone_new");
-      child->failed_access_message = child_failed_message;
+      child->failed_access_message = _("sfil_ib_cannot_connect_device");
     }
 
     return child;
