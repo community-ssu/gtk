@@ -249,7 +249,7 @@ ForceLock (string File, bool Errors = true)
       if (res < 0 && errno != ENOENT)
 	log_stderr ("Can't remove %s: %m", File.c_str ());
       else if (res == 0)
-	log_stderr ("Forced %s", File.c_str ());
+	log_stderr ("Forcing %s", File.c_str ());
     }
 
   return GetLock (File, Errors);
@@ -1947,14 +1947,18 @@ encode_prep_summary (pkgAcquire& Fetcher)
     {
       if (!is_certified_source ((*I)->DescURI ()))
 	{
+#ifdef DEBUG
 	  cerr << "notcert: " << (*I)->DescURI () << "\n";
+#endif
 	  response.encode_int (preptype_notcert);
 	  response.encode_string ((*I)->ShortDesc().c_str());
 	}
       
       if (!(*I)->IsTrusted())
 	{
+#ifdef DEBUG
 	  cerr << "notauth: " << (*I)->DescURI () << "\n";
+#endif
 	  response.encode_int (preptype_notauth);
 	  response.encode_string ((*I)->ShortDesc().c_str());
 	}
@@ -2180,13 +2184,30 @@ cmd_clean ()
 {
   bool success = true;
 
-  // Lock the archive directory
+  // Try to lock the archive directory.  If that fails because we are
+  // out of space, continue anyway since it is critical to free flash
+  // in that case.
+  //
+  // ForceLock has the same interface as GetLock: it returns -1 in
+  // case of failure with errno set appropriately.  However, errnor is
+  // always EPERM when the open syscall failed.  "Feh.."
+
   FileFd Lock;
   if (_config->FindB("Debug::NoLocking",false) == false)
     {
-      Lock.Fd(ForceLock(_config->FindDir("Dir::Cache::Archives") + "lock"));
-      if (_error->PendingError() == true)
-	success = _error->Error("Unable to lock the download directory");
+      int fd = ForceLock(_config->FindDir("Dir::Cache::Archives") + "lock");
+      if (fd < 0)
+	{
+	  if (errno != EPERM && errno != ENOSPC)
+	    {
+	      success = false;
+	      _error->Error("Unable to lock the download directory");
+	    }
+	  else
+	    _error->Warning("Unable to lock the download directory, but cleaning it anyway.");
+	}
+      else
+	Lock.Fd (fd);
     }
    
   if (success)
@@ -2197,6 +2218,13 @@ cmd_clean ()
     }
 
   response.encode_int (success);
+
+  // As a special case, we try to init the cache again.  Chances are
+  // good that it will now succeed because there might be more space
+  // available now.
+
+  if (package_cache == NULL)
+    need_cache_init ();
 }
 
 // XXX - interpret status codes
