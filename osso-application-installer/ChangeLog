@@ -1,3 +1,17 @@
+2006-06-20  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 4.22
+	
+	* src/util.cc (iap_callback): Only log errors, but not connections
+	and disconnections.
+
+	* src/apt-worker.cc (encode_prep_summary): Only log results when
+	DEBUG is defined.
+	(cmd_clean): Ignore locking failures for EPERM and ENOSPC which
+	both might be due to a 'out of space' condition and we badly want
+	to free some space in that case.  Also, init the cache again if
+	that has failed previously.  (N32851)
+	
 2006-06-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.21
