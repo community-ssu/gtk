@@ -41,7 +41,9 @@ libhildonfm_la_SOURCES = \
 	hildon-file-system-dynamic-device.h \
 	hildon-file-system-dynamic-device.c \
 	hildon-file-system-upnp.h \
-	hildon-file-system-upnp.c 
+	hildon-file-system-upnp.c \
+	hildon-file-system-bt.h \
+	hildon-file-system-bt.c 
 
 hildonwidgetsincludeinstdir=$(includedir)/hildon-fm/hildon-widgets
 hildonwidgetsincludeinst_DATA = \
