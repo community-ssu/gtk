@@ -1,0 +1,17 @@
+# Patch for clearing selection so that we don't have poinetrs to freed memory
+#
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the gtkhtml package
+#
+diff -Nru gtkhtml-3.9.1/src/htmlengine.c gtkhtml-3.9.1-fixed/src/htmlengine.c
+--- gtkhtml-3.9.1/src/htmlengine.c	2006-06-19 13:21:11.216380909 +0300
++++ gtkhtml-3.9.1-fixed/src/htmlengine.c	2006-06-19 08:35:54.000000000 +0300
+@@ -5002,6 +5002,8 @@
+ 	if (e->clue != NULL)
+ 		html_object_destroy (e->clue);
+ 
++	clear_selection (e);
++
+ 	g_list_foreach (e->formList, destroy_form, NULL);
+ 
+ 	g_list_free (e->formList);

@@ -1,3 +1,9 @@
+2006-06-19 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* fixes pointers to freed memory by clearing selection when new
+		parsing is begun (gtkhtml_clear_selection.diff)
+	Fixes N#32924
+
 2006-05-30 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 
