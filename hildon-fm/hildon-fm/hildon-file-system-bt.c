@@ -1,0 +1,107 @@
+/*
+ * This file is part of hildon-fm package
+ *
+ * Copyright (C) 2006 Nokia Corporation.
+ *
+ * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; version 2.1 of
+ * the License.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA
+ *
+ */
+
+#include <glib.h>
+#include <string.h>
+
+#include "hildon-file-system-bt.h"
+#include "hildon-file-system-settings.h"
+#include "hildon-file-system-dynamic-device.h"
+
+static void
+hildon_file_system_bt_class_init (HildonFileSystemBTClass *klass);
+static void
+hildon_file_system_bt_finalize (GObject *obj);
+static void
+hildon_file_system_bt_init (HildonFileSystemBT *device);
+HildonFileSystemSpecialLocation*
+hildon_file_system_bt_create_child_location (HildonFileSystemSpecialLocation
+                                             *location, gchar *uri);
+
+G_DEFINE_TYPE (HildonFileSystemBT,
+               hildon_file_system_bt,
+               HILDON_TYPE_FILE_SYSTEM_REMOTE_DEVICE);
+
+static const gchar *root_failed_message = "Unable to connect to BT devices";
+static const gchar *child_failed_message = "Unable to connect to BT device";
+
+static void
+hildon_file_system_bt_class_init (HildonFileSystemBTClass *klass)
+{
+    GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+    HildonFileSystemSpecialLocationClass *location = 
+            HILDON_FILE_SYSTEM_SPECIAL_LOCATION_CLASS (klass);
+
+    gobject_class->finalize = hildon_file_system_bt_finalize;
+    location->create_child_location = 
+            hildon_file_system_bt_create_child_location;
+}
+
+static void
+hildon_file_system_bt_init (HildonFileSystemBT *device)
+{
+    HildonFileSystemSpecialLocation *location;
+
+    location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (device);
+    location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_GATEWAY;
+    location->fixed_icon = g_strdup ("qgn_list_filesys_divc_cls");
+    location->fixed_title = g_strdup ("BT servers");
+    location->failed_access_message = root_failed_message;
+}
+
+static void
+hildon_file_system_bt_finalize (GObject *obj)
+{
+    G_OBJECT_CLASS (hildon_file_system_bt_parent_class)->finalize (obj);
+}
+
+HildonFileSystemSpecialLocation*
+hildon_file_system_bt_create_child_location (HildonFileSystemSpecialLocation
+                                             *location, gchar *uri)
+{
+    HildonFileSystemSpecialLocation *child = NULL;
+    gchar *skipped, *found;
+
+    /* We need to check if the given uri is our immediate child. It's
+     * guaranteed that it's our child (this is checked by the caller) */
+    skipped = uri + strlen (location->basepath);
+
+    /* Now the path is our immediate child if it contains separator chars
+     * in the middle (not in the ends) */
+    while (*skipped == G_DIR_SEPARATOR) skipped++;
+    found = strchr (skipped, G_DIR_SEPARATOR);
+
+    if (found == NULL || found[1] == 0) {
+      /* No middle separators found. That's our child!! */
+      child = g_object_new(HILDON_TYPE_FILE_SYSTEM_DYNAMIC_DEVICE, NULL);
+      HILDON_FILE_SYSTEM_REMOTE_DEVICE (child)->accessible =
+          HILDON_FILE_SYSTEM_REMOTE_DEVICE (location)->accessible;
+      hildon_file_system_special_location_set_icon (child,
+                                                   "qgn_list_btno_phone_new");
+      child->failed_access_message = child_failed_message;
+    }
+
+    return child;
+}
+

@@ -1,3 +1,10 @@
+hildon-fm (1.2-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added support for multiple Bluetooth devices.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 20 Jun 2006 15:17:37 +0300
+
 hildon-fm (1.1-1) unstable; urgency=low
 
   * Applied column headers patch (after some hand editing) from Kuisma Salonen

@@ -7,8 +7,8 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * as published by the Free Software Foundation; version 2.1 of
+ * the License.
  *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,6 +41,7 @@
 #include "hildon-file-system-local-device.h"
 #include "hildon-file-system-mmc.h"
 #include "hildon-file-system-upnp.h"
+#include "hildon-file-system-bt.h"
 #include "hildon-file-system-old-gateway.h"
 
 extern GtkFileSystem *gtk_file_system_unix_new();
@@ -183,10 +184,18 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
             g_node_append_data(locations, location);
         }    
 
-        /* Setup gateway */
         if (!g_getenv("DISABLE_GATEWAY")) {
+            /* Setup gateway */
             location = g_object_new(HILDON_TYPE_FILE_SYSTEM_OLD_GATEWAY, NULL);
             g_node_append_data(locations, location);
+        } else {
+            /* Setup multiple Bluetooth device support */
+            env = g_getenv("HILDON_FM_OBEX_ROOT");
+            if (env && env[0]) {
+                location = g_object_new(HILDON_TYPE_FILE_SYSTEM_BT, NULL);
+                location->basepath = g_strdup(env);
+                g_node_append_data(locations, location);
+            }    
         }
     }
 
