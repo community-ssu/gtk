@@ -87,7 +87,7 @@ install: build
 
 	# The gazenv-init.sh script
 	mkdir -p $(CURDIR)/$(d)/usr/bin/
-	cp debian/gazenv-init.sh $(CURDIR)/$(d)/usr/bin/
+	cp gazenv-init.sh $(CURDIR)/$(d)/usr/bin/
 	chmod 0755 $(CURDIR)/$(d)/usr/bin/gazenv-init.sh
 
 	mkdir -p $(CURDIR)/$(d_base)
