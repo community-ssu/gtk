@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE glade-catalog SYSTEM "glade-catalog.dtd">
-<glade-catalog name="hildonwidgets">
+<glade-catalog name="hildonwidgets" library="libglade-hildon">
   <glade-widget-classes>
 
     <!-- 

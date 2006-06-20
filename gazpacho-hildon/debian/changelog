@@ -1,3 +1,10 @@
+gazpacho-hildon (0.1.6) unstable; urgency=low
+
+  * hildonwidgets.xml - added library attribute so that the glade files refers
+    to the libglade-hildon module
+
+ -- Erik Karlsson <erikarls@localhost.localdomain>  Tue, 20 Jun 2006 09:48:52 +0300
+
 gazpacho-hildon (0.1.5) unstable; urgency=low
 
   * Added gazenv-init.sh script
