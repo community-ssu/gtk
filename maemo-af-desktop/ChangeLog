@@ -1,3 +1,8 @@
+2006-06-19  Karoliina Salminen <karoliina.t.salminen@nokia.com>
+	* configure.ac: 2.6.31
+	* Reverted fix proposal for the double free issue as it introduced more problems
+	* Patched bug N#32791 (backported from IT2007).
+
 2006-06-16  Karoliina Salminen <karoliina.t.salminen@nokia.com>
 	* configure.ac: 2.6.30
 	* Fix proposals committed.

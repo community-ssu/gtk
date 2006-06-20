@@ -89,7 +89,7 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 
   HN_DBG("### enter ###");
 
-  only_kill_able_to_hibernate = GPOINTER_TO_UINT(userdata);
+  only_kill_able_to_hibernate = *(gboolean*)(userdata);
   win                         = (HNWMWatchedWindow *)value;
   app                         = hn_wm_watched_window_get_app(win);
 
@@ -118,23 +118,27 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 	  HN_DBG("hn_wm_watched_window_attempt_pid_kill() for '%s'", hn_wm_watched_window_get_name (win));
 	  if (hn_wm_watched_window_attempt_signal_kill (win, SIGTERM))
 	    {
-	      hn_wm_watched_window_hibernate(app, win);
+          HN_DBG("app->hibernating now '%s'",
+                 hn_wm_watchable_app_is_hibernating(app) ? "true" : "false");
+          hn_wm_watchable_app_hibernate(hn_wm_watched_window_get_app(win));
 	    }
 	}
 
       if (top_xwin)
 	XFree(top_xwin);
+
+      HN_DBG("### leave ###");
+
+      return FALSE;  /* No need to delete, hibernate will have moved it */
     }
   else
     {
       /* Totally kill everthing and remove from our hash */
       HN_DBG("killing everything, currently '%s'", hn_wm_watched_window_get_name (win));
       hn_wm_watched_window_attempt_signal_kill (win, SIGTERM);
+      HN_DBG("### leave ###");
+      return TRUE;
     }
-
-  HN_DBG("### leave ###");
-  /* remove this item from the hash */
-  return TRUE;
 }
 
 /* FIXME: rename kill to hibernate - kill is misleading */
@@ -143,7 +147,7 @@ hn_wm_memory_kill_all_watched (gboolean only_kill_able_to_hibernate)
 {
   g_hash_table_foreach_remove ( hnwm->watched_windows,
 				hn_wm_memory_kill_all_watched_foreach_func,
-				GUINT_TO_POINTER(only_kill_able_to_hibernate));
+				(gpointer)&only_kill_able_to_hibernate);
 
   hn_wm_memory_update_lowmem_ui(hnwm->lowmem_situation);
 

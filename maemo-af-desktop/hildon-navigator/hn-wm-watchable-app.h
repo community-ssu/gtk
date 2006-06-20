@@ -257,6 +257,9 @@ hn_wm_watchable_app_launch_banner_timeout (gpointer data);
 
 
 void
+hn_wm_watchable_app_hibernate (HNWMWatchableApp *app);
+
+void
 hn_wm_watchable_app_set_ping_timeout_note (HNWMWatchableApp *app, GtkWidget *note);
 
 GtkWidget*

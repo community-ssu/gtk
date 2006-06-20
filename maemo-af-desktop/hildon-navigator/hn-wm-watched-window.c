@@ -949,20 +949,33 @@ hn_wm_watched_window_props_sync (HNWMWatchedWindow *win, gulong props)
   return TRUE;
 }
 
-/* called from "hn_wm_memory_kill_all_watched_foreach_func"
- * which removes this window for the normal window hash
- */
-void hn_wm_watched_window_hibernate(HNWMWatchableApp *app,
-				    HNWMWatchedWindow * win)
+gboolean hn_wm_watched_window_hibernate_func(gpointer key,
+                                             gpointer value,
+                                             gpointer user_data)
 {
-  win->xwin = None;
-  g_hash_table_insert (hnwm->watched_windows_hibernating,
-		       g_strdup(win->hibernation_key),
-		       win);
-  HN_DBG("'%s' now hibernating, moved to WatchedWindowsHibernating hash",
-	 win->name);
-  hn_wm_watchable_app_set_hibernate (app, TRUE);
+  HNWMWatchedWindow * win;
+  HNWMWatchableApp *app;
+
+  g_return_val_if_fail(key && value && user_data, FALSE);
+  
+  win = (HNWMWatchedWindow *)value;
+  app = hn_wm_watched_window_get_app(win);
+  g_return_val_if_fail(app, FALSE);
+
+  if(app == (HNWMWatchableApp *)user_data)
+    {
+      win->xwin = None;
+      g_hash_table_insert (hnwm->watched_windows_hibernating,
+                           g_strdup(win->hibernation_key),
+                           win);
+      HN_DBG("'%s' now hibernating, moved to WatchedWindowsHibernating hash",
+             win->name);
+
+      return TRUE;
+    }
+  return FALSE;
 }
+
 
 static void
 hn_wm_ping_timeout_dialog_response (GtkDialog *note, gint ret, gpointer data)
