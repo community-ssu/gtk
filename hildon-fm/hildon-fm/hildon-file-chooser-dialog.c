@@ -1556,7 +1556,7 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
     priv->entry_name = gtk_entry_new();
     
     priv->caption_control_name =
-        hildon_caption_new(size_group, _("ckdg_ti_select_file"),
+        hildon_caption_new(size_group, "caption control name",
                            priv->entry_name, NULL,
                            HILDON_CAPTION_OPTIONAL);
     hildon_caption_set_separator(HILDON_CAPTION(priv->caption_control_name),

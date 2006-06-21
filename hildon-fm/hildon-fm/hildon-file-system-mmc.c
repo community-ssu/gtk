@@ -93,9 +93,10 @@ hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation
         gtk_file_system_volume_free (fs, vol);
     }
 
+    /* TODO: Add support for another memory card */
     if (!name)
     {
-        name =  g_strdup (_("sfil_li_mmc_localdevice"));
+        name =  g_strdup (_("sfil_li_memorycard_removable"));
     }
 
     return name;
@@ -203,12 +204,12 @@ hildon_file_system_mmc_get_extra_info (HildonFileSystemSpecialLocation *location
     }
     else if (free_space < 1024 * 1024)
     {
-        g_snprintf (buffer, sizeof (buffer), _("sfil_li_mmc_free_kb"),
+        g_snprintf (buffer, sizeof (buffer), "%d kB free",
                 (gint) free_space / 1024);
     }
     else
     {
-        g_snprintf (buffer, sizeof (buffer), _("sfil_li_mmc_free_mb"),
+        g_snprintf (buffer, sizeof (buffer), "%d MB free",
                 (gint) (free_space / (1024 * 1024)));
     }
 
