@@ -1,0 +1,16 @@
+# Saving clipboard patch
+#
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the gtkhtml package
+#
+diff -Nru gtkhtml-3.9.1/src/gtkhtml.c gtkhtml-3.9.1-fixed/src/gtkhtml.c
+--- gtkhtml-3.9.1/src/gtkhtml.c	2006-06-19 13:21:06.000000000 +0300
++++ gtkhtml-3.9.1-fixed/src/gtkhtml.c	2006-06-15 13:23:42.000000000 +0300
+@@ -4361,6 +4361,7 @@
+ 
+ 	html_engine_copy (html->engine);
+ 	gtk_selection_owner_set (GTK_WIDGET (html), gdk_atom_intern ("CLIPBOARD", FALSE), gtk_get_current_event_time ());
++	gtk_clipboard_set_can_store (gtk_widget_get_clipboard (GTK_WIDGET (html), GDK_SELECTION_CLIPBOARD ), NULL, 0);
+ }
+ 
+ void

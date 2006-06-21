@@ -1,5 +1,12 @@
 2006-06-19 Jakub Pavelek <jakub.pavelek@nokia.com>
 
+	* Version 3.9.1-2osso2 - not 3.9.1-1osso8 !!!
+	* Stores clipboard when exiting application with gtkhtml widget from
+	  where current clipboard has been copied
+	Fixes N#33185
+
+2006-06-19 Jakub Pavelek <jakub.pavelek@nokia.com>
+
 	* fixes pointers to freed memory by clearing selection when new
 		parsing is begun (gtkhtml_clear_selection.diff)
 	Fixes N#32924
