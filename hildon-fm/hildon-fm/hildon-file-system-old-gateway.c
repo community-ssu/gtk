@@ -1,3 +1,27 @@
+/*
+ * This file is part of hildon-fm package
+ *
+ * Copyright (C) 2006 Nokia Corporation.
+ *
+ * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; version 2.1 of
+ * the License.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA
+ *
+ */
+
 #include <glib.h>
 #define GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
 #include <gtk/gtkfilesystem.h>
@@ -8,21 +32,28 @@
 #include "hildon-file-system-settings.h"
 
 static void
-hildon_file_system_old_gateway_class_init (HildonFileSystemOldGatewayClass *klass);
+hildon_file_system_old_gateway_class_init (HildonFileSystemOldGatewayClass
+                                           *klass);
 static void
 hildon_file_system_old_gateway_finalize (GObject *obj);
 static void
 hildon_file_system_old_gateway_init (HildonFileSystemOldGateway *gateway);
 static gboolean
-hildon_file_system_old_gateway_is_available(HildonFileSystemSpecialLocation *location);
+hildon_file_system_old_gateway_is_available(HildonFileSystemSpecialLocation
+                                            *location);
 static gboolean
-hildon_file_system_old_gateway_is_visible (HildonFileSystemSpecialLocation *location);
+hildon_file_system_old_gateway_is_visible (HildonFileSystemSpecialLocation
+                                           *location);
 static gchar*
-hildon_file_system_old_gateway_get_display_name (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs);
+hildon_file_system_old_gateway_get_display_name (HildonFileSystemSpecialLocation
+                                                 *location, GtkFileSystem *fs);
 static GdkPixbuf*
-hildon_file_system_old_gateway_get_icon (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs, GtkWidget *ref_widget, int size);
+hildon_file_system_old_gateway_get_icon (HildonFileSystemSpecialLocation
+                                         *location, GtkFileSystem *fs,
+                                         GtkWidget *ref_widget, int size);
 static gchar*
-hildon_file_system_old_gateway_get_unavailable_reason (HildonFileSystemSpecialLocation *location);
+hildon_file_system_old_gateway_get_unavailable_reason (
+                HildonFileSystemSpecialLocation *location);
 static void
 gateway_changed (GObject *settings, GParamSpec *param, gpointer data);
 
@@ -36,14 +67,16 @@ static void
 hildon_file_system_old_gateway_class_init (HildonFileSystemOldGatewayClass *klass)
 {
     GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-    HildonFileSystemSpecialLocationClass *location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_CLASS (klass);
+    HildonFileSystemSpecialLocationClass *location =
+            HILDON_FILE_SYSTEM_SPECIAL_LOCATION_CLASS (klass);
 
     gobject_class->finalize = hildon_file_system_old_gateway_finalize;
     location->is_visible = hildon_file_system_old_gateway_is_visible;
     location->is_available = hildon_file_system_old_gateway_is_available;
     location->get_display_name = hildon_file_system_old_gateway_get_display_name;
     location->get_icon = hildon_file_system_old_gateway_get_icon;
-    location->get_unavailable_reason = hildon_file_system_old_gateway_get_unavailable_reason;
+    location->get_unavailable_reason =
+            hildon_file_system_old_gateway_get_unavailable_reason;
 }
 
 static void
@@ -53,7 +86,7 @@ hildon_file_system_old_gateway_init (HildonFileSystemOldGateway *gateway)
     HildonFileSystemSettings *fs_settings;
 
     location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (gateway);
-    location->basepath = g_strdup ("obex://[]/");
+    location->basepath = g_strdup ("obex://[00:00:00:00:00:00]/");
     location->fixed_icon = g_strdup ("qgn_list_filesys_divc_gw");
     location->failed_access_message = _("sfil_ib_cannot_connect_device");
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_GATEWAY;
@@ -87,7 +120,8 @@ hildon_file_system_old_gateway_finalize (GObject *obj)
 }
 
 static gboolean
-hildon_file_system_old_gateway_is_available (HildonFileSystemSpecialLocation *location)
+hildon_file_system_old_gateway_is_available (HildonFileSystemSpecialLocation
+                                             *location)
 {
     HildonFileSystemOldGateway *gateway;
     gateway = HILDON_FILE_SYSTEM_OLD_GATEWAY (location);
@@ -101,7 +135,8 @@ hildon_file_system_old_gateway_is_available (HildonFileSystemSpecialLocation *lo
 }
 
 static gboolean
-hildon_file_system_old_gateway_is_visible (HildonFileSystemSpecialLocation *location)
+hildon_file_system_old_gateway_is_visible (HildonFileSystemSpecialLocation
+                                           *location)
 {
     HildonFileSystemOldGateway *gateway;
     gateway = HILDON_FILE_SYSTEM_OLD_GATEWAY (location);
@@ -110,7 +145,8 @@ hildon_file_system_old_gateway_is_visible (HildonFileSystemSpecialLocation *loca
 }
 
 static gchar*
-hildon_file_system_old_gateway_get_display_name (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs)
+hildon_file_system_old_gateway_get_display_name (HildonFileSystemSpecialLocation
+                                                 *location, GtkFileSystem *fs)
 {
     gchar *name = NULL;
     GtkFileSystemVolume *vol;
@@ -130,7 +166,9 @@ hildon_file_system_old_gateway_get_display_name (HildonFileSystemSpecialLocation
 }
 
 static GdkPixbuf*
-hildon_file_system_old_gateway_get_icon (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs, GtkWidget *ref_widget, int size)
+hildon_file_system_old_gateway_get_icon (HildonFileSystemSpecialLocation
+                                         *location, GtkFileSystem *fs,
+                                         GtkWidget *ref_widget, int size)
 {
     GdkPixbuf *icon = NULL;
     GtkFileSystemVolume *vol;
@@ -155,7 +193,8 @@ hildon_file_system_old_gateway_get_icon (HildonFileSystemSpecialLocation *locati
 }
 
 static gchar*
-hildon_file_system_old_gateway_get_unavailable_reason (HildonFileSystemSpecialLocation *location)
+hildon_file_system_old_gateway_get_unavailable_reason (
+                HildonFileSystemSpecialLocation *location)
 {
     HildonFileSystemOldGateway *gateway;
     gateway = HILDON_FILE_SYSTEM_OLD_GATEWAY (location);

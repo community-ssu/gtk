@@ -1,3 +1,27 @@
+/*
+ * This file is part of hildon-fm package
+ *
+ * Copyright (C) 2006 Nokia Corporation.
+ *
+ * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; version 2.1 of
+ * the License.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA
+ *
+ */
+
 #include <glib.h>
 #define GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
 #include <gtk/gtkfilesystem.h>
@@ -13,13 +37,16 @@ hildon_file_system_mmc_class_init (HildonFileSystemMMCClass *klass);
 static void
 hildon_file_system_mmc_init (HildonFileSystemMMC *device);
 static gchar*
-hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs);
+hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation
+                                         *location, GtkFileSystem *fs);
 static gboolean
 hildon_file_system_mmc_is_available (HildonFileSystemSpecialLocation *location);
 static void
-hildon_file_system_mmc_volumes_changed (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs);
+hildon_file_system_mmc_volumes_changed (HildonFileSystemSpecialLocation
+                                        *location, GtkFileSystem *fs);
 static gchar*
-hildon_file_system_mmc_get_unavailable_reason (HildonFileSystemSpecialLocation *location);
+hildon_file_system_mmc_get_unavailable_reason (HildonFileSystemSpecialLocation
+                                               *location);
 static gchar*
 hildon_file_system_mmc_get_extra_info (HildonFileSystemSpecialLocation *location);
 
@@ -30,12 +57,14 @@ G_DEFINE_TYPE (HildonFileSystemMMC,
 static void
 hildon_file_system_mmc_class_init (HildonFileSystemMMCClass *klass)
 {
-    HildonFileSystemSpecialLocationClass *location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_CLASS (klass);
+    HildonFileSystemSpecialLocationClass *location =
+            HILDON_FILE_SYSTEM_SPECIAL_LOCATION_CLASS (klass);
 
     location->get_display_name = hildon_file_system_mmc_get_display_name;
     location->is_available = hildon_file_system_mmc_is_available;
     location->volumes_changed = hildon_file_system_mmc_volumes_changed;
-    location->get_unavailable_reason = hildon_file_system_mmc_get_unavailable_reason;
+    location->get_unavailable_reason =
+            hildon_file_system_mmc_get_unavailable_reason;
     location->get_extra_info = hildon_file_system_mmc_get_extra_info;
 }
 
@@ -49,7 +78,9 @@ hildon_file_system_mmc_init (HildonFileSystemMMC *device)
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_MMC;
 }
 
-static gchar* hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs)
+static gchar*
+hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation
+                                         *location, GtkFileSystem *fs)
 {
     gchar *name = NULL;
     GtkFileSystemVolume *vol;
@@ -80,7 +111,8 @@ hildon_file_system_mmc_is_available (HildonFileSystemSpecialLocation *location)
 }
 
 static void
-hildon_file_system_mmc_volumes_changed (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs)
+hildon_file_system_mmc_volumes_changed (HildonFileSystemSpecialLocation
+                                        *location, GtkFileSystem *fs)
 {
     GtkFileSystemVolume *vol;
     HildonFileSystemMMC *device;
@@ -115,7 +147,8 @@ hildon_file_system_mmc_volumes_changed (HildonFileSystemSpecialLocation *locatio
 }
 
 static gchar*
-hildon_file_system_mmc_get_unavailable_reason (HildonFileSystemSpecialLocation *location)
+hildon_file_system_mmc_get_unavailable_reason (HildonFileSystemSpecialLocation
+                                               *location)
 {
     HildonFileSystemSettings *fs_settings;
     HildonFileSystemMMC *device;

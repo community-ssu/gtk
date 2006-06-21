@@ -1,3 +1,27 @@
+/*
+ * This file is part of hildon-fm package
+ *
+ * Copyright (C) 2006 Nokia Corporation.
+ *
+ * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; version 2.1 of
+ * the License.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA
+ *
+ */
+
 #include <glib.h>
 #include "hildon-file-common-private.h"
 
@@ -5,7 +29,8 @@
 #include "hildon-file-system-settings.h"
 
 static void
-hildon_file_system_remote_device_class_init (HildonFileSystemRemoteDeviceClass *klass);
+hildon_file_system_remote_device_class_init (HildonFileSystemRemoteDeviceClass
+                                             *klass);
 static void
 hildon_file_system_remote_device_init (HildonFileSystemRemoteDevice *device);
 static void
@@ -13,11 +38,14 @@ hildon_file_system_remote_device_finalize (GObject *obj);
 static void
 flightmode_changed (GObject *settings, GParamSpec *param, gpointer data);
 static gboolean
-hildon_file_system_remote_device_requires_access (HildonFileSystemSpecialLocation *location);
+hildon_file_system_remote_device_requires_access (HildonFileSystemSpecialLocation
+                                                  *location);
 static gboolean
-hildon_file_system_remote_device_is_available (HildonFileSystemSpecialLocation *location);
+hildon_file_system_remote_device_is_available (HildonFileSystemSpecialLocation
+                                               *location);
 static gchar*
-hildon_file_system_remote_device_get_unavailable_reason (HildonFileSystemSpecialLocation *location);
+hildon_file_system_remote_device_get_unavailable_reason (
+                HildonFileSystemSpecialLocation *location);
 
 
 static gpointer parent_class = NULL;
@@ -27,16 +55,19 @@ G_DEFINE_TYPE (HildonFileSystemRemoteDevice,
                HILDON_TYPE_FILE_SYSTEM_SPECIAL_LOCATION);
 
 static void
-hildon_file_system_remote_device_class_init (HildonFileSystemRemoteDeviceClass *klass)
+hildon_file_system_remote_device_class_init (HildonFileSystemRemoteDeviceClass
+                                             *klass)
 {
     GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
-    HildonFileSystemSpecialLocationClass *location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_CLASS (klass);
+    HildonFileSystemSpecialLocationClass *location =
+            HILDON_FILE_SYSTEM_SPECIAL_LOCATION_CLASS (klass);
 
     parent_class = g_type_class_peek_parent (klass);
     gobject_class->finalize = hildon_file_system_remote_device_finalize;
     location->requires_access = hildon_file_system_remote_device_requires_access;
     location->is_available = hildon_file_system_remote_device_is_available;
-    location->get_unavailable_reason = hildon_file_system_remote_device_get_unavailable_reason;
+    location->get_unavailable_reason =
+            hildon_file_system_remote_device_get_unavailable_reason;
 }
 
 static void
@@ -86,13 +117,15 @@ flightmode_changed (GObject *settings, GParamSpec *param, gpointer data)
 }
 
 static gboolean
-hildon_file_system_remote_device_requires_access (HildonFileSystemSpecialLocation *location)
+hildon_file_system_remote_device_requires_access (HildonFileSystemSpecialLocation
+                                                  *location)
 {
     return TRUE;
 }
 
 static gboolean
-hildon_file_system_remote_device_is_available (HildonFileSystemSpecialLocation *location)
+hildon_file_system_remote_device_is_available (HildonFileSystemSpecialLocation
+                                               *location)
 {
     HildonFileSystemRemoteDevice *device;
     device = HILDON_FILE_SYSTEM_REMOTE_DEVICE (location);
@@ -101,7 +134,8 @@ hildon_file_system_remote_device_is_available (HildonFileSystemSpecialLocation *
 }
 
 static gchar*
-hildon_file_system_remote_device_get_unavailable_reason (HildonFileSystemSpecialLocation *location)
+hildon_file_system_remote_device_get_unavailable_reason (
+                HildonFileSystemSpecialLocation *location)
 {
     HildonFileSystemRemoteDevice *device;
 
