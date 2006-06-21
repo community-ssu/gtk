@@ -5,7 +5,7 @@ hildon-fm (1.2-1) unstable; urgency=low
   * Added some missing license texts and fixed some white space.
   * Fixed some localised strings.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 20 Jun 2006 15:17:37 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 21 Jun 2006 14:03:22 +0300
 
 hildon-fm (1.1-1) unstable; urgency=low
 
