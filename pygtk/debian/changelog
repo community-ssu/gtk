@@ -1,3 +1,10 @@
+python-gtk2 (2.6.3-1osso6) unstable; urgency=low
+
+  * added bindings for g_(set|get)_application_name() glib funcions in gtk
+    module.
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 21 Jun 2006 14:03:51 -0300
+
 python-gtk2 (2.6.3-1osso5) unstable; urgency=low
 
   * debian/rules refactored

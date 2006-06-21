@@ -108,3 +108,17 @@
   (return-type "GtkCellRenderer*")
 )
 
+;; glib functions
+
+(define-function set_application_name
+  (c-name "g_set_application_name")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "application")
+  )
+)
+
+(define-function get_application_name
+  (c-name "g_get_application_name")
+  (return-type "const-gchar*")
+)
