@@ -28,6 +28,7 @@
 #include "hildon-file-system-bt.h"
 #include "hildon-file-system-settings.h"
 #include "hildon-file-system-dynamic-device.h"
+#include "hildon-file-common-private.h"
 
 static void
 hildon_file_system_bt_class_init (HildonFileSystemBTClass *klass);
