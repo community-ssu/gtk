@@ -9,7 +9,7 @@ Standards-Version: 3.5.9
 Package: fontconfig
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, gconf2 (>= 2.6.0)
 Description: generic font configuration library
  Fontconfig is a font configuration and customization library, which
  does not depend on the X Window System.  It is designed to locate

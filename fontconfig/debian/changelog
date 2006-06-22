@@ -1,3 +1,9 @@
+fontconfig (2.3.2-2osso2) unstable; urgency=low
+
+  * Added dependency on gconf2 for fontconfig.
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Thu, 22 Jun 2006 17:45:00 +0300
+
 fontconfig (2.3.2-2osso1) unstable; urgency=low
 
   * Bumping up for next OS version
