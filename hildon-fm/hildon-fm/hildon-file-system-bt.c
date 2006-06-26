@@ -83,6 +83,7 @@ hildon_file_system_bt_create_child_location (HildonFileSystemSpecialLocation
     HildonFileSystemSpecialLocation *child = NULL;
     gchar *skipped, *found;
 
+    ULOG_DEBUG_F("uri = '%s'", uri);
     /* We need to check if the given uri is our immediate child. It's
      * guaranteed that it's our child (this is checked by the caller) */
     skipped = uri + strlen (location->basepath);
@@ -91,9 +92,11 @@ hildon_file_system_bt_create_child_location (HildonFileSystemSpecialLocation
      * in the middle (not in the ends) */
     while (*skipped == G_DIR_SEPARATOR) skipped++;
     found = strchr (skipped, G_DIR_SEPARATOR);
+    ULOG_DEBUG_F("skipped = '%s'", skipped);
 
     if (found == NULL || found[1] == 0) {
       /* No middle separators found. That's our child!! */
+      ULOG_DEBUG_F("it's our child");
       child = g_object_new(HILDON_TYPE_FILE_SYSTEM_DYNAMIC_DEVICE, NULL);
       HILDON_FILE_SYSTEM_REMOTE_DEVICE (child)->accessible =
           HILDON_FILE_SYSTEM_REMOTE_DEVICE (location)->accessible;

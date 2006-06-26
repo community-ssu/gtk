@@ -1531,6 +1531,62 @@ static void real_volumes_changed(GtkFileSystem *fs, gpointer data)
             notify_volumes_changed, fs);
 }
 
+/* Removes extra '/' and escaping from the Bluetooth address part. */
+static gchar *fix_obex_path(gchar *path)
+{
+    gchar *copy;
+    gchar *end, *src, *tgt;
+    int i;
+
+    copy = g_strdup(path);
+    if (copy == NULL) {
+        return NULL;
+    }
+    strcpy(copy, "obex://");
+    tgt = copy + 7;
+
+    /* find end of the Bluetooth address part */
+    end = g_strstr_len(path + 8, strlen(path), "/");
+    if (end == NULL) {
+        end = path + strlen(path);
+    }
+
+    src = path + 8; /* beginning of the Bluetooth address */
+    if (g_str_has_prefix(src, "%5B")) {
+        *tgt = '[';
+        ++tgt;
+    } else {
+        g_assert(FALSE);
+    }
+    src += 3;
+
+    for (i = 0; i < 6; ++i) {
+        /* two hex digits */
+        *tgt = *src;
+        ++tgt;
+        ++src;
+        *tgt = *src;
+        ++tgt;
+        ++src;
+
+        /* ':' or ']' */
+        if (g_str_has_prefix(src, "%3A")) {
+            *tgt = ':';
+            ++tgt;
+        } else if (g_str_has_prefix(src, "%5D")) {
+            *tgt = ']';
+            ++tgt;
+        } else {
+            g_assert(FALSE);
+        }
+        src += 3;
+        g_assert(src <= end);
+    }
+    /* copy the rest of the URI as-is */
+    strcpy(tgt, end);
+    return copy;
+}
+
 static GNode *
 hildon_file_system_model_add_node(GtkTreeModel * model,
                                   GNode * parent_node,
@@ -1543,6 +1599,8 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
     GtkFileInfo *file_info = NULL;
     GtkTreePath *tree_path;
     GtkTreeIter iter;
+    const GtkFilePath *fixed_path;
+    gboolean free_path = FALSE;
 
     /* Path can be NULL for removable devices that are not present */
     g_return_val_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model), NULL);
@@ -1551,20 +1609,30 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
 
     priv = CAST_GET_PRIVATE(model);
 
-    ULOG_INFO("Adding %s", (const char *) path);
+    if (g_str_has_prefix((gchar*) path, "obex:///%5B")) {
+        fixed_path = (GtkFilePath*) fix_obex_path((gchar*) path);
+        free_path = TRUE;
+    } else {
+        fixed_path = path;
+    }
+
+    ULOG_INFO("Adding %s (orig. path '%s')", (const char *) fixed_path,
+              (const char *) path);
 
     /* First check if this item is already part of the model */
     {
-  	    node = hildon_file_system_model_search_path_internal(
-  	                  parent_node, path, FALSE);
+        node = hildon_file_system_model_search_path_internal(
+                          parent_node, fixed_path, FALSE);
   	 
-  	    if (node)
-  	    {
-  	       HildonFileSystemModelNode *model_node = node->data;
-  	       g_assert(model_node);
-  	       model_node->present_flag = TRUE;
-           return NULL;
-         }
+        if (node) {
+            HildonFileSystemModelNode *model_node = node->data;
+            g_assert(model_node);
+            model_node->present_flag = TRUE;
+            if (free_path) {
+                g_free((GtkFilePath*) fixed_path);
+            }
+            return NULL;
+        }
     }
 
     _hildon_file_system_prepare_banner();
@@ -1581,7 +1649,7 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
          the model believes that model is loading. See bug #14040. */
         g_signal_handlers_block_by_func(parent_folder,
           hildon_file_system_model_files_added, model);
-        file_info = gtk_file_folder_get_info(parent_folder, path, &error);
+        file_info = gtk_file_folder_get_info(parent_folder, fixed_path, &error);
         g_signal_handlers_unblock_by_func(parent_folder,
           hildon_file_system_model_files_added, model);
 
@@ -1590,6 +1658,9 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         {
           ULOG_ERR(error->message);
           g_error_free(error);
+          if (free_path) {
+              g_free((GtkFilePath*) fixed_path);
+          }
           return NULL;
         }
 
@@ -1601,14 +1672,15 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
     model_node->model = HILDON_FILE_SYSTEM_MODEL(model);
     model_node->present_flag = TRUE;
     model_node->available = TRUE;
-    model_node->path = gtk_file_path_copy(path);    
+    model_node->path = gtk_file_path_copy(fixed_path);    
 
     node = g_node_new(model_node);
     g_node_append(parent_node, node);
 
     if (!parent_folder || (file_info && gtk_file_info_get_is_folder(file_info)))
     {
-        model_node->location = _hildon_file_system_get_special_location(priv->filesystem, path);
+        model_node->location = _hildon_file_system_get_special_location(
+                                   priv->filesystem, fixed_path);
         setup_node_for_location(node);
     }
 
@@ -1621,7 +1693,8 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
        that's better than nothing... */
     if (!model_node->location)
     {
-      gchar *local_path = gtk_file_system_path_to_filename(priv->filesystem, path);
+      gchar *local_path = gtk_file_system_path_to_filename(priv->filesystem,
+                                                           fixed_path);
 
       if (local_path)
       {
@@ -1651,6 +1724,9 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
                                                         parent_node);
     }
 
+    if (free_path) {
+        g_free((GtkFilePath*) fixed_path);
+    }
     return node;
 }
 
