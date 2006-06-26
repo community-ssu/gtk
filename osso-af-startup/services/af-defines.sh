@@ -86,6 +86,10 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
 
     # enable UPnP/AV support
     export UPNP_ROOT='upnpav://'
+
+    # enable multiple BT device support
+    export DISABLE_GATEWAY=1
+    export HILDON_FM_OBEX_ROOT='obex://'
   else
     export OSSO_SWAP=$MMC_MOUNTPOINT
   fi

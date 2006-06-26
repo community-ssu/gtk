@@ -1,3 +1,10 @@
+osso-af-startup (1.21-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added definition for HILDON_FM_OBEX_ROOT and DISABLE_GATEWAY.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 26 Jun 2006 18:37:24 +0300
+
 osso-af-startup (1.20-1) unstable; urgency=low
 
   * Added definition for UPNP_ROOT.
