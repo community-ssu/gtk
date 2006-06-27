@@ -93,10 +93,30 @@ hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation
         gtk_file_system_volume_free (fs, vol);
     }
 
-    /* TODO: Add support for another memory card */
     if (!name)
     {
-        name =  g_strdup (_("sfil_li_memorycard_removable"));
+        const gchar *env;
+
+        env = g_getenv ("INTERNAL_MMC_MOUNTPOINT");
+        if (env && env[0])
+        {
+            gchar *prefix;
+
+            prefix = g_strconcat ("file://", env);
+            if (prefix != NULL &&
+                g_str_has_prefix (location->basepath, prefix))
+            {
+                name = g_strdup (_("sfil_li_memorycard_internal"));
+            }
+            if (prefix != NULL)
+            {
+                g_free (prefix);
+            }
+        }
+        if (name == NULL)
+        {
+            name = g_strdup (_("sfil_li_memorycard_removable"));
+        }
     }
 
     return name;

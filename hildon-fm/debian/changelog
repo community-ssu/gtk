@@ -9,6 +9,7 @@ hildon-fm (1.2-1) unstable; urgency=low
     Fixes: NB#31683
   * Now moving selection to Gateway before trying to connect to it.
     Fixes: NB#29953
+  * Fixed names of memory cards when the localised name is used.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 27 Jun 2006 12:42:19 +0300
 
