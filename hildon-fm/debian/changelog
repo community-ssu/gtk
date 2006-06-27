@@ -1,11 +1,11 @@
-hildon-fm (1.2-1) unstable; urgency=low
+hildon-fm (1.2-2) unstable; urgency=low
 
+  * (This is fixed changelog entry, otherwise same as 1.2-1.)
   * Added support for multiple Bluetooth devices.
   * Added some missing license texts and fixed some white space.
   * Fixed some localised strings. Fixes: NB#33233
   * Added missing if statement. Fixes: NB#33126, NB#33391, NB#27008
   * Fixed too persistent Updating banner when deleting files from Gateway.
-    Fixes: NB#31683
   * Now moving selection to Gateway before trying to connect to it.
     Fixes: NB#29953
   * Fixed names of memory cards when the localised name is used.
