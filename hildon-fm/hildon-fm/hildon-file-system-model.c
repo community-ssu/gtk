@@ -1399,6 +1399,8 @@ link_file_folder(GNode *node, const GtkFilePath *path, GError **error)
   model = model_node->model;
   g_assert(HILDON_IS_FILE_SYSTEM_MODEL(model));
 
+  ULOG_INFO_F("%s", (char *) path);
+
   model_node->folder =
      gtk_file_system_get_folder(model->priv->filesystem, 
             path, GTK_FILE_INFO_ALL, error);
@@ -2213,11 +2215,14 @@ location_connection_state_changed(HildonFileSystemSpecialLocation *location,
         if (hildon_file_system_special_location_is_available(location))
         {
             ULOG_INFO("Location %s is now available", (char *) model_node->path);
-    
-            if (!link_file_folder(node, model_node->path, &error))
-            {
-                ULOG_ERR(error->message);
-                g_error_free(error);
+
+            if (!hildon_file_system_special_location_requires_access(location))
+            {    
+                if (!link_file_folder(node, model_node->path, &error))
+                {
+                    ULOG_ERR(error->message);
+                    g_error_free(error);
+                }
             }
         } else {
             ULOG_INFO("Location %s is no longer available", 
