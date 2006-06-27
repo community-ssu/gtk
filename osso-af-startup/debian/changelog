@@ -2,8 +2,10 @@ osso-af-startup (1.21-1) unstable; urgency=low
 
   * UNRELEASED
   * Added definition for HILDON_FM_OBEX_ROOT and DISABLE_GATEWAY.
+  * Moved the restore application to appear before the startup wizard.
+    Fixes: NB#30976
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 26 Jun 2006 18:37:24 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 27 Jun 2006 15:23:15 +0300
 
 osso-af-startup (1.20-1) unstable; urgency=low
 
