@@ -102,7 +102,7 @@ hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation
         {
             gchar *prefix;
 
-            prefix = g_strconcat ("file://", env);
+            prefix = g_strconcat ("file://", env, NULL);
             if (prefix != NULL &&
                 g_str_has_prefix (location->basepath, prefix))
             {
