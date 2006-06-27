@@ -1507,6 +1507,11 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
                 g_timeout_add(500, hildon_file_selection_check_load_banner,
                               data);
 
+        /* Force all pending exposes to be handled, so the selection is 
+           redrawn. This hack can be removed once the mount_device_iter 
+           doesn't block any more */
+        gdk_window_process_all_updates();
+
         /* This can invalidate non-persisting iterators, so we need to do
            mounting as last action. */
         success =
