@@ -4,7 +4,9 @@ hildon-fm (1.2-1) unstable; urgency=low
   * Added support for multiple Bluetooth devices.
   * Added some missing license texts and fixed some white space.
   * Fixed some localised strings.
-  * Added missing if statement. Partially Fixes: NB#33126
+  * Added missing if statement. Fixes: NB#33126
+  * Fixed too persistent Updating banner when deleting files from Gateway.
+    Fixes: NB#31683
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 27 Jun 2006 12:42:19 +0300
 

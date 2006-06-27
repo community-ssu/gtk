@@ -1658,6 +1658,7 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         /* If file is created and then renamed it can happen that file with this name no longer exists. */
         if (error)
         {
+          _hildon_file_system_cancel_banner();
           ULOG_ERR(error->message);
           g_error_free(error);
           if (free_path) {
