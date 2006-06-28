@@ -1988,11 +1988,12 @@ encode_upgrades ()
   response.encode_string (NULL);
 }
 
-/* We modify the pkgDPkgPM package manager slightly so that it never
-   attempts to configure packages that are not otherwise operated on
-   during a package management run.  We do this to so that we only get
-   failure reports for the actual packages being worked on, and not
-   for ones that failed to configure in an earlier run.
+/* We modify the pkgDPkgPM package manager so that we can provide our
+   own method of constructing the 'order list', the ordered list of
+   packages to handle.  We do this to ignore packages that should be
+   kept.  Ordinarily, if a package should be kept but needs to be
+   reinstalled or configured, libapt-pkg will try to do that with
+   every operation.
 
    XXX - there might be a way to get the same effect by cleverly
          manipulating the pkgDepCache, but I would have to look
@@ -2001,20 +2002,49 @@ encode_upgrades ()
 
 class myDPkgPM : public pkgDPkgPM
 {
-  virtual bool Configure(PkgIterator Pkg);
-  
 public:
+
+  bool CreateOrderList ();
 
   myDPkgPM(pkgDepCache *Cache);
 };
 
 bool
-myDPkgPM::Configure (PkgIterator Pkg)
+myDPkgPM::CreateOrderList ()
 {
-  for (int i = 0; i < List.size (); i++)
-    if (List[i].Pkg == Pkg)
-      return pkgDPkgPM::Configure (Pkg);
-  log_stderr ("not configuring unrelated package %s", Pkg.Name ());
+  if (pkgPackageManager::List != 0)
+    return true;
+   
+  delete pkgPackageManager::List;
+  pkgPackageManager::List = new pkgOrderList(&Cache);
+   
+  // Generate the list of affected packages and sort it
+  for (PkgIterator I = Cache.PkgBegin(); I.end() == false; I++)
+    {
+      // Ignore no-version packages
+      if (I->VersionList == 0)
+	continue;
+      
+      // Not interesting
+      if ((Cache[I].Keep() == true || 
+	   Cache[I].InstVerIter(Cache) == I.CurrentVer()) && 
+	  I.State() == pkgCache::PkgIterator::NeedsNothing &&
+	  (Cache[I].iFlags & pkgDepCache::ReInstall) != pkgDepCache::ReInstall &&
+	  (I.Purge() != false || Cache[I].Mode != pkgDepCache::ModeDelete ||
+	   (Cache[I].iFlags & pkgDepCache::Purge) != pkgDepCache::Purge))
+	continue;
+      
+      // Ignore interesting but kept packages
+      if (Cache[I].Keep() == true)
+	{
+	  log_stderr ("Not handling kept package %s.", I.Name());
+	  continue;
+	}
+      
+      // Append it to the list
+      pkgPackageManager::List->push_back(I);      
+    }
+   
   return true;
 }
 
@@ -2040,15 +2070,15 @@ operation (bool check_only)
    pkgCacheFile &Cache = *package_cache;
 
    if (_config->FindB("APT::Get::Purge",false) == true)
-   {
-      pkgCache::PkgIterator I = Cache->PkgBegin();
-      for (; I.end() == false; I++)
-      {
-	 if (I.Purge() == false && Cache[I].Mode == pkgDepCache::ModeDelete)
-	    Cache->MarkDelete(I,true);
-      }
-   }
-   
+     {
+       pkgCache::PkgIterator I = Cache->PkgBegin();
+       for (; I.end() == false; I++)
+	 {
+	   if (I.Purge() == false && Cache[I].Mode == pkgDepCache::ModeDelete)
+	     Cache->MarkDelete(I,true);
+	 }
+     }
+
    bool Fail = false;
    
    if (Cache->DelCount() == 0 && Cache->InstCount() == 0 &&
@@ -2084,8 +2114,18 @@ operation (bool check_only)
        return rescode_failure;
      }
    
-   // Create the package manager and prepare to download
-   SPtr<pkgPackageManager> Pm = new myDPkgPM (Cache);
+   // Create the package manager
+   //
+   SPtr<myDPkgPM> Pm = new myDPkgPM (Cache);
+   
+   // Create the order list explicitely in a way that we like.  We
+   // have to do it explicitely since CreateOrderList is not virtual.
+   //
+   if (!Pm->CreateOrderList ())
+     return rescode_failure;
+
+   // Prepare to download
+   //
    if (Pm->GetArchives(&Fetcher,&List,&Recs) == false || 
        _error->PendingError() == true)
      return rescode_failure;

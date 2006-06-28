@@ -1,3 +1,13 @@
+2006-06-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Implement a better way to ignore unrelated packages.  This one
+	ignores all kept packages, not only the NeedsConfigure kepts ones.
+	
+	* src/apt-worker.cc (myDPkgPM::CreateOrderList): New.
+	(myDPkgPM::Configure): Removed, it is no longer needed.
+	(operation): Call myDPkgPM::CreateOrderList explicitely since it
+	is not virtual.
+
 2006-06-20  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.22
