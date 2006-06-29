@@ -2674,36 +2674,12 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
 void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
   GtkTreeIter *parent_iter, gboolean force)
 {
-  HildonFileSystemModelNode *model_node;
-  GNode *node;
-  time_t current_time;
-  gboolean removable;
-
   g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
   g_return_if_fail(parent_iter != NULL);
   g_return_if_fail(parent_iter->stamp == model->priv->stamp);
 
-  node = parent_iter->user_data;
-  model_node = node->data;
-  g_assert(model_node != NULL);
-
-  /* Check if we really need to load children. We don't want 
-     to reload if not needed and we don't want to restart existing
-     async loadings. We also don't try to access gateway if not accessed yet.*/
-  if (model_node->type < HILDON_FILE_SYSTEM_MODEL_FOLDER ||
-     (model_node->type == HILDON_FILE_SYSTEM_MODEL_GATEWAY &&
-      !model->priv->gateway_accessed) ||
-    model_node->folder == NULL ||
-    !is_node_loaded(model->priv, node) || model_node->path == NULL)
-    return;
-
-  current_time = time(NULL);
-  removable = !gtk_file_system_path_is_local(model->priv->filesystem, 
-      model_node->path);
-
-  if (model_node->load_time == 0 ||
-     ((abs(current_time - model_node->load_time) > RELOAD_THRESHOLD) &&
-     (removable || model_node->error)))
+  if (g_queue_find(model->priv->reload_list, parent_iter->user_data) == NULL)
+  {
     hildon_file_system_model_ensure_idle(model);
     g_queue_push_tail(model->priv->reload_list, parent_iter->user_data);
   }
@@ -2716,7 +2692,8 @@ void _hildon_file_system_model_load_children(HildonFileSystemModel *model,
   g_return_if_fail(parent_iter != NULL);
   g_return_if_fail(parent_iter->stamp == model->priv->stamp);
 
-  _hildon_file_system_model_queue_reload(model, parent_iter, FALSE);
+  hildon_file_system_model_delayed_add_children(model,
+                                                  parent_iter->user_data, FALSE);
   wait_node_load(model->priv, parent_iter->user_data);  
 }
 
@@ -2913,10 +2890,8 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
             return FALSE;
     
         model_node->accessed = TRUE;
-        priv->gateway_accessed = TRUE;
 
-        _hildon_file_system_model_queue_reload(model, iter, TRUE);
-
+        hildon_file_system_model_delayed_add_children(model, node, TRUE);
         return TRUE;
       }
     }
