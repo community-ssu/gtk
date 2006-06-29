@@ -7,8 +7,8 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * as published by the Free Software Foundation; version 2.1 of
+ * the License.
  *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -270,7 +270,8 @@ hildon_file_details_dialog_class_init(HildonFileDetailsDialogClass * klass)
                                    g_param_spec_object("additional-tab",
                                    "Additional tab",
                                    "Tab to show additinal information",
-						       GTK_TYPE_WIDGET, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+			           GTK_TYPE_WIDGET,
+                                   G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   /**
    * HildonFileDetailsDialog:show_tabs:
    *
@@ -313,9 +314,9 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     HildonFileDetailsDialogPrivate *priv;
 
     /* Initialize the private property */
-    self->priv = priv =
-      G_TYPE_INSTANCE_GET_PRIVATE(self, \
-          HILDON_TYPE_FILE_DETAILS_DIALOG, HildonFileDetailsDialogPrivate);
+    self->priv = priv = G_TYPE_INSTANCE_GET_PRIVATE(self,
+                                HILDON_TYPE_FILE_DETAILS_DIALOG,
+                                HildonFileDetailsDialogPrivate);
 
     priv->notebook = GTK_NOTEBOOK(gtk_notebook_new());
     scroll = gtk_scrolled_window_new(NULL, NULL);
@@ -342,9 +343,11 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     priv->file_location_image = gtk_image_new();
     priv->file_device_image = gtk_image_new();
 
-    gtk_box_pack_start(GTK_BOX(hbox_location), priv->file_location_image, FALSE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_location), priv->file_location_image,
+                       FALSE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(hbox_location), priv->file_location, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(hbox_device), priv->file_device_image, FALSE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_device), priv->file_device_image, FALSE,
+                       TRUE, 0);
     gtk_box_pack_start(GTK_BOX(hbox_device), priv->file_device, TRUE, TRUE, 0);
 
     /* Create captions for the dialog */
@@ -352,9 +355,11 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
       priv->file_name, NULL, HILDON_CAPTION_OPTIONAL);
     caption_type = hildon_caption_new(group, _("ckdg_fi_properties_type_prompt"), 
       priv->file_type, NULL, HILDON_CAPTION_OPTIONAL);
-    caption_location = hildon_caption_new(group, _("sfil_fi_properties_location_prompt"), 
-      hbox_location, NULL, HILDON_CAPTION_OPTIONAL);
-    caption_device = hildon_caption_new(group, _("sfil_fi_properties_device_prompt"), 
+    caption_location = hildon_caption_new(group,
+                               _("sfil_fi_properties_location_prompt"), 
+                               hbox_location, NULL, HILDON_CAPTION_OPTIONAL);
+    caption_device = hildon_caption_new(group,
+                               _("sfil_fi_properties_device_prompt"), 
       hbox_device, NULL, HILDON_CAPTION_OPTIONAL);
     caption_date = hildon_caption_new(group, _("ckdg_fi_properties_date_prompt"), 
       priv->file_date, NULL, HILDON_CAPTION_OPTIONAL);
@@ -672,23 +677,23 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
   g_object_set(self->priv->file_type, "label", _(mime), NULL);
 
   if (size < 1024)
-    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_kb"), 1);
+    g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_kb"), 1);
   else if (size < 100 * 1024)
-    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_1kb_99kb"),
+    g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_1kb_99kb"),
                size / 1024);
   else if (size < 1024 * 1024)
-    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_100kb_1mb"),
+    g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_100kb_1mb"),
                size / (1024.0f * 1024.0f));
   else if (size < 10 * 1024 * 1024)
-    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_1mb_10mb"),
+    g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_1mb_10mb"),
                size / (1024.0f * 1024.0f));
   else if (size < 1024 * 1024 * 1024)
-    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_10mb_1gb"),
+    g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_10mb_1gb"),
                size / (1024 * 1024));
   else
     /* Following calculation doesn't fit into 32 bits if the
      * filesize is larger than 2^62 ;) */
-    g_snprintf(buffer, sizeof(buffer), _("sfil_li_size_1gb_or_greater"),
+    g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_1gb_or_greater"),
                size / (1024.0f * 1024.0f * 1024.0f));
 
   g_object_set(self->priv->file_size, "label", buffer, NULL);
