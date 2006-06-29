@@ -683,7 +683,7 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
                size / 1024);
   else if (size < 1024 * 1024)
     g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_100kb_1mb"),
-               size / (1024.0f * 1024.0f));
+               size / 1024);
   else if (size < 10 * 1024 * 1024)
     g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_1mb_10mb"),
                size / (1024.0f * 1024.0f));
