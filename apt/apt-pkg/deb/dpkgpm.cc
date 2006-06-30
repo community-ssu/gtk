@@ -612,9 +612,6 @@ bool pkgDPkgPM::Go(int OutStatusFd)
 	 if (_config->FindB("Debug::pkgDPkgProgressReporting",false) == true)
 	    std::clog << "got from dpkg '" << line << "'" << std::endl;
 
-	 // the status we output
-	 ostringstream status;
-
 	 /* dpkg sends strings like this:
 	    'status:   <pkg>:  <pkg  qstate>'
 	    errors look like this:
@@ -630,6 +627,8 @@ bool pkgDPkgPM::Go(int OutStatusFd)
 
 	 if(strncmp(action,"error",strlen("error")) == 0)
 	 {
+	    ostringstream status;
+
 	    status << "pmerror:" << list[1]
 		   << ":"  << (Done/float(Total)*100.0) 
 		   << ":" << list[3]
@@ -643,6 +642,8 @@ bool pkgDPkgPM::Go(int OutStatusFd)
 	 }
 	 if(strncmp(action,"conffile",strlen("conffile")) == 0)
 	 {
+	    ostringstream status;
+
 	    status << "pmconffile:" << list[1]
 		   << ":"  << (Done/float(Total)*100.0) 
 		   << ":" << list[3]
@@ -662,6 +663,8 @@ bool pkgDPkgPM::Go(int OutStatusFd)
 	 // check if the package moved to the next dpkg state
 	 if(next_action && (strcmp(action, next_action) == 0)) 
 	 {
+	    ostringstream status;
+
 	    // only read the translation if there is actually a next
 	    // action
 	    const char *translation = states[PackageOpsDone[pkg]].str;

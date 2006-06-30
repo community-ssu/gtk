@@ -33,6 +33,8 @@
 using std::string;
 using std::min;
 
+#include <stdint.h>
+
 class MD5Summation;
 
 class MD5SumValue
