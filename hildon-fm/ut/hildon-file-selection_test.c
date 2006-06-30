@@ -92,7 +92,8 @@ int test002(void)
   gtk_widget_show_all(window);
 
   hildon_file_selection_set_mode(fs, HILDON_FILE_SELECTION_MODE_THUMBNAILS);
-  assert((hildon_file_selection_get_mode(fs) == HILDON_FILE_SELECTION_MODE_THUMBNAILS));
+  assert(hildon_file_selection_get_mode(fs) ==
+         HILDON_FILE_SELECTION_MODE_THUMBNAILS);
 
   gtk_widget_destroy(window);
 
@@ -108,7 +109,8 @@ int test003(void){
   model = g_object_new(HILDON_TYPE_FILE_SYSTEM_MODEL, NULL);
   fs = HILDON_FILE_SELECTION(hildon_file_selection_new_with_model(model));
 
-  hildon_file_selection_set_sort_key(fs, HILDON_FILE_SELECTION_SORT_SIZE, GTK_SORT_ASCENDING);
+  hildon_file_selection_set_sort_key(fs, HILDON_FILE_SELECTION_SORT_SIZE,
+                                     GTK_SORT_ASCENDING);
   hildon_file_selection_get_sort_key(fs,&key,&order);
 
   assert(key == HILDON_FILE_SELECTION_SORT_SIZE);
@@ -122,13 +124,16 @@ int test004(void) {
   HildonFileSystemModel *model;
   GtkFilePath *path, *path2;
   GtkTreeIter iter;
+  gboolean ret;
  
   model = g_object_new(HILDON_TYPE_FILE_SYSTEM_MODEL, NULL);
   fs = HILDON_FILE_SELECTION(hildon_file_selection_new_with_model(model));
 
   path = hildon_file_selection_get_current_folder(fs);  
-  hildon_file_selection_get_current_folder_iter(fs, &iter);
-  gtk_tree_model_get(GTK_TREE_MODEL(model), &iter, HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH, &path2, -1);
+  ret = hildon_file_selection_get_current_folder_iter(fs, &iter);
+  assert(ret);
+  gtk_tree_model_get(GTK_TREE_MODEL(model), &iter,
+                     HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH, &path2, -1);
   g_assert(gtk_file_path_compare(path, path2) == 0);
 
   return 1;
