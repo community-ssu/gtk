@@ -1,0 +1,68 @@
+#! /bin/sh -e
+## 05statusparse.dpatch by  <mvo@>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Robustify parsing of dpkg status output
+
+if [ $# -lt 1 ]; then
+    echo "`basename $0`: script expects -patch|-unpatch as argument" >&2
+    exit 1
+fi
+
+[ -f debian/patches/00patch-opts ] && . debian/patches/00patch-opts
+patch_opts="${patch_opts:--f --no-backup-if-mismatch} ${2:+-d $2}"
+
+case "$1" in
+    -patch) patch -p0 ${patch_opts} < $0;;
+    -unpatch) patch -R -p0 ${patch_opts} < $0;;
+    *)
+        echo "`basename $0`: script expects -patch|-unpatch as argument" >&2
+        exit 1;;
+esac
+
+exit 0
+
+@DPATCH@
+
+Index: apt-pkg/deb/dpkgpm.cc
+===================================================================
+--- apt-pkg/deb/dpkgpm.cc	(revision 5176)
++++ apt-pkg/deb/dpkgpm.cc	(working copy)
+@@ -620,8 +620,15 @@
+ 	    'status: conffile-prompt: conffile : 'current-conffile' 'new-conffile' useredited distedited
+ 	    
+ 	 */
+-	 char* list[4];
+-	 TokSplitString(':', line, list, 5);
++	 char* list[4] = { NULL, NULL, NULL, NULL };
++	 TokSplitString(':', line, list, 4);
++
++	 if (list[0] == NULL || strcmp (list[0], "status"))
++	   continue;
++
++	 if (list[1] == NULL || list[2] == NULL)
++	   continue;
++
+ 	 char *pkg = list[1];
+ 	 char *action = _strstrip(list[2]);
+ 
+@@ -629,6 +636,9 @@
+ 	 {
+ 	    ostringstream status;
+ 
++	    if (list[3] == NULL)
++	      continue;
++
+ 	    status << "pmerror:" << list[1]
+ 		   << ":"  << (Done/float(Total)*100.0) 
+ 		   << ":" << list[3]
+@@ -644,6 +654,9 @@
+ 	 {
+ 	    ostringstream status;
+ 
++	    if (list[3] == NULL)
++	      continue;
++
+ 	    status << "pmconffile:" << list[1]
+ 		   << ":"  << (Done/float(Total)*100.0) 
+ 		   << ":" << list[3]
