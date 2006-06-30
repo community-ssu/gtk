@@ -1,0 +1,40 @@
+#! /bin/sh -e
+## 99-unnamed.dpatch by Yauheni Kaliuta <y.kaliuta@gmail.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+if [ $# -lt 1 ]; then
+    echo "`basename $0`: script expects -patch|-unpatch as argument" >&2
+    exit 1
+fi
+
+[ -f debian/patches/00patch-opts ] && . debian/patches/00patch-opts
+patch_opts="${patch_opts:--f --no-backup-if-mismatch} ${2:+-d $2}"
+
+case "$1" in
+    -patch) patch -p1 ${patch_opts} < $0;;
+    -unpatch) patch -R -p1 ${patch_opts} < $0;;
+    *)
+        echo "`basename $0`: script expects -patch|-unpatch as argument" >&2
+        exit 1;;
+esac
+
+exit 0
+
+@DPATCH@
+diff -rN -u old-apt/Makefile new-apt/Makefile
+--- old-apt/Makefile	2006-04-10 19:40:50.000000000 +0300
++++ new-apt/Makefile	2006-04-10 19:40:50.000000000 +0300
+@@ -17,8 +17,8 @@
+ 	$(MAKE) -C cmdline $@
+ 	$(MAKE) -C ftparchive $@
+ 	$(MAKE) -C dselect $@
+-	$(MAKE) -C doc $@
+-	$(MAKE) -C po $@
++#	$(MAKE) -C doc $@
++#	$(MAKE) -C po $@
+ 
+ # Some very common aliases
+ .PHONY: maintainer-clean dist-clean distclean pristine sanity 
+

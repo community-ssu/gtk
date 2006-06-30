@@ -1,0 +1,48 @@
+Source: apt
+Section: admin
+Priority: important
+Maintainer: APT Development Team <deity@lists.debian.org>
+Uploaders: Jason Gunthorpe <jgg@debian.org>, Adam Heath <doogie@debian.org>, Matt Zimmerman <mdz@debian.org>, Michael Vogt <mvo@debian.org>
+Standards-Version: 3.6.1
+Build-Depends: debhelper (>= 4.1.62), gettext (>= 0.12), dpatch
+
+Package: apt
+Architecture: any
+Depends: ${shlibs:Depends}
+Priority: important
+Replaces: libapt-pkg-doc (<< 0.3.7), libapt-pkg-dev (<< 0.3.7)
+Provides: ${libapt-pkg:provides}
+Suggests: aptitude | synaptic | gnome-apt | wajig, dpkg-dev, apt-doc, bzip2, gnupg
+Section: admin
+Description: Advanced front-end for dpkg
+ This is Debian's next generation front-end for the dpkg package manager.
+ It provides the apt-get utility and APT dselect method that provides a 
+ simpler, safer way to install and upgrade packages.
+ .
+ APT features complete installation ordering, multiple source capability
+ and several other unique features, see the Users Guide in apt-doc.
+
+Package: libapt-pkg-dev
+Architecture: any
+Priority: optional
+Depends: apt (= ${Source-Version}), apt-utils (= ${Source-Version}), ${libapt-pkg:provides}, ${libapt-inst:provides}
+Section: libdevel
+Description: Development files for APT's libapt-pkg and libapt-inst
+ This package contains the header files and libraries for
+ developing with APT's libapt-pkg Debian package manipulation
+ library and the libapt-inst deb/tar/ar library.
+
+Package: apt-utils
+Architecture: any
+Depends: ${shlibs:Depends}
+Priority: important
+Provides: ${libapt-inst:provides}
+Replaces: apt (<< 0.5.9)
+Section: admin
+Description: APT utility programs
+ This package contains some APT utility programs such as apt-ftparchive,
+ apt-sortpkgs and apt-extracttemplates.
+ .
+ apt-extracttemplates is used by debconf to prompt for configuration 
+ questions before installation. apt-ftparchive is used to create Package
+ and other index files. apt-sortpkgs is a Package/Source file normalizer.

@@ -1,0 +1,305 @@
+#!/usr/bin/make -f
+# Made with the aid of dh_make, by Craig Small
+# Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.
+# Some lines taken from debmake, by Christoph Lameter.
+# $Id: rules,v 1.68 2004/05/30 18:21:43 mdz Exp $
+
+# LD_LIBRARY_PATH=pwd/$(DEBIAN_DIR)/apt/usr/lib dh_shlibdeps -papt
+# dpkg: /home/jgg/work/apt2/debian/apt/usr/lib/libapt-pkg.so.2.9 not found.
+
+# For the deb builder, you can run '$(DEBIAN_DIR)/rules cvs-build', which does all
+# steps nescessary to produce a proper source tarball with the CVS/ removed.
+# It builds in $(DEBIAN_DIR)/cvs-build/apt-<VER>/, and places files in
+# $(DEBIAN_DIR)/cvs-build/.  Optionally, you can run '$(DEBIAN_DIR)/rules cvs-mkul' to
+# create ../upload-<VER>, with all the files needed to be uploaded placed
+# in it.
+
+DEBIAN_DIR ?= debian
+
+include /usr/share/dpatch/dpatch.make
+
+export DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+# FOR AUTOCONF 2.52 AND NEWER ONLY
+ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
+  confflags += --build $(DEB_HOST_GNU_TYPE)
+else
+  confflags += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+endif
+
+# See below
+-include build/environment.mak
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+  export CXXFLAGS = -O0 -g -Wall
+else
+  export CXXFLAGS = -Os -g -Wall
+endif
+
+# Use soft-float and thumb mode if it enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+	CFLAGS   += -mthumb
+	CXXFLAGS += -mthumb
+endif
+
+export CXXFLAGS CFLAGS
+
+# Default rule
+build:
+
+DEB_BUILD_PROG:=debuild --preserve-envvar PATH --preserve-envvar CCACHE_DIR -us -uc $(DEB_BUILD_PROG_OPTS)
+APT_DEBVER=$(shell dpkg-parsechangelog |sed -n -e '/^Version:/s/^Version: //p')
+APT_CONFVER=$(shell sed -n -e 's/^AC_DEFINE_UNQUOTED(VERSION,"\(.*\)")/\1/p' configure.in)
+APT_CVSTAG=$(shell echo "$(APT_DEBVER)" | sed -e 's/^/v/' -e 's/\./_/g')
+
+# Determine the build directory to use
+BASE=.
+ifdef BUILD
+BUILD_POSSIBLE := $(BUILD) $(BASE)/$(BUILD)
+else
+BUILD_POSSIBLE := $(BASE) $(BASE)/build-$(shell uname -m) $(BASE)/build
+endif
+BUILDX:= $(foreach i,$(BUILD_POSSIBLE),$(wildcard $(i)/environment.mak*))
+BUILDX:= $(patsubst %/,%,$(firstword $(dir $(BUILDX))))
+override BLD := $(BUILDX)
+
+ifeq ($(words $(BLD)),0)
+override BLD := ./build
+endif
+
+# Rebuild configure.in to have the correct version from the change log
+ifneq ($(APT_DEBVER),$(APT_CONFVER))
+ifneq ($(APT_DEBVER),)
+.PHONY: configure.in
+configure.in:
+	sed -e 's/$(APT_CONFVER)/$(APT_DEBVER)/' $@ > $@.$$$$ && mv $@.$$$$ $@
+endif
+else
+configure.in:
+endif
+
+# APT Programs in apt-utils
+APT_UTILS=sortpkgs extracttemplates
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# Find the libapt-pkg major version for use in other control files
+export LIBAPTPKG_MAJOR:=$(shell egrep '^MAJOR=' apt-pkg/makefile |cut -d '=' -f 2)
+export LIBAPTINST_MAJOR:=$(shell egrep '^MAJOR=' apt-inst/makefile |cut -d '=' -f 2)
+
+# Determine which package we should provide in the control files
+LIBAPTPKG_PROVIDE=libapt-pkg$(GLIBC_VER)$(LIBSTDCPP_VER)-$(LIBAPTPKG_MAJOR)
+LIBAPTINST_PROVIDE=libapt-inst$(GLIBC_VER)$(LIBSTDCPP_VER)-$(LIBAPTINST_MAJOR)
+
+$(DEBIAN_DIR)/shlibs.local: apt-pkg/makefile
+	# We have 3 shlibs.local files.. One for 'apt', one for 'apt-utils' and
+	# one for the rest of the packages. This ensures that each package gets
+	# the right overrides.. 
+	rm -rf $@ $@.apt $@.apt-utils
+	echo "libapt-pkg$(GLIBC_VER)$(LIBSTDCPP_VER) $(LIBAPTPKG_MAJOR)" > $@.apt
+
+	echo "libapt-pkg$(GLIBC_VER)$(LIBSTDCPP_VER) $(LIBAPTPKG_MAJOR) $(LIBAPTPKG_PROVIDE)" > $@.apt-utils
+	echo "libapt-inst$(GLIBC_VER)$(LIBSTDCPP_VER) $(LIBAPTINST_MAJOR)" >> $@.apt-utils
+
+	echo "libapt-pkg$(GLIBC_VER)$(LIBSTDCPP_VER) $(LIBAPTPKG_MAJOR) $(LIBAPTPKG_PROVIDE)" > $@
+	echo "libapt-inst$(GLIBC_VER)$(LIBSTDCPP_VER) $(LIBAPTINST_MAJOR) $(LIBAPTINST_PROVIDE)" >> $@
+
+build: build/build-stamp	
+
+# Note that this is unconditionally done first as part of loading environment.mak
+# The true is needed to force make to reload environment.mak after running
+# configure-stamp. Otherwise we can get stale or invalid, or missing config data.
+build/environment.mak: build/configure-stamp
+	@true
+
+configure: configure.in
+build/configure-stamp: configure
+	dh_testdir
+	-mkdir build
+	cp COPYING $(DEBIAN_DIR)/copyright
+	cd build && CXXFLAGS="$(CXXFLAGS)" ../configure $(confflags)
+	touch $@
+
+build/build-stamp: build/configure-stamp patch-stamp
+	# Add here commands to compile the package.
+	$(MAKE) binary
+	touch $@
+
+clean: unpatch
+	dh_testdir
+#	dh_testroot
+	-$(MAKE) clean
+	-$(MAKE) distclean
+
+	rm -rf build
+
+	# Add here commands to clean up after the build process.
+	dh_clean $(DEBIAN_DIR)/copyright $(DEBIAN_DIR)/shlibs.local $(DEBIAN_DIR)/shlibs.local.apt $(DEBIAN_DIR)/shlibs.local.apt-utils
+
+binary-indep: 
+# Build architecture-independent files here.
+# Build architecture-dependent files here.
+
+binary-arch: apt libapt-pkg-dev apt-utils 
+apt: build $(DEBIAN_DIR)/shlibs.local
+	dh_testdir -p$@
+	dh_testroot -p$@
+	dh_clean -p$@ -k
+	dh_installdirs -p$@ /usr/share/bug/$@ /usr/share/$@
+
+	# emdebian removes
+	rm -f $(BLD)/bin/apt-cdrom $(BLD)/bin/apt-config
+	rm -f $(BLD)/bin/methods/cdrom
+
+#
+# apt install
+#
+	cp $(BLD)/bin/apt-* $(DEBIAN_DIR)/$@/usr/bin/
+
+	# Remove the bits that are in apt-utils
+	rm $(addprefix $(DEBIAN_DIR)/$@/usr/bin/apt-,$(APT_UTILS))
+
+	# install the shared libs
+	find $(BLD)/bin/ -type f -name "libapt-pkg*.so.*" -exec cp -a "{}" $(DEBIAN_DIR)/$@/usr/lib/ \;
+	find $(BLD)/bin/ -type l -name "libapt-pkg*.so.*" -exec cp -a "{}" $(DEBIAN_DIR)/$@/usr/lib/ \;
+
+	cp $(BLD)/bin/methods/* $(DEBIAN_DIR)/$@/usr/lib/apt/methods/
+
+	cp $(BLD)/scripts/dselect/* $(DEBIAN_DIR)/$@/usr/lib/dpkg/methods/apt/
+#	cp -r $(BLD)/locale $(DEBIAN_DIR)/$@/usr/share/
+
+	cp $(DEBIAN_DIR)/bugscript $(DEBIAN_DIR)/$@/usr/share/bug/apt/script
+
+	cp share/debian-archive.gpg $(DEBIAN_DIR)/$@/usr/share/$@
+	echo 'Acquire::gpgv::Options {"--ignore-time-conflict";};' \
+	     >$(DEBIAN_DIR)/$@/etc/apt/apt.conf.d/50gpgv
+
+#	head -n 500 ChangeLog > $(DEBIAN_DIR)/ChangeLog
+
+#	dh_installexamples -p$@ $(BLD)/docs/examples/*
+#	dh_installman -p$@ 
+#	dh_installcron -p$@
+	dh_installdocs -p$@
+#	dh_installchangelogs -p$@
+	dh_strip -p$@
+	dh_compress -p$@
+	dh_fixperms -p$@
+	chmod a+x $(DEBIAN_DIR)/apt/usr/{lib/dpkg/methods/apt/{setup,update,install},share/bug/apt/script}
+	dh_makeshlibs -p$@ -m$(LIBAPTPKG_MAJOR) -V '$(LIBAPTPKG_PROVIDE)'
+	dh_installdeb -p$@
+	dh_shlibdeps -p$@ -l`pwd`/$(DEBIAN_DIR)/apt/usr/lib:`pwd`/$(DEBIAN_DIR)/$@/usr/lib -- -L$(DEBIAN_DIR)/shlibs.local.apt
+	dh_gencontrol -p$@ -u -Vlibapt-pkg:provides=$(LIBAPTPKG_PROVIDE)
+	dh_md5sums -p$@
+	dh_builddeb -p$@
+
+libapt-pkg-dev: build $(DEBIAN_DIR)/shlibs.local
+	dh_testdir -p$@
+	dh_testroot -p$@
+	dh_clean -p$@ -k
+	dh_installdirs -p$@
+#
+# libapt-pkg-dev install
+#
+	cp -a $(BLD)/bin/libapt-pkg*.so $(DEBIAN_DIR)/libapt-pkg-dev/usr/lib/
+	cp -a $(BLD)/bin/libapt-inst*.so $(DEBIAN_DIR)/libapt-pkg-dev/usr/lib/
+#	ln -s libapt-pkg.so.$(LIBAPTPKG_MAJOR) $(DEBIAN_DIR)/libapt-pkg-dev/usr/lib/libapt-pkg.so
+	cp $(BLD)/include/apt-pkg/*.h $(DEBIAN_DIR)/libapt-pkg-dev/usr/include/apt-pkg/
+
+#	dh_installdocs -p$@
+#	dh_installmenu -p$@
+#	dh_installinit -p$@
+#	dh_installcron -p$@
+#	dh_installman -p$@
+
+	dh_installchangelogs -p$@
+	dh_strip -p$@
+	dh_compress -p$@
+	dh_fixperms -p$@
+#	dh_suidregister -p$@
+	dh_installdeb -p$@
+	dh_gencontrol -p$@ -u -Vlibapt-pkg:provides=$(LIBAPTPKG_PROVIDE) -Vlibapt-inst:provides=$(LIBAPTINST_PROVIDE)
+	dh_md5sums -p$@
+	dh_builddeb -p$@
+
+apt-utils: build $(DEBIAN_DIR)/shlibs.local
+	dh_testdir -p$@
+	dh_testroot -p$@
+	dh_clean -p$@ -k
+	dh_installdirs -p$@
+
+	# install the shared libs
+	find $(BLD)/bin/ -type f -name "libapt-inst*.so.*" -exec cp -a "{}" $(DEBIAN_DIR)/$@/usr/lib/ \;
+	find $(BLD)/bin/ -type l -name "libapt-inst*.so.*" -exec cp -a "{}" $(DEBIAN_DIR)/$@/usr/lib/ \;
+
+	cp $(addprefix $(BLD)/bin/apt-,$(APT_UTILS)) $(DEBIAN_DIR)/$@/usr/bin/
+#	dh_installdocs -p$@
+#	dh_installexamples -p$@
+
+	# Install the man pages..
+#	dh_installman -p$@
+
+	dh_installchangelogs -p$@
+	dh_strip -p$@
+	dh_compress -p$@
+	dh_fixperms -p$@
+	dh_makeshlibs -m$(LIBAPTINST_MAJOR) -V '$(LIBAPTINST_PROVIDE)' -p$@
+	dh_installdeb -p$@
+	dh_shlibdeps -p$@ -l`pwd`/$(DEBIAN_DIR)/apt/usr/lib:`pwd`/$(DEBIAN_DIR)/$@/usr/lib -- -L$(DEBIAN_DIR)/shlibs.local.apt-utils
+	dh_gencontrol -p$@ -u -Vlibapt-inst:provides=$(LIBAPTINST_PROVIDE)
+	dh_md5sums -p$@
+	dh_builddeb -p$@
+
+source diff:
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+# Update from CVS
+l33ch: really-clean
+	cvs update
+	buildlib/mkChangeLog
+
+# Update from CVS and then configure for build
+super-l33ch: l33ch Makefile.in
+
+configure:
+	$(MAKE) configure
+
+l33ch-stamp: super-l33ch
+	touch $@
+
+really-clean: clean
+	-find -name Makefile.in -print0 | xargs -0r rm -f
+	find -name ChangeLog | xargs rm -f
+	rm -f l33ch-stamp
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary $(DEBIAN_DIR)/shlibs.local
+
+# Done by the uploader.
+#cvs update.. 
+#edit $(DEBIAN_DIR)/changelog
+# configure.in has the version automatically updated now.
+# edit configure.in
+# $(DEBIAN_DIR)/rules cvs-build
+
+CVS_BUILDDIR=apt-$(APT_DEBVER)
+CVS_ROOT=$(shell cat CVS/Root)
+CVS_MODULE=$(shell cat CVS/Repository)
+cvs-build:
+	rm -rf $(DEBIAN_DIR)/cvs-build
+	mkdir -p $(DEBIAN_DIR)/cvs-build
+	(cd $(DEBIAN_DIR)/cvs-build;cvs -d $(CVS_ROOT) export -r$(APT_CVSTAG) -d apt-$(APT_DEBVER) $(CVS_MODULE))
+	$(MAKE) -C $(DEBIAN_DIR)/cvs-build/$(CVS_BUILDDIR) startup doc
+	(cd $(DEBIAN_DIR)/cvs-build/$(CVS_BUILDDIR);$(DEB_BUILD_PROG))
+
+cvs-mkul:
+	-mkdir -p ../upload-$(APT_DEBVER)
+	cp `find $(DEBIAN_DIR)/cvs-build -maxdepth 1 -type f` ../upload-$(APT_DEBVER)
+
+arch-build:
+	rm -rf $(DEBIAN_DIR)/arch-build
+	mkdir -p $(DEBIAN_DIR)/arch-build/apt-$(APT_DEBVER)
+	baz inventory -s | xargs cp -a --parents --target=$(DEBIAN_DIR)/arch-build/apt-$(APT_DEBVER)
+	$(MAKE) -C $(DEBIAN_DIR)/arch-build/apt-$(APT_DEBVER) startup doc
+	(cd $(DEBIAN_DIR)/arch-build/apt-$(APT_DEBVER); $(DEB_BUILD_PROG))

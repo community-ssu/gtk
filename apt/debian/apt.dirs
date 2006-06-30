@@ -1,0 +1,9 @@
+usr/bin
+usr/lib/apt/methods
+usr/lib/dpkg/methods/apt
+etc/apt
+etc/apt/apt.conf.d
+var/cache/apt/archives/partial
+var/lib/apt/lists/partial
+var/lib/apt/periodic
+usr/share/bug/apt

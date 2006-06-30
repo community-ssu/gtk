@@ -1,0 +1,185 @@
+#! /bin/sh -e
+## 01vollmer.dpatch by Yauheni Kaliuta <y.kaliuta@gmail.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: osso patches
+
+if [ $# -lt 1 ]; then
+    echo "`basename $0`: script expects -patch|-unpatch as argument" >&2
+    exit 1
+fi
+
+[ -f debian/patches/00patch-opts ] && . debian/patches/00patch-opts
+patch_opts="${patch_opts:--f --no-backup-if-mismatch} ${2:+-d $2}"
+
+case "$1" in
+    -patch) patch -p1 ${patch_opts} < $0;;
+    -unpatch) patch -R -p1 ${patch_opts} < $0;;
+    *)
+        echo "`basename $0`: script expects -patch|-unpatch as argument" >&2
+        exit 1;;
+esac
+
+exit 0
+
+@DPATCH@
+Mon Feb 27 10:24:53 EET 2006  yauheni.kaliuta@nokia.com
+  * 0.6.42.3osso6
+diff -rN -u old-apt/apt-pkg/contrib/mmap.cc new-apt/apt-pkg/contrib/mmap.cc
+--- old-apt/apt-pkg/contrib/mmap.cc	2006-04-10 19:40:50.000000000 +0300
++++ new-apt/apt-pkg/contrib/mmap.cc	2006-04-10 19:40:50.000000000 +0300
+@@ -35,13 +35,15 @@
+ #include <sys/stat.h>
+ #include <unistd.h>
+ #include <fcntl.h>
++#include <errno.h>
++
+    									/*}}}*/
+ 
+ // MMap::MMap - Constructor						/*{{{*/
+ // ---------------------------------------------------------------------
+ /* */
+ MMap::MMap(FileFd &F,unsigned long Flags) : Flags(Flags), iSize(0),
+-                     Base(0)
++					    Base(0), fd(0)
+ {
+    if ((Flags & NoImmMap) != NoImmMap)
+       Map(F);
+@@ -51,7 +53,7 @@
+ // ---------------------------------------------------------------------
+ /* */
+ MMap::MMap(unsigned long Flags) : Flags(Flags), iSize(0),
+-                     Base(0)
++                     Base(0), fd(0)
+ {
+ }
+ 									/*}}}*/
+@@ -84,7 +86,26 @@
+    // Map it.
+    Base = mmap(0,iSize,Prot,Map,Fd.Fd(),0);
+    if (Base == (void *)-1)
+-      return _error->Errno("mmap",_("Couldn't make mmap of %lu bytes"),iSize);
++     {
++       if (errno == ENODEV || errno == EINVAL)
++        {
++          // The filesystem doesn't support this particular kind of
++          // mmap.  So we allocate a buffer and read the whole file
++          // into it.
++          //
++	  int dupped_fd = dup (Fd.Fd());
++	  if (dupped_fd == -1)
++	    return _error->Errno("mmap",_("Couldn't dup filedescriptor"));
++	    
++	  Base = new unsigned char[iSize];
++          fd = new FileFd (dupped_fd);
++          if (!fd->Seek(0L) || !fd->Read(Base, iSize))
++	    return false;
++        }
++       else
++        return _error->Errno("mmap",_("Couldn't make mmap of %lu bytes"),
++                             iSize);
++     }
+ 
+    return true;
+ }
+@@ -99,9 +120,18 @@
+    
+    if (DoSync == true)
+       Sync();
+-   
+-   if (munmap((char *)Base,iSize) != 0)
+-      _error->Warning("Unable to munmap");
++
++   if (fd)
++     {
++       delete[] (char *)Base;
++       delete fd;
++       fd = NULL;
++     }
++   else
++     {
++       if (munmap((char *)Base,iSize) != 0)
++	 _error->Warning("Unable to munmap");
++     }
+    
+    iSize = 0;
+    Base = 0;
+@@ -113,14 +143,24 @@
+ /* This is done in syncronous mode - the docs indicate that this will 
+    not return till all IO is complete */
+ bool MMap::Sync()
+-{   
++{
+    if ((Flags & UnMapped) == UnMapped)
+       return true;
+    
+ #ifdef _POSIX_SYNCHRONIZED_IO   
+    if ((Flags & ReadOnly) != ReadOnly)
+-      if (msync((char *)Base,iSize,MS_SYNC) != 0)
+-	 return _error->Errno("msync","Unable to write mmap");
++     {
++       if (fd)
++	 {
++	   if (!fd->Seek (0) || !fd->Write (Base, iSize))
++	     return false;
++	 }
++       else
++	 {
++	   if (msync((char *)Base,iSize,MS_SYNC) != 0)
++	     return _error->Errno("msync","Unable to write mmap");
++	 }
++     }
+ #endif   
+    return true;
+ }
+@@ -136,8 +176,20 @@
+ #ifdef _POSIX_SYNCHRONIZED_IO
+    unsigned long PSize = sysconf(_SC_PAGESIZE);
+    if ((Flags & ReadOnly) != ReadOnly)
+-      if (msync((char *)Base+(int)(Start/PSize)*PSize,Stop - Start,MS_SYNC) != 0)
+-	 return _error->Errno("msync","Unable to write mmap");
++     {
++       if (fd)
++	 {
++	   if (!fd->Seek (Start)
++	       || !fd->Write (((char *)Base)+Start, Stop-Start))
++	     return false;
++	 }
++       else
++	 {
++	   if (msync((char *)Base+(int)(Start/PSize)*PSize,Stop - Start,
++		     MS_SYNC) != 0)
++	     return _error->Errno("msync","Unable to write mmap");
++	 }
++     }
+ #endif   
+    return true;
+ }
+diff -rN -u old-apt/apt-pkg/contrib/mmap.h new-apt/apt-pkg/contrib/mmap.h
+--- old-apt/apt-pkg/contrib/mmap.h	2006-04-10 19:40:50.000000000 +0300
++++ new-apt/apt-pkg/contrib/mmap.h	2006-04-10 19:41:00.000000000 +0300
+@@ -47,6 +47,12 @@
+    unsigned long iSize;
+    void *Base;
+ 
++   // In case mmap can not be used, we keep a dup of the file
++   // descriptor that should have been mmaped so that we can write to
++   // the file in Sync().
++   //
++   FileFd *fd;
++
+    bool Map(FileFd &Fd);
+    bool Close(bool DoSync = true);
+    
+diff -rN -u old-apt/cmdline/apt-key new-apt/cmdline/apt-key
+--- old-apt/cmdline/apt-key	2006-04-10 19:40:50.000000000 +0300
++++ new-apt/cmdline/apt-key	2006-04-10 19:41:00.000000000 +0300
+@@ -59,7 +59,7 @@
+ 
+ case "$command" in
+     add)
+-        $GPG --quiet --batch --import "$1"
++        $GPG --quiet --batch --ignore-time-conflict --import "$1"
+         echo "OK"
+         ;;
+     del|rm|remove)
