@@ -620,14 +620,24 @@ bool pkgDPkgPM::Go(int OutStatusFd)
 	    'status: conffile-prompt: conffile : 'current-conffile' 'new-conffile' useredited distedited
 	    
 	 */
-	 char* list[4];
-	 TokSplitString(':', line, list, 5);
+	 char* list[4] = { NULL, NULL, NULL, NULL };
+	 TokSplitString(':', line, list, 4);
+
+	 if (list[0] == NULL || strcmp (list[0], "status"))
+	   continue;
+
+	 if (list[1] == NULL || list[2] == NULL)
+	   continue;
+
 	 char *pkg = list[1];
 	 char *action = _strstrip(list[2]);
 
 	 if(strncmp(action,"error",strlen("error")) == 0)
 	 {
 	    ostringstream status;
+
+	    if (list[3] == NULL)
+	      continue;
 
 	    status << "pmerror:" << list[1]
 		   << ":"  << (Done/float(Total)*100.0) 
@@ -643,6 +653,9 @@ bool pkgDPkgPM::Go(int OutStatusFd)
 	 if(strncmp(action,"conffile",strlen("conffile")) == 0)
 	 {
 	    ostringstream status;
+
+	    if (list[3] == NULL)
+	      continue;
 
 	    status << "pmconffile:" << list[1]
 		   << ":"  << (Done/float(Total)*100.0) 
