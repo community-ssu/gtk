@@ -1,3 +1,22 @@
+2006-06-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Deal with packages that need to be reinstalled.
+	
+	* src/apt-worker.cc (mydebSystem::ClearUpdates,
+	clear_dpkg_updates): Renamed former to latter.  Don't remove
+	files, but run dpkg to apply the journal when a updates file is
+	found.
+	(mydebSystem::Lock): Don't call ClearUpdates.
+	(cache_init): Call clear_dpkg_updates here, before creating the
+	cache.
+	(mark_for_install): Set reinstall flag for packages that need to
+	be reinstalled.
+	(myDPkgPM::CreateOrderList): Don't ignore packages that have the
+	reinstall flag set.
+	(cmd_get_package_list): Also offer an available version when the
+	package needs to be reinstalled and the installed version can be
+	downloaded.
+	
 2006-06-28  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Implement a better way to ignore unrelated packages.  This one

@@ -79,6 +79,7 @@
 #include <apt-pkg/debversion.h>
 #include <apt-pkg/dpkgpm.h>
 #include <apt-pkg/debsystem.h>
+#include <apt-pkg/orderlist.h>
 
 #include <glib/glist.h>
 #include <glib/gstring.h>
@@ -731,7 +732,8 @@ load_auto_flags ()
 }
 
 /* Our own version of debSystem.  We override the Lock member function
-   to be able to break locks and clear the updates journal of dpkg.
+   to be able to break locks and to avoid failing when dpkg has left a
+   journal.
 */
 
 class mydebSystem : public debSystem
@@ -739,7 +741,6 @@ class mydebSystem : public debSystem
   // For locking support
   int LockFD;
   unsigned LockCount;
-  void ClearUpdates ();
 
 public:
 
@@ -760,43 +761,6 @@ signed
 mydebSystem::Score (Configuration const &Cnf)
 {
   return debSystem::Score (Cnf) + 10;  // Pick me, pick me, pick me!
-}
-
-void
-mydebSystem::ClearUpdates()
-{
-  string File = flNotFile(_config->Find("Dir::State::status")) + "updates/";
-  DIR *DirP = opendir(File.c_str());
-  if (DirP == 0)
-    return;
-   
-  /* We ignore any files that are not all digits, this skips .,.. and 
-     some tmp files dpkg will leave behind.. */
-
-  for (struct dirent *Ent = readdir(DirP); Ent != 0; Ent = readdir(DirP))
-    {
-      bool ignore = false;
-
-      for (unsigned int I = 0; Ent->d_name[I] != 0; I++)
-	{
-	  // Check if its not a digit..
-	  if (isdigit(Ent->d_name[I]) == 0)
-	    {
-	      ignore = true;
-	      break;
-	    }
-	}
-
-      if (!ignore)
-	{
-	  string name = File + Ent->d_name;
-	  log_stderr ("Cleaning %s", name.c_str ());
-	  if (unlink (name.c_str()) < 0 && errno != ENOENT)
-	    log_stderr ("%s: %m", name.c_str ());
-	}
-    }
-
-   closedir(DirP);
 }
 
 bool
@@ -828,11 +792,6 @@ mydebSystem::Lock ()
 			     "are you root?",AdminDir.c_str());
     }
 
-  /* Clear out the dpkg journal.
-   */
-
-  ClearUpdates();
-
   LockCount++;
       
   return true;
@@ -858,6 +817,43 @@ bool mydebSystem::UnLock(bool NoErrors)
 }
 									/*}}}*/
 mydebSystem mydebsystem;
+
+static void
+clear_dpkg_updates ()
+{
+  string File = flNotFile(_config->Find("Dir::State::status")) + "updates/";
+  DIR *DirP = opendir(File.c_str());
+  if (DirP == 0)
+    return;
+   
+  /* We ignore any files that are not all digits, this skips .,.. and 
+     some tmp files dpkg will leave behind.. */
+
+  for (struct dirent *Ent = readdir(DirP); Ent != 0; Ent = readdir(DirP))
+    {
+      bool ignore = false;
+
+      for (unsigned int I = 0; Ent->d_name[I] != 0; I++)
+	{
+	  // Check if its not a digit..
+	  if (isdigit(Ent->d_name[I]) == 0)
+	    {
+	      ignore = true;
+	      break;
+	    }
+	}
+
+      if (!ignore)
+	{
+	  log_stderr ("Running 'dpkg --configure dpkg' "
+		      "to clean up the journal.");
+	  system ("dpkg --configure dpkg");
+	  break;
+	}
+    }
+
+   closedir(DirP);
+}
 
 /* Initialize libapt-pkg if this has not been already and (re-)create
    PACKAGE_CACHE.  If the cache can not be created, PACKAGE_CACHE is
@@ -892,6 +888,10 @@ cache_init ()
      cause the following operations to fail.
   */
   _error->DumpErrors ();
+
+  /* Clear out the dpkg journal before construction the cache.
+   */
+  clear_dpkg_updates ();
 	  
   UpdateProgress progress;
   package_cache = new pkgCacheFile;
@@ -975,6 +975,9 @@ static void
 mark_for_install (pkgCache::PkgIterator &pkg)
 {
   pkgDepCache &cache = *package_cache;
+
+  if (pkg.State() == pkgCache::PkgIterator::NeedsUnpack)
+    cache.SetReInstall (pkg, true);
 
   cache.MarkInstall (pkg);
   for (pkgCache::PkgIterator p = cache.PkgBegin (); !p.end (); p++)
@@ -1215,9 +1218,18 @@ cmd_get_package_list ()
       else
 	encode_empty_version_info (true);
 
-      // Available version and section
-      // XXX - avoid duplicating information
-      if (!candidate.end () && installed.CompareVer (candidate) < 0)
+      // Available version 
+      //
+      // We only offer an available version if the package is not
+      // installed at all, or if the available version is newer than
+      // the installed one, or if the installed version needs to be
+      // reinstalled and it is actually downloadable.
+
+      if (!candidate.end ()
+	  && (installed.end ()
+	      || installed.CompareVer (candidate) < 0
+	      || (pkg.State () == pkgCache::PkgIterator::NeedsUnpack
+		  && candidate.Downloadable ())))
 	encode_version_info (candidate, false);
       else
 	encode_empty_version_info (false);
@@ -2034,8 +2046,11 @@ myDPkgPM::CreateOrderList ()
 	   (Cache[I].iFlags & pkgDepCache::Purge) != pkgDepCache::Purge))
 	continue;
       
-      // Ignore interesting but kept packages
-      if (Cache[I].Keep() == true)
+      // Ignore interesting but kept packages, except when they should
+      // be reinstalled.
+
+      if (Cache[I].Keep() == true
+	  && !(Cache[I].iFlags & pkgDepCache::ReInstall))
 	{
 	  log_stderr ("Not handling kept package %s.", I.Name());
 	  continue;
