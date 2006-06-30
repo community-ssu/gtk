@@ -838,7 +838,8 @@ static void build_ui(HildonFileChooserDialog * self)
         gtk_widget_hide(GTK_WIDGET(priv->filetree));
 	_hildon_file_selection_realize_help(priv->filetree);        
         gtk_widget_hide(priv->hbox_items);
-        gtk_window_set_title(GTK_WINDOW(self), _("ckdg_ti_new_folder"));
+        gtk_window_set_title(GTK_WINDOW(self), dgettext("hildon-libs",
+                             "ckdg_ti_new_folder"));
         gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(self),
                                           _("ckdg_va_new_folder_name_stub")); 
         gtk_button_set_label(GTK_BUTTON(priv->action_button),
