@@ -1,0 +1,3 @@
+patching file apt-pkg/contrib/mmap.cc
+patching file apt-pkg/contrib/mmap.h
+patching file cmdline/apt-key
