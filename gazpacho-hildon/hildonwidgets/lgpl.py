@@ -29,88 +29,88 @@ import gobject
 import hildon
 
 from gazpacho.widgetadaptor import WidgetAdaptor
-from gazpacho.widget import Widget, load_child, load_widget_from_gtk_widget
+from gazpacho.gadget import BaseGadget, load_gadget_from_widget
 from gazpacho.context import Context
 from gazpacho.placeholder import Placeholder
-from gazpacho.uieditor import UIEditor, MenuBarUIEditor, AddMenuDialog, AddMenuitemDialog
+from gazpacho.uieditor import UIEditor, AddMenuDialog, AddMenuitemDialog
 from gazpacho.properties import prop_registry, TransparentProperty, StringType, IntType, CustomProperty, PropertyCustomEditor, ObjectType, PropertyError
-from gazpacho.editor import PropertyCustomEditorWithDialog, EditorPropertyText, PropertyEditorDialog
-from gazpacho.util import unselect_when_press_escape, xml_filter_nodes
+from gazpacho.propertyeditor import PropertyCustomEditorWithDialog, EditorPropertyText, PropertyEditorDialog
+#from gazpacho.util import unselect_when_press_escape, xml_filter_nodes
 from gazpacho.widgetregistry import widget_registry
 from gazpacho.loader.custom import adapter_registry
 
 _ = gettext.gettext
 
 
-class AppAdaptor(WidgetAdaptor):
-    def post_create (self, context, app, interactive=True):
-        # Resize the window to target size
-        app.set_size_request(672,396)
+#class AppAdaptor(WidgetAdaptor):
+#    def post_create (self, context, app, interactive=True):
+#        # Resize the window to target size
+#        app.set_size_request(672,396)
+#
+#    def fill_empty(self, context, widget):
+#        widget.add(context.create_placeholder())
+#
+#    def replace_child(self, context, current, new, container):
+#        if not isinstance(current, hildon.AppView):
+#    		    container.remove(current)
+#        container.add(new)
 
-    def fill_empty(self, context, widget):
-        widget.add(context.create_placeholder())
-
-    def replace_child(self, context, current, new, container):
-        if not isinstance(current, hildon.AppView):
-    		    container.remove(current)
-        container.add(new)
-
-class AppViewAdaptor(WidgetAdaptor):
-    def post_create (self, context, appview, interactive=True):
-        gwidget = Widget.from_widget(appview)
-        ui_string = "<popup name='HildonApp'></popup>"
-        self._setup_internal_children(gwidget)
-
-        project = gwidget.project
-        project.uim.create_default_actions()
-
-        project.uim.add_ui(gwidget, ui_string)
-
-    def fill_empty(self, context, appview):
-        appview.add(context.create_placeholder())
-        appview.vbox.add(context.create_placeholder())
-
-    def replace_child(self, context, current, new, container):
-        if current in container.get_children():
-            container.remove(current)
-            container.add(new)
-        if current in container.vbox.get_children():
-            position = container.vbox.get_children().index(current)
-            container.vbox.remove(current)
-            container.vbox.add(new)
-            container.vbox.reorder_child(new, position)
-
-    def load(self, context, gtk_widget, blacklist):
-        project = context.get_project()
-
-        old_name = gtk_widget.name
-        gwidget = Widget.load(gtk_widget, project, blacklist)
-        gwidget._name = gwidget.gtk_widget.name
-
-        # change the gtk_widget for the one we get from the uimanager
-        project.uim.load_widget(gwidget, old_name)
-
-        # create the children
-        if isinstance(gtk_widget, gtk.Container):
-            for child in gtk_widget.get_children():
-                load_child(gwidget, child, project, blacklist)
-
-        # load the vbox
-        self._setup_internal_children(gwidget)
-
-        # create children for the vbox
-        for child in gtk_widget.vbox.get_children():
-            load_child(gwidget, child, project, blacklist)
-
-        gwidget.load_signals()
-
-        return gwidget
-
-    def _setup_internal_children(self, gwidget):
-        child_class = widget_registry.get_by_name('GtkVBox')
-        vbox_widget = Widget(child_class, gwidget.project)
-        vbox_widget.setup_internal_widget(gwidget.gtk_widget.vbox, 'vbox',
-                                          gwidget.name or '')
+#class AppViewAdaptor(WidgetAdaptor):
+#    def post_create (self, context, appview, interactive=True):
+#        gwidget = BaseCadget.from_widget(appview)
+#        ui_string = "<popup name='HildonApp'></popup>"
+#        self._setup_internal_children(gwidget)
+#
+#        project = gwidget.project
+#        project.uim.create_default_actions()
+#
+#        project.uim.add_ui(gwidget, ui_string)
+#
+#    def fill_empty(self, context, appview):
+#        appview.add(context.create_placeholder())
+#        appview.vbox.add(context.create_placeholder())
+#
+#    def replace_child(self, context, current, new, container):
+#        if current in container.get_children():
+#            container.remove(current)
+#            container.add(new)
+#        if current in container.vbox.get_children():
+#            position = container.vbox.get_children().index(current)
+#            container.vbox.remove(current)
+#            container.vbox.add(new)
+#            container.vbox.reorder_child(new, position)
+#
+#    def load(self, context, gtk_widget, blacklist):
+#        project = context.get_project()
+#
+#        old_name = gtk_widget.name
+#        gwidget = BaseGadget.load(gtk_widget, project, blacklist)
+#        gwidget._name = gwidget.gtk_widget.name
+#
+#        # change the gtk_widget for the one we get from the uimanager
+#        project.uim.load_widget(gwidget, old_name)
+#
+#        # create the children
+#        if isinstance(gtk_widget, gtk.Container):
+#            for child in gtk_widget.get_children():
+#                load_child(gwidget, child, project, blacklist)
+#
+#        # load the vbox
+#        self._setup_internal_children(gwidget)
+#
+#        # create children for the vbox
+#        for child in gtk_widget.vbox.get_children():
+#            load_child(gwidget, child, project, blacklist)
+#
+#        gwidget.load_signals()
+#
+#        return gwidget
+#
+#    def _setup_internal_children(self, gwidget):
+#        child_class = widget_registry.get_by_name('GtkVBox')
+#        vbox_widget = BaseGadget(child_class, gwidget.project)
+#        vbox_widget.setup_internal_widget(gwidget.gtk_widget.vbox, 'vbox',
+#                                          gwidget.name or '')
 
 class ToolBarsProp(CustomProperty, IntType):
     minimum = 0
@@ -266,9 +266,9 @@ class AppViewMenuAdaptor(CustomProperty, StringType):
     context = False
     cdata = True
 
-prop_registry.override_property('HildonAppView::menu-ui', AppViewMenuAdaptor)
+#prop_registry.override_property('HildonAppView::menu-ui', AppViewMenuAdaptor)
 
-prop_registry.override_simple('HildonAppView::fullscreen', disabled=True)
+#prop_registry.override_simple('HildonAppView::fullscreen', disabled=True)
 
 class  FileSelectEditor(PropertyCustomEditor, PropertyEditorDialog, EditorPropertyText):
     button_text = _('Select...')
@@ -373,7 +373,7 @@ class CaptionImageAdaptor(TransparentProperty, StringType):
         name = self._object.get_data("imagefilename")
         return name
 
-prop_registry.override_property('HildonCaption::icon-setter', CaptionImageAdaptor)
+#prop_registry.override_property('HildonCaption::icon-setter', CaptionImageAdaptor)
 
 class CaptionAdaptor(WidgetAdaptor):
     internal_child = None

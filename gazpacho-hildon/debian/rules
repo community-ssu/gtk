@@ -87,8 +87,16 @@ install: build
 
 	# The gazenv-init.sh script
 	mkdir -p $(CURDIR)/$(d)/usr/bin/
-	cp gazenv-init.sh $(CURDIR)/$(d)/usr/bin/
-	chmod 0755 $(CURDIR)/$(d)/usr/bin/gazenv-init.sh
+#	cp gazenv-init.sh $(CURDIR)/$(d)/usr/bin/
+#	chmod 0755 $(CURDIR)/$(d)/usr/bin/gazenv-init.sh
+
+	# Script to run gazpacho from scratchbox
+	cp run-gazpacho.sh $(CURDIR)/$(d)/usr/bin/
+	chmod 0755 $(CURDIR)/$(d)/usr/bin/run-gazpacho.sh
+
+	# Input method configurations
+	mkdir -p $(CURDIR)/$(d)/etc/gtk-2.0
+	cp gtk.immodules.gaz $(CURDIR)/$(d)/etc/gtk-2.0
 
 	mkdir -p $(CURDIR)/$(d_base)
 	mv $(d)/* $(d_base)

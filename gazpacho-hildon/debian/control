@@ -7,5 +7,5 @@ Standards-Version: 3.6.1
 Package: gazpacho-hildon
 Section: libs
 Architecture: all
-Depends: gazpacho-loader (>= 0.6.2), python2.4-hildon (>= 0.5.2)
+Depends: python2.4-hildon (>= 0.5.2)
 Description: Hildon support for Gazpacho

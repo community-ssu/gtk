@@ -1,0 +1,10 @@
+# GTK+ Input Method Modules file
+# Automatically generated file, do not edit
+# Created by /usr/bin/gtk-query-immodules-2.0 from gtk+-2.6.10
+#
+"/usr/lib/gtk-2.0/2.4.0/immodules/im-xim.so" 
+"xim" "X Input Method" "gtk20" "/usr/share/locale" "*" 
+
+#"/usr/lib/gtk-2.0/2.4.0/immodules/hildon-im-module.so" 
+#"osso-input-method" "OSSO input method" "hildon-input-method-framework" "/usr/share/locale" "*" 
+

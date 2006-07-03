@@ -1,3 +1,17 @@
+gazpacho-hildon (0.1.7) unstable; urgency=low
+
+  * Ported the widgets to the latest Gazpacho version 0.6.6-trunk 
+
+ -- Erik Karlsson <erikarls@localhost.localdomain>  Fri, 30 Jun 2006 16:36:58 +0300
+
+gazpacho-hildon (0.1.6-1) unstable; urgency=low
+
+  * run-gazpacho.sh - added to package
+  * gtk.immodules.gaz - added to package
+  * debian/rules - changes required by the new files
+
+ -- Erik Karlsson <erikarls@localhost.localdomain>  Wed, 21 Jun 2006 13:52:49 +0300
+
 gazpacho-hildon (0.1.6) unstable; urgency=low
 
   * hildonwidgets.xml - added library attribute so that the glade files refers

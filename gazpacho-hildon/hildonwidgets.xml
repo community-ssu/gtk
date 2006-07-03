@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <!DOCTYPE glade-catalog SYSTEM "glade-catalog.dtd">
-<glade-catalog name="hildonwidgets" library="libglade-hildon">
+<glade-catalog name="hildonwidgets" library="libglade-hildon" library-type="c">
   <glade-widget-classes>
 
     <!-- 
     Note that HildonApp and HildonAppView are deprecated 
     -->	  
+    <!--
     <glade-widget-class name="HildonApp"
                         generic-name="app"
                         title="Application"
@@ -14,7 +15,8 @@
     <glade-widget-class name="HildonAppView"
                         generic-name="appview"
                         title="Application View"
-                        adaptor-class="lgpl.AppViewAdaptor"/>
+			adaptor-class="lgpl.AppViewAdaptor"/>
+		-->
 		<!-- dep -->
     <glade-widget-class name="HildonWindow"
 	    		generic-name="window"
@@ -131,46 +133,45 @@
   </glade-widget-classes>
 
   <glade-widget-group name="hildon" title="Hildon Widgets">
-    <glade-widget-class-ref name="HildonColorButton"/>
+    	<glade-widget-class-ref name="HildonColorButton"/>
+    	<glade-widget-class-ref name="HildonDateEditor"/>
+    	<glade-widget-class-ref name="HildonWeekdayPicker"/>
+    	<glade-widget-class-ref name="HildonTimeEditor"/>
+    	<glade-widget-class-ref name="HildonNumberEditor"/>
+    	<glade-widget-class-ref name="HildonRangeEditor"/>
     
-    <glade-widget-class-ref name="HildonDateEditor"/>
-    <glade-widget-class-ref name="HildonWeekdayPicker"/>
-    <glade-widget-class-ref name="HildonTimeEditor"/>
-    <glade-widget-class-ref name="HildonNumberEditor"/>
-    <glade-widget-class-ref name="HildonRangeEditor"/>
+    	<glade-widget-class-ref name="HildonHVolumebar"/>
+    	<glade-widget-class-ref name="HildonVVolumebar"/>
+    	<glade-widget-class-ref name="HildonControlbar"/>
+    	<glade-widget-class-ref name="HildonSeekbar"/>
     
-    <glade-widget-class-ref name="HildonHVolumebar"/>
-    <glade-widget-class-ref name="HildonVVolumebar"/>
-    <glade-widget-class-ref name="HildonControlbar"/>
-    <glade-widget-class-ref name="HildonSeekbar"/>
-    
-    <glade-widget-class-ref name="HildonFindToolbar"/>
+    	<glade-widget-class-ref name="HildonFindToolbar"/>
   </glade-widget-group>
 
   <glade-widget-group name="hildon-containers" title="Hildon Popups">
-    <glade-widget-class-ref name="HildonCalendarPopup"/>
-    <glade-widget-class-ref name="HildonColorSelector"/>
-    <glade-widget-class-ref name="HildonTimePicker"/>
+    	<glade-widget-class-ref name="HildonCalendarPopup"/>
+    	<glade-widget-class-ref name="HildonColorSelector"/>
+    	<glade-widget-class-ref name="HildonTimePicker"/>
   </glade-widget-group>
   
   <glade-widget-group name="hildon-containers" title="Hildon Containers">
 
-	<glade-widget-class-ref name="HildonAppView"/>
+  	<!--<glade-widget-class-ref name="HildonAppView"/>-->
     	<glade-widget-class-ref name="HildonCaption"/> 
     	<glade-widget-class-ref name="HildonGrid"/>
   </glade-widget-group>
 
   <glade-widget-group name="hildon-toplevels" title="Hildon Toplevels">
   	<glade-widget-class-ref name="HildonWindow"/>
-    <glade-widget-class-ref name="HildonApp"/>
-    <glade-widget-class-ref name="HildonNote"/>
-    <glade-widget-class-ref name="HildonFileChooserDialog"/>
-    <glade-widget-class-ref name="HildonFontSelectionDialog"/>
-    <glade-widget-class-ref name="HildonGetPasswordDialog"/>
-    <glade-widget-class-ref name="HildonNamePasswordDialog"/>
-    <glade-widget-class-ref name="HildonSetPasswordDialog"/>
-    <glade-widget-class-ref name="HildonSortDialog"/>
-    <glade-widget-class-ref name="HildonWizardDialog"/>
+	<!--glade-widget-class-ref name="HildonApp"/> -->
+	<glade-widget-class-ref name="HildonNote"/>
+    	<glade-widget-class-ref name="HildonFileChooserDialog"/>
+    	<glade-widget-class-ref name="HildonFontSelectionDialog"/>
+    	<glade-widget-class-ref name="HildonGetPasswordDialog"/>
+    	<glade-widget-class-ref name="HildonNamePasswordDialog"/>
+    	<glade-widget-class-ref name="HildonSetPasswordDialog"/>
+    	<glade-widget-class-ref name="HildonSortDialog"/>
+    	<glade-widget-class-ref name="HildonWizardDialog"/>
   </glade-widget-group>
 </glade-catalog>
 

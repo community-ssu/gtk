@@ -24,7 +24,8 @@ import gtk
 
 import hildon
 
-from gazpacho.widget import Widget
+from gazpacho.gadget import BaseGadget
+from gazpacho.placeholder import Placeholder
 from gazpacho.widgetadaptor import WidgetAdaptor
 from gazpacho.properties import prop_registry, TransparentProperty, StringType, CustomProperty
 from gazpacho.loader.custom import adapter_registry
@@ -41,7 +42,7 @@ class WindowAdaptor(ContainerAdaptor):
         window.set_size_request (672, 396)
 
     def fill_empty (self, context, widget):
-        widget.add (context.create_placeholder ())
+        widget.add (Placeholder ())
     
 
 # Dialogs
@@ -64,7 +65,7 @@ class NoteAdaptor(ModalDialogAdaptor):
         self._make_usable(note)
 
     def fill_empty(self, context, note):
-        note.vbox.add(context.create_placeholder())
+        note.vbox.add(Placeholder ())
 
     def replace_child(self, context, current, new, note):
         note.vbox.remove(current)
@@ -73,7 +74,7 @@ class NoteAdaptor(ModalDialogAdaptor):
 class WizardAdaptor(WidgetAdaptor):
     def fill_empty(self, context, wizard):
         notebook = gtk.Notebook()
-        notebook.append_page(context.create_placeholder())
+        notebook.append_page(Placeholder ())
         wizard.set_property("wizard-notebook", notebook)
 
     def replace_child(self, context, current, new, wizard):
