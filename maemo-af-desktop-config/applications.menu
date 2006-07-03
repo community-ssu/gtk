@@ -39,18 +39,6 @@
       <Filename>chat-ui.desktop</Filename>
     </Include>
   </Menu>
-
-  <!-- Tools submenu -->
-  <Menu>
-    <Name>tana_fi_tools</Name>
-    <Include>
-      <Filename>osso-application-installer.desktop</Filename>
-      <Filename>osso-backup.desktop</Filename>
-      <Filename>hildon-control-panel.desktop</Filename>
-      <Filename>osso-connectivity-ui-connmgr.desktop</Filename>
-      <Filename>hwr-teacher.desktop</Filename>
-    </Include>
-  </Menu>
   
   <!-- Utilities submenu -->
   <Menu>
@@ -69,8 +57,21 @@
     <Name>tana_fi_games</Name>
     <Include>
       <Filename>chess_startup.desktop</Filename>
+      <Filename>maemoblocks.desktop</Filename>
       <Filename>mahjong_startup.desktop</Filename>
       <Filename>osso_lmarbles.desktop</Filename>
+    </Include>
+  </Menu>
+
+  <!-- Tools submenu -->
+  <Menu>
+    <Name>tana_fi_tools</Name>
+    <Include>
+      <Filename>osso-application-installer.desktop</Filename>
+      <Filename>osso-backup.desktop</Filename>
+      <Filename>hildon-control-panel.desktop</Filename>
+      <Filename>osso-connectivity-ui-connmgr.desktop</Filename>
+      <Filename>hwr-teacher.desktop</Filename>
     </Include>
   </Menu>
  
