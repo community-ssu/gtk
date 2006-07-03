@@ -1,5 +1,9 @@
 2006-06-19  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac: Version 0.17.
+
+2006-06-19  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (send_app_died): New variable, false by default.
 	(release_child_slot): Only send the signal if send_app_died is true.
 	(main): Add new '--send-app-died' argument.
