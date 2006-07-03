@@ -1,3 +1,9 @@
+maemo-af-desktop-config (0.0.9-1) unstable; urgency=low
+
+  * applet_manager.conf: Added resizability information (Closes N#32074)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  3 Jul 2006 17:08:15 +0300
+
 maemo-af-desktop-config (0.0.8-1) unstable; urgency=low
 
   * plugins.conf: added missing bluetooth plugin (Closes NB#32069)

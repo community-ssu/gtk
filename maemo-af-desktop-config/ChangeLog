@@ -1,5 +1,10 @@
 2006-07-03  Johan Bilien <johan.bilien@nokia.com>
 
+	* applet_manager.conf: Added resizability information (Closes N#32074)
+	* configure.ac: 0.0.9
+
+2006-07-03  Johan Bilien <johan.bilien@nokia.com>
+
 	* plugins.conf: added missing bluetooth plugin (Closes NB#32069)
 	* configure.ac: 0.0.8
 
