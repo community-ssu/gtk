@@ -21,6 +21,21 @@ AC_C_CONST
 
 AC_HEADER_STDC
 
+AC_MSG_CHECKING([for prctl with PR_SET_NAME support])
+AC_LINK_IFELSE([
+#include <sys/prctl.h>
+int main()
+{
+  char name[] = "name-test";
+  prctl(PR_SET_NAME, name);
+  return 0;
+}
+], [AC_DEFINE([HAVE_PRCTL_SET_NAME], [1],
+              [Define to 1 if prctl has PR_SET_NAME support])
+    prctl=yes],
+   [prctl=no])
+AC_MSG_RESULT([$prctl])
+
 AC_ARG_ENABLE([pie],
 	[AS_HELP_STRING([--enable-pie],
 			[link the client as a PIE])],

@@ -23,6 +23,8 @@
 
 #define _GNU_SOURCE
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -34,13 +36,15 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/resource.h>
+#ifdef HAVE_PRCTL_SET_NAME
+#include <sys/prctl.h>
+#endif
 #include <fcntl.h>
 #include <signal.h>
 #include <unistd.h>
 #include <dlfcn.h>
 #include <errno.h>
 
-#include "config.h"
 #include "ui.h"
 #include "report.h"
 #include "invokelib.h"
@@ -173,6 +177,19 @@ launch_process(prog_t *prog, ui_state state)
   _exit(entry(prog->argc, prog->argv));
 }
 
+#ifdef HAVE_PRCTL_SET_NAME
+static void
+set_process_name(const char *progname)
+{
+  prctl(PR_SET_NAME, basename(progname));
+}
+#else
+static inline void
+set_process_name(const char *progname)
+{
+}
+#endif
+
 static void
 set_progname(char *progname, int argc, char **argv)
 {
@@ -184,6 +201,8 @@ set_progname(char *progname, int argc, char **argv)
 
   memset(argv[0], 0, argvlen);
   strncpy(argv[0], progname, argvlen - 1);
+
+  set_process_name(progname);
 }
 
 static int

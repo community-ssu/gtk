@@ -1,3 +1,11 @@
+2006-07-05  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac (HAVE_PRCTL_SET_NAME): New check.
+	* launcher/launcher.c: Move the "config.h" include to the top.
+	[HAVE_PRCTL_SET_NAME]: Include <sys/prctl.h>.
+	(set_process_name): New function.
+	(set_progname): Use set_process_name.
+
 2006-07-03  Guillem Jover  <guillem.jover@nokia.com>
 
 	* configure.ac: Bump version to 0.18~.
