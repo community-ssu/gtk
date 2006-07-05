@@ -82,6 +82,8 @@ static void gtk_progress_bar_get_property  (GObject             *object,
 					    guint                prop_id,
 					    GValue              *value,
 					    GParamSpec          *pspec);
+static gboolean gtk_progress_bar_expose    (GtkWidget           *widget,
+					    GdkEventExpose      *event);
 static void gtk_progress_bar_size_request  (GtkWidget           *widget,
 					    GtkRequisition      *requisition);
 static void gtk_progress_bar_real_update   (GtkProgress         *progress);
@@ -97,6 +99,7 @@ static void gtk_progress_bar_set_activity_step_internal   (GtkProgressBar *pbar,
 static void gtk_progress_bar_set_activity_blocks_internal (GtkProgressBar *pbar,
 							   guint           blocks);
 
+static gpointer gtk_progress_bar_parent_class;
 
 GType
 gtk_progress_bar_get_type (void)
@@ -132,6 +135,8 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
   GObjectClass *gobject_class;
   GtkWidgetClass *widget_class;
   GtkProgressClass *progress_class;
+
+  gtk_progress_bar_parent_class = g_type_class_peek_parent (class);
   
   gobject_class = G_OBJECT_CLASS (class);
   widget_class = (GtkWidgetClass *) class;
@@ -140,6 +145,7 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
   gobject_class->set_property = gtk_progress_bar_set_property;
   gobject_class->get_property = gtk_progress_bar_get_property;
   
+  widget_class->expose_event = gtk_progress_bar_expose;
   widget_class->size_request = gtk_progress_bar_size_request;
 
   progress_class->paint = gtk_progress_bar_paint;
@@ -554,7 +560,7 @@ gtk_progress_bar_real_update (GtkProgress *progress)
 		}
 	    }
 	}
-      gtk_progress_bar_paint (progress);
+      pbar->dirty = TRUE;
       gtk_widget_queue_draw (GTK_WIDGET (progress));
     }
   else
@@ -567,10 +573,26 @@ gtk_progress_bar_real_update (GtkProgress *progress)
       if (pbar->in_block != in_block)
 	{
 	  pbar->in_block = in_block;
-	  gtk_progress_bar_paint (progress);
+	  pbar->dirty = TRUE;
 	  gtk_widget_queue_draw (GTK_WIDGET (progress));
 	}
     }
+}
+
+static gboolean
+gtk_progress_bar_expose (GtkWidget      *widget,
+			 GdkEventExpose *event)
+{
+  GtkProgressBar *pbar;
+
+  g_return_val_if_fail (GTK_IS_PROGRESS_BAR (widget), FALSE);
+
+  pbar = GTK_PROGRESS_BAR (widget);
+
+  if (GTK_WIDGET_DRAWABLE (widget) && pbar->dirty)
+    gtk_progress_bar_paint (GTK_PROGRESS (pbar));
+
+  return GTK_WIDGET_CLASS (gtk_progress_bar_parent_class)->expose_event (widget, event);
 }
 
 static void
@@ -1057,6 +1079,8 @@ gtk_progress_bar_paint (GtkProgress *progress)
 	  else
 	    gtk_progress_bar_paint_discrete (pbar, orientation);
 	}
+
+      pbar->dirty = FALSE;
     }
 }
 
