@@ -44,16 +44,21 @@ insensitive_press (GtkButton *button, gpointer data)
 }
 
 static GtkWidget *
-add_item (GtkMenu *menu, const gchar *label, void (*func)())
+add_item (GtkMenu *menu, const gchar *label, const gchar *insens,
+	  void (*func)())
 {
   GtkWidget *item = gtk_menu_item_new_with_label (label);
   gtk_menu_append (menu, item);
   if (func)
     g_signal_connect (item, "activate", G_CALLBACK (func), NULL);
 
-  g_signal_connect (item, "insensitive_press",
-		    G_CALLBACK (insensitive_press),
-		    _("ai_ib_not_available"));
+  if (insens)
+    {
+      if (ui_version < 2)
+	insens = _("ai_ib_not_available");
+      g_signal_connect (item, "insensitive_press",
+			G_CALLBACK (insensitive_press), (void *)insens);
+    }
 
   return item;
 }
@@ -96,7 +101,7 @@ static GtkMenu *
 add_menu (GtkMenu *menu, const gchar *label)
 {
   GtkWidget *sub = gtk_menu_new ();
-  GtkWidget *item = add_item (menu, label, NULL);
+  GtkWidget *item = add_item (menu, label, NULL, NULL);
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), sub);
   return GTK_MENU (sub);
 }
@@ -125,8 +130,17 @@ set_search_menu_sensitive (bool flag)
     gtk_widget_set_sensitive (search_menu_item, flag);
 }
 
+static const gchar *insensitive_operation_press_label;
+
+static void
+insensitive_operation_press (GtkButton *button, gpointer data)
+{
+  irritate_user (insensitive_operation_press_label);
+}
+
 void
-set_operation_menu_label (const char *label, bool sensitive)
+set_operation_menu_label (const char *label, bool sensitive,
+			  const gchar *insens)
 {
   if (operation_menu_item)
     {
@@ -134,6 +148,10 @@ set_operation_menu_label (const char *label, bool sensitive)
 	(GTK_LABEL (gtk_bin_get_child (GTK_BIN (operation_menu_item))),
 	 label);
       gtk_widget_set_sensitive (operation_menu_item, sensitive);
+
+      if (ui_version < 2)
+	insens = _("ai_ib_not_available");
+      insensitive_operation_press_label = insens;
     }
 }
 
@@ -178,12 +196,21 @@ create_menu (GtkMenu *main)
   GtkMenu *tools = add_menu (main, _("ai_me_tools"));
   GtkWidget *fullscreen_group, *item;
 
-  operation_menu_item = add_item (packages, "", do_current_operation);
-  add_item (packages, _("ai_me_package_install_file"), install_from_file);
-  details_menu_item = add_item (packages, _("ai_me_package_details"),
+  operation_menu_item = add_item (packages, "", NULL, do_current_operation);
+  g_signal_connect (operation_menu_item, "insensitive_press",
+		    G_CALLBACK (insensitive_operation_press), NULL);
+
+  add_item (packages,
+	    _("ai_me_package_install_file"), NULL,
+	    install_from_file);
+  details_menu_item = add_item (packages,
+				_("ai_me_package_details"),
+				_("ai_ib_nothing_to_view"),
 				show_current_details);
 
-  add_item (view, _("ai_me_view_sort"), show_sort_settings_dialog);
+  add_item (view,
+	    _("ai_me_view_sort"), NULL,
+	    show_sort_settings_dialog);
   add_sep (view);
   fullscreen_item = add_check (view, _("ai_me_view_fullscreen"), NULL);
   g_signal_connect (fullscreen_item, "activate",
@@ -204,15 +231,29 @@ create_menu (GtkMenu *main)
   g_signal_connect (item, "activate",
 		    G_CALLBACK (fullscreen_toolbar_activated), NULL);
 
-  add_item (tools, _("ai_me_tools_refresh"), refresh_package_cache);
-  add_item (tools, _("ai_me_tools_settings"), show_settings_dialog);
-  add_item (tools, _("ai_me_tools_repository"), show_repo_dialog);
+  add_item (tools,
+	    _("ai_me_tools_refresh"), NULL,
+	    refresh_package_cache);
+  add_item (tools,
+	    _("ai_me_tools_settings"), NULL,
+	    show_settings_dialog);
+  add_item (tools,
+	    _("ai_me_tools_repository"), NULL,
+	    show_repo_dialog);
   search_menu_item =
-    add_item (tools, _("ai_me_tools_search"), show_search_dialog);
-  add_item (tools, _("ai_me_tools_log"), show_log);
-  add_item (tools, _("ai_me_tools_help"), show_help);
+    add_item (tools,
+	      _("ai_me_tools_search"), _("ai_ib_unable_search"),
+	      show_search_dialog);
+  add_item (tools,
+	    _("ai_me_tools_log"), NULL,
+	    show_log);
+  add_item (tools,
+	    _("ai_me_tools_help"), NULL,
+	    show_help);
 
-  add_item (main, _("ai_me_close"), menu_close);
+  add_item (main,
+	    _("ai_me_close"), NULL,
+	    menu_close);
 
   gtk_widget_show_all (GTK_WIDGET (main));
 }
@@ -222,8 +263,12 @@ create_package_menu (const char *op_label)
 {
   GtkWidget *menu = gtk_menu_new ();
 
-  add_item (GTK_MENU (menu), op_label, do_current_operation);
-  add_item (GTK_MENU (menu), _("ai_me_cs_details"), show_current_details);
+  add_item (GTK_MENU (menu),
+	    op_label, NULL,
+	    do_current_operation);
+  add_item (GTK_MENU (menu),
+	    _("ai_me_cs_details"), NULL,
+	    show_current_details);
 
   return menu;
 }

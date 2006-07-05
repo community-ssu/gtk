@@ -61,7 +61,7 @@ using namespace std;
 static guint apt_source_id;
 
 static void set_details_callback (void (*func) (gpointer), gpointer data);
-static void set_operation_label (const char *label);
+static void set_operation_label (const char *label, const char *insens);
 static void set_operation_callback (void (*func) (gpointer), gpointer data);
 static void enable_search (bool f);
 static void set_current_help_topic (const char *topic);
@@ -96,7 +96,7 @@ show_view (view *v)
     gtk_widget_destroy (cur_view);
 
   set_details_callback (NULL, NULL);
-  set_operation_label (NULL);
+  set_operation_label (NULL, NULL);
   set_operation_callback (NULL, NULL);
 
   cur_view = v->maker (v);
@@ -974,7 +974,8 @@ refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *data)
       /* The user hit cancel.  We don't care whether the operation was
 	 successful or not.
       */
-      annoy_user (_("ai_ni_update_list_cancelled"));
+      if (ui_version < 2)
+	annoy_user (_("ai_ni_update_list_cancelled"));
       success = false;
     }
   else
@@ -1136,9 +1137,12 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
   else
     {
       if (progress_was_cancelled ())
-	annoy_user ((upgrading
-		     ? _("ai_ni_update_cancelled")
-		     : _("ai_ni_install_cancelled")));
+	{
+	  if (ui_version < 2)
+	    annoy_user ((upgrading
+			 ? _("ai_ni_update_cancelled")
+			 : _("ai_ni_install_cancelled")));
+	}
       else
 	{
 	  char *str =
@@ -1234,9 +1238,10 @@ install_package_cont5 (bool res, void *data)
 
   if (!res)
     {
-      annoy_user (c->pi->installed_version
-		  ? _("ai_ni_update_cancelled")
-		  : _("ai_ni_install_cancelled"));
+      if (ui_version < 2)
+	annoy_user (c->pi->installed_version
+		    ? _("ai_ni_update_cancelled")
+		    : _("ai_ni_install_cancelled"));
       install_package_cont3 (false, data);
     }
   else
@@ -1401,10 +1406,13 @@ install_package_cont2 (bool res, void *data)
     }
   else
     {
-      if (pi->installed_version)
-	annoy_user (_("ai_ni_update_cancelled"));
-      else
-	annoy_user (_("ai_ni_install_cancelled"));
+      if (ui_version < 2)
+	{
+	  if (pi->installed_version)
+	    annoy_user (_("ai_ni_update_cancelled"));
+	  else
+	    annoy_user (_("ai_ni_install_cancelled"));
+	}
       pi->unref ();
     }
 }
@@ -1472,6 +1480,9 @@ installed_package_selected (package_info *pi)
 static GtkWidget *
 make_last_update_label ()
 {
+  if (last_update == 0)
+    return gtk_label_new (_("ai_li_never"));
+
   char text[1024];
   time_t t = last_update;
   struct tm *broken = localtime (&t);
@@ -1512,7 +1523,8 @@ make_install_section_view (view *v)
   GtkWidget *view;
   GList *packages;
 
-  set_operation_label (_("ai_me_package_install"));
+  set_operation_label (_("ai_me_package_install"),
+		       _("ai_ib_nothing_to_install"));
 
   section_info *si = find_section_info (&install_sections,
 					cur_section_name, false, true);
@@ -1555,7 +1567,8 @@ make_install_applications_view (view *v)
 
   maybe_refresh_package_cache ();
 
-  set_operation_label (_("ai_me_package_install"));
+  set_operation_label (_("ai_me_package_install"),
+		       _("ai_ib_nothing_to_install"));
 
   if (install_sections && install_sections->next == NULL)
     {
@@ -1599,7 +1612,8 @@ make_upgrade_applications_view (view *v)
 
   maybe_refresh_package_cache ();
 
-  set_operation_label (_("ai_me_package_update"));
+  set_operation_label (_("ai_me_package_update"),
+		       _("ai_ib_nothing_to_update"));
 
   GtkWidget *list =
     make_global_package_list (upgradeable_packages,
@@ -1797,7 +1811,8 @@ uninstall_package_cont2 (bool res, void *data)
     check_uninstall_scripts (pi);
   else
     {
-      annoy_user (_("ai_ni_uninstall_cancelled"));
+      if (ui_version < 2)
+	annoy_user (_("ai_ni_uninstall_cancelled"));
       pi->unref ();
     }
 }
@@ -1821,7 +1836,8 @@ make_uninstall_applications_view (view *v)
   GtkWidget *view;
   GList *packages;
 
-  set_operation_label (_("ai_me_package_uninstall"));
+  set_operation_label (_("ai_me_package_uninstall"),
+		       _("ai_ib_nothing_to_uninstall"));
 
   view = make_global_package_list (installed_packages,
 				   true,
@@ -1847,7 +1863,10 @@ make_search_results_view (view *v)
     {
       set_operation_label (v->parent == &install_applications_view
 			   ? _("ai_me_package_install")
-			   : _("ai_me_package_update"));
+			   : _("ai_me_package_update"),
+			   v->parent == &install_applications_view
+			   ? _("ai_ib_nothing_to_install")
+			   : _("ai_ib_nothing_to_update"));
 
       view = make_global_package_list (search_result_packages,
 				       false,
@@ -1861,7 +1880,8 @@ make_search_results_view (view *v)
     }
   else
     {
-      set_operation_label (_("ai_me_package_uninstall"));
+      set_operation_label (_("ai_me_package_uninstall"),
+			   _("ai_ib_nothing_to_uninstall"));
 
       view = make_global_package_list (search_result_packages,
 				       true,
@@ -2072,12 +2092,12 @@ install_named_package (const char *package)
   find_in_package_list (&p, installed_packages, package);
 
   if (p == NULL)
-    annoy_user ("Not found?");
+    annoy_user (_("ai_ni_error_download_missing"));
   else
     {
       package_info *pi = (package_info *)p->data;
       if (pi->available_version == NULL)
-	annoy_user ("Already latest version.");
+	annoy_user (_("ai_ib_nothing_to_install"));
       else
 	install_package (pi);
     }
@@ -2106,6 +2126,7 @@ set_details_callback (void (*func) (gpointer), gpointer data)
 static void (*operation_func) (gpointer);
 static gpointer operation_data;
 static const char *operation_label;
+static const char *insensitive_operation_press_label = NULL;
 
 void
 do_current_operation ()
@@ -2117,13 +2138,20 @@ do_current_operation ()
 static void set_operation_toolbar_label (const char *label, bool enable);
 
 static void
-set_operation_label (const char *label)
+set_operation_label (const char *label, const char *insens)
 {
   if (label == NULL)
-    label = _("ai_me_package_install");
+    {
+      label = _("ai_me_package_install");
+      insens = _("ai_ib_nothing_to_install");
+    }
+
+  if (ui_version < 2 || insens == NULL)
+    insens = _("ai_ib_not_available");
 
   operation_label = label;
-  set_operation_menu_label (label, operation_func != NULL);
+  insensitive_operation_press_label = insens;
+  set_operation_menu_label (label, operation_func != NULL, insens);
   set_operation_toolbar_label (label, operation_func != NULL);
 }
 
@@ -2132,7 +2160,8 @@ set_operation_callback (void (*func) (gpointer), gpointer data)
 {
   operation_data = data;
   operation_func = func;
-  set_operation_label (operation_label);
+  set_operation_label (operation_label,
+		       insensitive_operation_press_label);
 }
 
 static void
@@ -2191,7 +2220,8 @@ install_from_file_cont4 (bool res, void *data)
   else
     {
       cleanup_temp_file ();
-      annoy_user (_("ai_ni_install_cancelled"));
+      if (ui_version < 2)
+	annoy_user (_("ai_ni_install_cancelled"));
       pi->unref ();
     }
 }
@@ -2547,7 +2577,14 @@ enable_search (bool f)
 static void
 insensitive_press (GtkButton *button, gpointer data)
 {
-  irritate_user (_("ai_ib_not_available"));
+  char *text = (char *)data;
+  irritate_user (text);
+}
+
+static void
+insensitive_operation_press (GtkButton *button, gpointer data)
+{
+  irritate_user (insensitive_operation_press_label);
 }
 
 static osso_context_t *osso_ctxt;
@@ -2629,7 +2666,7 @@ main (int argc, char **argv)
 		    G_CALLBACK (do_current_operation),
 		    NULL);
   g_signal_connect (G_OBJECT (toolbar_operation_item), "insensitive_press",
-		    G_CALLBACK (insensitive_press), NULL);
+		    G_CALLBACK (insensitive_operation_press), NULL);
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 		      GTK_TOOL_ITEM (toolbar_operation_item),
 		      -1);
@@ -2647,16 +2684,11 @@ main (int argc, char **argv)
 		    G_CALLBACK (show_current_details),
 		    NULL);
   g_signal_connect (G_OBJECT (details_button), "insensitive_press",
-		    G_CALLBACK (insensitive_press), NULL);
+		    G_CALLBACK (insensitive_press),
+		    _("ai_ib_nothing_to_view"));
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 		      GTK_TOOL_ITEM (details_button),
 		      -1);
-
-#if 0
-  gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
-		      GTK_TOOL_ITEM (gtk_separator_tool_item_new ()),
-		      -1);
-#endif
 
   image = gtk_image_new_from_icon_name ("qgn_toolb_gene_findbutton",
 					HILDON_ICON_SIZE_26);
@@ -2667,7 +2699,8 @@ main (int argc, char **argv)
 		    G_CALLBACK (show_search_dialog),
 		    NULL);
   g_signal_connect (G_OBJECT (search_button), "insensitive_press",
-		    G_CALLBACK (insensitive_press), NULL);
+		    G_CALLBACK (insensitive_press),
+		    _("ai_ib_unable_search"));
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 		      GTK_TOOL_ITEM (search_button),
 		      -1);
