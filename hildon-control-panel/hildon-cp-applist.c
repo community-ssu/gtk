@@ -209,12 +209,6 @@ static void create_items( HildonGrid * grid,
 
     additional_applet_dir = g_getenv(ADDITIONAL_CP_APPLETS_DIR_ENVIRONMENT);
 
-    if (additional_applet_dir != NULL) 
-    {
-        read_desktop_entries(additional_applet_dir, &desktop_entries);
-    }
-
-
     if(desktop_entries)
         desktop_entries = g_slist_sort(desktop_entries,
                                        (GCompareFunc) mb_list_compare);

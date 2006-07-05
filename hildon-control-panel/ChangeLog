@@ -1,3 +1,8 @@
+2006-07-05 Moises Martinez <moises.martinzes@nokia.com>
+
+        * hildon-cp-applist.c: Loading of user applets in old
+        "/var/lib/install..." removed
+
 2006-05-10 Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 1.2.5
