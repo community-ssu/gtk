@@ -200,7 +200,12 @@ struct repo_edit_closure {
   GtkWidget *uri_entry;
   GtkWidget *dist_entry;
   GtkWidget *components_entry;
+
+  // Only one of these is non-NULL, depending on the UI version we
+  // implement.
+  //
   GtkWidget *enabled_button;
+  GtkWidget *disabled_button;
 };
 
 static void ask_the_pill_question ();
@@ -240,8 +245,15 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
 	  r->name = g_strdup (name);
 	}
       free (r->line);
-      r->enabled =
-	gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (c->enabled_button));
+
+      if (c->enabled_button)
+	r->enabled =
+	  gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (c->enabled_button));
+      else
+	r->enabled =
+	  !gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON 
+					 (c->disabled_button));
+	
       r->line = g_strdup_printf ("%s %s %s %s",
 				 r->enabled? "deb" : "#deb", uri, dist, comps);
       r->deb_line = r->line + (r->enabled? 4 : 5);
@@ -270,16 +282,25 @@ add_entry (GtkWidget *box, GtkSizeGroup *group,
   GtkWidget *caption, *entry;
   gint pos = 0;
 
-  entry = gtk_entry_new ();
-  g_object_set (entry, "autocap", autocap, NULL);
-  if (text)
-    gtk_editable_insert_text (GTK_EDITABLE (entry), text, end-text, &pos);
-  gtk_editable_set_editable (GTK_EDITABLE (entry), !readonly);
+  if (readonly)
+    {
+      char *t = g_strndup (text, end-text);
+      entry = gtk_label_new (t);
+      gtk_misc_set_alignment (GTK_MISC (entry), 0.0, 0.5);
+      g_free (t);
+    }
+  else
+    {
+      entry = gtk_entry_new ();
+      g_object_set (entry, "autocap", autocap, NULL);
+      if (text)
+	gtk_editable_insert_text (GTK_EDITABLE (entry), text, end-text, &pos);
+    }
 
   caption = hildon_caption_new (group, label, entry,
 				NULL, HILDON_CAPTION_OPTIONAL);
   gtk_box_pack_start_defaults (GTK_BOX (box), caption);
-
+  
   return entry;
 }
 
@@ -362,17 +383,34 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
 				   _("ai_fi_new_repository_component"),
 				   start, end, false, readonly);
 
-  c->enabled_button = gtk_check_button_new ();
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (c->enabled_button),
-			       r->enabled);
-  caption = hildon_caption_new (group,
-				_("ai_fi_new_repository_enabled"),
-				c->enabled_button,
-				NULL, HILDON_CAPTION_OPTIONAL);
-  gtk_box_pack_start_defaults (GTK_BOX (vbox), caption);
-  gtk_widget_set_sensitive (c->enabled_button, !readonly);
-
-  gtk_widget_set_usize (dialog, 400, -1);
+  if (ui_version < 2)
+    {
+      c->disabled_button = NULL;
+      c->enabled_button = gtk_check_button_new ();
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (c->enabled_button),
+				    r->enabled);
+      caption = hildon_caption_new (group,
+				    _("ai_fi_new_repository_enabled"),
+				    c->enabled_button,
+				    NULL, HILDON_CAPTION_OPTIONAL);
+      gtk_box_pack_start_defaults (GTK_BOX (vbox), caption);
+      gtk_widget_set_sensitive (c->enabled_button, !readonly);
+    }
+  else
+    {
+      c->enabled_button = NULL;
+      c->disabled_button = gtk_check_button_new ();
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (c->disabled_button),
+				    !(r->enabled));
+      caption = hildon_caption_new (group,
+				    _("ai_fi_new_repository_disabled"),
+				    c->disabled_button,
+				    NULL, HILDON_CAPTION_OPTIONAL);
+      gtk_box_pack_start_defaults (GTK_BOX (vbox), caption);
+      gtk_widget_set_sensitive (c->disabled_button, !readonly);
+    }
+    
+  gtk_widget_set_usize (dialog, 500, -1);
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (repo_edit_response), c);
@@ -682,18 +720,28 @@ maybe_add_new_repo_cont (bool res, void *data)
 
   if (res)
     {
-      repo_line *r = ac->new_repo;
-      ac->new_repo = NULL;
+      repo_line *old_repo = c->find_repo (ac->new_repo->deb_line);
 
-      r->clos = c;
-      r->next = NULL;
-      *c->lastp = r;
-      c->lastp = &r->next;
+      if (old_repo)
+	{
+	  annoy_user (_("Catalogue already in use."));
+	  ac->cont (true, ac->cont_data);
+	}
+      else
+	{
+	  repo_line *r = ac->new_repo;
+	  ac->new_repo = NULL;
 
-      apt_worker_set_sources_list (repo_encoder, c, repo_reply, NULL);
+	  r->clos = c;
+	  r->next = NULL;
+	  *c->lastp = r;
+	  c->lastp = &r->next;
+	  
+	  apt_worker_set_sources_list (repo_encoder, c, repo_reply, NULL);
       
-      // Whooo, tail call elimination...
-      refresh_package_cache_with_cont (ac->cont, ac->cont_data);
+	  // Whooo, tail call elimination...
+	  refresh_package_cache_with_cont (ac->cont, ac->cont_data);
+	}
     }
   else
     ac->cont (false, ac->cont_data);
@@ -750,15 +798,16 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
   c->lastp = rp;
   free (next_name);
 
+  /* XXX - do something with 'success'.
+   */
+
   int success = dec->decode_int ();
 
   repo_add_closure *ac = (repo_add_closure *)data;
 
   if (ac)
     {
-      repo_line *old_repo = c->find_repo (ac->new_repo->deb_line);
-
-      if (old_repo)
+      if (ac->for_install && c->find_repo (ac->new_repo->deb_line))
 	{
 	  ac->cont (true, ac->cont_data);
 
