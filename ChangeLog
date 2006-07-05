@@ -1,3 +1,14 @@
+2006-07-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Taken from GNOME. N#32818
+
+    2006-05-27  Kristian Rietveld  <kris@gtk.org>
+
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_remove_node):
+	only unref if elt->ref_count > 0,
+	(gtk_tree_model_filter_row_deleted): likewise. (Fixes #340839,
+	reported by Yevgen Muntyan).
+	
 2006-06-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcombobox.c (gtk_combo_box_list_position): When in toolbar
