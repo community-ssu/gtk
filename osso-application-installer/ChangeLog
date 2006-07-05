@@ -1,6 +1,5 @@
 2006-07-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
-	* src/menu.cc	
 	Show a "Disabled" button instead of "Enabled" one for UI version 2
 	and up.
 
