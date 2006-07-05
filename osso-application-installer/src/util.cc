@@ -189,8 +189,10 @@ ask_yes_no_with_arbitrary_details (const gchar *title,
      _("ai_bd_confirm_cancel"),  GTK_RESPONSE_CANCEL,
      NULL);
 
+  GtkWidget *label = gtk_label_new (question);
+  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
-		     gtk_label_new (question));
+		     label);
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (yes_no_response), c);
@@ -1761,8 +1763,12 @@ ensure_network (void (*callback) (bool success, void *data), void *data)
       if (osso_iap_connect (OSSO_IAP_ANY, OSSO_IAP_REQUESTED_CONNECT, NULL)
 	  == OSSO_OK)
 	{
-	  show_progress (dgettext ("osso-browser-ui",
-				   "weba_pb_clearing_connecting"));
+	  if (ui_version < 2)
+	    show_progress (dgettext ("osso-browser-ui",
+				     "weba_pb_clearing_connecting"));
+	  else
+	    show_progress (_("ai_nw_connectiong"));
+	    
 	  return;
 	}
     }
