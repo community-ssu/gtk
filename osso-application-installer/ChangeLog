@@ -1,3 +1,51 @@
+2006-07-05  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/menu.cc	
+	Show a "Disabled" button instead of "Enabled" one for UI version 2
+	and up.
+
+	* src/repo.cc (repo_edit_closure): Added disabled_button field.
+	(show_repo_edit_dialog): Create it for UI versions 2 and up.
+	(repo_edit_response): Take enabled flag from either the enabled or
+	disabled button, as appropriate.
+
+	* src/repo.cc (add_entry): Use GtkLabels instead of GtkEntries for
+	readonly texts.
+	(maybe_add_new_repo_cont): Don't add new_repo when it is already
+	present.  Show information note in that case.
+	(sources_list_reply): When new_repo is already present, only
+	succeed immediately when this request for installing a package.
+	
+	* src/util.cc (ask_yes_no_with_arbitrary_details): Set
+	line-wrapping mode for label. (N34052)
+	(ensure_network): Use ai_new_connecting for UI versions 2 and
+	later instead of stealing the text from the browser-ui.
+
+	Show more specific information banners when pressing on
+	insensitive things.
+
+	* src/main.cc: Throughout, onyl show "Foo has been cancelled"
+	information notes for UI version 2 and up.
+	(set_operation_label): Added "insens" parameter.  Updated all
+	callers to provide the right string.  Force old value of "Not
+	available" for UI versions below 2.  Pass insens text on to
+	set_operation_menu_label.
+	(make_last_update_label): Show "Never" when last_update is zero.
+	(install_named_package): Use available logical instead of English.
+	(insensitive_press): Expect text to show as data parameter.
+	Changed all signal connections to provide the right text.
+	(insensitive_operation_press): New.
+	(main): Use it for the toolbar operation button.
+
+	* src/menu.h, src/menu.cc (set_operation_menu_label): Added insens
+	parameter.  Updated all callers to provide the right string.
+	Force "Not available" for UI versions below 2.
+	(add_item): Added insens parameter.  Updated all callers.  Only
+	connect to insensitive-press signal when insens is provided.
+	Force "Not available" for UI versions below 2.
+	(insensitive_operation_press): New.
+	(create_menu): Use it for the operation menu item.	
+	
 2006-06-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Deal with packages that need to be reinstalled.
