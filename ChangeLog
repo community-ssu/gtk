@@ -1,5 +1,15 @@
 2006-07-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Taken from GNOME. Optimize progressbar painting.
+
+    2006-06-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkprogressbar.h: Add a dirty flag to GtkProgressBar.
+	* gtk/gtkprogressbar.c: Defer updating of the offscreen
+	pixmap until expose.  (#344543, Chris Wilson)
+
+2006-07-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	Paint progress bar text also in activity mode. N#26099
 
 	* gtk/gtkprogressbar.c (gtk_progress_bar_paint_activity)
