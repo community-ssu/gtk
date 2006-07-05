@@ -1,3 +1,10 @@
+osso-application-installer (4.23) unstable; urgency=low
+
+  * UI version 2 overhaul.
+  * Fixes: NB#34057, NB#34052, NB#33648, NB#33240.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  5 Jul 2006 21:27:56 +0300
+
 osso-application-installer (4.22) unstable; urgency=low
 
   * Fixed bugs N32851.

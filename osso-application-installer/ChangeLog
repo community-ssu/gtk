@@ -1,7 +1,7 @@
 2006-07-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Show a "Disabled" button instead of "Enabled" one for UI version 2
-	and up.
+	and up. (N34057)
 
 	* src/repo.cc (repo_edit_closure): Added disabled_button field.
 	(show_repo_edit_dialog): Create it for UI versions 2 and up.
@@ -24,12 +24,13 @@
 	insensitive things.
 
 	* src/main.cc: Throughout, onyl show "Foo has been cancelled"
-	information notes for UI version 2 and up.
+	information notes for UI version 2 and up. (N33240)
 	(set_operation_label): Added "insens" parameter.  Updated all
 	callers to provide the right string.  Force old value of "Not
 	available" for UI versions below 2.  Pass insens text on to
 	set_operation_menu_label.
-	(make_last_update_label): Show "Never" when last_update is zero.
+	(make_last_update_label): Show "Never" when last_update is
+	zero. (N33651)
 	(install_named_package): Use available logical instead of English.
 	(insensitive_press): Expect text to show as data parameter.
 	Changed all signal connections to provide the right text.
@@ -47,7 +48,7 @@
 	
 2006-06-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
-	Deal with packages that need to be reinstalled.
+	Deal with packages that need to be reinstalled. (N33648)
 	
 	* src/apt-worker.cc (mydebSystem::ClearUpdates,
 	clear_dpkg_updates): Renamed former to latter.  Don't remove
