@@ -1,3 +1,18 @@
+2006-07-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Paint progress bar text also in activity mode. N#26099
+
+	* gtk/gtkprogressbar.c (gtk_progress_bar_paint_activity)
+	(gtk_progress_bar_get_activity): Move activity bar offset and size
+	calculations to separate function.
+	(gtk_progress_bar_paint_text): Allow caller to specify offset for the
+	prelight part in addition to width.
+	(gtk_progress_bar_paint): Paint the text also in activity mode, #337882.
+
+	* gtk/gtkprogressbar.c (gtk_progress_bar_paint_text): Paint the
+	prelighted text on top of the normal rather than side by side, to
+	simplify painting text in activity mode.
+
 2006-06-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Taken from GNOME. N#32657
