@@ -220,8 +220,8 @@ libhildonfm_la_SOURCES = \
 	hildon-file-system-dynamic-device.c \
 	hildon-file-system-upnp.h \
 	hildon-file-system-upnp.c \
-	hildon-file-system-bt.h \
-	hildon-file-system-bt.c 
+	hildon-file-system-obex.h \
+	hildon-file-system-obex.c 
 
 
 hildonwidgetsincludeinstdir = $(includedir)/hildon-fm/hildon-widgets
@@ -250,7 +250,7 @@ am_libhildonfm_la_OBJECTS = hildon-file-selection.lo \
 	hildon-file-system-remote-device.lo hildon-file-system-mmc.lo \
 	hildon-file-system-old-gateway.lo \
 	hildon-file-system-dynamic-device.lo hildon-file-system-upnp.lo \
-	hildon-file-system-bt.lo
+	hildon-file-system-obex.lo
 libhildonfm_la_OBJECTS = $(am_libhildonfm_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -259,7 +259,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/hildon-file-chooser-dialog.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-details-dialog.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-selection.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-bt.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-obex.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-dynamic-device.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-info.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-file-system-local-device.Plo \
@@ -333,7 +333,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-chooser-dialog.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-details-dialog.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-selection.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-bt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-obex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-dynamic-device.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-file-system-local-device.Plo@am__quote@

@@ -41,7 +41,7 @@
 #include "hildon-file-system-local-device.h"
 #include "hildon-file-system-mmc.h"
 #include "hildon-file-system-upnp.h"
-#include "hildon-file-system-bt.h"
+#include "hildon-file-system-obex.h"
 #include "hildon-file-system-old-gateway.h"
 
 extern GtkFileSystem *gtk_file_system_unix_new();
@@ -206,6 +206,7 @@ typedef struct {
     gchar *uri;
     gint len_uri;
     HildonFileSystemSpecialLocation *result;
+    gboolean is_child;
 } CallbackData;
 
 static gboolean get_special_location_callback(GNode *node, gpointer data)
@@ -224,12 +225,14 @@ static gboolean get_special_location_callback(GNode *node, gpointer data)
         if (searched->len_uri >= len_cand && g_ascii_strncasecmp(searched->uri, 
                 candidate->basepath, len_cand) == 0) 
         {
-            if (searched->len_uri == len_cand)
+            if (searched->len_uri == len_cand) {
                 searched->result = g_object_ref(candidate);
-            else if (searched->uri[len_cand] == G_DIR_SEPARATOR) {
+                searched->is_child = FALSE;
+            } else if (searched->uri[len_cand] == G_DIR_SEPARATOR) {
                 searched->result =
                     hildon_file_system_special_location_create_child_location(
                     candidate, searched->uri);
+                searched->is_child = TRUE;
                 ULOG_INFO("Checking if %s considers %s as dynamic device? Result = %p",
                     candidate->basepath, searched->uri, (gpointer) searched->result);
             }
