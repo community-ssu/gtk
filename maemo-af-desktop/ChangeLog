@@ -1,5 +1,20 @@
 2006-07-06  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Wrong task icon selected after Close applications dialog"
+	(Closes N#32199)
+	* hildon-navigator/hn-wm-watched-window.c: When topping a "hibernated"
+	  window, update the application switcher manually
+
+2006-07-06  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Application killing dialog does not come up when trying to
+	witch to a non-responsive BG killed application" (Closes N#34080)
+	* hildon-navigator/hn-wm-watched-window.c: Send a SIGKILL after
+	  a timeout if a SIGTERM was not sufficient to background-kill an
+	  application
+
+2006-07-06  Johan Bilien <johan.bilien@nokia.com>
+
     Applied fix to "Background killing works inconsistently."
 	(Closes N#34090)
 	* hildon-navigator/hn-wm-memory.c: fixed a bug in which the background

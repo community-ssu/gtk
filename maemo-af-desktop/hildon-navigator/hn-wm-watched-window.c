@@ -38,6 +38,7 @@
 #define PING_TIMEOUT_BUTTON_OK_STRING     _( "qgn_bd_apkil_ok" )
 #define PING_TIMEOUT_BUTTON_CANCEL_STRING _( "qgn_bd_apkil_cancel" )
 
+#define HIBERNATION_TIMEMOUT 3000 /* as suggested by 31410#10 */
 
 struct HNWMWatchedWindow
 {
@@ -615,6 +616,22 @@ hn_wm_watched_window_new (Window            xid,
 
       /* free the hash key */
       g_free(orig_key_ptr);
+
+      HN_DBG("window found in hibernation hash, updating icon");
+
+      /* As window has come out of hibernation and we still have all
+       * resources ( menu, views etc ) view creation etc wont fire
+       * needed app_switcher updates. Therefore explicitly push
+       * window up our selves.
+       * Note, win->view_active will be NULL for viewless windows.
+       * and its a guess for multiple view apps but no way around
+       * that with views ( deprecated and no multiview apps 
+       * hibernate anyway ).
+      */
+      app_switcher_update_item (hnwm->app_switcher, 
+                                win, 
+                                win->view_active,
+                                AS_MENUITEM_TO_FIRST_POSITION);
     }
   else
     win = g_new0 (HNWMWatchedWindow, 1);
@@ -767,6 +784,35 @@ hn_wm_watched_window_get_active_view (HNWMWatchedWindow     *win)
 }
 
 
+static gboolean
+hn_wm_watched_window_sigterm_timeout_cb (gpointer data)
+{
+  pid_t pid;
+  
+  g_return_val_if_fail (data, FALSE);
+
+  pid = (pid_t) GPOINTER_TO_INT (data);
+  
+  
+  HN_DBG ("Checking if pid %d is still around", pid);
+  
+  if(pid && !kill (pid, 0))
+    {
+      /* app did not exit in response to SIGTERM, kill it */
+      HN_DBG ("App still around, sending SIGKILL");
+
+      if(kill (pid, SIGKILL))
+        {
+	  /* Something went wrong, perhaps we do not have sufficient
+	   * permissions to kill this process
+	   */
+	  HN_DBG ("SIGKILL failed");
+        }
+    }
+  
+  return FALSE;
+}
+
 gboolean
 hn_wm_watched_window_attempt_signal_kill (HNWMWatchedWindow *win, int sig)
 {
@@ -787,6 +833,16 @@ hn_wm_watched_window_attempt_signal_kill (HNWMWatchedWindow *win, int sig)
 
   if(!pid)
       return FALSE;
+
+
+  if (sig == SIGTERM)
+    {
+      /* install timeout to check that the SIGTERM was handled */
+      g_timeout_add (HIBERNATION_TIMEMOUT,
+                     (GSourceFunc)hn_wm_watched_window_sigterm_timeout_cb,
+                     GINT_TO_POINTER (pid));
+    }
+  
 
   if(kill(pid, sig /*SIGTERM*/) != 0)
     {
