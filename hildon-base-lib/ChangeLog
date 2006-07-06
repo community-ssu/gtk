@@ -1,3 +1,7 @@
+2006-07-06  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: released 0.10.1
+
 2005-09-14  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: released 0.9.4

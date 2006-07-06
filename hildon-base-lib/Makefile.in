@@ -139,7 +139,6 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-
 INCLUDES = $(GLIB_CFLAGS) $(GTK_CFLAGS)
 
 EXTRA_DIST = debian/changelog debian/control debian/copyright debian/rules \
@@ -197,9 +196,9 @@ DIST_SOURCES = $(libhildonbase_la_SOURCES)
 DATA = $(libhildonbaseincludeinst_DATA) $(pkgconfig_DATA)
 
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure COPYING \
-	Doxyfile.in FullDoxyfile.in Makefile.am aclocal.m4 config.guess \
-	config.h.in config.sub configure configure.ac depcomp \
-	hildon-base-lib.pc.in install-sh ltmain.sh missing \
+	ChangeLog Doxyfile.in FullDoxyfile.in Makefile.am aclocal.m4 \
+	config.guess config.h.in config.sub configure configure.ac \
+	depcomp hildon-base-lib.pc.in install-sh ltmain.sh missing \
 	mkinstalldirs
 SOURCES = $(libhildonbase_la_SOURCES)
 
