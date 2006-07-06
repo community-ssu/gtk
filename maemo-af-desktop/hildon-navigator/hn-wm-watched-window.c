@@ -572,6 +572,10 @@ hn_wm_watched_window_new (Window            xid,
 {
   HNWMWatchedWindow *win = NULL;
   gchar             *hkey;
+  gboolean           win_found = FALSE;
+
+  gpointer           win_ptr = NULL;
+  gpointer           orig_key_ptr = NULL;
 
   /*  Check if this window is actually one coming out
    *  of 'hibernation', we use its WM_CLASS[+WM_WINDOW_ROLE] 
@@ -587,13 +591,17 @@ hn_wm_watched_window_new (Window            xid,
   
   g_return_val_if_fail(hkey, NULL);
 
-  win = g_hash_table_lookup(hnwm->watched_windows_hibernating,
-			    (gconstpointer)hkey);
+  win_found = g_hash_table_lookup_extended (hnwm->watched_windows_hibernating,
+                                            (gconstpointer)hkey,
+                                            & orig_key_ptr,
+                                            & win_ptr);
 
   HN_DBG("^^^^ win 0x%x ^^^^", (int)win);
 
-  if (win)
+  if (win_found)
     {
+      win = (HNWMWatchedWindow*)win_ptr;
+      
       /* Window already exists in our hibernating window hash.
        * There for we can reuse by just updating its var with
        * new window values
@@ -602,8 +610,11 @@ hn_wm_watched_window_new (Window            xid,
 			 hkey);
 
       /* We already have this value */
-      g_free(hkey); 
+      g_free(hkey);
       hkey = NULL;
+
+      /* free the hash key */
+      g_free(orig_key_ptr);
     }
   else
     win = g_new0 (HNWMWatchedWindow, 1);
@@ -949,31 +960,12 @@ hn_wm_watched_window_props_sync (HNWMWatchedWindow *win, gulong props)
   return TRUE;
 }
 
-gboolean hn_wm_watched_window_hibernate_func(gpointer key,
-                                             gpointer value,
-                                             gpointer user_data)
+void
+hn_wm_watched_window_reset_x_win (HNWMWatchedWindow * win)
 {
-  HNWMWatchedWindow * win;
-  HNWMWatchableApp *app;
-
-  g_return_val_if_fail(key && value && user_data, FALSE);
+  g_return_if_fail (win);
   
-  win = (HNWMWatchedWindow *)value;
-  app = hn_wm_watched_window_get_app(win);
-  g_return_val_if_fail(app, FALSE);
-
-  if(app == (HNWMWatchableApp *)user_data)
-    {
-      win->xwin = None;
-      g_hash_table_insert (hnwm->watched_windows_hibernating,
-                           g_strdup(win->hibernation_key),
-                           win);
-      HN_DBG("'%s' now hibernating, moved to WatchedWindowsHibernating hash",
-             win->name);
-
-      return TRUE;
-    }
-  return FALSE;
+  win->xwin = None;
 }
 
 

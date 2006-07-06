@@ -62,6 +62,9 @@ hn_wm_watched_window_get_app (HNWMWatchedWindow *win);
 Window
 hn_wm_watched_window_get_x_win (HNWMWatchedWindow *win);
 
+void
+hn_wm_watched_window_reset_x_win (HNWMWatchedWindow * win);
+
 gboolean
 hn_wm_watched_window_is_urgent (HNWMWatchedWindow *win);
 
@@ -121,11 +124,6 @@ hn_wm_watched_window_awake (HNWMWatchedWindow *win);
 
 void
 hn_wm_watched_window_destroy (HNWMWatchedWindow *win);
-
-
-gboolean hn_wm_watched_window_hibernate_func(gpointer key,
-                                             gpointer value,
-                                             gpointer user_data);
 
 void hn_wm_ping_timeout( HNWMWatchedWindow *win );
 

@@ -1,9 +1,18 @@
+2006-07-06  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Double free in Desktop background killing" (Closes
+	N#32740)
+	* hildon-navigator/hn-wm-watched-window.c: avoid modifying the
+	  hibernating app hash table while iterating it
+
 2006-06-19  Karoliina Salminen <karoliina.t.salminen@nokia.com>
+
 	* configure.ac: 2.6.31
 	* Reverted fix proposal for the double free issue as it introduced more problems
 	* Patched bug N#32791 (backported from IT2007).
 
 2006-06-16  Karoliina Salminen <karoliina.t.salminen@nokia.com>
+
 	* configure.ac: 2.6.30
 	* Fix proposals committed.
 

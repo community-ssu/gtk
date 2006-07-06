@@ -1,3 +1,4 @@
+/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This file is part of maemo-af-desktop
  *
@@ -86,7 +87,7 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
   HNWMWatchedWindow   *win;
   gboolean             only_kill_able_to_hibernate;
   Window              *top_xwin;
-
+  
   HN_DBG("### enter ###");
 
   only_kill_able_to_hibernate = *(gboolean*)(userdata);
@@ -95,6 +96,7 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 
   if (only_kill_able_to_hibernate)
     {
+      gboolean return_val = FALSE;
       HN_DBG("called with 'only_kill_able_to_hibernate'");
 
       top_xwin 
@@ -112,15 +114,32 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 	     (hn_wm_watched_window_get_x_win (win) == *top_xwin) ? "yes" : "no" );
 
       if (hn_wm_watchable_app_is_able_to_hibernate(app) 
-	  && !hn_wm_watchable_app_is_hibernating (app)
 	  && hn_wm_watched_window_get_x_win (win) != *top_xwin) 
 	{
 	  HN_DBG("hn_wm_watched_window_attempt_pid_kill() for '%s'", hn_wm_watched_window_get_name (win));
 	  if (hn_wm_watched_window_attempt_signal_kill (win, SIGTERM))
 	    {
-          HN_DBG("app->hibernating now '%s'",
-                 hn_wm_watchable_app_is_hibernating(app) ? "true" : "false");
-          hn_wm_watchable_app_hibernate(hn_wm_watched_window_get_app(win));
+              HN_DBG("app->hibernating now '%s'",
+                     hn_wm_watchable_app_is_hibernating(app) ? "true" : "false");
+
+              /* move the window into hibernation hash */
+              g_hash_table_insert (hnwm->watched_windows_hibernating,
+                                   g_strdup (hn_wm_watched_window_get_hibernation_key(win)),
+                                   win);
+
+              /* need to reset the window xid as well */
+              hn_wm_watched_window_reset_x_win (win);
+
+              /* mark the application as hibernating -- we do not know how many more
+               * windows it might have, so we need to set this on each one of them
+               */
+              hn_wm_watchable_app_set_hibernate (app, TRUE);
+
+              /* free the key */
+              g_free (key);
+              
+              /* remove the current entry from the watched windows hash */
+              return_val = TRUE;
 	    }
 	}
 
@@ -129,25 +148,35 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 
       HN_DBG("### leave ###");
 
-      return FALSE;  /* No need to delete, hibernate will have moved it */
+      return return_val;
     }
   else
     {
       /* Totally kill everthing and remove from our hash */
       HN_DBG("killing everything, currently '%s'", hn_wm_watched_window_get_name (win));
       hn_wm_watched_window_attempt_signal_kill (win, SIGTERM);
+
+      /* we are called by g_hash_foreach_steal -- have to explicitely destroy
+       * the window here and the associated key
+       */
+      hn_wm_watched_window_destroy (win);
+      g_free (key);
+      
       HN_DBG("### leave ###");
       return TRUE;
     }
 }
 
 /* FIXME: rename kill to hibernate - kill is misleading */
-int 
+int
 hn_wm_memory_kill_all_watched (gboolean only_kill_able_to_hibernate)
 {
-  g_hash_table_foreach_remove ( hnwm->watched_windows,
-				hn_wm_memory_kill_all_watched_foreach_func,
-				(gpointer)&only_kill_able_to_hibernate);
+  /* use _steal rather than _remove as we need to keep the window object
+   * in the hibernating windows hash
+   */
+  g_hash_table_foreach_steal ( hnwm->watched_windows,
+                               hn_wm_memory_kill_all_watched_foreach_func,
+                               (gpointer)&only_kill_able_to_hibernate);
 
   hn_wm_memory_update_lowmem_ui(hnwm->lowmem_situation);
 
