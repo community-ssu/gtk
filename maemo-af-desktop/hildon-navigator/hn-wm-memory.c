@@ -195,15 +195,12 @@ hn_wm_memory_bgkill_func(gboolean is_on)
   if (!config_do_bgkill) /* NOTE: var extern in hildon-navigator-main.h  */
     return;
 
-  if (is_on != hnwm->bg_kill_situation)
-    {
-      hnwm->bg_kill_situation = is_on;
+  hnwm->bg_kill_situation = is_on;
       
-      if (is_on == TRUE)
-	{
-	  hn_wm_memory_kill_all_watched(TRUE);
-	}
-    }
+  if (is_on == TRUE)
+   {
+	 hn_wm_memory_kill_all_watched(TRUE);
+   }
 }
 
  void                     /* NOTE: callback from app switcher */

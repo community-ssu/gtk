@@ -1,5 +1,12 @@
 2006-07-06  Johan Bilien <johan.bilien@nokia.com>
 
+    Applied fix to "Background killing works inconsistently."
+	(Closes N#34090)
+	* hildon-navigator/hn-wm-memory.c: fixed a bug in which the background
+	  killing would not always be activated
+
+2006-07-06  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Double free in Desktop background killing" (Closes
 	N#32740)
 	* hildon-navigator/hn-wm-watched-window.c: avoid modifying the
