@@ -1,5 +1,9 @@
 2006-07-06  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.6.32
+
+2006-07-06  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Wrong task icon selected after Close applications dialog"
 	(Closes N#32199)
 	* hildon-navigator/hn-wm-watched-window.c: When topping a "hibernated"

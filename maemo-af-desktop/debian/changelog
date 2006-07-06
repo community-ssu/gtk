@@ -1,3 +1,28 @@
+maemo-af-desktop (2.6.32-1) unstable; urgency=low
+
+  Applied fix to "Wrong task icon selected after Close applications dialog"
+  (Closes N#32199)
+  * hildon-navigator/hn-wm-watched-window.c: When topping a "hibernated"
+    window, update the application switcher manually
+
+  Applied fix to "Application killing dialog does not come up when trying to
+  witch to a non-responsive BG killed application" (Closes N#34080)
+  * hildon-navigator/hn-wm-watched-window.c: Send a SIGKILL after
+    a timeout if a SIGTERM was not sufficient to background-kill an
+    application
+
+    Applied fix to "Background killing works inconsistently."
+  (Closes N#34090)
+  * hildon-navigator/hn-wm-memory.c: fixed a bug in which the background
+    killing would not always be activated
+
+  Applied fix to "Double free in Desktop background killing" (Closes
+  N#32740)
+  * hildon-navigator/hn-wm-watched-window.c: avoid modifying the
+    hibernating app hash table while iterating it
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  6 Jul 2006 17:07:08 +0300
+
 maemo-af-desktop (2.6.31-1) unstable; urgency=low
 
   * Reverted doublefree fix because it was introducing side effects.
