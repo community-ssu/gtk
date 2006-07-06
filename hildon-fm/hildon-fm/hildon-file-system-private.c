@@ -192,7 +192,7 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
             /* Setup multiple Bluetooth device support */
             env = g_getenv("HILDON_FM_OBEX_ROOT");
             if (env && env[0]) {
-                location = g_object_new(HILDON_TYPE_FILE_SYSTEM_BT, NULL);
+                location = g_object_new(HILDON_TYPE_FILE_SYSTEM_OBEX, NULL);
                 location->basepath = g_strdup(env);
                 g_node_append_data(locations, location);
             }    
