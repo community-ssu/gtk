@@ -135,8 +135,8 @@ _unescape_base_uri (gchar *uri)
 
       /* some checking in the case something changes and thing won't
          go as we expect (we expect that uri is incorrectly escaped) */
-    if (strcmp (uri, "obex:///")) {
-        if (!strcmp (uri, "obex://[")) {
+    if (memcmp (uri, "obex:///", 8)) {
+        if (!memcmp (uri, "obex://[", 8)) {
             return g_strdup (uri);
         } else {
             return NULL;
