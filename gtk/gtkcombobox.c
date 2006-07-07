@@ -1769,11 +1769,16 @@ gtk_combo_box_list_position (GtkComboBox *combo_box,
   GtkRequisition popup_req;
   GtkPolicyType hpolicy, vpolicy;
   gboolean hildonlike;
+  gboolean list_full_width;
   gboolean in_toolbar;
 
   gtk_widget_style_get (GTK_WIDGET (combo_box), "hildonlike", &hildonlike, NULL);
+  list_full_width = TRUE; /* FIXME: make this a style property */
   
-  sample = GTK_BIN (combo_box)->child;
+  if (list_full_width)
+    sample = GTK_WIDGET (combo_box);
+  else
+    sample = GTK_BIN (combo_box)->child;
 
   gdk_window_get_origin (sample->window, x, y);
 
@@ -1785,7 +1790,8 @@ gtk_combo_box_list_position (GtkComboBox *combo_box,
   
   *width = sample->allocation.width;
   
-  if (combo_box->priv->cell_view_frame && combo_box->priv->has_frame)
+  if (combo_box->priv->cell_view_frame && combo_box->priv->has_frame && 
+      !list_full_width)
     {
        *x -= GTK_CONTAINER (combo_box->priv->cell_view_frame)->border_width +
 	     GTK_WIDGET (combo_box->priv->cell_view_frame)->style->xthickness;
