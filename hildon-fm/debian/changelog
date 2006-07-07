@@ -5,6 +5,12 @@ hildon-fm (1.3-1) unstable; urgency=low
   * Fixed logical strings used in the Details dialog when showing file sizes.
   * Corrected localisation domain for ckdg_ti_new_folder. Fixes: NB#33863
   * Fixed a bug in unit testing code. Fixes: NB#32579
+  * Added system to look up BT device nicknames. Fixes: NB#33840
+  * Removed hack to unescape the uri and made one to allow unescaping locally,
+    the uri is now unescaped within the child class.
+  * Exchanged hildon-file-system-bt.* with hildon-file-system-obex.*.
+  * The problem with listing OBEX devices (the unneccessary probing) is
+    solved. Fixes: NB#34017
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 30 Jun 2006 11:31:58 +0300
 
