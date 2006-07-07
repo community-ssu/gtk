@@ -1,3 +1,9 @@
+2006-07-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_list_position): Make the popup as
+	wide as the whole widget, it fits better with the current graphics and
+	avoids truncating wide rows.
+
 2006-07-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Taken from GNOME. Optimize progressbar painting.
