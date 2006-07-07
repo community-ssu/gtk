@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.6.10-2.osso6) unstable; urgency=low
+
+  * Make combobox popup as wide as the combobox itself to avoid truncations.
+  * Small optimizations to progress bar painting.
+  * Fixes: NB#32657 Critical warning in gtktreemodelfilter (fixed upstream)
+  * Fixes: NB#26099 Unable to set text in activity mode of gtkprogressbar.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  7 Jul 2006 11:21:02 +0300
+
 gtk+2.0 (2:2.6.10-2.osso5) unstable; urgency=low
 
   * debian/rules:
