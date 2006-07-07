@@ -1,4 +1,5 @@
 Source: gtkhtml
+Section: libs
 Priority: optional
 Maintainer: Jakub Pavelek <jakub.pavelek@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), libart-2.0-2, libart-2.0-dev, libgtk2.0-dev (>= 2.6.0), libgconf2-dev, intltool
