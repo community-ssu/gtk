@@ -45,10 +45,10 @@
 #include <dlfcn.h>
 #include <errno.h>
 
-#include "ui.h"
 #include "report.h"
 #include "invokelib.h"
 #include "comm_dbus.h"
+#include "booster.h"
 
 /* FIXME: Should go into '/var/run/'. */
 #define LAUNCHER_PIDFILE "/tmp/"PROG_NAME".pid"
@@ -117,7 +117,7 @@ rise_oom_defense(int pid)
 }
 
 static void
-launch_process(prog_t *prog, ui_state state)
+launch_process(prog_t *prog, booster_state_t state)
 {
   void *module;
   entry_t entry;
@@ -144,7 +144,7 @@ launch_process(prog_t *prog, ui_state state)
   /* Initialize the launched application. */
   setenv("_", prog->argv[0], true);
 
-  ui_client_init(prog->argv[0], state);
+  booster_init(prog->argv[0], state);
 
   /* Possibly restore process priority. */
   errno = 0;
@@ -708,7 +708,7 @@ usage(int status)
 int
 main(int argc, char *argv[])
 {
-  ui_state state;
+  booster_state_t state;
   kindergarten_t *childs;
   const int initial_child_slots = 64;
   int i;
@@ -743,7 +743,7 @@ main(int argc, char *argv[])
   /*
    * Daemon initialization.
    */
-  state = ui_daemon_init(&argc, &argv);
+  state = booster_preinit(&argc, &argv);
 
   sigs_init();
   env_init();
@@ -786,7 +786,7 @@ main(int argc, char *argv[])
 
     if (sighup_catched)
     {
-      ui_state_reload(state);
+      booster_reload(state);
       sighup_catched = false;
     }
 

@@ -17,8 +17,10 @@ maemo_defender_CPPFLAGS = \
 
 bin_PROGRAMS = maemo-launcher maemo-invoker
 
-maemo_launcher_SOURCES = launcher.c report.c report.h ui.h ui_gtk.c ui_gtk.h \
-		  invokelib.c invokelib.h comm_dbus.c comm_dbus.h
+maemo_launcher_SOURCES = \
+	launcher.c report.c report.h booster.h \
+	booster_gtk.c booster_gtk.h \
+	invokelib.c invokelib.h comm_dbus.c comm_dbus.h
 maemo_launcher_CPPFLAGS = $(LAUNCHER_CFLAGS) \
 	-DPROG_NAME="\"maemo-launcher\"" \
 	-DMAEMO_DEFENDER=$(MAEMO_DEFENDER)

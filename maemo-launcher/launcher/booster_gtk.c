@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2005 Nokia Corporation
+ * Copyright (C) 2005, 2006 Nokia Corporation
  *
  * Authors: Guillem Jover <guillem.jover@nokia.com>
  *	    Michael Natterer <mitch@imendio.com>
@@ -32,8 +32,8 @@
 #include <fontconfig/fontconfig.h>
 #include <pango/pangoxft.h>
 
-#include "ui.h"
-#include "ui_gtk.h"
+#include "booster.h"
+#include "booster_gtk.h"
 #include "report.h"
 
 typedef GType (*GetTypeFunc)(void);
@@ -129,8 +129,8 @@ init_gquarks(void)
   return 0;
 }
 
-ui_state
-ui_daemon_init(int *argc, char ***argv)
+booster_state_t
+booster_preinit(int *argc, char ***argv)
 {
   GdkDisplay *display;
   GtkSettings *settings;
@@ -275,7 +275,7 @@ timestamp_func(gpointer data)
 #endif
 
 void
-ui_client_init(const char *progfilename, const ui_state state)
+booster_init(const char *progfilename, const booster_state_t state)
 {
   char *progname;
   GtkSettings *settings = state;
@@ -316,7 +316,7 @@ ui_client_init(const char *progfilename, const ui_state state)
 }
 
 void
-ui_state_reload(ui_state state)
+booster_reload(booster_state_t state)
 {
   GtkSettings *settings = state;
   GdkDisplay *display;

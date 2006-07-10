@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2005 Nokia Corporation
+ * Copyright (C) 2005, 2006 Nokia Corporation
  *
  * Author: Guillem Jover <guillem.jover@nokia.com>
  *
@@ -20,14 +20,14 @@
  *
  */
 
-#ifndef LAUNCHER_UI_H
-#define LAUNCHER_UI_H
+#ifndef LAUNCHER_BOOSTER_H
+#define LAUNCHER_BOOSTER_H
 
-typedef void *ui_state;
+typedef void *booster_state_t;
 
-extern ui_state ui_daemon_init(int *argc, char **argv[]);
-extern void ui_client_init(const char *progfilename, const ui_state state);
-extern void ui_state_reload(ui_state state);
+extern booster_state_t booster_preinit(int *argc, char **argv[]);
+extern void booster_init(const char *progfilename, const booster_state_t state);
+extern void booster_reload(booster_state_t state);
 
 #endif
 
