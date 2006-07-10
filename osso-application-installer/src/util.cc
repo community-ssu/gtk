@@ -1767,7 +1767,7 @@ ensure_network (void (*callback) (bool success, void *data), void *data)
 	    show_progress (dgettext ("osso-browser-ui",
 				     "weba_pb_clearing_connecting"));
 	  else
-	    show_progress (_("ai_nw_connectiong"));
+	    show_progress (_("ai_nw_connecting"));
 	    
 	  return;
 	}
