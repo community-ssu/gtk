@@ -1,5 +1,7 @@
 2006-07-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.23
+	
 	* src/util.cc (ensure_network): Use correct logical ID
 	"ai_nw_connecting", stupid.
 
