@@ -57,7 +57,7 @@ static gchar *
 _unescape_base_uri (gchar *uri);
 
 static gchar *_uri_to_display_name (gchar *uri);
-/*static void _uri_filler_function (gpointer data, gpointer user_data);*/
+static void _uri_filler_function (gpointer data, gpointer user_data);
 static gchar *_obex_addr_to_display_name(gchar *obex_addr);
 
 
@@ -162,7 +162,7 @@ _unescape_base_uri (gchar *uri)
 
     return ret;
 }
-#if 0
+
 /* we'll cache addr & name pairs so we don't have to open D-BUS
    connection each time, caching happens per process lifetime */
 typedef struct {
@@ -172,42 +172,37 @@ typedef struct {
 
 
 static GList *cache_list = NULL;
-#endif
+
 
 static gchar *_uri_to_display_name (gchar *uri)
 {
-  /*CacheData *local = g_malloc0 (sizeof (CacheData));*/
+    CacheData *local = g_malloc0 (sizeof (CacheData));
     gchar *ret = NULL;
-    gchar *addr_name;
 
 
-  /*local->addr = g_malloc0(18);
+    local->addr = g_malloc0(18);
     memcpy (local->addr, uri + 8, 17);
-    local->name = NULL;*/
-    addr_name = g_malloc0 (18);
-    memcpy (addr_name, uri + 8, 17);
+    local->name = NULL;
 
-    ret = _obex_addr_to_display_name (addr_name);
-    g_free (addr_name);
 
-  /*g_list_foreach (cache_list, _uri_filler_function, local);
+    g_list_foreach (cache_list, _uri_filler_function, local);
 
 
     if(local->name) {
-        ret = local->name;
+        ret = g_strdup (local->name);
         g_free (local);
     } else {
         local->name = _obex_addr_to_display_name (local->addr);
-        ret = local->name;
+        ret = g_strdup (local->name);
 
         cache_list = g_list_append (cache_list, local);
-    }*/
+    }
 
 
     return ret;
 }
 
-/*
+
 static void _uri_filler_function (gpointer data, gpointer user_data)
 {
     CacheData *src, *dest;
@@ -225,7 +220,7 @@ static void _uri_filler_function (gpointer data, gpointer user_data)
         dest->addr = src->addr;
         dest->name = src->name;
     }
-}*/
+}
 
 
 /* TODO: works as long as you have one bt device locally, but when you have
