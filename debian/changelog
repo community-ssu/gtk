@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.6.10-1.osso22) unstable; urgency=low
+
+  * debian/rules:
+    - CFLAGS += -g (Fixes: NB#32637)
+  * Fixes: NB#32818 Critical warning in gtktreemodelfilter (fixed upstream)
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 11 Jul 2006 10:02:52 +0300
+
 gtk+2.0 (2:2.6.10-1.osso21) unstable; urgency=low
 
   * Bugs fixed:
