@@ -1,7 +1,7 @@
 apt (0.6.42.3osso14) unstable; urgency=low
 
   * Added 05statusparse patch, to improve robustness when parsing status
-    output from dpkg. Fixes: #33835.
+    output from dpkg. Fixes: NB#33835.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 30 Jun 2006 16:55:59 +0300
 
