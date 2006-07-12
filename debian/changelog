@@ -1,3 +1,14 @@
+gtk+2.0 (2:2.6.10-2.osso7) unstable; urgency=low
+
+  * Proper fix for NB#26600
+  * Fixes: NB#32507 Filemanager crashes when backup files are deleted from the
+    MMC card
+  * Fixes: NB#34607 Bookmarks application crashed.
+  * Fixes: NB#34609 File manager crashes after folder has been renamed from
+    leftside file view
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 12 Jul 2006 10:49:13 +0300
+
 gtk+2.0 (2:2.6.10-2.osso6) unstable; urgency=low
 
   * Make combobox popup as wide as the combobox itself to avoid truncations.
