@@ -1,3 +1,12 @@
+apt (0.6.42.3osso15) unstable; urgency=low
+
+  * Added 06transientsigs patch, to survive transient network failures
+    without forgetting about good signatures.  Fixes: NB#34545.
+  * Removed evil dpatch from build system.  (I plan to continue gathering
+    patches in debian/patches, but just for documentation purposes.)
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 12 Jul 2006 18:30:28 +0300
+
 apt (0.6.42.3osso14) unstable; urgency=low
 
   * Added 05statusparse patch, to improve robustness when parsing status
