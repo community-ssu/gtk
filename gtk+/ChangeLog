@@ -1,3 +1,26 @@
+2006-07-11  Kristian Rietveld  <kris@imendio.com>
+
+	Proper fix for N#26600, also fixes N#32507, N#34607, N#34609
+
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_finalize),
+	(gtk_tree_model_filter_row_deleted), (gtk_tree_model_filter_new):
+	unref the virtual root path once that node (or one if its
+	ancestors) is deleted, set virtual_root_deleted so we only unref
+	it once.
+
+	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_row_changed),
+	(gtk_tree_model_sort_sort_level): don't just modify the ref count
+	of the level, but ref count a node via a proper way (so the zero
+	ref count bookkeeping won't be messed up),
+	(gtk_tree_model_sort_ref_node), (gtk_tree_model_sort_unref_node),
+	(gtk_tree_model_sort_free_level): use similiar loops here, don't
+	bookkeep zero ref count for the root level,
+	(gtk_tree_model_sort_free_level): revert earlier changes for
+	N#26600, the zero ref count should be decremented once and only
+	if the level's ref count is zero,
+	(gtk_tree_model_sort_clear_cache): only clear cache if zero_ref_count
+	is > 0.
+
 2006-07-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcombobox.c (gtk_combo_box_list_position): Make the popup as
