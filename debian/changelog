@@ -1,3 +1,14 @@
+gtk+2.0 (2:2.6.10-1.osso23) unstable; urgency=low
+
+  * Proper fix for NB#26600
+  * Fixes: NB#31768 Filemanager crashes when backup files are deleted from the
+    MMC card
+  * Fixes: NB#32385 Bookmarks application crashed.
+  * Fixes: NB#33107 File manager crashes after folder has been renamed from
+    leftside file view
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 12 Jul 2006 10:58:32 +0300
+
 gtk+2.0 (2:2.6.10-1.osso22) unstable; urgency=low
 
   * debian/rules:
