@@ -4,7 +4,7 @@ Priority: important
 Maintainer: APT Development Team <deity@lists.debian.org>
 Uploaders: Jason Gunthorpe <jgg@debian.org>, Adam Heath <doogie@debian.org>, Matt Zimmerman <mdz@debian.org>, Michael Vogt <mvo@debian.org>
 Standards-Version: 3.6.1
-Build-Depends: debhelper (>= 4.1.62), gettext (>= 0.12), dpatch
+Build-Depends: debhelper (>= 4.1.62), gettext (>= 0.12)
 
 Package: apt
 Architecture: any

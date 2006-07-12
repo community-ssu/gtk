@@ -16,7 +16,7 @@
 
 DEBIAN_DIR ?= debian
 
-include /usr/share/dpatch/dpatch.make
+# include /usr/share/dpatch/dpatch.make
 
 export DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
@@ -122,12 +122,12 @@ build/configure-stamp: configure
 	cd build && CXXFLAGS="$(CXXFLAGS)" ../configure $(confflags)
 	touch $@
 
-build/build-stamp: build/configure-stamp patch-stamp
+build/build-stamp: build/configure-stamp # patch-stamp
 	# Add here commands to compile the package.
 	$(MAKE) binary
 	touch $@
 
-clean: unpatch
+clean: # unpatch
 	dh_testdir
 #	dh_testroot
 	-$(MAKE) clean
