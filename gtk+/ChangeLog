@@ -1,3 +1,12 @@
+2006-07-12  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcalendar.c (gtk_calendar_class_init) (gtk_calendar_finalize)
+	(gtk_calendar_init) (gtk_calendar_paint_day_names)
+	(gtk_calendar_paint_footer) (GtkCalendarPrivateData)
+	(gtk_calendar_size_request) (locales_init): Change abbreviated_dayname
+	and monthname into instance variables to react to locale changing on
+	runtime. N#33120
+
 2006-07-11  Kristian Rietveld  <kris@imendio.com>
 
 	Proper fix for N#26600, also fixes N#32507, N#34607, N#34609
