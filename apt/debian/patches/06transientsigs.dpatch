@@ -6,6 +6,21 @@
 ## DP: Keep old Release.gpg and Release files when acquiring them
 ## DP: fails for a transient reason.
 
+## DP: 2006-07-12  Marius Vollmer  <marius.vollmer@nokia.com>
+## DP: 
+## DP: 	* apt-pkg/acquire-item.cc (pkgAcqMetaSig::pkgAcqMetaSig): Don't
+## DP: 	move old version into partial/, we need it as a backup in the case
+## DP: 	the acquiring fails.
+## DP: 	(pkgAcqMetaSig::Custom600Headers): Updated to find the old
+## DP: 	version.
+## DP: 	(pkgAcqMetaSig::Done): Make sure that the file is in partial/ and
+## DP: 	no longer in lists/.
+## DP: 	(pkgAcqMetaSig::Failed): Use the old, existing version for a
+## DP: 	transient acquire failure.
+## DP: 	(pkgAcqMetaIndex::Failed): Likewise, start the gpgv pass for a
+## DP: 	transient failure when we have an old version and a signature
+## DP: 	file.
+
 if [ $# -lt 1 ]; then
     echo "`basename $0`: script expects -patch|-unpatch as argument" >&2
     exit 1
