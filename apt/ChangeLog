@@ -1,0 +1,14 @@
+2006-07-12  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* apt-pkg/acquire-item.cc (pkgAcqMetaSig::pkgAcqMetaSig): Don't
+	move old version into partial/, we need it as a backup in the case
+	the acquiring fails.
+	(pkgAcqMetaSig::Custom600Headers): Updated to find the old
+	version.
+	(pkgAcqMetaSig::Done): Make sure that the file is in partial/ and
+	no longer in lists/.
+	(pkgAcqMetaSig::Failed): Use the old, existing version for a
+	transient acquire failure.
+	(pkgAcqMetaIndex::Failed): Likewise, start the gpgv pass for a
+	transient failure when we have an old version and a signature
+	file.
