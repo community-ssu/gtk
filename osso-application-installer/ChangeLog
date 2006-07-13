@@ -1,3 +1,21 @@
+2006-07-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Ensure that the dependencies of a installed package are
+	reinstalled when needed.
+	
+	* src/apt-worker.cc (auto_flags, package_flags): Replaced
+	auto_flags with more general package_flags construction to
+	accomodate the new ' related' flag.  Updated all users.
+	(restore_auto_flags): Removed since cache_reset can do it for us.
+	(load_auto_flags): Don't call restore_auto_flags.
+	(cache_init): Call cache_reset here after load_auto_flags.
+	(is_related, mark_related): New.
+	(cache_reset_package): Reset 'related' flag of a package.
+	(mark_for_install): Don't set ReInstall flag, mark_related does it
+	now.  Call mark_related.
+	(myDPkgPM::CreateOrderList): Use 'related' flag to decide whether
+	to ignore an interesting package, not the ReInstall flag.
+
 2006-07-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.23

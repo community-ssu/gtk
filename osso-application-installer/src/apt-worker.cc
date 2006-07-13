@@ -637,11 +637,16 @@ is_user_package (const pkgCache::VerIterator &ver)
          pkgCache, a pkgDebCache, etc.
 */
 pkgCacheFile *package_cache = NULL;
-char *auto_flags = NULL;
-unsigned int package_count;
 
-/* Save and restore the 'Auto' flags of the cache.  Libapt-pkg does
-   not seem to save it so we do it.
+unsigned int package_count;
+struct package_flag_struct {
+  bool autoinst, related;
+} *package_flags = NULL;
+
+/* Save the 'Auto' flags of the cache.  Libapt-pkg does not seem to
+   save it so we do it.  We also make a copy of the Auto flags in our
+   own PACKAGE_FLAGS storage so that CACHE_RESET will reset the Auto
+   flags to the state last saved with this function.
 */
 
 void
@@ -658,39 +663,29 @@ save_auto_flags ()
       return;
     }
 
-  memset (auto_flags, 0, package_count);
-
   FILE *f = fopen ("/var/lib/osso-application-installer/autoinst", "w");
   if (f)
     {
       pkgDepCache &cache = *package_cache;
 
       for (pkgCache::PkgIterator pkg = cache.PkgBegin(); !pkg.end (); pkg++)
-	if (cache[pkg].Flags & pkgCache::Flag::Auto)
-	  {
-	    auto_flags[pkg->ID] = true;
-	    fprintf (f, "%s\n", pkg.Name ());
-	  }
+	{
+	  if (cache[pkg].Flags & pkgCache::Flag::Auto)
+	    {
+	      package_flags[pkg->ID].autoinst = true;
+	      fprintf (f, "%s\n", pkg.Name ());
+	    }
+	  else
+	    package_flags[pkg->ID].autoinst = false;
+	}
       fclose (f);
     }
 }
 
-void
-restore_auto_flags ()
-{
-  if (package_cache == NULL)
-    return;
-
-  pkgDepCache &cache = *package_cache;
-  
-  for (pkgCache::PkgIterator pkg = cache.PkgBegin(); !pkg.end (); pkg++)
-    {
-      if (auto_flags[pkg->ID])
-	cache[pkg].Flags |= pkgCache::Flag::Auto;
-      else
-	cache[pkg].Flags &= ~pkgCache::Flag::Auto;
-    }
-}
+/* Load the Auto flags and put them into our own PACKAGE_FLAGS
+   storage.  You need to call CACHE_RESET to transfer them into the
+   actual cache.
+*/
 
 void
 load_auto_flags ()
@@ -700,7 +695,8 @@ load_auto_flags ()
   if (package_cache == NULL)
     return;
 
-  memset (auto_flags, 0, package_count);
+  for (int i = 0; i < package_count; i++)
+    package_flags[i].autoinst = false;
 
   FILE *f = fopen ("/var/lib/osso-application-installer/autoinst", "r");
   if (f)
@@ -720,14 +716,12 @@ load_auto_flags ()
 	  if (!pkg.end ())
 	    {
 	      DBG ("auto: %s", pkg.Name ());
-	      auto_flags[pkg->ID] = true;
+	      package_flags[pkg->ID].autoinst = true;
 	    }
 	}
 
       free (line);
       fclose (f);
-
-      restore_auto_flags ();
     }
 }
 
@@ -855,6 +849,8 @@ clear_dpkg_updates ()
    closedir(DirP);
 }
 
+void cache_reset ();
+
 /* Initialize libapt-pkg if this has not been already and (re-)create
    PACKAGE_CACHE.  If the cache can not be created, PACKAGE_CACHE is
    set to NULL and an appropriate message is output.
@@ -869,7 +865,9 @@ cache_init ()
       DBG ("closing");
       package_cache->Close ();
       delete package_cache;
+      delete[] package_flags;
       package_cache = NULL;
+      package_flags = NULL;
       DBG ("done");
     }
 
@@ -905,21 +903,15 @@ cache_init ()
       package_cache = NULL;
     }
 
-  if (auto_flags)
-    {
-      delete[] auto_flags;
-      auto_flags = NULL;
-    }
-
   if (package_cache)
     {
       pkgDepCache &cache = *package_cache;
       package_count = cache.Head().PackageCount;
-      auto_flags = new char[package_count];
-      memset (auto_flags, 0, package_count);
+      package_flags = new package_flag_struct[package_count];
     }
 
   load_auto_flags ();
+  cache_reset ();
 }
 
 /* Determine whether a package was installed automatically to satisfy
@@ -933,11 +925,49 @@ is_auto_package (pkgCache::PkgIterator &pkg)
   return (cache[pkg].Flags & pkgCache::Flag::Auto) != 0;
 }
 
-/* Revert the cache to its initial state.  More concretely, all
-   packages are marked as 'keep'.
+/* Determine whether a package is related to the current operation.
+*/
+bool
+is_related (pkgCache::PkgIterator &pkg)
+{
+  return package_flags[pkg->ID].related;
+}
 
-   The effect should be the same as calling pkgDebCache::Init, but
-   much faster.
+void
+mark_related (pkgCache::PkgIterator &pkg)
+{
+  if (package_flags[pkg->ID].related)
+    return;
+
+  package_flags[pkg->ID].related = true;
+
+  pkgDepCache &cache = *package_cache;
+
+  if (pkg.State() == pkgCache::PkgIterator::NeedsUnpack)
+    cache.SetReInstall (pkg, true);
+  
+  pkgCache::VerIterator cand = cache.GetCandidateVer (pkg);
+  if (cand.end ())
+    return;
+
+  for (pkgCache::DepIterator dep = cand.DependsList(); dep.end() == false;
+       dep++)
+    {
+      if (dep->Type == pkgCache::Dep::PreDepends ||
+	  dep->Type == pkgCache::Dep::Depends)
+	{
+	  pkgCache::PkgIterator p = dep.TargetPkg ();
+	  if (!p.end ())
+	    mark_related (p);
+	}
+    }
+}
+
+/* Revert the cache to its initial state.  More concretely, all
+   packages are marked as 'keep' and 'unrelated'.
+
+   The effect on the cache should be the same as calling
+   pkgDebCache::Init, but much faster.
 */
 void
 cache_reset_package (pkgCache::PkgIterator &pkg)
@@ -945,10 +975,12 @@ cache_reset_package (pkgCache::PkgIterator &pkg)
   pkgDepCache &cache = *package_cache;
 
   cache.MarkKeep (pkg);
-  if (auto_flags[pkg->ID])
+  if (package_flags[pkg->ID].autoinst)
     cache[pkg].Flags |= pkgCache::Flag::Auto;
   else
     cache[pkg].Flags &= ~pkgCache::Flag::Auto;
+
+  package_flags[pkg->ID].related = false;
 }
 
 void
@@ -976,15 +1008,14 @@ mark_for_install (pkgCache::PkgIterator &pkg)
 {
   pkgDepCache &cache = *package_cache;
 
-  if (pkg.State() == pkgCache::PkgIterator::NeedsUnpack)
-    cache.SetReInstall (pkg, true);
-
   cache.MarkInstall (pkg);
   for (pkgCache::PkgIterator p = cache.PkgBegin (); !p.end (); p++)
     {
       if (cache[p].Delete ())
 	cache_reset_package (p);
     }
+
+  mark_related (pkg);
 }
 
 
@@ -2046,16 +2077,17 @@ myDPkgPM::CreateOrderList ()
 	   (Cache[I].iFlags & pkgDepCache::Purge) != pkgDepCache::Purge))
 	continue;
       
-      // Ignore interesting but kept packages, except when they should
-      // be reinstalled.
+      // Ignore interesting but kept packages, except when they are
+      // related to the current operation.
 
-      if (Cache[I].Keep() == true
-	  && !(Cache[I].iFlags & pkgDepCache::ReInstall))
+      if (Cache[I].Keep() == true && !is_related (I))
 	{
-	  log_stderr ("Not handling kept package %s.", I.Name());
+	  log_stderr ("Not handling unrelated package %s.", I.Name());
 	  continue;
 	}
       
+      DBG ("Handling interesting package %s.", I.Name());
+
       // Append it to the list
       pkgPackageManager::List->push_back(I);      
     }
