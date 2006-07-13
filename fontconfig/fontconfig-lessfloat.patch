@@ -1,60 +1,38 @@
-#
-# Copyright © 2006 Nokia Corporation. All rights reserved.
-#
-# Permission to use, copy, modify, distribute, and sell this software and its
-# documentation for any purpose is hereby granted without fee, provided that 
-# the above copyright notice appear in all copies and that both that 
-# copyright notice and this permission notice appear in supporting 
-# documentation, and that the name of copyright holder not be used in 
-# advertising or publicity pertaining to distribution of the software without 
-# specific, written prior permission. Copyright holder makes no 
-# representations about the suitability of this software for any purpose. 
-# It is provided "as is" without express or implied warranty.
-#
-# COPYRIGHT HOLDER DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, 
-# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO 
-# EVENT SHALL KEITH PACKARD BE LIABLE FOR ANY SPECIAL, INDIRECT OR 
-# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF 
-# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR 
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR 
-# PERFORMANCE OF THIS SOFTWARE.
-#
-#
-diff -Naur fontconfig/src/fcmatch.c fontconfig-2.2.97_lessfloat/src/fcmatch.c
---- fontconfig/src/fcmatch.c	2004-05-29 22:23:55.000000000 +0300
-+++ fontconfig-2.2.97_lessfloat/src/fcmatch.c	2004-12-09 10:50:48.000000000 +0200
-@@ -27,54 +27,54 @@
- #include "fcint.h"
+diff -Naur fontconfig/src/fcmatch.c fontconfig-2.3.95_lessfloat/src/fcmatch.c
+--- fontconfig/src/fcmatch.c	2006-04-25 08:51:35.000000000 +0300
++++ fontconfig-2.3.95_lessfloat/src/fcmatch.c	2006-07-07 17:16:13.000000000 +0300
+@@ -27,30 +27,30 @@
+ #include <ctype.h>
  #include <stdio.h>
  
 -static double
 +static int
- FcCompareNumber (char *object, FcValue value1, FcValue value2)
+ FcCompareNumber (FcValue *value1, FcValue *value2)
  {
 -    double  v1, v2, v;
-+    int v1, v2, v;
++    int  v1, v2, v;
      
-     switch (value1.type) {
+     switch (value1->type) {
      case FcTypeInteger:
--	v1 = (double) value1.u.i;
-+	v1 = value1.u.i;
+-	v1 = (double) value1->u.i;
++	v1 = value1->u.i;
  	break;
      case FcTypeDouble:
--	v1 = value1.u.d;
-+	v1 = (int) value1.u.d;
+-	v1 = value1->u.d;
++	v1 = (int)value1->u.d;
  	break;
      default:
 -	return -1.0;
 +	return -1;
      }
-     switch (value2.type) {
+     switch (value2->type) {
      case FcTypeInteger:
--	v2 = (double) value2.u.i;
-+	v2 = value2.u.i;
+-	v2 = (double) value2->u.i;
++	v2 = value2->u.i;
  	break;
      case FcTypeDouble:
--	v2 = value2.u.d;
-+	v2 = (int) value2.u.d;
+-	v2 = value2->u.d;
++	v2 = (int)value2->u.d;
  	break;
      default:
 -	return -1.0;
@@ -62,40 +40,41 @@ diff -Naur fontconfig/src/fcmatch.c fontconfig-2.2.97_lessfloat/src/fcmatch.c
      }
      v = v2 - v1;
      if (v < 0)
- 	v = -v;
--    return (double) v;
-+    return v;
+@@ -58,13 +58,13 @@
+     return v;
  }
  
 -static double
 +static int
- FcCompareString (char *object, FcValue value1, FcValue value2)
+ FcCompareString (FcValue *v1, FcValue *v2)
  {
-     if (value2.type != FcTypeString || value1.type != FcTypeString)
--	return -1.0;
--    return (double) FcStrCmpIgnoreCase (value1.u.s, value2.u.s) != 0;
-+	return -1;
-+    return (int) FcStrCmpIgnoreCase (value1.u.s, value2.u.s) != 0;
+-    return (double) FcStrCmpIgnoreCase (fc_value_string(v1), fc_value_string(v2)) != 0;
++    return (int) FcStrCmpIgnoreCase (fc_value_string(v1), fc_value_string(v2)) != 0;
  }
  
 -static double
 +static int
- FcCompareFamily (char *object, FcValue value1, FcValue value2)
+ FcCompareFamily (FcValue *v1, FcValue *v2)
  {
-     if (value2.type != FcTypeString || value1.type != FcTypeString)
--	return -1.0;
--    return (double) FcStrCmpIgnoreBlanksAndCase (value1.u.s, value2.u.s) != 0;
-+	return -1;
-+    return (int) FcStrCmpIgnoreBlanksAndCase (value1.u.s, value2.u.s) != 0;
+     /* rely on the guarantee in FcPatternAddWithBinding that
+@@ -73,12 +73,12 @@
+     const FcChar8* v2_string = fc_value_string(v2);
+ 
+     if (FcToLower(*v1_string) != FcToLower(*v2_string))
+-       return 1.0;
++       return 1;
+ 
+-    return (double) FcStrCmpIgnoreBlanksAndCase (v1_string, v2_string) != 0;
++    return (int) FcStrCmpIgnoreBlanksAndCase (v1_string, v2_string) != 0;
  }
  
 -static double
 +static int
- FcCompareLang (char *object, FcValue value1, FcValue value2)
+ FcCompareLang (FcValue *v1, FcValue *v2)
  {
      FcLangResult    result;
-@@ -89,7 +89,7 @@
- 	    result = FcLangSetHasLang (value1.u.l, value2.u.s);
+@@ -95,7 +95,7 @@
+ 				       value2.u.s);
  	    break;
  	default:
 -	    return -1.0;
@@ -103,8 +82,8 @@ diff -Naur fontconfig/src/fcmatch.c fontconfig-2.2.97_lessfloat/src/fcmatch.c
  	}
  	break;
      case FcTypeString:
-@@ -101,11 +101,11 @@
- 	    result = FcLangCompare (value1.u.s, value2.u.s);
+@@ -108,11 +108,11 @@
+ 				    value2.u.s);
  	    break;
  	default:
 -	    return -1.0;
@@ -117,80 +96,77 @@ diff -Naur fontconfig/src/fcmatch.c fontconfig-2.2.97_lessfloat/src/fcmatch.c
      }
      switch (result) {
      case FcLangEqual:
-@@ -118,33 +118,33 @@
+@@ -125,31 +125,31 @@
      }
  }
  
 -static double
 +static int
- FcCompareBool (char *object, FcValue value1, FcValue value2)
+ FcCompareBool (FcValue *v1, FcValue *v2)
  {
-     if (value2.type != FcTypeBool || value1.type != FcTypeBool)
+     if (fc_storage_type(v2) != FcTypeBool || fc_storage_type(v1) != FcTypeBool)
 -	return -1.0;
--    return (double) value2.u.b != value1.u.b;
+-    return (double) v2->u.b != v1->u.b;
 +	return -1;
-+    return (int) value2.u.b != value1.u.b;
++    return (int) v2->u.b != v1->u.b;
  }
  
 -static double
 +static int
- FcCompareCharSet (char *object, FcValue value1, FcValue value2)
+ FcCompareCharSet (FcValue *v1, FcValue *v2)
  {
-     if (value2.type != FcTypeCharSet || value1.type != FcTypeCharSet)
--	return -1.0;
--    return (double) FcCharSetSubtractCount (value1.u.c, value2.u.c);
-+	return -1;
-+    return (int) FcCharSetSubtractCount (value1.u.c, value2.u.c);
+-    return (double) FcCharSetSubtractCount (fc_value_charset(v1), fc_value_charset(v2));
++    return (int) FcCharSetSubtractCount (fc_value_charset(v1), fc_value_charset(v2));
  }
  
 -static double
 +static int
- FcCompareSize (char *object, FcValue value1, FcValue value2)
+ FcCompareSize (FcValue *value1, FcValue *value2)
  {
 -    double  v1, v2, v;
-+    int v1, v2, v;
++    int  v1, v2, v;
  
-     switch (value1.type) {
+     switch (value1->type) {
      case FcTypeInteger:
- 	v1 = value1.u.i;
+ 	v1 = value1->u.i;
  	break;
      case FcTypeDouble:
--	v1 = value1.u.d;
-+	v1 = (int) value1.u.d;
+-	v1 = value1->u.d;
++	v1 = (int)value1->u.d;
  	break;
      default:
  	return -1;
-@@ -154,7 +154,7 @@
- 	v2 = value2.u.i;
+@@ -159,7 +159,7 @@
+ 	v2 = value2->u.i;
  	break;
      case FcTypeDouble:
--	v2 = value2.u.d;
-+	v2 = (int) value2.u.d;
+-	v2 = value2->u.d;
++	v2 = (int)value2->u.d;
  	break;
      default:
  	return -1;
-@@ -169,7 +169,7 @@
- 
+@@ -175,7 +175,7 @@
  typedef struct _FcMatcher {
-     char	    *object;
--    double	    (*compare) (char *object, FcValue value1, FcValue value2);
-+    int		    (*compare) (char *object, FcValue value1, FcValue value2);
+     const char	    *object;
+     FcObjectPtr	    objectPtr;
+-    double	    (*compare) (FcValue *value1, FcValue *value2);
++    int		    (*compare) (FcValue *value1, FcValue *value2);
      int		    strong, weak;
  } FcMatcher;
  
-@@ -233,7 +233,7 @@
- 		    FcResult	*result)
+@@ -343,7 +343,7 @@
  {
-     FcValueList    *v1, *v2;
+     FcValueListPtr  v1, v2;
+     FcValueList     *v1_ptrU, *v2_ptrU;
 -    double    	    v, best, bestStrong, bestWeak;
 +    int    	    v, best, bestStrong, bestWeak;
-     int		    i;
      int		    j;
-     
-@@ -310,9 +310,9 @@
+     const char	    *object = FcObjectPtrU(o);
+     FcMatcher       *match = FcObjectPtrToMatcher(o);
+@@ -355,9 +355,9 @@
  	return FcTrue;
      }
- #endif
+ 
 -    best = 1e99;
 -    bestStrong = 1e99;
 -    bestWeak = 1e99;
@@ -198,18 +174,9 @@ diff -Naur fontconfig/src/fcmatch.c fontconfig-2.2.97_lessfloat/src/fcmatch.c
 +    bestStrong = INT_MAX;
 +    bestWeak = INT_MAX;
      j = 0;
-     for (v1 = v1orig; v1; v1 = v1->next)
-     {
-@@ -327,7 +327,7 @@
- 		return FcFalse;
- 	    }
- 	    if (FcDebug () & FC_DBG_MATCHV)
--		printf (" v %g j %d ", v, j);
-+		printf (" v %d j %d ", v, j);
- 	    v = v * 100 + j;
- 	    if (v < best)
- 	    {
-@@ -350,7 +350,7 @@
+     for (v1 = v1orig, v1_ptrU = FcValueListPtrU(v1); v1_ptrU;
+ 	 v1 = v1_ptrU->next, v1_ptrU = FcValueListPtrU(v1))
+@@ -393,7 +393,7 @@
      }
      if (FcDebug () & FC_DBG_MATCHV)
      {
@@ -218,14 +185,3 @@ diff -Naur fontconfig/src/fcmatch.c fontconfig-2.2.97_lessfloat/src/fcmatch.c
  	FcValueListPrint (v1orig);
  	printf (", ");
  	FcValueListPrint (v2orig);
-@@ -364,8 +364,8 @@
- 	    value[strong] += best;
- 	else
- 	{
--	    value[weak] += bestWeak;
--	    value[strong] += bestStrong;
-+	    value[weak] += (double) bestWeak;
-+	    value[strong] += (double) bestStrong;
- 	}
-     }
-     return FcTrue;

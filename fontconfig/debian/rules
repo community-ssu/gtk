@@ -1,25 +1,32 @@
 #!/usr/bin/make -f
 
 
-export DH_COMPAT=3
-PV = 2.3.2
+export DH_COMPAT=4
+PV = 2.3.95
 
 SHELL = /bin/bash
 
-CFLAGS = -g
+CFLAGS = -g0 -O2
+
+
+# Use soft-float and thumb mode if it enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -mthumb
+endif
+
+export CFLAGS
 
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
 	tar -xzf fontconfig-$(PV).tar.gz
 	mv fontconfig-$(PV) fontconfig
-	patch -p0 < fontconfig-const.patch
-	#patch -p0 < fontconfig-static-object.patch  in upstream already
-	patch -p0 < fontconfig-nodebug.patch
+	#patch -p0  < fontconfig-const.patch - in upstream already, 2.3.95
+	#patch -p0 < fontconfig-static-object.patch - in upstream already, 2.3.2
+	#patch -p0 < fontconfig-nodebug.patch - reimplemented, patch (hopefully) not needed anymore, 2.3.95
 	patch -p0 < fontconfig-lessfloat.patch
 	patch -p0 < fontconfig-optimize_config.patch
 	patch -p0 < fontconfig-newtimes-nohint.patch
-	#patch -p0 < fontconfig-even_less_debug.patch not working
 	cd fontconfig && patch -p0 < ../fontconfig-remove-i18n.patch
 	cd fontconfig && ./configure --prefix=/usr --sysconfdir=/etc
 	touch configure-stamp
@@ -81,12 +88,13 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_makeshlibs -V
-	dh_install --sourcedir=debian/tmp -v
 	dh_installchangelogs
+	dh_install --sourcedir=debian/tmp -v
+	dh_strip --dbg-package=libfontconfig1-dbg
+	dh_fixperms
+	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps
-	dh_strip --dbg-package=libfontconfig1-dbg
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb

@@ -1,3 +1,21 @@
+fontconfig (2.3.95-1osso1) unstable; urgency=low
+
+  * Upstream update
+  * using 2.3.95 version
+  * removed already integrated patches from build
+  * added thumb compilation to Debian build options, fixes NB#26665
+  * added dh_fixperms, fixes NB#33546
+  * reordered debhelper macro calls, fixes NB#34018
+  * Missing ldconfig call (updated compat level from 3 to 4), fixes NB#34020
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed, 12 Jul 2006 11:24:08 +0300
+
+fontconfig (2.3.2-2osso3) unstable; urgency=low
+
+  * Removed the static lib to keep the dev package architecture agnostic
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Fri,  7 Jul 2006 16:00:07 +0300
+
 fontconfig (2.3.2-2osso2) unstable; urgency=low
 
   * Added dependency on gconf2 for fontconfig.

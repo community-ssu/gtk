@@ -1,5 +1,4 @@
 usr/include/*
 usr/share/doc/fontconfig*
 usr/lib/libfontconfig.so
-usr/lib/libfontconfig.a
 usr/lib/pkgconfig/*
