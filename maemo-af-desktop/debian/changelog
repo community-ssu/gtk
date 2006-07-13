@@ -1,3 +1,12 @@
+maemo-af-desktop (2.6.33-1) unstable; urgency=low
+
+  Applied fix to "Not possible to switch between mail editor and default
+  mailbox window through application switcher of TN." (Closes N#32869)
+  * hildon-navigator/hn-wm.c: Update the application switcher top button 
+    with the correct view when a multi-view HildonApp is topped
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 13 Jul 2006 10:11:37 +0300
+
 maemo-af-desktop (2.6.32-1) unstable; urgency=low
 
   Applied fix to "Wrong task icon selected after Close applications dialog"

@@ -1,5 +1,9 @@
 2006-07-13  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.6.33
+
+2006-07-13  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Not possible to switch between mail editor and default
 	mailbox window through application switcher of TN." (Closes N#32869)
 	* hildon-navigator/hn-wm.c: Update the application switcher top button 
