@@ -166,10 +166,10 @@ In addition you can use any other =.deb= file you find in the
 
 The server with the test repository also contains =.install= files.
 These files contain instructions for the Application installer to add
-repositories and/or install a package.  The files can be found in this
-location:
+repositories and/or install a package.  The files can be found on this
+page:
 
-    http://stage.maemo.org/testrepo/
+    http://stage.maemo.org/testrepo/install.html
 
 You can open them directly with the browser or copy them to your
 device and open them with the File manager or via "Package / Install
@@ -184,6 +184,39 @@ These =.install= files are available:
    * *demo-catalogue.install*
    <p>
    Adds the =demo= distribution to the list of configured sources.
+
+
+---+++ How to break packages to be half-installed
+
+Some test cases below ask you to break a package in a specific way in
+order to test whether the Application installer can fix them again.
+
+These broken packages normally result from interrupted installations,
+such as when the device reboots in the middle of an operation or when
+you take out the MMC at the wrong time.
+
+For testing the behavior of the Application installer, it is
+sufficient to trick dpkg into thinking that the package is in a
+intermediate state.  It is not necessary to actually interrupt the
+installation.
+
+A simple way to modify the state of a package is to edit
+=/var/lib/dpkg/status=.  However that file is too big for the nimble
+busybox vi.  Therefore, the following method is recommended.
+
+   * Make sure the the Application installer is not running
+   * Create a file with the status of the package by running =dpkg
+   --status _package_ &gt;status.broken= (feel free to use a different filename
+   from =status.broken=, of course).
+   * Modify the =Status:= line in it to read
+   <pre>
+   Status: install reinstreq half-installed
+   </pre>
+   * Copy it to =/var/lib/dpkg/updates/0000=
+   * Run =dpkg --configure -a= in a terminal.
+   * Run =dpkg --status <packagename>= to verify the new status.
+
+You can reuse the =status.broken= file when you run the test case again.
 
 ---+++ Sample test cases
 
@@ -396,3 +429,27 @@ repository.
    * Make sure that package-A version 1 is installed
    * Install =package-a_2_powerpc.deb= using "Install from file ..."
    * Notice that the update fails because the packahe is incompatible
+
+---++++ Directly fixing a broken, half-installed package
+
+   * Make sure that package-A version 1 is installed and that
+     the =old= distribution is configured.
+   * Break package-A as explained above in "How to break packages to
+     be half-installed".
+   * Go to "Show installed applications" and verify that package-A has
+     the status "Broken but updateable".
+   * Go to "Check for updates" and verify that package-A is listed.
+   * Update package-A and verify that it succeeds
+   * Verify that package-A is now listed with status "Installed"
+
+---++++ Indirectly fixing a broken, half-installed, non-user package
+
+   * Make sure that the =old= distribution is configured and that the
+     =user1= package is not installed.
+   * Run =apt-get install system= in a terminal.
+   * Break the =system= package as explained above in "How to break
+     packages to be half-installed".
+   * Open Application installer and install the =user1= package.
+   * Verify that this suceeds.
+   * Open the "Log" and verify that the =system= package has been
+     downloaded and installed as well.
