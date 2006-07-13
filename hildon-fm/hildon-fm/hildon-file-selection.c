@@ -1602,8 +1602,6 @@ static void hildon_file_selection_row_activated(GtkTreeView * view,
                 HILDON_FILE_SELECTION(data), dir_path);
               gtk_tree_path_free(dir_path);
             }
-          /*hildon_file_selection_delayed_select_path
-                    (HILDON_FILE_SELECTION(data), path);*/
           }
           else { /* When we activate file, let's check if we need to reload */
             GtkTreeIter iter;
