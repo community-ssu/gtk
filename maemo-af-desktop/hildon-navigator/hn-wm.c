@@ -134,14 +134,9 @@ hn_wm_top_view (GtkMenuItem *menuitem)
 				     0,
 				     0,
 				     0);
-	  
-	  hn_wm_watched_window_set_active_view(win, view);
-	  
-	  HN_DBG("... and topping service");
-	  hn_wm_top_service(hn_wm_watchable_app_get_service (app));
 
-      if(!single_view)
-        return;
+          if(!single_view)
+            return;
 	}
     }
   
@@ -782,17 +777,25 @@ hn_wm_process_mb_current_app_window (void)
 	{
 	  GList      *iter;
 	  iter = hn_wm_watched_window_get_views (win);
+          HNWMWatchedWindowView *view;
 	  
 	  while (iter != NULL)
 	    {
-	      HNWMWatchedWindowView *view;
-	      
 	      view = (HNWMWatchedWindowView *)iter->data;
 	      
 	      app_switcher_update_item (hnwm->app_switcher, win, view,
 					AS_MENUITEM_TO_FIRST_POSITION);
 	      iter  = g_list_next(iter);
 	    }
+
+          /* the loop above left the last-created view associated with the
+           * top button -- we need to place the active view there instead
+           */
+          view = hn_wm_watched_window_get_active_view (win);
+
+          if (view)
+            app_switcher_update_item (hnwm->app_switcher, win, view,
+                                      AS_MENUITEM_TO_FIRST_POSITION);
 	}
       else
 	{
