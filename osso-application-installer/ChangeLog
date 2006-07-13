@@ -1,5 +1,7 @@
 2006-07-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.24
+	
 	Ensure that the dependencies of a installed package are
 	reinstalled when needed.
 	

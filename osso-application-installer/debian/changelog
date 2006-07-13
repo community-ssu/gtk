@@ -1,3 +1,10 @@
+osso-application-installer (4.24) unstable; urgency=low
+
+  * Ensure that the dependencies of a installed package are reinstalled
+    when needed.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 13 Jul 2006 17:45:10 +0300
+
 osso-application-installer (4.23) unstable; urgency=low
 
   * UI version 2 overhaul.
