@@ -66,6 +66,7 @@ binary-arch: build install
 	dh_installchangelogs
 	dh_install --sourcedir=debian/tmp -v
 	dh_strip --dbg-package=libfontconfig1-dbg
+	dh_link
 	dh_fixperms
 #	dh_makeshlibs -V
 	dh_installdeb
