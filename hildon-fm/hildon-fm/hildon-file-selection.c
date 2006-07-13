@@ -1557,7 +1557,7 @@ static void hildon_file_selection_row_activated(GtkTreeView * view,
 {
     GtkTreeIter iter;
     GtkTreeModel *model;
-    GtkTreePath *filter_path;
+    GtkTreePath *filter_path = NULL, *base_path = NULL, *dir_path = NULL;
     gboolean is_folder, is_available;
 
     model = gtk_tree_view_get_model(view); /* Content pane filter model */
@@ -1574,11 +1574,36 @@ static void hildon_file_selection_row_activated(GtkTreeView * view,
             filter_path = gtk_tree_model_sort_convert_path_to_child_path(
               GTK_TREE_MODEL_SORT(model), path);
 
+            
+
+            base_path = gtk_tree_model_filter_convert_path_to_child_path(
+              GTK_TREE_MODEL_FILTER(
+                HILDON_FILE_SELECTION(data)->priv->view_filter),
+              filter_path);
+
             if (filter_path) {
-              hildon_file_selection_delayed_select_path(
-                HILDON_FILE_SELECTION(data), filter_path);
+              base_path = gtk_tree_model_filter_convert_path_to_child_path(
+                GTK_TREE_MODEL_FILTER(
+                  HILDON_FILE_SELECTION(data)->priv->view_filter),
+                filter_path);
               gtk_tree_path_free(filter_path);
             }
+
+            if (base_path) {
+              dir_path = gtk_tree_model_sort_convert_child_path_to_path(
+                GTK_TREE_MODEL_SORT(
+                  HILDON_FILE_SELECTION(data)->priv->dir_sort),
+                base_path);
+              gtk_tree_path_free(base_path);
+            }
+
+            if (dir_path) {
+              hildon_file_selection_delayed_select_path(
+                HILDON_FILE_SELECTION(data), dir_path);
+              gtk_tree_path_free(dir_path);
+            }
+          /*hildon_file_selection_delayed_select_path
+                    (HILDON_FILE_SELECTION(data), path);*/
           }
           else { /* When we activate file, let's check if we need to reload */
             GtkTreeIter iter;
