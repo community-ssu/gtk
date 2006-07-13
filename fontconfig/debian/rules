@@ -55,33 +55,8 @@ install: build
 	install -m 644 hildon_fontconfig.schemas $(CURDIR)/debian/tmp/etc/gconf/schemas/
 	install -m 644 device_symbols.h $(CURDIR)/debian/tmp/usr/include/
 	install -d $(CURDIR)/debian/tmp/usr/lib/debug
-	cp --no-dereference $(CURDIR)/debian/tmp/usr/lib/*.so.* $(CURDIR)/debian/tmp/usr/lib/debug/
-
-
-#	$(MAKE) -C fontconfig install DESTDIR=$(CURDIR)/debian/libfontconfig1
-#	install -d $(CURDIR)/debian/fontconfig/usr/share/doc/fontconfig
-#	install -d $(CURDIR)/debian/libfontconfig1-dev/usr
-#	install -d $(CURDIR)/debian/libfontconfig1-dev/usr/lib
-#	install -d $(CURDIR)/debian/libfontconfig1-dbg/usr
-#	install -d $(CURDIR)/debian/libfontconfig1-dbg/usr/lib
-#	install -d $(CURDIR)/debian/libfontconfig1-dbg/usr/lib/debug
-#	mv $(CURDIR)/debian/libfontconfig1/usr/bin $(CURDIR)/debian/fontconfig/usr/
-#	mv $(CURDIR)/debian/libfontconfig1/etc $(CURDIR)/debian/fontconfig/
-#	mv $(CURDIR)/debian/libfontconfig1/usr/include $(CURDIR)/debian/libfontconfig1-dev/usr/
-#	mv $(CURDIR)/debian/libfontconfig1/usr/man $(CURDIR)/debian/libfontconfig1-dev/usr/
-#	mv $(CURDIR)/debian/libfontconfig1/usr/share $(CURDIR)/debian/libfontconfig1-dev/usr/
-#	mv $(CURDIR)/debian/libfontconfig1/usr/lib/libfontconfig.a $(CURDIR)/debian/libfontconfig1-dev/usr/lib/
-#	mv $(CURDIR)/debian/libfontconfig1/usr/lib/libfontconfig.la $(CURDIR)/debian/libfontconfig1-dev/usr/lib/
-#	cp --no-dereference $(CURDIR)/debian/libfontconfig1/usr/lib/libfontconfig.so* $(CURDIR)/debian/libfontconfig1-dbg/usr/lib/debug/
-#	mv $(CURDIR)/debian/libfontconfig1/usr/lib/libfontconfig.so $(CURDIR)/debian/libfontconfig1-dev/usr/lib/
-#	mv $(CURDIR)/debian/libfontconfig1/usr/lib/pkgconfig $(CURDIR)/debian/libfontconfig1-dev/usr/lib/
-#	mv $(CURDIR)/debian/libfontconfig1-dev/usr/share/doc/fontconfig/*.* $(CURDIR)/debian/fontconfig/usr/share/doc/fontconfig/
-#	mv $(CURDIR)/debian/libfontconfig1-dev/usr/share/doc/fontconfig $(CURDIR)/debian/libfontconfig1-dev/usr/share/doc/libfontconfig1-dev
-#	mv $(CURDIR)/debian/fontconfig/usr/share/doc/fontconfig/*.{pdf,html,txt} $(CURDIR)/debian/libfontconfig1-dev/usr/share/doc/libfontconfig1-dev/
-#	dh_strip 
-#	install -d $(CURDIR)/debian/fontconfig/etc/gconf/schemas
-#	install -m 644 hildon_fontconfig.schemas $(CURDIR)/debian/fontconfig/etc/gconf/schemas/
-#	install -m 644 device_symbols.h $(CURDIR)/debian/libfontconfig1-dev/usr/include/
+	install $(CURDIR)/debian/tmp/usr/lib/libfontconfig.so.?.?.? $(CURDIR)/debian/tmp/usr/lib/debug/
+#	cp --no-dereference $(CURDIR)/debian/tmp/usr/lib/*.so.* $(CURDIR)/debian/tmp/usr/lib/debug/
 
 binary-indep: build install
 
@@ -92,7 +67,7 @@ binary-arch: build install
 	dh_install --sourcedir=debian/tmp -v
 	dh_strip --dbg-package=libfontconfig1-dbg
 	dh_fixperms
-	dh_makeshlibs -V
+#	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
