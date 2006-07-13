@@ -1,3 +1,9 @@
+hildon-base-lib (0.10.1-2) unstable; urgency=low
+
+  * -test and -dev should be architecture independant (Closes N#27023) 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 13 Jul 2006 13:32:25 +0300
+
 hildon-base-lib (0.10.1-1) unstable; urgency=low
 
   * The configure.ac was not updated
