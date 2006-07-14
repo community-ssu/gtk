@@ -95,8 +95,6 @@ LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
-MB_CFLAGS = @MB_CFLAGS@
-MB_LIBS = @MB_LIBS@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MSGFMT = @MSGFMT@
 OBJEXT = @OBJEXT@
@@ -178,12 +176,13 @@ SUBDIRS =
 INCLUDES = \
 	$(HILDON_CFLAGS) $(HILDONBASELIB_CFLAGS) $(HILDONFM_CFLAGS)\
 	$(MAEMO_LAUNCHER_CFLAGS) \
-	$(MB_CFLAGS) $(OSSO_CFLAGS)\
+	$(OSSO_CFLAGS)\
 	$(LIBOSSOHELP_CFLAGS) \
 	$(HTML_CFLAGS)\
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DPREFIXDIR=\"$(prefix)\" \
-	-DCONTROLPANEL_ENTRY_DIR=\"$(hildoncpdesktopentrydir)\"
+	-DCONTROLPANEL_ENTRY_DIR=\"$(hildoncpdesktopentrydir)\" \
+	-DHCP_PLUGIN_DIR=\"$(hildoncplibdir)\"
 
 
 EXTRA_DIST = debian/changelog debian/control debian/copyright debian/rules \
@@ -203,11 +202,23 @@ pkgconfig_DATA = hildon-control-panel.pc
 
 controlpanel_SOURCES = \
 	hildon-control-panel-main.h \
+	hildon-control-panel-main-utils.h \
 	hildon-control-panel-main.c \
 	hildon-cp-applist.h \
 	hildon-cp-applist.c \
 	hildon-cp-rfs.c \
-	hildon-cp-plugin-interface.h
+	hildon-cp-plugin-interface.h \
+	hildon-cp-view.c \
+	hildon-cp-view.h \
+	hildon-cp-item.c \
+	hildon-cp-item.h \
+	cp-grid.h \
+	cp-grid.c \
+	cp-grid-item-private.h \
+	cp-grid-item.h \
+	cp-grid-item.c \
+	cp-marshalers.h \
+	cp-marshalers.c
 
 
 controlpanel_LDFLAGS = $(MAEMO_LAUNCHER_LDFLAGS)
@@ -215,10 +226,13 @@ controlpanel_LDFLAGS = $(MAEMO_LAUNCHER_LDFLAGS)
 servicefiledir = $(prefix)/share/dbus-1/services
 servicefile_DATA = com.nokia.controlpanel.service
 
+gconfschemasdir = $(sysconfdir)/gconf/schemas
+gconfschemas_DATA = hildon-control-panel.schemas
+
 hildondesktopentry_DATA = hildon-control-panel.desktop
 
 controlpanel_LDADD = \
-	$(HILDON_LIBS) $(HILDONBASELIB_LIBS) $(MB_LIBS) $(OSSO_LIBS)\
+	$(HILDON_LIBS) $(HILDONBASELIB_LIBS) $(OSSO_LIBS)\
 	$(LIBOSSOHELP_LIBS)  $(HTML_LIBS) $(HILDONFM_LIBS)
 
 
@@ -237,16 +251,23 @@ bin_PROGRAMS = controlpanel$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_controlpanel_OBJECTS = hildon-control-panel-main.$(OBJEXT) \
-	hildon-cp-applist.$(OBJEXT) hildon-cp-rfs.$(OBJEXT)
+	hildon-cp-applist.$(OBJEXT) hildon-cp-rfs.$(OBJEXT) \
+	hildon-cp-view.$(OBJEXT) hildon-cp-item.$(OBJEXT) \
+	cp-grid.$(OBJEXT) cp-grid-item.$(OBJEXT) \
+	cp-marshalers.$(OBJEXT)
 controlpanel_OBJECTS = $(am_controlpanel_OBJECTS)
 controlpanel_DEPENDENCIES =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/hildon-control-panel-main.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/cp-grid-item.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/cp-grid.Po ./$(DEPDIR)/cp-marshalers.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-control-panel-main.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/hildon-cp-applist.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/hildon-cp-rfs.Po
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-cp-item.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-cp-rfs.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/hildon-cp-view.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -255,8 +276,9 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES = $(controlpanel_SOURCES)
-DATA = $(hildon_cp_pluginincludeinst_DATA) $(hildondesktopentry_DATA) \
-	$(pkgconfig_DATA) $(servicefile_DATA)
+DATA = $(gconfschemas_DATA) $(hildon_cp_pluginincludeinst_DATA) \
+	$(hildondesktopentry_DATA) $(pkgconfig_DATA) \
+	$(servicefile_DATA)
 
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
@@ -358,9 +380,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cp-grid-item.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cp-grid.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cp-marshalers.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-control-panel-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-cp-applist.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-cp-item.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-cp-rfs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hildon-cp-view.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
@@ -404,6 +431,24 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+gconfschemasDATA_INSTALL = $(INSTALL_DATA)
+install-gconfschemasDATA: $(gconfschemas_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(gconfschemasdir)
+	@list='$(gconfschemas_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " $(gconfschemasDATA_INSTALL) $$d$$p $(DESTDIR)$(gconfschemasdir)/$$f"; \
+	  $(gconfschemasDATA_INSTALL) $$d$$p $(DESTDIR)$(gconfschemasdir)/$$f; \
+	done
+
+uninstall-gconfschemasDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(gconfschemas_DATA)'; for p in $$list; do \
+	  f="`echo $$p | sed -e 's|^.*/||'`"; \
+	  echo " rm -f $(DESTDIR)$(gconfschemasdir)/$$f"; \
+	  rm -f $(DESTDIR)$(gconfschemasdir)/$$f; \
+	done
 hildon_cp_pluginincludeinstDATA_INSTALL = $(INSTALL_DATA)
 install-hildon_cp_pluginincludeinstDATA: $(hildon_cp_pluginincludeinst_DATA)
 	@$(NORMAL_INSTALL)
@@ -731,7 +776,7 @@ check: check-recursive
 all-am: Makefile $(PROGRAMS) $(DATA) config.h
 installdirs: installdirs-recursive
 installdirs-am:
-	$(mkinstalldirs) $(DESTDIR)$(bindir) $(DESTDIR)$(hildon_cp_pluginincludeinstdir) $(DESTDIR)$(hildondesktopentrydir) $(DESTDIR)$(pkgconfigdir) $(DESTDIR)$(servicefiledir)
+	$(mkinstalldirs) $(DESTDIR)$(bindir) $(DESTDIR)$(gconfschemasdir) $(DESTDIR)$(hildon_cp_pluginincludeinstdir) $(DESTDIR)$(hildondesktopentrydir) $(DESTDIR)$(pkgconfigdir) $(DESTDIR)$(servicefiledir)
 
 install: install-recursive
 install-exec: install-exec-recursive
@@ -776,11 +821,10 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-hildon_cp_pluginincludeinstDATA \
+install-data-am: install-gconfschemasDATA \
+	install-hildon_cp_pluginincludeinstDATA \
 	install-hildondesktopentryDATA install-pkgconfigDATA \
 	install-servicefileDATA
-	@$(NORMAL_INSTALL)
-	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 
 install-exec-am: install-binPROGRAMS
 
@@ -810,7 +854,7 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS \
+uninstall-am: uninstall-binPROGRAMS uninstall-gconfschemasDATA \
 	uninstall-hildon_cp_pluginincludeinstDATA \
 	uninstall-hildondesktopentryDATA uninstall-info-am \
 	uninstall-pkgconfigDATA uninstall-servicefileDATA
@@ -826,7 +870,8 @@ uninstall-info: uninstall-info-recursive
 	dvi-recursive info info-am info-recursive install install-am \
 	install-binPROGRAMS install-data install-data-am \
 	install-data-recursive install-exec install-exec-am \
-	install-exec-recursive install-hildon_cp_pluginincludeinstDATA \
+	install-exec-recursive install-gconfschemasDATA \
+	install-hildon_cp_pluginincludeinstDATA \
 	install-hildondesktopentryDATA install-info install-info-am \
 	install-info-recursive install-man install-pkgconfigDATA \
 	install-recursive install-servicefileDATA install-strip \
@@ -836,17 +881,12 @@ uninstall-info: uninstall-info-recursive
 	mostlyclean-generic mostlyclean-libtool mostlyclean-recursive \
 	pdf pdf-am pdf-recursive ps ps-am ps-recursive tags \
 	tags-recursive uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-gconfschemasDATA \
 	uninstall-hildon_cp_pluginincludeinstDATA \
 	uninstall-hildondesktopentryDATA uninstall-info-am \
 	uninstall-info-recursive uninstall-pkgconfigDATA \
 	uninstall-recursive uninstall-servicefileDATA
 
-
-install-data-hook:
-	mkdir -p $(DESTDIR)/$(hildon_othersmenudir); \
-	cd $(DESTDIR)/$(hildon_othersmenudir); \
-	rm -f 1200_Control\ Panel.desktop; \
-	ln -sf $(hildondesktopentrydir)/hildon-control-panel.desktop 1200_Control\ Panel.desktop;
 
 deb: dist
 	 -mkdir $(top_builddir)/debian-build

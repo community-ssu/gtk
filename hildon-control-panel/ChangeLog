@@ -1,7 +1,99 @@
+2006-07-14 Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.2.0
+
+2006-07-14 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-control-panel-main.c: Always load the UI interface for now
+
+2006-07-12 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-cp-item.[ch]: 
+	  - load amd run plugins inside an idle loop
+	     so we can keep receiving DBus messages
+	  - load plugins without RTLD_GLOBAL, because we are likely to
+	    load 2 plugins at the same time, and they all use the same
+	    shared symbol names ...
+	* hildon-control-panel-main.[ch]:
+	  - Added RPC handler, with run_application method to launch
+	    applets remotely (Closes NB#25238 partially)
+
+2006-07-11 Johan Bilien <johan.bilien@nokia.com>
+
+	Major refactoring:
+	* hildon-cp-item.[ch]: Added to represent a CP item (.desktop)
+	* hildon-cp-view.[ch]: Added to represent grid container widget
+	* hildon-control-panel-main.[ch], hildon-cp-applist.[ch]:
+	  - replaced global variables with objectified code
+	  - use gconf to store settings instead of configuration file
+	  - use osso_state_read/write and g_key_file_ to save state
+	  - replaced libmb with g_key_file_ for .desktop parsing
+	  - do not use osso_cp_plugin_ but implement loading of plugin
+	    from the application
+
+2006-07-07 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-control-panel-main.c: Fixed height of the items in small icon
+	  mode
+	* hildon-cp-applist.c: Add applets to Extras if they don't have
+	  Category=
+	* configure.ac: 2.0.1
+
+2006-07-06 Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.0.0
+
+2006-07-06 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-cp-applist.c: Have 2 lists of ids for category, one for
+	  .desktop ids, one for localised titles
+	* cp-grid-item.c: Fixed typo which resulted in some Critical warnings
+	* hildon-control-panel.schemas: Added gconf schemas file with the default
+	  category
+	* hildon-control-panel.desktop: added Comment= field
+
 2006-07-05 Moises Martinez <moises.martinzes@nokia.com>
 
-        * hildon-cp-applist.c: Loading of user applets in old
-        "/var/lib/install..." removed
+	* hildon-cp-applist.c: Loading of user applets in old
+	  "/var/lib/install..." removed
+
+2006-06-06 Karoliina Salminen <karoliina.t.salminen@nokia.com>
+
+	* Added missing file hildon-control-panel-main-utils.h to version control.
+	* Tagged a new minor version for integration.
+	* configure.ac: 1.9.1
+
+2006-06-01 Karoliina Salminen <karoliina.t.salminen@nokia.com>
+
+	* configure.ac: 1.9.0. Changed version 
+	  so that it does not collide with IT2006.
+	* Merged implementation from branch cp-grid-fixes:
+	* up to r16945 
+	* New file:
+	* hildon-control-panel-main-utils.h
+	* contains a function needed by cp grid.
+
+	* Makefile.am
+	* added the new file to list of files.
+
+	* hildon-control-panel-main.c
+	* added accessor function for re-setting grid pointer after dnotify
+
+	* hildon-cp-applist.c
+	* after recreating grids, inform the main control panel of the change.
+
+2006-05-29 Karoliina Salminen <karoliina.t.salminen@nokia.com>
+
+	* Merged implementation branch up to r16763
+
+2006-05-24 Karoliina Salminen <karoliina.t.salminen@nokia.com>
+
+	* Imported some comments and minor additions, up to r16340.
+	* configure.ac: 1.2.6
+
+2006-05-11 Johan Bilien <johan.bilien@nokia.com>
+
+	* Imported group-sorting code
 
 2006-05-10 Johan Bilien <johan.bilien@nokia.com>
 

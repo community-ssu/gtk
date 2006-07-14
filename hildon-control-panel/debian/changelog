@@ -1,3 +1,92 @@
+hildon-control-panel (2.2.0-1) unstable; urgency=low
+
+  * hildon-control-panel-main.c: Always load the UI interface for now
+
+  * hildon-cp-item.[ch]: 
+    - load amd run plugins inside an idle loop
+       so we can keep receiving DBus messages
+    - load plugins without RTLD_GLOBAL, because we are likely to
+      load 2 plugins at the same time, and they all use the same
+      shared symbol names ...
+  * hildon-control-panel-main.[ch]:
+    - Added RPC handler, with run_application method to launch
+      applets remotely (Closes NB#25238 partially)
+
+  Major refactoring:
+  * hildon-cp-item.[ch]: Added to represent a CP item (.desktop)
+  * hildon-cp-view.[ch]: Added to represent grid container widget
+  * hildon-control-panel-main.[ch], hildon-cp-applist.[ch]:
+    - replaced global variables with objectified code
+    - use gconf to store settings instead of configuration file
+    - use osso_state_read/write and g_key_file_ to save state
+    - replaced libmb with g_key_file_ for .desktop parsing
+    - do not use osso_cp_plugin_ but implement loading of plugin
+      from the application
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 14 Jul 2006 11:31:31 +0300
+
+hildon-control-panel (2.0.1-2) unstable; urgency=low
+
+  * removed dependency on libmb 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 11 Jul 2006 15:46:14 +0300
+
+hildon-control-panel (2.0.1-1) unstable; urgency=low
+
+  * hildon-control-panel-main.c: Fixed height of the items in small icon
+    mode
+  * hildon-cp-applist.c: Add applets to Extras if they don't have
+      Category=
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri,  7 Jul 2006 13:57:32 +0300
+
+hildon-control-panel (2.0.0-1) unstable; urgency=low
+
+  * hildon-cp-applist.c: Have 2 lists of ids for category, one for
+    .desktop ids, one for localised titles
+  * cp-grid-item.c: Fixed typo which resulted in some Critical warnings
+  * hildon-control-panel.schemas: Added gconf schemas file with the default
+    category
+  * hildon-control-panel.desktop: added Comment= field
+
+  * hildon-cp-applist.c: Loading of user applets in old
+         "/var/lib/install..." removed
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  6 Jul 2006 14:55:40 +0300
+
+hildon-control-panel (1.9.1) unstable; urgency=low
+
+  * Added missing file hildon-control-panel-main-utils.h to version
+    control. Increased version number for tagging.
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Tue,  6 Jun 2006 12:46:53 +0300
+
+hildon-control-panel (1.9.0) unstable; urgency=low
+
+  * Updated version for 2007 branch
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  1 Jun 2006 18:07:16 +0300
+
+hildon-control-panel (1.2.7) unstable; urgency=low
+
+  * Integrated grid fixes.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  1 Jun 2006 16:01:59 +0300
+
+hildon-control-panel (1.2.6-2) unstable; urgency=low
+
+  * cp_ui_layout branch merged up to r16763. Added comments etc. Fixed
+    compiling by hand.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 29 May 2006 17:24:21 +0300
+
+hildon-control-panel (1.2.6-1) unstable; urgency=low
+
+  * Added some comments. Commented out one non-functioning function.
+    Everything merged up to r16340.
+
+ -- Karoliina Salminen <karoliina@karoliina.t.salminen@nokia.com>  Wed, 24 May 2006 11:28:45 +0300
+
 hildon-control-panel (1.2.5-1) unstable; urgency=low
 
   * Added build-dep on hildon-fm-dev

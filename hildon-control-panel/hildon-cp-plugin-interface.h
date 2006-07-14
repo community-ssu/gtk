@@ -29,27 +29,27 @@
  */
 
 #ifndef __HILDON_CP_PLUGIN_INTERFACE_H__
-# define  __HILDON_CP_PLUGIN_INTERFACE_H__
+#define __HILDON_CP_PLUGIN_INTERFACE_H__
 
-/* includes */
+/* Includes */
 # include <libosso.h>
-# include <glib.h>
-
 
 G_BEGIN_DECLS
+
 /**
  * The execute() function of the control panel plugin. 
  * 
  * This function will be called by the osso_cp_plugin_execute() function. 
+ * 
  * @param osso The osso context of the application that executes the plugin. 
  * @param data  The GTK toplevel widget. It is needed so that
- the widgets created by the plugin can be made a child of the
- main application that utilizes the plugin. Type is gpointer so
- that the plugin does not need to depend on GTK (in which case it
- should ignore the parameter).
-  @param user_activated True iff plugin was launched by user
-            False if plugin is launched by the application while restoring
-                its state.
+ * the widgets created by the plugin can be made a child of the
+ * main application that utilizes the plugin. Type is gpointer so
+ * that the plugin does not need to depend on GTK (in which case it
+ * should ignore the parameter).
+ * @param user_activated True iff plugin was launched by user, 
+ * False if plugin is launched by the application while restoring its state.
+ * 
  * @return OSSO_OK on success, OSSO_ERR on error.
  */
 
@@ -62,11 +62,12 @@ osso_return_t execute(osso_context_t * osso, gpointer data, gboolean user_activa
  * save its state.
  * 
  * @param osso The osso context of the application that executes the plug
- * @param data  The GTK toplevel widget. It is needed so that
- the widgets created by the plugin can be made a child of the
- main application that utilizes the plugin. Type is gpointer so
- that the plugin does not need to depend on GTK (in which case it
- should ignore the parameter). 
+ * @param data  The GTK toplevel widget. It is needed so that 
+ * the widgets created by the plugin can be made a child of the
+ * main application that utilizes the plugin. Type is gpointer so
+ * that the plugin does not need to depend on GTK (in which case it
+ * should ignore the parameter).
+ *  
  * @return OSSO_OK on success, OSSO_ERR on error.
  */
 osso_return_t save_state(osso_context_t * osso, gpointer data);

@@ -26,8 +26,9 @@
 
 #include <hildon-widgets/hildon-code-dialog.h>
 #include <libosso.h>
+#include <osso-log.h>
 
-#include <log-functions.h>
+/*#include <log-functions.h>*/
 
 
 static gboolean hildon_cp_rfs_display_warning( const gchar * warning,
@@ -108,19 +109,21 @@ static gboolean hildon_cp_rfs_display_warning( const gchar *warning,
 
     gtk_widget_destroy( GTK_WIDGET(confirm_dialog) );
 
-    if( ret == GTK_RESPONSE_CANCEL ||
-            ret == GTK_RESPONSE_DELETE_EVENT ) {
+    if( ret == GTK_RESPONSE_CANCEL || 
+	ret == GTK_RESPONSE_DELETE_EVENT ) {
         return FALSE;
     }
 
     return TRUE;
 }
 
+
 /*
  * Prompts the user for the lock password.
  * Returns TRUE if correct password, FALSE if cancelled
  */
-static gboolean hildon_cp_rfs_check_lock_code_dialog( osso_context_t * osso )
+static gboolean 
+hildon_cp_rfs_check_lock_code_dialog( osso_context_t * osso )
 {
     GtkWidget *dialog;
     gint ret;
@@ -143,7 +146,7 @@ static gboolean hildon_cp_rfs_check_lock_code_dialog( osso_context_t * osso )
         gtk_widget_set_sensitive( dialog, FALSE );
 
         if (ret == GTK_RESPONSE_CANCEL ||
-                ret == GTK_RESPONSE_DELETE_EVENT) {
+            ret == GTK_RESPONSE_DELETE_EVENT) {
             gtk_widget_destroy( dialog );
             
             return FALSE;
@@ -172,12 +175,14 @@ static gboolean hildon_cp_rfs_check_lock_code_dialog( osso_context_t * osso )
     return TRUE;
 }
 
+
 /*
  * Sends dbus message to MCE to check the lock code
  * Returns 0 if not correct, 1 if correct, -1 if an error occured
  */
-static gint hildon_cp_rfs_check_lock_code( const gchar * code,
-                                           osso_context_t *osso )
+static gint 
+hildon_cp_rfs_check_lock_code( const gchar * code,
+                               osso_context_t *osso )
 {
     gchar * crypted_code;
     osso_return_t ret;
@@ -202,8 +207,7 @@ static gint hildon_cp_rfs_check_lock_code( const gchar * code,
     switch( ret )
     {
         case OSSO_INVALID:
-            osso_log( LOG_ERR, "Lockcode query call failed: Invalid "
-                               "parameter\n" );
+            ULOG_ERR("Lockcode query call failed: Invalid parameter");
             osso_rpc_free_val( &returnvalue );
             return -1;
         case OSSO_RPC_ERROR:
@@ -213,13 +217,12 @@ static gint hildon_cp_rfs_check_lock_code( const gchar * code,
         case OSSO_ERROR_STATE_SIZE:
             if( returnvalue.type == DBUS_TYPE_STRING )
             {
-                osso_log( LOG_ERR, "Lockcode query call failed: %s\n",
-                          returnvalue.value.s );
+                ULOG_ERR("Lockcode query call failed: %s", 
+			 returnvalue.value.s);
             }
             else
             {
-                osso_log( LOG_ERR,
-                          "Lockcode query call failed: unspecified" );
+                ULOG_ERR("Lockcode query call failed: unspecified");
             }
             osso_rpc_free_val( &returnvalue );
             return -1;
@@ -227,16 +230,16 @@ static gint hildon_cp_rfs_check_lock_code( const gchar * code,
         case OSSO_OK:
             break;
         default:
-            osso_log( LOG_ERR, "Lockcode query call failed: unknown"
-                               " error type %d", ret );
+            ULOG_ERR("Lockcode query call failed: unknown"
+		     " error type %d", ret );
             osso_rpc_free_val( &returnvalue );
             return -1;
     }
         
     if( returnvalue.type != DBUS_TYPE_BOOLEAN )
     {
-        osso_log( LOG_ERR, "Lockcode query call failed: unexpected return "
-                "value type %d", returnvalue.type );
+        ULOG_ERR("Lockcode query call failed: unexpected return "
+                 "value type %d", returnvalue.type );
 
         osso_rpc_free_val( &returnvalue );
         return -1;
@@ -244,21 +247,24 @@ static gint hildon_cp_rfs_check_lock_code( const gchar * code,
 
     result = (gint)returnvalue.value.b;
     osso_rpc_free_val( &returnvalue );
+    
     return result;
 }
 
-static void hildon_cp_rfs_launch_script( const gchar * script )
+
+static void 
+hildon_cp_rfs_launch_script( const gchar * script )
 {
     GError *error = NULL;
 
-    if (!g_spawn_command_line_async (script,
-                &error))
+    if (!g_spawn_command_line_async(script, &error))
     {
-        osso_log (LOG_ERR, "Call to RFS or CUD script failed");
+        ULOG_ERR("Call to RFS or CUD script failed");
         if (error)
         {
-            osso_log (LOG_ERR, error->message);
+            ULOG_ERR(error->message);
             g_error_free (error);
         }
     }
 }
+

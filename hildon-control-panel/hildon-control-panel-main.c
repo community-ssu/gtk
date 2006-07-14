@@ -21,155 +21,194 @@
  * 02110-1301 USA
  *
  */
- 
+
+
+#ifdef HAVE_CONFIG_H
+    #include <config.h>
+#endif
+
+/* Osso logging functions */
+#include <osso-log.h>
+
+
+#include <gconf/gconf-client.h>
+#include <libosso.h>
+
 #include "hildon-control-panel-main.h"
-
-/* For logging functions */
-#include <log-functions.h>
-
-#  define dprint(f, a...)
-
-static const gchar *user_home_dir;
+#include "hildon-cp-applist.h"
+#include "hildon-cp-view.h"
+#include "hildon-cp-item.h"
 
 
-typedef struct _AppData AppData;
-
-static GtkCheckMenuItem *cp_view_small_icons;
-static GtkCheckMenuItem *cp_view_large_icons;
-
-struct _AppData
-{
-    HildonProgram *program;
-    HildonWindow *window;
-    GtkWidget * grid;
-    osso_context_t *osso;
-
-    /* for state save data */
-    gint icon_size;
-    gchar * focused_filename;
-    gchar * saved_focused_filename;
-    gint scroll_value;
-    gint execute;
-};
-
-
-AppData state_data;
-
-/* delay to wait from callback to actually reading the entries in msecs*/
+/* Delay to wait from callback to actually reading the entries in msecs */
 #define DIRREADDELAY 500
 
 #define HILDON_CP_RFS_SCRIPT "/usr/sbin/osso-app-killer-rfs.sh"
-
 #define HILDON_CP_CUD_SCRIPT "/usr/sbin/osso-app-killer-cud.sh"
 
-/* Definitions for mobile operator wizard launch*/
+/* Definitions for mobile operator wizard launch */
 #define HILDON_CONTROL_PANEL_DBUS_OPERATOR_WIZARD_SERVICE "operator_wizard"
-#define HILDON_CONTROL_PANEL_OPERATOR_WIZARD_LAUNCH "launch_operator_wizard"
+#define HILDON_CONTROL_PANEL_OPERATOR_WIZARD_LAUNCH       "launch_operator_wizard"
 
 #define HILDON_CONTROL_PANEL_STATEFILE_NO_CONTENT "EOF"
 
+/* Definitions for ugly hacks that have to be used in order to make
+ * CPGrid behave in this situation.
+ * FIXME: use a widget better suited for this purpose
+ */
+#define LARGE_ITEM_ROW_HEIGHT 64
+#define SMALL_ITEM_ROW_HEIGHT 30
+#define GRID_WIDTH            650
+#define LARGE_ITEM_PADDING    0 /* Padding is unnecessary as the item  */
+#define SMALL_ITEM_PADDING    0 /* category label contains padding too */
+
+
 /* Sets DNOTIFY callback for the .desktop dir */
-static int _init_dnotify(gchar * path, gchar *path_additional );
-static void _dnotify_callback_f(gchar * path, gpointer data);
+static int hcp_init_dnotify (HCP *hcp, 
+                             const gchar * path,
+                             const gchar * path_additional);
+static void hcp_dnotify_callback_f (gchar * path, HCP *hcp);
 
 
 /* Create the GUI entries */
-static void _init_gui (void);
-/* Set the grid to use large/small icons */
-static void _large_icons(void);
-static void _small_icons(void);
+/*static void hcp_init_gui(void);*/
+static GtkWidget *hcp_create_window (HCP *hcp);
+static void       hcp_show_window (HCP *hcp);
 
+/* Set the grid to use large/small icons */
+static void hcp_large_icons (HCP *hcp);
+static void hcp_small_icons (HCP *hcp);
 
 /* Create & free state data */
-static void _create_data(void);
-static void _destroy_data( void );
+static void hcp_create_data (HCP *hcp);
+static void hcp_destroy_data (HCP *hcp);
+
 /* State saving functions */
-static void _save_state( gboolean clear_state );
-static void _retrieve_state(void);
-static void _enforce_state(void);
+static void hcp_save_state (HCP *hcp, gboolean clear_state);
+static void hcp_retrieve_state(HCP *hcp);
+static void hcp_enforce_state(HCP *hcp);
 
 /* Configuration saving functions */
-static void _save_configuration( gpointer data );
-static void _retrieve_configuration( void );
+static void hcp_save_configuration (HCP *hcp);
+static void hcp_retrieve_configuration (HCP *hcp);
 
 /* Keylistener */
-static gint _cp_keyboard_listener(GtkWidget *widget, 
-                                  GdkEventKey * keyevent, gpointer data);
+static gint hcp_cp_keyboard_listener (GtkWidget * widget,
+                                      GdkEventKey * keyevent, 
+                                      HCP *hcp);
 
 /* Callback for topping */
-static void _topmost_status_change(GObject *gobject, GParamSpec *arg1,
-                                   gpointer user_data);;
+static void hcp_topmost_status_change (GObject * gobject, 
+		                               GParamSpec * arg1,
+				                       HCP *hcp);
 /* Callback for resetting factory settings */
-static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data );
+static gboolean hcp_reset_factory_settings (GtkWidget * widget, 
+		                                    HCP *hcp);
+
 /* Callback for clear user data */
-static gboolean _clear_user_data( GtkWidget *widget, gpointer data );
+static gboolean hcp_clear_user_data (GtkWidget * widget, HCP *hcp);
+
 /* Callback for operator wizard launch */
-static void _run_operator_wizard( GtkWidget *widget, gpointer data );
+static void hcp_run_operator_wizard (GtkWidget * widget, HCP *hcp);
+
 /* Callback for help function */
-static void _launch_help( GtkWidget *widget, gpointer data );
+static void hcp_launch_help (GtkWidget * widget, HCP *hcp);
+
 /* Callback for menu item small/large icons */
-static void _iconsize( GtkWidget *widget, gpointer data );
-static void _my_open( GtkWidget *widget, gpointer data );
-static void _my_quit( GtkWidget *widget, gpointer data );
+static void hcp_iconsize (GtkWidget * widget, HCP *hcp);
+static void hcp_my_open  (GtkWidget * widget, HCP *hcp);
+static void hcp_my_quit  (GtkWidget * widget, HCP *hcp);
 
-
-/* Callback for launching an item */
-static void _launch (MBDotDesktop *, gpointer, gboolean);
-static void _focus_change (MBDotDesktop *, gpointer);
 
 /* Callback for handling HW signals */
-static void _hw_signal_cb( osso_hw_state_t *state, gpointer data );
+static void hcp_hw_signal_cb (osso_hw_state_t * state, HCP *hcp);
 
+/* Hack to make CPGrid behave */
+static int hcp_calculate_grid_rows (GtkWidget *grid);
+    
+/* RPC setup */
+static void hcp_init_rpc (HCP *hcp);
+
+/* RPC callbacks */
+static gint hcp_rpc_handler (const gchar *interface,
+                             const gchar *method,
+                             GArray *arguments,
+                             HCP *hcp,
+                             osso_rpc_t *retval);
 
 /**********************************************************************
  * Main program
  **********************************************************************/
-int 
-main(int argc, char ** argv)
+int main (int argc, char **argv)
 {
-    setlocale( LC_ALL, "" );
+    HCP *hcp;
+    const gchar *additional_cp_applets_dir_environment;
+    gboolean dbus_activated;
+
+    setlocale(LC_ALL, "");
+
+    bindtextdomain(PACKAGE, LOCALEDIR);
+
+    bind_textdomain_codeset(PACKAGE, "UTF-8");
+
+    textdomain(PACKAGE);
+
+    /* Set application name to "" as we only need the window title
+     * in the title bar */
+    g_set_application_name("");
     
-    bindtextdomain( PACKAGE, LOCALEDIR );
+    gtk_init(&argc, &argv);
 
-    bind_textdomain_codeset( PACKAGE, "UTF-8" );
+    hcp = g_new0 (HCP, 1);
 
-    textdomain( PACKAGE );
-
-    /* Don't display the application name in the title bar */
-    g_set_application_name ("");
-     
-    _init_dnotify( CONTROLPANEL_ENTRY_DIR, 
-                   g_getenv(ADDITIONAL_CP_APPLETS_DIR_ENVIRONMENT) == NULL ?
-                   NULL :
-                   (char *)(g_getenv(ADDITIONAL_CP_APPLETS_DIR_ENVIRONMENT)));
-
-    /* We can cast this and lose the const keyword because dnotify just
-       strdups the string anyway. */
-
-    _create_data();       /* Create state data */
-
-    _retrieve_configuration(); /*configuration from disk */
-
-    _retrieve_state();    /* State data from disk */
+    hcp_item_init (hcp);
     
-    gtk_init( &argc, &argv );
+    additional_cp_applets_dir_environment = 
+        g_getenv (ADDITIONAL_CP_APPLETS_DIR_ENVIRONMENT);
+
+    hcp_init_dnotify (hcp,
+                      CONTROLPANEL_ENTRY_DIR,
+                      additional_cp_applets_dir_environment);
+
+
+    hcp_create_data (hcp);             /* Create state data */
+
+    hcp_init_rpc (hcp);
     
-    _init_gui();  /* Create GUI components */
+    hcp_retrieve_configuration (hcp);  /* configuration from disk */
 
-    _enforce_state();     /* realize the saved state */
+    hcp_retrieve_state (hcp);          /* State data from disk */
 
-    gtk_widget_show_all( GTK_WIDGET( state_data.window ) );
 
-    if(state_data.execute==1) {
-        _launch(hildon_cp_applist_get_entry(state_data.focused_filename),
-                NULL, FALSE );
+    
+    osso_hw_set_event_cb (hcp->osso,
+                          NULL ,
+                          (osso_hw_cb_f *)hcp_hw_signal_cb,
+                          hcp);
+
+    if (hcp->execute == 1 && hcp->focused_item) {
+        hcp_item_launch(hcp->focused_item, FALSE);
     }
-    
+
+    dbus_activated = g_getenv ("DBUS_STARTER_BUS_TYPE")?TRUE:FALSE;
+
+#if 0
+    if (!dbus_activated)
+    {
+        /* When started from the command line we show the UI as default
+         * behavior. When dbus activated, we wait to see if we got
+         * top_application or run_applet method call */
+        hcp_show_window (hcp);
+    }
+#endif
+    /* Always start the user interface for now */
+    hcp_show_window (hcp);
+
     gtk_main();
 
+    hcp_destroy_data (hcp);
+    g_free (hcp);
 
-    _destroy_data( );
-    
     return 0;
 }
 
@@ -182,238 +221,247 @@ static int callback_pending = 0;
 /* called by dnotify_callback_f after a timeout (to prevent exessive
    callbacks. */
 
-static gboolean _dnotify_reread_desktop_entries()
+static gboolean hcp_dnotify_reread_desktop_entries (HCP *hcp)
 {
+    gchar * focussed_item = g_strdup (hcp->focused_item->plugin);
+    HCPItem *item;
     callback_pending = 0;
-    hildon_cp_applist_reread_dot_desktops();
-    return FALSE; /* do not have the timeout called again */
+
+    /* Re-read the item list from .desktop files */
+    hcp_al_update_list (hcp->al);
+    /* Update the view */
+    hcp_view_populate (hcp->view, hcp->al);
+    gtk_widget_show_all (hcp->view);
+
+    item = g_hash_table_lookup (hcp->al->applets, focussed_item);
+    g_free (focussed_item);
+
+    if (item && item->grid_item)
+        gtk_widget_grab_focus (item->grid_item);
+
+    hcp_enforce_state (hcp);
+
+    return FALSE;       /* do not have the timeout called again */
 }
 
-static void _dnotify_callback_f(char * path,gpointer data)
+static void hcp_dnotify_callback_f (char *path, HCP *hcp)
 {
-    if(!callback_pending)
-    {
+    if (!callback_pending) {
         callback_pending = 1;
-        g_timeout_add( DIRREADDELAY, 
-                       (GSourceFunc)_dnotify_reread_desktop_entries,
-                       path );
+        g_timeout_add(DIRREADDELAY,
+                      (GSourceFunc) hcp_dnotify_reread_desktop_entries, hcp);
     }
 }
 
-static int _init_dnotify(gchar * path, gchar * path_additional )
+static int hcp_init_dnotify (HCP * hcp,
+                             const gchar * path,
+                             const gchar * path_additional)
 {
-  hildon_return_t ret;
+    hildon_return_t ret;
 
-  ret = hildon_dnotify_handler_init();
-  if( ret!=HILDON_OK )
-  {
-      return ret;
-  }
-  ret = hildon_dnotify_set_cb( _dnotify_callback_f, path, NULL);
-                               
-  if( ret!=HILDON_OK )
-  {
-      return ret;
-  }
-  if (path_additional !=NULL)
-  {
-      ret = hildon_dnotify_set_cb (_dnotify_callback_f, path_additional,
-                                   NULL);
-  }
-  return HILDON_OK;
+    ret = hildon_dnotify_handler_init ();
+    if (ret != HILDON_OK)
+    {
+        return ret;
+    }
+    
+    ret = hildon_dnotify_set_cb ((hildon_dnotify_cb_f*)hcp_dnotify_callback_f,
+                                 (gchar *)path,
+                                 hcp);
+
+    if (ret != HILDON_OK)
+    {
+        return ret;
+    }
+
+    if (path_additional)
+    {
+        ret = hildon_dnotify_set_cb (
+                (hildon_dnotify_cb_f*)hcp_dnotify_callback_f,
+                (gchar *)path_additional,
+                hcp);
+    }
+    return HILDON_OK;
 }
 
 
+/*********************************************************************
+ * RPC setup
+ *********************************************************************/
+static
+void hcp_init_rpc (HCP *hcp)
+{
+    hcp->osso = osso_initialize(APP_NAME, APP_VERSION, TRUE, NULL);
+    
+    if (!hcp->osso)
+    {
+        ULOG_ERR("Error initializing osso -- check that D-BUS is running");
+        exit(-1);
+    }
+
+#if 0
+    osso_rpc_set_cb_f (hcp->osso,
+                       "com.nokia.controlpanel",
+                       HCP_RPC_PATH,
+                       HCP_RPC_INTERFACE,
+                       (osso_rpc_cb_f *)hcp_rpc_handler,
+                       hcp);
+#endif
+    
+    osso_rpc_set_default_cb_f (hcp->osso,
+                       (osso_rpc_cb_f *)hcp_rpc_handler,
+                       hcp);
+                       
+}
+
+
+/**********************************************************************
+ * RPC callbacks
+ **********************************************************************/
+static
+gint hcp_rpc_handler (const gchar *interface,
+                      const gchar *method,
+                      GArray *arguments,
+                      HCP *hcp,
+                      osso_rpc_t *retval)
+{
+    g_return_val_if_fail (method, OSSO_ERROR);
+
+    if ((!strcmp (method, HCP_RPC_METHOD_RUN_APPLET)))
+    {
+        osso_rpc_t applet, user_activated;
+        HCPItem *item;
+        
+        if (arguments->len != 2)
+            goto error;
+
+        applet = g_array_index (arguments, osso_rpc_t, 0);
+        user_activated = g_array_index (arguments, osso_rpc_t, 1);
+
+        if (applet.type != DBUS_TYPE_STRING)
+            goto error;
+        
+        if (user_activated.type != DBUS_TYPE_BOOLEAN)
+            goto error;
+        
+        item = g_hash_table_lookup (hcp->al->applets, applet.value.s);
+
+        if (item)
+        {
+            if (!item->running)
+            {
+                hcp_item_launch (item, user_activated.value.b);
+
+            }
+
+            if(GTK_IS_WINDOW (hcp->window))
+                gtk_window_present (GTK_WINDOW (hcp->window));
+
+            retval->type = DBUS_TYPE_INT32;
+            retval->value.i = 0;
+            return OSSO_OK;
+        }
+
+    }
+
+    else if ((!strcmp (method, HCP_RPC_METHOD_TOP_APPLICATION)))
+    {
+        if (!hcp->window)
+            hcp_show_window (hcp);
+        else
+            gtk_window_present (GTK_WINDOW (hcp->window));
+
+        retval->type = DBUS_TYPE_INT32;
+        retval->value.i = 0;
+        return OSSO_OK;
+    }
+
+error:
+    retval->type = DBUS_TYPE_INT32;
+    retval->value.i = -1;
+    return OSSO_ERROR;
+
+
+}
 
 /**********************************************************************
  * GUI helper functions
  **********************************************************************/
 
-static void _large_icons(void)
+/* FIXME: use a widget better suited for this situation. Grid wants all the
+ * space it can get as it is designed to fill the whole area. 
+ * Now we have to restrict it's size in this rather ugly way
+ */
+static 
+void hcp_large_icons (HCP *hcp)
 {
-    if(state_data.grid)
-        hildon_grid_set_style(HILDON_GRID(state_data.grid),
-                              "largeicons-cp");
-}
-
-
-static void _small_icons(void)
-{
-    if(state_data.grid)
-        hildon_grid_set_style(HILDON_GRID(state_data.grid),
-                              "smallicons-cp");
-
-}
-
-static void _init_gui(void)
-{
-    GtkMenu *menu=NULL;
-    GtkWidget *sub_view=NULL;
-    GtkWidget *sub_tools=NULL;
-    GtkWidget *mi = NULL;
-    GSList *menugroup = NULL;
     GtkWidget *grid = NULL;
+    GList *iter = NULL;
+    GList *list = NULL;
 
-    state_data.window = HILDON_WINDOW( hildon_window_new() );
-    state_data.program = HILDON_PROGRAM( hildon_program_get_instance() );
-
-    hildon_program_add_window( state_data.program, state_data.window );
-
-    gtk_window_set_title( GTK_WINDOW( state_data.window ),
-            HILDON_CONTROL_PANEL_TITLE );
-    
-    g_signal_connect( G_OBJECT( state_data.window ), "destroy", 
-                      G_CALLBACK( _my_quit ),NULL);
-    
-    g_signal_connect(G_OBJECT(state_data.program), "notify::is-topmost",
-                     G_CALLBACK(_topmost_status_change), NULL);
-
-    menu = GTK_MENU( gtk_menu_new() );
-
-    hildon_window_set_menu( state_data.window, menu );
-    
-    mi = gtk_menu_item_new_with_label( HILDON_CONTROL_PANEL_MENU_OPEN );
-    
-    g_signal_connect( G_OBJECT( mi ), "activate", 
-                      G_CALLBACK( _my_open ), NULL ); 
-
-    gtk_menu_shell_append( GTK_MENU_SHELL( menu ), mi ); 
-    
-    
-    /* View submenu */
-    sub_view = gtk_menu_new();
-
-    mi = gtk_menu_item_new_with_label( HILDON_CONTROL_PANEL_MENU_SUB_VIEW );
-    
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(mi), sub_view);
-
-    gtk_menu_shell_append( GTK_MENU_SHELL( menu ), mi );
-        
-    /* Small icon size */
-    mi = gtk_radio_menu_item_new_with_label
-        ( menugroup, HILDON_CONTROL_PANEL_MENU_SMALL_ITEMS );
-    menugroup = gtk_radio_menu_item_get_group( GTK_RADIO_MENU_ITEM (mi) );
-    cp_view_small_icons = GTK_CHECK_MENU_ITEM(mi);
-
-    if(state_data.icon_size == 0) {
-        gtk_check_menu_item_set_active( GTK_CHECK_MENU_ITEM(mi), TRUE);
-    }
-
-
-    gtk_menu_shell_append( GTK_MENU_SHELL( sub_view ), mi );
-
-    
-    g_signal_connect( G_OBJECT( mi ), "activate", G_CALLBACK(_iconsize),
-                      "small");
-
-    /* Large icon size */
-    mi = gtk_radio_menu_item_new_with_label
-        ( menugroup,
-          HILDON_CONTROL_PANEL_MENU_LARGE_ITEMS );
-    cp_view_large_icons = GTK_CHECK_MENU_ITEM(mi);
-
-    if (state_data.icon_size == 1) {
-        gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (mi), TRUE);
-    }
-    menugroup = gtk_radio_menu_item_get_group( GTK_RADIO_MENU_ITEM (mi) );
-   
-    gtk_menu_shell_append( GTK_MENU_SHELL( sub_view ), mi );
-    
-    g_signal_connect( G_OBJECT( mi ), "activate", G_CALLBACK(_iconsize),
-                      "large");
-
-
-
-    /* Tools submenu*/
-    sub_tools = gtk_menu_new();
-
-    mi = gtk_menu_item_new_with_label( HILDON_CONTROL_PANEL_MENU_SUB_TOOLS);
-    
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(mi), sub_tools);
-
-    gtk_menu_shell_append( GTK_MENU_SHELL( menu ), mi );
-
-
-    /* Run operator wizard */
-    mi = gtk_menu_item_new_with_label
-        ( HILDON_CONTROL_PANEL_MENU_SETUP_WIZARD);
-
-    gtk_menu_shell_append( GTK_MENU_SHELL( sub_tools ), mi );
-    
-    g_signal_connect( G_OBJECT( mi ), "activate", 
-                      G_CALLBACK(_run_operator_wizard), NULL);
-
-    /* Reset Factory Settings */
-    mi = gtk_menu_item_new_with_label
-        ( HILDON_CONTROL_PANEL_MENU_RFS );
-
-    gtk_menu_shell_append( GTK_MENU_SHELL( sub_tools ), mi );
-    
-    g_signal_connect( G_OBJECT( mi ), "activate", 
-                      G_CALLBACK(_reset_factory_settings), NULL);
-    
-    /* Clean User Data */
-    mi = gtk_menu_item_new_with_label
-        ( HILDON_CONTROL_PANEL_MENU_CUD );
-
-    gtk_menu_shell_append( GTK_MENU_SHELL( sub_tools ), mi );
-    
-    g_signal_connect( G_OBJECT( mi ), "activate", 
-                      G_CALLBACK(_clear_user_data), NULL);
-
-    
-    /* Help! */
-
-    mi = gtk_menu_item_new_with_label
-        ( HILDON_CONTROL_PANEL_MENU_HELP);
-
-    gtk_menu_shell_append( GTK_MENU_SHELL( sub_tools ), mi );
-    
-    g_signal_connect( G_OBJECT( mi ), "activate", 
-                      G_CALLBACK(_launch_help), NULL);
-
-    /* close */
-    mi = gtk_menu_item_new_with_label( HILDON_CONTROL_PANEL_MENU_CLOSE);
-    
-    g_signal_connect(GTK_OBJECT(mi), "activate",
-                     G_CALLBACK(_my_quit),
-                     NULL);
-
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), mi);
-    
-    gtk_widget_show_all( GTK_WIDGET( menu ));
-    
-    hildon_cp_applist_initialize( _launch, NULL,
-                                    _focus_change, NULL,
-                                    GTK_WIDGET( state_data.window ), 
-                                    CONTROLPANEL_ENTRY_DIR);
-
-    grid = hildon_cp_applist_get_grid();
+    /* if we have grids */
+    if (hcp->view)
     {
-        GValue val = {0,};
-        g_value_init(&val, G_TYPE_STRING);
-        g_value_set_string(&val, "");
-        g_object_set_property(G_OBJECT (grid), "empty_label", &val);
-	g_value_unset(&val);
+        list = iter = gtk_container_get_children (
+                GTK_CONTAINER (hcp->view));
+
+        /* iterate through all of them and set their mode */
+        while (iter != 0)
+        {
+            if (CP_OBJECT_IS_GRID(iter->data))
+            {
+                grid = GTK_WIDGET (iter->data);
+                cp_grid_set_style(CP_GRID(grid), "largeicons-cp");
+            
+                guint num_rows = hcp_calculate_grid_rows (grid);
+                gtk_widget_set_size_request (grid, GRID_WIDTH,
+                        num_rows * LARGE_ITEM_ROW_HEIGHT + LARGE_ITEM_PADDING);
+            }
+
+            iter = iter->next;
+        }
+        
+        g_list_free (list);
     }
 
-    gtk_widget_show_all(GTK_WIDGET(state_data.window));
 
-    state_data.grid = hildon_cp_applist_get_grid();
+}
 
-    /* Set the callback function for HW signals */
-    osso_hw_set_event_cb(state_data.osso, NULL , _hw_signal_cb, NULL );
+/* FIXME: use a widget better suited for this situation. Grid wants all the
+ * space it can get as it is designed to fill the whole area. 
+ * Now we have to restrict it's size in this rather ugly way
+ */
+static void 
+hcp_small_icons (HCP *hcp)
+{
+    GtkWidget *grid = NULL;
+    GList *iter = NULL;
+    GList *list = NULL;
 
-    /* Set the keyboard listening callback */
+    /* If we have grids */
+    if (hcp->view)
+    {
+        list = iter = gtk_container_get_children (
+                GTK_CONTAINER(hcp->view));
 
-    gtk_widget_add_events(GTK_WIDGET(state_data.window), 
-                          GDK_BUTTON_RELEASE_MASK);
+        /* Iterate through all of them and set their mode */
+        while (iter != 0)
+        {
+            if (CP_OBJECT_IS_GRID(iter->data))
+            {
+                grid = GTK_WIDGET (iter->data);
+                cp_grid_set_style(CP_GRID(grid), "smallicons-cp");
 
-    g_signal_connect(G_OBJECT(state_data.window), "key_release_event",
-                     G_CALLBACK(_cp_keyboard_listener), NULL);
+                guint num_rows = hcp_calculate_grid_rows (grid);
+                gtk_widget_set_size_request (grid, GRID_WIDTH,
+                        num_rows * SMALL_ITEM_ROW_HEIGHT + SMALL_ITEM_PADDING);
+            }
 
+            iter = iter->next;
+        }
 
-
+        g_list_free (list);
+    }
 }
 
 
@@ -422,319 +470,265 @@ static void _init_gui(void)
  ************************************************************************/
 
 /* Create a struct for the application state data */
-
-static void _create_data(void)
+static void 
+hcp_create_data (HCP *hcp)
 {
-    state_data.osso = osso_initialize(APP_NAME, APP_VERSION, TRUE, NULL);
-    if(!state_data.osso)
-    {
-        osso_log(LOG_ERR,
-                "Error initializing osso -- check that D-BUS is running");
-        exit(-1);
-    }
-    
-    g_assert(state_data.osso);
-    state_data.icon_size=1;
-    state_data.focused_filename=NULL;
-    state_data.saved_focused_filename=NULL;
-    state_data.execute = 0;
-    state_data.scroll_value = 0;
+
+    hcp->icon_size = 1;
+    hcp->focused_item = NULL;
+    hcp->saved_focused_filename = NULL;
+    hcp->execute = 0;
+    hcp->scroll_value = 0;
+    hcp->al = hcp_al_new ();
+    hcp_al_update_list (hcp->al);
 }
 
 /* Clean the application state data struct */
-
-static void _destroy_data( void )
+static void 
+hcp_destroy_data (HCP *hcp)
 {
-    if( state_data.osso )      
-        osso_deinitialize(state_data.osso);
-    if( state_data.focused_filename )   
-        g_free( state_data.focused_filename );
-    if( state_data.saved_focused_filename )  
-        g_free( state_data.saved_focused_filename );
+    if (hcp->osso)
+        osso_deinitialize (hcp->osso);
 }
 
-/* save state data on disk */
+/* Save state data on disk */
+static void 
+hcp_save_state (HCP *hcp, gboolean clear_state)
+{
+    osso_state_t state = { 0, };
+    GKeyFile *keyfile = NULL;
+    osso_return_t ret;
+    GError *error = NULL;
 
-static void _save_state( gboolean clear_state ) {
-    gint scrollvalue = hildon_grid_get_scrollbar_pos(HILDON_GRID(
-                                                        state_data.grid));
-    gchar contents[HILDON_CONTROL_PANEL_STATEFILE_MAX];
-    gint fd, ret;
-					
+    if (clear_state)
+    {
+        state.state_data = "";
+        state.state_size = 1;
+        ret = osso_state_write (hcp->osso, &state);
+        if (ret != OSSO_OK)
+            ULOG_ERR ("An error occured when clearing application state");
 
-    if (clear_state) {
-        ret=g_sprintf(contents, "%s\n",
-                       HILDON_CONTROL_PANEL_STATEFILE_NO_CONTENT);
-    }
-    else 
-    {
-        if (state_data.focused_filename != NULL) 
-	  {
-          
-          MBDotDesktop* dd = 
-              hildon_cp_applist_get_entry( state_data.focused_filename );
-          char * lib_file = NULL;
-          if(dd && (lib_file = 
-               (char *)mb_dotdesktop_get(dd, "X-control-panel-plugin")))
-          {
-              osso_cp_plugin_save_state(
-		 		    state_data.osso,
-					lib_file,
-					NULL
-					);
-          }
-	  }
-        ret = g_snprintf(contents, HILDON_CONTROL_PANEL_STATEFILE_MAX,
-                         "focused=%s\n"
-                         "scroll=%d\n"
-                         "execute=%d\n",
-                         state_data.focused_filename != NULL ?
-                         state_data.focused_filename : "",
-                         scrollvalue,
-                         state_data.execute);
-    }
-    if(ret > HILDON_CONTROL_PANEL_STATEFILE_MAX)
-    {
-        osso_log(LOG_ERR, "Error saving state -- too long state");
-        return;
-    }   
-
-    fd = osso_state_open_write(state_data.osso);
-    if( fd == -1)
-    {
-        osso_log(LOG_ERR, "Opening state file for writing failed");
-        return;
+        goto cleanup;
     }
 
-    ret = write(fd, contents, strlen(contents));
-    if(ret != strlen(contents))
+    keyfile = g_key_file_new ();
+
+    g_key_file_set_string (keyfile,
+                           HCP_STATE_GROUP,
+                           HCP_STATE_FOCUSSED,
+                           hcp->focused_item?  hcp->focused_item->name:"");
+    
+    g_key_file_set_integer (keyfile,
+                            HCP_STATE_GROUP,
+                            HCP_STATE_SCROLL_VALUE,
+                            hcp->scroll_value);
+
+    g_key_file_set_boolean (keyfile,
+                            HCP_STATE_GROUP,
+                            HCP_STATE_EXECUTE,
+                            hcp->execute);
+
+    state.state_data = g_key_file_to_data (keyfile,
+                                           &state.state_size,
+                                           &error);
+
+    if (error)
+        goto cleanup;
+
+    ret = osso_state_write (hcp->osso, &state);
+
+    if (ret != OSSO_OK)
     {
-        osso_log(LOG_ERR, 
-      "Writing state save file failed. Tried to write %d bytes, wrote %d",
-                 strlen(contents), ret);
+        ULOG_ERR ("An error occured when reading application state");
     }
-    osso_state_close(state_data.osso, fd);
+
+
+cleanup:
+    if (error)
+    {
+        ULOG_ERR ("An error occured when reading application state: %s",
+                  error->message);
+        g_error_free (error);
+    }
+
+    g_free (state.state_data);
+    if (keyfile)
+        g_key_file_free (keyfile);
 }
 
 /* Read the saved state from disk */
+static void 
+hcp_retrieve_state (HCP *hcp)
+{
+    osso_state_t state = { 0, };
+    GKeyFile *keyfile = NULL;
+    osso_return_t ret;
+    GError *error = NULL;
+    gchar *focussed = NULL;
+    gint scroll_value;
+    gboolean execute;
 
-static void _retrieve_state( void ) {
-    gchar buff[HILDON_CONTROL_PANEL_STATEFILE_MAX];
-    ssize_t rc;
-    gint fd;
-    gchar *eq;
-    gchar *nl;
-    gchar *start;
-    gint length;
+    ret = osso_state_read (hcp->osso, &state);
 
-    fd = osso_state_open_read(state_data.osso);
-    if(fd == -1)
+    if (ret != OSSO_OK)
     {
+        ULOG_ERR ("An error occured when reading application state");
         return;
     }
 
-    rc = read(fd, buff, HILDON_CONTROL_PANEL_STATEFILE_MAX);
-    osso_state_close(state_data.osso, fd);
+    if (state.state_size == 1)
+    {
+        /* Clean state, return */
+        goto cleanup;
+    }
 
-    if(rc >= HILDON_CONTROL_PANEL_STATEFILE_MAX)
+    keyfile = g_key_file_new ();
+
+    g_key_file_load_from_data (keyfile,
+                               state.state_data,
+                               state.state_size,
+                               G_KEY_FILE_NONE,
+                               &error);
+
+    if (error)
     {
-        osso_log(LOG_ERR,
-                 "Error retrieving state -- too long state file %d", rc);
-        return;
+        ULOG_ERR ("An error occured when reading application state: %s",
+                  error->message);
+        goto cleanup;
     }
-    if(rc == -1)
+
+    focussed = g_key_file_get_string (keyfile,
+                                      HCP_STATE_GROUP,
+                                      HCP_STATE_FOCUSSED,
+                                      &error);
+
+    if (error)
     {
-        osso_log(LOG_ERR,
-                 "Error retrieving state -- error on reading the state file");
-        return;
+        ULOG_ERR ("An error occured when reading application state: %s",
+                  error->message);
+        goto cleanup;
     }
-   
-    start = buff;
-    length = rc;
-    while( ((nl = g_strstr_len(start, length, "\n")) != NULL) &&
-           ((eq = g_strstr_len(start, length, "=")) != NULL)) {
-        *nl = '\0';
-        *eq = '\0';
-        
-        if(strcmp(start, "focused")==0) {
-            state_data.saved_focused_filename = g_strdup(eq+1);
-        } else if(strcmp(start, "scroll")==0) {
-            sscanf(eq+1, "%d", &state_data.scroll_value);
-        } else if(strcmp(start, "execute")==0) {
-            sscanf(eq+1, "%d", &state_data.execute);
-        } else if (strcmp(start, HILDON_CONTROL_PANEL_STATEFILE_NO_CONTENT)==0) {
-            return;
-        } else {
-            osso_log(LOG_ERR, 
-                     "Error retrieving state -- unknown field %s", start);
-        }
-        
-        length = length - (nl - start + 1);
-        start=nl+1;
+
+    hcp->saved_focused_filename = focussed;
+
+    scroll_value = g_key_file_get_integer (keyfile,
+                                           HCP_STATE_GROUP,
+                                           HCP_STATE_SCROLL_VALUE,
+                                           &error);
+    if (error)
+    {
+        ULOG_ERR ("An error occured when reading application state: %s",
+                  error->message);
+        goto cleanup;
     }
+    
+    hcp->scroll_value = scroll_value;
+    
+    execute = g_key_file_get_boolean (keyfile,
+                                      HCP_STATE_GROUP,
+                                      HCP_STATE_EXECUTE,
+                                      &error);
+    if (error)
+    {
+        ULOG_ERR ("An error occured when reading application state: %s",
+                  error->message);
+        goto cleanup;
+    }
+    
+    hcp->execute = execute;
+
+cleanup:
+    if (error)
+        g_error_free (error);
+
+    g_free (state.state_data);
+    if (keyfile)
+        g_key_file_free (keyfile);
+    
 }
 
-static void _enforce_state(void)
+static void 
+hcp_enforce_state (HCP *hcp)
 {
     /* Actually enforce the saved state */
-    
-    if (state_data.icon_size == 0) 
-    {
-        _small_icons();
-    }
-    else if (state_data.icon_size == 1)
-    {
-        _large_icons();
-    } 
+
+    if (hcp->icon_size == 0)
+        hcp_small_icons (hcp);
+    else if (hcp->icon_size == 1)
+        hcp_large_icons (hcp);
     else 
+        ULOG_ERR("Unknown iconsize");
+
+    if (hcp->saved_focused_filename)
     {
-        osso_log(LOG_ERR, "Unknown iconsize");
+        hildon_cp_applist_focus_item (hcp->al, 
+                                      hcp->saved_focused_filename);
+
+        g_free (hcp->saved_focused_filename);
+        hcp->saved_focused_filename = NULL;
     }
 
-    if(state_data.saved_focused_filename)
-    {
-        hildon_cp_applist_focus_item( state_data.saved_focused_filename );
- 
-        g_free(state_data.saved_focused_filename);
-        state_data.saved_focused_filename = NULL;
-    }
-
-    hildon_grid_set_scrollbar_pos(HILDON_GRID(state_data.grid),
-                                  state_data.scroll_value);
-    /* main() will start the possible plugin in state_data.execute*/
+    /* main() will start the possible plugin in hcp->execute */
 }
 
 
 /* Save the configuration file (large/small icons)  */
-
-static void _save_configuration(gpointer data)
+static void 
+hcp_save_configuration (HCP *hcp)
 {
+    GConfClient *client = NULL;
+    GError *error = NULL;
+    gboolean icon_size;
 
-    FILE *fp;
-    gchar *configure_file;
+    client = gconf_client_get_default ();
 
-    if (data == NULL)
-        return;
+    g_return_if_fail (client);
 
-    g_return_if_fail (user_home_dir != NULL);
+    icon_size = hcp->icon_size?TRUE:FALSE;
 
-    /* user_home_dir is fetched from environment variables in 
-       _retrieve_configuration, which is executed during cp init */
+    gconf_client_set_bool (client,
+                           HCP_GCONF_ICON_SIZE,
+                           icon_size,
+                           &error);
 
-    configure_file = 
-        g_build_path("/", user_home_dir, HILDON_CP_SYSTEM_DIR,
-                     HILDON_CP_CONF_USER_FILENAME, NULL);
-        
-    fp = g_fopen (configure_file, "w");
-    if(fp == NULL) 
+    if (error)
     {
-        osso_log(LOG_ERR, "Couldn't open configure file %s", 
-                 configure_file);
-    } else 
-    {
-        if(fprintf(fp, "iconsize=%s",
-                   (gchar *)data)
-           < 0)
-        {
-            osso_log(LOG_ERR, 
-                     "Couldn't write values to configure file %s", 
-                     configure_file);
-        }
-        
+        ULOG_ERR (error->message);
+        g_error_free (error);
     }
-    if(fp != NULL && fclose(fp) != 0) 
-    {
-        osso_log(LOG_ERR, "Couldn't close file %s", configure_file);
-    }
-    
-    g_free(configure_file);
+
+    g_object_unref (client);
 
 }
 
-static void _retrieve_configuration()
+static void 
+hcp_retrieve_configuration (HCP *hcp)
 {
-    FILE *fp;
-    gchar *configure_file;    
-    gchar *system_dir;
-    gchar iconsize_data[HILDON_CP_MAX_FILE_LENGTH];
-    gboolean nonexistent = TRUE;
-    struct stat buf;
- 
-    iconsize_data[0] = 0;
-    iconsize_data[HILDON_CP_MAX_FILE_LENGTH-1]= 0;
+    GConfClient *client = NULL;
+    GError *error = NULL;
+    gboolean icon_size;
 
-    user_home_dir = g_getenv(HILDON_ENVIRONMENT_USER_HOME_DIR);
+    client = gconf_client_get_default ();
 
-    system_dir = 
-        g_build_path("/", user_home_dir, HILDON_CP_SYSTEM_DIR, NULL);
+    g_return_if_fail (client);
 
-    g_return_if_fail (system_dir != NULL);
+    icon_size = hcp->icon_size?TRUE:FALSE;
 
-    if (stat(system_dir, &buf) == 0) 
+    icon_size = gconf_client_get_bool (client,
+                                       HCP_GCONF_ICON_SIZE,
+                                       &error);
+
+    if (error)
     {
-        if(S_ISDIR(buf.st_mode))
-        {
-            nonexistent = FALSE;
-        }
+        ULOG_ERR (error->message);
+        g_error_free (error);
+    }
+    else
+    {
+        hcp->icon_size = icon_size?1:0;
     }
 
-    if(nonexistent)
-    {
-        if(mkdir (system_dir, HILDON_CP_SYSTEM_DIR_ACCESS) != 0) 
-        {
-            osso_log(LOG_ERR, "Couldn't create directory %s", system_dir);
-        }
-        g_free(system_dir);
-        return;
-    }
-
-    g_free(system_dir);
-    
-    configure_file = 
-        g_build_path("/", user_home_dir, HILDON_CP_SYSTEM_DIR,
-                     HILDON_CP_CONF_USER_FILENAME, NULL);
-
-    fp = fopen (configure_file, "r");
-
-    if(fp == NULL) 
-    {
-        osso_log(LOG_ERR, "Couldn't open configure file %s", 
-                 configure_file);
-    } else 
-    {
-        if(fscanf(fp,
-                  HILDON_CP_CONF_FILE_FORMAT,
-                  iconsize_data) 
-           <0)
-        {
-            osso_log(LOG_ERR, 
-                     "Couldn't load statusinfo from configure file");
-            state_data.icon_size = 0;
-        }
-        else {
-            g_return_if_fail (iconsize_data != NULL);
-
-            if( strcmp((gchar *)iconsize_data, "large") == 0)
-            {
-                state_data.icon_size = 1;
-            }
-            else if( strcmp((gchar *)iconsize_data, "small") == 0)
-            {
-                state_data.icon_size = 0;
-            }
-            else {
-                state_data.icon_size = 0;
-            }
-        }
-    }
-    
-    if(fp != NULL && fclose(fp) != 0) 
-    {
-        osso_log(LOG_ERR, "Couldn't close configure file %s", 
-                 configure_file);
-    }
-
-    g_free(configure_file);       
+    g_object_unref (client);
 
 }
 
@@ -743,103 +737,96 @@ static void _retrieve_configuration()
  ***********************************************************************/
 
 /***** Keyboard listener *******/
-
-static gint _cp_keyboard_listener( GtkWidget * widget, 
-                                   GdkEventKey * keyevent,
-                                   gpointer data)
+static gint 
+hcp_cp_keyboard_listener (GtkWidget * widget,
+                          GdkEventKey * keyevent, 
+		                  HCP *hcp)
 {
-    if (keyevent->type==GDK_KEY_RELEASE) 
-    {
+    if (keyevent->type == GDK_KEY_RELEASE) {
         if (keyevent->keyval == HILDON_HARDKEY_INCREASE) {
-            if (state_data.icon_size != 1) {
-                state_data.icon_size = 1;
-                gtk_check_menu_item_set_active 
-                    (cp_view_large_icons, TRUE);
-                _large_icons();
-                _save_configuration ((gpointer)"large");
+            if (hcp->icon_size != 1) {
+                hcp->icon_size = 1;
+                gtk_check_menu_item_set_active (
+                        GTK_CHECK_MENU_ITEM (hcp->large_icons_menu_item),
+                        TRUE);
+                hcp_large_icons (hcp);
+                hcp_save_configuration (hcp);
                 return TRUE;
             }
 
-        }
-        else if (keyevent->keyval == HILDON_HARDKEY_DECREASE) {
-            if (state_data.icon_size != 0) {
-                state_data.icon_size = 0;
-                gtk_check_menu_item_set_active 
-                    (cp_view_small_icons, TRUE);
-                _small_icons();
-                _save_configuration((gpointer)"small");
+        } else if (keyevent->keyval == HILDON_HARDKEY_DECREASE) {
+            if (hcp->icon_size != 0) {
+                hcp->icon_size = 0;
+                gtk_check_menu_item_set_active (
+                        GTK_CHECK_MENU_ITEM (hcp->small_icons_menu_item),
+                        TRUE);
+                hcp_small_icons (hcp);
+                hcp_save_configuration (hcp);
                 return TRUE;
             }
         }
     }
-        return FALSE;
+    
+    return FALSE;
 
 }
 
 /***** Top/Untop callbacks *****/
-
-static void _topmost_status_change(GObject *gobject, GParamSpec *arg1,
-                                   gpointer user_data)
+static void 
+hcp_topmost_status_change (GObject * gobject, 
+		                   GParamSpec * arg1,
+			               HCP *hcp)
 {
-    HildonProgram *program = HILDON_PROGRAM( gobject );
+    HildonProgram *program = HILDON_PROGRAM (gobject);
 
-    if( hildon_program_get_is_topmost (program) )
-    {
-        hildon_program_set_can_hibernate(program, FALSE);
-    }
-    else
-    {
-        _save_state(FALSE);
-        hildon_program_set_can_hibernate(program, TRUE);
+    if (hildon_program_get_is_topmost (program)) {
+        hildon_program_set_can_hibernate (program, FALSE);
+    } else {
+        hcp_save_state (hcp, FALSE);
+        hildon_program_set_can_hibernate (program, TRUE);
     }
 
 }
 
 /****** Menu callbacks ******/
 
-static void _my_open( GtkWidget *widget, gpointer data )
+static void hcp_my_open (GtkWidget *widget, HCP *hcp)
 {
-    _launch( hildon_cp_applist_get_entry( state_data.focused_filename ),
-             NULL, TRUE );
+    hcp_item_launch (hcp->focused_item, TRUE);
 }
 
-static void _my_quit(GtkWidget *widget, gpointer data)
+static void hcp_my_quit (GtkWidget *widget, HCP *hcp)
 {
-    _save_state( TRUE );
-    gtk_main_quit();
+    hcp_save_state (hcp, TRUE);
+    gtk_main_quit ();
 }
 
-static void _iconsize( GtkWidget *widget, gpointer data )
+static void hcp_iconsize (GtkWidget *widget, HCP *hcp)
 {
-    if(!gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)))
+    if (!gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (widget)))
         return;
     
-    /* Avoid instant segfault, but can stuff be left uninitialized?
-       Hope not. */
-    if (data == NULL)
-        return;
-
-    _save_configuration(data);
+    if (widget == hcp->large_icons_menu_item)
+    {
+        hcp_large_icons (hcp);
+        hcp->icon_size = 1;
+    }
+    else if (widget == hcp->small_icons_menu_item)
+    {
+        hcp_small_icons (hcp);
+        hcp->icon_size = 0;
+    }
     
-    if( strcmp((gchar *)data, "large") == 0)
-    {
-        _large_icons();
-        state_data.icon_size = 1;
-    }
-    else if( strcmp((gchar *)data, "small") == 0)
-    {
-        _small_icons();
-        state_data.icon_size = 0;
-    }
+    hcp_save_configuration (hcp);
 }
 
-static void _run_operator_wizard( GtkWidget *widget, gpointer data)
+static void hcp_run_operator_wizard (GtkWidget *widget, HCP *hcp)
 {
 
     osso_rpc_t returnvalues;
     osso_return_t returnstatus;
     returnstatus = osso_rpc_run_with_defaults
-        (state_data.osso, HILDON_CONTROL_PANEL_DBUS_OPERATOR_WIZARD_SERVICE,
+        (hcp->osso, HILDON_CONTROL_PANEL_DBUS_OPERATOR_WIZARD_SERVICE,
          HILDON_CONTROL_PANEL_OPERATOR_WIZARD_LAUNCH,
          &returnvalues, 
          DBUS_TYPE_INVALID);    
@@ -850,8 +837,9 @@ static void _run_operator_wizard( GtkWidget *widget, gpointer data)
         case OSSO_OK:
             break;
         case OSSO_INVALID:
-            osso_log(LOG_ERR, 
-                     "Invalid parameter in operator_wizard launch");
+        
+            ULOG_ERR("Invalid parameter in operator_wizard launch");
+
             break;
         case OSSO_RPC_ERROR:
         case OSSO_ERROR:
@@ -859,114 +847,306 @@ static void _run_operator_wizard( GtkWidget *widget, gpointer data)
         case OSSO_ERROR_NO_STATE:
         case OSSO_ERROR_STATE_SIZE:
             if (returnvalues.type == DBUS_TYPE_STRING) {
-                osso_log(LOG_ERR, "Operator wizard launch failed: %s\n", 
-                         returnvalues.value.s);
+                
+                ULOG_ERR("Operator wizard launch failed: %s\n",returnvalues.value.s);
             }
             else {
-                osso_log(LOG_ERR, 
-                         "Operator wizard launch failed, unspecified");
+                ULOG_ERR("Operator wizard launch failed, unspecified");
             }
             break;            
         default:
-            osso_log(LOG_ERR, "Unknown error type %d", returnstatus);
+            ULOG_ERR("Unknown error type %d", returnstatus);
     }
     
     osso_rpc_free_val (&returnvalues);
 }
 
-static gboolean _reset_factory_settings( GtkWidget *widget, gpointer data )
+static gboolean hcp_reset_factory_settings (GtkWidget *widget, HCP *hcp)
 {
 
-    hildon_cp_rfs( state_data.osso, HILDON_CP_RFS_WARNING, HILDON_CP_RFS_WARNING_TITLE, HILDON_CP_RFS_SCRIPT, HILDON_CP_RFS_HELP_TOPIC );
+    hildon_cp_rfs( hcp->osso, HILDON_CP_RFS_WARNING, HILDON_CP_RFS_WARNING_TITLE, HILDON_CP_RFS_SCRIPT, HILDON_CP_RFS_HELP_TOPIC );
 
     return TRUE;
 }
 
-static gboolean _clear_user_data( GtkWidget *widget, gpointer data )
+static gboolean hcp_clear_user_data (GtkWidget *widget, HCP *hcp)
 {
 
-    hildon_cp_rfs( state_data.osso, HILDON_CP_CUD_WARNING, HILDON_CP_CUD_WARNING_TITLE, HILDON_CP_CUD_SCRIPT, HILDON_CP_CUD_HELP_TOPIC );
+    hildon_cp_rfs (hcp->osso,
+                   HILDON_CP_CUD_WARNING,
+                   HILDON_CP_CUD_WARNING_TITLE,
+                   HILDON_CP_CUD_SCRIPT,
+                   HILDON_CP_CUD_HELP_TOPIC );
 
     return TRUE;
 }
 
-static void _launch_help( GtkWidget *widget, gpointer data)
+static void hcp_launch_help (GtkWidget *widget, HCP *hcp)
 {
-    
-
     osso_return_t help_ret;
     
-    help_ret = ossohelp_show(state_data.osso, OSSO_HELP_ID_CONTROL_PANEL, 0);
-
-
+    help_ret = ossohelp_show (hcp->osso, OSSO_HELP_ID_CONTROL_PANEL, 0);
 
     switch (help_ret)
      {
          case OSSO_OK:
              break;
          case OSSO_ERROR:
-             g_warning("HELP: ERROR (No help for such topic ID)\n");
+             ULOG_WARN ("HELP: ERROR (No help for such topic ID)\n");
              break;
          case OSSO_RPC_ERROR:
-             g_warning("HELP: RPC ERROR (RPC failed for HelpApp/Browser)\n");
+             ULOG_WARN ("HELP: RPC ERROR (RPC failed for HelpApp/Browser)\n");
              break;
          case OSSO_INVALID:
-             g_warning("HELP: INVALID (invalid argument)\n");
+             ULOG_WARN ("HELP: INVALID (invalid argument)\n");
              break;
          default:
-             g_warning("HELP: Unknown error!\n");
+             ULOG_WARN ("HELP: Unknown error!\n");
              break;
      }
 
 }
 
-static void _hw_signal_cb( osso_hw_state_t *state, gpointer data )
+static void hcp_hw_signal_cb (osso_hw_state_t *state, HCP *hcp)
 {
-	if ( state != NULL ) {
+	if (state != NULL) {
 		
 		/* Shutdown */
-		if ( state->shutdown_ind ) {
+		if (state->shutdown_ind)
+        {
 			/* Save state */
-			_save_state(FALSE);
+			hcp_save_state (hcp, FALSE);
 			/* Quit */
-			_my_quit( NULL, NULL );
+			hcp_my_quit (NULL, hcp);
 		}
 		
-	} else {
-		/* Do we care about this? */
 	}
 
 	return;
 }
 
 
-/***** Applist callbacks *****/
 
-static void _launch(MBDotDesktop* dd, gpointer data, gboolean user_activated )
+static int hcp_calculate_grid_rows (GtkWidget *grid)
 {
-    int ret;
-    char * lib_file = NULL;
+    guint num_columns = 0, num_rows = 0, num_items = 0;
+    GValue val = { 0, };
 
-    if(dd && (lib_file = 
-                (char *)mb_dotdesktop_get(dd, "X-control-panel-plugin")))
-    {
+    g_value_init(&val, G_TYPE_UINT);
+    g_object_get_property(G_OBJECT(grid), "n_items", &val);
+    num_items = g_value_get_uint(&val);
+    g_value_unset(&val);
 
-        state_data.execute=1;
-        ret = osso_cp_plugin_execute( state_data.osso, 
-                                      lib_file,
-                                      (gpointer)state_data.window,
-                                      user_activated );
-        state_data.execute = 0;
-    }
+    gtk_widget_style_get (grid, "n_columns", &num_columns, NULL);
+
+    num_rows = (num_items / num_columns) + (num_items % num_columns ? 1 : 0);
+
+    return num_rows;
 }
 
-static void _focus_change(MBDotDesktop* dd, gpointer data )
+
+static void
+hcp_show_window (HCP *hcp)
 {
-    if(dd)
-    {
-        if(state_data.focused_filename)
-            g_free(state_data.focused_filename);
-        state_data.focused_filename = g_strdup(
-            mb_dotdesktop_get_filename(dd));
+    hcp->view = hcp_view_new ();
+    hcp_view_populate (hcp->view, hcp->al);
+    hcp_create_window (hcp);
+    
+    gtk_widget_show_all (GTK_WIDGET(hcp->window));
+    hcp_enforce_state (hcp);           /* realize the saved state */
+}
+
+static GtkWidget *
+hcp_create_window (HCP *hcp)
+{
+    GtkMenu *menu = NULL;
+    GtkWidget *sub_view = NULL;
+    GtkWidget *sub_tools = NULL;
+    GtkWidget *mi = NULL;
+    GtkWidget *scrolled_window = NULL;
+    GSList *menugroup = NULL;
+
+    /* Why is this not read from the gtkrc?? -- Jobi */
+    /* Control Panel Grid */
+    gtk_rc_parse_string ("  style \"hildon-control-panel-grid\" {"
+                "    CPGrid::n_columns = 2"
+            "    CPGrid::label_pos = 1"
+            "  }"
+            " widget \"*.hildon-control-panel-grid\" "
+            "    style \"hildon-control-panel-grid\"");
+
+    /* Separators style */
+    gtk_rc_parse_string ("  style \"hildon-control-panel-separator\" {"
+            "    GtkSeparator::hildonlike-drawing = 1"
+                        "  }"
+            " widget \"*.hildon-control-panel-separator\" "
+                        "    style \"hildon-control-panel-separator\"");
+
+    hcp->window = HILDON_WINDOW (hildon_window_new ());
+    hcp->program = HILDON_PROGRAM (hildon_program_get_instance ());
+
+    hildon_program_add_window (hcp->program, hcp->window);
+
+    gtk_window_set_title (GTK_WINDOW (hcp->window),
+                          HILDON_CONTROL_PANEL_TITLE);
+
+    g_signal_connect (G_OBJECT (hcp->window), "destroy",
+                      G_CALLBACK (hcp_my_quit), hcp);
+
+    g_signal_connect(G_OBJECT(hcp->program), "notify::is-topmost",
+                     G_CALLBACK(hcp_topmost_status_change), hcp);
+
+    menu = GTK_MENU (gtk_menu_new ());
+
+    hildon_window_set_menu (hcp->window, menu);
+
+    mi = gtk_menu_item_new_with_label (HILDON_CONTROL_PANEL_MENU_OPEN);
+
+    g_signal_connect (G_OBJECT(mi), "activate",
+                      G_CALLBACK(hcp_my_open), hcp);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), mi);
+
+
+    /* View submenu */
+    sub_view = gtk_menu_new ();
+
+    mi = gtk_menu_item_new_with_label (HILDON_CONTROL_PANEL_MENU_SUB_VIEW);
+
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM (mi), sub_view);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), mi);
+
+    /* Small icon size */
+    mi = gtk_radio_menu_item_new_with_label
+        (menugroup, HILDON_CONTROL_PANEL_MENU_SMALL_ITEMS);
+    menugroup = gtk_radio_menu_item_get_group (GTK_RADIO_MENU_ITEM (mi));
+    hcp->small_icons_menu_item = mi;
+
+    if (hcp->icon_size == 0) {
+        gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM(mi), TRUE);
     }
+
+
+    gtk_menu_shell_append (GTK_MENU_SHELL(sub_view), mi);
+
+
+    g_signal_connect (G_OBJECT (mi), "activate",
+                      G_CALLBACK (hcp_iconsize), hcp);
+
+    /* Large icon size */
+    mi = gtk_radio_menu_item_new_with_label
+        (menugroup, HILDON_CONTROL_PANEL_MENU_LARGE_ITEMS);
+    hcp->large_icons_menu_item = mi;
+
+    if (hcp->icon_size == 1) {
+        gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (mi), TRUE);
+    }
+    menugroup = gtk_radio_menu_item_get_group (GTK_RADIO_MENU_ITEM (mi));
+
+    gtk_menu_shell_append (GTK_MENU_SHELL (sub_view), mi);
+
+    g_signal_connect (G_OBJECT (mi), "activate", 
+		              G_CALLBACK (hcp_iconsize), hcp);
+
+
+    /* Tools submenu */
+    sub_tools = gtk_menu_new ();
+
+    mi = gtk_menu_item_new_with_label (HILDON_CONTROL_PANEL_MENU_SUB_TOOLS);
+
+    gtk_menu_item_set_submenu (GTK_MENU_ITEM(mi), sub_tools);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL(menu), mi);
+
+
+    /* Run operator wizard */
+    mi = gtk_menu_item_new_with_label
+        (HILDON_CONTROL_PANEL_MENU_SETUP_WIZARD);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL(sub_tools), mi);
+
+    g_signal_connect (G_OBJECT (mi), "activate",
+                      G_CALLBACK (hcp_run_operator_wizard), hcp);
+
+    /* Reset Factory Settings */
+    mi = gtk_menu_item_new_with_label (HILDON_CONTROL_PANEL_MENU_RFS);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL (sub_tools), mi);
+
+    g_signal_connect (G_OBJECT (mi), "activate",
+                      G_CALLBACK (hcp_reset_factory_settings), hcp);
+
+    /* Clean User Data */
+    mi = gtk_menu_item_new_with_label (HILDON_CONTROL_PANEL_MENU_CUD);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL (sub_tools), mi);
+
+    g_signal_connect (G_OBJECT (mi), "activate",
+                      G_CALLBACK (hcp_clear_user_data), hcp);
+
+
+    /* Help! */
+    mi = gtk_menu_item_new_with_label (HILDON_CONTROL_PANEL_MENU_HELP);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL (sub_tools), mi);
+
+    g_signal_connect(G_OBJECT (mi), "activate",
+                     G_CALLBACK (hcp_launch_help), hcp);
+
+    /* Close */
+    mi = gtk_menu_item_new_with_label (HILDON_CONTROL_PANEL_MENU_CLOSE);
+
+    g_signal_connect (GTK_OBJECT(mi), "activate",
+                      G_CALLBACK(hcp_my_quit), hcp);
+
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu), mi);
+
+
+    gtk_widget_show_all (GTK_WIDGET (menu));
+
+    /* What is this for? -- Jobi */
+#if 0 
+  
+
+    hcp->grids = hildon_cp_applist_get_grids();
+    grids = hcp->grids;
+    
+    while (grids != 0)
+    {
+        grid = grids->data;
+        {
+            GValue val = { 0, };
+            g_value_init(&val, G_TYPE_STRING);
+            g_value_set_string(&val, "");
+            g_object_set_property(G_OBJECT(grid), "empty_label", &val);
+            g_value_unset(&val);
+        }
+
+        grids = grids->next;
+    }
+#endif
+
+    /* Set the keyboard listening callback */
+
+    gtk_widget_add_events (GTK_WIDGET(hcp->window),
+                           GDK_BUTTON_RELEASE_MASK);
+
+    g_signal_connect (G_OBJECT(hcp->window), "key_release_event",
+                      G_CALLBACK(hcp_cp_keyboard_listener), hcp);
+    
+    scrolled_window = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
+                                    "vscrollbar-policy",
+                                    GTK_POLICY_ALWAYS,
+                                    "hscrollbar-policy",
+                                    GTK_POLICY_NEVER,
+                                    NULL);
+
+    gtk_container_add (GTK_CONTAINER (hcp->window), scrolled_window);
+
+    gtk_scrolled_window_add_with_viewport (
+            GTK_SCROLLED_WINDOW (scrolled_window),
+            hcp->view);
+
+    return GTK_WIDGET (hcp->window);
 }

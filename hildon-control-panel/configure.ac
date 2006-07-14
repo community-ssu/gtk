@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-control-panel, 1.2.5)
+AM_INIT_AUTOMAKE(hildon-control-panel, 2.2.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -43,10 +43,6 @@ AC_SUBST(HILDONFM_CFLAGS)
 PKG_CHECK_MODULES(OSSO,libosso >= 0.10.0)
 AC_SUBST(OSSO_LIBS)
 AC_SUBST(OSSO_CFLAGS)
-
-PKG_CHECK_MODULES(MB, libmb >= 0.7)
-AC_SUBST(MB_LIBS)
-AC_SUBST(MB_CFLAGS)
 
 PKG_CHECK_MODULES(HILDON, hildon-libs >= 0.7.1)
 AC_SUBST(HILDON_LIBS)

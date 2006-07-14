@@ -22,513 +22,315 @@
  *
  */
 
-#include <langinfo.h>
-#include <hildon-widgets/hildon-grid.h>
-#include <hildon-widgets/hildon-grid-item.h>
-#include <gtk/gtkscrolledwindow.h>
-#include <gtk/gtkhbox.h>
-#include <gdk/gdkkeysyms.h>
-#include "hildon-cp-applist.h"
-
-#include <libosso.h>
-
-/* Log include */
-#include <log-functions.h>
-
-#include <locale.h>
+/* System includes */
 #include <libintl.h>
 
-#include <linux/limits.h>
+/* Osso includes */
+/* Osso logging functions */
+#include <osso-log.h>
 
-#include <libmb/mbutil.h>
+/* GTK includes */
+#include <gtk/gtkscrolledwindow.h>
+#include <gtk/gtkhbox.h>
+#include <gtk/gtkvbox.h>
+#include <gtk/gtklabel.h>
+#include <gtk/gtkhseparator.h>
+
+/* Gconf includes */
+#include <gconf/gconf-client.h>
+
+/* Control Panel includes */
+#include "hildon-cp-applist.h"
+#include "hildon-cp-item.h"
+#include "cp-grid.h"
+#include "cp-grid-item.h"
+#include "hildon-control-panel-main-utils.h"
 
 #define _(String) gettext(String)
 
-/* Should these be static, perhaps? */
-GtkWidget *table = NULL;
-gchar entry_path[PATH_MAX];
-hildon_applist_focus_cb_f * global_focus_callback;
-hildon_applist_activate_cb_f * global_activate_callback;
+#define HILDON_CP_SEPARATOR_DEFAULT _("copa_ia_extras")
 
-static GtkWidget * focused_item;
 
-/* Type for List of (HildonGridItem*,MbDotDesktop*) pairs */
+static void hcp_al_read_desktop_entries( const gchar *dir_path, GHashTable *entries );
 
-typedef struct _item_desktop {
-    GtkWidget * item;
-    MBDotDesktop *entry;
-} item_desktop_st;
 
-/* List of (HildonGridItem*,MbDotDesktop*) pairs */
-
-static GSList *app_list = NULL;
-
-/* Applist handling functions */
-static void applist_free(GSList *list);
-static gboolean applist_append(GSList **list, GtkWidget * item,
-                               MBDotDesktop * entry );
-static MBDotDesktop* applist_search_entry(GSList *list, GtkWidget *item);
-
-/* HildonGrid callbacks */
-static void _activate(HildonGrid*, HildonGridItem *item, gpointer data);
-static void _changefocus(GtkContainer * container, GtkWidget * widget,
-                         gpointer data);
-
-static void read_desktop_entries( const gchar *dir_path, GSList **items );
-static void create_items( HildonGrid * grid, const gchar * entry_path);
-
-/*
- * Return 0 when the names of the mbdot desktop entries  are equal
- */
-static gint mb_list_compare( MBDotDesktop *self_entry,
-                             MBDotDesktop *item_entry )
+static gboolean
+hcp_al_free_item (gchar *plugin, HCPItem *item)
 {
-    gint iRet;
-    gchar *self_name, *item_name;
-
-    g_return_val_if_fail( self_entry, 0 );
-    g_return_val_if_fail( item_entry, 0 );
-
-    self_name = (gchar *)mb_dotdesktop_get(self_entry, "Name"); 
-    item_name = (gchar *)mb_dotdesktop_get(item_entry, "Name"); 
-
-    if ( self_name == NULL )
-        return -1;
-
-    if ( item_name == NULL )
-        return 1;
-
-    iRet = g_utf8_collate(self_name, item_name);
-
-    if (iRet == 0)
-    {
-        gchar *self_file, *item_file;
-        
-        self_file = mb_dotdesktop_get_filename(self_entry);
-        item_file = mb_dotdesktop_get_filename(item_entry);
-
-        if ( self_file == NULL )
-            return -1;
-        
-        if ( item_file == NULL )
-            return 1;
-
-        iRet = g_utf8_collate(self_file, item_file);
-    }
-
-    return iRet;
-}
-
-/**
- * read_desktop_entry:
- * @dir_path: path to directory where dotdesktop files are
- * @items: list where items are stored
- *
- * Reads  desktop entries to the  items list
- *
- **/
-
-static void read_desktop_entries( const gchar *dir_path, GSList **items )
-{
-  GDir *dir;
-  GError * error = NULL;
-  MBDotDesktop * entry;
-
-  g_return_if_fail(dir_path);
-  g_return_if_fail(items);
-  dir = g_dir_open(dir_path, 0, &error);
-  if(!dir)
-  {
-    osso_log( LOG_ERR, error->message);
-    g_error_free(error);
-
-    return;
-  }
-  while (TRUE)
-  {
-    const gchar *name;
-    gchar *path=NULL;
-    name = g_dir_read_name(dir);
-    if (name == NULL)
-    {
-      break;
-    }
-
-    path = g_strconcat(dir_path, G_DIR_SEPARATOR_S, name, NULL);
-
-    if (path == NULL)
-    {
-        continue;
-    }
-
-    if (g_file_test(path, G_FILE_TEST_IS_DIR))
-    {
-      g_free(path);
-      continue;
-    }
-
-    if (!g_str_has_suffix(path, ".desktop") &&
-        !g_str_has_suffix(path, ".kdelnk")) /*TODO: needed? */
-    {
-      g_free(path);
-      continue;
-    }
-    entry = mb_dotdesktop_new_from_file(path);
-    if(!entry)
-    {
-      osso_log( LOG_WARNING, "Error reading entry file %s\n", path );
-      g_free(path);
-      continue;
-    }
-
-    *items = g_slist_append(*items, entry);
-    g_free(path);
-  }
-
-  g_dir_close(dir);
-}
-
-/**
- * create_items:
- * @grid: grid where to add items
- * @entry_path: where to find the files
- *
- * Creates HildonGridItems and adds to the grid.
- **/
-static void create_items( HildonGrid * grid,
-                          const gchar * entry_path)
-{
-    gboolean success = TRUE;
-    GSList * dlist;
-    GSList * desktop_entries = NULL;
-    const gchar * additional_applet_dir;
-
-    g_return_if_fail(grid);
-
-    read_desktop_entries(entry_path, &desktop_entries);
-
-    additional_applet_dir = g_getenv(ADDITIONAL_CP_APPLETS_DIR_ENVIRONMENT);
-
-    if(desktop_entries)
-        desktop_entries = g_slist_sort(desktop_entries,
-                                       (GCompareFunc) mb_list_compare);
-
-    dlist = desktop_entries;
-    while (dlist && success)
-    {
-        MBDotDesktop *entry = (MBDotDesktop *)dlist->data;
-        GtkWidget *item = hildon_grid_item_new_with_label(
-            (gchar *)mb_dotdesktop_get(entry, "Icon"),
-            _((gchar *)mb_dotdesktop_get(entry, "Name")));
-        success = applist_append( &app_list, item, entry );
-        gtk_container_add(GTK_CONTAINER(grid), item);
-        g_print("Adding item %s %d\n", 
-                (gchar *)mb_dotdesktop_get(entry, "Name"),
-                (int)item);
-        dlist = dlist->next;
-    }
-    g_slist_free(desktop_entries);
-}
-
-/**
- * _set_focus_after_dnotify:
- *
- * Resets the focus to the item that was previously focused (based on 
- * the filename). If the previously focused item has been removed, the
- * next in alphabetical order is focused
- */
-
-static void _set_focus_after_dnotify(GtkWidget * table,
-                                     const gchar * filename,
-                                     const gchar * name)
-{
-    GSList * cur = app_list;
-    GSList * prev = app_list;
-
-    g_message("_set_focus_after_dnotify filename=%s name=%s", filename,
-              name);
-
-    if( (table==NULL) || ! HILDON_IS_GRID(table) ||
-        (filename==NULL) || name == NULL)
-        return;
-    
-    if(hildon_cp_applist_focus_item(filename))
-        return;
-    else
-         /* the filename was removed, look for the next */
-    {
-        g_message("previous focused %s was removed", filename);
-        while(cur)
-        {
-            gchar * curname = mb_dotdesktop_get(
-                ((item_desktop_st*) cur->data)->entry, "Name");
-            gchar * curfname = mb_dotdesktop_get_filename(
-                ((item_desktop_st*) cur->data)->entry);
-            gint namecmp, filecmp;
-
-            g_message("Checking %s against %s", curfname, filename);
-
-            /* invalid names are considered to be the last */
-            /* Name -- visible to the user and primary sort key */
-            if(curname == NULL)
-                namecmp = -1;
-            else
-                namecmp = g_utf8_collate ( curname, name );
-
-            /* Filename -- .desktop file name, secondary sort key */
-            if(curfname == NULL)
-                filecmp = -1;
-            else
-                filecmp = g_utf8_collate( curfname, filename );
-            
-            /* continue the loop, curitem is smaller than the previous */
-            if( (namecmp <= -1) ||
-                ((namecmp == 0) && (filecmp <= -1)) )
-            {
-                prev = cur;
-                cur = cur->next;
-                g_message("continuing the loop");
-            } 
-
-            /* focus the current one, break the loop */
-            else if( (namecmp >= 1) || 
-                     ((namecmp == 0) && (filecmp >= 1)) )
-            {
-                hildon_cp_applist_focus_item(curfname);
-                g_message("ending the loop: name=%d file=%d",
-                          namecmp, filecmp);
-                return;
-            }
-        }
-        g_message("out of the loop");
-    }
-
-    /* focus the last entry */
-    if(prev && prev->data)
-        hildon_cp_applist_focus_item(
-            mb_dotdesktop_get_filename(
-                ((item_desktop_st*) prev->data)->entry));
-    
-    g_message("focused the last plugin");
-    
-}
-
-
-/**
- * hildon_cp_applist_initialize:
- * @activate_callback: called when an item gets activated
- * @activate_data: passed to activate_callback
- * @focus_callback: called when focus changes
- * @focus_data: passed to focus_callback
- * @hildon_appview: A GtkContainer where the grid is packed
- * @path: where .desktop files are found
- **/
-void hildon_cp_applist_initialize(
-    hildon_applist_activate_cb_f * activate_callback,
-    gpointer activate_data,
-    hildon_applist_focus_cb_f * focus_callback,
-    gpointer focus_data,
-    GtkWidget *hildon_appview,
-    gchar *path)
-{
-    GDir * ret;
-    
-    g_return_if_fail(activate_callback);
-    g_return_if_fail(hildon_appview);
-    g_return_if_fail(path);
-    g_return_if_fail(focus_callback);
-
-
-    global_focus_callback = focus_callback;
-    global_activate_callback = activate_callback;
-    
-    ret = g_dir_open(path, 0, NULL);
-    g_return_if_fail(ret);
-    g_dir_close(ret);
-
-    strncpy(entry_path, path, PATH_MAX);
-
-    table = hildon_grid_new();
-    g_signal_connect(table, "activate-child",
-                     G_CALLBACK(_activate),
-                     activate_data);
-    g_signal_connect(table, "set-focus-child",
-                     G_CALLBACK(_changefocus),
-                     focus_data);
-    
-    gtk_container_add( GTK_CONTAINER(hildon_appview), GTK_WIDGET(table) );
-
-    create_items(HILDON_GRID(table), entry_path);
-}
-
-
-/**
- * hildon_cp_applist_reread_dot_desktops:
- **/
-void hildon_cp_applist_reread_dot_desktops( void )
-{
-    GSList *list;
-    GtkWidget *item;
-    MBDotDesktop *focus_entry;
-
-    gchar * filename = NULL;
-    gchar * name = NULL;
-    gint scrollvalue;
-    
-    focus_entry = applist_search_entry(app_list, focused_item);
-    if(focus_entry != NULL)
-    {
-        name = g_strdup((gchar *)mb_dotdesktop_get(focus_entry, "Name"));
-        filename = g_strdup(mb_dotdesktop_get_filename(focus_entry));
-    }
-    /* scrollbar position */
-
-    scrollvalue = hildon_grid_get_scrollbar_pos(HILDON_GRID(table));
-
-    list = app_list;
-
-    while(list)
-    {
-        item = ((item_desktop_st *)list->data)->item;
-        gtk_container_remove( GTK_CONTAINER(table), item);
-        list = list->next;
-    }
-    applist_free(app_list);
-    app_list = NULL;
-    create_items( HILDON_GRID(table), entry_path);
-
-    /* Reset the scrollbar position */
-    hildon_grid_set_scrollbar_pos(HILDON_GRID(table), scrollvalue);
-
-    /* set focus for 
-       1) The same item as before (matched against the .desktop filename)
-       2) The next item that exists, if the previously focused item has
-          been removed
-       3) The last item if all items after the previously focused item
-          have been removed.
-    */
-    _set_focus_after_dnotify(table, filename, name);
-
-    gtk_widget_show_all( GTK_WIDGET(table) );
-}
-
-/* Return a handle to the HildonGrid */
-GtkWidget * hildon_cp_applist_get_grid( void )
-{
-    return table;
-}
-
-
-/* Find the desktop entry struct that corresponds to filename entryname.
- * Return NULL if the entry was not found. */
-
-MBDotDesktop*
-hildon_cp_applist_get_entry( const gchar * entryname)
-{
-    GSList * list = app_list;
-    MBDotDesktop * ret = NULL;
-    if (entryname == NULL)
-        return NULL;
-    while(list)
-    {
-        if( strcmp( entryname, 
-                    mb_dotdesktop_get_filename(
-                        ((item_desktop_st *)list->data)->entry)) == 0)
-        {
-            ret = ((item_desktop_st *)list->data)->entry;
-            break;
-        }
-        list=list->next;
-    }
-    return ret;
-}
-
-/* Set focus to the HildonGridItem corresponding to .desktop filenam
-   entryname. This is used on state retreival by the application.
- * Return TRUE if the entry name was found, false otherwise.
- */
-gboolean
-hildon_cp_applist_focus_item(const gchar * entryname)
-{
-    GSList * list = app_list;
-    if(entryname == NULL)
-        return FALSE;
-    while(list)
-    {
-        if( strcmp( entryname, 
-                    mb_dotdesktop_get_filename(
-                        ((item_desktop_st *)list->data)->entry)) == 0)
-        {
-            g_message("Setting focus for %s\n",mb_dotdesktop_get_filename(
-                          ((item_desktop_st *)list->data)->entry) );
-            gtk_container_set_focus_child(GTK_CONTAINER(table),
-                                   ((item_desktop_st *)list->data)->item);
-            return TRUE;
-        }
-        list=list->next;
-    }
-    return FALSE;
-}
-
-/* Free the list of griditem,mbdotdesktop pairs */
-static void applist_free(GSList * list)
-{
-    while(list)
-    {
-        mb_dotdesktop_free( ((item_desktop_st *)list->data)->entry);
-        g_free(list->data);
-        list=list->next;
-    }
-    g_slist_free(list);
-}
-
-
-/* Add a griditem,mbdotdesktop pair to the list */
-
-static gboolean applist_append(GSList **list, GtkWidget * item,
-                               MBDotDesktop * entry )
-{
-    item_desktop_st * itempair = g_malloc0(sizeof(item_desktop_st));
-    if(!itempair)
-        return FALSE;
-
-    itempair->item = item;
-    itempair->entry = entry;
-    *list = g_slist_append(*list, itempair);
+    hcp_item_free (item);
 
     return TRUE;
 }
 
-/* Return the MBDotDesktop that corresponds to GridItem item */
-
-static MBDotDesktop* applist_search_entry(GSList *list, GtkWidget *item)
+static void 
+hcp_al_read_desktop_entries (const gchar *dir_path, GHashTable *entries)
 {
-    while(list && (item_desktop_st *) list->data
-          && ((item_desktop_st *) list->data)->item != item)
+    GDir *dir;
+    GError * error = NULL;
+    const char *filename;
+    GKeyFile *keyfile;
+
+    ULOG_DEBUG("hildon-cp-applist:read_desktop_entries");
+
+    g_return_if_fail (dir_path && entries);
+
+    dir = g_dir_open(dir_path, 0, &error);
+    if (!dir)
     {
-        list = list->next;
+        ULOG_ERR (error->message);
+        g_error_free (error);
+        return;
     }
-    if(list)
+
+    keyfile = g_key_file_new ();
+
+    while ((filename = g_dir_read_name (dir)))
     {
-        return ((item_desktop_st*) list->data)->entry;
+        error = NULL;
+        gchar *desktop_path = NULL;
+        gchar *name = NULL;
+        gchar *plugin = NULL;
+        gchar *icon = NULL;
+        gchar *category = NULL;
+
+        desktop_path = g_build_filename (dir_path, filename, NULL);
+
+        g_key_file_load_from_file (keyfile,
+                                   desktop_path,
+                                   G_KEY_FILE_NONE,
+                                   &error);
+
+        g_free (desktop_path);
+
+        if (error)
+        {
+            ULOG_ERR (error->message);
+            g_error_free (error);
+            continue;
+        }
+
+        name = g_key_file_get_string (keyfile,
+                HCP_DESKTOP_GROUP,
+                HCP_DESKTOP_KEY_NAME,
+                &error);
+
+        if (error)
+        {
+            ULOG_ERR (error->message);
+            g_error_free (error);
+            continue;
+        }
+
+        plugin = g_key_file_get_string (keyfile,
+                HCP_DESKTOP_GROUP,
+                HCP_DESKTOP_KEY_PLUGIN,
+                &error);
+
+        if (error)
+        {
+            ULOG_ERR (error->message);
+            g_error_free (error);
+            continue;
+        }
+
+        icon = g_key_file_get_string (keyfile,
+                HCP_DESKTOP_GROUP,
+                HCP_DESKTOP_KEY_ICON,
+                &error);
+
+        if (error)
+        {
+            ULOG_WARN (error->message);
+            g_error_free (error);
+            error = NULL;
+        }
+        
+
+        category = g_key_file_get_string (keyfile,
+                HCP_DESKTOP_GROUP,
+                HCP_DESKTOP_KEY_CATEGORY,
+                &error);
+
+        if (error)
+        {
+            ULOG_WARN (error->message);
+            g_error_free (error);
+            error = NULL;
+        }
+
+        {
+            HCPItem *item = g_new0 (HCPItem, 1);
+            
+            item->name = name;
+            item->plugin = plugin;
+            item->icon = icon;
+            item->category = category;
+
+            g_hash_table_insert (entries, plugin, item);
+        }
+    }
+
+    g_key_file_free (keyfile);
+    g_dir_close (dir);
+}
+
+static gint
+hcp_al_find_category (gpointer _category, gpointer _applet)
+{
+    HCPItem *applet = (HCPItem *)_applet;
+    HCPCategory *category = (HCPCategory *)_category;
+
+    if (applet->category && category->id &&
+        !strcmp (applet->category, category->id))
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+static void
+hcp_al_sort_by_category (gpointer key, gpointer value, gpointer _al)
+{
+    HCPAppList *al = (HCPAppList *)_al;
+    GSList *category_item = NULL;
+    HCPItem *applet = (HCPItem *)value;
+    HCPCategory *category;
+
+    /* Find a category for this applet */
+    category_item = g_slist_find_custom (al->categories,
+                                         applet,
+                                         (GCompareFunc)hcp_al_find_category);
+
+    if (category_item)
+    {
+        category = (HCPCategory *)category_item->data;
+
     }
     else
-        return NULL;
+    {
+        /* If category doesn't exist or wasn't matched,
+         * add to the default one (Extra) */
+        
+        category = g_slist_last (al->categories)->data;
+    }
+        
+    category->applets = g_slist_append(category->applets, applet);
 }
 
-/* Callback for HildonGrid activation */
-static void _activate(HildonGrid* grid, HildonGridItem *item,gpointer data)
+static void
+hcp_al_get_configured_categories (HCPAppList *al)
 {
-    global_activate_callback(applist_search_entry(app_list,
-                                                  GTK_WIDGET(item)),data,1);
+    GConfClient * client     = NULL;
+    GSList * group_names     = NULL;
+    GSList * group_ids       = NULL;
+    GError * error = NULL;
+
+    client = gconf_client_get_default ();
+    
+    if (client)
+    {
+        /* Get the group names */
+        group_names = gconf_client_get_list(client, 
+			GCONF_CONTROLPANEL_GROUPS_KEY,
+			GCONF_VALUE_STRING, &error);
+
+        if (error)
+        {
+            ULOG_ERR (error->message);
+            g_error_free (error);
+            g_object_unref (client);
+            return;
+        }
+        
+        /* Get the group ids */
+        group_ids = gconf_client_get_list(client, 
+			GCONF_CONTROLPANEL_GROUP_IDS_KEY,
+			GCONF_VALUE_STRING, &error);
+        
+        if (error)
+        {
+            ULOG_ERR (error->message);
+            g_error_free (error);
+            g_object_unref (client);
+            return;
+        }
+
+        g_object_unref (client);
+    }
+
+    while (group_ids && group_names)
+    {
+        HCPCategory *category = g_new0 (HCPCategory, 1);
+        category->name = (gchar *)group_names->data;
+        category->id   = (gchar *)group_ids->data;
+
+        al->categories = g_slist_append (al->categories, category);
+
+        group_ids   = g_slist_next (group_ids);
+        group_names = g_slist_next (group_names);
+    }
+    
 }
 
-/* Callback for HildonGrid focus change */
-static void _changefocus(GtkContainer * container, GtkWidget * widget,
-                         gpointer data)
+static void
+hcp_al_empty_category (HCPCategory* category)
 {
-    MBDotDesktop* dd = applist_search_entry(app_list, widget);
-
-    global_focus_callback(dd, data);
-    focused_item = GTK_WIDGET(widget);
+    g_slist_free (category->applets);
+    category->applets = NULL;
 }
+
+void
+hcp_al_update_list (HCPAppList *al)
+{
+    /* Clean the previous list */
+    g_hash_table_foreach_remove (al->applets, (GHRFunc)hcp_al_free_item, NULL);
+
+    /* Read all the entries */
+    hcp_al_read_desktop_entries (CONTROLPANEL_ENTRY_DIR, al->applets);
+
+    /* Place them is the relevant category */
+    g_slist_foreach (al->categories, (GFunc)hcp_al_empty_category, NULL);
+    g_hash_table_foreach (al->applets,
+                           (GHFunc)hcp_al_sort_by_category,
+                           al);
+}
+
+HCPAppList *
+hcp_al_new ()
+{
+    HCPAppList *al;
+    HCPCategory *extras_category = g_new0 (HCPCategory, 1);
+
+    al = g_new0 (HCPAppList, 1);
+
+    al->applets = g_hash_table_new (g_str_hash, g_str_equal);
+
+    hcp_al_get_configured_categories (al);
+    
+    /* Add the default category as the last one */
+    extras_category->name = g_strdup (HILDON_CP_SEPARATOR_DEFAULT);
+    extras_category->id   = g_strdup ("");
+
+    al->categories = g_slist_append (al->categories, extras_category);
+
+    return al;
+}
+
+
+gboolean
+hildon_cp_applist_focus_item (HCPAppList *al, const gchar * entryname)
+{
+    HCPItem *applet;
+
+    applet = g_hash_table_lookup (al->applets, entryname);
+
+    if (applet)
+    {   
+        gtk_widget_grab_focus (applet->grid_item);
+        return TRUE;
+    }
+    
+    return FALSE;
+}
+
