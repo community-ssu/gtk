@@ -1,0 +1,2177 @@
+maemo-af-desktop (2.9.12-1) unstable; urgency=low
+
+  * hildon-status-bar/hildon-status-bar-main.c:
+    - brought back (in)sensitive RPC method
+    - if unknown method, do not assume that the return value is a string
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri,  7 Jul 2006 14:47:25 +0300
+
+maemo-af-desktop (2.9.11-1) unstable; urgency=low
+
+  Applied fix to "maemo_af_desktop crash:BG killing results in crash."
+  (Closes NB#33460)
+  * Avoid modifying the hibernating apps hash table when iterating
+    through it
+
+  * libhildonmenu/libhildonmenu.c: comment was wrongly stored as "" in the
+    TreeModel
+
+  * hildon-status-bar/hildon-status-bar-{main,item}.c: Removed
+    unnecessary g_object_ref, hopefully fixing NB#33707 cleanly
+
+  Applied fix to "captical character can't work when it is set as shortcut"
+  (Closes N#33979)
+  * hildon-navigator/hn-keys.c: Fixed the "shift" version of the
+    key shortcuts
+
+  * hildon-navigator/hn-app-switcher.c: 
+    - revert behavior of long and short press on home
+    - do not show the AS menu on home press if the AS button is not
+      sensitive
+
+  Applied fix to "Extension button on SB shown even when no of plugins < 8"
+  (Closes partially NB#30790)
+  * hildon-status-bar/hildon-status-bar-main.h:  removed one additional
+    plugin struct member and changed statusbar version.
+  * hildon-status-bar/hildon-status-bar-main.c:
+    fixed the bug by removing one line and cleaned up dbus rpc callback
+    function.
+
+  * hildon-status-bar/hildon-status-bar-item.c: check that a
+    callback has actually been defined before calling the destroy
+    callback in finalize. This caused a crash when the plugin was
+    sinked when initialization failed.
+
+    Applied fix to "AF-BAT:Tooltip initially shows logical IDs when the
+  application is launched and after a few seconds shows the correct
+  UI strings for application name and window name. (Closes NB#30218)
+  * hildon-navigator/hn-wm.c: set newly mapped window as the active
+    window of an application
+
+  Applied fix to "Maemo-af-desktop crashes on exit" (Closes NB#31832)
+  * hildon-navigator/hn-app-switcher.c: call the parent class finalize,
+    not our own.
+
+  * hildon-home/hildon-home-main.c:
+    - Expand comboboxes of the Select background dialog (Closes NB#31714)
+    - Set position to NONE so matchbox correctly places the dialog
+
+  Applied fix to "Application killing dialog does not come up when trying
+  to switch to a non-responsive BG killed application (Closes NB#31410)
+  * hildon-navigator/hn-wm-watched-window.c: send a SIGKILL after
+    a timeout if the SIGTERM was not sufficient to bgkill an app
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  6 Jul 2006 16:11:40 +0300
+
+maemo-af-desktop (2.9.10-1) unstable; urgency=low
+
+  * hildon-navigator/hn-app-switcher.c: Removed deprecated logical ids
+
+  * libhildonmenu/libhildonmenu.c: Fixed the leak of an int array
+    (Closes N#33607)
+
+  * hildon-navigator/hn-app-sound.[ch]: Backported sound sample playing
+    abstraction from IT-2006
+  * hildon-navigator/hn-app-switcher.c: Play a sound when opening or closing
+    windows (Closes N#33936)
+
+  * hildon-status-bar/hildon-status-bar-main.c: Brought back
+    closable dialogs RPC calls, which accidently disappeared
+    (Closes N#33720)
+
+  * hildon-navigator/others-menu.c:
+    - Open thumb menu on button2 press
+    - work around strange behavior of gettext for empty comments
+      (Closes N#32271)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  4 Jul 2006 15:02:27 +0300
+
+maemo-af-desktop (2.9.9-1) unstable; urgency=low
+
+  * hildon-home/layout-manager.c:
+    - add_new_applets(): After failed loading of applet call next in
+      list or free it. (Closes N#30756)
+
+  * hildon-navigator/hn-wm-watched-window.c:
+    - "backported" fixes to the ping dialog from IT-2006
+    - show the "app responded" infobanner when a closed app responded
+      (Closes NB#33463)
+
+  * hildon-status-bar/hildon-status-bar-main.c:
+    - Checking if file exists for prespecified plugins
+
+  Applied fix to "Cancel note shown twice when trying to set 'None' as
+  background image."
+  * hildon-home/hildon-home-main.c:
+    - create_background_preview(): Update image uri for "(none)" selection
+    - set_background_dialog_selected(): Clarifying if check structure
+ 
+ -- Moises Martinez <martinez.moises@nokia.com>  Mon,  3 Jul 2006 16:51:06 +0300
+
+maemo-af-desktop (2.9.8-1) unstable; urgency=low
+
+  * Patched bug N#33707
+  - hildon-status-bar/hildon-status-bar-item.c:
+    Forcing plugin finalize when destroyed. 
+
+ -- Moises Martinez <martinez.moises@nokia.com>  Thu, 29 Jun 2006 16:19:40 +0300 
+
+maemo-af-desktop (2.9.7-1) unstable; urgency=low
+
+  * Fixed bug N#32791
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 19 Jun 2006 13:11:15 +0300
+
+maemo-af-desktop (2.9.6-1) unstable; urgency=low
+
+  * removed all references to libcommon-error
+
+  * hildon-home/layout-manager.c: Fixed layout mode progress
+    banner logical id (Closes NB#31841)
+
+  * hildon-home/layout-manager.c: "Backport" of the red-border overlap
+    indication from IT-2006
+
+  * hildon-navigator/hn-wm-watched-window.c: Add sanity check
+    on the pid read from the window properties (Closes NB#32465)
+
+  Applied fix to "Applets are not initialized correctly at startup"
+  (Closes N#31630)
+  * hildon-home/applet-manager.h:
+    - applet_manager_set_minimum_size_handler(): Prototype for new
+      function for setting minimum resize size values using handler
+    - applet_manager_set_minimum_size(): Prototype for new function for
+      setting minimum resize size values using identifier
+    - applet_manager_set_resizable_handler(): Prototype for new function
+      for setting resizable status using handler
+    - applet_manager_set_resizable(): Prototype for new function for
+      setting resizable status using identifier
+    - Naming convention clarifications when handling minimum size
+  * hildon-home/applet-manager.c:
+    - applet_manager_configure_save_all(): Added saving resize information
+      about applet
+    - applet_manager_configure_load_all(): Added loading resize
+      information about applet
+    - applet_manager_set_minimum_size_handler(): New function for setting
+      minimum resize size values using handler
+    - applet_manager_set_minimum_size(): New function for setting minimum
+      resize size values using identifier
+    - applet_manager_set_resizable_handler(): New function for setting
+      resizable status using handler
+    - applet_manager_set_resizable(): New function for setting resizable
+      status using identifier
+    - Naming convention clarifications when handling minimum size
+  * hildon-home/home-applet-handler.h:
+    - home_applet_handler_set_minimum_size(): Prototype for new function
+      for setting minimum resize size values
+    - home_applet_handler_set_resizable(): Prototype for new function for
+      setting resizable status
+    - Naming convention clarifications when handling minimum size
+  * hildon-home/home-applet-handler.c:
+    - home_applet_handler_set_minimum_size(): New function for setting
+      minimum resize size values
+    - home_applet_handler_set_resizable(): New function for setting
+      resizable status
+
+  * hildon-home/screenshot.[ch]: forgot to add these
+  * hildon-navigator/hn-wm.c: Fixed typo
+
+  * hildon-home/layout-manager.c: 
+    - In layout mode, use images to represent the applets
+    - use correct themed pictures and colors
+
+  * hildon-navigator/hn-app-switcher.c: Made required changes to AS
+    layout in new layout guide.
+  
+  * hildon-navigator/hn-wm.c: Activate global key shortcut
+    on KeyRelease instead of KeyPress. This fixes the fullscreen
+    binding
+
+  * hildon-navigator/hn-keys.c: Fixed an invalid free
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 14 Jun 2006 15:52:53 +0300
+
+maemo-af-desktop (2.9.5-3) unstable; urgency=low
+
+  * Added missing dependency from libhildonmenu-dev to libxml2-dev 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 14 Jun 2006 15:52:06 +0300
+
+maemo-af-desktop (2.9.5-2) unstable; urgency=low
+
+  * Added missing build-dep to libxml2-dev 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 12 Jun 2006 15:10:14 +0300
+
+maemo-af-desktop (2.9.5-1) unstable; urgency=low
+
+  * hildon-navigator/hn-wm.c: Fixed "last opened application gets
+    topped when others-menu is closed"
+
+  * libhildonmenu/libhildonmenu.[ch]: Re-imported IT-2006 version,
+    and reapplied thumbable menu changes
+
+  Backported others-menu dnotify fixes from IT-2006
+  * hildon-navigator/others-menu.c:
+    - Added timeout to handle the dnotify signals
+    - get rid of the useless callback data structure
+    - do not remove dnotify callbacks after each call
+
+  Applied fix to "Application killing dialog does not come up when the
+  application switching fails."  (Closes N#31109)
+  * hildon-navigator/hn-wm.c: when a HildonApp has only one HildonAppView,
+    use the WM to top it, so the pinging works when switching applications
+
+  Applied fix to "Desktop doesn't exec an application with options NOR
+  output/log why its startup failed"
+  * hildon-navigator/others-menu.c: properly parse the Exec field
+    before spawning an application
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  7 Jun 2006 11:21:51 +0300
+
+maemo-af-desktop (2.9.4-1) unstable; urgency=low
+
+  * hildon-navigator/hn-app-switcher.c, hildon-navigator/hn-app-switcher.h,
+    hildon-navigator/hn-wm.c, hildon-navigator/hildon-navigator-main.c,
+    hildon-navigator/others-menu.c: Make the focus follow UI specifications
+  * hildon-navigator/hn-keys.c: Manage the PowerKey global shortcut
+
+  * hildon-home/home-select-applets-dialog.c: Added key-press handler
+    to select/unselect when Enter is pressed
+
+  * hildon-navigator/hildon-navigator-main.c:
+    do not apply dimming/undimming recursively
+
+  * hildon-navigator/hn-app-switcher.c: 
+    - mce_handler(): sensitive check added for as button to block Home
+      key handling
+
+  * hildon-navigator/hildon-navigator-backup.conf: Added backup
+    configuration not to restore the .watch files of TN plugins
+
+  Imported latest revision (16894) of the TN and AS refactoring
+  * fix for the flicker of the AS
+
+  * hn-keys.c: implemented hn_keys_action_close(), hn_keys_action_minimize()
+    and hn_keys_action_tn_activate() callbacks
+  * hn-wm.h/c: made hn_wm_activate() non-static, reformated some comments,
+    removed unused hn_wm_activate_adjucent_view()
+
+  * hildon-navigator/hn-keys.c: (gconf_key_changed_callback):
+    Handle gconf keys being unset.
+
+  * hildon-navigator/hn-keys.c: (hn_keys_action_task_launcher),
+    (hn_keys_action_home), (hn_key_shortcut_grab),
+    (hn_keys_load_and_grab_all_shortcuts),
+    (gconf_key_changed_callback):
+    Add support for keybinding changing on the fly.
+
+  * Makefile.am, configure.ac, 
+    hildon-home/Makefile.in:
+     hildon-navigator/Makefile.am:
+    hildon-navigator/hn-keys.c:
+    hildon-navigator/hn-keys.h:
+    hildon-navigator/hn-wm.c: (hn_wm_x_event_filter), (hn_wm_init):
+    hildon-status-bar/Makefile.in:
+    Add initial support for key shortcut binding.
+    Need to change on the fly as yet.
+
+  * hildon-home/hildon-home-main.h: Fixed a few l10n domains
+
+  Applied fix to "Using full service name in .desktop file chokes the
+  launch banner"
+  * hildon-navigator/hn-wm-watchable-app.c: Add com.nokia. prefix
+    to the services which don't have a .  which don't have it.
+
+  Applied fix to "Glib CRITICAL errors when Application killer dialog goes
+  away"
+  * hildon-navigator/hn-wm-watched-window.c: When a window is destroyed,
+    check if it doesn't have a ping failed note attached to it. If so
+    destroy it.
+
+  * hildon-home/home-applet-handler.c: destroy the applet's
+    event box when the applet was removed using the CSM
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  1 Jun 2006 18:26:37 +0300
+
+maemo-af-desktop (2.9.3-3) unstable; urgency=low
+
+  * Removed .la files from -dev packages
+  * added build-dep on xtst-dev
+  * get background filename from .desktop file in post-inst script
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 31 May 2006 13:55:37 +0300
+
+maemo-af-desktop (2.9.3-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-main.c: Removed set_width
+    on the comboboxes in the "Select Background Image" dialog
+
+  * hildon-navigator/hn-app-button.h: Corrected value of the
+    "Thumb button" id
+
+  * hildon-home/home-select-applets-dialog.c: Apply hard-coded
+    dialog width to reduce the risk of the title label being truncated
+
+  * hildon-navigator/hildon-navigator-main.c: create the user configuration
+    directory if not present, so we can monitor it
+
+  * hildon-navigator/hn-wm.c, hildon-navigator/hn-wm-session.[ch]:
+    removed deprecated session management code.
+
+  Applied fix to "Desktop doesn't restore background killed applications
+  when application above is closed"
+  * hildon-navigator/hn-app-switcher.c: Wake up the first application
+    when all of the application are background killed (after the top
+    one exited)
+
+  * hildon-home/home-applet-handler.c: Handle the applet-self-closing
+    correctly
+
+  Applied fix to "Memory leaks in hn_wm_watchable_app_new()"
+  * hildon-navigator/hn-wm-watchable-app.c: do not duplicate strings
+    contained in the watchable app structure.
+
+  * hildon-home/layout-manager.c: Open the help in a dialog
+
+  Applied fix to "home applet corners are not shown round as they should"
+  * hildon-home/layout-manager.c: Hide the applet eventbox windows
+    when not in layout mode to make shape masks work again
+
+  Applied fix to "AF-BAT: Cancelled background image visible beneath the
+  current background"
+  * hildon-home/hildon-home-main.c:
+    - create_background_preview(): Added new function to create background
+      preview and save it as a background if no preview is needed
+    - set_background_response_handler(): Update to use new function
+    - set_background_dialog_selected(): Update to use new function
+    - show_loading_image_note(): Update preview flag
+    - image_loader_callback(): Update to save preview if saving
+      picture as background and no cancel button is pressed
+    - construct_background_image_with_uri(): Changed to always
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 22 May 2006 12:55:17 +0300
+
+maemo-af-desktop (2.9.2-1) unstable; urgency=low
+
+  * hildon-status-bar/*: Imported hildon-status-bar extension implementation
+
+  * hildon-navigator/hn-app-switcher.c: Refresh the buttons in an idle
+    loop
+
+  * hildon-home/layout-manager.c, hildon-home/home-applet-handler.c,
+    hildon-home/applet-manager.c:
+    - make the home-applet-handler responsible for freeing the
+      applet's desktop filename and library filename
+    - fixed a possible crash in applet_manager_load_all, where
+      a list was being modified while being iterated
+    - added some check before disconnecting signals from the eventbox,
+      as they sometimes have already been destroyed
+  * hildon-navigator/hildon-navigator-main.c: Fixed the leak
+    of a GList and a GDir
+
+  * libhildonmenu/*: Imported thumbable menu implementation
+  * hildon-navigator/others-menu.c: Use the thumbable menu
+
+  * hildon-navigator/hn-wm.[ch]: Bring the exit signal handler
+    back from the ashes
+
+  * configure.ac: Removed -O3 optimization
+
+  * hildon-navigator/hn-app-button.c, hildon-navigator/hn-app-switcher.c:
+    don't change the active state of a button when it is already active
+
+  * hildon-navigator/hn-wm.c, hildon-navigator/hn-wm-watched-window.c,
+    hildon-navigator/hn-wm-watchable-app.c: Added a few libc #include
+    which are now necessary
+
+  * hildon-navigator/*: Imported application switcher refactoring
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 12 May 2006 18:19:02 +0300
+
+maemo-af-desktop (2.9.1-2) unstable; urgency=low
+
+  * Added -fPIC to thumb mode CFLAGS 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 10 May 2006 13:44:02 +0300
+
+maemo-af-desktop (2.9.1-1) unstable; urgency=low
+
+  Applied fix to "HOME: Buttons in layout mode are not shown completely"
+  (Closes N#27706 and N#28669)
+   * hildon-home/layout-manager.c:
+     - Position offset values changed and added size request for buttons
+     - layout_mode_begin(): sizerequest for buttons added
+
+  * hildon-home/*: Imported applet resizing feature.
+  * hildon-status-bar/hildon-status-bar-main.c: Fixed potential
+    double-free and other mess in the RPC return value
+  * .v 2.9.1-2
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 10 May 2006 13:43:58 +0300
+
+maemo-af-desktop (2.9.0-1) unstable; urgency=low
+
+  * hildon-navigator/others-menu.c: Remove dnotify handler before
+    allowing new update of the others-menu to be happening (should
+    fix a potential race condition)
+
+  Applied fix to "No application-killer dialog when trying to top frozen
+  application that uses HildonViews" (Closes N#28650)
+  * hildon-navigator/hn-wm.c: Treat single-view HildonApps as a
+    normal top-level window.
+
+  * hildon-home/hildon-home-main.c: Fixed a memory leak in the
+    "Set background image" function (Closes N#28797)
+
+  * hildon-home/hildon-home-image-loader.c: Interpret a NULL pixmap
+    returned by the pixmap loader as a corrupted file (Closes N#24700)
+
+  * hildon-navigator/others-menu.c: Only allow one dnotify-triggered
+    update at a time
+
+  * hildon-navigator/others-menu.c: Dnotify signal handlers now only
+    creates a timeout of 1s, after which the menu is updated
+    (Closes N#28658)
+
+  * hildon-status-bar/hildon-status-bar-main.c: Fix to load
+    configured plugins (problem in the merge)
+
+  * hildon-status-bar/*: Imported status-bar plugin framework.
+
+  * hildon-navigator/*.c: Removed deprecated low memory notifications
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  8 May 2006 12:37:54 +0300
+
+maemo-af-desktop (2.6.14-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-main.c: Fixed launching of calibration and
+    personalisation CPA I broke this week end
+
+  Applied fix to "HOME: Buttons in layout mode are not shown completely"
+  (Closes N#27706)
+  * layout-manager.c:
+    - modified icon placements to conform with specifications 6.1
+    - swapped ok and cancel buttons to conform to specifications 6.1
+  Applied fix to "HOME: Loading image -cancel note has animation
+  instead of progress bar" (Closes N#27722)
+  * hildon-home-main.c:
+    - added indefinite progress bar (Home UI spec 6.1)
+    - removed icon code
+    - added progress bar update function
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  3 May 2006 16:08:57 +0300
+
+maemo-af-desktop (2.6.13-1) unstable; urgency=low
+
+  * removed build-dep on libmb-dev
+
+  * hildon-home/applet_manager.c:
+
+  * hildon-home/hildon-home-main.c:
+    - replaced call to libmb with calls to g_key_file_
+    - factorized code to call cp applets
+  * hildon-home/home-applet-handler.c:
+    - replaced call to libmb with calls to g_key_file_
+  * hildon-home/applet-manager.c:
+    - replaced call to libmb with calls to g_key_file_
+    - removed applet_manager_initialize_all which, surprise surprise,
+      was never used ...
+  * configure.ac, Makefile.am, */Makefile.am: don't link to libmb
+    anymore
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  3 May 2006 12:18:21 +0300
+
+maemo-af-desktop (2.6.12-1) unstable; urgency=low
+
+  Applied fix to "TN should not create plugin then destroy them if they
+  are not going to be used" (Closes N#28153)
+  * hildon-navigato/hildon-navigator-main.c: Move plugin API calls
+    from create/destroy to the reload function to avoid creating plugin
+    data when the plugin is not going to be shown.
+
+  * hildon-navigator/hildon-navigator-main.c: Free the list of plugins
+    after having used it
+
+  * hildon-navigator/plugins.conf: made the bookmark plugin non-mandatory
+
+  * hildon-home/{layout-manager.c: Free the drag icon when exiting
+    layout mode
+  * hildon-home/home-applet-handler.c: Free the library path
+    (Closes N#27832)
+
+  Applied fix to "Others menu organization--dialog implementation problems"
+  (Closes N#25777)
+  * libhildonmenu/libhildonmenu.c: recurse when writing menus.
+
+  * hildon-navigator/hn-wm-memory.c: Removed deprecated memory low
+    banner
+
+  * hildon-navigator/Makefile.am: Remove any mention to /etc/others-menu
+  * hildon-navigator/hildon-navigator-restore-plugins.sh: Added script
+    to remove plugin configurations which may have been restored from
+    an older version of the software
+
+  * hildon-home/hildon-home-restore-background.sh: Only restore the
+    background when necessary
+
+  * hildon-navigator/close-application-dialog.c: Fixed localisation
+    of the title, for real (Closes N#27433)
+
+  Applied fix to "icon focus incorrect after 'Not enough memory'"
+  (Closes N#22638)
+  * hildon-navigator/hn-wm.[ch]: Push an app to the bottom of the
+    stack of topping failed due to low memory
+
+  Applied fix to "TN Plugin (re)loading doesn't initialize menus"
+  (Closes N#27316)
+  * hildon-navigator/hildon-navigator-main.c:
+    - New function: initialize_plugin_menus():
+      Move plugin menu init to it's own function
+    - plugin_configuration_changed(): Init plugin menus after reloading
+  * hildon-navigator/plugins.conf: Change positions to correct ones,
+    addition of Desktop-file key
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 28 Apr 2006 16:14:37 +0300
+
+maemo-af-desktop (2.6.11-1) unstable; urgency=low
+
+  * debian/rules: Fixed typo I just introduced
+
+  * hildon-navigator/hildon-navigator-main.c: Removed warning
+    when a configuration file is not found, as this is the expected
+    behaviour before the user uses the TN CPA (Closes N#24138)
+
+  * hildon-navigator/hn-wm-watched-window.c: Removed deprecated
+    "Application closed" note (Closes N#26282)
+
+  * hildon-navigator/close-application-dialog.c: l10n id should
+    come from the ke-recv domain (Closes N#27433)
+
+  Applied fix to "Contacts not able to load from others menu"
+  (Closes N#26808)
+  * hildon-navigator/hn-wm-watchable-app.c: Replaced call to libmb
+    with calls to glib's g_key_file_ API
+
+  Applied fix to "HOME:Undesired response for hardkeys in Layout mode"
+  (Closes N#26112)
+  * hildon-home/layout-manager.c: focus only ok and cancel buttons with
+    gtk_container_set_focus_chain() and grab
+    the focus on cancel button when layoutmode begins. 
+
+  Applied fix to "Menu hard key does not work consistently in Home"
+  (Closes N#25388)
+  * hildon-home/hildon-home-main.c: (set_menu())
+    Connect to deactivation signal to update internal status
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 24 Apr 2006 11:19:40 +0300
+
+maemo-af-desktop (2.6.10-4) unstable; urgency=low
+
+  * Run the autofoo when building the package
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 24 Apr 2006 11:07:58 +0300
+
+maemo-af-desktop (2.6.10-3) unstable; urgency=low
+
+  * compile in thumb mode if thumb in among the Debian build options
+    (Closes N#26531) 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 21 Apr 2006 17:42:38 +0300
+
+maemo-af-desktop (2.6.10-2) unstable; urgency=low
+
+  * build hildon-home-dev and hildon-navigator-dev for all architecture
+    (Closes N#27027 and N#27171) 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 21 Apr 2006 17:31:39 +0300
+
+maemo-af-desktop (2.6.10-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-main.h: Fixed logical id related to
+    to "Select Image" dialog
+
+  * hildon-navigator/hn-wm-watched-window.c: Fixed a logical id
+
+  * hildon-navigator/hn-wm-watchable-app.c: New application died
+    dialog's string belongs to ke-recv l10n domain
+
+  * hildon-status-bar/hildon-status-bar-main.c: Add the complete
+    path if only the relative path was specified in the .desktop file
+
+  * hildon-navigator/application-switcher.c: Home key toggles
+    between showing home and topping the last topped application
+    (Closes N#26294)
+
+  * maemo-af-desktop-main.c: Only reparse the rc files when launched
+    from maemo-launcher
+
+  Applied fix to "Select applets -dialog height is too short in Home"
+  (Closes N#25607)
+  * hildon-home/home-select-applets-dialog.h:
+    - added new defines
+  * hildon-home/home-select-applets-dialog.c
+    - added scrolled window size request handling
+    - also some very minor cleanup
+    - fixed the dialog read only .desktop files
+
+  * hildon-status-bar/hildon-status-bar-{item,main}.[ch]:
+    - hildon_status_bar_item_new() now takes both the name and the
+      path to a status bar plugin
+    - Removed all code to load custom applets inherited from IT-2005
+    - Parse .desktop files to load custom applets.
+    - Various cleanups
+
+  * maemo-af-desktop.sh: Fixed generation of the gtkrc file
+
+  Applied fix to "Context sensitive menus dont come up for applets displayed
+  in home in both normal mode and layout mode." (Closes N#24424)
+  * hildon-home/layout-manager.c:
+    - changed wrong menu logical_id for cancel
+    - added logical_id for tap'n'hold
+    - Cut&paste tap'n'hold defines from gtk/gtkwidget.c
+    - added global struct required fields for tap'n'hold handling
+    - added layout_node struct callback handler
+    - declarations for new functions
+    - layout_mode_begin(): added callback signal for launching tap'n'hold
+      menu to each applet. button release callback added. tap'n'hold
+      creation call.
+    - layout_mode_end(): added removing tap'n'hold handler and menu
+    - _tapnhold_menu_cb(): new function. callback function to launch
+      tap'n'hold menu
+    - _tapnhold_close_applet_cb(): new function. callback function to
+      remove current applet
+    - add_new_applets(): callback function connected to applet
+    - button_click_cb(): when candidate is found set tap'n'hold timeout
+    - button_release_cb(): new function. removes existing tap'n'hold
+      when released
+    - drag_begin(): when drag starts tap'n'hold menu is not to be shown
+    - create_tapnhold_menu(): new function. creates tap'n'hold menu common
+      for all applets. initiates animation
+    - create_tapnhold_remove_timer(): new function. Clears all timer
+      values for tap'n'hold menu
+    - layout_tapnhold_timeout(): new function. Handles tap'n'hold timeout
+      before showing menu
+    - layout_tapnhold_set_timeout(): new function. Sets timeout counting
+      for tap'n'hold menu
+    - layout_tapnhold_timeout_animation(): new function. creates cursor
+      animation
+
+  Applied fix to "Close Application Dialog MEM-DIA001 is lost"
+  (Closes N#24388)
+  * hildon-navigator/hn-wm.c:
+    - Remove attempt to reset the TN items (wasn't working, needs support
+        from elswhere to be done)
+  * hildon-navigator/close-application-dialog.c:
+    - Check for already listed pids, so no duplicates will be in the list
+
+  * hildon-home/hildon-home-main.c: Fixed another crash in disk full
+    situation
+
+  * hildon-home/applet-manager.c: Fixed a potential crash in low
+    disk space situation (Closes N#21571)
+
+  * hildon-navigator/hn-wm.c: Do not specify type='method' in a
+    dbus match rule, this is the default (Closes N#26063)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 19 Apr 2006 10:20:32 +0300
+
+maemo-af-desktop (2.6.9-1) unstable; urgency=low
+
+  * maemo-af-desktop.[sh,defs], maemo-af-desktop-main.[ch]: Parse the
+    maemo-af-desktop-specific gtkrc from the application.
+  * hildon-home/layout-manager.c: Fixed the leak of a GdkGC (Closes N#26116)
+  * hildon-home/layout-manager.c: Replaced the "Opening layout mode"
+    confirmation not with an animation banner, as required by  UI
+    specifications.
+  * hildon-home/hildon-home-restore-background.sh: Use sh instead of bash,
+    which doesn't exist on the target (Closes N#23524)
+  * hildon-home/layout-manager.c: Reset the applet offset after the
+    layout was cancelled (Closes N#24741)
+  * libhildonmenu/libhildonmenu.c: Use the memory XML writer instead
+    of the disk one, then write everything at once. This should be
+    faster and hopefully solve the race condition between the TN applet
+    writing to the file while the TN starts reading it. (Closes N#25930)
+  * Makefile.am, debian/rules: Use maemo-launcher for maemo-af-desktop
+  * hildon-home/home-select-applets-dialog.c: Fixed the leak of a string
+  * hildon-home/hildon-home-main.c: Fixed the leak of a g_list
+  * hildon-home/hildon-home-main.c: Populate the Applet Settings submenu
+    even when the menu is triggered from the hardware key
+  * hildon-navigator/hn-wm-watched-window.c:
+    - hn_wm_watched_window_get_active_view(): Return the first view of
+      an application if no one was set yet (Closes N#22987)
+    - Identation fixes
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 10 Apr 2006 17:44:14 +0300
+
+maemo-af-desktop (2.6.8-2) unstable; urgency=low
+
+  * Don't install convenience library libstatusbarmain.so (Closes N#25946)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  6 Apr 2006 19:27:08 +0300
+
+maemo-af-desktop (2.6.8-1) unstable; urgency=low
+
+  * hildon-navigator/hn-wm.h (MAEMO_LAUNCHER_SIGNAL_IFACE)
+    (MAEMO_LAUNCHER_SIGNAL_PATH, APP_DIED_SIGNAL_NAME): New macros.
+  * hildon-navigator/hn-wm.c (hn_wm_dbus_signal_handler): New function.
+    (hn_wm_init): Setup hn_wm_dbus_signal_handler as a match rule.
+  * hildon-navigator/hn-wm-watchable-app.h
+    (hn_wm_watchable_app_died_dialog_show): New prototype.
+  * hildon-navigator/hn-wm-watchable-app.c
+    (hn_wm_watchable_app_died_dialog_show): New function.
+  * hildon-navigator/hn-wm.h (DESKTOP_BIN_FIELD): Rename to ...
+    (DESKTOP_EXEC_FIELD): ... this. Fix all users.
+    (hn_wm_lookup_watchable_app_via_exec): New function prototype.
+  * hildon-navigator/hn-wm.c
+    (hn_wm_lookup_watchable_app_via_exec_find_func): New function.
+    (hn_wm_lookup_watchable_app_via_exec): Likewise.
+  * hildon-navigator/hn-wm-watchable-app.h
+    (hn_wm_watchable_app_get_exec): New function prototype.
+  * hildon-navigator/hn-wm-watchable-app.c (HNWMWatchableApp): Rename
+    bin_name to exec_name. Fix all users.
+    (hn_wm_watchable_app_new): Store exec_name in the app struct. Add
+    exec_name to the HN_DBG registering print call.
+    (hn_wm_watchable_app_get_exec): New function.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  4 Apr 2006 17:26:12 +0300
+
+maemo-af-desktop (2.6.7-1) unstable; urgency=low
+
+  Applied fix to Close Application Dialog MEM-DIA001 is lost.
+  (Closes N#24388)
+  * Use lowmem state when deciding if CAD will be shown, preserves old
+    method as it probably won't be triggered ever (but just in case the
+    configurability is still wanted, it should work ok)
+  * Reorganize code to make the dialog call only from hn-wm.c
+    and others-menu.c (all roads lead to hn_wm_top_service)
+  * Fixes for behaviour
+  * hildon-navigator/Makefile.am
+    hildon-navigator/close-application-dialog.h
+    hildon-navigator/close-application-dialog.c:
+    - Close application dialog implementation
+  * hildon-navigator/hn-wm-util.h
+    hildon-navigator/hn-wm-util.c:
+    - New function hn_wm_get_vmdata_for_pid():
+      Fetches VMData value for specified pid from /proc/$PID/status
+  * hildon-navigator/application-switcher.c
+     - Add dialog call to item activation
+  * hildon-navigator/hn-wm-memory.h
+    hildon-navigator/hn-wm-memory.c:
+    - Add convenience function to get lowmem state without using
+      global variables in other files
+
+  * hildon-home/hildon-home-main.c: Fixed possible leaks of
+    ugly global variable home_bg_image_uri
+  * hildon-navigator/hildon-navogator-main.c: 
+    (load_navigator_plugin_list) Fix the leak the library string
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  4 Apr 2006 14:22:59 +0300
+
+maemo-af-desktop (2.6.6-1) unstable; urgency=low
+
+  * libhildonmenu/libhildonmenu.h: localize the "Favourites" string
+    (Closes N#25393)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  3 Apr 2006 15:43:47 +0300
+
+maemo-af-desktop (2.6.5-1) unstable; urgency=low
+
+  * */*: Corrected some deprecated logical ids.
+  * hildon-navigator/hn-wm-watchable-app.c: (Closes N#24483)
+    - Replaced gtk_infoprint with hildon_banne_
+    - Removed message stacking work around, which seems no longer necessary
+  * hildon-status-bar/hildon-status-bar-main.c: Replaced gtk_infoprint
+    with hildon_banner_
+  * libhildonmenu/libhildonmenu.c: Fixed a potential crash
+    I just introduced
+  * libhildonmenu/libhildonmenu.c: load the folder icon only once
+    (Closes N#25288)
+  * Added hildon-home/hildon-home-restore-background.sh
+  * hildon-home/hildon-home-restore-background.sh: Restores the
+    default background after a backup from older releases is
+    restored (Closes N#23524)
+  * hildon-navigator/osso-manager.c (osso_manager_infoprint): Free
+    retval (Closes N#20883)
+  * hildon-home/home-select-applet-dialog.c: Localize the applet
+    name (Closes N#25271)
+  * libhildonmenu/libhildonmenu.c, hildon-navigator/others-menu.c:
+    fixed numerous (and big) memory leaks in menu generation.
+  * hildon-home/hildon-home-main.h: Fixed L10n of the
+    set background dialog title (id has changed in the UI spec).
+  * hildon-navigator/hildon-navigator-main.c: (Closes N#23928)
+      - Add defines for watchfile name
+      - (task_navigator_deinitialize): Remove watchfiles
+  * hildon-home/hildon-home-main.c: (Closes N#19498)
+    - Add a callback for hardware events
+    - when told to lower our activity, put the applets in background
+      mode
+    Applied fix to "Task Navigator and Status bar are accessible when Home
+    is in Layout mode" (Closes N#23028)
+  * hildon-home/layout-manager.c:
+    - Added dbus calls to statusbar and tasknav to dim/undim.
+  * hildon-status-bar/hildon-status-bar-main.c :
+    - added to method rpc_cb the code to handle insensitivity dbus calls 
+    - added the methods that do the actual insensitivity
+  * hildon-navigator/hildon-navigator-main.c:
+    - added functions to handle the sensitivity
+  * hildon-navigator/hn-wm.c:
+    - modified listening functions to listen to new type of signals
+  * hildon-navigator/application-switcher.c
+    (application_switcher_initialize_menu): Refactor toggle button signal
+      connection into ...
+    (as_toggle_button_connect): ... here. New function.
+  * hildon-navigator/application-switcher.[ch]:
+    - Removed the blinking timeout as per new specifications
+    - Stop blinking when the screen is blanked
+  * hildon-navigator/hildon-navigator-main.c (load_symbols): Make symbol
+      a single pointer instead of an array of pointers. Change the if
+      sentences to a switch block.
+  * hildon-navigator/application-switcher.h
+    (BIG_BUTTON_HEIGHT): New macro.
+    (BUTTON_1_Y_POS, BUTTON_2_Y_POS, BUTTON_3_Y_POS, BUTTON_4_Y_POS):
+    Use macros instead of hardcoded values.
+  * hildon-navigator/application-switcher.h
+    (NAME_SMAL_MENU_BUTTON_ITEM): Renamed to ...
+    (NAME_SMALL_MENU_BUTTON_ITEM): ... this. Fix all users.
+    (SMAL_BUTTON_HEIGHT): Rename to ...
+    (SMALL_BUTTON_HEIGHT): ... this. Fix all users.
+  * hildon-navigator/application-switcher.c
+    (application_switcher_initialize_menu): Refactor signal addition to ...
+    (as_add_signal): ... here. New function.
+  * hildon-navigator/application-switcher.c: Factorized creation
+    of AS buttons (patch courtesy of Guillem Jover, Closes N#24957)
+  * hildon-home/layout-manager.c: Fixed launching of the help from the
+    menu (Closes N#24891)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  3 Apr 2006 14:49:41 +0300
+
+maemo-af-desktop (2.6.4-2) unstable; urgency=low
+
+  * Updated build-dependency on hildon-libs-dev >= 0.12.2
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  3 Apr 2006 10:21:35 +0300
+
+maemo-af-desktop (2.6.4-1) unstable; urgency=low
+
+  * hildon-home/layout-manager.c: (Closes N#24617)
+    - layout_mode_begin(): switch layout and home menus while saving home
+      menu
+    - layout_mode_end(): switch layout and home menus
+  * hildon-home/hildon-home-main.[ch]: Fixed various logical ids in
+    the home background settings (Closes N#24837)
+  * hildon-navigator/hn-wm-memory.c: (Closes N#20305)
+    - hn_wm_memory_kill_all_watched_foreach_func: fixed a bug when accessing
+      the only_kill_able_to_hibernate argument (passed as reference,
+      accessed as value).
+  * hildon-home/layout-manager.c: If the applet EventBox has a child,
+    draw the red border on the child's window, or it will be
+    overwritten by the child's painting (Closes N#24722)
+  * hildon-home/hildon-home-image-loader.c: Removed an unnecessary
+    image copy. (Closes N#22549)
+  * hildon-home/layout-manager.c: (Closes N#24439 and N#24767)
+    - added field to layout mode internal struct to hold handler id
+    - layout_mode_end(): added disconnecting signal handler to catch ESC
+      hw key event to cancel
+    - gdkkeysyms include added for ESC hw key
+    - layout_mode_start(): added signal connect to key press listener
+    - layout_mode_end(): added check to catch ESC hw key event to cancel
+      dialog and NOT exiting from layout mode
+    - layout_mode_key_press_listener() new function to listen hw key
+      events. ESC hw key pressing launches layout mode ending with cancel
+      confirmation
+    - layout_mode_end(): changed GTK_RESPONSE_REJECT to
+      GTK_RESPONSE_CANCEL to catch ESC hw key event
+  * hildon-home/layout-manager.c: Fixed the cancel layout button (Closes
+    N#24428)
+  * hildon-navigator/other-menu.c:
+    - Removed code that got duplicated in branch merges
+    - Added a dnotify callback on the .desktop directory,
+      to allow new applications to appear in the menu (Closes N#24511)
+  * debian/control: Put myself as maintainer
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 27 Mar 2006 10:37:45 +0300
+
+maemo-af-desktop (2.6.3-1) unstable; urgency=low
+
+  * hildon-navigator/application-switcher.c: Stop blinking the
+    arrow when a clicked (Closes N#23155)
+  * hildon-navigator/hn-wm-watched-window.c,
+    hildon-navigator/hn-wm-watchable-app.c:
+    Bring focus to the last active window when multiple-windows app
+    are topped through dbus
+  * hildon-navigator/hildon-navigator-main.c:
+    - Fixed several leaks when a plugin cannot be loaded.
+    - Fixed leak of a string in create_new_plugin()
+  * libhildonmenu/libhildonmenu.c: Free the document handle
+     when not used anymore (Closes N#23989)
+  * libhildonmenu/libhildonmenu.c: Initialize a TreeStore iterator
+    before accessing it. (Closes N#24341)
+  * hildon-navigator/hn-wm.c: Applied fix to "The Address book doesnot
+    appear to foreground when other applications open." - use
+    MB to top windows when they have no views and are topped
+    from Others-Menu
+    (Closes N#23973)
+  * hildon-navigator/application-switcher.c: Reverted to use
+    GTK_WINDOW_TOPLEVEL for the tooltip, and set accept focus to FALSE
+    instead
+  * hildon-home/*:
+    . Export the show_*_banner functions
+    . Report about flash full when write ops fail (Closes N#20324)
+  * hildon-navigator/application-switcher.c: Use GTK_WINDOW_POPUP
+    instead of GTK_WINDOW_TOPLEVEL for the tooltip (Closes N#19590)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 20 Mar 2006 14:05:06 +0200
+
+maemo-af-desktop (2.6.2-1) unstable; urgency=low
+
+  * hildon-status-bar/hildon-status-bar-lib.[ch]: Applied
+    patch by Kimmo Hamalainen to specify the text and query the
+    response of system dialogs (Closes N#24060)
+  * Applied fix to "No information banner is shown when dimmed item is
+    tapped in Home" (Closes N#23033)
+    - hildon-home/hildon-home-main.h:
+      . added new infobanner text logical id
+      . added new function declaration
+    - hildon-home/hildon-home-main.c:
+      . added header include for infoprint
+      . construct_titlebar_menu(): added callback for insensitive press of
+        settings menu item
+      . no_applets_settings_callback(): added new function showing infobanner
+  * hildon-home/hildon-home-main.h: Fixed a string logical id
+  * hildon-navigator/application-switcher.c: arguments of store_item
+    differed in prototype and implementation. This resulted in it
+    being called with wrong order of arguments (Closes N#22987)
+  * hildon-home/layout-manager.c: (Close N#23344)
+    - layout_mode_begin(): after adding applets function call raise layout
+      mode eventbox to top
+    - _select_applets_cb(): after adding applets function call raise layout
+      mode eventbox to top
+    - _applet_expose_cb(): after adding applets function call raise layout
+      mode eventbox to top and cleaning extra else clause
+  * hildon-navigator/hn-wm-session.c: Fixed incorrect check
+    when saving state (Closes N#23930)
+  * hildon-navigator/hn-wm-watchable-app.c: use localized program name
+    in the starting info banner (Closes N#23428)
+  * hildon-navigator/hn-*.c: Added Copyright and licensing notices
+  * Applied fix to N#23750:
+    - hildon_home_main(): removing old saving configure function call
+      causing reseting values
+    - hildon-home/home-applet-handler.c: libraryfile value fixed to correct
+  * hildon-home/hildon-home-main.[ch]:
+    - global menu status flag added
+    - hildon_home_key_press_listener(): removed widget grabing add. Menu
+      closing added when open and menu key is pressed.
+    - hildon_home_key_release_listener(): removed widget grabing remove
+    - Closes N#22637
+  * configure.ac: Don't check for hildon-lgpl which is deprecated
+  * hildon-navigator/hn-wm.c:
+    - hn_wm_compute_watched_window_hibernation_key(): Replaced
+      conditional gdk_error_trap_pop with unconditional one
+      (Closes N#23940)
+  * hildon-home/hildon-home-main.[ch]:
+    - Moved static prototypes to the c file
+    - Added implementation of the help menu item
+    - Added help button to "Set background" and "Select image" dialogs
+    - Corrected a logical_id
+  * hildon-home/home-select-applets-dialo.[ch]:
+    - Added help button to "Select applet" dialog
+  * libhildonmenu/libhildonmenu.pc.in: added desktopentrydir variable
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 13 Mar 2006 14:45:13 +0200
+
+maemo-af-desktop (2.6.1-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-main.c: Fixed a bug introduced when
+    applying home background refactoring patch. Closes N#23715
+  * libhildonmenu/libhildonmenu.[ch]: Use Favourites name logical_id
+  * hildon-home/hildon-home-main.h: Corrected an id which changed
+    in the UI specs
+  * libhildonmenu/libhildonmenu.c: Use a different icon for the
+    "Favourites" folder
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  7 Mar 2006 11:31:24 +0200
+
+maemo-af-desktop (2.6.0-1) unstable; urgency=low
+
+  * fixed numerous memory leaks in the new OthersMenu handling
+  * a few cleanups in the osso RPC callback. 
+  * hildon-status-bar/hildon-status-bar-main.[ch]: the gateway lugin is gone
+    (Closes N#23163)
+  * Imported latest changes from the TN refactoring (Closes 23218)
+  * Imported latest changes from the hoem refactoring (Closes N#23221)
+  * Imported home_background_refactoring branch (Closes N#23035)
+  * Moved hildon-navogator/applications.menu to maemo-af-desktop-config
+  * Imported applet settings handling
+  * hildon-navigator/hildon-navigator.[ch]: removed unused functions
+  * hildon-navigator/application-switcher.c: Play sound on opening
+    and closing windows
+  * Imported unresponsive application killing confirmation note
+  * hildon-status-bar/{hildon-status-bar-{main,item}.c: Hardcode
+    loading of the presence status bar applet
+  * hildon-navigator/hn-wm-memory.c: Fixed bogus debug statement (Closes
+    N#23595)
+  * hildon-status-bar/hildon-status-bar-main.c: renamed presence_plugin
+    to presence
+
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  6 Mar 2006 14:44:07 +0200
+
+maemo-af-desktop (2.5.1-1) unstable; urgency=low
+
+  * hildon-navigator/applications.menu: Corrected .desktop name
+    for application installer, and de-dossfified (Closes N#23177)
+  * Don't display Extras if empty
+  * libhildonmenu/libhildonmenu.{c,h}: Imported latest versions
+  * hildon-navigator/{others-menu.c,application-switcher.c,
+    hildon-navigator.h}: Use another menu style for menus generated by TN
+    (Closes N#23063)
+  * Makefile.am, configure,ac, debian/control, hildon-home/Makefile.am:
+    Changes required for the new hildon-fm (Closes N#23168)
+  * hildon-status-bar/hildon-status-bar-lib.c: Rewrite of the
+    system dialog handling by Kimmo Hamalainen (Closes N#23171)
+  * hildon-home/hildon-home-main.c: Temporary workaround to
+    open the file dialog in Images. (Closes N#22926)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 22 Feb 2006 17:35:26 +0200
+
+maemo-af-desktop (2.5.0-1) unstable; urgency=low
+
+  * Imported latest changes on TN refactoring
+  * Fixed N#22992
+  * Fixed N#22957
+  * Fixed a crash when save_state was called on applets
+  * Imported user-configurable Others menu
+  * Imported libhildonmenu
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 20 Feb 2006 10:37:19 +0200
+
+maemo-af-desktop (2.4.5-2) unstable; urgency=low
+
+  * Fixed typo in default TN configuration file
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 15 Feb 2006 13:55:14 +0200
+
+maemo-af-desktop (2.4.5-1) unstable; urgency=low
+
+  * Imported latest changes from home refactoring.
+  * Closes N#22691, N#22636
+  * Added default TN configuration file
+  * Added .desktop path variable to pkg-config for home
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 15 Feb 2006 13:01:43 +0200
+
+maemo-af-desktop (2.4.4-1) unstable; urgency=low
+
+  * Fixed N#20498
+  * Send SIGTERM to all apps when we receive it
+  * Removed legacy hildon-navigator/windowmanager.{c,h} 
+  * Imported latest changes from task navigator refactoring. Fixes 22614 and
+    22596 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  9 Feb 2006 16:18:24 +0200
+
+maemo-af-desktop (2.4.3-1) unstable; urgency=low
+
+  * Updated home refactoring
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  9 Feb 2006 09:39:46 +0200
+
+maemo-af-desktop (2.4.2-2) unstable; urgency=low
+
+  * Added hildon-home-plugin-interface.h to the distribution 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  6 Feb 2006 14:46:06 +0200
+
+maemo-af-desktop (2.4.2-1) unstable; urgency=low
+
+  * Much improve icon animation/blinking to more closely
+    match specs so far.
+  * Improve to do faded blinking with alpha.  Unoptimised as yet.
+    Needs testing on device for performance.
+  * Add support for tracking _NET_WM_USER_TIME set to 0 for
+    new windows not mapping topped.
+  * Fix a couple of potential crashers if service name is NULL.
+  * Fixed N#22605
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  6 Feb 2006 10:52:02 +0200
+
+maemo-af-desktop (2.4.1-1) unstable; urgency=low
+
+  * Make blinking icons blink in sync and timeout to static
+    after 5000ms
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  2 Feb 2006 12:57:34 +0200
+
+maemo-af-desktop (2.4.0-1) unstable; urgency=low
+
+  * Imported task navigator plugin framework
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  1 Feb 2006 17:34:56 +0200
+
+maemo-af-desktop (2.3.0-1) unstable; urgency=low
+
+  * Imported home refactoring
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  1 Feb 2006 15:59:53 +0200
+
+maemo-af-desktop (2.2.2-1) unstable; urgency=low
+
+  * Closes N#20138
+  * Closes N#22549
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  1 Feb 2006 09:56:28 +0200
+
+maemo-af-desktop (2.2.1-1) unstable; urgency=low
+
+  * Added depency on libgtk2.0-bin (required by post-intall script)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 24 Jan 2006 14:31:31 +0200
+
+maemo-af-desktop (2.2.1-0) unstable; urgency=low
+
+  * Applied fix to N#22407
+  * Build a -dbg package
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 24 Jan 2006 13:15:11 +0200
+
+maemo-af-desktop (2.2.0-0) unstable; urgency=low
+
+  * Reverted fix to N#21895 as it introduces N#22414
+  * Heavy refactoring of the task navigator by Matthew Allum.
+  * Support the WM urgency hint and the WM_ICON properties
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 20 Jan 2006 12:47:42 +0200
+
+maemo-af-desktop (2.1.1-0) unstable; urgency=low
+
+  * Backported fix to  N#20921 from IT-2005
+  * Backported fix to  N#21089 from IT-2005
+  * Backported fix to  N#21750 from IT-2005
+  * Backported fix to  N#21814 from IT-2005
+  * Reverted improper fix to  N#21895 from IT-2005
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 21 Dec 2005 15:23:07 +0200
+
+maemo-af-desktop (2.1.0-0) unstable; urgency=low
+
+  * Depend on dbus >= 0.50
+  * backported a few changes from IT-2005
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 15 Dec 2005 16:11:08 +0200
+
+maemo-af-desktop (2.0.2) unstable; urgency=low
+
+  * Minor changes to status bar to fix plugins not loading problem
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri, 18 Nov 2005 11:17:58 +0200
+
+maemo-af-desktop (2.0.1) unstable; urgency=low
+
+  * Removed startup file lock temporarily for testing purposes
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Fri, 18 Nov 2005 10:07:48 +0200
+
+maemo-af-desktop (2.0.0) unstable; urgency=low
+
+  * Upped version of trunk to 2.0.0, 2.0.0 is baseline for development of IT-2006
+  * Patched bug N#18257
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Thu, 15 Nov 2005 13:15:46 +0200
+
+maemo-af-desktop (1.63.0) unstable; urgency=low
+
+  * Patched bug N#18881
+
+ -- Karoliina Salminen <karoliina@localhost.localdomain>  Mon,  7 Nov 2005 12:34:23 +0200
+
+maemo-af-desktop (1.62.1) unstable; urgency=low
+
+  * Updated version, incorrect version in previous version
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed,  2 Nov 2005 13:51:38 +0200
+
+maemo-af-desktop (1.61.2) unstable; urgency=low
+
+   * Reverted incomplete bug fix
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 26 Oct 2005 20:19:42 +0300
+
+maemo-af-desktop (1.61.1) unstable; urgency=low
+
+  * Patched PE bug 20384
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 26 Oct 2005 20:17:25 +0300
+
+maemo-af-desktop (1.61.0) unstable; urgency=low
+
+  * Corrected copyright texts in Makefiles.
+  * configure.ac -> 1.61.0
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 25 Oct 2005 16:54:48 +0300
+
+maemo-af-desktop (1.60.3) unstable; urgency=low
+
+  * Bug fixed:
+    N#19187 Application icon is not visible in Tasknavigator although
+            application is running.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Wed, 19 Oct 2005 14:56:23 +0300
+
+maemo-af-desktop (1.60.2) unstable; urgency=low
+
+  * applied patch to N#19614 Memory leaks in Statusbar
+    hildon_status_bar_item_new()
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri, 14 Oct 2005 17:19:06 +0300
+
+maemo-af-desktop (1.60.1) unstable; urgency=low
+
+  * Patched 20250 again with postinstfix
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri, 14 Oct 2005 14:31:44 +0300
+
+maemo-af-desktop (1.60.0) unstable; urgency=low
+
+  * Preparing for next integration round, increased version number to
+    1.60.0. Patched bug 20305
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 13 Oct 2005 16:24:50 +0300
+
+maemo-af-desktop (1.59.3) unstable; urgency=low
+
+  * Changed deps again, libosso >= 0.9.19+
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 13 Oct 2005 15:17:40 +0300
+
+maemo-af-desktop (1.59.2) unstable; urgency=low
+
+  * Reverted previous ugly hack
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 13 Oct 2005 14:03:49 +0300
+
+maemo-af-desktop (1.59.1) unstable; urgency=low
+
+  * Fixed libosso version inconsistency problem with a workaround by
+    reverting the dependency in configure.ac to the older package
+    version
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 13 Oct 2005 13:43:03 +0300
+
+maemo-af-desktop (1.59.0) unstable; urgency=low
+
+  * Patched bug 20250
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 12 Oct 2005 16:33:10 +0300
+
+maemo-af-desktop (1.58.7) unstable; urgency=low
+
+  * Added Doxygen comments and doxyconf-file
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 12 Oct 2005 16:17:36 +0300
+
+maemo-af-desktop (1.58.6) unstable; urgency=low
+
+  * Ready for integration
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 12 Oct 2005 14:59:21 +0300
+
+maemo-af-desktop (1.58.5) unstable; urgency=low
+
+  * Patched bug 20284 with a new patch
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 12 Oct 2005 14:38:31 +0300
+
+maemo-af-desktop (1.58.4) unstable; urgency=low
+
+  * Patched bug 18522. Reverted bug fix 20284, will be redone later.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 12 Oct 2005 10:18:24 +0300
+
+maemo-af-desktop (1.58.3) unstable; urgency=low
+
+  * Patched N#20284
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 10 Oct 2005 17:26:49 +0300
+
+maemo-af-desktop (1.58.2) unstable; urgency=low
+
+  * Commented out unused function
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 10 Oct 2005 14:53:46 +0300
+
+maemo-af-desktop (1.58.1) unstable; urgency=low
+
+  * Fixed bug N#20181
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  7 Oct 2005 17:59:53 +0300
+
+maemo-af-desktop (1.58.0) unstable; urgency=low
+
+  * New version for new integration round
+  * Implemented fix to bug N#20177.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  7 Oct 2005 13:39:42 +0300
+
+maemo-af-desktop (1.57.2) unstable; urgency=low
+
+  * Tagged for integration
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  6 Oct 2005 14:58:45 +0300
+
+maemo-af-desktop (1.57.1) unstable; urgency=low
+
+  * Additional XSync fix done
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  6 Oct 2005 14:15:22 +0300
+
+maemo-af-desktop (1.57.0) unstable; urgency=low
+
+  * Bug N#9843 patched with the latest patch
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  6 Oct 2005 11:58:25 +0300
+
+maemo-af-desktop (1.56.1) unstable; urgency=low
+
+  * Removed unnecessary XSync calls from places that do not require
+    synchronization
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed,  5 Oct 2005 12:31:56 +0300
+
+maemo-af-desktop (1.56.0) unstable; urgency=low
+
+  * Started fixing potential crash bug.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  4 Oct 2005 13:22:21 +0300
+
+maemo-af-desktop (1.55.1) unstable; urgency=low
+
+  * Applied memory mgmt patch from Guillem Jover <guillem.jover@nokia.com>:
+  * Only show notifica when leaving lowmem state.
+  * Fix spurious %s appearing in dialogs, by showing the proper string.
+  * Use consitently the same message when we cannot load a new application.
+  * Replace the cannot launch dialog with an infoprint.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon,  3 Oct 2005 13:30:46 +0300
+
+maemo-af-desktop (1.55.0) unstable; urgency=low
+
+  * Upped version number for next integration round. Applied patch for
+    bug N#19939.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon,  3 Oct 2005 12:06:50 +0300
+
+maemo-af-desktop (1.54.4) unstable; urgency=low
+
+  * Changed from maemo-af-desktop.sh dimming feature off
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 29 Sep 2005 12:44:35 +0300
+
+maemo-af-desktop (1.54.3) unstable; urgency=low
+
+  * Updated version to 1.54.3
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 28 Sep 2005 15:14:26 +0300
+
+maemo-af-desktop (1.54.2) unstable; urgency=low
+
+  * Changed timeout in maemo-af-desktop.sh from 200 to 20
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 28 Sep 2005 15:10:50 +0300
+
+maemo-af-desktop (1.54.1) unstable; urgency=low
+
+  * Fixed bug N#19662
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 28 Sep 2005 14:11:15 +0300
+
+maemo-af-desktop (1.54.0) unstable; urgency=low
+
+  * Fixed bug 18524 - Race condition in personalisation dialog
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 28 Sep 2005 13:51:53 +0300
+
+maemo-af-desktop (1.53.1) unstable; urgency=low
+
+  * Fixed bug 19593 with a workaround to hildon-status-bar-main.c
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 27 Sep 2005 17:11:16 +0300
+
+maemo-af-desktop (1.53.0) unstable; urgency=low
+
+  * Missing task delayed info banner patched
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 27 Sep 2005 16:36:21 +0300
+
+maemo-af-desktop (1.52.0) unstable; urgency=low
+
+  * Applied lowmem infoprint patch.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 27 Sep 2005 12:25:14 +0300
+
+maemo-af-desktop (1.51.0) unstable; urgency=low
+
+  * Added timeout multiplier handling to windowmanager.c|h.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 26 Sep 2005 16:53:01 +0300
+
+maemo-af-desktop (1.50.2) unstable; urgency=low
+
+  * Applied additional patch from Guillem which cleans up things a bit.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 22 Sep 2005 16:27:40 +0300
+
+maemo-af-desktop (1.50.1) unstable; urgency=low
+
+  * Integrated Mariuses memory management changes
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 21 Sep 2005 16:02:39 +0300
+
+maemo-af-desktop (1.50.0) unstable; urgency=low
+
+  * Patched bug 18881. Preparing for week 38 integration.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 20 Sep 2005 19:44:18 +0300
+
+maemo-af-desktop (1.49.11) unstable; urgency=low
+
+  * Patched bug #18019
+  * Ready for week 37 integration
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 19:10:49 +0300
+
+maemo-af-desktop (1.49.10) unstable; urgency=low
+
+  * Tagged new version for testing 1.49.10
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 17:38:18 +0300
+
+maemo-af-desktop (1.49.9) unstable; urgency=low
+
+  * Patched N#19111
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 17:24:49 +0300
+
+maemo-af-desktop (1.49.8) unstable; urgency=low
+
+  * Patched N#19108
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 17:17:09 +0300
+
+maemo-af-desktop (1.49.7) unstable; urgency=low
+
+  * Patched bug N#19106
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 17:11:46 +0300
+
+maemo-af-desktop (1.49.6) unstable; urgency=low
+
+  * Corrected crash problem, one NULL checking added
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 16:28:52 +0300
+
+maemo-af-desktop (1.49.5) unstable; urgency=low
+
+  * Patched N#19025
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 15:27:37 +0300
+
+maemo-af-desktop (1.49.4) unstable; urgency=low
+
+  * Patched bug 18477
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 15:17:15 +0300
+
+maemo-af-desktop (1.49.3) unstable; urgency=low
+
+  * Updated version again.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 15:14:12 +0300
+
+maemo-af-desktop (1.49.2) unstable; urgency=low
+
+  * Patched N#18873
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 15:00:58 +0300
+
+maemo-af-desktop (1.49.1) unstable; urgency=low
+
+  * Patched bug #15041
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 14:42:01 +0300
+
+maemo-af-desktop (1.49.0) unstable; urgency=low
+
+  * Updated version number for week 37 integration delivery
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 13 Sep 2005 14:41:06 +0300
+
+maemo-af-desktop (1.48.9) unstable; urgency=low
+
+  * Added patch for bug N#18875
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  9 Sep 2005 17:15:19 +0300
+
+maemo-af-desktop (1.48.8) unstable; urgency=low
+
+  * Hand-fixed broken patch issues.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  9 Sep 2005 17:02:14 +0300
+
+maemo-af-desktop (1.48.7) unstable; urgency=low
+
+  * Patched bug N#19007
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  9 Sep 2005 16:30:17 +0300
+
+maemo-af-desktop (1.48.6) unstable; urgency=low
+
+  * Reverted to 1.48.4 from 1.48.5 and resolved earlier old major
+    version conflict and changed the version to 1.48.6
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri,  9 Sep 2005 15:29:02 +0300
+
+maemo-af-desktop (1.48.4) unstable; urgency=low
+
+  * Patched earlier Mathew's patch with new one
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  8 Sep 2005 19:07:52 +0300
+
+maemo-af-desktop (1.48.3) unstable; urgency=low
+
+  * Patched bug 18503
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  8 Sep 2005 18:51:29 +0300
+
+maemo-af-desktop (1.48.2) unstable; urgency=low
+
+  * Applied faster-atoms -patch from Mathew Allum. Ready for testing.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  8 Sep 2005 14:31:10 +0300
+
+maemo-af-desktop (1.48.1) unstable; urgency=low
+
+  * Tagged version for integration
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  8 Sep 2005 14:04:40 +0300
+
+maemo-af-desktop (1.48.0) unstable; urgency=low
+
+  * Bug fix camp first version
+  * Applied improve-hildon-home-event-efficiency -patch from Mathew
+    Allum.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed,  7 Sep 2005 15:41:48 +0300
+
+maemo-af-desktop (1.47.9) unstable; urgency=low
+
+  * Fixed bug 18830
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed,  7 Sep 2005 12:42:24 +0300
+
+maemo-af-desktop (1.47.8) unstable; urgency=low
+
+  * Corrected versioning mistake. Now should be ok.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 18:15:39 +0300
+
+maemo-af-desktop (1.47.6) unstable; urgency=low
+
+  * Tagged new version for integration
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 17:55:09 +0300
+
+maemo-af-desktop (1.47.5) unstable; urgency=low
+
+  * Tried with w35 rootstrap, this version compiles, tagging new version
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 14:45:20 +0300
+
+maemo-af-desktop (1.47.4) unstable; urgency=low
+
+  * Patch applied for N#18300
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 13:22:57 +0300
+
+maemo-af-desktop (1.47.3) unstable; urgency=low
+
+  * Patch applied for bug N#14514
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 12:46:16 +0300
+
+maemo-af-desktop (1.47.2) unstable; urgency=low
+
+  * Applied additional patch for 18522
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  6 Sep 2005 10:50:42 +0300
+
+maemo-af-desktop (1.47.1) unstable; urgency=low
+
+  * Patched more bugs
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon,  5 Sep 2005 18:00:17 +0300
+
+maemo-af-desktop (1.47.0) unstable; urgency=low
+
+  * New proposed version for week 36 release.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon,  5 Sep 2005 17:54:51 +0300
+
+maemo-af-desktop (1.46.0-3) unstable; urgency=low
+
+  * Fixed bug 17425
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  1 Sep 2005 16:26:53 +0300
+
+maemo-af-desktop (1.46.0-2) unstable; urgency=low
+
+  * Made dependency to hildon-base-lib 0.9.3 and the new l10n files
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  1 Sep 2005 16:13:50 +0300
+
+maemo-af-desktop (1.46.0-1) unstable; urgency=low
+
+  * Added significant amount of code due to addition to installable user
+    applets to home and status-bar and thus raised the version.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 30 Aug 2005 20:01:22 +0300
+
+maemo-af-desktop (1.45.0-4) unstable; urgency=low
+
+  * Updated comment in ChangeLog
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 30 Aug 2005 19:05:21 +0300
+
+maemo-af-desktop (1.45.0-3) unstable; urgency=low
+
+  * Patched bug 17741
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 30 Aug 2005 18:53:17 +0300
+
+maemo-af-desktop (1.45.0-2) unstable; urgency=low
+
+  * Patched bug 9179
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 30 Aug 2005 18:31:10 +0300
+
+maemo-af-desktop (1.45.0-1) unstable; urgency=low
+
+  * Patched bug #16496
+  * 1.45.0-1 New release version 1.45.0, patched bug 17728
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 30 Aug 2005 17:38:13 +0300
+
+maemo-af-desktop (1.44.0) unstable; urgency=low
+
+  * Fixed bug FR_CA Home memory card cover: no message when open
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 25 Aug 2005 14:44:27 +0300
+
+maemo-af-desktop (1.43.0-11) unstable; urgency=low
+
+  * Fixed bug #17249
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 24 Aug 2005 17:01:21 +0300
+
+maemo-af-desktop (1.43.0-10) unstable; urgency=low
+
+  * Typo corrected in debian/control: default-backrounds-config ->
+    default-backgrounds-config
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed, 24 Aug 2005 14:00:43 +0300
+
+maemo-af-desktop (1.43.0-9) unstable; urgency=low
+
+  * Updated header of kstrace.h
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 22 Aug 2005 21:16:43 +0300
+
+maemo-af-desktop (1.43.0-8) unstable; urgency=low
+
+  * Added some missing files, that were lost in cleanup.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 22 Aug 2005 21:00:12 +0300
+
+maemo-af-desktop (1.43.0-7) unstable; urgency=low
+
+  * * windowmanager.c (handle_active_window_prop): Use
+    _MB_CURRENT_APP_WINDOW to determine active application instead of
+    _NET_ACTIVE_WINDOW. This avoids detection problems with applications
+    that have a dialog open. Also added the definition and
+    initialisation of the corresponding X atom.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 22 Aug 2005 20:29:13 +0300
+
+maemo-af-desktop (1.43.0-6) unstable; urgency=low
+
+  * Cleaned up version.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 22 Aug 2005 19:17:52 +0300
+
+maemo-af-desktop (1.43.0-5) unstable; urgency=low
+
+  * Added even more missing files. Should finally compile
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri, 19 Aug 2005 15:44:54 +0300
+
+maemo-af-desktop (1.43.0-4) unstable; urgency=low
+
+  * Added some more missing files
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri, 19 Aug 2005 15:23:14 +0300
+
+maemo-af-desktop (1.43.0-3) unstable; urgency=low
+
+  * Added configure script to package, was previously missing
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri, 19 Aug 2005 15:14:43 +0300
+
+maemo-af-desktop (1.43.0-2) unstable; urgency=low
+
+  * Recompiled with Scratchbox 0.9.8.2 for integration.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri, 19 Aug 2005 14:39:14 +0300
+
+maemo-af-desktop (1.43.0) unstable; urgency=low
+
+  * Corrected localization issues.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 18 Aug 2005 18:13:37 +0300
+
+maemo-af-desktop (1.42.0) unstable; urgency=low
+  
+  * Fixed #15159
+  * hildon-home-main.c (get_active_main_window): Added missing X
+  * error handling to prevent occasional crashes happening when
+  * switching themes.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 18 Aug 2005 12:44:37 +0300
+
+maemo-af-desktop (1.41.0-1) unstable; urgency=low
+
+  * Fixed #14536: On setting background image, a note "Loading image"
+    note does not display
+  * maemo-af-desktop.postinst
+  * - deleted harmful remove file
+  * hildon-home-image-loader.c
+  * - file saving order improved to meat cancel note requirements
+  * hildon-home-main.c
+  * - combobox state handling fixed
+  * - applybutton dimming corrected
+  * - NULL checks for g_str_equal arguments. Potential crash.
+  * - removed extra icon from Loading image Cancel note
+  * hildon-home-main.h
+  * - unnessesary string define removed
+  * Fixed #16523: Wrong string in the PO files for af-desktop: "loading"
+    instead on "%s - loading"
+  * - Modified: windowmanager.c
+
+ -- Nokia <nokia>  Thu, 11 Aug 2005 11:42:37 +0300
+
+maemo-af-desktop (1.40.0-1) unstable; urgency=low
+
+  * Fixed #16324: Multiple problems in Others menu item sorting
+  * others-menu.c:
+  * - Removed utf8 stuff and a possible memory allocation bug
+
+ -- Nokia <nokia>  Wed, 10 Aug 2005 09:32:42 +0300
+
+maemo-af-desktop (1.39.0-1) unstable; urgency=low
+
+  * Fixed #16681: AFW Stress Testing: System reboots when Image Viewer
+    is started after a search
+  * windowmanager.c:
+  * - (determine_window_type): Prevent a crash by checking that we do
+    not pass NULL pointers to g_str_equal()
+  * - (find_application_from_tree): Prevent a crash by checking that we
+    do not pass NULL pointers to g_str_equal()
+  * - (property_notify_handler): Prevent a crash by checking that we do
+    not pass NULL pointers to g_str_equal()
+  *  (find_service_from_tree): Prevent a crash by checking that we do
+    not pass NULL pointers to g_str_equal()
+
+ -- Nokia <nokia>  Tue,  9 Aug 2005 16:35:25 +0300
+
+maemo-af-desktop (1.38.0-1) unstable; urgency=low
+
+  * Fixed properly #16329, windowmanager.c was not included in 1.36.0-1
+  * Fixed #9179: Menu hardware key does not close menu
+  * hildon-home-main.c:
+  * - Don't keep hiding/showing menu when doing long menu key press
+  * Fixed #16797: AFW Stress Testing: Changing home background image
+    reboots
+  * hildon-home-main.c:
+  * -  Removed one second delay before showing Loading cancel note
+  * - comments clean-up
+  * hildon-home-main.h:
+  * - Removed ONE_SECOND define
+  * - changed show_loading_cancel_note() prototype
+  * Use new l10n packages
+
+ -- Nokia <nokia>  Mon,  8 Aug 2005 13:11:29 +0300
+
+maemo-af-desktop (1.37.0-1) unstable; urgency=low
+
+  * Fixed #16329: Task navigator crashes with incomplete .desktop files,
+    both while running and at startup
+  * others-menu.c:
+  * - Do not attempt to create menuitems for applications with mangled
+    .desktop files
+  * windowmanger.c:
+  * - Do not add applications with broken .desktop files to the
+    treemodel. (broken equals missing Name, Exec or StartupWMClass
+    fields)
+
+ -- Nokia <nokia>  Fri,  5 Aug 2005 15:18:07 +0300
+
+maemo-af-desktop (1.36.0-1) unstable; urgency=low
+
+  * Fixed #16775: System dialog API has wrong icon for OSSO_GN_NOTICE
+  * hildon-status-bar-lib.c:
+  * - Changed icon name from qgn_note_confirm to qgn_note_info
+  * Fixed #15856: TN does not restart bg-killed applications
+  * windowmanager.c:
+  * - Added automated topping of killed applications.
+  * - Minimization support improvements required by automated topping
+    fix.
+  * - Handle a rare situation with 0-length _NET_CLIENT_LIST X property
+    properly.
+  * Fixed #16179: saved picture cannot be selected as background image
+  * - Modified: hildon-home/hildon-home-main.c
+
+ -- Nokia <nokia>  Thu,  4 Aug 2005 12:13:24 +0300
+
+maemo-af-desktop (1.35.0-1) unstable; urgency=low
+
+  * Removed all references to libxtst
+  * Fixed #16337: Maemo-af-desktop crashes with broken background image
+  * hildon-home-main.c
+  * - including logging headers
+  * - set_default_background_image()
+  * -- removing old files and symlink to intall time generated images
+  * - refresh_background_image()
+  * -- change in check procedure to catch corrupted image file
+
+ -- Nokia <nokia>  Tue,  2 Aug 2005 15:26:19 +0300
+
+maemo-af-desktop (1.34.0-1) unstable; urgency=low
+
+  * Fixed #14536: On setting background image, a note "Loading image"
+    note does not display
+  * Fixed #15041: On selecting the same image as a background the apply
+    button should be dimmed
+  * Fixed #15786: "Set background image" doesn't indicate the active
+    image -TRUE
+
+ -- Nokia <nokia>  Mon,  1 Aug 2005 17:29:15 +0300
+
+maemo-af-desktop (1.33.0-2) unstable; urgency=low
+
+  * Added dependency for libosso-dev version >= 0.9.10
+
+ -- Nokia <nokia>  Wed, 27 Jul 2005 18:17:09 +0300
+
+maemo-af-desktop (1.33.0-1) unstable; urgency=low
+
+  * Fixed #1660 (Removed logging functions)
+  * hildon-home/hildon-home-plugin-loader.c: Included the log-
+    functions.h
+  * hildon-home/hildon-home-main.c: Included the log-functions.h
+  * hildon-status-bar/hildon-status-bar-[main|item|lib].c: Included the
+    log-functions.h
+  * hildon-navigator/others-menu.c: Included the log-functions.h
+  * hildon-navigator/application-switcher.c: Included the log-
+    functions.h
+  * hildon-navigator/windowmanager.c: Included the log-functions.h
+  * hildon-navigator/osso-manager.c: Included the log-functions.h
+  * hildon-navigator/hildon-navigator-main.c: Included the log-
+    functions.h
+
+ -- nokia <nokia>  Thu, 21 Jul 2005 16:51:11 +0300
+
+maemo-af-desktop (1.32.0-1) unstable; urgency=low
+
+  * Fixed #13749 (Home background not ready during first boot)
+  * debian/maemo-af-desktop.postinst: usage of image loader
+  * hildon-home/hildon-home-main.c: symlinks to pregenerated image files
+
+ -- nokia <nokia>  Mon, 18 Jul 2005 17:10:24 +0300
+
+maemo-af-desktop (1.31.0-1) unstable; urgency=low
+
+  * Fixed #14798 ((Program names not truncated correctly in task
+    navigator)
+  * application-switcher.h: Changed incorrect menu width max value to
+    comply with the current specifications
+  * application-switcher.c:
+  *  - AS menu fixed to check for the max. allocatable width.
+  *  - AS menu button gets activated when opened with long home press
+  * windowmanager.c:
+  *  - Moved often-done check for the subname property to its own
+    function
+  *  - Now we actually _always_ read the whole subname property
+  * Added support for the maemo launcher as an compile-time option
+
+ -- nokia <nokia>  Mon, 11 Jul 2005 15:32:06 +0300
+
+maemo-af-desktop (1.30.0-1) unstable; urgency=low
+
+  * Fixed #13372 (When looping through the menuitems set  pointers to
+    NULL before assigning new values.)
+  * Fixed #15459 (Home application seems to load and have in RAM two
+    backgrounds at the same time)
+  * hildon-home-main.c: Setting widget name removed
+  * others-menu.c: When looping through the menuitems set  pointers to
+    NULL before assigning new values.
+
+ -- nokia <nokia>  Fri,  8 Jul 2005 15:53:05 +0300
+
+maemo-af-desktop (1.29.0-1) unstable; urgency=low
+
+  * Fixed #14901 (Application Switcher menu item names end with a hyphen
+    ( - ))
+  * Fixed #14975 (Status bar: tapping on connectivity icons steels focus
+    from application switcher)
+  * Fixed #14976 (Focus indicator is lost if tooltip is shown for the
+    topmost application in Application switcher.)
+  * Fixed #14185 (Improvements to background killing)
+  * windowmanager.c: Use _NET_SHOWING_DESKTOP property instead of
+    combination of _NET_ACTIVE_WINDOW and WM_CLASS to determine whether
+    the desktop is topped.
+  * - Fixes to killed application handling
+  * - Supports lowmem_on / lowmem off signals
+  * application-switcher.c: Fixed a flawed string test.
+  * - Listen for lowmem on/off signals
+
+ -- nokia <nokia>  Mon,  4 Jul 2005 15:46:50 +0300
+
+maemo-af-desktop (1.28.0-1) unstable; urgency=low
+
+  * Fixed #11084: Code review comments for hildon-home-main.c
+  * Fixed #11088: Code review comments for hildon-home-plugin-loader.c
+  * Fixed #11090: Code review comments for hildon-home-image-loader.c
+  * hildon-home-main.c:
+  * - strcmp to g_str functions.
+  * - Extra checks removed before doing g_free.
+  * maemo-af-desktop/hildon-home/hildon-home-main.h
+  * - order of declarations changed
+  * maemo-af-desktop/hildon-home/hildon-home-plugin-loader.c
+  * - plugin path construction made better to maintain by define format
+  * string
+  * maemo-af-desktop/hildon-home/hildon-home-image-loader.c
+  * - handle from gnome_vfs_init closed with gnome_vfs_close
+  * - main() argument handling simplified and strcmp calls removed
+  * fixed #14574: Home - Set background image - truncation
+  * hildon-home-main.c:
+  * - Set the size request for the combo of background selection dialog
+    to make it fill the available space
+  * Fixed #13742: Selecting Home from the Task Navigator Application
+    Swither menu starts the previously accessed application.
+  * windowmanager.c:
+  * - Fixed application switcher menu behaviour
+  * Fixed #11126: Code review comments for hildon-status-bar-item.c
+  * Fixed #11127: Code review comments for hildon-status-bar-lib.c
+  * Fixed #11131: Code review comments for hildon-status-bar-main.c
+  * - Modified: hildon-status-bar-item.h hildon-status-bar-item.c
+    hildon-status-bar-lib.h hildon-status-bar-lib.c hildon-status-bar-
+    main.c hildon-status-bar-main.h
+
+ -- nokia <nokia>  Mon,  4 Jul 2005 15:36:57 +0300
+
+maemo-af-desktop (1.27.0-2) unstable; urgency=low
+
+  * Added shared-mime-info dependencty to maemo-af-desktop binary
+    package
+
+ -- nokia <nokia>  Mon, 20 Jun 2005 16:05:52 +0300
+
+maemo-af-desktop (1.27.0-1) unstable; urgency=low
+
+  * Fixed #13388 (Whole device hangs while dragging in Others menu)
+  * hildon-home-main.[ch]:
+  * - Added a break check in to a while loop
+  * Fixed #14547: Home Application (maemo-af-desktop): Applet sizes
+    incorrect
+  * hildon-home-main.h:
+  * - Applet sizes and layout change
+
+ -- Nokia <nokia>  Fri, 17 Jun 2005 09:55:47 +0300
+
+maemo-af-desktop (1.26.0-1) unstable; urgency=low
+
+  * windowmanager.c:
+  * - memory handling correction to Task Navigator
+  * Fixed #14249: libosso broadcasts private signal to everybody
+  * windowmanager.c:
+  * - Launch banner changed to use method call instead of signal.
+  * Fixed #11100 ("Code review comments for application-switcher.c")
+  * Fixed #11102 ("Code review comments for hildon-navigator-main.c")
+  * Fixed #11105 ("Code review comments for hildon-navigator.c")
+  * Fixed #11119 ("Code review comments for osso-manager.c")
+  * Fixed #11121 ("Code review comments for others-menu.c")
+  * Fixed #11125 ("Code review comments for windowmanager.c")
+  * maemo-af-desktop/hildon-navigator/application-switcher.c
+  * maemo-af-desktop/hildon-navigator/application-switcher.h
+  * - moved defines to header
+  * - strcmp to glib functions
+  * - logging with osso_log
+  * - defines for magic numebers
+  * maemo-af-desktop/hildon-navigator/hildon-navigator-main.c
+  * - TRACE debug removed
+  * maemo-af-desktop/hildon-navigator/hildon-navigator.h
+  * - enumerated defines
+  * maemo-af-desktop/hildon-navigator/osso-manager.c
+  * maemo-af-desktop/hildon-navigator/osso-manager.h
+  * - moved defines to header
+  * - logging with osso_log
+  * - defines for magic numebers
+  * maemo-af-desktop/hildon-navigator/others-menu.c
+  * maemo-af-desktop/hildon-navigator/others-menu.h
+  * - moved defines to header
+  * - strcmp to glib functions
+  * - logging with osso_log
+  * - defines for magic numebers
+  * - function declarations to start of file
+  * - others_menu_get_items()
+  * -- checks for correct directory name added for creating submenu
+    labels
+  * maemo-af-desktop/hildon-navigator/windowmanager.c
+  * maemo-af-desktop/hildon-navigator/windowmanager.h
+  * - moved defines to header
+  * - strcmp to glib functions
+  * - logging with osso_log
+  * - defines for magic numebers
+  * - create_notify_handler()
+  * -- initiliazation of attrs.override_redirect added
+  * Cleaned up forbidden words
+  * - Modified: hildon-home-plugin-interface.h hildon-navigator-lib.h
+    hildon-navigator-main.h de_DE.po en_EN.po en_GB.po en_US.po es_ES.po
+    es_MX.po fi_FI.po fr_CA.po fr_FR.po it_IT.po pt_BR.po ru_RU.po
+
+ -- Nokia <nokia>  Thu, 16 Jun 2005 19:03:17 +0300
+
+maemo-af-desktop (1.25.0-1) unstable; urgency=low
+
+  * Fixed #13753 Application switcher arrows shown in dimmed state when
+    device is booted
+  * hildon-navigator-main.c,maemo-af-desktop-main.c:
+  * - Initial display of TN GUI is again done by TN itself, not by the
+    maemo initialization.
+
+ -- Nokia <nokia>  Tue, 14 Jun 2005 12:41:00 +0300
+
+maemo-af-desktop (1.24.0-1) unstable; urgency=low
+
+  * Image mime support for Home image loading.
+  * maemo-af-desktop/Makefile.am:
+  * - added maemo-af-desktop.postinst and maemo-af-desktop.xml to
+    EXTRA_DIST
+  * maemo-af-desktop/debian/control:
+  * - depency to mimetype database
+  * maemo-af-desktop/debian/maemo-af-desktop.install:
+  * - directory to be installed and containing maemo-af-desktop.xml
+  * maemo-af-desktop/debian/maemo-af-desktop.postinst:
+  * - new, script to update mime database
+  * maemo-af-desktop/debian/maemo-af-desktop.xml:
+  * - new, defination of required image mimetypes
+  * maemo-af-desktop/debian/rules:
+  * - rules to install mime types
+  * --
+  * hildon-navigator/windowmanager.c:
+  * - Improved the handling of view registrations for situations where
+    the asynchronity of X and hildonapp changes caused problems.
+  * Fixed #10558: FR_CA Home memory card cover: no message when open
+  * hildon-home-image-loader.c:
+  * - uri prefix comparision changed in function load_image_from_uri()
+  * hildon-home-image-loader.h:
+  * - mmc uri prefix defined
+  * Fixed #10062: Plugin API issues
+  * hildon-navigator-dev.install:
+  * - installs navigators interface header and package config
+  * control:
+  * - Added -dev package
+
+ -- Nokia <nokia>  Mon, 13 Jun 2005 15:33:45 +0300
+
+maemo-af-desktop (1.23.0-1) unstable; urgency=low
+
+  * Fixed #12273: de-DE Notes, Teach Handwriting: application name in
+    loading banner still in English
+  * en_GB.po:
+  * - Added teach localisation
+
+ -- Nokia <nokia>  Mon,  6 Jun 2005 10:37:45 +0300
+
+maemo-af-desktop (1.22.0-1) unstable; urgency=low
+
+  * hildon-home-main.h:
+  * - new layout guide values for applet area
+  * hildon-home-image-viewer.h:
+  * - updated apple area size
+  * Fixed #9309: Minor code review comment for Hildon-Status-Bar
+  * hildon-status-bar-main.c:
+  * - some includes removed duplicates included headers.
+  * - Renamed a variable.
+  * - Added logging and improved message clarity
+  * - Fixed a real bug and another real bug.
+  * - Clarified logic.
+  * hildon-status-bar-item.c:
+  * - config.h included first
+  * - unnecessary include removed.
+  * hildon-status-bar-lib.c:
+  * - removed g_print
+  * Fixed #5424: AF SYTE: Icon for a minimized application remains in
+    depressed state on the Task Navigator when Control Panel application
+    is active.
+  * Fixed #4459: AF SYTE: Icons on the Application Switcher area of the
+    Task Navigator do not get re-arranged when we move between
+    applications.
+  * Fixed #8806: When a file is opened from the filemanager, the app.
+    icons are not stacked in the right order in the task panel.
+  * Fixed #9655: When a search result is opened, the icons in the
+    application switcher area donot get re-ordered
+  * Fixed #8075: Application switcher icons have bad behaviour
+  * Fixed #7128: The task navigator does not notice (an application)
+    raising a window
+  * Fixed #3671: TN - Application Switcher & Bookmark Manager
+  * -- Lots of modifications: application-switcher.[ch],windowmanager.c
+  
+ -- Nokia <nokia>  Fri,  3 Jun 2005 13:22:30 +0300
+
+maemo-af-desktop (1.21.0-1) unstable; urgency=low
+
+  * Changed to use LAUNCHWRAPPER_NICE
+
+ -- Nokia <nokia>  Fri, 27 May 2005 11:59:09 +0300
+
+maemo-af-desktop (1.20.0-1) unstable; urgency=low
+
+  * Updated menu structure to meet 2.5 spec
+  * Added support for launching CP plugins from menu
+  * Fixed #10607: Application titles are implemented using a wrong font
+    and placed incorrectly
+  * hildon-home-main.h:
+  * - Changed the fixed value for title alignment
+  * Fixed #10443: Switching themes leaks pixmaps
+
+ -- Nokia <nokia>  Tue, 24 May 2005 19:44:10 +0300
+
+maemo-af-desktop (1.19.0-1) unstable; urgency=low
+
+  * Fixed some packaging errors
+
+ -- Nokia <nokia>  Thu, 19 May 2005 17:51:01 +0300
+
+maemo-af-desktop (1.18.0-1) unstable; urgency=low
+
+  * Update to match CVS HEAD
+
+ -- Nokia <nokia>  Tue, 17 May 2005 15:15:05 +0300
+
+maemo-af-desktop (1.17.0) unstable; urgency=low
+
+  * initial version of maemo-af-desktop, week 17 release
+
+ -- Karoliina Salminen <karoliina.t.salminen at nokia dot com>  Fri, 29 Apr 2005 10:58:41 +0300
+
+

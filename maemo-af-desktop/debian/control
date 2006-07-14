@@ -1,0 +1,60 @@
+Source: maemo-af-desktop
+Section: x11
+Priority: optional
+Maintainer: Johan Bilien <johan.bilien@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), hildon-libs-dev (>= 0.12.2), pkg-config, libosso-dev (>= 0.9.19), libosso-gnomevfs2-dev, osso-af-settings, hildon-base-lib-dev (>= 0.9.3), shared-mime-info, hildon-fm-dev (>= 0.15), libosso-help-dev, libxtst-dev, libxml2-dev, osso-esd-dev
+Standards-Version: 3.6.0
+ 
+Package: maemo-af-desktop
+Section: x11
+Architecture: any
+Depends:  ${shlibs:Depends}, ${misc:Depends}, maemo-af-desktop-l10n-mr | maemo-af-desktop-l10n-mr0, hildon-libs0 (>= 0.7.1), hildon-base-lib0 (>= 0.9.3), matchbox-window-manager, hildon-status-bar-lib0 (=${Source-Version}), shared-mime-info, default-backgrounds-config, libosso-common-error0 (>= 0.1.6-2), osso-gnomevfs-extra, libgtk2.0-bin, maemo-af-desktop-config
+Conflicts: hildon-base, hildon-navigator, hildon-status-bar, hildon-home, home-image-loader
+Replaces: hildon-base, hildon-navigator, hildon-status-bar, hildon-home, hildon-image-loader
+Provides: hildon-navigator, hildon-status-bar, hildon-home, home-image-loader
+Description: Maemo AF Desktop
+
+Package: hildon-status-bar-lib0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: hildon-status-bar-lib
+Replaces: hildon-status-bar-lib
+Description: Hildon Status Bar library
+
+Package: libhildonmenu0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Library to handle freedesktop.org applications menu.
+
+Package: libhildonmenu-dev
+Section: devel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libhildonmenu0 (=${Source-Version}), libxml2-dev
+Description: libhildonmenu development files
+
+Package: hildon-status-bar-lib-dev
+Section: devel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-status-bar-lib0 (=${Source-Version}), hildon-libs-dev
+Description: Hildon Status Bar development files
+
+Package: hildon-navigator-dev
+Section: devel
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, pkg-config, hildon-libs-dev
+Description: Hildon Tasknavigator development files
+
+Package: hildon-home-dev
+Section: devel
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, pkg-config, libgtk2.0-dev, hildon-libs-dev
+Conflicts: hildon-base
+Description: Hildon Home development files
+
+Package: maemo-af-desktop-dbg
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Debug symbols for maemo-af-desktop

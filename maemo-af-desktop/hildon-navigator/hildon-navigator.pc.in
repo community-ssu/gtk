@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@/hildon-navigator-dev
+localedir=@localedir@
+pluginlibdir=@hildonnavigatorlibdir@
+
+Name: hildon-navigator
+Description: Hildon Navigator
+Requires: hildon-libs >= 0.7.1
+Version: @VERSION@
+Cflags: -I${includedir}
