@@ -3,6 +3,9 @@
 	* hildon-home/home-select-applets-dialog.c:
 	  - select_applets_selected(): fixed memory leak
 	    in list of removed items. (Fixes #34197)
+	* hildon-navigator/others-menu.c:
+	  - others_menu_initialize_menu(): fixed memory leak
+	    in g_path_get_dirname. (Fixes #34218)
 
 2006-07-14  Johan Bilien <johan.bilien@nokia.com>
 

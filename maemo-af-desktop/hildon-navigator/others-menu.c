@@ -511,6 +511,7 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 {
     gchar *user_home_dir = NULL;
     gchar *user_menu_conf_file = NULL;
+    gchar *systemwide_menu_path;
 
     g_return_if_fail(om);
     create_empty_menu(om);
@@ -545,15 +546,16 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
       }
 	
     /* Watch systemwide menu conf */
+    systemwide_menu_path = g_path_get_dirname( SYSTEMWIDE_MENU_FILE );
     if ( hildon_dnotify_set_cb(
 			    (hildon_dnotify_cb_f *)dnotify_handler,
-			    g_path_get_dirname( SYSTEMWIDE_MENU_FILE ),
+			    systemwide_menu_path,
 			    om ) != HILDON_OK) {
 	    ULOG_ERR( "others_menu_initialize_menu: "
 			    "failed setting dnotify callback "
 			    "for systemwide menu conf." );
     }
-
+    g_free (systemwide_menu_path);
     /* Watch user specific menu conf */
     user_home_dir = getenv( "HOME" );
     if( !user_home_dir ){
