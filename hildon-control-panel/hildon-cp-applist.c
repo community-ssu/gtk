@@ -44,7 +44,6 @@
 #include "hildon-cp-item.h"
 #include "cp-grid.h"
 #include "cp-grid-item.h"
-#include "hildon-control-panel-main-utils.h"
 
 #define _(String) gettext(String)
 
