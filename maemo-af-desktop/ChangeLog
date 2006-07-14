@@ -1,3 +1,9 @@
+2006-07-14  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-home/home-select-applets-dialog.c:
+	  - select_applets_selected(): fixed memory leak
+	    in list of removed items. (Fixes #34197)
+
 2006-07-14  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "HOME:No info banner is displayed on selecting "Edit

@@ -286,7 +286,7 @@ void select_applets_selected(GtkEventBox *home_event_box,
                              GtkWidget *titlebar_label)
 {	
    GList *added_applets;
-   GList *removed_applets;  
+   GList *removed_applets, *iter_removed_applets;  
 	
    /* Return if no home available */
    g_return_if_fail(home_event_box && home_fixed);
@@ -316,20 +316,20 @@ void select_applets_selected(GtkEventBox *home_event_box,
    }
    /* If applets are to be removed */
    else if ( removed_applets ) {
-       removed_applets = g_list_first(removed_applets);
+       iter_removed_applets = g_list_first(removed_applets);
        
-       while( removed_applets ) {
+       while( iter_removed_applets ) {
    	       
            /* Deinitialize removed applets */
 	   GtkEventBox *removed_event = applet_manager_get_eventbox
-		   (applet_manager_instance, (gchar *)removed_applets->data);
+		   (applet_manager_instance, (gchar *)iter_removed_applets->data);
            applet_manager_deinitialize(applet_manager_instance, 
-			               (gchar *)removed_applets->data);
+			               (gchar *)iter_removed_applets->data);
 	   gtk_container_remove(GTK_CONTAINER(home_fixed), 
 			        GTK_WIDGET(removed_event));
 	   removed_event = NULL;
 	   
-           removed_applets = removed_applets->next;
+           iter_removed_applets = iter_removed_applets->next;
        }	  
        applet_manager_configure_save_all(applet_manager_instance);   
    }
