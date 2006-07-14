@@ -162,6 +162,7 @@ G_BEGIN_DECLS
 #define HILDON_HOME_TITLEBAR_MENU_SELECT_APPLETS   _("home_me_select_applets")
 #define HILDON_HOME_TITLEBAR_MENU_APPLET_SETTINGS  _("home_me_applet_settings")
 #define HILDON_HOME_MENU_APPLET_SETTINGS_NOAVAIL   _("home_ib_not_available")
+#define HILDON_HOME_MENU_EDIT_LAYOUT_NOAVAIL       _("home_ib_select_applets")
 #define HILDON_HOME_TITLEBAR_MENU_EDIT_LAYOUT      _("home_me_edit_layout")
 #define HILDON_HOME_TITLEBAR_MENU_TOOLS            _("home_me_tools")
 #define HILDON_HOME_TITLEBAR_SUB_SET_BG            _("home_me_tools_set_background")
@@ -250,6 +251,8 @@ void show_file_corrupt_note(void);
 void show_file_unreadable_note(void);
 void show_mmc_cover_open_note(void);
 void show_flash_full_note(void);
+
+void home_layoutmode_menuitem_sensitivity_check(void);
 
 G_END_DECLS
 

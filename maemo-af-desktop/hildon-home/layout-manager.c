@@ -786,14 +786,14 @@ void layout_mode_end ( gboolean rollback )
 		ULOG_ERR("LAYOUT:Added applet, removing\n");
 		applet_manager_deinitialize(man, node->applet_identifier );
 		gtk_widget_destroy(node->ebox); /* How about finalizing the
-						 applet? Memory leak potential
+                                                   applet? Memory leak potential
 						*/
-        node->ebox = NULL;
+                node->ebox = NULL;
 	    }
 	    else 
 	    {
-            if(node->ebox)
-                gtk_widget_queue_draw(node->ebox);
+                if(node->ebox)
+                    gtk_widget_queue_draw(node->ebox);
 	    }
 	    if (!node->added)
 	    {
@@ -893,6 +893,8 @@ void layout_mode_end ( gboolean rollback )
 		  NULL, 
 		  0,
 		  NULL);
+
+    home_layoutmode_menuitem_sensitivity_check();
 
 }
 

@@ -85,6 +85,7 @@ static GtkWidget *home_fixed;
 static GtkWidget *menu_used;
 static GtkWidget *titlebar_label;
 static GtkWidget *titlebar_menu = NULL;
+static GtkWidget *titlebar_menu_layoutmode_item = NULL;
 static GtkWidget *applets_settings_item = NULL;
 static GtkWidget *titlebar_submenu_settings = NULL;
 
@@ -153,6 +154,10 @@ gint get_priority_from_treemodel(GtkTreeModel *tree, GtkTreeIter *iter);
 static gboolean no_applets_settings_callback(GtkWidget *widget,
                                              GdkEvent *event,
                                              gpointer unused);
+
+static gboolean layout_insensitive_callback(GtkWidget *widget,
+                                            GdkEvent *event,
+                                            gpointer unused);
 
 static gboolean layout_mode_selected(GtkWidget *widget,
                      GdkEvent *event,
@@ -393,7 +398,6 @@ static
 void construct_titlebar_menu()
 {    
     GtkWidget *select_applets_item;
-    GtkWidget *layout_item;
 
     GtkWidget *tools_item;
     GtkWidget *titlebar_submenu;
@@ -436,13 +440,16 @@ void construct_titlebar_menu()
 
     /* Layout mode launch */
 
-    layout_item = 
+    titlebar_menu_layoutmode_item = 
         gtk_menu_item_new_with_label(HILDON_HOME_TITLEBAR_MENU_EDIT_LAYOUT);
-    gtk_widget_show(layout_item);
-    gtk_menu_append(GTK_MENU(titlebar_menu), layout_item);
-    g_signal_connect(G_OBJECT(layout_item), "activate",
+    gtk_widget_show(titlebar_menu_layoutmode_item);
+    gtk_menu_append(GTK_MENU(titlebar_menu), titlebar_menu_layoutmode_item);
+    g_signal_connect(G_OBJECT(titlebar_menu_layoutmode_item), "activate",
 		     G_CALLBACK(layout_mode_selected), 
 		     NULL);
+    g_signal_connect(G_OBJECT(titlebar_menu_layoutmode_item), "insensitive_press",
+                     G_CALLBACK(layout_insensitive_callback),
+                     NULL);
 
     /* Sub menu: tools */
 
@@ -455,6 +462,8 @@ void construct_titlebar_menu()
     gtk_menu_append(GTK_MENU(titlebar_menu), tools_item);
     gtk_widget_show(tools_item);   
     
+    home_layoutmode_menuitem_sensitivity_check();
+
     /* FIXME is this option anymore ?*/
     if(background_changable)
     {
@@ -506,6 +515,8 @@ static void call_select_applets_dialog(GtkWidget *widget,
     select_applets_selected(GTK_EVENT_BOX(home_area_eventbox), 
                             GTK_FIXED(home_fixed),
                             titlebar_label);
+    
+    home_layoutmode_menuitem_sensitivity_check();
 }
 
 
@@ -1076,6 +1087,53 @@ gboolean no_applets_settings_callback(GtkWidget *widget,
             HILDON_HOME_MENU_APPLET_SETTINGS_NOAVAIL);
 
     return TRUE;
+}
+
+/**
+ * @layout_insensitive_callback
+ *
+ * @param widget The parent widget
+ * @param event The event that caused this callback
+ * @param unused standard cb data pointer, unused (null) 
+ * 
+ * @return TRUE (keeps cb alive)
+ * 
+ * Shows infoprint when layout mode is not able to be selected due no
+ * applets
+ **/
+static 
+gboolean layout_insensitive_callback(GtkWidget *widget, 
+                                      GdkEvent *event,
+                                      gpointer unused)
+
+{    
+    hildon_banner_show_information(NULL, NULL, 
+            HILDON_HOME_MENU_EDIT_LAYOUT_NOAVAIL);
+
+    return TRUE;
+}
+
+/**
+ * @home_layoutmode_menuitem_sensitivity_check
+ *
+ * Checks if there is any applets loaded and if not, menuitem is
+ * dimmed
+ *
+ */
+void home_layoutmode_menuitem_sensitivity_check(void)
+{
+    GList *list = NULL;
+    applet_manager_t *man = applet_manager_singleton_get_instance();
+    list = applet_manager_get_identifier_all(man);
+
+    /* if no applets, menu item is dimmed */
+    if(list == NULL)
+    {
+        gtk_widget_set_sensitive(titlebar_menu_layoutmode_item, FALSE);
+    } else
+    {
+        gtk_widget_set_sensitive(titlebar_menu_layoutmode_item, TRUE);
+    }
 }
 
 /**
@@ -2620,7 +2678,7 @@ static void construct_applets(void)
             gtk_widget_show_all(applet);
         }
     }
-    applet_manager_foreground_all(man);
+    applet_manager_foreground_all(man);    
 }
 
 /**

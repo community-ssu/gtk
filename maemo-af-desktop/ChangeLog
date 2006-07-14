@@ -1,5 +1,27 @@
 2006-07-14  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "HOME:No info banner is displayed on selecting "Edit
+	layout" when no applets are selected."
+	* hildon-home/hildon-home-main.c:
+	  - call_select_applets_dialog(): Added function call to update
+	    sensitivity status of layoutmode menuitem
+	  - construct_titlebar_menu(): moved layout item to global and
+	    namespaced. New call back for insensitive press. Sensitivity check.
+	  - layout_insensitive_callback(): new function to show information note
+	    for informing user that applets are needed to use layoutmode.
+	  - home_layoutmode_menuitem_sensitivity_check(): new function to check
+	    existence of any applet. Updates edit layoutmode menu item
+	    sensitivity accordingly.
+	* hildon-home/layout-manager.c:
+	  - layout_mode_end(): Added function call to request home to update
+	    sensitivity status of layoutmode menuitem. Indent fix for
+	    readability.
+	* hildon-home/hildon-home-main.h:
+	  - new logical_id definition for banner
+	  - added new function prototype 
+
+2006-07-14  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-sound.[ch]: Check the return value of
 	  esd_play_sample
 	* hildon-navigator/hn-app-switcher.c: If playing of sample failed,
