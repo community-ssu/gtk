@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<gconfschemafile>
+  <schemalist>
+    <schema>
+      <key>/schemas/apps/osso/apps/controlpanel/groups</key>
+      <applyto>/apps/osso/apps/controlpanel/groups</applyto>
+      <owner>controlpanel</owner>
+      <type>list</type>
+      <list_type>string</list_type>
+      <default>[copa_ia_general,copa_ia_connectivity,copa_ia_personalisation]</default>
+      <locale name="C"/>
+    </schema>
+    <schema>
+      <key>/schemas/apps/osso/apps/controlpanel/group_ids</key>
+      <applyto>/apps/osso/apps/controlpanel/group_ids</applyto>
+      <owner>controlpanel</owner>
+      <type>list</type>
+      <list_type>string</list_type>
+      <default>[general,connectivity,personalisation]</default>
+      <locale name="C"/>
+    </schema>
+    <schema>
+      <key>/schemas/apps/osso/apps/controlpanel/icon_size</key>
+      <applyto>/apps/osso/apps/controlpanel/icon_size</applyto>
+      <owner>controlpanel</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C"/>
+    </schema>
+  </schemalist>
+</gconfschemafile>
