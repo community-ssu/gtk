@@ -108,9 +108,10 @@ hcp_al_read_desktop_entries (const gchar *dir_path, GHashTable *entries)
             continue;
         }
 
-        name = g_key_file_get_string (keyfile,
+        name = g_key_file_get_locale_string (keyfile,
                 HCP_DESKTOP_GROUP,
                 HCP_DESKTOP_KEY_NAME,
+                NULL /* current locale */,
                 &error);
 
         if (error)
