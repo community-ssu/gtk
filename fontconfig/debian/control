@@ -46,4 +46,4 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, libfontconfig1 (= ${Source-Version})
 Description: Debugging symbols for libfontconfig1.
- This one goes to /usr/lib/debug and shadows the /usr/lib/ shared libraries.
+ Debug symbols for the library in /usr/lib/debug/usr/lib/.

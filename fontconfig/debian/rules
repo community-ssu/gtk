@@ -54,9 +54,6 @@ install: build
 	install -d $(CURDIR)/debian/tmp/etc/gconf/schemas
 	install -m 644 hildon_fontconfig.schemas $(CURDIR)/debian/tmp/etc/gconf/schemas/
 	install -m 644 device_symbols.h $(CURDIR)/debian/tmp/usr/include/
-	install -d $(CURDIR)/debian/tmp/usr/lib/debug
-	install $(CURDIR)/debian/tmp/usr/lib/libfontconfig.so.?.?.? $(CURDIR)/debian/tmp/usr/lib/debug/
-#	cp --no-dereference $(CURDIR)/debian/tmp/usr/lib/*.so.* $(CURDIR)/debian/tmp/usr/lib/debug/
 
 binary-indep: build install
 
@@ -65,10 +62,10 @@ binary-arch: build install
 	dh_testroot
 	dh_installchangelogs
 	dh_install --sourcedir=debian/tmp -v
-	dh_strip --dbg-package=libfontconfig1-dbg
+	dh_strip --dbg-package=libfontconfig1
 	dh_link
 	dh_fixperms
-#	dh_makeshlibs -V
+	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
