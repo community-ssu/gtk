@@ -5,7 +5,10 @@ fontconfig (2.3.95-1osso1) unstable; urgency=low
   * removed already integrated patches from build
   * added thumb compilation to Debian build options, fixes NB#26665
   * added dh_fixperms, fixes NB#33546
+  * changed the way debug package is built, added shlibs generation, fixes
+    NB#34018
   * Missing ldconfig call (updated compat level from 3 to 4), fixes NB#34020
+  * Removed static lib from -dev package. Fixed NB#34022
 
  -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed, 12 Jul 2006 11:24:08 +0300
 
