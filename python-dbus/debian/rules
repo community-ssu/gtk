@@ -27,7 +27,7 @@ clean:
 	$(PYTHON) setup.py clean --all
 	-rm -f build-stamp
 	-rm -rf $(d_base) $(d_dev)
-	-rm -f extrace.py[co]
+	-rm -f dbus/*.py[co]
 	dh_clean 
 
 install: build
