@@ -1,4 +1,9 @@
 2006-07-17  Johan Bilien <johan.bilien@nokia.com>
+	
+	* hildon-navigator/hn-app-switcher.c: fixed another potential invalid
+	  read reported by valgrind
+
+2006-07-17  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: fixed a potential invalid
 	  read reported by valgrind

@@ -1249,7 +1249,7 @@ remove_entry_from_app_button (HNAppSwitcher *app_switcher,
       if (e == entry_info)
         {
           hn_app_button_set_group (HN_APP_BUTTON (button), NULL);
-	  hn_app_button_set_entry_info (HN_APP_BUTTON (button), NULL);
+          hn_app_button_set_entry_info (HN_APP_BUTTON (button), NULL);
           priv->buttons_group = hn_app_button_get_group (HN_APP_BUTTON (button));
 	  break;
 	}
@@ -1333,9 +1333,6 @@ refresh_buttons (gpointer user_data)
   for (pos = AS_APP1_BUTTON; pos < N_BUTTONS; pos++)
     {
       HNAppButton *button = HN_APP_BUTTON (priv->buttons[pos]);
-
-      HN_DBG ("buttons_group.size := %d",
-	      g_slist_length (priv->buttons_group));
 
       hn_app_button_set_group (button, NULL);
       hn_app_button_set_entry_info (button, NULL);
