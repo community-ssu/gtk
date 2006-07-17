@@ -1,12 +1,13 @@
 import os
+import sys
 
 from distutils.core import setup
 from distutils.extension import Extension
 from distutils.command.clean import clean
 from Pyrex.Distutils import build_ext
 
+sys.path.append("dbus")
 import extract
-
 
 def remove(filename):
     if os.path.exists(filename):
@@ -15,12 +16,12 @@ def remove(filename):
 class full_clean(clean):
     def run(self):
         clean.run(self)
-        remove("extract.pyo")
-        remove("dbus_bindings.pxd")
-        remove("dbus_bindings.c")
-        remove("dbus_glib_bindings.c")
+        remove("dbus/extract.pyo")
+        remove("dbus/dbus_bindings.pxd")
+        remove("dbus/dbus_bindings.c")
+        remove("dbus/dbus_glib_bindings.c")
 
-includedirs_flag = ['-I.']
+includedirs_flag = ['-I.', '-Idbus/']
 dbus_includes = ['.']
 dbus_glib_includes = ['.']
 
@@ -46,8 +47,8 @@ if error:
 includedirs_flag.extend(output.split())
 dbus_glib_includes.extend([ x.replace("-I", "") for x in output.split() ])
 
-output = open("dbus_bindings.pxd", 'w')
-extract.main("dbus_bindings.pxd.in", includedirs_flag, output)
+output = open("dbus/dbus_bindings.pxd", 'w')
+extract.main("dbus/dbus_bindings.pxd.in", includedirs_flag, output)
 output.close()
 
 long_desc = '''D-BUS is a message bus system, a simple way for applications to
@@ -69,30 +70,27 @@ setup(
     url='http://dbus.freedesktop.org/',
     author='John (J5) Palmieri',
     author_email='johnp@redhat.com',
-    maintainer='Osvaldo Santana Neto',
-    maintainer_email='osvaldo.santana@indt.org.br',
-    package_dir={'dbus': '.'},
-    extra_path='dbus',
+    packages=['dbus'],
     py_modules=[
-        "_dbus",
-        "exceptions",
-        "glib",
-        "__init__",
-        "matchrules",
-        "service",
-        "types",
-        "decorators",
-        "introspect_parser",
-        "proxies",
-        "_util",
+        "dbus/_dbus",
+        "dbus/exceptions",
+        "dbus/glib",
+        "dbus/__init__",
+        "dbus/matchrules",
+        "dbus/service",
+        "dbus/types",
+        "dbus/decorators",
+        "dbus/introspect_parser",
+        "dbus/proxies",
+        "dbus/_util",
     ], 
 	ext_modules=[
-        Extension("dbus_bindings", ["dbus_bindings.pyx"],
+        Extension("dbus_bindings", ["dbus/dbus_bindings.pyx"],
             include_dirs=dbus_includes,
             libraries=["dbus-1"],
 
         ),
-        Extension("dbus_glib_bindings", ["dbus_glib_bindings.pyx"],
+        Extension("dbus_glib_bindings", ["dbus/dbus_glib_bindings.pyx"],
             include_dirs=dbus_glib_includes,
             libraries=["dbus-glib-1", "dbus-1", "glib-2.0"],
             define_macros=[
