@@ -1,3 +1,10 @@
+python-dbus (0.61-1osso6) unstable; urgency=low
+
+  * fixed a bug related conflicting module names with pygtk
+  * reorganizing dbus directories
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Mon, 17 Jul 2006 14:27:26 -0300
+
 python-dbus (0.61-1osso5) unstable; urgency=low
 
   * minor cleanups in debian/rules
