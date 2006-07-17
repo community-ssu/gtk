@@ -1250,6 +1250,7 @@ remove_entry_from_app_button (HNAppSwitcher *app_switcher,
         {
           hn_app_button_set_group (HN_APP_BUTTON (button), NULL);
 	  hn_app_button_set_entry_info (HN_APP_BUTTON (button), NULL);
+          priv->buttons_group = hn_app_button_get_group (HN_APP_BUTTON (button));
 	  break;
 	}
     }
