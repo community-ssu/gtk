@@ -375,12 +375,41 @@ hn_app_button_create_menu (HNAppButton *app_button)
   return menu;
 }
 
+void
+hn_app_button_make_active (HNAppButton *button)
+{
+  g_return_if_fail (button);
+
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), TRUE);
+  gtk_toggle_button_toggled (GTK_TOGGLE_BUTTON (button));
+
+  /* reset the previous button to NULL -- this function is called by
+     AS in response to MB stacking order changes
+   */
+  button->priv->prev_button = NULL;
+}
+
 static void
 menu_unmap_cb (GtkWidget   *widget,
 	       HNAppButton *app_button)
 {
   gtk_widget_destroy (widget);
   app_button->priv->menu = NULL;
+
+  /* we always deactivate the button when the menu closes, and wait for MB
+   * notification of change in stacking order to ensure that the button
+   * selection always matches the stacking order (i.e., if the app fails to
+   * start or top, we do not want the button selected)
+   */
+  if (app_button->priv->prev_button &&
+      app_button->priv->prev_button != GTK_TOGGLE_BUTTON(app_button))
+    {
+      HN_DBG ("Retoggling previously toggled button");
+	 
+      gtk_toggle_button_set_active (app_button->priv->prev_button, TRUE);
+      gtk_toggle_button_toggled (app_button->priv->prev_button);
+    }
+  
 }
 
 static gboolean
@@ -622,7 +651,8 @@ hn_app_button_release_event (GtkWidget      *widget,
   HNAppButton *app_button = HN_APP_BUTTON (widget);
   HNAppButtonPrivate *priv = app_button->priv;
   gint x,y;
-      
+  gboolean force_untoggle = FALSE;
+  gboolean untoggle = FALSE;
   
   HN_DBG("Button released ...");
 
@@ -652,7 +682,19 @@ hn_app_button_release_event (GtkWidget      *widget,
   if(x > widget->allocation.width  || x < 0 ||
      y > widget->allocation.height || y < 0)
     {
-      /* pointer outside the button, i.e., press canceled */
+      untoggle = TRUE;
+    }
+  else if (priv->info && hn_entry_info_get_n_children (priv->info) == 1)
+    {
+      /* single window application, i.e., no submenu -- have to untogle
+       * the button and wait for MB notification of change in stacking order
+       * to make the toggle permanent
+       */
+      force_untoggle = TRUE;
+    }
+    
+  if(untoggle || force_untoggle)
+    {
       if (priv->prev_button)
         {
           HN_DBG ("Retoggling previously toggled button");
@@ -660,12 +702,16 @@ hn_app_button_release_event (GtkWidget      *widget,
 	  gtk_toggle_button_set_active (priv->prev_button, TRUE);
 	  gtk_toggle_button_toggled (priv->prev_button);
 	}
-      
-      goto out;
-    }
 
+      if (untoggle)
+        {
+          /* click canceled -- we are done */
+          goto out;
+        }
+    }
+  
   hn_app_button_pop_menu (app_button);
-    
+
  out:
   /* reset the thumbable flag, to avoid problems if the menu is raised
    * some other way than via pointer (should really only be an issue for
@@ -694,9 +740,8 @@ hn_app_button_press_event (GtkWidget      *widget,
   GtkButton *button;
   GtkToggleButton *toggle_button;
   GtkToggleButton *tmp_button = NULL;
-  HNEntryInfo *info;
   GSList *l;
-  gint n_children;
+  HNEntryInfo *info;
   
   g_return_val_if_fail (widget && event, FALSE);
   
@@ -730,21 +775,17 @@ hn_app_button_press_event (GtkWidget      *widget,
         {
           priv->prev_button = tmp_button;
           break;
-	}
+        }
     }
   
   gtk_toggle_button_set_active (toggle_button, TRUE);
   gtk_toggle_button_toggled (toggle_button);
-
-#if 0
-  gtk_widget_grab_focus (widget);
-#endif
   
   info = priv->info;
   if (!info)
     {
       g_warning ("No entry info bound to this button!");
-
+      
       return FALSE;
     }
 
@@ -759,22 +800,6 @@ hn_app_button_press_event (GtkWidget      *widget,
                                 NULL,
                                 NULL);
   
-  n_children = hn_entry_info_get_n_children (info);
-  if (!n_children)
-    {
-      g_warning ("No children bound to this entry info");
-
-      return FALSE;
-    }
-
-  if (n_children == 1)
-    {
-      /* application gets topped on button release, not press */
-      gtk_button_clicked (button);
-      
-      return TRUE;
-    }
-
   return FALSE;
 }
 

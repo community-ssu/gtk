@@ -63,12 +63,14 @@ struct _HNAppSwitcherClass
 {
   GtkVBoxClass parent_class;
   
-  void (*add_info)     (HNAppSwitcher *app_switcher,
-		        HNEntryInfo   *entry_info);
-  void (*remove_info)  (HNAppSwitcher *app_switcher,
-		        HNEntryInfo   *entry_info);
-  void (*changed_info) (HNAppSwitcher *app_switcher,
-		        HNEntryInfo   *entry_info);
+  void (*add_info)      (HNAppSwitcher *app_switcher,
+		         HNEntryInfo   *entry_info);
+  void (*remove_info)   (HNAppSwitcher *app_switcher,
+		         HNEntryInfo   *entry_info);
+  void (*changed_info)  (HNAppSwitcher *app_switcher,
+		         HNEntryInfo   *entry_info);
+  void (*changed_stack) (HNAppSwitcher *app_switcher,
+		  	 HNEntryInfo   *entry_info);
   
   /* relay signals from the bus */
   void (*shutdown) (HNAppSwitcher *app_switcher);
@@ -93,6 +95,8 @@ void       hn_app_switcher_remove        (HNAppSwitcher *app_switcher,
 				          HNEntryInfo   *entry_info);
 void       hn_app_switcher_changed       (HNAppSwitcher *app_switcher,
 				          HNEntryInfo   *entry_info);
+void       hn_app_switcher_changed_stack (HNAppSwitcher *app_switcher,
+					  HNEntryInfo   *entry_info);
 
 void       hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher);
 

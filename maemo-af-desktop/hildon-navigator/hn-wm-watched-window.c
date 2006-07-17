@@ -285,9 +285,8 @@ hn_wm_watched_window_process_hildon_view_active (HNWMWatchedWindow *win)
           HNEntryInfo *info;
 
 	  info = hn_wm_watched_window_view_get_info (view);
-	  hn_app_switcher_changed (hn_wm_get_app_switcher (), info);
-	  
 	  hn_wm_watched_window_set_active_view (win, view);
+	  hn_app_switcher_changed_stack (hn_wm_get_app_switcher (), info);
 	  
 	  goto out;
 	}
@@ -437,37 +436,11 @@ hn_wm_watched_window_process_wm_state (HNWMWatchedWindow *win)
   if (state[0] == IconicState)
     {
       hn_wm_watchable_app_set_minimised (app, TRUE);
-
-      if (hn_wm_watched_window_get_views (win))
-	{
-	  GList      *iter;
-	  iter = hn_wm_watched_window_get_views (win);
-
-	  while (iter != NULL)
-	    {
-	      HNWMWatchedWindowView *view = iter->data;
-	      HNEntryInfo *info;
-
-	      info = hn_wm_watched_window_view_get_info (view);
-	      hn_app_switcher_changed (hn_wm_get_app_switcher (), info);
-
-	      iter  = g_list_next(iter);
-	    }
-	}
-      else
-	{
-          HNEntryInfo *info;
-
-	  info = hn_wm_watched_window_peek_info (win);
-	  
-	  /* Window with no views */
-	  hn_app_switcher_changed (hn_wm_get_app_switcher (), info);
-	}
     }
   else /* Assume non minimised state */
-   {
-     hn_wm_watchable_app_set_minimised (app, FALSE);
-   }
+    {
+      hn_wm_watchable_app_set_minimised (app, FALSE);
+    }
 
  out:
 

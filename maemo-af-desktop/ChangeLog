@@ -1,3 +1,12 @@
+2006-07-17  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-app-switcher.c:
+	  - added CHANGED_STACK signal to handle notifications from MB
+	    about changes in the window stack order
+	* hildon-navigator/hn-app-button.c:
+	  - untoggle the button after a click and wait for changes in the window
+	    stack to avoid AS and window stack not being synchronized
+
 2006-07-14  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-home/home-select-applets-dialog.c:
@@ -10,7 +19,7 @@
 2006-07-14  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "HOME:No info banner is displayed on selecting "Edit
-	layout" when no applets are selected."
+	layout" when no applets are selected." (Closes NB#31838)
 	* hildon-home/hildon-home-main.c:
 	  - call_select_applets_dialog(): Added function call to update
 	    sensitivity status of layoutmode menuitem

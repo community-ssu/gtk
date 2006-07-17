@@ -227,6 +227,7 @@ enum
   ADD_INFO,
   REMOVE_INFO,
   CHANGED_INFO,
+  CHANGED_STACK,
   SHUTDOWN,
   LOWMEM,
   BGKILL,
@@ -905,7 +906,7 @@ menu_button_pressed_cb (GtkWidget      *widget,
 
   hn_wm_activate(HN_TN_DEACTIVATE_KEY_FOCUS);
 
-  if(event->button == APP_BUTTON_THUMBABLE)
+  if(event->button == APP_BUTTON_THUMBABLE || event->button == 2)
     priv->is_thumbable = TRUE;
   else
     priv->is_thumbable = FALSE;
@@ -1635,6 +1636,7 @@ hn_app_switcher_real_remove_info (HNAppSwitcher *app_switcher,
     }
 }
 
+
 /* Class closure for the "changed" signal; this is called each time
  * an entry inside the applications list has been changed by the WM,
  * for instance when the icon or the title changes.
@@ -1654,12 +1656,6 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
   if (priv->main_menu)
     gtk_widget_destroy (priv->main_menu);
 
-  /* FIXME -- the change info signal is used to indicate not only changes to
-   * info, but also when a window is topped; this code does not handle that,
-   * as it requires rebuilding of the main menu buttons I will leave it here
-   * for now, in case we endup using a separate signal for windw topping
-   */
-  
   /*
    * If we are given an entry info and it of the app type, we just need to
    * update at most one button
@@ -1816,6 +1812,70 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
     queue_refresh_buttons (app_switcher);
 }
 
+
+/* Class closure for the "changed-stack" signal; this is called each time
+ * The TN receives notification from MB about window/view being topped. 
+ */
+static void
+hn_app_switcher_real_changed_stack (HNAppSwitcher *app_switcher,
+				    HNEntryInfo   *entry_info)
+{
+  gint                   pos;
+  GList                * l;
+  HNAppSwitcherPrivate * priv = app_switcher->priv;
+  HNEntryInfo          * parent;
+  
+  HN_DBG ("In hn_app_switcher_real_changed_stack");
+  
+  if (!entry_info || !hn_entry_info_is_active (entry_info))
+    {
+      /* rebuild everything, since we were not told what has been topped
+       * issue warning, as this is not how this function is meant to be
+       * called
+       */
+      g_warning ("No entry_info provided");
+      
+      queue_refresh_buttons (app_switcher);
+      return;
+    }
+  
+
+  if(entry_info->type == HN_ENTRY_WATCHED_APP)
+    {
+      /* we only accept entries for windows and views */
+      g_warning ("Cannot handle HN_ENTRY_WATCHED_APP");
+      return;
+    }
+  
+  parent = hn_entry_info_get_parent (entry_info);
+
+  if (!parent)
+    {
+      g_warning ("Orphan entry info");
+      return;
+    }
+  
+  /* locate the associated button, and toggle it */
+  for (l = priv->applications, pos = AS_APP1_BUTTON;
+       l != NULL && pos < N_BUTTONS;
+       l = l->next, pos++)
+    {
+      HNEntryInfo *entry = l->data;
+          
+      if(parent == entry)
+	{
+	  hn_app_button_make_active (HN_APP_BUTTON(priv->buttons[pos]));
+	  break;
+	}
+    }
+
+  /* if the entry that is becoming top is marked as urgent, we also have to
+   * deal with the button blinking
+   */
+  if(hn_entry_info_is_urgent(entry_info))
+    hn_app_switcher_real_changed_info (app_switcher, entry_info);
+}
+
 static void
 hn_app_switcher_real_lowmem (HNAppSwitcher *app_switcher,
                              gboolean       is_on)
@@ -1914,6 +1974,16 @@ hn_app_switcher_class_init (HNAppSwitcherClass *klass)
                   g_cclosure_marshal_VOID__POINTER,
                   G_TYPE_NONE, 1,
                   G_TYPE_POINTER);
+
+  app_switcher_signals[CHANGED_STACK] =
+    g_signal_new ("changed-stack",
+		  G_TYPE_FROM_CLASS (klass),
+		  G_SIGNAL_RUN_FIRST,
+		  G_STRUCT_OFFSET (HNAppSwitcherClass, changed_stack),
+		  NULL, NULL,
+		  g_cclosure_marshal_VOID__POINTER,
+		  G_TYPE_NONE, 1,
+		  G_TYPE_POINTER);
   
   app_switcher_signals[SHUTDOWN] =
     g_signal_new ("shutdown",
@@ -1947,7 +2017,8 @@ hn_app_switcher_class_init (HNAppSwitcherClass *klass)
   klass->add_info = hn_app_switcher_real_add_info;
   klass->remove_info = hn_app_switcher_real_remove_info;
   klass->changed_info = hn_app_switcher_real_changed_info;
-
+  klass->changed_stack = hn_app_switcher_real_changed_stack;
+  
   klass->lowmem = hn_app_switcher_real_lowmem;
   
   g_type_class_add_private (klass, sizeof (HNAppSwitcherPrivate));
@@ -2016,6 +2087,18 @@ hn_app_switcher_changed (HNAppSwitcher *app_switcher,
   HN_DBG ("Emitting the CHANGED_INFO signal");
   
   g_signal_emit (app_switcher, app_switcher_signals[CHANGED_INFO], 0, entry_info);
+}
+
+void
+hn_app_switcher_changed_stack (HNAppSwitcher *app_switcher,
+			       HNEntryInfo   *entry_info)
+{
+  g_return_if_fail (HN_IS_APP_SWITCHER (app_switcher));
+  g_return_if_fail (HN_ENTRY_INFO_IS_VALID_TYPE (entry_info->type));
+
+  HN_DBG ("Emitting the CHANGED_STACK signal");
+
+  g_signal_emit (app_switcher, app_switcher_signals[CHANGED_STACK], 0, entry_info);
 }
 
 GList *

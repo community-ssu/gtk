@@ -196,9 +196,6 @@ hn_wm_top_item (HNEntryInfo *info)
 				 0,
 				 0,
 				 0);
-      
-      HN_DBG("... and topping service");
-      hn_wm_top_service(hn_wm_watchable_app_get_service (app));
 
       if(!single_view)
         return;
@@ -349,8 +346,13 @@ hn_wm_top_service(const gchar *service_name)
           if (!view) /* There is no active so just grab the first one */
             {
               view = (HNWMWatchedWindowView *)((hn_wm_watched_window_get_views (win))->data);
+              HN_DBG ("Window does not have active view !!!");
               hn_wm_watched_window_set_active_view(win, view);
             }
+          else
+            HN_DBG ("Active view [%s]",
+                    hn_wm_watched_window_view_get_name(view));
+
         }
 
       if (hn_wm_watched_window_is_hibernating(win))
@@ -391,8 +393,6 @@ hn_wm_top_service(const gchar *service_name)
       
       if (view)
 	{
-	  HNEntryInfo *info;
-      
 	  hn_wm_util_send_x_message (hn_wm_watched_window_view_get_id (view),
 				     hn_wm_watched_window_get_x_win (win),
 				     hnwm.atoms[HN_ATOM_HILDON_VIEW_ACTIVE],
@@ -403,9 +403,6 @@ hn_wm_top_service(const gchar *service_name)
 				     0,
 				     0,
 				     0);
-
- 	  info = hn_wm_watched_window_view_get_info (view);
- 	  hn_app_switcher_changed (hnwm.app_switcher, info);
 	}
       else
 	{
@@ -836,6 +833,8 @@ hn_wm_process_mb_current_app_window (void)
   Window            *app_xwin;
   GList             *views;
 
+  HN_DBG ("called");
+  
   if(hnwm.active_window)
     previous_app_xwin = hn_wm_watched_window_get_x_win (hnwm.active_window);
   
@@ -877,7 +876,7 @@ hn_wm_process_mb_current_app_window (void)
               HNWMWatchedWindowView *view = l->data;
               HNEntryInfo *info = hn_wm_watched_window_view_get_info (view);
 
-              hn_app_switcher_changed (hnwm.app_switcher, info);
+              hn_app_switcher_changed_stack (hnwm.app_switcher, info);
             }
         }
       else
@@ -886,7 +885,7 @@ hn_wm_process_mb_current_app_window (void)
           HN_DBG("Window 0x%x just became active", (int)win);
           HNEntryInfo *info = hn_wm_watched_window_peek_info (win);
       
-          hn_app_switcher_changed (hnwm.app_switcher, info);
+          hn_app_switcher_changed_stack (hnwm.app_switcher, info);
       
         }
     }
