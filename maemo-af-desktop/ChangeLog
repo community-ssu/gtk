@@ -1,5 +1,9 @@
 2006-07-17  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.13
+
+2006-07-17  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-switcher.c:
 	  - added CHANGED_STACK signal to handle notifications from MB
 	    about changes in the window stack order
