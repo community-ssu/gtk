@@ -2,6 +2,7 @@ python-dbus (0.61-1osso6) unstable; urgency=low
 
   * fixed a bug related conflicting module names with pygtk
   * reorganizing dbus directories
+  * added pkg-config build dependency
 
  -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Mon, 17 Jul 2006 14:27:26 -0300
 
