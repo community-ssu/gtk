@@ -1,3 +1,7 @@
+2006-07-18  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-home/screenshot.h: Removed unnecesary repeated code.
+
 2006-07-18  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/others-menu.c: Removed legacy "toggle" handler,
