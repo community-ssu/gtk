@@ -625,11 +625,19 @@ gboolean ossohelp_dialog_help_enable( GtkDialog *dialog,
                                       const gchar *topic,
                                       osso_context_t *osso )
 {
-    gulong sigid = -1;
+    gulong sigid;
+    gulong *sigid_p;
     if (!dialog)
         return FALSE;   /* bad parameters */
 
     g_object_set_data(G_OBJECT(dialog), "help-topic", NULL);
+    sigid_p = (gulong*) g_object_get_data(G_OBJECT(dialog), "help-signal");
+
+    if (sigid_p) {
+        sigid = *sigid_p;
+    } else {
+        sigid = -1;
+    }
 
     /* If topic == NULL, disable the ? icon */
     if (!topic){
@@ -655,6 +663,10 @@ gboolean ossohelp_dialog_help_enable( GtkDialog *dialog,
 
     sigid = g_signal_connect( GTK_OBJECT (dialog), "help",
                       G_CALLBACK (on_help), (gpointer)osso);
+
+    sigid_p = g_new0(gulong, 1);
+    *sigid_p = sigid;
+    g_object_set_data_full(G_OBJECT(dialog), "help-signal", sigid_p, g_free);
 
     return TRUE;    
 }

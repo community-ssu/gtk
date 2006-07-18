@@ -1,3 +1,9 @@
+2006-07-18 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 2.0.2
+	* src/osso-helplib.c:ossohelp_dialog_help_enable(): storing and checking the help signal for a dialog.
+	Fixes NB#33600
+
 2006-06-05 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* Version 2.0.1
