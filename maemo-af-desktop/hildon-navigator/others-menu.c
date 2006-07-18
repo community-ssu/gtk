@@ -393,6 +393,7 @@ static void get_menu_position(GtkMenu * menu, gint * x, gint * y)
     } else {
 	*y = MENU_Y_POS;
     }
+
 }
 
 static void others_menu_show(OthersMenu_t * om)
@@ -431,6 +432,8 @@ static gboolean press_collapser(gpointer data)
     {
         hildon_menu_set_thumb_mode(om->menu, FALSE);
     }
+        
+    gtk_widget_realize(GTK_WIDGET(om->menu));
 
     others_menu_show(om);
     om->collapse_id = 0;
@@ -474,23 +477,6 @@ static gboolean others_menu_button_button_release(GtkWidget *widget,
     return TRUE;
 }
 
-static void
-others_menu_button_toggled (GtkToggleButton *toggle,
-							OthersMenu_t    *om)
-{
-	g_return_if_fail(om);
-	
-	if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (toggle)))
-	{
-		HN_DBG ("button not active -- not showing menu");
-		return;
-	}
-	
-	HN_DBG ("showing menu");
-    others_menu_show(om);
-}
-
-
 static void create_empty_menu(OthersMenu_t *om)
 {
     om->menu = GTK_MENU(gtk_menu_new());
@@ -525,8 +511,6 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
  		     G_CALLBACK(others_menu_button_button_press), om);
     g_signal_connect(G_OBJECT(om->toggle_button), "button-release-event",
              G_CALLBACK(others_menu_button_button_release), om);
-    g_signal_connect(G_OBJECT(om->toggle_button), "toggled",
- 		     G_CALLBACK(others_menu_button_toggled), om);
     g_signal_connect(G_OBJECT(om->toggle_button), "key-press-event",
  		     G_CALLBACK(others_menu_button_key_press), om);
 

@@ -1,5 +1,10 @@
 2006-07-18  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/others-menu.c: Removed legacy "toggle" handler,
+	  we now handle the button_press directly (Closes NB#35186)
+
+2006-07-18  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Thumbnail view missing for application switcher menu"
 	(Closes NB#34591)
 	* hildon-navigator/hn-app-switcher.c: toggle the button on a 
