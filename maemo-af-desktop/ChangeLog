@@ -1,3 +1,10 @@
+2006-07-18  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Thumbnail view missing for application switcher menu"
+	(Closes NB#34591)
+	* hildon-navigator/hn-app-switcher.c: toggle the button on a 
+	  button8 press or a global key shortcut
+
 2006-07-17  Johan Bilien <johan.bilien@nokia.com>
 	
 	* hildon-navigator/hn-app-switcher.c: fixed another potential invalid
