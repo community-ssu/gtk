@@ -81,6 +81,7 @@ struct HNWMWatchableApp
   gchar     *app_name; 		/* window title */
   gchar     *exec_name; 		/* class || exec field ? */
   gchar     *class_name;        
+  gchar     *text_domain;        
   GtkWidget *ping_timeout_note; /* The note that is shown when the app quits responding */
   HNWMWatchedWindow    *active_window;
   HNWMWatchableAppFlags flags;
@@ -134,7 +135,7 @@ hn_wm_watchable_app_new (const char * file)
 {
   HNWMWatchableApp *app = NULL;
   gchar            *service, *icon_name, *startup_notify;
-  gchar            *startup_wmclass, *exec_name, *app_name;
+  gchar            *startup_wmclass, *exec_name, *app_name, *text_domain;
   GKeyFile         *key_file;
 
   g_return_val_if_fail(file &&
@@ -193,6 +194,11 @@ hn_wm_watchable_app_new (const char * file)
                                         DESKTOP_STARTUPNOTIFY,
                                         NULL);
   
+  text_domain = g_key_file_get_value(key_file,
+                                   "Desktop Entry",
+                                   DESKTOP_TEXT_DOMAIN_FIELD,
+                                   NULL);
+  
   app = g_new0 (HNWMWatchableApp, 1);
 
   if (!app)
@@ -203,6 +209,7 @@ hn_wm_watchable_app_new (const char * file)
       g_free(service);
       g_free(icon_name);
       g_free(startup_notify);
+      g_free(text_domain);
       goto out;
     }
 
@@ -210,6 +217,7 @@ hn_wm_watchable_app_new (const char * file)
   app->service        = service;    
   app->app_name       = app_name; 
   app->exec_name      = exec_name;
+  app->text_domain    = text_domain;
 
   HNWM_APP_SET_FLAG (app, HNWM_APP_STARTUP_NOTIFY); /* Default */
 
@@ -475,6 +483,9 @@ hn_wm_watchable_app_destroy (HNWMWatchableApp *app)
   if(app->extra_icon)
     g_free(app->extra_icon);
   
+  if(app->text_domain)
+    g_free(app->text_domain);
+  
   if(app->info)
     hn_entry_info_free (app->info);
 
@@ -502,6 +513,7 @@ hn_wm_watchable_app_launch_banner_show (HNWMWatchableApp *app)
 {
   HNWMLaunchBannerInfo *info;
   guint                 interval;
+  gchar                *lapp_name;
 
   g_return_if_fail(app);
   
@@ -515,10 +527,13 @@ hn_wm_watchable_app_launch_banner_show (HNWMWatchableApp *app)
 
   gdk_error_trap_push(); 	/* Needed ? */
 
+  lapp_name = (app->text_domain?dgettext(app->text_domain,app->app_name):
+                                gettext(app->app_name));
+
   info->msg = g_strdup_printf(_(hn_wm_watchable_app_is_hibernating(app) ?
                                 APP_LAUNCH_BANNER_MSG_RESUMING :
                                 APP_LAUNCH_BANNER_MSG_LOADING ),
-                              app->app_name ? _(app->app_name) : "" );
+                              lapp_name ? _(lapp_name) : "" );
         
   info->banner = GTK_WIDGET(hildon_banner_show_animation(NULL, NULL, info->msg));
   gdk_error_trap_pop();

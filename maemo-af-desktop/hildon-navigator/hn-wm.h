@@ -85,6 +85,7 @@
 #define DESKTOP_ICON_PATH_FIELD       "X-Icon-path"
 #define DESKTOP_SUP_WMCLASS           "StartupWMClass"
 #define DESKTOP_STARTUPNOTIFY         "StartupNotify"
+#define DESKTOP_TEXT_DOMAIN_FIELD     "X-Text-Domain"
 #define DESKTOP_SUFFIX                ".desktop"
 
 /* Maemo Launcher DBus interface

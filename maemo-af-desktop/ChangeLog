@@ -1,5 +1,10 @@
 2006-07-19  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm-watchable-app.c: Use the newly defined
+	  "X-Text-Domain" to translate the launch banner as well
+
+2006-07-19  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.[ch]: Added new X-Text-Domain optional
 	  field to fetch L10n from other domains than m-a-d (Closes NB#35248)
 	* hildon-navigator/others-menu.[ch]: 
