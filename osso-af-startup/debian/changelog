@@ -1,3 +1,10 @@
+osso-af-startup (1.21-2) unstable; urgency=low
+
+  * Now calling HW keyboard layout configuration app if one exists.
+    Fixes: NB#34412
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Wed, 19 Jul 2006 13:18:21 +0300
+
 osso-af-startup (1.21-1) unstable; urgency=low
 
   * Added definition for HILDON_FM_OBEX_ROOT and DISABLE_GATEWAY.
