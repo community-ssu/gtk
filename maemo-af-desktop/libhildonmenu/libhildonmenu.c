@@ -38,6 +38,7 @@ typedef struct {
 	gchar *exec;
 	gchar *service;
 	gchar *desktop_id;
+	gchar *text_domain;
 	gboolean allocated;
 } desktop_entry_t;
 
@@ -74,6 +75,7 @@ static void destroy_desktop_item(gpointer data, gpointer null)
     g_free(de->icon);
     g_free(de->exec);
     g_free(de->service);
+    g_free(de->text_domain);
     g_free(de->desktop_id);
 
     g_free(de);
@@ -332,6 +334,12 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
                 g_free(item->service);
                 item->service = s;
             }
+			
+            item->text_domain = g_key_file_get_string(
+					key_file,
+					DESKTOP_ENTRY_GROUP,
+					DESKTOP_ENTRY_TEXT_DOMAIN_FIELD,
+					NULL);
 
 			item->desktop_id = g_strdup( dir_entry->d_name );
 
@@ -666,6 +674,8 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 							item->service,
 							TREE_MODEL_DESKTOP_ID,
 							item->desktop_id,
+                            TREE_MODEL_TEXT_DOMAIN,
+                            item->text_domain,
 							TREE_MODEL_COMMENT,
 							item->comment,
 							-1);
@@ -841,6 +851,8 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						item->exec,
 						TREE_MODEL_SERVICE,
 						item->service,
+                        TREE_MODEL_TEXT_DOMAIN,
+                        item->text_domain,
 						TREE_MODEL_DESKTOP_ID,
 						item->desktop_id,
 						-1 );
@@ -904,7 +916,8 @@ GtkTreeModel *get_menu_contents(void)
 			G_TYPE_STRING,	   /* Exec */
 			G_TYPE_STRING,	   /* Service  */
 			G_TYPE_STRING,	   /* Desktop ID */
-			G_TYPE_STRING	   /* Comment */
+			G_TYPE_STRING,     /* Comment */
+			G_TYPE_STRING	   /* Text domain */
 			);
 		
 	gtk_tree_store_append(contents, &content_iter, NULL);

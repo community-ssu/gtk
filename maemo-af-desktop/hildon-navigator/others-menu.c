@@ -638,6 +638,7 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
     gchar     *item_exec       = NULL;
     gchar     *item_service    = NULL;
     gchar     *item_desktop_id = NULL;
+    gchar     *item_text_domain= NULL;
 
     gboolean iter_created_by_me = FALSE;
 
@@ -683,6 +684,7 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 	    item_service    = NULL;
 	    item_desktop_id = NULL;
 	    item_comment    = NULL;
+	    item_text_domain= NULL;
 
 	    gtk_tree_model_get( model, iter,
 			    TREE_MODEL_NAME,
@@ -699,6 +701,8 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 			    &item_desktop_id,
                 TREE_MODEL_COMMENT,
                 &item_comment,
+                TREE_MODEL_TEXT_DOMAIN,
+                &item_text_domain,
 			    -1);
 
         children = 0;
@@ -714,12 +718,27 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
                     HILDON_NAVIGATOR_MENU_NAME);
 
 		    /* Create a menu item and add it to the menu.
-		     * FIXME: Localization?
 		     */
 		    children = gtk_tree_model_iter_n_children (model, iter);
-            child_string = g_strdup_printf("%i items", children);
+            switch (children) {
+                case 0:
+                    child_string = g_strdup(MENU_ITEM_N_EMPTY);
+                    break;
+                case 1:
+                    child_string = g_strdup(MENU_ITEM_N_ITEM);
+                    break;
+                default:
+                    child_string = g_strdup_printf(MENU_ITEM_N_ITEMS, children);
+                    break;
+            }
+
             menu_item = hildon_thumb_menu_item_new_with_labels(
-                    _(item_name), NULL, child_string);
+                    /* If the text domain was provided, use it to translate
+                     * the name, otherwise use "maemo-af-desktop" */
+                    ((item_text_domain && *item_text_domain)?
+                        dgettext(item_text_domain, item_name):
+                        _(item_name)),
+                     NULL, child_string);
             g_free(child_string);
 
 		    gtk_menu_shell_append(GTK_MENU_SHELL(menu),
@@ -752,11 +771,26 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
                         HILDON_NAVIGATOR_MENU_NAME);
 
 			    /* Create a menu item and add it to the menu.
-			     * FIXME: Localization?
 			     */
-                child_string = g_strdup_printf("%i items", children);
+                children = gtk_tree_model_iter_n_children (model, iter);
+                switch (children) {
+                    case 0:
+                        child_string = g_strdup(MENU_ITEM_N_EMPTY);
+                        break;
+                    case 1:
+                        child_string = g_strdup(MENU_ITEM_N_ITEM);
+                        break;
+                    default:
+                        child_string = g_strdup_printf(MENU_ITEM_N_ITEMS, children);
+                        break;
+                }
                 menu_item = hildon_thumb_menu_item_new_with_labels(
-                        _(item_name), NULL, child_string);
+                    /* If the text domain was provided, use it to translate
+                     * the name, otherwise use "maemo-af-desktop" */
+                    ((item_text_domain && *item_text_domain)?
+                        dgettext(item_text_domain, item_name):
+                        _(item_name)),
+                    NULL, child_string);
                 g_free(child_string);
 
 			    gtk_menu_shell_append(GTK_MENU_SHELL(menu),
@@ -797,7 +831,12 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 		    /* Application */
 
             menu_item = hildon_thumb_menu_item_new_with_labels(
-                    _(item_name), NULL, 
+                    /* If the text domain was provided, use it to translate
+                     * the name, otherwise use "maemo-af-desktop" */
+                    ((item_text_domain && *item_text_domain)?
+                        dgettext(item_text_domain, item_name):
+                        _(item_name)),
+                    NULL, 
                     /* work around strange behaviour of gettext for empty
                      * strings */
                     (item_comment && *item_comment)?_(item_comment):"");
@@ -846,6 +885,7 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 	    g_free(item_service);
 	    g_free(item_desktop_id);
 	    g_free(item_comment);
+	    g_free(item_text_domain);
 	    
     } while (gtk_tree_model_iter_next(model, iter));
 

@@ -46,6 +46,10 @@
 #define MENU_ITEM_DEFAULT_APP_ICON    "qgn_list_gene_default_app"
 #define MENU_ITEM_ICON_SIZE           26
 
+#define MENU_ITEM_N_ITEM              dgettext("hildon-fm", "sfil_li_folder_contents_item")
+#define MENU_ITEM_N_ITEMS              dgettext("hildon-fm", "sfil_li_folder_contents_items")
+#define MENU_ITEM_N_EMPTY              dgettext("hildon-fm", "sfil_li_folder_contents_empty")
+
 #define MENU_ITEM_EMPTY_SUBMENU_STRING _( "tana_li_of_noapps" )
 
 #define BORDER_WIDTH 7

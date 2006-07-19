@@ -1325,7 +1325,7 @@ refresh_app_button (HNAppSwitcher *app_switcher,
   if (hn_entry_info_is_active (entry))
     {
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->buttons[pos]),
-		                    hn_entry_info_is_active (entry));
+		                            TRUE);
       gtk_toggle_button_toggled (GTK_TOGGLE_BUTTON (priv->buttons[pos]));
     }
   
@@ -1510,23 +1510,23 @@ hn_app_switcher_real_add_info (HNAppSwitcher *app_switcher,
          * list and process them when the application item is added
          */
         HN_DBG ("Adding new child to AS ...");
-        app = hn_entry_info_get_app(entry_info);
-        e = hn_app_switcher_find_app_for_child(app_switcher, entry_info);
+        app = hn_entry_info_get_app (entry_info);
+        e = hn_app_switcher_find_app_for_child (app_switcher, entry_info);
 
-        if(!e)
+        if (!e)
           {
             e = hn_wm_watchable_app_get_info(app);
             if(!e)
               {
-                g_warning("Could not create HNEntryInfo for app.");
+                g_warning ("Could not create HNEntryInfo for app.");
                 return;
               }
             
-            priv->applications = g_list_prepend(priv->applications, e);
+            priv->applications = g_list_prepend (priv->applications, e);
             
           }
         
-        hn_entry_info_add_child(e, entry_info);
+        hn_entry_info_add_child (e, entry_info);
         break;
       case HN_ENTRY_WATCHED_APP:
         /* we handle adding of applications internally in AS */

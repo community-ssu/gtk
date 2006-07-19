@@ -1,3 +1,11 @@
+2006-07-19  Johan Bilien <johan.bilien@nokia.com>
+
+	* libhildonmenu/libhildonmenu.[ch]: Added new X-Text-Domain optional
+	  field to fetch L10n from other domains than m-a-d (Closes NB#35248)
+	* hildon-navigator/others-menu.[ch]: 
+	  - Use this field if present to translate the name of entries.
+	  - Properly translate the second line for folders
+
 2006-07-18  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-home/screenshot.h: Removed unnecesary repeated code.

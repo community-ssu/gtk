@@ -8,12 +8,13 @@
 G_BEGIN_DECLS
 
 /* [Desktop Entry] */
-#define DESKTOP_ENTRY_TYPE_FIELD     "Type"
-#define DESKTOP_ENTRY_ICON_FIELD     "Icon"
-#define DESKTOP_ENTRY_NAME_FIELD     "Name"
-#define DESKTOP_ENTRY_COMMENT_FIELD  "Comment"
-#define DESKTOP_ENTRY_EXEC_FIELD     "Exec"
-#define DESKTOP_ENTRY_SERVICE_FIELD  "X-Osso-Service"
+#define DESKTOP_ENTRY_TYPE_FIELD        "Type"
+#define DESKTOP_ENTRY_ICON_FIELD        "Icon"
+#define DESKTOP_ENTRY_NAME_FIELD        "Name"
+#define DESKTOP_ENTRY_COMMENT_FIELD     "Comment"
+#define DESKTOP_ENTRY_EXEC_FIELD        "Exec"
+#define DESKTOP_ENTRY_SERVICE_FIELD     "X-Osso-Service"
+#define DESKTOP_ENTRY_TEXT_DOMAIN_FIELD "X-Text-Domain"
 
 #define SEPARATOR_STRING   "SEPARATOR"
 #define EXTRAS_MENU_STRING "tana_fi_extras"
@@ -52,6 +53,7 @@ enum {
 	TREE_MODEL_SERVICE,
 	TREE_MODEL_DESKTOP_ID,
 	TREE_MODEL_COMMENT,
+	TREE_MODEL_TEXT_DOMAIN,
 	TREE_MODEL_COLUMNS
 };
 
