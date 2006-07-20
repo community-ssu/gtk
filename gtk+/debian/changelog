@@ -1,11 +1,13 @@
 gtk+2.0 (2:2.6.10-2.osso8) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
-  * debian/control.in: remove xlibs-dev from Build-Depends
-  * Fixes: NB#33120: AF-BAT:Calendar date labels are not updated when
+  * debian/control.in: remove obsolete xlibs-dev from Build-Depends
+  * Fixes: NB#33120 AF-BAT:Calendar date labels are not updated when
     switching languages
+  * Fixes: MB#707 GtkButton Images won't show if the button is created without
+    a label
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 12 Jul 2006 18:04:15 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 20 Jul 2006 12:17:51 +0300
 
 gtk+2.0 (2:2.6.10-2.osso7) unstable; urgency=low
 
