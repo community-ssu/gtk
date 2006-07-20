@@ -1,5 +1,10 @@
 2006-07-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
+	* configure.in: Make the tests for RANDR and SYNC extensions more
+	robust.
+
+2006-07-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
 	Taken from GNOME. M#707
 
     2006-03-05  Matthias Clasen  <mclasen@redhat.com>
