@@ -1,5 +1,12 @@
 2006-07-21  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Blinking icons do not stop blinking when topped from AS."
+	(Closes N#34349)
+	* hildon-navigator/ hn-app-switcher.c: Let the WM tell us when to update
+	  urgency state
+
+2006-07-21  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Trivial leak in window tracking code" (Closes NB#35582)
 	* hildon-navigator/hn-wm.c: Fixed leak of an XWindow in some error
 	  cases

@@ -1823,8 +1823,7 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
   /* either global update (no entry_info) or a more complicated case that
    * was not handled above
    */
-  if (!entry_info)
-    queue_refresh_buttons (app_switcher);
+  queue_refresh_buttons (app_switcher);
 }
 
 
@@ -1884,11 +1883,9 @@ hn_app_switcher_real_changed_stack (HNAppSwitcher *app_switcher,
 	}
     }
 
-  /* if the entry that is becoming top is marked as urgent, we also have to
-   * deal with the button blinking
+  /* we do not worry about the urgency hint here, as we will receive a
+   * notification when it is cleared from the WM
    */
-  if(hn_entry_info_is_urgent(entry_info))
-    hn_app_switcher_real_changed_info (app_switcher, entry_info);
 }
 
 static void
