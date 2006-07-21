@@ -95,16 +95,16 @@
 /* application button compose icon names */
 static const gchar *app_group_icons[] = {
   NULL,                    /* single instance: no icon */
-  "ggn_indi_grouped2",
-  "ggn_indi_grouped3",
-  "ggn_indi_grouped4",
-  "ggn_indi_grouped5",
-  "ggn_indi_grouped6",
-  "ggn_indi_grouped7",
-  "ggn_indi_grouped8",
-  "ggn_indi_grouped9",
+  "qgn_indi_grouped2",
+  "qgn_indi_grouped3",
+  "qgn_indi_grouped4",
+  "qgn_indi_grouped5",
+  "qgn_indi_grouped6",
+  "qgn_indi_grouped7",
+  "qgn_indi_grouped8",
+  "qgn_indi_grouped9",
   
-  "ggn_indi_grouped_more", /* 9+ instances: keep last! */
+  "qgn_indi_grouped_more", /* 9+ instances: keep last! */
 };
 static guint app_group_n_icons = G_N_ELEMENTS (app_group_icons);
 

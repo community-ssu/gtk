@@ -1,5 +1,9 @@
 2006-07-21  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.14
+
+2006-07-21  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/screenshot.c: Removed an assert which actually got
 	  triggered in some situation (Closes NB#33847)
 	* hildon-home/layout-manager.c: Added a sanity check to try to cope

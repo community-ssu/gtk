@@ -1,3 +1,41 @@
+maemo-af-desktop (2.9.14-1) unstable; urgency=low
+
+  * hildon-home/screenshot.c: Removed an assert which actually got
+    triggered in some situation (Closes NB#33847)
+  * hildon-home/layout-manager.c: Added a sanity check to try to cope
+    with this situation
+
+  * hildon-status-bar/hildon-status-bar-main.c: We do need to keep
+    one reference to the plugin, to avoid unloading it when the 
+    conditional status is set to false
+
+  * hildon-navigator/hn-wm-watchable-app.c: Use the newly defined
+    "X-Text-Domain" to translate the launch banner as well
+
+  * libhildonmenu/libhildonmenu.[ch]: Added new X-Text-Domain optional
+    field to fetch L10n from other domains than m-a-d (Closes NB#35248)
+  * hildon-navigator/others-menu.[ch]: 
+    - Use this field if present to translate the name of entries.
+    - Properly translate the second line for folders
+
+  * hildon-home/screenshot.h: Removed unnecesary repeated code.
+
+  * hildon-navigator/others-menu.c: Removed legacy "toggle" handler,
+    we now handle the button_press directly (Closes NB#35186)
+
+  Applied fix to "Thumbnail view missing for application switcher menu"
+  (Closes NB#34591)
+  * hildon-navigator/hn-app-switcher.c: toggle the button on a 
+    button8 press or a global key shortcut
+  
+  * hildon-navigator/hn-app-switcher.c: fixed another potential invalid
+    read reported by valgrind
+
+  * hildon-navigator/hn-app-switcher.c: fixed a potential invalid
+    read reported by valgrind
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 21 Jul 2006 14:13:19 +0300
+
 maemo-af-desktop (2.9.13-1) unstable; urgency=low
 
   * hildon-navigator/hn-app-switcher.c:
