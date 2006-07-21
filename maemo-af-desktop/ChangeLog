@@ -1,3 +1,10 @@
+2006-07-21  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hn-app-switcher.c: Fixed memory leak 
+	  in loading of icon theme.
+	* hildon-navigator/hn-wm-watchable-app.c: Fixed memory leak
+          in failing of g_key_file_new(). (Closes NB#35577) 
+
 2006-07-21  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Blinking icons do not stop blinking when topped from AS."

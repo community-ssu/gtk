@@ -138,13 +138,14 @@ hn_wm_watchable_app_new (const char * file)
   gchar            *startup_wmclass, *exec_name, *app_name, *text_domain;
   GKeyFile         *key_file;
 
-  g_return_val_if_fail(file &&
-                       (key_file = g_key_file_new()) &&
-                       g_key_file_load_from_file (key_file,
-                                                  file,
-                                                  G_KEY_FILE_NONE,
-                                                  NULL),
-                       NULL);
+  g_return_val_if_fail(file && (key_file = g_key_file_new()), NULL);
+
+  if (!g_key_file_load_from_file (key_file, file, G_KEY_FILE_NONE, NULL))
+  {
+    g_warning ("Could not load keyfile [%s]", file);
+    g_key_file_free(key_file);
+    return NULL;
+  }
   
   app_name = g_key_file_get_value(key_file,
                                   "Desktop Entry",

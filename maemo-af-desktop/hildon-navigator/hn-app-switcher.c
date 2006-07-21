@@ -475,8 +475,13 @@ hn_app_switcher_get_icon_from_theme (HNAppSwitcher *app_switcher,
   GError *error;
   GdkPixbuf *retval;
 
+  if (!icon_name)
+    return NULL;
+
   if (!priv->icon_theme)
     priv->icon_theme = gtk_icon_theme_get_default ();
+
+  g_return_val_if_fail (priv->icon_theme, NULL);
 
   if (!icon_name || icon_name[0] == '\0')
     return NULL;
