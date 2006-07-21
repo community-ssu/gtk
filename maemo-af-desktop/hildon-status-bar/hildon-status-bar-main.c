@@ -677,7 +677,7 @@ buffer_item ( StatusBar *panel, GtkWidget * item )
 			
 }
 
-etatic 
+static 
 void reload_configured_plugins( char *applets_path, gpointer user_data )
 {	
     StatusBar *panel = (StatusBar *)user_data;
