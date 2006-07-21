@@ -844,8 +844,11 @@ hn_wm_process_mb_current_app_window (void)
 							 32,
 							 0,
 							 NULL);
-  if (!app_xwin || *app_xwin == previous_app_xwin)
+  if (!app_xwin)
     return;
+
+  if (*app_xwin == previous_app_xwin)
+    goto out;
 
   previous_app_xwin = *app_xwin;
 
@@ -858,7 +861,7 @@ hn_wm_process_mb_current_app_window (void)
       app = hn_wm_watched_window_get_app (win);
       
       if (!app)
-	return;
+        goto out;
 
       hn_wm_watchable_app_set_active_window(app, win);
       
@@ -890,6 +893,7 @@ hn_wm_process_mb_current_app_window (void)
         }
     }
   
+out:
   XFree(app_xwin);
 }
 

@@ -1,5 +1,11 @@
 2006-07-21  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Trivial leak in window tracking code" (Closes NB#35582)
+	* hildon-navigator/hn-wm.c: Fixed leak of an XWindow in some error
+	  cases
+
+2006-07-21  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-watchable-app.c: Fixed a memory leak when
 	  showing the "application died" dialog (Closes NB#35581)
 
