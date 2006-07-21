@@ -562,7 +562,7 @@ gboolean hildon_status_bar_item_get_conditional( HildonStatusBarItem *item )
     HildonStatusBarItemPrivate *priv;
 
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );
-    
+
     return priv->conditional;
 }
 
@@ -587,6 +587,7 @@ void hildon_status_bar_item_set_button( HildonStatusBarItem *item,
 	gtk_widget_unparent(priv->button);   
 	priv->button = NULL;
     }
+
     
     priv->button = button;
    

@@ -1,3 +1,9 @@
+2006-07-21  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c: We do need to keep
+	  one reference to the plugin, to avoid unloading it when the 
+	  conditional status is set to false
+
 2006-07-19  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-wm-watchable-app.c: Use the newly defined
