@@ -67,6 +67,5 @@ GdkPixbuf *screenshot_grab_area(const  gint x,const gint y,
 			height);
 
 
-	g_assert(pixbuf);
 	return pixbuf;
 }

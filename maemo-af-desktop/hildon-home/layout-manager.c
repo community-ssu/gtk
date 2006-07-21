@@ -1760,40 +1760,44 @@ static void draw_cursor (LayoutNode *node, gint offset_x, gint offset_y)
         return;
     }
 
-    if(node->highlighted)
+    if(general_data.active->drag_icon)
     {
-        guint32 color = 0;
-        gint width = gdk_pixbuf_get_width(general_data.active->drag_icon);
-        gint height = gdk_pixbuf_get_height(general_data.active->drag_icon);
-        
-        drag_cursor_icon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 
-                                        width, height);
 
-        /* Convert the theme color to a pixel value, we don't bother with
-         * colormap allocation here for this.
-         */
-        color =
-         (guint8)(node->ebox->style->fg[GTK_STATE_PRELIGHT].red >> 8) << 24 | 
-         (guint8)(node->ebox->style->fg[GTK_STATE_PRELIGHT].green >> 8) << 16 |
-         (guint8)(node->ebox->style->fg[GTK_STATE_PRELIGHT].blue >> 8) << 8 |
-         0xff;
-        
-        gdk_pixbuf_fill(drag_cursor_icon, color);
-        
-        gdk_pixbuf_composite(general_data.active->drag_icon,
-                                drag_cursor_icon,
-                                LAYOUT_MODE_HIGHLIGHT_WIDTH,
-                                LAYOUT_MODE_HIGHLIGHT_WIDTH,
-                                width-2*LAYOUT_MODE_HIGHLIGHT_WIDTH,
-                                height-2*LAYOUT_MODE_HIGHLIGHT_WIDTH,
-                                0, 
-                                0,
-                                1,
-                                1,
-                                GDK_INTERP_NEAREST,
-                                LAYOUT_MODE_HIGHLIGHT_ALPHA_FULL);
-    } else {
-        drag_cursor_icon = gdk_pixbuf_copy(general_data.active->drag_icon);
+        if(node->highlighted)
+        {
+            guint32 color = 0;
+            gint width = gdk_pixbuf_get_width(general_data.active->drag_icon);
+            gint height = gdk_pixbuf_get_height(general_data.active->drag_icon);
+
+            drag_cursor_icon = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 
+                    width, height);
+
+            /* Convert the theme color to a pixel value, we don't bother with
+             * colormap allocation here for this.
+             */
+            color =
+                (guint8)(node->ebox->style->fg[GTK_STATE_PRELIGHT].red >> 8) << 24 | 
+                (guint8)(node->ebox->style->fg[GTK_STATE_PRELIGHT].green >> 8) << 16 |
+                (guint8)(node->ebox->style->fg[GTK_STATE_PRELIGHT].blue >> 8) << 8 |
+                0xff;
+
+            gdk_pixbuf_fill(drag_cursor_icon, color);
+
+            gdk_pixbuf_composite(general_data.active->drag_icon,
+                    drag_cursor_icon,
+                    LAYOUT_MODE_HIGHLIGHT_WIDTH,
+                    LAYOUT_MODE_HIGHLIGHT_WIDTH,
+                    width-2*LAYOUT_MODE_HIGHLIGHT_WIDTH,
+                    height-2*LAYOUT_MODE_HIGHLIGHT_WIDTH,
+                    0, 
+                    0,
+                    1,
+                    1,
+                    GDK_INTERP_NEAREST,
+                    LAYOUT_MODE_HIGHLIGHT_ALPHA_FULL);
+        } else {
+            drag_cursor_icon = gdk_pixbuf_copy(general_data.active->drag_icon);
+        }
     }
 
     gtk_drag_set_icon_pixbuf(general_data.drag_source_context, drag_cursor_icon,
