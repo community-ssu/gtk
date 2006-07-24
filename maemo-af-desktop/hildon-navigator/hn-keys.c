@@ -471,7 +471,7 @@ hn_key_shortcut_grab (HNKeysConfig  *keys,
 		    XKeysymToKeycode(GDK_DISPLAY(), shortcut->keysym), 
 		    shortcut->mod_mask | ignored_mask,
 		    GDK_ROOT_WINDOW(), 
-		    True, 
+		    False, 
 		    GrabModeAsync, 
 		    GrabModeAsync);
 	  

@@ -1,3 +1,11 @@
+2006-07-21  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Task launcher and task switcher shortcuts not working when
+	home view is shown" (Closes NB#34328)
+	* hildon-navigator/hn-keys.c: set the owner_events to False in
+	  XGrabKey, to avoid GTK from handling the shortcuts inside
+	  maemo-af-desktop
+
 2006-07-21  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: Fixed memory leak 
@@ -8,7 +16,7 @@
 2006-07-21  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Blinking icons do not stop blinking when topped from AS."
-	(Closes N#34349)
+	(Closes NB#34349)
 	* hildon-navigator/ hn-app-switcher.c: Let the WM tell us when to update
 	  urgency state
 
