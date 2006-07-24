@@ -1894,6 +1894,13 @@ hn_app_switcher_real_changed_stack (HNAppSwitcher *app_switcher,
 }
 
 static void
+hn_app_switcher_real_bgkill (HNAppSwitcher *app_switcher,
+			     gboolean       is_on)
+{
+  hn_app_switcher_changed (app_switcher, NULL);  
+}
+
+static void
 hn_app_switcher_real_lowmem (HNAppSwitcher *app_switcher,
                              gboolean       is_on)
 {
@@ -2035,7 +2042,8 @@ hn_app_switcher_class_init (HNAppSwitcherClass *klass)
   klass->remove_info = hn_app_switcher_real_remove_info;
   klass->changed_info = hn_app_switcher_real_changed_info;
   klass->changed_stack = hn_app_switcher_real_changed_stack;
-  
+ 
+  klass->bgkill = hn_app_switcher_real_bgkill; 
   klass->lowmem = hn_app_switcher_real_lowmem;
   
   g_type_class_add_private (klass, sizeof (HNAppSwitcherPrivate));

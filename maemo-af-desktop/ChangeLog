@@ -1,4 +1,11 @@
-2006-07-21  Johan Bilien <johan.bilien@nokia.com>
+2006-07-24  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Application switcher area does not immediately reflect the
+	tate of the application" (Closes NB#35604)
+	* hildon-navigator/hn-app-switcher.c: New handler for the bg_kill
+	  signal which updates the AS
+
+2006-07-24  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Task launcher and task switcher shortcuts not working when
 	home view is shown" (Closes NB#34328)
