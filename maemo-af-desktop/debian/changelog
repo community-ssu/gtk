@@ -1,3 +1,51 @@
+maemo-af-desktop (2.9.15-1) unstable; urgency=low
+
+  Applied further fix to "Application switcher area does not immediately
+  reflect the state of the application" (Closes NB#35604)
+  * hildon-navigator/hn-app-button.c: Added method to force the update
+    of the button icon
+  * hildon-navigator/hn-app-switcher.c: Force the update of the icon
+    when a change occurs in an entry structure
+
+  * hildon-navigator/hn-wm-watched-window.c:
+    - manually top a hildon-app when coming out of hibernation
+    - various cleanups
+
+  Applied fix to "Crash:When opening an application that was perviously BG
+  killed and closed using the "x" in AS menu." (Closes NB#35605)
+  * Remove a window from the hibernating hash-table if bg_killed app
+    is closed.
+
+  Applied fix to "Application switcher area does not immediately reflect the
+  tate of the application" (Closes NB#35604)
+  * hildon-navigator/hn-app-switcher.c: New handler for the bg_kill
+    signal which updates the AS
+
+  Applied fix to "Task launcher and task switcher shortcuts not working when
+  home view is shown" (Closes NB#34328)
+  * hildon-navigator/hn-keys.c: set the owner_events to False in
+    XGrabKey, to avoid GTK from handling the shortcuts inside
+    maemo-af-desktop
+
+  * hildon-navigator/hn-app-switcher.c: Fixed memory leak 
+    in loading of icon theme.
+  * hildon-navigator/hn-wm-watchable-app.c: Fixed memory leak
+          in failing of g_key_file_new(). (Closes NB#35577) 
+
+  Applied fix to "Blinking icons do not stop blinking when topped from AS."
+  (Closes NB#34349)
+  * hildon-navigator/ hn-app-switcher.c: Let the WM tell us when to update
+    urgency state
+
+  Applied fix to "Trivial leak in window tracking code" (Closes NB#35582)
+  * hildon-navigator/hn-wm.c: Fixed leak of an XWindow in some error
+    cases
+
+  * hildon-navigator/hn-wm-watchable-app.c: Fixed a memory leak when
+    showing the "application died" dialog (Closes NB#35581)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 25 Jul 2006 16:25:46 +0300
+
 maemo-af-desktop (2.9.14-1) unstable; urgency=low
 
   * hildon-home/screenshot.c: Removed an assert which actually got

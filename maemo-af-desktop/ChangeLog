@@ -1,5 +1,9 @@
 2006-07-25  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.15
+
+2006-07-25  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied further fix to "Application switcher area does not immediately
 	reflect the state of the application" (Closes NB#35604)
 	* hildon-navigator/hn-app-button.c: Added method to force the update
