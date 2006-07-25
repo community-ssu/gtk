@@ -179,16 +179,15 @@ int main (int argc, char **argv)
 
     hcp_retrieve_state (hcp);          /* State data from disk */
 
+    if (hcp->saved_focused_filename)
+        hcp->focused_item = g_hash_table_lookup (hcp->al->applets,
+                                                 hcp->saved_focused_filename);
 
-    
     osso_hw_set_event_cb (hcp->osso,
                           NULL ,
                           (osso_hw_cb_f *)hcp_hw_signal_cb,
                           hcp);
 
-    if (hcp->execute == 1 && hcp->focused_item) {
-        hcp_item_launch(hcp->focused_item, FALSE);
-    }
 
     dbus_activated = g_getenv ("DBUS_STARTER_BUS_TYPE")?TRUE:FALSE;
 
@@ -203,6 +202,10 @@ int main (int argc, char **argv)
 #endif
     /* Always start the user interface for now */
     hcp_show_window (hcp);
+    
+    if (hcp->execute == 1 && hcp->focused_item) {
+        hcp_item_launch(hcp->focused_item, FALSE);
+    }
 
     gtk_main();
 
@@ -516,7 +519,7 @@ hcp_save_state (HCP *hcp, gboolean clear_state)
     g_key_file_set_string (keyfile,
                            HCP_STATE_GROUP,
                            HCP_STATE_FOCUSSED,
-                           hcp->focused_item?  hcp->focused_item->name:"");
+                           hcp->focused_item?  hcp->focused_item->plugin:"");
     
     g_key_file_set_integer (keyfile,
                             HCP_STATE_GROUP,
