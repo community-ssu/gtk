@@ -549,7 +549,7 @@ hn_entry_info_is_active (HNEntryInfo *info)
 gboolean
 hn_entry_info_is_hibernating (HNEntryInfo *info)
 {
-  return hn_wm_watchable_app_is_hibernating (hn_entry_info_get_app(info));
+  return hn_wm_watchable_app_is_hibernating (hn_entry_info_get_app (info));
 }
 
 const gchar *

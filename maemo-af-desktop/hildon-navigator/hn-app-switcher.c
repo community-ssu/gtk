@@ -1479,10 +1479,11 @@ queue_refresh_buttons (HNAppSwitcher *app_switcher)
   HNAppSwitcherPrivate *priv = app_switcher->priv;
 
   if (!priv->queue_refresh_id)
-    priv->queue_refresh_id = g_idle_add_full (G_PRIORITY_LOW,
-		                              refresh_buttons,
-					      app_switcher,
-					      queue_refresh_done);
+    priv->queue_refresh_id = g_timeout_add_full (G_PRIORITY_HIGH,
+		    				 200,
+		                                 refresh_buttons,
+					         app_switcher,
+					         queue_refresh_done);
 }
 
 /* Class closure for the "add" signal; this is called each time an
@@ -1684,6 +1685,8 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
     {
       gint                  pos;
       GList *               l;
+
+      HN_DBG ("HNEntryInfo present and of type WATCHED_APP");
       
       for (l = priv->applications, pos = AS_APP1_BUTTON;
            l != NULL && pos < N_BUTTONS;
@@ -1697,16 +1700,16 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
               continue;
             }
 
-          if(entry_info == entry)
+          if (entry_info == entry)
             {
-              refresh_app_button(app_switcher, entry_info, pos);
+              refresh_app_button (app_switcher, entry_info, pos);
               return;
             }
         }
       
       return;
     }
-  else if(entry_info)
+  else if (entry_info)
     {
       /* this is a change in a child entry; in addition to the main menu impact
        * we already dealt with, child changes affect the blinking of the
@@ -1717,11 +1720,12 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
       GList       *l;
       gint         pos;
       
-      g_return_if_fail(entry_info->type != HN_ENTRY_INVALID);
+      g_return_if_fail (entry_info->type != HN_ENTRY_INVALID);
+      HN_DBG ("HNEntryInfo present, with child entry");
 
       parent = hn_entry_info_get_parent(entry_info);
 
-      if(!parent)
+      if (!parent)
         {
           g_critical("Attempting to change orphan child item.");
           return;
@@ -1771,7 +1775,12 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
               break;
             }
         }
-      
+
+      HN_DBG ("Force the button's icon to update itself");
+      hn_app_button_force_update_icon (HN_APP_BUTTON (button));
+
+      HN_MARK();
+
       /* if the current info is urgent and not to be ignored, we know the app
        * button should blink; make sure it does
        */
@@ -1816,6 +1825,8 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
               return;
             }
         }
+      
+      HN_MARK();
 
       /* we are left with the case where the info is not urgent, is not being
        * ignored, and the associated button is blinking -- this is probably a
@@ -1825,6 +1836,9 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
        */
     }
   
+  HN_DBG("Queuing a refresh cycle of the buttons (info: %s)",
+         entry_info != NULL ? "yes" : "no");
+
   /* either global update (no entry_info) or a more complicated case that
    * was not handled above
    */
@@ -1910,6 +1924,7 @@ hn_app_switcher_real_lowmem (HNAppSwitcher *app_switcher,
   /* TODO - update the sensitivity of the items depending on the
    * lowmem state
    */
+  hn_app_switcher_changed (app_switcher, NULL);
 }
 
 static void

@@ -1052,6 +1052,8 @@ compose_app_pixbuf (const GdkPixbuf *src,
   g_return_val_if_fail (GDK_IS_PIXBUF (src), NULL);
   g_return_val_if_fail (info != NULL, NULL);
 
+  HN_MARK();
+
   /* first of all, see if this app is hibernated */
   if (hn_entry_info_is_hibernating (info))
     {
@@ -1135,6 +1137,8 @@ hn_app_button_set_entry_info (HNAppButton *button,
 
   button->priv->info = NULL;
 
+  HN_MARK();
+
   if (info)
     {
       GdkPixbuf *app_pixbuf;
@@ -1187,6 +1191,62 @@ hn_app_button_set_entry_info (HNAppButton *button,
       gtk_toggle_button_toggled (GTK_TOGGLE_BUTTON (button));
 
       g_object_set (G_OBJECT (button), "can-focus", FALSE, NULL);
+    }
+}
+
+void
+hn_app_button_force_update_icon (HNAppButton *button)
+{
+  HNEntryInfo *info;
+  
+  g_return_if_fail (HN_IS_APP_BUTTON (button));
+
+  HN_MARK ();
+
+  info = button->priv->info;
+
+  if (info)
+    {
+      GdkPixbuf *app_pixbuf;
+      
+      app_pixbuf = get_pixbuf_for_entry_info (info);
+      if (app_pixbuf)
+	{
+          GdkPixbuf *pixbuf;
+
+	  /* compose the application icon with the number of
+	   * instances running
+	   */
+	  pixbuf = compose_app_pixbuf (app_pixbuf, info);
+	  if (pixbuf)
+            {
+              gtk_image_set_from_pixbuf (GTK_IMAGE (button->priv->icon),
+			                 pixbuf);
+	      g_object_unref (pixbuf);
+	    }
+	  else
+            gtk_image_set_from_pixbuf (GTK_IMAGE (button->priv->icon),
+			               app_pixbuf);
+
+	  g_object_unref (app_pixbuf);
+	}
+      else
+	HN_DBG ("Unable to find the icon (even the default one)");
+
+      /* the newly composed image is static */
+      if(button->priv->is_blinking &&
+         !hn_app_switcher_get_system_inactivity(hn_wm_get_app_switcher()))
+        hn_app_button_icon_animation (button->priv->icon,
+                                      button->priv->is_blinking);
+      
+      gtk_widget_show (button->priv->icon);
+      gtk_widget_set_sensitive (GTK_WIDGET (button), TRUE);
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button),
+		                    hn_entry_info_is_active (info));
+      
+      g_object_set (G_OBJECT (button), "can-focus", TRUE, NULL);
+      
+      button->priv->info = info;
     }
 }
 

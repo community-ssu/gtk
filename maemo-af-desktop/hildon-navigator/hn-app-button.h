@@ -84,7 +84,7 @@ void         hn_app_button_set_entry_info       (HNAppButton *button,
 gboolean     hn_app_button_get_is_blinking      (HNAppButton *button);
 void         hn_app_button_set_is_blinking      (HNAppButton *button,
 					         gboolean     is_blinking);
-
+void         hn_app_button_force_update_icon    (HNAppButton *button);
 void         hn_app_button_make_active          (HNAppButton *button);
 G_END_DECLS
 

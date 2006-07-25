@@ -959,7 +959,7 @@ hn_wm_process_x_client_list(void)
 	  HNWMWatchableApp    *app;
       
 	  /* We've found a window thats listed but not currently watched.
-       * Check if it is watchable by us
+	   * Check if it is watchable by us
 	   */
 	  app = hn_wm_x_window_is_watchable (xwins.wins[i]);
 	  
@@ -972,14 +972,13 @@ hn_wm_process_x_client_list(void)
 	    continue;
 
 
-	  if (!hn_wm_add_watched_window(win))
+	  if (!hn_wm_add_watched_window (win))
 	    continue; 		/* XError likely occured, xwin gone */
 
-      /*
-       * since we now have a window for the application, we clear any
-       * outstanding is_launching flag
+          /* since we now have a window for the application, we clear any
+	   * outstanding is_launching flag
 	   */
-      hn_wm_watchable_app_set_launching(app, FALSE);
+	  hn_wm_watchable_app_set_launching (app, FALSE);
       
 	  /* Grab the view prop from the window and add any views.
 	   * Note this will add menu items for em.
@@ -992,20 +991,22 @@ hn_wm_process_x_client_list(void)
 
 	  if (hn_wm_watched_window_get_n_views (win) == 0)
 	    {
-          /*
-           * if the window does not have attached info yet, then it is new
-           * and needs to be added to AS; if it has one, then it is coming
-           * out of hibernation, in which case it must not be added
-           */
-          
-          if (!hn_wm_watched_window_peek_info (win))
-            {
-              HNEntryInfo *info = hn_wm_watched_window_create_new_info (win);
-  
-              HN_DBG ("Adding AS entry for view-less window\n");
-          
-              hn_app_switcher_add (hnwm.app_switcher, info);
-            }
+	      HNEntryInfo *info;
+
+	      HN_MARK();
+	      
+              /* if the window does not have attached info yet, then it is new
+	       * and needs to be added to AS; if it has one, then it is coming
+	       * out of hibernation, in which case it must not be added
+	       */
+	      info = hn_wm_watched_window_peek_info (win);
+	      if (!info)
+                {
+		  info  = hn_wm_watched_window_create_new_info (win);
+		  HN_DBG ("Adding AS entry for view-less window\n");
+		 
+		  hn_app_switcher_add (hnwm.app_switcher, info);
+	        }
 	    }
 	}
     }
