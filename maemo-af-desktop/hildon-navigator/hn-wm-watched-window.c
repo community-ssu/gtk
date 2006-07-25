@@ -1064,8 +1064,6 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
 	  hn_wm_watchable_app_set_active_window(win->app_parent, NULL);
     }
 
-
-
   if(hn_wm_get_active_window() == win)
     hn_wm_reset_active_window();
   
@@ -1295,16 +1293,20 @@ hn_wm_watched_window_close (HNWMWatchedWindow *win)
     {
       /* turn off the hibernation flag in our app to force full destruction */
       HNWMWatchableApp * app = hn_wm_watched_window_get_app (win);
+
       g_return_if_fail(app);
-      
+
+      /* Set hibernate to FALSE and remove from hibernation hash as not
+       * hibernating anymore. Note g_hash_table_remove will call
+       * hn_wm_watched_window_destroy()
+      */
       hn_wm_watchable_app_set_hibernate(app, FALSE);
 
-      /* destroying a window takes care of the views, if any, as well */
-      hn_wm_watched_window_destroy(win);
+      g_hash_table_remove (hn_wm_get_hibernating_windows(), 
+                           hn_wm_watched_window_get_hibernation_key(win));
 
-      /*
-         If the app has any windows left, we need to reset the hibernation flag
-         back to TRUE
+      /* If the app has any windows left, we need to reset the hibernation 
+       * flag back to TRUE
        */
       if(hn_wm_watchable_app_has_hibernating_windows (app))
         hn_wm_watchable_app_set_hibernate(app, TRUE);

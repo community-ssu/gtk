@@ -1,3 +1,10 @@
+2006-07-25  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Crash:When opening an application that was perviously BG
+	killed and closed using the "x" in AS menu." (Closes NB#35605)
+	* Remove a window from the hibernating hash-table if bg_killed app
+	  is closed.
+
 2006-07-24  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Application switcher area does not immediately reflect the
