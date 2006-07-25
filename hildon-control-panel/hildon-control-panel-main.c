@@ -366,6 +366,28 @@ gint hcp_rpc_handler (const gchar *interface,
         }
 
     }
+    
+    else if ((!strcmp (method, HCP_RPC_METHOD_IS_APPLET_RUNNING)))
+    {
+        osso_rpc_t applet;
+        HCPItem *item;
+        
+        if (arguments->len != 1)
+            goto error;
+
+        applet = g_array_index (arguments, osso_rpc_t, 0);
+
+        if (applet.type != DBUS_TYPE_STRING)
+            goto error;
+        
+        item = g_hash_table_lookup (hcp->al->applets, applet.value.s);
+
+        retval->type = DBUS_TYPE_BOOLEAN;
+        retval->value.b = (item && item->running)?
+                                TRUE:
+                                FALSE;
+        return OSSO_OK;
+    }
 
     else if ((!strcmp (method, HCP_RPC_METHOD_TOP_APPLICATION)))
     {

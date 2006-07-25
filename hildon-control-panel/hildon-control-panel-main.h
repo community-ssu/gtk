@@ -130,6 +130,7 @@ G_BEGIN_DECLS
 #define HCP_RPC_METHOD_RUN_APPLET           "run_applet"
 #define HCP_RPC_METHOD_SAVE_STATE_APPLET    "save_state_applet"
 #define HCP_RPC_METHOD_TOP_APPLICATION      "top_application"
+#define HCP_RPC_METHOD_IS_APPLET_RUNNING    "is_applet_running"
 
 typedef struct _HCP HCP;
 
