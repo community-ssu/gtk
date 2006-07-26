@@ -380,6 +380,7 @@ hn_app_button_make_active (HNAppButton *button)
 {
   g_return_if_fail (button);
 
+  gtk_toggle_button_set_inconsistent (GTK_TOGGLE_BUTTON (button), FALSE);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), TRUE);
   gtk_toggle_button_toggled (GTK_TOGGLE_BUTTON (button));
 

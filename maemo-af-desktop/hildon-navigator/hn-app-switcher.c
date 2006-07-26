@@ -986,16 +986,23 @@ app_button_toggled_cb (GtkToggleButton *toggle,
   GtkWidget *widget = GTK_WIDGET (toggle);
   gint pos = get_app_button_pos (widget);
   gboolean is_active = gtk_toggle_button_get_active (toggle);
+  gboolean is_inconsistent = gtk_toggle_button_get_inconsistent (toggle);
 
-  if (is_active)
-    gtk_widget_set_name (widget, as_button_pressed_names[pos]);
-  else
+  if (is_inconsistent)
     gtk_widget_set_name (widget, as_button_names[pos]);
+  else
+    {
+      if (is_active)
+	gtk_widget_set_name (widget, as_button_pressed_names[pos]);
+      else
+	gtk_widget_set_name (widget, as_button_names[pos]);
+    }
 
-  HN_DBG ("setting button (pos=%d) (active='<%s>') name: %s",
+  HN_DBG ("setting button (pos=%d) (inconsistent='<%s>', active='<%s>') name: %s",
 	  pos,
+	  is_inconsistent ? "true" : "false",
 	  is_active ? "true" : "false",
-	  is_active ? as_button_pressed_names[pos] : as_button_names[pos]);
+	  gtk_widget_get_name (widget));
 }
 
 static GtkWidget *
@@ -1329,9 +1336,12 @@ refresh_app_button (HNAppSwitcher *app_switcher,
 
   if (hn_entry_info_is_active (entry))
     {
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->buttons[pos]),
-		                            TRUE);
-      gtk_toggle_button_toggled (GTK_TOGGLE_BUTTON (priv->buttons[pos]));
+      GtkToggleButton *button;
+
+      button = GTK_TOGGLE_BUTTON (priv->buttons[pos]);
+      gtk_toggle_button_set_inconsistent (button, FALSE);
+      gtk_toggle_button_set_active (button, TRUE);
+      gtk_toggle_button_toggled (button);
     }
   
   gtk_widget_set_sensitive (priv->buttons[pos], TRUE);
@@ -1347,6 +1357,7 @@ refresh_buttons (gpointer user_data)
   HNAppSwitcherPrivate *priv = app_switcher->priv;
   GList                *l;
   gint                  pos;
+  gint                  last_active;
   gboolean              was_blinking;
   gboolean              is_urgent = FALSE;
   GtkWidget            *app_image;
@@ -1388,7 +1399,7 @@ refresh_buttons (gpointer user_data)
   was_blinking = get_main_button_is_blinking (priv->main_button);
   
   is_urgent = FALSE;
-  
+  last_active = 0;
   for (l = priv->applications, pos = 0;
        l != NULL;
        l = l->next, ++pos)
@@ -1397,7 +1408,25 @@ refresh_buttons (gpointer user_data)
       HNEntryInfo       *child;
 
       if (pos < N_BUTTONS)
-        continue;
+        {
+          if (hn_entry_info_is_active (l->data))
+	    last_active = pos;
+	  
+          continue;
+	}
+
+      if (hn_entry_info_is_active (l->data))
+        {
+          GtkToggleButton *active_button;
+
+	  HN_DBG ("Unsetting the previously active button %d",
+		  last_active);
+	  
+	  active_button = GTK_TOGGLE_BUTTON (priv->buttons[pos]);
+	  gtk_toggle_button_set_inconsistent (active_button, TRUE);
+	  gtk_toggle_button_set_active (active_button, FALSE);
+	  gtk_toggle_button_toggled (active_button);
+	}
 
       /* set the ignore flag on any children that were causing the blinking
        * we skip the first four apps, which cause blinking of the app buttons,
@@ -1853,10 +1882,11 @@ static void
 hn_app_switcher_real_changed_stack (HNAppSwitcher *app_switcher,
 				    HNEntryInfo   *entry_info)
 {
-  gint                   pos;
+  gint                   pos, active_pos;
   GList                * l;
   HNAppSwitcherPrivate * priv = app_switcher->priv;
   HNEntryInfo          * parent;
+  gboolean               active_found = FALSE;
   
   HN_DBG ("In hn_app_switcher_real_changed_stack");
   
@@ -1889,18 +1919,40 @@ hn_app_switcher_real_changed_stack (HNAppSwitcher *app_switcher,
     }
   
   /* locate the associated button, and toggle it */
+  active_pos = 0;
   for (l = priv->applications, pos = AS_APP1_BUTTON;
        l != NULL && pos < N_BUTTONS;
        l = l->next, pos++)
     {
       HNEntryInfo *entry = l->data;
           
-      if(parent == entry)
+      if (parent == entry)
 	{
 	  hn_app_button_make_active (HN_APP_BUTTON(priv->buttons[pos]));
+	  active_pos = pos;
+	  active_found = TRUE;
 	  break;
 	}
     }
+
+  /* no active window in the buttons, make sure that
+   * no button is active
+   */  
+  if (!active_found)
+    {
+      for (pos = AS_APP1_BUTTON; pos < N_BUTTONS; pos++)
+        {
+          GtkToggleButton *app_button;
+
+	  HN_DBG ("Setting inconsistent state for pos %d", pos);
+
+	  app_button = GTK_TOGGLE_BUTTON (priv->buttons[pos]);
+	  gtk_toggle_button_set_inconsistent (app_button, TRUE);
+	  gtk_toggle_button_set_active (app_button, FALSE);
+	  gtk_toggle_button_toggled (app_button);
+	}
+    }  
+  
 
   /* we do not worry about the urgency hint here, as we will receive a
    * notification when it is cleared from the WM

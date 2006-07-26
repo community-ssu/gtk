@@ -1,3 +1,10 @@
+2006-07-26  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-app-switcher.c: use the is-inconsistent property
+	  to decide which state to draw the button in. This allows the button
+	  to be drawn as untoggled when the fifth application is chosen in the
+	  AS menu
+
 2006-07-25  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.15
