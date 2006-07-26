@@ -1,0 +1,80 @@
+libmatchbox1 (2:1.7-osso1) unstable; urgency=low
+
+  * remove .la from dev package, fix version to more reasonable
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 30 May 2006 11:18:52 +0300
+
+libmatchbox1 (1:1.7-20060529-7) unstable; urgency=low
+
+  * modify package license gpl->lgpl
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Mon, 29 May 2006 10:37:09 +0300
+
+libmatchbox1 (1:1.7-20060515-6) unstable; urgency=low
+
+  * Increase version number (recompilation is needed, see bug 29716)
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Mon, 17 May 2006 18:18:00 +0300
+
+libmatchbox1 (1:1.7-20060419-6) unstable; urgency=low
+
+  * use thumb if enabled, fixes #26780 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 19 Apr 2006 13:59:40 +0300
+
+libmatchbox1 (1:1.7-20060126-5) unstable; urgency=low
+
+  * patches from upstream, fixes #22211
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 26 Jan 2006 16:00:34 +0200
+
+libmatchbox1 (1:1.7-5) unstable; urgency=low
+
+  * updates from upstream (fixes #22211)
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Mon, 16 Jan 2006 10:08:06 +0200
+
+libmatchbox1 (1:1.7-4) unstable; urgency=low
+
+  * Committed changes from upstream release. Fixes #18082 and may have
+    implication to bug #18717 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 14 Sep 2005 09:30:37 +0300
+
+libmatchbox1 (1:1.7-3) unstable; urgency=low
+
+  * Code cleanup 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue,  6 Sep 2005 10:38:47 +0300
+
+libmatchbox1 (1:1.7-2) unstable; urgency=low
+
+  * Fixed #9512 ( libmatchbox1_1:1.6-2: build breaks because compilation
+    depends on libpango()-dev, but that's not in package dependencies)
+    by dropping pango build option and pango dependency (xft is used
+    instead)
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 14 Apr 2005 12:54:33 +0300
+
+libmatchbox1 (1:1.7-1) unstable; urgency=low
+
+  * Packaged a new upstream version.
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 13 Apr 2005 10:42:13 +0300
+
+libmatchbox1 (1:1.6-2) unstable; urgency=low
+
+  * Fixed #6068 (libmatchbox: missing dependency on libxrender-dev)
+  * Removed --enable-jpg
+  * Fixed #4654 (Missing dependence from libmatchbox-dev -> libpng12-
+    dev)
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 16 Mar 2005 11:09:43 +0200
+
+libmatchbox1 (1:1.6-1) unstable; urgency=high
+
+  * New upstream release debianized
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 16 Feb 2005 02:24:54 +0000
+
+

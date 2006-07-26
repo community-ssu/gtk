@@ -1,0 +1,36 @@
+Source: libmatchbox1
+Section: libs
+Priority: optional
+Maintainer: Tapani Palli <tapani.palli@nokia.com>
+Build-Depends: cdbs (>= 0.4.21), debhelper (>= 4.1.0), pkg-config, libx11-dev, x-dev, libxext-dev, libxt-dev, libglib2.0-dev, libpng12-dev, libjpeg62-dev, libxft-dev (>= 2.1.0), libxrender-dev
+Standards-Version: 3.6.1
+
+Package: libmatchbox-dev
+Section: devel
+Architecture: any
+Depends: libmatchbox1 (= ${Source-Version}), pkg-config, libglib2.0-dev,libpng12-dev, libjpeg62-dev, libxft-dev (>= 2.1.0), libxext-dev, libx11-dev, libxau-dev
+Replaces: matchbox (<< 1:0.8.2)
+Description: shared library for Matchbox Project applications [development]
+ Matchbox is a base environment for the X Window System running on non-desktop
+ embedded platforms such as handhelds, set-top boxes, kiosks and anything else
+ for which screen space, input mechanisms or system resources are limited.
+ .
+ libmatchbox provides core functionality used by several Matchbox project
+ applications.
+ . 
+ This package contains libmatchbox development files.
+
+Package: libmatchbox1
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Replaces: matchbox (<< 1:0.8.2)
+Description: shared library for Matchbox Project applications [runtime]
+ Matchbox is a base environment for the X Window System running on non-desktop
+ embedded platforms such as handhelds, set-top boxes, kiosks and anything else
+ for which screen space, input mechanisms or system resources are limited.
+ .
+ libmatchbox provides core functionality used by several Matchbox project
+ applications.
+ .
+ This package contains the libmatchbox runtime library.
