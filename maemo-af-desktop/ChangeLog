@@ -1,3 +1,14 @@
+2006-07-26  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-status-bar/hildon-log.[ch]: New files. GObject for
+	  logging and watching of plugins.
+	* hildon-status-bar/hildon-status-bar-item.[ch]: 
+	  - added signal for logging.
+	  - splitted instance and initialization of plugin.
+	* hildon-status-bar/hildon-status-bar-main.[ch]:
+	  - added support for HildonLog
+	* hildon-status-bar/Makefile.am: Added hildon-log.[ch].
+
 2006-07-26  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: use the is-inconsistent property

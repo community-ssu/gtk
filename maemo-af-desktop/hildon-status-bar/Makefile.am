@@ -20,7 +20,9 @@ libhildonstatusbar_la_SOURCES = \
 	hildon-status-bar-lib.c \
 	hildon-status-bar-lib.h \
 	hildon-status-bar-item.c \
-	hildon-status-bar-item.h
+	hildon-status-bar-item.h \
+	hildon-log.h 		 \
+	hildon-log.c
 
 libhildonstatusbarincludeinstdir=$(includedir)/hildon-status-bar-lib
 libhildonstatusbarincludeinst_DATA = \

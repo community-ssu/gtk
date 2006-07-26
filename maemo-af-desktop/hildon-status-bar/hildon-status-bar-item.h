@@ -63,6 +63,9 @@ struct _HildonStatusBarItemClass
     GtkContainerClass parent_class;
     void (*hildon_status_bar_update_conditional) 
 	    (HildonStatusBarItem * self, gboolean conditional_status);
+
+    void (*hildon_status_bar_log_start) (HildonStatusBarItem * self);
+    void (*hildon_status_bar_log_end)   (HildonStatusBarItem * self);
 };
 
 /* Type definitions for the plugin API */ 
@@ -106,6 +109,16 @@ GType hildon_status_bar_item_get_type( void );
  * Creates a new statusbar item.
  */
 HildonStatusBarItem *hildon_status_bar_item_new( const char* name, gboolean mandatory );
+
+
+/**
+ * @hildon_status_bar_item_new
+ *
+ * @param *name item to initialize
+ *
+ * Initialize a new statusbar item.
+ */
+void hildon_status_bar_item_initialize (HildonStatusBarItem *item);
 
 /**
  * @hildon_status_bar_item_update

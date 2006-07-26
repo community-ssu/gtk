@@ -29,7 +29,9 @@
 #ifndef __HILDON_STATUS_BAR_MAIN__H__
 #define __HILDON_STATUS_BAR_MAIN__H__
 
-#include <libosso.h> 
+#include <libosso.h>
+
+#include "hildon-log.h"
 
 G_BEGIN_DECLS
 
@@ -77,6 +79,10 @@ G_BEGIN_DECLS
 #define HSB_PLUGIN_CATEGORY_CONDITIONAL "conditional"
 #define HSB_PLUGIN_CATEGORY_TEMPORAL    "temporal"
 
+#define HSB_PLUGIN_LOG_FILE             HSB_PLUGIN_USER_CONFIG_DIR"statusbar.log"
+#define HSB_PLUGIN_LOG_KEY_START	"Init"
+#define HSB_PLUGIN_LOG_KEY_END		"End"
+
 
 /* Status Bar panel */
 typedef struct status_bar_st StatusBar;
@@ -93,6 +99,8 @@ struct status_bar_st
     
     GtkWidget *arrow_button;
     gboolean   arrow_button_toggled;
+
+    HildonLog *log;
 
     guint item_num;
     

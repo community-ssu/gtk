@@ -63,10 +63,17 @@ struct _HildonStatusBarItemPrivate
     HildonStatusBarItemEntryFn  entryfn;
 };
 
+typedef enum
+{
+  SB_SIGNAL_LOG_START,
+  SB_SIGNAL_LOG_END,
+  SB_SIGNALS_LOG
+} sb_signals;
+
 
 /* item conditional signal */
 static guint statusbar_signal = 0;
-
+static guint statusbar_log_signals[SB_SIGNALS_LOG];
 /* parent class pointer */
 static GtkContainerClass *parent_class;
 
@@ -152,6 +159,28 @@ static void hildon_status_bar_item_class_init(
 				    NULL, NULL,
 				    g_cclosure_marshal_VOID__POINTER, 
 				    G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
+
+    statusbar_log_signals[SB_SIGNAL_LOG_START] = 
+	g_signal_new("hildon_status_bar_log_start",
+		     G_OBJECT_CLASS_TYPE(object_class),
+		     G_SIGNAL_RUN_FIRST,
+		     G_STRUCT_OFFSET
+		     (HildonStatusBarItemClass, 
+		      hildon_status_bar_log_start),
+		     NULL, NULL,
+		     g_cclosure_marshal_VOID__VOID, 
+		     G_TYPE_NONE, 0);
+
+    statusbar_log_signals[SB_SIGNAL_LOG_END] = 
+	g_signal_new("hildon_status_bar_log_end",
+		     G_OBJECT_CLASS_TYPE(object_class),
+		     G_SIGNAL_RUN_FIRST,
+		     G_STRUCT_OFFSET
+		     (HildonStatusBarItemClass, 
+		      hildon_status_bar_log_end),
+		     NULL, NULL,
+		     g_cclosure_marshal_VOID__VOID, 
+		     G_TYPE_NONE, 0);
 }
 
 
@@ -295,7 +324,22 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin, gboolean ma
         gtk_object_sink( GTK_OBJECT( item ) );
         return NULL;
     }
+
+    return item;
+}
+
+void 
+hildon_status_bar_item_initialize (HildonStatusBarItem *item)
+{
+   HildonStatusBarItemPrivate *priv;
+	
+   g_return_if_fail (item);
+   g_return_if_fail (HILDON_IS_STATUS_BAR_ITEM (item));
+
+   g_signal_emit ( G_OBJECT(item), statusbar_log_signals[SB_SIGNAL_LOG_START], 0, NULL);
         
+    priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );
+	
     /* Initialize the plugin */
     priv->data = priv->fn->initialize( item, &priv->button );
     
@@ -309,8 +353,7 @@ HildonStatusBarItem *hildon_status_bar_item_new( const char *plugin, gboolean ma
     /* Get the priority for this item */
     priv->priority = priv->fn->get_priority( priv->data );
 
-    
-    return item;
+    g_signal_emit ( G_OBJECT(item), statusbar_log_signals[SB_SIGNAL_LOG_END], 0, NULL);
 }
 
 

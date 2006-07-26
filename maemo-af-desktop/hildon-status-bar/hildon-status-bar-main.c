@@ -137,7 +137,7 @@ void init_dock( StatusBar *panel )
     Display *dpy;
     Window  win;
     GtkWidget *arrow;
-
+    gchar *log_path;
     
     /* Initialize item widgets */
     for ( i = 0; i < HSB_MAX_NO_OF_ITEMS; ++i ) {
@@ -192,8 +192,11 @@ void init_dock( StatusBar *panel )
     panel->arrow_button_toggled = FALSE; 
     g_signal_connect(panel->arrow_button, "toggled", 
 		     G_CALLBACK(arrow_button_toggled_cb), panel);
-
     
+    log_path = g_strdup_printf("%s%s",(gchar *)getenv("HOME"),HSB_PLUGIN_LOG_FILE);
+    
+    panel->log = hildon_log_new (log_path);
+
     /* Initialize positions for fixed window areas */
     for ( i = 0; i < HSB_VISIBLE_ITEMS_IN_ROW; i++ ) {	
 	    
@@ -213,7 +216,8 @@ void init_dock( StatusBar *panel )
 	panel->plugin_pos_x[i+2*HSB_VISIBLE_ITEMS_IN_ROW] = i*HSB_ITEM_X_OFFSET;
         panel->plugin_pos_y[i+2*HSB_VISIBLE_ITEMS_IN_ROW] = HSB_ITEM_Y_OFFSET;		
     }
-   	            
+    
+    g_free (log_path);	            
 }
 
 
@@ -576,6 +580,8 @@ gboolean add_configured_plugins( StatusBar *panel )
     gchar *user_dir;
     gchar *plugin_path = NULL;
     GList *l = NULL;
+    GList *bad_plugins = NULL;
+    gboolean there_are_bad_plugins = FALSE;
 
     /* Return if panel fails */
     if ( !panel )  return FALSE;
@@ -590,6 +596,10 @@ gboolean add_configured_plugins( StatusBar *panel )
     if (!l) {
         l = get_plugins_from_file(HSB_PLUGIN_FACTORY_CONFIG_FILE);	
     }
+
+    bad_plugins = hildon_log_get_incomplete_groups (panel->log,
+		    				    HSB_PLUGIN_LOG_KEY_START,
+						    HSB_PLUGIN_LOG_KEY_END,NULL);
 
     /* Could not load plugin configuration file */     
     if (!l) { 
@@ -612,7 +622,12 @@ gboolean add_configured_plugins( StatusBar *panel )
             { 
                 gchar *stripped = g_strndup(plugin->library + 3, 
                         strlen(plugin->library) - 6);
-                add_item(panel, stripped, plugin->mandatory, plugin->position);
+
+		if (g_list_find_custom (bad_plugins,stripped,(GCompareFunc)strcmp) == NULL)
+                  add_item(panel, stripped, plugin->mandatory, plugin->position);
+		else 
+		  there_are_bad_plugins = TRUE;
+		
                 if(plugin_path) g_free(plugin_path);
                 g_free(stripped);
             }
@@ -620,7 +635,11 @@ gboolean add_configured_plugins( StatusBar *panel )
     }
 
     /* Cleanup */
-    g_list_free(l); 	  
+    g_list_free (l);
+    g_list_foreach (bad_plugins,(GFunc)g_free,NULL);
+    g_list_free (bad_plugins);
+    if (!there_are_bad_plugins)
+      hildon_log_remove_file (panel->log);
 
     return TRUE;
 }
@@ -1055,6 +1074,25 @@ HildonStatusBarItem *get_item( StatusBar *panel, const gchar *plugin )
     
 }
 
+static void 
+logging_start (HildonStatusBarItem *item, gpointer data)
+{
+  StatusBar *panel = (StatusBar *) data;
+  const gchar *name = hildon_status_bar_item_get_name (item);
+
+  hildon_log_add_group   (panel->log, name);
+  hildon_log_add_message (panel->log,HSB_PLUGIN_LOG_KEY_START,"1");
+
+}
+
+static void 
+logging_end (HildonStatusBarItem *item, gpointer data)
+{
+  StatusBar *panel = (StatusBar *) data;
+
+  hildon_log_add_message (panel->log,HSB_PLUGIN_LOG_KEY_END,"1");
+
+}
 
 static 
 HildonStatusBarItem *add_item( StatusBar *panel, 
@@ -1067,7 +1105,7 @@ HildonStatusBarItem *add_item( StatusBar *panel,
     gboolean already_loaded=FALSE;
 
     /* Return if panel or plugin name fails */
-    if ( !panel || !plugin )  return NULL;
+    g_return_val_if_fail (panel && plugin, NULL);
     /* Check if there is already a plugin mandatory and with the same name */
      
     for (i=0; i<HSB_MAX_NO_OF_ITEMS; i++)
@@ -1086,14 +1124,31 @@ HildonStatusBarItem *add_item( StatusBar *panel,
     if (!already_loaded)
     {
       item = hildon_status_bar_item_new( plugin, mandatory );
-      
-      if( !item || (panel->item_num >= HSB_MAX_NO_OF_ITEMS-1) ) 
-         return NULL;
 
-      /* ref the item, so it is not destroyed when removed temporarily 
-       * from container, or destroyed too early when the plugin is removed 
+      g_return_val_if_fail (item,NULL);
+
+      if( panel->item_num >= HSB_MAX_NO_OF_ITEMS-1 && item )
+      {
+        gtk_widget_destroy( GTK_WIDGET( item ));
+        return NULL;
+      }
+
+      /* ref the item, so it is not destroyed when removed temporarily
+       * from container, or destroyed too early when the plugin is removed
        * permanently */
       g_object_ref( item );
+
+      g_signal_connect (G_OBJECT (item),
+                        "hildon_status_bar_log_start",
+                        G_CALLBACK (logging_start),
+                        (gpointer)panel);
+
+      g_signal_connect (G_OBJECT (item),
+                        "hildon_status_bar_log_end",
+                        G_CALLBACK (logging_end),
+                        (gpointer)panel);
+
+      hildon_status_bar_item_initialize (item);
     }
     else
     {
@@ -1460,6 +1515,7 @@ status_bar_deinitialize( osso_context_t *osso, StatusBar **panel )
     }
     
     TRACE(TDEBUG,"status_bar_deinitialize: 3"); 
+    g_object_unref (sb_panel->log);
     gtk_widget_destroy( sb_panel->window );
     gtk_widget_destroy( sb_panel->arrow_button );
     if ( sb_panel->popup )
