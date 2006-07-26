@@ -1,4 +1,9 @@
-2006-07-25 Johan Bilien <johan.bilien@nokia.com>
+2006-07-26 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-cp-item.c: Block the execution of applets once the loading
+ 	  of one has been programmed (Closes NB#34981)
+
+2006-07-26 Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-control-panel.desktop.in: Add Comment field
 	* configure.ac: 2.2.1

@@ -69,7 +69,6 @@ hcp_item_idle_launch (struct PluginLaunchData *d)
     if (!p->handle)
         goto cleanup;
     
-    hcp->execute = 1;
     d->item->running = TRUE;
 
     /* Always use hcp->window as parent. If CP is launched without
@@ -118,14 +117,19 @@ hcp_item_launch (HCPItem *item, gboolean user_activated)
 
     g_return_if_fail (hcp);
     
-    d = g_new0 (struct PluginLaunchData, 1);
+    if (!hcp->execute)
+    {
+        hcp->execute = 1;
 
-    d->user_activated = user_activated;
-    d->item = item;
+        d = g_new0 (struct PluginLaunchData, 1);
 
-    /* We launch plugins inside an idle loop so we are still able
-     * to receive DBus messages */
-    g_idle_add ((GSourceFunc)hcp_item_idle_launch, d);
+        d->user_activated = user_activated;
+        d->item = item;
+
+        /* We launch plugins inside an idle loop so we are still able
+         * to receive DBus messages */
+        g_idle_add ((GSourceFunc)hcp_item_idle_launch, d);
+    }
 
 }
 
