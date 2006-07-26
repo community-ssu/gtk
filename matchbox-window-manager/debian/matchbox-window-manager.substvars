@@ -1,0 +1,1 @@
+shlibs:Depends=libc6 (>= 2.3.5-1), libfreetype6 (>= 2.1.10-1osso1), libmatchbox1 (>= 1.7-1), libpng12-0 (>= 1.2.8rel), libx11-6 | xlibs (>> 4.1.0), libxext6 | xlibs (>> 4.1.0), libxft2 (>= 2.1.6-1osso10), libxrender1, zlib1g (>= 1:1.2.1)

@@ -1,0 +1,77 @@
+.\" matchbox-remote.1
+.\" Copyright 2004  Moray Allan
+.TH matchbox-remote 1 "Jul 16 2004" ""
+.SH NAME
+matchbox-remote \- communicate with matchbox-window-manager process
+.SH SYNOPSIS
+.B matchbox-remote [options]
+.SH OPTIONS
+.TP
+\fB\-t\fR
+<matchbox theme name>  switch matchbox theme
+.TP
+\fB\-r\fR
+Print current matchbox theme to stdout
+.TP
+\fB\-exit\fR
+Request matchbox to exit
+.TP
+\fB\-next\fR
+Page to next window
+.TP
+\fB\-prev\fR
+Page to previous window
+.HP
+\fB\-desktop\fR Toggle desktop visibility
+.TP
+\fB\-mbmenu\fR
+Toggle mbmenu
+.TP
+\fB\-panel\-id\fR
+<int>
+.HP
+\fB\-panel\-toggle\fR
+.TP
+\fB\-h\fR
+help
+.TP
+\fB\-t\fR
+<matchbox theme name>  switch matchbox theme
+.TP
+\fB\-r\fR
+Print current matchbox theme to stdout
+.TP
+\fB\-exit\fR
+Request matchbox to exit
+.TP
+\fB\-next\fR
+Page to next window
+.TP
+\fB\-prev\fR
+Page to previous window
+.HP
+\fB\-desktop\fR Toggle desktop visibility
+.TP
+\fB\-mbmenu\fR
+Toggle mbmenu
+.TP
+\fB\-panel\-id\fR
+<int>
+.HP
+\fB\-panel\-toggle\fR
+.SH DESCRIPTION
+.B matchbox-remote
+connects to a running
+.B matchbox-window-manager
+process to get information about its state or send it instructions.
+
+.B matchbox-window-manager
+is a window manager for the X Window System running on non-desktop
+embedded platforms such as handhelds, set-top boxes, kiosks and anything else
+for which screen space, input mechanisms or system resources are limited.
+
+
+.SH AUTHOR
+.B matchbox-remote
+was written by Matthew Allum <mallum@o-hand.com>.
+
