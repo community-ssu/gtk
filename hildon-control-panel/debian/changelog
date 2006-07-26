@@ -1,3 +1,18 @@
+hildon-control-panel (2.2.1-1) unstable; urgency=low
+
+  * hildon-control-panel.desktop.in: Add Comment field
+
+  * hildon-control-panel-main.c: Added D-Bus RPC handler to query
+    if an applet is running
+
+  * hildon-control-panel-main.c: Restart the proper applet after coming
+    back from bg-killing (Closes NB#35677)
+
+  * hildon-cp-applist.c: Use g_key_file_get_locale_string to fetch the
+    name from the desktop file to allow "in .desktop" l10n
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 26 Jul 2006 12:05:00 +0300
+
 hildon-control-panel (2.2.0-1) unstable; urgency=low
 
   * hildon-control-panel-main.c: Always load the UI interface for now

@@ -1,5 +1,10 @@
 2006-07-25 Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-control-panel.desktop.in: Add Comment field
+	* configure.ac: 2.2.1
+
+2006-07-25 Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-control-panel-main.c: Added D-Bus RPC handler to query
 	  if an applet is running
 

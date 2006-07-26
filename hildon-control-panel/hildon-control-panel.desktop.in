@@ -3,6 +3,7 @@ Encoding=UTF-8
 Version=1.0
 Type=Application
 Name=copa_ap_cp_name
+Comment=copa_ap_cp_name_thumb
 Exec=@prefix@/bin/controlpanel
 Icon=qgn_list_cntlpane
 X-Icon-path=@prefix@/share/pixmaps/
