@@ -1,5 +1,15 @@
 2006-07-27  Johan Bilien <johan.bilien@nokia.com>
 
+	* libhildonmenu/libhildonmenu.c: Fixed the leak of the thumb icon
+	  pixbuf (Closes NB#34662)
+	* hildon-navigator/others-menu.c: Fixed the leak of the others-menu
+	  icon pixbuf
+	* hildon-navigator/hn-app-switcher.c: Fixed the leak of the AS menu
+	  icon pixbuf
+	* hildon-status-bar/hildon-status-bar-main.c: Fixed the leak of a string
+
+2006-07-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/others-menu.c: brought back "toggle" handler, but
 	  do not call it when events are being caught by the press_collapser
 	  (Closes NB#36129)

@@ -109,7 +109,8 @@ static guint dnotify_update_timeout = 0;
 OthersMenu_t *others_menu_init(void)
 {
     OthersMenu_t *ret;
-    GtkWidget *icon;
+    GtkWidget *icon = NULL;
+    GdkPixbuf *icon_pixbuf = NULL;
     
     ret = (OthersMenu_t *) g_malloc0(sizeof(OthersMenu_t));
     if (!ret) {
@@ -121,14 +122,20 @@ OthersMenu_t *others_menu_init(void)
     gtk_widget_set_name(ret->toggle_button,
 			NAVIGATOR_BUTTON_THREE);
 
+
+
     /* Icon */
-    icon = gtk_image_new_from_pixbuf(
-		    get_icon( OTHERS_MENU_ICON_NAME, OTHERS_MENU_ICON_SIZE )
-		    );
+    icon_pixbuf = get_icon( OTHERS_MENU_ICON_NAME, OTHERS_MENU_ICON_SIZE );
+    
+    if (icon_pixbuf) {
+        icon = gtk_image_new_from_pixbuf( icon_pixbuf );
+        g_object_unref( icon_pixbuf );
+    }
 
     if ( icon ) {
     	gtk_container_add(GTK_CONTAINER(ret->toggle_button), icon );
     }
+
 
     /* Initialize dnotify handler */
     if ( hildon_dnotify_handler_init() != HILDON_OK ) {

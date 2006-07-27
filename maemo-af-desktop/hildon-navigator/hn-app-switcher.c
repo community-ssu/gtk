@@ -619,13 +619,13 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
 		      				       AS_HOME_ITEM_ICON,
 						       -1);
       if (home_icon)
-        {
+      {
           GtkWidget *image = gtk_image_new_from_pixbuf (home_icon);
           gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (priv->main_home_item),
-			  		 image);
+                  image);
 
-	  g_object_unref (home_icon);
-	}
+          g_object_unref (home_icon);
+      }
 
       g_signal_connect (priv->main_home_item, "activate",
 		        G_CALLBACK (main_home_item_activate_cb),
@@ -957,6 +957,7 @@ create_menu_button (HNAppSwitcher *app_switcher)
   pixbuf = hn_app_switcher_get_icon_from_theme (app_switcher, AS_MENU_BUTTON_ICON, -1);
   icon = gtk_image_new_from_pixbuf (pixbuf);
   gtk_container_add (GTK_CONTAINER (button), icon);
+  g_object_unref (pixbuf);
 
   g_signal_connect_swapped (button, "toggled",
 		  	    G_CALLBACK (main_menu_button_toggled_cb),

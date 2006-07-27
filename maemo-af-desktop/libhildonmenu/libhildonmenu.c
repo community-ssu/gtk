@@ -684,6 +684,11 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						g_object_unref( G_OBJECT( app_icon ) );
 						app_icon = NULL;
 					}
+					
+                    if ( thumb_icon ){
+						g_object_unref( G_OBJECT( thumb_icon ) );
+						thumb_icon = NULL;
+					}
 
 					/* Mark the item allocated */
 					item->allocated = TRUE;

@@ -628,13 +628,13 @@ gboolean add_configured_plugins( StatusBar *panel )
 		else 
 		  there_are_bad_plugins = TRUE;
 		
-                if(plugin_path) g_free(plugin_path);
                 g_free(stripped);
             }
         }
     }
 
     /* Cleanup */
+    g_free(plugin_path);
     g_list_free (l);
     g_list_foreach (bad_plugins,(GFunc)g_free,NULL);
     g_list_free (bad_plugins);
