@@ -1,3 +1,9 @@
+maemo-af-desktop (2.9.15-2) unstable; urgency=low
+
+  * Compile libhildonmenu-dev for all arch (Closes NB#27309) 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 27 Jul 2006 18:35:16 +0300
+
 maemo-af-desktop (2.9.15-1) unstable; urgency=low
 
   Applied further fix to "Application switcher area does not immediately
