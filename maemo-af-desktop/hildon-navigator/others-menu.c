@@ -493,6 +493,25 @@ static void create_empty_menu(OthersMenu_t *om)
 		     G_CALLBACK(hn_app_switcher_menu_button_release_cb), NULL);
 }
 
+static void
+others_menu_button_toggled (GtkToggleButton *toggle,
+                            OthersMenu_t    *om)
+{
+    g_return_if_fail(om);
+
+    if (om->collapse_id)
+        return;
+
+    if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (toggle)))
+    {
+        HN_DBG ("button not active -- not showing menu");
+        return;
+    }
+
+    HN_DBG ("showing menu");
+    others_menu_show(om);
+}
+
 void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
 {
     gchar *user_home_dir = NULL;
@@ -513,6 +532,8 @@ void others_menu_initialize_menu(OthersMenu_t *om, void *as_menu_cb)
              G_CALLBACK(others_menu_button_button_release), om);
     g_signal_connect(G_OBJECT(om->toggle_button), "key-press-event",
  		     G_CALLBACK(others_menu_button_key_press), om);
+    g_signal_connect(G_OBJECT(om->toggle_button), "toggled",
+             G_CALLBACK(others_menu_button_toggled), om);
 
     /* Populate the menu with items */
     others_menu_get_items(GTK_WIDGET(om->menu), om, NULL, NULL);

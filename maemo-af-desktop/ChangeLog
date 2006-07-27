@@ -1,3 +1,9 @@
+2006-07-27  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/others-menu.c: brought back "toggle" handler, but
+	  do not call it when events are being caught by the press_collapser
+	  (Closes NB#36129)
+
 2006-07-26  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-status-bar/hildon-log.[ch]: New files. GObject for
