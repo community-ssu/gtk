@@ -1,5 +1,10 @@
 2006-07-27  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Fixed a few double-free when reading
+	  bogus background desktop file (Closes NB#35494)
+
+2006-07-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.c: Handle empty names for backgrounds
 	  gracefully (Closes NB#35454)
 

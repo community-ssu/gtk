@@ -1198,8 +1198,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
     /* Local strings */
     gchar *dot;
     gchar *temp_name;
-    gchar *image_name = NULL;
-    gchar *image_path = NULL;
     gint image_order;
     const gchar *image_desc_file;
     const gchar *image_modes[] = { 
@@ -1241,8 +1239,12 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
         if (g_str_has_suffix(image_desc_file, 
                              BG_IMG_INFO_FILE_TYPE)) 
         {
-            gchar *filename;
+            gchar *image_name = NULL;
+            gchar *image_path = NULL;
+            gchar *filename = NULL;
             GKeyFile *kfile;
+                
+            error = NULL;
 
             filename = g_build_filename(
                 HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
@@ -1280,7 +1282,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
                     g_error_free (error);
 
                 g_key_file_free (kfile);
-                g_free(filename);
 
                 continue;
             }
@@ -1297,7 +1298,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
 
                 g_key_file_free (kfile);
                 g_free(image_name);
-                g_free(filename);
 
                 continue;
             }
@@ -1310,6 +1310,7 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
             if (error)
             {
                 g_error_free (error);
+                error = NULL;
                 image_order = HOME_BG_IMG_DEFAULT_PRIORITY;
             }
                                 
