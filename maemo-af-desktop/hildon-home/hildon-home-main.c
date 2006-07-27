@@ -1328,7 +1328,10 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
 
             gtk_list_store_set(GTK_LIST_STORE(combobox_contents),
                     &iterator,
-                    BG_IMAGE_NAME, _(image_name),
+                    BG_IMAGE_NAME,
+                    /* work around a strange behavior of gettext for
+                     * empty strings */
+                    ((image_name && *image_name)?_(image_name):image_path),
                     BG_IMAGE_FILENAME, image_path,
                     BG_IMAGE_PRIORITY, image_order, -1);
             

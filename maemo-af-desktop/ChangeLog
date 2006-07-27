@@ -1,5 +1,10 @@
 2006-07-27  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Handle empty names for backgrounds
+	  gracefully (Closes NB#35454)
+
+2006-07-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.c: Fixed the leak of the thumb icon
 	  pixbuf (Closes NB#34662)
 	* hildon-navigator/others-menu.c: Fixed the leak of the others-menu
