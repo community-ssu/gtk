@@ -1,3 +1,9 @@
+hildon-control-panel (2.2.1-2) unstable; urgency=low
+
+  * Build hildon-control-panel-dev for all arch (Closes NB#27024) 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 27 Jul 2006 18:31:47 +0300
+
 hildon-control-panel (2.2.1-1) unstable; urgency=low
 
   * hildon-control-panel.desktop.in: Add Comment field

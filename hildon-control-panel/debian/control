@@ -17,7 +17,7 @@ Description: Hildon Control Panel
 
 Package: hildon-control-panel-dev
 Section: libs
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-control-panel, hildon-base-lib-dev, hildon-libs-dev
 Description: Hildon Control Panel development files.
 
