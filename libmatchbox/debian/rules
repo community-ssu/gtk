@@ -49,7 +49,7 @@ config.status: $(SOURCE_DIR)/configure
 
 $(SOURCE_DIR)/configure:
 	tar -jxf snapshot/libmatchbox*.tar.bz2
-	cd $(SOURCE_DIR) && aclocal-1.7 && autoconf && autoheader && automake-1.7 --add-missing --foreign
+	cd $(SOURCE_DIR) && aclocal && autoconf && autoheader && automake --add-missing --foreign
 
 build: build-stamp
 build-stamp:  config.status
