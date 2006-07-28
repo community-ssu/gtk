@@ -1,5 +1,9 @@
 2006-07-28  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-button.h: thumb button is 8, not 4
+
+2006-07-28  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Couldn't type 'apostrophe' where 'adiaeresis' assigned as
 	shortcut." (Closes NB#35553)
 	* hildon-navogator/hn-keys.[ch]:

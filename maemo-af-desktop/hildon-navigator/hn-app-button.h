@@ -38,7 +38,7 @@
 
 #include "hn-wm-types.h"
 
-#define APP_BUTTON_THUMBABLE 4
+#define APP_BUTTON_THUMBABLE 8
 #define APP_BUTTON_NORMAL    1
 
 G_BEGIN_DECLS
