@@ -24,6 +24,7 @@ typedef struct HNKeyShortcut
 {
   HNKeyAction       action;
   KeySym            keysym;
+  KeyCode           keycode;
   gint              mod_mask;
   gint              index;
   HNKeysActionFunc  action_func;
@@ -429,6 +430,7 @@ hn_keys_shortcut_new (HNKeysConfig *keys,
     = HNKeysActionConfLookup[conf_index].action_func_data;
   shortcut->mod_mask = mask;
   shortcut->keysym   = ks;
+  shortcut->keycode  = XKeysymToKeycode(GDK_DISPLAY(), ks);
   shortcut->index    = index;
 
   HN_DBG("'%s' to new shortcut with ks:%li, mask:%i",
@@ -457,7 +459,7 @@ hn_key_shortcut_grab (HNKeysConfig  *keys,
       if (ungrab)
 	{
 	  XUngrabKey(GDK_DISPLAY(),
-		     XKeysymToKeycode(GDK_DISPLAY(), shortcut->keysym), 
+		     shortcut->keycode, 
 		     shortcut->mod_mask | ignored_mask,
 		     GDK_ROOT_WINDOW());
 	} 
@@ -468,7 +470,7 @@ hn_key_shortcut_grab (HNKeysConfig  *keys,
 	  gdk_error_trap_push();	  
 	  
 	  XGrabKey (GDK_DISPLAY(), 
-		    XKeysymToKeycode(GDK_DISPLAY(), shortcut->keysym), 
+                    shortcut->keycode, 
 		    shortcut->mod_mask | ignored_mask,
 		    GDK_ROOT_WINDOW(), 
 		    False, 
@@ -638,6 +640,29 @@ hn_keys_init (void)
   HN_DBG("**** Shortcuts loaded and grabbed ****");
 
   return keys;
+}
+
+void
+hn_keys_reload (GdkKeymap *keymap, HNKeysConfig *keys)
+{
+  GSList *shortcut, *next_shortcut;
+
+  shortcut = keys->shortcuts;
+  
+  while (shortcut != NULL)
+    {
+      gpointer data = shortcut->data;
+      hn_key_shortcut_grab (keys, shortcut->data, TRUE);
+      next_shortcut = shortcut->next;
+      g_slist_remove (keys->shortcuts, shortcut->data);
+      g_free (data);
+      shortcut = next_shortcut;
+    }
+
+  keys->shortcuts = NULL;
+
+  hn_keys_set_modifiers (keys);
+  hn_keys_load_and_grab_all_shortcuts (keys);
 }
 
 void

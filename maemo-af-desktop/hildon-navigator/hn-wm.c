@@ -1818,6 +1818,7 @@ hn_wm_init (HNAppSwitcher *as)
   DBusConnection *connection;
   DBusError       error;
   gchar          *match_rule = NULL;
+  GdkKeymap      *keymap;
 
   memset(&hnwm, 0, sizeof(hnwm));
   
@@ -1895,6 +1896,12 @@ hn_wm_init (HNAppSwitcher *as)
   /* Setup shortcuts */
 
   hnwm.keys = hn_keys_init ();
+
+  /* Track changes in the keymap */
+
+  keymap = gdk_keymap_get_default ();
+  g_signal_connect (G_OBJECT (keymap), "keys-changed",
+                    G_CALLBACK (hn_keys_reload), hnwm.keys); 
 
   /* Get on the DBus */
 

@@ -1060,7 +1060,7 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
   if(win->app_parent &&
      win == hn_wm_watchable_app_get_active_window(win->app_parent))
     {
-	  hn_wm_watchable_app_set_active_window(win->app_parent, NULL);
+      hn_wm_watchable_app_set_active_window(win->app_parent, NULL);
     }
 
   if(hn_wm_get_active_window() == win)

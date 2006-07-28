@@ -41,6 +41,9 @@ HNKeysConfig*
 hn_keys_init (void);
 
 void
+hn_keys_reload (GdkKeymap *keymap, HNKeysConfig *keys);
+
+void
 hn_keys_handle_keypress (HNKeysConfig *keys, 
 			 KeyCode       keycode, 
 			 guint32       mod_mask);

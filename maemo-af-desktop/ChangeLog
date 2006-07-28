@@ -1,3 +1,14 @@
+2006-07-28  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Couldn't type 'apostrophe' where 'adiaeresis' assigned as
+	shortcut." (Closes NB#35553)
+	* hildon-navogator/hn-keys.[ch]:
+	  - Keep a pointer to the KeyCode, in case the KeySyms changed when
+	    removing a shortcut
+	  - Added callback to reload all the key bindings
+	* hildon-navogator/hn-wm.c: Track changes in the keymap, and reload
+	  the key shortcuts when detected.
+
 2006-07-28  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.h: Changed path for
