@@ -581,7 +581,6 @@ gboolean add_configured_plugins( StatusBar *panel )
     gchar *plugin_path = NULL;
     GList *l = NULL;
     GList *bad_plugins = NULL;
-    gboolean there_are_bad_plugins = FALSE;
 
     /* Return if panel fails */
     if ( !panel )  return FALSE;
@@ -625,8 +624,6 @@ gboolean add_configured_plugins( StatusBar *panel )
 
 		if (g_list_find_custom (bad_plugins,stripped,(GCompareFunc)strcmp) == NULL)
                   add_item(panel, stripped, plugin->mandatory, plugin->position);
-		else 
-		  there_are_bad_plugins = TRUE;
 		
                 g_free(stripped);
             }
@@ -638,8 +635,7 @@ gboolean add_configured_plugins( StatusBar *panel )
     g_list_free (l);
     g_list_foreach (bad_plugins,(GFunc)g_free,NULL);
     g_list_free (bad_plugins);
-    if (!there_are_bad_plugins)
-      hildon_log_remove_file (panel->log);
+    hildon_log_remove_file (panel->log);
 
     return TRUE;
 }

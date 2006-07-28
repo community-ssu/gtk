@@ -1,3 +1,10 @@
+2006-07-28  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.h: Changed path for
+	  status bar HildonLog
+	* hildon-status-bar/hildon-status-bar-main.c: Deletion of HildonLog
+	  file unconditionally
+
 2006-07-27  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-main.c: Fixed a few double-free when reading

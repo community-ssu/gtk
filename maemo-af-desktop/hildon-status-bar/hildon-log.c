@@ -170,7 +170,9 @@ hildon_log_open_file (HildonLog *log)
 {
   HildonLogPrivate *priv = HILDON_LOG_GET_PRIVATE (log);
 
-  priv->fp = open (priv->filename, O_WRONLY | O_APPEND | O_CREAT);
+  priv->fp = open (priv->filename, 
+		   O_CREAT | O_RDWR | O_APPEND, 
+		   S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 
   if (priv->fp == -1){ perror("fopen");priv->fp=0; }
 
