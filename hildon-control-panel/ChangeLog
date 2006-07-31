@@ -1,5 +1,9 @@
 2006-07-31 Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.2.2
+
+2006-07-31 Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-cp-rfc.c: Make the warning dialog artificially wider
 	  (Closes NB#36312)
 
