@@ -12,8 +12,8 @@ mime_DATA = osso-application-installer.xml
 etcdir = $(sysconfdir)/osso-application-installer/
 etc_DATA = certified.list
 
-aptdir = $(sysconfdir)/apt/
-apt_DATA = sources.list
+backupdir = $(sysconfdir)/osso-backup/applications/
+backup_DATA = osso-application-installer.conf
 
 aptconfdir = $(sysconfdir)/apt/apt.conf.d/
 aptconf_DATA = 00-smallcache
@@ -27,6 +27,7 @@ EXTRA_DIST = osso-application-installer.desktop			\
              certified.list					\
              osso-application-installer.mo			\
              sources.list					\
+             osso-application-installer.conf			\
              00-smallcache
 
 deb:
