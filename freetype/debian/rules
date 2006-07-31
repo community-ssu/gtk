@@ -41,22 +41,7 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	$(MAKE) -C freetype-2.2.1 install DESTDIR=$(CURDIR)/debian/libfreetype6
-	install -d $(CURDIR)/debian/libfreetype6-dev/usr
-	install -d $(CURDIR)/debian/libfreetype6-dev/usr/lib
-	install -d $(CURDIR)/debian/libfreetype6-dev/usr/share
-	install -d $(CURDIR)/debian/libfreetype6-dbg/usr
-	install -d $(CURDIR)/debian/libfreetype6-dbg/usr/lib
-	install -d $(CURDIR)/debian/libfreetype6-dbg/usr/lib/debug
-	mv $(CURDIR)/debian/libfreetype6/usr/include $(CURDIR)/debian/libfreetype6-dev/usr/
-	mv $(CURDIR)/debian/libfreetype6/usr/lib/pkgconfig $(CURDIR)/debian/libfreetype6-dev/usr/lib/
-	mv $(CURDIR)/debian/libfreetype6/usr/bin $(CURDIR)/debian/libfreetype6-dev/usr/
-	mv $(CURDIR)/debian/libfreetype6/usr/share/aclocal $(CURDIR)/debian/libfreetype6-dev/usr/share/
-	mv $(CURDIR)/debian/libfreetype6/usr/lib/libfreetype.a $(CURDIR)/debian/libfreetype6-dev/usr/lib/
-	mv $(CURDIR)/debian/libfreetype6/usr/lib/libfreetype.la $(CURDIR)/debian/libfreetype6-dev/usr/lib/
-	cp --no-dereference $(CURDIR)/debian/libfreetype6/usr/lib/libfreetype.so* $(CURDIR)/debian/libfreetype6-dbg/usr/lib/debug/
-	mv $(CURDIR)/debian/libfreetype6/usr/lib/libfreetype.so $(CURDIR)/debian/libfreetype6-dev/usr/lib/
-	dh_strip
+	$(MAKE) -C freetype-2.2.1 install DESTDIR=$(CURDIR)/debian/tmp
 	
 
 binary-indep: build install
@@ -66,8 +51,12 @@ binary-arch: build install
 	dh_testroot
 	dh_makeshlibs -V
 	dh_installchangelogs
-	dh_installdeb
+	dh_install --sourcedir=debian/tmp -v
+	dh_strip --dbg-package=libfreetype6
+	dh_link
 	dh_fixperms
+	dh_makeshlibs -V
+	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums

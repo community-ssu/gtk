@@ -2,6 +2,7 @@ freetype (2.2.1-1osso1) unstable; urgency=low
 
   * Upstream update from 2.1.10 to 2.2.1
   * Bugfixes, fixes NB#26659, NB#33547, NB#36268, NB#36269
+  * Updated packaging
 
  -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 31 Jul 2006 15:54:22 +0300
 

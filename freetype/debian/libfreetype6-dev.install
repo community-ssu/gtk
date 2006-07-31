@@ -1,0 +1,5 @@
+usr/include/*
+usr/lib/libfreetype.so
+usr/bin/freetype-config
+usr/lib/pkgconfig
+
