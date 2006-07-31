@@ -327,9 +327,16 @@ mce_handler (DBusConnection *conn,
         {
           if (GTK_WIDGET_IS_SENSITIVE (priv->main_button))
             {
-              gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->main_button),
-			      		    TRUE);
-	      gtk_toggle_button_toggled (GTK_TOGGLE_BUTTON (priv->main_button));
+	      GtkToggleButton *button;
+              gboolean is_active;
+
+	      button = GTK_TOGGLE_BUTTON (priv->main_button);
+	      
+	      is_active = gtk_toggle_button_get_active (button);
+	      is_active = !is_active;
+	      
+              gtk_toggle_button_set_active (button, is_active);
+	      gtk_toggle_button_toggled (button);
 	    }
 	}
 
@@ -864,7 +871,10 @@ main_menu_button_toggled_cb (HNAppSwitcher *app_switcher,
 			     GtkWidget     *toggle)
 {
   if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (toggle)))
-    return;
+    {
+      gtk_menu_popdown (GTK_MENU (app_switcher->priv->main_menu));
+      return;
+    }
 
   HN_DBG("Main menu button toggled");
   

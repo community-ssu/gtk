@@ -1,3 +1,10 @@
+2006-07-31  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "If the Applications switcher menu is already, the menu is
+	closed after short press home (sawp) hey." (Closes NB#36263)
+	* hildon-navigator/hn-app-switcher.c: Pop-down the AS menu on a second
+	  short press on HOME
+
 2006-07-28  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-button.h: thumb button is 8, not 4
