@@ -1,31 +1,38 @@
 #!/usr/bin/make -f
 
 
-export DH_COMPAT=3
+export DH_COMPAT=4
 
 SHELL = /bin/bash
 
-CFLAGS = -g
+CFLAGS = -g0 -O2
+
+# Use soft-float and thumb mode if it enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -mthumb
+endif
+
+export CFLAGS
 
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	tar -xjf freetype-2.1.10.tar.bz2
-	cd freetype-2.1.10 && ./configure --prefix=/usr --sysconfdir=/etc
+	tar -xjf freetype-2.2.1.tar.bz2
+	cd freetype-2.2.1 && ./configure --prefix=/usr --sysconfdir=/etc
 	touch configure-stamp
 
 
 build: configure-stamp build-stamp
 build-stamp:
 	dh_testdir
-	$(MAKE) -C freetype-2.1.10
+	$(MAKE) -C freetype-2.2.1
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
-	rm -rf freetype-2.1.10
+	rm -rf freetype-2.2.1
 	rm -fr objs/.libs
 	dh_clean
 
@@ -34,7 +41,7 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	$(MAKE) -C freetype-2.1.10 install DESTDIR=$(CURDIR)/debian/libfreetype6
+	$(MAKE) -C freetype-2.2.1 install DESTDIR=$(CURDIR)/debian/libfreetype6
 	install -d $(CURDIR)/debian/libfreetype6-dev/usr
 	install -d $(CURDIR)/debian/libfreetype6-dev/usr/lib
 	install -d $(CURDIR)/debian/libfreetype6-dev/usr/share
@@ -60,6 +67,7 @@ binary-arch: build install
 	dh_makeshlibs -V
 	dh_installchangelogs
 	dh_installdeb
+	dh_fixperms
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums

@@ -18,11 +18,11 @@ Description: FreeType 2 font engine, shared library files
 Package: libfreetype6-dev
 Section: libs
 Architecture: any
-Depends: libfreetype6 (>=2.1.9-1osso1), zlib1g-dev
+Depends: libfreetype6 (= ${Source-Version}), zlib1g-dev
 Description: Development package for Freetype2.
 
 Package: libfreetype6-dbg
 Section: libs
 Architecture: any
-Depends: libfreetype6, zlib1g
+Depends: libfreetype6 (= ${Source-Version}), zlib1g
 Description: Debugging symbols for Freetype2
