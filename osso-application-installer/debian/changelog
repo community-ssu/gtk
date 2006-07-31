@@ -1,3 +1,9 @@
+osso-application-installer (4.25) unstable; urgency=low
+
+  * UNRELASED
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 13 Jul 2006 18:50:39 +0300
+
 osso-application-installer (4.24) unstable; urgency=low
 
   * Ensure that the dependencies of a installed package are reinstalled
