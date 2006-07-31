@@ -28,6 +28,8 @@
 #include <libosso.h>
 #include <osso-log.h>
 
+#define HCP_RFC_WARNING_DIALOG_WIDTH 450
+
 /*#include <log-functions.h>*/
 
 
@@ -102,6 +104,10 @@ static gboolean hildon_cp_rfs_display_warning( const gchar *warning,
 
     gtk_container_add( GTK_CONTAINER( GTK_DIALOG( confirm_dialog )->vbox ), 
                        label );
+
+    gtk_widget_set_size_request (confirm_dialog,
+                                 HCP_RFC_WARNING_DIALOG_WIDTH,
+                                 -1);
 
 
     gtk_widget_show_all( confirm_dialog );
