@@ -1066,6 +1066,22 @@ section_clicked (GtkWidget *widget, gpointer data)
     global_section_activated (si);
 }
 
+static gboolean
+scroll_to_widget (GtkWidget *w, GdkEvent *, gpointer data)
+{
+  GtkWidget *scroller = (GtkWidget *)data;
+  GtkAdjustment *adj =
+    gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (scroller));
+
+  // XXX - this assumes that the adjustement unit is 'pixels'.
+
+  gtk_adjustment_clamp_page (adj,
+			     w->allocation.y,
+			     w->allocation.y + w->allocation.height);
+
+  return FALSE;
+}
+
 GtkWidget *
 make_global_section_list (GList *sections, section_activated *act)
 {
@@ -1085,6 +1101,8 @@ make_global_section_list (GList *sections, section_activated *act)
   gtk_box_pack_start (GTK_BOX (hbox), vbox, FALSE, FALSE, 10);
 
   bool first_button = true;
+
+  scroller = gtk_scrolled_window_new (NULL, NULL);
 
   for (GList *s = sections; s; s = s ->next)
     {
@@ -1108,9 +1126,11 @@ make_global_section_list (GList *sections, section_activated *act)
 
       osso_gtk_button_set_detail_from_attach_flags
 	(GTK_BUTTON (btn), OssoGtkButtonAttachFlags (f));
+
+      g_signal_connect (btn, "focus-in-event",
+			G_CALLBACK (scroll_to_widget), scroller);
     }
 
-  scroller = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroller),
 				  GTK_POLICY_NEVER,
 				  GTK_POLICY_AUTOMATIC);
