@@ -1,3 +1,17 @@
+2006-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/details.cc (add_table_field): Enable line wrapping for the
+	value label and expand the value cell horizontally, but don't
+	expand anything else. (N35651)
+	(show_with_details): Don't put table in hbox since it is supposed
+	to expand to the full width now.
+	
+	* osso-application-installer.conf: New, for backuping up
+	sources.list.
+	* Makefile.am: Install it and distribute it.  Don't install
+	sources.list.
+	* debian/postinst: Touch sources.list into existence.
+
 2006-07-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.24
