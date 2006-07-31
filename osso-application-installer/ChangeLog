@@ -1,5 +1,10 @@
 2006-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.cc (scroll_to_widget): New.
+	(make_global_section_list): Connect it to the focus-in-event for
+	every section button so that the scrolled window shows the focused
+	button. (N35753)
+
 	* src/details.cc (add_table_field): Enable line wrapping for the
 	value label and expand the value cell horizontally, but don't
 	expand anything else. (N35651)
