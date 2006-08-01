@@ -1,3 +1,9 @@
+maemo-af-desktop-config (0.1.0-1) unstable; urgency=low
+
+  * plugins.conf: corrected .desktop file names
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  1 Aug 2006 14:22:42 +0300
+
 maemo-af-desktop-config (0.0.9-1) unstable; urgency=low
 
   * applet_manager.conf: Added resizability information (Closes N#32074)

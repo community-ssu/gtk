@@ -1,3 +1,8 @@
+2006-08-01  Johan Bilien <johan.bilien@nokia.com>
+
+	* plugins.conf: corrected .desktop file names
+	* configure.ac: 0.1.0
+
 2006-07-03  Johan Bilien <johan.bilien@nokia.com>
 
 	* applet_manager.conf: Added resizability information (Closes N#32074)
