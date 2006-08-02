@@ -64,9 +64,7 @@
 
 
 /* Sets DNOTIFY callback for the .desktop dir */
-static int hcp_init_dnotify (HCP *hcp, 
-                             const gchar * path,
-                             const gchar * path_additional);
+static int hcp_init_dnotify (HCP *hcp, const gchar * path);
 static void hcp_dnotify_callback_f (gchar * path, HCP *hcp);
 
 
@@ -142,7 +140,6 @@ static gint hcp_rpc_handler (const gchar *interface,
 int main (int argc, char **argv)
 {
     HCP *hcp;
-    const gchar *additional_cp_applets_dir_environment;
     gboolean dbus_activated;
 
     setlocale(LC_ALL, "");
@@ -162,14 +159,8 @@ int main (int argc, char **argv)
     hcp = g_new0 (HCP, 1);
 
     hcp_item_init (hcp);
-    
-    additional_cp_applets_dir_environment = 
-        g_getenv (ADDITIONAL_CP_APPLETS_DIR_ENVIRONMENT);
 
-    hcp_init_dnotify (hcp,
-                      CONTROLPANEL_ENTRY_DIR,
-                      additional_cp_applets_dir_environment);
-
+    hcp_init_dnotify (hcp, CONTROLPANEL_ENTRY_DIR);
 
     hcp_create_data (hcp);             /* Create state data */
 
@@ -256,9 +247,7 @@ static void hcp_dnotify_callback_f (char *path, HCP *hcp)
     }
 }
 
-static int hcp_init_dnotify (HCP * hcp,
-                             const gchar * path,
-                             const gchar * path_additional)
+static int hcp_init_dnotify (HCP * hcp, const gchar * path)
 {
     hildon_return_t ret;
 
@@ -277,13 +266,6 @@ static int hcp_init_dnotify (HCP * hcp,
         return ret;
     }
 
-    if (path_additional)
-    {
-        ret = hildon_dnotify_set_cb (
-                (hildon_dnotify_cb_f*)hcp_dnotify_callback_f,
-                (gchar *)path_additional,
-                hcp);
-    }
     return HILDON_OK;
 }
 
