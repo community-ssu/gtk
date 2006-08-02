@@ -1,0 +1,39 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Exceptions</title><meta name="generator" content="DocBook XSL Stylesheets V1.61.2"><meta name="generator" content="GTK-Doc V1.2 (XML mode)"><link rel="stylesheet" href="style.css" type="text/css"><link rel="home" href="index.html" title="Libglade Reference Manual"><link rel="up" href="libglade-dtd.html" title="Glade 2.0 File Format"><link rel="previous" href="libglade-dtd.html" title="Glade 2.0 File Format"><link rel="next" href="libglade-lib.html" title="Part I. Libglade Library Reference"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table class="navigation" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle"><td><a accesskey="p" href="libglade-dtd.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td><td><a accesskey="u" href="libglade-dtd.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td><td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td><th width="100%" align="center">Libglade Reference Manual</th><td><a accesskey="n" href="libglade-lib.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td></tr></table><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="libglade-dtd-exceptions"></a>Exceptions</h2></div></div><div></div></div><p>As some widgets do not implement properties for all
+      required properties.  This section documents some of the
+      exceptions built into libglade's logic.</p><p>The following properties have custom handlers in libglade.
+      Most of these will probably become real properties in GTK+
+      2.2.</p><div class="itemizedlist"><ul type="disc"><li><p><i class="parameter"><tt>GtkWidget::visible</tt></i> is handled
+	  specially so that it gets applied after children have been
+	  added.  This works around some sizing bugs in certain
+	  widgets (and is the same behaviour libglade-0.x had).</p></li><li><p><i class="parameter"><tt>GtkWidget::tooltip</tt></i> implements
+	  tooltips for the widget.  The property value is the tooltip
+	  to set on the widget.</p></li><li><p><i class="parameter"><tt>GtkOptionMenu::history</tt></i> sets
+	  which menu item index in the list should be selected
+	  initially with
+	  <tt class="function">gtk_option_menu_set_history()</tt>.</p></li><li><p><i class="parameter"><tt>GtkTextView::text</tt></i> offers an
+	  easy way to set the contents of a text view's buffer.</p></li><li><p><i class="parameter"><tt>GtkCallendar::display_options</tt></i>
+	  sets display options of a calendar with
+	  <tt class="function">gtk_calendar_display_options()</tt>.</p></li><li><p><i class="parameter"><tt>GtkRadioMenuItem::group</tt></i> sets
+	  the group for the radio item.  The property value is the
+	  name of another widget in the group.  This property won't
+	  handle forward references like the
+	  <i class="parameter"><tt>GtkRadioButton::group</tt></i>
+	  property.</p></li><li><p><i class="parameter"><tt>GtkToolbar::tooltips</tt></i> sets
+	  whether the toolbar shows tooltips with
+	  <tt class="function">gtk_toolbar_set_tooltips()</tt>.</p></li><li><p><i class="parameter"><tt>GtkStatusbar::has_resize_grip</tt></i>
+	  sets whether the status bar has a resize grip in the bottom
+	  corner with
+	  <tt class="function">gtk_statusbar_set_has_resize_grip()</tt>.</p></li><li><p><i class="parameter"><tt>GtkRuler::metric</tt></i> sets the
+	  bounds and metric type for the ruler with
+	  <tt class="function">gtk_ruler_set_metric()</tt>.</p></li><li><p><i class="parameter"><tt>GtkMenuItem::label</tt></i>,
+	  <i class="parameter"><tt>GtkMenuItem::use_underline</tt></i> and
+	  <i class="parameter"><tt>GtkMenuItem::use_stock</tt></i> are used to
+	  create a label inside a menu item, and set whether it has a
+	  mnemonic (underlined letter), and whether it should be a
+	  stock item (standardised, translated label and an icon, if
+	  it is a GtkImageMenuItem).  These properties act similarly
+	  to the identically named <tt class="classname">GtkButton</tt>
+	  properties.</p></li></ul></div><p>There are custom handlers for a number of deprecated
+      widgets, and deprecated settings for some widgets.  These most
+      likely won't be converted to real properties in the
+      future.  These include:</p><table class="simplelist" border="0" summary="Simple list"><tr><td><i class="parameter"><tt>GtkPixmap::build_insensitive</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkPixmap::filename</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkProgress::format</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkCalendar::display_options</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkCList::column_widths</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkCList::selection_mode</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkCList::shadow_type</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkCList::show_titles</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkTree::selection_mode</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkTree::view_mode</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkTree::view_line</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkList::selection_mode</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkCheckMenuItem::always_show_toggle</tt></i></td></tr><tr><td><i class="parameter"><tt>GtkText::text</tt></i></td></tr></table><p><span class="emphasis"><em>XXXX - To be done</em></span></p></div><table class="navigation" width="100%" summary="Navigation footer" cellpadding="2" cellspacing="0"><tr valign="middle"><td align="left"><a accesskey="p" href="libglade-dtd.html"><b>&lt;&lt; Glade 2.0 File Format</b></a></td><td align="right"><a accesskey="n" href="libglade-lib.html"><b>Part I. Libglade Library Reference &gt;&gt;</b></a></td></tr></table></body></html>

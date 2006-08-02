@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+#export DH_VERBOSE=1
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/gnome.mk
+
+include /usr/share/gnome-pkg-tools/1/rules/uploaders.mk
+
+
+DEB_INSTALL_EXAMPLES_libglade2-dev := examples/*
+
+DEB_DH_INSTALL_ARGS := --sourcedir=debian/tmp
+
+DEB_DH_MAKESHLIBS_ARGS_libglade2-0 := -V 'libglade2-0 (>= 1:2.3.6)'

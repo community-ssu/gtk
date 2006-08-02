@@ -1,0 +1,32 @@
+Source: libglade2
+Section: devel
+Priority: optional
+Maintainer: Andreas Rottmann <rotty@debian.org>
+Uploaders: @GNOME_TEAM@
+Standards-Version: 3.6.1
+Build-Depends: cdbs, debhelper (>> 4), libgtk2.0-dev (>= 2.4.1-3), libglib2.0-dev (>= 2.4.1-2), libxml2-dev (>= 2.4.10), zlib1g-dev, gnome-pkg-tools, autotools-dev
+
+Package: libglade2-0
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends}
+Recommends: python2.3
+Description: Library to load .glade files at runtime
+ This library allows you to load user interfaces in your program, which are
+ stored externally. This allows alteration of the interface without
+ recompilation of the program.
+ .
+ The interfaces can also be edited with GLADE.
+
+Package: libglade2-dev
+Architecture: any
+Section: libdevel
+Depends: libglade2-0 (= ${Source-Version}), libgtk2.0-dev (>= 2.0.6), libxml2-dev
+Replaces: libglade2-0 (<< 2.0.1-10)
+Suggests: glade-2 | glade-gnome-2
+Description: Development files for libglade
+ This library allows you to load user interfaces in your program, which are
+ stored externally. This allows alteration of the interface without
+ recompilation of the program.
+ .
+ The interfaces can also be edited with GLADE.
