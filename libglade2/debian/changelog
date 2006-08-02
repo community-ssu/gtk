@@ -1,3 +1,9 @@
+libglade2 (1:2.4.0-1osso1) unstable; urgency=low
+
+  * Removed .la files from -dev package.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  2 Aug 2006 18:14:16 +0300
+
 libglade2 (1:2.4.0-1osso) unstable; urgency=low
 
   * Removed Python dependency.
