@@ -1,6 +1,14 @@
+osso-application-installer (4.26) unstable; urgency=low
+
+  * Don't include sources.list.
+  * Tell Backup/Restore to backup /etc/apt/sources.list.
+  * Fixes: NB#36318, NB#36694, NB#35753, NB#35651, NB#36696.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  2 Aug 2006 15:33:43 +0300
+
 osso-application-installer (4.25) unstable; urgency=low
 
-  * UNRELASED
+  * Skipped because of improper tagging... I will never learn this.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 13 Jul 2006 18:50:39 +0300
 

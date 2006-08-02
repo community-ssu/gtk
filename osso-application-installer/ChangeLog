@@ -1,4 +1,7 @@
 2006-08-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 4.26
+	Skipped 4.25
 	
 	* src/main.cc (expose_main_view): New, for drawing the big image
 	in a themable way and such that it is always in the background.
