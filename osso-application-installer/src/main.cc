@@ -198,20 +198,55 @@ make_padded_button (const char *label,
   return btn;
 }
 
-static GdkPixbuf *main_image = NULL;
+static gboolean
+expose_main_view (GtkWidget *w, GdkEventExpose *ev, gpointer data)
+{
+  /* This puts the background pixmap for the ACTIVE state into the
+     lower right corner.  Using bg_pixmap[ACTIVE] is a hack to
+     communicate which pixmap to use from the gtkrc file.  The widget
+     will never actually be in the ACTIVE state.
+  */
+
+  GtkStyle *style = gtk_rc_get_style (w);
+  GdkPixmap *pixmap = style->bg_pixmap[GTK_STATE_ACTIVE];
+  gint ww, wh, pw, ph;
+
+  if (pixmap)
+    {
+      gdk_drawable_get_size (pixmap, &pw, &ph);
+      gdk_drawable_get_size (w->window, &ww, &wh);
+      
+      gdk_draw_drawable (w->window, style->fg_gc[GTK_STATE_NORMAL],
+			 pixmap, 0, 0, ww-pw, wh-ph, pw, ph);
+    }
+
+  gtk_container_propagate_expose (GTK_CONTAINER (w),
+				  gtk_bin_get_child (GTK_BIN (w)),
+				  ev);
+
+  return TRUE;
+}
 
 GtkWidget *
 make_main_view (view *v)
 {
   GtkWidget *view;
-  GtkWidget *table, *vbox;
+  GtkWidget *vbox, *hbox, *table;
   GtkWidget *btn, *label, *image;
 
-  view = gtk_hbox_new (FALSE, 0);
+  view = gtk_event_box_new ();
+  gtk_widget_set_name (view, "osso-application-installer-main-view");
+
+  g_signal_connect (view, "expose-event",
+                    G_CALLBACK (expose_main_view), NULL);
+
+  hbox = gtk_hbox_new (FALSE, 0);
+  gtk_container_add (GTK_CONTAINER (view), hbox);
+
   vbox = gtk_vbox_new (FALSE, 0);
   table = gtk_table_new (5, 2, FALSE);
   gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (view), vbox, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, FALSE, FALSE, 0);
 
   gtk_table_set_row_spacings (GTK_TABLE (table), 10);
   gtk_table_set_col_spacings (GTK_TABLE (table), 10);
@@ -289,17 +324,7 @@ make_main_view (view *v)
 				 1, 2, 5, 6);
     }
 
-  if (main_image == NULL)
-    {
-      // XXX - find a proper way to theme the main view.
-      main_image = gdk_pixbuf_new_from_file ("/usr/share/themes/default/images/qgn_plat_application_installer_image.png", NULL);
-    }
 
-  vbox = gtk_vbox_new (FALSE, 0);
-  gtk_box_pack_end (GTK_BOX (view), vbox, FALSE, FALSE, 0);
-  image = gtk_image_new_from_pixbuf (main_image);
-  gtk_box_pack_end (GTK_BOX (vbox), image, FALSE, FALSE, 0);
-  
   gtk_widget_show_all (view);
 
   get_package_list_info (NULL);

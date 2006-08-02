@@ -1,3 +1,11 @@
+2006-08-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	
+	* src/main.cc (expose_main_view): New, for drawing the big image
+	in a themable way.
+	(make_main_view): Put everything in a GtkEventBox and use
+	expose_main_view for that.
+
 2006-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/util.cc (scroll_to_widget): New.
