@@ -32,10 +32,9 @@
 /* System includes */
 #include <glib.h>
 #include <stdlib.h>
-#include <osso-log.h>
 #include <gdk/gdkkeysyms.h>
 
-/* hildon includes */
+/* Hildon includes */
 #include "applet-manager.h"
 #include "home-applet-handler.h"
 #include "layout-manager.h"
@@ -49,6 +48,7 @@
 
 /* Osso includes */
 #include <osso-helplib.h>
+#include <osso-log.h>
 
 /* l10n includes */
 #include <libintl.h>
@@ -170,6 +170,7 @@ struct _layout_mode_internal_t {
     GdkPixbuf *empty_drag_icon;
     GdkDragContext *drag_source_context;
     gboolean ignore_visibility;
+    gboolean is_save_changes;
 };
 
 typedef enum
@@ -281,7 +282,7 @@ LayoutInternal general_data;
 
 void layout_mode_init (osso_context_t * osso_context)
 {
-    ULOG_ERR("LAYOUT:Layout_mode_init \n");
+    ULOG_DEBUG("LAYOUT:Layout_mode_init");
     general_data.main_applet_list = NULL;
     general_data.active = NULL;
     general_data.max_height = 0;
@@ -329,9 +330,9 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 
     general_data.drag_source_context = NULL;
 
-    ULOG_ERR("LAYOUT:Layoutmode begin, GLists are (*) %d and (*) %d\n",
-	    GPOINTER_TO_INT(added_applets), 
-	    GPOINTER_TO_INT(removed_applets));
+    ULOG_DEBUG("LAYOUT:Layoutmode begin, GLists are (*) %d and (*) %d",
+	       GPOINTER_TO_INT(added_applets),
+	       GPOINTER_TO_INT(removed_applets));
 
     if(general_data.main_applet_list != NULL)
     {
@@ -359,6 +360,9 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     general_data.home_area_eventbox = home_event_box;
 
     general_data.area = home_fixed;
+
+    /* Save any modification made whilst layout mode */
+    general_data.is_save_changes = FALSE;
 
     target.target = "home_applet_drag";
     target.flags = GTK_TARGET_SAME_WIDGET;
@@ -547,7 +551,6 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 		 (LAYOUT_MODE_ACCEPT_BUTTON, GTK_ICON_SIZE_BUTTON),
 		 NULL);
 
-	
     general_data.cancel_button = gtk_button_new_with_label("");
     g_object_set(general_data.cancel_button, "image", 
 		 gtk_image_new_from_icon_name
@@ -607,6 +610,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 
     if (addable_applets)
     {
+        general_data.is_save_changes = TRUE;
         add_new_applets(GTK_WIDGET(general_data.home_area_eventbox),
                         addable_applets);
         gtk_event_box_set_above_child(
@@ -616,6 +620,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     
     if (removed_applets)
     {
+        general_data.is_save_changes = TRUE;
         mark_applets_for_removal(g_list_first(general_data.main_applet_list),
                                               removed_applets);
     }
@@ -660,7 +665,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     {
         g_timeout_add(LAYOUT_OPENING_BANNER_TIMEOUT - ellapsed,
                       layout_banner_timeout_cb, 
-		      general_data.anim_banner);
+                      general_data.anim_banner);
     }
 
     /* Create the GdkWindow we use to draw the applet resize borders.
@@ -702,7 +707,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     
     overlap_check_list(general_data.main_applet_list);
 
-    ULOG_ERR("LAYOUT:Layout mode start ends here\n");
+    ULOG_DEBUG("LAYOUT:Layout mode start ends here");
     fp_mlist();
     
     /* FIXME: EXIT AND SAVE ICONS. CHECK LEGALITY IF SHOULD START GREYED. */
@@ -717,7 +722,7 @@ void layout_mode_end ( gboolean rollback )
     GtkWidget *window;
 
     /* Show Confirmation note if layout mode was cancelled */   
-    if( rollback == ROLLBACK_LAYOUT ) 
+    if( rollback == ROLLBACK_LAYOUT && general_data.is_save_changes ) 
     {    
         int ret;
 	GtkWidget *note = hildon_note_new_confirmation_add_buttons
@@ -742,13 +747,13 @@ void layout_mode_end ( gboolean rollback )
     
     iter = g_list_first(general_data.main_applet_list);
 
-    ULOG_ERR("LAYOUT:layout mode end with rollback set to %d\n", rollback);
+    ULOG_DEBUG("LAYOUT:layout mode end with rollback set to %d", rollback);
 
     fp_mlist();
 
     while(iter)
     {
-	ULOG_ERR("LAYOUT: iterating applets\n");
+	ULOG_DEBUG("LAYOUT: iterating applets");
 	node = (LayoutNode*)iter->data;	
 	
 	if (node == NULL)
@@ -861,7 +866,7 @@ void layout_mode_end ( gboolean rollback )
     general_data.newapplet_x = APPLET_ADD_X_MIN;
     general_data.newapplet_y = APPLET_ADD_Y_MIN;
     general_data.active = NULL;
-    ULOG_ERR("Free main applet_list\n");
+    ULOG_DEBUG("Free main applet_list");
     g_list_free(general_data.main_applet_list);
     general_data.main_applet_list = NULL;
 
@@ -909,10 +914,10 @@ void _select_applets_cb(GtkWidget * widget, gpointer data)
     GList * current_applets = NULL;
     GList * new_applets =NULL;
     
-    addable = NULL;
+    addable   = NULL;
     removable = NULL;
 
-    ULOG_ERR("LAYOUT:in _select_applets_cb\n");
+    ULOG_DEBUG("LAYOUT:in _select_applets_cb");
 
     fp_mlist();
     
@@ -920,22 +925,24 @@ void _select_applets_cb(GtkWidget * widget, gpointer data)
 
     while(iter)
     {
-	ULOG_ERR("LAYOUT:iterating\n");
+	ULOG_DEBUG("LAYOUT:iterating");
 	node = (LayoutNode*) iter->data;
 	if (!node->removed)
 	{
-	    ULOG_ERR("LAYOUT:Adding applet to dialog applet list\n");
-	    current_applets =
-		g_list_append(current_applets, node->applet_identifier);
+	    ULOG_DEBUG("LAYOUT:Adding applet to dialog applet list");
+	    current_applets = 
+		    g_list_append(current_applets, node->applet_identifier);
 	}
 	iter = g_list_next(iter);
     }
 
-    ULOG_ERR("LAYOUT:trying to show applet selection dialog\n");
+    ULOG_DEBUG("LAYOUT:trying to show applet selection dialog");
     show_select_applets_dialog(current_applets, &addable, &removable);
 
     if (addable)
     {
+	general_data.is_save_changes = TRUE;
+    	
 	addable = g_list_first(addable);
 	while (addable)
 	{
@@ -951,6 +958,7 @@ void _select_applets_cb(GtkWidget * widget, gpointer data)
     }
     if (removable)
     {
+	general_data.is_save_changes = TRUE;    
 	mark_applets_for_removal(g_list_first(general_data.main_applet_list),
 				 removable);
     }
@@ -993,16 +1001,16 @@ void _help_cb(GtkWidget * widget, gpointer data)
     case OSSO_OK:
 	break;
     case OSSO_ERROR:
-	ULOG_WARN("HELP: ERROR (No help for such topic ID)\n");
+	ULOG_WARN("HELP: ERROR (No help for such topic ID)");
 	break;
     case OSSO_RPC_ERROR:
-	ULOG_WARN("HELP: RPC ERROR (RPC failed for HelpApp/Browser)\n");
+	ULOG_WARN("HELP: RPC ERROR (RPC failed for HelpApp/Browser)");
 	break;
     case OSSO_INVALID:
-	ULOG_WARN("HELP: INVALID (invalid argument)\n");
+	ULOG_WARN("HELP: INVALID (invalid argument)");
 	break;
     default:
-	ULOG_WARN("HELP: Unknown error!\n");
+	ULOG_WARN("HELP: Unknown error!");
 	break;
     }
     
@@ -1040,11 +1048,12 @@ static
 void _tapnhold_close_applet_cb(GtkWidget * widget, gpointer unused)
 {
     GList *remove_list = NULL;
-    LayoutNode *node= general_data.active;
+    LayoutNode *node = general_data.active;
     
     ULOG_DEBUG(__FUNCTION__);
 
-    remove_list = g_list_append (remove_list, g_strdup(node->applet_identifier));
+    general_data.is_save_changes = TRUE;
+    remove_list = g_list_append(remove_list, g_strdup(node->applet_identifier));
     mark_applets_for_removal(g_list_first(general_data.main_applet_list), 
                              remove_list);
 
@@ -1294,7 +1303,7 @@ static void add_new_applets(GtkWidget *widget, gpointer data)
     applet_manager_t * manager;
     gint requested_width, requested_height;
     gint manager_given_x, manager_given_y;
-    ULOG_ERR("LAYOUT: add_new_applets\n");
+    ULOG_DEBUG("LAYOUT: add_new_applets");
     GList * temptemp = NULL;
     gchar * name;
 
@@ -1311,13 +1320,13 @@ static void add_new_applets(GtkWidget *widget, gpointer data)
 	name = temptemp->data;
 	if (temptemp == addable_list)
 	{
-	    ULOG_ERR("LAYOUT: (current item) ");
+	    ULOG_DEBUG("LAYOUT: (current item) ");
 	}
 	else
 	{
-	    ULOG_ERR("LAYOUT: ");
+	    ULOG_DEBUG("LAYOUT: ");
 	}
-	ULOG_ERR("add_list item %s\n", name);
+	ULOG_DEBUG("add_list item %s", name);
 	temptemp = g_list_next(temptemp);
     }
 
@@ -1328,7 +1337,7 @@ static void add_new_applets(GtkWidget *widget, gpointer data)
     
     while (main_list)
     {
-	ULOG_ERR("LAYOUT:iterating old applets\n");
+	ULOG_DEBUG("LAYOUT:iterating old applets");
 	node = (LayoutNode*)main_list->data;
 	if (node->applet_identifier != NULL &&
             new_applet_identifier &&
@@ -1522,8 +1531,8 @@ static void mark_applets_for_removal(GList * main_applet_list_ptr,
 	while(iter)
 	{
 	    removee = iter->data;
-            ULOG_ERR("mark_applet_for_removal()\n g_str_equal(%s, %s)\n",
-                    (gchar*)removee, node->applet_identifier);
+            ULOG_DEBUG("mark_applet_for_removal()\n g_str_equal(%s, %s)",
+                       (gchar*)removee, node->applet_identifier);
 	    if ((gchar*)removee != NULL &&
                 node->applet_identifier != NULL &&
                 g_str_equal((gchar*)removee, node->applet_identifier))
@@ -1532,8 +1541,8 @@ static void mark_applets_for_removal(GList * main_applet_list_ptr,
 		gtk_widget_hide(node->ebox);
 		if (node->added)
 		{
-		    ULOG_ERR("LAYOUT: freeing added node %s (also %s)\n",
-			    node->applet_identifier, (gchar*)removee);
+		    ULOG_DEBUG("LAYOUT: freeing added node %s (also %s)",
+			       node->applet_identifier, (gchar*)removee);
 		    applet_manager_deinitialize(man, (gchar*)removee);
 		    main_iter = g_list_next(main_iter);
 		    general_data.main_applet_list = 
@@ -1591,7 +1600,7 @@ static gboolean layout_mode_status_check(void)
 	position = g_list_next(position);
     }
     
-    ULOG_ERR("LAYOUT: status check");
+    ULOG_DEBUG("LAYOUT: status check");
 
     fp_mlist();
 
@@ -1619,17 +1628,17 @@ static gboolean layout_mode_status_check(void)
 		{
 		    iter_ebox = lnode_iter->ebox;
 		    
-		    ULOG_ERR("LAYOUT status comparison %d/%d,"
-			    " %d/%d, %d/%d, %d/%d\n",
-			    ((GtkWidget*)iter_ebox)->allocation.x,
-			    area.x,
-			    ((GtkWidget*)iter_ebox)->allocation.y,
-			    area.y,
-			    ((GtkWidget*)iter_ebox)->allocation.width,
-			    area.width,
-			    ((GtkWidget*)iter_ebox)->allocation.height,
-			    area.height
-			);
+		    ULOG_DEBUG("LAYOUT status comparison %d/%d,"
+			       " %d/%d, %d/%d, %d/%d",
+			       ((GtkWidget*)iter_ebox)->allocation.x,
+			       area.x,
+			       ((GtkWidget*)iter_ebox)->allocation.y,
+			       area.y,
+			       ((GtkWidget*)iter_ebox)->allocation.width,
+			       area.width,
+			       ((GtkWidget*)iter_ebox)->allocation.height,
+			       area.height
+			       );
 		    
 		    if (
 			gtk_widget_intersect(
@@ -1659,12 +1668,12 @@ static void layout_mode_done(void)
 {
     if (save_before_exit())
     {
-	ULOG_ERR("LAYOUT:save before exit\n");
+	ULOG_DEBUG("LAYOUT:save before exit");
 	layout_mode_end(FALSE);
     }
     else 
     {
-	ULOG_ERR("LAYOUT:save cancelled\n");
+	ULOG_DEBUG("LAYOUT:save cancelled");
 	
         /* Show information note about overlapping applets */
         GtkWidget *note = hildon_note_new_information
@@ -1681,16 +1690,16 @@ static gboolean save_before_exit(void)
     GList *iter;
     LayoutNode * node;
 
-    ULOG_ERR("Layout: saving main list\n");
+    ULOG_DEBUG("Layout: saving main list");
     fp_mlist();
 
     savable = layout_mode_status_check();
 
-    ULOG_ERR("LAYOUT: status check done\n");
+    ULOG_DEBUG("LAYOUT: status check done");
     
     if (!savable)
     {
-	ULOG_ERR("LAYOUT: not saveable\n");
+	ULOG_DEBUG("LAYOUT: not saveable");
 	return FALSE;
     }
     
@@ -1702,8 +1711,8 @@ static gboolean save_before_exit(void)
 	node = (LayoutNode*)iter->data;
 	if (node->highlighted)
 	{
-	    ULOG_ERR("Home Layoutmode trying to"
-		     "save highlighted applet!");
+	    ULOG_DEBUG("Home Layoutmode trying to"
+		       "save highlighted applet!");
 	    return FALSE;
 	}
 
@@ -1712,15 +1721,15 @@ static gboolean save_before_exit(void)
 	    applet_manager_deinitialize(man, node->applet_identifier);
 	    gtk_widget_destroy(node->ebox); /* How about finalizing the
 					       applet? Memory leak potential
-					    */
-        node->ebox = NULL;
+					     */
+            node->ebox = NULL;
 
 	}
 	else 
 	{
-	    ULOG_ERR("LAYOUT:applet manager set coordinates! %s %d %d\n",
-		    node->applet_identifier,
-		    node->ebox->allocation.x, node->ebox->allocation.y);
+	    ULOG_DEBUG("LAYOUT:applet manager set coordinates! %s %d %d",
+		       node->applet_identifier,
+		       node->ebox->allocation.x, node->ebox->allocation.y);
 	    
 	    applet_manager_set_coordinates(man,
 					   node->applet_identifier,
@@ -1730,7 +1739,7 @@ static gboolean save_before_exit(void)
 	iter = iter->next;
     }
 
-    ULOG_ERR("LAYOUT: calling save all\n");
+    ULOG_DEBUG("LAYOUT: calling save all");
     applet_manager_configure_save_all(man);
     return TRUE;
 }
@@ -2022,16 +2031,17 @@ static gboolean button_click_cb(GtkWidget *widget,
 	}
     }
 
+
     if (event->button == 1)
     {
-	ULOG_ERR("LAYOUT:event->button == 1\n");
-	g_message("BUTTON1 (%d,%d)", (gint) event->x, (gint)
-		  event->y);
+	ULOG_DEBUG("LAYOUT:event->button == 1");
+	ULOG_DEBUG("BUTTON1 (%d,%d)", 
+		   (gint) event->x, (gint)event->y);
 	iter = g_list_first(general_data.main_applet_list);
 	
 	if (!iter)
 	{
-	    ULOG_ERR("LAYOUT:No main applet list, FALSE\n");
+	    ULOG_DEBUG("LAYOUT:No main applet list, FALSE");
 	    return FALSE;
 	}
 
@@ -2054,7 +2064,7 @@ static gboolean button_click_cb(GtkWidget *widget,
 			general_data.offset_x = event->x - evbox->allocation.x;
 			general_data.offset_y = event->y - evbox->allocation.y;
 			general_data.active = candidate_node;
-                        ULOG_ERR("Candidate changed!");
+                        ULOG_DEBUG("Candidate changed!");
 		    }
 
 		    candidate = TRUE;
@@ -2067,7 +2077,7 @@ static gboolean button_click_cb(GtkWidget *widget,
 	
     }
 
-    ULOG_ERR("LAYOUT:After loop\n");	    
+    ULOG_DEBUG("LAYOUT:After loop");	    
 
     if (candidate)
     {
@@ -2134,7 +2144,7 @@ static gboolean button_click_cb(GtkWidget *widget,
     
     general_data.active = NULL;
     
-    ULOG_ERR("LAYOUT:no more childs!\n");
+    ULOG_DEBUG("LAYOUT:no more childs!");
 
     return FALSE;
 } 
@@ -2363,7 +2373,7 @@ static gboolean handle_drag_motion(GtkWidget *widget,
     gint tr_x, tr_y;
     GdkRectangle rect;
 
-    ULOG_ERR("handle_drag_motion \n");
+    ULOG_DEBUG("handle_drag_motion");
 
     if (!general_data.active)
     {
@@ -2502,7 +2512,7 @@ static gboolean handle_drag_motion(GtkWidget *widget,
                       APPLET_RESIZE_HANDLE_HEIGHT);
 	    */
 	    
-	    /* Show the window in case it was hidden */         
+	/* Show the window in case it was hidden */         
     	gdk_window_show(general_data.applet_resize_window);
     	
     	/* Update the status always to avoid the annoying flying cursor */
@@ -2677,7 +2687,7 @@ static gboolean drag_is_finished(GtkWidget *widget, GdkDragContext *context,
     gtk_container_remove(GTK_CONTAINER(general_data.area), 
 			 general_data.active->ebox);
 
-    ULOG_ERR("LAYOUT:drag_is_finished\n");
+    ULOG_DEBUG("LAYOUT:drag_is_finished");
     
     fp_mlist();
 
@@ -2691,7 +2701,9 @@ static gboolean drag_is_finished(GtkWidget *widget, GdkDragContext *context,
 
     gtk_event_box_set_above_child(general_data.home_area_eventbox, TRUE);
 
-    gtk_drag_finish(context, TRUE, FALSE, time);  
+    gtk_drag_finish(context, TRUE, FALSE, time);
+
+    general_data.is_save_changes = TRUE;  
 
     while (gtk_events_pending ())
     {
@@ -2708,8 +2720,9 @@ static gboolean drag_is_finished(GtkWidget *widget, GdkDragContext *context,
     
 }
 
-static void drag_begin(GtkWidget *widget, GdkDragContext *context,
-gpointer data)
+static void drag_begin(GtkWidget *widget, 
+		       GdkDragContext *context,
+		       gpointer data)
 {
     if (!general_data.active) return;
 
@@ -3091,7 +3104,7 @@ static void fp_mlist(void)
     
     if (mainlist == NULL)
     {
-	ULOG_ERR("LAYOUT: main applet list is NULL\n"); 
+	ULOG_DEBUG("LAYOUT: main applet list is NULL"); 
 	return;
     }
     
@@ -3100,43 +3113,43 @@ static void fp_mlist(void)
 	node = (LayoutNode *) mainlist->data;
 	if (node == NULL)
 	{
-	    ULOG_ERR("LAYOUT: null node in glist!\n");
+	    ULOG_DEBUG("LAYOUT: null node in glist!");
 	    return;
 	}
 	filename = g_path_get_basename(node->applet_identifier);
-	ULOG_ERR("LAYOUT: applet %s ", filename);
+	ULOG_DEBUG("LAYOUT: applet %s ", filename);
 	if (node->added)
 	{
-	    ULOG_ERR("(new) ");
+	    ULOG_DEBUG("(new) ");
 	}
 	if (node->removed)
 	{
-	    ULOG_ERR("(del) ");
+	    ULOG_DEBUG("(del) ");
 	}
-	ULOG_ERR("Height: %d ", node->height);
+	ULOG_DEBUG("Height: %d ", node->height);
 	if (node->visible)
 	{
-	    ULOG_ERR("vis ");
+	    ULOG_DEBUG("vis ");
 	}
 	else
 	{
-	    ULOG_ERR("!vis ");
+	    ULOG_DEBUG("!vis ");
 	}
 	if (node->drag_icon)
 	{
-	    ULOG_ERR("icon* ");
+	    ULOG_DEBUG("icon* ");
 	}
 	else 
 	{
-	    ULOG_ERR("!icon ");
+	    ULOG_DEBUG("!icon ");
 	}
 	if (node->highlighted)
 	{
-	    ULOG_ERR("highlight\n");
+	    ULOG_DEBUG("highlight");
 	}
 	else 
 	{
-	    ULOG_ERR("normal\n");
+	    ULOG_DEBUG("normal");
 	}
 
 	mainlist = g_list_next(mainlist);

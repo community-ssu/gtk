@@ -1,5 +1,13 @@
 2006-08-02  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "HOME: Discard layout -confirmation note shown even though
+    there wasn't any changes" (Closes NB#27713)
+	* hildon-home/layout-manager.c:
+	  - add gboolean value to save any changes made on layoutmode,
+	  - button and area clicks closes also layout mode begin animation banner,
+
+2006-08-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-keys.c: Change gconf keys as agreed with
 	  HW keyboard applet
 
