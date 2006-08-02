@@ -1,10 +1,9 @@
 2006-08-02  Marius Vollmer  <marius.vollmer@nokia.com>
-
 	
 	* src/main.cc (expose_main_view): New, for drawing the big image
-	in a themable way.
+	in a themable way and such that it is always in the background.
 	(make_main_view): Put everything in a GtkEventBox and use
-	expose_main_view for that.
+	expose_main_view for that. (N36318, N36694)
 
 2006-07-31  Marius Vollmer  <marius.vollmer@nokia.com>
 
@@ -20,7 +19,7 @@
 	to expand to the full width now.
 	
 	* osso-application-installer.conf: New, for backuping up
-	sources.list.
+	sources.list. (N36696)
 	* Makefile.am: Install it and distribute it.  Don't install
 	sources.list.
 	* debian/postinst: Touch sources.list into existence.
