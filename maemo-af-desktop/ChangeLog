@@ -1,5 +1,10 @@
 2006-08-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-keys.c: Change gconf keys as agreed with
+	  HW keyboard applet
+
+2006-08-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/others-menu.c: Fixed the second line of folders
 	  to comply with fixed UI specs
 	* hildon-navigator/hildon-navigator.pc.in: Added variable to get

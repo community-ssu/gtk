@@ -311,8 +311,8 @@ mce_handler (DBusConnection *conn,
         {
           priv->is_long_press = TRUE;
           
-	  hn_wm_top_desktop ();
-	}
+          hn_wm_top_desktop ();
+        }
       
       return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
@@ -327,18 +327,18 @@ mce_handler (DBusConnection *conn,
         {
           if (GTK_WIDGET_IS_SENSITIVE (priv->main_button))
             {
-	      GtkToggleButton *button;
+              GtkToggleButton *button;
               gboolean is_active;
 
-	      button = GTK_TOGGLE_BUTTON (priv->main_button);
-	      
-	      is_active = gtk_toggle_button_get_active (button);
-	      is_active = !is_active;
+              button = GTK_TOGGLE_BUTTON (priv->main_button);
+
+              is_active = gtk_toggle_button_get_active (button);
+              is_active = !is_active;
 	      
               gtk_toggle_button_set_active (button, is_active);
-	      gtk_toggle_button_toggled (button);
-	    }
-	}
+	          gtk_toggle_button_toggled (button);
+            }
+        }
 
       return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }

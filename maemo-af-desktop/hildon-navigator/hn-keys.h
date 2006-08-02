@@ -15,12 +15,10 @@ typedef enum HNKeyAction
   HN_KEY_ACTION_TASK_LAUNCHER,
   HN_KEY_ACTION_POWER,
   HN_KEY_ACTION_HOME,           /* Desktop Toggle */
-  HN_KEY_ACTION_SENDKEY_F4, 	/* App Menu */
-  HN_KEY_ACTION_SENDKEY_F5, 	/* App Menu ? */
-  HN_KEY_ACTION_SENDKEY_F6, 	/* Fullscreen */
-  HN_KEY_ACTION_SENDKEY_F7,	/* Rocker + */
-  HN_KEY_ACTION_SENDKEY_F8,     /* Rocker - */
-
+  HN_KEY_ACTION_MENU,
+  HN_KEY_ACTION_FULLSCREEN,
+  HN_KEY_ACTION_ZOOM_IN,
+  HN_KEY_ACTION_ZOOM_OUT,
 }
 HNKeyAction;
 
