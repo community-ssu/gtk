@@ -1,3 +1,9 @@
+osso-application-installer (4.27) unstable; urgency=low
+
+  * Rereleased 4.26 with osso-application-installer.conf committed to svn.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  2 Aug 2006 15:43:41 +0300
+
 osso-application-installer (4.26) unstable; urgency=low
 
   * Don't include sources.list.
