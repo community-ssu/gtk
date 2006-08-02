@@ -1,3 +1,10 @@
+2006-08-02  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/others-menu.c: Fixed the second line of folders
+	  to comply with fixed UI specs
+	* hildon-navigator/hildon-navigator.pc.in: Added variable to get
+	  the .desktop directory
+
 2006-07-31  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.16

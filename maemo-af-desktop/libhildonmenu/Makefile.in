@@ -163,6 +163,7 @@ hildoncpdesktopentrydir = @hildoncpdesktopentrydir@
 hildondesktopentrydir = @hildondesktopentrydir@
 hildonhomedesktopentrydir = @hildonhomedesktopentrydir@
 hildonhomelibdir = @hildonhomelibdir@
+hildonnavigatordesktopentrydir = @hildonnavigatordesktopentrydir@
 hildonnavigatorlibdir = @hildonnavigatorlibdir@
 hildonstatusbardesktopentrydir = @hildonstatusbardesktopentrydir@
 hildonstatusbarlibdir = @hildonstatusbarlibdir@

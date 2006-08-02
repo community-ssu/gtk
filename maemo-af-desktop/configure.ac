@@ -124,6 +124,9 @@ AC_SUBST(hildondesktopentrydir)
 hildoncpdesktopentrydir=${datadir}/applications/hildon-control-panel
 AC_SUBST(hildoncpdesktopentrydir)
 
+hildonnavigatordesktopentrydir=${datadir}/applications/hildon-navigator
+AC_SUBST(hildonnavigatordesktopentrydir)
+
 AC_SUBST(localedir)
 AC_SUBST(hildonnavigatorlibdir)
 

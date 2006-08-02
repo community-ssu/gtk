@@ -1984,6 +1984,8 @@ hn_app_switcher_real_lowmem (HNAppSwitcher *app_switcher,
   HNAppSwitcherPrivate *priv = app_switcher->priv;
   priv->is_dimming_on = is_on;
 
+  HN_DBG ("Received lowmem signal");
+
   /* TODO - update the sensitivity of the items depending on the
    * lowmem state
    */

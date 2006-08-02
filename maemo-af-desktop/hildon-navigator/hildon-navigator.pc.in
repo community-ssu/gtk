@@ -4,6 +4,7 @@ libdir=@libdir@
 includedir=@includedir@/hildon-navigator-dev
 localedir=@localedir@
 pluginlibdir=@hildonnavigatorlibdir@
+plugindesktopentrydir=@hildonnavigatordesktopentrydir@
 
 Name: hildon-navigator
 Description: Hildon Navigator
