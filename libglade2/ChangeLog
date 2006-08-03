@@ -1,3 +1,9 @@
+2006-08-03  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* configure.in: Added AM_MAINTAINER_MODE in order to prevent our
+	build robot from rebuilding the autocruft files, which it can't do
+	reliably it seems.
+
 2004-05-17  James Henstridge  <james@daa.com.au>
 
 	* NEWS: add small news message.
