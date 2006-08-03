@@ -3,6 +3,8 @@ dbus (0.61-osso17) experimental; urgency=low
   * UNRELEASED
   * Removed compilation of asserts and the forced initialisation of threads.
     Fixes: NB#36729
+  * Disabled __noreturn__ attributes when compiling for ARM, because of GDB
+    problems. Fixes: NB#35275
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 03 Aug 2006 15:44:24 +0300
 
