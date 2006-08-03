@@ -250,12 +250,19 @@ gboolean browser_find( GtkWidget *browser,
 */
 gboolean browser_has_selection( GtkWidget *browser, gboolean *retval_ref )
 {
-    guint len = -1;
-    const gchar *sel = gtk_html_get_selection_html(
-      GTK_HTML(gtk_bin_get_child(GTK_BIN(browser))), &len);
+    guint len = G_MAXUINT;
+    if (gtk_html_command(GTK_HTML(gtk_bin_get_child(GTK_BIN(browser))),
+                                 "is-selection-active"))
+    {
+        /* Not sure if this inner test is needed after adding
+         * is-selection-active test. But when the gtkhtml is not
+         * documented it is hard to know. */
+        const gchar *sel = gtk_html_get_selection_html(
+            GTK_HTML(gtk_bin_get_child(GTK_BIN(browser))), &len);
 
-    if (NULL != sel && (0 != strcmp(sel, ""))) {
-        return TRUE;
+        if (NULL != sel && (0 != strcmp(sel, ""))) {
+            return TRUE;
+        }
     }
 
     return FALSE;

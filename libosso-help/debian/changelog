@@ -1,3 +1,9 @@
+libosso-help (2.0.4-1) unstable; urgency=low
+
+  * Fixes NB#32554
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Thu,  3 Aug 2006 14:09:02 +0300
+
 libosso-help (2.0.3-1) unstable; urgency=low
 
   * Fixes NB#33294
