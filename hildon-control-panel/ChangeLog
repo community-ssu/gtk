@@ -1,7 +1,12 @@
+2006-08-03 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-cp-rfs.c: include unistd.h which seems to be required for crypt
+	* configure.ac: 2.2.2.1
+
 2006-08-02 Moises Martinez <moises.martinzes@nokia.com>
 
-        * hildon-control-panel-main.c: Remove dnotify
-        for old user's plugin folder
+	* hildon-control-panel-main.c: Remove dnotify
+	  for old user's plugin folder
 
 2006-07-31 Johan Bilien <johan.bilien@nokia.com>
 

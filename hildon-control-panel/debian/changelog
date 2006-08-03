@@ -1,3 +1,9 @@
+hildon-control-panel (2.2.2.1-1) unstable; urgency=low
+
+  * hildon-cp-rfs.c: include unistd.h which seems to be required for crypt
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  3 Aug 2006 11:05:07 +0300
+
 hildon-control-panel (2.2.2-1) unstable; urgency=low
 
   * hildon-cp-rfc.c: Make the warning dialog artificially wider
