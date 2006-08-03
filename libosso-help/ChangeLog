@@ -1,5 +1,10 @@
 2006-08-03 Jakub Pavelek <jakub.pavelek@nokia.com>
 
+	* src/graphic.c: Removed referneces to picture popup code because
+		that has been removed from UI Specs
+
+2006-08-03 Jakub Pavelek <jakub.pavelek@nokia.com>
+
 	* src/browser.c: In browser_has_selection() check that selection is also active
 	Fixes NB#32554
 

@@ -30,7 +30,7 @@
 #include <jpeglib.h> /* linjpeg */
 #include <setjmp.h>  /* Used for libjpeg error handling */
 
-/* Height limit for showing a pic in full size (and no popups)
+/* Height limit for showing a pic in full size
  *
  * This should be around the size of 'normal' Help text in browser.
  */
@@ -42,13 +42,6 @@ gboolean dialog_mode; /*internal.h*/
 /**
   Get the resolution (width & height) of a .PNG picture
   
-  @note This same code is duplicated in UI side (so if you change
-        some, change also that func)  UI is not linking here to
-        avoid conflicts with old helplibs (not having this).
-
-  @todo In the long run, this could be exposed in the HelpLib
-        private interface, and UI using this directly.
-
   @param fn filename
   @param wref reference to store the width
   @param href reference to store the height
@@ -153,10 +146,6 @@ gboolean jpeg_resolution( const char *fname, guint *wref, guint *href )
   Write an HTML tag entry for an inline picture to 'buf'.
 
   Note: Picture is scaled to "browser default text size" (whichever that is)
-        and it contains a popup link for viewing the picture in full.
-        
-  @todo: should _all_ pictures contain the popup link, or just selected
-        ones (those larger than a certain threshold?)
 
   @param buf text buffer
   @param bufsize size of @buf, in bytes
@@ -170,7 +159,7 @@ gboolean graphic_tag( char *buf, size_t bufsize, const char *fname)
     if (!buf || bufsize <= 0 || !fname) return FALSE;
 
     /*
-     * Basic functionality (no scaling, no popups):
+     * Basic functionality (no scaling):
      *
      * snprintf( buf, bufsize, "<img src=\"file://%s\"/>", fname );
      */
@@ -198,7 +187,7 @@ gboolean graphic_tag( char *buf, size_t bufsize, const char *fname)
     }
 
     /* If we don't know the height, or it is low enough, 
-       just pass on the picture, no popup either. */
+       just pass on the picture. */
     if (h <= NORMAL_HEIGHT) {
         snprintf( buf, bufsize, "<img src=\"file://%s\"/>", fname );
     } else {
@@ -217,21 +206,10 @@ gboolean graphic_tag( char *buf, size_t bufsize, const char *fname)
             w /= ((float)h) / (2*NORMAL_HEIGHT);
             h= 2*NORMAL_HEIGHT;
         }
-    /*Go button is not needed, and no enlarge link either*/
 
-        if (dialog_mode)
-            snprintf( buf, bufsize,
-                     "<img src=\"file://%s\" width=%d height=%d/>",
-                     fname, w, h );
-
-        /* No enlargeable links or Go button.
-         * NOTE: This specs is temporary. Could be changed later
-         */
-
-        else 
-            snprintf( buf, bufsize,
-                     "<img src=\"file://%s\" width=%d height=%d/>",
-                     fname, w, h );
+        snprintf( buf, bufsize,
+                  "<img src=\"file://%s\" width=%d height=%d/>",
+                  fname, w, h );
     }
 
     return TRUE;
