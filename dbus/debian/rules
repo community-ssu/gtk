@@ -31,7 +31,7 @@ endif
 
 DEB_CONFIGURE_SCRIPT_ENV += PYTHON=/usr/bin/python2.4
 DEB_CONFIGURE_EXTRA_FLAGS := CFLAGS="$(CFLAGS)" --enable-glib --disable-gtk \
-                             --disable-verbose-mode --enable-asserts \
+                             --disable-verbose-mode \
                              --disable-qt3 --with-qt3-moc=/usr/bin/moc-qt3 \
                              --disable-qt --with-qt-moc=/usr/bin/moc-qt4 \
                              --disable-python --with-xml=expat --disable-docs \

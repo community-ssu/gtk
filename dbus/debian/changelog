@@ -1,3 +1,11 @@
+dbus (0.61-osso17) experimental; urgency=low
+
+  * UNRELEASED
+  * Removed compilation of asserts and the forced initialisation of threads.
+    Fixes: NB#36729
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 03 Aug 2006 15:44:24 +0300
+
 dbus (0.61-osso16) experimental; urgency=low
 
   * Added fix for failing assert in dbus-connection.c, Fixes: NB#32677
