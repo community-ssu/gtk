@@ -1,3 +1,9 @@
+libglade2 (1:2.4.0-1osso2) unstable; urgency=low
+
+  * Added AM_MAINTAINER_MODE to configure.in
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  3 Aug 2006 15:05:32 +0300
+
 libglade2 (1:2.4.0-1osso1) unstable; urgency=low
 
   * Removed .la files from -dev package.
