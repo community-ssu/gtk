@@ -31,15 +31,6 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
-# shared library versions, option 1
-version=2.0.5
-major=2
-# option 2, assuming the library is created as src/.libs/libfoo.so.2.0.5 or so
-#version=`ls src/.libs/lib*.so.* | \
-# awk '{if (match($$0,/[0-9]+\.[0-9]+\.[0-9]+$$/)) print substr($$0,RSTART)}'`
-#major=`ls src/.libs/lib*.so.* | \
-# awk '{if (match($$0,/\.so\.[0-9]+$$/)) print substr($$0,RSTART+4)}'`
-
 config.status: $(SOURCE_DIR)/configure
 	dh_testdir
 
@@ -59,6 +50,7 @@ $(SOURCE_DIR)/configure:
 	patch -p0 < upstream/patches/gtkhtml_memleak_fix.diff
 	patch -p0 < upstream/patches/gtkhtml_clear_selection.diff
 	patch -p0 < upstream/patches/gtkhtml_store_clipboard.diff
+	patch -p0 < upstream/patches/gtkhtml_check_string.diff
 	cd $(SOURCE_DIR) && ./autogen.sh
 
 

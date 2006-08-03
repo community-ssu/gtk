@@ -1,0 +1,12 @@
+diff -Naur gtkhtml-3.9.1/src/htmlengine.c gtkhtml-3.9.1-check-string/src/htmlengine.c
+--- gtkhtml-3.9.1/src/htmlengine.c	2005-09-11 07:05:25.000000000 +0300
++++ gtkhtml-3.9.1-check-string/src/htmlengine.c	2006-08-03 16:37:41.000000000 +0300
+@@ -5008,7 +5008,7 @@
+ 	e->formTextArea = NULL;
+ 	e->inOption = FALSE;
+ 	e->inTextArea = FALSE;
+-	e->formText = g_string_new ("");
++	if (e->formText == NULL) e->formText = g_string_new ("");
+ 
+ 	e->flow = NULL;
+ 

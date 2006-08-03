@@ -1,3 +1,9 @@
+2006-08-03 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/htmlengine.c: check if we really need new allocation for 
+		e->formText before running e->formText = g_string_new
+	Fixes NB#36278
+
 2006-06-19 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* Version 3.9.1-2osso2 - not 3.9.1-1osso8 !!!
