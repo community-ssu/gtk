@@ -1,5 +1,15 @@
 2006-08-03  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Mode changes are retained even after pressing cancel
+	button" (Closes NB#36622)
+	* hildon-home/hildon-home-main.c:
+	  - renamed global variable to match role
+	  - create_background_preview(): removed storing mode value
+	  - set_background_dialog_selected(): Setting correct mode value to
+	    selection after accepting saving mode.
+
+2006-08-03  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Icon for close applet button missing in layout mode"
 	(CLoses NB#33472)
 	* hildon-home/layout-manager.c:
