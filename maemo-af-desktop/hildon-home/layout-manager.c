@@ -69,8 +69,10 @@
 #define APPLET_ADD_X_STEP 20
 
 /* These should probably be gtk-settings or something */
+#define APPLET_RESIZE_HANDLE_ICON   "qgn_home_layoutmode_resize"
 #define APPLET_RESIZE_HANDLE_WIDTH  40
 #define APPLET_RESIZE_HANDLE_HEIGHT 40
+#define APPLET_CLOSE_BUTTON_ICON    "qgn_home_layoutmode_close"
 #define APPLET_CLOSE_BUTTON_WIDTH   26
 #define APPLET_CLOSE_BUTTON_HEIGHT  26
 
@@ -171,6 +173,8 @@ struct _layout_mode_internal_t {
     GdkDragContext *drag_source_context;
     gboolean ignore_visibility;
     gboolean is_save_changes;
+    GdkPixbuf *close_button;
+    GdkPixbuf *resize_handle;
 };
 
 typedef enum
@@ -325,6 +329,8 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     gint ellapsed;
     GList *focus_list;
     GdkWindowAttr wattr = { 0 };
+    GtkIconTheme *icon_theme;
+    GError *error;
     
     node = NULL;
 
@@ -376,6 +382,39 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     gtk_drag_dest_set(GTK_WIDGET(general_data.home_area_eventbox), 
 		      GTK_DEST_DEFAULT_DROP,
 		      &target, 1, GDK_ACTION_COPY);
+
+    /* Load applet icons */
+    icon_theme = gtk_icon_theme_get_default();
+
+    error = NULL;
+    general_data.close_button = gtk_icon_theme_load_icon(icon_theme,
+                                    APPLET_CLOSE_BUTTON_ICON,
+                                    APPLET_CLOSE_BUTTON_WIDTH,
+                                    GTK_ICON_LOOKUP_NO_SVG, &error);
+
+    if (error)
+    {
+        ULOG_ERR("Error loading icon '%s': %s\n",
+                 APPLET_CLOSE_BUTTON_ICON,
+                 error->message);
+        g_error_free(error);
+        error = NULL;
+    }
+
+    general_data.resize_handle = gtk_icon_theme_load_icon(icon_theme,
+                                     APPLET_RESIZE_HANDLE_ICON,
+                                     APPLET_RESIZE_HANDLE_WIDTH,
+                                     GTK_ICON_LOOKUP_NO_SVG, &error);
+
+    if (error)
+    {
+        ULOG_ERR("Error loading icon '%s': %s\n",
+                 APPLET_RESIZE_HANDLE_ICON,
+                 error->message);
+        g_error_free(error);
+        error = NULL;
+    }
+
 
     manager = applet_manager_singleton_get_instance();    
     iter = applet_manager_get_identifier_all(manager);
@@ -855,6 +894,17 @@ void layout_mode_end ( gboolean rollback )
     gtk_widget_destroy (general_data.layout_menu);
     gtk_widget_destroy (general_data.menu_label);
 
+    if (general_data.close_button)
+    {
+        g_object_unref(G_OBJECT(general_data.close_button));
+        general_data.close_button = NULL;
+    }
+    if (general_data.resize_handle)
+    {
+        g_object_unref(G_OBJECT(general_data.resize_handle));
+        general_data.resize_handle = NULL;
+    }
+
 #ifdef USE_TAP_AND_HOLD
     gtk_widget_destroy (general_data.tapnhold_menu);
 #endif
@@ -1200,26 +1250,48 @@ gboolean _applet_expose_cb(GtkWidget * widget,
 
     /* Draw the close button */
 
-    gtk_paint_box(node->ebox->style, node->ebox->window,
-                  GTK_STATE_NORMAL, GTK_SHADOW_IN,
-                  NULL, node->ebox, "close_button",
-                  HILDON_MARGIN_DEFAULT, HILDON_MARGIN_DEFAULT,
-                  APPLET_CLOSE_BUTTON_WIDTH,
-                  APPLET_CLOSE_BUTTON_HEIGHT);
-
+    if (general_data.close_button)
+    {
+        gdk_draw_pixbuf(node->ebox->window, gc,
+                        general_data.close_button, 0, 0,
+                        HILDON_MARGIN_DEFAULT, HILDON_MARGIN_DEFAULT,
+                        APPLET_CLOSE_BUTTON_WIDTH, APPLET_CLOSE_BUTTON_HEIGHT,
+                        GDK_RGB_DITHER_NONE, 0, 0);
+    } else {
+        gtk_paint_box(node->ebox->style, node->ebox->window,
+                      GTK_STATE_NORMAL, GTK_SHADOW_IN,
+                      NULL, node->ebox, "close_button",
+                      HILDON_MARGIN_DEFAULT, HILDON_MARGIN_DEFAULT,
+                      APPLET_CLOSE_BUTTON_WIDTH,
+                      APPLET_CLOSE_BUTTON_HEIGHT);
+    }
+    
     /* Draw the resize grip, if approperiate */
     if (node->resize_type != APPLET_RESIZE_NONE)
     {
         
-        gtk_paint_box(node->ebox->style, node->ebox->window,
-                      GTK_STATE_NORMAL, GTK_SHADOW_IN,
-                      NULL, node->ebox, "resize_handle",
-                      node->ebox->allocation.width
-                       - APPLET_RESIZE_HANDLE_WIDTH,
-                      node->ebox->allocation.height
-                       - APPLET_RESIZE_HANDLE_HEIGHT,
-                      APPLET_RESIZE_HANDLE_WIDTH,
-                      APPLET_RESIZE_HANDLE_HEIGHT);
+        if (general_data.resize_handle)
+        {
+            gdk_draw_pixbuf(node->ebox->window, gc,
+                            general_data.resize_handle, 0, 0,
+                            node->ebox->allocation.width
+                              - APPLET_RESIZE_HANDLE_WIDTH,
+                            node->ebox->allocation.height
+                              - APPLET_RESIZE_HANDLE_HEIGHT,
+                            APPLET_RESIZE_HANDLE_WIDTH,
+                            APPLET_RESIZE_HANDLE_HEIGHT,
+                            GDK_RGB_DITHER_NONE, 0, 0);
+        } else {
+            gtk_paint_box(node->ebox->style, node->ebox->window,
+                          GTK_STATE_NORMAL, GTK_SHADOW_IN,
+                          NULL, node->ebox, "resize_handle",
+                          node->ebox->allocation.width
+                            - APPLET_RESIZE_HANDLE_WIDTH,
+                          node->ebox->allocation.height
+                            - APPLET_RESIZE_HANDLE_HEIGHT,
+                          APPLET_RESIZE_HANDLE_WIDTH,
+                          APPLET_RESIZE_HANDLE_HEIGHT);
+        }
     }
 
     g_object_unref(G_OBJECT(gc));

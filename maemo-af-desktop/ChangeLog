@@ -1,3 +1,14 @@
+2006-08-03  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Icon for close applet button missing in layout mode"
+	(CLoses NB#33472)
+	* hildon-home/layout-manager.c:
+  	  - layout_mode_begin(): Load applet close button and resize handle
+	    graphics
+  	  - layout_mode_begin(): Free close button and resize handle graphics
+  	  - _applet_expose_cb(): Draw close button and resize handle directly,
+	    preserve theme drawing as a fallback 
+
 2006-08-02  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "HOME: Discard layout -confirmation note shown even though
