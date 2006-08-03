@@ -28,7 +28,7 @@
 #include <libosso.h>
 #include <osso-log.h>
 
-#include <unistd.h> /*crypt()*/
+#include <crypt.h>
 
 #define HCP_RFC_WARNING_DIALOG_WIDTH 450
 
