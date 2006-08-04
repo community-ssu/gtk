@@ -232,7 +232,7 @@ gboolean browser_find( GtkWidget *browser,
                                              str,
                                              FALSE,
                                              TRUE,
-                                             TRUE);
+                                             FALSE);
     } else {
         *retval_ref = gtk_html_engine_search_next(GTK_HTML(gtk_bin_get_child(GTK_BIN(browser))));
     }

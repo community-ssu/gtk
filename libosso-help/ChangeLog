@@ -1,3 +1,8 @@
+2006-08-04 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/browser.c: Do not interperet find on page searches as regexp
+	Fixes NB#33749
+
 2006-08-03 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* src/graphic.c: Removed referneces to picture popup code because
