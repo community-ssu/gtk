@@ -1,5 +1,9 @@
 2006-08-03  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/Makefile.am: Install the restoration script in it2007
+
+2006-08-03  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-watched-window.[ch]: Add an ensure
 	  parameter to attempt_signal_kill to allow sending SIGTERM without
 	  SIGKILL
