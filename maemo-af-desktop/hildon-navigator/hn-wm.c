@@ -1687,7 +1687,7 @@ hn_wm_osso_kill_method(GArray *arguments, gpointer data)
   if (win)
     {
       if (hn_wm_watchable_app_is_able_to_hibernate (app))
-	hn_wm_watched_window_attempt_signal_kill (win, SIGTERM);
+        hn_wm_watched_window_attempt_signal_kill (win, SIGTERM, TRUE);
     }
 
   return 0;

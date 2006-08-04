@@ -127,7 +127,7 @@ void kill_selected_items (GList *items)
       if (gtk_toggle_button_get_active(item->button)
           && item->win != NULL)
         {
-          hn_wm_watched_window_attempt_signal_kill (item->win, SIGTERM);
+          hn_wm_watched_window_attempt_signal_kill (item->win, SIGTERM, TRUE);
         }
     }
 }
