@@ -14,12 +14,13 @@ lib_LTLIBRARIES = libossohelp.la
 #
 libossohelp_la_CFLAGS=$(INCLUDES) \
 			-DPREFIX=\"$(prefix)\" \
-            -DHELPLOCALEDIR=\"$(helplocaledir)\"\
+			-DHELPLOCALEDIR=\"$(helplocaledir)\"\
 			-DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\" \
 			-DOSSOLOG_STDERR -DOSSOLOG_DEBUG \
 			-DG_DISABLE_DEPRECATED \
 			-DGDK_DISABLE_DEPRECATED \
-			-DGTK_DISABLE_DEPRECATED
+			-DGTK_DISABLE_DEPRECATED \
+			-D_POSIX_SOURCE
 
 # Added to allow prelinkage
 # Changed to '_LIBADD'
