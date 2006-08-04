@@ -1,5 +1,19 @@
 2006-08-03  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm-watched-window.[ch]: Add an ensure
+	  parameter to attempt_signal_kill to allow sending SIGTERM without
+	  SIGKILL
+	* hildon-navigator/hn-wm-memory.c: When asked to kill everyone,
+	  only send SIGTERM
+
+2006-08-03  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/layout-manager.c: 
+	  Disconnect locical color changes signal to circumvent a bug in
+	  hildon-libs (Closes NB#33339)
+
+2006-08-03  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Mode changes are retained even after pressing cancel
 	button" (Closes NB#36622)
 	* hildon-home/hildon-home-main.c:

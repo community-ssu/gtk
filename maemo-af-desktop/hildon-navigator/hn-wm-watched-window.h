@@ -120,7 +120,9 @@ HNWMWatchedWindowView*
 hn_wm_watched_window_get_active_view (HNWMWatchedWindow     *win);
 
 gboolean
-hn_wm_watched_window_attempt_signal_kill (HNWMWatchedWindow *win, int sig);
+hn_wm_watched_window_attempt_signal_kill (HNWMWatchedWindow *win,
+                                          int sig,
+                                          gboolean ensure);
 
 gboolean
 hn_wm_watched_window_is_hibernating (HNWMWatchedWindow *win);

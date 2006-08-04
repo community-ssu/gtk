@@ -897,7 +897,9 @@ hn_wm_watched_window_sigterm_timeout_cb (gpointer data)
 }
 
 gboolean
-hn_wm_watched_window_attempt_signal_kill (HNWMWatchedWindow *win, int sig)
+hn_wm_watched_window_attempt_signal_kill (HNWMWatchedWindow *win,
+                                          int sig,
+                                          gboolean ensure)
 {
   guint32 *pid_result = NULL;
 
@@ -922,7 +924,7 @@ hn_wm_watched_window_attempt_signal_kill (HNWMWatchedWindow *win, int sig)
   HN_DBG("Attempting to kill pid %d with signal %d",
          pid_result[0], sig);
 
-  if (sig == SIGTERM)
+  if (sig == SIGTERM && ensure)
     {
       /* install timeout to check that the SIGTERM was handled */
       g_timeout_add (HIBERNATION_TIMEMOUT,
@@ -1143,7 +1145,7 @@ hn_wm_ping_timeout_dialog_response (GtkDialog *note, gint ret, gpointer data)
   if (ret == GTK_RESPONSE_OK)
     {
       /* Kill the app */
-      if (!hn_wm_watched_window_attempt_signal_kill (win, SIGKILL))
+      if (!hn_wm_watched_window_attempt_signal_kill (win, SIGKILL, FALSE))
         {
           HN_DBG ("hn_wm_ping_timeout: "
                   "failed to kill application '%s'.",

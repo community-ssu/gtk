@@ -125,7 +125,7 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 	  HN_DBG("hn_wm_watched_window_attempt_pid_kill() for '%s'",
 		 hn_wm_watched_window_get_name (win));
 
-          if (hn_wm_watched_window_attempt_signal_kill (win, SIGTERM))
+          if (hn_wm_watched_window_attempt_signal_kill (win, SIGTERM, TRUE))
  	    {
               HN_DBG("app->hibernating now '%s'",
                      hn_wm_watchable_app_is_hibernating(app) ? "true":"false");
@@ -163,7 +163,7 @@ hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
     {
       /* Totally kill everthing and remove from our hash */
       HN_DBG("killing everything, currently '%s'", hn_wm_watched_window_get_name (win));
-      hn_wm_watched_window_attempt_signal_kill (win, SIGTERM);
+      hn_wm_watched_window_attempt_signal_kill (win, SIGTERM, FALSE);
 
       /* we are called by g_hash_foreach_steal -- have to explicitely destroy
        * the window here and the associated key

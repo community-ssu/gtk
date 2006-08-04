@@ -175,6 +175,7 @@ struct _layout_mode_internal_t {
     gboolean is_save_changes;
     GdkPixbuf *close_button;
     GdkPixbuf *resize_handle;
+    gulong logical_color_change_sig;
 };
 
 typedef enum
@@ -543,10 +544,11 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     general_data.menu_label = gtk_label_new(LAYOUT_MODE_MENU_LABEL_NAME);
     hildon_gtk_widget_set_logical_font (general_data.menu_label,
                                         HILDON_HOME_TITLEBAR_MENU_LABEL_FONT);
-    hildon_gtk_widget_set_logical_color(general_data.menu_label,
-                                        GTK_RC_FG,
-                                        GTK_STATE_NORMAL, 
-                                        HILDON_HOME_TITLEBAR_MENU_LABEL_COLOR);
+    general_data.logical_color_change_sig =
+        hildon_gtk_widget_set_logical_color(general_data.menu_label,
+                                            GTK_RC_FG,
+                                            GTK_STATE_NORMAL, 
+                                       HILDON_HOME_TITLEBAR_MENU_LABEL_COLOR);
     gtk_fixed_put(general_data.area, general_data.menu_label,
                   HILDON_HOME_TITLEBAR_MENU_LABEL_X,
                   HILDON_HOME_TITLEBAR_MENU_LABEL_Y);
@@ -885,6 +887,9 @@ void layout_mode_end ( gboolean rollback )
     g_signal_handler_disconnect(window,
 				general_data.keylistener_id);
     
+    g_signal_handler_disconnect(general_data.menu_label,
+                                general_data.logical_color_change_sig);
+    
     applet_manager_configure_load_all(man);
     general_data.layout_menu =
         GTK_WIDGET(set_menu(GTK_MENU(general_data.home_menu)));
@@ -932,6 +937,7 @@ void layout_mode_end ( gboolean rollback )
         g_object_unref(general_data.empty_drag_icon);
         general_data.empty_drag_icon = NULL;
     }
+
 
     osso_rpc_run_with_defaults (general_data.osso, 
 				STATUSBAR_SERVICE_NAME, 
