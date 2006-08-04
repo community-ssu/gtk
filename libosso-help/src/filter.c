@@ -315,9 +315,7 @@ const char *loc_startelem( const xmlChar *name, const xmlChar **attrs )
     }
 
     /* Tags to be ignored: */
-    if ( (strcmp(name,"comment")==0) || 
-         (strcmp(name,"change_history")==0) || 
-         (strcmp(name,"change")==0) ) {
+    if ( (strcmp(name,"comment")==0) ) {
       StartUnknown:
         unknown_depth++;    /* this will shut up about the contents */
         return "";     /* just ignore :) */

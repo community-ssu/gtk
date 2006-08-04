@@ -1,5 +1,10 @@
 2006-08-04 Jakub Pavelek <jakub.pavelek@nokia.com>
 
+	* Version 2.0.3
+	* src/filter.c: removed extra checks for change_history and change (not present in help contents anymore)
+
+2006-08-04 Jakub Pavelek <jakub.pavelek@nokia.com>
+
 	* src/Makefile.am: added -D_POSIX_SOURCE to libossohelp_la_CFLAGS
 
 2006-08-04 Jakub Pavelek <jakub.pavelek@nokia.com>
