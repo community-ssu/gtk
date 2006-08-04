@@ -171,8 +171,11 @@ int main (int argc, char **argv)
     hcp_retrieve_state (hcp);          /* State data from disk */
 
     if (hcp->saved_focused_filename)
+    {
+
         hcp->focused_item = g_hash_table_lookup (hcp->al->applets,
                                                  hcp->saved_focused_filename);
+    }
 
     osso_hw_set_event_cb (hcp->osso,
                           NULL ,
@@ -195,7 +198,8 @@ int main (int argc, char **argv)
     hcp_show_window (hcp);
     
     if (hcp->execute == 1 && hcp->focused_item) {
-        hcp_item_launch(hcp->focused_item, FALSE);
+        hcp->execute = FALSE;
+        hcp_item_launch (hcp->focused_item, FALSE);
     }
 
     gtk_main();
@@ -341,6 +345,36 @@ gint hcp_rpc_handler (const gchar *interface,
 
             if(GTK_IS_WINDOW (hcp->window))
                 gtk_window_present (GTK_WINDOW (hcp->window));
+
+            retval->type = DBUS_TYPE_INT32;
+            retval->value.i = 0;
+            return OSSO_OK;
+        }
+
+    }
+    
+    else if ((!strcmp (method, HCP_RPC_METHOD_SAVE_STATE_APPLET)))
+    {
+        osso_rpc_t applet;
+        HCPItem *item;
+        
+        if (arguments->len != 1)
+            goto error;
+
+        applet = g_array_index (arguments, osso_rpc_t, 0);
+
+        if (applet.type != DBUS_TYPE_STRING)
+            goto error;
+        
+        item = g_hash_table_lookup (hcp->al->applets, applet.value.s);
+
+        if (item)
+        {
+            if (item->running)
+            {
+                hcp_item_save_state (item);
+
+            }
 
             retval->type = DBUS_TYPE_INT32;
             retval->value.i = 0;
@@ -549,6 +583,9 @@ hcp_save_state (HCP *hcp, gboolean clear_state)
         ULOG_ERR ("An error occured when reading application state");
     }
 
+    /* If a plugin is running, save its state */
+    if (hcp->execute && hcp->focused_item && hcp->focused_item->running)
+        hcp_item_save_state (hcp->focused_item);
 
 cleanup:
     if (error)

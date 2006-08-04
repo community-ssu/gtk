@@ -26,9 +26,20 @@
 #define HILDON_CP_ITEM_H
 
 #include <gtk/gtkwidget.h>
+#include <libosso.h>
 
-#define HCP_PLUGIN_EXEC_SYMBOL      "execute"
+#define HCP_PLUGIN_EXEC_SYMBOL          "execute"
+#define HCP_PLUGIN_SAVE_STATE_SYMBOL    "save_state"
 
+
+typedef osso_return_t (hcp_plugin_exec_f) (
+                       osso_context_t * osso,
+                       gpointer data,
+                       gboolean user_activated);
+
+typedef osso_return_t (hcp_plugin_save_state_f) (
+                       osso_context_t * osso,
+                       gpointer data);
 
 typedef struct _HCPItem {
     gchar *name;
@@ -37,6 +48,7 @@ typedef struct _HCPItem {
     gchar *category;
     gboolean running;
     GtkWidget *grid_item;
+    hcp_plugin_save_state_f *save_state;
 } HCPItem;
 
 void hcp_item_init (gpointer hcp);
@@ -45,6 +57,8 @@ void hcp_item_free (HCPItem *item);
 
 void hcp_item_launch (HCPItem *item,
                       gboolean user_activated);
+
+void hcp_item_save_state (HCPItem *item);
 
 void hcp_item_focus (HCPItem *item);
 

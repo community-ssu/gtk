@@ -1,3 +1,10 @@
+2006-08-04 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-cp-item.[ch]: Added hcp_item_save_state()
+	* hildon-control-panel-main.c: 
+	  - save the applet's state when saving cp state (Closes NB#36233)
+	  - implement the save_state RPC call
+
 2006-08-03 Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-cp-rfs.c: try with crypt.h instead

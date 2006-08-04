@@ -29,13 +29,6 @@
 #include <osso-log.h>
 
 
-/* exec() callback prototype */
-typedef osso_return_t (hcp_plugin_exec_f) (
-                          osso_context_t * osso,
-                          gpointer data,
-                          gboolean user_activated);
-
-
 typedef struct _HCPPlugin
 {
     void * handle;
@@ -130,7 +123,6 @@ hcp_item_launch (HCPItem *item, gboolean user_activated)
          * to receive DBus messages */
         g_idle_add ((GSourceFunc)hcp_item_idle_launch, d);
     }
-
 }
 
 void
@@ -139,6 +131,13 @@ hcp_item_focus (HCPItem *item)
     g_return_if_fail (hcp);
     
     hcp->focused_item = item;
+}
+
+void
+hcp_item_save_state (HCPItem *item)
+{
+    if (item->save_state)
+        item->save_state (hcp->osso, NULL /* What is expected here? -- Jobi */);
 }
 
 
@@ -184,6 +183,7 @@ hcp_item_load (HCPItem *item, HCPPlugin *plugin)
         plugin->handle = NULL;
     }
 
+    item->save_state = dlsym (plugin->handle, HCP_PLUGIN_SAVE_STATE_SYMBOL);
 }
 
 static void
