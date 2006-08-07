@@ -1,3 +1,50 @@
+maemo-af-desktop (2.9.17-1) unstable; urgency=low
+
+  * hildon-home/Makefile.am: Install the restoration script in it2007
+
+  * hildon-navigator/hn-wm-watched-window.[ch]: Add an ensure
+    parameter to attempt_signal_kill to allow sending SIGTERM without
+    SIGKILL
+  * hildon-navigator/hn-wm-memory.c: When asked to kill everyone,
+    only send SIGTERM
+
+  * hildon-home/layout-manager.c: 
+    Disconnect locical color changes signal to circumvent a bug in
+    hildon-libs (Closes NB#33339)
+
+  Applied fix to "Mode changes are retained even after pressing cancel
+  button" (Closes NB#36622)
+  * hildon-home/hildon-home-main.c:
+    - renamed global variable to match role
+    - create_background_preview(): removed storing mode value
+    - set_background_dialog_selected(): Setting correct mode value to
+      selection after accepting saving mode.
+
+  Applied fix to "Icon for close applet button missing in layout mode"
+  (CLoses NB#33472)
+  * hildon-home/layout-manager.c:
+      - layout_mode_begin(): Load applet close button and resize handle
+      graphics
+      - layout_mode_begin(): Free close button and resize handle graphics
+      - _applet_expose_cb(): Draw close button and resize handle directly,
+      preserve theme drawing as a fallback 
+
+  Applied fix to "HOME: Discard layout -confirmation note shown even though
+    there wasn't any changes" (Closes NB#27713)
+  * hildon-home/layout-manager.c:
+    - add gboolean value to save any changes made on layoutmode,
+    - button and area clicks closes also layout mode begin animation banner,
+
+  * hildon-navigator/hn-keys.c: Change gconf keys as agreed with
+    HW keyboard applet
+
+  * hildon-navigator/others-menu.c: Fixed the second line of folders
+    to comply with fixed UI specs
+  * hildon-navigator/hildon-navigator.pc.in: Added variable to get
+    the .desktop directory
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  7 Aug 2006 13:25:11 +0300
+
 maemo-af-desktop (2.9.16-1) unstable; urgency=low
 
   Applied fix to "If the Applications switcher menu is already, the menu is
