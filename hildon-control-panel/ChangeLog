@@ -1,3 +1,7 @@
+2006-08-07 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-cp-applist.c: Free the lists return by gconf (Closes NB#36887)
+
 2006-08-04 Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-cp-item.[ch]: Added hcp_item_save_state()

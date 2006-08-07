@@ -231,7 +231,7 @@ hcp_al_get_configured_categories (HCPAppList *al)
     if (client)
     {
         /* Get the group names */
-        group_names = gconf_client_get_list(client, 
+        group_names = gconf_client_get_list (client, 
 			GCONF_CONTROLPANEL_GROUPS_KEY,
 			GCONF_VALUE_STRING, &error);
 
@@ -240,11 +240,11 @@ hcp_al_get_configured_categories (HCPAppList *al)
             ULOG_ERR (error->message);
             g_error_free (error);
             g_object_unref (client);
-            return;
+            goto cleanup;
         }
         
         /* Get the group ids */
-        group_ids = gconf_client_get_list(client, 
+        group_ids = gconf_client_get_list (client, 
 			GCONF_CONTROLPANEL_GROUP_IDS_KEY,
 			GCONF_VALUE_STRING, &error);
         
@@ -253,7 +253,7 @@ hcp_al_get_configured_categories (HCPAppList *al)
             ULOG_ERR (error->message);
             g_error_free (error);
             g_object_unref (client);
-            return;
+            goto cleanup;
         }
 
         g_object_unref (client);
@@ -270,6 +270,13 @@ hcp_al_get_configured_categories (HCPAppList *al)
         group_ids   = g_slist_next (group_ids);
         group_names = g_slist_next (group_names);
     }
+
+cleanup:
+    if (group_names)
+        g_slist_free (group_names);
+
+    if (group_ids)
+        g_slist_free (group_ids);
     
 }
 
