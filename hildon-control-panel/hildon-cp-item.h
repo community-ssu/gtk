@@ -62,5 +62,8 @@ void hcp_item_save_state (HCPItem *item);
 
 void hcp_item_focus (HCPItem *item);
 
+gint hcp_item_sort_func (const HCPItem *a, const HCPItem *b);
+
+
 
 #endif

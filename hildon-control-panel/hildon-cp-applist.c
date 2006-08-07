@@ -215,7 +215,11 @@ hcp_al_sort_by_category (gpointer key, gpointer value, gpointer _al)
         category = g_slist_last (al->categories)->data;
     }
         
-    category->applets = g_slist_append(category->applets, applet);
+/*    category->applets = g_slist_append(category->applets, applet);*/
+    category->applets = g_slist_insert_sorted (
+                                    category->applets,
+                                    applet,
+                                    (GCompareFunc)hcp_item_sort_func);
 }
 
 static void
@@ -301,6 +305,7 @@ hcp_al_update_list (HCPAppList *al)
     g_hash_table_foreach (al->applets,
                            (GHFunc)hcp_al_sort_by_category,
                            al);
+
 }
 
 HCPAppList *

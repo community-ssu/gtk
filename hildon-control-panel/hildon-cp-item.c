@@ -140,6 +140,14 @@ hcp_item_save_state (HCPItem *item)
         item->save_state (hcp->osso, NULL /* What is expected here? -- Jobi */);
 }
 
+/* Sort by the translated name */
+gint
+hcp_item_sort_func (const HCPItem *a, const HCPItem *b)
+{
+    g_return_val_if_fail (a && b, 0);
+    return strcmp (_(a->name), _(b->name));
+}
+
 
 static void
 hcp_item_load (HCPItem *item, HCPPlugin *plugin)

@@ -108,8 +108,6 @@ hcp_view_add_category (HCPCategory *category, GtkWidget *view)
     if (category->applets)
     {
         GtkWidget *grid, *separator;
-
-        /* FIXME Sort the list */
         
         grid = hcp_view_create_grid ();
 
