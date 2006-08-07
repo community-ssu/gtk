@@ -1,3 +1,18 @@
+hildon-control-panel (2.2.3-1) unstable; urgency=low
+
+  * hildon-cp-item.[ch]: Added sort function
+  * hildon-cp-applist.c: Sort the applets in each category
+    (Closes NB#32005)
+
+  * hildon-cp-applist.c: Free the lists return by gconf (Closes NB#36887)
+
+  * hildon-cp-item.[ch]: Added hcp_item_save_state()
+  * hildon-control-panel-main.c: 
+    - save the applet's state when saving cp state (Closes NB#36233)
+    - implement the save_state RPC call
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  7 Aug 2006 16:59:55 +0300
+
 hildon-control-panel (2.2.2.2-1) unstable; urgency=low
 
   * hildon-cp-rfs.c: try with crypt.h instead

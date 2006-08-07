@@ -1,5 +1,9 @@
 2006-08-07 Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.2.3
+
+2006-08-07 Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-cp-item.[ch]: Added sort function
 	* hildon-cp-applist.c: Sort the applets in each category
 	  (Closes NB#32005)
