@@ -1387,7 +1387,7 @@ hildon_file_chooser_dialog_class_init(HildonFileChooserDialogClass * klass)
     gobject_class->constructor = hildon_file_chooser_dialog_constructor;
     gobject_class->finalize = hildon_file_chooser_dialog_finalize;
     GTK_WIDGET_CLASS(klass)->show = hildon_file_chooser_dialog_show;
-    GTK_WIDGET_CLASS(klass)->show_all = hildon_file_chooser_dialog_show;
+    GTK_WIDGET_CLASS(klass)->show_all = gtk_widget_show;
     GTK_OBJECT_CLASS(klass)->destroy = hildon_file_chooser_dialog_destroy;
 
     pspec = g_param_spec_string("empty-text", "Empty text",
