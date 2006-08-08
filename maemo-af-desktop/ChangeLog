@@ -1,5 +1,11 @@
 2006-08-08  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-status-bar/hildon-status-bar-main.c: gtk_object_sink
+	  the items to get rid to the floating reference, to be sure
+	  that the items get finalized when reloaded (Closes NB#37028)
+
+2006-08-08  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Width of the 'Others' menu gets altered in normal mode
 	after opening it in thumb mode." (Closes NB#36135)
 	* hildon-navigator/others-menu.c:

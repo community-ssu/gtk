@@ -1103,18 +1103,21 @@ HildonStatusBarItem *add_item( StatusBar *panel,
     /* Return if panel or plugin name fails */
     g_return_val_if_fail (panel && plugin, NULL);
     /* Check if there is already a plugin mandatory and with the same name */
-     
+
     for (i=0; i<HSB_MAX_NO_OF_ITEMS; i++)
     {
-      if (panel->buffer_items[i] != NULL)
-      {
-	if ( hildon_status_bar_item_get_mandatory ( HILDON_STATUS_BAR_ITEM (panel->buffer_items[i])) &&
-	     !strcmp (plugin, hildon_status_bar_item_get_name ( HILDON_STATUS_BAR_ITEM (panel->buffer_items[i]))) )
-	{
-	  already_loaded = TRUE;
-	  break;
-	}
-      }
+        if (panel->buffer_items[i] != NULL)
+        {
+            if ( hildon_status_bar_item_get_mandatory ( 
+                        HILDON_STATUS_BAR_ITEM (panel->buffer_items[i])) &&
+                    
+                  !strcmp (plugin, hildon_status_bar_item_get_name ( 
+                          HILDON_STATUS_BAR_ITEM (panel->buffer_items[i]))) )
+            {
+                already_loaded = TRUE;
+                break;
+            }
+        }
     }
 				
     if (!already_loaded)
@@ -1133,6 +1136,7 @@ HildonStatusBarItem *add_item( StatusBar *panel,
        * from container, or destroyed too early when the plugin is removed
        * permanently */
       g_object_ref( item );
+      gtk_object_sink( GTK_OBJECT( item ) );
 
       g_signal_connect (G_OBJECT (item),
                         "hildon_status_bar_log_start",
@@ -1187,34 +1191,35 @@ void update_conditional_plugin_cb( HildonStatusBarItem *item,
 {	
     /* Return if plugin item or panel fails */
     if ( !panel || !item )  return;     	
-    
+
     int slot = hildon_status_bar_item_get_position(item);
-     
+
     /* Remove item from the panel container */
     if( !conditional_status ) {
-	    
-	if ( gtk_widget_get_parent( panel->items[slot] ) == panel->fixed ) {
+
+        if ( gtk_widget_get_parent( panel->items[slot] ) == panel->fixed ) {
             gtk_container_remove( GTK_CONTAINER(panel->fixed), 
-			          panel->items[slot] );
-	}
+                    panel->items[slot] );
+        }
     }
-    
+
     /* Arrange items on visible panel */  
     arrange_items( panel, slot );
-     
+
     /* If the extension panel was opened update */
     if ( panel->popup ) {
         close_popup_window( panel );
-	g_signal_emit_by_name(panel->arrow_button, "toggled", panel);
+        g_signal_emit_by_name(panel->arrow_button, "toggled", panel);
     }
 			        
 }
 
 
-    static 
+static 
 void arrange_items( StatusBar *panel, gint start )
 { 
     gint i, place_here, prev_place;
+
 
     /* Return if panel fails */
     if ( !panel )  return;
@@ -1228,6 +1233,8 @@ void arrange_items( StatusBar *panel, gint start )
         if ( !panel->items[i] ) {	
             continue;
         }
+
+
         if ( !hildon_status_bar_item_get_conditional(
                     HILDON_STATUS_BAR_ITEM(panel->items[i])) ) {
             continue;	
@@ -1250,13 +1257,11 @@ void arrange_items( StatusBar *panel, gint start )
 
 
             if ( gtk_widget_get_parent( panel->items[i] ) == panel->fixed ) {
-
                 gtk_fixed_move( GTK_FIXED( panel->fixed ), 
                         panel->items[i],
                         panel->plugin_pos_x[place_here],
                         panel->plugin_pos_y[place_here] ); 
             } else if ( !gtk_widget_get_parent( panel->items[i] ) ) {
-
                 gtk_fixed_put( GTK_FIXED( panel->fixed ), 
                         panel->items[i], 
                         panel->plugin_pos_x[place_here],
