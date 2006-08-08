@@ -704,6 +704,11 @@ static gint sort_function(GtkTreeModel * model, GtkTreeIter * a,
     hildon_file_selection_get_sort_key(HILDON_FILE_SELECTION(data), &key,
                                        &order);
 
+    if (key == GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID) {
+        key = HILDON_FILE_SELECTION_SORT_NAME;
+        order = GTK_SORT_ASCENDING;
+    }
+
     /* If the items are in different sorting groups, we can determine
        the order directly by checking the weights. */
     if ((diff = weight_a - weight_b) != 0)
@@ -3952,6 +3957,8 @@ hildon_file_selection_create_sort_model(HildonFileSelection *self,
   gtk_tree_sortable_set_sort_func(sortable,
                                   HILDON_FILE_SELECTION_SORT_SIZE,
                                   sort_function, self, NULL);
+  gtk_tree_sortable_set_default_sort_func(sortable, sort_function,
+                                          self, NULL);
   gtk_tree_sortable_set_sort_column_id(sortable,
                                        (gint)
                                        HILDON_FILE_SELECTION_SORT_NAME,
