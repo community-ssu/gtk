@@ -1,5 +1,10 @@
 2006-08-08  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/plugins.conf: Second plugin is not mandatory
+	  anymore
+
+2006-08-08  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-keys.c: Fixed a warning which happened in the
 	  sardine environment
 
