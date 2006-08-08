@@ -1,5 +1,10 @@
 2006-08-08  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-keys.c: Use the new MCE dbus API to trigger a
+	  power key event (Closes NB#33771)
+
+2006-08-08  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "The SWAP key does not bring back the previously topped
 	application" (Closes NB#36149)
 	* hn_wm_toggle_desktop(): toggles between topping last app and 

@@ -10,13 +10,17 @@
 #include <X11/extensions/XTest.h>
 #include <glib.h>
 
-#define SYSTEMUI_REQUEST_IF    "com.nokia.system_ui.request"
-#define SYSTEMUI_REQUEST_PATH  "/com/nokia/system_ui/request"
-#define SYSTEMUI_SERVICE       "com.nokia.system_ui"
+/** The MCE DBus service */
+#define MCE_SERVICE         "com.nokia.mce"
 
-#define SYSTEMUI_POWERKEYMENU_OPEN_REQ       "powerkeymenu_open"
-#define SYSTEMUI_POWERKEYMENU_CLOSE_REQ      "powerkeymenu_close"
-#define SYSTEMUI_POWERKEYMENU_GETSTATE_REQ   "powerkeymenu_getstate"
+/** The MCE DBus Request interface */
+#define MCE_REQUEST_IF          "com.nokia.mce.request"
+/** The MCE DBus Request path */
+#define MCE_REQUEST_PATH        "/com/nokia/mce/request"
+/** The MCE DBus Signal path */
+#define MCE_SIGNAL_PATH         "/com/nokia/mce/signal"
+
+#define MCE_TRIGGER_POWERKEY_EVENT_REQ  "req_trigger_powerkey_event"
 
 typedef void (*HNKeysActionFunc) (HNKeysConfig *keys, gpointer *user_data);
 
@@ -113,42 +117,19 @@ hn_keys_action_power (HNKeysConfig *keys,
   osso_rpc_t       retval;
   osso_context_t * osso_context
     = get_context(osso_manager_singleton_get_instance());
+
   
-  if (osso_context &&
-      OSSO_OK == osso_rpc_run (osso_context,
-                               SYSTEMUI_SERVICE,
-                               SYSTEMUI_REQUEST_PATH,
-                               SYSTEMUI_REQUEST_IF,
-                               SYSTEMUI_POWERKEYMENU_GETSTATE_REQ,
-                               &retval,
-                               DBUS_TYPE_STRING, NULL,
-                               DBUS_TYPE_STRING, NULL,
-                               DBUS_TYPE_STRING, NULL,
-                               DBUS_TYPE_STRING, NULL,
-                               DBUS_TYPE_UINT32, NULL,
-                               DBUS_TYPE_INVALID))
+  if (!osso_context ||
+      OSSO_OK != osso_rpc_run_system (osso_context,
+                                      MCE_SERVICE,
+                                      MCE_REQUEST_PATH,
+                                      MCE_REQUEST_IF,
+                                      MCE_TRIGGER_POWERKEY_EVENT_REQ,
+                                      &retval,
+                                      DBUS_TYPE_BOOLEAN, FALSE, /* Long press */
+                                      DBUS_TYPE_INVALID))
     {
-      if (OSSO_OK != osso_rpc_run (osso_context,
-                                   SYSTEMUI_SERVICE,
-                                   SYSTEMUI_REQUEST_PATH,
-                                   SYSTEMUI_REQUEST_IF,
-                                   retval.value.b ?
-                                     SYSTEMUI_POWERKEYMENU_OPEN_REQ :
-                                     SYSTEMUI_POWERKEYMENU_CLOSE_REQ,
-                                   &retval,
-                                   DBUS_TYPE_STRING, NULL,
-                                   DBUS_TYPE_STRING, NULL,
-                                   DBUS_TYPE_STRING, NULL,
-                                   DBUS_TYPE_STRING, NULL,
-                                   DBUS_TYPE_UINT32, NULL,
-                                   DBUS_TYPE_INVALID))
-        {
           g_warning("Unable to toggle Power menu");
-        }
-    }
-  else
-    {
-      g_warning("Unable to ascertain state of Power menu");
     }
 }
 
