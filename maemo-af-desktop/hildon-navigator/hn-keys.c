@@ -624,7 +624,7 @@ hn_keys_init (void)
 void
 hn_keys_reload (GdkKeymap *keymap, HNKeysConfig *keys)
 {
-  GSList *shortcut, *next_shortcut;
+  GSList *shortcut;
 
   shortcut = keys->shortcuts;
   
@@ -632,10 +632,8 @@ hn_keys_reload (GdkKeymap *keymap, HNKeysConfig *keys)
     {
       gpointer data = shortcut->data;
       hn_key_shortcut_grab (keys, shortcut->data, TRUE);
-      next_shortcut = shortcut->next;
-      g_slist_remove (keys->shortcuts, shortcut->data);
+      shortcut = g_slist_remove (keys->shortcuts, shortcut->data);
       g_free (data);
-      shortcut = next_shortcut;
     }
 
   keys->shortcuts = NULL;
