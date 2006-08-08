@@ -1,3 +1,31 @@
+maemo-af-desktop (2.9.18-1) unstable; urgency=low
+
+  * hildon-navigator/plugins.conf: Second plugin is not mandatory
+    anymore
+
+  * hildon-navigator/hn-keys.c: Fixed a warning which happened in the
+    sardine environment
+
+  * hildon-navigator/hn-keys.c: Use the new MCE dbus API to trigger a
+    power key event (Closes NB#33771)
+
+  Applied fix to "The SWAP key does not bring back the previously topped
+  application" (Closes NB#36149)
+  * hn_wm_toggle_desktop(): toggles between topping last app and 
+    topping the desktop.
+
+  * hildon-status-bar/hildon-status-bar-main.c: gtk_object_sink
+    the items to get rid to the floating reference, to be sure
+    that the items get finalized when reloaded (Closes NB#37028)
+
+  Applied fix to "Width of the 'Others' menu gets altered in normal mode
+  after opening it in thumb mode." (Closes NB#36135)
+  * hildon-navigator/others-menu.c:
+    - others_menu_size_request(): if request size is not bigger than menu
+      max width, reset menu size request
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  8 Aug 2006 16:35:44 +0300
+
 maemo-af-desktop (2.9.17-1) unstable; urgency=low
 
   * hildon-home/Makefile.am: Install the restoration script in it2007

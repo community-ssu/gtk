@@ -149,9 +149,9 @@ hn_entry_info_set_app (HNEntryInfo      *entry_info,
 HNWMWatchableApp *
 hn_entry_info_get_app (HNEntryInfo *entry_info)
 {
-  RealEntryInfo         *real;
-  HNWMWatchedWindow     *win;
-  HNWMWatchedWindowView *view;
+  RealEntryInfo         *real = NULL;
+  HNWMWatchedWindow     *win = NULL;
+  HNWMWatchedWindowView *view = NULL;
   
   g_return_val_if_fail (entry_info != NULL, 0);
   real = REAL_ENTRY_INFO (entry_info);
