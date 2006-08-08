@@ -160,7 +160,10 @@ static void others_menu_size_request(GtkWidget * menu,
 				     GtkRequisition * req, gpointer data)
 {
     if (req->width > MENU_MAX_WIDTH) {
-	gtk_widget_set_size_request(GTK_WIDGET(menu), MENU_MAX_WIDTH, -1);
+        gtk_widget_set_size_request(GTK_WIDGET(menu), MENU_MAX_WIDTH, -1);
+    }
+    else {
+        gtk_widget_set_size_request(GTK_WIDGET(menu), -1, -1);
     }
 }
 

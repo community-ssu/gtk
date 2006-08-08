@@ -1,3 +1,11 @@
+2006-08-08  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Width of the 'Others' menu gets altered in normal mode
+	after opening it in thumb mode." (Closes NB#36135)
+	* hildon-navigator/others-menu.c:
+	  - others_menu_size_request(): if request size is not bigger than menu
+	    max width, reset menu size request
+
 2006-08-07  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.17
