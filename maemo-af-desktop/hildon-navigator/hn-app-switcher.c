@@ -256,7 +256,6 @@ struct _HNAppSwitcherPrivate
   guint menu_icon_is_blinking : 1;
   guint tooltip_visible : 1;
   guint switched_to_desktop : 1;
-  guint is_long_press : 1;
   guint is_dimming_on : 1;
   guint system_inactivity : 1;
   
@@ -309,9 +308,20 @@ mce_handler (DBusConnection *conn,
     {
       if (GTK_WIDGET_IS_SENSITIVE (priv->main_button))
         {
-          priv->is_long_press = TRUE;
-          
-          hn_wm_top_desktop ();
+          GtkToggleButton *button;
+          gboolean is_active;
+
+          /* if the AS menu is up, close it first */
+          button = GTK_TOGGLE_BUTTON (priv->main_button);
+          is_active = gtk_toggle_button_get_active (button);
+
+          if (is_active)
+            {
+              gtk_toggle_button_set_active (button, FALSE);
+              gtk_toggle_button_toggled (button);
+            }
+
+          hn_wm_toggle_desktop ();
         }
       
       return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -319,25 +329,18 @@ mce_handler (DBusConnection *conn,
   
   if (strcmp (HOME_PRESS, member) == 0)
     {
-      gboolean was_long_press = priv->is_long_press;
-      
-      if (was_long_press)
-        priv->is_long_press = FALSE;
-      else
+      if (GTK_WIDGET_IS_SENSITIVE (priv->main_button))
         {
-          if (GTK_WIDGET_IS_SENSITIVE (priv->main_button))
-            {
-              GtkToggleButton *button;
-              gboolean is_active;
+          GtkToggleButton *button;
+          gboolean is_active;
 
-              button = GTK_TOGGLE_BUTTON (priv->main_button);
+          button = GTK_TOGGLE_BUTTON (priv->main_button);
 
-              is_active = gtk_toggle_button_get_active (button);
-              is_active = !is_active;
+          is_active = gtk_toggle_button_get_active (button);
+          is_active = !is_active;
 	      
-              gtk_toggle_button_set_active (button, is_active);
-	          gtk_toggle_button_toggled (button);
-            }
+          gtk_toggle_button_set_active (button, is_active);
+          gtk_toggle_button_toggled (button);
         }
 
       return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;

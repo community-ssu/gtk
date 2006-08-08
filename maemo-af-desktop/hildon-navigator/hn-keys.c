@@ -100,7 +100,7 @@ hn_keys_action_home (HNKeysConfig *keys,
 		     gpointer     *user_data)
 {
   /* Desktop toggle */
-  hn_wm_top_desktop();
+  hn_wm_toggle_desktop();
 
   /* TODO: Also fake an F5 key to app */
   hn_keys_action_send_key (keys, (gpointer)XK_F5);

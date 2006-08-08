@@ -113,6 +113,9 @@ struct HNWM   /* Our main struct */
 
   /* curretnly active app window */
   HNWMWatchedWindow *active_window;
+
+  /* used to toggle between home and application */
+  HNWMWatchedWindow *last_active_window;
   
   /* A hash of valid watchable apps ( hashed on class name ). This is built
    * on startup by slurping in /usr/share/applications/hildon .desktop's
@@ -439,6 +442,38 @@ hn_wm_top_service(const gchar *service_name)
 }
 
 #include "close-application-dialog.h"
+
+void
+hn_wm_toggle_desktop (void)
+{
+  int *desktop_state;
+
+  desktop_state = hn_wm_util_get_win_prop_data_and_validate (
+                                 GDK_WINDOW_XID(gdk_get_default_root_window()),
+                                 hnwm.atoms[HN_ATOM_NET_SHOWING_DESKTOP],
+                                 XA_CARDINAL,
+                                 32,
+                                 1,
+                                 NULL);
+
+  if (desktop_state)
+    {
+      if (desktop_state[0] == 1 && hnwm.last_active_window)
+        {
+          HNWMWatchableApp* app =
+            hn_wm_watched_window_get_app(hnwm.last_active_window);
+          
+          const gchar * service = hn_wm_watchable_app_get_service (app);
+          hn_wm_top_service (service);
+        }
+      else
+        {
+          hn_wm_top_desktop();
+        }
+          
+      XFree(desktop_state);
+    }
+}
 
 void
 hn_wm_top_desktop(void)
@@ -866,7 +901,7 @@ hn_wm_process_mb_current_app_window (void)
       hn_wm_watchable_app_set_active_window(app, win);
       
       hn_wm_watchable_app_set_active_window(app, win);
-      hnwm.active_window = win;
+      hnwm.active_window = hnwm.last_active_window = win;
       
       /* Note: this is whats grouping all views togeather */
       views = hn_wm_watched_window_get_views (win);
@@ -1054,7 +1089,7 @@ hn_wm_add_watched_window (HNWMWatchedWindow *win)
   g_hash_table_insert (hnwm.watched_windows, key, (gpointer)win);
 
   /* we also mark this as the active window */
-  hnwm.active_window = win;
+  hnwm.active_window = hnwm.last_active_window = win;
   hn_wm_watchable_app_set_active_window (hn_wm_watched_window_get_app (win),
                                          win);
   
@@ -1237,7 +1272,7 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
 	    {
 	      if (desktop_state[0] == 1)
             {
-              hn_wm_reset_active_window ();
+              hnwm.active_window = NULL;
             }
           
 	      XFree(desktop_state);
@@ -2073,6 +2108,7 @@ void
 hn_wm_reset_active_window(void)
 {
   hnwm.active_window = NULL;
+  hnwm.last_active_window = NULL;
 }
 
 gboolean

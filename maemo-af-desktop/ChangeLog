@@ -1,5 +1,12 @@
 2006-08-08  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "The SWAP key does not bring back the previously topped
+	application" (Closes NB#36149)
+	* hn_wm_toggle_desktop(): toggles between topping last app and 
+	  topping the desktop.
+
+2006-08-08  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-status-bar/hildon-status-bar-main.c: gtk_object_sink
 	  the items to get rid to the floating reference, to be sure
 	  that the items get finalized when reloaded (Closes NB#37028)

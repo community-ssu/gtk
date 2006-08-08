@@ -149,6 +149,10 @@ gboolean hn_wm_top_service(const gchar *service_name);
  */
 void hn_wm_top_desktop(void);
 
+/**
+ * Toggle between desktop and the last active application
+ */
+void hn_wm_toggle_desktop (void);
 
 HNWMWatchedWindow*
 hn_wm_lookup_watched_window_via_service (const gchar *service_name);
