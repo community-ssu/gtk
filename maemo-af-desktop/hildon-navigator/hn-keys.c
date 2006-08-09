@@ -632,7 +632,7 @@ hn_keys_reload (GdkKeymap *keymap, HNKeysConfig *keys)
     {
       gpointer data = shortcut->data;
       hn_key_shortcut_grab (keys, shortcut->data, TRUE);
-      shortcut = g_slist_remove (keys->shortcuts, shortcut->data);
+      shortcut = g_slist_remove (shortcut, shortcut->data);
       g_free (data);
     }
 

@@ -1,5 +1,10 @@
 2006-08-09  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-keys.c: Fixed a crash I just introduced when
+	  fixing the sardine warning
+
+2006-08-09  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-status-bar/hildon-status-bar-main.c: Fixed  a crash
 	  when the event RPC method was called and the plugin could not
 	  be found
