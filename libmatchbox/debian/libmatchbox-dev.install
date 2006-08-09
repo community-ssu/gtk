@@ -1,4 +1,4 @@
-debian/tmp/usr/include/libmb/*
-debian/tmp/usr/lib/lib*.a
-debian/tmp/usr/lib/pkgconfig/*.pc
-debian/tmp/usr/lib/lib*.so
+usr/include/libmb/*
+usr/lib/lib*.a
+usr/lib/pkgconfig/*.pc
+usr/lib/lib*.so
