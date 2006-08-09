@@ -1,3 +1,14 @@
+maemo-af-desktop (2.9.19-1) unstable; urgency=low
+
+  * hildon-navigator/hn-keys.c: Fixed a crash I just introduced when
+    fixing the sardine warning
+
+  * hildon-status-bar/hildon-status-bar-main.c: Fixed  a crash
+    when the event RPC method was called and the plugin could not
+    be found
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  9 Aug 2006 16:11:52 +0300
+
 maemo-af-desktop (2.9.18.1-1) unstable; urgency=low
 
   * hildon-navigator/plugins.conf: corrected .desktop filename for the
