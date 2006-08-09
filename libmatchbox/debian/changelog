@@ -1,3 +1,9 @@
+libmatchbox1 (2:1.7-osso2) unstable; urgency=low
+
+  * fix paths in .install files
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed,  9 Aug 2006 09:12:49 +0300
+
 libmatchbox1 (2:1.7-osso1) unstable; urgency=low
 
   * remove .la from dev package, fix version to more reasonable
