@@ -1,3 +1,9 @@
+2006-08-09  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/plugins.conf: corrected .desktop filename for the
+	  contact plugin
+	* configure.ac: 2.9.18.1
+
 2006-08-08  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-entry-info.c: Fixed a gcc warning

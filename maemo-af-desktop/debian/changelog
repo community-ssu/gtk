@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.18.1-1) unstable; urgency=low
+
+  * hildon-navigator/plugins.conf: corrected .desktop filename for the
+    contact plugin
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  9 Aug 2006 09:41:36 +0300
+
 maemo-af-desktop (2.9.18-1) unstable; urgency=low
 
   * hildon-navigator/plugins.conf: Second plugin is not mandatory
