@@ -54,7 +54,8 @@ enum
   PROP_SHOW_TABS = 1,
   PROP_ADDITIONAL_TAB,
   PROP_ADDITIONAL_TAB_LABEL,
-  PROP_MODEL
+  PROP_MODEL,
+  PROP_ENABLE_READONLY_CHECKBOX
 };
 
 struct _HildonFileDetailsDialogPrivate {
@@ -293,10 +294,22 @@ hildon_file_details_dialog_class_init(HildonFileDetailsDialogClass * klass)
                                    "Label to the additional tab",
                                    NULL, G_PARAM_READWRITE));
 
-  g_object_class_install_property( gobject_class, PROP_MODEL,
+  g_object_class_install_property(gobject_class, PROP_MODEL,
                  g_param_spec_object("model", "Model", 
                  "HildonFileSystemModel to use when fetching information",
                  HILDON_TYPE_FILE_SYSTEM_MODEL, G_PARAM_READWRITE));
+
+  /**
+   * HildonFileDetailsDialog:enable_read_only_checkbox:
+   *
+   * Whether or not to enable the read-only checkbox. 
+   */
+  g_object_class_install_property(gobject_class,
+                 PROP_ENABLE_READONLY_CHECKBOX,
+                 g_param_spec_boolean("enable-read-only-checkbox",
+                 "Enable read-only checkbox", 
+                 "Whether or not to enable the read-only checkbox.",
+                 TRUE, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 }
 
 static void
@@ -440,9 +453,9 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
 }
 
 static void
-hildon_file_details_dialog_set_property( GObject *object, guint param_id,
-			                                   const GValue *value,
-                                         GParamSpec *pspec )
+hildon_file_details_dialog_set_property(GObject *object, guint param_id,
+                                        const GValue *value,
+                                        GParamSpec *pspec)
 {
   HildonFileDetailsDialogPrivate *priv;
   GtkNotebook *notebook;
@@ -507,6 +520,12 @@ hildon_file_details_dialog_set_property( GObject *object, guint param_id,
             G_CALLBACK(check_validity), object);
         }
       }  
+      break;
+    }
+    case PROP_ENABLE_READONLY_CHECKBOX:
+    {
+      gtk_widget_set_sensitive(priv->file_readonly,
+                               g_value_get_boolean(value));
       break;
     }
     default:
