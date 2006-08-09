@@ -946,9 +946,6 @@ gint rpc_cb( const gchar *interface,
         
         /* Plugin loading failed */
         if ( !item ) {
-            g_sprintf(retval->value.s, 
-		      "Failed to load plugin %s", val[0]->value.s);
-            ULOG_ERR( retval->value.s );
 	    
             return OSSO_ERROR;
         }
