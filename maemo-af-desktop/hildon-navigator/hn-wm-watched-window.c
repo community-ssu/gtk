@@ -195,7 +195,7 @@ hn_wm_watched_window_process_net_wm_icon (HNWMWatchedWindow *win)
 
   i = offset+2;
 
-  while (i < (w*h))
+  while (i < (w*h + offset + 2))
     {
       *p++ = (data[i] >> 16) & 0xff;
       *p++ = (data[i] >> 8) & 0xff;

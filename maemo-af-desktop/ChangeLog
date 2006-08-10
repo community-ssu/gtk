@@ -1,5 +1,10 @@
 2006-08-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-wm-watched-window.c: Fixed a bug in
+	  when applying window icons
+
+2006-08-10  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied further fix to "Background killing works inconsistently."
 	(Closes NB#31105)
 	* hildon-navigator/hn-{wm.c,wm-watched-window.c}: Update hashtables
