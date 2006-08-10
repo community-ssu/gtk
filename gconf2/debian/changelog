@@ -1,3 +1,10 @@
+gconf2 (2.6.4.14-osso3) unstable; urgency=low
+
+  * Added dependency to dbus because of the messagebus user created by it.
+    Fixes: NB#37497
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 10 Aug 2006 13:55:43 +0300
+
 gconf2 (2.6.4.14-osso2) unstable; urgency=low
 
   * Added thumb instruction support (N#26462).
