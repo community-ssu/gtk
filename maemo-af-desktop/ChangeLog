@@ -1,5 +1,10 @@
 2006-08-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-button.c: do not substitute colors
+	  with full opacity when compositing icons (Closes NB#37327)
+
+2006-08-10  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-wm-watched-window.c: Fixed a bug in
 	  when applying window icons
 

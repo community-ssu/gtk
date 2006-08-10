@@ -1109,7 +1109,7 @@ compose_app_pixbuf (const GdkPixbuf *src,
   /* make a copy of the source pixbuf, and also make
    * sure that it has an alpha channel
    */
-  retval = gdk_pixbuf_add_alpha (src, TRUE, 255, 255, 255);
+  retval = gdk_pixbuf_add_alpha (src, FALSE, 255, 255, 255);
 
   dest_width = gdk_pixbuf_get_width (retval);
   dest_height = gdk_pixbuf_get_height (retval);
