@@ -58,6 +58,10 @@ osso_return_t osso_display_state_on(osso_context_t *osso)
 {
   DBusMessage *msg = NULL;
   dbus_bool_t b;
+
+  if (osso == NULL) {
+    return OSSO_INVALID;
+  }
   
   if (osso->sys_conn == NULL) {
     ULOG_ERR_F("error: no system bus connection");
@@ -85,6 +89,10 @@ osso_return_t osso_display_blanking_pause(osso_context_t *osso)
 {
   DBusMessage *msg = NULL;
   dbus_bool_t b;
+
+  if (osso == NULL) {
+    return OSSO_INVALID;
+  }
   
   if (osso->sys_conn == NULL) {
     ULOG_ERR_F("error: no sys D-BUS connection!");

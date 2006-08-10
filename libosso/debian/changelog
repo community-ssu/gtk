@@ -7,6 +7,8 @@ libosso (1.16-1) unstable; urgency=low
   * Fixed the osso_time_set() to actually send a signal about time change.
     Fixes: NB#35824
   * Fixed compilation problem with GCC4.1. Fixes: NB#33996
+  * Fixed parameter check in osso_display_blanking_pause(). Fixes: NB#36576
+  * Fixed parameter check in osso_display_state_on(). Fixes: NB#36578
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 10 Aug 2006 15:03:27 +0300
 

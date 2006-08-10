@@ -1095,7 +1095,9 @@ typedef struct {
  * or the touch screen. This can be used after completing a long operation
  * such as downloading a large file or after retrieving e-mails.
  * 
- * @return #OSSO_OK if all goes well, #OSSO_ERROR if an error occured.
+ * @param osso The library context as returned by #osso_initialize.
+ * @return #OSSO_OK if all goes well, #OSSO_ERROR if an error occured, and
+ * #OSSO_INVALID if the context is not valid.
  */ 
 
 osso_return_t osso_display_state_on(osso_context_t *osso);
@@ -1106,7 +1108,9 @@ osso_return_t osso_display_state_on(osso_context_t *osso);
  * by the video player during video playback. Also prevents suspending the
  * device.
  * 
- * @return #OSSO_OK if all goes well, #OSSO_ERROR if an error occured.
+ * @param osso The library context as returned by #osso_initialize.
+ * @return #OSSO_OK if all goes well, #OSSO_ERROR if an error occured, and
+ * #OSSO_INVALID if the context is not valid.
  */
 
 osso_return_t osso_display_blanking_pause(osso_context_t *osso);
