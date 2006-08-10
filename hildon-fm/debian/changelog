@@ -1,6 +1,5 @@
 hildon-fm (1.4-1) unstable; urgency=low
 
-  * UNRELEASED
   * Replaced the show_all handler in HildonFileChooser with gtk_widget_show.
     Fixes: NB#36971
   * Fixed sorting in the default sorting order. Fixes: NB#35003
