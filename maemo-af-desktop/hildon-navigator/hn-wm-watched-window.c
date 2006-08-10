@@ -988,7 +988,6 @@ hn_wm_watched_window_awake (HNWMWatchedWindow *win)
 void
 hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
 {
-  GList                 *iter, *next_iter;
   HNWMWatchedWindowView *view;
   GtkWidget             *note;
 
@@ -1032,19 +1031,13 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
     }
   
   /* Destroy the views too */
-  iter = win->views;
-
-  while (iter)
+  while (win->views)
     {
-      next_iter = g_list_next(iter);
-
-      view = (HNWMWatchedWindowView *)iter->data;
+      view = (HNWMWatchedWindowView *)win->views->data;
 
       hn_wm_watched_window_view_destroy (view);
 
-      win->views = g_list_delete_link(win->views, iter);
-
-      iter = next_iter;
+      win->views = g_list_delete_link(win->views, win->views);
     }
 
   if (win->name)

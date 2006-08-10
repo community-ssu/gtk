@@ -874,11 +874,11 @@ hn_wm_process_mb_current_app_window (void)
     previous_app_xwin = hn_wm_watched_window_get_x_win (hnwm.active_window);
   
   app_xwin =  hn_wm_util_get_win_prop_data_and_validate (GDK_ROOT_WINDOW(),
-							 hnwm.atoms[HN_ATOM_MB_CURRENT_APP_WINDOW],
-							 XA_WINDOW,
-							 32,
-							 0,
-							 NULL);
+				hnwm.atoms[HN_ATOM_MB_CURRENT_APP_WINDOW],
+				XA_WINDOW,
+				32,
+				0,
+				NULL);
   if (!app_xwin)
     return;
 
@@ -933,9 +933,9 @@ out:
 }
 
 static gboolean
-client_list_remove_foreach_func (gpointer key,
-				 gpointer value,
-				 gpointer userdata)
+client_list_steal_foreach_func (gpointer key,
+                                gpointer value,
+                                gpointer userdata)
 {
   HNWMWatchedWindow   *win;
   struct xwinv *xwins;
@@ -943,11 +943,45 @@ client_list_remove_foreach_func (gpointer key,
   
   xwins = (struct xwinv*)userdata;
   win   = (HNWMWatchedWindow *)value;
-  
+
+  /* check if the window is on the list */
   for (i=0; i < xwins->n_wins; i++)
     if (G_UNLIKELY((xwins->wins[i] == hn_wm_watched_window_get_x_win (win))))
-      return FALSE;
+      {
+        /* if the window is on the list, we do not touch it */
+        return FALSE;
+      }
 
+  /* not on the list */
+  if (hn_wm_watched_window_is_hibernating (win))
+    {
+      /* the window is marked as hibernating, we move it to the hibernating
+       * windows hash
+       */
+      HN_DBG ("hibernating window [%s], moving to hibernating hash",
+              hn_wm_watched_window_get_hibernation_key(win));
+      
+      g_hash_table_insert (hn_wm_get_hibernating_windows(),
+                     g_strdup (hn_wm_watched_window_get_hibernation_key(win)),
+                     win);
+
+      /* reset the window xid */
+      hn_wm_watched_window_reset_x_win (win);
+
+      /* free the original hash key, since we are stealing */
+      g_free (key);
+
+      /* remove it from watched hash */
+      return TRUE;
+    }
+  
+  /* not on the list and not hibernating, we have to explicitely destroy the
+   * hash entry and its key, since we are using a steal function
+   */
+  hn_wm_watched_window_destroy (win);
+  g_free (key);
+
+  /* remove the entry from our hash */
   return TRUE;
 }
 
@@ -968,21 +1002,26 @@ hn_wm_process_x_client_list(void)
 
   xwins.wins
     = hn_wm_util_get_win_prop_data_and_validate (GDK_ROOT_WINDOW(),
-						 hnwm.atoms[HN_ATOM_MB_APP_WINDOW_LIST_STACKING],
-						 XA_WINDOW,
-						 32,
-						 0,
-						 &xwins.n_wins);
+			hnwm.atoms[HN_ATOM_MB_APP_WINDOW_LIST_STACKING],
+			XA_WINDOW,
+			32,
+			0,
+			&xwins.n_wins);
+  
   if (G_UNLIKELY(xwins.wins == NULL))
     {
       g_warning("Failed to read _MB_APP_WINDOW_LIST_STACKING root win prop, "
 		"you probably need a newer matchbox !!!");
     }
 
-  /* Check if any windows in our hash have since dissapeared */
-  g_hash_table_foreach_remove ( hnwm.watched_windows,
-				client_list_remove_foreach_func,
-				(gpointer)&xwins);
+  /* Check if any windows in our hash have since disappeared -- we use
+   * foreach_steal here because some of the windows that disappeared might in
+   * fact be hibernating, and we do not want to destroy those, see
+   * client_list_steal_foreach_func ()
+   */
+  g_hash_table_foreach_steal ( hnwm.watched_windows,
+                               client_list_steal_foreach_func,
+                               (gpointer)&xwins);
   
   /* Now add any new ones  */
   for (i=0; i < xwins.n_wins; i++)

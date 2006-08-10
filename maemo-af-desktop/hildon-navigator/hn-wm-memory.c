@@ -84,108 +84,122 @@ hn_wm_memory_get_limits (guint *pages_used,
   return result;
 }
 
-static gboolean 
+/* helper struct to hold things we need to pass to
+ * hn_wm_memory_kill_all_watched_foreach_func () below
+ */
+typedef struct
+{
+  gboolean             only_able_to_hibernate;
+  HNWMWatchableApp   * top_app;
+} _memory_foreach_data;
+
+
+static void
 hn_wm_memory_kill_all_watched_foreach_func (gpointer key,
 					    gpointer value,
 					    gpointer userdata)
 {
-  HNWMWatchableApp    *app;
-  HNWMWatchedWindow   *win;
-  gboolean             only_kill_able_to_hibernate;
-  Window              *top_xwin;
-
+  HNWMWatchableApp     * app;
+  HNWMWatchedWindow    * win;
+  _memory_foreach_data * d;
+  
   HN_DBG("### enter ###");
 
-  only_kill_able_to_hibernate = *(gboolean*)(userdata);
-  win                         = (HNWMWatchedWindow *)value;
-  app                         = hn_wm_watched_window_get_app(win);
+  d   = (_memory_foreach_data*) userdata;
+  win = (HNWMWatchedWindow *)value;
+  app = hn_wm_watched_window_get_app(win);
 
-  if (only_kill_able_to_hibernate)
+  if (d->only_able_to_hibernate)
     {
-      gboolean return_val = FALSE;
-      HN_DBG("called with 'only_kill_able_to_hibernate'");
-
-      top_xwin 
-	=  hn_wm_util_get_win_prop_data_and_validate (GDK_ROOT_WINDOW(),
-						      hn_wm_get_atom(HN_ATOM_MB_CURRENT_APP_WINDOW),
-						      XA_WINDOW,
-						      32,
-						      0,
-						      NULL);
-      
-      HN_DBG("'%s' able_to_hibernate? '%s' , hiberanting? '%s', Top win? '%s'",
+      HN_DBG("'%s' able_to_hibernate? '%s' , hiberanting? '%s'",
 	     hn_wm_watched_window_get_name (win),
 	     hn_wm_watchable_app_is_able_to_hibernate(app) ? "yes" : "no",
-	     hn_wm_watchable_app_is_hibernating (app)       ? "yes" : "no",
-	     (hn_wm_watched_window_get_x_win (win) == *top_xwin) ? "yes" : "no" );
-
-      if (hn_wm_watchable_app_is_able_to_hibernate(app) 
-	  && hn_wm_watched_window_get_x_win (win) != *top_xwin) 
+	     hn_wm_watchable_app_is_hibernating (app)       ? "yes" : "no");
+      
+      if (app != d->top_app &&
+          hn_wm_watchable_app_is_able_to_hibernate(app) &&
+          !hn_wm_watchable_app_is_hibernating (app)) 
 	{
 	  HN_DBG("hn_wm_watched_window_attempt_pid_kill() for '%s'",
 		 hn_wm_watched_window_get_name (win));
-
-          if (hn_wm_watched_window_attempt_signal_kill (win, SIGTERM, TRUE))
+          
+          /* mark the application as hibernating -- we do not know how many
+           * more windows it might have, so we need to set this on each one
+           * of them
+           *
+           * we have to do this unconditionally before sending SIGTERM to the
+           * app otherwise if the app exits very quickly, the client window
+           * list is updated before we have chance to mark the app as
+           * hibernating (NB, we cannot reset the hibernation flag here if the
+           * SIGTERM fails because there is still the SIGKILL in the pipeline.
+           */
+          hn_wm_watchable_app_set_hibernate (app, TRUE);
+          
+          if (!hn_wm_watched_window_attempt_signal_kill (win, SIGTERM, TRUE))
  	    {
-              HN_DBG("app->hibernating now '%s'",
-                     hn_wm_watchable_app_is_hibernating(app) ? "true":"false");
-
-              /* move the window into hibernation hash */
-              g_hash_table_insert (hn_wm_get_hibernating_windows(),
-                                   g_strdup (hn_wm_watched_window_get_hibernation_key(win)),
-                                   win);
-
-              /* need to reset the window xid as well */
-              hn_wm_watched_window_reset_x_win (win);
-
-              /* mark the application as hibernating -- we do not know how many
-               * more windows it might have, so we need to set this on each one
-               * of them
-               */
-              hn_wm_watchable_app_set_hibernate (app, TRUE);
-
-              /* free the key */
-              g_free (key);
-              
-              /* remove the current entry from the watched windows hash */
-              return_val = TRUE;
+              osso_log(LOG_ERR, "sigterm failed");
             }
 	}
-
-      if (top_xwin)
-	XFree(top_xwin);
-
-      HN_DBG("### leave ###");
-
-      return return_val;
     }
   else
     {
-      /* Totally kill everthing and remove from our hash */
-      HN_DBG("killing everything, currently '%s'", hn_wm_watched_window_get_name (win));
+      /* Totally kill everything */
+      HN_DBG("killing everything, currently '%s'",
+             hn_wm_watched_window_get_name (win));
       hn_wm_watched_window_attempt_signal_kill (win, SIGTERM, FALSE);
-
-      /* we are called by g_hash_foreach_steal -- have to explicitely destroy
-       * the window here and the associated key
-       */
-      hn_wm_watched_window_destroy (win);
-      g_free (key);
-      
-      HN_DBG("### leave ###");
-      return TRUE;
     }
+
+  HN_DBG("### leave ###");
 }
 
 /* FIXME: rename kill to hibernate - kill is misleading */
 int 
 hn_wm_memory_kill_all_watched (gboolean only_kill_able_to_hibernate)
 {
-  /* use _steal rather than _remove as we need to keep the window object
-   * in the hibernating windows hash
+  _memory_foreach_data   d;
+  HNWMWatchedWindow    * top_win = NULL;
+  Window               * top_xwin;
+
+  /* init the foreach data */
+  d.only_able_to_hibernate = only_kill_able_to_hibernate;
+  d.top_app                = NULL;
+
+  /* locate the application associated with the top-level window
+   * we pass this into the foreach function, to avoid doing the lookup on
+   * each iteration
+   *
+   * Get the xid of the top level window
    */
-  g_hash_table_foreach_steal ( hn_wm_get_watched_windows(),
-                               hn_wm_memory_kill_all_watched_foreach_func,
-                               (gpointer)&only_kill_able_to_hibernate);
+  top_xwin 
+	=  hn_wm_util_get_win_prop_data_and_validate (GDK_ROOT_WINDOW(),
+						      hn_wm_get_atom(HN_ATOM_MB_CURRENT_APP_WINDOW),
+						      XA_WINDOW,
+						      32,
+						      0,
+						      NULL);
+
+  /* see if we have a matching watched window */
+  if (top_xwin)
+    {
+      top_win = g_hash_table_lookup (hn_wm_get_watched_windows(),
+                                     (gconstpointer) top_xwin);
+
+      XFree (top_xwin);
+      top_xwin = NULL;
+    }
+  
+  /* if so, get the corresponding application */
+  if (top_win)
+    {
+      d.top_app = hn_wm_watched_window_get_app (top_win);
+      HN_DBG ("Top level application [%s]",
+              hn_wm_watchable_app_get_name (d.top_app));
+    }
+  
+  /* now hibernate our applications */
+  g_hash_table_foreach ( hn_wm_get_watched_windows(),
+                         hn_wm_memory_kill_all_watched_foreach_func,
+                         (gpointer)&d);
 
   hn_wm_memory_update_lowmem_ui(hn_wm_is_lowmem_situation());
 
