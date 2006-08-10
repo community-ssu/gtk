@@ -1,3 +1,11 @@
+libosso (1.16-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Modified Control Panel plugin startup so that single instance can be
+    achieved. The patch is from Johan Bilien. Fixes: NB#25238
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 10 Aug 2006 15:03:27 +0300
+
 libosso (1.15-1) unstable; urgency=low
 
   * Removed dbus_connection_unref()s, because they make DBus asserts fail

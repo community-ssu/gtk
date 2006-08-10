@@ -26,6 +26,61 @@
 #include <linux/limits.h>
 #include <errno.h>
 
+/* hildon-control-panel RPC */
+#define HCP_APPLICATION_NAME               "controlpanel"
+#define HCP_SERVICE                        "com.nokia.controlpanel"
+#define HCP_RPC_METHOD_RUN_APPLET          "run_applet"
+#define HCP_RPC_METHOD_TOP_APPLICATION     "top_application"
+#define HCP_RPC_METHOD_SAVE_STATE_APPLET   "save_state_applet"
+#define HCP_RPC_METHOD_IS_APPLET_RUNNING   "is_applet_running"
+
+static gboolean
+is_applet_running_in_cp (osso_context_t *osso,
+                         const char *filename)
+{
+  DBusError *error = NULL;
+  gboolean cp_running;
+  osso_return_t ret;
+  osso_rpc_t retval;
+
+  cp_running = dbus_bus_name_has_owner (osso->conn,
+                                        HCP_SERVICE,
+                                        error);
+  if (error)
+    {
+      ULOG_ERR_F("Error in dbus_bus_name_has_owner: %s", error->message);
+      dbus_error_free (error);
+      return FALSE;
+    }
+
+  if (!cp_running)
+    return FALSE;
+
+
+  ret = osso_rpc_run_with_defaults(osso,
+                                   HCP_APPLICATION_NAME,
+                                   HCP_RPC_METHOD_IS_APPLET_RUNNING,
+                                   &retval,
+                                   DBUS_TYPE_STRING,
+                                   filename,
+                                   DBUS_TYPE_INVALID);
+
+  if (ret != OSSO_OK)
+    {
+      ULOG_ERR_F("Error in RPC call");
+      return FALSE;
+    }
+
+  if (retval.type != DBUS_TYPE_BOOLEAN)
+    {
+      ULOG_ERR_F("Unexpected return value in RPC call");
+      return FALSE;
+    }
+
+  return retval.value.b;
+}
+
+
 static void *
 try_plugin (const char *dir, const char *file)
 {
@@ -60,6 +115,21 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
 	return OSSO_INVALID;
     }
     dprint("executing library '%s'",filename);
+
+    /* First of all, if the applet is started as system modal (data == NULL),
+     * and if controlpanel is already running this applet, just top
+     * controlpanel */
+    if (data == NULL && is_applet_running_in_cp (osso, filename))
+      {
+        ret = osso_rpc_run_with_defaults(osso,
+                                         HCP_APPLICATION_NAME,
+                                         HCP_RPC_METHOD_TOP_APPLICATION,
+                                         NULL,
+                                         DBUS_TYPE_INVALID);
+        if (ret == OSSO_OK)
+          return OSSO_OK;
+      }
+        
 
     /* First try builtin path */
     p.lib = try_plugin (OSSO_CTRLPANELPLUGINDIR, filename);
@@ -131,6 +201,13 @@ osso_return_t osso_cp_plugin_save_state(osso_context_t *osso,
 	return OSSO_INVALID;
     }
     a = osso->cp_plugins;
+
+    if (is_applet_running_in_cp (osso, filename))
+    {
+        /* Do not save state in this case, as the applet is run
+         * by controlpanel, which will take care of saving its state */
+        return OSSO_OK;
+    }
     
     pluginname = g_path_get_basename(filename);
     for (i = 0; i < a->len; i++) {
