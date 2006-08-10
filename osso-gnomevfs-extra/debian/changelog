@@ -1,9 +1,9 @@
-osso-gnomevfs-extra (1.5.1-1) unstable; urgency=low
+osso-gnomevfs-extra (1.7.0-1) unstable; urgency=low
 
   * Fixes: #33839, Merged 1.5.0-1multibt3 branch changes to TRUNK.
   * Fixes: #29658, Make the schemes case insensitive in libossomime.
 
- -- Martyn Russell <martyn@imendio.com>  Thu, 10 Aug 2006 16:23:26 +0100
+ -- Martyn Russell <martyn@imendio.com>  Thu, 10 Aug 2006 17:23:26 +0100
 	
 osso-gnomevfs-extra (1.5.0-1multibt3) unstable; urgency=low
 
