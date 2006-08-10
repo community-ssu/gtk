@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.12.0.12-1) unstable; urgency=low
+
+  * NB #33839 removed 02-obext-volumes.patch
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 10 Aug 2006 17:01:07 +0100
+
 osso-gnome-vfs2 (2.12.0.11-1) unstable; urgency=low
 
   * NB #31077 plug fd leak in the daemon per client

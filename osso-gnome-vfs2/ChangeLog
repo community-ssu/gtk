@@ -1,3 +1,7 @@
+2006-08-10  Martyn Russell  <martyn@imendio.com>
+
+	* debian/patches/02-obex-volumes.patch: Removed, fixes NB #33839.
+
 2006-06-02  Richard Hult  <richard@imendio.com>
 
 	* Release 2.12.0.11.
