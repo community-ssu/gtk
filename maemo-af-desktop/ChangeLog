@@ -1,5 +1,10 @@
 2006-08-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Give the home window as parent
+	  to the CPA applet (Closes NB#37380)
+
+2006-08-10  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Background colour not updated after having canceled the
 	loading image banner." (Closes NB#37213)
 	* hildon-home/hildon-home-main.c:

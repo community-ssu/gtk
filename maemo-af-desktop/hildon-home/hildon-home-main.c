@@ -634,7 +634,7 @@ gboolean hildon_home_execute_cp_applet(GtkWidget *widget,
 
     ret = osso_cp_plugin_execute(osso_home,
                                  applet_path,
-                                 NULL,
+                                 window,
                                  TRUE);
 
     switch(ret) 
