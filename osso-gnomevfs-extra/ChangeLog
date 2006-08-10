@@ -3,7 +3,8 @@
 	* debian/changelog:
 	* obex-module/src/obex-method.c:
 	* obex-module/src/om-dbus.c: 
-	* obex-module/src/om-dbus.h: Merged 1.5.0-1multibt3 branch changes to TRUNK.
+	* obex-module/src/om-dbus.h: Merged 1.5.0-1multibt3 branch changes
+	to TRUNK, partly fixes NB #33839.
 
 2006-06-16  Richard Hult  <richard@imendio.com>
 
