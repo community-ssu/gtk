@@ -37,15 +37,16 @@ static gboolean _validate_time(time_t time_candidate)
 
 
 /************************************************************************/
-osso_return_t osso_time_set_notification_cb(osso_context_t *osso, osso_time_cb_f *cb,
-                                   gpointer data) 
+osso_return_t osso_time_set_notification_cb(osso_context_t *osso,
+                                            osso_time_cb_f *cb,
+                                            gpointer data) 
 {
   struct _osso_time *ot;
   if ( (osso == NULL) || (cb == NULL) ) {
     return OSSO_INVALID;
   }
   if (osso->sys_conn == NULL) {
-    ULOG_ERR_F("error: no D-BUS connection!");
+    ULOG_ERR_F("no D-Bus system bus connection");
     return OSSO_INVALID;
   }
 
@@ -59,7 +60,7 @@ osso_return_t osso_time_set_notification_cb(osso_context_t *osso, osso_time_cb_f
   
   ot->handler = cb;
   ot->data = data;
-  ot->name = g_strdup(SIG_NAME);
+  ot->name = CHANGED_SIG_NAME;
   _msg_handler_set_cb_f_free_data(osso, TIME_INTERFACE,
                                   _time_handler, ot, FALSE);
   dbus_connection_flush(osso->sys_conn);
@@ -69,34 +70,40 @@ osso_return_t osso_time_set_notification_cb(osso_context_t *osso, osso_time_cb_f
 
 
 /************************************************************************/
-
-/* TODO: This function should just send the notification about time
- *       change, not try to set any time (that would need root privileges
- *       or some DBus service) */
-
 osso_return_t osso_time_set(osso_context_t *osso, time_t new_time)
 {
-  gchar *textual_time = NULL;
-  static const size_t textual_time_size = (TIME_MAX_LEN+1) * sizeof(gchar);
-  int ret;
-  gint retval = OSSO_ERROR;
+  DBusMessage* m = NULL;
+  dbus_bool_t ret = FALSE;
 
-  if ( _validate_time(new_time) == FALSE || (osso == NULL) ) {
-    return OSSO_INVALID;
+  if (_validate_time(new_time) == FALSE || osso == NULL
+      || osso->sys_conn == NULL) {
+      return OSSO_INVALID;
   }
 
-  textual_time = (gchar *) alloca(textual_time_size);
-  memset(textual_time, '\0', textual_time_size);
-  ret = g_snprintf(textual_time, TIME_MAX_LEN+1, "%ld", (long int)new_time);
-  if (ret > TIME_MAX_LEN + 1 || ret < 0) {
-    ULOG_ERR_F("Could not convert time_t to string");
-    return OSSO_ERROR;
+  /* send a signal about the time change */
+  m = dbus_message_new_signal(TIME_PATH, TIME_INTERFACE, CHANGED_SIG_NAME);
+  if (m == NULL) {
+      ULOG_ERR_F("dbus_message_new_signal failed");
+      return OSSO_ERROR;
   }
-  retval = osso_application_top(osso, "test_time_msg", textual_time);
-  ULOG_DEBUG_F("osso_application_top called");
-  if (retval != OSSO_OK) {
-    ULOG_ERR("osso_application_top failed!");
+
+  ret = dbus_message_append_args(m, DBUS_TYPE_INT64, &new_time,
+                                 DBUS_TYPE_INVALID);
+  if (!ret) {
+      ULOG_ERR_F("couldn't append argument");
+      dbus_message_unref(m);
+      return OSSO_ERROR;
   }
+
+  ret = dbus_connection_send(osso->sys_conn, m, NULL);
+  if (!ret) {
+      ULOG_ERR_F("dbus_connection_send failed");
+      dbus_message_unref(m);
+      return OSSO_ERROR;
+  }
+  dbus_message_unref(m);
+  dbus_connection_flush(osso->sys_conn);
+
   return OSSO_OK;
 }
 
@@ -107,9 +114,7 @@ static DBusHandlerResult _time_handler(osso_context_t *osso,
     struct _osso_time *ot;
 
     ot = (struct _osso_time *)data;
-    if( dbus_message_is_signal(msg, TIME_INTERFACE, ot->name) 
-	== TRUE)
-    {
+    if (dbus_message_is_signal(msg, TIME_INTERFACE, ot->name)) {
       ot->handler(ot->data);
       return DBUS_HANDLER_RESULT_HANDLED;
     }

@@ -31,7 +31,8 @@
 #include "osso-log.h"
 
 #define TIME_INTERFACE "com.nokia.time"
-#define SIG_NAME "changed"
+#define TIME_PATH "/com/nokia/time"
+#define CHANGED_SIG_NAME "changed"
 #define TIME_MAX_LEN 20
 
 /**
