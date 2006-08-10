@@ -10,7 +10,7 @@ Package: gconf2
 Section: admin
 Priority: optional
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, dbus
 Conflicts: gconf (<< 1.0.6-4), libgconf11 (<< 1.0.9-2.1)
 Replaces: libgconf2-4 (<< 1.1.10-2)
 Description: GNOME configuration database system. (daemon and tools, for GNOME2)
