@@ -49,6 +49,9 @@ typedef struct {
 G_LOCK_DEFINE (used_devs);
 static GHashTable *used_devs = NULL;
 
+static gboolean is_obex_device (Connection *conn, 
+				const char *dev,
+				const char *name);
 
 static Connection *
 get_gwcond_connection (void)
@@ -418,6 +421,212 @@ om_dbus_disconnect_dev (const gchar *dev)
 	send_disconnect (conn, dev, NULL);
 
 	connection_free (conn);
+}
+
+static void
+om_append_paired_devices (Connection   *conn, 
+			  DBusMessage  *msg,
+                          const char   *devname, 
+			  GList       **list)
+{
+        DBusMessageIter diter;
+	DBusMessageIter dsub;
+
+        if (!dbus_message_iter_init (msg, &diter)) {
+		return;
+	}
+
+	dbus_message_iter_recurse (&diter, &dsub);
+	
+	do { 
+		/* Add the entry to the list. */
+		GnomeVFSFileInfo *info;
+		char             *remote_devname;
+		
+		if (dbus_message_iter_get_arg_type (&dsub) != DBUS_TYPE_STRING) {
+			continue;
+		}
+		
+		dbus_message_iter_get_basic (&dsub, &remote_devname);
+		
+		if (!is_obex_device (conn, devname, (const char*) remote_devname)) {
+			continue;
+		}
+		
+		
+		info = gnome_vfs_file_info_new ();
+		
+		if (!info) {
+			return;
+		}
+		
+		info->valid_fields = 
+			GNOME_VFS_FILE_INFO_FIELDS_TYPE |
+			GNOME_VFS_FILE_INFO_FIELDS_PERMISSIONS |
+			GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
+		
+		info->name = g_strdup_printf ("[%s]", remote_devname);
+		info->type = GNOME_VFS_FILE_TYPE_DIRECTORY;
+		info->permissions = 
+			GNOME_VFS_PERM_USER_READ |
+			GNOME_VFS_PERM_GROUP_READ |
+			GNOME_VFS_PERM_OTHER_READ;
+		
+		info->uid = 0;
+		info->gid = 0;
+		info->mime_type = g_strdup ("x-directory/normal");
+		
+		*list = g_list_append (*list, info);
+		
+	} while (dbus_message_iter_next (&dsub));
+}
+
+GList *
+om_dbus_get_dev_list (void)
+{
+	Connection      *conn;
+	DBusMessage     *msg;
+	DBusMessage     *ret1;
+        DBusMessageIter  iter;
+	DBusError        error;
+	GList           *devlist = NULL;
+
+	conn = get_gwcond_connection ();
+	if (!conn) {
+		return NULL;
+	}
+
+	msg = dbus_message_new_method_call ("org.bluez", "/org/bluez",
+                                            "org.bluez.Manager",
+                                            "ListAdapters");
+
+	if (!msg) {
+		connection_free (conn);
+
+		return NULL;
+	}
+
+	dbus_error_init (&error);
+
+	ret1 = dbus_connection_send_with_reply_and_block (conn->dbus_conn,
+                                                          msg, -1, &error);
+	dbus_message_unref (msg);
+
+	if (dbus_error_is_set (&error)) {
+		dbus_error_free (&error);
+		connection_free (conn);
+		return NULL;
+	}
+
+	if (dbus_message_iter_init (ret1, &iter)) {
+                DBusMessageIter sub;
+
+		dbus_message_iter_recurse (&iter, &sub);
+
+		do {  /* go through each entry (device) and get each
+                         paired device from the entry */
+	                char *devname;
+                        DBusMessage *ret2;
+
+			dbus_message_iter_get_basic (&sub, &devname);
+
+			msg = dbus_message_new_method_call ("org.bluez",
+							    devname, 
+							    "org.bluez.Adapter", 
+							    "ListBondings");
+
+			if (!msg) {
+				dbus_message_unref (ret1);
+				connection_free (conn);
+				return NULL;
+                        }
+
+			dbus_error_init (&error);
+
+			ret2 = dbus_connection_send_with_reply_and_block (conn->dbus_conn, 
+									  msg, 
+									  -1, 
+									  &error);
+			dbus_message_unref (msg);
+
+			if (dbus_error_is_set (&error)) {
+				dbus_error_free (&error);
+
+				continue;
+			}
+
+
+                        om_append_paired_devices (conn, 
+						  ret2, 
+						  devname,
+                                                  &devlist);
+
+			dbus_message_unref (ret2);
+			
+		} while (dbus_message_iter_next (&sub));
+	}
+
+	dbus_message_unref (ret1);
+
+	connection_free (conn);
+
+	return devlist;
+}
+
+static gboolean
+is_obex_device (Connection *conn,
+		const char *dev, 
+		const char *name)
+{
+	DBusMessage      *msg, *ret;
+	DBusMessageIter  iter, sub;
+	DBusError        error;
+	gboolean         is_obex = FALSE;
+	char            *class_name;
+
+	msg = dbus_message_new_method_call ("org.bluez",
+					    dev,
+					    "org.bluez.Adapter",
+					    "GetRemoteServiceClasses");
+
+	dbus_message_iter_init_append (msg, &iter);
+
+	dbus_message_iter_append_basic (&iter, DBUS_TYPE_STRING, &name);
+
+	dbus_error_init (&error);
+	ret = dbus_connection_send_with_reply_and_block (conn->dbus_conn,
+							 msg, 
+							 -1, 
+							 &error);
+	dbus_message_unref (msg);
+
+	if (dbus_error_is_set (&error)) {
+		dbus_error_free (&error);
+		return FALSE;
+	}
+
+	if (dbus_message_iter_init (ret, &iter)) {
+		dbus_message_iter_recurse (&iter, &sub);
+
+		do {
+			if (dbus_message_iter_get_arg_type (&sub) != DBUS_TYPE_STRING) {
+				continue;
+			}
+
+			dbus_message_iter_get_basic (&sub, &class_name);
+
+			if (!strcmp (class_name, "object transfer")) {
+				is_obex = TRUE;
+				break;
+			}
+
+
+		} while (dbus_message_iter_next (&sub));
+	}
+
+	dbus_message_unref (ret);
+
+	return is_obex;
 }
 
 

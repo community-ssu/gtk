@@ -1,3 +1,30 @@
+osso-gnomevfs-extra (1.5.1-1) unstable; urgency=low
+
+  * Merged 1.5.0-1multibt3 branch changes to TRUNK.
+
+ -- Martyn Russell <martyn@imendio.com>  Thu, 10 Aug 2006 16:23:26 +0100
+	
+osso-gnomevfs-extra (1.5.0-1multibt3) unstable; urgency=low
+
+  * Added read-only access information for 'obex://' dir. Fixes: NB#34081
+  * Added NOT_SUPPORTED errors to some functions when trying to access with no
+    device.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Thu, 27 Jul 2006 20:23:26 +0300
+
+osso-gnomevfs-extra (1.5.0-1multibt2) unstable; urgency=low
+
+  * Fixes to om-dbus.c from Kuisma, and added query for OBEX-capability.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 29 Jun 2006 15:33:47 +0300
+
+osso-gnomevfs-extra (1.5.0-1multibt) unstable; urgency=low
+
+  * Added support for multiple Bluetooth devices (it needs some more work).
+    Original code written by Kuisma Salonen.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 27 Jun 2006 14:52:02 +0300
+
 osso-gnomevfs-extra (1.5.0-1) unstable; urgency=low
 
   * Remove "or later" wording in debian/copyright LGPL text

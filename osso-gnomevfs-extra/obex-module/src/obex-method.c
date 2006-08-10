@@ -684,8 +684,15 @@ do_open (GnomeVFSMethod        *method,
 	gint            error;
 	FileHandle     *handle;
 	gchar          *name;
+	gchar          *device;
 	GnomeVFSResult  result;
 	GwObexXfer     *xfer;
+
+	device = om_utils_get_dev_from_uri (uri);
+	if (!device) {
+		return GNOME_VFS_ERROR_IS_DIRECTORY;
+	}
+	g_free (device);
 
 	/* Only support either read or write */
 	if ((mode & GNOME_VFS_OPEN_READ) && (mode & GNOME_VFS_OPEN_WRITE)) {
@@ -769,9 +776,16 @@ do_create (GnomeVFSMethod        *method,
 	ObexConnection *conn;
 	GnomeVFSResult  result;
 	FileHandle     *handle;
-	gchar          *name;
+	gchar          *name, *dev;
 	GwObexXfer     *xfer;
 	gint            error;
+
+	dev = om_utils_get_dev_from_uri (uri);
+	if (!dev) {
+		return GNOME_VFS_ERROR_NOT_SUPPORTED;
+	}
+
+	g_free (dev);
 
 	if (!(mode & GNOME_VFS_OPEN_WRITE)) {
 		return GNOME_VFS_ERROR_INVALID_OPEN_MODE;
@@ -1028,20 +1042,38 @@ do_open_directory (GnomeVFSMethod           *method,
 		   GnomeVFSFileInfoOptions   options,
 		   GnomeVFSContext          *context)
 {
-	ObexConnection  *conn;
-	GnomeVFSResult   result;
-	GList           *elements;
+        GnomeVFSResult   result;
+	GList           *elements = NULL;
 	DirectoryHandle *handle;
+	gchar		*device_name;
 
-	conn = om_get_connection (uri, &result);
-	if (!conn) {
-		return result;
-	}
+	device_name = om_utils_get_dev_from_uri (uri);
 
-	result = om_get_folder_listing (conn, uri, FALSE, context, &elements);
-	if (result != GNOME_VFS_OK) {
+	if (device_name) {
+	        ObexConnection  *conn;
+
+		g_free (device_name);
+
+		conn = om_get_connection (uri, &result);
+		if (!conn) {
+			return result;
+		}
+
+		result = om_get_folder_listing (conn,
+						uri,
+						FALSE, 
+						context,
+						&elements);
+		
+		if (result != GNOME_VFS_OK) {
+			om_connection_unref (conn);
+			return result;
+		}
+		
 		om_connection_unref (conn);
-		return result;
+	} else { 
+		/* We want to list paired devices. */
+		elements = om_dbus_get_dev_list ();
 	}
 	
 	handle = g_new0 (DirectoryHandle, 1);
@@ -1049,8 +1081,6 @@ do_open_directory (GnomeVFSMethod           *method,
 	handle->current = handle->elements;
 	
 	*method_handle = (GnomeVFSMethodHandle *) handle;
-	
-	om_connection_unref (conn);
 
 	return GNOME_VFS_OK;
 }
@@ -1096,11 +1126,30 @@ do_get_file_info (GnomeVFSMethod          *method,
 		  GnomeVFSFileInfoOptions  options,
 		  GnomeVFSContext         *context)
 {
-	gchar          *path;
+	gchar          *path, *dev;
 	GnomeVFSResult  result;
 	ObexConnection *conn = NULL;
 	GList          *elements, *l;
 	gchar          *name;
+
+	/* Special-case the ultimate root */
+	dev = om_utils_get_dev_from_uri (uri);
+	if (!dev) {
+		file_info->valid_fields = GNOME_VFS_FILE_INFO_FIELDS_NONE;
+		file_info->name = g_strdup ("/");
+
+		file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_TYPE;
+		file_info->type = GNOME_VFS_FILE_TYPE_DIRECTORY;
+
+		file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
+		file_info->mime_type = g_strdup ("x-directory/normal");
+
+		file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_ACCESS;
+		file_info->permissions = GNOME_VFS_PERM_ACCESS_READABLE;
+
+		return GNOME_VFS_OK;
+	}
+	g_free (dev);
 
 	path = om_utils_get_path_from_uri (uri);
 	if (path == NULL) {
@@ -1196,8 +1245,15 @@ do_make_directory (GnomeVFSMethod  *method,
 {
 	GnomeVFSResult  result;
 	gchar          *name;
+	gchar          *device;
 	ObexConnection *conn;
 	gint            error;
+
+	device = om_utils_get_dev_from_uri (uri);
+	if (!device) {
+		return GNOME_VFS_ERROR_NOT_SUPPORTED;
+	}
+	g_free (device);
 
 	conn = om_get_connection (uri, &result);
 	if (!conn) {

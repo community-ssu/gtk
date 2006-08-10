@@ -1,3 +1,10 @@
+2006-08-10  Martyn Russell  <martyn@imendio.com>
+
+	* debian/changelog:
+	* obex-module/src/obex-method.c:
+	* obex-module/src/om-dbus.c: 
+	* obex-module/src/om-dbus.h: Merged 1.5.0-1multibt3 branch changes to TRUNK.
+
 2006-06-16  Richard Hult  <richard@imendio.com>
 
 	* Release 1.5.0.

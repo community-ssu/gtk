@@ -27,6 +27,8 @@
 gchar *om_dbus_get_dev        (const gchar *bda, GnomeVFSResult *result);
 void   om_dbus_disconnect_dev (const gchar *dev);
 
+GList *om_dbus_get_dev_list   (void);
+
 
 #ifdef OBEX_PROGRESS
 typedef void (*CancelNotifyFunc) (GnomeVFSURI *uri);
