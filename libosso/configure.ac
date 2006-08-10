@@ -11,7 +11,7 @@ AC_LANG(C)
 
 AC_ARG_ENABLE(debug, 
               [AC_HELP_STRING([--enable-debug],
-              [Compile with Debug symbols, and extra debug code (default=no)])], 
+              [Compile with extra debug code (default=no)])], 
               [libosso_use_debug=yes], [libosso_use_debug=no])
 
 ## GCC 3.3.4, used in scratchbox 0.9.8.5, has bugs with
@@ -23,9 +23,9 @@ AC_ARG_ENABLE(debug,
 WFLAGS="-Werror -Wall -Wmissing-prototypes -std=c99"
 if test x${libosso_use_debug} = xyes ; then
     AC_DEFINE(DEBUG,1,[Build extra debug code])
-    OSSO_CFLAGS="-g -ansi  -D_BSD_SOURCE -rdynamic $WFLAGS"
+    OSSO_CFLAGS="-g -ansi -D_BSD_SOURCE -rdynamic $WFLAGS"
 else
-    OSSO_CFLAGS="-ansi -D_BSD_SOURCE -O2 -fomit-frame-pointer -rdynamic $WFLAGS"
+    OSSO_CFLAGS="-g -ansi -D_BSD_SOURCE -O2 -rdynamic $WFLAGS"
 fi
 
 AC_SUBST(OSSO_CFLAGS)
