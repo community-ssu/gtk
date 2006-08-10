@@ -1,3 +1,11 @@
+2006-08-10  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Problems with setting BG when trying to get image from
+	gateway device fails" (Closes NB#35603)
+	* hildon-home/hildon-home-main.c:
+	  - image_loader_callback(): Save the configuration here after succesfull
+	    load
+
 2006-08-09  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.19-1

@@ -1550,7 +1550,6 @@ gboolean set_background_dialog_selected(GtkWidget *widget,
             gdk_color_free(home_bg_image_current_color);
         }
         home_bg_image_current_color = gdk_color_copy(color_selected);
-        hildon_home_save_configure();
 
         if(home_bg_image_previewed == FALSE 
            || !gdk_color_equal(home_bg_image_preview_color, color_selected) 
@@ -1832,28 +1831,44 @@ void image_loader_callback(GPid pid, gint child_exit_status,
         }
         if(preview == FALSE)
             refresh_background_image();
+        /* Moved here so we only save configuration on successful load */
+        hildon_home_save_configure();
             
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_MEMORY:
         show_no_memory_note();
+        clear_background_preview();
+        refresh_background_image();
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_CONNECTIVITY:
         show_connectivity_broke_note();
+        clear_background_preview();
+        refresh_background_image();
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_SYSTEM_RESOURCE:
         show_no_memory_note();
+        clear_background_preview();
+        refresh_background_image();
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_FILE_CORRUPT:
         show_file_corrupt_note();
+        clear_background_preview();
+        refresh_background_image();
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_FILE_UNREADABLE:
         show_file_unreadable_note();
+        clear_background_preview();
+        refresh_background_image();
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_MMC_OPEN:
         show_mmc_cover_open_note();
+        clear_background_preview();
+        refresh_background_image();
         break;
     case HILDON_HOME_IMAGE_LOADER_ERROR_FLASH_FULL:
         show_flash_full_note();
+        clear_background_preview();
+        refresh_background_image();
         break;
     default:
         ULOG_ERR("image_loader_callback() child_exit_status %d NOT_HANDLED",
