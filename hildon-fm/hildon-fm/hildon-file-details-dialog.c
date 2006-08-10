@@ -708,7 +708,7 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
                size / (1024.0f * 1024.0f));
   else if (size < 1024 * 1024 * 1024)
     g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_10mb_1gb"),
-               size / (1024 * 1024));
+               size / (1024.0f * 1024.0f));
   else
     /* Following calculation doesn't fit into 32 bits if the
      * filesize is larger than 2^62 ;) */
