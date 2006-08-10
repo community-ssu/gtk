@@ -323,7 +323,10 @@ uri_get_desktop_file_info (const gchar *desktop_file,
 	OssoURIAction *action = NULL;
 	GKeyFile      *key_file;
 	gchar         *filename;
+	gchar         *scheme_lower;
 	gboolean       ok;
+
+	scheme_lower = g_ascii_strdown (scheme, -1);
 
 	/* OK, here we don't search EVERY location because we know
 	 * that the desktop will be found in ONE of the locations by
@@ -360,7 +363,7 @@ uri_get_desktop_file_info (const gchar *desktop_file,
 		g_free (group);
 		
 		/* Group/Scheme details */
-		group = g_strdup_printf (OSSO_URI_SCHEME_HANDLER_GROUP, scheme);
+		group = g_strdup_printf (OSSO_URI_SCHEME_HANDLER_GROUP, scheme_lower);
 		
 		name = g_key_file_get_string (key_file, group,
 					      OSSO_URI_HANDLER_NAME, NULL);
@@ -371,25 +374,25 @@ uri_get_desktop_file_info (const gchar *desktop_file,
 		
 		if (!name) {
 			g_warning ("Desktop file:'%s' contained no 'Name' key for scheme:'%s'",
-				   filename, scheme);
+				   filename, scheme_lower);
 			create = FALSE;
 		}
 
 		if (!method) {
 			g_warning ("Desktop file:'%s' contained no 'Method' key for scheme:'%s'",
-				   filename, scheme);
+				   filename, scheme_lower);
 			create = FALSE;
 		}
 
 		if (!domain) {
 			g_warning ("Desktop file:'%s' contained no 'TranslationDomain' key for scheme:'%s'",
-				   filename, scheme);
+				   filename, scheme_lower);
 			create = FALSE;
 		}
 
 		if (create) {
 			action = uri_action_new (desktop_file, 
-						 scheme, 
+						 scheme_lower, 
 						 name, 
 						 service, 
 						 method, 
@@ -405,6 +408,7 @@ uri_get_desktop_file_info (const gchar *desktop_file,
 
 	g_key_file_free (key_file);
 	g_free (filename);
+	g_free (scheme_lower);
 
 	return action;
 }
@@ -415,8 +419,12 @@ uri_get_defaults_file_by_filename (const gchar *filename,
 {
 	GKeyFile *key_file;
 	gchar    *desktop_file = NULL;
+	gchar    *scheme_lower;
 
-	DEBUG_MSG (("URI: Checking for scheme:'%s' in defaults file:'%s'", scheme, filename));
+	scheme_lower = g_ascii_strdown (scheme, -1);
+
+	DEBUG_MSG (("URI: Checking for scheme:'%s' in defaults file:'%s'", 
+		    scheme_lower, filename));
 
 	key_file = g_key_file_new ();
 
@@ -426,7 +434,7 @@ uri_get_defaults_file_by_filename (const gchar *filename,
 
 		str = g_key_file_get_string (key_file, 
 					     OSSO_URI_DEFAULTS_GROUP,
-					     scheme, 
+					     scheme_lower, 
 					     NULL);
 		if (str) {
 			strv = g_strsplit (str, ";", -1);
@@ -441,6 +449,7 @@ uri_get_defaults_file_by_filename (const gchar *filename,
 	}
 
 	g_key_file_free (key_file);
+	g_free (scheme_lower);
 
 	return desktop_file;
 }
@@ -454,7 +463,10 @@ uri_get_defaults_file (const gchar *scheme)
 	const gchar        *user_data_dir;
 	const gchar* const *system_data_dirs;
 	const gchar        *dir;
+	gchar              *scheme_lower;
 	gint                i = 0;
+
+ 	scheme_lower = g_ascii_strdown (scheme, -1);
 
 	/* If we use g_key_file_load_from_data_dirs() here then it
 	 * stops at the first file it finds and we want to iterate all
@@ -470,14 +482,16 @@ uri_get_defaults_file (const gchar *scheme)
 	
 	/* Checking user dir ($home/.local/share/applications/...) first */
 	full_filename = g_build_filename (user_data_dir, filename, NULL);
-	desktop_file = uri_get_defaults_file_by_filename (full_filename, scheme);
+	desktop_file = uri_get_defaults_file_by_filename (full_filename, scheme_lower);
 
 	if (desktop_file) {
 		DEBUG_MSG (("URI: Found scheme:'%s' matches desktop file:'%s' in defaults file:'%s'",
-			    scheme, desktop_file, full_filename));
+			    scheme_lower, desktop_file, full_filename));
 		
 		g_free (full_filename);
 		g_free (filename);
+		g_free (scheme_lower);
+
 		return desktop_file;
 	} 
 
@@ -486,14 +500,16 @@ uri_get_defaults_file (const gchar *scheme)
 	/* Checking system dirs ($prefix/share/applications/..., etc) second */
 	while ((dir = system_data_dirs[i++]) != NULL) {
 		full_filename = g_build_filename (dir, filename, NULL);
-		desktop_file = uri_get_defaults_file_by_filename (full_filename, scheme);
+		desktop_file = uri_get_defaults_file_by_filename (full_filename, scheme_lower);
 		
 		if (desktop_file) {
 			DEBUG_MSG (("URI: Found scheme:'%s' matches desktop file:'%s' in defaults file:'%s'",
-				    scheme, desktop_file, full_filename));
+				    scheme_lower, desktop_file, full_filename));
 		
 			g_free (full_filename);
 			g_free (filename);
+			g_free (scheme_lower);
+
 			return desktop_file;
 		}
 
@@ -501,9 +517,10 @@ uri_get_defaults_file (const gchar *scheme)
 	}
 	
 	DEBUG_MSG (("URI: No scheme:'%s' was found in any of the defaults files",
-		    scheme));
+		    scheme_lower));
 
 	g_free (filename);
+	g_free (scheme_lower);
 
 	return NULL;
 }
@@ -515,8 +532,11 @@ uri_set_defaults_file (const gchar *scheme,
 	GKeyFile  *key_file;
 	gchar     *filename;
 	gchar     *content;
+	gchar     *scheme_lower;
 	gsize      length;
 	gboolean   ok = TRUE;
+
+ 	scheme_lower = g_ascii_strdown (scheme, -1);
 
 	filename = g_build_filename (g_get_user_data_dir (),
 				     "applications", 
@@ -532,22 +552,22 @@ uri_set_defaults_file (const gchar *scheme,
 
 	if (desktop_file) {
 		DEBUG_MSG (("URI: Added default desktop file:'%s' for scheme:'%s'",
-			    desktop_file, scheme));
+			    desktop_file, scheme_lower));
 		g_key_file_set_string (key_file, 
 				       OSSO_URI_DEFAULTS_GROUP,
-				       scheme, 
+				       scheme_lower, 
 				       desktop_file);
 	} else if (ok) {
 		DEBUG_MSG (("URI: Remove default for scheme:'%s'",
-			    scheme));
+			    scheme_lower));
 		g_key_file_remove_key (key_file, 
 				       OSSO_URI_DEFAULTS_GROUP,
-				       scheme,
+				       scheme_lower,
 				       NULL);
 	}
 
 	DEBUG_MSG (("URI: Set key:'%s' with value:'%s' in group:'%s'",
-		    scheme, desktop_file, OSSO_URI_DEFAULTS_GROUP));
+		    scheme_lower, desktop_file, OSSO_URI_DEFAULTS_GROUP));
 
 	content = g_key_file_to_data (key_file, &length, NULL);
 	if (content) {
@@ -571,6 +591,7 @@ uri_set_defaults_file (const gchar *scheme,
 
 	g_key_file_free (key_file);
 	g_free (filename);
+	g_free (scheme_lower);
 
 	return ok;
 }
@@ -719,20 +740,23 @@ GSList *
 osso_uri_get_actions (const gchar  *scheme,
 		      GError      **error)
 {
-	GSList         *actions = NULL;
-	OssoURIAction  *action;
-	GSList         *desktop_files;
-	GSList         *l;
-	gchar          *filename;
+	GSList        *actions = NULL;
+	OssoURIAction *action;
+	GSList        *desktop_files;
+	GSList        *l;
+	gchar         *filename;
+	gchar         *scheme_lower;
 
 	g_return_val_if_fail (scheme != NULL, NULL);
 
-	desktop_files = uri_get_desktop_files (scheme);
+ 	scheme_lower = g_ascii_strdown (scheme, -1);
+
+	desktop_files = uri_get_desktop_files (scheme_lower);
 
 	for (l = desktop_files; l; l = l->next) {
 		filename = l->data;
 
-		action = uri_get_desktop_file_info (filename, scheme);
+		action = uri_get_desktop_file_info (filename, scheme_lower);
 		if (action) {
 			actions = g_slist_append (actions, action);
 		}
@@ -740,6 +764,8 @@ osso_uri_get_actions (const gchar  *scheme,
 
 	g_slist_foreach (desktop_files, (GFunc) g_free, NULL);
 	g_slist_free (desktop_files);
+	
+	g_free (scheme_lower);
 
 	return actions;
 }
@@ -764,7 +790,14 @@ osso_uri_get_scheme_from_uri (const gchar  *uri,
 
 		p = strstr (uri, ":");
 		if (p) {
-			return g_strndup (uri, p - uri);
+			gchar *scheme;
+			gchar *scheme_lower;
+
+			scheme = g_strndup (uri, p - uri); 
+			scheme_lower = g_ascii_strdown (scheme, -1);
+			g_free (scheme);
+
+			return scheme_lower;
 		} 
 			
 		error_str = "No colon in the URI.";
@@ -831,6 +864,7 @@ osso_uri_get_default_action (const gchar  *scheme,
 {
 	OssoURIAction *action = NULL;
 	gchar         *desktop_file;
+	gchar         *scheme_lower;
 
 	if (!scheme) {
 		g_set_error (error,
@@ -840,11 +874,15 @@ osso_uri_get_default_action (const gchar  *scheme,
 		return NULL;
 	}
 
-	desktop_file = uri_get_defaults_file (scheme);
+ 	scheme_lower = g_ascii_strdown (scheme, -1);
+	desktop_file = uri_get_defaults_file (scheme_lower);
+
 	if (desktop_file) {
-		action = uri_get_desktop_file_info (desktop_file, scheme);	
+		action = uri_get_desktop_file_info (desktop_file, scheme_lower);	
 		g_free (desktop_file);
 	}
+
+	g_free (scheme_lower);
 
 	return action;
 }
@@ -855,6 +893,8 @@ osso_uri_set_default_action (const gchar    *scheme,
 			     GError        **error)
 {
 	const gchar *desktop_file = NULL;
+	gchar       *scheme_lower;
+	gboolean     success = TRUE;;
 
 	if (!scheme || strlen (scheme) < 1) {
 		g_set_error (error,
@@ -865,21 +905,24 @@ osso_uri_set_default_action (const gchar    *scheme,
 		return FALSE;
 	}
 
+ 	scheme_lower = g_ascii_strdown (scheme, -1);
+
 	/* We can have a NULL action to remove the default action. */
 	if (action && action->desktop_file && strlen (action->desktop_file) > 0) {
 		desktop_file = action->desktop_file;
 	}
 
-	if (!uri_set_defaults_file (scheme, desktop_file)) {
+	if (!uri_set_defaults_file (scheme_lower, desktop_file)) {
+		success = FALSE;
 		g_set_error (error,
 			     OSSO_URI_ERROR,
 			     OSSO_URI_SAVE_FAILED,
 			     "The defaults file could not be saved.");
-		
-		return FALSE;
 	}
 
-	return TRUE;
+	g_free (scheme_lower);
+
+	return success;
 }
 
 gboolean         

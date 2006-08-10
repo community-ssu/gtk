@@ -1,5 +1,10 @@
 2006-08-10  Martyn Russell  <martyn@imendio.com>
 
+	* libossomime/src/osso-uri.c: Make the scheme part of any URI case
+	insensitive so that URIs with mixed cases will work, fixes NB #29658.
+
+2006-08-10  Martyn Russell  <martyn@imendio.com>
+
 	* debian/changelog:
 	* obex-module/src/obex-method.c:
 	* obex-module/src/om-dbus.c: 
