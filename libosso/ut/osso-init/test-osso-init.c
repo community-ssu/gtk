@@ -127,7 +127,7 @@ int system_bus_init( void )
 
 int init_app( void )
 {
-    int activation_result;
+    unsigned int activation_result;
     DBusError err;
     dbus_bool_t r;
     osso_context_t *osso;
