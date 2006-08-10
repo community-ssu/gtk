@@ -1,5 +1,9 @@
 2006-08-10  Martyn Russell  <martyn@imendio.com>
 
+	* Release 1.5.1.
+
+2006-08-10  Martyn Russell  <martyn@imendio.com>
+
 	* libossomime/src/osso-uri.c: Make the scheme part of any URI case
 	insensitive so that URIs with mixed cases will work, fixes NB #29658.
 
