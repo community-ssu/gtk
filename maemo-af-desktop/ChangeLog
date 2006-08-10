@@ -1,5 +1,25 @@
 2006-08-10  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Background colour not updated after having canceled the
+	loading image banner." (Closes NB#37213)
+	* hildon-home/hildon-home-main.c:
+	  - set_background_dialog_selected(): added call to new function to get real
+	    values to dialog selections. Removed setting mode when
+	    ok is selected since
+	    cancelling is still possible.
+	  - image_loader_callback(): Added check for truly successful setting
+	    new image
+	    before saving configures. Image loader process returns OK when it is
+	    stopped controlled way, which happen when cancel is selected.
+	  - hildon_home_initiliaze(): removed loading configure values code
+	    and replaced with function call.
+	  - hildon_home_save_configure(): updated comments. Updated saved field to
+	  correct global variable.
+	  - hildon_home_load_configure(): new function to load bg image setting
+	    dialog configure values
+
+2006-08-10  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Problems with setting BG when trying to get image from
 	gateway device fails" (Closes NB#35603)
 	* hildon-home/hildon-home-main.c:
