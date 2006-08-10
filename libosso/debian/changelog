@@ -11,6 +11,7 @@ libosso (1.16-1) unstable; urgency=low
   * Fixed parameter check in osso_display_state_on(). Fixes: NB#36578
   * Fixed OSSO_CFLAGS so that it preserves debug symbols as it should
     (dh_strip will strip them for right packages anyway).
+  * Added two small test executables to the ut directory.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 10 Aug 2006 15:03:27 +0300
 
