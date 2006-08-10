@@ -349,6 +349,21 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
     return ret;
 }
 
+static void free_osso_rpc_async_t(_osso_rpc_async_t *rpc)
+{
+    if (rpc != NULL) {
+        if (rpc->interface != NULL) {
+            g_free(rpc->interface);
+            rpc->interface = NULL;
+        }
+        if (rpc->method != NULL) {
+            g_free(rpc->method);
+            rpc->method = NULL;
+        }
+        free(rpc); /* free() because calloc() was used */
+    }
+}
+
 /************************************************************************/
 osso_return_t osso_rpc_async_run_with_argfill (osso_context_t *osso,
 						  const gchar *service,
@@ -417,6 +432,10 @@ osso_return_t osso_rpc_async_run_with_argfill (osso_context_t *osso,
 					 _async_return_handler,
 					 rpc, NULL);
 	}
+        else if (rpc != NULL) {
+            free_osso_rpc_async_t(rpc);
+            rpc = NULL;
+        }
 	dbus_message_unref(msg);
 
 	/* Tell TaskNavigator to show "launch banner" */
@@ -445,6 +464,10 @@ osso_return_t osso_rpc_async_run_with_argfill (osso_context_t *osso,
     else {
         ULOG_ERR_F("dbus_connection_send(_with_reply) failed");
         dbus_message_unref(msg);
+        if (rpc != NULL) {
+            free_osso_rpc_async_t(rpc);
+            rpc = NULL;
+        }
         return OSSO_ERROR;
     }
 }
@@ -561,11 +584,13 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
                ret == DBUS_REQUEST_NAME_REPLY_EXISTS) {
         /* this should be impossible */
         ULOG_ERR_F("dbus_bus_request_name is broken");
+        free(rpc);
         return OSSO_ERROR;
     } else if (ret == -1) {
         ULOG_ERR_F("dbus_bus_request_name for '%s' failed: %s",
                    service, err.message);
 	dbus_error_free(&err);
+        free(rpc);
         return OSSO_ERROR;
     }
 
@@ -972,9 +997,7 @@ static void _async_return_handler(DBusPendingCall *pending, void *data)
     ULOG_INFO_F("At msg return handler");
     msg = dbus_pending_call_steal_reply(pending);
     if(msg == NULL) {
-	g_free(rpc->interface);
-	g_free(rpc->method);
-	g_free(rpc);
+        free_osso_rpc_async_t(rpc);
 	return;
     }
     type = dbus_message_get_type(msg);
@@ -1012,10 +1035,7 @@ static void _async_return_handler(DBusPendingCall *pending, void *data)
     dprint("rpc->func = %p",rpc->data);
     dprint("rpc->interface = '%s'",rpc->interface);
     dprint("rpc->method = '%s'",rpc->method);
-    fflush(stderr);
-    g_free(rpc->interface);
-    g_free(rpc->method);
-    g_free(rpc);
+    free_osso_rpc_async_t(rpc);
     return;
 }
 
