@@ -1,8 +1,7 @@
 libosso (1.16-1) unstable; urgency=low
 
-  * UNRELEASED
   * Modified Control Panel plugin startup so that single instance can be
-    achieved. The patch is from Johan Bilien. Fixes: NB#25238
+    achieved. The patch came from Johan Bilien. Fixes: NB#25238
   * Fixed several possible memory leaks in osso-rpc.c. Fixes: NB#34403
   * Fixed the osso_time_set() to actually send a signal about time change.
     Fixes: NB#35824
@@ -13,7 +12,7 @@ libosso (1.16-1) unstable; urgency=low
     (dh_strip will strip them for right packages anyway).
   * Added two small test executables to the ut directory.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 10 Aug 2006 15:03:27 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 10 Aug 2006 17:53:57 +0300
 
 libosso (1.15-1) unstable; urgency=low
 
