@@ -30,9 +30,28 @@ if [ ! -f $CURRENT_THEME_FILE ]; then
   echo "include \"$PREFIX/share/themes/$DEFAULTGTKTHEME/gtk-2.0/gtkrc\"" \
     > $CURRENT_THEME_FILE
 else
-  DEFAULTMBTHEME=$(cat $CURRENT_THEME_FILE | sed -e "s/include\ \"\/usr\/share\/themes\///" -e 's/\/gtk\-2\.0\/gtkrc\"//')
-fi
 
+  # investigate if theme exists
+  THEMEFILE=$(cat $CURRENT_THEME_FILE | sed -e "s/include\ \"\/usr\/share\/themes\///" -e 's/\/gtk\-2\.0\/gtkrc\"//'|tr -d '\n')
+  DEFAULTMBTHEME=$THEMEFILE
+
+  # if theme directory does not exist, use 'default' theme
+  if [ ! -d /usr/share/themes/$THEMEFILE ]; then
+
+    # set GTK theme
+    echo "include \"$PREFIX/share/themes/default/gtk-2.0/gtkrc\"" \
+      > $CURRENT_THEME_FILE
+
+    # set MAD theme
+    echo "include \"$PREFIX/share/themes/default/gtk-2.0/gtkrc.maemo_af_desktop\"" \
+      > $CURRENT_THEME_DIR/current-gtk-theme.maemo_af_desktop
+
+    # set MBOX theme
+    DEFAULTMBTHEME=default
+
+  fi
+
+fi
 
 export DEFAULTMBTHEME=$DEFAULTMBTHEME
 export DEFAULTGTKTHEME=$DEFAULTGTKTHEME
