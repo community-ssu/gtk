@@ -72,7 +72,7 @@
 #include "layout-manager.h"
 #include "../kstrace.h"
 
-static GtkWidget *window = NULL;
+GtkWidget *window = NULL;
 static GtkWidget *home_base_fixed;
 static GtkWidget *home_base_eventbox;
 

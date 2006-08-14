@@ -52,6 +52,7 @@
 
 
 extern osso_context_t *osso_home;
+extern GtkWindow *window;
 
 
 /* Dialog data contents structure */
@@ -172,7 +173,7 @@ void show_select_applets_dialog(GList *applets,
     
     /* Create the dialog */
     dialog = gtk_dialog_new_with_buttons(HOME_APPLETS_SELECT_TITLE, 
-		                         NULL, 
+		                         window, 
 		                         GTK_DIALOG_MODAL | 
 					 GTK_DIALOG_DESTROY_WITH_PARENT |
 					 GTK_DIALOG_NO_SEPARATOR, NULL);
@@ -197,6 +198,9 @@ void show_select_applets_dialog(GList *applets,
     gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), 
 		      home_applets_scrollwin); 
     
+    /* Let matchbox take care of the positioning */
+    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_NONE);
+
     /* Show 'em! */
     gtk_widget_show_all(dialog);
 
