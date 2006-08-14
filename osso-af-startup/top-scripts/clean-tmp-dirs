@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2004-2005 Nokia Corporation.
+# Copyright (C) 2004-2006 Nokia Corporation.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -16,5 +16,21 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-echo "Cleaning up /var/tmp"
-rm -rf /var/tmp/*
+case "$1" in
+start)  
+        echo "$0: cleaning up /var/tmp"
+        rm -rf /var/tmp/*
+        ;;
+stop)   
+        echo "$0: Stopping"
+        ;;
+restart)
+        echo "$0: not implemented"
+        ;;
+force-reload)
+        echo "$0: not implemented"
+        ;;
+*)      echo "Usage: $0 {start|stop}"
+        exit 1
+        ;;
+esac
