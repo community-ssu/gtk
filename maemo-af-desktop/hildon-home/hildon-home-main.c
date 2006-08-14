@@ -3203,7 +3203,7 @@ gint hildon_home_key_press_listener (GtkWidget * widget,
                               GdkEventKey * keyevent,
                               gpointer data)
 {
-    if (keyevent->keyval == HILDON_MENU_KEY)
+    if (keyevent->keyval == HILDON_HARDKEY_MENU)
     {
         menu_key_pressed = TRUE;
     }
@@ -3226,7 +3226,7 @@ gint hildon_home_key_release_listener (GtkWidget * widget,
                                        GdkEventKey * keyevent,
                                        gpointer data)
 {
-    if (keyevent->keyval == HILDON_MENU_KEY)
+    if (keyevent->keyval == HILDON_HARDKEY_MENU)
     {
         if (menu_key_pressed)
         {

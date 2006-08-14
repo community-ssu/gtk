@@ -1,5 +1,11 @@
 2006-08-14  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Use hildon-defines.h to get the
+     HW key mapping
+	* hildon-navigator/hn-keys.c: Menu key is now F10
+
+2006-08-14  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-button.c: Removed unused logical id
 
 2006-08-14  Johan Bilien <johan.bilien@nokia.com>

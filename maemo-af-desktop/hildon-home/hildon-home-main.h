@@ -31,6 +31,7 @@
 
 #include "hildon-home-image-loader.h"
 #include "hildon-home-interface.h"
+#include <hildon-widgets/hildon-defines.h>
 
 G_BEGIN_DECLS
 
@@ -38,8 +39,6 @@ G_BEGIN_DECLS
 #define _(a) gettext(a)
 #define COMMON_STRING(a) dgettext("hildon-common-strings", a)
 #define FM(a) dgettext("hildon-fm", a)
-
-#define HILDON_MENU_KEY                 GDK_F4
 
 #define WINDOW_WIDTH                    800
 #define WINDOW_HEIGHT                   480

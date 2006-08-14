@@ -1,3 +1,11 @@
+maemo-af-desktop (2.9.19.1-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-main.c: Use hildon-defines.h to get the
+    HW key mapping
+  * hildon-navigator/hn-keys.c: Menu key is now F10
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 10 Aug 2006 15:43:56 +0300
+
 maemo-af-desktop (2.9.19-1) unstable; urgency=low
 
   * hildon-navigator/hn-keys.c: Fixed a crash I just introduced when
