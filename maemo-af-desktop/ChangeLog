@@ -1,5 +1,10 @@
 2006-08-14  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/applet-manager.c: Fixed read of freed applet identifier
+	  (Closes NB#37693)
+
+2006-08-14  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.20
 
 2006-08-14  Johan Bilien <johan.bilien@nokia.com>

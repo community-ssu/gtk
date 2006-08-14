@@ -547,22 +547,28 @@ void applet_manager_configure_load_all(applet_manager_t *man)
             applet_manager_initialize(man, libraryfile, desktopfile, 
                                       applet_x, applet_y, 
                                       applet_width, applet_height);
+            applet_manager_set_minimum_size(man, desktopfile, 
+                    applet_minwidth, 
+                    applet_minheight);
+            applet_manager_set_resizable(man, desktopfile, 
+                    applet_resizable_width, 
+                    applet_resizable_height);
         } else
         {
             applet_manager_set_coordinates(man, desktopfile, 
                                            applet_x, applet_y);
             applet_manager_set_size(man, desktopfile, 
                                     applet_width, applet_height);
+            applet_manager_set_minimum_size(man, desktopfile, 
+                    applet_minwidth, 
+                    applet_minheight);
+            applet_manager_set_resizable(man, desktopfile, 
+                    applet_resizable_width, 
+                    applet_resizable_height);
             g_free(desktopfile);
             g_free(libraryfile);
         }
 
-        applet_manager_set_minimum_size(man, desktopfile, 
-                                        applet_minwidth, 
-                                        applet_minheight);
-        applet_manager_set_resizable(man, desktopfile, 
-                                     applet_resizable_width, 
-                                     applet_resizable_height);
         if(resizable != NULL)
         {
             g_free(resizable);
