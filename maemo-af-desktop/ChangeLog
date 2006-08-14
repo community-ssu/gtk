@@ -1,5 +1,9 @@
 2006-08-14  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-button.c: Removed unused logical id
+
+2006-08-14  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "External Keyboard <Ctrl><F4>-failed" (Closes NB#37171)
 	* hildon-navigator/hn-keys.c: Fixed grabbing of some special
 	  keys (FX, arrows ...)

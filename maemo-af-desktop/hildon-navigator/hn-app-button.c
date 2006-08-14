@@ -81,8 +81,6 @@
 #define AS_HOME_ITEM 		_("tana_fi_home")
 #define AS_HOME_ITEM_ICON 	"qgn_list_home"
 
-#define STRING_INSENSITIVE_INFOPRINT _("tana_ib_please_close_dialog")
-
 /* Defined workarea atom */
 #define WORKAREA_ATOM "_NET_WORKAREA"
 
