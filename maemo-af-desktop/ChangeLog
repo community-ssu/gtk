@@ -1,5 +1,9 @@
 2006-08-14  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.20
+
+2006-08-14  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Application topped when closed from Application switcher
 	menu" (Closes NB#37640)
 	* hildon-navigator/hn-app-menu-item.c: Actually close the

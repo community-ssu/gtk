@@ -1,3 +1,63 @@
+maemo-af-desktop (2.9.20-1) unstable; urgency=low
+
+  Applied fix to "Application topped when closed from Application switcher
+  menu" (Closes NB#37640)
+  * hildon-navigator/hn-app-menu-item.c: Actually close the
+    window on button-release, when tapping the menu close button
+
+  * hildon-home/hildon-home-main.c: Use hildon-defines.h to get the
+     HW key mapping
+  * hildon-navigator/hn-keys.c: Menu key is now F10
+
+  * hildon-navigator/hn-app-button.c: Removed unused logical id
+
+  Applied fix to "External Keyboard <Ctrl><F4>-failed" (Closes NB#37171)
+  * hildon-navigator/hn-keys.c: Fixed grabbing of some special
+    keys (FX, arrows ...)
+
+  * hildon-home/home-select-applet-dialog.c: Give the home main
+    window as parent and let MB handle the positioning (Closes NB#37521)
+
+  * hildon-navigator/hn-app-button.c: do not substitute colors
+    with full opacity when compositing icons (Closes NB#37327)
+
+  * hildon-navigator/hn-wm-watched-window.c: Fixed a bug in
+    when applying window icons
+
+  Applied further fix to "Background killing works inconsistently."
+  (Closes NB#31105)
+  * hildon-navigator/hn-{wm.c,wm-watched-window.c}: Update hashtables
+    about hibernation status only after receiving WM indications.
+
+  * hildon-home/hildon-home-main.c: Give the home window as parent
+    to the CPA applet (Closes NB#37380)
+
+  Applied fix to "Background colour not updated after having canceled the
+  loading image banner." (Closes NB#37213)
+  * hildon-home/hildon-home-main.c:
+    - set_background_dialog_selected(): added call to new function to get real
+      values to dialog selections. Removed setting mode when
+      ok is selected since
+      cancelling is still possible.
+    - image_loader_callback(): Added check for truly successful setting
+      new image
+      before saving configures. Image loader process returns OK when it is
+      stopped controlled way, which happen when cancel is selected.
+    - hildon_home_initiliaze(): removed loading configure values code
+      and replaced with function call.
+    - hildon_home_save_configure(): updated comments. Updated saved field to
+    correct global variable.
+    - hildon_home_load_configure(): new function to load bg image setting
+      dialog configure values
+
+  Applied fix to "Problems with setting BG when trying to get image from
+  gateway device fails" (Closes NB#35603)
+  * hildon-home/hildon-home-main.c:
+    - image_loader_callback(): Save the configuration here after succesfull
+      load
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 14 Aug 2006 13:24:18 +0300
+
 maemo-af-desktop (2.9.19.1-1) unstable; urgency=low
 
   * hildon-home/hildon-home-main.c: Use hildon-defines.h to get the
