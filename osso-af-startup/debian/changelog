@@ -1,3 +1,15 @@
+osso-af-startup (1.22-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Moved creation of /media/mmc2 directory from ke-recv to this package.
+  * Removed chown of the memory card directories. Fixes: NB#37373
+  * Fixed some Lintian warnings.
+  * Removed deprecated Control Panel variable from af-defines.sh.
+    Fixes: NB#34097
+  * Adjusted lowmem module parameters. Fixes: NB#37478
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 14 Aug 2006 15:10:28 +0300
+
 osso-af-startup (1.21-2) unstable; urgency=low
 
   * Now calling HW keyboard layout configuration app if one exists.

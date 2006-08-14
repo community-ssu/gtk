@@ -98,9 +98,6 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
   # MMC swap file location (directory)
   export MMC_SWAP_LOCATION=$MMC_MOUNTPOINT
 
-  # this is for Control Panel
-  export User_Applets_Dir='/var/lib/install/usr/share/applications/hildon-control-panel/'
-
   source_if_is()
   {
     farg=$AF_INIT_DIR/$1 
