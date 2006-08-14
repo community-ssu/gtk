@@ -459,13 +459,13 @@ hn_app_menu_item_activate (GtkMenuItem *menu_item)
 }
 
 static gboolean
-hn_app_menu_item_button_press_event (GtkWidget      *widget,
+hn_app_menu_item_button_release_event (GtkWidget      *widget,
                                      GdkEventButton *event)
 {
   HNAppMenuItem *menuitem = HN_APP_MENU_ITEM(widget);
   gint x, y;
   
-  HN_DBG ("menu item clicked");
+  HN_DBG ("menu item clicked ended");
   
   g_return_val_if_fail (menuitem && menuitem->priv && menuitem->priv->info,
                         FALSE);
@@ -501,6 +501,48 @@ hn_app_menu_item_button_press_event (GtkWidget      *widget,
   return FALSE;
 }
 
+static gboolean
+hn_app_menu_item_button_press_event (GtkWidget      *widget,
+                                     GdkEventButton *event)
+{
+  HNAppMenuItem *menuitem = HN_APP_MENU_ITEM(widget);
+  gint x, y;
+  
+  HN_DBG ("menu item clicked");
+  
+  g_return_val_if_fail (menuitem && menuitem->priv && menuitem->priv->info,
+                        FALSE);
+
+  if(!menuitem->priv->show_close ||
+     !menuitem->priv->close)
+    return FALSE;
+
+  /*
+   * the pointer value is relative to the menuitem, but for some reason,
+   * the close button allocation is relative to the menu as whole
+   */
+  
+  gtk_widget_get_pointer(widget, &x, &y);
+
+  HN_DBG ("pointer [%d,%d],\n"
+          "close allocation [%d, %d, %d, %d]",
+          x, y,
+          menuitem->priv->close->allocation.x,
+          menuitem->priv->close->allocation.y,
+          menuitem->priv->close->allocation.width,
+          menuitem->priv->close->allocation.height);
+
+  /* only test x here; y is always withing the button range */
+  if(x >  menuitem->priv->close->allocation.x &&
+     x <= menuitem->priv->close->allocation.x +
+          menuitem->priv->close->allocation.width)
+    {
+      return TRUE;
+    }
+  
+  return FALSE;
+}
+
 
 static void
 hn_app_menu_item_class_init (HNAppMenuItemClass *klass)
@@ -516,6 +558,7 @@ hn_app_menu_item_class_init (HNAppMenuItemClass *klass)
 
   widget_class->size_request = hn_app_menu_item_size_request;
   widget_class->button_press_event = hn_app_menu_item_button_press_event;
+  widget_class->button_release_event = hn_app_menu_item_button_release_event;
   
   menuitem_class->activate = hn_app_menu_item_activate;
   

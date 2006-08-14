@@ -1,5 +1,12 @@
 2006-08-14  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Application topped when closed from Application switcher
+	menu" (Closes NB#37640)
+	* hildon-navigator/hn-app-menu-item.c: Actually close the
+	  window on button-release, when tapping the menu close button
+
+2006-08-14  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.c: Use hildon-defines.h to get the
      HW key mapping
 	* hildon-navigator/hn-keys.c: Menu key is now F10
