@@ -39,11 +39,8 @@
 #include "hn-wm-watchable-app.h"
 #include "hildon-navigator.h"
 #include "others-menu.h"
-#include "hildon-navigator-main.h"
 #include "osso-manager.h"
-#include "others-menu.h"
-#include "hildon-navigator-interface.h"
-
+#include "hildon-navigator-window.h"
 
 gboolean 
 hn_wm_memory_get_limits (guint *pages_used,
@@ -256,7 +253,7 @@ hn_wm_memory_lowmem_func(gboolean is_on)
 /* FIXME: This is defined in maemo-af-desktop-main.c and we shouldn't
    be using it of course. Cleaning this up can be done when nothing
    else is left to clean up... */
-extern Navigator tasknav;
+extern HildonNavigatorWindow *tasknav;
 
  void 
 hn_wm_memory_update_lowmem_ui (gboolean lowmem)
@@ -266,8 +263,7 @@ hn_wm_memory_update_lowmem_ui (gboolean lowmem)
   if (!config_lowmem_dim)
     return;
 
-  gtk_widget_set_sensitive(others_menu_get_button(tasknav.others_menu),
-			   !lowmem);
+  gtk_widget_set_sensitive(hn_window_get_others_menu(tasknav),!lowmem);
   /*
   gtk_widget_set_sensitive(tasknav.bookmark_button, !lowmem);
   gtk_widget_set_sensitive(tasknav.mail_button, !lowmem);

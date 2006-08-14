@@ -140,12 +140,12 @@
 #include "maemo-af-desktop-main.h"
 #include "hildon-status-bar/hildon-status-bar-interface.h"
 #include "hildon-home/hildon-home-interface.h"
-#include "hildon-navigator/hildon-navigator-interface.h"
+#include "hildon-navigator/hildon-navigator-window.h"
 #include "kstrace.h"
 /* Moved from main to globals to reduce the amount
    of used stack -- Karoliina Salminen */
 
-Navigator tasknav;
+HildonNavigatorWindow *tasknav;
 osso_context_t *osso;
 StatusBar *panel;
 
@@ -294,7 +294,10 @@ int maemo_af_desktop_main(int argc, char* argv[])
     }
     
 
-    task_navigator_main(&tasknav);
+    tasknav = hildon_navigator_window_new ();
+
+    gtk_widget_show_all (GTK_WIDGET (tasknav));
+    /*task_navigator_main(&tasknav);*/
 
     keysnooper_id = 0;
     keysnooper_id=hildon_home_main();
@@ -348,7 +351,7 @@ int maemo_af_desktop_main(int argc, char* argv[])
     gtk_main();
     home_deinitialize(keysnooper_id);
     status_bar_deinitialize(osso,&panel);
-    task_navigator_deinitialize(&tasknav);
+    /*task_navigator_deinitialize(&tasknav);*/
     
     osso_deinitialize( osso );
       

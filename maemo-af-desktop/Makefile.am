@@ -2,7 +2,7 @@
 # Authors: Karoliina Salminen <karoliina.t.salminen@nokia.com>
 # 
 # Subdirectories
-SUBDIRS = libhildonmenu hildon-navigator hildon-status-bar hildon-home
+SUBDIRS = libdesktop libhildonmenu hildon-navigator hildon-status-bar hildon-home
 
 #
 EXTRA_DIST = debian/changelog debian/control debian/copyright debian/rules \
@@ -25,13 +25,6 @@ INCLUDES = \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\" \
 	-DPREFIX=\"$(prefix)\"
-
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = hildon-navigator/hildon-navigator.pc \
-	hildon-status-bar/hildon-status-bar-lib.pc \
-	hildon-home/hildon-home.pc \
-	libhildonmenu/libhildonmenu.pc
-
 
 bin_PROGRAMS = \
 	maemo_af_desktop 

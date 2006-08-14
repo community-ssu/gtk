@@ -35,7 +35,7 @@
 #include <hildon-widgets/hildon-defines.h>
 #include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-note.h>
-
+#include "hildon-navigator-window.h"
 #include "hn-wm-watched-window.h"
 #include "hn-wm-watched-window-view.h"
 #include "hn-wm-watchable-app.h"
@@ -43,7 +43,6 @@
 #include "hn-app-switcher.h"
 #include "osso-manager.h"
 #include "others-menu.h"          /* needed by hildon-navigator-main.h */
-#include "hildon-navigator-main.h"
 
 #define PING_TIMEOUT_MESSAGE_STRING       _( "qgn_nc_apkil_notresponding" )
 #define PING_TIMEOUT_RESPONSE_STRING      _( "qgn_ib_apkil_responded" )
@@ -54,10 +53,12 @@
 
 #define HIBERNATION_TIMEMOUT 3000 /* as suggested by 31410#10 */
 
+extern HildonNavigatorWindow *tasknav;
+/*
 extern Navigator * task_nav;
 
 extern Navigator * task_nav;
-
+*/
 typedef char HNWMWatchedWindowFlags;
 
 typedef enum 
@@ -1237,7 +1238,7 @@ hn_wm_watched_window_close (HNWMWatchedWindow *win)
       ev.xclient.message_type = hn_wm_get_atom(HN_ATOM_NET_CLOSE_WINDOW);
       ev.xclient.format       = 32;
       ev.xclient.data.l[0]    = CurrentTime;
-      ev.xclient.data.l[1]    = GDK_WINDOW_XID(gtk_widget_get_parent_window(task_nav->main_window));
+      ev.xclient.data.l[1]    = GDK_WINDOW_XID(gtk_widget_get_parent_window (GTK_WIDGET (tasknav)));
   
       gdk_error_trap_push();
       XSendEvent(GDK_DISPLAY(), GDK_ROOT_WINDOW(), False,

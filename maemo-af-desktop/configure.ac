@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-af-desktop, 2.9.20)
+AM_INIT_AUTOMAKE(maemo-af-desktop, 2.9.20.1)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -141,8 +141,9 @@ AC_SUBST(hildonstatusbardesktopentrydir)
 
 
 AC_OUTPUT(Makefile \
-    libhildonmenu/Makefile \
-    libhildonmenu/libhildonmenu.pc \
+	libdesktop/Makefile \
+    	libhildonmenu/Makefile \
+    	libhildonmenu/libhildonmenu.pc \
 	hildon-navigator/Makefile \
 	hildon-navigator/hildon-navigator.pc \
 	hildon-status-bar/Makefile \

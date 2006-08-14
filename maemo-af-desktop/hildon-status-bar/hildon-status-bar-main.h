@@ -31,7 +31,7 @@
 
 #include <libosso.h>
 
-#include "hildon-log.h"
+#include "libdesktop/hildon-log.h"
 
 G_BEGIN_DECLS
 

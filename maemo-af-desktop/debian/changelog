@@ -1,3 +1,67 @@
+maemo-af-desktop (2.9.20.1-1) unstable; urgency=low
+
+  * Merged new-hildon-navigator branch with trunk
+
+ -- Moises Martinez <moises.martinzes@nokia.com>  Mon, 14 Aug 2006 16:54:57 +0300
+
+maemo-af-desktop (2.9.20.3-new-navigator-1) unstable; urgency=low
+
+  * hildon-navigator-window.[ch]:
+  * hn-wm.c:
+    - Added missing old methods for focusing.
+  * hildon-navigator-panel.[ch]:
+  * hildon-navigator-item.[ch]:
+    - Added logging support by using HildonLog.
+
+ -- Moises Martinez <moises.martinzes@nokia.com>  Mon, 14 Aug 2006 15:33:42 +0300
+
+maemo-af-desktop (2.9.20.2-new-navigator-1) unstable; urgency=low
+
+  * hildon-navigator-panel.h:
+    - added new method: hn_panel_get_plugins
+  * hildon-navigator-window.c:
+  * hildon-navigator-panel.c:
+    - fixed setting of plugins' style according to
+      position
+    - implemented mandatory header
+    - fixed partially position of plugins
+
+  * TO-DO:
+    - fix focus issues
+    - press main key on buttons.
+    - improve position of plugins.
+
+ -- Moises Martinez <moises.martinzes@nokia.com>  Thu, 10 Aug 2006 19:10:02 +0300
+
+maemo-af-desktop (2.9.20.1-new-navigator-1) unstable; urgency=low
+
+  The HildonNavigator has been rewritten in order
+  to improve memory management, maintenance and
+  scalability.
+
+  * hildon-navigator-main.[ch]:
+  * hildon-navigator-interface.h:
+    - Files removed as they aren't needed anymore.
+  * hildon-navigator-item.[ch]:
+    - New GtkWidget child class for abstracting
+      hildon-navigator plugins.
+  * hildon-navigator-panel.[ch]:
+    - New GtkBox child class for abstracting
+      the navigator as a widget allowing
+      direction changes and automatic managing of
+      plugins.
+  * hildon-navigator-window.[ch]:
+    - New GtkWindow child class for abstracting
+      the whole hildon-navigator.
+  * configure.ac: 2.9.20.1
+  * hildon-navigator/hn-keys.c: Fixed a crash I just introduced when
+    fixing the sardine warning
+  * hildon-status-bar/hildon-status-bar-main.c: Fixed  a crash
+    when the event RPC method was called and the plugin could not
+    be found 
+
+ -- Moises Martinez <moises.martinzes@nokia.com>  Wed,  9 Aug 2006 17:58:27 +0300
+
 maemo-af-desktop (2.9.20-1) unstable; urgency=low
 
   Applied fix to "Application topped when closed from Application switcher

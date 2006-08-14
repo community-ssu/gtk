@@ -1,3 +1,16 @@
+2006-08-14  Moises Martinez <moises.martinzes@nokia.com>
+
+	* configure.ac: 2.9.20.1
+
+2006-08-14  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator-window.[ch]:
+	* hn-wm.c:
+	  - Added missing old methods for focusing.
+	* hildon-navigator-panel.[ch]:
+	* hildon-navigator-item.[ch]:
+	  - Added logging support by using HildonLog.
+
 2006-08-14  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/applet-manager.c: Fixed read of freed applet identifier
@@ -34,6 +47,28 @@
 
 	* hildon-home/home-select-applet-dialog.c: Give the home main
 	  window as parent and let MB handle the positioning (Closes NB#37521)
+
+2006-08-11  Moises Martinez <moises.martinzes@nokia.com>
+
+        * hildon-navigator-panel.h:
+	  - added new method hn_panel_peek_plugins
+	  - fixed position of plugins
+
+2006-08-10  Moises Martinez <moises.martinzes@nokia.com>
+
+        * hildon-navigator-panel.h:
+	  - added new method: hn_panel_get_plugins
+	* hildon-navigator-window.c:
+	* hildon-navigator-panel.c:
+          - fixed setting of plugins' style according to 
+	    position
+	  - implemented mandatory header
+	  - fixed partially position of plugins
+	* configure.ac: 2.9.20.2 (new-navigator)
+	
+	* TO-DO:
+	  - fix focus issues
+ 	  - press main key on buttons.
 
 2006-08-10  Johan Bilien <johan.bilien@nokia.com>
 
@@ -85,9 +120,27 @@
 	  - image_loader_callback(): Save the configuration here after succesfull
 	    load
 
-2006-08-09  Johan Bilien <johan.bilien@nokia.com>
+2006-08-09  Moises Martinez <moises.martinzes@nokia.com>
 
-	* configure.ac: 2.9.19-1
+        The HildonNavigator has been rewritten in order
+        to improve memory management, maintenance and
+        scalability.
+
+        * hildon-navigator-main.[ch]:
+	* hildon-navigator-interface.h: 
+	  - Files removed as they aren't needed anymore.
+        * hildon-navigator-item.[ch]:
+          - New GtkWidget child class for abstracting 
+            hildon-navigator plugins.
+        * hildon-navigator-panel.[ch]:
+	  - New GtkBox child class for abstracting 
+            the navigator as a widget allowing 
+            direction changes and automatic managing of
+            plugins.
+	* hildon-navigator-window.[ch]:
+	  - New GtkWindow child class for abstracting 
+	    the whole hildon-navigator.
+	* configure.ac: 2.9.20.1 (new-navigator)
 
 2006-08-09  Johan Bilien <johan.bilien@nokia.com>
 
@@ -1695,7 +1748,7 @@
 2006-03-13  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-lib.[ch]: Applied
-	  patch by Kimmo Hämälainen to specify the text and query the
+	  patch by Kimmo Hï¿½ï¿½ainen to specify the text and query the
 	  response of system dialogs (Closes N#24060)
 	* Applied fix to "No information banner is shown when dimmed item is
 	  tapped in Home" (Closes N#23033):

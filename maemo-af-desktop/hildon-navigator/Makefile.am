@@ -35,9 +35,12 @@ hn_hung_app_handler_LDADD = $(XLIBS_LIBS)
 libhildonnavigator_la_SOURCES = \
 	hildon-navigator.h \
 	hildon-navigator.c \
-	hildon-navigator-main.c \
-	hildon-navigator-main.h \
-	hildon-navigator-interface.h \
+	hildon-navigator-window.c \
+	hildon-navigator-window.h \
+ 	hildon-navigator-item.c \
+	hildon-navigator-item.h \
+	hildon-navigator-panel.c \
+	hildon-navigator-panel.h \
 	hildon-navigator-lib.h \
 	osso-manager.c \
 	osso-manager.h \
@@ -82,11 +85,11 @@ libhildonnavigator_la_LIBADD = \
 	$(XTEST_LIBS) \
 	$(LIBXML2_LIBS) \
 	$(GCONF_LIBS) \
-	../libhildonmenu/libhildonmenu.la
+	../libhildonmenu/libhildonmenu.la \
+	../libdesktop/.libs/libdesktop.a
 
 libhildonnavigatorincludeinstdir=$(includedir)/hildon-navigator-dev
 libhildonnavigatorincludeinst_DATA = \
-	hildon-navigator-interface.h \
 	hildon-navigator-lib.h
 
 

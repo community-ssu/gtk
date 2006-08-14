@@ -54,7 +54,7 @@
 #include "hn-app-switcher.h"
 #include "others-menu.h"
 #include "osso-manager.h"
-#include "hildon-navigator-interface.h"
+#include "hildon-navigator-window.h"
 #include "close-application-dialog.h"
 #include "hn-keys.h"
 
@@ -66,6 +66,8 @@
 #define TASKNAV_SENSITIVE_INTERFACE "com.nokia.tasknav.tasknav_sensitive"
 
 #define LAUNCH_SUCCESS_TIMEOUT 20
+
+extern HildonNavigatorWindow *tasknav;
 
 static GdkFilterReturn
 hn_wm_x_event_filter (GdkXEvent *xevent,
@@ -1153,7 +1155,7 @@ hn_wm_reset_focus ()
     {
       HN_DBG("Making TN unfocusable");
       hnwm.has_focus = FALSE;
-      task_navigator_set_focus(FALSE);
+      hn_window_set_focus (tasknav,FALSE);
     }
 };
 
@@ -1191,13 +1193,13 @@ hn_wm_activate(guint32 what)
       case HN_TN_ACTIVATE_KEY_FOCUS:
         HN_DBG("Making TN focusable");
         hnwm.has_focus = TRUE;
-        task_navigator_set_focus(TRUE);
+        hn_window_set_focus (tasknav,TRUE);
         return;
 
       case HN_TN_DEACTIVATE_KEY_FOCUS:
         HN_DBG("Making TN unfocusable");
         hnwm.has_focus = FALSE;
-        task_navigator_set_focus(FALSE);
+	hn_window_set_focus (tasknav,FALSE);
         return;
         
       case HN_TN_ACTIVATE_MAIN_MENU:
@@ -1208,18 +1210,18 @@ hn_wm_activate(guint32 what)
       case HN_TN_ACTIVATE_LAST_APP_WINDOW:
         HN_DBG("passing focus to last active window");
         hnwm.has_focus = FALSE;
-        task_navigator_set_focus(FALSE);
+        hn_window_set_focus (tasknav,FALSE);
         hn_wm_focus_active_window ();
         return;
         
       default:
-        button = task_navigator_get_button(what);
+        button = hn_window_get_button_focus (tasknav,what);
         if(button)
-          {
+        {
             HN_DBG("activating some other button");
-            gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON (button), TRUE);
+            gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), TRUE);
             g_signal_emit_by_name(button, "toggled");
-          }
+        }
     }
 }
 
@@ -1513,12 +1515,12 @@ hn_wm_dbus_method_call_handler (DBusConnection *connection,
       const gchar * interface = dbus_message_get_interface(message);
       if (g_str_equal(interface, TASKNAV_SENSITIVE_INTERFACE))
         {
-          navigator_set_sensitive(TRUE);
+          hn_window_set_sensitive (tasknav,TRUE);
           return DBUS_HANDLER_RESULT_HANDLED;
         }
       else if (g_str_equal(interface, TASKNAV_INSENSITIVE_INTERFACE))
         {
-          navigator_set_sensitive(FALSE);
+          hn_window_set_sensitive (tasknav,FALSE);
           return DBUS_HANDLER_RESULT_HANDLED;          
         } 
     }
