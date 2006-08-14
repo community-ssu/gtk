@@ -1,5 +1,11 @@
 2006-08-14  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "External Keyboard <Ctrl><F4>-failed" (Closes NB#37171)
+	* hildon-navigator/hn-keys.c: Fixed grabbing of some special
+	  keys (FX, arrows ...)
+
+2006-08-14  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/home-select-applet-dialog.c: Give the home main
 	  window as parent and let MB handle the positioning (Closes NB#37521)
 

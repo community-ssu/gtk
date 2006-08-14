@@ -181,8 +181,14 @@ hn_keys_keysym_needs_shift (KeySym keysym)
       for (col = 0; 
 	   (k = XKeycodeToKeysym (GDK_DISPLAY(), keycode, col)) != NoSymbol; 
 	   col++)
-	if (k == keysym && col == 1) 
-	  return TRUE;
+        {
+          if (k == keysym && col == 1)
+              return TRUE;
+      
+          if (k == keysym)
+            break;
+        }
+      
     }  
 
   return FALSE;
