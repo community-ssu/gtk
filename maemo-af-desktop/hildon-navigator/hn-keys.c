@@ -105,9 +105,6 @@ hn_keys_action_home (HNKeysConfig *keys,
 {
   /* Desktop toggle */
   hn_wm_toggle_desktop();
-
-  /* TODO: Also fake an F5 key to app */
-  hn_keys_action_send_key (keys, (gpointer)XK_F5);
 }
 
 static void 
@@ -402,6 +399,12 @@ hn_keys_shortcut_new (HNKeysConfig *keys,
       mask |= ShiftMask;
     }
 
+  /* If F5 is assigned to "Home", don't do anything or we will be
+   * conflicting with MCE's handling of the key */
+  if (ks == XK_F5 && 
+          HNKeysActionConfLookup[conf_index].action == HN_KEY_ACTION_HOME)
+      return NULL;
+  
   /* If we grab keycode 0, we end up grabbing the entire keyboard :\ */
   if (XKeysymToKeycode(GDK_DISPLAY(), ks) == 0 && mask == 0)
       return NULL;

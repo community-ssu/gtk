@@ -1,3 +1,12 @@
+maemo-af-desktop (2.9.21.1-1) unstable; urgency=low
+
+  * hildon-navigator/hn-keys.c:
+    - do not send a fake F5 event when receiving Home shortcut
+    - do not grab F5 to be Home, because it conflicts with the
+      MCE handler
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 15 Aug 2006 18:11:36 +0300
+
 maemo-af-desktop (2.9.21-1) unstable; urgency=low
 
   * Merged new-hildon-navigator branch with trunk

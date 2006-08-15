@@ -1,3 +1,11 @@
+2006-08-15  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-keys.c:
+      - do not send a fake F5 event when receiving Home shortcut
+	  - do not grab F5 to be Home, because it conflicts with the
+	    MCE handler
+	* configure.ac: 2.9.21.1
+
 2006-08-14  Moises Martinez <moises.martinzes@nokia.com>
 
 	* configure.ac: 2.9.21
