@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.21.2-1) unstable; urgency=low
+
+  * hildon-navigator/hn-keys.c:
+    - add flag when we fake a key event so we don't re-grab it
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 15 Aug 2006 19:18:39 +0300
+
 maemo-af-desktop (2.9.21.1-1) unstable; urgency=low
 
   * hildon-navigator/hn-keys.c:

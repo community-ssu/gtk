@@ -36,15 +36,74 @@ typedef struct HNKeyShortcut
 } 
 HNKeyShortcut;
 
+/* for shortcuts that fake key events we have to ensure that any grab handler
+ * does not fake events in response to events it itself faked, eitherwise we
+ * end up in endless loop.
+ *
+ * the hn_keys_send_key () method, therefore, checks if the keysym it
+ * responds matches the keysymbol it fakes; if it does, it sets flag so that
+ * when the fake keyevent is received by a grab handler, it would know to
+ * ignore it.
+ *
+ * We need a flag for each keysym we migh fake; the following enum is used to
+ * index the flag array that follows.
+ */
+enum
+{
+  HN_KEYS_IGNORE_F6 = 0,
+  HN_KEYS_IGNORE_F7,
+  HN_KEYS_IGNORE_F8,
+  HN_KEYS_IGNORE_F10,
+
+  HN_KEYS_IGNORE_LAST
+} HNIgnoreKeyEnum;
+
+gboolean HNIgnoreKeypress[HN_KEYS_IGNORE_LAST];
+
+/* translates a keysym into index into the array of ignored flags; it returns
+ * HN_KEYS_IGNORE_LAST if the KeySym is not found (i.e., should not be ignored
+ */
+static int
+hn_keys_ignored_index (KeySym symbol)
+{
+  switch (symbol)
+    {
+      case XK_F6:
+        return HN_KEYS_IGNORE_F6;
+      
+      case XK_F7:
+        return HN_KEYS_IGNORE_F7;
+      
+      case XK_F8:
+        return HN_KEYS_IGNORE_F8;
+      
+      case XK_F10:
+        return HN_KEYS_IGNORE_F10;
+
+      default:
+        return HN_KEYS_IGNORE_LAST;
+    }
+}
+
 static void 
 hn_keys_action_send_key (HNKeysConfig *keys,
 			 gpointer     *user_data)
 {
   KeyCode keycode = 0;
   KeySym  keysym = (KeySym)user_data;
-
+  int     index = hn_keys_ignored_index (keysym);
+  
   HN_DBG("Faking keysym %li", keysym);
 
+  if (index < HN_KEYS_IGNORE_LAST)
+    {
+      /* one of the keys we fake; set an ignore flag for it */
+      HN_DBG ("setting ignore flag for KeySym 0x%x",
+              (unsigned int) keysym);
+      
+      HNIgnoreKeypress[index] = TRUE;
+    }
+  
   if ((keycode = XKeysymToKeycode (GDK_DISPLAY(), keysym)) != 0)
     {
         XTestFakeKeyEvent (GDK_DISPLAY(), keycode, TRUE, CurrentTime);
@@ -604,7 +663,13 @@ HNKeysConfig*
 hn_keys_init (void)
 {
   HNKeysConfig *keys;
-
+  int i;
+  
+  for(i = 0; i < HN_KEYS_IGNORE_LAST; ++i)
+    {
+      HNIgnoreKeypress[i] = FALSE;
+    }
+  
   keys = g_new0 (HNKeysConfig, 1);
 
   keys->gconf_client  = gconf_client_get_default();
@@ -673,6 +738,19 @@ hn_keys_handle_keypress (HNKeysConfig *keys,
                                                keycode, 
                                                shortcut->index))
 	{
+          int index = hn_keys_ignored_index(shortcut->keysym);
+          
+          if (index < HN_KEYS_IGNORE_LAST && HNIgnoreKeypress[index])
+            {
+              /* ignore flag set for this KeySym, so we ignore it */
+              HN_DBG ("ignoring faked key event for keysym 0x%x",
+                      (unsigned int)shortcut->keysym);
+              
+              HNIgnoreKeypress[index] = FALSE;
+              return;
+            }
+          HN_DBG ("Calling action function");
+          
 	  shortcut->action_func (keys, shortcut->action_func_data); 
 	  return;
 	}

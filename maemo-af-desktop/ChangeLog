@@ -1,6 +1,12 @@
 2006-08-15  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-keys.c:
+	  - add flag when we fake a key event so we don't re-grab it
+	* configure.ac: 2.9.21.2
+
+2006-08-15  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-keys.c:
       - do not send a fake F5 event when receiving Home shortcut
 	  - do not grab F5 to be Home, because it conflicts with the
 	    MCE handler
