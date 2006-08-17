@@ -7,6 +7,7 @@ osso-af-startup (1.22-1) unstable; urgency=low
   * Removed deprecated Control Panel variable from af-defines.sh.
     Fixes: NB#34097
   * Adjusted lowmem module parameters. Fixes: NB#37478
+  * Added dependency to sudo package.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 14 Aug 2006 15:10:28 +0300
 
