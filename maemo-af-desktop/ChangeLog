@@ -1,6 +1,13 @@
 2006-08-15  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-keys.c:
+	  - revert the flag system
+	  - do not allow F4, F6, F7, F8 and F10 as shortcuts
+	* configure.ac: 2.9.21.3
+
+2006-08-15  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-keys.c:
 	  - add flag when we fake a key event so we don't re-grab it
 	* configure.ac: 2.9.21.2
 
@@ -64,13 +71,13 @@
 
 2006-08-11  Moises Martinez <moises.martinzes@nokia.com>
 
-        * hildon-navigator-panel.h:
+	* hildon-navigator-panel.h:
 	  - added new method hn_panel_peek_plugins
 	  - fixed position of plugins
 
 2006-08-10  Moises Martinez <moises.martinzes@nokia.com>
 
-        * hildon-navigator-panel.h:
+	* hildon-navigator-panel.h:
 	  - added new method: hn_panel_get_plugins
 	* hildon-navigator-window.c:
 	* hildon-navigator-panel.c:
@@ -140,13 +147,13 @@
         to improve memory management, maintenance and
         scalability.
 
-        * hildon-navigator-main.[ch]:
+	* hildon-navigator-main.[ch]:
 	* hildon-navigator-interface.h: 
 	  - Files removed as they aren't needed anymore.
-        * hildon-navigator-item.[ch]:
+	* hildon-navigator-item.[ch]:
           - New GtkWidget child class for abstracting 
             hildon-navigator plugins.
-        * hildon-navigator-panel.[ch]:
+	* hildon-navigator-panel.[ch]:
 	  - New GtkBox child class for abstracting 
             the navigator as a widget allowing 
             direction changes and automatic managing of
