@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.21.4-1) unstable; urgency=low
+
+  * hildon-navigator/plugins.conf: Corrected library file for
+    the contacts plugin
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 18 Aug 2006 16:33:47 +0300
+
 maemo-af-desktop (2.9.21.3-1) unstable; urgency=low
 
   * hildon-navigator/hn-keys.c:

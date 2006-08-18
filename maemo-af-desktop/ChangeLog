@@ -1,3 +1,9 @@
+2006-08-18  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/plugins.conf: Corrected library file for
+	  the contacts plugin
+	* configure.ac: 2.9.21.4
+
 2006-08-15  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-keys.c:
