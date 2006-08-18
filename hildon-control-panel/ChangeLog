@@ -1,3 +1,10 @@
+2006-08-18 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-cp-rfs.c:
+	  - Make the dialogs transient to the main window
+	  - slight code cleaning
+	* configure.ac: 2.2.4
+
 2006-08-07 Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.2.3

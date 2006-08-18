@@ -152,11 +152,11 @@ struct _HCP {
     gint execute;
 };
  
-gboolean hildon_cp_rfs( osso_context_t *osso, 
-                        const char *warning,
-                        const char *title,
-                        const char *script,
-                        const char *help_topic );
+gboolean hcp_rfs (HCP *hcp,
+                  const char *warning,
+                  const char *title,
+                  const char *script,
+                  const char *help_topic);
 
 
 G_END_DECLS

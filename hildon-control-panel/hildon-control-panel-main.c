@@ -908,7 +908,11 @@ static void hcp_run_operator_wizard (GtkWidget *widget, HCP *hcp)
 static gboolean hcp_reset_factory_settings (GtkWidget *widget, HCP *hcp)
 {
 
-    hildon_cp_rfs( hcp->osso, HILDON_CP_RFS_WARNING, HILDON_CP_RFS_WARNING_TITLE, HILDON_CP_RFS_SCRIPT, HILDON_CP_RFS_HELP_TOPIC );
+    hcp_rfs (hcp,
+             HILDON_CP_RFS_WARNING,
+             HILDON_CP_RFS_WARNING_TITLE,
+             HILDON_CP_RFS_SCRIPT,
+             HILDON_CP_RFS_HELP_TOPIC);
 
     return TRUE;
 }
@@ -916,11 +920,11 @@ static gboolean hcp_reset_factory_settings (GtkWidget *widget, HCP *hcp)
 static gboolean hcp_clear_user_data (GtkWidget *widget, HCP *hcp)
 {
 
-    hildon_cp_rfs (hcp->osso,
-                   HILDON_CP_CUD_WARNING,
-                   HILDON_CP_CUD_WARNING_TITLE,
-                   HILDON_CP_CUD_SCRIPT,
-                   HILDON_CP_CUD_HELP_TOPIC );
+    hcp_rfs (hcp,
+             HILDON_CP_CUD_WARNING,
+             HILDON_CP_CUD_WARNING_TITLE,
+             HILDON_CP_CUD_SCRIPT,
+             HILDON_CP_CUD_HELP_TOPIC);
 
     return TRUE;
 }

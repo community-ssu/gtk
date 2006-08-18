@@ -1,3 +1,11 @@
+hildon-control-panel (2.2.4-1) unstable; urgency=low
+
+  * hildon-cp-rfs.c:
+    - Make the dialogs transient to the main window
+    - slight code cleaning
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 18 Aug 2006 13:20:45 +0300
+
 hildon-control-panel (2.2.3-1) unstable; urgency=low
 
   * hildon-cp-item.[ch]: Added sort function
