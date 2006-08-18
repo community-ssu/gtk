@@ -227,7 +227,9 @@ hcp_al_get_configured_categories (HCPAppList *al)
 {
     GConfClient * client     = NULL;
     GSList * group_names     = NULL;
+    GSList * group_names_i   = NULL;
     GSList * group_ids       = NULL;
+    GSList * group_ids_i     = NULL;
     GError * error = NULL;
 
     client = gconf_client_get_default ();
@@ -263,16 +265,19 @@ hcp_al_get_configured_categories (HCPAppList *al)
         g_object_unref (client);
     }
 
-    while (group_ids && group_names)
+    group_names_i = group_names;
+    group_ids_i   = group_ids;
+
+    while (group_ids_i && group_names_i)
     {
         HCPCategory *category = g_new0 (HCPCategory, 1);
-        category->name = (gchar *)group_names->data;
-        category->id   = (gchar *)group_ids->data;
+        category->name = (gchar *)group_names_i->data;
+        category->id   = (gchar *)group_ids_i->data;
 
         al->categories = g_slist_append (al->categories, category);
 
-        group_ids   = g_slist_next (group_ids);
-        group_names = g_slist_next (group_names);
+        group_ids_i   = g_slist_next (group_ids_i);
+        group_names_i = g_slist_next (group_names_i);
     }
 
 cleanup:

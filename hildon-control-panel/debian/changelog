@@ -1,3 +1,10 @@
+hildon-control-panel (2.2.5-1) unstable; urgency=low
+
+   * hildon-cp-applist.c: Really free the lists return by gconf
+     (Closes NB#36887)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 18 Aug 2006 13:31:24 +0300
+
 hildon-control-panel (2.2.4-1) unstable; urgency=low
 
   * hildon-cp-rfs.c:

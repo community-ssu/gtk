@@ -1,7 +1,13 @@
 2006-08-18 Johan Bilien <johan.bilien@nokia.com>
 
+	 * hildon-cp-applist.c: Really free the lists return by gconf
+	   (Closes NB#36887)
+	* configure.ac: 2.2.5
+
+2006-08-18 Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-cp-rfs.c:
-	  - Make the dialogs transient to the main window
+	  - Make the dialogs transient to the main window (Closes NB#36937)
 	  - slight code cleaning
 	* configure.ac: 2.2.4
 
