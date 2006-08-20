@@ -1018,6 +1018,37 @@ mark_for_install (pkgCache::PkgIterator &pkg)
   mark_related (pkg);
 }
 
+/* Mark every upgradeable non-user package for installation.
+ */
+static void
+mark_sys_upgrades ()
+{
+  pkgDepCache &cache = *package_cache;
+
+  for (pkgCache::PkgIterator p = cache.PkgBegin (); !p.end (); p++)
+    {
+      if (!p.CurrentVer().end() && !is_user_package (p.CurrentVer()))
+	mark_for_install (p);
+    }
+}
+
+/* Mark the named package for installation.  This function also
+   handles magic packages like "magic:sys".
+*/
+
+static void
+mark_named_package_for_install (const char *package)
+{
+  if (!strcmp (package, "magic:sys"))
+    mark_sys_upgrades ();
+  else
+    {
+      pkgDepCache &cache = *package_cache;
+      pkgCache::PkgIterator pkg = cache.FindPkg (package);
+      if (!pkg.end())
+	mark_for_install (pkg);
+    }
+}
 
 /* Mark a package for removal and also remove as many of the packages
    that it depends on as possible.
@@ -1265,6 +1296,29 @@ cmd_get_package_list ()
       else
 	encode_empty_version_info (false);
     }
+
+  // Append the "magic:sys" package that represents all system
+  // packages This artificial package is identified by its name and
+  // handled specially by MARK_NAMED_PACKAGE_FOR_INSTALL, etc.
+
+  // Name
+  response.encode_string ("magic:sys");
+
+  // Broken?  XXX - give real information here
+  response.encode_int (FALSE);
+
+  // Installed version
+  response.encode_string ("");
+  response.encode_int (1000);
+  response.encode_string ("system");
+  response.encode_string ("All system packages");
+  response.encode_string (NULL);
+
+  // Available version
+  response.encode_string ("");
+  response.encode_string ("system");
+  response.encode_string (NULL);
+  response.encode_string (NULL);
 }
 
 /* APTCMD_GET_PACKAGE_INFO
@@ -1274,8 +1328,7 @@ cmd_get_package_list ()
  */
 
 static int
-installable_status_1 (pkgCache::PkgIterator &pkg,
-		      pkgCache::PkgIterator &want)
+installable_status_1 (pkgCache::PkgIterator &pkg)
 {
   pkgDepCache &Cache = *package_cache;
   pkgCache::VerIterator Ver = Cache[pkg].InstVerIter(Cache);
@@ -1318,7 +1371,7 @@ combine_status (int s1, int s2)
 }
 
 static int
-installable_status (pkgCache::PkgIterator &want)
+installable_status ()
 {
   pkgDepCache &cache = *package_cache;
   int installable_status = status_unable;
@@ -1329,15 +1382,14 @@ installable_status (pkgCache::PkgIterator &want)
     {
       if (cache[pkg].InstBroken())
 	installable_status =
-	  combine_status (installable_status_1 (pkg, want), 
-			  installable_status);
+	  combine_status (installable_status_1 (pkg), installable_status);
     }
 
   return installable_status;
 }
 
 static int
-removable_status (pkgCache::PkgIterator &want)
+removable_status ()
 {
   pkgDepCache &cache = *package_cache;
   for (pkgCache::PkgIterator pkg = cache.PkgBegin();
@@ -1370,31 +1422,32 @@ cmd_get_package_info ()
       pkgDepCache &cache = *package_cache;
       pkgCache::PkgIterator pkg = cache.FindPkg (package);
 
-      if (!pkg.end ())
+      // simulate install
+      
+      int old_broken_count = cache.BrokenCount();
+      mark_named_package_for_install (package);
+      if (cache.BrokenCount() > old_broken_count)
+	info.installable_status = installable_status ();
+      else
+	info.installable_status = status_able;
+      info.download_size = (int) cache.DebSize ();
+      info.install_user_size_delta = (int) cache.UsrSize ();
+      cache_reset ();
+
+      if (!only_installable_info)
 	{
-	  pkgCache::VerIterator inst = pkg.CurrentVer ();
-	  int old_broken_count;
-
-	  // simulate install
+	  // simulate remove
 	  
-	  old_broken_count = cache.BrokenCount();
-	  mark_for_install (pkg);
-	  if (cache.BrokenCount() > old_broken_count)
-	    info.installable_status = installable_status (pkg);
-	  else
-	    info.installable_status = status_able;
-	  info.download_size = (int) cache.DebSize ();
-	  info.install_user_size_delta = (int) cache.UsrSize ();
-	  cache_reset ();
-
-	  if (!only_installable_info)
+	  if (!strcmp (package, "magic:sys"))
 	    {
-	      // simulate remove
-	  
+	      info.removable_status = status_unable;
+	    }
+	  else
+	    {
 	      old_broken_count = cache.BrokenCount();
 	      mark_for_remove (pkg);
 	      if (cache.BrokenCount() > old_broken_count)
-		info.removable_status = removable_status (pkg);
+		info.removable_status = removable_status ();
 	      else
 		info.removable_status = status_able;
 	      info.remove_user_size_delta = (int) cache.UsrSize ();
@@ -1455,7 +1508,8 @@ encode_dependencies (pkgCache::VerIterator &ver)
 }
 
 void
-encode_broken (pkgCache::PkgIterator &pkg, pkgCache::PkgIterator &want)
+encode_broken (pkgCache::PkgIterator &pkg,
+	       const char *want)
 {
   pkgDepCache &Cache = *package_cache;
   pkgCache::VerIterator Ver = Cache[pkg].InstVerIter(Cache);
@@ -1496,7 +1550,7 @@ encode_broken (pkgCache::PkgIterator &pkg, pkgCache::PkgIterator &want)
 	  /* Never blame conflicts on the package that we want to
 	     install.
 	  */
-	  if (target == want && Start->Type == pkgCache::Dep::Conflicts)
+	  if (target.Name() == want && Start->Type == pkgCache::Dep::Conflicts)
 	    g_string_append_printf (str, "%s", pkg.Name());
 	  else
 	    {
@@ -1530,7 +1584,7 @@ encode_package_and_version (const char *package, const char *version)
 }
 
 void
-encode_install_summary (pkgCache::PkgIterator &want)
+encode_install_summary (const char *want)
 {
   pkgDepCache &cache = *package_cache;
 
@@ -1541,7 +1595,7 @@ encode_install_summary (pkgCache::PkgIterator &want)
   if (cache.BrokenCount() > 0)
     fprintf (stderr, "[ Some installed packages are broken! ]\n");
 
-  mark_for_install (want);
+  mark_named_package_for_install (want);
 
   for (pkgCache::PkgIterator pkg = cache.PkgBegin();
        pkg.end() != true;
@@ -1634,32 +1688,47 @@ cmd_get_package_details ()
   const char *version = request.decode_string_in_place ();
   int summary_kind = request.decode_int ();
 
-  pkgCache::PkgIterator pkg;
-  pkgCache::VerIterator ver;
-
-  if (find_package_version (package_cache, pkg, ver, package, version))
+  if (!strcmp (package, "magic:sys"))
     {
-      pkgDepCache &cache = *package_cache;
-      pkgRecords Recs (cache);
-      pkgRecords::Parser &P = Recs.Lookup (ver.FileList ());
-
-      response.encode_string (P.Maintainer().c_str());
-      response.encode_string (P.LongDesc().c_str());
-      encode_dependencies (ver);
+      response.encode_string ("");      // maintainer
+      response.encode_string 
+	("This is an artificial package that represents all\n"
+	 "system packages that are installed on your device.");
+      response.encode_int (deptype_end);  // dependencies
       if (summary_kind == 1)
-	encode_install_summary (pkg);
-      else if (summary_kind == 2)
-	encode_remove_summary (pkg);
+	encode_install_summary (package);
       else
 	response.encode_int (sumtype_end);
     }
   else
     {
-      // not found
-      response.encode_string (NULL);      // maintainer
-      response.encode_string (NULL);      // description
-      response.encode_int (deptype_end);  // dependencies
-      response.encode_int (sumtype_end);  // summary
+      pkgCache::PkgIterator pkg;
+      pkgCache::VerIterator ver;
+      
+      if (find_package_version (package_cache, pkg, ver, package, version))
+	{
+	  pkgDepCache &cache = *package_cache;
+	  pkgRecords Recs (cache);
+	  pkgRecords::Parser &P = Recs.Lookup (ver.FileList ());
+	  
+	  response.encode_string (P.Maintainer().c_str());
+	  response.encode_string (P.LongDesc().c_str());
+	  encode_dependencies (ver);
+	  if (summary_kind == 1)
+	    encode_install_summary (package);
+	  else if (summary_kind == 2)
+	    encode_remove_summary (pkg);
+	  else
+	    response.encode_int (sumtype_end);
+	}
+      else
+	{
+	  // not found
+	  response.encode_string (NULL);      // maintainer
+	  response.encode_string (NULL);      // description
+	  response.encode_int (deptype_end);  // dependencies
+	  response.encode_int (sumtype_end);  // summary
+	}
     }
 }
 
@@ -1821,15 +1890,9 @@ cmd_install_check ()
 
   if (package_cache)
     {
-      pkgDepCache &cache = *package_cache;
-      pkgCache::PkgIterator pkg = cache.FindPkg (package);
-
-      if (!pkg.end ())
-	{
-	  mark_for_install (pkg);
-	  result_code = operation (true);
-	  cache_reset ();
-	}
+      mark_named_package_for_install (package);
+      result_code = operation (true);
+      cache_reset ();
     }
 
   response.encode_int (result_code == rescode_success);
@@ -1857,14 +1920,8 @@ cmd_install_package ()
 
   if (package_cache)
     {
-      pkgDepCache &cache = *package_cache;
-      pkgCache::PkgIterator pkg = cache.FindPkg (package);
-
-      if (!pkg.end ())
-	{
-	  mark_for_install (pkg);
-	  result_code = operation (false);
-	}
+      mark_named_package_for_install (package);
+      result_code = operation (false);
     }
 
   need_cache_init ();
