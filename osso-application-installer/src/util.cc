@@ -59,7 +59,7 @@ extern "C" {
 
 struct ayn_closure {
   package_info *pi;
-  bool installed;
+  detail_kind kind;
   void (*cont) (bool res, void *data);
   void (*details) (void *data);
   void *data;
@@ -73,7 +73,7 @@ yes_no_response (GtkDialog *dialog, gint response, gpointer clos)
   if (response == 1)
     {
       if (c->pi)
-	show_package_details (c->pi, c->installed, false);
+	show_package_details (c->pi, c->kind, false);
       else if (c->details)
 	c->details (c->data);
       return;
@@ -136,7 +136,7 @@ ask_custom (const gchar *question,
 void
 ask_yes_no_with_details (const gchar *title,
 			 const gchar *question,
-			 package_info *pi, bool installed,
+			 package_info *pi, detail_kind kind,
 			 void (*cont) (bool res, void *data),
 			 void *data)
 {
@@ -144,7 +144,7 @@ ask_yes_no_with_details (const gchar *title,
   ayn_closure *c = new ayn_closure;
   c->pi = pi;
   pi->ref ();
-  c->installed = installed;
+  c->kind = kind;
   c->cont = cont;
   c->details = NULL;
   c->data = data;
@@ -225,7 +225,7 @@ annoy_user (const gchar *text)
 
 struct auwd_closure {
   package_info *pi;
-  bool installed;
+  detail_kind kind;
 };
 
 static void
@@ -236,7 +236,7 @@ annoy_user_with_details_response (GtkDialog *dialog, gint response,
 
   if (response == 1)
     {
-      show_package_details (c->pi, c->installed, true);
+      show_package_details (c->pi, c->kind, true);
     }
   else
     {
@@ -249,7 +249,7 @@ annoy_user_with_details_response (GtkDialog *dialog, gint response,
 
 void
 annoy_user_with_details (const gchar *text,
-			 package_info *pi, bool installed)
+			 package_info *pi, detail_kind kind)
 {
   if (currently_annoying_user)
     return;
@@ -278,7 +278,7 @@ annoy_user_with_details (const gchar *text,
 
   pi->ref ();
   c->pi = pi;
-  c->installed = installed;
+  c->kind = kind;
   g_signal_connect (dialog, "response", 
 		    G_CALLBACK (annoy_user_with_details_response), c);
   gtk_widget_show_all (dialog);

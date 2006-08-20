@@ -37,7 +37,7 @@
 
 struct spd_closure {
   package_info *pi;
-  bool installed;
+  detail_kind kind;
   bool show_problems;
 };
 
@@ -116,7 +116,7 @@ format_string_list_1 (GString *str, const char *title,
 }
 
 char *
-decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
+decode_summary (apt_proto_decoder *dec, package_info *pi, detail_kind kind)
 {
   GList *sum[sumtype_max];
   GString *str = g_string_new ("");
@@ -137,7 +137,7 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, bool installed)
     }
 
   bool possible = true;
-  if (installed)
+  if (kind == remove_details)
     {
       if (pi->info.removable_status == status_able)
 	{
@@ -277,8 +277,7 @@ details_response (GtkDialog *dialog, gint response, gpointer clos)
 }
 
 static void
-show_with_details (package_info *pi, bool installed,
-		   bool show_problems)
+show_with_details (package_info *pi, bool show_problems)
 {
   GtkWidget *dialog, *notebook;
   GtkWidget *table, *common;
@@ -326,7 +325,7 @@ show_with_details (package_info *pi, bool installed,
   add_table_field (table, 0,
 		   _("ai_fi_details_package"), pi->name);
 
-  gchar *short_description = (installed
+  gchar *short_description = (pi->have_detail_kind == remove_details
 			      ? pi->installed_short_description
 			      : pi->available_short_description);
   if (short_description == NULL)
@@ -338,7 +337,7 @@ show_with_details (package_info *pi, bool installed,
   add_table_field (table, 3, _("ai_fi_details_status"), status);
 
   add_table_field (table, 4, _("ai_fi_details_category"),
-		   nicify_section_name (installed
+		   nicify_section_name (pi->have_detail_kind == remove_details
 					? pi->installed_section
 					: pi->available_section));
 
@@ -370,7 +369,7 @@ show_with_details (package_info *pi, bool installed,
   gtk_box_pack_start (GTK_BOX (common), table, TRUE, TRUE, 0);
 
   const gchar *summary_label;
-  if (installed)
+  if (pi->have_detail_kind == remove_details)
     summary_label = _("ai_ti_details_noteb_uninstalling");
   else if (pi->info.installable_status != status_able)
     summary_label = _("ai_ti_details_noteb_problems");
@@ -425,6 +424,9 @@ show_with_details (package_info *pi, bool installed,
 void
 nicify_description_in_place (char *desc)
 {
+  if (desc == NULL)
+    return;
+
   /* The nicifications are this:
      
      - the first space of a line is removed.
@@ -462,7 +464,7 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
 {
   spd_closure *c = (spd_closure *)clos;
   package_info *pi = c->pi;
-  bool installed = c->installed;
+  detail_kind kind = c->kind;
   bool show_problems = c->show_problems;
   delete c;
 
@@ -471,6 +473,11 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
       pi->unref ();
       return;
     }
+
+  g_free (pi->maintainer);
+  g_free (pi->description);
+  g_free (pi->dependencies);
+  g_free (pi->summary);
 
   pi->maintainer = dec->decode_string_dup ();
   pi->description = dec->decode_string_dup ();
@@ -484,42 +491,41 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
       pi->dependencies = NULL;
     }
       
-  pi->summary = decode_summary (dec, pi, installed);
+  pi->summary = decode_summary (dec, pi, kind);
 
-  pi->have_details = true;
+  pi->have_detail_kind = kind;
 
-  show_with_details (pi, installed, show_problems);
+  show_with_details (pi, show_problems);
 }
 
 void
 spd_cont (package_info *pi, void *data, bool changed)
 {
   spd_closure *c = (spd_closure *)data;
-  
-  if (!pi->have_details)
-    apt_worker_get_package_details (pi->name, (c->installed
+
+  if (pi->have_detail_kind != c->kind)
+    apt_worker_get_package_details (pi->name, (c->kind == remove_details
 					       ? pi->installed_version
 					       : pi->available_version),
-				    c->installed? 2 : 1, // XXX - magic
+				    c->kind,
 				    get_package_details_reply,
 				    data);
   else
     {
-      bool installed = c->installed;
       bool show_problems = c->show_problems;
       delete c;
 
-      show_with_details (pi, installed, show_problems);
+      show_with_details (pi, show_problems);
     }
 }
 
 void
-show_package_details (package_info *pi, bool installed,
+show_package_details (package_info *pi, detail_kind kind,
 		      bool show_problems)
 {
   spd_closure *c = new spd_closure;
   c->pi = pi;
-  c->installed = installed;
+  c->kind = kind;
   c->show_problems = show_problems;
   pi->ref ();
   get_intermediate_package_info (pi, false, spd_cont, c);

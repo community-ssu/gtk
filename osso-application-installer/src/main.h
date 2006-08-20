@@ -29,6 +29,12 @@
 
 #include "apt-worker-proto.h"
 
+enum detail_kind {
+  no_details = 0,
+  install_details = 1,
+  remove_details = 2
+};
+
 struct package_info {
 
   package_info ();
@@ -54,7 +60,7 @@ struct package_info {
   bool have_info;
   apt_proto_package_info info;
  
-  bool have_details;
+  detail_kind have_detail_kind;
   char *maintainer;
   char *description;
   char *summary;

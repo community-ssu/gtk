@@ -357,7 +357,7 @@ package_info::package_info ()
 
   have_info = false;
 
-  have_details = false;
+  have_detail_kind = no_details;
   maintainer = NULL;
   description = NULL;
   summary = NULL;
@@ -1117,7 +1117,7 @@ confirm_install (package_info *pi,
   ask_yes_no_with_details ((pi->installed_version
 			    ? _("ai_ti_confirm_update")
 			    : _("ai_ti_confirm_install")),
-			   text->str, pi, false, cont, data);
+			   text->str, pi, install_details, cont, data);
   g_string_free (text, 1);
 }
 
@@ -1350,14 +1350,14 @@ annoy_user_with_installable_status_details (package_info *pi)
       annoy_user_with_details ((pi->installed_version
 				? _("ai_ni_error_update_missing")
 				: _("ai_ni_error_install_missing")),
-			       pi, false);
+			       pi, install_details);
     }
   else if (pi->info.installable_status == status_conflicting)
     {
       annoy_user_with_details ((pi->installed_version
 				? _("ai_ni_error_update_conflict")
 				: _("ai_ni_error_install_conflict")),
-			       pi, false);
+			       pi, install_details);
     }
   else if (pi->info.installable_status == status_corrupted)
     {
@@ -1382,7 +1382,7 @@ annoy_user_with_installable_status_details (package_info *pi)
 			  ? _("ai_ni_error_update_failed")
 			  : _("ai_ni_error_installation_failed")),
 			 pi->name);
-      annoy_user_with_details (str, pi, false);
+      annoy_user_with_details (str, pi, install_details);
       g_free (str);
     }
 }
@@ -1459,7 +1459,7 @@ static void
 available_package_details (gpointer data)
 {
   package_info *pi = (package_info *)data;
-  show_package_details (pi, false, false);
+  show_package_details (pi, install_details, false);
 }
 
 void
@@ -1482,7 +1482,7 @@ static void
 installed_package_details (gpointer data)
 {
   package_info *pi = (package_info *)data;
-  show_package_details (pi, true, false);
+  show_package_details (pi, remove_details, false);
 }
 
 static void uninstall_package (package_info *);
@@ -1671,7 +1671,7 @@ confirm_uninstall (package_info *pi,
 		   pi->name, pi->installed_version, size_buf);
 
   ask_yes_no_with_details (_("ai_ti_confirm_uninstall"), text->str,
-			   pi, true, cont, data);
+			   pi, remove_details, cont, data);
   g_string_free (text, 1);
 }
 
@@ -1714,12 +1714,12 @@ annoy_user_with_removable_status_details (package_info *pi)
 {
   if (pi->info.removable_status == status_needed)
     annoy_user_with_details (_("ai_ni_error_uninstall_packagesneeded"),
-			     pi, true);
+			     pi, remove_details);
   else
     {
       char *str = g_strdup_printf (_("ai_ni_error_uninstallation_failed"),
 				   pi->name);
-      annoy_user_with_details (str, pi, true);
+      annoy_user_with_details (str, pi, remove_details);
       g_free (str);
     }
 }
@@ -2318,7 +2318,7 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
   pi->available_icon = pixbuf_from_base64 (dec->decode_string_in_place ());
 
   pi->have_info = true;
-  pi->have_details = true;
+  pi->have_detail_kind = install_details;
 
   
   if (pi->info.installable_status == status_incompatible)
@@ -2328,7 +2328,7 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
   else if (pi->info.installable_status == status_corrupted)
     pi->summary = g_strdup (_("ai_ni_error_install_corrupted"));
   else
-    pi->summary = decode_summary (dec, pi, false);
+    pi->summary = decode_summary (dec, pi, install_details);
 
   GString *text = g_string_new ("");
 
@@ -2355,7 +2355,7 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
 			    ? _("ai_ti_confirm_update")
 			    : _("ai_ti_confirm_install")),
 			   text->str,
-			   pi, false, cont, pi);
+			   pi, install_details, cont, pi);
     
   g_string_free (text, 1);
 }

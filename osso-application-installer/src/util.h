@@ -96,7 +96,7 @@ void ask_custom (const gchar *question,
 
 void ask_yes_no_with_details (const gchar *title,
 			      const gchar *question,
-			      package_info *pi, bool installed,
+			      package_info *pi, detail_kind kind,
 			      void (*cont) (bool res, void *data), void *data);
 
 void ask_yes_no_with_arbitrary_details (const gchar *title,
@@ -107,7 +107,7 @@ void ask_yes_no_with_arbitrary_details (const gchar *title,
 
 void annoy_user (const gchar *text);
 void annoy_user_with_details (const gchar *text,
-			      package_info *pi, bool installed);
+			      package_info *pi, detail_kind kind);
 void annoy_user_with_log (const gchar *text);
 void annoy_user_with_errno (int err, const gchar *detail);
 void annoy_user_with_gnome_vfs_result (GnomeVFSResult result,
