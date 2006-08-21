@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.21.4-2) unstable; urgency=low
+
+  * debian/maemo-af-desktop.links: Added symbolic to use backup restore
+    script from both IT-2005 and IT.2006 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 21 Aug 2006 13:46:28 +0300
+
 maemo-af-desktop (2.9.21.4-1) unstable; urgency=low
 
   * hildon-navigator/plugins.conf: Corrected library file for
