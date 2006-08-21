@@ -1,3 +1,10 @@
+2006-08-21  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Shortcut to task switcher working where no applications
+	are open." (Closes NB#38033)
+	* hildon-navigator/hn-app-switcher.c: do not open the AS menu when
+	  no application is started
+
 2006-08-18  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/plugins.conf: Corrected library file for

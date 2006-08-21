@@ -2256,6 +2256,9 @@ hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher)
 
   g_return_if_fail (HN_IS_APP_SWITCHER (app_switcher));
   priv = app_switcher->priv;
+
+  if (!priv->applications)
+    return;
   
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->main_button), TRUE);
   g_signal_emit_by_name (priv->main_button, "toggled");
