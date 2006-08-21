@@ -23,6 +23,39 @@
 	to APTCMD_GET_PACKAGE_LIST to control the inclusion of the
 	"magic:sys" package.  Updated all callers.
 
+2006-08-20  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/details.cc (nicify_description_in_place): Deal with NULL
+	descriptions.
+
+	* main.h, main.cc, details.h, details.cc, util.h, util.cc:
+	Replaced the old "bool installed" flag for selecting what kind of
+	details to display with a proper "enum detail_kind" throughout.
+	This allows us to keep track of what kind of detail is actually
+	cached in the package_info structure.  Previously, the wrong kind
+	of details were displayed when you first asked for "install
+	details", say, and later for "remove details".
+
+	Implemented the artificial "magic:sys" package that represents all
+	non-user packages.
+	
+	* src/apt-worker.cc (mark_sys_upgrades,
+	mark_named_package_for_install): New.
+	(cmd_get_package_list): Append the "magic:sys" package.
+	(installable_status_1, installable_status, removable_status):
+	Removed 'want' parameter which is not needed.  Updated all
+	callers.
+	(cmd_get_package_info): Handle "magic:sys" package by using
+	mark_named_package_for_install instead of mark_for_install and
+	explicitely setting the removable_status.
+	(encode_broken, encode_install_summary): Pass 'want' package by
+	name, not as a cache iterator.  Use mark_named_package_for_install
+	instead of mark_for_install.  This allows artifical packages to
+	work.
+	(cmd_get_package_details): Explicitly handle "magic:sys" package.
+	(cmd_install_check, cmd_install_package): Use
+	mark_named_package_for_install instead of mark_for_install.
+
 2006-08-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.27
