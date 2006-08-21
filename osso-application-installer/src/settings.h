@@ -40,6 +40,9 @@ extern bool clean_after_install;
 extern bool assume_connection;
 extern bool break_locks;
 extern bool red_pill_mode;
+extern bool red_pill_show_deps;
+extern bool red_pill_show_all;
+extern bool red_pill_show_magic_sys;
 
 #define UPDATE_INTERVAL_SESSION 0
 #define UPDATE_INTERVAL_WEEK    1

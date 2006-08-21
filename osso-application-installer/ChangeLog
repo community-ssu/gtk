@@ -1,3 +1,28 @@
+2006-08-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Made the red-pill mode configurable.
+
+	* src/settings.h, src/settings.cc:
+	(red_pill_show_deps, red_pill_show_all, red_pill_show_magic_sys):
+	New. Updated old users of red_pill_mode to also check the more
+	specific setting.
+	(make_boolean_option): New.
+	(make_updates_tab, make_settings_tab): Renamed former to latter.
+	Use make_boolean_option to add more configuration options in
+	red_pill_mode.
+	(settings_dialog_response): Set boolean options created with
+	make_boolean_option.  Reget package list when in red_pill_mode
+	since it might have changed.
+
+	* src/main.cc (make_main_view): Do not add "Refresh list of
+	packages" button here when in red-pill mode...
+	(main): ...add a button to the toolbar here instead.
+		
+	* src/apt-worker-client.cc, apt-worker-client.h,
+	apt-worker-proto.h, apt-worker.cc: Added show_magic_sys parameter
+	to APTCMD_GET_PACKAGE_LIST to control the inclusion of the
+	"magic:sys" package.  Updated all callers.
+
 2006-08-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.27

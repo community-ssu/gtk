@@ -62,6 +62,7 @@ void apt_worker_get_package_list (bool only_user,
 				  bool only_installed,
 				  bool only_available,
 				  const char *pattern,
+				  bool show_magic_sys,
 				  apt_worker_callback *callback,
 				  void *data);
 

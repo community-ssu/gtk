@@ -457,6 +457,7 @@ apt_worker_get_package_list (bool only_user,
 			     bool only_installed,
 			     bool only_available,
 			     const char *pattern,
+			     bool show_magic_sys,
 			     apt_worker_callback *callback, void *data)
 {
   request.reset ();
@@ -464,6 +465,7 @@ apt_worker_get_package_list (bool only_user,
   request.encode_int (only_installed);
   request.encode_int (only_available);
   request.encode_string (pattern);
+  request.encode_int (show_magic_sys);
   call_apt_worker (APTCMD_GET_PACKAGE_LIST,
 		   request.get_buf (), request.get_len (),
 		   callback, data);

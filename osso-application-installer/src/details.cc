@@ -484,7 +484,7 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   nicify_description_in_place (pi->description);
 
   pi->dependencies = decode_dependencies (dec);
-  if (!red_pill_mode)
+  if (!red_pill_mode || !red_pill_show_deps)
     {
       // Too much information can kill you.
       g_free (pi->dependencies);

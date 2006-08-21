@@ -1202,6 +1202,7 @@ cmd_get_package_list ()
   bool only_installed = request.decode_int ();
   bool only_available = request.decode_int ();
   const char *pattern = request.decode_string_in_place ();
+  bool show_magic_sys = request.decode_int ();
 
   if (package_cache == NULL)
     {
@@ -1297,28 +1298,31 @@ cmd_get_package_list ()
 	encode_empty_version_info (false);
     }
 
-  // Append the "magic:sys" package that represents all system
-  // packages This artificial package is identified by its name and
-  // handled specially by MARK_NAMED_PACKAGE_FOR_INSTALL, etc.
+  if (show_magic_sys)
+    {
+      // Append the "magic:sys" package that represents all system
+      // packages This artificial package is identified by its name and
+      // handled specially by MARK_NAMED_PACKAGE_FOR_INSTALL, etc.
+      
+      // Name
+      response.encode_string ("magic:sys");
+      
+      // Broken?  XXX - give real information here
+      response.encode_int (FALSE);
 
-  // Name
-  response.encode_string ("magic:sys");
-
-  // Broken?  XXX - give real information here
-  response.encode_int (FALSE);
-
-  // Installed version
-  response.encode_string ("");
-  response.encode_int (1000);
-  response.encode_string ("system");
-  response.encode_string ("All system packages");
-  response.encode_string (NULL);
-
-  // Available version
-  response.encode_string ("");
-  response.encode_string ("system");
-  response.encode_string (NULL);
-  response.encode_string (NULL);
+      // Installed version
+      response.encode_string ("");
+      response.encode_int (1000);
+      response.encode_string ("system");
+      response.encode_string ("All system packages");
+      response.encode_string (NULL);
+      
+      // Available version
+      response.encode_string ("");
+      response.encode_string ("system");
+      response.encode_string (NULL);
+      response.encode_string (NULL);
+    }
 }
 
 /* APTCMD_GET_PACKAGE_INFO

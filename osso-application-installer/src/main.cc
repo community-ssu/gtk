@@ -309,22 +309,6 @@ make_main_view (view *v)
   gtk_table_attach_defaults (GTK_TABLE (table), btn,
 			     1, 2, 4, 5);
 
-  if (red_pill_mode)
-    {
-      btn = make_padded_button (_("ai_me_tools_refresh"),
-				OssoGtkButtonAttachFlags
-				(OSSO_GTK_BUTTON_ATTACH_NORTH |
-				 OSSO_GTK_BUTTON_ATTACH_EAST |
-				 OSSO_GTK_BUTTON_ATTACH_SOUTH |
-				 OSSO_GTK_BUTTON_ATTACH_WEST));
-      g_signal_connect (G_OBJECT (btn), "clicked",
-			G_CALLBACK (refresh_package_cache),
-			NULL);
-      gtk_table_attach_defaults (GTK_TABLE (table), btn,
-				 1, 2, 5, 6);
-    }
-
-
   gtk_widget_show_all (view);
 
   get_package_list_info (NULL);
@@ -477,7 +461,7 @@ free_all_packages ()
 static const char *
 canonicalize_section_name (const char *name)
 {
-  if (name == NULL || red_pill_mode)
+  if (name == NULL || (red_pill_mode && red_pill_show_all))
     return name;
 
   if (g_str_has_prefix (name, "maemo/"))
@@ -492,7 +476,7 @@ canonicalize_section_name (const char *name)
 const char *
 nicify_section_name (const char *name)
 {
-  if (red_pill_mode)
+  if (red_pill_mode && red_pill_show_all)
     return name;
 
   name = canonicalize_section_name (name);
@@ -789,10 +773,11 @@ get_package_list_with_cont (void (*cont) (void *data), void *data)
   free_all_packages ();
 
   show_updating ();
-  apt_worker_get_package_list (!red_pill_mode,
+  apt_worker_get_package_list (!(red_pill_mode && red_pill_show_all),
 			       false, 
 			       false, 
 			       NULL,
+			       red_pill_mode && red_pill_show_magic_sys,
 			       get_package_list_reply, c);
 }
 
@@ -2099,10 +2084,11 @@ search_packages (const char *pattern, bool in_descriptions)
 			     || parent == &upgrade_applications_view);
       bool only_available = (parent == &install_applications_view
 			     || parent == &upgrade_applications_view);
-      apt_worker_get_package_list (!red_pill_mode,
+      apt_worker_get_package_list (!(red_pill_mode && red_pill_show_all),
 				   only_installed,
 				   only_available, 
 				   pattern,
+				   red_pill_mode && red_pill_show_magic_sys,
 				   search_packages_reply, parent);
     }
 }
@@ -2371,7 +2357,8 @@ install_from_file_cont2 (char *filename, void *unused)
 	  g_free (filename);
 	}
       else
-	apt_worker_get_file_details (!red_pill_mode, filename,
+	apt_worker_get_file_details (!(red_pill_mode && red_pill_show_all),
+				     filename,
 				     file_details_reply, filename);
     }
 }
@@ -2729,6 +2716,21 @@ main (int argc, char **argv)
   gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 		      GTK_TOOL_ITEM (search_button),
 		      -1);
+
+  if (red_pill_mode)
+    {
+      image = gtk_image_new_from_icon_name ("qgn_toolb_gene_refresh",
+					    HILDON_ICON_SIZE_26);
+      GtkWidget *button = GTK_WIDGET (gtk_tool_button_new (image, NULL));
+      gtk_tool_item_set_expand (GTK_TOOL_ITEM (button), TRUE);
+      gtk_tool_item_set_homogeneous (GTK_TOOL_ITEM (button), TRUE);
+      g_signal_connect (button, "clicked",
+			G_CALLBACK (refresh_package_cache),
+			NULL);
+      gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
+			  GTK_TOOL_ITEM (button),
+			  -1);
+    }
 
   hildon_window_add_toolbar (HILDON_WINDOW (window),
 			     GTK_TOOLBAR (toolbar));

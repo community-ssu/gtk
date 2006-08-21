@@ -45,6 +45,9 @@ bool clean_after_install = true;
 bool assume_connection = false;
 bool break_locks = true;
 bool red_pill_mode = false;
+bool red_pill_show_deps = true;
+bool red_pill_show_all = true;
+bool red_pill_show_magic_sys = true;
 
 int  last_update = 0;
 bool fullscreen_toolbar = true;
@@ -98,6 +101,12 @@ load_settings ()
 	    break_locks = val;
 	  else if (sscanf (line, "red-pill-mode %d", &val) == 1)
 	    red_pill_mode = val;
+	  else if (sscanf (line, "red-pill-show-deps %d", &val) == 1)
+	    red_pill_show_deps = val;
+	  else if (sscanf (line, "red-pill-show-all %d", &val) == 1)
+	    red_pill_show_all = val;
+	  else if (sscanf (line, "red-pill-show-magic-sys %d", &val) == 1)
+	    red_pill_show_magic_sys = val;
 	  else if (sscanf (line, "assume-connection %d", &val) == 1)
 	    assume_connection = val;
 	  else if (sscanf (line, "fullscreen-toolbar %d", &val) == 1)
@@ -143,6 +152,9 @@ save_settings ()
       fprintf (f, "last-update %d\n", last_update);
       fprintf (f, "break-locks %d\n", break_locks);
       fprintf (f, "red-pill-mode %d\n", red_pill_mode);
+      fprintf (f, "red-pill-show-deps %d\n", red_pill_show_deps);
+      fprintf (f, "red-pill-show-all %d\n", red_pill_show_all);
+      fprintf (f, "red-pill-show-magic-sys %d\n", red_pill_show_magic_sys);
       fprintf (f, "assume-connection %d\n", assume_connection);
       fprintf (f, "fullscreen-toolbar %d\n", fullscreen_toolbar);
       fprintf (f, "normal-toolbar %d\n", normal_toolbar);
@@ -151,16 +163,46 @@ save_settings ()
     }
 }
 
+#define MAX_BOOLEAN_OPTIONS 10
+
 struct settings_closure {
-  GtkWidget *clean_radio;
   GtkWidget *update_combo;
+
+  int n_booleans;
+  GtkWidget *boolean_btn[MAX_BOOLEAN_OPTIONS];
+  bool *boolean_var[MAX_BOOLEAN_OPTIONS];
+
+  settings_closure () { n_booleans = 0; }
 };
 
+static void
+make_boolean_option (settings_closure *c, 
+		     GtkWidget *box, GtkSizeGroup *group,
+		     const char *text, bool *var)
+{
+  GtkWidget *caption, *btn;
+
+  btn = gtk_check_button_new ();
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (btn), *var);
+  caption = hildon_caption_new (group, text, btn,
+				NULL, HILDON_CAPTION_OPTIONAL);
+  gtk_box_pack_start (GTK_BOX (box), caption, FALSE, FALSE, 0);
+
+  int i = c->n_booleans++;
+  if (c->n_booleans > MAX_BOOLEAN_OPTIONS)
+    abort ();
+
+  c->boolean_btn[i] = btn;
+  c->boolean_var[i] = var;
+}
 
 static GtkWidget *
-make_updates_tab (settings_closure *c)
+make_settings_tab (settings_closure *c)
 {
-  GtkWidget *caption, *combo;
+  GtkWidget *tab, *combo;
+  GtkSizeGroup *group;
+
+  group = GTK_SIZE_GROUP (gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL));
 
   combo = gtk_combo_box_new_text ();
   gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
@@ -175,10 +217,32 @@ make_updates_tab (settings_closure *c)
 
   c->update_combo = combo;
 
-  caption = hildon_caption_new (NULL, _("ai_fi_settings_update_list"),
-				combo,
-				NULL, HILDON_CAPTION_OPTIONAL);
-  return caption;
+  tab = hildon_caption_new (group, _("ai_fi_settings_update_list"),
+			    combo,
+			    NULL, HILDON_CAPTION_OPTIONAL);
+  if (red_pill_mode)
+    {
+      GtkWidget *caption = tab;
+
+      tab = gtk_vbox_new (FALSE, 0);
+      gtk_box_pack_start (GTK_BOX (tab), caption, FALSE, FALSE, 0);
+
+      make_boolean_option (c, tab, group,
+			   "Clean apt cache", &clean_after_install);
+      make_boolean_option (c, tab, group,
+			   "Assume net connection", &assume_connection);
+      make_boolean_option (c, tab, group,
+			   "Break locks", &break_locks);
+      make_boolean_option (c, tab, group,
+			   "Show dependencies", &red_pill_show_deps);
+      make_boolean_option (c, tab, group,
+			   "Show all packages", &red_pill_show_all);
+      make_boolean_option (c, tab, group,
+			   "Show magic system package",
+			   &red_pill_show_magic_sys);
+    }
+
+  return tab;
 }
 
 static void
@@ -191,7 +255,13 @@ settings_dialog_response (GtkDialog *dialog, gint response, gpointer clos)
       update_interval_index =
 	gtk_combo_box_get_active (GTK_COMBO_BOX (c->update_combo));
 
+      for (int i = 0; i < c->n_booleans; i++)
+	*(c->boolean_var[i]) =
+	  gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (c->boolean_btn[i]));
+
       save_settings ();
+      if (red_pill_mode)
+	get_package_list ();
     }
 
   delete c;
@@ -216,7 +286,7 @@ show_settings_dialog ()
   set_dialog_help (dialog, AI_TOPIC ("settings"));
 
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG(dialog)->vbox),
-		      make_updates_tab (c),
+		      make_settings_tab (c),
 		      FALSE, FALSE, 20);
 
   g_signal_connect (dialog, "response",

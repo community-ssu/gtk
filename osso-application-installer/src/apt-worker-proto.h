@@ -157,6 +157,7 @@ enum apt_proto_operation {
 // - only_installed (int). Include only packages that are installed.
 // - only_available (int). Include only packages that are available.
 // - pattern (string).     Include only packages that match pattern.
+// - show_magic_sys (int). Include the artificial "magic:sys" package.
 //
 // The response starts with an int that tells whether the request
 // succeeded.  When that int is 0, no data follows.  When it is 1 then
