@@ -1,5 +1,12 @@
 2006-08-21  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "The extra 'zZZ' icons do not come up on doing BG killing."
+	(Closes NB#38259)
+	* hildon-navigator/hn-wm.c: signal the AS to update its icons when an
+	  application goes to hibernation
+
+2006-08-21  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Shortcut to task switcher working where no applications
 	are open." (Closes NB#38033)
 	* hildon-navigator/hn-app-switcher.c: do not open the AS menu when

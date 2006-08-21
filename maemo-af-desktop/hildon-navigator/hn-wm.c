@@ -960,6 +960,9 @@ client_list_steal_foreach_func (gpointer key,
       /* the window is marked as hibernating, we move it to the hibernating
        * windows hash
        */
+      HNWMWatchableApp * app;
+      HNEntryInfo      * app_info = NULL;
+      
       HN_DBG ("hibernating window [%s], moving to hibernating hash",
               hn_wm_watched_window_get_hibernation_key(win));
       
@@ -969,6 +972,14 @@ client_list_steal_foreach_func (gpointer key,
 
       /* reset the window xid */
       hn_wm_watched_window_reset_x_win (win);
+
+      /* update AS */
+      app = hn_wm_watched_window_get_app (win);
+
+      if (app)
+        app_info = hn_wm_watchable_app_get_info (app);
+      
+      hn_app_switcher_changed (hnwm.app_switcher, app_info);
 
       /* free the original hash key, since we are stealing */
       g_free (key);
