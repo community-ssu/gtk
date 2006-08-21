@@ -1,5 +1,7 @@
 2006-08-21  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.28.
+	
 	Made the red-pill mode configurable.
 
 	* src/settings.h, src/settings.cc:
