@@ -3,36 +3,56 @@
 # based on the sample debian/rules file for GNU hello by Ian Jackson.
 
 build:
-	$(checkdir)
+	dh_testdir
 	$(MAKE)
 
 clean:
-	$(checkdir)
+	dh_testdir
+	dh_testroot
 	$(MAKE) clean
-	-rm -rf debian/tmp
-	-rm -rf debian/files* core debian/substvars
+	dh_clean
 
-binary-indep: checkroot build
-	$(checkdir)
-	rm -rf debian/tmp
-	$(MAKE) install DESTDIR=$(PWD)/debian/tmp
-	debstd -m -c
-	dpkg-gencontrol -isp -pdocpurge
-	chown -R root:root debian/tmp
-	chmod -R go=rX debian/tmp
-	dpkg --build debian/tmp ..
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 
-binary-arch: checkroot build
-	$(checkdir)
+binary-indep: install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+#	dh_installexamples
+#	dh_install
+#	dh_installmenu
+#	dh_installdebconf	
+#	dh_installlogrotate
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installmime
+#	dh_installinit
+#	dh_installcron
+#	dh_installinfo
+#	dh_installman
+#	dh_link
+#	dh_strip
+#	dh_compress
+	dh_fixperms
+#	dh_perl
+#	dh_python
+#	dh_makeshlibs
+	dh_installdeb
+#	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
 
-define checkdir
-	test -f debian/rules
-endef
+binary-arch: install
+	dh_testdir
 
 binary: binary-indep binary-arch
 
-checkroot:
-	$(checkdir)
-	test root = "`whoami`"
 
 .PHONY: binary binary-arch binary-indep clean checkroot

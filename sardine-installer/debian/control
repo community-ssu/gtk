@@ -1,9 +1,9 @@
 Source: sardine-installer
-Section: misc
+Section: user/tools
 Priority: optional
 Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
-Build-Depends-Indep: debmake
-Standards-Version: 3.5.10
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
 
 Package: sardine-installer
 Architecture: all
