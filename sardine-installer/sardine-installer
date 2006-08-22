@@ -23,7 +23,10 @@ fi
 
 mke2fs $DEV
 
-insmod /mnt/initfs/lib/modules/current/ext2.ko
+if ! grep -q ext2 /proc/filesystems; then
+  insmod /mnt/initfs/lib/modules/current/ext2.ko
+fi
+
 mount -t ext2 $DEV /media/mmc1
 
 chroot /mnt/initfs wget -O - $ROOTFS | (cd /media/mmc1 && tar xvvzf -)
