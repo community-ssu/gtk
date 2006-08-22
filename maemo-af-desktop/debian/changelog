@@ -1,3 +1,9 @@
+maemo-af-desktop (2.9.21.5-1) unstable; urgency=low
+
+  * Patched bug 31081
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 22 Aug 2006 14:39:59 +0300
+
 maemo-af-desktop (2.9.21.4-2) unstable; urgency=low
 
   * debian/maemo-af-desktop.links: Added symbolic to use backup restore

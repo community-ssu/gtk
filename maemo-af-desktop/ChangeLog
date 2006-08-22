@@ -1,3 +1,9 @@
+2006-08-22  Karoliina Salminen <karoliina.t.salminen@nokia.com>
+
+	Applied patch for bug N#31081 Home enters into Layout mode in low memory state.
+	* hildon-home/layout-manager.c: added: if low memory is on, the layout mode is not activated
+	* configure.ac: 2.9.21.5
+
 2006-08-21  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "The extra 'zZZ' icons do not come up on doing BG killing."

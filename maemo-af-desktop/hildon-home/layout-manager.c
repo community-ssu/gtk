@@ -86,6 +86,8 @@
 
 #define ROLLBACK_LAYOUT TRUE
 
+#define LAYOUT_MODE_NOTIFICATION_LOWMEM \
+  dgettext("hildon-common-strings", "memr_ib_operation_disabled")
 #define LAYOUT_MODE_CANCEL_BUTTON "qgn_indi_home_layout_reject"
 #define LAYOUT_MODE_ACCEPT_BUTTON "qgn_indi_home_layout_accept"
 
@@ -134,6 +136,7 @@ typedef struct _layout_node_t LayoutNode;
 
 struct _layout_mode_internal_t {
     GList * main_applet_list;
+    GList * add_list;
     GtkFixed * area;
     GtkEventBox * home_area_eventbox;
     LayoutNode * active;   
@@ -276,7 +279,7 @@ static void layout_tapnhold_timeout_animation_stop(void);
 static gboolean layout_tapnhold_timeout_animation(GtkWidget *widget);
 static void layout_tapnhold_animation_init(void);
 #endif
-
+void layout_hw_cb_f(osso_hw_state_t *state, gpointer data);
 static void raise_applet(LayoutNode *node);
 
 static void fp_mlist(void);
@@ -318,6 +321,50 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 			 GList * removed_applets,
                          GtkWidget * titlebar_label)
 {
+    osso_return_t returnstatus;
+
+    ULOG_ERR("LAYOUT:Layoutmode begin, GLists are (*) %d and (*) %d\n",
+	    GPOINTER_TO_INT(added_applets), 
+	    GPOINTER_TO_INT(removed_applets));
+
+    if(general_data.main_applet_list != NULL)
+    {
+	ULOG_ERR("Home Layout Mode startup while running!");
+	return;
+    }
+
+    general_data.area = home_fixed;
+    general_data.home_area_eventbox = home_event_box;
+    general_data.titlebar_label = titlebar_label;
+    general_data.add_list = added_applets;
+
+    returnstatus = osso_hw_set_event_cb(general_data.osso, NULL,
+					layout_hw_cb_f, removed_applets);
+
+    if (returnstatus != OSSO_OK)
+    {
+	ULOG_ERR("LAYOUT: could not check device state");
+	return; /* User is not informed. What should we tell? FIXME */
+    }
+
+
+   
+}
+
+/**
+ * @layout_hw_cb_f
+ *
+ * @param state the osso hardware state reporting function.
+ *
+ * @param data unused
+ *
+ * This function is not currently used and exists because we need the function
+ * pointer to query the current hw state upon device startup. 
+ */
+
+void layout_hw_cb_f(osso_hw_state_t *state, gpointer data)
+{
+    osso_return_t osso_ret;
     applet_manager_t * manager;
     LayoutNode * node;
     GList * iter;
@@ -325,31 +372,45 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     GtkWidget * mi;
     gint x, y;
     GList * addable_applets =NULL;
+    
+
     GtkWidget *window;
     GTimeVal tv_s, tv_e;
     gint ellapsed;
     GList *focus_list;
+
+    
+    GList *added_applets = general_data.add_list;
+    GList * removed_applets = (GList*) data;
+    general_data.add_list = NULL;
+
     GdkWindowAttr wattr = { 0 };
     GtkIconTheme *icon_theme;
     GError *error;
     
     node = NULL;
+    osso_ret = osso_hw_unset_event_cb(general_data.osso, NULL);
 
     general_data.drag_source_context = NULL;
 
-    ULOG_DEBUG("LAYOUT:Layoutmode begin, GLists are (*) %d and (*) %d",
-	       GPOINTER_TO_INT(added_applets),
-	       GPOINTER_TO_INT(removed_applets));
-
-    if(general_data.main_applet_list != NULL)
+    if (osso_ret == OSSO_INVALID)
     {
-        ULOG_ERR("Home Layout Mode startup while running!");
+        ULOG_ERR ("Invalid callback unset");
         return;
     }
 
+    if (state->memory_low_ind)
+     {
+
+           hildon_banner_show_information(NULL, NULL, 
+                      LAYOUT_MODE_NOTIFICATION_LOWMEM);
+     return;
+    }
+
+
     /* Show animation banner to user about layout mode beginning */    
     general_data.anim_banner = hildon_banner_show_animation(
-    	    GTK_WIDGET(home_event_box), NULL, 
+    	    GTK_WIDGET (general_data.home_area_eventbox), NULL, 
     	    LAYOUT_MODE_NOTIFICATION_MODE_BEGIN_TEXT);   
 
     g_get_current_time (&tv_s);
@@ -364,9 +425,6 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
         added_applets = g_list_next(added_applets);
     }
 
-    general_data.home_area_eventbox = home_event_box;
-
-    general_data.area = home_fixed;
 
     /* Save any modification made whilst layout mode */
     general_data.is_save_changes = FALSE;
@@ -538,7 +596,6 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
 			 G_CALLBACK(handle_drag_motion), general_data.area);
 
 
-    general_data.titlebar_label = titlebar_label;
     gtk_widget_hide(general_data.titlebar_label);
 
     general_data.menu_label = gtk_label_new(LAYOUT_MODE_MENU_LABEL_NAME);
@@ -640,6 +697,7 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     gtk_widget_grab_focus(general_data.cancel_button);
 	
     gtk_widget_show_all(general_data.layout_menu);
+
     general_data.home_menu =
         GTK_WIDGET(set_menu(GTK_MENU(general_data.layout_menu)));
 
@@ -752,7 +810,11 @@ void layout_mode_begin ( GtkEventBox *home_event_box,
     fp_mlist();
     
     /* FIXME: EXIT AND SAVE ICONS. CHECK LEGALITY IF SHOULD START GREYED. */
+
+
 }
+
+
 
 void layout_mode_end ( gboolean rollback )
 {
