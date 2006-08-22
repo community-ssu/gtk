@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+# Made with the aid of debmake, by Christoph Lameter,
+# based on the sample debian/rules file for GNU hello by Ian Jackson.
+
+build:
+	$(checkdir)
+	$(MAKE)
+
+clean:
+	$(checkdir)
+	$(MAKE) clean
+	-rm -rf debian/tmp
+	-rm -rf debian/files* core debian/substvars
+
+binary-indep: checkroot build
+	$(checkdir)
+	rm -rf debian/tmp
+	$(MAKE) install DESTDIR=$(PWD)/debian/tmp
+	debstd -m -c
+	dpkg-gencontrol -isp -pdocpurge
+	chown -R root:root debian/tmp
+	chmod -R go=rX debian/tmp
+	dpkg --build debian/tmp ..
+
+binary-arch: checkroot build
+	$(checkdir)
+
+define checkdir
+	test -f debian/rules
+endef
+
+binary: binary-indep binary-arch
+
+checkroot:
+	$(checkdir)
+	test root = "`whoami`"
+
+.PHONY: binary binary-arch binary-indep clean checkroot

@@ -1,0 +1,32 @@
+#! /bin/sh
+
+if [ "$1" != "do" -o "$2" != "it" ]; then
+  exec >&2
+  echo
+  echo "** This program will erase your MMC and will **"
+  echo "**    put the Sardine distribution on it.    **"
+  echo
+  echo "Run it as \"sardine-installer do it\".  No further"
+  echo "questions will be asked, so once again: this program"
+  echo "WILL ERASE YOUR MMC."
+  exit 1
+fi;
+
+set -e -x
+
+DEV=/dev/mmcblk0p1
+ROOTFS="http://10.19.147.124/sardine-rootfs-0.tar.gz"
+
+if cat /proc/mounts | cut -d' ' -f 0 | grep -F -q $DEV; then
+  umount $DEV
+fi
+
+mke2fs $DEV
+
+insmod /mnt/initfs/lib/modules/current/ext2.ko
+mount -t ext2 $DEV /media/mmc1
+
+chroot /mnt/initfs wget -O - $ROOTFS | (cd /media/mmc1 && tar xvvzf -)
+umount /media/mmc1
+
+chroot /mnt/initfs cal-tool -R mmc

@@ -1,0 +1,20 @@
+Source: sardine-installer
+Section: misc
+Priority: optional
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Build-Depends-Indep: debmake
+Standards-Version: 3.5.10
+
+Package: sardine-installer
+Architecture: all
+Depends: e2fsprogs 
+Description: Installer for the Sardine distribution
+ This package installs the "sardine-installer" program that can be
+ invoked from the command line to install the Sardine distribution
+ on your MMC.
+ .
+ To use it, open a terminal and become root.  Then run
+ .
+   # sardine-installer
+ .
+ and follow the instructions.

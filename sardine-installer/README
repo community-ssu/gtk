@@ -1,0 +1,24 @@
+Sardine Installer
+-----------------
+
+This is a small package that allows you to install Sardine (the
+bleeding edge maemo distribution for the Nokia 770) on your MMC.
+
+The theory of operation is as follows:
+
+- Installing this package gives you a program named
+  "sardine-installer" that can be run from the command line.
+
+- The sardine-installer will format your first partition on your MMC
+  as an ext2 filesystem and extract the Sardine root filesystem onto it.
+
+- The Sardine root filesystem is downloaded and extracted on the fly.
+
+- You also get the select-root-device program that will allow you to
+  change the device that your device boots from.
+
+- The sardine-installer will use that program to set the root device
+  to "mmc".
+
+It is recommended that you flash the "bootmenu initfs".  More about
+this later.
