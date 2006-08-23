@@ -3023,23 +3023,6 @@ gtk_tree_view_button_release_column_resize (GtkWidget      *widget,
   return TRUE;
 }
 
-/* helper function for gtk_tree_view_button_release */
-static void
-activate_callback (GtkTreeModel *model,
-                   GtkTreePath  *path,
-                   GtkTreeIter  *iter,
-                   gpointer      data)
-{
-  GtkTreeView *tree_view = GTK_TREE_VIEW (data);
-
-  /* Hildon: if the tree view has no active focus we don't activate
-   * the selected row */
-  if ( !GTK_WIDGET_HAS_FOCUS (GTK_WIDGET(data)) )
-      return;
-  
-  gtk_tree_view_row_activated (tree_view, path, tree_view->priv->focus_column);
-}
-
 static gboolean
 gtk_tree_view_button_release (GtkWidget      *widget,
 			      GdkEventButton *event)
@@ -3100,9 +3083,8 @@ gtk_tree_view_button_release (GtkWidget      *widget,
 
           if (gtk_tree_path_compare (cursor_path, queued_path) == 0)
             {
-              gtk_tree_selection_selected_foreach (tree_view->priv->selection,
-                                                   activate_callback,
-                                                   tree_view);
+              gtk_tree_view_row_activated (tree_view, cursor_path,
+                                           tree_view->priv->focus_column);
             }
 
           gtk_tree_path_free (cursor_path);
