@@ -1213,11 +1213,11 @@ static void hildon_file_selection_close_load_banner(HildonFileSelection *
       /* User hasn't changed the selection. Select the first row. */
       GtkTreeIter iter;
       gboolean content_pane_focused = priv->content_pane_last_used;
+      GtkWidget *view = get_current_view(priv);
 
-      if (gtk_tree_model_get_iter_first(priv->view_filter, &iter))
+      if (view && gtk_tree_model_get_iter_first(priv->view_filter, &iter))
       {
         gboolean is_available;
-        GtkWidget *view = get_current_view(priv);
 
         gtk_tree_model_get(priv->view_filter, &iter,
           HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE, &is_available,
