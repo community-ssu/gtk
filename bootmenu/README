@@ -1,0 +1,6 @@
+This is the source for the "bootmenu" package
+---------------------------------------------
+
+Installing the bootmenu package patches your 770 to give you a menu at
+boot time where you can select the root device to boot from.
+
