@@ -62,6 +62,7 @@ static void url_requested (GtkHTML *html, const char *url,
       while ((size = read(fd, buf, GTKHTML_BUFLEN)) > 0) {
         gtk_html_stream_write (stream, buf, size);
       }
+      g_free (buf);
       gtk_html_stream_close(stream, 
                 size == -1
                 ? GTK_HTML_STREAM_ERROR

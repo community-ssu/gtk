@@ -1,5 +1,10 @@
 2006-08-23 Jakub Pavelek <jakub.pavelek@nokia.com>
 
+	* src/browser.c: url_requested(): freeing the allocated buffer
+	Fixes NB#38458
+
+2006-08-23 Jakub Pavelek <jakub.pavelek@nokia.com>
+
 	* src/browser.c: browser_show(): fixed file descriptor leak
 	Fixes NB#38456
 
