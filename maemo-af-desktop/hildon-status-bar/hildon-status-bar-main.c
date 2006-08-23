@@ -186,6 +186,7 @@ void init_dock( StatusBar *panel )
     gtk_widget_set_name(panel->arrow_button, "HildonStatusBarItem");
     arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_IN);
     g_object_ref( panel->arrow_button );
+    gtk_object_sink( GTK_OBJECT(panel->arrow_button) );
     gtk_container_add(GTK_CONTAINER(panel->arrow_button), arrow);
     gtk_widget_set_size_request(panel->arrow_button, 
 		                HSB_ITEM_SIZE, HSB_ITEM_SIZE);
@@ -1241,6 +1242,15 @@ void arrange_items( StatusBar *panel, gint start )
             continue;
         }
 
+        if ( place_here > HSB_VISIBLE_ITEMS_IN_ROW )
+            break;
+
+        /* Remove arrow if exists */
+        if ( gtk_widget_get_parent( panel->arrow_button ) ) {	    
+            gtk_container_remove( GTK_CONTAINER(panel->fixed), 
+                    panel->arrow_button );
+        }
+
         /* If the extension was opened, remove item from it */	
         if ( panel->popup_fixed && gtk_widget_get_parent
                 (panel->items[i]) == panel->popup_fixed ) {
@@ -1249,56 +1259,42 @@ void arrange_items( StatusBar *panel, gint start )
                     panel->items[i] );
         }
 
-        /* Update the position changes in fixed */
-        if ( place_here <= HSB_VISIBLE_ITEMS_IN_ROW - 1 ) {
-
-
-            if ( gtk_widget_get_parent( panel->items[i] ) == panel->fixed ) {
-                gtk_fixed_move( GTK_FIXED( panel->fixed ), 
-                        panel->items[i],
-                        panel->plugin_pos_x[place_here],
-                        panel->plugin_pos_y[place_here] ); 
-            } else if ( !gtk_widget_get_parent( panel->items[i] ) ) {
-                gtk_fixed_put( GTK_FIXED( panel->fixed ), 
-                        panel->items[i], 
-                        panel->plugin_pos_x[place_here],
-                        panel->plugin_pos_y[place_here] );
-                gtk_widget_show( panel->items[i] );					
-            }
-
-        } 
-
-        /* If arrow button is not needed remove it */
+        /* Save last shown items place */
         if ( place_here == HSB_VISIBLE_ITEMS_IN_ROW - 1 ) {
-
-            if ( gtk_widget_get_parent( panel->arrow_button ) ) {	    
-                gtk_container_remove( GTK_CONTAINER(panel->fixed), 
-                        panel->arrow_button );
-            }  
-
             prev_place = i;
         }
-        /* If arrow button is needed add it */
-        else if ( place_here == HSB_VISIBLE_ITEMS_IN_ROW ) {
 
+        /* If arrow button is needed add it */
+        if ( place_here == HSB_VISIBLE_ITEMS_IN_ROW ) {
             if ( gtk_widget_get_parent
                     ( panel->items[prev_place] ) == panel->fixed ) { 
                 gtk_container_remove( GTK_CONTAINER(panel->fixed), 
                         panel->items[prev_place] ); 
             }
             if ( gtk_widget_get_parent
-                    ( panel->items[place_here] ) == panel->fixed ) {
+                    ( panel->items[i] ) == panel->fixed ) {
                 gtk_container_remove( GTK_CONTAINER(panel->fixed), 
-                        panel->items[place_here] );
+                        panel->items[i] );
             }
 
-            g_object_ref( panel->arrow_button );
             gtk_fixed_put( GTK_FIXED( panel->fixed ), 
                     panel->arrow_button, 
                     panel->plugin_pos_x[place_here-1], 
                     panel->plugin_pos_y[place_here-1] );
-            gtk_widget_show( panel->arrow_button );    
             break;	     
+        }
+
+        /* Add or move item */
+        if ( gtk_widget_get_parent( panel->items[i] ) == panel->fixed ) {
+            gtk_fixed_move( GTK_FIXED( panel->fixed ), 
+                    panel->items[i],
+                    panel->plugin_pos_x[place_here],
+                    panel->plugin_pos_y[place_here] ); 
+        } else if ( !gtk_widget_get_parent( panel->items[i] ) ) {
+            gtk_fixed_put( GTK_FIXED( panel->fixed ), 
+                       panel->items[i], 
+                       panel->plugin_pos_x[place_here],
+                       panel->plugin_pos_y[place_here] );
         }
 
         place_here++;
@@ -1513,8 +1509,9 @@ status_bar_deinitialize( osso_context_t *osso, StatusBar **panel )
     }
     
     TRACE(TDEBUG,"status_bar_deinitialize: 3"); 
-    g_object_unref (sb_panel->log);
+    g_object_unref( sb_panel->log );
     gtk_widget_destroy( sb_panel->window );
+    g_object_unref( sb_panel->arrow_button );
     gtk_widget_destroy( sb_panel->arrow_button );
     if ( sb_panel->popup )
         gtk_widget_destroy( sb_panel->window );

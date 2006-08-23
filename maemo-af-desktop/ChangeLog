@@ -1,3 +1,9 @@
+2006-08-22  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Extension button is not showing next row." (Closes NB#36908)
+	* hildon-status-bar/hildon-status-bar-main.c: fixed bug in plugin
+	  placement in the status bar panel
+
 2006-08-22  Karoliina Salminen <karoliina.t.salminen@nokia.com>
 
 	Applied patch for bug N#31081 Home enters into Layout mode in low memory state.
@@ -8,7 +14,7 @@
 		layout-manager.c
 		* Added low memory check to layout_mode_begin
 		* Most of the functionality of layout_mode_begin function has been moved to
- 		fuction layout_hw_cb_f
+		fuction layout_hw_cb_f
 	* configure.ac: 2.9.21.5
 
 2006-08-21  Johan Bilien <johan.bilien@nokia.com>
