@@ -1,3 +1,15 @@
+hildon-fm (1.6-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Reverted a patch in 1.5-1 for the details dialog.
+  * Fixed crash that happens with Glib compiled with thumb instructions.
+    Fixes: NB#35428
+  * Fixed the icon shown for a special Bluetooth device. Fixes: NB#35354
+  * Fixed creating thumbnails for a long file list to be more efficient.
+    Fixes: NB#21674
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 23 Aug 2006 13:59:25 +0300
+
 hildon-fm (1.5-2) unstable; urgency=low
 
   * Same as 1.5-1, just removed one fixed bug from the list.

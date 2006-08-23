@@ -2567,31 +2567,10 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
     /* No, path was not found. Let's try go one level up and loading more
        contents */
     if (!gtk_file_system_get_parent
-        (model->priv->filesystem, path, &parent_path, NULL)
-        || parent_path == NULL)
-    {
-        /* Let's check a special case: We want remote servers to report
-           the used protocol as their parent uri, e.g.
-           upnpav://server/ => upnpav://         */
-        const gchar *s;
-        gint i;
-
-        s = gtk_file_path_get_string(path);
-        i = strlen(s) - 1;
-
-        /* Skip tailing slashes */
-        while (i >= 0 && s[i] == G_DIR_SEPARATOR) i--;
-        /* Skip characters backwards until we encounter next slash */
-        while (i >= 0 && s[i] != G_DIR_SEPARATOR) i--;
-
-        if (i >= 0)
-            parent_path = gtk_file_path_new_steal(g_strndup(s, i + 1));
-        else {
-            ULOG_ERR_F("Attempt to select folder that is not in user"
-                       " visible area");
-            return FALSE; /* Very BAD. We reached the real root. Given
-                             folder was probably not under any of our roots */
-        }
+        (model->priv->filesystem, path, &parent_path, NULL) || parent_path == NULL) {
+        ULOG_ERR_F("Attempt to select folder that is not in user visible area");
+        return FALSE; /* Very BAD. We reached the real root. Given
+                         folder was probably not under any of our roots */
     }
 
     if (hildon_file_system_model_load_path(model, parent_path, &parent_iter))
