@@ -1,0 +1,9 @@
+#! /bin/sh
+
+set -e
+
+cat >>/etc/inittab <<EOF 
+#begin:bootmenu
+bm::bootwait:/sbin/bootmenu
+#end:bootmenu
+EOF

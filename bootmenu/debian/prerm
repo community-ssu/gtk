@@ -1,0 +1,12 @@
+#! /bin/sh
+
+nukeconf () 
+{
+  f="$1"
+  awk '/#begin:bootmenu/ { ignore=1 }
+       /#end:bootmenu/   { ignore=0; next }
+                         { if (!ignore) print }' \
+  $f >$f.tmp && mv $f.tmp $f
+}
+
+nukeconf /etc/inittab
