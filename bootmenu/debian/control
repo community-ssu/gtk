@@ -1,0 +1,13 @@
+Source: bootmenu
+Section: user/tools
+Priority: optional
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
+
+Package: bootmenu
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: A menu to allow easy dual booting
+ This package adds a menu to the boot sequence that allows you
+ to choose whether to boot from the internal flash or the MMC.
