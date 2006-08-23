@@ -14,6 +14,10 @@ if [ "$1" != "do" -o "$2" != "it" ]; then
   echo "copied to the MMC on the fly.  About 60 MiB will be"
   echo "downloaded, so make sure you are well connected."
   echo
+  echo "This preliminary version of the Sardine Installer will"
+  echo "download from a temporary location that is only accessible"
+  echo "when connected to osso.net WITHOUT using a proxy."
+  echo
   echo "This program is quite simple.  Feel free to look at"
   echo "the source and modify it to suit your needs."
   exit 1
@@ -38,4 +42,4 @@ mount -t ext2 $DEV /media/mmc1
 chroot /mnt/initfs wget -O - $ROOTFS | (cd /media/mmc1 && tar xvvzf -)
 umount /media/mmc1      # this might take some time...
 
-chroot /mnt/initfs cal-tool -R mmc
+# chroot /mnt/initfs cal-tool -R mmc
