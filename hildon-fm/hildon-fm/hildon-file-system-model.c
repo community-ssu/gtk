@@ -988,8 +988,6 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
               }
               g_free(uri);
             }
-            else if (model_node->thumbnail_handle)
-              osso_thumbnail_factory_move_front(model_node->thumbnail_handle);
 
             /* the following if clause handles the hourglass icon */
             if (path && info && !model_node->thumbnail_cache)
@@ -1021,6 +1019,9 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
                  hildon_file_system_model_create_image(priv, model_node,
                                                        THUMBNAIL_ICON);
         }
+        else if (model_node->thumbnail_handle)
+            osso_thumbnail_factory_move_front(model_node->thumbnail_handle);
+
         g_value_set_object(value, model_node->thumbnail_cache);
         update_cache_queue(priv, node);
         break;
