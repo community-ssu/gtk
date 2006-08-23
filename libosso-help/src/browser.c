@@ -180,6 +180,7 @@ gboolean browser_show( GtkWidget *browser,
           continue;
         g_warning ("read error: %s", g_strerror (errno));
         gtk_html_end (html, html_stream_handle, GTK_HTML_STREAM_ERROR);
+	close(fd);
         return FALSE;
       }
       gtk_html_write (html, html_stream_handle, buf + total, nread);
@@ -193,6 +194,7 @@ gboolean browser_show( GtkWidget *browser,
 
   /* Focus to the HTML page of help instead of search bar */
   gtk_widget_grab_focus(child);
+  close(fd);
 
   return TRUE;
 }
