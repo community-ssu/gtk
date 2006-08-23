@@ -30,6 +30,8 @@
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus-glib-lowlevel.h>
 
+#include <gconf/gconf-client.h>
+
 #include "hildon-file-system-obex.h"
 #include "hildon-file-system-settings.h"
 #include "hildon-file-system-dynamic-device.h"
@@ -53,12 +55,13 @@ static const gchar *
 root_failed_message = "Unable to list paired OBEX devices";
 
 
-static gchar *
-_unescape_base_uri (gchar *uri);
+static gchar *_unescape_base_uri (gchar *uri);
 
 static gchar *_uri_to_display_name (gchar *uri);
 static void _uri_filler_function (gpointer data, gpointer user_data);
 static gchar *_obex_addr_to_display_name(gchar *obex_addr);
+
+static gchar *_get_icon_from_uri (gchar *uri);
 
 
 static void
@@ -106,10 +109,17 @@ hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *
         child = g_object_new(HILDON_TYPE_FILE_SYSTEM_DYNAMIC_DEVICE, NULL);
         HILDON_FILE_SYSTEM_REMOTE_DEVICE (child)->accessible =
             HILDON_FILE_SYSTEM_REMOTE_DEVICE (location)->accessible;
-        hildon_file_system_special_location_set_icon (child,
-                                                      "qgn_list_filesys_divc_gw");
 
         new_uri = _unescape_base_uri (uri);
+
+        name = _get_icon_from_uri (new_uri);
+        if (name) {
+            hildon_file_system_special_location_set_icon (child, name);
+            g_free (name);
+        } else {
+            hildon_file_system_special_location_set_icon (child,
+                "qgn_list_filesys_divc_gw");
+        }
 
           /* if this fails, NULL is returned and fallback is that
              the obex addr in format [12:34:...] is shown */
@@ -220,6 +230,31 @@ static void _uri_filler_function (gpointer data, gpointer user_data)
         dest->addr = src->addr;
         dest->name = src->name;
     }
+}
+
+
+static gchar *_get_icon_from_uri (gchar *uri)
+{
+    GConfClient *gconf_client;
+    gchar *ret = NULL;
+    gchar key[] = "/system/bluetooth/device/xx:xx:xx:xx:xx:xx/icon";
+
+    g_assert (uri != NULL);
+    gconf_client = gconf_client_get_default ();
+
+    if (!gconf_client) {
+        return NULL;
+    }
+
+    /* index 25 is the beginning of the BT address */
+    /* and 17 is the length of the BT address */
+    memcpy (key + 25, uri + 8, 17);
+
+    ret = gconf_client_get_string (gconf_client, key, NULL);
+
+    g_object_unref (gconf_client);
+
+    return ret;
 }
 
 

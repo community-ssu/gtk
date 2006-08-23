@@ -3,6 +3,7 @@ hildon-fm (1.5-1) unstable; urgency=low
   * UNRELEASED
   * Fixed crash that happens with Glib compiled with thumb instructions.
     Fixes: NB#35428
+  * Fixed the icon shown for a special Bluetooth device. Fixes: NB#35354
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 23 Aug 2006 10:35:50 +0300
 
