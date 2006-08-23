@@ -25,6 +25,7 @@
 #include "hildon-control-panel-main.h"
 
 #include <hildon-widgets/hildon-code-dialog.h>
+#include <hildon-widgets/hildon-banner.h>
 #include <libosso.h>
 #include <osso-log.h>
 
@@ -173,9 +174,10 @@ hcp_rfs_check_lock_code_dialog (HCP *hcp)
 
         if (!password_correct)
         {
-            gtk_infoprint (NULL,
-                           RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE );
-            hildon_code_dialog_clear_code (HILDON_CODE_DIALOG (dialog) );
+            hildon_banner_show_information (GTK_WIDGET (hcp->window),
+                                            NULL,
+                                            RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE);
+            hildon_code_dialog_clear_code (HILDON_CODE_DIALOG (dialog));
         }
     }
 

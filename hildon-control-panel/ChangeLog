@@ -1,6 +1,11 @@
+2006-08-23 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-cp-rfs.c: replace gtk_info_print with hildon_banner_info
+	  (Closes NB#37551)
+
 2006-08-18 Johan Bilien <johan.bilien@nokia.com>
 
-	 * hildon-cp-applist.c: Really free the lists return by gconf
+	* hildon-cp-applist.c: Really free the lists return by gconf
 	   (Closes NB#36887)
 	* configure.ac: 2.2.5
 
