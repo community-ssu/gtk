@@ -1,7 +1,7 @@
 hildon-fm (1.6-1) unstable; urgency=low
 
-  * UNRELEASED
-  * Reverted a patch in 1.5-1 for the details dialog.
+  * Reverted a patch in 1.5-1 for the details dialog (caused a crash in
+    some applications, but worked somehow for Sketch).
   * Fixed crash that happens with Glib compiled with thumb instructions.
     Fixes: NB#35428
   * Fixed the icon shown for a special Bluetooth device. Fixes: NB#35354
