@@ -1,5 +1,12 @@
 2006-08-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkcombobox.c (gtk_combo_box_add, gtk_combo_box_remove,
+	gtk_combo_box_menu_setup, gtk_combo_box_list_setup): Propagate
+	'insensitive-press' signal from (internal) child widgets.
+	NB#31719
+
+2006-08-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_button_release): Emit
 	'row-activated' consistently with stylus and keyboard; only once, for
 	the focused row.

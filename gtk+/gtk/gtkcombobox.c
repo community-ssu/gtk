@@ -1182,6 +1182,11 @@ gtk_combo_box_add (GtkContainer *container,
           combo_box->priv->box = NULL;
         }
     }
+
+  /* Hildon: propagate the insensitive-press */
+  if (GTK_BIN (container)->child)
+    g_signal_connect_swapped (GTK_BIN (container)->child, "insensitive-press",
+			      G_CALLBACK (gtk_widget_insensitive_press), combo_box);
 }
 
 static void
@@ -1191,6 +1196,9 @@ gtk_combo_box_remove (GtkContainer *container,
   GtkComboBox *combo_box = GTK_COMBO_BOX (container);
   GtkTreePath *path;
   gboolean appears_as_list;
+
+  /* Hildon: stop propagating the insensitive-press */
+  g_signal_handlers_disconnect_by_func (widget, G_CALLBACK (gtk_widget_insensitive_press), combo_box);
 
   gtk_widget_unparent (widget);
   GTK_BIN (container)->child = NULL;
@@ -2941,6 +2949,10 @@ gtk_combo_box_menu_setup (GtkComboBox *combo_box,
       gtk_widget_show_all (combo_box->priv->button);
     }
 
+  /* Hildon: propagate the insensitive press */
+  g_signal_connect_swapped (combo_box->priv->button, "insensitive-press",
+			    G_CALLBACK (gtk_widget_insensitive_press), combo_box);
+
   g_signal_connect_swapped (combo_box->priv->button, "focus_in_event", G_CALLBACK (gtk_combo_box_child_focus_in), combo_box);
   g_signal_connect_swapped (combo_box->priv->button, "focus_out_event", G_CALLBACK (gtk_combo_box_child_focus_out), combo_box);
 
@@ -3716,6 +3728,9 @@ gtk_combo_box_list_setup (GtkComboBox *combo_box)
                     G_CALLBACK (gtk_combo_box_button_toggled), combo_box);
   g_signal_connect_after (combo_box, "key_press_event",
 			  G_CALLBACK (gtk_combo_box_key_press), combo_box);
+  /* Hildon: propagate the insensitive press */
+  g_signal_connect_swapped (combo_box->priv->button, "insensitive-press",
+			    G_CALLBACK (gtk_widget_insensitive_press), combo_box);
 
   combo_box->priv->arrow = gtk_arrow_new (GTK_ARROW_DOWN, GTK_SHADOW_NONE);
   gtk_container_add (GTK_CONTAINER (combo_box->priv->button),
@@ -3731,6 +3746,9 @@ gtk_combo_box_list_setup (GtkComboBox *combo_box)
       combo_box->priv->box = gtk_event_box_new ();
       gtk_event_box_set_visible_window (GTK_EVENT_BOX (combo_box->priv->box), 
 					FALSE);
+      /* Hildon: propagate the insensitive press */
+      g_signal_connect_swapped (combo_box->priv->box, "insensitive-press",
+				G_CALLBACK (gtk_widget_insensitive_press), combo_box);
 
       if (combo_box->priv->has_frame)
 	{
