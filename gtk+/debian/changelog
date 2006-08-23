@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.6.10-2.osso9) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Fixes: MB#724 submenu disappears immediately when popped up
+  * Fixes: NB#29343 GtkTreeView emits 'row-activated' signals inconsistently
+
+ -- Tommi Komulainen <tommi.komulainen@iki.fi>  Wed, 23 Aug 2006 11:37:14 +0300
+
 gtk+2.0 (2:2.6.10-2.osso8) unstable; urgency=low
 
   * debian/control.in: remove obsolete xlibs-dev from Build-Depends
