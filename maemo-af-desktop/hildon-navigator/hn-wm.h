@@ -257,6 +257,9 @@ hn_wm_get_lowmem_timeout_multiplier(void);
 extern inline HNWMWatchedWindow *
 hn_wm_get_active_window(void);
 
+extern inline HNWMWatchedWindow *
+hn_wm_get_last_active_window(void);
+
 /*
  * reset the active window to NULL
  *
@@ -266,6 +269,9 @@ hn_wm_get_active_window(void);
  */
 extern inline void
 hn_wm_reset_active_window(void);
+
+extern inline void
+hn_wm_reset_last_active_window(void);
 
 #endif /* HILDON_NAVIGATOR_WM_H */
 

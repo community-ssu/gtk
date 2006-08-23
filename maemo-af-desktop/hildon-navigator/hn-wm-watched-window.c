@@ -1061,7 +1061,10 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
 
   if(hn_wm_get_active_window() == win)
     hn_wm_reset_active_window();
-  
+
+  if(hn_wm_get_last_active_window() == win)
+    hn_wm_reset_last_active_window();
+
   g_free(win);
 }
 

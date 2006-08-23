@@ -2160,6 +2160,17 @@ void
 hn_wm_reset_active_window(void)
 {
   hnwm.active_window = NULL;
+}
+
+HNWMWatchedWindow *
+hn_wm_get_last_active_window(void)
+{
+  return hnwm.last_active_window;
+}
+
+void
+hn_wm_reset_last_active_window(void)
+{
   hnwm.last_active_window = NULL;
 }
 
