@@ -1,5 +1,9 @@
 2006-08-22  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.22
+
+2006-08-22  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "AF-BAT:Device crashes on a long press on the Home key
 	after closing the application in the foreground." (Closes NB#38461)
 	* hildon-navigator/hn-wm.{c,h}: Add hn_wm_get_last_active_window()
