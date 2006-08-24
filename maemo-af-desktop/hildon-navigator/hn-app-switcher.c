@@ -246,6 +246,7 @@ struct _HNAppSwitcherPrivate
   GtkWidget *main_button;
   GtkWidget *main_menu;
   GtkWidget *main_home_item;
+  HNEntryInfo *home_info;
 
   GtkWidget *tooltip;
   
@@ -619,35 +620,27 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
     }
 
   /* append home menu item */
-  if (!priv->main_home_item)
+  if (priv->main_home_item)
     {
-      GdkPixbuf *home_icon;
-      
-      priv->main_home_item = gtk_image_menu_item_new_with_label (AS_HOME_ITEM);
-      
-      home_icon = hn_app_switcher_get_icon_from_theme (app_switcher,
-		      				       AS_HOME_ITEM_ICON,
-						       -1);
-      if (home_icon)
-      {
-          GtkWidget *image = gtk_image_new_from_pixbuf (home_icon);
-          gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (priv->main_home_item),
-                  image);
-
-          g_object_unref (home_icon);
-      }
-
-      g_signal_connect (priv->main_home_item, "activate",
-		        G_CALLBACK (main_home_item_activate_cb),
-			app_switcher);
-      
-      gtk_menu_shell_append (GTK_MENU_SHELL (priv->main_menu),
-		 	     priv->main_home_item);
+      gtk_widget_destroy (priv->main_home_item);
+      priv->main_home_item = NULL;
     }
-  else
-    gtk_menu_shell_append (GTK_MENU_SHELL (priv->main_menu),
-		           priv->main_home_item);
-
+  
+  priv->home_info = hn_entry_info_new (HN_ENTRY_DESKTOP);
+  g_debug ("home (%s), icon: %s",
+	   hn_entry_info_get_title (priv->home_info),
+	   hn_entry_info_get_app_icon_name (priv->home_info));
+  priv->main_home_item = hn_app_menu_item_new (priv->home_info,
+		                               FALSE,
+					       priv->is_thumbable);
+  g_assert (HN_IS_APP_MENU_ITEM (priv->main_home_item));
+      
+  g_signal_connect (priv->main_home_item, "activate",
+		    G_CALLBACK (main_home_item_activate_cb),
+		    app_switcher);
+      
+  gtk_menu_shell_append (GTK_MENU_SHELL (priv->main_menu),
+		 	 priv->main_home_item);
   gtk_widget_show (priv->main_home_item);
   
   g_object_ref (priv->main_home_item);
@@ -2004,6 +1997,9 @@ hn_app_switcher_finalize (GObject *gobject)
   osso_deinitialize (priv->osso);
 
   g_list_free (priv->applications);
+
+  if (priv->home_info)
+    hn_entry_info_free (priv->home_info);
 
   HN_DBG ("Destroying HNAppSwitcher");
 

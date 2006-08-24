@@ -43,6 +43,8 @@ G_BEGIN_DECLS
 typedef enum {
   HN_ENTRY_INVALID,        /* only used for debugging */
 
+  HN_ENTRY_DESKTOP,
+  
   HN_ENTRY_WATCHED_APP,
   HN_ENTRY_WATCHED_WINDOW,
   HN_ENTRY_WATCHED_VIEW
@@ -83,6 +85,8 @@ gint         hn_entry_info_get_n_children  (HNEntryInfo *info);
 gchar *      hn_entry_info_get_title       (HNEntryInfo *info);
 void         hn_entry_info_set_title       (HNEntryInfo *info,
 				            const gchar *title);
+gchar *      hn_entry_info_get_app_name    (HNEntryInfo *info);
+gchar *      hn_entry_info_get_window_name (HNEntryInfo *info);
 GdkPixbuf *  hn_entry_info_get_icon        (HNEntryInfo *info);
 void         hn_entry_info_set_icon        (HNEntryInfo *info,
 				            GdkPixbuf   *icon);

@@ -1,5 +1,12 @@
 2006-08-24  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Application switcher menu in thumb mode does not show the
+	second line for Home." (Closes NB#37012)
+	* hildon-navigator/hn-app-switcher.c: Add Home as a new type of
+	  InfoEntry to the AS menu
+
+2006-08-24  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied further fix to "HOME: Discard layout -confirmation note shown even
 	though there wasn't any changes" (Closes NB#27713)
 	* hildon-home/layout-manager.c: Set state to having changed if an

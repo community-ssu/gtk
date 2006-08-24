@@ -352,25 +352,19 @@ hn_app_menu_item_constructor (GType                  type,
             hn_app_menu_item_icon_animation (priv->icon, TRUE);
         }
 
-      app_name = hn_entry_info_get_title (priv->info);
+      app_name = hn_entry_info_get_app_name (priv->info);
+      win_name = hn_entry_info_get_window_name (priv->info);
+      g_debug ("app_name: %s, win_name: %s", app_name, win_name);
       
-      if (priv->thumbable && app_name)
+      if (priv->thumbable && win_name)
         {
-          /* this is bit hackish, but it works; the problem is that we are
-           * given the window title as a composite of app name and window name
-           * but the spec asks that we display the two separately
-           */
-          gchar *sep = strstr (app_name, " - ");
-          if (sep)
-            {
-              *sep = 0;
-              win_name = g_strdup(sep + 3);
-              gtk_label_set_text (GTK_LABEL (label2),
-                                  win_name);
-            }
+	  gtk_label_set_text (GTK_LABEL (label2), win_name);
         }
 
       gtk_label_set_text (GTK_LABEL (priv->label), app_name);
+
+      g_free (app_name);
+      g_free (win_name);
     }
 
   if (priv->show_close)
@@ -379,7 +373,7 @@ hn_app_menu_item_constructor (GType                  type,
 
       priv->close = gtk_image_new ();
       pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
-		             "qgn_list_app_close",
+		                         "qgn_list_app_close",
 					 priv->thumbable? 40:16,
 					 0,
 					 NULL);

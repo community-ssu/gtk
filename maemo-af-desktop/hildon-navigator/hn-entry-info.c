@@ -25,6 +25,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <glib/gi18n.h>
 
 #include "hn-entry-info.h"
 
@@ -278,6 +279,9 @@ hn_entry_info_get_title (HNEntryInfo *entry_info)
     case HN_ENTRY_WATCHED_VIEW:
       retval = g_strdup (hn_wm_watched_window_view_get_name (real->d.view));
       break;
+    case HN_ENTRY_DESKTOP:
+      retval = g_strdup (_("tana_fi_home"));
+      break;
     case HN_ENTRY_INVALID:
     default:
       g_assert_not_reached ();
@@ -285,6 +289,66 @@ hn_entry_info_get_title (HNEntryInfo *entry_info)
     }
  
   return retval;
+}
+
+gchar *
+hn_entry_info_get_app_name (HNEntryInfo *info)
+{
+  gchar *title, *sep;
+  
+  g_return_val_if_fail (info != NULL, NULL);
+
+  if (info->type == HN_ENTRY_DESKTOP)
+    return g_strdup (_("tana_fi_home"));
+  
+  title = hn_entry_info_get_title (info);
+  if (!title)
+    return NULL;
+  
+  sep = strstr (title, " - ");
+  if (sep)
+    {
+      gchar *retval;
+      
+      *sep = 0;
+      retval = g_strdup (title);
+
+      g_free (title);
+
+      return retval;
+    }
+  else
+    return title;
+}
+
+gchar *
+hn_entry_info_get_window_name (HNEntryInfo *info)
+{
+  gchar *title, *sep;
+
+  g_return_val_if_fail (info != NULL, NULL);
+
+  if (info->type == HN_ENTRY_DESKTOP)
+    return g_strdup (_("tana_fi_home_thumb"));
+  
+  title = hn_entry_info_get_title (info);
+  if (!title)
+    return NULL;
+
+  sep = strstr (title, " - ");
+  if (sep)
+    {
+      gchar *retval;
+      
+      *sep = 0;
+      retval = g_strdup (sep + 3);
+
+      g_free (title);
+
+      return retval;
+    }
+  else
+    return NULL;
 }
 
 void
@@ -335,6 +399,9 @@ hn_entry_info_get_icon (HNEntryInfo *entry_info)
       break;
     case HN_ENTRY_WATCHED_VIEW:
       retval = hn_entry_info_get_icon (hn_entry_info_get_parent (entry_info));
+      break;
+    case HN_ENTRY_DESKTOP:
+      retval = NULL;
       break;
     case HN_ENTRY_INVALID:
     default:
@@ -418,6 +485,8 @@ hn_entry_info_get_app_icon_name (HNEntryInfo *info)
     case HN_ENTRY_WATCHED_VIEW:
       win = hn_wm_watched_window_view_get_parent (real->d.view);
       break;
+    case HN_ENTRY_DESKTOP:
+      return "qgn_list_home";
     case HN_ENTRY_INVALID:
     default:
       g_assert_not_reached ();
@@ -487,7 +556,11 @@ hn_entry_info_is_urgent (HNEntryInfo *info)
   HNWMWatchedWindow * win;
   
   g_return_val_if_fail(info, FALSE);
-  win = hn_entry_info_get_window(info);
+  
+  if (info->type == HN_ENTRY_DESKTOP)
+    return FALSE;
+  
+  win = hn_entry_info_get_window (info);
 
   if (win)
     return hn_wm_watched_window_is_urgent(win);
@@ -549,6 +622,11 @@ hn_entry_info_is_active (HNEntryInfo *info)
 gboolean
 hn_entry_info_is_hibernating (HNEntryInfo *info)
 {
+  g_return_val_if_fail (info != NULL, FALSE);
+
+  if (info->type == HN_ENTRY_DESKTOP)
+    return FALSE;
+  
   return hn_wm_watchable_app_is_hibernating (hn_entry_info_get_app (info));
 }
 
