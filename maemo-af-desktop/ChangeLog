@@ -1,4 +1,9 @@
-2006-08-22  Johan Bilien <johan.bilien@nokia.com>
+2006-08-24  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/others-menu.{c,h}: Use dngettext for the
+	  second line of folders' L10n (Closes NB#37517)
+
+2006-08-23  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.22
 

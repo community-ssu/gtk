@@ -751,14 +751,7 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
 		    /* Create a menu item and add it to the menu.
 		     */
 		    children = gtk_tree_model_iter_n_children (model, iter);
-            switch (children) {
-                case 1:
-                    child_string = g_strdup_printf(MENU_ITEM_N_ITEM, children);
-                    break;
-                default:
-                    child_string = g_strdup_printf(MENU_ITEM_N_ITEMS, children);
-                    break;
-            }
+            child_string = g_strdup_printf(MENU_ITEM_N_ITEMS(children), children);
 
             menu_item = hildon_thumb_menu_item_new_with_labels(
                     /* If the text domain was provided, use it to translate
@@ -798,7 +791,7 @@ void others_menu_get_items(GtkWidget *widget, OthersMenu_t * om,
                 gtk_widget_set_name(GTK_WIDGET(submenu),
                         HILDON_NAVIGATOR_MENU_NAME);
 
-                child_string = g_strdup_printf(MENU_ITEM_N_ITEMS, 0);
+                child_string = g_strdup_printf(MENU_ITEM_N_ITEMS(0), 0);
 
 			    /* Create a menu item and add it to the menu.
 			     */
