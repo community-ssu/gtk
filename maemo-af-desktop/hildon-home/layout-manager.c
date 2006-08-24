@@ -2248,6 +2248,7 @@ static gboolean button_click_cb(GtkWidget *widget,
         {
             ULOG_DEBUG ("Applet %s closed from close button\n",  
                         general_data.active->applet_identifier);
+            general_data.is_save_changes = TRUE;
 
             remove_list = g_list_append (remove_list,
                               g_strdup(general_data.active->applet_identifier));

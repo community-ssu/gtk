@@ -1,5 +1,12 @@
 2006-08-24  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied further fix to "HOME: Discard layout -confirmation note shown even
+	though there wasn't any changes" (Closes NB#27713)
+	* hildon-home/layout-manager.c: Set state to having changed if an
+	  applet is closed from its close button 
+
+2006-08-24  Johan Bilien <johan.bilien@nokia.com>
+
     Applied fix to "Home layout is not considered changed when applets are
 	only resized." (Closes NB#38190)
 	* hildon-home/layout-manager.c: Set the state to having changed as soon
