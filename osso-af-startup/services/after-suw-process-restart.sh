@@ -22,12 +22,12 @@ if [ -x $DIR/osso-media-server.sh ]; then
   $DIR/osso-media-server.sh stop
 fi
 # this is first boot, so Connectivity UI is running
-if [ -x /usr/bin/osso-connectivity-ui.sh ]; then
-  source /usr/bin/osso-connectivity-ui.sh stop
-fi
-if [ -x $DIR/osso-connectivity-ui.sh ]; then
-  source $DIR/osso-connectivity-ui.sh stop
-fi
+#if [ -x /usr/bin/osso-connectivity-ui.sh ]; then
+#  source /usr/bin/osso-connectivity-ui.sh stop
+#fi
+#if [ -x $DIR/osso-connectivity-ui.sh ]; then
+#  source $DIR/osso-connectivity-ui.sh stop
+#fi
 # this is first boot, so VKB is running
 if [ -f $DIR/keyboard.defs ]; then
   source $DIR/keyboard.defs
