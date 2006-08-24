@@ -625,6 +625,7 @@ gtk_menu_shell_button_press (GtkWidget      *widget,
           /* Hildon-crack: The item could be unselected when the tap
            * occurs, make sure it gets selected. The real fix is bug#11670,
            * remove this crack when it is done.
+           * NB#9417
            */
           gtk_menu_shell_select_item (menu_shell, menu_item);
         
