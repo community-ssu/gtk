@@ -1,12 +1,11 @@
 osso-af-startup (1.23-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added new file locale.orig for RFS/ROS and CUD operations.
   * Removed unnecessary Connectivity UI startup in the first boot.
   * Removed support for the old place of Connectivity UI startup script.
   * Replaced license headers with more proper ones.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 24 Aug 2006 12:40:55 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 24 Aug 2006 16:41:17 +0300
 
 osso-af-startup (1.22-1) unstable; urgency=low
 
