@@ -1,11 +1,14 @@
 #!/bin/sh
 #
-# Copyright (C) 2004-2006 Nokia Corporation.
+# This file is part of osso-af-startup.
+#
+# Copyright (C) 2004-2006 Nokia Corporation. All rights reserved.
+#
+# Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 #
 # This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
+# modify it under the terms of the GNU General Public License 
+# version 2 as published by the Free Software Foundation. 
 #
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,11 +17,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-# USA
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+# 02110-1301 USA
 
-CONNECTIVITY_UI_SCRIPT=/usr/bin/osso-connectivity-ui.sh
-CONNECTIVITY_UI_SCRIPT2=$AF_INIT_DIR/osso-connectivity-ui.sh
+CONNECTIVITY_UI_SCRIPT=$AF_INIT_DIR/osso-connectivity-ui.sh
 case "$1" in
 start)
 
@@ -30,9 +32,6 @@ start)
 
   if [ -x $CONNECTIVITY_UI_SCRIPT ]; then
     source $CONNECTIVITY_UI_SCRIPT start
-  fi
-  if [ -x $CONNECTIVITY_UI_SCRIPT2 ]; then
-    source $CONNECTIVITY_UI_SCRIPT2 start
   fi
 
   source $AF_INIT_DIR/keyboard.sh start
@@ -51,9 +50,6 @@ stop)
 
   if [ -x $CONNECTIVITY_UI_SCRIPT ]; then
     source $CONNECTIVITY_UI_SCRIPT stop
-  fi
-  if [ -x $CONNECTIVITY_UI_SCRIPT2 ]; then
-    source $CONNECTIVITY_UI_SCRIPT2 stop
   fi
 
   source $AF_INIT_DIR/maemo-af-desktop.sh stop
