@@ -1,3 +1,9 @@
+2006-08-24 Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-control-panel-main.c: do not declare ourselves as background
+	  killable if we are running an applet and it does not support
+	  state-saving
+
 2006-08-23 Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-cp-rfs.c: replace gtk_info_print with hildon_banner_info

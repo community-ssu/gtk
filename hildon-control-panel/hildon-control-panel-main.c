@@ -826,8 +826,13 @@ hcp_topmost_status_change (GObject * gobject,
     if (hildon_program_get_is_topmost (program)) {
         hildon_program_set_can_hibernate (program, FALSE);
     } else {
-        hcp_save_state (hcp, FALSE);
-        hildon_program_set_can_hibernate (program, TRUE);
+        /* Do not set ourselves as background killable if we are
+         * running an applet which doesn't implementing state-saving */
+        if (!hcp->running || hcp->focused_item->save_state)
+        {
+            hcp_save_state (hcp, FALSE);
+            hildon_program_set_can_hibernate (program, TRUE);
+        }
     }
 
 }
