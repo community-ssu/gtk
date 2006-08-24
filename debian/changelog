@@ -1,6 +1,5 @@
-gtk+2.0 (2:2.6.10-2.osso9) UNRELEASED; urgency=low
+gtk+2.0 (2:2.6.10-2.osso9) unstable; urgency=low
 
-  * NOT RELEASED YET
   * Fixes: MB#724 submenu disappears immediately when popped up
   * Fixes: NB#29343 GtkTreeView emits 'row-activated' signals inconsistently
   * Fixes: NB#31719 "insensitive press" or similar signal not working on
@@ -8,7 +7,7 @@ gtk+2.0 (2:2.6.10-2.osso9) UNRELEASED; urgency=low
   * Fixes: NB#33601 Addressbook and file manager: CSM are too agressively
     dimmed
 
- -- Tommi Komulainen <tommi.komulainen@iki.fi>  Thu, 24 Aug 2006 10:53:06 +0300
+ -- Tommi Komulainen <tommi.komulainen@iki.fi>  Thu, 24 Aug 2006 11:03:03 +0300
 
 gtk+2.0 (2:2.6.10-2.osso8) unstable; urgency=low
 
