@@ -1,4 +1,6 @@
 #!/bin/sh
+# Common script for RFS/ROS and CUD.
+#
 # This file is part of osso-app-killer.
 #
 # Copyright (C) 2005-2006 Nokia Corporation. All rights reserved.
@@ -19,28 +21,18 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 # 02110-1301 USA
 
-cd /etc/osso-af-init/gconf-dir
-if [ $? = 0 ]; then
-  for d in `ls`; do
-    if [ "x$d" = "xschemas" ]; then
-      continue
-    fi
-    if [ "x$CUD" != "x" ]; then
-      if [ "x$d" = "xsystem" ]; then
-        for f in `find system -name *.xml`; do
-          echo "$f" | grep -e '\(connectivity\)\|\(bluetooth\)\|\(proxy\)' \
-	              > /dev/null
-          if [ $? = 1 ]; then
-            echo "$0: removing $f"
-            rm -f $f
-          fi
-        done
-        continue
-      fi
-    fi
-    echo "$0: removing GConf subdirectory $d"
-    rm -rf $d
-  done
-else
-  echo "$0: 'cd' command failed, doing nothing"
-fi
+DIR=/etc/osso-af-init
+
+# reset the Bluetooth name
+dbus-send --system --dest=org.bluez /org/bluez/hci0 \
+  org.bluez.Adapter.SetName string:'Nokia 770'
+
+# restore the original language
+cp -f $DIR/locale.orig $DIR/locale
+
+# ask MCE to reboot the system
+dbus-send --system --type=method_call \
+  --dest="com.nokia.mce" --print-reply \
+  "/com/nokia/mce/request" \
+  com.nokia.mce.request.req_reboot
+exit 0

@@ -7,6 +7,8 @@ Standards-Version: 3.6.0
 
 Package: osso-app-killer
 Architecture: all
-Depends: osso-af-startup, dbus, osso-bttools
-Description: Collection of scripts for RFS, CUD, restore.
- A bunch of some scripts.
+Depends: osso-af-startup (>= 1.23), dbus
+Description: Collection of scripts for RFS/ROS, CUD, restore.
+ Scripts to implement the 'cleansing effect' of Restore Original Settings
+ and Clear User Data. Also included is a script to run before the restore
+ operation.

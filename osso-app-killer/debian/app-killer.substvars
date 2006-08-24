@@ -1,1 +1,0 @@
-shlibs:Depends=libc6 (>= 2.3.2.ds1-4), libglib2.0-0 (>= 2.4.1), libosso0 (>= 0.7.5-2)
