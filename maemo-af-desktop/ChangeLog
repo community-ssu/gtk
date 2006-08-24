@@ -1,5 +1,12 @@
 2006-08-24  Johan Bilien <johan.bilien@nokia.com>
 
+    Applied fix to "Home layout is not considered changed when applets are
+	only resized." (Closes NB#38190)
+	* hildon-home/layout-manager.c: Set the state to having changed as soon
+      as an applet is moved
+
+2006-08-24  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Application close button is missing for Application
 	switcher menu in thumb mode" (Closes NB#37008)
 	* hildon-navigator/hn-app-menu-item.c: change the icon size instead

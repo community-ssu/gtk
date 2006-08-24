@@ -2925,6 +2925,8 @@ static void drag_begin(GtkWidget *widget,
     
     gtk_widget_hide (GTK_WIDGET(general_data.active->ebox));
     
+    /* Setting flag to indicate that some changes is going to happen */
+    general_data.is_save_changes = TRUE;
 }
 
 /**
