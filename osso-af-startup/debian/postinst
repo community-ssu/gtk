@@ -22,6 +22,9 @@ HOME="$TGT/home/$USER"
 rm -f /etc/osso-af-init/gconf-dir
 ln -s /var/lib/gconf /etc/osso-af-init/gconf-dir
 
+# save the original for Restore Original Settings
+cp -f /etc/osso-af-init/locale /etc/osso-af-init/locale.orig
+
 # startup wizard needs to be able to modify the locale
 chown $USER:$GROUP /etc/osso-af-init/locale
 
