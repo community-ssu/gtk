@@ -29,6 +29,10 @@ dbus-send --system --dest=org.bluez /org/bluez/hci0 \
 
 # restore the original language
 cp -f $DIR/locale.orig $DIR/locale
+USER=`whoami`
+if [ "x$USER" = "xroot" ]; then
+  chown user:users $DIR/locale
+fi
 
 # ask MCE to reboot the system
 dbus-send --system --type=method_call \
