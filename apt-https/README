@@ -1,0 +1,24 @@
+This is a https method for apt that uses libcst for certificate
+related things.
+
+Because of license issues, a program can unfortunately not link both
+to libapt-pkg (GPL) and OpenSSL (GPL incompatible).  Thus, the "https"
+program is written in such a way that it can use the "curl" program
+for downloading, or any program that is sufficiently compatible with
+it.  We provide such a sufficiently compatible program,
+"maemo-mini-curl", that uses libcurl and libcst and also interacts
+with the user in the appropriate maemo way.
+
+By default, "https" uses "maemo-mini-curl" but can fall back to
+"curl". 
+
+maemo-mini-curl interacts correctly with the Certificate manager and
+interacts graphically with the user when needed.
+
+
+Bugs
+----
+
+- Catching HTTP error codes.  I think right now, a 404 is not detected
+  by maemo-mini-curl, for example, but the error message from the web
+  server is saved.

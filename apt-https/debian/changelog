@@ -1,0 +1,32 @@
+apt-https (2.3) unstable; urgency=low
+
+  * Added maemo-mini-curl-cert-gui helper to do the user interfacing.
+  * Implemented: NR#132615.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  1 Jun 2006 21:32:42 +0300
+
+apt-https (2.2) unstable; urgency=low
+
+  * Fixed debian/rules to create configure if necessary.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 12 May 2006 14:07:05 +0300
+
+apt-https (2.1) unstable; urgency=low
+
+  * Added license statements
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  4 May 2006 16:27:04 +0300
+
+apt-https (2.0) unstable; urgency=low
+
+  * Refactored to avoid license incompatibility between libapt-pkg and
+    OpenSSL.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  4 May 2006 15:19:35 +0300
+
+apt-https (1.0) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 26 Apr 2006 22:26:53 +0300
+

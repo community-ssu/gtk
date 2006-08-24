@@ -1,0 +1,46 @@
+2006-06-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.3
+	
+	* maemo-mini-curl.c (ssl_app_verify_callback): Make certificate
+	file readable for everyone.
+	(fetch): Unlink destination file when libcurl returns an error.
+
+2006-06-01  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* Makefile.am (bin_PROGRAMS): Added maemo-mini-curl-cert-gui.
+	* maemo-cert-gui.c: New.
+	
+	* configure.ac (MINICURL): Remove dependency on cst.
+	(CERTGUI): New.
+
+	* maemo-mini-curl.c (fetch): Output newline after error message
+	from libcurl.
+	(ssl_app_verify_callback): Do not do verification here.  Execute
+	maemo-mini-curl-cert-gui to do it.
+	(main): Do not call g_type_init, it is no longer needed and we
+	don't link with libcst and glib anymore.
+	
+2006-05-12  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* debian/rules (config.status): Do not depend on configure, but
+	call autogen.sh when configure does not exist.
+
+2006-05-04  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.1
+	
+	* maemo-mini-curl.c: New.
+	* https.cc: Moved libcurl related code to maemo-mini-curl to avoid
+	linking libapt-pkg and OpenSSL into the same program.
+	* Makefile.am, configure.ac: Adapted accordingly.
+	
+2006-05-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* Makefile.am (deb): Added target for making nice debs.
+	(EXTRA_DIST): Distribute make-package.
+
+2006-04-26  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* Started.
+

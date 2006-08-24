@@ -1,0 +1,16 @@
+Source: apt-https
+Section: unknown
+Priority: optional
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), libapt-pkg-dev, libcurl3-dev, libcst-dev, libosso-certman-dev, libosso-dev, libssl-dev
+Standards-Version: 3.6.0
+
+Package: apt-https
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A HTTPS method for APT
+ This package extends APT so that it can also retrieve files from
+ HTTPS servers.
+ .
+ It uses libcurl for networking and libcst for certificate
+ verifications.
