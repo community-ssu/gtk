@@ -14464,22 +14464,6 @@ gtk_tree_view_grab_notify (GtkWidget *widget,
     {
       tree_view->priv->pressed_button = -1;
 
-      if (tree_view->priv->queued_expand_row)
-        {
-          gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
-          tree_view->priv->queued_expand_row = NULL;
-        }
-      if (tree_view->priv->queued_select_row)
-        {
-          gtk_tree_row_reference_free (tree_view->priv->queued_select_row);
-          tree_view->priv->queued_select_row = NULL;
-        }
-      if (tree_view->priv->queued_activate_row)
-        {
-          gtk_tree_row_reference_free (tree_view->priv->queued_activate_row);
-          tree_view->priv->queued_activate_row = NULL;
-        }
-
       /* stop pen dragging */
       if (tree_view->priv->first_drag_row)
         gtk_tree_row_reference_free (tree_view->priv->first_drag_row);
@@ -14497,6 +14481,33 @@ gtk_tree_view_grab_notify (GtkWidget *widget,
       tree_view->priv->pen_down = FALSE;
       tree_view->priv->pen_drag_active = FALSE;
       remove_scroll_timeout (tree_view);
+
+      if (gtk_tree_row_reference_valid (tree_view->priv->queued_select_row))
+        {
+	  GtkTreePath *select_path =
+	    gtk_tree_row_reference_get_path (tree_view->priv->queued_select_row);
+
+	  gtk_tree_view_real_set_cursor (tree_view, select_path, TRUE, TRUE);
+
+	  gtk_tree_path_free (select_path);
+	}
+
+      /* free row refs */
+      if (tree_view->priv->queued_expand_row)
+        {
+          gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
+          tree_view->priv->queued_expand_row = NULL;
+        }
+      if (tree_view->priv->queued_select_row)
+        {
+          gtk_tree_row_reference_free (tree_view->priv->queued_select_row);
+          tree_view->priv->queued_select_row = NULL;
+        }
+      if (tree_view->priv->queued_activate_row)
+        {
+          gtk_tree_row_reference_free (tree_view->priv->queued_activate_row);
+          tree_view->priv->queued_activate_row = NULL;
+        }
     }
 }
 
