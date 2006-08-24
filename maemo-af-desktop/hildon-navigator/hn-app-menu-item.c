@@ -379,9 +379,8 @@ hn_app_menu_item_constructor (GType                  type,
 
       priv->close = gtk_image_new ();
       pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
-		      			 priv->thumbable ? "qgn_list_app_close_thumb" :
-                                          "qgn_list_app_close",
-					 16,
+		             "qgn_list_app_close",
+					 priv->thumbable? 40:16,
 					 0,
 					 NULL);
       if (pixbuf)

@@ -1,5 +1,12 @@
 2006-08-24  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Application close button is missing for Application
+	switcher menu in thumb mode" (Closes NB#37008)
+	* hildon-navigator/hn-app-menu-item.c: change the icon size instead
+	  of the icon name for thumbable close icon
+
+2006-08-24  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/others-menu.{c,h}: Use dngettext for the
 	  second line of folders' L10n (Closes NB#37517)
 
