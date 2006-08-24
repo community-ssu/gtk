@@ -25,7 +25,7 @@ title      "Spanish locale for Argentina"
 source     "RAP"
 address    "Sankt J<U00F8>rgens Alle 8, DK-1615 K<U00F8>benhavn V, Danmark"
 contact    ""
-email      "bug-glibc@gnu.org"
+email      "bug-glibc-locales@gnu.org"
 tel        ""
 fax        ""
 language   "Spanish"
@@ -52,7 +52,7 @@ copy "es_ES"
 END LC_COLLATE
 
 LC_CTYPE
-copy "i18n"
+copy "es_ES"
 END LC_CTYPE
 
 LC_MESSAGES

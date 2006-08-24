@@ -24,7 +24,7 @@ title      "English locale for Australia"
 source     "RAP"
 address    "Sankt J<U00F8>rgens Alle 8, DK-1615 K<U00F8>benhavn V, Danmark"
 contact    ""
-email      "bug-glibc@gnu.org"
+email      "bug-glibc-locales@gnu.org"
 tel        ""
 fax        ""
 language   "English"
@@ -47,7 +47,7 @@ category  "en_AU:2000";LC_TELEPHONE
 END LC_IDENTIFICATION
 
 LC_CTYPE
-copy "i18n"
+copy "en_GB"
 END LC_CTYPE
 
 LC_COLLATE

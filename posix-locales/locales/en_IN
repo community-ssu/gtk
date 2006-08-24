@@ -10,7 +10,7 @@ title      "English language locale for India"
 source     "IBM Globalization Center of Competency, Yamato Software Laboratory"
 address    "1623-14, Shimotsuruma, Yamato-shi, Kanagawa-ken, 242-8502, Japan"
 contact    ""
-email      "bug-glibc@gnu.org"
+email      "bug-glibc-locales@gnu.org"
 tel         ""
 fax         ""
 language    "English"
@@ -34,7 +34,7 @@ END LC_IDENTIFICATION
 
 
 LC_CTYPE
-copy "i18n"
+copy "en_GB"
 END LC_CTYPE
 
 LC_COLLATE
