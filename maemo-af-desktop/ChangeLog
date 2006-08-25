@@ -1,3 +1,9 @@
+2006-08-25  Johan Bilien <johan.bilien@nokia.com>
+
+	* libhildonmenu/hildon-thumb-menu-item.c:
+	  - Chain the parent class' finalize
+	  - fix a problem with unreffing images
+
 2006-08-24  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Application switcher menu in thumb mode does not show the

@@ -369,19 +369,23 @@ hildon_thumb_menu_item_finalize (GObject *object)
     priv = HILDON_THUMB_MENU_ITEM_GET_PRIVATE (thumb_menu_item);
 
     /* Remove the additional references from the internal images */
-    if (priv->thumb_mode)
+    if (priv->menu_image)
     {
-        gtk_object_unref (GTK_OBJECT(priv->menu_image));
+        g_object_unref (G_OBJECT (priv->menu_image));
     }
-    else
+
+    if (priv->thumb_image)
     {
-        gtk_object_unref (GTK_OBJECT(priv->thumb_image));
+        g_object_unref (G_OBJECT (priv->thumb_image));
     }
     
     /* Free the internal strings */
     g_free (priv->label);
     g_free (priv->thumb_label);
     g_free (priv->comment);
+
+    if (G_OBJECT_CLASS (parent_class)->finalize)
+        G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 /* Sets the image for normal mode operation.
