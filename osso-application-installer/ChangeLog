@@ -1,3 +1,13 @@
+2006-08-25  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/apt-worker-client.h, src/apt-worker-client.cc
+	(status_out_of_space, reset_client_error_status,
+	client_error_out_of_space): New.
+	(interpret_pmstatus): Interpret "pmerror:" as well and set
+	status_out_of_space accordingly.
+	* src/main.cc (install_package_reply): Explicitely set result_code
+	when client_error_out_of_space is true. (N25494)
+	
 2006-08-21  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.28.
