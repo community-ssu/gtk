@@ -35,6 +35,27 @@ extern int apt_worker_in_fd, apt_worker_out_fd;
 bool start_apt_worker (gchar *prog);
 void cancel_apt_worker ();
 
+/* Miscellaneous status reporting.
+
+   The apt-worker client will asynchronously report the status of the
+   current operation.  This is used to automatically advance the
+   progress bar for example.  In addition to the progress information,
+   the apt-worker also reports error messages from dpkg.  These
+   messages might contain information that is not available elsewhere.
+   These messages are scanned for interesting bits and you can use the
+   following functions to access what has been found.
+
+   RESET_CLIENT_ERROR_STATUS will reset the error status so that all
+   of the functions below will return false.
+
+   CLIENT_ERROR_OUT_OF_SPACE returns true of dpkg has reported a "No
+   space left on device" error since the last call to
+   reset_client_error_status.
+ */
+
+void reset_client_error_status ();
+bool client_error_out_of_space ();
+
 typedef void apt_worker_callback (int cmd,
 				  apt_proto_decoder *dec,
 				  void *callback_data);

@@ -1160,6 +1160,10 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
 			      ? _("ai_ni_error_update_failed")
 			      : _("ai_ni_error_installation_failed")),
 			     pi->name);
+
+	  if (client_error_out_of_space ())
+	    result_code = rescode_out_of_space;
+
 	  annoy_user_with_result_code (result_code, str, upgrading);
 	  g_free (str);
 	}
@@ -1207,6 +1211,7 @@ install_package_cont3 (bool res, void *data)
     {
       if (res)
 	{
+	  reset_client_error_status ();
 	  apt_worker_install_package (c->pi->name,
 				      c->pi->installed_version != NULL,
 				      install_package_reply, c->pi);

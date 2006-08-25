@@ -51,6 +51,20 @@ int apt_worker_cancel_fd = -1;
 static void cancel_request (int cmd);
 static void cancel_all_pending_requests ();
 
+static bool status_out_of_space = false;
+
+void
+reset_client_error_status ()
+{
+  status_out_of_space = false;
+}
+
+bool
+client_error_out_of_space ()
+{
+  return status_out_of_space;
+}
+
 static GString *pmstatus_line;
 
 static void
@@ -59,24 +73,40 @@ interpret_pmstatus (char *str)
   float percentage;
   char *title;
 
-  if (strncmp (str, "pmstatus:", 9) != 0)
-    return;
-  str += 9;
-  str = strchr (str, ':');
-  if (str == NULL)
-    return;
-  str += 1;
-  percentage = atof (str);
-  str = strchr (str, ':');
-  if (str == NULL)
-    title = "Working";
-  else
+  fprintf (stderr, "STATUS: %s\n", str);
+
+  if (!strncmp (str, "pmstatus:", 9))
     {
+      str += 9;
+      str = strchr (str, ':');
+      if (str == NULL)
+	return;
       str += 1;
-      title = str;
-    }
+      percentage = atof (str);
+      str = strchr (str, ':');
+      if (str == NULL)
+	title = "Working";
+      else
+	{
+	  str += 1;
+	  title = str;
+	}
 	
-  set_progress (op_general, (int)percentage, 100);
+      set_progress (op_general, (int)percentage, 100);
+    }
+  else if (!strncmp (str, "pmerror:", 8))
+    {
+      /* Some error has been reported by dpkg.  We try to guess what
+	 it might have been.
+      */
+
+      /* XXX - we should probably get the string from strerror, but
+	 then we need to synchronize the locale environments between
+	 dpkg and this process...
+      */
+      if (strstr (str, "No space left on device"))
+	status_out_of_space = true;
+    }
 }
 
 static gboolean
