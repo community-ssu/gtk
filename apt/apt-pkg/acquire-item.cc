@@ -405,11 +405,9 @@ void pkgAcqMetaSig::Failed(string Message,pkgAcquire::MethodConfig *Cnf)
    //
    if (StringToBool(LookupTag(Message,"Transient-Failure"),false))
      {
-       cerr << "transient " << Final << "\n";
        struct stat Buf;
        if (stat(Final.c_str(),&Buf) == 0)
 	 {
-	   cerr << "have old version\n";
 	   Rename (Final, DestFile); 
 	   new pkgAcqMetaIndex(Owner, MetaIndexURI, MetaIndexURIDesc,
 			       MetaIndexShortDesc,
