@@ -1,3 +1,9 @@
+osso-application-installer (4.29) unstable; urgency=low
+
+  * Fixes: NB#25494.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 25 Aug 2006 20:40:33 +0300
+
 osso-application-installer (4.28) unstable; urgency=low
 
   * Made red-pill mode configurable.
