@@ -274,7 +274,7 @@ ForceLock (string File, bool Errors = true)
    the mere arrival of a byte triggers the abort.
 
    When using the apt-pkg PackageManager, it is configured in such a
-   way that it sents it "pmstatus:" message lines to STATUS_FD.
+   way that it sends it "pmstatus:" message lines to STATUS_FD.
    Other asynchronous status reports are sent as spontaneous
    APTCMD_STATUS responses via OUTPUT_FD.  'Spontaneous' should mean
    that no request is required to receive APTCMD_STATUS responses.
