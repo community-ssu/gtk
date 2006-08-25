@@ -1,3 +1,9 @@
+2006-08-25  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* apt-pkg/deb/dpkgpm.cc (pkgDPkgPM::Go): Redone dpkg status
+	parsing again so that error messages work.  Use strsep instead of
+	TokSplitString, to avoid splitting on ':' in the trailing part.
+
 2006-07-12  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* apt-pkg/acquire-item.cc (pkgAcqMetaSig::pkgAcqMetaSig): Don't

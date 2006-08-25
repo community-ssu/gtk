@@ -620,29 +620,27 @@ bool pkgDPkgPM::Go(int OutStatusFd)
 	    'status: conffile-prompt: conffile : 'current-conffile' 'new-conffile' useredited distedited
 	    
 	 */
-	 char* list[4] = { NULL, NULL, NULL, NULL };
-	 TokSplitString(':', line, list, 4);
 
-	 if (list[0] == NULL || strcmp (list[0], "status"))
-	   continue;
+	 char *line_ptr = line;
 
-	 if (list[1] == NULL || list[2] == NULL)
-	   continue;
-
-	 char *pkg = list[1];
-	 char *action = _strstrip(list[2]);
+	 char *status = strsep (&line_ptr, ":");
+	 if (strcmp (status, "status"))
+	   {
+	     line[0] = 0;
+	     continue;
+	   }
+	    
+	 char *pkg = _strstrip (strsep (&line_ptr, ":"));
+	 char *action = _strstrip (strsep (&line_ptr, ":"));
+	 char *msg = line_ptr;
 
 	 if(strncmp(action,"error",strlen("error")) == 0)
 	 {
 	    ostringstream status;
 
-	    if (list[3] == NULL)
-	      continue;
-
-	    status << "pmerror:" << list[1]
+	    status << "pmerror:" << pkg
 		   << ":"  << (Done/float(Total)*100.0) 
-		   << ":" << list[3]
-		   << endl;
+		   << ":" << msg;
 	    if(OutStatusFd > 0)
 	       write(OutStatusFd, status.str().c_str(), status.str().size());
 	    line[0]=0;
@@ -654,13 +652,9 @@ bool pkgDPkgPM::Go(int OutStatusFd)
 	 {
 	    ostringstream status;
 
-	    if (list[3] == NULL)
-	      continue;
-
-	    status << "pmconffile:" << list[1]
+	    status << "pmconffile:" << pkg
 		   << ":"  << (Done/float(Total)*100.0) 
-		   << ":" << list[3]
-		   << endl;
+		   << ":" << msg;
 	    if(OutStatusFd > 0)
 	       write(OutStatusFd, status.str().c_str(), status.str().size());
 	    line[0]=0;
