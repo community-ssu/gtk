@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.6.10-2.osso10) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Fixes: NB#34004,NB#36078 combobox doesn't move to selected value in the
+    first time active
+
+ -- Tommi Komulainen <tommi.komulainen@iki.fi>  Fri, 25 Aug 2006 11:55:47 +0300
+
 gtk+2.0 (2:2.6.10-2.osso9) unstable; urgency=low
 
   * Fixes: MB#724 submenu disappears immediately when popped up
