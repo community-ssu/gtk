@@ -1,3 +1,10 @@
+2006-08-24  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_popup): move set_cursor
+	after realization of the popup window, so clamp node doesn't fail.
+	(#346616, Tommi Komulainen).
+	NB#34004
+
 2006-08-23  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_grab_notify): process queued
