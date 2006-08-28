@@ -14655,7 +14655,6 @@ selection_changed (GtkTreeSelection *selection, gpointer data)
           _gtk_tree_view_find_node (tree_view, selected_path, &tree, &node);
           gtk_tree_view_clamp_node_visible (tree_view, tree, node);
           gtk_tree_path_free (selected_path);
-          gtk_widget_grab_focus (GTK_WIDGET (tree_view));
         }
       else
         {
@@ -14700,11 +14699,6 @@ check_if_can_focus (GtkTreeView *tree_view)
                                                node, path))
       {
         GTK_WIDGET_SET_FLAGS (tree_view, GTK_CAN_FOCUS);
-        if (!gtk_tree_row_reference_valid (tree_view->priv->cursor))
-          gtk_tree_view_real_set_cursor (tree_view, path,
-                                         !tree_view->priv->checkbox_mode,
-                                         TRUE);
-
         gtk_tree_path_free (path);
         return;
       }
