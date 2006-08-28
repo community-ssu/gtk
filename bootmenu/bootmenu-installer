@@ -1,0 +1,30 @@
+#! /bin/sh
+
+cpifchanged ()
+{
+    cmp -s "$1" "$2"
+    if [ $? != 0 ]; then
+      echo "Installing $2"
+      cp -a "$1" "$2"
+    else
+      echo "No need to touch $2"
+    fi
+}
+
+cpifchanged /usr/lib/bootmenu/evkey /mnt/initfs/usr/bin/evkey
+cpifchanged /usr/lib/bootmenu/bootmenu.sh /mnt/initfs/usr/bin/bootmenu.sh
+
+## Awk is not patch, but it's sooo close...
+
+awk '$0 == "\tdefault_root=$(cal-tool --get-root-device 2> /dev/null)" \
+      { print;
+        print "#begin:bootmenu";
+        print "\t[ -f /usr/bin/bootmenu.sh ] && . /usr/bin/bootmenu.sh";
+        print "#end:bootmenu";
+        next }
+     /#begin:bootmenu/ { ignore=1; }
+     /#end:bootmenu/   { ignore=0; next }
+     { if (!ignore) print; }' /mnt/initfs/linuxrc >/tmp/linuxrc.tmp
+
+chmod a+x /tmp/linuxrc.tmp
+cpifchanged /tmp/linuxrc.tmp /mnt/initfs/linuxrc 
