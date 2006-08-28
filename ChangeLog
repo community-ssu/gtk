@@ -1,5 +1,14 @@
 2006-08-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkentry.c (gtk_entry_key_press): Remove special casing for
+	GDK_Enter and GDK_KP_Enter, allow normal event processing emit
+	"activate" signal
+	(gtk_entry_real_activate): Move focus to next editable widget when
+	"activates-default" is FALSE
+	NB#34112
+
+2006-08-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeview.c (selection_changed): Don't grab focus to treeview
 	on selection change as it makes no sense.
 	* gtk/gtktreeview.c (check_if_can_focus): Remove forcefully setting

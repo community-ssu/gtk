@@ -2192,15 +2192,10 @@ gtk_entry_key_press (GtkWidget   *widget,
         }
     }
 
-  if (event->keyval == GDK_Return)
-    return FALSE;	
-  if (event->keyval == GDK_KP_Enter)	 	
-    g_signal_emit_by_name (G_OBJECT(gtk_widget_get_ancestor (widget,	 	
-                            GTK_TYPE_WINDOW)), "move-focus",	 	
-                           GTK_DIR_TAB_FORWARD);	 	
-
   if (GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event))
     /* Activate key bindings
+     * Hildon: this includes "activate" signal (from Enter, GDK_KP_Enter),
+     * which we handle in gtk_entry_real_activate()
      */
     return TRUE;
 
@@ -3151,10 +3146,10 @@ gtk_entry_real_activate (GtkEntry *entry)
   GtkWidget *widget;
 
   widget = GTK_WIDGET (entry);
+  toplevel = gtk_widget_get_toplevel (widget);
 
   if (entry->activates_default)
     {
-      toplevel = gtk_widget_get_toplevel (widget);
       if (GTK_IS_WINDOW (toplevel))
 	{
 	  window = GTK_WINDOW (toplevel);
@@ -3165,6 +3160,24 @@ gtk_entry_real_activate (GtkEntry *entry)
 		(!window->default_widget || !GTK_WIDGET_SENSITIVE (window->default_widget))))
 	    gtk_window_activate_default (window);
 	}
+    }
+  else
+    {
+      /* Hildon: (VKBD) Enter (Enter, GDK_KP_Enter) should accept the field
+       * and move focus to the next editable field. 
+       *
+       * If we get here it is often when the user has pressed Enter and no one
+       * handled the event. Another possibility is application emitting the
+       * "activate" signal (in)directly but that sould be rare.
+       *
+       * FIXME This should probably be removed as it changes the semantics
+       * slightly (be it here or in "key-press-event" handler) and is probably
+       * going to break something.  Though doing this in the default handler
+       * for "activate" should minimize the impact.
+       * NB#34112
+       */
+      if (GTK_IS_WINDOW (toplevel))
+	g_signal_emit_by_name (toplevel, "move-focus", GTK_DIR_TAB_FORWARD);
     }
 }
 
