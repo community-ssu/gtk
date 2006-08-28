@@ -4,7 +4,7 @@ gtk+2.0 (2:2.6.10-2.osso10) UNRELEASED; urgency=low
   * Fixes: NB#34004,NB#36078 combobox doesn't move to selected value in the
     first time active
 
- -- Tommi Komulainen <tommi.komulainen@iki.fi>  Fri, 25 Aug 2006 11:55:47 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 25 Aug 2006 11:55:47 +0300
 
 gtk+2.0 (2:2.6.10-2.osso9) unstable; urgency=low
 
@@ -15,7 +15,7 @@ gtk+2.0 (2:2.6.10-2.osso9) unstable; urgency=low
   * Fixes: NB#33601 Addressbook and file manager: CSM are too agressively
     dimmed
 
- -- Tommi Komulainen <tommi.komulainen@iki.fi>  Thu, 24 Aug 2006 11:03:03 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 24 Aug 2006 11:03:03 +0300
 
 gtk+2.0 (2:2.6.10-2.osso8) unstable; urgency=low
 
