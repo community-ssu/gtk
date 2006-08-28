@@ -1,11 +1,10 @@
-gtk+2.0 (2:2.6.10-2.osso10) UNRELEASED; urgency=low
+gtk+2.0 (2:2.6.10-2.osso10) unstable; urgency=low
 
-  * NOT RELEASED YET
   * Fixes: NB#34004,NB#36078 combobox doesn't move to selected value in the
     first time active
   * Fixes: NB#34112 Popup in GtkComboBoxEntry when pressing return
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 28 Aug 2006 16:35:04 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 28 Aug 2006 16:41:58 +0300
 
 gtk+2.0 (2:2.6.10-2.osso9) unstable; urgency=low
 
