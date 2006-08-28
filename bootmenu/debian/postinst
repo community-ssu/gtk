@@ -1,6 +1,14 @@
 #! /bin/sh
 
-/usr/sbin/bootmenu-installer 2>&1 >/tmp/bootmenu.log
+cat >/tmp/bootmenu.log <<EOF
+Below is the output of the bootmenu-installer.
+If it fails due to "No space left on device", you will very likely need
+to flash a smaller initfs.
+See http://maemo.org/maemowiki/BootMenu for more information.
+----
+EOF
+
+/usr/sbin/bootmenu-installer >>/tmp/bootmenu.log 2>&1 
 
 maemo-confirm-text "Output of bootmenu-installer" /tmp/bootmenu.log
 
