@@ -1,5 +1,5 @@
 Source: apt-https
-Section: unknown
+Section: admin
 Priority: optional
 Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), libapt-pkg-dev, libcurl3-dev, libcst-dev, libosso-certman-dev, libosso-dev, libssl-dev
