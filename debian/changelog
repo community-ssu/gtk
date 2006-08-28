@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.6.10-1.osso24) unstable; urgency=low
+
+  * Fixes: NB#31691 calendar labels language
+
+ -- Tommi Komulainen <tommi.komulainen@iki.fi>  Mon, 28 Aug 2006 10:28:11 +0300
+
 gtk+2.0 (2:2.6.10-1.osso23) unstable; urgency=low
 
   * Proper fix for NB#26600
