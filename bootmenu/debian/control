@@ -11,3 +11,6 @@ Depends: ${shlibs:Depends}
 Description: A menu to allow easy dual booting
  This package adds a menu to the boot sequence that allows you
  to choose whether to boot from the internal flash or the MMC.
+ .
+ You need to have the smaller initfs as described at
+ http://maemo.org/maemowiki/BootMenu.
