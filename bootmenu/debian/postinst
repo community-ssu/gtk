@@ -1,5 +1,7 @@
 #! /bin/sh
 
+chroot /mnt/initfs cal-tool -R ask
+
 cat >/tmp/bootmenu.log <<EOF
 Below is the output of the bootmenu-installer.
 If it fails due to "No space left on device", you will very likely need
