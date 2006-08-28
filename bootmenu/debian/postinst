@@ -1,9 +1,7 @@
 #! /bin/sh
 
-set -e
+/usr/sbin/bootmenu-installer 2>&1 >/tmp/bootmenu.log
 
-cat >>/etc/inittab <<EOF 
-#begin:bootmenu
-bm::bootwait:/sbin/bootmenu
-#end:bootmenu
-EOF
+maemo-confirm-text "Output of bootmenu-installer" /tmp/bootmenu.log
+
+rm /tmp/bootmenu.log
