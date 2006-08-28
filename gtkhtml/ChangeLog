@@ -1,3 +1,14 @@
+2006-08-28 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 3.9.1-2osso4
+	* src/gtkhtml.c: Update focused object before sending link-clicked
+		signal. Otherwise it caused crash if callback changed
+		content of gtkhtml
+	* src/htmlengine.c: Fixed crash/undefined behaiviour caused by
+		uninitialized variable when moving focused link
+	* src/htmlengine.c: Clear the focus when the engine is reset.
+		When it was not clearedit could cause crashes
+
 2006-08-03 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* src/htmlengine.c: check if we really need new allocation for 

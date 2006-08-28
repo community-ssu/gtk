@@ -51,6 +51,9 @@ $(SOURCE_DIR)/configure:
 	patch -p0 < upstream/patches/gtkhtml_clear_selection.diff
 	patch -p0 < upstream/patches/gtkhtml_store_clipboard.diff
 	patch -p0 < upstream/patches/gtkhtml_check_string.diff
+	patch -p0 < upstream/patches/gtkhtml_return_press_crash_fix.diff
+	patch -p0 < upstream/patches/gtkhtml_init_offset_in_engine_focus.diff
+	patch -p0 < upstream/patches/gtkhtml_engine_clear_focus.diff
 	cd $(SOURCE_DIR) && ./autogen.sh
 
 

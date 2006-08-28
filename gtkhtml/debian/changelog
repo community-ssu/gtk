@@ -1,3 +1,9 @@
+gtkhtml (3.9.1-2osso4) unstable; urgency=low
+
+  * Bugfixes
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 28 Aug 2006 09:25:55 +0300
+
 gtkhtml (3.9.1-2osso3) unstable; urgency=low
 
   * Added Section to the source package

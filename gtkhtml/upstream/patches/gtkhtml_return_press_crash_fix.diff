@@ -1,0 +1,22 @@
+# Patch fixing crash which is caused by changing content of gtkhtml in
+# link_clicked signal handler and focus_object pointing to freed area after
+# that
+#
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the gtkhtml package
+#
+diff -ur gtkhtml-3.9.1.orig/src/gtkhtml.c gtkhtml-3.9.1/src/gtkhtml.c
+--- gtkhtml-3.9.1.orig/src/gtkhtml.c	2006-08-18 10:23:49.351074161 +0300
++++ gtkhtml-3.9.1/src/gtkhtml.c	2006-08-18 10:22:01.637229535 +0300
+@@ -946,10 +946,10 @@
+ 				url = html_object_get_complete_url (focus_object, focus_object_offset);
+ 				if (url) {
+ 					/* printf ("link clicked: %s\n", url); */
+-					g_signal_emit (html, signals [LINK_CLICKED], 0, url);
+                                         if (HTML_IS_TEXT(focus_object)) {
+ 						html_text_set_link_visited (HTML_TEXT (focus_object), focus_object_offset, html->engine, TRUE);
+ 					}   
++					g_signal_emit (html, signals [LINK_CLICKED], 0, url);
+ 					g_free (url);
+ 				}
+ 			}
