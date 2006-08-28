@@ -1,12 +1,7 @@
 #! /bin/sh
 
-nukeconf () 
-{
-  f="$1"
-  awk '/#begin:bootmenu/ { ignore=1 }
-       /#end:bootmenu/   { ignore=0; next }
-                         { if (!ignore) print }' \
-  $f >$f.tmp && mv $f.tmp $f
-}
-
-nukeconf /etc/inittab
+### XXX - We should remove the bootmenu here when this is not a
+###       package upgrade.  Upgrades are handled by postinst in
+###       such a way to minimize modifications to /mnt/initfs,
+###       but when the package is removed, the bootmenu should go as well,
+###       of course
