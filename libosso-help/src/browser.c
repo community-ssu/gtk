@@ -193,6 +193,12 @@ gboolean browser_show( GtkWidget *browser,
     gtk_html_end (html, html_stream_handle, GTK_HTML_STREAM_OK);
   }
 
+  /* Select the first url link in breadcrumb trail*/
+  if (!is_dialog)
+  {
+      browser_focus_forward_backward(browser, GTK_DIR_RIGHT, TRUE);
+  }
+
   /* Focus to the HTML page of help instead of search bar */
   gtk_widget_grab_focus(child);
   close(fd);
@@ -323,3 +329,66 @@ osso_return_t libosso_update_html( osso_context_t *osso,
     return OSSO_OK;
 }
 
+
+/**
+
+  Moves the focused link in the browser widget
+  
+  @param browser returned by 'browser_new()'
+  @param dir     Direction to move in either GTK_DIR_LEFT or GTK_DIR_RIGHT
+  @param start_from_first if TRUE and no previous selection was set and
+                 direction is GTK_DIR_LEFT select anyway the first
+  @return   TRUE if focus was moved, FALSE otherwise
+*/
+gboolean browser_focus_forward_backward( GtkWidget *browser,
+                                         GtkDirectionType dir,
+                                         gboolean start_from_first)
+{
+    gchar* tmp;
+    gboolean had_focus;
+    gboolean has_focus;
+    GtkHTML *browser_html = GTK_HTML(gtk_bin_get_child(GTK_BIN(browser)));
+
+    g_return_val_if_fail(dir == GTK_DIR_LEFT || dir == GTK_DIR_RIGHT, FALSE);
+    g_return_val_if_fail(browser_html, FALSE);
+
+    tmp = gtk_html_get_cursor_url(browser_html);
+    had_focus = (tmp != NULL);
+    g_free(tmp); tmp = NULL;
+
+    gtk_html_command(browser_html,"grab-focus");
+
+    gtk_html_command(browser_html, ((!had_focus && start_from_first) ||
+                                    dir == GTK_DIR_RIGHT)
+                     ? "focus-forward"
+                     : "focus-backward");
+
+    tmp = gtk_html_get_cursor_url(browser_html);
+    has_focus = (tmp != NULL);
+    g_free(tmp); tmp = NULL;
+
+    if (had_focus && !has_focus)
+    {
+        /* The focus moved out from the last/first link, move it back */
+        gtk_html_command(browser_html, dir == GTK_DIR_RIGHT
+                         ? "focus-backward"
+                         : "focus-forward");
+        return FALSE;
+    }
+    else
+    {
+        return TRUE;
+    }
+}
+
+
+/**
+   Tells if the browser has the focus within its toplevel window
+   @return True if the browser has the focus
+ */
+gboolean browser_has_focus( GtkWidget *browser )
+{
+    GtkWidget *browser_html = gtk_bin_get_child(GTK_BIN(browser));
+
+    return browser_html && gtk_widget_is_focus(browser_html);
+}

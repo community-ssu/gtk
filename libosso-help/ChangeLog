@@ -1,3 +1,10 @@
+2006-08-28 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 2.0.5
+	* src/browser.c, src/osso-helplib-private.h: Added functions
+		browser_focus_forward_backward and browser_has_focus
+		which are used for rocker key interaction
+
 2006-08-23 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* src/browser.c: url_requested(): freeing the allocated buffer

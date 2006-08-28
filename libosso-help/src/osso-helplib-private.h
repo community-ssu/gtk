@@ -228,5 +228,12 @@ osso_return_t libosso_update_html ( osso_context_t *osso,
                            GdkNativeWindow socket_id,
                            const char *topic_key );
 
+gboolean browser_focus_forward_backward( GtkWidget *browser,
+                                         GtkDirectionType dir,
+                                         gboolean start_from_first);
+
+gboolean browser_has_focus( GtkWidget *browser );
+
+
 #endif  /* OSSO_HELPLIB_PRIVATE_H */
 
