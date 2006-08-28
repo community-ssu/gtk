@@ -1,3 +1,12 @@
+2006-08-28  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtktextbufferserialize.c (serialize_text): don't write out
+	</apply_tag> for tags that have already been closed by the logic
+	which turns overlapping spans into XML-able trees. Fixes broken
+	XML when there are overlapping tags in the buffer. Also free two
+	leaked GLists and did some cleanup.
+	NB#33737
+
 2006-08-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkentry.c (gtk_entry_key_press): Remove special casing for
