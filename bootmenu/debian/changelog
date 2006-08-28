@@ -1,3 +1,9 @@
+bootmenu (1) unstable; urgency=low
+
+  * Hook into initfs.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 28 Aug 2006 21:49:27 +0300
+
 bootmenu (0) unstable; urgency=low
 
   * Initial release.
