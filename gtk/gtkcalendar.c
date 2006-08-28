@@ -31,6 +31,8 @@
 
 #include <config.h>
 
+#define _GNU_SOURCE /* needed for GNU nl_langinfo_l */
+
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -332,6 +334,9 @@ struct _GtkCalendarPrivateData
 
   gint min_year;
   gint max_year;
+
+  char *abbreviated_dayname[7];
+  char *monthname[12];
 };
 
 #define GTK_CALENDAR_PRIVATE_DATA(widget)  (((GtkCalendarPrivateData*)(GTK_CALENDAR (widget)->private_data)))
@@ -436,9 +441,6 @@ static gboolean gtk_calendar_drag_drop      (GtkWidget        *widget,
 static void
 gtk_calendar_check_current_date (GtkCalendar *calendar, gint x, gint y);
 
-static char    *default_abbreviated_dayname[7];
-static char    *default_monthname[12];
-
 GType
 gtk_calendar_get_type (void)
 {
@@ -464,6 +466,60 @@ gtk_calendar_get_type (void)
     }
   
   return calendar_type;
+}
+
+static void
+locales_init (GtkCalendarPrivateData *priv)
+{
+  /* Hildon: This is not exactly portable, see
+   * http://bugzilla.gnome.org/show_bug.cgi?id=343415
+   * The labels need to be instance variables as the startup wizard changes
+   * locale on runtime.
+   */
+  locale_t l;
+
+  l = newlocale (LC_TIME_MASK, setlocale (LC_MESSAGES, NULL), NULL);
+
+  priv->abbreviated_dayname[0] = g_locale_to_utf8(nl_langinfo_l(ABDAY_1, l),
+						  -1, NULL, NULL, NULL);
+  priv->abbreviated_dayname[1] = g_locale_to_utf8(nl_langinfo_l(ABDAY_2, l),
+						  -1, NULL, NULL, NULL);
+  priv->abbreviated_dayname[2] = g_locale_to_utf8(nl_langinfo_l(ABDAY_3, l),
+						  -1, NULL, NULL, NULL);
+  priv->abbreviated_dayname[3] = g_locale_to_utf8(nl_langinfo_l(ABDAY_4, l),
+						  -1, NULL, NULL, NULL);
+  priv->abbreviated_dayname[4] = g_locale_to_utf8(nl_langinfo_l(ABDAY_5, l),
+						  -1, NULL, NULL, NULL);
+  priv->abbreviated_dayname[5] = g_locale_to_utf8(nl_langinfo_l(ABDAY_6, l),
+						  -1, NULL, NULL, NULL);
+  priv->abbreviated_dayname[6] = g_locale_to_utf8(nl_langinfo_l(ABDAY_7, l),
+						  -1, NULL, NULL, NULL);
+  priv->monthname[0] = g_locale_to_utf8(nl_langinfo_l(MON_1, l),
+					-1, NULL, NULL, NULL);
+  priv->monthname[1] = g_locale_to_utf8(nl_langinfo_l(MON_2, l),
+					-1, NULL, NULL, NULL);
+  priv->monthname[2] = g_locale_to_utf8(nl_langinfo_l(MON_3, l),
+					-1, NULL, NULL, NULL);
+  priv->monthname[3] = g_locale_to_utf8(nl_langinfo_l(MON_4, l),
+					-1, NULL, NULL, NULL);
+  priv->monthname[4] = g_locale_to_utf8(nl_langinfo_l(MON_5, l),
+					-1, NULL, NULL, NULL);
+  priv->monthname[5] = g_locale_to_utf8(nl_langinfo_l(MON_6, l),
+					-1, NULL, NULL, NULL);
+  priv->monthname[6] = g_locale_to_utf8(nl_langinfo_l(MON_7, l),
+					-1, NULL, NULL, NULL);
+  priv->monthname[7] = g_locale_to_utf8(nl_langinfo_l(MON_8, l),
+					-1, NULL, NULL, NULL);
+  priv->monthname[8] = g_locale_to_utf8(nl_langinfo_l(MON_9, l),
+					-1, NULL, NULL, NULL);
+  priv->monthname[9] = g_locale_to_utf8(nl_langinfo_l(MON_10, l),
+					-1, NULL, NULL, NULL);
+  priv->monthname[10] = g_locale_to_utf8(nl_langinfo_l(MON_11, l),
+					 -1, NULL, NULL, NULL);
+  priv->monthname[11] = g_locale_to_utf8(nl_langinfo_l(MON_12, l),
+					 -1, NULL, NULL, NULL);
+
+  freelocale (l);
 }
 
 static void
@@ -833,45 +889,6 @@ gtk_calendar_init (GtkCalendar *calendar)
   gtk_drag_dest_set (widget, 0, NULL, 0, GDK_ACTION_COPY);
   gtk_drag_dest_add_text_targets (widget);
 
-  default_abbreviated_dayname[0] = g_locale_to_utf8(nl_langinfo(ABDAY_1),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[1] = g_locale_to_utf8(nl_langinfo(ABDAY_2),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[2] = g_locale_to_utf8(nl_langinfo(ABDAY_3),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[3] = g_locale_to_utf8(nl_langinfo(ABDAY_4),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[4] = g_locale_to_utf8(nl_langinfo(ABDAY_5),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[5] = g_locale_to_utf8(nl_langinfo(ABDAY_6),
-                                                    -1, NULL, NULL, NULL);
-  default_abbreviated_dayname[6] = g_locale_to_utf8(nl_langinfo(ABDAY_7),
-                                                    -1, NULL, NULL, NULL);
-  default_monthname[0] = g_locale_to_utf8(nl_langinfo(MON_1),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[1] = g_locale_to_utf8(nl_langinfo(MON_2),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[2] = g_locale_to_utf8(nl_langinfo(MON_3),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[3] = g_locale_to_utf8(nl_langinfo(MON_4),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[4] = g_locale_to_utf8(nl_langinfo(MON_5),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[5] = g_locale_to_utf8(nl_langinfo(MON_6),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[6] = g_locale_to_utf8(nl_langinfo(MON_7),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[7] = g_locale_to_utf8(nl_langinfo(MON_8),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[8] = g_locale_to_utf8(nl_langinfo(MON_9),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[9] = g_locale_to_utf8(nl_langinfo(MON_10),
-                                          -1, NULL, NULL, NULL);
-  default_monthname[10] = g_locale_to_utf8(nl_langinfo(MON_11),
-                                           -1, NULL, NULL, NULL);
-  default_monthname[11] = g_locale_to_utf8(nl_langinfo(MON_12),
-                                           -1, NULL, NULL, NULL);
-
 #if 0
   private_data->year_before = 0;
 
@@ -909,6 +926,8 @@ gtk_calendar_init (GtkCalendar *calendar)
       g_warning ("nl_langinfo(_NL_TIME_WEEK_1STDAY) returns invalid date");
       private_data->week_start = 0;
     }
+
+  locales_init (private_data);
 }
 
 GtkWidget*
@@ -1661,7 +1680,7 @@ gtk_calendar_size_request (GtkWidget      *widget,
       private_data->max_month_width = 0;
       for (i = 0; i < 12; i++)
         {
-          pango_layout_set_text (layout, default_monthname[i], -1);
+          pango_layout_set_text (layout, private_data->monthname[i], -1);
           pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
           private_data->max_month_width = MAX (private_data->max_month_width,
                                                logical_rect.width + 8);
@@ -1719,7 +1738,7 @@ gtk_calendar_size_request (GtkWidget      *widget,
   if (calendar->display_flags & GTK_CALENDAR_SHOW_DAY_NAMES)
     for (i = 0; i < 7; i++)
       {
-        pango_layout_set_text (layout, default_abbreviated_dayname[i], -1);
+        pango_layout_set_text (layout, private_data->abbreviated_dayname[i], -1);
         pango_layout_line_get_pixel_extents (pango_layout_get_lines (layout)->data, NULL, &logical_rect);
 
         /* Hildon: add 4 so that passive focus wouldn't overlap day names */
@@ -1746,9 +1765,9 @@ gtk_calendar_size_request (GtkWidget      *widget,
                    ? private_data->max_week_char_width * 2 + (focus_padding + focus_width) * 2 + CALENDAR_XSEP * 2
                    : 0));
 
-  requisition->width = MAX (header_width, main_width + INNER_BORDER * 2) + widget->style->xthickness * 2;
-
-  /* FIXME: header_width is broken, when Calendar is themed ! 
+  /* requisition->width = MAX (header_width, main_width + INNER_BORDER * 2) + widget->style->xthickness * 2;
+   *
+   * FIXME: header_width is broken, when Calendar is themed ! 
    *  Next line is workaround for this bug
    */
   requisition->width = (main_width + INNER_BORDER * 2) + widget->style->xthickness * 2 + HILDON_WEEKS_EXTRA_WIDTH + HILDON_DAYS_EXTRA_WIDTH;
@@ -2070,7 +2089,7 @@ GtkCalendar *calendar;
   cal_height = widget->allocation.height;
   
   /* Draw month and its arrows */
-  g_snprintf (buffer, sizeof (buffer), "%s", default_monthname[calendar->month]);
+  g_snprintf (buffer, sizeof (buffer), "%s", private_data->monthname[calendar->month]);
   layout = gtk_widget_create_pango_layout (widget, buffer);
   pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
 
@@ -2172,7 +2191,7 @@ gtk_calendar_paint_day_names (GtkWidget *widget)
       else
         day = i;
       day = (day + private_data->week_start) % 7;
-      g_snprintf (buffer, sizeof (buffer), "%s", default_abbreviated_dayname[day]);
+      g_snprintf (buffer, sizeof (buffer), "%s", private_data->abbreviated_dayname[day]);
   
       pango_layout_set_text (layout, buffer, -1);
       pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
@@ -3577,8 +3596,14 @@ static void
 gtk_calendar_finalize (GObject *object)
 {
   GtkCalendarPrivateData *private_data;
+  int i;
+
   private_data = GTK_CALENDAR_PRIVATE_DATA (object);
   
+  for (i = 0; i < 7; i++)
+    g_free (private_data->abbreviated_dayname[i]);
+  for (i = 0; i < 12; i++)
+    g_free (private_data->monthname[i]);
   g_free (private_data);
   
   (* G_OBJECT_CLASS (parent_class)->finalize) (object);

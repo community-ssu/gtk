@@ -1,3 +1,26 @@
+2006-08-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Merge GtkCalendar localisation fixes from trunk. NB#31691
+
+	* gtk/gtkcalendar.c (gtk_calendar_class_init) (gtk_calendar_finalize)
+	(gtk_calendar_init) (gtk_calendar_paint_day_names)
+	(gtk_calendar_paint_footer) (GtkCalendarPrivateData)
+	(gtk_calendar_size_request) (locales_init): Change abbreviated_dayname
+	and monthname into instance variables to react to locale changing on
+	runtime. N#33120
+
+	* gtk/gtkcalendar.c (locales_init): Use nl_langinfo_l to get month /
+	weekday names from locale defined by LC_MESSAGES rather than LC_TIME.
+	N#32491, #343415
+	
+	* gtk/gtkcalendar.c (gtk_calendar_size_request): Silence harmless
+	valgrind warning. N#21938
+
+	* gtk/gtkcalendar.c (gtk_calendar_init) (gtk_calendar_class_init)
+	(locales_init): Move month / weekday name initialization to separate
+	function and call it from class init, not instance init.  Probably
+	fixes a minor memory leak.
+
 2006-07-11  Kristian Rietveld  <kris@imendio.com>
 
 	Proper fix for N#26600, also fixes N#31768, N#32385, N#33017
