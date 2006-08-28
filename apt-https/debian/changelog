@@ -1,3 +1,9 @@
+apt-https (2.4) unstable; urgency=low
+
+  * Changed subsection to "admin" to match apt.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 28 Aug 2006 12:23:54 +0300
+
 apt-https (2.3) unstable; urgency=low
 
   * Added maemo-mini-curl-cert-gui helper to do the user interfacing.

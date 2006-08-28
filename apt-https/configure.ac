@@ -1,6 +1,6 @@
 # configure.ac for apt-https
 
-AC_INIT(apt-https, 2.3)
+AC_INIT(apt-https, 2.4)
 AC_CONFIG_SRCDIR([https.cc])
 AM_INIT_AUTOMAKE
 
