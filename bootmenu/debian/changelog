@@ -1,3 +1,9 @@
+bootmenu (2) unstable; urgency=low
+
+  * Set root device to "ask", better package description.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 29 Aug 2006 00:19:18 +0300
+
 bootmenu (1) unstable; urgency=low
 
   * Hook into initfs.
