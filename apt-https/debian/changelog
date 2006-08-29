@@ -1,3 +1,9 @@
+apt-https (2.5) unstable; urgency=low
+
+  * Imroved debian/copyright.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 29 Aug 2006 15:33:59 +0300
+
 apt-https (2.4) unstable; urgency=low
 
   * Changed subsection to "admin" to match apt.
