@@ -1,4 +1,15 @@
 This package was debianized by Marius Vollmer <marius.vollmer@nokia.com> on
 Wed, 26 Apr 2006 22:23:41 +0300.
 
-Copyright: 2006 Nokia
+apt-https is Copyright (C) 2006 Nokia
+
+This package is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+As a special exception, linking parts of this package with OpenSSL is
+allowed.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
