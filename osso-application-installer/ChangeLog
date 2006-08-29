@@ -1,3 +1,17 @@
+2006-08-29  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Redone fishing for extra hints about installation failures.
+	
+	* src/log.h, src/log.cc (set_log_start, scan_log,
+	scan_log_for_result_code): New.
+	* src/main.cc (install_package, install_package_reply,
+	install_from_file, install_from_file_reply): Use them to augment
+	result code. (N25494)
+	* src/apt-worker-client.h, src/apt-worker-client.cc
+	(status_out_of_space, reset_client_error_status,
+	client_error_out_of_space): Removed.
+	(interpret_pmstatus): Don't interpret "pmerror:".
+
 2006-08-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/apt-worker-client.h, src/apt-worker-client.cc
@@ -6,7 +20,7 @@
 	(interpret_pmstatus): Interpret "pmerror:" as well and set
 	status_out_of_space accordingly.
 	* src/main.cc (install_package_reply): Explicitely set result_code
-	when client_error_out_of_space is true. (N25494)
+	when client_error_out_of_space is true. (N31101)
 	
 2006-08-21  Marius Vollmer  <marius.vollmer@nokia.com>
 

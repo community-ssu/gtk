@@ -73,8 +73,6 @@ interpret_pmstatus (char *str)
   float percentage;
   char *title;
 
-  fprintf (stderr, "STATUS: %s\n", str);
-
   if (!strncmp (str, "pmstatus:", 9))
     {
       str += 9;
@@ -93,19 +91,6 @@ interpret_pmstatus (char *str)
 	}
 	
       set_progress (op_general, (int)percentage, 100);
-    }
-  else if (!strncmp (str, "pmerror:", 8))
-    {
-      /* Some error has been reported by dpkg.  We try to guess what
-	 it might have been.
-      */
-
-      /* XXX - we should probably get the string from strerror, but
-	 then we need to synchronize the locale environments between
-	 dpkg and this process...
-      */
-      if (strstr (str, "No space left on device"))
-	status_out_of_space = true;
     }
 }
 

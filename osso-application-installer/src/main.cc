@@ -1128,7 +1128,8 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
       return;
     }
 
-  int result_code = dec->decode_int ();
+  apt_proto_result_code result_code =
+    apt_proto_result_code (dec->decode_int ());
 
   if (clean_after_install)
     apt_worker_clean (clean_reply, NULL);
@@ -1161,8 +1162,7 @@ install_package_reply (int cmd, apt_proto_decoder *dec, void *data)
 			      : _("ai_ni_error_installation_failed")),
 			     pi->name);
 
-	  if (client_error_out_of_space ())
-	    result_code = rescode_out_of_space;
+	  result_code = scan_log_for_result_code (result_code);
 
 	  annoy_user_with_result_code (result_code, str, upgrading);
 	  g_free (str);
@@ -1211,7 +1211,7 @@ install_package_cont3 (bool res, void *data)
     {
       if (res)
 	{
-	  reset_client_error_status ();
+	  set_log_start ();
 	  apt_worker_install_package (c->pi->name,
 				      c->pi->installed_version != NULL,
 				      install_package_reply, c->pi);
@@ -2213,7 +2213,13 @@ install_from_file_reply (int cmd, apt_proto_decoder *dec, void *data)
 				   ? _("ai_ni_error_update_failed")
 				   : _("ai_ni_error_installation_failed"),
 				   pi->name);
-      annoy_user_with_log (str);
+
+      apt_proto_result_code result_code = rescode_failure;
+
+      result_code = scan_log_for_result_code (result_code);
+
+      annoy_user_with_result_code (result_code, str,
+				   pi->installed_version != NULL);
       g_free (str);
     }
 
@@ -2230,6 +2236,7 @@ install_from_file_cont4 (bool res, void *data)
       show_progress (pi->installed_version
 		     ? _("ai_nw_updating")
 		     : _("ai_nw_installing"));
+      set_log_start ();
       apt_worker_install_file (pi->filename,
 			       install_from_file_reply, pi);
     }

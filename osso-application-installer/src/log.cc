@@ -142,6 +142,7 @@ log_response (GtkDialog *dialog, gint response, gpointer clos)
       add_log ("%s %s, UI version %d\n", PACKAGE, VERSION, ui_version);
       if (log_text)
 	set_small_text_view_text (text_view, log_text->str);
+      set_log_start ();
     }
 
   if (response == RESPONSE_SAVE)
@@ -223,6 +224,42 @@ add_log_no_fmt (const gchar *str, size_t n)
   if (log_text == NULL)
     log_text = g_string_new ("");
   g_string_append_len (log_text, str, n);
+}
+
+static int log_start = 0;
+
+void
+set_log_start ()
+{
+  if (log_text)
+    log_start = log_text->len;
+  else
+    log_start = 0;
+}
+
+bool
+scan_log (const char *str)
+{
+  if (log_text && log_text->len >= log_start)
+    return strstr (log_text->str + log_start, str);
+  else
+    return false;
+}
+
+apt_proto_result_code
+scan_log_for_result_code (apt_proto_result_code code)
+{
+  if (code == rescode_failure)
+    {
+      /* XXX - We should probably get the string from strerror, but
+	 then we need to synchronize the locale environments between
+	 dpkg and this process...
+      */
+      if (scan_log ("No space left on device"))
+	code = rescode_out_of_space;
+    }
+
+  return code;
 }
 
 static gboolean
