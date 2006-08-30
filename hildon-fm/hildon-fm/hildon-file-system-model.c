@@ -2610,33 +2610,17 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
 }
 
 void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
-                                            GtkTreeIter *parent_iter,
-                                            gboolean force)
+  GtkTreeIter *parent_iter, gboolean force)
 {
-    GNode *node;
-    HildonFileSystemModelNode *model_node;
-    HildonFileSystemModelPrivate *priv;
+  g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
+  g_return_if_fail(parent_iter != NULL);
+  g_return_if_fail(parent_iter->stamp == model->priv->stamp);
 
-    g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
-    g_return_if_fail(parent_iter != NULL);
-    g_return_if_fail(parent_iter->stamp == model->priv->stamp);
-
-    priv = model->priv;
-    node = parent_iter->user_data;
-    model_node = node->data;
-
-    if (!force && is_node_loaded(priv, node)
-        && gtk_file_system_path_is_local(priv->filesystem, model_node->path))
-    {
-      ULOG_DEBUG_F("local node is already loaded");
-      return;
-    }
-
-    if (g_queue_find(priv->reload_list, parent_iter->user_data) == NULL)
-    {
-      hildon_file_system_model_ensure_idle(model);
-      g_queue_push_tail(priv->reload_list, parent_iter->user_data);
-    }
+  if (g_queue_find(model->priv->reload_list, parent_iter->user_data) == NULL)
+  {
+    hildon_file_system_model_ensure_idle(model);
+    g_queue_push_tail(model->priv->reload_list, parent_iter->user_data);
+  }
 }
 
 static void
@@ -2647,7 +2631,8 @@ _hildon_file_system_model_load_children(HildonFileSystemModel *model,
   g_return_if_fail(parent_iter != NULL);
   g_return_if_fail(parent_iter->stamp == model->priv->stamp);
 
-  _hildon_file_system_model_queue_reload(model, parent_iter, FALSE);
+  hildon_file_system_model_delayed_add_children(model,
+                                                parent_iter->user_data, FALSE);
   wait_node_load(model->priv, parent_iter->user_data);  
 }
 
@@ -2814,8 +2799,7 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
     model_node = node->data;
 
     if (model_node->location && !active_flag && !model_node->accessed &&
-        hildon_file_system_special_location_requires_access(
-        model_node->location))
+        hildon_file_system_special_location_requires_access(model_node->location))
     {
       HildonFileSystemSettings *settings;
 
@@ -2847,7 +2831,7 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
     
         model_node->accessed = TRUE;
 
-        _hildon_file_system_model_queue_reload(model, iter, TRUE);
+        hildon_file_system_model_delayed_add_children(model, node, TRUE);
         return TRUE;
       }
     }
