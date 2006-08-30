@@ -1,5 +1,7 @@
 2006-08-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.29
+	
 	* src/repo.cc (make_repo_list): Make both scrollbars
 	automatic. (N34533)
 
