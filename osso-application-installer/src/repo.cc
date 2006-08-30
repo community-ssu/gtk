@@ -712,7 +712,7 @@ make_repo_list (repo_closure *c)
   scroller = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroller),
 				  GTK_POLICY_AUTOMATIC,
-				  GTK_POLICY_ALWAYS);
+				  GTK_POLICY_AUTOMATIC);
   gtk_container_add (GTK_CONTAINER (scroller), GTK_WIDGET (c->tree));
 
   return scroller;

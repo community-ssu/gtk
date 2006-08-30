@@ -1,11 +1,14 @@
 2006-08-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/repo.cc (make_repo_list): Make both scrollbars
+	automatic. (N34533)
+
 	* src/main.cc (refresh_package_cache,
 	refresh_package_cache_with_cont): Added 'ask' parameter.  Updated
 	all callers.
 
 	* src/repo.cc (show_repo_edit_dialog): Make dialog wider.
-	(sources_list_reply): Make dialog taller.
+	(sources_list_reply): Make dialog taller. (N32236)
 	(maybe_add_new_repo_cont): Don't refresh cache here.
 
 	* src/instr.cc (instr_cont2, instr_cont3): Renamed former to
@@ -23,7 +26,7 @@
 	now.
 	(refresh_repo_list): Use gtk_list_store_insert_with_values instead
 	of append-plus-set so that the selection-changed signal gets all
-	information that it needs.
+	information that it needs. (N34528)
 	(insensitive_press, insensitive_delete_press): Renamed former to
 	latter.  Show "unable to remove", but only when there is a
 	selected row.
