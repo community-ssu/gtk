@@ -1,3 +1,26 @@
+2006-08-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/main.cc (make_last_update_label): Use "ai_li_update_%s"
+	instead of "ai_li_update_%x" and put ai_li_never in it when
+	appropriate.
+
+	* src/repo.cc (repo_response): Irritate user when 'editing' an
+	essential repository and show the readonly details dialog.
+	(repo_row_activated): Likewise.
+	(repo_selection_changed): The edit button is active for all repos
+	now.
+	(refresh_repo_list): Use gtk_list_store_insert_with_values instead
+	of append-plus-set so that the selection-changed signal gets all
+	information that it needs.
+	(insensitive_press, insensitive_delete_press): Renamed former to
+	latter.  Show "unable to remove", but only when there is a
+	selected row.
+	(sources_list_reply): Don't connect to insensitive-press for the
+	edit button.  Use insensitive_delete_press for the delete button.
+	Make edit and delete button insensitive initially,
+	repo_selection_changed will take care of making them sensitive in
+	the right way.
+	
 2006-08-29  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Redone fishing for extra hints about installation failures.

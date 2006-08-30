@@ -1495,14 +1495,22 @@ installed_package_selected (package_info *pi)
 static GtkWidget *
 make_last_update_label ()
 {
-  if (last_update == 0)
-    return gtk_label_new (_("ai_li_never"));
+  char time_string[1024];
 
-  char text[1024];
-  time_t t = last_update;
-  struct tm *broken = localtime (&t);
-  strftime (text, 1024, _("ai_li_updated_%x"), broken);
-  return gtk_label_new (text);
+  if (last_update == 0)
+    strncpy (time_string, _("ai_li_never"), 1024);
+  else
+    {
+      time_t t = last_update;
+      struct tm *broken = localtime (&t);
+      strftime (time_string, 1024, "%x", broken);
+    }
+
+  char *text = g_strdup_printf (_("ai_li_updated_%s"), time_string);
+  GtkWidget *label = gtk_label_new (text);
+  g_free (text);
+
+  return label;
 }
 
 static GtkWidget *
