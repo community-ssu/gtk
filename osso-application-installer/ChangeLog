@@ -1,5 +1,17 @@
 2006-08-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/main.cc (refresh_package_cache,
+	refresh_package_cache_with_cont): Added 'ask' parameter.  Updated
+	all callers.
+
+	* src/repo.cc (show_repo_edit_dialog): Make dialog wider.
+	(sources_list_reply): Make dialog taller.
+	(maybe_add_new_repo_cont): Don't refresh cache here.
+
+	* src/instr.cc (instr_cont2, instr_cont3): Renamed former to
+	latter.
+	(inst_cont2): New, always refresh the cache here, without asking.
+
 	* src/main.cc (make_last_update_label): Use "ai_li_update_%s"
 	instead of "ai_li_update_%x" and put ai_li_never in it when
 	appropriate.
