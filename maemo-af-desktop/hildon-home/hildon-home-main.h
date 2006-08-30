@@ -29,16 +29,15 @@
 #ifndef HILDON_CLOCKAPP_HOME_MAIN_H
 #define HILDON_CLOCKAPP_HOME_MAIN_H
 
-#include "hildon-home-image-loader.h"
 #include "hildon-home-interface.h"
-#include <hildon-widgets/hildon-defines.h>
 
 G_BEGIN_DECLS
 
 /* generic and not home specific values */
-#define _(a) gettext(a)
 #define COMMON_STRING(a) dgettext("hildon-common-strings", a)
 #define FM(a) dgettext("hildon-fm", a)
+
+#define HILDON_MENU_KEY                 GDK_F4
 
 #define WINDOW_WIDTH                    800
 #define WINDOW_HEIGHT                   480
@@ -242,7 +241,7 @@ enum {
      BG_IMAGE_PRIORITY
 }; 	
 
-
+#if 0
 void show_no_memory_note(void);
 void show_connectivity_broke_note(void);
 void show_system_resource_note(void);
@@ -252,6 +251,9 @@ void show_mmc_cover_open_note(void);
 void show_flash_full_note(void);
 
 void home_layoutmode_menuitem_sensitivity_check(void);
+#endif
+
+osso_context_t * home_get_osso_context (void);
 
 G_END_DECLS
 

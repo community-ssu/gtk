@@ -29,24 +29,32 @@
 #ifndef LAYOUT_MANAGER_H
 #define LAYOUT_MANAGER_H
 
+#include <gtk/gtkwidget.h>
+#include <libosso.h>
+#include "hildon-home-titlebar.h"
+
+G_BEGIN_DECLS
+
 /** layout_mode_begin
  *
  * Enters layout mode. 
  *
- * @param home_event_box the home main eventbox
+ * @param titlebar the titlebar widget 
  *
- * @param home_fixed the home container for applet placement
+ * @param applet_area the main applet area
  *
  * @param added_applets the list of new applets to be added.
  *
  * @param removed_applets the list of on-screen applets to be removed.
  */
 
-void layout_mode_begin (GtkEventBox * home_event_box,
-			GtkFixed * home_fixed,
-			GList * added_applets,
-			GList * removed_applets,
-                        GtkWidget * titlebar_label); 
+void layout_mode_begin (HildonHomeTitlebar *titlebar,
+			GtkFixed           *applet_area,
+			GList              *added_applets,
+			GList              *removed_applets);
+
+void layout_mode_cancel (void);
+void layout_mode_accept (void);
 
 /** layout_mode_end
  *
@@ -64,8 +72,6 @@ void layout_mode_end (gboolean rollback);
  */
 
 void layout_mode_init (osso_context_t * osso_context);
-
-
 
 G_END_DECLS
 

@@ -33,7 +33,7 @@
 #include "home-applet-handler.h"
 #include "hildon-home-plugin-interface.h"
 #include "hildon-home-interface.h"
-#include "applet-manager.h"
+#include "home-applet-manager.h"
 
 /* Systems includes */
 #include <string.h>  /* for strcmp */
@@ -185,7 +185,6 @@ static void home_applet_handler_finalize(GObject * obj_self)
     self = HOME_APPLET_HANDLER(obj_self);
     
     g_assert(self);
-
     g_free (self->libraryfile);
     self->libraryfile = NULL;
     g_free (self->desktoppath);
@@ -214,7 +213,7 @@ static void home_applet_handler_finalize(GObject * obj_self)
 static void destroy_handler (GtkObject *object,
                              gpointer user_data)
 {
-    applet_manager_t *appman;
+    AppletManager *appman;
     HomeAppletHandler *self;
     HomeAppletHandlerPrivate *priv;
     GtkWidget *ebox;
@@ -227,18 +226,18 @@ static void destroy_handler (GtkObject *object,
 
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(self);
 
-    appman = applet_manager_singleton_get_instance();
+    appman = applet_manager_get_instance();
 
     ebox = GTK_WIDGET(self->eventbox);
     
     /* Kill the handler through appman so it is removed from the list */
-    applet_manager_deinitialize_handler(appman, self);
+    applet_manager_remove_applet_by_handler(appman, self);
     /* Save the new configuration */
     applet_manager_configure_save_all(appman);
     /* Destroy the eventbox too */
     gtk_widget_destroy (ebox);
     self->eventbox = NULL;
-    
+    g_object_unref (appman);
 }
 
 static void warning_function( void )
@@ -310,6 +309,8 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
                                               NULL);
     g_return_val_if_fail (desktoppath, NULL);
 
+    g_debug ("_applet_handler_new: [%s] [%s]", desktoppath, libraryfile);
+    
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
 
     if (!libraryfile)
@@ -324,6 +325,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
                                        G_KEY_FILE_NONE,
                                        &error))
         {
+	    g_debug ("cannot opent keyfile");
             g_key_file_free (kfile);
             if (error)
                 g_error_free (error);
@@ -337,6 +339,8 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
 
         if (!libraryfile || error)
         {
+            g_debug ("Unable find library path from desktop file %s\n",
+                    desktoppath);
             ULOG_WARN ("Unable find library path from desktop file %s\n",
                     desktoppath);
             g_key_file_free (kfile);
@@ -438,6 +442,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     
     if (!priv->dlhandle)
     {   
+        g_debug ("Unable to open Home Applet %s\n", librarypath);
         ULOG_WARN("Unable to open Home Applet %s\n", librarypath);
 
         return NULL;
@@ -450,14 +455,17 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
             
         if (error_str)
         {
+            g_debug ("Unable to load symbols from Applet %s: %s\n", 
+                      libraryfile, error_str);
             ULOG_WARN("Unable to load symbols from Applet %s: %s\n", 
                       libraryfile, error_str);
 
             dlclose(priv->dlhandle);
             return NULL;
         }
-    
+
         priv->applet_data = priv->initialize(state_data, state_size, &applet);
+	
         handler->eventbox = GTK_EVENT_BOX(gtk_event_box_new());
         /* The eventbox window should be invisible in normal mode so that the
          * shape mask for the applets will work
@@ -467,8 +475,8 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
         gtk_container_add(GTK_CONTAINER(handler->eventbox), applet);
         g_signal_connect (G_OBJECT(applet), "destroy",
                           G_CALLBACK(destroy_handler), handler);
-        handler->libraryfile = (gchar *)libraryfile;
-        handler->desktoppath = (gchar *)desktoppath;
+        handler->libraryfile = g_strdup (libraryfile);
+        handler->desktoppath = g_strdup (desktoppath);
         handler->x = applet_x;
         handler->y = applet_y;
         handler->minwidth = applet_minwidth;
@@ -486,7 +494,7 @@ int home_applet_handler_save_state(HomeAppletHandler *handler,
 {
     HomeAppletHandlerPrivate *priv;
     
-    g_assert(handler);
+    g_return_val_if_fail (handler, 1);
     
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
 
@@ -503,7 +511,7 @@ void home_applet_handler_background(HomeAppletHandler *handler)
 {
     HomeAppletHandlerPrivate *priv;
     
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
     
@@ -517,11 +525,11 @@ void home_applet_handler_foreground(HomeAppletHandler *handler)
 {
     HomeAppletHandlerPrivate *priv;
 
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
     g_assert(priv);
-    
+
     if (priv->applet_data)
     {
         priv->foreground(priv->applet_data);
@@ -533,7 +541,7 @@ GtkWidget *home_applet_handler_settings(HomeAppletHandler *handler,
 {
     HomeAppletHandlerPrivate *priv;
     
-    g_assert(handler);
+    g_return_val_if_fail (handler, NULL);
     
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
     
@@ -550,7 +558,7 @@ void home_applet_handler_deinitialize(HomeAppletHandler *handler)
 {
     HomeAppletHandlerPrivate *priv;
 
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
     
@@ -562,16 +570,18 @@ void home_applet_handler_deinitialize(HomeAppletHandler *handler)
     }
 }
 
-gchar *home_applet_handler_get_desktop_filepath(HomeAppletHandler *handler)
+const gchar *
+home_applet_handler_get_desktop_filepath(HomeAppletHandler * handler)
 {
-    g_assert(handler);
+    g_return_val_if_fail (handler, NULL);
 
     return handler->desktoppath;
 }
 
-gchar *home_applet_handler_get_libraryfile(HomeAppletHandler *handler)
+const gchar *
+home_applet_handler_get_libraryfile(HomeAppletHandler *handler)
 {
-    g_assert(handler);
+    g_return_val_if_fail (handler, NULL);
 
     return handler->libraryfile;
 }
@@ -579,7 +589,7 @@ gchar *home_applet_handler_get_libraryfile(HomeAppletHandler *handler)
 void home_applet_handler_set_coordinates(HomeAppletHandler *handler, 
                                          gint x, gint y)
 {
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     handler->x = x;
     handler->y = y;
@@ -589,7 +599,7 @@ void home_applet_handler_set_coordinates(HomeAppletHandler *handler,
 void home_applet_handler_get_coordinates(HomeAppletHandler *handler, 
                                          gint *x, gint *y)
 {
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     *x = handler->x;
     *y = handler->y;
@@ -598,7 +608,7 @@ void home_applet_handler_get_coordinates(HomeAppletHandler *handler,
 void home_applet_handler_store_size(HomeAppletHandler *handler)
 {
     GtkRequisition requisition = {0};
-    g_assert(handler);
+    g_return_if_fail (handler);
     gtk_widget_size_request((GtkWidget *)handler->eventbox, &requisition);
     
     handler->width = requisition.width;
@@ -608,7 +618,7 @@ void home_applet_handler_store_size(HomeAppletHandler *handler)
 void home_applet_handler_set_size(HomeAppletHandler *handler, 
                                   gint width, gint height)
 {
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     gtk_widget_set_size_request((GtkWidget *)handler->eventbox, width, height);
     
@@ -620,7 +630,7 @@ void home_applet_handler_set_size(HomeAppletHandler *handler,
 void home_applet_handler_get_size(HomeAppletHandler *handler, 
                                   gint *width, gint *height)
 {
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     *width = handler->width;
     *height = handler->height;
@@ -629,7 +639,7 @@ void home_applet_handler_get_size(HomeAppletHandler *handler,
 void home_applet_handler_set_minimum_size(HomeAppletHandler *handler, 
                                           gint minwidth, gint minheight)
 {
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     handler->minwidth = minwidth;
     handler->minheight = minheight;
@@ -638,7 +648,7 @@ void home_applet_handler_set_minimum_size(HomeAppletHandler *handler,
 void home_applet_handler_get_minimum_size(HomeAppletHandler *handler, 
                                           gint *minwidth, gint *minheight)
 {
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     *minwidth = handler->minwidth;
     *minheight = handler->minheight;
@@ -648,7 +658,7 @@ void home_applet_handler_set_resizable(HomeAppletHandler *handler,
                                        gboolean resizable_width, 
                                        gboolean resizable_height)
 {
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     handler->resizable_width = resizable_width;
     handler->resizable_height = resizable_height;
@@ -658,7 +668,7 @@ void home_applet_handler_get_resizable(HomeAppletHandler *handler,
                                        gboolean *resizable_width, 
                                        gboolean *resizable_height)
 {
-    g_assert(handler);
+    g_return_if_fail (handler);
 
     *resizable_width = handler->resizable_width;
     *resizable_height = handler->resizable_height;
@@ -668,7 +678,7 @@ void home_applet_handler_get_resizable(HomeAppletHandler *handler,
 
 GtkEventBox *home_applet_handler_get_eventbox(HomeAppletHandler *handler)
 {
-    g_assert(handler);
+    g_return_val_if_fail (handler, NULL);
 
     return handler->eventbox;
 }

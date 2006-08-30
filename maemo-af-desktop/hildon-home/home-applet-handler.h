@@ -217,7 +217,8 @@ void home_applet_handler_deinitialize(HomeAppletHandler *handler);
  *
  *  @returns desktop filepath
  **/
-gchar *home_applet_handler_get_desktop_filepath(HomeAppletHandler *handler);
+const gchar *
+home_applet_handler_get_desktop_filepath(HomeAppletHandler *handler);
 
 /**    
  *  home_applet_handler_get_libraryfile:
@@ -229,7 +230,8 @@ gchar *home_applet_handler_get_desktop_filepath(HomeAppletHandler *handler);
  *
  *  @returns library filepath
  **/
-gchar *home_applet_handler_get_libraryfile(HomeAppletHandler *handler);
+const gchar *
+home_applet_handler_get_libraryfile(HomeAppletHandler *handler);
 
 /**    
  *  home_applet_handler_set_coordinates:

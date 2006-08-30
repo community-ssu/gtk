@@ -40,7 +40,7 @@
 
 #include "home-select-applets-dialog.h"
 #include "hildon-home-main.h"
-#include "applet-manager.h"
+#include "home-applet-manager.h"
 #include "layout-manager.h"
 
 /* log include */
@@ -51,13 +51,10 @@
 #define DIALOG_WIDTH    300
 
 
-extern osso_context_t *osso_home;
-extern GtkWindow *window;
-
-
 /* Dialog data contents structure */
 static SelectAppletsData data_t;
 static GtkWidget *home_applets_scrollwin;
+extern GtkWidget *home_window;
 
 
 /* Private function declarations */
@@ -86,7 +83,8 @@ void select_applets_reload_applets(char *applets_path,
  *
  * Select and deselect applets
  **/
-void show_select_applets_dialog(GList *applets, 
+void show_select_applets_dialog(osso_context_t *osso_home,
+				GList *applets, 
         		        GList **added_list, 
 		                GList **removed_list)
 {
@@ -173,10 +171,13 @@ void show_select_applets_dialog(GList *applets,
     
     /* Create the dialog */
     dialog = gtk_dialog_new_with_buttons(HOME_APPLETS_SELECT_TITLE, 
-		                         window, 
+		                         GTK_WINDOW (home_window), 
 		                         GTK_DIALOG_MODAL | 
 					 GTK_DIALOG_DESTROY_WITH_PARENT |
 					 GTK_DIALOG_NO_SEPARATOR, NULL);
+
+    /* Let matchbox take care of the positioning */
+    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_NONE);
 
     gtk_widget_set_size_request (dialog, DIALOG_WIDTH, -1);
 
@@ -198,9 +199,6 @@ void show_select_applets_dialog(GList *applets,
     gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), 
 		      home_applets_scrollwin); 
     
-    /* Let matchbox take care of the positioning */
-    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_NONE);
-
     /* Show 'em! */
     gtk_widget_show_all(dialog);
 
@@ -285,57 +283,58 @@ void show_select_applets_dialog(GList *applets,
  *
  * Calls activation of Select Applets dialog
  **/
-void select_applets_selected(GtkEventBox *home_event_box,
-	                     GtkFixed *home_fixed,
-                             GtkWidget *titlebar_label)
+void
+select_applets_selected (osso_context_t     *osso_home,
+                         HildonHomeTitlebar *titlebar,
+                         GtkFixed           *applet_area)
 {	
    GList *added_applets;
    GList *removed_applets, *iter_removed_applets;  
 	
    /* Return if no home available */
-   g_return_if_fail(home_event_box && home_fixed);
+   g_return_if_fail (HILDON_IS_HOME_TITLEBAR (titlebar));
+   g_return_if_fail (GTK_IS_FIXED (applet_area));
    
    /* Get currently showed applets from the applet manager */
-   applet_manager_t *applet_manager_instance = 
-	   applet_manager_singleton_get_instance();
+   AppletManager *applet_manager_instance = applet_manager_get_instance();
    /* Return if no applet manager available */
    g_return_if_fail(applet_manager_instance); 
    GList *showed_list = applet_manager_get_identifier_all
 	   (applet_manager_instance);
 
    /* Call Select Applets -dialog */
-   show_select_applets_dialog(showed_list, &added_applets, &removed_applets);
+   show_select_applets_dialog (osso_home, showed_list, &added_applets, &removed_applets);
    
    /* If applets to be added, call layout manager */
    if ( added_applets ) {   
        ULOG_ERR("\nHOME-SELECT-APPLET-DIALOG - "
                 "adding applets now calling layout mode\n");
-	   
-       layout_mode_begin(home_event_box, home_fixed,
-                         added_applets, removed_applets,
-                         titlebar_label);
+       
+       layout_mode_begin (titlebar,
+		          applet_area,
+                          added_applets, removed_applets);
        
        g_list_foreach(added_applets, (GFunc)g_free, NULL);
        g_list_free(added_applets);
    }
    /* If applets are to be removed */
    else if ( removed_applets ) {
-       iter_removed_applets = g_list_first(removed_applets);
+     iter_removed_applets = g_list_first(removed_applets);
        
-       while( iter_removed_applets ) {
-   	       
-           /* Deinitialize removed applets */
-	   GtkEventBox *removed_event = applet_manager_get_eventbox
-		   (applet_manager_instance, (gchar *)iter_removed_applets->data);
-           applet_manager_deinitialize(applet_manager_instance, 
-			               (gchar *)iter_removed_applets->data);
-	   gtk_container_remove(GTK_CONTAINER(home_fixed), 
-			        GTK_WIDGET(removed_event));
-	   removed_event = NULL;
-	   
-           iter_removed_applets = iter_removed_applets->next;
-       }	  
-       applet_manager_configure_save_all(applet_manager_instance);   
+     while( iter_removed_applets ) {
+
+       /* Deinitialize removed applets */
+       GtkEventBox *removed_event = applet_manager_get_eventbox
+           (applet_manager_instance, (gchar *)iter_removed_applets->data);
+       applet_manager_remove_applet (applet_manager_instance, 
+                                     (gchar *)iter_removed_applets->data);
+       gtk_container_remove(GTK_CONTAINER (applet_area), 
+                            GTK_WIDGET (removed_event));
+       removed_event = NULL;
+
+       iter_removed_applets = iter_removed_applets->next;
+     }	  
+     applet_manager_configure_save_all(applet_manager_instance);   
    }
 
    /* Cleanup */
@@ -344,7 +343,7 @@ void select_applets_selected(GtkEventBox *home_event_box,
        g_list_free(removed_applets);
    }
     
-   
+   g_object_unref (applet_manager_instance);
    return;
 }
 

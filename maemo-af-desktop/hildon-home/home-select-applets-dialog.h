@@ -33,12 +33,12 @@
 #include "hildon-base-lib/hildon-base-dnotify.h"
 #include <gtk/gtk.h>
 
+#include <glib/gi18n.h>
 #include <libosso.h>
+#include "hildon-home-titlebar.h"
 
 G_BEGIN_DECLS
 
-/* generic values */
-#define _(a) gettext(a)
 
 /* 'Select Applets'-dialog constants */
 #define HOME_APPLETS_MAXIMUM_VISIBLE_ROWS 8
@@ -69,13 +69,14 @@ typedef struct {
 
 
 /* Public function declarations */
-void show_select_applets_dialog(GList *applets, 
-        		                GList **added_list, 
-		                		GList **removed_list);
+void show_select_applets_dialog (osso_context_t  *osso_home,
+				 GList           *applets, 
+        		         GList          **added_list, 
+		                 GList          **removed_list);
 
-void select_applets_selected(GtkEventBox *home_event_box,
-                             GtkFixed *home_fixed,
-                             GtkWidget *titlebar_label);
+void select_applets_selected (osso_context_t     *osso_home,
+			      HildonHomeTitlebar *titlebar,
+                              GtkFixed           *applet_area);
 
 G_END_DECLS
 
