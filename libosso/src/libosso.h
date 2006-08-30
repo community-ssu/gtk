@@ -931,9 +931,86 @@ struct state_data{
 };
  * @endcode
  * 
- * One particular version (the version is given to osso_initialize) of the
+ * One particular version (the version is given to osso_initialize()) of the
  * application can have only one state file.
  *
+ * Here are steps that an application could use to handle state saving
+ * (and auto-saving). The steps 1 and 2 (and possibly 10) should be done
+ * in startup of the application.
+ *
+ * 1) Register callbacks to execute when the application goes to background
+ *    and foreground:
+ * @code
+g_signal_connect(G_OBJECT(program), "notify::is-topmost",
+                 G_CALLBACK(topmost_status_change), data);
+ * @endcode
+ * Where program is the HildonProgram object, topmost_status_change is a
+ * function to execute when the application goes to background or
+ * foreground. The function could look like this:
+ * @code
+static void topmost_status_change(GObject *gobject,
+                                  GParamSpec *arg1,
+                                  gpointer data)
+{
+    HildonProgram *program = HILDON_PROGRAM(gobject);
+
+    if (hildon_program_get_is_topmost(program)) {
+        hildon_program_set_can_hibernate(program, FALSE);
+    } else {
+        save_state();
+        hildon_program_set_can_hibernate(program, TRUE);
+    }
+}
+ * @endcode
+ *
+ * 2) Read old UI state with osso_state_read(), if it exists. (Build the
+ *    UI according to the saved state, if it existed.)
+ *
+ * 3) Save the UI state with osso_state_write(), whenever the program
+ *    goes to background. If the UI was successfully saved, set the
+ *    'killable' flag with hildon_program_set_can_hibernate(). Note that
+ *    the killable flag should be set even if dialog contents could not be
+ *    completely saved, provided that the user does not lose data that
+ *    he/she input to the dialog.
+ *
+ * 4) Whenever the program goes to foreground, remove the killable
+ *    flag with hildon_program_set_can_hibernate().
+ *
+ * 5) Save the UI state before exiting when the user closes the
+ *    application.
+ *
+ * In addition to the above steps, follow these steps if the application
+ * handles 'user data' (e.g. unsaved draft document):
+ *
+ * 6) Register a callback function for saving the user data with
+ *    osso_application_set_autosave_cb().
+ *
+ * 7) When the application has unsaved user data, call
+ *    osso_application_userdata_changed(). This causes the autosave
+ *    callback to be called, after a timer has expired.
+ *
+ * 8) Whenever the application goes to background, call
+ *    osso_application_autosave_force() if the program has unsaved user
+ *    data.
+ *
+ * 9) When the application exits (for whatever reason), call
+ *    osso_application_autosave_force() if the program has unsaved user
+ *    data.
+ *
+ * 10) When the application is started the next time, check if there is
+ *     autosaved user data. If there is, the application should allow the
+ *     user to continue editing the data.
+ *
+ * Note that the state saving information is stored to volatile memory
+ * (RAM), but the autosaved information should be stored
+ * to non-volatile memory (e.g. the internal flash). This is partly because
+ * of reliability: this way the application cannot save a permanent,
+ * possibly corrupted, UI state that would crash or break the application
+ * whenever it is started (however, the autosaved user data could still
+ * do it).
+ *
+ * TODO: Libosso should provide more support for autosaving user data
+ *       (for saving, loading and removing it).
  */
 /* @{*/
 

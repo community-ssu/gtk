@@ -1,3 +1,11 @@
+libosso (1.16-2) unstable; urgency=low
+
+  * UNRELEASED
+  * Added detailed instructions for implementing state saving and autosaving
+    to libosso.h (finally).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 30 Aug 2006 13:08:25 +0300
+
 libosso (1.16-1) unstable; urgency=low
 
   * Modified Control Panel plugin startup so that single instance can be
