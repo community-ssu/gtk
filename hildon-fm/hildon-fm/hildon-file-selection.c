@@ -1206,6 +1206,13 @@ static gboolean load_banner_timeout(gpointer data)
         priv->update_banner = NULL;
     }
 
+    if (priv->banner_timeout_id != 0)
+    {
+        /* should not ever happen? */
+        g_source_remove(priv->banner_timeout_id);
+        priv->banner_timeout_id = 0;
+    }
+
     return FALSE;
 }
 
@@ -1214,9 +1221,17 @@ static void hildon_file_selection_close_load_banner(HildonFileSelection *
 {
     HildonFileSelectionPrivate *priv = self->priv;
 
-    if (priv->update_banner) {
+    if (priv->update_banner)
+    {
         gtk_widget_destroy(priv->update_banner);
         priv->update_banner = NULL;
+    }
+
+    if (priv->banner_timeout_id != 0)
+    {
+        /* cancel the banner */
+        g_source_remove(priv->banner_timeout_id);
+        priv->banner_timeout_id = 0;
     }
 
     /* Load can finish with no contents */
@@ -1562,6 +1577,8 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
           gtk_tree_row_reference_free(old_folder);
 
         gtk_tree_path_free(sort_path);
+
+        hildon_file_selection_close_load_banner(HILDON_FILE_SELECTION(data));
     }
     else 
       /* If we arrive there because the current cursor was removed, we are
