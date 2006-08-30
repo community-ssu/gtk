@@ -3,10 +3,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: osso-application-installer 5.0\n"
+"Project-Id-Version: osso-application-installer 6.0\n"
 "Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
-"POT-Creation-Date: 2006.06.22 12:40+0300\n"
-"PO-Revision-Date: 2006.06.22 12:40+0300\n"
+"POT-Creation-Date: 2006.08.29 11:02+0300\n"
+"PO-Revision-Date: 2006.08.29 11:02+0300\n"
 "Last-Translator:\n"
 "Language-Team: en_GB\n"
 "MIME-Version: 1.0\n"
@@ -133,8 +133,8 @@ msgid "ai_category_all"
 msgstr "All"
 
 # The time of last update (used in Packages-view and in Updates-view)
-msgid "ai_li_updated_%x"
-msgstr "Refreshed: %x"
+msgid "ai_li_updated_%s"
+msgstr "Refreshed: %s"
 
 # Text shown instead of the date if the list has been never refreshed
 msgid "ai_li_never"
@@ -517,7 +517,7 @@ msgstr "Conflict with application packages:"
 msgid "ai_fi_details_packages_needing"
 msgstr "Required by application packages:"
 
-# Title for Catalogue-dialog
+# Title of Catalogue-dialog
 msgid "ai_ti_repository"
 msgstr "Catalogue"
 
@@ -527,7 +527,7 @@ msgstr "New"
 
 # Dialog button in Catalogue-dialog
 msgid "ai_bd_repository_edit"
-msgstr "Edit"
+msgstr "Details"
 
 # Dialog button in Catalogue-dialog
 msgid "ai_bd_repository_delete"
@@ -569,9 +569,9 @@ msgstr "OK"
 msgid "ai_bd_new_repository_cancel"
 msgstr "Cancel"
 
-# Title of Edit catalogue –dialog
+# Title of Catalogue details (editable)–dialog
 msgid "ai_ti_edit_repository"
-msgstr "Edit catalogue"
+msgstr "Catalogue details"
 
 # Title of Add catalogue –dialog
 msgid "ai_ti_add_catalogue"
@@ -580,9 +580,9 @@ msgstr "Add catalogue"
 # Informative text in Add catalogue –dialog, where %s is the name of the catalogue
 msgid "ai_ia_add_catalogue_text"
 msgstr ""
-"In order to install software from this website a catalogue must be added. "
+"In order to install software from this source a catalogue must be added. "
 "Add catalogue now?\n"
-"%s"
+"Catalogue name: %s"
 
 # Informative text in Add catalogue –dialog, where %s is the name of the catalogue
 msgid "ai_ia_add_catalogue_text2"
@@ -1065,3 +1065,7 @@ msgid "ai_ib_unable_cancel"
 msgstr ""
 "Unable to cancel.\n"
 "Please wait."
+
+# The user tries to install the same package again
+msgid "ai_ni_package_installed"
+msgstr "%s already installed."

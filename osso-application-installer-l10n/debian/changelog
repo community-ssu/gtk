@@ -1,3 +1,9 @@
+osso-application-installer-l10n (3.0-2r4163.1) unstable; urgency=low
+
+  * Updated again.  Removed "!!" from en_GB.po.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 30 Aug 2006 16:15:23 +0300
+
 osso-application-installer-l10n (3.0-2r4112) unstable; urgency=low
 
   * Updated for UI version 2.
