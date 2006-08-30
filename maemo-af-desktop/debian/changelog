@@ -1,3 +1,39 @@
+maemo-af-desktop (2.9.23-1) unstable; urgency=low
+
+  Imported Hildon Home refactoring
+
+  * hildon-navigator/hn-app-button.c: Use the correct filename for
+    the 'zzz' icon (Closes NB#39078)
+
+  * libhildonmenu/hildon-thumb-menu-item.c:
+    - Chain the parent class' finalize
+    - fix a problem with unreffing images
+
+  Applied fix to "Application switcher menu in thumb mode does not show the
+  second line for Home." (Closes NB#37012)
+  * hildon-navigator/hn-app-switcher.c: Add Home as a new type of
+    InfoEntry to the AS menu
+
+  Applied further fix to "HOME: Discard layout -confirmation note shown even
+  though there wasn't any changes" (Closes NB#27713)
+  * hildon-home/layout-manager.c: Set state to having changed if an
+    applet is closed from its close button 
+
+    Applied fix to "Home layout is not considered changed when applets are
+  only resized." (Closes NB#38190)
+  * hildon-home/layout-manager.c: Set the state to having changed as soon
+      as an applet is moved
+
+  Applied fix to "Application close button is missing for Application
+  switcher menu in thumb mode" (Closes NB#37008)
+  * hildon-navigator/hn-app-menu-item.c: change the icon size instead
+    of the icon name for thumbable close icon
+
+  * hildon-navigator/others-menu.{c,h}: Use dngettext for the
+    second line of folders' L10n (Closes NB#37517)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 30 Aug 2006 17:59:34 +0300
+
 maemo-af-desktop (2.9.22-1) unstable; urgency=low
 
   Applied fix to "AF-BAT:Device crashes on a long press on the Home key
