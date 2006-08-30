@@ -16,43 +16,28 @@ else
    CFLAGS=-Os -Wall -Wstrict-prototypes
 endif
 
-configure:
-	automake
-	autoconf
-
-config.status: configure
-	dh_testdir
-	CFLAGS="$(CFLAGS)" ./configure --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
+CLEANFILES = hildon.c *.pyo *.lo *.la *.in
 
 build: build-stamp
-build-stamp:  config.status
+build-stamp:
 	dh_testdir
-	$(MAKE)
+	CFLAGS="$(CFLAGS)" python$(PYVER) setup.py build
 	touch build-stamp
 
-clean: config.status
+clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
-
-	automake
-	autoconf
-	CFLAGS="$(CFLAGS)" \
-	   ./configure \
-	      --prefix=/usr \
-	      --mandir=\$${prefix}/share/man \
-	      --infodir=\$${prefix}/share/info
-
-	-$(MAKE) distclean
-	dh_clean 
+	CFLAGS="$(CFLAGS)" python$(PYVER) setup.py clean -a
+	dh_clean $(CLEANFILES)
 
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k 
+	dh_clean -k
 	dh_installdirs
 
-	$(MAKE) install DESTDIR=$(CURDIR)/$(d)
+	python$(PYVER) setup.py install --prefix=$(d)/usr --skip-build
 	python$(PYVER) -OO -m compileall -l .
 
 	# base
@@ -70,7 +55,7 @@ install: build
 	cp hildonglade.py         $(d_dev)/usr/lib/python$(PYVER)/site-packages
 	cp hildon.defs $(d_dev)/usr/share/python-hildon
 	cp defs/*.defs $(d_dev)/usr/share/python-hildon/defs
-	cp $(d)/usr/lib/python$(PYVER)/site-packages/hildon.la $(d_dev)/usr/lib/python$(PYVER)/site-packages
+#	cp $(d)/usr/lib/python$(PYVER)/site-packages/hildon.la $(d_dev)/usr/lib/python$(PYVER)/site-packages
 
 	# finish
 	find $(d_base) $(d_dev) -name "CVS" | xargs rm -rf
