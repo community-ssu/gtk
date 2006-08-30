@@ -481,9 +481,6 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
         unlink_file_folder(node);
         if (!link_file_folder(node, model_node->path, &model_node->error))
         {
-                /*
-          _hildon_file_system_cancel_banner();
-          */
           ULOG_INFO("ERROR: %s", model_node->error->message);
           handle_load_error(node);
           return;
@@ -524,10 +521,6 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
         ULOG_INFO("ERROR: %s", model_node->error->message);
         handle_load_error(node);
       }
-
-      /*
-      _hildon_file_system_cancel_banner(banner_id);
-      */
     }
 }
 
@@ -1600,9 +1593,6 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
          * with this name no longer exists. */
         if (error)
         {
-                /*
-          _hildon_file_system_cancel_banner();
-          */
           ULOG_ERR(error->message);
           g_error_free(error);
           return NULL;
@@ -1627,10 +1617,6 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
                                    priv->filesystem, path);
         setup_node_for_location(node);
     }
-
-    /*
-    _hildon_file_system_cancel_banner();
-    */
 
     /* The following should be replaced by appending the functionality into
        GtkFileInfo, but this requires API changes into gtkfilesystem.h,
@@ -2834,9 +2820,6 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
 
         _hildon_file_system_prepare_banner(&priv->banner_timeout_id);
         success = link_file_folder(node, model_node->path, error);
-        /*
-        _hildon_file_system_cancel_banner();
-        */
 
         if (!success)
             return FALSE;
