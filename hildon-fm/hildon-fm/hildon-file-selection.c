@@ -139,6 +139,7 @@ struct _HildonFileSelectionPrivate {
                                            mode is either this or an empty
                                            view containing a message */
     guint banner_timeout_id;
+    guint banner_close_timeout_id;
     guint content_pane_changed_id;
     guint delayed_select_id;
     GtkWidget *update_banner;
@@ -1213,6 +1214,7 @@ static gboolean load_banner_timeout(gpointer data)
         priv->banner_timeout_id = 0;
     }
 
+    priv->banner_close_timeout_id = 0;
     return FALSE;
 }
 
@@ -1232,6 +1234,13 @@ static void hildon_file_selection_close_load_banner(HildonFileSelection *
         /* cancel the banner */
         g_source_remove(priv->banner_timeout_id);
         priv->banner_timeout_id = 0;
+    }
+
+    if (priv->banner_close_timeout_id != 0)
+    {
+        /* cancel the banner timeout */
+        g_source_remove(priv->banner_close_timeout_id);
+        priv->banner_close_timeout_id = 0;
     }
 
     /* Load can finish with no contents */
@@ -1541,7 +1550,8 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
             priv->banner_timeout_id =
                 g_timeout_add(500, hildon_file_selection_check_load_banner,
                               data);
-            g_timeout_add(30000, load_banner_timeout, data);
+            priv->banner_close_timeout_id = g_timeout_add(30000,
+                                                load_banner_timeout, data);
         }
 
         /* Force all pending exposes to be handled, so the selection is 
