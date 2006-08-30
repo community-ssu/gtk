@@ -1056,7 +1056,7 @@ compose_app_pixbuf (const GdkPixbuf *src,
   /* first of all, see if this app is hibernated */
   if (hn_entry_info_is_hibernating (info))
     {
-      inst_name = "ggn_indi_bkilled";
+      inst_name = "qgn_indi_bkilled";
     }
   else if (hn_entry_info_has_extra_icon (info))
     {
