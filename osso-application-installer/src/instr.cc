@@ -44,7 +44,7 @@ annoy_user_with_gerror (const char *filename, GError *error)
 }
 
 static void
-instr_cont2 (bool res, void *data)
+instr_cont3 (bool res, void *data)
 {
   char *package = (char *)data;
 
@@ -52,6 +52,17 @@ instr_cont2 (bool res, void *data)
     install_named_package (package);
 
   g_free (package);
+}
+
+static void
+instr_cont2 (bool res, void *data)
+{
+  char *package = (char *)data;
+
+  if (res)
+    refresh_package_cache_with_cont (false, instr_cont3, package);
+  else
+    g_free (package);
 }
 
 static void

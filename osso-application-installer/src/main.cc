@@ -944,7 +944,7 @@ struct rpc_clos {
 };
 
 static void
-refresh_package_cache_cont (void *data)
+refresh_package_cache_cont2 (void *data)
 {
   rpc_clos *c = (rpc_clos *)data;
   if (c->cont)
@@ -1011,7 +1011,7 @@ refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *data)
   // failed because it might have partially succeeded and changed
   // anyway.  So we need to resynchronize.
   
-  get_package_list_with_cont (refresh_package_cache_cont, c);
+  get_package_list_with_cont (refresh_package_cache_cont2, c);
 }
 
 static bool refreshed_this_session = false;
@@ -1032,7 +1032,8 @@ refresh_package_cache_cont (bool res, void *data)
 }
 
 void
-refresh_package_cache_with_cont (void (*cont) (bool res, void *data), 
+refresh_package_cache_with_cont (bool ask,
+				 void (*cont) (bool res, void *data), 
 				 void *data)
 {
   refreshed_this_session = true;
@@ -1041,13 +1042,16 @@ refresh_package_cache_with_cont (void (*cont) (bool res, void *data),
   c->cont = cont;
   c->data = data;
 
-  ask_yes_no (_("ai_nc_confirm_update"), refresh_package_cache_cont, c);
+  if (ask)
+    ask_yes_no (_("ai_nc_confirm_update"), refresh_package_cache_cont, c);
+  else
+    refresh_package_cache_cont (true, c);
 }
 
 void
-refresh_package_cache ()
+refresh_package_cache (bool ask)
 {
-  refresh_package_cache_with_cont (NULL, NULL);
+  refresh_package_cache_with_cont (ask, NULL, NULL);
 }
 
 static int
@@ -1081,7 +1085,7 @@ maybe_refresh_package_cache ()
       && days_elapsed_since (last_update) < 30)
     return;
 
-  refresh_package_cache ();
+  refresh_package_cache (true);
 }
 
 static bool
@@ -2121,7 +2125,12 @@ install_named_package (const char *package)
     {
       package_info *pi = (package_info *)p->data;
       if (pi->available_version == NULL)
-	annoy_user (_("ai_ib_nothing_to_install"));
+	{
+	  char *text = g_strdup_printf (_("ai_ni_package_installed"),
+					package);
+	  annoy_user (text);
+	  g_free (text);
+	}
       else
 	install_package (pi);
     }
@@ -2646,6 +2655,12 @@ set_current_help_topic (const char *topic)
   current_topic = topic;
 }
 
+static void
+call_refresh_package_cache (GtkWidget *button, gpointer data)
+{
+  refresh_package_cache (true);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -2745,7 +2760,7 @@ main (int argc, char **argv)
       gtk_tool_item_set_expand (GTK_TOOL_ITEM (button), TRUE);
       gtk_tool_item_set_homogeneous (GTK_TOOL_ITEM (button), TRUE);
       g_signal_connect (button, "clicked",
-			G_CALLBACK (refresh_package_cache),
+			G_CALLBACK (call_refresh_package_cache),
 			NULL);
       gtk_toolbar_insert (GTK_TOOLBAR (toolbar),
 			  GTK_TOOL_ITEM (button),

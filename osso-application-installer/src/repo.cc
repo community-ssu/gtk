@@ -409,8 +409,8 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
       gtk_box_pack_start_defaults (GTK_BOX (vbox), caption);
       gtk_widget_set_sensitive (c->disabled_button, !readonly);
     }
-    
-  gtk_widget_set_usize (dialog, 500, -1);
+
+  gtk_widget_set_usize (dialog, 650, -1);
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (repo_edit_response), c);
@@ -550,7 +550,7 @@ repo_response (GtkDialog *dialog, gint response, gpointer clos)
       if (c->dirty)
 	{
 	  apt_worker_set_sources_list (repo_encoder, c, repo_reply, NULL);
-	  refresh_package_cache ();
+	  refresh_package_cache (true);
 	}
       
       delete c;
@@ -745,8 +745,7 @@ maybe_add_new_repo_cont (bool res, void *data)
 	  
 	  apt_worker_set_sources_list (repo_encoder, c, repo_reply, NULL);
       
-	  // Whooo, tail call elimination...
-	  refresh_package_cache_with_cont (ac->cont, ac->cont_data);
+	  ac->cont (true, ac->cont_data);
 	}
     }
   else
@@ -887,6 +886,8 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
       
       gtk_widget_set_sensitive (c->edit_button, FALSE);
       gtk_widget_set_sensitive (c->delete_button, FALSE);
+
+      gtk_widget_set_usize (dialog, 0, 250);
 
       g_signal_connect (dialog, "response",
 			G_CALLBACK (repo_response), c);

@@ -188,6 +188,12 @@ fullscreen_toolbar_activated (GtkWidget *item)
   set_toolbar_visibility (true, active);
 }
 
+static void
+call_refresh_package_cache ()
+{
+  refresh_package_cache (true);
+}
+
 void
 create_menu (GtkMenu *main)
 {
@@ -233,7 +239,7 @@ create_menu (GtkMenu *main)
 
   add_item (tools,
 	    _("ai_me_tools_refresh"), NULL,
-	    refresh_package_cache);
+	    call_refresh_package_cache);
   add_item (tools,
 	    _("ai_me_tools_settings"), NULL,
 	    show_settings_dialog);
