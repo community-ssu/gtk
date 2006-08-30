@@ -1196,7 +1196,7 @@ static gboolean hildon_file_selection_check_load_banner(gpointer data)
 static gboolean load_banner_timeout(gpointer data)
 {
     HildonFileSelection *hfs = data;
-    HildonFileSelection *priv;
+    HildonFileSelectionPrivate *priv;
 
     ULOG_DEBUG_F("entered");
     priv = hfs->priv;
