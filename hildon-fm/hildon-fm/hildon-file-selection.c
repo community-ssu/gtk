@@ -2164,7 +2164,7 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
     gtk_tree_view_column_set_title(col, _("sfil_li_header_name"));
     /* Setting sizing to fixed with no "fixed-width" set makes column 
         to truncate nicely, but still take all available space. */
-    gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
+  /*    gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);*/
     gtk_tree_view_column_set_expand(col, TRUE);
     gtk_tree_view_column_set_sort_column_id(col, HILDON_FILE_SELECTION_SORT_NAME);
     gtk_tree_view_column_set_clickable(col, TRUE);
@@ -2187,7 +2187,6 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
     {
       col = gtk_tree_view_column_new();
       gtk_tree_view_column_set_title(col, _("sfil_li_header_date"));
-      gtk_tree_view_column_set_expand(col, TRUE);
       gtk_tree_view_column_set_sort_column_id(col, HILDON_FILE_SELECTION_SORT_MODIFIED);
   /*      gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
     gtk_tree_view_column_set_fixed_width(col, 128);*/
@@ -2208,7 +2207,6 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
     {
       col = gtk_tree_view_column_new();
       gtk_tree_view_column_set_title(col, _("sfil_li_header_size"));
-      gtk_tree_view_column_set_expand(col, TRUE);
       gtk_tree_view_column_set_sort_column_id(col, HILDON_FILE_SELECTION_SORT_SIZE);
 /*      gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_fixed_width(col, 128);*/
@@ -2224,6 +2222,8 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
                                             list_size_data_func, self,
                                             NULL);
     }
+
+    gtk_tree_view_columns_autosize (tree);
 
     selection = gtk_tree_view_get_selection(tree);
     g_signal_connect_object

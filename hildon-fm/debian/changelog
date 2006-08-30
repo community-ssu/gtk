@@ -1,3 +1,10 @@
+hildon-fm (1.7-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Fixed column width problems. Patch from Tapani Pälli. Fixes: NB#34618
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 30 Aug 2006 13:56:04 +0300
+
 hildon-fm (1.6-1) unstable; urgency=low
 
   * Reverted a patch in 1.5-1 for the details dialog (caused a crash in
