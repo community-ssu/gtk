@@ -2,6 +2,7 @@ hildon-fm (1.7-1) unstable; urgency=low
 
   * UNRELEASED
   * Fixed column width problems. Patch from Tapani Pälli. Fixes: NB#34618
+  * Fixed the ever-lasting updating banner.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 30 Aug 2006 13:56:04 +0300
 

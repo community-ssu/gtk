@@ -2609,7 +2609,8 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
 }
 
 void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
-  GtkTreeIter *parent_iter, gboolean force)
+                                            GtkTreeIter *parent_iter,
+                                            gboolean force)
 {
   g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
   g_return_if_fail(parent_iter != NULL);
@@ -2623,14 +2624,13 @@ void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
 }
 
 void _hildon_file_system_model_load_children(HildonFileSystemModel *model,
-  GtkTreeIter *parent_iter)
+                                             GtkTreeIter *parent_iter)
 {
   g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
   g_return_if_fail(parent_iter != NULL);
   g_return_if_fail(parent_iter->stamp == model->priv->stamp);
 
-  hildon_file_system_model_delayed_add_children(model,
-                                                  parent_iter->user_data, FALSE);
+  _hildon_file_system_model_queue_reload(model, parent_iter, FALSE);
   wait_node_load(model->priv, parent_iter->user_data);  
 }
 
@@ -2776,8 +2776,8 @@ gchar *hildon_file_system_model_new_item(HildonFileSystemModel * model,
 }
 
 /* Devices are not mounted automatically, only in response to user action. 
-    Additionally, we never try to mount MMC ourselves. So there is mow even 
-    less to do here. */
+   Additionally, we never try to mount MMC ourselves. So there is now even 
+   less to do here. */
 gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
                                                      * model,
                                                      GtkTreeIter * iter,
@@ -2797,7 +2797,8 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
     model_node = node->data;
 
     if (model_node->location && !active_flag && !model_node->accessed &&
-        hildon_file_system_special_location_requires_access(model_node->location))
+        hildon_file_system_special_location_requires_access(
+        model_node->location))
     {
       HildonFileSystemSettings *settings;
 
@@ -2815,7 +2816,8 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
 
       active_flag = FALSE;
 
-      if (hildon_file_system_special_location_is_available(model_node->location))
+      if (hildon_file_system_special_location_is_available(
+                                                   model_node->location))
       {
         gboolean success;
 
@@ -2828,7 +2830,7 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
     
         model_node->accessed = TRUE;
 
-        hildon_file_system_model_delayed_add_children(model, node, TRUE);
+        _hildon_file_system_model_queue_reload(model, iter, TRUE);
         return TRUE;
       }
     }
