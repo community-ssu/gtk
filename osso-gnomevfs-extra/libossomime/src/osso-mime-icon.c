@@ -33,15 +33,15 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include <string.h>
 
-#define ICON_NAME_BLOCK_DEVICE          "gnome-fs-blockdev"
-#define ICON_NAME_BROKEN_SYMBOLIC_LINK  "gnome-fs-symlink"
-#define ICON_NAME_CHARACTER_DEVICE      "gnome-fs-chardev"
-#define ICON_NAME_DIRECTORY             "gnome-fs-directory"
+#define ICON_NAME_BLOCK_DEVICE          "qgn_list_gene_unknown_file"
+#define ICON_NAME_BROKEN_SYMBOLIC_LINK  "qgn_list_filesys_nonreadable_file"
+#define ICON_NAME_CHARACTER_DEVICE      "qgn_list_gene_unknown_file"
+#define ICON_NAME_DIRECTORY             "qgn_list_filesys_common_fldr"
 #define ICON_NAME_EXECUTABLE            "gnome-fs-executable"
-#define ICON_NAME_FIFO                  "gnome-fs-fifo"
-#define ICON_NAME_REGULAR               "gnome-fs-regular"
+#define ICON_NAME_FIFO                  "qgn_list_gene_unknown_file"
+#define ICON_NAME_REGULAR               "qgn_list_gene_unknown_file"
 #define ICON_NAME_SEARCH_RESULTS        "gnome-fs-search"
-#define ICON_NAME_SOCKET                "gnome-fs-socket"
+#define ICON_NAME_SOCKET                "qgn_list_gene_unknown_file"
 
 #define ICON_NAME_MIME_PREFIX           "gnome-mime-"
 

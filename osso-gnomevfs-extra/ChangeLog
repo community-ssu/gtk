@@ -1,3 +1,10 @@
+2006-08-30  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+	* libossomime/src/osso-mime-icon.c (get_icon_name): Sync the
+	fallback icon names to the ones used by the filechooser backend.
+
 2006-08-10  Martyn Russell  <martyn@imendio.com>
 
 	* Release 1.7.0.

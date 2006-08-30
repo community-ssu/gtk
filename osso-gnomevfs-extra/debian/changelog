@@ -1,3 +1,10 @@
+osso-gnomevfs-extra (1.7.1-1) unstable; urgency=low
+
+  * FIXME: UNRELEASED
+  * Sync the icon name fallbacks to match the ones used in the filechooser
+
+ -- Richard Hult <richard@imendio.com>  Fre,  1 Sep 2006 17:23:26 +0200
+	
 osso-gnomevfs-extra (1.7.0-1) unstable; urgency=low
 
   * Fixes: #33839, Merged 1.5.0-1multibt3 branch changes to TRUNK.
