@@ -1183,7 +1183,7 @@ static gboolean hildon_file_selection_check_load_banner(gpointer data)
         if (window) {
             ULOG_DEBUG_F("Showing update banner");
             self->priv->update_banner = hildon_banner_show_animation(
-                                            GTK_WINDOW(window), NULL,
+                                            window, NULL,
                                             HCS("ckdg_pb_updating"));
         }
       }
@@ -1196,8 +1196,6 @@ static gboolean hildon_file_selection_check_load_banner(gpointer data)
 static void hildon_file_selection_close_load_banner(HildonFileSelection *
                                                     self)
 {
-    GtkWidget *window =
-        gtk_widget_get_ancestor(GTK_WIDGET(self), GTK_TYPE_WINDOW);
     HildonFileSelectionPrivate *priv = self->priv;
 
     if (priv->update_banner) {
