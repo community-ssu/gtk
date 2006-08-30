@@ -1,3 +1,9 @@
+osso-application-installer-l10n (3.0-2r4112) unstable; urgency=low
+
+  * Updated for UI version 2.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 30 Aug 2006 15:58:58 +0300
+
 osso-application-installer-l10n (2.0-4r3467) unstable; urgency=low
 
   * tentatively placed in stage.maemo.org SVN

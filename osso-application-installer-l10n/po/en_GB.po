@@ -3,18 +3,18 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: osso-application-installer 6.0\n"
+"Project-Id-Version: osso-application-installer 5.0\n"
 "Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
-"POT-Creation-Date: 2006.05.15 16:35+0300\n"
-"PO-Revision-Date: 2006.05.15 16:35+0300\n"
+"POT-Creation-Date: 2006.06.22 12:40+0300\n"
+"PO-Revision-Date: 2006.06.22 12:40+0300\n"
 "Last-Translator:\n"
 "Language-Team: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n!=1;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-# Name of Application installer shown in Task navigator others menu and as application title
+# Name of Application manager shown in Task navigator others menu and as application title
 msgid "ai_ap_application_installer"
 msgstr "Application manager"
 
@@ -66,7 +66,7 @@ msgstr "Uninstall"
 
 # First item in the breadcrumb trail in all views
 msgid "ai_ti_main"
-msgstr "Main"
+msgstr "Main view"
 
 # List item in the main view
 msgid "ai_li_uninstall"
@@ -74,7 +74,7 @@ msgstr "Show installed applications"
 
 # List item in the main view
 msgid "ai_li_install"
-msgstr "Install new applications"
+msgstr "Browse installable applications"
 
 # List item in the main view
 msgid "ai_li_update"
@@ -86,7 +86,7 @@ msgstr "%s"
 
 # List item in the main view
 msgid "ai_li_repository"
-msgstr "Catalogue"
+msgstr "Web catalogue"
 
 # Name of the category
 msgid "ai_category_games"
@@ -136,6 +136,10 @@ msgstr "All"
 msgid "ai_li_updated_%x"
 msgstr "Refreshed: %x"
 
+# Text shown instead of the date if the list has been never refreshed
+msgid "ai_li_never"
+msgstr "Never"
+
 # Informative text in the Packages-view if there are no applications available
 msgid "ai_li_no_applications_available"
 msgstr "(no applications available)"
@@ -160,83 +164,83 @@ msgstr "(no applications installed)"
 msgid "ai_ti_search_results"
 msgstr "Search results"
 
-# Application installer menu title
+# Application manager menu title
 msgid "ai_me_package"
-msgstr "Package"
+msgstr "Application"
 
-# Application installer menu command
+# Application manager menu command
 msgid "ai_me_package_install"
 msgstr "Install"
 
-# Application installer menu command
+# Application manager menu command
 msgid "ai_me_package_update"
 msgstr "Update"
 
-# Application installer menu command
+# Application manager menu command
 msgid "ai_me_package_uninstall"
 msgstr "Uninstall"
 
-# Application installer menu command, opens a dialog
+# Application manager menu command, opens a dialog
 msgid "ai_me_package_install_file"
 msgstr "Install from file…"
 
-# Application installer menu command, opens a dialog but in this case without ellipsis
+# Application manager menu command, opens a dialog but in this case without ellipsis
 msgid "ai_me_package_details"
 msgstr "Details"
 
-# Application installer menu title (a noun)
+# Application manager menu title (a noun)
 msgid "ai_me_view"
 msgstr "View"
 
-# Application installer menu command, opens a dialog
+# Application manager menu command, opens a dialog
 msgid "ai_me_view_sort"
 msgstr "Sort…"
 
-# Application installer menu command (used in submenu to access full screen)
+# Application manager menu command (used in submenu to access full screen)
 msgid "ai_me_view_fullscreen"
 msgstr "Full screen"
 
-# Application installer menu command
+# Application manager menu command
 msgid "ai_me_view_show_toolbar"
 msgstr "Show toolbar"
 
-# Application installer menu command
+# Application manager menu command
 msgid "ai_me_view_show_toolbar_normal"
 msgstr "Normal screen"
 
-# Application installer menu command (used in sub-sub menu to choose whether toolbar is shown or not)
+# Application manager menu command (used in sub-sub menu to choose whether toolbar is shown or not)
 msgid "ai_me_view_show_toolbar_fullscreen"
 msgstr "Full screen"
 
-# Application installer menu title
+# Application manager menu title
 msgid "ai_me_tools"
 msgstr "Tools"
 
-# Application installer menu command
+# Application manager menu command
 msgid "ai_me_tools_refresh"
-msgstr "Refresh list of packages"
+msgstr "Refresh application list"
 
-# Application installer menu command, opens a dialog
+# Application manager menu command, opens a dialog
 msgid "ai_me_tools_settings"
 msgstr "Settings…"
 
-# Application installer menu command, opens a dialog
+# Application manager menu command, opens a dialog
 msgid "ai_me_tools_repository"
 msgstr "Application catalogue…"
 
-# Application installer menu command, opens a dialog
+# Application manager menu command, opens a dialog
 msgid "ai_me_tools_search"
 msgstr "Search…"
 
-# Application installer menu command, opens a dialog
+# Application manager menu command, opens a dialog
 msgid "ai_me_tools_log"
 msgstr "Log…"
 
-# Application installer menu command, opens Help application
+# Application manager menu command, opens Help application
 msgid "ai_me_tools_help"
 msgstr "Help"
 
-# Application installer menu title
+# Application manager menu title
 msgid "ai_me_close"
 msgstr "Close"
 
@@ -256,17 +260,17 @@ msgstr "Uninstall"
 msgid "ai_me_cs_details"
 msgstr "Details"
 
-# Title of the Select package –dialog
+# Title of the Select application –dialog
 msgid "ai_ti_select_package"
-msgstr "Select package"
+msgstr "Select application"
 
-# Dialog button in Select package –dialog
+# Dialog button in Select application –dialog
 msgid "ai_bd_select_package"
 msgstr "Select"
 
-# Informational text in the Select package –dialog
+# Informational text in the Select application –dialog
 msgid "ai_ia_select_package_no_packages"
-msgstr "(no packages)"
+msgstr "(no applications)"
 
 # Confirm installation –dialog title
 msgid "ai_ti_confirm_install"
@@ -285,24 +289,24 @@ msgstr "Uninstall"
 msgid "ai_nc_install"
 msgstr ""
 "Install?\n"
-"%s %s\n"
-"%s"
+"%1$s %2$s\n"
+"%3$s"
 
 # Text in Confirm update –dialog
 # First %s is the name of the package, second the version of the package and third the size of the package (needed to be downloaded)
 msgid "ai_nc_update"
 msgstr ""
 "Update?\n"
-"%s %s\n"
-"%s"
+"%1$s %2$s\n"
+"%3$s"
 
 # Text in Confirm uninstallation –dialog
 # First %s is the name of the package, second the version of the package and third the size of the package (amount of flash freed from the device)
 msgid "ai_nc_uninstall"
 msgstr ""
 "Uninstall?\n"
-"%s %s\n"
-"%s"
+"%1$s %2$s\n"
+"%3$s"
 
 # Dialog Button in Confirm installation/update/uninstall –dialog
 msgid "ai_bd_confirm_ok"
@@ -323,12 +327,12 @@ msgstr "Notice"
 # Confirmation note shown to the user when s/he has selected a non-Nokia package to be installed/updated
 msgid "ai_nc_non_verified_package"
 msgstr ""
-"Nokia has neither created nor delivered this software and is thus unable to "
-"guarantee that the software will not harm your device. Installation will be "
-"at your own risk.\n"
+"Nokia has neither created nor delivered this software and is therefore "
+"unable to guarantee that the software will not harm your device. "
+"Installation will be at your own risk.\n"
 "Continue anyway?"
 
-# Confirmation note shown to the user when it cannot be known whether the package is delivered by Nokia or not. 
+# Confirmation note shown to the user when it cannot be known whether the package is delivered by Nokia or not
 msgid "ai_nc_unsure_package"
 msgstr ""
 "If the software is not obtained from Nokia, Nokia is unable to guarantee "
@@ -344,87 +348,87 @@ msgstr "OK"
 msgid "ai_bd_notice_cancel"
 msgstr "Cancel"
 
-# Title of Package details-dialog
+# Title of Application details-dialog
 msgid "ai_ti_details"
-msgstr "Package details"
+msgstr "Application details"
 
 # Title in Notebook
 msgid "ai_ti_details_noteb_common"
 msgstr "Common"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_fi_details_package"
-msgstr "Package:"
+msgstr "Application:"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_fi_details_maintainer"
 msgstr "Maintainer:"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_fi_details_status"
 msgstr "Status:"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_status_installed"
 msgstr "Installed"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_status_installable"
 msgstr "Installable"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_status_updateable"
 msgstr "Updateable"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_status_broken"
 msgstr "Broken"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_status_broken_updateable"
 msgstr "Broken but updateable"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_status_broken_not_updateable"
 msgstr "Broken and not updateable"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_status_not_updateable"
 msgstr "Update available but not installable"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_status_not_available"
 msgstr "Not available"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_status_not_installable"
 msgstr "Not installable"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_fi_details_category"
 msgstr "Category:"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_va_details_installed_version"
 msgstr "Installed version:"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_no_info"
 msgstr "-"
 
-# Field item in Package details-dialog 
+# Field item in Application details-dialog 
 msgid "ai_va_details_size"
 msgstr "Size:"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_va_details_available_version"
 msgstr "Available version:"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_va_details_download_size"
 msgstr "Download size:"
 
-# Close button in Package details-dialog
+# Close button in Application details-dialog
 msgid "ai_bd_details_close"
 msgstr "Close"
 
@@ -448,72 +452,72 @@ msgstr "Uninstalling"
 msgid "ai_ti_details_noteb_problems"
 msgstr "Problems"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_fi_details_summary"
 msgstr "Summary:"
 
-# Value in Package details-dialog, where first %s is the name of the package and second %s the size required shown in one of the following formats:
+# Value in Application details-dialog, where first %s is the name of the package and second %s the size required shown in one of the following formats:
 # ai_li_de_size_max_999kb, ai_li_de_size_1mb_10mb, ai_li_de_size_10mb_1gb
 msgid "ai_va_details_install_requires"
-msgstr "Installing %s requires %s of device memory"
+msgstr "Installing %1$s requires %2$s of device memory"
 
-# Value in Package details-dialog, where first %s is the name of the package and second %s the size freed shown in one of the following formats:
+# Value in Application details-dialog, where first %s is the name of the package and second %s the size freed shown in one of the following formats:
 # ai_li_de_size_max_999kb, ai_li_de_size_1mb_10mb, ai_li_de_size_10mb_1gb
 msgid "ai_va_details_install_frees"
-msgstr "Installing %s frees %s of device memory"
+msgstr "Installing %1$s frees %2$s of device memory"
 
-# Value in Package details-dialog, where first %s is the name of the package and second %s the size required shown in one of the following formats:
+# Value in Application details-dialog, where first %s is the name of the package and second %s the size required shown in one of the following formats:
 # ai_li_de_size_max_999kb, ai_li_de_size_1mb_10mb, ai_li_de_size_10mb_1gb
 msgid "ai_va_details_update_requires"
-msgstr "Updating %s requires %s of device memory"
+msgstr "Updating %1$s requires %2$s of device memory"
 
-# Value in Package details-dialog, where first %s is the name of the package and second %s the size freed shown in one of the following formats:
+# Value in Application details-dialog, where first %s is the name of the package and second %s the size freed shown in one of the following formats:
 # ai_li_de_size_max_999kb, ai_li_de_size_1mb_10mb, ai_li_de_size_10mb_1gb
 msgid "ai_va_details_update_frees"
-msgstr "Updating %s frees %s of device memory"
+msgstr "Updating %1$s frees %2$s of device memory"
 
-# Value in Package details-dialog, where first %s is the name of the package and second %s the download size shown in one of the following formats:
+# Value in Application details-dialog, where first %s is the name of the package and second %s the download size shown in one of the following formats:
 # ai_li_de_size_max_999kb, ai_li_de_size_1mb_10mb, ai_li_de_size_10mb_1gb
 msgid "ai_va_details_uninstall_frees"
-msgstr "Uninstalling %s frees %s of device memory"
+msgstr "Uninstalling %1$s frees %2$s of device memory"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_unable_install"
 msgstr "Unable to install %s"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_unable_update"
 msgstr "Unable to update %s"
 
-# Value in Package details-dialog
+# Value in Application details-dialog
 msgid "ai_va_details_unable_uninstall"
 msgstr "Unable to uninstall %s"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_fi_details_packages_install"
-msgstr "Packages to install:"
+msgstr " Application packages to install:"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_fi_details_packages_update"
-msgstr "Packages to update:"
+msgstr " Application packages to update:"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_fi_details_packages_uninstall"
-msgstr "Packages to remove:"
+msgstr " Application packages to remove:"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_fi_details_packages_missing"
-msgstr "Packages missing:"
+msgstr " Application packages missing:"
 
-# Field item in Package details-dialog
+# Field item in Application details-dialog
 msgid "ai_fi_details_packages_conflicting"
-msgstr "Conflict with packages:"
+msgstr "Conflict with application packages:"
 
-# Field item shown in Package details-dialog if the package cannot be uninstalled because other packages need it.
+# Field item shown in Application details-dialog if the package cannot be uninstalled because other packages need it.
 msgid "ai_fi_details_packages_needing"
-msgstr "Required by packages:"
+msgstr "Required by application packages:"
 
-# Title of Catalogue-dialog
+# Title for Catalogue-dialog
 msgid "ai_ti_repository"
 msgstr "Catalogue"
 
@@ -538,6 +542,10 @@ msgid "ai_ti_new_repository"
 msgstr "New catalogue"
 
 # Field item in New catalogue –dialog
+msgid "ai_fi_new_repository_name"
+msgstr "Catalogue name"
+
+# Field item in New catalogue –dialog
 msgid "ai_fi_new_repository_web_address"
 msgstr "Web address"
 
@@ -550,8 +558,8 @@ msgid "ai_fi_new_repository_component"
 msgstr "Components"
 
 # Field item in New catalogue –dialog
-msgid "ai_fi_new_repository_enabled"
-msgstr "Enabled"
+msgid "ai_fi_new_repository_disabled"
+msgstr "Disabled"
 
 # Dialog button in New catalogue -dialog
 msgid "ai_bd_new_repository_ok"
@@ -564,6 +572,59 @@ msgstr "Cancel"
 # Title of Edit catalogue –dialog
 msgid "ai_ti_edit_repository"
 msgstr "Edit catalogue"
+
+# Title of Add catalogue –dialog
+msgid "ai_ti_add_catalogue"
+msgstr "Add catalogue"
+
+# Informative text in Add catalogue –dialog, where %s is the name of the catalogue
+msgid "ai_ia_add_catalogue_text"
+msgstr ""
+"In order to install software from this website a catalogue must be added. "
+"Add catalogue now?\n"
+"%s"
+
+# Informative text in Add catalogue –dialog, where %s is the name of the catalogue
+msgid "ai_ia_add_catalogue_text2"
+msgstr ""
+"Add new catalogue?\n"
+"%s"
+
+# Dialog button in Add catalogue –dialog
+msgid "ai_bd_add_catalogue_ok"
+msgstr "OK"
+
+# Dialog button in Add catalogue –dialog
+msgid "ai_bd_add_catalogue_details"
+msgstr "Details"
+
+# Dialog button in Add catalogue –dialog
+msgid "ai_bd_add_catalogue_cancel"
+msgstr "Cancel"
+
+# Title of New catalogue –dialog
+msgid "ai_ti_catalogue_details"
+msgstr "Catalogue details"
+
+# Field item in Catalogue details –dialog
+msgid "ai_ti_catalogue_details_name"
+msgstr "Catalogue name:"
+
+# Field item in Catalogue details –dialog
+msgid "ai_ti_catalogue_details_web_address"
+msgstr "Web address:"
+
+# Field item in Catalogue details –dialog
+msgid "ai_ti_catalogue_details_distribution"
+msgstr "Distribution:"
+
+# Field item in Catalogue details –dialog
+msgid "ai_ti_catalogue_details_component"
+msgstr "Components:"
+
+# Dialog button in New catalogue -dialog
+msgid "ai_bd_catalogue_details_close"
+msgstr "Close"
 
 # Value in Sort-dialog
 msgid "ai_va_sort_name"
@@ -591,7 +652,7 @@ msgstr "Cancel"
 
 # Field item in Settings-dialog
 msgid "ai_fi_settings_update_list"
-msgstr "Refresh list of packages"
+msgstr "Refresh application list"
 
 # Value in Settings-dialog
 msgid "ai_va_settings_once_session"
@@ -611,7 +672,7 @@ msgstr "Only manually"
 
 # Title of Search-dialog
 msgid "ai_ti_search"
-msgstr "Search packages"
+msgstr "Search applications"
 
 # Field item in Search-dialog
 msgid "ai_fi_search_words"
@@ -623,11 +684,11 @@ msgstr "Search area"
 
 # Value in Search-dialog
 msgid "ai_va_search_name"
-msgstr "Package name"
+msgstr "Application name"
 
 # Value in Search-dialog
 msgid "ai_va_search_name_description"
-msgstr "Package name and description"
+msgstr "Application name and description"
 
 # "OK" button in Search-dialog
 msgid "ai_bd_search_ok"
@@ -697,11 +758,55 @@ msgstr "OK"
 msgid "ai_bd_license_cancel"
 msgstr "Cancel"
 
+# Title for Secure connection -dialog.
+msgid "ai_ti_secure_connection"
+msgstr "Secure connection"
+
+# Informative text in Secure connection -dialog
+msgid "ai_li_secure_connection_untrusted_cert"
+msgstr "Catalogue has sent an untrusted certificate"
+
+# Field item for informing that Certificate name is invalid or does not match the name of the site.
+msgid "ai_li_secure_connection_owner"
+msgstr "Certificate name is invalid or does not match the name of the server"
+
+# Field item for informing that the Certificate has expired.
+msgid "ai_li_secure_connection_expired"
+msgstr "Certificate has expired"
+
+# Field item for informing that the certificate is not valid yet.
+msgid "ai_li_secure_connection_not_valid_yet"
+msgstr "Certificate is not valid yet"
+
+# Field item for informing that the certificate is not signed by a trusted authority.
+msgid "ai_li_secure_connection_authority"
+msgstr "Certificate is not signed by a trusted authority"
+
+# Field item for informing that the Certificate can´t identify the server.
+msgid "ai_li_secure_connection_server"
+msgstr "Certificate cannot identify the server"
+
+# Continue button in the Secure connection dialog 
+msgid "ai_bd_secure_connection_proceed"
+msgstr "Continue"
+
+# Details button in the Secure connection dialog to open the details for an untrusted certificate
+msgid "ai_bd_secure_connection_details"
+msgstr "Details"
+
+# Cancel button in the Secure connection dialog 
+msgid "ai_bd_secure_connection_cancel"
+msgstr "Cancel"
+
 # Information banner shown to the user when s/he tries to select ‘Install new applications’ or ‘Check for updates’ in Main view and there are no catalogues defined
 msgid "ai_ib_no_repositories"
 msgstr "No catalogues in use"
 
-# Cancel note shown to the user when the package is being downloaded from the catalogue, where %s is the download size shown in one of the following formats:
+# Text shown in Connecting/Downloading -cancel note when the application has requested a connection and is waiting for it
+msgid "ai_nw_connecting"
+msgstr "Connecting"
+
+# Cancel note shown to the user when the package is being downloaded from the repository, where %s is the download size shown in one of the following formats:
 # ai_li_de_size_max_999kb, ai_li_de_size_1mb_10mb, ai_li_de_size_10mb_1gb
 msgid "ai_nw_downloading"
 msgstr "Downloading %s"
@@ -730,27 +835,11 @@ msgstr "%s successfully updated"
 msgid "ai_ni_uninstall_successful"
 msgstr "%s successfully uninstalled"
 
-# Information note shown to user after s/he has cancelled installation
-msgid "ai_ni_install_cancelled"
-msgstr "Installation cancelled"
-
-# Information note shown to user after s/he has cancelled update
-msgid "ai_ni_update_cancelled"
-msgstr "Update cancelled"
-
-# Information note shown to user after s/he has cancelled uninstallation
-msgid "ai_ni_uninstall_cancelled"
-msgstr "Uninstallation cancelled"
-
 # Confirmation note shown to the user when s/he has selected a catalogue to be deleted from the list
 msgid "ai_nc_remove_repository"
 msgstr ""
 "Delete catalogue?\n"
 "Package list originating from this catalogue will also be deleted."
-
-# Information note shown to the user when s/he has selected an essential catalogue to be deleted
-msgid "ai_ni_unable_remove_repository"
-msgstr "Unable to delete catalogue"
 
 # Confirmation note shown to the user when the list of packages should be updated
 msgid "ai_nc_confirm_update"
@@ -758,9 +847,9 @@ msgstr "Refresh package list?"
 
 # Cancel note shown to the user when updating the list of packages. 
 msgid "ai_nw_updating_list"
-msgstr "Refreshing package list"
+msgstr "Refreshing application list"
 
-# Information note shown to the user when updating the list of packages was cancelled
+# Information banner shown to the user when updating the list of packages was cancelled
 msgid "ai_ni_update_list_cancelled"
 msgstr ""
 "Refresh operation was cancelled.\n"
@@ -786,9 +875,37 @@ msgstr "No matches found"
 msgid "ai_ib_not_available"
 msgstr "Not available"
 
+# Information banner shown to the user if s/he taps dimmed ‘Details’
+msgid "ai_ib_nothing_to_view"
+msgstr "Nothing to view"
+
+# Information banner shown to the user if s/he taps dimmed ‘Install’
+msgid "ai_ib_nothing_to_install"
+msgstr "Nothing to install"
+
+# Information banner shown to the user if s/he taps dimmed ‘Details’
+msgid "ai_ib_nothing_to_update"
+msgstr "Nothing to update"
+
+# Information banner shown to the user if s/he taps dimmed ‘Details’
+msgid "ai_ib_nothing_to_uninstall"
+msgstr "Nothing to uninstall"
+
+# Information banner shown to the user if s/he taps dimmed ‘Search’
+msgid "ai_ib_unable_search"
+msgstr "Unable to search in this view"
+
 # Information banner shown to the user when the catalogue is not allowed to be edited
 msgid "ai_ib_unable_edit"
 msgstr "Unable to edit catalogue"
+
+# Information banner shown to the user when s/he has selected an essential catalogue to be deleted
+msgid "ai_ni_unable_remove_repository"
+msgstr "Unable to delete catalogue"
+
+# Information banner shown to the user if the catalogue name field has been left empty in New catalogue -dialog
+msgid "ai_ib_enter_name"
+msgstr "Enter catalogue name first"
 
 # Information banner shown to the user if the web address field has been left empty in New catalogue -dialog
 msgid "ai_ib_enter_web_address"
@@ -797,6 +914,24 @@ msgstr "Enter web address first"
 # Information banner shown to the user if the web address field has been left empty in New catalogue -dialog
 msgid "ai_ib_enter_distribution"
 msgstr "Enter distribution first"
+
+# Information note shown when trying to download from a source with a not trusted certificate and if this certificate has an unsupported algorithm.
+msgid "ai_ni_unsupported_certificate_algorithm"
+msgstr ""
+"Certificate algorithm not supported.\n"
+"Connection will be refused."
+
+# Information note shown, when trying to download from a source with a not trusted certificate and if this certificate has an unsupported version.
+msgid "ai_ni_unsupported_certificate_version"
+msgstr ""
+"Certificate version not supported.\n"
+"Connection will be refused."
+
+# Information note shown, when when trying to download from a source with a certificate and there is some other error in the certificate than unsupported certificate algorithm or version that will prevent handling the certificate.
+msgid "ai_ni_secure_connection_error"
+msgstr ""
+"Unknown certificate error.\n"
+"Connection will be refused."
 
 # Updating the list of packages fails because:
 # The server is not available
@@ -815,7 +950,7 @@ msgstr "Download failed"
 msgid "ai_ni_error_download_missing"
 msgstr ""
 "Unable to download.\n"
-"Package not found."
+"Application package not found."
 
 # Dependencies cannot be satisfied when installing from file or from catalogue
 # 
@@ -823,7 +958,7 @@ msgstr ""
 msgid "ai_ni_error_install_missing"
 msgstr ""
 "Unable to install.\n"
-"Some packages required for the installation are missing."
+"Some application packages required for the installation are missing."
 
 # Dependencies cannot be satisfied when updating from file or from catalogue
 # 
@@ -831,7 +966,7 @@ msgstr ""
 msgid "ai_ni_error_update_missing"
 msgstr ""
 "Unable to update.\n"
-"Some packages required for the update are missing."
+"Some application packages required for the update are missing."
 
 # The maintainer script fails during install and the package gets broken
 msgid "ai_ni_error_installation_failed"
@@ -845,31 +980,31 @@ msgstr "Unable to update %s"
 msgid "ai_ni_error_uninstallation_failed"
 msgstr "Unable to uninstall %s"
 
-# The package is incompatible because it is not a user package.but a system package, or it is otherwise incompatible with the device.
+# The package is incompatible because it is not a user package, but a system package, or it is otherwise incompatible with the device.
 msgid "ai_ni_error_install_incompatible"
 msgstr ""
 "Unable to install.\n"
-"Incompatible package."
+"Incompatible application package."
 
 # The package is incompatible because it is not a user package.but a system package, or it is otherwise incompatible with the device.
 msgid "ai_ni_error_update_incompatible"
 msgstr ""
 "Unable to update.\n"
-"Incompatible package."
+"Incompatible application package."
 
 # The package conflicts with another package and it cannot be installed (eg. another version of the package would be needed to satisfy dependencies)
 # Buttons: Details & Close
 msgid "ai_ni_error_install_conflict"
 msgstr ""
 "Unable to install.\n"
-"Conflicting packages."
+"Conflicting application packages."
 
 # The package conflicts with another package and it cannot be updated (eg. another version of the package would be needed to satisfy dependencies)
 # Buttons: Details & Close
 msgid "ai_ni_error_update_conflict"
 msgstr ""
 "Unable to update.\n"
-"Conflicting packages."
+"Conflicting application packages."
 
 # The installation file is corrupted. 
 msgid "ai_ni_error_install_corrupted"
@@ -889,7 +1024,7 @@ msgstr ""
 msgid "ai_ni_error_uninstall_packagesneeded"
 msgstr ""
 "Unable to uninstall.\n"
-"Some packages are needed by other applications."
+"Some application packages are needed by other applications."
 
 # Button used in some error notifications
 msgid "ai_ni_bd_details"
@@ -923,10 +1058,10 @@ msgstr "Operation failed"
 msgid "ai_ni_error_n770package_incompatible"
 msgstr ""
 "Unable to install.\n"
-"Package is incompatible with current software."
+"Application package is incompatible with current software."
 
 # The user tries to cancel the operation (eg.installation) at the moment when it cannot be done
 msgid "ai_ib_unable_cancel"
 msgstr ""
-"Unable to cancel now. \n"
+"Unable to cancel.\n"
 "Please wait."
