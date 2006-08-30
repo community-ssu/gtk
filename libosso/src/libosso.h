@@ -938,7 +938,7 @@ struct state_data{
  * (and auto-saving). The steps 1 and 2 (and possibly 10) should be done
  * in startup of the application.
  *
- * 1) Register callbacks to execute when the application goes to background
+ * 1) Register callback to execute when the application goes to background
  *    and foreground:
  * @code
 g_signal_connect(G_OBJECT(program), "notify::is-topmost",
