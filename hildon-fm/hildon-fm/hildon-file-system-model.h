@@ -174,8 +174,6 @@ void hildon_file_system_model_reset_available(HildonFileSystemModel *model);
 
 void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
   GtkTreeIter *parent_iter, gboolean force);
-void _hildon_file_system_model_load_children(HildonFileSystemModel *model,
-  GtkTreeIter *parent_iter);
 
 GtkFileSystem
     *_hildon_file_system_model_get_file_system(HildonFileSystemModel *

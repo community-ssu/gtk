@@ -874,14 +874,14 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME:
         /* Gtk+'s display name contains also extension */
         if (model_node->name_cache == NULL)
-          model_node->name_cache = _hildon_file_system_create_file_name(fs, path,
-            model_node->location, info);
+          model_node->name_cache = _hildon_file_system_create_file_name(fs,
+                                       path, model_node->location, info);
         g_value_set_string(value, model_node->name_cache);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_DISPLAY_NAME:
         if (!model_node->title_cache)
-          model_node->title_cache = _hildon_file_system_create_display_name(fs, path,
-            model_node->location, info);
+          model_node->title_cache = _hildon_file_system_create_display_name(fs,
+                                        path, model_node->location, info);
         g_value_set_string(value, model_node->title_cache);
 
         /* We try to reload children, if we are actually showing something */
@@ -897,7 +897,8 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
             HILDON_FILE_SYSTEM_MODEL(model), iter, FALSE);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_SORT_KEY:
-        /* We cannot just use display_key from GtkFileInfo, because it is case sensitive */
+        /* We cannot just use display_key from GtkFileInfo, because it is
+         * case sensitive */
         if (!model_node->key_cache)
         {
           gchar *name, *casefold;
@@ -2612,19 +2613,35 @@ void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
                                             GtkTreeIter *parent_iter,
                                             gboolean force)
 {
-  g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
-  g_return_if_fail(parent_iter != NULL);
-  g_return_if_fail(parent_iter->stamp == model->priv->stamp);
+    GNode *node;
+    HildonFileSystemModelNode *model_node;
+    HildonFileSystemModelPrivate *priv;
 
-  if (g_queue_find(model->priv->reload_list, parent_iter->user_data) == NULL)
-  {
-    hildon_file_system_model_ensure_idle(model);
-    g_queue_push_tail(model->priv->reload_list, parent_iter->user_data);
-  }
+    g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
+    g_return_if_fail(parent_iter != NULL);
+    g_return_if_fail(parent_iter->stamp == model->priv->stamp);
+
+    priv = model->priv;
+    node = iter->user_data;
+    model_node = node->data;
+
+    if (!force && is_node_loaded(priv, node)
+        && gtk_file_system_path_is_local(priv->filesystem, model_node->path))
+    {
+      ULOG_DEBUG_F("local node is already loaded");
+      return;
+    }
+
+    if (g_queue_find(priv->reload_list, parent_iter->user_data) == NULL)
+    {
+      hildon_file_system_model_ensure_idle(model);
+      g_queue_push_tail(priv->reload_list, parent_iter->user_data);
+    }
 }
 
-void _hildon_file_system_model_load_children(HildonFileSystemModel *model,
-                                             GtkTreeIter *parent_iter)
+static void
+_hildon_file_system_model_load_children(HildonFileSystemModel *model,
+                                        GtkTreeIter *parent_iter)
 {
   g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
   g_return_if_fail(parent_iter != NULL);
