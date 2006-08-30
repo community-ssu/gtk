@@ -110,6 +110,7 @@ struct _HildonFileSystemModelPrivate {
        them immediately after composed image is ready */
     GdkPixbuf *expanded_emblem, *collapsed_emblem;
     guint timeout_id;
+    guint banner_timeout_id;
 
     /* Properties */
     gchar *backend_name;
@@ -467,9 +468,10 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
     {
       /* Unix backend can fail to set children to NULL if it encounters error */
       GSList *children = NULL;
+      guint *banner_id = &(CAST_GET_PRIVATE(model)->banner_timeout_id);
 
       g_clear_error(&model_node->error);
-      _hildon_file_system_prepare_banner();
+      _hildon_file_system_prepare_banner(banner_id);
 
       /* List children do not work reliably with bluetooth connections. It can
          still succeed, even though the connection has died already. This
@@ -479,7 +481,9 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
         unlink_file_folder(node);
         if (!link_file_folder(node, model_node->path, &model_node->error))
         {
+                /*
           _hildon_file_system_cancel_banner();
+          */
           ULOG_INFO("ERROR: %s", model_node->error->message);
           handle_load_error(node);
           return;
@@ -521,7 +525,9 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
         handle_load_error(node);
       }
 
-      _hildon_file_system_cancel_banner();
+      /*
+      _hildon_file_system_cancel_banner(banner_id);
+      */
     }
 }
 
@@ -1572,7 +1578,7 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         }
     }
 
-    _hildon_file_system_prepare_banner();
+    _hildon_file_system_prepare_banner(&priv->banner_timeout_id);
 
     if (parent_folder) {
         GError *error = NULL;
@@ -1590,10 +1596,13 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         g_signal_handlers_unblock_by_func(parent_folder,
           hildon_file_system_model_files_added, model);
 
-        /* If file is created and then renamed it can happen that file with this name no longer exists. */
+        /* If file is created and then renamed it can happen that file
+         * with this name no longer exists. */
         if (error)
         {
+                /*
           _hildon_file_system_cancel_banner();
+          */
           ULOG_ERR(error->message);
           g_error_free(error);
           return NULL;
@@ -1619,7 +1628,9 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         setup_node_for_location(node);
     }
 
+    /*
     _hildon_file_system_cancel_banner();
+    */
 
     /* The following should be replaced by appending the functionality into
        GtkFileInfo, but this requires API changes into gtkfilesystem.h,
@@ -1658,7 +1669,6 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         hildon_file_system_model_send_has_child_toggled(model,
                                                         parent_node);
     }
-
 
     return node;
 }
@@ -2822,9 +2832,11 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
       {
         gboolean success;
 
-        _hildon_file_system_prepare_banner();
+        _hildon_file_system_prepare_banner(&priv->banner_timeout_id);
         success = link_file_folder(node, model_node->path, error);
+        /*
         _hildon_file_system_cancel_banner();
+        */
 
         if (!success)
             return FALSE;

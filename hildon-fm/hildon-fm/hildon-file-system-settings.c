@@ -595,15 +595,27 @@ gboolean _hildon_file_system_settings_ready(HildonFileSystemSettings *self)
          self->priv->flightmode_ready;
 }
 
+static gboolean banner_timeout(gpointer data)
+{
+  guint *id = data;
+
+  ULOG_DEBUG_F("entered");
+  _hildon_file_system_cancel_banner(NULL);
+  *id = 0;
+
+  return FALSE;
+}
+
 #define BANNER_SERVICE "com.nokia.statusbar"
 #define BANNER_REQUEST_PATH "/com/nokia/statusbar"
 #define BANNER_REQUEST_IF "com.nokia.statusbar"
 #define BANNER_SHOW "delayed_infobanner"
 #define BANNER_HIDE "cancel_delayed_infobanner"
+#define BANNER_TIMEOUT 2000
 
 /* Communication with tasknavigator for displaying possible
    banner while making blocking calls */
-void _hildon_file_system_prepare_banner(void)
+void _hildon_file_system_prepare_banner(guint *timeout_id)
 {
   HildonFileSystemSettings *settings;
   DBusConnection *conn;
@@ -613,6 +625,21 @@ void _hildon_file_system_prepare_banner(void)
   static const dbus_int32_t display_timeout = 30000;
   const char *ckdg_pb_updating_str;
   dbus_bool_t ret;
+
+  if (timeout_id == NULL) return;
+
+  /* just refresh the timeout if there is already a timeout */
+  if (*timeout_id != 0)
+  {
+    ULOG_DEBUG_F("refreshing existing timeout");
+    if (!g_source_remove(*timeout_id))
+    {
+      ULOG_ERR_F("g_source_remove() failed");
+    }
+    *timeout_id = g_timeout_add(BANNER_TIMEOUT, banner_timeout,
+                                timeout_id);
+    return;
+  }
 
   ckdg_pb_updating_str = HCS("ckdg_pb_updating");
   settings = _hildon_file_system_settings_get_instance();
@@ -648,16 +675,28 @@ void _hildon_file_system_prepare_banner(void)
   {
     dbus_connection_flush(conn);
   }
+
   ULOG_DEBUG_F("banner prepared");
+  *timeout_id = g_timeout_add(BANNER_TIMEOUT, banner_timeout, timeout_id);
+
   dbus_message_unref(message);
 }
 
-void _hildon_file_system_cancel_banner(void)
+void _hildon_file_system_cancel_banner(guint *timeout_id)
 {
   HildonFileSystemSettings *settings;
   DBusConnection *conn;
   DBusMessage *message;
   dbus_int32_t pid;
+
+  if (timeout_id != NULL && *timeout_id != 0)
+  {
+    if (!g_source_remove(*timeout_id))
+    {
+      ULOG_ERR_F("g_source_remove() failed");
+    }
+    *timeout_id = 0;
+  }
 
   settings = _hildon_file_system_settings_get_instance();
   g_assert(settings != NULL);
