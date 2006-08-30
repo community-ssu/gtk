@@ -1193,6 +1193,22 @@ static gboolean hildon_file_selection_check_load_banner(gpointer data)
     return FALSE;       /* Don't call again */
 }
 
+static gboolean load_banner_timeout(gpointer data)
+{
+    HildonFileSelection *hfs = data;
+    HildonFileSelection *priv;
+
+    ULOG_DEBUG_F("entered");
+    priv = hfs->priv;
+
+    if (priv->update_banner) {
+        gtk_widget_destroy(priv->update_banner);
+        priv->update_banner = NULL;
+    }
+
+    return FALSE;
+}
+
 static void hildon_file_selection_close_load_banner(HildonFileSelection *
                                                     self)
 {
@@ -1506,9 +1522,12 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
 
         hildon_file_selection_close_load_banner(HILDON_FILE_SELECTION(data));
         if (!priv->update_banner && priv->banner_timeout_id == 0)
+        {
             priv->banner_timeout_id =
                 g_timeout_add(500, hildon_file_selection_check_load_banner,
                               data);
+            g_timeout_add(30000, load_banner_timeout, data);
+        }
 
         /* Force all pending exposes to be handled, so the selection is 
            redrawn. This hack can be removed once the mount_device_iter 
