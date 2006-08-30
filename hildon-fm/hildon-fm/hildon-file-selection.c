@@ -141,7 +141,7 @@ struct _HildonFileSelectionPrivate {
     guint banner_timeout_id;
     guint content_pane_changed_id;
     guint delayed_select_id;
-    gboolean banner_shown;
+    GtkWidget *update_banner;
     gboolean content_pane_last_used;
 
     gboolean column_headers_visible;
@@ -1181,10 +1181,10 @@ static gboolean hildon_file_selection_check_load_banner(gpointer data)
             gtk_widget_get_ancestor(GTK_WIDGET(data), GTK_TYPE_WINDOW);
 
         if (window) {
-            self->priv->banner_shown = TRUE;
-            ULOG_DEBUG("Showing update banner");
-            gtk_banner_show_animation(GTK_WINDOW(window),
-                                      HCS("ckdg_pb_updating"));
+            ULOG_DEBUG_F("Showing update banner");
+            self->priv->update_banner = hildon_banner_show_animation(
+                                            GTK_WINDOW(window), NULL,
+                                            HCS("ckdg_pb_updating"));
         }
       }
     }
@@ -1200,9 +1200,9 @@ static void hildon_file_selection_close_load_banner(HildonFileSelection *
         gtk_widget_get_ancestor(GTK_WIDGET(self), GTK_TYPE_WINDOW);
     HildonFileSelectionPrivate *priv = self->priv;
 
-    if (window) {
-        priv->banner_shown = FALSE;
-        gtk_banner_close(GTK_WINDOW(window));
+    if (priv->update_banner) {
+        gtk_widget_destroy(priv->update_banner);
+        priv->update_banner = NULL;
     }
 
     /* Load can finish with no contents */
@@ -1507,7 +1507,7 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
         g_signal_emit(data, signal_folder_changed, 0);
 
         hildon_file_selection_close_load_banner(HILDON_FILE_SELECTION(data));
-        if (!priv->banner_shown && priv->banner_timeout_id == 0)
+        if (!priv->update_banner && priv->banner_timeout_id == 0)
             priv->banner_timeout_id =
                 g_timeout_add(500, hildon_file_selection_check_load_banner,
                               data);

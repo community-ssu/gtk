@@ -648,6 +648,7 @@ void _hildon_file_system_prepare_banner(void)
   {
     dbus_connection_flush(conn);
   }
+  ULOG_DEBUG_F("banner prepared");
   dbus_message_unref(message);
 }
 
@@ -687,6 +688,7 @@ void _hildon_file_system_cancel_banner(void)
   {
     dbus_connection_flush(conn);
   }
+  ULOG_DEBUG_F("banner closed");
   dbus_message_unref(message);
 }
 

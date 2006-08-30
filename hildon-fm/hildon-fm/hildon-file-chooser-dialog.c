@@ -999,7 +999,7 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
       else
         message = _("sfil_ib_create_folder_not_allowed");
 
-      ULOG_ERR_F(error->message);
+      ULOG_ERR_F("%s", error->message);
       gtk_infoprint(GTK_WINDOW(dialog), message);
       g_error_free(error);
 
@@ -1015,7 +1015,6 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
       sync_current_folders(HILDON_FILE_CHOOSER_DIALOG(dialog), self);
   }
 
-  gtk_banner_close(GTK_WINDOW(dialog));
   gtk_widget_destroy(dialog);
   gtk_window_present(GTK_WINDOW(self));
   self->priv->popup_protect = FALSE;
@@ -1336,7 +1335,7 @@ static void hildon_file_chooser_dialog_destroy(GtkObject * obj)
 {
     HildonFileChooserDialog *dialog;
  
-    ULOG_DEBUG(__FUNCTION__);
+    ULOG_DEBUG_F("entered");
 
     dialog = HILDON_FILE_CHOOSER_DIALOG(obj);
 
