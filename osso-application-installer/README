@@ -204,6 +204,8 @@ BUGS
 
 - "Cataloque needs to be enabled".
 - "Catalogue already present".
+- avoid cache refresh when provable unnecessary,
+  add "version" to .install for that
 - https needs to be trusted, even without key.
 
 - use doubles for sizes, maybe
