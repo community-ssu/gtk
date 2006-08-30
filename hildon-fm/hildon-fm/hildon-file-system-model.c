@@ -2622,7 +2622,7 @@ void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
     g_return_if_fail(parent_iter->stamp == model->priv->stamp);
 
     priv = model->priv;
-    node = iter->user_data;
+    node = parent_iter->user_data;
     model_node = node->data;
 
     if (!force && is_node_loaded(priv, node)
