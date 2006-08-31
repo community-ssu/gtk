@@ -128,7 +128,9 @@ const gchar *helplib_ui_str( enum e_HelpStrId id )
                      (id==HELP_UI_TAG_NOTE) ? "help_tag_note" :
                      (id==HELP_UI_TAG_EXAMPLE) ? "help_tag_example" :
                      (id==HELP_UI_TAG_WARNING) ? "help_tag_warning" :
-                     (id==HELP_UI_TAG_IMPORTANT) ? "help_tag_important" : "" );
+                     (id==HELP_UI_TAG_IMPORTANT) ? "help_tag_important" :
+                     (id==HELP_UI_IA_SEE_ALSO) ? "help_ia_see_also" :
+                     (id==HELP_UI_NOT_EXIST) ? "help_ni_help_text_does_not_exist" : "" );
 
     return str;
 }

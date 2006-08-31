@@ -27,6 +27,9 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
+#define HELP_URL_PREFIX "help://"
+#define HELP_URL_PREFIX_LENGTH (strlen(HELP_URL_PREFIX))
+
 /*
     This variable is set to:
        TRUE: If there's one instance of help dialog running already
@@ -86,6 +89,77 @@ gboolean on_key_release( GtkWidget *widget, GdkEventKey *event, gpointer data ) 
     return FALSE;
 }
 
+static
+gchar* get_dialog_title(const gchar *topic_key)
+{
+    char title_buf[HELP_TITLE_MAXLEN];
+
+    if (!ossohelp_title( topic_key, title_buf, sizeof(title_buf) ))
+    {
+        return NULL;  /* bad key (or no title) */
+    }
+
+    /* Get title prefix from osso-help-ui's po file */
+    return g_strdup_printf("%s - %s", helplib_str_title(), title_buf);
+}
+
+static
+gboolean open_help_url(const gchar *url,  osso_context_t *osso)
+{
+  const gchar *file_url= "file://" HELP_HTML_TMPFILE;
+  char key[HELP_KEY_MAXLEN];
+  gchar *dialog_title = NULL;
+
+  g_return_val_if_fail(url, FALSE);
+  g_return_val_if_fail(osso, FALSE);
+
+  if (strncmp(url, HELP_URL_PREFIX, HELP_URL_PREFIX_LENGTH))
+  {
+      return FALSE;
+  }
+
+  if (!key_from_triplet(url+HELP_URL_PREFIX_LENGTH, key, sizeof(key)))
+  {
+      return FALSE;
+  }
+
+  if (OSSO_OK != libosso_update_html( osso, 0, key ))
+  {
+      return FALSE;
+  }
+
+  dialog_title = get_dialog_title(key);
+
+  if (!dialog_title)
+  {
+      return FALSE;
+  }
+
+  if (!browser_show( browser, file_url, TRUE ))
+  {
+      g_free(dialog_title); dialog_title = NULL;
+      return FALSE;
+  }
+
+  gtk_window_set_title(GTK_WINDOW(dialog), dialog_title);
+  g_free(dialog_title); dialog_title = NULL;
+  return TRUE;
+}
+
+static
+void dialog_link_clicked (GtkHTML *html, const gchar *url, gpointer data)
+{
+  g_assert(url);
+  osso_context_t *osso = (osso_context_t*) data;
+
+
+  if (!open_help_url(url, osso))
+  {
+      osso_system_note_infoprint( osso, helplib_ui_str(HELP_UI_NOT_EXIST),
+                                  NULL /*retval*/ );
+  }
+}
+
 /**
   Show help in a system modal dialog
 
@@ -107,9 +181,8 @@ osso_return_t system_dialog( osso_context_t *osso,
     GtkWindowGroup *group;
     GtkWidget *vbox;
     GtkWidget *hsep;
+    gchar *dialog_title = NULL;
 
-    char title_buf[HELP_TITLE_MAXLEN];
-    static char dialog_title[HELP_TITLE_MAXLEN];
     const gchar *file_url= "file://" HELP_HTML_TMPFILE;
     
     if (dialog_running)  /*There shouldn't be more than one dialog*/
@@ -119,13 +192,15 @@ osso_return_t system_dialog( osso_context_t *osso,
 
     /* Catch the title before opening dialog; if there is
        no such key, this is the last chance to know.. */
-    if (!ossohelp_title( topic_key, title_buf, sizeof(title_buf) ))
-        return OSSO_ERROR;  /* bad key (or no title) */
+    dialog_title = get_dialog_title(topic_key);
+    if (!dialog_title)
+    {
+        osso_system_note_infoprint( osso, helplib_ui_str(HELP_UI_NOT_EXIST),
+                                    NULL /*retval*/ );
+        return OSSO_ERROR;
+    }
 
     dialog_running = TRUE;
-
-    /* Get title prefix from osso-help-ui's po file */
-    snprintf(dialog_title, sizeof(dialog_title), "%s - %s", helplib_str_title(), title_buf);
 
     /* Create dialog and set its attributes */
     dialog= gtk_dialog_new_with_buttons(
@@ -135,6 +210,8 @@ osso_return_t system_dialog( osso_context_t *osso,
             GTK_DIALOG_NO_SEPARATOR |
             GTK_DIALOG_MODAL,
         NULL );
+
+    g_free(dialog_title); dialog_title = NULL;
 
     g_assert(dialog);
 
@@ -180,6 +257,10 @@ osso_return_t system_dialog( osso_context_t *osso,
                       G_CALLBACK (on_key_release), NULL );
     gtk_widget_add_events(GTK_WIDGET(dialog), GDK_KEY_RELEASE_MASK);
 
+    GtkWidget *browser_html = gtk_bin_get_child(GTK_BIN(browser));
+    g_signal_connect(G_OBJECT (browser_html), "link_clicked",
+             G_CALLBACK(dialog_link_clicked), osso);
+
     gtk_widget_set_size_request( dialog, HELP_DIALOG_WIDTH, HELP_DIALOG_HEIGHT );
  
     /* Display dialog */
@@ -197,7 +278,8 @@ osso_return_t system_dialog( osso_context_t *osso,
 
     if (rc!=OSSO_OK) {
         gtk_widget_destroy( GTK_WIDGET (dialog) );
-
+        osso_system_note_infoprint( osso, helplib_ui_str(HELP_UI_NOT_EXIST),
+                                    NULL /*retval*/ );
         return rc;  /* failed! */
     }
 

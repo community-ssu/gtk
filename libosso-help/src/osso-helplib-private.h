@@ -131,7 +131,9 @@ enum e_HelpStrId {
     HELP_UI_TAG_NOTE,
     HELP_UI_TAG_EXAMPLE,
     HELP_UI_TAG_WARNING,
-    HELP_UI_TAG_IMPORTANT
+    HELP_UI_TAG_IMPORTANT,
+    HELP_UI_IA_SEE_ALSO,
+    HELP_UI_NOT_EXIST
 };
 
 struct s_help_trail {

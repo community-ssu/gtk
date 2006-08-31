@@ -56,7 +56,7 @@ static const char *emphasis_stop;
 #endif
 
 FILE* filter_outf;
-gboolean dialog_mode;   /* no title, no links, no... */
+gboolean dialog_mode;   /* no title */
 
 /*--*/
 static const char* TOPICTITLE_START;
@@ -332,14 +332,11 @@ const char *loc_startelem( const xmlChar *name, const xmlChar **attrs )
     */
 
     if (strcmp(name,"seealso")==0) {
-        if (dialog_mode)
-            goto StartUnknown;
-        else /*normal*/
-        {
-            snprintf( buf, sizeof(buf), "%s%s%s",
-              EMPHASIS_BOLD_START, _("help_ia_see_also"), EMPHASIS_BOLD_STOP);    
-            return buf;
-        }  
+        snprintf( buf, sizeof(buf), "%s%s%s",
+                  EMPHASIS_BOLD_START,
+                  helplib_ui_str(HELP_UI_IA_SEE_ALSO),
+                  EMPHASIS_BOLD_STOP);    
+        return buf;
     }
 
     /* State independent tags (text style etc.): */
@@ -647,22 +644,17 @@ const char *loc_startelem( const xmlChar *name, const xmlChar **attrs )
 
         /* Note: Tried triplet links without the "//" but it didn't
                  work. So, do it like "help://applications_clock_support" */
-        /*  Specs say dialogs shouldn't have links  
-        Nothing is printed if so */
-        if (!dialog_mode)
-            snprintf( buf, sizeof(buf),
-                       "<a href=\"help://%s\">"
-                         "%s"
-                       "</a>",
-                       refid,
-                       refdoc );
+        snprintf( buf, sizeof(buf),
+                  "<a href=\"help://%s\">"
+                  "%s"
+                  "</a>",
+                  refid,
+                  refdoc );
 
         return buf;         
     }
 
-    /*Only display if dialog_mode == FALSE. Else print nothing*/
-
-    if (( strcmp(name,"web_link")==0 ) && (!dialog_mode) ){
+    if ( strcmp(name,"web_link")==0 ){
         const char *url= loc_getattr( attrs, "url" );
         if (url) {
             /* TBD: Move this to htmltags.cfg once stabilized? */
@@ -750,7 +742,6 @@ const char *loc_endelem( const xmlChar *name )
     }
 
     if (strcmp(name,"seealso")==0) {
-        /*if (dialog_mode)*/
         return "";
     }
     /* State independent: */
@@ -832,8 +823,7 @@ const char *loc_endelem( const xmlChar *name )
     if ( strcmp(name,"emphasis")==0 )
         return TAG_EMPHASIS_STOP;
 
-    /*Only prints to file if !dialog_mode*/
-    if ( (strcmp(name,"web_link")==0 ) && (!dialog_mode) )
+    if ( strcmp(name,"web_link")==0 )
         return TAG_WEB_LINK_STOP;
 
 #else /* Old implementation without CSS */

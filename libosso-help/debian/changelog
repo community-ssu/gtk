@@ -1,3 +1,13 @@
+libosso-help (2.0.6-1) unstable; urgency=low
+
+  * src/dialog.c, src/filter.c: Changed to show hyperlinks in help
+          dialogs
+  * src/osso-helplib.c, src/osso-helplib-private.h: Added two logical
+          id:s which are used from the help domain
+  * Fixes NB#38141
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Thu, 31 Aug 2006 15:11:52 +0300
+
 libosso-help (2.0.5-1) unstable; urgency=low
 
   * Bugfixes

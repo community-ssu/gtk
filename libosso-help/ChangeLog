@@ -1,3 +1,12 @@
+2006-08-31 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* version 2.0.6
+	* src/dialog.c, src/filter.c: Changed to show hyperlinks in help
+	  dialogs
+	* src/osso-helplib.c, src/osso-helplib-private.h: Added two logical
+	  id:s which are used from the help domain
+	Fixes NB#38141
+
 2006-08-28 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* Version 2.0.5
