@@ -90,6 +90,9 @@
 #define AS_BUTTON_HEIGHT        38
 #define AS_ROW_HEIGHT 		30
 #define AS_ICON_SIZE            26
+#define AS_ICON_THUMB_SIZE      64
+#define AS_CLOSE_BUTTON_SIZE    16
+#define AS_CLOSE_BUTTON_THUMB_SIZE 40
 #define AS_TOOLTIP_WIDTH        360
 #define AS_MENU_ITEM_WIDTH      360
 #define AS_INTERNAL_PADDING     10
@@ -305,11 +308,13 @@ hn_app_menu_item_constructor (GType                  type,
           if (!icon_name)
             icon_name = AS_MENU_DEFAULT_APP_ICON;
 
-          app_pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
-                                                 icon_name,
-                                                 AS_ICON_SIZE,
-                                                 0,
-                                                 NULL);
+          app_pixbuf =
+            gtk_icon_theme_load_icon (priv->icon_theme,
+                                      icon_name,
+                                      priv->thumbable ?
+                                      AS_ICON_THUMB_SIZE : AS_ICON_SIZE,
+                                      GTK_ICON_LOOKUP_NO_SVG,
+                                      NULL);
         }
       
       if (app_pixbuf)
@@ -374,7 +379,9 @@ hn_app_menu_item_constructor (GType                  type,
       priv->close = gtk_image_new ();
       pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
 		                         "qgn_list_app_close",
-					 priv->thumbable? 40:16,
+					 priv->thumbable ?
+                                         AS_CLOSE_BUTTON_THUMB_SIZE :
+                                         AS_CLOSE_BUTTON_SIZE,
 					 0,
 					 NULL);
       if (pixbuf)
@@ -642,7 +649,8 @@ hn_app_menu_item_set_entry_info (HNAppMenuItem *menuitem,
 
       pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
                                          icon_name,
-					 AS_ICON_SIZE,
+					 priv->thumbable ?
+                                         AS_ICON_THUMB_SIZE : AS_ICON_SIZE,
 					 0,
 					 NULL);
     }
