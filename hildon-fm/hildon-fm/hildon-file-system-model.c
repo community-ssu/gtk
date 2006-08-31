@@ -1625,7 +1625,11 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
     node = g_node_new(model_node);
     g_node_append(parent_node, node);
 
-    if (!parent_folder || (file_info && gtk_file_info_get_is_folder(file_info)))
+    /* FIXME: explicit "obex:///" string there. This is because of the
+     * symlinks in the OBEX module nowadays (the BT device file is not
+     * a folder but a symlink). */
+    if (!parent_folder || (file_info && gtk_file_info_get_is_folder(file_info))
+        || g_str_has_prefix((gchar*)path, "obex:///"))
     {
         model_node->location = _hildon_file_system_get_special_location(
                                    priv->filesystem, path);

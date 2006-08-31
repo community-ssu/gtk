@@ -7,8 +7,11 @@ hildon-fm (1.7-1) unstable; urgency=low
   * Made an optimisation to file banner showing -- now it does not generate
     a flood of D-Bus activity when scanning a file list.
   * Added handling of an unexpected files-added signal. Fixes: NB#38523
+  * Corrected destination path in items-dropped signal. Fixes: NB#38406
+  * Included a change required by fixed OBEX module (thus depends on new
+    osso-gnomevfs-extra).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 31 Aug 2006 09:54:46 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 31 Aug 2006 18:36:29 +0300
 
 hildon-fm (1.6-1) unstable; urgency=low
 

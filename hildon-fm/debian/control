@@ -15,7 +15,7 @@ Description: Hildon-fm development files.
 Package: hildon-fm1
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-fm-l10n-mr | hildon-fm-l10n-mr0
+Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-fm-l10n-mr | hildon-fm-l10n-mr0, osso-gnomevfs-extra (>= 1.7.1)
 Conflicts: hildon-libs0 (<< 0.7.3), hildon-lgpl0 (<< 0.8.6)
 Replaces: hildon-libs0 (<< 0.7.3), hildon-lgpl0 (<< 0.8.6)
 Description: LGPL-licensed file management libraries.

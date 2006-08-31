@@ -2424,7 +2424,7 @@ static void on_drag_data_received(GtkWidget * widget,
     if (widget == nav_pane || 
         gtk_drag_get_source_widget(context) != nav_pane)
     {
-      if (gtk_tree_view_get_path_at_pos(view, x, y, &path, NULL, NULL, NULL))
+      if (gtk_tree_view_get_dest_row_at_pos(view, x, y, &path, NULL))
       {
         if (path_is_available_folder(view, &dest_iter, path))
         {
