@@ -4,6 +4,10 @@
         block/unblock to protect against unwanted "files-added" signal.
 	(my_copy_deep): Changed the order in which the folders are linked. 
 
+	* hildon-file-selection.c (on_drag_data_received): Changed to use    
+        gtk_tree_view_get_dest_row_at_pos instead of old 
+        gtk_tree_view_get_path_at_pos.
+
         Other changes as well -- check the diff.
 
 2006-02-14  Luc Pionchon  <luc.pionchon@nokia.com>
