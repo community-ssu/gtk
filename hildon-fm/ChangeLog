@@ -1,3 +1,11 @@
+2006-08-31  Kimmo Hämäläinen  <kimmo.hamalainen@nokia.com>
+
+	* hildon-file-system-model.c (link_file_folder): Added signal
+        block/unblock to protect against unwanted "files-added" signal.
+	(my_copy_deep): Changed the order in which the folders are linked. 
+
+        Other changes as well -- check the diff.
+
 2006-02-14  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	Moved hildon-file-details-dialog from hildon-libs to hildon-fm.
