@@ -94,7 +94,8 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data);
 static gboolean others_menu_key_press(GtkWidget * widget,
 				      GdkEventKey * event, gpointer data);
 static void get_workarea(GtkAllocation *allocation);
-static void get_menu_position(GtkMenu * menu, gint * x, gint * y);
+static void get_menu_position(GtkMenu * menu, gint * x, gint * y,
+                              gboolean *pushed_in, OthersMenu_t *om);
 static void others_menu_show(OthersMenu_t * om);
 static gboolean others_menu_button_button_press(GtkWidget *widget,
                                                 GdkEventButton * event,
@@ -379,7 +380,8 @@ static void get_workarea(GtkAllocation *allocation)
     }
 }
 
-static void get_menu_position(GtkMenu * menu, gint * x, gint * y)
+static void get_menu_position(GtkMenu * menu, gint * x, gint * y,
+                              gboolean *pushed_in, OthersMenu_t *om)
 {
 
     GtkRequisition req;
@@ -387,6 +389,9 @@ static void get_menu_position(GtkMenu * menu, gint * x, gint * y)
     int menu_height = 0;
     int main_height = 0;
     GtkAllocation workarea = { 0, 0, 0, 0 };
+    int button_y = om->toggle_button->allocation.y;
+
+    *pushed_in = FALSE;
     
     get_workarea(&workarea);
     
@@ -398,10 +403,10 @@ static void get_menu_position(GtkMenu * menu, gint * x, gint * y)
 
     *x =  workarea.x;
 
-    if (main_height - MENU_Y_POS < menu_height) {
+    if (main_height - button_y < menu_height) {
 	*y = MAX(0, ((main_height - menu_height) / 2));
     } else {
-	*y = MENU_Y_POS;
+	*y = button_y;
     }
 
 }
@@ -409,7 +414,7 @@ static void get_menu_position(GtkMenu * menu, gint * x, gint * y)
 static void others_menu_show(OthersMenu_t * om)
 {
     gtk_menu_popup(GTK_MENU(om->menu), NULL, NULL,
-		   (GtkMenuPositionFunc) get_menu_position, NULL, 1,
+		   (GtkMenuPositionFunc) get_menu_position, om, 1,
 		   gtk_get_current_event_time());
     gtk_menu_shell_select_first(GTK_MENU_SHELL(om->menu), TRUE);
 }

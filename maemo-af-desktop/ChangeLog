@@ -1,5 +1,10 @@
 2006-08-31  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/others-menu.c: Do not hardcode the menu y
+	  (Closes NB#39167)
+
+2006-08-31  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Incorrect size icons shown in the Application switcher
 	menu" (Closes NB#38684)
 	* Ask for 64x64 icons in the application switcher menu when thumbed
