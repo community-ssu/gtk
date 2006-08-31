@@ -1,6 +1,5 @@
 hildon-fm (1.7-1) unstable; urgency=low
 
-  * UNRELEASED
   * Fixed column width problems. Patch from Tapani Pälli. Fixes: NB#34618
   * Fixed the ever-lasting updating banner by using a timeout to close it.
     Fixes: NB#32064
@@ -11,7 +10,7 @@ hildon-fm (1.7-1) unstable; urgency=low
   * Included a change required by fixed OBEX module (thus depends on new
     osso-gnomevfs-extra).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 31 Aug 2006 18:36:29 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 31 Aug 2006 19:02:02 +0300
 
 hildon-fm (1.6-1) unstable; urgency=low
 
