@@ -1388,6 +1388,7 @@ link_file_folder(GNode *node, const GtkFilePath *path, GError **error)
 {
   HildonFileSystemModel *model;
   HildonFileSystemModelNode *model_node;
+  GtkFileFolder *parent_folder;
 
   g_assert(node != NULL && path != NULL);
   model_node = node->data;
@@ -1402,9 +1403,22 @@ link_file_folder(GNode *node, const GtkFilePath *path, GError **error)
 
   ULOG_INFO_F("%s", (char *) path);
 
+  parent_folder = (node->parent && node->parent->data) ?
+      ((HildonFileSystemModelNode *) node->parent->data)->folder : NULL;
+
+  if (parent_folder)
+  {
+     g_signal_handlers_block_by_func(parent_folder,
+         hildon_file_system_model_files_added, model);
+  }
   model_node->folder =
      gtk_file_system_get_folder(model->priv->filesystem, 
             path, GTK_FILE_INFO_ALL, error);
+  if (parent_folder)
+  {
+    g_signal_handlers_unblock_by_func(parent_folder,
+         hildon_file_system_model_files_added, model);
+  }
 
    if (!GTK_IS_FILE_FOLDER(model_node->folder))
    {
@@ -2262,13 +2276,16 @@ static GNode *my_copy_deep(GNode *node, gpointer data)
     }
 
     result = g_node_new(model_node);
-    setup_node_for_location(result);
 
     for (child = g_node_last_child (node); child; child = child->prev) {
         new_child = my_copy_deep(child, data);
         if (new_child)
             g_node_prepend (result, new_child);
     }
+
+    /* Let's setup parent after children, so that adding children do not
+       trigger premature "files-added" signals for parents. */
+    setup_node_for_location(result);
 
     return result;
 }

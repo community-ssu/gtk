@@ -2,11 +2,13 @@ hildon-fm (1.7-1) unstable; urgency=low
 
   * UNRELEASED
   * Fixed column width problems. Patch from Tapani Pälli. Fixes: NB#34618
-  * Fixed the ever-lasting updating banner.
+  * Fixed the ever-lasting updating banner by using a timeout to close it.
+    Fixes: NB#32064
   * Made an optimisation to file banner showing -- now it does not generate
     a flood of D-Bus activity when scanning a file list.
+  * Added handling of an unexpected files-added signal. Fixes: NB#38523
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 30 Aug 2006 13:56:04 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 31 Aug 2006 09:54:46 +0300
 
 hildon-fm (1.6-1) unstable; urgency=low
 
