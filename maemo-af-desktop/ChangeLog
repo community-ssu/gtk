@@ -1,3 +1,8 @@
+2006-08-31  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-background-dialog.c: Add spacing to the
+	  main vbox (Closes NB#31714)
+
 2006-08-30  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.23
