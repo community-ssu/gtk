@@ -1,7 +1,0 @@
-#! /bin/sh
-
-### XXX - We should remove the bootmenu here when this is not a
-###       package upgrade.  Upgrades are handled by postinst in
-###       such a way to minimize modifications to /mnt/initfs,
-###       but when the package is removed, the bootmenu should go as well,
-###       of course
