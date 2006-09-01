@@ -460,13 +460,16 @@ om_append_paired_devices (Connection   *conn,
 			return;
 		}
 		
+		info->flags |= GNOME_VFS_FILE_FLAGS_SYMLINK;
+		
 		info->valid_fields = 
 			GNOME_VFS_FILE_INFO_FIELDS_TYPE |
 			GNOME_VFS_FILE_INFO_FIELDS_PERMISSIONS |
-			GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
+			GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE |
+			GNOME_VFS_FILE_INFO_FIELDS_SYMLINK_NAME;
 		
 		info->name = g_strdup_printf ("[%s]", remote_devname);
-		info->type = GNOME_VFS_FILE_TYPE_DIRECTORY;
+		info->type = GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK;
 		info->permissions = 
 			GNOME_VFS_PERM_USER_READ |
 			GNOME_VFS_PERM_GROUP_READ |
@@ -475,11 +478,55 @@ om_append_paired_devices (Connection   *conn,
 		info->uid = 0;
 		info->gid = 0;
 		info->mime_type = g_strdup ("x-directory/normal");
+
+		info->symlink_name = g_strdup_printf ("obex://[%s]", remote_devname);
+
+		/*g_print ("added name: %s, symlink name: %s\n", info->name, info->symlink_name);*/
 		
+		if (!info->symlink_name) {
+			/* Extra caution. */
+			gnome_vfs_file_info_unref (info);
+			continue;
+		}
+
 		*list = g_list_append (*list, info);
-		
 	} while (dbus_message_iter_next (&dsub));
 }
+
+/* Leave this in for easy testing. */
+#if 0
+static GList *
+append_fake_device (GList *list, const gchar *bda)
+{
+	GnomeVFSFileInfo *info;
+	
+	info = gnome_vfs_file_info_new ();
+	
+	info->valid_fields = 
+		GNOME_VFS_FILE_INFO_FIELDS_TYPE |
+		GNOME_VFS_FILE_INFO_FIELDS_PERMISSIONS |
+		GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE |
+		GNOME_VFS_FILE_INFO_FIELDS_SYMLINK_NAME;
+	
+	info->flags |= GNOME_VFS_FILE_FLAGS_SYMLINK;
+	
+	info->name = g_strdup_printf ("[%s]", bda);
+	info->type = GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK;
+	info->permissions = 
+		GNOME_VFS_PERM_USER_READ |
+		GNOME_VFS_PERM_GROUP_READ |
+		GNOME_VFS_PERM_OTHER_READ;
+	info->symlink_name = g_strdup_printf ("obex://[%s]", bda);
+		
+	info->uid = 0;
+	info->gid = 0;
+	info->mime_type = g_strdup ("x-directory/normal");
+
+	/*g_print ("added fake: %s %s\n", info->name, info->symlink_name);*/
+
+	return g_list_append (list, info);
+}
+#endif
 
 GList *
 om_dbus_get_dev_list (void)
@@ -491,6 +538,15 @@ om_dbus_get_dev_list (void)
 	DBusError        error;
 	GList           *devlist = NULL;
 
+#if 0
+	if (0) {
+		devlist = append_fake_device (devlist, "foo");
+		devlist = append_fake_device (devlist, "bar");
+		
+		return devlist;
+	}
+#endif
+	
 	conn = get_gwcond_connection ();
 	if (!conn) {
 		return NULL;
@@ -522,9 +578,11 @@ om_dbus_get_dev_list (void)
                 DBusMessageIter sub;
 
 		dbus_message_iter_recurse (&iter, &sub);
-
-		do {  /* go through each entry (device) and get each
-                         paired device from the entry */
+		
+		/* Go through each entry (device) and get each paired device
+		 * from the entry.
+		 */
+		do {
 	                char *devname;
                         DBusMessage *ret2;
 
@@ -629,78 +687,3 @@ is_obex_device (Connection *conn,
 	return is_obex;
 }
 
-
-#ifdef OBEX_PROGRESS
-
-#define NOTIFY_SIGNAL_RULE \
-	"type='signal',interface='com.nokia.ObexProgress',member='Cancel'"
-
-static DBusHandlerResult
-notify_message_filter (DBusConnection *dbus_conn,
-		       DBusMessage    *message,
-		       gpointer        user_data)
-{
-	CancelNotifyFunc  func;
-	gchar            *str;
-	GnomeVFSURI      *uri;
-
-	func = (CancelNotifyFunc) user_data;
-
-	if (dbus_message_is_signal (message,
-				    "com.nokia.ObexProgress",
-				    "Cancel")) {
-		if (!dbus_message_get_args (message, NULL,
-					    DBUS_TYPE_STRING, &str,
-					    DBUS_TYPE_INVALID)) {
-			return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-		}
-		
-		uri = gnome_vfs_uri_new (str);
-
-		if (!uri) {
-			return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-		}
-
-		/* This is called from the main thread. */
-		
-		(* func) (uri);
-		gnome_vfs_uri_unref (uri);
-	}
-
-	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-}
-
-static gboolean
-_om_dbus_init_cancel_monitor (CancelNotifyFunc cancel_func)
-{
-	DBusConnection *conn;
-	DBusError       error;
-
-	/* Get our own connection to make threads work. */
-	dbus_error_init (&error);
-        conn = dbus_bus_get_private (DBUS_BUS_SESSION, &error);	
-	if (!conn) {
-		g_printerr ("Failed to connect to the D-BUS daemon: %s", error.message);
-		
-		dbus_error_free (&error);
-		return FALSE;
-	}
-
-	dbus_bus_add_match (conn, NOTIFY_SIGNAL_RULE, NULL);
-	dbus_connection_add_filter (conn, notify_message_filter, 
-				    cancel_func, NULL);
-
-	dbus_connection_setup_with_g_main (conn, NULL);
-
-	return FALSE;
-}
-
-void
-om_dbus_init_cancel_monitor (CancelNotifyFunc cancel_func)
-{
-	/* This is called from any thread so we need to set up the connection in
-	 * an idle.
-	 */
-	g_idle_add ((GSourceFunc) _om_dbus_init_cancel_monitor, cancel_func);
-}
-#endif

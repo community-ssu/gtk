@@ -24,19 +24,16 @@
 #include <glib.h>
 #include <libgnomevfs/gnome-vfs.h>
 
-gchar *        om_utils_get_dev_from_uri         (const GnomeVFSURI *uri);
-gchar *        om_utils_get_path_from_uri        (const GnomeVFSURI *uri);
-gchar *        om_utils_get_parent_path_from_uri (const GnomeVFSURI *uri);
-GList *        om_utils_get_path_list_from_uri   (const gchar       *cur_dir,
-						  const GnomeVFSURI *uri,
-						  gboolean           to_parent);
-gboolean       om_utils_check_same_fs            (const GnomeVFSURI *a,
-						  const GnomeVFSURI *b,
-						  gboolean          *same_fs);
-
-GnomeVFSResult om_utils_obex_error_to_vfs_result (gint               error);
-
-time_t         om_utils_parse_iso8601            (const gchar       *str);
-
+gchar *        om_utils_get_dev_from_uri          (const GnomeVFSURI  *uri);
+gchar *        om_utils_get_path_from_uri         (const GnomeVFSURI  *uri);
+gchar *        om_utils_get_parent_path_from_uri  (const GnomeVFSURI  *uri);
+GList *        om_utils_get_path_list_from_uri    (const gchar        *cur_dir,
+						   const GnomeVFSURI  *uri,
+						   gboolean            to_parent);
+gboolean       om_utils_check_same_fs             (const GnomeVFSURI  *a,
+						   const GnomeVFSURI  *b,
+						   gboolean           *same_fs);
+GnomeVFSResult om_utils_obex_error_to_vfs_result  (gint                error);
+time_t         om_utils_parse_iso8601             (const gchar        *str);
 
 #endif /* __OM_UTILS_H__ */

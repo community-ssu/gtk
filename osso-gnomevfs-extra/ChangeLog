@@ -1,3 +1,35 @@
+2006-09-01  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+	
+	* obex-module/src/obex-method.c: 
+	(om_connection_timed_out): Tweak comment.
+	(om_get_connection): Don't set result until needed.
+	(om_uri_is_virtual_obex_root, om_uri_is_below_virtual_obex_root):
+	New functions that check if the URI is or is below the virtual
+	OBEX root obex:///.
+	(do_open, do_create, do_write): Check if we're trying to work in
+	the virtual root, and return NOT_SUPPORTED if so.
+	(do_open_directory): Properly handle the virtual root and its
+	children.
+	- Don't try to get the device from the URI to see if the URI is in
+	the virtual root, that makes error handling broken.
+	(om_get_file_info_helper, do_get_file_info): Refactor so that we
+	can use it more easily for the virtual root when following
+	symlinks.
+	(do_set_file_info, do_make_directory): Check for the virtual root
+	properly.
+	(do_monitor_cancel): Fix comment typo.
+
+	* obex-module/src/om-dbus.c: (om_append_paired_devices),
+	(append_fake_device), (om_dbus_get_dev_list): Add commented test
+	code that appends hardcoded devices, and make the appended devices
+	be symlinks.
+	- Remove old unused ifdeffed progress reporting code.
+
+	* obex-module/src/om-utils.c: 
+	* obex-module/src/om-utils.h: Minor cleanup.
+
 2006-08-30  Richard Hult  <richard@imendio.com>
 
 	* configure.in: Bump version.

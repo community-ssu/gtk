@@ -19,11 +19,10 @@
  */
 
 #include <config.h>
-
-#include <glib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <glib.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <gw-obex.h>
 

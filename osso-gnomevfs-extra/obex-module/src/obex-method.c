@@ -42,7 +42,7 @@
 /* For debug output (like errors/warnings). */
 #define d(x) x
 
-/* For really verbose debut output (like for every read/write). */
+/* For really verbose debug output (like for every read/write). */
 #define dv(x) 
 
 /* Lock for all manipulations of the connection hash table. This includes
@@ -94,8 +94,6 @@ typedef struct {
 } FileHandle;
 
 typedef struct {
-	gchar *directory;
-
 	/* These are copied from conn->current_listing when created. */
 	GList *elements;
 	GList *current;
@@ -145,6 +143,9 @@ static GnomeVFSResult   om_chdir_to_uri          (ObexConnection     *conn,
 static void             om_notify_monitor        (GnomeVFSURI        *uri,
 						  GnomeVFSMonitorEventType event);
 
+static GnomeVFSResult   om_get_file_info_helper  (GnomeVFSURI        *uri,
+						  GnomeVFSFileInfo   *file_info,
+						  GnomeVFSContext    *context);
 /* Used by do_move */
 static GnomeVFSResult   do_set_file_info         (GnomeVFSMethod          *method,
 						  GnomeVFSURI             *uri,
@@ -219,6 +220,7 @@ om_connection_unref (ObexConnection *conn)
 	}
 	
 	g_mutex_unlock (conn_hash_mutex);
+
 	/* When last ref count is removed we add the connection to a timeout
 	 * in order to not destroy it directly. This gives new calls a chance
 	 * to use the same connection.
@@ -278,9 +280,9 @@ om_connection_timed_out (ObexConnection *conn)
 	g_hash_table_remove (conn_hash, conn->dev);
 	g_mutex_unlock (conn_hash_mutex);
 	
-	/* No one will be able to get to this connection now since it's 
-	 * removed the the hash table and since ref_count == 0 we can be
-	 * sure that no one already has a reference to it.
+	/* No one will be able to get to this connection now since it's removed
+	 * from the hash table and since ref_count == 0 we can be sure that no
+	 * one already has a reference to it.
 	 */
 
 	om_connection_free (conn);
@@ -372,13 +374,13 @@ om_get_connection (const GnomeVFSURI *uri, GnomeVFSResult *result)
 	gchar          *dev;
 	ObexConnection *conn;
 
-	*result = GNOME_VFS_OK;
-	
 	dev = om_utils_get_dev_from_uri (uri);
 	if (!dev) {
 		*result = GNOME_VFS_ERROR_INVALID_URI;
 		return NULL;
 	}
+	
+	*result = GNOME_VFS_OK;
 	
 	g_mutex_lock (conn_hash_mutex);
 	conn = g_hash_table_lookup (conn_hash, dev);
@@ -495,6 +497,43 @@ om_connection_check_gwobex_error (ObexConnection *conn,
 	    error == GW_OBEX_ERROR_DISCONNECT) {
 		conn->disconnected = TRUE;
 	}
+}
+
+static gboolean
+om_uri_is_virtual_obex_root (const GnomeVFSURI  *uri)
+{
+	const gchar *host;
+	const gchar *path;
+	
+	if (strcmp (gnome_vfs_uri_get_scheme (uri), "obex") != 0) {
+		return FALSE;
+	}
+
+	host = gnome_vfs_uri_get_host_name (uri);
+	if (host) {
+		return FALSE;
+	}
+
+	path = gnome_vfs_uri_get_path (uri); 
+	if (strcmp (path, "/") == 0) {
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+static gboolean
+om_uri_is_below_virtual_obex_root (const GnomeVFSURI  *uri)
+{
+	const gchar *host;
+	
+	if (strcmp (gnome_vfs_uri_get_scheme (uri), "obex") != 0) {
+		return FALSE;
+	}
+
+	host = gnome_vfs_uri_get_host_name (uri);
+
+	return host == NULL;
 }
 
 static void
@@ -684,16 +723,14 @@ do_open (GnomeVFSMethod        *method,
 	gint            error;
 	FileHandle     *handle;
 	gchar          *name;
-	gchar          *device;
 	GnomeVFSResult  result;
 	GwObexXfer     *xfer;
 
-	device = om_utils_get_dev_from_uri (uri);
-	if (!device) {
-		return GNOME_VFS_ERROR_IS_DIRECTORY;
+	if (om_uri_is_below_virtual_obex_root (uri)) {
+		/* There are no files on the virtual root. */
+		return GNOME_VFS_ERROR_NOT_FOUND;
 	}
-	g_free (device);
-
+	
 	/* Only support either read or write */
 	if ((mode & GNOME_VFS_OPEN_READ) && (mode & GNOME_VFS_OPEN_WRITE)) {
 		return GNOME_VFS_ERROR_INVALID_OPEN_MODE;
@@ -776,16 +813,16 @@ do_create (GnomeVFSMethod        *method,
 	ObexConnection *conn;
 	GnomeVFSResult  result;
 	FileHandle     *handle;
-	gchar          *name, *dev;
+	gchar          *name;
 	GwObexXfer     *xfer;
 	gint            error;
 
-	dev = om_utils_get_dev_from_uri (uri);
-	if (!dev) {
-		return GNOME_VFS_ERROR_NOT_SUPPORTED;
+	if (om_uri_is_below_virtual_obex_root (uri)) {
+		/* Files can't be created in the virtual root, it's
+		 * read-only.
+		 */
+		return GNOME_VFS_ERROR_NOT_PERMITTED;
 	}
-
-	g_free (dev);
 
 	if (!(mode & GNOME_VFS_OPEN_WRITE)) {
 		return GNOME_VFS_ERROR_INVALID_OPEN_MODE;
@@ -1045,14 +1082,26 @@ do_open_directory (GnomeVFSMethod           *method,
         GnomeVFSResult   result;
 	GList           *elements = NULL;
 	DirectoryHandle *handle;
-	gchar		*device_name;
 
-	device_name = om_utils_get_dev_from_uri (uri);
-
-	if (device_name) {
-	        ObexConnection  *conn;
-
-		g_free (device_name);
+	if (om_uri_is_virtual_obex_root (uri)) {
+		/* We can't support following symlinks in open_directory since
+		 * the URI is different, just not the path.
+		 */
+		if (options & GNOME_VFS_FILE_INFO_FOLLOW_LINKS) {
+			/* Note: However, that makes things like gnomevfs-ls not
+			 * work so we just ignore the flag instead.
+			 */
+			
+			/*return GNOME_VFS_ERROR_NOT_SUPPORTED;*/
+		}
+		
+		/* Get the list of paired devices. */
+		elements = om_dbus_get_dev_list ();
+	}
+	else if (om_uri_is_below_virtual_obex_root (uri)) {
+		return GNOME_VFS_ERROR_NOT_A_DIRECTORY;
+	} else {
+	        ObexConnection *conn;
 
 		conn = om_get_connection (uri, &result);
 		if (!conn) {
@@ -1071,9 +1120,6 @@ do_open_directory (GnomeVFSMethod           *method,
 		}
 		
 		om_connection_unref (conn);
-	} else { 
-		/* We want to list paired devices. */
-		elements = om_dbus_get_dev_list ();
 	}
 	
 	handle = g_new0 (DirectoryHandle, 1);
@@ -1120,42 +1166,21 @@ do_read_directory (GnomeVFSMethod       *method,
 }
 
 static GnomeVFSResult
-do_get_file_info (GnomeVFSMethod          *method,
-		  GnomeVFSURI             *uri,
-		  GnomeVFSFileInfo        *file_info,
-		  GnomeVFSFileInfoOptions  options,
-		  GnomeVFSContext         *context)
+om_get_file_info_helper (GnomeVFSURI       *uri,
+			 GnomeVFSFileInfo  *file_info,
+			 GnomeVFSContext   *context)
 {
-	gchar          *path, *dev;
+	gchar          *path;
 	GnomeVFSResult  result;
-	ObexConnection *conn = NULL;
+	ObexConnection *conn;
 	GList          *elements, *l;
 	gchar          *name;
-
-	/* Special-case the ultimate root */
-	dev = om_utils_get_dev_from_uri (uri);
-	if (!dev) {
-		file_info->valid_fields = GNOME_VFS_FILE_INFO_FIELDS_NONE;
-		file_info->name = g_strdup ("/");
-
-		file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_TYPE;
-		file_info->type = GNOME_VFS_FILE_TYPE_DIRECTORY;
-
-		file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
-		file_info->mime_type = g_strdup ("x-directory/normal");
-
-		file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_ACCESS;
-		file_info->permissions = GNOME_VFS_PERM_ACCESS_READABLE;
-
-		return GNOME_VFS_OK;
-	}
-	g_free (dev);
 
 	path = om_utils_get_path_from_uri (uri);
 	if (path == NULL) {
 		return GNOME_VFS_ERROR_INVALID_URI;
 	}
-	
+
 	conn = om_get_connection (uri, &result);
 	if (!conn) {
 		return result;
@@ -1217,6 +1242,112 @@ do_get_file_info (GnomeVFSMethod          *method,
 }
 
 static GnomeVFSResult
+do_get_file_info (GnomeVFSMethod          *method,
+		  GnomeVFSURI             *uri,
+		  GnomeVFSFileInfo        *file_info,
+		  GnomeVFSFileInfoOptions  options,
+		  GnomeVFSContext         *context)
+{
+	/* Special-case the obex:/// root, which is a virtual root containin
+	 * symlinks to the paired devices.
+	 */
+	if (om_uri_is_virtual_obex_root (uri)) {
+		file_info->valid_fields = GNOME_VFS_FILE_INFO_FIELDS_NONE;
+		file_info->name = g_strdup ("/");
+		
+		file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_TYPE;
+		file_info->type = GNOME_VFS_FILE_TYPE_DIRECTORY;
+
+		file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
+		file_info->mime_type = g_strdup ("x-directory/normal");
+
+		file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_ACCESS;
+		file_info->permissions = GNOME_VFS_PERM_ACCESS_READABLE;
+
+		return GNOME_VFS_OK;
+	}
+	else if (om_uri_is_below_virtual_obex_root (uri)) {
+		GnomeVFSURI *parent, *virtual_root;
+		gchar       *basename;
+		gboolean     found;
+		GnomeVFSResult  result;
+		GList          *elements, *l;
+
+		/* Check if the URI is an immediate parent of the virtual root,
+		 * otherwise bail, to save some expensive D-Bus traffic for
+		 * obviously non-correct URIs.
+		 */
+		
+		parent = gnome_vfs_uri_get_parent (uri);
+		virtual_root = gnome_vfs_uri_new ("obex:///");
+
+		if (!gnome_vfs_uri_equal (parent, virtual_root)) {
+			gnome_vfs_uri_unref (parent);
+			gnome_vfs_uri_unref (virtual_root);
+
+			return GNOME_VFS_ERROR_NOT_FOUND;
+		}
+		
+		gnome_vfs_uri_unref (parent);
+		gnome_vfs_uri_unref (virtual_root);
+
+		/* Check if the URI is an actual paired device, if so, return
+		 * the info for it.
+		 */
+		basename = gnome_vfs_uri_extract_short_name (uri);
+		found = FALSE;
+
+		elements = om_dbus_get_dev_list ();
+		for (l = elements; l; l = l->next) {
+			GnomeVFSFileInfo *child_info;
+
+			child_info = l->data;
+
+			if (strcmp (child_info->name, basename) == 0) {
+				gnome_vfs_file_info_copy (file_info, child_info);
+				found = TRUE;
+				break;
+			}
+		}
+
+		g_free (basename);
+		gnome_vfs_file_info_list_free (elements);
+
+		if (found) {
+			if (options & GNOME_VFS_FILE_INFO_FOLLOW_LINKS) {
+				GnomeVFSURI *symlink_uri;
+
+				/* Resolve the symlink, we only need to support
+				 * one step since only the virtual root may
+				 * contain symlinks.
+				 */
+				result = GNOME_VFS_ERROR_INVALID_URI;
+				symlink_uri = gnome_vfs_uri_new (file_info->symlink_name);
+				if (symlink_uri) {
+					gnome_vfs_file_info_clear (file_info);
+					result = om_get_file_info_helper (symlink_uri,
+									  file_info,
+									  context);
+					gnome_vfs_uri_unref (symlink_uri);
+				}
+				
+				/* Just use the symlink info when not following
+				 * symklinks.
+				 */
+				return result;
+			}
+			
+			return GNOME_VFS_OK;
+		} else {
+			return GNOME_VFS_ERROR_NOT_FOUND;
+		}
+	}
+
+	/* Normal obex://[BDA] form URI. */
+	return om_get_file_info_helper (uri, file_info, context);
+}
+
+static GnomeVFSResult
 do_get_file_info_from_handle (GnomeVFSMethod          *method,
 			      GnomeVFSMethodHandle    *method_handle,
 			      GnomeVFSFileInfo        *file_info,
@@ -1245,16 +1376,13 @@ do_make_directory (GnomeVFSMethod  *method,
 {
 	GnomeVFSResult  result;
 	gchar          *name;
-	gchar          *device;
 	ObexConnection *conn;
 	gint            error;
 
-	device = om_utils_get_dev_from_uri (uri);
-	if (!device) {
+	if (om_uri_is_below_virtual_obex_root (uri)) {
 		return GNOME_VFS_ERROR_NOT_SUPPORTED;
 	}
-	g_free (device);
-
+	
 	conn = om_get_connection (uri, &result);
 	if (!conn) {
 		return result;
@@ -1450,6 +1578,10 @@ do_set_file_info (GnomeVFSMethod          *method,
 	GnomeVFSURI     *tmp_uri;
 	GnomeVFSURI     *new_uri;
 
+	if (om_uri_is_below_virtual_obex_root (uri)) {
+		return GNOME_VFS_ERROR_NOT_PERMITTED;
+	}
+	
 	/* We can only support changing the name. */
 	if (!(mask & GNOME_VFS_SET_FILE_INFO_NAME)) {
 		return GNOME_VFS_ERROR_NOT_SUPPORTED;
@@ -1511,6 +1643,10 @@ do_get_volume_free_space (GnomeVFSMethod    *method,
 	OvuCaps        *caps;
 	GError         *gerror = NULL;
 	GList          *entries;
+
+	if (om_uri_is_virtual_obex_root (uri)) {
+		return GNOME_VFS_ERROR_NOT_SUPPORTED;
+	}
 
 	conn = om_get_connection (uri, &result);
 	if (!conn) {
@@ -1701,7 +1837,7 @@ do_monitor_cancel (GnomeVFSMethod       *method,
 /* The vtable for vfs methods. The unsupported methods are:
  *
  * seek, tell, truncate, truncate_handle:
- * Those does not map well to the OBEX protocoll.
+ * Those does not map well to the OBEX protocol.
  *
  * find_directory:
  * This is used to search for a trash directory, and does not
