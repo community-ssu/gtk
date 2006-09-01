@@ -1,5 +1,8 @@
 2006-09-01  Richard Hult  <richard@imendio.com>
 
+	* Release 1.7.1.
+2006-09-01  Richard Hult  <richard@imendio.com>
+
 	* configure.in: Bump version.
 	
 	* obex-module/src/obex-method.c: 
