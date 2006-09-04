@@ -14,6 +14,6 @@ int main(int argc, char* argv[])
                 perror("lstat");
                 return 1;
         }
-        printf("%u\n", buf.st_mtime);
+        printf("%u\n", (unsigned)buf.st_mtime);
         return 0;
 }
